@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0+
-//
-// Copyright 2016 Freescale Semiconductor, Inc.
-// Copyright 2017 NXP
+
+
+
+
 
 #include <linux/clk.h>
 #include <linux/clockchips.h>
@@ -39,7 +39,7 @@ static inline void tpm_timer_disable(void)
 {
 	unsigned int val;
 
-	/* channel disable */
+	 
 	val = readl(timer_base + TPM_C0SC);
 	val &= ~(TPM_C0SC_MODE_MASK | TPM_C0SC_CHIE);
 	writel(val, timer_base + TPM_C0SC);
@@ -49,7 +49,7 @@ static inline void tpm_timer_enable(void)
 {
 	unsigned int val;
 
-	/* channel enabled in sw compare mode */
+	 
 	val = readl(timer_base + TPM_C0SC);
 	val |= (TPM_C0SC_MODE_SW_COMPARE << TPM_C0SC_MODE_SHIFT) |
 	       TPM_C0SC_CHIE;
@@ -90,12 +90,7 @@ static int tpm_set_next_event(unsigned long delta,
 	writel(next, timer_base + TPM_C0V);
 	now = tpm_read_counter();
 
-	/*
-	 * NOTE: We observed in a very small probability, the bus fabric
-	 * contention between GPU and A7 may results a few cycles delay
-	 * of writing CNT registers which may cause the min_delta event got
-	 * missed, so we need add a ETIME check here in case it happened.
-	 */
+	 
 	return (int)(next - now) <= 0 ? -ETIME : 0;
 }
 
@@ -182,7 +177,7 @@ static int __init tpm_timer_init(struct device_node *np)
 		pr_err("tpm: failed to get ipg clk\n");
 		return -ENODEV;
 	}
-	/* enable clk before accessing registers */
+	 
 	ret = clk_prepare_enable(ipg);
 	if (ret) {
 		pr_err("tpm: ipg clock enable failed (%d)\n", ret);
@@ -198,35 +193,25 @@ static int __init tpm_timer_init(struct device_node *np)
 
 	counter_width = (readl(timer_base + TPM_PARAM)
 		& TPM_PARAM_WIDTH_MASK) >> TPM_PARAM_WIDTH_SHIFT;
-	/* use rating 200 for 32-bit counter and 150 for 16-bit counter */
+	 
 	to_tpm.clkevt.rating = counter_width == 0x20 ? 200 : 150;
 
-	/*
-	 * Initialize tpm module to a known state
-	 * 1) Counter disabled
-	 * 2) TPM counter operates in up counting mode
-	 * 3) Timer Overflow Interrupt disabled
-	 * 4) Channel0 disabled
-	 * 5) DMA transfers disabled
-	 */
-	/* make sure counter is disabled */
+	 
+	 
 	writel(0, timer_base + TPM_SC);
-	/* TOF is W1C */
+	 
 	writel(TPM_SC_TOF_MASK, timer_base + TPM_SC);
 	writel(0, timer_base + TPM_CNT);
-	/* CHF is W1C */
+	 
 	writel(TPM_C0SC_CHF_MASK, timer_base + TPM_C0SC);
 
-	/*
-	 * increase per cnt,
-	 * div 8 for 32-bit counter and div 128 for 16-bit counter
-	 */
+	 
 	writel(TPM_SC_CMOD_INC_PER_CNT |
 		(counter_width == 0x20 ?
 		TPM_SC_CMOD_DIV_DEFAULT : TPM_SC_CMOD_DIV_MAX),
 		timer_base + TPM_SC);
 
-	/* set MOD register to maximum for free running mode */
+	 
 	writel(GENMASK(counter_width - 1, 0), timer_base + TPM_MOD);
 
 	tpm_clockevent_init();

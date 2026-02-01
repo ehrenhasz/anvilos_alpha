@@ -1,12 +1,10 @@
-/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
-/*
- * Copyright (C) 2022 Kernkonzept GmbH.
- */
+ 
+ 
 
 #ifndef _DT_BINDINGS_CLK_QCOM_GCC_8909_H
 #define _DT_BINDINGS_CLK_QCOM_GCC_8909_H
 
-/* PLLs */
+ 
 #define GPLL0_EARLY				0
 #define GPLL0					1
 #define GPLL1					2
@@ -16,7 +14,7 @@
 #define BIMC_PLL_EARLY				6
 #define BIMC_PLL				7
 
-/* RCGs */
+ 
 #define APSS_AHB_CLK_SRC			8
 #define BIMC_DDR_CLK_SRC			9
 #define BIMC_GPU_CLK_SRC			10
@@ -67,7 +65,7 @@
 #define VFE0_CLK_SRC				55
 #define VSYNC_CLK_SRC				56
 
-/* Voteable Clocks */
+ 
 #define GCC_APSS_TCU_CLK			57
 #define GCC_BLSP1_AHB_CLK			58
 #define GCC_BLSP1_SLEEP_CLK			59
@@ -84,7 +82,7 @@
 #define GCC_VENUS_TBU_CLK			70
 #define GCC_VFE_TBU_CLK				71
 
-/* Branches */
+ 
 #define GCC_BIMC_GFX_CLK			72
 #define GCC_BIMC_GPU_CLK			73
 #define GCC_BLSP1_QUP1_I2C_APPS_CLK		74
@@ -162,7 +160,7 @@
 #define GCC_VENUS0_CORE0_VCODEC0_CLK		146
 #define GCC_VENUS0_VCODEC0_CLK			147
 
-/* Resets */
+ 
 #define GCC_AUDIO_CORE_BCR			0
 #define GCC_BLSP1_BCR				1
 #define GCC_BLSP1_QUP1_BCR			2
@@ -205,10 +203,10 @@
 #define GCC_USB_HS_BCR				39
 #define GCC_VENUS0_BCR				40
 
-/* Subsystem Restart */
+ 
 #define GCC_MSS_RESTART				41
 
-/* Power Domains */
+ 
 #define MDSS_GDSC				0
 #define OXILI_GDSC				1
 #define VENUS_GDSC				2

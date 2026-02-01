@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* TI K3 AM65x Common Platform Time Sync
- *
- * Copyright (C) 2020 Texas Instruments Incorporated - http://www.ti.com
- *
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/clk-provider.h>
@@ -23,48 +19,48 @@
 #include "am65-cpts.h"
 
 struct am65_genf_regs {
-	u32 comp_lo;	/* Comparison Low Value 0:31 */
-	u32 comp_hi;	/* Comparison High Value 32:63 */
-	u32 control;	/* control */
-	u32 length;	/* Length */
-	u32 ppm_low;	/* PPM Load Low Value 0:31 */
-	u32 ppm_hi;	/* PPM Load High Value 32:63 */
-	u32 ts_nudge;	/* Nudge value */
+	u32 comp_lo;	 
+	u32 comp_hi;	 
+	u32 control;	 
+	u32 length;	 
+	u32 ppm_low;	 
+	u32 ppm_hi;	 
+	u32 ts_nudge;	 
 } __aligned(32) __packed;
 
 #define AM65_CPTS_GENF_MAX_NUM 9
 #define AM65_CPTS_ESTF_MAX_NUM 8
 
 struct am65_cpts_regs {
-	u32 idver;		/* Identification and version */
-	u32 control;		/* Time sync control */
-	u32 rftclk_sel;		/* Reference Clock Select Register */
-	u32 ts_push;		/* Time stamp event push */
-	u32 ts_load_val_lo;	/* Time Stamp Load Low Value 0:31 */
-	u32 ts_load_en;		/* Time stamp load enable */
-	u32 ts_comp_lo;		/* Time Stamp Comparison Low Value 0:31 */
-	u32 ts_comp_length;	/* Time Stamp Comparison Length */
-	u32 intstat_raw;	/* Time sync interrupt status raw */
-	u32 intstat_masked;	/* Time sync interrupt status masked */
-	u32 int_enable;		/* Time sync interrupt enable */
-	u32 ts_comp_nudge;	/* Time Stamp Comparison Nudge Value */
-	u32 event_pop;		/* Event interrupt pop */
-	u32 event_0;		/* Event Time Stamp lo 0:31 */
-	u32 event_1;		/* Event Type Fields */
-	u32 event_2;		/* Event Type Fields domain */
-	u32 event_3;		/* Event Time Stamp hi 32:63 */
-	u32 ts_load_val_hi;	/* Time Stamp Load High Value 32:63 */
-	u32 ts_comp_hi;		/* Time Stamp Comparison High Value 32:63 */
-	u32 ts_add_val;		/* Time Stamp Add value */
-	u32 ts_ppm_low;		/* Time Stamp PPM Load Low Value 0:31 */
-	u32 ts_ppm_hi;		/* Time Stamp PPM Load High Value 32:63 */
-	u32 ts_nudge;		/* Time Stamp Nudge value */
+	u32 idver;		 
+	u32 control;		 
+	u32 rftclk_sel;		 
+	u32 ts_push;		 
+	u32 ts_load_val_lo;	 
+	u32 ts_load_en;		 
+	u32 ts_comp_lo;		 
+	u32 ts_comp_length;	 
+	u32 intstat_raw;	 
+	u32 intstat_masked;	 
+	u32 int_enable;		 
+	u32 ts_comp_nudge;	 
+	u32 event_pop;		 
+	u32 event_0;		 
+	u32 event_1;		 
+	u32 event_2;		 
+	u32 event_3;		 
+	u32 ts_load_val_hi;	 
+	u32 ts_comp_hi;		 
+	u32 ts_add_val;		 
+	u32 ts_ppm_low;		 
+	u32 ts_ppm_hi;		 
+	u32 ts_nudge;		 
 	u32 reserv[33];
 	struct am65_genf_regs genf[AM65_CPTS_GENF_MAX_NUM];
 	struct am65_genf_regs estf[AM65_CPTS_ESTF_MAX_NUM];
 };
 
-/* CONTROL_REG */
+ 
 #define AM65_CPTS_CONTROL_EN			BIT(0)
 #define AM65_CPTS_CONTROL_INT_TEST		BIT(1)
 #define AM65_CPTS_CONTROL_TS_COMP_POLARITY	BIT(2)
@@ -88,31 +84,31 @@ struct am65_cpts_regs {
 #define AM65_CPTS_CONTROL_TS_SYNC_SEL_MASK	(0xF)
 #define AM65_CPTS_CONTROL_TS_SYNC_SEL_SHIFT	(28)
 
-/* RFTCLK_SEL_REG */
+ 
 #define AM65_CPTS_RFTCLK_SEL_MASK		(0x1F)
 
-/* TS_PUSH_REG */
+ 
 #define AM65_CPTS_TS_PUSH			BIT(0)
 
-/* TS_LOAD_EN_REG */
+ 
 #define AM65_CPTS_TS_LOAD_EN			BIT(0)
 
-/* INTSTAT_RAW_REG */
+ 
 #define AM65_CPTS_INTSTAT_RAW_TS_PEND		BIT(0)
 
-/* INTSTAT_MASKED_REG */
+ 
 #define AM65_CPTS_INTSTAT_MASKED_TS_PEND	BIT(0)
 
-/* INT_ENABLE_REG */
+ 
 #define AM65_CPTS_INT_ENABLE_TS_PEND_EN		BIT(0)
 
-/* TS_COMP_NUDGE_REG */
+ 
 #define AM65_CPTS_TS_COMP_NUDGE_MASK		(0xFF)
 
-/* EVENT_POP_REG */
+ 
 #define AM65_CPTS_EVENT_POP			BIT(0)
 
-/* EVENT_1_REG */
+ 
 #define AM65_CPTS_EVENT_1_SEQUENCE_ID_MASK	GENMASK(15, 0)
 
 #define AM65_CPTS_EVENT_1_MESSAGE_TYPE_MASK	GENMASK(19, 16)
@@ -124,19 +120,19 @@ struct am65_cpts_regs {
 #define AM65_CPTS_EVENT_1_PORT_NUMBER_MASK	GENMASK(28, 24)
 #define AM65_CPTS_EVENT_1_PORT_NUMBER_SHIFT	(24)
 
-/* EVENT_2_REG */
+ 
 #define AM65_CPTS_EVENT_2_REG_DOMAIN_MASK	(0xFF)
 #define AM65_CPTS_EVENT_2_REG_DOMAIN_SHIFT	(0)
 
 enum {
-	AM65_CPTS_EV_PUSH,	/* Time Stamp Push Event */
-	AM65_CPTS_EV_ROLL,	/* Time Stamp Rollover Event */
-	AM65_CPTS_EV_HALF,	/* Time Stamp Half Rollover Event */
-	AM65_CPTS_EV_HW,		/* Hardware Time Stamp Push Event */
-	AM65_CPTS_EV_RX,		/* Ethernet Receive Event */
-	AM65_CPTS_EV_TX,		/* Ethernet Transmit Event */
-	AM65_CPTS_EV_TS_COMP,	/* Time Stamp Compare Event */
-	AM65_CPTS_EV_HOST,	/* Host Transmit Event */
+	AM65_CPTS_EV_PUSH,	 
+	AM65_CPTS_EV_ROLL,	 
+	AM65_CPTS_EV_HALF,	 
+	AM65_CPTS_EV_HW,		 
+	AM65_CPTS_EV_RX,		 
+	AM65_CPTS_EV_TX,		 
+	AM65_CPTS_EV_TS_COMP,	 
+	AM65_CPTS_EV_HOST,	 
 };
 
 struct am65_cpts_event {
@@ -149,8 +145,8 @@ struct am65_cpts_event {
 
 #define AM65_CPTS_FIFO_DEPTH		(16)
 #define AM65_CPTS_MAX_EVENTS		(32)
-#define AM65_CPTS_EVENT_RX_TX_TIMEOUT	(20) /* ms */
-#define AM65_CPTS_SKB_TX_WORK_TIMEOUT	1 /* jiffies */
+#define AM65_CPTS_EVENT_RX_TX_TIMEOUT	(20)  
+#define AM65_CPTS_SKB_TX_WORK_TIMEOUT	1  
 #define AM65_CPTS_MIN_PPM		0x400
 
 struct am65_cpts {
@@ -166,12 +162,12 @@ struct am65_cpts {
 	struct list_head events;
 	struct list_head pool;
 	struct am65_cpts_event pool_data[AM65_CPTS_MAX_EVENTS];
-	spinlock_t lock; /* protects events lists*/
+	spinlock_t lock;  
 	u32 ext_ts_inputs;
 	u32 genf_num;
 	u32 ts_add_val;
 	int irq;
-	struct mutex ptp_clk_lock; /* PHC access sync */
+	struct mutex ptp_clk_lock;  
 	u64 timestamp;
 	u32 genf_enable;
 	u32 hw_ts_enable;
@@ -181,7 +177,7 @@ struct am65_cpts {
 	bool pps_present;
 	u32 pps_hw_ts_idx;
 	u32 pps_genf_idx;
-	/* context save/restore */
+	 
 	u64 sr_cpts_ns;
 	u64 sr_ktime_ns;
 	u32 sr_control;
@@ -215,7 +211,7 @@ static void am65_cpts_settime(struct am65_cpts *cpts, u64 start_tstamp)
 
 static void am65_cpts_set_add_val(struct am65_cpts *cpts)
 {
-	/* select coefficient according to the rate */
+	 
 	cpts->ts_add_val = (NSEC_PER_SEC / cpts->refclk_freq - 1) & 0x7;
 
 	am65_cpts_write32(cpts, cpts->ts_add_val, ts_add_val);
@@ -370,12 +366,10 @@ static u64 am65_cpts_gettime(struct am65_cpts *cpts,
 	unsigned long flags;
 	u64 val = 0;
 
-	/* temporarily disable cpts interrupt to avoid intentional
-	 * doubled read. Interrupt can be in-flight - it's Ok.
-	 */
+	 
 	am65_cpts_write32(cpts, 0, int_enable);
 
-	/* use spin_lock_irqsave() here as it has to run very fast */
+	 
 	spin_lock_irqsave(&cpts->lock, flags);
 	ptp_read_system_prets(sts);
 	am65_cpts_write32(cpts, AM65_CPTS_TS_PUSH, ts_push);
@@ -402,7 +396,7 @@ static irqreturn_t am65_cpts_interrupt(int irq, void *dev_id)
 	return IRQ_HANDLED;
 }
 
-/* PTP clock operations */
+ 
 static int am65_cpts_ptp_adjfine(struct ptp_clock_info *ptp, long scaled_ppm)
 {
 	struct am65_cpts *cpts = container_of(ptp, struct am65_cpts, ptp_info);
@@ -419,15 +413,7 @@ static int am65_cpts_ptp_adjfine(struct ptp_clock_info *ptp, long scaled_ppm)
 		ppb = -ppb;
 	}
 
-	/* base freq = 1GHz = 1 000 000 000
-	 * ppb_norm = ppb * base_freq / clock_freq;
-	 * ppm_norm = ppb_norm / 1000
-	 * adj_period = 1 000 000 / ppm_norm
-	 * adj_period = 1 000 000 000 / ppb_norm
-	 * adj_period = 1 000 000 000 / (ppb * base_freq / clock_freq)
-	 * adj_period = (1 000 000 000 * clock_freq) / (ppb * base_freq)
-	 * adj_period = clock_freq / ppb
-	 */
+	 
 	adj_period = div_u64(cpts->refclk_freq, ppb);
 
 	mutex_lock(&cpts->ptp_clk_lock);
@@ -448,10 +434,7 @@ static int am65_cpts_ptp_adjfine(struct ptp_clock_info *ptp, long scaled_ppm)
 		else
 			estf_ctrl_val |= BIT(1);
 
-		/* GenF PPM will do correction using cpts refclk tick which is
-		 * (cpts->ts_add_val + 1) ns, so GenF length PPM adj period
-		 * need to be corrected.
-		 */
+		 
 		pps_adj_period = adj_period * (cpts->ts_add_val + 1);
 		estf_ppm_hi = upper_32_bits(pps_adj_period) & 0x3FF;
 		estf_ppm_low = lower_32_bits(pps_adj_period);
@@ -459,13 +442,7 @@ static int am65_cpts_ptp_adjfine(struct ptp_clock_info *ptp, long scaled_ppm)
 
 	spin_lock_irqsave(&cpts->lock, flags);
 
-	/* All below writes must be done extremely fast:
-	 *  - delay between PPM dir and PPM value changes can cause err due old
-	 *    PPM correction applied in wrong direction
-	 *  - delay between CPTS-clock PPM cfg and GenF PPM cfg can cause err
-	 *    due CPTS-clock PPM working with new cfg while GenF PPM cfg still
-	 *    with old for short period of time
-	 */
+	 
 
 	am65_cpts_write32(cpts, ctrl_val, control);
 	am65_cpts_write32(cpts, ppm_hi, ts_ppm_hi);
@@ -484,7 +461,7 @@ static int am65_cpts_ptp_adjfine(struct ptp_clock_info *ptp, long scaled_ppm)
 			am65_cpts_write32(cpts, estf_ppm_low, estf[i].ppm_low);
 		}
 	}
-	/* All GenF/EstF can be updated here the same way */
+	 
 	spin_unlock_irqrestore(&cpts->lock, flags);
 
 	mutex_unlock(&cpts->ptp_clk_lock);
@@ -525,7 +502,7 @@ u64 am65_cpts_ns_gettime(struct am65_cpts *cpts)
 {
 	u64 ns;
 
-	/* reuse ptp_clk_lock as it serialize ts push */
+	 
 	mutex_lock(&cpts->ptp_clk_lock);
 	ns = am65_cpts_gettime(cpts, NULL);
 	mutex_unlock(&cpts->ptp_clk_lock);
@@ -595,7 +572,7 @@ int am65_cpts_estf_enable(struct am65_cpts *cpts, int idx,
 	if (cycles > U32_MAX)
 		return -EINVAL;
 
-	/* according to TRM should be zeroed */
+	 
 	am65_cpts_write32(cpts, 0, estf[idx].length);
 
 	val = upper_32_bits(cfg->ns_start);
@@ -778,7 +755,7 @@ static bool am65_cpts_match_tx_ts(struct am65_cpts *cpts,
 	skb_queue_splice_init(&cpts->txq, &txq_list);
 	spin_unlock_irqrestore(&cpts->txq.lock, flags);
 
-	/* no need to grab txq.lock as access is always done under cpts->lock */
+	 
 	skb_queue_walk_safe(&txq_list, skb, tmp) {
 		struct skb_shared_hwtstamps ssh;
 		struct am65_cpts_skb_cb_data *skb_cb =
@@ -800,7 +777,7 @@ static bool am65_cpts_match_tx_ts(struct am65_cpts *cpts,
 		}
 
 		if (time_after(jiffies, skb_cb->tmo)) {
-			/* timeout any expired skbs over 100 ms */
+			 
 			dev_dbg(cpts->dev,
 				"expiring tx timestamp mtype_seqid %08x\n",
 				mtype_seqid);
@@ -859,14 +836,7 @@ static long am65_cpts_ts_work(struct ptp_clock_info *ptp)
 	return delay;
 }
 
-/**
- * am65_cpts_rx_enable - enable rx timestamping
- * @cpts: cpts handle
- * @en: enable
- *
- * This functions enables rx packets timestamping. The CPTS can timestamp all
- * rx packets.
- */
+ 
 void am65_cpts_rx_enable(struct am65_cpts *cpts, bool en)
 {
 	u32 val;
@@ -906,14 +876,7 @@ static int am65_skb_get_mtype_seqid(struct sk_buff *skb, u32 *mtype_seqid)
 	return 1;
 }
 
-/**
- * am65_cpts_tx_timestamp - save tx packet for timestamping
- * @cpts: cpts handle
- * @skb: packet
- *
- * This functions saves tx packet for timestamping if packet can be timestamped.
- * The future processing is done in from PTP auxiliary worker.
- */
+ 
 void am65_cpts_tx_timestamp(struct am65_cpts *cpts, struct sk_buff *skb)
 {
 	struct am65_cpts_skb_cb_data *skb_cb = (void *)skb->cb;
@@ -921,26 +884,16 @@ void am65_cpts_tx_timestamp(struct am65_cpts *cpts, struct sk_buff *skb)
 	if (!(skb_shinfo(skb)->tx_flags & SKBTX_IN_PROGRESS))
 		return;
 
-	/* add frame to queue for processing later.
-	 * The periodic FIFO check will handle this.
-	 */
+	 
 	skb_get(skb);
-	/* get the timestamp for timeouts */
+	 
 	skb_cb->tmo = jiffies + msecs_to_jiffies(100);
 	skb_queue_tail(&cpts->txq, skb);
 	ptp_schedule_worker(cpts->ptp_clock, 0);
 }
 EXPORT_SYMBOL_GPL(am65_cpts_tx_timestamp);
 
-/**
- * am65_cpts_prep_tx_timestamp - check and prepare tx packet for timestamping
- * @cpts: cpts handle
- * @skb: packet
- *
- * This functions should be called from .xmit().
- * It checks if packet can be timestamped, fills internal cpts data
- * in skb-cb and marks packet as SKBTX_IN_PROGRESS.
- */
+ 
 void am65_cpts_prep_tx_timestamp(struct am65_cpts *cpts, struct sk_buff *skb)
 {
 	struct am65_cpts_skb_cb_data *skb_cb = (void *)skb->cb;
@@ -1011,9 +964,7 @@ static int cpts_of_mux_clk_setup(struct am65_cpts *cpts,
 	}
 
 	reg = &cpts->reg->rftclk_sel;
-	/* dev must be NULL to avoid recursive incrementing
-	 * of module refcnt
-	 */
+	 
 	cpts->clk_mux_hw = clk_hw_register_mux(NULL, clk_mux_name,
 					       parent_names, num_parents,
 					       0, reg, 0, 5, 0, NULL);
@@ -1144,7 +1095,7 @@ struct am65_cpts *am65_cpts_create(struct device *dev, void __iomem *regs,
 			  control);
 	am65_cpts_write32(cpts, AM65_CPTS_INT_ENABLE_TS_PEND_EN, int_enable);
 
-	/* set time to the current system time */
+	 
 	am65_cpts_settime(cpts, ktime_to_ns(ktime_get_real()));
 
 	cpts->ptp_clock = ptp_clock_register(&cpts->ptp_info, cpts->dev);
@@ -1180,7 +1131,7 @@ EXPORT_SYMBOL_GPL(am65_cpts_create);
 
 void am65_cpts_suspend(struct am65_cpts *cpts)
 {
-	/* save state and disable CPTS */
+	 
 	cpts->sr_control = am65_cpts_read32(cpts, control);
 	cpts->sr_int_enable = am65_cpts_read32(cpts, int_enable);
 	cpts->sr_rftclk_sel = am65_cpts_read32(cpts, rftclk_sel);
@@ -1191,10 +1142,10 @@ void am65_cpts_suspend(struct am65_cpts *cpts)
 	am65_cpts_disable(cpts);
 	clk_disable(cpts->refclk);
 
-	/* Save GENF state */
+	 
 	memcpy_fromio(&cpts->sr_genf, &cpts->reg->genf, sizeof(cpts->sr_genf));
 
-	/* Save ESTF state */
+	 
 	memcpy_fromio(&cpts->sr_estf, &cpts->reg->estf, sizeof(cpts->sr_estf));
 }
 EXPORT_SYMBOL_GPL(am65_cpts_suspend);
@@ -1204,25 +1155,25 @@ void am65_cpts_resume(struct am65_cpts *cpts)
 	int i;
 	s64 ktime_ns;
 
-	/* restore state and enable CPTS */
+	 
 	clk_enable(cpts->refclk);
 	am65_cpts_write32(cpts, cpts->sr_rftclk_sel, rftclk_sel);
 	am65_cpts_set_add_val(cpts);
 	am65_cpts_write32(cpts, cpts->sr_control, control);
 	am65_cpts_write32(cpts, cpts->sr_int_enable, int_enable);
 
-	/* Restore time to saved CPTS time + time in suspend/resume */
+	 
 	ktime_ns = ktime_to_ns(ktime_get_real());
 	ktime_ns -= cpts->sr_ktime_ns;
 	am65_cpts_settime(cpts, cpts->sr_cpts_ns + ktime_ns);
 
-	/* Restore compensation (PPM) */
+	 
 	am65_cpts_write32(cpts, cpts->sr_ts_ppm_hi, ts_ppm_hi);
 	am65_cpts_write32(cpts, cpts->sr_ts_ppm_low, ts_ppm_low);
 
-	/* Restore GENF state */
+	 
 	for (i = 0; i < AM65_CPTS_GENF_MAX_NUM; i++) {
-		am65_cpts_write32(cpts, 0, genf[i].length);	/* TRM sequence */
+		am65_cpts_write32(cpts, 0, genf[i].length);	 
 		am65_cpts_write32(cpts, cpts->sr_genf[i].comp_hi, genf[i].comp_hi);
 		am65_cpts_write32(cpts, cpts->sr_genf[i].comp_lo, genf[i].comp_lo);
 		am65_cpts_write32(cpts, cpts->sr_genf[i].length, genf[i].length);
@@ -1231,9 +1182,9 @@ void am65_cpts_resume(struct am65_cpts *cpts)
 		am65_cpts_write32(cpts, cpts->sr_genf[i].ppm_low, genf[i].ppm_low);
 	}
 
-	/* Restore ESTTF state */
+	 
 	for (i = 0; i < AM65_CPTS_ESTF_MAX_NUM; i++) {
-		am65_cpts_write32(cpts, 0, estf[i].length);	/* TRM sequence */
+		am65_cpts_write32(cpts, 0, estf[i].length);	 
 		am65_cpts_write32(cpts, cpts->sr_estf[i].comp_hi, estf[i].comp_hi);
 		am65_cpts_write32(cpts, cpts->sr_estf[i].comp_lo, estf[i].comp_lo);
 		am65_cpts_write32(cpts, cpts->sr_estf[i].length, estf[i].length);

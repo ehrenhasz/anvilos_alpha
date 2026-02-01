@@ -1,25 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  ALSA sequencer device management
- *  Copyright (c) 1999 by Takashi Iwai <tiwai@suse.de>
- *
- *----------------------------------------------------------------
- *
- * This device handler separates the card driver module from sequencer
- * stuff (sequencer core, synth drivers, etc), so that user can avoid
- * to spend unnecessary resources e.g. if he needs only listening to
- * MP3s.
- *
- * The card (or lowlevel) driver creates a sequencer device entry
- * via snd_seq_device_new().  This is an entry pointer to communicate
- * with the sequencer device "driver", which is involved with the
- * actual part to communicate with the sequencer core.
- * Each sequencer device entry has an id string and the corresponding
- * driver with the same id is loaded when required.  For example,
- * lowlevel codes to access emu8000 chip on sbawe card are included in
- * emu8000-synth module.  To activate this module, the hardware
- * resources like i/o port are passed via snd_seq_device argument.
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/init.h>
@@ -37,9 +17,7 @@ MODULE_AUTHOR("Takashi Iwai <tiwai@suse.de>");
 MODULE_DESCRIPTION("ALSA sequencer device management");
 MODULE_LICENSE("GPL");
 
-/*
- * bus definition
- */
+ 
 static int snd_seq_bus_match(struct device *dev, struct device_driver *drv)
 {
 	struct snd_seq_device *sdev = to_seq_dev(dev);
@@ -54,9 +32,7 @@ static struct bus_type snd_seq_bus_type = {
 	.match = snd_seq_bus_match,
 };
 
-/*
- * proc interface -- just for compatibility
- */
+ 
 #ifdef CONFIG_SND_PROC_FS
 static struct snd_info_entry *info_entry;
 
@@ -78,13 +54,11 @@ static void snd_seq_device_info(struct snd_info_entry *entry,
 }
 #endif
 
-/*
- * load all registered drivers (called from seq_clientmgr.c)
- */
+ 
 
 #ifdef CONFIG_MODULES
-/* flag to block auto-loading */
-static atomic_t snd_seq_in_init = ATOMIC_INIT(1); /* blocked as default */
+ 
+static atomic_t snd_seq_in_init = ATOMIC_INIT(1);  
 
 static int request_seq_drv(struct device *dev, void *data)
 {
@@ -97,7 +71,7 @@ static int request_seq_drv(struct device *dev, void *data)
 
 static void autoload_drivers(struct work_struct *work)
 {
-	/* avoid reentrance */
+	 
 	if (atomic_inc_return(&snd_seq_in_init) == 1)
 		bus_for_each_dev(&snd_seq_bus_type, NULL, NULL,
 				 request_seq_drv);
@@ -115,7 +89,7 @@ void snd_seq_autoload_init(void)
 {
 	atomic_dec(&snd_seq_in_init);
 #ifdef CONFIG_SND_SEQUENCER_MODULE
-	/* initial autoload only when snd-seq is a module */
+	 
 	queue_autoload_drivers();
 #endif
 }
@@ -148,9 +122,7 @@ static inline void cancel_autoload_drivers(void)
 }
 #endif
 
-/*
- * device management
- */
+ 
 static int snd_seq_device_dev_free(struct snd_device *device)
 {
 	struct snd_seq_device *dev = device->device_data;
@@ -188,13 +160,7 @@ static void snd_seq_dev_release(struct device *dev)
 	kfree(to_seq_dev(dev));
 }
 
-/*
- * register a sequencer device
- * card = card info
- * device = device number (if any)
- * id = id of driver
- * result = return pointer (NULL allowed if unnecessary)
- */
+ 
 int snd_seq_device_new(struct snd_card *card, int device, const char *id,
 		       int argsize, struct snd_seq_device **result)
 {
@@ -216,7 +182,7 @@ int snd_seq_device_new(struct snd_card *card, int device, const char *id,
 	if (!dev)
 		return -ENOMEM;
 
-	/* set up device info */
+	 
 	dev->card = card;
 	dev->device = device;
 	dev->id = id;
@@ -228,7 +194,7 @@ int snd_seq_device_new(struct snd_card *card, int device, const char *id,
 	dev->dev.release = snd_seq_dev_release;
 	dev_set_name(&dev->dev, "%s-%d-%d", dev->id, card->number, device);
 
-	/* add this device to the list */
+	 
 	err = snd_device_new(card, SNDRV_DEV_SEQUENCER, dev, &dops);
 	if (err < 0) {
 		put_device(&dev->dev);
@@ -242,9 +208,7 @@ int snd_seq_device_new(struct snd_card *card, int device, const char *id,
 }
 EXPORT_SYMBOL(snd_seq_device_new);
 
-/*
- * driver registration
- */
+ 
 int __snd_seq_driver_register(struct snd_seq_driver *drv, struct module *mod)
 {
 	if (WARN_ON(!drv->driver.name || !drv->id))
@@ -261,9 +225,7 @@ void snd_seq_driver_unregister(struct snd_seq_driver *drv)
 }
 EXPORT_SYMBOL_GPL(snd_seq_driver_unregister);
 
-/*
- * module part
- */
+ 
 
 static int __init seq_dev_proc_init(void)
 {

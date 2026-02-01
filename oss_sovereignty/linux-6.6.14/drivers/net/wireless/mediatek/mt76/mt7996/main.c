@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: ISC
-/*
- * Copyright (C) 2022 MediaTek Inc.
- */
+
+ 
 
 #include "mt7996.h"
 #include "mcu.h"
@@ -106,7 +104,7 @@ static int get_omac_idx(enum nl80211_iftype type, u64 mask)
 	case NL80211_IFTYPE_MESH_POINT:
 	case NL80211_IFTYPE_ADHOC:
 	case NL80211_IFTYPE_STATION:
-		/* prefer hw bssid slot 1-3 */
+		 
 		i = get_free_idx(mask, HW_BSSID_1, HW_BSSID_3);
 		if (i)
 			return i - 1;
@@ -124,7 +122,7 @@ static int get_omac_idx(enum nl80211_iftype type, u64 mask)
 		break;
 	case NL80211_IFTYPE_MONITOR:
 	case NL80211_IFTYPE_AP:
-		/* ap uses hw bssid 0 and ext bssid */
+		 
 		if (~mask & BIT(HW_BSSID_0))
 			return HW_BSSID_0;
 
@@ -320,9 +318,7 @@ static int mt7996_set_key(struct ieee80211_hw *hw, enum set_key_cmd cmd,
 	int idx = key->keyidx;
 	int err = 0;
 
-	/* The hardware does not support per-STA RX GTK, fallback
-	 * to software mode for these.
-	 */
+	 
 	if ((vif->type == NL80211_IFTYPE_ADHOC ||
 	     vif->type == NL80211_IFTYPE_MESH_POINT) &&
 	    (key->cipher == WLAN_CIPHER_SUITE_TKIP ||
@@ -330,7 +326,7 @@ static int mt7996_set_key(struct ieee80211_hw *hw, enum set_key_cmd cmd,
 	    !(key->flags & IEEE80211_KEY_FLAG_PAIRWISE))
 		return -EOPNOTSUPP;
 
-	/* fall back to sw encryption for unsupported ciphers */
+	 
 	switch (key->cipher) {
 	case WLAN_CIPHER_SUITE_AES_CMAC:
 		wcid_keyidx = &wcid->hw_key_idx2;
@@ -421,9 +417,9 @@ mt7996_conf_tx(struct ieee80211_hw *hw, struct ieee80211_vif *vif,
 		[IEEE80211_AC_BK] = 1,
 	};
 
-	/* firmware uses access class index */
+	 
 	mvif->queue_params[mq_to_aci[queue]] = *params;
-	/* no need to update right away, we'll get BSS_CHANGED_QOS */
+	 
 
 	return 0;
 }
@@ -522,7 +518,7 @@ mt7996_get_rates_table(struct ieee80211_hw *hw, struct ieee80211_vif *vif,
 	if (beacon && ht) {
 		struct mt7996_dev *dev = mt7996_hw_dev(hw);
 
-		/* must odd index */
+		 
 		idx = MT7996_BEACON_RATES_TBL + 2 * (mvif->idx % 20);
 		mt7996_mac_set_fixed_rate_table(dev, idx, rate);
 		return idx;
@@ -567,9 +563,7 @@ static void mt7996_bss_info_changed(struct ieee80211_hw *hw,
 
 	mutex_lock(&dev->mt76.mutex);
 
-	/* station mode uses BSSID to map the wlan entry to a peer,
-	 * and then peer references bss_info_rfch to set bandwidth cap.
-	 */
+	 
 	if (changed & BSS_CHANGED_BSSID &&
 	    vif->type == NL80211_IFTYPE_STATION) {
 		bool join = !is_zero_ether_addr(info->bssid);
@@ -606,7 +600,7 @@ static void mt7996_bss_info_changed(struct ieee80211_hw *hw,
 		mt7996_mcu_add_sta(dev, vif, NULL, true);
 	}
 
-	/* ensure that enable txcmd_mode after bss_info */
+	 
 	if (changed & (BSS_CHANGED_QOS | BSS_CHANGED_BEACON_ENABLED))
 		mt7996_mcu_set_tx(dev, vif);
 
@@ -849,7 +843,7 @@ u64 __mt7996_get_tsf(struct ieee80211_hw *hw, struct mt7996_vif *mvif)
 
 	n = mvif->mt76.omac_idx > HW_BSSID_MAX ? HW_BSSID_0
 					       : mvif->mt76.omac_idx;
-	/* TSF software read */
+	 
 	mt76_rmw(dev, MT_LPON_TCR(phy->mt76->band_idx, n), MT_LPON_TCR_SW_MODE,
 		 MT_LPON_TCR_SW_READ);
 	tsf.t32[0] = mt76_rr(dev, MT_LPON_UTTR0(phy->mt76->band_idx));
@@ -891,7 +885,7 @@ mt7996_set_tsf(struct ieee80211_hw *hw, struct ieee80211_vif *vif,
 					       : mvif->mt76.omac_idx;
 	mt76_wr(dev, MT_LPON_UTTR0(phy->mt76->band_idx), tsf.t32[0]);
 	mt76_wr(dev, MT_LPON_UTTR1(phy->mt76->band_idx), tsf.t32[1]);
-	/* TSF software overwrite */
+	 
 	mt76_rmw(dev, MT_LPON_TCR(phy->mt76->band_idx, n), MT_LPON_TCR_SW_MODE,
 		 MT_LPON_TCR_SW_WRITE);
 
@@ -917,7 +911,7 @@ mt7996_offset_tsf(struct ieee80211_hw *hw, struct ieee80211_vif *vif,
 					       : mvif->mt76.omac_idx;
 	mt76_wr(dev, MT_LPON_UTTR0(phy->mt76->band_idx), tsf.t32[0]);
 	mt76_wr(dev, MT_LPON_UTTR1(phy->mt76->band_idx), tsf.t32[1]);
-	/* TSF software adjust*/
+	 
 	mt76_rmw(dev, MT_LPON_TCR(phy->mt76->band_idx, n), MT_LPON_TCR_SW_MODE,
 		 MT_LPON_TCR_SW_ADJUST);
 
@@ -954,7 +948,7 @@ mt7996_set_antenna(struct ieee80211_hw *hw, u32 tx_ant, u32 rx_ant)
 
 	phy->mt76->antenna_mask = tx_ant;
 
-	/* restore to the origin chainmask which might have auxiliary path */
+	 
 	if (hweight8(tx_ant) == max_nss && band_idx < MT_BAND2)
 		phy->mt76->chainmask = ((dev->chainmask >> shift) &
 					(BIT(dev->chainshift[band_idx + 1] - shift) - 1)) << shift;
@@ -967,7 +961,7 @@ mt7996_set_antenna(struct ieee80211_hw *hw, u32 tx_ant, u32 rx_ant)
 	mt7996_set_stream_vht_txbf_caps(phy);
 	mt7996_set_stream_he_eht_caps(phy);
 
-	/* TODO: update bmc_wtbl spe_idx when antenna changes */
+	 
 	mutex_unlock(&dev->mt76.mutex);
 
 	return 0;
@@ -1041,14 +1035,7 @@ mt7996_set_bitrate_mask(struct ieee80211_hw *hw, struct ieee80211_vif *vif,
 
 	mvif->bitrate_mask = *mask;
 
-	/* if multiple rates across different preambles are given we can
-	 * reconfigure this info with all peers using sta_rec command with
-	 * the below exception cases.
-	 * - single rate : if a rate is passed along with different preambles,
-	 * we select the highest one as fixed rate. i.e VHT MCS for VHT peers.
-	 * - multiple rates: if it's not in range format i.e 0-{7,8,9} for VHT
-	 * then multiple MCS setting (MCS 4,5,6) is not supported.
-	 */
+	 
 	ieee80211_iterate_stations_atomic(hw, mt7996_sta_rc_work, &changed);
 	ieee80211_queue_work(hw, &dev->rc_work);
 
@@ -1118,7 +1105,7 @@ static const char mt7996_gstrings_stats[][ETH_GSTRING_LEN] = {
 	"tx_beamformer_rx_feedback_he",
 	"tx_beamformer_rx_feedback_vht",
 	"tx_beamformer_rx_feedback_ht",
-	"tx_beamformer_rx_feedback_bw", /* zero based idx: 20, 40, 80, 160 */
+	"tx_beamformer_rx_feedback_bw",  
 	"tx_beamformer_rx_feedback_nc",
 	"tx_beamformer_rx_feedback_nr",
 	"tx_beamformee_ok_feedback_pkts",
@@ -1136,7 +1123,7 @@ static const char mt7996_gstrings_stats[][ETH_GSTRING_LEN] = {
 	"tx_msdu_pack_7",
 	"tx_msdu_pack_8",
 
-	/* rx counters */
+	 
 	"rx_fifo_full_cnt",
 	"rx_mpdu_cnt",
 	"channel_idle_cnt",
@@ -1151,7 +1138,7 @@ static const char mt7996_gstrings_stats[][ETH_GSTRING_LEN] = {
 	"rx_vec_queue_overflow_drop_cnt",
 	"rx_ba_cnt",
 
-	/* per vif counters */
+	 
 	"v_tx_mode_cck",
 	"v_tx_mode_ofdm",
 	"v_tx_mode_ht",
@@ -1191,7 +1178,7 @@ static const char mt7996_gstrings_stats[][ETH_GSTRING_LEN] = {
 
 #define MT7996_SSTATS_LEN ARRAY_SIZE(mt7996_gstrings_stats)
 
-/* Ethtool related API */
+ 
 static
 void mt7996_get_et_strings(struct ieee80211_hw *hw,
 			   struct ieee80211_vif *vif,
@@ -1236,7 +1223,7 @@ void mt7996_get_et_stats(struct ieee80211_hw *hw,
 		.data = data,
 		.idx = mvif->mt76.idx,
 	};
-	/* See mt7996_ampdu_stat_read_phy, etc */
+	 
 	int i, ei = 0;
 
 	mutex_lock(&dev->mt76.mutex);
@@ -1252,16 +1239,16 @@ void mt7996_get_et_stats(struct ieee80211_hw *hw,
 	data[ei++] = mib->tx_bf_ebf_ppdu_cnt;
 	data[ei++] = mib->tx_bf_ibf_ppdu_cnt;
 
-	/* Tx ampdu stat */
-	for (i = 0; i < 15 /*ARRAY_SIZE(bound)*/; i++)
+	 
+	for (i = 0; i < 15  ; i++)
 		data[ei++] = phy->mt76->aggr_stats[i];
 	data[ei++] = phy->mib.ba_miss_cnt;
 
-	/* Tx Beamformer monitor */
+	 
 	data[ei++] = mib->tx_bf_ibf_ppdu_cnt;
 	data[ei++] = mib->tx_bf_ebf_ppdu_cnt;
 
-	/* Tx Beamformer Rx feedback monitor */
+	 
 	data[ei++] = mib->tx_bf_rx_fb_all_cnt;
 	data[ei++] = mib->tx_bf_rx_fb_he_cnt;
 	data[ei++] = mib->tx_bf_rx_fb_vht_cnt;
@@ -1271,21 +1258,21 @@ void mt7996_get_et_stats(struct ieee80211_hw *hw,
 	data[ei++] = mib->tx_bf_rx_fb_nc_cnt;
 	data[ei++] = mib->tx_bf_rx_fb_nr_cnt;
 
-	/* Tx Beamformee Rx NDPA & Tx feedback report */
+	 
 	data[ei++] = mib->tx_bf_fb_cpl_cnt;
 	data[ei++] = mib->tx_bf_fb_trig_cnt;
 
-	/* Tx SU & MU counters */
+	 
 	data[ei++] = mib->tx_mu_bf_cnt;
 	data[ei++] = mib->tx_mu_mpdu_cnt;
 	data[ei++] = mib->tx_mu_acked_mpdu_cnt;
 	data[ei++] = mib->tx_su_acked_mpdu_cnt;
 
-	/* Tx amsdu info (pack-count histogram) */
+	 
 	for (i = 0; i < ARRAY_SIZE(mib->tx_amsdu); i++)
 		data[ei++] = mib->tx_amsdu[i];
 
-	/* rx counters */
+	 
 	data[ei++] = mib->rx_fifo_full_cnt;
 	data[ei++] = mib->rx_mpdu_cnt;
 	data[ei++] = mib->channel_idle_cnt;
@@ -1300,7 +1287,7 @@ void mt7996_get_et_stats(struct ieee80211_hw *hw,
 	data[ei++] = mib->rx_vec_queue_overflow_drop_cnt;
 	data[ei++] = mib->rx_ba_cnt;
 
-	/* Add values for all stations owned by this vif */
+	 
 	wi.initial_stat_idx = ei;
 	ieee80211_iterate_stations_atomic(hw, mt7996_ethtool_worker, &wi);
 
@@ -1343,12 +1330,12 @@ mt7996_set_radar_background(struct ieee80211_hw *hw,
 		goto out;
 
 	if (dev->rdd2_phy && dev->rdd2_phy != phy) {
-		/* rdd2 is already locked */
+		 
 		ret = -EBUSY;
 		goto out;
 	}
 
-	/* rdd2 already configured on a radar channel */
+	 
 	running = dev->rdd2_phy &&
 		  cfg80211_chandef_valid(&dev->rdd2_chandef) &&
 		  !!(dev->rdd2_chandef.chan->flags & IEEE80211_CHAN_RADAR);

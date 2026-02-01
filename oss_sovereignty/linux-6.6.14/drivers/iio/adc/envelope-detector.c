@@ -1,30 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Driver for an envelope detector using a DAC and a comparator
- *
- * Copyright (C) 2016 Axentia Technologies AB
- *
- * Author: Peter Rosin <peda@axentia.se>
- */
 
-/*
- * The DAC is used to find the peak level of an alternating voltage input
- * signal by a binary search using the output of a comparator wired to
- * an interrupt pin. Like so:
- *                           _
- *                          | \
- *     input +------>-------|+ \
- *                          |   \
- *            .-------.     |    }---.
- *            |       |     |   /    |
- *            |    dac|-->--|- /     |
- *            |       |     |_/      |
- *            |       |              |
- *            |       |              |
- *            |    irq|------<-------'
- *            |       |
- *            '-------'
- */
+ 
+
+ 
 
 #include <linux/completion.h>
 #include <linux/device.h>
@@ -43,10 +20,10 @@
 #include <linux/workqueue.h>
 
 struct envelope {
-	spinlock_t comp_lock; /* protects comp */
+	spinlock_t comp_lock;  
 	int comp;
 
-	struct mutex read_lock; /* protects everything else */
+	struct mutex read_lock;  
 
 	int comp_irq;
 	u32 comp_irq_trigger;
@@ -66,16 +43,7 @@ struct envelope {
 	struct completion done;
 };
 
-/*
- * The envelope_detector_comp_latch function works together with the compare
- * interrupt service routine below (envelope_detector_comp_isr) as a latch
- * (one-bit memory) for if the interrupt has triggered since last calling
- * this function.
- * The ..._comp_isr function disables the interrupt so that the cpu does not
- * need to service a possible interrupt flood from the comparator when no-one
- * cares anyway, and this ..._comp_latch function reenables them again if
- * needed.
- */
+ 
 static int envelope_detector_comp_latch(struct envelope *env)
 {
 	int comp;
@@ -88,19 +56,13 @@ static int envelope_detector_comp_latch(struct envelope *env)
 	if (!comp)
 		return 0;
 
-	/*
-	 * The irq was disabled, and is reenabled just now.
-	 * But there might have been a pending irq that
-	 * happened while the irq was disabled that fires
-	 * just as the irq is reenabled. That is not what
-	 * is desired.
-	 */
+	 
 	enable_irq(env->comp_irq);
 
-	/* So, synchronize this possibly pending irq... */
+	 
 	synchronize_irq(env->comp_irq);
 
-	/* ...and redo the whole dance. */
+	 
 	spin_lock_irq(&env->comp_lock);
 	comp = env->comp;
 	env->comp = 0;
@@ -128,16 +90,7 @@ static void envelope_detector_setup_compare(struct envelope *env)
 {
 	int ret;
 
-	/*
-	 * Do a binary search for the peak input level, and stop
-	 * when that level is "trapped" between two adjacent DAC
-	 * values.
-	 * When invert is active, use the midpoint floor so that
-	 * env->level ends up as env->low when the termination
-	 * criteria below is fulfilled, and use the midpoint
-	 * ceiling when invert is not active so that env->level
-	 * ends up as env->high in that case.
-	 */
+	 
 	env->level = (env->high + env->low + !env->invert) / 2;
 
 	if (env->high == env->low + 1) {
@@ -145,20 +98,20 @@ static void envelope_detector_setup_compare(struct envelope *env)
 		return;
 	}
 
-	/* Set a "safe" DAC level (if there is such a thing)... */
+	 
 	ret = iio_write_channel_raw(env->dac, env->invert ? 0 : env->dac_max);
 	if (ret < 0)
 		goto err;
 
-	/* ...clear the comparison result... */
+	 
 	envelope_detector_comp_latch(env);
 
-	/* ...set the real DAC level... */
+	 
 	ret = iio_write_channel_raw(env->dac, env->level);
 	if (ret < 0)
 		goto err;
 
-	/* ...and wait for a bit to see if the latch catches anything. */
+	 
 	schedule_delayed_work(&env->comp_timeout,
 			      msecs_to_jiffies(env->comp_interval));
 	return;
@@ -173,13 +126,13 @@ static void envelope_detector_timeout(struct work_struct *work)
 	struct envelope *env = container_of(work, struct envelope,
 					    comp_timeout.work);
 
-	/* Adjust low/high depending on the latch content... */
+	 
 	if (!envelope_detector_comp_latch(env) ^ !env->invert)
 		env->low = env->level;
 	else
 		env->high = env->level;
 
-	/* ...and continue the search. */
+	 
 	envelope_detector_setup_compare(env);
 }
 
@@ -192,16 +145,7 @@ static int envelope_detector_read_raw(struct iio_dev *indio_dev,
 
 	switch (mask) {
 	case IIO_CHAN_INFO_RAW:
-		/*
-		 * When invert is active, start with high=max+1 and low=0
-		 * since we will end up with the low value when the
-		 * termination criteria is fulfilled (rounding down). And
-		 * start with high=max and low=-1 when invert is not active
-		 * since we will end up with the high value in that case.
-		 * This ensures that the returned value in both cases are
-		 * in the same range as the DAC and is a value that has not
-		 * triggered the comparator.
-		 */
+		 
 		mutex_lock(&env->read_lock);
 		env->high = env->dac_max + env->invert;
 		env->low = -1 + env->invert;
@@ -305,7 +249,7 @@ static const struct iio_chan_spec_ext_info envelope_detector_ext_info[] = {
 	{ .name = "compare_interval",
 	  .read = envelope_show_comp_interval,
 	  .write = envelope_store_comp_interval, },
-	{ /* sentinel */ }
+	{   }
 };
 
 static const struct iio_chan_spec envelope_detector_iio_channel = {
@@ -334,7 +278,7 @@ static int envelope_detector_probe(struct platform_device *pdev)
 
 	platform_set_drvdata(pdev, indio_dev);
 	env = iio_priv(indio_dev);
-	env->comp_interval = 50; /* some sensible default? */
+	env->comp_interval = 50;  
 
 	spin_lock_init(&env->comp_lock);
 	mutex_init(&env->read_lock);
@@ -390,7 +334,7 @@ static int envelope_detector_probe(struct platform_device *pdev)
 
 static const struct of_device_id envelope_detector_match[] = {
 	{ .compatible = "axentia,tse850-envelope-detector", },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, envelope_detector_match);
 

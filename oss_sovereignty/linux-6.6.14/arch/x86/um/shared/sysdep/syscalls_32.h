@@ -1,7 +1,4 @@
-/* 
- * Copyright (C) 2000 - 2008 Jeff Dike (jdike@{addtoit,linux.intel}.com)
- * Licensed under the GPL
- */
+ 
 
 #include <asm/unistd.h>
 #include <sysdep/ptrace.h>

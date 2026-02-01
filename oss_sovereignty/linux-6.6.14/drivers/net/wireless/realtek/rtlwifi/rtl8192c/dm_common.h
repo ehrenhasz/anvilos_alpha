@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright(c) 2009-2012  Realtek Corporation.*/
+ 
+ 
 
 #ifndef	__RTL92COMMON_DM_H__
 #define __RTL92COMMON_DM_H__
@@ -55,7 +55,7 @@
 #define DYNAMIC_FUNC_DISABLE			0x0
 #define DYNAMIC_FUNC_DIG			BIT(0)
 #define DYNAMIC_FUNC_HP				BIT(1)
-#define DYNAMIC_FUNC_SS				BIT(2) /*Tx Power Tracking*/
+#define DYNAMIC_FUNC_SS				BIT(2)  
 #define DYNAMIC_FUNC_BT				BIT(3)
 #define DYNAMIC_FUNC_ANT_DIV			BIT(4)
 

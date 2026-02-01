@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/* Applied Micro X-Gene SoC Ethernet Driver
- *
- * Copyright (c) 2014, Applied Micro Circuits Corporation
- * Authors: Iyappan Subramanian <isubramanian@apm.com>
- *	    Ravi Patel <rapatel@apm.com>
- *	    Keyur Chudgar <kchudgar@apm.com>
- */
+ 
+ 
 
 #ifndef __XGENE_ENET_HW_H__
 #define __XGENE_ENET_HW_H__
@@ -16,7 +10,7 @@ struct xgene_enet_pdata;
 struct xgene_enet_stats;
 struct xgene_enet_desc_ring;
 
-/* clears and then set bits */
+ 
 static inline void xgene_set_bits(u32 *dst, u32 val, u32 start, u32 len)
 {
 	u32 end = start + len - 1;
@@ -61,7 +55,7 @@ enum xgene_enet_rm {
 #define CREATE_MASK(pos, len)		GENMASK((pos)+(len)-1, (pos))
 #define CREATE_MASK_ULL(pos, len)	GENMASK_ULL((pos)+(len)-1, (pos))
 
-/* Empty slot soft signature */
+ 
 #define EMPTY_SLOT_INDEX	1
 #define EMPTY_SLOT		~0ULL
 
@@ -291,17 +285,17 @@ enum xgene_enet_rm {
 #define TYPESEL_LEN			4
 #define ETHHDR_POS			12
 #define ETHHDR_LEN			8
-#define IC_POS				35	/* Insert CRC */
+#define IC_POS				35	 
 #define TCPHDR_POS			0
 #define TCPHDR_LEN			6
 #define IPHDR_POS			6
 #define IPHDR_LEN			6
 #define MSS_POS				20
 #define MSS_LEN				2
-#define EC_POS				22	/* Enable checksum */
+#define EC_POS				22	 
 #define EC_LEN				1
-#define ET_POS				23	/* Enable TSO */
-#define IS_POS				24	/* IP protocol select */
+#define ET_POS				23	 
+#define IS_POS				24	 
 #define IS_LEN				1
 #define TYPE_ETH_WORK_MESSAGE_POS	44
 #define LL_BYTES_MSB_POS		56
@@ -435,4 +429,4 @@ extern const struct xgene_mac_ops xgene_gmac_ops;
 extern const struct xgene_port_ops xgene_gport_ops;
 extern struct xgene_ring_ops xgene_ring1_ops;
 
-#endif /* __XGENE_ENET_HW_H__ */
+#endif  

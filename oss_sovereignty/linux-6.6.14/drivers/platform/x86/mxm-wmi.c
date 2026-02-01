@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * MXM WMI driver
- *
- * Copyright(C) 2010 Red Hat.
- */
+
+ 
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/init.h>
@@ -18,8 +14,8 @@ MODULE_LICENSE("GPL");
 
 MODULE_ALIAS("wmi:"MXM_WMMX_GUID);
 
-#define MXM_WMMX_FUNC_MXDS 0x5344584D /* "MXDS" */
-#define MXM_WMMX_FUNC_MXMX 0x53445344 /* "MXMX" */
+#define MXM_WMMX_FUNC_MXDS 0x5344584D  
+#define MXM_WMMX_FUNC_MXMX 0x53445344  
 
 struct mxds_args {
 	u32 func;

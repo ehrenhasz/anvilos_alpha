@@ -1,27 +1,4 @@
-/*
- *
- * Handle TWL4030 Power initialization
- *
- * Copyright (C) 2008 Nokia Corporation
- * Copyright (C) 2006 Texas Instruments, Inc
- *
- * Written by 	Kalle Jokiniemi
- *		Peter De Schrijver <peter.de-schrijver@nokia.com>
- * Several fixes by Amit Kucheria <amit.kucheria@verdurent.com>
- *
- * This file is subject to the terms and conditions of the GNU General
- * Public License. See the file "COPYING" in the main directory of this
- * archive for more details.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- */
+ 
 
 #include <linux/module.h>
 #include <linux/pm.h>
@@ -34,7 +11,7 @@
 
 static u8 twl4030_start_script_address = 0x2b;
 
-/* Register bits for P1, P2 and P3_SW_EVENTS */
+ 
 #define PWR_STOPON_PRWON	BIT(6)
 #define PWR_STOPON_SYSEN	BIT(5)
 #define PWR_ENABLE_WARMRESET	BIT(4)
@@ -43,24 +20,24 @@ static u8 twl4030_start_script_address = 0x2b;
 #define PWR_DEVSLP		BIT(1)
 #define PWR_DEVOFF		BIT(0)
 
-/* Register bits for CFG_P1_TRANSITION (also for P2 and P3) */
-#define STARTON_SWBUG		BIT(7)	/* Start on watchdog */
-#define STARTON_VBUS		BIT(5)	/* Start on VBUS */
-#define STARTON_VBAT		BIT(4)	/* Start on battery insert */
-#define STARTON_RTC		BIT(3)	/* Start on RTC */
-#define STARTON_USB		BIT(2)	/* Start on USB host */
-#define STARTON_CHG		BIT(1)	/* Start on charger */
-#define STARTON_PWON		BIT(0)	/* Start on PWRON button */
+ 
+#define STARTON_SWBUG		BIT(7)	 
+#define STARTON_VBUS		BIT(5)	 
+#define STARTON_VBAT		BIT(4)	 
+#define STARTON_RTC		BIT(3)	 
+#define STARTON_USB		BIT(2)	 
+#define STARTON_CHG		BIT(1)	 
+#define STARTON_PWON		BIT(0)	 
 
 #define SEQ_OFFSYNC		(1 << 0)
 
 #define PHY_TO_OFF_PM_MASTER(p)		(p - 0x36)
 #define PHY_TO_OFF_PM_RECEIVER(p)	(p - 0x5b)
 
-/* resource - hfclk */
+ 
 #define R_HFCLKOUT_DEV_GRP 	PHY_TO_OFF_PM_RECEIVER(0xe6)
 
-/* PM events */
+ 
 #define R_P1_SW_EVENTS		PHY_TO_OFF_PM_MASTER(0x46)
 #define R_P2_SW_EVENTS		PHY_TO_OFF_PM_MASTER(0x47)
 #define R_P3_SW_EVENTS		PHY_TO_OFF_PM_MASTER(0x48)
@@ -77,30 +54,25 @@ static u8 twl4030_start_script_address = 0x2b;
 #define R_MEMORY_ADDRESS	PHY_TO_OFF_PM_MASTER(0x59)
 #define R_MEMORY_DATA		PHY_TO_OFF_PM_MASTER(0x5a)
 
-/* resource configuration registers
-   <RESOURCE>_DEV_GRP   at address 'n+0'
-   <RESOURCE>_TYPE      at address 'n+1'
-   <RESOURCE>_REMAP     at address 'n+2'
-   <RESOURCE>_DEDICATED at address 'n+3'
-*/
+ 
 #define DEV_GRP_OFFSET		0
 #define TYPE_OFFSET		1
 #define REMAP_OFFSET		2
 #define DEDICATED_OFFSET	3
 
-/* Bit positions in the registers */
+ 
 
-/* <RESOURCE>_DEV_GRP */
+ 
 #define DEV_GRP_SHIFT		5
 #define DEV_GRP_MASK		(7 << DEV_GRP_SHIFT)
 
-/* <RESOURCE>_TYPE */
+ 
 #define TYPE_SHIFT		0
 #define TYPE_MASK		(7 << TYPE_SHIFT)
 #define TYPE2_SHIFT		3
 #define TYPE2_MASK		(3 << TYPE2_SHIFT)
 
-/* <RESOURCE>_REMAP */
+ 
 #define SLEEP_STATE_SHIFT	0
 #define SLEEP_STATE_MASK	(0xf << SLEEP_STATE_SHIFT)
 #define OFF_STATE_SHIFT		4
@@ -137,32 +109,22 @@ static u8 res_config_addrs[] = {
 	[RES_MAIN_REF]	= 0x94,
 };
 
-/*
- * Usable values for .remap_sleep and .remap_off
- * Based on table "5.3.3 Resource Operating modes"
- */
+ 
 enum {
 	TWL_REMAP_OFF = 0,
 	TWL_REMAP_SLEEP = 8,
 	TWL_REMAP_ACTIVE = 9,
 };
 
-/*
- * Macros to configure the PM register states for various resources.
- * Note that we can make MSG_SINGULAR etc private to this driver once
- * omap3 has been made DT only.
- */
-#define TWL_DFLT_DELAY		2	/* typically 2 32 KiHz cycles */
+ 
+#define TWL_DFLT_DELAY		2	 
 #define TWL_DEV_GRP_P123	(DEV_GRP_P1 | DEV_GRP_P2 | DEV_GRP_P3)
 #define TWL_RESOURCE_SET(res, state)					\
 	{ MSG_SINGULAR(DEV_GRP_NULL, (res), (state)), TWL_DFLT_DELAY }
 #define TWL_RESOURCE_ON(res)	TWL_RESOURCE_SET(res, RES_STATE_ACTIVE)
 #define TWL_RESOURCE_OFF(res)	TWL_RESOURCE_SET(res, RES_STATE_OFF)
 #define TWL_RESOURCE_RESET(res)	TWL_RESOURCE_SET(res, RES_STATE_WRST)
-/*
- * It seems that type1 and type2 is just the resource init order
- * number for the type1 and type2 group.
- */
+ 
 #define TWL_RESOURCE_SET_ACTIVE(res, state)			       	\
 	{ MSG_SINGULAR(DEV_GRP_NULL, (res), RES_STATE_ACTIVE), (state) }
 #define TWL_RESOURCE_GROUP_RESET(group, type1, type2)			\
@@ -246,12 +208,12 @@ static int twl4030_config_wakeup3_sequence(u8 address)
 	int err;
 	u8 data;
 
-	/* Set SLEEP to ACTIVE SEQ address for P3 */
+	 
 	err = twl_i2c_write_u8(TWL_MODULE_PM_MASTER, address, R_SEQ_ADD_S2A3);
 	if (err)
 		goto out;
 
-	/* P3 LVL_WAKEUP should be on LEVEL */
+	 
 	err = twl_i2c_read_u8(TWL_MODULE_PM_MASTER, &data, R_P3_SW_EVENTS);
 	if (err)
 		goto out;
@@ -270,12 +232,12 @@ twl4030_config_wakeup12_sequence(const struct twl4030_power_data *pdata,
 	int err = 0;
 	u8 data;
 
-	/* Set SLEEP to ACTIVE SEQ address for P1 and P2 */
+	 
 	err = twl_i2c_write_u8(TWL_MODULE_PM_MASTER, address, R_SEQ_ADD_S2A12);
 	if (err)
 		goto out;
 
-	/* P1/P2 LVL_WAKEUP should be on LEVEL */
+	 
 	err = twl_i2c_read_u8(TWL_MODULE_PM_MASTER, &data, R_P1_SW_EVENTS);
 	if (err)
 		goto out;
@@ -296,7 +258,7 @@ twl4030_config_wakeup12_sequence(const struct twl4030_power_data *pdata,
 
 	if (pdata->ac_charger_quirk || machine_is_omap_3430sdp() ||
 	    machine_is_omap_ldp()) {
-		/* Disabling AC charger effect on sleep-active transitions */
+		 
 		err = twl_i2c_read_u8(TWL_MODULE_PM_MASTER, &data,
 				      R_CFG_P1_TRANSITION);
 		if (err)
@@ -319,7 +281,7 @@ static int twl4030_config_sleep_sequence(u8 address)
 {
 	int err;
 
-	/* Set ACTIVE to SLEEP SEQ address in T2 memory*/
+	 
 	err = twl_i2c_write_u8(TWL_MODULE_PM_MASTER, address, R_SEQ_ADD_A2S);
 
 	if (err)
@@ -333,12 +295,12 @@ static int twl4030_config_warmreset_sequence(u8 address)
 	int err;
 	u8 rd_data;
 
-	/* Set WARM RESET SEQ address for P1 */
+	 
 	err = twl_i2c_write_u8(TWL_MODULE_PM_MASTER, address, R_SEQ_ADD_WARM);
 	if (err)
 		goto out;
 
-	/* P1/P2/P3 enable WARMRESET */
+	 
 	err = twl_i2c_read_u8(TWL_MODULE_PM_MASTER, &rd_data, R_P1_SW_EVENTS);
 	if (err)
 		goto out;
@@ -385,7 +347,7 @@ static int twl4030_configure_resource(struct twl4030_resconfig *rconfig)
 
 	rconfig_addr = res_config_addrs[rconfig->resource];
 
-	/* Set resource group */
+	 
 	err = twl_i2c_read_u8(TWL_MODULE_PM_RECEIVER, &grp,
 			      rconfig_addr + DEV_GRP_OFFSET);
 	if (err) {
@@ -405,7 +367,7 @@ static int twl4030_configure_resource(struct twl4030_resconfig *rconfig)
 		}
 	}
 
-	/* Set resource types */
+	 
 	err = twl_i2c_read_u8(TWL_MODULE_PM_RECEIVER, &type,
 				rconfig_addr + TYPE_OFFSET);
 	if (err < 0) {
@@ -431,7 +393,7 @@ static int twl4030_configure_resource(struct twl4030_resconfig *rconfig)
 		return err;
 	}
 
-	/* Set remap states */
+	 
 	err = twl_i2c_read_u8(TWL_MODULE_PM_RECEIVER, &remap,
 			      rconfig_addr + REMAP_OFFSET);
 	if (err < 0) {
@@ -468,7 +430,7 @@ static int load_twl4030_script(const struct twl4030_power_data *pdata,
 	int err;
 	static int order;
 
-	/* Make sure the script isn't going beyond last valid address (0x3f) */
+	 
 	if ((address + tscript->size) > END_OF_SCRIPT) {
 		pr_err("TWL4030 scripts too big error\n");
 		return -EINVAL;
@@ -484,7 +446,7 @@ static int load_twl4030_script(const struct twl4030_power_data *pdata,
 			goto out;
 	}
 	if (tscript->flags & TWL4030_WAKEUP12_SCRIPT) {
-		/* Reset any existing sleep script to avoid hangs on reboot */
+		 
 		err = twl_i2c_write_u8(TWL_MODULE_PM_MASTER, END_OF_SCRIPT,
 				       R_SEQ_ADD_A2S);
 		if (err)
@@ -654,16 +616,12 @@ relock:
 				TWL4030_PM_MASTER_PROTECT_KEY);
 }
 
-/*
- * In master mode, start the power off sequence.
- * After a successful execution, TWL shuts down the power to the SoC
- * and all peripherals connected to it.
- */
+ 
 void twl4030_power_off(void)
 {
 	int err;
 
-	/* Disable start on charger or VBUS as it can break poweroff */
+	 
 	err = twl4030_starton_mask_and_set(STARTON_VBUS | STARTON_CHG, 0);
 	if (err)
 		pr_err("TWL4030 Unable to configure start-up\n");
@@ -691,7 +649,7 @@ static bool twl4030_power_use_poweroff(const struct twl4030_power_data *pdata,
 
 #ifdef CONFIG_OF
 
-/* Generic warm reset configuration for omap3 */
+ 
 
 static struct twl4030_ins omap3_wrst_seq[] = {
 	TWL_RESOURCE_OFF(RES_NRES_PWRON),
@@ -729,9 +687,9 @@ static struct twl4030_power_data omap3_reset = {
 	.resource_config	= omap3_rconfig,
 };
 
-/* Recommended generic default idle configuration for off-idle */
+ 
 
-/* Broadcast message to put res to sleep */
+ 
 static struct twl4030_ins omap3_idle_sleep_on_seq[] = {
 	TWL_RESOURCE_GROUP_SLEEP(RES_GRP_ALL, RES_TYPE_ALL, 0),
 };
@@ -742,7 +700,7 @@ static struct twl4030_script omap3_idle_sleep_on_script = {
 	.flags	= TWL4030_SLEEP_SCRIPT,
 };
 
-/* Broadcast message to put res to active */
+ 
 static struct twl4030_ins omap3_idle_wakeup_p12_seq[] = {
 	TWL_RESOURCE_GROUP_ACTIVE(RES_GRP_ALL, RES_TYPE_ALL, 0),
 };
@@ -753,7 +711,7 @@ static struct twl4030_script omap3_idle_wakeup_p12_script = {
 	.flags	= TWL4030_WAKEUP12_SCRIPT,
 };
 
-/* Broadcast message to put res to active */
+ 
 static struct twl4030_ins omap3_idle_wakeup_p3_seq[] = {
 	TWL_RESOURCE_SET_ACTIVE(RES_CLKEN, 0x37),
 	TWL_RESOURCE_GROUP_ACTIVE(RES_GRP_ALL, RES_TYPE_ALL, 0),
@@ -772,14 +730,7 @@ static struct twl4030_script *omap3_idle_scripts[] = {
 	&omap3_idle_sleep_on_script,
 };
 
-/*
- * Recommended configuration based on "Recommended Sleep
- * Sequences for the Zoom Platform":
- * http://omappedia.com/wiki/File:Recommended_Sleep_Sequences_Zoom.pdf
- * Note that the type1 and type2 seem to be just the init order number
- * for type1 and type2 groups as specified in the document mentioned
- * above.
- */
+ 
 static struct twl4030_resconfig omap3_idle_rconfig[] = {
 	TWL_REMAP_SLEEP(RES_VAUX1, TWL4030_RESCONFIG_UNDEF, 0, 0),
 	TWL_REMAP_SLEEP(RES_VAUX2, TWL4030_RESCONFIG_UNDEF, 0, 0),
@@ -800,7 +751,7 @@ static struct twl4030_resconfig omap3_idle_rconfig[] = {
 	TWL_REMAP_SLEEP(RES_VUSB_1V5, TWL4030_RESCONFIG_UNDEF, 0, 0),
 	TWL_REMAP_SLEEP(RES_VUSB_1V8, TWL4030_RESCONFIG_UNDEF, 0, 0),
 	TWL_REMAP_SLEEP(RES_VUSB_3V1, TWL_DEV_GRP_P123, 0, 0),
-	/* Resource #20 USB charge pump skipped */
+	 
 	TWL_REMAP_SLEEP(RES_REGEN, TWL_DEV_GRP_P123, 2, 1),
 	TWL_REMAP_SLEEP(RES_NRES_PWRON, TWL_DEV_GRP_P123, 0, 1),
 	TWL_REMAP_SLEEP(RES_CLKEN, TWL_DEV_GRP_P123, 3, 2),
@@ -809,7 +760,7 @@ static struct twl4030_resconfig omap3_idle_rconfig[] = {
 	TWL_REMAP_SLEEP(RES_32KCLKOUT, TWL_DEV_GRP_P123, 0, 0),
 	TWL_REMAP_SLEEP(RES_RESET, TWL_DEV_GRP_P123, 6, 0),
 	TWL_REMAP_SLEEP(RES_MAIN_REF, TWL_DEV_GRP_P123, 0, 0),
-	{ /* Terminator */ },
+	{   },
 };
 
 static struct twl4030_power_data omap3_idle = {
@@ -818,10 +769,10 @@ static struct twl4030_power_data omap3_idle = {
 	.resource_config	= omap3_idle_rconfig,
 };
 
-/* Disable 32 KiHz oscillator during idle */
+ 
 static struct twl4030_resconfig osc_off_rconfig[] = {
 	TWL_REMAP_OFF(RES_CLKEN, DEV_GRP_P1 | DEV_GRP_P3, 3, 2),
-	{ /* Terminator */ },
+	{   },
 };
 
 static struct twl4030_power_data osc_off_idle = {
@@ -877,7 +828,7 @@ static const struct of_device_id twl4030_power_of_match[] = {
 	{ },
 };
 MODULE_DEVICE_TABLE(of, twl4030_power_of_match);
-#endif	/* CONFIG_OF */
+#endif	 
 
 static int twl4030_power_probe(struct platform_device *pdev)
 {
@@ -922,9 +873,9 @@ static int twl4030_power_probe(struct platform_device *pdev)
 		}
 	}
 
-	/* Board has to be wired properly to use this feature */
+	 
 	if (twl4030_power_use_poweroff(pdata, node) && !pm_power_off) {
-		/* Default for SEQ_OFFSYNC is set, lets ensure this */
+		 
 		err = twl_i2c_read_u8(TWL_MODULE_PM_MASTER, &val,
 				      TWL4030_PM_MASTER_CFG_P123_TRANSITION);
 		if (err) {

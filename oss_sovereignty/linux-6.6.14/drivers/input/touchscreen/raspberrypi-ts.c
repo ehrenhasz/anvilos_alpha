@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Raspberry Pi firmware based touchscreen driver
- *
- * Copyright (C) 2015, 2017 Raspberry Pi
- * Copyright (C) 2018 Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
- */
+
+ 
 
 #include <linux/io.h>
 #include <linux/of.h>
@@ -27,7 +22,7 @@
 #define RPI_TS_FTS_TOUCH_DOWN		0
 #define RPI_TS_FTS_TOUCH_CONTACT	2
 
-#define RPI_TS_POLL_INTERVAL		17	/* 60fps */
+#define RPI_TS_POLL_INTERVAL		17	 
 
 #define RPI_TS_NPOINTS_REG_INVALIDATE	99
 
@@ -51,8 +46,8 @@ struct rpi_ts_regs {
 		u8 xl;
 		u8 yh;
 		u8 yl;
-		u8 pressure; /* Not supported */
-		u8 area;     /* Not supported */
+		u8 pressure;  
+		u8 area;      
 	} point[RPI_TS_MAX_SUPPORTED_POINTS];
 };
 
@@ -68,12 +63,7 @@ static void rpi_ts_poll(struct input_dev *input)
 	int i;
 
 	memcpy_fromio(&regs, ts->fw_regs_va, sizeof(regs));
-	/*
-	 * We poll the memory based register copy of the touchscreen chip using
-	 * the number of points register to know whether the copy has been
-	 * updated (we write 99 to the memory copy, the GPU will write between
-	 * 0 - 10 points)
-	 */
+	 
 	iowrite8(RPI_TS_NPOINTS_REG_INVALIDATE,
 		 ts->fw_regs_va + offsetof(struct rpi_ts_regs, num_points));
 

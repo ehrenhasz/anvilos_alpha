@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  Copyright © 2017 Broadcom
- */
+
+ 
 
 #include <linux/seq_file.h>
 

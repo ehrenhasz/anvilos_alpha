@@ -1,34 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Adiantum length-preserving encryption mode
- *
- * Copyright 2018 Google LLC
- */
 
-/*
- * Adiantum is a tweakable, length-preserving encryption mode designed for fast
- * and secure disk encryption, especially on CPUs without dedicated crypto
- * instructions.  Adiantum encrypts each sector using the XChaCha12 stream
- * cipher, two passes of an ε-almost-∆-universal (ε-∆U) hash function based on
- * NH and Poly1305, and an invocation of the AES-256 block cipher on a single
- * 16-byte block.  See the paper for details:
- *
- *	Adiantum: length-preserving encryption for entry-level processors
- *      (https://eprint.iacr.org/2018/720.pdf)
- *
- * For flexibility, this implementation also allows other ciphers:
- *
- *	- Stream cipher: XChaCha12 or XChaCha20
- *	- Block cipher: any with a 128-bit block size and 256-bit key
- *
- * This implementation doesn't currently allow other ε-∆U hash functions, i.e.
- * HPolyC is not supported.  This is because Adiantum is ~20% faster than HPolyC
- * but still provably as secure, and also the ε-∆U hash function of HBSH is
- * formally defined to take two inputs (tweak, message) which makes it difficult
- * to wrap with the crypto_shash API.  Rather, some details need to be handled
- * here.  Nevertheless, if needed in the future, support for other ε-∆U hash
- * functions could be added here.
- */
+ 
+
+ 
 
 #include <crypto/b128ops.h>
 #include <crypto/chacha.h>
@@ -40,25 +13,16 @@
 #include <crypto/scatterwalk.h>
 #include <linux/module.h>
 
-/*
- * Size of right-hand part of input data, in bytes; also the size of the block
- * cipher's block size and the hash function's output.
- */
+ 
 #define BLOCKCIPHER_BLOCK_SIZE		16
 
-/* Size of the block cipher key (K_E) in bytes */
+ 
 #define BLOCKCIPHER_KEY_SIZE		32
 
-/* Size of the hash key (K_H) in bytes */
+ 
 #define HASH_KEY_SIZE		(POLY1305_BLOCK_SIZE + NHPOLY1305_KEY_SIZE)
 
-/*
- * The specification allows variable-length tweaks, but Linux's crypto API
- * currently only allows algorithms to support a single length.  The "natural"
- * tweak length for Adiantum is 16, since that fits into one Poly1305 block for
- * the best performance.  But longer tweaks are useful for fscrypt, to avoid
- * needing to derive per-file keys.  So instead we use two blocks, or 32 bytes.
- */
+ 
 #define TWEAK_SIZE		32
 
 struct adiantum_instance_ctx {
@@ -76,44 +40,26 @@ struct adiantum_tfm_ctx {
 
 struct adiantum_request_ctx {
 
-	/*
-	 * Buffer for right-hand part of data, i.e.
-	 *
-	 *    P_L => P_M => C_M => C_R when encrypting, or
-	 *    C_R => C_M => P_M => P_L when decrypting.
-	 *
-	 * Also used to build the IV for the stream cipher.
-	 */
+	 
 	union {
 		u8 bytes[XCHACHA_IV_SIZE];
 		__le32 words[XCHACHA_IV_SIZE / sizeof(__le32)];
-		le128 bignum;	/* interpret as element of Z/(2^{128}Z) */
+		le128 bignum;	 
 	} rbuf;
 
-	bool enc; /* true if encrypting, false if decrypting */
+	bool enc;  
 
-	/*
-	 * The result of the Poly1305 ε-∆U hash function applied to
-	 * (bulk length, tweak)
-	 */
+	 
 	le128 header_hash;
 
-	/* Sub-requests, must be last */
+	 
 	union {
 		struct shash_desc hash_desc;
 		struct skcipher_request streamcipher_req;
 	} u;
 };
 
-/*
- * Given the XChaCha stream key K_S, derive the block cipher key K_E and the
- * hash key K_H as follows:
- *
- *     K_E || K_H || ... = XChaCha(key=K_S, nonce=1||0^191)
- *
- * Note that this denotes using bits from the XChaCha keystream, which here we
- * get indirectly by encrypting a buffer containing all 0's.
- */
+ 
 static int adiantum_setkey(struct crypto_skcipher *tfm, const u8 *key,
 			   unsigned int keylen)
 {
@@ -123,12 +69,12 @@ static int adiantum_setkey(struct crypto_skcipher *tfm, const u8 *key,
 		u8 derived_keys[BLOCKCIPHER_KEY_SIZE + HASH_KEY_SIZE];
 		struct scatterlist sg;
 		struct crypto_wait wait;
-		struct skcipher_request req; /* must be last */
+		struct skcipher_request req;  
 	} *data;
 	u8 *keyp;
 	int err;
 
-	/* Set the stream cipher key (K_S) */
+	 
 	crypto_skcipher_clear_flags(tctx->streamcipher, CRYPTO_TFM_REQ_MASK);
 	crypto_skcipher_set_flags(tctx->streamcipher,
 				  crypto_skcipher_get_flags(tfm) &
@@ -137,7 +83,7 @@ static int adiantum_setkey(struct crypto_skcipher *tfm, const u8 *key,
 	if (err)
 		return err;
 
-	/* Derive the subkeys */
+	 
 	data = kzalloc(sizeof(*data) +
 		       crypto_skcipher_reqsize(tctx->streamcipher), GFP_KERNEL);
 	if (!data)
@@ -156,7 +102,7 @@ static int adiantum_setkey(struct crypto_skcipher *tfm, const u8 *key,
 		goto out;
 	keyp = data->derived_keys;
 
-	/* Set the block cipher key (K_E) */
+	 
 	crypto_cipher_clear_flags(tctx->blockcipher, CRYPTO_TFM_REQ_MASK);
 	crypto_cipher_set_flags(tctx->blockcipher,
 				crypto_skcipher_get_flags(tfm) &
@@ -167,7 +113,7 @@ static int adiantum_setkey(struct crypto_skcipher *tfm, const u8 *key,
 		goto out;
 	keyp += BLOCKCIPHER_KEY_SIZE;
 
-	/* Set the hash key (K_H) */
+	 
 	poly1305_core_setkey(&tctx->header_hash_key, keyp);
 	keyp += POLY1305_BLOCK_SIZE;
 
@@ -182,7 +128,7 @@ out:
 	return err;
 }
 
-/* Addition in Z/(2^{128}Z) */
+ 
 static inline void le128_add(le128 *r, const le128 *v1, const le128 *v2)
 {
 	u64 x = le64_to_cpu(v1->b);
@@ -193,7 +139,7 @@ static inline void le128_add(le128 *r, const le128 *v1, const le128 *v2)
 			   (x + y < x));
 }
 
-/* Subtraction in Z/(2^{128}Z) */
+ 
 static inline void le128_sub(le128 *r, const le128 *v1, const le128 *v2)
 {
 	u64 x = le64_to_cpu(v1->b);
@@ -204,18 +150,7 @@ static inline void le128_sub(le128 *r, const le128 *v1, const le128 *v2)
 			   (x - y > x));
 }
 
-/*
- * Apply the Poly1305 ε-∆U hash function to (bulk length, tweak) and save the
- * result to rctx->header_hash.  This is the calculation
- *
- *	H_T ← Poly1305_{K_T}(bin_{128}(|L|) || T)
- *
- * from the procedure in section 6.4 of the Adiantum paper.  The resulting value
- * is reused in both the first and second hash steps.  Specifically, it's added
- * to the result of an independently keyed ε-∆U hash function (for equal length
- * inputs only) taken over the left-hand part (the "bulk") of the message, to
- * give the overall Adiantum hash of the (tweak, left-hand part) pair.
- */
+ 
 static void adiantum_hash_header(struct skcipher_request *req)
 {
 	struct crypto_skcipher *tfm = crypto_skcipher_reqtfm(req);
@@ -243,7 +178,7 @@ static void adiantum_hash_header(struct skcipher_request *req)
 	poly1305_core_emit(&state, NULL, &rctx->header_hash);
 }
 
-/* Hash the left-hand part (the "bulk") of the message using NHPoly1305 */
+ 
 static int adiantum_hash_message(struct skcipher_request *req,
 				 struct scatterlist *sgl, le128 *digest)
 {
@@ -278,7 +213,7 @@ static int adiantum_hash_message(struct skcipher_request *req,
 	return crypto_shash_final(hash_desc, (u8 *)digest);
 }
 
-/* Continue Adiantum encryption/decryption after the stream cipher step */
+ 
 static int adiantum_finish(struct skcipher_request *req)
 {
 	struct crypto_skcipher *tfm = crypto_skcipher_reqtfm(req);
@@ -288,16 +223,12 @@ static int adiantum_finish(struct skcipher_request *req)
 	le128 digest;
 	int err;
 
-	/* If decrypting, decrypt C_M with the block cipher to get P_M */
+	 
 	if (!rctx->enc)
 		crypto_cipher_decrypt_one(tctx->blockcipher, rctx->rbuf.bytes,
 					  rctx->rbuf.bytes);
 
-	/*
-	 * Second hash step
-	 *	enc: C_R = C_M - H_{K_H}(T, C_L)
-	 *	dec: P_R = P_M - H_{K_H}(T, P_L)
-	 */
+	 
 	err = adiantum_hash_message(req, req->dst, &digest);
 	if (err)
 		return err;
@@ -333,11 +264,7 @@ static int adiantum_crypt(struct skcipher_request *req, bool enc)
 
 	rctx->enc = enc;
 
-	/*
-	 * First hash step
-	 *	enc: P_M = P_R + H_{K_H}(T, P_L)
-	 *	dec: C_M = C_R + H_{K_H}(T, C_L)
-	 */
+	 
 	adiantum_hash_header(req);
 	err = adiantum_hash_message(req, req->src, &digest);
 	if (err)
@@ -347,28 +274,20 @@ static int adiantum_crypt(struct skcipher_request *req, bool enc)
 				 bulk_len, BLOCKCIPHER_BLOCK_SIZE, 0);
 	le128_add(&rctx->rbuf.bignum, &rctx->rbuf.bignum, &digest);
 
-	/* If encrypting, encrypt P_M with the block cipher to get C_M */
+	 
 	if (enc)
 		crypto_cipher_encrypt_one(tctx->blockcipher, rctx->rbuf.bytes,
 					  rctx->rbuf.bytes);
 
-	/* Initialize the rest of the XChaCha IV (first part is C_M) */
+	 
 	BUILD_BUG_ON(BLOCKCIPHER_BLOCK_SIZE != 16);
-	BUILD_BUG_ON(XCHACHA_IV_SIZE != 32);	/* nonce || stream position */
+	BUILD_BUG_ON(XCHACHA_IV_SIZE != 32);	 
 	rctx->rbuf.words[4] = cpu_to_le32(1);
 	rctx->rbuf.words[5] = 0;
 	rctx->rbuf.words[6] = 0;
 	rctx->rbuf.words[7] = 0;
 
-	/*
-	 * XChaCha needs to be done on all the data except the last 16 bytes;
-	 * for disk encryption that usually means 4080 or 496 bytes.  But ChaCha
-	 * implementations tend to be most efficient when passed a whole number
-	 * of 64-byte ChaCha blocks, or sometimes even a multiple of 256 bytes.
-	 * And here it doesn't matter whether the last 16 bytes are written to,
-	 * as the second hash step will overwrite them.  Thus, round the XChaCha
-	 * length up to the next 64-byte boundary if possible.
-	 */
+	 
 	stream_len = bulk_len;
 	if (round_up(stream_len, CHACHA_BLOCK_SIZE) <= req->cryptlen)
 		stream_len = round_up(stream_len, CHACHA_BLOCK_SIZE);
@@ -464,10 +383,7 @@ static void adiantum_free_instance(struct skcipher_instance *inst)
 	kfree(inst);
 }
 
-/*
- * Check for a supported set of inner algorithms.
- * See the comment at the beginning of this file.
- */
+ 
 static bool adiantum_supported_algorithms(struct skcipher_alg *streamcipher_alg,
 					  struct crypto_alg *blockcipher_alg,
 					  struct shash_alg *hash_alg)
@@ -508,7 +424,7 @@ static int adiantum_create(struct crypto_template *tmpl, struct rtattr **tb)
 		return -ENOMEM;
 	ictx = skcipher_instance_ctx(inst);
 
-	/* Stream cipher, e.g. "xchacha12" */
+	 
 	err = crypto_grab_skcipher(&ictx->streamcipher_spawn,
 				   skcipher_crypto_instance(inst),
 				   crypto_attr_alg_name(tb[1]), 0, mask);
@@ -516,7 +432,7 @@ static int adiantum_create(struct crypto_template *tmpl, struct rtattr **tb)
 		goto err_free_inst;
 	streamcipher_alg = crypto_spawn_skcipher_alg(&ictx->streamcipher_spawn);
 
-	/* Block cipher, e.g. "aes" */
+	 
 	err = crypto_grab_cipher(&ictx->blockcipher_spawn,
 				 skcipher_crypto_instance(inst),
 				 crypto_attr_alg_name(tb[2]), 0, mask);
@@ -524,7 +440,7 @@ static int adiantum_create(struct crypto_template *tmpl, struct rtattr **tb)
 		goto err_free_inst;
 	blockcipher_alg = crypto_spawn_cipher_alg(&ictx->blockcipher_spawn);
 
-	/* NHPoly1305 ε-∆U hash function */
+	 
 	nhpoly1305_name = crypto_attr_alg_name(tb[3]);
 	if (nhpoly1305_name == ERR_PTR(-ENOENT))
 		nhpoly1305_name = "nhpoly1305";
@@ -535,7 +451,7 @@ static int adiantum_create(struct crypto_template *tmpl, struct rtattr **tb)
 		goto err_free_inst;
 	hash_alg = crypto_spawn_shash_alg(&ictx->hash_spawn);
 
-	/* Check the set of algorithms */
+	 
 	if (!adiantum_supported_algorithms(streamcipher_alg, blockcipher_alg,
 					   hash_alg)) {
 		pr_warn("Unsupported Adiantum instantiation: (%s,%s,%s)\n",
@@ -545,7 +461,7 @@ static int adiantum_create(struct crypto_template *tmpl, struct rtattr **tb)
 		goto err_free_inst;
 	}
 
-	/* Instance fields */
+	 
 
 	err = -ENAMETOOLONG;
 	if (snprintf(inst->alg.base.cra_name, CRYPTO_MAX_ALG_NAME,
@@ -563,12 +479,7 @@ static int adiantum_create(struct crypto_template *tmpl, struct rtattr **tb)
 	inst->alg.base.cra_ctxsize = sizeof(struct adiantum_tfm_ctx);
 	inst->alg.base.cra_alignmask = streamcipher_alg->base.cra_alignmask |
 				       hash_alg->base.cra_alignmask;
-	/*
-	 * The block cipher is only invoked once per message, so for long
-	 * messages (e.g. sectors for disk encryption) its performance doesn't
-	 * matter as much as that of the stream cipher and hash function.  Thus,
-	 * weigh the block cipher's ->cra_priority less.
-	 */
+	 
 	inst->alg.base.cra_priority = (4 * streamcipher_alg->base.cra_priority +
 				       2 * hash_alg->base.cra_priority +
 				       blockcipher_alg->cra_priority) / 7;
@@ -592,7 +503,7 @@ err_free_inst:
 	return err;
 }
 
-/* adiantum(streamcipher_name, blockcipher_name [, nhpoly1305_name]) */
+ 
 static struct crypto_template adiantum_tmpl = {
 	.name = "adiantum",
 	.create = adiantum_create,

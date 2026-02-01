@@ -1,8 +1,5 @@
-/* Copyright (c) 2013 Coraid, Inc.  See COPYING for GPL terms. */
-/*
- * aoenet.c
- * Ethernet portion of AoE driver
- */
+ 
+ 
 
 #include <linux/gfp.h>
 #include <linux/hdreg.h>
@@ -50,7 +47,7 @@ __setup("aoe_iflist=", aoe_iflist_setup);
 static spinlock_t txlock;
 static struct sk_buff_head skbtxq;
 
-/* enters with txlock held */
+ 
 static int
 tx(int id) __must_hold(&txlock)
 {
@@ -84,7 +81,7 @@ is_aoe_netif(struct net_device *ifp)
 		if (q != p)
 			len = q - p;
 		else
-			len = strlen(p); /* last token in aoe_iflist */
+			len = strlen(p);  
 
 		if (strlen(ifp->name) == len && !strncmp(ifp->name, p, len))
 			return 1;
@@ -124,9 +121,7 @@ aoenet_xmit(struct sk_buff_head *queue)
 	}
 }
 
-/*
- * (1) len doesn't include the header by default.  I want this.
- */
+ 
 static int
 aoenet_rcv(struct sk_buff *skb, struct net_device *ifp, struct packet_type *pt, struct net_device *orig_dev)
 {
@@ -143,7 +138,7 @@ aoenet_rcv(struct sk_buff *skb, struct net_device *ifp, struct packet_type *pt, 
 		return 0;
 	if (!is_aoe_netif(ifp))
 		goto exit;
-	skb_push(skb, ETH_HLEN);	/* (1) */
+	skb_push(skb, ETH_HLEN);	 
 	sn = sizeof(*h) + sizeof(*ah);
 	if (skb->len >= sn) {
 		sn -= skb_headlen(skb);
@@ -171,7 +166,7 @@ aoenet_rcv(struct sk_buff *skb, struct net_device *ifp, struct packet_type *pt, 
 
 	switch (h->cmd) {
 	case AOECMD_ATA:
-		/* ata_rsp may keep skb for later processing or give it back */
+		 
 		skb = aoecmd_ata_rsp(skb);
 		break;
 	case AOECMD_CFG:
@@ -179,7 +174,7 @@ aoenet_rcv(struct sk_buff *skb, struct net_device *ifp, struct packet_type *pt, 
 		break;
 	default:
 		if (h->cmd >= AOECMD_VEND_MIN)
-			break;	/* don't complain about vendor commands */
+			break;	 
 		pr_info("aoe: unknown AoE command type 0x%02x\n", h->cmd);
 		break;
 	}

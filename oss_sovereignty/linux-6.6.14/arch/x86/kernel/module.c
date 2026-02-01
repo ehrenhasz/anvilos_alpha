@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*  Kernel module help for x86.
-    Copyright (C) 2001 Rusty Russell.
 
-*/
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -39,18 +36,14 @@ do {							\
 #ifdef CONFIG_RANDOMIZE_BASE
 static unsigned long module_load_offset;
 
-/* Mutex protects the module_load_offset. */
+ 
 static DEFINE_MUTEX(module_kaslr_mutex);
 
 static unsigned long int get_module_load_offset(void)
 {
 	if (kaslr_enabled()) {
 		mutex_lock(&module_kaslr_mutex);
-		/*
-		 * Calculate the module_load_offset the first time this
-		 * code is called. Once calculated it stays the same until
-		 * reboot.
-		 */
+		 
 		if (module_load_offset == 0)
 			module_load_offset =
 				get_random_u32_inclusive(1, 1024) * PAGE_SIZE;
@@ -102,22 +95,21 @@ int apply_relocate(Elf32_Shdr *sechdrs,
 	DEBUGP("Applying relocate section %u to %u\n",
 	       relsec, sechdrs[relsec].sh_info);
 	for (i = 0; i < sechdrs[relsec].sh_size / sizeof(*rel); i++) {
-		/* This is where to make the change */
+		 
 		location = (void *)sechdrs[sechdrs[relsec].sh_info].sh_addr
 			+ rel[i].r_offset;
-		/* This is the symbol it is referring to.  Note that all
-		   undefined symbols have been resolved.  */
+		 
 		sym = (Elf32_Sym *)sechdrs[symindex].sh_addr
 			+ ELF32_R_SYM(rel[i].r_info);
 
 		switch (ELF32_R_TYPE(rel[i].r_info)) {
 		case R_386_32:
-			/* We add the value into the location given */
+			 
 			*location += sym->st_value;
 			break;
 		case R_386_PC32:
 		case R_386_PLT32:
-			/* Add the value, subtract its position */
+			 
 			*location += sym->st_value - (uint32_t)location;
 			break;
 		default:
@@ -128,7 +120,7 @@ int apply_relocate(Elf32_Shdr *sechdrs,
 	}
 	return 0;
 }
-#else /*X86_64*/
+#else  
 static int __write_relocate_add(Elf64_Shdr *sechdrs,
 		   const char *strtab,
 		   unsigned int symindex,
@@ -150,12 +142,11 @@ static int __write_relocate_add(Elf64_Shdr *sechdrs,
 	for (i = 0; i < sechdrs[relsec].sh_size / sizeof(*rel); i++) {
 		size_t size;
 
-		/* This is where to make the change */
+		 
 		loc = (void *)sechdrs[sechdrs[relsec].sh_info].sh_addr
 			+ rel[i].r_offset;
 
-		/* This is the symbol it is referring to.  Note that all
-		   undefined symbols have been resolved.  */
+		 
 		sym = (Elf64_Sym *)sechdrs[symindex].sh_addr
 			+ ELF64_R_SYM(rel[i].r_info);
 
@@ -167,7 +158,7 @@ static int __write_relocate_add(Elf64_Shdr *sechdrs,
 
 		switch (ELF64_R_TYPE(rel[i].r_info)) {
 		case R_X86_64_NONE:
-			continue;  /* nothing to write */
+			continue;   
 		case R_X86_64_64:
 			size = 8;
 			break;
@@ -304,10 +295,7 @@ int module_finalize(const Elf_Ehdr *hdr,
 			ibt_endbr = s;
 	}
 
-	/*
-	 * See alternative_instructions() for the ordering rules between the
-	 * various patching types.
-	 */
+	 
 	if (para) {
 		void *pseg = (void *)para->sh_addr;
 		apply_paravirt(pseg, pseg + para->sh_size);
@@ -337,7 +325,7 @@ int module_finalize(const Elf_Ehdr *hdr,
 		apply_returns(rseg, rseg + returns->sh_size);
 	}
 	if (alt) {
-		/* patch .altinstructions */
+		 
 		void *aseg = (void *)alt->sh_addr;
 		apply_alternatives(aseg, aseg + alt->sh_size);
 	}

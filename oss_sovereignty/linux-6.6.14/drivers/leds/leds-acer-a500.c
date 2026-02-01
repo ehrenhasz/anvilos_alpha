@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0+
+
 
 #include <linux/leds.h>
 #include <linux/module.h>
@@ -44,14 +44,7 @@ static int a500_ec_led_brightness_set(struct led_classdev *led_cdev,
 	if (value) {
 		control_seq[0] = led->enable_seq[0];
 	} else {
-		/*
-		 * There is no separate controls which can disable LEDs
-		 * individually, there is only RESET_LEDS command that turns
-		 * off both LEDs.
-		 *
-		 * RESET_LEDS turns off both LEDs, thus restore other LED if
-		 * it's turned ON.
-		 */
+		 
 		if (led->other->cdev.brightness)
 			num_regs = 2;
 
@@ -72,7 +65,7 @@ static int a500_ec_leds_probe(struct platform_device *pdev)
 	if (!rmap)
 		return -EINVAL;
 
-	/* reset and turn off LEDs */
+	 
 	regmap_multi_reg_write(rmap, a500_ec_leds_reset_seq, 2);
 
 	white_led = devm_kzalloc(&pdev->dev, sizeof(*white_led), GFP_KERNEL);

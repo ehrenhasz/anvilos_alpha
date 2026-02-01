@@ -1,13 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Remote processor framework
- *
- * Copyright (C) 2011 Texas Instruments, Inc.
- * Copyright (C) 2011 Google, Inc.
- *
- * Ohad Ben-Cohen <ohad@wizery.com>
- * Brian Swetland <swetland@google.com>
- */
+ 
+ 
 
 #ifndef REMOTEPROC_INTERNAL_H
 #define REMOTEPROC_INTERNAL_H
@@ -24,14 +16,7 @@ struct rproc_debug_trace {
 	struct rproc_mem_entry trace_mem;
 };
 
-/**
- * struct rproc_vdev_data - remoteproc virtio device data
- * @rsc_offset: offset of the vdev's resource entry
- * @id: virtio device id (as in virtio_ids.h)
- * @index: vdev position versus other vdev declared in resource table
- * @rsc: pointer to the vdev resource entry. Valid only during vdev init as
- *       the resource can be cached by rproc.
- */
+ 
 struct rproc_vdev_data {
 	u32 rsc_offset;
 	unsigned int id;
@@ -54,15 +39,15 @@ static inline int rproc_set_feature(struct rproc *rproc, unsigned int feature)
 	return 0;
 }
 
-/* from remoteproc_core.c */
+ 
 void rproc_release(struct kref *kref);
 int rproc_of_parse_firmware(struct device *dev, int index,
 			    const char **fw_name);
 
-/* from remoteproc_virtio.c */
+ 
 irqreturn_t rproc_vq_interrupt(struct rproc *rproc, int vq_id);
 
-/* from remoteproc_debugfs.c */
+ 
 void rproc_remove_trace_file(struct dentry *tfile);
 struct dentry *rproc_create_trace_file(const char *name, struct rproc *rproc,
 				       struct rproc_debug_trace *trace);
@@ -71,7 +56,7 @@ void rproc_create_debug_dir(struct rproc *rproc);
 void rproc_init_debugfs(void);
 void rproc_exit_debugfs(void);
 
-/* from remoteproc_sysfs.c */
+ 
 extern struct class rproc_class;
 int rproc_init_sysfs(void);
 void rproc_exit_sysfs(void);
@@ -90,10 +75,7 @@ static inline void rproc_exit_cdev(void)
 {
 }
 
-/*
- * The character device interface is an optional feature, if it is not enabled
- * the function should not return an error.
- */
+ 
 static inline int rproc_char_device_add(struct rproc *rproc)
 {
 	return 0;
@@ -221,4 +203,4 @@ bool rproc_u64_fit_in_size_t(u64 val)
 	return (val <= (size_t) -1);
 }
 
-#endif /* REMOTEPROC_INTERNAL_H */
+#endif  

@@ -1,36 +1,4 @@
-/*
-*  Copyright (c) 2001 The Regents of the University of Michigan.
-*  All rights reserved.
-*
-*  Kendrick Smith <kmsmith@umich.edu>
-*  Andy Adamson <kandros@umich.edu>
-*
-*  Redistribution and use in source and binary forms, with or without
-*  modification, are permitted provided that the following conditions
-*  are met:
-*
-*  1. Redistributions of source code must retain the above copyright
-*     notice, this list of conditions and the following disclaimer.
-*  2. Redistributions in binary form must reproduce the above copyright
-*     notice, this list of conditions and the following disclaimer in the
-*     documentation and/or other materials provided with the distribution.
-*  3. Neither the name of the University nor the names of its
-*     contributors may be used to endorse or promote products derived
-*     from this software without specific prior written permission.
-*
-*  THIS SOFTWARE IS PROVIDED ``AS IS'' AND ANY EXPRESS OR IMPLIED
-*  WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
-*  MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-*  DISCLAIMED. IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE
-*  FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
-*  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
-*  SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR
-*  BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
-*  LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
-*  NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-*  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*
-*/
+ 
 
 #include <linux/file.h>
 #include <linux/fs.h>
@@ -65,7 +33,7 @@ static const stateid_t one_stateid = {
 	.si_opaque = all_ones,
 };
 static const stateid_t zero_stateid = {
-	/* all fields zero */
+	 
 };
 static const stateid_t currentstateid = {
 	.si_generation = 1,
@@ -81,20 +49,16 @@ static u64 current_sessionid = 1;
 #define CURRENT_STATEID(stateid) (!memcmp((stateid), &currentstateid, sizeof(stateid_t)))
 #define CLOSE_STATEID(stateid)  (!memcmp((stateid), &close_stateid, sizeof(stateid_t)))
 
-/* forward declarations */
+ 
 static bool check_for_locks(struct nfs4_file *fp, struct nfs4_lockowner *lowner);
 static void nfs4_free_ol_stateid(struct nfs4_stid *stid);
 void nfsd4_end_grace(struct nfsd_net *nn);
 static void _free_cpntf_state_locked(struct nfsd_net *nn, struct nfs4_cpntf_state *cps);
 static void nfsd4_file_hash_remove(struct nfs4_file *fi);
 
-/* Locking: */
+ 
 
-/*
- * Currently used for the del_recall_lru and file hash table.  In an
- * effort to decrease the scope of the client_mutex, this spinlock may
- * eventually cover more:
- */
+ 
 static DEFINE_SPINLOCK(state_lock);
 
 enum nfsd4_st_mutex_lock_subclass {
@@ -102,17 +66,10 @@ enum nfsd4_st_mutex_lock_subclass {
 	LOCK_STATEID_MUTEX = 1,
 };
 
-/*
- * A waitqueue for all in-progress 4.0 CLOSE operations that are waiting for
- * the refcount on the open stateid to drop.
- */
+ 
 static DECLARE_WAIT_QUEUE_HEAD(close_wq);
 
-/*
- * A waitqueue where a writer to clients/#/ctl destroying a client can
- * wait for cl_rpc_users to drop to 0 and then for the client to be
- * unhashed.
- */
+ 
 static DECLARE_WAIT_QUEUE_HEAD(expiry_wq);
 
 static struct kmem_cache *client_slab;
@@ -184,7 +141,7 @@ static __be32 get_client_locked(struct nfs4_client *clp)
 	return nfs_ok;
 }
 
-/* must be called under the client_lock */
+ 
 static inline void
 renew_client_locked(struct nfs4_client *clp)
 {
@@ -337,7 +294,7 @@ remove_blocked_locks(struct nfs4_lockowner *lo)
 	struct nfsd4_blocked_lock *nbl;
 	LIST_HEAD(reaplist);
 
-	/* Dequeue all blocked locks */
+	 
 	spin_lock(&nn->blocked_locks_lock);
 	while (!list_empty(&lo->lo_blocked)) {
 		nbl = list_first_entry(&lo->lo_blocked,
@@ -349,7 +306,7 @@ remove_blocked_locks(struct nfs4_lockowner *lo)
 	}
 	spin_unlock(&nn->blocked_locks_lock);
 
-	/* Now free them */
+	 
 	while (!list_empty(&reaplist)) {
 		nbl = list_first_entry(&reaplist, struct nfsd4_blocked_lock,
 					nbl_lru);
@@ -371,11 +328,7 @@ nfsd4_cb_notify_lock_done(struct nfsd4_callback *cb, struct rpc_task *task)
 {
 	trace_nfsd_cb_notify_lock_done(&zero_stateid, task);
 
-	/*
-	 * Since this is just an optimization, we don't try very hard if it
-	 * turns out not to succeed. We'll requeue it on NFS4ERR_DELAY, and
-	 * just quit trying on anything else.
-	 */
+	 
 	switch (task->tk_status) {
 	case -NFS4ERR_DELAY:
 		rpc_delay(task, 1 * HZ);
@@ -400,30 +353,7 @@ static const struct nfsd4_callback_ops nfsd4_cb_notify_lock_ops = {
 	.release	= nfsd4_cb_notify_lock_release,
 };
 
-/*
- * We store the NONE, READ, WRITE, and BOTH bits separately in the
- * st_{access,deny}_bmap field of the stateid, in order to track not
- * only what share bits are currently in force, but also what
- * combinations of share bits previous opens have used.  This allows us
- * to enforce the recommendation in
- * https://datatracker.ietf.org/doc/html/rfc7530#section-16.19.4 that
- * the server return an error if the client attempt to downgrade to a
- * combination of share bits not explicable by closing some of its
- * previous opens.
- *
- * This enforcement is arguably incomplete, since we don't keep
- * track of access/deny bit combinations; so, e.g., we allow:
- *
- *	OPEN allow read, deny write
- *	OPEN allow both, deny none
- *	DOWNGRADE allow read, deny none
- *
- * which we should reject.
- *
- * But you could also argue that our current code is already overkill,
- * since it only exists to return NFS4ERR_INVAL on incorrect client
- * behavior.
- */
+ 
 static unsigned int
 bmap_to_share_mode(unsigned long bmap)
 {
@@ -437,7 +367,7 @@ bmap_to_share_mode(unsigned long bmap)
 	return access;
 }
 
-/* set share access for a given stateid */
+ 
 static inline void
 set_access(u32 access, struct nfs4_ol_stateid *stp)
 {
@@ -447,7 +377,7 @@ set_access(u32 access, struct nfs4_ol_stateid *stp)
 	stp->st_access_bmap |= mask;
 }
 
-/* clear share access for a given stateid */
+ 
 static inline void
 clear_access(u32 access, struct nfs4_ol_stateid *stp)
 {
@@ -457,7 +387,7 @@ clear_access(u32 access, struct nfs4_ol_stateid *stp)
 	stp->st_access_bmap &= ~mask;
 }
 
-/* test whether a given stateid has access */
+ 
 static inline bool
 test_access(u32 access, struct nfs4_ol_stateid *stp)
 {
@@ -466,7 +396,7 @@ test_access(u32 access, struct nfs4_ol_stateid *stp)
 	return (bool)(stp->st_access_bmap & mask);
 }
 
-/* set share deny for a given stateid */
+ 
 static inline void
 set_deny(u32 deny, struct nfs4_ol_stateid *stp)
 {
@@ -476,7 +406,7 @@ set_deny(u32 deny, struct nfs4_ol_stateid *stp)
 	stp->st_deny_bmap |= mask;
 }
 
-/* clear share deny for a given stateid */
+ 
 static inline void
 clear_deny(u32 deny, struct nfs4_ol_stateid *stp)
 {
@@ -486,7 +416,7 @@ clear_deny(u32 deny, struct nfs4_ol_stateid *stp)
 	stp->st_deny_bmap &= ~mask;
 }
 
-/* test whether a given stateid is denying specific access */
+ 
 static inline bool
 test_deny(u32 deny, struct nfs4_ol_stateid *stp)
 {
@@ -695,11 +625,9 @@ static struct nfsd_file *find_any_file_locked(struct nfs4_file *f)
 static atomic_long_t num_delegations;
 unsigned long max_delegations;
 
-/*
- * Open owner state (share locks)
- */
+ 
 
-/* hash tables for lock and open owners */
+ 
 #define OWNER_HASH_BITS              8
 #define OWNER_HASH_SIZE             (1 << OWNER_HASH_BITS)
 #define OWNER_HASH_MASK             (OWNER_HASH_SIZE - 1)
@@ -719,30 +647,12 @@ static const struct rhashtable_params nfs4_file_rhash_params = {
 	.key_offset		= offsetof(struct nfs4_file, fi_inode),
 	.head_offset		= offsetof(struct nfs4_file, fi_rlist),
 
-	/*
-	 * Start with a single page hash table to reduce resizing churn
-	 * on light workloads.
-	 */
+	 
 	.min_size		= 256,
 	.automatic_shrinking	= true,
 };
 
-/*
- * Check if courtesy clients have conflicting access and resolve it if possible
- *
- * access:  is op_share_access if share_access is true.
- *	    Check if access mode, op_share_access, would conflict with
- *	    the current deny mode of the file 'fp'.
- * access:  is op_share_deny if share_access is false.
- *	    Check if the deny mode, op_share_deny, would conflict with
- *	    current access of the file 'fp'.
- * stp:     skip checking this entry.
- * new_stp: normal open, not open upgrade.
- *
- * Function returns:
- *	false - access/deny mode conflict with normal client.
- *	true  - no conflict or conflict with courtesy client(s) is resolved.
- */
+ 
 static bool
 nfs4_resolve_deny_conflicts_locked(struct nfs4_file *fp, bool new_stp,
 		struct nfs4_ol_stateid *stp, u32 access, bool share_access)
@@ -755,12 +665,12 @@ nfs4_resolve_deny_conflicts_locked(struct nfs4_file *fp, bool new_stp,
 
 	lockdep_assert_held(&fp->fi_lock);
 	list_for_each_entry(st, &fp->fi_stateids, st_perfile) {
-		/* ignore lock stateid */
+		 
 		if (st->st_openstp)
 			continue;
 		if (st == stp && new_stp)
 			continue;
-		/* check file access against deny mode or vice versa */
+		 
 		bmap = share_access ? st->st_deny_bmap : st->st_access_bmap;
 		if (!(access & bmap_to_share_mode(bmap)))
 			continue;
@@ -794,11 +704,11 @@ nfs4_file_get_access(struct nfs4_file *fp, u32 access)
 {
 	lockdep_assert_held(&fp->fi_lock);
 
-	/* Does this access mode make sense? */
+	 
 	if (access & ~NFS4_SHARE_ACCESS_BOTH)
 		return nfserr_inval;
 
-	/* Does it conflict with a deny mode already set? */
+	 
 	if ((access & fp->fi_share_deny) != 0)
 		return nfserr_share_denied;
 
@@ -808,9 +718,9 @@ nfs4_file_get_access(struct nfs4_file *fp, u32 access)
 
 static __be32 nfs4_file_check_deny(struct nfs4_file *fp, u32 deny)
 {
-	/* Common case is that there is no deny mode. */
+	 
 	if (deny) {
-		/* Does this deny mode make sense? */
+		 
 		if (deny & ~NFS4_SHARE_DENY_BOTH)
 			return nfserr_inval;
 
@@ -854,13 +764,7 @@ static void nfs4_file_put_access(struct nfs4_file *fp, u32 access)
 		__nfs4_file_put_access(fp, O_RDONLY);
 }
 
-/*
- * Allocate a new open/delegation state counter. This is needed for
- * pNFS for proper return on close semantics.
- *
- * Note that we only allocate it for pNFS-enabled exports, otherwise
- * all pointers to struct nfs4_clnt_odstate are always NULL.
- */
+ 
 static struct nfs4_clnt_odstate *
 alloc_clnt_odstate(struct nfs4_client *clp)
 {
@@ -946,7 +850,7 @@ struct nfs4_stid *nfs4_alloc_stid(struct nfs4_client *cl, struct kmem_cache *sla
 
 	idr_preload(GFP_KERNEL);
 	spin_lock(&cl->cl_lock);
-	/* Reserving 0 for start of file in nfsdfs "states" file: */
+	 
 	new_id = idr_alloc_cyclic(&cl->cl_stateids, stid, 1, 0, GFP_NOWAIT);
 	spin_unlock(&cl->cl_lock);
 	idr_preload_end();
@@ -957,29 +861,19 @@ struct nfs4_stid *nfs4_alloc_stid(struct nfs4_client *cl, struct kmem_cache *sla
 	stid->sc_client = cl;
 	stid->sc_stateid.si_opaque.so_id = new_id;
 	stid->sc_stateid.si_opaque.so_clid = cl->cl_clientid;
-	/* Will be incremented before return to client: */
+	 
 	refcount_set(&stid->sc_count, 1);
 	spin_lock_init(&stid->sc_lock);
 	INIT_LIST_HEAD(&stid->sc_cp_list);
 
-	/*
-	 * It shouldn't be a problem to reuse an opaque stateid value.
-	 * I don't think it is for 4.1.  But with 4.0 I worry that, for
-	 * example, a stray write retransmission could be accepted by
-	 * the server when it should have been rejected.  Therefore,
-	 * adopt a trick from the sctp code to attempt to maximize the
-	 * amount of time until an id is reused, by ensuring they always
-	 * "increase" (mod INT_MAX):
-	 */
+	 
 	return stid;
 out_free:
 	kmem_cache_free(slab, stid);
 	return NULL;
 }
 
-/*
- * Create a unique stateid_t to represent each COPY.
- */
+ 
 static int nfs4_init_cp_state(struct nfsd_net *nn, copy_stateid_t *stid,
 			      unsigned char cs_type)
 {
@@ -1078,29 +972,12 @@ static void nfs4_free_deleg(struct nfs4_stid *stid)
 	atomic_long_dec(&num_delegations);
 }
 
-/*
- * When we recall a delegation, we should be careful not to hand it
- * out again straight away.
- * To ensure this we keep a pair of bloom filters ('new' and 'old')
- * in which the filehandles of recalled delegations are "stored".
- * If a filehandle appear in either filter, a delegation is blocked.
- * When a delegation is recalled, the filehandle is stored in the "new"
- * filter.
- * Every 30 seconds we swap the filters and clear the "new" one,
- * unless both are empty of course.
- *
- * Each filter is 256 bits.  We hash the filehandle to 32bit and use the
- * low 3 bytes as hash-table indices.
- *
- * 'blocked_delegations_lock', which is always taken in block_delegations(),
- * is used to manage concurrent access.  Testing does not need the lock
- * except when swapping the two filters.
- */
+ 
 static DEFINE_SPINLOCK(blocked_delegations_lock);
 static struct bloom_pair {
 	int	entries, old_entries;
 	time64_t swap_time;
-	int	new; /* index into 'set' */
+	int	new;  
 	DECLARE_BITMAP(set[2], 256);
 } blocked_delegations;
 
@@ -1171,11 +1048,7 @@ alloc_init_deleg(struct nfs4_client *clp, struct nfs4_file *fp,
 	if (dp == NULL)
 		goto out_dec;
 
-	/*
-	 * delegation seqid's are never incremented.  The 4.1 special
-	 * meaning of seqid 0 isn't meaningful, really, but let's avoid
-	 * 0 anyway just for consistency and use 1:
-	 */
+	 
 	dp->dl_stid.sc_stateid.si_generation = 1;
 	INIT_LIST_HEAD(&dp->dl_perfile);
 	INIT_LIST_HEAD(&dp->dl_perclnt);
@@ -1263,14 +1136,7 @@ void nfs4_unhash_stid(struct nfs4_stid *s)
 	s->sc_type = 0;
 }
 
-/**
- * nfs4_delegation_exists - Discover if this delegation already exists
- * @clp:     a pointer to the nfs4_client we're granting a delegation to
- * @fp:      a pointer to the nfs4_file we're granting a delegation on
- *
- * Return:
- *      On success: true iff an existing delegation is found
- */
+ 
 
 static bool
 nfs4_delegation_exists(struct nfs4_client *clp, struct nfs4_file *fp)
@@ -1290,18 +1156,7 @@ nfs4_delegation_exists(struct nfs4_client *clp, struct nfs4_file *fp)
 	return false;
 }
 
-/**
- * hash_delegation_locked - Add a delegation to the appropriate lists
- * @dp:     a pointer to the nfs4_delegation we are adding.
- * @fp:     a pointer to the nfs4_file we're granting a delegation on
- *
- * Return:
- *      On success: NULL if the delegation was successfully hashed.
- *
- *      On error: -EAGAIN if one was previously granted to this
- *                 nfs4_client for this nfs4_file. Delegation is not hashed.
- *
- */
+ 
 
 static int
 hash_delegation_locked(struct nfs4_delegation *dp, struct nfs4_file *fp)
@@ -1336,7 +1191,7 @@ unhash_delegation_locked(struct nfs4_delegation *dp)
 		return false;
 
 	dp->dl_stid.sc_type = NFS4_CLOSED_DELEG_STID;
-	/* Ensure that deleg break won't try to requeue it */
+	 
 	++dp->dl_time;
 	spin_lock(&fp->fi_lock);
 	list_del_init(&dp->dl_perclnt);
@@ -1375,9 +1230,7 @@ static void revoke_delegation(struct nfs4_delegation *dp)
 	destroy_unhashed_deleg(dp);
 }
 
-/* 
- * SETCLIENTID state 
- */
+ 
 
 static unsigned int clientid_hashval(u32 id)
 {
@@ -1389,10 +1242,7 @@ static unsigned int clientstr_hashval(struct xdr_netobj name)
 	return opaque_hashval(name.data, 8) & CLIENT_HASH_MASK;
 }
 
-/*
- * A stateid that had a deny mode associated with it is being released
- * or downgraded. Recalculate the deny mode on the file.
- */
+ 
 static void
 recalculate_deny_mode(struct nfs4_file *fp)
 {
@@ -1418,12 +1268,12 @@ reset_union_bmap_deny(u32 deny, struct nfs4_ol_stateid *stp)
 		}
 	}
 
-	/* Recalculate per-file deny mode if there was a change */
+	 
 	if (change)
 		recalculate_deny_mode(stp->st_stid.sc_file);
 }
 
-/* release all access and file references for a given stateid */
+ 
 static void
 release_all_access(struct nfs4_ol_stateid *stp)
 {
@@ -1508,11 +1358,7 @@ static void nfs4_free_lock_stateid(struct nfs4_stid *stid)
 	nfs4_free_ol_stateid(stid);
 }
 
-/*
- * Put the persistent reference to an already unhashed generic stateid, while
- * holding the cl_lock. If it's the last reference, then put it onto the
- * reaplist for later destruction.
- */
+ 
 static void put_ol_stateid_locked(struct nfs4_ol_stateid *stp,
 				       struct list_head *reaplist)
 {
@@ -1564,10 +1410,7 @@ static void unhash_lockowner_locked(struct nfs4_lockowner *lo)
 	list_del_init(&lo->lo_owner.so_strhash);
 }
 
-/*
- * Free a list of generic stateids that were collected earlier after being
- * fully unhashed.
- */
+ 
 static void
 free_ol_stateid_reaplist(struct list_head *reaplist)
 {
@@ -1695,10 +1538,7 @@ dump_sessionid(const char *fn, struct nfs4_sessionid *sessionid)
 }
 #endif
 
-/*
- * Bump the seqid on cstate->replay_owner, and clear replay_owner if it
- * won't be used for replay.
- */
+ 
 void nfsd4_bump_seqid(struct nfsd4_compound_state *cstate, __be32 nfserr)
 {
 	struct nfs4_stateowner *so = cstate->replay_owner;
@@ -1730,18 +1570,7 @@ gen_sessionid(struct nfsd4_session *ses)
 	sid->reserved = 0;
 }
 
-/*
- * The protocol defines ca_maxresponssize_cached to include the size of
- * the rpc header, but all we need to cache is the data starting after
- * the end of the initial SEQUENCE operation--the rest we regenerate
- * each time.  Therefore we can advertise a ca_maxresponssize_cached
- * value that is the number of bytes in our cache plus a few additional
- * bytes.  In order to stay on the safe side, and not promise more than
- * we can cache, those additional bytes must be the minimum possible: 24
- * bytes of rpc header (xid through accept state, with AUTH_NULL
- * verifier), 12 for the compound header (with zero-length tag), and 44
- * for the SEQUENCE op response:
- */
+ 
 #define NFSD_MIN_HDR_SEQ_SZ  (24 + 12 + 44)
 
 static void
@@ -1755,10 +1584,7 @@ free_session_slots(struct nfsd4_session *ses)
 	}
 }
 
-/*
- * We don't actually need to cache the rpc and session headers, so we
- * can allocate a little less for each slot:
- */
+ 
 static inline u32 slot_bytes(struct nfsd4_channel_attrs *ca)
 {
 	u32 size;
@@ -1770,11 +1596,7 @@ static inline u32 slot_bytes(struct nfsd4_channel_attrs *ca)
 	return size + sizeof(struct nfsd4_slot);
 }
 
-/*
- * XXX: If we run out of reserved DRC memory we could (up to a point)
- * re-negotiate active sessions and reduce their slot usage to make
- * room for new connections. For now we just fail the create session.
- */
+ 
 static u32 nfsd4_get_drc_mem(struct nfsd4_channel_attrs *ca, struct nfsd_net *nn)
 {
 	u32 slotsize = slot_bytes(ca);
@@ -1786,22 +1608,10 @@ static u32 nfsd4_get_drc_mem(struct nfsd4_channel_attrs *ca, struct nfsd_net *nn
 	if (nfsd_drc_max_mem > nfsd_drc_mem_used)
 		total_avail = nfsd_drc_max_mem - nfsd_drc_mem_used;
 	else
-		/* We have handed out more space than we chose in
-		 * set_max_drc() to allow.  That isn't really a
-		 * problem as long as that doesn't make us think we
-		 * have lots more due to integer overflow.
-		 */
+		 
 		total_avail = 0;
 	avail = min((unsigned long)NFSD_MAX_MEM_PER_SESSION, total_avail);
-	/*
-	 * Never use more than a fraction of the remaining memory,
-	 * unless it's the only way to give this client a slot.
-	 * The chosen fraction is either 1/8 or 1/number of threads,
-	 * whichever is smaller.  This ensures there are adequate
-	 * slots to support multiple clients per thread.
-	 * Give the client one slot even if that would require
-	 * over-allocation--it is better than failure.
-	 */
+	 
 	scale_factor = max_t(unsigned int, 8, nn->nfsd_serv->sv_nrthreads);
 
 	avail = clamp_t(unsigned long, avail, slotsize,
@@ -1837,7 +1647,7 @@ static struct nfsd4_session *alloc_session(struct nfsd4_channel_attrs *fattrs,
 	new = kzalloc(struct_size(new, se_slots, numslots), GFP_KERNEL);
 	if (!new)
 		return NULL;
-	/* allocate each struct nfsd4_slot and data cache in one piece */
+	 
 	for (i = 0; i < numslots; i++) {
 		new->se_slots[i] = kzalloc(slotsize, GFP_KERNEL);
 		if (!new->se_slots[i])
@@ -1919,9 +1729,9 @@ static void nfsd4_init_conn(struct svc_rqst *rqstp, struct nfsd4_conn *conn, str
 	nfsd4_hash_conn(conn, ses);
 	ret = nfsd4_register_conn(conn);
 	if (ret)
-		/* oops; xprt is already down: */
+		 
 		nfsd4_conn_lost(&conn->cn_xpt_user);
-	/* We may have gained or lost a callback channel: */
+	 
 	nfsd4_probe_callback_sync(ses->se_client);
 }
 
@@ -1934,7 +1744,7 @@ static struct nfsd4_conn *alloc_conn_from_crses(struct svc_rqst *rqstp, struct n
 	return alloc_conn(rqstp, dir);
 }
 
-/* must be called under client_lock */
+ 
 static void nfsd4_del_conns(struct nfsd4_session *s)
 {
 	struct nfs4_client *clp = s->se_client;
@@ -1990,19 +1800,13 @@ static void init_session(struct svc_rqst *rqstp, struct nfsd4_session *new, stru
 
 	{
 		struct sockaddr *sa = svc_addr(rqstp);
-		/*
-		 * This is a little silly; with sessions there's no real
-		 * use for the callback address.  Use the peer address
-		 * as a reasonable default for now, but consider fixing
-		 * the rpc client not to require an address in the
-		 * future:
-		 */
+		 
 		rpc_copy_addr((struct sockaddr *)&clp->cl_cb_conn.cb_addr, sa);
 		clp->cl_cb_conn.cb_addrlen = svc_addr_len(sa);
 	}
 }
 
-/* caller must hold client_lock */
+ 
 static struct nfsd4_session *
 __find_in_sessionid_hashtbl(struct nfs4_sessionid *sessionid, struct net *net)
 {
@@ -2014,7 +1818,7 @@ __find_in_sessionid_hashtbl(struct nfs4_sessionid *sessionid, struct net *net)
 
 	dump_sessionid(__func__, sessionid);
 	idx = hash_sessionid(sessionid);
-	/* Search in the appropriate list */
+	 
 	list_for_each_entry(elem, &nn->sessionid_hashtbl[idx], se_hash) {
 		if (!memcmp(elem->se_sessionid.data, sessionid->data,
 			    NFS4_MAX_SESSIONID_LEN)) {
@@ -2044,7 +1848,7 @@ out:
 	return session;
 }
 
-/* caller must hold client_lock */
+ 
 static void
 unhash_session(struct nfsd4_session *ses)
 {
@@ -2059,26 +1863,18 @@ unhash_session(struct nfsd4_session *ses)
 	spin_unlock(&ses->se_client->cl_lock);
 }
 
-/* SETCLIENTID and SETCLIENTID_CONFIRM Helper functions */
+ 
 static int
 STALE_CLIENTID(clientid_t *clid, struct nfsd_net *nn)
 {
-	/*
-	 * We're assuming the clid was not given out from a boot
-	 * precisely 2^32 (about 136 years) before this one.  That seems
-	 * a safe assumption:
-	 */
+	 
 	if (clid->cl_boot == (u32)nn->boot_time)
 		return 0;
 	trace_nfsd_clid_stale(clid);
 	return 1;
 }
 
-/* 
- * XXX Should we use a slab cache ?
- * This type of memory management is somewhat inefficient, but we use it
- * anyway since SETCLIENTID is not a common operation.
- */
+ 
 static struct nfs4_client *alloc_client(struct xdr_netobj name,
 				struct nfsd_net *nn)
 {
@@ -2169,7 +1965,7 @@ free_client(struct nfs4_client *clp)
 	drop_client(clp);
 }
 
-/* must be called under the client_lock */
+ 
 static void
 unhash_client_locked(struct nfs4_client *clp)
 {
@@ -2178,9 +1974,9 @@ unhash_client_locked(struct nfs4_client *clp)
 
 	lockdep_assert_held(&nn->client_lock);
 
-	/* Mark the client as expired! */
+	 
 	clp->cl_time = 0;
-	/* Make it invisible */
+	 
 	if (!list_empty(&clp->cl_idhash)) {
 		list_del_init(&clp->cl_idhash);
 		if (test_bit(NFSD4_CLIENT_CONFIRMED, &clp->cl_flags))
@@ -2250,7 +2046,7 @@ __destroy_client(struct nfs4_client *clp)
 
 		list_for_each_entry_safe(so, tmp, &clp->cl_ownerstr_hashtbl[i],
 					 so_strhash) {
-			/* Should be no openowners at this point */
+			 
 			WARN_ON_ONCE(so->so_is_open_owner);
 			remove_blocked_locks(lockowner(so));
 		}
@@ -2364,18 +2160,10 @@ static bool groups_equal(struct group_info *g1, struct group_info *g2)
 	return true;
 }
 
-/*
- * RFC 3530 language requires clid_inuse be returned when the
- * "principal" associated with a requests differs from that previously
- * used.  We use uid, gid's, and gss principal string as our best
- * approximation.  We also don't want to allow non-gss use of a client
- * established using gss: in theory cr_principal should catch that
- * change, but in practice cr_principal can be null even in the gss case
- * since gssd doesn't always pass down a principal string.
- */
+ 
 static bool is_gss_cred(struct svc_cred *cr)
 {
-	/* Is cr_flavor one of the gss "pseudoflavors"?: */
+	 
 	return (cr->cr_flavor > RPC_AUTH_MAXFLAVOR);
 }
 
@@ -2388,7 +2176,7 @@ same_creds(struct svc_cred *cr1, struct svc_cred *cr2)
 		|| (!gid_eq(cr1->cr_gid, cr2->cr_gid))
 		|| !groups_equal(cr1->cr_group_info, cr2->cr_group_info))
 		return false;
-	/* XXX: check that cr_targ_princ fields match ? */
+	 
 	if (cr1->cr_principal == cr2->cr_principal)
 		return true;
 	if (!cr1->cr_principal || !cr2->cr_principal)
@@ -2430,10 +2218,7 @@ static void gen_confirm(struct nfs4_client *clp, struct nfsd_net *nn)
 {
 	__be32 verf[2];
 
-	/*
-	 * This is opaque to client, so no need to byte-swap. Use
-	 * __force to keep sparse happy
-	 */
+	 
 	verf[0] = (__force __be32)(u32)ktime_get_real_seconds();
 	verf[1] = (__force __be32)nn->clverifier_counter++;
 	memcpy(clp->cl_confirm.data, verf, sizeof(clp->cl_confirm.data));
@@ -2619,7 +2404,7 @@ static int nfs4_show_open(struct seq_file *s, struct nfs4_stid *st)
 	unsigned int access, deny;
 
 	if (st->sc_type != NFS4_OPEN_STID && st->sc_type != NFS4_LOCK_STID)
-		return 0; /* XXX: or SEQ_SKIP? */
+		return 0;  
 	ols = openlockstateid(st);
 	oo = ols->st_stateowner;
 	nf = st->sc_file;
@@ -2673,15 +2458,10 @@ static int nfs4_show_lock(struct seq_file *s, struct nfs4_stid *st)
 	nfs4_show_stateid(s, &st->sc_stateid);
 	seq_printf(s, ": { type: lock, ");
 
-	/*
-	 * Note: a lock stateid isn't really the same thing as a lock,
-	 * it's the locking state held by one owner on a file, and there
-	 * may be multiple (or no) lock ranges associated with it.
-	 * (Same for the matter is true of open stateids.)
-	 */
+	 
 
 	nfs4_show_superblock(s, file);
-	/* XXX: open stateid? */
+	 
 	seq_printf(s, ", ");
 	nfs4_show_fname(s, file);
 	seq_printf(s, ", ");
@@ -2709,11 +2489,11 @@ static int nfs4_show_deleg(struct seq_file *s, struct nfs4_stid *st)
 	nfs4_show_stateid(s, &st->sc_stateid);
 	seq_printf(s, ": { type: deleg, ");
 
-	/* Kinda dead code as long as we only support read delegs: */
+	 
 	seq_printf(s, "access: %s, ",
 		ds->dl_type == NFS4_OPEN_DELEGATE_READ ? "r" : "w");
 
-	/* XXX: lease time, whether it's being recalled. */
+	 
 
 	nfs4_show_superblock(s, file);
 	seq_printf(s, ", ");
@@ -2736,7 +2516,7 @@ static int nfs4_show_layout(struct seq_file *s, struct nfs4_stid *st)
 	nfs4_show_stateid(s, &st->sc_stateid);
 	seq_printf(s, ": { type: layout, ");
 
-	/* XXX: What else would be useful? */
+	 
 
 	nfs4_show_superblock(s, file);
 	seq_printf(s, ", ");
@@ -2760,9 +2540,9 @@ static int states_show(struct seq_file *s, void *v)
 	case NFS4_LAYOUT_STID:
 		return nfs4_show_layout(s, st);
 	default:
-		return 0; /* XXX: or SEQ_SKIP? */
+		return 0;  
 	}
-	/* XXX: copy stateids? */
+	 
 }
 
 static struct seq_operations states_seq_ops = {
@@ -2795,7 +2575,7 @@ static int client_opens_release(struct inode *inode, struct file *file)
 	struct seq_file *m = file->private_data;
 	struct nfs4_client *clp = m->private;
 
-	/* XXX: alternatively, we could get/drop in seq start/stop */
+	 
 	drop_client(clp);
 	return seq_release(inode, file);
 }
@@ -2807,12 +2587,7 @@ static const struct file_operations client_states_fops = {
 	.release	= client_opens_release,
 };
 
-/*
- * Normally we refuse to destroy clients that are in use, but here the
- * administrator is telling us to just do it.  We also want to wait
- * so the caller has a guarantee that the client's locks are gone by
- * the time the write returns:
- */
+ 
 static void force_expire_client(struct nfs4_client *clp)
 {
 	struct nfsd_net *nn = net_generic(clp->net, nfsd_net_id);
@@ -3080,7 +2855,7 @@ gen_callback(struct nfs4_client *clp, struct nfsd4_setclientid *se, struct svc_r
 	u32 scopeid = rpc_get_scope_id(sa);
 	unsigned short expected_family;
 
-	/* Currently, we only support tcp and tcp6 for the callback channel */
+	 
 	if (se->se_callback_netid_len == 3 &&
 	    !memcmp(se->se_callback_netid_val, "tcp", 3))
 		expected_family = AF_INET;
@@ -3113,9 +2888,7 @@ out_err:
 	return;
 }
 
-/*
- * Cache a reply. nfsd4_check_resp_size() has bounded the cache size.
- */
+ 
 static void
 nfsd4_store_cache_entry(struct nfsd4_compoundres *resp)
 {
@@ -3145,13 +2918,7 @@ nfsd4_store_cache_entry(struct nfsd4_compoundres *resp)
 	return;
 }
 
-/*
- * Encode the replay sequence operation from the slot values.
- * If cachethis is FALSE encode the uncached rep error on the next
- * operation which sets resp->p and increments resp->opcnt for
- * nfs4svc_encode_compoundres.
- *
- */
+ 
 static __be32
 nfsd4_enc_sequence_replay(struct nfsd4_compoundargs *args,
 			  struct nfsd4_compoundres *resp)
@@ -3159,18 +2926,14 @@ nfsd4_enc_sequence_replay(struct nfsd4_compoundargs *args,
 	struct nfsd4_op *op;
 	struct nfsd4_slot *slot = resp->cstate.slot;
 
-	/* Encode the replayed sequence operation */
+	 
 	op = &args->ops[resp->opcnt - 1];
 	nfsd4_encode_operation(resp, op);
 
 	if (slot->sl_flags & NFSD4_SLOT_CACHED)
 		return op->status;
 	if (args->opcnt == 1) {
-		/*
-		 * The original operation wasn't a solo sequence--we
-		 * always cache those--so this retry must not match the
-		 * original:
-		 */
+		 
 		op->status = nfserr_seq_false_retry;
 	} else {
 		op = &args->ops[resp->opcnt++];
@@ -3180,10 +2943,7 @@ nfsd4_enc_sequence_replay(struct nfsd4_compoundargs *args,
 	return op->status;
 }
 
-/*
- * The sequence operation is not cached because we can use the slot and
- * session values.
- */
+ 
 static __be32
 nfsd4_replay_cache_entry(struct nfsd4_compoundres *resp,
 			 struct nfsd4_sequence *seq)
@@ -3211,9 +2971,7 @@ nfsd4_replay_cache_entry(struct nfsd4_compoundres *resp,
 	return slot->sl_status;
 }
 
-/*
- * Set the exchange_id flags returned by the server.
- */
+ 
 static void
 nfsd4_set_ex_flags(struct nfs4_client *new, struct nfsd4_exchange_id *clid)
 {
@@ -3223,10 +2981,10 @@ nfsd4_set_ex_flags(struct nfs4_client *new, struct nfsd4_exchange_id *clid)
 	new->cl_exchange_flags |= EXCHGID4_FLAG_USE_NON_PNFS;
 #endif
 
-	/* Referrals are supported, Migration is not. */
+	 
 	new->cl_exchange_flags |= EXCHGID4_FLAG_SUPP_MOVED_REFER;
 
-	/* set the wire flags to return to client. */
+	 
 	clid->flags = new->cl_exchange_flags;
 }
 
@@ -3319,11 +3077,7 @@ nfsd4_exchange_id(struct svc_rqst *rqstp, struct nfsd4_compound_state *cstate,
 			status = nfserr_inval;
 			goto out_nolock;
 		}
-		/*
-		 * Sometimes userspace doesn't give us a principal.
-		 * Which is a bug, really.  Anyway, we can't enforce
-		 * MACH_CRED in that case, better to give up now:
-		 */
+		 
 		if (!new->cl_cred.cr_principal &&
 					!new->cl_cred.cr_raw_principal) {
 			status = nfserr_serverfault;
@@ -3333,7 +3087,7 @@ nfsd4_exchange_id(struct svc_rqst *rqstp, struct nfsd4_compound_state *cstate,
 		break;
 	case SP4_NONE:
 		break;
-	default:				/* checked by xdr code */
+	default:				 
 		WARN_ON_ONCE(1);
 		fallthrough;
 	case SP4_SSV:
@@ -3341,7 +3095,7 @@ nfsd4_exchange_id(struct svc_rqst *rqstp, struct nfsd4_compound_state *cstate,
 		goto out_nolock;
 	}
 
-	/* Cases below refer to rfc 5661 section 18.35.4: */
+	 
 	spin_lock(&nn->client_lock);
 	conf = find_confirmed_client_by_name(&exid->clname, nn);
 	if (conf) {
@@ -3349,7 +3103,7 @@ nfsd4_exchange_id(struct svc_rqst *rqstp, struct nfsd4_compound_state *cstate,
 		bool verfs_match = same_verf(&verf, &conf->cl_verifier);
 
 		if (update) {
-			if (!clp_used_exchangeid(conf)) { /* buggy client */
+			if (!clp_used_exchangeid(conf)) {  
 				status = nfserr_inval;
 				goto out;
 			}
@@ -3357,20 +3111,20 @@ nfsd4_exchange_id(struct svc_rqst *rqstp, struct nfsd4_compound_state *cstate,
 				status = nfserr_wrong_cred;
 				goto out;
 			}
-			if (!creds_match) { /* case 9 */
+			if (!creds_match) {  
 				status = nfserr_perm;
 				goto out;
 			}
-			if (!verfs_match) { /* case 8 */
+			if (!verfs_match) {  
 				status = nfserr_not_same;
 				goto out;
 			}
-			/* case 6 */
+			 
 			exid->flags |= EXCHGID4_FLAG_CONFIRMED_R;
 			trace_nfsd_clid_confirmed_r(conf);
 			goto out_copy;
 		}
-		if (!creds_match) { /* case 3 */
+		if (!creds_match) {  
 			if (client_has_state(conf)) {
 				status = nfserr_clid_inuse;
 				trace_nfsd_clid_cred_mismatch(conf, rqstp);
@@ -3378,27 +3132,27 @@ nfsd4_exchange_id(struct svc_rqst *rqstp, struct nfsd4_compound_state *cstate,
 			}
 			goto out_new;
 		}
-		if (verfs_match) { /* case 2 */
+		if (verfs_match) {  
 			conf->cl_exchange_flags |= EXCHGID4_FLAG_CONFIRMED_R;
 			trace_nfsd_clid_confirmed_r(conf);
 			goto out_copy;
 		}
-		/* case 5, client reboot */
+		 
 		trace_nfsd_clid_verf_mismatch(conf, rqstp, &verf);
 		conf = NULL;
 		goto out_new;
 	}
 
-	if (update) { /* case 7 */
+	if (update) {  
 		status = nfserr_noent;
 		goto out;
 	}
 
 	unconf = find_unconfirmed_client_by_name(&exid->clname, nn);
-	if (unconf) /* case 4, possible retry or client restart */
+	if (unconf)  
 		unhash_client_locked(unconf);
 
-	/* case 1, new owner ID */
+	 
 	trace_nfsd_clid_fresh(new);
 
 out_new:
@@ -3443,14 +3197,14 @@ check_slot_seqid(u32 seqid, u32 slot_seqid, int slot_inuse)
 	dprintk("%s enter. seqid %d slot_seqid %d\n", __func__, seqid,
 		slot_seqid);
 
-	/* The slot is in use, and no response has been sent. */
+	 
 	if (slot_inuse) {
 		if (seqid == slot_seqid)
 			return nfserr_jukebox;
 		else
 			return nfserr_seq_misordered;
 	}
-	/* Note unsigned 32-bit arithmetic handles wraparound: */
+	 
 	if (likely(seqid == slot_seqid + 1))
 		return nfs_ok;
 	if (seqid == slot_seqid)
@@ -3458,11 +3212,7 @@ check_slot_seqid(u32 seqid, u32 slot_seqid, int slot_inuse)
 	return nfserr_seq_misordered;
 }
 
-/*
- * Cache the create session result into the create session single DRC
- * slot cache by saving the xdr structure. sl_seqid has been set.
- * Do this for solo or embedded create session operations.
- */
+ 
 static void
 nfsd4_cache_create_session(struct nfsd4_create_session *cr_ses,
 			   struct nfsd4_clid_slot *slot, __be32 nfserr)
@@ -3480,20 +3230,20 @@ nfsd4_replay_create_session(struct nfsd4_create_session *cr_ses,
 }
 
 #define NFSD_MIN_REQ_HDR_SEQ_SZ	((\
-			2 * 2 + /* credential,verifier: AUTH_NULL, length 0 */ \
-			1 +	/* MIN tag is length with zero, only length */ \
-			3 +	/* version, opcount, opcode */ \
+			2 * 2 +   \
+			1 +	  \
+			3 +	  \
 			XDR_QUADLEN(NFS4_MAX_SESSIONID_LEN) + \
-				/* seqid, slotID, slotID, cache */ \
+				  \
 			4 ) * sizeof(__be32))
 
 #define NFSD_MIN_RESP_HDR_SEQ_SZ ((\
-			2 +	/* verifier: AUTH_NULL, length 0 */\
-			1 +	/* status */ \
-			1 +	/* MIN tag is length with zero, only length */ \
-			3 +	/* opcount, opcode, opstatus*/ \
+			2 +	 \
+			1 +	  \
+			1 +	  \
+			3 +	  \
 			XDR_QUADLEN(NFS4_MAX_SESSIONID_LEN) + \
-				/* seqid, slotID, slotID, slotID, status */ \
+				  \
 			5 ) * sizeof(__be32))
 
 static __be32 check_forechannel_attrs(struct nfsd4_channel_attrs *ca, struct nfsd_net *nn)
@@ -3511,25 +3261,13 @@ static __be32 check_forechannel_attrs(struct nfsd4_channel_attrs *ca, struct nfs
 	ca->maxresp_cached = min_t(u32, ca->maxresp_cached,
 			NFSD_SLOT_CACHE_SIZE + NFSD_MIN_HDR_SEQ_SZ);
 	ca->maxreqs = min_t(u32, ca->maxreqs, NFSD_MAX_SLOTS_PER_SESSION);
-	/*
-	 * Note decreasing slot size below client's request may make it
-	 * difficult for client to function correctly, whereas
-	 * decreasing the number of slots will (just?) affect
-	 * performance.  When short on memory we therefore prefer to
-	 * decrease number of slots instead of their size.  Clients that
-	 * request larger slots than they need will get poor results:
-	 * Note that we always allow at least one slot, because our
-	 * accounting is soft and provides no guarantees either way.
-	 */
+	 
 	ca->maxreqs = nfsd4_get_drc_mem(ca, nn);
 
 	return nfs_ok;
 }
 
-/*
- * Server's NFSv4.1 backchannel support is AUTH_SYS-only for now.
- * These are based on similar macros in linux/sunrpc/msg_prot.h .
- */
+ 
 #define RPC_MAX_HEADER_WITH_AUTH_SYS \
 	(RPC_CALLHDRSIZE + 2 * (2 + UNX_CALLSLACK))
 
@@ -3564,13 +3302,7 @@ static __be32 nfsd4_check_cb_sec(struct nfsd4_cb_sec *cbs)
 	case RPC_AUTH_UNIX:
 		return nfs_ok;
 	default:
-		/*
-		 * GSS case: the spec doesn't allow us to return this
-		 * error.  But it also doesn't allow us not to support
-		 * GSS.
-		 * I'd rather this fail hard than return some error the
-		 * client might think it can already handle:
-		 */
+		 
 		return nfserr_encr_alg_unsupp;
 	}
 }
@@ -3637,7 +3369,7 @@ nfsd4_create_session(struct svc_rqst *rqstp,
 		cs_slot = &unconf->cl_cs_slot;
 		status = check_slot_seqid(cr_ses->seqid, cs_slot->sl_seqid, 0);
 		if (status) {
-			/* an unconfirmed replay returns misordered */
+			 
 			status = nfserr_seq_misordered;
 			goto out_free_conn;
 		}
@@ -3657,9 +3389,9 @@ nfsd4_create_session(struct svc_rqst *rqstp,
 		goto out_free_conn;
 	}
 	status = nfs_ok;
-	/* Persistent sessions are not supported */
+	 
 	cr_ses->flags &= ~SESSION4_PERSIST;
-	/* Upshifting from TCP to RDMA is not supported */
+	 
 	cr_ses->flags &= ~SESSION4_RDMA;
 
 	init_session(rqstp, new, conf, cr_ses);
@@ -3670,12 +3402,12 @@ nfsd4_create_session(struct svc_rqst *rqstp,
 	cs_slot->sl_seqid++;
 	cr_ses->seqid = cs_slot->sl_seqid;
 
-	/* cache solo and embedded create sessions under the client_lock */
+	 
 	nfsd4_cache_create_session(cr_ses, cs_slot, status);
 	spin_unlock(&nn->client_lock);
 	if (conf == unconf)
 		fsnotify_dentry(conf->cl_nfsd_info_dentry, FS_MODIFY);
-	/* init connection and backchannel */
+	 
 	nfsd4_init_conn(rqstp, conn, new);
 	nfsd4_put_session(new);
 	if (old)
@@ -3749,7 +3481,7 @@ static __be32 nfsd4_match_existing_connection(struct svc_rqst *rqst,
 	struct nfsd4_conn *c;
 	__be32 status;
 
-	/* Following the last paragraph of RFC 5661 Section 18.34.3: */
+	 
 	spin_lock(&clp->cl_lock);
 	c = __nfsd4_find_conn(xpt, session);
 	if (!c)
@@ -3885,7 +3617,7 @@ static __be32 nfsd4_sequence_check_conn(struct nfsd4_conn *new, struct nfsd4_ses
 	spin_unlock(&clp->cl_lock);
 	ret = nfsd4_register_conn(new);
 	if (ret)
-		/* oops; xprt is already down: */
+		 
 		nfsd4_conn_lost(&new->cn_xpt_user);
 	return nfs_ok;
 out_free:
@@ -3917,28 +3649,16 @@ static bool replay_matches_cache(struct svc_rqst *rqstp,
 	if ((bool)(slot->sl_flags & NFSD4_SLOT_CACHETHIS) !=
 	    (bool)seq->cachethis)
 		return false;
-	/*
-	 * If there's an error then the reply can have fewer ops than
-	 * the call.
-	 */
+	 
 	if (slot->sl_opcnt < argp->opcnt && !slot->sl_status)
 		return false;
-	/*
-	 * But if we cached a reply with *more* ops than the call you're
-	 * sending us now, then this new call is clearly not really a
-	 * replay of the old one:
-	 */
+	 
 	if (slot->sl_opcnt > argp->opcnt)
 		return false;
-	/* This is the only check explicitly called by spec: */
+	 
 	if (!same_creds(&rqstp->rq_cred, &slot->sl_cred))
 		return false;
-	/*
-	 * There may be more comparisons we could actually do, but the
-	 * spec doesn't require us to catch every case where the calls
-	 * don't match (that would require caching the call as well as
-	 * the reply), so we don't bother.
-	 */
+	 
 	return true;
 }
 
@@ -3961,10 +3681,7 @@ nfsd4_sequence(struct svc_rqst *rqstp, struct nfsd4_compound_state *cstate,
 	if (resp->opcnt != 1)
 		return nfserr_sequence_pos;
 
-	/*
-	 * Will be either used or freed by nfsd4_sequence_check_conn
-	 * below.
-	 */
+	 
 	conn = alloc_conn(rqstp, NFS4_CDFC4_FORE);
 	if (!conn)
 		return nfserr_jukebox;
@@ -3990,9 +3707,7 @@ nfsd4_sequence(struct svc_rqst *rqstp, struct nfsd4_compound_state *cstate,
 	slot = session->se_slots[seq->slotid];
 	dprintk("%s: slotid %d\n", __func__, seq->slotid);
 
-	/* We do not negotiate the number of slots yet, so set the
-	 * maxslots to the session maxreqs which is used to encode
-	 * sr_highest_slotid and the sr_target_slot id to maxslots */
+	 
 	seq->maxslots = session->se_fchannel.maxreqs;
 
 	status = check_slot_seqid(seq->seqid, slot->sl_seqid,
@@ -4007,8 +3722,7 @@ nfsd4_sequence(struct svc_rqst *rqstp, struct nfsd4_compound_state *cstate,
 		cstate->slot = slot;
 		cstate->session = session;
 		cstate->clp = clp;
-		/* Return the cached reply status and set cstate->status
-		 * for nfsd4_proc_compound processing */
+		 
 		status = nfsd4_replay_cache_entry(resp, seq);
 		cstate->status = nfserr_replay_cache;
 		goto out;
@@ -4031,7 +3745,7 @@ nfsd4_sequence(struct svc_rqst *rqstp, struct nfsd4_compound_state *cstate,
 	svc_reserve(rqstp, buflen);
 
 	status = nfs_ok;
-	/* Success! bump slot seqid */
+	 
 	slot->sl_seqid = seq->seqid;
 	slot->sl_flags |= NFSD4_SLOT_INUSE;
 	if (seq->cachethis)
@@ -4076,7 +3790,7 @@ nfsd4_sequence_done(struct nfsd4_compoundres *resp)
 			nfsd4_store_cache_entry(resp);
 			cs->slot->sl_flags &= ~NFSD4_SLOT_INUSE;
 		}
-		/* Drop session reference that was taken in nfsd4_sequence() */
+		 
 		nfsd4_put_session(cs->session);
 	} else if (cs->clp)
 		put_client_renew(cs->clp);
@@ -4138,10 +3852,7 @@ nfsd4_reclaim_complete(struct svc_rqst *rqstp,
 	if (rc->rca_one_fs) {
 		if (!cstate->current_fh.fh_dentry)
 			return nfserr_nofilehandle;
-		/*
-		 * We don't take advantage of the rca_one_fs case.
-		 * That's OK, it's optional, we can safely ignore it.
-		 */
+		 
 		return nfs_ok;
 	}
 
@@ -4151,13 +3862,7 @@ nfsd4_reclaim_complete(struct svc_rqst *rqstp,
 
 	status = nfserr_stale_clientid;
 	if (is_client_expired(clp))
-		/*
-		 * The following error isn't really legal.
-		 * But we only get here if the client just explicitly
-		 * destroyed the client.  Surely it no longer cares what
-		 * error it gets back on an operation for the dead
-		 * client.
-		 */
+		 
 		goto out;
 
 	status = nfs_ok;
@@ -4245,13 +3950,7 @@ nfsd4_setclientid_confirm(struct svc_rqst *rqstp,
 	spin_lock(&nn->client_lock);
 	conf = find_confirmed_client(clid, false, nn);
 	unconf = find_unconfirmed_client(clid, false, nn);
-	/*
-	 * We try hard to give out unique clientid's, so if we get an
-	 * attempt to confirm the same clientid with a different cred,
-	 * the client may be buggy; this should never happen.
-	 *
-	 * Nevertheless, RFC 7530 recommends INUSE for this case:
-	 */
+	 
 	status = nfserr_clid_inuse;
 	if (unconf && !same_creds(&unconf->cl_cred, &rqstp->rq_cred)) {
 		trace_nfsd_clid_cred_mismatch(unconf, rqstp);
@@ -4312,7 +4011,7 @@ static struct nfs4_file *nfsd4_alloc_file(void)
 	return kmem_cache_alloc(file_slab, GFP_KERNEL);
 }
 
-/* OPEN Share state helper functions */
+ 
 
 static void nfsd4_file_init(const struct svc_fh *fh, struct nfs4_file *fp)
 {
@@ -4423,7 +4122,7 @@ nfsd4_init_leases_net(struct nfsd_net *nn)
 	struct sysinfo si;
 	u64 max_clients;
 
-	nn->nfsd4_lease = 90;	/* default lease time */
+	nn->nfsd4_lease = 90;	 
 	nn->nfsd4_grace = 90;
 	nn->somebody_reclaimed = false;
 	nn->track_reclaim_completes = false;
@@ -4525,7 +4224,7 @@ nfsd4_find_existing_open(struct nfs4_file *fp, struct nfsd4_open *open)
 	lockdep_assert_held(&fp->fi_lock);
 
 	list_for_each_entry(local, &fp->fi_stateids, st_perfile) {
-		/* ignore lock owners */
+		 
 		if (local->st_stateowner->so_is_open_owner == 0)
 			continue;
 		if (local->st_stateowner != &oo->oo_owner)
@@ -4558,7 +4257,7 @@ nfsd4_verify_open_stid(struct nfs4_stid *s)
 	return ret;
 }
 
-/* Lock the stateid st_mutex, and deal with races with CLOSE */
+ 
 static __be32
 nfsd4_lock_ol_stateid(struct nfs4_ol_stateid *stp)
 {
@@ -4626,7 +4325,7 @@ init_open_stateid(struct nfs4_file *fp, struct nfsd4_open *open)
 	struct nfs4_ol_stateid *stp;
 
 	stp = open->op_stp;
-	/* We are moving these outside of the spinlocks to avoid the warnings */
+	 
 	mutex_init(&stp->st_mutex);
 	mutex_lock_nested(&stp->st_mutex, OPEN_STATEID_MUTEX);
 
@@ -4655,23 +4354,19 @@ out_unlock:
 	spin_unlock(&fp->fi_lock);
 	spin_unlock(&oo->oo_owner.so_client->cl_lock);
 	if (retstp) {
-		/* Handle races with CLOSE */
+		 
 		if (nfsd4_lock_ol_stateid(retstp) != nfs_ok) {
 			nfs4_put_stid(&retstp->st_stid);
 			goto retry;
 		}
-		/* To keep mutex tracking happy */
+		 
 		mutex_unlock(&stp->st_mutex);
 		stp = retstp;
 	}
 	return stp;
 }
 
-/*
- * In the 4.0 case we need to keep the owners around a little while to handle
- * CLOSE replay. We still do need to release any file access that is held by
- * them before returning however.
- */
+ 
 static void
 move_to_close_lru(struct nfs4_ol_stateid *s, struct net *net)
 {
@@ -4682,15 +4377,7 @@ move_to_close_lru(struct nfs4_ol_stateid *s, struct net *net)
 
 	dprintk("NFSD: move_to_close_lru nfs4_openowner %p\n", oo);
 
-	/*
-	 * We know that we hold one reference via nfsd4_close, and another
-	 * "persistent" reference for the client. If the refcount is higher
-	 * than 2, then there are still calls in progress that are using this
-	 * stateid. We can't put the sc_file reference until they are finished.
-	 * Wait for the refcount to drop to 2. Since it has been unhashed,
-	 * there should be no danger of the refcount going back up again at
-	 * this point.
-	 */
+	 
 	wait_event(close_wq, refcount_read(&s->st_stid.sc_count) == 2);
 
 	release_all_access(s);
@@ -4731,14 +4418,7 @@ nfsd4_file_hash_lookup(const struct svc_fh *fhp)
 	return NULL;
 }
 
-/*
- * On hash insertion, identify entries with the same inode but
- * distinct filehandles. They will all be on the list returned
- * by rhltable_lookup().
- *
- * inode->i_lock prevents racing insertions from adding an entry
- * for the same inode/fhp pair twice.
- */
+ 
 static noinline_for_stack struct nfs4_file *
 nfsd4_file_hash_insert(struct nfs4_file *new, const struct svc_fh *fhp)
 {
@@ -4785,10 +4465,7 @@ static noinline_for_stack void nfsd4_file_hash_remove(struct nfs4_file *fi)
 			nfs4_file_rhash_params);
 }
 
-/*
- * Called to check deny when READ with all zero stateid or
- * WRITE with all zero or all one stateid
- */
+ 
 static __be32
 nfs4_share_conflict(struct svc_fh *current_fh, unsigned int deny_type)
 {
@@ -4799,7 +4476,7 @@ nfs4_share_conflict(struct svc_fh *current_fh, unsigned int deny_type)
 	if (!fp)
 		return ret;
 
-	/* Check for conflicting share reservations */
+	 
 	spin_lock(&fp->fi_lock);
 	if (fp->fi_share_deny & deny_type)
 		ret = nfserr_locked;
@@ -4815,18 +4492,7 @@ static bool nfsd4_deleg_present(const struct inode *inode)
 	return ctx && !list_empty_careful(&ctx->flc_lease);
 }
 
-/**
- * nfsd_wait_for_delegreturn - wait for delegations to be returned
- * @rqstp: the RPC transaction being executed
- * @inode: in-core inode of the file being waited for
- *
- * The timeout prevents deadlock if all nfsd threads happen to be
- * tied up waiting for returning delegations.
- *
- * Return values:
- *   %true: delegation was returned
- *   %false: timed out waiting for delegreturn
- */
+ 
 bool nfsd_wait_for_delegreturn(struct svc_rqst *rqstp, struct inode *inode)
 {
 	long __maybe_unused timeo;
@@ -4845,13 +4511,7 @@ static void nfsd4_cb_recall_prepare(struct nfsd4_callback *cb)
 
 	block_delegations(&dp->dl_stid.sc_file->fi_fhandle);
 
-	/*
-	 * We can't do this in nfsd_break_deleg_cb because it is
-	 * already holding inode->i_lock.
-	 *
-	 * If the dl_time != 0, then we know that it has already been
-	 * queued for a lease break. Don't queue it again.
-	 */
+	 
 	spin_lock(&state_lock);
 	if (delegation_hashed(dp) && dp->dl_time == 0) {
 		dp->dl_time = ktime_get_boottime_seconds();
@@ -4879,10 +4539,7 @@ static int nfsd4_cb_recall_done(struct nfsd4_callback *cb,
 		return 0;
 	case -EBADHANDLE:
 	case -NFS4ERR_BAD_STATEID:
-		/*
-		 * Race: client probably got cb_recall before open reply
-		 * granting delegation.
-		 */
+		 
 		if (dp->dl_retries--) {
 			rpc_delay(task, 2 * HZ);
 			return 0;
@@ -4908,18 +4565,12 @@ static const struct nfsd4_callback_ops nfsd4_cb_recall_ops = {
 
 static void nfsd_break_one_deleg(struct nfs4_delegation *dp)
 {
-	/*
-	 * We're assuming the state code never drops its reference
-	 * without first removing the lease.  Since we're in this lease
-	 * callback (and since the lease code is serialized by the
-	 * flc_lock) we know the server hasn't removed the lease yet, and
-	 * we know it's safe to take a reference.
-	 */
+	 
 	refcount_inc(&dp->dl_stid.sc_count);
 	WARN_ON_ONCE(!nfsd4_run_cb(&dp->dl_recall));
 }
 
-/* Called from break_lease() with flc_lock held. */
+ 
 static bool
 nfsd_break_deleg_cb(struct file_lock *fl)
 {
@@ -4937,11 +4588,7 @@ nfsd_break_deleg_cb(struct file_lock *fl)
 		mod_delayed_work(laundry_wq, &nn->laundromat_work, 0);
 	}
 
-	/*
-	 * We don't want the locks code to timeout the lease for us;
-	 * we'll remove it ourself if a delegation isn't returned
-	 * in time:
-	 */
+	 
 	fl->fl_break_time = 0;
 
 	spin_lock(&fp->fi_lock);
@@ -4951,14 +4598,7 @@ nfsd_break_deleg_cb(struct file_lock *fl)
 	return false;
 }
 
-/**
- * nfsd_breaker_owns_lease - Check if lease conflict was resolved
- * @fl: Lock state to check
- *
- * Return values:
- *   %true: Lease conflict was resolved
- *   %false: Lease conflict was not resolved.
- */
+ 
 static bool nfsd_breaker_owns_lease(struct file_lock *fl)
 {
 	struct nfs4_delegation *dl = fl->fl_owner;
@@ -4968,7 +4608,7 @@ static bool nfsd_breaker_owns_lease(struct file_lock *fl)
 	if (!i_am_nfsd())
 		return false;
 	rqst = kthread_data(current);
-	/* Note rq_prog == NFS_ACL_PROGRAM is also possible: */
+	 
 	if (rqst->rq_prog != NFS_PROGRAM || rqst->rq_vers < 4)
 		return false;
 	clp = *(rqst->rq_lease_breaker);
@@ -5031,10 +4671,7 @@ static __be32 set_client(clientid_t *clid,
 	}
 	if (STALE_CLIENTID(clid, nn))
 		return nfserr_stale_clientid;
-	/*
-	 * We're in the 4.0 case (otherwise the SEQUENCE op would have
-	 * set cstate->clp), so session = false:
-	 */
+	 
 	cstate->clp = lookup_clientid(clid, false, nn);
 	if (!cstate->clp)
 		return nfserr_expired;
@@ -5051,10 +4688,7 @@ nfsd4_process_open1(struct nfsd4_compound_state *cstate,
 	struct nfs4_openowner *oo = NULL;
 	__be32 status;
 
-	/*
-	 * In case we need it later, after we've already created the
-	 * file and don't want to risk a further failure:
-	 */
+	 
 	open->op_file = nfsd4_alloc_file();
 	if (open->op_file == NULL)
 		return nfserr_jukebox;
@@ -5071,7 +4705,7 @@ nfsd4_process_open1(struct nfsd4_compound_state *cstate,
 		goto new_owner;
 	}
 	if (!(oo->oo_flags & NFS4_OO_CONFIRMED)) {
-		/* Replace unconfirmed owners without checking for replay. */
+		 
 		release_openowner(oo);
 		open->op_openowner = NULL;
 		goto new_owner;
@@ -5205,10 +4839,7 @@ static __be32 nfs4_get_vfs_file(struct svc_rqst *rqstp, struct nfs4_file *fp,
 
 	spin_lock(&fp->fi_lock);
 
-	/*
-	 * Are we trying to set a deny mode that would conflict with
-	 * current access?
-	 */
+	 
 	status = nfs4_file_check_deny(fp, open->op_share_deny);
 	if (status != nfs_ok) {
 		if (status != nfserr_share_denied) {
@@ -5222,7 +4853,7 @@ static __be32 nfs4_get_vfs_file(struct svc_rqst *rqstp, struct nfs4_file *fp,
 		goto out;
 	}
 
-	/* set access to the file */
+	 
 	status = nfs4_file_get_access(fp, open->op_share_access);
 	if (status != nfs_ok) {
 		if (status != nfserr_share_denied) {
@@ -5236,11 +4867,11 @@ static __be32 nfs4_get_vfs_file(struct svc_rqst *rqstp, struct nfs4_file *fp,
 		goto out;
 	}
 
-	/* Set access bits in stateid */
+	 
 	old_access_bmap = stp->st_access_bmap;
 	set_access(open->op_share_access, stp);
 
-	/* Set new deny mask */
+	 
 	old_deny_bmap = stp->st_deny_bmap;
 	set_deny(open->op_share_deny, stp);
 	fp->fi_share_deny |= (open->op_share_deny & NFS4_SHARE_DENY_BOTH);
@@ -5291,7 +4922,7 @@ nfs4_upgrade_open(struct svc_rqst *rqstp, struct nfs4_file *fp,
 	if (!test_access(open->op_share_access, stp))
 		return nfs4_get_vfs_file(rqstp, fp, cur_fh, stp, open, false);
 
-	/* test and set deny mode */
+	 
 	spin_lock(&fp->fi_lock);
 	status = nfs4_file_check_deny(fp, open->op_share_deny);
 	switch (status) {
@@ -5317,16 +4948,12 @@ nfs4_upgrade_open(struct svc_rqst *rqstp, struct nfs4_file *fp,
 	return status;
 }
 
-/* Should we give out recallable state?: */
+ 
 static bool nfsd4_cb_channel_good(struct nfs4_client *clp)
 {
 	if (clp->cl_cb_state == NFSD4_CB_UP)
 		return true;
-	/*
-	 * In the sessions case, since we don't have to establish a
-	 * separate connection for callbacks, we assume it's OK
-	 * until we hear otherwise:
-	 */
+	 
 	return clp->cl_minorversion && clp->cl_cb_state == NFSD4_CB_UNKNOWN;
 }
 
@@ -5359,20 +4986,10 @@ static int nfsd4_check_conflicting_opens(struct nfs4_client *clp,
 	writes = atomic_read(&ino->i_writecount);
 	if (!writes)
 		return 0;
-	/*
-	 * There could be multiple filehandles (hence multiple
-	 * nfs4_files) referencing this file, but that's not too
-	 * common; let's just give up in that case rather than
-	 * trying to go look up all the clients using that other
-	 * nfs4_file as well:
-	 */
+	 
 	if (fp->fi_aliased)
 		return -EAGAIN;
-	/*
-	 * If there's a close in progress, make sure that we see it
-	 * clear any fi_fds[] entries before we see it decrement
-	 * i_writecount:
-	 */
+	 
 	smp_mb__after_atomic();
 
 	if (fp->fi_fds[O_WRONLY])
@@ -5380,17 +4997,11 @@ static int nfsd4_check_conflicting_opens(struct nfs4_client *clp,
 	if (fp->fi_fds[O_RDWR])
 		writes--;
 	if (writes > 0)
-		return -EAGAIN; /* There may be non-NFSv4 writers */
-	/*
-	 * It's possible there are non-NFSv4 write opens in progress,
-	 * but if they haven't incremented i_writecount yet then they
-	 * also haven't called break lease yet; so, they'll break this
-	 * lease soon enough.  So, all that's left to check for is NFSv4
-	 * opens:
-	 */
+		return -EAGAIN;  
+	 
 	spin_lock(&fp->fi_lock);
 	list_for_each_entry(st, &fp->fi_stateids, st_perfile) {
-		if (st->st_openstp == NULL /* it's an open */ &&
+		if (st->st_openstp == NULL   &&
 		    access_permit_write(st) &&
 		    st->st_stid.sc_client != clp) {
 			spin_unlock(&fp->fi_lock);
@@ -5398,20 +5009,11 @@ static int nfsd4_check_conflicting_opens(struct nfs4_client *clp,
 		}
 	}
 	spin_unlock(&fp->fi_lock);
-	/*
-	 * There's a small chance that we could be racing with another
-	 * NFSv4 open.  However, any open that hasn't added itself to
-	 * the fi_stateids list also hasn't called break_lease yet; so,
-	 * they'll break this lease soon enough.
-	 */
+	 
 	return 0;
 }
 
-/*
- * It's possible that between opening the dentry and setting the delegation,
- * that it has been renamed or unlinked. Redo the lookup to verify that this
- * hasn't happened.
- */
+ 
 static int
 nfsd4_verify_deleg_dentry(struct nfsd4_open *open, struct nfs4_file *fp,
 			  struct svc_fh *parent)
@@ -5435,12 +5037,7 @@ nfsd4_verify_deleg_dentry(struct nfsd4_open *open, struct nfs4_file *fp,
 	return 0;
 }
 
-/*
- * We avoid breaking delegations held by a client due to its own activity, but
- * clearing setuid/setgid bits on a write is an implicit activity and the client
- * may not notice and continue using the old mode. Avoid giving out a delegation
- * on setuid/setgid files when the client is requesting an open for write.
- */
+ 
 static int
 nfsd4_verify_setuid_write(struct nfsd4_open *open, struct nfsd_file *nf)
 {
@@ -5465,35 +5062,17 @@ nfs4_set_delegation(struct nfsd4_open *open, struct nfs4_ol_stateid *stp,
 	struct file_lock *fl;
 	u32 dl_type;
 
-	/*
-	 * The fi_had_conflict and nfs_get_existing_delegation checks
-	 * here are just optimizations; we'll need to recheck them at
-	 * the end:
-	 */
+	 
 	if (fp->fi_had_conflict)
 		return ERR_PTR(-EAGAIN);
 
-	/*
-	 * Try for a write delegation first. RFC8881 section 10.4 says:
-	 *
-	 *  "An OPEN_DELEGATE_WRITE delegation allows the client to handle,
-	 *   on its own, all opens."
-	 *
-	 * Furthermore the client can use a write delegation for most READ
-	 * operations as well, so we require a O_RDWR file here.
-	 *
-	 * Offer a write delegation in the case of a BOTH open, and ensure
-	 * we get the O_RDWR descriptor.
-	 */
+	 
 	if ((open->op_share_access & NFS4_SHARE_ACCESS_BOTH) == NFS4_SHARE_ACCESS_BOTH) {
 		nf = find_rw_file(fp);
 		dl_type = NFS4_OPEN_DELEGATE_WRITE;
 	}
 
-	/*
-	 * If the file is being opened O_RDONLY or we couldn't get a O_RDWR
-	 * file for some reason, then try for a read delegation instead.
-	 */
+	 
 	if (!nf && (open->op_share_access & NFS4_SHARE_ACCESS_READ)) {
 		nf = find_readable_file(fp);
 		dl_type = NFS4_OPEN_DELEGATE_READ;
@@ -5510,8 +5089,7 @@ nfs4_set_delegation(struct nfsd4_open *open, struct nfs4_ol_stateid *stp,
 		status = -EAGAIN;
 	else if (!fp->fi_deleg_file) {
 		fp->fi_deleg_file = nf;
-		/* increment early to prevent fi_deleg_file from being
-		 * cleared */
+		 
 		fp->fi_delegees = 1;
 		nf = NULL;
 	} else
@@ -5548,10 +5126,7 @@ nfs4_set_delegation(struct nfsd4_open *open, struct nfs4_ol_stateid *stp,
 	if (status)
 		goto out_unlock;
 
-	/*
-	 * Now that the deleg is set, check again to ensure that nothing
-	 * raced in and changed the mode while we weren't lookng.
-	 */
+	 
 	status = nfsd4_verify_setuid_write(open, fp->fi_deleg_file);
 	if (status)
 		goto out_unlock;
@@ -5600,30 +5175,7 @@ static void nfsd4_open_deleg_none_ext(struct nfsd4_open *open, int status)
 	}
 }
 
-/*
- * The Linux NFS server does not offer write delegations to NFSv4.0
- * clients in order to avoid conflicts between write delegations and
- * GETATTRs requesting CHANGE or SIZE attributes.
- *
- * With NFSv4.1 and later minorversions, the SEQUENCE operation that
- * begins each COMPOUND contains a client ID. Delegation recall can
- * be avoided when the server recognizes the client sending a
- * GETATTR also holds write delegation it conflicts with.
- *
- * However, the NFSv4.0 protocol does not enable a server to
- * determine that a GETATTR originated from the client holding the
- * conflicting delegation versus coming from some other client. Per
- * RFC 7530 Section 16.7.5, the server must recall or send a
- * CB_GETATTR even when the GETATTR originates from the client that
- * holds the conflicting delegation.
- *
- * An NFSv4.0 client can trigger a pathological situation if it
- * always sends a DELEGRETURN preceded by a conflicting GETATTR in
- * the same COMPOUND. COMPOUND execution will always stop at the
- * GETATTR and the DELEGRETURN will never get executed. The server
- * eventually revokes the delegation, which can result in loss of
- * open or lock state.
- */
+ 
 static void
 nfs4_open_delegation(struct nfsd4_open *open, struct nfs4_ol_stateid *stp,
 		     struct svc_fh *currentfh)
@@ -5646,11 +5198,7 @@ nfs4_open_delegation(struct nfsd4_open *open, struct nfs4_ol_stateid *stp,
 			parent = currentfh;
 			fallthrough;
 		case NFS4_OPEN_CLAIM_FH:
-			/*
-			 * Let's not give out any delegations till everyone's
-			 * had the chance to reclaim theirs, *and* until
-			 * NLM locks have all been reclaimed:
-			 */
+			 
 			if (locks_in_grace(clp->net))
 				goto out_no_deleg;
 			if (!cb_up || !(oo->oo_flags & NFS4_OO_CONFIRMED))
@@ -5685,7 +5233,7 @@ out_no_deleg:
 		open->op_recall = 1;
 	}
 
-	/* 4.1 client asking for a delegation? */
+	 
 	if (open->op_deleg_want)
 		nfsd4_open_deleg_none_ext(open, status);
 	return;
@@ -5703,24 +5251,10 @@ static void nfsd4_deleg_xgrade_none_ext(struct nfsd4_open *open,
 		open->op_delegate_type = NFS4_OPEN_DELEGATE_NONE_EXT;
 		open->op_why_no_deleg = WND4_NOT_SUPP_UPGRADE;
 	}
-	/* Otherwise the client must be confused wanting a delegation
-	 * it already has, therefore we don't return
-	 * NFS4_OPEN_DELEGATE_NONE_EXT and reason.
-	 */
+	 
 }
 
-/**
- * nfsd4_process_open2 - finish open processing
- * @rqstp: the RPC transaction being executed
- * @current_fh: NFSv4 COMPOUND's current filehandle
- * @open: OPEN arguments
- *
- * If successful, (1) truncate the file if open->op_truncate was
- * set, (2) set open->op_stateid, (3) set open->op_delegation.
- *
- * Returns %nfs_ok on success; otherwise an nfs4stat value in
- * network byte order is returned.
- */
+ 
 __be32
 nfsd4_process_open2(struct svc_rqst *rqstp, struct svc_fh *current_fh, struct nfsd4_open *open)
 {
@@ -5732,11 +5266,7 @@ nfsd4_process_open2(struct svc_rqst *rqstp, struct svc_fh *current_fh, struct nf
 	__be32 status;
 	bool new_stp = false;
 
-	/*
-	 * Lookup file; if found, lookup stateid and check open request,
-	 * and check for delegations in the process of being recalled.
-	 * If not found, create the nfs4_file struct
-	 */
+	 
 	fp = nfsd4_file_hash_insert(open->op_file, current_fh);
 	if (unlikely(!fp))
 		return nfserr_jukebox;
@@ -5758,14 +5288,9 @@ nfsd4_process_open2(struct svc_rqst *rqstp, struct svc_fh *current_fh, struct nf
 			new_stp = true;
 	}
 
-	/*
-	 * OPEN the file, or upgrade an existing OPEN.
-	 * If truncate fails, the OPEN fails.
-	 *
-	 * stp is already locked.
-	 */
+	 
 	if (!new_stp) {
-		/* Stateid was found, this is an OPEN upgrade */
+		 
 		status = nfs4_upgrade_open(rqstp, fp, current_fh, stp, open);
 		if (status) {
 			mutex_unlock(&stp->st_mutex);
@@ -5797,16 +5322,13 @@ nfsd4_process_open2(struct svc_rqst *rqstp, struct svc_fh *current_fh, struct nf
 		}
 	}
 
-	/*
-	* Attempt to hand out a delegation. No error return, because the
-	* OPEN succeeds even if we fail.
-	*/
+	 
 	nfs4_open_delegation(open, stp, &resp->cstate.current_fh);
 nodeleg:
 	status = nfs_ok;
 	trace_nfsd_open(&stp->st_stid.sc_stateid);
 out:
-	/* 4.1 client trying to upgrade/downgrade delegation? */
+	 
 	if (open->op_delegate_type == NFS4_OPEN_DELEGATE_NONE && dp &&
 	    open->op_deleg_want)
 		nfsd4_deleg_xgrade_none_ext(open, dp);
@@ -5815,9 +5337,7 @@ out:
 		put_nfs4_file(fp);
 	if (status == 0 && open->op_claim_type == NFS4_OPEN_CLAIM_PREVIOUS)
 		open->op_openowner->oo_flags |= NFS4_OO_CONFIRMED;
-	/*
-	* To finish the open response, we just need to set the rflags.
-	*/
+	 
 	open->op_rflags = NFS4_OPEN_RESULT_LOCKTYPE_POSIX;
 	if (nfsd4_has_session(&resp->cstate))
 		open->op_rflags |= NFS4_OPEN_RESULT_MAY_NOTIFY_LOCK;
@@ -5872,40 +5392,20 @@ nfsd4_renew(struct svc_rqst *rqstp, struct nfsd4_compound_state *cstate,
 void
 nfsd4_end_grace(struct nfsd_net *nn)
 {
-	/* do nothing if grace period already ended */
+	 
 	if (nn->grace_ended)
 		return;
 
 	trace_nfsd_grace_complete(nn);
 	nn->grace_ended = true;
-	/*
-	 * If the server goes down again right now, an NFSv4
-	 * client will still be allowed to reclaim after it comes back up,
-	 * even if it hasn't yet had a chance to reclaim state this time.
-	 *
-	 */
+	 
 	nfsd4_record_grace_done(nn);
-	/*
-	 * At this point, NFSv4 clients can still reclaim.  But if the
-	 * server crashes, any that have not yet reclaimed will be out
-	 * of luck on the next boot.
-	 *
-	 * (NFSv4.1+ clients are considered to have reclaimed once they
-	 * call RECLAIM_COMPLETE.  NFSv4.0 clients are considered to
-	 * have reclaimed after their first OPEN.)
-	 */
+	 
 	locks_end_grace(&nn->nfsd4_manager);
-	/*
-	 * At this point, and once lockd and/or any other containers
-	 * exit their grace period, further reclaims will fail and
-	 * regular locking can resume.
-	 */
+	 
 }
 
-/*
- * If we've waited a lease period but there are still clients trying to
- * reclaim, wait a little longer to give them a chance to finish.
- */
+ 
 static bool clients_still_reclaiming(struct nfsd_net *nn)
 {
 	time64_t double_grace_period_end = nn->boot_time +
@@ -5918,10 +5418,7 @@ static bool clients_still_reclaiming(struct nfsd_net *nn)
 	if (!nn->somebody_reclaimed)
 		return false;
 	nn->somebody_reclaimed = false;
-	/*
-	 * If we've given them *two* lease times to reclaim, and they're
-	 * still not done, give up:
-	 */
+	 
 	if (ktime_get_boottime_seconds() > double_grace_period_end)
 		return false;
 	return true;
@@ -5952,10 +5449,7 @@ void nfsd4_ssc_init_umount_work(struct nfsd_net *nn)
 }
 EXPORT_SYMBOL_GPL(nfsd4_ssc_init_umount_work);
 
-/*
- * This is called when nfsd is being shutdown, after all inter_ssc
- * cleanup were done, to destroy the ssc delayed unmount list.
- */
+ 
 static void nfsd4_ssc_shutdown_umount(struct nfsd_net *nn)
 {
 	struct nfsd4_ssc_umount_item *ni = NULL;
@@ -5984,17 +5478,17 @@ static void nfsd4_ssc_expire_umount(struct nfsd_net *nn)
 			if (refcount_read(&ni->nsui_refcnt) > 1)
 				continue;
 
-			/* mark being unmount */
+			 
 			ni->nsui_busy = true;
 			spin_unlock(&nn->nfsd_ssc_lock);
 			mntput(ni->nsui_vfsmount);
 			spin_lock(&nn->nfsd_ssc_lock);
 
-			/* waiters need to start from begin of list */
+			 
 			list_del(&ni->nsui_list);
 			kfree(ni);
 
-			/* wakeup ssc_connect waiters */
+			 
 			do_wakeup = true;
 			continue;
 		}
@@ -6006,7 +5500,7 @@ static void nfsd4_ssc_expire_umount(struct nfsd_net *nn)
 }
 #endif
 
-/* Check if any lock belonging to this lockowner has any blockers */
+ 
 static bool
 nfs4_lockowner_has_blockers(struct nfs4_lockowner *lo)
 {
@@ -6192,17 +5686,7 @@ nfs4_laundromat(struct nfsd_net *nn)
 	}
 	spin_unlock(&nn->client_lock);
 
-	/*
-	 * It's possible for a client to try and acquire an already held lock
-	 * that is being held for a long time, and then lose interest in it.
-	 * So, we clean out any un-revisited request after a lease period
-	 * under the assumption that the client is no longer interested.
-	 *
-	 * RFC5661, sec. 9.6 states that the client must not rely on getting
-	 * notifications and must continue to poll for locks, even when the
-	 * server supports them. Thus this shouldn't lead to clients blocking
-	 * indefinitely once the lock does become free.
-	 */
+	 
 	BUG_ON(!list_empty(&reaplist));
 	spin_lock(&nn->blocked_locks_lock);
 	while (!list_empty(&nn->blocked_locks_lru)) {
@@ -6222,7 +5706,7 @@ nfs4_laundromat(struct nfsd_net *nn)
 		free_blocked_lock(nbl);
 	}
 #ifdef CONFIG_NFSD_V4_2_INTER_SSC
-	/* service the server-to-server copy delayed unmount list */
+	 
 	nfsd4_ssc_expire_umount(nn);
 #endif
 out:
@@ -6273,7 +5757,7 @@ deleg_reaper(struct nfsd_net *nn)
 		}
 		list_add(&clp->cl_ra_cblist, &cblist);
 
-		/* release in nfsd4_cb_recall_any_release */
+		 
 		atomic_inc(&clp->cl_rpc_users);
 		set_bit(NFSD4_CLIENT_CB_RECALL_ANY, &clp->cl_flags);
 		clp->cl_ra_time = ktime_get_boottime_seconds();
@@ -6313,7 +5797,7 @@ __be32 nfs4_check_openmode(struct nfs4_ol_stateid *stp, int flags)
 {
         __be32 status = nfserr_openmode;
 
-	/* For lock stateid's, we test the parent open, not the lock: */
+	 
 	if (stp->st_openstp)
 		stp = stp->st_openstp;
 	if ((flags & WR_STATE) && !access_permit_write(stp))
@@ -6331,42 +5815,29 @@ check_special_stateids(struct net *net, svc_fh *current_fh, stateid_t *stateid, 
 	if (ONE_STATEID(stateid) && (flags & RD_STATE))
 		return nfs_ok;
 	else if (opens_in_grace(net)) {
-		/* Answer in remaining cases depends on existence of
-		 * conflicting state; so we must wait out the grace period. */
+		 
 		return nfserr_grace;
 	} else if (flags & WR_STATE)
 		return nfs4_share_conflict(current_fh,
 				NFS4_SHARE_DENY_WRITE);
-	else /* (flags & RD_STATE) && ZERO_STATEID(stateid) */
+	else  
 		return nfs4_share_conflict(current_fh,
 				NFS4_SHARE_DENY_READ);
 }
 
 static __be32 check_stateid_generation(stateid_t *in, stateid_t *ref, bool has_session)
 {
-	/*
-	 * When sessions are used the stateid generation number is ignored
-	 * when it is zero.
-	 */
+	 
 	if (has_session && in->si_generation == 0)
 		return nfs_ok;
 
 	if (in->si_generation == ref->si_generation)
 		return nfs_ok;
 
-	/* If the client sends us a stateid from the future, it's buggy: */
+	 
 	if (nfsd4_stateid_generation_after(in, ref))
 		return nfserr_bad_stateid;
-	/*
-	 * However, we could see a stateid from the past, even from a
-	 * non-buggy client.  For example, if the client sends a lock
-	 * while some IO is outstanding, the lock may bump si_generation
-	 * while the IO is still in flight.  The client could avoid that
-	 * situation by waiting for responses on all the IO requests,
-	 * but better performance may result in retrying IO that
-	 * receives an old_stateid error if requests are rarely
-	 * reordered in flight:
-	 */
+	 
 	return nfserr_old_stateid;
 }
 
@@ -6437,10 +5908,7 @@ nfsd4_lookup_stateid(struct nfsd4_compound_state *cstate,
 	struct nfs4_stid *stid;
 	bool return_revoked = false;
 
-	/*
-	 *  only return revoked delegations if explicitly asked.
-	 *  otherwise we report revoked or bad_stateid status.
-	 */
+	 
 	if (typemask & NFS4_REVOKED_DELEG_STID)
 		return_revoked = true;
 	else if (typemask & NFS4_DELEG_STID)
@@ -6542,11 +6010,7 @@ _free_cpntf_state_locked(struct nfsd_net *nn, struct nfs4_cpntf_state *cps)
 		   cps->cp_stateid.cs_stid.si_opaque.so_id);
 	kfree(cps);
 }
-/*
- * A READ from an inter server to server COPY will have a
- * copy stateid. Look up the copy notify stateid from the
- * idr structure and take a reference on it.
- */
+ 
 __be32 manage_cpntf_state(struct nfsd_net *nn, stateid_t *st,
 			  struct nfs4_client *clp,
 			  struct nfs4_cpntf_state **cps)
@@ -6617,20 +6081,7 @@ void nfs4_put_cpntf_state(struct nfsd_net *nn, struct nfs4_cpntf_state *cps)
 	spin_unlock(&nn->s2s_cp_lock);
 }
 
-/**
- * nfs4_preprocess_stateid_op - find and prep stateid for an operation
- * @rqstp: incoming request from client
- * @cstate: current compound state
- * @fhp: filehandle associated with requested stateid
- * @stateid: stateid (provided by client)
- * @flags: flags describing type of operation to be done
- * @nfp: optional nfsd_file return pointer (may be NULL)
- * @cstid: optional returned nfs4_stid pointer (may be NULL)
- *
- * Given info from the client, look up a nfs4_stid for the operation. On
- * success, it returns a reference to the nfs4_stid and/or the nfsd_file
- * associated with it.
- */
+ 
 __be32
 nfs4_preprocess_stateid_op(struct svc_rqst *rqstp,
 		struct nfsd4_compound_state *cstate, struct svc_fh *fhp,
@@ -6695,9 +6146,7 @@ out:
 	return status;
 }
 
-/*
- * Test if the stateid is valid
- */
+ 
 __be32
 nfsd4_test_stateid(struct svc_rqst *rqstp, struct nfsd4_compound_state *cstate,
 		   union nfsd4_op_u *u)
@@ -6782,7 +6231,7 @@ nfsd4_free_stateid(struct svc_rqst *rqstp, struct nfsd4_compound_state *cstate,
 		nfs4_put_stid(s);
 		ret = nfs_ok;
 		goto out;
-	/* Default falls through and returns nfserr_bad_stateid */
+	 
 	}
 	spin_unlock(&s->sc_lock);
 out_unlock:
@@ -6818,19 +6267,7 @@ static __be32 nfs4_seqid_op_checks(struct nfsd4_compound_state *cstate, stateid_
 	return status;
 }
 
-/**
- * nfs4_preprocess_seqid_op - find and prep an ol_stateid for a seqid-morphing op
- * @cstate: compund state
- * @seqid: seqid (provided by client)
- * @stateid: stateid (provided by client)
- * @typemask: mask of allowable types for this operation
- * @stpp: return pointer for the stateid found
- * @nn: net namespace for request
- *
- * Given a stateid+seqid from a client, look up an nfs4_ol_stateid and
- * return it in @stpp. On a nfs_ok return, the returned stateid will
- * have its st_mutex locked.
- */
+ 
 static __be32
 nfs4_preprocess_seqid_op(struct nfsd4_compound_state *cstate, u32 seqid,
 			 stateid_t *stateid, char typemask,
@@ -6958,7 +6395,7 @@ nfsd4_open_downgrade(struct svc_rqst *rqstp,
 	dprintk("NFSD: nfsd4_open_downgrade on file %pd\n", 
 			cstate->current_fh.fh_dentry);
 
-	/* We don't yet support WANT bits: */
+	 
 	if (od->od_deleg_want)
 		dprintk("NFSD: %s: od_deleg_want=0x%x ignored\n", __func__,
 			od->od_deleg_want);
@@ -7015,9 +6452,7 @@ static void nfsd4_close_open_stateid(struct nfs4_ol_stateid *s)
 	}
 }
 
-/*
- * nfs4_unlock_state() called after encode
- */
+ 
 __be32
 nfsd4_close(struct svc_rqst *rqstp, struct nfsd4_compound_state *cstate,
 		union nfsd4_op_u *u)
@@ -7041,27 +6476,16 @@ nfsd4_close(struct svc_rqst *rqstp, struct nfsd4_compound_state *cstate,
 
 	stp->st_stid.sc_type = NFS4_CLOSED_STID;
 
-	/*
-	 * Technically we don't _really_ have to increment or copy it, since
-	 * it should just be gone after this operation and we clobber the
-	 * copied value below, but we continue to do so here just to ensure
-	 * that racing ops see that there was a state change.
-	 */
+	 
 	nfs4_inc_and_copy_stateid(&close->cl_stateid, &stp->st_stid);
 
 	nfsd4_close_open_stateid(stp);
 	mutex_unlock(&stp->st_mutex);
 
-	/* v4.1+ suggests that we send a special stateid in here, since the
-	 * clients should just ignore this anyway. Since this is not useful
-	 * for v4.0 clients either, we set it to the special close_stateid
-	 * universally.
-	 *
-	 * See RFC5661 section 18.2.4, and RFC7530 section 16.2.5
-	 */
+	 
 	memcpy(&close->cl_stateid, &close_stateid, sizeof(close->cl_stateid));
 
-	/* put reference from nfs4_preprocess_seqid_op */
+	 
 	nfs4_put_stid(&stp->st_stid);
 out:
 	return status;
@@ -7098,7 +6522,7 @@ out:
 	return status;
 }
 
-/* last octet in a range */
+ 
 static inline u64
 last_byte_offset(u64 start, u64 len)
 {
@@ -7109,14 +6533,7 @@ last_byte_offset(u64 start, u64 len)
 	return end > start ? end - 1: NFS4_MAX_UINT64;
 }
 
-/*
- * TODO: Linux file offsets are _signed_ 64-bit quantities, which means that
- * we can't properly handle lock requests that go beyond the (2^63 - 1)-th
- * byte, because of sign extension problems.  Since NFSv4 calls for 64-bit
- * locking, this prevents us from being completely protocol-compliant.  The
- * real solution to this problem is to start using unsigned file offsets in
- * the VFS, but this is a very deep change!
- */
+ 
 static inline void
 nfs4_transform_lock_offset(struct file_lock *lock)
 {
@@ -7144,7 +6561,7 @@ nfsd4_lm_put_owner(fl_owner_t owner)
 		nfs4_put_stateowner(&lo->lo_owner);
 }
 
-/* return pointer to struct nfs4_client if client is expirable */
+ 
 static bool
 nfsd4_lm_lock_expirable(struct file_lock *cfl)
 {
@@ -7160,7 +6577,7 @@ nfsd4_lm_lock_expirable(struct file_lock *cfl)
 	return false;
 }
 
-/* schedule laundromat to run immediately and wait for it to complete */
+ 
 static void
 nfsd4_lm_expire_lock(void)
 {
@@ -7177,7 +6594,7 @@ nfsd4_lm_notify(struct file_lock *fl)
 						struct nfsd4_blocked_lock, nbl_lock);
 	bool queue = false;
 
-	/* An empty list means that something else is going to be using it */
+	 
 	spin_lock(&nn->blocked_locks_lock);
 	if (!list_empty(&nbl->nbl_list)) {
 		list_del_init(&nbl->nbl_list);
@@ -7211,7 +6628,7 @@ nfs4_set_lock_denied(struct file_lock *fl, struct nfsd4_lock_denied *deny)
 		xdr_netobj_dup(&deny->ld_owner, &lo->lo_owner.so_owner,
 						GFP_KERNEL);
 		if (!deny->ld_owner.data)
-			/* We just don't care that much */
+			 
 			goto nevermind;
 		deny->ld_clientid = lo->lo_owner.so_client->cl_clientid;
 	} else {
@@ -7276,13 +6693,7 @@ static const struct nfs4_stateowner_operations lockowner_ops = {
 	.so_free =	nfs4_free_lockowner,
 };
 
-/*
- * Alloc a lock owner structure.
- * Called in nfsd4_lock - therefore, OPEN and OPEN_CONFIRM (if needed) has 
- * occurred. 
- *
- * strhashval = ownerstr_hashval
- */
+ 
 static struct nfs4_lockowner *
 alloc_init_lock_stateowner(unsigned int strhashval, struct nfs4_client *clp,
 			   struct nfs4_ol_stateid *open_stp,
@@ -7319,7 +6730,7 @@ find_lock_stateid(const struct nfs4_lockowner *lo,
 
 	lockdep_assert_held(&ost->st_stid.sc_client->cl_lock);
 
-	/* If ost is not hashed, ost->st_locks will not be valid */
+	 
 	if (!nfs4_ol_stateid_unhashed(ost))
 		list_for_each_entry(lst, &ost->st_locks, st_locks) {
 			if (lst->st_stateowner == &lo->lo_owner) {
@@ -7368,7 +6779,7 @@ out_found:
 		nfs4_put_stid(&retstp->st_stid);
 		goto retry;
 	}
-	/* To keep mutex tracking happy */
+	 
 	mutex_unlock(&stp->st_mutex);
 	return retstp;
 out_close:
@@ -7450,7 +6861,7 @@ lookup_or_create_lock_state(struct nfsd4_compound_state *cstate,
 		if (lo == NULL)
 			return nfserr_jukebox;
 	} else {
-		/* with an existing lockowner, seqids must be the same */
+		 
 		status = nfserr_bad_seqid;
 		if (!cstate->minorversion &&
 		    lock->lk_new_lock_seqid != lo->lo_owner.so_seqid)
@@ -7470,9 +6881,7 @@ out:
 	return status;
 }
 
-/*
- *  LOCK operation 
- */
+ 
 __be32
 nfsd4_lock(struct svc_rqst *rqstp, struct nfsd4_compound_state *cstate,
 	   union nfsd4_op_u *u)
@@ -7511,12 +6920,12 @@ nfsd4_lock(struct svc_rqst *rqstp, struct nfsd4_compound_state *cstate,
 
 	if (lock->lk_is_new) {
 		if (nfsd4_has_session(cstate))
-			/* See rfc 5661 18.10.3: given clientid is ignored: */
+			 
 			memcpy(&lock->lk_new_clientid,
 				&cstate->clp->cl_clientid,
 				sizeof(clientid_t));
 
-		/* validate and update open stateid and open seqid */
+		 
 		status = nfs4_preprocess_confirmed_seqid_op(cstate,
 				        lock->lk_new_open_seqid,
 		                        &lock->lk_new_open_stateid,
@@ -7592,13 +7001,7 @@ nfsd4_lock(struct svc_rqst *rqstp, struct nfsd4_compound_state *cstate,
 		goto out;
 	}
 
-	/*
-	 * Most filesystems with their own ->lock operations will block
-	 * the nfsd thread waiting to acquire the lock.  That leads to
-	 * deadlocks (we don't want every nfsd thread tied up waiting
-	 * for file locks), so don't attempt blocking lock notifications
-	 * on those filesystems:
-	 */
+	 
 	if (nf->nf_file->f_op->lock)
 		fl_flags &= ~FL_SLEEP;
 
@@ -7638,7 +7041,7 @@ nfsd4_lock(struct svc_rqst *rqstp, struct nfsd4_compound_state *cstate,
 
 	err = vfs_lock_file(nf->nf_file, F_SETLK, file_lock, conflock);
 	switch (err) {
-	case 0: /* success! */
+	case 0:  
 		nfs4_inc_and_copy_stateid(&lock->lk_resp_stateid, &lock_stp->st_stid);
 		status = 0;
 		if (lock->lk_reclaim)
@@ -7648,7 +7051,7 @@ nfsd4_lock(struct svc_rqst *rqstp, struct nfsd4_compound_state *cstate,
 		kref_put(&nbl->nbl_kref, free_nbl);
 		nbl = NULL;
 		fallthrough;
-	case -EAGAIN:		/* conflock holds conflicting lock */
+	case -EAGAIN:		 
 		status = nfserr_denied;
 		dprintk("NFSD: nfsd4_lock: conflicting lock found!\n");
 		nfs4_set_lock_denied(conflock, &lock->lk_denied);
@@ -7663,7 +7066,7 @@ nfsd4_lock(struct svc_rqst *rqstp, struct nfsd4_compound_state *cstate,
 	}
 out:
 	if (nbl) {
-		/* dequeue it if we queued it before */
+		 
 		if (fl_flags & FL_SLEEP) {
 			spin_lock(&nn->blocked_locks_lock);
 			if (!list_empty(&nbl->nbl_list) &&
@@ -7672,7 +7075,7 @@ out:
 				list_del_init(&nbl->nbl_lru);
 				kref_put(&nbl->nbl_kref, free_nbl);
 			}
-			/* nbl can use one of lists to be linked to reaplist */
+			 
 			spin_unlock(&nn->blocked_locks_lock);
 		}
 		free_blocked_lock(nbl);
@@ -7680,16 +7083,13 @@ out:
 	if (nf)
 		nfsd_file_put(nf);
 	if (lock_stp) {
-		/* Bump seqid manually if the 4.0 replay owner is openowner */
+		 
 		if (cstate->replay_owner &&
 		    cstate->replay_owner != &lock_sop->lo_owner &&
 		    seqid_mutating_err(ntohl(status)))
 			lock_sop->lo_owner.so_seqid++;
 
-		/*
-		 * If this is a new, never-before-used stateid, and we are
-		 * returning an error, then just go ahead and release it.
-		 */
+		 
 		if (status && new)
 			release_lock_stateid(lock_stp);
 
@@ -7705,11 +7105,7 @@ out:
 	return status;
 }
 
-/*
- * The NFSv4 spec allows a client to do a LOCKT without holding an OPEN,
- * so we do a temporary open here just to get an open file to pass to
- * vfs_test_lock.
- */
+ 
 static __be32 nfsd_test_lock(struct svc_rqst *rqstp, struct svc_fh *fhp, struct file_lock *lock)
 {
 	struct nfsd_file *nf;
@@ -7720,7 +7116,7 @@ static __be32 nfsd_test_lock(struct svc_rqst *rqstp, struct svc_fh *fhp, struct 
 	if (err)
 		return err;
 	inode = fhp->fh_dentry->d_inode;
-	inode_lock(inode); /* to block new leases till after test_lock: */
+	inode_lock(inode);  
 	err = nfserrno(nfsd_open_break_lease(inode, NFSD_MAY_READ));
 	if (err)
 		goto out;
@@ -7733,9 +7129,7 @@ out:
 	return err;
 }
 
-/*
- * LOCKT operation
- */
+ 
 __be32
 nfsd4_lockt(struct svc_rqst *rqstp, struct nfsd4_compound_state *cstate,
 	    union nfsd4_op_u *u)
@@ -7880,11 +7274,7 @@ out_nfserr:
 	goto put_file;
 }
 
-/*
- * returns
- * 	true:  locks held by lockowner
- * 	false: no locks held by lockowner
- */
+ 
 static bool
 check_for_locks(struct nfs4_file *fp, struct nfs4_lockowner *lowner)
 {
@@ -7895,7 +7285,7 @@ check_for_locks(struct nfs4_file *fp, struct nfs4_lockowner *lowner)
 	struct file_lock_context *flctx;
 
 	if (!nf) {
-		/* Any valid lock stateid should have some sort of access */
+		 
 		WARN_ON_ONCE(1);
 		return status;
 	}
@@ -7917,23 +7307,7 @@ check_for_locks(struct nfs4_file *fp, struct nfs4_lockowner *lowner)
 	return status;
 }
 
-/**
- * nfsd4_release_lockowner - process NFSv4.0 RELEASE_LOCKOWNER operations
- * @rqstp: RPC transaction
- * @cstate: NFSv4 COMPOUND state
- * @u: RELEASE_LOCKOWNER arguments
- *
- * The lockowner's so_count is bumped when a lock record is added
- * or when copying a conflicting lock. The latter case is brief,
- * but can lead to fleeting false positives when looking for
- * locks-in-use.
- *
- * Return values:
- *   %nfs_ok: lockowner released or not found
- *   %nfserr_locks_held: lockowner still in use
- *   %nfserr_stale_clientid: clientid no longer active
- *   %nfserr_expired: clientid not recognized
- */
+ 
 __be32
 nfsd4_release_lockowner(struct svc_rqst *rqstp,
 			struct nfsd4_compound_state *cstate,
@@ -7998,12 +7372,7 @@ nfs4_has_reclaimed_state(struct xdr_netobj name, struct nfsd_net *nn)
 	return (crp && crp->cr_clp);
 }
 
-/*
- * failure => all reset bets are off, nfserr_no_grace...
- *
- * The caller is responsible for freeing name.data if NULL is returned (it
- * will be freed in nfs4_remove_reclaim_record in the normal case).
- */
+ 
 struct nfs4_client_reclaim *
 nfs4_client_to_reclaim(struct xdr_netobj name, struct xdr_netobj princhash,
 		struct nfsd_net *nn)
@@ -8052,8 +7421,7 @@ nfs4_release_reclaim(struct nfsd_net *nn)
 	WARN_ON_ONCE(nn->reclaim_str_hashtbl_size);
 }
 
-/*
- * called from OPEN, CLAIM_PREVIOUS with a new clientid. */
+ 
 struct nfs4_client_reclaim *
 nfsd4_find_reclaim_client(struct xdr_netobj name, struct nfsd_net *nn)
 {
@@ -8081,24 +7449,11 @@ nfs4_check_open_reclaim(struct nfs4_client *clp)
 	return nfs_ok;
 }
 
-/*
- * Since the lifetime of a delegation isn't limited to that of an open, a
- * client may quite reasonably hang on to a delegation as long as it has
- * the inode cached.  This becomes an obvious problem the first time a
- * client's inode cache approaches the size of the server's total memory.
- *
- * For now we avoid this problem by imposing a hard limit on the number
- * of delegations, which varies according to the server's memory size.
- */
+ 
 static void
 set_max_delegations(void)
 {
-	/*
-	 * Allow at most 4 delegations per megabyte of RAM.  Quick
-	 * estimates suggest that in the worst case (where every delegation
-	 * is for a different inode), a delegation could take about 1.5K,
-	 * giving a worst case usage of about 6% of memory.
-	 */
+	 
 	max_delegations = nr_free_buffer_pages() >> (20 - 2 - PAGE_SHIFT);
 }
 
@@ -8224,7 +7579,7 @@ skip_grace:
 	return 0;
 }
 
-/* initialization to perform when the nfsd service is started: */
+ 
 
 int
 nfs4_state_start(void)
@@ -8308,9 +7663,7 @@ clear_current_stateid(struct nfsd4_compound_state *cstate)
 	CLEAR_CSTATE_FLAG(cstate, CURRENT_STATE_ID_FLAG);
 }
 
-/*
- * functions to set current state id
- */
+ 
 void
 nfsd4_set_opendowngradestateid(struct nfsd4_compound_state *cstate,
 		union nfsd4_op_u *u)
@@ -8339,9 +7692,7 @@ nfsd4_set_lockstateid(struct nfsd4_compound_state *cstate,
 	put_stateid(cstate, &u->lock.lk_resp_stateid);
 }
 
-/*
- * functions to consume current state id
- */
+ 
 
 void
 nfsd4_get_opendowngradestateid(struct nfsd4_compound_state *cstate,
@@ -8399,25 +7750,7 @@ nfsd4_get_writestateid(struct nfsd4_compound_state *cstate,
 	get_stateid(cstate, &u->write.wr_stateid);
 }
 
-/**
- * nfsd4_deleg_getattr_conflict - Recall if GETATTR causes conflict
- * @rqstp: RPC transaction context
- * @inode: file to be checked for a conflict
- *
- * This function is called when there is a conflict between a write
- * delegation and a change/size GETATTR from another client. The server
- * must either use the CB_GETATTR to get the current values of the
- * attributes from the client that holds the delegation or recall the
- * delegation before replying to the GETATTR. See RFC 8881 section
- * 18.7.4.
- *
- * The current implementation does not support CB_GETATTR yet. However
- * this can avoid recalling the delegation could be added in follow up
- * work.
- *
- * Returns 0 if there is no conflict; otherwise an nfs_stat
- * code is returned.
- */
+ 
 __be32
 nfsd4_deleg_getattr_conflict(struct svc_rqst *rqstp, struct inode *inode)
 {
@@ -8434,11 +7767,7 @@ nfsd4_deleg_getattr_conflict(struct svc_rqst *rqstp, struct inode *inode)
 		if (fl->fl_flags == FL_LAYOUT)
 			continue;
 		if (fl->fl_lmops != &nfsd_lease_mng_ops) {
-			/*
-			 * non-nfs lease, if it's a lease with F_RDLCK then
-			 * we are done; there isn't any write delegation
-			 * on this inode
-			 */
+			 
 			if (fl->fl_type == F_RDLCK)
 				break;
 			goto break_lease;

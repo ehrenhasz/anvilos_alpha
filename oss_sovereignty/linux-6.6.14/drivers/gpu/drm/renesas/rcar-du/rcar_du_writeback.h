@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * R-Car Display Unit Writeback Support
- *
- * Copyright (C) 2019 Laurent Pinchart <laurent.pinchart@ideasonboard.com>
- */
+ 
+ 
 
 #ifndef __RCAR_DU_WRITEBACK_H__
 #define __RCAR_DU_WRITEBACK_H__
@@ -36,4 +32,4 @@ static inline void rcar_du_writeback_complete(struct rcar_du_crtc *rcrtc)
 }
 #endif
 
-#endif /* __RCAR_DU_WRITEBACK_H__ */
+#endif  

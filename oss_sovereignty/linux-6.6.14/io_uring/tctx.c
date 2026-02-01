@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/kernel.h>
 #include <linux/errno.h>
 #include <linux/file.h>
@@ -38,7 +38,7 @@ static struct io_wq *io_init_wq_offload(struct io_ring_ctx *ctx,
 	data.free_work = io_wq_free_work;
 	data.do_work = io_wq_submit_work;
 
-	/* Do QD, or 4 * CPUS, whatever is smallest */
+	 
 	concurrency = min(ctx->sq_entries, 4 * num_online_cpus());
 
 	return io_wq_create(concurrency, &data);
@@ -149,9 +149,7 @@ int __io_uring_add_tctx_node_from_submit(struct io_ring_ctx *ctx)
 	return 0;
 }
 
-/*
- * Remove this io_uring_file -> task mapping.
- */
+ 
 __cold void io_uring_del_tctx_node(unsigned long index)
 {
 	struct io_uring_task *tctx = current->io_uring;
@@ -186,10 +184,7 @@ __cold void io_uring_clean_tctx(struct io_uring_task *tctx)
 		cond_resched();
 	}
 	if (wq) {
-		/*
-		 * Must be after io_uring_del_tctx_node() (removes nodes under
-		 * uring_lock) to avoid race with io_uring_try_cancel_iowq().
-		 */
+		 
 		io_wq_put_and_exit(wq);
 		tctx->io_wq = NULL;
 	}
@@ -242,14 +237,7 @@ static int io_ring_add_registered_fd(struct io_uring_task *tctx, int fd,
 	return offset;
 }
 
-/*
- * Register a ring fd to avoid fdget/fdput for each io_uring_enter()
- * invocation. User passes in an array of struct io_uring_rsrc_update
- * with ->data set to the ring_fd, and ->offset given for the desired
- * index. If no index is desired, application may set ->offset == -1U
- * and we'll find an available index. Returns number of entries
- * successfully processed, or < 0 on error if none were processed.
- */
+ 
 int io_ringfd_register(struct io_ring_ctx *ctx, void __user *__arg,
 		       unsigned nr_args)
 {

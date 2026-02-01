@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * Copyright 2021-2022 Bootlin
- * Author: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
- */
+ 
+ 
 
 #ifndef _SUN6I_ISP_REG_H_
 #define _SUN6I_ISP_REG_H_
@@ -11,7 +8,7 @@
 
 #define SUN6I_ISP_ADDR_VALUE(a)			((a) >> 2)
 
-/* Frontend */
+ 
 
 #define SUN6I_ISP_SRC_MODE_DRAM			0
 #define SUN6I_ISP_SRC_MODE_CSI(n)		(1 + (n))
@@ -54,11 +51,11 @@
 #define SUN6I_ISP_FE_INT_STA_ROT_FINISH		BIT(6)
 #define SUN6I_ISP_FE_INT_STA_LINE_NUM_START	BIT(7)
 
-/* Only since sun9i-a80-isp. */
+ 
 #define SUN6I_ISP_FE_INT_LINE_NUM_REG		0x18
 #define SUN6I_ISP_FE_ROT_OF_CFG_REG		0x1c
 
-/* Buffers/tables */
+ 
 
 #define SUN6I_ISP_REG_LOAD_ADDR_REG		0x20
 #define SUN6I_ISP_REG_SAVE_ADDR_REG		0x24
@@ -67,12 +64,12 @@
 #define SUN6I_ISP_DRC_TABLE_ADDR_REG		0x2c
 #define SUN6I_ISP_STATS_ADDR_REG		0x30
 
-/* SRAM */
+ 
 
 #define SUN6I_ISP_SRAM_RW_OFFSET_REG		0x38
 #define SUN6I_ISP_SRAM_RW_DATA_REG		0x3c
 
-/* Global */
+ 
 
 #define SUN6I_ISP_MODULE_EN_REG			0x40
 #define SUN6I_ISP_MODULE_EN_AE			BIT(0)
@@ -127,7 +124,7 @@
 #define SUN6I_ISP_IN_LUMA_RGB_ADDR1_REG		0x54
 #define SUN6I_ISP_IN_CHROMA_ADDR1_REG		0x58
 
-/* AE */
+ 
 
 #define SUN6I_ISP_AE_CFG_REG			0x60
 #define SUN6I_ISP_AE_CFG_LOW_BRI_TH(v)		((v) & GENMASK(11, 0))
@@ -143,7 +140,7 @@
 #define SUN6I_ISP_AE_POS_HORZ_START(v)		((v) & GENMASK(10, 0))
 #define SUN6I_ISP_AE_POS_VERT_START(v)		(((v) << 16) & GENMASK(26, 16))
 
-/* OB */
+ 
 
 #define SUN6I_ISP_OB_SIZE_REG			0x78
 #define SUN6I_ISP_OB_SIZE_WIDTH(v)		((v) & GENMASK(13, 0))
@@ -174,7 +171,7 @@
 #define SUN6I_ISP_OB_VERT_PARA_REG		0x98
 #define SUN6I_ISP_OB_OFFSET_FIXED_REG		0x9c
 
-/* BDNF */
+ 
 
 #define SUN6I_ISP_BDNF_CFG_REG			0xcc
 #define SUN6I_ISP_BDNF_CFG_IN_DIS_MIN(v)	((v) & GENMASK(7, 0))
@@ -188,7 +185,7 @@
 #define SUN6I_ISP_BDNF_COEF_G(i, v)		(((v) << (4 * (i))) & \
 						 GENMASK(4 * (i) + 3, 4 * (i)))
 
-/* Bayer */
+ 
 
 #define SUN6I_ISP_BAYER_OFFSET0_REG		0xe0
 #define SUN6I_ISP_BAYER_OFFSET0_R(v)		((v) & GENMASK(12, 0))
@@ -206,7 +203,7 @@
 #define SUN6I_ISP_BAYER_GAIN1_GB(v)		((v) & GENMASK(11, 0))
 #define SUN6I_ISP_BAYER_GAIN1_B(v)		(((v) << 16) & GENMASK(27, 16))
 
-/* WB */
+ 
 
 #define SUN6I_ISP_WB_GAIN0_REG			0x140
 #define SUN6I_ISP_WB_GAIN0_R(v)			((v) & GENMASK(11, 0))
@@ -219,7 +216,7 @@
 #define SUN6I_ISP_WB_CFG_REG			0x148
 #define SUN6I_ISP_WB_CFG_CLIP(v)		((v) & GENMASK(11, 0))
 
-/* Global */
+ 
 
 #define SUN6I_ISP_MCH_SIZE_CFG_REG		0x1e0
 #define SUN6I_ISP_MCH_SIZE_CFG_WIDTH(v)		((v) & GENMASK(12, 0))

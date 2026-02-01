@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2021 Facebook */
+
+ 
 #include <test_progs.h>
 #include "timer.skel.h"
 #include "timer_failure.skel.h"
@@ -22,27 +22,27 @@ static int timer(struct timer *timer_skel)
 	ASSERT_EQ(topts.retval, 0, "test_run");
 	timer__detach(timer_skel);
 
-	usleep(50); /* 10 usecs should be enough, but give it extra */
-	/* check that timer_cb1() was executed 10+10 times */
+	usleep(50);  
+	 
 	ASSERT_EQ(timer_skel->data->callback_check, 42, "callback_check2");
 	ASSERT_EQ(timer_skel->data->callback2_check, 42, "callback2_check2");
 
-	/* check that timer_cb2() was executed twice */
+	 
 	ASSERT_EQ(timer_skel->bss->bss_data, 10, "bss_data");
 
-	/* check that timer_cb3() was executed twice */
+	 
 	ASSERT_EQ(timer_skel->bss->abs_data, 12, "abs_data");
 
-	/* check that there were no errors in timer execution */
+	 
 	ASSERT_EQ(timer_skel->bss->err, 0, "err");
 
-	/* check that code paths completed */
+	 
 	ASSERT_EQ(timer_skel->bss->ok, 1 | 2 | 4, "ok");
 
 	return 0;
 }
 
-/* TODO: use pid filtering */
+ 
 void serial_test_timer(void)
 {
 	struct timer *timer_skel = NULL;

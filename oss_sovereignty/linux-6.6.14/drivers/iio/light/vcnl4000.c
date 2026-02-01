@@ -1,21 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * vcnl4000.c - Support for Vishay VCNL4000/4010/4020/4040/4200 combined ambient
- * light and proximity sensor
- *
- * Copyright 2012 Peter Meerwald <pmeerw@pmeerw.net>
- * Copyright 2019 Pursim SPC
- * Copyright 2020 Mathieu Othacehe <m.othacehe@gmail.com>
- *
- * IIO driver for:
- *   VCNL4000/10/20 (7-bit I2C slave address 0x13)
- *   VCNL4040 (7-bit I2C slave address 0x60)
- *   VCNL4200 (7-bit I2C slave address 0x51)
- *
- * TODO:
- *   allow to adjust IR current
- *   interrupts (VCNL4040, VCNL4200)
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/module.h>
@@ -36,78 +20,78 @@
 
 #define VCNL4000_DRV_NAME "vcnl4000"
 #define VCNL4000_PROD_ID	0x01
-#define VCNL4010_PROD_ID	0x02 /* for VCNL4020, VCNL4010 */
+#define VCNL4010_PROD_ID	0x02  
 #define VCNL4040_PROD_ID	0x86
 #define VCNL4200_PROD_ID	0x58
 
-#define VCNL4000_COMMAND	0x80 /* Command register */
-#define VCNL4000_PROD_REV	0x81 /* Product ID and Revision ID */
-#define VCNL4010_PROX_RATE      0x82 /* Proximity rate */
-#define VCNL4000_LED_CURRENT	0x83 /* IR LED current for proximity mode */
-#define VCNL4000_AL_PARAM	0x84 /* Ambient light parameter register */
-#define VCNL4010_ALS_PARAM      0x84 /* ALS rate */
-#define VCNL4000_AL_RESULT_HI	0x85 /* Ambient light result register, MSB */
-#define VCNL4000_AL_RESULT_LO	0x86 /* Ambient light result register, LSB */
-#define VCNL4000_PS_RESULT_HI	0x87 /* Proximity result register, MSB */
-#define VCNL4000_PS_RESULT_LO	0x88 /* Proximity result register, LSB */
-#define VCNL4000_PS_MEAS_FREQ	0x89 /* Proximity test signal frequency */
-#define VCNL4010_INT_CTRL	0x89 /* Interrupt control */
-#define VCNL4000_PS_MOD_ADJ	0x8a /* Proximity modulator timing adjustment */
-#define VCNL4010_LOW_THR_HI     0x8a /* Low threshold, MSB */
-#define VCNL4010_LOW_THR_LO     0x8b /* Low threshold, LSB */
-#define VCNL4010_HIGH_THR_HI    0x8c /* High threshold, MSB */
-#define VCNL4010_HIGH_THR_LO    0x8d /* High threshold, LSB */
-#define VCNL4010_ISR		0x8e /* Interrupt status */
+#define VCNL4000_COMMAND	0x80  
+#define VCNL4000_PROD_REV	0x81  
+#define VCNL4010_PROX_RATE      0x82  
+#define VCNL4000_LED_CURRENT	0x83  
+#define VCNL4000_AL_PARAM	0x84  
+#define VCNL4010_ALS_PARAM      0x84  
+#define VCNL4000_AL_RESULT_HI	0x85  
+#define VCNL4000_AL_RESULT_LO	0x86  
+#define VCNL4000_PS_RESULT_HI	0x87  
+#define VCNL4000_PS_RESULT_LO	0x88  
+#define VCNL4000_PS_MEAS_FREQ	0x89  
+#define VCNL4010_INT_CTRL	0x89  
+#define VCNL4000_PS_MOD_ADJ	0x8a  
+#define VCNL4010_LOW_THR_HI     0x8a  
+#define VCNL4010_LOW_THR_LO     0x8b  
+#define VCNL4010_HIGH_THR_HI    0x8c  
+#define VCNL4010_HIGH_THR_LO    0x8d  
+#define VCNL4010_ISR		0x8e  
 
-#define VCNL4200_AL_CONF	0x00 /* Ambient light configuration */
-#define VCNL4200_PS_CONF1	0x03 /* Proximity configuration */
-#define VCNL4200_PS_CONF3	0x04 /* Proximity configuration */
-#define VCNL4040_PS_THDL_LM	0x06 /* Proximity threshold low */
-#define VCNL4040_PS_THDH_LM	0x07 /* Proximity threshold high */
-#define VCNL4040_ALS_THDL_LM	0x02 /* Ambient light threshold low */
-#define VCNL4040_ALS_THDH_LM	0x01 /* Ambient light threshold high */
-#define VCNL4200_PS_DATA	0x08 /* Proximity data */
-#define VCNL4200_AL_DATA	0x09 /* Ambient light data */
-#define VCNL4040_INT_FLAGS	0x0b /* Interrupt register */
-#define VCNL4200_INT_FLAGS	0x0d /* Interrupt register */
-#define VCNL4200_DEV_ID		0x0e /* Device ID, slave address and version */
+#define VCNL4200_AL_CONF	0x00  
+#define VCNL4200_PS_CONF1	0x03  
+#define VCNL4200_PS_CONF3	0x04  
+#define VCNL4040_PS_THDL_LM	0x06  
+#define VCNL4040_PS_THDH_LM	0x07  
+#define VCNL4040_ALS_THDL_LM	0x02  
+#define VCNL4040_ALS_THDH_LM	0x01  
+#define VCNL4200_PS_DATA	0x08  
+#define VCNL4200_AL_DATA	0x09  
+#define VCNL4040_INT_FLAGS	0x0b  
+#define VCNL4200_INT_FLAGS	0x0d  
+#define VCNL4200_DEV_ID		0x0e  
 
-#define VCNL4040_DEV_ID		0x0c /* Device ID and version */
+#define VCNL4040_DEV_ID		0x0c  
 
-/* Bit masks for COMMAND register */
-#define VCNL4000_AL_RDY		BIT(6) /* ALS data ready? */
-#define VCNL4000_PS_RDY		BIT(5) /* proximity data ready? */
-#define VCNL4000_AL_OD		BIT(4) /* start on-demand ALS measurement */
-#define VCNL4000_PS_OD		BIT(3) /* start on-demand proximity measurement */
-#define VCNL4000_ALS_EN		BIT(2) /* start ALS measurement */
-#define VCNL4000_PROX_EN	BIT(1) /* start proximity measurement */
-#define VCNL4000_SELF_TIMED_EN	BIT(0) /* start self-timed measurement */
+ 
+#define VCNL4000_AL_RDY		BIT(6)  
+#define VCNL4000_PS_RDY		BIT(5)  
+#define VCNL4000_AL_OD		BIT(4)  
+#define VCNL4000_PS_OD		BIT(3)  
+#define VCNL4000_ALS_EN		BIT(2)  
+#define VCNL4000_PROX_EN	BIT(1)  
+#define VCNL4000_SELF_TIMED_EN	BIT(0)  
 
 #define VCNL4040_ALS_CONF_ALS_SHUTDOWN	BIT(0)
-#define VCNL4040_ALS_CONF_IT		GENMASK(7, 6) /* Ambient integration time */
-#define VCNL4040_ALS_CONF_INT_EN	BIT(1) /* Ambient light Interrupt enable */
-#define VCNL4040_ALS_CONF_PERS	GENMASK(3, 2) /* Ambient interrupt persistence setting */
+#define VCNL4040_ALS_CONF_IT		GENMASK(7, 6)  
+#define VCNL4040_ALS_CONF_INT_EN	BIT(1)  
+#define VCNL4040_ALS_CONF_PERS	GENMASK(3, 2)  
 #define VCNL4040_PS_CONF1_PS_SHUTDOWN	BIT(0)
-#define VCNL4040_PS_CONF2_PS_IT	GENMASK(3, 1) /* Proximity integration time */
-#define VCNL4040_CONF1_PS_PERS	GENMASK(5, 4) /* Proximity interrupt persistence setting */
-#define VCNL4040_PS_CONF2_PS_INT	GENMASK(9, 8) /* Proximity interrupt mode */
-#define VCNL4040_PS_CONF3_MPS		GENMASK(6, 5) /* Proximity multi pulse number */
-#define VCNL4040_PS_MS_LED_I		GENMASK(10, 8) /* Proximity current */
-#define VCNL4040_PS_IF_AWAY		BIT(8) /* Proximity event cross low threshold */
-#define VCNL4040_PS_IF_CLOSE		BIT(9) /* Proximity event cross high threshold */
-#define VCNL4040_ALS_RISING		BIT(12) /* Ambient Light cross high threshold */
-#define VCNL4040_ALS_FALLING		BIT(13) /* Ambient Light cross low threshold */
+#define VCNL4040_PS_CONF2_PS_IT	GENMASK(3, 1)  
+#define VCNL4040_CONF1_PS_PERS	GENMASK(5, 4)  
+#define VCNL4040_PS_CONF2_PS_INT	GENMASK(9, 8)  
+#define VCNL4040_PS_CONF3_MPS		GENMASK(6, 5)  
+#define VCNL4040_PS_MS_LED_I		GENMASK(10, 8)  
+#define VCNL4040_PS_IF_AWAY		BIT(8)  
+#define VCNL4040_PS_IF_CLOSE		BIT(9)  
+#define VCNL4040_ALS_RISING		BIT(12)  
+#define VCNL4040_ALS_FALLING		BIT(13)  
 
-/* Bit masks for interrupt registers. */
-#define VCNL4010_INT_THR_SEL	BIT(0) /* Select threshold interrupt source */
-#define VCNL4010_INT_THR_EN	BIT(1) /* Threshold interrupt type */
-#define VCNL4010_INT_ALS_EN	BIT(2) /* Enable on ALS data ready */
-#define VCNL4010_INT_PROX_EN	BIT(3) /* Enable on proximity data ready */
+ 
+#define VCNL4010_INT_THR_SEL	BIT(0)  
+#define VCNL4010_INT_THR_EN	BIT(1)  
+#define VCNL4010_INT_ALS_EN	BIT(2)  
+#define VCNL4010_INT_PROX_EN	BIT(3)  
 
-#define VCNL4010_INT_THR_HIGH	0 /* High threshold exceeded */
-#define VCNL4010_INT_THR_LOW	1 /* Low threshold exceeded */
-#define VCNL4010_INT_ALS	2 /* ALS data ready */
-#define VCNL4010_INT_PROXIMITY	3 /* Proximity data ready */
+#define VCNL4010_INT_THR_HIGH	0  
+#define VCNL4010_INT_THR_LOW	1  
+#define VCNL4010_INT_ALS	2  
+#define VCNL4010_INT_PROXIMITY	3  
 
 #define VCNL4010_INT_THR \
 	(BIT(VCNL4010_INT_THR_LOW) | BIT(VCNL4010_INT_THR_HIGH))
@@ -174,7 +158,7 @@ static const int vcnl4040_als_persistence[] = {1, 2, 4, 8};
 static const int vcnl4040_ps_persistence[] = {1, 2, 3, 4};
 static const int vcnl4040_ps_oversampling_ratio[] = {1, 2, 4, 8};
 
-#define VCNL4000_SLEEP_DELAY_MS	2000 /* before we enter pm_runtime_suspend */
+#define VCNL4000_SLEEP_DELAY_MS	2000  
 
 enum vcnl4000_device_ids {
 	VCNL4000,
@@ -195,8 +179,8 @@ struct vcnl4000_data {
 	enum vcnl4000_device_ids id;
 	int rev;
 	int al_scale;
-	u8 ps_int;		/* proximity interrupt mode */
-	u8 als_int;		/* ambient light interrupt mode*/
+	u8 ps_int;		 
+	u8 als_int;		 
 	const struct vcnl4000_chip_spec *chip_spec;
 	struct mutex vcnl4000_lock;
 	struct vcnl4200_channel vcnl4200_al;
@@ -237,7 +221,7 @@ MODULE_DEVICE_TABLE(i2c, vcnl4000_id);
 
 static int vcnl4000_set_power_state(struct vcnl4000_data *data, bool on)
 {
-	/* no suspend op */
+	 
 	return 0;
 }
 
@@ -321,7 +305,7 @@ static int vcnl4200_set_power_state(struct vcnl4000_data *data, bool on)
 {
 	int ret;
 
-	/* Do not power down if interrupts are enabled */
+	 
 	if (!on && (data->ps_int || data->als_int))
 		return 0;
 
@@ -334,7 +318,7 @@ static int vcnl4200_set_power_state(struct vcnl4000_data *data, bool on)
 		return ret;
 
 	if (on) {
-		/* Wait at least one integration cycle before fetching data */
+		 
 		data->vcnl4200_al.last_measurement = ktime_get();
 		data->vcnl4200_ps.last_measurement = ktime_get();
 	}
@@ -373,15 +357,15 @@ static int vcnl4200_init(struct vcnl4000_data *data)
 	data->vcnl4200_ps.reg = VCNL4200_PS_DATA;
 	switch (id) {
 	case VCNL4200_PROD_ID:
-		/* Default wait time is 50ms, add 20% tolerance. */
+		 
 		data->vcnl4200_al.sampling_rate = ktime_set(0, 60000 * 1000);
-		/* Default wait time is 4.8ms, add 20% tolerance. */
+		 
 		data->vcnl4200_ps.sampling_rate = ktime_set(0, 5760 * 1000);
 		break;
 	case VCNL4040_PROD_ID:
-		/* Default wait time is 80ms, add 20% tolerance. */
+		 
 		data->vcnl4200_al.sampling_rate = ktime_set(0, 96000 * 1000);
-		/* Default wait time is 5ms, add 20% tolerance. */
+		 
 		data->vcnl4200_ps.sampling_rate = ktime_set(0, 6000 * 1000);
 		break;
 	}
@@ -430,14 +414,14 @@ static int vcnl4000_measure(struct vcnl4000_data *data, u8 req_mask,
 	if (ret < 0)
 		goto fail;
 
-	/* wait for data to become ready */
+	 
 	while (tries--) {
 		ret = i2c_smbus_read_byte_data(data->client, VCNL4000_COMMAND);
 		if (ret < 0)
 			goto fail;
 		if (ret & rdy_mask)
 			break;
-		msleep(20); /* measurement takes up to 100 ms */
+		msleep(20);  
 	}
 
 	if (tries < 0) {
@@ -1054,7 +1038,7 @@ static int vcnl4010_read_raw(struct iio_dev *indio_dev,
 		if (ret)
 			return ret;
 
-		/* Protect against event capture. */
+		 
 		if (vcnl4010_is_in_periodic_mode(data)) {
 			ret = -EBUSY;
 		} else {
@@ -1127,7 +1111,7 @@ static int vcnl4010_write_raw(struct iio_dev *indio_dev,
 	if (ret)
 		return ret;
 
-	/* Protect against event capture. */
+	 
 	if (vcnl4010_is_in_periodic_mode(data)) {
 		ret = -EBUSY;
 		goto end;
@@ -1388,13 +1372,10 @@ static int vcnl4010_config_threshold(struct iio_dev *indio_dev, bool state)
 		if (ret)
 			return ret;
 
-		/* Enable periodic measurement of proximity data. */
+		 
 		command = VCNL4000_SELF_TIMED_EN | VCNL4000_PROX_EN;
 
-		/*
-		 * Enable interrupts on threshold, for proximity data by
-		 * default.
-		 */
+		 
 		icr = VCNL4010_INT_THR_EN;
 	} else {
 		if (!vcnl4010_is_thr_enabled(data))
@@ -1623,7 +1604,7 @@ static irqreturn_t vcnl4010_trigger_handler(int irq, void *p)
 	struct iio_dev *indio_dev = pf->indio_dev;
 	struct vcnl4000_data *data = iio_priv(indio_dev);
 	const unsigned long *active_scan_mask = indio_dev->active_scan_mask;
-	u16 buffer[8] __aligned(8) = {0}; /* 1x16-bit + naturally aligned ts */
+	u16 buffer[8] __aligned(8) = {0};  
 	bool data_read = false;
 	unsigned long isr;
 	int val = 0;
@@ -1670,7 +1651,7 @@ static int vcnl4010_buffer_postenable(struct iio_dev *indio_dev)
 	int ret;
 	int cmd;
 
-	/* Do not enable the buffer if we are already capturing events. */
+	 
 	if (vcnl4010_is_in_periodic_mode(data))
 		return -EBUSY;
 
@@ -1706,7 +1687,7 @@ static const struct iio_chan_spec_ext_info vcnl4000_ext_info[] = {
 		.shared = IIO_SEPARATE,
 		.read = vcnl4000_read_near_level,
 	},
-	{ /* sentinel */ }
+	{   }
 };
 
 static const struct iio_event_spec vcnl4000_event_spec[] = {

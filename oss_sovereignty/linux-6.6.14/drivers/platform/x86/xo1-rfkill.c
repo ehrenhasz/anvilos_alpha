@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Support for rfkill through the OLPC XO-1 laptop embedded controller
- *
- * Copyright (C) 2010 One Laptop per Child
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/platform_device.h>

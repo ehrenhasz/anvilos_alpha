@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2007-2014 Nicira, Inc.
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -70,8 +68,7 @@ static const struct genl_multicast_group ovs_dp_vport_multicast_group = {
 	.name = OVS_VPORT_MCGROUP,
 };
 
-/* Check if need to build a reply message.
- * OVS userspace sets the NLM_F_ECHO flag if it needs the reply. */
+ 
 static bool ovs_must_notify(struct genl_family *family, struct genl_info *info,
 			    unsigned int group)
 {
@@ -85,22 +82,7 @@ static void ovs_notify(struct genl_family *family,
 	genl_notify(family, skb, info, 0, GFP_KERNEL);
 }
 
-/**
- * DOC: Locking:
- *
- * All writes e.g. Writes to device state (add/remove datapath, port, set
- * operations on vports, etc.), Writes to other state (flow table
- * modifications, set miscellaneous datapath parameters, etc.) are protected
- * by ovs_lock.
- *
- * Reads are protected by RCU.
- *
- * There are a few special cases (mostly stats) that have their own
- * synchronization but they nest under all of above and don't interact with
- * each other.
- *
- * The RTNL lock nests inside ovs_mutex.
- */
+ 
 
 static DEFINE_MUTEX(ovs_mutex);
 
@@ -138,7 +120,7 @@ static void ovs_dp_masks_rebalance(struct work_struct *work);
 
 static int ovs_dp_set_upcall_portids(struct datapath *, const struct nlattr *);
 
-/* Must be called with rcu_read_lock or ovs_mutex. */
+ 
 const char *ovs_dp_name(const struct datapath *dp)
 {
 	struct vport *vport = ovs_vport_ovsl_rcu(dp, OVSP_LOCAL);
@@ -181,7 +163,7 @@ static struct hlist_head *vport_hash_bucket(const struct datapath *dp,
 	return &dp->ports[port_no & (DP_VPORT_HASH_BUCKETS - 1)];
 }
 
-/* Called with ovs_mutex or RCU read lock. */
+ 
 struct vport *ovs_lookup_vport(const struct datapath *dp, u16 port_no)
 {
 	struct vport *vport;
@@ -196,7 +178,7 @@ struct vport *ovs_lookup_vport(const struct datapath *dp, u16 port_no)
 	return NULL;
 }
 
-/* Called with ovs_mutex. */
+ 
 static struct vport *new_vport(const struct vport_parms *parms)
 {
 	struct vport *vport;
@@ -235,14 +217,14 @@ void ovs_dp_detach_port(struct vport *p)
 {
 	ASSERT_OVSL();
 
-	/* First drop references to device. */
+	 
 	hlist_del_rcu(&p->dp_hash_node);
 
-	/* Then destroy it. */
+	 
 	ovs_vport_del(p);
 }
 
-/* Must be called with rcu_read_lock. */
+ 
 void ovs_dp_process_packet(struct sk_buff *skb, struct sw_flow_key *key)
 {
 	const struct vport *p = OVS_CB(skb)->input_vport;
@@ -257,7 +239,7 @@ void ovs_dp_process_packet(struct sk_buff *skb, struct sw_flow_key *key)
 
 	stats = this_cpu_ptr(dp->stats_percpu);
 
-	/* Look up flow. */
+	 
 	flow = ovs_flow_tbl_lookup_stats(&dp->table, key, skb_get_hash(skb),
 					 &n_mask_hit, &n_cache_hit);
 	if (unlikely(!flow)) {
@@ -299,7 +281,7 @@ void ovs_dp_process_packet(struct sk_buff *skb, struct sw_flow_key *key)
 	stats_counter = &stats->n_hit;
 
 out:
-	/* Update datapath statistics. */
+	 
 	u64_stats_update_begin(&stats->syncp);
 	(*stats_counter)++;
 	stats->n_mask_hit += n_mask_hit;
@@ -362,15 +344,12 @@ static int queue_gso_packets(struct datapath *dp, struct sk_buff *skb,
 		return -EINVAL;
 
 	if (gso_type & SKB_GSO_UDP) {
-		/* The initial flow key extracted by ovs_flow_key_extract()
-		 * in this case is for a first fragment, so we need to
-		 * properly mark later fragments.
-		 */
+		 
 		later_key = *key;
 		later_key.ip.frag = OVS_FRAG_TYPE_LATER;
 	}
 
-	/* Queue all of the segments. */
+	 
 	skb_list_walk_safe(segs, skb, nskb) {
 		if (gso_type & SKB_GSO_UDP && skb != segs)
 			key = &later_key;
@@ -381,7 +360,7 @@ static int queue_gso_packets(struct datapath *dp, struct sk_buff *skb,
 
 	}
 
-	/* Free all of the segments. */
+	 
 	skb_list_walk_safe(segs, skb, nskb) {
 		if (err)
 			kfree_skb(skb);
@@ -395,24 +374,24 @@ static size_t upcall_msg_size(const struct dp_upcall_info *upcall_info,
 			      unsigned int hdrlen, int actions_attrlen)
 {
 	size_t size = NLMSG_ALIGN(sizeof(struct ovs_header))
-		+ nla_total_size(hdrlen) /* OVS_PACKET_ATTR_PACKET */
-		+ nla_total_size(ovs_key_attr_size()) /* OVS_PACKET_ATTR_KEY */
-		+ nla_total_size(sizeof(unsigned int)) /* OVS_PACKET_ATTR_LEN */
-		+ nla_total_size(sizeof(u64)); /* OVS_PACKET_ATTR_HASH */
+		+ nla_total_size(hdrlen)  
+		+ nla_total_size(ovs_key_attr_size())  
+		+ nla_total_size(sizeof(unsigned int))  
+		+ nla_total_size(sizeof(u64));  
 
-	/* OVS_PACKET_ATTR_USERDATA */
+	 
 	if (upcall_info->userdata)
 		size += NLA_ALIGN(upcall_info->userdata->nla_len);
 
-	/* OVS_PACKET_ATTR_EGRESS_TUN_KEY */
+	 
 	if (upcall_info->egress_tun_info)
 		size += nla_total_size(ovs_tun_key_attr_size());
 
-	/* OVS_PACKET_ATTR_ACTIONS */
+	 
 	if (upcall_info->actions_len)
 		size += nla_total_size(actions_attrlen);
 
-	/* OVS_PACKET_ATTR_MRU */
+	 
 	if (upcall_info->mru)
 		size += nla_total_size(sizeof(upcall_info->mru));
 
@@ -436,7 +415,7 @@ static int queue_userspace_packet(struct datapath *dp, struct sk_buff *skb,
 {
 	struct ovs_header *upcall;
 	struct sk_buff *nskb = NULL;
-	struct sk_buff *user_skb = NULL; /* to be queued to userspace */
+	struct sk_buff *user_skb = NULL;  
 	struct nlattr *nla;
 	size_t len;
 	unsigned int hlen;
@@ -464,15 +443,12 @@ static int queue_userspace_packet(struct datapath *dp, struct sk_buff *skb,
 		goto out;
 	}
 
-	/* Complete checksum if needed */
+	 
 	if (skb->ip_summed == CHECKSUM_PARTIAL &&
 	    (err = skb_csum_hwoffload_help(skb, 0)))
 		goto out;
 
-	/* Older versions of OVS user space enforce alignment of the last
-	 * Netlink attribute to NLA_ALIGNTO which would require extensive
-	 * padding logic. Only perform zerocopy if padding is not required.
-	 */
+	 
 	if (dp->user_features & OVS_DP_F_UNALIGNED)
 		hlen = skb_zerocopy_headlen(skb);
 	else
@@ -533,21 +509,21 @@ static int queue_userspace_packet(struct datapath *dp, struct sk_buff *skb,
 			nla_nest_cancel(user_skb, nla);
 	}
 
-	/* Add OVS_PACKET_ATTR_MRU */
+	 
 	if (upcall_info->mru &&
 	    nla_put_u16(user_skb, OVS_PACKET_ATTR_MRU, upcall_info->mru)) {
 		err = -ENOBUFS;
 		goto out;
 	}
 
-	/* Add OVS_PACKET_ATTR_LEN when packet is truncated */
+	 
 	if (cutlen > 0 &&
 	    nla_put_u32(user_skb, OVS_PACKET_ATTR_LEN, skb->len)) {
 		err = -ENOBUFS;
 		goto out;
 	}
 
-	/* Add OVS_PACKET_ATTR_HASH */
+	 
 	hash = skb_get_hash_raw(skb);
 	if (skb->sw_hash)
 		hash |= OVS_PACKET_HASH_SW_BIT;
@@ -560,8 +536,7 @@ static int queue_userspace_packet(struct datapath *dp, struct sk_buff *skb,
 		goto out;
 	}
 
-	/* Only reserve room for attribute header, packet data is added
-	 * in skb_zerocopy() */
+	 
 	if (!(nla = nla_reserve(user_skb, OVS_PACKET_ATTR_PACKET, 0))) {
 		err = -ENOBUFS;
 		goto out;
@@ -572,7 +547,7 @@ static int queue_userspace_packet(struct datapath *dp, struct sk_buff *skb,
 	if (err)
 		goto out;
 
-	/* Pad OVS_PACKET_ATTR_PACKET if linear copy was performed */
+	 
 	pad_packet(dp, user_skb);
 
 	((struct nlmsghdr *) user_skb->data)->nlmsg_len = user_skb->len;
@@ -619,7 +594,7 @@ static int ovs_packet_cmd_execute(struct sk_buff *skb, struct genl_info *info)
 
 	nla_memcpy(__skb_put(packet, len), a[OVS_PACKET_ATTR_PACKET], len);
 
-	/* Set packet's mru */
+	 
 	if (a[OVS_PACKET_ATTR_MRU]) {
 		mru = nla_get_u16(a[OVS_PACKET_ATTR_MRU]);
 		packet->ignore_df = 1;
@@ -634,7 +609,7 @@ static int ovs_packet_cmd_execute(struct sk_buff *skb, struct genl_info *info)
 			       !!(hash & OVS_PACKET_HASH_L4_BIT));
 	}
 
-	/* Build an sw_flow for sending this packet. */
+	 
 	flow = ovs_flow_alloc();
 	err = PTR_ERR(flow);
 	if (IS_ERR(flow))
@@ -701,7 +676,7 @@ static const struct nla_policy packet_policy[OVS_PACKET_ATTR_MAX + 1] = {
 static const struct genl_small_ops dp_packet_genl_ops[] = {
 	{ .cmd = OVS_PACKET_CMD_EXECUTE,
 	  .validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
-	  .flags = GENL_UNS_ADMIN_PERM, /* Requires CAP_NET_ADMIN privilege. */
+	  .flags = GENL_UNS_ADMIN_PERM,  
 	  .doit = ovs_packet_cmd_execute
 	}
 };
@@ -774,33 +749,31 @@ static size_t ovs_flow_cmd_msg_size(const struct sw_flow_actions *acts,
 {
 	size_t len = NLMSG_ALIGN(sizeof(struct ovs_header));
 
-	/* OVS_FLOW_ATTR_UFID, or unmasked flow key as fallback
-	 * see ovs_nla_put_identifier()
-	 */
+	 
 	if (sfid && ovs_identifier_is_ufid(sfid))
 		len += nla_total_size(sfid->ufid_len);
 	else
 		len += nla_total_size(ovs_key_attr_size());
 
-	/* OVS_FLOW_ATTR_KEY */
+	 
 	if (!sfid || should_fill_key(sfid, ufid_flags))
 		len += nla_total_size(ovs_key_attr_size());
 
-	/* OVS_FLOW_ATTR_MASK */
+	 
 	if (should_fill_mask(ufid_flags))
 		len += nla_total_size(ovs_key_attr_size());
 
-	/* OVS_FLOW_ATTR_ACTIONS */
+	 
 	if (should_fill_actions(ufid_flags))
 		len += nla_total_size(acts->orig_len);
 
 	return len
-		+ nla_total_size_64bit(sizeof(struct ovs_flow_stats)) /* OVS_FLOW_ATTR_STATS */
-		+ nla_total_size(1) /* OVS_FLOW_ATTR_TCP_FLAGS */
-		+ nla_total_size_64bit(8); /* OVS_FLOW_ATTR_USED */
+		+ nla_total_size_64bit(sizeof(struct ovs_flow_stats))  
+		+ nla_total_size(1)  
+		+ nla_total_size_64bit(8);  
 }
 
-/* Called with ovs_mutex or RCU read lock. */
+ 
 static int ovs_flow_cmd_fill_stats(const struct sw_flow *flow,
 				   struct sk_buff *skb)
 {
@@ -828,23 +801,14 @@ static int ovs_flow_cmd_fill_stats(const struct sw_flow *flow,
 	return 0;
 }
 
-/* Called with ovs_mutex or RCU read lock. */
+ 
 static int ovs_flow_cmd_fill_actions(const struct sw_flow *flow,
 				     struct sk_buff *skb, int skb_orig_len)
 {
 	struct nlattr *start;
 	int err;
 
-	/* If OVS_FLOW_ATTR_ACTIONS doesn't fit, skip dumping the actions if
-	 * this is the first flow to be dumped into 'skb'.  This is unusual for
-	 * Netlink but individual action lists can be longer than
-	 * NLMSG_GOODSIZE and thus entirely undumpable if we didn't do this.
-	 * The userspace caller can always fetch the actions separately if it
-	 * really wants them.  (Most userspace callers in fact don't care.)
-	 *
-	 * This can only fail for dump operations because the skb is always
-	 * properly sized for single flows.
-	 */
+	 
 	start = nla_nest_start_noflag(skb, OVS_FLOW_ATTR_ACTIONS);
 	if (start) {
 		const struct sw_flow_actions *sf_acts;
@@ -868,7 +832,7 @@ static int ovs_flow_cmd_fill_actions(const struct sw_flow *flow,
 	return 0;
 }
 
-/* Called with ovs_mutex or RCU read lock. */
+ 
 static int ovs_flow_cmd_fill_info(const struct sw_flow *flow, int dp_ifindex,
 				  struct sk_buff *skb, u32 portid,
 				  u32 seq, u32 flags, u8 cmd, u32 ufid_flags)
@@ -918,7 +882,7 @@ error:
 	return err;
 }
 
-/* May not be called with RCU read lock. */
+ 
 static struct sk_buff *ovs_flow_cmd_alloc_info(const struct sw_flow_actions *acts,
 					       const struct sw_flow_id *sfid,
 					       struct genl_info *info,
@@ -939,7 +903,7 @@ static struct sk_buff *ovs_flow_cmd_alloc_info(const struct sw_flow_actions *act
 	return skb;
 }
 
-/* Called with ovs_mutex. */
+ 
 static struct sk_buff *ovs_flow_cmd_build_info(const struct sw_flow *flow,
 					       int dp_ifindex,
 					       struct genl_info *info, u8 cmd,
@@ -979,7 +943,7 @@ static int ovs_flow_cmd_new(struct sk_buff *skb, struct genl_info *info)
 	int error;
 	bool log = !a[OVS_FLOW_ATTR_PROBE];
 
-	/* Must have key and actions. */
+	 
 	error = -EINVAL;
 	if (!a[OVS_FLOW_ATTR_KEY]) {
 		OVS_NLERR(log, "Flow key attr not present in new flow.");
@@ -990,16 +954,14 @@ static int ovs_flow_cmd_new(struct sk_buff *skb, struct genl_info *info)
 		goto error;
 	}
 
-	/* Most of the time we need to allocate a new flow, do it before
-	 * locking.
-	 */
+	 
 	new_flow = ovs_flow_alloc();
 	if (IS_ERR(new_flow)) {
 		error = PTR_ERR(new_flow);
 		goto error;
 	}
 
-	/* Extract key. */
+	 
 	key = kzalloc(sizeof(*key), GFP_KERNEL);
 	if (!key) {
 		error = -ENOMEM;
@@ -1014,13 +976,13 @@ static int ovs_flow_cmd_new(struct sk_buff *skb, struct genl_info *info)
 
 	ovs_flow_mask_key(&new_flow->key, key, true, &mask);
 
-	/* Extract flow identifier. */
+	 
 	error = ovs_nla_get_identifier(&new_flow->id, a[OVS_FLOW_ATTR_UFID],
 				       key, log);
 	if (error)
 		goto err_kfree_key;
 
-	/* Validate actions. */
+	 
 	error = ovs_nla_copy_actions(net, a[OVS_FLOW_ATTR_ACTIONS],
 				     &new_flow->key, &acts, log);
 	if (error) {
@@ -1042,7 +1004,7 @@ static int ovs_flow_cmd_new(struct sk_buff *skb, struct genl_info *info)
 		goto err_unlock_ovs;
 	}
 
-	/* Check if this is a duplicate flow */
+	 
 	if (ovs_identifier_is_ufid(&new_flow->id))
 		flow = ovs_flow_tbl_lookup_ufid(&dp->table, &new_flow->id);
 	if (!flow)
@@ -1050,7 +1012,7 @@ static int ovs_flow_cmd_new(struct sk_buff *skb, struct genl_info *info)
 	if (likely(!flow)) {
 		rcu_assign_pointer(new_flow->sf_acts, acts);
 
-		/* Put flow in bucket. */
+		 
 		error = ovs_flow_tbl_insert(&dp->table, new_flow, &mask);
 		if (unlikely(error)) {
 			acts = NULL;
@@ -1070,32 +1032,25 @@ static int ovs_flow_cmd_new(struct sk_buff *skb, struct genl_info *info)
 	} else {
 		struct sw_flow_actions *old_acts;
 
-		/* Bail out if we're not allowed to modify an existing flow.
-		 * We accept NLM_F_CREATE in place of the intended NLM_F_EXCL
-		 * because Generic Netlink treats the latter as a dump
-		 * request.  We also accept NLM_F_EXCL in case that bug ever
-		 * gets fixed.
-		 */
+		 
 		if (unlikely(info->nlhdr->nlmsg_flags & (NLM_F_CREATE
 							 | NLM_F_EXCL))) {
 			error = -EEXIST;
 			goto err_unlock_ovs;
 		}
-		/* The flow identifier has to be the same for flow updates.
-		 * Look for any overlapping flow.
-		 */
+		 
 		if (unlikely(!ovs_flow_cmp(flow, &match))) {
 			if (ovs_identifier_is_key(&flow->id))
 				flow = ovs_flow_tbl_lookup_exact(&dp->table,
 								 &match);
-			else /* UFID matches but key is different */
+			else  
 				flow = NULL;
 			if (!flow) {
 				error = -ENOENT;
 				goto err_unlock_ovs;
 			}
 		}
-		/* Update actions. */
+		 
 		old_acts = ovsl_dereference(flow->sf_acts);
 		rcu_assign_pointer(flow->sf_acts, acts);
 
@@ -1133,7 +1088,7 @@ error:
 	return error;
 }
 
-/* Factor out action copy to avoid "Wframe-larger-than=1024" warning. */
+ 
 static noinline_for_stack
 struct sw_flow_actions *get_flow_actions(struct net *net,
 					 const struct nlattr *a,
@@ -1156,19 +1111,7 @@ struct sw_flow_actions *get_flow_actions(struct net *net,
 	return acts;
 }
 
-/* Factor out match-init and action-copy to avoid
- * "Wframe-larger-than=1024" warning. Because mask is only
- * used to get actions, we new a function to save some
- * stack space.
- *
- * If there are not key and action attrs, we return 0
- * directly. In the case, the caller will also not use the
- * match as before. If there is action attr, we try to get
- * actions and save them to *acts. Before returning from
- * the function, we reset the match->mask pointer. Because
- * we should not to return match object with dangling reference
- * to mask.
- * */
+ 
 static noinline_for_stack int
 ovs_nla_init_match_and_action(struct net *net,
 			      struct sw_flow_match *match,
@@ -1204,7 +1147,7 @@ ovs_nla_init_match_and_action(struct net *net,
 		}
 	}
 
-	/* On success, error is 0. */
+	 
 error:
 	match->mask = NULL;
 	return error;
@@ -1240,7 +1183,7 @@ static int ovs_flow_cmd_set(struct sk_buff *skb, struct genl_info *info)
 		goto error;
 
 	if (acts) {
-		/* Can allocate before locking if have acts. */
+		 
 		reply = ovs_flow_cmd_alloc_info(acts, &sfid, info, false,
 						ufid_flags);
 		if (IS_ERR(reply)) {
@@ -1255,7 +1198,7 @@ static int ovs_flow_cmd_set(struct sk_buff *skb, struct genl_info *info)
 		error = -ENODEV;
 		goto err_unlock_ovs;
 	}
-	/* Check that the flow exists. */
+	 
 	if (ufid_present)
 		flow = ovs_flow_tbl_lookup_ufid(&dp->table, &sfid);
 	else
@@ -1265,7 +1208,7 @@ static int ovs_flow_cmd_set(struct sk_buff *skb, struct genl_info *info)
 		goto err_unlock_ovs;
 	}
 
-	/* Update actions, if present. */
+	 
 	if (likely(acts)) {
 		old_acts = ovsl_dereference(flow->sf_acts);
 		rcu_assign_pointer(flow->sf_acts, acts);
@@ -1280,7 +1223,7 @@ static int ovs_flow_cmd_set(struct sk_buff *skb, struct genl_info *info)
 			BUG_ON(error < 0);
 		}
 	} else {
-		/* Could not alloc without acts before locking. */
+		 
 		reply = ovs_flow_cmd_build_info(flow, ovs_header->dp_ifindex,
 						info, OVS_FLOW_CMD_SET, false,
 						ufid_flags);
@@ -1291,7 +1234,7 @@ static int ovs_flow_cmd_set(struct sk_buff *skb, struct genl_info *info)
 		}
 	}
 
-	/* Clear stats. */
+	 
 	if (a[OVS_FLOW_ATTR_CLEAR])
 		ovs_flow_stats_clear(flow);
 	ovs_unlock();
@@ -1424,7 +1367,7 @@ static int ovs_flow_cmd_del(struct sk_buff *skb, struct genl_info *info)
 					&flow->id, info, false, ufid_flags);
 	if (likely(reply)) {
 		if (!IS_ERR(reply)) {
-			rcu_read_lock();	/*To keep RCU checker happy. */
+			rcu_read_lock();	 
 			err = ovs_flow_cmd_fill_info(flow, ovs_header->dp_ifindex,
 						     reply, info->snd_portid,
 						     info->snd_seq, 0,
@@ -1510,23 +1453,23 @@ static const struct nla_policy flow_policy[OVS_FLOW_ATTR_MAX + 1] = {
 static const struct genl_small_ops dp_flow_genl_ops[] = {
 	{ .cmd = OVS_FLOW_CMD_NEW,
 	  .validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
-	  .flags = GENL_UNS_ADMIN_PERM, /* Requires CAP_NET_ADMIN privilege. */
+	  .flags = GENL_UNS_ADMIN_PERM,  
 	  .doit = ovs_flow_cmd_new
 	},
 	{ .cmd = OVS_FLOW_CMD_DEL,
 	  .validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
-	  .flags = GENL_UNS_ADMIN_PERM, /* Requires CAP_NET_ADMIN privilege. */
+	  .flags = GENL_UNS_ADMIN_PERM,  
 	  .doit = ovs_flow_cmd_del
 	},
 	{ .cmd = OVS_FLOW_CMD_GET,
 	  .validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
-	  .flags = 0,		    /* OK for unprivileged users. */
+	  .flags = 0,		     
 	  .doit = ovs_flow_cmd_get,
 	  .dumpit = ovs_flow_cmd_dump
 	},
 	{ .cmd = OVS_FLOW_CMD_SET,
 	  .validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
-	  .flags = GENL_UNS_ADMIN_PERM, /* Requires CAP_NET_ADMIN privilege. */
+	  .flags = GENL_UNS_ADMIN_PERM,  
 	  .doit = ovs_flow_cmd_set,
 	},
 };
@@ -1554,14 +1497,14 @@ static size_t ovs_dp_cmd_msg_size(void)
 	msgsize += nla_total_size(IFNAMSIZ);
 	msgsize += nla_total_size_64bit(sizeof(struct ovs_dp_stats));
 	msgsize += nla_total_size_64bit(sizeof(struct ovs_dp_megaflow_stats));
-	msgsize += nla_total_size(sizeof(u32)); /* OVS_DP_ATTR_USER_FEATURES */
-	msgsize += nla_total_size(sizeof(u32)); /* OVS_DP_ATTR_MASKS_CACHE_SIZE */
-	msgsize += nla_total_size(sizeof(u32) * nr_cpu_ids); /* OVS_DP_ATTR_PER_CPU_PIDS */
+	msgsize += nla_total_size(sizeof(u32));  
+	msgsize += nla_total_size(sizeof(u32));  
+	msgsize += nla_total_size(sizeof(u32) * nr_cpu_ids);  
 
 	return msgsize;
 }
 
-/* Called with ovs_mutex. */
+ 
 static int ovs_dp_cmd_fill_info(struct datapath *dp, struct sk_buff *skb,
 				u32 portid, u32 seq, u32 flags, u8 cmd)
 {
@@ -1619,7 +1562,7 @@ static struct sk_buff *ovs_dp_cmd_alloc_info(void)
 	return genlmsg_new(ovs_dp_cmd_msg_size(), GFP_KERNEL);
 }
 
-/* Called with rcu_read_lock or ovs_mutex. */
+ 
 static struct datapath *lookup_datapath(struct net *net,
 					const struct ovs_header *ovs_header,
 					struct nlattr *a[OVS_DP_ATTR_MAX + 1])
@@ -1688,11 +1631,7 @@ u32 ovs_dp_get_upcall_portid(const struct datapath *dp, uint32_t cpu_id)
 			return dp_nlsk_pids->pids[cpu_id];
 		} else if (dp_nlsk_pids->n_pids > 0 &&
 			   cpu_id >= dp_nlsk_pids->n_pids) {
-			/* If the number of netlink PIDs is mismatched with
-			 * the number of CPUs as seen by the kernel, log this
-			 * and send the upcall to an arbitrary socket (0) in
-			 * order to not drop packets
-			 */
+			 
 			pr_info_ratelimited("cpu_id mismatch with handler threads");
 			return dp_nlsk_pids->pids[cpu_id %
 						  dp_nlsk_pids->n_pids];
@@ -1738,7 +1677,7 @@ static int ovs_dp_change(struct datapath *dp, struct nlattr *a[])
 
 	if (dp->user_features & OVS_DP_F_DISPATCH_UPCALL_PER_CPU &&
 	    a[OVS_DP_ATTR_PER_CPU_PIDS]) {
-		/* Upcall Netlink Port IDs have been updated */
+		 
 		err = ovs_dp_set_upcall_portids(dp,
 						a[OVS_DP_ATTR_PER_CPU_PIDS]);
 		if (err)
@@ -1805,7 +1744,7 @@ static int ovs_dp_cmd_new(struct sk_buff *skb, struct genl_info *info)
 
 	ovs_dp_set_net(dp, sock_net(skb->sk));
 
-	/* Allocate table. */
+	 
 	err = ovs_flow_tbl_init(&dp->table);
 	if (err)
 		goto err_destroy_dp;
@@ -1822,7 +1761,7 @@ static int ovs_dp_cmd_new(struct sk_buff *skb, struct genl_info *info)
 	if (err)
 		goto err_destroy_ports;
 
-	/* Set up our datapath device. */
+	 
 	parms.name = nla_data(a[OVS_DP_ATTR_NAME]);
 	parms.type = OVS_VPORT_TYPE_INTERNAL;
 	parms.options = NULL;
@@ -1832,7 +1771,7 @@ static int ovs_dp_cmd_new(struct sk_buff *skb, struct genl_info *info)
 	parms.desired_ifindex = a[OVS_DP_ATTR_IFINDEX]
 		? nla_get_s32(a[OVS_DP_ATTR_IFINDEX]) : 0;
 
-	/* So far only local changes have been made, now need the lock. */
+	 
 	ovs_lock();
 
 	err = ovs_dp_change(dp, a);
@@ -1846,10 +1785,7 @@ static int ovs_dp_cmd_new(struct sk_buff *skb, struct genl_info *info)
 			err = -EEXIST;
 
 		if (err == -EEXIST) {
-			/* An outdated user space instance that does not understand
-			 * the concept of user_features has attempted to create a new
-			 * datapath and is likely to reuse it. Drop all user features.
-			 */
+			 
 			if (info->genlhdr->version < OVS_DP_VER_FEATURES)
 				ovs_dp_reset_user_features(skb, info);
 		}
@@ -1888,7 +1824,7 @@ err:
 	return err;
 }
 
-/* Called with ovs_mutex. */
+ 
 static void __dp_destroy(struct datapath *dp)
 {
 	struct flow_table *table = &dp->table;
@@ -1908,19 +1844,14 @@ static void __dp_destroy(struct datapath *dp)
 
 	list_del_rcu(&dp->list_node);
 
-	/* OVSP_LOCAL is datapath internal port. We need to make sure that
-	 * all ports in datapath are destroyed first before freeing datapath.
-	 */
+	 
 	ovs_dp_detach_port(ovs_vport_ovsl(dp, OVSP_LOCAL));
 
-	/* Flush sw_flow in the tables. RCU cb only releases resource
-	 * such as dp, ports and tables. That may avoid some issues
-	 * such as RCU usage warning.
-	 */
+	 
 	table_instance_flow_flush(table, ovsl_dereference(table->ti),
 				  ovsl_dereference(table->ufid_ti));
 
-	/* RCU destroy the ports, meters and flow tables. */
+	 
 	call_rcu(&dp->rcu, destroy_dp_rcu);
 }
 
@@ -2059,23 +1990,23 @@ static const struct nla_policy datapath_policy[OVS_DP_ATTR_MAX + 1] = {
 static const struct genl_small_ops dp_datapath_genl_ops[] = {
 	{ .cmd = OVS_DP_CMD_NEW,
 	  .validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
-	  .flags = GENL_UNS_ADMIN_PERM, /* Requires CAP_NET_ADMIN privilege. */
+	  .flags = GENL_UNS_ADMIN_PERM,  
 	  .doit = ovs_dp_cmd_new
 	},
 	{ .cmd = OVS_DP_CMD_DEL,
 	  .validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
-	  .flags = GENL_UNS_ADMIN_PERM, /* Requires CAP_NET_ADMIN privilege. */
+	  .flags = GENL_UNS_ADMIN_PERM,  
 	  .doit = ovs_dp_cmd_del
 	},
 	{ .cmd = OVS_DP_CMD_GET,
 	  .validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
-	  .flags = 0,		    /* OK for unprivileged users. */
+	  .flags = 0,		     
 	  .doit = ovs_dp_cmd_get,
 	  .dumpit = ovs_dp_cmd_dump
 	},
 	{ .cmd = OVS_DP_CMD_SET,
 	  .validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
-	  .flags = GENL_UNS_ADMIN_PERM, /* Requires CAP_NET_ADMIN privilege. */
+	  .flags = GENL_UNS_ADMIN_PERM,  
 	  .doit = ovs_dp_cmd_set,
 	},
 };
@@ -2096,7 +2027,7 @@ static struct genl_family dp_datapath_genl_family __ro_after_init = {
 	.module = THIS_MODULE,
 };
 
-/* Called with ovs_mutex or RCU read lock. */
+ 
 static int ovs_vport_cmd_fill_info(struct vport *vport, struct sk_buff *skb,
 				   struct net *net, u32 portid, u32 seq,
 				   u32 flags, u8 cmd, gfp_t gfp)
@@ -2157,7 +2088,7 @@ static struct sk_buff *ovs_vport_cmd_alloc_info(void)
 	return nlmsg_new(NLMSG_DEFAULT_SIZE, GFP_KERNEL);
 }
 
-/* Called with ovs_mutex, only via ovs_dp_notify_wq(). */
+ 
 struct sk_buff *ovs_vport_cmd_build_info(struct vport *vport, struct net *net,
 					 u32 portid, u32 seq, u8 cmd)
 {
@@ -2175,7 +2106,7 @@ struct sk_buff *ovs_vport_cmd_build_info(struct vport *vport, struct net *net,
 	return skb;
 }
 
-/* Called with ovs_mutex or RCU read lock. */
+ 
 static struct vport *lookup_vport(struct net *net,
 				  const struct ovs_header *ovs_header,
 				  struct nlattr *a[OVS_VPORT_ATTR_MAX + 1])
@@ -2232,7 +2163,7 @@ static unsigned int ovs_get_max_headroom(struct datapath *dp)
 	return max_headroom;
 }
 
-/* Called with ovs_mutex */
+ 
 static void ovs_update_headroom(struct datapath *dp, unsigned int new_headroom)
 {
 	struct vport *vport;
@@ -2422,7 +2353,7 @@ static int ovs_vport_cmd_del(struct sk_buff *skb, struct genl_info *info)
 				      OVS_VPORT_CMD_DEL, GFP_KERNEL);
 	BUG_ON(err < 0);
 
-	/* the vport deletion may trigger dp headroom update */
+	 
 	dp = vport->dp;
 	if (netdev_get_fwd_headroom(vport->dev) == dp->max_headroom)
 		update_headroom = true;
@@ -2551,23 +2482,23 @@ static const struct nla_policy vport_policy[OVS_VPORT_ATTR_MAX + 1] = {
 static const struct genl_small_ops dp_vport_genl_ops[] = {
 	{ .cmd = OVS_VPORT_CMD_NEW,
 	  .validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
-	  .flags = GENL_UNS_ADMIN_PERM, /* Requires CAP_NET_ADMIN privilege. */
+	  .flags = GENL_UNS_ADMIN_PERM,  
 	  .doit = ovs_vport_cmd_new
 	},
 	{ .cmd = OVS_VPORT_CMD_DEL,
 	  .validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
-	  .flags = GENL_UNS_ADMIN_PERM, /* Requires CAP_NET_ADMIN privilege. */
+	  .flags = GENL_UNS_ADMIN_PERM,  
 	  .doit = ovs_vport_cmd_del
 	},
 	{ .cmd = OVS_VPORT_CMD_GET,
 	  .validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
-	  .flags = 0,		    /* OK for unprivileged users. */
+	  .flags = 0,		     
 	  .doit = ovs_vport_cmd_get,
 	  .dumpit = ovs_vport_cmd_dump
 	},
 	{ .cmd = OVS_VPORT_CMD_SET,
 	  .validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
-	  .flags = GENL_UNS_ADMIN_PERM, /* Requires CAP_NET_ADMIN privilege. */
+	  .flags = GENL_UNS_ADMIN_PERM,  
 	  .doit = ovs_vport_cmd_set,
 	},
 };
@@ -2687,7 +2618,7 @@ static void __net_exit ovs_exit_net(struct net *dnet)
 		list_vports_from_net(net, dnet, &head);
 	up_read(&net_rwsem);
 
-	/* Detach all vports from given namespace. */
+	 
 	list_for_each_entry_safe(vport, vport_next, &head, detach_list) {
 		list_del(&vport->detach_list);
 		ovs_dp_detach_port(vport);

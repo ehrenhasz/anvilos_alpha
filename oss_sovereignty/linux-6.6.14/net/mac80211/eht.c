@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * EHT handling
- *
- * Copyright(c) 2021-2023 Intel Corporation
- */
+
+ 
 
 #include "ieee80211_i.h"
 
@@ -35,7 +31,7 @@ ieee80211_eht_cap_ie_to_sta_eht_cap(struct ieee80211_sub_if_data *sdata,
 
 	eht_total_size += mcs_nss_size;
 
-	/* Calculate the PPE thresholds length only if the header is present */
+	 
 	if (eht_cap_ie_elem->fixed.phy_cap_info[5] &
 			IEEE80211_EHT_PHY_CAP5_PPE_THRESHOLD_PRESENT) {
 		u16 eht_ppe_hdr;
@@ -49,7 +45,7 @@ ieee80211_eht_cap_ie_to_sta_eht_cap(struct ieee80211_sub_if_data *sdata,
 					       eht_cap_ie_elem->fixed.phy_cap_info);
 		eht_total_size += eht_ppe_size;
 
-		/* we calculate as if NSS > 8 are valid, but don't handle that */
+		 
 		if (eht_ppe_size > sizeof(eht_cap->eht_ppe_thres))
 			return;
 	}
@@ -57,11 +53,11 @@ ieee80211_eht_cap_ie_to_sta_eht_cap(struct ieee80211_sub_if_data *sdata,
 	if (eht_cap_len < eht_total_size)
 		return;
 
-	/* Copy the static portion of the EHT capabilities */
+	 
 	memcpy(&eht_cap->eht_cap_elem, pos, sizeof(eht_cap->eht_cap_elem));
 	pos += sizeof(eht_cap->eht_cap_elem);
 
-	/* Copy MCS/NSS which depends on the peer capabilities */
+	 
 	memset(&eht_cap->eht_mcs_nss_supp, 0,
 	       sizeof(eht_cap->eht_mcs_nss_supp));
 	memcpy(&eht_cap->eht_mcs_nss_supp, pos, mcs_nss_size);

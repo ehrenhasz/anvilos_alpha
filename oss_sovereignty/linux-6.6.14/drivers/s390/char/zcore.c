@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-1.0+
-/*
- * zcore module to export memory content and register sets for creating system
- * dumps on SCSI/NVMe disks (zfcp/nvme dump).
- *
- * For more information please refer to Documentation/arch/s390/zfcpdump.rst
- *
- * Copyright IBM Corp. 2003, 2008
- * Author(s): Michael Holzheu
- */
+
+ 
 
 #define KMSG_COMPONENT "zdump"
 #define pr_fmt(fmt) KMSG_COMPONENT ": " fmt
@@ -56,13 +48,7 @@ static unsigned long os_info_flags;
 static DEFINE_MUTEX(hsa_buf_mutex);
 static char hsa_buf[PAGE_SIZE] __aligned(PAGE_SIZE);
 
-/*
- * Copy memory from HSA to iterator (not reentrant):
- *
- * @iter:  Iterator where memory should be copied to
- * @src:   Start address within HSA where data should be copied
- * @count: Size of buffer, which should be copied
- */
+ 
 size_t memcpy_hsa_iter(struct iov_iter *iter, unsigned long src, size_t count)
 {
 	size_t bytes, copied, res = 0;
@@ -90,13 +76,7 @@ size_t memcpy_hsa_iter(struct iov_iter *iter, unsigned long src, size_t count)
 	return res;
 }
 
-/*
- * Copy memory from HSA to kernel memory (not reentrant):
- *
- * @dest:  Kernel or user buffer where memory should be copied to
- * @src:   Start address within HSA where data should be copied
- * @count: Size of buffer, which should be copied
- */
+ 
 static inline int memcpy_hsa_kernel(void *dst, unsigned long src, size_t count)
 {
 	struct iov_iter iter;
@@ -114,7 +94,7 @@ static int __init init_cpu_info(void)
 {
 	struct save_area *sa;
 
-	/* get info for boot cpu from lowcore, stored in the HSA */
+	 
 	sa = save_area_boot_cpu();
 	if (!sa)
 		return -ENOMEM;
@@ -122,13 +102,11 @@ static int __init init_cpu_info(void)
 		TRACE("could not copy from HSA\n");
 		return -EIO;
 	}
-	save_area_add_regs(sa, hsa_buf); /* vx registers are saved in smp.c */
+	save_area_add_regs(sa, hsa_buf);  
 	return 0;
 }
 
-/*
- * Release the HSA
- */
+ 
 static void release_hsa(void)
 {
 	diag308(DIAG308_REL_HSA, NULL);
@@ -142,7 +120,7 @@ static ssize_t zcore_reipl_write(struct file *filp, const char __user *buf,
 		diag308(DIAG308_SET, zcore_ipl_block);
 		if (os_info_flags & OS_INFO_FLAG_REIPL_CLEAR)
 			diag308(DIAG308_LOAD_CLEAR, NULL);
-		/* Use special diag308 subcode for CCW normal ipl */
+		 
 		if (zcore_ipl_block->pb0_hdr.pbt == IPL_PBT_CCW)
 			diag308(DIAG308_LOAD_NORMAL_DUMP, NULL);
 		else
@@ -213,10 +191,7 @@ static int __init check_sdias(void)
 	return 0;
 }
 
-/*
- * Provide IPL parameter information block from either HSA or memory
- * for future reipl
- */
+ 
 static int __init zcore_reipl_init(void)
 {
 	struct os_info_entry *entry;
@@ -244,12 +219,7 @@ static int __init zcore_reipl_init(void)
 		free_page((unsigned long) zcore_ipl_block);
 		zcore_ipl_block = NULL;
 	}
-	/*
-	 * Read the bit-flags field from os_info flags entry.
-	 * Return zero even for os_info read or entry checksum errors in order
-	 * to continue dump processing, considering that os_info could be
-	 * corrupted on the panicked system.
-	 */
+	 
 	os_info = (void *)__get_free_page(GFP_KERNEL);
 	if (!os_info)
 		return -ENOMEM;
@@ -288,13 +258,13 @@ static int zcore_reboot_and_on_panic_handler(struct notifier_block *self,
 
 static struct notifier_block zcore_reboot_notifier = {
 	.notifier_call	= zcore_reboot_and_on_panic_handler,
-	/* we need to be notified before reipl and kdump */
+	 
 	.priority	= INT_MAX,
 };
 
 static struct notifier_block zcore_on_panic_notifier = {
 	.notifier_call	= zcore_reboot_and_on_panic_handler,
-	/* we need to be notified before reipl and kdump */
+	 
 	.priority	= INT_MAX,
 };
 

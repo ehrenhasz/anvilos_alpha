@@ -1,19 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Architecture-specific ACPI-based support for suspend-to-idle.
- *
- * Author: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
- * Author: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
- * Author: Shyam Sundar S K <Shyam-sundar.S-k@amd.com>
- *
- * On platforms supporting the Low Power S0 Idle interface there is an ACPI
- * device object with the PNP0D80 compatible device ID (System Power Management
- * Controller) and a specific _DSM method under it.  That method, if present,
- * can be used to indicate to the platform that the OS is transitioning into a
- * low-power state in which certain types of activity are not desirable or that
- * it is leaving such a state, which allows the platform to adjust its operation
- * mode accordingly.
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/device.h>
@@ -33,7 +19,7 @@ static const struct acpi_device_id lps0_device_ids[] = {
 	{"", },
 };
 
-/* Microsoft platform agnostic UUID */
+ 
 #define ACPI_LPS0_DSM_UUID_MICROSOFT      "11e00d56-ce64-47ce-837b-1f898f9aa461"
 
 #define ACPI_LPS0_DSM_UUID	"c4eb40a0-6cd2-11e2-bcfd-0800200c9a66"
@@ -46,7 +32,7 @@ static const struct acpi_device_id lps0_device_ids[] = {
 #define ACPI_LPS0_MS_ENTRY      7
 #define ACPI_LPS0_MS_EXIT       8
 
-/* AMD */
+ 
 #define ACPI_LPS0_DSM_UUID_AMD      "e3f32452-febc-43ce-9039-932122d37721"
 #define ACPI_LPS0_ENTRY_AMD         2
 #define ACPI_LPS0_EXIT_AMD          3
@@ -61,14 +47,14 @@ static guid_t lps0_dsm_guid_microsoft;
 static int lps0_dsm_func_mask_microsoft;
 static int lps0_dsm_state;
 
-/* Device constraint entry structure */
+ 
 struct lpi_device_info {
 	char *name;
 	int enabled;
 	union acpi_object *package;
 };
 
-/* Constraint package structure */
+ 
 struct lpi_device_constraint {
 	int uid;
 	int min_dstate;
@@ -80,7 +66,7 @@ struct lpi_constraints {
 	int min_dstate;
 };
 
-/* AMD Constraint package structure */
+ 
 struct lpi_device_constraint_amd {
 	char *name;
 	int enabled;
@@ -262,7 +248,7 @@ static void lpi_device_get_constraints(void)
 
 			switch (info_obj->type) {
 			case ACPI_TYPE_INTEGER:
-				/* version */
+				 
 				break;
 			case ACPI_TYPE_PACKAGE:
 				if (info_obj->package.count < 2)
@@ -299,18 +285,7 @@ free_acpi_buffer:
 	ACPI_FREE(out_obj);
 }
 
-/**
- * acpi_get_lps0_constraint - Get the LPS0 constraint for a device.
- * @adev: Device to get the constraint for.
- *
- * The LPS0 constraint is the shallowest (minimum) power state in which the
- * device can be so as to allow the platform as a whole to achieve additional
- * energy conservation by utilizing a system-wide low-power state.
- *
- * Returns:
- *  - ACPI power state value of the constraint for @adev on success.
- *  - Otherwise, ACPI_STATE_UNKNOWN.
- */
+ 
 int acpi_get_lps0_constraint(struct acpi_device *adev)
 {
 	struct lpi_constraints *entry;
@@ -419,7 +394,7 @@ static int validate_dsm(acpi_handle handle, const char *uuid, int rev, guid_t *d
 	guid_parse(uuid, dsm_guid);
 	obj = acpi_evaluate_dsm(handle, dsm_guid, rev, 0, NULL);
 
-	/* Check if the _DSM is present and as expected. */
+	 
 	if (!obj || obj->type != ACPI_TYPE_BUFFER || obj->buffer.length == 0 ||
 	    obj->buffer.length > sizeof(u32)) {
 		acpi_handle_debug(handle,
@@ -493,7 +468,7 @@ static int lps0_device_attach(struct acpi_device *adev,
 	}
 
 	if (lps0_dsm_func_mask < 0 && lps0_dsm_func_mask_microsoft < 0)
-		return 0; //function evaluation failed
+		return 0; 
 
 	lps0_device_handle = adev->handle;
 
@@ -502,22 +477,14 @@ static int lps0_device_attach(struct acpi_device *adev,
 	else
 		lpi_device_get_constraints();
 
-	/*
-	 * Use suspend-to-idle by default if ACPI_FADT_LOW_POWER_S0 is set in
-	 * the FADT and the default suspend mode was not set from the command
-	 * line.
-	 */
+	 
 	if ((acpi_gbl_FADT.flags & ACPI_FADT_LOW_POWER_S0) &&
 	    mem_sleep_default > PM_SUSPEND_MEM && !acpi_sleep_default_s3) {
 		mem_sleep_current = PM_SUSPEND_TO_IDLE;
 		pr_info("Low-power S0 idle used by default for system suspend\n");
 	}
 
-	/*
-	 * Some LPS0 systems, like ASUS Zenbook UX430UNR/i7-8550U, require the
-	 * EC GPE to be enabled while suspended for certain wakeup devices to
-	 * work, so mark it as wakeup-capable.
-	 */
+	 
 	acpi_ec_mark_gpe_for_wake();
 
 	return 0;
@@ -538,7 +505,7 @@ int acpi_s2idle_prepare_late(void)
 	if (pm_debug_messages_on)
 		lpi_check_constraints();
 
-	/* Screen off */
+	 
 	if (lps0_dsm_func_mask > 0)
 		acpi_sleep_run_lps0_dsm(acpi_s2idle_vendor_amd() ?
 					ACPI_LPS0_SCREEN_OFF_AMD :
@@ -549,14 +516,14 @@ int acpi_s2idle_prepare_late(void)
 		acpi_sleep_run_lps0_dsm(ACPI_LPS0_SCREEN_OFF,
 				lps0_dsm_func_mask_microsoft, lps0_dsm_guid_microsoft);
 
-	/* LPS0 entry */
+	 
 	if (lps0_dsm_func_mask > 0)
 		acpi_sleep_run_lps0_dsm(acpi_s2idle_vendor_amd() ?
 					ACPI_LPS0_ENTRY_AMD :
 					ACPI_LPS0_ENTRY,
 					lps0_dsm_func_mask, lps0_dsm_guid);
 	if (lps0_dsm_func_mask_microsoft > 0) {
-		/* modern standby entry */
+		 
 		acpi_sleep_run_lps0_dsm(ACPI_LPS0_MS_ENTRY,
 				lps0_dsm_func_mask_microsoft, lps0_dsm_guid_microsoft);
 		acpi_sleep_run_lps0_dsm(ACPI_LPS0_ENTRY,
@@ -595,7 +562,7 @@ void acpi_s2idle_restore_early(void)
 		if (handler->restore)
 			handler->restore();
 
-	/* LPS0 exit */
+	 
 	if (lps0_dsm_func_mask > 0)
 		acpi_sleep_run_lps0_dsm(acpi_s2idle_vendor_amd() ?
 					ACPI_LPS0_EXIT_AMD :
@@ -605,12 +572,12 @@ void acpi_s2idle_restore_early(void)
 		acpi_sleep_run_lps0_dsm(ACPI_LPS0_EXIT,
 				lps0_dsm_func_mask_microsoft, lps0_dsm_guid_microsoft);
 
-	/* Modern standby exit */
+	 
 	if (lps0_dsm_func_mask_microsoft > 0)
 		acpi_sleep_run_lps0_dsm(ACPI_LPS0_MS_EXIT,
 				lps0_dsm_func_mask_microsoft, lps0_dsm_guid_microsoft);
 
-	/* Screen on */
+	 
 	if (lps0_dsm_func_mask_microsoft > 0)
 		acpi_sleep_run_lps0_dsm(ACPI_LPS0_SCREEN_ON,
 				lps0_dsm_func_mask_microsoft, lps0_dsm_guid_microsoft);
@@ -666,4 +633,4 @@ void acpi_unregister_lps0_dev(struct acpi_s2idle_dev_ops *arg)
 }
 EXPORT_SYMBOL_GPL(acpi_unregister_lps0_dev);
 
-#endif /* CONFIG_SUSPEND */
+#endif  

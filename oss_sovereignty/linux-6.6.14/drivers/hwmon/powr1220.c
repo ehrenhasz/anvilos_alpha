@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * powr1220.c - Driver for the Lattice POWR1220 programmable power supply
- * and monitor. Users can read all ADC inputs along with their labels
- * using the sysfs nodes.
- *
- * Copyright (c) 2014 Echo360 https://www.echo360.com
- * Scott Kanowitz <skanowitz@echo360.com> <scott.kanowitz@gmail.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -78,10 +71,10 @@ struct powr1220_data {
 	struct mutex update_lock;
 	u8 max_channels;
 	bool adc_valid[MAX_POWR1220_ADC_VALUES];
-	 /* the next value is in jiffies */
+	  
 	unsigned long adc_last_updated[MAX_POWR1220_ADC_VALUES];
 
-	/* values */
+	 
 	int adc_maxes[MAX_POWR1220_ADC_VALUES];
 	int adc_values[MAX_POWR1220_ADC_VALUES];
 };
@@ -103,7 +96,7 @@ static const char * const input_names[] = {
 	[VCCINP]   = "vccinp",
 };
 
-/* Reads the specified ADC channel */
+ 
 static int powr1220_read_adc(struct device *dev, int ch_num)
 {
 	struct powr1220_data *data = dev_get_drvdata(dev);
@@ -115,43 +108,35 @@ static int powr1220_read_adc(struct device *dev, int ch_num)
 
 	if (time_after(jiffies, data->adc_last_updated[ch_num] + HZ) ||
 	    !data->adc_valid[ch_num]) {
-		/*
-		 * figure out if we need to use the attenuator for
-		 * high inputs or inputs that we don't yet have a measurement
-		 * for. We dynamically set the attenuator depending on the
-		 * max reading.
-		 */
+		 
 		if (data->adc_maxes[ch_num] > ADC_MAX_LOW_MEASUREMENT_MV ||
 		    data->adc_maxes[ch_num] == 0)
 			adc_range = 1 << 4;
 
-		/* set the attenuator and mux */
+		 
 		result = i2c_smbus_write_byte_data(data->client, ADC_MUX,
 						   adc_range | ch_num);
 		if (result)
 			goto exit;
 
-		/*
-		 * wait at least Tconvert time (200 us) for the
-		 * conversion to complete
-		 */
+		 
 		udelay(200);
 
-		/* get the ADC reading */
+		 
 		result = i2c_smbus_read_byte_data(data->client, ADC_VALUE_LOW);
 		if (result < 0)
 			goto exit;
 
 		reading = result >> 4;
 
-		/* get the upper half of the reading */
+		 
 		result = i2c_smbus_read_byte_data(data->client, ADC_VALUE_HIGH);
 		if (result < 0)
 			goto exit;
 
 		reading |= result << 4;
 
-		/* now convert the reading to a voltage */
+		 
 		reading *= ADC_STEP_MV;
 		data->adc_values[ch_num] = reading;
 		data->adc_valid[ch_num] = true;

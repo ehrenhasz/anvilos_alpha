@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2020 Linaro Ltd
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/interconnect-provider.h>
@@ -16,14 +14,14 @@
 #include "icc-common.h"
 #include "icc-rpm.h"
 
-/* QNOC QoS */
+ 
 #define QNOC_QOS_MCTL_LOWn_ADDR(n)	(0x8 + (n * 0x1000))
 #define QNOC_QOS_MCTL_DFLT_PRIO_MASK	0x70
 #define QNOC_QOS_MCTL_DFLT_PRIO_SHIFT	4
 #define QNOC_QOS_MCTL_URGFWD_EN_MASK	0x8
 #define QNOC_QOS_MCTL_URGFWD_EN_SHIFT	3
 
-/* BIMC QoS */
+ 
 #define M_BKE_REG_BASE(n)		(0x300 + (0x4000 * n))
 #define M_BKE_EN_ADDR(n)		(M_BKE_REG_BASE(n))
 #define M_BKE_HEALTH_CFG_ADDR(i, n)	(M_BKE_REG_BASE(n) + 0x40 + (0x4 * i))
@@ -36,7 +34,7 @@
 
 #define M_BKE_EN_EN_BMASK		0x1
 
-/* NoC QoS */
+ 
 #define NOC_QOS_PRIORITYn_ADDR(n)	(0x8 + (n * 0x1000))
 #define NOC_QOS_PRIORITY_P1_MASK	0xc
 #define NOC_QOS_PRIORITY_P0_MASK	0x3
@@ -48,7 +46,7 @@
 #define NOC_QOS_MODE_FIXED_VAL		0x0
 #define NOC_QOS_MODE_BYPASS_VAL		0x2
 
-#define ICC_BUS_CLK_MIN_RATE		19200ULL /* kHz */
+#define ICC_BUS_CLK_MIN_RATE		19200ULL  
 
 static int qcom_icc_set_qnoc_qos(struct icc_node *src)
 {
@@ -84,7 +82,7 @@ static int qcom_icc_bimc_set_qos_health(struct qcom_icc_provider *qp,
 	val |= qos->areq_prio << M_BKE_HEALTH_CFG_AREQPRIO_SHIFT;
 	mask |= M_BKE_HEALTH_CFG_AREQPRIO_MASK;
 
-	/* LIMITCMDS is not present on M_BKE_HEALTH_3 */
+	 
 	if (regnum != 3) {
 		val |= qos->limit_commands << M_BKE_HEALTH_CFG_LIMITCMDS_SHIFT;
 		mask |= M_BKE_HEALTH_CFG_LIMITCMDS_MASK;
@@ -111,9 +109,7 @@ static int qcom_icc_set_bimc_qos(struct icc_node *src)
 	if (qn->qos.qos_mode != NOC_QOS_MODE_INVALID)
 		mode = qn->qos.qos_mode;
 
-	/* QoS Priority: The QoS Health parameters are getting considered
-	 * only if we are NOT in Bypass Mode.
-	 */
+	 
 	if (mode != NOC_QOS_MODE_BYPASS) {
 		for (i = 3; i >= 0; i--) {
 			rc = qcom_icc_bimc_set_qos_health(qp,
@@ -122,7 +118,7 @@ static int qcom_icc_set_bimc_qos(struct icc_node *src)
 				return rc;
 		}
 
-		/* Set BKE_EN to 1 when Fixed, Regulator or Limiter Mode */
+		 
 		val = 1;
 	}
 
@@ -137,7 +133,7 @@ static int qcom_icc_noc_set_qos_priority(struct qcom_icc_provider *qp,
 	u32 val;
 	int rc;
 
-	/* Must be updated one at a time, P1 first, P0 last */
+	 
 	val = qos->areq_prio << NOC_QOS_PRIORITY_P1_SHIFT;
 	rc = regmap_update_bits(qp->regmap,
 				qp->qos_offset + NOC_QOS_PRIORITYn_ADDR(qos->qos_port),
@@ -179,7 +175,7 @@ static int qcom_icc_set_noc_qos(struct icc_node *src)
 		dev_dbg(src->provider->dev, "NoC QoS: %s: Set Bypass mode\n", qn->name);
 		mode = NOC_QOS_MODE_BYPASS_VAL;
 	} else {
-		/* How did we get here? */
+		 
 	}
 
 	return regmap_update_bits(qp->regmap,
@@ -243,10 +239,7 @@ static int qcom_icc_rpm_set(struct qcom_icc_node *qn, u64 *bw)
 	return 0;
 }
 
-/**
- * qcom_icc_pre_bw_aggregate - cleans up values before re-aggregate requests
- * @node: icc node to operate on
- */
+ 
 static void qcom_icc_pre_bw_aggregate(struct icc_node *node)
 {
 	struct qcom_icc_node *qn;
@@ -259,15 +252,7 @@ static void qcom_icc_pre_bw_aggregate(struct icc_node *node)
 	}
 }
 
-/**
- * qcom_icc_bw_aggregate - aggregate bw for buckets indicated by tag
- * @node: node to aggregate
- * @tag: tag to indicate which buckets to aggregate
- * @avg_bw: new bw to sum aggregate
- * @peak_bw: new bw to max aggregate
- * @agg_avg: existing aggregate avg bw val
- * @agg_peak: existing aggregate peak bw val
- */
+ 
 static int qcom_icc_bw_aggregate(struct icc_node *node, u32 tag, u32 avg_bw,
 				 u32 peak_bw, u32 *agg_avg, u32 *agg_peak)
 {
@@ -291,11 +276,7 @@ static int qcom_icc_bw_aggregate(struct icc_node *node, u32 tag, u32 avg_bw,
 	return 0;
 }
 
-/**
- * qcom_icc_bus_aggregate - calculate bus clock rates by traversing all nodes
- * @provider: generic interconnect provider
- * @agg_clk_rate: array containing the aggregated clock rates in kHz
- */
+ 
 static void qcom_icc_bus_aggregate(struct icc_provider *provider, u64 *agg_clk_rate)
 {
 	u64 agg_avg_rate, agg_rate;
@@ -303,10 +284,7 @@ static void qcom_icc_bus_aggregate(struct icc_provider *provider, u64 *agg_clk_r
 	struct icc_node *node;
 	int i;
 
-	/*
-	 * Iterate nodes on the provider, aggregate bandwidth requests for
-	 * every bucket and convert them into bus clock rates.
-	 */
+	 
 	list_for_each_entry(node, &provider->nodes, node_list) {
 		qn = node->data;
 		for (i = 0; i < QCOM_SMD_RPM_STATE_NUM; i++) {
@@ -352,26 +330,23 @@ static int qcom_icc_set(struct icc_node *src, struct icc_node *dst)
 			return ret;
 	}
 
-	/* Some providers don't have a bus clock to scale */
+	 
 	if (!qp->bus_clk_desc && !qp->bus_clk)
 		return 0;
 
-	/*
-	 * Downstream checks whether the requested rate is zero, but it makes little sense
-	 * to vote for a value that's below the lower threshold, so let's not do so.
-	 */
+	 
 	if (qp->keep_alive)
 		active_rate = max(ICC_BUS_CLK_MIN_RATE, active_rate);
 
-	/* Some providers have a non-RPM-owned bus clock - convert kHz->Hz for the CCF */
+	 
 	if (qp->bus_clk) {
 		active_rate = max_t(u64, active_rate, sleep_rate);
-		/* ARM32 caps clk_set_rate arg to u32.. Nothing we can do about that! */
+		 
 		active_rate = min_t(u64, 1000ULL * active_rate, ULONG_MAX);
 		return clk_set_rate(qp->bus_clk, active_rate);
 	}
 
-	/* RPM only accepts <=INT_MAX rates */
+	 
 	active_rate = min_t(u64, active_rate, INT_MAX);
 	sleep_rate = min_t(u64, sleep_rate, INT_MAX);
 
@@ -381,7 +356,7 @@ static int qcom_icc_set(struct icc_node *src, struct icc_node *dst)
 		if (ret)
 			return ret;
 
-		/* Cache the rate after we've successfully commited it to RPM */
+		 
 		qp->bus_clk_rate[QCOM_SMD_RPM_ACTIVE_STATE] = active_rate;
 	}
 
@@ -391,7 +366,7 @@ static int qcom_icc_set(struct icc_node *src, struct icc_node *dst)
 		if (ret)
 			return ret;
 
-		/* Cache the rate after we've successfully commited it to RPM */
+		 
 		qp->bus_clk_rate[QCOM_SMD_RPM_SLEEP_STATE] = sleep_rate;
 	}
 
@@ -412,7 +387,7 @@ int qnoc_probe(struct platform_device *pdev)
 	int cd_num;
 	int ret;
 
-	/* wait for the RPM proxy */
+	 
 	if (!qcom_icc_rpm_smd_available())
 		return -EPROBE_DEFER;
 
@@ -427,7 +402,7 @@ int qnoc_probe(struct platform_device *pdev)
 		cds = desc->intf_clocks;
 		cd_num = desc->num_intf_clocks;
 	} else {
-		/* 0 intf clocks is perfectly fine */
+		 
 		cd_num = 0;
 	}
 
@@ -447,7 +422,7 @@ int qnoc_probe(struct platform_device *pdev)
 
 		qp->bus_clk_desc = desc->bus_clk_desc;
 	} else {
-		/* Some older SoCs may have a single non-RPM-owned bus clock. */
+		 
 		qp->bus_clk = devm_clk_get_optional(dev, "bus");
 		if (IS_ERR(qp->bus_clk))
 			return PTR_ERR(qp->bus_clk);
@@ -472,7 +447,7 @@ int qnoc_probe(struct platform_device *pdev)
 
 		res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 		if (!res) {
-			/* Try parent's regmap */
+			 
 			qp->regmap = dev_get_regmap(dev->parent, NULL);
 			if (qp->regmap)
 				goto regmap_done;
@@ -509,7 +484,7 @@ regmap_done:
 
 	icc_provider_init(provider);
 
-	/* If this fails, bus accesses will crash the platform! */
+	 
 	ret = clk_bulk_prepare_enable(qp->num_intf_clks, qp->intf_clks);
 	if (ret)
 		goto err_disable_unprepare_clk;
@@ -532,7 +507,7 @@ regmap_done:
 		for (j = 0; j < qnodes[i]->num_links; j++)
 			icc_link_create(node, qnodes[i]->links[j]);
 
-		/* Set QoS registers (we only need to do it once, generally) */
+		 
 		if (qnodes[i]->qos.ap_owned &&
 		    qnodes[i]->qos.qos_mode != NOC_QOS_MODE_INVALID) {
 			ret = qcom_icc_qos_set(node);
@@ -555,7 +530,7 @@ regmap_done:
 
 	platform_set_drvdata(pdev, qp);
 
-	/* Populate child NoC devices if any */
+	 
 	if (of_get_child_count(dev->of_node) > 0) {
 		ret = of_platform_populate(dev->of_node, NULL, NULL, dev);
 		if (ret)

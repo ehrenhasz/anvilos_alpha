@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Apple Onboard Audio Alsa helpers
- *
- * Copyright 2006 Johannes Berg <johannes@sipsolutions.net>
- */
+
+ 
 #include <linux/module.h>
 #include "alsa.h"
 
@@ -19,7 +15,7 @@ int aoa_alsa_init(char *name, struct module *mod, struct device *dev)
 	int err;
 
 	if (aoa_card)
-		/* cannot be EEXIST due to usage in aoa_fabric_register */
+		 
 		return -EBUSY;
 
 	err = snd_card_new(dev, index, name, mod, sizeof(struct aoa_card),

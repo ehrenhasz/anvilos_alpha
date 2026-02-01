@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2023 Qualcomm Innovation Center, Inc. All rights reserved.
- */
+
+ 
 
 #include <linux/amba/bus.h>
 #include <linux/bitfield.h>
@@ -21,7 +19,7 @@
 
 DEFINE_CORESIGHT_DEVLIST(tpda_devs, "tpda");
 
-/* Settings pre enabling port control register */
+ 
 static void tpda_enable_pre_port(struct tpda_drvdata *drvdata)
 {
 	u32 val;
@@ -37,7 +35,7 @@ static void tpda_enable_port(struct tpda_drvdata *drvdata, int port)
 	u32 val;
 
 	val = readl_relaxed(drvdata->base + TPDA_Pn_CR(port));
-	/* Enable the port */
+	 
 	val |= TPDA_Pn_CR_ENA;
 	writel_relaxed(val, drvdata->base + TPDA_Pn_CR(port));
 }
@@ -111,13 +109,7 @@ static const struct coresight_ops tpda_cs_ops = {
 static int tpda_init_default_data(struct tpda_drvdata *drvdata)
 {
 	int atid;
-	/*
-	 * TPDA must has a unique atid. This atid can uniquely
-	 * identify the TPDM trace source connected to the TPDA.
-	 * The TPDMs which are connected to same TPDA share the
-	 * same trace-id. When TPDA does packetization, different
-	 * port will have unique channel number for decoding.
-	 */
+	 
 	atid = coresight_trace_id_get_system_id();
 	if (atid < 0)
 		return atid;
@@ -185,10 +177,7 @@ static void tpda_remove(struct amba_device *adev)
 	coresight_unregister(drvdata->csdev);
 }
 
-/*
- * Different TPDA has different periph id.
- * The difference is 0-7 bits' value. So ignore 0-7 bits.
- */
+ 
 static struct amba_id tpda_ids[] = {
 	{
 		.id     = 0x000f0f00,

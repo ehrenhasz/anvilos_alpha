@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright(c) 2009-2012  Realtek Corporation.*/
+
+ 
 
 #include "../wifi.h"
 #include "../pci.h"
@@ -143,29 +143,29 @@ bool rtl8723e_phy_bb_config(struct ieee80211_hw *hw)
 
 	rtl8723_phy_init_bb_rf_reg_def(hw);
 
-	/* 1. 0x28[1] = 1 */
+	 
 	tmpu1b = rtl_read_byte(rtlpriv, REG_AFE_PLL_CTRL);
 	udelay(2);
 	rtl_write_byte(rtlpriv, REG_AFE_PLL_CTRL, (tmpu1b|BIT(1)));
 	udelay(2);
-	/* 2. 0x29[7:0] = 0xFF */
+	 
 	rtl_write_byte(rtlpriv, REG_AFE_PLL_CTRL+1, 0xff);
 	udelay(2);
 
-	/* 3. 0x02[1:0] = 2b'11 */
+	 
 	tmpu1b = rtl_read_byte(rtlpriv, REG_SYS_FUNC_EN);
 	rtl_write_byte(rtlpriv, REG_SYS_FUNC_EN,
 		       (tmpu1b | FEN_BB_GLB_RSTN | FEN_BBRSTB));
 
-	/* 4. 0x25[6] = 0 */
+	 
 	tmpu1b = rtl_read_byte(rtlpriv, REG_AFE_XTAL_CTRL+1);
 	rtl_write_byte(rtlpriv, REG_AFE_XTAL_CTRL+1, (tmpu1b & (~BIT(6))));
 
-	/* 5. 0x24[20] = 0	//Advised by SD3 Alex Wang. 2011.02.09. */
+	 
 	tmpu1b = rtl_read_byte(rtlpriv, REG_AFE_XTAL_CTRL+2);
 	rtl_write_byte(rtlpriv, REG_AFE_XTAL_CTRL+2, (tmpu1b & (~BIT(4))));
 
-	/* 6. 0x1f[7:0] = 0x07 */
+	 
 	rtl_write_byte(rtlpriv, REG_RF_CTRL, 0x07);
 
 	if (b_reg_hwparafile == 1)

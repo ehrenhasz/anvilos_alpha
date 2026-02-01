@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef __PERF_COUNTS_H
 #define __PERF_COUNTS_H
 
@@ -42,4 +42,4 @@ void evsel__reset_counts(struct evsel *evsel);
 int evsel__alloc_counts(struct evsel *evsel);
 void evsel__free_counts(struct evsel *evsel);
 
-#endif /* __PERF_COUNTS_H */
+#endif  

@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2022 Meta
+
+
 
 #include <stddef.h>
 #include <stdint.h>
@@ -16,18 +16,12 @@
 #include <bpf/bpf_helpers.h>
 #include <bpf/bpf_endian.h>
 
-/* veth_src --- veth_src_fwd --- veth_det_fwd --- veth_dst
- *           |                                 |
- *  ns_src   |              ns_fwd             |   ns_dst
- *
- * ns_src and ns_dst: ENDHOST namespace
- *            ns_fwd: Fowarding namespace
- */
+ 
 
 #define ctx_ptr(field)		(void *)(long)(field)
 
-#define ip4_src			__bpf_htonl(0xac100164) /* 172.16.1.100 */
-#define ip4_dst			__bpf_htonl(0xac100264) /* 172.16.2.100 */
+#define ip4_src			__bpf_htonl(0xac100164)  
+#define ip4_dst			__bpf_htonl(0xac100264)  
 
 #define ip6_src			{ 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, \
 				  0x00, 0x01, 0xde, 0xad, 0xbe, 0xef, 0xca, 0xfe }
@@ -129,11 +123,7 @@ static __u8 get_proto(void)
 	}
 }
 
-/* -1: parse error: TC_ACT_SHOT
- *  0: not testing traffic: TC_ACT_OK
- * >0: first byte is the inet_proto, second byte has the netns
- *     of the sender
- */
+ 
 static int skb_get_type(struct __sk_buff *skb)
 {
 	__u16 dst_ns_port = __bpf_htons(50000 + test);
@@ -174,9 +164,7 @@ static int skb_get_type(struct __sk_buff *skb)
 		return 0;
 	}
 
-	/* skb is not from src_ns or dst_ns.
-	 * skb is not the testing IPPROTO.
-	 */
+	 
 	if (!ns || inet_proto != get_proto())
 		return 0;
 
@@ -199,7 +187,7 @@ static int skb_get_type(struct __sk_buff *skb)
 		return 0;
 	}
 
-	/* The skb is the testing traffic */
+	 
 	if ((ns == SRC_NS && dport == dst_ns_port) ||
 	    (ns == DST_NS && sport == dst_ns_port))
 		return (ns << 8 | inet_proto);
@@ -207,9 +195,7 @@ static int skb_get_type(struct __sk_buff *skb)
 	return 0;
 }
 
-/* format: direction@iface@netns
- * egress@veth_(src|dst)@ns_(src|dst)
- */
+ 
 SEC("tc")
 int egress_host(struct __sk_buff *skb)
 {
@@ -240,7 +226,7 @@ int egress_host(struct __sk_buff *skb)
 	return TC_ACT_OK;
 }
 
-/* ingress@veth_(src|dst)@ns_(src|dst) */
+ 
 SEC("tc")
 int ingress_host(struct __sk_buff *skb)
 {
@@ -261,7 +247,7 @@ int ingress_host(struct __sk_buff *skb)
 	return TC_ACT_OK;
 }
 
-/* ingress@veth_(src|dst)_fwd@ns_fwd priority 100 */
+ 
 SEC("tc")
 int ingress_fwdns_prio100(struct __sk_buff *skb)
 {
@@ -273,9 +259,7 @@ int ingress_fwdns_prio100(struct __sk_buff *skb)
 	if (!skb_type)
 		return TC_ACT_OK;
 
-	/* delivery_time is only available to the ingress
-	 * if the tc-bpf checks the skb->tstamp_type.
-	 */
+	 
 	if (skb->tstamp == EGRESS_ENDHOST_MAGIC)
 		inc_errs(INGRESS_FWDNS_P100);
 
@@ -285,7 +269,7 @@ int ingress_fwdns_prio100(struct __sk_buff *skb)
 	return TC_ACT_UNSPEC;
 }
 
-/* egress@veth_(src|dst)_fwd@ns_fwd priority 100 */
+ 
 SEC("tc")
 int egress_fwdns_prio100(struct __sk_buff *skb)
 {
@@ -297,9 +281,7 @@ int egress_fwdns_prio100(struct __sk_buff *skb)
 	if (!skb_type)
 		return TC_ACT_OK;
 
-	/* delivery_time is always available to egress even
-	 * the tc-bpf did not use the tstamp_type.
-	 */
+	 
 	if (skb->tstamp == INGRESS_FWDNS_MAGIC)
 		inc_dtimes(EGRESS_FWDNS_P100);
 	else
@@ -311,7 +293,7 @@ int egress_fwdns_prio100(struct __sk_buff *skb)
 	return TC_ACT_UNSPEC;
 }
 
-/* ingress@veth_(src|dst)_fwd@ns_fwd priority 101 */
+ 
 SEC("tc")
 int ingress_fwdns_prio101(struct __sk_buff *skb)
 {
@@ -320,7 +302,7 @@ int ingress_fwdns_prio101(struct __sk_buff *skb)
 
 	skb_type = skb_get_type(skb);
 	if (skb_type == -1 || !skb_type)
-		/* Should have handled in prio100 */
+		 
 		return TC_ACT_SHOT;
 
 	if (skb_proto(skb_type) == IPPROTO_UDP)
@@ -357,7 +339,7 @@ int ingress_fwdns_prio101(struct __sk_buff *skb)
 			bpf_redirect_neigh(IFINDEX_SRC, NULL, 0, 0) : TC_ACT_OK;
 }
 
-/* egress@veth_(src|dst)_fwd@ns_fwd priority 101 */
+ 
 SEC("tc")
 int egress_fwdns_prio101(struct __sk_buff *skb)
 {
@@ -365,7 +347,7 @@ int egress_fwdns_prio101(struct __sk_buff *skb)
 
 	skb_type = skb_get_type(skb);
 	if (skb_type == -1 || !skb_type)
-		/* Should have handled in prio100 */
+		 
 		return TC_ACT_SHOT;
 
 	if (skb->tstamp_type) {

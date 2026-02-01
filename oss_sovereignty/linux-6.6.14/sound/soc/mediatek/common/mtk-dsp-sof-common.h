@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * mtk-dsp-sof-common.h  --  MediaTek dsp sof common definition
- *
- * Copyright (c) 2022 MediaTek Inc.
- * Author: Chunxu Li <chunxu.li@mediatek.com>
- */
+ 
+ 
 
 #ifndef _MTK_DSP_SOF_COMMON_H_
 #define _MTK_DSP_SOF_COMMON_H_

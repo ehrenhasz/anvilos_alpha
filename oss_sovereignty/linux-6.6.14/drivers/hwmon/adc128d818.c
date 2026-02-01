@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Driver for TI ADC128D818 System Monitor with Temperature Sensor
- *
- * Copyright (c) 2014 Guenter Roeck
- *
- * Derived from lm80.c
- * Copyright (C) 1998, 1999  Frodo Looijaard <frodol@dds.nl>
- *			     and Philip Edelbrock <phil@netroedge.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/slab.h>
@@ -21,15 +13,11 @@
 #include <linux/bitops.h>
 #include <linux/of.h>
 
-/* Addresses to scan
- * The chip also supports addresses 0x35..0x37. Don't scan those addresses
- * since they are also used by some EEPROMs, which may result in false
- * positives.
- */
+ 
 static const unsigned short normal_i2c[] = {
 	0x1d, 0x1e, 0x1f, 0x2d, 0x2e, 0x2f, I2C_CLIENT_END };
 
-/* registers */
+ 
 #define ADC128_REG_IN_MAX(nr)		(0x2a + (nr) * 2)
 #define ADC128_REG_IN_MIN(nr)		(0x2b + (nr) * 2)
 #define ADC128_REG_IN(nr)		(0x20 + (nr))
@@ -50,30 +38,24 @@ static const unsigned short normal_i2c[] = {
 #define ADC128_REG_MAN_ID		0x3e
 #define ADC128_REG_DEV_ID		0x3f
 
-/* No. of voltage entries in adc128_attrs */
+ 
 #define ADC128_ATTR_NUM_VOLT		(8 * 4)
 
-/* Voltage inputs visible per operation mode */
+ 
 static const u8 num_inputs[] = { 7, 8, 4, 6 };
 
 struct adc128_data {
 	struct i2c_client *client;
 	struct regulator *regulator;
-	int vref;		/* Reference voltage in mV */
+	int vref;		 
 	struct mutex update_lock;
-	u8 mode;		/* Operation mode */
-	bool valid;		/* true if following fields are valid */
-	unsigned long last_updated;	/* In jiffies */
+	u8 mode;		 
+	bool valid;		 
+	unsigned long last_updated;	 
 
-	u16 in[3][8];		/* Register value, normalized to 12 bit
-				 * 0: input voltage
-				 * 1: min limit
-				 * 2: max limit
-				 */
-	s16 temp[3];		/* Register value, normalized to 9 bit
-				 * 0: sensor 1: limit 2: hyst
-				 */
-	u8 alarms;		/* alarm register value */
+	u16 in[3][8];		 
+	s16 temp[3];		 
+	u8 alarms;		 
 };
 
 static struct adc128_data *adc128_update_device(struct device *dev)
@@ -175,7 +157,7 @@ static ssize_t adc128_in_store(struct device *dev,
 		return err;
 
 	mutex_lock(&data->update_lock);
-	/* 10 mV LSB on limit registers */
+	 
 	regval = clamp_val(DIV_ROUND_CLOSEST(val, 10), 0, 255);
 	data->in[index][nr] = regval << 4;
 	reg = index == 1 ? ADC128_REG_IN_MIN(nr) : ADC128_REG_IN_MAX(nr);
@@ -196,7 +178,7 @@ static ssize_t adc128_temp_show(struct device *dev,
 		return PTR_ERR(data);
 
 	temp = sign_extend32(data->temp[index], 8);
-	return sprintf(buf, "%d\n", temp * 500);/* 0.5 degrees C resolution */
+	return sprintf(buf, "%d\n", temp * 500); 
 }
 
 static ssize_t adc128_temp_store(struct device *dev,
@@ -235,10 +217,7 @@ static ssize_t adc128_alarm_show(struct device *dev,
 	if (IS_ERR(data))
 		return PTR_ERR(data);
 
-	/*
-	 * Clear an alarm after reporting it to user space. If it is still
-	 * active, the next update sequence will set the alarm bit again.
-	 */
+	 
 	alarms = data->alarms;
 	data->alarms &= ~mask;
 
@@ -252,11 +231,11 @@ static umode_t adc128_is_visible(struct kobject *kobj,
 	struct adc128_data *data = dev_get_drvdata(dev);
 
 	if (index < ADC128_ATTR_NUM_VOLT) {
-		/* Voltage, visible according to num_inputs[] */
+		 
 		if (index >= num_inputs[data->mode] * 4)
 			return 0;
 	} else {
-		/* Temperature, visible if not in mode 1 */
+		 
 		if (data->mode == 1)
 			return 0;
 	}
@@ -370,7 +349,7 @@ static int adc128_detect(struct i2c_client *client, struct i2c_board_info *info)
 	if (man_id != 0x01 || dev_id != 0x09)
 		return -ENODEV;
 
-	/* Check unused bits for confirmation */
+	 
 	if (i2c_smbus_read_byte_data(client, ADC128_REG_CONFIG) & 0xf4)
 		return -ENODEV;
 	if (i2c_smbus_read_byte_data(client, ADC128_REG_CONV_RATE) & 0xfe)
@@ -395,23 +374,20 @@ static int adc128_init_client(struct adc128_data *data)
 	int err;
 	u8 regval = 0x0;
 
-	/*
-	 * Reset chip to defaults.
-	 * This makes most other initializations unnecessary.
-	 */
+	 
 	err = i2c_smbus_write_byte_data(client, ADC128_REG_CONFIG, 0x80);
 	if (err)
 		return err;
 
-	/* Set operation mode, if non-default */
+	 
 	if (data->mode != 0)
 		regval |= data->mode << 1;
 
-	/* If external vref is selected, configure the chip to use it */
+	 
 	if (data->regulator)
 		regval |= 0x01;
 
-	/* Write advanced configuration register */
+	 
 	if (regval != 0x0) {
 		err = i2c_smbus_write_byte_data(client, ADC128_REG_CONFIG_ADV,
 						regval);
@@ -419,7 +395,7 @@ static int adc128_init_client(struct adc128_data *data)
 			return err;
 	}
 
-	/* Start monitoring */
+	 
 	err = i2c_smbus_write_byte_data(client, ADC128_REG_CONFIG, 0x01);
 	if (err)
 		return err;
@@ -439,7 +415,7 @@ static int adc128_probe(struct i2c_client *client)
 	if (!data)
 		return -ENOMEM;
 
-	/* vref is optional. If specified, is used as chip reference voltage */
+	 
 	regulator = devm_regulator_get_optional(dev, "vref");
 	if (!IS_ERR(regulator)) {
 		data->regulator = regulator;
@@ -453,10 +429,10 @@ static int adc128_probe(struct i2c_client *client)
 		}
 		data->vref = DIV_ROUND_CLOSEST(vref, 1000);
 	} else {
-		data->vref = 2560;	/* 2.56V, in mV */
+		data->vref = 2560;	 
 	}
 
-	/* Operation mode is optional. If unspecified, keep current mode */
+	 
 	if (of_property_read_u8(dev->of_node, "ti,mode", &data->mode) == 0) {
 		if (data->mode > 3) {
 			dev_err(dev, "invalid operation mode %d\n",
@@ -475,7 +451,7 @@ static int adc128_probe(struct i2c_client *client)
 	i2c_set_clientdata(client, data);
 	mutex_init(&data->update_lock);
 
-	/* Initialize the chip */
+	 
 	err = adc128_init_client(data);
 	if (err < 0)
 		goto error;

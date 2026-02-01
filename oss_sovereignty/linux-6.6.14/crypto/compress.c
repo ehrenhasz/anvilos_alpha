@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Cryptographic API.
- *
- * Compression operations.
- *
- * Copyright (c) 2002 James Morris <jmorris@intercode.com.au>
- */
+
+ 
 #include <linux/crypto.h>
 #include "internal.h"
 

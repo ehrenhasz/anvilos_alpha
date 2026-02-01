@@ -1,30 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Support for Medifield PNW Camera Imaging ISP subsystem.
- *
- * Copyright (c) 2010 Intel Corporation. All Rights Reserved.
- *
- * Copyright (c) 2010 Silicon Hive www.siliconhive.com.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License version
- * 2 as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- *
- */
-/*
- * ISP MMU management wrap code
- */
+
+ 
+ 
 #include <linux/kernel.h>
 #include <linux/types.h>
 #include <linux/gfp.h>
-#include <linux/mm.h>		/* for GFP_ATOMIC */
-#include <linux/slab.h>		/* for kmalloc */
+#include <linux/mm.h>		 
+#include <linux/slab.h>		 
 #include <linux/list.h>
 #include <linux/io.h>
 #include <linux/module.h>
@@ -40,18 +21,7 @@
 #include "atomisp_internal.h"
 #include "mmu/isp_mmu.h"
 
-/*
- * 64-bit x86 processor physical address layout:
- * 0		- 0x7fffffff		DDR RAM	(2GB)
- * 0x80000000	- 0xffffffff		MMIO	(2GB)
- * 0x100000000	- 0x3fffffffffff	DDR RAM	(64TB)
- * So if the system has more than 2GB DDR memory, the lower 2GB occupies the
- * physical address 0 - 0x7fffffff and the rest will start from 0x100000000.
- * We have to make sure memory is allocated from the lower 2GB for devices
- * that are only 32-bit capable(e.g. the ISP MMU).
- *
- * For any confusion, contact bin.gao@intel.com.
- */
+ 
 #define NR_PAGES_2GB	(SZ_2G / PAGE_SIZE)
 
 static void free_mmu_map(struct isp_mmu *mmu, unsigned int start_isp_virt,
@@ -90,10 +60,7 @@ static unsigned int isp_pgaddr_to_pte_valid(struct isp_mmu *mmu,
 	return (unsigned int)(pte | ISP_PTE_VALID_MASK(mmu));
 }
 
-/*
- * allocate a uncacheable page table.
- * return physical address.
- */
+ 
 static phys_addr_t alloc_page_table(struct isp_mmu *mmu)
 {
 	int i;
@@ -105,9 +72,7 @@ static phys_addr_t alloc_page_table(struct isp_mmu *mmu)
 	if (!virt)
 		return (phys_addr_t)NULL_PAGE;
 
-	/*
-	 * we need a uncacheable page table.
-	 */
+	 
 #ifdef	CONFIG_X86
 	set_memory_uc((unsigned long)virt, 1);
 #endif
@@ -115,7 +80,7 @@ static phys_addr_t alloc_page_table(struct isp_mmu *mmu)
 	page = virt_to_phys(virt);
 
 	for (i = 0; i < 1024; i++) {
-		/* NEED CHECK */
+		 
 		atomisp_set_pte(page, i, mmu->driver->null_pte);
 	}
 
@@ -127,9 +92,7 @@ static void free_page_table(struct isp_mmu *mmu, phys_addr_t page)
 	void *virt;
 
 	page &= ISP_PAGE_MASK;
-	/*
-	 * reset the page to write back before free
-	 */
+	 
 	virt = phys_to_virt(page);
 
 #ifdef	CONFIG_X86
@@ -192,10 +155,7 @@ static void mmu_unmap_l1_pt_error(struct isp_mmu *mmu, unsigned int pte)
 		"L1PT = 0x%x\n", (unsigned int)pte);
 }
 
-/*
- * Update L2 page table according to isp virtual address and page physical
- * address
- */
+ 
 static int mmu_l2_map(struct isp_mmu *mmu, phys_addr_t l1_pt,
 		      unsigned int l1_idx, phys_addr_t l2_pt,
 		      unsigned int start, unsigned int end, phys_addr_t phys)
@@ -220,7 +180,7 @@ static int mmu_l2_map(struct isp_mmu *mmu, phys_addr_t l1_pt,
 			mmu_remap_error(mmu, l1_pt, l1_idx,
 					l2_pt, idx, ptr, pte, phys);
 
-			/* free all mapped pages */
+			 
 			free_mmu_map(mmu, start, ptr);
 
 			return -EINVAL;
@@ -237,10 +197,7 @@ static int mmu_l2_map(struct isp_mmu *mmu, phys_addr_t l1_pt,
 	return 0;
 }
 
-/*
- * Update L1 page table according to isp virtual address and page physical
- * address
- */
+ 
 static int mmu_l1_map(struct isp_mmu *mmu, phys_addr_t l1_pt,
 		      unsigned int start, unsigned int end,
 		      phys_addr_t phys)
@@ -269,7 +226,7 @@ static int mmu_l1_map(struct isp_mmu *mmu, phys_addr_t l1_pt,
 				dev_err(atomisp_dev,
 					"alloc page table fail.\n");
 
-				/* free all mapped pages */
+				 
 				free_mmu_map(mmu, start, ptr);
 
 				return -ENOMEM;
@@ -300,7 +257,7 @@ static int mmu_l1_map(struct isp_mmu *mmu, phys_addr_t l1_pt,
 		if (ret) {
 			dev_err(atomisp_dev, "setup mapping in L2PT fail.\n");
 
-			/* free all mapped pages */
+			 
 			free_mmu_map(mmu, start, ptr);
 
 			return -EINVAL;
@@ -310,10 +267,7 @@ static int mmu_l1_map(struct isp_mmu *mmu, phys_addr_t l1_pt,
 	return 0;
 }
 
-/*
- * Update page table according to isp virtual address and page physical
- * address
- */
+ 
 static int mmu_map(struct isp_mmu *mmu, unsigned int isp_virt,
 		   phys_addr_t phys, unsigned int pgnr)
 {
@@ -323,9 +277,7 @@ static int mmu_map(struct isp_mmu *mmu, unsigned int isp_virt,
 
 	mutex_lock(&mmu->pt_mutex);
 	if (!ISP_PTE_VALID(mmu, mmu->l1_pte)) {
-		/*
-		 * allocate 1 new page for L1 page table
-		 */
+		 
 		l1_pt = alloc_page_table(mmu);
 		if (l1_pt == NULL_PAGE) {
 			dev_err(atomisp_dev, "alloc page table fail.\n");
@@ -333,9 +285,7 @@ static int mmu_map(struct isp_mmu *mmu, unsigned int isp_virt,
 			return -ENOMEM;
 		}
 
-		/*
-		 * setup L1 page table physical addr to MMU
-		 */
+		 
 		mmu->base_address = l1_pt;
 		mmu->l1_pte = isp_pgaddr_to_pte_valid(mmu, l1_pt);
 		memset(mmu->l2_pgt_refcount, 0, sizeof(int) * ISP_L1PT_PTES);
@@ -356,10 +306,7 @@ static int mmu_map(struct isp_mmu *mmu, unsigned int isp_virt,
 	return ret;
 }
 
-/*
- * Free L2 page table according to isp virtual address and page physical
- * address
- */
+ 
 static void mmu_l2_unmap(struct isp_mmu *mmu, phys_addr_t l1_pt,
 			 unsigned int l1_idx, phys_addr_t l2_pt,
 			 unsigned int start, unsigned int end)
@@ -394,10 +341,7 @@ static void mmu_l2_unmap(struct isp_mmu *mmu, phys_addr_t l1_pt,
 	}
 }
 
-/*
- * Free L1 page table according to isp virtual address and page physical
- * address
- */
+ 
 static void mmu_l1_unmap(struct isp_mmu *mmu, phys_addr_t l1_pt,
 			 unsigned int start, unsigned int end)
 {
@@ -433,18 +377,12 @@ static void mmu_l1_unmap(struct isp_mmu *mmu, phys_addr_t l1_pt,
 			mmu_l2_unmap(mmu, l1_pt, idx, l2_pt, ptr, end);
 			ptr = end;
 		}
-		/*
-		 * use the same L2 page next time, so we don't
-		 * need to invalidate and free this PT.
-		 */
-		/*      atomisp_set_pte(l1_pt, idx, NULL_PTE); */
+		 
+		 
 	} while (ptr < end && idx < ISP_L1PT_PTES);
 }
 
-/*
- * Free page table according to isp virtual address and page physical
- * address
- */
+ 
 static void mmu_unmap(struct isp_mmu *mmu, unsigned int isp_virt,
 		      unsigned int pgnr)
 {
@@ -467,10 +405,7 @@ static void mmu_unmap(struct isp_mmu *mmu, unsigned int isp_virt,
 	mutex_unlock(&mmu->pt_mutex);
 }
 
-/*
- * Free page tables according to isp start virtual address and end virtual
- * address.
- */
+ 
 static void free_mmu_map(struct isp_mmu *mmu, unsigned int start_isp_virt,
 			 unsigned int end_isp_virt)
 {
@@ -502,12 +437,12 @@ static void isp_mmu_flush_tlb_range_default(struct isp_mmu *mmu,
 	isp_mmu_flush_tlb(mmu);
 }
 
-/*MMU init for internal structure*/
+ 
 int isp_mmu_init(struct isp_mmu *mmu, struct isp_mmu_client *driver)
 {
-	if (!mmu)		/* error */
+	if (!mmu)		 
 		return -EINVAL;
-	if (!driver)		/* error */
+	if (!driver)		 
 		return -EINVAL;
 
 	if (!driver->name)
@@ -535,7 +470,7 @@ int isp_mmu_init(struct isp_mmu *mmu, struct isp_mmu_client *driver)
 	return 0;
 }
 
-/*Free L1 and L2 page table*/
+ 
 void isp_mmu_exit(struct isp_mmu *mmu)
 {
 	unsigned int idx;

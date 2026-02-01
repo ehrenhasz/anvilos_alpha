@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-/* Copyright (C) 2017-2018 Netronome Systems, Inc. */
+
+ 
 
 #include <linux/bug.h>
 #include <linux/lockdep.h>
@@ -179,14 +179,14 @@ nfp_app_netdev_event(struct notifier_block *nb, unsigned long event, void *ptr)
 	netdev = netdev_notifier_info_to_dev(ptr);
 	app = container_of(nb, struct nfp_app, netdev_nb);
 
-	/* Handle events common code is interested in */
+	 
 	switch (event) {
 	case NETDEV_FEAT_CHANGE:
 		nfp_app_netdev_feat_change(app, netdev);
 		break;
 	}
 
-	/* Call offload specific handlers */
+	 
 	if (app->type->netdev_event)
 		return app->type->netdev_event(app, netdev, event, ptr);
 	return NOTIFY_DONE;

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * CDX host controller driver for AMD versal-net platform.
- *
- * Copyright (C) 2022-2023, Advanced Micro Devices, Inc.
- */
+
+ 
 
 #include <linux/mod_devicetable.h>
 #include <linux/platform_device.h>
@@ -35,7 +31,7 @@ static const struct cdx_mcdi_ops mcdi_ops = {
 
 void cdx_rpmsg_post_probe(struct cdx_controller *cdx)
 {
-	/* Register CDX controller with CDX bus driver */
+	 
 	if (cdx_register_controller(cdx))
 		dev_err(cdx->dev, "Failed to register CDX controller\n");
 }
@@ -69,7 +65,7 @@ static int cdx_scan_devices(struct cdx_controller *cdx)
 	u8 bus_num, dev_num, num_cdx_bus;
 	int ret;
 
-	/* MCDI FW Read: Fetch the number of CDX buses on this controller */
+	 
 	ret = cdx_mcdi_get_num_buses(cdx_mcdi);
 	if (ret < 0) {
 		dev_err(cdx->dev,
@@ -81,7 +77,7 @@ static int cdx_scan_devices(struct cdx_controller *cdx)
 	for (bus_num = 0; bus_num < num_cdx_bus; bus_num++) {
 		u8 num_cdx_dev;
 
-		/* MCDI FW Read: Fetch the number of devices present */
+		 
 		ret = cdx_mcdi_get_num_devs(cdx_mcdi, bus_num);
 		if (ret < 0) {
 			dev_err(cdx->dev,
@@ -93,7 +89,7 @@ static int cdx_scan_devices(struct cdx_controller *cdx)
 		for (dev_num = 0; dev_num < num_cdx_dev; dev_num++) {
 			struct cdx_dev_params dev_params;
 
-			/* MCDI FW: Get the device config */
+			 
 			ret = cdx_mcdi_get_dev_config(cdx_mcdi, bus_num,
 						      dev_num, &dev_params);
 			if (ret) {
@@ -104,7 +100,7 @@ static int cdx_scan_devices(struct cdx_controller *cdx)
 			}
 			dev_params.cdx = cdx;
 
-			/* Add the device to the cdx bus */
+			 
 			ret = cdx_device_add(&dev_params);
 			if (ret) {
 				dev_err(cdx->dev, "registering cdx dev: %d failed: %d\n",
@@ -135,9 +131,9 @@ static int xlnx_cdx_probe(struct platform_device *pdev)
 	if (!cdx_mcdi)
 		return -ENOMEM;
 
-	/* Store the MCDI ops */
+	 
 	cdx_mcdi->mcdi_ops = &mcdi_ops;
-	/* MCDI FW: Initialize the FW path */
+	 
 	ret = cdx_mcdi_init(cdx_mcdi);
 	if (ret) {
 		dev_err_probe(&pdev->dev, ret, "MCDI Initialization failed\n");

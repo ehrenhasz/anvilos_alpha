@@ -1,18 +1,16 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/******************************************************************************
- * Xen balloon functionality
- */
+ 
+ 
 #ifndef _XEN_BALLOON_H
 #define _XEN_BALLOON_H
 
 #define RETRY_UNLIMITED	0
 
 struct balloon_stats {
-	/* We aim for 'current allocation' == 'target allocation'. */
+	 
 	unsigned long current_pages;
 	unsigned long target_pages;
 	unsigned long target_unpopulated;
-	/* Number of pages in high- and low-memory balloons. */
+	 
 	unsigned long balloon_low;
 	unsigned long balloon_high;
 	unsigned long total_pages;
@@ -37,4 +35,4 @@ static inline void xen_balloon_init(void)
 }
 #endif
 
-#endif	/* _XEN_BALLOON_H */
+#endif	 

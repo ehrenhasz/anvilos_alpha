@@ -1,13 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * build-id.c
- *
- * build-id support
- *
- * Copyright (C) 2009, 2010 Red Hat Inc.
- * Copyright (C) 2009, 2010 Arnaldo Carvalho de Melo <acme@redhat.com>
- */
-#include "util.h" // lsdir(), mkdir_p(), rm_rf()
+
+ 
+#include "util.h" 
 #include <dirent.h>
 #include <errno.h>
 #include <stdio.h>
@@ -146,7 +139,7 @@ int filename__sprintf_build_id(const char *pathname, char *sbuild_id)
 	return build_id__sprintf(&bid, sbuild_id);
 }
 
-/* asnprintf consolidates asprintf and snprintf */
+ 
 static int asnprintf(char **strp, size_t size, const char *fmt, ...)
 {
 	va_list ap;
@@ -176,7 +169,7 @@ retry:
 	if (!access(bf, F_OK))
 		return bf;
 	if (retry_old) {
-		/* Try old style kallsyms cache */
+		 
 		snprintf(bf, size, "%s/%s/%s",
 			 buildid_dir, DSO__NAME_KALLSYMS, sbuild_id);
 		retry_old = false;
@@ -196,13 +189,13 @@ char *build_id_cache__linkname(const char *sbuild_id, char *bf, size_t size)
 	return bf;
 }
 
-/* The caller is responsible to free the returned buffer. */
+ 
 char *build_id_cache__origname(const char *sbuild_id)
 {
 	char *linkname;
 	char buf[PATH_MAX];
 	char *ret = NULL, *p;
-	size_t offs = 5;	/* == strlen("../..") */
+	size_t offs = 5;	 
 	ssize_t len;
 
 	linkname = build_id_cache__linkname(sbuild_id, NULL, 0);
@@ -214,24 +207,20 @@ char *build_id_cache__origname(const char *sbuild_id)
 		goto out;
 	buf[len] = '\0';
 
-	/* The link should be "../..<origpath>/<sbuild_id>" */
-	p = strrchr(buf, '/');	/* Cut off the "/<sbuild_id>" */
+	 
+	p = strrchr(buf, '/');	 
 	if (p && (p > buf + offs)) {
 		*p = '\0';
 		if (buf[offs + 1] == '[')
-			offs++;	/*
-				 * This is a DSO name, like [kernel.kallsyms].
-				 * Skip the first '/', since this is not the
-				 * cache of a regular file.
-				 */
-		ret = strdup(buf + offs);	/* Skip "../..[/]" */
+			offs++;	 
+		ret = strdup(buf + offs);	 
 	}
 out:
 	free(linkname);
 	return ret;
 }
 
-/* Check if the given build_id cache is valid on current running system */
+ 
 static bool build_id_cache__valid_id(char *sbuild_id)
 {
 	char real_sbuild_id[SBUILD_ID_SIZE] = "";
@@ -248,7 +237,7 @@ static bool build_id_cache__valid_id(char *sbuild_id)
 	else if (pathname[0] == '/')
 		ret = filename__sprintf_build_id(pathname, real_sbuild_id);
 	else
-		ret = -EINVAL;	/* Should we support other special DSO cache? */
+		ret = -EINVAL;	 
 	if (ret >= 0)
 		result = (strcmp(sbuild_id, real_sbuild_id) == 0);
 	free(pathname);
@@ -280,7 +269,7 @@ char *__dso__build_id_filename(const struct dso *dso, char *bf, size_t size,
 	if (!linkname)
 		return NULL;
 
-	/* Check if old style build_id cache */
+	 
 	if (is_regular_file(linkname))
 		ret = asnprintf(&bf, size, "%s", linkname);
 	else
@@ -455,11 +444,11 @@ struct strlist *build_id_cache__list_all(bool validonly)
 	char *topdir, *linkdir = NULL;
 	char sbuild_id[SBUILD_ID_SIZE];
 
-	/* for filename__ functions */
+	 
 	if (validonly)
 		symbol__init(NULL);
 
-	/* Open the top-level directory */
+	 
 	if (asprintf(&topdir, "%s/.build-id/", buildid_dir) < 0)
 		return NULL;
 
@@ -470,7 +459,7 @@ struct strlist *build_id_cache__list_all(bool validonly)
 	toplist = lsdir(topdir, lsdir_bid_head_filter);
 	if (!toplist) {
 		pr_debug("Error in lsdir(%s): %d\n", topdir, errno);
-		/* If there is no buildid cache, return an empty list */
+		 
 		if (errno == ENOENT)
 			goto out;
 		goto err_out;
@@ -479,7 +468,7 @@ struct strlist *build_id_cache__list_all(bool validonly)
 	strlist__for_each_entry(nd, toplist) {
 		if (asprintf(&linkdir, "%s/%s", topdir, nd->s) < 0)
 			goto err_out;
-		/* Open the lower-level directory */
+		 
 		linklist = lsdir(linkdir, lsdir_bid_tail_filter);
 		if (!linklist) {
 			pr_debug("Error in lsdir(%s): %d\n", linkdir, errno);
@@ -524,7 +513,7 @@ static bool str_is_build_id(const char *maybe_sbuild_id, size_t len)
 	return true;
 }
 
-/* Return the valid complete build-id */
+ 
 char *build_id_cache__complement(const char *incomplete_sbuild_id)
 {
 	struct strlist *bidlist;
@@ -543,7 +532,7 @@ char *build_id_cache__complement(const char *incomplete_sbuild_id)
 	strlist__for_each_entry(nd, bidlist) {
 		if (strncmp(nd->s, incomplete_sbuild_id, len) != 0)
 			continue;
-		if (cand) {	/* Error: There are more than 2 candidates. */
+		if (cand) {	 
 			cand = NULL;
 			break;
 		}
@@ -663,7 +652,7 @@ static char *build_id_cache__find_debug(const char *sbuild_id,
 					(const unsigned char*)sbuild_id, 0,
 					&realname);
 			if (fd >= 0)
-				close(fd); /* retaining reference by realname */
+				close(fd);  
 			debuginfod_end(c);
 		}
 	}
@@ -692,7 +681,7 @@ build_id_cache__add(const char *sbuild_id, const char *name, const char *realnam
 	if (!dir_name)
 		goto out_free;
 
-	/* Remove old style build-id cache */
+	 
 	if (is_regular_file(dir_name))
 		if (unlink(dir_name))
 			goto out_free;
@@ -700,7 +689,7 @@ build_id_cache__add(const char *sbuild_id, const char *name, const char *realnam
 	if (mkdir_p(dir_name, 0755))
 		goto out_free;
 
-	/* Save the allocated buildid dirname */
+	 
 	if (asprintf(&filename, "%s/%s", dir_name,
 		     build_id_cache__basename(is_kallsyms, is_vdso,
 		     false)) < 0) {
@@ -724,11 +713,7 @@ build_id_cache__add(const char *sbuild_id, const char *name, const char *realnam
 		}
 	}
 
-	/* Some binaries are stripped, but have .debug files with their symbol
-	 * table.  Check to see if we can locate one of those, since the elf
-	 * file itself may not be very useful to users of our tools without a
-	 * symtab.
-	 */
+	 
 	if (!is_kallsyms && !is_vdso &&
 	    strncmp(".ko", name + strlen(name) - 3, 3)) {
 		debugfile = build_id_cache__find_debug(sbuild_id, nsi, root_dir);
@@ -784,7 +769,7 @@ build_id_cache__add(const char *sbuild_id, const char *name, const char *realnam
 		err = 0;
 	}
 
-	/* Update SDT cache : error is just warned */
+	 
 	if (realname &&
 	    build_id_cache__add_sdt_cache(sbuild_id, realname, nsi) < 0)
 		pr_debug4("Failed to update/scan SDT cache for %s\n", realname);
@@ -869,9 +854,7 @@ int build_id_cache__remove_s(const char *sbuild_id)
 	if (unlink(linkname))
 		goto out_free;
 
-	/*
-	 * Since the link is relative, we must make it absolute:
-	 */
+	 
 	tmp = strrchr(linkname, '/') + 1;
 	snprintf(tmp, size - (tmp - linkname), "%s", filename);
 
@@ -941,7 +924,7 @@ static int dso__cache_build_id(struct dso *dso, struct machine *machine,
 			proper_name = name;
 			name = allocated_name;
 		} else if (is_kallsyms) {
-			/* Cannot get guest kallsyms */
+			 
 			return 0;
 		}
 	}

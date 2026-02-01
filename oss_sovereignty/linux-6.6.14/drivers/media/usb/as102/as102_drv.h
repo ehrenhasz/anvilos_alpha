@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Abilis Systems Single DVB-T Receiver
- * Copyright (C) 2008 Pierrick Hascoet <pierrick.hascoet@abilis.com>
- */
+ 
+ 
 
 #ifndef _AS102_DRV_H
 #define _AS102_DRV_H
@@ -28,21 +25,21 @@ extern int elna_enable;
 
 struct as10x_bus_adapter_t {
 	struct usb_device *usb_dev;
-	/* bus token lock */
+	 
 	struct mutex lock;
-	/* low level interface for bus adapter */
+	 
 	union as10x_bus_token_t {
-		/* usb token */
+		 
 		struct as10x_usb_token_cmd_t usb;
 	} token;
 
-	/* token cmd xfer id */
+	 
 	uint16_t cmd_xid;
 
-	/* as10x command and response for dvb interface*/
+	 
 	struct as10x_cmd_t *cmd, *rsp;
 
-	/* bus adapter private ops callback */
+	 
 	const struct as102_priv_ops_t *ops;
 };
 
@@ -58,7 +55,7 @@ struct as102_dev_t {
 	struct dvb_demux dvb_dmx;
 	struct dmxdev dvb_dmxdev;
 
-	/* timer handle to trig ts stream download */
+	 
 	struct timer_list timer_handle;
 
 	struct mutex sem;

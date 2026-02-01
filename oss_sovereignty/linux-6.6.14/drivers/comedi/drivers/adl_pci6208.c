@@ -1,34 +1,13 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * adl_pci6208.c
- * Comedi driver for ADLink 6208 series cards
- *
- * COMEDI - Linux Control and Measurement Device Interface
- * Copyright (C) 2000 David A. Schleef <ds@schleef.org>
- */
 
-/*
- * Driver: adl_pci6208
- * Description: ADLink PCI-6208/6216 Series Multi-channel Analog Output Cards
- * Devices: [ADLink] PCI-6208 (adl_pci6208), PCI-6216
- * Author: nsyeow <nsyeow@pd.jaring.my>
- * Updated: Wed, 11 Feb 2015 11:37:18 +0000
- * Status: untested
- *
- * Configuration Options: not applicable, uses PCI auto config
- *
- * All supported devices share the same PCI device ID and are treated as a
- * PCI-6216 with 16 analog output channels.  On a PCI-6208, the upper 8
- * channels exist in registers, but don't go to DAC chips.
- */
+ 
+
+ 
 
 #include <linux/module.h>
 #include <linux/delay.h>
 #include <linux/comedi/comedi_pci.h>
 
-/*
- * PCI-6208/6216-GL register map
- */
+ 
 #define PCI6208_AO_CONTROL(x)		(0x00 + (2 * (x)))
 #define PCI6208_AO_STATUS		0x00
 #define PCI6208_AO_STATUS_DATA_SEND	BIT(0)
@@ -63,12 +42,12 @@ static int pci6208_ao_insn_write(struct comedi_device *dev,
 	for (i = 0; i < insn->n; i++) {
 		unsigned int val = data[i];
 
-		/* D/A transfer rate is 2.2us */
+		 
 		ret = comedi_timeout(dev, s, insn, pci6208_ao_eoc, 0);
 		if (ret)
 			return ret;
 
-		/* the hardware expects two's complement values */
+		 
 		outw(comedi_offset_munge(s, val),
 		     dev->iobase + PCI6208_AO_CONTROL(chan));
 
@@ -124,10 +103,10 @@ static int pci6208_auto_attach(struct comedi_device *dev,
 		return ret;
 
 	s = &dev->subdevices[0];
-	/* analog output subdevice */
+	 
 	s->type		= COMEDI_SUBD_AO;
 	s->subdev_flags	= SDF_WRITABLE;
-	s->n_chan	= 16;	/* Only 8 usable on PCI-6208 */
+	s->n_chan	= 16;	 
 	s->maxdata	= 0xffff;
 	s->range_table	= &range_bipolar10;
 	s->insn_write	= pci6208_ao_insn_write;
@@ -137,7 +116,7 @@ static int pci6208_auto_attach(struct comedi_device *dev,
 		return ret;
 
 	s = &dev->subdevices[1];
-	/* digital input subdevice */
+	 
 	s->type		= COMEDI_SUBD_DI;
 	s->subdev_flags	= SDF_READABLE;
 	s->n_chan	= 4;
@@ -146,7 +125,7 @@ static int pci6208_auto_attach(struct comedi_device *dev,
 	s->insn_bits	= pci6208_di_insn_bits;
 
 	s = &dev->subdevices[2];
-	/* digital output subdevice */
+	 
 	s->type		= COMEDI_SUBD_DO;
 	s->subdev_flags	= SDF_WRITABLE;
 	s->n_chan	= 4;
@@ -154,10 +133,7 @@ static int pci6208_auto_attach(struct comedi_device *dev,
 	s->range_table	= &range_digital;
 	s->insn_bits	= pci6208_do_insn_bits;
 
-	/*
-	 * Get the read back signals from the digital outputs
-	 * and save it as the initial state for the subdevice.
-	 */
+	 
 	val = inw(dev->iobase + PCI6208_DIO);
 	val = (val & PCI6208_DIO_DO_MASK) >> PCI6208_DIO_DO_SHIFT;
 	s->state	= val;

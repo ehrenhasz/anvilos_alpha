@@ -1,12 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2023, Linaro Limited
- */
+ 
+ 
 
 #ifndef QCOM_PHY_QMP_QSERDES_COM_V6_H_
 #define QCOM_PHY_QMP_QSERDES_COM_V6_H_
 
-/* Only for QMP V6 PHY - QSERDES COM registers */
+ 
 
 #define QSERDES_V6_COM_SSC_STEP_SIZE1_MODE1			0x00
 #define QSERDES_V6_COM_SSC_STEP_SIZE2_MODE1			0x04

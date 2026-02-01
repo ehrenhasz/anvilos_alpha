@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2022 MediaTek Inc.
- * Author: Ping-Hsun Wu <ping-hsun.wu@mediatek.com>
- */
+
+ 
 
 #include <linux/platform_device.h>
 #include <media/v4l2-ioctl.h>
@@ -134,7 +131,7 @@ static int mdp_m2m_start_streaming(struct vb2_queue *q, unsigned int count)
 	vq = v4l2_m2m_get_dst_vq(ctx->m2m_ctx);
 	cap_streaming = vb2_is_streaming(vq);
 
-	/* Check to see if scaling ratio is within supported range */
+	 
 	if ((V4L2_TYPE_IS_OUTPUT(q->type) && cap_streaming) ||
 	    (V4L2_TYPE_IS_CAPTURE(q->type) && out_streaming)) {
 		ret = mdp_check_scaling_ratio(&capture->crop.c,
@@ -195,14 +192,14 @@ static int mdp_m2m_queue_setup(struct vb2_queue *q,
 
 	pix_mp = &ctx_get_frame(ctx, q->type)->format.fmt.pix_mp;
 
-	/* from VIDIOC_CREATE_BUFS */
+	 
 	if (*num_planes) {
 		if (*num_planes != pix_mp->num_planes)
 			return -EINVAL;
 		for (i = 0; i < pix_mp->num_planes; ++i)
 			if (sizes[i] < pix_mp->plane_fmt[i].sizeimage)
 				return -EINVAL;
-	} else {/* from VIDIOC_REQBUFS */
+	} else { 
 		*num_planes = pix_mp->num_planes;
 		for (i = 0; i < pix_mp->num_planes; ++i)
 			sizes[i] = pix_mp->plane_fmt[i].sizeimage;
@@ -577,7 +574,7 @@ static int mdp_m2m_open(struct file *file)
 	if (ret)
 		goto err_exit_fh;
 
-	/* Use separate control handler per file handle */
+	 
 	ctx->fh.ctrl_handler = &ctx->ctrl_handler;
 	v4l2_fh_add(&ctx->fh);
 
@@ -599,7 +596,7 @@ static int mdp_m2m_open(struct file *file)
 
 	mutex_unlock(&mdp->m2m_lock);
 
-	/* Default format */
+	 
 	default_format.type = V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE;
 	default_format.fmt.pix_mp.width = limit->out_limit.wmin;
 	default_format.fmt.pix_mp.height = limit->out_limit.hmin;

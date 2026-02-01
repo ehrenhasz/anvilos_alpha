@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * (C) 2001 Clemson University and The University of Chicago
- *
- * See COPYING in top-level directory.
- */
+
+ 
 
 #include "protocol.h"
 #include "orangefs-kernel.h"
@@ -30,13 +26,7 @@ struct posix_acl *orangefs_get_acl(struct inode *inode, int type, bool rcu)
 		gossip_err("orangefs_get_acl: bogus value of type %d\n", type);
 		return ERR_PTR(-EINVAL);
 	}
-	/*
-	 * Rather than incurring a network call just to determine the exact
-	 * length of the attribute, I just allocate a max length to save on
-	 * the network call. Conceivably, we could pass NULL to
-	 * orangefs_inode_getxattr() to probe the length of the value, but
-	 * I don't do that for now.
-	 */
+	 
 	value = kmalloc(ORANGEFS_MAX_XATTR_VALUELEN, GFP_KERNEL);
 	if (!value)
 		return ERR_PTR(-ENOMEM);
@@ -48,7 +38,7 @@ struct posix_acl *orangefs_get_acl(struct inode *inode, int type, bool rcu)
 		     type);
 	ret = orangefs_inode_getxattr(inode, key, value,
 				      ORANGEFS_MAX_XATTR_VALUELEN);
-	/* if the key exists, convert it to an in-memory rep */
+	 
 	if (ret > 0) {
 		acl = posix_acl_from_xattr(&init_user_ns, value, ret);
 	} else if (ret == -ENODATA || ret == -ENOSYS) {
@@ -59,7 +49,7 @@ struct posix_acl *orangefs_get_acl(struct inode *inode, int type, bool rcu)
 			   ret);
 		acl = ERR_PTR(ret);
 	}
-	/* kfree(NULL) is safe, so don't worry if value ever got used */
+	 
 	kfree(value);
 	return acl;
 }
@@ -103,12 +93,7 @@ int __orangefs_set_acl(struct inode *inode, struct posix_acl *acl, int type)
 	gossip_debug(GOSSIP_ACL_DEBUG,
 		     "%s: name %s, value %p, size %zd, acl %p\n",
 		     __func__, name, value, size, acl);
-	/*
-	 * Go ahead and set the extended attribute now. NOTE: Suppose acl
-	 * was NULL, then value will be NULL and size will be 0 and that
-	 * will xlate to a removexattr. However, we don't want removexattr
-	 * complain if attributes does not exist.
-	 */
+	 
 	error = orangefs_inode_setxattr(inode, name, value, size, 0);
 
 out:
@@ -129,13 +114,7 @@ int orangefs_set_acl(struct mnt_idmap *idmap, struct dentry *dentry,
 	memset(&iattr, 0, sizeof iattr);
 
 	if (type == ACL_TYPE_ACCESS && acl) {
-		/*
-		 * posix_acl_update_mode checks to see if the permissions
-		 * described by the ACL can be encoded into the
-		 * object's mode. If so, it sets "acl" to NULL
-		 * and "mode" to the new desired value. It is up to
-		 * us to propagate the new mode back to the server...
-		 */
+		 
 		error = posix_acl_update_mode(&nop_mnt_idmap, inode,
 					      &iattr.ia_mode, &acl);
 		if (error) {

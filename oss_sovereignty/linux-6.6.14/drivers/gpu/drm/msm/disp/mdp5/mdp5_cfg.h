@@ -1,19 +1,12 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2014 The Linux Foundation. All rights reserved.
- */
+ 
+ 
 
 #ifndef __MDP5_CFG_H__
 #define __MDP5_CFG_H__
 
 #include "msm_drv.h"
 
-/*
- * mdp5_cfg
- *
- * This module configures the dynamic offsets used by mdp5.xml.h
- * (initialized in mdp5_cfg.c)
- */
+ 
 extern const struct mdp5_cfg_hw *mdp5_cfg;
 
 #define MAX_CTL			8
@@ -41,39 +34,39 @@ struct mdp5_lm_instance {
 struct mdp5_lm_block {
 	MDP5_SUB_BLOCK_DEFINITION;
 	struct mdp5_lm_instance instances[MAX_BASES];
-	uint32_t nb_stages;		/* number of stages per blender */
-	uint32_t max_width;		/* Maximum output resolution */
+	uint32_t nb_stages;		 
+	uint32_t max_width;		 
 	uint32_t max_height;
 };
 
 struct mdp5_pipe_block {
 	MDP5_SUB_BLOCK_DEFINITION;
-	uint32_t caps;			/* pipe capabilities */
+	uint32_t caps;			 
 };
 
 struct mdp5_ctl_block {
 	MDP5_SUB_BLOCK_DEFINITION;
-	uint32_t flush_hw_mask;		/* FLUSH register's hardware mask */
+	uint32_t flush_hw_mask;		 
 };
 
 struct mdp5_smp_block {
-	int mmb_count;			/* number of SMP MMBs */
-	int mmb_size;			/* MMB: size in bytes */
-	uint32_t clients[MAX_CLIENTS];	/* SMP port allocation /pipe */
-	mdp5_smp_state_t reserved_state;/* SMP MMBs statically allocated */
-	uint8_t reserved[MAX_CLIENTS];	/* # of MMBs allocated per client */
+	int mmb_count;			 
+	int mmb_size;			 
+	uint32_t clients[MAX_CLIENTS];	 
+	mdp5_smp_state_t reserved_state; 
+	uint8_t reserved[MAX_CLIENTS];	 
 };
 
 struct mdp5_mdp_block {
 	MDP5_SUB_BLOCK_DEFINITION;
-	uint32_t caps;			/* MDP capabilities: MDP_CAP_xxx bits */
+	uint32_t caps;			 
 };
 
 #define MDP5_INTF_NUM_MAX	5
 
 struct mdp5_intf_block {
 	uint32_t base[MAX_BASES];
-	u32 connect[MDP5_INTF_NUM_MAX]; /* array of enum mdp5_intf_type */
+	u32 connect[MDP5_INTF_NUM_MAX];  
 };
 
 struct mdp5_perf_block {
@@ -123,4 +116,4 @@ struct mdp5_cfg_handler *mdp5_cfg_init(struct mdp5_kms *mdp5_kms,
 		uint32_t major, uint32_t minor);
 void mdp5_cfg_destroy(struct mdp5_cfg_handler *cfg_hnd);
 
-#endif /* __MDP5_CFG_H__ */
+#endif  

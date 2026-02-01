@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * custom_method.c - debugfs interface for customizing ACPI control method
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/module.h>
@@ -17,7 +15,7 @@ MODULE_LICENSE("GPL");
 
 static struct dentry *cm_dentry;
 
-/* /sys/kernel/debug/acpi/custom_method */
+ 
 
 static ssize_t cm_write(struct file *file, const char __user *user_buf,
 			size_t count, loff_t *ppos)
@@ -35,14 +33,14 @@ static ssize_t cm_write(struct file *file, const char __user *user_buf,
 		return ret;
 
 	if (!(*ppos)) {
-		/* parse the table header to get the table length */
+		 
 		if (count <= sizeof(struct acpi_table_header))
 			return -EINVAL;
 		if (copy_from_user(&table, user_buf,
 				   sizeof(struct acpi_table_header)))
 			return -EFAULT;
 		uncopied_bytes = max_size = table.length;
-		/* make sure the buf is not allocated */
+		 
 		kfree(buf);
 		buf = kzalloc(max_size, GFP_KERNEL);
 		if (!buf)

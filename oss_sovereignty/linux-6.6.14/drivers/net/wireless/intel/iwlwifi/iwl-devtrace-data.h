@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/******************************************************************************
- *
- * Copyright(c) 2009 - 2014 Intel Corporation. All rights reserved.
- * Copyright(c) 2015        Intel Deutschland GmbH
- * Copyright(c) 2018 - 2019 Intel Corporation
- *****************************************************************************/
+ 
+ 
 
 #if !defined(__IWLWIFI_DEVICE_TRACE_DATA) || defined(TRACE_HEADER_MULTI_READ)
 #define __IWLWIFI_DEVICE_TRACE_DATA
@@ -53,7 +48,7 @@ TRACE_EVENT(iwlwifi_dev_rx_data,
 	),
 	TP_printk("[%s] RX frame data", __get_str(dev))
 );
-#endif /* __IWLWIFI_DEVICE_TRACE_DATA */
+#endif  
 
 #undef TRACE_INCLUDE_PATH
 #define TRACE_INCLUDE_PATH .

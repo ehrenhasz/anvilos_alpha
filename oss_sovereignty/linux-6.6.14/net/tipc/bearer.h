@@ -1,38 +1,4 @@
-/*
- * net/tipc/bearer.h: Include file for TIPC bearer code
- *
- * Copyright (c) 1996-2006, 2013-2016, Ericsson AB
- * Copyright (c) 2005, 2010-2011, Wind River Systems
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- * 3. Neither the names of the copyright holders nor the names of its
- *    contributors may be used to endorse or promote products derived from
- *    this software without specific prior written permission.
- *
- * Alternatively, this software may be distributed under the terms of the
- * GNU General Public License ("GPL") version 2 as published by the Free
- * Software Foundation.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGE.
- */
+ 
 
 #ifndef _TIPC_BEARER_H
 #define _TIPC_BEARER_H
@@ -44,36 +10,24 @@
 
 #define MAX_MEDIA	3
 
-/* Identifiers associated with TIPC message header media address info
- * - address info field is 32 bytes long
- * - the field's actual content and length is defined per media
- * - remaining unused bytes in the field are set to zero
- */
+ 
 #define TIPC_MEDIA_INFO_SIZE	32
 #define TIPC_MEDIA_TYPE_OFFSET	3
 #define TIPC_MEDIA_ADDR_OFFSET	4
 
-/*
- * Identifiers of supported TIPC media types
- */
+ 
 #define TIPC_MEDIA_TYPE_ETH	1
 #define TIPC_MEDIA_TYPE_IB	2
 #define TIPC_MEDIA_TYPE_UDP	3
 
-/* Minimum bearer MTU */
+ 
 #define TIPC_MIN_BEARER_MTU	(MAX_H_SIZE + INT_H_SIZE)
 
-/* Identifiers for distinguishing between broadcast/multicast and replicast
- */
+ 
 #define TIPC_BROADCAST_SUPPORT  1
 #define TIPC_REPLICAST_SUPPORT  2
 
-/**
- * struct tipc_media_addr - destination address used by TIPC bearers
- * @value: address info (format defined by media)
- * @media_id: TIPC media type identifier
- * @broadcast: non-zero if address is a broadcast address
- */
+ 
 struct tipc_media_addr {
 	u8 value[TIPC_MEDIA_INFO_SIZE];
 	u8 media_id;
@@ -82,25 +36,7 @@ struct tipc_media_addr {
 
 struct tipc_bearer;
 
-/**
- * struct tipc_media - Media specific info exposed to generic bearer layer
- * @send_msg: routine which handles buffer transmission
- * @enable_media: routine which enables a media
- * @disable_media: routine which disables a media
- * @addr2str: convert media address format to string
- * @addr2msg: convert from media addr format to discovery msg addr format
- * @msg2addr: convert from discovery msg addr format to media addr format
- * @raw2addr: convert from raw addr format to media addr format
- * @priority: default link (and bearer) priority
- * @tolerance: default time (in ms) before declaring link failure
- * @min_win: minimum window (in packets) before declaring link congestion
- * @max_win: maximum window (in packets) before declaring link congestion
- * @mtu: max packet size bearer can support for media type not dependent on
- * underlying device MTU
- * @type_id: TIPC media identifier
- * @hwaddr_len: TIPC media address len
- * @name: media name
- */
+ 
 struct tipc_media {
 	int (*send_msg)(struct net *net, struct sk_buff *buf,
 			struct tipc_bearer *b,
@@ -128,36 +64,11 @@ struct tipc_media {
 	char name[TIPC_MAX_MEDIA_NAME];
 };
 
-/**
- * struct tipc_bearer - Generic TIPC bearer structure
- * @media_ptr: pointer to additional media-specific information about bearer
- * @mtu: max packet size bearer can support
- * @addr: media-specific address associated with bearer
- * @name: bearer name (format = media:interface)
- * @media: ptr to media structure associated with bearer
- * @bcast_addr: media address used in broadcasting
- * @pt: packet type for bearer
- * @rcu: rcu struct for tipc_bearer
- * @priority: default link priority for bearer
- * @min_win: minimum window (in packets) before declaring link congestion
- * @max_win: maximum window (in packets) before declaring link congestion
- * @tolerance: default link tolerance for bearer
- * @domain: network domain to which links can be established
- * @identity: array index of this bearer within TIPC bearer array
- * @disc: ptr to link setup request
- * @net_plane: network plane ('A' through 'H') currently associated with bearer
- * @encap_hlen: encap headers length
- * @up: bearer up flag (bit 0)
- * @refcnt: tipc_bearer reference counter
- *
- * Note: media-specific code is responsible for initialization of the fields
- * indicated below when a bearer is enabled; TIPC's generic bearer code takes
- * care of initializing all other fields.
- */
+ 
 struct tipc_bearer {
-	void __rcu *media_ptr;			/* initialized by media */
-	u32 mtu;				/* initialized by media */
-	struct tipc_media_addr addr;		/* initialized by media */
+	void __rcu *media_ptr;			 
+	u32 mtu;				 
+	struct tipc_media_addr addr;		 
 	char name[TIPC_MAX_BEARER_NAME];
 	struct tipc_media *media;
 	struct tipc_media_addr bcast_addr;
@@ -181,15 +92,11 @@ struct tipc_bearer_names {
 	char if_name[TIPC_MAX_IF_NAME];
 };
 
-/*
- * TIPC routines available to supported media types
- */
+ 
 
 void tipc_rcv(struct net *net, struct sk_buff *skb, struct tipc_bearer *b);
 
-/*
- * Routines made available to TIPC by supported media types
- */
+ 
 extern struct tipc_media eth_media_info;
 
 #ifdef CONFIG_TIPC_MEDIA_IB
@@ -254,7 +161,7 @@ static inline void tipc_loopback_trace(struct net *net,
 		tipc_clone_to_loopback(net, pkts);
 }
 
-/* check if device MTU is too low for tipc headers */
+ 
 static inline bool tipc_mtu_bad(struct net_device *dev)
 {
 	if (dev->mtu >= TIPC_MIN_BEARER_MTU)
@@ -263,4 +170,4 @@ static inline bool tipc_mtu_bad(struct net_device *dev)
 	return true;
 }
 
-#endif	/* _TIPC_BEARER_H */
+#endif	 

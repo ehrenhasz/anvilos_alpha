@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * led_hw_brightness_mon.c
- *
- * This program monitors LED brightness level changes having its origin
- * in hardware/firmware, i.e. outside of kernel control.
- * A timestamp and brightness value is printed each time the brightness changes.
- *
- * Usage: led_hw_brightness_mon <device-name>
- *
- * <device-name> is the name of the LED class device to be monitored. Pressing
- * CTRL+C will exit.
- */
+
+ 
 
 #include <errno.h>
 #include <fcntl.h>
@@ -45,11 +34,7 @@ int main(int argc, char const *argv[])
 		return 1;
 	}
 
-	/*
-	 * read may fail if no hw brightness change has occurred so far,
-	 * but it is required to avoid spurious poll notifications in
-	 * the opposite case.
-	 */
+	 
 	read(fd, buf, sizeof(buf));
 
 	pollfd.fd = fd;

@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * nvec_kbd: keyboard driver for a NVIDIA compliant embedded controller
- *
- * Copyright (C) 2011 The AC100 Kernel Team <ac100@lists.launchpad.net>
- *
- * Authors:  Pierre-Hugues Husson <phhusson@free.fr>
- *           Marc Dietrich <marvin24@gmx.de>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/slab.h>
@@ -44,7 +37,7 @@ static void nvec_kbd_toggle_led(void)
 	keys_dev.caps_lock = !keys_dev.caps_lock;
 
 	if (keys_dev.caps_lock)
-		/* should be BIT(0) only, firmware bug? */
+		 
 		buf[2] = BIT(0) | BIT(1) | BIT(2);
 
 	nvec_write_async(keys_dev.nvec, buf, sizeof(buf));
@@ -59,7 +52,7 @@ static int nvec_keys_notifier(struct notifier_block *nb,
 	if (event_type == NVEC_KB_EVT) {
 		int _size = (msg[0] & (3 << 5)) >> 5;
 
-/* power on/off button */
+ 
 		if (_size == NVEC_VAR_SIZE)
 			return NOTIFY_STOP;
 
@@ -147,15 +140,15 @@ static int nvec_kbd_probe(struct platform_device *pdev)
 	keys_dev.nvec = nvec;
 	nvec_register_notifier(nvec, &keys_dev.notifier, 0);
 
-	/* Enable keyboard */
+	 
 	nvec_write_async(nvec, enable_kbd, 2);
 
-	/* configures wake on special keys */
+	 
 	nvec_write_async(nvec, cnfg_wake, 4);
-	/* enable wake key reporting */
+	 
 	nvec_write_async(nvec, cnfg_wake_key_reporting, 3);
 
-	/* Disable caps lock LED */
+	 
 	nvec_write_async(nvec, clear_leds, sizeof(clear_leds));
 
 	return 0;

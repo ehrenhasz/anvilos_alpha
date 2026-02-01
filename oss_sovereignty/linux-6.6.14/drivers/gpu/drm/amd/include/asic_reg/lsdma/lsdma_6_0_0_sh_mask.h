@@ -1,44 +1,23 @@
-/*
- * Copyright 2021 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 #ifndef _lsdma_6_0_0_SH_MASK_HEADER
 #define _lsdma_6_0_0_SH_MASK_HEADER
 
 
-// addressBlock: lsdma0_lsdma0dec
-//LSDMA_UCODE_ADDR
+
+
 #define LSDMA_UCODE_ADDR__VALUE__SHIFT                                                                        0x0
 #define LSDMA_UCODE_ADDR__VALUE_MASK                                                                          0x00001FFFL
-//LSDMA_UCODE_DATA
+
 #define LSDMA_UCODE_DATA__VALUE__SHIFT                                                                        0x0
 #define LSDMA_UCODE_DATA__VALUE_MASK                                                                          0xFFFFFFFFL
-//LSDMA_ERROR_INJECT_CNTL
+
 #define LSDMA_ERROR_INJECT_CNTL__ENABLE_IRRITATION__SHIFT                                                     0x0
 #define LSDMA_ERROR_INJECT_CNTL__ENABLE_SINGLE_WRITE__SHIFT                                                   0x1
 #define LSDMA_ERROR_INJECT_CNTL__ENABLE_ERROR_INJECT__SHIFT                                                   0x2
 #define LSDMA_ERROR_INJECT_CNTL__ENABLE_IRRITATION_MASK                                                       0x00000001L
 #define LSDMA_ERROR_INJECT_CNTL__ENABLE_SINGLE_WRITE_MASK                                                     0x00000002L
 #define LSDMA_ERROR_INJECT_CNTL__ENABLE_ERROR_INJECT_MASK                                                     0x0000000CL
-//LSDMA_ERROR_INJECT_SELECT
+
 #define LSDMA_ERROR_INJECT_SELECT__MBANK_DATA_BUF0__SHIFT                                                     0x0
 #define LSDMA_ERROR_INJECT_SELECT__MBANK_DATA_BUF1__SHIFT                                                     0x1
 #define LSDMA_ERROR_INJECT_SELECT__MBANK_DATA_BUF2__SHIFT                                                     0x2
@@ -97,25 +76,25 @@
 #define LSDMA_PUB_REG_TYPE0__LSDMA_UCODE_DATA_MASK                                                            0x00000002L
 #define LSDMA_PUB_REG_TYPE3__LSDMA_CLK_CTRL__SHIFT                                                            0x12
 #define LSDMA_PUB_REG_TYPE3__LSDMA_CLK_CTRL_MASK                                                              0x00040000L
-//LSDMA_CONTEXT_GROUP_BOUNDARY
+
 #define LSDMA_CONTEXT_GROUP_BOUNDARY__RESERVED__SHIFT                                                         0x0
 #define LSDMA_CONTEXT_GROUP_BOUNDARY__RESERVED_MASK                                                           0xFFFFFFFFL
-//LSDMA_RB_RPTR_FETCH_HI
+
 #define LSDMA_RB_RPTR_FETCH_HI__OFFSET__SHIFT                                                                 0x0
 #define LSDMA_RB_RPTR_FETCH_HI__OFFSET_MASK                                                                   0xFFFFFFFFL
-//LSDMA_SEM_WAIT_FAIL_TIMER_CNTL
+
 #define LSDMA_SEM_WAIT_FAIL_TIMER_CNTL__TIMER__SHIFT                                                          0x0
 #define LSDMA_SEM_WAIT_FAIL_TIMER_CNTL__TIMER_MASK                                                            0xFFFFFFFFL
-//LSDMA_RB_RPTR_FETCH
+
 #define LSDMA_RB_RPTR_FETCH__OFFSET__SHIFT                                                                    0x2
 #define LSDMA_RB_RPTR_FETCH__OFFSET_MASK                                                                      0xFFFFFFFCL
-//LSDMA_IB_OFFSET_FETCH
+
 #define LSDMA_IB_OFFSET_FETCH__OFFSET__SHIFT                                                                  0x2
 #define LSDMA_IB_OFFSET_FETCH__OFFSET_MASK                                                                    0x003FFFFCL
-//LSDMA_PROGRAM
+
 #define LSDMA_PROGRAM__STREAM__SHIFT                                                                          0x0
 #define LSDMA_PROGRAM__STREAM_MASK                                                                            0xFFFFFFFFL
-//LSDMA_STATUS_REG
+
 #define LSDMA_STATUS_REG__IDLE__SHIFT                                                                         0x0
 #define LSDMA_STATUS_REG__REG_IDLE__SHIFT                                                                     0x1
 #define LSDMA_STATUS_REG__RB_EMPTY__SHIFT                                                                     0x2
@@ -176,7 +155,7 @@
 #define LSDMA_STATUS_REG__SEM_RESP_STATE_MASK                                                                 0x30000000L
 #define LSDMA_STATUS_REG__INT_IDLE_MASK                                                                       0x40000000L
 #define LSDMA_STATUS_REG__INT_REQ_STALL_MASK                                                                  0x80000000L
-//LSDMA_STATUS1_REG
+
 #define LSDMA_STATUS1_REG__CE_WREQ_IDLE__SHIFT                                                                0x0
 #define LSDMA_STATUS1_REG__CE_WR_IDLE__SHIFT                                                                  0x1
 #define LSDMA_STATUS1_REG__CE_SPLIT_IDLE__SHIFT                                                               0x2
@@ -205,18 +184,18 @@
 #define LSDMA_STATUS1_REG__EX_START_MASK                                                                      0x00002000L
 #define LSDMA_STATUS1_REG__CE_RD_STALL_MASK                                                                   0x00008000L
 #define LSDMA_STATUS1_REG__CE_WR_STALL_MASK                                                                   0x00010000L
-//LSDMA_RD_BURST_CNTL
+
 #define LSDMA_RD_BURST_CNTL__RD_BURST__SHIFT                                                                  0x0
 #define LSDMA_RD_BURST_CNTL__CMD_BUFFER_RD_BURST__SHIFT                                                       0x2
 #define LSDMA_RD_BURST_CNTL__RD_BURST_MASK                                                                    0x00000003L
 #define LSDMA_RD_BURST_CNTL__CMD_BUFFER_RD_BURST_MASK                                                         0x0000000CL
-//LSDMA_HBM_PAGE_CONFIG
+
 #define LSDMA_HBM_PAGE_CONFIG__PAGE_SIZE_EXPONENT__SHIFT                                                      0x0
 #define LSDMA_HBM_PAGE_CONFIG__PAGE_SIZE_EXPONENT_MASK                                                        0x00000003L
-//LSDMA_UCODE_CHECKSUM
+
 #define LSDMA_UCODE_CHECKSUM__DATA__SHIFT                                                                     0x0
 #define LSDMA_UCODE_CHECKSUM__DATA_MASK                                                                       0xFFFFFFFFL
-//LSDMA_FREEZE
+
 #define LSDMA_FREEZE__PREEMPT__SHIFT                                                                          0x0
 #define LSDMA_FREEZE__FREEZE__SHIFT                                                                           0x4
 #define LSDMA_FREEZE__FROZEN__SHIFT                                                                           0x5
@@ -225,7 +204,7 @@
 #define LSDMA_FREEZE__FREEZE_MASK                                                                             0x00000010L
 #define LSDMA_FREEZE__FROZEN_MASK                                                                             0x00000020L
 #define LSDMA_FREEZE__F32_FREEZE_MASK                                                                         0x00000040L
-//LSDMA_PF_PIO_STATUS
+
 #define LSDMA_PF_PIO_STATUS__CMD_IN_FIFO__SHIFT                                                               0x0
 #define LSDMA_PF_PIO_STATUS__CMD_PROCESSING__SHIFT                                                            0x3
 #define LSDMA_PF_PIO_STATUS__ERROR_VM_HOLE__SHIFT                                                             0x8
@@ -252,7 +231,7 @@
 #define LSDMA_PF_PIO_STATUS__PIO_FIFO_EMPTY_MASK                                                              0x10000000L
 #define LSDMA_PF_PIO_STATUS__PIO_FIFO_FULL_MASK                                                               0x20000000L
 #define LSDMA_PF_PIO_STATUS__PIO_IDLE_MASK                                                                    0x80000000L
-//LSDMA_VF_PIO_STATUS
+
 #define LSDMA_VF_PIO_STATUS__CMD_IN_FIFO__SHIFT                                                               0x0
 #define LSDMA_VF_PIO_STATUS__CMD_PROCESSING__SHIFT                                                            0x3
 #define LSDMA_VF_PIO_STATUS__ERROR_VM_HOLE__SHIFT                                                             0x8
@@ -279,7 +258,7 @@
 #define LSDMA_VF_PIO_STATUS__PIO_FIFO_EMPTY_MASK                                                              0x10000000L
 #define LSDMA_VF_PIO_STATUS__PIO_FIFO_FULL_MASK                                                               0x20000000L
 #define LSDMA_VF_PIO_STATUS__PIO_IDLE_MASK                                                                    0x80000000L
-//LSDMA_POWER_GATING
+
 #define LSDMA_POWER_GATING__LSDMA_POWER_OFF_CONDITION__SHIFT                                                  0x0
 #define LSDMA_POWER_GATING__LSDMA_POWER_ON_CONDITION__SHIFT                                                   0x1
 #define LSDMA_POWER_GATING__LSDMA_POWER_OFF_REQ__SHIFT                                                        0x2
@@ -290,7 +269,7 @@
 #define LSDMA_POWER_GATING__LSDMA_POWER_OFF_REQ_MASK                                                          0x00000004L
 #define LSDMA_POWER_GATING__LSDMA_POWER_ON_REQ_MASK                                                           0x00000008L
 #define LSDMA_POWER_GATING__PG_CNTL_STATUS_MASK                                                               0x00000030L
-//LSDMA_PGFSM_CONFIG
+
 #define LSDMA_PGFSM_CONFIG__FSM_ADDR__SHIFT                                                                   0x0
 #define LSDMA_PGFSM_CONFIG__POWER_DOWN__SHIFT                                                                 0x8
 #define LSDMA_PGFSM_CONFIG__POWER_UP__SHIFT                                                                   0x9
@@ -309,13 +288,13 @@
 #define LSDMA_PGFSM_CONFIG__READ_MASK                                                                         0x00002000L
 #define LSDMA_PGFSM_CONFIG__SRBM_OVERRIDE_MASK                                                                0x08000000L
 #define LSDMA_PGFSM_CONFIG__REG_ADDR_MASK                                                                     0xF0000000L
-//LSDMA_PGFSM_WRITE
+
 #define LSDMA_PGFSM_WRITE__VALUE__SHIFT                                                                       0x0
 #define LSDMA_PGFSM_WRITE__VALUE_MASK                                                                         0xFFFFFFFFL
-//LSDMA_PGFSM_READ
+
 #define LSDMA_PGFSM_READ__VALUE__SHIFT                                                                        0x0
 #define LSDMA_PGFSM_READ__VALUE_MASK                                                                          0x00FFFFFFL
-//LSDMA_PIO_STATUS
+
 #define LSDMA_PIO_STATUS__CMD_IN_FIFO__SHIFT                                                                  0x0
 #define LSDMA_PIO_STATUS__CMD_PROCESSING__SHIFT                                                               0x3
 #define LSDMA_PIO_STATUS__ERROR_VM_HOLE__SHIFT                                                                0x8
@@ -342,22 +321,22 @@
 #define LSDMA_PIO_STATUS__PIO_FIFO_EMPTY_MASK                                                                 0x10000000L
 #define LSDMA_PIO_STATUS__PIO_FIFO_FULL_MASK                                                                  0x20000000L
 #define LSDMA_PIO_STATUS__PIO_IDLE_MASK                                                                       0x80000000L
-//LSDMA_BA_THRESHOLD
+
 #define LSDMA_BA_THRESHOLD__READ_THRES__SHIFT                                                                 0x0
 #define LSDMA_BA_THRESHOLD__WRITE_THRES__SHIFT                                                                0x10
 #define LSDMA_BA_THRESHOLD__READ_THRES_MASK                                                                   0x000003FFL
 #define LSDMA_BA_THRESHOLD__WRITE_THRES_MASK                                                                  0x03FF0000L
-//LSDMA_ID
+
 #define LSDMA_ID__DEVICE_ID__SHIFT                                                                            0x0
 #define LSDMA_ID__DEVICE_ID_MASK                                                                              0x000000FFL
-//LSDMA_VERSION
+
 #define LSDMA_VERSION__MINVER__SHIFT                                                                          0x0
 #define LSDMA_VERSION__MAJVER__SHIFT                                                                          0x8
 #define LSDMA_VERSION__REV__SHIFT                                                                             0x10
 #define LSDMA_VERSION__MINVER_MASK                                                                            0x0000007FL
 #define LSDMA_VERSION__MAJVER_MASK                                                                            0x00007F00L
 #define LSDMA_VERSION__REV_MASK                                                                               0x003F0000L
-//LSDMA_EDC_COUNTER
+
 #define LSDMA_EDC_COUNTER__LSDMA_MBANK_DATA_BUF0_SED__SHIFT                                                   0x0
 #define LSDMA_EDC_COUNTER__LSDMA_MBANK_DATA_BUF1_SED__SHIFT                                                   0x2
 #define LSDMA_EDC_COUNTER__LSDMA_MBANK_DATA_BUF2_SED__SHIFT                                                   0x4
@@ -390,7 +369,7 @@
 #define LSDMA_EDC_COUNTER__LSDMA_MBANK_DATA_BUF13_SED_MASK                                                    0x0C000000L
 #define LSDMA_EDC_COUNTER__LSDMA_MBANK_DATA_BUF14_SED_MASK                                                    0x30000000L
 #define LSDMA_EDC_COUNTER__LSDMA_MBANK_DATA_BUF15_SED_MASK                                                    0xC0000000L
-//LSDMA_EDC_COUNTER2
+
 #define LSDMA_EDC_COUNTER2__LSDMA_UCODE_BUF_SED__SHIFT                                                        0x0
 #define LSDMA_EDC_COUNTER2__LSDMA_RB_CMD_BUF_SED__SHIFT                                                       0x2
 #define LSDMA_EDC_COUNTER2__LSDMA_IB_CMD_BUF_SED__SHIFT                                                       0x4
@@ -411,23 +390,23 @@
 #define LSDMA_EDC_COUNTER2__LSDMA_SPLIT_DATA_BUF_SED_MASK                                                     0x0000C000L
 #define LSDMA_EDC_COUNTER2__LSDMA_MC_WR_ADDR_FIFO_SED_MASK                                                    0x00030000L
 #define LSDMA_EDC_COUNTER2__LSDMA_MC_RDRET_BUF_SED_MASK                                                       0x000C0000L
-//LSDMA_STATUS2_REG
+
 #define LSDMA_STATUS2_REG__ID__SHIFT                                                                          0x0
 #define LSDMA_STATUS2_REG__F32_INSTR_PTR__SHIFT                                                               0x3
 #define LSDMA_STATUS2_REG__CMD_OP__SHIFT                                                                      0x10
 #define LSDMA_STATUS2_REG__ID_MASK                                                                            0x00000007L
 #define LSDMA_STATUS2_REG__F32_INSTR_PTR_MASK                                                                 0x0000FFF8L
 #define LSDMA_STATUS2_REG__CMD_OP_MASK                                                                        0xFFFF0000L
-//LSDMA_ATOMIC_CNTL
+
 #define LSDMA_ATOMIC_CNTL__LOOP_TIMER__SHIFT                                                                  0x0
 #define LSDMA_ATOMIC_CNTL__LOOP_TIMER_MASK                                                                    0x7FFFFFFFL
-//LSDMA_ATOMIC_PREOP_LO
+
 #define LSDMA_ATOMIC_PREOP_LO__DATA__SHIFT                                                                    0x0
 #define LSDMA_ATOMIC_PREOP_LO__DATA_MASK                                                                      0xFFFFFFFFL
-//LSDMA_ATOMIC_PREOP_HI
+
 #define LSDMA_ATOMIC_PREOP_HI__DATA__SHIFT                                                                    0x0
 #define LSDMA_ATOMIC_PREOP_HI__DATA_MASK                                                                      0xFFFFFFFFL
-//LSDMA_UTCL1_CNTL
+
 #define LSDMA_UTCL1_CNTL__REDO_ENABLE__SHIFT                                                                  0x0
 #define LSDMA_UTCL1_CNTL__REDO_DELAY__SHIFT                                                                   0x1
 #define LSDMA_UTCL1_CNTL__REDO_WATERMK__SHIFT                                                                 0xb
@@ -440,7 +419,7 @@
 #define LSDMA_UTCL1_CNTL__INVACK_DELAY_MASK                                                                   0x00FFC000L
 #define LSDMA_UTCL1_CNTL__REQL2_CREDIT_MASK                                                                   0x1F000000L
 #define LSDMA_UTCL1_CNTL__VADDR_WATERMK_MASK                                                                  0xE0000000L
-//LSDMA_UTCL1_WATERMK
+
 #define LSDMA_UTCL1_WATERMK__REQ_WATERMK__SHIFT                                                               0x0
 #define LSDMA_UTCL1_WATERMK__REQ_DEPTH__SHIFT                                                                 0x3
 #define LSDMA_UTCL1_WATERMK__PAGE_WATERMK__SHIFT                                                              0x5
@@ -451,7 +430,7 @@
 #define LSDMA_UTCL1_WATERMK__PAGE_WATERMK_MASK                                                                0x000000E0L
 #define LSDMA_UTCL1_WATERMK__INVREQ_WATERMK_MASK                                                              0x0000FF00L
 #define LSDMA_UTCL1_WATERMK__RESERVED_MASK                                                                    0xFFFF0000L
-//LSDMA_UTCL1_RD_STATUS
+
 #define LSDMA_UTCL1_RD_STATUS__RQMC_RET_ADDR_FIFO_EMPTY__SHIFT                                                0x0
 #define LSDMA_UTCL1_RD_STATUS__RQMC_REQ_FIFO_EMPTY__SHIFT                                                     0x1
 #define LSDMA_UTCL1_RD_STATUS__RTPG_RET_BUF_EMPTY__SHIFT                                                      0x2
@@ -506,7 +485,7 @@
 #define LSDMA_UTCL1_RD_STATUS__ADDR_RD_RTR_MASK                                                               0x20000000L
 #define LSDMA_UTCL1_RD_STATUS__WPTR_POLLING_MASK                                                              0x40000000L
 #define LSDMA_UTCL1_RD_STATUS__INVREQ_SIZE_MASK                                                               0x80000000L
-//LSDMA_UTCL1_WR_STATUS
+
 #define LSDMA_UTCL1_WR_STATUS__RQMC_RET_ADDR_FIFO_EMPTY__SHIFT                                                0x0
 #define LSDMA_UTCL1_WR_STATUS__RQMC_REQ_FIFO_EMPTY__SHIFT                                                     0x1
 #define LSDMA_UTCL1_WR_STATUS__RTPG_RET_BUF_EMPTY__SHIFT                                                      0x2
@@ -563,7 +542,7 @@
 #define LSDMA_UTCL1_WR_STATUS__RPTR_DATA_FIFO_FULL_MASK                                                       0x20000000L
 #define LSDMA_UTCL1_WR_STATUS__WRREQ_DATA_FIFO_EMPTY_MASK                                                     0x40000000L
 #define LSDMA_UTCL1_WR_STATUS__WRREQ_DATA_FIFO_FULL_MASK                                                      0x80000000L
-//LSDMA_UTCL1_INV0
+
 #define LSDMA_UTCL1_INV0__INV_MIDDLE__SHIFT                                                                   0x0
 #define LSDMA_UTCL1_INV0__RD_TIMEOUT__SHIFT                                                                   0x1
 #define LSDMA_UTCL1_INV0__WR_TIMEOUT__SHIFT                                                                   0x2
@@ -592,16 +571,16 @@
 #define LSDMA_UTCL1_INV0__INV_FLUSHTYPE_MASK                                                                  0x00000800L
 #define LSDMA_UTCL1_INV0__INV_VMID_VEC_MASK                                                                   0x0FFFF000L
 #define LSDMA_UTCL1_INV0__INV_ADDR_HI_MASK                                                                    0xF0000000L
-//LSDMA_UTCL1_INV1
+
 #define LSDMA_UTCL1_INV1__INV_ADDR_LO__SHIFT                                                                  0x0
 #define LSDMA_UTCL1_INV1__INV_ADDR_LO_MASK                                                                    0xFFFFFFFFL
-//LSDMA_UTCL1_INV2
+
 #define LSDMA_UTCL1_INV2__INV_NFLUSH_VMID_VEC__SHIFT                                                          0x0
 #define LSDMA_UTCL1_INV2__INV_NFLUSH_VMID_VEC_MASK                                                            0xFFFFFFFFL
-//LSDMA_UTCL1_RD_XNACK0
+
 #define LSDMA_UTCL1_RD_XNACK0__XNACK_ADDR_LO__SHIFT                                                           0x0
 #define LSDMA_UTCL1_RD_XNACK0__XNACK_ADDR_LO_MASK                                                             0xFFFFFFFFL
-//LSDMA_UTCL1_RD_XNACK1
+
 #define LSDMA_UTCL1_RD_XNACK1__XNACK_ADDR_HI__SHIFT                                                           0x0
 #define LSDMA_UTCL1_RD_XNACK1__XNACK_VMID__SHIFT                                                              0x4
 #define LSDMA_UTCL1_RD_XNACK1__XNACK_VECTOR__SHIFT                                                            0x8
@@ -610,10 +589,10 @@
 #define LSDMA_UTCL1_RD_XNACK1__XNACK_VMID_MASK                                                                0x000000F0L
 #define LSDMA_UTCL1_RD_XNACK1__XNACK_VECTOR_MASK                                                              0x03FFFF00L
 #define LSDMA_UTCL1_RD_XNACK1__IS_XNACK_MASK                                                                  0x0C000000L
-//LSDMA_UTCL1_WR_XNACK0
+
 #define LSDMA_UTCL1_WR_XNACK0__XNACK_ADDR_LO__SHIFT                                                           0x0
 #define LSDMA_UTCL1_WR_XNACK0__XNACK_ADDR_LO_MASK                                                             0xFFFFFFFFL
-//LSDMA_UTCL1_WR_XNACK1
+
 #define LSDMA_UTCL1_WR_XNACK1__XNACK_ADDR_HI__SHIFT                                                           0x0
 #define LSDMA_UTCL1_WR_XNACK1__XNACK_VMID__SHIFT                                                              0x4
 #define LSDMA_UTCL1_WR_XNACK1__XNACK_VECTOR__SHIFT                                                            0x8
@@ -622,12 +601,12 @@
 #define LSDMA_UTCL1_WR_XNACK1__XNACK_VMID_MASK                                                                0x000000F0L
 #define LSDMA_UTCL1_WR_XNACK1__XNACK_VECTOR_MASK                                                              0x03FFFF00L
 #define LSDMA_UTCL1_WR_XNACK1__IS_XNACK_MASK                                                                  0x0C000000L
-//LSDMA_UTCL1_TIMEOUT
+
 #define LSDMA_UTCL1_TIMEOUT__RD_XNACK_LIMIT__SHIFT                                                            0x0
 #define LSDMA_UTCL1_TIMEOUT__WR_XNACK_LIMIT__SHIFT                                                            0x10
 #define LSDMA_UTCL1_TIMEOUT__RD_XNACK_LIMIT_MASK                                                              0x0000FFFFL
 #define LSDMA_UTCL1_TIMEOUT__WR_XNACK_LIMIT_MASK                                                              0xFFFF0000L
-//LSDMA_UTCL1_PAGE
+
 #define LSDMA_UTCL1_PAGE__VM_HOLE__SHIFT                                                                      0x0
 #define LSDMA_UTCL1_PAGE__REQ_TYPE__SHIFT                                                                     0x1
 #define LSDMA_UTCL1_PAGE__TMZ_ENABLE__SHIFT                                                                   0x5
@@ -638,7 +617,7 @@
 #define LSDMA_UTCL1_PAGE__TMZ_ENABLE_MASK                                                                     0x00000020L
 #define LSDMA_UTCL1_PAGE__USE_MTYPE_MASK                                                                      0x000001C0L
 #define LSDMA_UTCL1_PAGE__USE_PT_SNOOP_MASK                                                                   0x00000200L
-//LSDMA_RELAX_ORDERING_LUT
+
 #define LSDMA_RELAX_ORDERING_LUT__RESERVED0__SHIFT                                                            0x0
 #define LSDMA_RELAX_ORDERING_LUT__COPY__SHIFT                                                                 0x1
 #define LSDMA_RELAX_ORDERING_LUT__WRITE__SHIFT                                                                0x2
@@ -677,12 +656,12 @@
 #define LSDMA_RELAX_ORDERING_LUT__WPTR_POLL_MASK                                                              0x20000000L
 #define LSDMA_RELAX_ORDERING_LUT__IB_FETCH_MASK                                                               0x40000000L
 #define LSDMA_RELAX_ORDERING_LUT__RB_FETCH_MASK                                                               0x80000000L
-//LSDMA_CHICKEN_BITS_2
+
 #define LSDMA_CHICKEN_BITS_2__F32_CMD_PROC_DELAY__SHIFT                                                       0x0
 #define LSDMA_CHICKEN_BITS_2__F32_SEND_POSTCODE_EN__SHIFT                                                     0x4
 #define LSDMA_CHICKEN_BITS_2__F32_CMD_PROC_DELAY_MASK                                                         0x0000000FL
 #define LSDMA_CHICKEN_BITS_2__F32_SEND_POSTCODE_EN_MASK                                                       0x00000010L
-//LSDMA_STATUS3_REG
+
 #define LSDMA_STATUS3_REG__CMD_OP_STATUS__SHIFT                                                               0x0
 #define LSDMA_STATUS3_REG__PREV_VM_CMD__SHIFT                                                                 0x10
 #define LSDMA_STATUS3_REG__EXCEPTION_IDLE__SHIFT                                                              0x14
@@ -693,7 +672,7 @@
 #define LSDMA_STATUS3_REG__EXCEPTION_IDLE_MASK                                                                0x00100000L
 #define LSDMA_STATUS3_REG__QUEUE_ID_MATCH_MASK                                                                0x00200000L
 #define LSDMA_STATUS3_REG__INT_QUEUE_ID_MASK                                                                  0x03C00000L
-//LSDMA_PHYSICAL_ADDR_LO
+
 #define LSDMA_PHYSICAL_ADDR_LO__D_VALID__SHIFT                                                                0x0
 #define LSDMA_PHYSICAL_ADDR_LO__DIRTY__SHIFT                                                                  0x1
 #define LSDMA_PHYSICAL_ADDR_LO__PHY_VALID__SHIFT                                                              0x2
@@ -702,33 +681,33 @@
 #define LSDMA_PHYSICAL_ADDR_LO__DIRTY_MASK                                                                    0x00000002L
 #define LSDMA_PHYSICAL_ADDR_LO__PHY_VALID_MASK                                                                0x00000004L
 #define LSDMA_PHYSICAL_ADDR_LO__ADDR_MASK                                                                     0xFFFFF000L
-//LSDMA_PHYSICAL_ADDR_HI
+
 #define LSDMA_PHYSICAL_ADDR_HI__ADDR__SHIFT                                                                   0x0
 #define LSDMA_PHYSICAL_ADDR_HI__ADDR_MASK                                                                     0x0000FFFFL
-//LSDMA_ECC_CNTL
+
 #define LSDMA_ECC_CNTL__ECC_DISABLE__SHIFT                                                                    0x0
 #define LSDMA_ECC_CNTL__ECC_DISABLE_MASK                                                                      0x00000001L
-//LSDMA_ERROR_LOG
+
 #define LSDMA_ERROR_LOG__OVERRIDE__SHIFT                                                                      0x0
 #define LSDMA_ERROR_LOG__STATUS__SHIFT                                                                        0x10
 #define LSDMA_ERROR_LOG__OVERRIDE_MASK                                                                        0x0000FFFFL
 #define LSDMA_ERROR_LOG__STATUS_MASK                                                                          0xFFFF0000L
-//LSDMA_PUB_DUMMY0
+
 #define LSDMA_PUB_DUMMY0__DUMMY__SHIFT                                                                        0x0
 #define LSDMA_PUB_DUMMY0__DUMMY_MASK                                                                          0xFFFFFFFFL
-//LSDMA_PUB_DUMMY1
+
 #define LSDMA_PUB_DUMMY1__DUMMY__SHIFT                                                                        0x0
 #define LSDMA_PUB_DUMMY1__DUMMY_MASK                                                                          0xFFFFFFFFL
-//LSDMA_PUB_DUMMY2
+
 #define LSDMA_PUB_DUMMY2__DUMMY__SHIFT                                                                        0x0
 #define LSDMA_PUB_DUMMY2__DUMMY_MASK                                                                          0xFFFFFFFFL
-//LSDMA_PUB_DUMMY3
+
 #define LSDMA_PUB_DUMMY3__DUMMY__SHIFT                                                                        0x0
 #define LSDMA_PUB_DUMMY3__DUMMY_MASK                                                                          0xFFFFFFFFL
-//LSDMA_F32_COUNTER
+
 #define LSDMA_F32_COUNTER__VALUE__SHIFT                                                                       0x0
 #define LSDMA_F32_COUNTER__VALUE_MASK                                                                         0xFFFFFFFFL
-//LSDMA_PERFCNT_PERFCOUNTER0_CFG
+
 #define LSDMA_PERFCNT_PERFCOUNTER0_CFG__PERF_SEL__SHIFT                                                       0x0
 #define LSDMA_PERFCNT_PERFCOUNTER0_CFG__PERF_SEL_END__SHIFT                                                   0x8
 #define LSDMA_PERFCNT_PERFCOUNTER0_CFG__PERF_MODE__SHIFT                                                      0x18
@@ -739,7 +718,7 @@
 #define LSDMA_PERFCNT_PERFCOUNTER0_CFG__PERF_MODE_MASK                                                        0x0F000000L
 #define LSDMA_PERFCNT_PERFCOUNTER0_CFG__ENABLE_MASK                                                           0x10000000L
 #define LSDMA_PERFCNT_PERFCOUNTER0_CFG__CLEAR_MASK                                                            0x20000000L
-//LSDMA_PERFCNT_PERFCOUNTER1_CFG
+
 #define LSDMA_PERFCNT_PERFCOUNTER1_CFG__PERF_SEL__SHIFT                                                       0x0
 #define LSDMA_PERFCNT_PERFCOUNTER1_CFG__PERF_SEL_END__SHIFT                                                   0x8
 #define LSDMA_PERFCNT_PERFCOUNTER1_CFG__PERF_MODE__SHIFT                                                      0x18
@@ -750,7 +729,7 @@
 #define LSDMA_PERFCNT_PERFCOUNTER1_CFG__PERF_MODE_MASK                                                        0x0F000000L
 #define LSDMA_PERFCNT_PERFCOUNTER1_CFG__ENABLE_MASK                                                           0x10000000L
 #define LSDMA_PERFCNT_PERFCOUNTER1_CFG__CLEAR_MASK                                                            0x20000000L
-//LSDMA_PERFCNT_PERFCOUNTER_RSLT_CNTL
+
 #define LSDMA_PERFCNT_PERFCOUNTER_RSLT_CNTL__PERF_COUNTER_SELECT__SHIFT                                       0x0
 #define LSDMA_PERFCNT_PERFCOUNTER_RSLT_CNTL__START_TRIGGER__SHIFT                                             0x8
 #define LSDMA_PERFCNT_PERFCOUNTER_RSLT_CNTL__STOP_TRIGGER__SHIFT                                              0x10
@@ -763,25 +742,25 @@
 #define LSDMA_PERFCNT_PERFCOUNTER_RSLT_CNTL__ENABLE_ANY_MASK                                                  0x01000000L
 #define LSDMA_PERFCNT_PERFCOUNTER_RSLT_CNTL__CLEAR_ALL_MASK                                                   0x02000000L
 #define LSDMA_PERFCNT_PERFCOUNTER_RSLT_CNTL__STOP_ALL_ON_SATURATE_MASK                                        0x04000000L
-//LSDMA_PERFCNT_MISC_CNTL
+
 #define LSDMA_PERFCNT_MISC_CNTL__CMD_OP__SHIFT                                                                0x0
 #define LSDMA_PERFCNT_MISC_CNTL__MMHUB_REQ_EVENT_SELECT__SHIFT                                                0x10
 #define LSDMA_PERFCNT_MISC_CNTL__CMD_OP_MASK                                                                  0x0000FFFFL
 #define LSDMA_PERFCNT_MISC_CNTL__MMHUB_REQ_EVENT_SELECT_MASK                                                  0x00010000L
-//LSDMA_PERFCNT_PERFCOUNTER_LO
+
 #define LSDMA_PERFCNT_PERFCOUNTER_LO__COUNTER_LO__SHIFT                                                       0x0
 #define LSDMA_PERFCNT_PERFCOUNTER_LO__COUNTER_LO_MASK                                                         0xFFFFFFFFL
-//LSDMA_PERFCNT_PERFCOUNTER_HI
+
 #define LSDMA_PERFCNT_PERFCOUNTER_HI__COUNTER_HI__SHIFT                                                       0x0
 #define LSDMA_PERFCNT_PERFCOUNTER_HI__COMPARE_VALUE__SHIFT                                                    0x10
 #define LSDMA_PERFCNT_PERFCOUNTER_HI__COUNTER_HI_MASK                                                         0x0000FFFFL
 #define LSDMA_PERFCNT_PERFCOUNTER_HI__COMPARE_VALUE_MASK                                                      0xFFFF0000L
-//LSDMA_CRD_CNTL
+
 #define LSDMA_CRD_CNTL__MC_WRREQ_CREDIT__SHIFT                                                                0x7
 #define LSDMA_CRD_CNTL__MC_RDREQ_CREDIT__SHIFT                                                                0xd
 #define LSDMA_CRD_CNTL__MC_WRREQ_CREDIT_MASK                                                                  0x00001F80L
 #define LSDMA_CRD_CNTL__MC_RDREQ_CREDIT_MASK                                                                  0x0007E000L
-//LSDMA_ULV_CNTL
+
 #define LSDMA_ULV_CNTL__HYSTERESIS__SHIFT                                                                     0x0
 #define LSDMA_ULV_CNTL__ENTER_ULV_INT_CLR__SHIFT                                                              0x1b
 #define LSDMA_ULV_CNTL__EXIT_ULV_INT_CLR__SHIFT                                                               0x1c
@@ -794,13 +773,13 @@
 #define LSDMA_ULV_CNTL__ENTER_ULV_INT_MASK                                                                    0x20000000L
 #define LSDMA_ULV_CNTL__EXIT_ULV_INT_MASK                                                                     0x40000000L
 #define LSDMA_ULV_CNTL__ULV_STATUS_MASK                                                                       0x80000000L
-//LSDMA_EA_DBIT_ADDR_DATA
+
 #define LSDMA_EA_DBIT_ADDR_DATA__VALUE__SHIFT                                                                 0x0
 #define LSDMA_EA_DBIT_ADDR_DATA__VALUE_MASK                                                                   0xFFFFFFFFL
-//LSDMA_EA_DBIT_ADDR_INDEX
+
 #define LSDMA_EA_DBIT_ADDR_INDEX__VALUE__SHIFT                                                                0x0
 #define LSDMA_EA_DBIT_ADDR_INDEX__VALUE_MASK                                                                  0x00000007L
-//LSDMA_STATUS4_REG
+
 #define LSDMA_STATUS4_REG__IDLE__SHIFT                                                                        0x0
 #define LSDMA_STATUS4_REG__IH_OUTSTANDING__SHIFT                                                              0x2
 #define LSDMA_STATUS4_REG__SEM_OUTSTANDING__SHIFT                                                             0x3
@@ -829,7 +808,7 @@
 #define LSDMA_STATUS4_REG__ACTIVE_QUEUE_ID_MASK                                                               0x0003C000L
 #define LSDMA_STATUS4_REG__SRIOV_WATING_RLCV_CMD_MASK                                                         0x00040000L
 #define LSDMA_STATUS4_REG__SRIOV_LSDMA_EXECUTING_CMD_MASK                                                     0x00080000L
-//LSDMA_CE_CTRL
+
 #define LSDMA_CE_CTRL__RD_LUT_WATERMARK__SHIFT                                                                0x0
 #define LSDMA_CE_CTRL__RD_LUT_DEPTH__SHIFT                                                                    0x3
 #define LSDMA_CE_CTRL__RESERVED_7_5__SHIFT                                                                    0x5
@@ -838,7 +817,7 @@
 #define LSDMA_CE_CTRL__RD_LUT_DEPTH_MASK                                                                      0x00000018L
 #define LSDMA_CE_CTRL__RESERVED_7_5_MASK                                                                      0x000000E0L
 #define LSDMA_CE_CTRL__RESERVED_MASK                                                                          0xFFFFFF00L
-//LSDMA_EXCEPTION_STATUS
+
 #define LSDMA_EXCEPTION_STATUS__RB_FETCH_ECC__SHIFT                                                           0x0
 #define LSDMA_EXCEPTION_STATUS__IB_FETCH_ECC__SHIFT                                                           0x1
 #define LSDMA_EXCEPTION_STATUS__COPY_CMD_ECC__SHIFT                                                           0x2
@@ -871,19 +850,19 @@
 #define LSDMA_EXCEPTION_STATUS__NON_COPY_CMD_NACK_PRT_MASK                                                    0x00080000L
 #define LSDMA_EXCEPTION_STATUS__RPTR_WB_NACK_PRT_MASK                                                         0x00200000L
 #define LSDMA_EXCEPTION_STATUS__VM_HOLE_MASK                                                                  0x01000000L
-//LSDMA_PIO_SRC_ADDR_LO
+
 #define LSDMA_PIO_SRC_ADDR_LO__SRC_ADDR_LO__SHIFT                                                             0x0
 #define LSDMA_PIO_SRC_ADDR_LO__SRC_ADDR_LO_MASK                                                               0xFFFFFFFFL
-//LSDMA_PIO_SRC_ADDR_HI
+
 #define LSDMA_PIO_SRC_ADDR_HI__SRC_ADDR_HI__SHIFT                                                             0x0
 #define LSDMA_PIO_SRC_ADDR_HI__SRC_ADDR_HI_MASK                                                               0xFFFFFFFFL
-//LSDMA_PIO_DST_ADDR_LO
+
 #define LSDMA_PIO_DST_ADDR_LO__DST_ADDR_LO__SHIFT                                                             0x0
 #define LSDMA_PIO_DST_ADDR_LO__DST_ADDR_LO_MASK                                                               0xFFFFFFFFL
-//LSDMA_PIO_DST_ADDR_HI
+
 #define LSDMA_PIO_DST_ADDR_HI__DST_ADDR_HI__SHIFT                                                             0x0
 #define LSDMA_PIO_DST_ADDR_HI__DST_ADDR_HI_MASK                                                               0xFFFFFFFFL
-//LSDMA_PIO_COMMAND
+
 #define LSDMA_PIO_COMMAND__BYTE_COUNT__SHIFT                                                                  0x0
 #define LSDMA_PIO_COMMAND__SRC_LOCATION__SHIFT                                                                0x1a
 #define LSDMA_PIO_COMMAND__DST_LOCATION__SHIFT                                                                0x1b
@@ -898,10 +877,10 @@
 #define LSDMA_PIO_COMMAND__DST_ADDR_INC_MASK                                                                  0x20000000L
 #define LSDMA_PIO_COMMAND__OVERLAP_DISABLE_MASK                                                               0x40000000L
 #define LSDMA_PIO_COMMAND__CONSTANT_FILL_MASK                                                                 0x80000000L
-//LSDMA_PIO_CONSTFILL_DATA
+
 #define LSDMA_PIO_CONSTFILL_DATA__DATA__SHIFT                                                                 0x0
 #define LSDMA_PIO_CONSTFILL_DATA__DATA_MASK                                                                   0xFFFFFFFFL
-//LSDMA_PIO_CONTROL
+
 #define LSDMA_PIO_CONTROL__VMID__SHIFT                                                                        0x0
 #define LSDMA_PIO_CONTROL__GPA__SHIFT                                                                         0x4
 #define LSDMA_PIO_CONTROL__SYS__SHIFT                                                                         0x5
@@ -912,7 +891,7 @@
 #define LSDMA_PIO_CONTROL__SYS_MASK                                                                           0x00000020L
 #define LSDMA_PIO_CONTROL__GCC_MASK                                                                           0x00000040L
 #define LSDMA_PIO_CONTROL__SNOOP_MASK                                                                         0x00000080L
-//LSDMA_INT_CNTL
+
 #define LSDMA_INT_CNTL__ATOMIC_RTN_DONE_INT_ENABLE__SHIFT                                                     0x0
 #define LSDMA_INT_CNTL__TRAP_INT_ENABLE__SHIFT                                                                0x1
 #define LSDMA_INT_CNTL__SRBM_WRITE_INT_ENABLE__SHIFT                                                          0x2
@@ -939,10 +918,10 @@
 #define LSDMA_INT_CNTL__NACK_GEN_ERR_INT_ENABLE_MASK                                                          0x00000400L
 #define LSDMA_INT_CNTL__NACK_PRT_INT_ENABLE_MASK                                                              0x00000800L
 #define LSDMA_INT_CNTL__ECC_INT_ENABLE_MASK                                                                   0x00001000L
-//LSDMA_MEM_POWER_CTRL
+
 #define LSDMA_MEM_POWER_CTRL__MEM_POWER_CTRL_EN__SHIFT                                                        0x0
 #define LSDMA_MEM_POWER_CTRL__MEM_POWER_CTRL_EN_MASK                                                          0x00000001L
-//LSDMA_CLK_CTRL
+
 #define LSDMA_CLK_CTRL__SOFT_OVERRIDE_SRAM_FGCG__SHIFT                                                        0x0
 #define LSDMA_CLK_CTRL__RESERVED__SHIFT                                                                       0x1
 #define LSDMA_CLK_CTRL__SOFT_OVERRIDE7__SHIFT                                                                 0x18
@@ -963,7 +942,7 @@
 #define LSDMA_CLK_CTRL__SOFT_OVERRIDE2_MASK                                                                   0x20000000L
 #define LSDMA_CLK_CTRL__SOFT_OVERRIDE1_MASK                                                                   0x40000000L
 #define LSDMA_CLK_CTRL__SOFT_OVERRIDE0_MASK                                                                   0x80000000L
-//LSDMA_CNTL
+
 #define LSDMA_CNTL__UTC_L1_ENABLE__SHIFT                                                                      0x1
 #define LSDMA_CNTL__SEM_WAIT_INT_ENABLE__SHIFT                                                                0x2
 #define LSDMA_CNTL__DATA_SWAP_ENABLE__SHIFT                                                                   0x3
@@ -980,7 +959,7 @@
 #define LSDMA_CNTL__MIDCMD_EXPIRE_ENABLE_MASK                                                                 0x00000040L
 #define LSDMA_CNTL__MIDCMD_WORLDSWITCH_ENABLE_MASK                                                            0x00020000L
 #define LSDMA_CNTL__AUTO_CTXSW_ENABLE_MASK                                                                    0x00040000L
-//LSDMA_CHICKEN_BITS
+
 #define LSDMA_CHICKEN_BITS__STALL_ON_TRANS_FULL_ENABLE__SHIFT                                                 0x1
 #define LSDMA_CHICKEN_BITS__STALL_ON_NO_FREE_DATA_BUFFER_ENABLE__SHIFT                                        0x2
 #define LSDMA_CHICKEN_BITS__F32_MGCG_ENABLE__SHIFT                                                            0x3
@@ -1001,7 +980,7 @@
 #define LSDMA_CHICKEN_BITS__T2L_256B_ENABLE_MASK                                                              0x00040000L
 #define LSDMA_CHICKEN_BITS__SRBM_POLL_RETRYING_MASK                                                           0x00100000L
 #define LSDMA_CHICKEN_BITS__CG_STATUS_OUTPUT_MASK                                                             0x00800000L
-//LSDMA_GB_ADDR_CONFIG
+
 #define LSDMA_GB_ADDR_CONFIG__NUM_PIPES__SHIFT                                                                0x0
 #define LSDMA_GB_ADDR_CONFIG__PIPE_INTERLEAVE_SIZE__SHIFT                                                     0x3
 #define LSDMA_GB_ADDR_CONFIG__MAX_COMPRESSED_FRAGS__SHIFT                                                     0x6
@@ -1014,7 +993,7 @@
 #define LSDMA_GB_ADDR_CONFIG__NUM_PKRS_MASK                                                                   0x00000700L
 #define LSDMA_GB_ADDR_CONFIG__NUM_SHADER_ENGINES_MASK                                                         0x00180000L
 #define LSDMA_GB_ADDR_CONFIG__NUM_RB_PER_SE_MASK                                                              0x0C000000L
-//LSDMA_GB_ADDR_CONFIG_READ
+
 #define LSDMA_GB_ADDR_CONFIG_READ__NUM_PIPES__SHIFT                                                           0x0
 #define LSDMA_GB_ADDR_CONFIG_READ__PIPE_INTERLEAVE_SIZE__SHIFT                                                0x3
 #define LSDMA_GB_ADDR_CONFIG_READ__MAX_COMPRESSED_FRAGS__SHIFT                                                0x6
@@ -1027,7 +1006,7 @@
 #define LSDMA_GB_ADDR_CONFIG_READ__NUM_PKRS_MASK                                                              0x00000700L
 #define LSDMA_GB_ADDR_CONFIG_READ__NUM_SHADER_ENGINES_MASK                                                    0x00180000L
 #define LSDMA_GB_ADDR_CONFIG_READ__NUM_RB_PER_SE_MASK                                                         0x0C000000L
-//LSDMA_QUEUE0_RB_CNTL
+
 #define LSDMA_QUEUE0_RB_CNTL__RB_ENABLE__SHIFT                                                                0x0
 #define LSDMA_QUEUE0_RB_CNTL__RB_SIZE__SHIFT                                                                  0x1
 #define LSDMA_QUEUE0_RB_CNTL__RB_SWAP_ENABLE__SHIFT                                                           0x9
@@ -1042,25 +1021,25 @@
 #define LSDMA_QUEUE0_RB_CNTL__RPTR_WRITEBACK_SWAP_ENABLE_MASK                                                 0x00002000L
 #define LSDMA_QUEUE0_RB_CNTL__RPTR_WRITEBACK_TIMER_MASK                                                       0x001F0000L
 #define LSDMA_QUEUE0_RB_CNTL__RB_VMID_MASK                                                                    0x0F000000L
-//LSDMA_QUEUE0_RB_BASE
+
 #define LSDMA_QUEUE0_RB_BASE__ADDR__SHIFT                                                                     0x0
 #define LSDMA_QUEUE0_RB_BASE__ADDR_MASK                                                                       0xFFFFFFFFL
-//LSDMA_QUEUE0_RB_BASE_HI
+
 #define LSDMA_QUEUE0_RB_BASE_HI__ADDR__SHIFT                                                                  0x0
 #define LSDMA_QUEUE0_RB_BASE_HI__ADDR_MASK                                                                    0x00FFFFFFL
-//LSDMA_QUEUE0_RB_RPTR
+
 #define LSDMA_QUEUE0_RB_RPTR__OFFSET__SHIFT                                                                   0x0
 #define LSDMA_QUEUE0_RB_RPTR__OFFSET_MASK                                                                     0xFFFFFFFFL
-//LSDMA_QUEUE0_RB_RPTR_HI
+
 #define LSDMA_QUEUE0_RB_RPTR_HI__OFFSET__SHIFT                                                                0x0
 #define LSDMA_QUEUE0_RB_RPTR_HI__OFFSET_MASK                                                                  0xFFFFFFFFL
-//LSDMA_QUEUE0_RB_WPTR
+
 #define LSDMA_QUEUE0_RB_WPTR__OFFSET__SHIFT                                                                   0x0
 #define LSDMA_QUEUE0_RB_WPTR__OFFSET_MASK                                                                     0xFFFFFFFFL
-//LSDMA_QUEUE0_RB_WPTR_HI
+
 #define LSDMA_QUEUE0_RB_WPTR_HI__OFFSET__SHIFT                                                                0x0
 #define LSDMA_QUEUE0_RB_WPTR_HI__OFFSET_MASK                                                                  0xFFFFFFFFL
-//LSDMA_QUEUE0_RB_WPTR_POLL_CNTL
+
 #define LSDMA_QUEUE0_RB_WPTR_POLL_CNTL__ENABLE__SHIFT                                                         0x0
 #define LSDMA_QUEUE0_RB_WPTR_POLL_CNTL__SWAP_ENABLE__SHIFT                                                    0x1
 #define LSDMA_QUEUE0_RB_WPTR_POLL_CNTL__F32_POLL_ENABLE__SHIFT                                                0x2
@@ -1071,15 +1050,15 @@
 #define LSDMA_QUEUE0_RB_WPTR_POLL_CNTL__F32_POLL_ENABLE_MASK                                                  0x00000004L
 #define LSDMA_QUEUE0_RB_WPTR_POLL_CNTL__FREQUENCY_MASK                                                        0x0000FFF0L
 #define LSDMA_QUEUE0_RB_WPTR_POLL_CNTL__IDLE_POLL_COUNT_MASK                                                  0xFFFF0000L
-//LSDMA_QUEUE0_RB_RPTR_ADDR_HI
+
 #define LSDMA_QUEUE0_RB_RPTR_ADDR_HI__ADDR__SHIFT                                                             0x0
 #define LSDMA_QUEUE0_RB_RPTR_ADDR_HI__ADDR_MASK                                                               0xFFFFFFFFL
-//LSDMA_QUEUE0_RB_RPTR_ADDR_LO
+
 #define LSDMA_QUEUE0_RB_RPTR_ADDR_LO__RPTR_WB_IDLE__SHIFT                                                     0x0
 #define LSDMA_QUEUE0_RB_RPTR_ADDR_LO__ADDR__SHIFT                                                             0x2
 #define LSDMA_QUEUE0_RB_RPTR_ADDR_LO__RPTR_WB_IDLE_MASK                                                       0x00000001L
 #define LSDMA_QUEUE0_RB_RPTR_ADDR_LO__ADDR_MASK                                                               0xFFFFFFFCL
-//LSDMA_QUEUE0_IB_CNTL
+
 #define LSDMA_QUEUE0_IB_CNTL__IB_ENABLE__SHIFT                                                                0x0
 #define LSDMA_QUEUE0_IB_CNTL__IB_SWAP_ENABLE__SHIFT                                                           0x4
 #define LSDMA_QUEUE0_IB_CNTL__SWITCH_INSIDE_IB__SHIFT                                                         0x8
@@ -1088,25 +1067,25 @@
 #define LSDMA_QUEUE0_IB_CNTL__IB_SWAP_ENABLE_MASK                                                             0x00000010L
 #define LSDMA_QUEUE0_IB_CNTL__SWITCH_INSIDE_IB_MASK                                                           0x00000100L
 #define LSDMA_QUEUE0_IB_CNTL__CMD_VMID_MASK                                                                   0x000F0000L
-//LSDMA_QUEUE0_IB_RPTR
+
 #define LSDMA_QUEUE0_IB_RPTR__OFFSET__SHIFT                                                                   0x2
 #define LSDMA_QUEUE0_IB_RPTR__OFFSET_MASK                                                                     0x003FFFFCL
-//LSDMA_QUEUE0_IB_OFFSET
+
 #define LSDMA_QUEUE0_IB_OFFSET__OFFSET__SHIFT                                                                 0x2
 #define LSDMA_QUEUE0_IB_OFFSET__OFFSET_MASK                                                                   0x003FFFFCL
-//LSDMA_QUEUE0_IB_BASE_LO
+
 #define LSDMA_QUEUE0_IB_BASE_LO__ADDR__SHIFT                                                                  0x5
 #define LSDMA_QUEUE0_IB_BASE_LO__ADDR_MASK                                                                    0xFFFFFFE0L
-//LSDMA_QUEUE0_IB_BASE_HI
+
 #define LSDMA_QUEUE0_IB_BASE_HI__ADDR__SHIFT                                                                  0x0
 #define LSDMA_QUEUE0_IB_BASE_HI__ADDR_MASK                                                                    0xFFFFFFFFL
-//LSDMA_QUEUE0_IB_SIZE
+
 #define LSDMA_QUEUE0_IB_SIZE__SIZE__SHIFT                                                                     0x0
 #define LSDMA_QUEUE0_IB_SIZE__SIZE_MASK                                                                       0x000FFFFFL
-//LSDMA_QUEUE0_SKIP_CNTL
+
 #define LSDMA_QUEUE0_SKIP_CNTL__SKIP_COUNT__SHIFT                                                             0x0
 #define LSDMA_QUEUE0_SKIP_CNTL__SKIP_COUNT_MASK                                                               0x000FFFFFL
-//LSDMA_QUEUE0_CONTEXT_STATUS
+
 #define LSDMA_QUEUE0_CONTEXT_STATUS__SELECTED__SHIFT                                                          0x0
 #define LSDMA_QUEUE0_CONTEXT_STATUS__IDLE__SHIFT                                                              0x2
 #define LSDMA_QUEUE0_CONTEXT_STATUS__EXPIRED__SHIFT                                                           0x3
@@ -1123,106 +1102,106 @@
 #define LSDMA_QUEUE0_CONTEXT_STATUS__CTXSW_READY_MASK                                                         0x00000100L
 #define LSDMA_QUEUE0_CONTEXT_STATUS__PREEMPTED_MASK                                                           0x00000200L
 #define LSDMA_QUEUE0_CONTEXT_STATUS__PREEMPT_DISABLE_MASK                                                     0x00000400L
-//LSDMA_QUEUE0_DOORBELL
+
 #define LSDMA_QUEUE0_DOORBELL__ENABLE__SHIFT                                                                  0x1c
 #define LSDMA_QUEUE0_DOORBELL__CAPTURED__SHIFT                                                                0x1e
 #define LSDMA_QUEUE0_DOORBELL__ENABLE_MASK                                                                    0x10000000L
 #define LSDMA_QUEUE0_DOORBELL__CAPTURED_MASK                                                                  0x40000000L
-//LSDMA_QUEUE0_STATUS
+
 #define LSDMA_QUEUE0_STATUS__WPTR_UPDATE_FAIL_COUNT__SHIFT                                                    0x0
 #define LSDMA_QUEUE0_STATUS__WPTR_UPDATE_PENDING__SHIFT                                                       0x8
 #define LSDMA_QUEUE0_STATUS__WPTR_UPDATE_FAIL_COUNT_MASK                                                      0x000000FFL
 #define LSDMA_QUEUE0_STATUS__WPTR_UPDATE_PENDING_MASK                                                         0x00000100L
-//LSDMA_QUEUE0_DOORBELL_LOG
+
 #define LSDMA_QUEUE0_DOORBELL_LOG__BE_ERROR__SHIFT                                                            0x0
 #define LSDMA_QUEUE0_DOORBELL_LOG__DATA__SHIFT                                                                0x2
 #define LSDMA_QUEUE0_DOORBELL_LOG__BE_ERROR_MASK                                                              0x00000001L
 #define LSDMA_QUEUE0_DOORBELL_LOG__DATA_MASK                                                                  0xFFFFFFFCL
-//LSDMA_QUEUE0_WATERMARK
+
 #define LSDMA_QUEUE0_WATERMARK__RD_OUTSTANDING__SHIFT                                                         0x0
 #define LSDMA_QUEUE0_WATERMARK__WR_OUTSTANDING__SHIFT                                                         0x10
 #define LSDMA_QUEUE0_WATERMARK__RD_OUTSTANDING_MASK                                                           0x00000FFFL
 #define LSDMA_QUEUE0_WATERMARK__WR_OUTSTANDING_MASK                                                           0x03FF0000L
-//LSDMA_QUEUE0_DOORBELL_OFFSET
+
 #define LSDMA_QUEUE0_DOORBELL_OFFSET__OFFSET__SHIFT                                                           0x2
 #define LSDMA_QUEUE0_DOORBELL_OFFSET__OFFSET_MASK                                                             0x0FFFFFFCL
-//LSDMA_QUEUE0_CSA_ADDR_LO
+
 #define LSDMA_QUEUE0_CSA_ADDR_LO__ADDR__SHIFT                                                                 0x2
 #define LSDMA_QUEUE0_CSA_ADDR_LO__ADDR_MASK                                                                   0xFFFFFFFCL
-//LSDMA_QUEUE0_CSA_ADDR_HI
+
 #define LSDMA_QUEUE0_CSA_ADDR_HI__ADDR__SHIFT                                                                 0x0
 #define LSDMA_QUEUE0_CSA_ADDR_HI__ADDR_MASK                                                                   0xFFFFFFFFL
-//LSDMA_QUEUE0_RB_PREEMPT
+
 #define LSDMA_QUEUE0_RB_PREEMPT__PREEMPT_REQ__SHIFT                                                           0x0
 #define LSDMA_QUEUE0_RB_PREEMPT__PREEMPT_REQ_MASK                                                             0x00000001L
-//LSDMA_QUEUE0_IB_SUB_REMAIN
+
 #define LSDMA_QUEUE0_IB_SUB_REMAIN__SIZE__SHIFT                                                               0x0
 #define LSDMA_QUEUE0_IB_SUB_REMAIN__SIZE_MASK                                                                 0x000FFFFFL
-//LSDMA_QUEUE0_PREEMPT
+
 #define LSDMA_QUEUE0_PREEMPT__IB_PREEMPT__SHIFT                                                               0x0
 #define LSDMA_QUEUE0_PREEMPT__IB_PREEMPT_MASK                                                                 0x00000001L
-//LSDMA_QUEUE0_DUMMY0
+
 #define LSDMA_QUEUE0_DUMMY0__DUMMY__SHIFT                                                                     0x0
 #define LSDMA_QUEUE0_DUMMY0__DUMMY_MASK                                                                       0xFFFFFFFFL
-//LSDMA_QUEUE0_RB_WPTR_POLL_ADDR_HI
+
 #define LSDMA_QUEUE0_RB_WPTR_POLL_ADDR_HI__ADDR__SHIFT                                                        0x0
 #define LSDMA_QUEUE0_RB_WPTR_POLL_ADDR_HI__ADDR_MASK                                                          0xFFFFFFFFL
-//LSDMA_QUEUE0_RB_WPTR_POLL_ADDR_LO
+
 #define LSDMA_QUEUE0_RB_WPTR_POLL_ADDR_LO__ADDR__SHIFT                                                        0x2
 #define LSDMA_QUEUE0_RB_WPTR_POLL_ADDR_LO__ADDR_MASK                                                          0xFFFFFFFCL
-//LSDMA_QUEUE0_RB_AQL_CNTL
+
 #define LSDMA_QUEUE0_RB_AQL_CNTL__AQL_ENABLE__SHIFT                                                           0x0
 #define LSDMA_QUEUE0_RB_AQL_CNTL__AQL_PACKET_SIZE__SHIFT                                                      0x1
 #define LSDMA_QUEUE0_RB_AQL_CNTL__PACKET_STEP__SHIFT                                                          0x8
 #define LSDMA_QUEUE0_RB_AQL_CNTL__AQL_ENABLE_MASK                                                             0x00000001L
 #define LSDMA_QUEUE0_RB_AQL_CNTL__AQL_PACKET_SIZE_MASK                                                        0x000000FEL
 #define LSDMA_QUEUE0_RB_AQL_CNTL__PACKET_STEP_MASK                                                            0x0000FF00L
-//LSDMA_QUEUE0_MINOR_PTR_UPDATE
+
 #define LSDMA_QUEUE0_MINOR_PTR_UPDATE__ENABLE__SHIFT                                                          0x0
 #define LSDMA_QUEUE0_MINOR_PTR_UPDATE__ENABLE_MASK                                                            0x00000001L
-//LSDMA_QUEUE0_CNTL
+
 #define LSDMA_QUEUE0_CNTL__QUANTUM__SHIFT                                                                     0x0
 #define LSDMA_QUEUE0_CNTL__QUANTUM_MASK                                                                       0x000000FFL
-//LSDMA_QUEUE0_DUMMY1
+
 #define LSDMA_QUEUE0_DUMMY1__DUMMY__SHIFT                                                                     0x0
 #define LSDMA_QUEUE0_DUMMY1__DUMMY_MASK                                                                       0xFFFFFFFFL
-//LSDMA_QUEUE0_DUMMY2
+
 #define LSDMA_QUEUE0_DUMMY2__DUMMY__SHIFT                                                                     0x0
 #define LSDMA_QUEUE0_DUMMY2__DUMMY_MASK                                                                       0xFFFFFFFFL
-//LSDMA_QUEUE0_MIDCMD_DATA0
+
 #define LSDMA_QUEUE0_MIDCMD_DATA0__DATA0__SHIFT                                                               0x0
 #define LSDMA_QUEUE0_MIDCMD_DATA0__DATA0_MASK                                                                 0xFFFFFFFFL
-//LSDMA_QUEUE0_MIDCMD_DATA1
+
 #define LSDMA_QUEUE0_MIDCMD_DATA1__DATA1__SHIFT                                                               0x0
 #define LSDMA_QUEUE0_MIDCMD_DATA1__DATA1_MASK                                                                 0xFFFFFFFFL
-//LSDMA_QUEUE0_MIDCMD_DATA2
+
 #define LSDMA_QUEUE0_MIDCMD_DATA2__DATA2__SHIFT                                                               0x0
 #define LSDMA_QUEUE0_MIDCMD_DATA2__DATA2_MASK                                                                 0xFFFFFFFFL
-//LSDMA_QUEUE0_MIDCMD_DATA3
+
 #define LSDMA_QUEUE0_MIDCMD_DATA3__DATA3__SHIFT                                                               0x0
 #define LSDMA_QUEUE0_MIDCMD_DATA3__DATA3_MASK                                                                 0xFFFFFFFFL
-//LSDMA_QUEUE0_MIDCMD_DATA4
+
 #define LSDMA_QUEUE0_MIDCMD_DATA4__DATA4__SHIFT                                                               0x0
 #define LSDMA_QUEUE0_MIDCMD_DATA4__DATA4_MASK                                                                 0xFFFFFFFFL
-//LSDMA_QUEUE0_MIDCMD_DATA5
+
 #define LSDMA_QUEUE0_MIDCMD_DATA5__DATA5__SHIFT                                                               0x0
 #define LSDMA_QUEUE0_MIDCMD_DATA5__DATA5_MASK                                                                 0xFFFFFFFFL
-//LSDMA_QUEUE0_MIDCMD_DATA6
+
 #define LSDMA_QUEUE0_MIDCMD_DATA6__DATA6__SHIFT                                                               0x0
 #define LSDMA_QUEUE0_MIDCMD_DATA6__DATA6_MASK                                                                 0xFFFFFFFFL
-//LSDMA_QUEUE0_MIDCMD_DATA7
+
 #define LSDMA_QUEUE0_MIDCMD_DATA7__DATA7__SHIFT                                                               0x0
 #define LSDMA_QUEUE0_MIDCMD_DATA7__DATA7_MASK                                                                 0xFFFFFFFFL
-//LSDMA_QUEUE0_MIDCMD_DATA8
+
 #define LSDMA_QUEUE0_MIDCMD_DATA8__DATA8__SHIFT                                                               0x0
 #define LSDMA_QUEUE0_MIDCMD_DATA8__DATA8_MASK                                                                 0xFFFFFFFFL
-//LSDMA_QUEUE0_MIDCMD_DATA9
+
 #define LSDMA_QUEUE0_MIDCMD_DATA9__DATA9__SHIFT                                                               0x0
 #define LSDMA_QUEUE0_MIDCMD_DATA9__DATA9_MASK                                                                 0xFFFFFFFFL
-//LSDMA_QUEUE0_MIDCMD_DATA10
+
 #define LSDMA_QUEUE0_MIDCMD_DATA10__DATA10__SHIFT                                                             0x0
 #define LSDMA_QUEUE0_MIDCMD_DATA10__DATA10_MASK                                                               0xFFFFFFFFL
-//LSDMA_QUEUE0_MIDCMD_CNTL
+
 #define LSDMA_QUEUE0_MIDCMD_CNTL__DATA_VALID__SHIFT                                                           0x0
 #define LSDMA_QUEUE0_MIDCMD_CNTL__COPY_MODE__SHIFT                                                            0x1
 #define LSDMA_QUEUE0_MIDCMD_CNTL__SPLIT_STATE__SHIFT                                                          0x4
@@ -1231,7 +1210,7 @@
 #define LSDMA_QUEUE0_MIDCMD_CNTL__COPY_MODE_MASK                                                              0x00000002L
 #define LSDMA_QUEUE0_MIDCMD_CNTL__SPLIT_STATE_MASK                                                            0x000000F0L
 #define LSDMA_QUEUE0_MIDCMD_CNTL__ALLOW_PREEMPT_MASK                                                          0x00000100L
-//LSDMA_QUEUE1_RB_CNTL
+
 #define LSDMA_QUEUE1_RB_CNTL__RB_ENABLE__SHIFT                                                                0x0
 #define LSDMA_QUEUE1_RB_CNTL__RB_SIZE__SHIFT                                                                  0x1
 #define LSDMA_QUEUE1_RB_CNTL__RB_SWAP_ENABLE__SHIFT                                                           0x9
@@ -1246,25 +1225,25 @@
 #define LSDMA_QUEUE1_RB_CNTL__RPTR_WRITEBACK_SWAP_ENABLE_MASK                                                 0x00002000L
 #define LSDMA_QUEUE1_RB_CNTL__RPTR_WRITEBACK_TIMER_MASK                                                       0x001F0000L
 #define LSDMA_QUEUE1_RB_CNTL__RB_VMID_MASK                                                                    0x0F000000L
-//LSDMA_QUEUE1_RB_BASE
+
 #define LSDMA_QUEUE1_RB_BASE__ADDR__SHIFT                                                                     0x0
 #define LSDMA_QUEUE1_RB_BASE__ADDR_MASK                                                                       0xFFFFFFFFL
-//LSDMA_QUEUE1_RB_BASE_HI
+
 #define LSDMA_QUEUE1_RB_BASE_HI__ADDR__SHIFT                                                                  0x0
 #define LSDMA_QUEUE1_RB_BASE_HI__ADDR_MASK                                                                    0x00FFFFFFL
-//LSDMA_QUEUE1_RB_RPTR
+
 #define LSDMA_QUEUE1_RB_RPTR__OFFSET__SHIFT                                                                   0x0
 #define LSDMA_QUEUE1_RB_RPTR__OFFSET_MASK                                                                     0xFFFFFFFFL
-//LSDMA_QUEUE1_RB_RPTR_HI
+
 #define LSDMA_QUEUE1_RB_RPTR_HI__OFFSET__SHIFT                                                                0x0
 #define LSDMA_QUEUE1_RB_RPTR_HI__OFFSET_MASK                                                                  0xFFFFFFFFL
-//LSDMA_QUEUE1_RB_WPTR
+
 #define LSDMA_QUEUE1_RB_WPTR__OFFSET__SHIFT                                                                   0x0
 #define LSDMA_QUEUE1_RB_WPTR__OFFSET_MASK                                                                     0xFFFFFFFFL
-//LSDMA_QUEUE1_RB_WPTR_HI
+
 #define LSDMA_QUEUE1_RB_WPTR_HI__OFFSET__SHIFT                                                                0x0
 #define LSDMA_QUEUE1_RB_WPTR_HI__OFFSET_MASK                                                                  0xFFFFFFFFL
-//LSDMA_QUEUE1_RB_WPTR_POLL_CNTL
+
 #define LSDMA_QUEUE1_RB_WPTR_POLL_CNTL__ENABLE__SHIFT                                                         0x0
 #define LSDMA_QUEUE1_RB_WPTR_POLL_CNTL__SWAP_ENABLE__SHIFT                                                    0x1
 #define LSDMA_QUEUE1_RB_WPTR_POLL_CNTL__F32_POLL_ENABLE__SHIFT                                                0x2
@@ -1275,15 +1254,15 @@
 #define LSDMA_QUEUE1_RB_WPTR_POLL_CNTL__F32_POLL_ENABLE_MASK                                                  0x00000004L
 #define LSDMA_QUEUE1_RB_WPTR_POLL_CNTL__FREQUENCY_MASK                                                        0x0000FFF0L
 #define LSDMA_QUEUE1_RB_WPTR_POLL_CNTL__IDLE_POLL_COUNT_MASK                                                  0xFFFF0000L
-//LSDMA_QUEUE1_RB_RPTR_ADDR_HI
+
 #define LSDMA_QUEUE1_RB_RPTR_ADDR_HI__ADDR__SHIFT                                                             0x0
 #define LSDMA_QUEUE1_RB_RPTR_ADDR_HI__ADDR_MASK                                                               0xFFFFFFFFL
-//LSDMA_QUEUE1_RB_RPTR_ADDR_LO
+
 #define LSDMA_QUEUE1_RB_RPTR_ADDR_LO__RPTR_WB_IDLE__SHIFT                                                     0x0
 #define LSDMA_QUEUE1_RB_RPTR_ADDR_LO__ADDR__SHIFT                                                             0x2
 #define LSDMA_QUEUE1_RB_RPTR_ADDR_LO__RPTR_WB_IDLE_MASK                                                       0x00000001L
 #define LSDMA_QUEUE1_RB_RPTR_ADDR_LO__ADDR_MASK                                                               0xFFFFFFFCL
-//LSDMA_QUEUE1_IB_CNTL
+
 #define LSDMA_QUEUE1_IB_CNTL__IB_ENABLE__SHIFT                                                                0x0
 #define LSDMA_QUEUE1_IB_CNTL__IB_SWAP_ENABLE__SHIFT                                                           0x4
 #define LSDMA_QUEUE1_IB_CNTL__SWITCH_INSIDE_IB__SHIFT                                                         0x8
@@ -1292,25 +1271,25 @@
 #define LSDMA_QUEUE1_IB_CNTL__IB_SWAP_ENABLE_MASK                                                             0x00000010L
 #define LSDMA_QUEUE1_IB_CNTL__SWITCH_INSIDE_IB_MASK                                                           0x00000100L
 #define LSDMA_QUEUE1_IB_CNTL__CMD_VMID_MASK                                                                   0x000F0000L
-//LSDMA_QUEUE1_IB_RPTR
+
 #define LSDMA_QUEUE1_IB_RPTR__OFFSET__SHIFT                                                                   0x2
 #define LSDMA_QUEUE1_IB_RPTR__OFFSET_MASK                                                                     0x003FFFFCL
-//LSDMA_QUEUE1_IB_OFFSET
+
 #define LSDMA_QUEUE1_IB_OFFSET__OFFSET__SHIFT                                                                 0x2
 #define LSDMA_QUEUE1_IB_OFFSET__OFFSET_MASK                                                                   0x003FFFFCL
-//LSDMA_QUEUE1_IB_BASE_LO
+
 #define LSDMA_QUEUE1_IB_BASE_LO__ADDR__SHIFT                                                                  0x5
 #define LSDMA_QUEUE1_IB_BASE_LO__ADDR_MASK                                                                    0xFFFFFFE0L
-//LSDMA_QUEUE1_IB_BASE_HI
+
 #define LSDMA_QUEUE1_IB_BASE_HI__ADDR__SHIFT                                                                  0x0
 #define LSDMA_QUEUE1_IB_BASE_HI__ADDR_MASK                                                                    0xFFFFFFFFL
-//LSDMA_QUEUE1_IB_SIZE
+
 #define LSDMA_QUEUE1_IB_SIZE__SIZE__SHIFT                                                                     0x0
 #define LSDMA_QUEUE1_IB_SIZE__SIZE_MASK                                                                       0x000FFFFFL
-//LSDMA_QUEUE1_SKIP_CNTL
+
 #define LSDMA_QUEUE1_SKIP_CNTL__SKIP_COUNT__SHIFT                                                             0x0
 #define LSDMA_QUEUE1_SKIP_CNTL__SKIP_COUNT_MASK                                                               0x000FFFFFL
-//LSDMA_QUEUE1_CONTEXT_STATUS
+
 #define LSDMA_QUEUE1_CONTEXT_STATUS__SELECTED__SHIFT                                                          0x0
 #define LSDMA_QUEUE1_CONTEXT_STATUS__IDLE__SHIFT                                                              0x2
 #define LSDMA_QUEUE1_CONTEXT_STATUS__EXPIRED__SHIFT                                                           0x3
@@ -1327,106 +1306,106 @@
 #define LSDMA_QUEUE1_CONTEXT_STATUS__CTXSW_READY_MASK                                                         0x00000100L
 #define LSDMA_QUEUE1_CONTEXT_STATUS__PREEMPTED_MASK                                                           0x00000200L
 #define LSDMA_QUEUE1_CONTEXT_STATUS__PREEMPT_DISABLE_MASK                                                     0x00000400L
-//LSDMA_QUEUE1_DOORBELL
+
 #define LSDMA_QUEUE1_DOORBELL__ENABLE__SHIFT                                                                  0x1c
 #define LSDMA_QUEUE1_DOORBELL__CAPTURED__SHIFT                                                                0x1e
 #define LSDMA_QUEUE1_DOORBELL__ENABLE_MASK                                                                    0x10000000L
 #define LSDMA_QUEUE1_DOORBELL__CAPTURED_MASK                                                                  0x40000000L
-//LSDMA_QUEUE1_STATUS
+
 #define LSDMA_QUEUE1_STATUS__WPTR_UPDATE_FAIL_COUNT__SHIFT                                                    0x0
 #define LSDMA_QUEUE1_STATUS__WPTR_UPDATE_PENDING__SHIFT                                                       0x8
 #define LSDMA_QUEUE1_STATUS__WPTR_UPDATE_FAIL_COUNT_MASK                                                      0x000000FFL
 #define LSDMA_QUEUE1_STATUS__WPTR_UPDATE_PENDING_MASK                                                         0x00000100L
-//LSDMA_QUEUE1_DOORBELL_LOG
+
 #define LSDMA_QUEUE1_DOORBELL_LOG__BE_ERROR__SHIFT                                                            0x0
 #define LSDMA_QUEUE1_DOORBELL_LOG__DATA__SHIFT                                                                0x2
 #define LSDMA_QUEUE1_DOORBELL_LOG__BE_ERROR_MASK                                                              0x00000001L
 #define LSDMA_QUEUE1_DOORBELL_LOG__DATA_MASK                                                                  0xFFFFFFFCL
-//LSDMA_QUEUE1_WATERMARK
+
 #define LSDMA_QUEUE1_WATERMARK__RD_OUTSTANDING__SHIFT                                                         0x0
 #define LSDMA_QUEUE1_WATERMARK__WR_OUTSTANDING__SHIFT                                                         0x10
 #define LSDMA_QUEUE1_WATERMARK__RD_OUTSTANDING_MASK                                                           0x00000FFFL
 #define LSDMA_QUEUE1_WATERMARK__WR_OUTSTANDING_MASK                                                           0x03FF0000L
-//LSDMA_QUEUE1_DOORBELL_OFFSET
+
 #define LSDMA_QUEUE1_DOORBELL_OFFSET__OFFSET__SHIFT                                                           0x2
 #define LSDMA_QUEUE1_DOORBELL_OFFSET__OFFSET_MASK                                                             0x0FFFFFFCL
-//LSDMA_QUEUE1_CSA_ADDR_LO
+
 #define LSDMA_QUEUE1_CSA_ADDR_LO__ADDR__SHIFT                                                                 0x2
 #define LSDMA_QUEUE1_CSA_ADDR_LO__ADDR_MASK                                                                   0xFFFFFFFCL
-//LSDMA_QUEUE1_CSA_ADDR_HI
+
 #define LSDMA_QUEUE1_CSA_ADDR_HI__ADDR__SHIFT                                                                 0x0
 #define LSDMA_QUEUE1_CSA_ADDR_HI__ADDR_MASK                                                                   0xFFFFFFFFL
-//LSDMA_QUEUE1_RB_PREEMPT
+
 #define LSDMA_QUEUE1_RB_PREEMPT__PREEMPT_REQ__SHIFT                                                           0x0
 #define LSDMA_QUEUE1_RB_PREEMPT__PREEMPT_REQ_MASK                                                             0x00000001L
-//LSDMA_QUEUE1_IB_SUB_REMAIN
+
 #define LSDMA_QUEUE1_IB_SUB_REMAIN__SIZE__SHIFT                                                               0x0
 #define LSDMA_QUEUE1_IB_SUB_REMAIN__SIZE_MASK                                                                 0x000FFFFFL
-//LSDMA_QUEUE1_PREEMPT
+
 #define LSDMA_QUEUE1_PREEMPT__IB_PREEMPT__SHIFT                                                               0x0
 #define LSDMA_QUEUE1_PREEMPT__IB_PREEMPT_MASK                                                                 0x00000001L
-//LSDMA_QUEUE1_DUMMY0
+
 #define LSDMA_QUEUE1_DUMMY0__DUMMY__SHIFT                                                                     0x0
 #define LSDMA_QUEUE1_DUMMY0__DUMMY_MASK                                                                       0xFFFFFFFFL
-//LSDMA_QUEUE1_RB_WPTR_POLL_ADDR_HI
+
 #define LSDMA_QUEUE1_RB_WPTR_POLL_ADDR_HI__ADDR__SHIFT                                                        0x0
 #define LSDMA_QUEUE1_RB_WPTR_POLL_ADDR_HI__ADDR_MASK                                                          0xFFFFFFFFL
-//LSDMA_QUEUE1_RB_WPTR_POLL_ADDR_LO
+
 #define LSDMA_QUEUE1_RB_WPTR_POLL_ADDR_LO__ADDR__SHIFT                                                        0x2
 #define LSDMA_QUEUE1_RB_WPTR_POLL_ADDR_LO__ADDR_MASK                                                          0xFFFFFFFCL
-//LSDMA_QUEUE1_RB_AQL_CNTL
+
 #define LSDMA_QUEUE1_RB_AQL_CNTL__AQL_ENABLE__SHIFT                                                           0x0
 #define LSDMA_QUEUE1_RB_AQL_CNTL__AQL_PACKET_SIZE__SHIFT                                                      0x1
 #define LSDMA_QUEUE1_RB_AQL_CNTL__PACKET_STEP__SHIFT                                                          0x8
 #define LSDMA_QUEUE1_RB_AQL_CNTL__AQL_ENABLE_MASK                                                             0x00000001L
 #define LSDMA_QUEUE1_RB_AQL_CNTL__AQL_PACKET_SIZE_MASK                                                        0x000000FEL
 #define LSDMA_QUEUE1_RB_AQL_CNTL__PACKET_STEP_MASK                                                            0x0000FF00L
-//LSDMA_QUEUE1_MINOR_PTR_UPDATE
+
 #define LSDMA_QUEUE1_MINOR_PTR_UPDATE__ENABLE__SHIFT                                                          0x0
 #define LSDMA_QUEUE1_MINOR_PTR_UPDATE__ENABLE_MASK                                                            0x00000001L
-//LSDMA_QUEUE1_CNTL
+
 #define LSDMA_QUEUE1_CNTL__QUANTUM__SHIFT                                                                     0x0
 #define LSDMA_QUEUE1_CNTL__QUANTUM_MASK                                                                       0x000000FFL
-//LSDMA_QUEUE1_DUMMY1
+
 #define LSDMA_QUEUE1_DUMMY1__DUMMY__SHIFT                                                                     0x0
 #define LSDMA_QUEUE1_DUMMY1__DUMMY_MASK                                                                       0xFFFFFFFFL
-//LSDMA_QUEUE1_DUMMY2
+
 #define LSDMA_QUEUE1_DUMMY2__DUMMY__SHIFT                                                                     0x0
 #define LSDMA_QUEUE1_DUMMY2__DUMMY_MASK                                                                       0xFFFFFFFFL
-//LSDMA_QUEUE1_MIDCMD_DATA0
+
 #define LSDMA_QUEUE1_MIDCMD_DATA0__DATA0__SHIFT                                                               0x0
 #define LSDMA_QUEUE1_MIDCMD_DATA0__DATA0_MASK                                                                 0xFFFFFFFFL
-//LSDMA_QUEUE1_MIDCMD_DATA1
+
 #define LSDMA_QUEUE1_MIDCMD_DATA1__DATA1__SHIFT                                                               0x0
 #define LSDMA_QUEUE1_MIDCMD_DATA1__DATA1_MASK                                                                 0xFFFFFFFFL
-//LSDMA_QUEUE1_MIDCMD_DATA2
+
 #define LSDMA_QUEUE1_MIDCMD_DATA2__DATA2__SHIFT                                                               0x0
 #define LSDMA_QUEUE1_MIDCMD_DATA2__DATA2_MASK                                                                 0xFFFFFFFFL
-//LSDMA_QUEUE1_MIDCMD_DATA3
+
 #define LSDMA_QUEUE1_MIDCMD_DATA3__DATA3__SHIFT                                                               0x0
 #define LSDMA_QUEUE1_MIDCMD_DATA3__DATA3_MASK                                                                 0xFFFFFFFFL
-//LSDMA_QUEUE1_MIDCMD_DATA4
+
 #define LSDMA_QUEUE1_MIDCMD_DATA4__DATA4__SHIFT                                                               0x0
 #define LSDMA_QUEUE1_MIDCMD_DATA4__DATA4_MASK                                                                 0xFFFFFFFFL
-//LSDMA_QUEUE1_MIDCMD_DATA5
+
 #define LSDMA_QUEUE1_MIDCMD_DATA5__DATA5__SHIFT                                                               0x0
 #define LSDMA_QUEUE1_MIDCMD_DATA5__DATA5_MASK                                                                 0xFFFFFFFFL
-//LSDMA_QUEUE1_MIDCMD_DATA6
+
 #define LSDMA_QUEUE1_MIDCMD_DATA6__DATA6__SHIFT                                                               0x0
 #define LSDMA_QUEUE1_MIDCMD_DATA6__DATA6_MASK                                                                 0xFFFFFFFFL
-//LSDMA_QUEUE1_MIDCMD_DATA7
+
 #define LSDMA_QUEUE1_MIDCMD_DATA7__DATA7__SHIFT                                                               0x0
 #define LSDMA_QUEUE1_MIDCMD_DATA7__DATA7_MASK                                                                 0xFFFFFFFFL
-//LSDMA_QUEUE1_MIDCMD_DATA8
+
 #define LSDMA_QUEUE1_MIDCMD_DATA8__DATA8__SHIFT                                                               0x0
 #define LSDMA_QUEUE1_MIDCMD_DATA8__DATA8_MASK                                                                 0xFFFFFFFFL
-//LSDMA_QUEUE1_MIDCMD_DATA9
+
 #define LSDMA_QUEUE1_MIDCMD_DATA9__DATA9__SHIFT                                                               0x0
 #define LSDMA_QUEUE1_MIDCMD_DATA9__DATA9_MASK                                                                 0xFFFFFFFFL
-//LSDMA_QUEUE1_MIDCMD_DATA10
+
 #define LSDMA_QUEUE1_MIDCMD_DATA10__DATA10__SHIFT                                                             0x0
 #define LSDMA_QUEUE1_MIDCMD_DATA10__DATA10_MASK                                                               0xFFFFFFFFL
-//LSDMA_QUEUE1_MIDCMD_CNTL
+
 #define LSDMA_QUEUE1_MIDCMD_CNTL__DATA_VALID__SHIFT                                                           0x0
 #define LSDMA_QUEUE1_MIDCMD_CNTL__COPY_MODE__SHIFT                                                            0x1
 #define LSDMA_QUEUE1_MIDCMD_CNTL__SPLIT_STATE__SHIFT                                                          0x4

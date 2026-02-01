@@ -1,44 +1,4 @@
-/* This file is part of the Emulex RoCE Device Driver for
- * RoCE (RDMA over Converged Ethernet) adapters.
- * Copyright (C) 2012-2015 Emulex. All rights reserved.
- * EMULEX and SLI are trademarks of Emulex.
- * www.emulex.com
- *
- * This software is available to you under a choice of one of two licenses.
- * You may choose to be licensed under the terms of the GNU General Public
- * License (GPL) Version 2, available from the file COPYING in the main
- * directory of this source tree, or the BSD license below:
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- *
- * - Redistributions of source code must retain the above copyright notice,
- *   this list of conditions and the following disclaimer.
- *
- * - Redistributions in binary form must reproduce the above copyright
- *   notice, this list of conditions and the following disclaimer in
- *   the documentation and/or other materials provided with the distribution.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR
- * BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
- * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
- * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
- * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * Contact Information:
- * linux-drivers@emulex.com
- *
- * Emulex
- * 3333 Susan Street
- * Costa Mesa, CA 92626
- */
+ 
 
 #include <linux/dma-mapping.h>
 #include <net/addrconf.h>
@@ -145,7 +105,7 @@ static inline void get_link_speed_and_width(struct ocrdma_dev *dev,
 		break;
 
 	default:
-		/* Unsupported */
+		 
 		*ib_speed = IB_SPEED_SDR;
 		*ib_width = IB_WIDTH_1X;
 	}
@@ -158,7 +118,7 @@ int ocrdma_query_port(struct ib_device *ibdev,
 	struct ocrdma_dev *dev;
 	struct net_device *netdev;
 
-	/* props being zeroed by the caller, avoid zeroing it here */
+	 
 	dev = get_ocrdma_dev(ibdev);
 	netdev = dev->nic_info.netdev;
 	if (netif_running(netdev) && netif_oper_up(netdev)) {
@@ -319,7 +279,7 @@ static int ocrdma_get_pd_num(struct ocrdma_dev *dev, struct ocrdma_pd *pd)
 
 	mutex_lock(&dev->dev_lock);
 	if (pd->dpp_enabled) {
-		/* try allocating DPP PD, if not available then normal PD */
+		 
 		if (dev->pd_mgr->pd_dpp_count < dev->pd_mgr->max_dpp_pd) {
 			pd_idx = _ocrdma_pd_mgr_get_bitmap(dev, true);
 			pd->id = dev->pd_mgr->pd_dpp_start + pd_idx;
@@ -344,16 +304,7 @@ static int ocrdma_get_pd_num(struct ocrdma_dev *dev, struct ocrdma_pd *pd)
 	return status;
 }
 
-/*
- * NOTE:
- *
- * ocrdma_ucontext must be used here because this function is also
- * called from ocrdma_alloc_ucontext where ib_udata does not have
- * valid ib_ucontext pointer. ib_uverbs_get_context does not call
- * uobj_{alloc|get_xxx} helpers which are used to store the
- * ib_ucontext in uverbs_attr_bundle wrapping the ib_udata. so
- * ib_udata does NOT imply valid ib_ucontext here!
- */
+ 
 static int _ocrdma_alloc_pd(struct ocrdma_dev *dev, struct ocrdma_pd *pd,
 			    struct ocrdma_ucontext *uctx,
 			    struct ib_udata *udata)
@@ -828,16 +779,14 @@ static void build_user_pbes(struct ocrdma_dev *dev, struct ocrdma_mr *mr)
 	pbe_cnt = 0;
 
 	rdma_umem_for_each_dma_block (mr->umem, &biter, PAGE_SIZE) {
-		/* store the page address in pbe */
+		 
 		pg_addr = rdma_block_iter_dma_address(&biter);
 		pbe->pa_lo = cpu_to_le32(pg_addr);
 		pbe->pa_hi = cpu_to_le32(upper_32_bits(pg_addr));
 		pbe_cnt += 1;
 		pbe++;
 
-		/* if the given pbl is full storing the pbes,
-		 * move to next pbl.
-		 */
+		 
 		if (pbe_cnt == (mr->hwmr.pbl_size / sizeof(u64))) {
 			pbl_tbl++;
 			pbe = (struct ocrdma_pbe *)pbl_tbl->va;
@@ -910,11 +859,11 @@ int ocrdma_dereg_mr(struct ib_mr *ib_mr, struct ib_udata *udata)
 	kfree(mr->pages);
 	ocrdma_free_mr_pbl_tbl(dev, &mr->hwmr);
 
-	/* it could be user registered memory. */
+	 
 	ib_umem_release(mr->umem);
 	kfree(mr);
 
-	/* Don't stop cleanup, in case FW is unresponsive */
+	 
 	if (dev->mqe_ctx.fw_error_state) {
 		pr_err("%s(%d) fw not responding.\n",
 		       __func__, dev->id);
@@ -930,7 +879,7 @@ static int ocrdma_copy_cq_uresp(struct ocrdma_dev *dev, struct ocrdma_cq *cq,
 		udata, struct ocrdma_ucontext, ibucontext);
 	struct ocrdma_create_cq_uresp uresp;
 
-	/* this must be user flow! */
+	 
 	if (!udata)
 		return -EINVAL;
 
@@ -1036,9 +985,7 @@ static void ocrdma_flush_cq(struct ocrdma_cq *cq)
 	cqe = cq->va;
 	cqe_cnt = cq->cqe_cnt;
 
-	/* Last irq might have scheduled a polling thread
-	 * sync-up with it before hard flushing.
-	 */
+	 
 	spin_lock_irqsave(&cq->cq_lock, flags);
 	while (cqe_cnt) {
 		if (is_cqe_valid(cq, cqe))
@@ -1106,7 +1053,7 @@ static int ocrdma_check_qp_params(struct ib_pd *ibpd, struct ocrdma_dev *dev,
 		       __func__, dev->id, attrs->qp_type);
 		return -EOPNOTSUPP;
 	}
-	/* Skip the check for QP1 to support CM size of 128 */
+	 
 	if ((attrs->qp_type != IB_QPT_GSI) &&
 	    (attrs->cap.max_send_wr > dev->attr.max_wqe)) {
 		pr_err("%s(%d) unsupported send_wr=0x%x requested\n",
@@ -1143,20 +1090,20 @@ static int ocrdma_check_qp_params(struct ib_pd *ibpd, struct ocrdma_dev *dev,
 		       __func__, dev->id, dev->attr.max_recv_sge);
 		return -EINVAL;
 	}
-	/* unprivileged user space cannot create special QP */
+	 
 	if (udata && attrs->qp_type == IB_QPT_GSI) {
 		pr_err
 		    ("%s(%d) Userspace can't create special QPs of type=0x%x\n",
 		     __func__, dev->id, attrs->qp_type);
 		return -EINVAL;
 	}
-	/* allow creating only one GSI type of QP */
+	 
 	if (attrs->qp_type == IB_QPT_GSI && dev->gsi_qp_created) {
 		pr_err("%s(%d) GSI special QPs already created.\n",
 		       __func__, dev->id);
 		return -EINVAL;
 	}
-	/* verify consumer QPs are not trying to use GSI QP's CQ */
+	 
 	if ((attrs->qp_type != IB_QPT_GSI) && (dev->gsi_qp_created)) {
 		if ((dev->gsi_sqcq == get_ocrdma_cq(attrs->send_cq)) ||
 			(dev->gsi_rqcq == get_ocrdma_cq(attrs->recv_cq))) {
@@ -1325,7 +1272,7 @@ int ocrdma_create_qp(struct ib_qp *ibqp, struct ib_qp_init_attr *attrs,
 	if (status)
 		goto mbx_err;
 
-	/* user space QP's wr_id table are managed in library */
+	 
 	if (udata == NULL) {
 		status = ocrdma_alloc_wr_id_tbl(qp);
 		if (status)
@@ -1373,9 +1320,7 @@ int _ocrdma_modify_qp(struct ib_qp *ibqp, struct ib_qp_attr *attr,
 	dev = get_ocrdma_dev(ibqp->device);
 	if (attr_mask & IB_QP_STATE)
 		status = ocrdma_qp_state_change(qp, attr->qp_state, &old_qps);
-	/* if new and previous states are same hw doesn't need to
-	 * know about it.
-	 */
+	 
 	if (status < 0)
 		return status;
 	return ocrdma_mbx_modify_qp(dev, qp, attr, attr_mask);
@@ -1396,9 +1341,9 @@ int ocrdma_modify_qp(struct ib_qp *ibqp, struct ib_qp_attr *attr,
 	qp = get_ocrdma_qp(ibqp);
 	dev = get_ocrdma_dev(ibqp->device);
 
-	/* syncronize with multiple context trying to change, retrive qps */
+	 
 	mutex_lock(&dev->dev_lock);
-	/* syncronize with wqe, rqe posting and cqe processing contexts */
+	 
 	spin_lock_irqsave(&qp->q_lock, flags);
 	old_qps = get_ibqp_state(qp->state);
 	if (attr_mask & IB_QP_STATE)
@@ -1534,7 +1479,7 @@ int ocrdma_query_qp(struct ib_qp *ibqp,
 	    params.max_ord_ird & OCRDMA_QP_PARAMS_MAX_IRD_MASK;
 	qp_attr->en_sqd_async_notify = (params.max_sge_recv_flags &
 				OCRDMA_QP_PARAMS_FLAGS_SQD_ASYNC) ? 1 : 0;
-	/* Sync driver QP state with FW */
+	 
 	ocrdma_qp_state_change(qp, qp_attr->qp_state, NULL);
 mbx_err:
 	return status;
@@ -1584,7 +1529,7 @@ static void ocrdma_hwq_inc_tail(struct ocrdma_qp_hwq_info *q)
 	q->tail = (q->tail + 1) & q->max_wqe_idx;
 }
 
-/* discard the cqe for a given QP */
+ 
 static void ocrdma_discard_cqes(struct ocrdma_qp *qp, struct ocrdma_cq *cq)
 {
 	unsigned long cq_flags;
@@ -1595,28 +1540,20 @@ static void ocrdma_discard_cqes(struct ocrdma_qp *qp, struct ocrdma_cq *cq)
 
 	spin_lock_irqsave(&cq->cq_lock, cq_flags);
 
-	/* traverse through the CQEs in the hw CQ,
-	 * find the matching CQE for a given qp,
-	 * mark the matching one discarded by clearing qpn.
-	 * ring the doorbell in the poll_cq() as
-	 * we don't complete out of order cqe.
-	 */
+	 
 
 	cur_getp = cq->getp;
-	/* find upto when do we reap the cq. */
+	 
 	stop_getp = cur_getp;
 	do {
 		if (is_hw_sq_empty(qp) && (!qp->srq && is_hw_rq_empty(qp)))
 			break;
 
 		cqe = cq->va + cur_getp;
-		/* if (a) done reaping whole hw cq, or
-		 *    (b) qp_xq becomes empty.
-		 * then exit
-		 */
+		 
 		qpn = cqe->cmn.qpn & OCRDMA_CQE_QPN_MASK;
-		/* if previously discarded cqe found, skip that too. */
-		/* check for matching qp */
+		 
+		 
 		if (qpn == 0 || qpn != qp->id)
 			goto skip_cqe;
 
@@ -1637,9 +1574,7 @@ static void ocrdma_discard_cqes(struct ocrdma_qp *qp, struct ocrdma_cq *cq)
 				ocrdma_hwq_inc_tail(&qp->rq);
 			}
 		}
-		/* mark cqe discarded so that it is not picked up later
-		 * in the poll_cq().
-		 */
+		 
 		cqe->cmn.qpn = 0;
 skip_cqe:
 		cur_getp = (cur_getp + 1) % cq->max_hw_cqe;
@@ -1652,7 +1587,7 @@ void ocrdma_del_flush_qp(struct ocrdma_qp *qp)
 	int found = false;
 	unsigned long flags;
 	struct ocrdma_dev *dev = get_ocrdma_dev(qp->ibqp.device);
-	/* sync with any active CQ poll */
+	 
 
 	spin_lock_irqsave(&dev->flush_q_lock, flags);
 	found = ocrdma_is_qp_in_sq_flushlist(qp->sq_cq, qp);
@@ -1680,23 +1615,17 @@ int ocrdma_destroy_qp(struct ib_qp *ibqp, struct ib_udata *udata)
 
 	pd = qp->pd;
 
-	/* change the QP state to ERROR */
+	 
 	if (qp->state != OCRDMA_QPS_RST) {
 		attrs.qp_state = IB_QPS_ERR;
 		attr_mask = IB_QP_STATE;
 		_ocrdma_modify_qp(ibqp, &attrs, attr_mask);
 	}
-	/* ensure that CQEs for newly created QP (whose id may be same with
-	 * one which just getting destroyed are same), dont get
-	 * discarded until the old CQEs are discarded.
-	 */
+	 
 	mutex_lock(&dev->dev_lock);
 	(void) ocrdma_mbx_destroy_qp(dev, qp);
 
-	/*
-	 * acquire CQ lock while destroy is in progress, in order to
-	 * protect against proessing in-flight CQEs for this QP.
-	 */
+	 
 	spin_lock_irqsave(&qp->sq_cq->cq_lock, flags);
 	if (qp->rq_cq && (qp->rq_cq != qp->sq_cq)) {
 		spin_lock(&qp->rq_cq->cq_lock);
@@ -1868,7 +1797,7 @@ int ocrdma_destroy_srq(struct ib_srq *ibsrq, struct ib_udata *udata)
 	return 0;
 }
 
-/* unprivileged verbs and their support functions. */
+ 
 static void ocrdma_build_ud_hdr(struct ocrdma_qp *qp,
 				struct ocrdma_hdr_wqe *hdr,
 				const struct ib_send_wr *wr)
@@ -2011,7 +1940,7 @@ static void ocrdma_build_read(struct ocrdma_qp *qp, struct ocrdma_hdr_wqe *hdr,
 
 static int get_encoded_page_size(int pg_sz)
 {
-	/* Max size is 256M 4096 << 16 */
+	 
 	int i = 0;
 	for (; i < 17; i++)
 		if (pg_sz == (4096 << i))
@@ -2063,9 +1992,7 @@ static int ocrdma_build_reg(struct ocrdma_qp *qp,
 		num_pbes += 1;
 		pbe++;
 
-		/* if the pbl is full storing the pbes,
-		 * move to next pbl.
-		*/
+		 
 		if (num_pbes == (mr->hwmr.pbl_size/sizeof(u64))) {
 			pbl_tbl++;
 			pbe = (struct ocrdma_pbe *)pbl_tbl->va;
@@ -2174,12 +2101,12 @@ int ocrdma_post_send(struct ib_qp *ibqp, const struct ib_send_wr *wr,
 		qp->wqe_wr_id_tbl[qp->sq.head].wrid = wr->wr_id;
 		ocrdma_cpu_to_le32(hdr, ((hdr->cw >> OCRDMA_WQE_SIZE_SHIFT) &
 				   OCRDMA_WQE_SIZE_MASK) * OCRDMA_WQE_STRIDE);
-		/* make sure wqe is written before adapter can access it */
+		 
 		wmb();
-		/* inform hw to start processing it */
+		 
 		ocrdma_ring_sq_db(qp);
 
-		/* update pointer, counter for next wr */
+		 
 		ocrdma_hwq_inc_head(&qp->sq);
 		wr = wr->next;
 	}
@@ -2240,13 +2167,13 @@ int ocrdma_post_recv(struct ib_qp *ibqp, const struct ib_recv_wr *wr,
 		ocrdma_build_rqe(rqe, wr, 0);
 
 		qp->rqe_wr_id_tbl[qp->rq.head] = wr->wr_id;
-		/* make sure rqe is written before adapter can access it */
+		 
 		wmb();
 
-		/* inform hw to start processing it */
+		 
 		ocrdma_ring_rq_db(qp);
 
-		/* update pointer, counter for next wr */
+		 
 		ocrdma_hwq_inc_head(&qp->rq);
 		wr = wr->next;
 	}
@@ -2254,11 +2181,7 @@ int ocrdma_post_recv(struct ib_qp *ibqp, const struct ib_recv_wr *wr,
 	return status;
 }
 
-/* cqe for srq's rqe can potentially arrive out of order.
- * index gives the entry in the shadow table where to store
- * the wr_id. tag/index is returned in cqe to reference back
- * for a given rqe.
- */
+ 
 static int ocrdma_srq_get_idx(struct ocrdma_srq *srq)
 {
 	int row = 0;
@@ -2275,7 +2198,7 @@ static int ocrdma_srq_get_idx(struct ocrdma_srq *srq)
 	}
 
 	BUG_ON(row == srq->bit_fields_len);
-	return indx + 1; /* Use from index 1 */
+	return indx + 1;  
 }
 
 static void ocrdma_ring_srq_db(struct ocrdma_srq *srq)
@@ -2309,11 +2232,11 @@ int ocrdma_post_srq_recv(struct ib_srq *ibsrq, const struct ib_recv_wr *wr,
 		ocrdma_build_rqe(rqe, wr, tag);
 
 		srq->rqe_wr_id_tbl[tag] = wr->wr_id;
-		/* make sure rqe is written before adapter can perform DMA */
+		 
 		wmb();
-		/* inform hw to start processing it */
+		 
 		ocrdma_ring_srq_db(srq);
-		/* update pointer, counter for next wr */
+		 
 		ocrdma_hwq_inc_head(&srq->rq);
 		wr = wr->next;
 	}
@@ -2406,7 +2329,7 @@ static void ocrdma_update_wc(struct ocrdma_qp *qp, struct ib_wc *ibwc,
 	hdr = ocrdma_hwq_head_from_idx(&qp->sq, wqe_idx);
 
 	ibwc->wr_id = qp->wqe_wr_id_tbl[wqe_idx].wrid;
-	/* Undo the hdr->cw swap */
+	 
 	opcode = le32_to_cpu(hdr->cw) & OCRDMA_WQE_OPCODE_MASK;
 	switch (opcode) {
 	case OCRDMA_WRITE:
@@ -2478,9 +2401,7 @@ static bool ocrdma_update_err_cqe(struct ib_wc *ibwc, struct ocrdma_cqe *cqe,
 	ocrdma_flush_qp(qp);
 	ocrdma_qp_state_change(qp, IB_QPS_ERR, NULL);
 
-	/* if wqe/rqe pending for which cqe needs to be returned,
-	 * trigger inflating it.
-	 */
+	 
 	if (!is_hw_rq_empty(qp) || !is_hw_sq_empty(qp)) {
 		expand = true;
 		ocrdma_set_cqe_status_flushed(qp, cqe);
@@ -2519,29 +2440,21 @@ static bool ocrdma_poll_err_scqe(struct ocrdma_qp *qp,
 	if (status < OCRDMA_MAX_CQE_ERR)
 		atomic_inc(&dev->cqe_err_stats[status]);
 
-	/* when hw sq is empty, but rq is not empty, so we continue
-	 * to keep the cqe in order to get the cq event again.
-	 */
+	 
 	if (is_hw_sq_empty(qp) && !is_hw_rq_empty(qp)) {
-		/* when cq for rq and sq is same, it is safe to return
-		 * flush cqe for RQEs.
-		 */
+		 
 		if (!qp->srq && (qp->sq_cq == qp->rq_cq)) {
 			*polled = true;
 			status = OCRDMA_CQE_WR_FLUSH_ERR;
 			expand = ocrdma_update_err_rcqe(ibwc, cqe, qp, status);
 		} else {
-			/* stop processing further cqe as this cqe is used for
-			 * triggering cq event on buddy cq of RQ.
-			 * When QP is destroyed, this cqe will be removed
-			 * from the cq's hardware q.
-			 */
+			 
 			*polled = false;
 			*stop = true;
 			expand = false;
 		}
 	} else if (is_hw_sq_empty(qp)) {
-		/* Do nothing */
+		 
 		expand = false;
 		*polled = false;
 		*stop = false;
@@ -2561,7 +2474,7 @@ static bool ocrdma_poll_success_scqe(struct ocrdma_qp *qp,
 	u32 wqe_idx;
 
 	if (!qp->wqe_wr_id_tbl[tail].signaled) {
-		*polled = false;    /* WC cannot be consumed yet */
+		*polled = false;     
 	} else {
 		ibwc->status = IB_WC_SUCCESS;
 		ibwc->wc_flags = 0;
@@ -2572,7 +2485,7 @@ static bool ocrdma_poll_success_scqe(struct ocrdma_qp *qp,
 	wqe_idx = (le32_to_cpu(cqe->wq.wqeidx) &
 			OCRDMA_CQE_WQEIDX_MASK) & qp->sq.max_wqe_idx;
 	if (tail != wqe_idx)
-		expand = true; /* Coalesced CQE can't be consumed yet */
+		expand = true;  
 
 	ocrdma_hwq_inc_tail(&qp->sq);
 	return expand;
@@ -2651,9 +2564,7 @@ static bool ocrdma_poll_err_rcqe(struct ocrdma_qp *qp, struct ocrdma_cqe *cqe,
 	if (status < OCRDMA_MAX_CQE_ERR)
 		atomic_inc(&dev->cqe_err_stats[status]);
 
-	/* when hw_rq is empty, but wq is not empty, so continue
-	 * to keep the cqe to get the cq event again.
-	 */
+	 
 	if (is_hw_rq_empty(qp) && !is_hw_sq_empty(qp)) {
 		if (!qp->srq && (qp->sq_cq == qp->rq_cq)) {
 			*polled = true;
@@ -2665,7 +2576,7 @@ static bool ocrdma_poll_err_rcqe(struct ocrdma_qp *qp, struct ocrdma_cqe *cqe,
 			expand = false;
 		}
 	} else if (is_hw_rq_empty(qp)) {
-		/* Do nothing */
+		 
 		expand = false;
 		*polled = false;
 		*stop = false;
@@ -2743,7 +2654,7 @@ static void ocrdma_change_cq_phase(struct ocrdma_cq *cq, struct ocrdma_cqe *cqe,
 		if (cur_getp == 0)
 			cq->phase = (~cq->phase & OCRDMA_CQE_VALID);
 	} else {
-		/* clear valid bit */
+		 
 		cqe->flags_status_srcqpn = 0;
 	}
 }
@@ -2763,11 +2674,11 @@ static int ocrdma_poll_hwcq(struct ocrdma_cq *cq, int num_entries,
 	cur_getp = cq->getp;
 	while (num_entries) {
 		cqe = cq->va + cur_getp;
-		/* check whether valid cqe or not */
+		 
 		if (!is_cqe_valid(cq, cqe))
 			break;
 		qpn = (le32_to_cpu(cqe->cmn.qpn) & OCRDMA_CQE_QPN_MASK);
-		/* ignore discarded cqe */
+		 
 		if (qpn == 0)
 			goto skip_cqe;
 		qp = dev->qp_tbl[qpn];
@@ -2784,7 +2695,7 @@ static int ocrdma_poll_hwcq(struct ocrdma_cq *cq, int num_entries,
 			goto expand_cqe;
 		if (stop)
 			goto stop_cqe;
-		/* clear qpn to avoid duplicate processing by discard_cqe() */
+		 
 		cqe->cmn.qpn = 0;
 skip_cqe:
 		polled_hw_cqes += 1;
@@ -2807,7 +2718,7 @@ stop_cqe:
 	return i;
 }
 
-/* insert error cqe if the QP's SQ or RQ's CQ matches the CQ under poll. */
+ 
 static int ocrdma_add_err_cqe(struct ocrdma_cq *cq, int num_entries,
 			      struct ocrdma_qp *qp, struct ib_wc *ibwc)
 {
@@ -2843,7 +2754,7 @@ int ocrdma_poll_cq(struct ib_cq *ibcq, int num_entries, struct ib_wc *wc)
 	struct ocrdma_qp *qp;
 	unsigned long flags;
 
-	/* poll cqes from adapter CQ */
+	 
 	spin_lock_irqsave(&cq->cq_lock, flags);
 	num_os_cqe = ocrdma_poll_hwcq(cq, cqes_to_poll, wc);
 	spin_unlock_irqrestore(&cq->cq_lock, flags);
@@ -2851,11 +2762,7 @@ int ocrdma_poll_cq(struct ib_cq *ibcq, int num_entries, struct ib_wc *wc)
 
 	if (cqes_to_poll) {
 		wc = wc + num_os_cqe;
-		/* adapter returns single error cqe when qp moves to
-		 * error state. So insert error cqes with wc_status as
-		 * FLUSHED for pending WQEs and RQEs of QP's SQ and RQ
-		 * respectively which uses this CQ.
-		 */
+		 
 		spin_lock_irqsave(&dev->flush_q_lock, flags);
 		list_for_each_entry(qp, &cq->sq_head, sq_entry) {
 			if (cqes_to_poll == 0)

@@ -1,28 +1,4 @@
-/*
- * Copyright © 2014 Intel Corporation
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice (including the next
- * paragraph) shall be included in all copies or substantial portions of the
- * Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
- * DEALINGS IN THE SOFTWARE.
- *
- * Author: Shobhit Kumar <shobhit.kumar@intel.com>
- *
- */
+ 
 
 #include <linux/gpio/consumer.h>
 #include <linux/gpio/machine.h>
@@ -55,7 +31,7 @@
 #define MIPI_VIRTUAL_CHANNEL_SHIFT	1
 #define MIPI_PORT_SHIFT			3
 
-/* base offsets for gpio pads */
+ 
 #define VLV_GPIO_NC_0_HV_DDI0_HPD	0x4130
 #define VLV_GPIO_NC_1_HV_DDI0_DDC_SDA	0x4120
 #define VLV_GPIO_NC_2_HV_DDI0_DDC_SCL	0x4110
@@ -116,7 +92,7 @@ struct i2c_adapter_lookup {
 #define CHV_GPIO_PAD_CFG1(f, i)		(0x4400 + (f) * 0x400 + (i) * 8 + 4)
 #define  CHV_GPIO_CFGLOCK		(1 << 31)
 
-/* ICL DSI Display GPIO Pins */
+ 
 #define  ICL_GPIO_DDSP_HPD_A		0
 #define  ICL_GPIO_L_VDDEN_1		1
 #define  ICL_GPIO_L_BKLTEN_1		2
@@ -131,11 +107,7 @@ struct i2c_adapter_lookup {
 static enum port intel_dsi_seq_port_to_port(struct intel_dsi *intel_dsi,
 					    u8 seq_port)
 {
-	/*
-	 * If single link DSI is being used on any port, the VBT sequence block
-	 * send packet apparently always has 0 for the port. Just use the port
-	 * we have configured, and ignore the sequence block port.
-	 */
+	 
 	if (hweight8(intel_dsi->ports) == 1)
 		return ffs(intel_dsi->ports) - 1;
 
@@ -261,7 +233,7 @@ static void vlv_exec_gpio(struct intel_connector *connector,
 	map = &vlv_gpio_table[gpio_index];
 
 	if (connector->panel.vbt.dsi.seq_version >= 3) {
-		/* XXX: this assumes vlv_gpio_table only has NC GPIOs. */
+		 
 		port = IOSF_PORT_GPIO_NC;
 	} else {
 		if (gpio_source == 0) {
@@ -281,7 +253,7 @@ static void vlv_exec_gpio(struct intel_connector *connector,
 
 	vlv_iosf_sb_get(dev_priv, BIT(VLV_IOSF_SB_GPIO));
 	if (!map->init) {
-		/* FIXME: remove constant below */
+		 
 		vlv_iosf_sb_write(dev_priv, port, pconf0, 0x2000CC00);
 		map->init = true;
 	}
@@ -301,7 +273,7 @@ static void chv_exec_gpio(struct intel_connector *connector,
 
 	if (connector->panel.vbt.dsi.seq_version >= 3) {
 		if (gpio_index >= CHV_GPIO_IDX_START_SE) {
-			/* XXX: it's unclear whether 255->57 is part of SE. */
+			 
 			gpio_index -= CHV_GPIO_IDX_START_SE;
 			port = CHV_IOSF_PORT_GPIO_SE;
 		} else if (gpio_index >= CHV_GPIO_IDX_START_SW) {
@@ -314,7 +286,7 @@ static void chv_exec_gpio(struct intel_connector *connector,
 			port = CHV_IOSF_PORT_GPIO_N;
 		}
 	} else {
-		/* XXX: The spec is unclear about CHV GPIO on seq v2 */
+		 
 		if (gpio_source != 0) {
 			drm_dbg_kms(&dev_priv->drm,
 				    "unknown gpio source %u\n", gpio_source);
@@ -349,7 +321,7 @@ static void bxt_exec_gpio(struct intel_connector *connector,
 			  u8 gpio_source, u8 gpio_index, bool value)
 {
 	struct drm_i915_private *dev_priv = to_i915(connector->base.dev);
-	/* XXX: this table is a quick ugly hack. */
+	 
 	static struct gpio_desc *bxt_gpio_table[U8_MAX + 1];
 	struct gpio_desc *gpio_desc = bxt_gpio_table[gpio_index];
 
@@ -406,15 +378,7 @@ static void icl_native_gpio_set_value(struct drm_i915_private *dev_priv,
 	case MIPI_RESET_2:
 		index = gpio == MIPI_RESET_1 ? HPD_PORT_A : HPD_PORT_B;
 
-		/*
-		 * Disable HPD to set the pin to output, and set output
-		 * value. The HPD pin should not be enabled for DSI anyway,
-		 * assuming the board design and VBT are sane, and the pin isn't
-		 * used by a non-DSI encoder.
-		 *
-		 * The locking protects against concurrent SHOTPLUG_CTL_DDI
-		 * modifications in irq setup and handling.
-		 */
+		 
 		spin_lock_irq(&dev_priv->irq_lock);
 		intel_de_rmw(dev_priv, SHOTPLUG_CTL_DDI,
 			     SHOTPLUG_CTL_DDI_HPD_ENABLE(index) |
@@ -473,7 +437,7 @@ static const u8 *mipi_exec_gpio(struct intel_dsi *intel_dsi, const u8 *data)
 
 	gpio_number = *data++;
 
-	/* gpio source in sequence v2 only */
+	 
 	if (connector->panel.vbt.dsi.seq_version == 2)
 		gpio_source = (*data >> 1) & 3;
 	else
@@ -482,7 +446,7 @@ static const u8 *mipi_exec_gpio(struct intel_dsi *intel_dsi, const u8 *data)
 	if (connector->panel.vbt.dsi.seq_version >= 4 && *data & BIT(1))
 		native = false;
 
-	/* pull up/down */
+	 
 	value = *data++ & 1;
 
 	drm_dbg_kms(&dev_priv->drm, "GPIO index %u, number %u, source %u, native %s, set to %s\n",
@@ -618,7 +582,7 @@ static const u8 *mipi_exec_pmic(struct intel_dsi *intel_dsi, const u8 *data)
 	u16 i2c_address;
 	int ret;
 
-	/* byte 0 aka PMIC Flag is reserved */
+	 
 	i2c_address	= get_unaligned_le16(data + 1);
 	reg_address	= get_unaligned_le32(data + 3);
 	value		= get_unaligned_le32(data + 7);
@@ -648,11 +612,7 @@ static const fn_mipi_elem_exec exec_elem[] = {
 	[MIPI_SEQ_ELEM_PMIC] = mipi_exec_pmic,
 };
 
-/*
- * MIPI Sequence from VBT #53 parsing logic
- * We have already separated each seqence during bios parsing
- * Following is generic execution function for any sequence
- */
+ 
 
 static const char * const seq_name[] = {
 	[MIPI_SEQ_DEASSERT_RESET] = "MIPI_SEQ_DEASSERT_RESET",
@@ -697,10 +657,10 @@ static void intel_dsi_vbt_exec(struct intel_dsi *intel_dsi,
 	drm_dbg_kms(&dev_priv->drm, "Starting MIPI sequence %d - %s\n",
 		    seq_id, sequence_name(seq_id));
 
-	/* Skip Sequence Byte. */
+	 
 	data++;
 
-	/* Skip Size of Sequence. */
+	 
 	if (connector->panel.vbt.dsi.seq_version >= 3)
 		data += 4;
 
@@ -716,7 +676,7 @@ static void intel_dsi_vbt_exec(struct intel_dsi *intel_dsi,
 		else
 			mipi_elem_exec = NULL;
 
-		/* Size of Operation. */
+		 
 		if (connector->panel.vbt.dsi.seq_version >= 3)
 			operation_size = *data++;
 
@@ -725,20 +685,20 @@ static void intel_dsi_vbt_exec(struct intel_dsi *intel_dsi,
 
 			data = mipi_elem_exec(intel_dsi, data);
 
-			/* Consistency check if we have size. */
+			 
 			if (operation_size && data != next) {
 				drm_err(&dev_priv->drm,
 					"Inconsistent operation size\n");
 				return;
 			}
 		} else if (operation_size) {
-			/* We have size, skip. */
+			 
 			drm_dbg_kms(&dev_priv->drm,
 				    "Unsupported MIPI operation byte %u\n",
 				    operation_byte);
 			data += operation_size;
 		} else {
-			/* No size, can't skip without parsing. */
+			 
 			drm_err(&dev_priv->drm,
 				"Unsupported MIPI operation byte %u\n",
 				operation_byte);
@@ -850,34 +810,25 @@ bool intel_dsi_vbt_init(struct intel_dsi *intel_dsi, u16 panel_id)
 		mipi_config->bta_enabled ? DISABLE_VIDEO_BTA : 0;
 	intel_dsi->bgr_enabled = mipi_config->rgb_flip;
 
-	/* Starting point, adjusted depending on dual link and burst mode */
+	 
 	intel_dsi->pclk = mode->clock;
 
-	/* In dual link mode each port needs half of pixel clock */
+	 
 	if (intel_dsi->dual_link) {
 		intel_dsi->pclk /= 2;
 
-		/* we can enable pixel_overlap if needed by panel. In this
-		 * case we need to increase the pixelclock for extra pixels
-		 */
+		 
 		if (intel_dsi->dual_link == DSI_DUAL_LINK_FRONT_BACK) {
 			intel_dsi->pclk += DIV_ROUND_UP(mode->vtotal * intel_dsi->pixel_overlap * 60, 1000);
 		}
 	}
 
-	/* Burst Mode Ratio
-	 * Target ddr frequency from VBT / non burst ddr freq
-	 * multiply by 100 to preserve remainder
-	 */
+	 
 	if (intel_dsi->video_mode == BURST_MODE) {
 		if (mipi_config->target_burst_mode_freq) {
 			u32 bitrate = intel_dsi_bitrate(intel_dsi);
 
-			/*
-			 * Sometimes the VBT contains a slightly lower clock,
-			 * then the bitrate we have calculated, in this case
-			 * just replace it with the calculated bitrate.
-			 */
+			 
 			if (mipi_config->target_burst_mode_freq < bitrate &&
 			    intel_fuzzy_clock_check(
 					mipi_config->target_burst_mode_freq,
@@ -905,9 +856,7 @@ bool intel_dsi_vbt_init(struct intel_dsi *intel_dsi, u16 panel_id)
 
 	intel_dsi->burst_mode_ratio = burst_mode_ratio;
 
-	/* delays in VBT are in unit of 100us, so need to convert
-	 * here in ms
-	 * Delay (100us) * 100 /1000 = Delay / 10 (ms) */
+	 
 	intel_dsi->backlight_off_delay = pps->bl_disable_delay / 10;
 	intel_dsi->backlight_on_delay = pps->bl_enable_delay / 10;
 	intel_dsi->panel_on_delay = pps->panel_on_delay / 10;
@@ -916,7 +865,7 @@ bool intel_dsi_vbt_init(struct intel_dsi *intel_dsi, u16 panel_id)
 
 	intel_dsi->i2c_bus_num = -1;
 
-	/* a regular driver would get the device in probe */
+	 
 	for_each_dsi_port(port, intel_dsi->ports) {
 		mipi_dsi_attach(intel_dsi->dsi_hosts[port]->device);
 	}
@@ -924,17 +873,12 @@ bool intel_dsi_vbt_init(struct intel_dsi *intel_dsi, u16 panel_id)
 	return true;
 }
 
-/*
- * On some BYT/CHT devs some sequences are incomplete and we need to manually
- * control some GPIOs. We need to add a GPIO lookup table before we get these.
- * If the GOP did not initialize the panel (HDMI inserted) we may need to also
- * change the pinmux for the SoC's PWM0 pin from GPIO to PWM.
- */
+ 
 static struct gpiod_lookup_table pmic_panel_gpio_table = {
-	/* Intel GFX is consumer */
+	 
 	.dev_id = "0000:00:02.0",
 	.table = {
-		/* Panel EN/DISABLE */
+		 
 		GPIO_LOOKUP("gpio_crystalcove", 94, "panel", GPIO_ACTIVE_HIGH),
 		{ }
 	},
@@ -977,7 +921,7 @@ void intel_dsi_vbt_gpio_init(struct intel_dsi *intel_dsi, bool panel_is_on)
 		want_panel_gpio = true;
 		want_backlight_gpio = true;
 
-		/* Ensure PWM0 pin is muxed as PWM instead of GPIO */
+		 
 		ret = pinctrl_register_mappings(soc_pwm_pinctrl_map,
 					     ARRAY_SIZE(soc_pwm_pinctrl_map));
 		if (ret)

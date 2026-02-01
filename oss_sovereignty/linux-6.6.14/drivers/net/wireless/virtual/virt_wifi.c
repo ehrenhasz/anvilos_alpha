@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* drivers/net/wireless/virt_wifi.c
- *
- * A fake implementation of cfg80211_ops that can be tacked on to an ethernet
- * net_device to make it appear as a wireless connection.
- *
- * Copyright (C) 2018 Google, Inc.
- *
- * Author: schuffelen@google.com
- */
+
+ 
 
 #include <net/cfg80211.h>
 #include <net/rtnetlink.h>
@@ -133,7 +125,7 @@ static struct ieee80211_supported_band band_5ghz = {
 	},
 };
 
-/* Assigned at module init. Guaranteed locally-administered and unicast. */
+ 
 static u8 fake_router_bssid[ETH_ALEN] __ro_after_init = {};
 
 static void virt_wifi_inform_bss(struct wiphy *wiphy)
@@ -159,7 +151,7 @@ static void virt_wifi_inform_bss(struct wiphy *wiphy)
 	cfg80211_put_bss(wiphy, informed_bss);
 }
 
-/* Called with the rtnl lock held. */
+ 
 static int virt_wifi_scan(struct wiphy *wiphy,
 			  struct cfg80211_scan_request *request)
 {
@@ -176,7 +168,7 @@ static int virt_wifi_scan(struct wiphy *wiphy,
 	return 0;
 }
 
-/* Acquires and releases the rdev BSS lock. */
+ 
 static void virt_wifi_scan_result(struct work_struct *work)
 {
 	struct virt_wifi_wiphy_priv *priv =
@@ -187,21 +179,21 @@ static void virt_wifi_scan_result(struct work_struct *work)
 
 	virt_wifi_inform_bss(wiphy);
 
-	/* Schedules work which acquires and releases the rtnl lock. */
+	 
 	cfg80211_scan_done(priv->scan_request, &scan_info);
 	priv->scan_request = NULL;
 }
 
-/* May acquire and release the rdev BSS lock. */
+ 
 static void virt_wifi_cancel_scan(struct wiphy *wiphy)
 {
 	struct virt_wifi_wiphy_priv *priv = wiphy_priv(wiphy);
 
 	cancel_delayed_work_sync(&priv->scan_result);
-	/* Clean up dangling callbacks if necessary. */
+	 
 	if (priv->scan_request) {
 		struct cfg80211_scan_info scan_info = { .aborted = true };
-		/* Schedules work which acquires and releases the rtnl lock. */
+		 
 		cfg80211_scan_done(priv->scan_request, &scan_info);
 		priv->scan_request = NULL;
 	}
@@ -219,7 +211,7 @@ struct virt_wifi_netdev_priv {
 	bool being_deleted;
 };
 
-/* Called with the rtnl lock held. */
+ 
 static int virt_wifi_connect(struct wiphy *wiphy, struct net_device *netdev,
 			     struct cfg80211_connect_params *sme)
 {
@@ -245,7 +237,7 @@ static int virt_wifi_connect(struct wiphy *wiphy, struct net_device *netdev,
 	return 0;
 }
 
-/* Acquires and releases the rdev event lock. */
+ 
 static void virt_wifi_connect_complete(struct work_struct *work)
 {
 	struct virt_wifi_netdev_priv *priv =
@@ -262,20 +254,20 @@ static void virt_wifi_connect_complete(struct work_struct *work)
 	else
 		priv->is_connected = true;
 
-	/* Schedules an event that acquires the rtnl lock. */
+	 
 	cfg80211_connect_result(priv->upperdev, requested_bss, NULL, 0, NULL, 0,
 				status, GFP_KERNEL);
 	netif_carrier_on(priv->upperdev);
 }
 
-/* May acquire and release the rdev event lock. */
+ 
 static void virt_wifi_cancel_connect(struct net_device *netdev)
 {
 	struct virt_wifi_netdev_priv *priv = netdev_priv(netdev);
 
-	/* If there is work pending, clean up dangling callbacks. */
+	 
 	if (cancel_delayed_work_sync(&priv->connect)) {
-		/* Schedules an event that acquires the rtnl lock. */
+		 
 		cfg80211_connect_result(priv->upperdev,
 					priv->connect_requested_bss, NULL, 0,
 					NULL, 0,
@@ -284,7 +276,7 @@ static void virt_wifi_cancel_connect(struct net_device *netdev)
 	}
 }
 
-/* Called with the rtnl lock held. Acquires the rdev event lock. */
+ 
 static int virt_wifi_disconnect(struct wiphy *wiphy, struct net_device *netdev,
 				u16 reason_code)
 {
@@ -303,7 +295,7 @@ static int virt_wifi_disconnect(struct wiphy *wiphy, struct net_device *netdev,
 	return 0;
 }
 
-/* Called with the rtnl lock held. */
+ 
 static int virt_wifi_get_station(struct wiphy *wiphy, struct net_device *dev,
 				 const u8 *mac, struct station_info *sinfo)
 {
@@ -320,15 +312,15 @@ static int virt_wifi_get_station(struct wiphy *wiphy, struct net_device *dev,
 		BIT_ULL(NL80211_STA_INFO_TX_BITRATE);
 	sinfo->tx_packets = priv->tx_packets;
 	sinfo->tx_failed = priv->tx_failed;
-	/* For CFG80211_SIGNAL_TYPE_MBM, value is expressed in _dBm_ */
+	 
 	sinfo->signal = -50;
 	sinfo->txrate = (struct rate_info) {
-		.legacy = 10, /* units are 100kbit/s */
+		.legacy = 10,  
 	};
 	return 0;
 }
 
-/* Called with the rtnl lock held. */
+ 
 static int virt_wifi_dump_station(struct wiphy *wiphy, struct net_device *dev,
 				  int idx, u8 *mac, struct station_info *sinfo)
 {
@@ -353,7 +345,7 @@ static const struct cfg80211_ops virt_wifi_cfg80211_ops = {
 	.dump_station = virt_wifi_dump_station,
 };
 
-/* Acquires and releases the rtnl lock. */
+ 
 static struct wiphy *virt_wifi_make_wiphy(void)
 {
 	struct wiphy *wiphy;
@@ -389,7 +381,7 @@ static struct wiphy *virt_wifi_make_wiphy(void)
 	return wiphy;
 }
 
-/* Acquires and releases the rtnl lock. */
+ 
 static void virt_wifi_destroy_wiphy(struct wiphy *wiphy)
 {
 	struct virt_wifi_wiphy_priv *priv;
@@ -407,7 +399,7 @@ static void virt_wifi_destroy_wiphy(struct wiphy *wiphy)
 	wiphy_free(wiphy);
 }
 
-/* Enters and exits a RCU-bh critical section. */
+ 
 static netdev_tx_t virt_wifi_start_xmit(struct sk_buff *skb,
 					struct net_device *dev)
 {
@@ -423,7 +415,7 @@ static netdev_tx_t virt_wifi_start_xmit(struct sk_buff *skb,
 	return dev_queue_xmit(skb);
 }
 
-/* Called with rtnl lock held. */
+ 
 static int virt_wifi_net_device_open(struct net_device *dev)
 {
 	struct virt_wifi_netdev_priv *priv = netdev_priv(dev);
@@ -432,7 +424,7 @@ static int virt_wifi_net_device_open(struct net_device *dev)
 	return 0;
 }
 
-/* Called with rtnl lock held. */
+ 
 static int virt_wifi_net_device_stop(struct net_device *dev)
 {
 	struct virt_wifi_netdev_priv *n_priv = netdev_priv(dev);
@@ -463,17 +455,15 @@ static const struct net_device_ops virt_wifi_ops = {
 	.ndo_get_iflink = virt_wifi_net_device_get_iflink,
 };
 
-/* Invoked as part of rtnl lock release. */
+ 
 static void virt_wifi_net_device_destructor(struct net_device *dev)
 {
-	/* Delayed past dellink to allow nl80211 to react to the device being
-	 * deleted.
-	 */
+	 
 	kfree(dev->ieee80211_ptr);
 	dev->ieee80211_ptr = NULL;
 }
 
-/* No lock interaction. */
+ 
 static void virt_wifi_setup(struct net_device *dev)
 {
 	ether_setup(dev);
@@ -481,7 +471,7 @@ static void virt_wifi_setup(struct net_device *dev)
 	dev->needs_free_netdev  = true;
 }
 
-/* Called in a RCU read critical section from netif_receive_skb */
+ 
 static rx_handler_result_t virt_wifi_rx_handler(struct sk_buff **pskb)
 {
 	struct sk_buff *skb = *pskb;
@@ -491,7 +481,7 @@ static rx_handler_result_t virt_wifi_rx_handler(struct sk_buff **pskb)
 	if (!priv->is_connected)
 		return RX_HANDLER_PASS;
 
-	/* GFP_ATOMIC because this is a packet interrupt handler. */
+	 
 	skb = skb_share_check(skb, GFP_ATOMIC);
 	if (!skb) {
 		dev_err(&priv->upperdev->dev, "can't skb_share_check\n");
@@ -504,7 +494,7 @@ static rx_handler_result_t virt_wifi_rx_handler(struct sk_buff **pskb)
 	return RX_HANDLER_ANOTHER;
 }
 
-/* Called with rtnl lock held. */
+ 
 static int virt_wifi_newlink(struct net *src_net, struct net_device *dev,
 			     struct nlattr *tb[], struct nlattr *data[],
 			     struct netlink_ext_ack *extack)
@@ -583,7 +573,7 @@ remove_handler:
 	return err;
 }
 
-/* Called with rtnl lock held. */
+ 
 static void virt_wifi_dellink(struct net_device *dev,
 			      struct list_head *head)
 {
@@ -602,7 +592,7 @@ static void virt_wifi_dellink(struct net_device *dev,
 	unregister_netdevice_queue(dev, head);
 	module_put(THIS_MODULE);
 
-	/* Deleting the wiphy is handled in the module destructor. */
+	 
 }
 
 static struct rtnl_link_ops virt_wifi_link_ops = {
@@ -649,12 +639,12 @@ static struct notifier_block virt_wifi_notifier = {
 	.notifier_call = virt_wifi_event,
 };
 
-/* Acquires and releases the rtnl lock. */
+ 
 static int __init virt_wifi_init_module(void)
 {
 	int err;
 
-	/* Guaranteed to be locally-administered and not multicast. */
+	 
 	eth_random_addr(fake_router_bssid);
 
 	err = register_netdevice_notifier(&virt_wifi_notifier);
@@ -679,10 +669,10 @@ notifier:
 	return err;
 }
 
-/* Acquires and releases the rtnl lock. */
+ 
 static void __exit virt_wifi_cleanup_module(void)
 {
-	/* Will delete any devices that depend on the wiphy. */
+	 
 	rtnl_link_unregister(&virt_wifi_link_ops);
 	virt_wifi_destroy_wiphy(common_wiphy);
 	unregister_netdevice_notifier(&virt_wifi_notifier);

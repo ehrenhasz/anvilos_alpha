@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Greybus Bridged-Phy Bus driver
- *
- * Copyright 2014 Google Inc.
- * Copyright 2014 Linaro Ltd.
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -141,7 +136,7 @@ static int gbphy_dev_probe(struct device *dev)
 	if (!id)
 		return -ENODEV;
 
-	/* for old kernels we need get_sync to resume parent devices */
+	 
 	ret = gb_pm_runtime_get_sync(gbphy_dev->bundle);
 	if (ret < 0)
 		return ret;
@@ -152,10 +147,7 @@ static int gbphy_dev_probe(struct device *dev)
 	pm_runtime_set_active(dev);
 	pm_runtime_enable(dev);
 
-	/*
-	 * Drivers should call put on the gbphy dev before returning
-	 * from probe if they support runtime pm.
-	 */
+	 
 	ret = gbphy_drv->probe(gbphy_dev, id);
 	if (ret) {
 		pm_runtime_disable(dev);
@@ -290,10 +282,7 @@ static int gb_gbphy_probe(struct gb_bundle *bundle,
 	INIT_LIST_HEAD(&gbphy_host->devices);
 	greybus_set_drvdata(bundle, gbphy_host);
 
-	/*
-	 * Create a bunch of children devices, one per cport, and bind the
-	 * bridged phy drivers to them.
-	 */
+	 
 	for (i = 0; i < bundle->num_cports; ++i) {
 		gbphy_dev = gb_gbphy_create_dev(bundle, &bundle->cport_desc[i]);
 		if (IS_ERR(gbphy_dev)) {

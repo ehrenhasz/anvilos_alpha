@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*******************************************************************************
-  Copyright (C) 2007-2009  STMicroelectronics Ltd
-
-
-  Author: Giuseppe Cavallaro <peppe.cavallaro@st.com>
-*******************************************************************************/
+ 
+ 
 
 #ifndef __STMMAC_PLATFORM_H__
 #define __STMMAC_PLATFORM_H__
@@ -44,4 +39,4 @@ static inline void *get_stmmac_bsp_priv(struct device *dev)
 	return priv->plat->bsp_priv;
 }
 
-#endif /* __STMMAC_PLATFORM_H__ */
+#endif  

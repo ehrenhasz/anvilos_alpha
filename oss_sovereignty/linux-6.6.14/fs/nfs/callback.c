@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * linux/fs/nfs/callback.c
- *
- * Copyright (C) 2004 Trond Myklebust
- *
- * NFSv4 callback handling
- */
+
+ 
 
 #include <linux/completion.h>
 #include <linux/ip.h>
@@ -68,9 +62,7 @@ out_err:
 	return (ret) ? ret : -ENOMEM;
 }
 
-/*
- * This is the NFSv4 callback kernel thread.
- */
+ 
 static int
 nfs4_callback_svc(void *vrqstp)
 {
@@ -86,9 +78,7 @@ nfs4_callback_svc(void *vrqstp)
 }
 
 #if defined(CONFIG_NFS_V4_1)
-/*
- * The callback service for NFSv4.1 callbacks
- */
+ 
 static int
 nfs41_callback_svc(void *vrqstp)
 {
@@ -129,10 +119,7 @@ static inline void nfs_callback_bc_serv(u32 minorversion, struct rpc_xprt *xprt,
 		struct svc_serv *serv)
 {
 	if (minorversion)
-		/*
-		 * Save the svc_serv in the transport so that it can
-		 * be referenced when the session backchannel is initialized
-		 */
+		 
 		xprt->bc_serv = serv;
 }
 #else
@@ -140,7 +127,7 @@ static inline void nfs_callback_bc_serv(u32 minorversion, struct rpc_xprt *xprt,
 		struct svc_serv *serv)
 {
 }
-#endif /* CONFIG_NFS_V4_1 */
+#endif  
 
 static int nfs_callback_start_svc(int minorversion, struct rpc_xprt *xprt,
 				  struct svc_serv *serv)
@@ -222,16 +209,11 @@ static struct svc_serv *nfs_callback_create_svc(int minorversion)
 	int (*threadfn)(void *data);
 	struct svc_serv *serv;
 
-	/*
-	 * Check whether we're already up and running.
-	 */
+	 
 	if (cb_info->serv)
 		return svc_get(cb_info->serv);
 
-	/*
-	 * Sanity check: if there's no task,
-	 * we should be the first user ...
-	 */
+	 
 	if (cb_info->users)
 		printk(KERN_WARNING "nfs_callback_create_svc: no kthread, %d users??\n",
 			cb_info->users);
@@ -251,17 +233,13 @@ static struct svc_serv *nfs_callback_create_svc(int minorversion)
 		return ERR_PTR(-ENOMEM);
 	}
 	cb_info->serv = serv;
-	/* As there is only one thread we need to over-ride the
-	 * default maximum of 80 connections
-	 */
+	 
 	serv->sv_maxconn = 1024;
 	dprintk("nfs_callback_create_svc: service created\n");
 	return serv;
 }
 
-/*
- * Bring up the callback thread if it is not already up.
- */
+ 
 int nfs_callback_up(u32 minorversion, struct rpc_xprt *xprt)
 {
 	struct svc_serv *serv;
@@ -300,9 +278,7 @@ err_start:
 	goto err_net;
 }
 
-/*
- * Kill the callback thread if it's no longer being used.
- */
+ 
 void nfs_callback_down(int minorversion, struct net *net)
 {
 	struct nfs_callback_data *cb_info = &nfs_callback_info[minorversion];
@@ -322,7 +298,7 @@ void nfs_callback_down(int minorversion, struct net *net)
 	mutex_unlock(&nfs_callback_mutex);
 }
 
-/* Boolean check of RPC_AUTH_GSS principal */
+ 
 int
 check_gss_callback_principal(struct nfs_client *clp, struct svc_rqst *rqstp)
 {
@@ -331,29 +307,20 @@ check_gss_callback_principal(struct nfs_client *clp, struct svc_rqst *rqstp)
 	if (rqstp->rq_authop->flavour != RPC_AUTH_GSS)
 		return 1;
 
-	/* No RPC_AUTH_GSS on NFSv4.1 back channel yet */
+	 
 	if (clp->cl_minorversion != 0)
 		return 0;
-	/*
-	 * It might just be a normal user principal, in which case
-	 * userspace won't bother to tell us the name at all.
-	 */
+	 
 	if (p == NULL)
 		return 0;
 
-	/*
-	 * Did we get the acceptor from userland during the SETCLIENID
-	 * negotiation?
-	 */
+	 
 	if (clp->cl_acceptor)
 		return !strcmp(p, clp->cl_acceptor);
 
-	/*
-	 * Otherwise try to verify it using the cl_hostname. Note that this
-	 * doesn't work if a non-canonical hostname was used in the devname.
-	 */
+	 
 
-	/* Expect a GSS_C_NT_HOSTBASED_NAME like "nfs@serverhostname" */
+	 
 
 	if (memcmp(p, "nfs@", 4) != 0)
 		return 0;
@@ -363,15 +330,7 @@ check_gss_callback_principal(struct nfs_client *clp, struct svc_rqst *rqstp)
 	return 1;
 }
 
-/*
- * pg_authenticate method for nfsv4 callback threads.
- *
- * The authflavor has been negotiated, so an incorrect flavor is a server
- * bug. Deny packets with incorrect authflavor.
- *
- * All other checking done after NFS decoding where the nfs_client can be
- * found in nfs4_callback_compound
- */
+ 
 static enum svc_auth_status nfs_callback_authenticate(struct svc_rqst *rqstp)
 {
 	rqstp->rq_auth_stat = rpc_autherr_badcred;
@@ -382,7 +341,7 @@ static enum svc_auth_status nfs_callback_authenticate(struct svc_rqst *rqstp)
 			return SVC_DENIED;
 		break;
 	case RPC_AUTH_GSS:
-		/* No RPC_AUTH_GSS support yet in NFSv4.1 */
+		 
 		 if (svc_is_backchannel(rqstp))
 			return SVC_DENIED;
 	}
@@ -391,9 +350,7 @@ static enum svc_auth_status nfs_callback_authenticate(struct svc_rqst *rqstp)
 	return SVC_OK;
 }
 
-/*
- * Define NFS4 callback program
- */
+ 
 static const struct svc_version *nfs4_callback_version[] = {
 	[1] = &nfs4_callback_version1,
 	[4] = &nfs4_callback_version4,
@@ -402,11 +359,11 @@ static const struct svc_version *nfs4_callback_version[] = {
 static struct svc_stat nfs4_callback_stats;
 
 static struct svc_program nfs4_callback_program = {
-	.pg_prog = NFS4_CALLBACK,			/* RPC service number */
-	.pg_nvers = ARRAY_SIZE(nfs4_callback_version),	/* Number of entries */
-	.pg_vers = nfs4_callback_version,		/* version table */
-	.pg_name = "NFSv4 callback",			/* service name */
-	.pg_class = "nfs",				/* authentication class */
+	.pg_prog = NFS4_CALLBACK,			 
+	.pg_nvers = ARRAY_SIZE(nfs4_callback_version),	 
+	.pg_vers = nfs4_callback_version,		 
+	.pg_name = "NFSv4 callback",			 
+	.pg_class = "nfs",				 
 	.pg_stats = &nfs4_callback_stats,
 	.pg_authenticate = nfs_callback_authenticate,
 	.pg_init_request = svc_generic_init_request,

@@ -1,24 +1,12 @@
-/* SPDX-License-Identifier: GPL-2.0+ WITH Linux-syscall-note */
+ 
 #ifndef __UHID_H_
 #define __UHID_H_
 
-/*
- * User-space I/O driver support for HID subsystem
- * Copyright (c) 2012 David Herrmann
- */
+ 
 
-/*
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option)
- * any later version.
- */
+ 
 
-/*
- * Public header for user-space communication. We try to keep every structure
- * aligned but to be safe we also use __attribute__((__packed__)). Therefore,
- * the communication should be ABI compatible even between architectures.
- */
+ 
 
 #include <linux/input.h>
 #include <linux/types.h>
@@ -110,12 +98,7 @@ struct uhid_set_report_reply_req {
 	__u16 err;
 } __attribute__((__packed__));
 
-/*
- * Compat Layer
- * All these commands and requests are obsolete. You should avoid using them in
- * new code. We support them for backwards-compatibility, but you might not get
- * access to new feature in case you use them.
- */
+ 
 
 enum uhid_legacy_event_type {
 	UHID_CREATE			= __UHID_LEGACY_CREATE,
@@ -125,7 +108,7 @@ enum uhid_legacy_event_type {
 	UHID_FEATURE_ANSWER		= UHID_GET_REPORT_REPLY,
 };
 
-/* Obsolete! Use UHID_CREATE2. */
+ 
 struct uhid_create_req {
 	__u8 name[128];
 	__u8 phys[64];
@@ -140,27 +123,27 @@ struct uhid_create_req {
 	__u32 country;
 } __attribute__((__packed__));
 
-/* Obsolete! Use UHID_INPUT2. */
+ 
 struct uhid_input_req {
 	__u8 data[UHID_DATA_MAX];
 	__u16 size;
 } __attribute__((__packed__));
 
-/* Obsolete! Kernel uses UHID_OUTPUT exclusively now. */
+ 
 struct uhid_output_ev_req {
 	__u16 type;
 	__u16 code;
 	__s32 value;
 } __attribute__((__packed__));
 
-/* Obsolete! Kernel uses ABI compatible UHID_GET_REPORT. */
+ 
 struct uhid_feature_req {
 	__u32 id;
 	__u8 rnum;
 	__u8 rtype;
 } __attribute__((__packed__));
 
-/* Obsolete! Use ABI compatible UHID_GET_REPORT_REPLY. */
+ 
 struct uhid_feature_answer_req {
 	__u32 id;
 	__u16 err;
@@ -168,14 +151,7 @@ struct uhid_feature_answer_req {
 	__u8 data[UHID_DATA_MAX];
 } __attribute__((__packed__));
 
-/*
- * UHID Events
- * All UHID events from and to the kernel are encoded as "struct uhid_event".
- * The "type" field contains a UHID_* type identifier. All payload depends on
- * that type and can be accessed via ev->u.XYZ accordingly.
- * If user-space writes short events, they're extended with 0s by the kernel. If
- * the kernel writes short events, user-space shall extend them with 0s.
- */
+ 
 
 struct uhid_event {
 	__u32 type;
@@ -197,4 +173,4 @@ struct uhid_event {
 	} u;
 } __attribute__((__packed__));
 
-#endif /* __UHID_H_ */
+#endif  

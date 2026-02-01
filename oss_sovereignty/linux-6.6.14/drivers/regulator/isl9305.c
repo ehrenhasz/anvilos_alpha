@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * isl9305 - Intersil ISL9305 DCDC regulator
- *
- * Copyright 2014 Linaro Ltd
- *
- * Author: Mark Brown <broonie@kernel.org>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/err.h>
@@ -17,9 +11,7 @@
 #include <linux/regulator/of_regulator.h>
 #include <linux/slab.h>
 
-/*
- * Registers
- */
+ 
 #define ISL9305_DCD1OUT          0x0
 #define ISL9305_DCD2OUT          0x1
 #define ISL9305_LDO1OUT          0x2
@@ -30,9 +22,7 @@
 
 #define ISL9305_MAX_REG ISL9305_DCD_SRCTL
 
-/*
- * DCD_PARAMETER
- */
+ 
 #define ISL9305_DCD_PHASE   0x40
 #define ISL9305_DCD2_ULTRA  0x20
 #define ISL9305_DCD1_ULTRA  0x10
@@ -41,9 +31,7 @@
 #define ISL9305_DCD2_MODE   0x02
 #define ISL9305_DCD1_MODE   0x01
 
-/*
- * SYSTEM_PARAMETER
- */
+ 
 #define ISL9305_I2C_EN      0x40
 #define ISL9305_DCDPOR_MASK 0x30
 #define ISL9305_LDO2_EN     0x08
@@ -51,9 +39,7 @@
 #define ISL9305_DCD2_EN     0x02
 #define ISL9305_DCD1_EN     0x01
 
-/*
- * DCD_SRCTL
- */
+ 
 #define ISL9305_DCD2SR_MASK 0xc0
 #define ISL9305_DCD1SR_MASK 0x07
 
@@ -176,9 +162,9 @@ static int isl9305_i2c_probe(struct i2c_client *i2c)
 
 #ifdef CONFIG_OF
 static const struct of_device_id isl9305_dt_ids[] = {
-	{ .compatible = "isl,isl9305" }, /* for backward compat., don't use */
+	{ .compatible = "isl,isl9305" },  
 	{ .compatible = "isil,isl9305" },
-	{ .compatible = "isl,isl9305h" }, /* for backward compat., don't use */
+	{ .compatible = "isl,isl9305h" },  
 	{ .compatible = "isil,isl9305h" },
 	{},
 };

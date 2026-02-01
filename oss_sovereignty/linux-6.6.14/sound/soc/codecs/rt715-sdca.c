@@ -1,11 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0-only
-//
-// rt715-sdca.c -- rt715 ALSA SoC audio driver
-//
-// Copyright(c) 2020 Realtek Semiconductor Corp.
-//
-//
-//
+
+
+
+
+
+
+
+
 
 #include <linux/module.h>
 #include <linux/moduleparam.h>
@@ -127,7 +127,7 @@ static inline unsigned int rt715_sdca_get_gain(unsigned int reg_val,
 	return reg_val;
 }
 
-/* SDCA Volume/Boost control */
+ 
 static int rt715_sdca_set_amp_gain_put(struct snd_kcontrol *kcontrol,
 		struct snd_ctl_elem_value *ucontrol)
 {
@@ -456,7 +456,7 @@ static int rt715_sdca_fu_info(struct snd_kcontrol *kcontrol,
 	.private_value = RT715_SDCA_PR_VALUE(reg_base, xcount, xmax, 0, 0) }
 
 static const struct snd_kcontrol_new rt715_sdca_snd_controls[] = {
-	/* Capture switch */
+	 
 	SOC_DOUBLE_R("FU0A Capture Switch",
 		SDW_SDCA_CTL(FUN_MIC_ARRAY, RT715_SDCA_FU_ADC7_27_VOL,
 			RT715_SDCA_FU_MUTE_CTRL, CH_01),
@@ -471,7 +471,7 @@ static const struct snd_kcontrol_new rt715_sdca_snd_controls[] = {
 		SDW_SDCA_CTL(FUN_MIC_ARRAY, RT715_SDCA_FU_ADC10_11_VOL,
 			RT715_SDCA_FU_MUTE_CTRL, CH_01),
 			0, 1, 1, 4),
-	/* Volume Control */
+	 
 	SOC_DOUBLE_R_EXT_TLV("FU0A Capture Volume",
 		SDW_SDCA_CTL(FUN_MIC_ARRAY, RT715_SDCA_FU_ADC7_27_VOL,
 			RT715_SDCA_FU_VOL_CTRL, CH_01),
@@ -492,7 +492,7 @@ static const struct snd_kcontrol_new rt715_sdca_snd_controls[] = {
 		rt715_sdca_set_amp_gain_4ch_get,
 		rt715_sdca_set_amp_gain_4ch_put,
 		in_vol_tlv, 4, 0x7f),
-	/* MIC Boost Control */
+	 
 	RT715_SDCA_BOOST_EXT_TLV("FU0E Boost",
 		SDW_SDCA_CTL(FUN_MIC_ARRAY, RT715_SDCA_FU_DMIC_GAIN_EN,
 			RT715_SDCA_FU_DMIC_GAIN_CTRL, CH_01),
@@ -530,11 +530,7 @@ static int rt715_sdca_mux_get(struct snd_kcontrol *kcontrol,
 		RT715_HDA_LEGACY_MUX_CTL1, &val);
 	val = (val >> mask_sft) & 0xf;
 
-	/*
-	 * The first two indices of ADC Mux 24/25 are routed to the same
-	 * hardware source. ie, ADC Mux 24 0/1 will both connect to MIC2.
-	 * To have a unique set of inputs, we skip the index1 of the muxes.
-	 */
+	 
 	if ((strstr(ucontrol->id.name, "ADC 24 Mux") ||
 		strstr(ucontrol->id.name, "ADC 25 Mux")) && val > 0)
 		val -= 1;
@@ -569,7 +565,7 @@ static int rt715_sdca_mux_put(struct snd_kcontrol *kcontrol,
 	else
 		return -EINVAL;
 
-	/* Verb ID = 0x701h, nid = e->reg */
+	 
 	val = snd_soc_enum_item_to_val(e, item[0]) << e->shift_l;
 
 	rt715_sdca_index_read(rt715, RT715_VENDOR_HDA_CTL,
@@ -598,11 +594,7 @@ static const char * const adc_22_23_mux_text[] = {
 	"DMIC4",
 };
 
-/*
- * Due to mux design for nid 24 (MUX_IN3)/25 (MUX_IN4), connection index 0 and
- * 1 will be connected to the same dmic source, therefore we skip index 1 to
- * avoid misunderstanding on usage of dapm routing.
- */
+ 
 static int rt715_adc_24_25_values[] = {
 	0,
 	2,
@@ -958,7 +950,7 @@ static struct snd_soc_dai_driver rt715_sdca_dai[] = {
 	},
 };
 
-/* Bus clock frequency */
+ 
 #define RT715_CLK_FREQ_9600000HZ 9600000
 #define RT715_CLK_FREQ_12000000HZ 12000000
 #define RT715_CLK_FREQ_6000000HZ 6000000
@@ -985,10 +977,7 @@ int rt715_sdca_init(struct device *dev, struct regmap *mbq_regmap,
 	regcache_cache_only(rt715->regmap, true);
 	regcache_cache_only(rt715->mbq_regmap, true);
 
-	/*
-	 * Mark hw_init to false
-	 * HW init will be performed when device reports present
-	 */
+	 
 	rt715->hw_init = false;
 	rt715->first_hw_init = false;
 
@@ -999,20 +988,16 @@ int rt715_sdca_init(struct device *dev, struct regmap *mbq_regmap,
 	if (ret < 0)
 		return ret;
 
-	/* set autosuspend parameters */
+	 
 	pm_runtime_set_autosuspend_delay(dev, 3000);
 	pm_runtime_use_autosuspend(dev);
 
-	/* make sure the device does not suspend immediately */
+	 
 	pm_runtime_mark_last_busy(dev);
 
 	pm_runtime_enable(dev);
 
-	/* important note: the device is NOT tagged as 'active' and will remain
-	 * 'suspended' until the hardware is enumerated/initialized. This is required
-	 * to make sure the ASoC framework use of pm_runtime_get_sync() does not silently
-	 * fail with -EACCESS because of race conditions between card creation and enumeration
-	 */
+	 
 
 	dev_dbg(dev, "%s\n", __func__);
 
@@ -1030,11 +1015,9 @@ int rt715_sdca_io_init(struct device *dev, struct sdw_slave *slave)
 	regcache_cache_only(rt715->regmap, false);
 	regcache_cache_only(rt715->mbq_regmap, false);
 
-	/*
-	 * PM runtime status is marked as 'active' only when a Slave reports as Attached
-	 */
+	 
 	if (!rt715->first_hw_init) {
-		/* update count of parent 'active' children */
+		 
 		pm_runtime_set_active(&slave->dev);
 
 		rt715->first_hw_init = true;
@@ -1046,11 +1029,11 @@ int rt715_sdca_io_init(struct device *dev, struct sdw_slave *slave)
 		RT715_PRODUCT_NUM, &hw_ver);
 	hw_ver = hw_ver & 0x000f;
 
-	/* set clock selector = external */
+	 
 	regmap_write(rt715->regmap,
 		SDW_SDCA_CTL(FUN_MIC_ARRAY, RT715_SDCA_CX_CLK_SEL_EN,
 			RT715_SDCA_CX_CLK_SEL_CTRL, CH_00), 0x1);
-	/* set GPIO_4/5/6 to be 3rd/4th DMIC usage */
+	 
 	if (hw_ver == 0x0)
 		rt715_sdca_index_update_bits(rt715, RT715_VENDOR_REG,
 			RT715_AD_FUNC_EN, 0x54, 0x54);
@@ -1060,17 +1043,17 @@ int rt715_sdca_io_init(struct device *dev, struct sdw_slave *slave)
 		rt715_sdca_index_update_bits(rt715, RT715_VENDOR_REG,
 			RT715_REV_1, 0x40, 0x40);
 	}
-	/* DFLL Calibration trigger */
+	 
 	rt715_sdca_index_update_bits(rt715, RT715_VENDOR_REG,
 			RT715_DFLL_VAD, 0x1, 0x1);
-	/* trigger mode = VAD enable */
+	 
 	regmap_write(rt715->regmap,
 		SDW_SDCA_CTL(FUN_MIC_ARRAY, RT715_SDCA_SMPU_TRIG_ST_EN,
 			RT715_SDCA_SMPU_TRIG_EN_CTRL, CH_00), 0x2);
-	/* SMPU-1 interrupt enable mask */
+	 
 	regmap_update_bits(rt715->regmap, RT715_INT_MASK, 0x1, 0x1);
 
-	/* Mark Slave initialization complete */
+	 
 	rt715->hw_init = true;
 
 	pm_runtime_mark_last_busy(&slave->dev);

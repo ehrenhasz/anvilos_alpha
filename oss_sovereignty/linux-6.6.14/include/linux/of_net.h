@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * OF helpers for network devices.
- */
+ 
+ 
 
 #ifndef __LINUX_OF_NET_H
 #define __LINUX_OF_NET_H
@@ -45,4 +43,4 @@ static inline struct net_device *of_find_net_device_by_node(struct device_node *
 }
 #endif
 
-#endif /* __LINUX_OF_NET_H */
+#endif  

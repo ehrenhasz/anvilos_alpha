@@ -1,20 +1,4 @@
-/*
- * Retu/Tahvo MFD driver
- *
- * Copyright (C) 2004, 2005 Nokia Corporation
- *
- * Based on code written by Juha Yrjölä, David Weinehall and Mikko Ylinen.
- * Rewritten by Aaro Koskinen.
- *
- * This file is subject to the terms and conditions of the GNU General
- * Public License. See the file "COPYING" in the main directory of this
- * archive for more details.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- */
+ 
 
 #include <linux/err.h>
 #include <linux/i2c.h>
@@ -28,15 +12,15 @@
 #include <linux/interrupt.h>
 #include <linux/moduleparam.h>
 
-/* Registers */
-#define RETU_REG_ASICR		0x00		/* ASIC ID and revision */
-#define RETU_REG_ASICR_VILMA	(1 << 7)	/* Bit indicating Vilma */
-#define RETU_REG_IDR		0x01		/* Interrupt ID */
-#define RETU_REG_IMR		0x02		/* Interrupt mask (Retu) */
-#define TAHVO_REG_IMR		0x03		/* Interrupt mask (Tahvo) */
+ 
+#define RETU_REG_ASICR		0x00		 
+#define RETU_REG_ASICR_VILMA	(1 << 7)	 
+#define RETU_REG_IDR		0x01		 
+#define RETU_REG_IMR		0x02		 
+#define TAHVO_REG_IMR		0x03		 
 
-/* Interrupt sources */
-#define RETU_INT_PWR		0		/* Power button */
+ 
+#define RETU_INT_PWR		0		 
 
 struct retu_dev {
 	struct regmap			*regmap;
@@ -81,7 +65,7 @@ static struct regmap_irq_chip retu_irq_chip = {
 	.ack_base	= RETU_REG_IDR,
 };
 
-/* Retu device registered for the power off. */
+ 
 static struct retu_dev *retu_pm_power_off;
 
 static const struct resource tahvo_usb_res[] = {
@@ -172,14 +156,14 @@ static void retu_power_off(void)
 
 	mutex_lock(&retu_pm_power_off->mutex);
 
-	/* Ignore power button state */
+	 
 	regmap_read(rdev->regmap, RETU_REG_CC1, &reg);
 	regmap_write(rdev->regmap, RETU_REG_CC1, reg | 2);
 
-	/* Expire watchdog immediately */
+	 
 	regmap_write(rdev->regmap, RETU_REG_WATCHDOG, 0);
 
-	/* Wait for poweroff */
+	 
 	for (;;)
 		cpu_relax();
 
@@ -261,7 +245,7 @@ static int retu_probe(struct i2c_client *i2c)
 		 (ret & RETU_REG_ASICR_VILMA) ? rdat->companion_name : "",
 		 (ret >> 4) & 0x7, ret & 0xf);
 
-	/* Mask all interrupts. */
+	 
 	ret = retu_write(rdev, rdat->irq_chip->mask_base, 0xffff);
 	if (ret < 0)
 		return ret;

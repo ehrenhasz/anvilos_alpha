@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: BSD-3-Clause-Clear */
-/*
- * Copyright (c) 2018-2021 The Linux Foundation. All rights reserved.
- * Copyright (c) 2021-2022 Qualcomm Innovation Center, Inc. All rights reserved.
- */
+ 
+ 
 
 #ifndef ATH12K_MAC_H
 #define ATH12K_MAC_H
@@ -18,18 +15,15 @@ struct ath12k_generic_iter {
 	int ret;
 };
 
-/* number of failed packets (20 packets with 16 sw reties each) */
+ 
 #define ATH12K_KICKOUT_THRESHOLD		(20 * 16)
 
-/* Use insanely high numbers to make sure that the firmware implementation
- * won't start, we have the same functionality already in hostapd. Unit
- * is seconds.
- */
+ 
 #define ATH12K_KEEPALIVE_MIN_IDLE		3747
 #define ATH12K_KEEPALIVE_MAX_IDLE		3895
 #define ATH12K_KEEPALIVE_MAX_UNRESPONSIVE	3900
 
-/* FIXME: should these be in ieee80211.h? */
+ 
 #define IEEE80211_VHT_MCS_SUPPORT_0_11_MASK	GENMASK(23, 16)
 #define IEEE80211_DISABLE_VHT_MCS_SUPPORT_0_11	BIT(24)
 

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * AD9832 SPI DDS driver
- *
- * Copyright 2011 Analog Devices Inc.
- */
+
+ 
 
 #include <asm/div64.h>
 
@@ -24,7 +20,7 @@
 
 #include "dds.h"
 
-/* Registers */
+ 
 
 #define AD9832_FREQ0LL		0x0
 #define AD9832_FREQ0HL		0x1
@@ -48,7 +44,7 @@
 #define AD9832_PINCTRL_EN	0x12
 #define AD9832_OUTPUT_EN	0x13
 
-/* Command Control Bits */
+ 
 
 #define AD9832_CMD_PHA8BITSW	0x1
 #define AD9832_CMD_PHA16BITSW	0x0
@@ -71,26 +67,7 @@
 #define AD9832_PHASE_BITS	12
 #define RES_MASK(bits)		((1 << (bits)) - 1)
 
-/**
- * struct ad9832_state - driver instance specific data
- * @spi:		spi_device
- * @avdd:		supply regulator for the analog section
- * @dvdd:		supply regulator for the digital section
- * @mclk:		external master clock
- * @ctrl_fp:		cached frequency/phase control word
- * @ctrl_ss:		cached sync/selsrc control word
- * @ctrl_src:		cached sleep/reset/clr word
- * @xfer:		default spi transfer
- * @msg:		default spi message
- * @freq_xfer:		tuning word spi transfer
- * @freq_msg:		tuning word spi message
- * @phase_xfer:		tuning word spi transfer
- * @phase_msg:		tuning word spi message
- * @lock:		protect sensor state
- * @data:		spi transmit buffer
- * @phase_data:		tuning word spi transmit buffer
- * @freq_data:		tuning word spi transmit buffer
- */
+ 
 
 struct ad9832_state {
 	struct spi_device		*spi;
@@ -106,11 +83,8 @@ struct ad9832_state {
 	struct spi_message		freq_msg;
 	struct spi_transfer		phase_xfer[2];
 	struct spi_message		phase_msg;
-	struct mutex			lock;	/* protect sensor state */
-	/*
-	 * DMA (thus cache coherency maintenance) requires the
-	 * transfer buffers to live in their own cache lines.
-	 */
+	struct mutex			lock;	 
+	 
 	union {
 		__be16			freq_data[4];
 		__be16			phase_data[2];
@@ -248,14 +222,12 @@ error_ret:
 	return ret ? ret : len;
 }
 
-/*
- * see dds.h for further information
- */
+ 
 
 static IIO_DEV_ATTR_FREQ(0, 0, 0200, NULL, ad9832_write, AD9832_FREQ0HM);
 static IIO_DEV_ATTR_FREQ(0, 1, 0200, NULL, ad9832_write, AD9832_FREQ1HM);
 static IIO_DEV_ATTR_FREQSYMBOL(0, 0200, NULL, ad9832_write, AD9832_FREQ_SYM);
-static IIO_CONST_ATTR_FREQ_SCALE(0, "1"); /* 1Hz */
+static IIO_CONST_ATTR_FREQ_SCALE(0, "1");  
 
 static IIO_DEV_ATTR_PHASE(0, 0, 0200, NULL, ad9832_write, AD9832_PHASE0H);
 static IIO_DEV_ATTR_PHASE(0, 1, 0200, NULL, ad9832_write, AD9832_PHASE1H);
@@ -263,7 +235,7 @@ static IIO_DEV_ATTR_PHASE(0, 2, 0200, NULL, ad9832_write, AD9832_PHASE2H);
 static IIO_DEV_ATTR_PHASE(0, 3, 0200, NULL, ad9832_write, AD9832_PHASE3H);
 static IIO_DEV_ATTR_PHASESYMBOL(0, 0200, NULL,
 				ad9832_write, AD9832_PHASE_SYM);
-static IIO_CONST_ATTR_PHASE_SCALE(0, "0.0015339808"); /* 2PI/2^12 rad*/
+static IIO_CONST_ATTR_PHASE_SCALE(0, "0.0015339808");  
 
 static IIO_DEV_ATTR_PINCONTROL_EN(0, 0200, NULL,
 				ad9832_write, AD9832_PINCTRL_EN);
@@ -369,7 +341,7 @@ static int ad9832_probe(struct spi_device *spi)
 	indio_dev->info = &ad9832_info;
 	indio_dev->modes = INDIO_DIRECT_MODE;
 
-	/* Setup default messages */
+	 
 
 	st->xfer.tx_buf = &st->data;
 	st->xfer.len = 2;

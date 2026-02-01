@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0+
-//
-// Copyright (C) 2015-2017 Socionext Inc.
-//   Author: Masahiro Yamada <yamada.masahiro@socionext.com>
+
+
+
+
 
 #include <linux/kernel.h>
 #include <linux/init.h>
@@ -420,7 +420,7 @@ static const struct pinctrl_pin_desc uniphier_sld8_pins[] = {
 	UNIPHIER_PINCTRL_PIN(135, "XIRQ7", 0,
 			     118, UNIPHIER_PIN_DRV_1BIT,
 			     118, UNIPHIER_PIN_PULL_DOWN),
-	/* dedicated pins */
+	 
 	UNIPHIER_PINCTRL_PIN(136, "ED0", -1,
 			     0, UNIPHIER_PIN_DRV_1BIT,
 			     0, UNIPHIER_PIN_PULL_DOWN),
@@ -530,27 +530,27 @@ static const int usb1_muxvals[] = {0, 0};
 static const unsigned usb2_pins[] = {114, 115};
 static const int usb2_muxvals[] = {1, 1};
 static const unsigned int gpio_range0_pins[] = {
-	0, 1, 2, 3, 4, 5, 6, 7,			/* PORT0x */
-	8, 9, 10, 11, 12, 13, 14, 15,		/* PORT1x */
-	32, 33, 34, 35, 36, 37, 38, 39,		/* PORT2x */
-	59, 60, 61, 62, 63, 64, 65, 66,		/* PORT3x */
-	95, 96, 97, 98, 99, 100, 101, 57,	/* PORT4x */
-	70, 71, 72, 73, 74, 75, 76, 77,		/* PORT5x */
-	81, 83, 84, 85, 86, 89, 90, 91,		/* PORT6x */
-	118, 119, 120, 121, 122, 53, 54, 55,	/* PORT7x */
-	41, 42, 43, 44, 79, 80, 18, 19,		/* PORT8x */
-	110, 111, 112, 113, 114, 115, 16, 17,	/* PORT9x */
-	40, 67, 68, 69, 78, 92, 93, 94,		/* PORT10x */
-	48, 49, 46, 45, 123, 124, 125, 126,	/* PORT11x */
-	47, 127, 20, 56, 22,			/* PORT120-124 */
+	0, 1, 2, 3, 4, 5, 6, 7,			 
+	8, 9, 10, 11, 12, 13, 14, 15,		 
+	32, 33, 34, 35, 36, 37, 38, 39,		 
+	59, 60, 61, 62, 63, 64, 65, 66,		 
+	95, 96, 97, 98, 99, 100, 101, 57,	 
+	70, 71, 72, 73, 74, 75, 76, 77,		 
+	81, 83, 84, 85, 86, 89, 90, 91,		 
+	118, 119, 120, 121, 122, 53, 54, 55,	 
+	41, 42, 43, 44, 79, 80, 18, 19,		 
+	110, 111, 112, 113, 114, 115, 16, 17,	 
+	40, 67, 68, 69, 78, 92, 93, 94,		 
+	48, 49, 46, 45, 123, 124, 125, 126,	 
+	47, 127, 20, 56, 22,			 
 };
 static const unsigned int gpio_range1_pins[] = {
-	116, 117,				/* PORT130-131 */
+	116, 117,				 
 };
 static const unsigned int gpio_range2_pins[] = {
-	102, 103, 104, 105, 106, 107, 108, 109,	/* PORT14x */
-	128, 129, 130, 131, 132, 133, 134, 135,	/* XIRQ0-7 */
-	82, 87, 88, 50, 51, 23, 52, 58,	      /* XIRQ8-12, PORT165, XIRQ14-15 */
+	102, 103, 104, 105, 106, 107, 108, 109,	 
+	128, 129, 130, 131, 132, 133, 134, 135,	 
+	82, 87, 88, 50, 51, 23, 52, 58,	       
 };
 
 static const struct uniphier_pinctrl_group uniphier_sld8_groups[] = {
@@ -636,10 +636,10 @@ static int uniphier_sld8_get_gpio_muxval(unsigned int pin,
 					 unsigned int gpio_offset)
 {
 	switch (gpio_offset) {
-	case 120 ... 127:	/* XIRQ0-XIRQ7 */
+	case 120 ... 127:	 
 		return 0;
-	case 128 ... 132:	/* XIRQ8-12 */
-	case 134 ... 135:	/* XIRQ14-15 */
+	case 128 ... 132:	 
+	case 134 ... 135:	 
 		return 14;
 	default:
 		return 15;
@@ -664,7 +664,7 @@ static int uniphier_sld8_pinctrl_probe(struct platform_device *pdev)
 
 static const struct of_device_id uniphier_sld8_pinctrl_match[] = {
 	{ .compatible = "socionext,uniphier-sld8-pinctrl" },
-	{ /* sentinel */ }
+	{   }
 };
 
 static struct platform_driver uniphier_sld8_pinctrl_driver = {

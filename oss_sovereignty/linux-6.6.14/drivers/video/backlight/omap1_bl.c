@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Backlight driver for OMAP based boards.
- *
- * Copyright (c) 2006 Andrzej Zaborowski  <balrog@zabor.org>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -147,7 +143,7 @@ static int omapbl_probe(struct platform_device *pdev)
 
 	platform_set_drvdata(pdev, dev);
 
-	omap_cfg_reg(PWL);	/* Conflicts with UART3 */
+	omap_cfg_reg(PWL);	 
 
 	dev->props.fb_blank = FB_BLANK_UNBLANK;
 	dev->props.brightness = pdata->default_intensity;

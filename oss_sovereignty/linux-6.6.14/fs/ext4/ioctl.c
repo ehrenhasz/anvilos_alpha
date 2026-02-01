@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * linux/fs/ext4/ioctl.c
- *
- * Copyright (C) 1993, 1994, 1995
- * Remy Card (card@masi.ibp.fr)
- * Laboratoire MASI - Institut Blaise Pascal
- * Universite Pierre et Marie Curie (Paris VI)
- */
+
+ 
 
 #include <linux/fs.h>
 #include <linux/capability.h>
@@ -30,22 +23,16 @@
 typedef void ext4_update_sb_callback(struct ext4_super_block *es,
 				       const void *arg);
 
-/*
- * Superblock modification callback function for changing file system
- * label
- */
+ 
 static void ext4_sb_setlabel(struct ext4_super_block *es, const void *arg)
 {
-	/* Sanity check, this should never happen */
+	 
 	BUILD_BUG_ON(sizeof(es->s_volume_name) < EXT4_LABEL_MAX);
 
 	memcpy(es->s_volume_name, (char *)arg, EXT4_LABEL_MAX);
 }
 
-/*
- * Superblock modification callback function for changing file system
- * UUID.
- */
+ 
 static void ext4_sb_setuuid(struct ext4_super_block *es, const void *arg)
 {
 	memcpy(es->s_uuid, (__u8 *)arg, UUID_SIZE);
@@ -91,15 +78,7 @@ out_err:
 	return err;
 }
 
-/*
- * Update one backup superblock in the group 'grp' using the callback
- * function 'func' and argument 'arg'. If the handle is NULL the
- * modification is not journalled.
- *
- * Returns: 0 when no modification was done (no superblock in the group)
- *	    1 when the modification was successful
- *	   <0 on error
- */
+ 
 static int ext4_update_backup_sb(struct super_block *sb,
 				 handle_t *handle, ext4_group_t grp,
 				 ext4_update_sb_callback func, const void *arg)
@@ -113,10 +92,7 @@ static int ext4_update_backup_sb(struct super_block *sb,
 	if (!ext4_bg_has_super(sb, grp))
 		return 0;
 
-	/*
-	 * For the group 0 there is always 1k padding, so we have
-	 * either adjust offset, or sb_block depending on blocksize
-	 */
+	 
 	if (grp == 0) {
 		sb_block = 1 * EXT4_MIN_BLOCK_SIZE;
 		offset = do_div(sb_block, sb->s_blocksize);
@@ -171,15 +147,7 @@ out_bh:
 	return (err) ? err : 1;
 }
 
-/*
- * Update primary and backup superblocks using the provided function
- * func and argument arg.
- *
- * Only the primary superblock and at most two backup superblock
- * modifications are journalled; the rest is modified without journal.
- * This is safe because e2fsck will re-write them if there is a problem,
- * and we're very unlikely to ever need more than two backups.
- */
+ 
 static
 int ext4_update_superblocks_fn(struct super_block *sb,
 			       ext4_update_sb_callback func,
@@ -194,9 +162,7 @@ int ext4_update_superblocks_fn(struct super_block *sb,
 	ext4_group_t grp, primary_grp;
 	struct ext4_sb_info *sbi = EXT4_SB(sb);
 
-	/*
-	 * We can't update superblocks while the online resize is running
-	 */
+	 
 	if (test_and_set_bit_lock(EXT4_FLAGS_RESIZING,
 				  &sbi->s_ext4_flags)) {
 		ext4_msg(sb, KERN_ERR, "Can't modify superblock while"
@@ -204,17 +170,14 @@ int ext4_update_superblocks_fn(struct super_block *sb,
 		return -EBUSY;
 	}
 
-	/*
-	 * We're only going to update primary superblock and two
-	 * backup superblocks in this transaction.
-	 */
+	 
 	handle = ext4_journal_start_sb(sb, EXT4_HT_MISC, 3);
 	if (IS_ERR(handle)) {
 		err = PTR_ERR(handle);
 		goto out;
 	}
 
-	/* Update primary superblock */
+	 
 	err = ext4_update_primary_sb(sb, handle, func, arg);
 	if (err) {
 		ext4_msg(sb, KERN_ERR, "Failed to update primary "
@@ -225,21 +188,17 @@ int ext4_update_superblocks_fn(struct super_block *sb,
 	primary_grp = ext4_get_group_number(sb, sbi->s_sbh->b_blocknr);
 	ngroups = ext4_get_groups_count(sb);
 
-	/*
-	 * Update backup superblocks. We have to start from group 0
-	 * because it might not be where the primary superblock is
-	 * if the fs is mounted with -o sb=<backup_sb_block>
-	 */
+	 
 	i = 0;
 	grp = 0;
 	while (grp < ngroups) {
-		/* Skip primary superblock */
+		 
 		if (grp == primary_grp)
 			goto next_grp;
 
 		ret = ext4_update_backup_sb(sb, handle, grp, func, arg);
 		if (ret < 0) {
-			/* Ignore bad checksum; try to update next sb */
+			 
 			if (ret == -EFSBADCRC)
 				goto next_grp;
 			err = ret;
@@ -248,11 +207,7 @@ int ext4_update_superblocks_fn(struct super_block *sb,
 
 		i += ret;
 		if (handle && i > 1) {
-			/*
-			 * We're only journalling primary superblock and
-			 * two backup superblocks; the rest is not
-			 * journalled.
-			 */
+			 
 			err = ext4_journal_stop(handle);
 			if (err)
 				goto out;
@@ -274,14 +229,7 @@ out:
 	return err ? err : 0;
 }
 
-/*
- * Swap memory between @a and @b for @len bytes.
- *
- * @a:          pointer to first memory area
- * @b:          pointer to second memory area
- * @len:        number of bytes to swap
- *
- */
+ 
 static void memswap(void *a, void *b, size_t len)
 {
 	unsigned char *ap, *bp;
@@ -295,17 +243,7 @@ static void memswap(void *a, void *b, size_t len)
 	}
 }
 
-/*
- * Swap i_data and associated attributes between @inode1 and @inode2.
- * This function is used for the primary swap between inode1 and inode2
- * and also to revert this primary swap in case of errors.
- *
- * Therefore you have to make sure, that calling this method twice
- * will revert all changes.
- *
- * @inode1:     pointer to first inode
- * @inode2:     pointer to second inode
- */
+ 
 static void swap_inode_data(struct inode *inode1, struct inode *inode2)
 {
 	loff_t isize;
@@ -349,16 +287,7 @@ void ext4_reset_inode_seed(struct inode *inode)
 	ei->i_csum_seed = ext4_chksum(sbi, csum, (__u8 *)&gen, sizeof(gen));
 }
 
-/*
- * Swap the information from the given @inode and the inode
- * EXT4_BOOT_LOADER_INO. It will basically swap i_data and all other
- * important fields of the inodes.
- *
- * @sb:         the super block of the filesystem
- * @idmap:	idmap of the mount the inode was found from
- * @inode:      the inode to swap with EXT4_BOOT_LOADER_INO
- *
- */
+ 
 static long swap_inode_boot_loader(struct super_block *sb,
 				struct mnt_idmap *idmap,
 				struct inode *inode)
@@ -377,8 +306,7 @@ static long swap_inode_boot_loader(struct super_block *sb,
 		return PTR_ERR(inode_bl);
 	ei_bl = EXT4_I(inode_bl);
 
-	/* Protect orig inodes against a truncate and make sure,
-	 * that only 1 swap_inode_boot_loader is running. */
+	 
 	lock_two_nondirectories(inode, inode_bl);
 
 	if (inode->i_nlink != 1 || !S_ISREG(inode->i_mode) ||
@@ -405,7 +333,7 @@ static long swap_inode_boot_loader(struct super_block *sb,
 	if (err)
 		goto err_out;
 
-	/* Wait for all existing dio workers */
+	 
 	inode_dio_wait(inode);
 	inode_dio_wait(inode_bl);
 
@@ -419,11 +347,11 @@ static long swap_inode_boot_loader(struct super_block *sb,
 	}
 	ext4_fc_mark_ineligible(sb, EXT4_FC_REASON_SWAP_BOOT, handle);
 
-	/* Protect extent tree against block allocations via delalloc */
+	 
 	ext4_double_down_write_data_sem(inode, inode_bl);
 
 	if (is_bad_inode(inode_bl) || !S_ISREG(inode_bl->i_mode)) {
-		/* this inode has never been used as a BOOT_LOADER */
+		 
 		set_nlink(inode_bl, 1);
 		i_uid_write(inode_bl, 0);
 		i_gid_write(inode_bl, 0);
@@ -462,11 +390,11 @@ static long swap_inode_boot_loader(struct super_block *sb,
 
 	err = ext4_mark_inode_dirty(handle, inode);
 	if (err < 0) {
-		/* No need to update quota information. */
+		 
 		ext4_warning(inode->i_sb,
 			"couldn't mark inode #%lu dirty (err %d)",
 			inode->i_ino, err);
-		/* Revert all changes: */
+		 
 		swap_inode_data(inode, inode_bl);
 		ext4_mark_inode_dirty(handle, inode);
 		goto err_out1;
@@ -478,14 +406,14 @@ static long swap_inode_boot_loader(struct super_block *sb,
 	inode_bl->i_bytes = inode->i_bytes;
 	err = ext4_mark_inode_dirty(handle, inode_bl);
 	if (err < 0) {
-		/* No need to update quota information. */
+		 
 		ext4_warning(inode_bl->i_sb,
 			"couldn't mark inode #%lu dirty (err %d)",
 			inode_bl->i_ino, err);
 		goto revert;
 	}
 
-	/* Bootloader inode should not be counted into quota information. */
+	 
 	if (diff > 0)
 		dquot_free_space(inode, diff);
 	else
@@ -493,7 +421,7 @@ static long swap_inode_boot_loader(struct super_block *sb,
 
 	if (err < 0) {
 revert:
-		/* Revert all changes: */
+		 
 		inode_bl->i_blocks = blocks;
 		inode_bl->i_bytes = bytes;
 		swap_inode_data(inode, inode_bl);
@@ -513,11 +441,7 @@ journal_err_out:
 	return err;
 }
 
-/*
- * If immutable is set and we are not clearing it, we're not allowed to change
- * anything else in the inode.  Don't error out if we're only trying to set
- * immutable on an immutable file.
- */
+ 
 static int ext4_ioctl_check_immutable(struct inode *inode, __u32 new_projid,
 				      unsigned int flags)
 {
@@ -554,7 +478,7 @@ static void ext4_dax_dontcache(struct inode *inode, unsigned int flags)
 static bool dax_compatible(struct inode *inode, unsigned int oldflags,
 			   unsigned int flags)
 {
-	/* Allow the DAX flag to be changed on inline directories */
+	 
 	if (S_ISDIR(inode->i_mode)) {
 		flags &= ~EXT4_INLINE_DATA_FL;
 		oldflags &= ~EXT4_INLINE_DATA_FL;
@@ -584,15 +508,12 @@ static int ext4_ioctl_setflags(struct inode *inode,
 	unsigned int oldflags, mask, i;
 	struct super_block *sb = inode->i_sb;
 
-	/* Is it quota file? Do not allow user to mess with it */
+	 
 	if (ext4_is_quota_file(inode))
 		goto flags_out;
 
 	oldflags = ei->i_flags;
-	/*
-	 * The JOURNAL_DATA flag can only be changed by
-	 * the relevant capability.
-	 */
+	 
 	if ((flags ^ oldflags) & (EXT4_JOURNAL_DATA_FL)) {
 		if (!capable(CAP_SYS_RESOURCE))
 			goto flags_out;
@@ -623,12 +544,7 @@ static int ext4_ioctl_setflags(struct inode *inode,
 		}
 	}
 
-	/*
-	 * Wait for all pending directio and then flush all the dirty pages
-	 * for this file.  The flush marks all the pages readonly, so any
-	 * subsequent attempt to write to the file (particularly mmap pages)
-	 * will come through the filesystem and fail.
-	 */
+	 
 	if (S_ISREG(inode->i_mode) && !IS_IMMUTABLE(inode) &&
 	    (flags & EXT4_IMMUTABLE_FL)) {
 		inode_dio_wait(inode);
@@ -653,7 +569,7 @@ static int ext4_ioctl_setflags(struct inode *inode,
 	for (i = 0, mask = 1; i < 32; i++, mask <<= 1) {
 		if (!(mask & EXT4_FL_USER_MODIFIABLE))
 			continue;
-		/* These flags get special treatment later */
+		 
 		if (mask == EXT4_JOURNAL_DATA_FL || mask == EXT4_EXTENTS_FL)
 			continue;
 		if (mask & flags)
@@ -674,10 +590,7 @@ flags_err:
 		goto flags_out;
 
 	if ((flags ^ oldflags) & (EXT4_JOURNAL_DATA_FL)) {
-		/*
-		 * Changes to the journaling mode can cause unsafe changes to
-		 * S_DAX if the inode is DAX
-		 */
+		 
 		if (IS_DAX(inode)) {
 			err = -EBUSY;
 			goto flags_out;
@@ -727,7 +640,7 @@ static int ext4_ioctl_setproject(struct inode *inode, __u32 projid)
 		return 0;
 
 	err = -EPERM;
-	/* Is it quota file? Do not allow user to mess with it */
+	 
 	if (ext4_is_quota_file(inode))
 		return err;
 
@@ -763,9 +676,7 @@ static int ext4_ioctl_setproject(struct inode *inode, __u32 projid)
 	transfer_to[PRJQUOTA] = dqget(sb, make_kqid_projid(kprojid));
 	if (!IS_ERR(transfer_to[PRJQUOTA])) {
 
-		/* __dquot_transfer() calls back ext4_get_inode_usage() which
-		 * counts xattr inode references.
-		 */
+		 
 		down_read(&EXT4_I(inode)->xattr_sem);
 		err = __dquot_transfer(inode, transfer_to);
 		up_read(&EXT4_I(inode)->xattr_sem);
@@ -888,10 +799,7 @@ static int ext4_ioc_getfsmap(struct super_block *sb,
 	    memchr_inv(head.fmh_keys[1].fmr_reserved, 0,
 		       sizeof(head.fmh_keys[1].fmr_reserved)))
 		return -EINVAL;
-	/*
-	 * ext4 doesn't report file extents at all, so the only valid
-	 * file offsets are the magic ones (all zeroes or all ones).
-	 */
+	 
 	if (head.fmh_keys[0].fmr_offset ||
 	    (head.fmh_keys[1].fmr_offset != 0 &&
 	     head.fmh_keys[1].fmr_offset != -1ULL))
@@ -913,7 +821,7 @@ static int ext4_ioc_getfsmap(struct super_block *sb,
 	else if (error)
 		return error;
 
-	/* If we didn't abort, set the "last" flag in the last fmx */
+	 
 	if (!aborted && info.gi_idx) {
 		info.gi_last_flags |= FMR_OF_LAST;
 		if (copy_to_user(&info.gi_data->fmh_recs[info.gi_idx - 1].fmr_flags,
@@ -922,7 +830,7 @@ static int ext4_ioc_getfsmap(struct super_block *sb,
 			return -EFAULT;
 	}
 
-	/* copy back header */
+	 
 	head.fmh_entries = xhead.fmh_entries;
 	head.fmh_oflags = xhead.fmh_oflags;
 	if (copy_to_user(arg, &head, sizeof(struct fsmap_head)))
@@ -997,12 +905,7 @@ int ext4_fileattr_set(struct mnt_idmap *idmap,
 	if (flags & ~EXT4_FL_USER_VISIBLE)
 		goto out;
 
-	/*
-	 * chattr(1) grabs flags via GETFLAGS, modifies the result and
-	 * passes that to SETFLAGS. So we cannot easily make SETFLAGS
-	 * more restrictive than just silently masking off visible but
-	 * not settable flags as we always did.
-	 */
+	 
 	flags &= EXT4_FL_USER_MODIFIABLE;
 	if (ext4_mask_flags(inode->i_mode, flags) != flags)
 		goto out;
@@ -1017,7 +920,7 @@ out:
 	return err;
 }
 
-/* So that the fiemap access checks can't overflow on 32 bit machines. */
+ 
 #define FIEMAP_MAX_EXTENTS	(UINT_MAX / sizeof(struct fiemap_extent))
 
 static int ext4_ioctl_get_es_cache(struct file *filp, unsigned long arg)
@@ -1062,7 +965,7 @@ static int ext4_ioctl_checkpoint(struct file *filp, unsigned long arg)
 	if (!capable(CAP_SYS_ADMIN))
 		return -EPERM;
 
-	/* check for invalid bits set */
+	 
 	if ((flags & ~EXT4_IOC_CHECKPOINT_FLAG_VALID) ||
 				((flags & JBD2_JOURNAL_FLUSH_DISCARD) &&
 				(flags & JBD2_JOURNAL_FLUSH_ZEROOUT)))
@@ -1103,11 +1006,7 @@ static int ext4_ioctl_setlabel(struct file *filp, const char __user *user_label)
 	if (!capable(CAP_SYS_ADMIN))
 		return -EPERM;
 
-	/*
-	 * Copy the maximum length allowed for ext4 label with one more to
-	 * find the required terminating null byte in order to test the
-	 * label length. The on disk label doesn't need to be null terminated.
-	 */
+	 
 	if (copy_from_user(new_label, user_label, EXT4_LABEL_MAX + 1))
 		return -EFAULT;
 
@@ -1115,9 +1014,7 @@ static int ext4_ioctl_setlabel(struct file *filp, const char __user *user_label)
 	if (len > EXT4_LABEL_MAX)
 		return -EINVAL;
 
-	/*
-	 * Clear the buffer after the new label
-	 */
+	 
 	memset(new_label + len, 0, EXT4_LABEL_MAX - len);
 
 	ret = mnt_want_write_file(filp);
@@ -1134,11 +1031,7 @@ static int ext4_ioctl_getlabel(struct ext4_sb_info *sbi, char __user *user_label
 {
 	char label[EXT4_LABEL_MAX + 1];
 
-	/*
-	 * EXT4_LABEL_MAX must always be smaller than FSLABEL_MAX because
-	 * FSLABEL_MAX must include terminating null byte, while s_volume_name
-	 * does not have to.
-	 */
+	 
 	BUILD_BUG_ON(EXT4_LABEL_MAX >= FSLABEL_MAX);
 
 	memset(label, 0, sizeof(label));
@@ -1193,10 +1086,7 @@ static int ext4_ioctl_setuuid(struct file *filp,
 	if (!capable(CAP_SYS_ADMIN))
 		return -EPERM;
 
-	/*
-	 * If any checksums (group descriptors or metadata) are being used
-	 * then the checksum seed feature is required to change the UUID.
-	 */
+	 
 	if (((ext4_has_feature_gdt_csum(sb) || ext4_has_metadata_csum(sb))
 			&& !ext4_has_feature_csum_seed(sb))
 		|| ext4_has_feature_stable_inodes(sb))
@@ -1390,12 +1280,7 @@ mext_out:
 		err = mnt_want_write_file(filp);
 		if (err)
 			return err;
-		/*
-		 * inode_mutex prevent write and truncate on the file.
-		 * Read still goes through. We take i_data_sem in
-		 * ext4_ext_swap_inode_data before we switch the
-		 * inode format to prevent read.
-		 */
+		 
 		inode_lock((inode));
 		err = ext4_ext_migrate(inode);
 		inode_unlock((inode));
@@ -1481,10 +1366,7 @@ resizefs_out:
 		if (!bdev_max_discard_sectors(sb->s_bdev))
 			return -EOPNOTSUPP;
 
-		/*
-		 * We haven't replayed the journal, so we cannot use our
-		 * block-bitmap-guided storage zapping commands.
-		 */
+		 
 		if (test_opt(sb, NOLOAD) && ext4_has_feature_journal(sb))
 			return -EROFS;
 
@@ -1621,7 +1503,7 @@ long ext4_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 #ifdef CONFIG_COMPAT
 long ext4_compat_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 {
-	/* These are just misnamed, they actually get/put from/to user an int */
+	 
 	switch (cmd) {
 	case EXT4_IOC32_GETVERSION:
 		cmd = EXT4_IOC_GETVERSION;

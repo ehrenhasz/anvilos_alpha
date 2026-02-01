@@ -1,16 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2008, Creative Technology Ltd. All Rights Reserved.
- *
- * @File	ctimap.h
- *
- * @Brief
- * This file contains the definition of generic input mapper operations
- * for input mapper management.
- *
- * @Author	Liu Chun
- * @Date 	May 23 2008
- */
+ 
+ 
 
 #ifndef CTIMAP_H
 #define CTIMAP_H
@@ -18,10 +7,10 @@
 #include <linux/list.h>
 
 struct imapper {
-	unsigned short slot; /* the id of the slot containing input data */
-	unsigned short user; /* the id of the user resource consuming data */
-	unsigned short addr; /* the input mapper ram id */
-	unsigned short next; /* the next input mapper ram id */
+	unsigned short slot;  
+	unsigned short user;  
+	unsigned short addr;  
+	unsigned short next;  
 	struct list_head	list;
 };
 
@@ -33,4 +22,4 @@ int input_mapper_delete(struct list_head *mappers, struct imapper *entry,
 
 void free_input_mapper_list(struct list_head *mappers);
 
-#endif /* CTIMAP_H */
+#endif  

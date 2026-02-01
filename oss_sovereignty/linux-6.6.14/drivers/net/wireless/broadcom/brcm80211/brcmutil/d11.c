@@ -1,8 +1,6 @@
-// SPDX-License-Identifier: ISC
-/*
- * Copyright (c) 2013 Broadcom Corporation
- */
-/*********************channel spec common functions*********************/
+
+ 
+ 
 
 #include <linux/module.h>
 

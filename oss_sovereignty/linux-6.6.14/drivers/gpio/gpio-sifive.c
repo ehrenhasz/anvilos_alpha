@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2019 SiFive
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/device.h>
@@ -83,18 +81,18 @@ static void sifive_gpio_irq_enable(struct irq_data *d)
 	gpiochip_enable_irq(gc, hwirq);
 	irq_chip_enable_parent(d);
 
-	/* Switch to input */
+	 
 	gc->direction_input(gc, offset);
 
 	raw_spin_lock_irqsave(&gc->bgpio_lock, flags);
-	/* Clear any sticky pending interrupts */
+	 
 	regmap_write(chip->regs, SIFIVE_GPIO_RISE_IP, bit);
 	regmap_write(chip->regs, SIFIVE_GPIO_FALL_IP, bit);
 	regmap_write(chip->regs, SIFIVE_GPIO_HIGH_IP, bit);
 	regmap_write(chip->regs, SIFIVE_GPIO_LOW_IP, bit);
 	raw_spin_unlock_irqrestore(&gc->bgpio_lock, flags);
 
-	/* Enable interrupts */
+	 
 	assign_bit(offset, &chip->irq_state, 1);
 	sifive_gpio_set_ie(chip, offset);
 }
@@ -121,7 +119,7 @@ static void sifive_gpio_irq_eoi(struct irq_data *d)
 	unsigned long flags;
 
 	raw_spin_lock_irqsave(&gc->bgpio_lock, flags);
-	/* Clear all pending interrupts */
+	 
 	regmap_write(chip->regs, SIFIVE_GPIO_RISE_IP, bit);
 	regmap_write(chip->regs, SIFIVE_GPIO_FALL_IP, bit);
 	regmap_write(chip->regs, SIFIVE_GPIO_HIGH_IP, bit);
@@ -212,10 +210,7 @@ static int sifive_gpio_probe(struct platform_device *pdev)
 		return -ENODEV;
 	}
 
-	/*
-	 * The check above ensures at least one parent IRQ is valid.
-	 * Assume all parent IRQs belong to the same domain.
-	 */
+	 
 	parent = irq_get_irq_data(chip->irq_number[0])->domain;
 
 	ret = bgpio_init(&chip->gc, dev, 4,
@@ -230,7 +225,7 @@ static int sifive_gpio_probe(struct platform_device *pdev)
 		return ret;
 	}
 
-	/* Disable all GPIO interrupts before enabling parent interrupts */
+	 
 	regmap_write(chip->regs, SIFIVE_GPIO_RISE_IE, 0);
 	regmap_write(chip->regs, SIFIVE_GPIO_FALL_IE, 0);
 	regmap_write(chip->regs, SIFIVE_GPIO_HIGH_IE, 0);

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0 OR MIT)
-/*
- * Copyright (c) 2018 Synopsys, Inc. and/or its affiliates.
- * stmmac XGMAC support.
- */
+
+ 
 
 #include <linux/bitrev.h>
 #include <linux/crc32.h>
@@ -151,12 +148,12 @@ static void dwxgmac2_rx_queue_routing(struct mac_device_info *hw,
 
 	value = readl(ioaddr + XGMAC_RXQ_CTRL1);
 
-	/* routing configuration */
+	 
 	value &= ~dwxgmac2_route_possibilities[packet - 1].reg_mask;
 	value |= (queue << dwxgmac2_route_possibilities[packet - 1].reg_shift) &
 		 dwxgmac2_route_possibilities[packet - 1].reg_mask;
 
-	/* some packets require extra ops */
+	 
 	if (packet == PACKET_AVCPQ)
 		value |= FIELD_PREP(XGMAC_TACPQE, 1);
 	else if (packet == PACKET_MCBCQ)
@@ -215,7 +212,7 @@ static void dwxgmac2_prog_mtl_tx_algorithms(struct mac_device_info *hw,
 
 	writel(value, ioaddr + XGMAC_MTL_OPMODE);
 
-	/* Set ETS if desired */
+	 
 	for (i = 0; i < MTL_MAX_TX_QUEUES; i++) {
 		value = readl(ioaddr + XGMAC_MTL_TCx_ETS_CONTROL(i));
 		value &= ~XGMAC_TSA;
@@ -395,11 +392,11 @@ static void dwxgmac2_get_umac_addr(struct mac_device_info *hw,
 	void __iomem *ioaddr = hw->pcsr;
 	u32 hi_addr, lo_addr;
 
-	/* Read the MAC address from the hardware */
+	 
 	hi_addr = readl(ioaddr + XGMAC_ADDRx_HIGH(reg_n));
 	lo_addr = readl(ioaddr + XGMAC_ADDRx_LOW(reg_n));
 
-	/* Extract the MAC address from the high and low words */
+	 
 	addr[0] = lo_addr & 0xff;
 	addr[1] = (lo_addr >> 8) & 0xff;
 	addr[2] = (lo_addr >> 16) & 0xff;
@@ -515,7 +512,7 @@ static void dwxgmac2_set_filter(struct mac_device_info *hw,
 
 	dwxgmac2_set_mchash(ioaddr, mc_filter, mcbitslog2);
 
-	/* Handle multiple unicast addresses */
+	 
 	if (netdev_uc_count(dev) > hw->unicast_filter_entries) {
 		value |= XGMAC_FILTER_PR;
 	} else {
@@ -694,7 +691,7 @@ static void dwxgmac3_log_error(struct net_device *ndev, u32 value, bool corr,
 				"correctable" : "uncorrectable", module_name,
 				desc[loc].desc, desc[loc].detailed_desc);
 
-		/* Update counters */
+		 
 		ptr[loc]++;
 	}
 }
@@ -718,19 +715,19 @@ static const struct dwxgmac3_error_desc dwxgmac3_mac_errors[32]= {
 	{ true, "CTES", "CSR FSM Timeout Error" },
 	{ true, "ATES", "APP FSM Timeout Error" },
 	{ true, "PTES", "PTP FSM Timeout Error" },
-	{ false, "UNKNOWN", "Unknown Error" }, /* 18 */
-	{ false, "UNKNOWN", "Unknown Error" }, /* 19 */
-	{ false, "UNKNOWN", "Unknown Error" }, /* 20 */
+	{ false, "UNKNOWN", "Unknown Error" },  
+	{ false, "UNKNOWN", "Unknown Error" },  
+	{ false, "UNKNOWN", "Unknown Error" },  
 	{ true, "MSTTES", "Master Read/Write Timeout Error" },
 	{ true, "SLVTES", "Slave Read/Write Timeout Error" },
 	{ true, "ATITES", "Application Timeout on ATI Interface Error" },
 	{ true, "ARITES", "Application Timeout on ARI Interface Error" },
 	{ true, "FSMPES", "FSM State Parity Error" },
-	{ false, "UNKNOWN", "Unknown Error" }, /* 26 */
-	{ false, "UNKNOWN", "Unknown Error" }, /* 27 */
-	{ false, "UNKNOWN", "Unknown Error" }, /* 28 */
-	{ false, "UNKNOWN", "Unknown Error" }, /* 29 */
-	{ false, "UNKNOWN", "Unknown Error" }, /* 30 */
+	{ false, "UNKNOWN", "Unknown Error" },  
+	{ false, "UNKNOWN", "Unknown Error" },  
+	{ false, "UNKNOWN", "Unknown Error" },  
+	{ false, "UNKNOWN", "Unknown Error" },  
+	{ false, "UNKNOWN", "Unknown Error" },  
 	{ true, "CPI", "Control Register Parity Check Error" },
 };
 
@@ -751,35 +748,35 @@ static const struct dwxgmac3_error_desc dwxgmac3_mtl_errors[32]= {
 	{ true, "TXCES", "MTL TX Memory Error" },
 	{ true, "TXAMS", "MTL TX Memory Address Mismatch Error" },
 	{ true, "TXUES", "MTL TX Memory Error" },
-	{ false, "UNKNOWN", "Unknown Error" }, /* 3 */
+	{ false, "UNKNOWN", "Unknown Error" },  
 	{ true, "RXCES", "MTL RX Memory Error" },
 	{ true, "RXAMS", "MTL RX Memory Address Mismatch Error" },
 	{ true, "RXUES", "MTL RX Memory Error" },
-	{ false, "UNKNOWN", "Unknown Error" }, /* 7 */
+	{ false, "UNKNOWN", "Unknown Error" },  
 	{ true, "ECES", "MTL EST Memory Error" },
 	{ true, "EAMS", "MTL EST Memory Address Mismatch Error" },
 	{ true, "EUES", "MTL EST Memory Error" },
-	{ false, "UNKNOWN", "Unknown Error" }, /* 11 */
+	{ false, "UNKNOWN", "Unknown Error" },  
 	{ true, "RPCES", "MTL RX Parser Memory Error" },
 	{ true, "RPAMS", "MTL RX Parser Memory Address Mismatch Error" },
 	{ true, "RPUES", "MTL RX Parser Memory Error" },
-	{ false, "UNKNOWN", "Unknown Error" }, /* 15 */
-	{ false, "UNKNOWN", "Unknown Error" }, /* 16 */
-	{ false, "UNKNOWN", "Unknown Error" }, /* 17 */
-	{ false, "UNKNOWN", "Unknown Error" }, /* 18 */
-	{ false, "UNKNOWN", "Unknown Error" }, /* 19 */
-	{ false, "UNKNOWN", "Unknown Error" }, /* 20 */
-	{ false, "UNKNOWN", "Unknown Error" }, /* 21 */
-	{ false, "UNKNOWN", "Unknown Error" }, /* 22 */
-	{ false, "UNKNOWN", "Unknown Error" }, /* 23 */
-	{ false, "UNKNOWN", "Unknown Error" }, /* 24 */
-	{ false, "UNKNOWN", "Unknown Error" }, /* 25 */
-	{ false, "UNKNOWN", "Unknown Error" }, /* 26 */
-	{ false, "UNKNOWN", "Unknown Error" }, /* 27 */
-	{ false, "UNKNOWN", "Unknown Error" }, /* 28 */
-	{ false, "UNKNOWN", "Unknown Error" }, /* 29 */
-	{ false, "UNKNOWN", "Unknown Error" }, /* 30 */
-	{ false, "UNKNOWN", "Unknown Error" }, /* 31 */
+	{ false, "UNKNOWN", "Unknown Error" },  
+	{ false, "UNKNOWN", "Unknown Error" },  
+	{ false, "UNKNOWN", "Unknown Error" },  
+	{ false, "UNKNOWN", "Unknown Error" },  
+	{ false, "UNKNOWN", "Unknown Error" },  
+	{ false, "UNKNOWN", "Unknown Error" },  
+	{ false, "UNKNOWN", "Unknown Error" },  
+	{ false, "UNKNOWN", "Unknown Error" },  
+	{ false, "UNKNOWN", "Unknown Error" },  
+	{ false, "UNKNOWN", "Unknown Error" },  
+	{ false, "UNKNOWN", "Unknown Error" },  
+	{ false, "UNKNOWN", "Unknown Error" },  
+	{ false, "UNKNOWN", "Unknown Error" },  
+	{ false, "UNKNOWN", "Unknown Error" },  
+	{ false, "UNKNOWN", "Unknown Error" },  
+	{ false, "UNKNOWN", "Unknown Error" },  
+	{ false, "UNKNOWN", "Unknown Error" },  
 };
 
 static void dwxgmac3_handle_mtl_err(struct net_device *ndev,
@@ -799,35 +796,35 @@ static const struct dwxgmac3_error_desc dwxgmac3_dma_errors[32]= {
 	{ true, "TCES", "DMA TSO Memory Error" },
 	{ true, "TAMS", "DMA TSO Memory Address Mismatch Error" },
 	{ true, "TUES", "DMA TSO Memory Error" },
-	{ false, "UNKNOWN", "Unknown Error" }, /* 3 */
+	{ false, "UNKNOWN", "Unknown Error" },  
 	{ true, "DCES", "DMA DCACHE Memory Error" },
 	{ true, "DAMS", "DMA DCACHE Address Mismatch Error" },
 	{ true, "DUES", "DMA DCACHE Memory Error" },
-	{ false, "UNKNOWN", "Unknown Error" }, /* 7 */
-	{ false, "UNKNOWN", "Unknown Error" }, /* 8 */
-	{ false, "UNKNOWN", "Unknown Error" }, /* 9 */
-	{ false, "UNKNOWN", "Unknown Error" }, /* 10 */
-	{ false, "UNKNOWN", "Unknown Error" }, /* 11 */
-	{ false, "UNKNOWN", "Unknown Error" }, /* 12 */
-	{ false, "UNKNOWN", "Unknown Error" }, /* 13 */
-	{ false, "UNKNOWN", "Unknown Error" }, /* 14 */
-	{ false, "UNKNOWN", "Unknown Error" }, /* 15 */
-	{ false, "UNKNOWN", "Unknown Error" }, /* 16 */
-	{ false, "UNKNOWN", "Unknown Error" }, /* 17 */
-	{ false, "UNKNOWN", "Unknown Error" }, /* 18 */
-	{ false, "UNKNOWN", "Unknown Error" }, /* 19 */
-	{ false, "UNKNOWN", "Unknown Error" }, /* 20 */
-	{ false, "UNKNOWN", "Unknown Error" }, /* 21 */
-	{ false, "UNKNOWN", "Unknown Error" }, /* 22 */
-	{ false, "UNKNOWN", "Unknown Error" }, /* 23 */
-	{ false, "UNKNOWN", "Unknown Error" }, /* 24 */
-	{ false, "UNKNOWN", "Unknown Error" }, /* 25 */
-	{ false, "UNKNOWN", "Unknown Error" }, /* 26 */
-	{ false, "UNKNOWN", "Unknown Error" }, /* 27 */
-	{ false, "UNKNOWN", "Unknown Error" }, /* 28 */
-	{ false, "UNKNOWN", "Unknown Error" }, /* 29 */
-	{ false, "UNKNOWN", "Unknown Error" }, /* 30 */
-	{ false, "UNKNOWN", "Unknown Error" }, /* 31 */
+	{ false, "UNKNOWN", "Unknown Error" },  
+	{ false, "UNKNOWN", "Unknown Error" },  
+	{ false, "UNKNOWN", "Unknown Error" },  
+	{ false, "UNKNOWN", "Unknown Error" },  
+	{ false, "UNKNOWN", "Unknown Error" },  
+	{ false, "UNKNOWN", "Unknown Error" },  
+	{ false, "UNKNOWN", "Unknown Error" },  
+	{ false, "UNKNOWN", "Unknown Error" },  
+	{ false, "UNKNOWN", "Unknown Error" },  
+	{ false, "UNKNOWN", "Unknown Error" },  
+	{ false, "UNKNOWN", "Unknown Error" },  
+	{ false, "UNKNOWN", "Unknown Error" },  
+	{ false, "UNKNOWN", "Unknown Error" },  
+	{ false, "UNKNOWN", "Unknown Error" },  
+	{ false, "UNKNOWN", "Unknown Error" },  
+	{ false, "UNKNOWN", "Unknown Error" },  
+	{ false, "UNKNOWN", "Unknown Error" },  
+	{ false, "UNKNOWN", "Unknown Error" },  
+	{ false, "UNKNOWN", "Unknown Error" },  
+	{ false, "UNKNOWN", "Unknown Error" },  
+	{ false, "UNKNOWN", "Unknown Error" },  
+	{ false, "UNKNOWN", "Unknown Error" },  
+	{ false, "UNKNOWN", "Unknown Error" },  
+	{ false, "UNKNOWN", "Unknown Error" },  
+	{ false, "UNKNOWN", "Unknown Error" },  
 };
 
 static void dwxgmac3_handle_dma_err(struct net_device *ndev,
@@ -852,33 +849,31 @@ dwxgmac3_safety_feat_config(void __iomem *ioaddr, unsigned int asp,
 	if (!asp)
 		return -EINVAL;
 
-	/* 1. Enable Safety Features */
+	 
 	writel(0x0, ioaddr + XGMAC_MTL_ECC_CONTROL);
 
-	/* 2. Enable MTL Safety Interrupts */
+	 
 	value = readl(ioaddr + XGMAC_MTL_ECC_INT_ENABLE);
-	value |= XGMAC_RPCEIE; /* RX Parser Memory Correctable Error */
-	value |= XGMAC_ECEIE; /* EST Memory Correctable Error */
-	value |= XGMAC_RXCEIE; /* RX Memory Correctable Error */
-	value |= XGMAC_TXCEIE; /* TX Memory Correctable Error */
+	value |= XGMAC_RPCEIE;  
+	value |= XGMAC_ECEIE;  
+	value |= XGMAC_RXCEIE;  
+	value |= XGMAC_TXCEIE;  
 	writel(value, ioaddr + XGMAC_MTL_ECC_INT_ENABLE);
 
-	/* 3. Enable DMA Safety Interrupts */
+	 
 	value = readl(ioaddr + XGMAC_DMA_ECC_INT_ENABLE);
-	value |= XGMAC_DCEIE; /* Descriptor Cache Memory Correctable Error */
-	value |= XGMAC_TCEIE; /* TSO Memory Correctable Error */
+	value |= XGMAC_DCEIE;  
+	value |= XGMAC_TCEIE;  
 	writel(value, ioaddr + XGMAC_DMA_ECC_INT_ENABLE);
 
-	/* 0x2: Without ECC or Parity Ports on External Application Interface
-	 * 0x4: Only ECC Protection for External Memory feature is selected
-	 */
+	 
 	if (asp == 0x2 || asp == 0x4)
 		return 0;
 
-	/* 4. Enable Parity and Timeout for FSM */
+	 
 	value = readl(ioaddr + XGMAC_MAC_FSM_CONTROL);
-	value |= XGMAC_PRTYEN; /* FSM Parity Feature */
-	value |= XGMAC_TMOUTEN; /* FSM Timeout Feature */
+	value |= XGMAC_PRTYEN;  
+	value |= XGMAC_TMOUTEN;  
 	writel(value, ioaddr + XGMAC_MAC_FSM_CONTROL);
 
 	return 0;
@@ -979,29 +974,29 @@ static int dwxgmac3_rxp_update_single_entry(void __iomem *ioaddr,
 		int real_pos = pos * (sizeof(entry->val) / sizeof(u32)) + i;
 		u32 val;
 
-		/* Wait for ready */
+		 
 		ret = readl_poll_timeout(ioaddr + XGMAC_MTL_RXP_IACC_CTRL_ST,
 					 val, !(val & XGMAC_STARTBUSY), 1, 10000);
 		if (ret)
 			return ret;
 
-		/* Write data */
+		 
 		val = *((u32 *)&entry->val + i);
 		writel(val, ioaddr + XGMAC_MTL_RXP_IACC_DATA);
 
-		/* Write pos */
+		 
 		val = real_pos & XGMAC_ADDR;
 		writel(val, ioaddr + XGMAC_MTL_RXP_IACC_CTRL_ST);
 
-		/* Write OP */
+		 
 		val |= XGMAC_WRRDN;
 		writel(val, ioaddr + XGMAC_MTL_RXP_IACC_CTRL_ST);
 
-		/* Start Write */
+		 
 		val |= XGMAC_STARTBUSY;
 		writel(val, ioaddr + XGMAC_MTL_RXP_IACC_CTRL_ST);
 
-		/* Wait for done */
+		 
 		ret = readl_poll_timeout(ioaddr + XGMAC_MTL_RXP_IACC_CTRL_ST,
 					 val, !(val & XGMAC_STARTBUSY), 1, 10000);
 		if (ret)
@@ -1023,22 +1018,22 @@ dwxgmac3_rxp_get_next_entry(struct stmmac_tc_entry *entries,
 	for (i = count - 1; i >= 0; i--) {
 		entry = &entries[i];
 
-		/* Do not update unused entries */
+		 
 		if (!entry->in_use)
 			continue;
-		/* Do not update already updated entries (i.e. fragments) */
+		 
 		if (entry->in_hw)
 			continue;
-		/* Let last entry be updated last */
+		 
 		if (entry->is_last)
 			continue;
-		/* Do not return fragments */
+		 
 		if (entry->is_frag)
 			continue;
-		/* Check if we already checked this prio */
+		 
 		if (entry->prio < curr_prio)
 			continue;
-		/* Check if this is the minimum prio */
+		 
 		if (entry->prio < min_prio) {
 			min_prio = entry->prio;
 			min_prio_idx = i;
@@ -1060,23 +1055,23 @@ static int dwxgmac3_rxp_config(void __iomem *ioaddr,
 	u32 curr_prio = 0;
 	u32 old_val, val;
 
-	/* Force disable RX */
+	 
 	old_val = readl(ioaddr + XGMAC_RX_CONFIG);
 	val = old_val & ~XGMAC_CONFIG_RE;
 	writel(val, ioaddr + XGMAC_RX_CONFIG);
 
-	/* Disable RX Parser */
+	 
 	ret = dwxgmac3_rxp_disable(ioaddr);
 	if (ret)
 		goto re_enable;
 
-	/* Set all entries as NOT in HW */
+	 
 	for (i = 0; i < count; i++) {
 		entry = &entries[i];
 		entry->in_hw = false;
 	}
 
-	/* Update entries by reverse order */
+	 
 	while (1) {
 		entry = dwxgmac3_rxp_get_next_entry(entries, count, curr_prio);
 		if (!entry)
@@ -1085,7 +1080,7 @@ static int dwxgmac3_rxp_config(void __iomem *ioaddr,
 		curr_prio = entry->prio;
 		frag = entry->frag_ptr;
 
-		/* Set special fragment requirements */
+		 
 		if (frag) {
 			entry->val.af = 0;
 			entry->val.rf = 0;
@@ -1112,7 +1107,7 @@ static int dwxgmac3_rxp_config(void __iomem *ioaddr,
 	if (!nve)
 		goto re_enable;
 
-	/* Update all pass entry */
+	 
 	for (i = 0; i < count; i++) {
 		entry = &entries[i];
 		if (!entry->is_last)
@@ -1125,16 +1120,16 @@ static int dwxgmac3_rxp_config(void __iomem *ioaddr,
 		entry->table_pos = nve++;
 	}
 
-	/* Assume n. of parsable entries == n. of valid entries */
+	 
 	val = (nve << 16) & XGMAC_NPE;
 	val |= nve & XGMAC_NVE;
 	writel(val, ioaddr + XGMAC_MTL_RXP_CONTROL_STATUS);
 
-	/* Enable RX Parser */
+	 
 	dwxgmac3_rxp_enable(ioaddr);
 
 re_enable:
-	/* Re-enable RX */
+	 
 	writel(old_val, ioaddr + XGMAC_RX_CONFIG);
 	return ret;
 }
@@ -1179,17 +1174,7 @@ static int dwxgmac2_flex_pps_config(void __iomem *ioaddr, int index,
 	val |= XGMAC_PPSCMDx(index, XGMAC_PPSCMD_START);
 	val |= XGMAC_TRGTMODSELx(index, XGMAC_PPSCMD_START);
 
-	/* XGMAC Core has 4 PPS outputs at most.
-	 *
-	 * Prior XGMAC Core 3.20, Fixed mode or Flexible mode are selectable for
-	 * PPS0 only via PPSEN0. PPS{1,2,3} are in Flexible mode by default,
-	 * and can not be switched to Fixed mode, since PPSEN{1,2,3} are
-	 * read-only reserved to 0.
-	 * But we always set PPSEN{1,2,3} do not make things worse ;-)
-	 *
-	 * From XGMAC Core 3.20 and later, PPSEN{0,1,2,3} are writable and must
-	 * be set, or the PPS outputs stay in Fixed PPS mode by default.
-	 */
+	 
 	val |= XGMAC_PPSENx(index);
 
 	writel(cfg->start.tv_sec, ioaddr + XGMAC_PPSx_TARGET_TIME_SEC(index));
@@ -1214,7 +1199,7 @@ static int dwxgmac2_flex_pps_config(void __iomem *ioaddr, int index,
 
 	writel(period - 1, ioaddr + XGMAC_PPSx_WIDTH(index));
 
-	/* Finally, activate it */
+	 
 	writel(val, ioaddr + XGMAC_PPS_CONTROL);
 	return 0;
 }
@@ -1236,7 +1221,7 @@ static void dwxgmac2_enable_vlan(struct mac_device_info *hw, u32 type)
 
 	value = readl(ioaddr + XGMAC_VLAN_INCL);
 	value |= XGMAC_VLAN_VLTI;
-	value |= XGMAC_VLAN_CSVL; /* Only use SVLAN */
+	value |= XGMAC_VLAN_CSVL;  
 	value &= ~XGMAC_VLAN_VLC;
 	value |= (type << XGMAC_VLAN_VLC_SHIFT) & XGMAC_VLAN_VLC;
 	writel(value, ioaddr + XGMAC_VLAN_INCL);
@@ -1312,7 +1297,7 @@ static int dwxgmac2_config_l3_filter(struct mac_device_info *hw, u32 filter_no,
 	if (ret)
 		return ret;
 
-	/* For IPv6 not both SA/DA filters can be active */
+	 
 	if (ipv6) {
 		value |= XGMAC_L3PEN0;
 		value &= ~(XGMAC_L3SAM0 | XGMAC_L3SAIM0);

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * OPAL Operator Panel Display Driver
- *
- * Copyright 2016, Suraj Jitindar Singh, IBM Corporation.
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -21,13 +17,7 @@
 
 #include <asm/opal.h>
 
-/*
- * This driver creates a character device (/dev/op_panel) which exposes the
- * operator panel (character LCD display) on IBM Power Systems machines
- * with FSPs.
- * A character buffer written to the device will be displayed on the
- * operator panel.
- */
+ 
 
 static DEFINE_MUTEX(oppanel_mutex);
 

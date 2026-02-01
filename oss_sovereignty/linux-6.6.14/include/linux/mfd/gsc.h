@@ -1,13 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0
- *
- * Copyright (C) 2020 Gateworks Corporation
- */
+ 
 #ifndef __LINUX_MFD_GSC_H_
 #define __LINUX_MFD_GSC_H_
 
 #include <linux/regmap.h>
 
-/* Device Addresses */
+ 
 #define GSC_MISC	0x20
 #define GSC_UPDATE	0x21
 #define GSC_GPIO	0x23
@@ -18,7 +15,7 @@
 #define GSC_EEPROM3	0x53
 #define GSC_RTC		0x68
 
-/* Register offsets */
+ 
 enum {
 	GSC_CTRL_0	= 0x00,
 	GSC_CTRL_1	= 0x01,
@@ -31,7 +28,7 @@ enum {
 	GSC_WP		= 0x0F,
 };
 
-/* Bit definitions */
+ 
 #define GSC_CTRL_0_PB_HARD_RESET	0
 #define GSC_CTRL_0_PB_CLEAR_SECURE_KEY	1
 #define GSC_CTRL_0_PB_SOFT_POWER_DOWN	2
@@ -64,8 +61,8 @@ int gsc_write(void *context, unsigned int reg, unsigned int val);
 struct gsc_dev {
 	struct device *dev;
 
-	struct i2c_client *i2c;		/* 0x20: interrupt controller, WDT */
-	struct i2c_client *i2c_hwmon;	/* 0x29: hwmon, fan controller */
+	struct i2c_client *i2c;		 
+	struct i2c_client *i2c_hwmon;	 
 
 	struct regmap *regmap;
 
@@ -73,4 +70,4 @@ struct gsc_dev {
 	unsigned short fwcrc;
 };
 
-#endif /* __LINUX_MFD_GSC_H_ */
+#endif  

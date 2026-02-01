@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (C) 2017 Netronome Systems, Inc.
- * Copyright (C) 2019 Mellanox Technologies. All rights reserved
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/idr.h>
@@ -65,7 +63,7 @@ new_port_store(struct device *dev, struct device_attribute *attr,
 	unsigned int port_index;
 	int ret;
 
-	/* Prevent to use nsim_bus_dev before initialization. */
+	 
 	if (!smp_load_acquire(&nsim_bus_dev->init))
 		return -EBUSY;
 	ret = kstrtouint(buf, 0, &port_index);
@@ -86,7 +84,7 @@ del_port_store(struct device *dev, struct device_attribute *attr,
 	unsigned int port_index;
 	int ret;
 
-	/* Prevent to use nsim_bus_dev before initialization. */
+	 
 	if (!smp_load_acquire(&nsim_bus_dev->init))
 		return -EBUSY;
 	ret = kstrtouint(buf, 0, &port_index);
@@ -158,7 +156,7 @@ new_device_store(const struct bus_type *bus, const char *buf, size_t count)
 	}
 
 	mutex_lock(&nsim_bus_dev_list_lock);
-	/* Prevent to use resource before initialization. */
+	 
 	if (!smp_load_acquire(&nsim_bus_enable)) {
 		err = -EBUSY;
 		goto err;
@@ -170,7 +168,7 @@ new_device_store(const struct bus_type *bus, const char *buf, size_t count)
 		goto err;
 	}
 
-	/* Allow using nsim_bus_dev */
+	 
 	smp_store_release(&nsim_bus_dev->init, true);
 
 	list_add_tail(&nsim_bus_dev->list, &nsim_bus_dev_list);
@@ -207,7 +205,7 @@ del_device_store(const struct bus_type *bus, const char *buf, size_t count)
 
 	err = -ENOENT;
 	mutex_lock(&nsim_bus_dev_list_lock);
-	/* Prevent to use resource before initialization. */
+	 
 	if (!smp_load_acquire(&nsim_bus_enable)) {
 		mutex_unlock(&nsim_bus_dev_list_lock);
 		return -EBUSY;
@@ -284,7 +282,7 @@ nsim_bus_dev_new(unsigned int id, unsigned int port_count, unsigned int num_queu
 	nsim_bus_dev->num_queues = num_queues;
 	nsim_bus_dev->initial_net = current->nsproxy->net_ns;
 	nsim_bus_dev->max_vfs = NSIM_BUS_DEV_MAX_VFS;
-	/* Disallow using nsim_bus_dev */
+	 
 	smp_store_release(&nsim_bus_dev->init, false);
 
 	err = device_register(&nsim_bus_dev->dev);
@@ -304,7 +302,7 @@ err_nsim_bus_dev_free:
 
 static void nsim_bus_dev_del(struct nsim_bus_dev *nsim_bus_dev)
 {
-	/* Disallow using nsim_bus_dev */
+	 
 	smp_store_release(&nsim_bus_dev->init, false);
 	ida_free(&nsim_bus_dev_ids, nsim_bus_dev->dev.id);
 	device_unregister(&nsim_bus_dev->dev);
@@ -326,7 +324,7 @@ int nsim_bus_init(void)
 	err = driver_register(&nsim_driver);
 	if (err)
 		goto err_bus_unregister;
-	/* Allow using resources */
+	 
 	smp_store_release(&nsim_bus_enable, true);
 	return 0;
 
@@ -339,7 +337,7 @@ void nsim_bus_exit(void)
 {
 	struct nsim_bus_dev *nsim_bus_dev, *tmp;
 
-	/* Disallow using resources */
+	 
 	smp_store_release(&nsim_bus_enable, false);
 
 	mutex_lock(&nsim_bus_dev_list_lock);

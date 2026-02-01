@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Marvell 88E6xxx Address Translation Unit (ATU) support
- *
- * Copyright (c) 2008 Marvell Semiconductor
- * Copyright (c) 2017 Savoir-faire Linux, Inc.
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/interrupt.h>
@@ -15,14 +10,14 @@
 #include "switchdev.h"
 #include "trace.h"
 
-/* Offset 0x01: ATU FID Register */
+ 
 
 static int mv88e6xxx_g1_atu_fid_write(struct mv88e6xxx_chip *chip, u16 fid)
 {
 	return mv88e6xxx_g1_write(chip, MV88E6352_G1_ATU_FID, fid & 0xfff);
 }
 
-/* Offset 0x0A: ATU Control Register */
+ 
 
 int mv88e6xxx_g1_atu_set_learn2all(struct mv88e6xxx_chip *chip, bool learn2all)
 {
@@ -54,14 +49,14 @@ int mv88e6xxx_g1_atu_set_age_time(struct mv88e6xxx_chip *chip,
 	if (msecs < min || msecs > max)
 		return -ERANGE;
 
-	/* Round to nearest multiple of coeff */
+	 
 	age_time = (msecs + coeff / 2) / coeff;
 
 	err = mv88e6xxx_g1_read(chip, MV88E6XXX_G1_ATU_CTL, &val);
 	if (err)
 		return err;
 
-	/* AgeTime is 11:4 bits */
+	 
 	val &= ~0xff0;
 	val |= age_time << 4;
 
@@ -107,7 +102,7 @@ int mv88e6165_g1_atu_set_hash(struct mv88e6xxx_chip *chip, u8 hash)
 	return mv88e6xxx_g1_write(chip, MV88E6XXX_G1_ATU_CTL, val);
 }
 
-/* Offset 0x0B: ATU Operation Register */
+ 
 
 static int mv88e6xxx_g1_atu_op_wait(struct mv88e6xxx_chip *chip)
 {
@@ -134,14 +129,14 @@ static int mv88e6xxx_g1_atu_op(struct mv88e6xxx_chip *chip, u16 fid, u16 op)
 	u16 val;
 	int err;
 
-	/* FID bits are dispatched all around gradually as more are supported */
+	 
 	if (mv88e6xxx_num_databases(chip) > 256) {
 		err = mv88e6xxx_g1_atu_fid_write(chip, fid);
 		if (err)
 			return err;
 	} else {
 		if (mv88e6xxx_num_databases(chip) > 64) {
-			/* ATU DBNum[7:4] are located in ATU Control 15:12 */
+			 
 			err = mv88e6xxx_g1_read(chip, MV88E6XXX_G1_ATU_CTL,
 						&val);
 			if (err)
@@ -153,11 +148,11 @@ static int mv88e6xxx_g1_atu_op(struct mv88e6xxx_chip *chip, u16 fid, u16 op)
 			if (err)
 				return err;
 		} else if (mv88e6xxx_num_databases(chip) > 16) {
-			/* ATU DBNum[5:4] are located in ATU Operation 9:8 */
+			 
 			op |= (fid & 0x30) << 4;
 		}
 
-		/* ATU DBNum[3:0] are located in ATU Operation 3:0 */
+		 
 		op |= fid & 0xf;
 	}
 
@@ -189,7 +184,7 @@ static int mv88e6xxx_g1_atu_fid_read(struct mv88e6xxx_chip *chip, u16 *fid)
 		if (err)
 			return err;
 		if (mv88e6xxx_num_databases(chip) > 64) {
-			/* ATU DBNum[7:4] are located in ATU Control 15:12 */
+			 
 			err = mv88e6xxx_g1_read(chip, MV88E6XXX_G1_ATU_CTL,
 						&upper);
 			if (err)
@@ -197,11 +192,11 @@ static int mv88e6xxx_g1_atu_fid_read(struct mv88e6xxx_chip *chip, u16 *fid)
 
 			upper = (upper >> 8) & 0x00f0;
 		} else if (mv88e6xxx_num_databases(chip) > 16) {
-			/* ATU DBNum[5:4] are located in ATU Operation 9:8 */
+			 
 			upper = (op >> 4) & 0x30;
 		}
 
-		/* ATU DBNum[3:0] are located in ATU Operation 3:0 */
+		 
 		val = (op & 0xf) | upper;
 	}
 	*fid = val;
@@ -209,7 +204,7 @@ static int mv88e6xxx_g1_atu_fid_read(struct mv88e6xxx_chip *chip, u16 *fid)
 	return err;
 }
 
-/* Offset 0x0C: ATU Data Register */
+ 
 
 static int mv88e6xxx_g1_atu_data_read(struct mv88e6xxx_chip *chip,
 				      struct mv88e6xxx_atu_entry *entry)
@@ -245,10 +240,7 @@ static int mv88e6xxx_g1_atu_data_write(struct mv88e6xxx_chip *chip,
 	return mv88e6xxx_g1_write(chip, MV88E6XXX_G1_ATU_DATA, data);
 }
 
-/* Offset 0x0D: ATU MAC Address Register Bytes 0 & 1
- * Offset 0x0E: ATU MAC Address Register Bytes 2 & 3
- * Offset 0x0F: ATU MAC Address Register Bytes 4 & 5
- */
+ 
 
 static int mv88e6xxx_g1_atu_mac_read(struct mv88e6xxx_chip *chip,
 				     struct mv88e6xxx_atu_entry *entry)
@@ -284,7 +276,7 @@ static int mv88e6xxx_g1_atu_mac_write(struct mv88e6xxx_chip *chip,
 	return 0;
 }
 
-/* Address Translation Unit operations */
+ 
 
 int mv88e6xxx_g1_atu_getnext(struct mv88e6xxx_chip *chip, u16 fid,
 			     struct mv88e6xxx_atu_entry *entry)
@@ -295,7 +287,7 @@ int mv88e6xxx_g1_atu_getnext(struct mv88e6xxx_chip *chip, u16 fid,
 	if (err)
 		return err;
 
-	/* Write the MAC address to iterate from only once */
+	 
 	if (!entry->state) {
 		err = mv88e6xxx_g1_atu_mac_write(chip, entry);
 		if (err)
@@ -348,7 +340,7 @@ static int mv88e6xxx_g1_atu_flushmove(struct mv88e6xxx_chip *chip, u16 fid,
 	if (err)
 		return err;
 
-	/* Flush/Move all or non-static entries from all or a given database */
+	 
 	if (all && fid)
 		op = MV88E6XXX_G1_ATU_OP_FLUSH_MOVE_ALL_DB;
 	else if (fid)
@@ -364,7 +356,7 @@ static int mv88e6xxx_g1_atu_flushmove(struct mv88e6xxx_chip *chip, u16 fid,
 int mv88e6xxx_g1_atu_flush(struct mv88e6xxx_chip *chip, u16 fid, bool all)
 {
 	struct mv88e6xxx_atu_entry entry = {
-		.state = 0, /* Null EntryState means Flush */
+		.state = 0,  
 	};
 
 	return mv88e6xxx_g1_atu_flushmove(chip, fid, &entry, all);
@@ -383,7 +375,7 @@ static int mv88e6xxx_g1_atu_move(struct mv88e6xxx_chip *chip, u16 fid,
 	mask = chip->info->atu_move_port_mask;
 	shift = bitmap_weight(&mask, 16);
 
-	entry.state = 0xf; /* Full EntryState means Move */
+	entry.state = 0xf;  
 	entry.portvec = from_port & mask;
 	entry.portvec |= (to_port & mask) << shift;
 

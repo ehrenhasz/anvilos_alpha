@@ -1,12 +1,12 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright(c) 2009-2012  Realtek Corporation.*/
+ 
+ 
 
 #ifndef __INC_HAL8192SE_FW_IMG_H
 #define __INC_HAL8192SE_FW_IMG_H
 
 #include <linux/types.h>
 
-/*Created on  2010/ 4/12,  5:56*/
+ 
 
 #define PHY_REG_2T2RARRAYLENGTH 372
 extern u32 rtl8192sephy_reg_2t2rarray[PHY_REG_2T2RARRAYLENGTH];

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Cedrus VPU driver
- *
- * Copyright (C) 2016 Florent Revest <florent.revest@free-electrons.com>
- * Copyright (C) 2018 Paul Kocialkowski <paul.kocialkowski@bootlin.com>
- * Copyright (C) 2018 Bootlin
- */
+
+ 
 
 #include <media/videobuf2-dma-contig.h>
 
@@ -65,10 +59,10 @@ static int cedrus_mpeg2_setup(struct cedrus_ctx *ctx, struct cedrus_run *run)
 
 	quantisation = run->mpeg2.quantisation;
 
-	/* Activate MPEG engine. */
+	 
 	cedrus_engine_enable(ctx);
 
-	/* Set intra quantisation matrix. */
+	 
 	matrix = quantisation->intra_quantiser_matrix;
 	for (i = 0; i < 64; i++) {
 		reg = VE_DEC_MPEG_IQMINPUT_WEIGHT(i, matrix[i]);
@@ -77,7 +71,7 @@ static int cedrus_mpeg2_setup(struct cedrus_ctx *ctx, struct cedrus_run *run)
 		cedrus_write(dev, VE_DEC_MPEG_IQMINPUT, reg);
 	}
 
-	/* Set non-intra quantisation matrix. */
+	 
 	matrix = quantisation->non_intra_quantiser_matrix;
 	for (i = 0; i < 64; i++) {
 		reg = VE_DEC_MPEG_IQMINPUT_WEIGHT(i, matrix[i]);
@@ -86,7 +80,7 @@ static int cedrus_mpeg2_setup(struct cedrus_ctx *ctx, struct cedrus_run *run)
 		cedrus_write(dev, VE_DEC_MPEG_IQMINPUT, reg);
 	}
 
-	/* Set MPEG picture header. */
+	 
 
 	reg = VE_DEC_MPEG_MP12HDR_SLICE_TYPE(pic->picture_coding_type);
 	reg |= VE_DEC_MPEG_MP12HDR_F_CODE(0, 0, pic->f_code[0][0]);
@@ -106,7 +100,7 @@ static int cedrus_mpeg2_setup(struct cedrus_ctx *ctx, struct cedrus_run *run)
 
 	cedrus_write(dev, VE_DEC_MPEG_MP12HDR, reg);
 
-	/* Set frame dimensions. */
+	 
 
 	reg = VE_DEC_MPEG_PICCODEDSIZE_WIDTH(seq->horizontal_size);
 	reg |= VE_DEC_MPEG_PICCODEDSIZE_HEIGHT(seq->vertical_size);
@@ -118,7 +112,7 @@ static int cedrus_mpeg2_setup(struct cedrus_ctx *ctx, struct cedrus_run *run)
 
 	cedrus_write(dev, VE_DEC_MPEG_PICBOUNDSIZE, reg);
 
-	/* Forward and backward prediction reference buffers. */
+	 
 	vq = v4l2_m2m_get_vq(ctx->fh.m2m_ctx, V4L2_BUF_TYPE_VIDEO_CAPTURE);
 
 	cedrus_write_ref_buf_addr(ctx, vq, pic->forward_ref_ts,
@@ -128,7 +122,7 @@ static int cedrus_mpeg2_setup(struct cedrus_ctx *ctx, struct cedrus_run *run)
 				  VE_DEC_MPEG_BWD_REF_LUMA_ADDR,
 				  VE_DEC_MPEG_BWD_REF_CHROMA_ADDR);
 
-	/* Destination luma and chroma buffers. */
+	 
 
 	dst_luma_addr = cedrus_dst_buf_addr(ctx, &run->dst->vb2_buf, 0);
 	dst_chroma_addr = cedrus_dst_buf_addr(ctx, &run->dst->vb2_buf, 1);
@@ -136,14 +130,14 @@ static int cedrus_mpeg2_setup(struct cedrus_ctx *ctx, struct cedrus_run *run)
 	cedrus_write(dev, VE_DEC_MPEG_REC_LUMA, dst_luma_addr);
 	cedrus_write(dev, VE_DEC_MPEG_REC_CHROMA, dst_chroma_addr);
 
-	/* Source offset and length in bits. */
+	 
 
 	cedrus_write(dev, VE_DEC_MPEG_VLD_OFFSET, 0);
 
 	reg = vb2_get_plane_payload(&run->src->vb2_buf, 0) * 8;
 	cedrus_write(dev, VE_DEC_MPEG_VLD_LEN, reg);
 
-	/* Source beginning and end addresses. */
+	 
 
 	src_buf_addr = vb2_dma_contig_plane_dma_addr(&run->src->vb2_buf, 0);
 
@@ -157,17 +151,17 @@ static int cedrus_mpeg2_setup(struct cedrus_ctx *ctx, struct cedrus_run *run)
 	reg = src_buf_addr + vb2_get_plane_payload(&run->src->vb2_buf, 0);
 	cedrus_write(dev, VE_DEC_MPEG_VLD_END_ADDR, reg);
 
-	/* Macroblock address: start at the beginning. */
+	 
 	reg = VE_DEC_MPEG_MBADDR_Y(0) | VE_DEC_MPEG_MBADDR_X(0);
 	cedrus_write(dev, VE_DEC_MPEG_MBADDR, reg);
 
-	/* Clear previous errors. */
+	 
 	cedrus_write(dev, VE_DEC_MPEG_ERROR, 0);
 
-	/* Clear correct macroblocks register. */
+	 
 	cedrus_write(dev, VE_DEC_MPEG_CRTMBADDR, 0);
 
-	/* Enable appropriate interruptions and components. */
+	 
 
 	reg = VE_DEC_MPEG_CTRL_IRQ_MASK | VE_DEC_MPEG_CTRL_MC_NO_WRITEBACK |
 	      VE_DEC_MPEG_CTRL_MC_CACHE_EN;
@@ -182,7 +176,7 @@ static void cedrus_mpeg2_trigger(struct cedrus_ctx *ctx)
 	struct cedrus_dev *dev = ctx->dev;
 	u32 reg;
 
-	/* Trigger MPEG engine. */
+	 
 	reg = VE_DEC_MPEG_TRIGGER_HW_MPEG_VLD | VE_DEC_MPEG_TRIGGER_MPEG2 |
 	      VE_DEC_MPEG_TRIGGER_MB_BOUNDARY;
 

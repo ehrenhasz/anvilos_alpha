@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*  Kernel module to match IPComp parameters for IPv4 and IPv6
- *
- *  Copyright (C) 2013 WindRiver
- *
- *  Author:
- *  Fan Du <fan.du@windriver.com>
- *
- *  Based on:
- *  net/netfilter/xt_esp.c
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 #include <linux/in.h>
@@ -25,7 +16,7 @@ MODULE_DESCRIPTION("Xtables: IPv4/6 IPsec-IPComp SPI match");
 MODULE_ALIAS("ipt_ipcomp");
 MODULE_ALIAS("ip6t_ipcomp");
 
-/* Returns 1 if the spi is matched by the range, 0 otherwise */
+ 
 static inline bool
 spi_match(u_int32_t min, u_int32_t max, u_int32_t spi, bool invert)
 {
@@ -43,15 +34,13 @@ static bool comp_mt(const struct sk_buff *skb, struct xt_action_param *par)
 	const struct ip_comp_hdr *chdr;
 	const struct xt_ipcomp *compinfo = par->matchinfo;
 
-	/* Must not be a fragment. */
+	 
 	if (par->fragoff != 0)
 		return false;
 
 	chdr = skb_header_pointer(skb, par->thoff, sizeof(_comphdr), &_comphdr);
 	if (chdr == NULL) {
-		/* We've been asked to examine this packet, and we
-		 * can't.  Hence, no choice but to drop.
-		 */
+		 
 		pr_debug("Dropping evil IPComp tinygram.\n");
 		par->hotdrop = true;
 		return false;
@@ -66,7 +55,7 @@ static int comp_mt_check(const struct xt_mtchk_param *par)
 {
 	const struct xt_ipcomp *compinfo = par->matchinfo;
 
-	/* Must specify no unknown invflags */
+	 
 	if (compinfo->invflags & ~XT_IPCOMP_INV_MASK) {
 		pr_info_ratelimited("unknown flags %X\n", compinfo->invflags);
 		return -EINVAL;

@@ -1,36 +1,4 @@
-/*
- * Copyright (c) 2012 Intel Corporation.  All rights reserved.
- * Copyright (c) 2006 - 2012 QLogic Corporation. All rights reserved.
- * Copyright (c) 2006 PathScale, Inc. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 #include <linux/ctype.h>
 #include <rdma/ib_sysfs.h>
 
@@ -46,9 +14,7 @@ static struct qib_pportdata *qib_get_pportdata_kobj(struct kobject *kobj)
 	return &dd->pport[port_num - 1];
 }
 
-/*
- * Get/Set heartbeat enable. OR of 1=enabled, 2=auto
- */
+ 
 static ssize_t hrtbt_enable_show(struct ib_device *ibdev, u32 port_num,
 				 struct ib_port_attribute *attr, char *buf)
 {
@@ -73,13 +39,7 @@ static ssize_t hrtbt_enable_store(struct ib_device *ibdev, u32 port_num,
 		return ret;
 	}
 
-	/*
-	 * Set the "intentional" heartbeat enable per either of
-	 * "Enable" and "Auto", as these are normally set together.
-	 * This bit is consulted when leaving loopback mode,
-	 * because entering loopback mode overrides it and automatically
-	 * disables heartbeat.
-	 */
+	 
 	ret = dd->f_set_ib_cfg(ppd, QIB_IB_CFG_HRTBT, val);
 	return ret < 0 ? ret : count;
 }
@@ -134,10 +94,7 @@ static ssize_t status_show(struct ib_device *ibdev, u32 port_num,
 }
 static IB_PORT_ATTR_RO(status);
 
-/*
- * For userland compatibility, these offsets must remain fixed.
- * They are strings for QIB_STATUS_*
- */
+ 
 static const char * const qib_status_str[] = {
 	"Initted",
 	"",
@@ -170,7 +127,7 @@ static ssize_t status_str_show(struct ib_device *ibdev, u32 port_num,
 	*buf = '\0';
 	for (any = i = 0; s && qib_status_str[i]; i++) {
 		if (s & 1) {
-			/* if overflow */
+			 
 			if (any && strlcat(buf, " ", PAGE_SIZE) >= PAGE_SIZE)
 				break;
 			if (strlcat(buf, qib_status_str[i], PAGE_SIZE) >=
@@ -190,7 +147,7 @@ bail:
 }
 static IB_PORT_ATTR_RO(status_str);
 
-/* end of per-port functions */
+ 
 
 static struct attribute *port_linkcontrol_attributes[] = {
 	&ib_port_attr_loopback.attr,
@@ -206,13 +163,9 @@ static const struct attribute_group port_linkcontrol_group = {
 	.attrs = port_linkcontrol_attributes,
 };
 
-/*
- * Start of per-port congestion control structures and support code
- */
+ 
 
-/*
- * Congestion control table size followed by table entries
- */
+ 
 static ssize_t cc_table_bin_read(struct file *filp, struct kobject *kobj,
 				 struct bin_attribute *bin_attr, char *buf,
 				 loff_t pos, size_t count)
@@ -243,11 +196,7 @@ static ssize_t cc_table_bin_read(struct file *filp, struct kobject *kobj,
 }
 static BIN_ATTR_RO(cc_table_bin, PAGE_SIZE);
 
-/*
- * Congestion settings: port control, control map and an array of 16
- * entries for the congestion entries - increase, timer, event log
- * trigger threshold and the minimum injection rate delay.
- */
+ 
 static ssize_t cc_setting_bin_read(struct file *filp, struct kobject *kobj,
 				   struct bin_attribute *bin_attr, char *buf,
 				   loff_t pos, size_t count)
@@ -298,7 +247,7 @@ static const struct attribute_group port_ccmgta_attribute_group = {
 	.bin_attrs = port_ccmgta_attributes,
 };
 
-/* Start sl2vl */
+ 
 
 struct qib_sl2vl_attr {
 	struct ib_port_attribute attr;
@@ -364,9 +313,9 @@ static const struct attribute_group port_sl2vl_group = {
 	.attrs = port_sl2vl_attributes,
 };
 
-/* End sl2vl */
+ 
 
-/* Start diag_counters */
+ 
 
 struct qib_diagc_attr {
 	struct ib_port_attribute attr;
@@ -545,7 +494,7 @@ static const struct attribute_group port_diagc_group = {
 	.attrs = port_diagc_attributes,
 };
 
-/* End diag_counters */
+ 
 
 const struct attribute_group *qib_attr_port_groups[] = {
 	&port_linkcontrol_group,
@@ -555,12 +504,9 @@ const struct attribute_group *qib_attr_port_groups[] = {
 	NULL,
 };
 
-/* end of per-port file structures and support code */
+ 
 
-/*
- * Start of per-unit (or driver, in some cases, but replicated
- * per unit) functions (these get a device *)
- */
+ 
 static ssize_t hw_rev_show(struct device *device, struct device_attribute *attr,
 			   char *buf)
 {
@@ -588,7 +534,7 @@ static DEVICE_ATTR(board_id, 0444, hca_type_show, NULL);
 static ssize_t version_show(struct device *device,
 			    struct device_attribute *attr, char *buf)
 {
-	/* The string printed here is already newline-terminated. */
+	 
 	return sysfs_emit(buf, "%s", (char *)ib_qib_version);
 }
 static DEVICE_ATTR_RO(version);
@@ -600,7 +546,7 @@ static ssize_t boardversion_show(struct device *device,
 		rdma_device_to_drv_device(device, struct qib_ibdev, rdi.ibdev);
 	struct qib_devdata *dd = dd_from_dev(dev);
 
-	/* The string printed here is already newline-terminated. */
+	 
 	return sysfs_emit(buf, "%s", dd->boardversion);
 }
 static DEVICE_ATTR_RO(boardversion);
@@ -612,7 +558,7 @@ static ssize_t localbus_info_show(struct device *device,
 		rdma_device_to_drv_device(device, struct qib_ibdev, rdi.ibdev);
 	struct qib_devdata *dd = dd_from_dev(dev);
 
-	/* The string printed here is already newline-terminated. */
+	 
 	return sysfs_emit(buf, "%s", dd->lbus_info);
 }
 static DEVICE_ATTR_RO(localbus_info);
@@ -624,9 +570,8 @@ static ssize_t nctxts_show(struct device *device,
 		rdma_device_to_drv_device(device, struct qib_ibdev, rdi.ibdev);
 	struct qib_devdata *dd = dd_from_dev(dev);
 
-	/* Return the number of user ports (contexts) available. */
-	/* The calculation below deals with a special case where
-	 * cfgctxts is set to 1 on a single-port board. */
+	 
+	 
 	return sysfs_emit(buf, "%u\n",
 			  (dd->first_user_ctxt > dd->cfgctxts) ?
 				  0 :
@@ -641,7 +586,7 @@ static ssize_t nfreectxts_show(struct device *device,
 		rdma_device_to_drv_device(device, struct qib_ibdev, rdi.ibdev);
 	struct qib_devdata *dd = dd_from_dev(dev);
 
-	/* Return the number of free user ports (contexts) available. */
+	 
 	return sysfs_emit(buf, "%u\n", dd->freectxts);
 }
 static DEVICE_ATTR_RO(nfreectxts);
@@ -679,9 +624,7 @@ bail:
 }
 static DEVICE_ATTR_WO(chip_reset);
 
-/*
- * Dump tempsense regs. in decimal, to ease shell-scripts.
- */
+ 
 static ssize_t tempsense_show(struct device *device,
 			      struct device_attribute *attr, char *buf)
 {
@@ -698,7 +641,7 @@ static ssize_t tempsense_show(struct device *device,
 			continue;
 		ret = dd->f_tempsense_rd(dd, i);
 		if (ret < 0)
-			return ret;	/* return error on bad read */
+			return ret;	 
 		regvals[i] = ret;
 	}
 	return sysfs_emit(buf, "%d %d %02X %02X %d %d\n",
@@ -711,12 +654,9 @@ static ssize_t tempsense_show(struct device *device,
 }
 static DEVICE_ATTR_RO(tempsense);
 
-/*
- * end of per-unit (or driver, in some cases, but replicated
- * per unit) functions
- */
+ 
 
-/* start of per-unit file structures and support code */
+ 
 static struct attribute *qib_attributes[] = {
 	&dev_attr_hw_rev.attr,
 	&dev_attr_hca_type.attr,

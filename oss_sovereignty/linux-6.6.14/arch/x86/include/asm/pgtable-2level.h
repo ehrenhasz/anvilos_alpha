@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _ASM_X86_PGTABLE_2LEVEL_H
 #define _ASM_X86_PGTABLE_2LEVEL_H
 
@@ -7,11 +7,7 @@
 #define pgd_ERROR(e) \
 	pr_err("%s:%d: bad pgd %08lx\n", __FILE__, __LINE__, pgd_val(e))
 
-/*
- * Certain architectures need to do special things when PTEs
- * within a page table are directly modified.  Thus, the following
- * hook is made available.
- */
+ 
 static inline void native_set_pte(pte_t *ptep , pte_t pte)
 {
 	*ptep = pte;
@@ -73,25 +69,14 @@ static inline pud_t native_pudp_get_and_clear(pud_t *xp)
 #define native_pudp_get_and_clear(xp) native_local_pudp_get_and_clear(xp)
 #endif
 
-/* Bit manipulation helper on pte/pgoff entry */
+ 
 static inline unsigned long pte_bitop(unsigned long value, unsigned int rightshift,
 				      unsigned long mask, unsigned int leftshift)
 {
 	return ((value >> rightshift) & mask) << leftshift;
 }
 
-/*
- * Encode/decode swap entries and swap PTEs. Swap PTEs are all PTEs that
- * are !pte_none() && !pte_present().
- *
- * Format of swap PTEs:
- *
- *   3 3 2 2 2 2 2 2 2 2 2 2 1 1 1 1 1 1 1 1 1 1
- *   1 0 9 8 7 6 5 4 3 2 1 0 9 8 7 6 5 4 3 2 1 0 9 8 7 6 5 4 3 2 1 0
- *   <----------------- offset ------------------> 0 E <- type --> 0
- *
- *   E is the exclusive marker that is not stored in swap entries.
- */
+ 
 #define SWP_TYPE_BITS 5
 #define _SWP_TYPE_MASK ((1U << SWP_TYPE_BITS) - 1)
 #define _SWP_TYPE_SHIFT (_PAGE_BIT_PRESENT + 1)
@@ -108,10 +93,10 @@ static inline unsigned long pte_bitop(unsigned long value, unsigned int rightshi
 #define __pte_to_swp_entry(pte)		((swp_entry_t) { (pte).pte_low })
 #define __swp_entry_to_pte(x)		((pte_t) { .pte = (x).val })
 
-/* We borrow bit 7 to store the exclusive marker in swap PTEs. */
+ 
 #define _PAGE_SWP_EXCLUSIVE	_PAGE_PSE
 
-/* No inverted PFNs on 2 level page tables */
+ 
 
 static inline u64 protnone_mask(u64 val)
 {
@@ -128,4 +113,4 @@ static inline bool __pte_needs_invert(u64 val)
 	return false;
 }
 
-#endif /* _ASM_X86_PGTABLE_2LEVEL_H */
+#endif  

@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Marvell Armada AP806 System Controller
- *
- * Copyright (C) 2016 Marvell
- *
- * Thomas Petazzoni <thomas.petazzoni@free-electrons.com>
- *
- */
+
+ 
 
 #define pr_fmt(fmt) "ap806-system-controller: " fmt
 
@@ -167,11 +160,11 @@ static int ap806_syscon_common_probe(struct platform_device *pdev,
 		return ret;
 	}
 
-	/* Convert to hertz */
+	 
 	cpuclk_freq *= 1000 * 1000;
 	dclk_freq *= 1000 * 1000;
 
-	/* CPU clocks depend on the Sample At Reset configuration */
+	 
 	name = ap_cp_unique_name(dev, syscon_node, "pll-cluster-0");
 	ap806_clks[0] = clk_register_fixed_rate(dev, name, NULL,
 						0, cpuclk_freq);
@@ -188,7 +181,7 @@ static int ap806_syscon_common_probe(struct platform_device *pdev,
 		goto fail1;
 	}
 
-	/* Fixed clock is always 1200 Mhz */
+	 
 	fixedclk_name = ap_cp_unique_name(dev, syscon_node, "fixed");
 	ap806_clks[2] = clk_register_fixed_rate(dev, fixedclk_name, NULL,
 						0, 1200 * 1000 * 1000);
@@ -197,7 +190,7 @@ static int ap806_syscon_common_probe(struct platform_device *pdev,
 		goto fail2;
 	}
 
-	/* MSS Clock is fixed clock divided by 6 */
+	 
 	name = ap_cp_unique_name(dev, syscon_node, "mss");
 	ap806_clks[3] = clk_register_fixed_factor(NULL, name, fixedclk_name,
 						  0, 1, 6);
@@ -206,7 +199,7 @@ static int ap806_syscon_common_probe(struct platform_device *pdev,
 		goto fail3;
 	}
 
-	/* SDIO(/eMMC) Clock is fixed clock divided by 3 */
+	 
 	name = ap_cp_unique_name(dev, syscon_node, "sdio");
 	ap806_clks[4] = clk_register_fixed_factor(NULL, name,
 						  fixedclk_name,
@@ -216,7 +209,7 @@ static int ap806_syscon_common_probe(struct platform_device *pdev,
 		goto fail4;
 	}
 
-	/* AP-DCLK(HCLK) Clock is DDR clock divided by 2 */
+	 
 	name = ap_cp_unique_name(dev, syscon_node, "ap-dclk");
 	ap806_clks[5] = clk_register_fixed_rate(dev, name, NULL, 0, dclk_freq);
 	if (IS_ERR(ap806_clks[5])) {

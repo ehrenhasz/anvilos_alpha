@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * ads117x.c  --  Driver for ads1174/8 ADC chips
- *
- * Copyright 2009 ShotSpotter Inc.
- * Author: Graeme Gregory <gg@slimlogic.co.uk>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/slab.h>
@@ -44,7 +39,7 @@ static const struct snd_soc_dapm_route ads117x_dapm_routes[] = {
 };
 
 static struct snd_soc_dai_driver ads117x_dai = {
-/* ADC */
+ 
 	.name = "ads117x-hifi",
 	.capture = {
 		.stream_name = "Capture",

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Marvell CN10K DRAM Subsystem (DSS) Performance Monitor Driver
- *
- * Copyright (C) 2021 Marvell.
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/io.h>
@@ -13,27 +10,27 @@
 #include <linux/acpi.h>
 #include <linux/platform_device.h>
 
-/* Performance Counters Operating Mode Control Registers */
+ 
 #define DDRC_PERF_CNT_OP_MODE_CTRL	0x8020
 #define OP_MODE_CTRL_VAL_MANNUAL	0x1
 
-/* Performance Counters Start Operation Control Registers */
+ 
 #define DDRC_PERF_CNT_START_OP_CTRL	0x8028
 #define START_OP_CTRL_VAL_START		0x1ULL
 #define START_OP_CTRL_VAL_ACTIVE	0x2
 
-/* Performance Counters End Operation Control Registers */
+ 
 #define DDRC_PERF_CNT_END_OP_CTRL	0x8030
 #define END_OP_CTRL_VAL_END		0x1ULL
 
-/* Performance Counters End Status Registers */
+ 
 #define DDRC_PERF_CNT_END_STATUS		0x8038
 #define END_STATUS_VAL_END_TIMER_MODE_END	0x1
 
-/* Performance Counters Configuration Registers */
+ 
 #define DDRC_PERF_CFG_BASE		0x8040
 
-/* 8 Generic event counter + 2 fixed event counters */
+ 
 #define DDRC_PERF_NUM_GEN_COUNTERS	8
 #define DDRC_PERF_NUM_FIX_COUNTERS	2
 #define DDRC_PERF_READ_COUNTER_IDX	DDRC_PERF_NUM_GEN_COUNTERS
@@ -41,19 +38,15 @@
 #define DDRC_PERF_NUM_COUNTERS		(DDRC_PERF_NUM_GEN_COUNTERS + \
 					 DDRC_PERF_NUM_FIX_COUNTERS)
 
-/* Generic event counter registers */
+ 
 #define DDRC_PERF_CFG(n)		(DDRC_PERF_CFG_BASE + 8 * (n))
 #define EVENT_ENABLE			BIT_ULL(63)
 
-/* Two dedicated event counters for DDR reads and writes */
+ 
 #define EVENT_DDR_READS			101
 #define EVENT_DDR_WRITES		100
 
-/*
- * programmable events IDs in programmable event counters.
- * DO NOT change these event-id numbers, they are used to
- * program event bitmap in h/w.
- */
+ 
 #define EVENT_OP_IS_ZQLATCH			55
 #define EVENT_OP_IS_ZQSTART			54
 #define EVENT_OP_IS_TCR_MRR			53
@@ -101,21 +94,21 @@
 #define EVENT_HIF_WR				2
 #define EVENT_HIF_RD_OR_WR			1
 
-/* Event counter value registers */
+ 
 #define DDRC_PERF_CNT_VALUE_BASE		0x8080
 #define DDRC_PERF_CNT_VALUE(n)	(DDRC_PERF_CNT_VALUE_BASE + 8 * (n))
 
-/* Fixed event counter enable/disable register */
+ 
 #define DDRC_PERF_CNT_FREERUN_EN	0x80C0
 #define DDRC_PERF_FREERUN_WRITE_EN	0x1
 #define DDRC_PERF_FREERUN_READ_EN	0x2
 
-/* Fixed event counter control register */
+ 
 #define DDRC_PERF_CNT_FREERUN_CTRL	0x80C8
 #define DDRC_FREERUN_WRITE_CNT_CLR	0x1
 #define DDRC_FREERUN_READ_CNT_CLR	0x2
 
-/* Fixed event counter value register */
+ 
 #define DDRC_PERF_CNT_VALUE_WR_OP	0x80D0
 #define DDRC_PERF_CNT_VALUE_RD_OP	0x80D8
 #define DDRC_PERF_CNT_VALUE_OVERFLOW	BIT_ULL(48)
@@ -203,7 +196,7 @@ static struct attribute *cn10k_ddr_perf_events_attrs[] = {
 	CN10K_DDR_PMU_EVENT_ATTR(ddr_tcr_mrr, EVENT_OP_IS_TCR_MRR),
 	CN10K_DDR_PMU_EVENT_ATTR(ddr_zqstart, EVENT_OP_IS_ZQSTART),
 	CN10K_DDR_PMU_EVENT_ATTR(ddr_zqlatch, EVENT_OP_IS_ZQLATCH),
-	/* Free run event counters */
+	 
 	CN10K_DDR_PMU_EVENT_ATTR(ddr_ddr_reads, EVENT_DDR_READS),
 	CN10K_DDR_PMU_EVENT_ATTR(ddr_ddr_writes, EVENT_DDR_WRITES),
 	NULL
@@ -254,10 +247,7 @@ static const struct attribute_group *cn10k_attr_groups[] = {
 	NULL,
 };
 
-/* Default poll timeout is 100 sec, which is very sufficient for
- * 48 bit counter incremented max at 5.6 GT/s, which may take many
- * hours to overflow.
- */
+ 
 static unsigned long cn10k_ddr_pmu_poll_period_sec = 100;
 module_param_named(poll_period_sec, cn10k_ddr_pmu_poll_period_sec, ulong, 0644);
 
@@ -292,19 +282,19 @@ static int cn10k_ddr_perf_alloc_counter(struct cn10k_ddr_pmu *pmu,
 	u8 config = event->attr.config;
 	int i;
 
-	/* DDR read free-run counter index */
+	 
 	if (config == EVENT_DDR_READS) {
 		pmu->events[DDRC_PERF_READ_COUNTER_IDX] = event;
 		return DDRC_PERF_READ_COUNTER_IDX;
 	}
 
-	/* DDR write free-run counter index */
+	 
 	if (config == EVENT_DDR_WRITES) {
 		pmu->events[DDRC_PERF_WRITE_COUNTER_IDX] = event;
 		return DDRC_PERF_WRITE_COUNTER_IDX;
 	}
 
-	/* Allocate DDR generic counters */
+	 
 	for (i = 0; i < DDRC_PERF_NUM_GEN_COUNTERS; i++) {
 		if (pmu->events[i] == NULL) {
 			pmu->events[i] = event;
@@ -338,14 +328,12 @@ static int cn10k_ddr_perf_event_init(struct perf_event *event)
 		return -EOPNOTSUPP;
 	}
 
-	/*  We must NOT create groups containing mixed PMUs */
+	 
 	if (event->group_leader->pmu != event->pmu &&
 	    !is_software_event(event->group_leader))
 		return -EINVAL;
 
-	/* Set ownership of event to one CPU, same event can not be observed
-	 * on multiple cpus at same time.
-	 */
+	 
 	event->cpu = pmu->cpu;
 	hwc->idx = -1;
 	return 0;
@@ -453,7 +441,7 @@ static int cn10k_ddr_perf_event_add(struct perf_event *event, int flags)
 			      HRTIMER_MODE_REL_PINNED);
 
 	if (counter < DDRC_PERF_NUM_GEN_COUNTERS) {
-		/* Generic counters, configure event id */
+		 
 		reg_offset = DDRC_PERF_CFG(counter);
 		ret = ddr_perf_get_event_bitmap(config, &val);
 		if (ret)
@@ -461,7 +449,7 @@ static int cn10k_ddr_perf_event_add(struct perf_event *event, int flags)
 
 		writeq_relaxed(val, pmu->base + reg_offset);
 	} else {
-		/* fixed event counter, clear counter value */
+		 
 		if (counter == DDRC_PERF_READ_COUNTER_IDX)
 			val = DDRC_FREERUN_READ_CNT_CLR;
 		else
@@ -504,7 +492,7 @@ static void cn10k_ddr_perf_event_del(struct perf_event *event, int flags)
 	pmu->active_events--;
 	hwc->idx = -1;
 
-	/* Cancel timer when no events to capture */
+	 
 	if (pmu->active_events == 0)
 		hrtimer_cancel(&pmu->hrtimer);
 }
@@ -537,7 +525,7 @@ static void cn10k_ddr_perf_event_update_all(struct cn10k_ddr_pmu *pmu)
 		cn10k_ddr_perf_event_update(pmu->events[i]);
 	}
 
-	/* Reset previous count as h/w counter are reset */
+	 
 	for (i = 0; i < DDRC_PERF_NUM_GEN_COUNTERS; i++) {
 		if (pmu->events[i] == NULL)
 			continue;
@@ -561,9 +549,7 @@ static irqreturn_t cn10k_ddr_pmu_overflow_handler(struct cn10k_ddr_pmu *pmu)
 		prev_count = local64_read(&hwc->prev_count);
 		new_count = cn10k_ddr_perf_read_counter(pmu, hwc->idx);
 
-		/* Overflow condition is when new count less than
-		 * previous count
-		 */
+		 
 		if (new_count < prev_count)
 			cn10k_ddr_perf_event_update(event);
 	}
@@ -574,9 +560,7 @@ static irqreturn_t cn10k_ddr_pmu_overflow_handler(struct cn10k_ddr_pmu *pmu)
 		prev_count = local64_read(&hwc->prev_count);
 		new_count = cn10k_ddr_perf_read_counter(pmu, hwc->idx);
 
-		/* Overflow condition is when new count less than
-		 * previous count
-		 */
+		 
 		if (new_count < prev_count)
 			cn10k_ddr_perf_event_update(event);
 	}
@@ -650,7 +634,7 @@ static int cn10k_ddr_perf_probe(struct platform_device *pdev)
 
 	ddr_pmu->base = base;
 
-	/* Setup the PMU counter to work in manual mode */
+	 
 	writeq_relaxed(OP_MODE_CTRL_VAL_MANNUAL, ddr_pmu->base +
 		       DDRC_PERF_CNT_OP_MODE_CTRL);
 
@@ -669,7 +653,7 @@ static int cn10k_ddr_perf_probe(struct platform_device *pdev)
 		.pmu_disable = cn10k_ddr_perf_pmu_disable,
 	};
 
-	/* Choose this cpu to collect perf data */
+	 
 	ddr_pmu->cpu = raw_smp_processor_id();
 
 	name = devm_kasprintf(ddr_pmu->dev, GFP_KERNEL, "mrvl_ddr_pmu_%llx",

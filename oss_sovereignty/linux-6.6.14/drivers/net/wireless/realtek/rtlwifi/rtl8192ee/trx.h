@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright(c) 2009-2014  Realtek Corporation.*/
+ 
+ 
 
 #ifndef __RTL92E_TRX_H__
 #define __RTL92E_TRX_H__
@@ -139,7 +139,7 @@ static inline void set_tx_desc_max_agg_num(__le32 *__pdesc, u32 __val)
 	le32p_replace_bits((__pdesc + 3), __val, GENMASK(21, 17));
 }
 
-/* Dword 4 */
+ 
 static inline void set_tx_desc_tx_rate(__le32 *__pdesc, u32 __val)
 {
 	le32p_replace_bits((__pdesc + 4), __val, GENMASK(6, 0));
@@ -160,7 +160,7 @@ static inline void set_tx_desc_rts_rate(__le32 *__pdesc, u32 __val)
 	le32p_replace_bits((__pdesc + 4), __val, GENMASK(28, 24));
 }
 
-/* Dword 5 */
+ 
 static inline void set_tx_desc_tx_sub_carrier(__le32 *__pdesc, u32 __val)
 {
 	le32p_replace_bits((__pdesc + 5), __val, GENMASK(3, 0));
@@ -181,25 +181,25 @@ static inline void set_tx_desc_rts_sc(__le32 *__pdesc, u32 __val)
 	le32p_replace_bits((__pdesc + 5), __val, GENMASK(16, 13));
 }
 
-/* Dword 7 */
+ 
 static inline void set_tx_desc_tx_buffer_size(__le32 *__pdesc, u32 __val)
 {
 	le32p_replace_bits((__pdesc + 7), __val, GENMASK(15, 0));
 }
 
-/* Dword 9 */
+ 
 static inline void set_tx_desc_seq(__le32 *__pdesc, u32 __val)
 {
 	le32p_replace_bits((__pdesc + 9), __val, GENMASK(23, 12));
 }
 
-/* Dword 10 */
+ 
 static inline void set_tx_desc_tx_buffer_address(__le32 *__pdesc, u32 __val)
 {
 	*(__pdesc + 10) = cpu_to_le32(__val);
 }
 
-/* Dword 11*/
+ 
 static inline void set_tx_desc_next_desc_address(__le32 *__pdesc, u32 __val)
 {
 	*(__pdesc + 12) = cpu_to_le32(__val);
@@ -240,9 +240,9 @@ static inline void set_earlymode_len4(__le32 *__paddr, u32 __val)
 	le32p_replace_bits((__paddr + 1), __val, GENMASK(31, 20));
 }
 
-/* TX/RX buffer descriptor */
+ 
 
-/* for Txfilldescroptor92ee, fill the desc content. */
+ 
 static inline void set_txbuffer_desc_len_with_offset(__le32 *__pdesc,
 						     u8 __offset, u32 __val)
 {
@@ -284,7 +284,7 @@ static inline u32 get_txbuffer_desc_addr_high(__le32 *pbd, u32 off, bool dma64)
 	return 0;
 }
 
-/* Dword 0 */
+ 
 static inline void set_tx_buff_desc_len_0(__le32 *__pdesc, u32 __val)
 {
 	le32p_replace_bits(__pdesc, __val, GENMASK(13, 0));
@@ -300,13 +300,13 @@ static inline void set_tx_buff_desc_own(__le32 *__pdesc, u32 __val)
 	le32p_replace_bits(__pdesc, __val, BIT(31));
 }
 
-/* Dword 1 */
+ 
 static inline void set_tx_buff_desc_addr_low_0(__le32 *__pdesc, u32 __val)
 {
 	*(__pdesc + 1) = cpu_to_le32(__val);
 }
 
-/* Dword 2 */
+ 
 static inline void set_tx_buff_desc_addr_high_0(__le32 *pdesc, u32 val,
 						bool dma64)
 {
@@ -316,9 +316,9 @@ static inline void set_tx_buff_desc_addr_high_0(__le32 *pdesc, u32 val,
 		*(pdesc + 2) = 0;
 }
 
-/* RX buffer  */
+ 
 
-/* DWORD 0 */
+ 
 static inline void set_rx_buffer_desc_data_length(__le32 *__status, u32 __val)
 {
 	le32p_replace_bits(__status, __val, GENMASK(13, 0));
@@ -354,13 +354,13 @@ static inline int get_rx_buffer_desc_total_length(__le32 *__status)
 	return le32_get_bits(*(__status), GENMASK(30, 16));
 }
 
-/* DWORD 1 */
+ 
 static inline void set_rx_buffer_physical_low(__le32 *__status, u32 __val)
 {
 	*(__status + 1) = cpu_to_le32(__val);
 }
 
-/* DWORD 2 */
+ 
 static inline void set_rx_buffer_physical_high(__le32 *__rx_status_desc,
 					       u32 __val, bool dma64)
 {
@@ -460,7 +460,7 @@ static inline u32 get_rx_desc_buff_addr(__le32 *__pdesc)
 	return le32_to_cpu(*((__pdesc + 6)));
 }
 
-/* TX report 2 format in Rx desc*/
+ 
 
 static inline u32 get_rx_rpt2_desc_macid_valid_1(__le32 *__status)
 {
@@ -515,21 +515,21 @@ struct phy_status_rpt {
 	u8 sig_evm;
 	u8 rsvd_3;
 #if IS_LITTLE_ENDIAN
-	u8 antsel_rx_keep_2:1;	/*ex_intf_flg:1;*/
+	u8 antsel_rx_keep_2:1;	 
 	u8 sgi_en:1;
 	u8 rxsc:2;
 	u8 idle_long:1;
 	u8 r_ant_train_en:1;
 	u8 ant_sel_b:1;
 	u8 ant_sel:1;
-#else	/* _BIG_ENDIAN_	*/
+#else	 
 	u8 ant_sel:1;
 	u8 ant_sel_b:1;
 	u8 r_ant_train_en:1;
 	u8 idle_long:1;
 	u8 rxsc:2;
 	u8 sgi_en:1;
-	u8 antsel_rx_keep_2:1;	/*ex_intf_flg:1;*/
+	u8 antsel_rx_keep_2:1;	 
 #endif
 } __packed;
 

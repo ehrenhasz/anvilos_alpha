@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: LGPL-2.1 OR MIT */
-/*
- * minimal stdio function definitions for NOLIBC
- * Copyright (C) 2017-2021 Willy Tarreau <w@1wt.eu>
- */
+ 
+ 
 
 #ifndef _NOLIBC_STDIO_H
 #define _NOLIBC_STDIO_H
@@ -21,16 +18,12 @@
 #define EOF (-1)
 #endif
 
-/* Buffering mode used by setvbuf.  */
-#define _IOFBF 0	/* Fully buffered. */
-#define _IOLBF 1	/* Line buffered. */
-#define _IONBF 2	/* No buffering. */
+ 
+#define _IOFBF 0	 
+#define _IOLBF 1	 
+#define _IONBF 2	 
 
-/* just define FILE as a non-empty type. The value of the pointer gives
- * the FD: FILE=~fd for fd>=0 or NULL for fd<0. This way positive FILE
- * are immediately identified as abnormal entries (i.e. possible copies
- * of valid pointers to something else).
- */
+ 
 typedef struct FILE {
 	char dummy[1];
 } FILE;
@@ -39,7 +32,7 @@ static __attribute__((unused)) FILE* const stdin  = (FILE*)(intptr_t)~STDIN_FILE
 static __attribute__((unused)) FILE* const stdout = (FILE*)(intptr_t)~STDOUT_FILENO;
 static __attribute__((unused)) FILE* const stderr = (FILE*)(intptr_t)~STDERR_FILENO;
 
-/* provides a FILE* equivalent of fd. The mode is ignored. */
+ 
 static __attribute__((unused))
 FILE *fdopen(int fd, const char *mode __attribute__((unused)))
 {
@@ -50,7 +43,7 @@ FILE *fdopen(int fd, const char *mode __attribute__((unused)))
 	return (FILE*)(intptr_t)~fd;
 }
 
-/* provides the fd of stream. */
+ 
 static __attribute__((unused))
 int fileno(FILE *stream)
 {
@@ -63,23 +56,23 @@ int fileno(FILE *stream)
 	return ~i;
 }
 
-/* flush a stream. */
+ 
 static __attribute__((unused))
 int fflush(FILE *stream)
 {
 	intptr_t i = (intptr_t)stream;
 
-	/* NULL is valid here. */
+	 
 	if (i > 0) {
 		SET_ERRNO(EBADF);
 		return -1;
 	}
 
-	/* Don't do anything, nolibc does not support buffering. */
+	 
 	return 0;
 }
 
-/* flush a stream. */
+ 
 static __attribute__((unused))
 int fclose(FILE *stream)
 {
@@ -96,7 +89,7 @@ int fclose(FILE *stream)
 	return 0;
 }
 
-/* getc(), fgetc(), getchar() */
+ 
 
 #define getc(stream) fgetc(stream)
 
@@ -117,7 +110,7 @@ int getchar(void)
 }
 
 
-/* putc(), fputc(), putchar() */
+ 
 
 #define putc(c, stream) fputc(c, stream)
 
@@ -138,11 +131,9 @@ int putchar(int c)
 }
 
 
-/* fwrite(), puts(), fputs(). Note that puts() emits '\n' but not fputs(). */
+ 
 
-/* internal fwrite()-like function which only takes a size and returns 0 on
- * success or EOF on error. It automatically retries on short writes.
- */
+ 
 static __attribute__((unused))
 int _fwrite(const void *buf, size_t size, FILE *stream)
 {
@@ -187,7 +178,7 @@ int puts(const char *s)
 }
 
 
-/* fgets() */
+ 
 static __attribute__((unused))
 char *fgets(char *s, int size, FILE *stream)
 {
@@ -208,11 +199,7 @@ char *fgets(char *s, int size, FILE *stream)
 }
 
 
-/* minimal vfprintf(). It supports the following formats:
- *  - %[l*]{d,u,c,x,p}
- *  - %s
- *  - unknown modifiers are ignored.
- */
+ 
 static __attribute__((unused))
 int vfprintf(FILE *stream, const char *fmt, va_list args)
 {
@@ -228,7 +215,7 @@ int vfprintf(FILE *stream, const char *fmt, va_list args)
 		c = fmt[ofs++];
 
 		if (escape) {
-			/* we're in an escape sequence, ofs == 1 */
+			 
 			escape = 0;
 			if (c == 'c' || c == 'd' || c == 'u' || c == 'x' || c == 'p') {
 				char *out = tmpbuf;
@@ -244,7 +231,7 @@ int vfprintf(FILE *stream, const char *fmt, va_list args)
 					v = va_arg(args, unsigned int);
 
 				if (c == 'd') {
-					/* sign-extend the value */
+					 
 					if (lpref == 0)
 						v = (long long)(int)v;
 					else if (lpref == 1)
@@ -265,8 +252,8 @@ int vfprintf(FILE *stream, const char *fmt, va_list args)
 				case 'p':
 					*(out++) = '0';
 					*(out++) = 'x';
-					/* fall through */
-				default: /* 'x' and 'p' above */
+					 
+				default:  
 					u64toh_r(v, out);
 					break;
 				}
@@ -278,13 +265,13 @@ int vfprintf(FILE *stream, const char *fmt, va_list args)
 					outstr="(null)";
 			}
 			else if (c == '%') {
-				/* queue it verbatim */
+				 
 				continue;
 			}
 			else {
-				/* modifiers or final 0 */
+				 
 				if (c == 'l') {
-					/* long format prefix, maintain the escape */
+					 
 					lpref++;
 				}
 				escape = 1;
@@ -294,9 +281,9 @@ int vfprintf(FILE *stream, const char *fmt, va_list args)
 			goto flush_str;
 		}
 
-		/* not an escape sequence */
+		 
 		if (c == 0 || c == '%') {
-			/* flush pending data on escape or end */
+			 
 			escape = 1;
 			lpref = 0;
 			outstr = fmt;
@@ -314,7 +301,7 @@ int vfprintf(FILE *stream, const char *fmt, va_list args)
 			continue;
 		}
 
-		/* literal char, just queue it */
+		 
 	}
 	return written;
 }
@@ -361,10 +348,7 @@ int setvbuf(FILE *stream __attribute__((unused)),
 	    int mode,
 	    size_t size __attribute__((unused)))
 {
-	/*
-	 * nolibc does not support buffering so this is a nop. Just check mode
-	 * is valid as required by the spec.
-	 */
+	 
 	switch (mode) {
 	case _IOFBF:
 	case _IOLBF:
@@ -377,7 +361,7 @@ int setvbuf(FILE *stream __attribute__((unused)),
 	return 0;
 }
 
-/* make sure to include all global symbols */
+ 
 #include "nolibc.h"
 
-#endif /* _NOLIBC_STDIO_H */
+#endif  

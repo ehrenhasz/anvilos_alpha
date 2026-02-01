@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Cryptographic API.
- *
- * SHA-3, as specified in
- * https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.202.pdf
- *
- * SHA-3 code by Jeff Garzik <jeff@garzik.org>
- *               Ard Biesheuvel <ard.biesheuvel@linaro.org>
- */
+
+ 
 #include <crypto/internal/hash.h>
 #include <linux/init.h>
 #include <linux/module.h>
@@ -15,14 +7,7 @@
 #include <crypto/sha3.h>
 #include <asm/unaligned.h>
 
-/*
- * On some 32-bit architectures (h8300), GCC ends up using
- * over 1 KB of stack if we inline the round calculation into the loop
- * in keccakf(). On the other hand, on 64-bit architectures with plenty
- * of [64-bit wide] general purpose registers, not inlining it severely
- * hurts performance. So let's use 64-bitness as a heuristic to decide
- * whether to inline or not.
- */
+ 
 #ifdef CONFIG_64BIT
 #define SHA3_INLINE	inline
 #else
@@ -42,13 +27,13 @@ static const u64 keccakf_rndc[24] = {
 	0x8000000000008080ULL, 0x0000000080000001ULL, 0x8000000080008008ULL
 };
 
-/* update the state with given number of rounds */
+ 
 
 static SHA3_INLINE void keccakf_round(u64 st[25])
 {
 	u64 t[5], tt, bc[5];
 
-	/* Theta */
+	 
 	bc[0] = st[0] ^ st[5] ^ st[10] ^ st[15] ^ st[20];
 	bc[1] = st[1] ^ st[6] ^ st[11] ^ st[16] ^ st[21];
 	bc[2] = st[2] ^ st[7] ^ st[12] ^ st[17] ^ st[22];
@@ -63,7 +48,7 @@ static SHA3_INLINE void keccakf_round(u64 st[25])
 
 	st[0] ^= t[0];
 
-	/* Rho Pi */
+	 
 	tt = st[1];
 	st[ 1] = rol64(st[ 6] ^ t[1], 44);
 	st[ 6] = rol64(st[ 9] ^ t[4], 20);
@@ -90,7 +75,7 @@ static SHA3_INLINE void keccakf_round(u64 st[25])
 	st[ 7] = rol64(st[10] ^ t[0],  3);
 	st[10] = rol64(    tt ^ t[1],  1);
 
-	/* Chi */
+	 
 	bc[ 0] = ~st[ 1] & st[ 2];
 	bc[ 1] = ~st[ 2] & st[ 3];
 	bc[ 2] = ~st[ 3] & st[ 4];
@@ -153,7 +138,7 @@ static void keccakf(u64 st[25])
 
 	for (round = 0; round < KECCAK_ROUNDS; round++) {
 		keccakf_round(st);
-		/* Iota */
+		 
 		st[0] ^= keccakf_rndc[round];
 	}
 }

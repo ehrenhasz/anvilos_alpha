@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * ILITEK Touch IC driver for 23XX, 25XX and Lego series
- *
- * Copyright (C) 2011 ILI Technology Corporation.
- * Copyright (C) 2020 Luca Hsu <luca_hsu@ilitek.com>
- * Copyright (C) 2021 Joe Hung <joe_hung@ilitek.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -74,7 +68,7 @@ struct ilitek_protocol_map {
 };
 
 enum ilitek_cmds {
-	/* common cmds */
+	 
 	GET_PTL_VER = 0,
 	GET_FW_VER,
 	GET_SCRN_RES,
@@ -84,11 +78,11 @@ enum ilitek_cmds {
 	SET_IC_SLEEP,
 	SET_IC_WAKE,
 
-	/* ALWAYS keep at the end */
+	 
 	MAX_CMD_CNT
 };
 
-/* ILITEK I2C R/W APIs */
+ 
 static int ilitek_i2c_write_and_read(struct ilitek_ts_data *ts,
 				     u8 *cmd, int write_len, int delay,
 				     u8 *data, int read_len)
@@ -133,7 +127,7 @@ static int ilitek_i2c_write_and_read(struct ilitek_ts_data *ts,
 	return 0;
 }
 
-/* ILITEK ISR APIs */
+ 
 static void ilitek_touch_down(struct ilitek_ts_data *ts, unsigned int id,
 			      unsigned int x, unsigned int y)
 {
@@ -209,7 +203,7 @@ err_sync_frame:
 	return error;
 }
 
-/* APIs of cmds for ILITEK Touch IC */
+ 
 static int api_protocol_set_cmd(struct ilitek_ts_data *ts,
 				u16 idx, u8 *inbuf, u8 *outbuf)
 {
@@ -352,7 +346,7 @@ static int api_protocol_set_ic_wake(struct ilitek_ts_data *ts,
 }
 
 static const struct ilitek_protocol_map ptl_func_map[] = {
-	/* common cmds */
+	 
 	[GET_PTL_VER] = {
 		ILITEK_TP_CMD_GET_PRL_VER, "GET_PTL_VER",
 		api_protocol_get_ptl_ver
@@ -387,7 +381,7 @@ static const struct ilitek_protocol_map ptl_func_map[] = {
 	},
 };
 
-/* Probe APIs */
+ 
 static void ilitek_reset(struct ilitek_ts_data *ts, int delay)
 {
 	if (ts->reset_gpio) {
@@ -410,7 +404,7 @@ static int ilitek_protocol_init(struct ilitek_ts_data *ts)
 	if (error)
 		return error;
 
-	/* Protocol v3 is not support currently */
+	 
 	if (ts->ptl.ver_major == 0x3 ||
 	    ts->ptl.ver == BL_V1_6 ||
 	    ts->ptl.ver == BL_V1_7)

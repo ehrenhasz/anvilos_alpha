@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2012 Texas Instruments
- * Author: Rob Clark <robdclark@gmail.com>
- */
+
+ 
 
 #include <linux/component.h>
 #include <linux/gpio/consumer.h>
@@ -95,67 +92,63 @@ struct tda998x_priv {
 #define bridge_to_tda998x_priv(x) \
 	container_of(x, struct tda998x_priv, bridge)
 
-/* The TDA9988 series of devices use a paged register scheme.. to simplify
- * things we encode the page # in upper bits of the register #.  To read/
- * write a given register, we need to make sure CURPAGE register is set
- * appropriately.  Which implies reads/writes are not atomic.  Fun!
- */
+ 
 
 #define REG(page, addr) (((page) << 8) | (addr))
 #define REG2ADDR(reg)   ((reg) & 0xff)
 #define REG2PAGE(reg)   (((reg) >> 8) & 0xff)
 
-#define REG_CURPAGE               0xff                /* write */
+#define REG_CURPAGE               0xff                 
 
 
-/* Page 00h: General Control */
-#define REG_VERSION_LSB           REG(0x00, 0x00)     /* read */
-#define REG_MAIN_CNTRL0           REG(0x00, 0x01)     /* read/write */
+ 
+#define REG_VERSION_LSB           REG(0x00, 0x00)      
+#define REG_MAIN_CNTRL0           REG(0x00, 0x01)      
 # define MAIN_CNTRL0_SR           (1 << 0)
 # define MAIN_CNTRL0_DECS         (1 << 1)
 # define MAIN_CNTRL0_DEHS         (1 << 2)
 # define MAIN_CNTRL0_CECS         (1 << 3)
 # define MAIN_CNTRL0_CEHS         (1 << 4)
 # define MAIN_CNTRL0_SCALER       (1 << 7)
-#define REG_VERSION_MSB           REG(0x00, 0x02)     /* read */
-#define REG_SOFTRESET             REG(0x00, 0x0a)     /* write */
+#define REG_VERSION_MSB           REG(0x00, 0x02)      
+#define REG_SOFTRESET             REG(0x00, 0x0a)      
 # define SOFTRESET_AUDIO          (1 << 0)
 # define SOFTRESET_I2C_MASTER     (1 << 1)
-#define REG_DDC_DISABLE           REG(0x00, 0x0b)     /* read/write */
-#define REG_CCLK_ON               REG(0x00, 0x0c)     /* read/write */
-#define REG_I2C_MASTER            REG(0x00, 0x0d)     /* read/write */
+#define REG_DDC_DISABLE           REG(0x00, 0x0b)      
+#define REG_CCLK_ON               REG(0x00, 0x0c)      
+#define REG_I2C_MASTER            REG(0x00, 0x0d)      
 # define I2C_MASTER_DIS_MM        (1 << 0)
 # define I2C_MASTER_DIS_FILT      (1 << 1)
 # define I2C_MASTER_APP_STRT_LAT  (1 << 2)
-#define REG_FEAT_POWERDOWN        REG(0x00, 0x0e)     /* read/write */
+#define REG_FEAT_POWERDOWN        REG(0x00, 0x0e)      
 # define FEAT_POWERDOWN_PREFILT   BIT(0)
 # define FEAT_POWERDOWN_CSC       BIT(1)
 # define FEAT_POWERDOWN_SPDIF     (1 << 3)
-#define REG_INT_FLAGS_0           REG(0x00, 0x0f)     /* read/write */
-#define REG_INT_FLAGS_1           REG(0x00, 0x10)     /* read/write */
-#define REG_INT_FLAGS_2           REG(0x00, 0x11)     /* read/write */
+#define REG_INT_FLAGS_0           REG(0x00, 0x0f)      
+#define REG_INT_FLAGS_1           REG(0x00, 0x10)      
+#define REG_INT_FLAGS_2           REG(0x00, 0x11)      
 # define INT_FLAGS_2_EDID_BLK_RD  (1 << 1)
-#define REG_ENA_ACLK              REG(0x00, 0x16)     /* read/write */
-#define REG_ENA_VP_0              REG(0x00, 0x18)     /* read/write */
-#define REG_ENA_VP_1              REG(0x00, 0x19)     /* read/write */
-#define REG_ENA_VP_2              REG(0x00, 0x1a)     /* read/write */
-#define REG_ENA_AP                REG(0x00, 0x1e)     /* read/write */
-#define REG_VIP_CNTRL_0           REG(0x00, 0x20)     /* write */
+#define REG_ENA_ACLK              REG(0x00, 0x16)      
+#define REG_ENA_VP_0              REG(0x00, 0x18)      
+#define REG_ENA_VP_1              REG(0x00, 0x19)      
+#define REG_ENA_VP_2              REG(0x00, 0x1a)      
+#define REG_ENA_AP                REG(0x00, 0x1e)      
+#define REG_VIP_CNTRL_0           REG(0x00, 0x20)      
 # define VIP_CNTRL_0_MIRR_A       (1 << 7)
 # define VIP_CNTRL_0_SWAP_A(x)    (((x) & 7) << 4)
 # define VIP_CNTRL_0_MIRR_B       (1 << 3)
 # define VIP_CNTRL_0_SWAP_B(x)    (((x) & 7) << 0)
-#define REG_VIP_CNTRL_1           REG(0x00, 0x21)     /* write */
+#define REG_VIP_CNTRL_1           REG(0x00, 0x21)      
 # define VIP_CNTRL_1_MIRR_C       (1 << 7)
 # define VIP_CNTRL_1_SWAP_C(x)    (((x) & 7) << 4)
 # define VIP_CNTRL_1_MIRR_D       (1 << 3)
 # define VIP_CNTRL_1_SWAP_D(x)    (((x) & 7) << 0)
-#define REG_VIP_CNTRL_2           REG(0x00, 0x22)     /* write */
+#define REG_VIP_CNTRL_2           REG(0x00, 0x22)      
 # define VIP_CNTRL_2_MIRR_E       (1 << 7)
 # define VIP_CNTRL_2_SWAP_E(x)    (((x) & 7) << 4)
 # define VIP_CNTRL_2_MIRR_F       (1 << 3)
 # define VIP_CNTRL_2_SWAP_F(x)    (((x) & 7) << 0)
-#define REG_VIP_CNTRL_3           REG(0x00, 0x23)     /* write */
+#define REG_VIP_CNTRL_3           REG(0x00, 0x23)      
 # define VIP_CNTRL_3_X_TGL        (1 << 0)
 # define VIP_CNTRL_3_H_TGL        (1 << 1)
 # define VIP_CNTRL_3_V_TGL        (1 << 2)
@@ -164,65 +157,65 @@ struct tda998x_priv {
 # define VIP_CNTRL_3_SYNC_HS      (1 << 5)
 # define VIP_CNTRL_3_DE_INT       (1 << 6)
 # define VIP_CNTRL_3_EDGE         (1 << 7)
-#define REG_VIP_CNTRL_4           REG(0x00, 0x24)     /* write */
+#define REG_VIP_CNTRL_4           REG(0x00, 0x24)      
 # define VIP_CNTRL_4_BLC(x)       (((x) & 3) << 0)
 # define VIP_CNTRL_4_BLANKIT(x)   (((x) & 3) << 2)
 # define VIP_CNTRL_4_CCIR656      (1 << 4)
 # define VIP_CNTRL_4_656_ALT      (1 << 5)
 # define VIP_CNTRL_4_TST_656      (1 << 6)
 # define VIP_CNTRL_4_TST_PAT      (1 << 7)
-#define REG_VIP_CNTRL_5           REG(0x00, 0x25)     /* write */
+#define REG_VIP_CNTRL_5           REG(0x00, 0x25)      
 # define VIP_CNTRL_5_CKCASE       (1 << 0)
 # define VIP_CNTRL_5_SP_CNT(x)    (((x) & 3) << 1)
-#define REG_MUX_AP                REG(0x00, 0x26)     /* read/write */
+#define REG_MUX_AP                REG(0x00, 0x26)      
 # define MUX_AP_SELECT_I2S	  0x64
 # define MUX_AP_SELECT_SPDIF	  0x40
-#define REG_MUX_VP_VIP_OUT        REG(0x00, 0x27)     /* read/write */
-#define REG_MAT_CONTRL            REG(0x00, 0x80)     /* write */
+#define REG_MUX_VP_VIP_OUT        REG(0x00, 0x27)      
+#define REG_MAT_CONTRL            REG(0x00, 0x80)      
 # define MAT_CONTRL_MAT_SC(x)     (((x) & 3) << 0)
 # define MAT_CONTRL_MAT_BP        (1 << 2)
-#define REG_VIDFORMAT             REG(0x00, 0xa0)     /* write */
-#define REG_REFPIX_MSB            REG(0x00, 0xa1)     /* write */
-#define REG_REFPIX_LSB            REG(0x00, 0xa2)     /* write */
-#define REG_REFLINE_MSB           REG(0x00, 0xa3)     /* write */
-#define REG_REFLINE_LSB           REG(0x00, 0xa4)     /* write */
-#define REG_NPIX_MSB              REG(0x00, 0xa5)     /* write */
-#define REG_NPIX_LSB              REG(0x00, 0xa6)     /* write */
-#define REG_NLINE_MSB             REG(0x00, 0xa7)     /* write */
-#define REG_NLINE_LSB             REG(0x00, 0xa8)     /* write */
-#define REG_VS_LINE_STRT_1_MSB    REG(0x00, 0xa9)     /* write */
-#define REG_VS_LINE_STRT_1_LSB    REG(0x00, 0xaa)     /* write */
-#define REG_VS_PIX_STRT_1_MSB     REG(0x00, 0xab)     /* write */
-#define REG_VS_PIX_STRT_1_LSB     REG(0x00, 0xac)     /* write */
-#define REG_VS_LINE_END_1_MSB     REG(0x00, 0xad)     /* write */
-#define REG_VS_LINE_END_1_LSB     REG(0x00, 0xae)     /* write */
-#define REG_VS_PIX_END_1_MSB      REG(0x00, 0xaf)     /* write */
-#define REG_VS_PIX_END_1_LSB      REG(0x00, 0xb0)     /* write */
-#define REG_VS_LINE_STRT_2_MSB    REG(0x00, 0xb1)     /* write */
-#define REG_VS_LINE_STRT_2_LSB    REG(0x00, 0xb2)     /* write */
-#define REG_VS_PIX_STRT_2_MSB     REG(0x00, 0xb3)     /* write */
-#define REG_VS_PIX_STRT_2_LSB     REG(0x00, 0xb4)     /* write */
-#define REG_VS_LINE_END_2_MSB     REG(0x00, 0xb5)     /* write */
-#define REG_VS_LINE_END_2_LSB     REG(0x00, 0xb6)     /* write */
-#define REG_VS_PIX_END_2_MSB      REG(0x00, 0xb7)     /* write */
-#define REG_VS_PIX_END_2_LSB      REG(0x00, 0xb8)     /* write */
-#define REG_HS_PIX_START_MSB      REG(0x00, 0xb9)     /* write */
-#define REG_HS_PIX_START_LSB      REG(0x00, 0xba)     /* write */
-#define REG_HS_PIX_STOP_MSB       REG(0x00, 0xbb)     /* write */
-#define REG_HS_PIX_STOP_LSB       REG(0x00, 0xbc)     /* write */
-#define REG_VWIN_START_1_MSB      REG(0x00, 0xbd)     /* write */
-#define REG_VWIN_START_1_LSB      REG(0x00, 0xbe)     /* write */
-#define REG_VWIN_END_1_MSB        REG(0x00, 0xbf)     /* write */
-#define REG_VWIN_END_1_LSB        REG(0x00, 0xc0)     /* write */
-#define REG_VWIN_START_2_MSB      REG(0x00, 0xc1)     /* write */
-#define REG_VWIN_START_2_LSB      REG(0x00, 0xc2)     /* write */
-#define REG_VWIN_END_2_MSB        REG(0x00, 0xc3)     /* write */
-#define REG_VWIN_END_2_LSB        REG(0x00, 0xc4)     /* write */
-#define REG_DE_START_MSB          REG(0x00, 0xc5)     /* write */
-#define REG_DE_START_LSB          REG(0x00, 0xc6)     /* write */
-#define REG_DE_STOP_MSB           REG(0x00, 0xc7)     /* write */
-#define REG_DE_STOP_LSB           REG(0x00, 0xc8)     /* write */
-#define REG_TBG_CNTRL_0           REG(0x00, 0xca)     /* write */
+#define REG_VIDFORMAT             REG(0x00, 0xa0)      
+#define REG_REFPIX_MSB            REG(0x00, 0xa1)      
+#define REG_REFPIX_LSB            REG(0x00, 0xa2)      
+#define REG_REFLINE_MSB           REG(0x00, 0xa3)      
+#define REG_REFLINE_LSB           REG(0x00, 0xa4)      
+#define REG_NPIX_MSB              REG(0x00, 0xa5)      
+#define REG_NPIX_LSB              REG(0x00, 0xa6)      
+#define REG_NLINE_MSB             REG(0x00, 0xa7)      
+#define REG_NLINE_LSB             REG(0x00, 0xa8)      
+#define REG_VS_LINE_STRT_1_MSB    REG(0x00, 0xa9)      
+#define REG_VS_LINE_STRT_1_LSB    REG(0x00, 0xaa)      
+#define REG_VS_PIX_STRT_1_MSB     REG(0x00, 0xab)      
+#define REG_VS_PIX_STRT_1_LSB     REG(0x00, 0xac)      
+#define REG_VS_LINE_END_1_MSB     REG(0x00, 0xad)      
+#define REG_VS_LINE_END_1_LSB     REG(0x00, 0xae)      
+#define REG_VS_PIX_END_1_MSB      REG(0x00, 0xaf)      
+#define REG_VS_PIX_END_1_LSB      REG(0x00, 0xb0)      
+#define REG_VS_LINE_STRT_2_MSB    REG(0x00, 0xb1)      
+#define REG_VS_LINE_STRT_2_LSB    REG(0x00, 0xb2)      
+#define REG_VS_PIX_STRT_2_MSB     REG(0x00, 0xb3)      
+#define REG_VS_PIX_STRT_2_LSB     REG(0x00, 0xb4)      
+#define REG_VS_LINE_END_2_MSB     REG(0x00, 0xb5)      
+#define REG_VS_LINE_END_2_LSB     REG(0x00, 0xb6)      
+#define REG_VS_PIX_END_2_MSB      REG(0x00, 0xb7)      
+#define REG_VS_PIX_END_2_LSB      REG(0x00, 0xb8)      
+#define REG_HS_PIX_START_MSB      REG(0x00, 0xb9)      
+#define REG_HS_PIX_START_LSB      REG(0x00, 0xba)      
+#define REG_HS_PIX_STOP_MSB       REG(0x00, 0xbb)      
+#define REG_HS_PIX_STOP_LSB       REG(0x00, 0xbc)      
+#define REG_VWIN_START_1_MSB      REG(0x00, 0xbd)      
+#define REG_VWIN_START_1_LSB      REG(0x00, 0xbe)      
+#define REG_VWIN_END_1_MSB        REG(0x00, 0xbf)      
+#define REG_VWIN_END_1_LSB        REG(0x00, 0xc0)      
+#define REG_VWIN_START_2_MSB      REG(0x00, 0xc1)      
+#define REG_VWIN_START_2_LSB      REG(0x00, 0xc2)      
+#define REG_VWIN_END_2_MSB        REG(0x00, 0xc3)      
+#define REG_VWIN_END_2_LSB        REG(0x00, 0xc4)      
+#define REG_DE_START_MSB          REG(0x00, 0xc5)      
+#define REG_DE_START_LSB          REG(0x00, 0xc6)      
+#define REG_DE_STOP_MSB           REG(0x00, 0xc7)      
+#define REG_DE_STOP_LSB           REG(0x00, 0xc8)      
+#define REG_TBG_CNTRL_0           REG(0x00, 0xca)      
 # define TBG_CNTRL_0_TOP_TGL      (1 << 0)
 # define TBG_CNTRL_0_TOP_SEL      (1 << 1)
 # define TBG_CNTRL_0_DE_EXT       (1 << 2)
@@ -230,7 +223,7 @@ struct tda998x_priv {
 # define TBG_CNTRL_0_FRAME_DIS    (1 << 5)
 # define TBG_CNTRL_0_SYNC_MTHD    (1 << 6)
 # define TBG_CNTRL_0_SYNC_ONCE    (1 << 7)
-#define REG_TBG_CNTRL_1           REG(0x00, 0xcb)     /* write */
+#define REG_TBG_CNTRL_1           REG(0x00, 0xcb)      
 # define TBG_CNTRL_1_H_TGL        (1 << 0)
 # define TBG_CNTRL_1_V_TGL        (1 << 1)
 # define TBG_CNTRL_1_TGL_EN       (1 << 2)
@@ -238,134 +231,133 @@ struct tda998x_priv {
 # define TBG_CNTRL_1_H_EXT        (1 << 4)
 # define TBG_CNTRL_1_V_EXT        (1 << 5)
 # define TBG_CNTRL_1_DWIN_DIS     (1 << 6)
-#define REG_ENABLE_SPACE          REG(0x00, 0xd6)     /* write */
-#define REG_HVF_CNTRL_0           REG(0x00, 0xe4)     /* write */
+#define REG_ENABLE_SPACE          REG(0x00, 0xd6)      
+#define REG_HVF_CNTRL_0           REG(0x00, 0xe4)      
 # define HVF_CNTRL_0_SM           (1 << 7)
 # define HVF_CNTRL_0_RWB          (1 << 6)
 # define HVF_CNTRL_0_PREFIL(x)    (((x) & 3) << 2)
 # define HVF_CNTRL_0_INTPOL(x)    (((x) & 3) << 0)
-#define REG_HVF_CNTRL_1           REG(0x00, 0xe5)     /* write */
+#define REG_HVF_CNTRL_1           REG(0x00, 0xe5)      
 # define HVF_CNTRL_1_FOR          (1 << 0)
 # define HVF_CNTRL_1_YUVBLK       (1 << 1)
 # define HVF_CNTRL_1_VQR(x)       (((x) & 3) << 2)
 # define HVF_CNTRL_1_PAD(x)       (((x) & 3) << 4)
 # define HVF_CNTRL_1_SEMI_PLANAR  (1 << 6)
-#define REG_RPT_CNTRL             REG(0x00, 0xf0)     /* write */
+#define REG_RPT_CNTRL             REG(0x00, 0xf0)      
 # define RPT_CNTRL_REPEAT(x)      ((x) & 15)
-#define REG_I2S_FORMAT            REG(0x00, 0xfc)     /* read/write */
+#define REG_I2S_FORMAT            REG(0x00, 0xfc)      
 # define I2S_FORMAT_PHILIPS       (0 << 0)
 # define I2S_FORMAT_LEFT_J        (2 << 0)
 # define I2S_FORMAT_RIGHT_J       (3 << 0)
-#define REG_AIP_CLKSEL            REG(0x00, 0xfd)     /* write */
+#define REG_AIP_CLKSEL            REG(0x00, 0xfd)      
 # define AIP_CLKSEL_AIP_SPDIF	  (0 << 3)
 # define AIP_CLKSEL_AIP_I2S	  (1 << 3)
 # define AIP_CLKSEL_FS_ACLK	  (0 << 0)
 # define AIP_CLKSEL_FS_MCLK	  (1 << 0)
 # define AIP_CLKSEL_FS_FS64SPDIF  (2 << 0)
 
-/* Page 02h: PLL settings */
-#define REG_PLL_SERIAL_1          REG(0x02, 0x00)     /* read/write */
+ 
+#define REG_PLL_SERIAL_1          REG(0x02, 0x00)      
 # define PLL_SERIAL_1_SRL_FDN     (1 << 0)
 # define PLL_SERIAL_1_SRL_IZ(x)   (((x) & 3) << 1)
 # define PLL_SERIAL_1_SRL_MAN_IZ  (1 << 6)
-#define REG_PLL_SERIAL_2          REG(0x02, 0x01)     /* read/write */
+#define REG_PLL_SERIAL_2          REG(0x02, 0x01)      
 # define PLL_SERIAL_2_SRL_NOSC(x) ((x) << 0)
 # define PLL_SERIAL_2_SRL_PR(x)   (((x) & 0xf) << 4)
-#define REG_PLL_SERIAL_3          REG(0x02, 0x02)     /* read/write */
+#define REG_PLL_SERIAL_3          REG(0x02, 0x02)      
 # define PLL_SERIAL_3_SRL_CCIR    (1 << 0)
 # define PLL_SERIAL_3_SRL_DE      (1 << 2)
 # define PLL_SERIAL_3_SRL_PXIN_SEL (1 << 4)
-#define REG_SERIALIZER            REG(0x02, 0x03)     /* read/write */
-#define REG_BUFFER_OUT            REG(0x02, 0x04)     /* read/write */
-#define REG_PLL_SCG1              REG(0x02, 0x05)     /* read/write */
-#define REG_PLL_SCG2              REG(0x02, 0x06)     /* read/write */
-#define REG_PLL_SCGN1             REG(0x02, 0x07)     /* read/write */
-#define REG_PLL_SCGN2             REG(0x02, 0x08)     /* read/write */
-#define REG_PLL_SCGR1             REG(0x02, 0x09)     /* read/write */
-#define REG_PLL_SCGR2             REG(0x02, 0x0a)     /* read/write */
-#define REG_AUDIO_DIV             REG(0x02, 0x0e)     /* read/write */
+#define REG_SERIALIZER            REG(0x02, 0x03)      
+#define REG_BUFFER_OUT            REG(0x02, 0x04)      
+#define REG_PLL_SCG1              REG(0x02, 0x05)      
+#define REG_PLL_SCG2              REG(0x02, 0x06)      
+#define REG_PLL_SCGN1             REG(0x02, 0x07)      
+#define REG_PLL_SCGN2             REG(0x02, 0x08)      
+#define REG_PLL_SCGR1             REG(0x02, 0x09)      
+#define REG_PLL_SCGR2             REG(0x02, 0x0a)      
+#define REG_AUDIO_DIV             REG(0x02, 0x0e)      
 # define AUDIO_DIV_SERCLK_1       0
 # define AUDIO_DIV_SERCLK_2       1
 # define AUDIO_DIV_SERCLK_4       2
 # define AUDIO_DIV_SERCLK_8       3
 # define AUDIO_DIV_SERCLK_16      4
 # define AUDIO_DIV_SERCLK_32      5
-#define REG_SEL_CLK               REG(0x02, 0x11)     /* read/write */
+#define REG_SEL_CLK               REG(0x02, 0x11)      
 # define SEL_CLK_SEL_CLK1         (1 << 0)
 # define SEL_CLK_SEL_VRF_CLK(x)   (((x) & 3) << 1)
 # define SEL_CLK_ENA_SC_CLK       (1 << 3)
-#define REG_ANA_GENERAL           REG(0x02, 0x12)     /* read/write */
+#define REG_ANA_GENERAL           REG(0x02, 0x12)      
 
 
-/* Page 09h: EDID Control */
-#define REG_EDID_DATA_0           REG(0x09, 0x00)     /* read */
-/* next 127 successive registers are the EDID block */
-#define REG_EDID_CTRL             REG(0x09, 0xfa)     /* read/write */
-#define REG_DDC_ADDR              REG(0x09, 0xfb)     /* read/write */
-#define REG_DDC_OFFS              REG(0x09, 0xfc)     /* read/write */
-#define REG_DDC_SEGM_ADDR         REG(0x09, 0xfd)     /* read/write */
-#define REG_DDC_SEGM              REG(0x09, 0xfe)     /* read/write */
+ 
+#define REG_EDID_DATA_0           REG(0x09, 0x00)      
+ 
+#define REG_EDID_CTRL             REG(0x09, 0xfa)      
+#define REG_DDC_ADDR              REG(0x09, 0xfb)      
+#define REG_DDC_OFFS              REG(0x09, 0xfc)      
+#define REG_DDC_SEGM_ADDR         REG(0x09, 0xfd)      
+#define REG_DDC_SEGM              REG(0x09, 0xfe)      
 
 
-/* Page 10h: information frames and packets */
-#define REG_IF1_HB0               REG(0x10, 0x20)     /* read/write */
-#define REG_IF2_HB0               REG(0x10, 0x40)     /* read/write */
-#define REG_IF3_HB0               REG(0x10, 0x60)     /* read/write */
-#define REG_IF4_HB0               REG(0x10, 0x80)     /* read/write */
-#define REG_IF5_HB0               REG(0x10, 0xa0)     /* read/write */
+ 
+#define REG_IF1_HB0               REG(0x10, 0x20)      
+#define REG_IF2_HB0               REG(0x10, 0x40)      
+#define REG_IF3_HB0               REG(0x10, 0x60)      
+#define REG_IF4_HB0               REG(0x10, 0x80)      
+#define REG_IF5_HB0               REG(0x10, 0xa0)      
 
 
-/* Page 11h: audio settings and content info packets */
-#define REG_AIP_CNTRL_0           REG(0x11, 0x00)     /* read/write */
+ 
+#define REG_AIP_CNTRL_0           REG(0x11, 0x00)      
 # define AIP_CNTRL_0_RST_FIFO     (1 << 0)
 # define AIP_CNTRL_0_SWAP         (1 << 1)
 # define AIP_CNTRL_0_LAYOUT       (1 << 2)
 # define AIP_CNTRL_0_ACR_MAN      (1 << 5)
 # define AIP_CNTRL_0_RST_CTS      (1 << 6)
-#define REG_CA_I2S                REG(0x11, 0x01)     /* read/write */
+#define REG_CA_I2S                REG(0x11, 0x01)      
 # define CA_I2S_CA_I2S(x)         (((x) & 31) << 0)
 # define CA_I2S_HBR_CHSTAT        (1 << 6)
-#define REG_LATENCY_RD            REG(0x11, 0x04)     /* read/write */
-#define REG_ACR_CTS_0             REG(0x11, 0x05)     /* read/write */
-#define REG_ACR_CTS_1             REG(0x11, 0x06)     /* read/write */
-#define REG_ACR_CTS_2             REG(0x11, 0x07)     /* read/write */
-#define REG_ACR_N_0               REG(0x11, 0x08)     /* read/write */
-#define REG_ACR_N_1               REG(0x11, 0x09)     /* read/write */
-#define REG_ACR_N_2               REG(0x11, 0x0a)     /* read/write */
-#define REG_CTS_N                 REG(0x11, 0x0c)     /* read/write */
+#define REG_LATENCY_RD            REG(0x11, 0x04)      
+#define REG_ACR_CTS_0             REG(0x11, 0x05)      
+#define REG_ACR_CTS_1             REG(0x11, 0x06)      
+#define REG_ACR_CTS_2             REG(0x11, 0x07)      
+#define REG_ACR_N_0               REG(0x11, 0x08)      
+#define REG_ACR_N_1               REG(0x11, 0x09)      
+#define REG_ACR_N_2               REG(0x11, 0x0a)      
+#define REG_CTS_N                 REG(0x11, 0x0c)      
 # define CTS_N_K(x)               (((x) & 7) << 0)
 # define CTS_N_M(x)               (((x) & 3) << 4)
-#define REG_ENC_CNTRL             REG(0x11, 0x0d)     /* read/write */
+#define REG_ENC_CNTRL             REG(0x11, 0x0d)      
 # define ENC_CNTRL_RST_ENC        (1 << 0)
 # define ENC_CNTRL_RST_SEL        (1 << 1)
 # define ENC_CNTRL_CTL_CODE(x)    (((x) & 3) << 2)
-#define REG_DIP_FLAGS             REG(0x11, 0x0e)     /* read/write */
+#define REG_DIP_FLAGS             REG(0x11, 0x0e)      
 # define DIP_FLAGS_ACR            (1 << 0)
 # define DIP_FLAGS_GC             (1 << 1)
-#define REG_DIP_IF_FLAGS          REG(0x11, 0x0f)     /* read/write */
+#define REG_DIP_IF_FLAGS          REG(0x11, 0x0f)      
 # define DIP_IF_FLAGS_IF1         (1 << 1)
 # define DIP_IF_FLAGS_IF2         (1 << 2)
 # define DIP_IF_FLAGS_IF3         (1 << 3)
 # define DIP_IF_FLAGS_IF4         (1 << 4)
 # define DIP_IF_FLAGS_IF5         (1 << 5)
-#define REG_CH_STAT_B(x)          REG(0x11, 0x14 + (x)) /* read/write */
+#define REG_CH_STAT_B(x)          REG(0x11, 0x14 + (x))  
 
 
-/* Page 12h: HDCP and OTP */
-#define REG_TX3                   REG(0x12, 0x9a)     /* read/write */
-#define REG_TX4                   REG(0x12, 0x9b)     /* read/write */
+ 
+#define REG_TX3                   REG(0x12, 0x9a)      
+#define REG_TX4                   REG(0x12, 0x9b)      
 # define TX4_PD_RAM               (1 << 1)
-#define REG_TX33                  REG(0x12, 0xb8)     /* read/write */
+#define REG_TX33                  REG(0x12, 0xb8)      
 # define TX33_HDMI                (1 << 1)
 
 
-/* Page 13h: Gamut related metadata packets */
+ 
 
 
 
-/* CEC registers: (not paged)
- */
-#define REG_CEC_INTSTATUS	  0xee		      /* read */
+ 
+#define REG_CEC_INTSTATUS	  0xee		       
 # define CEC_INTSTATUS_CEC	  (1 << 0)
 # define CEC_INTSTATUS_HDMI	  (1 << 1)
 #define REG_CEC_CAL_XOSC_CTRL1    0xf2
@@ -374,20 +366,20 @@ struct tda998x_priv {
 # define CEC_DES_FREQ2_DIS_AUTOCAL BIT(7)
 #define REG_CEC_CLK               0xf6
 # define CEC_CLK_FRO              0x11
-#define REG_CEC_FRO_IM_CLK_CTRL   0xfb                /* read/write */
+#define REG_CEC_FRO_IM_CLK_CTRL   0xfb                 
 # define CEC_FRO_IM_CLK_CTRL_GHOST_DIS (1 << 7)
 # define CEC_FRO_IM_CLK_CTRL_ENA_OTP   (1 << 6)
 # define CEC_FRO_IM_CLK_CTRL_IMCLK_SEL (1 << 1)
 # define CEC_FRO_IM_CLK_CTRL_FRO_DIV   (1 << 0)
-#define REG_CEC_RXSHPDINTENA	  0xfc		      /* read/write */
-#define REG_CEC_RXSHPDINT	  0xfd		      /* read */
+#define REG_CEC_RXSHPDINTENA	  0xfc		       
+#define REG_CEC_RXSHPDINT	  0xfd		       
 # define CEC_RXSHPDINT_RXSENS     BIT(0)
 # define CEC_RXSHPDINT_HPD        BIT(1)
-#define REG_CEC_RXSHPDLEV         0xfe                /* read */
+#define REG_CEC_RXSHPDLEV         0xfe                 
 # define CEC_RXSHPDLEV_RXSENS     (1 << 0)
 # define CEC_RXSHPDLEV_HPD        (1 << 1)
 
-#define REG_CEC_ENAMODS           0xff                /* read/write */
+#define REG_CEC_ENAMODS           0xff                 
 # define CEC_ENAMODS_EN_CEC_CLK   (1 << 7)
 # define CEC_ENAMODS_DIS_FRO      (1 << 6)
 # define CEC_ENAMODS_DIS_CCLK     (1 << 5)
@@ -396,7 +388,7 @@ struct tda998x_priv {
 # define CEC_ENAMODS_EN_CEC       (1 << 0)
 
 
-/* Device versions: */
+ 
 #define TDA9989N2                 0x0101
 #define TDA19989                  0x0201
 #define TDA19989N2                0x0202
@@ -470,12 +462,12 @@ static void tda998x_cec_set_calibration(struct tda998x_priv *priv, bool enable)
 		cec_write(priv, 0xf3, 0xc0);
 		cec_write(priv, 0xf4, 0xd4);
 
-		/* Enable automatic calibration mode */
+		 
 		val = cec_read(priv, REG_CEC_DES_FREQ2);
 		val &= ~CEC_DES_FREQ2_DIS_AUTOCAL;
 		cec_write(priv, REG_CEC_DES_FREQ2, val);
 
-		/* Enable free running oscillator */
+		 
 		cec_write(priv, REG_CEC_CLK, CEC_CLK_FRO);
 		cec_enamods(priv, CEC_ENAMODS_DIS_FRO, false);
 
@@ -486,10 +478,7 @@ static void tda998x_cec_set_calibration(struct tda998x_priv *priv, bool enable)
 	}
 }
 
-/*
- * Calibration for the internal oscillator: we need to set calibration mode,
- * and then pulse the IRQ line low for a 10ms ± 1% period.
- */
+ 
 static void tda998x_cec_calibration(struct tda998x_priv *priv)
 {
 	struct gpio_desc *calib = priv->calib;
@@ -610,7 +599,7 @@ static void
 reg_write_range(struct tda998x_priv *priv, u16 reg, u8 *p, int cnt)
 {
 	struct i2c_client *client = priv->hdmi;
-	/* This is the maximum size of the buffer passed in */
+	 
 	u8 buf[MAX_WRITE_RANGE_BUF + 1];
 	int ret;
 
@@ -708,17 +697,17 @@ reg_clear(struct tda998x_priv *priv, u16 reg, u8 val)
 static void
 tda998x_reset(struct tda998x_priv *priv)
 {
-	/* reset audio and i2c master: */
+	 
 	reg_write(priv, REG_SOFTRESET, SOFTRESET_AUDIO | SOFTRESET_I2C_MASTER);
 	msleep(50);
 	reg_write(priv, REG_SOFTRESET, 0);
 	msleep(50);
 
-	/* reset transmitter: */
+	 
 	reg_set(priv, REG_MAIN_CNTRL0, MAIN_CNTRL0_SR);
 	reg_clear(priv, REG_MAIN_CNTRL0, MAIN_CNTRL0_SR);
 
-	/* PLL registers common configuration */
+	 
 	reg_write(priv, REG_PLL_SERIAL_1, 0x00);
 	reg_write(priv, REG_PLL_SERIAL_2, PLL_SERIAL_2_SRL_NOSC(1));
 	reg_write(priv, REG_PLL_SERIAL_3, 0x00);
@@ -733,21 +722,11 @@ tda998x_reset(struct tda998x_priv *priv)
 	reg_write(priv, REG_PLL_SCGR2,    0x00);
 	reg_write(priv, REG_PLL_SCG2,     0x10);
 
-	/* Write the default value MUX register */
+	 
 	reg_write(priv, REG_MUX_VP_VIP_OUT, 0x24);
 }
 
-/*
- * The TDA998x has a problem when trying to read the EDID close to a
- * HPD assertion: it needs a delay of 100ms to avoid timing out while
- * trying to read EDID data.
- *
- * However, tda998x_connector_get_modes() may be called at any moment
- * after tda998x_connector_detect() indicates that we are connected, so
- * we need to delay probing modes in tda998x_connector_get_modes() after
- * we have seen a HPD inactive->active transition.  This code implements
- * that delay.
- */
+ 
 static void tda998x_edid_delay_done(struct timer_list *t)
 {
 	struct tda998x_priv *priv = from_timer(priv, t, edid_delay_timer);
@@ -768,11 +747,7 @@ static int tda998x_edid_delay_wait(struct tda998x_priv *priv)
 	return wait_event_killable(priv->edid_delay_waitq, !priv->edid_delay_active);
 }
 
-/*
- * We need to run the KMS hotplug event helper outside of our threaded
- * interrupt routine as this can call back into our get_modes method,
- * which will want to make use of interrupts.
- */
+ 
 static void tda998x_detect_work(struct work_struct *work)
 {
 	struct tda998x_priv *priv =
@@ -783,9 +758,7 @@ static void tda998x_detect_work(struct work_struct *work)
 		drm_kms_helper_hotplug_event(dev);
 }
 
-/*
- * only 2 interrupts may occur: screen plug/unplug and EDID read
- */
+ 
 static irqreturn_t tda998x_irq_thread(int irq, void *data)
 {
 	struct tda998x_priv *priv = data;
@@ -882,7 +855,7 @@ static void tda998x_write_vsi(struct tda998x_priv *priv,
 		tda998x_write_if(priv, DIP_IF_FLAGS_IF1, REG_IF1_HB0, &frame);
 }
 
-/* Audio support */
+ 
 
 static const struct tda998x_audio_route tda998x_audio_route[AUDIO_ROUTE_NUM] = {
 	[AUDIO_ROUTE_I2S] = {
@@ -897,7 +870,7 @@ static const struct tda998x_audio_route tda998x_audio_route[AUDIO_ROUTE_NUM] = {
 	},
 };
 
-/* Configure the TDA998x audio data and clock routing. */
+ 
 static int tda998x_derive_routing(struct tda998x_priv *priv,
 				  struct tda998x_audio_settings *s,
 				  unsigned int route)
@@ -912,15 +885,7 @@ static int tda998x_derive_routing(struct tda998x_priv *priv,
 	return 0;
 }
 
-/*
- * The audio clock divisor register controls a divider producing Audio_Clk_Out
- * from SERclk by dividing it by 2^n where 0 <= n <= 5.  We don't know what
- * Audio_Clk_Out or SERclk are. We guess SERclk is the same as TMDS clock.
- *
- * It seems that Audio_Clk_Out must be the smallest value that is greater
- * than 128*fs, otherwise audio does not function. There is some suggestion
- * that 126*fs is a better value.
- */
+ 
 static u8 tda998x_get_adiv(struct tda998x_priv *priv, unsigned int fs)
 {
 	unsigned long min_audio_clk = fs * 128;
@@ -938,30 +903,7 @@ static u8 tda998x_get_adiv(struct tda998x_priv *priv, unsigned int fs)
 	return adiv;
 }
 
-/*
- * In auto-CTS mode, the TDA998x uses a "measured time stamp" counter to
- * generate the CTS value.  It appears that the "measured time stamp" is
- * the number of TDMS clock cycles within a number of audio input clock
- * cycles defined by the k and N parameters defined below, in a similar
- * way to that which is set out in the CTS generation in the HDMI spec.
- *
- *  tmdsclk ----> mts -> /m ---> CTS
- *                 ^
- *  sclk -> /k -> /N
- *
- * CTS = mts / m, where m is 2^M.
- * /k is a divider based on the K value below, K+1 for K < 4, or 8 for K >= 4
- * /N is a divider based on the HDMI specified N value.
- *
- * This produces the following equation:
- *  CTS = tmds_clock * k * N / (sclk * m)
- *
- * When combined with the sink-side equation, and realising that sclk is
- * bclk_ratio * fs, we end up with:
- *  k = m * bclk_ratio / 128.
- *
- * Note: S/PDIF always uses a bclk_ratio of 64.
- */
+ 
 static int tda998x_derive_cts_n(struct tda998x_priv *priv,
 				struct tda998x_audio_settings *settings,
 				unsigned int ratio)
@@ -1007,30 +949,27 @@ static void tda998x_configure_audio(struct tda998x_priv *priv)
 	u8 buf[6], adiv;
 	u32 n;
 
-	/* If audio is not configured, there is nothing to do. */
+	 
 	if (settings->ena_ap == 0)
 		return;
 
 	adiv = tda998x_get_adiv(priv, settings->sample_rate);
 
-	/* Enable audio ports */
+	 
 	reg_write(priv, REG_ENA_AP, settings->ena_ap);
 	reg_write(priv, REG_ENA_ACLK, settings->route->ena_aclk);
 	reg_write(priv, REG_MUX_AP, settings->route->mux_ap);
 	reg_write(priv, REG_I2S_FORMAT, settings->i2s_format);
 	reg_write(priv, REG_AIP_CLKSEL, settings->route->aip_clksel);
 	reg_clear(priv, REG_AIP_CNTRL_0, AIP_CNTRL_0_LAYOUT |
-					AIP_CNTRL_0_ACR_MAN);	/* auto CTS */
+					AIP_CNTRL_0_ACR_MAN);	 
 	reg_write(priv, REG_CTS_N, settings->cts_n);
 	reg_write(priv, REG_AUDIO_DIV, adiv);
 
-	/*
-	 * This is the approximate value of N, which happens to be
-	 * the recommended values for non-coherent clocks.
-	 */
+	 
 	n = 128 * settings->sample_rate / 1000;
 
-	/* Write the CTS and N values */
+	 
 	buf[0] = 0x44;
 	buf[1] = 0x42;
 	buf[2] = 0x01;
@@ -1039,14 +978,11 @@ static void tda998x_configure_audio(struct tda998x_priv *priv)
 	buf[5] = n >> 16;
 	reg_write_range(priv, REG_ACR_CTS_0, buf, 6);
 
-	/* Reset CTS generator */
+	 
 	reg_set(priv, REG_AIP_CNTRL_0, AIP_CNTRL_0_RST_CTS);
 	reg_clear(priv, REG_AIP_CNTRL_0, AIP_CNTRL_0_RST_CTS);
 
-	/* Write the channel status
-	 * The REG_CH_STAT_B-registers skip IEC958 AES2 byte, because
-	 * there is a separate register for each I2S wire.
-	 */
+	 
 	buf[0] = settings->status[0];
 	buf[1] = settings->status[1];
 	buf[2] = settings->status[3];
@@ -1190,7 +1126,7 @@ static int tda998x_audio_codec_init(struct tda998x_priv *priv,
 	return PTR_ERR_OR_ZERO(priv->audio_pdev);
 }
 
-/* DRM connector functions */
+ 
 
 static enum drm_connector_status
 tda998x_connector_detect(struct drm_connector *connector, bool force)
@@ -1232,14 +1168,14 @@ static int read_edid_block(void *data, u8 *buf, unsigned int blk, size_t length)
 	reg_write(priv, REG_DDC_SEGM_ADDR, 0x60);
 	reg_write(priv, REG_DDC_SEGM, segptr);
 
-	/* enable reading EDID: */
+	 
 	priv->wq_edid_wait = 1;
 	reg_write(priv, REG_EDID_CTRL, 0x1);
 
-	/* flag must be cleared by sw: */
+	 
 	reg_write(priv, REG_EDID_CTRL, 0x0);
 
-	/* wait for block read to complete: */
+	 
 	if (priv->hdmi->irq) {
 		i = wait_event_timeout(priv->wq_edid,
 					!priv->wq_edid_wait,
@@ -1286,11 +1222,7 @@ static int tda998x_connector_get_modes(struct drm_connector *connector)
 	struct edid *edid;
 	int n;
 
-	/*
-	 * If we get killed while waiting for the HPD timeout, return
-	 * no modes found: we are not in a restartable path, so we
-	 * can't handle signals gracefully.
-	 */
+	 
 	if (tda998x_edid_delay_wait(priv))
 		return 0;
 
@@ -1360,7 +1292,7 @@ static int tda998x_connector_init(struct tda998x_priv *priv,
 	return 0;
 }
 
-/* DRM bridge functions */
+ 
 
 static int tda998x_bridge_attach(struct drm_bridge *bridge,
 				 enum drm_bridge_attach_flags flags)
@@ -1386,7 +1318,7 @@ static enum drm_mode_status tda998x_bridge_mode_valid(struct drm_bridge *bridge,
 				     const struct drm_display_info *info,
 				     const struct drm_display_mode *mode)
 {
-	/* TDA19988 dotclock can go up to 165MHz */
+	 
 	struct tda998x_priv *priv = bridge_to_tda998x_priv(bridge);
 
 	if (mode->clock > ((priv->rev == TDA19988) ? 165000 : 150000))
@@ -1403,11 +1335,11 @@ static void tda998x_bridge_enable(struct drm_bridge *bridge)
 	struct tda998x_priv *priv = bridge_to_tda998x_priv(bridge);
 
 	if (!priv->is_on) {
-		/* enable video ports, audio will be enabled later */
+		 
 		reg_write(priv, REG_ENA_VP_0, 0xff);
 		reg_write(priv, REG_ENA_VP_1, 0xff);
 		reg_write(priv, REG_ENA_VP_2, 0xff);
-		/* set muxing after enabling ports: */
+		 
 		reg_write(priv, REG_VIP_CNTRL_0, priv->vip_cntrl_0);
 		reg_write(priv, REG_VIP_CNTRL_1, priv->vip_cntrl_1);
 		reg_write(priv, REG_VIP_CNTRL_2, priv->vip_cntrl_2);
@@ -1421,7 +1353,7 @@ static void tda998x_bridge_disable(struct drm_bridge *bridge)
 	struct tda998x_priv *priv = bridge_to_tda998x_priv(bridge);
 
 	if (priv->is_on) {
-		/* disable video ports */
+		 
 		reg_write(priv, REG_ENA_VP_0, 0x00);
 		reg_write(priv, REG_ENA_VP_1, 0x00);
 		reg_write(priv, REG_ENA_VP_2, 0x00);
@@ -1445,33 +1377,13 @@ static void tda998x_bridge_mode_set(struct drm_bridge *bridge,
 	u16 de_pix_s, de_pix_e;
 	u8 reg, div, rep, sel_clk;
 
-	/*
-	 * Since we are "computer" like, our source invariably produces
-	 * full-range RGB.  If the monitor supports full-range, then use
-	 * it, otherwise reduce to limited-range.
-	 */
+	 
 	priv->rgb_quant_range =
 		priv->connector.display_info.rgb_quant_range_selectable ?
 		HDMI_QUANTIZATION_RANGE_FULL :
 		drm_default_rgb_quant_range(adjusted_mode);
 
-	/*
-	 * Internally TDA998x is using ITU-R BT.656 style sync but
-	 * we get VESA style sync. TDA998x is using a reference pixel
-	 * relative to ITU to sync to the input frame and for output
-	 * sync generation. Currently, we are using reference detection
-	 * from HS/VS, i.e. REFPIX/REFLINE denote frame start sync point
-	 * which is position of rising VS with coincident rising HS.
-	 *
-	 * Now there is some issues to take care of:
-	 * - HDMI data islands require sync-before-active
-	 * - TDA998x register values must be > 0 to be enabled
-	 * - REFLINE needs an additional offset of +1
-	 * - REFPIX needs an addtional offset of +1 for UYUV and +3 for RGB
-	 *
-	 * So we add +1 to all horizontal and vertical register values,
-	 * plus an additional +3 for REFPIX as we are using RGB input only.
-	 */
+	 
 	n_pix        = mode->htotal;
 	n_line       = mode->vtotal;
 
@@ -1481,11 +1393,7 @@ static void tda998x_bridge_mode_set(struct drm_bridge *bridge,
 	de_pix_s     = mode->htotal - mode->hdisplay;
 	ref_pix      = 3 + hs_pix_s;
 
-	/*
-	 * Attached LCD controllers may generate broken sync. Allow
-	 * those to adjust the position of the rising VS edge by adding
-	 * HSKEW to ref_pix.
-	 */
+	 
 	if (adjusted_mode->flags & DRM_MODE_FLAG_HSKEW)
 		ref_pix += adjusted_mode->hskew;
 
@@ -1516,25 +1424,15 @@ static void tda998x_bridge_mode_set(struct drm_bridge *bridge,
 			       (mode->vsync_end - mode->vsync_start)/2;
 	}
 
-	/*
-	 * Select pixel repeat depending on the double-clock flag
-	 * (which means we have to repeat each pixel once.)
-	 */
+	 
 	rep = mode->flags & DRM_MODE_FLAG_DBLCLK ? 1 : 0;
 	sel_clk = SEL_CLK_ENA_SC_CLK | SEL_CLK_SEL_CLK1 |
 		  SEL_CLK_SEL_VRF_CLK(rep ? 2 : 0);
 
-	/* the TMDS clock is scaled up by the pixel repeat */
+	 
 	tmds_clock = mode->clock * (1 + rep);
 
-	/*
-	 * The divisor is power-of-2. The TDA9983B datasheet gives
-	 * this as ranges of Msample/s, which is 10x the TMDS clock:
-	 *   0 - 800 to 1500 Msample/s
-	 *   1 - 400 to 800 Msample/s
-	 *   2 - 200 to 400 Msample/s
-	 *   3 - as 2 above
-	 */
+	 
 	for (div = 0; div < 3; div++)
 		if (80000 >> div <= tmds_clock)
 			break;
@@ -1543,15 +1441,15 @@ static void tda998x_bridge_mode_set(struct drm_bridge *bridge,
 
 	priv->tmds_clock = tmds_clock;
 
-	/* mute the audio FIFO: */
+	 
 	reg_set(priv, REG_AIP_CNTRL_0, AIP_CNTRL_0_RST_FIFO);
 
-	/* set HDMI HDCP mode off: */
+	 
 	reg_write(priv, REG_TBG_CNTRL_1, TBG_CNTRL_1_DWIN_DIS);
 	reg_clear(priv, REG_TX33, TX33_HDMI);
 	reg_write(priv, REG_ENC_CNTRL, ENC_CNTRL_CTL_CODE(0));
 
-	/* no pre-filter or interpolator: */
+	 
 	reg_write(priv, REG_HVF_CNTRL_0, HVF_CNTRL_0_PREFIL(0) |
 			HVF_CNTRL_0_INTPOL(0));
 	reg_set(priv, REG_FEAT_POWERDOWN, FEAT_POWERDOWN_PREFILT);
@@ -1570,7 +1468,7 @@ static void tda998x_bridge_mode_set(struct drm_bridge *bridge,
 	reg_write(priv, REG_PLL_SERIAL_2, PLL_SERIAL_2_SRL_NOSC(div) |
 			PLL_SERIAL_2_SRL_PR(rep));
 
-	/* set color matrix according to output rgb quant range */
+	 
 	if (priv->rgb_quant_range == HDMI_QUANTIZATION_RANGE_LIMITED) {
 		static u8 tda998x_full_to_limited_range[] = {
 			MAT_CONTRL_MAT_SC(2),
@@ -1590,18 +1488,13 @@ static void tda998x_bridge_mode_set(struct drm_bridge *bridge,
 		reg_set(priv, REG_FEAT_POWERDOWN, FEAT_POWERDOWN_CSC);
 	}
 
-	/* set BIAS tmds value: */
+	 
 	reg_write(priv, REG_ANA_GENERAL, 0x09);
 
-	/*
-	 * Sync on rising HSYNC/VSYNC
-	 */
+	 
 	reg = VIP_CNTRL_3_SYNC_HS;
 
-	/*
-	 * TDA19988 requires high-active sync at input stage,
-	 * so invert low-active sync provided by master encoder here
-	 */
+	 
 	if (mode->flags & DRM_MODE_FLAG_NHSYNC)
 		reg |= VIP_CNTRL_3_H_TGL;
 	if (mode->flags & DRM_MODE_FLAG_NVSYNC)
@@ -1631,14 +1524,11 @@ static void tda998x_bridge_mode_set(struct drm_bridge *bridge,
 	reg_write16(priv, REG_DE_STOP_MSB, de_pix_e);
 
 	if (priv->rev == TDA19988) {
-		/* let incoming pixels fill the active space (if any) */
+		 
 		reg_write(priv, REG_ENABLE_SPACE, 0x00);
 	}
 
-	/*
-	 * Always generate sync polarity relative to input sync and
-	 * revert input stage toggled sync at output stage
-	 */
+	 
 	reg = TBG_CNTRL_1_DWIN_DIS | TBG_CNTRL_1_TGL_EN;
 	if (mode->flags & DRM_MODE_FLAG_NHSYNC)
 		reg |= TBG_CNTRL_1_H_TGL;
@@ -1646,24 +1536,14 @@ static void tda998x_bridge_mode_set(struct drm_bridge *bridge,
 		reg |= TBG_CNTRL_1_V_TGL;
 	reg_write(priv, REG_TBG_CNTRL_1, reg);
 
-	/* must be last register set: */
+	 
 	reg_write(priv, REG_TBG_CNTRL_0, 0);
 
-	/* CEA-861B section 6 says that:
-	 * CEA version 1 (CEA-861) has no support for infoframes.
-	 * CEA version 2 (CEA-861A) supports version 1 AVI infoframes,
-	 * and optional basic audio.
-	 * CEA version 3 (CEA-861B) supports version 1 and 2 AVI infoframes,
-	 * and optional digital audio, with audio infoframes.
-	 *
-	 * Since we only support generation of version 2 AVI infoframes,
-	 * ignore CEA version 2 and below (iow, behave as if we're a
-	 * CEA-861 source.)
-	 */
+	 
 	priv->supports_infoframes = priv->connector.display_info.cea_rev >= 3;
 
 	if (priv->supports_infoframes) {
-		/* We need to turn HDMI HDCP stuff on to get audio through */
+		 
 		reg &= ~TBG_CNTRL_1_DWIN_DIS;
 		reg_write(priv, REG_TBG_CNTRL_1, reg);
 		reg_write(priv, REG_ENC_CNTRL, ENC_CNTRL_CTL_CODE(1));
@@ -1688,7 +1568,7 @@ static const struct drm_bridge_funcs tda998x_bridge_funcs = {
 	.enable = tda998x_bridge_enable,
 };
 
-/* I2C driver functions */
+ 
 
 static int tda998x_get_audio_ports(struct tda998x_priv *priv,
 				   struct device_node *np)
@@ -1789,7 +1669,7 @@ static void tda998x_destroy(struct device *dev)
 
 	drm_bridge_remove(&priv->bridge);
 
-	/* disable all IRQs and free the IRQ handler */
+	 
 	cec_write(priv, REG_CEC_RXSHPDINTENA, 0);
 	reg_clear(priv, REG_INT_FLAGS_2, INT_FLAGS_2_EDID_BLK_RD);
 
@@ -1822,8 +1702,8 @@ static int tda998x_create(struct device *dev)
 
 	dev_set_drvdata(dev, priv);
 
-	mutex_init(&priv->mutex);	/* protect the page access */
-	mutex_init(&priv->audio_mutex); /* protect access from audio thread */
+	mutex_init(&priv->mutex);	 
+	mutex_init(&priv->audio_mutex);  
 	mutex_init(&priv->edid_mutex);
 	INIT_LIST_HEAD(&priv->bridge.list);
 	init_waitqueue_head(&priv->edid_delay_waitq);
@@ -1834,18 +1714,18 @@ static int tda998x_create(struct device *dev)
 	priv->vip_cntrl_1 = VIP_CNTRL_1_SWAP_C(0) | VIP_CNTRL_1_SWAP_D(1);
 	priv->vip_cntrl_2 = VIP_CNTRL_2_SWAP_E(4) | VIP_CNTRL_2_SWAP_F(5);
 
-	/* CEC I2C address bound to TDA998x I2C addr by configuration pins */
+	 
 	priv->cec_addr = 0x34 + (client->addr & 0x03);
 	priv->current_page = 0xff;
 	priv->hdmi = client;
 
-	/* wake up the device: */
+	 
 	cec_write(priv, REG_CEC_ENAMODS,
 			CEC_ENAMODS_EN_RXSENS | CEC_ENAMODS_EN_HDMI);
 
 	tda998x_reset(priv);
 
-	/* read version: */
+	 
 	rev_lo = reg_read(priv, REG_VERSION_LSB);
 	if (rev_lo < 0) {
 		dev_err(dev, "failed to read version: %d\n", rev_lo);
@@ -1860,8 +1740,8 @@ static int tda998x_create(struct device *dev)
 
 	priv->rev = rev_lo | rev_hi << 8;
 
-	/* mask off feature bits: */
-	priv->rev &= ~0x30; /* not-hdcp and not-scalar bit */
+	 
+	priv->rev &= ~0x30;  
 
 	switch (priv->rev) {
 	case TDA9989N2:
@@ -1881,33 +1761,33 @@ static int tda998x_create(struct device *dev)
 		return -ENXIO;
 	}
 
-	/* after reset, enable DDC: */
+	 
 	reg_write(priv, REG_DDC_DISABLE, 0x00);
 
-	/* set clock on DDC channel: */
+	 
 	reg_write(priv, REG_TX3, 39);
 
-	/* if necessary, disable multi-master: */
+	 
 	if (priv->rev == TDA19989)
 		reg_set(priv, REG_I2C_MASTER, I2C_MASTER_DIS_MM);
 
 	cec_write(priv, REG_CEC_FRO_IM_CLK_CTRL,
 			CEC_FRO_IM_CLK_CTRL_GHOST_DIS | CEC_FRO_IM_CLK_CTRL_IMCLK_SEL);
 
-	/* ensure interrupts are disabled */
+	 
 	cec_write(priv, REG_CEC_RXSHPDINTENA, 0);
 
-	/* clear pending interrupts */
+	 
 	cec_read(priv, REG_CEC_RXSHPDINT);
 	reg_read(priv, REG_INT_FLAGS_0);
 	reg_read(priv, REG_INT_FLAGS_1);
 	reg_read(priv, REG_INT_FLAGS_2);
 
-	/* initialize the optional IRQ */
+	 
 	if (client->irq) {
 		unsigned long irq_flags;
 
-		/* init read EDID waitqueue and HDP work */
+		 
 		init_waitqueue_head(&priv->wq_edid);
 
 		irq_flags =
@@ -1925,7 +1805,7 @@ static int tda998x_create(struct device *dev)
 			goto err_irq;
 		}
 
-		/* enable HPD irq */
+		 
 		cec_write(priv, REG_CEC_RXSHPDINTENA, CEC_RXSHPDLEV_HPD);
 	}
 
@@ -1942,14 +1822,7 @@ static int tda998x_create(struct device *dev)
 	priv->cec_glue.open = tda998x_cec_hook_open;
 	priv->cec_glue.release = tda998x_cec_hook_release;
 
-	/*
-	 * Some TDA998x are actually two I2C devices merged onto one piece
-	 * of silicon: TDA9989 and TDA19989 combine the HDMI transmitter
-	 * with a slightly modified TDA9950 CEC device.  The CEC device
-	 * is at the TDA9950 address, with the address pins strapped across
-	 * to the TDA998x address pins.  Hence, it always has the same
-	 * offset.
-	 */
+	 
 	memset(&cec_info, 0, sizeof(cec_info));
 	strscpy(cec_info.type, "tda9950", sizeof(cec_info.type));
 	cec_info.addr = priv->cec_addr;
@@ -1962,11 +1835,11 @@ static int tda998x_create(struct device *dev)
 		goto fail;
 	}
 
-	/* enable EDID read irq: */
+	 
 	reg_set(priv, REG_INT_FLAGS_2, INT_FLAGS_2_EDID_BLK_RD);
 
 	if (np) {
-		/* get the device tree parameters */
+		 
 		ret = of_property_read_u32(np, "video-ports", &video);
 		if (ret == 0) {
 			priv->vip_cntrl_0 = video >> 16;
@@ -2002,7 +1875,7 @@ err_irq:
 	return ret;
 }
 
-/* DRM encoder functions */
+ 
 
 static int tda998x_encoder_init(struct device *dev, struct drm_device *drm)
 {
@@ -2013,7 +1886,7 @@ static int tda998x_encoder_init(struct device *dev, struct drm_device *drm)
 	if (dev->of_node)
 		crtcs = drm_of_find_possible_crtcs(drm, dev->of_node);
 
-	/* If no CRTCs were found, fall back to our old behaviour */
+	 
 	if (crtcs == 0) {
 		dev_warn(dev, "Falling back to first CRTC\n");
 		crtcs = 1 << 0;

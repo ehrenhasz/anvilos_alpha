@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/******************************************************************************
- *
- * Copyright(c) 2007 - 2011 Realtek Corporation. All rights reserved.
- *
- ******************************************************************************/
+
+ 
 
 #include "odm_precomp.h"
 
@@ -11,26 +7,26 @@ void odm_NHMCounterStatisticsInit(void *pDM_VOID)
 {
 	struct dm_odm_t	*pDM_Odm = (struct dm_odm_t *)pDM_VOID;
 
-	/* PHY parameters initialize for n series */
-	rtw_write16(pDM_Odm->Adapter, ODM_REG_NHM_TIMER_11N+2, 0x2710);	/* 0x894[31:16]= 0x2710	Time duration for NHM unit: 4us, 0x2710 =40ms */
-	/* rtw_write16(pDM_Odm->Adapter, ODM_REG_NHM_TIMER_11N+2, 0x4e20);	0x894[31:16]= 0x4e20	Time duration for NHM unit: 4us, 0x4e20 =80ms */
-	rtw_write16(pDM_Odm->Adapter, ODM_REG_NHM_TH9_TH10_11N+2, 0xffff);	/* 0x890[31:16]= 0xffff	th_9, th_10 */
-	/* rtw_write32(pDM_Odm->Adapter, ODM_REG_NHM_TH3_TO_TH0_11N, 0xffffff5c);	0x898 = 0xffffff5c		th_3, th_2, th_1, th_0 */
-	rtw_write32(pDM_Odm->Adapter, ODM_REG_NHM_TH3_TO_TH0_11N, 0xffffff52);	/* 0x898 = 0xffffff52		th_3, th_2, th_1, th_0 */
-	rtw_write32(pDM_Odm->Adapter, ODM_REG_NHM_TH7_TO_TH4_11N, 0xffffffff);	/* 0x89c = 0xffffffff		th_7, th_6, th_5, th_4 */
-	PHY_SetBBReg(pDM_Odm->Adapter, ODM_REG_FPGA0_IQK_11N, bMaskByte0, 0xff);		/* 0xe28[7:0]= 0xff		th_8 */
-	PHY_SetBBReg(pDM_Odm->Adapter, ODM_REG_NHM_TH9_TH10_11N, BIT10|BIT9|BIT8, 0x7);	/* 0x890[9:8]=3			enable CCX */
-	PHY_SetBBReg(pDM_Odm->Adapter, ODM_REG_OFDM_FA_RSTC_11N, BIT7, 0x1);		/* 0xc0c[7]= 1			max power among all RX ants */
+	 
+	rtw_write16(pDM_Odm->Adapter, ODM_REG_NHM_TIMER_11N+2, 0x2710);	 
+	 
+	rtw_write16(pDM_Odm->Adapter, ODM_REG_NHM_TH9_TH10_11N+2, 0xffff);	 
+	 
+	rtw_write32(pDM_Odm->Adapter, ODM_REG_NHM_TH3_TO_TH0_11N, 0xffffff52);	 
+	rtw_write32(pDM_Odm->Adapter, ODM_REG_NHM_TH7_TO_TH4_11N, 0xffffffff);	 
+	PHY_SetBBReg(pDM_Odm->Adapter, ODM_REG_FPGA0_IQK_11N, bMaskByte0, 0xff);		 
+	PHY_SetBBReg(pDM_Odm->Adapter, ODM_REG_NHM_TH9_TH10_11N, BIT10|BIT9|BIT8, 0x7);	 
+	PHY_SetBBReg(pDM_Odm->Adapter, ODM_REG_OFDM_FA_RSTC_11N, BIT7, 0x1);		 
 }
 
 void odm_NHMCounterStatistics(void *pDM_VOID)
 {
 	struct dm_odm_t *pDM_Odm = (struct dm_odm_t *)pDM_VOID;
 
-	/*  Get NHM report */
+	 
 	odm_GetNHMCounterStatistics(pDM_Odm);
 
-	/*  Reset NHM counter */
+	 
 	odm_NHMCounterStatisticsReset(pDM_Odm);
 }
 
@@ -64,12 +60,12 @@ void odm_NHMBBInit(void *pDM_VOID)
 	pDM_Odm->NHMCurRxOkcnt = 0;
 }
 
-/*  */
+ 
 void odm_NHMBB(void *pDM_VOID)
 {
 	struct dm_odm_t *pDM_Odm = (struct dm_odm_t *)pDM_VOID;
-	/* u8 test_status; */
-	/* struct false_ALARM_STATISTICS *pFalseAlmCnt = &pDM_Odm->FalseAlmCnt; */
+	 
+	 
 
 	pDM_Odm->NHMCurTxOkcnt =
 		*(pDM_Odm->pNumTxBytesUnicast)-pDM_Odm->NHMLastTxOkcnt;
@@ -81,10 +77,10 @@ void odm_NHMBB(void *pDM_VOID)
 		*(pDM_Odm->pNumRxBytesUnicast);
 
 
-	if ((pDM_Odm->NHMCurTxOkcnt) + 1 > (u64)(pDM_Odm->NHMCurRxOkcnt<<2) + 1) { /* Tx > 4*Rx possible for adaptivity test */
+	if ((pDM_Odm->NHMCurTxOkcnt) + 1 > (u64)(pDM_Odm->NHMCurRxOkcnt<<2) + 1) {  
 		if (pDM_Odm->NHM_cnt_0 >= 190 || pDM_Odm->adaptivity_flag == true) {
-			/* Enable EDCCA since it is possible running Adaptivity testing */
-			/* test_status = 1; */
+			 
+			 
 			pDM_Odm->adaptivity_flag = true;
 			pDM_Odm->tolerance_cnt = 0;
 		} else {
@@ -92,24 +88,24 @@ void odm_NHMBB(void *pDM_VOID)
 				pDM_Odm->tolerance_cnt = pDM_Odm->tolerance_cnt + 1;
 			else
 				pDM_Odm->tolerance_cnt = 4;
-			/* test_status = 5; */
+			 
 			if (pDM_Odm->tolerance_cnt > 3) {
-				/* test_status = 3; */
+				 
 				pDM_Odm->adaptivity_flag = false;
 			}
 		}
-	} else { /*  TX<RX */
+	} else {  
 		if (pDM_Odm->adaptivity_flag == true && pDM_Odm->NHM_cnt_0 <= 200) {
-			/* test_status = 2; */
+			 
 			pDM_Odm->tolerance_cnt = 0;
 		} else {
 			if (pDM_Odm->tolerance_cnt < 3)
 				pDM_Odm->tolerance_cnt = pDM_Odm->tolerance_cnt + 1;
 			else
 				pDM_Odm->tolerance_cnt = 4;
-			/* test_status = 5; */
+			 
 			if (pDM_Odm->tolerance_cnt > 3) {
-				/* test_status = 4; */
+				 
 				pDM_Odm->adaptivity_flag = false;
 			}
 		}
@@ -125,7 +121,7 @@ void odm_SearchPwdBLowerBound(void *pDM_VOID, u8 IGI_target)
 	s8 TH_L2H_dmc, TH_H2L_dmc;
 	s8 Diff;
 
-	IGI = 0x50; /*  find H2L, L2H lower bound */
+	IGI = 0x50;  
 	ODM_Write_DIG(pDM_Odm, IGI);
 
 
@@ -190,7 +186,7 @@ void odm_AdaptivityInit(void *pDM_VOID)
 	struct dm_odm_t *pDM_Odm = (struct dm_odm_t *)pDM_VOID;
 
 	if (pDM_Odm->Carrier_Sense_enable == false)
-		pDM_Odm->TH_L2H_ini = 0xf7; /*  -7 */
+		pDM_Odm->TH_L2H_ini = 0xf7;  
 	else
 		pDM_Odm->TH_L2H_ini = 0xa;
 
@@ -209,7 +205,7 @@ void odm_AdaptivityInit(void *pDM_VOID)
 	pDM_Odm->Adaptivity_IGI_upper = 0;
 	odm_NHMBBInit(pDM_Odm);
 
-	PHY_SetBBReg(pDM_Odm->Adapter, REG_RD_CTRL, BIT11, 1); /*  stop counting if EDCCA is asserted */
+	PHY_SetBBReg(pDM_Odm->Adapter, REG_RD_CTRL, BIT11, 1);  
 }
 
 
@@ -224,7 +220,7 @@ void odm_Adaptivity(void *pDM_VOID, u8 IGI)
 		return;
 	}
 
-	if (*pDM_Odm->pBandWidth == ODM_BW20M) /* CHANNEL_WIDTH_20 */
+	if (*pDM_Odm->pBandWidth == ODM_BW20M)  
 		IGI_target = pDM_Odm->IGI_Base;
 	else if (*pDM_Odm->pBandWidth == ODM_BW40M)
 		IGI_target = pDM_Odm->IGI_Base + 2;
@@ -232,13 +228,13 @@ void odm_Adaptivity(void *pDM_VOID, u8 IGI)
 		IGI_target = pDM_Odm->IGI_Base;
 	pDM_Odm->IGI_target = (u8) IGI_target;
 
-	/* Search pwdB lower bound */
+	 
 	if (pDM_Odm->TxHangFlg == true) {
 		PHY_SetBBReg(pDM_Odm->Adapter, ODM_REG_DBG_RPT_11N, bMaskDWord, 0x208);
 		odm_SearchPwdBLowerBound(pDM_Odm, pDM_Odm->IGI_target);
 	}
 
-	if ((!pDM_Odm->bLinked) || (*pDM_Odm->pChannel > 149)) { /*  Band4 doesn't need adaptivity */
+	if ((!pDM_Odm->bLinked) || (*pDM_Odm->pChannel > 149)) {  
 		PHY_SetBBReg(pDM_Odm->Adapter, rOFDM0_ECCAThreshold, bMaskByte0, 0x7f);
 		PHY_SetBBReg(pDM_Odm->Adapter, rOFDM0_ECCAThreshold, bMaskByte2, 0x7f);
 		return;
@@ -268,7 +264,7 @@ void odm_Adaptivity(void *pDM_VOID, u8 IGI)
 
 		TH_H2L_dmc = TH_L2H_dmc - pDM_Odm->TH_EDCCA_HL_diff;
 
-		/* replace lower bound to prevent EDCCA always equal  */
+		 
 		if (TH_H2L_dmc < pDM_Odm->H2L_lb)
 			TH_H2L_dmc = pDM_Odm->H2L_lb;
 		if (TH_L2H_dmc < pDM_Odm->L2H_lb)
@@ -291,7 +287,7 @@ void ODM_Write_DIG(void *pDM_VOID, u8 CurrentIGI)
 	}
 
 	if (pDM_DigTable->CurIGValue != CurrentIGI) {
-		/* 1 Check initial gain by upper bound */
+		 
 		if (!pDM_DigTable->bPSDInProgress) {
 			if (CurrentIGI > pDM_DigTable->rx_gain_range_max) {
 				CurrentIGI = pDM_DigTable->rx_gain_range_max;
@@ -299,7 +295,7 @@ void ODM_Write_DIG(void *pDM_VOID, u8 CurrentIGI)
 
 		}
 
-		/* 1 Set IGI value */
+		 
 		PHY_SetBBReg(pDM_Odm->Adapter, ODM_REG(IGI_A, pDM_Odm), ODM_BIT(IGI, pDM_Odm), CurrentIGI);
 
 		PHY_SetBBReg(pDM_Odm->Adapter, ODM_REG(IGI_B, pDM_Odm), ODM_BIT(IGI, pDM_Odm), CurrentIGI);
@@ -313,22 +309,22 @@ bool odm_DigAbort(void *pDM_VOID)
 {
 	struct dm_odm_t *pDM_Odm = (struct dm_odm_t *)pDM_VOID;
 
-	/* SupportAbility */
+	 
 	if (!(pDM_Odm->SupportAbility & ODM_BB_FA_CNT)) {
 		return	true;
 	}
 
-	/* SupportAbility */
+	 
 	if (!(pDM_Odm->SupportAbility & ODM_BB_DIG)) {
 		return	true;
 	}
 
-	/* ScanInProcess */
+	 
 	if (*(pDM_Odm->pbScanInProcess)) {
 		return	true;
 	}
 
-	/* add by Neil Chen to avoid PSD is processing */
+	 
 	if (pDM_Odm->bDMInitialGainEnable == false) {
 		return	true;
 	}
@@ -359,13 +355,13 @@ void odm_DIGInit(void *pDM_VOID)
 	pDM_DigTable->bMediaConnect_0 = false;
 	pDM_DigTable->bMediaConnect_1 = false;
 
-	/* To Initialize pDM_Odm->bDMInitialGainEnable == false to avoid DIG error */
+	 
 	pDM_Odm->bDMInitialGainEnable = true;
 
 	pDM_DigTable->DIG_Dynamic_MIN_0 = DM_DIG_MIN_NIC;
 	pDM_DigTable->DIG_Dynamic_MIN_1 = DM_DIG_MIN_NIC;
 
-	/* To Initi BT30 IGI */
+	 
 	pDM_DigTable->BT30_CurIGI = 0x32;
 
 	pDM_DigTable->rx_gain_range_max = DM_DIG_MAX_NIC;
@@ -378,7 +374,7 @@ void odm_DIG(void *pDM_VOID)
 {
 	struct dm_odm_t *pDM_Odm = (struct dm_odm_t *)pDM_VOID;
 
-	/*  Common parameters */
+	 
 	struct dig_t *pDM_DigTable = &pDM_Odm->DM_DigTable;
 	struct false_ALARM_STATISTICS *pFalseAlmCnt = &pDM_Odm->FalseAlmCnt;
 	bool FirstConnect, FirstDisConnect;
@@ -399,21 +395,21 @@ void odm_DIG(void *pDM_VOID)
 		Adap_IGI_Upper = pDM_Odm->Adaptivity_IGI_upper;
 
 
-	/* 1 Update status */
+	 
 	DIG_Dynamic_MIN = pDM_DigTable->DIG_Dynamic_MIN_0;
 	FirstConnect = (pDM_Odm->bLinked) && (pDM_DigTable->bMediaConnect_0 == false);
 	FirstDisConnect = (!pDM_Odm->bLinked) && (pDM_DigTable->bMediaConnect_0 == true);
 
-	/* 1 Boundary Decision */
-	/* 2 For WIN\CE */
+	 
+	 
 	dm_dig_max = 0x5A;
 	dm_dig_min = DM_DIG_MIN_NIC;
 	DIG_MaxOfMin = DM_DIG_MAX_AP;
 
-	/* 1 Adjust boundary by RSSI */
+	 
 	if (pDM_Odm->bLinked && bPerformance) {
-		/* 2 Modify DIG upper bound */
-		/* 4 Modify DIG upper bound for 92E, 8723A\B, 8821 & 8812 BT */
+		 
+		 
 		if (pDM_Odm->bBtLimitedDig == 1) {
 			offset = 10;
 		} else
@@ -426,8 +422,8 @@ void odm_DIG(void *pDM_VOID)
 		else
 			pDM_DigTable->rx_gain_range_max = pDM_Odm->RSSI_Min + offset;
 
-		/* 2 Modify DIG lower bound */
-		/* if (pDM_Odm->bOneEntryOnly) */
+		 
+		 
 		{
 			if (pDM_Odm->RSSI_Min < dm_dig_min)
 				DIG_Dynamic_MIN = dm_dig_min;
@@ -441,7 +437,7 @@ void odm_DIG(void *pDM_VOID)
 		DIG_Dynamic_MIN = dm_dig_min;
 	}
 
-	/* 1 Force Lower Bound for AntDiv */
+	 
 	if (pDM_Odm->bLinked && !pDM_Odm->bOneEntryOnly) {
 		if (pDM_Odm->SupportAbility & ODM_BB_ANT_DIV) {
 			if (
@@ -457,8 +453,8 @@ void odm_DIG(void *pDM_VOID)
 		}
 	}
 
-	/* 1 Modify DIG lower bound, deal with abnormal case */
-	/* 2 Abnormal false alarm case */
+	 
+	 
 	if (FirstDisConnect) {
 		pDM_DigTable->rx_gain_range_min = DIG_Dynamic_MIN;
 		pDM_DigTable->ForbiddenIGI = DIG_Dynamic_MIN;
@@ -475,16 +471,16 @@ void odm_DIG(void *pDM_VOID)
 		}
 	}
 
-	/* 2 Abnormal lower bound case */
+	 
 	if (pDM_DigTable->rx_gain_range_min > pDM_DigTable->rx_gain_range_max) {
 		pDM_DigTable->rx_gain_range_min = pDM_DigTable->rx_gain_range_max;
 	}
 
 
-	/* 1 False alarm threshold decision */
+	 
 	odm_FAThresholdCheck(pDM_Odm, bDFSBand, bPerformance, RxTp, TxTp, dm_FA_thres);
 
-	/* 1 Adjust initial gain by false alarm */
+	 
 	if (pDM_Odm->bLinked && bPerformance) {
 
 		if (bFirstTpTarget || FirstConnect) {
@@ -528,14 +524,14 @@ void odm_DIG(void *pDM_VOID)
 		}
 	}
 
-	/* 1 Check initial gain by upper/lower bound */
+	 
 	if (CurrentIGI < pDM_DigTable->rx_gain_range_min)
 		CurrentIGI = pDM_DigTable->rx_gain_range_min;
 
 	if (CurrentIGI > pDM_DigTable->rx_gain_range_max)
 		CurrentIGI = pDM_DigTable->rx_gain_range_max;
 
-	/* 1 Force upper bound and lower bound for adaptivity */
+	 
 	if (
 		pDM_Odm->SupportAbility & ODM_BB_ADAPTIVITY &&
 		pDM_Odm->adaptivity_flag == true
@@ -550,7 +546,7 @@ void odm_DIG(void *pDM_VOID)
 	}
 
 
-	/* 1 Update status */
+	 
 	if (pDM_Odm->bBtHsOperation) {
 		if (pDM_Odm->bLinked) {
 			if (pDM_DigTable->BT30_CurIGI > (CurrentIGI))
@@ -566,10 +562,10 @@ void odm_DIG(void *pDM_VOID)
 			else if (pDM_Odm->bBtConnectProcess)
 				ODM_Write_DIG(pDM_Odm, 0x28);
 			else
-				ODM_Write_DIG(pDM_Odm, pDM_DigTable->BT30_CurIGI);/* ODM_Write_DIG(pDM_Odm, pDM_DigTable->CurIGValue); */
+				ODM_Write_DIG(pDM_Odm, pDM_DigTable->BT30_CurIGI); 
 		}
-	} else { /*  BT is not using */
-		ODM_Write_DIG(pDM_Odm, CurrentIGI);/* ODM_Write_DIG(pDM_Odm, pDM_DigTable->CurIGValue); */
+	} else {  
+		ODM_Write_DIG(pDM_Odm, CurrentIGI); 
 		pDM_DigTable->bMediaConnect_0 = pDM_Odm->bLinked;
 		pDM_DigTable->DIG_Dynamic_MIN_0 = DIG_Dynamic_MIN;
 	}
@@ -580,13 +576,13 @@ void odm_DIGbyRSSI_LPS(void *pDM_VOID)
 	struct dm_odm_t *pDM_Odm = (struct dm_odm_t *)pDM_VOID;
 	struct false_ALARM_STATISTICS *pFalseAlmCnt = &pDM_Odm->FalseAlmCnt;
 
-	u8 RSSI_Lower = DM_DIG_MIN_NIC;   /* 0x1E or 0x1C */
+	u8 RSSI_Lower = DM_DIG_MIN_NIC;    
 	u8 CurrentIGI = pDM_Odm->RSSI_Min;
 
 	CurrentIGI = CurrentIGI+RSSI_OFFSET_DIG;
 
-	/*  Using FW PS mode to make IGI */
-	/* Adjust by  FA in LPS MODE */
+	 
+	 
 	if (pFalseAlmCnt->Cnt_all > DM_DIG_FA_TH2_LPS)
 		CurrentIGI = CurrentIGI+4;
 	else if (pFalseAlmCnt->Cnt_all > DM_DIG_FA_TH1_LPS)
@@ -595,24 +591,24 @@ void odm_DIGbyRSSI_LPS(void *pDM_VOID)
 		CurrentIGI = CurrentIGI-2;
 
 
-	/* Lower bound checking */
+	 
 
-	/* RSSI Lower bound check */
+	 
 	RSSI_Lower = max(pDM_Odm->RSSI_Min - 10, DM_DIG_MIN_NIC);
 
-	/* Upper and Lower Bound checking */
+	 
 	if (CurrentIGI > DM_DIG_MAX_NIC)
 		CurrentIGI = DM_DIG_MAX_NIC;
 	else if (CurrentIGI < RSSI_Lower)
 		CurrentIGI = RSSI_Lower;
 
 	ODM_Write_DIG(pDM_Odm, CurrentIGI);
-	/* ODM_Write_DIG(pDM_Odm, pDM_DigTable->CurIGValue); */
+	 
 }
 
-/* 3 ============================================================ */
-/* 3 FASLE ALARM CHECK */
-/* 3 ============================================================ */
+ 
+ 
+ 
 
 void odm_FalseAlarmCounterStatistics(void *pDM_VOID)
 {
@@ -623,10 +619,10 @@ void odm_FalseAlarmCounterStatistics(void *pDM_VOID)
 	if (!(pDM_Odm->SupportAbility & ODM_BB_FA_CNT))
 		return;
 
-	/* hold ofdm counter */
-	/* hold page C counter */
+	 
+	 
 	PHY_SetBBReg(pDM_Odm->Adapter, ODM_REG_OFDM_FA_HOLDC_11N, BIT31, 1);
-	/* hold page D counter */
+	 
 	PHY_SetBBReg(pDM_Odm->Adapter, ODM_REG_OFDM_FA_RSTD_11N, BIT31, 1);
 
 	ret_value = PHY_QueryBBReg(
@@ -661,7 +657,7 @@ void odm_FalseAlarmCounterStatistics(void *pDM_VOID)
 		FalseAlmCnt->Cnt_SB_Search_fail;
 
 	{
-		/* hold cck counter */
+		 
 		PHY_SetBBReg(pDM_Odm->Adapter, ODM_REG_CCK_FA_RST_11N, BIT12, 1);
 		PHY_SetBBReg(pDM_Odm->Adapter, ODM_REG_CCK_FA_RST_11N, BIT14, 1);
 
@@ -709,7 +705,7 @@ void odm_FAThresholdCheck(
 	struct dm_odm_t *pDM_Odm = (struct dm_odm_t *)pDM_VOID;
 
 	if (pDM_Odm->bLinked && (bPerformance || bDFSBand)) {
-		/*  For NIC */
+		 
 		dm_FA_thres[0] = DM_DIG_FA_TH0;
 		dm_FA_thres[1] = DM_DIG_FA_TH1;
 		dm_FA_thres[2] = DM_DIG_FA_TH2;
@@ -731,10 +727,10 @@ u8 odm_ForbiddenIGICheck(void *pDM_VOID, u8 DIG_Dynamic_MIN, u8 CurrentIGI)
 		if (pDM_DigTable->LargeFAHit != 3)
 			pDM_DigTable->LargeFAHit++;
 
-		/* if (pDM_DigTable->ForbiddenIGI < pDM_DigTable->CurIGValue) */
+		 
 		if (pDM_DigTable->ForbiddenIGI < CurrentIGI) {
 			pDM_DigTable->ForbiddenIGI = CurrentIGI;
-			/* pDM_DigTable->ForbiddenIGI = pDM_DigTable->CurIGValue; */
+			 
 			pDM_DigTable->LargeFAHit = 1;
 		}
 
@@ -750,9 +746,9 @@ u8 odm_ForbiddenIGICheck(void *pDM_VOID, u8 DIG_Dynamic_MIN, u8 CurrentIGI)
 			pDM_DigTable->Recover_cnt--;
 		} else {
 			if (pDM_DigTable->LargeFAHit < 3) {
-				if ((pDM_DigTable->ForbiddenIGI - 2) < DIG_Dynamic_MIN) { /* DM_DIG_MIN) */
-					pDM_DigTable->ForbiddenIGI = DIG_Dynamic_MIN; /* DM_DIG_MIN; */
-					rx_gain_range_min = DIG_Dynamic_MIN; /* DM_DIG_MIN; */
+				if ((pDM_DigTable->ForbiddenIGI - 2) < DIG_Dynamic_MIN) {  
+					pDM_DigTable->ForbiddenIGI = DIG_Dynamic_MIN;  
+					rx_gain_range_min = DIG_Dynamic_MIN;  
 				} else {
 					pDM_DigTable->ForbiddenIGI -= 2;
 					rx_gain_range_min = (pDM_DigTable->ForbiddenIGI + 2);
@@ -766,9 +762,9 @@ u8 odm_ForbiddenIGICheck(void *pDM_VOID, u8 DIG_Dynamic_MIN, u8 CurrentIGI)
 
 }
 
-/* 3 ============================================================ */
-/* 3 CCK Packet Detect Threshold */
-/* 3 ============================================================ */
+ 
+ 
+ 
 
 void odm_CCKPacketDetectionThresh(void *pDM_VOID)
 {
@@ -813,7 +809,7 @@ void ODM_Write_CCK_CCA_Thres(void *pDM_VOID, u8 CurCCK_CCAThres)
 	struct dm_odm_t *pDM_Odm = (struct dm_odm_t *)pDM_VOID;
 	struct dig_t *pDM_DigTable = &pDM_Odm->DM_DigTable;
 
-	/* modify by Guo.Mingzhi 2012-01-03 */
+	 
 	if (pDM_DigTable->CurCCK_CCAThres != CurCCK_CCAThres)
 		rtw_write8(pDM_Odm->Adapter, ODM_REG(CCK_CCA, pDM_Odm), CurCCK_CCAThres);
 

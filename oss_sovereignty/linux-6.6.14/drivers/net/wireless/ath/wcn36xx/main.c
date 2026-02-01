@@ -1,18 +1,4 @@
-/*
- * Copyright (c) 2013 Eugene Krasnikov <k.eugene.e@gmail.com>
- *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY
- * SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION
- * OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
- * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -47,23 +33,22 @@ MODULE_PARM_DESC(debug_mask, "Debugging mask");
 	.max_power = 25, \
 }
 
-/* The wcn firmware expects channel values to matching
- * their mnemonic values. So use these for .hw_value. */
+ 
 static struct ieee80211_channel wcn_2ghz_channels[] = {
-	CHAN2G(2412, 1), /* Channel 1 */
-	CHAN2G(2417, 2), /* Channel 2 */
-	CHAN2G(2422, 3), /* Channel 3 */
-	CHAN2G(2427, 4), /* Channel 4 */
-	CHAN2G(2432, 5), /* Channel 5 */
-	CHAN2G(2437, 6), /* Channel 6 */
-	CHAN2G(2442, 7), /* Channel 7 */
-	CHAN2G(2447, 8), /* Channel 8 */
-	CHAN2G(2452, 9), /* Channel 9 */
-	CHAN2G(2457, 10), /* Channel 10 */
-	CHAN2G(2462, 11), /* Channel 11 */
-	CHAN2G(2467, 12), /* Channel 12 */
-	CHAN2G(2472, 13), /* Channel 13 */
-	CHAN2G(2484, 14)  /* Channel 14 */
+	CHAN2G(2412, 1),  
+	CHAN2G(2417, 2),  
+	CHAN2G(2422, 3),  
+	CHAN2G(2427, 4),  
+	CHAN2G(2432, 5),  
+	CHAN2G(2437, 6),  
+	CHAN2G(2442, 7),  
+	CHAN2G(2447, 8),  
+	CHAN2G(2452, 9),  
+	CHAN2G(2457, 10),  
+	CHAN2G(2462, 11),  
+	CHAN2G(2467, 12),  
+	CHAN2G(2472, 13),  
+	CHAN2G(2484, 14)   
 
 };
 
@@ -211,14 +196,14 @@ static int wcn36xx_start(struct ieee80211_hw *hw)
 
 	wcn36xx_dbg(WCN36XX_DBG_MAC, "mac start\n");
 
-	/* SMD initialization */
+	 
 	ret = wcn36xx_smd_open(wcn);
 	if (ret) {
 		wcn36xx_err("Failed to open smd channel: %d\n", ret);
 		goto out_err;
 	}
 
-	/* Allocate memory pools for Mgmt BD headers and Data BD headers */
+	 
 	ret = wcn36xx_dxe_allocate_mem_pools(wcn);
 	if (ret) {
 		wcn36xx_err("Failed to alloc DXE mempool: %d\n", ret);
@@ -251,7 +236,7 @@ static int wcn36xx_start(struct ieee80211_hw *hw)
 			wcn36xx_feat_caps_info(wcn);
 	}
 
-	/* DMA channel initialization */
+	 
 	ret = wcn36xx_dxe_init(wcn);
 	if (ret) {
 		wcn36xx_err("DXE init failed\n");
@@ -312,7 +297,7 @@ static void wcn36xx_change_ps(struct wcn36xx *wcn, bool enable)
 	list_for_each_entry(tmp, &wcn->vif_list, list) {
 		vif = wcn36xx_priv_to_vif(tmp);
 		if (enable && !wcn->sw_scan) {
-			if (vif->cfg.ps) /* ps allowed ? */
+			if (vif->cfg.ps)  
 				wcn36xx_pmc_enter_bmps_state(wcn, vif);
 		} else {
 			wcn36xx_pmc_exit_bmps_state(wcn, vif);
@@ -376,10 +361,7 @@ static int wcn36xx_config(struct ieee80211_hw *hw, u32 changed)
 			    ch);
 
 		if (wcn->sw_scan_opchannel == ch && wcn->sw_scan_channel) {
-			/* If channel is the initial operating channel, we may
-			 * want to receive/transmit regular data packets, then
-			 * simply stop the scan session and exit PS mode.
-			 */
+			 
 			if (wcn->sw_scan_channel)
 				wcn36xx_smd_end_scan(wcn, wcn->sw_scan_channel);
 			if (wcn->sw_scan_init) {
@@ -387,15 +369,11 @@ static int wcn36xx_config(struct ieee80211_hw *hw, u32 changed)
 							wcn->sw_scan_vif);
 			}
 		} else if (wcn->sw_scan) {
-			/* A scan is ongoing, do not change the operating
-			 * channel, but start a scan session on the channel.
-			 */
+			 
 			if (wcn->sw_scan_channel)
 				wcn36xx_smd_end_scan(wcn, wcn->sw_scan_channel);
 			if (!wcn->sw_scan_init) {
-				/* This can fail if we are unable to notify the
-				 * operating channel.
-				 */
+				 
 				ret = wcn36xx_smd_init_scan(wcn,
 							    HAL_SYS_MODE_SCAN,
 							    wcn->sw_scan_vif);
@@ -444,7 +422,7 @@ static void wcn36xx_configure_filter(struct ieee80211_hw *hw,
 	list_for_each_entry(tmp, &wcn->vif_list, list) {
 		vif = wcn36xx_priv_to_vif(tmp);
 
-		/* FW handles MC filtering only when connected as STA */
+		 
 		if (*total & FIF_ALLMULTI)
 			wcn36xx_smd_set_mc_list(wcn, vif, NULL);
 		else if (NL80211_IFTYPE_STATION == vif->type && tmp->sta_assoc)
@@ -469,7 +447,7 @@ static u64 wcn36xx_prepare_multicast(struct ieee80211_hw *hw,
 	}
 
 	fp->mc_addr_count = 0;
-	/* update multicast filtering parameters */
+	 
 	if (netdev_hw_addr_list_count(mc_list) <=
 	    WCN36XX_HAL_MAX_NUM_MULTICAST_ADDRESS) {
 		netdev_hw_addr_list_for_each(ha, mc_list) {
@@ -540,13 +518,7 @@ static int wcn36xx_set_key(struct ieee80211_hw *hw, enum set_key_cmd cmd,
 	switch (cmd) {
 	case SET_KEY:
 		if (WCN36XX_HAL_ED_TKIP == vif_priv->encrypt_type) {
-			/*
-			 * Supplicant is sending key in the wrong order:
-			 * Temporal Key (16 b) - TX MIC (8 b) - RX MIC (8 b)
-			 * but HW expects it to be in the order as described in
-			 * IEEE 802.11 spec (see chapter 11.7) like this:
-			 * Temporal Key (16 b) - RX MIC (8 b) - TX MIC (8 b)
-			 */
+			 
 			memcpy(key, key_conf->key, 16);
 			memcpy(key + 16, key_conf->key + 24, 8);
 			memcpy(key + 24, key_conf->key + 16, 8);
@@ -556,7 +528,7 @@ static int wcn36xx_set_key(struct ieee80211_hw *hw, enum set_key_cmd cmd,
 
 		if (IEEE80211_KEY_FLAG_PAIRWISE & key_conf->flags) {
 			sta_priv->is_data_encrypted = true;
-			/* Reconfigure bss with encrypt_type */
+			 
 			if (NL80211_IFTYPE_STATION == vif->type) {
 				wcn36xx_smd_config_bss(wcn,
 						       vif,
@@ -606,7 +578,7 @@ static int wcn36xx_set_key(struct ieee80211_hw *hw, enum set_key_cmd cmd,
 			vif_priv->encrypt_type = WCN36XX_HAL_ED_NONE;
 		} else {
 			sta_priv->is_data_encrypted = false;
-			/* do not remove key if disassociated */
+			 
 			if (sta_priv->aid)
 				wcn36xx_smd_remove_stakey(wcn,
 					vif_priv->encrypt_type,
@@ -633,13 +605,11 @@ static int wcn36xx_hw_scan(struct ieee80211_hw *hw,
 	struct wcn36xx *wcn = hw->priv;
 
 	if (!wcn36xx_firmware_get_feat_caps(wcn->fw_feat_caps, SCAN_OFFLOAD)) {
-		/* fallback to mac80211 software scan */
+		 
 		return 1;
 	}
 
-	/* Firmware scan offload is limited to 48 channels, fallback to
-	 * software driven scanning otherwise.
-	 */
+	 
 	if (hw_req->req.n_channels > 48) {
 		wcn36xx_warn("Offload scan aborted, n_channels=%u",
 			     hw_req->req.n_channels);
@@ -671,8 +641,7 @@ static void wcn36xx_cancel_hw_scan(struct ieee80211_hw *hw,
 	mutex_unlock(&wcn->scan_lock);
 
 	if (wcn36xx_firmware_get_feat_caps(wcn->fw_feat_caps, SCAN_OFFLOAD)) {
-		/* ieee80211_scan_completed will be called on FW scan
-		 * indication */
+		 
 		wcn36xx_smd_stop_hw_scan(wcn);
 	}
 }
@@ -702,7 +671,7 @@ static void wcn36xx_sw_scan_complete(struct ieee80211_hw *hw,
 
 	wcn36xx_dbg(WCN36XX_DBG_MAC, "sw_scan_complete");
 
-	/* ensure that any scan session is finished */
+	 
 	if (wcn->sw_scan_channel)
 		wcn36xx_smd_end_scan(wcn, wcn->sw_scan_channel);
 	if (wcn->sw_scan_init) {
@@ -868,12 +837,7 @@ static void wcn36xx_bss_info_changed(struct ieee80211_hw *hw,
 
 			vif_priv->sta_assoc = true;
 
-			/*
-			 * Holding conf_mutex ensures mutal exclusion with
-			 * wcn36xx_sta_remove() and as such ensures that sta
-			 * won't be freed while we're operating on it. As such
-			 * we do not need to hold the rcu_read_lock().
-			 */
+			 
 			sta = ieee80211_find_sta(vif, bss_conf->bssid);
 			if (!sta) {
 				wcn36xx_err("sta %pM is not found\n",
@@ -891,10 +855,7 @@ static void wcn36xx_bss_info_changed(struct ieee80211_hw *hw,
 					       bss_conf->bssid,
 					       true);
 			sta_priv->aid = vif->cfg.aid;
-			/*
-			 * config_sta must be called from  because this is the
-			 * place where AID is available.
-			 */
+			 
 			wcn36xx_smd_config_sta(wcn, vif, sta);
 			if (vif->type == NL80211_IFTYPE_STATION)
 				wcn36xx_smd_add_beacon_filter(wcn, vif);
@@ -964,7 +925,7 @@ out:
 	mutex_unlock(&wcn->conf_mutex);
 }
 
-/* this is required when using IEEE80211_HW_HAS_RATE_CONTROL */
+ 
 static int wcn36xx_set_rts_threshold(struct ieee80211_hw *hw, u32 value)
 {
 	struct wcn36xx *wcn = hw->priv;
@@ -1037,10 +998,7 @@ static int wcn36xx_sta_add(struct ieee80211_hw *hw, struct ieee80211_vif *vif,
 	sta_priv->vif = vif_priv;
 	list_add(&sta_priv->list, &vif_priv->sta_list);
 
-	/*
-	 * For STA mode HW will be configured on BSS_CHANGED_ASSOC because
-	 * at this stage AID is not available yet.
-	 */
+	 
 	if (NL80211_IFTYPE_STATION != vif->type) {
 		wcn36xx_update_allowed_rates(sta, WCN36XX_BAND(wcn));
 		sta_priv->aid = sta->aid;
@@ -1116,9 +1074,7 @@ static int wcn36xx_suspend(struct ieee80211_hw *hw, struct cfg80211_wowlan *wow)
 		ret = wcn36xx_smd_wlan_host_suspend_ind(wcn);
 	}
 
-	/* Disable IRQ, we don't want to handle any packet before mac80211 is
-	 * resumed and ready to receive packets.
-	 */
+	 
 	disable_irq(wcn->tx_irq);
 	disable_irq(wcn->rx_irq);
 
@@ -1210,12 +1166,12 @@ static int wcn36xx_ampdu_action(struct ieee80211_hw *hw,
 		sta_priv->ampdu_state[tid] = WCN36XX_AMPDU_START;
 		spin_unlock_bh(&sta_priv->ampdu_lock);
 
-		/* Replace the mac80211 ssn with the firmware one */
+		 
 		wcn36xx_dbg(WCN36XX_DBG_MAC, "mac ampdu ssn = %u\n", *ssn);
 		wcn36xx_smd_trigger_ba(wcn, get_sta_index(vif, sta_priv), tid, ssn);
 		wcn36xx_dbg(WCN36XX_DBG_MAC, "mac ampdu fw-ssn = %u\n", *ssn);
 
-		/* Start BA session */
+		 
 		session = wcn36xx_smd_add_ba_session(wcn, sta, tid, ssn, 1,
 						     get_sta_index(vif, sta_priv));
 		if (session < 0) {
@@ -1472,19 +1428,19 @@ static int wcn36xx_platform_get_resources(struct wcn36xx *wcn,
 	int index;
 	int ret;
 
-	/* Set TX IRQ */
+	 
 	ret = platform_get_irq_byname(pdev, "tx");
 	if (ret < 0)
 		return ret;
 	wcn->tx_irq = ret;
 
-	/* Set RX IRQ */
+	 
 	ret = platform_get_irq_byname(pdev, "rx");
 	if (ret < 0)
 		return ret;
 	wcn->rx_irq = ret;
 
-	/* Acquire SMSM tx enable handle */
+	 
 	wcn->tx_enable_state = qcom_smem_state_get(&pdev->dev,
 			"tx-enable", &wcn->tx_enable_state_bit);
 	if (IS_ERR(wcn->tx_enable_state)) {
@@ -1492,7 +1448,7 @@ static int wcn36xx_platform_get_resources(struct wcn36xx *wcn,
 		return PTR_ERR(wcn->tx_enable_state);
 	}
 
-	/* Acquire SMSM tx rings empty handle */
+	 
 	wcn->tx_rings_empty_state = qcom_smem_state_get(&pdev->dev,
 			"tx-rings-empty", &wcn->tx_rings_empty_state_bit);
 	if (IS_ERR(wcn->tx_rings_empty_state)) {
@@ -1509,7 +1465,7 @@ static int wcn36xx_platform_get_resources(struct wcn36xx *wcn,
 	wcn->is_pronto = !!of_device_is_compatible(mmio_node, "qcom,pronto");
 	wcn->is_pronto_v3 = !!of_device_is_compatible(mmio_node, "qcom,pronto-v3-pil");
 
-	/* Map the CCU memory */
+	 
 	index = of_property_match_string(mmio_node, "reg-names", "ccu");
 	wcn->ccu_base = of_iomap(mmio_node, index);
 	if (!wcn->ccu_base) {
@@ -1518,7 +1474,7 @@ static int wcn36xx_platform_get_resources(struct wcn36xx *wcn,
 		goto put_mmio_node;
 	}
 
-	/* Map the DXE memory */
+	 
 	index = of_property_match_string(mmio_node, "reg-names", "dxe");
 	wcn->dxe_base = of_iomap(mmio_node, index);
 	if (!wcn->dxe_base) {
@@ -1527,7 +1483,7 @@ static int wcn36xx_platform_get_resources(struct wcn36xx *wcn,
 		goto unmap_ccu;
 	}
 
-	/* External RF module */
+	 
 	iris_node = of_get_child_by_name(mmio_node, "iris");
 	if (iris_node) {
 		if (of_device_is_compatible(iris_node, "qcom,wcn3620"))

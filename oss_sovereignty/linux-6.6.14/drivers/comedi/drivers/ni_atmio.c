@@ -1,75 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Comedi driver for NI AT-MIO E series cards
- *
- * COMEDI - Linux Control and Measurement Device Interface
- * Copyright (C) 1997-2001 David A. Schleef <ds@schleef.org>
- */
 
-/*
- * Driver: ni_atmio
- * Description: National Instruments AT-MIO-E series
- * Author: ds
- * Devices: [National Instruments] AT-MIO-16E-1 (ni_atmio),
- *   AT-MIO-16E-2, AT-MIO-16E-10, AT-MIO-16DE-10, AT-MIO-64E-3,
- *   AT-MIO-16XE-50, AT-MIO-16XE-10, AT-AI-16XE-10
- * Status: works
- * Updated: Thu May  1 20:03:02 CDT 2003
- *
- * The driver has 2.6 kernel isapnp support, and will automatically probe for
- * a supported board if the I/O base is left unspecified with comedi_config.
- * However, many of the isapnp id numbers are unknown. If your board is not
- * recognized, please send the output of 'cat /proc/isapnp' (you may need to
- * modprobe the isa-pnp module for /proc/isapnp to exist) so the id numbers
- * for your board can be added to the driver.
- *
- * Otherwise, you can use the isapnptools package to configure your board.
- * Use isapnp to configure the I/O base and IRQ for the board, and then pass
- * the same values as parameters in comedi_config. A sample isapnp.conf file
- * is included in the etc/ directory of Comedilib.
- *
- * Comedilib includes a utility to autocalibrate these boards. The boards
- * seem to boot into a state where the all calibration DACs are at one
- * extreme of their range, thus the default calibration is terrible.
- * Calibration at boot is strongly encouraged.
- *
- * To use the extended digital I/O on some of the boards, enable the
- * 8255 driver when configuring the Comedi source tree.
- *
- * External triggering is supported for some events. The channel index
- * (scan_begin_arg, etc.) maps to PFI0 - PFI9.
- *
- * Some of the more esoteric triggering possibilities of these boards are
- * not supported.
- */
+ 
 
-/*
- * The real guts of the driver is in ni_mio_common.c, which is included
- * both here and in ni_pcimio.c
- *
- * Interrupt support added by Truxton Fulton <trux@truxton.com>
- *
- * References for specifications:
- *	340747b.pdf  Register Level Programmer Manual (obsolete)
- *	340747c.pdf  Register Level Programmer Manual (new)
- *		     DAQ-STC reference manual
- *
- * Other possibly relevant info:
- *	320517c.pdf  User manual (obsolete)
- *	320517f.pdf  User manual (new)
- *	320889a.pdf  delete
- *	320906c.pdf  maximum signal ratings
- *	321066a.pdf  about 16x
- *	321791a.pdf  discontinuation of at-mio-16e-10 rev. c
- *	321808a.pdf  about at-mio-16e-10 rev P
- *	321837a.pdf  discontinuation of at-mio-16de-10 rev d
- *	321838a.pdf  about at-mio-16de-10 rev N
- *
- * ISSUES:
- * - need to deal with external reference for DAC, and other DAC
- *   properties in board properties
- * - deal with at-mio-16de-10 revision D to N changes, etc.
- */
+ 
+
+ 
 
 #include <linux/module.h>
 #include <linux/interrupt.h>
@@ -79,12 +13,12 @@
 
 #include "ni_stc.h"
 
-/* AT specific setup */
+ 
 static const struct ni_board_struct ni_boards[] = {
 	{
 		.name		= "at-mio-16e-1",
 		.device_id	= 44,
-		.isapnp_id	= 0x0000,	/* XXX unknown */
+		.isapnp_id	= 0x0000,	 
 		.n_adchan	= 16,
 		.ai_maxdata	= 0x0fff,
 		.ai_fifo_depth	= 8192,
@@ -173,7 +107,7 @@ static const struct ni_board_struct ni_boards[] = {
 	}, {
 		.name		= "at-mio-16xe-10",
 		.device_id	= 50,
-		.isapnp_id	= 0x0000,	/* XXX unknown */
+		.isapnp_id	= 0x0000,	 
 		.n_adchan	= 16,
 		.ai_maxdata	= 0xffff,
 		.ai_fifo_depth	= 512,
@@ -189,11 +123,11 @@ static const struct ni_board_struct ni_boards[] = {
 	}, {
 		.name		= "at-ai-16xe-10",
 		.device_id	= 51,
-		.isapnp_id	= 0x0000,	/* XXX unknown */
+		.isapnp_id	= 0x0000,	 
 		.n_adchan	= 16,
 		.ai_maxdata	= 0xffff,
 		.ai_fifo_depth	= 512,
-		.alwaysdither	= 1,		/* unknown */
+		.alwaysdither	= 1,		 
 		.gainlkup	= ai_gain_14,
 		.ai_speed	= 10000,
 		.caldac		= { dac8800, dac8043, ad8522 },
@@ -312,7 +246,7 @@ static int ni_atmio_attach(struct comedi_device *dev,
 	dev->board_ptr = board;
 	dev->board_name = board->name;
 
-	/* irq stuff */
+	 
 
 	if (irq != 0) {
 		if (irq > 15 || ni_irqpin[irq] == -1)
@@ -324,7 +258,7 @@ static int ni_atmio_attach(struct comedi_device *dev,
 		dev->irq = irq;
 	}
 
-	/* generic E series stuff in ni_mio_common.c */
+	 
 
 	ret = ni_E_init(dev, ni_irqpin[dev->irq], 0);
 	if (ret < 0)

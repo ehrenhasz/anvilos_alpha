@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Elonics E4000 silicon tuner driver
- *
- * Copyright (C) 2012 Antti Palosaari <crope@iki.fi>
- */
+ 
+ 
 
 #ifndef E4000_PRIV_H
 #define E4000_PRIV_H
@@ -24,7 +20,7 @@ struct e4000_dev {
 	unsigned int f_frequency;
 	unsigned int f_bandwidth;
 
-	/* Controls */
+	 
 	struct v4l2_ctrl_handler hdl;
 	struct v4l2_ctrl *bandwidth_auto;
 	struct v4l2_ctrl *bandwidth;
@@ -44,18 +40,18 @@ struct e4000_pll {
 };
 
 static const struct e4000_pll e4000_pll_lut[] = {
-/*                                      VCO min    VCO max */
-	{   72400000, 0x0f, 48 }, /* .......... 3475200000 */
-	{   81200000, 0x0e, 40 }, /* 2896000000 3248000000 */
-	{  108300000, 0x0d, 32 }, /* 2598400000 3465600000 */
-	{  162500000, 0x0c, 24 }, /* 2599200000 3900000000 */
-	{  216600000, 0x0b, 16 }, /* 2600000000 3465600000 */
-	{  325000000, 0x0a, 12 }, /* 2599200000 3900000000 */
-	{  350000000, 0x09,  8 }, /* 2600000000 2800000000 */
-	{  432000000, 0x03,  8 }, /* 2800000000 3456000000 */
-	{  667000000, 0x02,  6 }, /* 2592000000 4002000000 */
-	{ 1200000000, 0x01,  4 }, /* 2668000000 4800000000 */
-	{ 0xffffffff, 0x00,  2 }, /* 2400000000 .......... */
+ 
+	{   72400000, 0x0f, 48 },  
+	{   81200000, 0x0e, 40 },  
+	{  108300000, 0x0d, 32 },  
+	{  162500000, 0x0c, 24 },  
+	{  216600000, 0x0b, 16 },  
+	{  325000000, 0x0a, 12 },  
+	{  350000000, 0x09,  8 },  
+	{  432000000, 0x03,  8 },  
+	{  667000000, 0x02,  6 },  
+	{ 1200000000, 0x01,  4 },  
+	{ 0xffffffff, 0x00,  2 },  
 };
 
 struct e4000_lna_filter {

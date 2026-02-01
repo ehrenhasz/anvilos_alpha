@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * AMCC SoC PPC4xx Crypto Driver
- *
- * Copyright (c) 2008 Applied Micro Circuits Corporation.
- * All rights reserved. James Hsiao <jhsiao@amcc.com>
- *
- * This file implements the Linux crypto algorithms.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/interrupt.h>
@@ -115,9 +108,7 @@ int crypto4xx_decrypt_iv_block(struct skcipher_request *req)
 	return crypto4xx_crypt(req, AES_IV_SIZE, true, true);
 }
 
-/*
- * AES Functions
- */
+ 
 static int crypto4xx_setkey_aes(struct crypto_skcipher *cipher,
 				const u8 *key,
 				unsigned int keylen,
@@ -132,7 +123,7 @@ static int crypto4xx_setkey_aes(struct crypto_skcipher *cipher,
 	    keylen != AES_KEYSIZE_128)
 		return -EINVAL;
 
-	/* Create SA */
+	 
 	if (ctx->sa_in || ctx->sa_out)
 		crypto4xx_free_sa(ctx);
 
@@ -140,7 +131,7 @@ static int crypto4xx_setkey_aes(struct crypto_skcipher *cipher,
 	if (rc)
 		return rc;
 
-	/* Setup SA */
+	 
 	sa = ctx->sa_in;
 
 	set_dynamic_sa_command_0(sa, SA_NOT_SAVE_HASH, (cm == CRYPTO_MODE_ECB ?
@@ -165,10 +156,7 @@ static int crypto4xx_setkey_aes(struct crypto_skcipher *cipher,
 	memcpy(ctx->sa_out, ctx->sa_in, ctx->sa_len * 4);
 	sa = ctx->sa_out;
 	sa->sa_command_0.bf.dir = DIR_OUTBOUND;
-	/*
-	 * SA_OPCODE_ENCRYPT is the same value as SA_OPCODE_DECRYPT.
-	 * it's the DIR_(IN|OUT)BOUND that matters
-	 */
+	 
 	sa->sa_command_0.bf.opcode = SA_OPCODE_ENCRYPT;
 
 	return 0;
@@ -259,12 +247,7 @@ crypto4xx_ctr_crypt(struct skcipher_request *req, bool encrypt)
 	unsigned int nblks = ALIGN(req->cryptlen, AES_BLOCK_SIZE) /
 			AES_BLOCK_SIZE;
 
-	/*
-	 * The hardware uses only the last 32-bits as the counter while the
-	 * kernel tests (aes_ctr_enc_tv_template[4] for example) expect that
-	 * the whole IV is a counter.  So fallback if the counter is going to
-	 * overlow.
-	 */
+	 
 	if (counter + nblks < counter) {
 		SYNC_SKCIPHER_REQUEST_ON_STACK(subreq, ctx->sw_cipher.cipher);
 		int ret;
@@ -326,22 +309,19 @@ static inline bool crypto4xx_aead_need_fallback(struct aead_request *req,
 {
 	struct crypto_aead *aead = crypto_aead_reqtfm(req);
 
-	/* authsize has to be a multiple of 4 */
+	 
 	if (aead->authsize & 3)
 		return true;
 
-	/*
-	 * hardware does not handle cases where plaintext
-	 * is less than a block.
-	 */
+	 
 	if (len < AES_BLOCK_SIZE)
 		return true;
 
-	/* assoc len needs to be a multiple of 4 and <= 1020 */
+	 
 	if (req->assoclen & 0x3 || req->assoclen > 1020)
 		return true;
 
-	/* CCM supports only counter field length of 2 and 4 bytes */
+	 
 	if (is_ccm && !(req->iv[0] == 1 || req->iv[0] == 3))
 		return true;
 
@@ -374,9 +354,7 @@ static int crypto4xx_aead_setup_fallback(struct crypto4xx_ctx *ctx,
 	return crypto_aead_setkey(ctx->sw_cipher.aead, key, keylen);
 }
 
-/*
- * AES-CCM Functions
- */
+ 
 
 int crypto4xx_setkey_aes_ccm(struct crypto_aead *cipher, const u8 *key,
 			     unsigned int keylen)
@@ -397,7 +375,7 @@ int crypto4xx_setkey_aes_ccm(struct crypto_aead *cipher, const u8 *key,
 	if (rc)
 		return rc;
 
-	/* Setup SA */
+	 
 	sa = (struct dynamic_sa_ctl *) ctx->sa_in;
 	sa->sa_contents.w = SA_AES_CCM_CONTENTS | (keylen << 2);
 
@@ -458,7 +436,7 @@ static int crypto4xx_crypt_aes_ccm(struct aead_request *req, bool decrypt)
 	sa->sa_command_0.bf.digest_len = crypto_aead_authsize(aead) >> 2;
 
 	if (req->iv[0] == 1) {
-		/* CRYPTO_MODE_AES_ICM */
+		 
 		sa->sa_command_1.bf.crypto_mode9_8 = 1;
 	}
 
@@ -489,9 +467,7 @@ int crypto4xx_setauthsize_aead(struct crypto_aead *cipher,
 	return crypto_aead_setauthsize(ctx->sw_cipher.aead, authsize);
 }
 
-/*
- * AES-GCM Functions
- */
+ 
 
 static int crypto4xx_aes_gcm_validate_keylen(unsigned int keylen)
 {
@@ -617,9 +593,7 @@ int crypto4xx_decrypt_aes_gcm(struct aead_request *req)
 	return crypto4xx_crypt_aes_gcm(req, true);
 }
 
-/*
- * HASH SHA1 Functions
- */
+ 
 static int crypto4xx_hash_alg_init(struct crypto_tfm *tfm,
 				   unsigned int sa_len,
 				   unsigned char ha,
@@ -635,7 +609,7 @@ static int crypto4xx_hash_alg_init(struct crypto_tfm *tfm,
 			      alg.u.hash);
 	ctx->dev   = my_alg->dev;
 
-	/* Create SA */
+	 
 	if (ctx->sa_in || ctx->sa_out)
 		crypto4xx_free_sa(ctx);
 
@@ -656,7 +630,7 @@ static int crypto4xx_hash_alg_init(struct crypto_tfm *tfm,
 				 SA_SEQ_MASK_OFF, SA_MC_ENABLE,
 				 SA_NOT_COPY_PAD, SA_NOT_COPY_PAYLOAD,
 				 SA_NOT_COPY_HDR);
-	/* Need to zero hash digest in SA */
+	 
 	memset(sa->inner_digest, 0, sizeof(sa->inner_digest));
 	memset(sa->outer_digest, 0, sizeof(sa->outer_digest));
 
@@ -711,9 +685,7 @@ int crypto4xx_hash_digest(struct ahash_request *req)
 				  ctx->sa_len, 0, NULL);
 }
 
-/*
- * SHA1 Algorithm
- */
+ 
 int crypto4xx_sha1_alg_init(struct crypto_tfm *tfm)
 {
 	return crypto4xx_hash_alg_init(tfm, SA_HASH160_LEN, SA_HASH_ALG_SHA1,

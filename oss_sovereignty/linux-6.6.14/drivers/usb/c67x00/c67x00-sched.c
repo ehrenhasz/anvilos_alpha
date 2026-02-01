@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * c67x00-sched.c: Cypress C67X00 USB Host Controller Driver - TD scheduling
- *
- * Copyright (C) 2006-2008 Barco N.V.
- *    Derived from the Cypress cy7c67200/300 ezusb linux driver and
- *    based on multiple host controller drivers inside the linux kernel.
- */
+
+ 
 
 #include <linux/kthread.h>
 #include <linux/slab.h>
@@ -13,59 +7,47 @@
 #include "c67x00.h"
 #include "c67x00-hcd.h"
 
-/*
- * These are the stages for a control urb, they are kept
- * in both urb->interval and td->privdata.
- */
+ 
 #define SETUP_STAGE		0
 #define DATA_STAGE		1
 #define STATUS_STAGE		2
 
-/* -------------------------------------------------------------------------- */
+ 
 
-/*
- * struct c67x00_ep_data: Host endpoint data structure
- */
+ 
 struct c67x00_ep_data {
 	struct list_head queue;
 	struct list_head node;
 	struct usb_host_endpoint *hep;
 	struct usb_device *dev;
-	u16 next_frame;		/* For int/isoc transactions */
+	u16 next_frame;		 
 };
 
-/*
- * struct c67x00_td
- *
- * Hardware parts are little endiannes, SW in CPU endianess.
- */
+ 
 struct c67x00_td {
-	/* HW specific part */
-	__le16 ly_base_addr;	/* Bytes 0-1 */
-	__le16 port_length;	/* Bytes 2-3 */
-	u8 pid_ep;		/* Byte 4 */
-	u8 dev_addr;		/* Byte 5 */
-	u8 ctrl_reg;		/* Byte 6 */
-	u8 status;		/* Byte 7 */
-	u8 retry_cnt;		/* Byte 8 */
+	 
+	__le16 ly_base_addr;	 
+	__le16 port_length;	 
+	u8 pid_ep;		 
+	u8 dev_addr;		 
+	u8 ctrl_reg;		 
+	u8 status;		 
+	u8 retry_cnt;		 
 #define TT_OFFSET		2
 #define TT_CONTROL		0
 #define TT_ISOCHRONOUS		1
 #define TT_BULK			2
 #define TT_INTERRUPT		3
-	u8 residue;		/* Byte 9 */
-	__le16 next_td_addr;	/* Bytes 10-11 */
-	/* SW part */
+	u8 residue;		 
+	__le16 next_td_addr;	 
+	 
 	struct list_head td_list;
 	u16 td_addr;
 	void *data;
 	struct urb *urb;
 	unsigned long privdata;
 
-	/* These are needed for handling the toggle bits:
-	 * an urb can be dequeued while a td is in progress
-	 * after checking the td, the toggle bit might need to
-	 * be fixed */
+	 
 	struct c67x00_ep_data *ep_data;
 	unsigned int pipe;
 };
@@ -74,7 +56,7 @@ struct c67x00_urb_priv {
 	struct list_head hep_node;
 	struct urb *urb;
 	int port;
-	int cnt;		/* packet number for isoc */
+	int cnt;		 
 	int status;
 	struct c67x00_ep_data *ep_data;
 };
@@ -111,7 +93,7 @@ struct c67x00_urb_priv {
 
 #define TD_PID_IN		0x90
 
-/* Residue: signed 8bits, neg -> OVERFLOW, pos -> UNDERFLOW */
+ 
 #define td_residue(td)		((__s8)(td->residue))
 #define td_ly_base_addr(td)	(__le16_to_cpu((td)->ly_base_addr))
 #define td_port_length(td)	(__le16_to_cpu((td)->port_length))
@@ -128,11 +110,9 @@ struct c67x00_urb_priv {
 				 (td->status & TD_STATUSMASK_ACK))
 #define td_actual_bytes(td)	(td_length(td) - td_residue(td))
 
-/* -------------------------------------------------------------------------- */
+ 
 
-/*
- * dbg_td - Dump the contents of the TD
- */
+ 
 static void dbg_td(struct c67x00_hcd *c67x00, struct c67x00_td *td, char *msg)
 {
 	struct device *dev = c67x00_hcd_dev(c67x00);
@@ -153,48 +133,37 @@ static void dbg_td(struct c67x00_hcd *c67x00, struct c67x00_td *td, char *msg)
 	dev_dbg(dev, "data: %*ph\n", td_length(td), td->data);
 }
 
-/* -------------------------------------------------------------------------- */
-/* Helper functions */
+ 
+ 
 
 static inline u16 c67x00_get_current_frame_number(struct c67x00_hcd *c67x00)
 {
 	return c67x00_ll_husb_get_frame(c67x00->sie) & HOST_FRAME_MASK;
 }
 
-/*
- * frame_add
- * Software wraparound for framenumbers.
- */
+ 
 static inline u16 frame_add(u16 a, u16 b)
 {
 	return (a + b) & HOST_FRAME_MASK;
 }
 
-/*
- * frame_after - is frame a after frame b
- */
+ 
 static inline int frame_after(u16 a, u16 b)
 {
 	return ((HOST_FRAME_MASK + a - b) & HOST_FRAME_MASK) <
 	    (HOST_FRAME_MASK / 2);
 }
 
-/*
- * frame_after_eq - is frame a after or equal to frame b
- */
+ 
 static inline int frame_after_eq(u16 a, u16 b)
 {
 	return ((HOST_FRAME_MASK + 1 + a - b) & HOST_FRAME_MASK) <
 	    (HOST_FRAME_MASK / 2);
 }
 
-/* -------------------------------------------------------------------------- */
+ 
 
-/*
- * c67x00_release_urb - remove link from all tds to this urb
- * Disconnects the urb from it's tds, so that it can be given back.
- * pre: urb->hcpriv != NULL
- */
+ 
 static void c67x00_release_urb(struct c67x00_hcd *c67x00, struct urb *urb)
 {
 	struct c67x00_td *td;
@@ -210,11 +179,7 @@ static void c67x00_release_urb(struct c67x00_hcd *c67x00, struct urb *urb)
 			c67x00->max_frame_bw = MAX_FRAME_BW_STD;
 	}
 
-	/* TODO this might be not so efficient when we've got many urbs!
-	 * Alternatives:
-	 *   * only clear when needed
-	 *   * keep a list of tds with each urbp
-	 */
+	 
 	list_for_each_entry(td, &c67x00->td_list, td_list)
 		if (urb == td->urb)
 			td->urb = NULL;
@@ -225,7 +190,7 @@ static void c67x00_release_urb(struct c67x00_hcd *c67x00, struct urb *urb)
 	kfree(urbp);
 }
 
-/* -------------------------------------------------------------------------- */
+ 
 
 static struct c67x00_ep_data *
 c67x00_ep_data_alloc(struct c67x00_hcd *c67x00, struct urb *urb)
@@ -236,7 +201,7 @@ c67x00_ep_data_alloc(struct c67x00_hcd *c67x00, struct urb *urb)
 
 	c67x00->current_frame = c67x00_get_current_frame_number(c67x00);
 
-	/* Check if endpoint already has a c67x00_ep_data struct allocated */
+	 
 	if (hep->hcpriv) {
 		ep_data = hep->hcpriv;
 		if (frame_after(c67x00->current_frame, ep_data->next_frame))
@@ -245,7 +210,7 @@ c67x00_ep_data_alloc(struct c67x00_hcd *c67x00, struct urb *urb)
 		return hep->hcpriv;
 	}
 
-	/* Allocate and initialize a new c67x00 endpoint data structure */
+	 
 	ep_data = kzalloc(sizeof(*ep_data), GFP_ATOMIC);
 	if (!ep_data)
 		return NULL;
@@ -254,16 +219,14 @@ c67x00_ep_data_alloc(struct c67x00_hcd *c67x00, struct urb *urb)
 	INIT_LIST_HEAD(&ep_data->node);
 	ep_data->hep = hep;
 
-	/* hold a reference to udev as long as this endpoint lives,
-	 * this is needed to possibly fix the data toggle */
+	 
 	ep_data->dev = usb_get_dev(urb->dev);
 	hep->hcpriv = ep_data;
 
-	/* For ISOC and INT endpoints, start ASAP: */
+	 
 	ep_data->next_frame = frame_add(c67x00->current_frame, 1);
 
-	/* Add the endpoint data to one of the pipe lists; must be added
-	   in order of endpoint address */
+	 
 	type = usb_pipetype(urb->pipe);
 	if (list_empty(&ep_data->node)) {
 		list_add(&ep_data->node, &c67x00->list[type]);
@@ -312,14 +275,12 @@ void c67x00_endpoint_disable(struct usb_hcd *hcd, struct usb_host_endpoint *ep)
 
 	spin_lock_irqsave(&c67x00->lock, flags);
 
-	/* loop waiting for all transfers in the endpoint queue to complete */
+	 
 	while (c67x00_ep_data_free(ep)) {
-		/* Drop the lock so we can sleep waiting for the hardware */
+		 
 		spin_unlock_irqrestore(&c67x00->lock, flags);
 
-		/* it could happen that we reinitialize this completion, while
-		 * somebody was waiting for that completion.  The timeout and
-		 * while loop handle such cases, but this might be improved */
+		 
 		reinit_completion(&c67x00->endpoint_disable);
 		c67x00_sched_kick(c67x00);
 		wait_for_completion_timeout(&c67x00->endpoint_disable, 1 * HZ);
@@ -330,7 +291,7 @@ void c67x00_endpoint_disable(struct usb_hcd *hcd, struct usb_host_endpoint *ep)
 	spin_unlock_irqrestore(&c67x00->lock, flags);
 }
 
-/* -------------------------------------------------------------------------- */
+ 
 
 static inline int get_root_port(struct usb_device *dev)
 {
@@ -348,7 +309,7 @@ int c67x00_urb_enqueue(struct usb_hcd *hcd,
 	struct c67x00_hcd *c67x00 = hcd_to_c67x00_hcd(hcd);
 	int port = get_root_port(urb->dev)-1;
 
-	/* Allocate and initialize urb private data */
+	 
 	urbp = kzalloc(sizeof(*urbp), mem_flags);
 	if (!urbp) {
 		ret = -ENOMEM;
@@ -357,7 +318,7 @@ int c67x00_urb_enqueue(struct usb_hcd *hcd,
 
 	spin_lock_irqsave(&c67x00->lock, flags);
 
-	/* Make sure host controller is running */
+	 
 	if (!HC_IS_RUNNING(hcd->state)) {
 		ret = -ENODEV;
 		goto err_not_linked;
@@ -378,12 +339,11 @@ int c67x00_urb_enqueue(struct usb_hcd *hcd,
 		goto err_epdata;
 	}
 
-	/* TODO claim bandwidth with usb_claim_bandwidth?
-	 * also release it somewhere! */
+	 
 
 	urb->hcpriv = urbp;
 
-	urb->actual_length = 0;	/* Nothing received/transmitted yet */
+	urb->actual_length = 0;	 
 
 	switch (usb_pipetype(urb->pipe)) {
 	case PIPE_CONTROL:
@@ -397,11 +357,11 @@ int c67x00_urb_enqueue(struct usb_hcd *hcd,
 		if (c67x00->urb_iso_count == 0)
 			c67x00->max_frame_bw = MAX_FRAME_BW_ISO;
 		c67x00->urb_iso_count++;
-		/* Assume always URB_ISO_ASAP, FIXME */
+		 
 		if (list_empty(&urbp->ep_data->queue))
 			urb->start_frame = urbp->ep_data->next_frame;
 		else {
-			/* Go right after the last one */
+			 
 			struct urb *last_urb;
 
 			last_urb = list_entry(urbp->ep_data->queue.prev,
@@ -416,10 +376,10 @@ int c67x00_urb_enqueue(struct usb_hcd *hcd,
 		break;
 	}
 
-	/* Add the URB to the endpoint queue */
+	 
 	list_add_tail(&urbp->hep_node, &urbp->ep_data->queue);
 
-	/* If this is the only URB, kick start the controller */
+	 
 	if (!c67x00->urb_count++)
 		c67x00_ll_hpi_enable_sofeop(c67x00->sie);
 
@@ -465,11 +425,9 @@ int c67x00_urb_dequeue(struct usb_hcd *hcd, struct urb *urb, int status)
 	return rc;
 }
 
-/* -------------------------------------------------------------------------- */
+ 
 
-/*
- * pre: c67x00 locked, urb unlocked
- */
+ 
 static void
 c67x00_giveback_urb(struct c67x00_hcd *c67x00, struct urb *urb, int status)
 {
@@ -490,7 +448,7 @@ c67x00_giveback_urb(struct c67x00_hcd *c67x00, struct urb *urb, int status)
 	spin_lock(&c67x00->lock);
 }
 
-/* -------------------------------------------------------------------------- */
+ 
 
 static int c67x00_claim_frame_bw(struct c67x00_hcd *c67x00, struct urb *urb,
 				 int len, int periodic)
@@ -498,29 +456,17 @@ static int c67x00_claim_frame_bw(struct c67x00_hcd *c67x00, struct urb *urb,
 	struct c67x00_urb_priv *urbp = urb->hcpriv;
 	int bit_time;
 
-	/* According to the C67x00 BIOS user manual, page 3-18,19, the
-	 * following calculations provide the full speed bit times for
-	 * a transaction.
-	 *
-	 * FS(in)	= 112.5 +  9.36*BC + HOST_DELAY
-	 * FS(in,iso)	=  90.5 +  9.36*BC + HOST_DELAY
-	 * FS(out)	= 112.5 +  9.36*BC + HOST_DELAY
-	 * FS(out,iso)	=  78.4 +  9.36*BC + HOST_DELAY
-	 * LS(in)	= 802.4 + 75.78*BC + HOST_DELAY
-	 * LS(out)	= 802.6 + 74.67*BC + HOST_DELAY
-	 *
-	 * HOST_DELAY == 106 for the c67200 and c67300.
-	 */
+	 
 
-	/* make calculations in 1/100 bit times to maintain resolution */
+	 
 	if (urbp->ep_data->dev->speed == USB_SPEED_LOW) {
-		/* Low speed pipe */
+		 
 		if (usb_pipein(urb->pipe))
 			bit_time = 80240 + 7578*len;
 		else
 			bit_time = 80260 + 7467*len;
 	} else {
-		/* FS pipes */
+		 
 		if (usb_pipeisoc(urb->pipe))
 			bit_time = usb_pipein(urb->pipe) ? 9050 : 7840;
 		else
@@ -528,8 +474,7 @@ static int c67x00_claim_frame_bw(struct c67x00_hcd *c67x00, struct urb *urb,
 		bit_time += 936*len;
 	}
 
-	/* Scale back down to integer bit times.  Use a host delay of 106.
-	 * (this is the only place it is used) */
+	 
 	bit_time = ((bit_time+50) / 100) + 106;
 
 	if (unlikely(bit_time + c67x00->bandwidth_allocated >=
@@ -555,11 +500,9 @@ static int c67x00_claim_frame_bw(struct c67x00_hcd *c67x00, struct urb *urb,
 	return 0;
 }
 
-/* -------------------------------------------------------------------------- */
+ 
 
-/*
- * td_addr and buf_addr must be word aligned
- */
+ 
 static int c67x00_create_td(struct c67x00_hcd *c67x00, struct urb *urb,
 			    void *data, int len, int pid, int toggle,
 			    unsigned long privdata)
@@ -572,7 +515,7 @@ static int c67x00_create_td(struct c67x00_hcd *c67x00, struct urb *urb,
 
 	if (c67x00_claim_frame_bw(c67x00, urb, len, usb_pipeisoc(urb->pipe)
 				  || usb_pipeint(urb->pipe)))
-		return -EMSGSIZE;	/* Not really an error, but expected */
+		return -EMSGSIZE;	 
 
 	td = kzalloc(sizeof(*td), GFP_ATOMIC);
 	if (!td)
@@ -606,11 +549,11 @@ static int c67x00_create_td(struct c67x00_hcd *c67x00, struct urb *urb,
 
 	cmd |= ARM_EN;
 
-	/* SW part */
+	 
 	td->td_addr = c67x00->next_td_addr;
 	c67x00->next_td_addr = c67x00->next_td_addr + CY_TD_SIZE;
 
-	/* HW part */
+	 
 	td->ly_base_addr = __cpu_to_le16(c67x00->next_buf_addr);
 	td->port_length = __cpu_to_le16((c67x00->sie->sie_num << 15) |
 					(urbp->port << 14) | (len & 0x3FF));
@@ -623,12 +566,12 @@ static int c67x00_create_td(struct c67x00_hcd *c67x00, struct urb *urb,
 	td->residue = 0;
 	td->next_td_addr = __cpu_to_le16(c67x00->next_td_addr);
 
-	/* SW part */
+	 
 	td->data = data;
 	td->urb = urb;
 	td->privdata = privdata;
 
-	c67x00->next_buf_addr += (len + 1) & ~0x01;	/* properly align */
+	c67x00->next_buf_addr += (len + 1) & ~0x01;	 
 
 	list_add_tail(&td->td_list, &c67x00->td_list);
 	return 0;
@@ -640,7 +583,7 @@ static inline void c67x00_release_td(struct c67x00_td *td)
 	kfree(td);
 }
 
-/* -------------------------------------------------------------------------- */
+ 
 
 static int c67x00_add_data_urb(struct c67x00_hcd *c67x00, struct urb *urb)
 {
@@ -674,7 +617,7 @@ static int c67x00_add_data_urb(struct c67x00_hcd *c67x00, struct urb *urb)
 		ret = c67x00_create_td(c67x00, urb, td_buf, len, pid, toggle,
 				       DATA_STAGE);
 		if (ret)
-			return ret;	/* td wasn't created */
+			return ret;	 
 
 		toggle ^= 1;
 		remaining -= len;
@@ -685,9 +628,7 @@ static int c67x00_add_data_urb(struct c67x00_hcd *c67x00, struct urb *urb)
 	return 0;
 }
 
-/*
- * return 0 in case more bandwidth is available, else errorcode
- */
+ 
 static int c67x00_add_ctrl_urb(struct c67x00_hcd *c67x00, struct urb *urb)
 {
 	int ret;
@@ -724,9 +665,7 @@ static int c67x00_add_ctrl_urb(struct c67x00_hcd *c67x00, struct urb *urb)
 	return 0;
 }
 
-/*
- * return 0 in case more bandwidth is available, else errorcode
- */
+ 
 static int c67x00_add_int_urb(struct c67x00_hcd *c67x00, struct urb *urb)
 {
 	struct c67x00_urb_priv *urbp = urb->hcpriv;
@@ -772,7 +711,7 @@ static int c67x00_add_iso_urb(struct c67x00_hcd *c67x00, struct urb *urb)
 	return 0;
 }
 
-/* -------------------------------------------------------------------------- */
+ 
 
 static void c67x00_fill_from_list(struct c67x00_hcd *c67x00, int type,
 				  int (*add)(struct c67x00_hcd *, struct urb *))
@@ -780,11 +719,11 @@ static void c67x00_fill_from_list(struct c67x00_hcd *c67x00, int type,
 	struct c67x00_ep_data *ep_data;
 	struct urb *urb;
 
-	/* traverse every endpoint on the list */
+	 
 	list_for_each_entry(ep_data, &c67x00->list[type], node) {
 		if (!list_empty(&ep_data->queue)) {
-			/* and add the first urb */
-			/* isochronous transfer rely on this */
+			 
+			 
 			urb = list_entry(ep_data->queue.next,
 					 struct c67x00_urb_priv,
 					 hep_node)->urb;
@@ -797,7 +736,7 @@ static void c67x00_fill_frame(struct c67x00_hcd *c67x00)
 {
 	struct c67x00_td *td, *ttd;
 
-	/* Check if we can proceed */
+	 
 	if (!list_empty(&c67x00->td_list)) {
 		dev_warn(c67x00_hcd_dev(c67x00),
 			 "TD list not empty! This should not happen!\n");
@@ -807,25 +746,23 @@ static void c67x00_fill_frame(struct c67x00_hcd *c67x00)
 		}
 	}
 
-	/* Reinitialize variables */
+	 
 	c67x00->bandwidth_allocated = 0;
 	c67x00->periodic_bw_allocated = 0;
 
 	c67x00->next_td_addr = c67x00->td_base_addr;
 	c67x00->next_buf_addr = c67x00->buf_base_addr;
 
-	/* Fill the list */
+	 
 	c67x00_fill_from_list(c67x00, PIPE_ISOCHRONOUS, c67x00_add_iso_urb);
 	c67x00_fill_from_list(c67x00, PIPE_INTERRUPT, c67x00_add_int_urb);
 	c67x00_fill_from_list(c67x00, PIPE_CONTROL, c67x00_add_ctrl_urb);
 	c67x00_fill_from_list(c67x00, PIPE_BULK, c67x00_add_data_urb);
 }
 
-/* -------------------------------------------------------------------------- */
+ 
 
-/*
- * Get TD from C67X00
- */
+ 
 static inline void
 c67x00_parse_td(struct c67x00_hcd *c67x00, struct c67x00_td *td)
 {
@@ -844,7 +781,7 @@ static int c67x00_td_to_error(struct c67x00_hcd *c67x00, struct c67x00_td *td)
 		return -EILSEQ;
 	}
 	if (td->status & TD_STATUSMASK_STALL) {
-		/* dbg_td(c67x00, td, "STALL"); */
+		 
 		return -EPIPE;
 	}
 	if (td->status & TD_STATUSMASK_TMOUT) {
@@ -864,12 +801,12 @@ static inline int c67x00_end_of_data(struct c67x00_td *td)
 	act_bytes = td_actual_bytes(td);
 
 	if (unlikely(!act_bytes))
-		return 1;	/* This was an empty packet */
+		return 1;	 
 
 	maxps = usb_maxpacket(td_udev(td), td->pipe);
 
 	if (unlikely(act_bytes < maxps))
-		return 1;	/* Smaller then full packet */
+		return 1;	 
 
 	remaining = urb->transfer_buffer_length - urb->actual_length;
 	need_empty = (urb->transfer_flags & URB_ZERO_PACKET) &&
@@ -881,11 +818,9 @@ static inline int c67x00_end_of_data(struct c67x00_td *td)
 	return 0;
 }
 
-/* -------------------------------------------------------------------------- */
+ 
 
-/* Remove all td's from the list which come
- * after last_td and are meant for the same pipe.
- * This is used when a short packet has occurred */
+ 
 static inline void c67x00_clear_pipe(struct c67x00_hcd *c67x00,
 				     struct c67x00_td *last_td)
 {
@@ -902,7 +837,7 @@ static inline void c67x00_clear_pipe(struct c67x00_hcd *c67x00,
 	}
 }
 
-/* -------------------------------------------------------------------------- */
+ 
 
 static void c67x00_handle_successful_td(struct c67x00_hcd *c67x00,
 					struct c67x00_td *td)
@@ -915,14 +850,14 @@ static void c67x00_handle_successful_td(struct c67x00_hcd *c67x00,
 	urb->actual_length += td_actual_bytes(td);
 
 	switch (usb_pipetype(td->pipe)) {
-		/* isochronous tds are handled separately */
+		 
 	case PIPE_CONTROL:
 		switch (td->privdata) {
 		case SETUP_STAGE:
 			urb->interval =
 			    urb->transfer_buffer_length ?
 			    DATA_STAGE : STATUS_STAGE;
-			/* Don't count setup_packet with normal data: */
+			 
 			urb->actual_length = 0;
 			break;
 
@@ -965,16 +900,13 @@ static void c67x00_handle_isoc(struct c67x00_hcd *c67x00, struct c67x00_td *td)
 
 	urb->iso_frame_desc[cnt].actual_length = td_actual_bytes(td);
 	urb->iso_frame_desc[cnt].status = c67x00_td_to_error(c67x00, td);
-	if (cnt + 1 == urb->number_of_packets)	/* Last packet */
+	if (cnt + 1 == urb->number_of_packets)	 
 		c67x00_giveback_urb(c67x00, urb, 0);
 }
 
-/* -------------------------------------------------------------------------- */
+ 
 
-/*
- * c67x00_check_td_list - handle tds which have been processed by the c67x00
- * pre: current_td == 0
- */
+ 
 static inline void c67x00_check_td_list(struct c67x00_hcd *c67x00)
 {
 	struct c67x00_td *td, *tmp;
@@ -983,22 +915,20 @@ static inline void c67x00_check_td_list(struct c67x00_hcd *c67x00)
 	int clear_endpoint;
 
 	list_for_each_entry_safe(td, tmp, &c67x00->td_list, td_list) {
-		/* get the TD */
+		 
 		c67x00_parse_td(c67x00, td);
-		urb = td->urb;	/* urb can be NULL! */
+		urb = td->urb;	 
 		ack_ok = 0;
 		clear_endpoint = 1;
 
-		/* Handle isochronous transfers separately */
+		 
 		if (usb_pipeisoc(td->pipe)) {
 			clear_endpoint = 0;
 			c67x00_handle_isoc(c67x00, td);
 			goto cont;
 		}
 
-		/* When an error occurs, all td's for that pipe go into an
-		 * inactive state. This state matches successful transfers so
-		 * we must make sure not to service them. */
+		 
 		if (td->status & TD_ERROR_MASK) {
 			c67x00_giveback_urb(c67x00, urb,
 					    c67x00_td_to_error(c67x00, td));
@@ -1009,12 +939,12 @@ static inline void c67x00_check_td_list(struct c67x00_hcd *c67x00)
 		    !td_acked(td))
 			goto cont;
 
-		/* Sequence ok and acked, don't need to fix toggle */
+		 
 		ack_ok = 1;
 
 		if (unlikely(td->status & TD_STATUSMASK_OVF)) {
 			if (td_residue(td) & TD_RESIDUE_OVERFLOW) {
-				/* Overflow */
+				 
 				c67x00_giveback_urb(c67x00, urb, -EOVERFLOW);
 				goto cont;
 			}
@@ -1030,25 +960,21 @@ cont:
 			usb_settoggle(td_udev(td), usb_pipeendpoint(td->pipe),
 				      usb_pipeout(td->pipe),
 				      !(td->ctrl_reg & SEQ_SEL));
-		/* next in list could have been removed, due to clear_pipe! */
+		 
 		tmp = list_entry(td->td_list.next, typeof(*td), td_list);
 		c67x00_release_td(td);
 	}
 }
 
-/* -------------------------------------------------------------------------- */
+ 
 
 static inline int c67x00_all_tds_processed(struct c67x00_hcd *c67x00)
 {
-	/* If all tds are processed, we can check the previous frame (if
-	 * there was any) and start our next frame.
-	 */
+	 
 	return !c67x00_ll_husb_get_current_td(c67x00->sie);
 }
 
-/*
- * Send td to C67X00
- */
+ 
 static void c67x00_send_td(struct c67x00_hcd *c67x00, struct c67x00_td *td)
 {
 	int len = td_length(td);
@@ -1072,7 +998,7 @@ static void c67x00_send_frame(struct c67x00_hcd *c67x00)
 
 	list_for_each_entry(td, &c67x00->td_list, td_list) {
 		if (td->td_list.next == &c67x00->td_list)
-			td->next_td_addr = 0;	/* Last td in list */
+			td->next_td_addr = 0;	 
 
 		c67x00_send_td(c67x00, td);
 	}
@@ -1080,22 +1006,19 @@ static void c67x00_send_frame(struct c67x00_hcd *c67x00)
 	c67x00_ll_husb_set_current_td(c67x00->sie, c67x00->td_base_addr);
 }
 
-/* -------------------------------------------------------------------------- */
+ 
 
-/*
- * c67x00_do_work - Schedulers state machine
- */
+ 
 static void c67x00_do_work(struct c67x00_hcd *c67x00)
 {
 	spin_lock(&c67x00->lock);
-	/* Make sure all tds are processed */
+	 
 	if (!c67x00_all_tds_processed(c67x00))
 		goto out;
 
 	c67x00_check_td_list(c67x00);
 
-	/* no td's are being processed (current == 0)
-	 * and all have been "checked" */
+	 
 	complete(&c67x00->endpoint_disable);
 
 	if (!list_empty(&c67x00->td_list))
@@ -1103,10 +1026,10 @@ static void c67x00_do_work(struct c67x00_hcd *c67x00)
 
 	c67x00->current_frame = c67x00_get_current_frame_number(c67x00);
 	if (c67x00->current_frame == c67x00->last_frame)
-		goto out;	/* Don't send tds in same frame */
+		goto out;	 
 	c67x00->last_frame = c67x00->current_frame;
 
-	/* If no urbs are scheduled, our work is done */
+	 
 	if (!c67x00->urb_count) {
 		c67x00_ll_hpi_disable_sofeop(c67x00->sie);
 		goto out;
@@ -1114,14 +1037,14 @@ static void c67x00_do_work(struct c67x00_hcd *c67x00)
 
 	c67x00_fill_frame(c67x00);
 	if (!list_empty(&c67x00->td_list))
-		/* TD's have been added to the frame */
+		 
 		c67x00_send_frame(c67x00);
 
  out:
 	spin_unlock(&c67x00->lock);
 }
 
-/* -------------------------------------------------------------------------- */
+ 
 
 static void c67x00_sched_work(struct work_struct *work)
 {

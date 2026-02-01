@@ -1,14 +1,4 @@
-/*
- * Broadcom specific AMBA
- * Broadcom MIPS32 74K core driver
- *
- * Copyright 2009, Broadcom Corporation
- * Copyright 2006, 2007, Michael Buesch <mb@bu3sch.de>
- * Copyright 2010, Bernhard Loos <bernhardloos@googlemail.com>
- * Copyright 2011, Hauke Mehrtens <hauke@hauke-m.de>
- *
- * Licensed under the GNU/GPL. See COPYING for details.
- */
+ 
 
 #include "bcma_private.h"
 
@@ -30,14 +20,14 @@ enum bcma_boot_dev {
 	BCMA_BOOT_DEV_NAND,
 };
 
-/* The 47162a0 hangs when reading MIPS DMP registers */
+ 
 static inline bool bcma_core_mips_bcm47162a0_quirk(struct bcma_device *dev)
 {
 	return dev->bus->chipinfo.id == BCMA_CHIP_ID_BCM47162 &&
 	       dev->bus->chipinfo.rev == 0 && dev->id.id == BCMA_CORE_MIPS_74K;
 }
 
-/* The 5357b0 hangs when reading USB20H DMP registers */
+ 
 static inline bool bcma_core_mips_bcm5357b0_quirk(struct bcma_device *dev)
 {
 	return (dev->bus->chipinfo.id == BCMA_CHIP_ID_BCM5357 ||
@@ -62,11 +52,7 @@ static u32 bcma_core_mips_irqflag(struct bcma_device *dev)
 		return 0x3f;
 }
 
-/* Get the MIPS IRQ assignment for a specified device.
- * If unassigned, 0 is returned.
- * If disabled, 5 is returned.
- * If not supported, 6 is returned.
- */
+ 
 unsigned int bcma_core_mips_irq(struct bcma_device *dev)
 {
 	struct bcma_device *mdev = dev->bus->drv_mips.core;
@@ -97,7 +83,7 @@ static void bcma_core_mips_set_irq(struct bcma_device *dev, unsigned int irq)
 
 	dev->irq = irq + 2;
 
-	/* clear the old irq */
+	 
 	if (oldirq == 0)
 		bcma_write32(mdev, BCMA_MIPS_MIPS74K_INTMASK(0),
 			    bcma_read32(mdev, BCMA_MIPS_MIPS74K_INTMASK(0)) &
@@ -105,7 +91,7 @@ static void bcma_core_mips_set_irq(struct bcma_device *dev, unsigned int irq)
 	else if (oldirq != 5)
 		bcma_write32(mdev, BCMA_MIPS_MIPS74K_INTMASK(oldirq), 0);
 
-	/* assign the new one */
+	 
 	if (irq == 0) {
 		bcma_write32(mdev, BCMA_MIPS_MIPS74K_INTMASK(0),
 			    bcma_read32(mdev, BCMA_MIPS_MIPS74K_INTMASK(0)) |
@@ -116,9 +102,7 @@ static void bcma_core_mips_set_irq(struct bcma_device *dev, unsigned int irq)
 		if (irqinitmask) {
 			struct bcma_device *core;
 
-			/* backplane irq line is in use, find out who uses
-			 * it and set user to irq 0
-			 */
+			 
 			list_for_each_entry(core, &bus->cores, list) {
 				if ((1 << bcma_core_mips_irqflag(core)) ==
 				    irqinitmask) {
@@ -230,7 +214,7 @@ static void bcma_core_mips_nvram_init(struct bcma_drv_mips *mcore)
 	struct bcma_bus *bus = mcore->core->bus;
 	enum bcma_boot_dev boot_dev;
 
-	/* Determine flash type this SoC boots from */
+	 
 	boot_dev = bcma_boot_dev(bus);
 	switch (boot_dev) {
 	case BCMA_BOOT_DEV_PARALLEL:
@@ -268,9 +252,7 @@ static void bcma_fix_i2s_irqflag(struct bcma_bus *bus)
 {
 	struct bcma_device *cpu, *pcie, *i2s;
 
-	/* Fixup the interrupts in 4716/4748 for i2s core (2010 Broadcom SDK)
-	 * (IRQ flags > 7 are ignored when setting the interrupt masks)
-	 */
+	 
 	if (bus->chipinfo.id != BCMA_CHIP_ID_BCM4716 &&
 	    bus->chipinfo.id != BCMA_CHIP_ID_BCM4748)
 		return;

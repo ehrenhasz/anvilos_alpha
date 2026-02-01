@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  ebt_mark_m
- *
- *	Authors:
- *	Bart De Schuymer <bdschuym@pandora.be>
- *
- *  July, 2002
- *
- */
+
+ 
 #include <linux/module.h>
 #include <linux/netfilter/x_tables.h>
 #include <linux/netfilter_bridge/ebtables.h>

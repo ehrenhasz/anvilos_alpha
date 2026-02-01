@@ -1,18 +1,13 @@
-/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause) */
-/*
- * This file is provided under a dual BSD/GPLv2 license.  When using or
- * redistributing this file, you may do so under either license.
- *
- * Copyright(c) 2020-2022 Intel Corporation. All rights reserved.
- */
+ 
+ 
 
-/* HDA Registers */
+ 
 #define MTL_PPLCLLPL_BASE		0x948
 #define MTL_PPLCLLPU_STRIDE		0x10
 #define MTL_PPLCLLPL(x)			(MTL_PPLCLLPL_BASE + (x) * MTL_PPLCLLPU_STRIDE)
 #define MTL_PPLCLLPU(x)			(MTL_PPLCLLPL_BASE + 0x4 + (x) * MTL_PPLCLLPU_STRIDE)
 
-/* DSP Registers */
+ 
 #define MTL_HFDSSCS			0x1000
 #define MTL_HFDSSCS_SPA_MASK		BIT(16)
 #define MTL_HFDSSCS_CPA_MASK		BIT(24)
@@ -36,7 +31,7 @@
 #define MTL_DSP2CXCTL_PRIMARY_CORE_OSEL GENMASK(25, 24)
 #define MTL_DSP2CXCTL_PRIMARY_CORE_OSEL_SHIFT 24
 
-/* IPC Registers */
+ 
 #define MTL_DSP_REG_HFIPCXTDR		0x73200
 #define MTL_DSP_REG_HFIPCXTDR_BUSY	BIT(31)
 #define MTL_DSP_REG_HFIPCXTDR_MSG_MASK GENMASK(30, 0)
@@ -62,9 +57,9 @@
 #define MTL_DSP_IRQSTS_IPC		BIT(0)
 #define MTL_DSP_IRQSTS_SDW		BIT(6)
 
-#define MTL_DSP_REG_POLL_INTERVAL_US	10	/* 10 us */
+#define MTL_DSP_REG_POLL_INTERVAL_US	10	 
 
-/* Memory windows */
+ 
 #define MTL_SRAM_WINDOW_OFFSET(x)	(0x180000 + 0x8000 * (x))
 
 #define MTL_DSP_MBOX_UPLINK_OFFSET	(MTL_SRAM_WINDOW_OFFSET(0) + 0x1000)
@@ -72,12 +67,12 @@
 #define MTL_DSP_MBOX_DOWNLINK_OFFSET	MTL_SRAM_WINDOW_OFFSET(1)
 #define MTL_DSP_MBOX_DOWNLINK_SIZE	0x1000
 
-/* FW registers */
-#define MTL_DSP_ROM_STS			MTL_SRAM_WINDOW_OFFSET(0) /* ROM status */
-#define MTL_DSP_ROM_ERROR		(MTL_SRAM_WINDOW_OFFSET(0) + 0x4) /* ROM error code */
+ 
+#define MTL_DSP_ROM_STS			MTL_SRAM_WINDOW_OFFSET(0)  
+#define MTL_DSP_ROM_ERROR		(MTL_SRAM_WINDOW_OFFSET(0) + 0x4)  
 
-#define MTL_DSP_REG_HFFLGPXQWY		0x163200 /* ROM debug status */
-#define MTL_DSP_REG_HFFLGPXQWY_ERROR	0x163204 /* ROM debug error code */
+#define MTL_DSP_REG_HFFLGPXQWY		0x163200  
+#define MTL_DSP_REG_HFFLGPXQWY_ERROR	0x163204  
 #define MTL_DSP_REG_HfIMRIS1		0x162088
 #define MTL_DSP_REG_HfIMRIS1_IU_MASK	BIT(0)
 

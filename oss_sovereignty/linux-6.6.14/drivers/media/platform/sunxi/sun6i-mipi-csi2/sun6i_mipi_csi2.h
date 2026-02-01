@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * Copyright 2020-2022 Bootlin
- * Author: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
- */
+ 
+ 
 
 #ifndef _SUN6I_MIPI_CSI2_H_
 #define _SUN6I_MIPI_CSI2_H_
@@ -33,7 +30,7 @@ struct sun6i_mipi_csi2_bridge {
 	struct v4l2_fwnode_endpoint	endpoint;
 	struct v4l2_async_notifier	notifier;
 	struct v4l2_mbus_framefmt	mbus_format;
-	struct mutex			lock; /* Mbus format lock. */
+	struct mutex			lock;  
 
 	struct v4l2_subdev		*source_subdev;
 };

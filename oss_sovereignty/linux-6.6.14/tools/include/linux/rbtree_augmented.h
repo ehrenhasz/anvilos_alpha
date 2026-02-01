@@ -1,16 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
-  Red Black Trees
-  (C) 1999  Andrea Arcangeli <andrea@suse.de>
-  (C) 2002  David Woodhouse <dwmw2@infradead.org>
-  (C) 2012  Michel Lespinasse <walken@google.com>
-
-
-  tools/linux/include/linux/rbtree_augmented.h
-
-  Copied from:
-  linux/include/linux/rbtree_augmented.h
-*/
+ 
+ 
 
 #ifndef _TOOLS_LINUX_RBTREE_AUGMENTED_H
 #define _TOOLS_LINUX_RBTREE_AUGMENTED_H
@@ -18,13 +7,7 @@
 #include <linux/compiler.h>
 #include <linux/rbtree.h>
 
-/*
- * Please note - only struct rb_augment_callbacks and the prototypes for
- * rb_insert_augmented() and rb_erase_augmented() are intended to be public.
- * The rest are implementation details you are not expected to depend on.
- *
- * See Documentation/core-api/rbtree.rst for documentation and samples.
- */
+ 
 
 struct rb_augment_callbacks {
 	void (*propagate)(struct rb_node *node, struct rb_node *stop);
@@ -35,16 +18,7 @@ struct rb_augment_callbacks {
 extern void __rb_insert_augmented(struct rb_node *node, struct rb_root *root,
 	void (*augment_rotate)(struct rb_node *old, struct rb_node *new));
 
-/*
- * Fixup the rbtree and update the augmented information when rebalancing.
- *
- * On insertion, the user must update the augmented information on the path
- * leading to the inserted node, then call rb_link_node() as usual and
- * rb_insert_augmented() instead of the usual rb_insert_color() call.
- * If rb_insert_augmented() rebalances the rbtree, it will callback into
- * a user provided function to update the augmented information on the
- * affected subtrees.
- */
+ 
 static inline void
 rb_insert_augmented(struct rb_node *node, struct rb_root *root,
 		    const struct rb_augment_callbacks *augment)
@@ -62,16 +36,7 @@ rb_insert_augmented_cached(struct rb_node *node,
 	rb_insert_augmented(node, &root->rb_root, augment);
 }
 
-/*
- * Template for declaring augmented rbtree callbacks (generic case)
- *
- * RBSTATIC:    'static' or empty
- * RBNAME:      name of the rb_augment_callbacks structure
- * RBSTRUCT:    struct type of the tree nodes
- * RBFIELD:     name of struct rb_node field within RBSTRUCT
- * RBAUGMENTED: name of field within RBSTRUCT holding data for subtree
- * RBCOMPUTE:   name of function that recomputes the RBAUGMENTED data
- */
+ 
 
 #define RB_DECLARE_CALLBACKS(RBSTATIC, RBNAME,				\
 			     RBSTRUCT, RBFIELD, RBAUGMENTED, RBCOMPUTE)	\
@@ -106,18 +71,7 @@ RBSTATIC const struct rb_augment_callbacks RBNAME = {			\
 	.rotate = RBNAME ## _rotate					\
 };
 
-/*
- * Template for declaring augmented rbtree callbacks,
- * computing RBAUGMENTED scalar as max(RBCOMPUTE(node)) for all subtree nodes.
- *
- * RBSTATIC:    'static' or empty
- * RBNAME:      name of the rb_augment_callbacks structure
- * RBSTRUCT:    struct type of the tree nodes
- * RBFIELD:     name of struct rb_node field within RBSTRUCT
- * RBTYPE:      type of the RBAUGMENTED field
- * RBAUGMENTED: name of RBTYPE field within RBSTRUCT holding data for subtree
- * RBCOMPUTE:   name of function that returns the per-node RBTYPE scalar
- */
+ 
 
 #define RB_DECLARE_CALLBACKS_MAX(RBSTATIC, RBNAME, RBSTRUCT, RBFIELD,	      \
 				 RBTYPE, RBAUGMENTED, RBCOMPUTE)	      \
@@ -193,13 +147,7 @@ __rb_erase_augmented(struct rb_node *node, struct rb_root *root,
 	unsigned long pc;
 
 	if (!tmp) {
-		/*
-		 * Case 1: node to erase has no more than 1 child (easy!)
-		 *
-		 * Note that if there is one child it must be red due to 5)
-		 * and node must be black due to 4). We adjust colors locally
-		 * so as to bypass __rb_erase_color() later on.
-		 */
+		 
 		pc = node->__rb_parent_color;
 		parent = __rb_parent(pc);
 		__rb_change_child(node, child, parent, root);
@@ -210,7 +158,7 @@ __rb_erase_augmented(struct rb_node *node, struct rb_root *root,
 			rebalance = __rb_is_black(pc) ? parent : NULL;
 		tmp = parent;
 	} else if (!child) {
-		/* Still case 1, but this time the child is node->rb_left */
+		 
 		tmp->__rb_parent_color = pc = node->__rb_parent_color;
 		parent = __rb_parent(pc);
 		__rb_change_child(node, tmp, parent, root);
@@ -221,34 +169,13 @@ __rb_erase_augmented(struct rb_node *node, struct rb_root *root,
 
 		tmp = child->rb_left;
 		if (!tmp) {
-			/*
-			 * Case 2: node's successor is its right child
-			 *
-			 *    (n)          (s)
-			 *    / \          / \
-			 *  (x) (s)  ->  (x) (c)
-			 *        \
-			 *        (c)
-			 */
+			 
 			parent = successor;
 			child2 = successor->rb_right;
 
 			augment->copy(node, successor);
 		} else {
-			/*
-			 * Case 3: node's successor is leftmost under
-			 * node's right child subtree
-			 *
-			 *    (n)          (s)
-			 *    / \          / \
-			 *  (x) (y)  ->  (x) (y)
-			 *      /            /
-			 *    (p)          (p)
-			 *    /            /
-			 *  (s)          (c)
-			 *    \
-			 *    (c)
-			 */
+			 
 			do {
 				parent = successor;
 				successor = tmp;
@@ -305,4 +232,4 @@ rb_erase_augmented_cached(struct rb_node *node, struct rb_root_cached *root,
 	rb_erase_augmented(node, &root->rb_root, augment);
 }
 
-#endif /* _TOOLS_LINUX_RBTREE_AUGMENTED_H */
+#endif  

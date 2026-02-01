@@ -1,38 +1,4 @@
-/* Test of getting load average.
-   Copyright (C) 2011-2023 Free Software Foundation, Inc.
-
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-#include <config.h>
-
-#include <stdlib.h>
-
-#include "signature.h"
-SIGNATURE_CHECK (getloadavg, int, (double [], int));
-
-#include <errno.h>
-#include <stdio.h>
-#include <unistd.h>
-
-static void
-check_avg (int minutes, double avg, int printit)
-{
-  if (printit)
-    printf ("%d-minute: %f  ", minutes, avg);
-  else
-    {
-      /* Plausibility checks.  */
+ 
       if (avg < 0.01)
         printf ("suspiciously low %d-minute average: %f\n", minutes, avg);
       if (avg > 1000000)
@@ -42,10 +8,7 @@ check_avg (int minutes, double avg, int printit)
     exit (minutes);
 }
 
-/* This program can also be used as a manual test, by invoking it with
-   an argument; it then prints the load average.  If the argument is
-   nonzero, the manual test repeats forever, sleeping for the stated
-   interval between each iteration.  */
+ 
 int
 main (int argc, char **argv)
 {

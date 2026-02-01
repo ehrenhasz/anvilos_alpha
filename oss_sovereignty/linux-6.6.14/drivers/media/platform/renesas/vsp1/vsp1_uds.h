@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * vsp1_uds.h  --  R-Car VSP1 Up and Down Scaler
- *
- * Copyright (C) 2013-2014 Renesas Electronics Corporation
- *
- * Contact: Laurent Pinchart (laurent.pinchart@ideasonboard.com)
- */
+ 
+ 
 #ifndef __VSP1_UDS_H__
 #define __VSP1_UDS_H__
 
@@ -34,4 +28,4 @@ struct vsp1_uds *vsp1_uds_create(struct vsp1_device *vsp1, unsigned int index);
 void vsp1_uds_set_alpha(struct vsp1_entity *uds, struct vsp1_dl_body *dlb,
 			unsigned int alpha);
 
-#endif /* __VSP1_UDS_H__ */
+#endif  

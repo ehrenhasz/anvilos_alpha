@@ -1,18 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * drivers/watchdog/m54xx_wdt.c
- *
- * Watchdog driver for ColdFire MCF547x & MCF548x processors
- * Copyright 2010 (c) Philippe De Muyter <phdm@macqel.be>
- *
- * Adapted from the IXP4xx watchdog driver, which carries these notices:
- *
- *  Author: Deepak Saxena <dsaxena@plexity.net>
- *
- *  Copyright 2004 (c) MontaVista, Software, Inc.
- *  Based on sa1100 driver, Copyright (C) 2000 Oleg Drokin <green@crimea.edu>
- *
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -34,7 +21,7 @@
 #include <asm/m54xxgpt.h>
 
 static bool nowayout = WATCHDOG_NOWAYOUT;
-static unsigned int heartbeat = 30;	/* (secs) Default is 0.5 minute */
+static unsigned int heartbeat = 30;	 
 static unsigned long wdt_status;
 
 #define	WDT_IN_USE		0
@@ -44,7 +31,7 @@ static void wdt_enable(void)
 {
 	unsigned int gms0;
 
-	/* preserve GPIO usage, if any */
+	 
 	gms0 = __raw_readl(MCF_GPT_GMS0);
 	if (gms0 & MCF_GPT_GMS_TMS_GPIO)
 		gms0 &= (MCF_GPT_GMS_TMS_GPIO | MCF_GPT_GMS_GPIO_MASK
@@ -62,7 +49,7 @@ static void wdt_disable(void)
 {
 	unsigned int gms0;
 
-	/* disable watchdog */
+	 
 	gms0 = __raw_readl(MCF_GPT_GMS0);
 	gms0 &= ~(MCF_GPT_GMS_WDEN | MCF_GPT_GMS_CE);
 	__raw_writel(gms0, MCF_GPT_GMS0);

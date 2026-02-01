@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  cx18 ioctl system call
- *
- *  Derived from ivtv-ioctl.c
- *
- *  Copyright (C) 2007  Hans Verkuil <hverkuil@xs4all.nl>
- *  Copyright (C) 2008  Andy Walls <awalls@md.metrocast.net>
- */
+
+ 
 
 #include "cx18-driver.h"
 #include "cx18-io.h"
@@ -92,18 +85,15 @@ static int cx18_try_fmt_vid_cap(struct file *file, void *fh,
 		if (pixfmt->pixelformat != V4L2_PIX_FMT_NV12_16L16 &&
 		    pixfmt->pixelformat != V4L2_PIX_FMT_UYVY)
 			pixfmt->pixelformat = V4L2_PIX_FMT_UYVY;
-		/* YUV height must be a multiple of 32 */
+		 
 		h = round_up(h, 32);
-		/*
-		 * HM12 YUV size is (Y=(h*720) + UV=(h*(720/2)))
-		 * UYUV YUV size is (Y=(h*720) + UV=(h*(720)))
-		 */
+		 
 		if (pixfmt->pixelformat == V4L2_PIX_FMT_NV12_16L16) {
 			pixfmt->sizeimage = h * 720 * 3 / 2;
-			pixfmt->bytesperline = 720; /* First plane */
+			pixfmt->bytesperline = 720;  
 		} else {
 			pixfmt->sizeimage = h * 720 * 2;
-			pixfmt->bytesperline = 1440; /* Packed */
+			pixfmt->bytesperline = 1440;  
 		}
 	} else {
 		pixfmt->pixelformat = V4L2_PIX_FMT_MPEG;
@@ -170,7 +160,7 @@ u16 cx18_service2vbi(int type)
 	}
 }
 
-/* Check if VBI services are allowed on the (field, line) for the video std */
+ 
 static int valid_service_line(int field, int line, int is_pal)
 {
 	return (is_pal && line >= 6 &&
@@ -178,13 +168,7 @@ static int valid_service_line(int field, int line, int is_pal)
 	       (!is_pal && line >= 10 && line < 22);
 }
 
-/*
- * For a (field, line, std) and inbound potential set of services for that line,
- * return the first valid service of those passed in the incoming set for that
- * line in priority order:
- * CC, VPS, or WSS over TELETEXT for well known lines
- * TELETEXT, before VPS, before CC, before WSS, for other lines
- */
+ 
 static u16 select_service_from_set(int field, int line, u16 set, int is_pal)
 {
 	u16 valid_set = (is_pal ? V4L2_SLICED_VBI_625 : V4L2_SLICED_VBI_525);
@@ -211,10 +195,7 @@ static u16 select_service_from_set(int field, int line, u16 set, int is_pal)
 	return 0;
 }
 
-/*
- * Expand the service_set of *fmt into valid service_lines for the std,
- * and clear the passed in fmt->service_set
- */
+ 
 void cx18_expand_service_set(struct v4l2_sliced_vbi_format *fmt, int is_pal)
 {
 	u16 set = fmt->service_set;
@@ -227,10 +208,7 @@ void cx18_expand_service_set(struct v4l2_sliced_vbi_format *fmt, int is_pal)
 	}
 }
 
-/*
- * Sanitize the service_lines in *fmt per the video std, and return 1
- * if any service_line is left as valid after santization
- */
+ 
 static int check_service_set(struct v4l2_sliced_vbi_format *fmt, int is_pal)
 {
 	int f, l;
@@ -245,7 +223,7 @@ static int check_service_set(struct v4l2_sliced_vbi_format *fmt, int is_pal)
 	return set != 0;
 }
 
-/* Compute the service_set from the assumed valid service_lines of *fmt */
+ 
 u16 cx18_get_service_set(struct v4l2_sliced_vbi_format *fmt)
 {
 	int f, l;
@@ -265,7 +243,7 @@ static int cx18_g_fmt_vbi_cap(struct file *file, void *fh,
 	struct v4l2_vbi_format *vbifmt = &fmt->fmt.vbi;
 
 	vbifmt->sampling_rate = 27000000;
-	vbifmt->offset = 248; /* FIXME - slightly wrong for both 50 & 60 Hz */
+	vbifmt->offset = 248;  
 	vbifmt->samples_per_line = VBI_ACTIVE_SAMPLES - 4;
 	vbifmt->sample_format = V4L2_PIX_FMT_GREY;
 	vbifmt->start[0] = cx->vbi.start[0];
@@ -283,18 +261,14 @@ static int cx18_g_fmt_sliced_vbi_cap(struct file *file, void *fh,
 	struct cx18 *cx = fh2id(fh)->cx;
 	struct v4l2_sliced_vbi_format *vbifmt = &fmt->fmt.sliced;
 
-	/* sane, V4L2 spec compliant, defaults */
+	 
 	vbifmt->reserved[0] = 0;
 	vbifmt->reserved[1] = 0;
 	vbifmt->io_size = sizeof(struct v4l2_sliced_vbi_data) * 36;
 	memset(vbifmt->service_lines, 0, sizeof(vbifmt->service_lines));
 	vbifmt->service_set = 0;
 
-	/*
-	 * Fetch the configured service_lines and total service_set from the
-	 * digitizer/slicer.  Note, cx18_av_vbi() wipes the passed in
-	 * fmt->fmt.sliced under valid calling conditions
-	 */
+	 
 	if (v4l2_subdev_call(cx->sd_av, vbi, g_sliced_fmt, &fmt->fmt.sliced))
 		return -EINVAL;
 
@@ -318,10 +292,10 @@ static int cx18_try_fmt_sliced_vbi_cap(struct file *file, void *fh,
 	vbifmt->reserved[0] = 0;
 	vbifmt->reserved[1] = 0;
 
-	/* If given a service set, expand it validly & clear passed in set */
+	 
 	if (vbifmt->service_set)
 		cx18_expand_service_set(vbifmt, cx->is_50hz);
-	/* Sanitize the service_lines, and compute the new set if any valid */
+	 
 	if (check_service_set(vbifmt, cx->is_50hz))
 		vbifmt->service_set = cx18_get_service_set(vbifmt);
 	return 0;
@@ -334,23 +308,16 @@ static int cx18_s_fmt_vbi_cap(struct file *file, void *fh,
 	struct cx18 *cx = id->cx;
 	int ret;
 
-	/*
-	 * Changing the Encoder's Raw VBI parameters won't have any effect
-	 * if any analog capture is ongoing
-	 */
+	 
 	if (!cx18_raw_vbi(cx) && atomic_read(&cx->ana_capturing) > 0)
 		return -EBUSY;
 
-	/*
-	 * Set the digitizer registers for raw active VBI.
-	 * Note cx18_av_vbi_wipes out a lot of the passed in fmt under valid
-	 * calling conditions
-	 */
+	 
 	ret = v4l2_subdev_call(cx->sd_av, vbi, s_raw_fmt, &fmt->fmt.vbi);
 	if (ret)
 		return ret;
 
-	/* Store our new v4l2 (non-)sliced VBI state */
+	 
 	cx->vbi.sliced_in->service_set = 0;
 	cx->vbi.in.type = V4L2_BUF_TYPE_VBI_CAPTURE;
 
@@ -367,22 +334,15 @@ static int cx18_s_fmt_sliced_vbi_cap(struct file *file, void *fh,
 
 	cx18_try_fmt_sliced_vbi_cap(file, fh, fmt);
 
-	/*
-	 * Changing the Encoder's Raw VBI parameters won't have any effect
-	 * if any analog capture is ongoing
-	 */
+	 
 	if (cx18_raw_vbi(cx) && atomic_read(&cx->ana_capturing) > 0)
 		return -EBUSY;
 
-	/*
-	 * Set the service_lines requested in the digitizer/slicer registers.
-	 * Note, cx18_av_vbi() wipes some "impossible" service lines in the
-	 * passed in fmt->fmt.sliced under valid calling conditions
-	 */
+	 
 	ret = v4l2_subdev_call(cx->sd_av, vbi, s_sliced_fmt, &fmt->fmt.sliced);
 	if (ret)
 		return ret;
-	/* Store our current v4l2 sliced VBI settings */
+	 
 	cx->vbi.in.type =  V4L2_BUF_TYPE_SLICED_VBI_CAPTURE;
 	memcpy(cx->vbi.sliced_in, vbifmt, sizeof(*cx->vbi.sliced_in));
 	return 0;
@@ -459,7 +419,7 @@ static int cx18_enum_input(struct file *file, void *fh, struct v4l2_input *vin)
 {
 	struct cx18 *cx = fh2id(fh)->cx;
 
-	/* set it to defaults from our table */
+	 
 	return cx18_get_input(cx, vin->index, vin);
 }
 
@@ -541,7 +501,7 @@ int cx18_s_input(struct file *file, void *fh, unsigned int inp)
 			cx->active_input, inp);
 
 	cx->active_input = inp;
-	/* Set the audio input to whatever is appropriate for the input type. */
+	 
 	cx->audio_input = cx->card->video_inputs[inp].audio_index;
 	if (card_input->video_type == V4L2_INPUT_TYPE_TUNER)
 		std = cx->tuner_std;
@@ -549,8 +509,7 @@ int cx18_s_input(struct file *file, void *fh, unsigned int inp)
 	cx->streams[CX18_ENC_STREAM_TYPE_YUV].video_dev.tvnorms = std;
 	cx->streams[CX18_ENC_STREAM_TYPE_VBI].video_dev.tvnorms = std;
 
-	/* prevent others from messing with the streams until
-	   we're finished changing inputs. */
+	 
 	cx18_mute(cx);
 	cx18_video_set_io(cx);
 	cx18_audio_set_io(cx);
@@ -606,9 +565,7 @@ int cx18_s_std(struct file *file, void *fh, v4l2_std_id std)
 
 	if (test_bit(CX18_F_I_RADIO_USER, &cx->i_flags) ||
 	    atomic_read(&cx->ana_capturing) > 0) {
-		/* Switching standard would turn off the radio or mess
-		   with already running streams, prevent that by
-		   returning EBUSY. */
+		 
 		return -EBUSY;
 	}
 
@@ -618,10 +575,7 @@ int cx18_s_std(struct file *file, void *fh, v4l2_std_id std)
 	cx2341x_handler_set_50hz(&cx->cxhdl, cx->is_50hz);
 	cx->cxhdl.width = 720;
 	cx->cxhdl.height = cx->is_50hz ? 576 : 480;
-	/*
-	 * HM12 YUV size is (Y=(h*720) + UV=(h*(720/2)))
-	 * UYUV YUV size is (Y=(h*720) + UV=(h*(720)))
-	 */
+	 
 	if (cx->streams[CX18_ENC_STREAM_TYPE_YUV].pixelformat == V4L2_PIX_FMT_NV12_16L16) {
 		cx->streams[CX18_ENC_STREAM_TYPE_YUV].vb_bytes_per_frame =
 			cx->cxhdl.height * 720 * 3 / 2;
@@ -637,7 +591,7 @@ int cx18_s_std(struct file *file, void *fh, v4l2_std_id std)
 	CX18_DEBUG_INFO("Switching standard to %llx.\n",
 			(unsigned long long) cx->std);
 
-	/* Tuner */
+	 
 	cx18_call_all(cx, video, s_std, cx->std);
 	return 0;
 }
@@ -684,10 +638,7 @@ static int cx18_g_sliced_vbi_cap(struct file *file, void *fh,
 	for (f = 0; f < 2; f++) {
 		for (l = 0; l < 24; l++) {
 			if (valid_service_line(f, l, cx->is_50hz)) {
-				/*
-				 * We can find all v4l2 supported vbi services
-				 * for the standard, on a valid line for the std
-				 */
+				 
 				cap->service_lines[f][l] = set;
 				cap->service_set |= set;
 			} else
@@ -706,17 +657,13 @@ static int _cx18_process_idx_data(struct cx18_buffer *buf,
 	struct v4l2_enc_idx_entry *e_idx;
 	struct cx18_enc_idx_entry *e_buf;
 
-	/* Frame type lookup: 1=I, 2=P, 4=B */
+	 
 	static const int mapping[8] = {
 		-1, V4L2_ENC_IDX_FRAME_I, V4L2_ENC_IDX_FRAME_P,
 		-1, V4L2_ENC_IDX_FRAME_B, -1, -1, -1
 	};
 
-	/*
-	 * Assumption here is that a buf holds an integral number of
-	 * struct cx18_enc_idx_entry objects and is properly aligned.
-	 * This is enforced by the module options on IDX buffer sizes.
-	 */
+	 
 	remaining = buf->bytesused - buf->readpos;
 	consumed = 0;
 	e_idx = &idx->entry[idx->entries];
@@ -746,7 +693,7 @@ static int _cx18_process_idx_data(struct cx18_buffer *buf,
 		consumed += sizeof(struct cx18_enc_idx_entry);
 	}
 
-	/* Swallow any partial entries at the end, if there are any */
+	 
 	if (remaining > 0 && remaining < sizeof(struct cx18_enc_idx_entry))
 		consumed += remaining;
 
@@ -765,24 +712,20 @@ static int cx18_process_idx_data(struct cx18_stream *s, struct cx18_mdl *mdl,
 						 struct cx18_buffer, list);
 
 	if (list_entry_is_past_end(mdl->curr_buf, &mdl->buf_list, list)) {
-		/*
-		 * For some reason we've exhausted the buffers, but the MDL
-		 * object still said some data was unread.
-		 * Fix that and bail out.
-		 */
+		 
 		mdl->readpos = mdl->bytesused;
 		return 0;
 	}
 
 	list_for_each_entry_from(mdl->curr_buf, &mdl->buf_list, list) {
 
-		/* Skip any empty buffers in the MDL */
+		 
 		if (mdl->curr_buf->readpos >= mdl->curr_buf->bytesused)
 			continue;
 
 		mdl->readpos += _cx18_process_idx_data(mdl->curr_buf, idx);
 
-		/* exit when MDL drained or request satisfied */
+		 
 		if (idx->entries >= V4L2_ENC_IDX_ENTRIES ||
 		    mdl->curr_buf->readpos < mdl->curr_buf->bytesused ||
 		    mdl->readpos >= mdl->bytesused)
@@ -799,41 +742,41 @@ static int cx18_g_enc_index(struct file *file, void *fh,
 	s32 tmp;
 	struct cx18_mdl *mdl;
 
-	if (!cx18_stream_enabled(s)) /* Module options inhibited IDX stream */
+	if (!cx18_stream_enabled(s))  
 		return -EINVAL;
 
-	/* Compute the best case number of entries we can buffer */
+	 
 	tmp = s->buffers -
 			  s->bufs_per_mdl * CX18_ENC_STREAM_TYPE_IDX_FW_MDL_MIN;
 	if (tmp <= 0)
 		tmp = 1;
 	tmp = tmp * s->buf_size / sizeof(struct cx18_enc_idx_entry);
 
-	/* Fill out the header of the return structure */
+	 
 	idx->entries = 0;
 	idx->entries_cap = tmp;
 	memset(idx->reserved, 0, sizeof(idx->reserved));
 
-	/* Pull IDX MDLs and buffers from q_full and populate the entries */
+	 
 	do {
 		mdl = cx18_dequeue(s, &s->q_full);
-		if (mdl == NULL) /* No more IDX data right now */
+		if (mdl == NULL)  
 			break;
 
-		/* Extract the Index entry data from the MDL and buffers */
+		 
 		cx18_process_idx_data(s, mdl, idx);
 		if (mdl->readpos < mdl->bytesused) {
-			/* We finished with data remaining, push the MDL back */
+			 
 			cx18_push(s, mdl, &s->q_full);
 			break;
 		}
 
-		/* We drained this MDL, schedule it to go to the firmware */
+		 
 		cx18_enqueue(s, mdl, &s->q_free);
 
 	} while (idx->entries < V4L2_ENC_IDX_ENTRIES);
 
-	/* Tell the work handler to send free IDX MDLs to the firmware */
+	 
 	cx18_stream_load_fw_queue(s);
 	return 0;
 }

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * CPCAP Power Button Input Driver
- *
- * Copyright (C) 2017 Sebastian Reichel <sre@kernel.org>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/init.h>

@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  compress_core.c - compress offload core
- *
- *  Copyright (C) 2011 Intel Corporation
- *  Authors:	Vinod Koul <vinod.koul@linux.intel.com>
- *		Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
- *  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- *
- * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- */
+
+ 
 #define FORMAT(fmt) "%s: %d: " fmt, __func__, __LINE__
 #define pr_fmt(fmt) KBUILD_MODNAME ": " FORMAT(fmt)
 
@@ -33,19 +24,12 @@
 #include <sound/compress_offload.h>
 #include <sound/compress_driver.h>
 
-/* struct snd_compr_codec_caps overflows the ioctl bit size for some
- * architectures, so we need to disable the relevant ioctls.
- */
+ 
 #if _IOC_SIZEBITS < 14
 #define COMPR_CODEC_CAPS_OVERFLOW
 #endif
 
-/* TODO:
- * - add substream support for multiple devices in case of
- *	SND_DYNAMIC_MINORS is not used
- * - Multiple node representation
- *	driver should be able to register multiple nodes
- */
+ 
 
 struct snd_compr_file {
 	unsigned long caps;
@@ -54,24 +38,7 @@ struct snd_compr_file {
 
 static void error_delayed_work(struct work_struct *work);
 
-/*
- * a note on stream states used:
- * we use following states in the compressed core
- * SNDRV_PCM_STATE_OPEN: When stream has been opened.
- * SNDRV_PCM_STATE_SETUP: When stream has been initialized. This is done by
- *	calling SNDRV_COMPRESS_SET_PARAMS. Running streams will come to this
- *	state at stop by calling SNDRV_COMPRESS_STOP, or at end of drain.
- * SNDRV_PCM_STATE_PREPARED: When a stream has been written to (for
- *	playback only). User after setting up stream writes the data buffer
- *	before starting the stream.
- * SNDRV_PCM_STATE_RUNNING: When stream has been started and is
- *	decoding/encoding and rendering/capturing data.
- * SNDRV_PCM_STATE_DRAINING: When stream is draining current data. This is done
- *	by calling SNDRV_COMPRESS_DRAIN.
- * SNDRV_PCM_STATE_PAUSED: When stream is paused. This is done by calling
- *	SNDRV_COMPRESS_PAUSE. It can be stopped or resumed by calling
- *	SNDRV_COMPRESS_STOP or SNDRV_COMPRESS_RESUME respectively.
- */
+ 
 static int snd_compr_open(struct inode *inode, struct file *f)
 {
 	struct snd_compr *compr;
@@ -183,7 +150,7 @@ static size_t snd_compr_calc_avail(struct snd_compr_stream *stream,
 {
 	memset(avail, 0, sizeof(*avail));
 	snd_compr_update_tstamp(stream, &avail->tstamp);
-	/* Still need to return avail even if tstamp can't be filled in */
+	 
 
 	if (stream->runtime->total_bytes_available == 0 &&
 			stream->runtime->state == SNDRV_PCM_STATE_SETUP &&
@@ -251,7 +218,7 @@ static int snd_compr_write_data(struct snd_compr_stream *stream,
 	void *dstn;
 	size_t copy;
 	struct snd_compr_runtime *runtime = stream->runtime;
-	/* 64-bit Modulus */
+	 
 	u64 app_pointer = div64_u64(runtime->total_bytes_available,
 				    runtime->buffer_size);
 	app_pointer = runtime->total_bytes_available -
@@ -270,7 +237,7 @@ static int snd_compr_write_data(struct snd_compr_stream *stream,
 		if (copy_from_user(runtime->buffer, buf + copy, count - copy))
 			return -EFAULT;
 	}
-	/* if DSP cares, let it know data has been written */
+	 
 	if (stream->ops->ack)
 		stream->ops->ack(stream, count);
 	return count;
@@ -289,7 +256,7 @@ static ssize_t snd_compr_write(struct file *f, const char __user *buf,
 
 	stream = &data->stream;
 	mutex_lock(&stream->device->lock);
-	/* write is allowed when stream is running or has been steup */
+	 
 	switch (stream->runtime->state) {
 	case SNDRV_PCM_STATE_SETUP:
 	case SNDRV_PCM_STATE_PREPARED:
@@ -302,7 +269,7 @@ static ssize_t snd_compr_write(struct file *f, const char __user *buf,
 
 	avail = snd_compr_get_avail(stream);
 	pr_debug("avail returned %ld\n", (unsigned long)avail);
-	/* calculate how much we can write to buffer */
+	 
 	if (avail > count)
 		avail = count;
 
@@ -315,8 +282,7 @@ static ssize_t snd_compr_write(struct file *f, const char __user *buf,
 	if (retval > 0)
 		stream->runtime->total_bytes_available += retval;
 
-	/* while initiating the stream, write should be called before START
-	 * call, so in setup move state */
+	 
 	if (stream->runtime->state == SNDRV_PCM_STATE_SETUP) {
 		stream->runtime->state = SNDRV_PCM_STATE_PREPARED;
 		pr_debug("stream prepared, Houston we are good to go\n");
@@ -341,10 +307,7 @@ static ssize_t snd_compr_read(struct file *f, char __user *buf,
 	stream = &data->stream;
 	mutex_lock(&stream->device->lock);
 
-	/* read is allowed when stream is running, paused, draining and setup
-	 * (yes setup is state which we transition to after stop, so if user
-	 * wants to read data after stop we allow that)
-	 */
+	 
 	switch (stream->runtime->state) {
 	case SNDRV_PCM_STATE_OPEN:
 	case SNDRV_PCM_STATE_PREPARED:
@@ -359,7 +322,7 @@ static ssize_t snd_compr_read(struct file *f, char __user *buf,
 
 	avail = snd_compr_get_avail(stream);
 	pr_debug("avail returned %ld\n", (unsigned long)avail);
-	/* calculate how much we can read from buffer */
+	 
 	if (avail > count)
 		avail = count;
 
@@ -417,12 +380,10 @@ static __poll_t snd_compr_poll(struct file *f, poll_table *wait)
 
 	avail = snd_compr_get_avail(stream);
 	pr_debug("avail is %ld\n", (unsigned long)avail);
-	/* check if we have at least one fragment to fill */
+	 
 	switch (stream->runtime->state) {
 	case SNDRV_PCM_STATE_DRAINING:
-		/* stream has been woken up after drain is complete
-		 * draining done so set stream state to stopped
-		 */
+		 
 		retval = snd_compr_get_poll(stream);
 		stream->runtime->state = SNDRV_PCM_STATE_SETUP;
 		break;
@@ -484,7 +445,7 @@ out:
 	kfree(caps);
 	return retval;
 }
-#endif /* !COMPR_CODEC_CAPS_OVERFLOW */
+#endif  
 
 int snd_compr_malloc_pages(struct snd_compr_stream *stream, size_t size)
 {
@@ -519,7 +480,7 @@ int snd_compr_free_pages(struct snd_compr_stream *stream)
 	if (runtime->dma_area == NULL)
 		return 0;
 	if (runtime->dma_buffer_p != &stream->dma_buffer) {
-		/* It's a newly allocated buffer. Release it now. */
+		 
 		snd_dma_free_pages(runtime->dma_buffer_p);
 		kfree(runtime->dma_buffer_p);
 	}
@@ -529,7 +490,7 @@ int snd_compr_free_pages(struct snd_compr_stream *stream)
 }
 EXPORT_SYMBOL(snd_compr_free_pages);
 
-/* revisit this with snd_pcm_preallocate_xxx */
+ 
 static int snd_compr_allocate_buffer(struct snd_compr_stream *stream,
 		struct snd_compr_params *params)
 {
@@ -539,9 +500,7 @@ static int snd_compr_allocate_buffer(struct snd_compr_stream *stream,
 	buffer_size = params->buffer.fragment_size * params->buffer.fragments;
 	if (stream->ops->copy) {
 		buffer = NULL;
-		/* if copy is defined the driver will be required to copy
-		 * the data from core
-		 */
+		 
 	} else {
 		if (stream->runtime->dma_buffer_p) {
 
@@ -567,13 +526,13 @@ static int snd_compr_allocate_buffer(struct snd_compr_stream *stream,
 
 static int snd_compress_check_input(struct snd_compr_params *params)
 {
-	/* first let's check the buffer parameter's */
+	 
 	if (params->buffer.fragment_size == 0 ||
 	    params->buffer.fragments > U32_MAX / params->buffer.fragment_size ||
 	    params->buffer.fragments == 0)
 		return -EINVAL;
 
-	/* now codec parameters */
+	 
 	if (params->codec.id == 0 || params->codec.id > SND_AUDIOCODEC_MAX)
 		return -EINVAL;
 
@@ -590,10 +549,7 @@ snd_compr_set_params(struct snd_compr_stream *stream, unsigned long arg)
 	int retval;
 
 	if (stream->runtime->state == SNDRV_PCM_STATE_OPEN || stream->next_track) {
-		/*
-		 * we should allow parameter change only when stream has been
-		 * opened not in other cases
-		 */
+		 
 		params = memdup_user((void __user *)arg, sizeof(*params));
 		if (IS_ERR(params))
 			return PTR_ERR(params);
@@ -680,10 +636,7 @@ snd_compr_set_metadata(struct snd_compr_stream *stream, unsigned long arg)
 
 	if (!stream->ops->set_metadata)
 		return -ENXIO;
-	/*
-	* we should allow parameter change only when stream has been
-	* opened not in other cases
-	*/
+	 
 	if (copy_from_user(&metadata, (void __user *)arg, sizeof(metadata)))
 		return -EFAULT;
 
@@ -788,7 +741,7 @@ static int snd_compr_stop(struct snd_compr_stream *stream)
 
 	retval = stream->ops->trigger(stream, SNDRV_PCM_TRIGGER_STOP);
 	if (!retval) {
-		/* clear flags and stop any drain wait */
+		 
 		stream->partial_drain = false;
 		stream->metadata_set = false;
 		stream->pause_in_draining = false;
@@ -813,17 +766,7 @@ static void error_delayed_work(struct work_struct *work)
 	mutex_unlock(&stream->device->lock);
 }
 
-/**
- * snd_compr_stop_error: Report a fatal error on a stream
- * @stream: pointer to stream
- * @state: state to transition the stream to
- *
- * Stop the stream and set its state.
- *
- * Should be called with compressed device lock held.
- *
- * Return: zero if successful, or a negative error code
- */
+ 
 int snd_compr_stop_error(struct snd_compr_stream *stream,
 			 snd_pcm_state_t state)
 {
@@ -844,22 +787,11 @@ static int snd_compress_wait_for_drain(struct snd_compr_stream *stream)
 {
 	int ret;
 
-	/*
-	 * We are called with lock held. So drop the lock while we wait for
-	 * drain complete notification from the driver
-	 *
-	 * It is expected that driver will notify the drain completion and then
-	 * stream will be moved to SETUP state, even if draining resulted in an
-	 * error. We can trigger next track after this.
-	 */
+	 
 	stream->runtime->state = SNDRV_PCM_STATE_DRAINING;
 	mutex_unlock(&stream->device->lock);
 
-	/* we wait for drain to complete here, drain can return when
-	 * interruption occurred, wait returned error or success.
-	 * For the first two cases we don't do anything different here and
-	 * return after waking up
-	 */
+	 
 
 	ret = wait_event_interruptible(stream->runtime->sleep,
 			(stream->runtime->state != SNDRV_PCM_STATE_DRAINING));
@@ -905,17 +837,15 @@ static int snd_compr_next_track(struct snd_compr_stream *stream)
 {
 	int retval;
 
-	/* only a running stream can transition to next track */
+	 
 	if (stream->runtime->state != SNDRV_PCM_STATE_RUNNING)
 		return -EPERM;
 
-	/* next track doesn't have any meaning for capture streams */
+	 
 	if (stream->direction == SND_COMPRESS_CAPTURE)
 		return -EPERM;
 
-	/* you can signal next track if this is intended to be a gapless stream
-	 * and current track metadata is set
-	 */
+	 
 	if (stream->metadata_set == false)
 		return -EPERM;
 
@@ -943,11 +873,11 @@ static int snd_compr_partial_drain(struct snd_compr_stream *stream)
 		break;
 	}
 
-	/* partial drain doesn't have any meaning for capture streams */
+	 
 	if (stream->direction == SND_COMPRESS_CAPTURE)
 		return -EPERM;
 
-	/* stream can be drained only when next track has been signalled */
+	 
 	if (stream->next_track == false)
 		return -EPERM;
 
@@ -1033,7 +963,7 @@ static long snd_compr_ioctl(struct file *f, unsigned int cmd, unsigned long arg)
 	return retval;
 }
 
-/* support of 32bit userspace on 64bit platforms */
+ 
 #ifdef CONFIG_COMPAT
 static long snd_compr_ioctl_compat(struct file *file, unsigned int cmd,
 						unsigned long arg)
@@ -1067,7 +997,7 @@ static int snd_compress_dev_register(struct snd_device *device)
 
 	pr_debug("reg device %s, direction %d\n", compr->name,
 			compr->direction);
-	/* register compressed device */
+	 
 	ret = snd_register_device(SNDRV_DEVICE_TYPE_COMPRESS,
 				  compr->card, compr->device,
 				  &snd_compr_file_ops, compr, compr->dev);
@@ -1162,16 +1092,7 @@ static int snd_compress_dev_free(struct snd_device *device)
 	return 0;
 }
 
-/**
- * snd_compress_new: create new compress device
- * @card: sound card pointer
- * @device: device number
- * @dirn: device direction, should be of type enum snd_compr_direction
- * @id: ID string
- * @compr: compress device pointer
- *
- * Return: zero if successful, or a negative error code
- */
+ 
 int snd_compress_new(struct snd_card *card, int device,
 			int dirn, const char *id, struct snd_compr *compr)
 {

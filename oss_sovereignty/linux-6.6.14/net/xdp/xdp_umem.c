@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* XDP user-space packet buffer
- * Copyright(c) 2018 Intel Corporation.
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/sched/mm.h>
@@ -158,12 +156,7 @@ static int xdp_umem_reg(struct xdp_umem *umem, struct xdp_umem_reg *mr)
 	int err;
 
 	if (chunk_size < XDP_UMEM_MIN_CHUNK_SIZE || chunk_size > PAGE_SIZE) {
-		/* Strictly speaking we could support this, if:
-		 * - huge pages, or*
-		 * - using an IOMMU, or
-		 * - making sure the memory area is consecutive
-		 * but for now, we simply say "computer says no".
-		 */
+		 
 		return -EINVAL;
 	}
 
@@ -174,9 +167,7 @@ static int xdp_umem_reg(struct xdp_umem *umem, struct xdp_umem_reg *mr)
 		return -EINVAL;
 
 	if (!PAGE_ALIGNED(addr)) {
-		/* Memory area has to be page size aligned. For
-		 * simplicity, this might change.
-		 */
+		 
 		return -EINVAL;
 	}
 

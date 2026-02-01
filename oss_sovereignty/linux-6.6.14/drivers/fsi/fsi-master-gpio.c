@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * A FSI master controller, using a simple GPIO bit-banging interface
- */
+
+ 
 
 #include <linux/crc4.h>
 #include <linux/delay.h>
@@ -17,18 +15,18 @@
 
 #include "fsi-master.h"
 
-#define	FSI_GPIO_STD_DLY	1	/* Standard pin delay in nS */
+#define	FSI_GPIO_STD_DLY	1	 
 #define LAST_ADDR_INVALID		0x1
 
 struct fsi_master_gpio {
 	struct fsi_master	master;
 	struct device		*dev;
-	struct mutex		cmd_lock;	/* mutex for command ordering */
+	struct mutex		cmd_lock;	 
 	struct gpio_desc	*gpio_clk;
 	struct gpio_desc	*gpio_data;
-	struct gpio_desc	*gpio_trans;	/* Voltage translator */
-	struct gpio_desc	*gpio_enable;	/* FSI enable */
-	struct gpio_desc	*gpio_mux;	/* Mux control */
+	struct gpio_desc	*gpio_trans;	 
+	struct gpio_desc	*gpio_enable;	 
+	struct gpio_desc	*gpio_mux;	 
 	bool			external_mode;
 	bool			no_delays;
 	uint32_t		last_addr;
@@ -68,10 +66,10 @@ static int sda_clock_in(struct fsi_master_gpio *master)
 		ndelay(FSI_GPIO_STD_DLY);
 	gpiod_set_value(master->gpio_clk, 0);
 
-	/* Dummy read to feed the synchronizers */
+	 
 	gpiod_get_value(master->gpio_data);
 
-	/* Actual data read */
+	 
 	in = gpiod_get_value(master->gpio_data);
 	if (!master->no_delays)
 		ndelay(FSI_GPIO_STD_DLY);
@@ -119,7 +117,7 @@ static void serial_in(struct fsi_master_gpio *master, struct fsi_gpio_msg *msg,
 	for (bit = 0; bit < num_bits; bit++) {
 		in_bit = sda_clock_in(master);
 		msg->msg <<= 1;
-		msg->msg |= ~in_bit & 0x1;	/* Data is active low */
+		msg->msg |= ~in_bit & 0x1;	 
 	}
 	msg->bits += num_bits;
 
@@ -130,7 +128,7 @@ static void serial_out(struct fsi_master_gpio *master,
 			const struct fsi_gpio_msg *cmd)
 {
 	uint8_t bit;
-	uint64_t msg = ~cmd->msg;	/* Data is active low */
+	uint64_t msg = ~cmd->msg;	 
 	uint64_t sda_mask = 0x1ULL << (cmd->bits - 1);
 	uint64_t last_bit = ~0;
 	int next_bit;
@@ -143,11 +141,11 @@ static void serial_out(struct fsi_master_gpio *master,
 	}
 	set_sda_output(master, 0);
 
-	/* Send the start bit */
+	 
 	sda_out(master, 0);
 	clock_toggle(master, 1);
 
-	/* Send the message */
+	 
 	for (bit = 0; bit < cmd->bits; bit++) {
 		next_bit = (msg & sda_mask) >> (cmd->bits - 1);
 		if (last_bit ^ next_bit) {
@@ -173,10 +171,10 @@ static void msg_push_crc(struct fsi_gpio_msg *msg)
 
 	top = msg->bits & 0x3;
 
-	/* start bit, and any non-aligned top bits */
+	 
 	crc = crc4(0, 1 << top | msg->msg >> (msg->bits - top), top + 1);
 
-	/* aligned bits */
+	 
 	crc = crc4(crc, msg->msg, msg->bits - top);
 
 	msg_push_bits(msg, crc, 4);
@@ -185,7 +183,7 @@ static void msg_push_crc(struct fsi_gpio_msg *msg)
 static bool check_same_address(struct fsi_master_gpio *master, int id,
 		uint32_t addr)
 {
-	/* this will also handle LAST_ADDR_INVALID */
+	 
 	return master->last_addr == (((id & 0x3) << 21) | (addr & ~0x3));
 }
 
@@ -198,18 +196,14 @@ static bool check_relative_address(struct fsi_master_gpio *master, int id,
 	if (last_addr == LAST_ADDR_INVALID)
 		return false;
 
-	/* We may be in 23-bit addressing mode, which uses the id as the
-	 * top two address bits. So, if we're referencing a different ID,
-	 * use absolute addresses.
-	 */
+	 
 	if (((last_addr >> 21) & 0x3) != id)
 		return false;
 
-	/* remove the top two bits from any 23-bit addressing */
+	 
 	last_addr &= (1 << 21) - 1;
 
-	/* We know that the addresses are limited to 21 bits, so this won't
-	 * overflow the signed rel_addr */
+	 
 	rel_addr = addr - last_addr;
 	if (rel_addr > 255 || rel_addr < -256)
 		return false;
@@ -228,9 +222,7 @@ static void last_address_update(struct fsi_master_gpio *master,
 		master->last_addr = ((id & 0x3) << 21) | (addr & ~0x3);
 }
 
-/*
- * Encode an Absolute/Relative/Same Address command
- */
+ 
 static void build_ar_command(struct fsi_master_gpio *master,
 		struct fsi_gpio_msg *cmd, uint8_t id,
 		uint32_t addr, size_t size, const void *data)
@@ -243,21 +235,21 @@ static void build_ar_command(struct fsi_master_gpio *master,
 	cmd->bits = 0;
 	cmd->msg = 0;
 
-	/* we have 21 bits of address max */
+	 
 	addr &= ((1 << 21) - 1);
 
-	/* cmd opcodes are variable length - SAME_AR is only two bits */
+	 
 	opcode_bits = 3;
 
 	if (check_same_address(master, id, addr)) {
-		/* we still address the byte offset within the word */
+		 
 		addr_bits = 2;
 		opcode_bits = 2;
 		opcode = FSI_CMD_SAME_AR;
 		trace_fsi_master_gpio_cmd_same_addr(master);
 
 	} else if (check_relative_address(master, id, addr, &rel_addr)) {
-		/* 8 bits plus sign */
+		 
 		addr_bits = 9;
 		addr = rel_addr;
 		opcode = FSI_CMD_REL_AR;
@@ -269,16 +261,7 @@ static void build_ar_command(struct fsi_master_gpio *master,
 		trace_fsi_master_gpio_cmd_abs_addr(master, addr);
 	}
 
-	/*
-	 * The read/write size is encoded in the lower bits of the address
-	 * (as it must be naturally-aligned), and the following ds bit.
-	 *
-	 *	size	addr:1	addr:0	ds
-	 *	1	x	x	0
-	 *	2	x	0	1
-	 *	4	0	1	1
-	 *
-	 */
+	 
 	ds = size > 1 ? 1 : 0;
 	addr &= ~(size - 1);
 	if (size == 4)
@@ -325,12 +308,7 @@ static void build_term_command(struct fsi_gpio_msg *cmd, uint8_t slave_id)
 	msg_push_crc(cmd);
 }
 
-/*
- * Note: callers rely specifically on this returning -EAGAIN for
- * a CRC error detected in the response. Use other error code
- * for other situations. It will be converted to something else
- * higher up the stack before it reaches userspace.
- */
+ 
 static int read_one_response(struct fsi_master_gpio *master,
 		uint8_t data_size, struct fsi_gpio_msg *msgp, uint8_t *tagp)
 {
@@ -342,7 +320,7 @@ static int read_one_response(struct fsi_master_gpio *master,
 
 	local_irq_save(flags);
 
-	/* wait for the start bit */
+	 
 	for (i = 0; i < FSI_MASTER_MTOE_COUNT; i++) {
 		msg.bits = 0;
 		msg.msg = 0;
@@ -360,25 +338,25 @@ static int read_one_response(struct fsi_master_gpio *master,
 	msg.bits = 0;
 	msg.msg = 0;
 
-	/* Read slave ID & response tag */
+	 
 	serial_in(master, &msg, 4);
 
 	tag = msg.msg & 0x3;
 
-	/* If we have an ACK and we're expecting data, clock the data in too */
+	 
 	if (tag == FSI_RESP_ACK && data_size)
 		serial_in(master, &msg, data_size * 8);
 
-	/* read CRC */
+	 
 	serial_in(master, &msg, FSI_CRC_SIZE);
 
 	local_irq_restore(flags);
 
-	/* we have a whole message now; check CRC */
+	 
 	crc = crc4(0, 1, 1);
 	crc = crc4(crc, msg.msg, msg.bits);
 	if (crc) {
-		/* Check if it's all 1's, that probably means the host is off */
+		 
 		if (((~msg.msg) & ((1ull << msg.bits) - 1)) == 0)
 			return -ENODEV;
 		dev_dbg(master->dev, "ERR response CRC msg: 0x%016llx (%d bits)\n",
@@ -433,14 +411,11 @@ static int poll_for_response(struct fsi_master_gpio *master,
 retry:
 	rc = read_one_response(master, size, &response, &tag);
 
-	/* Handle retries on CRC errors */
+	 
 	if (rc == -EAGAIN) {
-		/* Too many retries ? */
+		 
 		if (crc_err_retries++ > FSI_CRC_ERR_RETRIES) {
-			/*
-			 * Pass it up as a -EIO otherwise upper level will retry
-			 * the whole command which isn't what we want here.
-			 */
+			 
 			rc = -EIO;
 			goto fail;
 		}
@@ -461,7 +436,7 @@ retry:
 	case FSI_RESP_ACK:
 		if (size && data) {
 			uint64_t val = response.msg;
-			/* clear crc & mask */
+			 
 			val >>= 4;
 			val &= (1ull << (size * 8)) - 1;
 
@@ -472,11 +447,7 @@ retry:
 		}
 		break;
 	case FSI_RESP_BUSY:
-		/*
-		 * Its necessary to clock slave before issuing
-		 * d-poll, not indicated in the hardware protocol
-		 * spec. < 20 clocks causes slave to hang, 21 ok.
-		 */
+		 
 		if (busy_count++ < FSI_MASTER_MAX_BUSY) {
 			build_dpoll_command(&cmd, slave);
 			local_irq_save(flags);
@@ -509,10 +480,7 @@ retry:
 	if (busy_count > 0)
 		trace_fsi_master_gpio_poll_response_busy(master, busy_count);
  fail:
-	/*
-	 * tSendDelay clocks, avoids signal reflections when switching
-	 * from receive of response back to send of data.
-	 */
+	 
 	local_irq_save(flags);
 	clock_zeros(master, master->t_send_delay);
 	local_irq_restore(flags);
@@ -551,7 +519,7 @@ static int fsi_master_gpio_xfer(struct fsi_master_gpio *master, uint8_t slave,
 		rc = -EIO;
 		dev_warn(master->dev, "ECRC retry %d\n", retries);
 
-		/* Pace it a bit before retry */
+		 
 		msleep(1);
 	}
 
@@ -647,7 +615,7 @@ static int fsi_master_gpio_break(struct fsi_master *_master, int link)
 	last_address_update(master, 0, false, 0);
 	mutex_unlock(&master->cmd_lock);
 
-	/* Wait for logic reset to take effect */
+	 
 	udelay(200);
 
 	return 0;
@@ -663,7 +631,7 @@ static void fsi_master_gpio_init(struct fsi_master_gpio *master)
 	gpiod_direction_output(master->gpio_clk, 1);
 	gpiod_direction_output(master->gpio_data, 1);
 
-	/* todo: evaluate if clocks can be reduced */
+	 
 	local_irq_save(flags);
 	clock_zeros(master, FSI_INIT_CLOCKS);
 	local_irq_restore(flags);
@@ -800,7 +768,7 @@ static int fsi_master_gpio_probe(struct platform_device *pdev)
 	}
 	master->gpio_data = gpio;
 
-	/* Optional GPIOs */
+	 
 	gpio = devm_gpiod_get_optional(&pdev->dev, "trans", 0);
 	if (IS_ERR(gpio)) {
 		dev_err(&pdev->dev, "failed to get trans gpio\n");
@@ -825,14 +793,10 @@ static int fsi_master_gpio_probe(struct platform_device *pdev)
 	}
 	master->gpio_mux = gpio;
 
-	/*
-	 * Check if GPIO block is slow enought that no extra delays
-	 * are necessary. This improves performance on ast2500 by
-	 * an order of magnitude.
-	 */
+	 
 	master->no_delays = device_property_present(&pdev->dev, "no-gpio-delays");
 
-	/* Default FSI command delays */
+	 
 	master->t_send_delay = FSI_SEND_DELAY_CLOCKS;
 	master->t_echo_delay = FSI_ECHO_DELAY_CLOCKS;
 

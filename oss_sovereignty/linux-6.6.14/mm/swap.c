@@ -1,18 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  linux/mm/swap.c
- *
- *  Copyright (C) 1991, 1992, 1993, 1994  Linus Torvalds
- */
 
-/*
- * This file contains the default values for the operation of the
- * Linux VM subsystem. Fine-tuning documentation can be found in
- * Documentation/admin-guide/sysctl/vm.rst.
- * Started 18.12.91
- * Swap aging added 23.2.95, Stephen Tweedie.
- * Buffermem limits added 12.3.98, Rik van Riel.
- */
+ 
+
+ 
 
 #include <linux/mm.h>
 #include <linux/sched.h>
@@ -43,11 +32,11 @@
 #define CREATE_TRACE_POINTS
 #include <trace/events/pagemap.h>
 
-/* How many pages do we try to swap or page in/out together? As a power of 2 */
+ 
 int page_cluster;
 const int page_cluster_max = 31;
 
-/* Protecting only lru_rotate.fbatch which requires disabling interrupts */
+ 
 struct lru_rotate {
 	local_lock_t lock;
 	struct folio_batch fbatch;
@@ -56,10 +45,7 @@ static DEFINE_PER_CPU(struct lru_rotate, lru_rotate) = {
 	.lock = INIT_LOCAL_LOCK(lock),
 };
 
-/*
- * The following folio batches are grouped together because they are protected
- * by disabling preemption (and interrupts remain enabled).
- */
+ 
 struct cpu_fbatches {
 	local_lock_t lock;
 	struct folio_batch lru_add;
@@ -74,10 +60,7 @@ static DEFINE_PER_CPU(struct cpu_fbatches, cpu_fbatches) = {
 	.lock = INIT_LOCAL_LOCK(lock),
 };
 
-/*
- * This path almost never happens for VM activity - pages are normally freed
- * in batches.  But it gets used by networking - and for compound pages.
- */
+ 
 static void __page_cache_release(struct folio *folio)
 {
 	if (folio_test_lru(folio)) {
@@ -89,7 +72,7 @@ static void __page_cache_release(struct folio *folio)
 		__folio_clear_lru_flags(folio);
 		unlock_page_lruvec_irqrestore(lruvec, flags);
 	}
-	/* See comment on folio_test_mlocked in release_pages() */
+	 
 	if (unlikely(folio_test_mlocked(folio))) {
 		long nr_pages = folio_nr_pages(folio);
 
@@ -108,12 +91,7 @@ static void __folio_put_small(struct folio *folio)
 
 static void __folio_put_large(struct folio *folio)
 {
-	/*
-	 * __page_cache_release() is supposed to be called for thp, not for
-	 * hugetlb. This is because hugetlb page does never have PageLRU set
-	 * (it's never listed to any LRU lists) and no memcg routines should
-	 * be called for hugetlb (it has a separate hugetlb_cgroup.)
-	 */
+	 
 	if (!folio_test_hugetlb(folio))
 		__page_cache_release(folio);
 	destroy_large_folio(folio);
@@ -130,12 +108,7 @@ void __folio_put(struct folio *folio)
 }
 EXPORT_SYMBOL(__folio_put);
 
-/**
- * put_pages_list() - release a list of pages
- * @pages: list of pages threaded on page->lru
- *
- * Release a list of pages which are strung together on page.lru.
- */
+ 
 void put_pages_list(struct list_head *pages)
 {
 	struct folio *folio, *next;
@@ -150,7 +123,7 @@ void put_pages_list(struct list_head *pages)
 			__folio_put_large(folio);
 			continue;
 		}
-		/* LRU flag must be clear because it's passed using the lru */
+		 
 	}
 
 	free_unref_page_list(pages);
@@ -167,30 +140,14 @@ static void lru_add_fn(struct lruvec *lruvec, struct folio *folio)
 
 	VM_BUG_ON_FOLIO(folio_test_lru(folio), folio);
 
-	/*
-	 * Is an smp_mb__after_atomic() still required here, before
-	 * folio_evictable() tests the mlocked flag, to rule out the possibility
-	 * of stranding an evictable folio on an unevictable LRU?  I think
-	 * not, because __munlock_folio() only clears the mlocked flag
-	 * while the LRU lock is held.
-	 *
-	 * (That is not true of __page_cache_release(), and not necessarily
-	 * true of release_pages(): but those only clear the mlocked flag after
-	 * folio_put_testzero() has excluded any other users of the folio.)
-	 */
+	 
 	if (folio_evictable(folio)) {
 		if (was_unevictable)
 			__count_vm_events(UNEVICTABLE_PGRESCUED, nr_pages);
 	} else {
 		folio_clear_active(folio);
 		folio_set_unevictable(folio);
-		/*
-		 * folio->mlock_count = !!folio_test_mlocked(folio)?
-		 * But that leaves __mlock_folio() in doubt whether another
-		 * actor has already counted the mlock or not.  Err on the
-		 * safe side, underestimate, let page reclaim fix it, rather
-		 * than leaving a page on the unevictable LRU indefinitely.
-		 */
+		 
 		folio->mlock_count = 0;
 		if (!was_unevictable)
 			__count_vm_events(UNEVICTABLE_PGCULLED, nr_pages);
@@ -209,7 +166,7 @@ static void folio_batch_move_lru(struct folio_batch *fbatch, move_fn_t move_fn)
 	for (i = 0; i < folio_batch_count(fbatch); i++) {
 		struct folio *folio = fbatch->folios[i];
 
-		/* block memcg migration while the folio moves between lru */
+		 
 		if (move_fn != lru_add_fn && !folio_test_clear_lru(folio))
 			continue;
 
@@ -244,13 +201,7 @@ static void lru_move_tail_fn(struct lruvec *lruvec, struct folio *folio)
 	}
 }
 
-/*
- * Writeback is about to end against a folio which has been marked for
- * immediate reclaim.  If it still appears to be reclaimable, move it
- * to the tail of the inactive list.
- *
- * folio_rotate_reclaimable() must disable IRQs, to prevent nasty races.
- */
+ 
 void folio_rotate_reclaimable(struct folio *folio)
 {
 	if (!folio_test_locked(folio) && !folio_test_dirty(folio) &&
@@ -271,40 +222,21 @@ void lru_note_cost(struct lruvec *lruvec, bool file,
 {
 	unsigned long cost;
 
-	/*
-	 * Reflect the relative cost of incurring IO and spending CPU
-	 * time on rotations. This doesn't attempt to make a precise
-	 * comparison, it just says: if reloads are about comparable
-	 * between the LRU lists, or rotations are overwhelmingly
-	 * different between them, adjust scan balance for CPU work.
-	 */
+	 
 	cost = nr_io * SWAP_CLUSTER_MAX + nr_rotated;
 
 	do {
 		unsigned long lrusize;
 
-		/*
-		 * Hold lruvec->lru_lock is safe here, since
-		 * 1) The pinned lruvec in reclaim, or
-		 * 2) From a pre-LRU page during refault (which also holds the
-		 *    rcu lock, so would be safe even if the page was on the LRU
-		 *    and could move simultaneously to a new lruvec).
-		 */
+		 
 		spin_lock_irq(&lruvec->lru_lock);
-		/* Record cost event */
+		 
 		if (file)
 			lruvec->file_cost += cost;
 		else
 			lruvec->anon_cost += cost;
 
-		/*
-		 * Decay previous events
-		 *
-		 * Because workloads change over time (and to avoid
-		 * overflow) we keep these statistics as a floating
-		 * average, which ends up weighing recent refaults
-		 * more than old ones.
-		 */
+		 
 		lrusize = lruvec_page_state(lruvec, NR_INACTIVE_ANON) +
 			  lruvec_page_state(lruvec, NR_ACTIVE_ANON) +
 			  lruvec_page_state(lruvec, NR_INACTIVE_FILE) +
@@ -389,16 +321,7 @@ static void __lru_cache_activate_folio(struct folio *folio)
 	local_lock(&cpu_fbatches.lock);
 	fbatch = this_cpu_ptr(&cpu_fbatches.lru_add);
 
-	/*
-	 * Search backwards on the optimistic assumption that the folio being
-	 * activated has just been added to this batch. Note that only
-	 * the local batch is examined as a !LRU folio could be in the
-	 * process of being released, reclaimed, migrated or on a remote
-	 * batch that is currently being drained. Furthermore, marking
-	 * a remote batch's folio active potentially hits a race where
-	 * a folio is marked active just after it is added to the inactive
-	 * list causing accounting errors and BUG_ON checks to trigger.
-	 */
+	 
 	for (i = folio_batch_count(fbatch) - 1; i >= 0; i--) {
 		struct folio *batch_folio = fbatch->folios[i];
 
@@ -429,7 +352,7 @@ static void folio_inc_refs(struct folio *folio)
 		return;
 	}
 
-	/* see the comment on MAX_NR_TIERS */
+	 
 	do {
 		new_flags = old_flags & LRU_REFS_MASK;
 		if (new_flags == LRU_REFS_MASK)
@@ -443,18 +366,9 @@ static void folio_inc_refs(struct folio *folio)
 static void folio_inc_refs(struct folio *folio)
 {
 }
-#endif /* CONFIG_LRU_GEN */
+#endif  
 
-/*
- * Mark a page as having seen activity.
- *
- * inactive,unreferenced	->	inactive,referenced
- * inactive,referenced		->	active,unreferenced
- * active,unreferenced		->	active,referenced
- *
- * When a newly allocated page is not yet visible, so safe for non-atomic ops,
- * __SetPageReferenced(page) may be substituted for mark_page_accessed(page).
- */
+ 
 void folio_mark_accessed(struct folio *folio)
 {
 	if (lru_gen_enabled()) {
@@ -465,18 +379,9 @@ void folio_mark_accessed(struct folio *folio)
 	if (!folio_test_referenced(folio)) {
 		folio_set_referenced(folio);
 	} else if (folio_test_unevictable(folio)) {
-		/*
-		 * Unevictable pages are on the "LRU_UNEVICTABLE" list. But,
-		 * this list is never rotated or maintained, so marking an
-		 * unevictable page accessed has no effect.
-		 */
+		 
 	} else if (!folio_test_active(folio)) {
-		/*
-		 * If the folio is on the LRU, queue it for activation via
-		 * cpu_fbatches.activate. Otherwise, assume the folio is in a
-		 * folio_batch, mark it active and it'll be moved to the active
-		 * LRU on the next drain.
-		 */
+		 
 		if (folio_test_lru(folio))
 			folio_activate(folio);
 		else
@@ -489,15 +394,7 @@ void folio_mark_accessed(struct folio *folio)
 }
 EXPORT_SYMBOL(folio_mark_accessed);
 
-/**
- * folio_add_lru - Add a folio to an LRU list.
- * @folio: The folio to be added to the LRU.
- *
- * Queue the folio for addition to the LRU. The decision on whether
- * to add the page to the [in]active [file|anon] list is deferred until the
- * folio_batch is drained. This gives a chance for the caller of folio_add_lru()
- * have the folio added to the active list using folio_mark_accessed().
- */
+ 
 void folio_add_lru(struct folio *folio)
 {
 	struct folio_batch *fbatch;
@@ -506,7 +403,7 @@ void folio_add_lru(struct folio *folio)
 			folio_test_unevictable(folio), folio);
 	VM_BUG_ON_FOLIO(folio_test_lru(folio), folio);
 
-	/* see the comment in lru_gen_add_folio() */
+	 
 	if (lru_gen_enabled() && !folio_test_unevictable(folio) &&
 	    lru_gen_in_fault() && !(current->flags & PF_MEMALLOC))
 		folio_set_active(folio);
@@ -519,14 +416,7 @@ void folio_add_lru(struct folio *folio)
 }
 EXPORT_SYMBOL(folio_add_lru);
 
-/**
- * folio_add_lru_vma() - Add a folio to the appropate LRU list for this VMA.
- * @folio: The folio to be added to the LRU.
- * @vma: VMA in which the folio is mapped.
- *
- * If the VMA is mlocked, @folio is added to the unevictable list.
- * Otherwise, it is treated the same way as folio_add_lru().
- */
+ 
 void folio_add_lru_vma(struct folio *folio, struct vm_area_struct *vma)
 {
 	VM_BUG_ON_FOLIO(folio_test_lru(folio), folio);
@@ -537,27 +427,7 @@ void folio_add_lru_vma(struct folio *folio, struct vm_area_struct *vma)
 		folio_add_lru(folio);
 }
 
-/*
- * If the folio cannot be invalidated, it is moved to the
- * inactive list to speed up its reclaim.  It is moved to the
- * head of the list, rather than the tail, to give the flusher
- * threads some time to write it out, as this is much more
- * effective than the single-page writeout from reclaim.
- *
- * If the folio isn't mapped and dirty/writeback, the folio
- * could be reclaimed asap using the reclaim flag.
- *
- * 1. active, mapped folio -> none
- * 2. active, dirty/writeback folio -> inactive, head, reclaim
- * 3. inactive, mapped folio -> none
- * 4. inactive, dirty/writeback folio -> inactive, head, reclaim
- * 5. inactive, clean -> inactive, tail
- * 6. Others -> none
- *
- * In 4, it moves to the head of the inactive list so the folio is
- * written out by flusher threads as this is much more efficient
- * than the single-page writeout from reclaim.
- */
+ 
 static void lru_deactivate_file_fn(struct lruvec *lruvec, struct folio *folio)
 {
 	bool active = folio_test_active(folio);
@@ -566,7 +436,7 @@ static void lru_deactivate_file_fn(struct lruvec *lruvec, struct folio *folio)
 	if (folio_test_unevictable(folio))
 		return;
 
-	/* Some processes are using the folio */
+	 
 	if (folio_mapped(folio))
 		return;
 
@@ -575,19 +445,11 @@ static void lru_deactivate_file_fn(struct lruvec *lruvec, struct folio *folio)
 	folio_clear_referenced(folio);
 
 	if (folio_test_writeback(folio) || folio_test_dirty(folio)) {
-		/*
-		 * Setting the reclaim flag could race with
-		 * folio_end_writeback() and confuse readahead.  But the
-		 * race window is _really_ small and  it's not a critical
-		 * problem.
-		 */
+		 
 		lruvec_add_folio(lruvec, folio);
 		folio_set_reclaim(folio);
 	} else {
-		/*
-		 * The folio's writeback ended while it was in the batch.
-		 * We move that folio to the tail of the inactive list.
-		 */
+		 
 		lruvec_add_folio_tail(lruvec, folio);
 		__count_vm_events(PGROTATED, nr_pages);
 	}
@@ -624,11 +486,7 @@ static void lru_lazyfree_fn(struct lruvec *lruvec, struct folio *folio)
 		lruvec_del_folio(lruvec, folio);
 		folio_clear_active(folio);
 		folio_clear_referenced(folio);
-		/*
-		 * Lazyfree folios are clean anonymous folios.  They have
-		 * the swapbacked flag cleared, to distinguish them from normal
-		 * anonymous folios
-		 */
+		 
 		folio_clear_swapbacked(folio);
 		lruvec_add_folio(lruvec, folio);
 
@@ -638,11 +496,7 @@ static void lru_lazyfree_fn(struct lruvec *lruvec, struct folio *folio)
 	}
 }
 
-/*
- * Drain pages out of the cpu's folio_batch.
- * Either "cpu" is the current CPU, and preemption has already been
- * disabled; or "cpu" is being hot-unplugged, and is already dead.
- */
+ 
 void lru_add_drain_cpu(int cpu)
 {
 	struct cpu_fbatches *fbatches = &per_cpu(cpu_fbatches, cpu);
@@ -652,11 +506,11 @@ void lru_add_drain_cpu(int cpu)
 		folio_batch_move_lru(fbatch, lru_add_fn);
 
 	fbatch = &per_cpu(lru_rotate.fbatch, cpu);
-	/* Disabling interrupts below acts as a compiler barrier. */
+	 
 	if (data_race(folio_batch_count(fbatch))) {
 		unsigned long flags;
 
-		/* No harm done if a racing interrupt already did this */
+		 
 		local_lock_irqsave(&lru_rotate.lock, flags);
 		folio_batch_move_lru(fbatch, lru_move_tail_fn);
 		local_unlock_irqrestore(&lru_rotate.lock, flags);
@@ -677,21 +531,12 @@ void lru_add_drain_cpu(int cpu)
 	folio_activate_drain(cpu);
 }
 
-/**
- * deactivate_file_folio() - Deactivate a file folio.
- * @folio: Folio to deactivate.
- *
- * This function hints to the VM that @folio is a good reclaim candidate,
- * for example if its invalidation fails due to the folio being dirty
- * or under writeback.
- *
- * Context: Caller holds a reference on the folio.
- */
+ 
 void deactivate_file_folio(struct folio *folio)
 {
 	struct folio_batch *fbatch;
 
-	/* Deactivating an unevictable folio will not accelerate reclaim */
+	 
 	if (folio_test_unevictable(folio))
 		return;
 
@@ -702,14 +547,7 @@ void deactivate_file_folio(struct folio *folio)
 	local_unlock(&cpu_fbatches.lock);
 }
 
-/*
- * folio_deactivate - deactivate a folio
- * @folio: folio to deactivate
- *
- * folio_deactivate() moves @folio to the inactive list if @folio was on the
- * active list and was not unevictable. This is done to accelerate the
- * reclaim of @folio.
- */
+ 
 void folio_deactivate(struct folio *folio)
 {
 	if (folio_test_lru(folio) && !folio_test_unevictable(folio) &&
@@ -724,13 +562,7 @@ void folio_deactivate(struct folio *folio)
 	}
 }
 
-/**
- * folio_mark_lazyfree - make an anon folio lazyfree
- * @folio: folio to deactivate
- *
- * folio_mark_lazyfree() moves @folio to the inactive file list.
- * This is done to accelerate the reclaim of @folio.
- */
+ 
 void folio_mark_lazyfree(struct folio *folio)
 {
 	if (folio_test_lru(folio) && folio_test_anon(folio) &&
@@ -754,12 +586,7 @@ void lru_add_drain(void)
 	mlock_drain_local();
 }
 
-/*
- * It's called from per-cpu workqueue context in SMP case so
- * lru_add_drain_cpu and invalidate_bh_lrus_cpu should run on
- * the same cpu. It shouldn't be a problem in !SMP case since
- * the core is only one and the locks will disable preemption.
- */
+ 
 static void lru_add_and_bh_lrus_drain(void)
 {
 	local_lock(&cpu_fbatches.lock);
@@ -791,7 +618,7 @@ static bool cpu_needs_drain(unsigned int cpu)
 {
 	struct cpu_fbatches *fbatches = &per_cpu(cpu_fbatches, cpu);
 
-	/* Check these in order of likelihood that they're not zero */
+	 
 	return folio_batch_count(&fbatches->lru_add) ||
 		data_race(folio_batch_count(&per_cpu(lru_rotate.fbatch, cpu))) ||
 		folio_batch_count(&fbatches->lru_deactivate_file) ||
@@ -802,83 +629,32 @@ static bool cpu_needs_drain(unsigned int cpu)
 		has_bh_in_lru(cpu, NULL);
 }
 
-/*
- * Doesn't need any cpu hotplug locking because we do rely on per-cpu
- * kworkers being shut down before our page_alloc_cpu_dead callback is
- * executed on the offlined cpu.
- * Calling this function with cpu hotplug locks held can actually lead
- * to obscure indirect dependencies via WQ context.
- */
+ 
 static inline void __lru_add_drain_all(bool force_all_cpus)
 {
-	/*
-	 * lru_drain_gen - Global pages generation number
-	 *
-	 * (A) Definition: global lru_drain_gen = x implies that all generations
-	 *     0 < n <= x are already *scheduled* for draining.
-	 *
-	 * This is an optimization for the highly-contended use case where a
-	 * user space workload keeps constantly generating a flow of pages for
-	 * each CPU.
-	 */
+	 
 	static unsigned int lru_drain_gen;
 	static struct cpumask has_work;
 	static DEFINE_MUTEX(lock);
 	unsigned cpu, this_gen;
 
-	/*
-	 * Make sure nobody triggers this path before mm_percpu_wq is fully
-	 * initialized.
-	 */
+	 
 	if (WARN_ON(!mm_percpu_wq))
 		return;
 
-	/*
-	 * Guarantee folio_batch counter stores visible by this CPU
-	 * are visible to other CPUs before loading the current drain
-	 * generation.
-	 */
+	 
 	smp_mb();
 
-	/*
-	 * (B) Locally cache global LRU draining generation number
-	 *
-	 * The read barrier ensures that the counter is loaded before the mutex
-	 * is taken. It pairs with smp_mb() inside the mutex critical section
-	 * at (D).
-	 */
+	 
 	this_gen = smp_load_acquire(&lru_drain_gen);
 
 	mutex_lock(&lock);
 
-	/*
-	 * (C) Exit the draining operation if a newer generation, from another
-	 * lru_add_drain_all(), was already scheduled for draining. Check (A).
-	 */
+	 
 	if (unlikely(this_gen != lru_drain_gen && !force_all_cpus))
 		goto done;
 
-	/*
-	 * (D) Increment global generation number
-	 *
-	 * Pairs with smp_load_acquire() at (B), outside of the critical
-	 * section. Use a full memory barrier to guarantee that the
-	 * new global drain generation number is stored before loading
-	 * folio_batch counters.
-	 *
-	 * This pairing must be done here, before the for_each_online_cpu loop
-	 * below which drains the page vectors.
-	 *
-	 * Let x, y, and z represent some system CPU numbers, where x < y < z.
-	 * Assume CPU #z is in the middle of the for_each_online_cpu loop
-	 * below and has already reached CPU #y's per-cpu data. CPU #x comes
-	 * along, adds some pages to its per-cpu vectors, then calls
-	 * lru_add_drain_all().
-	 *
-	 * If the paired barrier is done at any later step, e.g. after the
-	 * loop, CPU #x will just exit at (C) and miss flushing out all of its
-	 * added pages.
-	 */
+	 
 	WRITE_ONCE(lru_drain_gen, lru_drain_gen + 1);
 	smp_mb();
 
@@ -909,34 +685,15 @@ void lru_add_drain_all(void)
 {
 	lru_add_drain();
 }
-#endif /* CONFIG_SMP */
+#endif  
 
 atomic_t lru_disable_count = ATOMIC_INIT(0);
 
-/*
- * lru_cache_disable() needs to be called before we start compiling
- * a list of pages to be migrated using isolate_lru_page().
- * It drains pages on LRU cache and then disable on all cpus until
- * lru_cache_enable is called.
- *
- * Must be paired with a call to lru_cache_enable().
- */
+ 
 void lru_cache_disable(void)
 {
 	atomic_inc(&lru_disable_count);
-	/*
-	 * Readers of lru_disable_count are protected by either disabling
-	 * preemption or rcu_read_lock:
-	 *
-	 * preempt_disable, local_irq_disable  [bh_lru_lock()]
-	 * rcu_read_lock		       [rt_spin_lock CONFIG_PREEMPT_RT]
-	 * preempt_disable		       [local_lock !CONFIG_PREEMPT_RT]
-	 *
-	 * Since v5.1 kernel, synchronize_rcu() is guaranteed to wait on
-	 * preempt_disable() regions of code. So any CPU which sees
-	 * lru_disable_count = 0 will have exited the critical
-	 * section when synchronize_rcu() returns.
-	 */
+	 
 	synchronize_rcu_expedited();
 #ifdef CONFIG_SMP
 	__lru_add_drain_all(true);
@@ -945,18 +702,7 @@ void lru_cache_disable(void)
 #endif
 }
 
-/**
- * release_pages - batched put_page()
- * @arg: array of pages to release
- * @nr: number of pages
- *
- * Decrement the reference count on all the pages in @arg.  If it
- * fell to zero, remove the page from the LRU and free it.
- *
- * Note that the argument can be an array of pages, encoded pages,
- * or folio pointers. We ignore any encoded bits, and turn any of
- * them into just a folio that gets free'd.
- */
+ 
 void release_pages(release_pages_arg arg, int nr)
 {
 	int i;
@@ -969,14 +715,10 @@ void release_pages(release_pages_arg arg, int nr)
 	for (i = 0; i < nr; i++) {
 		struct folio *folio;
 
-		/* Turn any of the argument types into a folio */
+		 
 		folio = page_folio(encoded_page_ptr(encoded[i]));
 
-		/*
-		 * Make sure the IRQ-safe lock-holding time does not get
-		 * excessive with a continuous string of pages from the
-		 * same lruvec. The lock is held only if lruvec != NULL.
-		 */
+		 
 		if (lruvec && ++lock_batch == SWAP_CLUSTER_MAX) {
 			unlock_page_lruvec_irqrestore(lruvec, flags);
 			lruvec = NULL;
@@ -1021,12 +763,7 @@ void release_pages(release_pages_arg arg, int nr)
 			__folio_clear_lru_flags(folio);
 		}
 
-		/*
-		 * In rare cases, when truncation or holepunching raced with
-		 * munlock after VM_LOCKED was cleared, Mlocked may still be
-		 * found set here.  This does not indicate a problem, unless
-		 * "unevictable_pgs_cleared" appears worryingly large.
-		 */
+		 
 		if (unlikely(folio_test_mlocked(folio))) {
 			__folio_clear_mlocked(folio);
 			zone_stat_sub_folio(folio, NR_MLOCK);
@@ -1043,16 +780,7 @@ void release_pages(release_pages_arg arg, int nr)
 }
 EXPORT_SYMBOL(release_pages);
 
-/*
- * The folios which we're about to release may be in the deferred lru-addition
- * queues.  That would prevent them from really being freed right now.  That's
- * OK from a correctness point of view but is inefficient - those folios may be
- * cache-warm and we want to give them back to the page allocator ASAP.
- *
- * So __folio_batch_release() will drain those queues here.
- * folio_batch_move_lru() calls folios_put() directly to avoid
- * mutual recursion.
- */
+ 
 void __folio_batch_release(struct folio_batch *fbatch)
 {
 	if (!fbatch->percpu_pvec_drained) {
@@ -1064,15 +792,7 @@ void __folio_batch_release(struct folio_batch *fbatch)
 }
 EXPORT_SYMBOL(__folio_batch_release);
 
-/**
- * folio_batch_remove_exceptionals() - Prune non-folios from a batch.
- * @fbatch: The batch to prune
- *
- * find_get_entries() fills a batch with both folios and shadow/swap/DAX
- * entries.  This function prunes all the non-folio entries from @fbatch
- * without leaving holes, so that it can be passed on to folio-only batch
- * operations.
- */
+ 
 void folio_batch_remove_exceptionals(struct folio_batch *fbatch)
 {
 	unsigned int i, j;
@@ -1085,20 +805,15 @@ void folio_batch_remove_exceptionals(struct folio_batch *fbatch)
 	fbatch->nr = j;
 }
 
-/*
- * Perform any setup for the swap system
- */
+ 
 void __init swap_setup(void)
 {
 	unsigned long megs = totalram_pages() >> (20 - PAGE_SHIFT);
 
-	/* Use a smaller cluster for small-memory machines */
+	 
 	if (megs < 16)
 		page_cluster = 2;
 	else
 		page_cluster = 3;
-	/*
-	 * Right now other parts of the system means that we
-	 * _really_ don't want to cluster much more
-	 */
+	 
 }

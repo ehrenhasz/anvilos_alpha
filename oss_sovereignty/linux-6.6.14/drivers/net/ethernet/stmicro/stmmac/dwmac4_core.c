@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * This is the driver for the GMAC on-chip Ethernet controller for ST SoCs.
- * DWC Ether MAC version 4.00  has been used for developing this code.
- *
- * This only implements the mac core functions for this chip.
- *
- * Copyright (C) 2015  STMicroelectronics Ltd
- *
- * Author: Alexandre Torgue <alexandre.torgue@st.com>
- */
+
+ 
 
 #include <linux/crc32.h>
 #include <linux/slab.h>
@@ -48,17 +39,17 @@ static void dwmac4_core_init(struct mac_device_info *hw,
 
 	writel(value, ioaddr + GMAC_CONFIG);
 
-	/* Configure LPI 1us counter to number of CSR clock ticks in 1us - 1 */
+	 
 	clk_rate = clk_get_rate(priv->plat->stmmac_clk);
 	writel((clk_rate / 1000000) - 1, ioaddr + GMAC4_MAC_ONEUS_TIC_COUNTER);
 
-	/* Enable GMAC interrupts */
+	 
 	value = GMAC_INT_DEFAULT_ENABLE;
 
 	if (hw->pcs)
 		value |= GMAC_PCS_IRQ_DEFAULT;
 
-	/* Enable FPE interrupt */
+	 
 	if ((GMAC_HW_FEAT_FPESEL & readl(ioaddr + GMAC_HW_FEATURE3)) >> 26)
 		value |= GMAC_INT_FPE_EN;
 
@@ -143,12 +134,12 @@ static void dwmac4_rx_queue_routing(struct mac_device_info *hw,
 
 	value = readl(ioaddr + GMAC_RXQ_CTRL1);
 
-	/* routing configuration */
+	 
 	value &= ~route_possibilities[packet - 1].reg_mask;
 	value |= (queue << route_possibilities[packet-1].reg_shift) &
 		 route_possibilities[packet - 1].reg_mask;
 
-	/* some packets require extra ops */
+	 
 	if (packet == PACKET_AVCPQ) {
 		value &= ~GMAC_RXQCTRL_TACPQE;
 		value |= 0x1 << GMAC_RXQCTRL_TACPQE_SHIFT;
@@ -255,13 +246,13 @@ static void dwmac4_config_cbs(struct stmmac_priv *priv,
 	pr_debug("\thigh_credit: 0x%08x\n", high_credit);
 	pr_debug("\tlow_credit: 0x%08x\n", low_credit);
 
-	/* enable AV algorithm */
+	 
 	value = readl(ioaddr + mtl_etsx_ctrl_base_addr(dwmac4_addrs, queue));
 	value |= MTL_ETS_CTRL_AVALG;
 	value |= MTL_ETS_CTRL_CC;
 	writel(value, ioaddr + mtl_etsx_ctrl_base_addr(dwmac4_addrs, queue));
 
-	/* configure send slope */
+	 
 	value = readl(ioaddr + mtl_send_slp_credx_base_addr(dwmac4_addrs,
 							    queue));
 	value &= ~MTL_SEND_SLP_CRED_SSC_MASK;
@@ -269,16 +260,16 @@ static void dwmac4_config_cbs(struct stmmac_priv *priv,
 	writel(value, ioaddr + mtl_send_slp_credx_base_addr(dwmac4_addrs,
 							    queue));
 
-	/* configure idle slope (same register as tx weight) */
+	 
 	dwmac4_set_mtl_tx_queue_weight(priv, hw, idle_slope, queue);
 
-	/* configure high credit */
+	 
 	value = readl(ioaddr + mtl_high_credx_base_addr(dwmac4_addrs, queue));
 	value &= ~MTL_HIGH_CRED_HC_MASK;
 	value |= high_credit & MTL_HIGH_CRED_HC_MASK;
 	writel(value, ioaddr + mtl_high_credx_base_addr(dwmac4_addrs, queue));
 
-	/* configure high credit */
+	 
 	value = readl(ioaddr + mtl_low_credx_base_addr(dwmac4_addrs, queue));
 	value &= ~MTL_HIGH_CRED_LC_MASK;
 	value |= low_credit & MTL_HIGH_CRED_LC_MASK;
@@ -327,7 +318,7 @@ static void dwmac4_pmt(struct mac_device_info *hw, unsigned long mode)
 	}
 
 	if (pmt) {
-		/* The receiver must be enabled for WOL before powering down */
+		 
 		config = readl(ioaddr + GMAC_CONFIG);
 		config |= GMAC_CONFIG_RE;
 		writel(config, ioaddr + GMAC_CONFIG);
@@ -359,10 +350,7 @@ static void dwmac4_set_eee_mode(struct mac_device_info *hw,
 	void __iomem *ioaddr = hw->pcsr;
 	u32 value;
 
-	/* Enable the link status receive on RGMII, SGMII ore SMII
-	 * receive path and instruct the transmit to enter in LPI
-	 * state.
-	 */
+	 
 	value = readl(ioaddr + GMAC4_LPI_CTRL_STATUS);
 	value |= GMAC4_LPI_CTRL_STATUS_LPIEN | GMAC4_LPI_CTRL_STATUS_LPITXA;
 
@@ -403,10 +391,10 @@ static void dwmac4_set_eee_lpi_entry_timer(struct mac_device_info *hw, int et)
 	int value = et & STMMAC_ET_MAX;
 	int regval;
 
-	/* Program LPI entry timer value into register */
+	 
 	writel(value, ioaddr + GMAC4_LPI_ENTRY_TIMER);
 
-	/* Enable/disable LPI entry timer */
+	 
 	regval = readl(ioaddr + GMAC4_LPI_CTRL_STATUS);
 	regval |= GMAC4_LPI_CTRL_STATUS_LPIEN | GMAC4_LPI_CTRL_STATUS_LPITXA;
 
@@ -423,13 +411,7 @@ static void dwmac4_set_eee_timer(struct mac_device_info *hw, int ls, int tw)
 	void __iomem *ioaddr = hw->pcsr;
 	int value = ((tw & 0xffff)) | ((ls & 0x3ff) << 16);
 
-	/* Program the timers in the LPI timer control register:
-	 * LS: minimum time (ms) for which the link
-	 *  status from PHY should be ok before transmitting
-	 *  the LPI pattern.
-	 * TW: minimum time (us) for which the core waits
-	 *  after it has stopped transmitting the LPI pattern.
-	 */
+	 
 	writel(value, ioaddr + GMAC4_LPI_TIMER_CTRL);
 }
 
@@ -489,9 +471,9 @@ static int dwmac4_add_hw_vlan_rx_fltr(struct net_device *dev,
 	if (vid > 4095)
 		return -EINVAL;
 
-	/* Single Rx VLAN Filter */
+	 
 	if (hw->num_vlan == 1) {
-		/* For single VLAN filter, VID 0 means VLAN promiscuous */
+		 
 		if (vid == 0) {
 			netdev_warn(dev, "Adding VLAN ID 0 is not supported\n");
 			return -EPERM;
@@ -508,7 +490,7 @@ static int dwmac4_add_hw_vlan_rx_fltr(struct net_device *dev,
 		return 0;
 	}
 
-	/* Extended Rx VLAN Filter Enable */
+	 
 	val |= GMAC_VLAN_TAG_DATA_ETV | GMAC_VLAN_TAG_DATA_VEN | vid;
 
 	for (i = 0; i < hw->num_vlan; i++) {
@@ -538,7 +520,7 @@ static int dwmac4_del_hw_vlan_rx_fltr(struct net_device *dev,
 {
 	int i, ret = 0;
 
-	/* Single Rx VLAN Filter */
+	 
 	if (hw->num_vlan == 1) {
 		if ((hw->vlan_filter[0] & GMAC_VLAN_TAG_VID) == vid) {
 			hw->vlan_filter[0] = 0;
@@ -547,7 +529,7 @@ static int dwmac4_del_hw_vlan_rx_fltr(struct net_device *dev,
 		return 0;
 	}
 
-	/* Extended Rx VLAN Filter Enable */
+	 
 	for (i = 0; i < hw->num_vlan; i++) {
 		if ((hw->vlan_filter[i] & GMAC_VLAN_TAG_DATA_VID) == vid) {
 			ret = dwmac4_write_vlan_filter(dev, hw, i, 0);
@@ -571,13 +553,13 @@ static void dwmac4_restore_hw_vlan_rx_fltr(struct net_device *dev,
 	u32 val;
 	int i;
 
-	/* Single Rx VLAN Filter */
+	 
 	if (hw->num_vlan == 1) {
 		dwmac4_write_single_vlan(dev, hw->vlan_filter[0]);
 		return;
 	}
 
-	/* Extended Rx VLAN Filter Enable */
+	 
 	for (i = 0; i < hw->num_vlan; i++) {
 		if (hw->vlan_filter[i] & GMAC_VLAN_TAG_DATA_VEN) {
 			val = hw->vlan_filter[i];
@@ -613,7 +595,7 @@ static void dwmac4_set_filter(struct mac_device_info *hw,
 	value &= ~GMAC_PACKET_FILTER_PR;
 	value &= ~GMAC_PACKET_FILTER_RA;
 	if (dev->flags & IFF_PROMISC) {
-		/* VLAN Tag Filter Fail Packets Queuing */
+		 
 		if (hw->vlan_fail_q_en) {
 			value = readl(ioaddr + GMAC_RXQ_CTRL4);
 			value &= ~GMAC_RXQCTRL_VFFQ_MASK;
@@ -627,28 +609,21 @@ static void dwmac4_set_filter(struct mac_device_info *hw,
 
 	} else if ((dev->flags & IFF_ALLMULTI) ||
 		   (netdev_mc_count(dev) > hw->multicast_filter_bins)) {
-		/* Pass all multi */
+		 
 		value |= GMAC_PACKET_FILTER_PM;
-		/* Set all the bits of the HASH tab */
+		 
 		memset(mc_filter, 0xff, sizeof(mc_filter));
 	} else if (!netdev_mc_empty(dev) && (dev->flags & IFF_MULTICAST)) {
 		struct netdev_hw_addr *ha;
 
-		/* Hash filter for multicast */
+		 
 		value |= GMAC_PACKET_FILTER_HMC;
 
 		netdev_for_each_mc_addr(ha, dev) {
-			/* The upper n bits of the calculated CRC are used to
-			 * index the contents of the hash table. The number of
-			 * bits used depends on the hardware configuration
-			 * selected at core configuration time.
-			 */
+			 
 			u32 bit_nr = bitrev32(~crc32_le(~0, ha->addr,
 					ETH_ALEN)) >> (32 - mcbitslog2);
-			/* The most significant bit determines the register to
-			 * use (H/L) while the other 5 bits determine the bit
-			 * within the register.
-			 */
+			 
 			mc_filter[bit_nr >> 5] |= (1 << (bit_nr & 0x1f));
 		}
 	}
@@ -658,11 +633,9 @@ static void dwmac4_set_filter(struct mac_device_info *hw,
 
 	value |= GMAC_PACKET_FILTER_HPF;
 
-	/* Handle multiple unicast addresses */
+	 
 	if (netdev_uc_count(dev) > hw->unicast_filter_entries) {
-		/* Switch to promiscuous mode if more than 128 addrs
-		 * are required
-		 */
+		 
 		value |= GMAC_PACKET_FILTER_PR;
 	} else {
 		struct netdev_hw_addr *ha;
@@ -680,7 +653,7 @@ static void dwmac4_set_filter(struct mac_device_info *hw,
 		}
 	}
 
-	/* VLAN filtering */
+	 
 	if (dev->flags & IFF_PROMISC && !hw->vlan_fail_q_en)
 		value &= ~GMAC_PACKET_FILTER_VTFE;
 	else if (dev->features & NETIF_F_HW_VLAN_CTAG_FILTER)
@@ -743,7 +716,7 @@ static void dwmac4_get_adv_lp(void __iomem *ioaddr, struct rgmii_adv *adv)
 	dwmac_get_adv_lp(ioaddr, GMAC_PCS_BASE, adv);
 }
 
-/* RGMII or SMII interface */
+ 
 static void dwmac4_phystatus(void __iomem *ioaddr, struct stmmac_extra_stats *x)
 {
 	u32 status;
@@ -751,7 +724,7 @@ static void dwmac4_phystatus(void __iomem *ioaddr, struct stmmac_extra_stats *x)
 	status = readl(ioaddr + GMAC_PHYIF_CONTROL_STATUS);
 	x->irq_rgmii_n++;
 
-	/* Check the link status */
+	 
 	if (status & GMAC_PHYIF_CTRLSTATUS_LNKSTS) {
 		int speed_value;
 
@@ -786,14 +759,14 @@ static int dwmac4_irq_mtl_status(struct stmmac_priv *priv,
 
 	mtl_int_qx_status = readl(ioaddr + MTL_INT_STATUS);
 
-	/* Check MTL Interrupt */
+	 
 	if (mtl_int_qx_status & MTL_INT_QX(chan)) {
-		/* read Queue x Interrupt status */
+		 
 		u32 status = readl(ioaddr + MTL_CHAN_INT_CTRL(dwmac4_addrs,
 							      chan));
 
 		if (status & MTL_RX_OVERFLOW_INT) {
-			/*  clear Interrupt */
+			 
 			writel(status | MTL_RX_OVERFLOW_INT,
 			       ioaddr + MTL_CHAN_INT_CTRL(dwmac4_addrs, chan));
 			ret = CORE_IRQ_MTL_RX_OVERFLOW;
@@ -811,25 +784,25 @@ static int dwmac4_irq_status(struct mac_device_info *hw,
 	u32 intr_enable = readl(ioaddr + GMAC_INT_EN);
 	int ret = 0;
 
-	/* Discard disabled bits */
+	 
 	intr_status &= intr_enable;
 
-	/* Not used events (e.g. MMC interrupts) are not handled. */
+	 
 	if ((intr_status & mmc_tx_irq))
 		x->mmc_tx_irq_n++;
 	if (unlikely(intr_status & mmc_rx_irq))
 		x->mmc_rx_irq_n++;
 	if (unlikely(intr_status & mmc_rx_csum_offload_irq))
 		x->mmc_rx_csum_offload_irq_n++;
-	/* Clear the PMT bits 5 and 6 by reading the PMT status reg */
+	 
 	if (unlikely(intr_status & pmt_irq)) {
 		readl(ioaddr + GMAC_PMT);
 		x->irq_receive_pmt_irq_n++;
 	}
 
-	/* MAC tx/rx EEE LPI entry/exit interrupts */
+	 
 	if (intr_status & lpi_irq) {
-		/* Clear LPI interrupt by reading MAC_LPI_Control_Status */
+		 
 		u32 status = readl(ioaddr + GMAC4_LPI_CTRL_STATUS);
 
 		if (status & GMAC4_LPI_CTRL_STATUS_TLPIEN) {
@@ -919,7 +892,7 @@ static void dwmac4_debug(struct stmmac_priv *priv, void __iomem *ioaddr,
 			x->mtl_rx_fifo_ctrl_active++;
 	}
 
-	/* GMAC debug */
+	 
 	value = readl(ioaddr + GMAC_DEBUG);
 
 	if (value & GMAC_DEBUG_TFCSTS_MASK) {
@@ -1012,7 +985,7 @@ static void dwmac4_enable_vlan(struct mac_device_info *hw, u32 type)
 
 	value = readl(ioaddr + GMAC_VLAN_INCL);
 	value |= GMAC_VLAN_VLTI;
-	value |= GMAC_VLAN_CSVL; /* Only use SVLAN */
+	value |= GMAC_VLAN_CSVL;  
 	value &= ~GMAC_VLAN_VLC;
 	value |= (type << GMAC_VLAN_VLC_SHIFT) & GMAC_VLAN_VLC;
 	writel(value, ioaddr + GMAC_VLAN_INCL);
@@ -1047,7 +1020,7 @@ static int dwmac4_config_l3_filter(struct mac_device_info *hw, u32 filter_no,
 
 	value = readl(ioaddr + GMAC_L3L4_CTRL(filter_no));
 
-	/* For IPv6 not both SA/DA filters can be active */
+	 
 	if (ipv6) {
 		value |= GMAC_L3PEN0;
 		value &= ~(GMAC_L3SAM0 | GMAC_L3SAIM0);

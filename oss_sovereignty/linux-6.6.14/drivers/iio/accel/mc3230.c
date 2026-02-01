@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * mCube MC3230 3-Axis Accelerometer
- *
- * Copyright (c) 2016 Hans de Goede <hdegoede@redhat.com>
- *
- * IIO driver for mCube MC3230; 7-bit I2C address: 0x4c.
- */
+
+ 
 
 #include <linux/i2c.h>
 #include <linux/module.h>
@@ -27,13 +21,7 @@
 #define MC3230_REG_PRODUCT_CODE		0x3b
 #define MC3230_PRODUCT_CODE		0x19
 
-/*
- * The accelerometer has one measurement range:
- *
- * -1.5g - +1.5g (8-bit, signed)
- *
- * scale = (1.5 + 1.5) * 9.81 / (2^8 - 1)	= 0.115411765
- */
+ 
 
 static const int mc3230_nscale = 115411765;
 
@@ -112,7 +100,7 @@ static int mc3230_probe(struct i2c_client *client)
 	struct iio_dev *indio_dev;
 	struct mc3230_data *data;
 
-	/* First check chip-id and product-id */
+	 
 	ret = i2c_smbus_read_byte_data(client, MC3230_REG_CHIP_ID);
 	if (ret != MC3230_CHIP_ID)
 		return (ret < 0) ? ret : -ENODEV;

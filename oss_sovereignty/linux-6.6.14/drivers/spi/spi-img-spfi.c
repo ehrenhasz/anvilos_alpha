@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * IMG SPFI controller driver
- *
- * Copyright (C) 2007,2008,2013 Imagination Technologies Ltd.
- * Copyright (C) 2014 Google, Inc.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -74,13 +69,7 @@
 #define SPFI_INTERRUPT_SDE			BIT(1)
 #define SPFI_INTERRUPT_SDTRIG			BIT(0)
 
-/*
- * There are four parallel FIFOs of 16 bytes each.  The word buffer
- * (*_32BIT_VALID_DATA) accesses all four FIFOs at once, resulting in an
- * effective FIFO size of 64 bytes.  The byte buffer (*_8BIT_VALID_DATA)
- * accesses only a single FIFO, resulting in an effective FIFO size of
- * 16 bytes.
- */
+ 
 #define SPFI_32BIT_FIFO_SIZE			64
 #define SPFI_8BIT_FIFO_SIZE			16
 
@@ -390,10 +379,7 @@ static void img_spfi_handle_err(struct spi_controller *host,
 	struct img_spfi *spfi = spi_controller_get_devdata(host);
 	unsigned long flags;
 
-	/*
-	 * Stop all DMA and reset the controller if the previous transaction
-	 * timed-out and never completed it's DMA.
-	 */
+	 
 	spin_lock_irqsave(&spfi->lock, flags);
 	if (spfi->tx_dma_busy || spfi->rx_dma_busy) {
 		spfi->tx_dma_busy = false;
@@ -443,10 +429,7 @@ static void img_spfi_config(struct spi_controller *host, struct spi_device *spi,
 	struct img_spfi *spfi = spi_controller_get_devdata(spi->controller);
 	u32 val, div;
 
-	/*
-	 * output = spfi_clk * (BITCLK / 512), where BITCLK must be a
-	 * power of 2 up to 128
-	 */
+	 
 	div = DIV_ROUND_UP(clk_get_rate(spfi->spfi_clk), xfer->speed_hz);
 	div = clamp(512 / (1 << get_count_order(div)), 1, 128);
 
@@ -576,10 +559,7 @@ static int img_spfi_probe(struct platform_device *pdev)
 		goto disable_pclk;
 
 	spfi_reset(spfi);
-	/*
-	 * Only enable the error (IACCESS) interrupt.  In PIO mode we'll
-	 * poll the status of the FIFOs.
-	 */
+	 
 	spfi_writel(spfi, SPFI_INTERRUPT_IACCESS, SPFI_INTERRUPT_ENABLE);
 
 	host->auto_runtime_pm = true;
@@ -592,13 +572,7 @@ static int img_spfi_probe(struct platform_device *pdev)
 	host->max_speed_hz = clk_get_rate(spfi->spfi_clk) / 4;
 	host->min_speed_hz = clk_get_rate(spfi->spfi_clk) / 512;
 
-	/*
-	 * Maximum speed supported by spfi is limited to the lower value
-	 * between 1/4 of the SPFI clock or to "spfi-max-frequency"
-	 * defined in the device tree.
-	 * If no value is defined in the device tree assume the maximum
-	 * speed supported to be 1/4 of the SPFI clock.
-	 */
+	 
 	if (!of_property_read_u32(spfi->dev->of_node, "spfi-max-frequency",
 				  &max_speed_hz)) {
 		if (host->max_speed_hz > max_speed_hz)
@@ -711,7 +685,7 @@ static int img_spfi_runtime_resume(struct device *dev)
 
 	return 0;
 }
-#endif /* CONFIG_PM */
+#endif  
 
 #ifdef CONFIG_PM_SLEEP
 static int img_spfi_suspend(struct device *dev)
@@ -735,7 +709,7 @@ static int img_spfi_resume(struct device *dev)
 
 	return spi_controller_resume(host);
 }
-#endif /* CONFIG_PM_SLEEP */
+#endif  
 
 static const struct dev_pm_ops img_spfi_pm_ops = {
 	SET_RUNTIME_PM_OPS(img_spfi_runtime_suspend, img_spfi_runtime_resume,

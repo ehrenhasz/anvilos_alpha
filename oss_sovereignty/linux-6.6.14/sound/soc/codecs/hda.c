@@ -1,9 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Copyright(c) 2021-2022 Intel Corporation. All rights reserved.
-//
-// Author: Cezary Rojewski <cezary.rojewski@intel.com>
-//
+
+
+
+
+
+
 
 #include <linux/module.h>
 #include <linux/pm_runtime.h>
@@ -153,13 +153,13 @@ int hda_codec_probe_complete(struct hda_codec *codec)
 		goto out;
 	}
 
-	/* Bus suspended codecs as it does not manage their pm */
+	 
 	pm_runtime_set_active(&hdev->dev);
-	/* rpm was forbidden in snd_hda_codec_device_new() */
+	 
 	snd_hda_codec_set_power_save(codec, 2000);
 	snd_hda_codec_register(codec);
 out:
-	/* Complement pm_runtime_get_sync(bus) in probe */
+	 
 	pm_runtime_mark_last_busy(bus->dev);
 	pm_runtime_put_autosuspend(bus->dev);
 
@@ -167,7 +167,7 @@ out:
 }
 EXPORT_SYMBOL_GPL(hda_codec_probe_complete);
 
-/* Expects codec with usage_count=1 and status=suspended */
+ 
 static int hda_codec_probe(struct snd_soc_component *component)
 {
 	struct hda_codec *codec = dev_to_hda_codec(component->dev);
@@ -265,7 +265,7 @@ device_new_err:
 	return ret;
 }
 
-/* Leaves codec with usage_count=1 and status=suspended */
+ 
 static void hda_codec_remove(struct snd_soc_component *component)
 {
 	struct hda_codec *codec = dev_to_hda_codec(component->dev);
@@ -274,7 +274,7 @@ static void hda_codec_remove(struct snd_soc_component *component)
 	struct hdac_ext_link *hlink;
 	bool was_registered = codec->core.registered;
 
-	/* Don't allow any more runtime suspends */
+	 
 	pm_runtime_forbid(&hdev->dev);
 
 	hda_codec_unregister_dais(codec, component);
@@ -284,7 +284,7 @@ static void hda_codec_remove(struct snd_soc_component *component)
 
 	snd_hda_codec_cleanup_for_unbind(codec);
 	pm_runtime_put_noidle(&hdev->dev);
-	/* snd_hdac_device_exit() is only called on bus remove */
+	 
 	pm_runtime_set_suspended(&hdev->dev);
 
 	if (hda_codec_is_display(codec))
@@ -293,10 +293,7 @@ static void hda_codec_remove(struct snd_soc_component *component)
 	hlink = snd_hdac_ext_bus_get_hlink_by_addr(bus, hdev->addr);
 	if (hlink)
 		snd_hdac_ext_bus_link_put(bus, hlink);
-	/*
-	 * HDMI card's hda_codec_probe_complete() (see late_probe()) may
-	 * not be called due to early error, leaving bus uc unbalanced
-	 */
+	 
 	if (!was_registered) {
 		pm_runtime_mark_last_busy(bus->dev);
 		pm_runtime_put_autosuspend(bus->dev);
@@ -319,7 +316,7 @@ static const struct snd_soc_dapm_route hda_dapm_routes[] = {
 };
 
 static const struct snd_soc_dapm_widget hda_dapm_widgets[] = {
-	/* Audio Interface */
+	 
 	SND_SOC_DAPM_AIF_IN("AIF1RX", "Analog Codec Playback", 0, SND_SOC_NOPM, 0, 0),
 	SND_SOC_DAPM_AIF_IN("AIF2RX", "Digital Codec Playback", 0, SND_SOC_NOPM, 0, 0),
 	SND_SOC_DAPM_AIF_IN("AIF3RX", "Alt Analog Codec Playback", 0, SND_SOC_NOPM, 0, 0),
@@ -327,12 +324,12 @@ static const struct snd_soc_dapm_widget hda_dapm_widgets[] = {
 	SND_SOC_DAPM_AIF_OUT("AIF2TX", "Digital Codec Capture", 0, SND_SOC_NOPM, 0, 0),
 	SND_SOC_DAPM_AIF_OUT("AIF3TX", "Alt Analog Codec Capture", 0, SND_SOC_NOPM, 0, 0),
 
-	/* Input Pins */
+	 
 	SND_SOC_DAPM_INPUT("Codec Input Pin1"),
 	SND_SOC_DAPM_INPUT("Codec Input Pin2"),
 	SND_SOC_DAPM_INPUT("Codec Input Pin3"),
 
-	/* Output Pins */
+	 
 	SND_SOC_DAPM_OUTPUT("Codec Output Pin1"),
 	SND_SOC_DAPM_OUTPUT("Codec Output Pin2"),
 	SND_SOC_DAPM_OUTPUT("Codec Output Pin3"),
@@ -352,10 +349,7 @@ static int hda_hdev_attach(struct hdac_device *hdev)
 	if (!comp_drv)
 		return -ENOMEM;
 
-	/*
-	 * It's save to rely on dev_name() rather than a copy as component
-	 * driver's lifetime is directly tied to hda codec one
-	 */
+	 
 	comp_drv->name = dev_name(&hdev->dev);
 	comp_drv->probe = hda_codec_probe;
 	comp_drv->remove = hda_codec_remove;

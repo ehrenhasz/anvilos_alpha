@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * HDMI PLL
- *
- * Copyright (C) 2013 Texas Instruments Incorporated - https://www.ti.com/
- */
+
+ 
 
 #define DSS_SUBSYS_NAME "HDMIPLL"
 

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright 2012 Freescale Semiconductor, Inc.
- * Copyright (C) 2012 Marek Vasut <marex@denx.de>
- * on behalf of DENX Software Engineering GmbH
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/of.h>
@@ -88,7 +84,7 @@ static const struct of_device_id ci_hdrc_imx_dt_ids[] = {
 	{ .compatible = "fsl,imx7d-usb", .data = &imx7d_usb_data},
 	{ .compatible = "fsl,imx7ulp-usb", .data = &imx7ulp_usb_data},
 	{ .compatible = "fsl,imx8ulp-usb", .data = &imx8ulp_usb_data},
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, ci_hdrc_imx_dt_ids);
 
@@ -103,17 +99,17 @@ struct ci_hdrc_imx_data {
 	struct pinctrl *pinctrl;
 	struct pinctrl_state *pinctrl_hsic_active;
 	struct regulator *hsic_pad_regulator;
-	/* SoC before i.mx6 (except imx23/imx28) needs three clks */
+	 
 	bool need_three_clks;
 	struct clk *clk_ipg;
 	struct clk *clk_ahb;
 	struct clk *clk_per;
-	/* --------------------------------- */
+	 
 	struct pm_qos_request pm_qos_req;
 	const struct ci_hdrc_imx_platform_flag *plat_data;
 };
 
-/* Common functions shared by usbmisc drivers */
+ 
 
 static struct imx_usbmisc_data *usbmisc_get_init_data(struct device *dev)
 {
@@ -123,10 +119,7 @@ static struct imx_usbmisc_data *usbmisc_get_init_data(struct device *dev)
 	struct imx_usbmisc_data *data;
 	int ret;
 
-	/*
-	 * In case the fsl,usbmisc property is not present this device doesn't
-	 * need usbmisc. Return NULL (which is no error here)
-	 */
+	 
 	if (!of_get_property(np, "fsl,usbmisc", NULL))
 		return NULL;
 
@@ -156,10 +149,7 @@ static struct imx_usbmisc_data *usbmisc_get_init_data(struct device *dev)
 	}
 	data->dev = &misc_pdev->dev;
 
-	/*
-	 * Check the various over current related properties. If over current
-	 * detection is disabled we're not interested in the polarity.
-	 */
+	 
 	if (of_property_read_bool(np, "disable-over-current")) {
 		data->disable_oc = 1;
 	} else if (of_property_read_bool(np, "over-current-active-high")) {
@@ -191,7 +181,7 @@ static struct imx_usbmisc_data *usbmisc_get_init_data(struct device *dev)
 	return data;
 }
 
-/* End of common functions shared by usbmisc drivers*/
+ 
 static int imx_get_clks(struct device *dev)
 {
 	struct ci_hdrc_imx_data *data = dev_get_drvdata(dev);
@@ -199,7 +189,7 @@ static int imx_get_clks(struct device *dev)
 
 	data->clk_ipg = devm_clk_get(dev, "ipg");
 	if (IS_ERR(data->clk_ipg)) {
-		/* If the platform only needs one clocks */
+		 
 		data->clk = devm_clk_get(dev, NULL);
 		if (IS_ERR(data->clk)) {
 			ret = PTR_ERR(data->clk);
@@ -368,7 +358,7 @@ static int ci_hdrc_imx_probe(struct platform_device *pdev)
 		data->hsic_pad_regulator =
 				devm_regulator_get_optional(dev, "hsic");
 		if (PTR_ERR(data->hsic_pad_regulator) == -ENODEV) {
-			/* no pad regulator is needed */
+			 
 			data->hsic_pad_regulator = NULL;
 		} else if (IS_ERR(data->hsic_pad_regulator))
 			return dev_err_probe(dev, PTR_ERR(data->hsic_pad_regulator),
@@ -384,7 +374,7 @@ static int ci_hdrc_imx_probe(struct platform_device *pdev)
 		}
 	}
 
-	/* HSIC pinctrl handling */
+	 
 	if (data->pinctrl) {
 		struct pinctrl_state *pinctrl_hsic_idle;
 
@@ -481,7 +471,7 @@ static int ci_hdrc_imx_probe(struct platform_device *pdev)
 		    of_property_read_bool(np, "usb-role-switch"))
 			data->usbmisc_data->ext_vbus = 1;
 
-		/* usbmisc needs to know dr mode to choose wakeup setting */
+		 
 		data->usbmisc_data->available_role =
 			ci_hdrc_query_available_role(data->ci_pdev);
 	}
@@ -507,7 +497,7 @@ err_clk:
 	imx_disable_unprepare_clks(dev);
 disable_hsic_regulator:
 	if (data->hsic_pad_regulator)
-		/* don't overwrite original ret (cf. EPROBE_DEFER) */
+		 
 		regulator_disable(data->hsic_pad_regulator);
 	if (pdata.flags & CI_HDRC_PMQOS)
 		cpu_latency_qos_remove_request(&data->pm_qos_req);
@@ -610,7 +600,7 @@ static int __maybe_unused ci_hdrc_imx_suspend(struct device *dev)
 	struct ci_hdrc_imx_data *data = dev_get_drvdata(dev);
 
 	if (data->in_lpm)
-		/* The core's suspend doesn't run */
+		 
 		return 0;
 
 	ret = imx_controller_suspend(dev, PMSG_SUSPEND);

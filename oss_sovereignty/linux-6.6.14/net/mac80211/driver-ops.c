@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright 2015 Intel Deutschland GmbH
- * Copyright (C) 2022-2023 Intel Corporation
- */
+
+ 
 #include <net/mac80211.h>
 #include "ieee80211_i.h"
 #include "trace.h"
@@ -21,7 +18,7 @@ int drv_start(struct ieee80211_local *local)
 
 	trace_drv_start(local);
 	local->started = true;
-	/* allow rx frames */
+	 
 	smp_mb();
 	ret = local->ops->start(&local->hw);
 	trace_drv_return_int(local, ret);
@@ -43,7 +40,7 @@ void drv_stop(struct ieee80211_local *local)
 	local->ops->stop(&local->hw);
 	trace_drv_return_void(local);
 
-	/* sync away all work on the tasklet before clearing started */
+	 
 	tasklet_disable(&local->tasklet);
 	tasklet_enable(&local->tasklet);
 
@@ -199,10 +196,7 @@ int drv_conf_tx(struct ieee80211_local *local,
 		return 0;
 
 	if (params->cw_min == 0 || params->cw_min > params->cw_max) {
-		/*
-		 * If we can't configure hardware anyway, don't warn. We may
-		 * never have initialized the CW parameters.
-		 */
+		 
 		WARN_ONCE(local->ops->conf_tx,
 			  "%s: invalid CW_min/CW_max: %d/%d\n",
 			  sdata->name, params->cw_min, params->cw_max);
@@ -564,7 +558,7 @@ int drv_change_sta_links(struct ieee80211_local *local,
 	if (ret)
 		return ret;
 
-	/* during reconfig don't add it to debugfs again */
+	 
 	if (local->in_reconfig)
 		return 0;
 

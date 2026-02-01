@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Xinpeng xpp055c272 5.5" MIPI-DSI panel driver
- * Copyright (C) 2019 Theobroma Systems Design und Consulting GmbH
- *
- * based on
- *
- * Rockteck jh057n00900 5.5" MIPI-DSI panel driver
- * Copyright (C) Purism SPC 2019
- */
+
+ 
 
 #include <drm/drm_mipi_dsi.h>
 #include <drm/drm_modes.h>
@@ -23,7 +15,7 @@
 #include <linux/of.h>
 #include <linux/regulator/consumer.h>
 
-/* Manufacturer specific Commands send via DSI */
+ 
 #define XPP055C272_CMD_ALL_PIXEL_OFF	0x22
 #define XPP055C272_CMD_ALL_PIXEL_ON	0x23
 #define XPP055C272_CMD_SETDISP		0xb2
@@ -65,10 +57,7 @@ static int xpp055c272_init_sequence(struct xpp055c272 *ctx)
 	struct mipi_dsi_device *dsi = to_mipi_dsi_device(ctx->dev);
 	struct device *dev = ctx->dev;
 
-	/*
-	 * Init sequence was supplied by the panel vendor without much
-	 * documentation.
-	 */
+	 
 	mipi_dsi_dcs_write_seq(dsi, XPP055C272_CMD_SETEXTC, 0xf1, 0x12, 0x83);
 	mipi_dsi_dcs_write_seq(dsi, XPP055C272_CMD_SETMIPI,
 			       0x33, 0x81, 0x05, 0xf9, 0x0e, 0x0e, 0x00, 0x00,
@@ -179,11 +168,11 @@ static int xpp055c272_prepare(struct drm_panel *panel)
 	}
 
 	gpiod_set_value_cansleep(ctx->reset_gpio, 1);
-	/* T6: 10us */
+	 
 	usleep_range(10, 20);
 	gpiod_set_value_cansleep(ctx->reset_gpio, 0);
 
-	/* T8: 20ms */
+	 
 	msleep(20);
 
 	ret = xpp055c272_init_sequence(ctx);
@@ -198,7 +187,7 @@ static int xpp055c272_prepare(struct drm_panel *panel)
 		goto disable_iovcc;
 	}
 
-	/* T9: 120ms */
+	 
 	msleep(120);
 
 	ret = mipi_dsi_dcs_set_display_on(dsi);
@@ -347,7 +336,7 @@ static void xpp055c272_remove(struct mipi_dsi_device *dsi)
 
 static const struct of_device_id xpp055c272_of_match[] = {
 	{ .compatible = "xinpeng,xpp055c272" },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, xpp055c272_of_match);
 

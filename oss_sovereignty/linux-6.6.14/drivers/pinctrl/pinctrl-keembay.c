@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (C) 2020 Intel Corporation */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/bitops.h>
@@ -18,18 +18,18 @@
 #include "core.h"
 #include "pinmux.h"
 
-/* GPIO data registers' offsets */
+ 
 #define KEEMBAY_GPIO_DATA_OUT		0x000
 #define KEEMBAY_GPIO_DATA_IN		0x020
 #define KEEMBAY_GPIO_DATA_IN_RAW	0x040
 #define KEEMBAY_GPIO_DATA_HIGH		0x060
 #define KEEMBAY_GPIO_DATA_LOW		0x080
 
-/* GPIO Interrupt and mode registers' offsets */
+ 
 #define KEEMBAY_GPIO_INT_CFG		0x000
 #define KEEMBAY_GPIO_MODE		0x070
 
-/* GPIO mode register bit fields */
+ 
 #define KEEMBAY_GPIO_MODE_PULLUP_MASK	GENMASK(13, 12)
 #define KEEMBAY_GPIO_MODE_DRIVE_MASK	GENMASK(8, 7)
 #define KEEMBAY_GPIO_MODE_INV_MASK	GENMASK(5, 4)
@@ -54,14 +54,10 @@
 #define KEEMBAY_GPIO_MAX_STRENGTH	12
 #define KEEMBAY_GPIO_SENSE_LOW		(IRQ_TYPE_LEVEL_LOW | IRQ_TYPE_EDGE_FALLING)
 
-/* GPIO reg address calculation */
+ 
 #define KEEMBAY_GPIO_REG_OFFSET(pin)	((pin) * 4)
 
-/**
- * struct keembay_mux_desc - Mux properties of each GPIO pin
- * @mode: Pin mode when operating in this function
- * @name: Pin function name
- */
+ 
 struct keembay_mux_desc {
 	u8 mode;
 	const char *name;
@@ -79,14 +75,7 @@ struct keembay_mux_desc {
 	.name = pin_function,				\
 }							\
 
-/**
- * struct keembay_gpio_irq - Config of each GPIO Interrupt sources
- * @source: Interrupt source number (0 - 7)
- * @line: Actual Interrupt line number
- * @pins: Array of GPIO pins using this Interrupt line
- * @trigger: Interrupt trigger type for this line
- * @num_share: Number of pins currently using this Interrupt line
- */
+ 
 struct keembay_gpio_irq {
 	unsigned int source;
 	unsigned int line;
@@ -95,22 +84,7 @@ struct keembay_gpio_irq {
 	unsigned int num_share;
 };
 
-/**
- * struct keembay_pinctrl - Intel Keembay pinctrl structure
- * @pctrl: Pointer to the pin controller device
- * @base0: First register base address
- * @base1: Second register base address
- * @dev: Pointer to the device structure
- * @chip: GPIO chip used by this pin controller
- * @soc: Pin control configuration data based on SoC
- * @lock: Spinlock to protect various gpio config register access
- * @ngroups: Number of pin groups available
- * @nfuncs: Number of pin functions available
- * @npins: Number of GPIO pins available
- * @irq: Store Interrupt source
- * @max_gpios_level_type: Store max level trigger type
- * @max_gpios_edge_type: Store max edge trigger type
- */
+ 
 struct keembay_pinctrl {
 	struct pinctrl_dev *pctrl;
 	void __iomem *base0;
@@ -127,10 +101,7 @@ struct keembay_pinctrl {
 	int max_gpios_edge_type;
 };
 
-/**
- * struct keembay_pin_soc - Pin control config data based on SoC
- * @pins: Pin description structure
- */
+ 
 struct keembay_pin_soc {
 	const struct pinctrl_pin_desc *pins;
 };
@@ -889,11 +860,7 @@ static void keembay_gpio_invert(struct keembay_pinctrl *kpc, unsigned int pin)
 {
 	unsigned int val = keembay_read_reg(kpc->base1 + KEEMBAY_GPIO_MODE, pin);
 
-	/*
-	 * This IP doesn't support the falling edge and low level interrupt
-	 * trigger. Invert API is used to mimic the falling edge and low
-	 * level support
-	 */
+	 
 
 	val |= FIELD_PREP(KEEMBAY_GPIO_MODE_INV_MASK, KEEMBAY_GPIO_MODE_INV_VAL);
 	keembay_write_reg(val, kpc->base1 + KEEMBAY_GPIO_MODE, pin);
@@ -919,7 +886,7 @@ static int keembay_request_gpio(struct pinctrl_dev *pctldev,
 	val = keembay_read_reg(kpc->base1 + KEEMBAY_GPIO_MODE, pin);
 	val = FIELD_GET(KEEMBAY_GPIO_MODE_SELECT_MASK, val);
 
-	/* As per Pin Mux Map, Modes 0 to 6 are for peripherals */
+	 
 	if (val != KEEMBAY_GPIO_MODE_DEFAULT)
 		return -EBUSY;
 
@@ -944,7 +911,7 @@ static int keembay_set_mux(struct pinctrl_dev *pctldev, unsigned int fun_sel,
 	if (!func)
 		return -EINVAL;
 
-	/* Change modes for pins in the selected group */
+	 
 	pin = *grp->pins;
 	pin_mode = *(u8 *)(func->data);
 
@@ -1245,7 +1212,7 @@ static void keembay_gpio_irq_handler(struct irq_desc *desc)
 	struct keembay_pinctrl *kpc;
 	unsigned int src, pin, val;
 
-	/* Identify GPIO interrupt number from GIC interrupt number */
+	 
 	for (src = 0; src < KEEMBAY_GPIO_NUM_IRQ; src++) {
 		if (kmb_irq == gc->irq.parents[src])
 			break;
@@ -1260,17 +1227,13 @@ static void keembay_gpio_irq_handler(struct irq_desc *desc)
 	chained_irq_enter(parent_chip, desc);
 	reg = keembay_read_reg(kpc->base1 + KEEMBAY_GPIO_INT_CFG, src);
 
-	/*
-	 * Each Interrupt line can be shared by up to 4 GPIO pins. Enable bit
-	 * and input values were checked to identify the source of the
-	 * Interrupt. The checked enable bit positions are 7, 15, 23 and 31.
-	 */
+	 
 	for_each_set_clump8(bit, clump, &reg, BITS_PER_TYPE(typeof(reg))) {
 		pin = clump & ~KEEMBAY_GPIO_IRQ_ENABLE;
 		val = keembay_read_pin(kpc->base0 + KEEMBAY_GPIO_DATA_IN, pin);
 		kmb_irq = irq_linear_revmap(gc->irq.domain, pin);
 
-		/* Checks if the interrupt is enabled */
+		 
 		if (val && (clump & KEEMBAY_GPIO_IRQ_ENABLE))
 			generic_handle_irq(kmb_irq);
 	}
@@ -1286,11 +1249,11 @@ static void keembay_gpio_clear_irq(struct irq_data *data, unsigned long pos,
 	struct keembay_gpio_irq *irq = &kpc->irq[src];
 	unsigned long val;
 
-	/* Check if the value of pos/KEEMBAY_GPIO_NUM_IRQ is in valid range. */
+	 
 	if ((pos / KEEMBAY_GPIO_NUM_IRQ) >= KEEMBAY_GPIO_MAX_PER_IRQ)
 		return;
 
-	/* Retains val register as it handles other interrupts as well. */
+	 
 	val = keembay_read_reg(kpc->base1 + KEEMBAY_GPIO_INT_CFG, src);
 
 	bitmap_set_value8(&val, 0, pos);
@@ -1367,7 +1330,7 @@ static void keembay_gpio_irq_enable(struct irq_data *data)
 	irq_hw_number_t pin = irqd_to_hwirq(data);
 	int src, slot;
 
-	/* Check which Interrupt source and slot is available */
+	 
 	src = keembay_find_free_src(kpc, trig);
 	slot = keembay_find_free_slot(kpc, src);
 
@@ -1382,15 +1345,7 @@ static void keembay_gpio_irq_enable(struct irq_data *data)
 
 static void keembay_gpio_irq_ack(struct irq_data *data)
 {
-	/*
-	 * The keembay_gpio_irq_ack function is needed to handle_edge_irq.
-	 * IRQ ack is not possible from the SOC perspective. The IP by itself
-	 * is used for handling interrupts which do not come in short-time and
-	 * not used as protocol or communication interrupts. All the interrupts
-	 * are threaded IRQ interrupts. But this function is expected to be
-	 * present as the gpio IP is registered with irq framework. Otherwise
-	 * handle_edge_irq() fails.
-	 */
+	 
 }
 
 static void keembay_gpio_irq_disable(struct irq_data *data)
@@ -1417,7 +1372,7 @@ static int keembay_gpio_irq_set_type(struct irq_data *data, unsigned int type)
 	struct gpio_chip *gc = irq_data_get_irq_chip_data(data);
 	struct keembay_pinctrl *kpc = gpiochip_get_data(gc);
 
-	/* Change EDGE_BOTH as EDGE_RISING in order to claim the IRQ for power button */
+	 
 	if (!kpc->max_gpios_edge_type && (type & IRQ_TYPE_EDGE_BOTH))
 		type = IRQ_TYPE_EDGE_RISING;
 
@@ -1460,7 +1415,7 @@ static int keembay_gpiochip_probe(struct keembay_pinctrl *kpc,
 	struct gpio_chip *gc = &kpc->chip;
 	struct gpio_irq_chip *girq;
 
-	/* Setup GPIO IRQ chip */
+	 
 	girq			= &kpc->chip.irq;
 	girq->chip		= &keembay_gpio_irqchip;
 	girq->parent_handler	= keembay_gpio_irq_handler;
@@ -1471,7 +1426,7 @@ static int keembay_gpiochip_probe(struct keembay_pinctrl *kpc,
 	if (!girq->parents)
 		return -ENOMEM;
 
-	/* Setup GPIO chip */
+	 
 	gc->label		= dev_name(kpc->dev);
 	gc->parent		= kpc->dev;
 	gc->request		= gpiochip_generic_request;
@@ -1525,7 +1480,7 @@ static int keembay_build_groups(struct keembay_pinctrl *kpc)
 	if (!grp)
 		return -ENOMEM;
 
-	/* Each pin is categorised as one group */
+	 
 	for (i = 0; i < kpc->ngroups; i++) {
 		const struct pinctrl_pin_desc *pdesc = keembay_pins + i;
 		struct group_desc *kmb_grp = grp + i;
@@ -1559,7 +1514,7 @@ static int keembay_add_functions(struct keembay_pinctrl *kpc,
 {
 	unsigned int i;
 
-	/* Assign the groups for each function */
+	 
 	for (i = 0; i < kpc->nfuncs; i++) {
 		struct function_desc *func = &functions[i];
 		const char **group_names;
@@ -1584,7 +1539,7 @@ static int keembay_add_functions(struct keembay_pinctrl *kpc,
 		func->group_names = group_names;
 	}
 
-	/* Add all functions */
+	 
 	for (i = 0; i < kpc->nfuncs; i++) {
 		pinmux_generic_add_function(kpc->pctrl,
 					    functions[i].name,
@@ -1601,16 +1556,13 @@ static int keembay_build_functions(struct keembay_pinctrl *kpc)
 	struct function_desc *keembay_funcs, *new_funcs;
 	int i;
 
-	/*
-	 * Allocate maximum possible number of functions. Assume every pin
-	 * being part of 8 (hw maximum) globally unique muxes.
-	 */
+	 
 	kpc->nfuncs = 0;
 	keembay_funcs = kcalloc(kpc->npins * 8, sizeof(*keembay_funcs), GFP_KERNEL);
 	if (!keembay_funcs)
 		return -ENOMEM;
 
-	/* Setup 1 function for each unique mux */
+	 
 	for (i = 0; i < kpc->npins; i++) {
 		const struct pinctrl_pin_desc *pdesc = keembay_pins + i;
 		struct keembay_mux_desc *mux;
@@ -1618,7 +1570,7 @@ static int keembay_build_functions(struct keembay_pinctrl *kpc)
 		for (mux = pdesc->drv_data; mux->name; mux++) {
 			struct function_desc *fdesc;
 
-			/* Check if we already have function for this mux */
+			 
 			for (fdesc = keembay_funcs; fdesc->name; fdesc++) {
 				if (!strcmp(mux->name, fdesc->name)) {
 					fdesc->num_group_names++;
@@ -1626,7 +1578,7 @@ static int keembay_build_functions(struct keembay_pinctrl *kpc)
 				}
 			}
 
-			/* Setup new function for this mux we didn't see before */
+			 
 			if (!fdesc->name) {
 				fdesc->name = mux->name;
 				fdesc->num_group_names = 1;
@@ -1636,7 +1588,7 @@ static int keembay_build_functions(struct keembay_pinctrl *kpc)
 		}
 	}
 
-	/* Reallocate memory based on actual number of functions */
+	 
 	new_funcs = krealloc(keembay_funcs, kpc->nfuncs * sizeof(*new_funcs), GFP_KERNEL);
 	if (!new_funcs) {
 		kfree(keembay_funcs);

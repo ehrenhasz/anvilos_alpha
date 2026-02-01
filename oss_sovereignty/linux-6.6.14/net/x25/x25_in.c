@@ -1,22 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *	X.25 Packet Layer release 002
- *
- *	This is ALPHA test software. This code may break your machine,
- *	randomly fail to work with new releases, misbehave and/or generally
- *	screw up. It might even work.
- *
- *	This code REQUIRES 2.1.15 or higher
- *
- *	History
- *	X.25 001	Jonathan Naylor	  Started coding.
- *	X.25 002	Jonathan Naylor	  Centralised disconnection code.
- *					  New timer architecture.
- *	2000-03-20	Daniela Squassoni Disabling/enabling of facilities
- *					  negotiation.
- *	2000-11-10	Henner Eisen	  Check and reset for out-of-sequence
- *					  i-frames.
- */
+
+ 
 
 #define pr_fmt(fmt) "X25: " fmt
 
@@ -41,7 +24,7 @@ static int x25_queue_rx_frame(struct sock *sk, struct sk_buff *skb, int more)
 		return 0;
 	}
 
-	if (x25->fraglen > 0) {	/* End of fragment */
+	if (x25->fraglen > 0) {	 
 		int len = x25->fraglen + skb->len;
 
 		if ((skbn = alloc_skb(len, GFP_ATOMIC)) == NULL){
@@ -79,11 +62,7 @@ static int x25_queue_rx_frame(struct sock *sk, struct sk_buff *skb, int more)
 	return 0;
 }
 
-/*
- * State machine for state 1, Awaiting Call Accepted State.
- * The handling of the timer(s) is in file x25_timer.c.
- * Handling of state 0 and connection release is in af_x25.c.
- */
+ 
 static int x25_state1_machine(struct sock *sk, struct sk_buff *skb, int frametype)
 {
 	struct x25_address source_addr, dest_addr;
@@ -101,9 +80,7 @@ static int x25_state1_machine(struct sock *sk, struct sk_buff *skb, int frametyp
 		x25->vl        = 0;
 		x25->state     = X25_STATE_3;
 		sk->sk_state   = TCP_ESTABLISHED;
-		/*
-		 *	Parse the data in the frame.
-		 */
+		 
 		if (!pskb_may_pull(skb, X25_STD_MIN_LEN))
 			goto out_clear;
 		skb_pull(skb, X25_STD_MIN_LEN);
@@ -122,9 +99,7 @@ static int x25_state1_machine(struct sock *sk, struct sk_buff *skb, int frametyp
 			skb_pull(skb, len);
 		else if (len < 0)
 			goto out_clear;
-		/*
-		 *	Copy any Call User Data.
-		 */
+		 
 		if (skb->len > 0) {
 			if (skb->len > X25_MAX_CUD_LEN)
 				goto out_clear;
@@ -138,7 +113,7 @@ static int x25_state1_machine(struct sock *sk, struct sk_buff *skb, int frametyp
 		break;
 	}
 	case X25_CALL_REQUEST:
-		/* call collision */
+		 
 		x25->causediag.cause      = 0x01;
 		x25->causediag.diagnostic = 0x48;
 
@@ -167,11 +142,7 @@ out_clear:
 	return 0;
 }
 
-/*
- * State machine for state 2, Awaiting Clear Confirmation State.
- * The handling of the timer(s) is in file x25_timer.c
- * Handling of state 0 and connection release is in af_x25.c.
- */
+ 
 static int x25_state2_machine(struct sock *sk, struct sk_buff *skb, int frametype)
 {
 	switch (frametype) {
@@ -200,11 +171,7 @@ out_clear:
 	return 0;
 }
 
-/*
- * State machine for state 3, Connected State.
- * The handling of the timer(s) is in file x25_timer.c
- * Handling of state 0 and connection release is in af_x25.c.
- */
+ 
 static int x25_state3_machine(struct sock *sk, struct sk_buff *skb, int frametype, int ns, int nr, int q, int d, int m)
 {
 	int queued = 0;
@@ -256,7 +223,7 @@ static int x25_state3_machine(struct sock *sk, struct sk_buff *skb, int frametyp
 			}
 			break;
 
-		case X25_DATA:	/* XXX */
+		case X25_DATA:	 
 			x25->condition &= ~X25_COND_PEER_RX_BUSY;
 			if ((ns != x25->vr) || !x25_validate_nr(sk, nr)) {
 				x25_clear_queues(sk);
@@ -276,7 +243,7 @@ static int x25_state3_machine(struct sock *sk, struct sk_buff *skb, int frametyp
 					x25->vr = (x25->vr + 1) % modulus;
 					queued = 1;
 				} else {
-					/* Should never happen */
+					 
 					x25_clear_queues(sk);
 					x25_write_internal(sk, X25_RESET_REQUEST);
 					x25_start_t22timer(sk);
@@ -292,10 +259,7 @@ static int x25_state3_machine(struct sock *sk, struct sk_buff *skb, int frametyp
 				    (sk->sk_rcvbuf >> 1))
 					x25->condition |= X25_COND_OWN_RX_BUSY;
 			}
-			/*
-			 *	If the window is full Ack it immediately, else
-			 *	start the holdback timer.
-			 */
+			 
 			if (((x25->vl + x25->facilities.winsize_in) % modulus) == x25->vr) {
 				x25->condition &= ~X25_COND_ACK_PENDING;
 				x25_stop_timer(sk);
@@ -336,11 +300,7 @@ out_clear:
 	return 0;
 }
 
-/*
- * State machine for state 4, Awaiting Reset Confirmation State.
- * The handling of the timer(s) is in file x25_timer.c
- * Handling of state 0 and connection release is in af_x25.c.
- */
+ 
 static int x25_state4_machine(struct sock *sk, struct sk_buff *skb, int frametype)
 {
 	struct x25_sock *x25 = x25_sk(sk);
@@ -382,11 +342,7 @@ out_clear:
 	return 0;
 }
 
-/*
- * State machine for state 5, Call Accepted / Call Connected pending (X25_ACCPT_APPRV_FLAG).
- * The handling of the timer(s) is in file x25_timer.c
- * Handling of state 0 and connection release is in af_x25.c.
- */
+ 
 static int x25_state5_machine(struct sock *sk, struct sk_buff *skb, int frametype)
 {
 	struct x25_sock *x25 = x25_sk(sk);
@@ -411,7 +367,7 @@ static int x25_state5_machine(struct sock *sk, struct sk_buff *skb, int frametyp
 	return 0;
 }
 
-/* Higher level upcall for a LAPB frame */
+ 
 int x25_process_rx_frame(struct sock *sk, struct sk_buff *skb)
 {
 	struct x25_sock *x25 = x25_sk(sk);

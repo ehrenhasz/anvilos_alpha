@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <string.h>
 #include <stdio.h>
 #include <sys/types.h>
@@ -109,7 +109,7 @@ static int setup_pmu_alias_list(void)
 
 		fclose(file);
 
-		/* Remove the last '\n' */
+		 
 		buf[strlen(buf) - 1] = 0;
 
 		pmu_alias = pmu_alias__new(dent->d_name, buf);
@@ -173,10 +173,10 @@ const char *pmu_find_alias_name(const char *name)
 
 int perf_pmus__num_mem_pmus(void)
 {
-	/* AMD uses IBS OP pmu and not a core PMU for perf mem/c2c */
+	 
 	if (x86__is_amd_cpu())
 		return 1;
 
-	/* Intel uses core pmus for perf mem/c2c */
+	 
 	return perf_pmus__num_core_pmus();
 }

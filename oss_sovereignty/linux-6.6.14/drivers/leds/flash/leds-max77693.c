@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * LED Flash class driver for the flash cell of max77693 mfd.
- *
- *	Copyright (C) 2015, Samsung Electronics Co., Ltd.
- *
- *	Authors: Jacek Anaszewski <j.anaszewski@samsung.com>
- *		 Andrzej Hajda <a.hajda@samsung.com>
- */
+
+ 
 
 #include <linux/led-class-flash.h>
 #include <linux/mfd/max77693.h>
@@ -54,51 +47,51 @@ struct max77693_led_config_data {
 };
 
 struct max77693_sub_led {
-	/* corresponding FLED output identifier */
+	 
 	int fled_id;
-	/* corresponding LED Flash class device */
+	 
 	struct led_classdev_flash fled_cdev;
-	/* V4L2 Flash device */
+	 
 	struct v4l2_flash *v4l2_flash;
 
-	/* brightness cache */
+	 
 	unsigned int torch_brightness;
-	/* flash timeout cache */
+	 
 	unsigned int flash_timeout;
-	/* flash faults that may have occurred */
+	 
 	u32 flash_faults;
 };
 
 struct max77693_led_device {
-	/* parent mfd regmap */
+	 
 	struct regmap *regmap;
-	/* platform device data */
+	 
 	struct platform_device *pdev;
-	/* secures access to the device */
+	 
 	struct mutex lock;
 
-	/* sub led data */
+	 
 	struct max77693_sub_led sub_leds[2];
 
-	/* maximum torch current values for FLED outputs */
+	 
 	u32 iout_torch_max[2];
-	/* maximum flash current values for FLED outputs */
+	 
 	u32 iout_flash_max[2];
 
-	/* current flash timeout cache */
+	 
 	unsigned int current_flash_timeout;
-	/* ITORCH register cache */
+	 
 	u8 torch_iout_reg;
-	/* mode of fled outputs */
+	 
 	unsigned int mode_flags;
-	/* recently strobed fled */
+	 
 	int strobing_sub_led_id;
-	/* bitmask of FLED outputs use state (bit 0. - FLED1, bit 1. - FLED2) */
+	 
 	u8 fled_mask;
-	/* FLED modes that can be set */
+	 
 	u8 allowed_modes;
 
-	/* arrangement of current outputs */
+	 
 	bool iout_joint;
 };
 
@@ -158,16 +151,12 @@ static int max77693_set_mode_reg(struct max77693_led_device *led, u8 mode)
 			v |= FLASH_EN_ON << FLASH_EN_SHIFT(i);
 		} else if (mode & MODE_FLASH_EXTERNAL(i)) {
 			v |= FLASH_EN_FLASH << FLASH_EN_SHIFT(i);
-			/*
-			 * Enable hw triggering also for torch mode, as some
-			 * camera sensors use torch led to fathom ambient light
-			 * conditions before strobing the flash.
-			 */
+			 
 			v |= FLASH_EN_TORCH << TORCH_EN_SHIFT(i);
 		}
 	}
 
-	/* Reset the register only prior setting flash modes */
+	 
 	if (mode & ~(MODE_TORCH(FLED1) | MODE_TORCH(FLED2))) {
 		ret = regmap_write(rmap, MAX77693_LED_REG_FLASH_EN, 0);
 		if (ret < 0)
@@ -183,14 +172,10 @@ static int max77693_add_mode(struct max77693_led_device *led, u8 mode)
 	int i, ret;
 
 	if (led->iout_joint)
-		/* Span the mode on FLED2 for joint iouts case */
+		 
 		mode |= (mode << 1);
 
-	/*
-	 * FLASH_EXTERNAL mode activates FLASHEN and TORCHEN pins in the device.
-	 * Corresponding register bit fields interfere with SW triggered modes,
-	 * thus clear them to ensure proper device configuration.
-	 */
+	 
 	for (i = FLED1; i <= FLED2; ++i)
 		if (mode & MODE_FLASH_EXTERNAL(i))
 			led->mode_flags &= (~MODE_TORCH(i) & ~MODE_FLASH(i));
@@ -207,10 +192,7 @@ static int max77693_add_mode(struct max77693_led_device *led, u8 mode)
 	if (ret < 0)
 		return ret;
 
-	/*
-	 * Clear flash mode flag after setting the mode to avoid spurious flash
-	 * strobing on each subsequent torch mode setting.
-	 */
+	 
 	if (mode & MODE_FLASH_MASK)
 		led->mode_flags &= ~mode;
 
@@ -221,7 +203,7 @@ static int max77693_clear_mode(struct max77693_led_device *led,
 				u8 mode)
 {
 	if (led->iout_joint)
-		/* Clear mode also on FLED2 for joint iouts case */
+		 
 		mode |= (mode << 1);
 
 	led->mode_flags &= ~mode;
@@ -395,11 +377,7 @@ static int max77693_setup(struct max77693_led_device *led,
 	u32 max_flash_curr[2];
 	u8 v;
 
-	/*
-	 * Initialize only flash current. Torch current doesn't
-	 * require initialization as ITORCH register is written with
-	 * new value each time brightness_set op is called.
-	 */
+	 
 	if (led->iout_joint) {
 		first_led = FLED1;
 		last_led = FLED1;
@@ -457,7 +435,7 @@ static int max77693_setup(struct max77693_led_device *led,
 	return max77693_set_mode_reg(led, MODE_OFF);
 }
 
-/* LED subsystem callbacks */
+ 
 static int max77693_led_brightness_set(struct led_classdev *led_cdev,
 					enum led_brightness value)
 {
@@ -739,7 +717,7 @@ static void max77693_led_validate_configuration(struct max77693_led_device *led,
 	cfg->boost_mode = clamp_val(cfg->boost_mode, MAX77693_LED_BOOST_NONE,
 			    MAX77693_LED_BOOST_FIXED);
 
-	/* Boost must be enabled if both current outputs are used */
+	 
 	if ((cfg->boost_mode == MAX77693_LED_BOOST_NONE) && led->iout_joint)
 		cfg->boost_mode = MAX77693_LED_BOOST_FIXED;
 
@@ -797,7 +775,7 @@ static void max77693_init_flash_settings(struct max77693_sub_led *sub_led,
 	int fled_id = sub_led->fled_id;
 	struct led_flash_setting *setting;
 
-	/* Init flash intensity setting */
+	 
 	setting = &fled_cdev->brightness;
 	setting->min = FLASH_IOUT_MIN;
 	setting->max = led->iout_joint ?
@@ -807,7 +785,7 @@ static void max77693_init_flash_settings(struct max77693_sub_led *sub_led,
 	setting->step = FLASH_IOUT_STEP;
 	setting->val = setting->max;
 
-	/* Init flash timeout setting */
+	 
 	setting = &fled_cdev->timeout;
 	setting->min = FLASH_TIMEOUT_MIN;
 	setting->max = led_cfg->flash_timeout_max[fled_id];
@@ -859,7 +837,7 @@ static void max77693_init_v4l2_flash_config(struct max77693_sub_led *sub_led,
 	s->step = TORCH_IOUT_STEP;
 	s->val = s->max;
 
-	/* Init flash faults config */
+	 
 	v4l2_sd_cfg->flash_faults = LED_FAULT_OVER_VOLTAGE |
 				LED_FAULT_SHORT_CIRCUIT |
 				LED_FAULT_OVER_CURRENT;
@@ -888,7 +866,7 @@ static void max77693_init_fled_cdev(struct max77693_sub_led *sub_led,
 	struct led_classdev_flash *fled_cdev;
 	struct led_classdev *led_cdev;
 
-	/* Initialize LED Flash class device */
+	 
 	fled_cdev = &sub_led->fled_cdev;
 	fled_cdev->ops = &flash_ops;
 	led_cdev = &fled_cdev->led_cdev;
@@ -905,7 +883,7 @@ static void max77693_init_fled_cdev(struct max77693_sub_led *sub_led,
 
 	max77693_init_flash_settings(sub_led, led_cfg);
 
-	/* Init flash timeout cache */
+	 
 	sub_led->flash_timeout = fled_cdev->timeout.val;
 }
 
@@ -919,14 +897,14 @@ static int max77693_register_led(struct max77693_sub_led *sub_led,
 	struct v4l2_flash_config v4l2_sd_cfg = {};
 	int ret;
 
-	/* Register in the LED subsystem */
+	 
 	ret = led_classdev_flash_register(dev, fled_cdev);
 	if (ret < 0)
 		return ret;
 
 	max77693_init_v4l2_flash_config(sub_led, led_cfg, &v4l2_sd_cfg);
 
-	/* Register in the V4L2 subsystem. */
+	 
 	sub_led->v4l2_flash = v4l2_flash_init(dev, of_fwnode_handle(sub_node),
 					      fled_cdev, &v4l2_flash_ops,
 					      &v4l2_sd_cfg);
@@ -981,20 +959,14 @@ static int max77693_led_probe(struct platform_device *pdev)
 		if (!init_fled_cdev[i])
 			continue;
 
-		/* Initialize LED Flash class device */
+		 
 		max77693_init_fled_cdev(&sub_leds[i], &led_cfg);
 
-		/*
-		 * Register LED Flash class device and corresponding
-		 * V4L2 Flash device.
-		 */
+		 
 		ret = max77693_register_led(&sub_leds[i], &led_cfg,
 						sub_nodes[i]);
 		if (ret < 0) {
-			/*
-			 * At this moment FLED1 might have been already
-			 * registered and it needs to be released.
-			 */
+			 
 			if (i == FLED2)
 				goto err_register_led2;
 			else
@@ -1005,7 +977,7 @@ static int max77693_led_probe(struct platform_device *pdev)
 	return 0;
 
 err_register_led2:
-	/* It is possible than only FLED2 was to be registered */
+	 
 	if (!init_fled_cdev[FLED1])
 		goto err_register_led1;
 	v4l2_flash_release(sub_leds[FLED1].v4l2_flash);

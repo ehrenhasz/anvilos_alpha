@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Allwinner sunxi AHCI SATA platform driver
- * Copyright 2013 Olliver Schinagl <oliver@schinagl.nl>
- * Copyright 2014 Hans de Goede <hdegoede@redhat.com>
- *
- * based on the AHCI SATA platform driver by Jeff Garzik and Anton Vorontsov
- * Based on code from Allwinner Technology Co., Ltd. <www.allwinnertech.com>,
- * Daniel Wang <danielwang@allwinnertech.com>
- */
+
+ 
 
 #include <linux/ahci_platform.h>
 #include <linux/clk.h>
@@ -21,7 +13,7 @@
 
 #define DRV_NAME "ahci-sunxi"
 
-/* Insmod parameters */
+ 
 static bool enable_pmp;
 module_param(enable_pmp, bool, 0);
 MODULE_PARM_DESC(enable_pmp,
@@ -88,7 +80,7 @@ static int ahci_sunxi_phy_init(struct device *dev, void __iomem *reg_base)
 	u32 reg_val;
 	int timeout;
 
-	/* This magic is from the original code */
+	 
 	writel(0, reg_base + AHCI_RWCR);
 	msleep(5);
 
@@ -109,7 +101,7 @@ static int ahci_sunxi_phy_init(struct device *dev, void __iomem *reg_base)
 
 	sunxi_setbits(reg_base + AHCI_PHYCS0R, (0x1 << 19));
 
-	timeout = 250; /* Power up takes aprox 50 us */
+	timeout = 250;  
 	do {
 		reg_val = sunxi_getbits(reg_base + AHCI_PHYCS0R, 0x7, 28);
 		if (reg_val == 0x02)
@@ -124,7 +116,7 @@ static int ahci_sunxi_phy_init(struct device *dev, void __iomem *reg_base)
 
 	sunxi_setbits(reg_base + AHCI_PHYCS2R, (0x1 << 24));
 
-	timeout = 100; /* Calibration takes aprox 10 us */
+	timeout = 100;  
 	do {
 		reg_val = sunxi_getbits(reg_base + AHCI_PHYCS2R, 0x1, 24);
 		if (reg_val == 0x00)
@@ -149,53 +141,10 @@ static void ahci_sunxi_start_engine(struct ata_port *ap)
 	void __iomem *port_mmio = ahci_port_base(ap);
 	struct ahci_host_priv *hpriv = ap->host->private_data;
 
-	/* Setup DMA before DMA start
-	 *
-	 * NOTE: A similar SoC with SATA/AHCI by Texas Instruments documents
-	 *   this Vendor Specific Port (P0DMACR, aka PxDMACR) in its
-	 *   User's Guide document (TMS320C674x/OMAP-L1x Processor
-	 *   Serial ATA (SATA) Controller, Literature Number: SPRUGJ8C,
-	 *   March 2011, Chapter 4.33 Port DMA Control Register (P0DMACR),
-	 *   p.68, https://www.ti.com/lit/ug/sprugj8c/sprugj8c.pdf)
-	 *   as equivalent to the following struct:
-	 *
-	 *   struct AHCI_P0DMACR_t
-	 *   {
-	 *     unsigned TXTS     : 4;
-	 *     unsigned RXTS     : 4;
-	 *     unsigned TXABL    : 4;
-	 *     unsigned RXABL    : 4;
-	 *     unsigned Reserved : 16;
-	 *   };
-	 *
-	 *   TXTS: Transmit Transaction Size (TX_TRANSACTION_SIZE).
-	 *     This field defines the DMA transaction size in DWORDs for
-	 *     transmit (system bus read, device write) operation. [...]
-	 *
-	 *   RXTS: Receive Transaction Size (RX_TRANSACTION_SIZE).
-	 *     This field defines the Port DMA transaction size in DWORDs
-	 *     for receive (system bus write, device read) operation. [...]
-	 *
-	 *   TXABL: Transmit Burst Limit.
-	 *     This field allows software to limit the VBUSP master read
-	 *     burst size. [...]
-	 *
-	 *   RXABL: Receive Burst Limit.
-	 *     Allows software to limit the VBUSP master write burst
-	 *     size. [...]
-	 *
-	 *   Reserved: Reserved.
-	 *
-	 *
-	 * NOTE: According to the above document, the following alternative
-	 *   to the code below could perhaps be a better option
-	 *   (or preparation) for possible further improvements later:
-	 *     sunxi_clrsetbits(hpriv->mmio + AHCI_P0DMACR, 0x0000ffff,
-	 *		0x00000033);
-	 */
+	 
 	sunxi_clrsetbits(hpriv->mmio + AHCI_P0DMACR, 0x0000ffff, 0x00004433);
 
-	/* Start DMA */
+	 
 	sunxi_setbits(port_mmio + PORT_CMD, PORT_CMD_START);
 }
 
@@ -233,11 +182,7 @@ static int ahci_sunxi_probe(struct platform_device *pdev)
 	hpriv->flags = AHCI_HFLAG_32BIT_ONLY | AHCI_HFLAG_NO_MSI |
 		       AHCI_HFLAG_YES_NCQ;
 
-	/*
-	 * The sunxi sata controller seems to be unable to successfully do a
-	 * soft reset if no pmp is attached, so disable pmp use unless
-	 * requested, otherwise directly attached disks do not work.
-	 */
+	 
 	if (!enable_pmp)
 		hpriv->flags |= AHCI_HFLAG_NO_PMP;
 
@@ -286,7 +231,7 @@ static SIMPLE_DEV_PM_OPS(ahci_sunxi_pm_ops, ahci_platform_suspend,
 static const struct of_device_id ahci_sunxi_of_match[] = {
 	{ .compatible = "allwinner,sun4i-a10-ahci", },
 	{ .compatible = "allwinner,sun8i-r40-ahci", },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, ahci_sunxi_of_match);
 

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Driver for IMS Passenger Control Unit Devices
- *
- * Copyright (C) 2013 The IMS Company
- */
+
+ 
 
 #include <linux/completion.h>
 #include <linux/device.h>
@@ -52,7 +48,7 @@ struct ims_pcu_backlight {
 
 struct ims_pcu {
 	struct usb_device *udev;
-	struct device *dev; /* control interface's device, used for logging */
+	struct device *dev;  
 
 	unsigned int device_no;
 
@@ -110,13 +106,11 @@ struct ims_pcu {
 	struct ims_pcu_gamepad *gamepad;
 	struct ims_pcu_backlight backlight;
 
-	bool setup_complete; /* Input and LED devices have been created */
+	bool setup_complete;  
 };
 
 
-/*********************************************************************
- *             Buttons Input device support                          *
- *********************************************************************/
+ 
 
 static const unsigned short ims_pcu_keymap_1[] = {
 	[1] = KEY_ATTENDANT_OFF,
@@ -255,9 +249,7 @@ static void ims_pcu_destroy_buttons(struct ims_pcu *pcu)
 }
 
 
-/*********************************************************************
- *             Gamepad Input device support                          *
- *********************************************************************/
+ 
 
 static void ims_pcu_gamepad_report(struct ims_pcu *pcu, u32 data)
 {
@@ -347,15 +339,13 @@ static void ims_pcu_destroy_gamepad(struct ims_pcu *pcu)
 }
 
 
-/*********************************************************************
- *             PCU Communication protocol handling                   *
- *********************************************************************/
+ 
 
 #define IMS_PCU_PROTOCOL_STX		0x02
 #define IMS_PCU_PROTOCOL_ETX		0x03
 #define IMS_PCU_PROTOCOL_DLE		0x10
 
-/* PCU commands */
+ 
 #define IMS_PCU_CMD_STATUS		0xa0
 #define IMS_PCU_CMD_PCU_RESET		0xa1
 #define IMS_PCU_CMD_RESET_REASON	0xa2
@@ -370,16 +360,16 @@ static void ims_pcu_destroy_gamepad(struct ims_pcu *pcu)
 #define IMS_PCU_CMD_GET_BRIGHTNESS	0xac
 #define IMS_PCU_CMD_GET_DEVICE_ID	0xae
 #define IMS_PCU_CMD_SPECIAL_INFO	0xb0
-#define IMS_PCU_CMD_BOOTLOADER		0xb1	/* Pass data to bootloader */
+#define IMS_PCU_CMD_BOOTLOADER		0xb1	 
 #define IMS_PCU_CMD_OFN_SET_CONFIG	0xb3
 #define IMS_PCU_CMD_OFN_GET_CONFIG	0xb4
 
-/* PCU responses */
+ 
 #define IMS_PCU_RSP_STATUS		0xc0
-#define IMS_PCU_RSP_PCU_RESET		0	/* Originally 0xc1 */
+#define IMS_PCU_RSP_PCU_RESET		0	 
 #define IMS_PCU_RSP_RESET_REASON	0xc2
 #define IMS_PCU_RSP_SEND_BUTTONS	0xc3
-#define IMS_PCU_RSP_JUMP_TO_BTLDR	0	/* Originally 0xc4 */
+#define IMS_PCU_RSP_JUMP_TO_BTLDR	0	 
 #define IMS_PCU_RSP_GET_INFO		0xc5
 #define IMS_PCU_RSP_SET_BRIGHTNESS	0xc6
 #define IMS_PCU_RSP_EEPROM		0xc7
@@ -390,20 +380,20 @@ static void ims_pcu_destroy_gamepad(struct ims_pcu *pcu)
 #define IMS_PCU_RSP_CMD_INVALID		0xcd
 #define IMS_PCU_RSP_GET_DEVICE_ID	0xce
 #define IMS_PCU_RSP_SPECIAL_INFO	0xd0
-#define IMS_PCU_RSP_BOOTLOADER		0xd1	/* Bootloader response */
+#define IMS_PCU_RSP_BOOTLOADER		0xd1	 
 #define IMS_PCU_RSP_OFN_SET_CONFIG	0xd2
 #define IMS_PCU_RSP_OFN_GET_CONFIG	0xd3
 
 
-#define IMS_PCU_RSP_EVNT_BUTTONS	0xe0	/* Unsolicited, button state */
-#define IMS_PCU_GAMEPAD_MASK		0x0001ff80UL	/* Bits 7 through 16 */
+#define IMS_PCU_RSP_EVNT_BUTTONS	0xe0	 
+#define IMS_PCU_GAMEPAD_MASK		0x0001ff80UL	 
 
 
 #define IMS_PCU_MIN_PACKET_LEN		3
 #define IMS_PCU_DATA_OFFSET		2
 
-#define IMS_PCU_CMD_WRITE_TIMEOUT	100 /* msec */
-#define IMS_PCU_CMD_RESPONSE_TIMEOUT	500 /* msec */
+#define IMS_PCU_CMD_WRITE_TIMEOUT	100  
+#define IMS_PCU_CMD_RESPONSE_TIMEOUT	500  
 
 static void ims_pcu_report_events(struct ims_pcu *pcu)
 {
@@ -423,11 +413,7 @@ static void ims_pcu_handle_response(struct ims_pcu *pcu)
 		break;
 
 	default:
-		/*
-		 * See if we got command completion.
-		 * If both the sequence and response code match save
-		 * the data and signal completion.
-		 */
+		 
 		if (pcu->read_buf[0] == pcu->expected_response &&
 		    pcu->read_buf[1] == pcu->ack_id - 1) {
 
@@ -446,7 +432,7 @@ static void ims_pcu_process_data(struct ims_pcu *pcu, struct urb *urb)
 	for (i = 0; i < urb->actual_length; i++) {
 		u8 data = pcu->urb_in_buf[i];
 
-		/* Skip everything until we get Start Xmit */
+		 
 		if (!pcu->have_stx && data != IMS_PCU_PROTOCOL_STX)
 			continue;
 
@@ -539,7 +525,7 @@ static int ims_pcu_send_command(struct ims_pcu *pcu,
 
 	pcu->urb_out_buf[count++] = IMS_PCU_PROTOCOL_STX;
 
-	/* We know the command need not be escaped */
+	 
 	pcu->urb_out_buf[count++] = command;
 	csum += command;
 
@@ -624,7 +610,7 @@ static int __ims_pcu_execute_command(struct ims_pcu *pcu,
 #define ims_pcu_execute_query(pcu, code)				\
 	ims_pcu_execute_command(pcu, code, NULL, 0)
 
-/* Bootloader commands */
+ 
 #define IMS_PCU_BL_CMD_QUERY_DEVICE	0xa1
 #define IMS_PCU_BL_CMD_UNLOCK_CONFIG	0xa2
 #define IMS_PCU_BL_CMD_ERASE_APP	0xa3
@@ -634,15 +620,15 @@ static int __ims_pcu_execute_command(struct ims_pcu *pcu,
 #define IMS_PCU_BL_CMD_RESET_DEVICE	0xa7
 #define IMS_PCU_BL_CMD_LAUNCH_APP	0xa8
 
-/* Bootloader commands */
+ 
 #define IMS_PCU_BL_RSP_QUERY_DEVICE	0xc1
 #define IMS_PCU_BL_RSP_UNLOCK_CONFIG	0xc2
 #define IMS_PCU_BL_RSP_ERASE_APP	0xc3
 #define IMS_PCU_BL_RSP_PROGRAM_DEVICE	0xc4
 #define IMS_PCU_BL_RSP_PROGRAM_COMPLETE	0xc5
 #define IMS_PCU_BL_RSP_READ_APP		0xc6
-#define IMS_PCU_BL_RSP_RESET_DEVICE	0	/* originally 0xa7 */
-#define IMS_PCU_BL_RSP_LAUNCH_APP	0	/* originally 0xa8 */
+#define IMS_PCU_BL_RSP_RESET_DEVICE	0	 
+#define IMS_PCU_BL_RSP_LAUNCH_APP	0	 
 
 #define IMS_PCU_BL_DATA_OFFSET		3
 
@@ -740,7 +726,7 @@ static int ims_pcu_switch_to_bootloader(struct ims_pcu *pcu)
 {
 	int error;
 
-	/* Execute jump to the bootoloader */
+	 
 	error = ims_pcu_execute_command(pcu, JUMP_TO_BTLDR, NULL, 0);
 	if (error) {
 		dev_err(pcu->dev,
@@ -752,9 +738,7 @@ static int ims_pcu_switch_to_bootloader(struct ims_pcu *pcu)
 	return 0;
 }
 
-/*********************************************************************
- *             Firmware Update handling                              *
- *********************************************************************/
+ 
 
 #define IMS_PCU_FIRMWARE_NAME	"imspcu.fw"
 
@@ -836,12 +820,7 @@ static int ims_pcu_flash_firmware(struct ims_pcu *pcu,
 	}
 
 	while (rec) {
-		/*
-		 * The firmware format is messed up for some reason.
-		 * The address twice that of what is needed for some
-		 * reason and we end up overwriting half of the data
-		 * with the next record.
-		 */
+		 
 		addr = be32_to_cpu(rec->addr) / 2;
 		len = be16_to_cpu(rec->len);
 
@@ -938,9 +917,7 @@ out:
 	complete(&pcu->async_firmware_done);
 }
 
-/*********************************************************************
- *             Backlight LED device support                          *
- *********************************************************************/
+ 
 
 #define IMS_PCU_MAX_BRIGHTNESS		31998
 
@@ -985,7 +962,7 @@ ims_pcu_backlight_get_brightness(struct led_classdev *cdev)
 		dev_warn(pcu->dev,
 			 "Failed to get current brightness, error: %d\n",
 			 error);
-		/* Assume the LED is OFF */
+		 
 		brightness = LED_OFF;
 	} else {
 		brightness =
@@ -1030,9 +1007,7 @@ static void ims_pcu_destroy_backlight(struct ims_pcu *pcu)
 }
 
 
-/*********************************************************************
- *             Sysfs attributes handling                             *
- *********************************************************************/
+ 
 
 struct ims_pcu_attribute {
 	struct device_attribute dattr;
@@ -1082,10 +1057,7 @@ static ssize_t ims_pcu_attribute_store(struct device *dev,
 
 	error = ims_pcu_set_info(pcu);
 
-	/*
-	 * Even if update failed, let's fetch the info again as we just
-	 * clobbered one of the fields.
-	 */
+	 
 	ims_pcu_get_info(pcu);
 
 	mutex_unlock(&pcu->cmd_mutex);
@@ -1175,14 +1147,7 @@ static ssize_t ims_pcu_update_firmware_store(struct device *dev,
 		goto out;
 	}
 
-	/*
-	 * If we are already in bootloader mode we can proceed with
-	 * flashing the firmware.
-	 *
-	 * If we are in application mode, then we need to switch into
-	 * bootloader mode, which will cause the device to disconnect
-	 * and reconnect as different device.
-	 */
+	 
 	if (pcu->bootloader_mode)
 		error = ims_pcu_handle_firmware_update(pcu, fw);
 	else
@@ -1252,7 +1217,7 @@ static const struct attribute_group ims_pcu_attr_group = {
 	.attrs		= ims_pcu_attrs,
 };
 
-/* Support for a separate OFN attribute group */
+ 
 
 #define OFN_REG_RESULT_OFFSET	2
 
@@ -1270,7 +1235,7 @@ static int ims_pcu_read_ofn_config(struct ims_pcu *pcu, u8 addr, u8 *data)
 	if (result < 0)
 		return -EIO;
 
-	/* We only need LSB */
+	 
 	*data = pcu->cmd_buf[OFN_REG_RESULT_OFFSET];
 	return 0;
 }
@@ -1480,12 +1445,12 @@ static void ims_pcu_irq(struct urb *urb)
 
 	switch (status) {
 	case 0:
-		/* success */
+		 
 		break;
 	case -ECONNRESET:
 	case -ENOENT:
 	case -ESHUTDOWN:
-		/* this urb is terminated, clean up */
+		 
 		dev_dbg(pcu->dev, "%s - urb shutting down with status: %d\n",
 			__func__, status);
 		return;
@@ -1536,10 +1501,7 @@ static int ims_pcu_buffers_alloc(struct ims_pcu *pcu)
 			  pcu->urb_in_buf, pcu->max_in_size,
 			  ims_pcu_irq, pcu);
 
-	/*
-	 * We are using usb_bulk_msg() for sending so there is no point
-	 * in allocating memory with usb_alloc_coherent().
-	 */
+	 
 	pcu->urb_out_buf = kmalloc(pcu->max_out_size, GFP_KERNEL);
 	if (!pcu->urb_out_buf) {
 		dev_err(pcu->dev, "Failed to allocate memory for write buffer\n");
@@ -1864,7 +1826,7 @@ static int ims_pcu_init_application_mode(struct ims_pcu *pcu)
 
 	error = ims_pcu_get_device_info(pcu);
 	if (error) {
-		/* Device does not respond to basic queries, hopeless */
+		 
 		return error;
 	}
 
@@ -1872,27 +1834,21 @@ static int ims_pcu_init_application_mode(struct ims_pcu *pcu)
 	if (error) {
 		dev_err(pcu->dev,
 			"Failed to identify device, error: %d\n", error);
-		/*
-		 * Do not signal error, but do not create input nor
-		 * backlight devices either, let userspace figure this
-		 * out (flash a new firmware?).
-		 */
+		 
 		return 0;
 	}
 
 	if (pcu->device_id >= ARRAY_SIZE(ims_pcu_device_info) ||
 	    !ims_pcu_device_info[pcu->device_id].keymap) {
 		dev_err(pcu->dev, "Device ID %d is not valid\n", pcu->device_id);
-		/* Same as above, punt to userspace */
+		 
 		return 0;
 	}
 
-	/* Device appears to be operable, complete initialization */
+	 
 	pcu->device_no = atomic_inc_return(&device_no);
 
-	/*
-	 * PCU-B devices, both GEN_1 and GEN_2 do not have OFN sensor
-	 */
+	 
 	if (pcu->device_id != IMS_PCU_PCU_B_DEVICE_ID) {
 		error = sysfs_create_group(&pcu->dev->kobj,
 					   &ims_pcu_ofn_attr_group);
@@ -1930,7 +1886,7 @@ static void ims_pcu_destroy_application_mode(struct ims_pcu *pcu)
 {
 	if (pcu->setup_complete) {
 		pcu->setup_complete = false;
-		mb(); /* make sure flag setting is not reordered */
+		mb();  
 
 		if (pcu->gamepad)
 			ims_pcu_destroy_gamepad(pcu);
@@ -1968,7 +1924,7 @@ static int ims_pcu_init_bootloader_mode(struct ims_pcu *pcu)
 					pcu->dev, GFP_KERNEL, pcu,
 					ims_pcu_process_async_firmware);
 	if (error) {
-		/* This error is not fatal, let userspace have another chance */
+		 
 		complete(&pcu->async_firmware_done);
 	}
 
@@ -1977,7 +1933,7 @@ static int ims_pcu_init_bootloader_mode(struct ims_pcu *pcu)
 
 static void ims_pcu_destroy_bootloader_mode(struct ims_pcu *pcu)
 {
-	/* Make sure our initial firmware request has completed */
+	 
 	wait_for_completion(&pcu->async_firmware_done);
 }
 
@@ -2063,10 +2019,7 @@ static void ims_pcu_disconnect(struct usb_interface *intf)
 
 	usb_set_intfdata(intf, NULL);
 
-	/*
-	 * See if we are dealing with control or data interface. The cleanup
-	 * happens when we unbind primary (control) interface.
-	 */
+	 
 	if (alt->desc.bInterfaceClass != USB_CLASS_COMM)
 		return;
 

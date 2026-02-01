@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Driver for Surface System Aggregator Module (SSAM) subsystem device hubs.
- *
- * Provides a driver for SSAM subsystems device hubs. This driver performs
- * instantiation of the devices managed by said hubs and takes care of
- * (hot-)removal.
- *
- * Copyright (C) 2020-2022 Maximilian Luz <luzmaximilian@gmail.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/limits.h>
@@ -18,10 +10,10 @@
 #include <linux/surface_aggregator/device.h>
 
 
-/* -- SSAM generic subsystem hub driver framework. -------------------------- */
+ 
 
 enum ssam_hub_state {
-	SSAM_HUB_UNINITIALIZED,		/* Only set during initialization. */
+	SSAM_HUB_UNINITIALIZED,		 
 	SSAM_HUB_CONNECTED,
 	SSAM_HUB_DISCONNECTED,
 };
@@ -74,26 +66,7 @@ static void ssam_hub_update_workfn(struct work_struct *work)
 	if (status)
 		return;
 
-	/*
-	 * There is a small possibility that hub devices were hot-removed and
-	 * re-added before we were able to remove them here. In that case, both
-	 * the state returned by get_state() and the state of the hub will
-	 * equal SSAM_HUB_CONNECTED and we would bail early below, which would
-	 * leave child devices without proper (re-)initialization and the
-	 * hot-remove flag set.
-	 *
-	 * Therefore, we check whether devices have been hot-removed via an
-	 * additional flag on the hub and, in this case, override the returned
-	 * hub state. In case of a missed disconnect (i.e. get_state returned
-	 * "connected"), we further need to re-schedule this work (with the
-	 * appropriate delay) as the actual connect work submission might have
-	 * been merged with this one.
-	 *
-	 * This then leads to one of two cases: Either we submit an unnecessary
-	 * work item (which will get ignored via either the queue or the state
-	 * checks) or, in the unlikely case that the work is actually required,
-	 * double the normal connect delay.
-	 */
+	 
 	if (test_and_clear_bit(SSAM_HUB_HOT_REMOVED, &hub->flags)) {
 		if (state == SSAM_HUB_CONNECTED)
 			schedule_delayed_work(&hub->update_work, hub->connect_delay);
@@ -128,16 +101,13 @@ static void ssam_hub_update(struct ssam_hub *hub, bool connected)
 {
 	unsigned long delay;
 
-	/* Mark devices as hot-removed before we remove any. */
+	 
 	if (!connected) {
 		set_bit(SSAM_HUB_HOT_REMOVED, &hub->flags);
 		device_for_each_child_reverse(&hub->sdev->dev, NULL, ssam_hub_mark_hot_removed);
 	}
 
-	/*
-	 * Delay update when the base/keyboard cover is being connected to give
-	 * devices/EC some time to set up.
-	 */
+	 
 	delay = connected ? hub->connect_delay : 0;
 
 	schedule_delayed_work(&hub->update_work, delay);
@@ -171,7 +141,7 @@ static int ssam_hub_probe(struct ssam_device *sdev)
 	hub->sdev = sdev;
 	hub->state = SSAM_HUB_UNINITIALIZED;
 
-	hub->notif.base.priority = INT_MAX;  /* This notifier should run first. */
+	hub->notif.base.priority = INT_MAX;   
 	hub->notif.base.fn = desc->ops.notify;
 	hub->notif.event.reg = desc->event.reg;
 	hub->notif.event.id = desc->event.id;
@@ -203,13 +173,9 @@ static void ssam_hub_remove(struct ssam_device *sdev)
 }
 
 
-/* -- SSAM base-subsystem hub driver. --------------------------------------- */
+ 
 
-/*
- * Some devices (especially battery) may need a bit of time to be fully usable
- * after being (re-)connected. This delay has been determined via
- * experimentation.
- */
+ 
 #define SSAM_BASE_UPDATE_CONNECT_DELAY		2500
 
 SSAM_DEFINE_SYNC_REQUEST_R(ssam_bas_query_opmode, u8, {
@@ -255,11 +221,7 @@ static u32 ssam_base_hub_notif(struct ssam_event_notifier *nf, const struct ssam
 
 	ssam_hub_update(hub, event->data[0]);
 
-	/*
-	 * Do not return SSAM_NOTIF_HANDLED: The event should be picked up and
-	 * consumed by the detachment system driver. We're just a (more or less)
-	 * silent observer.
-	 */
+	 
 	return 0;
 }
 
@@ -280,12 +242,9 @@ static const struct ssam_hub_desc base_hub = {
 };
 
 
-/* -- SSAM KIP-subsystem hub driver. ---------------------------------------- */
+ 
 
-/*
- * Some devices may need a bit of time to be fully usable after being
- * (re-)connected. This delay has been determined via experimentation.
- */
+ 
 #define SSAM_KIP_UPDATE_CONNECT_DELAY		250
 
 #define SSAM_EVENT_KIP_CID_CONNECTION		0x2c
@@ -317,7 +276,7 @@ static u32 ssam_kip_hub_notif(struct ssam_event_notifier *nf, const struct ssam_
 	struct ssam_hub *hub = container_of(nf, struct ssam_hub, notif);
 
 	if (event->command_id != SSAM_EVENT_KIP_CID_CONNECTION)
-		return 0;	/* Return "unhandled". */
+		return 0;	 
 
 	if (event->length < 1) {
 		dev_err(&hub->sdev->dev, "unexpected payload size: %u\n", event->length);
@@ -345,7 +304,7 @@ static const struct ssam_hub_desc kip_hub = {
 };
 
 
-/* -- Driver registration. -------------------------------------------------- */
+ 
 
 static const struct ssam_device_id ssam_hub_match[] = {
 	{ SSAM_VDEV(HUB, SAM, SSAM_SSH_TC_KIP, 0x00), (unsigned long)&kip_hub  },

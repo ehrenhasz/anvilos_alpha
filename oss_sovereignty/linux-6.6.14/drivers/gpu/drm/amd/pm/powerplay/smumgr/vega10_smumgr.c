@@ -1,25 +1,4 @@
-/*
- * Copyright 2016 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 
 #include <linux/pci.h>
 
@@ -74,9 +53,7 @@ static int vega10_copy_table_to_smc(struct pp_hwmgr *hwmgr,
 	struct vega10_smumgr *priv = hwmgr->smu_backend;
 	struct amdgpu_device *adev = hwmgr->adev;
 
-	/* under sriov, vbios or hypervisor driver
-	 * has already copy table to smc so here only skip it
-	 */
+	 
 	if (!hwmgr->not_vf)
 		return 0;
 
@@ -114,11 +91,7 @@ int vega10_enable_smc_features(struct pp_hwmgr *hwmgr,
 	int msg = enable ? PPSMC_MSG_EnableSmuFeatures :
 			PPSMC_MSG_DisableSmuFeatures;
 
-	/* VF has no permission to change smu feature due
-	 * to security concern even under pp one vf mode
-	 * it still can't do it. For vega10, the smu in
-	 * vbios will enable the appropriate features.
-	 * */
+	 
 	if (!hwmgr->not_vf)
 		return 0;
 
@@ -221,7 +194,7 @@ static int vega10_smu_init(struct pp_hwmgr *hwmgr)
 
 	hwmgr->smu_backend = priv;
 
-	/* allocate space for pptable */
+	 
 	ret = amdgpu_bo_create_kernel((struct amdgpu_device *)hwmgr->adev,
 			sizeof(PPTable_t),
 			PAGE_SIZE,
@@ -236,7 +209,7 @@ static int vega10_smu_init(struct pp_hwmgr *hwmgr)
 	priv->smu_tables.entry[PPTABLE].size = sizeof(PPTable_t);
 	priv->smu_tables.entry[PPTABLE].table_id = TABLE_PPTABLE;
 
-	/* allocate space for watermarks table */
+	 
 	ret = amdgpu_bo_create_kernel((struct amdgpu_device *)hwmgr->adev,
 			sizeof(Watermarks_t),
 			PAGE_SIZE,
@@ -252,7 +225,7 @@ static int vega10_smu_init(struct pp_hwmgr *hwmgr)
 	priv->smu_tables.entry[WMTABLE].size = sizeof(Watermarks_t);
 	priv->smu_tables.entry[WMTABLE].table_id = TABLE_WATERMARKS;
 
-	/* allocate space for AVFS table */
+	 
 	ret = amdgpu_bo_create_kernel((struct amdgpu_device *)hwmgr->adev,
 			sizeof(AvfsTable_t),
 			PAGE_SIZE,
@@ -284,7 +257,7 @@ static int vega10_smu_init(struct pp_hwmgr *hwmgr)
 		priv->smu_tables.entry[TOOLSTABLE].table_id = TABLE_PMSTATUSLOG;
 	}
 
-	/* allocate space for AVFS Fuse table */
+	 
 	ret = amdgpu_bo_create_kernel((struct amdgpu_device *)hwmgr->adev,
 			sizeof(AvfsFuseOverride_t),
 			PAGE_SIZE,

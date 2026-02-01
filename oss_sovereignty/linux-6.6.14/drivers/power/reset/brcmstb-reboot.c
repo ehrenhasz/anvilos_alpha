@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-// Copyright (C) 2013 Broadcom Corporation
+
+
 
 #include <linux/bitops.h>
 #include <linux/device.h>

@@ -1,12 +1,9 @@
-// SPDX-License-Identifier: (GPL-2.0 OR BSD-3-Clause)
-/*
- * Copyright(c) 2018 Intel Corporation.
- *
- */
+
+ 
 #include "iowait.h"
 #include "trace_iowait.h"
 
-/* 1 priority == 16 starve_cnt */
+ 
 #define IOWAIT_PRIORITY_STARVE_SHIFT 4
 
 void iowait_set_flag(struct iowait *wait, u32 flag)
@@ -26,18 +23,7 @@ inline void iowait_clear_flag(struct iowait *wait, u32 flag)
 	clear_bit(flag, &wait->flags);
 }
 
-/*
- * iowait_init() - initialize wait structure
- * @wait: wait struct to initialize
- * @tx_limit: limit for overflow queuing
- * @func: restart function for workqueue
- * @sleep: sleep function for no space
- * @resume: wakeup function for no space
- *
- * This function initializes the iowait
- * structure embedded in the QP or PQ.
- *
- */
+ 
 void iowait_init(struct iowait *wait, u32 tx_limit,
 		 void (*func)(struct work_struct *work),
 		 void (*tidfunc)(struct work_struct *work),
@@ -74,22 +60,16 @@ void iowait_init(struct iowait *wait, u32 tx_limit,
 	}
 }
 
-/**
- * iowait_cancel_work - cancel all work in iowait
- * @w: the iowait struct
- */
+ 
 void iowait_cancel_work(struct iowait *w)
 {
 	cancel_work_sync(&iowait_get_ib_work(w)->iowork);
-	/* Make sure that the iowork for TID RDMA is used */
+	 
 	if (iowait_get_tid_work(w)->iowork.func)
 		cancel_work_sync(&iowait_get_tid_work(w)->iowork);
 }
 
-/**
- * iowait_set_work_flag - set work flag based on leg
- * @w: the iowait work struct
- */
+ 
 int iowait_set_work_flag(struct iowait_work *w)
 {
 	if (w == &w->iow->wait[IOWAIT_IB_SE]) {
@@ -100,24 +80,14 @@ int iowait_set_work_flag(struct iowait_work *w)
 	return IOWAIT_TID_SE;
 }
 
-/**
- * iowait_priority_update_top - update the top priority entry
- * @w: the iowait struct
- * @top: a pointer to the top priority entry
- * @idx: the index of the current iowait in an array
- * @top_idx: the array index for the iowait entry that has the top priority
- *
- * This function is called to compare the priority of a given
- * iowait with the given top priority entry. The top index will
- * be returned.
- */
+ 
 uint iowait_priority_update_top(struct iowait *w,
 				struct iowait *top,
 				uint idx, uint top_idx)
 {
 	u8 cnt, tcnt;
 
-	/* Convert priority into starve_cnt and compare the total.*/
+	 
 	cnt = (w->priority << IOWAIT_PRIORITY_STARVE_SHIFT) + w->starved_cnt;
 	tcnt = (top->priority << IOWAIT_PRIORITY_STARVE_SHIFT) +
 		top->starved_cnt;

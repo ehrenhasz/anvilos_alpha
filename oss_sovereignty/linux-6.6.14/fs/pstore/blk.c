@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Implements pstore backend driver that write to block (or non-block) storage
- * devices, using the pstore/zone API.
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -56,18 +53,12 @@ static bool best_effort;
 module_param(best_effort, bool, 0400);
 MODULE_PARM_DESC(best_effort, "use best effort to write (i.e. do not require storage driver pstore support, default: off)");
 
-/*
- * blkdev - the block device to use for pstore storage
- * See Documentation/admin-guide/pstore-blk.rst for details.
- */
+ 
 static char blkdev[80] = CONFIG_PSTORE_BLK_BLKDEV;
 module_param_string(blkdev, blkdev, 80, 0400);
 MODULE_PARM_DESC(blkdev, "block device for pstore storage");
 
-/*
- * All globals must only be accessed under the pstore_blk_lock
- * during the register/unregister functions.
- */
+ 
 static DEFINE_MUTEX(pstore_blk_lock);
 static struct file *psblk_file;
 static struct pstore_device_info *pstore_device_info;
@@ -89,7 +80,7 @@ static struct pstore_device_info *pstore_device_info;
 		_##name_ = check_size(name, alignsize);		\
 	else							\
 		_##name_ = 0;					\
-	/* Synchronize module parameters with resuls. */	\
+	 	\
 	name = _##name_ / 1024;					\
 	dev->zone.name = _##name_;				\
 }
@@ -117,22 +108,22 @@ static int __register_pstore_device(struct pstore_device_info *dev)
 		return -EINVAL;
 	}
 
-	/* someone already registered before */
+	 
 	if (pstore_device_info)
 		return -EBUSY;
 
-	/* zero means not limit on which backends to attempt to store. */
+	 
 	if (!dev->flags)
 		dev->flags = UINT_MAX;
 
-	/* Copy in module parameters. */
+	 
 	verify_size(kmsg_size, 4096, dev->flags & PSTORE_FLAGS_DMESG);
 	verify_size(pmsg_size, 4096, dev->flags & PSTORE_FLAGS_PMSG);
 	verify_size(console_size, 4096, dev->flags & PSTORE_FLAGS_CONSOLE);
 	verify_size(ftrace_size, 4096, dev->flags & PSTORE_FLAGS_FTRACE);
 	dev->zone.max_reason = max_reason;
 
-	/* Initialize required zone ownership details. */
+	 
 	dev->zone.name = KBUILD_MODNAME;
 	dev->zone.owner = THIS_MODULE;
 
@@ -142,15 +133,7 @@ static int __register_pstore_device(struct pstore_device_info *dev)
 
 	return ret;
 }
-/**
- * register_pstore_device() - register non-block device to pstore/blk
- *
- * @dev: non-block device information
- *
- * Return:
- * * 0		- OK
- * * Others	- something error.
- */
+ 
 int register_pstore_device(struct pstore_device_info *dev)
 {
 	int ret;
@@ -172,11 +155,7 @@ static void __unregister_pstore_device(struct pstore_device_info *dev)
 	}
 }
 
-/**
- * unregister_pstore_device() - unregister non-block device from pstore/blk
- *
- * @dev: non-block device information
- */
+ 
 void unregister_pstore_device(struct pstore_device_info *dev)
 {
 	mutex_lock(&pstore_blk_lock);
@@ -193,15 +172,13 @@ static ssize_t psblk_generic_blk_read(char *buf, size_t bytes, loff_t pos)
 static ssize_t psblk_generic_blk_write(const char *buf, size_t bytes,
 		loff_t pos)
 {
-	/* Console/Ftrace backend may handle buffer until flush dirty zones */
+	 
 	if (in_interrupt() || irqs_disabled())
 		return -EBUSY;
 	return kernel_write(psblk_file, buf, bytes, &pos);
 }
 
-/*
- * This takes its configuration only from the module parameters now.
- */
+ 
 static int __register_pstore_blk(struct pstore_device_info *dev,
 				 const char *devpath)
 {
@@ -238,7 +215,7 @@ err:
 	return ret;
 }
 
-/* get information of pstore/blk */
+ 
 int pstore_blk_get_config(struct pstore_blk_config *info)
 {
 	strncpy(info->device, blkdev, 80);
@@ -257,12 +234,7 @@ EXPORT_SYMBOL_GPL(pstore_blk_get_config);
 static const char devname[] = "/dev/pstore-blk";
 static __init const char *early_boot_devpath(const char *initial_devname)
 {
-	/*
-	 * During early boot the real root file system hasn't been
-	 * mounted yet, and no device nodes are present yet. Use the
-	 * same scheme to find the device that we use for mounting
-	 * the root file system.
-	 */
+	 
 	dev_t dev;
 
 	if (early_lookup_bdev(initial_devname, &dev)) {
@@ -287,11 +259,11 @@ static int __init __best_effort_init(void)
 	struct pstore_device_info *best_effort_dev;
 	int ret;
 
-	/* No best-effort mode requested. */
+	 
 	if (!best_effort)
 		return 0;
 
-	/* Reject an empty blkdev. */
+	 
 	if (!blkdev[0]) {
 		pr_err("blkdev empty with best_effort=Y\n");
 		return -EINVAL;
@@ -317,12 +289,7 @@ static int __init __best_effort_init(void)
 
 static void __exit __best_effort_exit(void)
 {
-	/*
-	 * Currently, the only user of psblk_file is best_effort, so
-	 * we can assume that pstore_device_info is associated with it.
-	 * Once there are "real" blk devices, there will need to be a
-	 * dedicated pstore_blk_info, etc.
-	 */
+	 
 	if (psblk_file) {
 		struct pstore_device_info *dev = pstore_device_info;
 
@@ -349,7 +316,7 @@ static void __exit pstore_blk_exit(void)
 {
 	mutex_lock(&pstore_blk_lock);
 	__best_effort_exit();
-	/* If we've been asked to unload, unregister any remaining device. */
+	 
 	__unregister_pstore_device(pstore_device_info);
 	mutex_unlock(&pstore_blk_lock);
 }

@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
+ 
 #ifndef _OBJTOOL_ENDIANNESS_H
 #define _OBJTOOL_ENDIANNESS_H
 
@@ -6,12 +6,7 @@
 #include <endian.h>
 #include <objtool/elf.h>
 
-/*
- * Does a byte swap if target file endianness doesn't match the host, i.e. cross
- * compilation for little endian on big endian and vice versa.
- * To be used for multi-byte values conversion, which are read from / about
- * to be written to a target native endianness ELF file.
- */
+ 
 static inline bool need_bswap(struct elf *elf)
 {
 	return (__BYTE_ORDER == __LITTLE_ENDIAN) ^
@@ -35,4 +30,4 @@ static inline bool need_bswap(struct elf *elf)
 	__ret;								\
 })
 
-#endif /* _OBJTOOL_ENDIANNESS_H */
+#endif  

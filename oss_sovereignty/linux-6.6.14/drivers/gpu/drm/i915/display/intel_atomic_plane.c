@@ -1,35 +1,6 @@
-/*
- * Copyright © 2014 Intel Corporation
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice (including the next
- * paragraph) shall be included in all copies or substantial portions of the
- * Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
- * DEALINGS IN THE SOFTWARE.
- */
+ 
 
-/**
- * DOC: atomic plane helpers
- *
- * The functions here are used by the atomic plane helper functions to
- * implement legacy plane updates (i.e., drm_plane->update_plane() and
- * drm_plane->disable_plane()).  This allows plane updates to use the
- * atomic state infrastructure and perform plane updates as separate
- * prepare/check/commit/cleanup steps.
- */
+ 
 
 #include <drm/drm_atomic_helper.h>
 #include <drm/drm_blend.h>
@@ -85,15 +56,7 @@ void intel_plane_free(struct intel_plane *plane)
 	kfree(plane);
 }
 
-/**
- * intel_plane_duplicate_state - duplicate plane state
- * @plane: drm plane
- *
- * Allocates and returns a copy of the plane state (both common and
- * Intel-specific) for the specified plane.
- *
- * Returns: The newly allocated plane state, or NULL on failure.
- */
+ 
 struct drm_plane_state *
 intel_plane_duplicate_state(struct drm_plane *plane)
 {
@@ -111,21 +74,14 @@ intel_plane_duplicate_state(struct drm_plane *plane)
 	intel_state->dpt_vma = NULL;
 	intel_state->flags = 0;
 
-	/* add reference to fb */
+	 
 	if (intel_state->hw.fb)
 		drm_framebuffer_get(intel_state->hw.fb);
 
 	return &intel_state->uapi;
 }
 
-/**
- * intel_plane_destroy_state - destroy plane state
- * @plane: drm plane
- * @state: state object to destroy
- *
- * Destroys the plane state (both common and Intel-specific) for the
- * specified plane.
- */
+ 
 void
 intel_plane_destroy_state(struct drm_plane *plane,
 			  struct drm_plane_state *state)
@@ -152,7 +108,7 @@ unsigned int intel_adjusted_rate(const struct drm_rect *src,
 	dst_w = drm_rect_width(dst);
 	dst_h = drm_rect_height(dst);
 
-	/* Downscaling limits the maximum pixel rate */
+	 
 	dst_w = min(src_w, dst_w);
 	dst_h = min(src_h, dst_h);
 
@@ -163,17 +119,7 @@ unsigned int intel_adjusted_rate(const struct drm_rect *src,
 unsigned int intel_plane_pixel_rate(const struct intel_crtc_state *crtc_state,
 				    const struct intel_plane_state *plane_state)
 {
-	/*
-	 * Note we don't check for plane visibility here as
-	 * we want to use this when calculating the cursor
-	 * watermarks even if the cursor is fully offscreen.
-	 * That depends on the src/dst rectangles being
-	 * correctly populated whenever the watermark code
-	 * considers the cursor to be visible, whether or not
-	 * it is actually visible.
-	 *
-	 * See: intel_wm_plane_visible() and intel_check_cursor()
-	 */
+	 
 
 	return intel_adjusted_rate(&plane_state->uapi.src,
 				   &plane_state->uapi.dst,
@@ -220,23 +166,15 @@ intel_plane_relative_data_rate(const struct intel_crtc_state *crtc_state,
 	if (!plane_state->uapi.visible)
 		return 0;
 
-	/*
-	 * We calculate extra ddb based on ratio plane rate/total data rate
-	 * in case, in some cases we should not allocate extra ddb for the plane,
-	 * so do not count its data rate, if this is the case.
-	 */
+	 
 	if (use_min_ddb(crtc_state, plane))
 		return 0;
 
-	/*
-	 * Src coordinates are already rotated by 270 degrees for
-	 * the 90/270 degree plane rotation cases (to match the
-	 * GTT mapping), hence no need to account for rotation here.
-	 */
+	 
 	width = drm_rect_width(&plane_state->uapi.src) >> 16;
 	height = drm_rect_height(&plane_state->uapi.src) >> 16;
 
-	/* UV plane does 1/2 pixel sub-sampling */
+	 
 	if (color_plane == 1) {
 		width /= 2;
 		height /= 2;
@@ -270,14 +208,7 @@ int intel_plane_calc_min_cdclk(struct intel_atomic_state *state,
 	new_crtc_state->min_cdclk[plane->id] =
 		plane->min_cdclk(new_crtc_state, plane_state);
 
-	/*
-	 * No need to check against the cdclk state if
-	 * the min cdclk for the plane doesn't increase.
-	 *
-	 * Ie. we only ever increase the cdclk due to plane
-	 * requirements. This can reduce back and forth
-	 * display blinking due to constant cdclk changes.
-	 */
+	 
 	if (new_crtc_state->min_cdclk[plane->id] <=
 	    old_crtc_state->min_cdclk[plane->id])
 		return 0;
@@ -286,14 +217,7 @@ int intel_plane_calc_min_cdclk(struct intel_atomic_state *state,
 	if (IS_ERR(cdclk_state))
 		return PTR_ERR(cdclk_state);
 
-	/*
-	 * No need to recalculate the cdclk state if
-	 * the min cdclk for the pipe doesn't increase.
-	 *
-	 * Ie. we only ever increase the cdclk due to plane
-	 * requirements. This can reduce back and forth
-	 * display blinking due to constant cdclk changes.
-	 */
+	 
 	if (new_crtc_state->min_cdclk[plane->id] <=
 	    cdclk_state->min_cdclk[crtc->pipe])
 		return 0;
@@ -323,12 +247,7 @@ void intel_plane_copy_uapi_to_hw_state(struct intel_plane_state *plane_state,
 {
 	intel_plane_clear_hw_state(plane_state);
 
-	/*
-	 * For the bigjoiner slave uapi.crtc will point at
-	 * the master crtc. So we explicitly assign the right
-	 * slave crtc to hw.crtc. uapi.crtc!=NULL simply indicates
-	 * the plane is logically enabled on the uapi level.
-	 */
+	 
 	plane_state->hw.crtc = from_plane_state->uapi.crtc ? &crtc->base : NULL;
 
 	plane_state->hw.fb = from_plane_state->uapi.fb;
@@ -378,11 +297,11 @@ void intel_plane_set_invisible(struct intel_crtc_state *crtc_state,
 	plane_state->uapi.visible = false;
 }
 
-/* FIXME nuke when all wm code is atomic */
+ 
 static bool intel_wm_need_update(const struct intel_plane_state *cur,
 				 struct intel_plane_state *new)
 {
-	/* Update watermarks on tiling or size changes. */
+	 
 	if (new->uapi.visible != cur->uapi.visible)
 		return true;
 
@@ -422,13 +341,7 @@ static bool intel_plane_do_async_flip(struct intel_plane *plane,
 	if (!new_crtc_state->uapi.async_flip)
 		return false;
 
-	/*
-	 * In platforms after DISPLAY13, we might need to override
-	 * first async flip in order to change watermark levels
-	 * as part of optimization.
-	 * So for those, we are checking if this is a first async flip.
-	 * For platforms earlier than DISPLAY13 we always do async flip.
-	 */
+	 
 	return DISPLAY_VER(i915) < 13 || old_crtc_state->uapi.async_flip;
 }
 
@@ -450,21 +363,14 @@ static bool i9xx_must_disable_cxsr(const struct intel_crtc_state *new_crtc_state
 	turn_off = old_visible && (!new_visible || modeset);
 	turn_on = new_visible && (!old_visible || modeset);
 
-	/* Must disable CxSR around plane enable/disable */
+	 
 	if (turn_on || turn_off)
 		return true;
 
 	if (!old_visible || !new_visible)
 		return false;
 
-	/*
-	 * Most plane control register updates are blocked while in CxSR.
-	 *
-	 * Tiling mode is one exception where the primary plane can
-	 * apparently handle it, whereas the sprites can not (the
-	 * sprite issue being only relevant on VLV/CHV where CxSR
-	 * is actually possible with a sprite enabled).
-	 */
+	 
 	if (plane->id == PLANE_PRIMARY) {
 		old_ctl &= ~DISP_TILED;
 		new_ctl &= ~DISP_TILED;
@@ -499,16 +405,7 @@ static int intel_plane_atomic_calc_changes(const struct intel_crtc_state *old_cr
 	if (!was_crtc_enabled && drm_WARN_ON(&dev_priv->drm, was_visible))
 		was_visible = false;
 
-	/*
-	 * Visibility is calculated as if the crtc was on, but
-	 * after scaler setup everything depends on it being off
-	 * when the crtc isn't active.
-	 *
-	 * FIXME this is wrong for watermarks. Watermarks should also
-	 * be computed as if the pipe would be active. Perhaps move
-	 * per-plane wm computation to the .check_plane() hook, and
-	 * only combine the results from all planes in the current place?
-	 */
+	 
 	if (!is_crtc_enabled) {
 		intel_plane_set_invisible(new_crtc_state, new_plane_state);
 		visible = false;
@@ -535,7 +432,7 @@ static int intel_plane_atomic_calc_changes(const struct intel_crtc_state *old_cr
 			new_crtc_state->update_wm_post = true;
 	} else if (intel_wm_need_update(old_plane_state, new_plane_state)) {
 		if (DISPLAY_VER(dev_priv) < 5 && !IS_G4X(dev_priv)) {
-			/* FIXME bollocks */
+			 
 			new_crtc_state->update_wm_pre = true;
 			new_crtc_state->update_wm_post = true;
 		}
@@ -548,39 +445,7 @@ static int intel_plane_atomic_calc_changes(const struct intel_crtc_state *old_cr
 	    i9xx_must_disable_cxsr(new_crtc_state, old_plane_state, new_plane_state))
 		new_crtc_state->disable_cxsr = true;
 
-	/*
-	 * ILK/SNB DVSACNTR/Sprite Enable
-	 * IVB SPR_CTL/Sprite Enable
-	 * "When in Self Refresh Big FIFO mode, a write to enable the
-	 *  plane will be internally buffered and delayed while Big FIFO
-	 *  mode is exiting."
-	 *
-	 * Which means that enabling the sprite can take an extra frame
-	 * when we start in big FIFO mode (LP1+). Thus we need to drop
-	 * down to LP0 and wait for vblank in order to make sure the
-	 * sprite gets enabled on the next vblank after the register write.
-	 * Doing otherwise would risk enabling the sprite one frame after
-	 * we've already signalled flip completion. We can resume LP1+
-	 * once the sprite has been enabled.
-	 *
-	 *
-	 * WaCxSRDisabledForSpriteScaling:ivb
-	 * IVB SPR_SCALE/Scaling Enable
-	 * "Low Power watermarks must be disabled for at least one
-	 *  frame before enabling sprite scaling, and kept disabled
-	 *  until sprite scaling is disabled."
-	 *
-	 * ILK/SNB DVSASCALE/Scaling Enable
-	 * "When in Self Refresh Big FIFO mode, scaling enable will be
-	 *  masked off while Big FIFO mode is exiting."
-	 *
-	 * Despite the w/a only being listed for IVB we assume that
-	 * the ILK/SNB note has similar ramifications, hence we apply
-	 * the w/a on all three platforms.
-	 *
-	 * With experimental results seems this is needed also for primary
-	 * plane, not only sprite plane.
-	 */
+	 
 	if (plane->id != PLANE_CURSOR &&
 	    (IS_IRONLAKE(dev_priv) || IS_SANDYBRIDGE(dev_priv) ||
 	     IS_IVYBRIDGE(dev_priv)) &&
@@ -618,7 +483,7 @@ int intel_plane_atomic_check_with_state(const struct intel_crtc_state *old_crtc_
 	if (fb)
 		new_crtc_state->enabled_planes |= BIT(plane->id);
 
-	/* FIXME pre-g4x don't work like this */
+	 
 	if (new_plane_state->uapi.visible)
 		new_crtc_state->active_planes |= BIT(plane->id);
 
@@ -754,7 +619,7 @@ skl_next_plane_to_commit(struct intel_atomic_state *state,
 		return plane;
 	}
 
-	/* should never happen */
+	 
 	drm_WARN_ON(state->base.dev, 1);
 
 	return NULL;
@@ -808,16 +673,13 @@ void intel_crtc_planes_update_noarm(struct intel_atomic_state *state,
 	if (new_crtc_state->do_async_flip)
 		return;
 
-	/*
-	 * Since we only write non-arming registers here,
-	 * the order does not matter even for skl+.
-	 */
+	 
 	for_each_new_intel_plane_in_state(state, plane, new_plane_state, i) {
 		if (crtc->pipe != plane->pipe ||
 		    !(update_mask & BIT(plane->id)))
 			continue;
 
-		/* TODO: for mailbox updates this should be skipped */
+		 
 		if (new_plane_state->uapi.visible ||
 		    new_plane_state->planar_slave)
 			intel_plane_update_noarm(plane, new_crtc_state, new_plane_state);
@@ -845,10 +707,7 @@ static void skl_crtc_planes_update_arm(struct intel_atomic_state *state,
 		struct intel_plane_state *new_plane_state =
 			intel_atomic_get_new_plane_state(state, plane);
 
-		/*
-		 * TODO: for mailbox updates intel_plane_update_noarm()
-		 * would have to be called here as well.
-		 */
+		 
 		if (new_plane_state->uapi.visible ||
 		    new_plane_state->planar_slave)
 			intel_plane_update_arm(plane, new_crtc_state, new_plane_state);
@@ -872,10 +731,7 @@ static void i9xx_crtc_planes_update_arm(struct intel_atomic_state *state,
 		    !(update_mask & BIT(plane->id)))
 			continue;
 
-		/*
-		 * TODO: for mailbox updates intel_plane_update_noarm()
-		 * would have to be called here as well.
-		 */
+		 
 		if (new_plane_state->uapi.visible)
 			intel_plane_update_arm(plane, new_crtc_state, new_plane_state);
 		else
@@ -914,7 +770,7 @@ int intel_atomic_plane_check_clipping(struct intel_plane_state *plane_state,
 
 	drm_rect_rotate(src, fb->width << 16, fb->height << 16, rotation);
 
-	/* Check scaling */
+	 
 	hscale = drm_rect_calc_hscale(src, dst, min_scale, max_scale);
 	vscale = drm_rect_calc_vscale(src, dst, min_scale, max_scale);
 	if (hscale < 0 || vscale < 0) {
@@ -924,10 +780,7 @@ int intel_atomic_plane_check_clipping(struct intel_plane_state *plane_state,
 		return -ERANGE;
 	}
 
-	/*
-	 * FIXME: This might need further adjustment for seamless scaling
-	 * with phase information, for the 2p2 and 2p1 scenarios.
-	 */
+	 
 	plane_state->uapi.visible = drm_rect_clip_scaled(src, dst, clip);
 
 	drm_rect_rotate_inv(src, fb->width << 16, fb->height << 16, rotation);
@@ -940,7 +793,7 @@ int intel_atomic_plane_check_clipping(struct intel_plane_state *plane_state,
 		return -EINVAL;
 	}
 
-	/* final plane coordinates will be relative to the plane's pipe */
+	 
 	drm_rect_translate(dst, -clip->x1, -clip->y1);
 
 	return 0;
@@ -954,22 +807,12 @@ int intel_plane_check_src_coordinates(struct intel_plane_state *plane_state)
 	u32 src_x, src_y, src_w, src_h, hsub, vsub;
 	bool rotated = drm_rotation_90_or_270(plane_state->hw.rotation);
 
-	/*
-	 * FIXME hsub/vsub vs. block size is a mess. Pre-tgl CCS
-	 * abuses hsub/vsub so we can't use them here. But as they
-	 * are limited to 32bpp RGB formats we don't actually need
-	 * to check anything.
-	 */
+	 
 	if (fb->modifier == I915_FORMAT_MOD_Y_TILED_CCS ||
 	    fb->modifier == I915_FORMAT_MOD_Yf_TILED_CCS)
 		return 0;
 
-	/*
-	 * Hardware doesn't handle subpixel coordinates.
-	 * Adjust to (macro)pixel boundary, but be careful not to
-	 * increase the source viewport size, because that could
-	 * push the downscaling factor out of bounds.
-	 */
+	 
 	src_x = src->x1 >> 16;
 	src_w = drm_rect_width(src) >> 16;
 	src_y = src->y1 >> 16;
@@ -1004,18 +847,7 @@ int intel_plane_check_src_coordinates(struct intel_plane_state *plane_state)
 	return 0;
 }
 
-/**
- * intel_prepare_plane_fb - Prepare fb for usage on plane
- * @_plane: drm plane to prepare for
- * @_new_plane_state: the plane state being prepared
- *
- * Prepares a framebuffer for usage on a display plane.  Generally this
- * involves pinning the underlying object and updating the frontbuffer tracking
- * bits.  Some older platforms need special physical address handling for
- * cursor planes.
- *
- * Returns 0 on success, negative error code on failure.
- */
+ 
 static int
 intel_prepare_plane_fb(struct drm_plane *_plane,
 		       struct drm_plane_state *_new_plane_state)
@@ -1038,17 +870,7 @@ intel_prepare_plane_fb(struct drm_plane *_plane,
 			intel_atomic_get_new_crtc_state(state,
 							to_intel_crtc(old_plane_state->hw.crtc));
 
-		/* Big Hammer, we also need to ensure that any pending
-		 * MI_WAIT_FOR_EVENT inside a user batch buffer on the
-		 * current scanout is retired before unpinning the old
-		 * framebuffer. Note that we rely on userspace rendering
-		 * into the buffer attached to the pipe they are waiting
-		 * on. If not, userspace generates a GPU hang with IPEHR
-		 * point to the MI_WAIT_FOR_EVENT.
-		 *
-		 * This should only fail upon a hung GPU, in which case we
-		 * can safely continue.
-		 */
+		 
 		if (new_crtc_state && intel_crtc_needs_modeset(new_crtc_state)) {
 			ret = i915_sw_fence_await_reservation(&state->commit_ready,
 							      old_obj->base.resv,
@@ -1059,7 +881,7 @@ intel_prepare_plane_fb(struct drm_plane *_plane,
 		}
 	}
 
-	if (new_plane_state->uapi.fence) { /* explicit fencing */
+	if (new_plane_state->uapi.fence) {  
 		i915_gem_fence_wait_priority(new_plane_state->uapi.fence,
 					     &attr);
 		ret = i915_sw_fence_await_dma_fence(&state->commit_ready,
@@ -1080,7 +902,7 @@ intel_prepare_plane_fb(struct drm_plane *_plane,
 
 	i915_gem_object_wait_priority(obj, 0, &attr);
 
-	if (!new_plane_state->uapi.fence) { /* implicit fencing */
+	if (!new_plane_state->uapi.fence) {  
 		struct dma_resv_iter cursor;
 		struct dma_fence *fence;
 
@@ -1103,14 +925,7 @@ intel_prepare_plane_fb(struct drm_plane *_plane,
 						     new_plane_state->uapi.fence);
 	}
 
-	/*
-	 * We declare pageflips to be interactive and so merit a small bias
-	 * towards upclocking to deliver the frame on time. By only changing
-	 * the RPS thresholds to sample more regularly and aim for higher
-	 * clocks we can hopefully deliver low power workloads (like kodi)
-	 * that are not quite steady state without resorting to forcing
-	 * maximum clocks following a vblank miss (see do_rps_boost()).
-	 */
+	 
 	intel_display_rps_mark_interactive(dev_priv, state, true);
 
 	return 0;
@@ -1121,13 +936,7 @@ unpin_fb:
 	return ret;
 }
 
-/**
- * intel_cleanup_plane_fb - Cleans up an fb after plane use
- * @plane: drm plane to clean up for
- * @_old_plane_state: the state from the previous modeset
- *
- * Cleans up a framebuffer that has just been removed from a plane.
- */
+ 
 static void
 intel_cleanup_plane_fb(struct drm_plane *plane,
 		       struct drm_plane_state *_old_plane_state)
@@ -1144,7 +953,7 @@ intel_cleanup_plane_fb(struct drm_plane *plane,
 
 	intel_display_rps_mark_interactive(dev_priv, state, false);
 
-	/* Should only be called after a successful intel_prepare_plane_fb()! */
+	 
 	intel_plane_unpin_fb(old_plane_state);
 }
 

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * lms501kf03 TFT LCD panel driver.
- *
- * Copyright (c) 2012 Samsung Electronics Co., Ltd.
- * Author: Jingoo Han  <jg1.han@samsung.com>
- */
+
+ 
 
 #include <linux/backlight.h>
 #include <linux/delay.h>
@@ -182,11 +177,7 @@ static int lms501kf03_ldi_init(struct lms501kf03 *lcd)
 		if (ret)
 			break;
 	}
-	/*
-	 * According to the datasheet, 120ms delay time is required.
-	 * After sleep out sequence, command is blocked for 120ms.
-	 * Thus, LDI should wait for 120ms.
-	 */
+	 
 	msleep(120);
 
 	return ret;
@@ -319,7 +310,7 @@ static int lms501kf03_probe(struct spi_device *spi)
 	if (!lcd)
 		return -ENOMEM;
 
-	/* lms501kf03 lcd panel uses 3-wire 9-bit SPI Mode. */
+	 
 	spi->bits_per_word = 9;
 
 	ret = spi_setup(spi);
@@ -345,11 +336,7 @@ static int lms501kf03_probe(struct spi_device *spi)
 	lcd->ld = ld;
 
 	if (!lcd->lcd_pd->lcd_enabled) {
-		/*
-		 * if lcd panel was off from bootloader then
-		 * current lcd status is powerdown and then
-		 * it enables lcd panel.
-		 */
+		 
 		lcd->power = FB_BLANK_POWERDOWN;
 
 		lms501kf03_power(lcd, FB_BLANK_UNBLANK);
@@ -378,10 +365,7 @@ static int lms501kf03_suspend(struct device *dev)
 
 	dev_dbg(dev, "lcd->power = %d\n", lcd->power);
 
-	/*
-	 * when lcd panel is suspend, lcd panel becomes off
-	 * regardless of status.
-	 */
+	 
 	return lms501kf03_power(lcd, FB_BLANK_POWERDOWN);
 }
 

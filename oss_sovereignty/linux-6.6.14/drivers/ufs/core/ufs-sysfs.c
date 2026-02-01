@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (C) 2018 Western Digital Corporation
+
+
 
 #include <linux/err.h>
 #include <linux/string.h>
@@ -127,7 +127,7 @@ static ssize_t spm_target_link_state_show(struct device *dev,
 				ufs_pm_lvl_states[hba->spm_lvl].link_state));
 }
 
-/* Convert Auto-Hibernate Idle Timer register value to microseconds */
+ 
 static int ufshcd_ahit_to_us(u32 ahit)
 {
 	int timer = FIELD_GET(UFSHCI_AHIBERN8_TIMER_MASK, ahit);
@@ -139,7 +139,7 @@ static int ufshcd_ahit_to_us(u32 ahit)
 	return timer;
 }
 
-/* Convert microseconds to Auto-Hibernate Idle Timer register value */
+ 
 static u32 ufshcd_us_to_ahit(unsigned int timer)
 {
 	unsigned int scale;
@@ -227,10 +227,7 @@ static ssize_t wb_on_store(struct device *dev, struct device_attribute *attr,
 
 	if (!ufshcd_is_wb_allowed(hba) || (ufshcd_is_clkscaling_supported(hba)
 		&& ufshcd_enable_wb_if_scaling_up(hba))) {
-		/*
-		 * If the platform supports UFSHCD_CAP_CLK_SCALING, turn WB
-		 * on/off will be done while clock scaling up/down.
-		 */
+		 
 		dev_warn(dev, "It is not allowed to configure WB!\n");
 		return -EOPNOTSUPP;
 	}
@@ -317,7 +314,7 @@ static ssize_t wb_flush_threshold_store(struct device *dev,
 	if (kstrtouint(buf, 0, &wb_flush_threshold))
 		return -EINVAL;
 
-	/* The range of values for wb_flush_threshold is (0,10] */
+	 
 	if (wb_flush_threshold > UFS_WB_BUF_REMAIN_PERCENT(100) ||
 	    wb_flush_threshold == 0) {
 		dev_err(dev, "The value of wb_flush_threshold is invalid!\n");
@@ -377,10 +374,7 @@ static ssize_t write_booster_show(struct device *dev, struct device_attribute *a
 static DEVICE_ATTR_RO(clock_scaling);
 static DEVICE_ATTR_RO(write_booster);
 
-/*
- * See Documentation/ABI/testing/sysfs-driver-ufs for the semantics of this
- * group.
- */
+ 
 static struct attribute *ufs_sysfs_capabilities_attrs[] = {
 	&dev_attr_clock_scaling.attr,
 	&dev_attr_write_booster.attr,
@@ -446,7 +440,7 @@ static ssize_t monitor_chunk_size_store(struct device *dev,
 		return -EINVAL;
 
 	spin_lock_irqsave(hba->host->host_lock, flags);
-	/* Only allow chunk size change when monitor is disabled */
+	 
 	if (!hba->monitor.enabled)
 		hba->monitor.chunk_size = value;
 	spin_unlock_irqrestore(hba->host->host_lock, flags);
@@ -1304,7 +1298,7 @@ static umode_t ufs_unit_descriptor_is_visible(struct kobject *kobj, struct attri
 	umode_t mode = attr->mode;
 
 	if (lun == UFS_UPIU_BOOT_WLUN || lun == UFS_UPIU_UFS_DEVICE_WLUN)
-		/* Boot and device WLUN have no unit descriptors */
+		 
 		mode = 0;
 	if (lun == UFS_UPIU_RPMB_WLUN && attr == &dev_attr_wb_buf_alloc_units.attr)
 		mode = 0;

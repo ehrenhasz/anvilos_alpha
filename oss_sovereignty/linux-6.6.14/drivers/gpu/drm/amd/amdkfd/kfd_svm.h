@@ -1,26 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR MIT */
-/*
- * Copyright 2020-2021 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
+ 
 
 #ifndef KFD_SVM_H_
 #define KFD_SVM_H_
@@ -42,7 +21,7 @@
 struct svm_range_bo {
 	struct amdgpu_bo		*bo;
 	struct kref			kref;
-	struct list_head		range_list; /* all svm ranges shared this bo */
+	struct list_head		range_list;  
 	spinlock_t			list_lock;
 	struct amdgpu_amdkfd_fence	*eviction_fence;
 	struct work_struct		eviction_work;
@@ -65,44 +44,7 @@ struct svm_work_list_item {
 	struct mm_struct *mm;
 };
 
-/**
- * struct svm_range - shared virtual memory range
- *
- * @svms:       list of svm ranges, structure defined in kfd_process
- * @migrate_mutex: to serialize range migration, validation and mapping update
- * @start:      range start address in pages
- * @last:       range last address in pages
- * @it_node:    node [start, last] stored in interval tree, start, last are page
- *              aligned, page size is (last - start + 1)
- * @list:       link list node, used to scan all ranges of svms
- * @update_list:link list node used to add to update_list
- * @mapping:    bo_va mapping structure to create and update GPU page table
- * @npages:     number of pages
- * @dma_addr:   dma mapping address on each GPU for system memory physical page
- * @ttm_res:    vram ttm resource map
- * @offset:     range start offset within mm_nodes
- * @svm_bo:     struct to manage splited amdgpu_bo
- * @svm_bo_list:link list node, to scan all ranges which share same svm_bo
- * @lock:       protect prange start, last, child_list, svm_bo_list
- * @saved_flags:save/restore current PF_MEMALLOC flags
- * @flags:      flags defined as KFD_IOCTL_SVM_FLAG_*
- * @perferred_loc: perferred location, 0 for CPU, or GPU id
- * @perfetch_loc: last prefetch location, 0 for CPU, or GPU id
- * @actual_loc: the actual location, 0 for CPU, or GPU id
- * @granularity:migration granularity, log2 num pages
- * @invalid:    not 0 means cpu page table is invalidated
- * @validate_timestamp: system timestamp when range is validated
- * @notifier:   register mmu interval notifier
- * @work_item:  deferred work item information
- * @deferred_list: list header used to add range to deferred list
- * @child_list: list header for split ranges which are not added to svms yet
- * @bitmap_access: index bitmap of GPUs which can access the range
- * @bitmap_aip: index bitmap of GPUs which can access the range in place
- *
- * Data structure for virtual memory range shared by CPU and GPUs, it can be
- * allocated from system memory ram or device vram, and migrate from ram to vram
- * or from vram to ram.
- */
+ 
 struct svm_range {
 	struct svm_range_list		*svms;
 	struct mutex			migrate_mutex;
@@ -196,9 +138,7 @@ struct kfd_process_device *
 svm_range_get_pdd_by_node(struct svm_range *prange, struct kfd_node *node);
 void svm_range_list_lock_and_flush_work(struct svm_range_list *svms, struct mm_struct *mm);
 
-/* SVM API and HMM page migration work together, device memory type
- * is initialized to not 0 when page migration register device memory.
- */
+ 
 #define KFD_IS_SVM_API_SUPPORTED(adev) ((adev)->kfd.pgmap.type != 0 ||\
 					(adev)->gmc.is_app_apu)
 
@@ -217,7 +157,7 @@ static inline int svm_range_list_init(struct kfd_process *p)
 }
 static inline void svm_range_list_fini(struct kfd_process *p)
 {
-	/* empty */
+	 
 }
 
 static inline int svm_range_restore_pages(struct amdgpu_device *adev,
@@ -270,6 +210,6 @@ static inline void svm_range_set_max_pages(struct amdgpu_device *adev)
 
 #define KFD_IS_SVM_API_SUPPORTED(dev) false
 
-#endif /* IS_ENABLED(CONFIG_HSA_AMD_SVM) */
+#endif  
 
-#endif /* KFD_SVM_H_ */
+#endif  

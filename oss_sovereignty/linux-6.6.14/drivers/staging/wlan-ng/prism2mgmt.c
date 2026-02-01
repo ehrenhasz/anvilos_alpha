@@ -1,41 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0 OR MPL-1.1)
-/*
- *
- * Management request handler functions.
- *
- * Copyright (C) 1999 AbsoluteValue Systems, Inc.  All Rights Reserved.
- * --------------------------------------------------------------------
- *
- * linux-wlan
- *
- * --------------------------------------------------------------------
- *
- * Inquiries regarding the linux-wlan Open Source project can be
- * made directly to:
- *
- * AbsoluteValue Systems Inc.
- * info@linux-wlan.com
- * http://www.linux-wlan.com
- *
- * --------------------------------------------------------------------
- *
- * Portions of the development of this software were funded by
- * Intersil Corporation as part of PRISM(R) chipset product development.
- *
- * --------------------------------------------------------------------
- *
- * The functions in this file handle management requests sent from
- * user mode.
- *
- * Most of these functions have two separate blocks of code that are
- * conditional on whether this is a station or an AP.  This is used
- * to separate out the STA and AP responses to these management primitives.
- * It's a choice (good, bad, indifferent?) to have the code in the same
- * place so it's clear that the same primitive is implemented in both
- * cases but has different behavior.
- *
- * --------------------------------------------------------------------
- */
+
+ 
 
 #include <linux/if_arp.h>
 #include <linux/module.h>
@@ -63,7 +27,7 @@
 #include "hfa384x.h"
 #include "prism2mgmt.h"
 
-/* Converts 802.11 format rate specifications to prism2 */
+ 
 static inline u16 p80211rate_to_p2bit(u32 rate)
 {
 	switch (rate & ~BIT(7)) {
@@ -80,31 +44,7 @@ static inline u16 p80211rate_to_p2bit(u32 rate)
 	}
 }
 
-/*----------------------------------------------------------------
- * prism2mgmt_scan
- *
- * Initiate a scan for BSSs.
- *
- * This function corresponds to MLME-scan.request and part of
- * MLME-scan.confirm.  As far as I can tell in the standard, there
- * are no restrictions on when a scan.request may be issued.  We have
- * to handle in whatever state the driver/MAC happen to be.
- *
- * Arguments:
- *	wlandev		wlan device structure
- *	msgp		ptr to msg buffer
- *
- * Returns:
- *	0	success and done
- *	<0	success, but we're waiting for something to finish.
- *	>0	an error occurred while handling the message.
- * Side effects:
- *
- * Call context:
- *	process thread  (usually)
- *	interrupt
- *----------------------------------------------------------------
- */
+ 
 int prism2mgmt_scan(struct wlandevice *wlandev, void *msgp)
 {
 	int result = 0;
@@ -116,7 +56,7 @@ int prism2mgmt_scan(struct wlandevice *wlandev, void *msgp)
 
 	struct hfa384x_host_scan_request_data scanreq;
 
-	/* gatekeeper check */
+	 
 	if (HFA384x_FIRMWARE_VERSION(hw->ident_sta_fw.major,
 				     hw->ident_sta_fw.minor,
 				     hw->ident_sta_fw.variant) <
@@ -130,7 +70,7 @@ int prism2mgmt_scan(struct wlandevice *wlandev, void *msgp)
 
 	memset(&scanreq, 0, sizeof(scanreq));
 
-	/* save current roaming mode */
+	 
 	result = hfa384x_drvr_getconfig16(hw,
 					  HFA384x_RID_CNFROAMINGMODE,
 					  &roamingmode);
@@ -142,7 +82,7 @@ int prism2mgmt_scan(struct wlandevice *wlandev, void *msgp)
 		goto exit;
 	}
 
-	/* drop into mode 3 for the scan */
+	 
 	result = hfa384x_drvr_setconfig16(hw,
 					  HFA384x_RID_CNFROAMINGMODE,
 					  HFA384x_ROAMMODE_HOSTSCAN_HOSTROAM);
@@ -155,7 +95,7 @@ int prism2mgmt_scan(struct wlandevice *wlandev, void *msgp)
 		goto exit;
 	}
 
-	/* active or passive? */
+	 
 	if (HFA384x_FIRMWARE_VERSION(hw->ident_sta_fw.major,
 				     hw->ident_sta_fw.minor,
 				     hw->ident_sta_fw.variant) >
@@ -174,27 +114,27 @@ int prism2mgmt_scan(struct wlandevice *wlandev, void *msgp)
 		}
 	}
 
-	/* set up the txrate to be 2MBPS. Should be fastest basicrate... */
+	 
 	word = HFA384x_RATEBIT_2;
 	scanreq.tx_rate = cpu_to_le16(word);
 
-	/* set up the channel list */
+	 
 	word = 0;
 	for (i = 0; i < msg->channellist.data.len; i++) {
 		u8 channel = msg->channellist.data.data[i];
 
 		if (channel > 14)
 			continue;
-		/* channel 1 is BIT 0 ... channel 14 is BIT 13 */
+		 
 		word |= (1 << (channel - 1));
 	}
 	scanreq.channel_list = cpu_to_le16(word);
 
-	/* set up the ssid, if present. */
+	 
 	scanreq.ssid.len = cpu_to_le16(msg->ssid.data.len);
 	memcpy(scanreq.ssid.data, msg->ssid.data.data, msg->ssid.data.len);
 
-	/* Enable the MAC port if it's not already enabled  */
+	 
 	result = hfa384x_drvr_getconfig16(hw, HFA384x_RID_PORTSTATUS, &word);
 	if (result) {
 		netdev_err(wlandev->netdev,
@@ -217,9 +157,7 @@ int prism2mgmt_scan(struct wlandevice *wlandev, void *msgp)
 			    P80211ENUM_resultcode_implementation_failure;
 			goto exit;
 		}
-		/* Construct a bogus SSID and assign it to OwnSSID and
-		 * DesiredSSID
-		 */
+		 
 		wordbuf[0] = cpu_to_le16(WLAN_SSID_MAXLEN);
 		get_random_bytes(&wordbuf[1], WLAN_SSID_MAXLEN);
 		result = hfa384x_drvr_setconfig(hw, HFA384x_RID_CNFOWNSSID,
@@ -241,7 +179,7 @@ int prism2mgmt_scan(struct wlandevice *wlandev, void *msgp)
 			    P80211ENUM_resultcode_implementation_failure;
 			goto exit;
 		}
-		/* bsstype */
+		 
 		result = hfa384x_drvr_setconfig16(hw,
 						  HFA384x_RID_CNFPORTTYPE,
 						  HFA384x_PORTTYPE_IBSS);
@@ -252,7 +190,7 @@ int prism2mgmt_scan(struct wlandevice *wlandev, void *msgp)
 			    P80211ENUM_resultcode_implementation_failure;
 			goto exit;
 		}
-		/* ibss options */
+		 
 		result = hfa384x_drvr_setconfig16(hw,
 						  HFA384x_RID_CREATEIBSS,
 						  HFA384x_CREATEIBSS_JOINCREATEIBSS);
@@ -275,11 +213,11 @@ int prism2mgmt_scan(struct wlandevice *wlandev, void *msgp)
 		istmpenable = 1;
 	}
 
-	/* Figure out our timeout first Kus, then HZ */
+	 
 	timeout = msg->channellist.data.len * msg->maxchanneltime.data;
 	timeout = (timeout * HZ) / 1000;
 
-	/* Issue the scan request */
+	 
 	hw->scanflag = 0;
 
 	result = hfa384x_drvr_setconfig(hw,
@@ -294,7 +232,7 @@ int prism2mgmt_scan(struct wlandevice *wlandev, void *msgp)
 		goto exit;
 	}
 
-	/* sleep until info frame arrives */
+	 
 	wait_event_interruptible_timeout(hw->cmdq, hw->scanflag, timeout);
 
 	msg->numbss.status = P80211ENUM_msgitem_status_data_ok;
@@ -305,7 +243,7 @@ int prism2mgmt_scan(struct wlandevice *wlandev, void *msgp)
 
 	hw->scanflag = 0;
 
-	/* Disable port if we temporarily enabled it. */
+	 
 	if (istmpenable) {
 		result = hfa384x_drvr_disable(hw, 0);
 		if (result) {
@@ -318,7 +256,7 @@ int prism2mgmt_scan(struct wlandevice *wlandev, void *msgp)
 		}
 	}
 
-	/* restore original roaming mode */
+	 
 	result = hfa384x_drvr_setconfig16(hw, HFA384x_RID_CNFROAMINGMODE,
 					  roamingmode);
 	if (result) {
@@ -338,27 +276,7 @@ exit:
 	return result;
 }
 
-/*----------------------------------------------------------------
- * prism2mgmt_scan_results
- *
- * Retrieve the BSS description for one of the BSSs identified in
- * a scan.
- *
- * Arguments:
- *	wlandev		wlan device structure
- *	msgp		ptr to msg buffer
- *
- * Returns:
- *	0	success and done
- *	<0	success, but we're waiting for something to finish.
- *	>0	an error occurred while handling the message.
- * Side effects:
- *
- * Call context:
- *	process thread  (usually)
- *	interrupt
- *----------------------------------------------------------------
- */
+ 
 int prism2mgmt_scan_results(struct wlandevice *wlandev, void *msgp)
 {
 	int result = 0;
@@ -394,24 +312,24 @@ int prism2mgmt_scan_results(struct wlandevice *wlandev, void *msgp)
 	}
 
 	item = &hw->scanresults->info.hscanresult.result[req->bssindex.data];
-	/* signal and noise */
+	 
 	req->signal.status = P80211ENUM_msgitem_status_data_ok;
 	req->noise.status = P80211ENUM_msgitem_status_data_ok;
 	req->signal.data = le16_to_cpu(item->sl);
 	req->noise.data = le16_to_cpu(item->anl);
 
-	/* BSSID */
+	 
 	req->bssid.status = P80211ENUM_msgitem_status_data_ok;
 	req->bssid.data.len = WLAN_BSSID_LEN;
 	memcpy(req->bssid.data.data, item->bssid, WLAN_BSSID_LEN);
 
-	/* SSID */
+	 
 	req->ssid.status = P80211ENUM_msgitem_status_data_ok;
 	req->ssid.data.len = le16_to_cpu(item->ssid.len);
 	req->ssid.data.len = min_t(u16, req->ssid.data.len, WLAN_SSID_MAXLEN);
 	memcpy(req->ssid.data.data, item->ssid.data, req->ssid.data.len);
 
-	/* supported rates */
+	 
 	for (count = 0; count < 10; count++)
 		if (item->supprates[count] == 0)
 			break;
@@ -433,42 +351,42 @@ int prism2mgmt_scan_results(struct wlandevice *wlandev, void *msgp)
 		}
 	}
 
-	/* beacon period */
+	 
 	req->beaconperiod.status = P80211ENUM_msgitem_status_data_ok;
 	req->beaconperiod.data = le16_to_cpu(item->bcnint);
 
-	/* timestamps */
+	 
 	req->timestamp.status = P80211ENUM_msgitem_status_data_ok;
 	req->timestamp.data = jiffies;
 	req->localtime.status = P80211ENUM_msgitem_status_data_ok;
 	req->localtime.data = jiffies;
 
-	/* atim window */
+	 
 	req->ibssatimwindow.status = P80211ENUM_msgitem_status_data_ok;
 	req->ibssatimwindow.data = le16_to_cpu(item->atim);
 
-	/* Channel */
+	 
 	req->dschannel.status = P80211ENUM_msgitem_status_data_ok;
 	req->dschannel.data = le16_to_cpu(item->chid);
 
-	/* capinfo bits */
+	 
 	count = le16_to_cpu(item->capinfo);
 	req->capinfo.status = P80211ENUM_msgitem_status_data_ok;
 	req->capinfo.data = count;
 
-	/* privacy flag */
+	 
 	req->privacy.status = P80211ENUM_msgitem_status_data_ok;
 	req->privacy.data = WLAN_GET_MGMT_CAP_INFO_PRIVACY(count);
 
-	/* cfpollable */
+	 
 	req->cfpollable.status = P80211ENUM_msgitem_status_data_ok;
 	req->cfpollable.data = WLAN_GET_MGMT_CAP_INFO_CFPOLLABLE(count);
 
-	/* cfpollreq */
+	 
 	req->cfpollreq.status = P80211ENUM_msgitem_status_data_ok;
 	req->cfpollreq.data = WLAN_GET_MGMT_CAP_INFO_CFPOLLREQ(count);
 
-	/* bsstype */
+	 
 	req->bsstype.status = P80211ENUM_msgitem_status_data_ok;
 	req->bsstype.data = (WLAN_GET_MGMT_CAP_INFO_ESS(count)) ?
 	    P80211ENUM_bsstype_infrastructure : P80211ENUM_bsstype_independent;
@@ -480,26 +398,7 @@ exit:
 	return result;
 }
 
-/*----------------------------------------------------------------
- * prism2mgmt_start
- *
- * Start a BSS.  Any station can do this for IBSS, only AP for ESS.
- *
- * Arguments:
- *	wlandev		wlan device structure
- *	msgp		ptr to msg buffer
- *
- * Returns:
- *	0	success and done
- *	<0	success, but we're waiting for something to finish.
- *	>0	an error occurred while handling the message.
- * Side effects:
- *
- * Call context:
- *	process thread  (usually)
- *	interrupt
- *----------------------------------------------------------------
- */
+ 
 int prism2mgmt_start(struct wlandevice *wlandev, void *msgp)
 {
 	int result = 0;
@@ -513,16 +412,16 @@ int prism2mgmt_start(struct wlandevice *wlandev, void *msgp)
 
 	wlandev->macmode = WLAN_MACMODE_NONE;
 
-	/* Set the SSID */
+	 
 	memcpy(&wlandev->ssid, &msg->ssid.data, sizeof(msg->ssid.data));
 
-	/*** ADHOC IBSS ***/
-	/* see if current f/w is less than 8c3 */
+	 
+	 
 	if (HFA384x_FIRMWARE_VERSION(hw->ident_sta_fw.major,
 				     hw->ident_sta_fw.minor,
 				     hw->ident_sta_fw.variant) <
 	    HFA384x_FIRMWARE_VERSION(0, 8, 3)) {
-		/* Ad-Hoc not quite supported on Prism2 */
+		 
 		msg->resultcode.status = P80211ENUM_msgitem_status_data_ok;
 		msg->resultcode.data = P80211ENUM_resultcode_not_supported;
 		goto done;
@@ -530,9 +429,9 @@ int prism2mgmt_start(struct wlandevice *wlandev, void *msgp)
 
 	msg->resultcode.status = P80211ENUM_msgitem_status_data_ok;
 
-	/*** STATION ***/
-	/* Set the REQUIRED config items */
-	/* SSID */
+	 
+	 
+	 
 	pstr = (struct p80211pstrd *)&msg->ssid.data;
 	prism2mgmt_pstr2bytestr(p2bytestr, pstr);
 	result = hfa384x_drvr_setconfig(hw, HFA384x_RID_CNFOWNSSID,
@@ -549,11 +448,11 @@ int prism2mgmt_start(struct wlandevice *wlandev, void *msgp)
 		goto failed;
 	}
 
-	/* bsstype - we use the default in the ap firmware */
-	/* IBSS port */
+	 
+	 
 	hfa384x_drvr_setconfig16(hw, HFA384x_RID_CNFPORTTYPE, 0);
 
-	/* beacon period */
+	 
 	word = msg->beaconperiod.data;
 	result = hfa384x_drvr_setconfig16(hw, HFA384x_RID_CNFAPBCNINT, word);
 	if (result) {
@@ -562,7 +461,7 @@ int prism2mgmt_start(struct wlandevice *wlandev, void *msgp)
 		goto failed;
 	}
 
-	/* dschannel */
+	 
 	word = msg->dschannel.data;
 	result = hfa384x_drvr_setconfig16(hw, HFA384x_RID_CNFOWNCHANNEL, word);
 	if (result) {
@@ -570,7 +469,7 @@ int prism2mgmt_start(struct wlandevice *wlandev, void *msgp)
 			   "Failed to set channel=%d.\n", word);
 		goto failed;
 	}
-	/* Basic rates */
+	 
 	word = p80211rate_to_p2bit(msg->basicrate1.data);
 	if (msg->basicrate2.status == P80211ENUM_msgitem_status_data_ok)
 		word |= p80211rate_to_p2bit(msg->basicrate2.data);
@@ -600,7 +499,7 @@ int prism2mgmt_start(struct wlandevice *wlandev, void *msgp)
 		goto failed;
 	}
 
-	/* Operational rates (supprates and txratecontrol) */
+	 
 	word = p80211rate_to_p2bit(msg->operationalrate1.data);
 	if (msg->operationalrate2.status == P80211ENUM_msgitem_status_data_ok)
 		word |= p80211rate_to_p2bit(msg->operationalrate2.data);
@@ -637,14 +536,14 @@ int prism2mgmt_start(struct wlandevice *wlandev, void *msgp)
 		goto failed;
 	}
 
-	/* Set the macmode so the frame setup code knows what to do */
+	 
 	if (msg->bsstype.data == P80211ENUM_bsstype_independent) {
 		wlandev->macmode = WLAN_MACMODE_IBSS_STA;
-		/* lets extend the data length a bit */
+		 
 		hfa384x_drvr_setconfig16(hw, HFA384x_RID_CNFMAXDATALEN, 2304);
 	}
 
-	/* Enable the Port */
+	 
 	result = hfa384x_drvr_enable(hw, 0);
 	if (result) {
 		netdev_err(wlandev->netdev,
@@ -664,34 +563,14 @@ done:
 	return 0;
 }
 
-/*----------------------------------------------------------------
- * prism2mgmt_readpda
- *
- * Collect the PDA data and put it in the message.
- *
- * Arguments:
- *	wlandev		wlan device structure
- *	msgp		ptr to msg buffer
- *
- * Returns:
- *	0	success and done
- *	<0	success, but we're waiting for something to finish.
- *	>0	an error occurred while handling the message.
- * Side effects:
- *
- * Call context:
- *	process thread  (usually)
- *----------------------------------------------------------------
- */
+ 
 int prism2mgmt_readpda(struct wlandevice *wlandev, void *msgp)
 {
 	struct hfa384x *hw = wlandev->priv;
 	struct p80211msg_p2req_readpda *msg = msgp;
 	int result;
 
-	/* We only support collecting the PDA when in the FWLOAD
-	 * state.
-	 */
+	 
 	if (wlandev->msdstate != WLAN_MSD_FWLOAD) {
 		netdev_err(wlandev->netdev,
 			   "PDA may only be read in the fwload state.\n");
@@ -699,9 +578,7 @@ int prism2mgmt_readpda(struct wlandevice *wlandev, void *msgp)
 		    P80211ENUM_resultcode_implementation_failure;
 		msg->resultcode.status = P80211ENUM_msgitem_status_data_ok;
 	} else {
-		/*  Call drvr_readpda(), it handles the auxport enable
-		 *  and validating the returned PDA.
-		 */
+		 
 		result = hfa384x_drvr_readpda(hw,
 					      msg->pda.data,
 					      HFA384x_PDA_LEN_MAX);
@@ -724,32 +601,7 @@ int prism2mgmt_readpda(struct wlandevice *wlandev, void *msgp)
 	return 0;
 }
 
-/*----------------------------------------------------------------
- * prism2mgmt_ramdl_state
- *
- * Establishes the beginning/end of a card RAM download session.
- *
- * It is expected that the ramdl_write() function will be called
- * one or more times between the 'enable' and 'disable' calls to
- * this function.
- *
- * Note: This function should not be called when a mac comm port
- *       is active.
- *
- * Arguments:
- *	wlandev		wlan device structure
- *	msgp		ptr to msg buffer
- *
- * Returns:
- *	0	success and done
- *	<0	success, but we're waiting for something to finish.
- *	>0	an error occurred while handling the message.
- * Side effects:
- *
- * Call context:
- *	process thread  (usually)
- *----------------------------------------------------------------
- */
+ 
 int prism2mgmt_ramdl_state(struct wlandevice *wlandev, void *msgp)
 {
 	struct hfa384x *hw = wlandev->priv;
@@ -764,10 +616,7 @@ int prism2mgmt_ramdl_state(struct wlandevice *wlandev, void *msgp)
 		return 0;
 	}
 
-	/*
-	 ** Note: Interrupts are locked out if this is an AP and are NOT
-	 ** locked out if this is a station.
-	 */
+	 
 
 	msg->resultcode.status = P80211ENUM_msgitem_status_data_ok;
 	if (msg->enable.data == P80211ENUM_truth_true) {
@@ -785,27 +634,7 @@ int prism2mgmt_ramdl_state(struct wlandevice *wlandev, void *msgp)
 	return 0;
 }
 
-/*----------------------------------------------------------------
- * prism2mgmt_ramdl_write
- *
- * Writes a buffer to the card RAM using the download state.  This
- * is for writing code to card RAM.  To just read or write raw data
- * use the aux functions.
- *
- * Arguments:
- *	wlandev		wlan device structure
- *	msgp		ptr to msg buffer
- *
- * Returns:
- *	0	success and done
- *	<0	success, but we're waiting for something to finish.
- *	>0	an error occurred while handling the message.
- * Side effects:
- *
- * Call context:
- *	process thread  (usually)
- *----------------------------------------------------------------
- */
+ 
 int prism2mgmt_ramdl_write(struct wlandevice *wlandev, void *msgp)
 {
 	struct hfa384x *hw = wlandev->priv;
@@ -824,13 +653,13 @@ int prism2mgmt_ramdl_write(struct wlandevice *wlandev, void *msgp)
 	}
 
 	msg->resultcode.status = P80211ENUM_msgitem_status_data_ok;
-	/* first validate the length */
+	 
 	if (msg->len.data > sizeof(msg->data.data)) {
 		msg->resultcode.status =
 		    P80211ENUM_resultcode_invalid_parameters;
 		return 0;
 	}
-	/* call the hfa384x function to do the write */
+	 
 	addr = msg->addr.data;
 	len = msg->len.data;
 	buf = msg->data.data;
@@ -842,32 +671,7 @@ int prism2mgmt_ramdl_write(struct wlandevice *wlandev, void *msgp)
 	return 0;
 }
 
-/*----------------------------------------------------------------
- * prism2mgmt_flashdl_state
- *
- * Establishes the beginning/end of a card Flash download session.
- *
- * It is expected that the flashdl_write() function will be called
- * one or more times between the 'enable' and 'disable' calls to
- * this function.
- *
- * Note: This function should not be called when a mac comm port
- *       is active.
- *
- * Arguments:
- *	wlandev		wlan device structure
- *	msgp		ptr to msg buffer
- *
- * Returns:
- *	0	success and done
- *	<0	success, but we're waiting for something to finish.
- *	>0	an error occurred while handling the message.
- * Side effects:
- *
- * Call context:
- *	process thread  (usually)
- *----------------------------------------------------------------
- */
+ 
 int prism2mgmt_flashdl_state(struct wlandevice *wlandev, void *msgp)
 {
 	int result = 0;
@@ -883,10 +687,7 @@ int prism2mgmt_flashdl_state(struct wlandevice *wlandev, void *msgp)
 		return 0;
 	}
 
-	/*
-	 ** Note: Interrupts are locked out if this is an AP and are NOT
-	 ** locked out if this is a station.
-	 */
+	 
 
 	msg->resultcode.status = P80211ENUM_msgitem_status_data_ok;
 	if (msg->enable.data == P80211ENUM_truth_true) {
@@ -899,13 +700,7 @@ int prism2mgmt_flashdl_state(struct wlandevice *wlandev, void *msgp)
 	} else {
 		hfa384x_drvr_flashdl_disable(hw);
 		msg->resultcode.data = P80211ENUM_resultcode_success;
-		/* NOTE: At this point, the MAC is in the post-reset
-		 * state and the driver is in the fwload state.
-		 * We need to get the MAC back into the fwload
-		 * state.  To do this, we set the nsdstate to HWPRESENT
-		 * and then call the ifstate function to redo everything
-		 * that got us into the fwload state.
-		 */
+		 
 		wlandev->msdstate = WLAN_MSD_HWPRESENT;
 		result = prism2sta_ifstate(wlandev, P80211ENUM_ifstate_fwload);
 		if (result != P80211ENUM_resultcode_success) {
@@ -921,25 +716,7 @@ int prism2mgmt_flashdl_state(struct wlandevice *wlandev, void *msgp)
 	return result;
 }
 
-/*----------------------------------------------------------------
- * prism2mgmt_flashdl_write
- *
- *
- *
- * Arguments:
- *	wlandev		wlan device structure
- *	msgp		ptr to msg buffer
- *
- * Returns:
- *	0	success and done
- *	<0	success, but we're waiting for something to finish.
- *	>0	an error occurred while handling the message.
- * Side effects:
- *
- * Call context:
- *	process thread  (usually)
- *----------------------------------------------------------------
- */
+ 
 int prism2mgmt_flashdl_write(struct wlandevice *wlandev, void *msgp)
 {
 	struct hfa384x *hw = wlandev->priv;
@@ -957,19 +734,16 @@ int prism2mgmt_flashdl_write(struct wlandevice *wlandev, void *msgp)
 		return 0;
 	}
 
-	/*
-	 ** Note: Interrupts are locked out if this is an AP and are NOT
-	 ** locked out if this is a station.
-	 */
+	 
 
 	msg->resultcode.status = P80211ENUM_msgitem_status_data_ok;
-	/* first validate the length */
+	 
 	if (msg->len.data > sizeof(msg->data.data)) {
 		msg->resultcode.status =
 		    P80211ENUM_resultcode_invalid_parameters;
 		return 0;
 	}
-	/* call the hfa384x function to do the write */
+	 
 	addr = msg->addr.data;
 	len = msg->len.data;
 	buf = msg->data.data;
@@ -981,26 +755,7 @@ int prism2mgmt_flashdl_write(struct wlandevice *wlandev, void *msgp)
 	return 0;
 }
 
-/*----------------------------------------------------------------
- * prism2mgmt_autojoin
- *
- * Associate with an ESS.
- *
- * Arguments:
- *	wlandev		wlan device structure
- *	msgp		ptr to msg buffer
- *
- * Returns:
- *	0	success and done
- *	<0	success, but we're waiting for something to finish.
- *	>0	an error occurred while handling the message.
- * Side effects:
- *
- * Call context:
- *	process thread  (usually)
- *	interrupt
- *----------------------------------------------------------------
- */
+ 
 int prism2mgmt_autojoin(struct wlandevice *wlandev, void *msgp)
 {
 	struct hfa384x *hw = wlandev->priv;
@@ -1014,17 +769,17 @@ int prism2mgmt_autojoin(struct wlandevice *wlandev, void *msgp)
 
 	wlandev->macmode = WLAN_MACMODE_NONE;
 
-	/* Set the SSID */
+	 
 	memcpy(&wlandev->ssid, &msg->ssid.data, sizeof(msg->ssid.data));
 
-	/* Disable the Port */
+	 
 	hfa384x_drvr_disable(hw, 0);
 
-	/*** STATION ***/
-	/* Set the TxRates */
+	 
+	 
 	hfa384x_drvr_setconfig16(hw, HFA384x_RID_TXRATECNTL, 0x000f);
 
-	/* Set the auth type */
+	 
 	if (msg->authtype.data == P80211ENUM_authalg_sharedkey)
 		reg = HFA384x_CNFAUTHENTICATION_SHAREDKEY;
 	else
@@ -1032,7 +787,7 @@ int prism2mgmt_autojoin(struct wlandevice *wlandev, void *msgp)
 
 	hfa384x_drvr_setconfig16(hw, HFA384x_RID_CNFAUTHENTICATION, reg);
 
-	/* Set the ssid */
+	 
 	memset(bytebuf, 0, 256);
 	pstr = (struct p80211pstrd *)&msg->ssid.data;
 	prism2mgmt_pstr2bytestr(p2bytestr, pstr);
@@ -1040,39 +795,20 @@ int prism2mgmt_autojoin(struct wlandevice *wlandev, void *msgp)
 					bytebuf,
 					HFA384x_RID_CNFDESIREDSSID_LEN);
 	port_type = HFA384x_PORTTYPE_BSS;
-	/* Set the PortType */
+	 
 	hfa384x_drvr_setconfig16(hw, HFA384x_RID_CNFPORTTYPE, port_type);
 
-	/* Enable the Port */
+	 
 	hfa384x_drvr_enable(hw, 0);
 
-	/* Set the resultcode */
+	 
 	msg->resultcode.status = P80211ENUM_msgitem_status_data_ok;
 	msg->resultcode.data = P80211ENUM_resultcode_success;
 
 	return result;
 }
 
-/*----------------------------------------------------------------
- * prism2mgmt_wlansniff
- *
- * Start or stop sniffing.
- *
- * Arguments:
- *	wlandev		wlan device structure
- *	msgp		ptr to msg buffer
- *
- * Returns:
- *	0	success and done
- *	<0	success, but we're waiting for something to finish.
- *	>0	an error occurred while handling the message.
- * Side effects:
- *
- * Call context:
- *	process thread  (usually)
- *	interrupt
- *----------------------------------------------------------------
- */
+ 
 int prism2mgmt_wlansniff(struct wlandevice *wlandev, void *msgp)
 {
 	int result = 0;
@@ -1084,13 +820,13 @@ int prism2mgmt_wlansniff(struct wlandevice *wlandev, void *msgp)
 	msg->resultcode.status = P80211ENUM_msgitem_status_data_ok;
 	switch (msg->enable.data) {
 	case P80211ENUM_truth_false:
-		/* Confirm that we're in monitor mode */
+		 
 		if (wlandev->netdev->type == ARPHRD_ETHER) {
 			msg->resultcode.data =
 			    P80211ENUM_resultcode_invalid_parameters;
 			return 0;
 		}
-		/* Disable monitor mode */
+		 
 		result = hfa384x_cmd_monitor(hw, HFA384x_MONITOR_DISABLE);
 		if (result) {
 			netdev_dbg(wlandev->netdev,
@@ -1098,7 +834,7 @@ int prism2mgmt_wlansniff(struct wlandevice *wlandev, void *msgp)
 				   result);
 			goto failed;
 		}
-		/* Disable port 0 */
+		 
 		result = hfa384x_drvr_disable(hw, 0);
 		if (result) {
 			netdev_dbg
@@ -1107,10 +843,10 @@ int prism2mgmt_wlansniff(struct wlandevice *wlandev, void *msgp)
 			     result);
 			goto failed;
 		}
-		/* Clear the driver state */
+		 
 		wlandev->netdev->type = ARPHRD_ETHER;
 
-		/* Restore the wepflags */
+		 
 		result = hfa384x_drvr_setconfig16(hw,
 						  HFA384x_RID_CNFWEPFLAGS,
 						  hw->presniff_wepflags);
@@ -1122,7 +858,7 @@ int prism2mgmt_wlansniff(struct wlandevice *wlandev, void *msgp)
 			goto failed;
 		}
 
-		/* Set the port to its prior type and enable (if necessary) */
+		 
 		if (hw->presniff_port_type != 0) {
 			word = hw->presniff_port_type;
 			result = hfa384x_drvr_setconfig16(hw,
@@ -1136,7 +872,7 @@ int prism2mgmt_wlansniff(struct wlandevice *wlandev, void *msgp)
 				goto failed;
 			}
 
-			/* Enable the port */
+			 
 			result = hfa384x_drvr_enable(hw, 0);
 			if (result) {
 				netdev_dbg(wlandev->netdev,
@@ -1152,10 +888,10 @@ int prism2mgmt_wlansniff(struct wlandevice *wlandev, void *msgp)
 		msg->resultcode.data = P80211ENUM_resultcode_success;
 		return 0;
 	case P80211ENUM_truth_true:
-		/* Disable the port (if enabled), only check Port 0 */
+		 
 		if (hw->port_enabled[0]) {
 			if (wlandev->netdev->type == ARPHRD_ETHER) {
-				/* Save macport 0 state */
+				 
 				result = hfa384x_drvr_getconfig16(hw,
 								  HFA384x_RID_CNFPORTTYPE,
 								  &hw->presniff_port_type);
@@ -1166,7 +902,7 @@ int prism2mgmt_wlansniff(struct wlandevice *wlandev, void *msgp)
 					     result);
 					goto failed;
 				}
-				/* Save the wepflags state */
+				 
 				result = hfa384x_drvr_getconfig16(hw,
 								  HFA384x_RID_CNFWEPFLAGS,
 								  &hw->presniff_wepflags);
@@ -1186,7 +922,7 @@ int prism2mgmt_wlansniff(struct wlandevice *wlandev, void *msgp)
 					goto failed;
 				}
 			} else {
-				/* Disable the port */
+				 
 				result = hfa384x_drvr_disable(hw, 0);
 				if (result) {
 					netdev_dbg(wlandev->netdev,
@@ -1199,7 +935,7 @@ int prism2mgmt_wlansniff(struct wlandevice *wlandev, void *msgp)
 			hw->presniff_port_type = 0;
 		}
 
-		/* Set the channel we wish to sniff  */
+		 
 		word = msg->channel.data;
 		result = hfa384x_drvr_setconfig16(hw,
 						  HFA384x_RID_CNFOWNCHANNEL,
@@ -1213,9 +949,9 @@ int prism2mgmt_wlansniff(struct wlandevice *wlandev, void *msgp)
 			goto failed;
 		}
 
-		/* Now if we're already sniffing, we can skip the rest */
+		 
 		if (wlandev->netdev->type != ARPHRD_ETHER) {
-			/* Set the port type to pIbss */
+			 
 			word = HFA384x_PORTTYPE_PSUEDOIBSS;
 			result = hfa384x_drvr_setconfig16(hw,
 							  HFA384x_RID_CNFPORTTYPE,
@@ -1230,7 +966,7 @@ int prism2mgmt_wlansniff(struct wlandevice *wlandev, void *msgp)
 			if ((msg->keepwepflags.status ==
 			     P80211ENUM_msgitem_status_data_ok) &&
 			    (msg->keepwepflags.data != P80211ENUM_truth_true)) {
-				/* Set the wepflags for no decryption */
+				 
 				word = HFA384x_WEPFLAGS_DISABLE_TXCRYPT |
 				    HFA384x_WEPFLAGS_DISABLE_RXCRYPT;
 				result =
@@ -1248,7 +984,7 @@ int prism2mgmt_wlansniff(struct wlandevice *wlandev, void *msgp)
 			}
 		}
 
-		/* Do we want to strip the FCS in monitor mode? */
+		 
 		if ((msg->stripfcs.status ==
 		     P80211ENUM_msgitem_status_data_ok) &&
 		    (msg->stripfcs.data == P80211ENUM_truth_true)) {
@@ -1257,7 +993,7 @@ int prism2mgmt_wlansniff(struct wlandevice *wlandev, void *msgp)
 			hw->sniff_fcs = 1;
 		}
 
-		/* Do we want to truncate the packets? */
+		 
 		if (msg->packet_trunc.status ==
 		    P80211ENUM_msgitem_status_data_ok) {
 			hw->sniff_truncate = msg->packet_trunc.data;
@@ -1265,7 +1001,7 @@ int prism2mgmt_wlansniff(struct wlandevice *wlandev, void *msgp)
 			hw->sniff_truncate = 0;
 		}
 
-		/* Enable the port */
+		 
 		result = hfa384x_drvr_enable(hw, 0);
 		if (result) {
 			netdev_dbg
@@ -1274,7 +1010,7 @@ int prism2mgmt_wlansniff(struct wlandevice *wlandev, void *msgp)
 			     result);
 			goto failed;
 		}
-		/* Enable monitor mode */
+		 
 		result = hfa384x_cmd_monitor(hw, HFA384x_MONITOR_ENABLE);
 		if (result) {
 			netdev_dbg(wlandev->netdev,
@@ -1286,8 +1022,8 @@ int prism2mgmt_wlansniff(struct wlandevice *wlandev, void *msgp)
 		if (wlandev->netdev->type == ARPHRD_ETHER)
 			netdev_info(wlandev->netdev, "monitor mode enabled\n");
 
-		/* Set the driver state */
-		/* Do we want the prism2 header? */
+		 
+		 
 		if ((msg->prismheader.status ==
 		     P80211ENUM_msgitem_status_data_ok) &&
 		    (msg->prismheader.data == P80211ENUM_truth_true)) {

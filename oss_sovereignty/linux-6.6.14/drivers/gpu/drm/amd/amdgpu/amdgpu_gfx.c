@@ -1,27 +1,4 @@
-/*
- * Copyright 2014 Advanced Micro Devices, Inc.
- * Copyright 2008 Red Hat Inc.
- * Copyright 2009 Jerome Glisse.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 
 #include <linux/firmware.h>
 #include "amdgpu.h"
@@ -30,14 +7,12 @@
 #include "amdgpu_ras.h"
 #include "amdgpu_xcp.h"
 
-/* delay 0.1 second to enable gfx off feature */
+ 
 #define GFX_OFF_DELAY_ENABLE         msecs_to_jiffies(100)
 
 #define GFX_OFF_NO_DELAY 0
 
-/*
- * GPU GFX IP block helpers function.
- */
+ 
 
 int amdgpu_gfx_mec_queue_to_bit(struct amdgpu_device *adev, int mec,
 				int pipe, int queue)
@@ -100,16 +75,7 @@ bool amdgpu_gfx_is_me_queue_enabled(struct amdgpu_device *adev,
 			adev->gfx.me.queue_bitmap);
 }
 
-/**
- * amdgpu_gfx_parse_disable_cu - Parse the disable_cu module parameter
- *
- * @mask: array in which the per-shader array disable masks will be stored
- * @max_se: number of SEs
- * @max_sh: number of SHs
- *
- * The bitmask of CUs to be disabled in the shader array determined by se and
- * sh is stored in mask[se * max_sh + sh].
- */
+ 
 void amdgpu_gfx_parse_disable_cu(unsigned int *mask, unsigned int max_se, unsigned int max_sh)
 {
 	unsigned int se, sh, cu;
@@ -161,8 +127,7 @@ static bool amdgpu_gfx_is_compute_multipipe_capable(struct amdgpu_device *adev)
 	if (adev->ip_versions[GC_HWIP][0] > IP_VERSION(9, 0, 0))
 		return true;
 
-	/* FIXME: spreading the queues across pipes causes perf regressions
-	 * on POLARIS11 compute workloads */
+	 
 	if (adev->asic_type == CHIP_POLARIS11)
 		return false;
 
@@ -175,9 +140,7 @@ bool amdgpu_gfx_is_high_priority_graphics_queue(struct amdgpu_device *adev,
 	int queue = ring->queue;
 	int pipe = ring->pipe;
 
-	/* Policy: use pipe1 queue0 as high priority graphics queue if we
-	 * have more than one gfx pipe.
-	 */
+	 
 	if (amdgpu_gfx_is_graphics_multipipe_capable(adev) &&
 	    adev->gfx.num_gfx_rings > 1 && pipe == 1 && queue == 0) {
 		int me = ring->me;
@@ -194,9 +157,7 @@ bool amdgpu_gfx_is_high_priority_graphics_queue(struct amdgpu_device *adev,
 bool amdgpu_gfx_is_high_priority_compute_queue(struct amdgpu_device *adev,
 					       struct amdgpu_ring *ring)
 {
-	/* Policy: use 1st queue as high priority compute queue if we
-	 * have more than one compute queue.
-	 */
+	 
 	if (adev->gfx.num_compute_rings > 1 &&
 	    ring == &adev->gfx.compute_ring[0])
 		return true;
@@ -214,8 +175,7 @@ void amdgpu_gfx_compute_queue_acquire(struct amdgpu_device *adev)
 	int num_xcc = adev->gfx.xcc_mask ? NUM_XCC(adev->gfx.xcc_mask) : 1;
 
 	if (multipipe_policy) {
-		/* policy: make queues evenly cross all pipes on MEC1 only
-		 * for multiple xcc, just use the original policy for simplicity */
+		 
 		for (j = 0; j < num_xcc; j++) {
 			for (i = 0; i < max_queues_per_mec; i++) {
 				pipe = i % adev->gfx.mec.num_pipe_per_mec;
@@ -227,7 +187,7 @@ void amdgpu_gfx_compute_queue_acquire(struct amdgpu_device *adev)
 			}
 		}
 	} else {
-		/* policy: amdgpu owns all queues in the given pipe */
+		 
 		for (j = 0; j < num_xcc; j++) {
 			for (i = 0; i < max_queues_per_mec; ++i)
 				set_bit(i, adev->gfx.mec_bitmap[j].queue_bitmap);
@@ -248,8 +208,7 @@ void amdgpu_gfx_graphics_queue_acquire(struct amdgpu_device *adev)
 					adev->gfx.me.num_queue_per_pipe;
 
 	if (multipipe_policy) {
-		/* policy: amdgpu owns the first queue per pipe at this stage
-		 * will extend to mulitple queues per pipe later */
+		 
 		for (i = 0; i < max_queues_per_me; i++) {
 			pipe = i % adev->gfx.me.num_pipe_per_me;
 			queue = (i / adev->gfx.me.num_pipe_per_me) %
@@ -263,7 +222,7 @@ void amdgpu_gfx_graphics_queue_acquire(struct amdgpu_device *adev)
 			set_bit(i, adev->gfx.me.queue_bitmap);
 	}
 
-	/* update the number of active graphics rings */
+	 
 	adev->gfx.num_gfx_rings =
 		bitmap_weight(adev->gfx.me.queue_bitmap, AMDGPU_MAX_GFX_QUEUES);
 }
@@ -284,11 +243,7 @@ static int amdgpu_gfx_kiq_acquire(struct amdgpu_device *adev,
 
 		amdgpu_queue_mask_bit_to_mec_queue(adev, queue_bit, &mec, &pipe, &queue);
 
-		/*
-		 * 1. Using pipes 2/3 from MEC 2 seems cause problems.
-		 * 2. It must use queue id 0, because CGPG_IDLE/SAVE/LOAD/RUN
-		 * only can be issued on queue 0.
-		 */
+		 
 		if ((mec == 1 && pipe > 1) || queue != 0)
 			continue;
 
@@ -375,7 +330,7 @@ int amdgpu_gfx_kiq_init(struct amdgpu_device *adev,
 	return 0;
 }
 
-/* create MQD for each compute/gfx queue */
+ 
 int amdgpu_gfx_mqd_sw_init(struct amdgpu_device *adev,
 			   unsigned int mqd_size, int xcc_id)
 {
@@ -385,18 +340,14 @@ int amdgpu_gfx_mqd_sw_init(struct amdgpu_device *adev,
 	u32 domain = AMDGPU_GEM_DOMAIN_GTT;
 
 #if !defined(CONFIG_ARM) && !defined(CONFIG_ARM64)
-	/* Only enable on gfx10 and 11 for now to avoid changing behavior on older chips */
+	 
 	if (adev->ip_versions[GC_HWIP][0] >= IP_VERSION(10, 0, 0))
 		domain |= AMDGPU_GEM_DOMAIN_VRAM;
 #endif
 
-	/* create MQD for KIQ */
+	 
 	if (!adev->enable_mes_kiq && !ring->mqd_obj) {
-		/* originaly the KIQ MQD is put in GTT domain, but for SRIOV VRAM domain is a must
-		 * otherwise hypervisor trigger SAVE_VF fail after driver unloaded which mean MQD
-		 * deallocated and gart_unbind, to strict diverage we decide to use VRAM domain for
-		 * KIQ MQD no matter SRIOV or Bare-metal
-		 */
+		 
 		r = amdgpu_bo_create_kernel(adev, mqd_size, PAGE_SIZE,
 					    AMDGPU_GEM_DOMAIN_VRAM |
 					    AMDGPU_GEM_DOMAIN_GTT,
@@ -408,7 +359,7 @@ int amdgpu_gfx_mqd_sw_init(struct amdgpu_device *adev,
 			return r;
 		}
 
-		/* prepare MQD backup */
+		 
 		kiq->mqd_backup = kmalloc(mqd_size, GFP_KERNEL);
 		if (!kiq->mqd_backup) {
 			dev_warn(adev->dev,
@@ -418,7 +369,7 @@ int amdgpu_gfx_mqd_sw_init(struct amdgpu_device *adev,
 	}
 
 	if (adev->asic_type >= CHIP_NAVI10 && amdgpu_async_gfx_ring) {
-		/* create MQD for each KGQ */
+		 
 		for (i = 0; i < adev->gfx.num_gfx_rings; i++) {
 			ring = &adev->gfx.gfx_ring[i];
 			if (!ring->mqd_obj) {
@@ -431,7 +382,7 @@ int amdgpu_gfx_mqd_sw_init(struct amdgpu_device *adev,
 				}
 
 				ring->mqd_size = mqd_size;
-				/* prepare MQD backup */
+				 
 				adev->gfx.me.mqd_backup[i] = kmalloc(mqd_size, GFP_KERNEL);
 				if (!adev->gfx.me.mqd_backup[i]) {
 					dev_warn(adev->dev, "no memory to create MQD backup for ring %s\n", ring->name);
@@ -441,7 +392,7 @@ int amdgpu_gfx_mqd_sw_init(struct amdgpu_device *adev,
 		}
 	}
 
-	/* create MQD for each KCQ */
+	 
 	for (i = 0; i < adev->gfx.num_compute_rings; i++) {
 		j = i + xcc_id * adev->gfx.num_compute_rings;
 		ring = &adev->gfx.compute_ring[j];
@@ -455,7 +406,7 @@ int amdgpu_gfx_mqd_sw_init(struct amdgpu_device *adev,
 			}
 
 			ring->mqd_size = mqd_size;
-			/* prepare MQD backup */
+			 
 			adev->gfx.mec.mqd_backup[j] = kmalloc(mqd_size, GFP_KERNEL);
 			if (!adev->gfx.mec.mqd_backup[j]) {
 				dev_warn(adev->dev, "no memory to create MQD backup for ring %s\n", ring->name);
@@ -590,9 +541,7 @@ int amdgpu_gfx_enable_kcq(struct amdgpu_device *adev, int xcc_id)
 		if (!test_bit(i, adev->gfx.mec_bitmap[xcc_id].queue_bitmap))
 			continue;
 
-		/* This situation may be hit in the future if a new HW
-		 * generation exposes more than 64 queues. If so, the
-		 * definition of queue_mask needs updating */
+		 
 		if (WARN_ON(i > (sizeof(queue_mask)*8))) {
 			DRM_ERROR("Invalid KCQ enabled: %d\n", i);
 			break;
@@ -645,7 +594,7 @@ int amdgpu_gfx_enable_kgq(struct amdgpu_device *adev, int xcc_id)
 	amdgpu_device_flush_hdp(adev, NULL);
 
 	spin_lock(&kiq->ring_lock);
-	/* No need to map kcq on the slave */
+	 
 	if (amdgpu_gfx_is_master_xcc(adev, xcc_id)) {
 		r = amdgpu_ring_alloc(kiq_ring, kiq->pmf->map_queues_size *
 						adev->gfx.num_gfx_rings);
@@ -670,16 +619,7 @@ int amdgpu_gfx_enable_kgq(struct amdgpu_device *adev, int xcc_id)
 	return r;
 }
 
-/* amdgpu_gfx_off_ctrl - Handle gfx off feature enable/disable
- *
- * @adev: amdgpu_device pointer
- * @bool enable true: enable gfx off feature, false: disable gfx off feature
- *
- * 1. gfx off feature will be enabled by gfx ip after gfx cg gp enabled.
- * 2. other client can send request to disable gfx off feature, the request should be honored.
- * 3. other client can cancel their request of disable gfx off feature
- * 4. other client should not send request to enable gfx off feature before disable gfx off feature.
- */
+ 
 
 void amdgpu_gfx_off_ctrl(struct amdgpu_device *adev, bool enable)
 {
@@ -691,10 +631,7 @@ void amdgpu_gfx_off_ctrl(struct amdgpu_device *adev, bool enable)
 	mutex_lock(&adev->gfx.gfx_off_mutex);
 
 	if (enable) {
-		/* If the count is already 0, it means there's an imbalance bug somewhere.
-		 * Note that the bug may be in a different caller than the one which triggers the
-		 * WARN_ON_ONCE.
-		 */
+		 
 		if (WARN_ON_ONCE(adev->gfx.gfx_off_req_count == 0))
 			goto unlock;
 
@@ -813,9 +750,7 @@ int amdgpu_gfx_ras_sw_init(struct amdgpu_device *adev)
 	int err = 0;
 	struct amdgpu_gfx_ras *ras = NULL;
 
-	/* adev->gfx.ras is NULL, which means gfx does not
-	 * support ras function, then do nothing here.
-	 */
+	 
 	if (!adev->gfx.ras)
 		return 0;
 
@@ -832,11 +767,11 @@ int amdgpu_gfx_ras_sw_init(struct amdgpu_device *adev)
 	ras->ras_block.ras_comm.type = AMDGPU_RAS_ERROR__MULTI_UNCORRECTABLE;
 	adev->gfx.ras_if = &ras->ras_block.ras_comm;
 
-	/* If not define special ras_late_init function, use gfx default ras_late_init */
+	 
 	if (!ras->ras_block.ras_late_init)
 		ras->ras_block.ras_late_init = amdgpu_gfx_ras_late_init;
 
-	/* If not defined special ras_cb function, use default ras_cb */
+	 
 	if (!ras->ras_block.ras_cb)
 		ras->ras_block.ras_cb = amdgpu_gfx_process_ras_data_cb;
 
@@ -856,12 +791,7 @@ int amdgpu_gfx_process_ras_data_cb(struct amdgpu_device *adev,
 		void *err_data,
 		struct amdgpu_iv_entry *entry)
 {
-	/* TODO ue will trigger an interrupt.
-	 *
-	 * When “Full RAS” is enabled, the per-IP interrupt sources should
-	 * be disabled and the driver should only look for the aggregated
-	 * interrupt via sync flood
-	 */
+	 
 	if (!amdgpu_ras_is_supported(adev, AMDGPU_RAS_BLOCK__GFX)) {
 		kgd2kfd_set_sram_ecc_flag(adev->kfd.dev);
 		if (adev->gfx.ras && adev->gfx.ras->ras_block.hw_ops &&
@@ -942,14 +872,7 @@ uint32_t amdgpu_kiq_rreg(struct amdgpu_device *adev, uint32_t reg)
 
 	r = amdgpu_fence_wait_polling(ring, seq, MAX_KIQ_REG_WAIT);
 
-	/* don't wait anymore for gpu reset case because this way may
-	 * block gpu_recover() routine forever, e.g. this virt_kiq_rreg
-	 * is triggered in TTM and ttm_bo_lock_delayed_workqueue() will
-	 * never return if we keep waiting in virt_kiq_rreg, which cause
-	 * gpu_recover() hang there.
-	 *
-	 * also don't wait anymore for IRQ context
-	 * */
+	 
 	if (r < 1 && (amdgpu_in_reset(adev) || in_interrupt()))
 		goto failed_kiq_read;
 
@@ -1008,14 +931,7 @@ void amdgpu_kiq_wreg(struct amdgpu_device *adev, uint32_t reg, uint32_t v)
 
 	r = amdgpu_fence_wait_polling(ring, seq, MAX_KIQ_REG_WAIT);
 
-	/* don't wait anymore for gpu reset case because this way may
-	 * block gpu_recover() routine forever, e.g. this virt_kiq_rreg
-	 * is triggered in TTM and ttm_bo_lock_delayed_workqueue() will
-	 * never return if we keep waiting in virt_kiq_rreg, which cause
-	 * gpu_recover() hang there.
-	 *
-	 * also don't wait anymore for IRQ context
-	 * */
+	 
 	if (r < 1 && (amdgpu_in_reset(adev) || in_interrupt()))
 		goto failed_kiq_write;
 
@@ -1224,10 +1140,7 @@ static ssize_t amdgpu_gfx_set_compute_partition(struct device *dev,
 	if (!strncasecmp("SPX", buf, strlen("SPX"))) {
 		mode = AMDGPU_SPX_PARTITION_MODE;
 	} else if (!strncasecmp("DPX", buf, strlen("DPX"))) {
-		/*
-		 * DPX mode needs AIDs to be in multiple of 2.
-		 * Each AID connects 2 XCCs.
-		 */
+		 
 		if (num_xcc%4)
 			return -EINVAL;
 		mode = AMDGPU_DPX_PARTITION_MODE;
@@ -1261,7 +1174,7 @@ static ssize_t amdgpu_gfx_get_available_compute_partition(struct device *dev,
 	struct amdgpu_device *adev = drm_to_adev(ddev);
 	char *supported_partition;
 
-	/* TBD */
+	 
 	switch (NUM_XCC(adev->gfx.xcc_mask)) {
 	case 8:
 		supported_partition = "SPX, DPX, QPX, CPX";
@@ -1272,7 +1185,7 @@ static ssize_t amdgpu_gfx_get_available_compute_partition(struct device *dev,
 	case 4:
 		supported_partition = "SPX, DPX, CPX";
 		break;
-	/* this seems only existing in emulation phase */
+	 
 	case 2:
 		supported_partition = "SPX, CPX";
 		break;

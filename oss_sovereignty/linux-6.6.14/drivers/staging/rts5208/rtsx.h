@@ -1,13 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * Driver for Realtek PCI-Express card reader
- *
- * Copyright(c) 2009-2013 Realtek Semiconductor Corp. All rights reserved.
- *
- * Author:
- *   Wei WANG (wei_wang@realsil.com.cn)
- *   Micky Ching (micky_ching@realsil.com.cn)
- */
+ 
+ 
 
 #ifndef __REALTEK_RTSX_H
 #define __REALTEK_RTSX_H
@@ -36,9 +28,7 @@
 
 #define CR_DRIVER_NAME		"rts5208"
 
-/*
- * macros for easy use
- */
+ 
 #define rtsx_writel(chip, reg, value) \
 	iowrite32(value, (chip)->rtsx->remap_addr + reg)
 #define rtsx_readl(chip, reg) \
@@ -81,28 +71,28 @@ struct rtsx_chip;
 struct rtsx_dev {
 	struct pci_dev *pci;
 
-	/* pci resources */
+	 
 	unsigned long		addr;
 	void __iomem		*remap_addr;
 	int irq;
 
-	/* locks */
+	 
 	spinlock_t		reg_lock;
 
-	struct task_struct	*ctl_thread;	 /* the control thread   */
-	struct task_struct	*polling_thread; /* the polling thread   */
+	struct task_struct	*ctl_thread;	  
+	struct task_struct	*polling_thread;  
 
-	/* mutual exclusion and synchronization structures */
-	struct completion	cmnd_ready;	 /* to sleep thread on	    */
-	struct completion	control_exit;	 /* control thread exit	    */
-	struct completion	polling_exit;	 /* polling thread exit	    */
-	struct completion	notify;		 /* thread begin/end	    */
-	struct completion	scanning_done;	 /* wait for scan thread    */
+	 
+	struct completion	cmnd_ready;	  
+	struct completion	control_exit;	  
+	struct completion	polling_exit;	  
+	struct completion	notify;		  
+	struct completion	scanning_done;	  
 
-	wait_queue_head_t	delay_wait;	 /* wait during scan, reset */
+	wait_queue_head_t	delay_wait;	  
 	struct mutex		dev_mutex;
 
-	/* host reserved buffer */
+	 
 	void			*rtsx_resv_buf;
 	dma_addr_t		rtsx_resv_buf_addr;
 
@@ -110,13 +100,13 @@ struct rtsx_dev {
 	char			trans_state;
 
 	struct completion	*done;
-	/* Whether interrupt handler should care card cd info */
+	 
 	u32			check_card_cd;
 
 	struct rtsx_chip	*chip;
 };
 
-/* Convert between rtsx_dev and the corresponding Scsi_Host */
+ 
 static inline struct Scsi_Host *rtsx_to_host(struct rtsx_dev *dev)
 {
 	return container_of((void *)dev, struct Scsi_Host, hostdata);
@@ -127,17 +117,14 @@ static inline struct rtsx_dev *host_to_rtsx(struct Scsi_Host *host)
 	return (struct rtsx_dev *)host->hostdata;
 }
 
-/*
- * The scsi_lock() and scsi_unlock() macros protect the sm_state and the
- * single queue element srb for write access
- */
+ 
 #define scsi_unlock(host)	spin_unlock_irq(host->host_lock)
 #define scsi_lock(host)		spin_lock_irq(host->host_lock)
 
 #define lock_state(chip)	spin_lock_irq(&((chip)->rtsx->reg_lock))
 #define unlock_state(chip)	spin_unlock_irq(&((chip)->rtsx->reg_lock))
 
-/* struct scsi_cmnd transfer buffer access utilities */
+ 
 enum xfer_buf_dir	{TO_XFER_BUF, FROM_XFER_BUF};
 
 #include "rtsx_chip.h"
@@ -147,4 +134,4 @@ enum xfer_buf_dir	{TO_XFER_BUF, FROM_XFER_BUF};
 #include "rtsx_sys.h"
 #include "general.h"
 
-#endif  /* __REALTEK_RTSX_H */
+#endif   

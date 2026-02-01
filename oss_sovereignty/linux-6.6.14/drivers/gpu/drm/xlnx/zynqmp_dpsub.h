@@ -1,13 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * ZynqMP DPSUB Subsystem Driver
- *
- * Copyright (C) 2017 - 2020 Xilinx, Inc.
- *
- * Authors:
- * - Hyun Woo Kwon <hyun.kwon@xilinx.com>
- * - Laurent Pinchart <laurent.pinchart@ideasonboard.com>
- */
+ 
+ 
 
 #ifndef _ZYNQMP_DPSUB_H_
 #define _ZYNQMP_DPSUB_H_
@@ -39,23 +31,7 @@ enum zynqmp_dpsub_format {
 	ZYNQMP_DPSUB_FORMAT_YONLY,
 };
 
-/**
- * struct zynqmp_dpsub - ZynqMP DisplayPort Subsystem
- * @dev: The physical device
- * @apb_clk: The APB clock
- * @vid_clk: Video clock
- * @vid_clk_from_ps: True of the video clock comes from PS, false from PL
- * @aud_clk: Audio clock
- * @aud_clk_from_ps: True of the audio clock comes from PS, false from PL
- * @connected_ports: Bitmask of connected ports in the device tree
- * @dma_enabled: True if the DMA interface is enabled, false if the DPSUB is
- *	driven by the live input
- * @drm: The DRM/KMS device data
- * @bridge: The DP encoder bridge
- * @disp: The display controller
- * @dp: The DisplayPort controller
- * @dma_align: DMA alignment constraint (must be a power of 2)
- */
+ 
 struct zynqmp_dpsub {
 	struct device *dev;
 
@@ -83,4 +59,4 @@ unsigned int zynqmp_dpsub_get_audio_clk_rate(struct zynqmp_dpsub *dpsub);
 
 void zynqmp_dpsub_release(struct zynqmp_dpsub *dpsub);
 
-#endif /* _ZYNQMP_DPSUB_H_ */
+#endif  

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * AES CBC routines supporting the Power 7+ Nest Accelerators driver
- *
- * Copyright (C) 2011-2012 International Business Machines Inc.
- *
- * Author: Kent Yoder <yoder1@us.ibm.com>
- */
+
+ 
 
 #include <crypto/aes.h>
 #include <crypto/algapi.h>

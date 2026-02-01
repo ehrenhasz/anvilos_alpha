@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * vivid-meta-out.c - meta output support functions.
- */
+
+ 
 
 #include <linux/errno.h>
 #include <linux/kernel.h>
@@ -45,10 +43,7 @@ static int meta_out_buf_prepare(struct vb2_buffer *vb)
 	dprintk(dev, 1, "%s\n", __func__);
 
 	if (dev->buf_prepare_error) {
-		/*
-		 * Error injection: test what happens if buf_prepare() returns
-		 * an error.
-		 */
+		 
 		dev->buf_prepare_error = false;
 		return -EINVAL;
 	}
@@ -102,7 +97,7 @@ static int meta_out_start_streaming(struct vb2_queue *vq, unsigned int count)
 	return err;
 }
 
-/* abort streaming and wait for last buffer */
+ 
 static void meta_out_stop_streaming(struct vb2_queue *vq)
 {
 	struct vivid_dev *dev = vb2_get_drv_priv(vq);

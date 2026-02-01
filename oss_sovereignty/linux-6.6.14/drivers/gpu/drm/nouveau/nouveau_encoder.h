@@ -1,28 +1,4 @@
-/*
- * Copyright (C) 2008 Maarten Maathuis.
- * All Rights Reserved.
- *
- * Permission is hereby granted, free of charge, to any person obtaining
- * a copy of this software and associated documentation files (the
- * "Software"), to deal in the Software without restriction, including
- * without limitation the rights to use, copy, modify, merge, publish,
- * distribute, sublicense, and/or sell copies of the Software, and to
- * permit persons to whom the Software is furnished to do so, subject to
- * the following conditions:
- *
- * The above copyright notice and this permission notice (including the
- * next paragraph) shall be included in all copies or substantial
- * portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
- * IN NO EVENT SHALL THE COPYRIGHT OWNER(S) AND/OR ITS SUPPLIERS BE
- * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
- * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
- * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 
 #ifndef __NOUVEAU_ENCODER_H__
 #define __NOUVEAU_ENCODER_H__
@@ -52,12 +28,11 @@ struct nouveau_encoder {
 	struct i2c_adapter *i2c;
 	struct nvkm_i2c_aux *aux;
 
-	/* different to drm_encoder.crtc, this reflects what's
-	 * actually programmed on the hw, not the proposed crtc */
+	 
 	struct drm_crtc *crtc;
 	u32 ctrl;
 
-	/* Protected by nouveau_drm.audio.lock */
+	 
 	struct {
 		bool enabled;
 		struct drm_connector *connector;
@@ -74,9 +49,7 @@ struct nouveau_encoder {
 			int link_nr;
 			int link_bw;
 
-			/* Protects DP state that needs to be accessed outside
-			 * connector reprobing contexts
-			 */
+			 
 			struct mutex hpd_irq_lock;
 
 			u8 dpcd[DP_RECEIVER_CAP_SIZE];
@@ -102,7 +75,7 @@ struct nv50_mstm {
 
 	struct drm_dp_mst_topology_mgr mgr;
 
-	/* Protected under nouveau_encoder->dp.hpd_irq_lock */
+	 
 	bool can_mst;
 	bool is_mst;
 	bool suspended;
@@ -133,7 +106,7 @@ get_slave_funcs(struct drm_encoder *enc)
 	return to_encoder_slave(enc)->slave_funcs;
 }
 
-/* nouveau_dp.c */
+ 
 enum nouveau_dp_status {
 	NOUVEAU_DP_NONE,
 	NOUVEAU_DP_SST,
@@ -157,4 +130,4 @@ void nv50_mstm_remove(struct nv50_mstm *mstm);
 bool nv50_mstm_service(struct nouveau_drm *drm,
 		       struct nouveau_connector *nv_connector,
 		       struct nv50_mstm *mstm);
-#endif /* __NOUVEAU_ENCODER_H__ */
+#endif  

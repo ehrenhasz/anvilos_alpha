@@ -1,35 +1,4 @@
-/*
- * Copyright (c) 2006, 2007, 2008, 2009 QLogic Corporation. All rights reserved.
- * Copyright (c) 2005, 2006 PathScale, Inc. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 
 #include <linux/spinlock.h>
 #include <rdma/ib_smi.h>
@@ -37,10 +6,7 @@
 #include "qib.h"
 #include "qib_mad.h"
 
-/*
- * Switch to alternate path.
- * The QP s_lock should be held and interrupts disabled.
- */
+ 
 void qib_migrate_qp(struct rvt_qp *qp)
 {
 	struct ib_event ev;
@@ -73,12 +39,7 @@ static int gid_ok(union ib_gid *gid, __be64 gid_prefix, __be64 id)
 		 gid->global.subnet_prefix == IB_DEFAULT_GID_PREFIX));
 }
 
-/*
- *
- * This should be called with the QP r_lock held.
- *
- * The s_lock will be acquired around the qib_migrate_qp() call.
- */
+ 
 int qib_ruc_check_hdr(struct qib_ibport *ibp, struct ib_header *hdr,
 		      int has_grh, struct rvt_qp *qp, u32 bth0)
 {
@@ -115,7 +76,7 @@ int qib_ruc_check_hdr(struct qib_ibport *ibp, struct ib_header *hdr,
 				     hdr->lrh[3], hdr->lrh[1]);
 			goto err;
 		}
-		/* Validate the SLID. See Ch. 9.6.1.5 and 17.2.8 */
+		 
 		if ((be16_to_cpu(hdr->lrh[3]) !=
 		     rdma_ah_get_dlid(&qp->alt_ah_attr)) ||
 		    ppd_from_ibp(ibp)->port !=
@@ -154,7 +115,7 @@ int qib_ruc_check_hdr(struct qib_ibport *ibp, struct ib_header *hdr,
 				     hdr->lrh[3], hdr->lrh[1]);
 			goto err;
 		}
-		/* Validate the SLID. See Ch. 9.6.1.5 */
+		 
 		if (be16_to_cpu(hdr->lrh[3]) !=
 		    rdma_ah_get_dlid(&qp->remote_ah_attr) ||
 		    ppd_from_ibp(ibp)->port != qp->port_num)
@@ -170,16 +131,7 @@ err:
 	return 1;
 }
 
-/**
- * qib_make_grh - construct a GRH header
- * @ibp: a pointer to the IB port
- * @hdr: a pointer to the GRH header being constructed
- * @grh: the global route address to send to
- * @hwords: the number of 32 bit words of header being sent
- * @nwords: the number of 32 bit words of data being sent
- *
- * Return the size of the header in 32 bit words.
- */
+ 
 u32 qib_make_grh(struct qib_ibport *ibp, struct ib_grh *hdr,
 		 const struct ib_global_route *grh, u32 hwords, u32 nwords)
 {
@@ -188,10 +140,10 @@ u32 qib_make_grh(struct qib_ibport *ibp, struct ib_grh *hdr,
 			    (grh->traffic_class << IB_GRH_TCLASS_SHIFT) |
 			    (grh->flow_label << IB_GRH_FLOW_SHIFT));
 	hdr->paylen = cpu_to_be16((hwords - 2 + nwords + SIZE_OF_CRC) << 2);
-	/* next_hdr is defined by C8-7 in ch. 8.4.1 */
+	 
 	hdr->next_hdr = IB_GRH_NEXT_HDR;
 	hdr->hop_limit = grh->hop_limit;
-	/* The SGID is 32-bit aligned. */
+	 
 	hdr->sgid.global.subnet_prefix = ibp->rvp.gid_prefix;
 	if (!grh->sgid_index)
 		hdr->sgid.global.interface_id = ppd_from_ibp(ibp)->guid;
@@ -199,7 +151,7 @@ u32 qib_make_grh(struct qib_ibport *ibp, struct ib_grh *hdr,
 		hdr->sgid.global.interface_id = ibp->guids[grh->sgid_index - 1];
 	hdr->dgid = grh->dgid;
 
-	/* GRH header size in 32-bit words. */
+	 
 	return sizeof(struct ib_grh) / sizeof(u32);
 }
 
@@ -212,7 +164,7 @@ void qib_make_ruc_header(struct rvt_qp *qp, struct ib_other_headers *ohdr,
 	u32 nwords;
 	u32 extra_bytes;
 
-	/* Construct the header. */
+	 
 	extra_bytes = -qp->s_cur_size & 3;
 	nwords = (qp->s_cur_size + extra_bytes) >> 2;
 	lrh0 = QIB_LRH_BTH;
@@ -252,14 +204,7 @@ void _qib_do_send(struct work_struct *work)
 	qib_do_send(qp);
 }
 
-/**
- * qib_do_send - perform a send on a QP
- * @qp: pointer to the QP
- *
- * Process entries in the send work queue until credit or queue is
- * exhausted.  Only allow one CPU to send a packet per QP (tasklet).
- * Otherwise, two threads could send packets out of order.
- */
+ 
 void qib_do_send(struct rvt_qp *qp)
 {
 	struct qib_qp_priv *priv = qp->priv;
@@ -285,7 +230,7 @@ void qib_do_send(struct rvt_qp *qp)
 
 	spin_lock_irqsave(&qp->s_lock, flags);
 
-	/* Return if we are already busy processing a work request. */
+	 
 	if (!qib_send_ok(qp)) {
 		spin_unlock_irqrestore(&qp->s_lock, flags);
 		return;
@@ -294,17 +239,14 @@ void qib_do_send(struct rvt_qp *qp)
 	qp->s_flags |= RVT_S_BUSY;
 
 	do {
-		/* Check for a constructed packet to be sent. */
+		 
 		if (qp->s_hdrwords != 0) {
 			spin_unlock_irqrestore(&qp->s_lock, flags);
-			/*
-			 * If the packet cannot be sent now, return and
-			 * the send tasklet will be woken up later.
-			 */
+			 
 			if (qib_verbs_send(qp, priv->s_hdr, qp->s_hdrwords,
 					   qp->s_cur_sge, qp->s_cur_size))
 				return;
-			/* Record that s_hdr is empty. */
+			 
 			qp->s_hdrwords = 0;
 			spin_lock_irqsave(&qp->s_lock, flags);
 		}

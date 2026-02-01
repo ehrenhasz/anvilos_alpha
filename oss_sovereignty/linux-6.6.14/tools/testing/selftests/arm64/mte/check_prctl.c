@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (C) 2022 ARM Limited
+
+
 
 #include <stdbool.h>
 #include <stdio.h>
@@ -34,10 +34,7 @@ static int get_tagged_addr_ctrl(void)
 	return ret;
 }
 
-/*
- * Read the current mode without having done any configuration, should
- * run first.
- */
+ 
 void check_basic_read(void)
 {
 	int ret;
@@ -53,13 +50,11 @@ void check_basic_read(void)
 	if (ret & PR_MTE_TCF_ASYNC)
 		ksft_print_msg("ASYNC enabled\n");
 
-	/* Any configuration is valid */
+	 
 	ksft_test_result_pass("check_basic_read\n");
 }
 
-/*
- * Attempt to set a specified combination of modes.
- */
+ 
 void set_mode_test(const char *name, int hwcap2, int mask)
 {
 	int ret;

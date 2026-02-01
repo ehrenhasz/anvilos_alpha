@@ -1,27 +1,4 @@
-/*
- * Copyright 2021 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 
 #include "dm_services.h"
@@ -137,7 +114,7 @@
 #define DCN3_15_MAX_DET_SIZE 384
 #define DCN3_15_CRB_SEGMENT_SIZE_KB 64
 #define DCN3_15_MAX_DET_SEGS (DCN3_15_MAX_DET_SIZE / DCN3_15_CRB_SEGMENT_SIZE_KB)
-/* Minimum 2 extra segments need to be in compbuf and claimable to guarantee seamless mpo transitions */
+ 
 #define MIN_RESERVED_DET_SEGS 2
 
 enum dcn31_clk_src_array_id {
@@ -149,11 +126,9 @@ enum dcn31_clk_src_array_id {
 	DCN30_CLK_SRC_TOTAL
 };
 
-/* begin *********************
- * macros to expend register list macro defined in HW object header file
- */
+ 
 
-/* DCN */
+ 
 #define BASE_INNER(seg) DCN_BASE__INST0_SEG ## seg
 
 #define BASE(seg) BASE_INNER(seg)
@@ -197,7 +172,7 @@ enum dcn31_clk_src_array_id {
 	.reg_name[id] = BASE(reg ## reg_name ## _ ## block ## id ## _BASE_IDX) + \
 					reg ## reg_name ## _ ## block ## id
 
-/* NBIO */
+ 
 #define NBIO_BASE_INNER(seg) \
 	NBIO_BASE__INST0_SEG ## seg
 
@@ -843,7 +818,7 @@ static const struct dc_plane_cap plane_cap = {
 			.fp16 = 16000
 	},
 
-	// 6:1 downscaling ratio: 1000/6 = 166.666
+	
 	.max_downscale_factor = {
 			.argb8888 = 167,
 			.nv12 = 167,
@@ -854,7 +829,7 @@ static const struct dc_plane_cap plane_cap = {
 };
 
 static const struct dc_debug_options debug_defaults_drv = {
-	.disable_z10 = true, /*hw not support it*/
+	.disable_z10 = true,  
 	.disable_dmcu = true,
 	.force_abm_enable = false,
 	.timing_trace = false,
@@ -865,12 +840,12 @@ static const struct dc_debug_options debug_defaults_drv = {
 	.disable_dcc = DCC_ENABLE,
 	.vsr_support = true,
 	.performance_trace = false,
-	.max_downscale_src_width = 4096,/*upto true 4k*/
+	.max_downscale_src_width = 4096, 
 	.disable_pplib_wm_range = false,
 	.scl_reset_length10 = true,
 	.sanity_checks = false,
 	.underflow_assert_delay_us = 0xFFFFFFFF,
-	.dwb_fi_phase = -1, // -1 = disable,
+	.dwb_fi_phase = -1, 
 	.dmub_command_table = true,
 	.pstate_enabled = true,
 	.use_max_lb = true,
@@ -878,7 +853,7 @@ static const struct dc_debug_options debug_defaults_drv = {
 		.bits = {
 			.vga = true,
 			.i2c = true,
-			.dmcu = false, // This is previously known to cause hang on S3 cycles if enabled
+			.dmcu = false, 
 			.dscl = true,
 			.cm = true,
 			.mpc = true,
@@ -1104,10 +1079,7 @@ static struct link_encoder *dcn31_link_encoder_create(
 	return &enc20->enc10.base;
 }
 
-/* Create a minimal link encoder object not associated with a particular
- * physical connector.
- * resource_funcs.link_enc_create_minimal
- */
+ 
 static struct link_encoder *dcn31_link_enc_create_minimal(
 		struct dc_context *ctx, enum engine_id eng_id)
 {
@@ -1190,7 +1162,7 @@ static struct afmt *dcn31_afmt_create(
 			&afmt_shift,
 			&afmt_mask);
 
-	// Light sleep by default, no need to power down here
+	
 
 	return &afmt31->base;
 }
@@ -1222,9 +1194,9 @@ static struct stream_encoder *dcn315_stream_encoder_create(
 	int vpg_inst;
 	int afmt_inst;
 
-	/*PHYB is wired off in HW, allow front end to remapping, otherwise needs more changes*/
+	 
 
-	/* Mapping of VPG, AFMT, DME register blocks to DIO block instance */
+	 
 	if (eng_id <= ENGINE_ID_DIGF) {
 		vpg_inst = eng_id;
 		afmt_inst = eng_id;
@@ -1264,23 +1236,13 @@ static struct hpo_dp_stream_encoder *dcn31_hpo_dp_stream_encoder_create(
 	ASSERT((eng_id >= ENGINE_ID_HPO_DP_0) && (eng_id <= ENGINE_ID_HPO_DP_3));
 	hpo_dp_inst = eng_id - ENGINE_ID_HPO_DP_0;
 
-	/* Mapping of VPG register blocks to HPO DP block instance:
-	 * VPG[6] -> HPO_DP[0]
-	 * VPG[7] -> HPO_DP[1]
-	 * VPG[8] -> HPO_DP[2]
-	 * VPG[9] -> HPO_DP[3]
-	 */
+	 
 	vpg_inst = hpo_dp_inst + 6;
 
-	/* Mapping of APG register blocks to HPO DP block instance:
-	 * APG[0] -> HPO_DP[0]
-	 * APG[1] -> HPO_DP[1]
-	 * APG[2] -> HPO_DP[2]
-	 * APG[3] -> HPO_DP[3]
-	 */
+	 
 	apg_inst = hpo_dp_inst;
 
-	/* allocate HPO stream encoder and create VPG sub-block */
+	 
 	hpo_dp_enc31 = kzalloc(sizeof(struct dcn31_hpo_dp_stream_encoder), GFP_KERNEL);
 	vpg = dcn31_vpg_create(ctx, vpg_inst);
 	apg = dcn31_apg_create(ctx, apg_inst);
@@ -1306,7 +1268,7 @@ static struct hpo_dp_link_encoder *dcn31_hpo_dp_link_encoder_create(
 {
 	struct dcn31_hpo_dp_link_encoder *hpo_dp_enc31;
 
-	/* allocate HPO link encoder */
+	 
 	hpo_dp_enc31 = kzalloc(sizeof(struct dcn31_hpo_dp_link_encoder), GFP_KERNEL);
 
 	hpo_dp_link_encoder31_construct(hpo_dp_enc31, ctx, inst,
@@ -1630,7 +1592,7 @@ static bool allow_pixel_rate_crb(struct dc *dc, struct dc_state *context)
 	int i;
 	struct resource_context *res_ctx = &context->res_ctx;
 
-	/*Don't apply for single stream*/
+	 
 	if (context->stream_count < 2)
 		return false;
 
@@ -1638,7 +1600,7 @@ static bool allow_pixel_rate_crb(struct dc *dc, struct dc_state *context)
 		if (!res_ctx->pipe_ctx[i].stream)
 			continue;
 
-		/*Don't apply if scaling*/
+		 
 		if (res_ctx->pipe_ctx[i].stream->src.width != res_ctx->pipe_ctx[i].stream->dst.width ||
 				res_ctx->pipe_ctx[i].stream->src.height != res_ctx->pipe_ctx[i].stream->dst.height ||
 				(res_ctx->pipe_ctx[i].plane_state && (res_ctx->pipe_ctx[i].plane_state->src_rect.width
@@ -1646,7 +1608,7 @@ static bool allow_pixel_rate_crb(struct dc *dc, struct dc_state *context)
 					res_ctx->pipe_ctx[i].plane_state->src_rect.height
 														!= res_ctx->pipe_ctx[i].plane_state->dst_rect.height)))
 			return false;
-		/*Don't apply if MPO to avoid transition issues*/
+		 
 		if (res_ctx->pipe_ctx[i].top_pipe && res_ctx->pipe_ctx[i].top_pipe->plane_state != res_ctx->pipe_ctx[i].plane_state)
 			return false;
 	}
@@ -1677,11 +1639,7 @@ static int dcn315_populate_dml_pipes_from_context(
 		pipe = &res_ctx->pipe_ctx[i];
 		timing = &pipe->stream->timing;
 
-		/*
-		 * Immediate flip can be set dynamically after enabling the plane.
-		 * We need to require support for immediate flip or underflow can be
-		 * intermittently experienced depending on peak b/w requirements.
-		 */
+		 
 		pipes[pipe_cnt].pipe.src.immediate_flip = true;
 
 		pipes[pipe_cnt].pipe.src.unbounded_req_mode = false;
@@ -1692,7 +1650,7 @@ static int dcn315_populate_dml_pipes_from_context(
 		dcn31_zero_pipe_dcc_fraction(pipes, pipe_cnt);
 		if (pixel_rate_crb && !pipe->top_pipe && !pipe->prev_odm_pipe) {
 			int bpp = source_format_to_bpp(pipes[pipe_cnt].pipe.src.source_format);
-			/* Ceil to crb segment size */
+			 
 			int approx_det_segs_required_for_pstate = dcn_get_approx_det_segs_required_for_pstate(
 					&context->bw_ctx.dml.soc, timing->pix_clk_100hz, bpp, DCN3_15_CRB_SEGMENT_SIZE_KB);
 
@@ -1701,7 +1659,7 @@ static int dcn315_populate_dml_pipes_from_context(
 				split_required = split_required || timing->pix_clk_100hz >= dcn_get_max_non_odm_pix_rate_100hz(&dc->dml.soc);
 				split_required = split_required || (pipe->plane_state && pipe->plane_state->src_rect.width > 5120);
 
-				/* Minimum 2 segments to allow mpc/odm combine if its used later */
+				 
 				if (approx_det_segs_required_for_pstate < 2)
 					approx_det_segs_required_for_pstate = 2;
 				if (split_required)
@@ -1733,14 +1691,14 @@ static int dcn315_populate_dml_pipes_from_context(
 		pipe_cnt++;
 	}
 
-	/* Spread remaining unreserved crb evenly among all pipes*/
+	 
 	if (pixel_rate_crb) {
 		for (i = 0, pipe_cnt = 0, crb_idx = 0; i < dc->res_pool->pipe_count; i++) {
 			pipe = &res_ctx->pipe_ctx[i];
 			if (!pipe->stream)
 				continue;
 
-			/* Do not use asymetric crb if not enough for pstate support */
+			 
 			if (remaining_det_segs < 0) {
 				pipes[pipe_cnt].pipe.src.det_size_override = 0;
 				pipe_cnt++;
@@ -1755,16 +1713,16 @@ static int dcn315_populate_dml_pipes_from_context(
 					pipes[pipe_cnt].pipe.src.det_size_override += (remaining_det_segs - MIN_RESERVED_DET_SEGS) / crb_pipes +
 							(crb_idx < (remaining_det_segs - MIN_RESERVED_DET_SEGS) % crb_pipes ? 1 : 0);
 				if (pipes[pipe_cnt].pipe.src.det_size_override > 2 * DCN3_15_MAX_DET_SEGS) {
-					/* Clamp to 2 pipe split max det segments */
+					 
 					remaining_det_segs += pipes[pipe_cnt].pipe.src.det_size_override - 2 * (DCN3_15_MAX_DET_SEGS);
 					pipes[pipe_cnt].pipe.src.det_size_override = 2 * DCN3_15_MAX_DET_SEGS;
 				}
 				if (pipes[pipe_cnt].pipe.src.det_size_override > DCN3_15_MAX_DET_SEGS || split_required) {
-					/* If we are splitting we must have an even number of segments */
+					 
 					remaining_det_segs += pipes[pipe_cnt].pipe.src.det_size_override % 2;
 					pipes[pipe_cnt].pipe.src.det_size_override -= pipes[pipe_cnt].pipe.src.det_size_override % 2;
 				}
-				/* Convert segments into size for DML use */
+				 
 				pipes[pipe_cnt].pipe.src.det_size_override *= DCN3_15_CRB_SEGMENT_SIZE_KB;
 
 				crb_idx++;
@@ -1789,7 +1747,7 @@ static int dcn315_populate_dml_pipes_from_context(
 		} else if (!is_dual_plane(pipe->plane_state->format)
 				&& pipe->plane_state->src_rect.width <= 5120
 				&& pipe->stream->timing.pix_clk_100hz < dcn_get_max_non_odm_pix_rate_100hz(&dc->dml.soc)) {
-			/* Limit to 5k max to avoid forced pipe split when there is not enough detile for swath */
+			 
 			context->bw_ctx.dml.ip.det_buffer_size_kbytes = 192;
 			pipes[0].pipe.src.unbounded_req_mode = true;
 		}
@@ -1847,9 +1805,7 @@ static bool dcn315_resource_construct(
 
 	pool->base.funcs = &dcn315_res_pool_funcs;
 
-	/*************************************************
-	 *  Resource + asic cap harcoding                *
-	 *************************************************/
+	 
 	pool->base.underlay_pipe_index = NO_UNDERLAY_PIPE;
 	pool->base.pipe_count = pool->base.res_cap->num_timing_generator;
 	pool->base.mpcc_count = pool->base.res_cap->num_timing_generator;
@@ -1873,11 +1829,11 @@ static bool dcn315_resource_construct(
 	dc->caps.dmcub_support = true;
 	dc->caps.is_apu = true;
 
-	/* Color pipeline capabilities */
+	 
 	dc->caps.color.dpp.dcn_arch = 1;
 	dc->caps.color.dpp.input_lut_shared = 0;
 	dc->caps.color.dpp.icsc = 1;
-	dc->caps.color.dpp.dgam_ram = 0; // must use gamma_corr
+	dc->caps.color.dpp.dgam_ram = 0; 
 	dc->caps.color.dpp.dgam_rom_caps.srgb = 1;
 	dc->caps.color.dpp.dgam_rom_caps.bt2020 = 1;
 	dc->caps.color.dpp.dgam_rom_caps.gamma2_2 = 1;
@@ -1889,7 +1845,7 @@ static bool dcn315_resource_construct(
 
 	dc->caps.color.dpp.hw_3d_lut = 1;
 	dc->caps.color.dpp.ogam_ram = 1;
-	// no OGAM ROM on DCN301
+	
 	dc->caps.color.dpp.ogam_rom_caps.srgb = 0;
 	dc->caps.color.dpp.ogam_rom_caps.bt2020 = 0;
 	dc->caps.color.dpp.ogam_rom_caps.gamma2_2 = 0;
@@ -1898,7 +1854,7 @@ static bool dcn315_resource_construct(
 	dc->caps.color.dpp.ocsc = 0;
 
 	dc->caps.color.mpc.gamut_remap = 1;
-	dc->caps.color.mpc.num_3dluts = pool->base.res_cap->num_mpc_3dlut; //2
+	dc->caps.color.mpc.num_3dluts = pool->base.res_cap->num_mpc_3dlut; 
 	dc->caps.color.mpc.ogam_ram = 1;
 	dc->caps.color.mpc.ogam_rom_caps.srgb = 0;
 	dc->caps.color.mpc.ogam_rom_caps.bt2020 = 0;
@@ -1907,7 +1863,7 @@ static bool dcn315_resource_construct(
 	dc->caps.color.mpc.ogam_rom_caps.hlg = 0;
 	dc->caps.color.mpc.ocsc = 1;
 
-	/* read VBIOS LTTPR caps */
+	 
 	{
 		if (ctx->dc_bios->funcs->get_lttpr_caps) {
 			enum bp_result bp_query_result;
@@ -1917,7 +1873,7 @@ static bool dcn315_resource_construct(
 			dc->caps.vbios_lttpr_enable = (bp_query_result == BP_RESULT_OK) && !!is_vbios_lttpr_enable;
 		}
 
-		/* interop bit is implicit */
+		 
 		{
 			dc->caps.vbios_lttpr_aware = true;
 		}
@@ -1926,15 +1882,13 @@ static bool dcn315_resource_construct(
 	if (dc->ctx->dce_environment == DCE_ENV_PRODUCTION_DRV)
 		dc->debug = debug_defaults_drv;
 
-	// Init the vm_helper
+	
 	if (dc->vm_helper)
 		vm_helper_init(dc->vm_helper, 16);
 
-	/*************************************************
-	 *  Create resources                             *
-	 *************************************************/
+	 
 
-	/* Clock Sources for Pixel Clock*/
+	 
 	pool->base.clock_sources[DCN31_CLK_SRC_PLL0] =
 			dcn31_clock_source_create(ctx, ctx->dc_bios,
 				CLOCK_SOURCE_COMBO_PHY_PLL0,
@@ -1958,7 +1912,7 @@ static bool dcn315_resource_construct(
 
 	pool->base.clk_src_count = DCN30_CLK_SRC_TOTAL;
 
-	/* todo: not reuse phy_pll registers */
+	 
 	pool->base.dp_clock_source =
 			dcn31_clock_source_create(ctx, ctx->dc_bios,
 				CLOCK_SOURCE_ID_DP_DTO,
@@ -1972,7 +1926,7 @@ static bool dcn315_resource_construct(
 		}
 	}
 
-	/* TODO: DCCG */
+	 
 	pool->base.dccg = dccg31_create(ctx, &dccg_regs, &dccg_shift, &dccg_mask);
 	if (pool->base.dccg == NULL) {
 		dm_error("DC: failed to create dccg!\n");
@@ -1980,13 +1934,13 @@ static bool dcn315_resource_construct(
 		goto create_fail;
 	}
 
-	/* TODO: IRQ */
+	 
 	init_data.ctx = dc->ctx;
 	pool->base.irqs = dal_irq_service_dcn315_create(&init_data);
 	if (!pool->base.irqs)
 		goto create_fail;
 
-	/* HUBBUB */
+	 
 	pool->base.hubbub = dcn31_hubbub_create(ctx);
 	if (pool->base.hubbub == NULL) {
 		BREAK_TO_DEBUGGER();
@@ -1994,7 +1948,7 @@ static bool dcn315_resource_construct(
 		goto create_fail;
 	}
 
-	/* HUBPs, DPPs, OPPs and TGs */
+	 
 	for (i = 0; i < pool->base.pipe_count; i++) {
 		pool->base.hubps[i] = dcn31_hubp_create(ctx, i);
 		if (pool->base.hubps[i] == NULL) {
@@ -2034,7 +1988,7 @@ static bool dcn315_resource_construct(
 	}
 	pool->base.timing_generator_count = i;
 
-	/* PSR */
+	 
 	pool->base.psr = dmub_psr_create(ctx);
 	if (pool->base.psr == NULL) {
 		dm_error("DC: failed to create psr obj!\n");
@@ -2042,7 +1996,7 @@ static bool dcn315_resource_construct(
 		goto create_fail;
 	}
 
-	/* ABM */
+	 
 	for (i = 0; i < pool->base.res_cap->num_timing_generator; i++) {
 		pool->base.multiple_abms[i] = dmub_abm_create(ctx,
 				&abm_regs[i],
@@ -2055,7 +2009,7 @@ static bool dcn315_resource_construct(
 		}
 	}
 
-	/* MPC and DSC */
+	 
 	pool->base.mpc = dcn31_mpc_create(ctx, pool->base.mpcc_count, pool->base.res_cap->num_mpc_3dlut);
 	if (pool->base.mpc == NULL) {
 		BREAK_TO_DEBUGGER();
@@ -2072,7 +2026,7 @@ static bool dcn315_resource_construct(
 		}
 	}
 
-	/* DWB and MMHUBBUB */
+	 
 	if (!dcn31_dwbc_create(ctx, &pool->base)) {
 		BREAK_TO_DEBUGGER();
 		dm_error("DC: failed to create dwbc!\n");
@@ -2085,7 +2039,7 @@ static bool dcn315_resource_construct(
 		goto create_fail;
 	}
 
-	/* AUX and I2C */
+	 
 	for (i = 0; i < pool->base.res_cap->num_ddc; i++) {
 		pool->base.engines[i] = dcn31_aux_engine_create(ctx, i);
 		if (pool->base.engines[i] == NULL) {
@@ -2104,12 +2058,12 @@ static bool dcn315_resource_construct(
 		pool->base.sw_i2cs[i] = NULL;
 	}
 
-	/* Audio, Stream Encoders including HPO and virtual, MPC 3D LUTs */
+	 
 	if (!resource_construct(num_virtual_links, dc, &pool->base,
 			&res_create_funcs))
 		goto create_fail;
 
-	/* HW Sequencer and Plane caps */
+	 
 	dcn31_hw_sequencer_construct(dc);
 
 	dc->caps.max_planes =  pool->base.pipe_count;

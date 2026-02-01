@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * ledtrig-gio.c - LED Trigger Based on GPIO events
- *
- * Copyright 2009 Felipe Balbi <me@felipebalbi.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -17,9 +13,9 @@
 struct gpio_trig_data {
 	struct led_classdev *led;
 
-	unsigned desired_brightness;	/* desired brightness when led is on */
-	unsigned inverted;		/* true when gpio is inverted */
-	unsigned gpio;			/* gpio that triggers the leds */
+	unsigned desired_brightness;	 
+	unsigned inverted;		 
+	unsigned gpio;			 
 };
 
 static irqreturn_t gpio_trig_irq(int irq, void *_led)
@@ -98,7 +94,7 @@ static ssize_t gpio_trig_inverted_store(struct device *dev,
 
 	gpio_data->inverted = inverted;
 
-	/* After inverting, we need to update the LED. */
+	 
 	if (gpio_is_valid(gpio_data->gpio))
 		gpio_trig_irq(0, led);
 
@@ -148,7 +144,7 @@ static ssize_t gpio_trig_gpio_store(struct device *dev,
 		if (gpio_is_valid(gpio_data->gpio))
 			free_irq(gpio_to_irq(gpio_data->gpio), led);
 		gpio_data->gpio = gpio;
-		/* After changing the GPIO, we need to update the LED. */
+		 
 		gpio_trig_irq(0, led);
 	}
 

@@ -1,35 +1,12 @@
-/*
- * Copyright 2012-16 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 #ifndef DRIVERS_GPU_DRM_AMD_DC_DEV_DC_GPIO_DDC_REGS_H_
 #define DRIVERS_GPU_DRM_AMD_DC_DEV_DC_GPIO_DDC_REGS_H_
 
 #include "gpio_regs.h"
 
-/****************************** new register headers */
-/*** following in header */
+ 
+ 
 
 #define DDC_GPIO_REG_LIST_ENTRY(type, cd, id) \
 	.type ## _reg =   REG(DC_GPIO_DDC ## id ## _ ## type),\
@@ -128,25 +105,25 @@ struct ddc_registers {
 };
 
 struct ddc_sh_mask {
-	/* i2c_dd_setup */
+	 
 	uint32_t DC_I2C_DDC1_ENABLE;
 	uint32_t DC_I2C_DDC1_EDID_DETECT_ENABLE;
 	uint32_t DC_I2C_DDC1_EDID_DETECT_MODE;
-	/* ddc1_mask */
+	 
 	uint32_t DC_GPIO_DDC1DATA_PD_EN;
 	uint32_t DC_GPIO_DDC1CLK_PD_EN;
 	uint32_t AUX_PAD1_MODE;
-	/* i2cpad_mask */
+	 
 	uint32_t DC_GPIO_SDA_PD_DIS;
 	uint32_t DC_GPIO_SCL_PD_DIS;
-	//phy_aux_cntl
+	
 	uint32_t AUX_PAD_RXSEL;
 	uint32_t DDC_PAD_I2CMODE;
 };
 
 
 
-/*** following in dc_resource */
+ 
 
 #define ddc_data_regs(id) \
 {\
@@ -198,4 +175,4 @@ struct ddc_sh_mask {
 }
 
 
-#endif /* DRIVERS_GPU_DRM_AMD_DC_DEV_DC_GPIO_DDC_REGS_H_ */
+#endif  

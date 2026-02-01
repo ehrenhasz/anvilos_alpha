@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2018 Spreadtrum Communications Inc.
- * Copyright (C) 2018 Linaro Ltd.
- */
+
+ 
 
 #include <linux/gpio/driver.h>
 #include <linux/interrupt.h>
@@ -12,7 +9,7 @@
 #include <linux/platform_device.h>
 #include <linux/regmap.h>
 
-/* EIC registers definition */
+ 
 #define SPRD_PMIC_EIC_DATA		0x0
 #define SPRD_PMIC_EIC_DMSK		0x4
 #define SPRD_PMIC_EIC_IEV		0x14
@@ -23,20 +20,14 @@
 #define SPRD_PMIC_EIC_TRIG		0x28
 #define SPRD_PMIC_EIC_CTRL0		0x40
 
-/*
- * The PMIC EIC controller only has one bank, and each bank now can contain
- * 16 EICs.
- */
+ 
 #define SPRD_PMIC_EIC_PER_BANK_NR	16
 #define SPRD_PMIC_EIC_NR		SPRD_PMIC_EIC_PER_BANK_NR
 #define SPRD_PMIC_EIC_DATA_MASK		GENMASK(15, 0)
 #define SPRD_PMIC_EIC_BIT(x)		((x) & (SPRD_PMIC_EIC_PER_BANK_NR - 1))
 #define SPRD_PMIC_EIC_DBNC_MASK		GENMASK(11, 0)
 
-/*
- * These registers are modified under the irq bus lock and cached to avoid
- * unnecessary writes in bus_sync_unlock.
- */
+ 
 enum {
 	REG_IEV,
 	REG_IE,
@@ -44,15 +35,7 @@ enum {
 	CACHE_NR_REGS
 };
 
-/**
- * struct sprd_pmic_eic - PMIC EIC controller
- * @chip: the gpio_chip structure.
- * @map:  the regmap from the parent device.
- * @offset: the EIC controller's offset address of the PMIC.
- * @reg: the array to cache the EIC registers.
- * @buslock: for bus lock/sync and unlock.
- * @irq: the interrupt number of the PMIC EIC conteroller.
- */
+ 
 struct sprd_pmic_eic {
 	struct gpio_chip chip;
 	struct regmap *map;
@@ -105,14 +88,14 @@ static int sprd_pmic_eic_get(struct gpio_chip *chip, unsigned int offset)
 static int sprd_pmic_eic_direction_input(struct gpio_chip *chip,
 					 unsigned int offset)
 {
-	/* EICs are always input, nothing need to do here. */
+	 
 	return 0;
 }
 
 static void sprd_pmic_eic_set(struct gpio_chip *chip, unsigned int offset,
 			      int value)
 {
-	/* EICs are always input, nothing need to do here. */
+	 
 }
 
 static int sprd_pmic_eic_set_debounce(struct gpio_chip *chip,
@@ -185,10 +168,7 @@ static int sprd_pmic_eic_irq_set_type(struct irq_data *data,
 	case IRQ_TYPE_EDGE_RISING:
 	case IRQ_TYPE_EDGE_FALLING:
 	case IRQ_TYPE_EDGE_BOTH:
-		/*
-		 * Will set the trigger level according to current EIC level
-		 * in irq_bus_sync_unlock() interface, so here nothing to do.
-		 */
+		 
 		break;
 	default:
 		return -ENOTSUPP;
@@ -213,7 +193,7 @@ static void sprd_pmic_eic_bus_sync_unlock(struct irq_data *data)
 	u32 offset = irqd_to_hwirq(data);
 	int state;
 
-	/* Set irq type */
+	 
 	if (trigger & IRQ_TYPE_EDGE_BOTH) {
 		state = sprd_pmic_eic_get(chip, offset);
 		if (state)
@@ -225,10 +205,10 @@ static void sprd_pmic_eic_bus_sync_unlock(struct irq_data *data)
 				     pmic_eic->reg[REG_IEV]);
 	}
 
-	/* Set irq unmask */
+	 
 	sprd_pmic_eic_update(chip, offset, SPRD_PMIC_EIC_IE,
 			     pmic_eic->reg[REG_IE]);
-	/* Generate trigger start pulse for debounce EIC */
+	 
 	sprd_pmic_eic_update(chip, offset, SPRD_PMIC_EIC_TRIG,
 			     pmic_eic->reg[REG_TRIG]);
 
@@ -258,9 +238,9 @@ retry:
 		goto retry;
 	}
 
-	/* Set irq unmask */
+	 
 	sprd_pmic_eic_update(chip, offset, SPRD_PMIC_EIC_IE, 1);
-	/* Generate trigger start pulse for debounce EIC */
+	 
 	sprd_pmic_eic_update(chip, offset, SPRD_PMIC_EIC_TRIG, 1);
 }
 
@@ -280,16 +260,13 @@ static irqreturn_t sprd_pmic_eic_irq_handler(int irq, void *data)
 	status = val & SPRD_PMIC_EIC_DATA_MASK;
 
 	for_each_set_bit(n, &status, chip->ngpio) {
-		/* Clear the interrupt */
+		 
 		sprd_pmic_eic_update(chip, n, SPRD_PMIC_EIC_IC, 1);
 
 		girq = irq_find_mapping(chip->irq.domain, n);
 		handle_nested_irq(girq);
 
-		/*
-		 * The PMIC EIC can only support level trigger, so we can
-		 * toggle the level trigger to emulate the edge trigger.
-		 */
+		 
 		sprd_pmic_eic_toggle_trigger(chip, girq, n);
 	}
 
@@ -369,7 +346,7 @@ static int sprd_pmic_eic_probe(struct platform_device *pdev)
 
 static const struct of_device_id sprd_pmic_eic_of_match[] = {
 	{ .compatible = "sprd,sc2731-eic", },
-	{ /* end of list */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, sprd_pmic_eic_of_match);
 

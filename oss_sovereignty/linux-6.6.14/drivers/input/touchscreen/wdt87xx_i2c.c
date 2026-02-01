@@ -1,13 +1,4 @@
-/*
- * Weida HiTech WDT87xx TouchScreen I2C driver
- *
- * Copyright (c) 2015  Weida Hi-Tech Co., Ltd.
- * HN Chen <hn.chen@weidahitech.com>
- *
- * This software is licensed under the terms of the GNU General Public
- * License, as published by the Free Software Foundation, and
- * may be copied, distributed, and modified under those terms.
- */
+ 
 
 #include <linux/i2c.h>
 #include <linux/input.h>
@@ -45,7 +36,7 @@
 #define PKT_READ_SIZE			72
 #define PKT_WRITE_SIZE			80
 
-/* the finger definition of the report event */
+ 
 #define FINGER_EV_OFFSET_ID		0
 #define FINGER_EV_OFFSET_X		1
 #define FINGER_EV_OFFSET_Y		3
@@ -58,7 +49,7 @@
 #define FINGER_EV_V1_OFFSET_Y		5
 #define FINGER_EV_V1_SIZE		7
 
-/* The definition of a report packet */
+ 
 #define TOUCH_PK_OFFSET_REPORT_ID	0
 #define TOUCH_PK_OFFSET_EVENT		1
 #define TOUCH_PK_OFFSET_SCAN_TIME	51
@@ -69,7 +60,7 @@
 #define TOUCH_PK_V1_OFFSET_SCAN_TIME	71
 #define TOUCH_PK_V1_OFFSET_FNGR_NUM	73
 
-/* The definition of the controller parameters */
+ 
 #define CTL_PARAM_OFFSET_FW_ID		0
 #define CTL_PARAM_OFFSET_PLAT_ID	2
 #define CTL_PARAM_OFFSET_XMLS_ID1	4
@@ -84,12 +75,12 @@
 #define CTL_PARAM_OFFSET_PHY_H		24
 #define CTL_PARAM_OFFSET_FACTOR		32
 
-/* The definition of the device descriptor */
+ 
 #define WDT_GD_DEVICE			1
 #define DEV_DESC_OFFSET_VID		8
 #define DEV_DESC_OFFSET_PID		10
 
-/* Communication commands */
+ 
 #define PACKET_SIZE			56
 #define VND_REQ_READ			0x06
 #define VND_READ_DATA			0x07
@@ -120,7 +111,7 @@
 #define CMD_BUF_SIZE			8
 #define PKT_BUF_SIZE			64
 
-/* The definition of the command packet */
+ 
 #define CMD_REPORT_ID_OFFSET		0x0
 #define CMD_TYPE_OFFSET			0x1
 #define CMD_INDEX_OFFSET		0x2
@@ -128,7 +119,7 @@
 #define CMD_LENGTH_OFFSET		0x4
 #define CMD_DATA_OFFSET			0x8
 
-/* The definition of firmware chunk tags */
+ 
 #define FOURCC_ID_RIFF			0x46464952
 #define FOURCC_ID_WHIF			0x46494857
 #define FOURCC_ID_FRMT			0x544D5246
@@ -153,7 +144,7 @@
 #define FW_CHUNK_ATTR_OFFSET		24
 #define FW_CHUNK_PAYLOAD_OFFSET		32
 
-/* Controller requires minimum 300us between commands */
+ 
 #define WDT_COMMAND_DELAY_MS		2
 #define WDT_FLASH_WRITE_DELAY_MS	4
 #define WDT_FLASH_ERASE_DELAY_MS	200
@@ -178,7 +169,7 @@ struct wdt87xx_sys_param {
 struct wdt87xx_data {
 	struct i2c_client		*client;
 	struct input_dev		*input;
-	/* Mutex for fw update to prevent concurrent access */
+	 
 	struct mutex			fw_mutex;
 	struct wdt87xx_sys_param	param;
 	u8				phys[32];
@@ -286,7 +277,7 @@ static int wdt87xx_get_feature(struct i2c_client *client,
 	if (rx_len > sizeof(rx_buf))
 		return -EINVAL;
 
-	/* Get feature command packet */
+	 
 	tx_buf[tx_len++] = 0x22;
 	tx_buf[tx_len++] = 0x00;
 	if (buf[CMD_REPORT_ID_OFFSET] > 0xF) {
@@ -321,7 +312,7 @@ static int wdt87xx_set_feature(struct i2c_client *client,
 	int tx_len = 0;
 	int error;
 
-	/* Set feature command packet */
+	 
 	tx_buf[tx_len++] = 0x22;
 	tx_buf[tx_len++] = 0x00;
 	if (buf[CMD_REPORT_ID_OFFSET] > 0xF) {
@@ -358,7 +349,7 @@ static int wdt87xx_send_command(struct i2c_client *client, int cmd, int value)
 {
 	u8 cmd_buf[CMD_BUF_SIZE];
 
-	/* Set the command packet */
+	 
 	cmd_buf[CMD_REPORT_ID_OFFSET] = VND_REQ_WRITE;
 	cmd_buf[CMD_TYPE_OFFSET] = VND_SET_COMMAND_DATA;
 	put_unaligned_le16((u16)cmd, &cmd_buf[CMD_INDEX_OFFSET]);
@@ -367,7 +358,7 @@ static int wdt87xx_send_command(struct i2c_client *client, int cmd, int value)
 	case VND_CMD_START:
 	case VND_CMD_STOP:
 	case VND_CMD_RESET:
-		/* Mode selector */
+		 
 		put_unaligned_le32((value & 0xFF), &cmd_buf[CMD_LENGTH_OFFSET]);
 		break;
 
@@ -406,7 +397,7 @@ static int wdt87xx_sw_reset(struct i2c_client *client)
 		return error;
 	}
 
-	/* Wait the device to be ready */
+	 
 	msleep(WDT_FW_RESET_TIME);
 
 	return 0;
@@ -425,7 +416,7 @@ static const void *wdt87xx_get_fw_chunk(const struct firmware *fw, u32 id)
 
 		chunk_size = get_unaligned_le32(fw->data +
 						pos + FW_CHUNK_SIZE_OFFSET);
-		pos += chunk_size + 2 * sizeof(u32); /* chunk ID + size */
+		pos += chunk_size + 2 * sizeof(u32);  
 	}
 
 	return NULL;
@@ -459,7 +450,7 @@ static int wdt87xx_get_sysparam(struct i2c_client *client,
 	param->phy_w = get_unaligned_le16(buf + CTL_PARAM_OFFSET_PHY_W) / 10;
 	param->phy_h = get_unaligned_le16(buf + CTL_PARAM_OFFSET_PHY_H) / 10;
 
-	/* Get the scaling factor of pixel to logical coordinate */
+	 
 	param->scaling_factor =
 			get_unaligned_le16(buf + CTL_PARAM_OFFSET_FACTOR);
 
@@ -522,10 +513,7 @@ static int wdt87xx_validate_firmware(struct wdt87xx_data *wdt,
 		return -EINVAL;
 	}
 
-	/*
-	 * Get the chip_id from the firmware. Make sure that it is the
-	 * right controller to do the firmware and config update.
-	 */
+	 
 	fw_chunk = wdt87xx_get_fw_chunk(fw, CHUNK_ID_FRWR);
 	if (!fw_chunk) {
 		dev_err(&wdt->client->dev,
@@ -568,7 +556,7 @@ static int wdt87xx_write_data(struct i2c_client *client, const char *data,
 	int error;
 	u8 pkt_buf[PKT_BUF_SIZE];
 
-	/* Address and length should be 4 bytes aligned */
+	 
 	if ((address & 0x3) != 0 || (length & 0x3) != 0) {
 		dev_err(&client->dev,
 			"addr & len must be 4 bytes aligned %x, %x\n",
@@ -593,11 +581,11 @@ static int wdt87xx_write_data(struct i2c_client *client, const char *data,
 		data += packet_size;
 		address += packet_size;
 
-		/* Wait for the controller to finish the write */
+		 
 		mdelay(WDT_FLASH_WRITE_DELAY_MS);
 
 		if ((++count % 32) == 0) {
-			/* Delay for fw to clear watch dog */
+			 
 			msleep(20);
 		}
 	}
@@ -658,7 +646,7 @@ static int wdt87xx_get_checksum(struct i2c_client *client, u16 *checksum,
 		return error;
 	}
 
-	/* Wait the operation to complete */
+	 
 	time_delay = DIV_ROUND_UP(length, 1024);
 	msleep(time_delay * 30);
 
@@ -844,7 +832,7 @@ static int wdt87xx_do_update_firmware(struct i2c_client *client,
 		goto out;
 	}
 
-	/* Refresh the parameters */
+	 
 	error = wdt87xx_get_sysparam(client, &wdt->param);
 	if (error)
 		dev_err(&client->dev,
@@ -961,7 +949,7 @@ static void wdt87xx_report_contact(struct input_dev *input,
 	if (finger_id < 0)
 		return;
 
-	/* Check if this is an active contact */
+	 
 	if (!(buf[FINGER_EV_V1_OFFSET_ID] & 0x1))
 		return;
 
@@ -975,7 +963,7 @@ static void wdt87xx_report_contact(struct input_dev *input,
 	y = get_unaligned_le16(buf + FINGER_EV_V1_OFFSET_Y);
 	y = DIV_ROUND_CLOSEST(y * param->phy_h, param->phy_w);
 
-	/* Refuse incorrect coordinates */
+	 
 	if (x > param->max_x || y > param->max_y)
 		return;
 
@@ -1072,7 +1060,7 @@ static int wdt87xx_ts_probe(struct i2c_client *client)
 	dev_dbg(&client->dev, "adapter=%d, client irq: %d\n",
 		client->adapter->nr, client->irq);
 
-	/* Check if the I2C function is ok in this adaptor */
+	 
 	if (!i2c_check_functionality(client->adapter, I2C_FUNC_I2C))
 		return -ENXIO;
 
@@ -1137,10 +1125,7 @@ static int wdt87xx_resume(struct device *dev)
 	struct i2c_client *client = to_i2c_client(dev);
 	int error;
 
-	/*
-	 * The chip may have been reset while system is resuming,
-	 * give it some time to settle.
-	 */
+	 
 	msleep(100);
 
 	error = wdt87xx_send_command(client, VND_CMD_START, 0);

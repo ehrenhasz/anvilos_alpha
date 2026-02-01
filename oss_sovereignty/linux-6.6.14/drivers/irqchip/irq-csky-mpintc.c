@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (C) 2018 Hangzhou C-SKY Microsystems co.,ltd.
+
+
 
 #include <linux/kernel.h>
 #include <linux/init.h>
@@ -62,7 +62,7 @@ static void setup_trigger(unsigned long irq, unsigned long trigger)
 
 	spin_lock(&setup_lock);
 
-	/* setup trigger */
+	 
 	tmp = readl_relaxed(TRIG_BASE(irq)) & TRIG_VAL_MSK(irq);
 
 	writel_relaxed(tmp | TRIG_VAL(trigger, irq), TRIG_BASE(irq));
@@ -139,15 +139,7 @@ static int csky_irq_set_affinity(struct irq_data *d,
 	if (cpu >= nr_cpu_ids)
 		return -EINVAL;
 
-	/*
-	 * The csky,mpintc could support auto irq deliver, but it only
-	 * could deliver external irq to one cpu or all cpus. So it
-	 * doesn't support deliver external irq to a group of cpus
-	 * with cpu_mask.
-	 * SO we only use auto deliver mode when affinity mask_val is
-	 * equal to cpu_present_mask.
-	 *
-	 */
+	 
 	if (cpumask_equal(mask_val, cpu_present_mask))
 		cpu = 0;
 	else
@@ -214,16 +206,13 @@ static void csky_mpintc_send_ipi(const struct cpumask *mask)
 {
 	void __iomem *reg_base = this_cpu_read(intcl_reg);
 
-	/*
-	 * INTCL_SIGR[3:0] INTID
-	 * INTCL_SIGR[8:15] CPUMASK
-	 */
+	 
 	writel_relaxed((*cpumask_bits(mask)) << 8 | IPI_IRQ,
 					reg_base + INTCL_SIGR);
 }
 #endif
 
-/* C-SKY multi processor interrupt controller */
+ 
 static int __init
 csky_mpintc_init(struct device_node *node, struct device_node *parent)
 {
@@ -260,7 +249,7 @@ csky_mpintc_init(struct device_node *node, struct device_node *parent)
 	if (!root_domain)
 		return -ENXIO;
 
-	/* for every cpu */
+	 
 	for_each_present_cpu(cpu) {
 		per_cpu(intcl_reg, cpu) = INTCL_base + (INTCL_SIZE * cpu);
 		writel_relaxed(BIT(0), per_cpu(intcl_reg, cpu) + INTCL_PICTLR);

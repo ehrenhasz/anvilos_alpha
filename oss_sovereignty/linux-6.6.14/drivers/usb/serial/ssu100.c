@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * usb-serial driver for Quatech SSU-100
- *
- * based on ftdi_sio.c and the original serqt_usb.c from Quatech
- *
- */
+
+ 
 
 #include <linux/errno.h>
 #include <linux/slab.h>
@@ -48,12 +43,12 @@
 
 #define DRIVER_DESC "Quatech SSU-100 USB to Serial Driver"
 
-#define	USB_VENDOR_ID_QUATECH	0x061d	/* Quatech VID */
-#define QUATECH_SSU100	0xC020	/* SSU100 */
+#define	USB_VENDOR_ID_QUATECH	0x061d	 
+#define QUATECH_SSU100	0xC020	 
 
 static const struct usb_device_id id_table[] = {
 	{USB_DEVICE(USB_VENDOR_ID_QUATECH, QUATECH_SSU100)},
-	{}			/* Terminating entry */
+	{}			 
 };
 MODULE_DEVICE_TABLE(usb, id_table);
 
@@ -129,7 +124,7 @@ static inline int ssu100_setregister(struct usb_device *dev,
 #define set_mctrl(dev, set)		update_mctrl((dev), (set), 0)
 #define clear_mctrl(dev, clear)	update_mctrl((dev), 0, (clear))
 
-/* these do not deal with device that have more than 1 port */
+ 
 static inline int update_mctrl(struct usb_device *dev, unsigned int set,
 			       unsigned int clear)
 {
@@ -138,10 +133,10 @@ static inline int update_mctrl(struct usb_device *dev, unsigned int set,
 
 	if (((set | clear) & (TIOCM_DTR | TIOCM_RTS)) == 0) {
 		dev_dbg(&dev->dev, "%s - DTR|RTS not being set|cleared\n", __func__);
-		return 0;	/* no change */
+		return 0;	 
 	}
 
-	clear &= ~set;	/* 'set' takes precedence over 'clear' */
+	clear &= ~set;	 
 	urb_value = 0;
 	if (set & TIOCM_DTR)
 		urb_value |= UART_MCR_DTR;
@@ -221,7 +216,7 @@ static void ssu100_set_termios(struct tty_struct *tty,
 	struct ktermios *termios = &tty->termios;
 	u16 baud, divisor, remainder;
 	unsigned int cflag = termios->c_cflag;
-	u16 urb_value = 0; /* will hold the new flags */
+	u16 urb_value = 0;  
 	int result;
 
 	if (cflag & PARENB) {
@@ -306,7 +301,7 @@ static int ssu100_open(struct tty_struct *tty, struct usb_serial_port *port)
 
 	kfree(data);
 
-/* set to 9600 */
+ 
 	result = ssu100_control_msg(dev, QT_GET_SET_UART, 0x30, 0x0300);
 	if (result < 0)
 		dev_dbg(&port->dev, "%s - set uart failed\n", __func__);
@@ -389,12 +384,12 @@ static void ssu100_dtr_rts(struct usb_serial_port *port, int on)
 {
 	struct usb_device *dev = port->serial->dev;
 
-	/* Disable flow control */
+	 
 	if (!on) {
 		if (ssu100_setregister(dev, 0, UART_MCR, 0) < 0)
 			dev_err(&port->dev, "error from flowcontrol urb\n");
 	}
-	/* drop RTS and DTR */
+	 
 	if (on)
 		set_mctrl(dev, TIOCM_DTR | TIOCM_RTS);
 	else
@@ -411,7 +406,7 @@ static void ssu100_update_msr(struct usb_serial_port *port, u8 msr)
 	spin_unlock_irqrestore(&priv->status_lock, flags);
 
 	if (msr & UART_MSR_ANY_DELTA) {
-		/* update input line counters */
+		 
 		if (msr & UART_MSR_DCTS)
 			port->icount.cts++;
 		if (msr & UART_MSR_DDSR)
@@ -436,8 +431,7 @@ static void ssu100_update_lsr(struct usb_serial_port *port, u8 lsr,
 
 	*tty_flag = TTY_NORMAL;
 	if (lsr & UART_LSR_BRK_ERROR_BITS) {
-		/* we always want to update icount, but we only want to
-		 * update tty_flag for one case */
+		 
 		if (lsr & UART_LSR_BI) {
 			port->icount.brk++;
 			*tty_flag = TTY_BREAK;
@@ -484,7 +478,7 @@ static void ssu100_process_read_urb(struct urb *urb)
 		ch = packet;
 
 	if (!len)
-		return;	/* status only */
+		return;	 
 
 	if (port->sysrq) {
 		for (i = 0; i < len; i++, ch++) {

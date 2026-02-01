@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * HCI based Driver for Inside Secure microread NFC Chip
- *
- * Copyright (C) 2013  Intel Corporation. All rights reserved.
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -18,8 +14,8 @@
 
 #include "microread.h"
 
-/* Proprietary gates, events, commands and registers */
-/* Admin */
+ 
+ 
 #define MICROREAD_GATE_ID_ADM NFC_HCI_ADMIN_GATE
 #define MICROREAD_GATE_ID_MGT 0x01
 #define MICROREAD_GATE_ID_OS 0x02
@@ -28,7 +24,7 @@
 #define MICROREAD_GATE_ID_IDT NFC_HCI_ID_MGMT_GATE
 #define MICROREAD_GATE_ID_LMS NFC_HCI_LINK_MGMT_GATE
 
-/* Reader */
+ 
 #define MICROREAD_GATE_ID_MREAD_GEN 0x10
 #define MICROREAD_GATE_ID_MREAD_ISO_B NFC_HCI_RF_READER_B_GATE
 #define MICROREAD_GATE_ID_MREAD_NFC_T1 0x12
@@ -40,7 +36,7 @@
 #define MICROREAD_GATE_ID_MREAD_BPRIME 0x18
 #define MICROREAD_GATE_ID_MREAD_ISO_A_3 0x19
 
-/* Card */
+ 
 #define MICROREAD_GATE_ID_MCARD_GEN 0x20
 #define MICROREAD_GATE_ID_MCARD_ISO_B 0x21
 #define MICROREAD_GATE_ID_MCARD_BPRIME 0x22
@@ -52,7 +48,7 @@
 #define MICROREAD_GATE_ID_MCARD_ISO_CUSTOM 0x28
 #define MICROREAD_GATE_ID_SECURE_ELEMENT 0x2F
 
-/* P2P */
+ 
 #define MICROREAD_GATE_ID_P2P_GEN 0x30
 #define MICROREAD_GATE_ID_P2P_TARGET 0x31
 #define MICROREAD_PAR_P2P_TARGET_MODE 0x01
@@ -61,7 +57,7 @@
 #define MICROREAD_PAR_P2P_INITIATOR_GI 0x01
 #define MICROREAD_PAR_P2P_INITIATOR_GT 0x03
 
-/* Those pipes are created/opened by default in the chip */
+ 
 #define MICROREAD_PIPE_ID_LMS 0x00
 #define MICROREAD_PIPE_ID_ADMIN 0x01
 #define MICROREAD_PIPE_ID_MGT 0x02
@@ -92,7 +88,7 @@
 #define MICROREAD_PIPE_ID_HDS_P2P_TARGET 0x1F
 #define MICROREAD_PIPE_ID_HDS_P2P_INITIATOR 0x20
 
-/* Events */
+ 
 #define MICROREAD_EVT_MREAD_DISCOVERY_OCCURED NFC_HCI_EVT_TARGET_DISCOVERED
 #define MICROREAD_EVT_MREAD_CARD_FOUND 0x3D
 #define MICROREAD_EMCF_A_ATQA 0
@@ -119,11 +115,11 @@
 #define MICROREAD_EVT_P2P_TARGET_DEACTIVATED 0x12
 #define MICROREAD_EVT_MCARD_FIELD_OFF 0x14
 
-/* Commands */
+ 
 #define MICROREAD_CMD_MREAD_EXCHANGE 0x10
 #define MICROREAD_CMD_MREAD_SUBSCRIBE 0x3F
 
-/* Hosts IDs */
+ 
 #define MICROREAD_ELT_ID_HDS NFC_HCI_TERMINAL_HOST_ID
 #define MICROREAD_ELT_ID_SIM NFC_HCI_UICC_HOST_ID
 #define MICROREAD_ELT_ID_SE1 0x03
@@ -146,7 +142,7 @@ static const struct nfc_hci_gate microread_gates[] = {
 	{MICROREAD_GATE_ID_P2P_INITIATOR, MICROREAD_PIPE_ID_HDS_P2P_INITIATOR}
 };
 
-/* Largest headroom needed for outgoing custom commands */
+ 
 #define MICROREAD_CMDS_HEADROOM	2
 #define MICROREAD_CMD_TAILROOM	2
 
@@ -378,7 +374,7 @@ static void microread_im_transceive_cb(void *context, struct sk_buff *skb,
 				return;
 			}
 
-			skb_trim(skb, skb->len - 1);	/* RF Error ind. */
+			skb_trim(skb, skb->len - 1);	 
 		}
 		info->async_cb(info->async_cb_context, skb, err);
 		break;
@@ -389,11 +385,7 @@ static void microread_im_transceive_cb(void *context, struct sk_buff *skb,
 	}
 }
 
-/*
- * Returns:
- * <= 0: driver handled the data exchange
- *    1: driver doesn't especially handle, please do standard processing
- */
+ 
 static int microread_im_transceive(struct nfc_hci_dev *hdev,
 				   struct nfc_target *target,
 				   struct sk_buff *skb, data_exchange_cb_t cb,

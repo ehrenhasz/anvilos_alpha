@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-// Flash and torch driver for Texas Instruments LM3601X LED
-// Flash driver chip family
-// Copyright (C) 2018 Texas Instruments Incorporated - https://www.ti.com/
+
+
+
+
 
 #include <linux/delay.h>
 #include <linux/i2c.h>
@@ -14,7 +14,7 @@
 #define LM3601X_LED_IR		0x0
 #define LM3601X_LED_TORCH	0x1
 
-/* Registers */
+ 
 #define LM3601X_ENABLE_REG	0x01
 #define LM3601X_CFG_REG		0x02
 #define LM3601X_LED_FLASH_REG	0x03
@@ -24,7 +24,7 @@
 
 #define LM3601X_SW_RESET	BIT(7)
 
-/* Enable Mode bits */
+ 
 #define LM3601X_MODE_STANDBY	0x00
 #define LM3601X_MODE_IR_DRV	BIT(0)
 #define LM3601X_MODE_TORCH	BIT(1)
@@ -37,7 +37,7 @@
 #define LM36010_BOOST_FREQ_4MHZ	BIT(6)
 #define LM36010_BOOST_MODE_PASS	BIT(7)
 
-/* Flag Mask */
+ 
 #define LM3601X_FLASH_TIME_OUT	BIT(0)
 #define LM3601X_UVLO_FAULT	BIT(1)
 #define LM3601X_THERM_SHUTDOWN	BIT(2)
@@ -69,20 +69,7 @@ enum lm3601x_type {
 	CHIP_LM36011,
 };
 
-/**
- * struct lm3601x_led -
- * @fled_cdev: flash LED class device pointer
- * @client: Pointer to the I2C client
- * @regmap: Devices register map
- * @lock: Lock for reading/writing the device
- * @led_name: LED label for the Torch or IR LED
- * @flash_timeout: the timeout for the flash
- * @last_flag: last known flags register value
- * @torch_current_max: maximum current for the torch
- * @flash_current_max: maximum current for the flash
- * @max_flash_timeout: maximum timeout for the flash
- * @led_mode: The mode to enable either IR or Torch
- */
+ 
 struct lm3601x_led {
 	struct led_classdev_flash fled_cdev;
 	struct i2c_client *client;

@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * This is a module which is used for queueing packets and communicating with
- * userspace via nfnetlink.
- *
- * (C) 2005 by Harald Welte <laforge@netfilter.org>
- * (C) 2007 by Patrick McHardy <kaber@trash.net>
- *
- * Based on the old ipv4-only ip_queue.c:
- * (C) 2000-2002 James Morris <jmorris@intercode.com.au>
- * (C) 2003-2005 Netfilter Core Team <coreteam@netfilter.org>
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -48,16 +38,11 @@
 
 #define NFQNL_QMAX_DEFAULT 1024
 
-/* We're using struct nlattr which has 16bit nla_len. Note that nla_len
- * includes the header length. Thus, the maximum packet length that we
- * support is 65531 bytes. We send truncated packets if the specified length
- * is larger than that.  Userspace can check for presence of NFQA_CAP_LEN
- * attribute to detect truncation.
- */
+ 
 #define NFQNL_MAX_COPY_RANGE (0xffff - NLA_HDRLEN)
 
 struct nfqnl_instance {
-	struct hlist_node hlist;		/* global list of queues */
+	struct hlist_node hlist;		 
 	struct rcu_head rcu;
 
 	u32 peer_portid;
@@ -67,17 +52,14 @@ struct nfqnl_instance {
 	unsigned int queue_user_dropped;
 
 
-	u_int16_t queue_num;			/* number of this queue */
+	u_int16_t queue_num;			 
 	u_int8_t copy_mode;
-	u_int32_t flags;			/* Set using NFQA_CFG_FLAGS */
-/*
- * Following fields are dirtied for each queued packet,
- * keep them in same cache line if possible.
- */
+	u_int32_t flags;			 
+ 
 	spinlock_t	lock	____cacheline_aligned_in_smp;
 	unsigned int	queue_total;
-	unsigned int	id_sequence;		/* 'sequence' of pkt ids */
-	struct list_head queue_list;		/* packets in queue */
+	unsigned int	id_sequence;		 
+	struct list_head queue_list;		 
 };
 
 typedef int (*nfqnl_cmpfn)(struct nf_queue_entry *, unsigned long);
@@ -411,20 +393,20 @@ nfqnl_build_packet_message(struct net *net, struct nfqnl_instance *queue,
 
 	size = nlmsg_total_size(sizeof(struct nfgenmsg))
 		+ nla_total_size(sizeof(struct nfqnl_msg_packet_hdr))
-		+ nla_total_size(sizeof(u_int32_t))	/* ifindex */
-		+ nla_total_size(sizeof(u_int32_t))	/* ifindex */
+		+ nla_total_size(sizeof(u_int32_t))	 
+		+ nla_total_size(sizeof(u_int32_t))	 
 #if IS_ENABLED(CONFIG_BRIDGE_NETFILTER)
-		+ nla_total_size(sizeof(u_int32_t))	/* ifindex */
-		+ nla_total_size(sizeof(u_int32_t))	/* ifindex */
+		+ nla_total_size(sizeof(u_int32_t))	 
+		+ nla_total_size(sizeof(u_int32_t))	 
 #endif
-		+ nla_total_size(sizeof(u_int32_t))	/* mark */
-		+ nla_total_size(sizeof(u_int32_t))	/* priority */
+		+ nla_total_size(sizeof(u_int32_t))	 
+		+ nla_total_size(sizeof(u_int32_t))	 
 		+ nla_total_size(sizeof(struct nfqnl_msg_packet_hw))
-		+ nla_total_size(sizeof(u_int32_t))	/* skbinfo */
+		+ nla_total_size(sizeof(u_int32_t))	 
 #if IS_ENABLED(CONFIG_CGROUP_NET_CLASSID)
-		+ nla_total_size(sizeof(u_int32_t))	/* classid */
+		+ nla_total_size(sizeof(u_int32_t))	 
 #endif
-		+ nla_total_size(sizeof(u_int32_t));	/* cap_len */
+		+ nla_total_size(sizeof(u_int32_t));	 
 
 	tstamp = skb_tstamp_cond(entskb, false);
 	if (tstamp)
@@ -475,8 +457,8 @@ nfqnl_build_packet_message(struct net *net, struct nfqnl_instance *queue,
 #endif
 
 	if (queue->flags & NFQA_CFG_F_UID_GID) {
-		size += (nla_total_size(sizeof(u_int32_t))	/* uid */
-			+ nla_total_size(sizeof(u_int32_t)));	/* gid */
+		size += (nla_total_size(sizeof(u_int32_t))	 
+			+ nla_total_size(sizeof(u_int32_t)));	 
 	}
 
 	if ((queue->flags & NFQA_CFG_F_SECCTX) && entskb->sk) {
@@ -514,21 +496,18 @@ nfqnl_build_packet_message(struct net *net, struct nfqnl_instance *queue,
 			goto nla_put_failure;
 #else
 		if (entry->state.pf == PF_BRIDGE) {
-			/* Case 1: indev is physical input device, we need to
-			 * look for bridge group (when called from
-			 * netfilter_bridge) */
+			 
 			if (nla_put_be32(skb, NFQA_IFINDEX_PHYSINDEV,
 					 htonl(indev->ifindex)) ||
-			/* this is the bridge group "brX" */
-			/* rcu_read_lock()ed by __nf_queue */
+			 
+			 
 			    nla_put_be32(skb, NFQA_IFINDEX_INDEV,
 					 htonl(br_port_get_rcu(indev)->br->dev->ifindex)))
 				goto nla_put_failure;
 		} else {
 			int physinif;
 
-			/* Case 2: indev is bridge group, we need to look for
-			 * physical device (when called from ipv4) */
+			 
 			if (nla_put_be32(skb, NFQA_IFINDEX_INDEV,
 					 htonl(indev->ifindex)))
 				goto nla_put_failure;
@@ -548,21 +527,18 @@ nfqnl_build_packet_message(struct net *net, struct nfqnl_instance *queue,
 			goto nla_put_failure;
 #else
 		if (entry->state.pf == PF_BRIDGE) {
-			/* Case 1: outdev is physical output device, we need to
-			 * look for bridge group (when called from
-			 * netfilter_bridge) */
+			 
 			if (nla_put_be32(skb, NFQA_IFINDEX_PHYSOUTDEV,
 					 htonl(outdev->ifindex)) ||
-			/* this is the bridge group "brX" */
-			/* rcu_read_lock()ed by __nf_queue */
+			 
+			 
 			    nla_put_be32(skb, NFQA_IFINDEX_OUTDEV,
 					 htonl(br_port_get_rcu(outdev)->br->dev->ifindex)))
 				goto nla_put_failure;
 		} else {
 			int physoutif;
 
-			/* Case 2: outdev is bridge group, we need to look for
-			 * physical output device (when called from ipv4) */
+			 
 			if (nla_put_be32(skb, NFQA_IFINDEX_OUTDEV,
 					 htonl(outdev->ifindex)))
 				goto nla_put_failure;
@@ -707,7 +683,7 @@ __nfqnl_enqueue_packet(struct net *net, struct nfqnl_instance *queue,
 	entry->id = ++queue->id_sequence;
 	*packet_id_ptr = htonl(entry->id);
 
-	/* nfnetlink_unicast will either free the nskb or add it to a socket */
+	 
 	err = nfnetlink_unicast(nskb, net, queue->peer_portid);
 	if (err < 0) {
 		if (queue->flags & NFQA_CFG_F_FAIL_OPEN) {
@@ -750,10 +726,7 @@ nf_queue_entry_dup(struct nf_queue_entry *e)
 }
 
 #if IS_ENABLED(CONFIG_BRIDGE_NETFILTER)
-/* When called from bridge netfilter, skb->data must point to MAC header
- * before calling skb_gso_segment(). Else, original MAC header is lost
- * and segmented skbs will be sent to wrong destination.
- */
+ 
 static void nf_bridge_adjust_skb_data(struct sk_buff *skb)
 {
 	if (nf_bridge_info_get(skb))
@@ -779,7 +752,7 @@ __nfqnl_enqueue_packet_gso(struct net *net, struct nfqnl_instance *queue,
 
 	nf_bridge_adjust_segmented_data(skb);
 
-	if (skb->next == NULL) { /* last packet, no need to copy entry */
+	if (skb->next == NULL) {  
 		struct sk_buff *gso_skb = entry->skb;
 		entry->skb = skb;
 		ret = __nfqnl_enqueue_packet(net, queue, entry);
@@ -810,7 +783,7 @@ nfqnl_enqueue_packet(struct nf_queue_entry *entry, unsigned int queuenum)
 	struct net *net = entry->state.net;
 	struct nfnl_queue_net *q = nfnl_queue_pernet(net);
 
-	/* rcu_read_lock()ed by nf_hook_thresh */
+	 
 	queue = instance_lookup(q, queuenum);
 	if (!queue)
 		return -ESRCH;
@@ -834,10 +807,7 @@ nfqnl_enqueue_packet(struct nf_queue_entry *entry, unsigned int queuenum)
 
 	nf_bridge_adjust_skb_data(skb);
 	segs = skb_gso_segment(skb, 0);
-	/* Does not use PTR_ERR to limit the number of error codes that can be
-	 * returned by nf_queue.  For instance, callers rely on -ESRCH to
-	 * mean 'ignore this hook'.
-	 */
+	 
 	if (IS_ERR_OR_NULL(segs))
 		goto out_err;
 	queued = 0;
@@ -853,7 +823,7 @@ nfqnl_enqueue_packet(struct nf_queue_entry *entry, unsigned int queuenum)
 	}
 
 	if (queued) {
-		if (err) /* some segments are already queued */
+		if (err)  
 			nf_queue_entry_free(entry);
 		kfree_skb(skb);
 		return 0;
@@ -949,8 +919,7 @@ dev_cmp(struct nf_queue_entry *entry, unsigned long ifindex)
 	return 0;
 }
 
-/* drop all packets with either indev or outdev == ifindex from all queue
- * instances */
+ 
 static void
 nfqnl_dev_drop(struct net *net, int ifindex)
 {
@@ -976,7 +945,7 @@ nfqnl_rcv_dev_event(struct notifier_block *this,
 {
 	struct net_device *dev = netdev_notifier_info_to_dev(ptr);
 
-	/* Drop any packets associated with the downed device */
+	 
 	if (event == NETDEV_DOWN)
 		nfqnl_dev_drop(dev_net(dev), dev->ifindex);
 	return NOTIFY_DONE;
@@ -991,13 +960,7 @@ static void nfqnl_nf_hook_drop(struct net *net)
 	struct nfnl_queue_net *q = nfnl_queue_pernet(net);
 	int i;
 
-	/* This function is also called on net namespace error unwind,
-	 * when pernet_ops->init() failed and ->exit() functions of the
-	 * previous pernet_ops gets called.
-	 *
-	 * This may result in a call to nfqnl_nf_hook_drop() before
-	 * struct nfnl_queue_net was allocated.
-	 */
+	 
 	if (!q)
 		return;
 
@@ -1020,7 +983,7 @@ nfqnl_rcv_nl_event(struct notifier_block *this,
 	if (event == NETLINK_URELEASE && n->protocol == NETLINK_NETFILTER) {
 		int i;
 
-		/* destroy all instances for this portid */
+		 
 		spin_lock(&q->instances_lock);
 		for (i = 0; i < INSTANCE_BUCKETS; i++) {
 			struct hlist_node *t2;
@@ -1239,7 +1202,7 @@ static int nfqnl_recv_verdict(struct sk_buff *skb, const struct nfnl_info *info,
 	if (entry == NULL)
 		return -ENOENT;
 
-	/* rcu lock already held from nfnl->call_rcu. */
+	 
 	nfnl_ct = rcu_dereference(nfnl_ct_hook);
 
 	if (nfqa[NFQA_CT]) {
@@ -1308,21 +1271,17 @@ static int nfqnl_recv_config(struct sk_buff *skb, const struct nfnl_info *info,
 	if (nfqa[NFQA_CFG_CMD]) {
 		cmd = nla_data(nfqa[NFQA_CFG_CMD]);
 
-		/* Obsolete commands without queue context */
+		 
 		switch (cmd->command) {
 		case NFQNL_CFG_CMD_PF_BIND: return 0;
 		case NFQNL_CFG_CMD_PF_UNBIND: return 0;
 		}
 	}
 
-	/* Check if we support these flags in first place, dependencies should
-	 * be there too not to break atomicity.
-	 */
+	 
 	if (nfqa[NFQA_CFG_FLAGS]) {
 		if (!nfqa[NFQA_CFG_MASK]) {
-			/* A mask is needed to specify which flags are being
-			 * changed.
-			 */
+			 
 			return -EINVAL;
 		}
 
@@ -1543,7 +1502,7 @@ static const struct seq_operations nfqnl_seq_ops = {
 	.stop	= seq_stop,
 	.show	= seq_show,
 };
-#endif /* PROC_FS */
+#endif  
 
 static int __net_init nfnl_queue_net_init(struct net *net)
 {
@@ -1626,7 +1585,7 @@ static void __exit nfnetlink_queue_fini(void)
 	netlink_unregister_notifier(&nfqnl_rtnl_notifier);
 	unregister_pernet_subsys(&nfnl_queue_net_ops);
 
-	rcu_barrier(); /* Wait for completion of call_rcu()'s */
+	rcu_barrier();  
 }
 
 MODULE_DESCRIPTION("netfilter packet queue handler");

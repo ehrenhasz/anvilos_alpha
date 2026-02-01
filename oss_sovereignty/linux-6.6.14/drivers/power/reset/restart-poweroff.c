@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Power off by restarting and let u-boot keep hold of the machine
- * until the user presses a button for example.
- *
- * Andrew Lunn <andrew@lunn.ch>
- *
- * Copyright (C) 2012 Andrew Lunn
- */
+
+ 
 #include <linux/kernel.h>
 #include <linux/init.h>
 #include <linux/platform_device.h>
@@ -22,7 +15,7 @@ static void restart_poweroff_do_poweroff(void)
 
 static int restart_poweroff_probe(struct platform_device *pdev)
 {
-	/* If a pm_power_off function has already been added, leave it alone */
+	 
 	if (pm_power_off != NULL) {
 		dev_err(&pdev->dev,
 			"pm_power_off function already registered");

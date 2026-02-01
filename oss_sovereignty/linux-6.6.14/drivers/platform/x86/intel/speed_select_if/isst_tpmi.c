@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * isst_tpmi.c: SST TPMI interface
- *
- * Copyright (c) 2023, Intel Corporation.
- * All Rights Reserved.
- *
- */
+
+ 
 
 #include <linux/auxiliary_bus.h>
 #include <linux/module.h>

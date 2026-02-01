@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * rt5677-spi.c  --  RT5677 ALSA SoC audio codec driver
- *
- * Copyright 2013 Realtek Semiconductor Corp.
- * Author: Oder Chiou <oder_chiou@realtek.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/input.h>
@@ -35,12 +30,7 @@
 #define RT5677_SPI_HEADER	5
 #define RT5677_SPI_FREQ		6000000
 
-/* The AddressPhase and DataPhase of SPI commands are MSB first on the wire.
- * DataPhase word size of 16-bit commands is 2 bytes.
- * DataPhase word size of 32-bit commands is 4 bytes.
- * DataPhase word size of burst commands is 8 bytes.
- * The DSP CPU is little-endian.
- */
+ 
 #define RT5677_SPI_WRITE_BURST	0x5
 #define RT5677_SPI_READ_BURST	0x4
 #define RT5677_SPI_WRITE_32	0x3
@@ -63,10 +53,10 @@ struct rt5677_dsp {
 	struct delayed_work copy_work;
 	struct mutex dma_lock;
 	struct snd_pcm_substream *substream;
-	size_t dma_offset;	/* zero-based offset into runtime->dma_area */
-	size_t avail_bytes;	/* number of new bytes since last period */
-	u32 mic_read_offset;	/* zero-based offset into DSP's mic buffer */
-	bool new_hotword;	/* a new hotword is fired */
+	size_t dma_offset;	 
+	size_t avail_bytes;	 
+	u32 mic_read_offset;	 
+	bool new_hotword;	 
 };
 
 static const struct snd_pcm_hardware rt5677_spi_pcm_hardware = {
@@ -84,10 +74,7 @@ static const struct snd_pcm_hardware rt5677_spi_pcm_hardware = {
 };
 
 static struct snd_soc_dai_driver rt5677_spi_dai = {
-	/* The DAI name "rt5677-dsp-cpu-dai" is not used. The actual DAI name
-	 * registered with ASoC is the name of the device "spi-RT5677AA:00",
-	 * because we only have one DAI. See snd_soc_register_dais().
-	 */
+	 
 	.name = "rt5677-dsp-cpu-dai",
 	.id = 0,
 	.capture = {
@@ -99,7 +86,7 @@ static struct snd_soc_dai_driver rt5677_spi_dai = {
 	},
 };
 
-/* PCM for streaming audio from the DSP buffer */
+ 
 static int rt5677_spi_pcm_open(
 		struct snd_soc_component *component,
 		struct snd_pcm_substream *substream)
@@ -186,28 +173,17 @@ static snd_pcm_uframes_t rt5677_spi_pcm_pointer(
 static int rt5677_spi_mic_write_offset(u32 *mic_write_offset)
 {
 	int ret;
-	/* Grab the first 4 bytes that hold the write pointer on the
-	 * dsp, and check to make sure that it points somewhere inside the
-	 * buffer.
-	 */
+	 
 	ret = rt5677_spi_read(RT5677_MIC_BUF_ADDR, mic_write_offset,
 			sizeof(u32));
 	if (ret)
 		return ret;
-	/* Adjust the offset so that it's zero-based */
+	 
 	*mic_write_offset = *mic_write_offset - sizeof(u32);
 	return *mic_write_offset < RT5677_MIC_BUF_BYTES ? 0 : -EFAULT;
 }
 
-/*
- * Copy one contiguous block of audio samples from the DSP mic buffer to the
- * dma_area of the pcm runtime. The receiving buffer may wrap around.
- * @begin: start offset of the block to copy, in bytes.
- * @end:   offset of the first byte after the block to copy, must be greater
- *         than or equal to begin.
- *
- * Return: Zero if successful, or a negative error code on failure.
- */
+ 
 static int rt5677_spi_copy_block(struct rt5677_dsp *rt5677_dsp,
 		u32 begin, u32 end)
 {
@@ -223,27 +199,25 @@ static int rt5677_spi_copy_block(struct rt5677_dsp *rt5677_dsp,
 		return -EINVAL;
 	}
 
-	/* The block to copy is empty */
+	 
 	if (begin == end)
 		return 0;
 
-	/* If the incoming chunk is too big for the receiving buffer, only the
-	 * last "receiving buffer size - one frame" bytes are copied.
-	 */
+	 
 	if (end - begin > runtime->dma_bytes - bytes_per_frame)
 		begin = end - (runtime->dma_bytes - bytes_per_frame);
 
-	/* May need to split to two chunks, calculate the size of each */
+	 
 	first_chunk_len = end - begin;
 	second_chunk_len = 0;
 	if (rt5677_dsp->dma_offset + first_chunk_len > runtime->dma_bytes) {
-		/* Receiving buffer wrapped around */
+		 
 		second_chunk_len = first_chunk_len;
 		first_chunk_len = runtime->dma_bytes - rt5677_dsp->dma_offset;
 		second_chunk_len -= first_chunk_len;
 	}
 
-	/* Copy first chunk */
+	 
 	ret = rt5677_spi_read(RT5677_MIC_BUF_ADDR + sizeof(u32) + begin,
 			runtime->dma_area + rt5677_dsp->dma_offset,
 			first_chunk_len);
@@ -253,7 +227,7 @@ static int rt5677_spi_copy_block(struct rt5677_dsp *rt5677_dsp,
 	if (rt5677_dsp->dma_offset == runtime->dma_bytes)
 		rt5677_dsp->dma_offset = 0;
 
-	/* Copy second chunk */
+	 
 	if (second_chunk_len) {
 		ret = rt5677_spi_read(RT5677_MIC_BUF_ADDR + sizeof(u32) +
 				begin + first_chunk_len, runtime->dma_area,
@@ -264,14 +238,7 @@ static int rt5677_spi_copy_block(struct rt5677_dsp *rt5677_dsp,
 	return ret;
 }
 
-/*
- * Copy a given amount of audio samples from the DSP mic buffer starting at
- * mic_read_offset, to the dma_area of the pcm runtime. The source buffer may
- * wrap around. mic_read_offset is updated after successful copy.
- * @amount: amount of samples to copy, in bytes.
- *
- * Return: Zero if successful, or a negative error code on failure.
- */
+ 
 static int rt5677_spi_copy(struct rt5677_dsp *rt5677_dsp, u32 amount)
 {
 	int ret = 0;
@@ -281,12 +248,12 @@ static int rt5677_spi_copy(struct rt5677_dsp *rt5677_dsp, u32 amount)
 		return ret;
 
 	target = rt5677_dsp->mic_read_offset + amount;
-	/* Copy the first chunk in DSP's mic buffer */
+	 
 	ret |= rt5677_spi_copy_block(rt5677_dsp, rt5677_dsp->mic_read_offset,
 			min(target, RT5677_MIC_BUF_BYTES));
 
 	if (target >= RT5677_MIC_BUF_BYTES) {
-		/* Wrap around, copy the second chunk */
+		 
 		target -= RT5677_MIC_BUF_BYTES;
 		ret |= rt5677_spi_copy_block(rt5677_dsp, 0, target);
 	}
@@ -296,10 +263,7 @@ static int rt5677_spi_copy(struct rt5677_dsp *rt5677_dsp, u32 amount)
 	return ret;
 }
 
-/*
- * A delayed work that streams audio samples from the DSP mic buffer to the
- * dma_area of the pcm runtime via SPI.
- */
+ 
 static void rt5677_spi_copy_work(struct work_struct *work)
 {
 	struct rt5677_dsp *rt5677_dsp =
@@ -310,7 +274,7 @@ static void rt5677_spi_copy_work(struct work_struct *work)
 	unsigned int delay;
 	int ret = 0;
 
-	/* Ensure runtime->dma_area buffer does not go away while copying. */
+	 
 	mutex_lock(&rt5677_dsp->dma_lock);
 	if (!rt5677_dsp->substream) {
 		dev_err(rt5677_dsp->dev, "No pcm substream\n");
@@ -324,13 +288,10 @@ static void rt5677_spi_copy_work(struct work_struct *work)
 		goto done;
 	}
 
-	/* If this is the first time that we've asked for streaming data after
-	 * a hotword is fired, we should start reading from the previous 2
-	 * seconds of audio from wherever the mic_write_offset is currently.
-	 */
+	 
 	if (rt5677_dsp->new_hotword) {
 		rt5677_dsp->new_hotword = false;
-		/* See if buffer wraparound happens */
+		 
 		if (mic_write_offset < RT5677_MIC_BUF_FIRST_READ_SIZE)
 			rt5677_dsp->mic_read_offset = RT5677_MIC_BUF_BYTES -
 					(RT5677_MIC_BUF_FIRST_READ_SIZE -
@@ -340,14 +301,14 @@ static void rt5677_spi_copy_work(struct work_struct *work)
 					RT5677_MIC_BUF_FIRST_READ_SIZE;
 	}
 
-	/* Calculate the amount of new samples in bytes */
+	 
 	if (rt5677_dsp->mic_read_offset <= mic_write_offset)
 		new_bytes = mic_write_offset - rt5677_dsp->mic_read_offset;
 	else
 		new_bytes = RT5677_MIC_BUF_BYTES + mic_write_offset
 				- rt5677_dsp->mic_read_offset;
 
-	/* Copy all new samples from DSP mic buffer, one period at a time */
+	 
 	period_bytes = snd_pcm_lib_period_bytes(rt5677_dsp->substream);
 	while (new_bytes) {
 		copy_bytes = min(new_bytes, period_bytes
@@ -408,34 +369,7 @@ static const struct snd_soc_component_driver rt5677_spi_dai_component = {
 	.legacy_dai_naming	= 1,
 };
 
-/* Select a suitable transfer command for the next transfer to ensure
- * the transfer address is always naturally aligned while minimizing
- * the total number of transfers required.
- *
- * 3 transfer commands are available:
- * RT5677_SPI_READ/WRITE_16:	Transfer 2 bytes
- * RT5677_SPI_READ/WRITE_32:	Transfer 4 bytes
- * RT5677_SPI_READ/WRITE_BURST:	Transfer any multiples of 8 bytes
- *
- * Note:
- * 16 Bit writes and reads are restricted to the address range
- * 0x18020000 ~ 0x18021000
- *
- * For example, reading 256 bytes at 0x60030004 uses the following commands:
- * 0x60030004 RT5677_SPI_READ_32	4 bytes
- * 0x60030008 RT5677_SPI_READ_BURST	240 bytes
- * 0x600300F8 RT5677_SPI_READ_BURST	8 bytes
- * 0x60030100 RT5677_SPI_READ_32	4 bytes
- *
- * Input:
- * @read: true for read commands; false for write commands
- * @align: alignment of the next transfer address
- * @remain: number of bytes remaining to transfer
- *
- * Output:
- * @len: number of bytes to transfer with the selected command
- * Returns the selected command
- */
+ 
 static u8 rt5677_spi_select_cmd(bool read, u32 align, u32 remain, u32 *len)
 {
 	u8 cmd;
@@ -451,9 +385,7 @@ static u8 rt5677_spi_select_cmd(bool read, u32 align, u32 remain, u32 *len)
 	return read ? cmd : cmd + 1;
 }
 
-/* Copy dstlen bytes from src to dst, while reversing byte order for each word.
- * If srclen < dstlen, zeros are padded.
- */
+ 
 static void rt5677_spi_reverse(u8 *dst, u32 dstlen, const u8 *src, u32 srclen)
 {
 	u32 w, i, si;
@@ -467,14 +399,14 @@ static void rt5677_spi_reverse(u8 *dst, u32 dstlen, const u8 *src, u32 srclen)
 	}
 }
 
-/* Read DSP address space using SPI. addr and len have to be 4-byte aligned. */
+ 
 int rt5677_spi_read(u32 addr, void *rxbuf, size_t len)
 {
 	u32 offset;
 	int status = 0;
 	struct spi_transfer t[2];
 	struct spi_message m;
-	/* +4 bytes is for the DummyPhase following the AddressPhase */
+	 
 	u8 header[RT5677_SPI_HEADER + 4];
 	u8 body[RT5677_SPI_BURST_LEN];
 	u8 spi_cmd;
@@ -500,7 +432,7 @@ int rt5677_spi_read(u32 addr, void *rxbuf, size_t len)
 		spi_cmd = rt5677_spi_select_cmd(true, (addr + offset) & 7,
 				len - offset, &t[1].len);
 
-		/* Construct SPI message header */
+		 
 		header[0] = spi_cmd;
 		header[1] = ((addr + offset) & 0xff000000) >> 24;
 		header[2] = ((addr + offset) & 0x00ff0000) >> 16;
@@ -512,24 +444,21 @@ int rt5677_spi_read(u32 addr, void *rxbuf, size_t len)
 		mutex_unlock(&spi_mutex);
 
 
-		/* Copy data back to caller buffer */
+		 
 		rt5677_spi_reverse(cb + offset, len - offset, body, t[1].len);
 	}
 	return status;
 }
 EXPORT_SYMBOL_GPL(rt5677_spi_read);
 
-/* Write DSP address space using SPI. addr has to be 4-byte aligned.
- * If len is not 4-byte aligned, then extra zeros are written at the end
- * as padding.
- */
+ 
 int rt5677_spi_write(u32 addr, const void *txbuf, size_t len)
 {
 	u32 offset;
 	int status = 0;
 	struct spi_transfer t;
 	struct spi_message m;
-	/* +1 byte is for the DummyPhase following the DataPhase */
+	 
 	u8 buf[RT5677_SPI_HEADER + RT5677_SPI_BURST_LEN + 1];
 	u8 *body = buf + RT5677_SPI_HEADER;
 	u8 spi_cmd;
@@ -552,14 +481,14 @@ int rt5677_spi_write(u32 addr, const void *txbuf, size_t len)
 		spi_cmd = rt5677_spi_select_cmd(false, (addr + offset) & 7,
 				len - offset, &t.len);
 
-		/* Construct SPI message header */
+		 
 		buf[0] = spi_cmd;
 		buf[1] = ((addr + offset) & 0xff000000) >> 24;
 		buf[2] = ((addr + offset) & 0x00ff0000) >> 16;
 		buf[3] = ((addr + offset) & 0x0000ff00) >> 8;
 		buf[4] = ((addr + offset) & 0x000000ff) >> 0;
 
-		/* Fetch data from caller buffer */
+		 
 		rt5677_spi_reverse(body, t.len, cb + offset, len - offset);
 		offset += t.len;
 		t.len += RT5677_SPI_HEADER + 1;

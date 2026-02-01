@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef __Q6_ADM_V2_H__
 #define __Q6_ADM_V2_H__
 
@@ -7,7 +7,7 @@
 #define MAX_COPPS_PER_PORT	8
 #define NULL_COPP_TOPOLOGY	0x00010312
 
-/* multiple copp per stream. */
+ 
 struct route_payload {
 	int num_copps;
 	int session_id;
@@ -24,4 +24,4 @@ int q6adm_get_copp_id(struct q6copp *copp);
 int q6adm_matrix_map(struct device *dev, int path,
 		     struct route_payload payload_map, int perf_mode);
 
-#endif /* __Q6_ADM_V2_H__ */
+#endif  

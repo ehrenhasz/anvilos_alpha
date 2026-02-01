@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) STMicroelectronics SA 2017
- *
- * Authors: Philippe Cornu <philippe.cornu@st.com>
- *          Yannick Fertre <yannick.fertre@st.com>
- *          Fabien Dessenne <fabien.dessenne@st.com>
- *          Mickael Reulier <mickael.reulier@st.com>
- */
+
+ 
 
 #include <linux/component.h>
 #include <linux/dma-mapping.h>
@@ -29,7 +22,7 @@
 #include "ltdc.h"
 
 #define STM_MAX_FB_WIDTH	2048
-#define STM_MAX_FB_HEIGHT	2048 /* same as width to handle orientation */
+#define STM_MAX_FB_HEIGHT	2048  
 
 static const struct drm_mode_config_funcs drv_mode_config_funcs = {
 	.fb_create = drm_gem_fb_create,
@@ -43,10 +36,7 @@ static int stm_gem_dma_dumb_create(struct drm_file *file,
 {
 	unsigned int min_pitch = DIV_ROUND_UP(args->width * args->bpp, 8);
 
-	/*
-	 * in order to optimize data transfer, pitch is aligned on
-	 * 128 bytes, height is aligned on 4 bytes
-	 */
+	 
 	args->pitch = roundup(min_pitch, 128);
 	args->height = roundup(args->height, 4);
 
@@ -85,11 +75,7 @@ static int drv_load(struct drm_device *ddev)
 	if (ret)
 		return ret;
 
-	/*
-	 * set max width and height as default value.
-	 * this value would be used to check framebuffer size limitation
-	 * at drm_mode_addfb().
-	 */
+	 
 	ddev->mode_config.min_width = 0;
 	ddev->mode_config.min_height = 0;
 	ddev->mode_config.max_width = STM_MAX_FB_WIDTH;
@@ -233,7 +219,7 @@ static void stm_drm_platform_shutdown(struct platform_device *pdev)
 
 static const struct of_device_id drv_dt_ids[] = {
 	{ .compatible = "st,stm32-ltdc"},
-	{ /* end node */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, drv_dt_ids);
 

@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Regulator Driver for Freescale MC13783 PMIC
-//
-// Copyright 2010 Yong Shen <yong.shen@linaro.org>
-// Copyright (C) 2008 Sascha Hauer, Pengutronix <s.hauer@pengutronix.de>
-// Copyright 2009 Alberto Panizzo <maramaopercheseimorto@gmail.com>
+
+
+
+
+
+
+
 
 #include <linux/mfd/mc13783.h>
 #include <linux/regulator/machine.h>
@@ -18,25 +18,25 @@
 #include "mc13xxx.h"
 
 #define MC13783_REG_SWITCHERS0			24
-/* Enable does not exist for SW1A */
+ 
 #define MC13783_REG_SWITCHERS0_SW1AEN			0
 #define MC13783_REG_SWITCHERS0_SW1AVSEL			0
 #define MC13783_REG_SWITCHERS0_SW1AVSEL_M		(63 << 0)
 
 #define MC13783_REG_SWITCHERS1			25
-/* Enable does not exist for SW1B */
+ 
 #define MC13783_REG_SWITCHERS1_SW1BEN			0
 #define MC13783_REG_SWITCHERS1_SW1BVSEL			0
 #define MC13783_REG_SWITCHERS1_SW1BVSEL_M		(63 << 0)
 
 #define MC13783_REG_SWITCHERS2			26
-/* Enable does not exist for SW2A */
+ 
 #define MC13783_REG_SWITCHERS2_SW2AEN			0
 #define MC13783_REG_SWITCHERS2_SW2AVSEL			0
 #define MC13783_REG_SWITCHERS2_SW2AVSEL_M		(63 << 0)
 
 #define MC13783_REG_SWITCHERS3			27
-/* Enable does not exist for SW2B */
+ 
 #define MC13783_REG_SWITCHERS3_SW2BEN			0
 #define MC13783_REG_SWITCHERS3_SW2BVSEL			0
 #define MC13783_REG_SWITCHERS3_SW2BVSEL_M		(63 << 0)
@@ -112,7 +112,7 @@
 #define MC13783_REG_POWERMISC_PWGTSPI_M			(3 << 15)
 
 
-/* Voltage Values */
+ 
 static const int mc13783_sw1x_val[] = {
 	900000, 925000, 950000, 975000,
 	1000000, 1025000, 1050000, 1075000,
@@ -305,14 +305,14 @@ static int mc13783_powermisc_rmw(struct mc13xxx_regulator_priv *priv, u32 mask,
 	if (ret)
 		goto out;
 
-	/* Update the stored state for Power Gates. */
+	 
 	priv->powermisc_pwgt_state =
 				(priv->powermisc_pwgt_state & ~mask) | val;
 	priv->powermisc_pwgt_state &= MC13783_REG_POWERMISC_PWGTSPI_M;
 
-	/* Construct the new register value */
+	 
 	valread = (valread & ~mask) | val;
-	/* Overwrite the PWGTxEN with the stored version */
+	 
 	valread = (valread & ~MC13783_REG_POWERMISC_PWGTSPI_M) |
 						priv->powermisc_pwgt_state;
 
@@ -331,7 +331,7 @@ static int mc13783_gpo_regulator_enable(struct regulator_dev *rdev)
 
 	dev_dbg(rdev_get_dev(rdev), "%s id: %d\n", __func__, id);
 
-	/* Power Gate enable value is 0 */
+	 
 	if (id == MC13783_REG_PWGT1SPI ||
 	    id == MC13783_REG_PWGT2SPI)
 		en_val = 0;
@@ -349,7 +349,7 @@ static int mc13783_gpo_regulator_disable(struct regulator_dev *rdev)
 
 	dev_dbg(rdev_get_dev(rdev), "%s id: %d\n", __func__, id);
 
-	/* Power Gate disable value is 1 */
+	 
 	if (id == MC13783_REG_PWGT1SPI ||
 	    id == MC13783_REG_PWGT2SPI)
 		dis_val = mc13xxx_regulators[id].enable_bit;
@@ -372,8 +372,7 @@ static int mc13783_gpo_regulator_is_enabled(struct regulator_dev *rdev)
 	if (ret)
 		return ret;
 
-	/* Power Gates state is stored in powermisc_pwgt_state
-	 * where the meaning of bits is negated */
+	 
 	val = (val & ~MC13783_REG_POWERMISC_PWGTSPI_M) |
 	      (priv->powermisc_pwgt_state ^ MC13783_REG_POWERMISC_PWGTSPI_M);
 

@@ -1,25 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  atakbd.c
- *
- *  Copyright (c) 2005 Michael Schmitz
- *
- * Based on amikbd.c, which is
- *
- *  Copyright (c) 2000-2001 Vojtech Pavlik
- *
- *  Based on the work of:
- *	Hamish Macdonald
- */
 
-/*
- * Atari keyboard driver for Linux/m68k
- *
- * The low level init and interrupt stuff is handled in arch/mm68k/atari/atakeyb.c
- * (the keyboard ACIA also handles the mouse and joystick data, and the keyboard
- * interrupt is shared with the MIDI ACIA so MIDI data also get handled there).
- * This driver only deals with handing key events off to the input layer.
- */
+ 
+
+ 
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -36,31 +18,10 @@ MODULE_AUTHOR("Michael Schmitz <schmitz@biophys.uni-duesseldorf.de>");
 MODULE_DESCRIPTION("Atari keyboard driver");
 MODULE_LICENSE("GPL");
 
-/*
- 0x47: KP_7     71
- 0x48: KP_8     72
- 0x49: KP_9     73
- 0x62: KP_/     98
- 0x4b: KP_4     75
- 0x4c: KP_5     76
- 0x4d: KP_6     77
- 0x37: KP_*     55
- 0x4f: KP_1     79
- 0x50: KP_2     80
- 0x51: KP_3     81
- 0x4a: KP_-     74
- 0x52: KP_0     82
- 0x53: KP_.     83
- 0x4e: KP_+     78
-
- 0x67: Up       103
- 0x6c: Down     108
- 0x69: Left     105
- 0x6a: Right    106
- */
+ 
 
 
-static unsigned char atakbd_keycode[0x73] = {	/* American layout */
+static unsigned char atakbd_keycode[0x73] = {	 
 	[1]	 = KEY_ESC,
 	[2]	 = KEY_1,
 	[3]	 = KEY_2,
@@ -164,15 +125,15 @@ static struct input_dev *atakbd_dev;
 static void atakbd_interrupt(unsigned char scancode, char down)
 {
 
-	if (scancode < 0x73) {		/* scancodes < 0xf3 are keys */
+	if (scancode < 0x73) {		 
 
-		// report raw events here?
+		
 
 		scancode = atakbd_keycode[scancode];
 
 		input_report_key(atakbd_dev, scancode, down);
 		input_sync(atakbd_dev);
-	} else				/* scancodes >= 0xf3 are mouse data, most likely */
+	} else				 
 		printk(KERN_INFO "atakbd: unhandled scancode %x\n", scancode);
 
 	return;
@@ -185,7 +146,7 @@ static int __init atakbd_init(void)
 	if (!MACH_IS_ATARI || !ATARIHW_PRESENT(ST_MFP))
 		return -ENODEV;
 
-	// need to init core driver if not already done so
+	
 	error = atari_keyb_init();
 	if (error)
 		return error;
@@ -210,7 +171,7 @@ static int __init atakbd_init(void)
 		set_bit(atakbd_keycode[i], atakbd_dev->keybit);
 	}
 
-	/* error check */
+	 
 	error = input_register_device(atakbd_dev);
 	if (error) {
 		input_free_device(atakbd_dev);

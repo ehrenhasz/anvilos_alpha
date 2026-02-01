@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0+
-//
-// pv88090-regulator.c - Regulator device driver for PV88090
-// Copyright (C) 2015  Powerventure Semiconductor Ltd.
+
+
+
+
 
 #include <linux/err.h>
 #include <linux/i2c.h>
@@ -18,14 +18,14 @@
 
 #define PV88090_MAX_REGULATORS	5
 
-/* PV88090 REGULATOR IDs */
+ 
 enum {
-	/* BUCKs */
+	 
 	PV88090_ID_BUCK1,
 	PV88090_ID_BUCK2,
 	PV88090_ID_BUCK3,
 
-	/* LDOs */
+	 
 	PV88090_ID_LDO1,
 	PV88090_ID_LDO2,
 };
@@ -53,9 +53,7 @@ static const struct regmap_config pv88090_regmap_config = {
 	.val_bits = 8,
 };
 
-/* Current limits array (in uA) for BUCK1, BUCK2, BUCK3.
- *  Entry indexes corresponds to register values.
- */
+ 
 
 static const unsigned int pv88090_buck1_limits[] = {
 	 220000,  440000,  660000,  880000, 1100000, 1320000, 1540000, 1760000,
@@ -263,9 +261,7 @@ error_i2c:
 	return IRQ_NONE;
 }
 
-/*
- * I2C driver interface functions
- */
+ 
 static int pv88090_i2c_probe(struct i2c_client *i2c)
 {
 	struct regulator_init_data *init_data = dev_get_platdata(&i2c->dev);

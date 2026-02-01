@@ -1,28 +1,18 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Description:
- * Device Driver for the Infineon Technologies
- * SLD 9630 TT 1.1 and SLB 9635 TT 1.2 Trusted Platform Module
- * Specifications at www.trustedcomputinggroup.org
- *
- * Copyright (C) 2005, Marcel Selhorst <tpmdd@selhorst.net>
- * Sirrix AG - security technologies <tpmdd@sirrix.com> and
- * Applied Data Security Group, Ruhr-University Bochum, Germany
- * Project-Homepage: http://www.trust.rub.de/projects/linux-device-driver-infineon-tpm/ 
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/pnp.h>
 #include "tpm.h"
 
-/* Infineon specific definitions */
-/* maximum number of WTX-packages */
+ 
+ 
 #define	TPM_MAX_WTX_PACKAGES 	50
-/* msleep-Time for WTX-packages */
+ 
 #define	TPM_WTX_MSLEEP_TIME 	20
-/* msleep-Time --> Interval to check status register */
+ 
 #define	TPM_MSLEEP_TIME 	3
-/* gives number of max. msleep()-calls before throwing timeout */
+ 
 #define	TPM_MAX_TRIES		5000
 #define	TPM_INFINEON_DEV_VEN_VALUE	0x15D1
 
@@ -35,15 +25,15 @@
 struct tpm_inf_dev {
 	int iotype;
 
-	void __iomem *mem_base;	/* MMIO ioremap'd addr */
-	unsigned long map_base;	/* phys MMIO base */
-	unsigned long map_size;	/* MMIO region size */
-	unsigned int index_off;	/* index register offset */
+	void __iomem *mem_base;	 
+	unsigned long map_base;	 
+	unsigned long map_size;	 
+	unsigned int index_off;	 
 
-	unsigned int data_regs;	/* Data registers */
+	unsigned int data_regs;	 
 	unsigned int data_size;
 
-	unsigned int config_port;	/* IO Port config index reg */
+	unsigned int config_port;	 
 	unsigned int config_size;
 };
 
@@ -81,7 +71,7 @@ static inline unsigned char tpm_config_in(unsigned char offset)
 		return readb(tpm_dev.mem_base + tpm_dev.index_off + offset);
 }
 
-/* TPM header definitions */
+ 
 enum infineon_tpm_header {
 	TPM_VL_VER = 0x01,
 	TPM_VL_CHANNEL_CONTROL = 0x07,
@@ -123,7 +113,7 @@ enum infineon_tpm_status_bits {
 	STAT_RDA = 0x07
 };
 
-/* some outgoing values */
+ 
 enum infineon_tpm_values {
 	CHIP_ID1 = 0x20,
 	CHIP_ID2 = 0x21,
@@ -158,15 +148,7 @@ static int empty_fifo(struct tpm_chip *chip, int clear_wrfifo)
 			}
 		}
 	}
-	/* Note: The values which are currently in the FIFO of the TPM
-	   are thrown away since there is no usage for them. Usually,
-	   this has nothing to say, since the TPM will give its answer
-	   immediately or will be aborted anyway, so the data here is
-	   usually garbage and useless.
-	   We have to clean this, because the next communication with
-	   the TPM would be rubbish, if there is still some old data
-	   in the Read FIFO.
-	 */
+	 
 	i = 0;
 	do {
 		status = tpm_data_in(RDFIFO);
@@ -184,12 +166,12 @@ static int wait(struct tpm_chip *chip, int wait_for_bit)
 	int i;
 	for (i = 0; i < TPM_MAX_TRIES; i++) {
 		status = tpm_data_in(STAT);
-		/* check the status-register if wait_for_bit is set */
+		 
 		if (status & 1 << wait_for_bit)
 			break;
 		tpm_msleep(TPM_MSLEEP_TIME);
 	}
-	if (i == TPM_MAX_TRIES) {	/* timeout occurs */
+	if (i == TPM_MAX_TRIES) {	 
 		if (wait_for_bit == STAT_XFE)
 			dev_err(&chip->dev, "Timeout in wait(STAT_XFE)\n");
 		if (wait_for_bit == STAT_RDA)
@@ -205,13 +187,7 @@ static void wait_and_send(struct tpm_chip *chip, u8 sendbyte)
 	tpm_data_out(sendbyte, WRFIFO);
 }
 
-    /* Note: WTX means Waiting-Time-Extension. Whenever the TPM needs more
-       calculation time, it sends a WTX-package, which has to be acknowledged
-       or aborted. This usually occurs if you are hammering the TPM with key
-       creation. Set the maximum number of WTX-packages in the definitions
-       above, if the number is reached, the waiting-time will be denied
-       and the TPM command has to be resend.
-     */
+     
 
 static void tpm_wtx(struct tpm_chip *chip)
 {
@@ -244,7 +220,7 @@ static int tpm_inf_recv(struct tpm_chip *chip, u8 * buf, size_t count)
 	number_of_wtx = 0;
 
 recv_begin:
-	/* start receiving header */
+	 
 	for (i = 0; i < 4; i++) {
 		ret = wait(chip, STAT_RDA);
 		if (ret)
@@ -259,7 +235,7 @@ recv_begin:
 	}
 
 	if (buf[1] == TPM_CTRL_DATA) {
-		/* size of the data received */
+		 
 		size = ((buf[2] << 8) | buf[3]);
 
 		for (i = 0; i < size; i++) {
@@ -312,7 +288,7 @@ static int tpm_inf_send(struct tpm_chip *chip, u8 * buf, size_t count)
 	int ret;
 	u8 count_high, count_low, count_4, count_3, count_2, count_1;
 
-	/* Disabling Reset, LP and IRQC */
+	 
 	tpm_data_out(RESET_LP_IRQC_DISABLE, CMD);
 
 	ret = empty_fifo(chip, 1);
@@ -332,13 +308,13 @@ static int tpm_inf_send(struct tpm_chip *chip, u8 * buf, size_t count)
 	count_high = ((count + 6) & 0xffffff00) >> 8;
 	count_low = ((count + 6) & 0x000000ff);
 
-	/* Sending Header */
+	 
 	wait_and_send(chip, TPM_VL_VER);
 	wait_and_send(chip, TPM_CTRL_DATA);
 	wait_and_send(chip, count_high);
 	wait_and_send(chip, count_low);
 
-	/* Sending Data Header */
+	 
 	wait_and_send(chip, TPM_VL_VER);
 	wait_and_send(chip, TPM_VL_CHANNEL_TPM);
 	wait_and_send(chip, count_4);
@@ -346,7 +322,7 @@ static int tpm_inf_send(struct tpm_chip *chip, u8 * buf, size_t count)
 	wait_and_send(chip, count_2);
 	wait_and_send(chip, count_1);
 
-	/* Sending Data */
+	 
 	for (i = 0; i < count; i++) {
 		wait_and_send(chip, buf[i]);
 	}
@@ -355,11 +331,7 @@ static int tpm_inf_send(struct tpm_chip *chip, u8 * buf, size_t count)
 
 static void tpm_inf_cancel(struct tpm_chip *chip)
 {
-	/*
-	   Since we are using the legacy mode to communicate
-	   with the TPM, we have no cancel functions, but have
-	   a workaround for interrupting the TPM through WTX.
-	 */
+	 
 }
 
 static u8 tpm_inf_status(struct tpm_chip *chip)
@@ -377,7 +349,7 @@ static const struct tpm_class_ops tpm_inf = {
 };
 
 static const struct pnp_device_id tpm_inf_pnp_tbl[] = {
-	/* Infineon TPMs */
+	 
 	{"IFX0101", 0},
 	{"IFX0102", 0},
 	{"", 0}
@@ -396,7 +368,7 @@ static int tpm_inf_pnp_probe(struct pnp_dev *dev,
 	const char *chipname;
 	struct tpm_chip *chip;
 
-	/* read IO-ports through PnP */
+	 
 	if (pnp_port_valid(dev, 0) && pnp_port_valid(dev, 1) &&
 	    !(pnp_port_flags(dev, 0) & IORESOURCE_DISABLED)) {
 
@@ -416,7 +388,7 @@ static int tpm_inf_pnp_probe(struct pnp_dev *dev,
 			rc = -EINVAL;
 			goto err_last;
 		}
-		/* publish my base address and request region */
+		 
 		if (request_region(tpm_dev.data_regs, tpm_dev.data_size,
 				   "tpm_infineon0") == NULL) {
 			rc = -EINVAL;
@@ -439,7 +411,7 @@ static int tpm_inf_pnp_probe(struct pnp_dev *dev,
 		dev_info(&dev->dev, "Found %s with ID %s\n",
 			 dev->name, dev_id->id);
 
-		/* publish my base address and request region */
+		 
 		if (request_mem_region(tpm_dev.map_base, tpm_dev.map_size,
 				       "tpm_infineon0") == NULL) {
 			rc = -EINVAL;
@@ -453,13 +425,7 @@ static int tpm_inf_pnp_probe(struct pnp_dev *dev,
 			goto err_last;
 		}
 
-		/*
-		 * The only known MMIO based Infineon TPM system provides
-		 * a single large mem region with the device config
-		 * registers at the default TPM_ADDR.  The data registers
-		 * seem like they could be placed anywhere within the MMIO
-		 * region, but lets just put them at zero offset.
-		 */
+		 
 		tpm_dev.index_off = TPM_ADDR;
 		tpm_dev.data_regs = 0x0;
 	} else {
@@ -467,7 +433,7 @@ static int tpm_inf_pnp_probe(struct pnp_dev *dev,
 		goto err_last;
 	}
 
-	/* query chip for its vendor, its version number a.s.o. */
+	 
 	tpm_config_out(ENABLE_REGISTER_PAIR, TPM_INF_ADDR);
 	tpm_config_out(IDVENL, TPM_INF_ADDR);
 	vendorid[1] = tpm_config_in(TPM_INF_DATA);
@@ -496,13 +462,13 @@ static int tpm_inf_pnp_probe(struct pnp_dev *dev,
 
 	if ((vendorid[0] << 8 | vendorid[1]) == (TPM_INFINEON_DEV_VEN_VALUE)) {
 
-		/* configure TPM with IO-ports */
+		 
 		tpm_config_out(IOLIMH, TPM_INF_ADDR);
 		tpm_config_out((tpm_dev.data_regs >> 8) & 0xff, TPM_INF_DATA);
 		tpm_config_out(IOLIML, TPM_INF_ADDR);
 		tpm_config_out((tpm_dev.data_regs & 0xff), TPM_INF_DATA);
 
-		/* control if IO-ports are set correctly */
+		 
 		tpm_config_out(IOLIMH, TPM_INF_ADDR);
 		ioh = tpm_config_in(TPM_INF_DATA);
 		tpm_config_out(IOLIML, TPM_INF_ADDR);
@@ -516,15 +482,15 @@ static int tpm_inf_pnp_probe(struct pnp_dev *dev,
 			goto err_release_region;
 		}
 
-		/* activate register */
+		 
 		tpm_config_out(TPM_DAR, TPM_INF_ADDR);
 		tpm_config_out(0x01, TPM_INF_DATA);
 		tpm_config_out(DISABLE_REGISTER_PAIR, TPM_INF_ADDR);
 
-		/* disable RESET, LP and IRQC */
+		 
 		tpm_data_out(RESET_LP_IRQC_DISABLE, CMD);
 
-		/* Finally, we're done, print some infos */
+		 
 		dev_info(&dev->dev, "TPM found: "
 			 "config base 0x%lx, "
 			 "data base 0x%lx, "
@@ -590,17 +556,17 @@ static void tpm_inf_pnp_remove(struct pnp_dev *dev)
 #ifdef CONFIG_PM_SLEEP
 static int tpm_inf_resume(struct device *dev)
 {
-	/* Re-configure TPM after suspending */
+	 
 	tpm_config_out(ENABLE_REGISTER_PAIR, TPM_INF_ADDR);
 	tpm_config_out(IOLIMH, TPM_INF_ADDR);
 	tpm_config_out((tpm_dev.data_regs >> 8) & 0xff, TPM_INF_DATA);
 	tpm_config_out(IOLIML, TPM_INF_ADDR);
 	tpm_config_out((tpm_dev.data_regs & 0xff), TPM_INF_DATA);
-	/* activate register */
+	 
 	tpm_config_out(TPM_DAR, TPM_INF_ADDR);
 	tpm_config_out(0x01, TPM_INF_DATA);
 	tpm_config_out(DISABLE_REGISTER_PAIR, TPM_INF_ADDR);
-	/* disable RESET, LP and IRQC */
+	 
 	tpm_data_out(RESET_LP_IRQC_DISABLE, CMD);
 	return tpm_pm_resume(dev);
 }

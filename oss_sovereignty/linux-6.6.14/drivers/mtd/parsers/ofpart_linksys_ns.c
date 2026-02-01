@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2021 Rafał Miłecki <rafal@milecki.pl>
- */
+
+ 
 
 #include <linux/bcm47xx_nvram.h>
 #include <linux/mtd/mtd.h>
@@ -16,7 +14,7 @@ static int ofpart_linksys_ns_bootpartition(void)
 	char buf[4];
 	int bootpartition;
 
-	/* Check CFE environment variable */
+	 
 	if (bcm47xx_nvram_getenv(NVRAM_BOOT_PART, buf, sizeof(buf)) > 0) {
 		if (!kstrtoint(buf, 0, &bootpartition))
 			return bootpartition;

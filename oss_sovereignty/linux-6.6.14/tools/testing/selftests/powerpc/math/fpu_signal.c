@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright 2015, Cyril Bur, IBM Corp.
- *
- * This test attempts to see if the FPU registers are correctly reported in a
- * signal context. Each worker just spins checking its FPU registers, at some
- * point a signal will interrupt it and C code will check the signal context
- * ensuring it is also the same.
- */
+
+ 
 
 #include <stdio.h>
 #include <unistd.h>
@@ -19,12 +12,9 @@
 
 #include "utils.h"
 
-/* Number of times each thread should receive the signal */
+ 
 #define ITERATIONS 10
-/*
- * Factor by which to multiply number of online CPUs for total number of
- * worker threads
- */
+ 
 #define THREAD_FACTOR 8
 
 __thread double darray[] = {0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0,
@@ -43,7 +33,7 @@ void signal_fpu_sig(int sig, siginfo_t *info, void *context)
 	ucontext_t *uc = context;
 	mcontext_t *mc = &uc->uc_mcontext;
 
-	/* Only the non volatiles were loaded up */
+	 
 	for (i = 14; i < 32; i++) {
 		if (mc->fp_regs[i] != darray[i - 14]) {
 			bad_context = true;
@@ -109,10 +99,7 @@ int test_signal_fpu(void)
 	for (i = 0; i < threads; i++) {
 		pthread_join(tids[i], &rc_p);
 
-		/*
-		 * Harness will say the fail was here, look at why signal_fpu
-		 * returned
-		 */
+		 
 		if ((long) rc_p || bad_context)
 			printf("oops\n");
 		if (bad_context)

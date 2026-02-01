@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * linux/fs/seq_file.c
- *
- * helper functions for making synthetic files from sequences of records.
- * initial implementation -- AV, Oct 2001.
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -38,22 +33,7 @@ static void *seq_buf_alloc(unsigned long size)
 	return kvmalloc(size, GFP_KERNEL_ACCOUNT);
 }
 
-/**
- *	seq_open -	initialize sequential file
- *	@file: file we initialize
- *	@op: method table describing the sequence
- *
- *	seq_open() sets @file, associating it with a sequence described
- *	by @op.  @op->start() sets the iterator up and returns the first
- *	element of sequence. @op->stop() shuts it down.  @op->next()
- *	returns the next element of sequence.  @op->show() prints element
- *	into the buffer.  In case of error ->start() and ->next() return
- *	ERR_PTR(error).  In the end of sequence they return %NULL. ->show()
- *	returns 0 in case of success and negative number in case of error.
- *	Returning SEQ_SKIP means "discard this element and move on".
- *	Note: seq_open() will allocate a struct seq_file and store its
- *	pointer in @file->private_data. This pointer should not be modified.
- */
+ 
 int seq_open(struct file *file, const struct seq_operations *op)
 {
 	struct seq_file *p;
@@ -69,19 +49,11 @@ int seq_open(struct file *file, const struct seq_operations *op)
 	mutex_init(&p->lock);
 	p->op = op;
 
-	// No refcounting: the lifetime of 'p' is constrained
-	// to the lifetime of the file.
+	
+	
 	p->file = file;
 
-	/*
-	 * seq_files support lseek() and pread().  They do not implement
-	 * write() at all, but we clear FMODE_PWRITE here for historical
-	 * reasons.
-	 *
-	 * If a client of seq_files a) implements file.write() and b) wishes to
-	 * support pwrite() then that client will need to implement its own
-	 * file.open() which calls seq_open() and then sets FMODE_PWRITE.
-	 */
+	 
 	file->f_mode &= ~FMODE_PWRITE;
 	return 0;
 }
@@ -139,15 +111,7 @@ Eoverflow:
 	return !m->buf ? -ENOMEM : -EAGAIN;
 }
 
-/**
- *	seq_read -	->read() method for sequential files.
- *	@file: the file to read from
- *	@buf: the buffer to read to
- *	@size: the maximum number of bytes to read
- *	@ppos: the current position in the file
- *
- *	Ready-made ->f_op->read()
- */
+ 
 ssize_t seq_read(struct file *file, char __user *buf, size_t size, loff_t *ppos)
 {
 	struct iovec iov = { .iov_base = buf, .iov_len = size};
@@ -165,9 +129,7 @@ ssize_t seq_read(struct file *file, char __user *buf, size_t size, loff_t *ppos)
 }
 EXPORT_SYMBOL(seq_read);
 
-/*
- * Ready-made ->f_op->read_iter()
- */
+ 
 ssize_t seq_read_iter(struct kiocb *iocb, struct iov_iter *iter)
 {
 	struct seq_file *m = iocb->ki_filp->private_data;
@@ -181,21 +143,18 @@ ssize_t seq_read_iter(struct kiocb *iocb, struct iov_iter *iter)
 
 	mutex_lock(&m->lock);
 
-	/*
-	 * if request is to read from zero offset, reset iterator to first
-	 * record as it might have been already advanced by previous requests
-	 */
+	 
 	if (iocb->ki_pos == 0) {
 		m->index = 0;
 		m->count = 0;
 	}
 
-	/* Don't assume ki_pos is where we left it */
+	 
 	if (unlikely(iocb->ki_pos != m->read_pos)) {
 		while ((err = traverse(m, iocb->ki_pos)) == -EAGAIN)
 			;
 		if (err) {
-			/* With prejudice... */
+			 
 			m->read_pos = 0;
 			m->index = 0;
 			m->count = 0;
@@ -205,40 +164,40 @@ ssize_t seq_read_iter(struct kiocb *iocb, struct iov_iter *iter)
 		}
 	}
 
-	/* grab buffer if we didn't have one */
+	 
 	if (!m->buf) {
 		m->buf = seq_buf_alloc(m->size = PAGE_SIZE);
 		if (!m->buf)
 			goto Enomem;
 	}
-	// something left in the buffer - copy it out first
+	
 	if (m->count) {
 		n = copy_to_iter(m->buf + m->from, m->count, iter);
 		m->count -= n;
 		m->from += n;
 		copied += n;
-		if (m->count)	// hadn't managed to copy everything
+		if (m->count)	
 			goto Done;
 	}
-	// get a non-empty record in the buffer
+	
 	m->from = 0;
 	p = m->op->start(m, &m->index);
 	while (1) {
 		err = PTR_ERR(p);
-		if (!p || IS_ERR(p))	// EOF or an error
+		if (!p || IS_ERR(p))	
 			break;
 		err = m->op->show(m, p);
-		if (err < 0)		// hard error
+		if (err < 0)		
 			break;
-		if (unlikely(err))	// ->show() says "skip it"
+		if (unlikely(err))	
 			m->count = 0;
-		if (unlikely(!m->count)) { // empty record
+		if (unlikely(!m->count)) { 
 			p = m->op->next(m, p, &m->index);
 			continue;
 		}
-		if (!seq_has_overflowed(m)) // got it
+		if (!seq_has_overflowed(m)) 
 			goto Fill;
-		// need a bigger buffer
+		
 		m->op->stop(m, p);
 		kvfree(m->buf);
 		m->count = 0;
@@ -247,14 +206,14 @@ ssize_t seq_read_iter(struct kiocb *iocb, struct iov_iter *iter)
 			goto Enomem;
 		p = m->op->start(m, &m->index);
 	}
-	// EOF or an error
+	
 	m->op->stop(m, p);
 	m->count = 0;
 	goto Done;
 Fill:
-	// one non-empty record is in the buffer; if they want more,
-	// try to fit more in, but in any case we need to advance
-	// the iterator once for every record shown.
+	
+	
+	
 	while (1) {
 		size_t offs = m->count;
 		loff_t pos = m->index;
@@ -265,12 +224,12 @@ Fill:
 					    m->op->next);
 			m->index++;
 		}
-		if (!p || IS_ERR(p))	// no next record for us
+		if (!p || IS_ERR(p))	
 			break;
 		if (m->count >= iov_iter_count(iter))
 			break;
 		err = m->op->show(m, p);
-		if (err > 0) {		// ->show() says "skip it"
+		if (err > 0) {		
 			m->count = offs;
 		} else if (err || seq_has_overflowed(m)) {
 			m->count = offs;
@@ -297,14 +256,7 @@ Enomem:
 }
 EXPORT_SYMBOL(seq_read_iter);
 
-/**
- *	seq_lseek -	->llseek() method for sequential files.
- *	@file: the file in question
- *	@offset: new position
- *	@whence: 0 for absolute, 1 for relative position
- *
- *	Ready-made ->f_op->llseek()
- */
+ 
 loff_t seq_lseek(struct file *file, loff_t offset, int whence)
 {
 	struct seq_file *m = file->private_data;
@@ -323,7 +275,7 @@ loff_t seq_lseek(struct file *file, loff_t offset, int whence)
 			while ((retval = traverse(m, offset)) == -EAGAIN)
 				;
 			if (retval) {
-				/* with extreme prejudice... */
+				 
 				file->f_pos = 0;
 				m->read_pos = 0;
 				m->index = 0;
@@ -341,14 +293,7 @@ loff_t seq_lseek(struct file *file, loff_t offset, int whence)
 }
 EXPORT_SYMBOL(seq_lseek);
 
-/**
- *	seq_release -	free the structures associated with sequential file.
- *	@file: file in question
- *	@inode: its inode
- *
- *	Frees the structures associated with sequential file; can be used
- *	as ->f_op->release() if you don't have private data to destroy.
- */
+ 
 int seq_release(struct inode *inode, struct file *file)
 {
 	struct seq_file *m = file->private_data;
@@ -358,19 +303,7 @@ int seq_release(struct inode *inode, struct file *file)
 }
 EXPORT_SYMBOL(seq_release);
 
-/**
- * seq_escape_mem - print data into buffer, escaping some characters
- * @m: target buffer
- * @src: source buffer
- * @len: size of source buffer
- * @flags: flags to pass to string_escape_mem()
- * @esc: set of characters that need escaping
- *
- * Puts data into buffer, replacing each occurrence of character from
- * given class (defined by @flags and @esc) with printable escaped sequence.
- *
- * Use seq_has_overflowed() to check for errors.
- */
+ 
 void seq_escape_mem(struct seq_file *m, const char *src, size_t len,
 		    unsigned int flags, const char *esc)
 {
@@ -424,19 +357,9 @@ void seq_bprintf(struct seq_file *m, const char *f, const u32 *binary)
 	seq_set_overflow(m);
 }
 EXPORT_SYMBOL(seq_bprintf);
-#endif /* CONFIG_BINARY_PRINTF */
+#endif  
 
-/**
- *	mangle_path -	mangle and copy path to buffer beginning
- *	@s: buffer start
- *	@p: beginning of path in above buffer
- *	@esc: set of characters that need escaping
- *
- *      Copy the path from @p to @s, replacing each occurrence of character from
- *      @esc with usual octal escape.
- *      Returns pointer past last written character in @s, or NULL in case of
- *      failure.
- */
+ 
 char *mangle_path(char *s, const char *p, const char *esc)
 {
 	while (s <= p) {
@@ -458,15 +381,7 @@ char *mangle_path(char *s, const char *p, const char *esc)
 }
 EXPORT_SYMBOL(mangle_path);
 
-/**
- * seq_path - seq_file interface to print a pathname
- * @m: the seq_file handle
- * @path: the struct path to print
- * @esc: set of characters to escape in the output
- *
- * return the absolute path of 'path', as represented by the
- * dentry / mnt pair in the path parameter.
- */
+ 
 int seq_path(struct seq_file *m, const struct path *path, const char *esc)
 {
 	char *buf;
@@ -487,23 +402,14 @@ int seq_path(struct seq_file *m, const struct path *path, const char *esc)
 }
 EXPORT_SYMBOL(seq_path);
 
-/**
- * seq_file_path - seq_file interface to print a pathname of a file
- * @m: the seq_file handle
- * @file: the struct file to print
- * @esc: set of characters to escape in the output
- *
- * return the absolute path to the file.
- */
+ 
 int seq_file_path(struct seq_file *m, struct file *file, const char *esc)
 {
 	return seq_path(m, &file->f_path, esc);
 }
 EXPORT_SYMBOL(seq_file_path);
 
-/*
- * Same as seq_path, but relative to supplied root.
- */
+ 
 int seq_path_root(struct seq_file *m, const struct path *path,
 		  const struct path *root, const char *esc)
 {
@@ -531,9 +437,7 @@ int seq_path_root(struct seq_file *m, const struct path *path,
 	return res < 0 && res != -ENAMETOOLONG ? res : 0;
 }
 
-/*
- * returns the path of the 'dentry' from the root of its filesystem.
- */
+ 
 int seq_dentry(struct seq_file *m, struct dentry *dentry, const char *esc)
 {
 	char *buf;
@@ -682,25 +586,13 @@ void seq_puts(struct seq_file *m, const char *s)
 }
 EXPORT_SYMBOL(seq_puts);
 
-/**
- * seq_put_decimal_ull_width - A helper routine for putting decimal numbers
- * 			       without rich format of printf().
- * only 'unsigned long long' is supported.
- * @m: seq_file identifying the buffer to which data should be written
- * @delimiter: a string which is printed before the number
- * @num: the number
- * @width: a minimum field width
- *
- * This routine will put strlen(delimiter) + number into seq_filed.
- * This routine is very quick when you show lots of numbers.
- * In usual cases, it will be better to use seq_printf(). It's easier to read.
- */
+ 
 void seq_put_decimal_ull_width(struct seq_file *m, const char *delimiter,
 			 unsigned long long num, unsigned int width)
 {
 	int len;
 
-	if (m->count + 2 >= m->size) /* we'll write 2 bytes at least */
+	if (m->count + 2 >= m->size)  
 		goto overflow;
 
 	if (delimiter && delimiter[0]) {
@@ -734,18 +626,7 @@ void seq_put_decimal_ull(struct seq_file *m, const char *delimiter,
 }
 EXPORT_SYMBOL(seq_put_decimal_ull);
 
-/**
- * seq_put_hex_ll - put a number in hexadecimal notation
- * @m: seq_file identifying the buffer to which data should be written
- * @delimiter: a string which is printed before the number
- * @v: the number
- * @width: a minimum field width
- *
- * seq_put_hex_ll(m, "", v, 8) is equal to seq_printf(m, "%08llx", v)
- *
- * This routine is very quick when you show lots of numbers.
- * In usual cases, it will be better to use seq_printf(). It's easier to read.
- */
+ 
 void seq_put_hex_ll(struct seq_file *m, const char *delimiter,
 				unsigned long long v, unsigned int width)
 {
@@ -759,7 +640,7 @@ void seq_put_hex_ll(struct seq_file *m, const char *delimiter,
 			seq_puts(m, delimiter);
 	}
 
-	/* If x is 0, the result of __builtin_clzll is undefined */
+	 
 	if (v == 0)
 		len = 1;
 	else
@@ -784,7 +665,7 @@ void seq_put_decimal_ll(struct seq_file *m, const char *delimiter, long long num
 {
 	int len;
 
-	if (m->count + 3 >= m->size) /* we'll write 2 bytes at least */
+	if (m->count + 3 >= m->size)  
 		goto overflow;
 
 	if (delimiter && delimiter[0]) {
@@ -819,14 +700,7 @@ overflow:
 }
 EXPORT_SYMBOL(seq_put_decimal_ll);
 
-/**
- * seq_write - write arbitrary data to buffer
- * @seq: seq_file identifying the buffer to which data should be written
- * @data: data address
- * @len: number of bytes
- *
- * Return 0 on success, non-zero otherwise.
- */
+ 
 int seq_write(struct seq_file *seq, const void *data, size_t len)
 {
 	if (seq->count + len < seq->size) {
@@ -839,11 +713,7 @@ int seq_write(struct seq_file *seq, const void *data, size_t len)
 }
 EXPORT_SYMBOL(seq_write);
 
-/**
- * seq_pad - write padding spaces to buffer
- * @m: seq_file identifying the buffer to which data should be written
- * @c: the byte to append after padding if non-zero
- */
+ 
 void seq_pad(struct seq_file *m, char c)
 {
 	int size = m->pad_until - m->count;
@@ -860,7 +730,7 @@ void seq_pad(struct seq_file *m, char c)
 }
 EXPORT_SYMBOL(seq_pad);
 
-/* A complete analogue of print_hex_dump() */
+ 
 void seq_hex_dump(struct seq_file *m, const char *prefix_str, int prefix_type,
 		  int rowsize, int groupsize, const void *buf, size_t len,
 		  bool ascii)
@@ -963,13 +833,7 @@ struct list_head *seq_list_next_rcu(void *v, struct list_head *head,
 }
 EXPORT_SYMBOL(seq_list_next_rcu);
 
-/**
- * seq_hlist_start - start an iteration of a hlist
- * @head: the head of the hlist
- * @pos:  the start position of the sequence
- *
- * Called at seq_file->op->start().
- */
+ 
 struct hlist_node *seq_hlist_start(struct hlist_head *head, loff_t pos)
 {
 	struct hlist_node *node;
@@ -981,14 +845,7 @@ struct hlist_node *seq_hlist_start(struct hlist_head *head, loff_t pos)
 }
 EXPORT_SYMBOL(seq_hlist_start);
 
-/**
- * seq_hlist_start_head - start an iteration of a hlist
- * @head: the head of the hlist
- * @pos:  the start position of the sequence
- *
- * Called at seq_file->op->start(). Call this function if you want to
- * print a header at the top of the output.
- */
+ 
 struct hlist_node *seq_hlist_start_head(struct hlist_head *head, loff_t pos)
 {
 	if (!pos)
@@ -998,14 +855,7 @@ struct hlist_node *seq_hlist_start_head(struct hlist_head *head, loff_t pos)
 }
 EXPORT_SYMBOL(seq_hlist_start_head);
 
-/**
- * seq_hlist_next - move to the next position of the hlist
- * @v:    the current iterator
- * @head: the head of the hlist
- * @ppos: the current position
- *
- * Called at seq_file->op->next().
- */
+ 
 struct hlist_node *seq_hlist_next(void *v, struct hlist_head *head,
 				  loff_t *ppos)
 {
@@ -1019,17 +869,7 @@ struct hlist_node *seq_hlist_next(void *v, struct hlist_head *head,
 }
 EXPORT_SYMBOL(seq_hlist_next);
 
-/**
- * seq_hlist_start_rcu - start an iteration of a hlist protected by RCU
- * @head: the head of the hlist
- * @pos:  the start position of the sequence
- *
- * Called at seq_file->op->start().
- *
- * This list-traversal primitive may safely run concurrently with
- * the _rcu list-mutation primitives such as hlist_add_head_rcu()
- * as long as the traversal is guarded by rcu_read_lock().
- */
+ 
 struct hlist_node *seq_hlist_start_rcu(struct hlist_head *head,
 				       loff_t pos)
 {
@@ -1042,18 +882,7 @@ struct hlist_node *seq_hlist_start_rcu(struct hlist_head *head,
 }
 EXPORT_SYMBOL(seq_hlist_start_rcu);
 
-/**
- * seq_hlist_start_head_rcu - start an iteration of a hlist protected by RCU
- * @head: the head of the hlist
- * @pos:  the start position of the sequence
- *
- * Called at seq_file->op->start(). Call this function if you want to
- * print a header at the top of the output.
- *
- * This list-traversal primitive may safely run concurrently with
- * the _rcu list-mutation primitives such as hlist_add_head_rcu()
- * as long as the traversal is guarded by rcu_read_lock().
- */
+ 
 struct hlist_node *seq_hlist_start_head_rcu(struct hlist_head *head,
 					    loff_t pos)
 {
@@ -1064,18 +893,7 @@ struct hlist_node *seq_hlist_start_head_rcu(struct hlist_head *head,
 }
 EXPORT_SYMBOL(seq_hlist_start_head_rcu);
 
-/**
- * seq_hlist_next_rcu - move to the next position of the hlist protected by RCU
- * @v:    the current iterator
- * @head: the head of the hlist
- * @ppos: the current position
- *
- * Called at seq_file->op->next().
- *
- * This list-traversal primitive may safely run concurrently with
- * the _rcu list-mutation primitives such as hlist_add_head_rcu()
- * as long as the traversal is guarded by rcu_read_lock().
- */
+ 
 struct hlist_node *seq_hlist_next_rcu(void *v,
 				      struct hlist_head *head,
 				      loff_t *ppos)
@@ -1090,14 +908,7 @@ struct hlist_node *seq_hlist_next_rcu(void *v,
 }
 EXPORT_SYMBOL(seq_hlist_next_rcu);
 
-/**
- * seq_hlist_start_percpu - start an iteration of a percpu hlist array
- * @head: pointer to percpu array of struct hlist_heads
- * @cpu:  pointer to cpu "cursor"
- * @pos:  start position of sequence
- *
- * Called at seq_file->op->start().
- */
+ 
 struct hlist_node *
 seq_hlist_start_percpu(struct hlist_head __percpu *head, int *cpu, loff_t pos)
 {
@@ -1113,15 +924,7 @@ seq_hlist_start_percpu(struct hlist_head __percpu *head, int *cpu, loff_t pos)
 }
 EXPORT_SYMBOL(seq_hlist_start_percpu);
 
-/**
- * seq_hlist_next_percpu - move to the next position of the percpu hlist array
- * @v:    pointer to current hlist_node
- * @head: pointer to percpu array of struct hlist_heads
- * @cpu:  pointer to cpu "cursor"
- * @pos:  start position of sequence
- *
- * Called at seq_file->op->next().
- */
+ 
 struct hlist_node *
 seq_hlist_next_percpu(void *v, struct hlist_head __percpu *head,
 			int *cpu, loff_t *pos)

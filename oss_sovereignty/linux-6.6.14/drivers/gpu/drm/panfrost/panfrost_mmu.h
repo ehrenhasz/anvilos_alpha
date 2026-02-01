@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright 2019 Linaro, Ltd, Rob Herring <robh@kernel.org> */
+ 
+ 
 
 #ifndef __PANFROST_MMU_H__
 #define __PANFROST_MMU_H__

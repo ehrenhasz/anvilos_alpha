@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  tifm_7xx1.c - TI FlashMedia driver
- *
- *  Copyright (C) 2006 Alex Dubov <oakad@yahoo.com>
- */
+
+ 
 
 #include <linux/tifm.h>
 #include <linux/dma-mapping.h>
@@ -97,14 +93,14 @@ static unsigned char tifm_7xx1_toggle_sock_power(char __iomem *sock_addr)
 	writel(readl(sock_addr + SOCK_CONTROL) | TIFM_CTRL_LED,
 	       sock_addr + SOCK_CONTROL);
 
-	/* xd needs some extra time before power on */
+	 
 	if (((readl(sock_addr + SOCK_PRESENT_STATE) >> 4) & 7)
 	    == TIFM_TYPE_XD)
 		msleep(40);
 
 	writel((s_state & TIFM_CTRL_POWER_MASK) | 0x0c00,
 	       sock_addr + SOCK_CONTROL);
-	/* wait for power to stabilize */
+	 
 	msleep(20);
 	for (cnt = 16; cnt <= 256; cnt <<= 1) {
 		if ((TIFM_SOCK_STATE_POWERED
@@ -176,7 +172,7 @@ static void tifm_7xx1_switch_media(struct work_struct *work)
 		media_id = tifm_7xx1_toggle_sock_power(
 				tifm_7xx1_sock_addr(fm->addr, cnt));
 
-		// tifm_alloc_device will check if media_id is valid
+		
 		sock = tifm_alloc_device(fm, cnt, media_id);
 		if (sock) {
 			sock->addr = tifm_7xx1_sock_addr(fm->addr, cnt);
@@ -232,7 +228,7 @@ static int __maybe_unused tifm_7xx1_resume(struct device *dev_d)
 	unsigned long timeout;
 	unsigned int good_sockets = 0, bad_sockets = 0;
 	unsigned long flags;
-	/* Maximum number of entries is 4 */
+	 
 	unsigned char new_ids[4];
 	DECLARE_COMPLETION_ONSTACK(finish_resume);
 
@@ -401,7 +397,7 @@ static void tifm_7xx1_remove(struct pci_dev *dev)
 
 static const struct pci_device_id tifm_7xx1_pci_tbl[] = {
 	{ PCI_VENDOR_ID_TI, PCI_DEVICE_ID_TI_XX21_XX11_FM, PCI_ANY_ID,
-	  PCI_ANY_ID, 0, 0, 0 }, /* xx21 - the one I have */
+	  PCI_ANY_ID, 0, 0, 0 },  
         { PCI_VENDOR_ID_TI, PCI_DEVICE_ID_TI_XX12_FM, PCI_ANY_ID,
 	  PCI_ANY_ID, 0, 0, 0 },
 	{ PCI_VENDOR_ID_TI, PCI_DEVICE_ID_TI_XX20_FM, PCI_ANY_ID,

@@ -1,47 +1,4 @@
-/*
- * ipheth.c - Apple iPhone USB Ethernet driver
- *
- * Copyright (c) 2009 Diego Giagio <diego@giagio.com>
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- * 3. Neither the name of GIAGIO.COM nor the names of its contributors
- *    may be used to endorse or promote products derived from this software
- *    without specific prior written permission.
- *
- * Alternatively, provided that this notice is retained in full, this
- * software may be distributed under the terms of the GNU General
- * Public License ("GPL") version 2, in which case the provisions of the
- * GPL apply INSTEAD OF those given above.
- *
- * The provided data structures and external interfaces from this code
- * are not restricted to be used by modules with a GPL compatible license.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
- * DAMAGE.
- *
- *
- * Attention: iPhone device must be paired, otherwise it won't respond to our
- * driver. For more info: http://giagio.com/wiki/moin.cgi/iPhoneEthernetDriver
- *
- */
+ 
 
 #include <linux/kernel.h>
 #include <linux/errno.h>
@@ -60,8 +17,8 @@
 #define IPHETH_USBINTF_SUBCLASS 253
 #define IPHETH_USBINTF_PROTO    1
 
-#define IPHETH_IP_ALIGN		2	/* padding at front of URB */
-#define IPHETH_NCM_HEADER_SIZE  (12 + 96) /* NCMH + NCM0 */
+#define IPHETH_IP_ALIGN		2	 
+#define IPHETH_NCM_HEADER_SIZE  (12 + 96)  
 #define IPHETH_TX_BUF_SIZE      ETH_FRAME_LEN
 #define IPHETH_RX_BUF_SIZE_LEGACY (IPHETH_IP_ALIGN + ETH_FRAME_LEN)
 #define IPHETH_RX_BUF_SIZE_NCM	65536
@@ -291,12 +248,7 @@ static void ipheth_rcvbulk_callback(struct urb *urb)
 		return;
 	}
 
-	/* RX URBs starting with 0x00 0x01 do not encapsulate Ethernet frames,
-	 * but rather are control frames. Their purpose is not documented, and
-	 * they don't affect driver functionality, okay to drop them.
-	 * There is usually just one 4-byte control frame as the very first
-	 * URB received from the bulk IN endpoint.
-	 */
+	 
 	if (unlikely
 		(((char *)urb->transfer_buffer)[0] == 0 &&
 		 ((char *)urb->transfer_buffer)[1] == 1))
@@ -333,7 +285,7 @@ static void ipheth_sndbulk_callback(struct urb *urb)
 	if (status == 0)
 		netif_wake_queue(dev->net);
 	else
-		// on URB error, trigger immediate poll
+		
 		schedule_delayed_work(&dev->carrier_work, 0);
 }
 
@@ -348,10 +300,10 @@ static int ipheth_carrier_set(struct ipheth_device *dev)
 	udev = dev->udev;
 	retval = usb_control_msg(udev,
 			usb_rcvctrlpipe(udev, IPHETH_CTRL_ENDP),
-			IPHETH_CMD_CARRIER_CHECK, /* request */
-			0xc0, /* request type */
-			0x00, /* value */
-			0x02, /* index */
+			IPHETH_CMD_CARRIER_CHECK,  
+			0xc0,  
+			0x00,  
+			0x02,  
 			dev->ctrl_buf, IPHETH_CTRL_BUF_SIZE,
 			IPHETH_CTRL_TIMEOUT);
 	if (retval < 0) {
@@ -388,10 +340,10 @@ static int ipheth_get_macaddr(struct ipheth_device *dev)
 
 	retval = usb_control_msg(udev,
 				 usb_rcvctrlpipe(udev, IPHETH_CTRL_ENDP),
-				 IPHETH_CMD_GET_MACADDR, /* request */
-				 0xc0, /* request type */
-				 0x00, /* value */
-				 0x02, /* index */
+				 IPHETH_CMD_GET_MACADDR,  
+				 0xc0,  
+				 0x00,  
+				 0x02,  
 				 dev->ctrl_buf,
 				 IPHETH_CTRL_BUF_SIZE,
 				 IPHETH_CTRL_TIMEOUT);
@@ -418,10 +370,10 @@ static int ipheth_enable_ncm(struct ipheth_device *dev)
 
 	retval = usb_control_msg(udev,
 				 usb_sndctrlpipe(udev, IPHETH_CTRL_ENDP),
-				 IPHETH_CMD_ENABLE_NCM, /* request */
-				 0x41, /* request type */
-				 0x00, /* value */
-				 0x02, /* index */
+				 IPHETH_CMD_ENABLE_NCM,  
+				 0x41,  
+				 0x00,  
+				 0x02,  
 				 NULL,
 				 0,
 				 IPHETH_CTRL_TIMEOUT);
@@ -486,7 +438,7 @@ static netdev_tx_t ipheth_tx(struct sk_buff *skb, struct net_device *net)
 	struct usb_device *udev = dev->udev;
 	int retval;
 
-	/* Paranoid */
+	 
 	if (skb->len > IPHETH_TX_BUF_SIZE) {
 		WARN(1, "%s: skb too large: %d bytes\n", __func__, skb->len);
 		dev->net->stats.tx_dropped++;
@@ -572,7 +524,7 @@ static int ipheth_probe(struct usb_interface *intf,
 	dev->confirmed_pairing = false;
 	dev->rx_buf_len = IPHETH_RX_BUF_SIZE_LEGACY;
 	dev->rcvbulk_callback = ipheth_rcvbulk_callback_legacy;
-	/* Set up endpoints */
+	 
 	hintf = usb_altnum_to_altsetting(intf, IPHETH_ALT_INTFNUM);
 	if (hintf == NULL) {
 		retval = -ENODEV;
@@ -628,7 +580,7 @@ static int ipheth_probe(struct usb_interface *intf,
 		retval = -EIO;
 		goto err_register_netdev;
 	}
-	// carrier down and transmit queues stopped until packet from device
+	
 	netif_carrier_off(netdev);
 	netif_tx_stop_all_queues(netdev);
 	dev_info(&intf->dev, "Apple iPhone USB Ethernet device attached\n");

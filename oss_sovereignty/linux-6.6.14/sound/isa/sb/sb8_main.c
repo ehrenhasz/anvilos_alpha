@@ -1,20 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  Copyright (c) by Jaroslav Kysela <perex@perex.cz>
- *                   Uros Bizjak <uros@kss-loka.si>
- *
- *  Routines for control of 8-bit SoundBlaster cards and clones
- *  Please note: I don't have access to old SB8 soundcards.
- *
- * --
- *
- * Thu Apr 29 20:36:17 BST 1999 George David Morrison <gdm@gedamo.demon.co.uk>
- *   DSP can't respond to commands whilst in "high speed" mode. Caused 
- *   glitching during playback. Fixed.
- *
- * Wed Jul 12 22:02:55 CEST 2000 Uros Bizjak <uros@kss-loka.si>
- *   Cleaned up and rewrote lowlevel routines.
- */
+
+ 
 
 #include <linux/io.h>
 #include <asm/dma.h>
@@ -147,17 +132,17 @@ static int snd_sb8_playback_prepare(struct snd_pcm_substream *substream)
 	if (chip->hardware == SB_HW_JAZZ16)
 		snd_sbdsp_command(chip, format);
 	else if (stereo) {
-		/* set playback stereo mode */
+		 
 		spin_lock(&chip->mixer_lock);
 		mixreg = snd_sbmixer_read(chip, SB_DSP_STEREO_SW);
 		snd_sbmixer_write(chip, SB_DSP_STEREO_SW, mixreg | 0x02);
 		spin_unlock(&chip->mixer_lock);
 
-		/* Soundblaster hardware programming reference guide, 3-23 */
+		 
 		snd_sbdsp_command(chip, SB_DSP_DMA8_EXIT);
 		runtime->dma_area[0] = 0x80;
 		snd_dma_program(dma, runtime->dma_addr, 1, DMA_MODE_WRITE);
-		/* force interrupt */
+		 
 		snd_sbdsp_command(chip, SB_DSP_OUTPUT);
 		snd_sbdsp_command(chip, 0);
 		snd_sbdsp_command(chip, 0);
@@ -166,11 +151,11 @@ static int snd_sb8_playback_prepare(struct snd_pcm_substream *substream)
 	if (stereo) {
 		snd_sbdsp_command(chip, 256 - runtime->rate_den / 2);
 		spin_lock(&chip->mixer_lock);
-		/* save output filter status and turn it off */
+		 
 		mixreg = snd_sbmixer_read(chip, SB_DSP_PLAYBACK_FILT);
 		snd_sbmixer_write(chip, SB_DSP_PLAYBACK_FILT, mixreg | 0x20);
 		spin_unlock(&chip->mixer_lock);
-		/* just use force_mode16 for temporary storate... */
+		 
 		chip->force_mode16 = mixreg;
 	} else {
 		snd_sbdsp_command(chip, 256 - runtime->rate_den);
@@ -212,7 +197,7 @@ static int snd_sb8_playback_trigger(struct snd_pcm_substream *substream,
 			snd_sbdsp_reset(chip);
 			if (runtime->channels > 1) {
 				spin_lock(&chip->mixer_lock);
-				/* restore output filter and set hardware to mono mode */ 
+				  
 				snd_sbmixer_write(chip, SB_DSP_STEREO_SW, chip->force_mode16 & ~0x02);
 				spin_unlock(&chip->mixer_lock);
 			}
@@ -291,11 +276,11 @@ static int snd_sb8_capture_prepare(struct snd_pcm_substream *substream)
 	if (stereo) {
 		snd_sbdsp_command(chip, 256 - runtime->rate_den / 2);
 		spin_lock(&chip->mixer_lock);
-		/* save input filter status and turn it off */
+		 
 		mixreg = snd_sbmixer_read(chip, SB_DSP_CAPTURE_FILT);
 		snd_sbmixer_write(chip, SB_DSP_CAPTURE_FILT, mixreg | 0x20);
 		spin_unlock(&chip->mixer_lock);
-		/* just use force_mode16 for temporary storate... */
+		 
 		chip->force_mode16 = mixreg;
 	} else {
 		snd_sbdsp_command(chip, 256 - runtime->rate_den);
@@ -336,11 +321,11 @@ static int snd_sb8_capture_trigger(struct snd_pcm_substream *substream,
 			struct snd_pcm_runtime *runtime = substream->runtime;
 			snd_sbdsp_reset(chip);
 			if (runtime->channels > 1) {
-				/* restore input filter status */
+				 
 				spin_lock(&chip->mixer_lock);
 				snd_sbmixer_write(chip, SB_DSP_CAPTURE_FILT, chip->force_mode16);
 				spin_unlock(&chip->mixer_lock);
-				/* set hardware to mono mode */
+				 
 				snd_sbdsp_command(chip, SB_DSP_MONO_8BIT);
 			}
 		} else {
@@ -358,7 +343,7 @@ irqreturn_t snd_sb8dsp_interrupt(struct snd_sb *chip)
 
 	snd_sb_ack_8bit(chip);
 	switch (chip->mode) {
-	case SB_MODE_PLAYBACK_16:	/* ok.. playback is active */
+	case SB_MODE_PLAYBACK_16:	 
 		if (chip->hardware != SB_HW_JAZZ16)
 			break;
 		fallthrough;
@@ -414,9 +399,7 @@ static snd_pcm_uframes_t snd_sb8_capture_pointer(struct snd_pcm_substream *subst
 	return bytes_to_frames(substream->runtime, ptr);
 }
 
-/*
-
- */
+ 
 
 static const struct snd_pcm_hardware snd_sb8_playback =
 {
@@ -456,9 +439,7 @@ static const struct snd_pcm_hardware snd_sb8_capture =
 	.fifo_size =		0,
 };
 
-/*
- *
- */
+ 
  
 static int snd_sb8_open(struct snd_pcm_substream *substream)
 {
@@ -540,9 +521,7 @@ static int snd_sb8_close(struct snd_pcm_substream *substream)
 	return 0;
 }
 
-/*
- *  Initialization part
- */
+ 
  
 static const struct snd_pcm_ops snd_sb8_playback_ops = {
 	.open =			snd_sb8_open,
@@ -587,6 +566,6 @@ int snd_sb8dsp_pcm(struct snd_sb *chip, int device)
 
 EXPORT_SYMBOL(snd_sb8dsp_pcm);
 EXPORT_SYMBOL(snd_sb8dsp_interrupt);
-  /* sb8_midi.c */
+   
 EXPORT_SYMBOL(snd_sb8dsp_midi_interrupt);
 EXPORT_SYMBOL(snd_sb8dsp_midi);

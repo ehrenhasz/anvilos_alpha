@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * cec-notifier.c - notify CEC drivers of physical address changes
- *
- * Copyright 2016 Russell King.
- * Copyright 2016-2017 Cisco Systems, Inc. and/or its affiliates. All rights reserved.
- */
+
+ 
 
 #include <linux/export.h>
 #include <linux/platform_device.h>
@@ -34,20 +29,7 @@ struct cec_notifier {
 static LIST_HEAD(cec_notifiers);
 static DEFINE_MUTEX(cec_notifiers_lock);
 
-/**
- * cec_notifier_get_conn - find or create a new cec_notifier for the given
- * device and connector tuple.
- * @hdmi_dev: device that sends the events.
- * @port_name: the connector name from which the event occurs
- *
- * If a notifier for device @dev already exists, then increase the refcount
- * and return that notifier.
- *
- * If it doesn't exist, then allocate a new notifier struct and return a
- * pointer to that new struct.
- *
- * Return NULL if the memory could not be allocated.
- */
+ 
 static struct cec_notifier *
 cec_notifier_get_conn(struct device *hdmi_dev, const char *port_name)
 {
@@ -239,12 +221,7 @@ struct device *cec_notifier_parse_hdmi_phandle(struct device *dev)
 	if (!hdmi_dev)
 		return ERR_PTR(-EPROBE_DEFER);
 
-	/*
-	 * Note that the device struct is only used as a key into the
-	 * cec_notifiers list, it is never actually accessed.
-	 * So we decrement the reference here so we don't leak
-	 * memory.
-	 */
+	 
 	put_device(hdmi_dev);
 	return hdmi_dev;
 }

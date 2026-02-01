@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * TI OMAP4 ISS V4L2 Driver - CSI PHY module
- *
- * Copyright (C) 2012 Texas Instruments, Inc.
- *
- * Author: Sergio Aguirre <sergio.a.aguirre@gmail.com>
- */
+
+ 
 
 #include <linux/delay.h>
 #include <media/v4l2-common.h>
@@ -16,11 +10,7 @@
 #include "iss_regs.h"
 #include "iss_csi2.h"
 
-/*
- * csi2_if_enable - Enable CSI2 Receiver interface.
- * @enable: enable flag
- *
- */
+ 
 static void csi2_if_enable(struct iss_csi2_device *csi2, u8 enable)
 {
 	struct iss_csi2_ctrl_cfg *currctrl = &csi2->ctrl;
@@ -31,11 +21,7 @@ static void csi2_if_enable(struct iss_csi2_device *csi2, u8 enable)
 	currctrl->if_enable = enable;
 }
 
-/*
- * csi2_recv_config - CSI2 receiver module configuration.
- * @currctrl: iss_csi2_ctrl_cfg structure
- *
- */
+ 
 static void csi2_recv_config(struct iss_csi2_device *csi2,
 			     struct iss_csi2_ctrl_cfg *currctrl)
 {
@@ -64,25 +50,18 @@ static void csi2_recv_config(struct iss_csi2_device *csi2,
 	else
 		reg &= ~CSI2_CTRL_ECC_EN;
 
-	/*
-	 * Set MFlag assertion boundaries to:
-	 * Low: 4/8 of FIFO size
-	 * High: 6/8 of FIFO size
-	 */
+	 
 	reg &= ~(CSI2_CTRL_MFLAG_LEVH_MASK | CSI2_CTRL_MFLAG_LEVL_MASK);
 	reg |= (2 << CSI2_CTRL_MFLAG_LEVH_SHIFT) |
 	       (4 << CSI2_CTRL_MFLAG_LEVL_SHIFT);
 
-	/* Generation of 16x64-bit bursts (Recommended) */
+	 
 	reg |= CSI2_CTRL_BURST_SIZE_EXPAND;
 
-	/* Do Non-Posted writes (Recommended) */
+	 
 	reg |= CSI2_CTRL_NON_POSTED_WRITE;
 
-	/*
-	 * Enforce Little endian for all formats, including:
-	 * YUV4:2:2 8-bit and YUV4:2:0 Legacy
-	 */
+	 
 	reg |= CSI2_CTRL_ENDIANNESS;
 
 	iss_reg_write(csi2->iss, csi2->regs1, CSI2_CTRL, reg);
@@ -105,92 +84,79 @@ static const unsigned int csi2_input_fmts[] = {
 	MEDIA_BUS_FMT_YUYV8_1X16,
 };
 
-/* To set the format on the CSI2 requires a mapping function that takes
- * the following inputs:
- * - 3 different formats (at this time)
- * - 2 destinations (mem, vp+mem) (vp only handled separately)
- * - 2 decompression options (on, off)
- * Output should be CSI2 frame format code
- * Array indices as follows: [format][dest][decompr]
- * Not all combinations are valid. 0 means invalid.
- */
+ 
 static const u16 __csi2_fmt_map[][2][2] = {
-	/* RAW10 formats */
+	 
 	{
-		/* Output to memory */
+		 
 		{
-			/* No DPCM decompression */
+			 
 			CSI2_PIX_FMT_RAW10_EXP16,
-			/* DPCM decompression */
+			 
 			0,
 		},
-		/* Output to both */
+		 
 		{
-			/* No DPCM decompression */
+			 
 			CSI2_PIX_FMT_RAW10_EXP16_VP,
-			/* DPCM decompression */
+			 
 			0,
 		},
 	},
-	/* RAW10 DPCM8 formats */
+	 
 	{
-		/* Output to memory */
+		 
 		{
-			/* No DPCM decompression */
+			 
 			CSI2_USERDEF_8BIT_DATA1,
-			/* DPCM decompression */
+			 
 			CSI2_USERDEF_8BIT_DATA1_DPCM10,
 		},
-		/* Output to both */
+		 
 		{
-			/* No DPCM decompression */
+			 
 			CSI2_PIX_FMT_RAW8_VP,
-			/* DPCM decompression */
+			 
 			CSI2_USERDEF_8BIT_DATA1_DPCM10_VP,
 		},
 	},
-	/* RAW8 formats */
+	 
 	{
-		/* Output to memory */
+		 
 		{
-			/* No DPCM decompression */
+			 
 			CSI2_PIX_FMT_RAW8,
-			/* DPCM decompression */
+			 
 			0,
 		},
-		/* Output to both */
+		 
 		{
-			/* No DPCM decompression */
+			 
 			CSI2_PIX_FMT_RAW8_VP,
-			/* DPCM decompression */
+			 
 			0,
 		},
 	},
-	/* YUV422 formats */
+	 
 	{
-		/* Output to memory */
+		 
 		{
-			/* No DPCM decompression */
+			 
 			CSI2_PIX_FMT_YUV422_8BIT,
-			/* DPCM decompression */
+			 
 			0,
 		},
-		/* Output to both */
+		 
 		{
-			/* No DPCM decompression */
+			 
 			CSI2_PIX_FMT_YUV422_8BIT_VP16,
-			/* DPCM decompression */
+			 
 			0,
 		},
 	},
 };
 
-/*
- * csi2_ctx_map_format - Map CSI2 sink media bus format to CSI2 format ID
- * @csi2: ISS CSI2 device
- *
- * Returns CSI2 physical format id
- */
+ 
 static u16 csi2_ctx_map_format(struct iss_csi2_device *csi2)
 {
 	const struct v4l2_mbus_framefmt *fmt = &csi2->formats[CSI2_PAD_SINK];
@@ -227,28 +193,17 @@ static u16 csi2_ctx_map_format(struct iss_csi2_device *csi2)
 
 	if (!(csi2->output & CSI2_OUTPUT_IPIPEIF) &&
 	    !(csi2->output & CSI2_OUTPUT_MEMORY)) {
-		/* Neither output enabled is a valid combination */
+		 
 		return CSI2_PIX_FMT_OTHERS;
 	}
 
-	/* If we need to skip frames at the beginning of the stream disable the
-	 * video port to avoid sending the skipped frames to the IPIPEIF.
-	 */
+	 
 	destidx = csi2->frame_skip ? 0 : !!(csi2->output & CSI2_OUTPUT_IPIPEIF);
 
 	return __csi2_fmt_map[fmtidx][destidx][csi2->dpcm_decompress];
 }
 
-/*
- * csi2_set_outaddr - Set memory address to save output image
- * @csi2: Pointer to ISS CSI2a device.
- * @addr: 32-bit memory address aligned on 32 byte boundary.
- *
- * Sets the memory address where the output will be saved.
- *
- * Returns 0 if successful, or -EINVAL if the address is not in the 32 byte
- * boundary.
- */
+ 
 static void csi2_set_outaddr(struct iss_csi2_device *csi2, u32 addr)
 {
 	struct iss_csi2_ctx_cfg *ctx = &csi2->contexts[0];
@@ -261,23 +216,13 @@ static void csi2_set_outaddr(struct iss_csi2_device *csi2, u32 addr)
 		      ctx->pong_addr);
 }
 
-/*
- * is_usr_def_mapping - Checks whether USER_DEF_MAPPING should
- *			be enabled by CSI2.
- * @format_id: mapped format id
- *
- */
+ 
 static inline int is_usr_def_mapping(u32 format_id)
 {
 	return (format_id & 0xf0) == 0x40 ? 1 : 0;
 }
 
-/*
- * csi2_ctx_enable - Enable specified CSI2 context
- * @ctxnum: Context number, valid between 0 and 7 values.
- * @enable: enable
- *
- */
+ 
 static void csi2_ctx_enable(struct iss_csi2_device *csi2, u8 ctxnum, u8 enable)
 {
 	struct iss_csi2_ctx_cfg *ctx = &csi2->contexts[ctxnum];
@@ -305,11 +250,7 @@ static void csi2_ctx_enable(struct iss_csi2_device *csi2, u8 ctxnum, u8 enable)
 	ctx->enabled = enable;
 }
 
-/*
- * csi2_ctx_config - CSI2 context configuration.
- * @ctx: context configuration
- *
- */
+ 
 static void csi2_ctx_config(struct iss_csi2_device *csi2,
 			    struct iss_csi2_ctx_cfg *ctx)
 {
@@ -317,7 +258,7 @@ static void csi2_ctx_config(struct iss_csi2_device *csi2,
 
 	ctx->frame = 0;
 
-	/* Set up CSI2_CTx_CTRL1 */
+	 
 	if (ctx->eof_enabled)
 		reg = CSI2_CTX_CTRL1_EOF_EN;
 
@@ -329,7 +270,7 @@ static void csi2_ctx_config(struct iss_csi2_device *csi2,
 
 	iss_reg_write(csi2->iss, csi2->regs1, CSI2_CTX_CTRL1(ctx->ctxnum), reg);
 
-	/* Set up CSI2_CTx_CTRL2 */
+	 
 	reg = ctx->virtual_id << CSI2_CTX_CTRL2_VIRTUAL_ID_SHIFT;
 	reg |= ctx->format_id << CSI2_CTX_CTRL2_FORMAT_SHIFT;
 
@@ -341,11 +282,11 @@ static void csi2_ctx_config(struct iss_csi2_device *csi2,
 
 	iss_reg_write(csi2->iss, csi2->regs1, CSI2_CTX_CTRL2(ctx->ctxnum), reg);
 
-	/* Set up CSI2_CTx_CTRL3 */
+	 
 	iss_reg_write(csi2->iss, csi2->regs1, CSI2_CTX_CTRL3(ctx->ctxnum),
 		      ctx->alpha << CSI2_CTX_CTRL3_ALPHA_SHIFT);
 
-	/* Set up CSI2_CTx_DAT_OFST */
+	 
 	iss_reg_update(csi2->iss, csi2->regs1, CSI2_CTX_DAT_OFST(ctx->ctxnum),
 		       CSI2_CTX_DAT_OFST_MASK, ctx->data_offset);
 
@@ -355,10 +296,7 @@ static void csi2_ctx_config(struct iss_csi2_device *csi2,
 		      ctx->pong_addr);
 }
 
-/*
- * csi2_timing_config - CSI2 timing configuration.
- * @timing: csi2_timing_cfg structure
- */
+ 
 static void csi2_timing_config(struct iss_csi2_device *csi2,
 			       struct iss_csi2_timing_cfg *timing)
 {
@@ -388,10 +326,7 @@ static void csi2_timing_config(struct iss_csi2_device *csi2,
 	iss_reg_write(csi2->iss, csi2->regs1, CSI2_TIMING, reg);
 }
 
-/*
- * csi2_irq_ctx_set - Enables CSI2 Context IRQs.
- * @enable: Enable/disable CSI2 Context interrupts
- */
+ 
 static void csi2_irq_ctx_set(struct iss_csi2_device *csi2, int enable)
 {
 	const u32 mask = CSI2_CTX_IRQ_FE | CSI2_CTX_IRQ_FS;
@@ -409,10 +344,7 @@ static void csi2_irq_ctx_set(struct iss_csi2_device *csi2, int enable)
 	}
 }
 
-/*
- * csi2_irq_complexio1_set - Enables CSI2 ComplexIO IRQs.
- * @enable: Enable/disable CSI2 ComplexIO #1 interrupts
- */
+ 
 static void csi2_irq_complexio1_set(struct iss_csi2_device *csi2, int enable)
 {
 	u32 reg;
@@ -453,10 +385,7 @@ static void csi2_irq_complexio1_set(struct iss_csi2_device *csi2, int enable)
 			      0);
 }
 
-/*
- * csi2_irq_status_set - Enables CSI2 Status IRQs.
- * @enable: Enable/disable CSI2 Status interrupts
- */
+ 
 static void csi2_irq_status_set(struct iss_csi2_device *csi2, int enable)
 {
 	u32 reg;
@@ -475,13 +404,7 @@ static void csi2_irq_status_set(struct iss_csi2_device *csi2, int enable)
 		iss_reg_write(csi2->iss, csi2->regs1, CSI2_IRQENABLE, 0);
 }
 
-/*
- * omap4iss_csi2_reset - Resets the CSI2 module.
- *
- * Must be called with the phy lock held.
- *
- * Returns 0 if successful, or -EBUSY if power command didn't respond.
- */
+ 
 int omap4iss_csi2_reset(struct iss_csi2_device *csi2)
 {
 	unsigned int timeout;
@@ -529,12 +452,7 @@ static int csi2_configure(struct iss_csi2_device *csi2)
 	struct v4l2_subdev *sensor;
 	struct media_pad *pad;
 
-	/*
-	 * CSI2 fields that can be updated while the context has
-	 * been enabled or the interface has been enabled are not
-	 * updated dynamically currently. So we do not allow to
-	 * reconfigure if either has been enabled
-	 */
+	 
 	if (csi2->contexts[0].enabled || csi2->ctrl.if_enable)
 		return -EBUSY;
 
@@ -554,11 +472,7 @@ static int csi2_configure(struct iss_csi2_device *csi2)
 	timing->stop_state_4x = 1;
 	timing->stop_state_counter = 0x1ff;
 
-	/*
-	 * The CSI2 receiver can't do any format conversion except DPCM
-	 * decompression, so every set_format call configures both pads
-	 * and enables DPCM decompression as a special case:
-	 */
+	 
 	if (csi2->formats[CSI2_PAD_SINK].code !=
 	    csi2->formats[CSI2_PAD_SOURCE].code)
 		csi2->dpcm_decompress = true;
@@ -572,13 +486,7 @@ static int csi2_configure(struct iss_csi2_device *csi2)
 	else
 		csi2->contexts[0].data_offset = csi2->video_out.bpl_value;
 
-	/*
-	 * Enable end of frame and end of line signals generation for
-	 * context 0. These signals are generated from CSI2 receiver to
-	 * qualify the last pixel of a frame and the last pixel of a line.
-	 * Without enabling the signals CSI2 receiver writes data to memory
-	 * beyond buffer size and/or data line offset is not handled correctly.
-	 */
+	 
 	csi2->contexts[0].eof_enabled = 1;
 	csi2->contexts[0].eol_enabled = 1;
 
@@ -586,7 +494,7 @@ static int csi2_configure(struct iss_csi2_device *csi2)
 	csi2_irq_ctx_set(csi2, 1);
 	csi2_irq_status_set(csi2, 1);
 
-	/* Set configuration (timings, format and links) */
+	 
 	csi2_timing_config(csi2, timing);
 	csi2_recv_config(csi2, &csi2->ctrl);
 	csi2_ctx_config(csi2, &csi2->contexts[0]);
@@ -594,9 +502,7 @@ static int csi2_configure(struct iss_csi2_device *csi2)
 	return 0;
 }
 
-/*
- * csi2_print_status - Prints CSI2 debug information.
- */
+ 
 #define CSI2_PRINT_REGISTER(iss, regs, name)\
 	dev_dbg(iss->dev, "###CSI2 " #name "=0x%08x\n", \
 		iss_reg_read(iss, regs, CSI2_##name))
@@ -634,14 +540,9 @@ static void csi2_print_status(struct iss_csi2_device *csi2)
 	dev_dbg(iss->dev, "--------------------------------------------\n");
 }
 
-/* -----------------------------------------------------------------------------
- * Interrupt handling
- */
+ 
 
-/*
- * csi2_isr_buffer - Does buffer handling at end-of-frame
- * when writing to memory.
- */
+ 
 static void csi2_isr_buffer(struct iss_csi2_device *csi2)
 {
 	struct iss_buffer *buffer;
@@ -650,10 +551,7 @@ static void csi2_isr_buffer(struct iss_csi2_device *csi2)
 
 	buffer = omap4iss_video_buffer_next(&csi2->video_out);
 
-	/*
-	 * Let video queue operation restart engine if there is an underrun
-	 * condition.
-	 */
+	 
 	if (!buffer)
 		return;
 
@@ -673,7 +571,7 @@ static void csi2_isr_ctx(struct iss_csi2_device *csi2,
 	if (omap4iss_module_sync_is_stopping(&csi2->wait, &csi2->stopping))
 		return;
 
-	/* Propagate frame number */
+	 
 	if (status & CSI2_CTX_IRQ_FS) {
 		struct iss_pipeline *pipe =
 				     to_iss_pipeline(&csi2->subdev.entity);
@@ -685,19 +583,10 @@ static void csi2_isr_ctx(struct iss_csi2_device *csi2,
 		      >> CSI2_CTX_CTRL2_FRAME_SHIFT;
 
 		if (frame == 0) {
-			/* A zero value means that the counter isn't implemented
-			 * by the source. Increment the frame number in software
-			 * in that case.
-			 */
+			 
 			atomic_inc(&pipe->frame_number);
 		} else {
-			/* Extend the 16 bit frame number to 32 bits by
-			 * computing the delta between two consecutive CSI2
-			 * frame numbers and adding it to the software frame
-			 * number. The hardware counter starts at 1 and wraps
-			 * from 0xffff to 1 without going through 0, so subtract
-			 * 1 when the counter wraps.
-			 */
+			 
 			delta = frame - ctx->frame;
 			if (frame < ctx->frame)
 				delta--;
@@ -710,16 +599,7 @@ static void csi2_isr_ctx(struct iss_csi2_device *csi2,
 	if (!(status & CSI2_CTX_IRQ_FE))
 		return;
 
-	/* Skip interrupts until we reach the frame skip count. The CSI2 will be
-	 * automatically disabled, as the frame skip count has been programmed
-	 * in the CSI2_CTx_CTRL1::COUNT field, so re-enable it.
-	 *
-	 * It would have been nice to rely on the FRAME_NUMBER interrupt instead
-	 * but it turned out that the interrupt is only generated when the CSI2
-	 * writes to memory (the CSI2_CTx_CTRL1::COUNT field is decreased
-	 * correctly and reaches 0 when data is forwarded to the video port only
-	 * but no interrupt arrives). Maybe a CSI2 hardware bug.
-	 */
+	 
 	if (csi2->frame_skip) {
 		csi2->frame_skip--;
 		if (csi2->frame_skip == 0) {
@@ -734,9 +614,7 @@ static void csi2_isr_ctx(struct iss_csi2_device *csi2,
 		csi2_isr_buffer(csi2);
 }
 
-/*
- * omap4iss_csi2_isr - CSI2 interrupt handling.
- */
+ 
 void omap4iss_csi2_isr(struct iss_csi2_device *csi2)
 {
 	struct iss_pipeline *pipe = to_iss_pipeline(&csi2->subdev.entity);
@@ -749,7 +627,7 @@ void omap4iss_csi2_isr(struct iss_csi2_device *csi2)
 	csi2_irqstatus = iss_reg_read(csi2->iss, csi2->regs1, CSI2_IRQSTATUS);
 	iss_reg_write(csi2->iss, csi2->regs1, CSI2_IRQSTATUS, csi2_irqstatus);
 
-	/* Failure Cases */
+	 
 	if (csi2_irqstatus & CSI2_IRQ_COMPLEXIO_ERR) {
 		cpxio1_irqstatus = iss_reg_read(csi2->iss, csi2->regs1,
 						CSI2_COMPLEXIO_IRQSTATUS);
@@ -775,7 +653,7 @@ void omap4iss_csi2_isr(struct iss_csi2_device *csi2)
 		pipe->error = true;
 	}
 
-	/* Successful cases */
+	 
 	if (csi2_irqstatus & CSI2_IRQ_CONTEXT0)
 		csi2_isr_ctx(csi2, &csi2->contexts[0]);
 
@@ -783,15 +661,9 @@ void omap4iss_csi2_isr(struct iss_csi2_device *csi2)
 		dev_dbg(iss->dev, "CSI2: ECC correction done\n");
 }
 
-/* -----------------------------------------------------------------------------
- * ISS video operations
- */
+ 
 
-/*
- * csi2_queue - Queues the first buffer when using memory output
- * @video: The video node
- * @buffer: buffer to queue
- */
+ 
 static int csi2_queue(struct iss_video *video, struct iss_buffer *buffer)
 {
 	struct iss_csi2_device *csi2 = container_of(video,
@@ -799,14 +671,9 @@ static int csi2_queue(struct iss_video *video, struct iss_buffer *buffer)
 
 	csi2_set_outaddr(csi2, buffer->iss_addr);
 
-	/*
-	 * If streaming was enabled before there was a buffer queued
-	 * or underrun happened in the ISR, the hardware was not enabled
-	 * and DMA queue flag ISS_VIDEO_DMAQUEUE_UNDERRUN is still set.
-	 * Enable it now.
-	 */
+	 
 	if (csi2->video_out.dmaqueue_flags & ISS_VIDEO_DMAQUEUE_UNDERRUN) {
-		/* Enable / disable context 0 and IRQs */
+		 
 		csi2_if_enable(csi2, 1);
 		csi2_ctx_enable(csi2, 0, 1);
 		iss_video_dmaqueue_flags_clr(&csi2->video_out);
@@ -819,9 +686,7 @@ static const struct iss_video_operations csi2_issvideo_ops = {
 	.queue = csi2_queue,
 };
 
-/* -----------------------------------------------------------------------------
- * V4L2 subdev operations
- */
+ 
 
 static struct v4l2_mbus_framefmt *
 __csi2_get_format(struct iss_csi2_device *csi2,
@@ -850,13 +715,13 @@ csi2_try_format(struct iss_csi2_device *csi2,
 
 	switch (pad) {
 	case CSI2_PAD_SINK:
-		/* Clamp the width and height to valid range (1-8191). */
+		 
 		for (i = 0; i < ARRAY_SIZE(csi2_input_fmts); i++) {
 			if (fmt->code == csi2_input_fmts[i])
 				break;
 		}
 
-		/* If not found, use SGRBG10 as default */
+		 
 		if (i >= ARRAY_SIZE(csi2_input_fmts))
 			fmt->code = MEDIA_BUS_FMT_SGRBG10_1X10;
 
@@ -865,36 +730,25 @@ csi2_try_format(struct iss_csi2_device *csi2,
 		break;
 
 	case CSI2_PAD_SOURCE:
-		/* Source format same as sink format, except for DPCM
-		 * compression.
-		 */
+		 
 		pixelcode = fmt->code;
 		format = __csi2_get_format(csi2, sd_state, CSI2_PAD_SINK,
 					   which);
 		memcpy(fmt, format, sizeof(*fmt));
 
-		/*
-		 * Only Allow DPCM decompression, and check that the
-		 * pattern is preserved
-		 */
+		 
 		info = omap4iss_video_format_info(fmt->code);
 		if (info->uncompressed == pixelcode)
 			fmt->code = pixelcode;
 		break;
 	}
 
-	/* RGB, non-interlaced */
+	 
 	fmt->colorspace = V4L2_COLORSPACE_SRGB;
 	fmt->field = V4L2_FIELD_NONE;
 }
 
-/*
- * csi2_enum_mbus_code - Handle pixel format enumeration
- * @sd     : pointer to v4l2 subdev structure
- * @cfg    : V4L2 subdev pad config
- * @code   : pointer to v4l2_subdev_mbus_code_enum structure
- * return -EINVAL or zero on success
- */
+ 
 static int csi2_enum_mbus_code(struct v4l2_subdev *sd,
 			       struct v4l2_subdev_state *sd_state,
 			       struct v4l2_subdev_mbus_code_enum *code)
@@ -913,11 +767,11 @@ static int csi2_enum_mbus_code(struct v4l2_subdev *sd,
 					   code->which);
 		switch (code->index) {
 		case 0:
-			/* Passthrough sink pad code */
+			 
 			code->code = format->code;
 			break;
 		case 1:
-			/* Uncompressed code */
+			 
 			info = omap4iss_video_format_info(format->code);
 			if (info->uncompressed == format->code)
 				return -EINVAL;
@@ -962,13 +816,7 @@ static int csi2_enum_frame_size(struct v4l2_subdev *sd,
 	return 0;
 }
 
-/*
- * csi2_get_format - Handle get format by pads subdev method
- * @sd : pointer to v4l2 subdev structure
- * @cfg: V4L2 subdev pad config
- * @fmt: pointer to v4l2 subdev format structure
- * return -EINVAL or zero on success
- */
+ 
 static int csi2_get_format(struct v4l2_subdev *sd,
 			   struct v4l2_subdev_state *sd_state,
 			   struct v4l2_subdev_format *fmt)
@@ -984,13 +832,7 @@ static int csi2_get_format(struct v4l2_subdev *sd,
 	return 0;
 }
 
-/*
- * csi2_set_format - Handle set format by pads subdev method
- * @sd : pointer to v4l2 subdev structure
- * @cfg: V4L2 subdev pad config
- * @fmt: pointer to v4l2 subdev format structure
- * return -EINVAL or zero on success
- */
+ 
 static int csi2_set_format(struct v4l2_subdev *sd,
 			   struct v4l2_subdev_state *sd_state,
 			   struct v4l2_subdev_format *fmt)
@@ -1005,7 +847,7 @@ static int csi2_set_format(struct v4l2_subdev *sd,
 	csi2_try_format(csi2, sd_state, fmt->pad, &fmt->format, fmt->which);
 	*format = fmt->format;
 
-	/* Propagate the format from sink to source */
+	 
 	if (fmt->pad == CSI2_PAD_SINK) {
 		format = __csi2_get_format(csi2, sd_state, CSI2_PAD_SOURCE,
 					   fmt->which);
@@ -1034,15 +876,7 @@ static int csi2_link_validate(struct v4l2_subdev *sd, struct media_link *link,
 						 sink_fmt);
 }
 
-/*
- * csi2_init_formats - Initialize formats on all pads
- * @sd: ISS CSI2 V4L2 subdevice
- * @fh: V4L2 subdev file handle
- *
- * Initialize all pad formats with default values. If fh is not NULL, try
- * formats are initialized on the file handle. Otherwise active formats are
- * initialized on the device.
- */
+ 
 static int csi2_init_formats(struct v4l2_subdev *sd, struct v4l2_subdev_fh *fh)
 {
 	struct v4l2_subdev_format format;
@@ -1058,13 +892,7 @@ static int csi2_init_formats(struct v4l2_subdev *sd, struct v4l2_subdev_fh *fh)
 	return 0;
 }
 
-/*
- * csi2_set_stream - Enable/Disable streaming on the CSI2 module
- * @sd: ISS CSI2 V4L2 subdevice
- * @enable: ISS pipeline stream state
- *
- * Return 0 on success or a negative error code otherwise.
- */
+ 
 static int csi2_set_stream(struct v4l2_subdev *sd, int enable)
 {
 	struct iss_csi2_device *csi2 = v4l2_get_subdevdata(sd);
@@ -1090,16 +918,11 @@ static int csi2_set_stream(struct v4l2_subdev *sd, int enable)
 		csi2_configure(csi2);
 		csi2_print_status(csi2);
 
-		/*
-		 * When outputting to memory with no buffer available, let the
-		 * buffer queue handler start the hardware. A DMA queue flag
-		 * ISS_VIDEO_DMAQUEUE_QUEUED will be set as soon as there is
-		 * a buffer available.
-		 */
+		 
 		if (csi2->output & CSI2_OUTPUT_MEMORY &&
 		    !(video_out->dmaqueue_flags & ISS_VIDEO_DMAQUEUE_QUEUED))
 			break;
-		/* Enable context 0 and IRQs */
+		 
 		atomic_set(&csi2->stopping, 0);
 		csi2_ctx_enable(csi2, 0, 1);
 		csi2_if_enable(csi2, 1);
@@ -1125,12 +948,12 @@ static int csi2_set_stream(struct v4l2_subdev *sd, int enable)
 	return ret;
 }
 
-/* subdev video operations */
+ 
 static const struct v4l2_subdev_video_ops csi2_video_ops = {
 	.s_stream = csi2_set_stream,
 };
 
-/* subdev pad operations */
+ 
 static const struct v4l2_subdev_pad_ops csi2_pad_ops = {
 	.enum_mbus_code = csi2_enum_mbus_code,
 	.enum_frame_size = csi2_enum_frame_size,
@@ -1139,29 +962,20 @@ static const struct v4l2_subdev_pad_ops csi2_pad_ops = {
 	.link_validate = csi2_link_validate,
 };
 
-/* subdev operations */
+ 
 static const struct v4l2_subdev_ops csi2_ops = {
 	.video = &csi2_video_ops,
 	.pad = &csi2_pad_ops,
 };
 
-/* subdev internal operations */
+ 
 static const struct v4l2_subdev_internal_ops csi2_internal_ops = {
 	.open = csi2_init_formats,
 };
 
-/* -----------------------------------------------------------------------------
- * Media entity operations
- */
+ 
 
-/*
- * csi2_link_setup - Setup CSI2 connections.
- * @entity : Pointer to media entity structure
- * @local  : Pointer to local pad array
- * @remote : Pointer to remote pad array
- * @flags  : Link flags
- * return -EINVAL or zero on success
- */
+ 
 static int csi2_link_setup(struct media_entity *entity,
 			   const struct media_pad *local,
 			   const struct media_pad *remote, u32 flags)
@@ -1171,14 +985,11 @@ static int csi2_link_setup(struct media_entity *entity,
 	struct iss_csi2_ctrl_cfg *ctrl = &csi2->ctrl;
 	unsigned int index = local->index;
 
-	/* FIXME: this is actually a hack! */
+	 
 	if (is_media_entity_v4l2_subdev(remote->entity))
 		index |= 2 << 16;
 
-	/*
-	 * The ISS core doesn't support pipelines with multiple video outputs.
-	 * Revisit this when it will be implemented, and return -EBUSY for now.
-	 */
+	 
 
 	switch (index) {
 	case CSI2_PAD_SOURCE:
@@ -1202,7 +1013,7 @@ static int csi2_link_setup(struct media_entity *entity,
 		break;
 
 	default:
-		/* Link from camera to CSI2 is fixed... */
+		 
 		return -EINVAL;
 	}
 
@@ -1212,7 +1023,7 @@ static int csi2_link_setup(struct media_entity *entity,
 	return 0;
 }
 
-/* media operations */
+ 
 static const struct media_entity_operations csi2_media_ops = {
 	.link_setup = csi2_link_setup,
 	.link_validate = v4l2_subdev_link_validate,
@@ -1229,7 +1040,7 @@ int omap4iss_csi2_register_entities(struct iss_csi2_device *csi2,
 {
 	int ret;
 
-	/* Register the subdev and video nodes. */
+	 
 	ret = v4l2_device_register_subdev(vdev, &csi2->subdev);
 	if (ret < 0)
 		goto error;
@@ -1245,15 +1056,9 @@ error:
 	return ret;
 }
 
-/* -----------------------------------------------------------------------------
- * ISS CSI2 initialisation and cleanup
- */
+ 
 
-/*
- * csi2_init_entities - Initialize subdev and media entity.
- * @csi2: Pointer to csi2 structure.
- * return -ENOMEM or zero on success
- */
+ 
 static int csi2_init_entities(struct iss_csi2_device *csi2, const char *subname)
 {
 	struct v4l2_subdev *sd = &csi2->subdev;
@@ -1267,7 +1072,7 @@ static int csi2_init_entities(struct iss_csi2_device *csi2, const char *subname)
 	snprintf(name, sizeof(name), "CSI2%s", subname);
 	snprintf(sd->name, sizeof(sd->name), "OMAP4 ISS %s", name);
 
-	sd->grp_id = BIT(16);	/* group ID for iss subdevs */
+	sd->grp_id = BIT(16);	 
 	v4l2_set_subdevdata(sd, csi2);
 	sd->flags |= V4L2_SUBDEV_FL_HAS_DEVNODE;
 
@@ -1281,7 +1086,7 @@ static int csi2_init_entities(struct iss_csi2_device *csi2, const char *subname)
 
 	csi2_init_formats(sd, NULL);
 
-	/* Video device node */
+	 
 	csi2->video_out.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
 	csi2->video_out.ops = &csi2_issvideo_ops;
 	csi2->video_out.bpl_alignment = 32;
@@ -1301,9 +1106,7 @@ error_video:
 	return ret;
 }
 
-/*
- * omap4iss_csi2_init - Routine for module driver init
- */
+ 
 int omap4iss_csi2_init(struct iss_device *iss)
 {
 	struct iss_csi2_device *csi2a = &iss->csi2a;
@@ -1337,25 +1140,20 @@ int omap4iss_csi2_init(struct iss_device *iss)
 	return 0;
 }
 
-/*
- * omap4iss_csi2_create_links() - CSI2 pads links creation
- * @iss: Pointer to ISS device
- *
- * return negative error code or zero on success
- */
+ 
 int omap4iss_csi2_create_links(struct iss_device *iss)
 {
 	struct iss_csi2_device *csi2a = &iss->csi2a;
 	struct iss_csi2_device *csi2b = &iss->csi2b;
 	int ret;
 
-	/* Connect the CSI2a subdev to the video node. */
+	 
 	ret = media_create_pad_link(&csi2a->subdev.entity, CSI2_PAD_SOURCE,
 				    &csi2a->video_out.video.entity, 0, 0);
 	if (ret < 0)
 		return ret;
 
-	/* Connect the CSI2b subdev to the video node. */
+	 
 	ret = media_create_pad_link(&csi2b->subdev.entity, CSI2_PAD_SOURCE,
 				    &csi2b->video_out.video.entity, 0, 0);
 	if (ret < 0)
@@ -1364,9 +1162,7 @@ int omap4iss_csi2_create_links(struct iss_device *iss)
 	return 0;
 }
 
-/*
- * omap4iss_csi2_cleanup - Routine for module driver cleanup
- */
+ 
 void omap4iss_csi2_cleanup(struct iss_device *iss)
 {
 	struct iss_csi2_device *csi2a = &iss->csi2a;

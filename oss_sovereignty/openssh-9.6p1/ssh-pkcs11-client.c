@@ -1,20 +1,5 @@
-/* $OpenBSD: ssh-pkcs11-client.c,v 1.19 2023/12/18 14:46:56 djm Exp $ */
-/*
- * Copyright (c) 2010 Markus Friedl.  All rights reserved.
- * Copyright (c) 2014 Pedro Martelletto. All rights reserved.
- *
- * Permission to use, copy, modify, and distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
+ 
+ 
 
 #include "includes.h"
 
@@ -53,12 +38,9 @@
 #define EC_KEY void
 #endif
 
-/* borrows code from sftp-server and ssh-agent */
+ 
 
-/*
- * Maintain a list of ssh-pkcs11-helper subprocesses. These may be looked up
- * by provider path or their unique EC/RSA METHOD pointers.
- */
+ 
 struct helper {
 	char *path;
 	pid_t pid;
@@ -67,7 +49,7 @@ struct helper {
 	EC_KEY_METHOD *ec_meth;
 	int (*rsa_finish)(RSA *rsa);
 	void (*ec_finish)(EC_KEY *key);
-	size_t nrsa, nec; /* number of active keys of each type */
+	size_t nrsa, nec;  
 };
 static struct helper **helpers;
 static size_t nhelpers;
@@ -119,7 +101,7 @@ helper_by_ec(const EC_KEY *ec)
 	return NULL;
 
 }
-#endif /* defined(OPENSSL_HAS_ECC) && defined(HAVE_EC_KEY_METHOD_NEW) */
+#endif  
 
 static void
 helper_free(struct helper *helper)
@@ -167,15 +149,11 @@ helper_terminate(struct helper *helper)
 		    "remaining %zu RSA %zu ECDSA",
 		    helper->path, helper->nrsa, helper->nec);
 		close(helper->fd);
-		/* XXX waitpid() */
+		 
 		helper->fd = -1;
 		helper->pid = -1;
 	}
-	/*
-	 * Don't delete the helper entry until there are no remaining keys
-	 * that reference it. Otherwise, any signing operation would call
-	 * a free'd METHOD pointer and that would be bad.
-	 */
+	 
 	if (helper->nrsa == 0 && helper->nec == 0)
 		helper_free(helper);
 }
@@ -207,22 +185,22 @@ recv_msg(int fd, struct sshbuf *m)
 
 	sshbuf_reset(m);
 	if (fd == -1)
-		return 0; /* XXX */
+		return 0;  
 	if ((len = atomicio(read, fd, buf, 4)) != 4) {
 		error("read from helper failed: %u", len);
-		return (0); /* XXX */
+		return (0);  
 	}
 	len = PEEK_U32(buf);
 	if (len > 256 * 1024)
 		fatal("response too long: %u", len);
-	/* read len bytes into m */
+	 
 	while (len > 0) {
 		l = len;
 		if (l > sizeof(buf))
 			l = sizeof(buf);
 		if (atomicio(read, fd, buf, l) != l) {
 			error("response from helper failed.");
-			return (0); /* XXX */
+			return (0);  
 		}
 		if ((r = sshbuf_put(m, buf, l)) != 0)
 			fatal_fr(r, "sshbuf_put");
@@ -402,9 +380,9 @@ ecdsa_do_finish(EC_KEY *ec)
 	if (helper->nrsa == 0 && helper->nec == 0)
 		helper_terminate(helper);
 }
-#endif /* defined(OPENSSL_HAS_ECC) && defined(HAVE_EC_KEY_METHOD_NEW) */
+#endif  
 
-/* redirect private key crypto operations to the ssh-pkcs11-helper */
+ 
 static void
 wrap_key(struct helper *helper, struct sshkey *k)
 {
@@ -426,10 +404,7 @@ wrap_key(struct helper *helper, struct sshkey *k)
 	    helper->path, helper->nrsa, helper->nec);
 }
 
-/*
- * Make a private PKCS#11-backed certificate by grafting a previously-loaded
- * PKCS#11 private key and a public certificate key.
- */
+ 
 int
 pkcs11_make_cert(const struct sshkey *priv,
     const struct sshkey *certpub, struct sshkey **certprivp)
@@ -475,7 +450,7 @@ pkcs11_make_cert(const struct sshkey *priv,
 		fatal_fr(r, "graft certificate");
 	debug3_f("provider %s remaining keys: %zu RSA %zu ECDSA",
 	    helper->path, helper->nrsa, helper->nec);
-	/* success */
+	 
 	*certprivp = ret;
 	return 0;
 }
@@ -502,7 +477,7 @@ pkcs11_start_helper_methods(struct helper *helper)
 	    &ec_copy, &ec_set_group, &ec_set_private, &ec_set_public);
 	EC_KEY_METHOD_set_init(ec_meth, ec_init, ecdsa_do_finish,
 	    ec_copy, ec_set_group, ec_set_private, ec_set_public);
-#endif /* defined(OPENSSL_HAS_ECC) && defined(HAVE_EC_KEY_METHOD_NEW) */
+#endif  
 
 	if ((rsa_meth = RSA_meth_dup(RSA_get_default_method())) == NULL)
 		fatal_f("RSA_meth_dup failed");
@@ -613,7 +588,7 @@ pkcs11_add_provider(char *name, char *pin, struct sshkey ***keysp,
 		if (labelsp)
 			*labelsp = xcalloc(nkeys, sizeof(char *));
 		for (i = 0; i < nkeys; i++) {
-			/* XXX clean up properly instead of fatal() */
+			 
 			if ((r = sshbuf_get_string(msg, &blob, &blen)) != 0 ||
 			    (r = sshbuf_get_cstring(msg, &label, NULL)) != 0)
 				fatal_fr(r, "parse key");
@@ -642,13 +617,10 @@ pkcs11_del_provider(char *name)
 {
 	struct helper *helper;
 
-	/*
-	 * ssh-agent deletes keys before calling this, so the helper entry
-	 * should be gone before we get here.
-	 */
+	 
 	debug3_f("delete %s", name);
 	if ((helper = helper_by_provider(name)) != NULL)
 		helper_terminate(helper);
 	return 0;
 }
-#endif /* ENABLE_PKCS11 */
+#endif  

@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* Hisilicon Hibmc SoC drm driver
- *
- * Based on the bochs drm driver.
- *
- * Copyright (c) 2016 Huawei Limited.
- *
- * Author:
- *	Rongrong Zou <zourongrong@huawei.com>
- *	Rongrong Zou <zourongrong@gmail.com>
- *	Jianhua Li <lijianhua@huawei.com>
- */
+
+ 
 
 #include <linux/delay.h>
 
@@ -116,7 +106,7 @@ static void hibmc_plane_atomic_update(struct drm_plane *plane,
 
 	gpu_addr = drm_gem_vram_offset(gbo);
 	if (WARN_ON_ONCE(gpu_addr < 0))
-		return; /* Bug: we didn't pin the BO to VRAM in prepare_fb. */
+		return;  
 
 	writel(gpu_addr, priv->mmio + HIBMC_CRT_FB_ADDRESS);
 
@@ -127,7 +117,7 @@ static void hibmc_plane_atomic_update(struct drm_plane *plane,
 	       HIBMC_FIELD(HIBMC_CRT_FB_WIDTH_OFFS, line_l),
 	       priv->mmio + HIBMC_CRT_FB_WIDTH);
 
-	/* SET PIXEL FORMAT */
+	 
 	reg = readl(priv->mmio + HIBMC_CRT_DISP_CTL);
 	reg &= ~HIBMC_CRT_DISP_CTL_FORMAT_MASK;
 	reg |= HIBMC_FIELD(HIBMC_CRT_DISP_CTL_FORMAT,
@@ -179,7 +169,7 @@ static void hibmc_crtc_atomic_enable(struct drm_crtc *crtc,
 
 	hibmc_set_power_mode(priv, HIBMC_PW_MODE_CTL_MODE_MODE0);
 
-	/* Enable display power gate & LOCALMEM power gate*/
+	 
 	reg = readl(priv->mmio + HIBMC_CURRENT_GATE);
 	reg &= ~HIBMC_CURR_GATE_LOCALMEM_MASK;
 	reg &= ~HIBMC_CURR_GATE_DISPLAY_MASK;
@@ -201,7 +191,7 @@ static void hibmc_crtc_atomic_disable(struct drm_crtc *crtc,
 
 	hibmc_set_power_mode(priv, HIBMC_PW_MODE_CTL_MODE_SLEEP);
 
-	/* Enable display power gate & LOCALMEM power gate*/
+	 
 	reg = readl(priv->mmio + HIBMC_CURRENT_GATE);
 	reg &= ~HIBMC_CURR_GATE_LOCALMEM_MASK;
 	reg &= ~HIBMC_CURR_GATE_DISPLAY_MASK;
@@ -234,12 +224,7 @@ static u32 format_pll_reg(void)
 	u32 pllreg = 0;
 	struct hibmc_display_panel_pll pll = {0};
 
-	/*
-	 * Note that all PLL's have the same format. Here,
-	 * we just use Panel PLL parameter to work out the bit
-	 * fields in the register.On returning a 32 bit number, the value can
-	 * be applied to any PLL in the calling function.
-	 */
+	 
 	pllreg |= HIBMC_FIELD(HIBMC_PLL_CTRL_BYPASS, 0);
 	pllreg |= HIBMC_FIELD(HIBMC_PLL_CTRL_POWER, 1);
 	pllreg |= HIBMC_FIELD(HIBMC_PLL_CTRL_INPUT, 0);
@@ -295,25 +280,19 @@ static void get_pll_config(u64 x, u64 y, u32 *pll1, u32 *pll2)
 		}
 	}
 
-	/* if found none, we use default value */
+	 
 	*pll1 = CRT_PLL1_HS_25MHZ;
 	*pll2 = CRT_PLL2_HS_25MHZ;
 }
 
-/*
- * This function takes care the extra registers and bit fields required to
- * setup a mode in board.
- * Explanation about Display Control register:
- * FPGA only supports 7 predefined pixel clocks, and clock select is
- * in bit 4:0 of new register 0x802a8.
- */
+ 
 static u32 display_ctrl_adjust(struct drm_device *dev,
 			       struct drm_display_mode *mode,
 			       u32 ctrl)
 {
 	u64 x, y;
-	u32 pll1; /* bit[31:0] of PLL */
-	u32 pll2; /* bit[63:32] of PLL */
+	u32 pll1;  
+	u32 pll2;  
 	struct hibmc_drm_private *priv = to_hibmc_drm_private(dev);
 
 	x = mode->hdisplay;
@@ -323,12 +302,7 @@ static u32 display_ctrl_adjust(struct drm_device *dev,
 	writel(pll2, priv->mmio + CRT_PLL2_HS);
 	set_vclock_hisilicon(dev, pll1);
 
-	/*
-	 * Hisilicon has to set up the top-left and bottom-right
-	 * registers as well.
-	 * Note that normal chip only use those two register for
-	 * auto-centering mode.
-	 */
+	 
 	writel(HIBMC_FIELD(HIBMC_CRT_AUTO_CENTERING_TL_TOP, 0) |
 	       HIBMC_FIELD(HIBMC_CRT_AUTO_CENTERING_TL_LEFT, 0),
 	       priv->mmio + HIBMC_CRT_AUTO_CENTERING_TL);
@@ -337,19 +311,15 @@ static u32 display_ctrl_adjust(struct drm_device *dev,
 	       HIBMC_FIELD(HIBMC_CRT_AUTO_CENTERING_BR_RIGHT, x - 1),
 	       priv->mmio + HIBMC_CRT_AUTO_CENTERING_BR);
 
-	/*
-	 * Assume common fields in ctrl have been properly set before
-	 * calling this function.
-	 * This function only sets the extra fields in ctrl.
-	 */
+	 
 
-	/* Set bit 25 of display controller: Select CRT or VGA clock */
+	 
 	ctrl &= ~HIBMC_CRT_DISP_CTL_CRTSELECT_MASK;
 	ctrl &= ~HIBMC_CRT_DISP_CTL_CLOCK_PHASE_MASK;
 
 	ctrl |= HIBMC_CRT_DISP_CTL_CRTSELECT(HIBMC_CRTSELECT_CRT);
 
-	/* clock_phase_polarity is 0 */
+	 
 	ctrl |= HIBMC_CRT_DISP_CTL_CLOCK_PHASE(0);
 
 	writel(ctrl, priv->mmio + HIBMC_CRT_DISP_CTL);
@@ -400,7 +370,7 @@ static void hibmc_crtc_atomic_begin(struct drm_crtc *crtc,
 
 	hibmc_set_power_mode(priv, HIBMC_PW_MODE_CTL_MODE_MODE0);
 
-	/* Enable display power gate & LOCALMEM power gate*/
+	 
 	reg = readl(priv->mmio + HIBMC_CURRENT_GATE);
 	reg &= ~HIBMC_CURR_GATE_DISPLAY_MASK;
 	reg &= ~HIBMC_CURR_GATE_LOCALMEM_MASK;
@@ -408,7 +378,7 @@ static void hibmc_crtc_atomic_begin(struct drm_crtc *crtc,
 	reg |= HIBMC_CURR_GATE_LOCALMEM(1);
 	hibmc_set_current_gate(priv, reg);
 
-	/* We can add more initialization as needed. */
+	 
 }
 
 static void hibmc_crtc_atomic_flush(struct drm_crtc *crtc,

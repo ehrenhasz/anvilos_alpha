@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2014 Felix Fietkau <nbd@openwrt.org>
- * Copyright (C) 2015 Jakub Kicinski <kubakici@wp.pl>
- */
+
+ 
 
 #include "mt7601u.h"
 #include "trace.h"
@@ -17,13 +14,13 @@ enum mt76_txq_id {
 	__MT_TXQ_MAX
 };
 
-/* Hardware uses mirrored order of queues with Q0 having the highest priority */
+ 
 static u8 q2hwq(u8 q)
 {
 	return q ^ 0x3;
 }
 
-/* Take mac80211 Q id from the skb and translate it to hardware Q id */
+ 
 static u8 skb2q(struct sk_buff *skb)
 {
 	int qid = skb_get_queue_mapping(skb);
@@ -36,31 +33,12 @@ static u8 skb2q(struct sk_buff *skb)
 	return q2hwq(qid);
 }
 
-/* Note: TX retry reporting is a bit broken.
- *	 Retries are reported only once per AMPDU and often come a frame early
- *	 i.e. they are reported in the last status preceding the AMPDU. Apart
- *	 from the fact that it's hard to know the length of the AMPDU (which is
- *	 required to know to how many consecutive frames retries should be
- *	 applied), if status comes early on full FIFO it gets lost and retries
- *	 of the whole AMPDU become invisible.
- *	 As a work-around encode the desired rate in PKT_ID of TX descriptor
- *	 and based on that guess the retries (every rate is tried once).
- *	 Only downside here is that for MCS0 we have to rely solely on
- *	 transmission failures as no retries can ever be reported.
- *	 Not having to read EXT_FIFO has a nice effect of doubling the number
- *	 of reports which can be fetched.
- *	 Also the vendor driver never uses the EXT_FIFO register so it may be
- *	 undertested.
- */
+ 
 static u8 mt7601u_tx_pktid_enc(struct mt7601u_dev *dev, u8 rate, bool is_probe)
 {
 	u8 encoded = (rate + 1) + is_probe *  8;
 
-	/* Because PKT_ID 0 disables status reporting only 15 values are
-	 * available but 16 are needed (8 MCS * 2 for encoding is_probe)
-	 * - we need to cram together two rates. MCS0 and MCS7 with is_probe
-	 * share PKT_ID 9.
-	 */
+	 
 	if (is_probe && rate == 7)
 		return encoded - 7;
 
@@ -79,7 +57,7 @@ mt7601u_tx_pktid_dec(struct mt7601u_dev *dev, struct mt76_tx_status *stat)
 		stat->is_probe = true;
 		req_rate -= 8;
 
-		/* Decide between MCS0 and MCS7 which share pktid 9 */
+		 
 		if (!req_rate && eff_rate)
 			req_rate = 7;
 	}
@@ -265,9 +243,7 @@ int mt7601u_conf_tx(struct ieee80211_hw *hw, struct ieee80211_vif *vif,
 	u8 cw_min = 5, cw_max = 10, hw_q = q2hwq(queue);
 	u32 val;
 
-	/* TODO: should we do funny things with the parameters?
-	 *	 See what mt7601u_set_default_edca() used to do in init.c.
-	 */
+	 
 
 	if (params->cw_min)
 		cw_min = fls(params->cw_min);
@@ -282,10 +258,7 @@ int mt7601u_conf_tx(struct ieee80211_hw *hw, struct ieee80211_vif *vif,
 	val = FIELD_PREP(MT_EDCA_CFG_AIFSN, params->aifs) |
 	      FIELD_PREP(MT_EDCA_CFG_CWMIN, cw_min) |
 	      FIELD_PREP(MT_EDCA_CFG_CWMAX, cw_max);
-	/* TODO: based on user-controlled EnableTxBurst var vendor drv sets
-	 *	 a really long txop on AC0 (see connect.c:2009) but only on
-	 *	 connect? When not connected should be 0.
-	 */
+	 
 	if (!hw_q)
 		val |= 0x60;
 	else

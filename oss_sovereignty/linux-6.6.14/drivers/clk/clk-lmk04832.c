@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * LMK04832 Ultra Low-Noise JESD204B Compliant Clock Jitter Cleaner
- * Pin compatible with the LMK0482x family
- *
- * Datasheet: https://www.ti.com/lit/ds/symlink/lmk04832.pdf
- *
- * Copyright (c) 2020, Xiphos Systems Corp.
- *
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/clk.h>
@@ -19,7 +11,7 @@
 #include <linux/regmap.h>
 #include <linux/spi/spi.h>
 
-/* 0x000 - 0x00d System Functions */
+ 
 #define LMK04832_REG_RST3W		0x000
 #define LMK04832_BIT_RESET			BIT(7)
 #define LMK04832_BIT_SPI_3WIRE_DIS		BIT(4)
@@ -31,7 +23,7 @@
 #define LMK04832_REG_ID_VNDR_MSB	0x00c
 #define LMK04832_REG_ID_VNDR_LSB	0x00d
 
-/* 0x100 - 0x137 Device Clock and SYSREF Clock Output Control */
+ 
 #define LMK04832_REG_CLKOUT_CTRL0(ch)	(0x100 + (ch >> 1) * 8)
 #define LMK04832_BIT_DCLK_DIV_LSB		GENMASK(7, 0)
 #define LMK04832_REG_CLKOUT_CTRL1(ch)	(0x101 + (ch >> 1) * 8)
@@ -72,7 +64,7 @@
 #define LMK04832_VAL_CLKOUT_FMT_CMOS_NOR_INV		0x0e
 #define LMK04832_VAL_CLKOUT_FMT_CMOS_NOR_NOR		0x0f
 
-/* 0x138 - 0x145 SYSREF, SYNC, and Device Config */
+ 
 #define LMK04832_REG_VCO_OSCOUT		0x138
 #define LMK04832_BIT_VCO_MUX			GENMASK(6, 5)
 #define LMK04832_VAL_VCO_MUX_VCO0			0x00
@@ -121,7 +113,7 @@
 #define LMK04832_VAL_SYNC_MODE_PULSER_SPI		0x03
 #define LMK04832_REG_SYNC_DIS		0x144
 
-/* 0x146 - 0x14a CLKin Control */
+ 
 #define LMK04832_REG_CLKIN_SEL0		0x148
 #define LMK04832_REG_CLKIN_SEL1		0x149
 #define LMK04832_REG_CLKIN_RST		0x14a
@@ -131,16 +123,16 @@
 #define LMK04832_BIT_CLKIN_SEL_TYPE		GENMASK(2, 0)
 #define LMK04832_VAL_CLKIN_SEL_TYPE_OUT			0x03
 
-/* 0x14b - 0x152 Holdover */
+ 
 
-/* 0x153 - 0x15f PLL1 Configuration */
+ 
 #define LMK04832_REG_PLL1_LD		0x15f
 #define LMK04832_BIT_PLL1_LD_MUX		GENMASK(7, 3)
 #define LMK04832_VAL_PLL1_LD_MUX_SPI_RDBK		0x07
 #define LMK04832_BIT_PLL1_LD_TYPE		GENMASK(2, 0)
 #define LMK04832_VAL_PLL1_LD_TYPE_OUT_PP		0x03
 
-/* 0x160 - 0x16e PLL2 Configuration */
+ 
 #define LMK04832_REG_PLL2_R_MSB		0x160
 #define LMK04832_BIT_PLL2_R_MSB			GENMASK(3, 0)
 #define LMK04832_REG_PLL2_R_LSB		0x161
@@ -163,7 +155,7 @@
 #define LMK04832_BIT_PLL2_LD_TYPE		GENMASK(2, 0)
 #define LMK04832_VAL_PLL2_LD_TYPE_OUT_PP		0x03
 
-/* 0x16F - 0x555 Misc Registers */
+ 
 #define LMK04832_REG_PLL2_PD		0x173
 #define LMK04832_BIT_PLL2_PRE_PD		BIT(6)
 #define LMK04832_BIT_PLL2_PD			BIT(5)
@@ -179,16 +171,7 @@ enum lmk04832_device_types {
 	LMK04832,
 };
 
-/**
- * struct lmk04832_device_info - Holds static device information that is
- *                               specific to the chip revision
- *
- * @pid:          Product Identifier
- * @maskrev:      IC version identifier
- * @num_channels: Number of available output channels (clkout count)
- * @vco0_range:   {min, max} of the VCO0 operating range (in MHz)
- * @vco1_range:   {min, max} of the VCO1 operating range (in MHz)
- */
+ 
 struct lmk04832_device_info {
 	u16 pid;
 	u8 maskrev;
@@ -199,7 +182,7 @@ struct lmk04832_device_info {
 
 static const struct lmk04832_device_info lmk04832_device_info[] = {
 	[LMK04832] = {
-		.pid = 0x63d1, /* WARNING PROD_ID is inverted in the datasheet */
+		.pid = 0x63d1,  
 		.maskrev = 0x70,
 		.num_channels = 14,
 		.vco0_range = { 2440, 2580 },
@@ -228,26 +211,7 @@ struct lmk_clkout {
 	u8 id;
 };
 
-/**
- * struct lmk04832 - The LMK04832 device structure
- *
- * @dev: reference to a struct device, linked to the spi_device
- * @regmap: struct regmap instance use to access the chip
- * @sync_mode: operational mode for SYNC signal
- * @sysref_mux: select SYSREF source
- * @sysref_pulse_cnt: number of SYSREF pulses generated while not in continuous
- *                    mode.
- * @sysref_ddly: SYSREF digital delay value
- * @oscin: PLL2 input clock
- * @vco: reference to the internal VCO clock
- * @sclk: reference to the internal sysref clock (SCLK)
- * @vco_rate: user provided VCO rate
- * @reset_gpio: reference to the reset GPIO
- * @dclk: list of internal device clock references.
- *        Each pair of clkout clocks share a single device clock (DCLKX_Y)
- * @clkout: list of output clock references
- * @clk_data: holds clkout related data like clk_hw* and number of clocks
- */
+ 
 struct lmk04832 {
 	struct device *dev;
 	struct regmap *regmap;
@@ -366,7 +330,7 @@ static void lmk04832_vco_unprepare(struct clk_hw *hw)
 			   LMK04832_BIT_PLL2_PRE_PD | LMK04832_BIT_PLL2_PD,
 			   0xff);
 
-	/* Don't set LMK04832_BIT_OSCIN_PD since other clocks depend on it */
+	 
 	regmap_update_bits(lmk->regmap, LMK04832_REG_MAIN_PD,
 			   LMK04832_BIT_VCO_LDO_PD | LMK04832_BIT_VCO_PD, 0xff);
 }
@@ -409,17 +373,7 @@ static unsigned long lmk04832_vco_recalc_rate(struct clk_hw *hw,
 	return vco_rate;
 }
 
-/**
- * lmk04832_check_vco_ranges - Check requested VCO frequency against VCO ranges
- *
- * @lmk:   Reference to the lmk device
- * @rate:  Desired output rate for the VCO
- *
- * The LMK04832 has 2 internal VCO, each with independent operating ranges.
- * Use the device_info structure to determine which VCO to use based on rate.
- *
- * Returns: VCO_MUX value or negative errno.
- */
+ 
 static int lmk04832_check_vco_ranges(struct lmk04832 *lmk, unsigned long rate)
 {
 	struct spi_device *spi = to_spi_device(lmk->dev);
@@ -438,25 +392,7 @@ static int lmk04832_check_vco_ranges(struct lmk04832 *lmk, unsigned long rate)
 	return -ERANGE;
 }
 
-/**
- * lmk04832_calc_pll2_params - Get PLL2 parameters used to set the VCO frequency
- *
- * @prate: parent rate to the PLL2, usually OSCin
- * @rate:  Desired output rate for the VCO
- * @n:     reference to PLL2_N
- * @p:     reference to PLL2_P
- * @r:     reference to PLL2_R
- *
- * This functions assumes LMK04832_BIT_PLL2_MISC_REF_2X_EN is set since it is
- * recommended in the datasheet because a higher phase detector frequencies
- * makes the design of wider loop bandwidth filters possible.
- *
- * the VCO rate can be calculated using the following expression:
- *
- *	VCO = OSCin * 2 * PLL2_N * PLL2_P / PLL2_R
- *
- * Returns: vco rate or negative errno.
- */
+ 
 static long lmk04832_calc_pll2_params(unsigned long prate, unsigned long rate,
 				      unsigned int *n, unsigned int *p,
 				      unsigned int *r)
@@ -464,7 +400,7 @@ static long lmk04832_calc_pll2_params(unsigned long prate, unsigned long rate,
 	unsigned int pll2_n, pll2_p, pll2_r;
 	unsigned long num, div;
 
-	/* Set PLL2_P to a fixed value to simplify optimizations */
+	 
 	pll2_p = 2;
 
 	div = gcd(rate, prate);
@@ -557,10 +493,7 @@ static int lmk04832_vco_set_rate(struct clk_hw *hw, unsigned long rate,
 	if (ret)
 		return ret;
 
-	/*
-	 * PLL2_N registers must be programmed after other PLL2 dividers are
-	 * programmed to ensure proper VCO frequency calibration
-	 */
+	 
 	ret = regmap_write(lmk->regmap, LMK04832_REG_PLL2_N_0,
 			   FIELD_GET(0x030000, n));
 	if (ret)
@@ -583,10 +516,7 @@ static const struct clk_ops lmk04832_vco_ops = {
 	.set_rate = lmk04832_vco_set_rate,
 };
 
-/*
- * lmk04832_register_vco - Initialize the internal VCO and clock distribution
- *                         path in PLL2 single loop mode.
- */
+ 
 static int lmk04832_register_vco(struct lmk04832 *lmk)
 {
 	const char *parent_names[1];
@@ -711,25 +641,14 @@ static int lmk04832_clkout_set_ddly(struct lmk04832 *lmk, int id)
 				  FIELD_GET(0x0300, dclkx_y_ddly));
 }
 
-/** lmk04832_sclk_sync - Establish deterministic phase relationship between sclk
- *                       and dclk
- *
- * @lmk: Reference to the lmk device
- *
- * The synchronization sequence:
- * - in the datasheet https://www.ti.com/lit/ds/symlink/lmk04832.pdf, p.31
- *   (8.3.3.1 How to enable SYSREF)
- * - Ti forum: https://e2e.ti.com/support/clock-and-timing/f/48/t/970972
- *
- * Returns 0 or negative errno.
- */
+ 
 static int lmk04832_sclk_sync_sequence(struct lmk04832 *lmk)
 {
 	int ret;
 	int i;
 
-	/* 1. (optional) mute all sysref_outputs during synchronization */
-	/* 2. Enable and write device clock digital delay to applicable clocks */
+	 
+	 
 	ret = regmap_update_bits(lmk->regmap, LMK04832_REG_MAIN_PD,
 				 LMK04832_BIT_SYSREF_DDLY_PD,
 				 FIELD_PREP(LMK04832_BIT_SYSREF_DDLY_PD, 0));
@@ -742,10 +661,7 @@ static int lmk04832_sclk_sync_sequence(struct lmk04832 *lmk)
 			return ret;
 	}
 
-	/*
-	 * 3. Configure SYNC_MODE to SYNC_PIN and SYSREF_MUX to Normal SYNC,
-	 *    and clear SYSREF_REQ_EN (see 6.)
-	 */
+	 
 	ret = regmap_update_bits(lmk->regmap, LMK04832_REG_SYSREF_OUT,
 				 LMK04832_BIT_SYSREF_REQ_EN |
 				 LMK04832_BIT_SYSREF_MUX,
@@ -762,18 +678,12 @@ static int lmk04832_sclk_sync_sequence(struct lmk04832 *lmk)
 	if (ret)
 		return ret;
 
-	/* 4. Clear SYNXC_DISx or applicable clocks and clear SYNC_DISSYSREF */
+	 
 	ret = regmap_write(lmk->regmap, LMK04832_REG_SYNC_DIS, 0x00);
 	if (ret)
 		return ret;
 
-	/*
-	 * 5. If SCLKX_Y_DDLY != 0, Set SYSREF_CLR=1 for at least 15 clock
-	 *    distribution path cycles (VCO cycles), then back to 0. In
-	 *    PLL2-only use case, this will be complete in less than one SPI
-	 *    transaction. If SYSREF local digital delay is not used, this step
-	 *    can be skipped.
-	 */
+	 
 	ret = regmap_update_bits(lmk->regmap, LMK04832_REG_SYNC,
 				 LMK04832_BIT_SYNC_CLR,
 				 FIELD_PREP(LMK04832_BIT_SYNC_CLR, 0x01));
@@ -786,12 +696,7 @@ static int lmk04832_sclk_sync_sequence(struct lmk04832 *lmk)
 	if (ret)
 		return ret;
 
-	/*
-	 * 6. Toggle SYNC_POL state between inverted and not inverted.
-	 *    If you use an external signal on the SYNC pin instead of toggling
-	 *    SYNC_POL, make sure that SYSREF_REQ_EN=0 so that the SYSREF_MUX
-	 *    does not shift into continuous SYSREF mode.
-	 */
+	 
 	ret = regmap_update_bits(lmk->regmap, LMK04832_REG_SYNC,
 			   LMK04832_BIT_SYNC_POL,
 			   FIELD_PREP(LMK04832_BIT_SYNC_POL, 0x01));
@@ -804,12 +709,12 @@ static int lmk04832_sclk_sync_sequence(struct lmk04832 *lmk)
 	if (ret)
 		return ret;
 
-	/* 7. Set all SYNC_DISx=1, including SYNC_DISSYSREF */
+	 
 	ret = regmap_write(lmk->regmap, LMK04832_REG_SYNC_DIS, 0xff);
 	if (ret)
 		return ret;
 
-	/* 8. Restore state of SYNC_MODE and SYSREF_MUX to desired values */
+	 
 	ret = regmap_update_bits(lmk->regmap, LMK04832_REG_SYSREF_OUT,
 				 LMK04832_BIT_SYSREF_MUX,
 				 FIELD_PREP(LMK04832_BIT_SYSREF_MUX,
@@ -824,19 +729,9 @@ static int lmk04832_sclk_sync_sequence(struct lmk04832 *lmk)
 	if (ret)
 		return ret;
 
-	/*
-	 * 9. (optional) if SCLKx_y_DIS_MODE was used to mute SYSREF outputs
-	 *    during the SYNC event, restore SCLKx_y_DIS_MODE=0 for active state,
-	 *    or set SYSREF_GBL_PD=0 if SCLKx_y_DIS_MODE is set to a conditional
-	 *    option.
-	 */
+	 
 
-	/*
-	 * 10. (optional) To reduce power consumption, after the synchronization
-	 *     event is complete, DCLKx_y_DDLY_PD=1 and SYSREF_DDLY_PD=1 disable the
-	 *     digital delay counters (which are only used immediately after the
-	 *     SYNC pulse to delay the output by some number of VCO counts).
-	 */
+	 
 
 	return ret;
 }
@@ -1106,7 +1001,7 @@ static int lmk04832_dclk_set_rate(struct clk_hw *hw, unsigned long rate,
 		return -EINVAL;
 	}
 
-	/* Enable Duty Cycle Correction */
+	 
 	if (dclk_div == 1) {
 		ret = regmap_update_bits(lmk->regmap,
 					 LMK04832_REG_CLKOUT_CTRL3(dclk->id),
@@ -1116,11 +1011,7 @@ static int lmk04832_dclk_set_rate(struct clk_hw *hw, unsigned long rate,
 			return ret;
 	}
 
-	/*
-	 * While using Divide-by-2 or Divide-by-3 for DCLK_X_Y_DIV, SYNC
-	 * procedure requires to first program Divide-by-4 and then back to
-	 * Divide-by-2 or Divide-by-3 before doing SYNC.
-	 */
+	 
 	if (dclk_div == 2 || dclk_div == 3) {
 		ret = regmap_update_bits(lmk->regmap,
 					 LMK04832_REG_CLKOUT_CTRL2(dclk->id),
@@ -1338,7 +1229,7 @@ static int lmk04832_register_clkout(struct lmk04832 *lmk, const int num)
 	lmk->clkout[num].hw.init = &init;
 	lmk->clk_data->hws[num] = &lmk->clkout[num].hw;
 
-	/* Set initial parent */
+	 
 	regmap_update_bits(lmk->regmap,
 			   LMK04832_REG_CLKOUT_SRC_MUX(num),
 			   LMK04832_BIT_CLKOUT_SRC_MUX,

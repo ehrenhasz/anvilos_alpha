@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Tegra host1x Command DMA
- *
- * Copyright (c) 2010-2013, NVIDIA Corporation.
- */
+
+ 
 
 #include <linux/slab.h>
 #include <linux/scatterlist.h>
@@ -14,17 +10,13 @@
 #include "../dev.h"
 #include "../debug.h"
 
-/*
- * Put the restart at the end of pushbuffer memory
- */
+ 
 static void push_buffer_init(struct push_buffer *pb)
 {
 	*(u32 *)(pb->mapped + pb->size) = host1x_opcode_restart(0);
 }
 
-/*
- * Increment timedout buffer's syncpt via CPU.
- */
+ 
 static void cdma_timeout_cpu_incr(struct host1x_cdma *cdma, u32 getptr,
 				u32 syncpt_incrs, u32 syncval, u32 nr_slots)
 {
@@ -33,13 +25,11 @@ static void cdma_timeout_cpu_incr(struct host1x_cdma *cdma, u32 getptr,
 	for (i = 0; i < syncpt_incrs; i++)
 		host1x_syncpt_incr(cdma->timeout.syncpt);
 
-	/* after CPU incr, ensure shadow is up to date */
+	 
 	host1x_syncpt_load(cdma->timeout.syncpt);
 }
 
-/*
- * Start channel DMA
- */
+ 
 static void cdma_start(struct host1x_cdma *cdma)
 {
 	struct host1x_channel *ch = cdma_to_channel(cdma);
@@ -55,7 +45,7 @@ static void cdma_start(struct host1x_cdma *cdma)
 	host1x_ch_writel(ch, HOST1X_CHANNEL_DMACTRL_DMASTOP,
 			 HOST1X_CHANNEL_DMACTRL);
 
-	/* set base, put and end pointer */
+	 
 	host1x_ch_writel(ch, lower_32_bits(start), HOST1X_CHANNEL_DMASTART);
 #if HOST1X_HW >= 6
 	host1x_ch_writel(ch, upper_32_bits(start), HOST1X_CHANNEL_DMASTART_HI);
@@ -69,23 +59,19 @@ static void cdma_start(struct host1x_cdma *cdma)
 	host1x_ch_writel(ch, upper_32_bits(end), HOST1X_CHANNEL_DMAEND_HI);
 #endif
 
-	/* reset GET */
+	 
 	host1x_ch_writel(ch, HOST1X_CHANNEL_DMACTRL_DMASTOP |
 			 HOST1X_CHANNEL_DMACTRL_DMAGETRST |
 			 HOST1X_CHANNEL_DMACTRL_DMAINITGET,
 			 HOST1X_CHANNEL_DMACTRL);
 
-	/* start the command DMA */
+	 
 	host1x_ch_writel(ch, 0, HOST1X_CHANNEL_DMACTRL);
 
 	cdma->running = true;
 }
 
-/*
- * Similar to cdma_start(), but rather than starting from an idle
- * state (where DMA GET is set to DMA PUT), on a timeout we restore
- * DMA GET from an explicit value (so DMA may again be pending).
- */
+ 
 static void cdma_timeout_restart(struct host1x_cdma *cdma, u32 getptr)
 {
 	struct host1x *host1x = cdma_to_host1x(cdma);
@@ -103,7 +89,7 @@ static void cdma_timeout_restart(struct host1x_cdma *cdma, u32 getptr)
 	start = cdma->push_buffer.dma;
 	end = cdma->push_buffer.size + 4;
 
-	/* set base, end pointer (all of memory) */
+	 
 	host1x_ch_writel(ch, lower_32_bits(start), HOST1X_CHANNEL_DMASTART);
 #if HOST1X_HW >= 6
 	host1x_ch_writel(ch, upper_32_bits(start), HOST1X_CHANNEL_DMASTART_HI);
@@ -113,7 +99,7 @@ static void cdma_timeout_restart(struct host1x_cdma *cdma, u32 getptr)
 	host1x_ch_writel(ch, upper_32_bits(end), HOST1X_CHANNEL_DMAEND_HI);
 #endif
 
-	/* set GET, by loading the value in PUT (then reset GET) */
+	 
 	host1x_ch_writel(ch, getptr, HOST1X_CHANNEL_DMAPUT);
 	host1x_ch_writel(ch, HOST1X_CHANNEL_DMACTRL_DMASTOP |
 			 HOST1X_CHANNEL_DMACTRL_DMAGETRST |
@@ -126,20 +112,18 @@ static void cdma_timeout_restart(struct host1x_cdma *cdma, u32 getptr)
 		host1x_ch_readl(ch, HOST1X_CHANNEL_DMAPUT),
 		cdma->last_pos);
 
-	/* deassert GET reset and set PUT */
+	 
 	host1x_ch_writel(ch, HOST1X_CHANNEL_DMACTRL_DMASTOP,
 			 HOST1X_CHANNEL_DMACTRL);
 	host1x_ch_writel(ch, cdma->push_buffer.pos, HOST1X_CHANNEL_DMAPUT);
 
-	/* start the command DMA */
+	 
 	host1x_ch_writel(ch, 0, HOST1X_CHANNEL_DMACTRL);
 
 	cdma->running = true;
 }
 
-/*
- * Kick channel DMA into action by writing its PUT offset (if it has changed)
- */
+ 
 static void cdma_flush(struct host1x_cdma *cdma)
 {
 	struct host1x_channel *ch = cdma_to_channel(cdma);
@@ -191,10 +175,7 @@ static void cdma_hw_teardown(struct host1x *host, struct host1x_channel *ch)
 #endif
 }
 
-/*
- * Stops both channel's command processor and CDMA immediately.
- * Also, tears down the channel and resets corresponding module.
- */
+ 
 static void cdma_freeze(struct host1x_cdma *cdma)
 {
 	struct host1x *host = cdma_to_host1x(cdma);
@@ -241,14 +222,7 @@ static void cdma_resume(struct host1x_cdma *cdma, u32 getptr)
 static void timeout_release_mlock(struct host1x_cdma *cdma)
 {
 #if HOST1X_HW >= 8
-	/* Tegra186 and Tegra194 require a more complicated MLOCK release
-	 * sequence. Furthermore, those chips by default don't enforce MLOCKs,
-	 * so it turns out that if we don't /actually/ need MLOCKs, we can just
-	 * ignore them.
-	 *
-	 * As such, for now just implement this on Tegra234 where things are
-	 * stricter but also easy to implement.
-	 */
+	 
 	struct host1x_channel *ch = cdma_to_channel(cdma);
 	struct host1x *host1x = cdma_to_host1x(cdma);
 	u32 offset;
@@ -269,11 +243,7 @@ static void timeout_release_mlock(struct host1x_cdma *cdma)
 #endif
 }
 
-/*
- * If this timeout fires, it indicates the current sync_queue entry has
- * exceeded its TTL and the userctx should be timed out and remaining
- * submits already issued cleaned up (future submits return an error).
- */
+ 
 static void cdma_timeout_handler(struct work_struct *work)
 {
 	u32 syncpt_val;
@@ -297,16 +267,16 @@ static void cdma_timeout_handler(struct work_struct *work)
 		return;
 	}
 
-	/* stop processing to get a clean snapshot */
+	 
 	cdma_hw_cmdproc_stop(host1x, ch, true);
 
 	syncpt_val = host1x_syncpt_load(cdma->timeout.syncpt);
 
-	/* has buffer actually completed? */
+	 
 	if ((s32)(syncpt_val - cdma->timeout.syncpt_val) >= 0) {
 		dev_dbg(host1x->dev,
 			"cdma_timeout: expired, but buffer had completed\n");
-		/* restore */
+		 
 		cdma_hw_cmdproc_stop(host1x, ch, false);
 		mutex_unlock(&cdma->lock);
 		return;
@@ -316,19 +286,17 @@ static void cdma_timeout_handler(struct work_struct *work)
 		 __func__, cdma->timeout.syncpt->id, cdma->timeout.syncpt->name,
 		 syncpt_val, cdma->timeout.syncpt_val);
 
-	/* stop HW, resetting channel/module */
+	 
 	host1x_hw_cdma_freeze(host1x, cdma);
 
-	/* release any held MLOCK */
+	 
 	timeout_release_mlock(cdma);
 
 	host1x_cdma_update_sync_queue(cdma, ch->dev);
 	mutex_unlock(&cdma->lock);
 }
 
-/*
- * Init timeout resources
- */
+ 
 static int cdma_timeout_init(struct host1x_cdma *cdma)
 {
 	INIT_DELAYED_WORK(&cdma->timeout.wq, cdma_timeout_handler);
@@ -337,9 +305,7 @@ static int cdma_timeout_init(struct host1x_cdma *cdma)
 	return 0;
 }
 
-/*
- * Clean up timeout resources
- */
+ 
 static void cdma_timeout_destroy(struct host1x_cdma *cdma)
 {
 	if (cdma->timeout.initialized)

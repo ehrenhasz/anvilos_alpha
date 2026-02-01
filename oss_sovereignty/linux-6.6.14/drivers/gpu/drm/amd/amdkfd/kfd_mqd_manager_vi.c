@@ -1,26 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR MIT
-/*
- * Copyright 2014-2022 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+
+ 
 
 #include <linux/printk.h>
 #include <linux/slab.h>
@@ -49,7 +28,7 @@ static void update_cu_mask(struct mqd_manager *mm, void *mqd,
 			struct mqd_update_info *minfo)
 {
 	struct vi_mqd *m;
-	uint32_t se_mask[4] = {0}; /* 4 is the max # of SEs */
+	uint32_t se_mask[4] = {0};  
 
 	if (!minfo || !minfo->cu_mask.ptr)
 		return;
@@ -158,7 +137,7 @@ static int load_mqd(struct mqd_manager *mm, void *mqd,
 			uint32_t pipe_id, uint32_t queue_id,
 			struct queue_properties *p, struct mm_struct *mms)
 {
-	/* AQL write pointer counts in 64B packets, PM4/CP counts in dwords. */
+	 
 	uint32_t wptr_shift = (p->format == KFD_QUEUE_FORMAT_AQL ? 4 : 0);
 	uint32_t wptr_mask = (uint32_t)((p->queue_size / 4) - 1);
 
@@ -202,13 +181,7 @@ static void __update_mqd(struct mqd_manager *mm, void *mqd,
 			3 << CP_HQD_IB_CONTROL__MIN_IB_AVAIL_SIZE__SHIFT |
 			mtype << CP_HQD_IB_CONTROL__MTYPE__SHIFT;
 
-	/*
-	 * HW does not clamp this field correctly. Maximum EOP queue size
-	 * is constrained by per-SE EOP done signal count, which is 8-bit.
-	 * Limit is 0xFF EOP entries (= 0x7F8 dwords). CP will not submit
-	 * more than (EOP entry count - 1) so a queue size of 0x800 dwords
-	 * is safe, giving a maximum field value of 0xA.
-	 */
+	 
 	m->cp_hqd_eop_control |= min(0xA,
 		order_base_2(q->eop_ring_buffer_size / 4) - 1);
 	m->cp_hqd_eop_base_addr_lo =
@@ -266,17 +239,14 @@ static int get_wave_state(struct mqd_manager *mm, void *mqd,
 	*save_area_used_size = m->cp_hqd_wg_state_offset -
 		m->cp_hqd_cntl_stack_size;
 
-	/* Control stack is not copied to user mode for GFXv8 because
-	 * it's part of the context save area that is already
-	 * accessible to user mode
-	 */
+	 
 
 	return 0;
 }
 
 static void get_checkpoint_info(struct mqd_manager *mm, void *mqd, u32 *ctl_stack_size)
 {
-	/* Control stack is stored in user mode */
+	 
 	*ctl_stack_size = 0;
 }
 

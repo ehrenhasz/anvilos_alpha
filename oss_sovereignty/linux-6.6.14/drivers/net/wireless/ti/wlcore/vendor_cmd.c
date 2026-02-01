@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * This file is part of wlcore
- *
- * Copyright (C) 2014 Texas Instruments. All rights reserved.
- */
+
+ 
 
 #include <linux/pm_runtime.h>
 

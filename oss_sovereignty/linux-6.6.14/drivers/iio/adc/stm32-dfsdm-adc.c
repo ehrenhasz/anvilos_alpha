@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * This file is the ADC part of the STM32 DFSDM driver
- *
- * Copyright (C) 2017, STMicroelectronics - All Rights Reserved
- * Author: Arnaud Pouliquen <arnaud.pouliquen@st.com>.
- */
+
+ 
 
 #include <linux/dmaengine.h>
 #include <linux/dma-mapping.h>
@@ -29,29 +24,23 @@
 
 #define DFSDM_DMA_BUFFER_SIZE (4 * PAGE_SIZE)
 
-/* Conversion timeout */
+ 
 #define DFSDM_TIMEOUT_US 100000
 #define DFSDM_TIMEOUT (msecs_to_jiffies(DFSDM_TIMEOUT_US / 1000))
 
-/* Oversampling attribute default */
+ 
 #define DFSDM_DEFAULT_OVERSAMPLING  100
 
-/* Oversampling max values */
+ 
 #define DFSDM_MAX_INT_OVERSAMPLING 256
 #define DFSDM_MAX_FL_OVERSAMPLING 1024
 
-/* Limit filter output resolution to 31 bits. (i.e. sample range is +/-2^30) */
+ 
 #define DFSDM_DATA_MAX BIT(30)
-/*
- * Data are output as two's complement data in a 24 bit field.
- * Data from filters are in the range +/-2^(n-1)
- * 2^(n-1) maximum positive value cannot be coded in 2's complement n bits
- * An extra bit is required to avoid wrap-around of the binary code for 2^(n-1)
- * So, the resolution of samples from filter is actually limited to 23 bits
- */
+ 
 #define DFSDM_DATA_RES 24
 
-/* Filter configuration */
+ 
 #define DFSDM_CR1_CFG_MASK (DFSDM_CR1_RCH_MASK | DFSDM_CR1_RCONT_MASK | \
 			    DFSDM_CR1_RSYNC_MASK | DFSDM_CR1_JSYNC_MASK | \
 			    DFSDM_CR1_JSCAN_MASK)
@@ -75,22 +64,22 @@ struct stm32_dfsdm_adc {
 	unsigned int nconv;
 	unsigned long smask;
 
-	/* ADC specific */
+	 
 	unsigned int oversamp;
 	struct iio_hw_consumer *hwc;
 	struct completion completion;
 	u32 *buffer;
 
-	/* Audio specific */
-	unsigned int spi_freq;  /* SPI bus clock frequency */
-	unsigned int sample_freq; /* Sample frequency after filter decimation */
+	 
+	unsigned int spi_freq;   
+	unsigned int sample_freq;  
 	int (*cb)(const void *data, size_t size, void *cb_priv);
 	void *cb_priv;
 
-	/* DMA */
+	 
 	u8 *rx_buf;
-	unsigned int bufi; /* Buffer current position */
-	unsigned int buf_sz; /* Buffer size */
+	unsigned int bufi;  
+	unsigned int buf_sz;  
 	struct dma_chan	*dma_chan;
 	dma_addr_t dma_buf;
 };
@@ -100,24 +89,24 @@ struct stm32_dfsdm_str2field {
 	unsigned int	val;
 };
 
-/* DFSDM channel serial interface type */
+ 
 static const struct stm32_dfsdm_str2field stm32_dfsdm_chan_type[] = {
-	{ "SPI_R", 0 }, /* SPI with data on rising edge */
-	{ "SPI_F", 1 }, /* SPI with data on falling edge */
-	{ "MANCH_R", 2 }, /* Manchester codec, rising edge = logic 0 */
-	{ "MANCH_F", 3 }, /* Manchester codec, falling edge = logic 1 */
+	{ "SPI_R", 0 },  
+	{ "SPI_F", 1 },  
+	{ "MANCH_R", 2 },  
+	{ "MANCH_F", 3 },  
 	{},
 };
 
-/* DFSDM channel clock source */
+ 
 static const struct stm32_dfsdm_str2field stm32_dfsdm_chan_src[] = {
-	/* External SPI clock (CLKIN x) */
+	 
 	{ "CLKIN", DFSDM_CHANNEL_SPI_CLOCK_EXTERNAL },
-	/* Internal SPI clock (CLKOUT) */
+	 
 	{ "CLKOUT", DFSDM_CHANNEL_SPI_CLOCK_INTERNAL },
-	/* Internal SPI clock divided by 2 (falling edge) */
+	 
 	{ "CLKOUT_F", DFSDM_CHANNEL_SPI_CLOCK_INTERNAL_DIV2_FALLING },
-	/* Internal SPI clock divided by 2 (falling edge) */
+	 
 	{ "CLKOUT_R", DFSDM_CHANNEL_SPI_CLOCK_INTERNAL_DIV2_RISING },
 	{},
 };
@@ -134,17 +123,13 @@ static int stm32_dfsdm_str2val(const char *str,
 	return -EINVAL;
 }
 
-/**
- * struct stm32_dfsdm_trig_info - DFSDM trigger info
- * @name:		name of the trigger, corresponding to its source
- * @jextsel:		trigger signal selection
- */
+ 
 struct stm32_dfsdm_trig_info {
 	const char *name;
 	unsigned int jextsel;
 };
 
-/* hardware injected trigger enable, edge selection */
+ 
 enum stm32_dfsdm_jexten {
 	STM32_DFSDM_JEXTEN_DISABLED,
 	STM32_DFSDM_JEXTEN_RISING_EDGE,
@@ -173,12 +158,9 @@ static int stm32_dfsdm_get_jextsel(struct iio_dev *indio_dev,
 {
 	int i;
 
-	/* lookup triggers registered by stm32 timer trigger driver */
+	 
 	for (i = 0; stm32_dfsdm_trigs[i].name; i++) {
-		/**
-		 * Checking both stm32 timer trigger type and trig name
-		 * should be safe against arbitrary trigger names.
-		 */
+		 
 		if ((is_stm32_timer_trigger(trig) ||
 		     is_stm32_lptim_trigger(trig)) &&
 		    !strcmp(stm32_dfsdm_trigs[i].name, trig->name)) {
@@ -195,29 +177,18 @@ static int stm32_dfsdm_compute_osrs(struct stm32_dfsdm_filter *fl,
 	unsigned int i, d, fosr, iosr;
 	u64 res, max;
 	int bits, shift;
-	unsigned int m = 1;	/* multiplication factor */
-	unsigned int p = fl->ford;	/* filter order (ford) */
+	unsigned int m = 1;	 
+	unsigned int p = fl->ford;	 
 	struct stm32_dfsdm_filter_osr *flo = &fl->flo[fast];
 
 	pr_debug("Requested oversampling: %d\n", oversamp);
-	/*
-	 * This function tries to compute filter oversampling and integrator
-	 * oversampling, base on oversampling ratio requested by user.
-	 *
-	 * Decimation d depends on the filter order and the oversampling ratios.
-	 * ford: filter order
-	 * fosr: filter over sampling ratio
-	 * iosr: integrator over sampling ratio
-	 */
+	 
 	if (fl->ford == DFSDM_FASTSINC_ORDER) {
 		m = 2;
 		p = 2;
 	}
 
-	/*
-	 * Look for filter and integrator oversampling ratios which allows
-	 * to maximize data output resolution.
-	 */
+	 
 	for (fosr = 1; fosr <= DFSDM_MAX_FL_OVERSAMPLING; fosr++) {
 		for (iosr = 1; iosr <= DFSDM_MAX_INT_OVERSAMPLING; iosr++) {
 			if (fast)
@@ -231,14 +202,7 @@ static int stm32_dfsdm_compute_osrs(struct stm32_dfsdm_filter *fl,
 				break;
 			else if (d != oversamp)
 				continue;
-			/*
-			 * Check resolution (limited to signed 32 bits)
-			 *   res <= 2^31
-			 * Sincx filters:
-			 *   res = m * fosr^p x iosr (with m=1, p=ford)
-			 * FastSinc filter
-			 *   res = m * fosr^p x iosr (with m=2, p=2)
-			 */
+			 
 			res = fosr;
 			for (i = p - 1; i > 0; i--) {
 				res = res * (u64)fosr;
@@ -258,37 +222,23 @@ static int stm32_dfsdm_compute_osrs(struct stm32_dfsdm_filter *fl,
 				flo->iosr = iosr;
 
 				bits = fls(flo->res);
-				/* 8 LBSs in data register contain chan info */
+				 
 				max = flo->res << 8;
 
-				/* if resolution is not a power of two */
+				 
 				if (flo->res > BIT(bits - 1))
 					bits++;
 				else
 					max--;
 
 				shift = DFSDM_DATA_RES - bits;
-				/*
-				 * Compute right/left shift
-				 * Right shift is performed by hardware
-				 * when transferring samples to data register.
-				 * Left shift is done by software on buffer
-				 */
+				 
 				if (shift > 0) {
-					/* Resolution is lower than 24 bits */
+					 
 					flo->rshift = 0;
 					flo->lshift = shift;
 				} else {
-					/*
-					 * If resolution is 24 bits or more,
-					 * max positive value may be ambiguous
-					 * (equal to max negative value as sign
-					 * bit is dropped).
-					 * Reduce resolution to 23 bits (rshift)
-					 * to keep the sign on bit 23 and treat
-					 * saturation before rescaling on 24
-					 * bits (lshift).
-					 */
+					 
 					flo->rshift = 1 - shift;
 					flo->lshift = 1;
 					max >>= flo->rshift;
@@ -396,17 +346,17 @@ static int stm32_dfsdm_start_filter(struct stm32_dfsdm_adc *adc,
 	struct stm32_dfsdm *dfsdm = adc->dfsdm;
 	int ret;
 
-	/* Enable filter */
+	 
 	ret = regmap_update_bits(dfsdm->regmap, DFSDM_CR1(fl_id),
 				 DFSDM_CR1_DFEN_MASK, DFSDM_CR1_DFEN(1));
 	if (ret < 0)
 		return ret;
 
-	/* Nothing more to do for injected (scan mode/triggered) conversions */
+	 
 	if (adc->nconv > 1 || trig)
 		return 0;
 
-	/* Software start (single or continuous) regular conversion */
+	 
 	return regmap_update_bits(dfsdm->regmap, DFSDM_CR1(fl_id),
 				  DFSDM_CR1_RSWSTART_MASK,
 				  DFSDM_CR1_RSWSTART(1));
@@ -415,7 +365,7 @@ static int stm32_dfsdm_start_filter(struct stm32_dfsdm_adc *adc,
 static void stm32_dfsdm_stop_filter(struct stm32_dfsdm *dfsdm,
 				    unsigned int fl_id)
 {
-	/* Disable conversion */
+	 
 	regmap_update_bits(dfsdm->regmap, DFSDM_CR1(fl_id),
 			   DFSDM_CR1_DFEN_MASK, DFSDM_CR1_DFEN(0));
 }
@@ -434,7 +384,7 @@ static int stm32_dfsdm_filter_set_trig(struct iio_dev *indio_dev,
 		if (ret < 0)
 			return ret;
 
-		/* set trigger source and polarity (default to rising edge) */
+		 
 		jextsel = ret;
 		jexten = STM32_DFSDM_JEXTEN_RISING_EDGE;
 	}
@@ -463,10 +413,7 @@ static int stm32_dfsdm_channels_configure(struct iio_dev *indio_dev,
 
 	fl->fast = 0;
 
-	/*
-	 * In continuous mode, use fast mode configuration,
-	 * if it provides a better resolution.
-	 */
+	 
 	if (adc->nconv == 1 && !trig && iio_buffer_enabled(indio_dev)) {
 		if (fl->flo[1].res >= fl->flo[0].res) {
 			fl->fast = 1;
@@ -508,13 +455,13 @@ static int stm32_dfsdm_filter_configure(struct iio_dev *indio_dev,
 	unsigned int bit, jchg = 0;
 	int ret;
 
-	/* Average integrator oversampling */
+	 
 	ret = regmap_update_bits(regmap, DFSDM_FCR(fl_id), DFSDM_FCR_IOSR_MASK,
 				 DFSDM_FCR_IOSR(flo->iosr - 1));
 	if (ret)
 		return ret;
 
-	/* Filter order and Oversampling */
+	 
 	ret = regmap_update_bits(regmap, DFSDM_FCR(fl_id), DFSDM_FCR_FOSR_MASK,
 				 DFSDM_FCR_FOSR(flo->fosr - 1));
 	if (ret)
@@ -535,39 +482,21 @@ static int stm32_dfsdm_filter_configure(struct iio_dev *indio_dev,
 	if (ret)
 		return ret;
 
-	/*
-	 * DFSDM modes configuration W.R.T audio/iio type modes
-	 * ----------------------------------------------------------------
-	 * Modes         | regular |  regular     | injected | injected   |
-	 *               |         |  continuous  |          | + scan     |
-	 * --------------|---------|--------------|----------|------------|
-	 * single conv   |    x    |              |          |            |
-	 * (1 chan)      |         |              |          |            |
-	 * --------------|---------|--------------|----------|------------|
-	 * 1 Audio chan	 |         | sample freq  |          |            |
-	 *               |         | or sync_mode |          |            |
-	 * --------------|---------|--------------|----------|------------|
-	 * 1 IIO chan	 |         | sample freq  | trigger  |            |
-	 *               |         | or sync_mode |          |            |
-	 * --------------|---------|--------------|----------|------------|
-	 * 2+ IIO chans  |         |              |          | trigger or |
-	 *               |         |              |          | sync_mode  |
-	 * ----------------------------------------------------------------
-	 */
+	 
 	if (adc->nconv == 1 && !trig) {
 		bit = __ffs(adc->smask);
 		chan = indio_dev->channels + bit;
 
-		/* Use regular conversion for single channel without trigger */
+		 
 		cr1 = DFSDM_CR1_RCH(chan->channel);
 
-		/* Continuous conversions triggered by SPI clk in buffer mode */
+		 
 		if (iio_buffer_enabled(indio_dev))
 			cr1 |= DFSDM_CR1_RCONT(1);
 
 		cr1 |= DFSDM_CR1_RSYNC(fl->sync_mode);
 	} else {
-		/* Use injected conversion for multiple channels */
+		 
 		for_each_set_bit(bit, &adc->smask,
 				 sizeof(adc->smask) * BITS_PER_BYTE) {
 			chan = indio_dev->channels + bit;
@@ -577,15 +506,10 @@ static int stm32_dfsdm_filter_configure(struct iio_dev *indio_dev,
 		if (ret < 0)
 			return ret;
 
-		/* Use scan mode for multiple channels */
+		 
 		cr1 = DFSDM_CR1_JSCAN((adc->nconv > 1) ? 1 : 0);
 
-		/*
-		 * Continuous conversions not supported in injected mode,
-		 * either use:
-		 * - conversions in sync with filter 0
-		 * - triggered conversions
-		 */
+		 
 		if (!fl->sync_mode && !trig)
 			return -EINVAL;
 		cr1 |= DFSDM_CR1_JSYNC(fl->sync_mode);
@@ -712,7 +636,7 @@ static ssize_t dfsdm_adc_audio_set_spiclk(struct iio_dev *indio_dev,
 	int ret;
 
 	dev_err(&indio_dev->dev, "enter %s\n", __func__);
-	/* If DFSDM is master on SPI, SPI freq can not be updated */
+	 
 	if (ch->src != DFSDM_CHANNEL_SPI_CLOCK_EXTERNAL)
 		return -EPERM;
 
@@ -787,12 +711,7 @@ static int stm32_dfsdm_set_watermark(struct iio_dev *indio_dev,
 	unsigned int watermark = DFSDM_DMA_BUFFER_SIZE / 2;
 	unsigned int rx_buf_sz = DFSDM_DMA_BUFFER_SIZE;
 
-	/*
-	 * DMA cyclic transfers are used, buffer is split into two periods.
-	 * There should be :
-	 * - always one buffer (period) DMA is working on
-	 * - one buffer (period) driver pushed to ASoC side.
-	 */
+	 
 	watermark = min(watermark, val * (unsigned int)(sizeof(u32)));
 	adc->buf_sz = min(rx_buf_sz, watermark * 2 * adc->nconv);
 
@@ -808,11 +727,11 @@ static unsigned int stm32_dfsdm_adc_dma_residue(struct stm32_dfsdm_adc *adc)
 				     adc->dma_chan->cookie,
 				     &state);
 	if (status == DMA_IN_PROGRESS) {
-		/* Residue is size in bytes from end of buffer */
+		 
 		unsigned int i = adc->buf_sz - state.residue;
 		unsigned int size;
 
-		/* Return available bytes */
+		 
 		if (i >= adc->bufi)
 			size = i - adc->bufi;
 		else
@@ -833,15 +752,12 @@ static inline void stm32_dfsdm_process_data(struct stm32_dfsdm_adc *adc,
 	s32 *ptr = buffer;
 
 	while (i--) {
-		/* Mask 8 LSB that contains the channel ID */
+		 
 		*ptr &= 0xFFFFFF00;
-		/* Convert 2^(n-1) sample to 2^(n-1)-1 to avoid wrap-around */
+		 
 		if (*ptr > flo->max)
 			*ptr -= 1;
-		/*
-		 * Samples from filter are retrieved with 23 bits resolution
-		 * or less. Shift left to align MSB on 24 bits.
-		 */
+		 
 		*ptr <<= flo->lshift;
 
 		ptr++;
@@ -855,14 +771,7 @@ static void stm32_dfsdm_dma_buffer_done(void *data)
 	int available = stm32_dfsdm_adc_dma_residue(adc);
 	size_t old_pos;
 
-	/*
-	 * FIXME: In Kernel interface does not support cyclic DMA buffer,and
-	 * offers only an interface to push data samples per samples.
-	 * For this reason IIO buffer interface is not used and interface is
-	 * bypassed using a private callback registered by ASoC.
-	 * This should be a temporary solution waiting a cyclic DMA engine
-	 * support in IIO.
-	 */
+	 
 
 	dev_dbg(&indio_dev->dev, "pos = %d, available = %d\n",
 		adc->bufi, available);
@@ -882,15 +791,7 @@ static void stm32_dfsdm_dma_buffer_done(void *data)
 			adc->bufi = 0;
 			old_pos = 0;
 		}
-		/*
-		 * In DMA mode the trigger services of IIO are not used
-		 * (e.g. no call to iio_trigger_poll).
-		 * Calling irq handler associated to the hardware trigger is not
-		 * relevant as the conversions have already been done. Data
-		 * transfers are performed directly in DMA callback instead.
-		 * This implementation avoids to call trigger irq handler that
-		 * may sleep, in an atomic context (DMA irq handler context).
-		 */
+		 
 		if (adc->dev_data->type == DFSDM_IIO)
 			iio_push_to_buffers(indio_dev, buffer);
 	}
@@ -902,11 +803,7 @@ static void stm32_dfsdm_dma_buffer_done(void *data)
 static int stm32_dfsdm_adc_dma_start(struct iio_dev *indio_dev)
 {
 	struct stm32_dfsdm_adc *adc = iio_priv(indio_dev);
-	/*
-	 * The DFSDM supports half-word transfers. However, for 16 bits record,
-	 * 4 bytes buswidth is kept, to avoid losing samples LSBs when left
-	 * shift is required.
-	 */
+	 
 	struct dma_slave_config config = {
 		.src_addr = (dma_addr_t)adc->dfsdm->phys_base,
 		.src_addr_width = DMA_SLAVE_BUSWIDTH_4_BYTES,
@@ -929,7 +826,7 @@ static int stm32_dfsdm_adc_dma_start(struct iio_dev *indio_dev)
 	if (ret)
 		return ret;
 
-	/* Prepare a DMA cyclic transaction */
+	 
 	desc = dmaengine_prep_dma_cyclic(adc->dma_chan,
 					 adc->dma_buf,
 					 adc->buf_sz, adc->buf_sz / 2,
@@ -946,17 +843,17 @@ static int stm32_dfsdm_adc_dma_start(struct iio_dev *indio_dev)
 	if (ret)
 		goto err_stop_dma;
 
-	/* Issue pending DMA requests */
+	 
 	dma_async_issue_pending(adc->dma_chan);
 
 	if (adc->nconv == 1 && !indio_dev->trig) {
-		/* Enable regular DMA transfer*/
+		 
 		ret = regmap_update_bits(adc->dfsdm->regmap,
 					 DFSDM_CR1(adc->fl_id),
 					 DFSDM_CR1_RDMAEN_MASK,
 					 DFSDM_CR1_RDMAEN_MASK);
 	} else {
-		/* Enable injected DMA transfer*/
+		 
 		ret = regmap_update_bits(adc->dfsdm->regmap,
 					 DFSDM_CR1(adc->fl_id),
 					 DFSDM_CR1_JDMAEN_MASK,
@@ -1004,7 +901,7 @@ static int stm32_dfsdm_postenable(struct iio_dev *indio_dev)
 	struct stm32_dfsdm_adc *adc = iio_priv(indio_dev);
 	int ret;
 
-	/* Reset adc buffer index */
+	 
 	adc->bufi = 0;
 
 	if (adc->hwc) {
@@ -1063,17 +960,7 @@ static const struct iio_buffer_setup_ops stm32_dfsdm_buffer_setup_ops = {
 	.predisable = &stm32_dfsdm_predisable,
 };
 
-/**
- * stm32_dfsdm_get_buff_cb() - register a callback that will be called when
- *                             DMA transfer period is achieved.
- *
- * @iio_dev: Handle to IIO device.
- * @cb: Pointer to callback function:
- *      - data: pointer to data buffer
- *      - size: size in byte of the data buffer
- *      - private: pointer to consumer private structure.
- * @private: Pointer to consumer private structure.
- */
+ 
 int stm32_dfsdm_get_buff_cb(struct iio_dev *iio_dev,
 			    int (*cb)(const void *data, size_t size,
 				      void *private),
@@ -1092,11 +979,7 @@ int stm32_dfsdm_get_buff_cb(struct iio_dev *iio_dev,
 }
 EXPORT_SYMBOL_GPL(stm32_dfsdm_get_buff_cb);
 
-/**
- * stm32_dfsdm_release_buff_cb - unregister buffer callback
- *
- * @iio_dev: Handle to IIO device.
- */
+ 
 int stm32_dfsdm_release_buff_cb(struct iio_dev *iio_dev)
 {
 	struct stm32_dfsdm_adc *adc;
@@ -1144,7 +1027,7 @@ static int stm32_dfsdm_single_conv(struct iio_dev *indio_dev,
 	timeout = wait_for_completion_interruptible_timeout(&adc->completion,
 							    DFSDM_TIMEOUT);
 
-	/* Mask IRQ for regular conversion achievement*/
+	 
 	regmap_update_bits(adc->dfsdm->regmap, DFSDM_CR2(adc->fl_id),
 			   DFSDM_CR2_REOCIE_MASK, DFSDM_CR2_REOCIE(0));
 
@@ -1297,7 +1180,7 @@ static irqreturn_t stm32_dfsdm_irq(int irq, void *arg)
 	regmap_read(regmap, DFSDM_CR2(adc->fl_id), &int_en);
 
 	if (status & DFSDM_ISR_REOCF_MASK) {
-		/* Read the data register clean the IRQ status */
+		 
 		regmap_read(regmap, DFSDM_RDATAR(adc->fl_id), adc->buffer);
 		complete(&adc->completion);
 	}
@@ -1313,12 +1196,9 @@ static irqreturn_t stm32_dfsdm_irq(int irq, void *arg)
 	return IRQ_HANDLED;
 }
 
-/*
- * Define external info for SPI Frequency and audio sampling rate that can be
- * configured by ASoC driver through consumer.h API
- */
+ 
 static const struct iio_chan_spec_ext_info dfsdm_adc_audio_ext_info[] = {
-	/* spi_clk_freq : clock freq on SPI/manchester bus used by channel */
+	 
 	{
 		.name = "spi_clk_freq",
 		.shared = IIO_SHARED_BY_TYPE,
@@ -1380,10 +1260,7 @@ static int stm32_dfsdm_adc_chan_init_one(struct iio_dev *indio_dev,
 	ch->type = IIO_VOLTAGE;
 	ch->indexed = 1;
 
-	/*
-	 * IIO_CHAN_INFO_RAW: used to compute regular conversion
-	 * IIO_CHAN_INFO_OVERSAMPLING_RATIO: used to set oversampling
-	 */
+	 
 	ch->info_mask_separate = BIT(IIO_CHAN_INFO_RAW);
 	ch->info_mask_shared_by_all = BIT(IIO_CHAN_INFO_OVERSAMPLING_RATIO) |
 					BIT(IIO_CHAN_INFO_SAMP_FREQ);
@@ -1450,7 +1327,7 @@ static int stm32_dfsdm_adc_init(struct device *dev, struct iio_dev *indio_dev)
 		return num_ch < 0 ? num_ch : -EINVAL;
 	}
 
-	/* Bind to SD modulator IIO device */
+	 
 	adc->hwc = devm_iio_hw_consumer_alloc(&indio_dev->dev);
 	if (IS_ERR(adc->hwc))
 		return -EPROBE_DEFER;
@@ -1474,7 +1351,7 @@ static int stm32_dfsdm_adc_init(struct device *dev, struct iio_dev *indio_dev)
 
 	init_completion(&adc->completion);
 
-	/* Optionally request DMA */
+	 
 	ret = stm32_dfsdm_dma_request(dev, indio_dev);
 	if (ret) {
 		if (ret != -ENODEV)
@@ -1494,7 +1371,7 @@ static int stm32_dfsdm_adc_init(struct device *dev, struct iio_dev *indio_dev)
 		return ret;
 	}
 
-	/* lptimer/timer hardware triggers */
+	 
 	indio_dev->modes |= INDIO_HARDWARE_TRIGGERED;
 
 	return 0;
@@ -1566,10 +1443,7 @@ static int stm32_dfsdm_adc_probe(struct platform_device *pdev)
 	}
 	iio->name = name;
 
-	/*
-	 * In a first step IRQs generated for channels are not treated.
-	 * So IRQ associated to filter instance 0 is dedicated to the Filter 0.
-	 */
+	 
 	irq = platform_get_irq(pdev, 0);
 	if (irq < 0)
 		return irq;
@@ -1651,7 +1525,7 @@ static int stm32_dfsdm_adc_resume(struct device *dev)
 	struct stm32_dfsdm_channel *ch;
 	int i, ret;
 
-	/* restore channels configuration */
+	 
 	for (i = 0; i < indio_dev->num_channels; i++) {
 		chan = indio_dev->channels + i;
 		ch = &adc->dfsdm->ch_list[chan->channel];

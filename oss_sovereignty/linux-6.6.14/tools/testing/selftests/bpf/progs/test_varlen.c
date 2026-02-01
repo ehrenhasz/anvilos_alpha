@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2020 Facebook */
+
+ 
 
 #include "vmlinux.h"
 #include <bpf/bpf_helpers.h>
@@ -14,14 +14,14 @@ char buf_in2[MAX_LEN] = {};
 int test_pid = 0;
 bool capture = false;
 
-/* .bss */
+ 
 __u64 payload1_len1 = 0;
 __u64 payload1_len2 = 0;
 __u64 total1 = 0;
 char payload1[MAX_LEN + MAX_LEN] = {};
 __u64 ret_bad_read = 0;
 
-/* .data */
+ 
 int payload2_len1 = -1;
 int payload2_len2 = -1;
 int total2 = -1;
@@ -46,7 +46,7 @@ int handler64_unsigned(void *regs)
 	void *payload = payload1;
 	long len;
 
-	/* ignore irrelevant invocations */
+	 
 	if (test_pid != pid || !capture)
 		return 0;
 
@@ -76,7 +76,7 @@ int handler64_signed(void *regs)
 	void *payload = payload3;
 	long len;
 
-	/* ignore irrelevant invocations */
+	 
 	if (test_pid != pid || !capture)
 		return 0;
 
@@ -102,7 +102,7 @@ int handler32_unsigned(void *regs)
 	void *payload = payload2;
 	u32 len;
 
-	/* ignore irrelevant invocations */
+	 
 	if (test_pid != pid || !capture)
 		return 0;
 
@@ -130,7 +130,7 @@ int handler32_signed(void *regs)
 	void *payload = payload4;
 	long len;
 
-	/* ignore irrelevant invocations */
+	 
 	if (test_pid != pid || !capture)
 		return 0;
 

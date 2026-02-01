@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Core MFD support for Cirrus Logic Madera codecs
- *
- * Copyright (C) 2015-2018 Cirrus Logic
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/delay.h>
@@ -65,7 +61,7 @@ static const struct mfd_cell cs47l15_devs[] = {
 	{
 		.name = "madera-extcon",
 		.parent_supplies = cs47l15_supplies,
-		.num_parent_supplies = 1, /* We only need MICVDD */
+		.num_parent_supplies = 1,  
 	},
 	{
 		.name = "cs47l15-codec",
@@ -90,7 +86,7 @@ static const struct mfd_cell cs47l35_devs[] = {
 	{
 		.name = "madera-extcon",
 		.parent_supplies = cs47l35_supplies,
-		.num_parent_supplies = 1, /* We only need MICVDD */
+		.num_parent_supplies = 1,  
 	},
 	{
 		.name = "cs47l35-codec",
@@ -118,7 +114,7 @@ static const struct mfd_cell cs47l85_devs[] = {
 	{
 		.name = "madera-extcon",
 		.parent_supplies = cs47l85_supplies,
-		.num_parent_supplies = 1, /* We only need MICVDD */
+		.num_parent_supplies = 1,  
 	},
 	{
 		.name = "cs47l85-codec",
@@ -144,7 +140,7 @@ static const struct mfd_cell cs47l90_devs[] = {
 	{
 		.name = "madera-extcon",
 		.parent_supplies = cs47l90_supplies,
-		.num_parent_supplies = 1, /* We only need MICVDD */
+		.num_parent_supplies = 1,  
 	},
 	{
 		.name = "cs47l90-codec",
@@ -167,7 +163,7 @@ static const struct mfd_cell cs47l92_devs[] = {
 	{
 		.name = "madera-extcon",
 		.parent_supplies = cs47l92_supplies,
-		.num_parent_supplies = 1, /* We only need MICVDD */
+		.num_parent_supplies = 1,  
 	},
 	{
 		.name = "cs47l92-codec",
@@ -176,7 +172,7 @@ static const struct mfd_cell cs47l92_devs[] = {
 	},
 };
 
-/* Used by madera-i2c and madera-spi drivers */
+ 
 const char *madera_name_from_type(enum madera_type type)
 {
 	switch (type) {
@@ -213,13 +209,7 @@ static int madera_wait_for_boot_noack(struct madera *madera)
 	unsigned int val = 0;
 	int ret = 0;
 
-	/*
-	 * We can't use an interrupt as we need to runtime resume to do so,
-	 * so we poll the status bit. This won't race with the interrupt
-	 * handler because it will be blocked on runtime resume.
-	 * The chip could NAK a read request while it is booting so ignore
-	 * errors from regmap_read.
-	 */
+	 
 	timeout = ktime_add_us(ktime_get(), MADERA_BOOT_POLL_TIMEOUT_USEC);
 	regmap_read(madera->regmap, MADERA_IRQ1_RAW_STATUS_1, &val);
 	while (!(val & MADERA_BOOT_DONE_STS1) &&
@@ -241,10 +231,7 @@ static int madera_wait_for_boot(struct madera *madera)
 {
 	int ret = madera_wait_for_boot_noack(madera);
 
-	/*
-	 * BOOT_DONE defaults to unmasked on boot so we must ack it.
-	 * Do this even after a timeout to avoid interrupt storms.
-	 */
+	 
 	regmap_write(madera->regmap, MADERA_IRQ1_STATUS_1,
 		     MADERA_BOOT_DONE_EINT1);
 
@@ -263,7 +250,7 @@ static int madera_soft_reset(struct madera *madera)
 		return ret;
 	}
 
-	/* Allow time for internal clocks to startup after reset */
+	 
 	usleep_range(MADERA_RESET_MIN_US, MADERA_RESET_MAX_US);
 
 	return 0;
@@ -271,11 +258,7 @@ static int madera_soft_reset(struct madera *madera)
 
 static void madera_enable_hard_reset(struct madera *madera)
 {
-	/*
-	 * There are many existing out-of-tree users of these codecs that we
-	 * can't break so preserve the expected behaviour of setting the line
-	 * low to assert reset.
-	 */
+	 
 	gpiod_set_raw_value_cansleep(madera->pdata.reset, 0);
 }
 
@@ -398,11 +381,7 @@ static int madera_get_reset_gpio(struct madera *madera)
 		return dev_err_probe(madera->dev, PTR_ERR(reset),
 				"Failed to request /RESET");
 
-	/*
-	 * A hard reset is needed for full reset of the chip. We allow running
-	 * without hard reset only because it can be useful for early
-	 * prototyping and some debugging, but we need to warn it's not ideal.
-	 */
+	 
 	if (!reset)
 		dev_warn(madera->dev,
 			 "Running without reset GPIO is not recommended\n");
@@ -414,10 +393,7 @@ static int madera_get_reset_gpio(struct madera *madera)
 
 static void madera_set_micbias_info(struct madera *madera)
 {
-	/*
-	 * num_childbias is an array because future codecs can have different
-	 * childbiases for each micbias. Unspecified values default to 0.
-	 */
+	 
 	switch (madera->type) {
 	case CS47L15:
 		madera->num_micbias = 1;
@@ -431,7 +407,7 @@ static void madera_set_micbias_info(struct madera *madera)
 	case CS47L85:
 	case WM1840:
 		madera->num_micbias = 4;
-		/* no child biases */
+		 
 		return;
 	case CS47L90:
 	case CS47L91:
@@ -466,10 +442,7 @@ int madera_dev_init(struct madera *madera)
 
 	madera_set_micbias_info(madera);
 
-	/*
-	 * We need writable hw config info that all children can share.
-	 * Simplest to take one shared copy of pdata struct.
-	 */
+	 
 	if (dev_get_platdata(madera->dev)) {
 		memcpy(&madera->pdata, dev_get_platdata(madera->dev),
 		       sizeof(madera->pdata));
@@ -486,7 +459,7 @@ int madera_dev_init(struct madera *madera)
 		return ret;
 	}
 
-	/* Not using devm_clk_get to prevent breakage of existing DTs */
+	 
 	if (!madera->mclk[MADERA_MCLK2].clk)
 		dev_warn(madera->dev, "Missing MCLK2, requires 32kHz clock\n");
 
@@ -502,11 +475,7 @@ int madera_dev_init(struct madera *madera)
 
 	madera->num_core_supplies = ARRAY_SIZE(madera_core_supplies);
 
-	/*
-	 * On some codecs DCVDD could be supplied by the internal LDO1.
-	 * For those we must add the LDO1 driver before requesting DCVDD
-	 * No devm_ because we need to control shutdown order of children.
-	 */
+	 
 	switch (madera->type) {
 	case CS47L15:
 		madera->reset_errata = true;
@@ -530,7 +499,7 @@ int madera_dev_init(struct madera *madera)
 		}
 		break;
 	default:
-		/* No point continuing if the type is unknown */
+		 
 		dev_err(madera->dev, "Unknown device type %d\n", madera->type);
 		return -ENODEV;
 	}
@@ -542,11 +511,7 @@ int madera_dev_init(struct madera *madera)
 		goto err_devs;
 	}
 
-	/*
-	 * Don't use devres here. If the regulator is one of our children it
-	 * will already have been removed before devres cleanup on this mfd
-	 * driver tries to call put() on it. We need control of shutdown order.
-	 */
+	 
 	madera->dcvdd = regulator_get(madera->dev, "DCVDD");
 	if (IS_ERR(madera->dcvdd)) {
 		ret = PTR_ERR(madera->dcvdd);
@@ -584,10 +549,7 @@ int madera_dev_init(struct madera *madera)
 		goto err_reset;
 	}
 
-	/*
-	 * Now we can power up and verify that this is a chip we know about
-	 * before we start doing any writes to its registers.
-	 */
+	 
 	ret = regmap_read(madera->regmap, MADERA_SOFTWARE_RESET, &hwid);
 	if (ret) {
 		dev_err(dev, "Failed to read ID register: %d\n", ret);
@@ -677,10 +639,7 @@ int madera_dev_init(struct madera *madera)
 		goto err_reset;
 	}
 
-	/*
-	 * It looks like a device we support. If we don't have a hard reset
-	 * we can now attempt a soft reset.
-	 */
+	 
 	if (!madera->pdata.reset || madera->reset_errata) {
 		ret = madera_soft_reset(madera);
 		if (ret)
@@ -704,7 +663,7 @@ int madera_dev_init(struct madera *madera)
 	dev_info(dev, "%s silicon revision %d\n", madera->type_name,
 		 madera->rev);
 
-	/* Apply hardware patch */
+	 
 	if (patch_fn) {
 		ret = patch_fn(madera);
 		if (ret) {
@@ -713,7 +672,7 @@ int madera_dev_init(struct madera *madera)
 		}
 	}
 
-	/* Init 32k clock sourced from MCLK2 */
+	 
 	ret = clk_prepare_enable(madera->mclk[MADERA_MCLK2].clk);
 	if (ret) {
 		dev_err(madera->dev, "Failed to enable 32k clock: %d\n", ret);
@@ -734,7 +693,7 @@ int madera_dev_init(struct madera *madera)
 	pm_runtime_set_autosuspend_delay(madera->dev, 100);
 	pm_runtime_use_autosuspend(madera->dev);
 
-	/* No devm_ because we need to control shutdown order of children */
+	 
 	ret = mfd_add_devices(madera->dev, PLATFORM_DEVID_NONE,
 			      mfd_devs, n_devs,
 			      NULL, 0, NULL);
@@ -766,7 +725,7 @@ EXPORT_SYMBOL_GPL(madera_dev_init);
 
 int madera_dev_exit(struct madera *madera)
 {
-	/* Prevent any IRQs being serviced while we clean up */
+	 
 	disable_irq(madera->irq);
 
 	pm_runtime_get_sync(madera->dev);

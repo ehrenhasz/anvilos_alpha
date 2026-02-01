@@ -1,37 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) Sistina Software, Inc.  1997-2003 All rights reserved.
- * Copyright (C) 2004-2007 Red Hat, Inc.  All rights reserved.
- */
 
-/*
- * Quota change tags are associated with each transaction that allocates or
- * deallocates space.  Those changes are accumulated locally to each node (in a
- * per-node file) and then are periodically synced to the quota file.  This
- * avoids the bottleneck of constantly touching the quota file, but introduces
- * fuzziness in the current usage value of IDs that are being used on different
- * nodes in the cluster simultaneously.  So, it is possible for a user on
- * multiple nodes to overrun their quota, but that overrun is controlable.
- * Since quota tags are part of transactions, there is no need for a quota check
- * program to be run on node crashes or anything like that.
- *
- * There are couple of knobs that let the administrator manage the quota
- * fuzziness.  "quota_quantum" sets the maximum time a quota change can be
- * sitting on one node before being synced to the quota file.  (The default is
- * 60 seconds.)  Another knob, "quota_scale" controls how quickly the frequency
- * of quota file syncs increases as the user moves closer to their limit.  The
- * more frequent the syncs, the more accurate the quota enforcement, but that
- * means that there is more contention between the nodes for the quota file.
- * The default value is one.  This sets the maximum theoretical quota overrun
- * (with infinite node with infinite bandwidth) to twice the user's limit.  (In
- * practice, the maximum overrun you see should be much less.)  A "quota_scale"
- * number greater than one makes quota syncs more frequent and reduces the
- * maximum overrun.  Numbers less than one (but greater than zero) make quota
- * syncs less frequent.
- *
- * GFS quotas also use per-ID Lock Value Blocks (LVBs) to cache the contents of
- * the quota file, so it is not being constantly read.
- */
+ 
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -78,8 +48,8 @@
 #define QC_CHANGE 0
 #define QC_SYNC 1
 
-/* Lock order: qd_lock -> bucket lock -> qd->lockref.lock -> lru lock */
-/*                     -> sd_bitmap_lock                              */
+ 
+ 
 static DEFINE_SPINLOCK(qd_lock);
 struct list_lru gfs2_qd_lru;
 
@@ -457,11 +427,7 @@ static int qd_check_sync(struct gfs2_sbd *sdp, struct gfs2_quota_data *qd,
 	    (sync_gen && (qd->qd_sync_gen >= *sync_gen)))
 		return 0;
 
-	/*
-	 * If qd_change is 0 it means a pending quota change was negated.
-	 * We should not sync it, but we still have a qd reference and slot
-	 * reference taken by gfs2_quota_change -> do_qc that need to be put.
-	 */
+	 
 	if (!qd->qd_change && test_and_clear_bit(QDF_CHANGE, &qd->qd_flags)) {
 		slot_put(qd);
 		qd_put(qd);
@@ -563,11 +529,7 @@ fail:
 	return error;
 }
 
-/**
- * gfs2_qa_get - make sure we have a quota allocations data structure,
- *               if necessary
- * @ip: the inode for this reservation
- */
+ 
 int gfs2_qa_get(struct gfs2_inode *ip)
 {
 	struct gfs2_sbd *sdp = GFS2_SB(&ip->i_inode);
@@ -736,7 +698,7 @@ static void do_qc(struct gfs2_quota_data *qd, s64 change, int qc_type)
 		qd_put(qd);
 	}
 
-	if (change < 0) /* Reset quiet flag if we freed some blocks */
+	if (change < 0)  
 		clear_bit(QDF_QMSG_QUIET, &qd->qd_flags);
 	mutex_unlock(&sdp->sd_quota_mutex);
 }
@@ -764,7 +726,7 @@ static int gfs2_write_buf_to_page(struct gfs2_sbd *sdp, unsigned long index,
 
 	bh = page_buffers(page);
 	for(;;) {
-		/* Find the beginning block within the page */
+		 
 		if (pg_off >= ((bnum * bsize) + bsize)) {
 			bh = bh->b_this_page;
 			bnum++;
@@ -775,7 +737,7 @@ static int gfs2_write_buf_to_page(struct gfs2_sbd *sdp, unsigned long index,
 			gfs2_block_map(inode, blk, bh, 1);
 			if (!buffer_mapped(bh))
 				goto unlock_out;
-			/* If it's a newly allocated disk block, zero it */
+			 
 			if (buffer_new(bh))
 				zero_user(page, bnum * bsize, bh->b_size);
 		}
@@ -785,7 +747,7 @@ static int gfs2_write_buf_to_page(struct gfs2_sbd *sdp, unsigned long index,
 			goto unlock_out;
 		gfs2_trans_add_data(ip->i_gl, bh);
 
-		/* If we need to write to the next block as well */
+		 
 		if (to_write > (bsize - boff)) {
 			pg_off += (bsize - boff);
 			to_write -= (bsize - boff);
@@ -795,7 +757,7 @@ static int gfs2_write_buf_to_page(struct gfs2_sbd *sdp, unsigned long index,
 		break;
 	}
 
-	/* Write to the page, now that we have setup the buffer(s) */
+	 
 	memcpy_to_page(page, off, buf, bytes);
 	flush_dcache_page(page);
 	unlock_page(page);
@@ -822,14 +784,14 @@ static int gfs2_write_disk_quota(struct gfs2_sbd *sdp, struct gfs2_quota *qp,
 	pg_beg = loc >> PAGE_SHIFT;
 	pg_off = offset_in_page(loc);
 
-	/* If the quota straddles a page boundary, split the write in two */
+	 
 	if ((pg_off + nbytes) > PAGE_SIZE)
 		overflow = (pg_off + nbytes) - PAGE_SIZE;
 
 	ptr = qp;
 	error = gfs2_write_buf_to_page(sdp, pg_beg, pg_off, ptr,
 				       nbytes - overflow);
-	/* If there's an overflow, write the remaining bytes to the next page */
+	 
 	if (!error && overflow)
 		error = gfs2_write_buf_to_page(sdp, pg_beg + 1, 0,
 					       ptr + nbytes - overflow,
@@ -837,19 +799,7 @@ static int gfs2_write_disk_quota(struct gfs2_sbd *sdp, struct gfs2_quota *qp,
 	return error;
 }
 
-/**
- * gfs2_adjust_quota - adjust record of current block usage
- * @sdp: The superblock
- * @loc: Offset of the entry in the quota file
- * @change: The amount of usage change to record
- * @qd: The quota data
- * @fdq: The updated limits to record
- *
- * This function was mostly borrowed from gfs2_block_truncate_page which was
- * in turn mostly borrowed from ext3
- *
- * Returns: 0 or -ve on error
- */
+ 
 
 static int gfs2_adjust_quota(struct gfs2_sbd *sdp, loff_t loc,
 			     s64 change, struct gfs2_quota_data *qd,
@@ -872,10 +822,10 @@ static int gfs2_adjust_quota(struct gfs2_sbd *sdp, loff_t loc,
 	if (err < 0)
 		return err;
 
-	loc -= sizeof(q); /* gfs2_internal_read would've advanced the loc ptr */
+	loc -= sizeof(q);  
 	be64_add_cpu(&q.qu_value, change);
 	if (((s64)be64_to_cpu(q.qu_value)) < 0)
-		q.qu_value = 0; /* Never go negative on quota usage */
+		q.qu_value = 0;  
 	qd->qd_qb.qb_value = q.qu_value;
 	if (fdq) {
 		if (fdq->d_fieldmask & QC_SPC_SOFT) {
@@ -946,15 +896,8 @@ static int do_sync(unsigned int num_qd, struct gfs2_quota_data **qda)
 			nalloc++;
 	}
 
-	/* 
-	 * 1 blk for unstuffing inode if stuffed. We add this extra
-	 * block to the reservation unconditionally. If the inode
-	 * doesn't need unstuffing, the block will be released to the 
-	 * rgrp since it won't be allocated during the transaction
-	 */
-	/* +3 in the end for unstuffing block, inode size update block
-	 * and another block in case quota straddles page boundary and 
-	 * two blocks need to be updated instead of 1 */
+	 
+	 
 	blocks = num_qd * data_blocks + RES_DINODE + num_qd + 3;
 
 	reserved = 1 + (nalloc * (data_blocks + ind_blocks));
@@ -1204,23 +1147,7 @@ static int print_message(struct gfs2_quota_data *qd, char *type)
 	return 0;
 }
 
-/**
- * gfs2_quota_check - check if allocating new blocks will exceed quota
- * @ip:  The inode for which this check is being performed
- * @uid: The uid to check against
- * @gid: The gid to check against
- * @ap:  The allocation parameters. ap->target contains the requested
- *       blocks. ap->min_target, if set, contains the minimum blks
- *       requested.
- *
- * Returns: 0 on success.
- *                  min_req = ap->min_target ? ap->min_target : ap->target;
- *                  quota must allow at least min_req blks for success and
- *                  ap->allowed is set to the number of blocks allowed
- *
- *          -EDQUOT otherwise, quota violation. ap->allowed is set to number
- *                  of blocks available.
- */
+ 
 int gfs2_quota_check(struct gfs2_inode *ip, kuid_t uid, kgid_t gid,
 		     struct gfs2_alloc_parms *ap)
 {
@@ -1230,7 +1157,7 @@ int gfs2_quota_check(struct gfs2_inode *ip, kuid_t uid, kgid_t gid,
 	u32 x;
 	int error = 0;
 
-	ap->allowed = UINT_MAX; /* Assume we are permitted a whole lot */
+	ap->allowed = UINT_MAX;  
 	if (!test_bit(GIF_QD_LOCKED, &ip->i_flags))
 		return 0;
 
@@ -1250,10 +1177,9 @@ int gfs2_quota_check(struct gfs2_inode *ip, kuid_t uid, kgid_t gid,
 
 		if (limit > 0 && (limit - value) < ap->allowed)
 			ap->allowed = limit - value;
-		/* If we can't meet the target */
+		 
 		if (limit && limit < (value + (s64)ap->target)) {
-			/* If no min_target specified or we don't meet
-			 * min_target, return -EDQUOT */
+			 
 			if (!ap->min_target || ap->min_target > ap->allowed) {
 				if (!test_and_set_bit(QDF_QMSG_QUIET,
 						      &qd->qd_flags)) {
@@ -1557,11 +1483,7 @@ void gfs2_wake_up_statfs(struct gfs2_sbd *sdp) {
 }
 
 
-/**
- * gfs2_quotad - Write cached quota changes into the quota file
- * @data: Pointer to GFS2 superblock
- *
- */
+ 
 
 int gfs2_quotad(void *data)
 {
@@ -1575,7 +1497,7 @@ int gfs2_quotad(void *data)
 		if (gfs2_withdrawn(sdp))
 			break;
 
-		/* Update the master statfs file */
+		 
 		if (sdp->sd_statfs_force_sync) {
 			int error = gfs2_statfs_sync(sdp->sd_vfs, 0);
 			quotad_error(sdp, "statfs", error);
@@ -1586,7 +1508,7 @@ int gfs2_quotad(void *data)
 				   	   &statfs_timeo,
 					   &tune->gt_statfs_quantum);
 
-		/* Update quota file */
+		 
 		quotad_check_timeo(sdp, "sync", gfs2_quota_sync, t,
 				   &quotad_timeo, &tune->gt_quota_quantum);
 
@@ -1634,7 +1556,7 @@ static int gfs2_quota_get_state(struct super_block *sb, struct qc_state *state)
 					GFS2_I(sdp->sd_quota_inode)->i_no_addr;
 		state->s_state[USRQUOTA].blocks = sdp->sd_quota_inode->i_blocks;
 	}
-	state->s_state[USRQUOTA].nextents = 1;	/* unsupported */
+	state->s_state[USRQUOTA].nextents = 1;	 
 	state->s_state[GRPQUOTA] = state->s_state[USRQUOTA];
 	state->s_incoredqs = list_lru_count(&gfs2_qd_lru);
 	return 0;
@@ -1652,7 +1574,7 @@ static int gfs2_get_dqblk(struct super_block *sb, struct kqid qid,
 	memset(fdq, 0, sizeof(*fdq));
 
 	if (sdp->sd_args.ar_quota == GFS2_QUOTA_OFF)
-		return -ESRCH; /* Crazy XFS error code */
+		return -ESRCH;  
 
 	if ((qid.type != USRQUOTA) &&
 	    (qid.type != GRPQUOTA))
@@ -1676,7 +1598,7 @@ out:
 	return error;
 }
 
-/* GFS2 only supports a subset of the XFS fields */
+ 
 #define GFS2_FIELDMASK (QC_SPC_SOFT|QC_SPC_HARD|QC_SPACE)
 
 static int gfs2_set_dqblk(struct super_block *sb, struct kqid qid,
@@ -1693,7 +1615,7 @@ static int gfs2_set_dqblk(struct super_block *sb, struct kqid qid,
 	int error;
 
 	if (sdp->sd_args.ar_quota == GFS2_QUOTA_OFF)
-		return -ESRCH; /* Crazy XFS error code */
+		return -ESRCH;  
 
 	if ((qid.type != USRQUOTA) &&
 	    (qid.type != GRPQUOTA))
@@ -1718,12 +1640,12 @@ static int gfs2_set_dqblk(struct super_block *sb, struct kqid qid,
 	if (error)
 		goto out_q;
 
-	/* Check for existing entry, if none then alloc new blocks */
+	 
 	error = update_qd(sdp, qd);
 	if (error)
 		goto out_i;
 
-	/* If nothing has changed, this is a no-op */
+	 
 	if ((fdq->d_fieldmask & QC_SPC_SOFT) &&
 	    ((fdq->d_spc_softlimit >> sdp->sd_sb.sb_bsize_shift) == be64_to_cpu(qd->qd_qb.qb_warn)))
 		fdq->d_fieldmask ^= QC_SPC_SOFT;
@@ -1755,13 +1677,12 @@ static int gfs2_set_dqblk(struct super_block *sb, struct kqid qid,
 		blocks += gfs2_rg_blocks(ip, blocks);
 	}
 
-	/* Some quotas span block boundaries and can update two blocks,
-	   adding an extra block to the transaction to handle such quotas */
+	 
 	error = gfs2_trans_begin(sdp, blocks + RES_DINODE + 2, 0);
 	if (error)
 		goto out_release;
 
-	/* Apply changes */
+	 
 	error = gfs2_adjust_quota(sdp, offset, 0, qd, fdq);
 	if (!error)
 		clear_bit(QDF_QMSG_QUIET, &qd->qd_flags);

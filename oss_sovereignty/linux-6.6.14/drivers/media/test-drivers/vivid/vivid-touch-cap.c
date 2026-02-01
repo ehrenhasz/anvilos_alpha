@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * vivid-touch-cap.c - touch support functions.
- */
+
+ 
 
 #include "vivid-core.h"
 #include "vivid-kthread-touch.h"
@@ -37,10 +35,7 @@ static int touch_cap_buf_prepare(struct vb2_buffer *vb)
 	unsigned int size = f->sizeimage;
 
 	if (dev->buf_prepare_error) {
-		/*
-		 * Error injection: test what happens if buf_prepare() returns
-		 * an error.
-		 */
+		 
 		dev->buf_prepare_error = false;
 		return -EINVAL;
 	}
@@ -91,7 +86,7 @@ static int touch_cap_start_streaming(struct vb2_queue *vq, unsigned int count)
 	return err;
 }
 
-/* abort streaming and wait for last buffer */
+ 
 static void touch_cap_stop_streaming(struct vb2_queue *vq)
 {
 	struct vivid_dev *dev = vb2_get_drv_priv(vq);
@@ -208,7 +203,7 @@ static void vivid_fill_buff_noise(__s16 *tch_buf, int size)
 {
 	int i;
 
-	/* Fill 10% of the values within range -3 and 3, zero the others */
+	 
 	for (i = 0; i < size; i++) {
 		unsigned int rand = get_random_u32();
 
@@ -323,7 +318,7 @@ void vivid_fillbuff_tch(struct vivid_dev *dev, struct vivid_buffer *buf)
 							get_random_pressure();
 		break;
 	case MULTIPLE_PRESS:
-		/* 16 pressure points */
+		 
 		for (y = 0; y < 4; y++) {
 			for (x = 0; x < 4; x++) {
 				ystart = (y * f->height) / 4 + f->height / 8;

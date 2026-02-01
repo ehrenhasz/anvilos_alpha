@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * NEC NL8048HL11 Panel Driver
- *
- * Copyright (C) 2019 Texas Instruments Incorporated
- *
- * Based on the omapdrm-specific panel-nec-nl8048hl11 driver
- *
- * Copyright (C) 2010 Texas Instruments Incorporated
- * Author: Erik Gilling <konkers@android.com>
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/gpio/consumer.h>
@@ -106,7 +97,7 @@ static int nl8048_enable(struct drm_panel *panel)
 }
 
 static const struct drm_display_mode nl8048_mode = {
-	/*  NEC PIX Clock Ratings MIN:21.8MHz TYP:23.8MHz MAX:25.7MHz */
+	 
 	.clock	= 23800,
 	.hdisplay = 800,
 	.hsync_start = 800 + 6,
@@ -163,7 +154,7 @@ static int __maybe_unused nl8048_resume(struct device *dev)
 {
 	struct nl8048_panel *lcd = dev_get_drvdata(dev);
 
-	/* Reinitialize the panel. */
+	 
 	spi_setup(lcd->spi);
 	nl8048_write(lcd, 2, 0x00);
 	nl8048_init(lcd);
@@ -223,14 +214,14 @@ static void nl8048_remove(struct spi_device *spi)
 
 static const struct of_device_id nl8048_of_match[] = {
 	{ .compatible = "nec,nl8048hl11", },
-	{ /* sentinel */ },
+	{   },
 };
 
 MODULE_DEVICE_TABLE(of, nl8048_of_match);
 
 static const struct spi_device_id nl8048_ids[] = {
 	{ "nl8048hl11", 0 },
-	{ /* sentinel */ }
+	{   }
 };
 
 MODULE_DEVICE_TABLE(spi, nl8048_ids);

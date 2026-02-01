@@ -1,28 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * pcl724.c
- * Comedi driver for 8255 based ISA and PC/104 DIO boards
- *
- * Michal Dobes <dobes@tesnet.cz>
- */
 
-/*
- * Driver: pcl724
- * Description: Comedi driver for 8255 based ISA DIO boards
- * Devices: [Advantech] PCL-724 (pcl724), PCL-722 (pcl722), PCL-731 (pcl731),
- *  [ADLink] ACL-7122 (acl7122), ACL-7124 (acl7124), PET-48DIO (pet48dio),
- *  [WinSystems] PCM-IO48 (pcmio48),
- *  [Diamond Systems] ONYX-MM-DIO (onyx-mm-dio)
- * Author: Michal Dobes <dobes@tesnet.cz>
- * Status: untested
- *
- * Configuration options:
- *   [0] - IO Base
- *   [1] - IRQ (not supported)
- *   [2] - number of DIO (pcl722 and acl7122 boards)
- *	   0, 144: 144 DIO configuration
- *	   1,  96:  96 DIO configuration
- */
+ 
+
+ 
 
 #include <linux/module.h>
 #include <linux/comedi/comedidev.h>
@@ -40,38 +19,38 @@ static const struct pcl724_board boardtypes[] = {
 	{
 		.name		= "pcl724",
 		.io_range	= 0x04,
-		.numofports	= 1,	/* 24 DIO channels */
+		.numofports	= 1,	 
 	}, {
 		.name		= "pcl722",
 		.io_range	= 0x20,
 		.can_have96	= 1,
-		.numofports	= 6,	/* 144 (or 96) DIO channels */
+		.numofports	= 6,	 
 	}, {
 		.name		= "pcl731",
 		.io_range	= 0x08,
-		.numofports	= 2,	/* 48 DIO channels */
+		.numofports	= 2,	 
 	}, {
 		.name		= "acl7122",
 		.io_range	= 0x20,
 		.can_have96	= 1,
-		.numofports	= 6,	/* 144 (or 96) DIO channels */
+		.numofports	= 6,	 
 	}, {
 		.name		= "acl7124",
 		.io_range	= 0x04,
-		.numofports	= 1,	/* 24 DIO channels */
+		.numofports	= 1,	 
 	}, {
 		.name		= "pet48dio",
 		.io_range	= 0x02,
 		.is_pet48	= 1,
-		.numofports	= 2,	/* 48 DIO channels */
+		.numofports	= 2,	 
 	}, {
 		.name		= "pcmio48",
 		.io_range	= 0x08,
-		.numofports	= 2,	/* 48 DIO channels */
+		.numofports	= 2,	 
 	}, {
 		.name		= "onyx-mm-dio",
 		.io_range	= 0x10,
-		.numofports	= 2,	/* 48 DIO channels */
+		.numofports	= 2,	 
 	},
 };
 
@@ -105,7 +84,7 @@ static int pcl724_attach(struct comedi_device *dev,
 	iorange = board->io_range;
 	n_subdevices = board->numofports;
 
-	/* Handle PCL-724 in 96 DIO configuration */
+	 
 	if (board->can_have96 &&
 	    (it->options[2] == 1 || it->options[2] == 96)) {
 		iorange = 0x10;

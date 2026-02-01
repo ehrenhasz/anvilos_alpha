@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * HCI based Driver for Inside Secure microread NFC Chip - i2c layer
- *
- * Copyright (C) 2013 Intel Corporation. All rights reserved.
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -25,7 +21,7 @@
 #define MICROREAD_I2C_FRAME_HEADROOM 1
 #define MICROREAD_I2C_FRAME_TAILROOM 1
 
-/* framing in HCI mode */
+ 
 #define MICROREAD_I2C_LLC_LEN		1
 #define MICROREAD_I2C_LLC_CRC		1
 #define MICROREAD_I2C_LLC_LEN_CRC	(MICROREAD_I2C_LLC_LEN + \
@@ -39,10 +35,7 @@ struct microread_i2c_phy {
 	struct i2c_client *i2c_dev;
 	struct nfc_hci_dev *hdev;
 
-	int hard_fault;		/*
-				 * < 0 if hardware error occured (e.g. i2c err)
-				 * and prevents normal operation.
-				 */
+	int hard_fault;		 
 };
 
 #define I2C_DUMP_SKB(info, skb)					\
@@ -117,7 +110,7 @@ static int microread_i2c_write(void *phy_id, struct sk_buff *skb)
 
 	r = i2c_master_send(client, skb->data, skb->len);
 
-	if (r == -EREMOTEIO) {	/* Retry, chip was in standby */
+	if (r == -EREMOTEIO) {	 
 		usleep_range(6000, 10000);
 		r = i2c_master_send(client, skb->data, skb->len);
 	}

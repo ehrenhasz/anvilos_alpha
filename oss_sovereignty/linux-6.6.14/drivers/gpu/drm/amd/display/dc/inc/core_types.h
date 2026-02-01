@@ -1,27 +1,4 @@
-/*
- * Copyright 2015 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 #ifndef _CORE_TYPES_H_
 #define _CORE_TYPES_H_
@@ -55,7 +32,7 @@ void enable_surface_flip_reporting(struct dc_plane_state *plane_state,
 #include "dm_cp_psp.h"
 #include "link_hwss.h"
 
-/********** DAL Core*********************/
+ 
 #include "transform.h"
 #include "dpp.h"
 
@@ -73,8 +50,7 @@ struct resource_funcs {
 	struct link_encoder *(*link_enc_create)(
 			struct dc_context *ctx,
 			const struct encoder_init_data *init);
-	/* Create a minimal link encoder object with no dc_link object
-	 * associated with it. */
+	 
 	struct link_encoder *(*link_enc_create_minimal)(struct dc_context *ctx, enum engine_id eng_id);
 
 	bool (*validate_bandwidth)(
@@ -89,35 +65,20 @@ struct resource_funcs {
 	void (*update_soc_for_wm_a)(
 				struct dc *dc, struct dc_state *context);
 
-	/**
-	 * @populate_dml_pipes - Populate pipe data struct
-	 *
-	 * Returns:
-	 * Total of pipes available in the specific ASIC.
-	 */
+	 
 	int (*populate_dml_pipes)(
 		struct dc *dc,
 		struct dc_state *context,
 		display_e2e_pipe_params_st *pipes,
 		bool fast_validate);
 
-	/*
-	 * Algorithm for assigning available link encoders to links.
-	 *
-	 * Update link_enc_assignments table and link_enc_avail list accordingly in
-	 * struct resource_context.
-	 */
+	 
 	void (*link_encs_assign)(
 			struct dc *dc,
 			struct dc_state *state,
 			struct dc_stream_state *streams[],
 			uint8_t stream_count);
-	/*
-	 * Unassign a link encoder from a stream.
-	 *
-	 * Update link_enc_assignments table and link_enc_avail list accordingly in
-	 * struct resource_context.
-	 */
+	 
 	void (*link_enc_unassign)(
 			struct dc_state *state,
 			struct dc_stream_state *stream);
@@ -235,15 +196,11 @@ struct resource_pool {
 	unsigned int underlay_pipe_index;
 	unsigned int stream_enc_count;
 
-	/* An array for accessing the link encoder objects that have been created.
-	 * Index in array corresponds to engine ID - viz. 0: ENGINE_ID_DIGA
-	 */
+	 
 	struct link_encoder *link_encoders[MAX_DIG_LINK_ENCODERS];
-	/* Number of DIG link encoder objects created - i.e. number of valid
-	 * entries in link_encoders array.
-	 */
+	 
 	unsigned int dig_link_enc_count;
-	/* Number of USB4 DPIA (DisplayPort Input Adapter) link objects created.*/
+	 
 	unsigned int usb4_dpia_count;
 
 	unsigned int hpo_dp_stream_enc_count;
@@ -262,9 +219,7 @@ struct resource_pool {
 	unsigned int mpcc_count;
 
 	unsigned int writeback_pipe_count;
-	/*
-	 * reserved clock source for DP
-	 */
+	 
 	struct clock_source *dp_clock_source;
 
 	struct clock_source *clock_sources[MAX_CLOCK_SOURCES];
@@ -308,9 +263,7 @@ struct stream_resource {
 	struct encoder_info_frame encoder_info_frame;
 
 	struct abm *abm;
-	/* There are only (num_pipes+1)/2 groups. 0 means unassigned,
-	 * otherwise it's using group number 'gsl_group-1'
-	 */
+	 
 	uint8_t gsl_group;
 };
 
@@ -329,7 +282,7 @@ struct plane_resource {
 #define LINK_RES_HPO_DP_REC_MAP__MASK 0xFFFF
 #define LINK_RES_HPO_DP_REC_MAP__SHIFT 0
 
-/* all mappable hardware resources used to enable a link */
+ 
 struct link_resource {
 	struct hpo_dp_link_encoder *hpo_dp_link_enc;
 };
@@ -365,9 +318,7 @@ struct pipe_ctx {
 
 	struct plane_resource plane_res;
 
-	/**
-	 * @stream_res: Reference to DCN resource components such OPP and DSC.
-	 */
+	 
 	struct stream_resource stream_res;
 	struct link_resource link_res;
 
@@ -375,14 +326,7 @@ struct pipe_ctx {
 
 	struct pll_settings pll_settings;
 
-	/**
-	 * @link_config:
-	 *
-	 * link config records software decision for what link config should be
-	 * enabled given current link capability and stream during hw resource
-	 * mapping. This is to decouple the dependency on link capability during
-	 * dc commit or update.
-	 */
+	 
 	struct link_config link_config;
 
 	uint8_t pipe_idx;
@@ -411,10 +355,7 @@ struct pipe_ctx {
 	bool has_vactive_margin;
 };
 
-/* Data used for dynamic link encoder assignment.
- * Tracks current and future assignments; available link encoders;
- * and mode of operation (whether to use current or future assignments).
- */
+ 
 struct link_enc_cfg_context {
 	enum link_enc_cfg_mode mode;
 	struct link_enc_assignment link_enc_assignments[MAX_PIPES];
@@ -484,52 +425,30 @@ struct dc_dmub_cmd {
 	enum dm_dmub_wait_type wait_type;
 };
 
-/**
- * struct dc_state - The full description of a state requested by users
- */
+ 
 struct dc_state {
-	/**
-	 * @streams: Stream state properties
-	 */
+	 
 	struct dc_stream_state *streams[MAX_PIPES];
 
-	/**
-	 * @stream_status: Planes status on a given stream
-	 */
+	 
 	struct dc_stream_status stream_status[MAX_PIPES];
 
-	/**
-	 * @stream_count: Total of streams in use
-	 */
+	 
 	uint8_t stream_count;
 	uint8_t stream_mask;
 
-	/**
-	 * @res_ctx: Persistent state of resources
-	 */
+	 
 	struct resource_context res_ctx;
 
-	/**
-	 * @pp_display_cfg: PowerPlay clocks and settings
-	 * Note: this is a big struct, do *not* put on stack!
-	 */
+	 
 	struct dm_pp_display_configuration pp_display_cfg;
 
-	/**
-	 * @dcn_bw_vars: non-stack memory to support bandwidth calculations
-	 * Note: this is a big struct, do *not* put on stack!
-	 */
+	 
 	struct dcn_bw_internal_vars dcn_bw_vars;
 
 	struct clk_mgr *clk_mgr;
 
-	/**
-	 * @bw_ctx: The output from bandwidth and watermark calculations and the DML
-	 *
-	 * Each context must have its own instance of VBA, and in order to
-	 * initialize and obtain IP and SOC, the base DML instance from DC is
-	 * initially copied into every context.
-	 */
+	 
 	struct bw_context bw_ctx;
 
 	struct block_sequence block_sequence[50];
@@ -537,13 +456,7 @@ struct dc_state {
 	struct dc_dmub_cmd dc_dmub_cmd[10];
 	unsigned int dmub_cmd_count;
 
-	/**
-	 * @refcount: refcount reference
-	 *
-	 * Notice that dc_state is used around the code to capture the current
-	 * context, so we need to pass it everywhere. That's why we want to use
-	 * kref in this struct.
-	 */
+	 
 	struct kref refcount;
 
 	struct {
@@ -552,13 +465,13 @@ struct dc_state {
 };
 
 struct replay_context {
-	/* ddc line */
+	 
 	enum channel_id aux_inst;
-	/* Transmitter id */
+	 
 	enum transmitter digbe_inst;
-	/* Engine Id is used for Dig Be source select */
+	 
 	enum engine_id digfe_inst;
-	/* Controller Id used for Dig Fe source select */
+	 
 	enum controller_id controllerId;
 	unsigned int line_time_in_ns;
 };
@@ -575,4 +488,4 @@ struct dc_bounding_box_max_clk {
 	int max_phyclk_mhz;
 };
 
-#endif /* _CORE_TYPES_H_ */
+#endif  

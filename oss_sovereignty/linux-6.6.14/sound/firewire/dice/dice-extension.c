@@ -1,13 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * dice-extension.c - a part of driver for DICE based devices
- *
- * Copyright (c) 2018 Takashi Sakamoto
- */
+
+ 
 
 #include "dice.h"
 
-/* For TCD2210/2220, TCAT defines extension of application protocol. */
+ 
 
 #define DICE_EXT_APP_SPACE		0xffffe0200000uLL
 
@@ -92,10 +88,7 @@ static int detect_stream_formats(struct snd_dice *dice, u64 section_addr)
 	for (mode = 0; mode < SND_DICE_RATE_MODE_COUNT; ++mode) {
 		unsigned int cap;
 
-		/*
-		 * Some models report stream formats at highest mode, however
-		 * they don't support the mode. Check clock capabilities.
-		 */
+		 
 		if (mode == 2) {
 			cap = CLOCK_CAP_RATE_176400 | CLOCK_CAP_RATE_192000;
 		} else if (mode == 1) {
@@ -154,13 +147,13 @@ int snd_dice_detect_extension_formats(struct snd_dice *dice)
 	if (err < 0)
 		goto end;
 
-	/* Check two of them for offset have the same value or not. */
+	 
 	for (i = 0; i < 9; ++i) {
 		int j;
 
 		for (j = i + 1; j < 9; ++j) {
 			if (pointers[i * 2] == pointers[j * 2]) {
-				// Fallback to limited functionality.
+				
 				err = -ENXIO;
 				goto end;
 			}

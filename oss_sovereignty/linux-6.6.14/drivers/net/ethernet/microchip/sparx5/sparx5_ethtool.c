@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/* Microchip Sparx5 Switch driver
- *
- * Copyright (c) 2021 Microchip Technology Inc. and its subsidiaries.
- */
+
+ 
 
 #include <linux/ethtool.h>
 
@@ -10,14 +7,14 @@
 #include "sparx5_main.h"
 #include "sparx5_port.h"
 
-/* Index of ANA_AC port counters */
+ 
 #define SPX5_PORT_POLICER_DROPS 0
 
-/* Add a potentially wrapping 32 bit value to a 64 bit counter */
+ 
 static void sparx5_update_counter(u64 *cnt, u32 val)
 {
 	if (val < (*cnt & U32_MAX))
-		*cnt += (u64)1 << 32; /* value has wrapped */
+		*cnt += (u64)1 << 32;  
 	*cnt = (*cnt & ~(u64)U32_MAX) + val;
 }
 
@@ -1039,7 +1036,7 @@ static void sparx5_get_sset_data(struct net_device *ndev,
 	}
 	sparx5_get_ana_ac_stats_stats(sparx5, portno);
 	sparx5_get_queue_sys_stats(sparx5, portno);
-	/* Copy port counters to the ethtool buffer */
+	 
 	for (idx = spx5_stats_mm_rx_assembly_err_cnt;
 	     idx < spx5_stats_mm_rx_assembly_err_cnt +
 	     sparx5->num_ethtool_stats; idx++)
@@ -1055,7 +1052,7 @@ void sparx5_get_stats64(struct net_device *ndev,
 	int idx;
 
 	if (!sparx5->stats)
-		return; /* Not initialized yet */
+		return;  
 
 	portstats = &sparx5->stats[port->portno * sparx5->num_stats];
 
@@ -1159,7 +1156,7 @@ static int sparx5_set_link_settings(struct net_device *ndev,
 
 static void sparx5_config_stats(struct sparx5 *sparx5)
 {
-	/* Enable global events for port policer drops */
+	 
 	spx5_rmw(ANA_AC_PORT_SGE_CFG_MASK_SET(0xf0f0),
 		 ANA_AC_PORT_SGE_CFG_MASK,
 		 sparx5,
@@ -1168,12 +1165,12 @@ static void sparx5_config_stats(struct sparx5 *sparx5)
 
 static void sparx5_config_port_stats(struct sparx5 *sparx5, int portno)
 {
-	/* Clear Queue System counters */
+	 
 	spx5_wr(XQS_STAT_CFG_STAT_VIEW_SET(portno) |
 		XQS_STAT_CFG_STAT_CLEAR_SHOT_SET(3), sparx5,
 		XQS_STAT_CFG);
 
-	/* Use counter for port policer drop count */
+	 
 	spx5_rmw(ANA_AC_PORT_STAT_CFG_CFG_CNT_FRM_TYPE_SET(1) |
 		 ANA_AC_PORT_STAT_CFG_CFG_CNT_BYTE_SET(0) |
 		 ANA_AC_PORT_STAT_CFG_CFG_PRIO_MASK_SET(0xff),

@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Generic ULPI USB transceiver support
- *
- * Copyright (C) 2009 Daniel Mack <daniel@caiaq.de>
- *
- * Based on sources from
- *
- *   Sascha Hauer <s.hauer@pengutronix.de>
- *   Freescale Semiconductors
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/slab.h>
@@ -30,7 +21,7 @@ struct ulpi_info {
 		.name	= (_name),	\
 	}
 
-/* ULPI hardcoded IDs, used for probing */
+ 
 static struct ulpi_info ulpi_ids[] = {
 	ULPI_INFO(ULPI_ID(0x04cc, 0x1504), "NXP ISP1504"),
 	ULPI_INFO(ULPI_ID(0x0424, 0x0006), "SMSC USB331x"),
@@ -47,10 +38,7 @@ static int ulpi_set_otg_flags(struct usb_phy *phy)
 	if (phy->flags & ULPI_OTG_ID_PULLUP)
 		flags |= ULPI_OTG_CTRL_ID_PULLUP;
 
-	/*
-	 * ULPI Specification rev.1.1 default
-	 * for Dp/DmPulldown is enabled.
-	 */
+	 
 	if (phy->flags & ULPI_OTG_DP_PULLDOWN_DIS)
 		flags &= ~ULPI_OTG_CTRL_DP_PULLDOWN;
 
@@ -67,10 +55,7 @@ static int ulpi_set_fc_flags(struct usb_phy *phy)
 {
 	unsigned int flags = 0;
 
-	/*
-	 * ULPI Specification rev.1.1 default
-	 * for XcvrSelect is Full Speed.
-	 */
+	 
 	if (phy->flags & ULPI_FC_HS)
 		flags |= ULPI_FUNC_CTRL_HIGH_SPEED;
 	else if (phy->flags & ULPI_FC_LS)
@@ -83,10 +68,7 @@ static int ulpi_set_fc_flags(struct usb_phy *phy)
 	if (phy->flags & ULPI_FC_TERMSEL)
 		flags |= ULPI_FUNC_CTRL_TERMSELECT;
 
-	/*
-	 * ULPI Specification rev.1.1 default
-	 * for OpMode is Normal Operation.
-	 */
+	 
 	if (phy->flags & ULPI_FC_OP_NODRV)
 		flags |= ULPI_FUNC_CTRL_OPMODE_NONDRIVING;
 	else if (phy->flags & ULPI_FC_OP_DIS_NRZI)
@@ -96,10 +78,7 @@ static int ulpi_set_fc_flags(struct usb_phy *phy)
 	else
 		flags |= ULPI_FUNC_CTRL_OPMODE_NORMAL;
 
-	/*
-	 * ULPI Specification rev.1.1 default
-	 * for SuspendM is Powered.
-	 */
+	 
 	flags |= ULPI_FUNC_CTRL_SUSPENDM;
 
 	return usb_phy_io_write(phy, flags, ULPI_FUNC_CTRL);

@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * PTP 1588 clock using the EG20T PCH
- *
- * Copyright (C) 2010 OMICRON electronics GmbH
- * Copyright (C) 2011-2012 LAPIS SEMICONDUCTOR Co., LTD.
- *
- * This code was derived from the IXP46X driver.
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/err.h>
@@ -39,9 +32,7 @@ enum pch_status {
 	PCH_UNSUPPORTED,
 };
 
-/*
- * struct pch_ts_regs - IEEE 1588 registers
- */
+ 
 struct pch_ts_regs {
 	u32 control;
 	u32 event;
@@ -105,9 +96,7 @@ struct pch_ts_regs {
 #define PCH_IEEE1588_ETH	(1 << 0)
 #define PCH_IEEE1588_CAN	(1 << 1)
 
-/*
- * struct pch_dev - Driver private data
- */
+ 
 struct pch_dev {
 	struct pch_ts_regs __iomem *regs;
 	struct ptp_clock *ptp_clock;
@@ -120,25 +109,21 @@ struct pch_dev {
 	spinlock_t register_lock;
 };
 
-/*
- * struct pch_params - 1588 module parameter
- */
+ 
 struct pch_params {
 	u8 station[STATION_ADDR_LEN];
 };
 
-/* structure to hold the module parameters */
+ 
 static struct pch_params pch_param = {
 	"00:00:00:00:00:00"
 };
 
-/*
- * Register access functions
- */
+ 
 static inline void pch_eth_enable_set(struct pch_dev *chip)
 {
 	u32 val;
-	/* SET the eth_enable bit */
+	 
 	val = ioread32(&chip->regs->ts_sel) | (PCH_ECS_ETH);
 	iowrite32(val, (&chip->regs->ts_sel));
 }
@@ -160,7 +145,7 @@ static void pch_systime_write(struct pch_ts_regs __iomem *regs, u64 ns)
 static inline void pch_block_reset(struct pch_dev *chip)
 {
 	u32 val;
-	/* Reset Hardware Assist block */
+	 
 	val = ioread32(&chip->regs->control) | PCH_TSC_RESET;
 	iowrite32(val, (&chip->regs->control));
 	val = val & ~PCH_TSC_RESET;
@@ -238,8 +223,7 @@ u64 pch_tx_snap_read(struct pci_dev *pdev)
 }
 EXPORT_SYMBOL(pch_tx_snap_read);
 
-/* This function enables all 64 bits in system time registers [high & low].
-This is a work-around for non continuous value in the SystemTime Register*/
+ 
 static void pch_set_system_time_count(struct pch_dev *chip)
 {
 	iowrite32(0x01, &chip->regs->stl_max_set_en);
@@ -249,27 +233,21 @@ static void pch_set_system_time_count(struct pch_dev *chip)
 
 static void pch_reset(struct pch_dev *chip)
 {
-	/* Reset Hardware Assist */
+	 
 	pch_block_reset(chip);
 
-	/* enable all 32 bits in system time registers */
+	 
 	pch_set_system_time_count(chip);
 }
 
-/**
- * pch_set_station_address() - This API sets the station address used by
- *				    IEEE 1588 hardware when looking at PTP
- *				    traffic on the  ethernet interface
- * @addr:	dress which contain the column separated address to be used.
- * @pdev:	PCI device.
- */
+ 
 int pch_set_station_address(u8 *addr, struct pci_dev *pdev)
 {
 	struct pch_dev *chip = pci_get_drvdata(pdev);
 	bool valid;
 	u64 mac;
 
-	/* Verify the parameter */
+	 
 	if ((chip->regs == NULL) || addr == (u8 *)NULL) {
 		dev_err(&pdev->dev,
 			"invalid params returning PCH_INVALIDPARAM\n");
@@ -288,9 +266,7 @@ int pch_set_station_address(u8 *addr, struct pci_dev *pdev)
 }
 EXPORT_SYMBOL(pch_set_station_address);
 
-/*
- * Interrupt service routine
- */
+ 
 static irqreturn_t isr(int irq, void *priv)
 {
 	struct pch_dev *pch_dev = priv;
@@ -323,7 +299,7 @@ static irqreturn_t isr(int irq, void *priv)
 	}
 
 	if (val & PCH_TSE_TTIPEND)
-		ack |= PCH_TSE_TTIPEND; /* this bit seems to be always set */
+		ack |= PCH_TSE_TTIPEND;  
 
 	if (ack) {
 		iowrite32(ack, &regs->event);
@@ -332,9 +308,7 @@ static irqreturn_t isr(int irq, void *priv)
 		return IRQ_NONE;
 }
 
-/*
- * PTP clock operations
- */
+ 
 
 static int ptp_pch_adjfine(struct ptp_clock_info *ptp, long scaled_ppm)
 {
@@ -455,7 +429,7 @@ pch_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 	if (chip == NULL)
 		return -ENOMEM;
 
-	/* enable the 1588 pci device */
+	 
 	ret = pcim_enable_device(pdev);
 	if (ret != 0) {
 		dev_err(&pdev->dev, "could not enable the pci device\n");
@@ -468,7 +442,7 @@ pch_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 		return ret;
 	}
 
-	/* get the virtual address to the 1588 registers */
+	 
 	chip->regs = pcim_iomap_table(pdev)[IO_MEM_BAR];
 	chip->caps = ptp_pch_caps;
 	chip->ptp_clock = ptp_clock_register(&chip->caps, &pdev->dev);
@@ -483,13 +457,13 @@ pch_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 		goto err_req_irq;
 	}
 
-	/* indicate success */
+	 
 	chip->irq = pdev->irq;
 	chip->pdev = pdev;
 	pci_set_drvdata(pdev, chip);
 
 	spin_lock_irqsave(&chip->register_lock, flags);
-	/* reset the ieee1588 h/w */
+	 
 	pch_reset(chip);
 
 	iowrite32(DEFAULT_ADDEND, &chip->regs->addend);

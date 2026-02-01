@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2021, Google LLC.
- *
- * Tests for adjusting the KVM clock from userspace
- */
+
+ 
 #include <asm/kvm_para.h>
 #include <asm/pvclock.h>
 #include <asm/pvclock-abi.h>

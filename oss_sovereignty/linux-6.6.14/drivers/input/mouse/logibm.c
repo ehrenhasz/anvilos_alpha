@@ -1,18 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  Copyright (c) 1999-2001 Vojtech Pavlik
- *
- *  Based on the work of:
- *	James Banks		Matthew Dillon
- *	David Giller		Nathan Laredo
- *	Linus Torvalds		Johan Myreen
- *	Cliff Matthews		Philip Blundell
- *	Russell King
- */
 
-/*
- * Logitech Bus Mouse Driver for Linux
- */
+ 
+
+ 
 
 #include <linux/module.h>
 #include <linux/delay.h>

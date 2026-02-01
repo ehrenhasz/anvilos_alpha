@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * mt8173-rt5650.c  --  MT8173 machine driver with RT5650 codecs
- *
- * Copyright (c) 2016 MediaTek Inc.
- * Author: Koro Chen <koro.chen@mediatek.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/gpio.h>
@@ -22,7 +17,7 @@ enum mt8173_rt5650_mclk {
 
 struct mt8173_rt5650_platform_data {
 	enum mt8173_rt5650_mclk pll_from;
-	/* 0 = external oscillator; 1 = internal source from mt8173 */
+	 
 };
 
 static struct mt8173_rt5650_platform_data mt8173_rt5650_priv = {
@@ -75,27 +70,27 @@ static int mt8173_rt5650_hw_params(struct snd_pcm_substream *substream,
 
 	switch (mt8173_rt5650_priv.pll_from) {
 	case MT8173_RT5650_MCLK_EXTERNAL:
-		/* mclk = 12.288M */
+		 
 		mclk_clock = MCLK_FOR_CODECS;
 		break;
 	case MT8173_RT5650_MCLK_INTERNAL:
-		/* mclk = sampling rate*256 */
+		 
 		mclk_clock = params_rate(params) * 256;
 		break;
 	default:
-		/* mclk = 12.288M */
+		 
 		mclk_clock = MCLK_FOR_CODECS;
 		break;
 	}
 
 	for_each_rtd_codec_dais(rtd, i, codec_dai) {
-		/* pll from mclk */
+		 
 		ret = snd_soc_dai_set_pll(codec_dai, 0, 0, mclk_clock,
 					  params_rate(params) * 512);
 		if (ret)
 			return ret;
 
-		/* sysclk from pll */
+		 
 		ret = snd_soc_dai_set_sysclk(codec_dai, 1,
 					     params_rate(params) * 512,
 					     SND_SOC_CLOCK_IN);
@@ -138,7 +133,7 @@ static int mt8173_rt5650_init(struct snd_soc_pcm_runtime *runtime)
 					RT5645_CLK_SEL_I2S1_ASRC);
 	}
 
-	/* enable jack detection */
+	 
 	ret = snd_soc_card_jack_new_pins(card, "Headset Jack",
 					 SND_JACK_HEADPHONE | SND_JACK_MICROPHONE |
 					 SND_JACK_BTN_0 | SND_JACK_BTN_1 |
@@ -195,8 +190,8 @@ SND_SOC_DAILINK_DEFS(hdmi_pcm,
 
 SND_SOC_DAILINK_DEFS(codec,
 	DAILINK_COMP_ARRAY(COMP_CPU("I2S")),
-	DAILINK_COMP_ARRAY(COMP_CODEC(NULL, "rt5645-aif1"), /* Playback */
-			   COMP_CODEC(NULL, "rt5645-aif1")),/* Capture */
+	DAILINK_COMP_ARRAY(COMP_CODEC(NULL, "rt5645-aif1"),  
+			   COMP_CODEC(NULL, "rt5645-aif1")), 
 	DAILINK_COMP_ARRAY(COMP_EMPTY()));
 
 SND_SOC_DAILINK_DEFS(hdmi_be,
@@ -204,9 +199,9 @@ SND_SOC_DAILINK_DEFS(hdmi_be,
 	DAILINK_COMP_ARRAY(COMP_CODEC(NULL, "i2s-hifi")),
 	DAILINK_COMP_ARRAY(COMP_EMPTY()));
 
-/* Digital audio interface glue - connects codec <---> CPU */
+ 
 static struct snd_soc_dai_link mt8173_rt5650_dais[] = {
-	/* Front End DAI links */
+	 
 	[DAI_LINK_PLAYBACK] = {
 		.name = "rt5650 Playback",
 		.stream_name = "rt5650 Playback",
@@ -231,7 +226,7 @@ static struct snd_soc_dai_link mt8173_rt5650_dais[] = {
 		.dpcm_playback = 1,
 		SND_SOC_DAILINK_REG(hdmi_pcm),
 	},
-	/* Back End DAI links */
+	 
 	[DAI_LINK_CODEC_I2S] = {
 		.name = "Codec",
 		.no_pcm = 1,
@@ -358,7 +353,7 @@ static struct platform_driver mt8173_rt5650_driver = {
 
 module_platform_driver(mt8173_rt5650_driver);
 
-/* Module information */
+ 
 MODULE_DESCRIPTION("MT8173 RT5650 SoC machine driver");
 MODULE_AUTHOR("Koro Chen <koro.chen@mediatek.com>");
 MODULE_LICENSE("GPL v2");

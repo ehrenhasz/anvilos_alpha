@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2021-2022, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/module.h>
@@ -34,7 +32,7 @@ static const struct pll_vco lucid_vco[] = {
 	{ 249600000, 2000000000, 0 },
 };
 
-/* 1520MHz Configuration*/
+ 
 static const struct alpha_pll_config disp_cc_pll0_config = {
 	.l = 0x4F,
 	.alpha = 0x2AAA,
@@ -878,10 +876,7 @@ static int disp_cc_sc7280_probe(struct platform_device *pdev)
 
 	clk_lucid_pll_configure(&disp_cc_pll0, regmap, &disp_cc_pll0_config);
 
-	/*
-	 * Keep the clocks always-ON
-	 * DISP_CC_XO_CLK
-	 */
+	 
 	regmap_update_bits(regmap, 0x5008, BIT(0), BIT(0));
 
 	return qcom_cc_really_probe(pdev, &disp_cc_sc7280_desc, regmap);

@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Intel Skylake I2S Machine Driver
- *
- * Copyright (C) 2014-2015, Intel Corporation. All rights reserved.
- *
- * Modified from:
- *   Intel Broadwell Wildcatpoint SST Audio
- *
- *   Copyright (C) 2013, Intel Corporation. All rights reserved.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/platform_device.h>
@@ -44,7 +35,7 @@ enum {
 	SKL_DPCM_AUDIO_HDMI3_PB,
 };
 
-/* Headset jack detection DAPM pins */
+ 
 static struct snd_soc_jack_pin skylake_headset_pins[] = {
 	{
 		.pin = "Mic Jack",
@@ -74,21 +65,21 @@ static const struct snd_soc_dapm_widget skylake_widgets[] = {
 };
 
 static const struct snd_soc_dapm_route skylake_rt286_map[] = {
-	/* speaker */
+	 
 	{"Speaker", NULL, "SPOR"},
 	{"Speaker", NULL, "SPOL"},
 
-	/* HP jack connectors - unknown if we have jack deteck */
+	 
 	{"Headphone Jack", NULL, "HPO Pin"},
 
-	/* other jacks */
+	 
 	{"MIC1", NULL, "Mic Jack"},
 
-	/* digital mics */
+	 
 	{"DMIC1 Pin", NULL, "DMIC2"},
 	{"DMic", NULL, "SoC DMIC"},
 
-	/* CODEC BE connections */
+	 
 	{ "AIF1 Playback", NULL, "ssp0 Tx"},
 	{ "ssp0 Tx", NULL, "codec0_out"},
 	{ "ssp0 Tx", NULL, "codec1_out"},
@@ -182,12 +173,7 @@ static int skl_fe_startup(struct snd_pcm_substream *substream)
 {
 	struct snd_pcm_runtime *runtime = substream->runtime;
 
-	/*
-	 * on this platform for PCM device we support,
-	 *	48Khz
-	 *	stereo
-	 *	16 bit audio
-	 */
+	 
 
 	runtime->hw.channels_max = 2;
 	snd_pcm_hw_constraint_list(runtime, 0, SNDRV_PCM_HW_PARAM_CHANNELS,
@@ -215,11 +201,11 @@ static int skylake_ssp0_fixup(struct snd_soc_pcm_runtime *rtd,
 						SNDRV_PCM_HW_PARAM_CHANNELS);
 	struct snd_mask *fmt = hw_param_mask(params, SNDRV_PCM_HW_PARAM_FORMAT);
 
-	/* The output is 48KHz, stereo, 16bits */
+	 
 	rate->min = rate->max = 48000;
 	chan->min = chan->max = 2;
 
-	/* set SSP0 to 24 bit */
+	 
 	snd_mask_none(fmt);
 	snd_mask_set_format(fmt, SNDRV_PCM_FORMAT_S24_LE);
 	return 0;
@@ -335,9 +321,9 @@ SND_SOC_DAILINK_DEF(idisp3_codec,
 SND_SOC_DAILINK_DEF(platform,
 	DAILINK_COMP_ARRAY(COMP_PLATFORM("0000:00:1f.3")));
 
-/* skylake digital audio interface glue - connects codec <--> CPU */
+ 
 static struct snd_soc_dai_link skylake_rt286_dais[] = {
-	/* Front End DAI links */
+	 
 	[SKL_DPCM_AUDIO_PB] = {
 		.name = "Skl Audio Port",
 		.stream_name = "Audio",
@@ -425,9 +411,9 @@ static struct snd_soc_dai_link skylake_rt286_dais[] = {
 		SND_SOC_DAILINK_REG(hdmi3, dummy, platform),
 	},
 
-	/* Back End DAI links */
+	 
 	{
-		/* SSP0 - Codec */
+		 
 		.name = "SSP0-Codec",
 		.id = 0,
 		.no_pcm = 1,
@@ -510,7 +496,7 @@ static int skylake_card_late_probe(struct snd_soc_card *card)
 	return hdac_hdmi_jack_port_init(component, &card->dapm);
 }
 
-/* skylake audio machine driver for SPT + RT286S */
+ 
 static struct snd_soc_card skylake_rt286 = {
 	.name = "skylake-rt286",
 	.owner = THIS_MODULE,
@@ -561,7 +547,7 @@ static struct platform_driver skylake_audio = {
 
 module_platform_driver(skylake_audio)
 
-/* Module information */
+ 
 MODULE_AUTHOR("Omair Mohammed Abdullah <omair.m.abdullah@intel.com>");
 MODULE_DESCRIPTION("Intel SST Audio for Skylake");
 MODULE_LICENSE("GPL v2");

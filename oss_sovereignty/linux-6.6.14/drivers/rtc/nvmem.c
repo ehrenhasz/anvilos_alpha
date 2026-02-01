@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * RTC subsystem, nvmem interface
- *
- * Copyright (C) 2017 Alexandre Belloni
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/types.h>

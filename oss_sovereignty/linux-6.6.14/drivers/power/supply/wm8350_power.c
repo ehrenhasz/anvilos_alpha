@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Battery driver for wm8350 PMIC
- *
- * Copyright 2007, 2008 Wolfson Microelectronics PLC.
- *
- * Based on OLPC Battery Driver
- *
- * Copyright 2006  David Woodhouse <dwmw2@infradead.org>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/err.h>
@@ -57,14 +49,13 @@ static int wm8350_get_supplies(struct wm8350 *wm8350)
 	co = wm8350_reg_read(wm8350, WM8350_COMPARATOR_OVERRIDES);
 	chrg = wm8350_reg_read(wm8350, WM8350_BATTERY_CHARGER_CONTROL_2);
 
-	/* USB_SM */
+	 
 	sm = (sm & WM8350_USB_SM_MASK) >> WM8350_USB_SM_SHIFT;
 
-	/* CHG_ISEL */
+	 
 	chrg &= WM8350_CHG_ISEL_MASK;
 
-	/* If the USB state machine is active then we're using that with or
-	 * without battery, otherwise check for wall supply */
+	 
 	if (((sm == WM8350_USB_SM_100_SLV) ||
 	     (sm == WM8350_USB_SM_500_SLV) ||
 	     (sm == WM8350_USB_SM_STDBY_SLV))
@@ -94,7 +85,7 @@ static int wm8350_charger_config(struct wm8350 *wm8350,
 		return -EINVAL;
 	}
 
-	/* make sure USB fast charge current is not > 500mA */
+	 
 	if (policy->fast_limit_USB_mA > 500) {
 		dev_err(wm8350->dev, "USB fast charge > 500mA\n");
 		return -EINVAL;
@@ -222,8 +213,7 @@ static irqreturn_t wm8350_charger_handler(int irq, void *data)
 		dev_warn(wm8350->dev, "battery < 2.85V\n");
 		break;
 
-		/* Supply change.  We will overnotify but it should do
-		 * no harm. */
+		 
 	case WM8350_IRQ_EXT_USB_FB:
 	case WM8350_IRQ_EXT_WALL_FB:
 		wm8350_charger_config(wm8350, policy);
@@ -241,9 +231,7 @@ static irqreturn_t wm8350_charger_handler(int irq, void *data)
 	return IRQ_HANDLED;
 }
 
-/*********************************************************************
- *		AC Power
- *********************************************************************/
+ 
 static int wm8350_ac_get_prop(struct power_supply *psy,
 			      enum power_supply_property psp,
 			      union power_supply_propval *val)
@@ -271,9 +259,7 @@ static enum power_supply_property wm8350_ac_props[] = {
 	POWER_SUPPLY_PROP_VOLTAGE_NOW,
 };
 
-/*********************************************************************
- *		USB Power
- *********************************************************************/
+ 
 static int wm8350_usb_get_prop(struct power_supply *psy,
 			       enum power_supply_property psp,
 			       union power_supply_propval *val)
@@ -301,9 +287,7 @@ static enum power_supply_property wm8350_usb_props[] = {
 	POWER_SUPPLY_PROP_VOLTAGE_NOW,
 };
 
-/*********************************************************************
- *		Battery properties
- *********************************************************************/
+ 
 
 static int wm8350_bat_check_health(struct wm8350 *wm8350)
 {
@@ -404,15 +388,13 @@ static const struct power_supply_desc wm8350_usb_desc = {
 	.get_property	= wm8350_usb_get_prop,
 };
 
-/*********************************************************************
- *		Initialisation
- *********************************************************************/
+ 
 
 static int wm8350_init_charger(struct wm8350 *wm8350)
 {
 	int ret;
 
-	/* register our interest in charger events */
+	 
 	ret = wm8350_register_irq(wm8350, WM8350_IRQ_CHG_BAT_HOT,
 			    wm8350_charger_handler, 0, "Battery hot", wm8350);
 	if (ret)
@@ -470,7 +452,7 @@ static int wm8350_init_charger(struct wm8350 *wm8350)
 	if (ret)
 		goto free_chg_vbatt_lt_3p1;
 
-	/* and supply change events */
+	 
 	ret = wm8350_register_irq(wm8350, WM8350_IRQ_EXT_USB_FB,
 			    wm8350_charger_handler, 0, "USB", wm8350);
 	if (ret)

@@ -1,28 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * NILFS pathname lookup operations.
- *
- * Copyright (C) 2005-2008 Nippon Telegraph and Telephone Corporation.
- *
- * Modified for NILFS by Amagai Yoshiji and Ryusuke Konishi.
- */
-/*
- *  linux/fs/ext2/namei.c
- *
- * Copyright (C) 1992, 1993, 1994, 1995
- * Remy Card (card@masi.ibp.fr)
- * Laboratoire MASI - Institut Blaise Pascal
- * Universite Pierre et Marie Curie (Paris VI)
- *
- *  from
- *
- *  linux/fs/minix/namei.c
- *
- *  Copyright (C) 1991, 1992  Linus Torvalds
- *
- *  Big-endian to little-endian byte-swapping/bitmaps by
- *        David S. Miller (davem@caip.rutgers.edu), 1995
- */
+
+ 
+ 
 
 #include <linux/pagemap.h>
 #include "nilfs.h"
@@ -46,9 +24,7 @@ static inline int nilfs_add_nondir(struct dentry *dentry, struct inode *inode)
 	return err;
 }
 
-/*
- * Methods themselves.
- */
+ 
 
 static struct dentry *
 nilfs_lookup(struct inode *dir, struct dentry *dentry, unsigned int flags)
@@ -64,14 +40,7 @@ nilfs_lookup(struct inode *dir, struct dentry *dentry, unsigned int flags)
 	return d_splice_alias(inode, dentry);
 }
 
-/*
- * By the time this is called, we already have created
- * the directory cache entry for the new file, but it
- * is so far negative - it has no inode.
- *
- * If the create succeeds, we fill in the inode information
- * with d_instantiate().
- */
+ 
 static int nilfs_create(struct mnt_idmap *idmap, struct inode *dir,
 			struct dentry *dentry, umode_t mode, bool excl)
 {
@@ -146,7 +115,7 @@ static int nilfs_symlink(struct mnt_idmap *idmap, struct inode *dir,
 	if (IS_ERR(inode))
 		goto out;
 
-	/* slow symlink */
+	 
 	inode->i_op = &nilfs_symlink_inode_operations;
 	inode_nohighmem(inode);
 	inode->i_mapping->a_ops = &nilfs_aops;
@@ -154,8 +123,8 @@ static int nilfs_symlink(struct mnt_idmap *idmap, struct inode *dir,
 	if (err)
 		goto out_fail;
 
-	/* mark_inode_dirty(inode); */
-	/* page_symlink() do this */
+	 
+	 
 
 	err = nilfs_add_nondir(dentry, inode);
 out:
@@ -402,10 +371,7 @@ static int nilfs_rename(struct mnt_idmap *idmap,
 		}
 	}
 
-	/*
-	 * Like most other Unix systems, set the ctime for inodes on a
-	 * rename.
-	 */
+	 
 	inode_set_ctime_current(old_inode);
 
 	nilfs_delete_entry(old_de, old_page);
@@ -433,9 +399,7 @@ out:
 	return err;
 }
 
-/*
- * Export operations
- */
+ 
 static struct dentry *nilfs_get_parent(struct dentry *child)
 {
 	unsigned long ino;

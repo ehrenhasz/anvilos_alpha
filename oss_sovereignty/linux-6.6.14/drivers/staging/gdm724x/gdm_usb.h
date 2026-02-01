@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright (c) 2012 GCT Semiconductor, Inc. All rights reserved. */
+ 
+ 
 
 #ifndef _GDM_USB_H_
 #define _GDM_USB_H_
@@ -14,7 +14,7 @@
 
 #define PM_NORMAL 0
 #define PM_SUSPEND 1
-#define AUTO_SUSPEND_TIMER 5000 /* ms */
+#define AUTO_SUSPEND_TIMER 5000  
 
 #define RX_BUF_SIZE		(1024 * 32)
 #define TX_BUF_SIZE		(1024 * 32)
@@ -96,4 +96,4 @@ struct lte_udev {
 	u8 request_mac_addr;
 };
 
-#endif /* _GDM_USB_H_ */
+#endif  

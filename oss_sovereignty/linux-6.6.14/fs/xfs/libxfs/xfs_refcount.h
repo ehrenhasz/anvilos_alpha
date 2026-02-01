@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (C) 2016 Oracle.  All Rights Reserved.
- * Author: Darrick J. Wong <darrick.wong@oracle.com>
- */
+
+ 
 #ifndef __XFS_REFCOUNT_H__
 #define __XFS_REFCOUNT_H__
 
@@ -29,11 +26,7 @@ xfs_refcount_encode_startblock(
 {
 	uint32_t		start;
 
-	/*
-	 * low level btree operations need to handle the generic btree range
-	 * query functions (which set rc_domain == -1U), so we check that the
-	 * domain is /not/ shared.
-	 */
+	 
 	start = startblock & ~XFS_REFC_COWFLAG;
 	if (domain != XFS_REFC_DOMAIN_SHARED)
 		start |= XFS_REFC_COWFLAG;
@@ -56,7 +49,7 @@ struct xfs_refcount_intent {
 	xfs_fsblock_t				ri_startblock;
 };
 
-/* Check that the refcount is appropriate for the record domain. */
+ 
 static inline bool
 xfs_refcount_check_domain(
 	const struct xfs_refcount_irec	*irec)
@@ -92,23 +85,7 @@ void xfs_refcount_free_cow_extent(struct xfs_trans *tp, xfs_fsblock_t fsb,
 extern int xfs_refcount_recover_cow_leftovers(struct xfs_mount *mp,
 		struct xfs_perag *pag);
 
-/*
- * While we're adjusting the refcounts records of an extent, we have
- * to keep an eye on the number of extents we're dirtying -- run too
- * many in a single transaction and we'll exceed the transaction's
- * reservation and crash the fs.  Each record adds 12 bytes to the
- * log (plus any key updates) so we'll conservatively assume 32 bytes
- * per record.  We must also leave space for btree splits on both ends
- * of the range and space for the CUD and a new CUI.
- *
- * Each EFI that we attach to the transaction is assumed to consume ~32 bytes.
- * This is a low estimate for an EFI tracking a single extent (16 bytes for the
- * EFI header, 16 for the extent, and 12 for the xlog op header), but the
- * estimate is acceptable if there's more than one extent being freed.
- * In the worst case of freeing every other block during a refcount decrease
- * operation, we amortize the space used for one EFI log item across 16
- * extents.
- */
+ 
 #define XFS_REFCOUNT_ITEM_OVERHEAD	32
 
 extern int xfs_refcount_has_records(struct xfs_btree_cur *cur,
@@ -127,4 +104,4 @@ extern struct kmem_cache	*xfs_refcount_intent_cache;
 int __init xfs_refcount_intent_init_cache(void);
 void xfs_refcount_intent_destroy_cache(void);
 
-#endif	/* __XFS_REFCOUNT_H__ */
+#endif	 

@@ -1,26 +1,4 @@
-/*
- * Copyright 2010 Red Hat Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: Ben Skeggs
- */
+ 
 #include "ummu.h"
 #include "vmm.h"
 
@@ -44,14 +22,12 @@ nvkm_mmu_ptp_put(struct nvkm_mmu *mmu, bool force, struct nvkm_mmu_pt *pt)
 	const int slot = pt->base >> pt->ptp->shift;
 	struct nvkm_mmu_ptp *ptp = pt->ptp;
 
-	/* If there were no free slots in the parent allocation before,
-	 * there will be now, so return PTP to the cache.
-	 */
+	 
 	if (!ptp->free)
 		list_add(&ptp->head, &mmu->ptp.list);
 	ptp->free |= BIT(slot);
 
-	/* If there's no more sub-allocations, destroy PTP. */
+	 
 	if (ptp->free == ptp->mask) {
 		nvkm_mmu_ptc_put(mmu, force, &ptp->pt);
 		list_del(&ptp->head);
@@ -73,7 +49,7 @@ nvkm_mmu_ptp_get(struct nvkm_mmu *mmu, u32 size, bool zero)
 
 	ptp = list_first_entry_or_null(&mmu->ptp.list, typeof(*ptp), head);
 	if (!ptp) {
-		/* Need to allocate a new parent to sub-allocate from. */
+		 
 		if (!(ptp = kmalloc(sizeof(*ptp), GFP_KERNEL))) {
 			kfree(pt);
 			return NULL;
@@ -95,9 +71,7 @@ nvkm_mmu_ptp_get(struct nvkm_mmu *mmu, u32 size, bool zero)
 	pt->ptp = ptp;
 	pt->sub = true;
 
-	/* Sub-allocate from parent object, removing PTP from cache
-	 * if there's no more free slots left.
-	 */
+	 
 	slot = __ffs(ptp->free);
 	ptp->free &= ~BIT(slot);
 	if (!ptp->free)
@@ -142,7 +116,7 @@ nvkm_mmu_ptc_put(struct nvkm_mmu *mmu, bool force, struct nvkm_mmu_pt **ppt)
 {
 	struct nvkm_mmu_pt *pt = *ppt;
 	if (pt) {
-		/* Handle sub-allocated page tables. */
+		 
 		if (pt->sub) {
 			mutex_lock(&mmu->ptp.mutex);
 			nvkm_mmu_ptp_put(mmu, force, pt);
@@ -150,9 +124,9 @@ nvkm_mmu_ptc_put(struct nvkm_mmu *mmu, bool force, struct nvkm_mmu_pt **ppt)
 			return;
 		}
 
-		/* Either cache or free the object. */
+		 
 		mutex_lock(&mmu->ptc.mutex);
-		if (pt->ptc->refs < 8 /* Heuristic. */ && !force) {
+		if (pt->ptc->refs < 8   && !force) {
 			list_add_tail(&pt->head, &pt->ptc->item);
 			pt->ptc->refs++;
 		} else {
@@ -170,7 +144,7 @@ nvkm_mmu_ptc_get(struct nvkm_mmu *mmu, u32 size, u32 align, bool zero)
 	struct nvkm_mmu_pt *pt;
 	int ret;
 
-	/* Sub-allocated page table (ie. GP100 LPT). */
+	 
 	if (align < 0x1000) {
 		mutex_lock(&mmu->ptp.mutex);
 		pt = nvkm_mmu_ptp_get(mmu, align, zero);
@@ -178,7 +152,7 @@ nvkm_mmu_ptc_get(struct nvkm_mmu *mmu, u32 size, u32 align, bool zero)
 		return pt;
 	}
 
-	/* Lookup cache for this page table size. */
+	 
 	mutex_lock(&mmu->ptc.mutex);
 	ptc = nvkm_mmu_ptc_find(mmu, size);
 	if (!ptc) {
@@ -186,7 +160,7 @@ nvkm_mmu_ptc_get(struct nvkm_mmu *mmu, u32 size, u32 align, bool zero)
 		return NULL;
 	}
 
-	/* If there's a free PT in the cache, reuse it. */
+	 
 	pt = list_first_entry_or_null(&ptc->item, typeof(*pt), head);
 	if (pt) {
 		if (zero)
@@ -198,7 +172,7 @@ nvkm_mmu_ptc_get(struct nvkm_mmu *mmu, u32 size, u32 align, bool zero)
 	}
 	mutex_unlock(&mmu->ptc.mutex);
 
-	/* No such luck, we need to allocate. */
+	 
 	if (!(pt = kmalloc(sizeof(*pt), GFP_KERNEL)))
 		return NULL;
 	pt->ptc = ptc;
@@ -281,33 +255,23 @@ nvkm_mmu_host(struct nvkm_mmu *mmu)
 	u8 type = NVKM_MEM_KIND * !!mmu->func->kind_sys;
 	int heap;
 
-	/* Non-mappable system memory. */
+	 
 	heap = nvkm_mmu_heap(mmu, NVKM_MEM_HOST, ~0ULL);
 	nvkm_mmu_type(mmu, heap, type);
 
-	/* Non-coherent, cached, system memory.
-	 *
-	 * Block-linear mappings of system memory must be done through
-	 * BAR1, and cannot be supported on systems where we're unable
-	 * to map BAR1 with write-combining.
-	 */
+	 
 	type |= NVKM_MEM_MAPPABLE;
 	if (!device->bar || device->bar->iomap_uncached)
 		nvkm_mmu_type(mmu, heap, type & ~NVKM_MEM_KIND);
 	else
 		nvkm_mmu_type(mmu, heap, type);
 
-	/* Coherent, cached, system memory.
-	 *
-	 * Unsupported on systems that aren't able to support snooped
-	 * mappings, and also for block-linear mappings which must be
-	 * done through BAR1.
-	 */
+	 
 	type |= NVKM_MEM_COHERENT;
 	if (device->func->cpu_coherent)
 		nvkm_mmu_type(mmu, heap, type & ~NVKM_MEM_KIND);
 
-	/* Uncached system memory. */
+	 
 	nvkm_mmu_type(mmu, heap, type |= NVKM_MEM_UNCACHED);
 }
 
@@ -323,7 +287,7 @@ nvkm_mmu_vram(struct nvkm_mmu *mmu)
 	u8 heap = NVKM_MEM_VRAM;
 	int heapM, heapN, heapU;
 
-	/* Mixed-memory doesn't support compression or display. */
+	 
 	heapM = nvkm_mmu_heap(mmu, heap, sizeM << NVKM_RAM_MM_SHIFT);
 
 	heap |= NVKM_MEM_COMP;
@@ -331,32 +295,24 @@ nvkm_mmu_vram(struct nvkm_mmu *mmu)
 	heapN = nvkm_mmu_heap(mmu, heap, sizeN << NVKM_RAM_MM_SHIFT);
 	heapU = nvkm_mmu_heap(mmu, heap, sizeU << NVKM_RAM_MM_SHIFT);
 
-	/* Add non-mappable VRAM types first so that they're preferred
-	 * over anything else.  Mixed-memory will be slower than other
-	 * heaps, it's prioritised last.
-	 */
+	 
 	nvkm_mmu_type(mmu, heapU, type);
 	nvkm_mmu_type(mmu, heapN, type);
 	nvkm_mmu_type(mmu, heapM, type);
 
-	/* Add host memory types next, under the assumption that users
-	 * wanting mappable memory want to use them as staging buffers
-	 * or the like.
-	 */
+	 
 	nvkm_mmu_host(mmu);
 
-	/* Mappable VRAM types go last, as they're basically the worst
-	 * possible type to ask for unless there's no other choice.
-	 */
+	 
 	if (device->bar) {
-		/* Write-combined BAR1 access. */
+		 
 		type |= NVKM_MEM_MAPPABLE;
 		if (!device->bar->iomap_uncached) {
 			nvkm_mmu_type(mmu, heapN, type);
 			nvkm_mmu_type(mmu, heapM, type);
 		}
 
-		/* Uncached BAR1 access. */
+		 
 		type |= NVKM_MEM_COHERENT;
 		type |= NVKM_MEM_UNCACHED;
 		nvkm_mmu_type(mmu, heapN, type);
@@ -369,7 +325,7 @@ nvkm_mmu_oneinit(struct nvkm_subdev *subdev)
 {
 	struct nvkm_mmu *mmu = nvkm_mmu(subdev);
 
-	/* Determine available memory types. */
+	 
 	if (mmu->subdev.device->fb && mmu->subdev.device->fb->ram)
 		nvkm_mmu_vram(mmu);
 	else

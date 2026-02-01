@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/* MDIO bus multiplexer using kernel multiplexer subsystem
- *
- * Copyright 2019 NXP
- */
+
+ 
 
 #include <linux/mdio-mux.h>
 #include <linux/module.h>
@@ -15,19 +12,7 @@ struct mdio_mux_multiplexer_state {
 	void *mux_handle;
 };
 
-/**
- * mdio_mux_multiplexer_switch_fn - This function is called by the mdio-mux
- *                                  layer when it thinks the mdio bus
- *                                  multiplexer needs to switch.
- * @current_child:  current value of the mux register.
- * @desired_child: value of the 'reg' property of the target child MDIO node.
- * @data: Private data used by this switch_fn passed to mdio_mux_init function
- *        via mdio_mux_init(.., .., .., .., data, ..).
- *
- * The first time this function is called, current_child == -1.
- * If current_child == desired_child, then the mux is already set to the
- * correct bus.
- */
+ 
 static int mdio_mux_multiplexer_switch_fn(int current_child, int desired_child,
 					  void *data)
 {

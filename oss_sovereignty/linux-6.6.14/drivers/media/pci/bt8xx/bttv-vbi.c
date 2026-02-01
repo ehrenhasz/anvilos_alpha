@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
 
-    bttv - Bt848 frame grabber driver
-    vbi interface
-
-    (c) 2002 Gerd Knorr <kraxel@bytesex.org>
-
-    Copyright (C) 2005, 2006 Michael H. Schimek <mschimek@gmx.at>
-    Sponsored by OPQ Systems AB
-
-*/
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -23,15 +13,7 @@
 #include <asm/io.h>
 #include "bttvp.h"
 
-/* Offset from line sync pulse leading edge (0H) to start of VBI capture,
-   in fCLKx2 pixels.  According to the datasheet, VBI capture starts
-   VBI_HDELAY fCLKx1 pixels from the tailing edgeof /HRESET, and /HRESET
-   is 64 fCLKx1 pixels wide.  VBI_HDELAY is set to 0, so this should be
-   (64 + 0) * 2 = 128 fCLKx2 pixels.  But it's not!  The datasheet is
-   Just Plain Wrong.  The real value appears to be different for
-   different revisions of the bt8x8 chips, and to be affected by the
-   horizontal scaling factor.  Experimentally, the value is measured
-   to be about 244.  */
+ 
 #define VBI_OFFSET 244
 
 static unsigned int vbibufs = 4;
@@ -54,8 +36,8 @@ do {									\
 #define IMAGE_SIZE(fmt) \
 	(((fmt)->count[0] + (fmt)->count[1]) * (fmt)->samples_per_line)
 
-/* ----------------------------------------------------------------------- */
-/* vbi risc code + mm                                                      */
+ 
+ 
 
 static int queue_setup_vbi(struct vb2_queue *q, unsigned int *num_buffers,
 			   unsigned int *num_planes, unsigned int sizes[],
@@ -157,7 +139,7 @@ static void stop_streaming_vbi(struct vb2_queue *q)
 	spin_lock_irqsave(&btv->s_lock, flags);
 	free_btres_lock(btv, RESOURCE_VBI);
 	if (!vb2_is_streaming(&btv->capq)) {
-		/* stop field counter */
+		 
 		btand(~BT848_INT_VSYNC, BT848_INT_MASK);
 	}
 	spin_unlock_irqrestore(&btv->s_lock, flags);
@@ -174,7 +156,7 @@ const struct vb2_ops bttv_vbi_qops = {
 	.wait_finish    = vb2_ops_wait_finish,
 };
 
-/* ----------------------------------------------------------------------- */
+ 
 
 static int try_fmt(struct v4l2_vbi_format *f, const struct bttv_tvnorm *tvnorm,
 			__s32 crop_start)
@@ -182,12 +164,7 @@ static int try_fmt(struct v4l2_vbi_format *f, const struct bttv_tvnorm *tvnorm,
 	__s32 min_start, max_start, max_end, f2_offset;
 	unsigned int i;
 
-	/* For compatibility with earlier driver versions we must pretend
-	   the VBI and video capture window may overlap. In reality RISC
-	   magic aborts VBI capturing at the first line of video capturing,
-	   leaving the rest of the buffer unchanged, usually all zero.
-	   VBI capturing must always start before video capturing. >> 1
-	   because cropping counts field lines times two. */
+	 
 	min_start = tvnorm->vbistart[0];
 	max_start = (crop_start >> 1) - 1;
 	max_end = (tvnorm->cropcap.bounds.top
@@ -207,15 +184,12 @@ static int try_fmt(struct v4l2_vbi_format *f, const struct bttv_tvnorm *tvnorm,
 
 	for (i = 0; i < 2; ++i) {
 		if (0 == f->count[i]) {
-			/* No data from this field. We leave f->start[i]
-			   alone because VIDIOCSVBIFMT is w/o and EINVALs
-			   when a driver does not support exactly the
-			   requested parameters. */
+			 
 		} else {
 			s64 start, count;
 
 			start = clamp(f->start[i], min_start, max_start);
-			/* s64 to prevent overflow. */
+			 
 			count = (s64) f->start[i] + f->count[i] - start;
 			f->start[i] = start;
 			f->count[i] = clamp(count, (s64) 1,
@@ -228,7 +202,7 @@ static int try_fmt(struct v4l2_vbi_format *f, const struct bttv_tvnorm *tvnorm,
 	}
 
 	if (0 == (f->count[0] | f->count[1])) {
-		/* As in earlier driver versions. */
+		 
 		f->start[0] = tvnorm->vbistart[0];
 		f->start[1] = tvnorm->vbistart[1];
 		f->count[0] = 1;
@@ -282,12 +256,7 @@ int bttv_s_fmt_vbi_cap(struct file *file, void *f, struct v4l2_format *frt)
 	start1 = frt->fmt.vbi.start[1] - tvnorm->vbistart[1] +
 		tvnorm->vbistart[0];
 
-	/* First possible line of video capturing. Should be
-	   max(f->start[0] + f->count[0], start1 + f->count[1]) * 2
-	   when capturing both fields. But for compatibility we must
-	   pretend the VBI and video capture window may overlap,
-	   so end = start + 1, the lowest possible value, times two
-	   because vbi_fmt.end counts field lines times two. */
+	 
 	end = max(frt->fmt.vbi.start[0], start1) * 2 + 2;
 
 	btv->vbi_fmt.fmt = frt->fmt.vbi;
@@ -316,9 +285,7 @@ int bttv_g_fmt_vbi_cap(struct file *file, void *f, struct v4l2_format *frt)
 		__s32 max_end;
 		unsigned int i;
 
-		/* As in vbi_buffer_prepare() this imitates the
-		   behaviour of earlier driver versions after video
-		   standard changes, with default parameters anyway. */
+		 
 
 		max_end = (tvnorm->cropcap.bounds.top
 			   + tvnorm->cropcap.bounds.height) >> 1;
@@ -363,8 +330,7 @@ void bttv_vbi_fmt_reset(struct bttv_vbi_fmt *f, unsigned int norm)
 	f->fmt.reserved[0]      = 0;
 	f->fmt.reserved[1]      = 0;
 
-	/* For compatibility the buffer size must be 2 * VBI_DEFLINES *
-	   VBI_BPL regardless of the current video standard. */
+	 
 	real_samples_per_line   = 1024 + tvnorm->vbipack * 4;
 	real_count              = ((tvnorm->cropcap.defrect.top >> 1)
 				   - tvnorm->vbistart[0]);
@@ -374,6 +340,6 @@ void bttv_vbi_fmt_reset(struct bttv_vbi_fmt *f, unsigned int norm)
 
 	f->tvnorm               = tvnorm;
 
-	/* See bttv_vbi_fmt_set(). */
+	 
 	f->end                  = tvnorm->vbistart[0] * 2 + 2;
 }

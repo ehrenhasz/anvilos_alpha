@@ -1,38 +1,6 @@
-/****************************************************************************
- * Copyright 2019-2021,2022 Thomas E. Dickey                                *
- * Copyright 1998-2016,2017 Free Software Foundation, Inc.                  *
- *                                                                          *
- * Permission is hereby granted, free of charge, to any person obtaining a  *
- * copy of this software and associated documentation files (the            *
- * "Software"), to deal in the Software without restriction, including      *
- * without limitation the rights to use, copy, modify, merge, publish,      *
- * distribute, distribute with modifications, sublicense, and/or sell       *
- * copies of the Software, and to permit persons to whom the Software is    *
- * furnished to do so, subject to the following conditions:                 *
- *                                                                          *
- * The above copyright notice and this permission notice shall be included  *
- * in all copies or substantial portions of the Software.                   *
- *                                                                          *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS  *
- * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF               *
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.   *
- * IN NO EVENT SHALL THE ABOVE COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,   *
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR    *
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR    *
- * THE USE OR OTHER DEALINGS IN THE SOFTWARE.                               *
- *                                                                          *
- * Except as contained in this notice, the name(s) of the above copyright   *
- * holders shall not be used in advertising or otherwise to promote the     *
- * sale, use or other dealings in this Software without prior written       *
- * authorization.                                                           *
- ****************************************************************************/
+ 
 
-/*
-**	lib_addch.c
-**
-**	The routine waddch().
-**
-*/
+ 
 
 #include <curses.priv.h>
 #include <ctype.h>
@@ -41,22 +9,14 @@ MODULE_ID("$Id: lib_addch.c,v 1.141 2022/06/12 15:16:41 tom Exp $")
 
 static const NCURSES_CH_T blankchar = NewChar(BLANK_TEXT);
 
-/*
- * Ugly microtweaking alert.  Everything from here to end of module is
- * likely to be speed-critical -- profiling data sure says it is!
- * Most of the important screen-painting functions are shells around
- * waddch().  So we make every effort to reduce function-call overhead
- * by inlining stuff, even at the cost of making wrapped copies for
- * export.  Also we supply some internal versions that don't call the
- * window sync hook, for use by string-put functions.
- */
+ 
 
-/* Return bit mask for clearing color pair number if given ch has color */
+ 
 #define COLOR_MASK(ch) (~(attr_t)(((ch) & A_COLOR) ? A_COLOR : 0))
 
 static NCURSES_INLINE NCURSES_CH_T
 render_char(WINDOW *win, NCURSES_CH_T ch)
-/* compute a rendition of the given char correct for the current context */
+ 
 {
     attr_t a = WINDOW_ATTRS(win);
     int pair = GetPair(ch);
@@ -64,16 +24,16 @@ render_char(WINDOW *win, NCURSES_CH_T ch)
     if (ISBLANK(ch)
 	&& AttrOf(ch) == A_NORMAL
 	&& pair == 0) {
-	/* color/pair in attrs has precedence over bkgrnd */
+	 
 	ch = win->_nc_bkgd;
 	SetAttr(ch, a | AttrOf(win->_nc_bkgd));
 	if ((pair = GET_WINDOW_PAIR(win)) == 0)
 	    pair = GetPair(win->_nc_bkgd);
 	SetPair(ch, pair);
     } else {
-	/* color in attrs has precedence over bkgrnd */
+	 
 	a |= AttrOf(win->_nc_bkgd) & COLOR_MASK(a);
-	/* color in ch has precedence */
+	 
 	if (pair == 0) {
 	    if ((pair = GET_WINDOW_PAIR(win)) == 0)
 		pair = GetPair(win->_nc_bkgd);
@@ -96,13 +56,13 @@ render_char(WINDOW *win, NCURSES_CH_T ch)
 
 NCURSES_EXPORT(NCURSES_CH_T)
 _nc_render(WINDOW *win, NCURSES_CH_T ch)
-/* make render_char() visible while still allowing us to inline it below */
+ 
 {
     return render_char(win, ch);
 }
 
-/* check if position is legal; if not, return error */
-#ifndef NDEBUG			/* treat this like an assertion */
+ 
+#ifndef NDEBUG			 
 #define CHECK_POSITION(win, x, y) \
 	if (y > win->_maxy \
 	 || x > win->_maxx \
@@ -114,7 +74,7 @@ _nc_render(WINDOW *win, NCURSES_CH_T ch)
 		return(ERR); \
 	}
 #else
-#define CHECK_POSITION(win, x, y)	/* nothing */
+#define CHECK_POSITION(win, x, y)	 
 #endif
 
 static bool
@@ -135,15 +95,7 @@ newline_forces_scroll(WINDOW *win, NCURSES_SIZE_T *ypos)
     return result;
 }
 
-/*
- * The _WRAPPED flag is useful only for telling an application that we've just
- * wrapped the cursor.  We don't do anything with this flag except set it when
- * wrapping, and clear it whenever we move the cursor.  If we try to wrap at
- * the lower-right corner of a window, we cannot move the cursor (since that
- * wouldn't be legal).  So we return an error (which is what SVr4 does).
- * Unlike SVr4, we can successfully add a character to the lower-right corner
- * (Solaris 2.6 does this also, however).
- */
+ 
 static int
 wrap_to_next_line(WINDOW *win)
 {
@@ -160,10 +112,7 @@ wrap_to_next_line(WINDOW *win)
 
 #if USE_WIDEC_SUPPORT
 static int waddch_literal(WINDOW *, NCURSES_CH_T);
-/*
- * Fill the given number of cells with blanks using the current background
- * rendition.  This saves/restores the current x-position.
- */
+ 
 static void
 fill_cells(WINDOW *win, int count)
 {
@@ -180,10 +129,7 @@ fill_cells(WINDOW *win, int count)
 }
 #endif
 
-/*
- * Build up the bytes for a multibyte character, returning the length when
- * complete (a positive number), -1 for error and -2 for incomplete.
- */
+ 
 #if USE_WIDEC_SUPPORT
 NCURSES_EXPORT(int)
 _nc_build_wch(WINDOW *win, ARG_CH_T ch)
@@ -198,7 +144,7 @@ _nc_build_wch(WINDOW *win, ARG_CH_T ch)
     if ((WINDOW_EXT(win, addch_used) != 0) &&
 	(WINDOW_EXT(win, addch_x) != x ||
 	 WINDOW_EXT(win, addch_y) != y)) {
-	/* discard the incomplete multibyte character */
+	 
 	WINDOW_EXT(win, addch_used) = 0;
 	TR(TRACE_VIRTPUT,
 	   ("Alert discarded multibyte on move (%d,%d) -> (%d,%d)",
@@ -208,13 +154,10 @@ _nc_build_wch(WINDOW *win, ARG_CH_T ch)
     WINDOW_EXT(win, addch_x) = x;
     WINDOW_EXT(win, addch_y) = y;
 
-    /*
-     * If the background character is a wide-character, that may interfere with
-     * processing multibyte characters in this function.
-     */
+     
     if (!is8bits(CharOf(CHDEREF(ch)))) {
 	if (WINDOW_EXT(win, addch_used) != 0) {
-	    /* discard the incomplete multibyte character */
+	     
 	    WINDOW_EXT(win, addch_used) = 0;
 	    TR(TRACE_VIRTPUT,
 	       ("Alert discarded incomplete multibyte"));
@@ -236,21 +179,17 @@ _nc_build_wch(WINDOW *win, ARG_CH_T ch)
 	if_EXT_COLORS(SetPair(CHDEREF(ch), pair));
 	WINDOW_EXT(win, addch_used) = 0;
     } else if (len == -1) {
-	/*
-	 * An error occurred.  We could either discard everything,
-	 * or assume that the error was in the previous input.
-	 * Try the latter.
-	 */
+	 
 	TR(TRACE_VIRTPUT, ("Alert! mbrtowc returns error"));
-	/* handle this with unctrl() */
+	 
 	WINDOW_EXT(win, addch_used) = 0;
     }
     return len;
 }
-#endif /* USE_WIDEC_SUPPORT */
+#endif  
 
 static
-#if !USE_WIDEC_SUPPORT		/* cannot be inline if it is recursive */
+#if !USE_WIDEC_SUPPORT		 
 NCURSES_INLINE
 #endif
 int
@@ -271,13 +210,11 @@ waddch_literal(WINDOW *win, NCURSES_CH_T ch)
 
     CHANGED_CELL(line, x);
 
-    /*
-     * Build up multibyte characters until we have a wide-character.
-     */
+     
 #if NCURSES_SP_FUNCS
 #define DeriveSP() SCREEN *sp = _nc_screen_of(win);
 #else
-#define DeriveSP()		/*nothing */
+#define DeriveSP()		 
 #endif
     if_WIDEC({
 	DeriveSP();
@@ -287,7 +224,7 @@ waddch_literal(WINDOW *win, NCURSES_CH_T ch)
 	    if (len >= -1) {
 		attr_t attr = AttrOf(ch);
 
-		/* handle EILSEQ (i.e., when len >= -1) */
+		 
 		if (len == -1 && is8bits(CharOf(ch))) {
 		    const char *s = NCURSES_SP_NAME(unctrl)
 		      (NCURSES_SP_ARGx (chtype) CharOf(ch));
@@ -311,18 +248,13 @@ waddch_literal(WINDOW *win, NCURSES_CH_T ch)
 	}
     });
 
-    /*
-     * Non-spacing characters are added to the current cell.
-     *
-     * Spacing characters that are wider than one column require some display
-     * adjustments.
-     */
+     
     if_WIDEC({
 	int len = _nc_wacs_width(CharOf(ch));
 	int i;
 	int j;
 
-	if (len == 0) {		/* non-spacing */
+	if (len == 0) {		 
 	    if ((x > 0 && y >= 0)
 		|| (win->_maxx >= 0 && win->_cury >= 1)) {
 		NCURSES_CH_T *dst;
@@ -350,12 +282,8 @@ waddch_literal(WINDOW *win, NCURSES_CH_T ch)
 		}
 	    }
 	    goto testwrapping;
-	} else if (len > 1) {	/* multi-column characters */
-	    /*
-	     * Check if the character will fit on the current line.  If it does
-	     * not fit, fill in the remainder of the line with blanks.  and
-	     * move to the next line.
-	     */
+	} else if (len > 1) {	 
+	     
 	    if (len > win->_maxx + 1) {
 		TR(TRACE_VIRTPUT, ("character will not fit"));
 		return ERR;
@@ -370,13 +298,7 @@ waddch_literal(WINDOW *win, NCURSES_CH_T ch)
 		CHECK_POSITION(win, x, y);
 		line = win->_line + y;
 	    }
-	    /*
-	     * Check for cells which are orphaned by adding this character, set
-	     * those to blanks.
-	     *
-	     * FIXME: this actually could fill j-i cells, more complicated to
-	     * setup though.
-	     */
+	     
 	    for (i = 0; i < len; ++i) {
 		if (isWidecBase(win->_line[y].text[x + i])) {
 		    break;
@@ -391,9 +313,7 @@ waddch_literal(WINDOW *win, NCURSES_CH_T ch)
 		    break;
 		}
 	    }
-	    /*
-	     * Finally, add the cells for this character.
-	     */
+	     
 	    for (i = 0; i < len; ++i) {
 		NCURSES_CH_T value = ch;
 		SetWidecExt(value, i);
@@ -408,13 +328,9 @@ waddch_literal(WINDOW *win, NCURSES_CH_T ch)
 	}
     });
 
-    /*
-     * Single-column characters.
-     */
+     
     line->text[x++] = ch;
-    /*
-     * This label is used only for wide-characters.
-     */
+     
     if_WIDEC(
   testwrapping:
     );
@@ -432,7 +348,7 @@ waddch_literal(WINDOW *win, NCURSES_CH_T ch)
 
 static NCURSES_INLINE int
 waddch_nosync(WINDOW *win, const NCURSES_CH_T ch)
-/* the workhorse function -- add a character to the given window */
+ 
 {
     NCURSES_SIZE_T x, y;
     chtype t = (chtype) CharOf(ch);
@@ -442,12 +358,7 @@ waddch_nosync(WINDOW *win, const NCURSES_CH_T ch)
     const char *s = NCURSES_SP_NAME(unctrl) (NCURSES_SP_ARGx t);
     int tabsize = 8;
 
-    /*
-     * If we are using the alternate character set, forget about locale.
-     * Otherwise, if unctrl() returns a single-character or the locale
-     * claims the code is printable (and not also a control character),
-     * treat it that way.
-     */
+     
     if ((AttrOf(ch) & A_ALTCHARSET)
 	|| (
 #if USE_WIDEC_SUPPORT
@@ -466,10 +377,7 @@ waddch_nosync(WINDOW *win, const NCURSES_CH_T ch)
 	return waddch_literal(win, ch);
     }
 
-    /*
-     * Handle carriage control and other codes that are not printable, or are
-     * known to expand to more than one character according to unctrl().
-     */
+     
     x = win->_curx;
     y = win->_cury;
     CHECK_POSITION(win, x, y);
@@ -482,10 +390,7 @@ waddch_nosync(WINDOW *win, const NCURSES_CH_T ch)
 	tabsize = TABSIZE;
 #endif
 	x = (NCURSES_SIZE_T) (x + (tabsize - (x % tabsize)));
-	/*
-	 * Space-fill the tab on the bottom line so that we'll get the
-	 * "correct" cursor position.
-	 */
+	 
 	if ((!win->_scroll && (y == win->_regbottom))
 	    || (x <= win->_maxx)) {
 	    NCURSES_CH_T blank = blankchar;
@@ -517,7 +422,7 @@ waddch_nosync(WINDOW *win, const NCURSES_CH_T ch)
 	    else
 		return (ERR);
 	}
-	/* FALLTHRU */
+	 
     case '\r':
 	x = 0;
 	win->_flags &= ~_WRAPPED;
@@ -547,18 +452,14 @@ waddch_nosync(WINDOW *win, const NCURSES_CH_T ch)
 
 NCURSES_EXPORT(int)
 _nc_waddch_nosync(WINDOW *win, const NCURSES_CH_T c)
-/* export copy of waddch_nosync() so the string-put functions can use it */
+ 
 {
     return (waddch_nosync(win, c));
 }
 
-/*
- * The versions below call _nc_synchook().  We wanted to avoid this in the
- * version exported for string puts; they'll call _nc_synchook once at end
- * of run.
- */
+ 
 
-/* These are actual entry points */
+ 
 
 NCURSES_EXPORT(int)
 waddch(WINDOW *win, const chtype ch)

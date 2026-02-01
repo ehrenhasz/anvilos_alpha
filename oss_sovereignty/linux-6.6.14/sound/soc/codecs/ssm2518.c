@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * SSM2518 amplifier audio driver
- *
- * Copyright 2013 Analog Devices Inc.
- *  Author: Lars-Peter Clausen <lars@metafoo.de>
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/module.h>
@@ -372,7 +367,7 @@ static int ssm2518_hw_params(struct snd_pcm_substream *substream,
 		ctrl1_mask |= SSM2518_SAI_CTRL1_FMT_MASK;
 	}
 
-	/* Disable auto samplerate detection */
+	 
 	ret = regmap_update_bits(ssm2518->regmap, SSM2518_REG_CLOCK,
 				SSM2518_CLOCK_ASR, SSM2518_CLOCK_ASR);
 	if (ret < 0)
@@ -541,7 +536,7 @@ static int ssm2518_set_tdm_slot(struct snd_soc_dai *dai, unsigned int tx_mask,
 		left_slot = 0;
 		right_slot = 0;
 	} else {
-		/* We assume the left channel < right channel */
+		 
 		left_slot = __ffs(tx_mask);
 		tx_mask &= ~(1 << left_slot);
 		if (tx_mask == 0) {
@@ -654,9 +649,7 @@ static int ssm2518_set_sysclk(struct snd_soc_component *component, int clk_id,
 		val = 0;
 		break;
 	case SSM2518_SYSCLK_SRC_BCLK:
-		/* In this case the bitclock is used as the system clock, and
-		 * the bitclock signal needs to be connected to the MCLK pin and
-		 * the BCLK pin is left unconnected */
+		 
 		val = SSM2518_POWER1_NO_BCLK;
 		break;
 	default:
@@ -742,7 +735,7 @@ static int ssm2518_i2c_probe(struct i2c_client *i2c)
 	if (ssm2518 == NULL)
 		return -ENOMEM;
 
-	/* Start with enabling the chip */
+	 
 	ssm2518->enable_gpio = devm_gpiod_get_optional(&i2c->dev, NULL,
 						       GPIOD_OUT_HIGH);
 	ret = PTR_ERR_OR_ZERO(ssm2518->enable_gpio);
@@ -757,12 +750,7 @@ static int ssm2518_i2c_probe(struct i2c_client *i2c)
 	if (IS_ERR(ssm2518->regmap))
 		return PTR_ERR(ssm2518->regmap);
 
-	/*
-	 * The reset bit is obviously volatile, but we need to be able to cache
-	 * the other bits in the register, so we can't just mark the whole
-	 * register as volatile. Since this is the only place where we'll ever
-	 * touch the reset bit just bypass the cache for this operation.
-	 */
+	 
 	regcache_cache_bypass(ssm2518->regmap, true);
 	ret = regmap_write(ssm2518->regmap, SSM2518_REG_POWER1,
 			SSM2518_POWER1_RESET);

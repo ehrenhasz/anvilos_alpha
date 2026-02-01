@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Renesas RZ/G2L Multi-Function Timer Pulse Unit 3(MTU3a) Core driver
- *
- * Copyright (C) 2023 Renesas Electronics Corporation
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/clk.h>
@@ -25,7 +21,7 @@ struct rz_mtu3_priv {
 	spinlock_t lock;
 };
 
-/******* MTU3 registers (original offset is +0x1200) *******/
+ 
 static const unsigned long rz_mtu3_8bit_ch_reg_offs[][13] = {
 	[RZ_MTU3_CHAN_0] = MTU_8BIT_CH_0(0x104, 0x090, 0x100, 0x128, 0x101, 0x102, 0x103, 0x126),
 	[RZ_MTU3_CHAN_1] = MTU_8BIT_CH_1_2(0x184, 0x091, 0x185, 0x180, 0x194, 0x181, 0x182),
@@ -92,7 +88,7 @@ u16 rz_mtu3_16bit_ch_read(struct rz_mtu3_channel *ch, u16 offset)
 	struct rz_mtu3_priv *priv = mtu->priv_data;
 	u16 ch_offs;
 
-	/* MTU8 doesn't have 16-bit registers */
+	 
 	if (ch->channel_number == RZ_MTU3_CHAN_8)
 		return 0;
 
@@ -134,7 +130,7 @@ void rz_mtu3_16bit_ch_write(struct rz_mtu3_channel *ch, u16 offset, u16 val)
 	struct rz_mtu3_priv *priv = mtu->priv_data;
 	u16 ch_offs;
 
-	/* MTU8 doesn't have 16-bit registers */
+	 
 	if (ch->channel_number == RZ_MTU3_CHAN_8)
 		return;
 
@@ -255,7 +251,7 @@ static void rz_mtu3_start_stop_ch(struct rz_mtu3_channel *ch, bool start)
 	offset = rz_mtu3_get_tstr_offset(ch);
 	bitpos = rz_mtu3_get_tstr_bit_pos(ch);
 
-	/* start stop register shared by multiple timer channels */
+	 
 	spin_lock_irqsave(&priv->lock, flags);
 
 	tstr = rz_mtu3_shared_reg_read(ch, offset);
@@ -276,7 +272,7 @@ bool rz_mtu3_is_enabled(struct rz_mtu3_channel *ch)
 	offset = rz_mtu3_get_tstr_offset(ch);
 	bitpos = rz_mtu3_get_tstr_bit_pos(ch);
 
-	/* start stop register shared by multiple timer channels */
+	 
 	spin_lock_irqsave(&priv->lock, flags);
 	tstr = rz_mtu3_shared_reg_read(ch, offset);
 	spin_unlock_irqrestore(&priv->lock, flags);
@@ -287,7 +283,7 @@ EXPORT_SYMBOL_GPL(rz_mtu3_is_enabled);
 
 int rz_mtu3_enable(struct rz_mtu3_channel *ch)
 {
-	/* enable channel */
+	 
 	rz_mtu3_start_stop_ch(ch, true);
 
 	return 0;
@@ -296,7 +292,7 @@ EXPORT_SYMBOL_GPL(rz_mtu3_enable);
 
 void rz_mtu3_disable(struct rz_mtu3_channel *ch)
 {
-	/* disable channel */
+	 
 	rz_mtu3_start_stop_ch(ch, false);
 }
 EXPORT_SYMBOL_GPL(rz_mtu3_disable);
@@ -373,7 +369,7 @@ err_assert:
 
 static const struct of_device_id rz_mtu3_of_match[] = {
 	{ .compatible = "renesas,rz-mtu3", },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, rz_mtu3_of_match);
 

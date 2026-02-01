@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Infineon TUA9001 silicon tuner driver
- *
- * Copyright (C) 2009 Antti Palosaari <crope@iki.fi>
- */
+ 
+ 
 
 #ifndef TUA9001_PRIV_H
 #define TUA9001_PRIV_H

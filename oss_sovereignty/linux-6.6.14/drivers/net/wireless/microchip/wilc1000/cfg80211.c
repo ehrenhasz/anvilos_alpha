@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2012 - 2018 Microchip Technology Inc., and its subsidiaries.
- * All rights reserved.
- */
+
+ 
 
 #include "cfg80211.h"
 
@@ -14,7 +11,7 @@
 
 #define WILC_INVALID_CHANNEL		0
 
-/* Operation at 2.4 GHz with channels 1-13 */
+ 
 #define WILC_WLAN_OPERATING_CLASS_2_4GHZ		0x51
 
 static const struct ieee80211_txrx_stypes
@@ -462,7 +459,7 @@ static int disconnect(struct wiphy *wiphy, struct net_device *dev,
 		return -EIO;
 
 	if (wilc->close) {
-		/* already disconnected done */
+		 
 		cfg80211_disconnected(dev, 0, NULL, 0, true, GFP_KERNEL);
 		return 0;
 	}
@@ -723,7 +720,7 @@ static int get_key(struct wiphy *wiphy, struct net_device *netdev, int link_id,
 	return 0;
 }
 
-/* wiphy_new_nm() will WARNON if not present */
+ 
 static int set_default_key(struct wiphy *wiphy, struct net_device *netdev,
 			   int link_id, u8 key_index, bool unicast,
 			   bool multicast)
@@ -984,7 +981,7 @@ static inline void wilc_wfi_cfg_parse_ch_attr(u8 *buf, u32 len, u8 sta_ch)
 		u16 elem_size;
 
 		ch_list = (struct wilc_attr_ch_list *)&buf[ch_list_idx];
-		/* the number of bytes following the final 'elem' member */
+		 
 		elem_size = le16_to_cpu(ch_list->attr_len) -
 			(sizeof(*ch_list) - sizeof(struct wilc_attr_entry));
 		for (unsigned int i = 0; i < elem_size;) {
@@ -1698,7 +1695,7 @@ static int get_tx_power(struct wiphy *wiphy, struct wireless_dev *wdev,
 	struct wilc_vif *vif = netdev_priv(wdev->netdev);
 	struct wilc *wl = vif->wilc;
 
-	/* If firmware is not started, return. */
+	 
 	if (!wl->initialized)
 		return -EIO;
 

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2016 MediaTek Inc.
- * Author: Ming Hsiu Tsai <minghsiu.tsai@mediatek.com>
- *         Rick Chang <rick.chang@mediatek.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/videodev2.h>
@@ -79,11 +75,11 @@ static bool mtk_jpeg_do_parse(struct mtk_jpeg_dec_param *param, u8 *src_addr_va,
 		length = 0;
 		switch (byte) {
 		case JPEG_MARKER_SOF0:
-			/* length */
+			 
 			if (read_word_be(&stream, &word))
 				break;
 
-			/* precision */
+			 
 			if (read_byte(&stream) == -1)
 				break;
 
@@ -104,7 +100,7 @@ static bool mtk_jpeg_do_parse(struct mtk_jpeg_dec_param *param, u8 *src_addr_va,
 				if (param->comp_id[i] == -1)
 					break;
 
-				/* sampling */
+				 
 				byte = read_byte(&stream);
 				if (byte == -1)
 					break;

@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0-only
-//
-// Copyright(c) 2021-2022 Intel Corporation. All rights reserved.
-//
-// Authors: Cezary Rojewski <cezary.rojewski@intel.com>
-//          Amadeusz Slawinski <amadeuszx.slawinski@linux.intel.com>
-//
+
+
+
+
+
+
+
 
 #include <linux/clk.h>
 #include <linux/dmi.h>
@@ -28,7 +28,7 @@
 #define AVS_RT5682_MCLK_24MHZ		BIT(4)
 #define AVS_RT5682_CODEC_DAI_NAME	"rt5682-aif1"
 
-/* Default: MCLK on, MCLK 19.2M, SSP0 */
+ 
 static unsigned long avs_rt5682_quirk = AVS_RT5682_MCLK_EN | AVS_RT5682_SSP_CODEC(0);
 
 static int avs_rt5682_quirk_cb(const struct dmi_system_id *id)
@@ -71,11 +71,11 @@ static const struct snd_soc_dapm_widget card_widgets[] = {
 };
 
 static const struct snd_soc_dapm_route card_base_routes[] = {
-	/* HP jack connectors - unknown if we have jack detect */
+	 
 	{ "Headphone Jack", NULL, "HPOL" },
 	{ "Headphone Jack", NULL, "HPOR" },
 
-	/* other jacks */
+	 
 	{ "IN1P", NULL, "Headset Mic" },
 };
 
@@ -105,7 +105,7 @@ static int avs_rt5682_codec_init(struct snd_soc_pcm_runtime *runtime)
 	if (!pins)
 		return -ENOMEM;
 
-	/* Need to enable ASRC function for 24MHz mclk rate */
+	 
 	if ((avs_rt5682_quirk & AVS_RT5682_MCLK_EN) &&
 	    (avs_rt5682_quirk & AVS_RT5682_MCLK_24MHZ)) {
 		rt5682_sel_asrc_clk_src(component, RT5682_DA_STEREO1_FILTER |
@@ -169,7 +169,7 @@ avs_rt5682_hw_params(struct snd_pcm_substream *substream, struct snd_pcm_hw_para
 	if (ret < 0)
 		dev_err(runtime->dev, "Set sysclk failed: %d\n", ret);
 
-	/* slot_width should be equal or larger than data length. */
+	 
 	ret = snd_soc_dai_set_tdm_slot(codec_dai, 0x0, 0x0, 2, params_width(params));
 	if (ret < 0)
 		dev_err(runtime->dev, "Set TDM slot failed: %d\n", ret);
@@ -191,11 +191,11 @@ avs_rt5682_be_fixup(struct snd_soc_pcm_runtime *runtime, struct snd_pcm_hw_param
 	channels = hw_param_interval(params, SNDRV_PCM_HW_PARAM_CHANNELS);
 	fmt = hw_param_mask(params, SNDRV_PCM_HW_PARAM_FORMAT);
 
-	/* The ADSP will convert the FE rate to 48k, stereo */
+	 
 	rate->min = rate->max = 48000;
 	channels->min = channels->max = 2;
 
-	/* set SSPN to 24 bit */
+	 
 	snd_mask_none(fmt);
 	snd_mask_set_format(fmt, SNDRV_PCM_FORMAT_S24_LE);
 

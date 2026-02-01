@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: ISC
-/* Copyright (C) 2022 MediaTek Inc.
- *
- * Author: Lorenzo Bianconi <lorenzo@kernel.org>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -15,10 +12,10 @@
 static const struct usb_device_id mt7921u_device_table[] = {
 	{ USB_DEVICE_AND_INTERFACE_INFO(0x0e8d, 0x7961, 0xff, 0xff, 0xff),
 		.driver_info = (kernel_ulong_t)MT7921_FIRMWARE_WM },
-	/* Comfast CF-952AX */
+	 
 	{ USB_DEVICE_AND_INTERFACE_INFO(0x3574, 0x6211, 0xff, 0xff, 0xff),
 		.driver_info = (kernel_ulong_t)MT7921_FIRMWARE_WM },
-	/* Netgear, Inc. [A8000,AXE3000] */
+	 
 	{ USB_DEVICE_AND_INTERFACE_INFO(0x0846, 0x9060, 0xff, 0xff, 0xff),
 		.driver_info = (kernel_ulong_t)MT7921_FIRMWARE_WM },
 	{ },
@@ -234,7 +231,7 @@ static int mt7921u_probe(struct usb_interface *usb_intf,
 		goto error;
 
 	hw = mt76_hw(dev);
-	/* check hw sg support in order to enable AMSDU */
+	 
 	hw->max_tx_fragments = mdev->usb.sg_en ? MT_HW_TXP_MAX_BUF_NUM : 1;
 
 	ret = mt7921_register_device(dev);
@@ -323,7 +320,7 @@ failed:
 
 	return err;
 }
-#endif /* CONFIG_PM */
+#endif  
 
 MODULE_DEVICE_TABLE(usb, mt7921u_device_table);
 MODULE_FIRMWARE(MT7921_FIRMWARE_WM);
@@ -338,7 +335,7 @@ static struct usb_driver mt7921u_driver = {
 	.suspend	= mt7921u_suspend,
 	.resume		= mt7921u_resume,
 	.reset_resume	= mt7921u_resume,
-#endif /* CONFIG_PM */
+#endif  
 	.soft_unbind	= 1,
 	.disable_hub_initiated_lpm = 1,
 };

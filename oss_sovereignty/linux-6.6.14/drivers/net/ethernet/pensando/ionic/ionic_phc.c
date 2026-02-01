@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright(c) 2017 - 2021 Pensando Systems, Inc */
+
+ 
 
 #include <linux/netdevice.h>
 #include <linux/etherdevice.h>
@@ -84,12 +84,7 @@ static int ionic_lif_hwstamp_set_ts_config(struct ionic_lif *lif,
 	if (new_ts) {
 		config = new_ts;
 	} else {
-		/* If called with new_ts == NULL, replay the previous request
-		 * primarily for recovery after a FW_RESET.
-		 * We saved the previous configuration request info, so copy
-		 * the previous request for reference, clear the current state
-		 * to match the device's reset state, and run with it.
-		 */
+		 
 		config = &ts;
 		memcpy(config, &lif->phc->ts_config, sizeof(*config));
 		memset(&lif->phc->ts_config, 0, sizeof(lif->phc->ts_config));
@@ -177,7 +172,7 @@ err_rxfilt:
 				"Failed to revert tx timestamp mode: %d\n", err2);
 	}
 err_txmode:
-	/* special queues remain allocated, just unused */
+	 
 err_queues:
 	mutex_unlock(&lif->phc->config_lock);
 	return err;
@@ -267,7 +262,7 @@ static u64 ionic_hwstamp_read(struct ionic *ionic,
 {
 	u32 tick_high_before, tick_high, tick_low;
 
-	/* read and discard low part to defeat hw staging of high part */
+	 
 	ioread32(&ionic->idev.hwstamp_regs->tick_low);
 
 	tick_high_before = ioread32(&ionic->idev.hwstamp_regs->tick_high);
@@ -278,9 +273,7 @@ static u64 ionic_hwstamp_read(struct ionic *ionic,
 
 	tick_high = ioread32(&ionic->idev.hwstamp_regs->tick_high);
 
-	/* If tick_high changed, re-read tick_low once more.  Assume tick_high
-	 * cannot change again so soon as in the span of re-reading tick_low.
-	 */
+	 
 	if (tick_high != tick_high_before) {
 		ptp_read_system_prets(sts);
 		tick_low = ioread32(&ionic->idev.hwstamp_regs->tick_low);
@@ -322,28 +315,26 @@ static int ionic_phc_adjfine(struct ptp_clock_info *info, long scaled_ppm)
 	s64 adj;
 	int err;
 
-	/* Reject phc adjustments during device upgrade */
+	 
 	if (test_bit(IONIC_LIF_F_FW_RESET, phc->lif->state))
 		return -EBUSY;
 
-	/* Adjustment value scaled by 2^16 million */
+	 
 	adj = (s64)scaled_ppm * phc->init_cc_mult;
 
-	/* Adjustment value to scale */
+	 
 	adj /= (s64)SCALED_PPM;
 
-	/* Final adjusted multiplier */
+	 
 	adj += phc->init_cc_mult;
 
 	spin_lock_irqsave(&phc->lock, irqflags);
 
-	/* update the point-in-time basis to now, before adjusting the rate */
+	 
 	timecounter_read(&phc->tc);
 	phc->cc.mult = adj;
 
-	/* Setphc commands are posted in-order, sequenced by phc->lock.  We
-	 * need to drop the lock before waiting for the command to complete.
-	 */
+	 
 	err = ionic_setphc_cmd(phc, &ctx);
 
 	spin_unlock_irqrestore(&phc->lock, irqflags);
@@ -358,7 +349,7 @@ static int ionic_phc_adjtime(struct ptp_clock_info *info, s64 delta)
 	unsigned long irqflags;
 	int err;
 
-	/* Reject phc adjustments during device upgrade */
+	 
 	if (test_bit(IONIC_LIF_F_FW_RESET, phc->lif->state))
 		return -EBUSY;
 
@@ -366,9 +357,7 @@ static int ionic_phc_adjtime(struct ptp_clock_info *info, s64 delta)
 
 	timecounter_adjtime(&phc->tc, delta);
 
-	/* Setphc commands are posted in-order, sequenced by phc->lock.  We
-	 * need to drop the lock before waiting for the command to complete.
-	 */
+	 
 	err = ionic_setphc_cmd(phc, &ctx);
 
 	spin_unlock_irqrestore(&phc->lock, irqflags);
@@ -385,7 +374,7 @@ static int ionic_phc_settime64(struct ptp_clock_info *info,
 	int err;
 	u64 ns;
 
-	/* Reject phc adjustments during device upgrade */
+	 
 	if (test_bit(IONIC_LIF_F_FW_RESET, phc->lif->state))
 		return -EBUSY;
 
@@ -395,9 +384,7 @@ static int ionic_phc_settime64(struct ptp_clock_info *info,
 
 	timecounter_init(&phc->tc, &phc->cc, ns);
 
-	/* Setphc commands are posted in-order, sequenced by phc->lock.  We
-	 * need to drop the lock before waiting for the command to complete.
-	 */
+	 
 	err = ionic_setphc_cmd(phc, &ctx);
 
 	spin_unlock_irqrestore(&phc->lock, irqflags);
@@ -414,7 +401,7 @@ static int ionic_phc_gettimex64(struct ptp_clock_info *info,
 	unsigned long irqflags;
 	u64 tick, ns;
 
-	/* Do not attempt to read device time during upgrade */
+	 
 	if (test_bit(IONIC_LIF_F_FW_RESET, phc->lif->state))
 		return -EBUSY;
 
@@ -438,23 +425,16 @@ static long ionic_phc_aux_work(struct ptp_clock_info *info)
 	unsigned long irqflags;
 	int err;
 
-	/* Do not update phc during device upgrade, but keep polling to resume
-	 * after upgrade.  Since we don't update the point in time basis, there
-	 * is no expectation that we are maintaining the phc time during the
-	 * upgrade.  After upgrade, it will need to be readjusted back to the
-	 * correct time by the ptp daemon.
-	 */
+	 
 	if (test_bit(IONIC_LIF_F_FW_RESET, phc->lif->state))
 		return phc->aux_work_delay;
 
 	spin_lock_irqsave(&phc->lock, irqflags);
 
-	/* update point-in-time basis to now */
+	 
 	timecounter_read(&phc->tc);
 
-	/* Setphc commands are posted in-order, sequenced by phc->lock.  We
-	 * need to drop the lock before waiting for the command to complete.
-	 */
+	 
 	err = ionic_setphc_cmd(phc, &ctx);
 
 	spin_unlock_irqrestore(&phc->lock, irqflags);
@@ -559,19 +539,17 @@ void ionic_lif_alloc_phc(struct ionic_lif *lif)
 	spin_lock_init(&phc->lock);
 	mutex_init(&phc->config_lock);
 
-	/* max ticks is limited by the multiplier, or by the update period. */
+	 
 	if (phc->cc.shift + 2 + ilog2(IONIC_PHC_UPDATE_NS) >= 64) {
-		/* max ticks that do not overflow when multiplied by max
-		 * adjusted multiplier (twice the initial multiplier)
-		 */
+		 
 		diff = U64_MAX / phc->cc.mult / 2;
 	} else {
-		/* approx ticks at four times the update period */
+		 
 		diff = (u64)IONIC_PHC_UPDATE_NS << (phc->cc.shift + 2);
 		diff = DIV_ROUND_UP(diff, phc->cc.mult);
 	}
 
-	/* transform to bitmask */
+	 
 	diff |= diff >> 1;
 	diff |= diff >> 2;
 	diff |= diff >> 4;
@@ -579,32 +557,16 @@ void ionic_lif_alloc_phc(struct ionic_lif *lif)
 	diff |= diff >> 16;
 	diff |= diff >> 32;
 
-	/* constrain to the hardware bitmask */
+	 
 	diff &= phc->cc.mask;
 
-	/* the wrap period is now defined by diff
-	 *
-	 * we will update the time basis at about 1/4 the wrap period, so
-	 * should not see a difference of more than +/- diff/4.
-	 *
-	 * this is sufficient not see a difference of more than +/- diff/2, as
-	 * required by timecounter_cyc2time, to detect an old time stamp.
-	 *
-	 * adjust the initial multiplier, being careful to avoid overflow:
-	 *  - do not overflow 63 bits: init_cc_mult * SCALED_PPM
-	 *  - do not overflow 64 bits: max_mult * (diff / 2)
-	 *
-	 * we want to increase the initial multiplier as much as possible, to
-	 * allow for more precise adjustment in ionic_phc_adjfine.
-	 *
-	 * only adjust the multiplier if we can double it or more.
-	 */
+	 
 	mult = U64_MAX / 2 / max(diff / 2, SCALED_PPM);
 	shift = mult / phc->cc.mult;
 	if (shift >= 2) {
-		/* initial multiplier will be 2^n of hardware cc.mult */
+		 
 		shift = fls(shift);
-		/* increase cc.mult and cc.shift by the same 2^n and n. */
+		 
 		phc->cc.mult <<= shift;
 		phc->cc.shift += shift;
 	}
@@ -612,12 +574,12 @@ void ionic_lif_alloc_phc(struct ionic_lif *lif)
 	dev_dbg(lif->ionic->dev, "Initial PHC mask %#llx mult %u shift %u\n",
 		phc->cc.mask, phc->cc.mult, phc->cc.shift);
 
-	/* frequency adjustments are relative to the initial multiplier */
+	 
 	phc->init_cc_mult = phc->cc.mult;
 
 	timecounter_init(&phc->tc, &phc->cc, ktime_get_real_ns());
 
-	/* Update cycle_last at 1/4 the wrap period, or IONIC_PHC_UPDATE_NS */
+	 
 	delay = min_t(u64, IONIC_PHC_UPDATE_NS,
 		      cyclecounter_cyc2ns(&phc->cc, diff / 4, 0, &frac));
 	dev_dbg(lif->ionic->dev, "Work delay %llu ms\n", delay / NSEC_PER_MSEC);
@@ -626,9 +588,7 @@ void ionic_lif_alloc_phc(struct ionic_lif *lif)
 
 	phc->ptp_info = ionic_ptp_info;
 
-	/* We have allowed to adjust the multiplier up to +/- 1 part per 1.
-	 * Here expressed as NORMAL_PPB (1 billion parts per billion).
-	 */
+	 
 	phc->ptp_info.max_adj = NORMAL_PPB;
 
 	lif->phc = phc;

@@ -1,55 +1,8 @@
 #ifndef _OPA_VNIC_INTERNAL_H
 #define _OPA_VNIC_INTERNAL_H
-/*
- * Copyright(c) 2017 Intel Corporation.
- *
- * This file is provided under a dual BSD/GPLv2 license.  When using or
- * redistributing this file, you may do so under either license.
- *
- * GPL LICENSE SUMMARY
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of version 2 of the GNU General Public License as
- * published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.
- *
- * BSD LICENSE
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- *
- *  - Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- *  - Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in
- *    the documentation and/or other materials provided with the
- *    distribution.
- *  - Neither the name of Intel Corporation nor the names of its
- *    contributors may be used to endorse or promote products derived
- *    from this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- */
+ 
 
-/*
- * This file contains OPA VNIC driver internal declarations
- */
+ 
 
 #include <linux/bitops.h>
 #include <linux/etherdevice.h>
@@ -62,19 +15,15 @@
 #define OPA_VNIC_VLAN_PCP(vlan_tci)  \
 			(((vlan_tci) & VLAN_PRIO_MASK) >> VLAN_PRIO_SHIFT)
 
-/* Flow to default port redirection table size */
+ 
 #define OPA_VNIC_FLOW_TBL_SIZE    32
 
-/* Invalid port number */
+ 
 #define OPA_VNIC_INVALID_PORT     0xff
 
 struct opa_vnic_adapter;
 
-/*
- * struct __opa_vesw_info - OPA vnic virtual switch info
- *
- * Same as opa_vesw_info without bitwise attribute.
- */
+ 
 struct __opa_vesw_info {
 	u16  fabric_id;
 	u16  vesw_id;
@@ -96,11 +45,7 @@ struct __opa_vesw_info {
 	u8   rsvd4[2];
 } __packed;
 
-/*
- * struct __opa_per_veswport_info - OPA vnic per port info
- *
- * Same as opa_per_veswport_info without bitwise attribute.
- */
+ 
 struct __opa_per_veswport_info {
 	u32  port_num;
 
@@ -136,21 +81,13 @@ struct __opa_per_veswport_info {
 	u8   rsvd3[8];
 } __packed;
 
-/*
- * struct __opa_veswport_info - OPA vnic port info
- *
- * Same as opa_veswport_info without bitwise attribute.
- */
+ 
 struct __opa_veswport_info {
 	struct __opa_vesw_info            vesw;
 	struct __opa_per_veswport_info    vport;
 };
 
-/*
- * struct __opa_veswport_trap - OPA vnic trap info
- *
- * Same as opa_veswport_trap without bitwise attribute.
- */
+ 
 struct __opa_veswport_trap {
 	u16	fabric_id;
 	u16	veswid;
@@ -161,38 +98,14 @@ struct __opa_veswport_trap {
 	u32	reserved;
 } __packed;
 
-/**
- * struct opa_vnic_ctrl_port - OPA virtual NIC control port
- * @ibdev: pointer to ib device
- * @ops: opa vnic control operations
- * @num_ports: number of opa ports
- */
+ 
 struct opa_vnic_ctrl_port {
 	struct ib_device           *ibdev;
 	struct opa_vnic_ctrl_ops   *ops;
 	u8                          num_ports;
 };
 
-/**
- * struct opa_vnic_adapter - OPA VNIC netdev private data structure
- * @netdev: pointer to associated netdev
- * @ibdev: ib device
- * @cport: pointer to opa vnic control port
- * @rn_ops: rdma netdev's net_device_ops
- * @port_num: OPA port number
- * @vport_num: vesw port number
- * @lock: adapter lock
- * @info: virtual ethernet switch port information
- * @vema_mac_addr: mac address configured by vema
- * @umac_hash: unicast maclist hash
- * @mmac_hash: multicast maclist hash
- * @mactbl: hash table of MAC entries
- * @mactbl_lock: mac table lock
- * @stats_lock: statistics lock
- * @flow_tbl: flow to default port redirection table
- * @trap_timeout: trap timeout
- * @trap_count: no. of traps allowed within timeout period
- */
+ 
 struct opa_vnic_adapter {
 	struct net_device             *netdev;
 	struct ib_device              *ibdev;
@@ -202,7 +115,7 @@ struct opa_vnic_adapter {
 	u8 port_num;
 	u8 vport_num;
 
-	/* Lock used around concurrent updates to netdev */
+	 
 	struct mutex lock;
 
 	struct __opa_veswport_info  info;
@@ -211,10 +124,10 @@ struct opa_vnic_adapter {
 	u32                         mmac_hash;
 	struct hlist_head  __rcu   *mactbl;
 
-	/* Lock used to protect updates to mac table */
+	 
 	struct mutex mactbl_lock;
 
-	/* Lock used to protect access to vnic counters */
+	 
 	spinlock_t stats_lock;
 
 	u8 flow_tbl[OPA_VNIC_FLOW_TBL_SIZE];
@@ -223,19 +136,14 @@ struct opa_vnic_adapter {
 	u8            trap_count;
 };
 
-/* Same as opa_veswport_mactable_entry, but without bitwise attribute */
+ 
 struct __opa_vnic_mactable_entry {
 	u8  mac_addr[ETH_ALEN];
 	u8  mac_addr_mask[ETH_ALEN];
 	u32 dlid_sd;
 } __packed;
 
-/**
- * struct opa_vnic_mac_tbl_node - OPA VNIC mac table node
- * @hlist: hash list handle
- * @index: index of entry in the mac table
- * @entry: entry in the table
- */
+ 
 struct opa_vnic_mac_tbl_node {
 	struct hlist_node                    hlist;
 	u16                                  index;
@@ -258,19 +166,19 @@ struct opa_vnic_mac_tbl_node {
 #define c_dbg(format, arg...) \
 	dev_dbg(&cport->ibdev->dev, format, ## arg)
 
-/* The maximum allowed entries in the mac table */
+ 
 #define OPA_VNIC_MAC_TBL_MAX_ENTRIES  2048
-/* Limit of smac entries in mac table */
+ 
 #define OPA_VNIC_MAX_SMAC_LIMIT       256
 
-/* The last octet of the MAC address is used as the key to the hash table */
+ 
 #define OPA_VNIC_MAC_HASH_IDX         5
 
-/* The VNIC MAC hash table is of size 2^8 */
+ 
 #define OPA_VNIC_MAC_TBL_HASH_BITS    8
 #define OPA_VNIC_MAC_TBL_SIZE  BIT(OPA_VNIC_MAC_TBL_HASH_BITS)
 
-/* VNIC HASH MACROS */
+ 
 #define vnic_hash_init(hashtable) __hash_init(hashtable, OPA_VNIC_MAC_TBL_SIZE)
 
 #define vnic_hash_add(hashtable, node, key)                                   \
@@ -326,4 +234,4 @@ void opa_vnic_set_ethtool_ops(struct net_device *netdev);
 void opa_vnic_vema_send_trap(struct opa_vnic_adapter *adapter,
 			     struct __opa_veswport_trap *data, u32 lid);
 
-#endif /* _OPA_VNIC_INTERNAL_H */
+#endif  

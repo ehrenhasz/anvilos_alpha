@@ -1,11 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0-only
-//
-// sdw-mockup.c -- a mockup SoundWire codec for tests where only the host
-// drives the bus.
-//
-// Copyright(c) 2021 Intel Corporation
-//
-//
+
+
+
+
+
+
+
+
 
 #include <linux/device.h>
 #include <linux/mod_devicetable.h>
@@ -69,7 +69,7 @@ static int sdw_mockup_pcm_hw_params(struct snd_pcm_substream *substream,
 	if (!sdw_mockup->slave)
 		return -EINVAL;
 
-	/* SoundWire specific configuration */
+	 
 	snd_sdw_params_to_config(substream, params, &stream_config, &port_config);
 
 	if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK)
@@ -141,13 +141,7 @@ static int sdw_mockup_read_prop(struct sdw_slave *slave)
 
 	prop->paging_support = false;
 
-	/*
-	 * first we need to allocate memory for set bits in port lists
-	 * the port allocation is completely arbitrary:
-	 * DP0 is not supported
-	 * DP1 is sink
-	 * DP8 is source
-	 */
+	 
 	prop->source_ports = BIT(8);
 	prop->sink_ports = BIT(1);
 
@@ -168,7 +162,7 @@ static int sdw_mockup_read_prop(struct sdw_slave *slave)
 		i++;
 	}
 
-	/* do this again for sink now */
+	 
 	nval = hweight32(prop->sink_ports);
 	prop->sink_dpn_prop = devm_kcalloc(&slave->dev, nval,
 					   sizeof(*prop->sink_dpn_prop),
@@ -188,7 +182,7 @@ static int sdw_mockup_read_prop(struct sdw_slave *slave)
 
 	prop->simple_clk_stop_capable = true;
 
-	/* wake-up event */
+	 
 	prop->wake_capable = 0;
 
 	return 0;
@@ -242,14 +236,7 @@ static int sdw_mockup_sdw_remove(struct sdw_slave *slave)
 	return 0;
 }
 
-/*
- * Intel reserved parts ID with the following mapping expected:
- * 0xAAAA: generic full-duplex codec
- * 0xAA55: headset codec (mock-up of RT711/RT5682) - full-duplex
- * 0x55AA: amplifier (mock-up of RT1308/Maxim 98373) - playback only with
- * IV feedback
- * 0x5555: mic codec (mock-up of RT715) - capture-only
- */
+ 
 static const struct sdw_device_id sdw_mockup_id[] = {
 	SDW_SLAVE_ENTRY_EXT(0x0105, 0xAAAA, 0x0, 0, 0),
 	SDW_SLAVE_ENTRY_EXT(0x0105, 0xAA55, 0x0, 0, 0),

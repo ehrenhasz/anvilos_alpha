@@ -1,14 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
 
-/*
- * ibumad BPF sample user side
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of version 2 of the GNU General Public
- * License as published by the Free Software Foundation.
- *
- * Copyright(c) 2018 Ira Weiny, Intel Corporation
- */
+
+ 
 
 #include <linux/bpf.h>
 #include <signal.h>
@@ -57,7 +49,7 @@ static void dump_all_counts(void)
 static void dump_exit(int sig)
 {
 	dump_all_counts();
-	/* Detach tracepoints */
+	 
 	while (tp_cnt)
 		bpf_link__destroy(tp_links[--tp_cnt]);
 
@@ -108,7 +100,7 @@ int main(int argc, char **argv)
 		}
 	}
 
-	/* Do one final dump when exiting */
+	 
 	signal(SIGINT, dump_exit);
 	signal(SIGTERM, dump_exit);
 
@@ -119,7 +111,7 @@ int main(int argc, char **argv)
 		return err;
 	}
 
-	/* load BPF program */
+	 
 	if (bpf_object__load(obj)) {
 		fprintf(stderr, "ERROR: loading BPF object file failed\n");
 		goto cleanup;
@@ -149,7 +141,7 @@ int main(int argc, char **argv)
 	err = 0;
 
 cleanup:
-	/* Detach tracepoints */
+	 
 	while (tp_cnt)
 		bpf_link__destroy(tp_links[--tp_cnt]);
 

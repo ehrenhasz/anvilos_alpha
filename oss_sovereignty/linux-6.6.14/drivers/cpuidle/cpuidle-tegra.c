@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * CPU idle driver for Tegra CPUs
- *
- * Copyright (c) 2010-2013, NVIDIA Corporation.
- * Copyright (c) 2011 Google, Inc.
- * Author: Colin Cross <ccross@android.com>
- *         Gary King <gking@nvidia.com>
- *
- * Rework for 3.3 by Peter De Schrijver <pdeschrijver@nvidia.com>
- *
- * Tegra20/124 driver unification by Dmitry Osipenko <digetx@gmail.com>
- */
+
+ 
 
 #define pr_fmt(fmt)	"tegra-cpuidle: " fmt
 
@@ -69,13 +58,7 @@ static int tegra_cpuidle_wait_for_secondary_cpus_parking(void)
 		unsigned int delay_us = 10;
 		unsigned int timeout_us = 500 * 1000 / delay_us;
 
-		/*
-		 * The primary CPU0 core shall wait for the secondaries
-		 * shutdown in order to power-off CPU's cluster safely.
-		 * The timeout value depends on the current CPU frequency,
-		 * it takes about 40-150us in average and over 1000us in
-		 * a worst case scenario.
-		 */
+		 
 		do {
 			if (tegra_cpu_rail_off_ready())
 				return 0;
@@ -140,12 +123,7 @@ static int tegra_cpuidle_c7_enter(void)
 static int tegra_cpuidle_coupled_barrier(struct cpuidle_device *dev)
 {
 	if (tegra_pending_sgi()) {
-		/*
-		 * CPU got local interrupt that will be lost after GIC's
-		 * shutdown because GIC driver doesn't save/restore the
-		 * pending SGI state across CPU cluster PM.  Abort and retry
-		 * next time.
-		 */
+		 
 		atomic_set(&tegra_abort_flag, 1);
 	}
 
@@ -165,14 +143,7 @@ static __cpuidle int tegra_cpuidle_state_enter(struct cpuidle_device *dev,
 {
 	int err;
 
-	/*
-	 * CC6 state is the "CPU cluster power-off" state.  In order to
-	 * enter this state, at first the secondary CPU cores need to be
-	 * parked into offline mode, then the last CPU should clean out
-	 * remaining dirty cache lines into DRAM and trigger Flow Controller
-	 * logic that turns off the cluster's power domain (which includes
-	 * CPU cores, GIC and L2 cache).
-	 */
+	 
 	if (index == TEGRA_CC6) {
 		err = tegra_cpuidle_coupled_barrier(dev);
 		if (err)
@@ -210,14 +181,11 @@ static __cpuidle int tegra_cpuidle_state_enter(struct cpuidle_device *dev,
 
 static int tegra_cpuidle_adjust_state_index(int index, unsigned int cpu)
 {
-	/*
-	 * On Tegra30 CPU0 can't be power-gated separately from secondary
-	 * cores because it gates the whole CPU cluster.
-	 */
+	 
 	if (cpu > 0 || index != TEGRA_C7 || tegra_get_chip_id() != TEGRA30)
 		return index;
 
-	/* put CPU0 into C1 if C7 is requested and secondaries are online */
+	 
 	if (!IS_ENABLED(CONFIG_PM_SLEEP) || num_online_cpus() > 1)
 		index = TEGRA_C1;
 	else
@@ -268,23 +236,7 @@ static int tegra114_enter_s2idle(struct cpuidle_device *dev,
 	return 0;
 }
 
-/*
- * The previous versions of Tegra CPUIDLE driver used a different "legacy"
- * terminology for naming of the idling states, while this driver uses the
- * new terminology.
- *
- * Mapping of the old terms into the new ones:
- *
- * Old | New
- * ---------
- * LP3 | C1	(CPU core clock gating)
- * LP2 | C7	(CPU core power gating)
- * LP2 | CC6	(CPU cluster power gating)
- *
- * Note that that the older CPUIDLE driver versions didn't explicitly
- * differentiate the LP2 states because these states either used the same
- * code path or because CC6 wasn't supported.
- */
+ 
 static struct cpuidle_driver tegra_idle_driver = {
 	.name = "tegra_idle",
 	.states = {
@@ -320,11 +272,7 @@ static inline void tegra_cpuidle_disable_state(enum tegra_state state)
 	cpuidle_driver_state_disabled(&tegra_idle_driver, state, true);
 }
 
-/*
- * Tegra20 HW appears to have a bug such that PCIe device interrupts, whether
- * they are legacy IRQs or MSI, are lost when CC6 is enabled.  To work around
- * this, simply disable CC6 if the PCI driver and DT node are both enabled.
- */
+ 
 void tegra_cpuidle_pcie_irqs_in_use(void)
 {
 	struct cpuidle_state *state_cc6 = &tegra_idle_driver.states[TEGRA_CC6];
@@ -351,27 +299,20 @@ static int tegra_cpuidle_probe(struct platform_device *pdev)
 	if (tegra_pmc_get_suspend_mode() == TEGRA_SUSPEND_NOT_READY)
 		return -EPROBE_DEFER;
 
-	/* LP2 could be disabled in device-tree */
+	 
 	if (tegra_pmc_get_suspend_mode() < TEGRA_SUSPEND_LP2)
 		tegra_cpuidle_disable_state(TEGRA_CC6);
 
-	/*
-	 * Required suspend-resume functionality, which is provided by the
-	 * Tegra-arch core and PMC driver, is unavailable if PM-sleep option
-	 * is disabled.
-	 */
+	 
 	if (!IS_ENABLED(CONFIG_PM_SLEEP)) {
 		tegra_cpuidle_disable_state(TEGRA_C7);
 		tegra_cpuidle_disable_state(TEGRA_CC6);
 	}
 
-	/*
-	 * Generic WFI state (also known as C1 or LP3) and the coupled CPU
-	 * cluster power-off (CC6 or LP2) states are common for all Tegra SoCs.
-	 */
+	 
 	switch (tegra_get_chip_id()) {
 	case TEGRA20:
-		/* Tegra20 isn't capable to power-off individual CPU cores */
+		 
 		tegra_cpuidle_disable_state(TEGRA_C7);
 		break;
 
@@ -382,7 +323,7 @@ static int tegra_cpuidle_probe(struct platform_device *pdev)
 	case TEGRA124:
 		tegra_cpuidle_setup_tegra114_c7_state();
 
-		/* coupled CC6 (LP2) state isn't implemented yet */
+		 
 		tegra_cpuidle_disable_state(TEGRA_CC6);
 		break;
 

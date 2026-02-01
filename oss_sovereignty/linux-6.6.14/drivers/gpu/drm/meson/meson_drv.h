@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copyright (C) 2016 BayLibre, SAS
- * Author: Neil Armstrong <narmstrong@baylibre.com>
- */
+ 
+ 
 
 #ifndef __MESON_DRV_H
 #define __MESON_DRV_H
@@ -61,7 +58,7 @@ struct meson_drm {
 
 	const struct meson_drm_soc_limits *limits;
 
-	/* Components Data */
+	 
 	struct {
 		bool osd1_enabled;
 		bool osd1_interlace;
@@ -182,4 +179,4 @@ static inline int meson_vpu_is_compatible(struct meson_drm *priv,
 	return priv->compat == family;
 }
 
-#endif /* __MESON_DRV_H */
+#endif  

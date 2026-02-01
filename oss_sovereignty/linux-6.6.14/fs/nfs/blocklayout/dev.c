@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2014-2016 Christoph Hellwig.
- */
+
+ 
 #include <linux/sunrpc/svc.h>
 #include <linux/blkdev.h>
 #include <linux/nfs4.h>
@@ -207,14 +205,14 @@ static bool bl_map_stripe(struct pnfs_block_dev *dev, u64 offset,
 	if (chunk_idx >= dev->nr_children) {
 		dprintk("%s: invalid chunk idx %d (%lld/%lld)\n",
 			__func__, chunk_idx, offset, dev->chunk_size);
-		/* error, should not happen */
+		 
 		return false;
 	}
 
-	/* truncate offset to the beginning of the stripe */
+	 
 	offset = chunk * dev->chunk_size;
 
-	/* disk offset of the stripe */
+	 
 	disk_offset = div_u64(offset, dev->nr_children);
 
 	child = &dev->children[chunk_idx];
@@ -336,12 +334,7 @@ bl_parse_scsi(struct nfs_server *server, struct pnfs_block_dev *d,
 	if (!bl_validate_designator(v))
 		return -EINVAL;
 
-	/*
-	 * Try to open the RH/Fedora specific dm-mpath udev path first, as the
-	 * wwn- links will only point to the first discovered SCSI device there.
-	 * On other distributions like Debian, the default SCSI by-id path will
-	 * point to the dm-multipath device if one exists.
-	 */
+	 
 	bdev = bl_open_path(v, "dm-uuid-mpath-0x");
 	if (IS_ERR(bdev))
 		bdev = bl_open_path(v, "wwn-0x");

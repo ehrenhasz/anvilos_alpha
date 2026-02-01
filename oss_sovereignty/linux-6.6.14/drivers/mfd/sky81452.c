@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * sky81452.c	SKY81452 MFD driver
- *
- * Copyright 2014 Skyworks Solutions Inc.
- * Author : Gyungoh Yoo <jack.yoo@skyworksinc.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>

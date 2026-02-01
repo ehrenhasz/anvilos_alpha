@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * This file contians vfs dentry ops for the 9P2000 protocol.
- *
- *  Copyright (C) 2004 by Eric Van Hensbergen <ericvh@gmail.com>
- *  Copyright (C) 2002 by Ron Minnich <rminnich@lanl.gov>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/errno.h>
@@ -23,27 +18,19 @@
 #include "v9fs_vfs.h"
 #include "fid.h"
 
-/**
- * v9fs_cached_dentry_delete - called when dentry refcount equals 0
- * @dentry:  dentry in question
- *
- */
+ 
 static int v9fs_cached_dentry_delete(const struct dentry *dentry)
 {
 	p9_debug(P9_DEBUG_VFS, " dentry: %pd (%p)\n",
 		 dentry, dentry);
 
-	/* Don't cache negative dentries */
+	 
 	if (d_really_is_negative(dentry))
 		return 1;
 	return 0;
 }
 
-/**
- * v9fs_dentry_release - called when dentry is going to be freed
- * @dentry:  dentry that is being release
- *
- */
+ 
 
 static void v9fs_dentry_release(struct dentry *dentry)
 {

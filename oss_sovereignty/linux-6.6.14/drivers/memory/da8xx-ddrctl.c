@@ -1,29 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * TI da8xx DDR2/mDDR controller driver
- *
- * Copyright (C) 2016 BayLibre SAS
- *
- * Author:
- *   Bartosz Golaszewski <bgolaszewski@baylibre.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/of.h>
 #include <linux/platform_device.h>
 #include <linux/io.h>
 
-/*
- * REVISIT: Linux doesn't have a good framework for the kind of performance
- * knobs this driver controls. We can't use device tree properties as it deals
- * with hardware configuration rather than description. We also don't want to
- * commit to maintaining some random sysfs attributes.
- *
- * For now we just hardcode the register values for the boards that need
- * some changes (as is the case for the LCD controller on da850-lcdk - the
- * first board we support here). When linux gets an appropriate framework,
- * we'll easily convert the driver to it.
- */
+ 
 
 struct da8xx_ddrctl_config_knob {
 	const char *name;

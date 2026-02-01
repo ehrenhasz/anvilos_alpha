@@ -1,48 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * POLYVAL: hash function for HCTR2.
- *
- * Copyright (c) 2007 Nokia Siemens Networks - Mikko Herranen <mh1@iki.fi>
- * Copyright (c) 2009 Intel Corp.
- *   Author: Huang Ying <ying.huang@intel.com>
- * Copyright 2021 Google LLC
- */
 
-/*
- * Code based on crypto/ghash-generic.c
- *
- * POLYVAL is a keyed hash function similar to GHASH. POLYVAL uses a different
- * modulus for finite field multiplication which makes hardware accelerated
- * implementations on little-endian machines faster. POLYVAL is used in the
- * kernel to implement HCTR2, but was originally specified for AES-GCM-SIV
- * (RFC 8452).
- *
- * For more information see:
- * Length-preserving encryption with HCTR2:
- *   https://eprint.iacr.org/2021/1441.pdf
- * AES-GCM-SIV: Nonce Misuse-Resistant Authenticated Encryption:
- *   https://datatracker.ietf.org/doc/html/rfc8452
- *
- * Like GHASH, POLYVAL is not a cryptographic hash function and should
- * not be used outside of crypto modes explicitly designed to use POLYVAL.
- *
- * This implementation uses a convenient trick involving the GHASH and POLYVAL
- * fields. This trick allows multiplication in the POLYVAL field to be
- * implemented by using multiplication in the GHASH field as a subroutine. An
- * element of the POLYVAL field can be converted to an element of the GHASH
- * field by computing x*REVERSE(a), where REVERSE reverses the byte-ordering of
- * a. Similarly, an element of the GHASH field can be converted back to the
- * POLYVAL field by computing REVERSE(x^{-1}*a). For more information, see:
- * https://datatracker.ietf.org/doc/html/rfc8452#appendix-A
- *
- * By using this trick, we do not need to implement the POLYVAL field for the
- * generic implementation.
- *
- * Warning: this generic implementation is not intended to be used in practice
- * and is not constant time. For practical use, a hardware accelerated
- * implementation of POLYVAL should be used instead.
- *
- */
+ 
+
+ 
 
 #include <asm/unaligned.h>
 #include <crypto/algapi.h>
@@ -76,19 +35,12 @@ static void copy_and_reverse(u8 dst[POLYVAL_BLOCK_SIZE],
 	put_unaligned(swab64(b), (u64 *)&dst[0]);
 }
 
-/*
- * Performs multiplication in the POLYVAL field using the GHASH field as a
- * subroutine.  This function is used as a fallback for hardware accelerated
- * implementations when simd registers are unavailable.
- *
- * Note: This function is not used for polyval-generic, instead we use the 4k
- * lookup table implementation for finite field multiplication.
- */
+ 
 void polyval_mul_non4k(u8 *op1, const u8 *op2)
 {
 	be128 a, b;
 
-	// Assume one argument is in Montgomery form and one is not.
+	
 	copy_and_reverse((u8 *)&a, op1);
 	copy_and_reverse((u8 *)&b, op2);
 	gf128mul_x_lle(&a, &a);
@@ -97,14 +49,7 @@ void polyval_mul_non4k(u8 *op1, const u8 *op2)
 }
 EXPORT_SYMBOL_GPL(polyval_mul_non4k);
 
-/*
- * Perform a POLYVAL update using non4k multiplication.  This function is used
- * as a fallback for hardware accelerated implementations when simd registers
- * are unavailable.
- *
- * Note: This function is not used for polyval-generic, instead we use the 4k
- * lookup table implementation of finite field multiplication.
- */
+ 
 void polyval_update_non4k(const u8 *key, const u8 *in,
 			  size_t nblocks, u8 *accumulator)
 {

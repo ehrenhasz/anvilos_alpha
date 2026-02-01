@@ -1,11 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 
-/*
- * This is a (sorted!) list of all known __noreturn functions in the kernel.
- * It's needed for objtool to properly reverse-engineer the control flow graph.
- *
- * Yes, this is unfortunate.  A better solution is in the works.
- */
+ 
 NORETURN(__kunit_abort)
 NORETURN(__module_put_and_kthread_exit)
 NORETURN(__reiserfs_panic)

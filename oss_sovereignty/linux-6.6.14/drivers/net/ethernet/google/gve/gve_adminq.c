@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0 OR MIT)
-/* Google virtual Ethernet (gve) driver
- *
- * Copyright (C) 2015-2021 Google, Inc.
- */
+
+ 
 
 #include <linux/etherdevice.h>
 #include <linux/pci.h>
@@ -46,9 +43,7 @@ void gve_parse_device_option(struct gve_priv *priv,
 	u16 option_length = be16_to_cpu(option->option_length);
 	u16 option_id = be16_to_cpu(option->option_id);
 
-	/* If the length or feature mask doesn't match, continue without
-	 * enabling the feature.
-	 */
+	 
 	switch (option_id) {
 	case GVE_DEV_OPT_ID_GQI_RAW_ADDRESSING:
 		if (option_length != GVE_DEV_OPT_LEN_GQI_RAW_ADDRESSING ||
@@ -148,15 +143,13 @@ void gve_parse_device_option(struct gve_priv *priv,
 		*dev_op_jumbo_frames = (void *)(option + 1);
 		break;
 	default:
-		/* If we don't recognize the option just continue
-		 * without doing anything.
-		 */
+		 
 		dev_dbg(&priv->pdev->dev, "Unrecognized device option 0x%hx not enabled.\n",
 			option_id);
 	}
 }
 
-/* Process all device options for a given describe device call. */
+ 
 static int
 gve_process_device_options(struct gve_priv *priv,
 			   struct gve_device_descriptor *descriptor,
@@ -170,7 +163,7 @@ gve_process_device_options(struct gve_priv *priv,
 	struct gve_device_option *dev_opt;
 	int i;
 
-	/* The options struct directly follows the device descriptor. */
+	 
 	dev_opt = (void *)(descriptor + 1);
 	for (i = 0; i < num_options; i++) {
 		struct gve_device_option *next_opt;
@@ -217,7 +210,7 @@ int gve_adminq_alloc(struct device *dev, struct gve_priv *priv)
 	priv->adminq_report_link_speed_cnt = 0;
 	priv->adminq_get_ptype_map_cnt = 0;
 
-	/* Setup Admin queue with the device */
+	 
 	iowrite32be(priv->adminq_bus_addr / PAGE_SIZE,
 		    &priv->reg_bar0->adminq_pfn);
 
@@ -229,13 +222,10 @@ void gve_adminq_release(struct gve_priv *priv)
 {
 	int i = 0;
 
-	/* Tell the device the adminq is leaving */
+	 
 	iowrite32be(0x0, &priv->reg_bar0->adminq_pfn);
 	while (ioread32be(&priv->reg_bar0->adminq_pfn)) {
-		/* If this is reached the device is unrecoverable and still
-		 * holding memory. Continue looping to avoid memory corruption,
-		 * but WARN so it is visible what is going on.
-		 */
+		 
 		if (i == GVE_MAX_ADMINQ_RELEASE_CHECK)
 			WARN(1, "Unrecoverable platform error!");
 		i++;
@@ -315,9 +305,7 @@ static int gve_adminq_parse_err(struct gve_priv *priv, u32 status)
 	}
 }
 
-/* Flushes all AQ commands currently queued and waits for them to complete.
- * If there are failures, it will return the first error.
- */
+ 
 static int gve_adminq_kick_and_wait(struct gve_priv *priv)
 {
 	int tail, head;
@@ -341,16 +329,14 @@ static int gve_adminq_kick_and_wait(struct gve_priv *priv)
 		status = be32_to_cpu(READ_ONCE(cmd->status));
 		err = gve_adminq_parse_err(priv, status);
 		if (err)
-			// Return the first error if we failed.
+			
 			return err;
 	}
 
 	return 0;
 }
 
-/* This function is not threadsafe - the caller is responsible for any
- * necessary locks.
- */
+ 
 static int gve_adminq_issue_cmd(struct gve_priv *priv,
 				union gve_adminq_command *cmd_orig)
 {
@@ -360,22 +346,22 @@ static int gve_adminq_issue_cmd(struct gve_priv *priv,
 
 	tail = ioread32be(&priv->reg_bar0->adminq_event_counter);
 
-	// Check if next command will overflow the buffer.
+	
 	if (((priv->adminq_prod_cnt + 1) & priv->adminq_mask) ==
 	    (tail & priv->adminq_mask)) {
 		int err;
 
-		// Flush existing commands to make room.
+		
 		err = gve_adminq_kick_and_wait(priv);
 		if (err)
 			return err;
 
-		// Retry.
+		
 		tail = ioread32be(&priv->reg_bar0->adminq_event_counter);
 		if (((priv->adminq_prod_cnt + 1) & priv->adminq_mask) ==
 		    (tail & priv->adminq_mask)) {
-			// This should never happen. We just flushed the
-			// command queue so there should be enough space.
+			
+			
 			return -ENOMEM;
 		}
 	}
@@ -436,11 +422,7 @@ static int gve_adminq_issue_cmd(struct gve_priv *priv,
 	return 0;
 }
 
-/* This function is not threadsafe - the caller is responsible for any
- * necessary locks.
- * The caller is also responsible for making sure there are no commands
- * waiting to be executed.
- */
+ 
 static int gve_adminq_execute_cmd(struct gve_priv *priv,
 				  union gve_adminq_command *cmd_orig)
 {
@@ -450,7 +432,7 @@ static int gve_adminq_execute_cmd(struct gve_priv *priv,
 	tail = ioread32be(&priv->reg_bar0->adminq_event_counter);
 	head = priv->adminq_prod_cnt;
 	if (tail != head)
-		// This is not a valid path
+		
 		return -EINVAL;
 
 	err = gve_adminq_issue_cmd(priv, cmd_orig);
@@ -460,13 +442,7 @@ static int gve_adminq_execute_cmd(struct gve_priv *priv,
 	return gve_adminq_kick_and_wait(priv);
 }
 
-/* The device specifies that the management vector can either be the first irq
- * or the last irq. ntfy_blk_msix_base_idx indicates the first irq assigned to
- * the ntfy blks. It if is 0 then the management vector is last, if it is 1 then
- * the management vector is first.
- *
- * gve arranges the msix vectors so that the management vector is last.
- */
+ 
 #define GVE_NTFY_BLK_BASE_MSIX_IDX	0
 int gve_adminq_configure_device_resources(struct gve_priv *priv,
 					  dma_addr_t counter_array_bus_addr,
@@ -738,10 +714,7 @@ static void gve_enable_supported_features(struct gve_priv *priv,
 					  const struct gve_device_option_dqo_qpl
 					  *dev_op_dqo_qpl)
 {
-	/* Before control reaches this point, the page-size-capped max MTU from
-	 * the gve_device_descriptor field has already been stored in
-	 * priv->dev->max_mtu. We overwrite it with the true max MTU below.
-	 */
+	 
 	if (dev_op_jumbo_frames &&
 	    (supported_features_mask & GVE_SUP_JUMBO_FRAMES_MASK)) {
 		dev_info(&priv->pdev->dev,
@@ -749,7 +722,7 @@ static void gve_enable_supported_features(struct gve_priv *priv,
 		priv->dev->max_mtu = be16_to_cpu(dev_op_jumbo_frames->max_mtu);
 	}
 
-	/* Override pages for qpl for DQO-QPL */
+	 
 	if (dev_op_dqo_qpl) {
 		priv->tx_pages_per_qpl =
 			be16_to_cpu(dev_op_dqo_qpl->tx_pages_per_qpl);
@@ -800,10 +773,7 @@ int gve_adminq_describe_device(struct gve_priv *priv)
 	if (err)
 		goto free_device_descriptor;
 
-	/* If the GQI_RAW_ADDRESSING option is not enabled and the queue format
-	 * is not set to GqiRda, choose the queue format in a priority order:
-	 * DqoRda, DqoQpl, GqiRda, GqiQpl. Use GqiQpl as default.
-	 */
+	 
 	if (dev_op_dqo_rda) {
 		priv->queue_format = GVE_DQO_RDA_FORMAT;
 		dev_info(&priv->pdev->dev,
@@ -834,7 +804,7 @@ int gve_adminq_describe_device(struct gve_priv *priv)
 	if (gve_is_gqi(priv)) {
 		err = gve_set_desc_cnt(priv, descriptor);
 	} else {
-		/* DQO supports LRO. */
+		 
 		priv->dev->hw_features |= NETIF_F_LRO;
 		err = gve_set_desc_cnt_dqo(priv, descriptor, dev_op_dqo_rda);
 	}
@@ -1016,7 +986,7 @@ int gve_adminq_get_ptype_map_dqo(struct gve_priv *priv,
 	if (err)
 		goto err;
 
-	/* Populate ptype_lut. */
+	 
 	for (i = 0; i < GVE_NUM_PTYPES; i++) {
 		ptype_lut->ptypes[i].l3_type =
 			ptype_map->ptypes[i].l3_type;

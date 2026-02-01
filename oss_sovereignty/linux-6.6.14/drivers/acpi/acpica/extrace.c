@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
-/******************************************************************************
- *
- * Module Name: extrace - Support for interpreter execution tracing
- *
- * Copyright (C) 2000 - 2023, Intel Corp.
- *
- *****************************************************************************/
+
+ 
 
 #include <acpi/acpi.h>
 #include "accommon.h"
@@ -17,45 +11,24 @@ ACPI_MODULE_NAME("extrace")
 
 static union acpi_operand_object *acpi_gbl_trace_method_object = NULL;
 
-/* Local prototypes */
+ 
 
 #ifdef ACPI_DEBUG_OUTPUT
 static const char *acpi_ex_get_trace_event_name(acpi_trace_event_type type);
 #endif
 
-/*******************************************************************************
- *
- * FUNCTION:    acpi_ex_interpreter_trace_enabled
- *
- * PARAMETERS:  name                - Whether method name should be matched,
- *                                    this should be checked before starting
- *                                    the tracer
- *
- * RETURN:      TRUE if interpreter trace is enabled.
- *
- * DESCRIPTION: Check whether interpreter trace is enabled
- *
- ******************************************************************************/
+ 
 
 static u8 acpi_ex_interpreter_trace_enabled(char *name)
 {
 
-	/* Check if tracing is enabled */
+	 
 
 	if (!(acpi_gbl_trace_flags & ACPI_TRACE_ENABLED)) {
 		return (FALSE);
 	}
 
-	/*
-	 * Check if tracing is filtered:
-	 *
-	 * 1. If the tracer is started, acpi_gbl_trace_method_object should have
-	 *    been filled by the trace starter
-	 * 2. If the tracer is not started, acpi_gbl_trace_method_name should be
-	 *    matched if it is specified
-	 * 3. If the tracer is oneshot style, acpi_gbl_trace_method_name should
-	 *    not be cleared by the trace stopper during the first match
-	 */
+	 
 	if (acpi_gbl_trace_method_object) {
 		return (TRUE);
 	}
@@ -74,17 +47,7 @@ static u8 acpi_ex_interpreter_trace_enabled(char *name)
 	return (TRUE);
 }
 
-/*******************************************************************************
- *
- * FUNCTION:    acpi_ex_get_trace_event_name
- *
- * PARAMETERS:  type            - Trace event type
- *
- * RETURN:      Trace event name.
- *
- * DESCRIPTION: Used to obtain the full trace event name.
- *
- ******************************************************************************/
+ 
 
 #ifdef ACPI_DEBUG_OUTPUT
 
@@ -112,20 +75,7 @@ static const char *acpi_ex_get_trace_event_name(acpi_trace_event_type type)
 
 #endif
 
-/*******************************************************************************
- *
- * FUNCTION:    acpi_ex_trace_point
- *
- * PARAMETERS:  type                - Trace event type
- *              begin               - TRUE if before execution
- *              aml                 - Executed AML address
- *              pathname            - Object path
- *
- * RETURN:      None
- *
- * DESCRIPTION: Internal interpreter execution trace.
- *
- ******************************************************************************/
+ 
 
 void
 acpi_ex_trace_point(acpi_trace_event_type type,
@@ -147,20 +97,7 @@ acpi_ex_trace_point(acpi_trace_event_type type,
 	}
 }
 
-/*******************************************************************************
- *
- * FUNCTION:    acpi_ex_start_trace_method
- *
- * PARAMETERS:  method_node         - Node of the method
- *              obj_desc            - The method object
- *              walk_state          - current state, NULL if not yet executing
- *                                    a method.
- *
- * RETURN:      None
- *
- * DESCRIPTION: Start control method execution trace
- *
- ******************************************************************************/
+ 
 
 void
 acpi_ex_start_trace_method(struct acpi_namespace_node *method_node,
@@ -204,20 +141,7 @@ acpi_ex_start_trace_method(struct acpi_namespace_node *method_node,
 	}
 }
 
-/*******************************************************************************
- *
- * FUNCTION:    acpi_ex_stop_trace_method
- *
- * PARAMETERS:  method_node         - Node of the method
- *              obj_desc            - The method object
- *              walk_state          - current state, NULL if not yet executing
- *                                    a method.
- *
- * RETURN:      None
- *
- * DESCRIPTION: Stop control method execution trace
- *
- ******************************************************************************/
+ 
 
 void
 acpi_ex_stop_trace_method(struct acpi_namespace_node *method_node,
@@ -241,11 +165,11 @@ acpi_ex_stop_trace_method(struct acpi_namespace_node *method_node,
 				 pathname);
 	}
 
-	/* Check whether the tracer should be stopped */
+	 
 
 	if (acpi_gbl_trace_method_object == obj_desc) {
 
-		/* Disable further tracing if type is one-shot */
+		 
 
 		if (acpi_gbl_trace_flags & ACPI_TRACE_ONESHOT) {
 			acpi_gbl_trace_method_name = NULL;
@@ -261,19 +185,7 @@ acpi_ex_stop_trace_method(struct acpi_namespace_node *method_node,
 	}
 }
 
-/*******************************************************************************
- *
- * FUNCTION:    acpi_ex_start_trace_opcode
- *
- * PARAMETERS:  op                  - The parser opcode object
- *              walk_state          - current state, NULL if not yet executing
- *                                    a method.
- *
- * RETURN:      None
- *
- * DESCRIPTION: Start opcode execution trace
- *
- ******************************************************************************/
+ 
 
 void
 acpi_ex_start_trace_opcode(union acpi_parse_object *op,
@@ -289,19 +201,7 @@ acpi_ex_start_trace_opcode(union acpi_parse_object *op,
 	}
 }
 
-/*******************************************************************************
- *
- * FUNCTION:    acpi_ex_stop_trace_opcode
- *
- * PARAMETERS:  op                  - The parser opcode object
- *              walk_state          - current state, NULL if not yet executing
- *                                    a method.
- *
- * RETURN:      None
- *
- * DESCRIPTION: Stop opcode execution trace
- *
- ******************************************************************************/
+ 
 
 void
 acpi_ex_stop_trace_opcode(union acpi_parse_object *op,

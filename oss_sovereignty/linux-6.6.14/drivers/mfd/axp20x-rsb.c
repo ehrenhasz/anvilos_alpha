@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * RSB driver for the X-Powers' Power Management ICs
- *
- * AXP20x typically comprises an adaptive USB-Compatible PWM charger, BUCK DC-DC
- * converters, LDOs, multiple 12-bit ADCs of voltage, current and temperature
- * as well as configurable GPIOs.
- *
- * This driver supports the RSB variants.
- *
- * Copyright (C) 2015 Chen-Yu Tsai
- *
- * Author: Chen-Yu Tsai <wens@csie.org>
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/err.h>

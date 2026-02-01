@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0-or-later
-/*
- * Copyright 2008 - 2015 Freescale Semiconductor Inc.
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -32,7 +30,7 @@ MODULE_DESCRIPTION("FSL FMan MAC API based driver");
 struct mac_priv_s {
 	u8				cell_index;
 	struct fman			*fman;
-	/* List of multicast addresses */
+	 
 	struct list_head		mc_addr_list;
 	struct platform_device		*eth_dev;
 	u16				speed;
@@ -47,7 +45,7 @@ static void mac_exception(struct mac_device *mac_dev,
 			  enum fman_mac_exceptions ex)
 {
 	if (ex == FM_MAC_EX_10G_RX_FIFO_OVFL) {
-		/* don't flag RX FIFO after the first */
+		 
 		mac_dev->set_exception(mac_dev->fman_mac,
 				       FM_MAC_EX_10G_RX_FIFO_OVFL, false);
 		dev_err(mac_dev->dev, "10G MAC got RX FIFO Error = %x\n", ex);
@@ -67,7 +65,7 @@ int fman_set_multi(struct net_device *net_dev, struct mac_device *mac_dev)
 
 	priv = mac_dev->priv;
 
-	/* Clear previous address list */
+	 
 	list_for_each_entry_safe(old_addr, tmp, &priv->mc_addr_list, list) {
 		addr = (enet_addr_t *)old_addr->addr;
 		err = mac_dev->remove_hash_mac_addr(mac_dev->fman_mac, addr);
@@ -78,7 +76,7 @@ int fman_set_multi(struct net_device *net_dev, struct mac_device *mac_dev)
 		kfree(old_addr);
 	}
 
-	/* Add all the addresses from the new list */
+	 
 	netdev_for_each_mc_addr(ha, net_dev) {
 		addr = (enet_addr_t *)ha->addr;
 		err = mac_dev->add_hash_mac_addr(mac_dev->fman_mac, addr);
@@ -177,13 +175,13 @@ static int mac_probe(struct platform_device *_of_dev)
 		return -ENOMEM;
 	platform_set_drvdata(_of_dev, mac_dev);
 
-	/* Save private information */
+	 
 	mac_dev->priv = priv;
 	mac_dev->dev = dev;
 
 	INIT_LIST_HEAD(&priv->mc_addr_list);
 
-	/* Get the FM node */
+	 
 	dev_node = of_get_parent(mac_node);
 	if (!dev_node) {
 		dev_err(dev, "of_get_parent(%pOF) failed\n",
@@ -198,14 +196,14 @@ static int mac_probe(struct platform_device *_of_dev)
 		goto _return_of_node_put;
 	}
 
-	/* Get the FMan cell-index */
+	 
 	err = of_property_read_u32(dev_node, "cell-index", &val);
 	if (err) {
 		dev_err(dev, "failed to read cell-index for %pOF\n", dev_node);
 		err = -EINVAL;
 		goto _return_of_node_put;
 	}
-	/* cell-index 0 => FMan id 1 */
+	 
 	fman_id = (u8)(val + 1);
 
 	priv->fman = fman_bind(&of_dev->dev);
@@ -217,7 +215,7 @@ static int mac_probe(struct platform_device *_of_dev)
 
 	of_node_put(dev_node);
 
-	/* Get the address of the memory mapped registers */
+	 
 	mac_dev->res = platform_get_mem_or_io(_of_dev, 0);
 	if (!mac_dev->res) {
 		dev_err(dev, "could not get registers\n");
@@ -241,7 +239,7 @@ static int mac_probe(struct platform_device *_of_dev)
 	if (!of_device_is_available(mac_node))
 		return -ENODEV;
 
-	/* Get the cell-index */
+	 
 	err = of_property_read_u32(mac_node, "cell-index", &val);
 	if (err) {
 		dev_err(dev, "failed to read cell-index for %pOF\n", mac_node);
@@ -249,12 +247,12 @@ static int mac_probe(struct platform_device *_of_dev)
 	}
 	priv->cell_index = (u8)val;
 
-	/* Get the MAC address */
+	 
 	err = of_get_mac_address(mac_node, mac_dev->addr);
 	if (err)
 		dev_warn(dev, "of_get_mac_address(%pOF) failed\n", mac_node);
 
-	/* Get the port handles */
+	 
 	nph = of_count_phandle_with_args(mac_node, "fsl,fman-ports", NULL);
 	if (unlikely(nph < 0)) {
 		dev_err(dev, "of_count_phandle_with_args(%pOF, fsl,fman-ports) failed\n",
@@ -269,7 +267,7 @@ static int mac_probe(struct platform_device *_of_dev)
 	}
 
 	for (i = 0; i < ARRAY_SIZE(mac_dev->port); i++) {
-		/* Find the port node */
+		 
 		dev_node = of_parse_phandle(mac_node, "fsl,fman-ports", i);
 		if (!dev_node) {
 			dev_err(dev, "of_parse_phandle(%pOF, fsl,fman-ports) failed\n",
@@ -295,7 +293,7 @@ static int mac_probe(struct platform_device *_of_dev)
 		of_node_put(dev_node);
 	}
 
-	/* Get the PHY connection type */
+	 
 	err = of_get_phy_mode(mac_node, &phy_if);
 	if (err) {
 		dev_warn(dev,

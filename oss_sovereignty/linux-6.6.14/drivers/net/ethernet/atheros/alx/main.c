@@ -1,36 +1,4 @@
-/*
- * Copyright (c) 2013, 2021 Johannes Berg <johannes@sipsolutions.net>
- *
- *  This file is free software: you may copy, redistribute and/or modify it
- *  under the terms of the GNU General Public License as published by the
- *  Free Software Foundation, either version 2 of the License, or (at your
- *  option) any later version.
- *
- *  This file is distributed in the hope that it will be useful, but
- *  WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- *  General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
- * This file incorporates work covered by the following copyright and
- * permission notice:
- *
- * Copyright (c) 2012 Qualcomm Atheros, Inc.
- *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
+ 
 
 #include <linux/module.h>
 #include <linux/pci.h>
@@ -84,15 +52,7 @@ static int alx_refill_rx_ring(struct alx_priv *alx, gfp_t gfp)
 	while (!cur_buf->skb && next != rxq->read_idx) {
 		struct alx_rfd *rfd = &rxq->rfd[cur];
 
-		/*
-		 * When DMA RX address is set to something like
-		 * 0x....fc0, it will be very likely to cause DMA
-		 * RFD overflow issue.
-		 *
-		 * To work around it, we apply rx skb with 64 bytes
-		 * longer space, and offset the address whenever
-		 * 0x....fc0 is detected.
-		 */
+		 
 		skb = __netdev_alloc_skb(alx->dev, alx->rxbuf_size + 64, gfp);
 		if (!skb)
 			break;
@@ -108,9 +68,7 @@ static int alx_refill_rx_ring(struct alx_priv *alx, gfp_t gfp)
 			break;
 		}
 
-		/* Unfortunately, RX descriptor buffers must be 4-byte
-		 * aligned, so we can't use IP alignment.
-		 */
+		 
 		if (WARN_ON(dma & 3)) {
 			dev_kfree_skb(skb);
 			break;
@@ -129,7 +87,7 @@ static int alx_refill_rx_ring(struct alx_priv *alx, gfp_t gfp)
 	}
 
 	if (count) {
-		/* flush all updates before updating hardware */
+		 
 		wmb();
 		rxq->write_idx = cur;
 		alx_write_mem16(&alx->hw, ALX_RFD_PIDX, cur);
@@ -312,7 +270,7 @@ static int alx_poll(struct napi_struct *napi, int budget)
 
 	napi_complete_done(&np->napi, work);
 
-	/* enable interrupt */
+	 
 	if (alx->hw.pdev->msix_enabled) {
 		alx_mask_msix(hw, np->vec_idx, false);
 	} else {
@@ -342,10 +300,7 @@ static bool alx_intr_handle_misc(struct alx_priv *alx, u32 intr)
 		netdev_warn(alx->dev, "alert interrupt: 0x%x\n", intr);
 
 	if (intr & ALX_ISR_PHY) {
-		/* suppress PHY interrupt, because the source
-		 * is from PHY internal. only the internal status
-		 * is cleared, the interrupt status could be cleared.
-		 */
+		 
 		alx->int_mask &= ~ALX_ISR_PHY;
 		alx_write_mem32(hw, ALX_IMR, alx->int_mask);
 		alx_schedule_link_check(alx);
@@ -360,7 +315,7 @@ static irqreturn_t alx_intr_handle(struct alx_priv *alx, u32 intr)
 
 	spin_lock(&alx->irq_lock);
 
-	/* ACK interrupt */
+	 
 	alx_write_mem32(hw, ALX_ISR, intr | ALX_ISR_DIS);
 	intr &= alx->int_mask;
 
@@ -369,7 +324,7 @@ static irqreturn_t alx_intr_handle(struct alx_priv *alx, u32 intr)
 
 	if (intr & (ALX_ISR_TX_Q0 | ALX_ISR_RX_Q0)) {
 		napi_schedule(&alx->qnapi[0]->napi);
-		/* mask rx/tx interrupt, enable them when napi complete */
+		 
 		alx->int_mask &= ~ALX_ISR_ALL_QUEUES;
 		alx_write_mem32(hw, ALX_IMR, alx->int_mask);
 	}
@@ -386,9 +341,9 @@ static irqreturn_t alx_intr_msix_ring(int irq, void *data)
 	struct alx_napi *np = data;
 	struct alx_hw *hw = &np->alx->hw;
 
-	/* mask interrupt to ACK chip */
+	 
 	alx_mask_msix(hw, np->vec_idx, true);
-	/* clear interrupt status */
+	 
 	alx_write_mem32(hw, ALX_ISR, np->vec_mask);
 
 	napi_schedule(&np->napi);
@@ -402,20 +357,20 @@ static irqreturn_t alx_intr_msix_misc(int irq, void *data)
 	struct alx_hw *hw = &alx->hw;
 	u32 intr;
 
-	/* mask interrupt to ACK chip */
+	 
 	alx_mask_msix(hw, 0, true);
 
-	/* read interrupt status */
+	 
 	intr = alx_read_mem32(hw, ALX_ISR);
 	intr &= (alx->int_mask & ~ALX_ISR_ALL_QUEUES);
 
 	if (alx_intr_handle_misc(alx, intr))
 		return IRQ_HANDLED;
 
-	/* clear interrupt status */
+	 
 	alx_write_mem32(hw, ALX_ISR, intr);
 
-	/* enable interrupt again */
+	 
 	alx_mask_msix(hw, 0, false);
 
 	return IRQ_HANDLED;
@@ -481,7 +436,7 @@ static void alx_init_ring_ptrs(struct alx_priv *alx)
 	alx_write_mem32(hw, ALX_RFD_RING_SZ, alx->rx_ringsz);
 	alx_write_mem32(hw, ALX_RFD_BUF_SZ, alx->rxbuf_size);
 
-	/* load these pointers into the chip */
+	 
 	alx_write_mem32(hw, ALX_SRAM9, ALX_SRAM_LOAD_PTR);
 }
 
@@ -649,12 +604,7 @@ static int alx_alloc_rings(struct alx_priv *alx)
 {
 	int i, offset = 0;
 
-	/* physical tx/rx ring descriptors
-	 *
-	 * Allocate them as a single chunk because they must not cross a
-	 * 4G boundary (hardware has a single register for high 32 bits
-	 * of addresses only)
-	 */
+	 
 	alx->descmem.size = sizeof(struct alx_txd) * alx->tx_ringsz *
 			    alx->num_txq +
 			    sizeof(struct alx_rrd) * alx->rx_ringsz +
@@ -665,7 +615,7 @@ static int alx_alloc_rings(struct alx_priv *alx)
 	if (!alx->descmem.virt)
 		return -ENOMEM;
 
-	/* alignment requirements */
+	 
 	BUILD_BUG_ON(sizeof(struct alx_txd) % 8);
 	BUILD_BUG_ON(sizeof(struct alx_rrd) % 8);
 
@@ -744,7 +694,7 @@ static int alx_alloc_napis(struct alx_priv *alx)
 
 	alx->int_mask &= ~ALX_ISR_ALL_QUEUES;
 
-	/* allocate alx_napi structures */
+	 
 	for (i = 0; i < alx->num_napi; i++) {
 		np = kzalloc(sizeof(struct alx_napi), GFP_KERNEL);
 		if (!np)
@@ -755,7 +705,7 @@ static int alx_alloc_napis(struct alx_priv *alx)
 		alx->qnapi[i] = np;
 	}
 
-	/* allocate tx queues */
+	 
 	for (i = 0; i < alx->num_txq; i++) {
 		np = alx->qnapi[i];
 		txq = kzalloc(sizeof(*txq), GFP_KERNEL);
@@ -773,7 +723,7 @@ static int alx_alloc_napis(struct alx_priv *alx)
 		alx->int_mask |= tx_vect_mask[i];
 	}
 
-	/* allocate rx queues */
+	 
 	np = alx->qnapi[0];
 	rxq = kzalloc(sizeof(*rxq), GFP_KERNEL);
 	if (!rxq)
@@ -810,14 +760,14 @@ static void alx_config_vector_mapping(struct alx_priv *alx)
 	int i, vector, idx, shift;
 
 	if (alx->hw.pdev->msix_enabled) {
-		/* tx mappings */
+		 
 		for (i = 0, vector = 1; i < alx->num_txq; i++, vector++) {
 			idx = txq_vec_mapping_shift[i * 2];
 			shift = txq_vec_mapping_shift[i * 2 + 1];
 			tbl[idx] |= vector << shift;
 		}
 
-		/* rx mapping */
+		 
 		tbl[0] |= 1 << ALX_MSI_MAP_TBL1_RXQ0_SHIFT;
 	}
 
@@ -917,13 +867,13 @@ static void alx_irq_enable(struct alx_priv *alx)
 	struct alx_hw *hw = &alx->hw;
 	int i;
 
-	/* level-1 interrupt switch */
+	 
 	alx_write_mem32(hw, ALX_ISR, 0);
 	alx_write_mem32(hw, ALX_IMR, alx->int_mask);
 	alx_post_write(hw);
 
 	if (alx->hw.pdev->msix_enabled) {
-		/* enable all msix irqs */
+		 
 		for (i = 0; i < alx->num_vec; i++)
 			alx_mask_msix(hw, i, false);
 	}
@@ -986,7 +936,7 @@ static int alx_request_irq(struct alx_priv *alx)
 		if (!err)
 			goto out;
 
-		/* msix request failed, realloc resources */
+		 
 		err = alx_realloc_resources(alx);
 		if (err)
 			goto out;
@@ -1000,7 +950,7 @@ static int alx_request_irq(struct alx_priv *alx)
 		if (!err)
 			goto out;
 
-		/* fall back to legacy interrupt */
+		 
 		pci_free_irq_vectors(alx->hw.pdev);
 	}
 
@@ -1063,7 +1013,7 @@ static int alx_init_sw(struct alx_priv *alx)
 	hw->smb_timer = 400;
 	hw->mtu = alx->dev->mtu;
 	alx->rxbuf_size = ALX_MAX_FRAME_LEN(hw->mtu);
-	/* MTU range: 34 - 9256 */
+	 
 	alx->dev->min_mtu = 34;
 	alx->dev->max_mtu = ALX_MAX_FRAME_LEN(ALX_MAX_FRAME_SIZE);
 	alx->tx_ringsz = 256;
@@ -1130,7 +1080,7 @@ static void alx_halt(struct alx_priv *alx)
 
 	alx_reset_mac(hw);
 
-	/* disable l0s/l1 */
+	 
 	alx_enable_aspm(hw, false, false);
 	alx_irq_disable(alx);
 	alx_free_buffers(alx);
@@ -1151,11 +1101,11 @@ static void alx_activate(struct alx_priv *alx)
 {
 	lockdep_assert_held(&alx->mtx);
 
-	/* hardware setting lost, restore it */
+	 
 	alx_reinit_rings(alx);
 	alx_configure(alx);
 
-	/* clear old interrupts */
+	 
 	alx_write_mem32(&alx->hw, ALX_ISR, ~(u32)ALX_ISR_DIS);
 
 	alx_irq_enable(alx);
@@ -1226,16 +1176,13 @@ static int __alx_open(struct alx_priv *alx, bool resume)
 	if (err)
 		goto out_free_rings;
 
-	/* must be called after alx_request_irq because the chip stops working
-	 * if we copy the dma addresses in alx_init_ring_ptrs twice when
-	 * requesting msi-x interrupts failed
-	 */
+	 
 	alx_reinit_rings(alx);
 
 	netif_set_real_num_tx_queues(alx->dev, alx->num_txq);
 	netif_set_real_num_rx_queues(alx->dev, alx->num_rxq);
 
-	/* clear old interrupts */
+	 
 	alx_write_mem32(&alx->hw, ALX_ISR, ~(u32)ALX_ISR_DIS);
 
 	alx_irq_enable(alx);
@@ -1295,9 +1242,7 @@ static void alx_check_link(struct alx_priv *alx)
 
 	lockdep_assert_held(&alx->mtx);
 
-	/* clear PHY internal interrupt status, otherwise the main
-	 * interrupt status will be asserted forever
-	 */
+	 
 	alx_clear_phy_intr(hw);
 
 	old_speed = hw->link_speed;
@@ -1323,7 +1268,7 @@ static void alx_check_link(struct alx_priv *alx)
 		if (old_speed == SPEED_UNKNOWN)
 			alx_netif_start(alx);
 	} else {
-		/* link is now down */
+		 
 		alx_netif_stop(alx);
 		netif_info(alx, link, alx->dev, "Link Down\n");
 		err = alx_reset_mac(hw);
@@ -1331,7 +1276,7 @@ static void alx_check_link(struct alx_priv *alx)
 			goto reset;
 		alx_irq_disable(alx);
 
-		/* MAC reset causes all HW settings to be lost, restore all */
+		 
 		err = alx_reinit_rings(alx);
 		if (err)
 			goto reset;
@@ -1395,7 +1340,7 @@ static int alx_tpd_req(struct sk_buff *skb)
 	int num;
 
 	num = skb_shinfo(skb)->nr_frags + 1;
-	/* we need one extra descriptor for LSOv2 */
+	 
 	if (skb_is_gso(skb) && skb_shinfo(skb)->gso_type & SKB_GSO_TCPV6)
 		num++;
 
@@ -1444,7 +1389,7 @@ static int alx_tso(struct sk_buff *skb, struct alx_txd *first)
 		first->word1 |= 1 << TPD_IPV4_SHIFT;
 	} else if (skb_is_gso_v6(skb)) {
 		tcp_v6_gso_csum_prep(skb);
-		/* LSOv2: the first TPD only provides the packet length */
+		 
 		first->adrl.l.pkt_len = skb->len;
 		first->word1 |= 1 << TPD_LSO_V2_SHIFT;
 	}
@@ -1509,7 +1454,7 @@ static int alx_map_tx_skb(struct alx_tx_queue *txq, struct sk_buff *skb)
 		tpd->len = cpu_to_le16(maplen);
 	}
 
-	/* last TPD, set EOP flag and store skb */
+	 
 	tpd->word1 |= cpu_to_le32(1 << TPD_EOP_SHIFT);
 	txq->bufs[txq->write_idx].skb = skb;
 
@@ -1556,7 +1501,7 @@ static netdev_tx_t alx_start_xmit_ring(struct sk_buff *skb,
 
 	netdev_tx_sent_queue(alx_get_tx_queue(txq), skb->len);
 
-	/* flush updates before updating hardware */
+	 
 	wmb();
 	alx_write_mem16(&alx->hw, txq->p_reg, txq->write_idx);
 
@@ -1723,10 +1668,7 @@ static int alx_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 	if (err)
 		return err;
 
-	/* The alx chip can DMA to 64-bit addresses, but it uses a single
-	 * shared register for the high 32 bits, so only a single, aligned,
-	 * 4 GB physical address range can be used for descriptors.
-	 */
+	 
 	if (!dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(64))) {
 		dev_dbg(&pdev->dev, "DMA to 64-BIT addresses\n");
 	} else {
@@ -1808,7 +1750,7 @@ static int alx_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 		goto out_unlock;
 	}
 
-	/* setup link to put it in a known good starting state */
+	 
 	if (!phy_configured) {
 		err = alx_setup_speed_duplex(hw, hw->adv_cfg, hw->flowctrl);
 		if (err) {
@@ -1887,7 +1829,7 @@ static void alx_remove(struct pci_dev *pdev)
 	struct alx_priv *alx = pci_get_drvdata(pdev);
 	struct alx_hw *hw = &alx->hw;
 
-	/* restore permanent mac address */
+	 
 	alx_set_macaddr(hw, hw->perm_addr);
 
 	unregister_netdev(alx->dev);

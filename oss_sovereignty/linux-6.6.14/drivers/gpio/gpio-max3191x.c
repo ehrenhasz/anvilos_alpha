@@ -1,34 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * gpio-max3191x.c - GPIO driver for Maxim MAX3191x industrial serializer
- *
- * Copyright (C) 2017 KUNBUS GmbH
- *
- * The MAX3191x makes 8 digital 24V inputs available via SPI.
- * Multiple chips can be daisy-chained, the spec does not impose
- * a limit on the number of chips and neither does this driver.
- *
- * Either of two modes is selectable: In 8-bit mode, only the state
- * of the inputs is clocked out to achieve high readout speeds;
- * In 16-bit mode, an additional status byte is clocked out with
- * a CRC and indicator bits for undervoltage and overtemperature.
- * The driver returns an error instead of potentially bogus data
- * if any of these fault conditions occur.  However it does allow
- * readout of non-faulting chips in the same daisy-chain.
- *
- * MAX3191x supports four debounce settings and the driver is
- * capable of configuring these differently for each chip in the
- * daisy-chain.
- *
- * If the chips are hardwired to 8-bit mode ("modesel" pulled high),
- * gpio-pisosr.c can be used alternatively to this driver.
- *
- * https://datasheets.maximintegrated.com/en/ds/MAX31910.pdf
- * https://datasheets.maximintegrated.com/en/ds/MAX31911.pdf
- * https://datasheets.maximintegrated.com/en/ds/MAX31912.pdf
- * https://datasheets.maximintegrated.com/en/ds/MAX31913.pdf
- * https://datasheets.maximintegrated.com/en/ds/MAX31953-MAX31963.pdf
- */
+
+ 
 
 #include <linux/bitmap.h>
 #include <linux/bitops.h>
@@ -43,32 +14,7 @@ enum max3191x_mode {
 	STATUS_BYTE_DISABLED,
 };
 
-/**
- * struct max3191x_chip - max3191x daisy-chain
- * @gpio: GPIO controller struct
- * @lock: protects read sequences
- * @nchips: number of chips in the daisy-chain
- * @mode: current mode, 0 for 16-bit, 1 for 8-bit;
- *	for simplicity, all chips in the daisy-chain are assumed
- *	to use the same mode
- * @modesel_pins: GPIO pins to configure modesel of each chip
- * @fault_pins: GPIO pins to detect fault of each chip
- * @db0_pins: GPIO pins to configure debounce of each chip
- * @db1_pins: GPIO pins to configure debounce of each chip
- * @mesg: SPI message to perform a readout
- * @xfer: SPI transfer used by @mesg
- * @crc_error: bitmap signaling CRC error for each chip
- * @overtemp: bitmap signaling overtemperature alarm for each chip
- * @undervolt1: bitmap signaling undervoltage alarm for each chip
- * @undervolt2: bitmap signaling undervoltage warning for each chip
- * @fault: bitmap signaling assertion of @fault_pins for each chip
- * @ignore_uv: whether to ignore undervoltage alarms;
- *	set by a device property if the chips are powered through
- *	5VOUT instead of VCC24V, in which case they will constantly
- *	signal undervoltage;
- *	for simplicity, all chips in the daisy-chain are assumed
- *	to be powered the same way
- */
+ 
 struct max3191x_chip {
 	struct gpio_chip gpio;
 	struct mutex lock;
@@ -89,13 +35,13 @@ struct max3191x_chip {
 };
 
 #define MAX3191X_NGPIO 8
-#define MAX3191X_CRC8_POLYNOMIAL 0xa8 /* (x^5) + x^4 + x^2 + x^0 */
+#define MAX3191X_CRC8_POLYNOMIAL 0xa8  
 
 DECLARE_CRC8_TABLE(max3191x_crc8);
 
 static int max3191x_get_direction(struct gpio_chip *gpio, unsigned int offset)
 {
-	return GPIO_LINE_DIRECTION_IN; /* always in */
+	return GPIO_LINE_DIRECTION_IN;  
 }
 
 static int max3191x_direction_input(struct gpio_chip *gpio, unsigned int offset)
@@ -166,7 +112,7 @@ static int max3191x_readout_locked(struct max3191x_chip *max3191x)
 		}
 
 		if (max3191x->fault_pins && !max3191x->ignore_uv) {
-			/* fault pin shared by all chips or per chip */
+			 
 			struct gpio_desc *fault_pin =
 				(max3191x->fault_pins->ndescs == 1)
 					? max3191x->fault_pins->desc[0]
@@ -191,7 +137,7 @@ static int max3191x_readout_locked(struct max3191x_chip *max3191x)
 static bool max3191x_chip_is_faulting(struct max3191x_chip *max3191x,
 				      unsigned int chipnum)
 {
-	/* without status byte the only diagnostic is the fault pin */
+	 
 	if (!max3191x->ignore_uv && test_bit(chipnum, max3191x->fault))
 		return true;
 
@@ -298,9 +244,9 @@ static int max3191x_set_config(struct gpio_chip *gpio, unsigned int offset,
 	}
 
 	if (max3191x->db0_pins->ndescs == 1)
-		chipnum = 0; /* all chips use the same pair of debounce pins */
+		chipnum = 0;  
 	else
-		chipnum = offset / MAX3191X_NGPIO; /* per chip debounce pins */
+		chipnum = offset / MAX3191X_NGPIO;  
 
 	mutex_lock(&max3191x->lock);
 	gpiod_set_value_cansleep(max3191x->db0_pins->desc[chipnum], db0_val);

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2014-2016 Christoph Hellwig.
- */
+
+ 
 
 #include <linux/vmalloc.h>
 
@@ -412,16 +410,12 @@ ext_tree_mark_written(struct pnfs_block_layout *bl, sector_t start,
 	LIST_HEAD(tmp);
 
 	spin_lock(&bl->bl_ext_lock);
-	/*
-	 * First remove all COW extents or holes from written to range.
-	 */
+	 
 	err = __ext_tree_remove(&bl->bl_ext_ro, start, end, &tmp);
 	if (err)
 		goto out;
 
-	/*
-	 * Then mark all invalid extents in the range as written to.
-	 */
+	 
 	for (be = __ext_tree_search(root, start); be; be = ext_tree_next(be)) {
 		if (be->be_f_offset >= end)
 			break;
@@ -534,7 +528,7 @@ static int ext_tree_encode_commit(struct pnfs_block_layout *bl, __be32 *p,
 
 		(*count)++;
 		if (ext_tree_layoutupdate_size(bl, *count) > buffer_size) {
-			/* keep counting.. */
+			 
 			ret = -ENOSPC;
 			continue;
 		}
@@ -629,11 +623,7 @@ ext_tree_mark_committed(struct nfs4_layoutcommit_args *arg, int status)
 			continue;
 
 		if (status) {
-			/*
-			 * Mark as written and try again.
-			 *
-			 * XXX: some real error handling here wouldn't hurt..
-			 */
+			 
 			be->be_tag = EXTENT_WRITTEN;
 		} else {
 			be->be_state = PNFS_BLOCK_READWRITE_DATA;

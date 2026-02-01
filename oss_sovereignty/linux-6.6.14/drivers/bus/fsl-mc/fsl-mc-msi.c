@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Freescale Management Complex (MC) bus driver MSI support
- *
- * Copyright (C) 2015-2016 Freescale Semiconductor, Inc.
- * Author: German Rivera <German.Rivera@freescale.com>
- *
- */
+
+ 
 
 #include <linux/of_irq.h>
 #include <linux/irq.h>
@@ -16,17 +10,11 @@
 #include "fsl-mc-private.h"
 
 #ifdef GENERIC_MSI_DOMAIN_OPS
-/*
- * Generate a unique ID identifying the interrupt (only used within the MSI
- * irqdomain.  Combine the icid with the interrupt index.
- */
+ 
 static irq_hw_number_t fsl_mc_domain_calc_hwirq(struct fsl_mc_device *dev,
 						struct msi_desc *desc)
 {
-	/*
-	 * Make the base hwirq value for ICID*10000 so it is readable
-	 * as a decimal value in /proc/interrupts.
-	 */
+	 
 	return (irq_hw_number_t)(desc->msi_index + (dev->icid * 10000));
 }
 
@@ -48,9 +36,7 @@ static void fsl_mc_msi_update_dom_ops(struct msi_domain_info *info)
 	if (!ops)
 		return;
 
-	/*
-	 * set_desc should not be set by the caller
-	 */
+	 
 	if (!ops->set_desc)
 		ops->set_desc = fsl_mc_msi_set_desc;
 }
@@ -63,11 +49,7 @@ static void __fsl_mc_msi_write_msg(struct fsl_mc_device *mc_bus_dev,
 	struct fsl_mc_device *owner_mc_dev = mc_dev_irq->mc_dev;
 	struct dprc_irq_cfg irq_cfg;
 
-	/*
-	 * msi_desc->msg.address is 0x0 when this function is invoked in
-	 * the free_irq() code path. In this case, for the MC, we don't
-	 * really need to "unprogram" the MSI, so we just return.
-	 */
+	 
 	if (msi_desc->msg.address_lo == 0x0 && msi_desc->msg.address_hi == 0x0)
 		return;
 
@@ -80,9 +62,7 @@ static void __fsl_mc_msi_write_msg(struct fsl_mc_device *mc_bus_dev,
 	irq_cfg.irq_num = msi_desc->irq;
 
 	if (owner_mc_dev == mc_bus_dev) {
-		/*
-		 * IRQ is for the mc_bus_dev's DPRC itself
-		 */
+		 
 		error = dprc_set_irq(mc_bus_dev->mc_io,
 				     MC_CMD_FLAG_INTR_DIS | MC_CMD_FLAG_PRI,
 				     mc_bus_dev->mc_handle,
@@ -93,9 +73,7 @@ static void __fsl_mc_msi_write_msg(struct fsl_mc_device *mc_bus_dev,
 				"dprc_set_irq() failed: %d\n", error);
 		}
 	} else {
-		/*
-		 * IRQ is for for a child device of mc_bus_dev
-		 */
+		 
 		error = dprc_set_obj_irq(mc_bus_dev->mc_io,
 					 MC_CMD_FLAG_INTR_DIS | MC_CMD_FLAG_PRI,
 					 mc_bus_dev->mc_handle,
@@ -110,9 +88,7 @@ static void __fsl_mc_msi_write_msg(struct fsl_mc_device *mc_bus_dev,
 	}
 }
 
-/*
- * NOTE: This function is invoked with interrupts disabled
- */
+ 
 static void fsl_mc_msi_write_msg(struct irq_data *irq_data,
 				 struct msi_msg *msg)
 {
@@ -124,9 +100,7 @@ static void fsl_mc_msi_write_msg(struct irq_data *irq_data,
 
 	msi_desc->msg = *msg;
 
-	/*
-	 * Program the MSI (paddr, value) pair in the device:
-	 */
+	 
 	__fsl_mc_msi_write_msg(mc_bus_dev, mc_dev_irq, msi_desc);
 }
 
@@ -137,25 +111,12 @@ static void fsl_mc_msi_update_chip_ops(struct msi_domain_info *info)
 	if (!chip)
 		return;
 
-	/*
-	 * irq_write_msi_msg should not be set by the caller
-	 */
+	 
 	if (!chip->irq_write_msi_msg)
 		chip->irq_write_msi_msg = fsl_mc_msi_write_msg;
 }
 
-/**
- * fsl_mc_msi_create_irq_domain - Create a fsl-mc MSI interrupt domain
- * @fwnode:	Optional firmware node of the interrupt controller
- * @info:	MSI domain info
- * @parent:	Parent irq domain
- *
- * Updates the domain and chip ops and creates a fsl-mc MSI
- * interrupt domain.
- *
- * Returns:
- * A domain pointer or NULL in case of failure.
- */
+ 
 struct irq_domain *fsl_mc_msi_create_irq_domain(struct fwnode_handle *fwnode,
 						struct msi_domain_info *info,
 						struct irq_domain *parent)
@@ -192,10 +153,7 @@ struct irq_domain *fsl_mc_find_msi_domain(struct device *dev)
 						  mc_dev->icid,
 						  DOMAIN_BUS_FSL_MC_MSI);
 
-		/*
-		 * if the msi-map property is missing assume that all the
-		 * child containers inherit the domain from the parent
-		 */
+		 
 		if (!msi_domain)
 
 			msi_domain = of_msi_get_domain(bus_dev,
@@ -216,10 +174,7 @@ int fsl_mc_msi_domain_alloc_irqs(struct device *dev,  unsigned int irq_count)
 	if (error)
 		return error;
 
-	/*
-	 * NOTE: Calling this function will trigger the invocation of the
-	 * its_fsl_mc_msi_prepare() callback
-	 */
+	 
 	error = msi_domain_alloc_irqs_range(dev, MSI_DEFAULT_DOMAIN, 0, irq_count - 1);
 
 	if (error)

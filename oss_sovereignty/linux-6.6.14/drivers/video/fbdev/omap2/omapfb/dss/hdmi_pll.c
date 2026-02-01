@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * HDMI PLL
- *
- * Copyright (C) 2013 Texas Instruments Incorporated
- */
+
+ 
 
 #define DSS_SUBSYS_NAME "HDMIPLL"
 
@@ -52,11 +48,11 @@ void hdmi_pll_compute(struct hdmi_pll_data *pll,
 
 	target_bitclk = target_tmds * 10;
 
-	/* Fint */
+	 
 	n = DIV_ROUND_UP(clkin, hw->fint_max);
 	fint = clkin / n;
 
-	/* adjust m2 so that the clkdco will be high enough */
+	 
 	min_dco = roundup(hw->clkdco_min, fint);
 	m2 = DIV_ROUND_UP(min_dco, target_bitclk);
 	if (m2 == 0)
@@ -67,7 +63,7 @@ void hdmi_pll_compute(struct hdmi_pll_data *pll,
 
 	clkdco = fint * m;
 
-	/* adjust clkdco with fractional mf */
+	 
 	if (WARN_ON(target_clkdco - clkdco > fint))
 		mf = 0;
 	else
@@ -78,7 +74,7 @@ void hdmi_pll_compute(struct hdmi_pll_data *pll,
 
 	clkout = clkdco / m2;
 
-	/* sigma-delta */
+	 
 	sd = DIV_ROUND_UP(fint * m, 250000000);
 
 	DSSDBG("N = %u, M = %u, M.f = %u, M2 = %u, SD = %u\n",

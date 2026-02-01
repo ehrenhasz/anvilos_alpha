@@ -1,9 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0+
-//
-// max14577_charger.c - Battery charger driver for the Maxim 14577/77836
-//
-// Copyright (C) 2013,2014 Samsung Electronics
-// Krzysztof Kozlowski <krzk@kernel.org>
+
+
+
+
+
+
 
 #include <linux/module.h>
 #include <linux/platform_device.h>
@@ -19,10 +19,7 @@ struct max14577_charger {
 	struct max14577_charger_platform_data	*pdata;
 };
 
-/*
- * Helper function for mapping values of STATUS2/CHGTYP register on max14577
- * and max77836 chipsets to enum maxim_muic_charger_type.
- */
+ 
 static enum max14577_muic_charger_type maxim_get_charger_type(
 		enum maxim_device_type dev_type, u8 val) {
 	switch (val) {
@@ -50,17 +47,7 @@ static int max14577_get_charger_state(struct max14577_charger *chg, int *val)
 	int ret;
 	u8 reg_data;
 
-	/*
-	 * Charging occurs only if:
-	 *  - CHGCTRL2/MBCHOSTEN == 1
-	 *  - STATUS2/CGMBC == 1
-	 *
-	 * TODO:
-	 *  - handle FULL after Top-off timer (EOC register may be off
-	 *    and the charger won't be charging although MBCHOSTEN is on)
-	 *  - handle properly dead-battery charging (respect timer)
-	 *  - handle timers (fast-charge and prequal) /MBCCHGERR/
-	 */
+	 
 	ret = max14577_read_reg(rmap, MAX14577_CHG_REG_CHG_CTRL2, &reg_data);
 	if (ret < 0)
 		goto out;
@@ -75,7 +62,7 @@ static int max14577_get_charger_state(struct max14577_charger *chg, int *val)
 		goto out;
 
 	if (reg_data & STATUS3_CGMBC_MASK) {
-		/* Charger or USB-cable is connected */
+		 
 		if (reg_data & STATUS3_EOC_MASK)
 			*val = POWER_SUPPLY_STATUS_FULL;
 		else
@@ -89,23 +76,12 @@ out:
 	return ret;
 }
 
-/*
- * Supported charge types:
- *  - POWER_SUPPLY_CHARGE_TYPE_NONE
- *  - POWER_SUPPLY_CHARGE_TYPE_FAST
- */
+ 
 static int max14577_get_charge_type(struct max14577_charger *chg, int *val)
 {
 	int ret, charging;
 
-	/*
-	 * TODO: CHARGE_TYPE_TRICKLE (VCHGR_RC or EOC)?
-	 * As spec says:
-	 * [after reaching EOC interrupt]
-	 * "When the battery is fully charged, the 30-minute (typ)
-	 *  top-off timer starts. The device continues to trickle
-	 *  charge the battery until the top-off timer runs out."
-	 */
+	 
 	ret = max14577_get_charger_state(chg, &charging);
 	if (ret < 0)
 		return ret;
@@ -151,12 +127,7 @@ static int max14577_get_online(struct max14577_charger *chg, int *val)
 	return 0;
 }
 
-/*
- * Supported health statuses:
- *  - POWER_SUPPLY_HEALTH_DEAD
- *  - POWER_SUPPLY_HEALTH_OVERVOLTAGE
- *  - POWER_SUPPLY_HEALTH_GOOD
- */
+ 
 static int max14577_get_battery_health(struct max14577_charger *chg, int *val)
 {
 	struct regmap *rmap = chg->max14577->regmap;
@@ -184,18 +155,14 @@ static int max14577_get_battery_health(struct max14577_charger *chg, int *val)
 		goto out;
 	}
 
-	/* Not dead, not overvoltage */
+	 
 	*val = POWER_SUPPLY_HEALTH_GOOD;
 
 out:
 	return ret;
 }
 
-/*
- * Always returns 1.
- * The max14577 chip doesn't report any status of battery presence.
- * Lets assume that it will always be used with some battery.
- */
+ 
 static int max14577_get_present(struct max14577_charger *chg, int *val)
 {
 	*val = 1;
@@ -213,7 +180,7 @@ static int max14577_set_fast_charge_timer(struct max14577_charger *chg,
 		reg_data = hours - 3;
 		break;
 	case 0:
-		/* Disable */
+		 
 		reg_data = 0x7;
 		break;
 	default:
@@ -248,7 +215,7 @@ static int max14577_init_constant_voltage(struct max14577_charger *chg,
 		if (uvolt <= 4180000)
 			reg_data = 0x1 + val;
 		else
-			reg_data = val; /* Fix for gap between 4.18V and 4.22V */
+			reg_data = val;  
 	} else
 		return -EINVAL;
 
@@ -267,12 +234,12 @@ static int max14577_init_eoc(struct max14577_charger *chg,
 	switch (chg->max14577->dev_type) {
 	case MAXIM_DEVICE_TYPE_MAX77836:
 		if (uamp < 5000)
-			return -EINVAL; /* Requested current is too low */
+			return -EINVAL;  
 
 		if (uamp >= 7500 && uamp < 10000)
 			current_bits = 0x0;
 		else if (uamp <= 50000) {
-			/* <5000, 7499> and <10000, 50000> */
+			 
 			current_bits = uamp / 5000;
 		} else {
 			uamp = min(uamp, 100000U) - 50000U;
@@ -283,7 +250,7 @@ static int max14577_init_eoc(struct max14577_charger *chg,
 	case MAXIM_DEVICE_TYPE_MAX14577:
 	default:
 		if (uamp < MAX14577_CHARGER_EOC_CURRENT_LIMIT_MIN)
-			return -EINVAL; /* Requested current is too low */
+			return -EINVAL;  
 
 		uamp = min(uamp, MAX14577_CHARGER_EOC_CURRENT_LIMIT_MAX);
 		uamp -= MAX14577_CHARGER_EOC_CURRENT_LIMIT_MIN;
@@ -318,36 +285,25 @@ static int max14577_init_fast_charge(struct max14577_charger *chg,
 			reg_data);
 }
 
-/*
- * Sets charger registers to proper and safe default values.
- * Some of these values are equal to defaults in MAX14577E
- * data sheet but there are minor differences.
- */
+ 
 static int max14577_charger_reg_init(struct max14577_charger *chg)
 {
 	struct regmap *rmap = chg->max14577->regmap;
 	u8 reg_data;
 	int ret;
 
-	/*
-	 * Charger-Type Manual Detection, default off (set CHGTYPMAN to 0)
-	 * Charger-Detection Enable, default on (set CHGDETEN to 1)
-	 * Combined mask of CHGDETEN and CHGTYPMAN will zero the CHGTYPMAN bit
-	 */
+	 
 	reg_data = 0x1 << CDETCTRL1_CHGDETEN_SHIFT;
 	max14577_update_reg(rmap, MAX14577_REG_CDETCTRL1,
 			CDETCTRL1_CHGDETEN_MASK | CDETCTRL1_CHGTYPMAN_MASK,
 			reg_data);
 
-	/*
-	 * Wall-Adapter Rapid Charge, default on
-	 * Battery-Charger, default on
-	 */
+	 
 	reg_data = 0x1 << CHGCTRL2_VCHGR_RC_SHIFT;
 	reg_data |= 0x1 << CHGCTRL2_MBCHOSTEN_SHIFT;
 	max14577_write_reg(rmap, MAX14577_REG_CHGCTRL2, reg_data);
 
-	/* Auto Charging Stop, default off */
+	 
 	reg_data = 0x0 << CHGCTRL6_AUTOSTOP_SHIFT;
 	max14577_write_reg(rmap, MAX14577_REG_CHGCTRL6, reg_data);
 
@@ -368,7 +324,7 @@ static int max14577_charger_reg_init(struct max14577_charger *chg)
 	if (ret)
 		return ret;
 
-	/* Initialize Overvoltage-Protection Threshold */
+	 
 	switch (chg->pdata->ovp_uvolt) {
 	case 7500000:
 		reg_data = 0x0;
@@ -389,7 +345,7 @@ static int max14577_charger_reg_init(struct max14577_charger *chg)
 	return 0;
 }
 
-/* Support property from charger */
+ 
 static enum power_supply_property max14577_charger_props[] = {
 	POWER_SUPPLY_PROP_STATUS,
 	POWER_SUPPLY_PROP_CHARGE_TYPE,
@@ -497,13 +453,13 @@ static struct max14577_charger_platform_data *max14577_charger_dt_init(
 
 	return pdata;
 }
-#else /* CONFIG_OF */
+#else  
 static struct max14577_charger_platform_data *max14577_charger_dt_init(
 		struct platform_device *pdev)
 {
 	return NULL;
 }
-#endif /* CONFIG_OF */
+#endif  
 
 static ssize_t show_fast_charge_timer(struct device *dev,
 		struct device_attribute *attr, char *buf)
@@ -594,7 +550,7 @@ static int max14577_charger_probe(struct platform_device *pdev)
 		goto err;
 	}
 
-	/* Check for valid values for charger */
+	 
 	BUILD_BUG_ON(MAX14577_CHARGER_EOC_CURRENT_LIMIT_MIN +
 			MAX14577_CHARGER_EOC_CURRENT_LIMIT_STEP * 0xf !=
 			MAX14577_CHARGER_EOC_CURRENT_LIMIT_MAX);

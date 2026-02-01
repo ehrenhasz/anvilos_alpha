@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * AppArmor security module
- *
- * This file contains AppArmor dfa based regular expression matching engine
- *
- * Copyright (C) 1998-2008 Novell/SUSE
- * Copyright 2009-2012 Canonical Ltd.
- */
+
+ 
 
 #include <linux/errno.h>
 #include <linux/kernel.h>
@@ -65,15 +58,7 @@ void __init aa_teardown_dfa_engine(void)
 	aa_put_dfa(nulldfa);
 }
 
-/**
- * unpack_table - unpack a dfa table (one of accept, default, base, next check)
- * @blob: data to unpack (NOT NULL)
- * @bsize: size of blob
- *
- * Returns: pointer to table else NULL on failure
- *
- * NOTE: must be freed by kvfree (not kfree)
- */
+ 
 static struct table_header *unpack_table(char *blob, size_t bsize)
 {
 	struct table_header *table = NULL;
@@ -83,9 +68,7 @@ static struct table_header *unpack_table(char *blob, size_t bsize)
 	if (bsize < sizeof(struct table_header))
 		goto out;
 
-	/* loaded td_id's start at 1, subtract 1 now to avoid doing
-	 * it every time we use td_id as an index
-	 */
+	 
 	th.td_id = be16_to_cpu(*(__be16 *) (blob)) - 1;
 	if (th.td_id > YYTD_ID_MAX)
 		goto out;
@@ -97,7 +80,7 @@ static struct table_header *unpack_table(char *blob, size_t bsize)
 	      th.td_flags == YYTD_DATA8))
 		goto out;
 
-	/* if we have a table it must have some entries */
+	 
 	if (th.td_lolen == 0)
 		goto out;
 	tsize = table_size(th.td_lolen, th.td_flags);
@@ -120,9 +103,7 @@ static struct table_header *unpack_table(char *blob, size_t bsize)
 				     u32, __be32, be32_to_cpu);
 		else
 			goto fail;
-		/* if table was vmalloced make sure the page tables are synced
-		 * before it is used, as it goes live to all cpus.
-		 */
+		 
 		if (is_vmalloc_addr(table))
 			vm_unmap_aliases();
 	}
@@ -134,27 +115,18 @@ fail:
 	return NULL;
 }
 
-/**
- * verify_table_headers - verify that the tables headers are as expected
- * @tables - array of dfa tables to check (NOT NULL)
- * @flags: flags controlling what type of accept table are acceptable
- *
- * Assumes dfa has gone through the first pass verification done by unpacking
- * NOTE: this does not valid accept table values
- *
- * Returns: %0 else error code on failure to verify
- */
+ 
 static int verify_table_headers(struct table_header **tables, int flags)
 {
 	size_t state_count, trans_count;
 	int error = -EPROTO;
 
-	/* check that required tables exist */
+	 
 	if (!(tables[YYTD_ID_DEF] && tables[YYTD_ID_BASE] &&
 	      tables[YYTD_ID_NXT] && tables[YYTD_ID_CHK]))
 		goto out;
 
-	/* accept.size == default.size == base.size */
+	 
 	state_count = tables[YYTD_ID_BASE]->td_lolen;
 	if (ACCEPT1_FLAGS(flags)) {
 		if (!tables[YYTD_ID_ACCEPT])
@@ -171,12 +143,12 @@ static int verify_table_headers(struct table_header **tables, int flags)
 	if (state_count != tables[YYTD_ID_DEF]->td_lolen)
 		goto out;
 
-	/* next.size == chk.size */
+	 
 	trans_count = tables[YYTD_ID_NXT]->td_lolen;
 	if (trans_count != tables[YYTD_ID_CHK]->td_lolen)
 		goto out;
 
-	/* if equivalence classes then its table size must be 256 */
+	 
 	if (tables[YYTD_ID_EC] && tables[YYTD_ID_EC]->td_lolen != 256)
 		goto out;
 
@@ -185,15 +157,7 @@ out:
 	return error;
 }
 
-/**
- * verify_dfa - verify that transitions and states in the tables are in bounds.
- * @dfa: dfa to test  (NOT NULL)
- *
- * Assumes dfa has gone through the first pass verification done by unpacking
- * NOTE: this does not valid accept table values
- *
- * Returns: %0 else error code on failure to verify
- */
+ 
 static int verify_dfa(struct aa_dfa *dfa)
 {
 	size_t i, state_count, trans_count;
@@ -240,7 +204,7 @@ static int verify_dfa(struct aa_dfa *dfa)
 			goto out;
 	}
 
-	/* Now that all the other tables are verified, verify diffencoding */
+	 
 	for (i = 0; i < state_count; i++) {
 		size_t j, k;
 
@@ -252,7 +216,7 @@ static int verify_dfa(struct aa_dfa *dfa)
 			if (j == k)
 				goto out;
 			if (k < j)
-				break;		/* already verified */
+				break;		 
 			BASE_TABLE(dfa)[j] |= MARK_DIFF_ENCODE;
 		}
 	}
@@ -262,12 +226,7 @@ out:
 	return error;
 }
 
-/**
- * dfa_free - free a dfa allocated by aa_dfa_unpack
- * @dfa: the dfa to free  (MAYBE NULL)
- *
- * Requires: reference count to dfa == 0
- */
+ 
 static void dfa_free(struct aa_dfa *dfa)
 {
 	if (dfa) {
@@ -281,28 +240,14 @@ static void dfa_free(struct aa_dfa *dfa)
 	}
 }
 
-/**
- * aa_dfa_free_kref - free aa_dfa by kref (called by aa_put_dfa)
- * @kr: kref callback for freeing of a dfa  (NOT NULL)
- */
+ 
 void aa_dfa_free_kref(struct kref *kref)
 {
 	struct aa_dfa *dfa = container_of(kref, struct aa_dfa, count);
 	dfa_free(dfa);
 }
 
-/**
- * aa_dfa_unpack - unpack the binary tables of a serialized dfa
- * @blob: aligned serialized stream of data to unpack  (NOT NULL)
- * @size: size of data to unpack
- * @flags: flags controlling what type of accept tables are acceptable
- *
- * Unpack a dfa that has been serialized.  To find information on the dfa
- * format look in Documentation/admin-guide/LSM/apparmor.rst
- * Assumes the dfa @blob stream has been aligned on a 8 byte boundary
- *
- * Returns: an unpacked dfa ready for matching or ERR_PTR on failure
- */
+ 
 struct aa_dfa *aa_dfa_unpack(void *blob, size_t size, int flags)
 {
 	int hsize;
@@ -317,7 +262,7 @@ struct aa_dfa *aa_dfa_unpack(void *blob, size_t size, int flags)
 
 	error = -EPROTO;
 
-	/* get dfa table set header */
+	 
 	if (size < sizeof(struct table_set_header))
 		goto fail;
 
@@ -332,18 +277,7 @@ struct aa_dfa *aa_dfa_unpack(void *blob, size_t size, int flags)
 	if (dfa->flags & ~(YYTH_FLAGS))
 		goto fail;
 
-	/*
-	 * TODO: needed for dfa to support more than 1 oob
-	 * if (dfa->flags & YYTH_FLAGS_OOB_TRANS) {
-	 *	if (hsize < 16 + 4)
-	 *		goto fail;
-	 *	dfa->max_oob = ntol(*(__be32 *) (data + 16));
-	 *	if (dfa->max <= MAX_OOB_SUPPORTED) {
-	 *		pr_err("AppArmor DFA OOB greater than supported\n");
-	 *		goto fail;
-	 *	}
-	 * }
-	 */
+	 
 	dfa->max_oob = 1;
 
 	data += hsize;
@@ -380,7 +314,7 @@ struct aa_dfa *aa_dfa_unpack(void *blob, size_t size, int flags)
 		default:
 			goto fail;
 		}
-		/* check for duplicate table entry */
+		 
 		if (dfa->tables[table->td_id])
 			goto fail;
 		dfa->tables[table->td_id] = table;
@@ -420,22 +354,7 @@ do {							\
 	break;						\
 } while (1)
 
-/**
- * aa_dfa_match_len - traverse @dfa to find state @str stops at
- * @dfa: the dfa to match @str against  (NOT NULL)
- * @start: the state of the dfa to start matching in
- * @str: the string of bytes to match against the dfa  (NOT NULL)
- * @len: length of the string of bytes to match
- *
- * aa_dfa_match_len will match @str against the dfa and return the state it
- * finished matching in. The final state can be used to look up the accepting
- * label, or as the start state of a continuing match.
- *
- * This function will happily match again the 0 byte and only finishes
- * when @len input is consumed.
- *
- * Returns: final state reached after input is consumed
- */
+ 
 aa_state_t aa_dfa_match_len(struct aa_dfa *dfa, aa_state_t start,
 			    const char *str, int len)
 {
@@ -448,15 +367,15 @@ aa_state_t aa_dfa_match_len(struct aa_dfa *dfa, aa_state_t start,
 	if (state == DFA_NOMATCH)
 		return DFA_NOMATCH;
 
-	/* current state is <state>, matching character *str */
+	 
 	if (dfa->tables[YYTD_ID_EC]) {
-		/* Equivalence class table defined */
+		 
 		u8 *equiv = EQUIV_TABLE(dfa);
 		for (; len; len--)
 			match_char(state, def, base, next, check,
 				   equiv[(u8) *str++]);
 	} else {
-		/* default is direct to next state */
+		 
 		for (; len; len--)
 			match_char(state, def, base, next, check, (u8) *str++);
 	}
@@ -464,18 +383,7 @@ aa_state_t aa_dfa_match_len(struct aa_dfa *dfa, aa_state_t start,
 	return state;
 }
 
-/**
- * aa_dfa_match - traverse @dfa to find state @str stops at
- * @dfa: the dfa to match @str against  (NOT NULL)
- * @start: the state of the dfa to start matching in
- * @str: the null terminated string of bytes to match against the dfa (NOT NULL)
- *
- * aa_dfa_match will match @str against the dfa and return the state it
- * finished matching in. The final state can be used to look up the accepting
- * label, or as the start state of a continuing match.
- *
- * Returns: final state reached after input is consumed
- */
+ 
 aa_state_t aa_dfa_match(struct aa_dfa *dfa, aa_state_t start, const char *str)
 {
 	u16 *def = DEFAULT_TABLE(dfa);
@@ -487,16 +395,16 @@ aa_state_t aa_dfa_match(struct aa_dfa *dfa, aa_state_t start, const char *str)
 	if (state == DFA_NOMATCH)
 		return DFA_NOMATCH;
 
-	/* current state is <state>, matching character *str */
+	 
 	if (dfa->tables[YYTD_ID_EC]) {
-		/* Equivalence class table defined */
+		 
 		u8 *equiv = EQUIV_TABLE(dfa);
-		/* default is direct to next state */
+		 
 		while (*str)
 			match_char(state, def, base, next, check,
 				   equiv[(u8) *str++]);
 	} else {
-		/* default is direct to next state */
+		 
 		while (*str)
 			match_char(state, def, base, next, check, (u8) *str++);
 	}
@@ -504,16 +412,7 @@ aa_state_t aa_dfa_match(struct aa_dfa *dfa, aa_state_t start, const char *str)
 	return state;
 }
 
-/**
- * aa_dfa_next - step one character to the next state in the dfa
- * @dfa: the dfa to traverse (NOT NULL)
- * @state: the state to start in
- * @c: the input character to transition on
- *
- * aa_dfa_match will step through the dfa by one input character @c
- *
- * Returns: state reach after input @c
- */
+ 
 aa_state_t aa_dfa_next(struct aa_dfa *dfa, aa_state_t state, const char c)
 {
 	u16 *def = DEFAULT_TABLE(dfa);
@@ -521,9 +420,9 @@ aa_state_t aa_dfa_next(struct aa_dfa *dfa, aa_state_t state, const char c)
 	u16 *next = NEXT_TABLE(dfa);
 	u16 *check = CHECK_TABLE(dfa);
 
-	/* current state is <state>, matching character *str */
+	 
 	if (dfa->tables[YYTD_ID_EC]) {
-		/* Equivalence class table defined */
+		 
 		u8 *equiv = EQUIV_TABLE(dfa);
 		match_char(state, def, base, next, check, equiv[(u8) c]);
 	} else
@@ -543,25 +442,13 @@ aa_state_t aa_dfa_outofband_transition(struct aa_dfa *dfa, aa_state_t state)
 	if (!(b & MATCH_FLAG_OOB_TRANSITION))
 		return DFA_NOMATCH;
 
-	/* No Equivalence class remapping for outofband transitions */
+	 
 	match_char(state, def, base, next, check, -1);
 
 	return state;
 }
 
-/**
- * aa_dfa_match_until - traverse @dfa until accept state or end of input
- * @dfa: the dfa to match @str against  (NOT NULL)
- * @start: the state of the dfa to start matching in
- * @str: the null terminated string of bytes to match against the dfa (NOT NULL)
- * @retpos: first character in str after match OR end of string
- *
- * aa_dfa_match will match @str against the dfa and return the state it
- * finished matching in. The final state can be used to look up the accepting
- * label, or as the start state of a continuing match.
- *
- * Returns: final state reached after input is consumed
- */
+ 
 aa_state_t aa_dfa_match_until(struct aa_dfa *dfa, aa_state_t start,
 				const char *str, const char **retpos)
 {
@@ -575,11 +462,11 @@ aa_state_t aa_dfa_match_until(struct aa_dfa *dfa, aa_state_t start,
 	if (state == DFA_NOMATCH)
 		return DFA_NOMATCH;
 
-	/* current state is <state>, matching character *str */
+	 
 	if (dfa->tables[YYTD_ID_EC]) {
-		/* Equivalence class table defined */
+		 
 		u8 *equiv = EQUIV_TABLE(dfa);
-		/* default is direct to next state */
+		 
 		while (*str) {
 			pos = base_idx(base[state]) + equiv[(u8) *str++];
 			if (check[pos] == state)
@@ -590,7 +477,7 @@ aa_state_t aa_dfa_match_until(struct aa_dfa *dfa, aa_state_t start,
 				break;
 		}
 	} else {
-		/* default is direct to next state */
+		 
 		while (*str) {
 			pos = base_idx(base[state]) + (u8) *str++;
 			if (check[pos] == state)
@@ -606,23 +493,7 @@ aa_state_t aa_dfa_match_until(struct aa_dfa *dfa, aa_state_t start,
 	return state;
 }
 
-/**
- * aa_dfa_matchn_until - traverse @dfa until accept or @n bytes consumed
- * @dfa: the dfa to match @str against  (NOT NULL)
- * @start: the state of the dfa to start matching in
- * @str: the string of bytes to match against the dfa  (NOT NULL)
- * @n: length of the string of bytes to match
- * @retpos: first character in str after match OR str + n
- *
- * aa_dfa_match_len will match @str against the dfa and return the state it
- * finished matching in. The final state can be used to look up the accepting
- * label, or as the start state of a continuing match.
- *
- * This function will happily match again the 0 byte and only finishes
- * when @n input is consumed.
- *
- * Returns: final state reached after input is consumed
- */
+ 
 aa_state_t aa_dfa_matchn_until(struct aa_dfa *dfa, aa_state_t start,
 				 const char *str, int n, const char **retpos)
 {
@@ -637,11 +508,11 @@ aa_state_t aa_dfa_matchn_until(struct aa_dfa *dfa, aa_state_t start,
 	if (state == DFA_NOMATCH)
 		return DFA_NOMATCH;
 
-	/* current state is <state>, matching character *str */
+	 
 	if (dfa->tables[YYTD_ID_EC]) {
-		/* Equivalence class table defined */
+		 
 		u8 *equiv = EQUIV_TABLE(dfa);
-		/* default is direct to next state */
+		 
 		for (; n; n--) {
 			pos = base_idx(base[state]) + equiv[(u8) *str++];
 			if (check[pos] == state)
@@ -652,7 +523,7 @@ aa_state_t aa_dfa_matchn_until(struct aa_dfa *dfa, aa_state_t start,
 				break;
 		}
 	} else {
-		/* default is direct to next state */
+		 
 		for (; n; n--) {
 			pos = base_idx(base[state]) + (u8) *str++;
 			if (check[pos] == state)
@@ -674,7 +545,7 @@ do {								\
 	wb->len = (wb->len + 1) & (WB_HISTORY_SIZE - 1);		\
 } while (0)
 
-/* For DFAs that don't support extended tagging of states */
+ 
 static bool is_loop(struct match_workbuf *wb, aa_state_t state,
 		    unsigned int *adjust)
 {
@@ -717,11 +588,11 @@ static aa_state_t leftmatch_fb(struct aa_dfa *dfa, aa_state_t start,
 	if (state == DFA_NOMATCH)
 		return DFA_NOMATCH;
 
-	/* current state is <state>, matching character *str */
+	 
 	if (dfa->tables[YYTD_ID_EC]) {
-		/* Equivalence class table defined */
+		 
 		u8 *equiv = EQUIV_TABLE(dfa);
-		/* default is direct to next state */
+		 
 		while (*str) {
 			unsigned int adjust;
 
@@ -740,7 +611,7 @@ static aa_state_t leftmatch_fb(struct aa_dfa *dfa, aa_state_t start,
 			(*count)++;
 		}
 	} else {
-		/* default is direct to next state */
+		 
 		while (*str) {
 			unsigned int adjust;
 
@@ -766,25 +637,13 @@ out:
 	return state;
 }
 
-/**
- * aa_dfa_leftmatch - traverse @dfa to find state @str stops at
- * @dfa: the dfa to match @str against  (NOT NULL)
- * @start: the state of the dfa to start matching in
- * @str: the null terminated string of bytes to match against the dfa (NOT NULL)
- * @count: current count of longest left.
- *
- * aa_dfa_match will match @str against the dfa and return the state it
- * finished matching in. The final state can be used to look up the accepting
- * label, or as the start state of a continuing match.
- *
- * Returns: final state reached after input is consumed
- */
+ 
 aa_state_t aa_dfa_leftmatch(struct aa_dfa *dfa, aa_state_t start,
 			    const char *str, unsigned int *count)
 {
 	DEFINE_MATCH_WB(wb);
 
-	/* TODO: match for extended state dfas */
+	 
 
 	return leftmatch_fb(dfa, start, str, &wb, count);
 }

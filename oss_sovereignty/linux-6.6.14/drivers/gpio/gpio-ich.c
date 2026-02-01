@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Intel ICH6-10, Series 5 and 6, Atom C2000 (Avoton/Rangeley) GPIO driver
- *
- * Copyright (C) 2010 Extreme Engineering Solutions.
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/gpio/driver.h>
@@ -14,15 +10,7 @@
 
 #define DRV_NAME "gpio_ich"
 
-/*
- * GPIO register offsets in GPIO I/O space.
- * Each chunk of 32 GPIOs is manipulated via its own USE_SELx, IO_SELx, and
- * LVLx registers.  Logic in the read/write functions takes a register and
- * an absolute bit number and determines the proper register offset and bit
- * number in that register.  For example, to read the value of GPIO bit 50
- * the code would access offset ichx_regs[2(=GPIO_LVL)][1(=50/32)],
- * bit 18 (50%32).
- */
+ 
 enum GPIO_REG {
 	GPIO_USE_SEL = 0,
 	GPIO_IO_SEL,
@@ -31,10 +19,10 @@ enum GPIO_REG {
 };
 
 static const u8 ichx_regs[4][3] = {
-	{0x00, 0x30, 0x40},	/* USE_SEL[1-3] offsets */
-	{0x04, 0x34, 0x44},	/* IO_SEL[1-3] offsets */
-	{0x0c, 0x38, 0x48},	/* LVL[1-3] offsets */
-	{0x18, 0x18, 0x18},	/* BLINK offset */
+	{0x00, 0x30, 0x40},	 
+	{0x04, 0x34, 0x44},	 
+	{0x0c, 0x38, 0x48},	 
+	{0x18, 0x18, 0x18},	 
 };
 
 static const u8 ichx_reglen[3] = {
@@ -55,30 +43,27 @@ static const u8 avoton_reglen[3] = {
 #define ICHX_READ(reg, base_res)	inl((reg) + (base_res)->start)
 
 struct ichx_desc {
-	/* Max GPIO pins the chipset can have */
+	 
 	uint ngpio;
 
-	/* chipset registers */
+	 
 	const u8 (*regs)[3];
 	const u8 *reglen;
 
-	/* GPO_BLINK is available on this chipset */
+	 
 	bool have_blink;
 
-	/* Whether the chipset has GPIO in GPE0_STS in the PM IO region */
+	 
 	bool uses_gpe0;
 
-	/* USE_SEL is bogus on some chipsets, eg 3100 */
+	 
 	u32 use_sel_ignore[3];
 
-	/* Some chipsets have quirks, let these use their own request/get */
+	 
 	int (*request)(struct gpio_chip *chip, unsigned int offset);
 	int (*get)(struct gpio_chip *chip, unsigned int offset);
 
-	/*
-	 * Some chipsets don't let reading output values on GPIO_LVL register
-	 * this option allows driver caching written output values
-	 */
+	 
 	bool use_outlvl_cache;
 };
 
@@ -86,15 +71,15 @@ static struct {
 	spinlock_t lock;
 	struct device *dev;
 	struct gpio_chip chip;
-	struct resource *gpio_base;	/* GPIO IO base */
-	struct resource *pm_base;	/* Power Management IO base */
-	struct ichx_desc *desc;	/* Pointer to chipset-specific description */
-	u32 orig_gpio_ctrl;	/* Orig CTRL value, used to restore on exit */
-	u8 use_gpio;		/* Which GPIO groups are usable */
-	int outlvl_cache[3];	/* cached output values */
+	struct resource *gpio_base;	 
+	struct resource *pm_base;	 
+	struct ichx_desc *desc;	 
+	u32 orig_gpio_ctrl;	 
+	u8 use_gpio;		 
+	int outlvl_cache[3];	 
 } ichx_priv;
 
-static int modparam_gpiobase = -1;	/* dynamic */
+static int modparam_gpiobase = -1;	 
 module_param_named(gpiobase, modparam_gpiobase, int, 0444);
 MODULE_PARM_DESC(gpiobase, "The GPIO number base. -1 means dynamic, which is the default.");
 
@@ -165,27 +150,21 @@ static int ichx_gpio_get_direction(struct gpio_chip *gpio, unsigned int nr)
 
 static int ichx_gpio_direction_input(struct gpio_chip *gpio, unsigned int nr)
 {
-	/*
-	 * Try setting pin as an input and verify it worked since many pins
-	 * are output-only.
-	 */
+	 
 	return ichx_write_bit(GPIO_IO_SEL, nr, 1, 1);
 }
 
 static int ichx_gpio_direction_output(struct gpio_chip *gpio, unsigned int nr,
 					int val)
 {
-	/* Disable blink hardware which is available for GPIOs from 0 to 31. */
+	 
 	if (nr < 32 && ichx_priv.desc->have_blink)
 		ichx_write_bit(GPO_BLINK, nr, 0, 0);
 
-	/* Set GPIO output value. */
+	 
 	ichx_write_bit(GPIO_LVL, nr, val, 0);
 
-	/*
-	 * Try setting pin as an output and verify it worked since many pins
-	 * are input-only.
-	 */
+	 
 	return ichx_write_bit(GPIO_IO_SEL, nr, 0, 1);
 }
 
@@ -199,17 +178,14 @@ static int ich6_gpio_get(struct gpio_chip *chip, unsigned int nr)
 	unsigned long flags;
 	u32 data;
 
-	/*
-	 * GPI 0 - 15 need to be read from the power management registers on
-	 * a ICH6/3100 bridge.
-	 */
+	 
 	if (nr < 16) {
 		if (!ichx_priv.pm_base)
 			return -ENXIO;
 
 		spin_lock_irqsave(&ichx_priv.lock, flags);
 
-		/* GPI 0 - 15 are latched, write 1 to clear*/
+		 
 		ICHX_WRITE(BIT(16 + nr), 0, ichx_priv.pm_base);
 		data = ICHX_READ(0, ichx_priv.pm_base);
 
@@ -226,12 +202,7 @@ static int ichx_gpio_request(struct gpio_chip *chip, unsigned int nr)
 	if (!ichx_gpio_check_available(chip, nr))
 		return -ENXIO;
 
-	/*
-	 * Note we assume the BIOS properly set a bridge's USE value.  Some
-	 * chips (eg Intel 3100) have bogus USE values though, so first see if
-	 * the chipset's USE value can be trusted for this specific bit.
-	 * If it can't be trusted, assume that the pin can be used as a GPIO.
-	 */
+	 
 	if (ichx_priv.desc->use_sel_ignore[nr / 32] & BIT(nr & 0x1f))
 		return 0;
 
@@ -240,12 +211,7 @@ static int ichx_gpio_request(struct gpio_chip *chip, unsigned int nr)
 
 static int ich6_gpio_request(struct gpio_chip *chip, unsigned int nr)
 {
-	/*
-	 * Fixups for bits 16 and 17 are necessary on the Intel ICH6/3100
-	 * bridge as they are controlled by USE register bits 0 and 1.  See
-	 * "Table 704 GPIO_USE_SEL1 register" in the i3100 datasheet for
-	 * additional info.
-	 */
+	 
 	if (nr == 16 || nr == 17)
 		nr -= 16;
 
@@ -263,7 +229,7 @@ static void ichx_gpiolib_setup(struct gpio_chip *chip)
 	chip->label = DRV_NAME;
 	chip->parent = ichx_priv.dev;
 
-	/* Allow chip-specific overrides of request()/get() */
+	 
 	chip->request = ichx_priv.desc->request ?
 		ichx_priv.desc->request : ichx_gpio_request;
 	chip->get = ichx_priv.desc->get ?
@@ -279,13 +245,13 @@ static void ichx_gpiolib_setup(struct gpio_chip *chip)
 	chip->dbg_show = NULL;
 }
 
-/* ICH6-based, 631xesb-based */
+ 
 static struct ichx_desc ich6_desc = {
-	/* Bridges using the ICH6 controller need fixups for GPIO 0 - 17 */
+	 
 	.request = ich6_gpio_request,
 	.get = ich6_gpio_get,
 
-	/* GPIO 0-15 are read in the GPE0_STS PM register */
+	 
 	.uses_gpe0 = true,
 
 	.ngpio = 50,
@@ -294,20 +260,16 @@ static struct ichx_desc ich6_desc = {
 	.reglen = ichx_reglen,
 };
 
-/* Intel 3100 */
+ 
 static struct ichx_desc i3100_desc = {
-	/*
-	 * Bits 16,17, 20 of USE_SEL and bit 16 of USE_SEL2 always read 0 on
-	 * the Intel 3100.  See "Table 712. GPIO Summary Table" of 3100
-	 * Datasheet for more info.
-	 */
+	 
 	.use_sel_ignore = {0x00130000, 0x00010000, 0x0},
 
-	/* The 3100 needs fixups for GPIO 0 - 17 */
+	 
 	.request = ich6_gpio_request,
 	.get = ich6_gpio_get,
 
-	/* GPIO 0-15 are read in the GPE0_STS PM register */
+	 
 	.uses_gpe0 = true,
 
 	.ngpio = 50,
@@ -315,7 +277,7 @@ static struct ichx_desc i3100_desc = {
 	.reglen = ichx_reglen,
 };
 
-/* ICH7 and ICH8-based */
+ 
 static struct ichx_desc ich7_desc = {
 	.ngpio = 50,
 	.have_blink = true,
@@ -323,7 +285,7 @@ static struct ichx_desc ich7_desc = {
 	.reglen = ichx_reglen,
 };
 
-/* ICH9-based */
+ 
 static struct ichx_desc ich9_desc = {
 	.ngpio = 61,
 	.have_blink = true,
@@ -331,7 +293,7 @@ static struct ichx_desc ich9_desc = {
 	.reglen = ichx_reglen,
 };
 
-/* ICH10-based - Consumer/corporate versions have different amount of GPIO */
+ 
 static struct ichx_desc ich10_cons_desc = {
 	.ngpio = 61,
 	.have_blink = true,
@@ -345,18 +307,16 @@ static struct ichx_desc ich10_corp_desc = {
 	.reglen = ichx_reglen,
 };
 
-/* Intel 5 series, 6 series, 3400 series, and C200 series */
+ 
 static struct ichx_desc intel5_desc = {
 	.ngpio = 76,
 	.regs = ichx_regs,
 	.reglen = ichx_reglen,
 };
 
-/* Avoton */
+ 
 static struct ichx_desc avoton_desc = {
-	/* Avoton has only 59 GPIOs, but we assume the first set of register
-	 * (Core) has 32 instead of 31 to keep gpio-ich compliance
-	 */
+	 
 	.ngpio = 60,
 	.regs = avoton_regs,
 	.reglen = avoton_reglen,
@@ -433,11 +393,7 @@ static int ichx_gpio_probe(struct platform_device *pdev)
 	ichx_priv.gpio_base = res_base;
 	ichx_priv.use_gpio = ich_info->use_gpio;
 
-	/*
-	 * If necessary, determine the I/O address of ACPI/power management
-	 * registers which are needed to read the GPE0 register for GPI pins
-	 * 0 - 15 on some chipsets.
-	 */
+	 
 	if (!ichx_priv.desc->uses_gpe0)
 		goto init;
 

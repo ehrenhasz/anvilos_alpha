@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * vdso_test_getcpu.c: Sample code to test parse_vdso.c and vDSO getcpu()
- *
- * Copyright (c) 2020 Arm Ltd
- */
+
+ 
 
 #include <stdint.h>
 #include <elf.h>

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/**************************************************************************
- * Copyright (c) 2011, Intel Corporation.
- * All Rights Reserved.
- *
- **************************************************************************/
+
+ 
 
 #include <linux/delay.h>
 
@@ -47,7 +43,7 @@ static int cdv_output_init(struct drm_device *dev)
 	cdv_intel_crt_init(dev, &dev_priv->mode_dev);
 	cdv_intel_lvds_init(dev, &dev_priv->mode_dev);
 
-	/* These bits indicate HDMI not SDVO on CDV */
+	 
 	if (REG_READ(SDVOB) & SDVO_DETECTED) {
 		cdv_hdmi_init(dev, &dev_priv->mode_dev, SDVOB);
 		if (REG_READ(DP_B) & DP_DETECTED)
@@ -62,9 +58,7 @@ static int cdv_output_init(struct drm_device *dev)
 	return 0;
 }
 
-/*
- *	Cedartrail Backlght Interfaces
- */
+ 
 
 static int cdv_backlight_combination_mode(struct drm_device *dev)
 {
@@ -77,8 +71,7 @@ static u32 cdv_get_max_backlight(struct drm_device *dev)
 
 	if (max == 0) {
 		DRM_DEBUG_KMS("LVDS Panel PWM value is 0!\n");
-		/* i915 does this, I believe which means that we should not
-		 * smash PWM control as firmware will take control of it. */
+		 
 		return 1;
 	}
 
@@ -136,13 +129,7 @@ static int cdv_backlight_init(struct drm_device *dev)
 	return 0;
 }
 
-/*
- *	Provide the Cedarview specific chip logic and low level methods
- *	for power management
- *
- *	FIXME: we need to implement the apm/ospm base management bits
- *	for this and the MID devices.
- */
+ 
 
 static inline u32 CDV_MSG_READ32(int domain, uint port, uint offset)
 {
@@ -185,15 +172,15 @@ static void cdv_init_pm(struct drm_device *dev)
 	dev_priv->ospm_base = CDV_MSG_READ32(domain, PSB_PUNIT_PORT,
 							PSB_OSPMBA) & 0xFFFF;
 
-	/* Power status */
+	 
 	pwr_cnt = inl(dev_priv->apm_base + PSB_APM_CMD);
 
-	/* Enable the GPU */
+	 
 	pwr_cnt &= ~PSB_PWRGT_GFX_MASK;
 	pwr_cnt |= PSB_PWRGT_GFX_ON;
 	outl(pwr_cnt, dev_priv->apm_base + PSB_APM_CMD);
 
-	/* Wait for the GPU power */
+	 
 	for (i = 0; i < 5; i++) {
 		u32 pwr_sts = inl(dev_priv->apm_base + PSB_APM_STS);
 		if ((pwr_sts & PSB_PWRGT_GFX_MASK) == 0)
@@ -207,24 +194,11 @@ static void cdv_errata(struct drm_device *dev)
 {
 	struct pci_dev *pdev = to_pci_dev(dev->dev);
 
-	/* Disable bonus launch.
-	 *	CPU and GPU competes for memory and display misses updates and
-	 *	flickers. Worst with dual core, dual displays.
-	 *
-	 *	Fixes were done to Win 7 gfx driver to disable a feature called
-	 *	Bonus Launch to work around the issue, by degrading
-	 *	performance.
-	 */
+	 
 	 CDV_MSG_WRITE32(pci_domain_nr(pdev->bus), 3, 0x30, 0x08027108);
 }
 
-/**
- *	cdv_save_display_registers	-	save registers lost on suspend
- *	@dev: our DRM device
- *
- *	Save the state we need in order to be able to restore the interface
- *	upon resume from suspend
- */
+ 
 static int cdv_save_display_registers(struct drm_device *dev)
 {
 	struct drm_psb_private *dev_priv = to_drm_psb_private(dev);
@@ -275,14 +249,7 @@ static int cdv_save_display_registers(struct drm_device *dev)
 	return 0;
 }
 
-/**
- *	cdv_restore_display_registers	-	restore lost register state
- *	@dev: our DRM device
- *
- *	Restore register state that was lost during suspend and resume.
- *
- *	FIXME: review
- */
+ 
 static int cdv_restore_display_registers(struct drm_device *dev)
 {
 	struct drm_psb_private *dev_priv = to_drm_psb_private(dev);
@@ -297,7 +264,7 @@ static int cdv_restore_display_registers(struct drm_device *dev)
 	REG_WRITE(DSPCLK_GATE_D, regs->cdv.saveDSPCLK_GATE_D);
 	REG_WRITE(RAMCLK_GATE_D, regs->cdv.saveRAMCLK_GATE_D);
 
-	/* BIOS does below anyway */
+	 
 	REG_WRITE(DPIO_CFG, 0);
 	REG_WRITE(DPIO_CFG, DPIO_MODE_SELECT_0 | DPIO_CMN_RESET_N);
 
@@ -340,7 +307,7 @@ static int cdv_restore_display_registers(struct drm_device *dev)
 	REG_WRITE(PSB_INT_ENABLE_R, regs->cdv.saveIER);
 	REG_WRITE(PSB_INT_MASK_R, regs->cdv.saveIMR);
 
-	/* Fix arbitration bug */
+	 
 	cdv_errata(dev);
 
 	drm_mode_config_reset(dev);
@@ -350,7 +317,7 @@ static int cdv_restore_display_registers(struct drm_device *dev)
 		connector->funcs->dpms(connector, DRM_MODE_DPMS_ON);
 	drm_connector_list_iter_end(&conn_iter);
 
-	/* Resume the modeset for every activated CRTC */
+	 
 	drm_helper_resume_force_mode(dev);
 	return 0;
 }
@@ -405,12 +372,11 @@ static void cdv_hotplug_work_func(struct work_struct *work)
 							hotplug_work);
 	struct drm_device *dev = &dev_priv->dev;
 
-        /* Just fire off a uevent and let userspace tell us what to do */
+         
         drm_helper_hpd_irq_event(dev);
 }
 
-/* The core driver has received a hotplug IRQ. We are in IRQ context
-   so extract the needed information and kick off queued processing */
+ 
 
 static int cdv_hotplug_event(struct drm_device *dev)
 {
@@ -492,7 +458,7 @@ void cdv_intel_attach_broadcast_rgb_property(struct drm_connector *connector)
 	drm_object_attach_property(&connector->base, prop, 0);
 }
 
-/* Cedarview */
+ 
 static const struct psb_offset cdv_regmap[2] = {
 	{
 		.fp0 = FPA0,
@@ -560,7 +526,7 @@ static int cdv_chip_setup(struct drm_device *dev)
 	return 0;
 }
 
-/* CDV is much like Poulsbo but has MID like SGX offsets and PM */
+ 
 
 const struct psb_ops cdv_chip_ops = {
 	.name = "GMA3600/3650",

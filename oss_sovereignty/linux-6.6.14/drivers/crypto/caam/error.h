@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * CAAM Error Reporting code header
- *
- * Copyright 2009-2011 Freescale Semiconductor, Inc.
- */
+ 
+ 
 
 #ifndef CAAM_ERROR_H
 #define CAAM_ERROR_H
@@ -26,4 +22,4 @@ static inline bool is_mdha(u32 algtype)
 	return (algtype & OP_ALG_ALGSEL_MASK & ~OP_ALG_ALGSEL_SUBMASK) ==
 	       OP_ALG_CHA_MDHA;
 }
-#endif /* CAAM_ERROR_H */
+#endif  

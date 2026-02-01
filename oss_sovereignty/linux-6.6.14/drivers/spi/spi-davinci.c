@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2009 Texas Instruments.
- * Copyright (C) 2010 EF Johnson Technologies
- */
+
+ 
 
 #include <linux/interrupt.h>
 #include <linux/io.h>
@@ -34,33 +31,33 @@
 #define SPIFMT_WDELAY_SHIFT	24
 #define SPIFMT_PRESCALE_SHIFT	8
 
-/* SPIPC0 */
-#define SPIPC0_DIFUN_MASK	BIT(11)		/* MISO */
-#define SPIPC0_DOFUN_MASK	BIT(10)		/* MOSI */
-#define SPIPC0_CLKFUN_MASK	BIT(9)		/* CLK */
-#define SPIPC0_SPIENA_MASK	BIT(8)		/* nREADY */
+ 
+#define SPIPC0_DIFUN_MASK	BIT(11)		 
+#define SPIPC0_DOFUN_MASK	BIT(10)		 
+#define SPIPC0_CLKFUN_MASK	BIT(9)		 
+#define SPIPC0_SPIENA_MASK	BIT(8)		 
 
 #define SPIINT_MASKALL		0x0101035F
 #define SPIINT_MASKINT		0x0000015F
 #define SPI_INTLVL_1		0x000001FF
 #define SPI_INTLVL_0		0x00000000
 
-/* SPIDAT1 (upper 16 bit defines) */
+ 
 #define SPIDAT1_CSHOLD_MASK	BIT(12)
 #define SPIDAT1_WDEL		BIT(10)
 
-/* SPIGCR1 */
+ 
 #define SPIGCR1_CLKMOD_MASK	BIT(1)
 #define SPIGCR1_MASTER_MASK     BIT(0)
 #define SPIGCR1_POWERDOWN_MASK	BIT(8)
 #define SPIGCR1_LOOPBACK_MASK	BIT(16)
 #define SPIGCR1_SPIENA_MASK	BIT(24)
 
-/* SPIBUF */
+ 
 #define SPIBUF_TXFULL_MASK	BIT(29)
 #define SPIBUF_RXEMPTY_MASK	BIT(31)
 
-/* SPIDELAY */
+ 
 #define SPIDELAY_C2TDELAY_SHIFT 24
 #define SPIDELAY_C2TDELAY_MASK  (0xFF << SPIDELAY_C2TDELAY_SHIFT)
 #define SPIDELAY_T2CDELAY_SHIFT 16
@@ -70,7 +67,7 @@
 #define SPIDELAY_C2EDELAY_SHIFT 0
 #define SPIDELAY_C2EDELAY_MASK  0xFF
 
-/* Error Masks */
+ 
 #define SPIFLG_DLEN_ERR_MASK		BIT(0)
 #define SPIFLG_TIMEOUT_MASK		BIT(1)
 #define SPIFLG_PARERR_MASK		BIT(2)
@@ -85,7 +82,7 @@
 
 #define SPIINT_DMA_REQ_EN	BIT(16)
 
-/* SPI Controller registers */
+ 
 #define SPIGCR0		0x00
 #define SPIGCR1		0x04
 #define SPIINT		0x08
@@ -100,7 +97,7 @@
 
 #define DMA_MIN_BYTES	16
 
-/* SPI Controller driver's private data. */
+ 
 struct davinci_spi {
 	struct spi_bitbang	bitbang;
 	struct clk		*clk;
@@ -191,9 +188,7 @@ static inline void clear_io_bits(void __iomem *addr, u32 bits)
 	iowrite32(v, addr);
 }
 
-/*
- * Interface to control the chip select signal
- */
+ 
 static void davinci_spi_chipselect(struct spi_device *spi, int value)
 {
 	struct davinci_spi *dspi;
@@ -203,14 +198,11 @@ static void davinci_spi_chipselect(struct spi_device *spi, int value)
 
 	dspi = spi_controller_get_devdata(spi->controller);
 
-	/* program delay transfers if tx_delay is non zero */
+	 
 	if (spicfg && spicfg->wdelay)
 		spidat1 |= SPIDAT1_WDEL;
 
-	/*
-	 * Board specific chip select logic decides the polarity and cs
-	 * line for the controller
-	 */
+	 
 	if (spi_get_csgpiod(spi, 0)) {
 		if (value == BITBANG_CS_ACTIVE)
 			gpiod_set_value(spi_get_csgpiod(spi, 0), 1);
@@ -227,23 +219,13 @@ static void davinci_spi_chipselect(struct spi_device *spi, int value)
 	iowrite16(spidat1, dspi->base + SPIDAT1 + 2);
 }
 
-/**
- * davinci_spi_get_prescale - Calculates the correct prescale value
- * @dspi: the controller data
- * @max_speed_hz: the maximum rate the SPI clock can run at
- *
- * This function calculates the prescale value that generates a clock rate
- * less than or equal to the specified maximum.
- *
- * Returns: calculated prescale value for easy programming into SPI registers
- * or negative error number if valid prescalar cannot be updated.
- */
+ 
 static inline int davinci_spi_get_prescale(struct davinci_spi *dspi,
 							u32 max_speed_hz)
 {
 	int ret;
 
-	/* Subtract 1 to match what will be programmed into SPI register. */
+	 
 	ret = DIV_ROUND_UP(clk_get_rate(dspi->clk), max_speed_hz) - 1;
 
 	if (ret < dspi->prescaler_limit || ret > 255)
@@ -252,15 +234,7 @@ static inline int davinci_spi_get_prescale(struct davinci_spi *dspi,
 	return ret;
 }
 
-/**
- * davinci_spi_setup_transfer - This functions will determine transfer method
- * @spi: spi device on which data transfer to be done
- * @t: spi transfer in which transfer info is filled
- *
- * This function determines data transfer method (8/16/32 bit transfer).
- * It will also set the SPI Clock Control register according to
- * SPI slave device freq.
- */
+ 
 static int davinci_spi_setup_transfer(struct spi_device *spi,
 		struct spi_transfer *t)
 {
@@ -281,14 +255,11 @@ static int davinci_spi_setup_transfer(struct spi_device *spi,
 		hz = t->speed_hz;
 	}
 
-	/* if bits_per_word is not set then set it default */
+	 
 	if (!bits_per_word)
 		bits_per_word = spi->bits_per_word;
 
-	/*
-	 * Assign function pointer to appropriate transfer method
-	 * 8bit, 16bit or 32bit transfer
-	 */
+	 
 	if (bits_per_word <= 8) {
 		dspi->get_rx = davinci_spi_rx_buf_u8;
 		dspi->get_tx = davinci_spi_tx_buf_u8;
@@ -302,7 +273,7 @@ static int davinci_spi_setup_transfer(struct spi_device *spi,
 	if (!hz)
 		hz = spi->max_speed_hz;
 
-	/* Set up SPIFMTn register, unique to this chipselect. */
+	 
 
 	prescale = davinci_spi_get_prescale(dspi, hz);
 	if (prescale < 0)
@@ -319,26 +290,12 @@ static int davinci_spi_setup_transfer(struct spi_device *spi,
 	if (!(spi->mode & SPI_CPHA))
 		spifmt |= SPIFMT_PHASE_MASK;
 
-	/*
-	* Assume wdelay is used only on SPI peripherals that has this field
-	* in SPIFMTn register and when it's configured from board file or DT.
-	*/
+	 
 	if (spicfg->wdelay)
 		spifmt |= ((spicfg->wdelay << SPIFMT_WDELAY_SHIFT)
 				& SPIFMT_WDELAY_MASK);
 
-	/*
-	 * Version 1 hardware supports two basic SPI modes:
-	 *  - Standard SPI mode uses 4 pins, with chipselect
-	 *  - 3 pin SPI is a 4 pin variant without CS (SPI_NO_CS)
-	 *	(distinct from SPI_3WIRE, with just one data wire;
-	 *	or similar variants without MOSI or without MISO)
-	 *
-	 * Version 2 hardware supports an optional handshaking signal,
-	 * so it can support two more modes:
-	 *  - 5 pin SPI variant is standard SPI plus SPI_READY
-	 *  - 4 pin with enable is (SPI_READY | SPI_NO_CS)
-	 */
+	 
 
 	if (dspi->version == SPI_VERSION_2) {
 
@@ -387,7 +344,7 @@ static int davinci_spi_of_setup(struct spi_device *spi)
 		if (!spicfg)
 			return -ENOMEM;
 		*spicfg = davinci_spi_default_cfg;
-		/* override with dt configured values */
+		 
 		if (!of_property_read_u32(np, "ti,spi-wdelay", &prop))
 			spicfg->wdelay = (u8)prop;
 		spi->controller_data = spicfg;
@@ -399,12 +356,7 @@ static int davinci_spi_of_setup(struct spi_device *spi)
 	return 0;
 }
 
-/**
- * davinci_spi_setup - This functions will set default transfer method
- * @spi: spi device on which data transfer to be done
- *
- * This functions sets the default transfer method.
- */
+ 
 static int davinci_spi_setup(struct spi_device *spi)
 {
 	struct davinci_spi *dspi;
@@ -496,13 +448,7 @@ static int davinci_spi_check_error(struct davinci_spi *dspi, int int_status)
 	return 0;
 }
 
-/**
- * davinci_spi_process_events - check for and handle any SPI controller events
- * @dspi: the controller data
- *
- * This function will check the SPIFLG register and handle any events that are
- * detected there
- */
+ 
 static int davinci_spi_process_events(struct davinci_spi *dspi)
 {
 	u32 buf, status, errors = 0, spidat1;
@@ -553,15 +499,7 @@ static void davinci_spi_dma_tx_callback(void *data)
 		complete(&dspi->done);
 }
 
-/**
- * davinci_spi_bufs - functions which will handle transfer data
- * @spi: spi device on which data transfer to be done
- * @t: spi transfer in which transfer info is filled
- *
- * This function will put data to be transferred into data register
- * of SPI controller and then wait until the completion will be marked
- * by the IRQ Handler.
- */
+ 
 static int davinci_spi_bufs(struct spi_device *spi, struct spi_transfer *t)
 {
 	struct davinci_spi *dspi;
@@ -577,7 +515,7 @@ static int davinci_spi_bufs(struct spi_device *spi, struct spi_transfer *t)
 	if (!spicfg)
 		spicfg = &davinci_spi_default_cfg;
 
-	/* convert len to words based on bits_per_word */
+	 
 	data_type = dspi->bytes_per_word[spi_get_chipselect(spi, 0)];
 
 	dspi->tx = t->tx_buf;
@@ -595,7 +533,7 @@ static int davinci_spi_bufs(struct spi_device *spi, struct spi_transfer *t)
 	if (!davinci_spi_can_dma(spi->controller, spi, t)) {
 		if (spicfg->io_type != SPI_IO_TYPE_POLL)
 			set_io_bits(dspi->base + SPIINT, SPIINT_MASKINT);
-		/* start the transfer */
+		 
 		dspi->wcount--;
 		tx_data = dspi->get_tx(dspi);
 		spidat1 &= 0xFFFF0000;
@@ -627,11 +565,7 @@ static int davinci_spi_bufs(struct spi_device *spi, struct spi_transfer *t)
 			goto err_desc;
 
 		if (!t->tx_buf) {
-			/* To avoid errors when doing rx-only transfers with
-			 * many SG entries (> 20), use the rx buffer as the
-			 * dummy tx buffer so that dma reloads are done at the
-			 * same time for rx and tx.
-			 */
+			 
 			t->tx_sg.sgl = t->rx_sg.sgl;
 			t->tx_sg.nents = t->rx_sg.nents;
 		}
@@ -659,7 +593,7 @@ static int davinci_spi_bufs(struct spi_device *spi, struct spi_transfer *t)
 		set_io_bits(dspi->base + SPIINT, SPIINT_DMA_REQ_EN);
 	}
 
-	/* Wait for the transfer to complete */
+	 
 	if (spicfg->io_type != SPI_IO_TYPE_POLL) {
 		if (wait_for_completion_timeout(&dspi->done, HZ) == 0)
 			errors = SPIFLG_TIMEOUT_MASK;
@@ -679,10 +613,7 @@ static int davinci_spi_bufs(struct spi_device *spi, struct spi_transfer *t)
 	clear_io_bits(dspi->base + SPIGCR1, SPIGCR1_SPIENA_MASK);
 	set_io_bits(dspi->base + SPIGCR1, SPIGCR1_POWERDOWN_MASK);
 
-	/*
-	 * Check for bit error, desync error,parity error,timeout error and
-	 * receive overflow errors
-	 */
+	 
 	if (errors) {
 		ret = davinci_spi_check_error(dspi, errors);
 		WARN(!ret, "%s: error reported but no error found!\n",
@@ -701,30 +632,13 @@ err_desc:
 	return ret;
 }
 
-/**
- * dummy_thread_fn - dummy thread function
- * @irq: IRQ number for this SPI Master
- * @data: structure for SPI Master controller davinci_spi
- *
- * This is to satisfy the request_threaded_irq() API so that the irq
- * handler is called in interrupt context.
- */
+ 
 static irqreturn_t dummy_thread_fn(s32 irq, void *data)
 {
 	return IRQ_HANDLED;
 }
 
-/**
- * davinci_spi_irq - Interrupt handler for SPI Master Controller
- * @irq: IRQ number for this SPI Master
- * @data: structure for SPI Master controller davinci_spi
- *
- * ISR will determine that interrupt arrives either for READ or WRITE command.
- * According to command it will do the appropriate action. It will check
- * transfer length and if it is not zero then dispatch transfer command again.
- * If transfer length is zero then it will indicate the COMPLETION so that
- * davinci_spi_bufs function can go ahead.
- */
+ 
 static irqreturn_t davinci_spi_irq(s32 irq, void *data)
 {
 	struct davinci_spi *dspi = data;
@@ -759,7 +673,7 @@ static int davinci_spi_request_dma(struct davinci_spi *dspi)
 
 #if defined(CONFIG_OF)
 
-/* OF SPI data structure */
+ 
 struct davinci_spi_of_data {
 	u8	version;
 	u8	prescaler_limit;
@@ -797,15 +711,7 @@ static const struct of_device_id davinci_spi_of_match[] = {
 };
 MODULE_DEVICE_TABLE(of, davinci_spi_of_match);
 
-/**
- * spi_davinci_get_pdata - Get platform data from DTS binding
- * @pdev: ptr to platform data
- * @dspi: ptr to driver data
- *
- * Parses and populates pdata in dspi from device tree bindings.
- *
- * NOTE: Not all platform data params are supported currently.
- */
+ 
 static int spi_davinci_get_pdata(struct platform_device *pdev,
 			struct davinci_spi *dspi)
 {
@@ -820,13 +726,7 @@ static int spi_davinci_get_pdata(struct platform_device *pdev,
 
 	pdata->version = spi_data->version;
 	pdata->prescaler_limit = spi_data->prescaler_limit;
-	/*
-	 * default num_cs is 1 and all chipsel are internal to the chip
-	 * indicated by chip_sel being NULL or cs_gpios being NULL or
-	 * set to -ENOENT. num-cs includes internal as well as gpios.
-	 * indicated by chip_sel being NULL. GPIO based CS is not
-	 * supported yet in DT bindings.
-	 */
+	 
 	num_cs = 1;
 	of_property_read_u32(node, "num-cs", &num_cs);
 	pdata->num_chipselect = num_cs;
@@ -842,17 +742,7 @@ static int spi_davinci_get_pdata(struct platform_device *pdev,
 }
 #endif
 
-/**
- * davinci_spi_probe - probe function for SPI Master Controller
- * @pdev: platform_device structure which contains plateform specific data
- *
- * According to Linux Device Model this function will be invoked by Linux
- * with platform_device struct which contains the device specific info.
- * This function will map the SPI controller's memory, register IRQ,
- * Reset SPI controller and setting its registers to default value.
- * It will invoke spi_bitbang_start to create work queue so that client driver
- * can register transfer method to work queue.
- */
+ 
 static int davinci_spi_probe(struct platform_device *pdev)
 {
 	struct spi_controller *host;
@@ -876,13 +766,13 @@ static int davinci_spi_probe(struct platform_device *pdev)
 		pdata = dev_get_platdata(&pdev->dev);
 		dspi->pdata = *pdata;
 	} else {
-		/* update dspi pdata with that from the DT */
+		 
 		ret = spi_davinci_get_pdata(pdev, dspi);
 		if (ret < 0)
 			goto free_host;
 	}
 
-	/* pdata in dspi is now updated and point pdata to that */
+	 
 	pdata = &dspi->pdata;
 
 	dspi->bytes_per_word = devm_kcalloc(&pdev->dev,
@@ -957,12 +847,12 @@ static int davinci_spi_probe(struct platform_device *pdev)
 	dspi->get_rx = davinci_spi_rx_buf_u8;
 	dspi->get_tx = davinci_spi_tx_buf_u8;
 
-	/* Reset In/OUT SPI module */
+	 
 	iowrite32(0, dspi->base + SPIGCR0);
 	udelay(100);
 	iowrite32(1, dspi->base + SPIGCR0);
 
-	/* Set up SPIPC0.  CS and ENA init is done in davinci_spi_setup */
+	 
 	spipc0 = SPIPC0_DIFUN_MASK | SPIPC0_DOFUN_MASK | SPIPC0_CLKFUN_MASK;
 	iowrite32(spipc0, dspi->base + SPIPC0);
 
@@ -973,7 +863,7 @@ static int davinci_spi_probe(struct platform_device *pdev)
 
 	iowrite32(CS_DEFAULT, dspi->base + SPIDEF);
 
-	/* host mode default */
+	 
 	set_io_bits(dspi->base + SPIGCR1, SPIGCR1_CLKMOD_MASK);
 	set_io_bits(dspi->base + SPIGCR1, SPIGCR1_MASTER_MASK);
 	set_io_bits(dspi->base + SPIGCR1, SPIGCR1_POWERDOWN_MASK);
@@ -999,15 +889,7 @@ err:
 	return ret;
 }
 
-/**
- * davinci_spi_remove - remove function for SPI Master Controller
- * @pdev: platform_device structure which contains plateform specific data
- *
- * This function will do the reverse action of davinci_spi_probe function
- * It will free the IRQ and SPI controller's memory region.
- * It will also call spi_bitbang_stop to destroy the work queue which was
- * created by spi_bitbang_start.
- */
+ 
 static void davinci_spi_remove(struct platform_device *pdev)
 {
 	struct davinci_spi *dspi;

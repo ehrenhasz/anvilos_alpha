@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
-/******************************************************************************
- *
- * Module Name: nsparse - namespace interface to AML parser
- *
- * Copyright (C) 2000 - 2023, Intel Corp.
- *
- *****************************************************************************/
+
+ 
 
 #include <acpi/acpi.h>
 #include "accommon.h"
@@ -18,28 +12,7 @@
 #define _COMPONENT          ACPI_NAMESPACE
 ACPI_MODULE_NAME("nsparse")
 
-/*******************************************************************************
- *
- * FUNCTION:    ns_execute_table
- *
- * PARAMETERS:  table_desc      - An ACPI table descriptor for table to parse
- *              start_node      - Where to enter the table into the namespace
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Load ACPI/AML table by executing the entire table as a single
- *              large control method.
- *
- * NOTE: The point of this is to execute any module-level code in-place
- * as the table is parsed. Some AML code depends on this behavior.
- *
- * It is a run-time option at this time, but will eventually become
- * the default.
- *
- * Note: This causes the table to only have a single-pass parse.
- * However, this is compatible with other ACPI implementations.
- *
- ******************************************************************************/
+ 
 acpi_status
 acpi_ns_execute_table(u32 table_index, struct acpi_namespace_node *start_node)
 {
@@ -58,7 +31,7 @@ acpi_ns_execute_table(u32 table_index, struct acpi_namespace_node *start_node)
 		return_ACPI_STATUS(status);
 	}
 
-	/* Table must consist of at least a complete header */
+	 
 
 	if (table->length < sizeof(struct acpi_table_header)) {
 		return_ACPI_STATUS(AE_BAD_HEADER);
@@ -72,14 +45,14 @@ acpi_ns_execute_table(u32 table_index, struct acpi_namespace_node *start_node)
 		return_ACPI_STATUS(status);
 	}
 
-	/* Create, initialize, and link a new temporary method object */
+	 
 
 	method_obj = acpi_ut_create_internal_object(ACPI_TYPE_METHOD);
 	if (!method_obj) {
 		return_ACPI_STATUS(AE_NO_MEMORY);
 	}
 
-	/* Allocate the evaluation information block */
+	 
 
 	info = ACPI_ALLOCATE_ZEROED(sizeof(struct acpi_evaluate_info));
 	if (!info) {
@@ -107,7 +80,7 @@ acpi_ns_execute_table(u32 table_index, struct acpi_namespace_node *start_node)
 		goto cleanup;
 	}
 
-	/* Optional object evaluation log */
+	 
 
 	ACPI_DEBUG_PRINT_RAW((ACPI_DB_EVALUATION,
 			      "%-26s:  (Definition Block level)\n",
@@ -115,7 +88,7 @@ acpi_ns_execute_table(u32 table_index, struct acpi_namespace_node *start_node)
 
 	status = acpi_ps_execute_table(info);
 
-	/* Optional object evaluation log */
+	 
 
 	ACPI_DEBUG_PRINT_RAW((ACPI_DB_EVALUATION,
 			      "%-26s:  (Definition Block level)\n",
@@ -131,18 +104,7 @@ cleanup:
 	return_ACPI_STATUS(status);
 }
 
-/*******************************************************************************
- *
- * FUNCTION:    ns_one_complete_parse
- *
- * PARAMETERS:  pass_number             - 1 or 2
- *              table_desc              - The table to be parsed.
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Perform one complete parse of an ACPI/AML table.
- *
- ******************************************************************************/
+ 
 
 acpi_status
 acpi_ns_one_complete_parse(u32 pass_number,
@@ -164,7 +126,7 @@ acpi_ns_one_complete_parse(u32 pass_number,
 		return_ACPI_STATUS(status);
 	}
 
-	/* Table must consist of at least a complete header */
+	 
 
 	if (table->length < sizeof(struct acpi_table_header)) {
 		return_ACPI_STATUS(AE_BAD_HEADER);
@@ -178,14 +140,14 @@ acpi_ns_one_complete_parse(u32 pass_number,
 		return_ACPI_STATUS(status);
 	}
 
-	/* Create and init a Root Node */
+	 
 
 	parse_root = acpi_ps_create_scope_op(aml_start);
 	if (!parse_root) {
 		return_ACPI_STATUS(AE_NO_MEMORY);
 	}
 
-	/* Create and initialize a new walk state */
+	 
 
 	walk_state = acpi_ds_create_walk_state(owner_id, NULL, NULL, NULL);
 	if (!walk_state) {
@@ -201,14 +163,14 @@ acpi_ns_one_complete_parse(u32 pass_number,
 		goto cleanup;
 	}
 
-	/* Found OSDT table, enable the namespace override feature */
+	 
 
 	if (ACPI_COMPARE_NAMESEG(table->signature, ACPI_SIG_OSDT) &&
 	    pass_number == ACPI_IMODE_LOAD_PASS1) {
 		walk_state->namespace_override = TRUE;
 	}
 
-	/* start_node is the default location to load the table */
+	 
 
 	if (start_node && start_node != acpi_gbl_root_node) {
 		status =
@@ -220,7 +182,7 @@ acpi_ns_one_complete_parse(u32 pass_number,
 		}
 	}
 
-	/* Parse the AML */
+	 
 
 	ACPI_DEBUG_PRINT((ACPI_DB_PARSE,
 			  "*PARSE* pass %u parse\n", pass_number));
@@ -233,18 +195,7 @@ cleanup:
 	return_ACPI_STATUS(status);
 }
 
-/*******************************************************************************
- *
- * FUNCTION:    acpi_ns_parse_table
- *
- * PARAMETERS:  table_desc      - An ACPI table descriptor for table to parse
- *              start_node      - Where to enter the table into the namespace
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Parse AML within an ACPI table and return a tree of ops
- *
- ******************************************************************************/
+ 
 
 acpi_status
 acpi_ns_parse_table(u32 table_index, struct acpi_namespace_node *start_node)
@@ -253,14 +204,7 @@ acpi_ns_parse_table(u32 table_index, struct acpi_namespace_node *start_node)
 
 	ACPI_FUNCTION_TRACE(ns_parse_table);
 
-	/*
-	 * Executes the AML table as one large control method.
-	 * The point of this is to execute any module-level code in-place
-	 * as the table is parsed. Some AML code depends on this behavior.
-	 *
-	 * Note: This causes the table to only have a single-pass parse.
-	 * However, this is compatible with other ACPI implementations.
-	 */
+	 
 	ACPI_DEBUG_PRINT_RAW((ACPI_DB_PARSE,
 			      "%s: **** Start table execution pass\n",
 			      ACPI_GET_FUNCTION_NAME));

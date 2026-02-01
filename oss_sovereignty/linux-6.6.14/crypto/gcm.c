@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * GCM: Galois/Counter Mode.
- *
- * Copyright (c) 2007 Nokia Siemens Networks - Mikko Herranen <mh1@iki.fi>
- */
+
+ 
 
 #include <crypto/gf128mul.h>
 #include <crypto/internal/aead.h>
@@ -609,7 +605,7 @@ static int crypto_gcm_create_common(struct crypto_template *tmpl,
 		goto err_free_inst;
 	ctr = crypto_spawn_skcipher_alg(&ctx->ctr);
 
-	/* The skcipher algorithm must be CTR mode, using 16-byte blocks. */
+	 
 	err = -EINVAL;
 	if (strncmp(ctr->base.cra_name, "ctr(", 4) != 0 ||
 	    crypto_skcipher_alg_ivsize(ctr) != 16 ||
@@ -849,11 +845,11 @@ static int crypto_rfc4106_create(struct crypto_template *tmpl,
 
 	err = -EINVAL;
 
-	/* Underlying IV size must be 12. */
+	 
 	if (crypto_aead_alg_ivsize(alg) != GCM_AES_IV_SIZE)
 		goto err_free_inst;
 
-	/* Not a stream cipher? */
+	 
 	if (alg->base.cra_blocksize != 1)
 		goto err_free_inst;
 
@@ -1064,11 +1060,11 @@ static int crypto_rfc4543_create(struct crypto_template *tmpl,
 
 	err = -EINVAL;
 
-	/* Underlying IV size must be 12. */
+	 
 	if (crypto_aead_alg_ivsize(alg) != GCM_AES_IV_SIZE)
 		goto err_free_inst;
 
-	/* Not a stream cipher? */
+	 
 	if (alg->base.cra_blocksize != 1)
 		goto err_free_inst;
 

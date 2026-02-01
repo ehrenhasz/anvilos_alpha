@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (C) 2018 Joe Lawrence <joe.lawrence@redhat.com>
+
+
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -28,7 +28,7 @@ static struct klp_func funcs[] = {
 
 static struct klp_object objs[] = {
 	{
-		/* name being NULL means vmlinux */
+		 
 		.funcs = funcs,
 	}, {}
 };
@@ -36,7 +36,7 @@ static struct klp_object objs[] = {
 static struct klp_patch patch = {
 	.mod = THIS_MODULE,
 	.objs = objs,
-	/* set .replace in the init function below for demo purposes */
+	 
 };
 
 static int test_klp_atomic_replace_init(void)

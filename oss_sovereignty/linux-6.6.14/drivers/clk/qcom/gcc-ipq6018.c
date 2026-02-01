@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2018, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/err.h>
@@ -4585,16 +4583,16 @@ static int gcc_ipq6018_probe(struct platform_device *pdev)
 	if (IS_ERR(regmap))
 		return PTR_ERR(regmap);
 
-	/* Disable SW_COLLAPSE for USB0 GDSCR */
+	 
 	regmap_update_bits(regmap, 0x3e078, BIT(0), 0x0);
-	/* Enable SW_OVERRIDE for USB0 GDSCR */
+	 
 	regmap_update_bits(regmap, 0x3e078, BIT(2), BIT(2));
-	/* Disable SW_COLLAPSE for USB1 GDSCR */
+	 
 	regmap_update_bits(regmap, 0x3f078, BIT(0), 0x0);
-	/* Enable SW_OVERRIDE for USB1 GDSCR */
+	 
 	regmap_update_bits(regmap, 0x3f078, BIT(2), BIT(2));
 
-	/* SW Workaround for UBI Huyara PLL */
+	 
 	regmap_update_bits(regmap, 0x2501c, BIT(26), BIT(26));
 
 	clk_alpha_pll_configure(&ubi32_pll_main, regmap, &ubi32_pll_config);

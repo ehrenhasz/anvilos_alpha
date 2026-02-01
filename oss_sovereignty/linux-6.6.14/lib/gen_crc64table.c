@@ -1,18 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Generate lookup table for the table-driven CRC64 calculation.
- *
- * gen_crc64table is executed in kernel build time and generates
- * lib/crc64table.h. This header is included by lib/crc64.c for
- * the table-driven CRC64 calculation.
- *
- * See lib/crc64.c for more information about which specification
- * and polynomial arithmetic that gen_crc64table.c follows to
- * generate the lookup table.
- *
- * Copyright 2018 SUSE Linux.
- *   Author: Coly Li <colyli@suse.de>
- */
+
+ 
 #include <inttypes.h>
 #include <stdio.h>
 

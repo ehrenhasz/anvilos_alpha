@@ -1,58 +1,17 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- *  comedi/drivers/ni_routing/ni_route_values/ni_mseries.c
- *  Route information for NI_MSERIES boards.
- *
- *  COMEDI - Linux Control and Measurement Device Interface
- *  Copyright (C) 2016 Spencer E. Olson <olsonse@umich.edu>
- *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- */
 
-/*
- * This file includes a list of all the values of various signals routes
- * available on NI 660x hardware.  In many cases, one does not explicitly make
- * these routes, rather one might indicate that something is used as the source
- * of one particular trigger or another (using *_src=TRIG_EXT).
- *
- * The contents of this file can be generated using the tools in
- * comedi/drivers/ni_routing/tools.  This file also contains specific notes to
- * this family of devices.
- *
- * Please use those tools to help maintain the contents of this file, but be
- * mindful to not lose the notes already made in this file, since these notes
- * are critical to a complete undertsanding of the register values of this
- * family.
- */
+ 
+
+ 
 
 #include "../ni_route_values.h"
 #include "all.h"
 
-/*
- * GATE SELECT NOTE:
- * CtrAux and CtrArmStartrigger register values are not documented in the
- * DAQ-STC.  There is some evidence that using CtrGate values is valid (see
- * comedi.h).  Some information and hints exist in the M-Series user manual
- * (ni-62xx user-manual 371022K-01).
- */
+ 
 
 const struct family_route_values ni_mseries_route_values = {
 	.family = "ni_mseries",
 	.register_values = {
-		/*
-		 * destination = {
-		 *              source          = register value,
-		 *              ...
-		 * }
-		 */
+		 
 		[B(NI_PFI(0))] = {
 			[B(TRIGGER_LINE(0))]	= I(18),
 			[B(TRIGGER_LINE(1))]	= I(19),
@@ -577,12 +536,7 @@ const struct family_route_values ni_mseries_route_values = {
 			[B(NI_AI_ConvertClock)]	= I(2),
 			[B(NI_AO_SampleClock)]	= I(3),
 			[B(NI_AO_StartTrigger)]	= I(4),
-			/*
-			 * for (*->TRIGGER_LINE(*)) MUX, a value of 12 should be
-			 * RTSI_OSC according to MHDDK mseries source.  There
-			 * are hints in comedi that show that this is actually a
-			 * 20MHz source for 628x cards(?)
-			 */
+			 
 			[B(NI_10MHzRefClock)]	= I(12),
 			[B(NI_RGOUT0)]	= I(7),
 		},
@@ -598,12 +552,7 @@ const struct family_route_values ni_mseries_route_values = {
 			[B(NI_AI_ConvertClock)]	= I(2),
 			[B(NI_AO_SampleClock)]	= I(3),
 			[B(NI_AO_StartTrigger)]	= I(4),
-			/*
-			 * for (*->TRIGGER_LINE(*)) MUX, a value of 12 should be
-			 * RTSI_OSC according to MHDDK mseries source.  There
-			 * are hints in comedi that show that this is actually a
-			 * 20MHz source for 628x cards(?)
-			 */
+			 
 			[B(NI_10MHzRefClock)]	= I(12),
 			[B(NI_RGOUT0)]	= I(7),
 		},
@@ -619,12 +568,7 @@ const struct family_route_values ni_mseries_route_values = {
 			[B(NI_AI_ConvertClock)]	= I(2),
 			[B(NI_AO_SampleClock)]	= I(3),
 			[B(NI_AO_StartTrigger)]	= I(4),
-			/*
-			 * for (*->TRIGGER_LINE(*)) MUX, a value of 12 should be
-			 * RTSI_OSC according to MHDDK mseries source.  There
-			 * are hints in comedi that show that this is actually a
-			 * 20MHz source for 628x cards(?)
-			 */
+			 
 			[B(NI_10MHzRefClock)]	= I(12),
 			[B(NI_RGOUT0)]	= I(7),
 		},
@@ -640,12 +584,7 @@ const struct family_route_values ni_mseries_route_values = {
 			[B(NI_AI_ConvertClock)]	= I(2),
 			[B(NI_AO_SampleClock)]	= I(3),
 			[B(NI_AO_StartTrigger)]	= I(4),
-			/*
-			 * for (*->TRIGGER_LINE(*)) MUX, a value of 12 should be
-			 * RTSI_OSC according to MHDDK mseries source.  There
-			 * are hints in comedi that show that this is actually a
-			 * 20MHz source for 628x cards(?)
-			 */
+			 
 			[B(NI_10MHzRefClock)]	= I(12),
 			[B(NI_RGOUT0)]	= I(7),
 		},
@@ -661,12 +600,7 @@ const struct family_route_values ni_mseries_route_values = {
 			[B(NI_AI_ConvertClock)]	= I(2),
 			[B(NI_AO_SampleClock)]	= I(3),
 			[B(NI_AO_StartTrigger)]	= I(4),
-			/*
-			 * for (*->TRIGGER_LINE(*)) MUX, a value of 12 should be
-			 * RTSI_OSC according to MHDDK mseries source.  There
-			 * are hints in comedi that show that this is actually a
-			 * 20MHz source for 628x cards(?)
-			 */
+			 
 			[B(NI_10MHzRefClock)]	= I(12),
 			[B(NI_RGOUT0)]	= I(7),
 		},
@@ -682,12 +616,7 @@ const struct family_route_values ni_mseries_route_values = {
 			[B(NI_AI_ConvertClock)]	= I(2),
 			[B(NI_AO_SampleClock)]	= I(3),
 			[B(NI_AO_StartTrigger)]	= I(4),
-			/*
-			 * for (*->TRIGGER_LINE(*)) MUX, a value of 12 should be
-			 * RTSI_OSC according to MHDDK mseries source.  There
-			 * are hints in comedi that show that this is actually a
-			 * 20MHz source for 628x cards(?)
-			 */
+			 
 			[B(NI_10MHzRefClock)]	= I(12),
 			[B(NI_RGOUT0)]	= I(7),
 		},
@@ -703,12 +632,7 @@ const struct family_route_values ni_mseries_route_values = {
 			[B(NI_AI_ConvertClock)]	= I(2),
 			[B(NI_AO_SampleClock)]	= I(3),
 			[B(NI_AO_StartTrigger)]	= I(4),
-			/*
-			 * for (*->TRIGGER_LINE(*)) MUX, a value of 12 should be
-			 * RTSI_OSC according to MHDDK mseries source.  There
-			 * are hints in comedi that show that this is actually a
-			 * 20MHz source for 628x cards(?)
-			 */
+			 
 			[B(NI_10MHzRefClock)]	= I(12),
 			[B(NI_RGOUT0)]	= I(7),
 		},
@@ -724,12 +648,7 @@ const struct family_route_values ni_mseries_route_values = {
 			[B(NI_AI_ConvertClock)]	= I(2),
 			[B(NI_AO_SampleClock)]	= I(3),
 			[B(NI_AO_StartTrigger)]	= I(4),
-			/*
-			 * for (*->TRIGGER_LINE(*)) MUX, a value of 12 should be
-			 * RTSI_OSC according to MHDDK mseries source.  There
-			 * are hints in comedi that show that this is actually a
-			 * 20MHz source for 628x cards(?)
-			 */
+			 
 			[B(NI_10MHzRefClock)]	= I(12),
 			[B(NI_RGOUT0)]	= I(7),
 		},
@@ -806,7 +725,7 @@ const struct family_route_values ni_mseries_route_values = {
 			[B(NI_AnalogComparisonEvent)]	= I(14),
 		},
 		[B(NI_CtrSource(0))] = {
-			/* These are not currently implemented in ni modules */
+			 
 			[B(NI_PFI(0))]	= U(1),
 			[B(NI_PFI(1))]	= U(2),
 			[B(NI_PFI(2))]	= U(3),
@@ -842,7 +761,7 @@ const struct family_route_values ni_mseries_route_values = {
 			[B(NI_LogicLow)]	= U(31),
 		},
 		[B(NI_CtrSource(1))] = {
-			/* These are not currently implemented in ni modules */
+			 
 			[B(NI_PFI(0))]	= U(1),
 			[B(NI_PFI(1))]	= U(2),
 			[B(NI_PFI(2))]	= U(3),
@@ -878,7 +797,7 @@ const struct family_route_values ni_mseries_route_values = {
 			[B(NI_LogicLow)]	= U(31),
 		},
 		[B(NI_CtrGate(0))] = {
-			[B(NI_PFI(0))]	= I(1 /* source:  mhddk examples */),
+			[B(NI_PFI(0))]	= I(1  ),
 			[B(NI_PFI(1))]	= I(2),
 			[B(NI_PFI(2))]	= I(3),
 			[B(NI_PFI(3))]	= I(4),
@@ -903,7 +822,7 @@ const struct family_route_values ni_mseries_route_values = {
 			[B(TRIGGER_LINE(6))]	= I(17),
 			[B(TRIGGER_LINE(7))]	= I(27),
 			[B(NI_CtrSource(1))]	= I(29),
-			/* source for following line:  mhddk GP examples */
+			 
 			[B(NI_CtrInternalOutput(1))]	= I(20),
 			[B(PXI_Star)]	= I(19),
 			[B(NI_AI_StartTrigger)]	= I(28),
@@ -912,7 +831,7 @@ const struct family_route_values ni_mseries_route_values = {
 			[B(NI_LogicLow)]	= I(31),
 		},
 		[B(NI_CtrGate(1))] = {
-			/* source for following line:  mhddk examples */
+			 
 			[B(NI_PFI(0))]	= I(1),
 			[B(NI_PFI(1))]	= I(2),
 			[B(NI_PFI(2))]	= I(3),
@@ -938,7 +857,7 @@ const struct family_route_values ni_mseries_route_values = {
 			[B(TRIGGER_LINE(6))]	= I(17),
 			[B(TRIGGER_LINE(7))]	= I(27),
 			[B(NI_CtrSource(0))]	= I(29),
-			/* source for following line:  mhddk GP examples */
+			 
 			[B(NI_CtrInternalOutput(0))]	= I(20),
 			[B(PXI_Star)]	= I(19),
 			[B(NI_AI_StartTrigger)]	= I(28),
@@ -947,7 +866,7 @@ const struct family_route_values ni_mseries_route_values = {
 			[B(NI_LogicLow)]	= I(31),
 		},
 		[B(NI_CtrAux(0))] = {
-			/* these are just a guess; see GATE SELECT NOTE */
+			 
 			[B(NI_PFI(0))]	= I(1),
 			[B(NI_PFI(1))]	= I(2),
 			[B(NI_PFI(2))]	= I(3),
@@ -973,7 +892,7 @@ const struct family_route_values ni_mseries_route_values = {
 			[B(TRIGGER_LINE(6))]	= I(17),
 			[B(TRIGGER_LINE(7))]	= I(27),
 			[B(NI_CtrSource(1))]	= I(29),
-			/* source for following line:  mhddk GP examples */
+			 
 			[B(NI_CtrInternalOutput(1))]	= I(20),
 			[B(PXI_Star)]	= I(19),
 			[B(NI_AI_StartTrigger)]	= I(28),
@@ -982,7 +901,7 @@ const struct family_route_values ni_mseries_route_values = {
 			[B(NI_LogicLow)]	= I(31),
 		},
 		[B(NI_CtrAux(1))] = {
-			/* these are just a guess; see GATE SELECT NOTE */
+			 
 			[B(NI_PFI(0))]	= I(1),
 			[B(NI_PFI(1))]	= I(2),
 			[B(NI_PFI(2))]	= I(3),
@@ -1008,7 +927,7 @@ const struct family_route_values ni_mseries_route_values = {
 			[B(TRIGGER_LINE(6))]	= I(17),
 			[B(TRIGGER_LINE(7))]	= I(27),
 			[B(NI_CtrSource(0))]	= I(29),
-			/* source for following line:  mhddk GP examples */
+			 
 			[B(NI_CtrInternalOutput(0))]	= I(20),
 			[B(PXI_Star)]	= I(19),
 			[B(NI_AI_StartTrigger)]	= I(28),
@@ -1017,11 +936,7 @@ const struct family_route_values ni_mseries_route_values = {
 			[B(NI_LogicLow)]	= I(31),
 		},
 		[B(NI_CtrA(0))] = {
-			/*
-			 * See nimseries/Examples for outputs; inputs a guess
-			 * from device routes shown on NI-MAX.
-			 * see M-Series user manual (371022K-01)
-			 */
+			 
 			[B(NI_PFI(0))]	= I(1),
 			[B(NI_PFI(1))]	= I(2),
 			[B(NI_PFI(2))]	= I(3),
@@ -1051,11 +966,7 @@ const struct family_route_values ni_mseries_route_values = {
 			[B(NI_LogicLow)]	= I(31),
 		},
 		[B(NI_CtrA(1))] = {
-			/*
-			 * See nimseries/Examples for outputs; inputs a guess
-			 * from device routes shown on NI-MAX.
-			 * see M-Series user manual (371022K-01)
-			 */
+			 
 			[B(NI_PFI(0))]	= I(1),
 			[B(NI_PFI(1))]	= I(2),
 			[B(NI_PFI(2))]	= I(3),
@@ -1085,11 +996,7 @@ const struct family_route_values ni_mseries_route_values = {
 			[B(NI_LogicLow)]	= I(31),
 		},
 		[B(NI_CtrB(0))] = {
-			/*
-			 * See nimseries/Examples for outputs; inputs a guess
-			 * from device routes shown on NI-MAX.
-			 * see M-Series user manual (371022K-01)
-			 */
+			 
 			[B(NI_PFI(0))]	= I(1),
 			[B(NI_PFI(1))]	= I(2),
 			[B(NI_PFI(2))]	= I(3),
@@ -1119,11 +1026,7 @@ const struct family_route_values ni_mseries_route_values = {
 			[B(NI_LogicLow)]	= I(31),
 		},
 		[B(NI_CtrB(1))] = {
-			/*
-			 * See nimseries/Examples for outputs; inputs a guess
-			 * from device routes shown on NI-MAX.
-			 * see M-Series user manual (371022K-01)
-			 */
+			 
 			[B(NI_PFI(0))]	= I(1),
 			[B(NI_PFI(1))]	= I(2),
 			[B(NI_PFI(2))]	= I(3),
@@ -1153,11 +1056,7 @@ const struct family_route_values ni_mseries_route_values = {
 			[B(NI_LogicLow)]	= I(31),
 		},
 		[B(NI_CtrZ(0))] = {
-			/*
-			 * See nimseries/Examples for outputs; inputs a guess
-			 * from device routes shown on NI-MAX.
-			 * see M-Series user manual (371022K-01)
-			 */
+			 
 			[B(NI_PFI(0))]	= I(1),
 			[B(NI_PFI(1))]	= I(2),
 			[B(NI_PFI(2))]	= I(3),
@@ -1187,11 +1086,7 @@ const struct family_route_values ni_mseries_route_values = {
 			[B(NI_LogicLow)]	= I(31),
 		},
 		[B(NI_CtrZ(1))] = {
-			/*
-			 * See nimseries/Examples for outputs; inputs a guess
-			 * from device routes shown on NI-MAX.
-			 * see M-Series user manual (371022K-01)
-			 */
+			 
 			[B(NI_PFI(0))]	= I(1),
 			[B(NI_PFI(1))]	= I(2),
 			[B(NI_PFI(2))]	= I(3),
@@ -1221,7 +1116,7 @@ const struct family_route_values ni_mseries_route_values = {
 			[B(NI_LogicLow)]	= I(31),
 		},
 		[B(NI_CtrArmStartTrigger(0))] = {
-			/* these are just a guess; see GATE SELECT NOTE */
+			 
 			[B(NI_PFI(0))]	= I(1),
 			[B(NI_PFI(1))]	= I(2),
 			[B(NI_PFI(2))]	= I(3),
@@ -1247,7 +1142,7 @@ const struct family_route_values ni_mseries_route_values = {
 			[B(TRIGGER_LINE(6))]	= I(17),
 			[B(TRIGGER_LINE(7))]	= I(27),
 			[B(NI_CtrSource(1))]	= I(29),
-			/* source for following line:  mhddk GP examples */
+			 
 			[B(NI_CtrInternalOutput(1))]	= I(20),
 			[B(PXI_Star)]	= I(19),
 			[B(NI_AI_StartTrigger)]	= I(28),
@@ -1256,7 +1151,7 @@ const struct family_route_values ni_mseries_route_values = {
 			[B(NI_LogicLow)]	= I(31),
 		},
 		[B(NI_CtrArmStartTrigger(1))] = {
-			/* these are just a guess; see GATE SELECT NOTE */
+			 
 			[B(NI_PFI(0))]	= I(1),
 			[B(NI_PFI(1))]	= I(2),
 			[B(NI_PFI(2))]	= I(3),
@@ -1282,7 +1177,7 @@ const struct family_route_values ni_mseries_route_values = {
 			[B(TRIGGER_LINE(6))]	= I(17),
 			[B(TRIGGER_LINE(7))]	= I(27),
 			[B(NI_CtrSource(0))]	= I(29),
-			/* source for following line:  mhddk GP examples */
+			 
 			[B(NI_CtrInternalOutput(0))]	= I(20),
 			[B(PXI_Star)]	= I(19),
 			[B(NI_AI_StartTrigger)]	= I(28),
@@ -1337,7 +1232,7 @@ const struct family_route_values ni_mseries_route_values = {
 			[B(NI_LogicLow)]	= I(31),
 		},
 		[B(NI_AI_SampleClockTimebase)] = {
-			/* These are not currently implemented in ni modules */
+			 
 			[B(NI_PFI(0))]	= U(1),
 			[B(NI_PFI(1))]	= U(2),
 			[B(NI_PFI(2))]	= U(3),
@@ -1364,12 +1259,7 @@ const struct family_route_values ni_mseries_route_values = {
 			[B(TRIGGER_LINE(7))]	= U(27),
 			[B(PXI_Star)]	= U(20),
 			[B(PXI_Clk10)]	= U(29),
-			/*
-			 * For routes (*->NI_AI_SampleClockTimebase) and
-			 * (*->NI_AO_SampleClockTimebase), tMSeries.h of MHDDK
-			 * shows 0 value as selecting ground (case ground?) and
-			 * 28 value selecting TIMEBASE 1.
-			 */
+			 
 			[B(NI_20MHzTimebase)]	= U(28),
 			[B(NI_100kHzTimebase)]	= U(19),
 			[B(NI_AnalogComparisonEvent)]	= U(30),
@@ -1408,7 +1298,7 @@ const struct family_route_values ni_mseries_route_values = {
 			[B(NI_LogicLow)]	= I(31),
 		},
 		[B(NI_AI_ReferenceTrigger)] = {
-			/* These are not currently implemented in ni modules */
+			 
 			[B(NI_PFI(0))]	= U(1),
 			[B(NI_PFI(1))]	= U(2),
 			[B(NI_PFI(2))]	= U(3),
@@ -1462,9 +1352,9 @@ const struct family_route_values ni_mseries_route_values = {
 			[B(TRIGGER_LINE(5))]	= I(16),
 			[B(TRIGGER_LINE(6))]	= I(17),
 			[B(TRIGGER_LINE(7))]	= I(27),
-			/* source for following line:  mhddk example headers */
+			 
 			[B(NI_CtrInternalOutput(0))]	= I(19),
-			/* source for following line:  mhddk example headers */
+			 
 			[B(NI_CtrInternalOutput(1))]	= I(18),
 			[B(PXI_Star)]	= I(20),
 			[B(NI_AI_ConvertClockTimebase)]	= I(0),
@@ -1472,12 +1362,12 @@ const struct family_route_values ni_mseries_route_values = {
 			[B(NI_LogicLow)]	= I(31),
 		},
 		[B(NI_AI_ConvertClockTimebase)] = {
-			/* These are not currently implemented in ni modules */
+			 
 			[B(NI_AI_SampleClockTimebase)]	= U(0),
 			[B(NI_20MHzTimebase)]	= U(1),
 		},
 		[B(NI_AI_PauseTrigger)] = {
-			/* These are not currently implemented in ni modules */
+			 
 			[B(NI_PFI(0))]	= U(1),
 			[B(NI_PFI(1))]	= U(2),
 			[B(NI_PFI(2))]	= U(3),
@@ -1539,7 +1429,7 @@ const struct family_route_values ni_mseries_route_values = {
 			[B(NI_LogicLow)]	= I(31),
 		},
 		[B(NI_AO_SampleClockTimebase)] = {
-			/* These are not currently implemented in ni modules */
+			 
 			[B(NI_PFI(0))]	= U(1),
 			[B(NI_PFI(1))]	= U(2),
 			[B(NI_PFI(2))]	= U(3),
@@ -1566,12 +1456,7 @@ const struct family_route_values ni_mseries_route_values = {
 			[B(TRIGGER_LINE(7))]	= U(27),
 			[B(PXI_Star)]	= U(20),
 			[B(PXI_Clk10)]	= U(29),
-			/*
-			 * For routes (*->NI_AI_SampleClockTimebase) and
-			 * (*->NI_AO_SampleClockTimebase), tMSeries.h of MHDDK
-			 * shows 0 value as selecting ground (case ground?) and
-			 * 28 value selecting TIMEBASE 1.
-			 */
+			 
 			[B(NI_20MHzTimebase)]	= U(28),
 			[B(NI_100kHzTimebase)]	= U(19),
 			[B(NI_AnalogComparisonEvent)]	= U(30),
@@ -1604,23 +1489,14 @@ const struct family_route_values ni_mseries_route_values = {
 			[B(TRIGGER_LINE(6))]	= I(17),
 			[B(TRIGGER_LINE(7))]	= I(27),
 			[B(PXI_Star)]	= I(20),
-			/*
-			 * for the signal route
-			 * (NI_AI_StartTrigger->NI_AO_StartTrigger), DAQ-STC &
-			 * MHDDK disagreed for e-series.  MHDDK for m-series
-			 * agrees with DAQ-STC description and uses the value 18
-			 * for the route
-			 * (NI_AI_ReferenceTrigger->NI_AO_StartTrigger).  The
-			 * m-series devices are supposed to have DAQ-STC2.
-			 * There are no DAQ-STC2 docs to compare with.
-			 */
+			 
 			[B(NI_AI_StartTrigger)]	= I(19),
 			[B(NI_AI_ReferenceTrigger)]	= I(18),
 			[B(NI_AnalogComparisonEvent)]	= I(30),
 			[B(NI_LogicLow)]	= I(31),
 		},
 		[B(NI_AO_PauseTrigger)] = {
-			/* These are not currently implemented in ni modules */
+			 
 			[B(NI_PFI(0))]	= U(1),
 			[B(NI_PFI(1))]	= U(2),
 			[B(NI_PFI(2))]	= U(3),
@@ -1720,7 +1596,7 @@ const struct family_route_values ni_mseries_route_values = {
 			[B(NI_CaseGround)]	= I(0),
 		},
 		[B(NI_MasterTimebase)] = {
-			/* These are not currently implemented in ni modules */
+			 
 			[B(TRIGGER_LINE(0))]	= U(11),
 			[B(TRIGGER_LINE(1))]	= U(12),
 			[B(TRIGGER_LINE(2))]	= U(13),
@@ -1733,16 +1609,7 @@ const struct family_route_values ni_mseries_route_values = {
 			[B(PXI_Clk10)]	= U(29),
 			[B(NI_10MHzRefClock)]	= U(0),
 		},
-		/*
-		 * This symbol is not defined and nothing for this is
-		 * implemented--just including this because data was found in
-		 * the NI-STC for it--can't remember where.
-		 * [B(NI_FrequencyOutTimebase)] = {
-		 *	** These are not currently implemented in ni modules **
-		 *	[B(NI_20MHzTimebase)]	= U(0),
-		 *	[B(NI_100kHzTimebase)]	= U(1),
-		 * },
-		 */
+		 
 		[B(NI_RGOUT0)] = {
 			[B(NI_CtrInternalOutput(0))]	= I(0),
 			[B(NI_CtrOut(0))]	= I(1),

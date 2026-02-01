@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2019 Facebook */
+
+ 
 
 #include <test_progs.h>
 #include <sys/mman.h>
@@ -42,7 +42,7 @@ void test_skeleton(void)
 	ASSERT_STREQ(bpf_map__name(skel->maps.rodata_dyn), ".rodata.dyn", "rodata_dyn_name");
 	ASSERT_STREQ(bpf_map__name(skel->maps.data_dyn), ".data.dyn", "data_dyn_name");
 
-	/* validate values are pre-initialized correctly */
+	 
 	CHECK(data->in1 != -1, "in1", "got %d != exp %d\n", data->in1, -1);
 	CHECK(data->out1 != -1, "out1", "got %d != exp %d\n", data->out1, -1);
 	CHECK(data->in2 != -1, "in2", "got %lld != exp %lld\n", data->in2, -1LL);
@@ -62,7 +62,7 @@ void test_skeleton(void)
 	for (i = 0; i < 4; i++)
 		ASSERT_EQ(data_dyn->out_dynarr[i], i + 1, "out_dynarr");
 
-	/* validate we can pre-setup global variables, even in .bss */
+	 
 	data->in1 = 10;
 	data->in2 = 11;
 	bss->in3 = 12;
@@ -77,7 +77,7 @@ void test_skeleton(void)
 	if (CHECK(err, "skel_load", "failed to load skeleton: %d\n", err))
 		goto cleanup;
 
-	/* validate pre-setup values are still there */
+	 
 	CHECK(data->in1 != 10, "in1", "got %d != exp %d\n", data->in1, 10);
 	CHECK(data->in2 != 11, "in2", "got %lld != exp %lld\n", data->in2, 11LL);
 	CHECK(bss->in3 != 12, "in3", "got %d != exp %d\n", bss->in3, 12);
@@ -88,7 +88,7 @@ void test_skeleton(void)
 	for (i = 0; i < 4; i++)
 		ASSERT_EQ(rodata_dyn->in_dynarr[i], i + 10, "in_dynarr");
 
-	/* now set new values and attach to get them into outX variables */
+	 
 	data->in1 = 1;
 	data->in2 = 2;
 	bss->in3 = 3;
@@ -103,7 +103,7 @@ void test_skeleton(void)
 	if (CHECK(err, "skel_attach", "skeleton attach failed: %d\n", err))
 		goto cleanup;
 
-	/* trigger tracepoint */
+	 
 	usleep(1);
 
 	CHECK(data->out1 != 1, "res1", "got %d != exp %d\n", data->out1, 1);

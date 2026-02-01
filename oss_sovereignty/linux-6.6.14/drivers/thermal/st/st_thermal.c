@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * ST Thermal Sensor Driver core routines
- * Author: Ajit Pal Singh <ajitpal.singh@st.com>
- *
- * Copyright (C) 2003-2014 STMicroelectronics (R&D) Limited
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/module.h>
@@ -13,13 +8,10 @@
 
 #include "st_thermal.h"
 
-/* The Thermal Framework expects millidegrees */
+ 
 #define mcelsius(temp)			((temp) * 1000)
 
-/*
- * Function to allocate regfields which are common
- * between syscfg and memory mapped based sensors
- */
+ 
 static int st_thermal_alloc_regfields(struct st_thermal_sensor *sensor)
 {
 	struct device *dev = sensor->dev;
@@ -84,7 +76,7 @@ static int st_thermal_calibration(struct st_thermal_sensor *sensor)
 	unsigned int val;
 	struct device *dev = sensor->dev;
 
-	/* Check if sensor calibration data is already written */
+	 
 	ret = regmap_field_read(sensor->dcorrect, &val);
 	if (ret) {
 		dev_err(dev, "failed to read calibration data\n");
@@ -92,10 +84,7 @@ static int st_thermal_calibration(struct st_thermal_sensor *sensor)
 	}
 
 	if (!val) {
-		/*
-		 * Sensor calibration value not set by bootloader,
-		 * default calibration data to be used
-		 */
+		 
 		ret = regmap_field_write(sensor->dcorrect,
 					 sensor->cdata->calibration_val);
 		if (ret)
@@ -105,7 +94,7 @@ static int st_thermal_calibration(struct st_thermal_sensor *sensor)
 	return ret;
 }
 
-/* Callback to get temperature from HW*/
+ 
 static int st_thermal_get_temp(struct thermal_zone_device *th, int *temperature)
 {
 	struct st_thermal_sensor *sensor = thermal_zone_device_priv(th);

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2012 Red Hat
- */
+
+ 
 
 #include <linux/module.h>
 
@@ -48,11 +46,7 @@ static int udl_usb_reset_resume(struct usb_interface *interface)
 	return drm_mode_config_helper_resume(dev);
 }
 
-/*
- * FIXME: Dma-buf sharing requires DMA support by the importing device.
- *        This function is a workaround to make USB devices work as well.
- *        See todo.rst for how to fix the issue in the dma-buf framework.
- */
+ 
 static struct drm_gem_object *udl_driver_gem_prime_import(struct drm_device *dev,
 							  struct dma_buf *dma_buf)
 {
@@ -69,7 +63,7 @@ DEFINE_DRM_GEM_FOPS(udl_driver_fops);
 static const struct drm_driver driver = {
 	.driver_features = DRIVER_ATOMIC | DRIVER_GEM | DRIVER_MODESET,
 
-	/* GEM hooks */
+	 
 	.fops = &udl_driver_fops,
 	DRM_GEM_SHMEM_DRIVER_OPS,
 	.gem_prime_import = udl_driver_gem_prime_import,
@@ -131,13 +125,7 @@ static void udl_usb_disconnect(struct usb_interface *interface)
 	drm_dev_unplug(dev);
 }
 
-/*
- * There are many DisplayLink-based graphics products, all with unique PIDs.
- * So we match on DisplayLink's VID + Vendor-Defined Interface Class (0xff)
- * We also require a match on SubClass (0x00) and Protocol (0x00),
- * which is compatible with all known USB 2.0 era graphics chips and firmware,
- * but allows DisplayLink to increment those for any future incompatible chips
- */
+ 
 static const struct usb_device_id id_table[] = {
 	{.idVendor = 0x17e9, .bInterfaceClass = 0xff,
 	 .bInterfaceSubClass = 0x00,

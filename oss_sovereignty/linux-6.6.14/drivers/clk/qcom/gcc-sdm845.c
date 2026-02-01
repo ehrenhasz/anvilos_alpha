@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2018, 2020, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/bitops.h>
@@ -1406,10 +1404,7 @@ static struct clk_branch gcc_cpuss_rbcpr_clk = {
 	},
 };
 
-/*
- * The source clock frequencies are different for SDM670; define a child clock
- * pointing to the source clock that uses SDM670 frequencies.
- */
+ 
 static struct clk_branch gcc_sdm670_cpuss_rbcpr_clk = {
 	.halt_reg = 0x48008,
 	.halt_check = BRANCH_HALT,
@@ -2609,10 +2604,7 @@ static struct clk_branch gcc_sdcc4_apps_clk = {
 	},
 };
 
-/*
- * The source clock frequencies are different for SDM670; define a child clock
- * pointing to the source clock that uses SDM670 frequencies.
- */
+ 
 static struct clk_branch gcc_sdm670_sdcc4_apps_clk = {
 	.halt_reg = 0x16004,
 	.halt_check = BRANCH_HALT,
@@ -3376,7 +3368,7 @@ static struct clk_branch gcc_cpuss_gnoc_clk = {
 	},
 };
 
-/* TODO: Remove after DTS updated to protect these */
+ 
 #ifdef CONFIG_SDM_LPASSCC_845
 static struct clk_branch gcc_lpass_q6_axi_clk = {
 	.halt_reg = 0x47000,
@@ -3948,7 +3940,7 @@ static const struct qcom_cc_desc gcc_sdm670_desc = {
 	.config = &gcc_sdm845_regmap_config,
 	.clks = gcc_sdm670_clocks,
 	.num_clks = ARRAY_SIZE(gcc_sdm670_clocks),
-	/* Snapdragon 670 can function without its own exclusive resets. */
+	 
 	.resets = gcc_sdm845_resets,
 	.num_resets = ARRAY_SIZE(gcc_sdm845_resets),
 	.gdscs = gcc_sdm670_gdscs,
@@ -4001,7 +3993,7 @@ static int gcc_sdm845_probe(struct platform_device *pdev)
 	if (IS_ERR(regmap))
 		return PTR_ERR(regmap);
 
-	/* Disable the GPLL0 active input to MMSS and GPU via MISC registers */
+	 
 	regmap_update_bits(regmap, 0x09ffc, 0x3, 0x3);
 	regmap_update_bits(regmap, 0x71028, 0x3, 0x3);
 

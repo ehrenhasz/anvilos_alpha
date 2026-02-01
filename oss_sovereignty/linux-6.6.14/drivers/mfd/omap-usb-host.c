@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * omap-usb-host.c - The USBHS core driver for OMAP EHCI & OHCI
- *
- * Copyright (C) 2011-2013 Texas Instruments Incorporated - https://www.ti.com
- * Author: Keshava Munegowda <keshava_mgowda@ti.com>
- * Author: Roger Quadros <rogerq@ti.com>
- */
+
+ 
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/types.h>
@@ -27,9 +21,9 @@
 #define OMAP_EHCI_DEVICE	"ehci-omap"
 #define OMAP_OHCI_DEVICE	"ohci-omap3"
 
-/* OMAP USBHOST Register addresses  */
+ 
 
-/* UHH Register Set */
+ 
 #define	OMAP_UHH_REVISION				(0x00)
 #define	OMAP_UHH_SYSCONFIG				(0x10)
 #define	OMAP_UHH_SYSCONFIG_MIDLEMODE			(1 << 12)
@@ -54,7 +48,7 @@
 #define OMAP_UHH_HOSTCONFIG_P3_CONNECT_STATUS		(1 << 10)
 #define OMAP4_UHH_HOSTCONFIG_APP_START_CLK		(1 << 31)
 
-/* OMAP4-specific defines */
+ 
 #define OMAP4_UHH_SYSCONFIG_IDLEMODE_CLEAR		(3 << 2)
 #define OMAP4_UHH_SYSCONFIG_NOIDLE			(1 << 2)
 #define OMAP4_UHH_SYSCONFIG_STDBYMODE_CLEAR		(3 << 4)
@@ -70,9 +64,9 @@
 
 #define	OMAP_UHH_DEBUG_CSR				(0x44)
 
-/* Values of UHH_REVISION - Note: these are not given in the TRM */
-#define OMAP_USBHS_REV1		0x00000010	/* OMAP3 */
-#define OMAP_USBHS_REV2		0x50700100	/* OMAP4 */
+ 
+#define OMAP_USBHS_REV1		0x00000010	 
+#define OMAP_USBHS_REV2		0x50700100	 
 
 #define is_omap_usbhs_rev1(x)	(x->usbhs_rev == OMAP_USBHS_REV1)
 #define is_omap_usbhs_rev2(x)	(x->usbhs_rev == OMAP_USBHS_REV2)
@@ -101,12 +95,12 @@ struct usbhs_hcd_omap {
 
 	u32				usbhs_rev;
 };
-/*-------------------------------------------------------------------------*/
+ 
 
 static const char usbhs_driver_name[] = USBHS_DRIVER_NAME;
 static u64 usbhs_dmamask = DMA_BIT_MASK(32);
 
-/*-------------------------------------------------------------------------*/
+ 
 
 static inline void usbhs_write(void __iomem *base, u32 reg, u32 val)
 {
@@ -118,13 +112,9 @@ static inline u32 usbhs_read(void __iomem *base, u32 reg)
 	return readl_relaxed(base + reg);
 }
 
-/*-------------------------------------------------------------------------*/
+ 
 
-/*
- * Map 'enum usbhs_omap_port_mode' found in <linux/platform_data/usb-omap.h>
- * to the device tree binding portN-mode found in
- * 'Documentation/devicetree/bindings/mfd/omap-usb-host.txt'
- */
+ 
 static const char * const port_modes[] = {
 	[OMAP_USBHS_PORT_MODE_UNUSED]	= "",
 	[OMAP_EHCI_PORT_MODE_PHY]	= "ehci-phy",
@@ -308,7 +298,7 @@ static int usbhs_runtime_resume(struct device *dev)
 					 i, r);
 				}
 			}
-			fallthrough;	/* as HSIC mode needs utmi_clk */
+			fallthrough;	 
 
 		case OMAP_EHCI_PORT_MODE_TLL:
 			if (!IS_ERR(omap->utmi_clk[i])) {
@@ -344,7 +334,7 @@ static int usbhs_runtime_suspend(struct device *dev)
 
 			if (!IS_ERR(omap->hsic480m_clk[i]))
 				clk_disable_unprepare(omap->hsic480m_clk[i]);
-			fallthrough;	/* as utmi_clks were used in HSIC mode */
+			fallthrough;	 
 
 		case OMAP_EHCI_PORT_MODE_TLL:
 			if (!IS_ERR(omap->utmi_clk[i]))
@@ -398,7 +388,7 @@ static unsigned omap_usbhs_rev1_hostconfig(struct usbhs_hcd_omap *omap,
 	}
 
 	if (pdata->single_ulpi_bypass) {
-		/* bypass ULPI only if none of the ports use PHY mode */
+		 
 		reg |= OMAP_UHH_HOSTCONFIG_ULPI_BYPASS;
 
 		for (i = 0; i < omap->nports; i++) {
@@ -419,7 +409,7 @@ static unsigned omap_usbhs_rev2_hostconfig(struct usbhs_hcd_omap *omap,
 	int i;
 
 	for (i = 0; i < omap->nports; i++) {
-		/* Clear port mode fields for PHY mode */
+		 
 		reg &= ~(OMAP4_P1_MODE_CLEAR << 2 * i);
 
 		if (is_ehci_tll_mode(pdata->port_mode[i]) ||
@@ -442,7 +432,7 @@ static void omap_usbhs_init(struct device *dev)
 	pm_runtime_get_sync(dev);
 
 	reg = usbhs_read(omap->uhh_base, OMAP_UHH_HOSTCONFIG);
-	/* setup ULPI bypass and burst configurations */
+	 
 	reg |= (OMAP_UHH_HOSTCONFIG_INCR4_BURST_EN
 			| OMAP_UHH_HOSTCONFIG_INCR8_BURST_EN
 			| OMAP_UHH_HOSTCONFIG_INCR16_BURST_EN);
@@ -458,7 +448,7 @@ static void omap_usbhs_init(struct device *dev)
 		reg = omap_usbhs_rev2_hostconfig(omap, reg);
 		break;
 
-	default:	/* newer revisions */
+	default:	 
 		reg = omap_usbhs_rev2_hostconfig(omap, reg);
 		break;
 	}
@@ -485,7 +475,7 @@ static int usbhs_omap_get_dt_pdata(struct device *dev,
 		return -ENODEV;
 	}
 
-	/* get port modes */
+	 
 	for (i = 0; i < OMAP3_HS_USB_PORTS; i++) {
 		char prop[11];
 		const char *mode;
@@ -497,7 +487,7 @@ static int usbhs_omap_get_dt_pdata(struct device *dev,
 		if (ret < 0)
 			continue;
 
-		/* get 'enum usbhs_omap_port_mode' from port mode string */
+		 
 		ret = match_string(port_modes, ARRAY_SIZE(port_modes), mode);
 		if (ret < 0) {
 			dev_warn(dev, "Invalid port%d-mode \"%s\" in device tree\n",
@@ -509,7 +499,7 @@ static int usbhs_omap_get_dt_pdata(struct device *dev,
 		pdata->port_mode[i] = ret;
 	}
 
-	/* get flags */
+	 
 	pdata->single_ulpi_bypass = of_property_read_bool(node,
 						"single-ulpi-bypass");
 
@@ -522,13 +512,7 @@ static const struct of_device_id usbhs_child_match_table[] = {
 	{ }
 };
 
-/**
- * usbhs_omap_probe - initialize TI-based HCDs
- *
- * Allocates basic resources for this USB host controller.
- *
- * @pdev: Pointer to this device's platform device structure
- */
+ 
 static int usbhs_omap_probe(struct platform_device *pdev)
 {
 	struct device			*dev =  &pdev->dev;
@@ -539,7 +523,7 @@ static int usbhs_omap_probe(struct platform_device *pdev)
 	bool				need_logic_fck;
 
 	if (dev->of_node) {
-		/* For DT boot we populate platform data from OF node */
+		 
 		pdata = devm_kzalloc(dev, sizeof(*pdata), GFP_KERNEL);
 		if (!pdata)
 			return -ENOMEM;
@@ -574,7 +558,7 @@ static int usbhs_omap_probe(struct platform_device *pdev)
 
 	omap->pdata = pdata;
 
-	/* Initialize the TLL subsystem */
+	 
 	omap_tll_init(pdata);
 
 	pm_runtime_enable(dev);
@@ -584,15 +568,10 @@ static int usbhs_omap_probe(struct platform_device *pdev)
 
 	omap->usbhs_rev = usbhs_read(omap->uhh_base, OMAP_UHH_REVISION);
 
-	/* we need to call runtime suspend before we update omap->nports
-	 * to prevent unbalanced clk_disable()
-	 */
+	 
 	pm_runtime_put_sync(dev);
 
-	/*
-	 * If platform data contains nports then use that
-	 * else make out number of ports from USBHS revision
-	 */
+	 
 	if (pdata->nports) {
 		omap->nports = pdata->nports;
 	} else {
@@ -624,7 +603,7 @@ static int usbhs_omap_probe(struct platform_device *pdev)
 		goto err_mem;
 	}
 
-	/* Set all clocks as invalid to begin with */
+	 
 	omap->ehci_logic_fck = ERR_PTR(-ENODEV);
 	omap->init_60m_fclk = ERR_PTR(-ENODEV);
 	omap->utmi_p1_gfclk = ERR_PTR(-ENODEV);
@@ -638,7 +617,7 @@ static int usbhs_omap_probe(struct platform_device *pdev)
 		omap->hsic60m_clk[i] = ERR_PTR(-ENODEV);
 	}
 
-	/* for OMAP3 i.e. USBHS REV1 */
+	 
 	if (omap->usbhs_rev == OMAP_USBHS_REV1) {
 		need_logic_fck = false;
 		for (i = 0; i < omap->nports; i++) {
@@ -662,7 +641,7 @@ static int usbhs_omap_probe(struct platform_device *pdev)
 		goto initialize;
 	}
 
-	/* for OMAP4+ i.e. USBHS REV2+ */
+	 
 	omap->utmi_p1_gfclk = devm_clk_get(dev, "utmi_p1_gfclk");
 	if (IS_ERR(omap->utmi_p1_gfclk)) {
 		ret = PTR_ERR(omap->utmi_p1_gfclk);
@@ -701,14 +680,11 @@ static int usbhs_omap_probe(struct platform_device *pdev)
 	for (i = 0; i < omap->nports; i++) {
 		char clkname[30];
 
-		/* clock names are indexed from 1*/
+		 
 		snprintf(clkname, sizeof(clkname),
 				"usb_host_hs_utmi_p%d_clk", i + 1);
 
-		/* If a clock is not found we won't bail out as not all
-		 * platforms have all clocks and we can function without
-		 * them
-		 */
+		 
 		omap->utmi_clk[i] = devm_clk_get(dev, clkname);
 		if (IS_ERR(omap->utmi_clk[i])) {
 			ret = PTR_ERR(omap->utmi_clk[i]);
@@ -810,17 +786,12 @@ static int usbhs_omap_remove_child(struct device *dev, void *data)
 	return 0;
 }
 
-/**
- * usbhs_omap_remove - shutdown processing for UHH & TLL HCDs
- * @pdev: USB Host Controller being removed
- *
- * Reverses the effect of usbhs_omap_probe().
- */
+ 
 static int usbhs_omap_remove(struct platform_device *pdev)
 {
 	pm_runtime_disable(&pdev->dev);
 
-	/* remove children */
+	 
 	device_for_each_child(&pdev->dev, NULL, usbhs_omap_remove_child);
 	return 0;
 }
@@ -858,13 +829,7 @@ static int omap_usbhs_drvinit(void)
 	return platform_driver_register(&usbhs_omap_driver);
 }
 
-/*
- * init before ehci and ohci drivers;
- * The usbhs core driver should be initialized much before
- * the omap ehci and ohci probe functions are called.
- * This usbhs core driver should be initialized after
- * usb tll driver
- */
+ 
 fs_initcall_sync(omap_usbhs_drvinit);
 
 static void omap_usbhs_drvexit(void)

@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _SBP_BASE_H
 #define _SBP_BASE_H
 
@@ -71,7 +71,7 @@
 #define SBP_STATUS_ACCESS_DENIED	4
 #define SBP_STATUS_LUN_NOTSUPP		5
 #define SBP_STATUS_PAYLOAD_TOO_SMALL	6
-/* 7 is reserved */
+ 
 #define SBP_STATUS_RESOURCES_UNAVAIL	8
 #define SBP_STATUS_FUNCTION_REJECTED	9
 #define SBP_STATUS_LOGIN_ID_UNKNOWN	10
@@ -141,8 +141,8 @@ struct sbp_session {
 	struct list_head login_list;
 	struct delayed_work maint_work;
 
-	u64 guid; /* login_owner_EUI_64 */
-	int node_id; /* login_owner_ID */
+	u64 guid;  
+	int node_id;  
 
 	struct fw_card *card;
 	int generation;
@@ -153,31 +153,31 @@ struct sbp_session {
 };
 
 struct sbp_tpg {
-	/* Target portal group tag for TCM */
+	 
 	u16 tport_tpgt;
-	/* Pointer back to sbp_tport */
+	 
 	struct sbp_tport *tport;
-	/* Returned by sbp_make_tpg() */
+	 
 	struct se_portal_group se_tpg;
 };
 
 struct sbp_tport {
-	/* Target Unit Identifier (EUI-64) */
+	 
 	u64 guid;
-	/* Target port name */
+	 
 	char tport_name[SBP_NAMELEN];
-	/* Returned by sbp_make_tport() */
+	 
 	struct se_wwn tport_wwn;
 
 	struct sbp_tpg *tpg;
 
-	/* FireWire unit directory */
+	 
 	struct fw_descriptor unit_directory;
 
-	/* SBP Management Agent */
+	 
 	struct sbp_management_agent *mgt_agt;
 
-	/* Parameters */
+	 
 	int enable;
 	s32 directory_id;
 	int mgt_orb_timeout;

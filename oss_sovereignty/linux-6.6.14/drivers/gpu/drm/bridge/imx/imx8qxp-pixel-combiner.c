@@ -1,8 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0+
 
-/*
- * Copyright 2020 NXP
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/clk.h>
@@ -149,22 +147,22 @@ imx8qxp_pc_bridge_mode_set(struct drm_bridge *bridge,
 		DRM_DEV_ERROR(pc->dev, "%s: failed to enable apb clock: %d\n",
 			      __func__,  ret);
 
-	/* HSYNC to pixel link is active low. */
+	 
 	imx8qxp_pc_write_clr(pc, PC_CTRL_REG,
 			     PC_DISP_HSYNC_POLARITY(ch->stream_id));
 
-	/* VSYNC to pixel link is active low. */
+	 
 	imx8qxp_pc_write_clr(pc, PC_CTRL_REG,
 			     PC_DISP_VSYNC_POLARITY(ch->stream_id));
 
-	/* Data enable to pixel link is active high. */
+	 
 	imx8qxp_pc_write_set(pc, PC_CTRL_REG,
 			     PC_DISP_DVALID_POLARITY(ch->stream_id));
 
-	/* Mask the first frame output which may be incomplete. */
+	 
 	imx8qxp_pc_write_set(pc, PC_CTRL_REG, PC_VSYNC_MASK_ENABLE);
 
-	/* Only support RGB currently. */
+	 
 	val = imx8qxp_pc_read(pc, PC_CTRL_REG);
 	if (ch->stream_id == 0) {
 		val &= ~PC_DISP0_PIX_DATA_FORMAT_MASK;
@@ -175,7 +173,7 @@ imx8qxp_pc_bridge_mode_set(struct drm_bridge *bridge,
 	}
 	imx8qxp_pc_write(pc, PC_CTRL_REG, val);
 
-	/* Only support bypass mode currently. */
+	 
 	imx8qxp_pc_write_set(pc, PC_CTRL_REG, PC_DISP_BYPASS(ch->stream_id));
 
 	clk_disable_unprepare(pc->clk_apb);
@@ -387,12 +385,12 @@ static int __maybe_unused imx8qxp_pc_runtime_suspend(struct device *dev)
 		DRM_DEV_ERROR(pc->dev, "%s: failed to enable apb clock: %d\n",
 			      __func__,  ret);
 
-	/* Disable pixel combiner by full reset. */
+	 
 	imx8qxp_pc_write_clr(pc, PC_SW_RESET_REG, PC_FULL_RESET_N);
 
 	clk_disable_unprepare(pc->clk_apb);
 
-	/* Ensure the reset takes effect. */
+	 
 	usleep_range(10, 20);
 
 	return ret;
@@ -411,7 +409,7 @@ static int __maybe_unused imx8qxp_pc_runtime_resume(struct device *dev)
 		return ret;
 	}
 
-	/* out of reset */
+	 
 	imx8qxp_pc_write_set(pc, PC_SW_RESET_REG, PC_FULL_RESET_N);
 
 	clk_disable_unprepare(pc->clk_apb);
@@ -427,7 +425,7 @@ static const struct dev_pm_ops imx8qxp_pc_pm_ops = {
 static const struct of_device_id imx8qxp_pc_dt_ids[] = {
 	{ .compatible = "fsl,imx8qm-pixel-combiner", },
 	{ .compatible = "fsl,imx8qxp-pixel-combiner", },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, imx8qxp_pc_dt_ids);
 

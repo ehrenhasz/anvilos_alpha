@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * wm8731.c  --  WM8731 ALSA SoC Audio driver
- *
- * Copyright 2005 Openedhand Ltd.
- * Copyright 2006-12 Wolfson Microelectronics, plc
- *
- * Author: Richard Purdie <richard@openedhand.com>
- *
- * Based on wm8753.c by Liam Girdwood
- */
+
+ 
 
 #include <linux/spi/spi.h>
 #include <linux/module.h>

@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2019 Intel Corporation
- */
+ 
+ 
 
 #ifndef __INTEL_LSPCON_H__
 #define __INTEL_LSPCON_H__
@@ -44,4 +42,4 @@ void hsw_read_infoframe(struct intel_encoder *encoder,
 			unsigned int type,
 			void *frame, ssize_t len);
 
-#endif /* __INTEL_LSPCON_H__ */
+#endif  

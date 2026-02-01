@@ -1,133 +1,85 @@
-/* mountlist.c -- return a list of mounted file systems
-
-   Copyright (C) 1991-1992, 1997-2023 Free Software Foundation, Inc.
-
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-#include <config.h>
-
-#include "mountlist.h"
-
-#include <limits.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <stdint.h>
-
-#include "xalloc.h"
-
-#include <errno.h>
-
-#include <fcntl.h>
-
-#include <unistd.h>
-
-#if HAVE_SYS_PARAM_H
-# include <sys/param.h>
-#endif
-
-#if MAJOR_IN_MKDEV
-# include <sys/mkdev.h>
-#elif MAJOR_IN_SYSMACROS
-# include <sys/sysmacros.h>
-#endif
-
-#if defined MOUNTED_GETFSSTAT   /* OSF/1, also (obsolete) Apple Darwin 1.3 */
+ 
 # if HAVE_SYS_UCRED_H
-#  include <grp.h> /* needed on OSF V4.0 for definition of NGROUPS,
-                      NGROUPS is used as an array dimension in ucred.h */
-#  include <sys/ucred.h> /* needed by powerpc-apple-darwin1.3.7 */
+#  include <grp.h>  
+#  include <sys/ucred.h>  
 # endif
 # if HAVE_SYS_MOUNT_H
 #  include <sys/mount.h>
 # endif
 # if HAVE_SYS_FS_TYPES_H
-#  include <sys/fs_types.h> /* needed by powerpc-apple-darwin1.3.7 */
+#  include <sys/fs_types.h>  
 # endif
 # if HAVE_STRUCT_FSSTAT_F_FSTYPENAME
 #  define FS_TYPE(Ent) ((Ent).f_fstypename)
 # else
 #  define FS_TYPE(Ent) mnt_names[(Ent).f_type]
 # endif
-#endif /* MOUNTED_GETFSSTAT */
+#endif  
 
-#ifdef MOUNTED_GETMNTENT1       /* glibc, HP-UX, IRIX, Cygwin, Android,
-                                   also (obsolete) 4.3BSD, SunOS */
+#ifdef MOUNTED_GETMNTENT1        
 # include <mntent.h>
 # include <sys/types.h>
-# if defined __ANDROID__        /* Android */
-   /* Bionic versions from between 2014-01-09 and 2015-01-08 define MOUNTED to
-      an incorrect value; older Bionic versions don't define it at all.  */
+# if defined __ANDROID__         
+    
 #  undef MOUNTED
 #  define MOUNTED "/proc/mounts"
 # elif !defined MOUNTED
-#  if defined _PATH_MOUNTED     /* GNU libc  */
+#  if defined _PATH_MOUNTED      
 #   define MOUNTED _PATH_MOUNTED
 #  endif
-#  if defined MNT_MNTTAB        /* HP-UX.  */
+#  if defined MNT_MNTTAB         
 #   define MOUNTED MNT_MNTTAB
 #  endif
 # endif
 #endif
 
-#ifdef MOUNTED_GETMNTINFO       /* Mac OS X, FreeBSD, OpenBSD, also (obsolete) 4.4BSD */
+#ifdef MOUNTED_GETMNTINFO        
 # include <sys/mount.h>
 #endif
 
-#ifdef MOUNTED_GETMNTINFO2      /* NetBSD, Minix */
+#ifdef MOUNTED_GETMNTINFO2       
 # include <sys/statvfs.h>
 #endif
 
-#ifdef MOUNTED_FS_STAT_DEV      /* Haiku, also (obsolete) BeOS */
+#ifdef MOUNTED_FS_STAT_DEV       
 # include <fs_info.h>
 # include <dirent.h>
 #endif
 
-#ifdef MOUNTED_FREAD_FSTYP      /* (obsolete) SVR3 */
+#ifdef MOUNTED_FREAD_FSTYP       
 # include <mnttab.h>
 # include <sys/fstyp.h>
 # include <sys/statfs.h>
 #endif
 
-#ifdef MOUNTED_GETEXTMNTENT     /* Solaris >= 8 */
+#ifdef MOUNTED_GETEXTMNTENT      
 # include <sys/mnttab.h>
 #endif
 
-#ifdef MOUNTED_GETMNTENT2       /* Solaris < 8, also (obsolete) SVR4 */
+#ifdef MOUNTED_GETMNTENT2        
 # include <sys/mnttab.h>
 #endif
 
-#ifdef MOUNTED_VMOUNT           /* AIX */
+#ifdef MOUNTED_VMOUNT            
 # include <fshelp.h>
 # include <sys/vfs.h>
 #endif
 
-#ifdef MOUNTED_INTERIX_STATVFS  /* Interix */
+#ifdef MOUNTED_INTERIX_STATVFS   
 # include <sys/statvfs.h>
 # include <dirent.h>
 #endif
 
 #if HAVE_SYS_MNTENT_H
-/* This is to get MNTOPT_IGNORE on e.g. SVR4.  */
+ 
 # include <sys/mntent.h>
 #endif
 
 #ifdef MOUNTED_GETMNTENT1
-# if !HAVE_SETMNTENT            /* Android <= 4.4 */
+# if !HAVE_SETMNTENT             
 #  define setmntent(fp,mode) fopen (fp, mode "e")
 # endif
-# if !HAVE_ENDMNTENT            /* Android <= 4.4 */
+# if !HAVE_ENDMNTENT             
 #  define endmntent(fp) fclose (fp)
 # endif
 #endif
@@ -139,8 +91,7 @@
 #undef MNT_IGNORE
 #ifdef MNTOPT_IGNORE
 # if defined __sun && defined __SVR4
-/* Solaris defines hasmntopt(struct mnttab *, char *)
-   while it is otherwise hasmntopt(struct mnttab *, const char *).  */
+ 
 #  define MNT_IGNORE(M) hasmntopt (M, (char *) MNTOPT_IGNORE)
 # else
 #  define MNT_IGNORE(M) hasmntopt (M, MNTOPT_IGNORE)
@@ -149,11 +100,10 @@
 # define MNT_IGNORE(M) 0
 #endif
 
-/* Each of the FILE streams in this file is only used in a single thread.  */
+ 
 #include "unlocked-io.h"
 
-/* The results of opendir() in this file are not used with dirfd and fchdir,
-   therefore save some unnecessary work in fchdir.c.  */
+ 
 #ifdef GNULIB_defined_DIR
 # undef DIR
 # undef opendir
@@ -172,7 +122,7 @@
   (strcmp (Fs_type, "autofs") == 0              \
    || strcmp (Fs_type, "proc") == 0             \
    || strcmp (Fs_type, "subfs") == 0            \
-   /* for Linux 2.6/3.x */                      \
+                          \
    || strcmp (Fs_type, "debugfs") == 0          \
    || strcmp (Fs_type, "devpts") == 0           \
    || strcmp (Fs_type, "fusectl") == 0          \
@@ -180,17 +130,14 @@
    || strcmp (Fs_type, "mqueue") == 0           \
    || strcmp (Fs_type, "rpc_pipefs") == 0       \
    || strcmp (Fs_type, "sysfs") == 0            \
-   /* FreeBSD, Linux 2.4 */                     \
+                         \
    || strcmp (Fs_type, "devfs") == 0            \
-   /* for NetBSD 3.0 */                         \
+                             \
    || strcmp (Fs_type, "kernfs") == 0           \
-   /* for Irix 6.5 */                           \
+                               \
    || strcmp (Fs_type, "ignore") == 0)
 
-/* Historically, we have marked as "dummy" any file system of type "none",
-   but now that programs like du need to know about bind-mounted directories,
-   we grant an exception to any with "bind" in its list of mount options.
-   I.e., those are *not* dummy entries.  */
+ 
 #ifdef MOUNTED_GETMNTENT1
 # define ME_DUMMY(Fs_name, Fs_type, Bind)	\
   (ME_DUMMY_0 (Fs_name, Fs_type)		\
@@ -202,12 +149,11 @@
 
 #ifdef __CYGWIN__
 # include <windows.h>
-/* Don't assume that UNICODE is not defined.  */
+ 
 # undef GetDriveType
 # define GetDriveType GetDriveTypeA
 # define ME_REMOTE me_remote
-/* All cygwin mount points include ':' or start with '//'; so it
-   requires a native Windows call to determine remote disks.  */
+ 
 static bool
 me_remote (char const *fs_name, _GL_UNUSED char const *fs_type)
 {
@@ -229,11 +175,7 @@ me_remote (char const *fs_name, _GL_UNUSED char const *fs_type)
 #endif
 
 #ifndef ME_REMOTE
-/* A file system is "remote" if its Fs_name contains a ':'
-   or if (it is of type (smbfs or cifs) and its Fs_name starts with '//')
-   or if it is of any other of the listed types
-   or Fs_name is equal to "-hosts" (used by autofs to mount remote fs).
-   "VM" file systems like prl_fs or vboxsf are not considered remote here. */
+ 
 # define ME_REMOTE(Fs_name, Fs_type)            \
     (strchr (Fs_name, ':') != NULL              \
      || ((Fs_name)[0] == '/'                    \
@@ -253,7 +195,7 @@ me_remote (char const *fs_name, _GL_UNUSED char const *fs_type)
      || strcmp ("-hosts", Fs_name) == 0)
 #endif
 
-#if MOUNTED_GETMNTINFO          /* Mac OS X, FreeBSD, OpenBSD, also (obsolete) 4.4BSD */
+#if MOUNTED_GETMNTINFO           
 
 # if ! HAVE_STRUCT_STATFS_F_FSTYPENAME
 static char *
@@ -361,9 +303,9 @@ fsp_to_string (const struct statfs *fsp)
 # endif
 }
 
-#endif /* MOUNTED_GETMNTINFO */
+#endif  
 
-#ifdef MOUNTED_VMOUNT           /* AIX */
+#ifdef MOUNTED_VMOUNT            
 static char *
 fstype_to_string (int t)
 {
@@ -375,19 +317,16 @@ fstype_to_string (int t)
   else
     return e->vfsent_name;
 }
-#endif /* MOUNTED_VMOUNT */
+#endif  
 
 
 #if defined MOUNTED_GETMNTENT1 || defined MOUNTED_GETMNTENT2
 
-/* Return the device number from MOUNT_OPTIONS, if possible.
-   Otherwise return (dev_t) -1.  */
+ 
 static dev_t
 dev_from_mount_options (char const *mount_options)
 {
-  /* GNU/Linux allows file system implementations to define their own
-     meaning for "dev=" mount options, so don't trust the meaning
-     here.  */
+   
 # ifndef __linux__
 
   static char const dev_pattern[] = ",dev=";
@@ -414,10 +353,9 @@ dev_from_mount_options (char const *mount_options)
 
 #endif
 
-#if defined MOUNTED_GETMNTENT1 && (defined __linux__ || defined __ANDROID__) /* GNU/Linux, Android */
+#if defined MOUNTED_GETMNTENT1 && (defined __linux__ || defined __ANDROID__)  
 
-/* Unescape the paths in mount tables.
-   STR is updated in place.  */
+ 
 
 static void
 unescape_tab (char *str)
@@ -441,8 +379,7 @@ unescape_tab (char *str)
     }
 }
 
-/* Find the next space in STR, terminate the string there in place,
-   and return that position.  Otherwise return NULL.  */
+ 
 
 static char *
 terminate_at_blank (char *str)
@@ -454,10 +391,7 @@ terminate_at_blank (char *str)
 }
 #endif
 
-/* Return a list of the currently mounted file systems, or NULL on error.
-   Add each entry to the tail of the list so that they stay in order.
-   If NEED_FS_TYPE is true, ensure that the file system type fields in
-   the returned list are valid.  Otherwise, they might not be.  */
+ 
 
 struct mount_entry *
 read_file_system_list (bool need_fs_type)
@@ -467,16 +401,12 @@ read_file_system_list (bool need_fs_type)
   struct mount_entry **mtail = &mount_list;
   (void) need_fs_type;
 
-#ifdef MOUNTED_GETMNTENT1       /* glibc, HP-UX, IRIX, Cygwin, Android,
-                                   also (obsolete) 4.3BSD, SunOS */
+#ifdef MOUNTED_GETMNTENT1        
   {
     FILE *fp;
 
 # if defined __linux__ || defined __ANDROID__
-    /* Try parsing mountinfo first, as that make device IDs available.
-       Note we could use libmount routines to simplify this parsing a little
-       (and that code is in previous versions of this function), however
-       libmount depends on libselinux which pulls in many dependencies.  */
+     
     char const *mountinfo = "/proc/self/mountinfo";
     fp = fopen (mountinfo, "re");
     if (fp != NULL)
@@ -489,45 +419,45 @@ read_file_system_list (bool need_fs_type)
             unsigned int devmaj, devmin;
             int rc, mntroot_s;
 
-            rc = sscanf(line, "%*u "        /* id - discarded  */
-                              "%*u "        /* parent - discarded  */
-                              "%u:%u "      /* dev major:minor  */
-                              "%n",         /* mountroot (start)  */
+            rc = sscanf(line, "%*u "         
+                              "%*u "         
+                              "%u:%u "       
+                              "%n",          
                               &devmaj, &devmin,
                               &mntroot_s);
 
-            if (rc != 2 && rc != 3)  /* 3 if %n included in count.  */
+            if (rc != 2 && rc != 3)   
               continue;
 
-            /* find end of MNTROOT.  */
+             
             char *mntroot = line + mntroot_s;
             char *blank = terminate_at_blank (mntroot);
             if (! blank)
               continue;
 
-            /* find end of TARGET.  */
+             
             char *target = blank + 1;
             blank = terminate_at_blank (target);
             if (! blank)
               continue;
 
-            /* skip optional fields, terminated by " - "  */
+             
             char *dash = strstr (blank + 1, " - ");
             if (! dash)
               continue;
 
-            /* advance past the " - " separator.  */
+             
             char *fstype = dash + 3;
             blank = terminate_at_blank (fstype);
             if (! blank)
               continue;
 
-            /* find end of SOURCE.  */
+             
             char *source = blank + 1;
             if (! terminate_at_blank (source))
               continue;
 
-            /* manipulate the sub-strings in place.  */
+             
             unescape_tab (source);
             unescape_tab (target);
             unescape_tab (mntroot);
@@ -541,14 +471,11 @@ read_file_system_list (bool need_fs_type)
             me->me_type = xstrdup (fstype);
             me->me_type_malloced = 1;
             me->me_dev = makedev (devmaj, devmin);
-            /* we pass "false" for the "Bind" option as that's only
-               significant when the Fs_type is "none" which will not be
-               the case when parsing "/proc/self/mountinfo", and only
-               applies for static /etc/mtab files.  */
+             
             me->me_dummy = ME_DUMMY (me->me_devname, me->me_type, false);
             me->me_remote = ME_REMOTE (me->me_devname, me->me_type);
 
-            /* Add to the linked list. */
+             
             *mtail = me;
             mtail = &me->me_next;
           }
@@ -566,8 +493,8 @@ read_file_system_list (bool need_fs_type)
         if (fclose (fp) == EOF)
           goto free_then_fail;
       }
-    else /* fallback to /proc/self/mounts (/etc/mtab).  */
-# endif /* __linux __ || __ANDROID__ */
+    else  
+# endif  
       {
         struct mntent *mnt;
         char const *table = MOUNTED;
@@ -590,7 +517,7 @@ read_file_system_list (bool need_fs_type)
             me->me_remote = ME_REMOTE (me->me_devname, me->me_type);
             me->me_dev = dev_from_mount_options (mnt->mnt_opts);
 
-            /* Add to the linked list. */
+             
             *mtail = me;
             mtail = &me->me_next;
           }
@@ -599,9 +526,9 @@ read_file_system_list (bool need_fs_type)
           goto free_then_fail;
       }
   }
-#endif /* MOUNTED_GETMNTENT1. */
+#endif  
 
-#ifdef MOUNTED_GETMNTINFO       /* Mac OS X, FreeBSD, OpenBSD, also (obsolete) 4.4BSD */
+#ifdef MOUNTED_GETMNTINFO        
   {
     struct statfs *fsp;
     int entries;
@@ -621,16 +548,16 @@ read_file_system_list (bool need_fs_type)
         me->me_type_malloced = 0;
         me->me_dummy = ME_DUMMY (me->me_devname, me->me_type);
         me->me_remote = ME_REMOTE (me->me_devname, me->me_type);
-        me->me_dev = (dev_t) -1;        /* Magic; means not known yet. */
+        me->me_dev = (dev_t) -1;         
 
-        /* Add to the linked list. */
+         
         *mtail = me;
         mtail = &me->me_next;
       }
   }
-#endif /* MOUNTED_GETMNTINFO */
+#endif  
 
-#ifdef MOUNTED_GETMNTINFO2      /* NetBSD, Minix */
+#ifdef MOUNTED_GETMNTINFO2       
   {
     struct statvfs *fsp;
     int entries;
@@ -648,26 +575,18 @@ read_file_system_list (bool need_fs_type)
         me->me_type_malloced = 1;
         me->me_dummy = ME_DUMMY (me->me_devname, me->me_type);
         me->me_remote = ME_REMOTE (me->me_devname, me->me_type);
-        me->me_dev = (dev_t) -1;        /* Magic; means not known yet. */
+        me->me_dev = (dev_t) -1;         
 
-        /* Add to the linked list. */
+         
         *mtail = me;
         mtail = &me->me_next;
       }
   }
-#endif /* MOUNTED_GETMNTINFO2 */
+#endif  
 
-#if defined MOUNTED_FS_STAT_DEV /* Haiku, also (obsolete) BeOS */
+#if defined MOUNTED_FS_STAT_DEV  
   {
-    /* The next_dev() and fs_stat_dev() system calls give the list of
-       all file systems, including the information returned by statvfs()
-       (fs type, total blocks, free blocks etc.), but without the mount
-       point. But on BeOS all file systems except / are mounted in the
-       rootfs, directly under /.
-       The directory name of the mount point is often, but not always,
-       identical to the volume name of the device.
-       We therefore get the list of subdirectories of /, and the list
-       of all file systems, and match the two lists.  */
+     
 
     DIR *dirp;
     struct rootdir_entry
@@ -683,7 +602,7 @@ read_file_system_list (bool need_fs_type)
     dev_t dev;
     fs_info fi;
 
-    /* All volumes are mounted in the rootfs, directly under /. */
+     
     rootdir_list = NULL;
     rootdir_tail = &rootdir_list;
     dirp = opendir ("/");
@@ -715,7 +634,7 @@ read_file_system_list (bool need_fs_type)
                 re->dev = statbuf.st_dev;
                 re->ino = statbuf.st_ino;
 
-                /* Add to the linked list.  */
+                 
                 *rootdir_tail = re;
                 rootdir_tail = &re->next;
               }
@@ -729,7 +648,7 @@ read_file_system_list (bool need_fs_type)
     for (pos = 0; (dev = next_dev (&pos)) >= 0; )
       if (fs_stat_dev (dev, &fi) >= 0)
         {
-          /* Note: fi.dev == dev. */
+           
           struct rootdir_entry *re;
 
           for (re = rootdir_list; re; re = re->next)
@@ -747,7 +666,7 @@ read_file_system_list (bool need_fs_type)
           me->me_dummy = 0;
           me->me_remote = (fi.flags & B_FS_IS_SHARED) != 0;
 
-          /* Add to the linked list. */
+           
           *mtail = me;
           mtail = &me->me_next;
         }
@@ -761,9 +680,9 @@ read_file_system_list (bool need_fs_type)
         free (re);
       }
   }
-#endif /* MOUNTED_FS_STAT_DEV */
+#endif  
 
-#if defined MOUNTED_GETFSSTAT   /* OSF/1, also (obsolete) Apple Darwin 1.3 */
+#if defined MOUNTED_GETFSSTAT    
   {
     int numsys, counter;
     size_t bufsize;
@@ -795,18 +714,18 @@ read_file_system_list (bool need_fs_type)
         me->me_type_malloced = 1;
         me->me_dummy = ME_DUMMY (me->me_devname, me->me_type);
         me->me_remote = ME_REMOTE (me->me_devname, me->me_type);
-        me->me_dev = (dev_t) -1;        /* Magic; means not known yet. */
+        me->me_dev = (dev_t) -1;         
 
-        /* Add to the linked list. */
+         
         *mtail = me;
         mtail = &me->me_next;
       }
 
     free (stats);
   }
-#endif /* MOUNTED_GETFSSTAT */
+#endif  
 
-#if defined MOUNTED_FREAD_FSTYP /* (obsolete) SVR3 */
+#if defined MOUNTED_FREAD_FSTYP  
   {
     struct mnttab mnt;
     char *table = "/etc/mnttab";
@@ -822,7 +741,7 @@ read_file_system_list (bool need_fs_type)
         me->me_devname = xstrdup (mnt.mt_dev);
         me->me_mountdir = xstrdup (mnt.mt_filsys);
         me->me_mntroot = NULL;
-        me->me_dev = (dev_t) -1;        /* Magic; means not known yet. */
+        me->me_dev = (dev_t) -1;         
         me->me_type = "";
         me->me_type_malloced = 0;
         if (need_fs_type)
@@ -840,14 +759,14 @@ read_file_system_list (bool need_fs_type)
         me->me_dummy = ME_DUMMY (me->me_devname, me->me_type);
         me->me_remote = ME_REMOTE (me->me_devname, me->me_type);
 
-        /* Add to the linked list. */
+         
         *mtail = me;
         mtail = &me->me_next;
       }
 
     if (ferror (fp))
       {
-        /* The last fread() call must have failed.  */
+         
         int saved_errno = errno;
         fclose (fp);
         errno = saved_errno;
@@ -857,17 +776,16 @@ read_file_system_list (bool need_fs_type)
     if (fclose (fp) == EOF)
       goto free_then_fail;
   }
-#endif /* MOUNTED_FREAD_FSTYP.  */
+#endif  
 
-#ifdef MOUNTED_GETEXTMNTENT     /* Solaris >= 8 */
+#ifdef MOUNTED_GETEXTMNTENT      
   {
     struct extmnttab mnt;
     const char *table = MNTTAB;
     FILE *fp;
     int ret;
 
-    /* No locking is needed, because the contents of /etc/mnttab is generated
-       by the kernel.  */
+     
 
     errno = 0;
     fp = fopen (table, "re");
@@ -887,13 +805,13 @@ read_file_system_list (bool need_fs_type)
             me->me_remote = ME_REMOTE (me->me_devname, me->me_type);
             me->me_dev = makedev (mnt.mnt_major, mnt.mnt_minor);
 
-            /* Add to the linked list. */
+             
             *mtail = me;
             mtail = &me->me_next;
           }
 
         ret = fclose (fp) == EOF ? errno : 0 < ret ? 0 : -1;
-        /* Here ret = -1 means success, ret >= 0 means failure.  */
+         
       }
 
     if (0 <= ret)
@@ -902,9 +820,9 @@ read_file_system_list (bool need_fs_type)
         goto free_then_fail;
       }
   }
-#endif /* MOUNTED_GETEXTMNTENT */
+#endif  
 
-#ifdef MOUNTED_GETMNTENT2       /* Solaris < 8, also (obsolete) SVR4 */
+#ifdef MOUNTED_GETMNTENT2        
   {
     struct mnttab mnt;
     const char *table = MNTTAB;
@@ -913,10 +831,7 @@ read_file_system_list (bool need_fs_type)
     int lockfd = -1;
 
 # if defined F_RDLCK && defined F_SETLKW
-    /* MNTTAB_LOCK is a macro name of our own invention; it's not present in
-       e.g. Solaris 2.6.  If the SVR4 folks ever define a macro
-       for this file name, we should use their macro name instead.
-       (Why not just lock MNTTAB directly?  We don't know.)  */
+     
 #  ifndef MNTTAB_LOCK
 #   define MNTTAB_LOCK "/etc/.mnttab.lock"
 #  endif
@@ -959,13 +874,13 @@ read_file_system_list (bool need_fs_type)
             me->me_remote = ME_REMOTE (me->me_devname, me->me_type);
             me->me_dev = dev_from_mount_options (mnt.mnt_mntopts);
 
-            /* Add to the linked list. */
+             
             *mtail = me;
             mtail = &me->me_next;
           }
 
         ret = fclose (fp) == EOF ? errno : 0 < ret ? 0 : -1;
-        /* Here ret = -1 means success, ret >= 0 means failure.  */
+         
       }
 
     if (0 <= lockfd && close (lockfd) != 0)
@@ -977,9 +892,9 @@ read_file_system_list (bool need_fs_type)
         goto free_then_fail;
       }
   }
-#endif /* MOUNTED_GETMNTENT2.  */
+#endif  
 
-#ifdef MOUNTED_VMOUNT           /* AIX */
+#ifdef MOUNTED_VMOUNT            
   {
     int bufsize;
     void *entries;
@@ -988,13 +903,13 @@ read_file_system_list (bool need_fs_type)
     int n_entries;
     int i;
 
-    /* Ask how many bytes to allocate for the mounted file system info.  */
+     
     entries = &bufsize;
     if (mntctl (MCTL_QUERY, sizeof bufsize, entries) != 0)
       return NULL;
     entries = xmalloc (bufsize);
 
-    /* Get the list of mounted file systems.  */
+     
     n_entries = mntctl (MCTL_QUERY, bufsize, entries);
     if (n_entries < 0)
       {
@@ -1015,7 +930,7 @@ read_file_system_list (bool need_fs_type)
             char *host, *dir;
 
             me->me_remote = 1;
-            /* Prepend the remote dirname.  */
+             
             host = thisent + vmp->vmt_data[VMT_HOSTNAME].vmt_off;
             dir = thisent + vmp->vmt_data[VMT_OBJECT].vmt_off;
             me->me_devname = xmalloc (strlen (host) + strlen (dir) + 2);
@@ -1039,17 +954,17 @@ read_file_system_list (bool need_fs_type)
                         && (ignore == options || ignore[-1] == ',')
                         && (ignore[sizeof "ignore" - 1] == ','
                             || ignore[sizeof "ignore" - 1] == '\0'));
-        me->me_dev = (dev_t) -1; /* vmt_fsid might be the info we want.  */
+        me->me_dev = (dev_t) -1;  
 
-        /* Add to the linked list. */
+         
         *mtail = me;
         mtail = &me->me_next;
       }
     free (entries);
   }
-#endif /* MOUNTED_VMOUNT. */
+#endif  
 
-#ifdef MOUNTED_INTERIX_STATVFS  /* Interix */
+#ifdef MOUNTED_INTERIX_STATVFS   
   {
     DIR *dirp = opendir ("/dev/fs");
     char node[9 + NAME_MAX];
@@ -1063,8 +978,7 @@ read_file_system_list (bool need_fs_type)
         struct dirent entry;
         struct dirent *result;
 
-        /* FIXME: readdir_r is planned to be withdrawn from POSIX and
-           marked obsolescent in glibc.  Use readdir instead.  */
+         
         if (readdir_r (dirp, &entry, &result) || result == NULL)
           break;
 
@@ -1081,16 +995,16 @@ read_file_system_list (bool need_fs_type)
             me->me_type_malloced = 1;
             me->me_dummy = ME_DUMMY (me->me_devname, me->me_type);
             me->me_remote = ME_REMOTE (me->me_devname, me->me_type);
-            me->me_dev = (dev_t) -1;        /* Magic; means not known yet. */
+            me->me_dev = (dev_t) -1;         
 
-            /* Add to the linked list. */
+             
             *mtail = me;
             mtail = &me->me_next;
           }
       }
     closedir (dirp);
   }
-#endif /* MOUNTED_INTERIX_STATVFS */
+#endif  
 
   *mtail = NULL;
   return mount_list;
@@ -1113,7 +1027,7 @@ read_file_system_list (bool need_fs_type)
   }
 }
 
-/* Free a mount entry as returned from read_file_system_list ().  */
+ 
 
 void
 free_mount_entry (struct mount_entry *me)

@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef __PINCTRL_MTK_MT6397_H
 #define __PINCTRL_MTK_MT6397_H
 
@@ -381,4 +381,4 @@ static const struct mtk_desc_pin mtk_pins_mt6397[] = {
 	),
 };
 
-#endif /* __PINCTRL_MTK_MT6397_H */
+#endif  

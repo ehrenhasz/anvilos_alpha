@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * A sensor driver for the magnetometer AK8975.
- *
- * Magnetic compass sensor driver for monitoring magnetic flux information.
- *
- * Copyright (c) 2010, NVIDIA Corporation.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/mod_devicetable.h>
@@ -28,10 +22,7 @@
 #include <linux/iio/trigger_consumer.h>
 #include <linux/iio/triggered_buffer.h>
 
-/*
- * Register definitions, as well as various shifts and masks to get at the
- * individual fields of the registers.
- */
+ 
 #define AK8975_REG_WIA			0x00
 #define AK8975_DEVICE_ID		0x48
 
@@ -73,9 +64,7 @@
 
 #define AK8975_MAX_REGS			AK8975_REG_ASAZ
 
-/*
- * AK09912 Register definitions
- */
+ 
 #define AK09912_REG_WIA1		0x00
 #define AK09912_REG_WIA2		0x01
 #define AK09916_DEVICE_ID		0x09
@@ -126,83 +115,31 @@
 
 #define AK09912_MAX_REGS		AK09912_REG_ASAZ
 
-/*
- * Miscellaneous values.
- */
+ 
 #define AK8975_MAX_CONVERSION_TIMEOUT	500
 #define AK8975_CONVERSION_DONE_POLL_TIME 10
 #define AK8975_DATA_READY_TIMEOUT	((100*HZ)/1000)
 
-/*
- * Precalculate scale factor (in Gauss units) for each axis and
- * store in the device data.
- *
- * This scale factor is axis-dependent, and is derived from 3 calibration
- * factors ASA(x), ASA(y), and ASA(z).
- *
- * These ASA values are read from the sensor device at start of day, and
- * cached in the device context struct.
- *
- * Adjusting the flux value with the sensitivity adjustment value should be
- * done via the following formula:
- *
- * Hadj = H * ( ( ( (ASA-128)*0.5 ) / 128 ) + 1 )
- * where H is the raw value, ASA is the sensitivity adjustment, and Hadj
- * is the resultant adjusted value.
- *
- * We reduce the formula to:
- *
- * Hadj = H * (ASA + 128) / 256
- *
- * H is in the range of -4096 to 4095.  The magnetometer has a range of
- * +-1229uT.  To go from the raw value to uT is:
- *
- * HuT = H * 1229/4096, or roughly, 3/10.
- *
- * Since 1uT = 0.01 gauss, our final scale factor becomes:
- *
- * Hadj = H * ((ASA + 128) / 256) * 3/10 * 1/100
- * Hadj = H * ((ASA + 128) * 0.003) / 256
- *
- * Since ASA doesn't change, we cache the resultant scale factor into the
- * device context in ak8975_setup().
- *
- * Given we use IIO_VAL_INT_PLUS_MICRO bit when displaying the scale, we
- * multiply the stored scale value by 1e6.
- */
+ 
 static long ak8975_raw_to_gauss(u16 data)
 {
 	return (((long)data + 128) * 3000) / 256;
 }
 
-/*
- * For AK8963 and AK09911, same calculation, but the device is less sensitive:
- *
- * H is in the range of +-8190.  The magnetometer has a range of
- * +-4912uT.  To go from the raw value to uT is:
- *
- * HuT = H * 4912/8190, or roughly, 6/10, instead of 3/10.
- */
+ 
 
 static long ak8963_09911_raw_to_gauss(u16 data)
 {
 	return (((long)data + 128) * 6000) / 256;
 }
 
-/*
- * For AK09912, same calculation, except the device is more sensitive:
- *
- * H is in the range of -32752 to 32752.  The magnetometer has a range of
- * +-4912uT.  To go from the raw value to uT is:
- *
- * HuT = H * 4912/32752, or roughly, 3/20, instead of 3/10.
- */
+ 
 static long ak09912_raw_to_gauss(u16 data)
 {
 	return (((long)data + 128) * 1500) / 256;
 }
 
-/* Compatible Asahi Kasei Compass parts */
+ 
 enum asahi_compass_chipset {
 	AKXXXX		= 0,
 	AK8975,
@@ -375,9 +312,7 @@ static const struct ak_def ak_def_array[] = {
 	}
 };
 
-/*
- * Per-instance context data for the device.
- */
+ 
 struct ak8975_data {
 	struct i2c_client	*client;
 	const struct ak_def	*def;
@@ -394,14 +329,14 @@ struct ak8975_data {
 	struct regulator	*vdd;
 	struct regulator	*vid;
 
-	/* Ensure natural alignment of timestamp */
+	 
 	struct {
 		s16 channels[3];
 		s64 ts __aligned(8);
 	} scan;
 };
 
-/* Enable attached power regulator if any. */
+ 
 static int ak8975_power_on(const struct ak8975_data *data)
 {
 	int ret;
@@ -422,16 +357,12 @@ static int ak8975_power_on(const struct ak8975_data *data)
 
 	gpiod_set_value_cansleep(data->reset_gpiod, 0);
 
-	/*
-	 * According to the datasheet the power supply rise time is 200us
-	 * and the minimum wait time before mode setting is 100us, in
-	 * total 300us. Add some margin and say minimum 500us here.
-	 */
+	 
 	usleep_range(500, 1000);
 	return 0;
 }
 
-/* Disable attached power regulator if any. */
+ 
 static void ak8975_power_off(const struct ak8975_data *data)
 {
 	gpiod_set_value_cansleep(data->reset_gpiod, 1);
@@ -440,25 +371,14 @@ static void ak8975_power_off(const struct ak8975_data *data)
 	regulator_disable(data->vdd);
 }
 
-/*
- * Return 0 if the i2c device is the one we expect.
- * return a negative error number otherwise
- */
+ 
 static int ak8975_who_i_am(struct i2c_client *client,
 			   enum asahi_compass_chipset type)
 {
 	u8 wia_val[2];
 	int ret;
 
-	/*
-	 * Signature for each device:
-	 * Device   |  WIA1      |  WIA2
-	 * AK09916  |  DEVICE_ID_|  AK09916_DEVICE_ID
-	 * AK09912  |  DEVICE_ID |  AK09912_DEVICE_ID
-	 * AK09911  |  DEVICE_ID |  AK09911_DEVICE_ID
-	 * AK8975   |  DEVICE_ID |  NA
-	 * AK8963   |  DEVICE_ID |  NA
-	 */
+	 
 	ret = i2c_smbus_read_i2c_block_data_or_emulated(
 			client, AK09912_REG_WIA1, 2, wia_val);
 	if (ret < 0) {
@@ -491,9 +411,7 @@ static int ak8975_who_i_am(struct i2c_client *client,
 	return -ENODEV;
 }
 
-/*
- * Helper function to write to CNTL register.
- */
+ 
 static int ak8975_set_mode(struct ak8975_data *data, enum ak_ctrl_mode mode)
 {
 	u8 regval;
@@ -507,15 +425,13 @@ static int ak8975_set_mode(struct ak8975_data *data, enum ak_ctrl_mode mode)
 		return ret;
 	}
 	data->cntl_cache = regval;
-	/* After mode change wait atleast 100us */
+	 
 	usleep_range(100, 500);
 
 	return 0;
 }
 
-/*
- * Handle data ready irq
- */
+ 
 static irqreturn_t ak8975_irq_handler(int irq, void *data)
 {
 	struct ak8975_data *ak8975 = data;
@@ -526,9 +442,7 @@ static irqreturn_t ak8975_irq_handler(int irq, void *data)
 	return IRQ_HANDLED;
 }
 
-/*
- * Install data ready interrupt handler
- */
+ 
 static int ak8975_setup_irq(struct ak8975_data *data)
 {
 	struct i2c_client *client = data->client;
@@ -556,24 +470,21 @@ static int ak8975_setup_irq(struct ak8975_data *data)
 }
 
 
-/*
- * Perform some start-of-day setup, including reading the asa calibration
- * values and caching them.
- */
+ 
 static int ak8975_setup(struct i2c_client *client)
 {
 	struct iio_dev *indio_dev = i2c_get_clientdata(client);
 	struct ak8975_data *data = iio_priv(indio_dev);
 	int ret;
 
-	/* Write the fused rom access mode. */
+	 
 	ret = ak8975_set_mode(data, FUSE_ROM);
 	if (ret < 0) {
 		dev_err(&client->dev, "Error in setting fuse access mode\n");
 		return ret;
 	}
 
-	/* Get asa data and store in the device data. */
+	 
 	ret = i2c_smbus_read_i2c_block_data_or_emulated(
 			client, data->def->ctrl_regs[ASA_BASE],
 			3, data->asa);
@@ -582,7 +493,7 @@ static int ak8975_setup(struct i2c_client *client)
 		return ret;
 	}
 
-	/* After reading fuse ROM data set power-down mode */
+	 
 	ret = ak8975_set_mode(data, POWER_DOWN);
 	if (ret < 0) {
 		dev_err(&client->dev, "Error in setting power-down mode\n");
@@ -611,7 +522,7 @@ static int wait_conversion_complete_gpio(struct ak8975_data *data)
 	u32 timeout_ms = AK8975_MAX_CONVERSION_TIMEOUT;
 	int ret;
 
-	/* Wait for the conversion to complete. */
+	 
 	while (timeout_ms) {
 		msleep(AK8975_CONVERSION_DONE_POLL_TIME);
 		if (gpiod_get_value(data->eoc_gpiod))
@@ -637,7 +548,7 @@ static int wait_conversion_complete_polled(struct ak8975_data *data)
 	u32 timeout_ms = AK8975_MAX_CONVERSION_TIMEOUT;
 	int ret;
 
-	/* Wait for the conversion to complete. */
+	 
 	while (timeout_ms) {
 		msleep(AK8975_CONVERSION_DONE_POLL_TIME);
 		ret = i2c_smbus_read_byte_data(client,
@@ -659,7 +570,7 @@ static int wait_conversion_complete_polled(struct ak8975_data *data)
 	return read_status;
 }
 
-/* Returns 0 if the end of conversion interrupt occured or -ETIME otherwise */
+ 
 static int wait_conversion_complete_interrupt(struct ak8975_data *data)
 {
 	int ret;
@@ -675,7 +586,7 @@ static int wait_conversion_complete_interrupt(struct ak8975_data *data)
 static int ak8975_start_read_axis(struct ak8975_data *data,
 				  const struct i2c_client *client)
 {
-	/* Set up the device for taking a sample. */
+	 
 	int ret = ak8975_set_mode(data, MODE_ONCE);
 
 	if (ret < 0) {
@@ -683,7 +594,7 @@ static int ak8975_start_read_axis(struct ak8975_data *data,
 		return ret;
 	}
 
-	/* Wait for the conversion to complete. */
+	 
 	if (data->eoc_irq)
 		ret = wait_conversion_complete_interrupt(data);
 	else if (data->eoc_gpiod)
@@ -693,7 +604,7 @@ static int ak8975_start_read_axis(struct ak8975_data *data,
 	if (ret < 0)
 		return ret;
 
-	/* This will be executed only for non-interrupt based waiting case */
+	 
 	if (ret & data->def->ctrl_masks[ST1_DRDY]) {
 		ret = i2c_smbus_read_byte_data(client,
 					       data->def->ctrl_regs[ST2]);
@@ -711,7 +622,7 @@ static int ak8975_start_read_axis(struct ak8975_data *data,
 	return 0;
 }
 
-/* Retrieve raw flux value for one of the x, y, or z axis.  */
+ 
 static int ak8975_read_axis(struct iio_dev *indio_dev, int index, int *val)
 {
 	struct ak8975_data *data = iio_priv(indio_dev);
@@ -740,7 +651,7 @@ static int ak8975_read_axis(struct iio_dev *indio_dev, int index, int *val)
 	pm_runtime_mark_last_busy(&data->client->dev);
 	pm_runtime_put_autosuspend(&data->client->dev);
 
-	/* Swap bytes and convert to valid range. */
+	 
 	buff = le16_to_cpu(rval);
 	*val = clamp_t(s16, buff, -def->range, def->range);
 	return IIO_VAL_INT;
@@ -838,10 +749,7 @@ static void ak8975_fill_buffer(struct iio_dev *indio_dev)
 	if (ret)
 		goto unlock;
 
-	/*
-	 * For each axis, read the flux value from the appropriate register
-	 * (the register is specified in the iio device attributes).
-	 */
+	 
 	ret = i2c_smbus_read_i2c_block_data_or_emulated(client,
 							def->data_regs[0],
 							3 * sizeof(fval[0]),
@@ -851,7 +759,7 @@ static void ak8975_fill_buffer(struct iio_dev *indio_dev)
 
 	mutex_unlock(&data->lock);
 
-	/* Clamp to valid range. */
+	 
 	data->scan.channels[0] = clamp_t(s16, le16_to_cpu(fval[0]), -def->range, def->range);
 	data->scan.channels[1] = clamp_t(s16, le16_to_cpu(fval[1]), -def->range, def->range);
 	data->scan.channels[2] = clamp_t(s16, le16_to_cpu(fval[2]), -def->range, def->range);
@@ -889,28 +797,20 @@ static int ak8975_probe(struct i2c_client *client)
 	enum asahi_compass_chipset chipset;
 	const char *name = NULL;
 
-	/*
-	 * Grab and set up the supplied GPIO.
-	 * We may not have a GPIO based IRQ to scan, that is fine, we will
-	 * poll if so.
-	 */
+	 
 	eoc_gpiod = devm_gpiod_get_optional(&client->dev, NULL, GPIOD_IN);
 	if (IS_ERR(eoc_gpiod))
 		return PTR_ERR(eoc_gpiod);
 	if (eoc_gpiod)
 		gpiod_set_consumer_name(eoc_gpiod, "ak_8975");
 
-	/*
-	 * According to AK09911 datasheet, if reset GPIO is provided then
-	 * deassert reset on ak8975_power_on() and assert reset on
-	 * ak8975_power_off().
-	 */
+	 
 	reset_gpiod = devm_gpiod_get_optional(&client->dev,
 					      "reset", GPIOD_OUT_HIGH);
 	if (IS_ERR(reset_gpiod))
 		return PTR_ERR(reset_gpiod);
 
-	/* Register with IIO */
+	 
 	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
 	if (indio_dev == NULL)
 		return -ENOMEM;
@@ -927,7 +827,7 @@ static int ak8975_probe(struct i2c_client *client)
 	if (err)
 		return err;
 
-	/* id will be NULL when enumerated via ACPI */
+	 
 	match = device_get_match_data(&client->dev);
 	if (match) {
 		chipset = (uintptr_t)match;
@@ -950,7 +850,7 @@ static int ak8975_probe(struct i2c_client *client)
 
 	data->def = &ak_def_array[i];
 
-	/* Fetch the regulators */
+	 
 	data->vdd = devm_regulator_get(&client->dev, "vdd");
 	if (IS_ERR(data->vdd))
 		return PTR_ERR(data->vdd);
@@ -969,7 +869,7 @@ static int ak8975_probe(struct i2c_client *client)
 	}
 	dev_dbg(&client->dev, "Asahi compass chip %s\n", name);
 
-	/* Perform some basic start-of-day setup of the device. */
+	 
 	err = ak8975_setup(client);
 	if (err < 0) {
 		dev_err(&client->dev, "%s initialization fails\n", name);
@@ -997,14 +897,11 @@ static int ak8975_probe(struct i2c_client *client)
 		goto cleanup_buffer;
 	}
 
-	/* Enable runtime PM */
+	 
 	pm_runtime_get_noresume(&client->dev);
 	pm_runtime_set_active(&client->dev);
 	pm_runtime_enable(&client->dev);
-	/*
-	 * The device comes online in 500us, so add two orders of magnitude
-	 * of delay before autosuspending: 50 ms.
-	 */
+	 
 	pm_runtime_set_autosuspend_delay(&client->dev, 50);
 	pm_runtime_use_autosuspend(&client->dev);
 	pm_runtime_put(&client->dev);
@@ -1039,13 +936,13 @@ static int ak8975_runtime_suspend(struct device *dev)
 	struct ak8975_data *data = iio_priv(indio_dev);
 	int ret;
 
-	/* Set the device in power down if it wasn't already */
+	 
 	ret = ak8975_set_mode(data, POWER_DOWN);
 	if (ret < 0) {
 		dev_err(&client->dev, "Error in setting power-down mode\n");
 		return ret;
 	}
-	/* Next cut the regulators */
+	 
 	ak8975_power_off(data);
 
 	return 0;
@@ -1058,12 +955,9 @@ static int ak8975_runtime_resume(struct device *dev)
 	struct ak8975_data *data = iio_priv(indio_dev);
 	int ret;
 
-	/* Take up the regulators */
+	 
 	ak8975_power_on(data);
-	/*
-	 * We come up in powered down mode, the reading routines will
-	 * put us in the mode to read values later.
-	 */
+	 
 	ret = ak8975_set_mode(data, POWER_DOWN);
 	if (ret < 0) {
 		dev_err(&client->dev, "Error in setting power-down mode\n");

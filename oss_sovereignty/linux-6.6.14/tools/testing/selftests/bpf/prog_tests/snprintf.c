@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2021 Google LLC. */
+
+ 
 
 #include <test_progs.h>
 #include "test_snprintf.skel.h"
@@ -11,11 +11,11 @@
 #define EXP_IP_OUT   "127.000.000.001 0000:0000:0000:0000:0000:0000:0000:0001"
 #define EXP_IP_RET   sizeof(EXP_IP_OUT)
 
-/* The third specifier, %pB, depends on compiler inlining so don't check it */
+ 
 #define EXP_SYM_OUT  "schedule schedule+0x0/"
 #define MIN_SYM_RET  sizeof(EXP_SYM_OUT)
 
-/* The third specifier, %p, is a hashed pointer which changes on every reboot */
+ 
 #define EXP_ADDR_OUT "0000000000000000 ffff00000add4e55 "
 #define EXP_ADDR_RET sizeof(EXP_ADDR_OUT "unknownhashedptr")
 
@@ -48,7 +48,7 @@ static void test_snprintf_positive(void)
 	if (!ASSERT_OK(test_snprintf__attach(skel), "skel_attach"))
 		goto cleanup;
 
-	/* trigger tracepoint */
+	 
 	usleep(1);
 
 	ASSERT_STREQ(skel->bss->num_out, EXP_NUM_OUT, "num_out");
@@ -83,7 +83,7 @@ cleanup:
 	test_snprintf__destroy(skel);
 }
 
-/* Loads an eBPF object calling bpf_snprintf with up to 10 characters of fmt */
+ 
 static int load_single_snprintf(char *fmt)
 {
 	struct test_snprintf_single *skel;

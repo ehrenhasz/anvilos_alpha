@@ -1,13 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * PCIe host controller driver for Mobiveil PCIe Host controller
- *
- * Copyright (c) 2018 Mobiveil Inc.
- * Copyright 2019 NXP
- *
- * Author: Subrahmanya Lingappa <l.subrahmanya@mobiveil.co.in>
- *	   Hou Zhiqiang <Zhiqiang.Hou@nxp.com>
- */
+ 
+ 
 
 #ifndef _PCIE_MOBIVEIL_H
 #define _PCIE_MOBIVEIL_H
@@ -17,12 +9,9 @@
 #include <linux/msi.h>
 #include "../../pci.h"
 
-/* register offsets and bit positions */
+ 
 
-/*
- * translation tables are grouped into windows, each window registers are
- * grouped into blocks of 4 or 16 registers each
- */
+ 
 #define PAB_REG_BLOCK_SIZE		16
 #define PAB_EXT_REG_BLOCK_SIZE		4
 
@@ -97,13 +86,13 @@
 #define PAB_PEX_AMAP_PEX_WIN_L(win)	PAB_REG_ADDR(0x4ba8, win)
 #define PAB_PEX_AMAP_PEX_WIN_H(win)	PAB_REG_ADDR(0x4bac, win)
 
-/* starting offset of INTX bits in status register */
+ 
 #define PAB_INTX_START			5
 
-/* supported number of MSI interrupts */
+ 
 #define PCI_NUM_MSI			16
 
-/* MSI registers */
+ 
 #define MSI_BASE_LO_OFFSET		0x04
 #define MSI_BASE_HI_OFFSET		0x08
 #define MSI_SIZE_OFFSET			0x0c
@@ -113,7 +102,7 @@
 #define MSI_ADDR_L_OFFSET		0x24
 #define MSI_ADDR_H_OFFSET		0x28
 
-/* outbound and inbound window definitions */
+ 
 #define WIN_NUM_0			0
 #define WIN_NUM_1			1
 #define CFG_WINDOW_TYPE			0
@@ -122,7 +111,7 @@
 #define IB_WIN_SIZE			((u64)256 * 1024 * 1024 * 1024)
 #define MAX_PIO_WINDOWS			8
 
-/* Parameters for the waiting for link up routine */
+ 
 #define LINK_WAIT_MAX_RETRIES		10
 #define LINK_WAIT_MIN			90000
 #define LINK_WAIT_MAX			100000
@@ -133,8 +122,8 @@
 #define OFFSET_TO_PAGE_IDX(off)		\
 	((off >> PAGE_SEL_OFFSET_SHIFT) & PAGE_SEL_MASK)
 
-struct mobiveil_msi {			/* MSI information */
-	struct mutex lock;		/* protect bitmap variable */
+struct mobiveil_msi {			 
+	struct mutex lock;		 
 	struct irq_domain *msi_domain;
 	struct irq_domain *dev_domain;
 	phys_addr_t msi_pages_phys;
@@ -149,7 +138,7 @@ struct mobiveil_rp_ops {
 };
 
 struct mobiveil_root_port {
-	void __iomem *config_axi_slave_base;	/* endpoint config base */
+	void __iomem *config_axi_slave_base;	 
 	struct resource *ob_io_res;
 	struct mobiveil_rp_ops *ops;
 	int irq;
@@ -165,13 +154,13 @@ struct mobiveil_pab_ops {
 
 struct mobiveil_pcie {
 	struct platform_device *pdev;
-	void __iomem *csr_axi_slave_base;	/* root port config base */
-	void __iomem *apb_csr_base;	/* MSI register base */
-	phys_addr_t pcie_reg_base;	/* Physical PCIe Controller Base */
+	void __iomem *csr_axi_slave_base;	 
+	void __iomem *apb_csr_base;	 
+	phys_addr_t pcie_reg_base;	 
 	int apio_wins;
 	int ppio_wins;
-	int ob_wins_configured;		/* configured outbound windows */
-	int ib_wins_configured;		/* configured inbound windows */
+	int ob_wins_configured;		 
+	int ib_wins_configured;		 
 	const struct mobiveil_pab_ops *ops;
 	struct mobiveil_root_port rp;
 };
@@ -222,4 +211,4 @@ static inline void mobiveil_csr_writeb(struct mobiveil_pcie *pcie, u8 val,
 	mobiveil_csr_write(pcie, val, off, 0x1);
 }
 
-#endif /* _PCIE_MOBIVEIL_H */
+#endif  

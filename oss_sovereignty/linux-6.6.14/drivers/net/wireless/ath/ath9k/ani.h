@@ -1,25 +1,11 @@
-/*
- * Copyright (c) 2008-2011 Atheros Communications Inc.
- *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
+ 
 
 #ifndef ANI_H
 #define ANI_H
 
 #define BEACON_RSSI(ahp) (ahp->stats.avgbrssi)
 
-/* units are errors per second */
+ 
 #define ATH9K_ANI_OFDM_TRIG_HIGH           3500
 #define ATH9K_ANI_OFDM_TRIG_HIGH_BELOW_INI 1000
 #define ATH9K_ANI_OFDM_TRIG_HIGH_OLD       500
@@ -41,7 +27,7 @@
 
 #define ATH9K_ANI_PERIOD                  300
 
-/* in ms */
+ 
 #define ATH9K_ANI_POLLINTERVAL            1000
 
 #define ATH9K_SIG_FIRSTEP_SETTING_MIN     0
@@ -49,7 +35,7 @@
 #define ATH9K_SIG_SPUR_IMM_SETTING_MIN    0
 #define ATH9K_SIG_SPUR_IMM_SETTING_MAX    22
 
-/* values here are relative to the INI */
+ 
 
 enum ath9k_ani_cmd {
 	ATH9K_ANI_OFDM_WEAK_SIGNAL_DETECTION = 0x1,
@@ -67,7 +53,7 @@ struct ath9k_mib_stats {
 	u32 beacons;
 };
 
-/* INI default values for ANI registers */
+ 
 struct ath9k_ani_default {
 	u16 m1ThreshLow;
 	u16 m2ThreshLow;
@@ -122,4 +108,4 @@ void ath9k_enable_mib_counters(struct ath_hw *ah);
 void ath9k_hw_disable_mib_counters(struct ath_hw *ah);
 void ath9k_hw_ani_init(struct ath_hw *ah);
 
-#endif /* ANI_H */
+#endif  

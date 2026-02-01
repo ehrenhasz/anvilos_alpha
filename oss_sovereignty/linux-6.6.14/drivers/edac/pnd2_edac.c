@@ -1,20 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Driver for Pondicherry2 memory controller.
- *
- * Copyright (c) 2016, Intel Corporation.
- *
- * [Derived from sb_edac.c]
- *
- * Translation of system physical addresses to DIMM addresses
- * is a two stage process:
- *
- * First the Pondicherry 2 memory controller handles slice and channel interleaving
- * in "sys2pmi()". This is (almost) completley common between platforms.
- *
- * Then a platform specific dunit (DIMM unit) completes the process to provide DIMM,
- * rank, bank, row and column using the appropriate "dunit_ops" functions/parameters.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -43,11 +28,11 @@
 
 #define APL_NUM_CHANNELS	4
 #define DNV_NUM_CHANNELS	2
-#define DNV_MAX_DIMMS		2 /* Max DIMMs per channel */
+#define DNV_MAX_DIMMS		2  
 
 enum type {
 	APL,
-	DNV, /* All requests go to PMI CH0 on each slice (CH1 disabled) */
+	DNV,  
 };
 
 struct dram_addr {
@@ -64,15 +49,7 @@ struct pnd2_pvt {
 	u64 tolm, tohm;
 };
 
-/*
- * System address space is divided into multiple regions with
- * different interleave rules in each. The as0/as1 regions
- * have no interleaving at all. The as2 region is interleaved
- * between two channels. The mot region is magic and may overlap
- * other regions, with its interleave rules taking precedence.
- * Addresses not in any of these regions are interleaved across
- * all four channels.
- */
+ 
 static struct region {
 	u64	base;
 	u64	limit;
@@ -99,7 +76,7 @@ static struct mem_ctl_info *pnd2_mci;
 
 #define PND2_MSG_SIZE	256
 
-/* Debug macros */
+ 
 #define pnd2_printk(level, fmt, arg...)			\
 	edac_printk(level, "pnd2", fmt, ##arg)
 
@@ -125,11 +102,7 @@ static struct mem_ctl_info *pnd2_mci;
 #define GET_BITFIELD(v, lo, hi)	(((v) & GENMASK_ULL(hi, lo)) >> (lo))
 #define U64_LSHIFT(val, s)	((u64)(val) << (s))
 
-/*
- * On Apollo Lake we access memory controller registers via a
- * side-band mailbox style interface in a hidden PCI device
- * configuration space.
- */
+ 
 static struct pci_bus	*p2sb_bus;
 #define P2SB_DEVFN	PCI_DEVFN(0xd, 0)
 #define P2SB_ADDR_OFF	0xd0
@@ -159,7 +132,7 @@ static int _apl_rd_reg(int port, int off, int op, u32 *data)
 	u16 status;
 	u8 hidden;
 
-	/* Unhide the P2SB device, if it's hidden */
+	 
 	P2SB_READ(byte, P2SB_HIDE_OFF, &hidden);
 	if (hidden)
 		P2SB_WRITE(byte, P2SB_HIDE_OFF, 0);
@@ -185,7 +158,7 @@ static int _apl_rd_reg(int port, int off, int op, u32 *data)
 	P2SB_READ(dword, P2SB_DATA_OFF, data);
 	ret = (status >> 1) & 0x3;
 out:
-	/* Hide the P2SB device, if it was hidden before */
+	 
 	if (hidden)
 		P2SB_WRITE(byte, P2SB_HIDE_OFF, hidden);
 
@@ -251,7 +224,7 @@ static int dnv_rd_reg(int port, int off, int op, void *data, size_t sz, char *na
 		pci_read_config_dword(pdev, off, data);
 		pci_dev_put(pdev);
 	} else {
-		/* MMIO via memory controller hub base address */
+		 
 		if (op == 0 && port == 0x4c) {
 			memset(&r, 0, sizeof(r));
 
@@ -260,7 +233,7 @@ static int dnv_rd_reg(int port, int off, int op, void *data, size_t sz, char *na
 				return -ENODEV;
 			r.end = r.start + DNV_MCHBAR_SIZE - 1;
 		} else {
-			/* MMIO via sideband register base address */
+			 
 			ret = p2sb_bar(NULL, 0, &r);
 			if (ret)
 				return ret;
@@ -303,7 +276,7 @@ static int dnv_rd_reg(int port, int off, int op, void *data, size_t sz, char *na
 
 static u64 top_lm, top_hm;
 static bool two_slices;
-static bool two_channels; /* Both PMI channels in one slice enabled */
+static bool two_channels;  
 
 static u8 sym_chan_mask;
 static u8 asym_chan_mask;
@@ -400,16 +373,12 @@ static struct b_cr_mot_out_base_mchbar mot_base;
 static struct b_cr_mot_out_mask_mchbar mot_mask;
 static struct b_cr_slice_channel_hash chash;
 
-/* Apollo Lake dunit */
-/*
- * Validated on board with just two DIMMs in the [0] and [2] positions
- * in this array. Other port number matches documentation, but caution
- * advised.
- */
+ 
+ 
 static const int apl_dports[APL_NUM_CHANNELS] = { 0x18, 0x10, 0x11, 0x19 };
 static struct d_cr_drp0 drp0[APL_NUM_CHANNELS];
 
-/* Denverton dunit */
+ 
 static const int dnv_dports[DNV_NUM_CHANNELS] = { 0x10, 0x12 };
 static struct d_cr_dsch dsch;
 static struct d_cr_ecc_ctrl ecc_ctrl[DNV_NUM_CHANNELS];
@@ -449,10 +418,7 @@ static int apl_get_registers(void)
 	if (RD_REG(&asym_2way, b_cr_asym_2way_mem_region_mchbar))
 		return -ENODEV;
 
-	/*
-	 * RD_REGP() will fail for unpopulated or non-existent
-	 * DIMM slots. Return success if we find at least one DIMM.
-	 */
+	 
 	for (i = 0; i < APL_NUM_CHANNELS; i++)
 		if (!RD_REGP(&drp0[i], d_cr_drp0, apl_dports[i]))
 			ret = 0;
@@ -481,11 +447,7 @@ static int dnv_get_registers(void)
 	return 0;
 }
 
-/*
- * Read all the h/w config registers once here (they don't
- * change at run time. Figure out which address ranges have
- * which interleave characteristics.
- */
+ 
 static int get_registers(void)
 {
 	const int intlv[] = { 10, 11, 12, 12 };
@@ -504,10 +466,10 @@ static int get_registers(void)
 		return -ENODEV;
 
 	if (ops->type == DNV) {
-		/* PMI channel idx (always 0) for asymmetric region */
+		 
 		asym0.slice0_asym_channel_select = 0;
 		asym1.slice1_asym_channel_select = 0;
-		/* PMI channel bitmap (always 1) for symmetric region */
+		 
 		chash.sym_slice0_channel_enabled = 0x1;
 		chash.sym_slice1_channel_enabled = 0x1;
 	}
@@ -584,13 +546,13 @@ static int get_registers(void)
 	return 0;
 }
 
-/* Get a contiguous memory address (remove the MMIO gap) */
+ 
 static u64 remove_mmio_gap(u64 sys)
 {
 	return (sys < _4GB) ? sys : sys - (_4GB - top_lm);
 }
 
-/* Squeeze out one address bit, shift upper part down to fill gap */
+ 
 static void remove_addr_bit(u64 *addr, int bitidx)
 {
 	u64	mask;
@@ -602,7 +564,7 @@ static void remove_addr_bit(u64 *addr, int bitidx)
 	*addr = ((*addr >> 1) & ~mask) | (*addr & mask);
 }
 
-/* XOR all the bits from addr specified in mask */
+ 
 static int hash_by_mask(u64 addr, u64 mask)
 {
 	u64 result = addr & mask;
@@ -617,10 +579,7 @@ static int hash_by_mask(u64 addr, u64 mask)
 	return (int)result & 1;
 }
 
-/*
- * First stage decode. Take the system address and figure out which
- * second stage will deal with it based on interleave modes.
- */
+ 
 static int sys2pmi(const u64 addr, u32 *pmiidx, u64 *pmiaddr, char *msg)
 {
 	u64 contig_addr, contig_base, contig_offset, contig_base_adj;
@@ -628,27 +587,22 @@ static int sys2pmi(const u64 addr, u32 *pmiidx, u64 *pmiaddr, char *msg)
 						MOT_CHAN_INTLV_BIT_1SLC_2CH;
 	int slice_intlv_bit_rm = SELECTOR_DISABLED;
 	int chan_intlv_bit_rm = SELECTOR_DISABLED;
-	/* Determine if address is in the MOT region. */
+	 
 	bool mot_hit = in_region(&mot, addr);
-	/* Calculate the number of symmetric regions enabled. */
+	 
 	int sym_channels = hweight8(sym_chan_mask);
 
-	/*
-	 * The amount we need to shift the asym base can be determined by the
-	 * number of enabled symmetric channels.
-	 * NOTE: This can only work because symmetric memory is not supposed
-	 * to do a 3-way interleave.
-	 */
+	 
 	int sym_chan_shift = sym_channels >> 1;
 
-	/* Give up if address is out of range, or in MMIO gap */
+	 
 	if (addr >= (1ul << PND_MAX_PHYS_BIT) ||
 	   (addr >= top_lm && addr < _4GB) || addr >= top_hm) {
 		snprintf(msg, PND2_MSG_SIZE, "Error address 0x%llx is not DRAM", addr);
 		return -EINVAL;
 	}
 
-	/* Get a contiguous memory address (remove the MMIO gap) */
+	 
 	contig_addr = remove_mmio_gap(addr);
 
 	if (in_region(&as0, addr)) {
@@ -682,7 +636,7 @@ static int sys2pmi(const u64 addr, u32 *pmiidx, u64 *pmiaddr, char *msg)
 		remove_addr_bit(&contig_offset, chan_intlv_bit_rm);
 		contig_addr = (contig_base >> sym_chan_shift) + contig_offset;
 	} else {
-		/* Otherwise we're in normal, boring symmetric mode. */
+		 
 		*pmiidx = 0u;
 
 		if (two_slices) {
@@ -717,32 +671,32 @@ static int sys2pmi(const u64 addr, u32 *pmiidx, u64 *pmiaddr, char *msg)
 		}
 	}
 
-	/* Remove the chan_selector bit first */
+	 
 	remove_addr_bit(&contig_addr, chan_intlv_bit_rm);
-	/* Remove the slice bit (we remove it second because it must be lower */
+	 
 	remove_addr_bit(&contig_addr, slice_intlv_bit_rm);
 	*pmiaddr = contig_addr;
 
 	return 0;
 }
 
-/* Translate PMI address to memory (rank, row, bank, column) */
-#define C(n) (0x10 | (n))	/* column */
-#define B(n) (0x20 | (n))	/* bank */
-#define R(n) (0x40 | (n))	/* row */
-#define RS   (0x80)			/* rank */
+ 
+#define C(n) (0x10 | (n))	 
+#define B(n) (0x20 | (n))	 
+#define R(n) (0x40 | (n))	 
+#define RS   (0x80)			 
 
-/* addrdec values */
+ 
 #define AMAP_1KB	0
 #define AMAP_2KB	1
 #define AMAP_4KB	2
 #define AMAP_RSVD	3
 
-/* dden values */
+ 
 #define DEN_4Gb		0
 #define DEN_8Gb		2
 
-/* dwid values */
+ 
 #define X8		0
 #define X16		1
 
@@ -900,7 +854,7 @@ static int rank_hash(u64 pmiaddr)
 	return ((pmiaddr >> 16) ^ (pmiaddr >> 10)) & 1;
 }
 
-/* Second stage decode. Compute rank, bank, row & column. */
+ 
 static int apl_pmi2mem(struct mem_ctl_info *mci, u64 pmiaddr, u32 pmiidx,
 		       struct dram_addr *daddr, char *msg)
 {
@@ -922,10 +876,7 @@ static int apl_pmi2mem(struct mem_ctl_info *mci, u64 pmiaddr, u32 pmiidx,
 		type = d->bits[i + skiprs] & ~0xf;
 		idx = d->bits[i + skiprs] & 0xf;
 
-		/*
-		 * On single rank DIMMs ignore the rank select bit
-		 * and shift remainder of "bits[]" down one place.
-		 */
+		 
 		if (type == RS && (cr_drp0->rken0 + cr_drp0->rken1) == 1) {
 			skiprs = 1;
 			type = d->bits[i + skiprs] & ~0xf;
@@ -968,21 +919,18 @@ done:
 	return 0;
 }
 
-/* Pluck bit "in" from pmiaddr and return value shifted to bit "out" */
+ 
 #define dnv_get_bit(pmi, in, out) ((int)(((pmi) >> (in)) & 1u) << (out))
 
 static int dnv_pmi2mem(struct mem_ctl_info *mci, u64 pmiaddr, u32 pmiidx,
 					   struct dram_addr *daddr, char *msg)
 {
-	/* Rank 0 or 1 */
+	 
 	daddr->rank = dnv_get_bit(pmiaddr, dmap[pmiidx].rs0 + 13, 0);
-	/* Rank 2 or 3 */
+	 
 	daddr->rank |= dnv_get_bit(pmiaddr, dmap[pmiidx].rs1 + 13, 1);
 
-	/*
-	 * Normally ranks 0,1 are DIMM0, and 2,3 are DIMM1, but we
-	 * flip them if DIMM1 is larger than DIMM0.
-	 */
+	 
 	daddr->dimm = (daddr->rank >= 2) ^ drp[pmiidx].dimmflip;
 
 	daddr->bank = dnv_get_bit(pmiaddr, dmap[pmiidx].ba0 + 6, 0);
@@ -995,10 +943,10 @@ static int dnv_pmi2mem(struct mem_ctl_info *mci, u64 pmiaddr, u32 pmiidx,
 			daddr->bank ^= dnv_get_bit(pmiaddr, dmap3[pmiidx].row6 + 6, 0);
 			daddr->bank ^= dnv_get_bit(pmiaddr, dmap3[pmiidx].row7 + 6, 1);
 			if (dsch.chan_width == 0)
-				/* 64/72 bit dram channel width */
+				 
 				daddr->bank ^= dnv_get_bit(pmiaddr, dmap5[pmiidx].ca3 + 6, 2);
 			else
-				/* 32/40 bit dram channel width */
+				 
 				daddr->bank ^= dnv_get_bit(pmiaddr, dmap5[pmiidx].ca4 + 6, 2);
 			daddr->bank ^= dnv_get_bit(pmiaddr, dmap2[pmiidx].row2 + 6, 3);
 		} else {
@@ -1063,7 +1011,7 @@ static int apl_check_ecc_active(void)
 {
 	int	i, ret = 0;
 
-	/* Check dramtype and ECC mode for each present DIMM */
+	 
 	for (i = 0; i < APL_NUM_CHANNELS; i++)
 		if (chan_mask & BIT(i))
 			ret += check_channel(i);
@@ -1104,7 +1052,7 @@ static int get_memory_error_data(struct mem_ctl_info *mci, u64 addr,
 		return ret;
 
 	pmiaddr >>= ops->pmiaddr_shift;
-	/* pmi channel idx to dimm channel idx */
+	 
 	pmiidx >>= ops->pmiidx_shift;
 	daddr->chan = pmiidx;
 
@@ -1136,17 +1084,7 @@ static void pnd2_mce_output_error(struct mem_ctl_info *mci, const struct mce *m,
 	tp_event = uc_err ? (ripv ? HW_EVENT_ERR_UNCORRECTED : HW_EVENT_ERR_FATAL) :
 						 HW_EVENT_ERR_CORRECTED;
 
-	/*
-	 * According with Table 15-9 of the Intel Architecture spec vol 3A,
-	 * memory errors should fit in this mask:
-	 *	000f 0000 1mmm cccc (binary)
-	 * where:
-	 *	f = Correction Report Filtering Bit. If 1, subsequent errors
-	 *	    won't be shown
-	 *	mmm = error type
-	 *	cccc = channel
-	 * If the mask doesn't match, report an error to the parsing logic
-	 */
+	 
 	if (!((errcode & 0xef80) == 0x80)) {
 		optype = "Can't parse: it is not a mem";
 	} else {
@@ -1172,7 +1110,7 @@ static void pnd2_mce_output_error(struct mem_ctl_info *mci, const struct mce *m,
 		}
 	}
 
-	/* Only decode errors with an valid address (ADDRV) */
+	 
 	if (!(m->status & MCI_STATUS_ADDRV))
 		return;
 
@@ -1187,7 +1125,7 @@ static void pnd2_mce_output_error(struct mem_ctl_info *mci, const struct mce *m,
 
 	edac_dbg(0, "%s\n", msg);
 
-	/* Call the helper to output message */
+	 
 	edac_mc_handle_error(tp_event, mci, core_err_cnt, m->addr >> PAGE_SHIFT,
 						 m->addr & ~PAGE_MASK, 0, daddr->chan, daddr->dimm, -1, optype, msg);
 
@@ -1280,9 +1218,9 @@ static void dnv_get_dimm_config(struct mem_ctl_info *mci)
 		}
 
 		d = &drp[i];
-		/* DIMM0 is present if rank0 and/or rank1 is enabled */
+		 
 		ranks_of_dimm[0] = d->rken0 + d->rken1;
-		/* DIMM1 is present if rank2 and/or rank3 is enabled */
+		 
 		ranks_of_dimm[1] = d->rken2 + d->rken3;
 
 		for (j = 0; j < DNV_MAX_DIMMS; j++) {
@@ -1318,7 +1256,7 @@ static int pnd2_register_mci(struct mem_ctl_info **ppmci)
 	if (rc < 0)
 		return rc;
 
-	/* Allocate a new MC control structure */
+	 
 	layers[0].type = EDAC_MC_LAYER_CHANNEL;
 	layers[0].size = ops->channels;
 	layers[0].is_virt_csrow = false;
@@ -1336,7 +1274,7 @@ static int pnd2_register_mci(struct mem_ctl_info **ppmci)
 	mci->dev_name = ops->name;
 	mci->ctl_name = "Pondicherry2";
 
-	/* Get dimm basic config and the memory layout */
+	 
 	ops->get_dimm_config(mci);
 
 	if (edac_mc_add_mc(mci)) {
@@ -1357,16 +1295,13 @@ static void pnd2_unregister_mci(struct mem_ctl_info *mci)
 		return;
 	}
 
-	/* Remove MC sysfs nodes */
+	 
 	edac_mc_del_mc(NULL);
 	edac_dbg(1, "%s: free mci struct\n", mci->ctl_name);
 	edac_mc_free(mci);
 }
 
-/*
- * Callback function registered with core kernel mce code.
- * Called once for each logged error.
- */
+ 
 static int pnd2_mce_check_error(struct notifier_block *nb, unsigned long val, void *data)
 {
 	struct mce *mce = (struct mce *)data;
@@ -1378,12 +1313,7 @@ static int pnd2_mce_check_error(struct notifier_block *nb, unsigned long val, vo
 	if (!mci || (mce->kflags & MCE_HANDLED_CEC))
 		return NOTIFY_DONE;
 
-	/*
-	 * Just let mcelog handle it if the error is
-	 * outside the memory controller. A memory error
-	 * is indicated by bit 7 = 1 and bits = 8-11,13-15 = 0.
-	 * bit 12 has an special meaning.
-	 */
+	 
 	if ((mce->status & 0xefff) >> 7 != 1)
 		return NOTIFY_DONE;
 
@@ -1403,7 +1333,7 @@ static int pnd2_mce_check_error(struct notifier_block *nb, unsigned long val, vo
 
 	pnd2_mce_output_error(mci, mce, &daddr);
 
-	/* Advice mcelog that the error were handled */
+	 
 	mce->kflags |= MCE_HANDLED_EDAC;
 	return NOTIFY_OK;
 }
@@ -1414,10 +1344,7 @@ static struct notifier_block pnd2_mce_dec = {
 };
 
 #ifdef CONFIG_EDAC_DEBUG
-/*
- * Write an address to this file to exercise the address decode
- * logic in this driver.
- */
+ 
 static u64 pnd2_fake_addr;
 #define PND2_BLOB_SIZE 1024
 static char pnd2_result[PND2_BLOB_SIZE];
@@ -1434,7 +1361,7 @@ static int debugfs_u64_set(void *data, u64 val)
 
 	*(u64 *)data = val;
 	m.mcgstatus = 0;
-	/* ADDRV + MemRd + Unknown channel */
+	 
 	m.status = MCI_STATUS_ADDRV + 0x9f;
 	m.addr = val;
 	pnd2_mce_output_error(pnd2_mci, &m, &daddr);
@@ -1462,7 +1389,7 @@ static void teardown_pnd2_debug(void)
 #else
 static void setup_pnd2_debug(void)	{}
 static void teardown_pnd2_debug(void)	{}
-#endif /* CONFIG_EDAC_DEBUG */
+#endif  
 
 
 static int pnd2_probe(void)
@@ -1550,7 +1477,7 @@ static int __init pnd2_init(void)
 			return -ENODEV;
 	}
 
-	/* Ensure that the OPSTATE is set correctly for POLL or NMI */
+	 
 	opstate_init();
 
 	rc = pnd2_probe();

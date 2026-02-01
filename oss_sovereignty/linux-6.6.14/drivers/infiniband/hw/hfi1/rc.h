@@ -1,13 +1,10 @@
-/* SPDX-License-Identifier: (GPL-2.0 OR BSD-3-Clause) */
-/*
- * Copyright(c) 2018 Intel Corporation.
- *
- */
+ 
+ 
 
 #ifndef HFI1_RC_H
 #define HFI1_RC_H
 
-/* cut down ridiculously long IB macro names */
+ 
 #define OP(x) IB_OPCODE_RC_##x
 
 static inline void update_ack_queue(struct rvt_qp *qp, unsigned int n)
@@ -56,4 +53,4 @@ int do_rc_ack(struct rvt_qp *qp, u32 aeth, u32 psn, int opcode, u64 val,
 struct rvt_swqe *do_rc_completion(struct rvt_qp *qp, struct rvt_swqe *wqe,
 				  struct hfi1_ibport *ibp);
 
-#endif /* HFI1_RC_H */
+#endif  

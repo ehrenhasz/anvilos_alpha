@@ -1,22 +1,4 @@
-/* Lock a mutex, abandoning after a certain time.
-   Copyright (C) 2019-2023 Free Software Foundation, Inc.
-
-   This file is free software: you can redistribute it and/or modify
-   it under the terms of the GNU Lesser General Public License as
-   published by the Free Software Foundation; either version 2.1 of the
-   License, or (at your option) any later version.
-
-   This file is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU Lesser General Public License for more details.
-
-   You should have received a copy of the GNU Lesser General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-#include <config.h>
-
-/* Specification.  */
+ 
 #include <pthread.h>
 
 #include <errno.h>
@@ -31,13 +13,8 @@
 int
 pthread_mutex_timedlock (pthread_mutex_t *mutex, const struct timespec *abstime)
 {
-  /* Poll the mutex's state in regular intervals.  Ugh.  */
-  /* POSIX says:
-      "Under no circumstance shall the function fail with a timeout if
-       the mutex can be locked immediately. The validity of the abstime
-       parameter need not be checked if the mutex can be locked
-       immediately."
-     Therefore start the loop with a pthread_mutex_trylock call.  */
+   
+   
   for (;;)
     {
       int err;
@@ -56,7 +33,7 @@ pthread_mutex_timedlock (pthread_mutex_t *mutex, const struct timespec *abstime)
         {
           unsigned long seconds = abstime->tv_sec - currtime.tv_sec;
           remaining = seconds * 1000000000;
-          if (remaining / 1000000000 != seconds) /* overflow? */
+          if (remaining / 1000000000 != seconds)  
             remaining = ULONG_MAX;
           else
             {
@@ -65,7 +42,7 @@ pthread_mutex_timedlock (pthread_mutex_t *mutex, const struct timespec *abstime)
               if (nanoseconds >= 0)
                 {
                   remaining += nanoseconds;
-                  if (remaining < nanoseconds) /* overflow? */
+                  if (remaining < nanoseconds)  
                     remaining = ULONG_MAX;
                 }
               else
@@ -80,7 +57,7 @@ pthread_mutex_timedlock (pthread_mutex_t *mutex, const struct timespec *abstime)
       if (remaining == 0)
         return ETIMEDOUT;
 
-      /* Sleep 1 ms.  */
+       
       struct timespec duration =
         {
           .tv_sec = 0,

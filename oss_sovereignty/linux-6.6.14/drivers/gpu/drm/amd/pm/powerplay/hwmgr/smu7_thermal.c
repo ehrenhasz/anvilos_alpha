@@ -1,25 +1,4 @@
-/*
- * Copyright 2016 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 
 #include <asm/div64.h>
 #include "smu7_thermal.h"
@@ -99,12 +78,7 @@ int smu7_fan_ctrl_get_fan_speed_rpm(struct pp_hwmgr *hwmgr, uint32_t *speed)
 	return 0;
 }
 
-/**
- * smu7_fan_ctrl_set_static_mode - Set Fan Speed Control to static mode, so that the user can decide what speed to use.
- * @hwmgr:  the address of the powerplay hardware manager.
- * @mode:   the fan control mode, 0 default, 1 by percent, 5, by RPM
- * Exception: Should always succeed.
- */
+ 
 int smu7_fan_ctrl_set_static_mode(struct pp_hwmgr *hwmgr, uint32_t mode)
 {
 	if (hwmgr->fan_ctrl_is_in_default_mode) {
@@ -125,11 +99,7 @@ int smu7_fan_ctrl_set_static_mode(struct pp_hwmgr *hwmgr, uint32_t mode)
 	return 0;
 }
 
-/**
- * smu7_fan_ctrl_set_default_mode - Reset Fan Speed Control to default mode.
- * @hwmgr:  the address of the powerplay hardware manager.
- * Exception: Should always succeed.
- */
+ 
 int smu7_fan_ctrl_set_default_mode(struct pp_hwmgr *hwmgr)
 {
 	if (!hwmgr->fan_ctrl_is_in_default_mode) {
@@ -195,11 +165,7 @@ int smu7_fan_ctrl_stop_smc_fan_control(struct pp_hwmgr *hwmgr)
 	return smum_send_msg_to_smc(hwmgr, PPSMC_StopFanControl, NULL);
 }
 
-/**
- * smu7_fan_ctrl_set_fan_speed_pwm - Set Fan Speed in PWM.
- * @hwmgr: the address of the powerplay hardware manager.
- * @speed: is the pwm value (0 - 255) to be set.
- */
+ 
 int smu7_fan_ctrl_set_fan_speed_pwm(struct pp_hwmgr *hwmgr,
 		uint32_t speed)
 {
@@ -231,11 +197,7 @@ int smu7_fan_ctrl_set_fan_speed_pwm(struct pp_hwmgr *hwmgr,
 	return smu7_fan_ctrl_set_static_mode(hwmgr, FDO_PWM_MODE_STATIC);
 }
 
-/**
-* smu7_fan_ctrl_reset_fan_speed_to_default - Reset Fan Speed to default.
-* @hwmgr:  the address of the powerplay hardware manager.
-* Exception: Always succeeds.
-*/
+ 
 int smu7_fan_ctrl_reset_fan_speed_to_default(struct pp_hwmgr *hwmgr)
 {
 	int result;
@@ -253,12 +215,7 @@ int smu7_fan_ctrl_reset_fan_speed_to_default(struct pp_hwmgr *hwmgr)
 	return result;
 }
 
-/**
- * smu7_fan_ctrl_set_fan_speed_rpm - Set Fan Speed in RPM.
- * @hwmgr: the address of the powerplay hardware manager.
- * @speed: is the percentage value (min - max) to be set.
- * Exception: Fails is the speed not lie between min and max.
- */
+ 
 int smu7_fan_ctrl_set_fan_speed_rpm(struct pp_hwmgr *hwmgr, uint32_t speed)
 {
 	uint32_t tach_period;
@@ -285,11 +242,7 @@ int smu7_fan_ctrl_set_fan_speed_rpm(struct pp_hwmgr *hwmgr, uint32_t speed)
 	return smu7_fan_ctrl_set_static_mode(hwmgr, FDO_PWM_MODE_STATIC_RPM);
 }
 
-/**
- * smu7_thermal_get_temperature - Reads the remote temperature from the SIslands thermal controller.
- *
- * @hwmgr: The address of the hardware manager.
- */
+ 
 int smu7_thermal_get_temperature(struct pp_hwmgr *hwmgr)
 {
 	int temp;
@@ -297,7 +250,7 @@ int smu7_thermal_get_temperature(struct pp_hwmgr *hwmgr)
 	temp = PHM_READ_VFPF_INDIRECT_FIELD(hwmgr->device, CGS_IND_REG__SMC,
 			CG_MULT_THERMAL_STATUS, CTF_TEMP);
 
-	/* Bit 9 means the reading is lower than the lowest usable value. */
+	 
 	if (temp & 0x200)
 		temp = SMU7_THERMAL_MAXIMUM_TEMP_READING;
 	else
@@ -308,14 +261,7 @@ int smu7_thermal_get_temperature(struct pp_hwmgr *hwmgr)
 	return temp;
 }
 
-/**
- * smu7_thermal_set_temperature_range - Set the requested temperature range for high and low alert signals
- *
- * @hwmgr: The address of the hardware manager.
- * @low_temp: Temperature to be programmed for high alert signals
- * @high_temp: Temperature to be programmed for low alert signals
- * Exception: PP_Result_BadInput if the input data is not valid.
- */
+ 
 static int smu7_thermal_set_temperature_range(struct pp_hwmgr *hwmgr,
 		int low_temp, int high_temp)
 {
@@ -345,11 +291,7 @@ static int smu7_thermal_set_temperature_range(struct pp_hwmgr *hwmgr,
 	return 0;
 }
 
-/**
- * smu7_thermal_initialize - Programs thermal controller one-time setting registers
- *
- * @hwmgr: The address of the hardware manager.
- */
+ 
 static int smu7_thermal_initialize(struct pp_hwmgr *hwmgr)
 {
 	if (hwmgr->thermal_controller.fanInfo.ucTachometerPulsesPerRevolution)
@@ -364,11 +306,7 @@ static int smu7_thermal_initialize(struct pp_hwmgr *hwmgr)
 	return 0;
 }
 
-/**
- * smu7_thermal_enable_alert - Enable thermal alerts on the RV770 thermal controller.
- *
- * @hwmgr: The address of the hardware manager.
- */
+ 
 static void smu7_thermal_enable_alert(struct pp_hwmgr *hwmgr)
 {
 	uint32_t alert;
@@ -379,14 +317,11 @@ static void smu7_thermal_enable_alert(struct pp_hwmgr *hwmgr)
 	PHM_WRITE_VFPF_INDIRECT_FIELD(hwmgr->device, CGS_IND_REG__SMC,
 			CG_THERMAL_INT, THERM_INT_MASK, alert);
 
-	/* send message to SMU to enable internal thermal interrupts */
+	 
 	smum_send_msg_to_smc(hwmgr, PPSMC_MSG_Thermal_Cntl_Enable, NULL);
 }
 
-/**
- * smu7_thermal_disable_alert - Disable thermal alerts on the RV770 thermal controller.
- * @hwmgr: The address of the hardware manager.
- */
+ 
 int smu7_thermal_disable_alert(struct pp_hwmgr *hwmgr)
 {
 	uint32_t alert;
@@ -397,15 +332,11 @@ int smu7_thermal_disable_alert(struct pp_hwmgr *hwmgr)
 	PHM_WRITE_VFPF_INDIRECT_FIELD(hwmgr->device, CGS_IND_REG__SMC,
 			CG_THERMAL_INT, THERM_INT_MASK, alert);
 
-	/* send message to SMU to disable internal thermal interrupts */
+	 
 	return smum_send_msg_to_smc(hwmgr, PPSMC_MSG_Thermal_Cntl_Disable, NULL);
 }
 
-/**
- * smu7_thermal_stop_thermal_controller - Uninitialize the thermal controller.
- * Currently just disables alerts.
- * @hwmgr: The address of the hardware manager.
- */
+ 
 int smu7_thermal_stop_thermal_controller(struct pp_hwmgr *hwmgr)
 {
 	int result = smu7_thermal_disable_alert(hwmgr);
@@ -416,18 +347,10 @@ int smu7_thermal_stop_thermal_controller(struct pp_hwmgr *hwmgr)
 	return result;
 }
 
-/**
- * smu7_thermal_start_smc_fan_control - Start the fan control on the SMC.
- * @hwmgr:  the address of the powerplay hardware manager.
- * Return:   result from set temperature range routine
- */
+ 
 static int smu7_thermal_start_smc_fan_control(struct pp_hwmgr *hwmgr)
 {
-/* If the fantable setup has failed we could have disabled
- * PHM_PlatformCaps_MicrocodeFanControl even after
- * this function was included in the table.
- * Make sure that we still think controlling the fan is OK.
-*/
+ 
 	if (PP_CAP(PHM_PlatformCaps_MicrocodeFanControl)) {
 		smu7_fan_ctrl_start_smc_fan_control(hwmgr);
 		smu7_fan_ctrl_set_static_mode(hwmgr, FDO_PWM_MODE_STATIC);
@@ -453,11 +376,7 @@ int smu7_start_thermal_controller(struct pp_hwmgr *hwmgr,
 	if (ret)
 		return -EINVAL;
 
-/* We should restrict performance levels to low before we halt the SMC.
- * On the other hand we are still in boot state when we do this
- * so it would be pointless.
- * If this assumption changes we have to revisit this table.
- */
+ 
 	smum_thermal_setup_fan_table(hwmgr);
 	smu7_thermal_start_smc_fan_control(hwmgr);
 	return 0;

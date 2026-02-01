@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2019 Intel Corporation
- */
+ 
+ 
 
 #ifndef __INTEL_GMBUS_H__
 #define __INTEL_GMBUS_H__
@@ -15,12 +13,12 @@ struct i2c_adapter;
 #define GMBUS_PIN_SSC		1
 #define GMBUS_PIN_VGADDC	2
 #define GMBUS_PIN_PANEL		3
-#define GMBUS_PIN_DPD_CHV	3 /* HDMID_CHV */
-#define GMBUS_PIN_DPC		4 /* HDMIC */
-#define GMBUS_PIN_DPB		5 /* SDVO, HDMIB */
-#define GMBUS_PIN_DPD		6 /* HDMID */
-#define GMBUS_PIN_RESERVED	7 /* 7 reserved */
-#define GMBUS_PIN_1_BXT		1 /* BXT+ (atom) and CNP+ (big core) */
+#define GMBUS_PIN_DPD_CHV	3  
+#define GMBUS_PIN_DPC		4  
+#define GMBUS_PIN_DPB		5  
+#define GMBUS_PIN_DPD		6  
+#define GMBUS_PIN_RESERVED	7  
+#define GMBUS_PIN_1_BXT		1  
 #define GMBUS_PIN_2_BXT		2
 #define GMBUS_PIN_3_BXT		3
 #define GMBUS_PIN_4_CNP		4
@@ -32,7 +30,7 @@ struct i2c_adapter;
 #define GMBUS_PIN_13_TC5_TGP	13
 #define GMBUS_PIN_14_TC6_TGP	14
 
-#define GMBUS_NUM_PINS	15 /* including 0 */
+#define GMBUS_NUM_PINS	15  
 
 int intel_gmbus_setup(struct drm_i915_private *dev_priv);
 void intel_gmbus_teardown(struct drm_i915_private *dev_priv);
@@ -48,4 +46,4 @@ void intel_gmbus_reset(struct drm_i915_private *dev_priv);
 
 void intel_gmbus_irq_handler(struct drm_i915_private *i915);
 
-#endif /* __INTEL_GMBUS_H__ */
+#endif  

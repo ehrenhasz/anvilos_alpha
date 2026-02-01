@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * vsp1_uif.c  --  R-Car VSP1 User Logic Interface
- *
- * Copyright (C) 2017-2018 Laurent Pinchart
- *
- * Contact: Laurent Pinchart (laurent.pinchart@ideasonboard.com)
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/gfp.h>
@@ -22,9 +16,7 @@
 #define UIF_MIN_SIZE				4U
 #define UIF_MAX_SIZE				8190U
 
-/* -----------------------------------------------------------------------------
- * Device Access
- */
+ 
 
 static inline u32 vsp1_uif_read(struct vsp1_uif *uif, u32 reg)
 {
@@ -43,9 +35,7 @@ u32 vsp1_uif_get_crc(struct vsp1_uif *uif)
 	return vsp1_uif_read(uif, VI6_UIF_DISCOM_DOCMCCRCR);
 }
 
-/* -----------------------------------------------------------------------------
- * V4L2 Subdevice Pad Operations
- */
+ 
 
 static const unsigned int uif_codes[] = {
 	MEDIA_BUS_FMT_ARGB8888_1X32,
@@ -151,7 +141,7 @@ static int uif_set_selection(struct v4l2_subdev *subdev,
 		goto done;
 	}
 
-	/* The crop rectangle must be inside the input frame. */
+	 
 	format = vsp1_entity_get_pad_format(&uif->entity, config, UIF_PAD_SINK);
 
 	sel->r.left = clamp_t(unsigned int, sel->r.left, 0, format->width - 1);
@@ -161,7 +151,7 @@ static int uif_set_selection(struct v4l2_subdev *subdev,
 	sel->r.height = clamp_t(unsigned int, sel->r.height, UIF_MIN_SIZE,
 				format->height - sel->r.top);
 
-	/* Store the crop rectangle. */
+	 
 	selection = vsp1_entity_get_pad_selection(&uif->entity, config,
 						  sel->pad, V4L2_SEL_TGT_CROP);
 	*selection = sel->r;
@@ -171,9 +161,7 @@ done:
 	return ret;
 }
 
-/* -----------------------------------------------------------------------------
- * V4L2 Subdevice Operations
- */
+ 
 
 static const struct v4l2_subdev_pad_ops uif_pad_ops = {
 	.init_cfg = vsp1_entity_init_cfg,
@@ -189,9 +177,7 @@ static const struct v4l2_subdev_ops uif_ops = {
 	.pad    = &uif_pad_ops,
 };
 
-/* -----------------------------------------------------------------------------
- * VSP1 Entity Operations
- */
+ 
 
 static void uif_configure_stream(struct vsp1_entity *entity,
 				 struct vsp1_pipeline *pipe,
@@ -212,7 +198,7 @@ static void uif_configure_stream(struct vsp1_entity *entity,
 	left = crop->left;
 	width = crop->width;
 
-	/* On M3-W the horizontal coordinates are twice the register value. */
+	 
 	if (uif->m3w_quirk) {
 		left /= 2;
 		width /= 2;
@@ -231,13 +217,11 @@ static const struct vsp1_entity_operations uif_entity_ops = {
 	.configure_stream = uif_configure_stream,
 };
 
-/* -----------------------------------------------------------------------------
- * Initialization and Cleanup
- */
+ 
 
 static const struct soc_device_attribute vsp1_r8a7796[] = {
 	{ .soc_id = "r8a7796" },
-	{ /* sentinel */ }
+	{   }
 };
 
 struct vsp1_uif *vsp1_uif_create(struct vsp1_device *vsp1, unsigned int index)
@@ -257,7 +241,7 @@ struct vsp1_uif *vsp1_uif_create(struct vsp1_device *vsp1, unsigned int index)
 	uif->entity.type = VSP1_ENTITY_UIF;
 	uif->entity.index = index;
 
-	/* The datasheet names the two UIF instances UIF4 and UIF5. */
+	 
 	sprintf(name, "uif.%u", index + 4);
 	ret = vsp1_entity_init(vsp1, &uif->entity, name, 2, &uif_ops,
 			       MEDIA_ENT_F_PROC_VIDEO_STATISTICS);

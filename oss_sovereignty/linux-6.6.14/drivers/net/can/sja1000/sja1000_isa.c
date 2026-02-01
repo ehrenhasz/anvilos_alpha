@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2009 Wolfgang Grandegger <wg@grandegger.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -24,7 +22,7 @@ MODULE_AUTHOR("Wolfgang Grandegger <wg@grandegger.com>");
 MODULE_DESCRIPTION("Socket-CAN driver for SJA1000 on the ISA bus");
 MODULE_LICENSE("GPL v2");
 
-#define CLK_DEFAULT	16000000	/* 16 MHz */
+#define CLK_DEFAULT	16000000	 
 #define CDR_DEFAULT	(CDR_CBP | CDR_CLK_OFF)
 #define OCR_DEFAULT	OCR_TX0_PUSHPULL
 
@@ -35,7 +33,7 @@ static int clk[MAXDEV];
 static unsigned char cdr[MAXDEV] = {[0 ... (MAXDEV - 1)] = 0xff};
 static unsigned char ocr[MAXDEV] = {[0 ... (MAXDEV - 1)] = 0xff};
 static int indirect[MAXDEV] = {[0 ... (MAXDEV - 1)] = -1};
-static spinlock_t indirect_lock[MAXDEV];  /* lock for indirect access mode */
+static spinlock_t indirect_lock[MAXDEV];   
 
 module_param_hw_array(port, ulong, ioport, NULL, 0444);
 MODULE_PARM_DESC(port, "I/O port number");

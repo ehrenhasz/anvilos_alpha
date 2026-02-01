@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Freescale MPL115A2 pressure/temperature sensor
- *
- * Copyright (c) 2014 Peter Meerwald <pmeerw@pmeerw.net>
- *
- * (7-bit I2C slave address 0x60)
- *
- * Datasheet: http://www.nxp.com/files/sensors/doc/data_sheet/MPL115A2.pdf
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/i2c.h>

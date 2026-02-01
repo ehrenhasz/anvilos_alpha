@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Generic GPIO beeper driver
- *
- * Copyright (C) 2013-2014 Alexander Shiyan <shc_work@mail.ru>
- */
+
+ 
 
 #include <linux/input.h>
 #include <linux/module.h>
@@ -44,7 +40,7 @@ static int gpio_beeper_event(struct input_dev *dev, unsigned int type,
 		return -EINVAL;
 
 	beep->beeping = value;
-	/* Schedule work to actually turn the beeper on or off */
+	 
 	schedule_work(&beep->work);
 
 	return 0;

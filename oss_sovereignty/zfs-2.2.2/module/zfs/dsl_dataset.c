@@ -1,40 +1,6 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
+ 
 
-/*
- * Copyright (c) 2005, 2010, Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2011, 2020 by Delphix. All rights reserved.
- * Copyright (c) 2014, Joyent, Inc. All rights reserved.
- * Copyright (c) 2014 RackTop Systems.
- * Copyright (c) 2014 Spectra Logic Corporation, All rights reserved.
- * Copyright (c) 2016 Actifio, Inc. All rights reserved.
- * Copyright 2016, OmniTI Computer Consulting, Inc. All rights reserved.
- * Copyright 2017 Nexenta Systems, Inc.
- * Copyright (c) 2019, Klara Inc.
- * Copyright (c) 2019, Allan Jude
- * Copyright (c) 2020 The FreeBSD Foundation [1]
- *
- * [1] Portions of this software were developed by Allan Jude
- *     under sponsorship from the FreeBSD Foundation.
- */
+ 
 
 #include <sys/dmu_objset.h>
 #include <sys/dsl_dataset.h>
@@ -69,18 +35,7 @@
 #include <zfs_fletcher.h>
 #include <sys/zio_checksum.h>
 
-/*
- * The SPA supports block sizes up to 16MB.  However, very large blocks
- * can have an impact on i/o latency (e.g. tying up a spinning disk for
- * ~300ms), and also potentially on the memory allocator.  Therefore,
- * we did not allow the recordsize to be set larger than zfs_max_recordsize
- * (former default: 1MB).  Larger blocks could be created by changing this
- * tunable, and pools with larger blocks could always be imported and used,
- * regardless of this setting.
- *
- * We do, however, still limit it by default to 1M on x86_32, because Linux's
- * 3/1 memory split doesn't leave much room for 16M chunks.
- */
+ 
 #ifdef _ILP32
 uint_t zfs_max_recordsize =  1 * 1024 * 1024;
 #else
@@ -110,11 +65,7 @@ extern uint_t spa_asize_inflation;
 
 static zil_header_t zero_zil;
 
-/*
- * Figure out how much of this delta should be propagated to the dsl_dir
- * layer.  If there's a refreservation, that space has already been
- * partially accounted for in our ancestors.
- */
+ 
 static int64_t
 parent_delta(dsl_dataset_t *ds, int64_t delta)
 {
@@ -145,7 +96,7 @@ dsl_dataset_block_born(dsl_dataset_t *ds, const blkptr_t *bp, dmu_tx_t *tx)
 	dprintf_bp(bp, "ds=%p", ds);
 
 	ASSERT(dmu_tx_is_syncing(tx));
-	/* It could have been compressed away to nothing */
+	 
 	if (BP_IS_HOLE(bp) || BP_IS_REDACTED(bp))
 		return;
 	ASSERT(BP_GET_TYPE(bp) != DMU_OT_NONE);
@@ -185,10 +136,7 @@ dsl_dataset_block_born(dsl_dataset_t *ds, const blkptr_t *bp, dmu_tx_t *tx)
 		ds->ds_feature_activation[f] = (void *)B_TRUE;
 	}
 
-	/*
-	 * Track block for livelist, but ignore embedded blocks because
-	 * they do not need to be freed.
-	 */
+	 
 	if (dsl_deadlist_is_open(&ds->ds_dir->dd_livelist) &&
 	    bp->blk_birth > ds->ds_dir->dd_origin_txg &&
 	    !(BP_IS_EMBEDDED(bp))) {
@@ -204,13 +152,7 @@ dsl_dataset_block_born(dsl_dataset_t *ds, const blkptr_t *bp, dmu_tx_t *tx)
 	    DD_USED_REFRSRV, DD_USED_HEAD, tx);
 }
 
-/*
- * Called when the specified segment has been remapped, and is thus no
- * longer referenced in the head dataset.  The vdev must be indirect.
- *
- * If the segment is referenced by a snapshot, put it on the remap deadlist.
- * Otherwise, add this segment to the obsolete spacemap.
- */
+ 
 void
 dsl_dataset_block_remapped(dsl_dataset_t *ds, uint64_t vdev, uint64_t offset,
     uint64_t size, uint64_t birth, dmu_tx_t *tx)
@@ -272,10 +214,7 @@ dsl_dataset_block_kill(dsl_dataset_t *ds, const blkptr_t *bp, dmu_tx_t *tx,
 	ASSERT(!ds->ds_is_snapshot);
 	dmu_buf_will_dirty(ds->ds_dbuf, tx);
 
-	/*
-	 * Track block for livelist, but ignore embedded blocks because
-	 * they do not need to be freed.
-	 */
+	 
 	if (dsl_deadlist_is_open(&ds->ds_dir->dd_livelist) &&
 	    bp->blk_birth > ds->ds_dir->dd_origin_txg &&
 	    !(BP_IS_EMBEDDED(bp))) {
@@ -303,13 +242,7 @@ dsl_dataset_block_kill(dsl_dataset_t *ds, const blkptr_t *bp, dmu_tx_t *tx,
 	} else {
 		dprintf_bp(bp, "putting on dead list: %s", "");
 		if (async) {
-			/*
-			 * We are here as part of zio's write done callback,
-			 * which means we're a zio interrupt thread.  We can't
-			 * call dsl_deadlist_insert() now because it may block
-			 * waiting for I/O.  Instead, put bp on the deferred
-			 * queue and let dsl_pool_sync() finish the job.
-			 */
+			 
 			bplist_append(&ds->ds_pending_deadlist, bp);
 		} else {
 			dsl_deadlist_insert(&ds->ds_deadlist, bp, B_FALSE, tx);
@@ -317,7 +250,7 @@ dsl_dataset_block_kill(dsl_dataset_t *ds, const blkptr_t *bp, dmu_tx_t *tx,
 		ASSERT3U(ds->ds_prev->ds_object, ==,
 		    dsl_dataset_phys(ds)->ds_prev_snap_obj);
 		ASSERT(dsl_dataset_phys(ds->ds_prev)->ds_num_children > 0);
-		/* if (bp->blk_birth > prev prev snap txg) prev unique += bs */
+		 
 		if (dsl_dataset_phys(ds->ds_prev)->ds_next_snap_obj ==
 		    ds->ds_object && bp->blk_birth >
 		    dsl_dataset_phys(ds->ds_prev)->ds_prev_snap_txg) {
@@ -412,12 +345,7 @@ load_zfeature(objset_t *mos, dsl_dataset_t *ds, spa_feature_t f)
 	return (err);
 }
 
-/*
- * We have to release the fsid synchronously or we risk that a subsequent
- * mount of the same dataset will fail to unique_insert the fsid.  This
- * failure would manifest itself as the fsid of this dataset changing
- * between mounts which makes NFS clients quite unhappy.
- */
+ 
 static void
 dsl_dataset_evict_sync(void *dbu)
 {
@@ -581,7 +509,7 @@ dsl_dataset_hold_obj(dsl_pool_t *dp, uint64_t dsobj, const void *tag,
 	if (err != 0)
 		return (err);
 
-	/* Make sure dsobj has the correct object type. */
+	 
 	dmu_object_info_from_db(dbuf, &doi);
 	if (doi.doi_bonus_type != DMU_OT_DSL_DATASET) {
 		dmu_buf_rele(dbuf, tag);
@@ -798,7 +726,7 @@ dsl_dataset_hold_flags(dsl_pool_t *dp, const char *name, ds_hold_flags_t flags,
 	else
 		err = SET_ERROR(ENOENT);
 
-	/* we may be looking for a snapshot */
+	 
 	if (err == 0 && snapname != NULL) {
 		dsl_dataset_t *snap_ds;
 
@@ -896,15 +824,7 @@ dsl_dataset_own(dsl_pool_t *dp, const char *name, ds_hold_flags_t flags,
 	return (dsl_dataset_own_impl(dp, name, flags, tag, B_FALSE, dsp));
 }
 
-/*
- * See the comment above dsl_pool_hold() for details.  In summary, a long
- * hold is used to prevent destruction of a dataset while the pool hold
- * is dropped, allowing other concurrent operations (e.g. spa_sync()).
- *
- * The dataset and pool must be held when this function is called.  After it
- * is called, the pool hold may be released while the dataset is still held
- * and accessed.
- */
+ 
 void
 dsl_dataset_long_hold(dsl_dataset_t *ds, const void *tag)
 {
@@ -918,7 +838,7 @@ dsl_dataset_long_rele(dsl_dataset_t *ds, const void *tag)
 	(void) zfs_refcount_remove(&ds->ds_longholds, tag);
 }
 
-/* Return B_TRUE if there are any long holds on this dataset. */
+ 
 boolean_t
 dsl_dataset_long_held(dsl_dataset_t *ds)
 {
@@ -936,10 +856,7 @@ dsl_dataset_name(dsl_dataset_t *ds, char *name)
 		if (ds->ds_snapname[0]) {
 			VERIFY3U(strlcat(name, "@", ZFS_MAX_DATASET_NAME_LEN),
 			    <, ZFS_MAX_DATASET_NAME_LEN);
-			/*
-			 * We use a "recursive" mutex so that we
-			 * can call dprintf_ds() with ds_lock held.
-			 */
+			 
 			if (!MUTEX_HELD(&ds->ds_lock)) {
 				mutex_enter(&ds->ds_lock);
 				VERIFY3U(strlcat(name, ds->ds_snapname,
@@ -962,7 +879,7 @@ dsl_dataset_namelen(dsl_dataset_t *ds)
 	mutex_enter(&ds->ds_lock);
 	int len = strlen(ds->ds_snapname);
 	mutex_exit(&ds->ds_lock);
-	/* add '@' if ds is a snap */
+	 
 	if (len > 0)
 		len++;
 	len += dsl_dir_namelen(ds->ds_dir);
@@ -1049,10 +966,7 @@ zfeature_active(spa_feature_t f, void *arg)
 		return (val);
 	}
 	case ZFEATURE_TYPE_UINT64_ARRAY:
-		/*
-		 * In this case, arg is a uint64_t array.  The feature is active
-		 * if the array is non-null.
-		 */
+		 
 		return (arg != NULL);
 	default:
 		panic("Invalid zfeature type %d", spa_feature_table[f].fi_type);
@@ -1066,11 +980,7 @@ dsl_dataset_feature_is_active(dsl_dataset_t *ds, spa_feature_t f)
 	return (zfeature_active(f, ds->ds_feature[f]));
 }
 
-/*
- * The buffers passed out by this function are references to internal buffers;
- * they should not be freed by callers of this function, and they should not be
- * used after the dataset has been released.
- */
+ 
 boolean_t
 dsl_dataset_get_uint64_array_feature(dsl_dataset_t *ds, spa_feature_t f,
     uint64_t *outlength, uint64_t **outp)
@@ -1176,7 +1086,7 @@ dsl_dataset_create_sync_dd(dsl_dir_t *dd, dsl_dataset_t *origin,
 	if (origin == NULL) {
 		dsphys->ds_deadlist_obj = dsl_deadlist_alloc(mos, tx);
 	} else {
-		dsl_dataset_t *ohds; /* head of the origin snapshot */
+		dsl_dataset_t *ohds;  
 
 		dsphys->ds_prev_snap_obj = origin->ds_object;
 		dsphys->ds_prev_snap_txg =
@@ -1191,10 +1101,7 @@ dsl_dataset_create_sync_dd(dsl_dir_t *dd, dsl_dataset_t *origin,
 		dsphys->ds_bp = dsl_dataset_phys(origin)->ds_bp;
 		rrw_exit(&origin->ds_bp_rwlock, FTAG);
 
-		/*
-		 * Inherit flags that describe the dataset's contents
-		 * (INCONSISTENT) or properties (Case Insensitive).
-		 */
+		 
 		dsphys->ds_flags |= dsl_dataset_phys(origin)->ds_flags &
 		    (DS_FLAG_INCONSISTENT | DS_FLAG_CI_DATASET);
 
@@ -1241,7 +1148,7 @@ dsl_dataset_create_sync_dd(dsl_dir_t *dd, dsl_dataset_t *origin,
 		}
 	}
 
-	/* handle encryption */
+	 
 	dsl_dataset_create_crypt_sync(dsobj, dd, origin, dcp, tx);
 
 	if (spa_version(dp->dp_spa) >= SPA_VERSION_UNIQUE_ACCURATE)
@@ -1287,12 +1194,7 @@ dsl_dataset_create_sync(dsl_dir_t *pdd, const char *lastname,
 
 	ASSERT(dmu_tx_is_syncing(tx));
 	ASSERT(lastname[0] != '@');
-	/*
-	 * Filesystems will eventually have their origin set to dp_origin_snap,
-	 * but that's taken care of in dsl_dataset_create_sync_dd. When
-	 * creating a filesystem, this function is called with origin equal to
-	 * NULL.
-	 */
+	 
 	if (origin != NULL)
 		ASSERT3P(origin, !=, dp->dp_origin_snap);
 
@@ -1304,10 +1206,7 @@ dsl_dataset_create_sync(dsl_dir_t *pdd, const char *lastname,
 
 	dsl_deleg_set_create_perms(dd, tx, cr);
 
-	/*
-	 * If we are creating a clone and the livelist feature is enabled,
-	 * add the entry DD_FIELD_LIVELIST to ZAP.
-	 */
+	 
 	if (origin != NULL &&
 	    spa_feature_is_enabled(dp->dp_spa, SPA_FEATURE_LIVELIST)) {
 		objset_t *mos = dd->dd_pool->dp_meta_objset;
@@ -1318,10 +1217,7 @@ dsl_dataset_create_sync(dsl_dir_t *pdd, const char *lastname,
 		spa_feature_incr(dp->dp_spa, SPA_FEATURE_LIVELIST, tx);
 	}
 
-	/*
-	 * Since we're creating a new node we know it's a leaf, so we can
-	 * initialize the counts if the limit feature is active.
-	 */
+	 
 	if (spa_feature_is_active(dp->dp_spa, SPA_FEATURE_FS_SS_LIMIT)) {
 		uint64_t cnt = 0;
 		objset_t *os = dd->dd_pool->dp_meta_objset;
@@ -1335,10 +1231,7 @@ dsl_dataset_create_sync(dsl_dir_t *pdd, const char *lastname,
 
 	dsl_dir_rele(dd, FTAG);
 
-	/*
-	 * If we are creating a clone, make sure we zero out any stale
-	 * data from the origin snapshots zil header.
-	 */
+	 
 	if (origin != NULL && !(flags & DS_CREATE_FLAG_NODIRTY)) {
 		dsl_dataset_t *ds;
 
@@ -1350,14 +1243,7 @@ dsl_dataset_create_sync(dsl_dir_t *pdd, const char *lastname,
 	return (dsobj);
 }
 
-/*
- * The unique space in the head dataset can be calculated by subtracting
- * the space used in the most recent snapshot, that is still being used
- * in this file system, from the space currently in use.  To figure out
- * the space in the most recent snapshot still in use, we need to take
- * the total space used in the snapshot and subtract out the space that
- * has been freed up since the snapshot was taken.
- */
+ 
 void
 dsl_dataset_recalc_head_uniq(dsl_dataset_t *ds)
 {
@@ -1393,16 +1279,7 @@ dsl_dataset_remove_from_next_clones(dsl_dataset_t *ds, uint64_t obj,
 	ASSERT(dsl_dataset_phys(ds)->ds_num_children >= 2);
 	err = zap_remove_int(mos, dsl_dataset_phys(ds)->ds_next_clones_obj,
 	    obj, tx);
-	/*
-	 * The err should not be ENOENT, but a bug in a previous version
-	 * of the code could cause upgrade_clones_cb() to not set
-	 * ds_next_snap_obj when it should, leading to a missing entry.
-	 * If we knew that the pool was created after
-	 * SPA_VERSION_NEXT_CLONES, we could assert that it isn't
-	 * ENOENT.  However, at least we can check that we don't have
-	 * too many entries in the next_clones_obj even after failing to
-	 * remove this one.
-	 */
+	 
 	if (err != ENOENT)
 		VERIFY0(err);
 	ASSERT0(zap_count(mos, dsl_dataset_phys(ds)->ds_next_clones_obj,
@@ -1428,7 +1305,7 @@ dsl_dataset_dirty(dsl_dataset_t *ds, dmu_tx_t *tx)
 {
 	dsl_pool_t *dp;
 
-	if (ds == NULL) /* this is the meta-objset */
+	if (ds == NULL)  
 		return;
 
 	ASSERT(ds->ds_objset != NULL);
@@ -1436,17 +1313,17 @@ dsl_dataset_dirty(dsl_dataset_t *ds, dmu_tx_t *tx)
 	if (dsl_dataset_phys(ds)->ds_next_snap_obj != 0)
 		panic("dirtying snapshot!");
 
-	/* Must not dirty a dataset in the same txg where it got snapshotted. */
+	 
 	ASSERT3U(tx->tx_txg, >, dsl_dataset_phys(ds)->ds_prev_snap_txg);
 
 	dp = ds->ds_dir->dd_pool;
 	if (txg_list_add(&dp->dp_dirty_datasets, ds, tx->tx_txg)) {
 		objset_t *os = ds->ds_objset;
 
-		/* up the hold count until we can be written out */
+		 
 		dmu_buf_add_ref(ds->ds_dbuf, ds);
 
-		/* if this dataset is encrypted, grab a reference to the DCK */
+		 
 		if (ds->ds_dir->dd_crypto_obj != 0 &&
 		    !os->os_raw_receive &&
 		    !os->os_next_write_raw[tx->tx_txg & TXG_MASK]) {
@@ -1464,20 +1341,13 @@ dsl_dataset_snapshot_reserve_space(dsl_dataset_t *ds, dmu_tx_t *tx)
 	if (!dmu_tx_is_syncing(tx))
 		return (0);
 
-	/*
-	 * If there's an fs-only reservation, any blocks that might become
-	 * owned by the snapshot dataset must be accommodated by space
-	 * outside of the reservation.
-	 */
+	 
 	ASSERT(ds->ds_reserved == 0 || DS_UNIQUE_IS_ACCURATE(ds));
 	asize = MIN(dsl_dataset_phys(ds)->ds_unique_bytes, ds->ds_reserved);
 	if (asize > dsl_dir_space_available(ds->ds_dir, NULL, 0, TRUE))
 		return (SET_ERROR(ENOSPC));
 
-	/*
-	 * Propagate any reserved space for this snapshot to other
-	 * snapshot checks in this sync group.
-	 */
+	 
 	if (asize > 0)
 		dsl_dir_willuse_space(ds->ds_dir, asize, tx);
 
@@ -1496,39 +1366,22 @@ dsl_dataset_snapshot_check_impl(dsl_dataset_t *ds, const char *snapname,
 	if (!dmu_tx_is_syncing(tx))
 		return (0);
 
-	/*
-	 * We don't allow multiple snapshots of the same txg.  If there
-	 * is already one, try again.
-	 */
+	 
 	if (dsl_dataset_phys(ds)->ds_prev_snap_txg >= tx->tx_txg)
 		return (SET_ERROR(EAGAIN));
 
-	/*
-	 * Check for conflicting snapshot name.
-	 */
+	 
 	error = dsl_dataset_snap_lookup(ds, snapname, &value);
 	if (error == 0)
 		return (SET_ERROR(EEXIST));
 	if (error != ENOENT)
 		return (error);
 
-	/*
-	 * We don't allow taking snapshots of inconsistent datasets, such as
-	 * those into which we are currently receiving.  However, if we are
-	 * creating this snapshot as part of a receive, this check will be
-	 * executed atomically with respect to the completion of the receive
-	 * itself but prior to the clearing of DS_FLAG_INCONSISTENT; in this
-	 * case we ignore this, knowing it will be fixed up for us shortly in
-	 * dmu_recv_end_sync().
-	 */
+	 
 	if (!recv && DS_IS_INCONSISTENT(ds))
 		return (SET_ERROR(EBUSY));
 
-	/*
-	 * Skip the check for temporary snapshots or if we have already checked
-	 * the counts in dsl_dataset_snapshot_check. This means we really only
-	 * check the count here when we're receiving a stream.
-	 */
+	 
 	if (cnt != 0 && cr != NULL) {
 		error = dsl_fs_ss_limit_check(ds->ds_dir, cnt,
 		    ZFS_PROP_SNAPSHOT_LIMIT, NULL, cr, proc);
@@ -1551,32 +1404,7 @@ dsl_dataset_snapshot_check(void *arg, dmu_tx_t *tx)
 	nvpair_t *pair;
 	int rv = 0;
 
-	/*
-	 * Pre-compute how many total new snapshots will be created for each
-	 * level in the tree and below. This is needed for validating the
-	 * snapshot limit when either taking a recursive snapshot or when
-	 * taking multiple snapshots.
-	 *
-	 * The problem is that the counts are not actually adjusted when
-	 * we are checking, only when we finally sync. For a single snapshot,
-	 * this is easy, the count will increase by 1 at each node up the tree,
-	 * but its more complicated for the recursive/multiple snapshot case.
-	 *
-	 * The dsl_fs_ss_limit_check function does recursively check the count
-	 * at each level up the tree but since it is validating each snapshot
-	 * independently we need to be sure that we are validating the complete
-	 * count for the entire set of snapshots. We do this by rolling up the
-	 * counts for each component of the name into an nvlist and then
-	 * checking each of those cases with the aggregated count.
-	 *
-	 * This approach properly handles not only the recursive snapshot
-	 * case (where we get all of those on the ddsa_snaps list) but also
-	 * the sibling case (e.g. snapshot a/b and a/c so that we will also
-	 * validate the limit on 'a' using a count of 2).
-	 *
-	 * We validate the snapshot names in the third loop and only report
-	 * name errors once.
-	 */
+	 
 	if (dmu_tx_is_syncing(tx)) {
 		char *nm;
 		nvlist_t *cnt_track = NULL;
@@ -1584,7 +1412,7 @@ dsl_dataset_snapshot_check(void *arg, dmu_tx_t *tx)
 
 		nm = kmem_alloc(MAXPATHLEN, KM_SLEEP);
 
-		/* Rollup aggregated counts into the cnt_track list */
+		 
 		for (pair = nvlist_next_nvpair(ddsa->ddsa_snaps, NULL);
 		    pair != NULL;
 		    pair = nvlist_next_nvpair(ddsa->ddsa_snaps, pair)) {
@@ -1600,11 +1428,11 @@ dsl_dataset_snapshot_check(void *arg, dmu_tx_t *tx)
 			do {
 				if (nvlist_lookup_uint64(cnt_track, nm,
 				    &val) == 0) {
-					/* update existing entry */
+					 
 					fnvlist_add_uint64(cnt_track, nm,
 					    val + 1);
 				} else {
-					/* add to list */
+					 
 					fnvlist_add_uint64(cnt_track, nm, 1);
 				}
 
@@ -1616,7 +1444,7 @@ dsl_dataset_snapshot_check(void *arg, dmu_tx_t *tx)
 
 		kmem_free(nm, MAXPATHLEN);
 
-		/* Check aggregated counts at each level */
+		 
 		for (pair = nvlist_next_nvpair(cnt_track, NULL);
 		    pair != NULL; pair = nvlist_next_nvpair(cnt_track, pair)) {
 			int error = 0;
@@ -1641,7 +1469,7 @@ dsl_dataset_snapshot_check(void *arg, dmu_tx_t *tx)
 					fnvlist_add_int32(ddsa->ddsa_errors,
 					    name, error);
 				rv = error;
-				/* only report one error for this check */
+				 
 				break;
 			}
 		}
@@ -1668,7 +1496,7 @@ dsl_dataset_snapshot_check(void *arg, dmu_tx_t *tx)
 		if (error == 0)
 			error = dsl_dataset_hold(dp, dsname, FTAG, &ds);
 		if (error == 0) {
-			/* passing 0/NULL skips dsl_fs_ss_limit_check */
+			 
 			error = dsl_dataset_snapshot_check_impl(ds,
 			    atp + 1, tx, B_FALSE, 0, NULL, NULL);
 			dsl_dataset_rele(ds, FTAG);
@@ -1699,24 +1527,19 @@ dsl_dataset_snapshot_sync_impl(dsl_dataset_t *ds, const char *snapname,
 
 	ASSERT(RRW_WRITE_HELD(&dp->dp_config_rwlock));
 
-	/*
-	 * If we are on an old pool, the zil must not be active, in which
-	 * case it will be zeroed.  Usually zil_suspend() accomplishes this.
-	 */
+	 
 	ASSERT(spa_version(dmu_tx_pool(tx)->dp_spa) >= SPA_VERSION_FAST_SNAP ||
 	    dmu_objset_from_ds(ds, &os) != 0 ||
 	    memcmp(&os->os_phys->os_zil_header, &zero_zil,
 	    sizeof (zero_zil)) == 0);
 
-	/* Should not snapshot a dirty dataset. */
+	 
 	ASSERT(!txg_list_member(&ds->ds_dir->dd_pool->dp_dirty_datasets,
 	    ds, tx->tx_txg));
 
 	dsl_fs_ss_count_adjust(ds->ds_dir, 1, DD_FIELD_SNAPSHOT_COUNT, tx);
 
-	/*
-	 * The origin's ds_creation_txg has to be < TXG_INITIAL
-	 */
+	 
 	if (strcmp(snapname, ORIGIN_DIR_NAME) == 0)
 		crtxg = 1;
 	else
@@ -1778,11 +1601,7 @@ dsl_dataset_snapshot_sync_impl(dsl_dataset_t *ds, const char *snapname,
 		}
 	}
 
-	/*
-	 * If we have a reference-reservation on this dataset, we will
-	 * need to increase the amount of refreservation being charged
-	 * since our unique space is going to zero.
-	 */
+	 
 	if (ds->ds_reserved) {
 		int64_t delta;
 		ASSERT(DS_UNIQUE_IS_ACCURATE(ds));
@@ -1806,11 +1625,7 @@ dsl_dataset_snapshot_sync_impl(dsl_dataset_t *ds, const char *snapname,
 	if (dsl_dataset_remap_deadlist_exists(ds)) {
 		uint64_t remap_deadlist_obj =
 		    dsl_dataset_get_remap_deadlist_object(ds);
-		/*
-		 * Move the remap_deadlist to the snapshot.  The head
-		 * will create a new remap deadlist on demand, from
-		 * dsl_dataset_block_remapped().
-		 */
+		 
 		dsl_dataset_unset_remap_deadlist_object(ds, tx);
 		dsl_deadlist_close(&ds->ds_remap_deadlist);
 
@@ -1819,21 +1634,7 @@ dsl_dataset_snapshot_sync_impl(dsl_dataset_t *ds, const char *snapname,
 		    sizeof (remap_deadlist_obj), 1, &remap_deadlist_obj, tx));
 	}
 
-	/*
-	 * Create a ivset guid for this snapshot if the dataset is
-	 * encrypted. This may be overridden by a raw receive. A
-	 * previous implementation of this code did not have this
-	 * field as part of the on-disk format for ZFS encryption
-	 * (see errata #4). As part of the remediation for this
-	 * issue, we ask the user to enable the bookmark_v2 feature
-	 * which is now a dependency of the encryption feature. We
-	 * use this as a heuristic to determine when the user has
-	 * elected to correct any datasets created with the old code.
-	 * As a result, we only do this step if the bookmark_v2
-	 * feature is enabled, which limits the number of states a
-	 * given pool / dataset can be in with regards to terms of
-	 * correcting the issue.
-	 */
+	 
 	if (ds->ds_dir->dd_crypto_obj != 0 &&
 	    spa_feature_is_enabled(dp->dp_spa, SPA_FEATURE_BOOKMARK_V2)) {
 		uint64_t ivset_guid = unique_create();
@@ -1894,10 +1695,7 @@ dsl_dataset_snapshot_sync(void *arg, dmu_tx_t *tx)
 	}
 }
 
-/*
- * The snapshots must all be in the same pool.
- * All-or-nothing: if there are any failures, nothing will be modified.
- */
+ 
 int
 dsl_dataset_snapshot(nvlist_t *snaps, nvlist_t *props, nvlist_t *errors)
 {
@@ -1994,7 +1792,7 @@ dsl_dataset_snapshot_tmp_check(void *arg, dmu_tx_t *tx)
 	if (error != 0)
 		return (error);
 
-	/* NULL cred means no limit check for tmp snapshot */
+	 
 	error = dsl_dataset_snapshot_check_impl(ds, ddsta->ddsta_snapname,
 	    tx, B_FALSE, 0, NULL, NULL);
 	if (error != 0) {
@@ -2076,10 +1874,7 @@ dsl_dataset_sync(dsl_dataset_t *ds, zio_t *zio, dmu_tx_t *tx)
 	ASSERT(ds->ds_objset != NULL);
 	ASSERT(dsl_dataset_phys(ds)->ds_next_snap_obj == 0);
 
-	/*
-	 * in case we had to change ds_fsid_guid when we opened it,
-	 * sync it out now.
-	 */
+	 
 	dmu_buf_will_dirty(ds->ds_dbuf, tx);
 	dsl_dataset_phys(ds)->ds_fsid_guid = ds->ds_fsid_guid;
 
@@ -2101,11 +1896,7 @@ dsl_dataset_sync(dsl_dataset_t *ds, zio_t *zio, dmu_tx_t *tx)
 	dmu_objset_sync(ds->ds_objset, zio, tx);
 }
 
-/*
- * Check if the percentage of blocks shared between the clone and the
- * snapshot (as opposed to those that are clone only) is below a certain
- * threshold
- */
+ 
 static boolean_t
 dsl_livelist_should_disable(dsl_dataset_t *ds)
 {
@@ -2122,14 +1913,7 @@ dsl_livelist_should_disable(dsl_dataset_t *ds)
 	return (B_FALSE);
 }
 
-/*
- *  Check if it is possible to combine two livelist entries into one.
- *  This is the case if the combined number of 'live' blkptrs (ALLOCs that
- *  don't have a matching FREE) is under the maximum sublist size.
- *  We check this by subtracting twice the total number of frees from the total
- *  number of blkptrs. FREEs are counted twice because each FREE blkptr
- *  will cancel out an ALLOC blkptr when the livelist is processed.
- */
+ 
 static boolean_t
 dsl_livelist_should_condense(dsl_deadlist_entry_t *first,
     dsl_deadlist_entry_t *next)
@@ -2148,10 +1932,7 @@ typedef struct try_condense_arg {
 	dsl_dataset_t *ds;
 } try_condense_arg_t;
 
-/*
- * Iterate over the livelist entries, searching for a pair to condense.
- * A nonzero return value means stop, 0 means keep looking.
- */
+ 
 static int
 dsl_livelist_try_condense(void *arg, dsl_deadlist_entry_t *first)
 {
@@ -2161,32 +1942,28 @@ dsl_livelist_try_condense(void *arg, dsl_deadlist_entry_t *first)
 	dsl_deadlist_t *ll = &ds->ds_dir->dd_livelist;
 	dsl_deadlist_entry_t *next;
 
-	/* The condense thread has not yet been created at import */
+	 
 	if (spa->spa_livelist_condense_zthr == NULL)
 		return (1);
 
-	/* A condense is already in progress */
+	 
 	if (spa->spa_to_condense.ds != NULL)
 		return (1);
 
 	next = AVL_NEXT(&ll->dl_tree, &first->dle_node);
-	/* The livelist has only one entry - don't condense it */
+	 
 	if (next == NULL)
 		return (1);
 
-	/* Next is the newest entry - don't condense it */
+	 
 	if (AVL_NEXT(&ll->dl_tree, &next->dle_node) == NULL)
 		return (1);
 
-	/* This pair is not ready to condense but keep looking */
+	 
 	if (!dsl_livelist_should_condense(first, next))
 		return (0);
 
-	/*
-	 * Add a ref to prevent the dataset from being evicted while
-	 * the condense zthr or synctask are running. Ref will be
-	 * released at the end of the condense synctask
-	 */
+	 
 	dmu_buf_add_ref(ds->ds_dbuf, spa);
 
 	spa->spa_to_condense.ds = ds;
@@ -2206,19 +1983,13 @@ dsl_flush_pending_livelist(dsl_dataset_t *ds, dmu_tx_t *tx)
 	spa_t *spa = ds->ds_dir->dd_pool->dp_spa;
 	dsl_deadlist_entry_t *last = dsl_deadlist_last(&dd->dd_livelist);
 
-	/* Check if we need to add a new sub-livelist */
+	 
 	if (last == NULL) {
-		/* The livelist is empty */
+		 
 		dsl_deadlist_add_key(&dd->dd_livelist,
 		    tx->tx_txg - 1, tx);
 	} else if (spa_sync_pass(spa) == 1) {
-		/*
-		 * Check if the newest entry is full. If it is, make a new one.
-		 * We only do this once per sync because we could overfill a
-		 * sublist in one sync pass and don't want to add another entry
-		 * for a txg that is already represented. This ensures that
-		 * blkptrs born in the same txg are stored in the same sublist.
-		 */
+		 
 		bpobj_t bpobj = last->dle_bpobj;
 		uint64_t all = bpobj.bpo_phys->bpo_num_blkptrs;
 		uint64_t free = bpobj.bpo_phys->bpo_num_freed;
@@ -2229,13 +2000,13 @@ dsl_flush_pending_livelist(dsl_dataset_t *ds, dmu_tx_t *tx)
 		}
 	}
 
-	/* Insert each entry into the on-disk livelist */
+	 
 	bplist_iterate(&dd->dd_pending_allocs,
 	    dsl_deadlist_insert_alloc_cb, &dd->dd_livelist, tx);
 	bplist_iterate(&dd->dd_pending_frees,
 	    dsl_deadlist_insert_free_cb, &dd->dd_livelist, tx);
 
-	/* Attempt to condense every pair of adjacent entries */
+	 
 	try_condense_arg_t arg = {
 	    .spa = spa,
 	    .ds = ds
@@ -2292,11 +2063,7 @@ get_clones_stat_impl(dsl_dataset_t *ds, nvlist_t *val)
 
 	ASSERT(dsl_pool_config_held(ds->ds_dir->dd_pool));
 
-	/*
-	 * There may be missing entries in ds_next_clones_obj
-	 * due to a bug in a previous version of the code.
-	 * Only trust it if it has the right number of entries.
-	 */
+	 
 	if (dsl_dataset_phys(ds)->ds_next_clones_obj != 0) {
 		VERIFY0(zap_count(mos, dsl_dataset_phys(ds)->ds_next_clones_obj,
 		    &count));
@@ -2447,26 +2214,16 @@ get_receive_resume_token_impl(dsl_dataset_t *ds)
 	return (propval);
 }
 
-/*
- * Returns a string that represents the receive resume state token. It should
- * be freed with strfree(). NULL is returned if no resume state is present.
- */
+ 
 char *
 get_receive_resume_token(dsl_dataset_t *ds)
 {
-	/*
-	 * A failed "newfs" (e.g. full) resumable receive leaves
-	 * the stats set on this dataset.  Check here for the prop.
-	 */
+	 
 	char *token = get_receive_resume_token_impl(ds);
 	if (token != NULL)
 		return (token);
-	/*
-	 * A failed incremental resumable receive leaves the
-	 * stats set on our child named "%recv".  Check the child
-	 * for the prop.
-	 */
-	/* 6 extra bytes for /%recv */
+	 
+	 
 	char name[ZFS_MAX_DATASET_NAME_LEN + 6];
 	dsl_dataset_t *recv_ds;
 	dsl_dataset_name(ds, name);
@@ -2614,9 +2371,7 @@ dsl_get_available(dsl_dataset_t *ds)
 		    ds->ds_reserved - dsl_dataset_phys(ds)->ds_unique_bytes;
 	}
 	if (ds->ds_quota != 0) {
-		/*
-		 * Adjust available bytes according to refquota
-		 */
+		 
 		if (refdbytes < ds->ds_quota) {
 			availbytes = MIN(availbytes,
 			    ds->ds_quota - refdbytes);
@@ -2643,9 +2398,7 @@ dsl_get_written(dsl_dataset_t *ds, uint64_t *written)
 	return (err);
 }
 
-/*
- * 'snap' should be a buffer of size ZFS_MAX_DATASET_NAME_LEN.
- */
+ 
 int
 dsl_get_prev_snap(dsl_dataset_t *ds, char *snap)
 {
@@ -2670,12 +2423,7 @@ dsl_get_redact_snaps(dsl_dataset_t *ds, nvlist_t *propval)
 	}
 }
 
-/*
- * Returns the mountpoint property and source for the given dataset in the value
- * and source buffers. The value buffer must be at least as large as MAXPATHLEN
- * and the source buffer as least as large a ZFS_MAX_DATASET_NAME_LEN.
- * Returns 0 on success and an error on failure.
- */
+ 
 int
 dsl_get_mountpoint(dsl_dataset_t *ds, const char *dsname, char *value,
     char *source)
@@ -2683,29 +2431,20 @@ dsl_get_mountpoint(dsl_dataset_t *ds, const char *dsname, char *value,
 	int error;
 	dsl_pool_t *dp = ds->ds_dir->dd_pool;
 
-	/* Retrieve the mountpoint value stored in the zap object */
+	 
 	error = dsl_prop_get_ds(ds, zfs_prop_to_name(ZFS_PROP_MOUNTPOINT), 1,
 	    ZAP_MAXVALUELEN, value, source);
 	if (error != 0) {
 		return (error);
 	}
 
-	/*
-	 * Process the dsname and source to find the full mountpoint string.
-	 * Can be skipped for 'legacy' or 'none'.
-	 */
+	 
 	if (value[0] == '/') {
 		char *buf = kmem_alloc(ZAP_MAXVALUELEN, KM_SLEEP);
 		char *root = buf;
 		const char *relpath;
 
-		/*
-		 * If we inherit the mountpoint, even from a dataset
-		 * with a received value, the source will be the path of
-		 * the dataset we inherit from. If source is
-		 * ZPROP_SOURCE_VAL_RECVD, the received value is not
-		 * inherited.
-		 */
+		 
 		if (strcmp(source, ZPROP_SOURCE_VAL_RECVD) == 0) {
 			relpath = "";
 		} else {
@@ -2717,19 +2456,11 @@ dsl_get_mountpoint(dsl_dataset_t *ds, const char *dsname, char *value,
 
 		spa_altroot(dp->dp_spa, root, ZAP_MAXVALUELEN);
 
-		/*
-		 * Special case an alternate root of '/'. This will
-		 * avoid having multiple leading slashes in the
-		 * mountpoint path.
-		 */
+		 
 		if (strcmp(root, "/") == 0)
 			root++;
 
-		/*
-		 * If the mountpoint is '/' then skip over this
-		 * if we are obtaining either an alternate root or
-		 * an inherited mountpoint.
-		 */
+		 
 		char *mnt = value;
 		if (value[1] == '\0' && (root[0] != '\0' ||
 		    relpath[0] != '\0'))
@@ -2869,9 +2600,7 @@ dsl_dataset_space(dsl_dataset_t *ds,
 		*availbytesp +=
 		    ds->ds_reserved - dsl_dataset_phys(ds)->ds_unique_bytes;
 	if (ds->ds_quota != 0) {
-		/*
-		 * Adjust available bytes according to refquota
-		 */
+		 
 		if (*refdbytesp < ds->ds_quota)
 			*availbytesp = MIN(*availbytesp,
 			    ds->ds_quota - *refdbytesp);
@@ -2898,11 +2627,7 @@ dsl_dataset_modified_since_snap(dsl_dataset_t *ds, dsl_dataset_t *snap)
 	rrw_exit(&ds->ds_bp_rwlock, FTAG);
 	if (birth > dsl_dataset_phys(snap)->ds_creation_txg) {
 		objset_t *os, *os_snap;
-		/*
-		 * It may be that only the ZIL differs, because it was
-		 * reset in the head.  Don't count that as being
-		 * modified.
-		 */
+		 
 		if (dmu_objset_from_ds(ds, &os) != 0)
 			return (B_TRUE);
 		if (dmu_objset_from_ds(snap, &os_snap) != 0)
@@ -2925,18 +2650,18 @@ dsl_dataset_rename_snapshot_check_impl(dsl_pool_t *dp,
 
 	error = dsl_dataset_snap_lookup(hds, ddrsa->ddrsa_oldsnapname, &val);
 	if (error != 0) {
-		/* ignore nonexistent snapshots */
+		 
 		return (error == ENOENT ? 0 : error);
 	}
 
-	/* new name should not exist */
+	 
 	error = dsl_dataset_snap_lookup(hds, ddrsa->ddrsa_newsnapname, &val);
 	if (error == 0)
 		error = SET_ERROR(EEXIST);
 	else if (error == ENOENT)
 		error = 0;
 
-	/* dataset name + 1 for the "@" + the new snapshot name must fit */
+	 
 	if (dsl_dir_namelen(hds->ds_dir) + 1 +
 	    strlen(ddrsa->ddrsa_newsnapname) >= ZFS_MAX_DATASET_NAME_LEN)
 		error = SET_ERROR(ENAMETOOLONG);
@@ -2980,13 +2705,13 @@ dsl_dataset_rename_snapshot_sync_impl(dsl_pool_t *dp,
 	error = dsl_dataset_snap_lookup(hds, ddrsa->ddrsa_oldsnapname, &val);
 	ASSERT(error == 0 || error == ENOENT);
 	if (error == ENOENT) {
-		/* ignore nonexistent snapshots */
+		 
 		return (0);
 	}
 
 	VERIFY0(dsl_dataset_hold_obj(dp, val, FTAG, &ds));
 
-	/* log before we change the name */
+	 
 	spa_history_log_internal_ds(ds, "rename", tx,
 	    "-> @%s", ddrsa->ddrsa_newsnapname);
 
@@ -3041,13 +2766,7 @@ dsl_dataset_rename_snapshot(const char *fsname,
 	    1, ZFS_SPACE_CHECK_RESERVED));
 }
 
-/*
- * If we're doing an ownership handoff, we need to make sure that there is
- * only one long hold on the dataset.  We're not allowed to change anything here
- * so we don't permanently release the long hold or regular hold here.  We want
- * to do this only when syncing to avoid the dataset unexpectedly going away
- * when we release the long hold.
- */
+ 
 static int
 dsl_dataset_handoff_check(dsl_dataset_t *ds, void *owner, dmu_tx_t *tx)
 {
@@ -3060,14 +2779,7 @@ dsl_dataset_handoff_check(dsl_dataset_t *ds, void *owner, dmu_tx_t *tx)
 	mutex_enter(&dd->dd_activity_lock);
 	uint64_t holds = zfs_refcount_count(&ds->ds_longholds) -
 	    (owner != NULL ? 1 : 0);
-	/*
-	 * The value of dd_activity_waiters can chance as soon as we drop the
-	 * lock, but we're fine with that; new waiters coming in or old
-	 * waiters leaving doesn't cause problems, since we're going to cancel
-	 * waiters later anyway. The goal of this check is to verify that no
-	 * non-waiters have long-holds, and all new long-holds will be
-	 * prevented because we're holding the pool config as writer.
-	 */
+	 
 	if (holds != dd->dd_activity_waiters)
 		held = B_TRUE;
 	mutex_exit(&dd->dd_activity_lock);
@@ -3091,48 +2803,33 @@ dsl_dataset_rollback_check(void *arg, dmu_tx_t *tx)
 	if (error != 0)
 		return (error);
 
-	/* must not be a snapshot */
+	 
 	if (ds->ds_is_snapshot) {
 		dsl_dataset_rele(ds, FTAG);
 		return (SET_ERROR(EINVAL));
 	}
 
-	/* must have a most recent snapshot */
+	 
 	if (dsl_dataset_phys(ds)->ds_prev_snap_txg < TXG_INITIAL) {
 		dsl_dataset_rele(ds, FTAG);
 		return (SET_ERROR(ESRCH));
 	}
 
-	/*
-	 * No rollback to a snapshot created in the current txg, because
-	 * the rollback may dirty the dataset and create blocks that are
-	 * not reachable from the rootbp while having a birth txg that
-	 * falls into the snapshot's range.
-	 */
+	 
 	if (dmu_tx_is_syncing(tx) &&
 	    dsl_dataset_phys(ds)->ds_prev_snap_txg >= tx->tx_txg) {
 		dsl_dataset_rele(ds, FTAG);
 		return (SET_ERROR(EAGAIN));
 	}
 
-	/*
-	 * If the expected target snapshot is specified, then check that
-	 * the latest snapshot is it.
-	 */
+	 
 	if (ddra->ddra_tosnap != NULL) {
 		dsl_dataset_t *snapds;
 
-		/* Check if the target snapshot exists at all. */
+		 
 		error = dsl_dataset_hold(dp, ddra->ddra_tosnap, FTAG, &snapds);
 		if (error != 0) {
-			/*
-			 * ESRCH is used to signal that the target snapshot does
-			 * not exist, while ENOENT is used to report that
-			 * the rolled back dataset does not exist.
-			 * ESRCH is also used to cover other cases where the
-			 * target snapshot is not related to the dataset being
-			 * rolled back such as being in a different pool.
-			 */
+			 
 			if (error == ENOENT || error == EXDEV)
 				error = SET_ERROR(ESRCH);
 			dsl_dataset_rele(ds, FTAG);
@@ -3140,13 +2837,9 @@ dsl_dataset_rollback_check(void *arg, dmu_tx_t *tx)
 		}
 		ASSERT(snapds->ds_is_snapshot);
 
-		/* Check if the snapshot is the latest snapshot indeed. */
+		 
 		if (snapds != ds->ds_prev) {
-			/*
-			 * Distinguish between the case where the only problem
-			 * is intervening snapshots (EEXIST) vs the snapshot
-			 * not being a valid target for rollback (ESRCH).
-			 */
+			 
 			if (snapds->ds_dir == ds->ds_dir ||
 			    (dsl_dir_is_clone(ds->ds_dir) &&
 			    dsl_dir_phys(ds->ds_dir)->dd_origin_obj ==
@@ -3162,7 +2855,7 @@ dsl_dataset_rollback_check(void *arg, dmu_tx_t *tx)
 		dsl_dataset_rele(snapds, FTAG);
 	}
 
-	/* must not have any bookmarks after the most recent snapshot */
+	 
 	if (dsl_bookmark_latest_txg(ds) >
 	    dsl_dataset_phys(ds)->ds_prev_snap_txg) {
 		dsl_dataset_rele(ds, FTAG);
@@ -3175,23 +2868,14 @@ dsl_dataset_rollback_check(void *arg, dmu_tx_t *tx)
 		return (error);
 	}
 
-	/*
-	 * Check if the snap we are rolling back to uses more than
-	 * the refquota.
-	 */
+	 
 	if (ds->ds_quota != 0 &&
 	    dsl_dataset_phys(ds->ds_prev)->ds_referenced_bytes > ds->ds_quota) {
 		dsl_dataset_rele(ds, FTAG);
 		return (SET_ERROR(EDQUOT));
 	}
 
-	/*
-	 * When we do the clone swap, we will temporarily use more space
-	 * due to the refreservation (the head will no longer have any
-	 * unique space, so the entire amount of the refreservation will need
-	 * to be free).  We will immediately destroy the clone, freeing
-	 * this space, but the freeing happens over many txg's.
-	 */
+	 
 	unused_refres_delta = (int64_t)MIN(ds->ds_reserved,
 	    dsl_dataset_phys(ds)->ds_unique_bytes);
 
@@ -3234,19 +2918,7 @@ dsl_dataset_rollback_sync(void *arg, dmu_tx_t *tx)
 	dsl_dataset_rele(ds, FTAG);
 }
 
-/*
- * Rolls back the given filesystem or volume to the most recent snapshot.
- * The name of the most recent snapshot will be returned under key "target"
- * in the result nvlist.
- *
- * If owner != NULL:
- * - The existing dataset MUST be owned by the specified owner at entry
- * - Upon return, dataset will still be held by the same owner, whether we
- *   succeed or not.
- *
- * This mode is required any time the existing filesystem is mounted.  See
- * notes above zfs_suspend_fs() for further details.
- */
+ 
 int
 dsl_dataset_rollback(const char *fsname, const char *tosnap, void *owner,
     nvlist_t *result)
@@ -3305,26 +2977,18 @@ dsl_dataset_promote_check(void *arg, dmu_tx_t *tx)
 	}
 	dsl_dataset_t *const origin_ds = snap->ds;
 
-	/*
-	 * Encrypted clones share a DSL Crypto Key with their origin's dsl dir.
-	 * When doing a promote we must make sure the encryption root for
-	 * both the target and the target's origin does not change to avoid
-	 * needing to rewrap encryption keys
-	 */
+	 
 	err = dsl_dataset_promote_crypt_check(hds->ds_dir, origin_ds->ds_dir);
 	if (err != 0)
 		goto out;
 
-	/*
-	 * Compute and check the amount of space to transfer.  Since this is
-	 * so expensive, don't do the preliminary check.
-	 */
+	 
 	if (!dmu_tx_is_syncing(tx)) {
 		promote_rele(ddpa, FTAG);
 		return (0);
 	}
 
-	/* compute origin's new unique space */
+	 
 	snap = list_tail(&ddpa->clone_snaps);
 	ASSERT(snap != NULL);
 	ASSERT3U(dsl_dataset_phys(snap->ds)->ds_prev_snap_obj, ==,
@@ -3333,21 +2997,7 @@ dsl_dataset_promote_check(void *arg, dmu_tx_t *tx)
 	    dsl_dataset_phys(origin_ds)->ds_prev_snap_txg, UINT64_MAX,
 	    &ddpa->unique, &unused, &unused);
 
-	/*
-	 * Walk the snapshots that we are moving
-	 *
-	 * Compute space to transfer.  Consider the incremental changes
-	 * to used by each snapshot:
-	 * (my used) = (prev's used) + (blocks born) - (blocks killed)
-	 * So each snapshot gave birth to:
-	 * (blocks born) = (my used) - (prev's used) + (blocks killed)
-	 * So a sequence would look like:
-	 * (uN - u(N-1) + kN) + ... + (u1 - u0 + k1) + (u0 - 0 + k0)
-	 * Which simplifies to:
-	 * uN + kN + kN-1 + ... + k1 + k0
-	 * Note however, if we stop before we reach the ORIGIN we get:
-	 * uN + kN + kN-1 + ... + kM - uM-1
-	 */
+	 
 	conflicting_snaps = B_FALSE;
 	ss_mv_cnt = 0;
 	ddpa->used = dsl_dataset_phys(origin_ds)->ds_referenced_bytes;
@@ -3360,16 +3010,13 @@ dsl_dataset_promote_check(void *arg, dmu_tx_t *tx)
 
 		ss_mv_cnt++;
 
-		/*
-		 * If there are long holds, we won't be able to evict
-		 * the objset.
-		 */
+		 
 		if (dsl_dataset_long_held(ds)) {
 			err = SET_ERROR(EBUSY);
 			goto out;
 		}
 
-		/* Check that the snapshot name does not conflict */
+		 
 		VERIFY0(dsl_dataset_get_snapname(ds));
 		if (strlen(ds->ds_snapname) >= max_snap_len) {
 			err = SET_ERROR(ENAMETOOLONG);
@@ -3384,7 +3031,7 @@ dsl_dataset_promote_check(void *arg, dmu_tx_t *tx)
 			goto out;
 		}
 
-		/* The very first snapshot does not have a deadlist */
+		 
 		if (dsl_dataset_phys(ds)->ds_prev_snap_obj == 0)
 			continue;
 
@@ -3395,10 +3042,7 @@ dsl_dataset_promote_check(void *arg, dmu_tx_t *tx)
 		ddpa->uncomp += dluncomp;
 	}
 
-	/*
-	 * Check that bookmarks that are being transferred don't have
-	 * name conflicts.
-	 */
+	 
 	for (dsl_bookmark_node_t *dbn = avl_first(&origin_ds->ds_bookmarks);
 	    dbn != NULL && dbn->dbn_phys.zbm_creation_txg <=
 	    dsl_dataset_phys(origin_ds)->ds_creation_txg;
@@ -3422,19 +3066,13 @@ dsl_dataset_promote_check(void *arg, dmu_tx_t *tx)
 		}
 	}
 
-	/*
-	 * In order to return the full list of conflicting snapshots, we check
-	 * whether there was a conflict after traversing all of them.
-	 */
+	 
 	if (conflicting_snaps) {
 		err = SET_ERROR(EEXIST);
 		goto out;
 	}
 
-	/*
-	 * If we are a clone of a clone then we never reached ORIGIN,
-	 * so we need to subtract out the clone origin's used space.
-	 */
+	 
 	if (ddpa->origin_origin) {
 		ddpa->used -=
 		    dsl_dataset_phys(ddpa->origin_origin)->ds_referenced_bytes;
@@ -3445,28 +3083,17 @@ dsl_dataset_promote_check(void *arg, dmu_tx_t *tx)
 		    ds_uncompressed_bytes;
 	}
 
-	/* Check that there is enough space and limit headroom here */
+	 
 	err = dsl_dir_transfer_possible(origin_ds->ds_dir, hds->ds_dir,
 	    0, ss_mv_cnt, ddpa->used, ddpa->cr, ddpa->proc);
 	if (err != 0)
 		goto out;
 
-	/*
-	 * Compute the amounts of space that will be used by snapshots
-	 * after the promotion (for both origin and clone).  For each,
-	 * it is the amount of space that will be on all of their
-	 * deadlists (that was not born before their new origin).
-	 */
+	 
 	if (dsl_dir_phys(hds->ds_dir)->dd_flags & DD_FLAG_USED_BREAKDOWN) {
 		uint64_t space;
 
-		/*
-		 * Note, typically this will not be a clone of a clone,
-		 * so dd_origin_txg will be < TXG_INITIAL, so
-		 * these snaplist_space() -> dsl_deadlist_space_range()
-		 * calls will be fast because they do not have to
-		 * iterate over all bps.
-		 */
+		 
 		snap = list_head(&ddpa->origin_snaps);
 		if (snap == NULL) {
 			err = SET_ERROR(ENOENT);
@@ -3525,16 +3152,13 @@ dsl_dataset_promote_sync(void *arg, dmu_tx_t *tx)
 	snap = list_head(&ddpa->origin_snaps);
 	origin_head = snap->ds;
 
-	/*
-	 * We need to explicitly open odd, since origin_ds's dd will be
-	 * changing.
-	 */
+	 
 	VERIFY0(dsl_dir_hold_obj(dp, origin_ds->ds_dir->dd_object,
 	    NULL, FTAG, &odd));
 
 	dsl_dataset_promote_crypt_sync(hds->ds_dir, odd, tx);
 
-	/* change origin's next snap */
+	 
 	dmu_buf_will_dirty(origin_ds->ds_dbuf, tx);
 	oldnext_obj = dsl_dataset_phys(origin_ds)->ds_next_snap_obj;
 	snap = list_tail(&ddpa->clone_snaps);
@@ -3542,7 +3166,7 @@ dsl_dataset_promote_sync(void *arg, dmu_tx_t *tx)
 	    origin_ds->ds_object);
 	dsl_dataset_phys(origin_ds)->ds_next_snap_obj = snap->ds->ds_object;
 
-	/* change the origin's next clone */
+	 
 	if (dsl_dataset_phys(origin_ds)->ds_next_clones_obj) {
 		dsl_dataset_remove_from_next_clones(origin_ds,
 		    snap->ds->ds_object, tx);
@@ -3551,7 +3175,7 @@ dsl_dataset_promote_sync(void *arg, dmu_tx_t *tx)
 		    oldnext_obj, tx));
 	}
 
-	/* change origin */
+	 
 	dmu_buf_will_dirty(dd->dd_dbuf, tx);
 	ASSERT3U(dsl_dir_phys(dd)->dd_origin_obj, ==, origin_ds->ds_object);
 	dsl_dir_phys(dd)->dd_origin_obj = dsl_dir_phys(odd)->dd_origin_obj;
@@ -3561,7 +3185,7 @@ dsl_dataset_promote_sync(void *arg, dmu_tx_t *tx)
 	origin_head->ds_dir->dd_origin_txg =
 	    dsl_dataset_phys(origin_ds)->ds_creation_txg;
 
-	/* change dd_clone entries */
+	 
 	if (spa_version(dp->dp_spa) >= SPA_VERSION_DIR_CLONES) {
 		VERIFY0(zap_remove_int(dp->dp_meta_objset,
 		    dsl_dir_phys(odd)->dd_clones, hds->ds_object, tx));
@@ -3581,9 +3205,7 @@ dsl_dataset_promote_sync(void *arg, dmu_tx_t *tx)
 		    dsl_dir_phys(dd)->dd_clones, origin_head->ds_object, tx));
 	}
 
-	/*
-	 * Move bookmarks to this dir.
-	 */
+	 
 	dsl_bookmark_node_t *dbn_next;
 	for (dsl_bookmark_node_t *dbn = avl_first(&origin_head->ds_bookmarks);
 	    dbn != NULL && dbn->dbn_phys.zbm_creation_txg <=
@@ -3600,22 +3222,18 @@ dsl_dataset_promote_sync(void *arg, dmu_tx_t *tx)
 
 	dsl_bookmark_next_changed(hds, origin_ds, tx);
 
-	/* move snapshots to this dir */
+	 
 	for (snap = list_head(&ddpa->shared_snaps); snap;
 	    snap = list_next(&ddpa->shared_snaps, snap)) {
 		dsl_dataset_t *ds = snap->ds;
 
-		/*
-		 * Property callbacks are registered to a particular
-		 * dsl_dir.  Since ours is changing, evict the objset
-		 * so that they will be unregistered from the old dsl_dir.
-		 */
+		 
 		if (ds->ds_objset) {
 			dmu_objset_evict(ds->ds_objset);
 			ds->ds_objset = NULL;
 		}
 
-		/* move snap name entry */
+		 
 		VERIFY0(dsl_dataset_get_snapname(ds));
 		VERIFY0(dsl_dataset_snap_remove(origin_head,
 		    ds->ds_snapname, tx, B_TRUE));
@@ -3625,7 +3243,7 @@ dsl_dataset_promote_sync(void *arg, dmu_tx_t *tx)
 		dsl_fs_ss_count_adjust(hds->ds_dir, 1,
 		    DD_FIELD_SNAPSHOT_COUNT, tx);
 
-		/* change containing dsl_dir */
+		 
 		dmu_buf_will_dirty(ds->ds_dbuf, tx);
 		ASSERT3U(dsl_dataset_phys(ds)->ds_dir_obj, ==, odd->dd_object);
 		dsl_dataset_phys(ds)->ds_dir_obj = dd->dd_object;
@@ -3634,7 +3252,7 @@ dsl_dataset_promote_sync(void *arg, dmu_tx_t *tx)
 		VERIFY0(dsl_dir_hold_obj(dp, dd->dd_object,
 		    NULL, ds, &ds->ds_dir));
 
-		/* move any clone references */
+		 
 		if (dsl_dataset_phys(ds)->ds_next_clones_obj &&
 		    spa_version(dp->dp_spa) >= SPA_VERSION_DIR_CLONES) {
 			zap_cursor_t zc;
@@ -3648,10 +3266,7 @@ dsl_dataset_promote_sync(void *arg, dmu_tx_t *tx)
 				uint64_t o;
 
 				if (za.za_first_integer == oldnext_obj) {
-					/*
-					 * We've already moved the
-					 * origin's reference.
-					 */
+					 
 					continue;
 				}
 
@@ -3672,12 +3287,7 @@ dsl_dataset_promote_sync(void *arg, dmu_tx_t *tx)
 		ASSERT(!dsl_prop_hascb(ds));
 	}
 
-	/*
-	 * Change space accounting.
-	 * Note, pa->*usedsnap and dd_used_breakdown[SNAP] will either
-	 * both be valid, or both be 0 (resulting in delta == 0).  This
-	 * is true for each of {clone,origin} independently.
-	 */
+	 
 
 	delta = ddpa->cloneusedsnap -
 	    dsl_dir_phys(dd)->dd_used_breakdown[DD_USED_SNAP];
@@ -3697,24 +3307,17 @@ dsl_dataset_promote_sync(void *arg, dmu_tx_t *tx)
 
 	dsl_dataset_phys(origin_ds)->ds_unique_bytes = ddpa->unique;
 
-	/*
-	 * Since livelists are specific to a clone's origin txg, they
-	 * are no longer accurate. Destroy the livelist from the clone being
-	 * promoted. If the origin dataset is a clone, destroy its livelist
-	 * as well.
-	 */
+	 
 	dsl_dir_remove_livelist(dd, tx, B_TRUE);
 	dsl_dir_remove_livelist(odd, tx, B_TRUE);
 
-	/* log history record */
+	 
 	spa_history_log_internal_ds(hds, "promote", tx, " ");
 
 	dsl_dir_rele(odd, FTAG);
 	promote_rele(ddpa, FTAG);
 
-	/*
-	 * Transfer common error blocks from old head to new head.
-	 */
+	 
 	if (spa_feature_is_enabled(dp->dp_spa, SPA_FEATURE_HEAD_ERRLOG)) {
 		uint64_t old_head = origin_head->ds_object;
 		uint64_t new_head = hds->ds_object;
@@ -3722,12 +3325,7 @@ dsl_dataset_promote_sync(void *arg, dmu_tx_t *tx)
 	}
 }
 
-/*
- * Make a list of dsl_dataset_t's for the snapshots between first_obj
- * (exclusive) and last_obj (inclusive).  The list will be in reverse
- * order (last_obj will be the list_head()).  If first_obj == 0, do all
- * snapshots back to this dataset's origin.
- */
+ 
 static int
 snaplist_make(dsl_pool_t *dp,
     uint64_t first_obj, uint64_t last_obj, list_t *l, const void *tag)
@@ -3850,12 +3448,7 @@ promote_rele(dsl_dataset_promote_arg_t *ddpa, const void *tag)
 	dsl_dataset_rele(ddpa->ddpa_clone, tag);
 }
 
-/*
- * Promote a clone.
- *
- * If it fails due to a conflicting snapshot name, "conflsnap" will be filled
- * in with the name.  (It must be at least ZFS_MAX_DATASET_NAME_LEN bytes long.)
- */
+ 
 int
 dsl_dataset_promote(const char *name, char *conflsnap)
 {
@@ -3865,10 +3458,7 @@ dsl_dataset_promote(const char *name, char *conflsnap)
 	nvpair_t *snap_pair;
 	objset_t *os;
 
-	/*
-	 * We will modify space proportional to the number of
-	 * snapshots.  Compute numsnaps.
-	 */
+	 
 	error = dmu_objset_hold(name, FTAG, &os);
 	if (error != 0)
 		return (error);
@@ -3888,9 +3478,7 @@ dsl_dataset_promote(const char *name, char *conflsnap)
 	    dsl_dataset_promote_sync, &ddpa,
 	    2 + numsnaps, ZFS_SPACE_CHECK_RESERVED);
 
-	/*
-	 * Return the first conflicting snapshot found.
-	 */
+	 
 	snap_pair = nvlist_next_nvpair(ddpa.err_ds, NULL);
 	if (snap_pair != NULL && conflsnap != NULL)
 		(void) strlcpy(conflsnap, nvpair_name(snap_pair),
@@ -3904,43 +3492,40 @@ int
 dsl_dataset_clone_swap_check_impl(dsl_dataset_t *clone,
     dsl_dataset_t *origin_head, boolean_t force, void *owner, dmu_tx_t *tx)
 {
-	/*
-	 * "slack" factor for received datasets with refquota set on them.
-	 * See the bottom of this function for details on its use.
-	 */
+	 
 	uint64_t refquota_slack = (uint64_t)DMU_MAX_ACCESS *
 	    spa_asize_inflation;
 	int64_t unused_refres_delta;
 
-	/* they should both be heads */
+	 
 	if (clone->ds_is_snapshot ||
 	    origin_head->ds_is_snapshot)
 		return (SET_ERROR(EINVAL));
 
-	/* if we are not forcing, the branch point should be just before them */
+	 
 	if (!force && clone->ds_prev != origin_head->ds_prev)
 		return (SET_ERROR(EINVAL));
 
-	/* clone should be the clone (unless they are unrelated) */
+	 
 	if (clone->ds_prev != NULL &&
 	    clone->ds_prev != clone->ds_dir->dd_pool->dp_origin_snap &&
 	    origin_head->ds_dir != clone->ds_prev->ds_dir)
 		return (SET_ERROR(EINVAL));
 
-	/* the clone should be a child of the origin */
+	 
 	if (clone->ds_dir->dd_parent != origin_head->ds_dir)
 		return (SET_ERROR(EINVAL));
 
-	/* origin_head shouldn't be modified unless 'force' */
+	 
 	if (!force &&
 	    dsl_dataset_modified_since_snap(origin_head, origin_head->ds_prev))
 		return (SET_ERROR(ETXTBSY));
 
-	/* origin_head should have no long holds (e.g. is not mounted) */
+	 
 	if (dsl_dataset_handoff_check(origin_head, owner, tx))
 		return (SET_ERROR(EBUSY));
 
-	/* check amount of any unconsumed refreservation */
+	 
 	unused_refres_delta =
 	    (int64_t)MIN(origin_head->ds_reserved,
 	    dsl_dataset_phys(origin_head)->ds_unique_bytes) -
@@ -3952,19 +3537,7 @@ dsl_dataset_clone_swap_check_impl(dsl_dataset_t *clone,
 	    dsl_dir_space_available(origin_head->ds_dir, NULL, 0, TRUE))
 		return (SET_ERROR(ENOSPC));
 
-	/*
-	 * The clone can't be too much over the head's refquota.
-	 *
-	 * To ensure that the entire refquota can be used, we allow one
-	 * transaction to exceed the refquota.  Therefore, this check
-	 * needs to also allow for the space referenced to be more than the
-	 * refquota.  The maximum amount of space that one transaction can use
-	 * on disk is DMU_MAX_ACCESS * spa_asize_inflation.  Allowing this
-	 * overage ensures that we are able to receive a filesystem that
-	 * exceeds the refquota on the source system.
-	 *
-	 * So that overage is the refquota_slack we use below.
-	 */
+	 
 	if (origin_head->ds_quota != 0 &&
 	    dsl_dataset_phys(clone)->ds_referenced_bytes >
 	    origin_head->ds_quota + refquota_slack)
@@ -4016,10 +3589,7 @@ dsl_dataset_clone_swap_sync_impl(dsl_dataset_t *clone,
 	int64_t unused_refres_delta;
 
 	ASSERT(clone->ds_reserved == 0);
-	/*
-	 * NOTE: On DEBUG kernels there could be a race between this and
-	 * the check function if spa_asize_inflation is adjusted...
-	 */
+	 
 	ASSERT(origin_head->ds_quota == 0 ||
 	    dsl_dataset_phys(clone)->ds_unique_bytes <= origin_head->ds_quota +
 	    DMU_MAX_ACCESS * spa_asize_inflation);
@@ -4027,9 +3597,7 @@ dsl_dataset_clone_swap_sync_impl(dsl_dataset_t *clone,
 
 	dsl_dir_cancel_waiters(origin_head->ds_dir);
 
-	/*
-	 * Swap per-dataset feature flags.
-	 */
+	 
 	for (spa_feature_t f = 0; f < SPA_FEATURES; f++) {
 		if (!(spa_feature_table[f].fi_flags &
 		    ZFEATURE_FLAG_PER_DATASET)) {
@@ -4080,9 +3648,7 @@ dsl_dataset_clone_swap_sync_impl(dsl_dataset_t *clone,
 	    (int64_t)MIN(origin_head->ds_reserved,
 	    dsl_dataset_phys(clone)->ds_unique_bytes);
 
-	/*
-	 * Reset origin's unique bytes.
-	 */
+	 
 	{
 		dsl_dataset_t *origin = clone->ds_prev;
 		uint64_t comp, uncomp;
@@ -4093,7 +3659,7 @@ dsl_dataset_clone_swap_sync_impl(dsl_dataset_t *clone,
 		    &dsl_dataset_phys(origin)->ds_unique_bytes, &comp, &uncomp);
 	}
 
-	/* swap blkptrs */
+	 
 	{
 		rrw_enter(&clone->ds_bp_rwlock, RW_WRITER, FTAG);
 		rrw_enter(&origin_head->ds_bp_rwlock, RW_WRITER, FTAG);
@@ -4106,7 +3672,7 @@ dsl_dataset_clone_swap_sync_impl(dsl_dataset_t *clone,
 		rrw_exit(&clone->ds_bp_rwlock, FTAG);
 	}
 
-	/* set dd_*_bytes */
+	 
 	{
 		int64_t dused, dcomp, duncomp;
 		uint64_t cdl_used, cdl_comp, cdl_uncomp;
@@ -4138,12 +3704,7 @@ dsl_dataset_clone_swap_sync_impl(dsl_dataset_t *clone,
 		dsl_dir_diduse_space(clone->ds_dir, DD_USED_HEAD,
 		    -dused, -dcomp, -duncomp, tx);
 
-		/*
-		 * The difference in the space used by snapshots is the
-		 * difference in snapshot space due to the head's
-		 * deadlist (since that's the only thing that's
-		 * changing that affects the snapused).
-		 */
+		 
 		dsl_deadlist_space_range(&clone->ds_deadlist,
 		    origin_head->ds_dir->dd_origin_txg, UINT64_MAX,
 		    &cdl_used, &cdl_comp, &cdl_uncomp);
@@ -4154,7 +3715,7 @@ dsl_dataset_clone_swap_sync_impl(dsl_dataset_t *clone,
 		    DD_USED_HEAD, DD_USED_SNAP, tx);
 	}
 
-	/* swap ds_*_bytes */
+	 
 	SWITCH64(dsl_dataset_phys(origin_head)->ds_referenced_bytes,
 	    dsl_dataset_phys(clone)->ds_referenced_bytes);
 	SWITCH64(dsl_dataset_phys(origin_head)->ds_compressed_bytes,
@@ -4164,13 +3725,11 @@ dsl_dataset_clone_swap_sync_impl(dsl_dataset_t *clone,
 	SWITCH64(dsl_dataset_phys(origin_head)->ds_unique_bytes,
 	    dsl_dataset_phys(clone)->ds_unique_bytes);
 
-	/* apply any parent delta for change in unconsumed refreservation */
+	 
 	dsl_dir_diduse_space(origin_head->ds_dir, DD_USED_REFRSRV,
 	    unused_refres_delta, 0, 0, tx);
 
-	/*
-	 * Swap deadlists.
-	 */
+	 
 	dsl_deadlist_close(&clone->ds_deadlist);
 	dsl_deadlist_close(&origin_head->ds_deadlist);
 	SWITCH64(dsl_dataset_phys(origin_head)->ds_deadlist_obj,
@@ -4181,19 +3740,12 @@ dsl_dataset_clone_swap_sync_impl(dsl_dataset_t *clone,
 	    dsl_dataset_phys(origin_head)->ds_deadlist_obj);
 	dsl_dataset_swap_remap_deadlists(clone, origin_head, tx);
 
-	/*
-	 * If there is a bookmark at the origin, its "next dataset" is
-	 * changing, so we need to reset its FBN.
-	 */
+	 
 	dsl_bookmark_next_changed(origin_head, origin_head->ds_prev, tx);
 
 	dsl_scan_ds_clone_swapped(origin_head, clone, tx);
 
-	/*
-	 * Destroy any livelists associated with the clone or the origin,
-	 * since after the swap the corresponding livelists are no longer
-	 * valid.
-	 */
+	 
 	dsl_dir_remove_livelist(clone->ds_dir, tx, B_TRUE);
 	dsl_dir_remove_livelist(origin_head->ds_dir, tx, B_TRUE);
 
@@ -4201,10 +3753,7 @@ dsl_dataset_clone_swap_sync_impl(dsl_dataset_t *clone,
 	    "parent=%s", origin_head->ds_dir->dd_myname);
 }
 
-/*
- * Given a pool name and a dataset object number in that pool,
- * return the name of that dataset.
- */
+ 
 int
 dsl_dsobj_to_dsname(char *pname, uint64_t obj, char *buf)
 {
@@ -4234,16 +3783,11 @@ dsl_dataset_check_quota(dsl_dataset_t *ds, boolean_t check_quota,
 
 	ASSERT3S(asize, >, 0);
 
-	/*
-	 * *ref_rsrv is the portion of asize that will come from any
-	 * unconsumed refreservation space.
-	 */
+	 
 	*ref_rsrv = 0;
 
 	mutex_enter(&ds->ds_lock);
-	/*
-	 * Make a space adjustment for reserved bytes.
-	 */
+	 
 	if (ds->ds_reserved > dsl_dataset_phys(ds)->ds_unique_bytes) {
 		ASSERT3U(*used, >=,
 		    ds->ds_reserved - dsl_dataset_phys(ds)->ds_unique_bytes);
@@ -4257,12 +3801,7 @@ dsl_dataset_check_quota(dsl_dataset_t *ds, boolean_t check_quota,
 		mutex_exit(&ds->ds_lock);
 		return (0);
 	}
-	/*
-	 * If they are requesting more space, and our current estimate
-	 * is over quota, they get to try again unless the actual
-	 * on-disk is over quota and there are no pending changes (which
-	 * may free up space for us).
-	 */
+	 
 	if (dsl_dataset_phys(ds)->ds_referenced_bytes + inflight >=
 	    ds->ds_quota) {
 		if (inflight > 0 ||
@@ -4396,10 +3935,7 @@ dsl_dataset_set_refreservation_check(void *arg, dmu_tx_t *tx)
 		return (error);
 	}
 
-	/*
-	 * If we are doing the preliminary check in open context, the
-	 * space estimates may be inaccurate.
-	 */
+	 
 	if (!dmu_tx_is_syncing(tx)) {
 		dsl_dataset_rele(ds, FTAG);
 		return (0);
@@ -4535,10 +4071,7 @@ dsl_dataset_set_compression(const char *dsname, zprop_source_t source,
 {
 	dsl_dataset_set_compression_arg_t ddsca;
 
-	/*
-	 * The sync task is only required for zstd in order to activate
-	 * the feature flag when the property is first set.
-	 */
+	 
 	if (ZIO_COMPRESS_ALGO(compression) != ZIO_COMPRESS_ZSTD)
 		return (0);
 
@@ -4551,28 +4084,7 @@ dsl_dataset_set_compression(const char *dsname, zprop_source_t source,
 	    ZFS_SPACE_CHECK_EXTRA_RESERVED));
 }
 
-/*
- * Return (in *usedp) the amount of space referenced by "new" that was not
- * referenced at the time the bookmark corresponds to.  "New" may be a
- * snapshot or a head.  The bookmark must be before new, in
- * new's filesystem (or its origin) -- caller verifies this.
- *
- * The written space is calculated by considering two components:  First, we
- * ignore any freed space, and calculate the written as new's used space
- * minus old's used space.  Next, we add in the amount of space that was freed
- * between the two time points, thus reducing new's used space relative to
- * old's. Specifically, this is the space that was born before
- * zbm_creation_txg, and freed before new (ie. on new's deadlist or a
- * previous deadlist).
- *
- * space freed                         [---------------------]
- * snapshots                       ---O-------O--------O-------O------
- *                                         bookmark           new
- *
- * Note, the bookmark's zbm_*_bytes_refd must be valid, but if the HAS_FBN
- * flag is not set, we will calculate the freed_before_next based on the
- * next snapshot's deadlist, rather than using zbm_*_freed_before_next_snap.
- */
+ 
 static int
 dsl_dataset_space_written_impl(zfs_bookmark_phys_t *bmp,
     dsl_dataset_t *new, uint64_t *usedp, uint64_t *compp, uint64_t *uncompp)
@@ -4619,11 +4131,7 @@ dsl_dataset_space_written_impl(zfs_bookmark_phys_t *bmp,
 			break;
 	}
 
-	/*
-	 * We might not have the FBN if we are calculating written from
-	 * a snapshot (because we didn't know the correct "next" snapshot
-	 * until now).
-	 */
+	 
 	if (bmp->zbm_flags & ZBM_FLAG_HAS_FBN) {
 		*usedp += bmp->zbm_referenced_freed_before_next_snap;
 		*compp += bmp->zbm_compressed_freed_before_next_snap;
@@ -4642,12 +4150,7 @@ dsl_dataset_space_written_impl(zfs_bookmark_phys_t *bmp,
 	return (err);
 }
 
-/*
- * Return (in *usedp) the amount of space written in new that was not
- * present at the time the bookmark corresponds to.  New may be a
- * snapshot or the head.  Old must be a bookmark before new, in
- * new's filesystem (or its origin) -- caller verifies this.
- */
+ 
 int
 dsl_dataset_space_written_bookmark(zfs_bookmark_phys_t *bmp,
     dsl_dataset_t *new, uint64_t *usedp, uint64_t *compp, uint64_t *uncompp)
@@ -4658,12 +4161,7 @@ dsl_dataset_space_written_bookmark(zfs_bookmark_phys_t *bmp,
 	    usedp, compp, uncompp));
 }
 
-/*
- * Return (in *usedp) the amount of space written in new that is not
- * present in oldsnap.  New may be a snapshot or the head.  Old must be
- * a snapshot before new, in new's filesystem (or its origin).  If not then
- * fail and return EINVAL.
- */
+ 
 int
 dsl_dataset_space_written(dsl_dataset_t *oldsnap, dsl_dataset_t *new,
     uint64_t *usedp, uint64_t *compp, uint64_t *uncompp)
@@ -4680,32 +4178,12 @@ dsl_dataset_space_written(dsl_dataset_t *oldsnap, dsl_dataset_t *new,
 	zbm.zbm_compressed_bytes_refd = dsp->ds_compressed_bytes;
 	zbm.zbm_uncompressed_bytes_refd = dsp->ds_uncompressed_bytes;
 
-	/*
-	 * If oldsnap is the origin (or origin's origin, ...) of new,
-	 * we can't easily calculate the effective FBN.  Therefore,
-	 * we do not set ZBM_FLAG_HAS_FBN, so that the _impl will calculate
-	 * it relative to the correct "next": the next snapshot towards "new",
-	 * rather than the next snapshot in oldsnap's dsl_dir.
-	 */
+	 
 	return (dsl_dataset_space_written_impl(&zbm, new,
 	    usedp, compp, uncompp));
 }
 
-/*
- * Return (in *usedp) the amount of space that will be reclaimed if firstsnap,
- * lastsnap, and all snapshots in between are deleted.
- *
- * blocks that would be freed            [---------------------------]
- * snapshots                       ---O-------O--------O-------O--------O
- *                                        firstsnap        lastsnap
- *
- * This is the set of blocks that were born after the snap before firstsnap,
- * (birth > firstsnap->prev_snap_txg) and died before the snap after the
- * last snap (ie, is on lastsnap->ds_next->ds_deadlist or an earlier deadlist).
- * We calculate this by iterating over the relevant deadlists (from the snap
- * after lastsnap, backward to the snap after firstsnap), summing up the
- * space on the deadlist that was born after the snap before firstsnap.
- */
+ 
 int
 dsl_dataset_space_wouldfree(dsl_dataset_t *firstsnap,
     dsl_dataset_t *lastsnap,
@@ -4718,10 +4196,7 @@ dsl_dataset_space_wouldfree(dsl_dataset_t *firstsnap,
 	ASSERT(firstsnap->ds_is_snapshot);
 	ASSERT(lastsnap->ds_is_snapshot);
 
-	/*
-	 * Check that the snapshots are in the same dsl_dir, and firstsnap
-	 * is before lastsnap.
-	 */
+	 
 	if (firstsnap->ds_dir != lastsnap->ds_dir ||
 	    dsl_dataset_phys(firstsnap)->ds_creation_txg >
 	    dsl_dataset_phys(lastsnap)->ds_creation_txg)
@@ -4752,15 +4227,7 @@ dsl_dataset_space_wouldfree(dsl_dataset_t *firstsnap,
 	return (err);
 }
 
-/*
- * Return TRUE if 'earlier' is an earlier snapshot in 'later's timeline.
- * For example, they could both be snapshots of the same filesystem, and
- * 'earlier' is before 'later'.  Or 'earlier' could be the origin of
- * 'later's filesystem.  Or 'earlier' could be an older snapshot in the origin's
- * filesystem.  Or 'earlier' could be the origin's origin.
- *
- * If non-zero, earlier_txg is used instead of earlier's ds_creation_txg.
- */
+ 
 boolean_t
 dsl_dataset_is_before(dsl_dataset_t *later, dsl_dataset_t *earlier,
     uint64_t earlier_txg)
@@ -4782,12 +4249,7 @@ dsl_dataset_is_before(dsl_dataset_t *later, dsl_dataset_t *earlier,
 	if (later->ds_dir == earlier->ds_dir)
 		return (B_TRUE);
 
-	/*
-	 * We check dd_origin_obj explicitly here rather than using
-	 * dsl_dir_is_clone() so that we will return TRUE if "earlier"
-	 * is $ORIGIN@$ORIGIN.  dsl_dataset_space_written() depends on
-	 * this behavior.
-	 */
+	 
 	if (dsl_dir_phys(later->ds_dir)->dd_origin_obj == 0)
 		return (B_FALSE);
 
@@ -4901,10 +4363,7 @@ dsl_dataset_create_remap_deadlist(dsl_dataset_t *ds, dmu_tx_t *tx)
 
 	ASSERT(dmu_tx_is_syncing(tx));
 	ASSERT(MUTEX_HELD(&ds->ds_remap_deadlist_lock));
-	/*
-	 * Currently we only create remap deadlists when there are indirect
-	 * vdevs with referenced mappings.
-	 */
+	 
 	ASSERT(spa_feature_is_active(spa, SPA_FEATURE_DEVICE_REMOVAL));
 
 	remap_deadlist_obj = dsl_deadlist_clone(
@@ -4936,10 +4395,7 @@ dsl_dataset_activate_redaction(dsl_dataset_t *ds, uint64_t *redact_snaps,
 	ds->ds_feature[SPA_FEATURE_REDACTED_DATASETS] = ftuaa;
 }
 
-/*
- * Find and return (in *oldest_dsobj) the oldest snapshot of the dsobj
- * dataset whose birth time is >= min_txg.
- */
+ 
 int
 dsl_dataset_oldest_snapshot(spa_t *spa, uint64_t head_ds, uint64_t min_txg,
     uint64_t *oldest_dsobj)

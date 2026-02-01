@@ -1,34 +1,4 @@
-/*
- * Copyright (c) 2005-2006 Intel Corporation.  All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *	copyright notice, this list of conditions and the following
- *	disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *	copyright notice, this list of conditions and the following
- *	disclaimer in the documentation and/or other materials
- *	provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 
 #include <linux/completion.h>
 #include <linux/file.h>
@@ -156,10 +126,7 @@ static void ucma_put_ctx(struct ucma_context *ctx)
 		complete(&ctx->comp);
 }
 
-/*
- * Same as ucm_get_ctx but requires that ->cm_id->device is valid, eg that the
- * CM_ID is bound.
- */
+ 
 static struct ucma_context *ucma_get_ctx_dev(struct ucma_file *file, int id)
 {
 	struct ucma_context *ctx = ucma_get_ctx(file, id);
@@ -177,16 +144,13 @@ static void ucma_close_id(struct work_struct *work)
 {
 	struct ucma_context *ctx =  container_of(work, struct ucma_context, close_work);
 
-	/* once all inflight tasks are finished, we close all underlying
-	 * resources. The context is still alive till its explicit destryoing
-	 * by its creator. This puts back the xarray's reference.
-	 */
+	 
 	ucma_put_ctx(ctx);
 	wait_for_completion(&ctx->comp);
-	/* No new events will be generated after destroying the id. */
+	 
 	rdma_destroy_id(ctx->cm_id);
 
-	/* Reading the cm_id without holding a positive ref is not allowed */
+	 
 	ctx->cm_id = NULL;
 }
 
@@ -201,7 +165,7 @@ static struct ucma_context *ucma_alloc_ctx(struct ucma_file *file)
 	INIT_WORK(&ctx->close_work, ucma_close_id);
 	init_completion(&ctx->comp);
 	INIT_LIST_HEAD(&ctx->mc_list);
-	/* So list_del() will work if we don't do ucma_finish_ctx() */
+	 
 	INIT_LIST_HEAD(&ctx->list);
 	ctx->file = file;
 	mutex_init(&ctx->mutex);
@@ -326,7 +290,7 @@ err_alloc:
 	ucma_destroy_private_ctx(ctx);
 err_backlog:
 	atomic_inc(&listen_ctx->backlog);
-	/* Returning error causes the new ID to be destroyed */
+	 
 	return -ENOMEM;
 }
 
@@ -339,13 +303,7 @@ static int ucma_event_handler(struct rdma_cm_id *cm_id,
 	if (event->event == RDMA_CM_EVENT_CONNECT_REQUEST)
 		return ucma_connect_event_handler(cm_id, event);
 
-	/*
-	 * We ignore events for new connections until userspace has set their
-	 * context.  This can only happen if an error occurs on a new connection
-	 * before the user accepts it.  This is okay, since the accept will just
-	 * fail later. However, we do need to release the underlying HW
-	 * resources in case of a device removal event.
-	 */
+	 
 	if (ctx->uid) {
 		uevent = ucma_create_uevent(ctx, event);
 		if (!uevent)
@@ -372,10 +330,7 @@ static ssize_t ucma_get_event(struct ucma_file *file, const char __user *inbuf,
 	struct rdma_ucm_get_event cmd;
 	struct ucma_event *uevent;
 
-	/*
-	 * Old 32 bit user space does not send the 4 byte padding in the
-	 * reserved field. We don't care, allow it to keep working.
-	 */
+	 
 	if (out_len < sizeof(uevent->resp) - sizeof(uevent->resp.reserved) -
 			      sizeof(uevent->resp.ece))
 		return -ENOSPC;
@@ -492,10 +447,7 @@ static void ucma_cleanup_multicast(struct ucma_context *ctx)
 	xa_lock(&multicast_table);
 	list_for_each_entry_safe(mc, tmp, &ctx->mc_list, list) {
 		list_del(&mc->list);
-		/*
-		 * At this point mc->ctx->ref is 0 so the mc cannot leave the
-		 * lock on the reader and this is enough serialization
-		 */
+		 
 		__xa_erase(&multicast_table, mc->id);
 		kfree(mc);
 	}
@@ -525,7 +477,7 @@ static int ucma_cleanup_ctx_events(struct ucma_context *ctx)
 	struct ucma_event *uevent, *tmp;
 	LIST_HEAD(list);
 
-	/* Cleanup events not yet reported to the user.*/
+	 
 	mutex_lock(&ctx->file->mut);
 	list_for_each_entry_safe(uevent, tmp, &ctx->file->event_list, list) {
 		if (uevent->ctx != ctx)
@@ -545,11 +497,7 @@ static int ucma_cleanup_ctx_events(struct ucma_context *ctx)
 	events_reported = ctx->events_reported;
 	mutex_unlock(&ctx->file->mut);
 
-	/*
-	 * If this was a listening ID then any connections spawned from it that
-	 * have not been delivered to userspace are cleaned up too. Must be done
-	 * outside any locks.
-	 */
+	 
 	list_for_each_entry_safe(uevent, tmp, &list, list) {
 		ucma_destroy_private_ctx(uevent->conn_req_ctx);
 		kfree(uevent);
@@ -557,23 +505,12 @@ static int ucma_cleanup_ctx_events(struct ucma_context *ctx)
 	return events_reported;
 }
 
-/*
- * When this is called the xarray must have a XA_ZERO_ENTRY in the ctx->id (ie
- * the ctx is not public to the user). This either because:
- *  - ucma_finish_ctx() hasn't been called
- *  - xa_cmpxchg() succeed to remove the entry (only one thread can succeed)
- */
+ 
 static int ucma_destroy_private_ctx(struct ucma_context *ctx)
 {
 	int events_reported;
 
-	/*
-	 * Destroy the underlying cm_id. New work queuing is prevented now by
-	 * the removal from the xarray. Once the work is cancled ref will either
-	 * be 0 because the work ran to completion and consumed the ref from the
-	 * xarray, or it will be positive because we still have the ref from the
-	 * xarray. This can also be 0 in cases where cm_id was never set
-	 */
+	 
 	cancel_work_sync(&ctx->close_work);
 	if (refcount_read(&ctx->ref))
 		ucma_close_id(&ctx->close_work);
@@ -1139,7 +1076,7 @@ static ssize_t ucma_accept(struct ucma_file *file, const char __user *inbuf,
 		rdma_lock_handler(ctx->cm_id);
 		ret = rdma_accept_ece(ctx->cm_id, &conn_param, &ece);
 		if (!ret) {
-			/* The uid must be set atomically with the handler */
+			 
 			ctx->uid = cmd.uid;
 		}
 		rdma_unlock_handler(ctx->cm_id);
@@ -1623,7 +1560,7 @@ static ssize_t ucma_migrate_id(struct ucma_file *new_file,
 	if (copy_from_user(&cmd, inbuf, sizeof(cmd)))
 		return -EFAULT;
 
-	/* Get current fd to protect against it being closed */
+	 
 	f = fdget(cmd.fd);
 	if (!f.file)
 		return -ENOENT;
@@ -1633,7 +1570,7 @@ static ssize_t ucma_migrate_id(struct ucma_file *new_file,
 	}
 	cur_file = f.file->private_data;
 
-	/* Validate current fd and prevent destruction of id. */
+	 
 	ctx = ucma_get_ctx(cur_file, cmd.id);
 	if (IS_ERR(ctx)) {
 		ret = PTR_ERR(ctx);
@@ -1641,11 +1578,7 @@ static ssize_t ucma_migrate_id(struct ucma_file *new_file,
 	}
 
 	rdma_lock_handler(ctx->cm_id);
-	/*
-	 * ctx->file can only be changed under the handler & xa_lock. xa_load()
-	 * must be checked again to ensure the ctx hasn't begun destruction
-	 * since the ucma_get_ctx().
-	 */
+	 
 	xa_lock(&ctx_table);
 	if (_ucma_find_context(cmd.id, cur_file) != ctx) {
 		xa_unlock(&ctx_table);
@@ -1657,10 +1590,7 @@ static ssize_t ucma_migrate_id(struct ucma_file *new_file,
 
 	mutex_lock(&cur_file->mut);
 	list_del(&ctx->list);
-	/*
-	 * At this point lock_handler() prevents addition of new uevents for
-	 * this ctx.
-	 */
+	 
 	list_for_each_entry_safe(uevent, tmp, &cur_file->event_list, list)
 		if (uevent->ctx == ctx)
 			list_move_tail(&uevent->list, &event_list);
@@ -1761,14 +1691,7 @@ static __poll_t ucma_poll(struct file *filp, struct poll_table_struct *wait)
 	return mask;
 }
 
-/*
- * ucma_open() does not need the BKL:
- *
- *  - no global state is referred to;
- *  - there is no ioctl method to race against;
- *  - no further module initialization is required for open to work
- *    after the device is registered.
- */
+ 
 static int ucma_open(struct inode *inode, struct file *filp)
 {
 	struct ucma_file *file;
@@ -1792,14 +1715,7 @@ static int ucma_close(struct inode *inode, struct file *filp)
 {
 	struct ucma_file *file = filp->private_data;
 
-	/*
-	 * All paths that touch ctx_list or ctx_list starting from write() are
-	 * prevented by this being a FD release function. The list_add_tail() in
-	 * ucma_connect_event_handler() can run concurrently, however it only
-	 * adds to the list *after* a listening ID. By only reading the first of
-	 * the list, and relying on ucma_destroy_private_ctx() to block
-	 * ucma_connect_event_handler(), no additional locking is needed.
-	 */
+	 
 	while (!list_empty(&file->ctx_list)) {
 		struct ucma_context *ctx = list_first_entry(
 			&file->ctx_list, struct ucma_context, list);

@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
-/* Copyright (c) 2017-2018 Mellanox Technologies. All rights reserved */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/bitops.h>
@@ -44,7 +44,7 @@ struct mlxsw_sp_fid {
 	int nve_ifindex;
 	u8 vni_valid:1,
 	   nve_flood_index_valid:1;
-	struct list_head port_vid_list; /* Ordered by local port. */
+	struct list_head port_vid_list;  
 };
 
 struct mlxsw_sp_fid_8021q {
@@ -513,9 +513,7 @@ mlxsw_sp_fid_8021q_vid_to_fid_rif_update(const struct mlxsw_sp_fid *fid,
 {
 	struct mlxsw_sp_fid_8021q *fid_8021q = mlxsw_sp_fid_8021q_fid(fid);
 
-	/* Update the global VID => FID mapping we created when the FID was
-	 * configured.
-	 */
+	 
 	return mlxsw_sp_fid_vid_to_fid_map(fid, fid_8021q->vid, true, rif);
 }
 
@@ -549,10 +547,7 @@ static int mlxsw_sp_fid_vid_to_fid_rif_set(const struct mlxsw_sp_fid *fid,
 	irif_index = mlxsw_sp_rif_index(rif);
 
 	list_for_each_entry(pv, &fid->port_vid_list, list) {
-		/* If port is not in virtual mode, then it does not have any
-		 * {Port, VID}->FID mappings that need to be updated with the
-		 * ingress RIF.
-		 */
+		 
 		if (!mlxsw_sp->fid_core->port_fid_mappings[pv->local_port])
 			continue;
 
@@ -583,9 +578,7 @@ static void mlxsw_sp_fid_vid_to_fid_rif_unset(const struct mlxsw_sp_fid *fid)
 	struct mlxsw_sp_fid_port_vid *pv;
 
 	list_for_each_entry(pv, &fid->port_vid_list, list) {
-		/* If port is not in virtual mode, then it does not have any
-		 * {Port, VID}->FID mappings that need to be updated.
-		 */
+		 
 		if (!mlxsw_sp->fid_core->port_fid_mappings[pv->local_port])
 			continue;
 
@@ -613,7 +606,7 @@ static int mlxsw_sp_fid_reiv_handle(struct mlxsw_sp_fid *fid, u16 rif_index,
 	mlxsw_reg_reiv_pack(reiv_pl, port_page, rif_index);
 
 	list_for_each_entry(port_vid, &fid->port_vid_list, list) {
-		/* port_vid_list is sorted by local_port. */
+		 
 		if (port_vid->local_port < local_port_start)
 			continue;
 
@@ -1150,11 +1143,7 @@ static int mlxsw_sp_fid_rfid_port_vid_map(struct mlxsw_sp_fid *fid,
 	if (err)
 		return err;
 
-	/* Using legacy bridge model, we only need to transition the port to
-	 * virtual mode since {Port, VID} => FID is done by the firmware upon
-	 * RIF creation. Using unified bridge model, we need to map
-	 * {Port, VID} => FID and map egress VID.
-	 */
+	 
 	err = __mlxsw_sp_fid_port_vid_map(fid, mlxsw_sp_port->local_port, vid,
 					  true);
 	if (err)
@@ -1347,10 +1336,7 @@ static int mlxsw_sp_fid_8021q_port_vid_map(struct mlxsw_sp_fid *fid,
 	u16 local_port = mlxsw_sp_port->local_port;
 	int err;
 
-	/* In case there are no {Port, VID} => FID mappings on the port,
-	 * we can use the global VID => FID mapping we created when the
-	 * FID was configured, otherwise, configure new mapping.
-	 */
+	 
 	if (mlxsw_sp->fid_core->port_fid_mappings[local_port]) {
 		err =  __mlxsw_sp_fid_port_vid_map(fid, local_port, vid, true);
 		if (err)
@@ -1405,20 +1391,20 @@ static const struct mlxsw_sp_fid_ops mlxsw_sp_fid_8021q_ops = {
 	.vid_to_fid_rif_update  = mlxsw_sp_fid_8021q_vid_to_fid_rif_update,
 };
 
-/* There are 4K-2 802.1Q FIDs */
-#define MLXSW_SP_FID_8021Q_START	1 /* FID 0 is reserved. */
+ 
+#define MLXSW_SP_FID_8021Q_START	1  
 #define MLXSW_SP_FID_8021Q_END		(MLXSW_SP_FID_8021Q_START + \
 					 MLXSW_SP_FID_8021Q_MAX - 1)
 
-/* There are 1K 802.1D FIDs */
+ 
 #define MLXSW_SP_FID_8021D_START	(MLXSW_SP_FID_8021Q_END + 1)
 #define MLXSW_SP_FID_8021D_END		(MLXSW_SP_FID_8021D_START + \
 					 MLXSW_SP_FID_8021D_MAX - 1)
 
-/* There is one dummy FID */
+ 
 #define MLXSW_SP_FID_DUMMY		(MLXSW_SP_FID_8021D_END + 1)
 
-/* There are 11K rFIDs */
+ 
 #define MLXSW_SP_RFID_START		(MLXSW_SP_FID_DUMMY + 1)
 #define MLXSW_SP_RFID_END		(MLXSW_SP_RFID_START + \
 					 MLXSW_SP_FID_RFID_MAX - 1)
@@ -1782,10 +1768,7 @@ int mlxsw_sp_port_fids_init(struct mlxsw_sp_port *mlxsw_sp_port)
 {
 	struct mlxsw_sp *mlxsw_sp = mlxsw_sp_port->mlxsw_sp;
 
-	/* Track number of FIDs configured on the port with mapping type
-	 * PORT_VID_TO_FID, so that we know when to transition the port
-	 * back to non-virtual (VLAN) mode.
-	 */
+	 
 	mlxsw_sp->fid_core->port_fid_mappings[mlxsw_sp_port->local_port] = 0;
 
 	return mlxsw_sp_port_vp_mode_set(mlxsw_sp_port, false);

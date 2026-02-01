@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #include <media/videobuf2-v4l2.h>
 #include <media/videobuf2-dma-contig.h>
@@ -10,11 +10,7 @@
 #include "mtk_vcodec_dec_pm.h"
 #include "vdec_drv_if.h"
 
-/**
- * struct mtk_stateless_control  - CID control type
- * @cfg: control configuration
- * @codec_type: codec type (V4L2 pixel format) for CID control type
- */
+ 
 struct mtk_stateless_control {
 	struct v4l2_ctrl_config cfg;
 	int codec_type;
@@ -322,7 +318,7 @@ static void mtk_vdec_worker(struct work_struct *work)
 
 	mtk_v4l2_vdec_dbg(3, ctx, "[%d] Bitstream VA=%p DMA=%pad Size=%zx vb=%p",
 			  ctx->id, bs_src->va, &bs_src->dma_addr, bs_src->size, vb2_src);
-	/* Apply request controls. */
+	 
 	src_buf_req = vb2_src->req_obj.req;
 	if (src_buf_req)
 		v4l2_ctrl_request_setup(src_buf_req, &ctx->ctrl_hdl);
@@ -371,7 +367,7 @@ static void vb2ops_vdec_stateless_buf_queue(struct vb2_buffer *vb)
 	if (vb->vb2_queue->type != V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE)
 		return;
 
-	/* If an OUTPUT buffer, we may need to update the state */
+	 
 	if (ctx->state == MTK_STATE_INIT) {
 		ctx->state = MTK_STATE_HEADER;
 		mtk_v4l2_vdec_dbg(1, ctx, "Init driver from init to header.");
@@ -551,7 +547,7 @@ static int fops_media_request_validate(struct media_request *mreq)
 
 	switch (buffer_cnt) {
 	case 1:
-		/* We expect exactly one buffer with the request */
+		 
 		break;
 	case 0:
 		pr_debug(MTK_DBG_VCODEC_STR "No buffer provided with the request.");
@@ -675,7 +671,7 @@ static void mtk_init_vdec_params(struct mtk_vcodec_dec_ctx *ctx)
 			MTK_VDEC_FORMAT_H264_SLICE | MTK_VDEC_FORMAT_MM21;
 	mtk_vcodec_get_supported_formats(ctx);
 
-	/* Support request api for output plane */
+	 
 	src_vq->supports_requests = true;
 	src_vq->requires_requests = true;
 }
@@ -720,7 +716,7 @@ const struct mtk_vcodec_dec_pdata mtk_vdec_8183_pdata = {
 	.hw_arch = MTK_VDEC_PURE_SINGLE_CORE,
 };
 
-/* This platform data is used for one lat and one core architecture. */
+ 
 const struct mtk_vcodec_dec_pdata mtk_lat_sig_core_pdata = {
 	.init_vdec_params = mtk_init_vdec_params,
 	.ctrls_setup = mtk_vcodec_dec_ctrls_setup,

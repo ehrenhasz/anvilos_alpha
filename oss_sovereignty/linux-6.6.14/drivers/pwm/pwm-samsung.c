@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2007 Ben Dooks
- * Copyright (c) 2008 Simtec Electronics
- *     Ben Dooks <ben@simtec.co.uk>, <ben-linux@fluff.org>
- * Copyright (c) 2013 Tomasz Figa <tomasz.figa@gmail.com>
- * Copyright (c) 2017 Samsung Electronics Co., Ltd.
- *
- * PWM driver for Samsung SoCs
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/clk.h>
@@ -23,7 +15,7 @@
 #include <linux/spinlock.h>
 #include <linux/time.h>
 
-/* For struct samsung_timer_variant and samsung_pwm_lock. */
+ 
 #include <clocksource/samsung_pwm.h>
 
 #define REG_TCFG0			0x00
@@ -39,14 +31,7 @@
 #define TCFG1_MUX_MASK			0xf
 #define TCFG1_SHIFT(chan)		(4 * (chan))
 
-/*
- * Each channel occupies 4 bits in TCON register, but there is a gap of 4
- * bits (one channel) after channel 0, so channels have different numbering
- * when accessing TCON register. See to_tcon_channel() function.
- *
- * In addition, the location of autoreload bit for channel 4 (TCON channel 5)
- * in its set of bits is 2 as opposed to 3 for other channels.
- */
+ 
 #define TCON_START(chan)		BIT(4 * (chan) + 0)
 #define TCON_MANUALUPDATE(chan)		BIT(4 * (chan) + 1)
 #define TCON_INVERT(chan)		BIT(4 * (chan) + 2)
@@ -55,29 +40,14 @@
 #define TCON_AUTORELOAD(chan)		\
 	((chan < 5) ? _TCON_AUTORELOAD(chan) : _TCON_AUTORELOAD4(chan))
 
-/**
- * struct samsung_pwm_channel - private data of PWM channel
- * @period_ns:	current period in nanoseconds programmed to the hardware
- * @duty_ns:	current duty time in nanoseconds programmed to the hardware
- * @tin_ns:	time of one timer tick in nanoseconds with current timer rate
- */
+ 
 struct samsung_pwm_channel {
 	u32 period_ns;
 	u32 duty_ns;
 	u32 tin_ns;
 };
 
-/**
- * struct samsung_pwm_chip - private data of PWM chip
- * @chip:		generic PWM chip
- * @variant:		local copy of hardware variant data
- * @inverter_mask:	inverter status for all channels - one bit per channel
- * @disabled_mask:	disabled status for all channels - one bit per channel
- * @base:		base address of mapped PWM registers
- * @base_clk:		base clock used to drive the timers
- * @tclk0:		external clock 0 (can be ERR_PTR if not present)
- * @tclk1:		external clock 1 (can be ERR_PTR if not present)
- */
+ 
 struct samsung_pwm_chip {
 	struct pwm_chip chip;
 	struct samsung_pwm_variant variant;
@@ -91,17 +61,7 @@ struct samsung_pwm_chip {
 };
 
 #ifndef CONFIG_CLKSRC_SAMSUNG_PWM
-/*
- * PWM block is shared between pwm-samsung and samsung_pwm_timer drivers
- * and some registers need access synchronization. If both drivers are
- * compiled in, the spinlock is defined in the clocksource driver,
- * otherwise following definition is used.
- *
- * Currently we do not need any more complex synchronization method
- * because all the supported SoCs contain only one instance of the PWM
- * IP. Should this change, both drivers will need to be modified to
- * properly synchronize accesses to particular instances.
- */
+ 
 static DEFINE_SPINLOCK(samsung_pwm_lock);
 #endif
 
@@ -113,7 +73,7 @@ struct samsung_pwm_chip *to_samsung_pwm_chip(struct pwm_chip *chip)
 
 static inline unsigned int to_tcon_channel(unsigned int channel)
 {
-	/* TCON register has a gap of 4 bits (1 channel) after channel 0 */
+	 
 	return (channel == 0) ? 0 : (channel + 1);
 }
 
@@ -202,21 +162,14 @@ static unsigned long pwm_samsung_calc_tin(struct samsung_pwm_chip *chip,
 	rate = pwm_samsung_get_tin_rate(chip, chan);
 	dev_dbg(chip->chip.dev, "tin parent at %lu\n", rate);
 
-	/*
-	 * Compare minimum PWM frequency that can be achieved with possible
-	 * divider settings and choose the lowest divisor that can generate
-	 * frequencies lower than requested.
-	 */
+	 
 	if (variant->bits < 32) {
-		/* Only for s3c24xx */
+		 
 		for (div = variant->div_base; div < 4; ++div)
 			if ((rate >> (variant->bits + div)) < freq)
 				break;
 	} else {
-		/*
-		 * Other variants have enough counter bits to generate any
-		 * requested rate, so no need to check higher divisors.
-		 */
+		 
 		div = variant->div_base;
 	}
 
@@ -290,10 +243,7 @@ static void pwm_samsung_disable(struct pwm_chip *chip, struct pwm_device *pwm)
 	tcon &= ~TCON_AUTORELOAD(tcon_chan);
 	writel(tcon, our_chip->base + REG_TCON);
 
-	/*
-	 * In case the PWM is at 100% duty cycle, force a manual
-	 * update to prevent the signal from staying high.
-	 */
+	 
 	if (readl(our_chip->base + REG_TCMPB(pwm->hwpwm)) == (u32)-1U)
 		__pwm_samsung_manual_update(our_chip, pwm);
 
@@ -324,10 +274,10 @@ static int __pwm_samsung_config(struct pwm_chip *chip, struct pwm_device *pwm,
 	tcnt = readl(our_chip->base + REG_TCNTB(pwm->hwpwm));
 	oldtcmp = readl(our_chip->base + REG_TCMPB(pwm->hwpwm));
 
-	/* We need tick count for calculation, not last tick. */
+	 
 	++tcnt;
 
-	/* Check to see if we are changing the clock rate of the PWM. */
+	 
 	if (chan->period_ns != period_ns || force_period) {
 		unsigned long tin_rate;
 		u32 period;
@@ -345,36 +295,32 @@ static int __pwm_samsung_config(struct pwm_chip *chip, struct pwm_device *pwm,
 		tcnt = period_ns / tin_ns;
 	}
 
-	/* Period is too short. */
+	 
 	if (tcnt <= 1)
 		return -ERANGE;
 
-	/* Note that counters count down. */
+	 
 	tcmp = duty_ns / tin_ns;
 
-	/* 0% duty is not available */
+	 
 	if (!tcmp)
 		++tcmp;
 
 	tcmp = tcnt - tcmp;
 
-	/* Decrement to get tick numbers, instead of tick counts. */
+	 
 	--tcnt;
-	/* -1UL will give 100% duty. */
+	 
 	--tcmp;
 
 	dev_dbg(our_chip->chip.dev,
 				"tin_ns=%u, tcmp=%u/%u\n", tin_ns, tcmp, tcnt);
 
-	/* Update PWM registers. */
+	 
 	writel(tcnt, our_chip->base + REG_TCNTB(pwm->hwpwm));
 	writel(tcmp, our_chip->base + REG_TCMPB(pwm->hwpwm));
 
-	/*
-	 * In case the PWM is currently at 100% duty cycle, force a manual
-	 * update to prevent the signal staying high if the PWM is disabled
-	 * shortly afer this update (before it autoreloaded the new values).
-	 */
+	 
 	if (oldtcmp == (u32) -1) {
 		dev_dbg(our_chip->chip.dev, "Forcing manual update");
 		pwm_samsung_manual_update(our_chip, pwm);
@@ -424,7 +370,7 @@ static int pwm_samsung_set_polarity(struct pwm_chip *chip,
 	struct samsung_pwm_chip *our_chip = to_samsung_pwm_chip(chip);
 	bool invert = (polarity == PWM_POLARITY_NORMAL);
 
-	/* Inverted means normal in the hardware. */
+	 
 	pwm_samsung_set_invert(our_chip, pwm->hwpwm, invert);
 
 	return 0;
@@ -453,11 +399,7 @@ static int pwm_samsung_apply(struct pwm_chip *chip, struct pwm_device *pwm,
 		return 0;
 	}
 
-	/*
-	 * We currently avoid using 64bit arithmetic by using the
-	 * fact that anything faster than 1Hz is easily representable
-	 * by 32bits.
-	 */
+	 
 	if (state->period > NSEC_PER_SEC)
 		return -ERANGE;
 
@@ -600,7 +542,7 @@ static int pwm_samsung_probe(struct platform_device *pdev)
 		if (chip->variant.output_mask & BIT(chan))
 			pwm_samsung_set_invert(chip, chan, true);
 
-	/* Following clocks are optional. */
+	 
 	chip->tclk0 = devm_clk_get(&pdev->dev, "pwm-tclk0");
 	chip->tclk1 = devm_clk_get(&pdev->dev, "pwm-tclk1");
 
@@ -651,7 +593,7 @@ static int pwm_samsung_resume(struct device *dev)
 		if (chan->period_ns) {
 			__pwm_samsung_config(chip, pwm, chan->duty_ns,
 					     chan->period_ns, true);
-			/* needed to make PWM disable work on Odroid-XU3 */
+			 
 			pwm_samsung_manual_update(our_chip, pwm);
 		}
 

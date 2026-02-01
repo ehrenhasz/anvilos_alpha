@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * UIO driver fo Humusoft MF624 DAQ card.
- * Copyright (C) 2011 Rostislav Lisovy <lisovy@gmail.com>,
- *                    Czech Technical University in Prague
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/module.h>
@@ -19,7 +15,7 @@
 #define PCI_SUBVENDOR_ID_HUMUSOFT	0x186c
 #define PCI_SUBDEVICE_DEVICE		0x0624
 
-/* BAR0 Interrupt control/status register */
+ 
 #define INTCSR				0x4C
 #define INTCSR_ADINT_ENABLE		(1 << 0)
 #define INTCSR_CTR4INT_ENABLE		(1 << 3)
@@ -149,17 +145,17 @@ static int mf624_pci_probe(struct pci_dev *dev, const struct pci_device_id *id)
 	info->name = "mf624";
 	info->version = "0.0.1";
 
-	/* Note: Datasheet says device uses BAR0, BAR1, BAR2 -- do not trust it */
+	 
 
-	/* BAR0 */
+	 
 	if (mf624_setup_mem(dev, 0, &info->mem[0], "PCI chipset, interrupts, status "
 			    "bits, special functions"))
 		goto out_release;
-	/* BAR2 */
+	 
 	if (mf624_setup_mem(dev, 2, &info->mem[1], "ADC, DAC, DIO"))
 		goto out_unmap0;
 
-	/* BAR4 */
+	 
 	if (mf624_setup_mem(dev, 4, &info->mem[2], "Counter/timer chip"))
 		goto out_unmap1;
 

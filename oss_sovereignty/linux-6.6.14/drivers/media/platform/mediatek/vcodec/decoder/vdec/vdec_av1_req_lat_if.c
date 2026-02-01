@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2023 MediaTek Inc.
- * Author: Xiaoyong Lu <xiaoyong.lu@mediatek.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/slab.h>
@@ -85,17 +82,7 @@ static const short div_lut[DIV_LUT_NUM + 1] = {
 	8240,  8224,  8208,  8192,
 };
 
-/**
- * struct vdec_av1_slice_init_vsi - VSI used to initialize instance
- * @architecture:	architecture type
- * @reserved:		reserved
- * @core_vsi:		for core vsi
- * @cdf_table_addr:	cdf table addr
- * @cdf_table_size:	cdf table size
- * @iq_table_addr:	iq table addr
- * @iq_table_size:	iq table size
- * @vsi_size:		share vsi structure size
- */
+ 
 struct vdec_av1_slice_init_vsi {
 	u32 architecture;
 	u32 reserved;
@@ -107,14 +94,7 @@ struct vdec_av1_slice_init_vsi {
 	u32 vsi_size;
 };
 
-/**
- * struct vdec_av1_slice_mem - memory address and size
- * @buf:		dma_addr padding
- * @dma_addr:		buffer address
- * @size:		buffer size
- * @dma_addr_end:	buffer end address
- * @padding:		for padding
- */
+ 
 struct vdec_av1_slice_mem {
 	union {
 		u64 buf;
@@ -127,15 +107,7 @@ struct vdec_av1_slice_mem {
 	};
 };
 
-/**
- * struct vdec_av1_slice_state - decoding state
- * @err                   : err type for decode
- * @full                  : transcoded buffer is full or not
- * @timeout               : decode timeout or not
- * @perf                  : performance enable
- * @crc                   : hw checksum
- * @out_size              : hw output size
- */
+ 
 struct vdec_av1_slice_state {
 	int err;
 	u32 full;
@@ -145,9 +117,7 @@ struct vdec_av1_slice_state {
 	u32 out_size;
 };
 
-/*
- * enum vdec_av1_slice_resolution_level - resolution level
- */
+ 
 enum vdec_av1_slice_resolution_level {
 	AV1_RES_NONE,
 	AV1_RES_FHD,
@@ -155,9 +125,7 @@ enum vdec_av1_slice_resolution_level {
 	AV1_RES_8K,
 };
 
-/*
- * enum vdec_av1_slice_frame_type - av1 frame type
- */
+ 
 enum vdec_av1_slice_frame_type {
 	AV1_KEY_FRAME = 0,
 	AV1_INTER_FRAME,
@@ -166,9 +134,7 @@ enum vdec_av1_slice_frame_type {
 	AV1_FRAME_TYPES,
 };
 
-/*
- * enum vdec_av1_slice_reference_mode - reference mode type
- */
+ 
 enum vdec_av1_slice_reference_mode {
 	AV1_SINGLE_REFERENCE = 0,
 	AV1_COMPOUND_REFERENCE,
@@ -176,26 +142,14 @@ enum vdec_av1_slice_reference_mode {
 	AV1_REFERENCE_MODES,
 };
 
-/**
- * struct vdec_av1_slice_tile_group - info for each tile
- * @num_tiles:			tile number
- * @tile_size:			input size for each tile
- * @tile_start_offset:		tile offset to input buffer
- */
+ 
 struct vdec_av1_slice_tile_group {
 	u32 num_tiles;
 	u32 tile_size[V4L2_AV1_MAX_TILE_COUNT];
 	u32 tile_start_offset[V4L2_AV1_MAX_TILE_COUNT];
 };
 
-/**
- * struct vdec_av1_slice_scale_factors - scale info for each ref frame
- * @is_scaled:  frame is scaled or not
- * @x_scale:    frame width scale coefficient
- * @y_scale:    frame height scale coefficient
- * @x_step:     width step for x_scale
- * @y_step:     height step for y_scale
- */
+ 
 struct vdec_av1_slice_scale_factors {
 	u8 is_scaled;
 	int x_scale;
@@ -204,28 +158,14 @@ struct vdec_av1_slice_scale_factors {
 	int y_step;
 };
 
-/**
- * struct vdec_av1_slice_frame_refs - ref frame info
- * @ref_fb_idx:         ref slot index
- * @ref_map_idx:        ref frame index
- * @scale_factors:      scale factors for each ref frame
- */
+ 
 struct vdec_av1_slice_frame_refs {
 	int ref_fb_idx;
 	int ref_map_idx;
 	struct vdec_av1_slice_scale_factors scale_factors;
 };
 
-/**
- * struct vdec_av1_slice_gm - AV1 Global Motion parameters
- * @wmtype:     The type of global motion transform used
- * @wmmat:      gm_params
- * @alpha:      alpha info
- * @beta:       beta info
- * @gamma:      gamma info
- * @delta:      delta info
- * @invalid:    is invalid or not
- */
+ 
 struct vdec_av1_slice_gm {
 	int wmtype;
 	int wmmat[8];
@@ -236,29 +176,14 @@ struct vdec_av1_slice_gm {
 	char invalid;
 };
 
-/**
- * struct vdec_av1_slice_sm - AV1 Skip Mode parameters
- * @skip_mode_allowed:  Skip Mode is allowed or not
- * @skip_mode_present:  specified that the skip_mode will be present or not
- * @skip_mode_frame:    specifies the frames to use for compound prediction
- */
+ 
 struct vdec_av1_slice_sm {
 	u8 skip_mode_allowed;
 	u8 skip_mode_present;
 	int skip_mode_frame[2];
 };
 
-/**
- * struct vdec_av1_slice_seg - AV1 Segmentation params
- * @segmentation_enabled:        this frame makes use of the segmentation tool or not
- * @segmentation_update_map:     segmentation map are updated during the decoding frame
- * @segmentation_temporal_update:segmentation map are coded relative the existing segmentaion map
- * @segmentation_update_data:    new parameters are about to be specified for each segment
- * @feature_data:                specifies the feature data for a segment feature
- * @feature_enabled_mask:        the corresponding feature value is coded or not.
- * @segid_preskip:               segment id will be read before the skip syntax element.
- * @last_active_segid:           the highest numbered segment id that has some enabled feature
- */
+ 
 struct vdec_av1_slice_seg {
 	u8 segmentation_enabled;
 	u8 segmentation_update_map;
@@ -270,16 +195,7 @@ struct vdec_av1_slice_seg {
 	int last_active_segid;
 };
 
-/**
- * struct vdec_av1_slice_delta_q_lf - AV1 Loop Filter delta parameters
- * @delta_q_present:    specified whether quantizer index delta values are present
- * @delta_q_res:        specifies the left shift which should be applied to decoded quantizer index
- * @delta_lf_present:   specifies whether loop filter delta values are present
- * @delta_lf_res:       specifies the left shift which should be applied to decoded
- *                      loop filter delta values
- * @delta_lf_multi:     specifies that separate loop filter deltas are sent for horizontal
- *                      luma edges,vertical luma edges,the u edges, and the v edges.
- */
+ 
 struct vdec_av1_slice_delta_q_lf {
 	u8 delta_q_present;
 	u8 delta_q_res;
@@ -288,25 +204,7 @@ struct vdec_av1_slice_delta_q_lf {
 	u8 delta_lf_multi;
 };
 
-/**
- * struct vdec_av1_slice_quantization - AV1 Quantization params
- * @base_q_idx:         indicates the base frame qindex. This is used for Y AC
- *                      coefficients and as the base value for the other quantizers.
- * @qindex:             qindex
- * @delta_qydc:         indicates the Y DC quantizer relative to base_q_idx
- * @delta_qudc:         indicates the U DC quantizer relative to base_q_idx.
- * @delta_quac:         indicates the U AC quantizer relative to base_q_idx
- * @delta_qvdc:         indicates the V DC quantizer relative to base_q_idx
- * @delta_qvac:         indicates the V AC quantizer relative to base_q_idx
- * @using_qmatrix:      specifies that the quantizer matrix will be used to
- *                      compute quantizers
- * @qm_y:               specifies the level in the quantizer matrix that should
- *                      be used for luma plane decoding
- * @qm_u:               specifies the level in the quantizer matrix that should
- *                      be used for chroma U plane decoding.
- * @qm_v:               specifies the level in the quantizer matrix that should be
- *                      used for chroma V plane decoding
- */
+ 
 struct vdec_av1_slice_quantization {
 	int base_q_idx;
 	int qindex[V4L2_AV1_MAX_SEGMENTS];
@@ -321,14 +219,7 @@ struct vdec_av1_slice_quantization {
 	u8 qm_v;
 };
 
-/**
- * struct vdec_av1_slice_lr - AV1 Loop Restauration parameters
- * @use_lr:                     whether to use loop restoration
- * @use_chroma_lr:              whether to use chroma loop restoration
- * @frame_restoration_type:     specifies the type of restoration used for each plane
- * @loop_restoration_size:      pecifies the size of loop restoration units in units
- *                              of samples in the current plane
- */
+ 
 struct vdec_av1_slice_lr {
 	u8 use_lr;
 	u8 use_chroma_lr;
@@ -336,20 +227,7 @@ struct vdec_av1_slice_lr {
 	u32 loop_restoration_size[V4L2_AV1_NUM_PLANES_MAX];
 };
 
-/**
- * struct vdec_av1_slice_loop_filter - AV1 Loop filter parameters
- * @loop_filter_level:          an array containing loop filter strength values.
- * @loop_filter_ref_deltas:     contains the adjustment needed for the filter
- *                              level based on the chosen reference frame
- * @loop_filter_mode_deltas:    contains the adjustment needed for the filter
- *                              level based on the chosen mode
- * @loop_filter_sharpness:      indicates the sharpness level. The loop_filter_level
- *                              and loop_filter_sharpness together determine when
- *                              a block edge is filtered, and by how much the
- *                              filtering can change the sample values
- * @loop_filter_delta_enabled:  filetr level depends on the mode and reference
- *                              frame used to predict a block
- */
+ 
 struct vdec_av1_slice_loop_filter {
 	u8 loop_filter_level[4];
 	int loop_filter_ref_deltas[V4L2_AV1_TOTAL_REFS_PER_FRAME];
@@ -358,14 +236,7 @@ struct vdec_av1_slice_loop_filter {
 	u8 loop_filter_delta_enabled;
 };
 
-/**
- * struct vdec_av1_slice_cdef - AV1 CDEF parameters
- * @cdef_damping:       controls the amount of damping in the deringing filter
- * @cdef_y_strength:    specifies the strength of the primary filter and secondary filter
- * @cdef_uv_strength:   specifies the strength of the primary filter and secondary filter
- * @cdef_bits:          specifies the number of bits needed to specify which
- *                      CDEF filter to apply
- */
+ 
 struct vdec_av1_slice_cdef {
 	u8 cdef_damping;
 	u8 cdef_y_strength[8];
@@ -373,14 +244,7 @@ struct vdec_av1_slice_cdef {
 	u8 cdef_bits;
 };
 
-/**
- * struct vdec_av1_slice_mfmv - AV1 mfmv parameters
- * @mfmv_valid_ref:     mfmv_valid_ref
- * @mfmv_dir:           mfmv_dir
- * @mfmv_ref_to_cur:    mfmv_ref_to_cur
- * @mfmv_ref_frame_idx: mfmv_ref_frame_idx
- * @mfmv_count:         mfmv_count
- */
+ 
 struct vdec_av1_slice_mfmv {
 	u32 mfmv_valid_ref[3];
 	u32 mfmv_dir[3];
@@ -389,16 +253,7 @@ struct vdec_av1_slice_mfmv {
 	int mfmv_count;
 };
 
-/**
- * struct vdec_av1_slice_tile - AV1 Tile info
- * @tile_cols:                  specifies the number of tiles across the frame
- * @tile_rows:                  pecifies the number of tiles down the frame
- * @mi_col_starts:              an array specifying the start column
- * @mi_row_starts:              an array specifying the start row
- * @context_update_tile_id:     specifies which tile to use for the CDF update
- * @uniform_tile_spacing_flag:  tiles are uniformly spaced across the frame
- *                              or the tile sizes are coded
- */
+ 
 struct vdec_av1_slice_tile {
 	u8 tile_cols;
 	u8 tile_rows;
@@ -408,53 +263,7 @@ struct vdec_av1_slice_tile {
 	u8 uniform_tile_spacing_flag;
 };
 
-/**
- * struct vdec_av1_slice_uncompressed_header - Represents an AV1 Frame Header OBU
- * @use_ref_frame_mvs:          use_ref_frame_mvs flag
- * @order_hint:                 specifies OrderHintBits least significant bits of the expected
- * @gm:                         global motion param
- * @upscaled_width:             the upscaled width
- * @frame_width:                frame's width
- * @frame_height:               frame's height
- * @reduced_tx_set:             frame is restricted to a reduced subset of the full
- *                              set of transform types
- * @tx_mode:                    specifies how the transform size is determined
- * @uniform_tile_spacing_flag:  tiles are uniformly spaced across the frame
- *                              or the tile sizes are coded
- * @interpolation_filter:       specifies the filter selection used for performing inter prediction
- * @allow_warped_motion:        motion_mode may be present or not
- * @is_motion_mode_switchable : euqlt to 0 specifies that only the SIMPLE motion mode will be used
- * @reference_mode :            frame reference mode selected
- * @allow_high_precision_mv:    specifies that motion vectors are specified to
- *                              quarter pel precision or to eighth pel precision
- * @allow_intra_bc:             ubducates that intra block copy may be used in this frame
- * @force_integer_mv:           specifies motion vectors will always be integers or
- *                              can contain fractional bits
- * @allow_screen_content_tools: intra blocks may use palette encoding
- * @error_resilient_mode:       error resislent mode is enable/disable
- * @frame_type:                 specifies the AV1 frame type
- * @primary_ref_frame:          specifies which reference frame contains the CDF values
- *                              and other state that should be loaded at the start of the frame
- *                              slots will be updated with the current frame after it is decoded
- * @disable_frame_end_update_cdf:indicates the end of frame CDF update is disable or enable
- * @disable_cdf_update:         specified whether the CDF update in the symbol
- *                              decoding process should be disables
- * @skip_mode:                  av1 skip mode parameters
- * @seg:                        av1 segmentaon parameters
- * @delta_q_lf:                 av1 delta loop fileter
- * @quant:                      av1 Quantization params
- * @lr:                         av1 Loop Restauration parameters
- * @superres_denom:             the denominator for the upscaling ratio
- * @loop_filter:                av1 Loop filter parameters
- * @cdef:                       av1 CDEF parameters
- * @mfmv:                       av1 mfmv parameters
- * @tile:                       av1 Tile info
- * @frame_is_intra:             intra frame
- * @loss_less_array:            loss less array
- * @coded_loss_less:            coded lsss less
- * @mi_rows:                    size of mi unit in rows
- * @mi_cols:                    size of mi unit in cols
- */
+ 
 struct vdec_av1_slice_uncompressed_header {
 	u8 use_ref_frame_mvs;
 	int order_hint;
@@ -495,27 +304,7 @@ struct vdec_av1_slice_uncompressed_header {
 	u32 mi_cols;
 };
 
-/**
- * struct vdec_av1_slice_seq_header - Represents an AV1 Sequence OBU
- * @bitdepth:                   the bitdepth to use for the sequence
- * @enable_superres:            specifies whether the use_superres syntax element may be present
- * @enable_filter_intra:        specifies the use_filter_intra syntax element may be present
- * @enable_intra_edge_filter:   whether the intra edge filtering process should be enabled
- * @enable_interintra_compound: specifies the mode info fo rinter blocks may
- *                              contain the syntax element interintra
- * @enable_masked_compound:     specifies the mode info fo rinter blocks may
- *                              contain the syntax element compound_type
- * @enable_dual_filter:         the inter prediction filter type may be specified independently
- * @enable_jnt_comp:            distance weights process may be used for inter prediction
- * @mono_chrome:                indicates the video does not contain U and V color planes
- * @enable_order_hint:          tools based on the values of order hints may be used
- * @order_hint_bits:            the number of bits used for the order_hint field at each frame
- * @use_128x128_superblock:     indicates superblocks contain 128*128 luma samples
- * @subsampling_x:              the chroma subsamling format
- * @subsampling_y:              the chroma subsamling format
- * @max_frame_width:            the maximum frame width for the frames represented by sequence
- * @max_frame_height:           the maximum frame height for the frames represented by sequence
- */
+ 
 struct vdec_av1_slice_seq_header {
 	u8 bitdepth;
 	u8 enable_superres;
@@ -535,19 +324,7 @@ struct vdec_av1_slice_seq_header {
 	u32 max_frame_height;
 };
 
-/**
- * struct vdec_av1_slice_frame - Represents current Frame info
- * @uh:                         uncompressed header info
- * @seq:                        sequence header info
- * @large_scale_tile:           is large scale mode
- * @cur_ts:                     current frame timestamp
- * @prev_fb_idx:                prev slot id
- * @ref_frame_sign_bias:        arrays for ref_frame sign bias
- * @order_hints:                arrays for ref_frame order hint
- * @ref_frame_valid:            arrays for valid ref_frame
- * @ref_frame_map:              map to slot frame info
- * @frame_refs:                 ref_frame info
- */
+ 
 struct vdec_av1_slice_frame {
 	struct vdec_av1_slice_uncompressed_header uh;
 	struct vdec_av1_slice_seq_header seq;
@@ -561,32 +338,14 @@ struct vdec_av1_slice_frame {
 	struct vdec_av1_slice_frame_refs frame_refs[V4L2_AV1_REFS_PER_FRAME];
 };
 
-/**
- * struct vdec_av1_slice_work_buffer - work buffer for lat
- * @mv_addr:    mv buffer memory info
- * @cdf_addr:   cdf buffer memory info
- * @segid_addr: segid buffer memory info
- */
+ 
 struct vdec_av1_slice_work_buffer {
 	struct vdec_av1_slice_mem mv_addr;
 	struct vdec_av1_slice_mem cdf_addr;
 	struct vdec_av1_slice_mem segid_addr;
 };
 
-/**
- * struct vdec_av1_slice_frame_info - frame info for each slot
- * @frame_type:         frame type
- * @frame_is_intra:     is intra frame
- * @order_hint:         order hint
- * @order_hints:        referece frame order hint
- * @upscaled_width:     upscale width
- * @pic_pitch:          buffer pitch
- * @frame_width:        frane width
- * @frame_height:       frame height
- * @mi_rows:            rows in mode info
- * @mi_cols:            cols in mode info
- * @ref_count:          mark to reference frame counts
- */
+ 
 struct vdec_av1_slice_frame_info {
 	u8 frame_type;
 	u8 frame_is_intra;
@@ -601,64 +360,36 @@ struct vdec_av1_slice_frame_info {
 	int ref_count;
 };
 
-/**
- * struct vdec_av1_slice_slot - slot info that needs to be saved in the global instance
- * @frame_info: frame info for each slot
- * @timestamp:  time stamp info
- */
+ 
 struct vdec_av1_slice_slot {
 	struct vdec_av1_slice_frame_info frame_info[AV1_MAX_FRAME_BUF_COUNT];
 	u64 timestamp[AV1_MAX_FRAME_BUF_COUNT];
 };
 
-/**
- * struct vdec_av1_slice_fb - frame buffer for decoding
- * @y:  current y buffer address info
- * @c:  current c buffer address info
- */
+ 
 struct vdec_av1_slice_fb {
 	struct vdec_av1_slice_mem y;
 	struct vdec_av1_slice_mem c;
 };
 
-/**
- * struct vdec_av1_slice_vsi - exchange frame information between Main CPU and MicroP
- * @bs:			input buffer info
- * @work_buffer:	working buffe for hw
- * @cdf_table:		cdf_table buffer
- * @cdf_tmp:		cdf temp buffer
- * @rd_mv:		mv buffer for lat output , core input
- * @ube:		ube buffer
- * @trans:		transcoded buffer
- * @err_map:		err map buffer
- * @row_info:		row info buffer
- * @fb:			current y/c buffer
- * @ref:		ref y/c buffer
- * @iq_table:		iq table buffer
- * @tile:		tile buffer
- * @slots:		slots info for each frame
- * @slot_id:		current frame slot id
- * @frame:		current frame info
- * @state:		status after decode done
- * @cur_lst_tile_id:	tile id for large scale
- */
+ 
 struct vdec_av1_slice_vsi {
-	/* lat */
+	 
 	struct vdec_av1_slice_mem bs;
 	struct vdec_av1_slice_work_buffer work_buffer[AV1_MAX_FRAME_BUF_COUNT];
 	struct vdec_av1_slice_mem cdf_table;
 	struct vdec_av1_slice_mem cdf_tmp;
-	/* LAT stage's output, Core stage's input */
+	 
 	struct vdec_av1_slice_mem rd_mv;
 	struct vdec_av1_slice_mem ube;
 	struct vdec_av1_slice_mem trans;
 	struct vdec_av1_slice_mem err_map;
 	struct vdec_av1_slice_mem row_info;
-	/* core */
+	 
 	struct vdec_av1_slice_fb fb;
 	struct vdec_av1_slice_fb ref[V4L2_AV1_REFS_PER_FRAME];
 	struct vdec_av1_slice_mem iq_table;
-	/* lat and core share*/
+	 
 	struct vdec_av1_slice_mem tile;
 	struct vdec_av1_slice_slot slots;
 	s8 slot_id;
@@ -667,43 +398,14 @@ struct vdec_av1_slice_vsi {
 	u32 cur_lst_tile_id;
 };
 
-/**
- * struct vdec_av1_slice_pfc - per-frame context that contains a local vsi.
- *                             pass it from lat to core
- * @vsi:        local vsi. copy to/from remote vsi before/after decoding
- * @ref_idx:    reference buffer timestamp
- * @seq:        picture sequence
- */
+ 
 struct vdec_av1_slice_pfc {
 	struct vdec_av1_slice_vsi vsi;
 	u64 ref_idx[V4L2_AV1_REFS_PER_FRAME];
 	int seq;
 };
 
-/**
- * struct vdec_av1_slice_instance - represent one av1 instance
- * @ctx:                pointer to codec's context
- * @vpu:                VPU instance
- * @iq_table:           iq table buffer
- * @cdf_table:          cdf table buffer
- * @mv:                 mv working buffer
- * @cdf:                cdf working buffer
- * @seg:                segmentation working buffer
- * @cdf_temp:           cdf temp buffer
- * @tile:               tile buffer
- * @slots:              slots info
- * @tile_group:         tile_group entry
- * @level:              level of current resolution
- * @width:              width of last picture
- * @height:             height of last picture
- * @frame_type:         frame_type of last picture
- * @irq_enabled:        irq to Main CPU or MicroP
- * @inneracing_mode:    is inneracing mode
- * @init_vsi:           vsi used for initialized AV1 instance
- * @vsi:                vsi used for decoding/flush ...
- * @core_vsi:           vsi used for Core stage
- * @seq:                global picture sequence
- */
+ 
 struct vdec_av1_slice_instance {
 	struct mtk_vcodec_dec_ctx *ctx;
 	struct vdec_vpu_inst vpu;
@@ -719,7 +421,7 @@ struct vdec_av1_slice_instance {
 	struct vdec_av1_slice_slot slots;
 	struct vdec_av1_slice_tile_group tile_group;
 
-	/* for resolution change and get_pic_info */
+	 
 	enum vdec_av1_slice_resolution_level level;
 	u32 width;
 	u32 height;
@@ -728,7 +430,7 @@ struct vdec_av1_slice_instance {
 	u32 irq_enabled;
 	u32 inneracing_mode;
 
-	/* MicroP vsi */
+	 
 	union {
 		struct vdec_av1_slice_init_vsi *init_vsi;
 		struct vdec_av1_slice_vsi *vsi;
@@ -880,7 +582,7 @@ static void vdec_av1_slice_cleanup_slots(struct vdec_av1_slice_slot *slots,
 		u64 timestamp = slots->timestamp[slot_id];
 		bool ref_used = false;
 
-		/* ignored unused slots */
+		 
 		if (slots->frame_info[slot_id].ref_count == 0)
 			continue;
 
@@ -924,7 +626,7 @@ static void vdec_av1_slice_setup_slot(struct vdec_av1_slice_instance *instance,
 	cur_frame_info->mi_cols = ((uh->frame_width + 7) >> 3) << 1;
 	cur_frame_info->mi_rows = ((uh->frame_height + 7) >> 3) << 1;
 
-	/* ensure current frame is properly mapped if referenced */
+	 
 	for (ref_id = 0; ref_id < V4L2_AV1_TOTAL_REFS_PER_FRAME; ref_id++) {
 		u64 timestamp = vsi->slots.timestamp[vsi->slot_id];
 
@@ -945,16 +647,16 @@ static int vdec_av1_slice_alloc_working_buffer(struct vdec_av1_slice_instance *i
 	h = vsi->frame.uh.frame_height;
 
 	if (w > VCODEC_DEC_4K_CODED_WIDTH || h > VCODEC_DEC_4K_CODED_HEIGHT)
-		/* 8K */
+		 
 		return -EINVAL;
 
 	if (w > MTK_VDEC_MAX_W || h > MTK_VDEC_MAX_H) {
-		/* 4K */
+		 
 		level = AV1_RES_4K;
 		max_w = VCODEC_DEC_4K_CODED_WIDTH;
 		max_h = VCODEC_DEC_4K_CODED_HEIGHT;
 	} else {
-		/* FHD */
+		 
 		level = AV1_RES_FHD;
 		max_w = MTK_VDEC_MAX_W;
 		max_h = MTK_VDEC_MAX_H;
@@ -1077,9 +779,9 @@ static short vdec_av1_slice_resolve_divisor_32(u32 D, short *shift)
 	int e;
 
 	*shift = vdec_av1_slice_get_msb(D);
-	/* e is obtained from D after resetting the most significant 1 bit. */
+	 
 	e = D - ((u32)1 << *shift);
-	/* Get the most significant DIV_LUT_BITS (8) bits of e into f */
+	 
 	if (*shift > DIV_LUT_BITS)
 		f = AV1_DIV_ROUND_UP_POW2(e, *shift - DIV_LUT_BITS);
 	else
@@ -1087,7 +789,7 @@ static short vdec_av1_slice_resolve_divisor_32(u32 D, short *shift)
 	if (f > DIV_LUT_NUM)
 		return -1;
 	*shift += DIV_LUT_PREC_BITS;
-	/* Use f as lookup into the precomputed table of multipliers */
+	 
 	return div_lut[f];
 }
 
@@ -1552,7 +1254,7 @@ static int vdec_av1_slice_setup_pfc(struct vdec_av1_slice_instance *instance,
 	struct vdec_av1_slice_vsi *vsi = &pfc->vsi;
 	int ret = 0;
 
-	/* frame header */
+	 
 	ctrl_fh = (struct v4l2_ctrl_av1_frame *)
 		  vdec_av1_get_ctrl_ptr(instance->ctx,
 					V4L2_CID_STATELESS_AV1_FRAME);
@@ -1565,7 +1267,7 @@ static int vdec_av1_slice_setup_pfc(struct vdec_av1_slice_instance *instance,
 	if (IS_ERR(ctrl_seq))
 		return PTR_ERR(ctrl_seq);
 
-	/* setup vsi information */
+	 
 	vdec_av1_slice_setup_seq(&vsi->frame.seq, ctrl_seq);
 	vdec_av1_slice_setup_uh(instance, &vsi->frame, ctrl_fh);
 	vdec_av1_slice_setup_operating_mode(instance, &vsi->frame);
@@ -1595,7 +1297,7 @@ static void vdec_av1_slice_setup_lat_buffer(struct vdec_av1_slice_instance *inst
 	vsi->ube.dma_addr = lat_buf->ctx->msg_queue.wdma_addr.dma_addr;
 	vsi->ube.size = lat_buf->ctx->msg_queue.wdma_addr.size;
 	vsi->trans.dma_addr = lat_buf->ctx->msg_queue.wdma_wptr_addr;
-	/* used to store trans end */
+	 
 	vsi->trans.dma_addr_end = lat_buf->ctx->msg_queue.wdma_rptr_addr;
 	vsi->err_map.dma_addr = lat_buf->wdma_err_addr.dma_addr;
 	vsi->err_map.size = lat_buf->wdma_err_addr.size;
@@ -1635,7 +1337,7 @@ static void vdec_av1_slice_setup_seg_buffer(struct vdec_av1_slice_instance *inst
 	struct vdec_av1_slice_uncompressed_header *uh = &vsi->frame.uh;
 	struct mtk_vcodec_mem *buf;
 
-	/* reset segment buffer */
+	 
 	if (uh->primary_ref_frame == AV1_PRIMARY_REF_NONE || !uh->seg.segmentation_enabled) {
 		mtk_vdec_debug(instance->ctx, "reset seg %d\n", vsi->slot_id);
 		if (vsi->slot_id != AV1_INVALID_IDX) {
@@ -1664,16 +1366,14 @@ static void vdec_av1_slice_setup_tile_buffer(struct vdec_av1_slice_instance *ins
 		allow_update_cdf = 1;
 
 	for (tile_num = 0; tile_num < tile_group->num_tiles; tile_num++) {
-		/* each uint32 takes place of 4 bytes */
+		 
 		tile_info_base = (AV1_TILE_BUF_SIZE * tile_num) >> 2;
 		tile_row = tile_num / tile->tile_cols;
 		tile_col = tile_num % tile->tile_cols;
 		tile_info_buf[tile_info_base + 0] = (tile_group->tile_size[tile_num] << 3);
 		tile_buf_pa = pa + tile_group->tile_start_offset[tile_num];
 
-		/* save av1 tile high 4bits(bit 32-35) address in lower 4 bits position
-		 * and clear original for hw requirement.
-		 */
+		 
 		tile_info_buf[tile_info_base + 1] = (tile_buf_pa & 0xFFFFFFF0ull) |
 			((tile_buf_pa & 0xF00000000ull) >> 32);
 		tile_info_buf[tile_info_base + 2] = (tile_buf_pa & 0xFull) << 3;
@@ -1748,9 +1448,9 @@ static int vdec_av1_slice_update_lat(struct vdec_av1_slice_instance *instance,
 	mtk_vdec_debug(instance->ctx, "frame %u LAT CRC 0x%08x, output size is %d\n",
 		       pfc->seq, vsi->state.crc[0], vsi->state.out_size);
 
-	/* buffer full, need to re-decode */
+	 
 	if (vsi->state.full) {
-		/* buffer not enough */
+		 
 		if (vsi->trans.dma_addr_end - vsi->trans.dma_addr == vsi->ube.size)
 			return -ENOMEM;
 		return -EAGAIN;
@@ -1793,24 +1493,24 @@ static int vdec_av1_slice_setup_core_buffer(struct vdec_av1_slice_instance *inst
 	h = vsi->frame.uh.frame_height;
 	size = ALIGN(w, VCODEC_DEC_ALIGNED_64) * ALIGN(h, VCODEC_DEC_ALIGNED_64);
 
-	/* frame buffer */
+	 
 	vsi->fb.y.dma_addr = fb->base_y.dma_addr;
 	if (plane == 1)
 		vsi->fb.c.dma_addr = fb->base_y.dma_addr + size;
 	else
 		vsi->fb.c.dma_addr = fb->base_c.dma_addr;
 
-	/* reference buffers */
+	 
 	vq = v4l2_m2m_get_vq(instance->ctx->m2m_ctx, V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE);
 	if (!vq)
 		return -EINVAL;
 
-	/* get current output buffer */
+	 
 	vb = &v4l2_m2m_next_dst_buf(instance->ctx->m2m_ctx)->vb2_buf;
 	if (!vb)
 		return -EINVAL;
 
-	/* get buffer address from vb2buf */
+	 
 	for (i = 0; i < V4L2_AV1_REFS_PER_FRAME; i++) {
 		struct vdec_av1_slice_fb *vref = &vsi->ref[i];
 
@@ -1889,7 +1589,7 @@ static int vdec_av1_slice_init(struct mtk_vcodec_dec_ctx *ctx)
 		goto error_vpu_init;
 	}
 
-	/* init vsi and global flags */
+	 
 	vsi = instance->vpu.vsi;
 	if (!vsi) {
 		mtk_vdec_err(ctx, "failed to get AV1 vsi\n");
@@ -1984,7 +1684,7 @@ static void vdec_av1_slice_get_pic_info(struct vdec_av1_slice_instance *instance
 static inline void vdec_av1_slice_get_dpb_size(struct vdec_av1_slice_instance *instance,
 					       u32 *dpb_sz)
 {
-	/* refer av1 specification */
+	 
 	*dpb_sz = V4L2_AV1_TOTAL_REFS_PER_FRAME + 1;
 }
 
@@ -2038,14 +1738,14 @@ static int vdec_av1_slice_lat_decode(void *h_vdec, struct mtk_vcodec_mem *bs,
 		return -EINVAL;
 
 	ctx = instance->ctx;
-	/* init msgQ for the first time */
+	 
 	if (vdec_msg_queue_init(&ctx->msg_queue, ctx,
 				vdec_av1_slice_core_decode, sizeof(*pfc))) {
 		mtk_vdec_err(ctx, "failed to init AV1 msg queue\n");
 		return -ENOMEM;
 	}
 
-	/* bs NULL means flush decoder */
+	 
 	if (!bs)
 		return vdec_av1_slice_flush(h_vdec, bs, fb, res_chg);
 
@@ -2080,7 +1780,7 @@ static int vdec_av1_slice_lat_decode(void *h_vdec, struct mtk_vcodec_mem *bs,
 		ret = mtk_vcodec_wait_for_done_ctx(ctx, MTK_INST_IRQ_RECEIVED,
 						   WAIT_INTR_TIMEOUT_MS,
 						   MTK_VDEC_LAT0);
-		/* update remote vsi if decode timeout */
+		 
 		if (ret) {
 			mtk_vdec_err(ctx, "AV1 Frame %d decode timeout %d\n", pfc->seq, ret);
 			WRITE_ONCE(instance->vsi->state.timeout, 1);
@@ -2091,7 +1791,7 @@ static int vdec_av1_slice_lat_decode(void *h_vdec, struct mtk_vcodec_mem *bs,
 	vdec_av1_slice_vsi_from_remote(vsi, instance->vsi);
 	ret = vdec_av1_slice_update_lat(instance, lat_buf, pfc);
 
-	/* LAT trans full, re-decode */
+	 
 	if (ret == -EAGAIN) {
 		mtk_vdec_err(ctx, "AV1 Frame %d trans full\n", pfc->seq);
 		if (!instance->inneracing_mode)
@@ -2099,7 +1799,7 @@ static int vdec_av1_slice_lat_decode(void *h_vdec, struct mtk_vcodec_mem *bs,
 		return 0;
 	}
 
-	/* LAT trans full, no more UBE or decode timeout */
+	 
 	if (ret == -ENOMEM || vsi->state.timeout) {
 		mtk_vdec_err(ctx, "AV1 Frame %d insufficient buffer or timeout\n", pfc->seq);
 		if (!instance->inneracing_mode)
@@ -2169,7 +1869,7 @@ static int vdec_av1_slice_core_decode(struct vdec_lat_buf *lat_buf)
 		ret = mtk_vcodec_wait_for_done_ctx(ctx, MTK_INST_IRQ_RECEIVED,
 						   WAIT_INTR_TIMEOUT_MS,
 						   MTK_VDEC_CORE);
-		/* update remote vsi if decode timeout */
+		 
 		if (ret) {
 			mtk_vdec_err(ctx, "AV1 frame %d core timeout\n", pfc->seq);
 			WRITE_ONCE(instance->vsi->state.timeout, 1);
@@ -2192,7 +1892,7 @@ static int vdec_av1_slice_core_decode(struct vdec_lat_buf *lat_buf)
 	return 0;
 
 err:
-	/* always update read pointer */
+	 
 	vdec_msg_queue_update_ube_rptr(&ctx->msg_queue, pfc->vsi.trans.dma_addr_end);
 
 	if (fb)

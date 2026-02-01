@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *    Support for LG2160 - ATSC/MH
- *
- *    Copyright (C) 2010 Michael Krufky <mkrufky@linuxtv.org>
- */
+
+ 
 
 #include <linux/jiffies.h>
 #include <linux/dvb/frontend.h>
@@ -48,7 +44,7 @@ struct lg216x_state {
 	unsigned int last_reset;
 };
 
-/* ------------------------------------------------------------------------ */
+ 
 
 static int lg216x_write_reg(struct lg216x_state *state, u16 reg, u8 val)
 {
@@ -141,7 +137,7 @@ fail:
 	return ret;
 }
 
-/* ------------------------------------------------------------------------ */
+ 
 
 static int lg216x_i2c_gate_ctrl(struct dvb_frontend *fe, int enable)
 {
@@ -231,7 +227,7 @@ fail:
 	return ret;
 }
 
-/* ------------------------------------------------------------------------ */
+ 
 
 static int lg216x_set_if(struct lg216x_state *state)
 {
@@ -250,12 +246,12 @@ static int lg216x_set_if(struct lg216x_state *state)
 	ret = lg216x_write_reg(state, 0x0132, val);
 	lg_fail(ret);
 
-	/* if NOT zero IF, 6 MHz is the default */
+	 
 fail:
 	return ret;
 }
 
-/* ------------------------------------------------------------------------ */
+ 
 
 static int lg2160_agc_fix(struct lg216x_state *state,
 			  int if_agc_fix, int rf_agc_fix)
@@ -445,7 +441,7 @@ static int lg2161_set_output_interface(struct lg216x_state *state)
 		goto fail;
 
 	val &= ~0x07;
-	val |= state->cfg->output_if; /* FIXME: needs sanity check */
+	val |= state->cfg->output_if;  
 
 	ret = lg216x_write_reg(state, 0x0014, val);
 	lg_fail(ret);
@@ -489,14 +485,14 @@ fail:
 	return ret;
 }
 
-/* ------------------------------------------------------------------------ */
+ 
 
 static int lg216x_get_fic_version(struct lg216x_state *state, u8 *ficver)
 {
 	u8 val;
 	int ret;
 
-	*ficver = 0xff; /* invalid value */
+	*ficver = 0xff;  
 
 	ret = lg216x_read_reg(state, 0x0128, &val);
 	if (lg_fail(ret))
@@ -513,7 +509,7 @@ static int lg2160_get_parade_id(struct lg216x_state *state, u8 *id)
 	u8 val;
 	int ret;
 
-	*id = 0xff; /* invalid value */
+	*id = 0xff;  
 
 	ret = lg216x_read_reg(state, 0x0123, &val);
 	if (lg_fail(ret))
@@ -530,7 +526,7 @@ static int lg216x_get_nog(struct lg216x_state *state, u8 *nog)
 	u8 val;
 	int ret;
 
-	*nog = 0xff; /* invalid value */
+	*nog = 0xff;  
 
 	ret = lg216x_read_reg(state, 0x0124, &val);
 	if (lg_fail(ret))
@@ -546,7 +542,7 @@ static int lg216x_get_tnog(struct lg216x_state *state, u8 *tnog)
 	u8 val;
 	int ret;
 
-	*tnog = 0xff; /* invalid value */
+	*tnog = 0xff;  
 
 	ret = lg216x_read_reg(state, 0x0125, &val);
 	if (lg_fail(ret))
@@ -562,7 +558,7 @@ static int lg216x_get_sgn(struct lg216x_state *state, u8 *sgn)
 	u8 val;
 	int ret;
 
-	*sgn = 0xff; /* invalid value */
+	*sgn = 0xff;  
 
 	ret = lg216x_read_reg(state, 0x0124, &val);
 	if (lg_fail(ret))
@@ -578,7 +574,7 @@ static int lg216x_get_prc(struct lg216x_state *state, u8 *prc)
 	u8 val;
 	int ret;
 
-	*prc = 0xff; /* invalid value */
+	*prc = 0xff;  
 
 	ret = lg216x_read_reg(state, 0x0125, &val);
 	if (lg_fail(ret))
@@ -589,7 +585,7 @@ fail:
 	return ret;
 }
 
-/* ------------------------------------------------------------------------ */
+ 
 
 static int lg216x_get_rs_frame_mode(struct lg216x_state *state,
 				    enum atscmh_rs_frame_mode *rs_framemode)
@@ -789,7 +785,7 @@ fail:
 	return ret;
 }
 
-/* ------------------------------------------------------------------------ */
+ 
 
 #if 0
 static int lg216x_read_fic_err_count(struct lg216x_state *state, u8 *err)
@@ -926,7 +922,7 @@ static int lg216x_read_rs_err_count(struct lg216x_state *state, u16 *err)
 }
 #endif
 
-/* ------------------------------------------------------------------------ */
+ 
 
 static int lg216x_get_frontend(struct dvb_frontend *fe,
 			       struct dtv_frontend_properties *c)
@@ -952,7 +948,7 @@ static int lg216x_get_frontend(struct dvb_frontend *fe,
 				&c->atscmh_parade_id);
 		if (lg_fail(ret))
 			goto fail;
-/* #else */
+ 
 		c->atscmh_parade_id = state->parade_id;
 #endif
 		ret = lg216x_get_nog(state,
@@ -1028,7 +1024,7 @@ static int lg216x_get_frontend(struct dvb_frontend *fe,
 			ret = lg216x_soft_reset(state);
 		break;
 	case LG2161:
-		/* no fix needed here (as far as we know) */
+		 
 		ret = 0;
 		break;
 	}
@@ -1071,7 +1067,7 @@ static int lg2160_set_frontend(struct dvb_frontend *fe)
 	if (lg_fail(ret))
 		goto fail;
 
-	/* be tuned before this point */
+	 
 	ret = lg216x_soft_reset(state);
 	if (lg_fail(ret))
 		goto fail;
@@ -1114,7 +1110,7 @@ fail:
 	return ret;
 }
 
-/* ------------------------------------------------------------------------ */
+ 
 
 static int lg2160_read_lock_status(struct lg216x_state *state,
 				   int *acq_lock, int *sync_lock)
@@ -1210,7 +1206,7 @@ fail:
 	return ret;
 }
 
-/* ------------------------------------------------------------------------ */
+ 
 
 static int lg2160_read_snr(struct dvb_frontend *fe, u16 *snr)
 {
@@ -1233,7 +1229,7 @@ static int lg2160_read_snr(struct dvb_frontend *fe, u16 *snr)
 	else
 #if 1
 	*snr =  ((snr1 >> 4) * 100) + ((snr1 & 0x0f) * 10) + (snr2 >> 4);
-#else /* BCD */
+#else  
 	*snr =  (snr2 | (snr1 << 8));
 #endif
 fail:
@@ -1269,13 +1265,7 @@ static int lg216x_read_signal_strength(struct dvb_frontend *fe,
 				       u16 *strength)
 {
 #if 0
-	/* borrowed from lgdt330x.c
-	 *
-	 * Calculate strength from SNR up to 35dB
-	 * Even though the SNR can go higher than 35dB,
-	 * there is some comfort factor in having a range of
-	 * strong signals that can show at 100%
-	 */
+	 
 	struct lg216x_state *state = fe->demodulator_priv;
 	u16 snr;
 	int ret;
@@ -1285,8 +1275,8 @@ static int lg216x_read_signal_strength(struct dvb_frontend *fe,
 	ret = fe->ops.read_snr(fe, &snr);
 	if (lg_fail(ret))
 		goto fail;
-	/* Rather than use the 8.8 value snr, use state->snr which is 8.24 */
-	/* scale the range 0 - 35*2^24 into 0 - 65535 */
+	 
+	 
 	if (state->snr >= 8960 * 0x10000)
 		*strength = 0xffff;
 	else
@@ -1298,7 +1288,7 @@ fail:
 #endif
 }
 
-/* ------------------------------------------------------------------------ */
+ 
 
 static int lg216x_read_ucblocks(struct dvb_frontend *fe, u32 *ucblocks)
 {
@@ -1421,7 +1411,7 @@ struct dvb_frontend *lg2160_attach(const struct lg2160_config *config,
 
 	state->frontend.demodulator_priv = state;
 	state->current_frequency = -1;
-	/* parade 1 by default */
+	 
 	state->frontend.dtv_property_cache.atscmh_parade_id = 1;
 
 	return &state->frontend;

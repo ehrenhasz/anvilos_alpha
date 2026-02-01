@@ -1,17 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- *  HID driver for UC-Logic devices not fully compliant with HID standard
- *
- *  Copyright (c) 2010-2014 Nikolai Kondrashov
- *  Copyright (c) 2013 Martin Rusko
- */
 
-/*
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option)
- * any later version.
- */
+ 
+
+ 
 
 #include <linux/device.h>
 #include <linux/hid.h>
@@ -22,14 +12,7 @@
 
 #include "hid-ids.h"
 
-/**
- * uclogic_inrange_timeout - handle pen in-range state timeout.
- * Emulate input events normally generated when pen goes out of range for
- * tablets which don't report that.
- *
- * @t:	The timer the timeout handler is attached to, stored in a struct
- *	uclogic_drvdata.
- */
+ 
 static void uclogic_inrange_timeout(struct timer_list *t)
 {
 	struct uclogic_drvdata *drvdata = from_timer(drvdata, t,
@@ -39,10 +22,10 @@ static void uclogic_inrange_timeout(struct timer_list *t)
 	if (input == NULL)
 		return;
 	input_report_abs(input, ABS_PRESSURE, 0);
-	/* If BTN_TOUCH state is changing */
+	 
 	if (test_bit(BTN_TOUCH, input->key)) {
 		input_event(input, EV_MSC, MSC_SCAN,
-				/* Digitizer Tip Switch usage */
+				 
 				0xd0042);
 		input_report_key(input, BTN_TOUCH, 0);
 	}
@@ -72,11 +55,11 @@ static int uclogic_input_mapping(struct hid_device *hdev,
 	struct uclogic_drvdata *drvdata = hid_get_drvdata(hdev);
 	struct uclogic_params *params = &drvdata->params;
 
-	/* Discard invalid pen usages */
+	 
 	if (params->pen.usage_invalid && (field->application == HID_DG_PEN))
 		return -1;
 
-	/* Let hid-core decide what to do */
+	 
 	return 0;
 }
 
@@ -90,29 +73,23 @@ static int uclogic_input_configured(struct hid_device *hdev,
 	size_t i;
 	const struct uclogic_params_frame *frame;
 
-	/* no report associated (HID_QUIRK_MULTI_INPUT not set) */
+	 
 	if (!hi->report)
 		return 0;
 
-	/*
-	 * If this is the input corresponding to the pen report
-	 * in need of tweaking.
-	 */
+	 
 	if (hi->report->id == params->pen.id) {
-		/* Remember the input device so we can simulate events */
+		 
 		drvdata->pen_input = hi->input;
 	}
 
-	/* If it's one of the frame devices */
+	 
 	for (i = 0; i < ARRAY_SIZE(params->frame_list); i++) {
 		frame = &params->frame_list[i];
 		if (hi->report->id == frame->id) {
-			/* Assign custom suffix, if any */
+			 
 			suffix = frame->suffix;
-			/*
-			 * Disable EV_MSC reports for touch ring interfaces to
-			 * make the Wacom driver pickup touch ring extents
-			 */
+			 
 			if (frame->touch_byte > 0)
 				__clear_bit(EV_MSC, hi->input->evbit);
 		}
@@ -161,14 +138,11 @@ static int uclogic_probe(struct hid_device *hdev,
 	if (!hid_is_usb(hdev))
 		return -EINVAL;
 
-	/*
-	 * libinput requires the pad interface to be on a different node
-	 * than the pen, so use QUIRK_MULTI_INPUT for all tablets.
-	 */
+	 
 	hdev->quirks |= HID_QUIRK_MULTI_INPUT;
 	hdev->quirks |= HID_QUIRK_HIDINPUT_FORCE;
 
-	/* Allocate and assign driver data */
+	 
 	drvdata = devm_kzalloc(&hdev->dev, sizeof(*drvdata), GFP_KERNEL);
 	if (drvdata == NULL) {
 		rc = -ENOMEM;
@@ -179,7 +153,7 @@ static int uclogic_probe(struct hid_device *hdev,
 	drvdata->quirks = id->driver_data;
 	hid_set_drvdata(hdev, drvdata);
 
-	/* Initialize the device and retrieve interface parameters */
+	 
 	rc = uclogic_params_init(&drvdata->params, hdev);
 	if (rc != 0) {
 		hid_err(hdev, "failed probing parameters: %d\n", rc);
@@ -194,7 +168,7 @@ static int uclogic_probe(struct hid_device *hdev,
 		goto failure;
 	}
 
-	/* Generate replacement report descriptor */
+	 
 	rc = uclogic_params_get_desc(&drvdata->params,
 				     &drvdata->desc_ptr,
 				     &drvdata->desc_size);
@@ -219,7 +193,7 @@ static int uclogic_probe(struct hid_device *hdev,
 
 	return 0;
 failure:
-	/* Assume "remove" might not be called if "probe" failed */
+	 
 	if (params_initialized)
 		uclogic_params_cleanup(&drvdata->params);
 	return rc;
@@ -231,7 +205,7 @@ static int uclogic_resume(struct hid_device *hdev)
 	int rc;
 	struct uclogic_params params;
 
-	/* Re-initialize the device, but discard parameters */
+	 
 	rc = uclogic_params_init(&params, hdev);
 	if (rc != 0)
 		hid_err(hdev, "failed to re-initialize the device\n");
@@ -242,17 +216,7 @@ static int uclogic_resume(struct hid_device *hdev)
 }
 #endif
 
-/**
- * uclogic_exec_event_hook - if the received event is hooked schedules the
- * associated work.
- *
- * @p:		Tablet interface report parameters.
- * @event:	Raw event.
- * @size:	The size of event.
- *
- * Returns:
- *	Whether the event was hooked or not.
- */
+ 
 static bool uclogic_exec_event_hook(struct uclogic_params *p, u8 *event, int size)
 {
 	struct uclogic_raw_event_hook *curr;
@@ -270,16 +234,7 @@ static bool uclogic_exec_event_hook(struct uclogic_params *p, u8 *event, int siz
 	return false;
 }
 
-/**
- * uclogic_raw_event_pen - handle raw pen events (pen HID reports).
- *
- * @drvdata:	Driver data.
- * @data:	Report data buffer, can be modified.
- * @size:	Report data size, bytes.
- *
- * Returns:
- *	Negative value on error (stops event delivery), zero for success.
- */
+ 
 static int uclogic_raw_event_pen(struct uclogic_drvdata *drvdata,
 					u8 *data, int size)
 {
@@ -288,63 +243,47 @@ static int uclogic_raw_event_pen(struct uclogic_drvdata *drvdata,
 	WARN_ON(drvdata == NULL);
 	WARN_ON(data == NULL && size != 0);
 
-	/* If in-range reports are inverted */
+	 
 	if (pen->inrange ==
 		UCLOGIC_PARAMS_PEN_INRANGE_INVERTED) {
-		/* Invert the in-range bit */
+		 
 		data[1] ^= 0x40;
 	}
-	/*
-	 * If report contains fragmented high-resolution pen
-	 * coordinates
-	 */
+	 
 	if (size >= 10 && pen->fragmented_hires) {
 		u8 pressure_low_byte;
 		u8 pressure_high_byte;
 
-		/* Lift pressure bytes */
+		 
 		pressure_low_byte = data[6];
 		pressure_high_byte = data[7];
-		/*
-		 * Move Y coord to make space for high-order X
-		 * coord byte
-		 */
+		 
 		data[6] = data[5];
 		data[5] = data[4];
-		/* Move high-order X coord byte */
+		 
 		data[4] = data[8];
-		/* Move high-order Y coord byte */
+		 
 		data[7] = data[9];
-		/* Place pressure bytes */
+		 
 		data[8] = pressure_low_byte;
 		data[9] = pressure_high_byte;
 	}
-	/* If we need to emulate in-range detection */
+	 
 	if (pen->inrange == UCLOGIC_PARAMS_PEN_INRANGE_NONE) {
-		/* Set in-range bit */
+		 
 		data[1] |= 0x40;
-		/* (Re-)start in-range timeout */
+		 
 		mod_timer(&drvdata->inrange_timer,
 				jiffies + msecs_to_jiffies(100));
 	}
-	/* If we report tilt and Y direction is flipped */
+	 
 	if (size >= 12 && pen->tilt_y_flipped)
 		data[11] = -data[11];
 
 	return 0;
 }
 
-/**
- * uclogic_raw_event_frame - handle raw frame events (frame HID reports).
- *
- * @drvdata:	Driver data.
- * @frame:	The parameters of the frame controls to handle.
- * @data:	Report data buffer, can be modified.
- * @size:	Report data size, bytes.
- *
- * Returns:
- *	Negative value on error (stops event delivery), zero for success.
- */
+ 
 static int uclogic_raw_event_frame(
 		struct uclogic_drvdata *drvdata,
 		const struct uclogic_params_frame *frame,
@@ -353,9 +292,9 @@ static int uclogic_raw_event_frame(
 	WARN_ON(drvdata == NULL);
 	WARN_ON(data == NULL && size != 0);
 
-	/* If need to, and can, set pad device ID for Wacom drivers */
+	 
 	if (frame->dev_id_byte > 0 && frame->dev_id_byte < size) {
-		/* If we also have a touch ring and the finger left it */
+		 
 		if (frame->touch_byte > 0 && frame->touch_byte < size &&
 		    data[frame->touch_byte] == 0) {
 			data[frame->dev_id_byte] = 0;
@@ -364,16 +303,16 @@ static int uclogic_raw_event_frame(
 		}
 	}
 
-	/* If need to, and can, read rotary encoder state change */
+	 
 	if (frame->re_lsb > 0 && frame->re_lsb / 8 < size) {
 		unsigned int byte = frame->re_lsb / 8;
 		unsigned int bit = frame->re_lsb % 8;
 
 		u8 change;
 		u8 prev_state = drvdata->re_state;
-		/* Read Gray-coded state */
+		 
 		u8 state = (data[byte] >> bit) & 0x3;
-		/* Encode state change into 2-bit signed integer */
+		 
 		if ((prev_state == 1 && state == 0) ||
 		    (prev_state == 2 && state == 3)) {
 			change = 1;
@@ -383,14 +322,14 @@ static int uclogic_raw_event_frame(
 		} else {
 			change = 0;
 		}
-		/* Write change */
+		 
 		data[byte] = (data[byte] & ~((u8)3 << bit)) |
 				(change << bit);
-		/* Remember state */
+		 
 		drvdata->re_state = state;
 	}
 
-	/* If need to, and can, transform the touch ring reports */
+	 
 	if (frame->touch_byte > 0 && frame->touch_byte < size) {
 		__s8 value = data[frame->touch_byte];
 
@@ -404,7 +343,7 @@ static int uclogic_raw_event_frame(
 		}
 	}
 
-	/* If need to, and can, transform the bitmap dial reports */
+	 
 	if (frame->bitmap_dial_byte > 0 && frame->bitmap_dial_byte < size) {
 		if (data[frame->bitmap_dial_byte] == 2)
 			data[frame->bitmap_dial_byte] = -1;
@@ -424,7 +363,7 @@ static int uclogic_raw_event(struct hid_device *hdev,
 	struct uclogic_params_pen_subreport *subreport_list_end;
 	size_t i;
 
-	/* Do not handle anything but input reports */
+	 
 	if (report->type != HID_INPUT_REPORT)
 		return 0;
 
@@ -432,12 +371,12 @@ static int uclogic_raw_event(struct hid_device *hdev,
 		return 0;
 
 	while (true) {
-		/* Tweak pen reports, if necessary */
+		 
 		if ((report_id == params->pen.id) && (size >= 2)) {
 			subreport_list_end =
 				params->pen.subreport_list +
 				ARRAY_SIZE(params->pen.subreport_list);
-			/* Try to match a subreport */
+			 
 			for (subreport = params->pen.subreport_list;
 			     subreport < subreport_list_end; subreport++) {
 				if (subreport->value != 0 &&
@@ -445,9 +384,9 @@ static int uclogic_raw_event(struct hid_device *hdev,
 					break;
 				}
 			}
-			/* If a subreport matched */
+			 
 			if (subreport < subreport_list_end) {
-				/* Change to subreport ID, and restart */
+				 
 				report_id = data[0] = subreport->id;
 				continue;
 			} else {
@@ -455,7 +394,7 @@ static int uclogic_raw_event(struct hid_device *hdev,
 			}
 		}
 
-		/* Tweak frame control reports, if necessary */
+		 
 		for (i = 0; i < ARRAY_SIZE(params->frame_list); i++) {
 			if (report_id == params->frame_list[i].id) {
 				return uclogic_raw_event_frame(

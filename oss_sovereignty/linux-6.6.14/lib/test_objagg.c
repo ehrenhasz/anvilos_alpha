@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
-/* Copyright (c) 2018 Mellanox Technologies. All rights reserved */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -316,16 +316,14 @@ static int test_nodelta(void)
 	if (err)
 		goto err_stats_first_zero;
 
-	/* First round of gets, the root objects should be created */
+	 
 	for (i = 0; i < NUM_KEYS; i++) {
 		err = test_nodelta_obj_get(&world, objagg, i, true);
 		if (err)
 			goto err_obj_first_get;
 	}
 
-	/* Do the second round of gets, all roots are already created,
-	 * make sure that no new root is created
-	 */
+	 
 	for (i = 0; i < NUM_KEYS; i++) {
 		err = test_nodelta_obj_get(&world, objagg, i, false);
 		if (err)
@@ -432,130 +430,130 @@ static const struct action_item action_items[] = {
 	{
 		1, ACTION_GET, EXPECT_DELTA_SAME, EXPECT_ROOT_INC,
 		EXPECT_STATS(1, ROOT(1, 1, 1)),
-	},	/* r: 1			d: */
+	},	 
 	{
 		7, ACTION_GET, EXPECT_DELTA_SAME, EXPECT_ROOT_INC,
 		EXPECT_STATS(2, ROOT(1, 1, 1), ROOT(7, 1, 1)),
-	},	/* r: 1, 7		d: */
+	},	 
 	{
 		3, ACTION_GET, EXPECT_DELTA_INC, EXPECT_ROOT_SAME,
 		EXPECT_STATS(3, ROOT(1, 1, 2), ROOT(7, 1, 1),
 				DELTA(3, 1)),
-	},	/* r: 1, 7		d: 3^1 */
+	},	 
 	{
 		5, ACTION_GET, EXPECT_DELTA_INC, EXPECT_ROOT_SAME,
 		EXPECT_STATS(4, ROOT(1, 1, 3), ROOT(7, 1, 1),
 				DELTA(3, 1), DELTA(5, 1)),
-	},	/* r: 1, 7		d: 3^1, 5^1 */
+	},	 
 	{
 		3, ACTION_GET, EXPECT_DELTA_SAME, EXPECT_ROOT_SAME,
 		EXPECT_STATS(4, ROOT(1, 1, 4), ROOT(7, 1, 1),
 				DELTA(3, 2), DELTA(5, 1)),
-	},	/* r: 1, 7		d: 3^1, 3^1, 5^1 */
+	},	 
 	{
 		1, ACTION_GET, EXPECT_DELTA_SAME, EXPECT_ROOT_SAME,
 		EXPECT_STATS(4, ROOT(1, 2, 5), ROOT(7, 1, 1),
 				DELTA(3, 2), DELTA(5, 1)),
-	},	/* r: 1, 1, 7		d: 3^1, 3^1, 5^1 */
+	},	 
 	{
 		30, ACTION_GET, EXPECT_DELTA_SAME, EXPECT_ROOT_INC,
 		EXPECT_STATS(5, ROOT(1, 2, 5), ROOT(7, 1, 1), ROOT(30, 1, 1),
 				DELTA(3, 2), DELTA(5, 1)),
-	},	/* r: 1, 1, 7, 30	d: 3^1, 3^1, 5^1 */
+	},	 
 	{
 		8, ACTION_GET, EXPECT_DELTA_INC, EXPECT_ROOT_SAME,
 		EXPECT_STATS(6, ROOT(1, 2, 5), ROOT(7, 1, 2), ROOT(30, 1, 1),
 				DELTA(3, 2), DELTA(5, 1), DELTA(8, 1)),
-	},	/* r: 1, 1, 7, 30	d: 3^1, 3^1, 5^1, 8^7 */
+	},	 
 	{
 		8, ACTION_GET, EXPECT_DELTA_SAME, EXPECT_ROOT_SAME,
 		EXPECT_STATS(6, ROOT(1, 2, 5), ROOT(7, 1, 3), ROOT(30, 1, 1),
 				DELTA(3, 2), DELTA(8, 2), DELTA(5, 1)),
-	},	/* r: 1, 1, 7, 30	d: 3^1, 3^1, 5^1, 8^7, 8^7 */
+	},	 
 	{
 		3, ACTION_PUT, EXPECT_DELTA_SAME, EXPECT_ROOT_SAME,
 		EXPECT_STATS(6, ROOT(1, 2, 4), ROOT(7, 1, 3), ROOT(30, 1, 1),
 				DELTA(8, 2), DELTA(3, 1), DELTA(5, 1)),
-	},	/* r: 1, 1, 7, 30	d: 3^1, 5^1, 8^7, 8^7 */
+	},	 
 	{
 		3, ACTION_PUT, EXPECT_DELTA_DEC, EXPECT_ROOT_SAME,
 		EXPECT_STATS(5, ROOT(1, 2, 3), ROOT(7, 1, 3), ROOT(30, 1, 1),
 				DELTA(8, 2), DELTA(5, 1)),
-	},	/* r: 1, 1, 7, 30	d: 5^1, 8^7, 8^7 */
+	},	 
 	{
 		1, ACTION_PUT, EXPECT_DELTA_SAME, EXPECT_ROOT_SAME,
 		EXPECT_STATS(5, ROOT(7, 1, 3), ROOT(1, 1, 2), ROOT(30, 1, 1),
 				DELTA(8, 2), DELTA(5, 1)),
-	},	/* r: 1, 7, 30		d: 5^1, 8^7, 8^7 */
+	},	 
 	{
 		1, ACTION_PUT, EXPECT_DELTA_SAME, EXPECT_ROOT_SAME,
 		EXPECT_STATS(5, ROOT(7, 1, 3), ROOT(30, 1, 1), ROOT(1, 0, 1),
 				DELTA(8, 2), DELTA(5, 1)),
-	},	/* r: 7, 30		d: 5^1, 8^7, 8^7 */
+	},	 
 	{
 		5, ACTION_PUT, EXPECT_DELTA_DEC, EXPECT_ROOT_DEC,
 		EXPECT_STATS(3, ROOT(7, 1, 3), ROOT(30, 1, 1),
 				DELTA(8, 2)),
-	},	/* r: 7, 30		d: 8^7, 8^7 */
+	},	 
 	{
 		5, ACTION_GET, EXPECT_DELTA_SAME, EXPECT_ROOT_INC,
 		EXPECT_STATS(4, ROOT(7, 1, 3), ROOT(30, 1, 1), ROOT(5, 1, 1),
 				DELTA(8, 2)),
-	},	/* r: 7, 30, 5		d: 8^7, 8^7 */
+	},	 
 	{
 		6, ACTION_GET, EXPECT_DELTA_INC, EXPECT_ROOT_SAME,
 		EXPECT_STATS(5, ROOT(7, 1, 3), ROOT(5, 1, 2), ROOT(30, 1, 1),
 				DELTA(8, 2), DELTA(6, 1)),
-	},	/* r: 7, 30, 5		d: 8^7, 8^7, 6^5 */
+	},	 
 	{
 		8, ACTION_GET, EXPECT_DELTA_SAME, EXPECT_ROOT_SAME,
 		EXPECT_STATS(5, ROOT(7, 1, 4), ROOT(5, 1, 2), ROOT(30, 1, 1),
 				DELTA(8, 3), DELTA(6, 1)),
-	},	/* r: 7, 30, 5		d: 8^7, 8^7, 8^7, 6^5 */
+	},	 
 	{
 		8, ACTION_PUT, EXPECT_DELTA_SAME, EXPECT_ROOT_SAME,
 		EXPECT_STATS(5, ROOT(7, 1, 3), ROOT(5, 1, 2), ROOT(30, 1, 1),
 				DELTA(8, 2), DELTA(6, 1)),
-	},	/* r: 7, 30, 5		d: 8^7, 8^7, 6^5 */
+	},	 
 	{
 		8, ACTION_PUT, EXPECT_DELTA_SAME, EXPECT_ROOT_SAME,
 		EXPECT_STATS(5, ROOT(7, 1, 2), ROOT(5, 1, 2), ROOT(30, 1, 1),
 				DELTA(8, 1), DELTA(6, 1)),
-	},	/* r: 7, 30, 5		d: 8^7, 6^5 */
+	},	 
 	{
 		8, ACTION_PUT, EXPECT_DELTA_DEC, EXPECT_ROOT_SAME,
 		EXPECT_STATS(4, ROOT(5, 1, 2), ROOT(7, 1, 1), ROOT(30, 1, 1),
 				DELTA(6, 1)),
-	},	/* r: 7, 30, 5		d: 6^5 */
+	},	 
 	{
 		8, ACTION_GET, EXPECT_DELTA_INC, EXPECT_ROOT_SAME,
 		EXPECT_STATS(5, ROOT(5, 1, 3), ROOT(7, 1, 1), ROOT(30, 1, 1),
 				DELTA(6, 1), DELTA(8, 1)),
-	},	/* r: 7, 30, 5		d: 6^5, 8^5 */
+	},	 
 	{
 		7, ACTION_PUT, EXPECT_DELTA_SAME, EXPECT_ROOT_DEC,
 		EXPECT_STATS(4, ROOT(5, 1, 3), ROOT(30, 1, 1),
 				DELTA(6, 1), DELTA(8, 1)),
-	},	/* r: 30, 5		d: 6^5, 8^5 */
+	},	 
 	{
 		30, ACTION_PUT, EXPECT_DELTA_SAME, EXPECT_ROOT_DEC,
 		EXPECT_STATS(3, ROOT(5, 1, 3),
 				DELTA(6, 1), DELTA(8, 1)),
-	},	/* r: 5			d: 6^5, 8^5 */
+	},	 
 	{
 		5, ACTION_PUT, EXPECT_DELTA_SAME, EXPECT_ROOT_SAME,
 		EXPECT_STATS(3, ROOT(5, 0, 2),
 				DELTA(6, 1), DELTA(8, 1)),
-	},	/* r:			d: 6^5, 8^5 */
+	},	 
 	{
 		6, ACTION_PUT, EXPECT_DELTA_DEC, EXPECT_ROOT_SAME,
 		EXPECT_STATS(2, ROOT(5, 0, 1),
 				DELTA(8, 1)),
-	},	/* r:			d: 6^5 */
+	},	 
 	{
 		8, ACTION_PUT, EXPECT_DELTA_DEC, EXPECT_ROOT_DEC,
 		EXPECT_STATS(0, ),
-	},	/* r:			d: */
+	},	 
 };
 
 static int check_expect(struct world *world,
@@ -726,9 +724,7 @@ static int __check_expect_stats(const struct objagg_stats *stats,
 		err = check_expect_stats_key_id(&stats->stats_info[i],
 						&expect_stats->info[i], errmsg);
 		if (err) {
-			/* It is possible that one of the neighbor stats with
-			 * same numbers have the correct key id, so check it
-			 */
+			 
 			err = check_expect_stats_neigh(stats, expect_stats, i);
 			if (err)
 				return err;
@@ -797,9 +793,7 @@ static int test_delta_action_item(struct world *world,
 	return 0;
 
 errout:
-	/* This can only happen when action is not inversed.
-	 * So in case of an error, cleanup by doing inverse action.
-	 */
+	 
 	test_delta_action_item(world, objagg, action_item, true);
 	return err;
 }

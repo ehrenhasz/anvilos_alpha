@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2018-2019 Synopsys, Inc. and/or its affiliates.
- * Synopsys DesignWare eDMA core driver
- *
- * Author: Gustavo Pimentel <gustavo.pimentel@synopsys.com>
- */
+ 
+ 
 
 #ifndef _DW_EDMA_CORE_H
 #define _DW_EDMA_CORE_H
@@ -57,7 +52,7 @@ struct dw_edma_chunk {
 	u32				bursts_alloc;
 
 	u8				cb;
-	struct dw_edma_region		ll_region;	/* Linked list */
+	struct dw_edma_region		ll_region;	 
 };
 
 struct dw_edma_desc {
@@ -108,7 +103,7 @@ struct dw_edma {
 
 	struct dw_edma_chan		*chan;
 
-	raw_spinlock_t			lock;		/* Only for legacy */
+	raw_spinlock_t			lock;		 
 
 	struct dw_edma_chip             *chip;
 
@@ -206,4 +201,4 @@ void dw_edma_core_debugfs_on(struct dw_edma *dw)
 	dw->core->debugfs_on(dw);
 }
 
-#endif /* _DW_EDMA_CORE_H */
+#endif  

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2012-2015 Spreadtrum Communications Inc.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/console.h>
@@ -21,7 +19,7 @@
 #include <linux/tty.h>
 #include <linux/tty_flip.h>
 
-/* device name */
+ 
 #define UART_NR_MAX		8
 #define SPRD_TTY_NAME		"ttyS"
 #define SPRD_FIFO_SIZE		128
@@ -29,12 +27,12 @@
 #define SPRD_BAUD_IO_LIMIT	3000000
 #define SPRD_TIMEOUT		256000
 
-/* the offset of serial registers and BITs for them */
-/* data registers */
+ 
+ 
 #define SPRD_TXD		0x0000
 #define SPRD_RXD		0x0004
 
-/* line status register and its BITs  */
+ 
 #define SPRD_LSR		0x0008
 #define SPRD_LSR_OE		BIT(4)
 #define SPRD_LSR_FE		BIT(3)
@@ -42,23 +40,23 @@
 #define SPRD_LSR_BI		BIT(7)
 #define SPRD_LSR_TX_OVER	BIT(15)
 
-/* data number in TX and RX fifo */
+ 
 #define SPRD_STS1		0x000C
 #define SPRD_RX_FIFO_CNT_MASK	GENMASK(7, 0)
 #define SPRD_TX_FIFO_CNT_MASK	GENMASK(15, 8)
 
-/* interrupt enable register and its BITs */
+ 
 #define SPRD_IEN		0x0010
 #define SPRD_IEN_RX_FULL	BIT(0)
 #define SPRD_IEN_TX_EMPTY	BIT(1)
 #define SPRD_IEN_BREAK_DETECT	BIT(7)
 #define SPRD_IEN_TIMEOUT	BIT(13)
 
-/* interrupt clear register */
+ 
 #define SPRD_ICLR		0x0014
 #define SPRD_ICLR_TIMEOUT	BIT(13)
 
-/* line control register */
+ 
 #define SPRD_LCR		0x0018
 #define SPRD_LCR_STOP_1BIT	0x10
 #define SPRD_LCR_STOP_2BIT	0x30
@@ -72,7 +70,7 @@
 #define SPRD_LCR_EVEN_PAR	0x0
 #define SPRD_LCR_ODD_PAR	0x1
 
-/* control register 1 */
+ 
 #define SPRD_CTL1		0x001C
 #define SPRD_DMA_EN		BIT(15)
 #define SPRD_LOOPBACK_EN	BIT(14)
@@ -82,21 +80,21 @@
 #define RX_TOUT_THLD_DEF	0x3E00
 #define RX_HFC_THLD_DEF		0x40
 
-/* fifo threshold register */
+ 
 #define SPRD_CTL2		0x0020
 #define THLD_TX_EMPTY		0x40
 #define THLD_TX_EMPTY_SHIFT	8
 #define THLD_RX_FULL		0x40
 #define THLD_RX_FULL_MASK	GENMASK(6, 0)
 
-/* config baud rate register */
+ 
 #define SPRD_CLKD0		0x0024
 #define SPRD_CLKD0_MASK		GENMASK(15, 0)
 #define SPRD_CLKD1		0x0028
 #define SPRD_CLKD1_MASK		GENMASK(20, 16)
 #define SPRD_CLKD1_SHIFT	16
 
-/* interrupt mask status register */
+ 
 #define SPRD_IMSR		0x002C
 #define SPRD_IMSR_RX_FIFO_FULL	BIT(0)
 #define SPRD_IMSR_TX_FIFO_EMPTY	BIT(1)
@@ -551,10 +549,10 @@ static void sprd_start_tx(struct uart_port *port)
 	}
 }
 
-/* The Sprd serial does not support this function. */
+ 
 static void sprd_break_ctl(struct uart_port *port, int break_state)
 {
-	/* nothing to do */
+	 
 }
 
 static int handle_lsr_errors(struct uart_port *port,
@@ -563,7 +561,7 @@ static int handle_lsr_errors(struct uart_port *port,
 {
 	int ret = 0;
 
-	/* statistics */
+	 
 	if (*lsr & SPRD_LSR_BI) {
 		*lsr &= ~(SPRD_LSR_FE | SPRD_LSR_PE);
 		port->icount.brk++;
@@ -577,7 +575,7 @@ static int handle_lsr_errors(struct uart_port *port,
 	if (*lsr & SPRD_LSR_OE)
 		port->icount.overrun++;
 
-	/* mask off conditions which should be ignored */
+	 
 	*lsr &= port->read_status_mask;
 	if (*lsr & SPRD_LSR_BI)
 		*flag = TTY_BREAK;
@@ -632,7 +630,7 @@ static inline void sprd_tx(struct uart_port *port)
 		({}));
 }
 
-/* this handles the interrupt from one port */
+ 
 static irqreturn_t sprd_handle_irq(int irq, void *dev_id)
 {
 	struct uart_port *port = dev_id;
@@ -695,21 +693,21 @@ static int sprd_startup(struct uart_port *port)
 	serial_out(port, SPRD_CTL2,
 		   THLD_TX_EMPTY << THLD_TX_EMPTY_SHIFT | THLD_RX_FULL);
 
-	/* clear rx fifo */
+	 
 	timeout = SPRD_TIMEOUT;
 	while (timeout-- && serial_in(port, SPRD_STS1) & SPRD_RX_FIFO_CNT_MASK)
 		serial_in(port, SPRD_RXD);
 
-	/* clear tx fifo */
+	 
 	timeout = SPRD_TIMEOUT;
 	while (timeout-- && serial_in(port, SPRD_STS1) & SPRD_TX_FIFO_CNT_MASK)
 		cpu_relax();
 
-	/* clear interrupt */
+	 
 	serial_out(port, SPRD_IEN, 0);
 	serial_out(port, SPRD_ICLR, ~0);
 
-	/* allocate irq */
+	 
 	sp = container_of(port, struct sprd_uart_port, port);
 	snprintf(sp->name, sizeof(sp->name), "sprd_serial%d", port->line);
 
@@ -726,7 +724,7 @@ static int sprd_startup(struct uart_port *port)
 	fc |= RX_TOUT_THLD_DEF | RX_HFC_THLD_DEF;
 	serial_out(port, SPRD_CTL1, fc);
 
-	/* enable interrupt */
+	 
 	spin_lock_irqsave(&port->lock, flags);
 	ien = serial_in(port, SPRD_IEN);
 	ien |= SPRD_IEN_BREAK_DETECT | SPRD_IEN_TIMEOUT;
@@ -753,12 +751,12 @@ static void sprd_set_termios(struct uart_port *port, struct ktermios *termios,
 	unsigned int lcr = 0, fc;
 	unsigned long flags;
 
-	/* ask the core to calculate the divisor for us */
+	 
 	baud = uart_get_baud_rate(port, termios, old, 0, SPRD_BAUD_IO_LIMIT);
 
 	quot = port->uartclk / baud;
 
-	/* set data length */
+	 
 	switch (termios->c_cflag & CSIZE) {
 	case CS5:
 		lcr |= SPRD_LCR_DATA_LEN5;
@@ -775,16 +773,16 @@ static void sprd_set_termios(struct uart_port *port, struct ktermios *termios,
 		break;
 	}
 
-	/* calculate stop bits */
+	 
 	lcr &= ~(SPRD_LCR_STOP_1BIT | SPRD_LCR_STOP_2BIT);
 	if (termios->c_cflag & CSTOPB)
 		lcr |= SPRD_LCR_STOP_2BIT;
 	else
 		lcr |= SPRD_LCR_STOP_1BIT;
 
-	/* calculate parity */
+	 
 	lcr &= ~SPRD_LCR_PARITY;
-	termios->c_cflag &= ~CMSPAR;	/* no support mark/space */
+	termios->c_cflag &= ~CMSPAR;	 
 	if (termios->c_cflag & PARENB) {
 		lcr |= SPRD_LCR_PARITY_EN;
 		if (termios->c_cflag & PARODD)
@@ -795,7 +793,7 @@ static void sprd_set_termios(struct uart_port *port, struct ktermios *termios,
 
 	spin_lock_irqsave(&port->lock, flags);
 
-	/* update the per-port timeout */
+	 
 	uart_update_timeout(port, termios->c_cflag, baud);
 
 	port->read_status_mask = SPRD_LSR_OE;
@@ -804,21 +802,18 @@ static void sprd_set_termios(struct uart_port *port, struct ktermios *termios,
 	if (termios->c_iflag & (IGNBRK | BRKINT | PARMRK))
 		port->read_status_mask |= SPRD_LSR_BI;
 
-	/* characters to ignore */
+	 
 	port->ignore_status_mask = 0;
 	if (termios->c_iflag & IGNPAR)
 		port->ignore_status_mask |= SPRD_LSR_PE | SPRD_LSR_FE;
 	if (termios->c_iflag & IGNBRK) {
 		port->ignore_status_mask |= SPRD_LSR_BI;
-		/*
-		 * If we're ignoring parity and break indicators,
-		 * ignore overruns too (for real raw support).
-		 */
+		 
 		if (termios->c_iflag & IGNPAR)
 			port->ignore_status_mask |= SPRD_LSR_OE;
 	}
 
-	/* flow control */
+	 
 	fc = serial_in(port, SPRD_CTL1);
 	fc &= ~(RX_HW_FLOW_CTL_THLD | RX_HW_FLOW_CTL_EN | TX_HW_FLOW_CTL_EN);
 	if (termios->c_cflag & CRTSCTS) {
@@ -827,10 +822,10 @@ static void sprd_set_termios(struct uart_port *port, struct ktermios *termios,
 		fc |= TX_HW_FLOW_CTL_EN;
 	}
 
-	/* clock divider bit0~bit15 */
+	 
 	serial_out(port, SPRD_CLKD0, quot & SPRD_CLKD0_MASK);
 
-	/* clock divider bit16~bit20 */
+	 
 	serial_out(port, SPRD_CLKD1,
 		   (quot & SPRD_CLKD1_MASK) >> SPRD_CLKD1_SHIFT);
 	serial_out(port, SPRD_LCR, lcr);
@@ -839,7 +834,7 @@ static void sprd_set_termios(struct uart_port *port, struct ktermios *termios,
 
 	spin_unlock_irqrestore(&port->lock, flags);
 
-	/* Don't rewrite B0 */
+	 
 	if (tty_termios_baud_rate(termios))
 		tty_termios_encode_baud_rate(termios, baud, baud);
 }
@@ -851,7 +846,7 @@ static const char *sprd_type(struct uart_port *port)
 
 static void sprd_release_port(struct uart_port *port)
 {
-	/* nothing to do */
+	 
 }
 
 static int sprd_request_port(struct uart_port *port)
@@ -949,7 +944,7 @@ static void wait_for_xmitr(struct uart_port *port)
 {
 	unsigned int status, tmout = 10000;
 
-	/* wait up to 10ms for the character(s) to be sent */
+	 
 	do {
 		status = serial_in(port, SPRD_STS1);
 		if (--tmout == 0)
@@ -980,7 +975,7 @@ static void sprd_console_write(struct console *co, const char *s,
 
 	uart_console_write(port, s, count, sprd_console_putchar);
 
-	/* wait for transmitter to become empty */
+	 
 	wait_for_xmitr(port);
 
 	if (locked)
@@ -1031,7 +1026,7 @@ console_initcall(sprd_serial_console_init);
 
 #define SPRD_CONSOLE	(&sprd_console)
 
-/* Support for earlycon */
+ 
 static void sprd_putc(struct uart_port *port, unsigned char c)
 {
 	unsigned int timeout = SPRD_TIMEOUT;
@@ -1062,7 +1057,7 @@ static int __init sprd_early_console_setup(struct earlycon_device *device,
 OF_EARLYCON_DECLARE(sprd_serial, "sprd,sc9836-uart",
 		    sprd_early_console_setup);
 
-#else /* !CONFIG_SERIAL_SPRD_CONSOLE */
+#else  
 #define SPRD_CONSOLE		NULL
 #endif
 
@@ -1136,7 +1131,7 @@ static int sprd_clk_init(struct uart_port *uport)
 		dev_warn(uport->dev, "uart%d can't get enable clock\n",
 			uport->line);
 
-		/* To keep console alive even if the error occurred */
+		 
 		if (!sprd_uart_is_console(uport))
 			return PTR_ERR(u->clk);
 
@@ -1191,10 +1186,7 @@ static int sprd_probe(struct platform_device *pdev)
 		return irq;
 	up->irq = irq;
 
-	/*
-	 * Allocate one dma buffer to prepare for receive transfer, in case
-	 * memory allocation failure at runtime.
-	 */
+	 
 	ret = sprd_rx_alloc_buf(sport);
 	if (ret)
 		return ret;

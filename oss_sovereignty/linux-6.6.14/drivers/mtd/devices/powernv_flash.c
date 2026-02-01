@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * OPAL PNOR flash MTD abstraction
- *
- * Copyright IBM 2015
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -22,10 +18,7 @@
 #include <asm/opal.h>
 
 
-/*
- * This driver creates the a Linux MTD abstraction for platform PNOR flash
- * backed by OPAL calls
- */
+ 
 
 struct powernv_flash {
 	struct mtd_info	mtd;
@@ -38,11 +31,7 @@ enum flash_op {
 	FLASH_OP_ERASE,
 };
 
-/*
- * Don't return -ERESTARTSYS if we can't get a token, the MTD core
- * might have split up the call from userspace and called into the
- * driver more than once, we'll already have done some amount of work.
- */
+ 
 static int powernv_flash_async_op(struct mtd_info *mtd, enum flash_op op,
 		loff_t offset, size_t len, size_t *retlen, u_char *buf)
 {
@@ -83,18 +72,7 @@ static int powernv_flash_async_op(struct mtd_info *mtd, enum flash_op op,
 	if (rc == OPAL_ASYNC_COMPLETION) {
 		rc = opal_async_wait_response_interruptible(token, &msg);
 		if (rc) {
-			/*
-			 * If we return the mtd core will free the
-			 * buffer we've just passed to OPAL but OPAL
-			 * will continue to read or write from that
-			 * memory.
-			 * It may be tempting to ultimately return 0
-			 * if we're doing a read or a write since we
-			 * are going to end up waiting until OPAL is
-			 * done. However, because the MTD core sends
-			 * us the userspace request in chunks, we need
-			 * it to know we've been interrupted.
-			 */
+			 
 			rc = -EINTR;
 			if (opal_async_wait_response(token, &msg))
 				dev_err(dev, "opal_async_wait_response() failed\n");
@@ -103,15 +81,7 @@ static int powernv_flash_async_op(struct mtd_info *mtd, enum flash_op op,
 		rc = opal_get_async_rc(msg);
 	}
 
-	/*
-	 * OPAL does mutual exclusion on the flash, it will return
-	 * OPAL_BUSY.
-	 * During firmware updates by the service processor OPAL may
-	 * be (temporarily) prevented from accessing the flash, in
-	 * this case OPAL will also return OPAL_BUSY.
-	 * Both cases aren't errors exactly but the flash could have
-	 * changed, userspace should be informed.
-	 */
+	 
 	if (rc != OPAL_SUCCESS && rc != OPAL_BUSY)
 		dev_err(dev, "opal_flash_async_op(op=%d) failed (rc %d)\n",
 				op, rc);
@@ -125,16 +95,7 @@ out:
 	return rc;
 }
 
-/**
- * powernv_flash_read
- * @mtd: the device
- * @from: the offset to read from
- * @len: the number of bytes to read
- * @retlen: the number of bytes actually read
- * @buf: the filled in buffer
- *
- * Returns 0 if read successful, or -ERRNO if an error occurred
- */
+ 
 static int powernv_flash_read(struct mtd_info *mtd, loff_t from, size_t len,
 	     size_t *retlen, u_char *buf)
 {
@@ -142,16 +103,7 @@ static int powernv_flash_read(struct mtd_info *mtd, loff_t from, size_t len,
 			len, retlen, buf);
 }
 
-/**
- * powernv_flash_write
- * @mtd: the device
- * @to: the offset to write to
- * @len: the number of bytes to write
- * @retlen: the number of bytes actually written
- * @buf: the buffer to get bytes from
- *
- * Returns 0 if write successful, -ERRNO if error occurred
- */
+ 
 static int powernv_flash_write(struct mtd_info *mtd, loff_t to, size_t len,
 		     size_t *retlen, const u_char *buf)
 {
@@ -159,12 +111,7 @@ static int powernv_flash_write(struct mtd_info *mtd, loff_t to, size_t len,
 			len, retlen, (u_char *)buf);
 }
 
-/**
- * powernv_flash_erase
- * @mtd: the device
- * @erase: the erase info
- * Returns 0 if erase successful or -ERRNO if an error occurred
- */
+ 
 static int powernv_flash_erase(struct mtd_info *mtd, struct erase_info *erase)
 {
 	int rc;
@@ -177,11 +124,7 @@ static int powernv_flash_erase(struct mtd_info *mtd, struct erase_info *erase)
 	return rc;
 }
 
-/**
- * powernv_flash_set_driver_info - Fill the mtd_info structure and docg3
- * @dev: The device structure
- * @mtd: The structure to fill
- */
+ 
 static int powernv_flash_set_driver_info(struct device *dev,
 		struct mtd_info *mtd)
 {
@@ -202,10 +145,7 @@ static int powernv_flash_set_driver_info(struct device *dev,
 		return rc;
 	}
 
-	/*
-	 * Going to have to check what details I need to set and how to
-	 * get them
-	 */
+	 
 	mtd->name = devm_kasprintf(dev, GFP_KERNEL, "%pOFP", dev->of_node);
 	mtd->type = MTD_NORFLASH;
 	mtd->flags = MTD_WRITEABLE;
@@ -221,12 +161,7 @@ static int powernv_flash_set_driver_info(struct device *dev,
 	return 0;
 }
 
-/**
- * powernv_flash_probe
- * @pdev: platform device
- *
- * Returns 0 on success, -ENOMEM, -ENXIO on error
- */
+ 
 static int powernv_flash_probe(struct platform_device *pdev)
 {
 	struct device *dev = &pdev->dev;
@@ -251,25 +186,16 @@ static int powernv_flash_probe(struct platform_device *pdev)
 
 	dev_set_drvdata(dev, data);
 
-	/*
-	 * The current flash that skiboot exposes is one contiguous flash chip
-	 * with an ffs partition at the start, it should prove easier for users
-	 * to deal with partitions or not as they see fit
-	 */
+	 
 	return mtd_device_register(&data->mtd, NULL, 0);
 }
 
-/**
- * op_release - Release the driver
- * @pdev: the platform device
- *
- * Returns 0
- */
+ 
 static int powernv_flash_release(struct platform_device *pdev)
 {
 	struct powernv_flash *data = dev_get_drvdata(&(pdev->dev));
 
-	/* All resources should be freed automatically */
+	 
 	WARN_ON(mtd_device_unregister(&data->mtd));
 
 	return 0;

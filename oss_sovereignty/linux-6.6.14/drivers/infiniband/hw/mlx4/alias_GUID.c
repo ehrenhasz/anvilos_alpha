@@ -1,37 +1,7 @@
-/*
- * Copyright (c) 2012 Mellanox Technologies. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
- /***********************************************************/
-/*This file support the handling of the Alias GUID feature. */
-/***********************************************************/
+ 
+  
+ 
+ 
 #include <rdma/ib_mad.h>
 #include <rdma/ib_smi.h>
 #include <rdma/ib_cache.h>
@@ -44,10 +14,7 @@
 #include <linux/delay.h>
 #include "mlx4_ib.h"
 
-/*
-The driver keeps the current state of all guids, as they are in the HW.
-Whenever we receive an smp mad GUIDInfo record, the data will be cached.
-*/
+ 
 
 struct mlx4_alias_guid_work_context {
 	u8 port;
@@ -88,8 +55,7 @@ void mlx4_ib_update_cache_on_guid_change(struct mlx4_ib_dev *dev, int block_num,
 	pr_debug("port: %u, guid_indexes: 0x%llx\n", port_num, guid_indexes);
 
 	for (i = 0; i < NUM_ALIAS_GUID_IN_REC; i++) {
-		/* The location of the specific index starts from bit number 4
-		 * until bit num 11 */
+		 
 		if (test_bit(i + 4, (unsigned long *)&guid_indexes)) {
 			slave_id = (block_num * NUM_ALIAS_GUID_IN_REC) + i ;
 			if (slave_id >= dev->dev->num_slaves) {
@@ -97,7 +63,7 @@ void mlx4_ib_update_cache_on_guid_change(struct mlx4_ib_dev *dev, int block_num,
 				return;
 			}
 
-			/* cache the guid: */
+			 
 			memcpy(&dev->sriov.demux[port_index].guid_cache[slave_id],
 			       &p_data[i * GUID_REC_SIZE],
 			       GUID_REC_SIZE);
@@ -159,7 +125,7 @@ void mlx4_ib_slave_alias_guid_event(struct mlx4_ib_dev *dev, int slave,
 	dev->sriov.alias_guid.ports_guid[port_index].
 		all_rec_per_port[record_num].status
 		= MLX4_GUID_INFO_STATUS_IDLE;
-	/* set to run immediately */
+	 
 	dev->sriov.alias_guid.ports_guid[port_index].
 		all_rec_per_port[record_num].time_to_run = 0;
 	dev->sriov.alias_guid.ports_guid[port_index].
@@ -173,15 +139,7 @@ unlock:
 		mlx4_ib_init_alias_guid_work(dev, port_index);
 }
 
-/*
- * Whenever new GUID is set/unset (guid table change) create event and
- * notify the relevant slave (master also should be notified).
- * If the GUID value is not as we have in the cache the slave will not be
- * updated; in this case it waits for the smp_snoop or the port management
- * event to call the function and to update the slave.
- * block_number - the index of the block (16 blocks available)
- * port_number - 1 or 2
- */
+ 
 void mlx4_ib_notify_slaves_on_guid_change(struct mlx4_ib_dev *dev,
 					  int block_num, u32 port_num,
 					  u8 *p_data)
@@ -207,9 +165,9 @@ void mlx4_ib_notify_slaves_on_guid_change(struct mlx4_ib_dev *dev,
 				   all_rec_per_port[block_num].guid_indexes);
 	pr_debug("port: %u, guid_indexes: 0x%llx\n", port_num, guid_indexes);
 
-	/*calculate the slaves and notify them*/
+	 
 	for (i = 0; i < NUM_ALIAS_GUID_IN_REC; i++) {
-		/* the location of the specific index runs from bits 4..11 */
+		 
 		if (!(test_bit(i + 4, (unsigned long *)&guid_indexes)))
 			continue;
 
@@ -218,17 +176,13 @@ void mlx4_ib_notify_slaves_on_guid_change(struct mlx4_ib_dev *dev,
 			return;
 
 		slave_port = mlx4_phys_to_slave_port(dev->dev, slave_id, port_num);
-		if (slave_port < 0) /* this port isn't available for the VF */
+		if (slave_port < 0)  
 			continue;
 
 		tmp_cur_ag = *(__be64 *)&p_data[i * GUID_REC_SIZE];
 		form_cache_ag = get_cached_alias_guid(dev, port_num,
 					(NUM_ALIAS_GUID_IN_REC * block_num) + i);
-		/*
-		 * Check if guid is not the same as in the cache,
-		 * If it is different, wait for the snoop_smp or the port mgmt
-		 * change event to update the slave on its port state change
-		 */
+		 
 		if (tmp_cur_ag != form_cache_ag)
 			continue;
 
@@ -242,7 +196,7 @@ void mlx4_ib_notify_slaves_on_guid_change(struct mlx4_ib_dev *dev,
 			rec->guid_indexes = rec->guid_indexes &
 			       ~mlx4_ib_get_aguid_comp_mask_from_ix(i);
 		} else {
-			/* may notify port down if value is 0 */
+			 
 			if (tmp_cur_ag != MLX4_NOT_SET_GUID) {
 				spin_unlock_irqrestore(&dev->sriov.
 					alias_guid.ag_work_lock, flags);
@@ -252,9 +206,9 @@ void mlx4_ib_notify_slaves_on_guid_change(struct mlx4_ib_dev *dev,
 		spin_unlock_irqrestore(&dev->sriov.alias_guid.ag_work_lock,
 				       flags);
 		mlx4_gen_guid_change_eqe(dev->dev, slave_id, port_num);
-		/*2 cases: Valid GUID, and Invalid Guid*/
+		 
 
-		if (tmp_cur_ag != MLX4_NOT_SET_GUID) { /*valid GUID*/
+		if (tmp_cur_ag != MLX4_NOT_SET_GUID) {  
 			prev_state = mlx4_get_slave_port_state(dev->dev, slave_id, port_num);
 			new_state = set_and_calc_slave_port_state(dev->dev, slave_id, port_num,
 								  MLX4_PORT_STATE_IB_PORT_STATE_EVENT_GID_VALID,
@@ -268,7 +222,7 @@ void mlx4_ib_notify_slaves_on_guid_change(struct mlx4_ib_dev *dev,
 				mlx4_gen_port_state_change_eqe(dev->dev, slave_id,
 							       port_num, MLX4_PORT_CHANGE_SUBTYPE_ACTIVE);
 			}
-		} else { /* request to invalidate GUID */
+		} else {  
 			set_and_calc_slave_port_state(dev->dev, slave_id, port_num,
 						      MLX4_PORT_STATE_IB_EVENT_GID_INVALID,
 						      &gen_event);
@@ -341,16 +295,14 @@ static void aliasguid_query_handler(int status,
 			    cpu_to_be64(MLX4_GUID_FOR_DELETE_VAL))
 				goto next_entry;
 
-			/* A new value was set till we got the response */
+			 
 			pr_debug("need to set new value %llx, record num %d, block_num:%d\n",
 				 be64_to_cpu(required_val),
 				 i, guid_rec->block_num);
 			goto entry_declined;
 		}
 
-		/* check if the SM didn't assign one of the records.
-		 * if it didn't, re-ask for.
-		 */
+		 
 		if (sm_response == MLX4_NOT_SET_GUID) {
 			if (rec->guids_retry_schedule[i] == 0)
 				mlx4_ib_warn(&dev->ib_dev,
@@ -359,13 +311,11 @@ static void aliasguid_query_handler(int status,
 					     guid_rec->block_num);
 			goto entry_declined;
 		} else {
-		       /* properly assigned record. */
-		       /* We save the GUID we just got from the SM in the
-			* admin_guid in order to be persistent, and in the
-			* request from the sm the process will ask for the same GUID */
+		        
+		        
 			if (required_val &&
 			    sm_response != required_val) {
-				/* Warn only on first retry */
+				 
 				if (rec->guids_retry_schedule[i] == 0)
 					mlx4_ib_warn(&dev->ib_dev, "%s: Failed to set"
 						     " admin guid after SysAdmin "
@@ -396,7 +346,7 @@ entry_declined:
 			(rec->guids_retry_schedule[i] == 0) ?  1 :
 			min((unsigned int)60,
 			    rec->guids_retry_schedule[i] * 2);
-		/* using the minimum value among all entries in that record */
+		 
 		resched_delay_sec = (resched_delay_sec == 0) ?
 				rec->guids_retry_schedule[i] :
 				min(resched_delay_sec,
@@ -421,11 +371,7 @@ next_entry:
 		rec->status = MLX4_GUID_INFO_STATUS_SET;
 	}
 	spin_unlock_irqrestore(&dev->sriov.alias_guid.ag_work_lock, flags);
-	/*
-	The func is call here to close the cases when the
-	sm doesn't send smp, so in the sa response the driver
-	notifies the slave.
-	*/
+	 
 	mlx4_ib_notify_slaves_on_guid_change(dev, guid_rec->block_num,
 					     cb_ctx->port,
 					     guid_rec->guid_info_list);
@@ -457,17 +403,12 @@ static void invalidate_guid_record(struct mlx4_ib_dev *dev, u8 port, int index)
 	dev->sriov.alias_guid.ports_guid[port - 1].all_rec_per_port[index].status
 		= MLX4_GUID_INFO_STATUS_SET;
 
-	/* calculate the comp_mask for that record.*/
+	 
 	for (i = 0; i < NUM_ALIAS_GUID_IN_REC; i++) {
 		cur_admin_val =
 			*(u64 *)&dev->sriov.alias_guid.ports_guid[port - 1].
 			all_rec_per_port[index].all_recs[GUID_REC_SIZE * i];
-		/*
-		check the admin value: if it's for delete (~00LL) or
-		it is the first guid of the first record (hw guid) or
-		the records is not in ownership of the sysadmin and the sm doesn't
-		need to assign GUIDs, then don't put it up for assignment.
-		*/
+		 
 		if (MLX4_GUID_FOR_DELETE_VAL == cur_admin_val ||
 		    (!index && !i))
 			continue;
@@ -505,7 +446,7 @@ static int set_guid_rec(struct ib_device *ibdev,
 			 err, port);
 		return err;
 	}
-	/*check the port was configured by the sm, otherwise no need to send */
+	 
 	if (attr.state != IB_PORT_ACTIVE) {
 		pr_debug("port %d not active...rescheduling\n", port);
 		resched_delay = 5 * HZ;
@@ -583,11 +524,11 @@ static void mlx4_ib_guid_port_init(struct mlx4_ib_dev *dev, int port)
 	int j, k, entry;
 	__be64 guid;
 
-	/*Check if the SM doesn't need to assign the GUIDs*/
+	 
 	for (j = 0; j < NUM_ALIAS_GUID_REC_IN_PORT; j++) {
 		for (k = 0; k < NUM_ALIAS_GUID_IN_REC; k++) {
 			entry = j * NUM_ALIAS_GUID_IN_REC + k;
-			/* no request for the 0 entry (hw guid) */
+			 
 			if (!entry || entry > dev->dev->persist->num_vfs ||
 			    !mlx4_is_slave_active(dev->dev, entry))
 				continue;
@@ -622,11 +563,7 @@ void mlx4_ib_invalidate_all_guid_record(struct mlx4_ib_dev *dev, int port)
 		invalidate_guid_record(dev, port, i);
 
 	if (mlx4_is_master(dev->dev) && !dev->sriov.is_going_down) {
-		/*
-		make sure no work waits in the queue, if the work is already
-		queued(not on the timer) the cancel will fail. That is not a problem
-		because we just want the work started.
-		*/
+		 
 		cancel_delayed_work(&dev->sriov.alias_guid.
 				      ports_guid[port - 1].alias_guid_work);
 		queue_delayed_work(dev->sriov.alias_guid.ports_guid[port - 1].wq,
@@ -684,9 +621,7 @@ static void set_required_record(struct mlx4_ib_dev *dev, u8 port,
 	}
 }
 
-/* return index of record that should be updated based on lowest
- * rescheduled time
- */
+ 
 static int get_low_record_time_index(struct mlx4_ib_dev *dev, u8 port,
 				     int *resched_delay_sec)
 {
@@ -717,8 +652,7 @@ static int get_low_record_time_index(struct mlx4_ib_dev *dev, u8 port,
 	return record_index;
 }
 
-/* The function returns the next record that was
- * not configured (or failed to be configured) */
+ 
 static int get_next_record_to_update(struct mlx4_ib_dev *dev, u8 port,
 				     struct mlx4_next_alias_guid_work *rec)
 {
@@ -780,10 +714,7 @@ void mlx4_ib_init_alias_guid_work(struct mlx4_ib_dev *dev, int port)
 	spin_lock_irqsave(&dev->sriov.going_down_lock, flags);
 	spin_lock_irqsave(&dev->sriov.alias_guid.ag_work_lock, flags1);
 	if (!dev->sriov.is_going_down) {
-		/* If there is pending one should cancel then run, otherwise
-		  * won't run till previous one is ended as same work
-		  * struct is used.
-		  */
+		 
 		cancel_delayed_work(&dev->sriov.alias_guid.ports_guid[port].
 				    alias_guid_work);
 		queue_delayed_work(dev->sriov.alias_guid.ports_guid[port].wq,
@@ -858,14 +789,14 @@ int mlx4_ib_init_alias_guid_service(struct mlx4_ib_dev *dev)
 		dev->sriov.alias_guid.ports_guid[i].state_flags |=
 				GUID_STATE_NEED_PORT_INIT;
 		for (j = 0; j < NUM_ALIAS_GUID_REC_IN_PORT; j++) {
-			/* mark each val as it was deleted */
+			 
 			memset(dev->sriov.alias_guid.ports_guid[i].
 				all_rec_per_port[j].all_recs, 0xFF,
 				sizeof(dev->sriov.alias_guid.ports_guid[i].
 				all_rec_per_port[j].all_recs));
 		}
 		INIT_LIST_HEAD(&dev->sriov.alias_guid.ports_guid[i].cb_list);
-		/*prepare the records, set them to be allocated by sm*/
+		 
 		if (mlx4_ib_sm_guid_assign)
 			for (j = 1; j < NUM_ALIAS_GUID_PER_PORT; j++)
 				mlx4_set_admin_guid(dev->dev, 0, j, i + 1);

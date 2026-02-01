@@ -1,10 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
 
-/*
- * Copyright 2022 HabanaLabs, Ltd.
- * All Rights Reserved.
- *
- */
+
+ 
 
 #include <linux/debugfs.h>
 #include <linux/device.h>
@@ -78,15 +74,7 @@ static const struct drm_info_list accel_debugfs_list[] = {
 };
 #define ACCEL_DEBUGFS_ENTRIES ARRAY_SIZE(accel_debugfs_list)
 
-/**
- * accel_debugfs_init() - Initialize debugfs for accel minor
- * @minor: Pointer to the drm_minor instance.
- * @minor_id: The minor's id
- *
- * This function initializes the drm minor's debugfs members and creates
- * a root directory for the minor in debugfs. It also creates common files
- * for accelerators and calls the driver's debugfs init callback.
- */
+ 
 void accel_debugfs_init(struct drm_minor *minor, int minor_id)
 {
 	struct drm_device *dev = minor->dev;
@@ -104,15 +92,7 @@ void accel_debugfs_init(struct drm_minor *minor, int minor_id)
 		dev->driver->debugfs_init(minor);
 }
 
-/**
- * accel_set_device_instance_params() - Set some device parameters for accel device
- * @kdev: Pointer to the device instance.
- * @index: The minor's index
- *
- * This function creates the dev_t of the device using the accel major and
- * the device's minor number. In addition, it sets the class and type of the
- * device instance to the accel sysfs class and device type, respectively.
- */
+ 
 void accel_set_device_instance_params(struct device *kdev, int index)
 {
 	kdev->devt = MKDEV(ACCEL_MAJOR, index);
@@ -120,14 +100,7 @@ void accel_set_device_instance_params(struct device *kdev, int index)
 	kdev->type = &accel_sysfs_device_minor;
 }
 
-/**
- * accel_minor_alloc() - Allocates a new accel minor
- *
- * This function access the accel minors idr and allocates from it
- * a new id to represent a new accel minor
- *
- * Return: A new id on success or error code in case idr_alloc failed
- */
+ 
 int accel_minor_alloc(void)
 {
 	unsigned long flags;
@@ -140,13 +113,7 @@ int accel_minor_alloc(void)
 	return r;
 }
 
-/**
- * accel_minor_remove() - Remove an accel minor
- * @index: The minor id to remove.
- *
- * This function access the accel minors idr and removes from
- * it the member with the id that is passed to this function.
- */
+ 
 void accel_minor_remove(int index)
 {
 	unsigned long flags;
@@ -156,17 +123,7 @@ void accel_minor_remove(int index)
 	spin_unlock_irqrestore(&accel_minor_lock, flags);
 }
 
-/**
- * accel_minor_replace() - Replace minor pointer in accel minors idr.
- * @minor: Pointer to the new minor.
- * @index: The minor id to replace.
- *
- * This function access the accel minors idr structure and replaces the pointer
- * that is associated with an existing id. Because the minor pointer can be
- * NULL, we need to explicitly pass the index.
- *
- * Return: 0 for success, negative value for error
- */
+ 
 void accel_minor_replace(struct drm_minor *minor, int index)
 {
 	unsigned long flags;
@@ -176,17 +133,7 @@ void accel_minor_replace(struct drm_minor *minor, int index)
 	spin_unlock_irqrestore(&accel_minor_lock, flags);
 }
 
-/*
- * Looks up the given minor-ID and returns the respective DRM-minor object. The
- * refence-count of the underlying device is increased so you must release this
- * object with accel_minor_release().
- *
- * The object can be only a drm_minor that represents an accel device.
- *
- * As long as you hold this minor, it is guaranteed that the object and the
- * minor->dev pointer will stay valid! However, the device may get unplugged and
- * unregistered while you hold the minor.
- */
+ 
 static struct drm_minor *accel_minor_acquire(unsigned int minor_id)
 {
 	struct drm_minor *minor;
@@ -213,17 +160,7 @@ static void accel_minor_release(struct drm_minor *minor)
 	drm_dev_put(minor->dev);
 }
 
-/**
- * accel_open - open method for ACCEL file
- * @inode: device inode
- * @filp: file pointer.
- *
- * This function must be used by drivers as their &file_operations.open method.
- * It looks up the correct ACCEL device and instantiates all the per-file
- * resources for it. It also calls the &drm_driver.open driver callback.
- *
- * Return: 0 on success or negative errno value on failure.
- */
+ 
 int accel_open(struct inode *inode, struct file *filp)
 {
 	struct drm_device *dev;
@@ -238,7 +175,7 @@ int accel_open(struct inode *inode, struct file *filp)
 
 	atomic_fetch_inc(&dev->open_count);
 
-	/* share address_space across all char-devs of a single device */
+	 
 	filp->f_mapping = dev->anon_inode->i_mapping;
 
 	retcode = drm_open_helper(filp, minor);
@@ -315,9 +252,6 @@ int __init accel_core_init(void)
 		DRM_ERROR("Cannot register ACCEL major: %d\n", ret);
 
 error:
-	/*
-	 * Any cleanup due to errors will be done in drm_core_exit() that
-	 * will call accel_core_exit()
-	 */
+	 
 	return ret;
 }

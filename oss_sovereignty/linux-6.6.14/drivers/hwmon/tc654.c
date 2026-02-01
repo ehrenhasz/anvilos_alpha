@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * tc654.c - Linux kernel modules for fan speed controller
- *
- * Copyright (C) 2016 Allied Telesis Labs NZ
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/err.h>
@@ -19,118 +15,61 @@
 #include <linux/util_macros.h>
 
 enum tc654_regs {
-	TC654_REG_RPM1 = 0x00,	/* RPM Output 1 */
-	TC654_REG_RPM2 = 0x01,	/* RPM Output 2 */
-	TC654_REG_FAN_FAULT1 = 0x02,	/* Fan Fault 1 Threshold */
-	TC654_REG_FAN_FAULT2 = 0x03,	/* Fan Fault 2 Threshold */
-	TC654_REG_CONFIG = 0x04,	/* Configuration */
-	TC654_REG_STATUS = 0x05,	/* Status */
-	TC654_REG_DUTY_CYCLE = 0x06,	/* Fan Speed Duty Cycle */
-	TC654_REG_MFR_ID = 0x07,	/* Manufacturer Identification */
-	TC654_REG_VER_ID = 0x08,	/* Version Identification */
+	TC654_REG_RPM1 = 0x00,	 
+	TC654_REG_RPM2 = 0x01,	 
+	TC654_REG_FAN_FAULT1 = 0x02,	 
+	TC654_REG_FAN_FAULT2 = 0x03,	 
+	TC654_REG_CONFIG = 0x04,	 
+	TC654_REG_STATUS = 0x05,	 
+	TC654_REG_DUTY_CYCLE = 0x06,	 
+	TC654_REG_MFR_ID = 0x07,	 
+	TC654_REG_VER_ID = 0x08,	 
 };
 
-/* Macros to easily index the registers */
+ 
 #define TC654_REG_RPM(idx)		(TC654_REG_RPM1 + (idx))
 #define TC654_REG_FAN_FAULT(idx)	(TC654_REG_FAN_FAULT1 + (idx))
 
-/* Config register bits */
-#define TC654_REG_CONFIG_RES		BIT(6)	/* Resolution Selection */
-#define TC654_REG_CONFIG_DUTYC		BIT(5)	/* Duty Cycle Control */
-#define TC654_REG_CONFIG_SDM		BIT(0)	/* Shutdown Mode */
+ 
+#define TC654_REG_CONFIG_RES		BIT(6)	 
+#define TC654_REG_CONFIG_DUTYC		BIT(5)	 
+#define TC654_REG_CONFIG_SDM		BIT(0)	 
 
-/* Status register bits */
-#define TC654_REG_STATUS_F2F		BIT(1)	/* Fan 2 Fault */
-#define TC654_REG_STATUS_F1F		BIT(0)	/* Fan 1 Fault */
+ 
+#define TC654_REG_STATUS_F2F		BIT(1)	 
+#define TC654_REG_STATUS_F1F		BIT(0)	 
 
-/* RPM resolution for RPM Output registers */
-#define TC654_HIGH_RPM_RESOLUTION	25	/* 25 RPM resolution */
-#define TC654_LOW_RPM_RESOLUTION	50	/* 50 RPM resolution */
+ 
+#define TC654_HIGH_RPM_RESOLUTION	25	 
+#define TC654_LOW_RPM_RESOLUTION	50	 
 
-/* Convert to the fan fault RPM threshold from register value */
-#define TC654_FAN_FAULT_FROM_REG(val)	((val) * 50)	/* 50 RPM resolution */
+ 
+#define TC654_FAN_FAULT_FROM_REG(val)	((val) * 50)	 
 
-/* Convert to register value from the fan fault RPM threshold */
+ 
 #define TC654_FAN_FAULT_TO_REG(val)	(((val) / 50) & 0xff)
 
-/* Register data is read (and cached) at most once per second. */
+ 
 #define TC654_UPDATE_INTERVAL		HZ
 
 struct tc654_data {
 	struct i2c_client *client;
 
-	/* update mutex */
+	 
 	struct mutex update_lock;
 
-	/* tc654 register cache */
+	 
 	bool valid;
-	unsigned long last_updated;	/* in jiffies */
+	unsigned long last_updated;	 
 
-	u8 rpm_output[2];	/* The fan RPM data for fans 1 and 2 is then
-				 * written to registers RPM1 and RPM2
-				 */
-	u8 fan_fault[2];	/* The Fan Fault Threshold Registers are used to
-				 * set the fan fault threshold levels for fan 1
-				 * and fan 2
-				 */
-	u8 config;	/* The Configuration Register is an 8-bit read/
-			 * writable multi-function control register
-			 *   7: Fan Fault Clear
-			 *      1 = Clear Fan Fault
-			 *      0 = Normal Operation (default)
-			 *   6: Resolution Selection for RPM Output Registers
-			 *      RPM Output Registers (RPM1 and RPM2) will be
-			 *      set for
-			 *      1 = 25 RPM (9-bit) resolution
-			 *      0 = 50 RPM (8-bit) resolution (default)
-			 *   5: Duty Cycle Control Method
-			 *      The V OUT duty cycle will be controlled via
-			 *      1 = the SMBus interface.
-			 *      0 = via the V IN analog input pin. (default)
-			 * 4,3: Fan 2 Pulses Per Rotation
-			 *      00 = 1
-			 *      01 = 2 (default)
-			 *      10 = 4
-			 *      11 = 8
-			 * 2,1: Fan 1 Pulses Per Rotation
-			 *      00 = 1
-			 *      01 = 2 (default)
-			 *      10 = 4
-			 *      11 = 8
-			 *   0: Shutdown Mode
-			 *      1 = Shutdown mode.
-			 *      0 = Normal operation. (default)
-			 */
-	u8 status;	/* The Status register provides all the information
-			 * about what is going on within the TC654/TC655
-			 * devices.
-			 * 7,6: Unimplemented, Read as '0'
-			 *   5: Over-Temperature Fault Condition
-			 *      1 = Over-Temperature condition has occurred
-			 *      0 = Normal operation. V IN is less than 2.6V
-			 *   4: RPM2 Counter Overflow
-			 *      1 = Fault condition
-			 *      0 = Normal operation
-			 *   3: RPM1 Counter Overflow
-			 *      1 = Fault condition
-			 *      0 = Normal operation
-			 *   2: V IN Input Status
-			 *      1 = V IN is open
-			 *      0 = Normal operation. voltage present at V IN
-			 *   1: Fan 2 Fault
-			 *      1 = Fault condition
-			 *      0 = Normal operation
-			 *   0: Fan 1 Fault
-			 *      1 = Fault condition
-			 *      0 = Normal operation
-			 */
-	u8 duty_cycle;	/* The DUTY_CYCLE register is a 4-bit read/
-			 * writable register used to control the duty
-			 * cycle of the V OUT output.
-			 */
+	u8 rpm_output[2];	 
+	u8 fan_fault[2];	 
+	u8 config;	 
+	u8 status;	 
+	u8 duty_cycle;	 
 };
 
-/* helper to grab and cache data, at most one time per second */
+ 
 static struct tc654_data *tc654_update_client(struct device *dev)
 {
 	struct tc654_data *data = dev_get_drvdata(dev);
@@ -182,15 +121,13 @@ static struct tc654_data *tc654_update_client(struct device *dev)
 out:
 	mutex_unlock(&data->update_lock);
 
-	if (ret < 0)		/* upon error, encode it in return value */
+	if (ret < 0)		 
 		data = ERR_PTR(ret);
 
 	return data;
 }
 
-/*
- * sysfs attributes
- */
+ 
 
 static ssize_t fan_show(struct device *dev, struct device_attribute *da,
 			char *buf)
@@ -436,7 +373,7 @@ static SENSOR_DEVICE_ATTR_RW(fan2_pulses, fan_pulses, 1);
 static SENSOR_DEVICE_ATTR_RW(pwm1_mode, pwm_mode, 0);
 static SENSOR_DEVICE_ATTR_RW(pwm1, pwm, 0);
 
-/* Driver data */
+ 
 static struct attribute *tc654_attrs[] = {
 	&sensor_dev_attr_fan1_input.dev_attr.attr,
 	&sensor_dev_attr_fan2_input.dev_attr.attr,
@@ -453,19 +390,7 @@ static struct attribute *tc654_attrs[] = {
 
 ATTRIBUTE_GROUPS(tc654);
 
-/*
- * thermal cooling device functions
- *
- * Account for the "ShutDown Mode (SDM)" state by offsetting
- * the 16 PWM duty cycle states by 1.
- *
- * State  0 =   0% PWM | Shutdown - Fan(s) are off
- * State  1 =  30% PWM | duty_cycle =  0
- * State  2 = ~35% PWM | duty_cycle =  1
- * [...]
- * State 15 = ~95% PWM | duty_cycle = 14
- * State 16 = 100% PWM | duty_cycle = 15
- */
+ 
 #define TC654_MAX_COOLING_STATE	16
 
 static int tc654_get_max_state(struct thermal_cooling_device *cdev, unsigned long *state)
@@ -482,9 +407,9 @@ static int tc654_get_cur_state(struct thermal_cooling_device *cdev, unsigned lon
 		return PTR_ERR(data);
 
 	if (data->config & TC654_REG_CONFIG_SDM)
-		*state = 0;	/* FAN is off */
+		*state = 0;	 
 	else
-		*state = data->duty_cycle + 1;	/* offset PWM States by 1 */
+		*state = data->duty_cycle + 1;	 
 
 	return 0;
 }
@@ -505,9 +430,7 @@ static const struct thermal_cooling_device_ops tc654_fan_cool_ops = {
 	.set_cur_state = tc654_set_cur_state,
 };
 
-/*
- * device probe and removal
- */
+ 
 
 static int tc654_probe(struct i2c_client *client)
 {

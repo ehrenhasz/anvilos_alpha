@@ -1,7 +1,4 @@
-/*
- * Strictly speaking, this is not a test. But it can report during test
- * runs so relative performace can be measured.
- */
+ 
 #define _GNU_SOURCE
 #include <assert.h>
 #include <limits.h>
@@ -82,7 +79,7 @@ bool approx(int i_one, int i_two)
 	one_bump = one + MAX(one_bump, 2.0);
 	two_bump = two + MAX(two_bump, 2.0);
 
-	/* Equal to, or within 1% or 2 digits */
+	 
 	if (one == two ||
 	    (one > two && one <= two_bump) ||
 	    (two > one && two <= one_bump))
@@ -149,7 +146,7 @@ int main(int argc, char *argv[])
 	system("uname -a");
 
 	printf("Current BPF sysctl settings:\n");
-	/* Avoid using "sysctl" which may not be installed. */
+	 
 	system("grep -H . /proc/sys/net/core/bpf_jit_enable");
 	system("grep -H . /proc/sys/net/core/bpf_jit_harden");
 
@@ -160,42 +157,42 @@ int main(int argc, char *argv[])
 
 	printf("Benchmarking %llu syscalls...\n", samples);
 
-	/* Native call */
+	 
 	native = timing(CLOCK_PROCESS_CPUTIME_ID, samples) / samples;
 	printf("getpid native: %llu ns\n", native);
 
 	ret = prctl(PR_SET_NO_NEW_PRIVS, 1, 0, 0, 0);
 	assert(ret == 0);
 
-	/* One filter resulting in a bitmap */
+	 
 	ret = prctl(PR_SET_SECCOMP, SECCOMP_MODE_FILTER, &bitmap_prog);
 	assert(ret == 0);
 
 	bitmap1 = timing(CLOCK_PROCESS_CPUTIME_ID, samples) / samples;
 	printf("getpid RET_ALLOW 1 filter (bitmap): %llu ns\n", bitmap1);
 
-	/* Second filter resulting in a bitmap */
+	 
 	ret = prctl(PR_SET_SECCOMP, SECCOMP_MODE_FILTER, &bitmap_prog);
 	assert(ret == 0);
 
 	bitmap2 = timing(CLOCK_PROCESS_CPUTIME_ID, samples) / samples;
 	printf("getpid RET_ALLOW 2 filters (bitmap): %llu ns\n", bitmap2);
 
-	/* Third filter, can no longer be converted to bitmap */
+	 
 	ret = prctl(PR_SET_SECCOMP, SECCOMP_MODE_FILTER, &prog);
 	assert(ret == 0);
 
 	filter1 = timing(CLOCK_PROCESS_CPUTIME_ID, samples) / samples;
 	printf("getpid RET_ALLOW 3 filters (full): %llu ns\n", filter1);
 
-	/* Fourth filter, can not be converted to bitmap because of filter 3 */
+	 
 	ret = prctl(PR_SET_SECCOMP, SECCOMP_MODE_FILTER, &bitmap_prog);
 	assert(ret == 0);
 
 	filter2 = timing(CLOCK_PROCESS_CPUTIME_ID, samples) / samples;
 	printf("getpid RET_ALLOW 4 filters (full): %llu ns\n", filter2);
 
-	/* Estimations */
+	 
 #define ESTIMATE(fmt, var, what)	do {			\
 		var = (what);					\
 		printf("Estimated " fmt ": %llu ns\n", var);	\

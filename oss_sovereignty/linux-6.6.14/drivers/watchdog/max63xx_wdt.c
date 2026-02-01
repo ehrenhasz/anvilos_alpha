@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * drivers/char/watchdog/max63xx_wdt.c
- *
- * Driver for max63{69,70,71,72,73,74} watchdog timers
- *
- * Copyright (C) 2009 Marc Zyngier <maz@misterjones.org>
- *
- * This driver assumes the watchdog pins are memory mapped (as it is
- * the case for the Arcom Zeus). Should it be connected over GPIOs or
- * another interface, some abstraction will have to be introduced.
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/module.h>
@@ -31,10 +21,7 @@
 static unsigned int heartbeat = DEFAULT_HEARTBEAT;
 static bool nowayout  = WATCHDOG_NOWAYOUT;
 
-/*
- * Memory mapping: a single byte, 3 first lower bits to select bit 3
- * to ping the watchdog.
- */
+ 
 #define MAX6369_WDSET	(7 << 0)
 #define MAX6369_WDI	(1 << 3)
 
@@ -46,29 +33,18 @@ struct max63xx_wdt {
 	struct watchdog_device wdd;
 	const struct max63xx_timeout *timeout;
 
-	/* memory mapping */
+	 
 	void __iomem *base;
 	spinlock_t lock;
 
-	/* WDI and WSET bits write access routines */
+	 
 	void (*ping)(struct max63xx_wdt *wdt);
 	void (*set)(struct max63xx_wdt *wdt, u8 set);
 };
 
-/*
- * The timeout values used are actually the absolute minimum the chip
- * offers. Typical values on my board are slightly over twice as long
- * (10s setting ends up with a 25s timeout), and can be up to 3 times
- * the nominal setting (according to the datasheet). So please take
- * these values with a grain of salt. Same goes for the initial delay
- * "feature". Only max6373/74 have a few settings without this initial
- * delay (selected with the "nodelay" parameter).
- *
- * I also decided to remove from the tables any timeout smaller than a
- * second, as it looked completly overkill...
- */
+ 
 
-/* Timeouts in second */
+ 
 struct max63xx_timeout {
 	const u8 wdset;
 	const u8 tdelay;
@@ -129,7 +105,7 @@ static int max63xx_wdt_start(struct watchdog_device *wdd)
 
 	wdt->set(wdt, wdt->timeout->wdset);
 
-	/* check for a edge triggered startup */
+	 
 	if (wdt->timeout->tdelay == 0)
 		wdt->ping(wdt);
 	return 0;
@@ -207,7 +183,7 @@ static int max63xx_wdt_probe(struct platform_device *pdev)
 	if (!wdt)
 		return -ENOMEM;
 
-	/* Attempt to use fwnode first */
+	 
 	table = device_get_match_data(dev);
 	if (!table)
 		table = (struct max63xx_timeout *)pdev->id_entry->driver_data;

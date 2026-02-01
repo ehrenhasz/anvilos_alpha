@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * GPIO driver for RICOH583 power management chip.
- *
- * Copyright (c) 2012, NVIDIA CORPORATION.  All rights reserved.
- * Author: Laxman dewangan <ldewangan@nvidia.com>
- *
- * Based on code
- *	Copyright (C) 2011 RICOH COMPANY,LTD
- */
+
+ 
 #include <linux/init.h>
 #include <linux/kernel.h>
 #include <linux/slab.h>
@@ -55,7 +47,7 @@ static int rc5t583_gpio_dir_input(struct gpio_chip *gc, unsigned int offset)
 	if (ret < 0)
 		return ret;
 
-	/* Set pin to gpio mode */
+	 
 	return rc5t583_clear_bits(parent, RC5T583_GPIO_PGSEL, BIT(offset));
 }
 
@@ -71,7 +63,7 @@ static int rc5t583_gpio_dir_output(struct gpio_chip *gc, unsigned offset,
 	if (ret < 0)
 		return ret;
 
-	/* Set pin to gpio mode */
+	 
 	return rc5t583_clear_bits(parent, RC5T583_GPIO_PGSEL, BIT(offset));
 }
 

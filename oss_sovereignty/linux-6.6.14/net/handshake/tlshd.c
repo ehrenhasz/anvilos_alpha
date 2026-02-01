@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Establish a TLS session for a kernel socket consumer
- * using the tlshd user space handler.
- *
- * Author: Chuck Lever <chuck.lever@oracle.com>
- *
- * Copyright (c) 2021-2023, Oracle and/or its affiliates.
- */
+
+ 
 
 #include <linux/types.h>
 #include <linux/socket.h>
@@ -85,13 +78,7 @@ static void tls_handshake_remote_peerids(struct tls_handshake_req *treq,
 	}
 }
 
-/**
- * tls_handshake_done - callback to handle a CMD_DONE request
- * @req: socket on which the handshake was performed
- * @status: session status code
- * @info: full results of session establishment
- *
- */
+ 
 static void tls_handshake_done(struct handshake_req *req,
 			       unsigned int status, struct genl_info *info)
 {
@@ -185,14 +172,7 @@ static int tls_handshake_put_certificate(struct sk_buff *msg,
 	return 0;
 }
 
-/**
- * tls_handshake_accept - callback to construct a CMD_ACCEPT response
- * @req: handshake parameters to return
- * @info: generic netlink message context
- * @fd: file descriptor to be returned
- *
- * Returns zero on success, or a negative errno on failure.
- */
+ 
 static int tls_handshake_accept(struct handshake_req *req,
 				struct genl_info *info, int fd)
 {
@@ -267,16 +247,7 @@ static const struct handshake_proto tls_handshake_proto = {
 	.hp_done		= tls_handshake_done,
 };
 
-/**
- * tls_client_hello_anon - request an anonymous TLS handshake on a socket
- * @args: socket and handshake parameters for this request
- * @flags: memory allocation control flags
- *
- * Return values:
- *   %0: Handshake request enqueue; ->done will be called when complete
- *   %-ESRCH: No user agent is available
- *   %-ENOMEM: Memory allocation failed
- */
+ 
 int tls_client_hello_anon(const struct tls_handshake_args *args, gfp_t flags)
 {
 	struct tls_handshake_req *treq;
@@ -293,16 +264,7 @@ int tls_client_hello_anon(const struct tls_handshake_args *args, gfp_t flags)
 }
 EXPORT_SYMBOL(tls_client_hello_anon);
 
-/**
- * tls_client_hello_x509 - request an x.509-based TLS handshake on a socket
- * @args: socket and handshake parameters for this request
- * @flags: memory allocation control flags
- *
- * Return values:
- *   %0: Handshake request enqueue; ->done will be called when complete
- *   %-ESRCH: No user agent is available
- *   %-ENOMEM: Memory allocation failed
- */
+ 
 int tls_client_hello_x509(const struct tls_handshake_args *args, gfp_t flags)
 {
 	struct tls_handshake_req *treq;
@@ -321,17 +283,7 @@ int tls_client_hello_x509(const struct tls_handshake_args *args, gfp_t flags)
 }
 EXPORT_SYMBOL(tls_client_hello_x509);
 
-/**
- * tls_client_hello_psk - request a PSK-based TLS handshake on a socket
- * @args: socket and handshake parameters for this request
- * @flags: memory allocation control flags
- *
- * Return values:
- *   %0: Handshake request enqueue; ->done will be called when complete
- *   %-EINVAL: Wrong number of local peer IDs
- *   %-ESRCH: No user agent is available
- *   %-ENOMEM: Memory allocation failed
- */
+ 
 int tls_client_hello_psk(const struct tls_handshake_args *args, gfp_t flags)
 {
 	struct tls_handshake_req *treq;
@@ -356,16 +308,7 @@ int tls_client_hello_psk(const struct tls_handshake_args *args, gfp_t flags)
 }
 EXPORT_SYMBOL(tls_client_hello_psk);
 
-/**
- * tls_server_hello_x509 - request a server TLS handshake on a socket
- * @args: socket and handshake parameters for this request
- * @flags: memory allocation control flags
- *
- * Return values:
- *   %0: Handshake request enqueue; ->done will be called when complete
- *   %-ESRCH: No user agent is available
- *   %-ENOMEM: Memory allocation failed
- */
+ 
 int tls_server_hello_x509(const struct tls_handshake_args *args, gfp_t flags)
 {
 	struct tls_handshake_req *treq;
@@ -384,16 +327,7 @@ int tls_server_hello_x509(const struct tls_handshake_args *args, gfp_t flags)
 }
 EXPORT_SYMBOL(tls_server_hello_x509);
 
-/**
- * tls_server_hello_psk - request a server TLS handshake on a socket
- * @args: socket and handshake parameters for this request
- * @flags: memory allocation control flags
- *
- * Return values:
- *   %0: Handshake request enqueue; ->done will be called when complete
- *   %-ESRCH: No user agent is available
- *   %-ENOMEM: Memory allocation failed
- */
+ 
 int tls_server_hello_psk(const struct tls_handshake_args *args, gfp_t flags)
 {
 	struct tls_handshake_req *treq;
@@ -412,28 +346,14 @@ int tls_server_hello_psk(const struct tls_handshake_args *args, gfp_t flags)
 }
 EXPORT_SYMBOL(tls_server_hello_psk);
 
-/**
- * tls_handshake_cancel - cancel a pending handshake
- * @sk: socket on which there is an ongoing handshake
- *
- * Request cancellation races with request completion. To determine
- * who won, callers examine the return value from this function.
- *
- * Return values:
- *   %true - Uncompleted handshake request was canceled
- *   %false - Handshake request already completed or not found
- */
+ 
 bool tls_handshake_cancel(struct sock *sk)
 {
 	return handshake_req_cancel(sk);
 }
 EXPORT_SYMBOL(tls_handshake_cancel);
 
-/**
- * tls_handshake_close - send a Closure alert
- * @sock: an open socket
- *
- */
+ 
 void tls_handshake_close(struct socket *sock)
 {
 	struct handshake_req *req;

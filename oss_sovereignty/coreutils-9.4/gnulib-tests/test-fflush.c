@@ -1,25 +1,8 @@
-/* Test of POSIX compatible fflush() function.
-   Copyright (C) 2007, 2009-2023 Free Software Foundation, Inc.
-
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* Written by Eric Blake, 2007.  */
+ 
 
 #include <config.h>
 
-/* None of the files accessed by this test are large, so disable the
-   ftell link warning if we are not using the gnulib ftell module.  */
+ 
 #define _GL_NO_LARGE_FILES
 #include <stdio.h>
 
@@ -38,7 +21,7 @@ main (void)
   char buffer[10];
   int fd;
 
-  /* Create test file.  */
+   
   f = fopen ("test-fflush.txt", "w");
   if (!f || fwrite ("1234567890ABCDEFG", 1, 17, f) != 17 || fclose (f) != 0)
     {
@@ -47,7 +30,7 @@ main (void)
       return 1;
     }
 
-  /* Test fflush.  */
+   
   f = fopen ("test-fflush.txt", "r");
   ASSERT (f != NULL);
   fd = fileno (f);
@@ -59,8 +42,7 @@ main (void)
       unlink ("test-fflush.txt");
       return 1;
     }
-  /* For deterministic results, ensure f read a bigger buffer.
-     This is not the case on BeOS, nor on uClibc.  */
+   
 #if !(defined __BEOS__ || defined __UCLIBC__)
   if (lseek (fd, 0, SEEK_CUR) == 5)
     {
@@ -70,7 +52,7 @@ main (void)
       return 1;
     }
 #endif
-  /* POSIX requires fflush-fseek to set file offset of fd.  */
+   
   if (fflush (f) != 0 || fseeko (f, 0, SEEK_CUR) != 0)
     {
       fputs ("Failed to flush-fseek sample file.\n", stderr);
@@ -78,7 +60,7 @@ main (void)
       unlink ("test-fflush.txt");
       return 1;
     }
-  /* Check that offset is correct.  */
+   
   if (lseek (fd, 0, SEEK_CUR) != 5)
     {
       fprintf (stderr, "File offset is wrong after fseek: %ld.\n",
@@ -95,7 +77,7 @@ main (void)
       unlink ("test-fflush.txt");
       return 1;
     }
-  /* Check that file reading resumes at correct location.  */
+   
   if (fgetc (f) != '6')
     {
       fputs ("Failed to read next byte after fseek.\n", stderr);
@@ -103,7 +85,7 @@ main (void)
       unlink ("test-fflush.txt");
       return 1;
     }
-  /* For deterministic results, ensure f read a bigger buffer.  */
+   
   if (lseek (fd, 0, SEEK_CUR) == 6)
     {
       fputs ("Sample file was not buffered after fgetc.\n", stderr);
@@ -111,7 +93,7 @@ main (void)
       unlink ("test-fflush.txt");
       return 1;
     }
-  /* POSIX requires fflush-fseeko to set file offset of fd.  */
+   
   if (fflush (f) != 0 || fseeko (f, 0, SEEK_CUR) != 0)
     {
       fputs ("Failed to flush-fseeko sample file.\n", stderr);
@@ -119,7 +101,7 @@ main (void)
       unlink ("test-fflush.txt");
       return 1;
     }
-  /* Check that offset is correct.  */
+   
   if (lseek (fd, 0, SEEK_CUR) != 6)
     {
       fprintf (stderr, "File offset is wrong after fseeko: %ld.\n",
@@ -136,7 +118,7 @@ main (void)
       unlink ("test-fflush.txt");
       return 1;
     }
-  /* Check that file reading resumes at correct location.  */
+   
   if (fgetc (f) != '7')
     {
       fputs ("Failed to read next byte after fseeko.\n", stderr);
@@ -146,9 +128,8 @@ main (void)
     }
   fclose (f);
 
-  /* Test that fflush() sets errno if someone else closes the stream
-     fd behind the back of stdio.  */
-  #if !defined __ANDROID__ /* fdsan */
+   
+  #if !defined __ANDROID__  
   {
     FILE *fp = fopen ("test-fflush.txt", "w");
     ASSERT (fp != NULL);
@@ -161,8 +142,7 @@ main (void)
   }
   #endif
 
-  /* Test that fflush() sets errno if the stream was constructed with
-     an invalid file descriptor.  */
+   
   {
     FILE *fp = fdopen (-1, "w");
     if (fp != NULL)
@@ -186,7 +166,7 @@ main (void)
       }
   }
 
-  /* Clean up.  */
+   
   unlink ("test-fflush.txt");
 
   return 0;

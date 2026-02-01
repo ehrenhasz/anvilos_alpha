@@ -1,22 +1,6 @@
-/* intl-compat.c - Stub functions to call gettext functions from GNU gettext library. */
+ 
 
-/* Copyright (C) 1995, 2000-2003, 2005-2009 Free Software Foundation, Inc.
-
-   This file is part of GNU Bash.
-
-   Bash is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   Bash is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with Bash.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ 
 
 #ifdef HAVE_CONFIG_H
 # include <config.h>
@@ -24,16 +8,9 @@
 
 #include "gettextP.h"
 
-/* @@ end of prolog @@ */
+ 
 
-/* This file redirects the gettext functions (without prefix) to those
-   defined in the included GNU libintl library (with "libintl_" prefix).
-   It is compiled into libintl in order to make the AM_GNU_GETTEXT test
-   of gettext <= 0.11.2 work with the libintl library >= 0.11.3 which
-   has the redirections primarily in the <libintl.h> include file.
-   It is also compiled into libgnuintl so that libgnuintl.so can be used
-   as LD_PRELOADable library on glibc systems, to provide the extra
-   features that the functions in the libc don't have (namely, logging).  */
+ 
 
 
 #undef gettext
@@ -47,9 +24,7 @@
 #undef bind_textdomain_codeset
 
 
-/* When building a DLL, we must export some functions.  Note that because
-   the functions are only defined for binary backward compatibility, we
-   don't need to use __declspec(dllimport) in any case.  */
+ 
 #if defined _MSC_VER && BUILDING_DLL
 # define DLL_EXPORTED __declspec(dllexport)
 #else

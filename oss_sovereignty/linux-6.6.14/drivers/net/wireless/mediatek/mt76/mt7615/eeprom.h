@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: ISC */
-/* Copyright (C) 2019 MediaTek Inc. */
+ 
+ 
 
 #ifndef __MT7615_EEPROM_H
 #define __MT7615_EEPROM_H

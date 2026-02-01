@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * T10 Data Integrity Field CRC16 calculation
- *
- * Copyright (c) 2007 Oracle Corporation.  All rights reserved.
- * Written by Martin K. Petersen <martin.petersen@oracle.com>
- */
+
+ 
 
 #include <linux/types.h>
 #include <linux/module.h>

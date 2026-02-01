@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Watchdog driver for SBC-FITPC2 board
- *
- * Author: Denis Turischev <denis@compulab.co.il>
- *
- * Adapted from the IXP2000 watchdog driver by Deepak Saxena.
- *
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME " WATCHDOG: " fmt
 
@@ -25,7 +18,7 @@
 
 
 static bool nowayout = WATCHDOG_NOWAYOUT;
-static unsigned int margin = 60;	/* (secs) Default is 1 minute */
+static unsigned int margin = 60;	 
 static unsigned long wdt_status;
 static DEFINE_MUTEX(wdt_lock);
 

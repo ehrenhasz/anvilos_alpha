@@ -1,15 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2005 - 2016 Broadcom
- * All rights reserved.
- *
- * Contact Information:
- * linux-drivers@emulex.com
- *
- * Emulex
- * 3333 Susan Street
- * Costa Mesa, CA 92626
- */
+ 
+ 
 
 #ifndef BE_ROCE_H
 #define BE_ROCE_H
@@ -47,7 +37,7 @@ struct be_dev_info {
 	} msix;
 };
 
-/* ocrdma driver register's the callback functions with nic driver. */
+ 
 struct ocrdma_driver {
 	unsigned char name[32];
 	u32 be_abi_version;
@@ -60,14 +50,12 @@ enum be_roce_event {
 	BE_DEV_SHUTDOWN = 2
 };
 
-/* APIs for RoCE driver to register callback handlers,
- * which will be invoked when device is added, removed, ifup, ifdown
- */
+ 
 int be_roce_register_driver(struct ocrdma_driver *drv);
 void be_roce_unregister_driver(struct ocrdma_driver *drv);
 
-/* API for RoCE driver to issue mailbox commands */
+ 
 int be_roce_mcc_cmd(void *netdev_handle, void *wrb_payload,
 		    int wrb_payload_size, u16 *cmd_status, u16 *ext_status);
 
-#endif /* BE_ROCE_H */
+#endif  

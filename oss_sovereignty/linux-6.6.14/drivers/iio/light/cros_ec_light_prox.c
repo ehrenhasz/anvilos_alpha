@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * cros_ec_light_prox - Driver for light and prox sensors behing CrosEC.
- *
- * Copyright (C) 2017 Google, Inc
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/iio/buffer.h>
@@ -21,16 +17,12 @@
 #include <linux/platform_device.h>
 #include <linux/slab.h>
 
-/*
- * We only represent one entry for light or proximity. EC is merging different
- * light sensors to return the what the eye would see. For proximity, we
- * currently support only one light source.
- */
+ 
 #define CROS_EC_LIGHT_PROX_MAX_CHANNELS (1 + 1)
 
-/* State data for ec_sensors iio driver. */
+ 
 struct cros_ec_light_prox_state {
-	/* Shared by all sensors */
+	 
 	struct cros_ec_sensors_core_state core;
 
 	struct iio_chan_spec channels[CROS_EC_LIGHT_PROX_MAX_CHANNELS];
@@ -67,11 +59,7 @@ static int cros_ec_light_prox_read(struct iio_dev *indio_dev,
 						     (s16 *)&data);
 			if (ret)
 				break;
-			/*
-			 * The data coming from the light sensor is
-			 * pre-processed and represents the ambient light
-			 * illuminance reading expressed in lux.
-			 */
+			 
 			*val = data;
 			ret = IIO_VAL_INT;
 		} else {
@@ -86,7 +74,7 @@ static int cros_ec_light_prox_read(struct iio_dev *indio_dev,
 		if (ret)
 			break;
 
-		/* Save values */
+		 
 		st->core.calib[0].offset =
 			st->core.resp->sensor_offset.offset[0];
 
@@ -94,11 +82,7 @@ static int cros_ec_light_prox_read(struct iio_dev *indio_dev,
 		ret = IIO_VAL_INT;
 		break;
 	case IIO_CHAN_INFO_CALIBSCALE:
-		/*
-		 * RANGE is used for calibration
-		 * scale is a number x.y, where x is coded on 16 bits,
-		 * y coded on 16 bits, between 0 and 9999.
-		 */
+		 
 		st->core.param.cmd = MOTIONSENSE_CMD_SENSOR_RANGE;
 		st->core.param.sensor_range.data = EC_MOTION_SENSE_NO_VALUE;
 
@@ -135,7 +119,7 @@ static int cros_ec_light_prox_write(struct iio_dev *indio_dev,
 	switch (mask) {
 	case IIO_CHAN_INFO_CALIBBIAS:
 		st->core.calib[idx].offset = val;
-		/* Send to EC for each axis, even if not complete */
+		 
 		st->core.param.cmd = MOTIONSENSE_CMD_SENSOR_OFFSET;
 		st->core.param.sensor_offset.flags = MOTION_SENSE_SET_OFFSET;
 		st->core.param.sensor_offset.offset[0] =
@@ -190,7 +174,7 @@ static int cros_ec_light_prox_probe(struct platform_device *pdev)
 	state = iio_priv(indio_dev);
 	channel = state->channels;
 
-	/* Common part */
+	 
 	channel->info_mask_shared_by_all =
 		BIT(IIO_CHAN_INFO_SAMP_FREQ);
 	channel->info_mask_shared_by_all_available =
@@ -202,7 +186,7 @@ static int cros_ec_light_prox_probe(struct platform_device *pdev)
 	channel->ext_info = cros_ec_sensors_ext_info;
 	channel->scan_type.sign = 'u';
 
-	/* Sensor specific */
+	 
 	switch (state->core.type) {
 	case MOTIONSENSE_TYPE_LIGHT:
 		channel->type = IIO_LIGHT;
@@ -223,7 +207,7 @@ static int cros_ec_light_prox_probe(struct platform_device *pdev)
 		return -EINVAL;
 	}
 
-	/* Timestamp */
+	 
 	channel++;
 	channel->type = IIO_TIMESTAMP;
 	channel->channel = -1;
@@ -249,7 +233,7 @@ static const struct platform_device_id cros_ec_light_prox_ids[] = {
 	{
 		.name = "cros-ec-light",
 	},
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(platform, cros_ec_light_prox_ids);
 

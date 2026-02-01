@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * TSA driver
- *
- * Copyright 2022 CS GROUP France
- *
- * Author: Herve Codina <herve.codina@bootlin.com>
- */
+
+ 
 
 #include "tsa.h"
 #include <dt-bindings/soc/cpm1-fsl,tsa.h>
@@ -18,7 +12,7 @@
 #include <linux/slab.h>
 
 
-/* TSA SI RAM routing tables entry */
+ 
 #define TSA_SIRAM_ENTRY_LAST		(1 << 16)
 #define TSA_SIRAM_ENTRY_BYTE		(1 << 17)
 #define TSA_SIRAM_ENTRY_CNT(x)		(((x) & 0x0f) << 18)
@@ -30,7 +24,7 @@
 #define TSA_SIRAM_ENTRY_CSEL_SMC1	(0x5 << 22)
 #define TSA_SIRAM_ENTRY_CSEL_SMC2	(0x6 << 22)
 
-/* SI mode register (32 bits) */
+ 
 #define TSA_SIMODE	0x00
 #define   TSA_SIMODE_SMC2			0x80000000
 #define   TSA_SIMODE_SMC1			0x00008000
@@ -51,7 +45,7 @@
 #define     TSA_SIMODE_TDM_GM			0x0004
 #define     TSA_SIMODE_TDM_TFSD(x)		((x) << 0)
 
-/* SI global mode register (8 bits) */
+ 
 #define TSA_SIGMR	0x04
 #define TSA_SIGMR_ENB			(1<<3)
 #define TSA_SIGMR_ENA			(1<<2)
@@ -61,13 +55,13 @@
 #define   TSA_SIGMR_RDM_STATIC_TDMAB	0x02
 #define   TSA_SIGMR_RDM_DYN_TDMAB	0x03
 
-/* SI status register (8 bits) */
+ 
 #define TSA_SISTR	0x06
 
-/* SI command register (8 bits) */
+ 
 #define TSA_SICMR	0x07
 
-/* SI clock route register (32 bits) */
+ 
 #define TSA_SICR	0x0C
 #define   TSA_SICR_SCC2(x)		((x) << 8)
 #define   TSA_SICR_SCC3(x)		((x) << 16)
@@ -94,7 +88,7 @@
 #define       TSA_SICR_SCC_TXCS_CLK37	(0x6 << 0)
 #define       TSA_SICR_SCC_TXCS_CLK48	(0x7 << 0)
 
-/* Serial interface RAM pointer register (32 bits) */
+ 
 #define TSA_SIRP	0x10
 
 struct tsa_entries_area {
@@ -121,8 +115,8 @@ struct tsa {
 	void *__iomem si_ram;
 	resource_size_t si_ram_sz;
 	spinlock_t	lock;
-	int tdms; /* TSA_TDMx ORed */
-	struct tsa_tdm tdm[2]; /* TDMa and TDMb */
+	int tdms;  
+	struct tsa_tdm tdm[2];  
 	struct tsa_serial {
 		unsigned int id;
 		struct tsa_serial_info info;
@@ -131,7 +125,7 @@ struct tsa {
 
 static inline struct tsa *tsa_serial_get_tsa(struct tsa_serial *tsa_serial)
 {
-	/* The serials table is indexed by the serial id */
+	 
 	return container_of(tsa_serial, struct tsa, serials[tsa_serial->id]);
 }
 
@@ -239,40 +233,40 @@ static void tsa_init_entries_area(struct tsa *tsa, struct tsa_entries_area *area
 	half = tsa->si_ram_sz/2;
 
 	if (tdms == BIT(TSA_TDMA)) {
-		/* Only TDMA */
+		 
 		if (is_rx) {
-			/* First half of si_ram */
+			 
 			area->entries_start = tsa->si_ram;
 			area->entries_next = area->entries_start + half;
 			area->last_entry = NULL;
 		} else {
-			/* Second half of si_ram */
+			 
 			area->entries_start = tsa->si_ram + half;
 			area->entries_next = area->entries_start + half;
 			area->last_entry = NULL;
 		}
 	} else {
-		/* Only TDMB or both TDMs */
+		 
 		if (tdm_id == TSA_TDMA) {
 			if (is_rx) {
-				/* First half of first half of si_ram */
+				 
 				area->entries_start = tsa->si_ram;
 				area->entries_next = area->entries_start + quarter;
 				area->last_entry = NULL;
 			} else {
-				/* First half of second half of si_ram */
+				 
 				area->entries_start = tsa->si_ram + (2 * quarter);
 				area->entries_next = area->entries_start + quarter;
 				area->last_entry = NULL;
 			}
 		} else {
 			if (is_rx) {
-				/* Second half of first half of si_ram */
+				 
 				area->entries_start = tsa->si_ram + quarter;
 				area->entries_next = area->entries_start + quarter;
 				area->last_entry = NULL;
 			} else {
-				/* Second half of second half of si_ram */
+				 
 				area->entries_start = tsa->si_ram + (3 * quarter);
 				area->entries_next = area->entries_start + quarter;
 				area->last_entry = NULL;
@@ -328,7 +322,7 @@ static int tsa_add_entry(struct tsa *tsa, struct tsa_entries_area *area,
 	}
 
 	if (area->last_entry) {
-		/* Clear last flag */
+		 
 		tsa_clrbits32(area->last_entry, TSA_SIRAM_ENTRY_LAST);
 	}
 
@@ -635,7 +629,7 @@ static void tsa_init_si_ram(struct tsa *tsa)
 {
 	resource_size_t i;
 
-	/* Fill all entries as the last one */
+	 
 	for (i = 0; i < tsa->si_ram_sz; i += 4)
 		tsa_write32(tsa->si_ram + i, TSA_SIRAM_ENTRY_LAST);
 }
@@ -680,7 +674,7 @@ static int tsa_probe(struct platform_device *pdev)
 	if (ret)
 		return ret;
 
-	/* Set SIMODE */
+	 
 	val = 0;
 	if (tsa->tdm[0].is_enable)
 		val |= TSA_SIMODE_TDMA(tsa->tdm[0].simode_tdm);
@@ -692,7 +686,7 @@ static int tsa_probe(struct platform_device *pdev)
 			 TSA_SIMODE_TDMB(TSA_SIMODE_TDM_MASK),
 			 val);
 
-	/* Set SIGMR */
+	 
 	val = (tsa->tdms == BIT(TSA_TDMA)) ?
 		TSA_SIGMR_RDM_STATIC_TDMA : TSA_SIGMR_RDM_STATIC_TDMAB;
 	if (tsa->tdms & BIT(TSA_TDMA))
@@ -734,7 +728,7 @@ static int tsa_remove(struct platform_device *pdev)
 
 static const struct of_device_id tsa_id_table[] = {
 	{ .compatible = "fsl,cpm1-tsa" },
-	{} /* sentinel */
+	{}  
 };
 MODULE_DEVICE_TABLE(of, tsa_id_table);
 
@@ -789,11 +783,7 @@ struct tsa_serial *tsa_serial_get_byphandle(struct device_node *np,
 
 	tsa_serial = &tsa->serials[out_args.args[0]];
 
-	/*
-	 * Be sure that the serial id matches the phandle arg.
-	 * The tsa_serials table is indexed by serial ids. The serial id is set
-	 * during the probe() call and needs to be coherent.
-	 */
+	 
 	if (WARN_ON(tsa_serial->id != out_args.args[0])) {
 		platform_device_put(pdev);
 		return ERR_PTR(-EINVAL);

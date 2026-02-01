@@ -1,87 +1,45 @@
-/****************************************************************************
- * Copyright 2020,2021 Thomas E. Dickey                                     *
- * Copyright 1998-2012,2014 Free Software Foundation, Inc.                  *
- *                                                                          *
- * Permission is hereby granted, free of charge, to any person obtaining a  *
- * copy of this software and associated documentation files (the            *
- * "Software"), to deal in the Software without restriction, including      *
- * without limitation the rights to use, copy, modify, merge, publish,      *
- * distribute, distribute with modifications, sublicense, and/or sell       *
- * copies of the Software, and to permit persons to whom the Software is    *
- * furnished to do so, subject to the following conditions:                 *
- *                                                                          *
- * The above copyright notice and this permission notice shall be included  *
- * in all copies or substantial portions of the Software.                   *
- *                                                                          *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS  *
- * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF               *
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.   *
- * IN NO EVENT SHALL THE ABOVE COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,   *
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR    *
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR    *
- * THE USE OR OTHER DEALINGS IN THE SOFTWARE.                               *
- *                                                                          *
- * Except as contained in this notice, the name(s) of the above copyright   *
- * holders shall not be used in advertising or otherwise to promote the     *
- * sale, use or other dealings in this Software without prior written       *
- * authorization.                                                           *
- ****************************************************************************/
+ 
 
-/****************************************************************************
- *   Author:  Juergen Pfeifer, 1995,1997                                    *
- ****************************************************************************/
+ 
 
 #include "form.priv.h"
 
 MODULE_ID("$Id: fld_def.c,v 1.44 2021/03/27 23:49:53 tom Exp $")
 
-/* this can't be readonly */
+ 
 static FIELD default_field =
 {
-  0,				/* status  */
-  0,				/* rows    */
-  0,				/* cols    */
-  0,				/* frow    */
-  0,				/* fcol    */
-  0,				/* drows   */
-  0,				/* dcols   */
-  0,				/* maxgrow */
-  0,				/* nrow    */
-  0,				/* nbuf    */
-  NO_JUSTIFICATION,		/* just    */
-  0,				/* page    */
-  0,				/* index   */
-  (int)' ',			/* pad     */
-  A_NORMAL,			/* fore    */
-  A_NORMAL,			/* back    */
-  STD_FIELD_OPTS,		/* opts    */
-  (FIELD *)0,			/* snext   */
-  (FIELD *)0,			/* sprev   */
-  (FIELD *)0,			/* link    */
-  (FORM *)0,			/* form    */
-  (FIELDTYPE *)0,		/* type    */
-  (char *)0,			/* arg     */
-  (FIELD_CELL *)0,		/* buf     */
-  (char *)0			/* usrptr  */
+  0,				 
+  0,				 
+  0,				 
+  0,				 
+  0,				 
+  0,				 
+  0,				 
+  0,				 
+  0,				 
+  0,				 
+  NO_JUSTIFICATION,		 
+  0,				 
+  0,				 
+  (int)' ',			 
+  A_NORMAL,			 
+  A_NORMAL,			 
+  STD_FIELD_OPTS,		 
+  (FIELD *)0,			 
+  (FIELD *)0,			 
+  (FIELD *)0,			 
+  (FORM *)0,			 
+  (FIELDTYPE *)0,		 
+  (char *)0,			 
+  (FIELD_CELL *)0,		 
+  (char *)0			 
   NCURSES_FIELD_EXTENSION
 };
 
 FORM_EXPORT_VAR(FIELD *) _nc_Default_Field = &default_field;
 
-/*---------------------------------------------------------------------------
-|   Facility      :  libnform
-|   Function      :  TypeArgument *_nc_Make_Argument(
-|                              const FIELDTYPE *typ,
-|                              va_list *ap,
-|                              int *err )
-|
-|   Description   :  Create an argument structure for the specified type.
-|                    Use the type-dependent argument list to construct
-|                    it.
-|
-|   Return Values :  Pointer to argument structure. Maybe NULL.
-|                    In case of an error in *err an error counter is increased.
-+--------------------------------------------------------------------------*/
+ 
 FORM_EXPORT(TypeArgument *)
 _nc_Make_Argument(const FIELDTYPE *typ, va_list *ap, int *err)
 {
@@ -117,18 +75,7 @@ _nc_Make_Argument(const FIELDTYPE *typ, va_list *ap, int *err)
   return res;
 }
 
-/*---------------------------------------------------------------------------
-|   Facility      :  libnform
-|   Function      :  TypeArgument *_nc_Copy_Argument(const FIELDTYPE *typ,
-|                                                    const TypeArgument *argp,
-|                                                    int *err )
-|
-|   Description   :  Create a copy of an argument structure for the specified
-|                    type.
-|
-|   Return Values :  Pointer to argument structure. Maybe NULL.
-|                    In case of an error in *err an error counter is increased.
-+--------------------------------------------------------------------------*/
+ 
 FORM_EXPORT(TypeArgument *)
 _nc_Copy_Argument(const FIELDTYPE *typ, const TypeArgument *argp, int *err)
 {
@@ -167,16 +114,7 @@ _nc_Copy_Argument(const FIELDTYPE *typ, const TypeArgument *argp, int *err)
   return res;
 }
 
-/*---------------------------------------------------------------------------
-|   Facility      :  libnform
-|   Function      :  void _nc_Free_Argument(const FIELDTYPE *typ,
-|                                           TypeArgument * argp )
-|
-|   Description   :  Release memory associated with the argument structure
-|                    for the given fieldtype.
-|
-|   Return Values :  -
-+--------------------------------------------------------------------------*/
+ 
 FORM_EXPORT(void)
 _nc_Free_Argument(const FIELDTYPE *typ, TypeArgument *argp)
 {
@@ -201,15 +139,7 @@ _nc_Free_Argument(const FIELDTYPE *typ, TypeArgument *argp)
     }
 }
 
-/*---------------------------------------------------------------------------
-|   Facility      :  libnform
-|   Function      :  bool _nc_Copy_Type( FIELD *dst, FIELD const *src )
-|
-|   Description   :  Copy argument structure of field src to field dst
-|
-|   Return Values :  TRUE       - copy worked
-|                    FALSE      - error occurred
-+--------------------------------------------------------------------------*/
+ 
 FORM_EXPORT(bool)
 _nc_Copy_Type(FIELD *dst, FIELD const *src)
 {
@@ -237,14 +167,7 @@ _nc_Copy_Type(FIELD *dst, FIELD const *src)
     }
 }
 
-/*---------------------------------------------------------------------------
-|   Facility      :  libnform
-|   Function      :  void _nc_Free_Type( FIELD *field )
-|
-|   Description   :  Release Argument structure for this field
-|
-|   Return Values :  -
-+--------------------------------------------------------------------------*/
+ 
 FORM_EXPORT(void)
 _nc_Free_Type(FIELD *field)
 {
@@ -256,22 +179,7 @@ _nc_Free_Type(FIELD *field)
     }
 }
 
-/*---------------------------------------------------------------------------
-|   Facility      :  libnform
-|   Function      :  FIELD *new_field( int rows, int cols,
-|                                      int frow, int fcol,
-|                                      int nrow, int nbuf )
-|
-|   Description   :  Create a new field with this many 'rows' and 'cols',
-|                    starting at 'frow/fcol' in the subwindow of the form.
-|                    Allocate 'nrow' off-screen rows and 'nbuf' additional
-|                    buffers. If an error occurs, errno is set to
-|
-|                    E_BAD_ARGUMENT - invalid argument
-|                    E_SYSTEM_ERROR - system error
-|
-|   Return Values :  Pointer to the new field or NULL if failure.
-+--------------------------------------------------------------------------*/
+ 
 FORM_EXPORT(FIELD *)
 new_field(int rows, int cols, int frow, int fcol, int nrow, int nbuf)
 {
@@ -288,7 +196,7 @@ new_field(int rows, int cols, int frow, int fcol, int nrow, int nbuf)
       fcol >= 0 &&
       nrow >= 0 &&
       nbuf >= 0 &&
-      ((err = E_SYSTEM_ERROR) != 0) &&	/* trick: this resets the default error */
+      ((err = E_SYSTEM_ERROR) != 0) &&	 
       (New_Field = typeMalloc(FIELD, 1)) != 0)
     {
       T((T_CREATE("field %p"), (void *)New_Field));
@@ -315,8 +223,7 @@ new_field(int rows, int cols, int frow, int fcol, int nrow, int nbuf)
 	  len = Total_Buffer_Size(New_Field);
 	  if ((New_Field->buf = (FIELD_CELL *)malloc(len)))
 	    {
-	      /* Prefill buffers with blanks and insert terminating zeroes
-	         between buffers */
+	       
 	      int i, j;
 	      int cells = Buffer_Length(New_Field);
 
@@ -342,16 +249,7 @@ new_field(int rows, int cols, int frow, int fcol, int nrow, int nbuf)
   returnField((FIELD *)0);
 }
 
-/*---------------------------------------------------------------------------
-|   Facility      :  libnform
-|   Function      :  int free_field( FIELD *field )
-|
-|   Description   :  Frees the storage allocated for the field.
-|
-|   Return Values :  E_OK           - success
-|                    E_BAD_ARGUMENT - invalid field pointer
-|                    E_CONNECTED    - field is connected
-+--------------------------------------------------------------------------*/
+ 
 FORM_EXPORT(int)
 free_field(FIELD *field)
 {
@@ -396,4 +294,4 @@ free_field(FIELD *field)
   RETURN(E_OK);
 }
 
-/* fld_def.c ends here */
+ 

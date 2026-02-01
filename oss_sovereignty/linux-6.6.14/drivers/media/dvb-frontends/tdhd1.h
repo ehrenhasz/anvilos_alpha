@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * tdhd1.h - ALPS TDHD1-204A tuner support
- *
- * Copyright (C) 2008 Oliver Endriss <o.endriss@gmx.de>
- *
- * The project's page is at https://linuxtv.org
- */
+ 
+ 
 
 #ifndef TDHD1_H
 #define TDHD1_H
@@ -55,4 +49,4 @@ static int alps_tdhd1_204a_tuner_set_params(struct dvb_frontend *fe)
 	return 0;
 }
 
-#endif /* TDHD1_H */
+#endif  

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Renesas RZ/G2L MTU3a Counter driver
- *
- * Copyright (C) 2022 Renesas Electronics Corporation
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/counter.h>
@@ -13,46 +9,29 @@
 #include <linux/pm_runtime.h>
 #include <linux/types.h>
 
-/*
- * Register descriptions
- *   TSR: Timer Status Register
- *   TMDR1: Timer Mode Register 1
- *   TMDR3: Timer Mode Register 3
- *   TIOR: Timer I/O Control Register
- *   TCR: Timer Control Register
- *   TCNT: Timer Counter
- *   TGRA: Timer general register A
- *   TCNTLW: Timer Longword Counter
- *   TGRALW: Timer longword general register A
- */
+ 
 
-#define RZ_MTU3_TSR_TCFD	BIT(7) /* Count Direction Flag */
+#define RZ_MTU3_TSR_TCFD	BIT(7)  
 
-#define RZ_MTU3_TMDR1_PH_CNT_MODE_1	(4) /* Phase counting mode 1 */
-#define RZ_MTU3_TMDR1_PH_CNT_MODE_2	(5) /* Phase counting mode 2 */
-#define RZ_MTU3_TMDR1_PH_CNT_MODE_3	(6) /* Phase counting mode 3 */
-#define RZ_MTU3_TMDR1_PH_CNT_MODE_4	(7) /* Phase counting mode 4 */
-#define RZ_MTU3_TMDR1_PH_CNT_MODE_5	(9) /* Phase counting mode 5 */
+#define RZ_MTU3_TMDR1_PH_CNT_MODE_1	(4)  
+#define RZ_MTU3_TMDR1_PH_CNT_MODE_2	(5)  
+#define RZ_MTU3_TMDR1_PH_CNT_MODE_3	(6)  
+#define RZ_MTU3_TMDR1_PH_CNT_MODE_4	(7)  
+#define RZ_MTU3_TMDR1_PH_CNT_MODE_5	(9)  
 #define RZ_MTU3_TMDR1_PH_CNT_MODE_MASK	(0xf)
 
-/*
- * LWA: MTU1/MTU2 Combination Longword Access Control
- * 0: 16-bit, 1: 32-bit
- */
+ 
 #define RZ_MTU3_TMDR3_LWA	(0)
 
-/*
- * PHCKSEL: External Input Phase Clock Select
- * 0: MTCLKA and MTCLKB, 1: MTCLKC and MTCLKD
- */
+ 
 #define RZ_MTU3_TMDR3_PHCKSEL	(1)
 
 #define RZ_MTU3_16_BIT_MTU1_CH	(0)
 #define RZ_MTU3_16_BIT_MTU2_CH	(1)
 #define RZ_MTU3_32_BIT_CH	(2)
 
-#define RZ_MTU3_TIOR_NO_OUTPUT	(0) /* Output prohibited */
-#define RZ_MTU3_TIOR_IC_BOTH	(10) /* Input capture at both edges */
+#define RZ_MTU3_TIOR_NO_OUTPUT	(0)  
+#define RZ_MTU3_TIOR_IC_BOTH	(10)  
 
 #define SIGNAL_A_ID	(0)
 #define SIGNAL_B_ID	(1)
@@ -62,16 +41,7 @@
 #define RZ_MTU3_MAX_HW_CNTR_CHANNELS	(2)
 #define RZ_MTU3_MAX_LOGICAL_CNTR_CHANNELS	(3)
 
-/**
- * struct rz_mtu3_cnt - MTU3 counter private data
- *
- * @clk: MTU3 module clock
- * @lock: Lock to prevent concurrent access for ceiling and count
- * @ch: HW channels for the counters
- * @count_is_enabled: Enabled state of Counter value channel
- * @mtu_16bit_max: Cache for 16-bit counters
- * @mtu_32bit_max: Cache for 32-bit counters
- */
+ 
 struct rz_mtu3_cnt {
 	struct clk *clk;
 	struct mutex lock;
@@ -219,11 +189,7 @@ static int rz_mtu3_count_function_read_helper(struct rz_mtu3_channel *const ch,
 		*function = COUNTER_FUNCTION_QUADRATURE_X2_B;
 		return 0;
 	default:
-		/*
-		 * TODO:
-		 *  - need to add RZ_MTU3_TMDR1_PH_CNT_MODE_3
-		 *  - need to add RZ_MTU3_TMDR1_PH_CNT_MODE_5
-		 */
+		 
 		return -EINVAL;
 	}
 }
@@ -270,11 +236,7 @@ static int rz_mtu3_count_function_write(struct counter_device *counter,
 		timer_mode = RZ_MTU3_TMDR1_PH_CNT_MODE_4;
 		break;
 	default:
-		/*
-		 * TODO:
-		 *  - need to add RZ_MTU3_TMDR1_PH_CNT_MODE_3
-		 *  - need to add RZ_MTU3_TMDR1_PH_CNT_MODE_5
-		 */
+		 
 		mutex_unlock(&priv->lock);
 		return -EINVAL;
 	}
@@ -333,7 +295,7 @@ static int rz_mtu3_count_ceiling_read(struct counter_device *counter,
 		*ceiling = priv->mtu_32bit_max;
 		break;
 	default:
-		/* should never reach this path */
+		 
 		mutex_unlock(&priv->lock);
 		return -EINVAL;
 	}
@@ -372,7 +334,7 @@ static int rz_mtu3_count_ceiling_write(struct counter_device *counter,
 		priv->mtu_32bit_max = ceiling;
 		break;
 	default:
-		/* should never reach this path */
+		 
 		mutex_unlock(&priv->lock);
 		return -EINVAL;
 	}
@@ -395,7 +357,7 @@ static void rz_mtu3_32bit_cnt_setting(struct counter_device *counter)
 	struct rz_mtu3_channel *const ch1 = rz_mtu3_get_ch(counter, 0);
 	struct rz_mtu3_channel *const ch2 = rz_mtu3_get_ch(counter, 1);
 
-	/* Phase counting mode 1 is used as default in initialization. */
+	 
 	rz_mtu3_8bit_ch_write(ch1, RZ_MTU3_TMDR1, RZ_MTU3_TMDR1_PH_CNT_MODE_1);
 
 	rz_mtu3_8bit_ch_write(ch1, RZ_MTU3_TCR, RZ_MTU3_TCR_CCLR_TGRA);
@@ -409,7 +371,7 @@ static void rz_mtu3_16bit_cnt_setting(struct counter_device *counter, int id)
 {
 	struct rz_mtu3_channel *const ch = rz_mtu3_get_ch(counter, id);
 
-	/* Phase counting mode 1 is used as default in initialization. */
+	 
 	rz_mtu3_8bit_ch_write(ch, RZ_MTU3_TMDR1, RZ_MTU3_TMDR1_PH_CNT_MODE_1);
 
 	rz_mtu3_8bit_ch_write(ch, RZ_MTU3_TCR, RZ_MTU3_TCR_CCLR_TGRA);
@@ -432,10 +394,7 @@ static int rz_mtu3_initialize_counter(struct counter_device *counter, int id)
 		rz_mtu3_16bit_cnt_setting(counter, id);
 		return 0;
 	case RZ_MTU3_32_BIT_CH:
-		/*
-		 * 32-bit phase counting need MTU1 and MTU2 to create 32-bit
-		 * cascade counter.
-		 */
+		 
 		if (!rz_mtu3_request_channel(ch1))
 			return -EBUSY;
 
@@ -447,7 +406,7 @@ static int rz_mtu3_initialize_counter(struct counter_device *counter, int id)
 		rz_mtu3_32bit_cnt_setting(counter);
 		return 0;
 	default:
-		/* should never reach this path */
+		 
 		return -EINVAL;
 	}
 }
@@ -646,7 +605,7 @@ static int rz_mtu3_action_read(struct counter_device *counter,
 		return ret;
 	}
 
-	/* Default action mode */
+	 
 	*action = COUNTER_SYNAPSE_ACTION_NONE;
 
 	if (count->id != RZ_MTU3_16_BIT_MTU1_CH) {
@@ -661,30 +620,23 @@ static int rz_mtu3_action_read(struct counter_device *counter,
 
 	switch (function) {
 	case COUNTER_FUNCTION_PULSE_DIRECTION:
-		/*
-		 * Rising edges on signal A (signal C) updates the respective
-		 * count. The input level of signal B (signal D) determines
-		 * direction.
-		 */
+		 
 		if (synapse->signal->id == SIGNAL_A_ID ||
 		    synapse->signal->id == SIGNAL_C_ID)
 			*action = COUNTER_SYNAPSE_ACTION_RISING_EDGE;
 		break;
 	case COUNTER_FUNCTION_QUADRATURE_X2_B:
-		/*
-		 * Any state transition on quadrature pair signal B (signal D)
-		 * updates the respective count.
-		 */
+		 
 		if (synapse->signal->id == SIGNAL_B_ID ||
 		    synapse->signal->id == SIGNAL_D_ID)
 			*action = COUNTER_SYNAPSE_ACTION_BOTH_EDGES;
 		break;
 	case COUNTER_FUNCTION_QUADRATURE_X4:
-		/* counts up/down on both edges of A (C)  and B (D) signal */
+		 
 		*action = COUNTER_SYNAPSE_ACTION_BOTH_EDGES;
 		break;
 	default:
-		/* should never reach this path */
+		 
 		mutex_unlock(&priv->lock);
 		return -EINVAL;
 	}
@@ -875,7 +827,7 @@ static int rz_mtu3_cnt_probe(struct platform_device *pdev)
 	counter->ext = rz_mtu3_device_ext;
 	counter->num_ext = ARRAY_SIZE(rz_mtu3_device_ext);
 
-	/* Register Counter device */
+	 
 	ret = devm_counter_add(dev, counter);
 	if (ret < 0) {
 		dev_err_probe(dev, ret, "Failed to add counter\n");

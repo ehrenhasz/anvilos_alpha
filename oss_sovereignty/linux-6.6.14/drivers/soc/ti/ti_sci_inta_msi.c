@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Texas Instruments' K3 Interrupt Aggregator MSI bus
- *
- * Copyright (C) 2018-2019 Texas Instruments Incorporated - http://www.ti.com/
- *	Lokesh Vutla <lokeshvutla@ti.com>
- */
+
+ 
 
 #include <linux/irq.h>
 #include <linux/irqdomain.h>
@@ -19,13 +14,13 @@
 static void ti_sci_inta_msi_write_msg(struct irq_data *data,
 				      struct msi_msg *msg)
 {
-	/* Nothing to do */
+	 
 }
 
 static void ti_sci_inta_msi_compose_msi_msg(struct irq_data *data,
 					    struct msi_msg *msg)
 {
-	/* Nothing to do */
+	 
 }
 
 static void ti_sci_inta_msi_update_chip_ops(struct msi_domain_info *info)
@@ -110,7 +105,7 @@ int ti_sci_inta_msi_domain_alloc_irqs(struct device *dev,
 		goto unlock;
 	}
 
-	/* Use alloc ALL as it's unclear whether there are gaps in the indices */
+	 
 	ret = msi_domain_alloc_irqs_all_locked(dev, MSI_DEFAULT_DOMAIN, nvec);
 	if (ret)
 		dev_err(dev, "Failed to allocate IRQs %d\n", ret);

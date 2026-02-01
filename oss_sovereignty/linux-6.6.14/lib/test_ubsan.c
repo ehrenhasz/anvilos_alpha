@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/init.h>
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -36,9 +36,9 @@ static void test_ubsan_shift_out_of_bounds(void)
 static void test_ubsan_out_of_bounds(void)
 {
 	volatile int i = 4, j = 5, k = -1;
-	volatile char above[4] = { }; /* Protect surrounding memory. */
+	volatile char above[4] = { };  
 	volatile int arr[4];
-	volatile char below[4] = { }; /* Protect surrounding memory. */
+	volatile char below[4] = { };  
 
 	above[0] = below[0];
 
@@ -96,7 +96,7 @@ static const test_ubsan_fp test_ubsan_array[] = {
 	test_ubsan_misaligned_access,
 };
 
-/* Excluded because they Oops the module. */
+ 
 static const test_ubsan_fp skip_ubsan_array[] = {
 	test_ubsan_divrem_overflow,
 };
@@ -114,7 +114,7 @@ module_init(test_ubsan_init);
 
 static void __exit test_ubsan_exit(void)
 {
-	/* do nothing */
+	 
 }
 module_exit(test_ubsan_exit);
 

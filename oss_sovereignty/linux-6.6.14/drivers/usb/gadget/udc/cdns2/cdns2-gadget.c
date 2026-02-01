@@ -1,29 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Cadence USBHS-DEV Driver - gadget side.
- *
- * Copyright (C) 2023 Cadence Design Systems.
- *
- * Authors: Pawel Laszczak <pawell@cadence.com>
- */
 
-/*
- * Work around 1:
- * At some situations, the controller may get stale data address in TRB
- * at below sequences:
- * 1. Controller read TRB includes data address
- * 2. Software updates TRBs includes data address and Cycle bit
- * 3. Controller read TRB which includes Cycle bit
- * 4. DMA run with stale data address
- *
- * To fix this problem, driver needs to make the first TRB in TD as invalid.
- * After preparing all TRBs driver needs to check the position of DMA and
- * if the DMA point to the first just added TRB and doorbell is 1,
- * then driver must defer making this TRB as valid. This TRB will be make
- * as valid during adding next TRB only if DMA is stopped or at TRBERR
- * interrupt.
- *
- */
+ 
+
+ 
 
 #include <linux/dma-mapping.h>
 #include <linux/pm_runtime.h>
@@ -35,36 +13,28 @@
 #include "cdns2-gadget.h"
 #include "cdns2-trace.h"
 
-/**
- * set_reg_bit_32 - set bit in given 32 bits register.
- * @ptr: register address.
- * @mask: bits to set.
- */
+ 
 static void set_reg_bit_32(void __iomem *ptr, u32 mask)
 {
 	mask = readl(ptr) | mask;
 	writel(mask, ptr);
 }
 
-/*
- * clear_reg_bit_32 - clear bit in given 32 bits register.
- * @ptr: register address.
- * @mask: bits to clear.
- */
+ 
 static void clear_reg_bit_32(void __iomem *ptr, u32 mask)
 {
 	mask = readl(ptr) & ~mask;
 	writel(mask, ptr);
 }
 
-/* Clear bit in given 8 bits register. */
+ 
 static void clear_reg_bit_8(void __iomem *ptr, u8 mask)
 {
 	mask = readb(ptr) & ~mask;
 	writeb(mask, ptr);
 }
 
-/* Set bit in given 16 bits register. */
+ 
 void set_reg_bit_8(void __iomem *ptr, u8 mask)
 {
 	mask = readb(ptr) | mask;
@@ -81,7 +51,7 @@ static int cdns2_get_dma_pos(struct cdns2_device *pdev,
 	return dma_index / TRB_SIZE;
 }
 
-/* Get next private request from list. */
+ 
 struct cdns2_request *cdns2_next_preq(struct list_head *list)
 {
 	return list_first_entry_or_null(list, struct cdns2_request, list);
@@ -115,7 +85,7 @@ static void cdns2_free_tr_segment(struct cdns2_endpoint *pep)
 	}
 }
 
-/* Allocates Transfer Ring segment. */
+ 
 static int cdns2_alloc_tr_segment(struct cdns2_endpoint *pep)
 {
 	struct cdns2_device *pdev = pep->pdev;
@@ -137,7 +107,7 @@ static int cdns2_alloc_tr_segment(struct cdns2_endpoint *pep)
 	if (!pep->num)
 		return 0;
 
-	/* Initialize the last TRB as Link TRB */
+	 
 	link_trb = (ring->trbs + (TRBS_PER_SEGMENT - 1));
 	link_trb->buffer = cpu_to_le32(TRB_BUFFER(ring->dma));
 	link_trb->control = cpu_to_le32(TRB_CYCLE | TRB_TYPE(TRB_LINK) |
@@ -146,10 +116,7 @@ static int cdns2_alloc_tr_segment(struct cdns2_endpoint *pep)
 	return 0;
 }
 
-/*
- * Stalls and flushes selected endpoint.
- * Endpoint must be selected before invoking this function.
- */
+ 
 static void cdns2_ep_stall_flush(struct cdns2_endpoint *pep)
 {
 	struct cdns2_device *pdev = pep->pdev;
@@ -159,20 +126,14 @@ static void cdns2_ep_stall_flush(struct cdns2_endpoint *pep)
 
 	writel(DMA_EP_CMD_DFLUSH, &pdev->adma_regs->ep_cmd);
 
-	/* Wait for DFLUSH cleared. */
+	 
 	readl_poll_timeout_atomic(&pdev->adma_regs->ep_cmd, val,
 				  !(val & DMA_EP_CMD_DFLUSH), 1, 1000);
 	pep->ep_state |= EP_STALLED;
 	pep->ep_state &= ~EP_STALL_PENDING;
 }
 
-/*
- * Increment a trb index.
- *
- * The index should never point to the last link TRB in TR. After incrementing,
- * if it point to the link TRB, wrap around to the beginning and revert
- * cycle state bit. The link TRB is always at the last TRB entry.
- */
+ 
 static void cdns2_ep_inc_trb(int *index, u8 *cs, int trb_in_seg)
 {
 	(*index)++;
@@ -194,14 +155,7 @@ static void cdns2_ep_inc_deq(struct cdns2_ring *ring)
 	cdns2_ep_inc_trb(&ring->dequeue, &ring->ccs, TRBS_PER_SEGMENT);
 }
 
-/*
- * Enable/disable LPM.
- *
- * If bit USBCS_LPMNYET is not set and device receive Extended Token packet,
- * then controller answer with ACK handshake.
- * If bit USBCS_LPMNYET is set and device receive Extended Token packet,
- * then controller answer with NYET handshake.
- */
+ 
 static void cdns2_enable_l1(struct cdns2_device *pdev, int enable)
 {
 	if (enable) {
@@ -247,7 +201,7 @@ void cdns2_gadget_giveback(struct cdns2_endpoint *pep,
 
 	usb_gadget_unmap_request_by_dev(pdev->dev, request, pep->dir);
 
-	/* All TRBs have finished, clear the counter. */
+	 
 	preq->finished_trb = 0;
 
 	trace_cdns2_request_giveback(preq);
@@ -264,7 +218,7 @@ void cdns2_gadget_giveback(struct cdns2_endpoint *pep,
 
 static void cdns2_wa1_restore_cycle_bit(struct cdns2_endpoint *pep)
 {
-	/* Work around for stale data address in TRB. */
+	 
 	if (pep->wa1_set) {
 		trace_cdns2_wa1(pep, "restore cycle bit");
 
@@ -333,23 +287,16 @@ static int cdns2_prepare_ring(struct cdns2_device *pdev,
 		doorbell = !!(readl(&pdev->adma_regs->ep_cmd) & DMA_EP_CMD_DRDY);
 		dma_index = cdns2_get_dma_pos(pdev, pep);
 
-		/* Driver can't update LINK TRB if it is current processed. */
+		 
 		if (doorbell && dma_index == TRBS_PER_SEGMENT - 1) {
 			pep->ep_state |= EP_DEFERRED_DRDY;
 			return -ENOBUFS;
 		}
 
-		/* Update C bt in Link TRB before starting DMA. */
+		 
 		link_trb = ring->trbs + (TRBS_PER_SEGMENT - 1);
 
-		/*
-		 * For TRs size equal 2 enabling TRB_CHAIN for epXin causes
-		 * that DMA stuck at the LINK TRB.
-		 * On the other hand, removing TRB_CHAIN for longer TRs for
-		 * epXout cause that DMA stuck after handling LINK TRB.
-		 * To eliminate this strange behavioral driver set TRB_CHAIN
-		 * bit only for TR size > 2.
-		 */
+		 
 		if (pep->type == USB_ENDPOINT_XFER_ISOC || TRBS_PER_SEGMENT > 2)
 			ch_bit = TRB_CHAIN;
 
@@ -386,11 +333,7 @@ static unsigned int cdns2_count_trbs(struct cdns2_endpoint *pep,
 	unsigned int num_trbs = 1;
 
 	if (pep->type == USB_ENDPOINT_XFER_ISOC) {
-		/*
-		 * To speed up DMA performance address should not exceed 4KB.
-		 * for high bandwidth transfer and driver will split
-		 * such buffer into two TRBs.
-		 */
+		 
 		num_trbs = DIV_ROUND_UP(len +
 					(addr & (TRB_MAX_ISO_BUFF_SIZE - 1)),
 					TRB_MAX_ISO_BUFF_SIZE);
@@ -398,11 +341,7 @@ static unsigned int cdns2_count_trbs(struct cdns2_endpoint *pep,
 		if (pep->interval > 1)
 			num_trbs = pep->dir ? num_trbs * pep->interval : 1;
 	} else if (pep->dir) {
-		/*
-		 * One extra link trb for IN direction.
-		 * Sometimes DMA doesn't want advance to next TD and transfer
-		 * hangs. This extra Link TRB force DMA to advance to next TD.
-		 */
+		 
 		num_trbs++;
 	}
 
@@ -423,15 +362,7 @@ static unsigned int cdns2_count_sg_trbs(struct cdns2_endpoint *pep,
 		num_trbs += cdns2_count_trbs(pep, sg_dma_address(sg), len);
 		len = min(len, full_len);
 
-		/*
-		 * For HS ISO transfer TRBs should not exceed max packet size.
-		 * When DMA is working, and data exceed max packet size then
-		 * some data will be read in single mode instead burst mode.
-		 * This behavior will drastically reduce the copying speed.
-		 * To avoid this we need one or two extra TRBs.
-		 * This issue occurs for UVC class with sg_supported = 1
-		 * because buffers addresses are not aligned to 1024.
-		 */
+		 
 		if (pep->type == USB_ENDPOINT_XFER_ISOC) {
 			u8 temp;
 
@@ -456,18 +387,7 @@ static unsigned int cdns2_count_sg_trbs(struct cdns2_endpoint *pep,
 	return num_trbs;
 }
 
-/*
- * Function prepares the array with optimized AXI burst value for different
- * transfer lengths. Controller handles the final data which are less
- * then AXI burst size as single byte transactions.
- * e.g.:
- * Let's assume that driver prepares trb with trb->length 700 and burst size
- * will be set to 128. In this case the controller will handle a first 512 as
- * single AXI transaction but the next 188 bytes will be handled
- * as 47 separate AXI transaction.
- * The better solution is to use the burst size equal 16 and then we will
- * have only 25 AXI transaction (10 * 64 + 15 *4).
- */
+ 
 static void cdsn2_isoc_burst_opt(struct cdns2_device *pdev)
 {
 	int axi_burst_option[]  =  {1, 2, 4, 8, 16, 32, 64, 128};
@@ -516,10 +436,7 @@ static void cdns2_ep_tx_isoc(struct cdns2_endpoint *pep,
 	int num_tds;
 	u32 length;
 
-	/*
-	 * For OUT direction 1 TD per interval is enough
-	 * because TRBs are not dumped by controller.
-	 */
+	 
 	num_tds = pep->dir ? pep->interval : 1;
 	split_size = preq->request.num_sgs ? 1024 : 3072;
 
@@ -542,10 +459,7 @@ static void cdns2_ep_tx_isoc(struct cdns2_endpoint *pep,
 			if (remaining_packet_size == 0)
 				remaining_packet_size = split_size;
 
-			/*
-			 * Calculate TRB length.- buffer can't across 4KB
-			 * and max packet size.
-			 */
+			 
 			trb_buff_len = TRB_BUFF_LEN_UP_TO_BOUNDARY(trb_dma);
 			trb_buff_len = min(trb_buff_len, remaining_packet_size);
 			trb_buff_len = min(trb_buff_len, block_length);
@@ -555,20 +469,11 @@ static void cdns2_ep_tx_isoc(struct cdns2_endpoint *pep,
 
 			control = TRB_TYPE(TRB_NORMAL);
 
-			/*
-			 * For IN direction driver has to set the IOC for
-			 * last TRB in last TD.
-			 * For OUT direction driver must set IOC and ISP
-			 * only for last TRB in each TDs.
-			 */
+			 
 			if (enqd_len + trb_buff_len >= full_len || !pep->dir)
 				control |= TRB_IOC | TRB_ISP;
 
-			/*
-			 * Don't give the first TRB to the hardware (by toggling
-			 * the cycle bit) until we've finished creating all the
-			 * other TRBs.
-			 */
+			 
 			if (first_trb) {
 				first_trb = false;
 				if (pep->ring.pcs == 0)
@@ -592,7 +497,7 @@ static void cdns2_ep_tx_isoc(struct cdns2_endpoint *pep,
 			sent_len = trb_buff_len;
 
 			if (sg && sent_len >= block_length) {
-				/* New sg entry */
+				 
 				--sg_iter;
 				sent_len -= block_length;
 				if (sg_iter != 0) {
@@ -647,7 +552,7 @@ static void cdns2_ep_tx_bulk(struct cdns2_endpoint *pep,
 			if (ring->enqueue == 0)
 				control |= TRB_TOGGLE;
 
-			/* Point to next bad TRB. */
+			 
 			trb->buffer = cpu_to_le32(pep->ring.dma +
 						  (ring->enqueue * TRB_SIZE));
 			trb->length = 0;
@@ -655,15 +560,11 @@ static void cdns2_ep_tx_bulk(struct cdns2_endpoint *pep,
 			break;
 		}
 
-		/*
-		 * Don't give the first TRB to the hardware (by toggling
-		 * the cycle bit) until we've finished creating all the
-		 * other TRBs.
-		 */
+		 
 		if (sg_iter == 0)
 			control = control ^ TRB_CYCLE;
 
-		/* For last TRB in TD. */
+		 
 		if (sg_iter == (trbs_per_td - (pep->dir ? 2 : 1)))
 			control |= TRB_IOC;
 		else
@@ -690,12 +591,10 @@ static void cdns2_set_drdy(struct cdns2_device *pdev,
 {
 	trace_cdns2_ring(pep);
 
-	/*
-	 * Memory barrier - Cycle Bit must be set before doorbell.
-	 */
+	 
 	dma_wmb();
 
-	/* Clearing TRBERR and DESCMIS before setting DRDY. */
+	 
 	writel(DMA_EP_STS_TRBERR | DMA_EP_STS_DESCMIS,
 	       &pdev->adma_regs->ep_sts);
 	writel(DMA_EP_CMD_DRDY, &pdev->adma_regs->ep_cmd);
@@ -725,10 +624,7 @@ static int cdns2_prepare_first_isoc_transfer(struct cdns2_device *pdev,
 		return 0;
 	}
 
-	/*
-	 * The first packet after doorbell can be corrupted so,
-	 * driver prepares 0 length packet as first packet.
-	 */
+	 
 	buffer = pep->ring.dma + pep->ring.dequeue * TRB_SIZE;
 	hw_ccs = !!DMA_EP_STS_CCS(readl(&pdev->adma_regs->ep_sts));
 
@@ -737,10 +633,7 @@ static int cdns2_prepare_first_isoc_transfer(struct cdns2_device *pdev,
 	trb->buffer = cpu_to_le32(TRB_BUFFER(buffer));
 	trb->control = cpu_to_le32((hw_ccs ? TRB_CYCLE : 0) | TRB_TYPE(TRB_NORMAL));
 
-	/*
-	 * LINK TRB is used to force updating cycle bit in controller and
-	 * move to correct place in transfer ring.
-	 */
+	 
 	trb++;
 	trb->length = 0;
 	trb->buffer = cpu_to_le32(TRB_BUFFER(buffer));
@@ -757,7 +650,7 @@ static int cdns2_prepare_first_isoc_transfer(struct cdns2_device *pdev,
 	return 0;
 }
 
-/* Prepare and start transfer on no-default endpoint. */
+ 
 static int cdns2_ep_run_transfer(struct cdns2_endpoint *pep,
 				 struct cdns2_request *preq)
 {
@@ -792,12 +685,10 @@ static int cdns2_ep_run_transfer(struct cdns2_endpoint *pep,
 
 	preq->num_of_trb = num_trbs;
 
-	/*
-	 * Memory barrier - cycle bit must be set as the last operation.
-	 */
+	 
 	dma_wmb();
 
-	/* Give the TD to the consumer. */
+	 
 	if (togle_pcs)
 		preq->trb->control = preq->trb->control ^ cpu_to_le32(1);
 
@@ -817,7 +708,7 @@ static int cdns2_ep_run_transfer(struct cdns2_endpoint *pep,
 	return 0;
 }
 
-/* Prepare and start transfer for all not started requests. */
+ 
 static int cdns2_start_all_request(struct cdns2_device *pdev,
 				   struct cdns2_endpoint *pep)
 {
@@ -839,42 +730,7 @@ static int cdns2_start_all_request(struct cdns2_device *pdev,
 	return 0;
 }
 
-/*
- * Check whether trb has been handled by DMA.
- *
- * Endpoint must be selected before invoking this function.
- *
- * Returns false if request has not been handled by DMA, else returns true.
- *
- * SR - start ring
- * ER - end ring
- * DQ = ring->dequeue - dequeue position
- * EQ = ring->enqueue - enqueue position
- * ST = preq->start_trb - index of first TRB in transfer ring
- * ET = preq->end_trb - index of last TRB in transfer ring
- * CI = current_index - index of processed TRB by DMA.
- *
- * As first step, we check if the TRB between the ST and ET.
- * Then, we check if cycle bit for index pep->dequeue
- * is correct.
- *
- * some rules:
- * 1. ring->dequeue never equals to current_index.
- * 2  ring->enqueue never exceed ring->dequeue
- * 3. exception: ring->enqueue == ring->dequeue
- *    and ring->free_trbs is zero.
- *    This case indicate that TR is full.
- *
- * At below two cases, the request have been handled.
- * Case 1 - ring->dequeue < current_index
- *      SR ... EQ ... DQ ... CI ... ER
- *      SR ... DQ ... CI ... EQ ... ER
- *
- * Case 2 - ring->dequeue > current_index
- * This situation takes place when CI go through the LINK TRB at the end of
- * transfer ring.
- *      SR ... CI ... EQ ... DQ ... ER
- */
+ 
 static bool cdns2_trb_handled(struct cdns2_endpoint *pep,
 			      struct cdns2_request *preq)
 {
@@ -889,15 +745,11 @@ static bool cdns2_trb_handled(struct cdns2_endpoint *pep,
 	current_index = cdns2_get_dma_pos(pdev, pep);
 	doorbell = !!(readl(&pdev->adma_regs->ep_cmd) & DMA_EP_CMD_DRDY);
 
-	/*
-	 * Only ISO transfer can use 2 entries outside the standard
-	 * Transfer Ring. First of them is used as zero length packet and the
-	 * second as LINK TRB.
-	 */
+	 
 	if (current_index >= TRBS_PER_SEGMENT)
 		goto finish;
 
-	/* Current trb doesn't belong to this request. */
+	 
 	if (preq->start_trb < preq->end_trb) {
 		if (ring->dequeue > preq->end_trb)
 			goto finish;
@@ -921,7 +773,7 @@ static bool cdns2_trb_handled(struct cdns2_endpoint *pep,
 	if (doorbell == 1 && current_index == ring->dequeue)
 		goto finish;
 
-	/* The corner case for TRBS_PER_SEGMENT equal 2). */
+	 
 	if (TRBS_PER_SEGMENT == 2 && pep->type != USB_ENDPOINT_XFER_ISOC) {
 		handled = 1;
 		goto finish;
@@ -979,10 +831,7 @@ static void cdns2_transfer_completed(struct cdns2_device *pdev,
 		preq = cdns2_next_preq(&pep->pending_list);
 		trb = pep->ring.trbs + pep->ring.dequeue;
 
-		/*
-		 * The TRB was changed as link TRB, and the request
-		 * was handled at ep_dequeue.
-		 */
+		 
 		while (TRB_FIELD_TO_TYPE(le32_to_cpu(trb->control)) == TRB_LINK &&
 		       le32_to_cpu(trb->length)) {
 			trace_cdns2_complete_trb(pep, trb);
@@ -990,10 +839,7 @@ static void cdns2_transfer_completed(struct cdns2_device *pdev,
 			trb = pep->ring.trbs + pep->ring.dequeue;
 		}
 
-		/*
-		 * Re-select endpoint. It could be changed by other CPU
-		 * during handling usb_gadget_giveback_request.
-		 */
+		 
 		cdns2_select_ep(pdev, pep->endpoint.address);
 
 		while (cdns2_trb_handled(pep, preq)) {
@@ -1006,10 +852,7 @@ static void cdns2_transfer_completed(struct cdns2_device *pdev,
 			trace_cdns2_complete_trb(pep, trb);
 
 			if (pep->dir && pep->type == USB_ENDPOINT_XFER_ISOC)
-				/*
-				 * For ISOC IN controller doens't update the
-				 * trb->length.
-				 */
+				 
 				preq->request.actual = preq->request.length;
 			else
 				preq->request.actual +=
@@ -1044,7 +887,7 @@ static void cdns2_wakeup(struct cdns2_device *pdev)
 	if (!pdev->may_wakeup)
 		return;
 
-	/* Start driving resume signaling to indicate remote wakeup. */
+	 
 	set_reg_bit_8(&pdev->usb_regs->usbcs, USBCS_SIGRSUME);
 }
 
@@ -1057,7 +900,7 @@ static void cdns2_rearm_transfer(struct cdns2_endpoint *pep, u8 rearm)
 	if (rearm) {
 		trace_cdns2_ring(pep);
 
-		/* Cycle Bit must be updated before arming DMA. */
+		 
 		dma_wmb();
 
 		writel(DMA_EP_CMD_DRDY, &pdev->adma_regs->ep_cmd);
@@ -1094,21 +937,17 @@ static void cdns2_handle_epx_interrupt(struct cdns2_endpoint *pep)
 			isoerror = EPX_CS_ERR(cs);
 	}
 
-	/*
-	 * Sometimes ISO Error for mult=1 or mult=2 is not propagated on time
-	 * from USB module to DMA module. To protect against this driver
-	 * checks also the txcs/rxcs registers.
-	 */
+	 
 	if ((ep_sts_reg & DMA_EP_STS_ISOERR) || isoerror) {
 		clear_reg_bit_32(&pdev->adma_regs->ep_cfg, DMA_EP_CFG_ENABLE);
 
-		/* Wait for DBUSY cleared. */
+		 
 		readl_poll_timeout_atomic(&pdev->adma_regs->ep_sts, val,
 					  !(val & DMA_EP_STS_DBUSY), 1, 125);
 
 		writel(DMA_EP_CMD_DFLUSH, &pep->pdev->adma_regs->ep_cmd);
 
-		/* Wait for DFLUSH cleared. */
+		 
 		readl_poll_timeout_atomic(&pep->pdev->adma_regs->ep_cmd, val,
 					  !(val & DMA_EP_CMD_DFLUSH), 1, 10);
 
@@ -1120,13 +959,7 @@ static void cdns2_handle_epx_interrupt(struct cdns2_endpoint *pep)
 		    !(ep_sts_reg & DMA_EP_STS_DESCMIS))
 			cdns2_ep_stall_flush(pep);
 
-		/*
-		 * For isochronous transfer driver completes request on
-		 * IOC or on TRBERR. IOC appears only when device receive
-		 * OUT data packet. If host disable stream or lost some packet
-		 * then the only way to finish all queued transfer is to do it
-		 * on TRBERR event.
-		 */
+		 
 		if (pep->type == USB_ENDPOINT_XFER_ISOC && !pep->wa1_set) {
 			if (!pep->dir)
 				clear_reg_bit_32(&pdev->adma_regs->ep_cfg,
@@ -1181,12 +1014,12 @@ static irqreturn_t cdns2_usb_irq_handler(int irq, void *data)
 	reg_usb_irq_m = readb(&pdev->interrupt_regs->usbien);
 	reg_ext_irq_m = readb(&pdev->interrupt_regs->extien);
 
-	/* Mask all sources of interrupt. */
+	 
 	writeb(0, &pdev->interrupt_regs->usbien);
 	writeb(0, &pdev->interrupt_regs->extien);
 	writel(0, &pdev->adma_regs->ep_ien);
 
-	/* Clear interrupt sources. */
+	 
 	writel(0, &pdev->adma_regs->ep_sts);
 	writeb(0, &pdev->interrupt_regs->usbirq);
 	writeb(0, &pdev->interrupt_regs->extirq);
@@ -1234,7 +1067,7 @@ static irqreturn_t cdns2_thread_usb_irq_handler(struct cdns2_device *pdev)
 	if (usb_irq & USBIRQ_LPM) {
 		u8 reg = readb(&pdev->usb_regs->lpmctrl);
 
-		/* LPM1 enter */
+		 
 		if (!(reg & LPMCTRLLH_LPMNYET))
 			writeb(0, &pdev->usb_regs->sleep_clkgate);
 	}
@@ -1256,12 +1089,7 @@ static irqreturn_t cdns2_thread_usb_irq_handler(struct cdns2_device *pdev)
 					     pdev->gadget_driver);
 			spin_lock(&pdev->lock);
 
-			/*
-			 * The USBIRQ_URESET is reported at the beginning of
-			 * reset signal. 100ms is enough time to finish reset
-			 * process. For high-speed reset procedure is completed
-			 * when controller detect HS mode.
-			 */
+			 
 			for (i = 0; i < 100; i++) {
 				mdelay(1);
 				speed = cdns2_get_speed(pdev);
@@ -1284,7 +1112,7 @@ static irqreturn_t cdns2_thread_usb_irq_handler(struct cdns2_device *pdev)
 	return IRQ_HANDLED;
 }
 
-/* Deferred USB interrupt handler. */
+ 
 static irqreturn_t cdns2_thread_irq_handler(int irq, void *data)
 {
 	struct cdns2_device *pdev = data;
@@ -1303,11 +1131,11 @@ static irqreturn_t cdns2_thread_irq_handler(int irq, void *data)
 
 	trace_cdns2_dma_ep_ists(dma_ep_ists);
 
-	/* Handle default endpoint OUT. */
+	 
 	if (dma_ep_ists & DMA_EP_ISTS_EP_OUT0)
 		cdns2_handle_ep0_interrupt(pdev, USB_DIR_OUT);
 
-	/* Handle default endpoint IN. */
+	 
 	if (dma_ep_ists & DMA_EP_ISTS_EP_IN0)
 		cdns2_handle_ep0_interrupt(pdev, USB_DIR_IN);
 
@@ -1316,12 +1144,7 @@ static irqreturn_t cdns2_thread_irq_handler(int irq, void *data)
 	for_each_set_bit(bit, &dma_ep_ists, sizeof(u32) * BITS_PER_BYTE) {
 		u8 ep_idx = bit > 16 ? (bit - 16) * 2 : (bit * 2) - 1;
 
-		/*
-		 * Endpoints in pdev->eps[] are held in order:
-		 * ep0, ep1out, ep1in, ep2out, ep2in... ep15out, ep15in.
-		 * but in dma_ep_ists in order:
-		 * ep0 ep1out ep2out ... ep15out ep0in ep1in .. ep15in
-		 */
+		 
 		cdns2_handle_epx_interrupt(&pdev->eps[ep_idx]);
 	}
 
@@ -1336,7 +1159,7 @@ unlock:
 	return IRQ_HANDLED;
 }
 
-/* Calculates and assigns onchip memory for endpoints. */
+ 
 static void cdns2_eps_onchip_buffer_init(struct cdns2_device *pdev)
 {
 	struct cdns2_endpoint *pep;
@@ -1407,7 +1230,7 @@ static void cdns2_eps_onchip_buffer_init(struct cdns2_device *pdev)
 	}
 }
 
-/* Configure hardware endpoint. */
+ 
 static int cdns2_ep_config(struct cdns2_endpoint *pep, bool enable)
 {
 	bool is_iso_ep = (pep->type == USB_ENDPOINT_XFER_ISOC);
@@ -1446,7 +1269,7 @@ static int cdns2_ep_config(struct cdns2_endpoint *pep, bool enable)
 		max_packet_size = is_iso_ep ? 1024 : 512;
 		break;
 	default:
-		/* All other speed are not supported. */
+		 
 		return -EINVAL;
 	}
 
@@ -1564,14 +1387,7 @@ static int cdns2_gadget_ep_enable(struct usb_ep *ep,
 		goto exit;
 	}
 
-	/*
-	 * During ISO OUT traffic DMA reads Transfer Ring for the EP which has
-	 * never got doorbell.
-	 * This issue was detected only on simulation, but to avoid this issue
-	 * driver add protection against it. To fix it driver enable ISO OUT
-	 * endpoint before setting DRBL. This special treatment of ISO OUT
-	 * endpoints are recommended by controller specification.
-	 */
+	 
 	if (pep->type == USB_ENDPOINT_XFER_ISOC  && !pep->dir)
 		enable = 0;
 
@@ -1599,7 +1415,7 @@ static int cdns2_gadget_ep_enable(struct usb_ep *ep,
 
 	writel(pep->ring.dma, &pdev->adma_regs->ep_traddr);
 
-	/* one TRB is reserved for link TRB used in DMULT mode*/
+	 
 	pep->ring.free_trbs = TRBS_PER_SEGMENT - 1;
 
 exit:
@@ -1634,11 +1450,7 @@ static int cdns2_gadget_ep_disable(struct usb_ep *ep)
 
 	clear_reg_bit_32(&pdev->adma_regs->ep_cfg, DMA_EP_CFG_ENABLE);
 
-	/*
-	 * Driver needs some time before resetting endpoint.
-	 * It need waits for clearing DBUSY bit or for timeout expired.
-	 * 10us is enough time for controller to stop transfer.
-	 */
+	 
 	readl_poll_timeout_atomic(&pdev->adma_regs->ep_sts, val,
 				  !(val & DMA_EP_STS_DBUSY), 1, 10);
 	writel(DMA_EP_CMD_EPRST, &pdev->adma_regs->ep_cmd);
@@ -1756,7 +1568,7 @@ int cdns2_gadget_ep_dequeue(struct usb_ep *ep,
 		return -ESHUTDOWN;
 	}
 
-	/* Requests has been dequeued during disabling endpoint. */
+	 
 	if (!(pep->ep_state & EP_ENABLED))
 		return 0;
 
@@ -1782,12 +1594,12 @@ int cdns2_gadget_ep_dequeue(struct usb_ep *ep,
 found:
 	link_trb = preq->trb;
 
-	/* Update ring only if removed request is on pending_req_list list. */
+	 
 	if (req_on_hw_ring && link_trb) {
-		/* Stop DMA */
+		 
 		writel(DMA_EP_CMD_DFLUSH, &pep->pdev->adma_regs->ep_cmd);
 
-		/* Wait for DFLUSH cleared. */
+		 
 		readl_poll_timeout_atomic(&pep->pdev->adma_regs->ep_cmd, val,
 					  !(val & DMA_EP_CMD_DFLUSH), 1, 1000);
 
@@ -1852,7 +1664,7 @@ int cdns2_halt_endpoint(struct cdns2_device *pdev,
 
 		trace_cdns2_ep_halt(pep, 0, 0);
 
-		/* Resets Sequence Number */
+		 
 		writeb(dir | pep->num, &pdev->epx_regs->endprst);
 		writeb(dir | ENDPRST_TOGRST | pep->num,
 		       &pdev->epx_regs->endprst);
@@ -1881,7 +1693,7 @@ int cdns2_halt_endpoint(struct cdns2_device *pdev,
 	return 0;
 }
 
-/* Sets/clears stall on selected endpoint. */
+ 
 static int cdns2_gadget_ep_set_halt(struct usb_ep *ep, int value)
 {
 	struct cdns2_endpoint *pep = ep_to_cdns2_ep(ep);
@@ -1930,7 +1742,7 @@ cdns2_endpoint *cdns2_find_available_ep(struct cdns2_device *pdev,
 	list_for_each_entry(ep, &pdev->gadget.ep_list, ep_list) {
 		unsigned long num;
 		int ret;
-		/* ep name pattern likes epXin or epXout. */
+		 
 		char c[2] = {ep->name[2], '\0'};
 
 		ret = kstrtoul(c, 10, &num);
@@ -1953,10 +1765,7 @@ cdns2_endpoint *cdns2_find_available_ep(struct cdns2_device *pdev,
 	return ERR_PTR(-ENOENT);
 }
 
-/*
- * Function used to recognize which endpoints will be used to optimize
- * on-chip memory usage.
- */
+ 
 static struct
 usb_ep *cdns2_gadget_match_ep(struct usb_gadget *gadget,
 			      struct usb_endpoint_descriptor *desc,
@@ -2027,17 +1836,17 @@ static int cdns2_gadget_set_selfpowered(struct usb_gadget *gadget,
 	return 0;
 }
 
-/*  Disable interrupts and begin the controller halting process. */
+ 
 static void cdns2_quiesce(struct cdns2_device *pdev)
 {
 	set_reg_bit_8(&pdev->usb_regs->usbcs, USBCS_DISCON);
 
-	/* Disable interrupt. */
+	 
 	writeb(0, &pdev->interrupt_regs->extien),
 	writeb(0, &pdev->interrupt_regs->usbien),
 	writew(0, &pdev->adma_regs->ep_ien);
 
-	/* Clear interrupt line. */
+	 
 	writeb(0x0, &pdev->interrupt_regs->usbirq);
 }
 
@@ -2045,7 +1854,7 @@ static void cdns2_gadget_config(struct cdns2_device *pdev)
 {
 	cdns2_ep0_config(pdev);
 
-	/* Enable DMA interrupts for all endpoints. */
+	 
 	writel(~0x0, &pdev->adma_regs->ep_ien);
 	cdns2_enable_l1(pdev, 0);
 	writeb(USB_IEN_INIT, &pdev->interrupt_regs->usbien);
@@ -2060,10 +1869,7 @@ static int cdns2_gadget_pullup(struct usb_gadget *gadget, int is_on)
 
 	trace_cdns2_pullup(is_on);
 
-	/*
-	 * Disable events handling while controller is being
-	 * enabled/disabled.
-	 */
+	 
 	disable_irq(pdev->irq);
 	spin_lock_irqsave(&pdev->lock, flags);
 
@@ -2090,7 +1896,7 @@ static int cdns2_gadget_udc_start(struct usb_gadget *gadget,
 	spin_lock_irqsave(&pdev->lock, flags);
 	pdev->gadget_driver = driver;
 
-	/* Limit speed if necessary. */
+	 
 	max_speed = min(driver->max_speed, gadget->max_speed);
 
 	switch (max_speed) {
@@ -2105,12 +1911,12 @@ static int cdns2_gadget_udc_start(struct usb_gadget *gadget,
 			max_speed);
 		fallthrough;
 	case USB_SPEED_UNKNOWN:
-		/* Default to highspeed. */
+		 
 		max_speed = USB_SPEED_HIGH;
 		break;
 	}
 
-	/* Reset all USB endpoints. */
+	 
 	writeb(ENDPRST_IO_TX, &pdev->usb_regs->endprst);
 	writeb(ENDPRST_FIFORST | ENDPRST_TOGRST | ENDPRST_IO_TX,
 	       &pdev->usb_regs->endprst);
@@ -2172,31 +1978,28 @@ static void cdns2_free_all_eps(struct cdns2_device *pdev)
 		cdns2_free_tr_segment(&pdev->eps[i]);
 }
 
-/* Initializes software endpoints of gadget. */
+ 
 static int cdns2_init_eps(struct cdns2_device *pdev)
 {
 	struct cdns2_endpoint *pep;
 	int i;
 
 	for (i = 0; i < CDNS2_ENDPOINTS_NUM; i++) {
-		bool direction = !(i & 1); /* Start from OUT endpoint. */
+		bool direction = !(i & 1);  
 		u8 epnum = ((i + 1) >> 1);
 
-		/*
-		 * Endpoints are being held in pdev->eps[] in form:
-		 * ep0, ep1out, ep1in ... ep15out, ep15in.
-		 */
+		 
 		if (!CDNS2_IF_EP_EXIST(pdev, epnum, direction))
 			continue;
 
 		pep = &pdev->eps[i];
 		pep->pdev = pdev;
 		pep->num = epnum;
-		/* 0 for OUT, 1 for IN. */
+		 
 		pep->dir = direction ? USB_DIR_IN : USB_DIR_OUT;
 		pep->idx = i;
 
-		/* Ep0in and ep0out are represented by pdev->eps[0]. */
+		 
 		if (!epnum) {
 			int ret;
 
@@ -2260,7 +2063,7 @@ static int cdns2_gadget_start(struct cdns2_device *pdev)
 	pdev->interrupt_regs = pdev->regs;
 	pdev->adma_regs = pdev->regs + CDNS2_ADMA_REGS_OFFSET;
 
-	/* Reset controller. */
+	 
 	set_reg_bit_8(&pdev->usb_regs->cpuctrl, CPUCTRL_SW_RST);
 
 	ret = readl_poll_timeout_atomic(&pdev->usb_regs->cpuctrl, val,
@@ -2279,10 +2082,7 @@ static int cdns2_gadget_start(struct cdns2_device *pdev)
 	device_property_read_u32(pdev->dev, "cdns,avail-endpoints",
 				 &pdev->eps_supported);
 
-	/*
-	 * Driver assumes that each USBHS controller has at least
-	 * one IN and one OUT non control endpoint.
-	 */
+	 
 	if (!pdev->onchip_tx_buf && !pdev->onchip_rx_buf) {
 		ret = -EINVAL;
 		dev_err(pdev->dev, "Invalid on-chip memory configuration\n");
@@ -2320,7 +2120,7 @@ static int cdns2_gadget_start(struct cdns2_device *pdev)
 	spin_lock_init(&pdev->lock);
 	INIT_WORK(&pdev->pending_status_wq, cdns2_pending_setup_status_handler);
 
-	/* Initialize endpoint container. */
+	 
 	INIT_LIST_HEAD(&pdev->gadget.ep_list);
 	pdev->eps_dma_pool = dma_pool_create("cdns2_eps_dma_pool", pdev->dev,
 					     TR_SEG_SIZE, 8, 0);
@@ -2344,7 +2144,7 @@ static int cdns2_gadget_start(struct cdns2_device *pdev)
 		goto destroy_dma_pool;
 	}
 
-	/* Allocate memory for setup packet buffer. */
+	 
 	buf = dma_alloc_coherent(pdev->dev, 8, &pdev->ep0_preq.request.dma,
 				 GFP_DMA);
 	pdev->ep0_preq.request.buf = buf;
@@ -2354,7 +2154,7 @@ static int cdns2_gadget_start(struct cdns2_device *pdev)
 		goto free_zlp_buf;
 	}
 
-	/* Add USB gadget device. */
+	 
 	ret = usb_add_gadget(&pdev->gadget);
 	if (ret < 0) {
 		dev_err(pdev->dev, "Failed to add gadget\n");
@@ -2389,7 +2189,7 @@ int cdns2_gadget_suspend(struct cdns2_device *pdev)
 	usb_gadget_set_state(&pdev->gadget, USB_STATE_NOTATTACHED);
 	cdns2_enable_l1(pdev, 0);
 
-	/* Disable interrupt for device. */
+	 
 	writeb(0, &pdev->interrupt_regs->usbien);
 	writel(0, &pdev->adma_regs->ep_ien);
 	spin_unlock_irqrestore(&pdev->lock, flags);
@@ -2435,7 +2235,7 @@ int cdns2_gadget_init(struct cdns2_device *pdev)
 {
 	int ret;
 
-	/* Ensure 32-bit DMA Mask. */
+	 
 	ret = dma_set_mask_and_coherent(pdev->dev, DMA_BIT_MASK(32));
 	if (ret) {
 		dev_err(pdev->dev, "Failed to set dma mask: %d\n", ret);
@@ -2452,10 +2252,7 @@ int cdns2_gadget_init(struct cdns2_device *pdev)
 		return ret;
 	}
 
-	/*
-	 * Because interrupt line can be shared with other components in
-	 * driver it can't use IRQF_ONESHOT flag here.
-	 */
+	 
 	ret = devm_request_threaded_irq(pdev->dev, pdev->irq,
 					cdns2_usb_irq_handler,
 					cdns2_thread_irq_handler,

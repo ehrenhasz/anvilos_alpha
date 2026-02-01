@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  ALSA PCM device for the
- *  ALSA interface to cobalt PCM capture streams
- *
- *  Copyright 2014-2015 Cisco Systems, Inc. and/or its affiliates.
- *  All rights reserved.
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/kernel.h>
@@ -44,9 +38,9 @@ static const struct snd_pcm_hardware snd_cobalt_hdmi_capture = {
 	.rate_max = 48000,
 	.channels_min = 1,
 	.channels_max = 8,
-	.buffer_bytes_max = 4 * 240 * 8 * 4,	/* 5 ms of data */
-	.period_bytes_min = 1920,		/* 1 sample = 8 * 4 bytes */
-	.period_bytes_max = 240 * 8 * 4,	/* 5 ms of 8 channel data */
+	.buffer_bytes_max = 4 * 240 * 8 * 4,	 
+	.period_bytes_min = 1920,		 
+	.period_bytes_max = 240 * 8 * 4,	 
 	.periods_min = 1,
 	.periods_max = 4,
 };
@@ -65,9 +59,9 @@ static const struct snd_pcm_hardware snd_cobalt_playback = {
 	.rate_max = 48000,
 	.channels_min = 1,
 	.channels_max = 8,
-	.buffer_bytes_max = 4 * 240 * 8 * 4,	/* 5 ms of data */
-	.period_bytes_min = 1920,		/* 1 sample = 8 * 4 bytes */
-	.period_bytes_max = 240 * 8 * 4,	/* 5 ms of 8 channel data */
+	.buffer_bytes_max = 4 * 240 * 8 * 4,	 
+	.period_bytes_min = 1920,		 
+	.period_bytes_max = 240 * 8 * 4,	 
 	.periods_min = 1,
 	.periods_max = 4,
 };
@@ -478,9 +472,9 @@ int snd_cobalt_pcm_create(struct snd_cobalt_card *cobsc)
 		mdelay(1);
 
 		ret = snd_pcm_new(sc, "Cobalt PCM-In HDMI",
-			0, /* PCM device 0, the only one for this card */
-			0, /* 0 playback substreams */
-			1, /* 1 capture substream */
+			0,  
+			0,  
+			1,  
 			&sp);
 		if (ret) {
 			cobalt_err("snd_cobalt_pcm_create() failed for input with err %d\n",
@@ -504,9 +498,9 @@ int snd_cobalt_pcm_create(struct snd_cobalt_card *cobsc)
 		mdelay(1);
 
 		ret = snd_pcm_new(sc, "Cobalt PCM-Out HDMI",
-			0, /* PCM device 0, the only one for this card */
-			1, /* 0 playback substreams */
-			0, /* 1 capture substream */
+			0,  
+			1,  
+			0,  
 			&sp);
 		if (ret) {
 			cobalt_err("snd_cobalt_pcm_create() failed for output with err %d\n",

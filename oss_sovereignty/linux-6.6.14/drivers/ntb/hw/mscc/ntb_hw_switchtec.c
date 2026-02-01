@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Microsemi Switchtec(tm) PCIe Management Driver
- * Copyright (c) 2017, Microsemi Corporation
- */
+
+ 
 
 #include <linux/interrupt.h>
 #include <linux/io-64-nonatomic-lo-hi.h>
@@ -71,7 +68,7 @@ struct switchtec_ntb {
 	int db_shift;
 	int db_peer_shift;
 
-	/* synchronize rmw access of db_mask and hw reg */
+	 
 	spinlock_t db_mask_lock;
 
 	int nr_direct_mw;
@@ -289,13 +286,7 @@ static int switchtec_ntb_mw_set_trans(struct ntb_dev *ntb, int pidx, int widx,
 		return -EINVAL;
 
 	if (!IS_ALIGNED(addr, BIT_ULL(xlate_pos))) {
-		/*
-		 * In certain circumstances we can get a buffer that is
-		 * not aligned to its size. (Most of the time
-		 * dma_alloc_coherent ensures this). This can happen when
-		 * using large buffers allocated by the CMA
-		 * (see CMA_CONFIG_ALIGNMENT)
-		 */
+		 
 		dev_err(&sndev->stdev->dev,
 			"ERROR: Memory window address is not aligned to its size!\n");
 		return -EINVAL;
@@ -357,11 +348,7 @@ static int switchtec_ntb_direct_get_addr(struct switchtec_ntb *sndev,
 		return -EINVAL;
 
 	if (idx == 0) {
-		/*
-		 * This is the direct BAR shared with the LUTs
-		 * which means the actual window will be offset
-		 * by the size of all the LUT entries.
-		 */
+		 
 
 		offset = LUT_SIZE * sndev->nr_lut_mw;
 	}
@@ -1078,11 +1065,7 @@ static int crosslink_setup_req_ids(struct switchtec_ntb *sndev,
 	return config_req_id_table(sndev, mmio_ctrl, req_ids, i);
 }
 
-/*
- * In crosslink configuration there is a virtual partition in the
- * middle of the two switches. The BARs in this partition have to be
- * enumerated and assigned addresses.
- */
+ 
 static int crosslink_enum_partition(struct switchtec_ntb *sndev,
 				    u64 *bar_addrs)
 {
@@ -1219,16 +1202,7 @@ static void switchtec_ntb_init_mw(struct switchtec_ntb *sndev)
 
 }
 
-/*
- * There are 64 doorbells in the switch hardware but this is
- * shared among all partitions. So we must split them in half
- * (32 for each partition). However, the message interrupts are
- * also shared with the top 4 doorbells so we just limit this to
- * 28 doorbells per partition.
- *
- * In crosslink mode, each side has it's own dbmsg register so
- * they can each use all 60 of the available doorbells.
- */
+ 
 static void switchtec_ntb_init_db(struct switchtec_ntb *sndev)
 {
 	sndev->db_mask = 0x0FFFFFFFFFFFFFFFULL;
@@ -1278,14 +1252,10 @@ switchtec_ntb_init_req_id_table(struct switchtec_ntb *sndev)
 {
 	int req_ids[2];
 
-	/*
-	 * Root Complex Requester ID (which is 0:00.0)
-	 */
+	 
 	req_ids[0] = 0;
 
-	/*
-	 * Host Bridge Requester ID (as read from the mmap address)
-	 */
+	 
 	req_ids[1] = ioread16(&sndev->mmio_ntb->requester_id);
 
 	return config_req_id_table(sndev, sndev->mmio_self_ctrl, req_ids,
@@ -1511,11 +1481,7 @@ static int switchtec_ntb_add(struct device *dev)
 	if (rc)
 		goto deinit_shared_and_exit;
 
-	/*
-	 * If this host crashed, the other host may think the link is
-	 * still up. Tell them to force it down (it will go back up
-	 * once we register the ntb device).
-	 */
+	 
 	switchtec_ntb_send_msg(sndev, LINK_MESSAGE, MSG_LINK_FORCE_DOWN);
 
 	rc = ntb_register_device(&sndev->ntb);

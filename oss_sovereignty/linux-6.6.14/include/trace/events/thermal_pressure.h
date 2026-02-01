@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM thermal_pressure
 
@@ -23,7 +23,7 @@ TRACE_EVENT(thermal_pressure_update,
 
 	TP_printk("cpu=%d thermal_pressure=%lu", __entry->cpu, __entry->thermal_pressure)
 );
-#endif /* _TRACE_THERMAL_PRESSURE_H */
+#endif  
 
-/* This part must be outside protection */
+ 
 #include <trace/define_trace.h>

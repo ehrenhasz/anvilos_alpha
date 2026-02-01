@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
-/*******************************************************************************
- *
- * Module Name: dbinput - user front-end to the AML debugger
- *
- ******************************************************************************/
+
+ 
 
 #include <acpi/acpi.h>
 #include "accommon.h"
@@ -16,7 +12,7 @@
 #define _COMPONENT          ACPI_CA_DEBUGGER
 ACPI_MODULE_NAME("dbinput")
 
-/* Local prototypes */
+ 
 static u32 acpi_db_get_line(char *input_buffer);
 
 static u32 acpi_db_match_command(char *user_command);
@@ -29,11 +25,7 @@ static u8
 acpi_db_match_command_help(const char *command,
 			   const struct acpi_db_command_help *help);
 
-/*
- * Top-level debugger commands.
- *
- * This list of commands must match the string table below it
- */
+ 
 enum acpi_ex_debugger_commands {
 	CMD_NOT_FOUND = 0,
 	CMD_NULL,
@@ -112,7 +104,7 @@ enum acpi_ex_debugger_commands {
 
 #define CMD_FIRST_VALID     2
 
-/* Second parameter is the required argument count */
+ 
 
 static const struct acpi_db_command_info acpi_gbl_db_commands[] = {
 	{"<NOT FOUND>", 0},
@@ -191,13 +183,7 @@ static const struct acpi_db_command_info acpi_gbl_db_commands[] = {
 	{NULL, 0}
 };
 
-/*
- * Help for all debugger commands. First argument is the number of lines
- * of help to output for the command.
- *
- * Note: Some commands are not supported by the kernel-level version of
- * the debugger.
- */
+ 
 static const struct acpi_db_command_help acpi_gbl_db_command_help[] = {
 	{0, "\nNamespace Access:", "\n"},
 	{1, "  Businfo", "Display system bus info\n"},
@@ -325,19 +311,7 @@ static const struct acpi_db_command_help acpi_gbl_db_command_help[] = {
 	{0, NULL, NULL}
 };
 
-/*******************************************************************************
- *
- * FUNCTION:    acpi_db_match_command_help
- *
- * PARAMETERS:  command             - Command string to match
- *              help                - Help table entry to attempt match
- *
- * RETURN:      TRUE if command matched, FALSE otherwise
- *
- * DESCRIPTION: Attempt to match a command in the help table in order to
- *              print help information for a single command.
- *
- ******************************************************************************/
+ 
 
 static u8
 acpi_db_match_command_help(const char *command,
@@ -346,7 +320,7 @@ acpi_db_match_command_help(const char *command,
 	char *invocation = help->invocation;
 	u32 line_count;
 
-	/* Valid commands in the help table begin with a couple of spaces */
+	 
 
 	if (*invocation != ' ') {
 		return (FALSE);
@@ -356,7 +330,7 @@ acpi_db_match_command_help(const char *command,
 		invocation++;
 	}
 
-	/* Match command name (full command or substring) */
+	 
 
 	while ((*command) && (*invocation) && (*invocation != ' ')) {
 		if (tolower((int)*command) != tolower((int)*invocation)) {
@@ -367,7 +341,7 @@ acpi_db_match_command_help(const char *command,
 		command++;
 	}
 
-	/* Print the appropriate number of help lines */
+	 
 
 	line_count = help->line_count;
 	while (line_count) {
@@ -380,19 +354,7 @@ acpi_db_match_command_help(const char *command,
 	return (TRUE);
 }
 
-/*******************************************************************************
- *
- * FUNCTION:    acpi_db_display_command_info
- *
- * PARAMETERS:  command             - Command string to match
- *              display_all         - Display all matching commands, or just
- *                                    the first one (substring match)
- *
- * RETURN:      None
- *
- * DESCRIPTION: Display help information for a Debugger command.
- *
- ******************************************************************************/
+ 
 
 static void acpi_db_display_command_info(const char *command, u8 display_all)
 {
@@ -410,19 +372,7 @@ static void acpi_db_display_command_info(const char *command, u8 display_all)
 	}
 }
 
-/*******************************************************************************
- *
- * FUNCTION:    acpi_db_display_help
- *
- * PARAMETERS:  command             - Optional command string to display help.
- *                                    if not specified, all debugger command
- *                                    help strings are displayed
- *
- * RETURN:      None
- *
- * DESCRIPTION: Display help for a single debugger command, or all of them.
- *
- ******************************************************************************/
+ 
 
 static void acpi_db_display_help(char *command)
 {
@@ -430,7 +380,7 @@ static void acpi_db_display_help(char *command)
 
 	if (!command) {
 
-		/* No argument to help, display help for all commands */
+		 
 
 		acpi_os_printf("\nSummary of AML Debugger Commands\n\n");
 
@@ -442,24 +392,13 @@ static void acpi_db_display_help(char *command)
 		acpi_os_printf("\n");
 
 	} else {
-		/* Display help for all commands that match the substring */
+		 
 
 		acpi_db_display_command_info(command, TRUE);
 	}
 }
 
-/*******************************************************************************
- *
- * FUNCTION:    acpi_db_get_next_token
- *
- * PARAMETERS:  string          - Command buffer
- *              next            - Return value, end of next token
- *
- * RETURN:      Pointer to the start of the next token.
- *
- * DESCRIPTION: Command line parsing. Get the next token on the command line
- *
- ******************************************************************************/
+ 
 
 char *acpi_db_get_next_token(char *string,
 			     char **next, acpi_object_type *return_type)
@@ -468,13 +407,13 @@ char *acpi_db_get_next_token(char *string,
 	u32 depth;
 	acpi_object_type type = ACPI_TYPE_INTEGER;
 
-	/* At end of buffer? */
+	 
 
 	if (!string || !(*string)) {
 		return (NULL);
 	}
 
-	/* Remove any spaces at the beginning, ignore blank lines */
+	 
 
 	while (*string && isspace((int)*string)) {
 		string++;
@@ -487,13 +426,13 @@ char *acpi_db_get_next_token(char *string,
 	switch (*string) {
 	case '"':
 
-		/* This is a quoted string, scan until closing quote */
+		 
 
 		string++;
 		start = string;
 		type = ACPI_TYPE_STRING;
 
-		/* Find end of string */
+		 
 
 		while (*string && (*string != '"')) {
 			string++;
@@ -502,13 +441,13 @@ char *acpi_db_get_next_token(char *string,
 
 	case '(':
 
-		/* This is the start of a buffer, scan until closing paren */
+		 
 
 		string++;
 		start = string;
 		type = ACPI_TYPE_BUFFER;
 
-		/* Find end of buffer */
+		 
 
 		while (*string && (*string != ')')) {
 			string++;
@@ -517,13 +456,13 @@ char *acpi_db_get_next_token(char *string,
 
 	case '{':
 
-		/* This is the start of a field unit, scan until closing brace */
+		 
 
 		string++;
 		start = string;
 		type = ACPI_TYPE_FIELD_UNIT;
 
-		/* Find end of buffer */
+		 
 
 		while (*string && (*string != '}')) {
 			string++;
@@ -532,21 +471,21 @@ char *acpi_db_get_next_token(char *string,
 
 	case '[':
 
-		/* This is the start of a package, scan until closing bracket */
+		 
 
 		string++;
 		depth = 1;
 		start = string;
 		type = ACPI_TYPE_PACKAGE;
 
-		/* Find end of package (closing bracket) */
+		 
 
 		while (*string) {
 
-			/* Handle String package elements */
+			 
 
 			if (*string == '"') {
-				/* Find end of string */
+				 
 
 				string++;
 				while (*string && (*string != '"')) {
@@ -556,10 +495,10 @@ char *acpi_db_get_next_token(char *string,
 					break;
 				}
 			} else if (*string == '[') {
-				depth++;	/* A nested package declaration */
+				depth++;	 
 			} else if (*string == ']') {
 				depth--;
-				if (depth == 0) {	/* Found final package closing bracket */
+				if (depth == 0) {	 
 					break;
 				}
 			}
@@ -572,7 +511,7 @@ char *acpi_db_get_next_token(char *string,
 
 		start = string;
 
-		/* Find end of token */
+		 
 
 		while (*string && !isspace((int)*string)) {
 			string++;
@@ -591,18 +530,7 @@ char *acpi_db_get_next_token(char *string,
 	return (start);
 }
 
-/*******************************************************************************
- *
- * FUNCTION:    acpi_db_get_line
- *
- * PARAMETERS:  input_buffer        - Command line buffer
- *
- * RETURN:      Count of arguments to the command
- *
- * DESCRIPTION: Get the next command line from the user. Gets entire line
- *              up to the next newline
- *
- ******************************************************************************/
+ 
 
 static u32 acpi_db_get_line(char *input_buffer)
 {
@@ -632,29 +560,19 @@ static u32 acpi_db_get_line(char *input_buffer)
 		this = next;
 	}
 
-	/* Uppercase the actual command */
+	 
 
 	acpi_ut_strupr(acpi_gbl_db_args[0]);
 
 	count = i;
 	if (count) {
-		count--;	/* Number of args only */
+		count--;	 
 	}
 
 	return (count);
 }
 
-/*******************************************************************************
- *
- * FUNCTION:    acpi_db_match_command
- *
- * PARAMETERS:  user_command            - User command line
- *
- * RETURN:      Index into command array, -1 if not found
- *
- * DESCRIPTION: Search command array for a command match
- *
- ******************************************************************************/
+ 
 
 static u32 acpi_db_match_command(char *user_command)
 {
@@ -672,24 +590,12 @@ static u32 acpi_db_match_command(char *user_command)
 		}
 	}
 
-	/* Command not recognized */
+	 
 
 	return (CMD_NOT_FOUND);
 }
 
-/*******************************************************************************
- *
- * FUNCTION:    acpi_db_command_dispatch
- *
- * PARAMETERS:  input_buffer        - Command line buffer
- *              walk_state          - Current walk
- *              op                  - Current (executing) parse op
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Command dispatcher.
- *
- ******************************************************************************/
+ 
 
 acpi_status
 acpi_db_command_dispatch(char *input_buffer,
@@ -703,27 +609,23 @@ acpi_db_command_dispatch(char *input_buffer,
 	char *command_line;
 	acpi_status status = AE_CTRL_TRUE;
 
-	/* If acpi_terminate has been called, terminate this thread */
+	 
 
 	if (acpi_gbl_db_terminate_loop) {
 		return (AE_CTRL_TERMINATE);
 	}
 
-	/* Find command and add to the history buffer */
+	 
 
 	param_count = acpi_db_get_line(input_buffer);
 	command_index = acpi_db_match_command(acpi_gbl_db_args[0]);
 
-	/*
-	 * We don't want to add the !! command to the history buffer. It
-	 * would cause an infinite loop because it would always be the
-	 * previous command.
-	 */
+	 
 	if (command_index != CMD_HISTORY_LAST) {
 		acpi_db_add_to_history(input_buffer);
 	}
 
-	/* Verify that we have the minimum number of params */
+	 
 
 	if (param_count < acpi_gbl_db_commands[command_index].min_args) {
 		acpi_os_printf
@@ -736,7 +638,7 @@ acpi_db_command_dispatch(char *input_buffer,
 		return (AE_CTRL_TRUE);
 	}
 
-	/* Decode and dispatch the command */
+	 
 
 	switch (command_index) {
 	case CMD_NULL:
@@ -858,7 +760,7 @@ acpi_db_command_dispatch(char *input_buffer,
 		acpi_db_display_history();
 		break;
 
-	case CMD_HISTORY_EXE:	/* ! command */
+	case CMD_HISTORY_EXE:	 
 
 		command_line = acpi_db_get_from_history(acpi_gbl_db_args[1]);
 		if (!command_line) {
@@ -868,7 +770,7 @@ acpi_db_command_dispatch(char *input_buffer,
 		status = acpi_db_command_dispatch(command_line, walk_state, op);
 		return (status);
 
-	case CMD_HISTORY_LAST:	/* !! command */
+	case CMD_HISTORY_LAST:	 
 
 		command_line = acpi_db_get_from_history(NULL);
 		if (!command_line) {
@@ -1048,7 +950,7 @@ acpi_db_command_dispatch(char *input_buffer,
 
 #ifdef ACPI_APPLICATION
 
-		/* Hardware simulation commands. */
+		 
 
 	case CMD_ENABLEACPI:
 #if (!ACPI_REDUCED_HARDWARE)
@@ -1059,7 +961,7 @@ acpi_db_command_dispatch(char *input_buffer,
 				       status);
 			return (status);
 		}
-#endif				/* !ACPI_REDUCED_HARDWARE */
+#endif				 
 		break;
 
 	case CMD_EVENT:
@@ -1092,7 +994,7 @@ acpi_db_command_dispatch(char *input_buffer,
 		status = acpi_db_sleep(acpi_gbl_db_args[1]);
 		break;
 
-		/* File I/O commands. */
+		 
 
 	case CMD_CLOSE:
 
@@ -1117,20 +1019,17 @@ acpi_db_command_dispatch(char *input_buffer,
 		acpi_db_open_debug_file(acpi_gbl_db_args[1]);
 		break;
 
-		/* User space commands. */
+		 
 
 	case CMD_TERMINATE:
 
 		acpi_db_set_output_destination(ACPI_DB_REDIRECTABLE_OUTPUT);
 		acpi_ut_subsystem_shutdown();
 
-		/*
-		 * TBD: [Restructure] Need some way to re-initialize without
-		 * re-creating the semaphores!
-		 */
+		 
 
 		acpi_gbl_db_terminate_loop = TRUE;
-		/*  acpi_initialize (NULL); */
+		 
 		break;
 
 	case CMD_BACKGROUND:
@@ -1147,7 +1046,7 @@ acpi_db_command_dispatch(char *input_buffer,
 						 acpi_gbl_db_args[3]);
 		break;
 
-		/* Debug test commands. */
+		 
 
 	case CMD_PREDEFINED:
 
@@ -1196,18 +1095,7 @@ acpi_db_command_dispatch(char *input_buffer,
 	return (status);
 }
 
-/*******************************************************************************
- *
- * FUNCTION:    acpi_db_execute_thread
- *
- * PARAMETERS:  context         - Not used
- *
- * RETURN:      None
- *
- * DESCRIPTION: Debugger execute thread. Waits for a command line, then
- *              simply dispatches it.
- *
- ******************************************************************************/
+ 
 
 void ACPI_SYSTEM_XFACE acpi_db_execute_thread(void *context)
 {
@@ -1216,18 +1104,7 @@ void ACPI_SYSTEM_XFACE acpi_db_execute_thread(void *context)
 	acpi_gbl_db_threads_terminated = TRUE;
 }
 
-/*******************************************************************************
- *
- * FUNCTION:    acpi_db_user_commands
- *
- * PARAMETERS:  None
- *
- * RETURN:      None
- *
- * DESCRIPTION: Command line execution for the AML debugger. Commands are
- *              matched and dispatched here.
- *
- ******************************************************************************/
+ 
 
 acpi_status acpi_db_user_commands(void)
 {
@@ -1235,18 +1112,18 @@ acpi_status acpi_db_user_commands(void)
 
 	acpi_os_printf("\n");
 
-	/* TBD: [Restructure] Need a separate command line buffer for step mode */
+	 
 
 	while (!acpi_gbl_db_terminate_loop) {
 
-		/* Wait the readiness of the command */
+		 
 
 		status = acpi_os_wait_command_ready();
 		if (ACPI_FAILURE(status)) {
 			break;
 		}
 
-		/* Just call to the command line interpreter */
+		 
 
 		acpi_gbl_method_executing = FALSE;
 		acpi_gbl_step_to_next_call = FALSE;
@@ -1254,7 +1131,7 @@ acpi_status acpi_db_user_commands(void)
 		(void)acpi_db_command_dispatch(acpi_gbl_db_line_buf, NULL,
 					       NULL);
 
-		/* Notify the completion of the command */
+		 
 
 		status = acpi_os_notify_command_complete();
 		if (ACPI_FAILURE(status)) {

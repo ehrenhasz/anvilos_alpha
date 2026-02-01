@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * TPM handling.
- *
- * Copyright (C) 2016 CoreOS, Inc
- * Copyright (C) 2017 Google, Inc.
- *     Matthew Garrett <mjg59@google.com>
- *     Thiebaud Weksteen <tweek@google.com>
- */
+
+ 
 #include <linux/efi.h>
 #include <linux/tpm_eventlog.h>
 #include <asm/efi.h>
@@ -20,12 +13,7 @@ static const efi_char16_t efi_MemoryOverWriteRequest_name[] =
 #define MEMORY_ONLY_RESET_CONTROL_GUID \
 	EFI_GUID(0xe20939be, 0x32d4, 0x41be, 0xa1, 0x50, 0x89, 0x7f, 0x85, 0xd4, 0x98, 0x29)
 
-/*
- * Enable reboot attack mitigation. This requests that the firmware clear the
- * RAM on next reboot before proceeding with boot, ensuring that any secrets
- * are cleared. If userland has ensured that all secrets have been removed
- * from RAM before reboot it can simply reset this variable.
- */
+ 
 void efi_enable_reset_attack_mitigation(void)
 {
 	u8 val = 1;
@@ -82,27 +70,14 @@ void efi_retrieve_tpm2_eventlog(void)
 
 	first_entry_addr = (unsigned long) log_location;
 
-	/*
-	 * We populate the EFI table even if the logs are empty.
-	 */
+	 
 	if (!log_last_entry) {
 		log_size = 0;
 	} else {
 		last_entry_addr = (unsigned long) log_last_entry;
-		/*
-		 * get_event_log only returns the address of the last entry.
-		 * We need to calculate its size to deduce the full size of
-		 * the logs.
-		 */
+		 
 		if (version == EFI_TCG2_EVENT_LOG_FORMAT_TCG_2) {
-			/*
-			 * The TCG2 log format has variable length entries,
-			 * and the information to decode the hash algorithms
-			 * back into a size is contained in the first entry -
-			 * pass a pointer to the final entry (to calculate its
-			 * size) and the first entry (so we know how long each
-			 * digest is)
-			 */
+			 
 			last_entry_size =
 				__calc_tpm2_event_size((void *)last_entry_addr,
 						    (void *)(long)log_location,
@@ -114,7 +89,7 @@ void efi_retrieve_tpm2_eventlog(void)
 		log_size = log_last_entry - log_location + last_entry_size;
 	}
 
-	/* Allocate space for the logs and copy them. */
+	 
 	status = efi_bs_call(allocate_pool, EFI_LOADER_DATA,
 			     sizeof(*log_tbl) + log_size, (void **)&log_tbl);
 
@@ -123,10 +98,7 @@ void efi_retrieve_tpm2_eventlog(void)
 		return;
 	}
 
-	/*
-	 * Figure out whether any events have already been logged to the
-	 * final events structure, and if so how much space they take up
-	 */
+	 
 	if (version == EFI_TCG2_EVENT_LOG_FORMAT_TCG_2)
 		final_events_table = get_efi_config_table(LINUX_EFI_TPM_FINAL_LOG_GUID);
 	if (final_events_table && final_events_table->nr_events) {

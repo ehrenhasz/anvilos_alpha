@@ -1,25 +1,4 @@
-/*
- * Copyright 2012 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 #ifndef __SI_DPM_H__
 #define __SI_DPM_H__
 
@@ -149,7 +128,7 @@ struct si_ulv_param {
 };
 
 struct si_power_info {
-	/* must be first! */
+	 
 	struct ni_power_info ni;
 	struct si_clock_registers clock_registers;
 	struct si_mc_reg_table mc_reg_table;
@@ -159,12 +138,12 @@ struct si_power_info {
 	u16 mvdd_bootup_value;
 	struct si_ulv_param ulv;
 	u32 max_cu;
-	/* pcie gen */
+	 
 	enum radeon_pcie_gen force_pcie_gen;
 	enum radeon_pcie_gen boot_pcie_gen;
 	enum radeon_pcie_gen acpi_pcie_gen;
 	u32 sys_pcie_mask;
-	/* flags */
+	 
 	bool enable_dte;
 	bool enable_ppm;
 	bool vddc_phase_shed_control;
@@ -172,7 +151,7 @@ struct si_power_info {
 	bool sclk_deep_sleep_above_low;
 	bool voltage_control_svi2;
 	bool vddci_control_svi2;
-	/* smc offsets */
+	 
 	u32 sram_end;
 	u32 state_table_start;
 	u32 soft_regs_start;
@@ -183,22 +162,22 @@ struct si_power_info {
 	u32 spll_table_start;
 	u32 papm_cfg_table_start;
 	u32 fan_table_start;
-	/* CAC stuff */
+	 
 	const struct si_cac_config_reg *cac_weights;
 	const struct si_cac_config_reg *lcac_config;
 	const struct si_cac_config_reg *cac_override;
 	const struct si_powertune_data *powertune_data;
 	struct si_dyn_powertune_data dyn_powertune_data;
-	/* DTE stuff */
+	 
 	struct si_dte_data dte_data;
-	/* scratch structs */
+	 
 	SMC_SIslands_MCRegisters smc_mc_reg_table;
 	SISLANDS_SMC_STATETABLE smc_statetable;
 	PP_SIslands_PAPMParameters papm_parm;
-	/* SVI2 */
+	 
 	u8 svd_gpio_id;
 	u8 svc_gpio_id;
-	/* fan control */
+	 
 	bool fan_ctrl_is_in_default_mode;
 	u32 t_min;
 	u32 fan_ctrl_default_mode;

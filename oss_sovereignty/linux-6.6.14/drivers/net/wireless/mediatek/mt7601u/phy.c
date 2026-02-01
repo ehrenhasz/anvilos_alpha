@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * (c) Copyright 2002-2010, Ralink Technology, Inc.
- * Copyright (C) 2014 Felix Fietkau <nbd@openwrt.org>
- * Copyright (C) 2015 Jakub Kicinski <kubakici@wp.pl>
- */
+
+ 
 
 #include "mt7601u.h"
 #include "mcu.h"
@@ -234,13 +230,13 @@ int mt7601u_phy_get_rssi(struct mt7601u_dev *dev,
 			 struct mt7601u_rxwi *rxwi, u16 rate)
 {
 	static const s8 lna[2][2][3] = {
-		/* main LNA */ {
-			/* bw20 */ { -2, 15, 33 },
-			/* bw40 */ {  0, 16, 34 }
+		  {
+			  { -2, 15, 33 },
+			  {  0, 16, 34 }
 		},
-		/*  aux LNA */ {
-			/* bw20 */ { -2, 15, 33 },
-			/* bw40 */ { -2, 16, 34 }
+		  {
+			  { -2, 15, 33 },
+			  { -2, 16, 34 }
 		}
 	};
 	int bw = FIELD_GET(MT_RXWI_RATE_BW, rate);
@@ -248,7 +244,7 @@ int mt7601u_phy_get_rssi(struct mt7601u_dev *dev,
 	int lna_id = FIELD_GET(MT_RXWI_GAIN_RSSI_LNA_ID, rxwi->gain);
 	int val;
 
-	if (lna_id) /* LNA id can be 0, 2, 3. */
+	if (lna_id)  
 		lna_id--;
 
 	val = 8;
@@ -278,11 +274,11 @@ static int mt7601u_set_bw_filter(struct mt7601u_dev *dev, bool cal)
 	if (dev->bw != MT_BW_20)
 		filter |= 0x00100;
 
-	/* TX */
+	 
 	ret = mt7601u_mcu_calibrate(dev, MCU_CAL_BW, filter | 1);
 	if (ret)
 		return ret;
-	/* RX */
+	 
 	return mt7601u_mcu_calibrate(dev, MCU_CAL_BW, filter);
 }
 
@@ -329,11 +325,11 @@ static void mt7601u_apply_ch14_fixup(struct mt7601u_dev *dev, int hw_chan)
 
 		t->cck[0].bw20 = dev->ee->real_cck_bw20[0];
 		t->cck[1].bw20 = dev->ee->real_cck_bw20[1];
-	} else { /* Apply CH14 OBW fixup */
+	} else {  
 		mt7601u_bbp_wr(dev, 4, 0x60);
 		mt7601u_bbp_wr(dev, 178, 0);
 
-		/* Note: vendor code is buggy here for negative values */
+		 
 		t->cck[0].bw20 = dev->ee->real_cck_bw20[0] - 2;
 		t->cck[1].bw20 = dev->ee->real_cck_bw20[1] - 2;
 	}
@@ -469,18 +465,7 @@ int mt7601u_phy_set_channel(struct mt7601u_dev *dev,
 #define BBP_R47_F_PKT_T		1
 #define BBP_R47_F_TX_RATE	2
 #define BBP_R47_F_TEMP		4
-/**
- * mt7601u_bbp_r47_get - read value through BBP R47/R49 pair
- * @dev:	pointer to adapter structure
- * @reg:	value of BBP R47 before the operation
- * @flag:	one of the BBP_R47_F_* flags
- *
- * Convenience helper for reading values through BBP R47/R49 pair.
- * Takes old value of BBP R47 as @reg, because callers usually have it
- * cached already.
- *
- * Return: value of BBP R49.
- */
+ 
 static u8 mt7601u_bbp_r47_get(struct mt7601u_dev *dev, u8 reg, u8 flag)
 {
 	flag |= reg & ~BBP_R47_FLAG;
@@ -535,7 +520,7 @@ static s8 mt7601u_read_temp(struct mt7601u_dev *dev)
 
 	val = mt7601u_bbp_rmw(dev, 47, 0x7f, 0x10);
 
-	/* Note: this rarely succeeds, temp can change even if it fails. */
+	 
 	for (i = 100; i && (val & 0x10); i--)
 		val = mt7601u_bbp_rr(dev, 47);
 
@@ -594,7 +579,7 @@ void mt7601u_phy_recalibrate_after_assoc(struct mt7601u_dev *dev)
 	mt7601u_rxdc_cal(dev);
 }
 
-/* Note: function copied from vendor driver */
+ 
 static s16 lin2dBd(u16 linear)
 {
 	short exp = 0;
@@ -654,11 +639,11 @@ static void mt7601u_tssi_dc_gain_cal(struct mt7601u_dev *dev)
 	mt7601u_bbp_wr(dev, 23, 0x8);
 	bbp_r47 = mt7601u_bbp_rr(dev, 47);
 
-	/* Set VGA gain */
+	 
 	rf_vga = mt7601u_rf_rr(dev, 5, 3);
 	mt7601u_rf_wr(dev, 5, 3, 8);
 
-	/* Mixer disable */
+	 
 	rf_mixer = mt7601u_rf_rr(dev, 4, 39);
 	mt7601u_rf_wr(dev, 4, 39, 0);
 
@@ -668,7 +653,7 @@ static void mt7601u_tssi_dc_gain_cal(struct mt7601u_dev *dev)
 		mt7601u_bbp_wr(dev, 23, (i < 2) ? 0x08 : 0x02);
 		mt7601u_rf_wr(dev, 5, 3, (i < 2) ? 0x08 : 0x11);
 
-		/* BBP TSSI initial and soft reset */
+		 
 		mt7601u_bbp_wr(dev, 22, 0);
 		mt7601u_bbp_wr(dev, 244, 0);
 
@@ -676,7 +661,7 @@ static void mt7601u_tssi_dc_gain_cal(struct mt7601u_dev *dev)
 		udelay(1);
 		mt7601u_bbp_wr(dev, 21, 0);
 
-		/* TSSI measurement */
+		 
 		mt7601u_bbp_wr(dev, 47, 0x50);
 		mt7601u_bbp_wr(dev, (i & 1) ? 244 : 22, (i & 1) ? 0x31 : 0x40);
 
@@ -686,7 +671,7 @@ static void mt7601u_tssi_dc_gain_cal(struct mt7601u_dev *dev)
 		if (!j)
 			dev_err(dev->dev, "%s timed out\n", __func__);
 
-		/* TSSI read */
+		 
 		mt7601u_bbp_wr(dev, 47, 0x40);
 		res[i] = mt7601u_bbp_rr(dev, 49);
 	}
@@ -726,7 +711,7 @@ static int mt7601u_temp_comp(struct mt7601u_dev *dev, bool on)
 	temp = (dev->raw_temp - dev->ee->ref_temp) * MT_EE_TEMPERATURE_SLOPE;
 	dev->curr_temp = temp;
 
-	/* DPD Calibration */
+	 
 	if (temp - dev->dpd_temp > 450 || temp - dev->dpd_temp < -450) {
 		dev->dpd_temp = temp;
 
@@ -739,15 +724,15 @@ static int mt7601u_temp_comp(struct mt7601u_dev *dev, bool on)
 		dev_dbg(dev->dev, "Recalibrate DPD\n");
 	}
 
-	/* PLL Lock Protect */
-	if (temp < -50 && !dev->pll_lock_protect) { /* < 20C */
+	 
+	if (temp < -50 && !dev->pll_lock_protect) {  
 		dev->pll_lock_protect =  true;
 
 		mt7601u_rf_wr(dev, 4, 4, 6);
 		mt7601u_rf_clear(dev, 4, 10, 0x30);
 
 		dev_dbg(dev->dev, "PLL lock protect on - too cold\n");
-	} else if (temp > 50 && dev->pll_lock_protect) { /* > 30C */
+	} else if (temp > 50 && dev->pll_lock_protect) {  
 		dev->pll_lock_protect = false;
 
 		mt7601u_rf_wr(dev, 4, 4, 0);
@@ -761,7 +746,7 @@ static int mt7601u_temp_comp(struct mt7601u_dev *dev, bool on)
 		lo_temp -= 50;
 	}
 
-	/* BBP CR for H, L, N temperature */
+	 
 	if (temp > hi_temp)
 		return mt7601u_bbp_temp(dev, MT_TEMP_MODE_HIGH, "high");
 	else if (temp > lo_temp)
@@ -770,7 +755,7 @@ static int mt7601u_temp_comp(struct mt7601u_dev *dev, bool on)
 		return mt7601u_bbp_temp(dev, MT_TEMP_MODE_LOW, "low");
 }
 
-/* Note: this is used only with TSSI, we can just use trgt_pwr from eeprom. */
+ 
 static int mt7601u_current_tx_power(struct mt7601u_dev *dev)
 {
 	return dev->ee->chan_pwr[dev->chandef.chan->hw_value - 1];
@@ -849,7 +834,7 @@ mt7601u_tssi_params_get(struct mt7601u_dev *dev)
 	p.trgt_power += mt7601u_phy_rf_pa_mode_val(dev, pkt_type & 0x03,
 						   tx_rate);
 
-	/* Channel 14, cck, bw20 */
+	 
 	if ((pkt_type & 0x03) == MT_PHY_TYPE_CCK) {
 		if (mt7601u_bbp_rr(dev, 4) & 0x20)
 			p.trgt_power += mt7601u_bbp_rr(dev, 178) ? 18022 : 9830;
@@ -975,10 +960,7 @@ static void mt7601u_agc_tune(struct mt7601u_dev *dev)
 	if (test_bit(MT7601U_STATE_SCANNING, &dev->state))
 		return;
 
-	/* Note: only in STA mode and not dozing; perhaps do this only if
-	 *	 there is enough rssi updates since last run?
-	 *	 Rssi updates are only on beacons and U2M so should work...
-	 */
+	 
 	spin_lock_bh(&dev->con_mon_lock);
 	avg_rssi = ewma_rssi_read(&dev->avg_rssi);
 	spin_unlock_bh(&dev->con_mon_lock);
@@ -994,9 +976,7 @@ static void mt7601u_agc_tune(struct mt7601u_dev *dev)
 	if (val != mt7601u_bbp_rr(dev, 66))
 		mt7601u_bbp_wr(dev, 66, val);
 
-	/* TODO: also if lost a lot of beacons try resetting
-	 *       (see RTMPSetAGCInitValue() call in mlme.c).
-	 */
+	 
 }
 
 static void mt7601u_phy_calibrate(struct work_struct *work)
@@ -1006,10 +986,10 @@ static void mt7601u_phy_calibrate(struct work_struct *work)
 
 	mt7601u_agc_tune(dev);
 	mt7601u_tssi_cal(dev);
-	/* If TSSI calibration was run it already updated temperature. */
+	 
 	if (!dev->ee->tssi_enabled)
 		dev->raw_temp = mt7601u_read_temp(dev);
-	mt7601u_temp_comp(dev, true); /* TODO: find right value for @on */
+	mt7601u_temp_comp(dev, true);  
 
 	ieee80211_queue_delayed_work(dev->hw, &dev->cal_work,
 				     MT_CALIBRATE_INTERVAL);
@@ -1022,7 +1002,7 @@ __mt7601u_phy_freq_cal(struct mt7601u_dev *dev, s8 last_offset, u8 phy_mode)
 
 	trace_freq_cal_offset(dev, phy_mode, last_offset);
 
-	/* No beacons received - reschedule soon */
+	 
 	if (last_offset == MT_FREQ_OFFSET_INVALID)
 		return MT_FREQ_CAL_ADJ_INTERVAL;
 
@@ -1103,7 +1083,7 @@ void mt7601u_phy_con_cal_onoff(struct mt7601u_dev *dev,
 	if (!vif->cfg.assoc)
 		cancel_delayed_work_sync(&dev->freq_cal.work);
 
-	/* Start/stop collecting beacon data */
+	 
 	spin_lock_bh(&dev->con_mon_lock);
 	ether_addr_copy(dev->ap_bssid, info->bssid);
 	ewma_rssi_init(&dev->avg_rssi);
@@ -1182,14 +1162,14 @@ int mt7601u_bbp_set_bw(struct mt7601u_dev *dev, int bw)
 	u32 val, old;
 
 	if (bw == dev->bw) {
-		/* Vendor driver does the rmc even when no change is needed. */
+		 
 		mt7601u_bbp_rmc(dev, 4, 0x18, bw == MT_BW_20 ? 0 : 0x10);
 
 		return 0;
 	}
 	dev->bw = bw;
 
-	/* Stop MAC for the time of bw change */
+	 
 	old = mt7601u_rr(dev, MT_MAC_SYS_CTRL);
 	val = old & ~(MT_MAC_SYS_CTRL_ENABLE_TX | MT_MAC_SYS_CTRL_ENABLE_RX);
 	mt7601u_wr(dev, MT_MAC_SYS_CTRL, val);
@@ -1203,21 +1183,13 @@ int mt7601u_bbp_set_bw(struct mt7601u_dev *dev, int bw)
 	return mt7601u_load_bbp_temp_table_bw(dev);
 }
 
-/**
- * mt7601u_set_rx_path - set rx path in BBP
- * @dev:	pointer to adapter structure
- * @path:	rx path to set values are 0-based
- */
+ 
 void mt7601u_set_rx_path(struct mt7601u_dev *dev, u8 path)
 {
 	mt7601u_bbp_rmw(dev, 3, 0x18, path << 3);
 }
 
-/**
- * mt7601u_set_tx_dac - set which tx DAC to use
- * @dev:	pointer to adapter structure
- * @dac:	DAC index, values are 0-based
- */
+ 
 void mt7601u_set_tx_dac(struct mt7601u_dev *dev, u8 dac)
 {
 	mt7601u_bbp_rmc(dev, 1, 0x18, dac << 3);

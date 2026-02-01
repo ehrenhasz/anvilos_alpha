@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Samsung EXYNOS4x12 FIMC-IS (Imaging Subsystem) driver
- *
- * Copyright (C) 2013 Samsung Electronics Co., Ltd.
- *
- * Authors: Sylwester Nawrocki <s.nawrocki@samsung.com>
- *          Younghwan Joo <yhwan.joo@samsung.com>
- */
+
+ 
 #define pr_fmt(fmt) "%s:%d " fmt, __func__, __LINE__
 
 #include <linux/device.h>
@@ -184,7 +177,7 @@ static int fimc_is_parse_sensor_config(struct fimc_is *is, unsigned int index,
 	if (!port)
 		return -ENXIO;
 
-	/* Use MIPI-CSIS channel id to determine the ISP I2C bus index. */
+	 
 	ret = of_property_read_u32(port, "reg", &tmp);
 	if (ret < 0) {
 		dev_err(&is->pdev->dev, "reg property not found at: %pOF\n",
@@ -265,17 +258,17 @@ int fimc_is_cpu_set_power(struct fimc_is *is, int on)
 	unsigned int timeout = FIMC_IS_POWER_ON_TIMEOUT;
 
 	if (on) {
-		/* Disable watchdog */
+		 
 		mcuctl_write(0, is, REG_WDT_ISP);
 
-		/* Cortex-A5 start address setting */
+		 
 		mcuctl_write(is->memory.addr, is, MCUCTL_REG_BBOAR);
 
-		/* Enable and start Cortex-A5 */
+		 
 		pmuisp_write(0x18000, is, REG_PMU_ISP_ARM_OPTION);
 		pmuisp_write(0x1, is, REG_PMU_ISP_ARM_CONFIGURATION);
 	} else {
-		/* A5 power off */
+		 
 		pmuisp_write(0x10000, is, REG_PMU_ISP_ARM_OPTION);
 		pmuisp_write(0x0, is, REG_PMU_ISP_ARM_CONFIGURATION);
 
@@ -290,7 +283,7 @@ int fimc_is_cpu_set_power(struct fimc_is *is, int on)
 	return 0;
 }
 
-/* Wait until @bit of @is->state is set to @state in the interrupt handler. */
+ 
 int fimc_is_wait_event(struct fimc_is *is, unsigned long bit,
 		       unsigned int state, unsigned int timeout)
 {
@@ -330,7 +323,7 @@ int fimc_is_start_firmware(struct fimc_is *is)
 	return ret;
 }
 
-/* Allocate working memory for the FIMC-IS CPU. */
+ 
 static int fimc_is_alloc_cpu_memory(struct fimc_is *is)
 {
 	struct device *dev = &is->pdev->dev;
@@ -403,7 +396,7 @@ static void fimc_is_load_firmware(const struct firmware *fw, void *context)
 	memcpy(is->memory.vaddr, fw->data, fw->size);
 	wmb();
 
-	/* Read firmware description. */
+	 
 	buf = (void *)(is->memory.vaddr + fw->size - FIMC_IS_FW_DESC_LEN);
 	memcpy(&is->fw.info, buf, FIMC_IS_FW_INFO_LEN);
 	is->fw.info[FIMC_IS_FW_INFO_LEN] = 0;
@@ -423,11 +416,7 @@ static void fimc_is_load_firmware(const struct firmware *fw, void *context)
 
 	fimc_is_mem_barrier();
 
-	/*
-	 * FIXME: The firmware is not being released for now, as it is
-	 * needed around for copying to the IS working memory every
-	 * time before the Cortex-A5 is restarted.
-	 */
+	 
 	release_firmware(is->fw.f_w);
 	is->fw.f_w = fw;
 done:
@@ -441,7 +430,7 @@ static int fimc_is_request_firmware(struct fimc_is *is, const char *fw_name)
 				GFP_KERNEL, is, fimc_is_load_firmware);
 }
 
-/* General IS interrupt handler */
+ 
 static void fimc_is_general_irq_handler(struct fimc_is *is)
 {
 	is->i2h_cmd.cmd = mcuctl_read(is, MCUCTL_REG_ISSR(10));
@@ -501,7 +490,7 @@ static void fimc_is_general_irq_handler(struct fimc_is *is)
 
 		switch (is->i2h_cmd.args[0]) {
 		case HIC_PREVIEW_STILL...HIC_CAPTURE_VIDEO:
-			/* Get CAC margin */
+			 
 			set_bit(IS_ST_CHANGE_MODE, &is->state);
 			is->isp.cac_margin_x = is->i2h_cmd.args[1];
 			is->isp.cac_margin_y = is->i2h_cmd.args[2];
@@ -631,10 +620,7 @@ static int fimc_is_hw_open_sensor(struct fimc_is *is,
 
 	fimc_is_mem_barrier();
 
-	/*
-	 * Some user space use cases hang up here without this
-	 * empirically chosen delay.
-	 */
+	 
 	udelay(100);
 
 	mcuctl_write(HIC_OPEN_SENSOR, is, MCUCTL_REG_ISSR(0));
@@ -660,12 +646,12 @@ int fimc_is_hw_initialize(struct fimc_is *is)
 	u32 prev_id;
 	int i, ret;
 
-	/* Sensor initialization. Only one sensor is currently supported. */
+	 
 	ret = fimc_is_hw_open_sensor(is, &is->sensor[0]);
 	if (ret < 0)
 		return ret;
 
-	/* Get the setfile address. */
+	 
 	fimc_is_hw_get_setfile_addr(is);
 
 	ret = fimc_is_wait_event(is, IS_ST_SETFILE_LOADED, 1,
@@ -676,7 +662,7 @@ int fimc_is_hw_initialize(struct fimc_is *is)
 	}
 	pr_debug("setfile.base: %#x\n", is->setfile.base);
 
-	/* Load the setfile. */
+	 
 	fimc_is_load_setfile(is, FIMC_IS_SETFILE_6A3);
 	clear_bit(IS_ST_SETFILE_LOADED, &is->state);
 	fimc_is_hw_load_setfile(is);
@@ -691,7 +677,7 @@ int fimc_is_hw_initialize(struct fimc_is *is)
 		 is->setfile.base, is->setfile.size);
 	pr_info("FIMC-IS Setfile info: %s\n", is->fw.setfile_info);
 
-	/* Check magic number. */
+	 
 	if (is->is_p_region->shared[MAX_SHARED_COUNT - 1] !=
 	    FIMC_IS_MAGIC_NUMBER) {
 		dev_err(dev, "magic number error!\n");
@@ -704,7 +690,7 @@ int fimc_is_hw_initialize(struct fimc_is *is)
 
 	is->setfile.sub_index = 0;
 
-	/* Stream off. */
+	 
 	fimc_is_hw_stream_off(is);
 	ret = fimc_is_wait_event(is, IS_ST_STREAM_OFF, 1,
 				 FIMC_IS_CONFIG_TIMEOUT);
@@ -713,10 +699,10 @@ int fimc_is_hw_initialize(struct fimc_is *is)
 		return ret;
 	}
 
-	/* Preserve previous mode. */
+	 
 	prev_id = is->config_index;
 
-	/* Set initial parameter values. */
+	 
 	for (i = 0; i < ARRAY_SIZE(config_ids); i++) {
 		is->config_index = config_ids[i];
 		fimc_is_set_initial_params(is);
@@ -839,10 +825,7 @@ static int fimc_is_probe(struct platform_device *pdev)
 	if (ret < 0)
 		goto err_pm;
 
-	/*
-	 * Register FIMC-IS V4L2 subdevs to this driver. The video nodes
-	 * will be created within the subdev's registered() callback.
-	 */
+	 
 	ret = fimc_is_register_subdevs(is);
 	if (ret < 0)
 		goto err_pm;
@@ -899,7 +882,7 @@ static int fimc_is_runtime_suspend(struct device *dev)
 #ifdef CONFIG_PM_SLEEP
 static int fimc_is_resume(struct device *dev)
 {
-	/* TODO: */
+	 
 	return 0;
 }
 
@@ -907,13 +890,13 @@ static int fimc_is_suspend(struct device *dev)
 {
 	struct fimc_is *is = dev_get_drvdata(dev);
 
-	/* TODO: */
+	 
 	if (test_bit(IS_ST_A5_PWR_ON, &is->state))
 		return -EBUSY;
 
 	return 0;
 }
-#endif /* CONFIG_PM_SLEEP */
+#endif  
 
 static void fimc_is_remove(struct platform_device *pdev)
 {
@@ -936,7 +919,7 @@ static void fimc_is_remove(struct platform_device *pdev)
 
 static const struct of_device_id fimc_is_of_match[] = {
 	{ .compatible = "samsung,exynos4212-fimc-is" },
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, fimc_is_of_match);
 

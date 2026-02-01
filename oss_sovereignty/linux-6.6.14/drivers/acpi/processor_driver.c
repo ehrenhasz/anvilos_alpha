@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * processor_driver.c - ACPI Processor Driver
- *
- *  Copyright (C) 2001, 2002 Andy Grover <andrew.grover@intel.com>
- *  Copyright (C) 2001, 2002 Paul Diefenbaugh <paul.s.diefenbaugh@intel.com>
- *  Copyright (C) 2004       Dominik Brodowski <linux@brodo.de>
- *  Copyright (C) 2004  Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>
- *  			- Added processor hotplug support
- *  Copyright (C) 2013, Intel Corporation
- *                      Rafael J. Wysocki <rafael.j.wysocki@intel.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -105,10 +95,7 @@ static int acpi_soft_cpu_online(unsigned int cpu)
 	if (!device)
 		return 0;
 
-	/*
-	 * CPU got physically hotplugged and onlined for the first time:
-	 * Initialize missing things.
-	 */
+	 
 	if (pr->flags.need_hotplug_init) {
 		int ret;
 
@@ -118,7 +105,7 @@ static int acpi_soft_cpu_online(unsigned int cpu)
 		ret = __acpi_processor_start(device);
 		WARN(ret, "Failed to start CPU: %d\n", pr->id);
 	} else {
-		/* Normal CPU soft online event. */
+		 
 		acpi_processor_ppc_has_changed(pr, 0);
 		acpi_processor_hotplug(pr);
 		acpi_processor_reevaluate_tstate(pr, false);
@@ -150,7 +137,7 @@ static void acpi_pss_perf_init(struct acpi_processor *pr)
 }
 #else
 static inline void acpi_pss_perf_init(struct acpi_processor *pr) {}
-#endif /* CONFIG_ACPI_CPU_FREQ_PSS */
+#endif  
 
 static int __acpi_processor_start(struct acpi_device *device)
 {
@@ -198,7 +185,7 @@ static int acpi_processor_start(struct device *dev)
 	if (!device)
 		return -ENODEV;
 
-	/* Protect against concurrent CPU hotplug operations */
+	 
 	cpu_hotplug_disable();
 	ret = __acpi_processor_start(device);
 	cpu_hotplug_enable();
@@ -250,11 +237,7 @@ static struct notifier_block acpi_processor_notifier_block = {
 	.notifier_call = acpi_processor_notifier,
 };
 
-/*
- * We keep the driver loaded even when ACPI is not running.
- * This is needed for the powernow-k8 driver, that works even without
- * ACPI, but needs symbols from this driver
- */
+ 
 static enum cpuhp_state hp_online;
 static int __init acpi_processor_driver_init(void)
 {

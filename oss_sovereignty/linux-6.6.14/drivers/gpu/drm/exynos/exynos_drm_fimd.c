@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* exynos_drm_fimd.c
- *
- * Copyright (C) 2011 Samsung Electronics Co.Ltd
- * Authors:
- *	Joonyoung Shim <jy0922.shim@samsung.com>
- *	Inki Dae <inki.dae@samsung.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/component.h>
@@ -31,24 +25,16 @@
 #include "exynos_drm_fb.h"
 #include "exynos_drm_plane.h"
 
-/*
- * FIMD stands for Fully Interactive Mobile Display and
- * as a display controller, it transfers contents drawn on memory
- * to a LCD Panel through Display Interfaces such as RGB or
- * CPU Interface.
- */
+ 
 
 #define MIN_FB_WIDTH_FOR_16WORD_BURST 128
 
-/* position control register for hardware window 0, 2 ~ 4.*/
+ 
 #define VIDOSD_A(win)		(VIDOSD_BASE + 0x00 + (win) * 16)
 #define VIDOSD_B(win)		(VIDOSD_BASE + 0x04 + (win) * 16)
-/*
- * size control register for hardware windows 0 and alpha control register
- * for hardware windows 1 ~ 4
- */
+ 
 #define VIDOSD_C(win)		(VIDOSD_BASE + 0x08 + (win) * 16)
-/* size control register for hardware windows 1 ~ 2. */
+ 
 #define VIDOSD_D(win)		(VIDOSD_BASE + 0x0C + (win) * 16)
 
 #define VIDWnALPHA0(win)	(VIDW_ALPHA + 0x00 + (win) * 8)
@@ -59,26 +45,26 @@
 #define VIDWx_BUF_END(win, buf)		(VIDW_BUF_END(buf) + (win) * 8)
 #define VIDWx_BUF_SIZE(win, buf)	(VIDW_BUF_SIZE(buf) + (win) * 4)
 
-/* color key control register for hardware window 1 ~ 4. */
+ 
 #define WKEYCON0_BASE(x)		((WKEYCON0 + 0x140) + ((x - 1) * 8))
-/* color key value register for hardware window 1 ~ 4. */
+ 
 #define WKEYCON1_BASE(x)		((WKEYCON1 + 0x140) + ((x - 1) * 8))
 
-/* I80 trigger control register */
+ 
 #define TRIGCON				0x1A4
 #define TRGMODE_ENABLE			(1 << 0)
 #define SWTRGCMD_ENABLE			(1 << 1)
-/* Exynos3250, 3472, 5260 5410, 5420 and 5422 only supported. */
+ 
 #define HWTRGEN_ENABLE			(1 << 3)
 #define HWTRGMASK_ENABLE		(1 << 4)
-/* Exynos3250, 3472, 5260, 5420 and 5422 only supported. */
+ 
 #define HWTRIGEN_PER_ENABLE		(1 << 31)
 
-/* display mode change control register except exynos4 */
+ 
 #define VIDOUT_CON			0x000
 #define VIDOUT_CON_F_I80_LDI0		(0x2 << 8)
 
-/* I80 interface control for main LDI register */
+ 
 #define I80IFCONFAx(x)			(0x1B0 + (x) * 4)
 #define I80IFCONFBx(x)			(0x1B8 + (x) * 4)
 #define LCD_CS_SETUP(x)			((x) << 16)
@@ -87,10 +73,10 @@
 #define LCD_WR_HOLD(x)			((x) << 4)
 #define I80IFEN_ENABLE			(1 << 0)
 
-/* FIMD has totally five hardware windows. */
+ 
 #define WINDOWS_NR	5
 
-/* HW trigger flag on i80 panel. */
+ 
 #define I80_HW_TRG     (1 << 1)
 
 struct fimd_driver_data {
@@ -323,10 +309,7 @@ static void fimd_wait_for_vblank(struct exynos_drm_crtc *crtc)
 
 	atomic_set(&ctx->wait_vsync_event, 1);
 
-	/*
-	 * wait for FIMD to signal VSYNC interrupt or return after
-	 * timeout which is set to 50ms (refresh rate of 20).
-	 */
+	 
 	if (!wait_event_timeout(ctx->wait_vsync_queue,
 				!atomic_read(&ctx->wait_vsync_event),
 				HZ/20))
@@ -366,7 +349,7 @@ static int fimd_clear_channels(struct exynos_drm_crtc *crtc)
 	unsigned int win, ch_enabled = 0;
 	int ret;
 
-	/* Hardware is in unknown state, so ensure it gets enabled properly */
+	 
 	ret = pm_runtime_resume_and_get(ctx->dev);
 	if (ret < 0) {
 		dev_err(ctx->dev, "failed to enable FIMD device.\n");
@@ -376,7 +359,7 @@ static int fimd_clear_channels(struct exynos_drm_crtc *crtc)
 	clk_prepare_enable(ctx->bus_clk);
 	clk_prepare_enable(ctx->lcd_clk);
 
-	/* Check if any channel is enabled. */
+	 
 	for (win = 0; win < WINDOWS_NR; win++) {
 		u32 val = readl(ctx->regs + WINCON(win));
 
@@ -391,7 +374,7 @@ static int fimd_clear_channels(struct exynos_drm_crtc *crtc)
 		}
 	}
 
-	/* Wait for vsync, as disable channel takes effect at next vsync */
+	 
 	if (ch_enabled) {
 		ctx->suspended = false;
 
@@ -427,10 +410,7 @@ static int fimd_atomic_check(struct exynos_drm_crtc *crtc,
 	ideal_clk = mode->clock * 1000;
 
 	if (ctx->i80_if) {
-		/*
-		 * The frame done interrupt should be occurred prior to the
-		 * next TE signal.
-		 */
+		 
 		ideal_clk *= 2;
 	}
 
@@ -442,7 +422,7 @@ static int fimd_atomic_check(struct exynos_drm_crtc *crtc,
 		return -EINVAL;
 	}
 
-	/* Find the clock divider value that gets us closest to ideal_clk */
+	 
 	clkdiv = DIV_ROUND_CLOSEST(lcd_rate, ideal_clk);
 	if (clkdiv >= 0x200) {
 		DRM_DEV_ERROR(ctx->dev, "requested pixel clock(%lu) too low\n",
@@ -486,7 +466,7 @@ static void fimd_commit(struct exynos_drm_crtc *crtc)
 	if (ctx->suspended)
 		return;
 
-	/* nothing to do if we haven't set the mode yet */
+	 
 	if (mode->htotal == 0 || mode->vtotal == 0)
 		return;
 
@@ -494,10 +474,10 @@ static void fimd_commit(struct exynos_drm_crtc *crtc)
 		val = ctx->i80ifcon | I80IFEN_ENABLE;
 		writel(val, timing_base + I80IFCONFAx(0));
 
-		/* disable auto frame rate */
+		 
 		writel(0, timing_base + I80IFCONFBx(0));
 
-		/* set video type selection to I80 interface */
+		 
 		if (driver_data->has_vtsel && ctx->sysreg &&
 				regmap_update_bits(ctx->sysreg,
 					driver_data->lcdblk_offset,
@@ -511,7 +491,7 @@ static void fimd_commit(struct exynos_drm_crtc *crtc)
 		int vsync_len, vbpd, vfpd, hsync_len, hbpd, hfpd;
 		u32 vidcon1;
 
-		/* setup polarity values */
+		 
 		vidcon1 = ctx->vidcon1;
 		if (mode->flags & DRM_MODE_FLAG_NVSYNC)
 			vidcon1 |= VIDCON1_INV_VSYNC;
@@ -519,7 +499,7 @@ static void fimd_commit(struct exynos_drm_crtc *crtc)
 			vidcon1 |= VIDCON1_INV_HSYNC;
 		writel(vidcon1, ctx->regs + driver_data->timing_base + VIDCON1);
 
-		/* setup vertical timing values. */
+		 
 		vsync_len = mode->crtc_vsync_end - mode->crtc_vsync_start;
 		vbpd = mode->crtc_vtotal - mode->crtc_vsync_end;
 		vfpd = mode->crtc_vsync_start - mode->crtc_vdisplay;
@@ -529,7 +509,7 @@ static void fimd_commit(struct exynos_drm_crtc *crtc)
 			VIDTCON0_VSPW(vsync_len - 1);
 		writel(val, ctx->regs + driver_data->timing_base + VIDTCON0);
 
-		/* setup horizontal timing values.  */
+		 
 		hsync_len = mode->crtc_hsync_end - mode->crtc_hsync_start;
 		hbpd = mode->crtc_htotal - mode->crtc_hsync_end;
 		hfpd = mode->crtc_hsync_start - mode->crtc_hdisplay;
@@ -543,7 +523,7 @@ static void fimd_commit(struct exynos_drm_crtc *crtc)
 	if (driver_data->has_vidoutcon)
 		writel(ctx->vidout_con, timing_base + VIDOUT_CON);
 
-	/* set bypass selection */
+	 
 	if (ctx->sysreg && regmap_update_bits(ctx->sysreg,
 				driver_data->lcdblk_offset,
 				0x1 << driver_data->lcdblk_bypass_shift,
@@ -553,9 +533,7 @@ static void fimd_commit(struct exynos_drm_crtc *crtc)
 		return;
 	}
 
-	/* TODO: When MIC is enabled for display path, the lcdblk_mic_bypass
-	 * bit should be cleared.
-	 */
+	 
 	if (driver_data->has_mic_bypass && ctx->sysreg &&
 	    regmap_update_bits(ctx->sysreg,
 				driver_data->lcdblk_offset,
@@ -566,7 +544,7 @@ static void fimd_commit(struct exynos_drm_crtc *crtc)
 		return;
 	}
 
-	/* setup horizontal and vertical display size. */
+	 
 	val = VIDTCON2_LINEVAL(mode->vdisplay - 1) |
 	       VIDTCON2_HOZVAL(mode->hdisplay - 1) |
 	       VIDTCON2_LINEVAL_E(mode->vdisplay - 1) |
@@ -575,10 +553,7 @@ static void fimd_commit(struct exynos_drm_crtc *crtc)
 
 	fimd_setup_trigger(ctx);
 
-	/*
-	 * fields of register with prefix '_F' would be updated
-	 * at vsync(same as dma start)
-	 */
+	 
 	val = ctx->vidcon0;
 	val |= VIDCON0_ENVID | VIDCON0_ENVID_F;
 
@@ -637,7 +612,7 @@ static void fimd_win_set_bldmod(struct fimd_context *ctx, unsigned int win,
 	}
 	fimd_set_bits(ctx, WINCON(win), WINCONx_BLEND_MODE_MASK, val);
 
-	/* OSD alpha */
+	 
 	val = VIDISD14C_ALPHA0_R(win_alpha_h) |
 		VIDISD14C_ALPHA0_G(win_alpha_h) |
 		VIDISD14C_ALPHA0_B(win_alpha_h) |
@@ -674,10 +649,7 @@ static void fimd_win_set_pixfmt(struct fimd_context *ctx, unsigned int win,
 	else
 		pixel_alpha = DRM_MODE_BLEND_PIXEL_NONE;
 
-	/*
-	 * In case of s3c64xx, window 0 doesn't support alpha channel.
-	 * So the request format is ARGB8888 then change it to XRGB8888.
-	 */
+	 
 	if (ctx->driver_data->has_limited_fmt && !win) {
 		if (pixel_format == DRM_FORMAT_ARGB8888)
 			pixel_format = DRM_FORMAT_XRGB8888;
@@ -728,13 +700,7 @@ static void fimd_win_set_pixfmt(struct fimd_context *ctx, unsigned int win,
 		break;
 	}
 
-	/*
-	 * Setting dma-burst to 16Word causes permanent tearing for very small
-	 * buffers, e.g. cursor buffer. Burst Mode switching which based on
-	 * plane size is not recommended as plane size varies alot towards the
-	 * end of the screen and rapid movement causes unstable DMA, but it is
-	 * still better to change dma-burst than displaying garbage.
-	 */
+	 
 
 	if (width < MIN_FB_WIDTH_FOR_16WORD_BURST) {
 		val &= ~WINCONx_BURSTLEN_MASK;
@@ -742,7 +708,7 @@ static void fimd_win_set_pixfmt(struct fimd_context *ctx, unsigned int win,
 	}
 	fimd_set_bits(ctx, WINCON(win), ~WINCONx_BLEND_MODE_MASK, val);
 
-	/* hardware window 0 doesn't support alpha channel. */
+	 
 	if (win != 0) {
 		fimd_win_set_bldmod(ctx, win, alpha, pixel_alpha);
 		fimd_win_set_bldeq(ctx, win, alpha, pixel_alpha);
@@ -762,27 +728,13 @@ static void fimd_win_set_colkey(struct fimd_context *ctx, unsigned int win)
 	writel(keycon1, ctx->regs + WKEYCON1_BASE(win));
 }
 
-/**
- * fimd_shadow_protect_win() - disable updating values from shadow registers at vsync
- *
- * @ctx: local driver data
- * @win: window to protect registers for
- * @protect: 1 to protect (disable updates)
- */
+ 
 static void fimd_shadow_protect_win(struct fimd_context *ctx,
 				    unsigned int win, bool protect)
 {
 	u32 reg, bits, val;
 
-	/*
-	 * SHADOWCON/PRTCON register is used for enabling timing.
-	 *
-	 * for example, once only width value of a register is set,
-	 * if the dma is started then fimd hardware could malfunction so
-	 * with protect window setting, the register fields with prefix '_F'
-	 * wouldn't be updated at vsync also but updated once unprotect window
-	 * is set.
-	 */
+	 
 
 	if (ctx->driver_data->has_shadowcon) {
 		reg = SHADOWCON;
@@ -846,12 +798,12 @@ static void fimd_update_plane(struct exynos_drm_crtc *crtc,
 	offset = state->src.x * cpp;
 	offset += state->src.y * pitch;
 
-	/* buffer start address */
+	 
 	dma_addr = exynos_drm_fb_dma_addr(fb, 0) + offset;
 	val = (unsigned long)dma_addr;
 	writel(val, ctx->regs + VIDWx_BUF_START(win, 0));
 
-	/* buffer end address */
+	 
 	size = pitch * state->crtc.h;
 	val = (unsigned long)(dma_addr + size);
 	writel(val, ctx->regs + VIDWx_BUF_END(win, 0));
@@ -862,7 +814,7 @@ static void fimd_update_plane(struct exynos_drm_crtc *crtc,
 	DRM_DEV_DEBUG_KMS(ctx->dev, "ovl_width = %d, ovl_height = %d\n",
 			  state->crtc.w, state->crtc.h);
 
-	/* buffer size */
+	 
 	buf_offsize = pitch - (state->crtc.w * cpp);
 	line_size = state->crtc.w * cpp;
 	val = VIDW_BUF_SIZE_OFFSET(buf_offsize) |
@@ -871,7 +823,7 @@ static void fimd_update_plane(struct exynos_drm_crtc *crtc,
 		VIDW_BUF_SIZE_PAGEWIDTH_E(line_size);
 	writel(val, ctx->regs + VIDWx_BUF_SIZE(win, 0));
 
-	/* OSD position */
+	 
 	val = VIDOSDxA_TOPLEFT_X(state->crtc.x) |
 		VIDOSDxA_TOPLEFT_Y(state->crtc.y) |
 		VIDOSDxA_TOPLEFT_X_E(state->crtc.x) |
@@ -894,7 +846,7 @@ static void fimd_update_plane(struct exynos_drm_crtc *crtc,
 			  "osd pos: tx = %d, ty = %d, bx = %d, by = %d\n",
 			  state->crtc.x, state->crtc.y, last_x, last_y);
 
-	/* OSD size */
+	 
 	if (win != 3 && win != 4) {
 		u32 offset = VIDOSD_D(win);
 		if (win == 0)
@@ -908,7 +860,7 @@ static void fimd_update_plane(struct exynos_drm_crtc *crtc,
 
 	fimd_win_set_pixfmt(ctx, win, fb, state->src.w);
 
-	/* hardware window 0 doesn't support color key. */
+	 
 	if (win != 0)
 		fimd_win_set_colkey(ctx, win);
 
@@ -950,7 +902,7 @@ static void fimd_atomic_enable(struct exynos_drm_crtc *crtc)
 		return;
 	}
 
-	/* if vblank was enabled status, enable it again. */
+	 
 	if (test_and_clear_bit(0, &ctx->irq_flags))
 		fimd_enable_vblank(ctx->crtc);
 
@@ -965,11 +917,7 @@ static void fimd_atomic_disable(struct exynos_drm_crtc *crtc)
 	if (ctx->suspended)
 		return;
 
-	/*
-	 * We need to make sure that all windows are disabled before we
-	 * suspend that connector. Otherwise we might try to scan from
-	 * a destroyed buffer later.
-	 */
+	 
 	for (i = 0; i < WINDOWS_NR; i++)
 		fimd_disable_plane(crtc, &ctx->planes[i]);
 
@@ -990,24 +938,18 @@ static void fimd_trigger(struct device *dev)
 	void *timing_base = ctx->regs + driver_data->timing_base;
 	u32 reg;
 
-	 /*
-	  * Skips triggering if in triggering state, because multiple triggering
-	  * requests can cause panel reset.
-	  */
+	  
 	if (atomic_read(&ctx->triggering))
 		return;
 
-	/* Enters triggering mode */
+	 
 	atomic_set(&ctx->triggering, 1);
 
 	reg = readl(timing_base + TRIGCON);
 	reg |= (TRGMODE_ENABLE | SWTRGCMD_ENABLE);
 	writel(reg, timing_base + TRIGCON);
 
-	/*
-	 * Exits triggering mode if vblank is not enabled yet, because when the
-	 * VIDINTCON0 register is not set, it can not exit from triggering mode.
-	 */
+	 
 	if (!test_bit(0, &ctx->irq_flags))
 		atomic_set(&ctx->triggering, 0);
 }
@@ -1017,22 +959,19 @@ static void fimd_te_handler(struct exynos_drm_crtc *crtc)
 	struct fimd_context *ctx = crtc->ctx;
 	u32 trg_type = ctx->driver_data->trg_type;
 
-	/* Checks the crtc is detached already from encoder */
+	 
 	if (!ctx->drm_dev)
 		return;
 
 	if (trg_type == I80_HW_TRG)
 		goto out;
 
-	/*
-	 * If there is a page flip request, triggers and handles the page flip
-	 * event so that current fb can be updated into panel GRAM.
-	 */
+	 
 	if (atomic_add_unless(&ctx->win_updated, -1, 0))
 		fimd_trigger(ctx->dev);
 
 out:
-	/* Wakes up vsync event queue */
+	 
 	if (atomic_read(&ctx->wait_vsync_event)) {
 		atomic_set(&ctx->wait_vsync_event, 0);
 		wake_up(&ctx->wait_vsync_queue);
@@ -1074,7 +1013,7 @@ static irqreturn_t fimd_irq_handler(int irq, void *dev_id)
 	if (val & clear_bit)
 		writel(clear_bit, ctx->regs + VIDINTCON1);
 
-	/* check the crtc is detached already from encoder */
+	 
 	if (!ctx->drm_dev)
 		goto out;
 
@@ -1082,10 +1021,10 @@ static irqreturn_t fimd_irq_handler(int irq, void *dev_id)
 		drm_crtc_handle_vblank(&ctx->crtc->base);
 
 	if (ctx->i80_if) {
-		/* Exits triggering mode */
+		 
 		atomic_set(&ctx->triggering, 0);
 	} else {
-		/* set wait vsync event to zero and wake up queue. */
+		 
 		if (atomic_read(&ctx->wait_vsync_event)) {
 			atomic_set(&ctx->wait_vsync_event, 0);
 			wake_up(&ctx->wait_vsync_queue);
@@ -1200,10 +1139,7 @@ static int fimd_probe(struct platform_device *pdev)
 			ctx->vidout_con |= VIDOUT_CON_F_I80_LDI0;
 		else
 			ctx->vidcon0 |= VIDCON0_VIDOUT_I80_LDI0;
-		/*
-		 * The user manual describes that this "DSI_EN" bit is required
-		 * to enable I80 24-bit data interface.
-		 */
+		 
 		ctx->vidcon0 |= VIDCON0_DSI_EN;
 
 		if (of_property_read_u32(i80_if_timings, "cs-setup", &val))

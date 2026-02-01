@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * SuperH Pin Function Controller GPIO driver.
- *
- * Copyright (C) 2008 Magnus Damm
- * Copyright (C) 2009 - 2012 Paul Mundt
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/gpio/driver.h>
@@ -97,9 +92,7 @@ static int gpio_setup_data_regs(struct sh_pfc_chip *chip)
 	const struct pinmux_data_reg *dreg;
 	unsigned int i;
 
-	/* Count the number of data registers, allocate memory and initialize
-	 * them.
-	 */
+	 
 	for (i = 0; pfc->info->data_regs[i].reg_width; ++i)
 		;
 
@@ -123,9 +116,7 @@ static int gpio_setup_data_regs(struct sh_pfc_chip *chip)
 	return 0;
 }
 
-/* -----------------------------------------------------------------------------
- * Pin GPIOs
- */
+ 
 
 static int gpio_pin_request(struct gpio_chip *gc, unsigned offset)
 {
@@ -244,9 +235,7 @@ static int gpio_pin_setup(struct sh_pfc_chip *chip)
 	return 0;
 }
 
-/* -----------------------------------------------------------------------------
- * Function GPIOs
- */
+ 
 
 #ifdef CONFIG_PINCTRL_SH_FUNC_GPIO
 static int gpio_function_request(struct gpio_chip *gc, unsigned offset)
@@ -283,11 +272,9 @@ static int gpio_function_setup(struct sh_pfc_chip *chip)
 
 	return 0;
 }
-#endif /* CONFIG_PINCTRL_SH_FUNC_GPIO */
+#endif  
 
-/* -----------------------------------------------------------------------------
- * Register/unregister
- */
+ 
 
 static struct sh_pfc_chip *
 sh_pfc_add_gpiochip(struct sh_pfc *pfc, int(*setup)(struct sh_pfc_chip *),
@@ -327,11 +314,7 @@ int sh_pfc_register_gpiochip(struct sh_pfc *pfc)
 	if (pfc->info->data_regs == NULL)
 		return 0;
 
-	/* Find the memory window that contains the GPIO registers. Boards that
-	 * register a separate GPIO device will not supply a memory resource
-	 * that covers the data registers. In that case don't try to handle
-	 * GPIOs.
-	 */
+	 
 	address = pfc->info->data_regs[0].reg;
 	for (i = 0; i < pfc->num_windows; ++i) {
 		struct sh_pfc_window *window = &pfc->windows[i];
@@ -344,13 +327,13 @@ int sh_pfc_register_gpiochip(struct sh_pfc *pfc)
 	if (i == pfc->num_windows)
 		return 0;
 
-	/* If we have IRQ resources make sure their number is correct. */
+	 
 	if (pfc->num_irqs != pfc->info->gpio_irq_size) {
 		dev_err(pfc->dev, "invalid number of IRQ resources\n");
 		return -EINVAL;
 	}
 
-	/* Register the real GPIOs chip. */
+	 
 	chip = sh_pfc_add_gpiochip(pfc, gpio_pin_setup, &pfc->windows[i]);
 	if (IS_ERR(chip))
 		return PTR_ERR(chip);
@@ -361,12 +344,7 @@ int sh_pfc_register_gpiochip(struct sh_pfc *pfc)
 		return 0;
 
 #ifdef CONFIG_PINCTRL_SH_FUNC_GPIO
-	/*
-	 * Register the GPIO to pin mappings. As pins with GPIO ports
-	 * must come first in the ranges, skip the pins without GPIO
-	 * ports by stopping at the first range that contains such a
-	 * pin.
-	 */
+	 
 	for (i = 0; i < pfc->nr_ranges; ++i) {
 		const struct sh_pfc_pin_range *range = &pfc->ranges[i];
 		int ret;
@@ -381,13 +359,13 @@ int sh_pfc_register_gpiochip(struct sh_pfc *pfc)
 			return ret;
 	}
 
-	/* Register the function GPIOs chip. */
+	 
 	if (pfc->info->nr_func_gpios) {
 		chip = sh_pfc_add_gpiochip(pfc, gpio_function_setup, NULL);
 		if (IS_ERR(chip))
 			return PTR_ERR(chip);
 	}
-#endif /* CONFIG_PINCTRL_SH_FUNC_GPIO */
+#endif  
 
 	return 0;
 }

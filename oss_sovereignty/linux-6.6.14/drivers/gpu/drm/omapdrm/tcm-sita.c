@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * SImple Tiler Allocator (SiTA): 2D and 1D allocation(reservation) algorithm
- *
- * Authors: Ravi Ramachandra <r.ramachandra@ti.com>,
- *          Lajos Molnar <molnar@ti.com>
- *          Andy Gross <andy.gross@ti.com>
- *
- * Copyright (C) 2012 Texas Instruments Incorporated - https://www.ti.com/
- */
+
+ 
 #include <linux/init.h>
 #include <linux/module.h>
 #include <linux/errno.h>
@@ -18,13 +10,7 @@
 #include "tcm.h"
 
 static unsigned long mask[8];
-/*
- * pos		position in bitmap
- * w		width in slots
- * h		height in slots
- * map		ptr to bitmap
- * stride		slots in a row
- */
+ 
 static void free_slots(unsigned long pos, u16 w, u16 h,
 		unsigned long *map, u16 stride)
 {
@@ -34,12 +20,7 @@ static void free_slots(unsigned long pos, u16 w, u16 h,
 		bitmap_clear(map, pos, w);
 }
 
-/*
- * w		width in slots
- * pos		ptr to position
- * map		ptr to bitmap
- * num_bits	number of bits in bitmap
- */
+ 
 static int r2l_b2t_1d(u16 w, unsigned long *pos, unsigned long *map,
 		size_t num_bits)
 {
@@ -53,7 +34,7 @@ static int r2l_b2t_1d(u16 w, unsigned long *pos, unsigned long *map,
 		bit = find_next_bit(map, num_bits, *pos);
 
 		if (bit - *pos >= w) {
-			/* found a long enough free area */
+			 
 			bitmap_set(map, *pos, w);
 			area_found = true;
 			break;
@@ -66,16 +47,7 @@ static int r2l_b2t_1d(u16 w, unsigned long *pos, unsigned long *map,
 	return (area_found) ? 0 : -ENOMEM;
 }
 
-/*
- * w = width in slots
- * h = height in slots
- * a = align in slots	(mask, 2^n-1, 0 is unaligned)
- * offset = offset in bytes from 4KiB
- * pos = position in bitmap for buffer
- * map = bitmap ptr
- * num_bits = size of bitmap
- * stride = bits in one row of container
- */
+ 
 static int l2r_t2b(u16 w, u16 h, u16 a, s16 offset,
 		unsigned long *pos, unsigned long slot_bytes,
 		unsigned long *map, size_t num_bits, size_t slot_stride)
@@ -87,42 +59,42 @@ static int l2r_t2b(u16 w, u16 h, u16 a, s16 offset,
 	unsigned long bit_offset = (offset > 0) ? offset / slot_bytes : 0;
 	unsigned long curr_bit = bit_offset;
 
-	/* reset alignment to 1 if we are matching a specific offset */
-	/* adjust alignment - 1 to get to the format expected in bitmaps */
+	 
+	 
 	a = (offset > 0) ? 0 : a - 1;
 
-	/* FIXME Return error if slots_per_band > stride */
+	 
 
 	while (curr_bit < num_bits) {
 		*pos = bitmap_find_next_zero_area(map, num_bits, curr_bit, w,
 				a);
 
-		/* skip forward if we are not at right offset */
+		 
 		if (bit_offset > 0 && (*pos % slots_per_band != bit_offset)) {
 			curr_bit = ALIGN(*pos, slots_per_band) + bit_offset;
 			continue;
 		}
 
-		/* skip forward to next row if we overlap end of row */
+		 
 		if ((*pos % slot_stride) + w > slot_stride) {
 			curr_bit = ALIGN(*pos, slot_stride) + bit_offset;
 			continue;
 		}
 
-		/* TODO: Handle overlapping 4K boundaries */
+		 
 
-		/* break out of look if we will go past end of container */
+		 
 		if ((*pos + slot_stride * h) > num_bits)
 			break;
 
-		/* generate mask that represents out matching pattern */
+		 
 		bitmap_clear(mask, 0, slot_stride);
 		bitmap_set(mask, (*pos % BITS_PER_LONG), w);
 
-		/* assume the area is free until we find an overlap */
+		 
 		area_free = true;
 
-		/* check subsequent rows to see if complete area is free */
+		 
 		for (i = 1; i < h; i++) {
 			index = *pos / BITS_PER_LONG + i * 8;
 			if (bitmap_intersects(&map[index], mask,
@@ -135,7 +107,7 @@ static int l2r_t2b(u16 w, u16 h, u16 a, s16 offset,
 		if (area_free)
 			break;
 
-		/* go forward past this match */
+		 
 		if (bit_offset > 0)
 			curr_bit = ALIGN(*pos, slots_per_band) + bit_offset;
 		else
@@ -143,7 +115,7 @@ static int l2r_t2b(u16 w, u16 h, u16 a, s16 offset,
 	}
 
 	if (area_free) {
-		/* set area as in-use. iterate over rows */
+		 
 		for (i = 0, index = *pos; i < h; i++, index += slot_stride)
 			bitmap_set(map, index, w);
 	}
@@ -229,7 +201,7 @@ struct tcm *sita_init(u16 width, u16 height)
 	if (!tcm)
 		goto error;
 
-	/* Updating the pointers to SiTA implementation APIs */
+	 
 	tcm->height = height;
 	tcm->width = width;
 	tcm->reserve_2d = sita_reserve_2d;

@@ -1,11 +1,11 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
-//
-// This file is provided under a dual BSD/GPLv2 license.  When using or
-// redistributing this file, you may do so under either license.
-//
-// Copyright(c) 2022 Intel Corporation. All rights reserved.
-//
-//
+
+
+
+
+
+
+
+
 
 #include "sof-priv.h"
 #include "sof-audio.h"
@@ -24,7 +24,7 @@ static int sof_ipc4_set_get_kcontrol_data(struct snd_sof_control *scontrol,
 	bool widget_found = false;
 	int ret = 0;
 
-	/* find widget associated with the control */
+	 
 	list_for_each_entry(swidget, &sdev->widget_list, list) {
 		if (swidget->comp_id == scontrol->comp_id) {
 			widget_found = true;
@@ -42,11 +42,7 @@ static int sof_ipc4_set_get_kcontrol_data(struct snd_sof_control *scontrol,
 	else
 		lockdep_assert_held(&swidget->setup_mutex);
 
-	/*
-	 * Volatile controls should always be part of static pipelines and the
-	 * widget use_count would always be > 0 in this case. For the others,
-	 * just return the cached value if the widget is not set up.
-	 */
+	 
 	if (!swidget->use_count)
 		goto unlock;
 
@@ -57,19 +53,16 @@ static int sof_ipc4_set_get_kcontrol_data(struct snd_sof_control *scontrol,
 	if (!set)
 		goto unlock;
 
-	/* It is a set-data operation, and we have a valid backup that we can restore */
+	 
 	if (ret < 0) {
 		if (!scontrol->old_ipc_control_data)
 			goto unlock;
-		/*
-		 * Current ipc_control_data is not valid, we use the last known good
-		 * configuration
-		 */
+		 
 		memcpy(scontrol->ipc_control_data, scontrol->old_ipc_control_data,
 		       scontrol->max_size);
 		kfree(scontrol->old_ipc_control_data);
 		scontrol->old_ipc_control_data = NULL;
-		/* Send the last known good configuration to firmware */
+		 
 		ret = iops->set_get_data(sdev, msg, msg->data_size, set);
 		if (ret < 0)
 			goto unlock;
@@ -94,7 +87,7 @@ sof_ipc4_set_volume_data(struct snd_sof_dev *sdev, struct snd_sof_widget *swidge
 	u32 value;
 	int ret, i;
 
-	/* check if all channel values are equal */
+	 
 	value = cdata->chanv[0].value;
 	for (i = 1; i < scontrol->num_channels; i++) {
 		if (cdata->chanv[i].value != value) {
@@ -103,10 +96,7 @@ sof_ipc4_set_volume_data(struct snd_sof_dev *sdev, struct snd_sof_widget *swidge
 		}
 	}
 
-	/*
-	 * notify DSP with a single IPC message if all channel values are equal. Otherwise send
-	 * a separate IPC for each channel.
-	 */
+	 
 	for (i = 0; i < scontrol->num_channels; i++) {
 		if (all_channels_equal) {
 			params.channels = SOF_IPC4_GAIN_ALL_CHANNELS_MASK;
@@ -116,7 +106,7 @@ sof_ipc4_set_volume_data(struct snd_sof_dev *sdev, struct snd_sof_widget *swidge
 			params.init_val = cdata->chanv[i].value;
 		}
 
-		/* set curve type and duration from topology */
+		 
 		params.curve_duration_l = gain->data.params.curve_duration_l;
 		params.curve_duration_h = gain->data.params.curve_duration_h;
 		params.curve_type = gain->data.params.curve_type;
@@ -153,7 +143,7 @@ static bool sof_ipc4_volume_put(struct snd_sof_control *scontrol,
 	unsigned int i;
 	int ret;
 
-	/* update each channel */
+	 
 	for (i = 0; i < channels; i++) {
 		u32 value = mixer_to_ipc(ucontrol->value.integer.value[i],
 					 scontrol->volume_table, scontrol->max + 1);
@@ -166,7 +156,7 @@ static bool sof_ipc4_volume_put(struct snd_sof_control *scontrol,
 	if (!pm_runtime_active(scomp->dev))
 		return change;
 
-	/* find widget associated with the control */
+	 
 	list_for_each_entry(swidget, &sdev->widget_list, list) {
 		if (swidget->comp_id == scontrol->comp_id) {
 			widget_found = true;
@@ -210,7 +200,7 @@ static int sof_ipc4_set_get_bytes_data(struct snd_sof_dev *sdev,
 	struct sof_ipc4_msg *msg = &cdata->msg;
 	int ret = 0;
 
-	/* Send the new data to the firmware only if it is powered up */
+	 
 	if (set && !pm_runtime_active(sdev->dev))
 		return 0;
 
@@ -247,7 +237,7 @@ static int sof_ipc4_bytes_put(struct snd_sof_control *scontrol,
 		return -EINVAL;
 	}
 
-	/* scontrol->max_size has been verified to be >= sizeof(struct sof_abi_hdr) */
+	 
 	if (data->size > scontrol->max_size - sizeof(*data)) {
 		dev_err_ratelimited(scomp->dev,
 				    "data size too big %u bytes max is %zu\n",
@@ -257,7 +247,7 @@ static int sof_ipc4_bytes_put(struct snd_sof_control *scontrol,
 
 	size = data->size + sizeof(*data);
 
-	/* copy from kcontrol */
+	 
 	memcpy(data, ucontrol->value.bytes.data, size);
 
 	sof_ipc4_set_get_bytes_data(sdev, scontrol, true, true);
@@ -288,7 +278,7 @@ static int sof_ipc4_bytes_get(struct snd_sof_control *scontrol,
 
 	size = data->size + sizeof(*data);
 
-	/* copy back to kcontrol */
+	 
 	memcpy(ucontrol->value.bytes.data, data, size);
 
 	return 0;
@@ -306,15 +296,11 @@ static int sof_ipc4_bytes_ext_put(struct snd_sof_control *scontrol,
 	struct sof_abi_hdr abi_hdr;
 	struct snd_ctl_tlv header;
 
-	/*
-	 * The beginning of bytes data contains a header from where
-	 * the length (as bytes) is needed to know the correct copy
-	 * length of data from tlvd->tlv.
-	 */
+	 
 	if (copy_from_user(&header, tlvd, sizeof(struct snd_ctl_tlv)))
 		return -EFAULT;
 
-	/* make sure TLV info is consistent */
+	 
 	if (header.length + sizeof(struct snd_ctl_tlv) > size) {
 		dev_err_ratelimited(scomp->dev,
 				    "Inconsistent TLV, data %d + header %zu > %d\n",
@@ -322,7 +308,7 @@ static int sof_ipc4_bytes_ext_put(struct snd_sof_control *scontrol,
 		return -EINVAL;
 	}
 
-	/* be->max is coming from topology */
+	 
 	if (header.length > scontrol->max_size) {
 		dev_err_ratelimited(scomp->dev,
 				    "Bytes data size %d exceeds max %zu\n",
@@ -330,7 +316,7 @@ static int sof_ipc4_bytes_ext_put(struct snd_sof_control *scontrol,
 		return -EINVAL;
 	}
 
-	/* Verify the ABI header first */
+	 
 	if (copy_from_user(&abi_hdr, tlvd->tlv, sizeof(abi_hdr)))
 		return -EFAULT;
 
@@ -348,14 +334,14 @@ static int sof_ipc4_bytes_ext_put(struct snd_sof_control *scontrol,
 	}
 
 	if (!scontrol->old_ipc_control_data) {
-		/* Create a backup of the current, valid bytes control */
+		 
 		scontrol->old_ipc_control_data = kmemdup(scontrol->ipc_control_data,
 							 scontrol->max_size, GFP_KERNEL);
 		if (!scontrol->old_ipc_control_data)
 			return -ENOMEM;
 	}
 
-	/* Copy the whole binary data which includes the ABI header and the payload */
+	 
 	if (copy_from_user(data, tlvd->tlv, header.length)) {
 		memcpy(scontrol->ipc_control_data, scontrol->old_ipc_control_data,
 		       scontrol->max_size);
@@ -378,16 +364,13 @@ static int _sof_ipc4_bytes_ext_get(struct snd_sof_control *scontrol,
 	struct snd_ctl_tlv header;
 	size_t data_size;
 
-	/*
-	 * Decrement the limit by ext bytes header size to ensure the user space
-	 * buffer is not exceeded.
-	 */
+	 
 	if (size < sizeof(struct snd_ctl_tlv))
 		return -ENOSPC;
 
 	size -= sizeof(struct snd_ctl_tlv);
 
-	/* get all the component data from DSP */
+	 
 	if (from_dsp) {
 		struct snd_sof_dev *sdev = snd_soc_component_get_drvdata(scomp);
 		int ret = sof_ipc4_set_get_bytes_data(sdev, scontrol, false, true);
@@ -395,7 +378,7 @@ static int _sof_ipc4_bytes_ext_get(struct snd_sof_control *scontrol,
 		if (ret < 0)
 			return ret;
 
-		/* Set the ABI magic (if the control is not initialized) */
+		 
 		data->magic = SOF_IPC4_ABI_MAGIC;
 	}
 
@@ -408,7 +391,7 @@ static int _sof_ipc4_bytes_ext_get(struct snd_sof_control *scontrol,
 
 	data_size = data->size + sizeof(struct sof_abi_hdr);
 
-	/* make sure we don't exceed size provided by user space for data */
+	 
 	if (data_size > size)
 		return -ENOSPC;
 
@@ -438,7 +421,7 @@ static int sof_ipc4_bytes_ext_volatile_get(struct snd_sof_control *scontrol,
 	return _sof_ipc4_bytes_ext_get(scontrol, binary_data, size, true);
 }
 
-/* set up all controls for the widget */
+ 
 static int sof_ipc4_widget_kcontrol_setup(struct snd_sof_dev *sdev, struct snd_sof_widget *swidget)
 {
 	struct snd_sof_control *scontrol;
@@ -478,15 +461,15 @@ sof_ipc4_set_up_volume_table(struct snd_sof_control *scontrol, int tlv[SOF_TLV_I
 {
 	int i;
 
-	/* init the volume table */
+	 
 	scontrol->volume_table = kcalloc(size, sizeof(u32), GFP_KERNEL);
 	if (!scontrol->volume_table)
 		return -ENOMEM;
 
-	/* populate the volume table */
+	 
 	for (i = 0; i < size ; i++) {
 		u32 val = vol_compute_gain(i, tlv);
-		u64 q31val = ((u64)val) << 15; /* Can be over Q1.31, need to saturate */
+		u64 q31val = ((u64)val) << 15;  
 
 		scontrol->volume_table[i] = q31val > SOF_IPC4_VOL_ZERO_DB ?
 						SOF_IPC4_VOL_ZERO_DB : q31val;

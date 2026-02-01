@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright(c) 2019 Intel Corporation. All rights rsvd. */
+
+ 
 #include <linux/init.h>
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -16,7 +16,7 @@ static char *idxd_wq_type_names[] = {
 	[IDXD_WQT_USER]		= "user",
 };
 
-/* IDXD engine attributes */
+ 
 static ssize_t engine_group_id_show(struct device *dev,
 				    struct device_attribute *attr, char *buf)
 {
@@ -97,7 +97,7 @@ struct device_type idxd_engine_device_type = {
 	.groups = idxd_engine_attribute_groups,
 };
 
-/* Group attributes */
+ 
 
 static void idxd_set_free_rdbufs(struct idxd_device *idxd)
 {
@@ -531,10 +531,7 @@ static bool idxd_group_attr_progress_limit_invisible(struct attribute *attr,
 static bool idxd_group_attr_read_buffers_invisible(struct attribute *attr,
 						   struct idxd_device *idxd)
 {
-	/*
-	 * Intel IAA does not support Read Buffer allocation control,
-	 * make these attributes invisible.
-	 */
+	 
 	return (attr == &dev_attr_group_use_token_limit.attr ||
 		attr == &dev_attr_group_use_read_buffer_limit.attr ||
 		attr == &dev_attr_group_tokens_allowed.attr ||
@@ -583,7 +580,7 @@ struct device_type idxd_group_device_type = {
 	.groups = idxd_group_attribute_groups,
 };
 
-/* IDXD work queue attribs */
+ 
 static ssize_t wq_clients_show(struct device *dev,
 			       struct device_attribute *attr, char *buf)
 {
@@ -917,7 +914,7 @@ static ssize_t wq_type_store(struct device *dev,
 	else
 		return -EINVAL;
 
-	/* If we are changing queue type, clear the name */
+	 
 	if (wq->type != old_type)
 		memset(wq->name, 0, WQ_NAME_SIZE + 1);
 
@@ -1133,7 +1130,7 @@ static ssize_t wq_prs_disable_store(struct device *dev, struct device_attribute 
 
 	if (prs_dis) {
 		set_bit(WQ_FLAG_PRS_DISABLE, &wq->flags);
-		/* when PRS is disabled, BOF needs to be off as well */
+		 
 		clear_bit(WQ_FLAG_BLOCK_ON_FAULT, &wq->flags);
 	} else {
 		clear_bit(WQ_FLAG_PRS_DISABLE, &wq->flags);
@@ -1209,12 +1206,7 @@ static int idxd_verify_supported_opcap(struct idxd_device *idxd, unsigned long *
 {
 	int bit;
 
-	/*
-	 * The OPCAP is defined as 256 bits that represents each operation the device
-	 * supports per bit. Iterate through all the bits and check if the input mask
-	 * is set for bits that are not set in the OPCAP for the device. If no OPCAP
-	 * bit is set and input mask has the bit set, then return error.
-	 */
+	 
 	for_each_set_bit(bit, opmask, IDXD_MAX_OPCAP_BITS) {
 		if (!test_bit(bit, idxd->opcap_bmap))
 			return -EINVAL;
@@ -1281,14 +1273,14 @@ static struct attribute *idxd_wq_attributes[] = {
 	NULL,
 };
 
-/*  A WQ attr is invisible if the feature is not supported in WQCAP. */
+ 
 #define idxd_wq_attr_invisible(name, cap_field, a, idxd)		\
 	((a) == &dev_attr_wq_##name.attr && !(idxd)->hw.wq_cap.cap_field)
 
 static bool idxd_wq_attr_max_batch_size_invisible(struct attribute *attr,
 						  struct idxd_device *idxd)
 {
-	/* Intel IAA does not support batch processing, make it invisible */
+	 
 	return attr == &dev_attr_wq_max_batch_size.attr &&
 	       idxd->data->type == IDXD_TYPE_IAX;
 }
@@ -1341,7 +1333,7 @@ struct device_type idxd_wq_device_type = {
 	.groups = idxd_wq_attribute_groups,
 };
 
-/* IDXD device attribs */
+ 
 static ssize_t version_show(struct device *dev, struct device_attribute *attr,
 			    char *buf)
 {
@@ -1517,7 +1509,7 @@ static ssize_t max_tokens_show(struct device *dev,
 	return max_read_buffers_show(dev, attr, buf);
 }
 
-static DEVICE_ATTR_RO(max_tokens);	/* deprecated */
+static DEVICE_ATTR_RO(max_tokens);	 
 static DEVICE_ATTR_RO(max_read_buffers);
 
 static ssize_t read_buffer_limit_show(struct device *dev,
@@ -1571,7 +1563,7 @@ static ssize_t token_limit_store(struct device *dev,
 	return read_buffer_limit_store(dev, attr, buf, count);
 }
 
-static DEVICE_ATTR_RW(token_limit);	/* deprecated */
+static DEVICE_ATTR_RW(token_limit);	 
 static DEVICE_ATTR_RW(read_buffer_limit);
 
 static ssize_t cdev_major_show(struct device *dev,
@@ -1657,7 +1649,7 @@ static DEVICE_ATTR_RW(event_log_size);
 static bool idxd_device_attr_max_batch_size_invisible(struct attribute *attr,
 						      struct idxd_device *idxd)
 {
-	/* Intel IAA does not support batch processing, make it invisible */
+	 
 	return attr == &dev_attr_max_batch_size.attr &&
 	       idxd->data->type == IDXD_TYPE_IAX;
 }
@@ -1665,10 +1657,7 @@ static bool idxd_device_attr_max_batch_size_invisible(struct attribute *attr,
 static bool idxd_device_attr_read_buffers_invisible(struct attribute *attr,
 						    struct idxd_device *idxd)
 {
-	/*
-	 * Intel IAA does not support Read Buffer allocation control,
-	 * make these attributes invisible.
-	 */
+	 
 	return (attr == &dev_attr_max_tokens.attr ||
 		attr == &dev_attr_max_read_buffers.attr ||
 		attr == &dev_attr_token_limit.attr ||

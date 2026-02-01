@@ -1,8 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0+
-//
-// AMD ACP PCI Driver
-//
-//Copyright 2016 Advanced Micro Devices, Inc.
+
+
+
+
+
 
 #include <linux/pci.h>
 #include <linux/module.h>
@@ -41,9 +41,7 @@ static int acp3x_power_on(struct acp3x_dev_data *adata)
 	while (++timeout < 500) {
 		val = rv_readl(acp3x_base + mmACP_PGFSM_STATUS);
 		if (!val) {
-			/* ACP power On clears PME_EN.
-			 * Restore the value to its prior state
-			 */
+			 
 			rv_writel(adata->pme_en, acp3x_base + mmACP_PME_EN);
 			return 0;
 		}
@@ -94,13 +92,13 @@ static int acp3x_init(struct acp3x_dev_data *adata)
 	void __iomem *acp3x_base = adata->acp3x_base;
 	int ret;
 
-	/* power on */
+	 
 	ret = acp3x_power_on(adata);
 	if (ret) {
 		pr_err("ACP3x power on failed\n");
 		return ret;
 	}
-	/* Reset */
+	 
 	ret = acp3x_reset(acp3x_base);
 	if (ret) {
 		pr_err("ACP3x reset failed\n");
@@ -115,7 +113,7 @@ static int acp3x_deinit(void __iomem *acp3x_base)
 	int ret;
 
 	acp3x_disable_interrupts(acp3x_base);
-	/* Reset */
+	 
 	ret = acp3x_reset(acp3x_base);
 	if (ret) {
 		pr_err("ACP3x reset failed\n");
@@ -133,7 +131,7 @@ static int snd_acp3x_probe(struct pci_dev *pci,
 	int ret, i;
 	u32 addr, val;
 
-	/* Raven device detection */
+	 
 	if (pci->revision != 0x00)
 		return -ENODEV;
 
@@ -166,7 +164,7 @@ static int snd_acp3x_probe(struct pci_dev *pci,
 	}
 	pci_set_master(pci);
 	pci_set_drvdata(pci, adata);
-	/* Save ACP_PME_EN state */
+	 
 	adata->pme_en = rv_readl(adata->acp3x_base + mmACP_PME_EN);
 	ret = acp3x_init(adata);
 	if (ret)

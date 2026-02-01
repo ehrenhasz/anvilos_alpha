@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * OF helpers for DMA request / controller
- *
- * Based on of_gpio.h
- *
- * Copyright (C) 2012 Texas Instruments Incorporated - http://www.ti.com/
- */
+ 
+ 
 
 #ifndef __LINUX_OF_DMA_H
 #define __LINUX_OF_DMA_H
@@ -90,4 +84,4 @@ static inline struct dma_chan *of_dma_simple_xlate(struct of_phandle_args *dma_s
 
 #endif
 
-#endif /* __LINUX_OF_DMA_H */
+#endif  

@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR MIT
-/* Copyright 2017-2019 Qiang Yu <yuq825@gmail.com> */
+
+ 
 
 #include <linux/iosys-map.h>
 #include <linux/kthread.h>
@@ -181,7 +181,7 @@ static int lima_pm_busy(struct lima_device *ldev)
 {
 	int ret;
 
-	/* resume GPU if it has been suspended by runtime PM */
+	 
 	ret = pm_runtime_resume_and_get(ldev->dev);
 	if (ret < 0)
 		return ret;
@@ -194,7 +194,7 @@ static void lima_pm_idle(struct lima_device *ldev)
 {
 	lima_devfreq_record_idle(&ldev->devfreq);
 
-	/* GPU can do auto runtime suspend */
+	 
 	pm_runtime_mark_last_busy(ldev->dev);
 	pm_runtime_put_autosuspend(ldev->dev);
 }
@@ -207,7 +207,7 @@ static struct dma_fence *lima_sched_run_job(struct drm_sched_job *job)
 	struct lima_fence *fence;
 	int i, err;
 
-	/* after GPU reset */
+	 
 	if (job->s_fence->finished.error < 0)
 		return NULL;
 
@@ -223,28 +223,12 @@ static struct dma_fence *lima_sched_run_job(struct drm_sched_job *job)
 
 	task->fence = &fence->base;
 
-	/* for caller usage of the fence, otherwise irq handler
-	 * may consume the fence before caller use it
-	 */
+	 
 	dma_fence_get(task->fence);
 
 	pipe->current_task = task;
 
-	/* this is needed for MMU to work correctly, otherwise GP/PP
-	 * will hang or page fault for unknown reason after running for
-	 * a while.
-	 *
-	 * Need to investigate:
-	 * 1. is it related to TLB
-	 * 2. how much performance will be affected by L2 cache flush
-	 * 3. can we reduce the calling of this function because all
-	 *    GP/PP use the same L2 cache on mali400
-	 *
-	 * TODO:
-	 * 1. move this to task fini to save some wait time?
-	 * 2. when GP/PP use different l2 cache, need PP wait GP l2
-	 *    cache flush?
-	 */
+	 
 	for (i = 0; i < pipe->num_l2_cache; i++)
 		lima_l2_cache_flush(pipe->l2_cache[i]);
 
@@ -295,13 +279,13 @@ static void lima_sched_build_error_task_list(struct lima_sched_task *task)
 		goto out;
 	}
 
-	/* frame chunk */
+	 
 	size = sizeof(struct lima_dump_chunk) + pipe->frame_size;
-	/* process name chunk */
+	 
 	size += sizeof(struct lima_dump_chunk) + sizeof(ctx->pname);
-	/* pid chunk */
+	 
 	size += sizeof(struct lima_dump_chunk);
-	/* buffer chunks */
+	 
 	for (i = 0; i < task->num_bos; i++) {
 		struct lima_bo *bo = task->bos[i];
 

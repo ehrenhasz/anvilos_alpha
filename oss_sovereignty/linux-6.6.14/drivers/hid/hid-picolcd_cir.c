@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/***************************************************************************
- *   Copyright (C) 2010-2012 by Bruno Prémont <bonbons@linux-vserver.org>  *
- *                                                                         *
- *   Based on Logitech G13 driver (v0.4)                                   *
- *     Copyright (C) 2009 by Rick L. Vinyard, Jr. <rvinyard@cs.nmsu.edu>   *
- *                                                                         *
- ***************************************************************************/
+
+ 
 
 #include <linux/hid.h>
 #include <linux/hid-debug.h>
@@ -37,7 +31,7 @@ int picolcd_raw_cir(struct picolcd_data *data,
 	int i, w, sz;
 	struct ir_raw_event rawir = {};
 
-	/* ignore if rc_dev is NULL or status is shunned */
+	 
 	spin_lock_irqsave(&data->lock, flags);
 	if (!data->rc_dev || (data->status & PICOLCD_CIR_SHUN)) {
 		spin_unlock_irqrestore(&data->lock, flags);
@@ -45,22 +39,13 @@ int picolcd_raw_cir(struct picolcd_data *data,
 	}
 	spin_unlock_irqrestore(&data->lock, flags);
 
-	/* PicoLCD USB packets contain 16-bit intervals in network order,
-	 * with value negated for pulse. Intervals are in microseconds.
-	 *
-	 * Note: some userspace LIRC code for PicoLCD says negated values
-	 * for space - is it a matter of IR chip? (pulse for my TSOP2236)
-	 *
-	 * In addition, the first interval seems to be around 15000 + base
-	 * interval for non-first report of IR data - thus the quirk below
-	 * to get RC_CODE to understand Sony and JVC remotes I have at hand
-	 */
+	 
 	sz = size > 0 ? min((int)raw_data[0], size-1) : 0;
 	for (i = 0; i+1 < sz; i += 2) {
 		w = (raw_data[i] << 8) | (raw_data[i+1]);
 		rawir.pulse = !!(w & 0x8000);
 		rawir.duration = rawir.pulse ? (65536 - w) : w;
-		/* Quirk!! - see above */
+		 
 		if (i == 0 && rawir.duration > 15000)
 			rawir.duration -= 15000;
 		ir_raw_event_store(data->rc_dev, &rawir);
@@ -91,7 +76,7 @@ static void picolcd_cir_close(struct rc_dev *dev)
 	spin_unlock_irqrestore(&data->lock, flags);
 }
 
-/* initialize CIR input device */
+ 
 int picolcd_init_cir(struct picolcd_data *data, struct hid_report *report)
 {
 	struct rc_dev *rdev;

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #define _GNU_SOURCE
 #include <linux/limits.h>
@@ -13,9 +13,9 @@
 #include "cgroup_util.h"
 
 enum hog_clock_type {
-	// Count elapsed time using the CLOCK_PROCESS_CPUTIME_ID clock.
+	
 	CPU_HOG_CLOCK_PROCESS,
-	// Count elapsed time using system wallclock time.
+	
 	CPU_HOG_CLOCK_WALL,
 };
 
@@ -31,16 +31,13 @@ struct cpu_hog_func_param {
 	enum hog_clock_type clock_type;
 };
 
-/*
- * This test creates two nested cgroups with and without enabling
- * the cpu controller.
- */
+ 
 static int test_cpucg_subtree_control(const char *root)
 {
 	char *parent = NULL, *child = NULL, *parent2 = NULL, *child2 = NULL;
 	int ret = KSFT_FAIL;
 
-	// Create two nested cgroups with the cpu controller enabled.
+	
 	parent = cg_name(root, "cpucg_test_0");
 	if (!parent)
 		goto cleanup;
@@ -61,7 +58,7 @@ static int test_cpucg_subtree_control(const char *root)
 	if (cg_read_strstr(child, "cgroup.controllers", "cpu"))
 		goto cleanup;
 
-	// Create two nested cgroups without enabling the cpu controller.
+	
 	parent2 = cg_name(root, "cpucg_test_1");
 	if (!parent2)
 		goto cleanup;
@@ -176,10 +173,7 @@ static int hog_cpus_timed(const char *cgroup, void *arg)
 	return 0;
 }
 
-/*
- * Creates a cpu cgroup, burns a CPU for a few quanta, and verifies that
- * cpu.stat shows the expected output.
- */
+ 
 static int test_cpucg_stats(const char *root)
 {
 	int ret = KSFT_FAIL;
@@ -338,20 +332,7 @@ cleanup:
 	return ret;
 }
 
-/*
- * First, this test creates the following hierarchy:
- * A
- * A/B     cpu.weight = 50
- * A/C     cpu.weight = 100
- * A/D     cpu.weight = 150
- *
- * A separate process is then created for each child cgroup which spawns as
- * many threads as there are cores, and hogs each CPU as much as possible
- * for some time interval.
- *
- * Once all of the children have exited, we verify that each child cgroup
- * was given proportional runtime as informed by their cpu.weight.
- */
+ 
 static int test_cpucg_weight_overprovisioned(const char *root)
 {
 	return run_cpucg_weight_test(root, weight_hog_all_cpus,
@@ -378,24 +359,11 @@ cleanup:
 	return ret;
 }
 
-/*
- * First, this test creates the following hierarchy:
- * A
- * A/B     cpu.weight = 50
- * A/C     cpu.weight = 100
- * A/D     cpu.weight = 150
- *
- * A separate process is then created for each child cgroup which spawns a
- * single thread that hogs a CPU. The testcase is only run on systems that
- * have at least one core per-thread in the child processes.
- *
- * Once all of the children have exited, we verify that each child cgroup
- * had roughly the same runtime despite having different cpu.weight.
- */
+ 
 static int test_cpucg_weight_underprovisioned(const char *root)
 {
-	// Only run the test if there are enough cores to avoid overprovisioning
-	// the system.
+	
+	
 	if (get_nprocs() < 4)
 		return KSFT_SKIP;
 
@@ -414,10 +382,7 @@ run_cpucg_nested_weight_test(const char *root, bool overprovisioned)
 
 	if (!overprovisioned) {
 		if (nprocs < 4)
-			/*
-			 * Only run the test if there are enough cores to avoid overprovisioning
-			 * the system.
-			 */
+			 
 			return KSFT_SKIP;
 		nprocs /= 4;
 	}
@@ -524,50 +489,21 @@ cleanup:
 	return ret;
 }
 
-/*
- * First, this test creates the following hierarchy:
- * A
- * A/B     cpu.weight = 1000
- * A/C     cpu.weight = 1000
- * A/C/D   cpu.weight = 5000
- * A/C/E   cpu.weight = 5000
- *
- * A separate process is then created for each leaf, which spawn nproc threads
- * that burn a CPU for a few seconds.
- *
- * Once all of those processes have exited, we verify that each of the leaf
- * cgroups have roughly the same usage from cpu.stat.
- */
+ 
 static int
 test_cpucg_nested_weight_overprovisioned(const char *root)
 {
 	return run_cpucg_nested_weight_test(root, true);
 }
 
-/*
- * First, this test creates the following hierarchy:
- * A
- * A/B     cpu.weight = 1000
- * A/C     cpu.weight = 1000
- * A/C/D   cpu.weight = 5000
- * A/C/E   cpu.weight = 5000
- *
- * A separate process is then created for each leaf, which nproc / 4 threads
- * that burns a CPU for a few seconds.
- *
- * Once all of those processes have exited, we verify that each of the leaf
- * cgroups have roughly the same usage from cpu.stat.
- */
+ 
 static int
 test_cpucg_nested_weight_underprovisioned(const char *root)
 {
 	return run_cpucg_nested_weight_test(root, false);
 }
 
-/*
- * This test creates a cgroup with some maximum value within a period, and
- * verifies that a process in the cgroup is not overscheduled.
- */
+ 
 static int test_cpucg_max(const char *root)
 {
 	int ret = KSFT_FAIL;
@@ -617,10 +553,7 @@ cleanup:
 	return ret;
 }
 
-/*
- * This test verifies that a process inside of a nested cgroup whose parent
- * group has a cpu.max value set, is properly throttled.
- */
+ 
 static int test_cpucg_max_nested(const char *root)
 {
 	int ret = KSFT_FAIL;

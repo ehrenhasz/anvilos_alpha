@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2014 MediaTek Inc.
- * Author: James Liao <jamesjj.liao@mediatek.com>
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/mfd/syscon.h>

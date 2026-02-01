@@ -1,18 +1,14 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- *  Copyright IBM Corp. 2022
- *
- * Author(s): Tony Krowiak <akrowiak@linux.ibm.com>
- */
+ 
+ 
 #ifndef VFIO_AP_DEBUG_H
 #define VFIO_AP_DEBUG_H
 
 #include <asm/debug.h>
 
-#define DBF_ERR		3	/* error conditions   */
-#define DBF_WARN	4	/* warning conditions */
-#define DBF_INFO	5	/* informational      */
-#define DBF_DEBUG	6	/* for debugging only */
+#define DBF_ERR		3	 
+#define DBF_WARN	4	 
+#define DBF_INFO	5	 
+#define DBF_DEBUG	6	 
 
 #define DBF_MAX_SPRINTF_ARGS 10
 
@@ -29,4 +25,4 @@
 
 extern debug_info_t *vfio_ap_dbf_info;
 
-#endif /* VFIO_AP_DEBUG_H */
+#endif  

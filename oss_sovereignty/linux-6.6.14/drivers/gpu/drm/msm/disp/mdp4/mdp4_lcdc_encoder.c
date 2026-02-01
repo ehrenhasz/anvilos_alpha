@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2014 Red Hat
- * Author: Rob Clark <robdclark@gmail.com>
- * Author: Vinay Simha <vinaysimha@inforcecomputing.com>
- */
+
+ 
 
 #include <linux/delay.h>
 
@@ -42,7 +38,7 @@ static const struct drm_encoder_funcs mdp4_lcdc_encoder_funcs = {
 	.destroy = mdp4_lcdc_encoder_destroy,
 };
 
-/* this should probably be a helper: */
+ 
 static struct drm_connector *get_connector(struct drm_encoder *encoder)
 {
 	struct drm_device *dev = encoder->dev;
@@ -71,7 +67,7 @@ static void setup_phy(struct drm_encoder *encoder)
 	if (!bpp)
 		bpp = 18;
 
-	/* TODO, these should come from panel somehow: */
+	 
 	nchan = 1;
 	swap = 0;
 
@@ -234,9 +230,9 @@ static void mdp4_lcdc_encoder_mode_set(struct drm_encoder *encoder,
 		ctrl_pol |= MDP4_LCDC_CTRL_POLARITY_HSYNC_LOW;
 	if (mode->flags & DRM_MODE_FLAG_NVSYNC)
 		ctrl_pol |= MDP4_LCDC_CTRL_POLARITY_VSYNC_LOW;
-	/* probably need to get DATA_EN polarity from panel.. */
+	 
 
-	lcdc_hsync_skew = 0;  /* get this from panel? */
+	lcdc_hsync_skew = 0;   
 
 	hsync_start_x = (mode->htotal - mode->hsync_start);
 	hsync_end_x = mode->htotal - (mode->hsync_start - mode->hdisplay) - 1;
@@ -289,14 +285,7 @@ static void mdp4_lcdc_encoder_disable(struct drm_encoder *encoder)
 		drm_panel_unprepare(panel);
 	}
 
-	/*
-	 * Wait for a vsync so we know the ENABLE=0 latched before
-	 * the (connector) source of the vsync's gets disabled,
-	 * otherwise we end up in a funny state if we re-enable
-	 * before the disable latches, which results that some of
-	 * the settings changes for the new modeset (like new
-	 * scanout buffer) don't latch properly..
-	 */
+	 
 	mdp_irq_wait(&mdp4_kms->base, MDP4_IRQ_PRIMARY_VSYNC);
 
 	clk_disable_unprepare(mdp4_lcdc_encoder->lcdc_clk);
@@ -324,7 +313,7 @@ static void mdp4_lcdc_encoder_enable(struct drm_encoder *encoder)
 	if (WARN_ON(mdp4_lcdc_encoder->enabled))
 		return;
 
-	/* TODO: hard-coded for 18bpp: */
+	 
 	config =
 		MDP4_DMA_CONFIG_R_BPC(BPC6) |
 		MDP4_DMA_CONFIG_G_BPC(BPC6) |
@@ -379,7 +368,7 @@ long mdp4_lcdc_round_pixclk(struct drm_encoder *encoder, unsigned long rate)
 	return clk_round_rate(mdp4_lcdc_encoder->lcdc_clk, rate);
 }
 
-/* initialize encoder */
+ 
 struct drm_encoder *mdp4_lcdc_encoder_init(struct drm_device *dev,
 		struct device_node *panel_node)
 {
@@ -402,7 +391,7 @@ struct drm_encoder *mdp4_lcdc_encoder_init(struct drm_device *dev,
 			 DRM_MODE_ENCODER_LVDS, NULL);
 	drm_encoder_helper_add(encoder, &mdp4_lcdc_encoder_helper_funcs);
 
-	/* TODO: do we need different pll in other cases? */
+	 
 	mdp4_lcdc_encoder->lcdc_clk = mpd4_lvds_pll_init(dev);
 	if (IS_ERR(mdp4_lcdc_encoder->lcdc_clk)) {
 		DRM_DEV_ERROR(dev->dev, "failed to get lvds_clk\n");
@@ -410,7 +399,7 @@ struct drm_encoder *mdp4_lcdc_encoder_init(struct drm_device *dev,
 		goto fail;
 	}
 
-	/* TODO: different regulators in other cases? */
+	 
 	reg = devm_regulator_get(dev->dev, "lvds-vccs-3p3v");
 	if (IS_ERR(reg)) {
 		ret = PTR_ERR(reg);

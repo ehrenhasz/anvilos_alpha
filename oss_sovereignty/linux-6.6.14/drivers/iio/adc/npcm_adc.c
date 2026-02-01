@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2019 Nuvoton Technology corporation.
+
+
 
 #include <linux/clk.h>
 #include <linux/device.h>
@@ -33,23 +33,16 @@ struct npcm_adc {
 	wait_queue_head_t wq;
 	struct regulator *vref;
 	struct reset_control *reset;
-	/*
-	 * Lock to protect the device state during a potential concurrent
-	 * read access from userspace. Reading a raw value requires a sequence
-	 * of register writes, then a wait for a event and finally a register
-	 * read, during which userspace could issue another read request.
-	 * This lock protects a read access from ocurring before another one
-	 * has finished.
-	 */
+	 
 	struct mutex lock;
 	const struct npcm_adc_info *data;
 };
 
-/* ADC registers */
+ 
 #define NPCM_ADCCON	 0x00
 #define NPCM_ADCDATA	 0x04
 
-/* ADCCON Register Bits */
+ 
 #define NPCM_ADCCON_ADC_INT_EN		BIT(21)
 #define NPCM_ADCCON_REFSEL		BIT(19)
 #define NPCM_ADCCON_ADC_INT_ST		BIT(18)
@@ -64,7 +57,7 @@ struct npcm_adc {
 
 #define NPCM_ADC_ENABLE		(NPCM_ADCCON_ADC_EN | NPCM_ADCCON_ADC_INT_EN)
 
-/* ADC General Definition */
+ 
 static const struct npcm_adc_info npxm7xx_adc_info = {
 	.data_mask = GENMASK(9, 0),
 	.internal_vref = 2048,
@@ -118,7 +111,7 @@ static int npcm_adc_read(struct npcm_adc *info, int *val, u8 channel)
 	int ret;
 	u32 regtemp;
 
-	/* Select ADC channel */
+	 
 	regtemp = ioread32(info->regs + NPCM_ADCCON);
 	regtemp &= ~NPCM_ADCCON_CH_MASK;
 	info->int_status = false;
@@ -130,13 +123,13 @@ static int npcm_adc_read(struct npcm_adc *info, int *val, u8 channel)
 	if (ret == 0) {
 		regtemp = ioread32(info->regs + NPCM_ADCCON);
 		if (regtemp & NPCM_ADCCON_ADC_CONV) {
-			/* if conversion failed - reset ADC module */
+			 
 			reset_control_assert(info->reset);
 			msleep(100);
 			reset_control_deassert(info->reset);
 			msleep(100);
 
-			/* Enable ADC and start conversion module */
+			 
 			iowrite32(NPCM_ADC_ENABLE | NPCM_ADCCON_ADC_CONV,
 				  info->regs + NPCM_ADCCON);
 			dev_err(info->dev, "RESET ADC Complete\n");
@@ -196,7 +189,7 @@ static const struct iio_info npcm_adc_iio_info = {
 static const struct of_device_id npcm_adc_match[] = {
 	{ .compatible = "nuvoton,npcm750-adc", .data = &npxm7xx_adc_info},
 	{ .compatible = "nuvoton,npcm845-adc", .data = &npxm8xx_adc_info},
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, npcm_adc_match);
 
@@ -237,7 +230,7 @@ static int npcm_adc_probe(struct platform_device *pdev)
 		return PTR_ERR(info->adc_clk);
 	}
 
-	/* calculate ADC clock sample rate */
+	 
 	reg_con = ioread32(info->regs + NPCM_ADCCON);
 	div = reg_con & NPCM_ADCCON_DIV_MASK;
 	div = div >> NPCM_ADCCON_DIV_SHIFT;
@@ -268,16 +261,13 @@ static int npcm_adc_probe(struct platform_device *pdev)
 		iowrite32(reg_con & ~NPCM_ADCCON_REFSEL,
 			  info->regs + NPCM_ADCCON);
 	} else {
-		/*
-		 * Any error which is not ENODEV indicates the regulator
-		 * has been specified and so is a failure case.
-		 */
+		 
 		if (PTR_ERR(info->vref) != -ENODEV) {
 			ret = PTR_ERR(info->vref);
 			goto err_disable_clk;
 		}
 
-		/* Use internal reference */
+		 
 		iowrite32(reg_con | NPCM_ADCCON_REFSEL,
 			  info->regs + NPCM_ADCCON);
 	}
@@ -287,10 +277,10 @@ static int npcm_adc_probe(struct platform_device *pdev)
 	reg_con = ioread32(info->regs + NPCM_ADCCON);
 	reg_con |= NPCM_ADC_ENABLE;
 
-	/* Enable the ADC Module */
+	 
 	iowrite32(reg_con, info->regs + NPCM_ADCCON);
 
-	/* Start ADC conversion */
+	 
 	iowrite32(reg_con | NPCM_ADCCON_ADC_CONV, info->regs + NPCM_ADCCON);
 
 	platform_set_drvdata(pdev, indio_dev);

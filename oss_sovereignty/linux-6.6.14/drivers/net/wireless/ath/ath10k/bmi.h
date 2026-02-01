@@ -1,60 +1,32 @@
-/* SPDX-License-Identifier: ISC */
-/*
- * Copyright (c) 2005-2011 Atheros Communications Inc.
- * Copyright (c) 2011-2015,2017 Qualcomm Atheros, Inc.
- */
+ 
+ 
 
 #ifndef _BMI_H_
 #define _BMI_H_
 
 #include "core.h"
 
-/*
- * Bootloader Messaging Interface (BMI)
- *
- * BMI is a very simple messaging interface used during initialization
- * to read memory, write memory, execute code, and to define an
- * application entry PC.
- *
- * It is used to download an application to QCA988x, to provide
- * patches to code that is already resident on QCA988x, and generally
- * to examine and modify state.  The Host has an opportunity to use
- * BMI only once during bootup.  Once the Host issues a BMI_DONE
- * command, this opportunity ends.
- *
- * The Host writes BMI requests to mailbox0, and reads BMI responses
- * from mailbox0.   BMI requests all begin with a command
- * (see below for specific commands), and are followed by
- * command-specific data.
- *
- * Flow control:
- * The Host can only issue a command once the Target gives it a
- * "BMI Command Credit", using AR8K Counter #4.  As soon as the
- * Target has completed a command, it issues another BMI Command
- * Credit (so the Host can issue the next command).
- *
- * BMI handles all required Target-side cache flushing.
- */
+ 
 
-/* Maximum data size used for BMI transfers */
+ 
 #define BMI_MAX_DATA_SIZE	256
 
-/* len = cmd + addr + length */
+ 
 #define BMI_MAX_CMDBUF_SIZE (BMI_MAX_DATA_SIZE + \
 			sizeof(u32) + \
 			sizeof(u32) + \
 			sizeof(u32))
 
-/* Maximum data size used for large BMI transfers */
+ 
 #define BMI_MAX_LARGE_DATA_SIZE	2048
 
-/* len = cmd + addr + length */
+ 
 #define BMI_MAX_LARGE_CMDBUF_SIZE (BMI_MAX_LARGE_DATA_SIZE + \
 			sizeof(u32) + \
 			sizeof(u32) + \
 			sizeof(u32))
 
-/* BMI Commands */
+ 
 
 enum bmi_cmd_id {
 	BMI_NO_COMMAND          = 0,
@@ -73,7 +45,7 @@ enum bmi_cmd_id {
 	BMI_ROMPATCH_UNINSTALL  = 10,
 	BMI_ROMPATCH_ACTIVATE   = 11,
 	BMI_ROMPATCH_DEACTIVATE = 12,
-	BMI_LZ_STREAM_START     = 13, /* should be followed by LZ_DATA */
+	BMI_LZ_STREAM_START     = 13,  
 	BMI_LZ_DATA             = 14,
 	BMI_NVRAM_PROCESS       = 15,
 };
@@ -84,7 +56,7 @@ enum bmi_cmd_id {
 #define BMI_PARAM_GET_FLASH_BOARD_ID 0x8000
 #define BMI_PARAM_FLASH_SECTION_ALL 0x10000
 
-/* Dual-band Extended Board ID */
+ 
 #define BMI_PARAM_GET_EXT_BOARD_ID 0x40000
 #define ATH10K_BMI_EXT_BOARD_ID_SUPPORT 0x40000
 
@@ -98,7 +70,7 @@ enum bmi_cmd_id {
 #define ATH10K_BMI_EBOARD_ID_STATUS_MASK 0xff
 
 struct bmi_cmd {
-	__le32 id; /* enum bmi_cmd_id */
+	__le32 id;  
 	union {
 		struct {
 		} done;
@@ -129,27 +101,27 @@ struct bmi_cmd {
 		} get_target_info;
 		struct {
 			__le32 rom_addr;
-			__le32 ram_addr; /* or value */
+			__le32 ram_addr;  
 			__le32 size;
-			__le32 activate; /* 0=install, but dont activate */
+			__le32 activate;  
 		} rompatch_install;
 		struct {
 			__le32 patch_id;
 		} rompatch_uninstall;
 		struct {
 			__le32 count;
-			__le32 patch_ids[]; /* length of @count */
+			__le32 patch_ids[];  
 		} rompatch_activate;
 		struct {
 			__le32 count;
-			__le32 patch_ids[]; /* length of @count */
+			__le32 patch_ids[];  
 		} rompatch_deactivate;
 		struct {
 			__le32 addr;
 		} lz_start;
 		struct {
-			__le32 len; /* max BMI_MAX_DATA_SIZE */
-			u8 payload[]; /* length of @len */
+			__le32 len;  
+			u8 payload[];  
 		} lz_data;
 		struct {
 			u8 name[BMI_NVRAM_SEG_NAME_SZ];
@@ -180,9 +152,7 @@ union bmi_resp {
 		__le32 patch_id;
 	} rompatch_uninstall;
 	struct {
-		/* 0 = nothing executed
-		 * otherwise = NVRAM segment return value
-		 */
+		 
 		__le32 result;
 	} nvram_process;
 	u8 payload[BMI_MAX_CMDBUF_SIZE];
@@ -205,24 +175,24 @@ struct bmi_segmented_metadata {
 	u8 data[];
 };
 
-#define BMI_SGMTFILE_MAGIC_NUM          0x544d4753 /* "SGMT" */
+#define BMI_SGMTFILE_MAGIC_NUM          0x544d4753  
 #define BMI_SGMTFILE_FLAG_COMPRESS      1
 
-/* Special values for bmi_segmented_metadata.length (all have high bit set) */
+ 
 
-/* end of segmented data */
+ 
 #define BMI_SGMTFILE_DONE               0xffffffff
 
-/* Board Data segment */
+ 
 #define BMI_SGMTFILE_BDDATA             0xfffffffe
 
-/* set beginning address */
+ 
 #define BMI_SGMTFILE_BEGINADDR          0xfffffffd
 
-/* immediate function execution */
+ 
 #define BMI_SGMTFILE_EXEC               0xfffffffc
 
-/* in jiffies */
+ 
 #define BMI_COMMUNICATION_TIMEOUT_HZ (3 * HZ)
 
 #define BMI_CE_NUM_TO_TARG 0
@@ -274,4 +244,4 @@ int ath10k_bmi_read_soc_reg(struct ath10k *ar, u32 address, u32 *reg_val);
 int ath10k_bmi_write_soc_reg(struct ath10k *ar, u32 address, u32 reg_val);
 int ath10k_bmi_set_start(struct ath10k *ar, u32 address);
 
-#endif /* _BMI_H_ */
+#endif  

@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
-/* Copyright (c) 2018 Mellanox Technologies. All rights reserved */
+
+ 
 
 #include <linux/err.h>
 #include <linux/gfp.h>
@@ -453,9 +453,7 @@ mlxsw_sp_nve_mc_record_ip_add(struct mlxsw_sp_nve_mc_record *mc_record,
 	if (err)
 		goto err_record_refresh;
 
-	/* If this is a new record and not the first one, then we need to
-	 * update the next pointer of the previous entry
-	 */
+	 
 	if (mc_record->num_entries != 1 ||
 	    mlxsw_sp_nve_mc_record_is_first(mc_record))
 		return 0;
@@ -483,21 +481,14 @@ mlxsw_sp_nve_mc_record_entry_del(struct mlxsw_sp_nve_mc_record *mc_record,
 	mc_entry->valid = false;
 	mc_record->num_entries--;
 
-	/* When the record continues to exist we only need to invalidate
-	 * the requested entry
-	 */
+	 
 	if (mc_record->num_entries != 0) {
 		mlxsw_sp_nve_mc_record_refresh(mc_record);
 		mc_record->ops->entry_del(mc_record, mc_entry);
 		return;
 	}
 
-	/* If the record needs to be deleted, but it is not the first,
-	 * then we need to make sure that the previous record no longer
-	 * points to it. Remove deleted record from the list to reflect
-	 * that and then re-add it at the end, so that it could be
-	 * properly removed by the record destruction code
-	 */
+	 
 	if (!mlxsw_sp_nve_mc_record_is_first(mc_record)) {
 		struct mlxsw_sp_nve_mc_record *prev_record;
 
@@ -509,11 +500,7 @@ mlxsw_sp_nve_mc_record_entry_del(struct mlxsw_sp_nve_mc_record *mc_record,
 		return;
 	}
 
-	/* If the first record needs to be deleted, but the list is not
-	 * singular, then the second record needs to be written in the
-	 * first record's address, as this address is stored as a property
-	 * of the FID
-	 */
+	 
 	if (mlxsw_sp_nve_mc_record_is_first(mc_record) &&
 	    !list_is_singular(&mc_list->records_list)) {
 		struct mlxsw_sp_nve_mc_record *next_record;
@@ -525,9 +512,7 @@ mlxsw_sp_nve_mc_record_entry_del(struct mlxsw_sp_nve_mc_record *mc_record,
 		return;
 	}
 
-	/* This is the last case where the last remaining record needs to
-	 * be deleted. Simply delete the entry
-	 */
+	 
 	mc_record->ops->entry_del(mc_record, mc_entry);
 }
 
@@ -597,10 +582,7 @@ mlxsw_sp_nve_fid_flood_index_set(struct mlxsw_sp_fid *fid,
 {
 	struct mlxsw_sp_nve_mc_record *mc_record;
 
-	/* The address of the first record in the list is a property of
-	 * the FID and we never change it. It only needs to be set when
-	 * a new list is created
-	 */
+	 
 	if (mlxsw_sp_fid_nve_flood_index_is_set(fid))
 		return 0;
 
@@ -616,9 +598,7 @@ mlxsw_sp_nve_fid_flood_index_clear(struct mlxsw_sp_fid *fid,
 {
 	struct mlxsw_sp_nve_mc_record *mc_record;
 
-	/* The address of the first record needs to be invalidated only when
-	 * the last record is about to be removed
-	 */
+	 
 	if (!list_is_singular(&mc_list->records_list))
 		return;
 
@@ -989,7 +969,7 @@ void mlxsw_sp_nve_fid_disable(struct mlxsw_sp *mlxsw_sp,
 	int nve_ifindex;
 	__be32 vni;
 
-	/* Necessary for __dev_get_by_index() below. */
+	 
 	ASSERT_RTNL();
 
 	mlxsw_sp_nve_flood_ip_flush(mlxsw_sp, fid);
@@ -1037,7 +1017,7 @@ static int mlxsw_sp_nve_ecn_encap_init(struct mlxsw_sp *mlxsw_sp)
 {
 	int i;
 
-	/* Iterate over inner ECN values */
+	 
 	for (i = INET_ECN_NOT_ECT; i <= INET_ECN_CE; i++) {
 		u8 outer_ecn = INET_ECN_encapsulate(0, i);
 		char tneem_pl[MLXSW_REG_TNEEM_LEN];
@@ -1071,11 +1051,11 @@ static int mlxsw_sp_nve_ecn_decap_init(struct mlxsw_sp *mlxsw_sp)
 {
 	int i;
 
-	/* Iterate over inner ECN values */
+	 
 	for (i = INET_ECN_NOT_ECT; i <= INET_ECN_CE; i++) {
 		int j;
 
-		/* Iterate over outer ECN values */
+		 
 		for (j = INET_ECN_NOT_ECT; j <= INET_ECN_CE; j++) {
 			int err;
 

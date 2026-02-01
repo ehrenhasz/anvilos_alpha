@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2020 HiSilicon Limited.
- */
+
+ 
 
 #include <fcntl.h>
 #include <stdio.h>
@@ -25,11 +23,11 @@ int main(int argc, char **argv)
 {
 	struct map_benchmark map;
 	int fd, opt;
-	/* default single thread, run 20 seconds on NUMA_NO_NODE */
+	 
 	int threads = 1, seconds = 20, node = -1;
-	/* default dma mask 32bit, bidirectional DMA */
+	 
 	int bits = 32, xdelay = 0, dir = DMA_MAP_BIDIRECTIONAL;
-	/* default granule 1 PAGESIZE */
+	 
 	int granule = 1;
 
 	int cmd = DMA_MAP_BENCHMARK;
@@ -81,7 +79,7 @@ int main(int argc, char **argv)
 		exit(1);
 	}
 
-	/* suppose the mininum DMA zone is 1MB in the world */
+	 
 	if (bits < 20 || bits > 64) {
 		fprintf(stderr, "invalid dma mask bit, must be in 20-64\n");
 		exit(1);

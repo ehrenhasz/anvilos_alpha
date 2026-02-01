@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Tegra CEC implementation
- *
- * The original 3.10 CEC driver using a custom API:
- *
- * Copyright (c) 2012-2015, NVIDIA CORPORATION.  All rights reserved.
- *
- * Conversion to the CEC framework and to the mainline kernel:
- *
- * Copyright 2016-2017 Cisco Systems, Inc. and/or its affiliates. All rights reserved.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -372,7 +362,7 @@ static int tegra_cec_probe(struct platform_device *pdev)
 		return ret;
 	}
 
-	/* set context info. */
+	 
 	cec->dev = &pdev->dev;
 
 	platform_set_drvdata(pdev, cec);

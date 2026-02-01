@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *Copyright (C) 2011 LAPIS Semiconductor Co., Ltd.
- */
+
+ 
 #include <linux/kernel.h>
 #include <linux/serial.h>
 #include <linux/serial_reg.h>
@@ -34,11 +32,7 @@ enum {
 
 #define PCH_UART_DRIVER_DEVICE "ttyPCH"
 
-/* Set the max number of UART port
- * Intel EG20T PCH: 4 port
- * LAPIS Semiconductor ML7213 IOH: 3 port
- * LAPIS Semiconductor ML7223 IOH: 2 port
-*/
+ 
 #define PCH_UART_NR	4
 
 #define PCH_UART_HANDLED_RX_INT	(1<<((PCH_UART_HANDLED_RX_INT_SHIFT)<<1))
@@ -190,12 +184,12 @@ enum {
 #define PCH_UART_HAL_LOOP		(PCH_UART_MCR_LOOP)
 #define PCH_UART_HAL_AFE		(PCH_UART_MCR_AFE)
 
-#define DEFAULT_UARTCLK   1843200 /*   1.8432 MHz */
-#define CMITC_UARTCLK   192000000 /* 192.0000 MHz */
-#define FRI2_64_UARTCLK  64000000 /*  64.0000 MHz */
-#define FRI2_48_UARTCLK  48000000 /*  48.0000 MHz */
-#define NTC1_UARTCLK     64000000 /*  64.0000 MHz */
-#define MINNOW_UARTCLK   50000000 /*  50.0000 MHz */
+#define DEFAULT_UARTCLK   1843200  
+#define CMITC_UARTCLK   192000000  
+#define FRI2_64_UARTCLK  64000000  
+#define FRI2_48_UARTCLK  48000000  
+#define NTC1_UARTCLK     64000000  
+#define MINNOW_UARTCLK   50000000  
 
 struct pch_uart_buffer {
 	unsigned char *buf;
@@ -238,15 +232,11 @@ struct eg20t_port {
 #define IRQ_NAME_SIZE 17
 	char				irq_name[IRQ_NAME_SIZE];
 
-	/* protect the eg20t_port private structure and io access to membase */
+	 
 	spinlock_t lock;
 };
 
-/**
- * struct pch_uart_driver_data - private data structure for UART-DMA
- * @port_type:			The type of UART port
- * @line_no:			UART port line number (0, 1, 2...)
- */
+ 
 struct pch_uart_driver_data {
 	int port_type;
 	int line_no;
@@ -396,7 +386,7 @@ static const struct dmi_system_id pch_uart_dmi_table[] = {
 	{ }
 };
 
-/* Return UART clock, checking for board specific clocks. */
+ 
 static unsigned int pch_uart_get_uartclk(void)
 {
 	const struct dmi_system_id *d;
@@ -680,14 +670,14 @@ static void pch_request_dma(struct uart_port *port)
 	dma_cap_zero(mask);
 	dma_cap_set(DMA_SLAVE, mask);
 
-	/* Get DMA's dev information */
+	 
 	dma_dev = pci_get_slot(priv->pdev->bus,
 			PCI_DEVFN(PCI_SLOT(priv->pdev->devfn), 0));
 
-	/* Set Tx DMA */
+	 
 	param = &priv->param_tx;
 	param->dma_dev = &dma_dev->dev;
-	param->chan_id = priv->port.line * 2; /* Tx = 0, 2, 4, ... */
+	param->chan_id = priv->port.line * 2;  
 
 	param->tx_reg = port->mapbase + UART_TX;
 	chan = dma_request_channel(mask, filter, param);
@@ -699,10 +689,10 @@ static void pch_request_dma(struct uart_port *port)
 	}
 	priv->chan_tx = chan;
 
-	/* Set Rx DMA */
+	 
 	param = &priv->param_rx;
 	param->dma_dev = &dma_dev->dev;
-	param->chan_id = priv->port.line * 2 + 1; /* Rx = Tx + 1 */
+	param->chan_id = priv->port.line * 2 + 1;  
 
 	param->rx_reg = port->mapbase + UART_RX;
 	chan = dma_request_channel(mask, filter, param);
@@ -715,7 +705,7 @@ static void pch_request_dma(struct uart_port *port)
 		return;
 	}
 
-	/* Get Consistent memory for DMA */
+	 
 	priv->rx_buf_virt = dma_alloc_coherent(port->dev, port->fifosize,
 				    &priv->rx_buf_dma, GFP_KERNEL);
 	priv->chan_rx = chan;
@@ -792,7 +782,7 @@ static int dma_handle_rx(struct eg20t_port *priv)
 	priv = container_of(port, struct eg20t_port, port);
 	sg = &priv->sg_rx;
 
-	sg_init_table(&priv->sg_rx, 1); /* Initialize SG table */
+	sg_init_table(&priv->sg_rx, 1);  
 
 	sg_dma_len(sg) = priv->trigger_level;
 
@@ -927,7 +917,7 @@ static unsigned int dma_handle_tx(struct eg20t_port *priv)
 		return 0;
 	}
 
-	sg_init_table(priv->sg_tx_p, num); /* Initialize SG table */
+	sg_init_table(priv->sg_tx_p, num);  
 	sg = priv->sg_tx_p;
 
 	for (i = 0; i < num; i++, sg++) {
@@ -1027,10 +1017,10 @@ static irqreturn_t pch_uart_interrupt(int irq, void *dev_id)
 	handled = 0;
 	while (next) {
 		iid = pch_uart_hal_get_iid(priv);
-		if (iid & PCH_UART_IIR_IP) /* No Interrupt */
+		if (iid & PCH_UART_IIR_IP)  
 			break;
 		switch (iid) {
-		case PCH_UART_IID_RLS:	/* Receiver Line Status */
+		case PCH_UART_IID_RLS:	 
 			lsr = pch_uart_hal_get_line_status(priv);
 			if (lsr & (PCH_UART_LSR_ERR | UART_LSR_FE |
 						UART_LSR_PE | UART_LSR_OE)) {
@@ -1040,7 +1030,7 @@ static irqreturn_t pch_uart_interrupt(int irq, void *dev_id)
 				ret = PCH_UART_HANDLED_LS_INT;
 			}
 			break;
-		case PCH_UART_IID_RDR:	/* Received Data Ready */
+		case PCH_UART_IID_RDR:	 
 			if (priv->use_dma) {
 				pch_uart_hal_disable_interrupt(priv,
 						PCH_UART_HAL_RX_INT |
@@ -1054,26 +1044,23 @@ static irqreturn_t pch_uart_interrupt(int irq, void *dev_id)
 				ret = handle_rx(priv);
 			}
 			break;
-		case PCH_UART_IID_RDR_TO:	/* Received Data Ready
-						   (FIFO Timeout) */
+		case PCH_UART_IID_RDR_TO:	 
 			ret = handle_rx_to(priv);
 			break;
-		case PCH_UART_IID_THRE:	/* Transmitter Holding Register
-						   Empty */
+		case PCH_UART_IID_THRE:	 
 			if (priv->use_dma)
 				ret = dma_handle_tx(priv);
 			else
 				ret = handle_tx(priv);
 			break;
-		case PCH_UART_IID_MS:	/* Modem Status */
+		case PCH_UART_IID_MS:	 
 			msr = pch_uart_hal_get_modem(priv);
-			next = 0; /* MS ir prioirty is the lowest. So, MS ir
-				     means final interrupt */
+			next = 0;  
 			if ((msr & UART_MSR_ANY_DELTA) == 0)
 				break;
 			ret |= PCH_UART_HANDLED_MS_INT;
 			break;
-		default:	/* Never junp to this label */
+		default:	 
 			dev_err(priv->port.dev, "%s:iid=%02x (%lu)\n", __func__,
 				iid, jiffies);
 			ret = -1;
@@ -1087,8 +1074,7 @@ static irqreturn_t pch_uart_interrupt(int irq, void *dev_id)
 	return IRQ_RETVAL(handled);
 }
 
-/* This function tests whether the transmitter fifo and shifter for the port
-						described by 'port' is empty. */
+ 
 static unsigned int pch_uart_tx_empty(struct uart_port *port)
 {
 	struct eg20t_port *priv;
@@ -1100,7 +1086,7 @@ static unsigned int pch_uart_tx_empty(struct uart_port *port)
 		return 0;
 }
 
-/* Returns the current state of modem control inputs. */
+ 
 static unsigned int pch_uart_get_mctrl(struct uart_port *port)
 {
 	struct eg20t_port *priv;
@@ -1179,7 +1165,7 @@ static void pch_uart_stop_rx(struct uart_port *port)
 					     PCH_UART_HAL_RX_ERR_INT);
 }
 
-/* Enable the modem status interrupts. */
+ 
 static void pch_uart_enable_ms(struct uart_port *port)
 {
 	struct eg20t_port *priv;
@@ -1187,7 +1173,7 @@ static void pch_uart_enable_ms(struct uart_port *port)
 	pch_uart_hal_enable_interrupt(priv, PCH_UART_HAL_MS_INT);
 }
 
-/* Control the transmission of a break signal. */
+ 
 static void pch_uart_break_ctl(struct uart_port *port, int ctl)
 {
 	struct eg20t_port *priv;
@@ -1199,7 +1185,7 @@ static void pch_uart_break_ctl(struct uart_port *port, int ctl)
 	spin_unlock_irqrestore(&priv->lock, flags);
 }
 
-/* Grab any interrupt resources and initialise any low level driver state. */
+ 
 static int pch_uart_startup(struct uart_port *port)
 {
 	struct eg20t_port *priv;
@@ -1295,9 +1281,7 @@ static void pch_uart_shutdown(struct uart_port *port)
 	free_irq(priv->port.irq, priv);
 }
 
-/* Change the port parameters, including word length, parity, stop
- *bits.  Update read_status_mask and ignore_status_mask to indicate
- *the types of events we are interested in receiving.  */
+ 
 static void pch_uart_set_termios(struct uart_port *port,
 				 struct ktermios *termios,
 				 const struct ktermios *old)
@@ -1318,7 +1302,7 @@ static void pch_uart_set_termios(struct uart_port *port,
 	case CS7:
 		bits = PCH_UART_HAL_7BIT;
 		break;
-	default:		/* CS8 */
+	default:		 
 		bits = PCH_UART_HAL_8BIT;
 		break;
 	}
@@ -1336,13 +1320,13 @@ static void pch_uart_set_termios(struct uart_port *port,
 	} else
 		parity = PCH_UART_HAL_PARITY_NONE;
 
-	/* Only UART0 has auto hardware flow function */
+	 
 	if ((termios->c_cflag & CRTSCTS) && (priv->fifo_size == 256))
 		priv->mcr |= UART_MCR_AFE;
 	else
 		priv->mcr &= ~UART_MCR_AFE;
 
-	termios->c_cflag &= ~CMSPAR; /* Mark/Space parity is not supported */
+	termios->c_cflag &= ~CMSPAR;  
 
 	baud = uart_get_baud_rate(port, termios, old, 0, port->uartclk / 16);
 
@@ -1355,7 +1339,7 @@ static void pch_uart_set_termios(struct uart_port *port,
 		goto out;
 
 	pch_uart_set_mctrl(&priv->port, priv->port.mctrl);
-	/* Don't rewrite B0 */
+	 
 	if (tty_termios_baud_rate(termios))
 		tty_termios_encode_baud_rate(termios, baud, baud);
 
@@ -1441,14 +1425,12 @@ static int pch_uart_verify_port(struct uart_port *port,
 }
 
 #if defined(CONFIG_CONSOLE_POLL) || defined(CONFIG_SERIAL_PCH_UART_CONSOLE)
-/*
- *	Wait for transmitter & holding register to empty
- */
+ 
 static void wait_for_xmitr(struct eg20t_port *up, int bits)
 {
 	unsigned int status, tmout = 10000;
 
-	/* Wait up to 10ms for the character(s) to be sent. */
+	 
 	for (;;) {
 		status = ioread8(up->membase + UART_LSR);
 
@@ -1459,7 +1441,7 @@ static void wait_for_xmitr(struct eg20t_port *up, int bits)
 		udelay(1);
 	}
 
-	/* Wait up to 1s for flow control if necessary */
+	 
 	if (up->port.flags & UPF_CONS_FLOW) {
 		unsigned int tmout;
 		for (tmout = 1000000; tmout; tmout--) {
@@ -1471,13 +1453,10 @@ static void wait_for_xmitr(struct eg20t_port *up, int bits)
 		}
 	}
 }
-#endif /* CONFIG_CONSOLE_POLL || CONFIG_SERIAL_PCH_UART_CONSOLE */
+#endif  
 
 #ifdef CONFIG_CONSOLE_POLL
-/*
- * Console polling routines for communicate via uart while
- * in an interrupt or debug context.
- */
+ 
 static int pch_uart_get_poll_char(struct uart_port *port)
 {
 	struct eg20t_port *priv =
@@ -1498,26 +1477,19 @@ static void pch_uart_put_poll_char(struct uart_port *port,
 	struct eg20t_port *priv =
 		container_of(port, struct eg20t_port, port);
 
-	/*
-	 * First save the IER then disable the interrupts
-	 */
+	 
 	ier = ioread8(priv->membase + UART_IER);
 	pch_uart_hal_disable_interrupt(priv, PCH_UART_HAL_ALL_INT);
 
 	wait_for_xmitr(priv, UART_LSR_THRE);
-	/*
-	 * Send the character out.
-	 */
+	 
 	iowrite8(c, priv->membase + PCH_UART_THR);
 
-	/*
-	 * Finally, wait for transmitter to become empty
-	 * and restore the IER
-	 */
+	 
 	wait_for_xmitr(priv, UART_LSR_BOTH_EMPTY);
 	iowrite8(ier, priv->membase + UART_IER);
 }
-#endif /* CONFIG_CONSOLE_POLL */
+#endif  
 
 static const struct uart_ops pch_uart_ops = {
 	.tx_empty = pch_uart_tx_empty,
@@ -1531,7 +1503,7 @@ static const struct uart_ops pch_uart_ops = {
 	.startup = pch_uart_startup,
 	.shutdown = pch_uart_shutdown,
 	.set_termios = pch_uart_set_termios,
-/*	.pm		= pch_uart_pm,		Not supported yet */
+ 
 	.type = pch_uart_type,
 	.release_port = pch_uart_release_port,
 	.request_port = pch_uart_request_port,
@@ -1554,12 +1526,7 @@ static void pch_console_putchar(struct uart_port *port, unsigned char ch)
 	iowrite8(ch, priv->membase + PCH_UART_THR);
 }
 
-/*
- *	Print a string to the serial port trying not to disturb
- *	any possible real use of the port...
- *
- *	The console_lock must be held when we get here.
- */
+ 
 static void
 pch_console_write(struct console *co, const char *s, unsigned int count)
 {
@@ -1575,9 +1542,9 @@ pch_console_write(struct console *co, const char *s, unsigned int count)
 
 	local_irq_save(flags);
 	if (priv->port.sysrq) {
-		/* call to uart_handle_sysrq_char already took the priv lock */
+		 
 		priv_locked = 0;
-		/* serial8250_handle_port() already took the port lock */
+		 
 		port_locked = 0;
 	} else if (oops_in_progress) {
 		priv_locked = spin_trylock(&priv->lock);
@@ -1587,19 +1554,14 @@ pch_console_write(struct console *co, const char *s, unsigned int count)
 		spin_lock(&priv->port.lock);
 	}
 
-	/*
-	 *	First save the IER then disable the interrupts
-	 */
+	 
 	ier = ioread8(priv->membase + UART_IER);
 
 	pch_uart_hal_disable_interrupt(priv, PCH_UART_HAL_ALL_INT);
 
 	uart_console_write(&priv->port, s, count, pch_console_putchar);
 
-	/*
-	 *	Finally, wait for transmitter to become empty
-	 *	and restore the IER
-	 */
+	 
 	wait_for_xmitr(priv, UART_LSR_BOTH_EMPTY);
 	iowrite8(ier, priv->membase + UART_IER);
 
@@ -1618,11 +1580,7 @@ static int __init pch_console_setup(struct console *co, char *options)
 	int parity = 'n';
 	int flow = 'n';
 
-	/*
-	 * Check whether an invalid uart number has been specified, and
-	 * if so, search for the first available port that does have
-	 * console support.
-	 */
+	 
 	if (co->index >= PCH_UART_NR)
 		co->index = 0;
 	port = &pch_uart_ports[co->index]->port;
@@ -1653,7 +1611,7 @@ static struct console pch_console = {
 #define PCH_CONSOLE	(&pch_console)
 #else
 #define PCH_CONSOLE	NULL
-#endif	/* CONFIG_SERIAL_PCH_UART_CONSOLE */
+#endif	 
 
 static struct uart_driver pch_uart_driver = {
 	.owner = THIS_MODULE,
@@ -1691,10 +1649,10 @@ static struct eg20t_port *pch_uart_init_port(struct pci_dev *pdev,
 
 	switch (port_type) {
 	case PORT_PCH_8LINE:
-		fifosize = 256; /* EG20T/ML7213: UART0 */
+		fifosize = 256;  
 		break;
 	case PORT_PCH_2LINE:
-		fifosize = 64; /* EG20T:UART1~3  ML7213: UART1~2*/
+		fifosize = 64;  
 		break;
 	default:
 		dev_err(&pdev->dev, "Invalid Port Type(=%d)\n", port_type);
@@ -1881,12 +1839,12 @@ static int __init pch_uart_module_init(void)
 {
 	int ret;
 
-	/* register as UART driver */
+	 
 	ret = uart_register_driver(&pch_uart_driver);
 	if (ret < 0)
 		return ret;
 
-	/* register as PCI driver */
+	 
 	ret = pci_register_driver(&pch_uart_pci_driver);
 	if (ret < 0)
 		uart_unregister_driver(&pch_uart_driver);

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * AMD Yellow Carp ACP PCI Driver
- *
- * Copyright 2021 Advanced Micro Devices, Inc.
- */
+
+ 
 
 #include <linux/pci.h>
 #include <linux/module.h>
@@ -86,14 +82,14 @@ static int acp6x_init(void __iomem *acp_base)
 {
 	int ret;
 
-	/* power on */
+	 
 	ret = acp6x_power_on(acp_base);
 	if (ret) {
 		pr_err("ACP power on failed\n");
 		return ret;
 	}
 	acp6x_writel(0x01, acp_base + ACP_CONTROL);
-	/* Reset */
+	 
 	ret = acp6x_reset(acp_base);
 	if (ret) {
 		pr_err("ACP reset failed\n");
@@ -109,7 +105,7 @@ static int acp6x_deinit(void __iomem *acp_base)
 	int ret;
 
 	acp6x_disable_interrupts(acp_base);
-	/* Reset */
+	 
 	ret = acp6x_reset(acp_base);
 	if (ret) {
 		pr_err("ACP reset failed\n");
@@ -154,12 +150,12 @@ static int snd_acp6x_probe(struct pci_dev *pci,
 
 	irqflags = IRQF_SHARED;
 
-	/* Return if acp config flag is defined */
+	 
 	flag = snd_amd_acp_find_config(pci);
 	if (flag)
 		return -ENODEV;
 
-	/* Yellow Carp device check */
+	 
 	switch (pci->revision) {
 	case 0x60:
 	case 0x6f:

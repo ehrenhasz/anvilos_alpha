@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2010-2014, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/dma-mapping.h>
@@ -195,7 +193,7 @@ static int qce_ahash_update(struct ahash_request *req)
 	blocksize = crypto_tfm_alg_blocksize(crypto_ahash_tfm(tfm));
 	rctx->count += req->nbytes;
 
-	/* check for buffer from previous updates and append it */
+	 
 	total = req->nbytes + rctx->buflen;
 
 	if (total <= blocksize) {
@@ -205,35 +203,18 @@ static int qce_ahash_update(struct ahash_request *req)
 		return 0;
 	}
 
-	/* save the original req structure fields */
+	 
 	rctx->src_orig = req->src;
 	rctx->nbytes_orig = req->nbytes;
 
-	/*
-	 * if we have data from previous update copy them on buffer. The old
-	 * data will be combined with current request bytes.
-	 */
+	 
 	if (rctx->buflen)
 		memcpy(rctx->tmpbuf, rctx->buf, rctx->buflen);
 
-	/* calculate how many bytes will be hashed later */
+	 
 	hash_later = total % blocksize;
 
-	/*
-	 * At this point, there is more than one block size of data.  If
-	 * the available data to transfer is exactly a multiple of block
-	 * size, save the last block to be transferred in qce_ahash_final
-	 * (with the last block bit set) if this is indeed the end of data
-	 * stream. If not this saved block will be transferred as part of
-	 * next update. If this block is not held back and if this is
-	 * indeed the end of data stream, the digest obtained will be wrong
-	 * since qce_ahash_final will see that rctx->buflen is 0 and return
-	 * doing nothing which in turn means that a digest will not be
-	 * copied to the destination result buffer.  qce_ahash_final cannot
-	 * be made to alter this behavior and allowed to proceed if
-	 * rctx->buflen is 0 because the crypto engine BAM does not allow
-	 * for zero length transfers.
-	 */
+	 
 	if (!hash_later)
 		hash_later = blocksize;
 
@@ -243,7 +224,7 @@ static int qce_ahash_update(struct ahash_request *req)
 					 hash_later, 0);
 	}
 
-	/* here nbytes is multiple of blocksize */
+	 
 	nbytes = total - hash_later;
 
 	len = rctx->buflen;

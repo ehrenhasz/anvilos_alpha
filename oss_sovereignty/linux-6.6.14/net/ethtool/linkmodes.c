@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 
 #include "netlink.h"
 #include "common.h"
 #include "bitset.h"
 
-/* LINKMODES_GET */
+ 
 
 struct linkmodes_req_info {
 	struct ethnl_req_info		base;
@@ -66,11 +66,11 @@ static int linkmodes_reply_size(const struct ethnl_req_info *req_base,
 	bool compact = req_base->flags & ETHTOOL_FLAG_COMPACT_BITSETS;
 	int len, ret;
 
-	len = nla_total_size(sizeof(u8)) /* LINKMODES_AUTONEG */
-		+ nla_total_size(sizeof(u32)) /* LINKMODES_SPEED */
-		+ nla_total_size(sizeof(u32)) /* LINKMODES_LANES */
-		+ nla_total_size(sizeof(u8)) /* LINKMODES_DUPLEX */
-		+ nla_total_size(sizeof(u8)) /* LINKMODES_RATE_MATCHING */
+	len = nla_total_size(sizeof(u8))  
+		+ nla_total_size(sizeof(u32))  
+		+ nla_total_size(sizeof(u32))  
+		+ nla_total_size(sizeof(u8))  
+		+ nla_total_size(sizeof(u8))  
 		+ 0;
 	ret = ethnl_bitset_size(ksettings->link_modes.advertising,
 				ksettings->link_modes.supported,
@@ -151,7 +151,7 @@ static int linkmodes_fill_reply(struct sk_buff *skb,
 	return 0;
 }
 
-/* LINKMODES_SET */
+ 
 
 const struct nla_policy ethnl_linkmodes_set_policy[] = {
 	[ETHTOOL_A_LINKMODES_HEADER]		=
@@ -164,12 +164,7 @@ const struct nla_policy ethnl_linkmodes_set_policy[] = {
 	[ETHTOOL_A_LINKMODES_LANES]		= NLA_POLICY_RANGE(NLA_U32, 1, 8),
 };
 
-/* Set advertised link modes to all supported modes matching requested speed,
- * lanes and duplex values. Called when autonegotiation is on, speed, lanes or
- * duplex is requested but no link mode change. This is done in userspace with
- * ioctl() interface, move it into kernel for netlink.
- * Returns true if advertised modes bitmap was modified.
- */
+ 
 static bool ethnl_auto_linkmodes(struct ethtool_link_ksettings *ksettings,
 				 bool req_speed, bool req_lanes, bool req_duplex)
 {
@@ -261,9 +256,7 @@ static int ethnl_update_linkmodes(struct genl_info *info, struct nlattr **tb,
 
 	lanes_cfg = tb[ETHTOOL_A_LINKMODES_LANES];
 	if (lanes_cfg) {
-		/* If autoneg is off and lanes parameter is not supported by the
-		 * driver, return an error.
-		 */
+		 
 		if (!lsettings->autoneg &&
 		    !dev->ethtool_ops->cap_link_lanes_supported) {
 			NL_SET_ERR_MSG_ATTR(info->extack, lanes_cfg,
@@ -271,9 +264,7 @@ static int ethnl_update_linkmodes(struct genl_info *info, struct nlattr **tb,
 			return -EOPNOTSUPP;
 		}
 	} else if (!lsettings->autoneg && ksettings->lanes) {
-		/* If autoneg is off and lanes parameter is not passed from user but
-		 * it was defined previously then set the lanes parameter to 0.
-		 */
+		 
 		ksettings->lanes = 0;
 		*mod = true;
 	}

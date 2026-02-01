@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright 2020 NXP.
- *
- * Author: Anson Huang <Anson.Huang@nxp.com>
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/clk.h>
@@ -18,20 +14,20 @@
 
 #include "thermal_hwmon.h"
 
-#define TER			0x0	/* TMU enable */
+#define TER			0x0	 
 #define TPS			0x4
-#define TRITSR			0x20	/* TMU immediate temp */
-/* TMU calibration data registers */
+#define TRITSR			0x20	 
+ 
 #define TASR			0x28
 #define TASR_BUF_SLOPE_MASK	GENMASK(19, 16)
-#define TASR_BUF_VREF_MASK	GENMASK(4, 0)	/* TMU_V1 */
-#define TASR_BUF_VERF_SEL_MASK	GENMASK(1, 0)	/* TMU_V2 */
+#define TASR_BUF_VREF_MASK	GENMASK(4, 0)	 
+#define TASR_BUF_VERF_SEL_MASK	GENMASK(1, 0)	 
 #define TCALIV(n)		(0x30 + ((n) * 4))
 #define TCALIV_EN		BIT(31)
-#define TCALIV_HR_MASK		GENMASK(23, 16)	/* TMU_V1 */
-#define TCALIV_RT_MASK		GENMASK(7, 0)	/* TMU_V1 */
-#define TCALIV_SNSR105C_MASK	GENMASK(27, 16)	/* TMU_V2 */
-#define TCALIV_SNSR25C_MASK	GENMASK(11, 0)	/* TMU_V2 */
+#define TCALIV_HR_MASK		GENMASK(23, 16)	 
+#define TCALIV_RT_MASK		GENMASK(7, 0)	 
+#define TCALIV_SNSR105C_MASK	GENMASK(27, 16)	 
+#define TCALIV_SNSR25C_MASK	GENMASK(11, 0)	 
 #define TRIM			0x3c
 #define TRIM_BJT_CUR_MASK	GENMASK(23, 20)
 #define TRIM_BGR_MASK		GENMASK(31, 28)
@@ -49,7 +45,7 @@
 #define SIGN_BIT		BIT(7)
 #define TEMP_VAL_MASK		GENMASK(6, 0)
 
-/* TMU OCOTP calibration data bitfields */
+ 
 #define ANA0_EN			BIT(25)
 #define ANA0_BUF_VREF_MASK	GENMASK(24, 20)
 #define ANA0_BUF_SLOPE_MASK	GENMASK(19, 16)
@@ -102,10 +98,7 @@ static int imx8mm_tmu_get_temp(void *data, int *temp)
 
 	val = readl_relaxed(tmu->base + TRITSR) & TRITSR_TEMP0_VAL_MASK;
 
-	/*
-	 * Do not validate against the V bit (bit 31) due to errata
-	 * ERR051272: TMU: Bit 31 of registers TMU_TSCR/TMU_TRITSR/TMU_TRATSR invalid
-	 */
+	 
 
 	*temp = val * 1000;
 	if (*temp < VER1_TEMP_LOW_LIMIT || *temp > VER2_TEMP_HIGH_LIMIT)
@@ -128,7 +121,7 @@ static int imx8mp_tmu_get_temp(void *data, int *temp)
 
 	val = sensor->hw_id ? FIELD_GET(TRITSR_TEMP1_VAL_MASK, val) :
 	      FIELD_GET(TRITSR_TEMP0_VAL_MASK, val);
-	if (val & SIGN_BIT) /* negative */
+	if (val & SIGN_BIT)  
 		val = (~(val & TEMP_VAL_MASK) + 1);
 
 	*temp = val * 1000;
@@ -223,9 +216,9 @@ static int imx8mm_tmu_probe_set_calib_v2(struct platform_device *pdev,
 		return -EINVAL;
 	}
 
-	/* Blank sample hardware */
+	 
 	if (!trim[0] && !trim[1] && !trim[2] && !trim[3]) {
-		/* Use a default 25C binary codes */
+		 
 		writel(FIELD_PREP(TCALIV_SNSR25C_MASK, 0x63c),
 		       tmu->base + TCALIV(0));
 		writel(FIELD_PREP(TCALIV_SNSR25C_MASK, 0x63c),
@@ -273,12 +266,7 @@ static int imx8mm_tmu_probe_set_calib(struct platform_device *pdev,
 {
 	struct device *dev = &pdev->dev;
 
-	/*
-	 * Lack of calibration data OCOTP reference is not considered
-	 * fatal to retain compatibility with old DTs. It is however
-	 * strongly recommended to update such old DTs to get correct
-	 * temperature compensation values for each SoC.
-	 */
+	 
 	if (!of_property_present(pdev->dev.of_node, "nvmem-cells")) {
 		dev_warn(dev,
 			 "No OCOTP nvmem reference found, SoC-specific calibration not loaded. Please update your DT.\n");
@@ -322,7 +310,7 @@ static int imx8mm_tmu_probe(struct platform_device *pdev)
 		return ret;
 	}
 
-	/* disable the monitor during initialization */
+	 
 	imx8mm_tmu_enable(tmu, false);
 
 	for (i = 0; i < data->num_sensors; i++) {
@@ -349,11 +337,11 @@ static int imx8mm_tmu_probe(struct platform_device *pdev)
 	if (ret)
 		goto disable_clk;
 
-	/* enable all the probes for V2 TMU */
+	 
 	if (tmu->socdata->version == TMU_VER2)
 		imx8mm_tmu_probe_sel_all(tmu);
 
-	/* enable the monitor */
+	 
 	imx8mm_tmu_enable(tmu, true);
 
 	return 0;
@@ -367,7 +355,7 @@ static int imx8mm_tmu_remove(struct platform_device *pdev)
 {
 	struct imx8mm_tmu *tmu = platform_get_drvdata(pdev);
 
-	/* disable TMU */
+	 
 	imx8mm_tmu_enable(tmu, false);
 
 	clk_disable_unprepare(tmu->clk);

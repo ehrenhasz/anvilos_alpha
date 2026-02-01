@@ -1,44 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0 OR MIT
-/*
- * Copyright 2011 Red Hat Inc.
- * Copyright 2023 Intel Corporation.
- * All Rights Reserved.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the
- * "Software"), to deal in the Software without restriction, including
- * without limitation the rights to use, copy, modify, merge, publish,
- * distribute, sub license, and/or sell copies of the Software, and to
- * permit persons to whom the Software is furnished to do so, subject to
- * the following conditions:
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT. IN NO EVENT SHALL
- * THE COPYRIGHT HOLDERS, AUTHORS AND/OR ITS SUPPLIERS BE LIABLE FOR ANY CLAIM,
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
- * USE OR OTHER DEALINGS IN THE SOFTWARE.
- *
- * The above copyright notice and this permission notice (including the
- * next paragraph) shall be included in all copies or substantial portions
- * of the Software.
- *
- */
-/* Algorithm:
- *
- * We store the last allocated bo in "hole", we always try to allocate
- * after the last allocated bo. Principle is that in a linear GPU ring
- * progression was is after last is the oldest bo we allocated and thus
- * the first one that should no longer be in use by the GPU.
- *
- * If it's not the case we skip over the bo after last to the closest
- * done bo if such one exist. If none exist and we are not asked to
- * block we report failure to allocate.
- *
- * If we are asked to block we wait on all the oldest fence of all
- * rings. We just wait for any of those fence to complete.
- */
+
+ 
+ 
 
 #include <drm/drm_suballoc.h>
 #include <drm/drm_print.h>
@@ -50,14 +12,7 @@
 static void drm_suballoc_remove_locked(struct drm_suballoc *sa);
 static void drm_suballoc_try_free(struct drm_suballoc_manager *sa_manager);
 
-/**
- * drm_suballoc_manager_init() - Initialise the drm_suballoc_manager
- * @sa_manager: pointer to the sa_manager
- * @size: number of bytes we want to suballocate
- * @align: alignment for each suballocated chunk
- *
- * Prepares the suballocation manager for suballocations.
- */
+ 
 void drm_suballoc_manager_init(struct drm_suballoc_manager *sa_manager,
 			       size_t size, size_t align)
 {
@@ -68,7 +23,7 @@ void drm_suballoc_manager_init(struct drm_suballoc_manager *sa_manager,
 	if (!align)
 		align = 1;
 
-	/* alignment must be a power of 2 */
+	 
 	if (WARN_ON_ONCE(align & (align - 1)))
 		align = roundup_pow_of_two(align);
 
@@ -82,14 +37,7 @@ void drm_suballoc_manager_init(struct drm_suballoc_manager *sa_manager,
 }
 EXPORT_SYMBOL(drm_suballoc_manager_init);
 
-/**
- * drm_suballoc_manager_fini() - Destroy the drm_suballoc_manager
- * @sa_manager: pointer to the sa_manager
- *
- * Cleans up the suballocation manager after use. All fences added
- * with drm_suballoc_free() must be signaled, or we cannot clean up
- * the entire manager.
- */
+ 
 void drm_suballoc_manager_fini(struct drm_suballoc_manager *sa_manager)
 {
 	struct drm_suballoc *sa, *tmp;
@@ -200,16 +148,7 @@ static bool __drm_suballoc_event(struct drm_suballoc_manager *sa_manager,
 	return ((eoffset - soffset) >= (size + wasted));
 }
 
-/**
- * drm_suballoc_event() - Check if we can stop waiting
- * @sa_manager: pointer to the sa_manager
- * @size: number of bytes we want to allocate
- * @align: alignment we need to match
- *
- * Return: true if either there is a fence we can wait for or
- * enough free memory to satisfy the allocation directly.
- * false otherwise.
- */
+ 
 static bool drm_suballoc_event(struct drm_suballoc_manager *sa_manager,
 			       size_t size, size_t align)
 {
@@ -229,19 +168,17 @@ static bool drm_suballoc_next_hole(struct drm_suballoc_manager *sa_manager,
 	unsigned int i, best_idx;
 	size_t soffset, best, tmp;
 
-	/* if hole points to the end of the buffer */
+	 
 	if (sa_manager->hole->next == &sa_manager->olist) {
-		/* try again with its beginning */
+		 
 		sa_manager->hole = &sa_manager->olist;
 		return true;
 	}
 
 	soffset = drm_suballoc_hole_soffset(sa_manager);
-	/* to handle wrap around we add sa_manager->size */
+	 
 	best = sa_manager->size * 2;
-	/* go over all fence list and try to find the closest sa
-	 * of the current last
-	 */
+	 
 	for (i = 0; i < DRM_SUBALLOC_MAX_QUEUES; ++i) {
 		struct drm_suballoc *sa;
 
@@ -258,18 +195,18 @@ static bool drm_suballoc_next_hole(struct drm_suballoc_manager *sa_manager,
 			continue;
 		}
 
-		/* limit the number of tries each freelist gets */
+		 
 		if (tries[i] > 2)
 			continue;
 
 		tmp = sa->soffset;
 		if (tmp < soffset) {
-			/* wrap around, pretend it's after */
+			 
 			tmp += sa_manager->size;
 		}
 		tmp -= soffset;
 		if (tmp < best) {
-			/* this sa bo is the closest one */
+			 
 			best = tmp;
 			best_idx = i;
 			best_bo = sa;
@@ -280,35 +217,14 @@ static bool drm_suballoc_next_hole(struct drm_suballoc_manager *sa_manager,
 		++tries[best_idx];
 		sa_manager->hole = best_bo->olist.prev;
 
-		/*
-		 * We know that this one is signaled,
-		 * so it's safe to remove it.
-		 */
+		 
 		drm_suballoc_remove_locked(best_bo);
 		return true;
 	}
 	return false;
 }
 
-/**
- * drm_suballoc_new() - Make a suballocation.
- * @sa_manager: pointer to the sa_manager
- * @size: number of bytes we want to suballocate.
- * @gfp: gfp flags used for memory allocation. Typically GFP_KERNEL but
- *       the argument is provided for suballocations from reclaim context or
- *       where the caller wants to avoid pipelining rather than wait for
- *       reclaim.
- * @intr: Whether to perform waits interruptible. This should typically
- *        always be true, unless the caller needs to propagate a
- *        non-interruptible context from above layers.
- * @align: Alignment. Must not exceed the default manager alignment.
- *         If @align is zero, then the manager alignment is used.
- *
- * Try to make a suballocation of size @size, which will be rounded
- * up to the alignment specified in specified in drm_suballoc_manager_init().
- *
- * Return: a new suballocated bo, or an ERR_PTR.
- */
+ 
 struct drm_suballoc *
 drm_suballoc_new(struct drm_suballoc_manager *sa_manager, size_t size,
 		 gfp_t gfp, bool intr, size_t align)
@@ -349,7 +265,7 @@ drm_suballoc_new(struct drm_suballoc_manager *sa_manager, size_t size,
 				return sa;
 			}
 
-			/* see if we can skip over some allocations */
+			 
 		} while (drm_suballoc_next_hole(sa_manager, fences, tries));
 
 		for (i = 0, count = 0; i < DRM_SUBALLOC_MAX_QUEUES; ++i)
@@ -369,7 +285,7 @@ drm_suballoc_new(struct drm_suballoc_manager *sa_manager, size_t size,
 			r = (t > 0) ? 0 : t;
 			spin_lock(&sa_manager->wq.lock);
 		} else if (intr) {
-			/* if we have nothing to wait for block */
+			 
 			r = wait_event_interruptible_locked
 				(sa_manager->wq,
 				 __drm_suballoc_event(sa_manager, size, align));
@@ -388,13 +304,7 @@ drm_suballoc_new(struct drm_suballoc_manager *sa_manager, size_t size,
 }
 EXPORT_SYMBOL(drm_suballoc_new);
 
-/**
- * drm_suballoc_free - Free a suballocation
- * @suballoc: pointer to the suballocation
- * @fence: fence that signals when suballocation is idle
- *
- * Free the suballocation. The suballocation can be re-used after @fence signals.
- */
+ 
 void drm_suballoc_free(struct drm_suballoc *suballoc,
 		       struct dma_fence *fence)
 {

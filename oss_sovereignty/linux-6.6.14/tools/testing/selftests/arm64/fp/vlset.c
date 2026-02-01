@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2015-2019 ARM Limited.
- * Original author: Dave Martin <Dave.Martin@arm.com>
- */
+
+ 
 #define _GNU_SOURCE
 #include <assert.h>
 #include <errno.h>
@@ -64,7 +61,7 @@ static int parse_options(int argc, char **argv)
 		goto error;
 
 	if (!vl) {
-		/* vector length */
+		 
 		if (optind >= argc)
 			goto error;
 
@@ -83,7 +80,7 @@ static int parse_options(int argc, char **argv)
 		++optind;
 	}
 
-	/* command */
+	 
 	if (optind >= argc)
 		goto error;
 
@@ -101,18 +98,18 @@ error:
 
 int main(int argc, char **argv)
 {
-	int ret = 126;	/* same as sh(1) command-not-executable error */
+	int ret = 126;	 
 	long flags;
 	char *path;
 	int t, e;
 
 	if (parse_options(argc, argv))
-		return 2;	/* same as sh(1) builtin incorrect-usage */
+		return 2;	 
 
 	if (vl & ~(vl & PR_SVE_VL_LEN_MASK)) {
 		fprintf(stderr, "%s: Invalid vector length %lu\n",
 			program_name, vl);
-		return 2;	/* same as sh(1) builtin incorrect-usage */
+		return 2;	 
 	}
 
 	if (!(getauxval(AT_HWCAP) & HWCAP_SVE)) {
@@ -153,9 +150,9 @@ int main(int argc, char **argv)
 	execvp(path, &argv[optind]);
 	e = errno;
 	if (errno == ENOENT)
-		ret = 127;	/* same as sh(1) not-found error */
+		ret = 127;	 
 	fprintf(stderr, "%s: %s: %s\n", program_name, path, strerror(e));
 
 error:
-	return ret;		/* same as sh(1) not-executable error */
+	return ret;		 
 }

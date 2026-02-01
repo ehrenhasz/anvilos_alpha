@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Zynq pin controller
- *
- *  Copyright (C) 2014 Xilinx
- *
- *  Sören Brinkmann <soren.brinkmann@xilinx.com>
- */
+
+ 
 #include <linux/io.h>
 #include <linux/mfd/syscon.h>
 #include <linux/module.h>
@@ -28,16 +22,7 @@
 #define ZYNQ_PINMUX_MUX_SHIFT	1
 #define ZYNQ_PINMUX_MUX_MASK	(0x7f << ZYNQ_PINMUX_MUX_SHIFT)
 
-/**
- * struct zynq_pinctrl - driver data
- * @pctrl:		Pinctrl device
- * @syscon:		Syscon regmap
- * @pctrl_offset:	Offset for pinctrl into the @syscon space
- * @groups:		Pingroups
- * @ngroups:		Number of @groups
- * @funcs:		Pinmux functions
- * @nfuncs:		Number of @funcs
- */
+ 
 struct zynq_pinctrl {
 	struct pinctrl_dev *pctrl;
 	struct regmap *syscon;
@@ -54,16 +39,7 @@ struct zynq_pctrl_group {
 	const unsigned int npins;
 };
 
-/**
- * struct zynq_pinmux_function - a pinmux function
- * @name:	Name of the pinmux function.
- * @groups:	List of pingroups for this function.
- * @ngroups:	Number of entries in @groups.
- * @mux_val:	Selector for this function
- * @mux:	Offset of function specific mux
- * @mux_mask:	Mask for function specific selector
- * @mux_shift:	Shift for function specific selector
- */
+ 
 struct zynq_pinmux_function {
 	const char *name;
 	const char * const *groups;
@@ -175,7 +151,7 @@ static const struct pinctrl_pin_desc zynq_pins[] = {
 	PINCTRL_PIN(57, "EMIO_SD1_CD"),
 };
 
-/* pin groups */
+ 
 static const unsigned int ethernet0_0_pins[] = {16, 17, 18, 19, 20, 21, 22, 23,
 						24, 25, 26, 27};
 static const unsigned int ethernet1_0_pins[] = {28, 29, 30, 31, 32, 33, 34, 35,
@@ -238,7 +214,7 @@ static const unsigned int smc0_nand_pins[] = {0, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11,
 					      21, 22, 23};
 static const unsigned int smc0_nand8_pins[] = {0, 2, 3,  4,  5,  6,  7,
 					       8, 9, 10, 11, 12, 13, 14};
-/* Note: CAN MIO clock inputs are modeled in the clock framework */
+ 
 static const unsigned int can0_0_pins[] = {10, 11};
 static const unsigned int can0_1_pins[] = {14, 15};
 static const unsigned int can0_2_pins[] = {18, 19};
@@ -574,7 +550,7 @@ static const struct zynq_pctrl_group zynq_pctrl_groups[] = {
 	DEFINE_ZYNQ_PINCTRL_GRP(usb1_0),
 };
 
-/* function groups */
+ 
 static const char * const ethernet0_groups[] = {"ethernet0_0_grp"};
 static const char * const ethernet1_groups[] = {"ethernet1_0_grp"};
 static const char * const usb0_groups[] = {"usb0_0_grp"};
@@ -821,7 +797,7 @@ static const struct zynq_pinmux_function zynq_pmux_functions[] = {
 };
 
 
-/* pinctrl */
+ 
 static int zynq_pctrl_get_groups_count(struct pinctrl_dev *pctldev)
 {
 	struct zynq_pinctrl *pctrl = pinctrl_dev_get_drvdata(pctldev);
@@ -858,7 +834,7 @@ static const struct pinctrl_ops zynq_pctrl_ops = {
 	.dt_free_map = pinctrl_utils_free_map,
 };
 
-/* pinmux */
+ 
 static int zynq_pmux_get_functions_count(struct pinctrl_dev *pctldev)
 {
 	struct zynq_pinctrl *pctrl = pinctrl_dev_get_drvdata(pctldev);
@@ -895,10 +871,7 @@ static int zynq_pinmux_set_mux(struct pinctrl_dev *pctldev,
 	const struct zynq_pctrl_group *pgrp = &pctrl->groups[group];
 	const struct zynq_pinmux_function *func = &pctrl->funcs[function];
 
-	/*
-	 * SD WP & CD are special. They have dedicated registers
-	 * to mux them in
-	 */
+	 
 	if (function == ZYNQ_PMUX_sdio0_cd || function == ZYNQ_PMUX_sdio0_wp ||
 			function == ZYNQ_PMUX_sdio1_cd ||
 			function == ZYNQ_PMUX_sdio1_wp) {
@@ -942,7 +915,7 @@ static const struct pinmux_ops zynq_pinmux_ops = {
 	.set_mux = zynq_pinmux_set_mux,
 };
 
-/* pinconfig */
+ 
 #define ZYNQ_PINCONF_TRISTATE		BIT(0)
 #define ZYNQ_PINCONF_SPEED		BIT(8)
 #define ZYNQ_PINCONF_PULLUP		BIT(12)
@@ -960,11 +933,7 @@ enum zynq_io_standards {
 	zynq_iostd_max
 };
 
-/*
- * PIN_CONFIG_IOSTANDARD: if the pin can select an IO standard, the argument to
- *	this parameter (on a custom format) tells the driver which alternative
- *	IO standard to use.
- */
+ 
 #define PIN_CONFIG_IOSTANDARD		(PIN_CONFIG_END + 1)
 
 static const struct pinconf_generic_params zynq_dt_params[] = {

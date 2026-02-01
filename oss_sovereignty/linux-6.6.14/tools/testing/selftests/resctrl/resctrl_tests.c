@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Resctrl tests
- *
- * Copyright (C) 2018 Intel Corporation
- *
- * Authors:
- *    Sai Praneeth Prakhya <sai.praneeth.prakhya@intel.com>,
- *    Fenghua Yu <fenghua.yu@intel.com>
- */
+
+ 
 #include "resctrl.h"
 
 static int detect_vendor(void)
@@ -268,11 +260,7 @@ int main(int argc, char **argv)
 
 	ksft_print_header();
 
-	/*
-	 * Typically we need root privileges, because:
-	 * 1. We write to resctrl FS
-	 * 2. We execute perf commands
-	 */
+	 
 	if (geteuid() != 0)
 		return ksft_exit_skip("Not running as root. Skipping...\n");
 
@@ -280,12 +268,12 @@ int main(int argc, char **argv)
 		if (argc - ben_ind >= BENCHMARK_ARGS)
 			ksft_exit_fail_msg("Too long benchmark command.\n");
 
-		/* Extract benchmark command from command line. */
+		 
 		for (i = 0; i < argc - ben_ind; i++)
 			benchmark_cmd[i] = argv[i + ben_ind];
 		benchmark_cmd[ben_count] = NULL;
 	} else {
-		/* If no benchmark is given by "-b" argument, use fill_buf. */
+		 
 		benchmark_cmd[0] = "fill_buf";
 		ret = asprintf(&span_str, "%u", DEFAULT_SPAN);
 		if (ret < 0)

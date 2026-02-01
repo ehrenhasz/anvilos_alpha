@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2013 Avionic Design GmbH
- * Copyright (C) 2013 NVIDIA Corporation
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -313,11 +310,7 @@ static int gr3d_power_up_legacy_domain(struct device *dev, const char *name,
 	unsigned int i;
 	int err;
 
-	/*
-	 * Tegra20 device-tree doesn't specify 3d clock name and there is only
-	 * one clock for Tegra20. Tegra30+ device-trees always specified names
-	 * for the clocks.
-	 */
+	 
 	if (gr3d->nclocks == 1) {
 		if (id == TEGRA_POWERGATE_3D1)
 			return 0;
@@ -338,12 +331,7 @@ static int gr3d_power_up_legacy_domain(struct device *dev, const char *name,
 			return -EINVAL;
 	}
 
-	/*
-	 * We use array of resets, which includes MC resets, and MC
-	 * reset shouldn't be asserted while hardware is gated because
-	 * MC flushing will fail for gated hardware. Hence for legacy
-	 * PD we request the individual reset separately.
-	 */
+	 
 	reset = reset_control_get_exclusive_released(dev, name);
 	if (IS_ERR(reset))
 		return PTR_ERR(reset);
@@ -360,10 +348,7 @@ static int gr3d_power_up_legacy_domain(struct device *dev, const char *name,
 	if (err)
 		return err;
 
-	/*
-	 * tegra_powergate_sequence_power_up() leaves clocks enabled,
-	 * while GENPD not. Hence keep clock-enable balanced.
-	 */
+	 
 	clk_disable_unprepare(clk);
 
 	return 0;
@@ -389,10 +374,7 @@ static int gr3d_init_power(struct device *dev, struct gr3d *gr3d)
 		if (err != -ENOENT)
 			return err;
 
-		/*
-		 * Older device-trees don't use GENPD. In this case we should
-		 * toggle power domain manually.
-		 */
+		 
 		err = gr3d_power_up_legacy_domain(dev, "3d",
 						  TEGRA_POWERGATE_3D);
 		if (err)
@@ -406,11 +388,7 @@ static int gr3d_init_power(struct device *dev, struct gr3d *gr3d)
 		return 0;
 	}
 
-	/*
-	 * The PM domain core automatically attaches a single power domain,
-	 * otherwise it skips attaching completely. We have a single domain
-	 * on Tegra20 and two domains on Tegra30+.
-	 */
+	 
 	if (dev->pm_domain)
 		return 0;
 
@@ -536,7 +514,7 @@ static int gr3d_probe(struct platform_device *pdev)
 		return err;
 	}
 
-	/* initialize address register map */
+	 
 	for (i = 0; i < ARRAY_SIZE(gr3d_addr_regs); i++)
 		set_bit(gr3d_addr_regs[i], gr3d->addr_regs);
 
@@ -566,11 +544,7 @@ static int __maybe_unused gr3d_runtime_suspend(struct device *dev)
 
 	usleep_range(10, 20);
 
-	/*
-	 * Older device-trees don't specify MC resets and power-gating can't
-	 * be done safely in that case. Hence we will keep the power ungated
-	 * for older DTBs. For newer DTBs, GENPD will perform the power-gating.
-	 */
+	 
 
 	clk_bulk_disable_unprepare(gr3d->nclocks, gr3d->clocks);
 	reset_control_bulk_release(gr3d->nresets, gr3d->resets);

@@ -1,21 +1,4 @@
-/* nl -- number lines of files
-   Copyright (C) 1989-2023 Free Software Foundation, Inc.
-
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* Written by Scott Bartram (nancy!scott@uunet.uu.net)
-   Revised by David MacKenzie (djm@gnu.ai.mit.edu) */
+ 
 
 #include <config.h>
 
@@ -33,119 +16,117 @@
 #include "quote.h"
 #include "xdectoint.h"
 
-/* The official name of this program (e.g., no 'g' prefix).  */
+ 
 #define PROGRAM_NAME "nl"
 
 #define AUTHORS \
   proper_name ("Scott Bartram"), \
   proper_name ("David MacKenzie")
 
-/* Line-number formats.  They are given an int width, an intmax_t
-   value, and a string separator.  */
+ 
 
-/* Right justified, no leading zeroes.  */
+ 
 static char const FORMAT_RIGHT_NOLZ[] = "%*" PRIdMAX "%s";
 
-/* Right justified, leading zeroes.  */
+ 
 static char const FORMAT_RIGHT_LZ[] = "%0*" PRIdMAX "%s";
 
-/* Left justified, no leading zeroes.  */
+ 
 static char const FORMAT_LEFT[] = "%-*" PRIdMAX "%s";
 
-/* Default section delimiter characters.  */
+ 
 static char DEFAULT_SECTION_DELIMITERS[] = "\\:";
 
-/* Types of input lines: either one of the section delimiters,
-   or text to output. */
+ 
 enum section
 {
   Header, Body, Footer, Text
 };
 
-/* Format of body lines (-b).  */
+ 
 static char const *body_type = "t";
 
-/* Format of header lines (-h).  */
+ 
 static char const *header_type = "n";
 
-/* Format of footer lines (-f).  */
+ 
 static char const *footer_type = "n";
 
-/* Format currently being used (body, header, or footer).  */
+ 
 static char const *current_type;
 
-/* Regex for body lines to number (-bp).  */
+ 
 static struct re_pattern_buffer body_regex;
 
-/* Regex for header lines to number (-hp).  */
+ 
 static struct re_pattern_buffer header_regex;
 
-/* Regex for footer lines to number (-fp).  */
+ 
 static struct re_pattern_buffer footer_regex;
 
-/* Fastmaps for the above.  */
+ 
 static char body_fastmap[UCHAR_MAX + 1];
 static char header_fastmap[UCHAR_MAX + 1];
 static char footer_fastmap[UCHAR_MAX + 1];
 
-/* Pointer to current regex, if any.  */
+ 
 static struct re_pattern_buffer *current_regex = nullptr;
 
-/* Separator string to print after line number (-s).  */
+ 
 static char const *separator_str = "\t";
 
-/* Input section delimiter string (-d).  */
+ 
 static char *section_del = DEFAULT_SECTION_DELIMITERS;
 
-/* Header delimiter string.  */
+ 
 static char *header_del = nullptr;
 
-/* Header section delimiter length.  */
+ 
 static size_t header_del_len;
 
-/* Body delimiter string.  */
+ 
 static char *body_del = nullptr;
 
-/* Body section delimiter length.  */
+ 
 static size_t body_del_len;
 
-/* Footer delimiter string.  */
+ 
 static char *footer_del = nullptr;
 
-/* Footer section delimiter length.  */
+ 
 static size_t footer_del_len;
 
-/* Input buffer.  */
+ 
 static struct linebuffer line_buf;
 
-/* printf format string for unnumbered lines.  */
+ 
 static char *print_no_line_fmt = nullptr;
 
-/* Starting line number on each page (-v).  */
+ 
 static intmax_t starting_line_number = 1;
 
-/* Line number increment (-i).  */
+ 
 static intmax_t page_incr = 1;
 
-/* If true, reset line number at start of each page (-p).  */
+ 
 static bool reset_numbers = true;
 
-/* Number of blank lines to consider to be one line for numbering (-l).  */
+ 
 static intmax_t blank_join = 1;
 
-/* Width of line numbers (-w).  */
+ 
 static int lineno_width = 6;
 
-/* Line number format (-n).  */
+ 
 static char const *lineno_format = FORMAT_RIGHT_NOLZ;
 
-/* Current print line number.  */
+ 
 static intmax_t line_no;
 
-/* Whether the current line number has incremented past limits.  */
+ 
 static bool line_no_overflow;
 
-/* True if we have ever read standard input.  */
+ 
 static bool have_read_stdin;
 
 static struct option const longopts[] =
@@ -166,7 +147,7 @@ static struct option const longopts[] =
   {nullptr, 0, nullptr, 0}
 };
 
-/* Print a usage message and quit. */
+ 
 
 void
 usage (int status)

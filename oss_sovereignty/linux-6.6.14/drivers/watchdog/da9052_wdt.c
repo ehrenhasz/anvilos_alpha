@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * System monitoring driver for DA9052 PMICs.
- *
- * Copyright(c) 2012 Dialog Semiconductor Ltd.
- *
- * Author: Anthony Olech <Anthony.Olech@diasemi.com>
- *
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/delay.h>
@@ -32,16 +25,16 @@ struct da9052_wdt_data {
 
 static const struct {
 	u8 reg_val;
-	int time;  /* Seconds */
+	int time;   
 } da9052_wdt_maps[] = {
 	{ 1, 2 },
 	{ 2, 4 },
 	{ 3, 8 },
 	{ 4, 16 },
 	{ 5, 32 },
-	{ 5, 33 },  /* Actual time  32.768s so included both 32s and 33s */
+	{ 5, 33 },   
 	{ 6, 65 },
-	{ 6, 66 },  /* Actual time 65.536s so include both, 65s and 66s */
+	{ 6, 66 },   
 	{ 7, 131 },
 };
 
@@ -53,10 +46,7 @@ static int da9052_wdt_set_timeout(struct watchdog_device *wdt_dev,
 	struct da9052 *da9052 = driver_data->da9052;
 	int ret, i;
 
-	/*
-	 * Disable the Watchdog timer before setting
-	 * new time out.
-	 */
+	 
 	ret = da9052_reg_update(da9052, DA9052_CONTROL_D_REG,
 				DA9052_CONTROLD_TWDSCALE, 0);
 	if (ret < 0) {
@@ -65,13 +55,10 @@ static int da9052_wdt_set_timeout(struct watchdog_device *wdt_dev,
 		return ret;
 	}
 	if (timeout) {
-		/*
-		 * To change the timeout, da9052 needs to
-		 * be disabled for at least 150 us.
-		 */
+		 
 		udelay(150);
 
-		/* Set the desired timeout */
+		 
 		for (i = 0; i < ARRAY_SIZE(da9052_wdt_maps); i++)
 			if (da9052_wdt_maps[i].time == timeout)
 				break;
@@ -112,24 +99,18 @@ static int da9052_wdt_ping(struct watchdog_device *wdt_dev)
 	unsigned long msec, jnow = jiffies;
 	int ret;
 
-	/*
-	 * We have a minimum time for watchdog window called TWDMIN. A write
-	 * to the watchdog before this elapsed time should cause an error.
-	 */
+	 
 	msec = (jnow - driver_data->jpast) * 1000/HZ;
 	if (msec < DA9052_TWDMIN)
 		mdelay(msec);
 
-	/* Reset the watchdog timer */
+	 
 	ret = da9052_reg_update(da9052, DA9052_CONTROL_D_REG,
 				DA9052_CONTROLD_WATCHDOG, 1 << 7);
 	if (ret < 0)
 		return ret;
 
-	/*
-	 * FIXME: Reset the watchdog core, in general PMIC
-	 * is supposed to do this
-	 */
+	 
 	return da9052_reg_update(da9052, DA9052_CONTROL_D_REG,
 				 DA9052_CONTROLD_WATCHDOG, 0 << 7);
 }

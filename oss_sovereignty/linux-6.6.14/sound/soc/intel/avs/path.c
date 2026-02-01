@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0-only
-//
-// Copyright(c) 2021 Intel Corporation. All rights reserved.
-//
-// Authors: Cezary Rojewski <cezary.rojewski@intel.com>
-//          Amadeusz Slawinski <amadeuszx.slawinski@linux.intel.com>
-//
+
+
+
+
+
+
+
 
 #include <sound/intel-nhlt.h>
 #include <sound/pcm_params.h>
@@ -14,7 +14,7 @@
 #include "path.h"
 #include "topology.h"
 
-/* Must be called with adev->comp_list_mutex held. */
+ 
 static struct avs_tplg *
 avs_path_find_tplg(struct avs_dev *adev, const char *name)
 {
@@ -69,7 +69,7 @@ avs_path_find_path(struct avs_dev *adev, const char *name, u32 template_id)
 		return NULL;
 
 	spin_lock(&adev->path_list_lock);
-	/* Only one variant of given path template may be instantiated at a time. */
+	 
 	list_for_each_entry(path, &adev->path_list, node) {
 		if (path->template->owner == template) {
 			spin_unlock(&adev->path_list_lock);
@@ -186,7 +186,7 @@ static int avs_copier_create(struct avs_dev *adev, struct avs_path_module *mod)
 
 		data = ep_blob->caps;
 		data_size = ep_blob->size;
-		/* I2S gateway's vindex is statically assigned in topology */
+		 
 		node_id.vindex = t->cfg_ext->copier.vindex.val;
 
 		break;
@@ -210,14 +210,14 @@ static int avs_copier_create(struct avs_dev *adev, struct avs_path_module *mod)
 
 		data = ep_blob->caps;
 		data_size = ep_blob->size;
-		/* DMIC gateway's vindex is statically assigned in topology */
+		 
 		node_id.vindex = t->cfg_ext->copier.vindex.val;
 
 		break;
 
 	case AVS_DMA_HDA_HOST_OUTPUT:
 	case AVS_DMA_HDA_HOST_INPUT:
-		/* HOST gateway's vindex is dynamically assigned with DMA id */
+		 
 		node_id.vindex = mod->owner->owner->dma_id;
 		break;
 
@@ -234,7 +234,7 @@ static int avs_copier_create(struct avs_dev *adev, struct avs_path_module *mod)
 	}
 
 	cfg_size = sizeof(*cfg) + data_size;
-	/* Every config-BLOB contains gateway attributes. */
+	 
 	if (data_size)
 		cfg_size -= sizeof(cfg->gtw_cfg.config.attrs);
 
@@ -251,7 +251,7 @@ static int avs_copier_create(struct avs_dev *adev, struct avs_path_module *mod)
 	cfg->feature_mask = t->cfg_ext->copier.feature_mask;
 	cfg->gtw_cfg.node_id = node_id;
 	cfg->gtw_cfg.dma_buffer_size = t->cfg_ext->copier.dma_buffer_size;
-	/* config_length in DWORDs */
+	 
 	cfg->gtw_cfg.config_length = DIV_ROUND_UP(data_size, 4);
 	if (data)
 		memcpy(&cfg->gtw_cfg.config, data, data_size);
@@ -301,7 +301,7 @@ static int avs_peakvol_create(struct avs_dev *adev, struct avs_path_module *mod)
 	if (ctl_data)
 		volume = ctl_data->volume;
 
-	/* As 2+ channels controls are unsupported, have a single block for all channels. */
+	 
 	size = struct_size(cfg, vols, 1);
 	cfg = kzalloc(size, GFP_KERNEL);
 	if (!cfg)
@@ -492,7 +492,7 @@ static int avs_modext_create(struct avs_dev *adev, struct avs_path_module *mod)
 	cfg->num_input_pins = tcfg->generic.num_input_pins;
 	cfg->num_output_pins = tcfg->generic.num_output_pins;
 
-	/* configure pin formats */
+	 
 	for (i = 0; i < num_pins; i++) {
 		struct avs_tplg_pin_format *tpin = &tcfg->generic.pin_fmts[i];
 		struct avs_pin_format *pin = &cfg->pin_fmts[i];
@@ -599,7 +599,7 @@ static int avs_path_binding_arm(struct avs_dev *adev, struct avs_path_binding *b
 		return -EINVAL;
 	}
 
-	/* update with target_tplg_name too */
+	 
 	target_path = avs_path_find_path(adev, t->target_tplg_name,
 					 t->target_path_tmpl_id);
 	if (!target_path) {
@@ -667,15 +667,12 @@ static int avs_path_pipeline_arm(struct avs_dev *adev,
 		struct avs_path_module *source, *sink;
 		int ret;
 
-		/*
-		 * Only one module (so it's implicitly last) or it is the last
-		 * one, either way we don't have next module to bind it to.
-		 */
+		 
 		if (mod == list_last_entry(&ppl->mod_list,
 					   struct avs_path_module, node))
 			break;
 
-		/* bind current module to next module on list */
+		 
 		source = mod;
 		sink = list_next_entry(mod, node);
 		if (!source || !sink)
@@ -703,7 +700,7 @@ static void avs_path_pipeline_free(struct avs_dev *adev,
 
 	avs_dsp_delete_pipeline(adev, ppl->instance_id);
 
-	/* Unload resources occupied by owned modules */
+	 
 	list_for_each_entry_safe(mod, save, &ppl->mod_list, node) {
 		avs_dsp_delete_module(adev, mod->module_id, mod->instance_id,
 				      mod->owner->instance_id,
@@ -787,7 +784,7 @@ static int avs_path_init(struct avs_dev *adev, struct avs_path *path,
 	INIT_LIST_HEAD(&path->ppl_list);
 	INIT_LIST_HEAD(&path->node);
 
-	/* create all the pipelines */
+	 
 	list_for_each_entry(tppl, &template->ppl_list, node) {
 		struct avs_path_pipeline *ppl;
 
@@ -812,10 +809,7 @@ static int avs_path_arm(struct avs_dev *adev, struct avs_path *path)
 	int ret;
 
 	list_for_each_entry(ppl, &path->ppl_list, node) {
-		/*
-		 * Arm all ppl bindings before binding internal modules
-		 * as it costs no IPCs which isn't true for the latter.
-		 */
+		 
 		list_for_each_entry(binding, &ppl->binding_list, node) {
 			ret = avs_path_binding_arm(adev, binding);
 			if (ret < 0)
@@ -892,9 +886,9 @@ struct avs_path *avs_path_create(struct avs_dev *adev, u32 dma_id,
 		return ERR_PTR(-ENOENT);
 	}
 
-	/* Serialize path and its components creation. */
+	 
 	mutex_lock(&adev->path_mutex);
-	/* Satisfy needs of avs_path_find_tplg(). */
+	 
 	mutex_lock(&adev->comp_list_mutex);
 
 	path = avs_path_create_unlocked(adev, dma_id, variant);
@@ -913,10 +907,7 @@ static int avs_path_bind_prepare(struct avs_dev *adev,
 	struct avs_path_module *source = binding->source;
 	int ret;
 
-	/*
-	 * only copier modules about to be bound
-	 * to output pin other than 0 need preparation
-	 */
+	 
 	if (!binding->source_pin)
 		return 0;
 	if (!guid_equal(&tsource->cfg_ext->type, &AVS_COPIER_MOD_UUID))

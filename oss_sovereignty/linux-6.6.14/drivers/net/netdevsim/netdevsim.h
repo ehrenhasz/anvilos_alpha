@@ -1,17 +1,4 @@
-/*
- * Copyright (C) 2017 Netronome Systems, Inc.
- *
- * This software is licensed under the GNU General License Version 2,
- * June 1991 as shown in the file COPYING in the top-level directory of this
- * source tree.
- *
- * THE COPYRIGHT HOLDERS AND/OR OTHER PARTIES PROVIDE THE PROGRAM "AS IS"
- * WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING,
- * BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE. THE ENTIRE RISK AS TO THE QUALITY AND PERFORMANCE
- * OF THE PROGRAM IS WITH YOU. SHOULD THE PROGRAM PROVE DEFECTIVE, YOU ASSUME
- * THE COST OF ALL NECESSARY SERVICING, REPAIR OR CORRECTION.
- */
+ 
 
 #include <linux/debugfs.h>
 #include <linux/device.h>
@@ -185,7 +172,7 @@ nsim_bpf_setup_tc_block_cb(enum tc_setup_type type, void *type_data,
 #endif
 
 enum nsim_resource_id {
-	NSIM_RESOURCE_NONE,   /* DEVLINK_RESOURCE_ID_PARENT_TOP */
+	NSIM_RESOURCE_NONE,    
 	NSIM_RESOURCE_IPV4,
 	NSIM_RESOURCE_IPV4_FIB,
 	NSIM_RESOURCE_IPV4_FIB_RULES,
@@ -219,7 +206,7 @@ struct nsim_dev_hwstats {
 	struct dentry *ddir;
 	struct dentry *l3_ddir;
 
-	struct mutex hwsdev_list_lock; /* protects hwsdev list(s) */
+	struct mutex hwsdev_list_lock;  
 	struct list_head l3_list;
 
 	struct notifier_block netdevice_nb;
@@ -306,7 +293,7 @@ struct nsim_dev {
 	struct nsim_dev_health health;
 	struct nsim_dev_hwstats hwstats;
 	struct flow_action_cookie *fa_cookie;
-	spinlock_t fa_cookie_lock; /* protects fa_cookie */
+	spinlock_t fa_cookie_lock;  
 	bool fail_trap_group_set;
 	bool fail_trap_policer_set;
 	bool fail_trap_policer_counter_get;
@@ -406,10 +393,8 @@ struct nsim_bus_dev {
 	struct device dev;
 	struct list_head list;
 	unsigned int port_count;
-	unsigned int num_queues; /* Number of queues for each port on this bus */
-	struct net *initial_net; /* Purpose of this is to carry net pointer
-				  * during the probe time only.
-				  */
+	unsigned int num_queues;  
+	struct net *initial_net;  
 	unsigned int max_vfs;
 	unsigned int num_vfs;
 	bool init;

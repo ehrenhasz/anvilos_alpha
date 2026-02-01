@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2022 Intel Corporation
- */
+ 
+ 
 
 #ifndef __INTEL_MODESET_VERIFY_H__
 #define __INTEL_MODESET_VERIFY_H__
@@ -18,4 +16,4 @@ void intel_modeset_verify_crtc(struct intel_crtc *crtc,
 void intel_modeset_verify_disabled(struct drm_i915_private *dev_priv,
 				   struct intel_atomic_state *state);
 
-#endif /* __INTEL_MODESET_VERIFY_H__ */
+#endif  

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * builtin-annotate.c
- *
- * Builtin annotate command: Analyze the perf.data input file,
- * look up and read DSOs and symbol information and display
- * a histogram of results, along various sorting keys.
- */
+
+ 
 #include "builtin.h"
 
 #include "util/color.h"
@@ -62,30 +56,7 @@ struct perf_annotate {
 	DECLARE_BITMAP(cpu_bitmap, MAX_NR_CPUS);
 };
 
-/*
- * Given one basic block:
- *
- *	from	to		branch_i
- *	* ----> *
- *		|
- *		| block
- *		v
- *		* ----> *
- *		from	to	branch_i+1
- *
- * where the horizontal are the branches and the vertical is the executed
- * block of instructions.
- *
- * We count, for each 'instruction', the number of blocks that covered it as
- * well as count the ratio each branch is taken.
- *
- * We can do this without knowing the actual instruction stream by keeping
- * track of the address ranges. We break down ranges such that there is no
- * overlap and iterate from the start until the end.
- *
- * @acme: once we parse the objdump output _before_ processing the samples,
- * we can easily fold the branch.cycles IPC bits in.
- */
+ 
 static void process_basic_block(struct addr_map_symbol *start,
 				struct addr_map_symbol *end,
 				struct branch_flags *flags)
@@ -95,9 +66,7 @@ static void process_basic_block(struct addr_map_symbol *start,
 	struct block_range_iter iter;
 	struct block_range *entry;
 
-	/*
-	 * Sanity; NULL isn't executable and the CPU cannot execute backwards
-	 */
+	 
 	if (!start->addr || start->addr > end->addr)
 		return;
 
@@ -105,9 +74,7 @@ static void process_basic_block(struct addr_map_symbol *start,
 	if (!block_range_iter__valid(&iter))
 		return;
 
-	/*
-	 * First block in range is a branch target.
-	 */
+	 
 	entry = block_range_iter(&iter);
 	assert(entry->is_target);
 	entry->entry++;
@@ -123,9 +90,7 @@ static void process_basic_block(struct addr_map_symbol *start,
 
 	} while (block_range_iter__next(&iter));
 
-	/*
-	 * Last block in rage is a branch.
-	 */
+	 
 	entry = block_range_iter(&iter);
 	assert(entry->is_branch);
 	entry->taken++;
@@ -148,9 +113,7 @@ static void process_branch_stack(struct branch_stack *bs, struct addr_location *
 		return;
 
 	for (i = bs->nr - 1; i >= 0; i--) {
-		/*
-		 * XXX filter against symbol
-		 */
+		 
 		if (prev)
 			process_basic_block(prev, &bi[i].from, &bi[i].flags);
 		prev = &bi[i].to;
@@ -237,11 +200,8 @@ static int evsel__add_sample(struct evsel *evsel, struct perf_sample *sample,
 	    ann->sym_hist_filter != NULL &&
 	    (al->sym == NULL ||
 	     strcmp(ann->sym_hist_filter, al->sym->name) != 0)) {
-		/* We're only interested in a symbol named sym_hist_filter */
-		/*
-		 * FIXME: why isn't this done in the symbol_filter when loading
-		 * the DSO?
-		 */
+		 
+		 
 		if (al->sym != NULL) {
 			struct dso *dso = map__dso(al->map);
 
@@ -252,10 +212,7 @@ static int evsel__add_sample(struct evsel *evsel, struct perf_sample *sample,
 		return 0;
 	}
 
-	/*
-	 * XXX filtered samples can still have branch entries pointing into our
-	 * symbol and are missed.
-	 */
+	 
 	process_branch_stack(sample->branch_stack, al, sample);
 
 	if (ann->has_br_stack && has_annotation(ann))
@@ -377,7 +334,7 @@ find_next:
 			if (!ret || !ann->skip_missing)
 				return;
 
-			/* skip missing symbols */
+			 
 			nd = rb_next(nd);
 		} else if (use_browser == 1) {
 			key = hist_entry__tui_annotate(he, evsel, NULL, &ann->opts);
@@ -386,7 +343,7 @@ find_next:
 			case -1:
 				if (!ann->skip_missing)
 					return;
-				/* fall through */
+				 
 			case K_RIGHT:
 			case '>':
 				next = rb_next(nd);
@@ -453,7 +410,7 @@ static int __cmd_annotate(struct perf_annotate *ann)
 		if (nr_samples > 0) {
 			total_nr_samples += nr_samples;
 			hists__collapse_resort(hists, NULL);
-			/* Don't sort callchain */
+			 
 			evsel__reset_sample_bit(pos, CALLCHAIN);
 			evsel__output_resort(pos, NULL);
 
@@ -624,10 +581,7 @@ int cmd_annotate(int argc, const char **argv)
 
 	argc = parse_options(argc, argv, options, annotate_usage, 0);
 	if (argc) {
-		/*
-		 * Special case: if there's an argument left then assume that
-		 * it's a symbol filter:
-		 */
+		 
 		if (argc > 1)
 			usage_with_options(annotate_usage, options);
 
@@ -704,17 +658,10 @@ int cmd_annotate(int argc, const char **argv)
 
 	setup_browser(true);
 
-	/*
-	 * Events of different processes may correspond to the same
-	 * symbol, we do not care about the processes in annotate,
-	 * set sort order to avoid repeated output.
-	 */
+	 
 	sort_order = "dso,symbol";
 
-	/*
-	 * Set SORT_MODE__BRANCH so that annotate display IPC/Cycle
-	 * if branch info is in perf data in TUI mode.
-	 */
+	 
 	if ((use_browser == 1 || annotate.use_stdio2) && annotate.has_br_stack)
 		sort__mode = SORT_MODE__BRANCH;
 
@@ -724,10 +671,7 @@ int cmd_annotate(int argc, const char **argv)
 	ret = __cmd_annotate(&annotate);
 
 out_delete:
-	/*
-	 * Speed up the exit process by only deleting for debug builds. For
-	 * large files this can save time.
-	 */
+	 
 #ifndef NDEBUG
 	perf_session__delete(annotate.session);
 #endif

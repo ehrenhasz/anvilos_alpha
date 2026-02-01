@@ -1,18 +1,16 @@
-// SPDX-License-Identifier: GPL-2.0+
-// Copyright (c) 2018 Christian Hewitt
+
+
 
 #include <media/rc-map.h>
 #include <linux/module.h>
 
-/*
- * This keymap is used with the WeTek Hub STB.
- */
+ 
 
 static struct rc_map_table wetek_hub[] = {
 	{ 0x77f1, KEY_POWER },
 
 	{ 0x77f2, KEY_HOME },
-	{ 0x77f3, KEY_MUTE }, // mouse
+	{ 0x77f3, KEY_MUTE }, 
 
 	{ 0x77f4, KEY_UP },
 	{ 0x77f5, KEY_DOWN },

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) Fuzhou Rockchip Electronics Co.Ltd
- * Author: Jacob Chen <jacob-chen@iotwrt.com>
- */
+
+ 
 
 #include <linux/pm_runtime.h>
 
@@ -31,13 +28,7 @@ struct rga_corners_addr_offset {
 
 static unsigned int rga_get_scaling(unsigned int src, unsigned int dst)
 {
-	/*
-	 * The rga hw scaling factor is a normalized inverse of the
-	 * scaling factor.
-	 * For example: When source width is 100 and destination width is 200
-	 * (scaling of 2x), then the hw factor is NC * 100 / 200.
-	 * The normalization factor (NC) is 2^16 = 0x10000.
-	 */
+	 
 
 	return (src > dst) ? ((dst << 16) / src) : ((src << 16) / dst);
 }
@@ -200,10 +191,7 @@ static void rga_cmd_set_trans_info(struct rga_ctx *ctx)
 	dst_info.data.format = ctx->out.fmt->hw_format;
 	dst_info.data.swap = ctx->out.fmt->color_swap;
 
-	/*
-	 * CSC mode must only be set when the colorspace families differ between
-	 * input and output. It must remain unset (zeroed) if both are the same.
-	 */
+	 
 
 	if (RGA_COLOR_FMT_IS_YUV(ctx->in.fmt->hw_format) &&
 	    RGA_COLOR_FMT_IS_RGB(ctx->out.fmt->hw_format)) {
@@ -250,12 +238,7 @@ static void rga_cmd_set_trans_info(struct rga_ctx *ctx)
 		break;
 	}
 
-	/*
-	 * Calculate the up/down scaling mode/factor.
-	 *
-	 * RGA used to scale the picture first, and then rotate second,
-	 * so we need to swap the w/h when rotate degree is 90/270.
-	 */
+	 
 	if (src_info.data.rot_mode == RGA_SRC_ROT_MODE_90_DEGREE ||
 	    src_info.data.rot_mode == RGA_SRC_ROT_MODE_270_DEGREE) {
 		if (rga->version.major == 0 || rga->version.minor == 0) {
@@ -298,10 +281,7 @@ static void rga_cmd_set_trans_info(struct rga_ctx *ctx)
 			rga_get_scaling(src_h - 1, scale_dst_h - 1);
 	}
 
-	/*
-	 * Calculate the framebuffer virtual strides and active size,
-	 * note that the step of vir_stride / vir_width is 4 byte words
-	 */
+	 
 	src_vir_info.data.vir_stride = ctx->in.stride >> 2;
 	src_vir_info.data.vir_width = ctx->in.stride >> 2;
 
@@ -312,15 +292,11 @@ static void rga_cmd_set_trans_info(struct rga_ctx *ctx)
 	dst_act_info.data.act_height = dst_h - 1;
 	dst_act_info.data.act_width = dst_w - 1;
 
-	/*
-	 * Calculate the source framebuffer base address with offset pixel.
-	 */
+	 
 	src_offsets = rga_get_addr_offset(&ctx->in, src_x, src_y,
 					  src_w, src_h);
 
-	/*
-	 * Configure the dest framebuffer base address with pixel offset.
-	 */
+	 
 	offsets = rga_get_addr_offset(&ctx->out, dst_x, dst_y, dst_w, dst_h);
 	dst_offset = rga_lookup_draw_pos(&offsets, src_info.data.rot_mode,
 					 src_info.data.mir_mode);
@@ -368,7 +344,7 @@ static void rga_cmd_set_mode(struct rga_ctx *ctx)
 	mode.data.render = RGA_MODE_RENDER_BITBLT;
 	mode.data.bitblt = RGA_MODE_BITBLT_MODE_SRC_TO_DST;
 
-	/* disable alpha blending */
+	 
 	dest[(RGA_ALPHA_CTRL0 - RGA_MODE_BASE_REG) >> 2] = alpha_ctrl0.val;
 	dest[(RGA_ALPHA_CTRL1 - RGA_MODE_BASE_REG) >> 2] = alpha_ctrl1.val;
 
@@ -382,10 +358,7 @@ static void rga_cmd_set(struct rga_ctx *ctx)
 	memset(rga->cmdbuf_virt, 0, RGA_CMDBUF_SIZE * 4);
 
 	rga_cmd_set_src_addr(ctx, rga->src_mmu_pages);
-	/*
-	 * Due to hardware bug,
-	 * src1 mmu also should be configured when using alpha blending.
-	 */
+	 
 	rga_cmd_set_src1_addr(ctx, rga->dst_mmu_pages);
 
 	rga_cmd_set_dst_addr(ctx, rga->dst_mmu_pages);
@@ -395,7 +368,7 @@ static void rga_cmd_set(struct rga_ctx *ctx)
 
 	rga_write(rga, RGA_CMD_BASE, rga->cmdbuf_phy);
 
-	/* sync CMD buf for RGA */
+	 
 	dma_sync_single_for_device(rga->dev, rga->cmdbuf_phy,
 		PAGE_SIZE, DMA_BIDIRECTIONAL);
 }

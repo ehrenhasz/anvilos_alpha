@@ -1,29 +1,5 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
-/*
- * Copyright (c) 2007, 2010, Oracle and/or its affiliates. All rights reserved.
- * Copyright 2010 Nexenta Systems, Inc. All rights reserved.
- * Copyright (c) 2013, 2015 by Delphix. All rights reserved.
- * Copyright 2016 Igor Kozhukhov <ikozhukhov@gmail.com>
- */
+ 
+ 
 
 #include <sys/zfs_context.h>
 
@@ -190,20 +166,7 @@ zfs_deleg_verify_nvlist(nvlist_t *nvp)
 	return (0);
 }
 
-/*
- * Construct the base attribute name.  The base attribute names
- * are the "key" to locate the jump objects which contain the actual
- * permissions.  The base attribute names are encoded based on
- * type of entry and whether it is a local or descendent permission.
- *
- * Arguments:
- * attr - attribute name return string, attribute is assumed to be
- *        ZFS_MAX_DELEG_NAME long.
- * type - type of entry to construct
- * inheritchr - inheritance type (local,descendent, or NA for create and
- *                               permission set definitions
- * data - is either a permission set name or a 64 bit uid/gid.
- */
+ 
 void
 zfs_deleg_whokey(char *attr, zfs_deleg_who_type_t type,
     char inheritchr, void *data)

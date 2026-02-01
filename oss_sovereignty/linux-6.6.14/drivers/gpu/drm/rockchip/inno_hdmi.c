@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) Fuzhou Rockchip Electronics Co.Ltd
- *    Zheng Yang <zhengyang@rock-chips.com>
- *    Yakir Yang <ykk@rock-chips.com>
- */
+
+ 
 
 #include <linux/irq.h>
 #include <linux/clk.h>
@@ -87,68 +83,38 @@ enum {
 };
 
 static const char coeff_csc[][24] = {
-	/*
-	 * YUV2RGB:601 SD mode(Y[16:235], UV[16:240], RGB[0:255]):
-	 *   R = 1.164*Y + 1.596*V - 204
-	 *   G = 1.164*Y - 0.391*U - 0.813*V + 154
-	 *   B = 1.164*Y + 2.018*U - 258
-	 */
+	 
 	{
 		0x04, 0xa7, 0x00, 0x00, 0x06, 0x62, 0x02, 0xcc,
 		0x04, 0xa7, 0x11, 0x90, 0x13, 0x40, 0x00, 0x9a,
 		0x04, 0xa7, 0x08, 0x12, 0x00, 0x00, 0x03, 0x02
 	},
-	/*
-	 * YUV2RGB:601 SD mode(YUV[0:255],RGB[0:255]):
-	 *   R = Y + 1.402*V - 248
-	 *   G = Y - 0.344*U - 0.714*V + 135
-	 *   B = Y + 1.772*U - 227
-	 */
+	 
 	{
 		0x04, 0x00, 0x00, 0x00, 0x05, 0x9b, 0x02, 0xf8,
 		0x04, 0x00, 0x11, 0x60, 0x12, 0xdb, 0x00, 0x87,
 		0x04, 0x00, 0x07, 0x16, 0x00, 0x00, 0x02, 0xe3
 	},
-	/*
-	 * YUV2RGB:709 HD mode(Y[16:235],UV[16:240],RGB[0:255]):
-	 *   R = 1.164*Y + 1.793*V - 248
-	 *   G = 1.164*Y - 0.213*U - 0.534*V + 77
-	 *   B = 1.164*Y + 2.115*U - 289
-	 */
+	 
 	{
 		0x04, 0xa7, 0x00, 0x00, 0x07, 0x2c, 0x02, 0xf8,
 		0x04, 0xa7, 0x10, 0xda, 0x12, 0x22, 0x00, 0x4d,
 		0x04, 0xa7, 0x08, 0x74, 0x00, 0x00, 0x03, 0x21
 	},
 
-	/*
-	 * RGB2YUV:601 SD mode:
-	 *   Cb = -0.291G - 0.148R + 0.439B + 128
-	 *   Y  = 0.504G  + 0.257R + 0.098B + 16
-	 *   Cr = -0.368G + 0.439R - 0.071B + 128
-	 */
+	 
 	{
 		0x11, 0x5f, 0x01, 0x82, 0x10, 0x23, 0x00, 0x80,
 		0x02, 0x1c, 0x00, 0xa1, 0x00, 0x36, 0x00, 0x1e,
 		0x11, 0x29, 0x10, 0x59, 0x01, 0x82, 0x00, 0x80
 	},
-	/*
-	 * RGB2YUV:709 HD mode:
-	 *   Cb = - 0.338G - 0.101R + 0.439B + 128
-	 *   Y  = 0.614G   + 0.183R + 0.062B + 16
-	 *   Cr = - 0.399G + 0.439R - 0.040B + 128
-	 */
+	 
 	{
 		0x11, 0x98, 0x01, 0xc1, 0x10, 0x28, 0x00, 0x80,
 		0x02, 0x74, 0x00, 0xbb, 0x00, 0x3f, 0x00, 0x10,
 		0x11, 0x5a, 0x10, 0x67, 0x01, 0xc1, 0x00, 0x80
 	},
-	/*
-	 * RGB[0:255]2RGB[16:235]:
-	 *   R' = R x (235-16)/255 + 16;
-	 *   G' = G x (235-16)/255 + 16;
-	 *   B' = B x (235-16)/255 + 16;
-	 */
+	 
 	{
 		0x00, 0x00, 0x03, 0x6F, 0x00, 0x00, 0x00, 0x10,
 		0x03, 0x6F, 0x00, 0x00, 0x00, 0x00, 0x00, 0x10,
@@ -184,7 +150,7 @@ static void inno_hdmi_i2c_init(struct inno_hdmi *hdmi)
 	hdmi_writeb(hdmi, DDC_BUS_FREQ_L, ddc_bus_freq & 0xFF);
 	hdmi_writeb(hdmi, DDC_BUS_FREQ_H, (ddc_bus_freq >> 8) & 0xFF);
 
-	/* Clear the EDID interrupt flag and mute the interrupt */
+	 
 	hdmi_writeb(hdmi, HDMI_INTERRUPT_MASK1, 0);
 	hdmi_writeb(hdmi, HDMI_INTERRUPT_STATUS1, m_INT_EDID_READY);
 }
@@ -321,11 +287,11 @@ static int inno_hdmi_config_video_csc(struct inno_hdmi *hdmi)
 	int value;
 	int i;
 
-	/* Input video mode is SDR RGB24bit, data enable signal from external */
+	 
 	hdmi_writeb(hdmi, HDMI_VIDEO_CONTRL1, v_DE_EXTERNAL |
 		    v_VIDEO_INPUT_FORMAT(VIDEO_INPUT_SDR_RGB444));
 
-	/* Input color hardcode to RGB, and output color hardcode to RGB888 */
+	 
 	value = v_VIDEO_INPUT_BITS(VIDEO_INPUT_8BITS) |
 		v_VIDEO_OUTPUT_COLOR(0) |
 		v_VIDEO_INPUT_CSP(0);
@@ -393,7 +359,7 @@ static int inno_hdmi_config_video_timing(struct inno_hdmi *hdmi,
 {
 	int value;
 
-	/* Set detail external video timing polarity and interlace mode */
+	 
 	value = v_EXTERANL_VIDEO(1);
 	value |= mode->flags & DRM_MODE_FLAG_PHSYNC ?
 		 v_HSYNC_POLARITY(1) : v_HSYNC_POLARITY(0);
@@ -403,7 +369,7 @@ static int inno_hdmi_config_video_timing(struct inno_hdmi *hdmi,
 		 v_INETLACE(1) : v_INETLACE(0);
 	hdmi_writeb(hdmi, HDMI_VIDEO_TIMING_CTL, value);
 
-	/* Set detail external video timing */
+	 
 	value = mode->htotal;
 	hdmi_writeb(hdmi, HDMI_VIDEO_EXT_HTOTAL_L, value & 0xFF);
 	hdmi_writeb(hdmi, HDMI_VIDEO_EXT_HTOTAL_H, (value >> 8) & 0xFF);
@@ -458,11 +424,11 @@ static int inno_hdmi_setup(struct inno_hdmi *hdmi,
 	else
 		hdmi->hdmi_data.colorimetry = HDMI_COLORIMETRY_ITU_709;
 
-	/* Mute video and audio output */
+	 
 	hdmi_modb(hdmi, HDMI_AV_MUTE, m_AUDIO_MUTE | m_VIDEO_BLACK,
 		  v_AUDIO_MUTE(1) | v_VIDEO_MUTE(1));
 
-	/* Set HDMI Mode */
+	 
 	hdmi_writeb(hdmi, HDMI_HDCP_CTRL,
 		    v_HDMI_DVI(display->is_hdmi));
 
@@ -475,16 +441,11 @@ static int inno_hdmi_setup(struct inno_hdmi *hdmi,
 		inno_hdmi_config_video_vsi(hdmi, mode);
 	}
 
-	/*
-	 * When IP controller have configured to an accurate video
-	 * timing, then the TMDS clock source would be switched to
-	 * DCLK_LCDC, so we need to init the TMDS rate to mode pixel
-	 * clock rate, and reconfigure the DDC clock.
-	 */
+	 
 	hdmi->tmds_rate = mode->clock * 1000;
 	inno_hdmi_i2c_init(hdmi);
 
-	/* Unmute video and audio output */
+	 
 	hdmi_modb(hdmi, HDMI_AV_MUTE, m_AUDIO_MUTE | m_VIDEO_BLACK,
 		  v_AUDIO_MUTE(0) | v_VIDEO_MUTE(0));
 
@@ -499,7 +460,7 @@ static void inno_hdmi_encoder_mode_set(struct drm_encoder *encoder,
 
 	inno_hdmi_setup(hdmi, adj_mode);
 
-	/* Store the display mode for plugin/DPMS poweron events */
+	 
 	drm_mode_copy(&hdmi->previous_mode, adj_mode);
 }
 
@@ -615,12 +576,7 @@ static int inno_hdmi_register(struct drm_device *drm, struct inno_hdmi *hdmi)
 
 	encoder->possible_crtcs = drm_of_find_possible_crtcs(drm, dev->of_node);
 
-	/*
-	 * If we failed to find the CRTC(s) which this encoder is
-	 * supposed to be connected to, it's because the CRTC has
-	 * not been registered yet.  Defer probing, and hope that
-	 * the required CRTC is added later.
-	 */
+	 
 	if (encoder->possible_crtcs == 0)
 		return -EPROBE_DEFER;
 
@@ -650,7 +606,7 @@ static irqreturn_t inno_hdmi_i2c_irq(struct inno_hdmi *hdmi)
 	if (!(stat & m_INT_EDID_READY))
 		return IRQ_NONE;
 
-	/* Clear HDMI EDID interrupt flag */
+	 
 	hdmi_writeb(hdmi, HDMI_INTERRUPT_STATUS1, m_INT_EDID_READY);
 
 	complete(&i2c->cmp);
@@ -703,11 +659,7 @@ static int inno_hdmi_i2c_read(struct inno_hdmi *hdmi, struct i2c_msg *msgs)
 
 static int inno_hdmi_i2c_write(struct inno_hdmi *hdmi, struct i2c_msg *msgs)
 {
-	/*
-	 * The DDC module only support read EDID message, so
-	 * we assume that each word write to this i2c adapter
-	 * should be the offset of EDID word address.
-	 */
+	 
 	if ((msgs->len != 1) ||
 	    ((msgs->addr != DDC_ADDR) && (msgs->addr != DDC_SEGMENT_ADDR)))
 		return -EINVAL;
@@ -719,13 +671,13 @@ static int inno_hdmi_i2c_write(struct inno_hdmi *hdmi, struct i2c_msg *msgs)
 	if (msgs->addr == DDC_ADDR)
 		hdmi->i2c->ddc_addr = msgs->buf[0];
 
-	/* Set edid fifo first addr */
+	 
 	hdmi_writeb(hdmi, HDMI_EDID_FIFO_OFFSET, 0x00);
 
-	/* Set edid word address 0x00/0x80 */
+	 
 	hdmi_writeb(hdmi, HDMI_EDID_WORD_ADDR, hdmi->i2c->ddc_addr);
 
-	/* Set edid segment pointer */
+	 
 	hdmi_writeb(hdmi, HDMI_EDID_SEGMENT_POINTER, hdmi->i2c->segment_addr);
 
 	return 0;
@@ -740,7 +692,7 @@ static int inno_hdmi_i2c_xfer(struct i2c_adapter *adap,
 
 	mutex_lock(&i2c->lock);
 
-	/* Clear the EDID interrupt flag and unmute the interrupt */
+	 
 	hdmi_writeb(hdmi, HDMI_INTERRUPT_MASK1, m_INT_EDID_READY);
 	hdmi_writeb(hdmi, HDMI_INTERRUPT_STATUS1, m_INT_EDID_READY);
 
@@ -761,7 +713,7 @@ static int inno_hdmi_i2c_xfer(struct i2c_adapter *adap,
 	if (!ret)
 		ret = num;
 
-	/* Mute HDMI EDID interrupt */
+	 
 	hdmi_writeb(hdmi, HDMI_INTERRUPT_MASK1, 0);
 
 	mutex_unlock(&i2c->lock);
@@ -863,12 +815,7 @@ static int inno_hdmi_bind(struct device *dev, struct device *master,
 		goto err_disable_clk;
 	}
 
-	/*
-	 * When IP controller haven't configured to an accurate video
-	 * timing, then the TMDS clock source would be switched to
-	 * PCLK_HDMI, so we need to init the TMDS rate to PCLK rate,
-	 * and reconfigure the DDC clock.
-	 */
+	 
 	hdmi->tmds_rate = clk_get_rate(hdmi->pclk);
 	inno_hdmi_i2c_init(hdmi);
 
@@ -878,7 +825,7 @@ static int inno_hdmi_bind(struct device *dev, struct device *master,
 
 	dev_set_drvdata(dev, hdmi);
 
-	/* Unmute hotplug interrupt */
+	 
 	hdmi_modb(hdmi, HDMI_STATUS, m_MASK_INT_HOTPLUG, v_MASK_INT_HOTPLUG(1));
 
 	ret = devm_request_threaded_irq(dev, irq, inno_hdmi_hardirq,

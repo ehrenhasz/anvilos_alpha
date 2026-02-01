@@ -1,19 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0-only
- *
- * Copyright (c) 2021, MediaTek Inc.
- * Copyright (c) 2021-2022, Intel Corporation.
- *
- * Authors:
- *  Haijun Liu <haijun.liu@mediatek.com>
- *  Moises Veleta <moises.veleta@intel.com>
- *  Ricardo Martinez <ricardo.martinez@linux.intel.com>
- *  Sreehari Kancharla <sreehari.kancharla@intel.com>
- *
- * Contributors:
- *  Amir Hanania <amir.hanania@intel.com>
- *  Chiranjeevi Rapolu <chiranjeevi.rapolu@intel.com>
- *  Eliot Lee <eliot.lee@intel.com>
- */
+ 
 
 #ifndef __T7XX_HIF_CLDMA_H__
 #define __T7XX_HIF_CLDMA_H__
@@ -31,12 +16,7 @@
 #include "t7xx_cldma.h"
 #include "t7xx_pci.h"
 
-/**
- * enum cldma_id - Identifiers for CLDMA HW units.
- * @CLDMA_ID_MD: Modem control channel.
- * @CLDMA_ID_AP: Application Processor control channel.
- * @CLDMA_NUM:   Number of CLDMA HW units available.
- */
+ 
 enum cldma_id {
 	CLDMA_ID_MD,
 	CLDMA_ID_AP,
@@ -56,16 +36,16 @@ struct cldma_gpd {
 };
 
 struct cldma_request {
-	struct cldma_gpd *gpd;	/* Virtual address for CPU */
-	dma_addr_t gpd_addr;	/* Physical address for DMA */
+	struct cldma_gpd *gpd;	 
+	dma_addr_t gpd_addr;	 
 	struct sk_buff *skb;
 	dma_addr_t mapped_buff;
 	struct list_head entry;
 };
 
 struct cldma_ring {
-	struct list_head gpd_ring;	/* Ring of struct cldma_request */
-	unsigned int length;		/* Number of struct cldma_request */
+	struct list_head gpd_ring;	 
+	unsigned int length;		 
 	int pkt_size;
 };
 
@@ -77,9 +57,9 @@ struct cldma_queue {
 	struct cldma_request *tr_done;
 	struct cldma_request *rx_refill;
 	struct cldma_request *tx_next;
-	int budget;			/* Same as ring buffer size by default */
+	int budget;			 
 	spinlock_t ring_lock;
-	wait_queue_head_t req_wq;	/* Only for TX */
+	wait_queue_head_t req_wq;	 
 	struct workqueue_struct *worker;
 	struct work_struct cldma_work;
 };
@@ -93,8 +73,8 @@ struct cldma_ctrl {
 	unsigned short txq_active;
 	unsigned short rxq_active;
 	unsigned short txq_started;
-	spinlock_t cldma_lock; /* Protects CLDMA structure */
-	/* Assumes T/R GPD/BD/SPD have the same size */
+	spinlock_t cldma_lock;  
+	 
 	struct dma_pool *gpd_dmapool;
 	struct cldma_ring tx_ring[CLDMA_TXQ_NUM];
 	struct cldma_ring rx_ring[CLDMA_RXQ_NUM];
@@ -108,7 +88,7 @@ struct cldma_ctrl {
 #define GPD_FLAGS_IOC		BIT(7)
 #define GPD_DMAPOOL_ALIGN	16
 
-#define CLDMA_MTU		3584	/* 3.5kB */
+#define CLDMA_MTU		3584	 
 
 int t7xx_cldma_alloc(enum cldma_id hif_id, struct t7xx_pci_dev *t7xx_dev);
 void t7xx_cldma_hif_hw_init(struct cldma_ctrl *md_ctrl);
@@ -124,4 +104,4 @@ int t7xx_cldma_send_skb(struct cldma_ctrl *md_ctrl, int qno, struct sk_buff *skb
 void t7xx_cldma_stop_all_qs(struct cldma_ctrl *md_ctrl, enum mtk_txrx tx_rx);
 void t7xx_cldma_clear_all_qs(struct cldma_ctrl *md_ctrl, enum mtk_txrx tx_rx);
 
-#endif /* __T7XX_HIF_CLDMA_H__ */
+#endif  

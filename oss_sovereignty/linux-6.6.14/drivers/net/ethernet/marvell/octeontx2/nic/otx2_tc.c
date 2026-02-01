@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Marvell RVU Ethernet driver
- *
- * Copyright (C) 2021 Marvell.
- *
- */
+
+ 
 
 #include <linux/netdevice.h>
 #include <linux/etherdevice.h>
@@ -38,7 +34,7 @@ struct otx2_tc_flow {
 	unsigned long			cookie;
 	struct rcu_head			rcu;
 	struct otx2_tc_flow_stats	stats;
-	spinlock_t			lock; /* lock for stats */
+	spinlock_t			lock;  
 	u16				rq;
 	u16				entry;
 	u16				leaf_profile;
@@ -64,10 +60,7 @@ static void otx2_get_egress_burst_cfg(struct otx2_nic *nic, u32 burst,
 		max_mantissa = CN10K_MAX_BURST_MANTISSA;
 	}
 
-	/* Burst is calculated as
-	 * ((256 + BURST_MANTISSA) << (1 + BURST_EXPONENT)) / 256
-	 * Max supported burst size is 130,816 bytes.
-	 */
+	 
 	burst = min_t(u32, burst, max_burst);
 	if (burst) {
 		*burst_exp = ilog2(burst) ? ilog2(burst) - 1 : 0;
@@ -87,17 +80,9 @@ static void otx2_get_egress_rate_cfg(u64 maxrate, u32 *exp,
 {
 	u64 tmp;
 
-	/* Rate calculation by hardware
-	 *
-	 * PIR_ADD = ((256 + mantissa) << exp) / 256
-	 * rate = (2 * PIR_ADD) / ( 1 << div_exp)
-	 * The resultant rate is in Mbps.
-	 */
+	 
 
-	/* 2Mbps to 100Gbps can be expressed with div_exp = 0.
-	 * Setting this to '0' will ease the calculation of
-	 * exponent and mantissa.
-	 */
+	 
 	*div_exp = 0;
 
 	if (maxrate) {
@@ -108,7 +93,7 @@ static void otx2_get_egress_rate_cfg(u64 maxrate, u32 *exp,
 		else
 			*mantissa = tmp / (1ULL << (*exp - 7));
 	} else {
-		/* Instead of disabling rate limiting, set all values to max */
+		 
 		*exp = MAX_RATE_EXPONENT;
 		*mantissa = MAX_RATE_MANTISSA;
 	}
@@ -121,7 +106,7 @@ u64 otx2_get_txschq_rate_regval(struct otx2_nic *nic,
 	u32 exp, mantissa, div_exp;
 	u64 regval = 0;
 
-	/* Get exponent and mantissa values from the desired rate */
+	 
 	otx2_get_egress_burst_cfg(nic, burst, &burst_exp, &burst_mantissa);
 	otx2_get_egress_rate_cfg(maxrate, &exp, &mantissa, &div_exp);
 
@@ -149,7 +134,7 @@ static int otx2_set_matchall_egress_rate(struct otx2_nic *nic,
 	struct nix_txschq_config *req;
 	int txschq, err;
 
-	/* All SQs share the same TL4, so pick the first scheduler */
+	 
 	txschq = hw->txschq_list[NIX_TXSCH_LVL_TL4][0];
 
 	mutex_lock(&nic->mbox.lock);
@@ -386,7 +371,7 @@ static int otx2_tc_parse_actions(struct otx2_nic *nic,
 		case FLOW_ACTION_REDIRECT_INGRESS:
 			target = act->dev;
 			priv = netdev_priv(target);
-			/* npc_install_flow_req doesn't support passing a target pcifunc */
+			 
 			if (rvu_get_pf(nic->pcifunc) != rvu_get_pf(priv->pcifunc)) {
 				NL_SET_ERR_MSG_MOD(extack,
 						   "can't redirect to other pf/vf");
@@ -394,18 +379,18 @@ static int otx2_tc_parse_actions(struct otx2_nic *nic,
 			}
 			req->vf = priv->pcifunc & RVU_PFVF_FUNC_MASK;
 
-			/* if op is already set; avoid overwriting the same */
+			 
 			if (!req->op)
 				req->op = NIX_RX_ACTION_DEFAULT;
 			break;
 
 		case FLOW_ACTION_VLAN_POP:
 			req->vtag0_valid = true;
-			/* use RX_VTAG_TYPE7 which is initialized to strip vlan tag */
+			 
 			req->vtag0_type = NIX_AF_LFX_RX_VTAG_TYPE7;
 			break;
 		case FLOW_ACTION_POLICE:
-			/* Ingress ratelimiting is not supported on OcteonTx2 */
+			 
 			if (is_dev_otx2(nic->pdev)) {
 				NL_SET_ERR_MSG_MOD(extack,
 					"Ingress policing not supported on this platform");
@@ -420,11 +405,7 @@ static int otx2_tc_parse_actions(struct otx2_nic *nic,
 				rate = act->police.rate_bytes_ps * 8;
 				burst = act->police.burst;
 			} else if (act->police.rate_pkt_ps > 0) {
-				/* The algorithm used to calculate rate
-				 * mantissa, exponent values for a given token
-				 * rate (token can be byte or packet) requires
-				 * token rate to be mutiplied by 8.
-				 */
+				 
 				rate = act->police.rate_pkt_ps * 8;
 				burst = act->police.burst_pkt;
 				pps = true;
@@ -549,7 +530,7 @@ static int otx2_tc_prepare_flow(struct otx2_nic *nic, struct otx2_tc_flow *node,
 
 		flow_rule_match_basic(rule, &match);
 
-		/* All EtherTypes can be matched, no hw limitation */
+		 
 		flow_spec->etype = match.key->n_proto;
 		flow_mask->etype = match.mask->n_proto;
 		req->features |= BIT_ULL(NPC_ETYPE);
@@ -825,7 +806,7 @@ static int otx2_tc_add_to_flow_list(struct otx2_flow_config *flow_cfg,
 	struct otx2_tc_flow *tmp;
 	int index = 0;
 
-	/* If the flow list is empty then add the new node */
+	 
 	if (list_empty(&flow_cfg->flow_list_tc)) {
 		list_add(&node->list, &flow_cfg->flow_list_tc);
 		return index;
@@ -855,7 +836,7 @@ static int otx2_add_mcam_flow_entry(struct otx2_nic *nic, struct npc_install_flo
 	}
 
 	memcpy(tmp_req, req, sizeof(struct npc_install_flow_req));
-	/* Send message to AF */
+	 
 	err = otx2_sync_mbox_msg(&nic->mbox);
 	if (err) {
 		netdev_err(nic->netdev, "Failed to install MCAM flow entry %d\n",
@@ -883,7 +864,7 @@ static int otx2_del_mcam_flow_entry(struct otx2_nic *nic, u16 entry, u16 *cntr_v
 
 	req->entry = entry;
 
-	/* Send message to AF */
+	 
 	err = otx2_sync_mbox_msg(&nic->mbox);
 	if (err) {
 		netdev_err(nic->netdev, "Failed to delete MCAM flow entry %d\n",
@@ -918,10 +899,7 @@ static int otx2_tc_update_mcam_table_del_req(struct otx2_nic *nic,
 	int i = 0, index = 0;
 	u16 cntr_val = 0;
 
-	/* Find and delete the entry from the list and re-install
-	 * all the entries from beginning to the index of the
-	 * deleted entry to higher mcam indexes.
-	 */
+	 
 	list_for_each_safe(pos, n, &flow_cfg->flow_list_tc) {
 		tmp = list_entry(pos, struct otx2_tc_flow, list);
 		if (node == tmp) {
@@ -957,11 +935,7 @@ static int otx2_tc_update_mcam_table_add_req(struct otx2_nic *nic,
 	int list_idx, i;
 	u16 cntr_val = 0;
 
-	/* Find the index of the entry(list_idx) whose priority
-	 * is greater than the new entry and re-install all
-	 * the entries from beginning to list_idx to higher
-	 * mcam indexes.
-	 */
+	 
 	list_idx = otx2_tc_add_to_flow_list(flow_cfg, node);
 	for (i = 0; i < list_idx; i++) {
 		tmp = otx2_tc_get_entry_by_index(flow_cfg, i);
@@ -1059,7 +1033,7 @@ static int otx2_tc_add_flow(struct otx2_nic *nic,
 		return -ENOMEM;
 	}
 
-	/* allocate memory for the new flow and it's node */
+	 
 	new_node = kzalloc(sizeof(*new_node), GFP_KERNEL);
 	if (!new_node)
 		return -ENOMEM;
@@ -1075,7 +1049,7 @@ static int otx2_tc_add_flow(struct otx2_nic *nic,
 		return rc;
 	}
 
-	/* If a flow exists with the same cookie, delete it */
+	 
 	old_node = otx2_tc_get_entry_by_cookie(flow_cfg, tc_flow_cmd->cookie);
 	if (old_node)
 		otx2_tc_del_flow(nic, tc_flow_cmd);
@@ -1097,7 +1071,7 @@ static int otx2_tc_add_flow(struct otx2_nic *nic,
 	req->set_cntr = 1;
 	new_node->entry = req->entry;
 
-	/* Send message to AF */
+	 
 	rc = otx2_sync_mbox_msg(&nic->mbox);
 	if (rc) {
 		NL_SET_ERR_MSG_MOD(extack, "Failed to install MCAM flow entry");
@@ -1231,7 +1205,7 @@ static int otx2_tc_ingress_matchall_install(struct otx2_nic *nic,
 	entry = &cls->rule->action.entries[0];
 	switch (entry->id) {
 	case FLOW_ACTION_POLICE:
-		/* Ingress ratelimiting is not supported on OcteonTx2 */
+		 
 		if (is_dev_otx2(nic->pdev)) {
 			NL_SET_ERR_MSG_MOD(extack,
 					   "Ingress policing not supported on this platform");
@@ -1242,7 +1216,7 @@ static int otx2_tc_ingress_matchall_install(struct otx2_nic *nic,
 		if (err)
 			return err;
 
-		/* Convert to bits per second */
+		 
 		rate = entry->police.rate_bytes_ps * 8;
 		err = cn10k_set_matchall_ipolicer_rate(nic, entry->police.burst, rate);
 		if (err)
@@ -1394,7 +1368,7 @@ EXPORT_SYMBOL(otx2_setup_tc);
 
 int otx2_init_tc(struct otx2_nic *nic)
 {
-	/* Exclude receive queue 0 being used for police action */
+	 
 	set_bit(0, &nic->rq_bmap);
 
 	if (!nic->flow_cfg) {
@@ -1441,13 +1415,7 @@ void otx2_tc_apply_ingress_police_rules(struct otx2_nic *nic)
 	struct otx2_flow_config *flow_cfg = nic->flow_cfg;
 	struct otx2_tc_flow *node;
 
-	/* If any ingress policer rules exist for the interface then
-	 * apply those rules. Ingress policer rules depend on bandwidth
-	 * profiles linked to the receive queues. Since no receive queues
-	 * exist when interface is down, ingress policer rules are stored
-	 * and configured in hardware after all receive queues are allocated
-	 * in otx2_open.
-	 */
+	 
 	list_for_each_entry(node, &flow_cfg->flow_list_tc, list) {
 		if (node->is_act_police)
 			otx2_tc_config_ingress_rule(nic, node);

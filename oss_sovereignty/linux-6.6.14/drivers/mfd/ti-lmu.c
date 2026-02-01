@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * TI LMU (Lighting Management Unit) Core Driver
- *
- * Copyright 2017 Texas Instruments
- *
- * Author: Milo Kim <milo.kim@ti.com>
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/err.h>
@@ -30,10 +24,10 @@ static int ti_lmu_enable_hw(struct ti_lmu *lmu, enum ti_lmu_id id)
 	if (lmu->en_gpio)
 		gpiod_set_value(lmu->en_gpio, 1);
 
-	/* Delay about 1ms after HW enable pin control */
+	 
 	usleep_range(1000, 1500);
 
-	/* LM3631 has additional power up sequence - enable LCD_EN bit. */
+	 
 	if (id == LM3631) {
 		return regmap_update_bits(lmu->regmap, LM3631_REG_DEVCTRL,
 					  LM3631_LCD_EN_MASK,
@@ -91,7 +85,7 @@ static const struct mfd_cell lm3633_devices[] = {
 		.name          = "lm3633-leds",
 		.of_compatible = "ti,lm3633-leds",
 	},
-	/* Monitoring driver for open/short circuit detection */
+	 
 	{
 		.name          = "ti-lmu-fault-monitor",
 		.id            = LM3633,
@@ -141,10 +135,7 @@ static int ti_lmu_probe(struct i2c_client *cl)
 	struct ti_lmu *lmu;
 	int ret;
 
-	/*
-	 * Get device specific data from of_match table.
-	 * This data is defined by using TI_LMU_DATA() macro.
-	 */
+	 
 	data = of_device_get_match_data(dev);
 	if (!data)
 		return -ENODEV;
@@ -155,7 +146,7 @@ static int ti_lmu_probe(struct i2c_client *cl)
 
 	lmu->dev = &cl->dev;
 
-	/* Setup regmap */
+	 
 	memset(&regmap_cfg, 0, sizeof(struct regmap_config));
 	regmap_cfg.reg_bits = 8;
 	regmap_cfg.val_bits = 8;
@@ -166,7 +157,7 @@ static int ti_lmu_probe(struct i2c_client *cl)
 	if (IS_ERR(lmu->regmap))
 		return PTR_ERR(lmu->regmap);
 
-	/* HW enable pin control and additional power up sequence if required */
+	 
 	lmu->en_gpio = devm_gpiod_get_optional(dev, "enable", GPIOD_OUT_HIGH);
 	if (IS_ERR(lmu->en_gpio)) {
 		ret = PTR_ERR(lmu->en_gpio);
@@ -182,11 +173,7 @@ static int ti_lmu_probe(struct i2c_client *cl)
 	if (ret)
 		return ret;
 
-	/*
-	 * Fault circuit(open/short) can be detected by ti-lmu-fault-monitor.
-	 * After fault detection is done, some devices should re-initialize
-	 * configuration. The notifier enables such kind of handling.
-	 */
+	 
 	BLOCKING_INIT_NOTIFIER_HEAD(&lmu->notifier);
 
 	i2c_set_clientdata(cl, lmu);

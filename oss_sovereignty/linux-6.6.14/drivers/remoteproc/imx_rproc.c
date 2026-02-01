@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2017 Pengutronix, Oleksij Rempel <kernel@pengutronix.de>
- */
+
+ 
 
 #include <dt-bindings/firmware/imx/rsrc.h>
 #include <linux/arm-smccc.h>
@@ -46,7 +44,7 @@
 #define IMX8M_GPR22			0x58
 #define IMX8M_GPR22_CM7_CPUWAIT		BIT(0)
 
-/* Address: 0x020D8000 */
+ 
 #define IMX6SX_SRC_SCR			0x00
 #define IMX6SX_ENABLE_M4		BIT(22)
 #define IMX6SX_SW_M4P_RST		BIT(12)
@@ -70,20 +68,15 @@
 
 #define IMX_SC_IRQ_GROUP_REBOOTED	5
 
-/**
- * struct imx_rproc_mem - slim internal memory structure
- * @cpu_addr: MPU virtual address of the memory region
- * @sys_addr: Bus address used to access the memory region
- * @size: Size of the memory region
- */
+ 
 struct imx_rproc_mem {
 	void __iomem *cpu_addr;
 	phys_addr_t sys_addr;
 	size_t size;
 };
 
-/* att flags: lower 16 bits specifying core, higher 16 bits for flags  */
-/* M4 own area. Can be mapped at probe */
+ 
+ 
 #define ATT_OWN         BIT(31)
 #define ATT_IOMEM       BIT(30)
 
@@ -110,9 +103,9 @@ struct imx_rproc {
 	void __iomem			*rsc_table;
 	struct imx_sc_ipc		*ipc_handle;
 	struct notifier_block		rproc_nb;
-	u32				rproc_pt;	/* partition id */
-	u32				rsrc_id;	/* resource id */
-	u32				entry;		/* cpu start address */
+	u32				rproc_pt;	 
+	u32				rsrc_id;	 
+	u32				entry;		 
 	int                             num_pd;
 	u32				core_index;
 	struct device                   **pd_dev;
@@ -120,24 +113,24 @@ struct imx_rproc {
 };
 
 static const struct imx_rproc_att imx_rproc_att_imx93[] = {
-	/* dev addr , sys addr  , size	    , flags */
-	/* TCM CODE NON-SECURE */
+	 
+	 
 	{ 0x0FFC0000, 0x201C0000, 0x00020000, ATT_OWN | ATT_IOMEM },
 	{ 0x0FFE0000, 0x201E0000, 0x00020000, ATT_OWN | ATT_IOMEM },
 
-	/* TCM CODE SECURE */
+	 
 	{ 0x1FFC0000, 0x201C0000, 0x00020000, ATT_OWN | ATT_IOMEM },
 	{ 0x1FFE0000, 0x201E0000, 0x00020000, ATT_OWN | ATT_IOMEM },
 
-	/* TCM SYS NON-SECURE*/
+	 
 	{ 0x20000000, 0x20200000, 0x00020000, ATT_OWN | ATT_IOMEM },
 	{ 0x20020000, 0x20220000, 0x00020000, ATT_OWN | ATT_IOMEM },
 
-	/* TCM SYS SECURE*/
+	 
 	{ 0x30000000, 0x20200000, 0x00020000, ATT_OWN | ATT_IOMEM },
 	{ 0x30020000, 0x20220000, 0x00020000, ATT_OWN | ATT_IOMEM },
 
-	/* DDR */
+	 
 	{ 0x80000000, 0x80000000, 0x10000000, 0 },
 	{ 0x90000000, 0x80000000, 0x10000000, 0 },
 
@@ -146,85 +139,85 @@ static const struct imx_rproc_att imx_rproc_att_imx93[] = {
 };
 
 static const struct imx_rproc_att imx_rproc_att_imx8qm[] = {
-	/* dev addr , sys addr  , size      , flags */
+	 
 	{ 0x08000000, 0x08000000, 0x10000000, 0},
-	/* TCML */
+	 
 	{ 0x1FFE0000, 0x34FE0000, 0x00020000, ATT_OWN | ATT_IOMEM | ATT_CORE(0)},
 	{ 0x1FFE0000, 0x38FE0000, 0x00020000, ATT_OWN | ATT_IOMEM | ATT_CORE(1)},
-	/* TCMU */
+	 
 	{ 0x20000000, 0x35000000, 0x00020000, ATT_OWN | ATT_IOMEM | ATT_CORE(0)},
 	{ 0x20000000, 0x39000000, 0x00020000, ATT_OWN | ATT_IOMEM | ATT_CORE(1)},
-	/* DDR (Data) */
+	 
 	{ 0x80000000, 0x80000000, 0x60000000, 0 },
 };
 
 static const struct imx_rproc_att imx_rproc_att_imx8qxp[] = {
 	{ 0x08000000, 0x08000000, 0x10000000, 0 },
-	/* TCML/U */
+	 
 	{ 0x1FFE0000, 0x34FE0000, 0x00040000, ATT_OWN | ATT_IOMEM },
-	/* OCRAM(Low 96KB) */
+	 
 	{ 0x21000000, 0x00100000, 0x00018000, 0 },
-	/* OCRAM */
+	 
 	{ 0x21100000, 0x00100000, 0x00040000, 0 },
-	/* DDR (Data) */
+	 
 	{ 0x80000000, 0x80000000, 0x60000000, 0 },
 };
 
 static const struct imx_rproc_att imx_rproc_att_imx8mn[] = {
-	/* dev addr , sys addr  , size	    , flags */
-	/* ITCM   */
+	 
+	 
 	{ 0x00000000, 0x007E0000, 0x00020000, ATT_OWN | ATT_IOMEM },
-	/* OCRAM_S */
+	 
 	{ 0x00180000, 0x00180000, 0x00009000, 0 },
-	/* OCRAM */
+	 
 	{ 0x00900000, 0x00900000, 0x00020000, 0 },
-	/* OCRAM */
+	 
 	{ 0x00920000, 0x00920000, 0x00020000, 0 },
-	/* OCRAM */
+	 
 	{ 0x00940000, 0x00940000, 0x00050000, 0 },
-	/* QSPI Code - alias */
+	 
 	{ 0x08000000, 0x08000000, 0x08000000, 0 },
-	/* DDR (Code) - alias */
+	 
 	{ 0x10000000, 0x40000000, 0x0FFE0000, 0 },
-	/* DTCM */
+	 
 	{ 0x20000000, 0x00800000, 0x00020000, ATT_OWN | ATT_IOMEM },
-	/* OCRAM_S - alias */
+	 
 	{ 0x20180000, 0x00180000, 0x00008000, ATT_OWN },
-	/* OCRAM */
+	 
 	{ 0x20200000, 0x00900000, 0x00020000, ATT_OWN },
-	/* OCRAM */
+	 
 	{ 0x20220000, 0x00920000, 0x00020000, ATT_OWN },
-	/* OCRAM */
+	 
 	{ 0x20240000, 0x00940000, 0x00040000, ATT_OWN },
-	/* DDR (Data) */
+	 
 	{ 0x40000000, 0x40000000, 0x80000000, 0 },
 };
 
 static const struct imx_rproc_att imx_rproc_att_imx8mq[] = {
-	/* dev addr , sys addr  , size	    , flags */
-	/* TCML - alias */
+	 
+	 
 	{ 0x00000000, 0x007e0000, 0x00020000, ATT_IOMEM},
-	/* OCRAM_S */
+	 
 	{ 0x00180000, 0x00180000, 0x00008000, 0 },
-	/* OCRAM */
+	 
 	{ 0x00900000, 0x00900000, 0x00020000, 0 },
-	/* OCRAM */
+	 
 	{ 0x00920000, 0x00920000, 0x00020000, 0 },
-	/* QSPI Code - alias */
+	 
 	{ 0x08000000, 0x08000000, 0x08000000, 0 },
-	/* DDR (Code) - alias */
+	 
 	{ 0x10000000, 0x80000000, 0x0FFE0000, 0 },
-	/* TCML */
+	 
 	{ 0x1FFE0000, 0x007E0000, 0x00020000, ATT_OWN  | ATT_IOMEM},
-	/* TCMU */
+	 
 	{ 0x20000000, 0x00800000, 0x00020000, ATT_OWN  | ATT_IOMEM},
-	/* OCRAM_S */
+	 
 	{ 0x20180000, 0x00180000, 0x00008000, ATT_OWN },
-	/* OCRAM */
+	 
 	{ 0x20200000, 0x00900000, 0x00020000, ATT_OWN },
-	/* OCRAM */
+	 
 	{ 0x20220000, 0x00920000, 0x00020000, ATT_OWN },
-	/* DDR (Data) */
+	 
 	{ 0x40000000, 0x40000000, 0x80000000, 0 },
 };
 
@@ -243,52 +236,52 @@ static const struct imx_rproc_att imx_rproc_att_imx7ulp[] = {
 };
 
 static const struct imx_rproc_att imx_rproc_att_imx7d[] = {
-	/* dev addr , sys addr  , size	    , flags */
-	/* OCRAM_S (M4 Boot code) - alias */
+	 
+	 
 	{ 0x00000000, 0x00180000, 0x00008000, 0 },
-	/* OCRAM_S (Code) */
+	 
 	{ 0x00180000, 0x00180000, 0x00008000, ATT_OWN },
-	/* OCRAM (Code) - alias */
+	 
 	{ 0x00900000, 0x00900000, 0x00020000, 0 },
-	/* OCRAM_EPDC (Code) - alias */
+	 
 	{ 0x00920000, 0x00920000, 0x00020000, 0 },
-	/* OCRAM_PXP (Code) - alias */
+	 
 	{ 0x00940000, 0x00940000, 0x00008000, 0 },
-	/* TCML (Code) */
+	 
 	{ 0x1FFF8000, 0x007F8000, 0x00008000, ATT_OWN | ATT_IOMEM },
-	/* DDR (Code) - alias, first part of DDR (Data) */
+	 
 	{ 0x10000000, 0x80000000, 0x0FFF0000, 0 },
 
-	/* TCMU (Data) */
+	 
 	{ 0x20000000, 0x00800000, 0x00008000, ATT_OWN | ATT_IOMEM },
-	/* OCRAM (Data) */
+	 
 	{ 0x20200000, 0x00900000, 0x00020000, 0 },
-	/* OCRAM_EPDC (Data) */
+	 
 	{ 0x20220000, 0x00920000, 0x00020000, 0 },
-	/* OCRAM_PXP (Data) */
+	 
 	{ 0x20240000, 0x00940000, 0x00008000, 0 },
-	/* DDR (Data) */
+	 
 	{ 0x80000000, 0x80000000, 0x60000000, 0 },
 };
 
 static const struct imx_rproc_att imx_rproc_att_imx6sx[] = {
-	/* dev addr , sys addr  , size	    , flags */
-	/* TCML (M4 Boot Code) - alias */
+	 
+	 
 	{ 0x00000000, 0x007F8000, 0x00008000, ATT_IOMEM },
-	/* OCRAM_S (Code) */
+	 
 	{ 0x00180000, 0x008F8000, 0x00004000, 0 },
-	/* OCRAM_S (Code) - alias */
+	 
 	{ 0x00180000, 0x008FC000, 0x00004000, 0 },
-	/* TCML (Code) */
+	 
 	{ 0x1FFF8000, 0x007F8000, 0x00008000, ATT_OWN | ATT_IOMEM },
-	/* DDR (Code) - alias, first part of DDR (Data) */
+	 
 	{ 0x10000000, 0x80000000, 0x0FFF8000, 0 },
 
-	/* TCMU (Data) */
+	 
 	{ 0x20000000, 0x00800000, 0x00008000, ATT_OWN | ATT_IOMEM },
-	/* OCRAM_S (Data) - alias? */
+	 
 	{ 0x208F8000, 0x008F8000, 0x00004000, 0 },
-	/* DDR (Data) */
+	 
 	{ 0x80000000, 0x80000000, 0x60000000, 0 },
 };
 
@@ -460,16 +453,11 @@ static int imx_rproc_da_to_sys(struct imx_rproc *priv, u64 da,
 	const struct imx_rproc_dcfg *dcfg = priv->dcfg;
 	int i;
 
-	/* parse address translation table */
+	 
 	for (i = 0; i < dcfg->att_size; i++) {
 		const struct imx_rproc_att *att = &dcfg->att[i];
 
-		/*
-		 * Ignore entries not belong to current core:
-		 * i.MX8QM has dual general M4_[0,1] cores, M4_0's own entries
-		 * has "ATT_CORE(0) & BIT(0)" true, M4_1's own entries has
-		 * "ATT_CORE(1) & BIT(1)" true.
-		 */
+		 
 		if (att->flags & ATT_CORE_MASK) {
 			if (!((BIT(priv->core_index)) & (att->flags & ATT_CORE_MASK)))
 				continue;
@@ -500,10 +488,7 @@ static void *imx_rproc_da_to_va(struct rproc *rproc, u64 da, size_t len, bool *i
 	if (len == 0)
 		return NULL;
 
-	/*
-	 * On device side we have many aliases, so we need to convert device
-	 * address (M4) to system bus address first.
-	 */
+	 
 	if (imx_rproc_da_to_sys(priv, da, len, &sys, is_iomem))
 		return NULL;
 
@@ -511,7 +496,7 @@ static void *imx_rproc_da_to_va(struct rproc *rproc, u64 da, size_t len, bool *i
 		if (sys >= priv->mem[i].sys_addr && sys + len <
 		    priv->mem[i].sys_addr +  priv->mem[i].size) {
 			unsigned int offset = sys - priv->mem[i].sys_addr;
-			/* __force to make sparse happy with type conversion */
+			 
 			va = (__force void *)(priv->mem[i].cpu_addr + offset);
 			break;
 		}
@@ -537,7 +522,7 @@ static int imx_rproc_mem_alloc(struct rproc *rproc,
 		return -ENOMEM;
 	}
 
-	/* Update memory entry va */
+	 
 	mem->va = va;
 
 	return 0;
@@ -561,13 +546,10 @@ static int imx_rproc_prepare(struct rproc *rproc)
 	struct reserved_mem *rmem;
 	u32 da;
 
-	/* Register associated reserved memory regions */
+	 
 	of_phandle_iterator_init(&it, np, "memory-region", NULL, 0);
 	while (of_phandle_iterator_next(&it) == 0) {
-		/*
-		 * Ignore the first memory region which will be used vdev buffer.
-		 * No need to do extra handlings, rproc_add_virtio_dev will handle it.
-		 */
+		 
 		if (!strcmp(it.node->name, "vdev0buffer"))
 			continue;
 
@@ -581,10 +563,10 @@ static int imx_rproc_prepare(struct rproc *rproc)
 			return -EINVAL;
 		}
 
-		/* No need to translate pa to da, i.MX use same map */
+		 
 		da = rmem->base;
 
-		/* Register memory region */
+		 
 		mem = rproc_mem_entry_init(priv->dev, NULL, (dma_addr_t)rmem->base, rmem->size, da,
 					   imx_rproc_mem_alloc, imx_rproc_mem_release,
 					   it.node->name);
@@ -624,10 +606,7 @@ static void imx_rproc_kick(struct rproc *rproc, int vqid)
 		return;
 	}
 
-	/*
-	 * Send the index of the triggered virtqueue as the mu payload.
-	 * Let remote processor know which virtqueue is used.
-	 */
+	 
 	mmsg = vqid << 16;
 
 	err = mbox_send_message(priv->tx_ch, (void *)&mmsg);
@@ -661,7 +640,7 @@ static struct resource_table *imx_rproc_get_loaded_rsc_table(struct rproc *rproc
 {
 	struct imx_rproc *priv = rproc->priv;
 
-	/* The resource table has already been mapped in imx_rproc_addr_init */
+	 
 	if (!priv->rsc_table)
 		return NULL;
 
@@ -693,7 +672,7 @@ static int imx_rproc_addr_init(struct imx_rproc *priv,
 	struct device_node *np = dev->of_node;
 	int a, b = 0, err, nph;
 
-	/* remap required addresses */
+	 
 	for (a = 0; a < dcfg->att_size; a++) {
 		const struct imx_rproc_att *att = &dcfg->att[a];
 
@@ -718,18 +697,18 @@ static int imx_rproc_addr_init(struct imx_rproc *priv,
 		b++;
 	}
 
-	/* memory-region is optional property */
+	 
 	nph = of_count_phandle_with_args(np, "memory-region", NULL);
 	if (nph <= 0)
 		return 0;
 
-	/* remap optional addresses */
+	 
 	for (a = 0; a < nph; a++) {
 		struct device_node *node;
 		struct resource res;
 
 		node = of_parse_phandle(np, "memory-region", a);
-		/* Not map vdevbuffer, vdevring region */
+		 
 		if (!strncmp(node->name, "vdev", strlen("vdev"))) {
 			of_node_put(node);
 			continue;
@@ -744,7 +723,7 @@ static int imx_rproc_addr_init(struct imx_rproc *priv,
 		if (b >= IMX_RPROC_MEM_MAX)
 			break;
 
-		/* Not use resource version, because we might share region */
+		 
 		priv->mem[b].cpu_addr = devm_ioremap_wc(&pdev->dev, res.start, resource_size(&res));
 		if (!priv->mem[b].cpu_addr) {
 			dev_err(dev, "failed to remap %pr\n", &res);
@@ -792,15 +771,7 @@ static int imx_rproc_xtr_mbox_init(struct rproc *rproc)
 	struct device *dev = priv->dev;
 	struct mbox_client *cl;
 
-	/*
-	 * stop() and detach() will free the mbox channels, so need
-	 * to request mbox channels in start() and attach().
-	 *
-	 * Because start() and attach() not able to handle mbox defer
-	 * probe, imx_rproc_xtr_mbox_init is also called in probe().
-	 * The check is to avoid request mbox again when start() or
-	 * attach() after probe() returns success.
-	 */
+	 
 	if (priv->tx_ch && priv->rx_ch)
 		return 0;
 
@@ -866,7 +837,7 @@ static int imx_rproc_partition_notify(struct notifier_block *nb,
 {
 	struct imx_rproc *priv = container_of(nb, struct imx_rproc, rproc_nb);
 
-	/* Ignore other irqs */
+	 
 	if (!((event & BIT(priv->rproc_pt)) && (*(u8 *)group == IMX_SC_IRQ_GROUP_REBOOTED)))
 		return 0;
 
@@ -882,10 +853,7 @@ static int imx_rproc_attach_pd(struct imx_rproc *priv)
 	struct device *dev = priv->dev;
 	int ret, i;
 
-	/*
-	 * If there is only one power-domain entry, the platform driver framework
-	 * will handle it, no need handle it in this driver.
-	 */
+	 
 	priv->num_pd = of_count_phandle_with_args(dev->of_node, "power-domains",
 						  "#power-domain-cells");
 	if (priv->num_pd <= 1)
@@ -933,10 +901,7 @@ static int imx_rproc_detach_pd(struct rproc *rproc)
 	struct imx_rproc *priv = rproc->priv;
 	int i;
 
-	/*
-	 * If there is only one power-domain entry, the platform driver framework
-	 * will handle it, no need handle it in this driver.
-	 */
+	 
 	if (priv->num_pd <= 1)
 		return 0;
 
@@ -983,10 +948,7 @@ static int imx_rproc_detect_mode(struct imx_rproc *priv)
 		else
 			priv->core_index = 0;
 
-		/*
-		 * If Mcore resource is not owned by Acore partition, It is kicked by ROM,
-		 * and Linux could only do IPC with Mcore and nothing else.
-		 */
+		 
 		if (imx_sc_rm_is_resource_owned(priv->ipc_handle, priv->rsrc_id)) {
 			if (of_property_read_u32(dev->of_node, "fsl,entry-address", &priv->entry))
 				return -EINVAL;
@@ -998,7 +960,7 @@ static int imx_rproc_detect_mode(struct imx_rproc *priv)
 		priv->rproc->recovery_disabled = false;
 		rproc_set_feature(priv->rproc, RPROC_FEAT_ATTACH_ON_RECOVERY);
 
-		/* Get partition id and enable irq in SCFW */
+		 
 		ret = imx_sc_rm_get_resource_owner(priv->ipc_handle, priv->rsrc_id, &pt);
 		if (ret) {
 			dev_err(dev, "not able to get resource owner\n");
@@ -1043,11 +1005,7 @@ static int imx_rproc_detect_mode(struct imx_rproc *priv)
 	if (priv->gpr) {
 		ret = regmap_read(priv->gpr, dcfg->gpr_reg, &val);
 		if (val & dcfg->gpr_wait) {
-			/*
-			 * After cold boot, the CM indicates its in wait
-			 * state, but not fully powered off. Power it off
-			 * fully so firmware can be loaded into it.
-			 */
+			 
 			imx_rproc_stop(priv->rproc);
 			return 0;
 		}
@@ -1071,7 +1029,7 @@ static int imx_rproc_clk_enable(struct imx_rproc *priv)
 	struct device *dev = priv->dev;
 	int ret;
 
-	/* Remote core is not under control of Linux */
+	 
 	if (dcfg->method == IMX_RPROC_NONE)
 		return 0;
 
@@ -1081,10 +1039,7 @@ static int imx_rproc_clk_enable(struct imx_rproc *priv)
 		return PTR_ERR(priv->clk);
 	}
 
-	/*
-	 * clk for M4 block including memory. Should be
-	 * enabled before .start for FW transfer.
-	 */
+	 
 	ret = clk_prepare_enable(priv->clk);
 	if (ret) {
 		dev_err(dev, "Failed to enable clock\n");
@@ -1103,7 +1058,7 @@ static int imx_rproc_probe(struct platform_device *pdev)
 	const struct imx_rproc_dcfg *dcfg;
 	int ret;
 
-	/* set some other name then imx */
+	 
 	rproc = rproc_alloc(dev, "imx-rproc", &imx_rproc_ops,
 			    NULL, sizeof(*priv));
 	if (!rproc)

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #ifdef __aarch64__
 #include <asm/hwcap.h>
@@ -168,7 +168,7 @@ TEST_F(mdwe, mmap_FIXED)
 	self->p = mmap(NULL, self->size, PROT_READ, self->flags, 0, 0);
 	ASSERT_NE(self->p, MAP_FAILED);
 
-	/* MAP_FIXED unmaps the existing page before mapping which is allowed */
+	 
 	p = mmap(self->p, self->size, PROT_READ | PROT_EXEC,
 		 self->flags | MAP_FIXED, 0, 0);
 	EXPECT_EQ(p, self->p);

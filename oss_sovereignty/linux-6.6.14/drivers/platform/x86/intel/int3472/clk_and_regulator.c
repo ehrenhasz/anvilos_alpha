@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Author: Dan Scally <djrscally@gmail.com> */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/clkdev.h>
@@ -12,11 +12,7 @@
 
 #include "common.h"
 
-/*
- * 82c0d13a-78c5-4244-9bb1-eb8b539a8d11
- * This _DSM GUID allows controlling the sensor clk when it is not controlled
- * through a GPIO.
- */
+ 
 static const guid_t img_clk_guid =
 	GUID_INIT(0x82c0d13a, 0x78c5, 0x4244,
 		  0x9b, 0xb1, 0xeb, 0x8b, 0x53, 0x9a, 0x8d, 0x11);
@@ -47,11 +43,7 @@ static void skl_int3472_enable_clk(struct int3472_clock *clk, int enable)
 			  0, 1, &argv4);
 }
 
-/*
- * The regulators have to have .ops to be valid, but the only ops we actually
- * support are .enable and .disable which are handled via .ena_gpiod. Pass an
- * empty struct to clear the check without lying about capabilities.
- */
+ 
 static const struct regulator_ops int3472_gpio_regulator_ops;
 
 static int skl_int3472_clk_prepare(struct clk_hw *hw)
@@ -67,18 +59,13 @@ static void skl_int3472_clk_unprepare(struct clk_hw *hw)
 
 static int skl_int3472_clk_enable(struct clk_hw *hw)
 {
-	/*
-	 * We're just turning a GPIO on to enable the clock, which operation
-	 * has the potential to sleep. Given .enable() cannot sleep, but
-	 * .prepare() can, we toggle the GPIO in .prepare() instead. Thus,
-	 * nothing to do here.
-	 */
+	 
 	return 0;
 }
 
 static void skl_int3472_clk_disable(struct clk_hw *hw)
 {
-	/* Likewise, nothing to do here... */
+	 
 }
 
 static unsigned int skl_int3472_get_clk_frequency(struct int3472_discrete_device *int3472)
@@ -88,7 +75,7 @@ static unsigned int skl_int3472_get_clk_frequency(struct int3472_discrete_device
 
 	obj = skl_int3472_get_acpi_buffer(int3472->sensor, "SSDB");
 	if (IS_ERR(obj))
-		return 0; /* report rate as 0 on error */
+		return 0;  
 
 	if (obj->buffer.length < CIO2_SENSOR_SSDB_MCLKSPEED_OFFSET + sizeof(u32)) {
 		dev_err(int3472->dev, "The buffer is too small\n");
@@ -128,10 +115,10 @@ int skl_int3472_register_dsm_clock(struct int3472_discrete_device *int3472)
 	int ret;
 
 	if (int3472->clock.cl)
-		return 0; /* A GPIO controlled clk has already been registered */
+		return 0;  
 
 	if (!acpi_check_dsm(adev->handle, &img_clk_guid, 0, BIT(1)))
-		return 0; /* DSM clock control is not available */
+		return 0;  
 
 	init.name = kasprintf(GFP_KERNEL, "%s-clk", acpi_dev_name(adev));
 	if (!init.name)
@@ -185,7 +172,7 @@ int skl_int3472_register_gpio_clock(struct int3472_discrete_device *int3472,
 	if (polarity == GPIO_ACTIVE_LOW)
 		gpiod_toggle_active_low(int3472->clock.ena_gpio);
 
-	/* Ensure the pin is in output mode and non-active state */
+	 
 	gpiod_direction_output(int3472->clock.ena_gpio, 0);
 
 	init.name = kasprintf(GFP_KERNEL, "%s-clk",
@@ -235,17 +222,7 @@ void skl_int3472_unregister_clock(struct int3472_discrete_device *int3472)
 	gpiod_put(int3472->clock.ena_gpio);
 }
 
-/*
- * The INT3472 device is going to be the only supplier of a regulator for
- * the sensor device. But unlike the clk framework the regulator framework
- * does not allow matching by consumer-device-name only.
- *
- * Ideally all sensor drivers would use "avdd" as supply-id. But for drivers
- * where this cannot be changed because another supply-id is already used in
- * e.g. DeviceTree files an alias for the other supply-id can be added here.
- *
- * Do not forget to update GPIO_REGULATOR_SUPPLY_MAP_COUNT when changing this.
- */
+ 
 static const char * const skl_int3472_regulator_map_supplies[] = {
 	"avdd",
 	"AVDD",
@@ -254,15 +231,10 @@ static const char * const skl_int3472_regulator_map_supplies[] = {
 static_assert(ARRAY_SIZE(skl_int3472_regulator_map_supplies) ==
 	      GPIO_REGULATOR_SUPPLY_MAP_COUNT);
 
-/*
- * On some models there is a single GPIO regulator which is shared between
- * sensors and only listed in the ACPI resources of one sensor.
- * This DMI table contains the name of the second sensor. This is used to add
- * entries for the second sensor to the supply_map.
- */
+ 
 static const struct dmi_system_id skl_int3472_regulator_second_sensor[] = {
 	{
-		/* Lenovo Miix 510-12IKB */
+		 
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "LENOVO"),
 			DMI_MATCH(DMI_PRODUCT_VERSION, "MIIX 510-12IKB"),
@@ -322,7 +294,7 @@ int skl_int3472_register_regulator(struct int3472_discrete_device *int3472,
 		return dev_err_probe(int3472->dev, ret, "getting regulator GPIO\n");
 	}
 
-	/* Ensure the pin is in output mode and non-active state */
+	 
 	gpiod_direction_output(int3472->regulator.gpio, 0);
 
 	cfg.dev = &int3472->adev->dev;

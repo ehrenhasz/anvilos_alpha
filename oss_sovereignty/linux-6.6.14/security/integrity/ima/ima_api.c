@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2008 IBM Corporation
- *
- * Author: Mimi Zohar <zohar@us.ibm.com>
- *
- * File: ima_api.c
- *	Implements must_appraise_or_measure, collect_measurement,
- *	appraise_measurement, store_measurement and store_template.
- */
+
+ 
 #include <linux/slab.h>
 #include <linux/file.h>
 #include <linux/fs.h>
@@ -17,9 +9,7 @@
 
 #include "ima.h"
 
-/*
- * ima_free_template_entry - free an existing template entry
- */
+ 
 void ima_free_template_entry(struct ima_template_entry *entry)
 {
 	int i;
@@ -31,9 +21,7 @@ void ima_free_template_entry(struct ima_template_entry *entry)
 	kfree(entry);
 }
 
-/*
- * ima_alloc_init_template - create and initialize a new template entry
- */
+ 
 int ima_alloc_init_template(struct ima_event_data *event_data,
 			    struct ima_template_entry **entry,
 			    struct ima_template_desc *desc)
@@ -83,22 +71,7 @@ out:
 	return result;
 }
 
-/*
- * ima_store_template - store ima template measurements
- *
- * Calculate the hash of a template entry, add the template entry
- * to an ordered list of measurement entries maintained inside the kernel,
- * and also update the aggregate integrity value (maintained inside the
- * configured TPM PCR) over the hashes of the current list of measurement
- * entries.
- *
- * Applications retrieve the current kernel-held measurement list through
- * the securityfs entries in /sys/kernel/security/ima. The signed aggregate
- * TPM PCR (called quote) can be retrieved using a TPM user space library
- * and is used to validate the measurement list.
- *
- * Returns 0 on success, error code otherwise
- */
+ 
 int ima_store_template(struct ima_template_entry *entry,
 		       int violation, struct inode *inode,
 		       const unsigned char *filename, int pcr)
@@ -123,13 +96,7 @@ int ima_store_template(struct ima_template_entry *entry,
 	return result;
 }
 
-/*
- * ima_add_violation - add violation to measurement list.
- *
- * Violations are flagged in the measurement list with zero hash values.
- * By extending the PCR with 0xFF's instead of with zeroes, the PCR
- * value is invalidated.
- */
+ 
 void ima_add_violation(struct file *file, const unsigned char *filename,
 		       struct integrity_iint_cache *iint,
 		       const char *op, const char *cause)
@@ -143,7 +110,7 @@ void ima_add_violation(struct file *file, const unsigned char *filename,
 	int violation = 1;
 	int result;
 
-	/* can overflow, only indicator */
+	 
 	atomic_long_inc(&ima_htable.violations);
 
 	result = ima_alloc_init_template(&event_data, &entry, NULL);
@@ -160,32 +127,7 @@ err_out:
 			    op, cause, result, 0);
 }
 
-/**
- * ima_get_action - appraise & measure decision based on policy.
- * @idmap: idmap of the mount the inode was found from
- * @inode: pointer to the inode associated with the object being validated
- * @cred: pointer to credentials structure to validate
- * @secid: secid of the task being validated
- * @mask: contains the permission mask (MAY_READ, MAY_WRITE, MAY_EXEC,
- *        MAY_APPEND)
- * @func: caller identifier
- * @pcr: pointer filled in if matched measure policy sets pcr=
- * @template_desc: pointer filled in if matched measure policy sets template=
- * @func_data: func specific data, may be NULL
- * @allowed_algos: allowlist of hash algorithms for the IMA xattr
- *
- * The policy is defined in terms of keypairs:
- *		subj=, obj=, type=, func=, mask=, fsmagic=
- *	subj,obj, and type: are LSM specific.
- *	func: FILE_CHECK | BPRM_CHECK | CREDS_CHECK | MMAP_CHECK | MODULE_CHECK
- *	| KEXEC_CMDLINE | KEY_CHECK | CRITICAL_DATA | SETXATTR_CHECK
- *	| MMAP_CHECK_REQPROT
- *	mask: contains the permission mask
- *	fsmagic: hex value
- *
- * Returns IMA_MEASURE, IMA_APPRAISE mask.
- *
- */
+ 
 int ima_get_action(struct mnt_idmap *idmap, struct inode *inode,
 		   const struct cred *cred, u32 secid, int mask,
 		   enum ima_hooks func, int *pcr,
@@ -207,36 +149,18 @@ static bool ima_get_verity_digest(struct integrity_iint_cache *iint,
 	enum hash_algo alg;
 	int digest_len;
 
-	/*
-	 * On failure, 'measure' policy rules will result in a file data
-	 * hash containing 0's.
-	 */
+	 
 	digest_len = fsverity_get_digest(iint->inode, hash->digest, NULL, &alg);
 	if (digest_len == 0)
 		return false;
 
-	/*
-	 * Unlike in the case of actually calculating the file hash, in
-	 * the fsverity case regardless of the hash algorithm, return
-	 * the verity digest to be included in the measurement list. A
-	 * mismatch between the verity algorithm and the xattr signature
-	 * algorithm, if one exists, will be detected later.
-	 */
+	 
 	hash->hdr.algo = alg;
 	hash->hdr.length = digest_len;
 	return true;
 }
 
-/*
- * ima_collect_measurement - collect file measurement
- *
- * Calculate the file hash, if it doesn't already exist,
- * storing the measurement and i_version in the iint.
- *
- * Must be called with iint->mutex held.
- *
- * Return 0 on success, error code otherwise
- */
+ 
 int ima_collect_measurement(struct integrity_iint_cache *iint,
 			    struct file *file, void *buf, loff_t size,
 			    enum hash_algo algo, struct modsig *modsig)
@@ -252,23 +176,14 @@ int ima_collect_measurement(struct integrity_iint_cache *iint,
 	void *tmpbuf;
 	u64 i_version = 0;
 
-	/*
-	 * Always collect the modsig, because IMA might have already collected
-	 * the file digest without collecting the modsig in a previous
-	 * measurement rule.
-	 */
+	 
 	if (modsig)
 		ima_collect_modsig(modsig, buf, size);
 
 	if (iint->flags & IMA_COLLECTED)
 		goto out;
 
-	/*
-	 * Detecting file change is based on i_version. On filesystems
-	 * which do not support i_version, support was originally limited
-	 * to an initial measurement/appraisal/audit, but was modified to
-	 * assume the file changed.
-	 */
+	 
 	result = vfs_getattr_nosec(&file->f_path, &stat, STATX_CHANGE_COOKIE,
 				   AT_STATX_SYNC_AS_STAT);
 	if (!result && (stat.result_mask & STATX_CHANGE_COOKIE))
@@ -276,7 +191,7 @@ int ima_collect_measurement(struct integrity_iint_cache *iint,
 	hash.hdr.algo = algo;
 	hash.hdr.length = hash_digest_size[algo];
 
-	/* Initialize hash digest to 0's in case of failure */
+	 
 	memset(&hash.digest, 0, sizeof(hash.digest));
 
 	if (iint->flags & IMA_VERITY_REQUIRED) {
@@ -308,7 +223,7 @@ int ima_collect_measurement(struct integrity_iint_cache *iint,
 		iint->real_dev = real_inode->i_sb->s_dev;
 	}
 
-	/* Possibly temporary failure due to type of read (eg. O_DIRECT) */
+	 
 	if (!result)
 		iint->flags |= IMA_COLLECTED;
 out:
@@ -323,21 +238,7 @@ out:
 	return result;
 }
 
-/*
- * ima_store_measurement - store file measurement
- *
- * Create an "ima" template and then store the template by calling
- * ima_store_template.
- *
- * We only get here if the inode has not already been measured,
- * but the measurement could already exist:
- *	- multiple copies of the same file on either the same or
- *	  different filesystems.
- *	- the inode was previously flushed as well as the iint info,
- *	  containing the hashing info.
- *
- * Must be called with iint->mutex held.
- */
+ 
 void ima_store_measurement(struct integrity_iint_cache *iint,
 			   struct file *file, const unsigned char *filename,
 			   struct evm_ima_xattr_data *xattr_value,
@@ -357,12 +258,7 @@ void ima_store_measurement(struct integrity_iint_cache *iint,
 					     .modsig = modsig };
 	int violation = 0;
 
-	/*
-	 * We still need to store the measurement in the case of MODSIG because
-	 * we only have its contents to put in the list at the time of
-	 * appraisal, but a file measurement from earlier might already exist in
-	 * the measurement list.
-	 */
+	 
 	if (iint->measured_pcrs & (0x1 << pcr) && !modsig)
 		return;
 
@@ -419,16 +315,7 @@ out:
 	return;
 }
 
-/*
- * ima_d_path - return a pointer to the full pathname
- *
- * Attempt to return a pointer to the full pathname for use in the
- * IMA measurement list, IMA audit records, and auditing logs.
- *
- * On failure, return a pointer to a copy of the filename, not dname.
- * Returning a pointer to dname, could result in using the pointer
- * after the memory has been freed.
- */
+ 
 const char *ima_d_path(const struct path *path, char **pathbuf, char *namebuf)
 {
 	char *pathname = NULL;

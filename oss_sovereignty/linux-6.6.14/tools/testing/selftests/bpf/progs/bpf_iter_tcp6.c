@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2020 Facebook */
+
+ 
 #include "bpf_iter.h"
 #include "bpf_tracing_net.h"
 #include <bpf/bpf_helpers.h>
@@ -23,9 +23,7 @@ extern unsigned CONFIG_HZ __kconfig;
 #define NSEC_PER_SEC	1000000000ULL
 static clock_t jiffies_to_clock_t(unsigned long x)
 {
-	/* The implementation here tailored to a particular
-	 * setting of USER_HZ.
-	 */
+	 
 	u64 tick_nsec = (NSEC_PER_SEC + CONFIG_HZ/2) / CONFIG_HZ;
 	u64 user_hz_nsec = NSEC_PER_SEC / USER_HZ;
 

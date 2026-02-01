@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) STMicroelectronics SA 2014
- * Author: Benjamin Gaignard <benjamin.gaignard@st.com> for STMicroelectronics.
- */
+ 
+ 
 
 #ifndef _STI_PLANE_H_
 #define _STI_PLANE_H_
@@ -58,14 +55,7 @@ struct sti_fps_info {
 	char fips_str[FPS_LENGTH];
 };
 
-/**
- * STI plane structure
- *
- * @plane:              drm plane it is bound to (if any)
- * @desc:               plane type & id
- * @status:             to know the status of the plane
- * @fps_info:           frame per second info
- */
+ 
 struct sti_plane {
 	struct drm_plane drm_plane;
 	enum sti_plane_desc desc;

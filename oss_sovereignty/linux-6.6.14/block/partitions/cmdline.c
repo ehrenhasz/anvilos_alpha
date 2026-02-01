@@ -1,31 +1,17 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2013 HUAWEI
- * Author: Cai Zhiyong <caizhiyong@huawei.com>
- *
- * Read block device partition table from the command line.
- * Typically used for fixed block (eMMC) embedded devices.
- * It has no MBR, so saves storage space. Bootloader can be easily accessed
- * by absolute address of data on the block device.
- * Users can easily change the partition.
- *
- * The format for the command line is just like mtdparts.
- *
- * For further information, see "Documentation/block/cmdline-partition.rst"
- *
- */
+
+ 
 #include <linux/blkdev.h>
 #include <linux/fs.h>
 #include <linux/slab.h>
 #include "check.h"
 
 
-/* partition flags */
-#define PF_RDONLY                   0x01 /* Device is read only */
-#define PF_POWERUP_LOCK             0x02 /* Always locked after reset */
+ 
+#define PF_RDONLY                   0x01  
+#define PF_POWERUP_LOCK             0x02  
 
 struct cmdline_subpart {
-	char name[BDEVNAME_SIZE]; /* partition name, such as 'rootfs' */
+	char name[BDEVNAME_SIZE];  
 	sector_t from;
 	sector_t size;
 	int flags;
@@ -33,7 +19,7 @@ struct cmdline_subpart {
 };
 
 struct cmdline_parts {
-	char name[BDEVNAME_SIZE]; /* block device, such as 'mmcblk0' */
+	char name[BDEVNAME_SIZE];  
 	unsigned int nr_subparts;
 	struct cmdline_subpart *subpart;
 	struct cmdline_parts *next_parts;
@@ -366,13 +352,7 @@ static void cmdline_parts_verifier(int slot, struct parsed_partitions *state)
 	}
 }
 
-/*
- * Purpose: allocate cmdline partitions.
- * Returns:
- * -1 if unable to read the partition table
- *  0 if this isn't our partition table
- *  1 if successful
- */
+ 
 int cmdline_partition(struct parsed_partitions *state)
 {
 	sector_t disk_size;

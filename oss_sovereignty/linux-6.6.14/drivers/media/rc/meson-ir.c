@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Driver for Amlogic Meson IR remote receiver
- *
- * Copyright (C) 2014 Beniamino Galvani <b.galvani@gmail.com>
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/err.h>
@@ -35,7 +31,7 @@
 #define IR_DEC_REG1_MODE	GENMASK(8, 7)
 #define IR_DEC_REG1_IRQSEL	GENMASK(3, 2)
 #define IR_DEC_REG1_RESET	BIT(0)
-/* The following regs are only available on Meson 8b and newer */
+ 
 #define IR_DEC_REG2		0x20
 #define IR_DEC_REG2_MODE	GENMASK(3, 0)
 
@@ -47,8 +43,8 @@
 #define IRQSEL_FALL		2
 #define IRQSEL_RISE		3
 
-#define MESON_RAW_TRATE		10	/* us */
-#define MESON_HW_TRATE		20	/* us */
+#define MESON_RAW_TRATE		10	 
+#define MESON_HW_TRATE		20	 
 
 struct meson_ir {
 	struct regmap	*reg;
@@ -144,12 +140,12 @@ static int meson_ir_probe(struct platform_device *pdev)
 		return ret;
 	}
 
-	/* Reset the decoder */
+	 
 	regmap_update_bits(ir->reg, IR_DEC_REG1, IR_DEC_REG1_RESET,
 			   IR_DEC_REG1_RESET);
 	regmap_update_bits(ir->reg, IR_DEC_REG1, IR_DEC_REG1_RESET, 0);
 
-	/* Set general operation mode (= raw/software decoding) */
+	 
 	if (of_device_is_compatible(node, "amlogic,meson6-ir"))
 		regmap_update_bits(ir->reg, IR_DEC_REG1, IR_DEC_REG1_MODE,
 				   FIELD_PREP(IR_DEC_REG1_MODE, DEC_MODE_RAW));
@@ -157,14 +153,14 @@ static int meson_ir_probe(struct platform_device *pdev)
 		regmap_update_bits(ir->reg, IR_DEC_REG2, IR_DEC_REG2_MODE,
 				   FIELD_PREP(IR_DEC_REG2_MODE, DEC_MODE_RAW));
 
-	/* Set rate */
+	 
 	regmap_update_bits(ir->reg, IR_DEC_REG0, IR_DEC_REG0_BASE_TIME,
 			   FIELD_PREP(IR_DEC_REG0_BASE_TIME,
 				      MESON_RAW_TRATE - 1));
-	/* IRQ on rising and falling edges */
+	 
 	regmap_update_bits(ir->reg, IR_DEC_REG1, IR_DEC_REG1_IRQSEL,
 			   FIELD_PREP(IR_DEC_REG1_IRQSEL, IRQSEL_RISE_FALL));
-	/* Enable the decoder */
+	 
 	regmap_update_bits(ir->reg, IR_DEC_REG1, IR_DEC_REG1_ENABLE,
 			   IR_DEC_REG1_ENABLE);
 
@@ -178,7 +174,7 @@ static void meson_ir_remove(struct platform_device *pdev)
 	struct meson_ir *ir = platform_get_drvdata(pdev);
 	unsigned long flags;
 
-	/* Disable the decoder */
+	 
 	spin_lock_irqsave(&ir->lock, flags);
 	regmap_update_bits(ir->reg, IR_DEC_REG1, IR_DEC_REG1_ENABLE, 0);
 	spin_unlock_irqrestore(&ir->lock, flags);
@@ -193,10 +189,7 @@ static void meson_ir_shutdown(struct platform_device *pdev)
 
 	spin_lock_irqsave(&ir->lock, flags);
 
-	/*
-	 * Set operation mode to NEC/hardware decoding to give
-	 * bootloader a chance to power the system back on
-	 */
+	 
 	if (of_device_is_compatible(node, "amlogic,meson6-ir"))
 		regmap_update_bits(ir->reg, IR_DEC_REG1, IR_DEC_REG1_MODE,
 				   FIELD_PREP(IR_DEC_REG1_MODE, DEC_MODE_NEC));
@@ -204,7 +197,7 @@ static void meson_ir_shutdown(struct platform_device *pdev)
 		regmap_update_bits(ir->reg, IR_DEC_REG2, IR_DEC_REG2_MODE,
 				   FIELD_PREP(IR_DEC_REG2_MODE, DEC_MODE_NEC));
 
-	/* Set rate to default value */
+	 
 	regmap_update_bits(ir->reg, IR_DEC_REG0, IR_DEC_REG0_BASE_TIME,
 			   FIELD_PREP(IR_DEC_REG0_BASE_TIME,
 				      MESON_HW_TRATE - 1));

@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: MIT */
+ 
 #ifndef __NVKM_CHAN_H__
 #define __NVKM_CHAN_H__
 #include <engine/fifo.h>
@@ -67,7 +67,7 @@ void nvkm_chan_remove_locked(struct nvkm_chan *);
 int nvkm_chan_preempt(struct nvkm_chan *, bool wait);
 int nvkm_chan_preempt_locked(struct nvkm_chan *, bool wait);
 int nvkm_chan_cctx_get(struct nvkm_chan *, struct nvkm_engn *, struct nvkm_cctx **,
-		       struct nvkm_client * /*TODO: remove need for this */);
+		       struct nvkm_client *  );
 void nvkm_chan_cctx_put(struct nvkm_chan *, struct nvkm_cctx **);
 void nvkm_chan_cctx_bind(struct nvkm_chan *, struct nvkm_engn *, struct nvkm_cctx *);
 

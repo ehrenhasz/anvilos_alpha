@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * PolarFire SoC (MPFS) MUSB Glue Layer
- *
- * Copyright (c) 2020-2022 Microchip Corporation. All rights reserved.
- * Based on {omap2430,tusb6010,ux500}.c
- *
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/dma-mapping.h>
@@ -77,11 +71,7 @@ static void mpfs_musb_set_vbus(struct musb *musb, int is_on)
 {
 	u8 devctl;
 
-	/*
-	 * HDRC controls CPEN, but beware current surges during device
-	 * connect.  They can trigger transient overcurrent conditions
-	 * that must be ignored.
-	 */
+	 
 	devctl = musb_readb(musb->mregs, MUSB_DEVCTL);
 
 	if (is_on) {
@@ -93,10 +83,7 @@ static void mpfs_musb_set_vbus(struct musb *musb, int is_on)
 	} else {
 		musb->is_active = 0;
 
-		/*
-		 * NOTE:  skipping A_WAIT_VFALL -> A_IDLE and
-		 * jumping right to B_IDLE...
-		 */
+		 
 		musb->xceiv->otg->default_a = 0;
 		musb->xceiv->otg->state = OTG_STATE_B_IDLE;
 		devctl &= ~MUSB_DEVCTL_SESSION;

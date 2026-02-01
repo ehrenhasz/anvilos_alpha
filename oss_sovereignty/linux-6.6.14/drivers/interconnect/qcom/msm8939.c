@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2020 Linaro Ltd
- * Author: Jun Nie <jun.nie@linaro.org>
- * With reference of msm8916 interconnect driver of Georgi Djakov.
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/interconnect-provider.h>

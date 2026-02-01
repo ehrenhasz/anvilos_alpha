@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Support for Faraday Technology FTPC100 PCI Controller
- *
- * Copyright (C) 2017 Linus Walleij <linus.walleij@linaro.org>
- *
- * Based on the out-of-tree OpenWRT patch for Cortina Gemini:
- * Copyright (C) 2009 Janos Laube <janos.dev@gmail.com>
- * Copyright (C) 2009 Paulius Zaleckas <paulius.zaleckas@teltonika.lt>
- * Based on SL2312 PCI controller code
- * Storlink (C) 2003
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/interrupt.h>
@@ -29,33 +19,30 @@
 
 #include "../pci.h"
 
-/*
- * Special configuration registers directly in the first few words
- * in I/O space.
- */
+ 
 #define FTPCI_IOSIZE	0x00
-#define FTPCI_PROT	0x04 /* AHB protection */
-#define FTPCI_CTRL	0x08 /* PCI control signal */
-#define FTPCI_SOFTRST	0x10 /* Soft reset counter and response error enable */
-#define FTPCI_CONFIG	0x28 /* PCI configuration command register */
+#define FTPCI_PROT	0x04  
+#define FTPCI_CTRL	0x08  
+#define FTPCI_SOFTRST	0x10  
+#define FTPCI_CONFIG	0x28  
 #define FTPCI_DATA	0x2C
 
-#define FARADAY_PCI_STATUS_CMD		0x04 /* Status and command */
-#define FARADAY_PCI_PMC			0x40 /* Power management control */
-#define FARADAY_PCI_PMCSR		0x44 /* Power management status */
-#define FARADAY_PCI_CTRL1		0x48 /* Control register 1 */
-#define FARADAY_PCI_CTRL2		0x4C /* Control register 2 */
-#define FARADAY_PCI_MEM1_BASE_SIZE	0x50 /* Memory base and size #1 */
-#define FARADAY_PCI_MEM2_BASE_SIZE	0x54 /* Memory base and size #2 */
-#define FARADAY_PCI_MEM3_BASE_SIZE	0x58 /* Memory base and size #3 */
+#define FARADAY_PCI_STATUS_CMD		0x04  
+#define FARADAY_PCI_PMC			0x40  
+#define FARADAY_PCI_PMCSR		0x44  
+#define FARADAY_PCI_CTRL1		0x48  
+#define FARADAY_PCI_CTRL2		0x4C  
+#define FARADAY_PCI_MEM1_BASE_SIZE	0x50  
+#define FARADAY_PCI_MEM2_BASE_SIZE	0x54  
+#define FARADAY_PCI_MEM3_BASE_SIZE	0x58  
 
 #define PCI_STATUS_66MHZ_CAPABLE	BIT(21)
 
-/* Bits 31..28 gives INTD..INTA status */
+ 
 #define PCI_CTRL2_INTSTS_SHIFT		28
 #define PCI_CTRL2_INTMASK_CMDERR	BIT(27)
 #define PCI_CTRL2_INTMASK_PARERR	BIT(26)
-/* Bits 25..22 masks INTD..INTA */
+ 
 #define PCI_CTRL2_INTMASK_SHIFT		22
 #define PCI_CTRL2_INTMASK_MABRT_RX	BIT(21)
 #define PCI_CTRL2_INTMASK_TABRT_RX	BIT(20)
@@ -63,7 +50,7 @@
 #define PCI_CTRL2_INTMASK_RETRY4	BIT(18)
 #define PCI_CTRL2_INTMASK_SERR_RX	BIT(17)
 #define PCI_CTRL2_INTMASK_PERR_RX	BIT(16)
-/* Bit 15 reserved */
+ 
 #define PCI_CTRL2_MSTPRI_REQ6		BIT(14)
 #define PCI_CTRL2_MSTPRI_REQ5		BIT(13)
 #define PCI_CTRL2_MSTPRI_REQ4		BIT(12)
@@ -71,14 +58,10 @@
 #define PCI_CTRL2_MSTPRI_REQ2		BIT(10)
 #define PCI_CTRL2_MSTPRI_REQ1		BIT(9)
 #define PCI_CTRL2_MSTPRI_REQ0		BIT(8)
-/* Bits 7..4 reserved */
-/* Bits 3..0 TRDYW */
+ 
+ 
 
-/*
- * Memory configs:
- * Bit 31..20 defines the PCI side memory base
- * Bit 19..16 (4 bits) defines the size per below
- */
+ 
 #define FARADAY_PCI_MEMBASE_MASK	0xfff00000
 #define FARADAY_PCI_MEMSIZE_1MB		0x0
 #define FARADAY_PCI_MEMSIZE_2MB		0x1
@@ -94,19 +77,12 @@
 #define FARADAY_PCI_MEMSIZE_2GB		0xb
 #define FARADAY_PCI_MEMSIZE_SHIFT	16
 
-/*
- * The DMA base is set to 0x0 for all memory segments, it reflects the
- * fact that the memory of the host system starts at 0x0.
- */
+ 
 #define FARADAY_PCI_DMA_MEM1_BASE	0x00000000
 #define FARADAY_PCI_DMA_MEM2_BASE	0x00000000
 #define FARADAY_PCI_DMA_MEM3_BASE	0x00000000
 
-/**
- * struct faraday_pci_variant - encodes IP block differences
- * @cascaded_irq: this host has cascaded IRQs from an interrupt controller
- *	embedded in the host bridge.
- */
+ 
 struct faraday_pci_variant {
 	bool cascaded_irq;
 };
@@ -166,10 +142,10 @@ static int faraday_res_to_memcfg(resource_size_t mem_base,
 	}
 	outval <<= FARADAY_PCI_MEMSIZE_SHIFT;
 
-	/* This is probably not good */
+	 
 	if (mem_base & ~(FARADAY_PCI_MEMBASE_MASK))
 		pr_warn("truncated PCI memory base\n");
-	/* Translate to bridge side address space */
+	 
 	outval |= (mem_base & FARADAY_PCI_MEMBASE_MASK);
 	pr_debug("Translated pci base @%pap, size %pap to config %08x\n",
 		 &mem_base, &mem_size, outval);
@@ -337,7 +313,7 @@ static int faraday_pci_setup_cascaded_irq(struct faraday_pci *p)
 		return -EINVAL;
 	}
 
-	/* All PCI IRQs cascade off this one */
+	 
 	irq = of_irq_get(intc, 0);
 	if (irq <= 0) {
 		dev_err(p->dev, "failed to get parent IRQ\n");
@@ -427,7 +403,7 @@ static int faraday_pci_probe(struct platform_device *pdev)
 	host->sysdata = p;
 	p->dev = dev;
 
-	/* Retrieve and enable optional clocks */
+	 
 	clk = devm_clk_get_enabled(dev, "PCLK");
 	if (IS_ERR(clk))
 		return PTR_ERR(clk);
@@ -444,7 +420,7 @@ static int faraday_pci_probe(struct platform_device *pdev)
 		io = win->res;
 		if (!faraday_res_to_memcfg(io->start - win->offset,
 					   resource_size(io), &val)) {
-			/* setup I/O space size */
+			 
 			writel(val, p->base + FTPCI_IOSIZE);
 		} else {
 			dev_err(dev, "illegal IO mem size\n");
@@ -452,13 +428,13 @@ static int faraday_pci_probe(struct platform_device *pdev)
 		}
 	}
 
-	/* Setup hostbridge */
+	 
 	val = readl(p->base + FTPCI_CTRL);
 	val |= PCI_COMMAND_IO;
 	val |= PCI_COMMAND_MEMORY;
 	val |= PCI_COMMAND_MASTER;
 	writel(val, p->base + FTPCI_CTRL);
-	/* Mask and clear all interrupts */
+	 
 	faraday_raw_pci_write_config(p, 0, 0, FARADAY_PCI_CTRL2 + 2, 2, 0xF000);
 	if (variant->cascaded_irq) {
 		ret = faraday_pci_setup_cascaded_irq(p);
@@ -468,7 +444,7 @@ static int faraday_pci_probe(struct platform_device *pdev)
 		}
 	}
 
-	/* Check bus clock if we can gear up to 66 MHz */
+	 
 	if (!IS_ERR(p->bus_clk)) {
 		unsigned long rate;
 		u32 val;
@@ -488,7 +464,7 @@ static int faraday_pci_probe(struct platform_device *pdev)
 			max_bus_speed = PCI_SPEED_33MHz;
 		}
 
-		/* Bumping the clock may fail so read back the rate */
+		 
 		rate = clk_get_rate(p->bus_clk);
 		if (rate == 33000000)
 			cur_bus_speed = PCI_SPEED_33MHz;
@@ -515,10 +491,7 @@ static int faraday_pci_probe(struct platform_device *pdev)
 	return 0;
 }
 
-/*
- * We encode bridge variants here, we have at least two so it doesn't
- * hurt to have infrastructure to encompass future variants as well.
- */
+ 
 static const struct faraday_pci_variant faraday_regular = {
 	.cascaded_irq = true,
 };

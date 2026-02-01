@@ -1,14 +1,12 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/* Atlantic Network Driver
- * Copyright (C) 2020 Marvell International Ltd.
- */
+ 
+ 
 
 #ifndef HW_ATL2_UTILS_H
 #define HW_ATL2_UTILS_H
 
 #include "aq_hw.h"
 
-/* F W    A P I */
+ 
 
 struct link_options_s {
 	u8 link_up:1;
@@ -633,4 +631,4 @@ int hw_atl2_utils_get_action_resolve_table_caps(struct aq_hw_s *self,
 
 extern const struct aq_fw_ops aq_a2_fw_ops;
 
-#endif /* HW_ATL2_UTILS_H */
+#endif  

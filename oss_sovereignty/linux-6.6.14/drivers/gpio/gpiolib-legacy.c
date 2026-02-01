@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/gpio/consumer.h>
 #include <linux/gpio/driver.h>
 
@@ -12,12 +12,7 @@ void gpio_free(unsigned gpio)
 }
 EXPORT_SYMBOL_GPL(gpio_free);
 
-/**
- * gpio_request_one - request a single GPIO with initial configuration
- * @gpio:	the GPIO number
- * @flags:	GPIO configuration as specified by GPIOF_*
- * @label:	a literal description string of this GPIO
- */
+ 
 int gpio_request_one(unsigned gpio, unsigned long flags, const char *label)
 {
 	struct gpio_desc *desc;
@@ -25,7 +20,7 @@ int gpio_request_one(unsigned gpio, unsigned long flags, const char *label)
 
 	desc = gpio_to_desc(gpio);
 
-	/* Compatibility: assume unavailable "valid" GPIOs will appear later */
+	 
 	if (!desc && gpio_is_valid(gpio))
 		return -EPROBE_DEFER;
 
@@ -57,7 +52,7 @@ int gpio_request(unsigned gpio, const char *label)
 {
 	struct gpio_desc *desc = gpio_to_desc(gpio);
 
-	/* Compatibility: assume unavailable "valid" GPIOs will appear later */
+	 
 	if (!desc && gpio_is_valid(gpio))
 		return -EPROBE_DEFER;
 
@@ -65,11 +60,7 @@ int gpio_request(unsigned gpio, const char *label)
 }
 EXPORT_SYMBOL_GPL(gpio_request);
 
-/**
- * gpio_request_array - request multiple GPIOs in a single call
- * @array:	array of the 'struct gpio'
- * @num:	how many GPIOs in the array
- */
+ 
 int gpio_request_array(const struct gpio *array, size_t num)
 {
 	int i, err;
@@ -88,11 +79,7 @@ err_free:
 }
 EXPORT_SYMBOL_GPL(gpio_request_array);
 
-/**
- * gpio_free_array - release multiple GPIOs in a single call
- * @array:	array of the 'struct gpio'
- * @num:	how many GPIOs in the array
- */
+ 
 void gpio_free_array(const struct gpio *array, size_t num)
 {
 	while (num--)

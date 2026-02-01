@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * xfrm4_output.c - Common IPsec encapsulation code for IPv4.
- * Copyright (c) 2004 Herbert Xu <herbert@gondor.apana.org.au>
- */
+
+ 
 
 #include <linux/if_ether.h>
 #include <linux/kernel.h>

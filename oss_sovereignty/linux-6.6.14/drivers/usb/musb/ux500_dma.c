@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * drivers/usb/musb/ux500_dma.c
- *
- * U8500 DMA support code
- *
- * Copyright (C) 2009 STMicroelectronics
- * Copyright (C) 2011 ST-Ericsson SA
- * Authors:
- *	Mian Yousaf Kaukab <mian.yousaf.kaukab@stericsson.com>
- *	Praveena Nadahally <praveen.nadahally@stericsson.com>
- *	Rajaram Regupathy <ragupathy.rajaram@stericsson.com>
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/interrupt.h>
@@ -47,7 +36,7 @@ struct ux500_dma_controller {
 	dma_addr_t phy_base;
 };
 
-/* Work function invoked from DMA callback to handle rx transfers. */
+ 
 static void ux500_dma_callback(void *private_data)
 {
 	struct dma_channel *channel = private_data;
@@ -134,10 +123,7 @@ static struct dma_channel *ux500_dma_channel_allocate(struct dma_controller *c,
 	struct musb *musb = controller->private_data;
 	u8 ch_num = hw_ep->epnum - 1;
 
-	/* 8 DMA channels (0 - 7). Each DMA channel can only be allocated
-	 * to specified hw_ep. For example DMA channel 0 can only be allocated
-	 * to hw_ep 1 and 9.
-	 */
+	 
 	if (ch_num > 7)
 		ch_num -= 8;
 
@@ -147,7 +133,7 @@ static struct dma_channel *ux500_dma_channel_allocate(struct dma_controller *c,
 	ux500_channel = is_tx ? &(controller->tx_channel[ch_num]) :
 				&(controller->rx_channel[ch_num]) ;
 
-	/* Check if channel is already used. */
+	 
 	if (ux500_channel->is_allocated)
 		return NULL;
 
@@ -290,7 +276,7 @@ static int ux500_dma_controller_start(struct ux500_dma_controller *controller)
 	dma_cap_zero(mask);
 	dma_cap_set(DMA_SLAVE, mask);
 
-	/* Prepare the loop for RX channels */
+	 
 	channel_array = controller->rx_channel;
 	param_array = data ? data->dma_rx_param_array : NULL;
 	chan_names = (char **)iep_chan_names;
@@ -326,7 +312,7 @@ static int ux500_dma_controller_start(struct ux500_dma_controller *controller)
 				ERR("Dma pipe allocation error dir=%d ch=%d\n",
 					dir, ch_num);
 
-				/* Release already allocated channels */
+				 
 				ux500_dma_controller_stop(controller);
 
 				return -EBUSY;
@@ -334,7 +320,7 @@ static int ux500_dma_controller_start(struct ux500_dma_controller *controller)
 
 		}
 
-		/* Prepare the loop for TX channels */
+		 
 		channel_array = controller->tx_channel;
 		param_array = data ? data->dma_tx_param_array : NULL;
 		chan_names = (char **)oep_chan_names;
@@ -368,7 +354,7 @@ ux500_dma_controller_create(struct musb *musb, void __iomem *base)
 
 	controller->private_data = musb;
 
-	/* Save physical address for DMA controller. */
+	 
 	iomem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 	if (!iomem) {
 		dev_err(musb->controller, "no memory resource defined\n");

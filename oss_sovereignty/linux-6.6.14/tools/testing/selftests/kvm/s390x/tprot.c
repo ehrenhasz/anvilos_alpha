@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Test TEST PROTECTION emulation.
- *
- * Copyright IBM Corp. 2021
- */
+
+ 
 #include <sys/mman.h>
 #include "test_util.h"
 #include "kvm_util.h"
@@ -18,7 +14,7 @@ static __aligned(PAGE_SIZE) uint8_t pages[2][PAGE_SIZE];
 static uint8_t *const page_store_prot = pages[0];
 static uint8_t *const page_fetch_prot = pages[1];
 
-/* Nonzero return value indicates that address not mapped */
+ 
 static int set_storage_key(void *addr, uint8_t key)
 {
 	int not_mapped = 0;
@@ -66,7 +62,7 @@ enum stage {
 	STAGE_INIT_FETCH_PROT_OVERRIDE,
 	TEST_FETCH_PROT_OVERRIDE,
 	TEST_STORAGE_PROT_OVERRIDE,
-	STAGE_END	/* must be the last entry (it's the amount of tests) */
+	STAGE_END	 
 };
 
 struct test {
@@ -75,64 +71,35 @@ struct test {
 	uint8_t key;
 	enum permission expected;
 } tests[] = {
-	/*
-	 * We perform each test in the array by executing TEST PROTECTION on
-	 * the specified addr with the specified key and checking if the returned
-	 * permissions match the expected value.
-	 * Both guest and host cooperate to set up the required test conditions.
-	 * A central condition is that the page targeted by addr has to be DAT
-	 * protected in the host mappings, in order for KVM to emulate the
-	 * TEST PROTECTION instruction.
-	 * Since the page tables are shared, the host uses mprotect to achieve
-	 * this.
-	 *
-	 * Test resulting in RW_PROTECTED/TRANSL_UNAVAIL will be interpreted
-	 * by SIE, not KVM, but there is no harm in testing them also.
-	 * See Enhanced Suppression-on-Protection Facilities in the
-	 * Interpretive-Execution Mode
-	 */
-	/*
-	 * guest: set storage key of page_store_prot to 1
-	 *        storage key of page_fetch_prot to 9 and enable
-	 *        protection for it
-	 * STAGE_INIT_SIMPLE
-	 * host: write protect both via mprotect
-	 */
-	/* access key 0 matches any storage key -> RW */
+	 
+	 
+	 
 	{ TEST_SIMPLE, page_store_prot, 0x00, READ_WRITE },
-	/* access key matches storage key -> RW */
+	 
 	{ TEST_SIMPLE, page_store_prot, 0x10, READ_WRITE },
-	/* mismatched keys, but no fetch protection -> RO */
+	 
 	{ TEST_SIMPLE, page_store_prot, 0x20, READ },
-	/* access key 0 matches any storage key -> RW */
+	 
 	{ TEST_SIMPLE, page_fetch_prot, 0x00, READ_WRITE },
-	/* access key matches storage key -> RW */
+	 
 	{ TEST_SIMPLE, page_fetch_prot, 0x90, READ_WRITE },
-	/* mismatched keys, fetch protection -> inaccessible */
+	 
 	{ TEST_SIMPLE, page_fetch_prot, 0x10, RW_PROTECTED },
-	/* page 0 not mapped yet -> translation not available */
+	 
 	{ TEST_SIMPLE, (void *)0x00, 0x10, TRANSL_UNAVAIL },
-	/*
-	 * host: try to map page 0
-	 * guest: set storage key of page 0 to 9 and enable fetch protection
-	 * STAGE_INIT_FETCH_PROT_OVERRIDE
-	 * host: write protect page 0
-	 *       enable fetch protection override
-	 */
-	/* mismatched keys, fetch protection, but override applies -> RO */
+	 
+	 
 	{ TEST_FETCH_PROT_OVERRIDE, (void *)0x00, 0x10, READ },
-	/* mismatched keys, fetch protection, override applies to 0-2048 only -> inaccessible */
+	 
 	{ TEST_FETCH_PROT_OVERRIDE, (void *)2049, 0x10, RW_PROTECTED },
-	/*
-	 * host: enable storage protection override
-	 */
-	/* mismatched keys, but override applies (storage key 9) -> RW */
+	 
+	 
 	{ TEST_STORAGE_PROT_OVERRIDE, page_fetch_prot, 0x10, READ_WRITE },
-	/* mismatched keys, no fetch protection, override doesn't apply -> RO */
+	 
 	{ TEST_STORAGE_PROT_OVERRIDE, page_store_prot, 0x20, READ },
-	/* mismatched keys, but override applies (storage key 9) -> RW */
+	 
 	{ TEST_STORAGE_PROT_OVERRIDE, (void *)2049, 0x10, READ_WRITE },
-	/* end marker */
+	 
 	{ STAGE_END, 0, 0, 0 },
 };
 
@@ -143,13 +110,7 @@ static enum stage perform_next_stage(int *i, bool mapped_0)
 	bool skip;
 
 	for (; tests[*i].stage == stage; (*i)++) {
-		/*
-		 * Some fetch protection override tests require that page 0
-		 * be mapped, however, when the hosts tries to map that page via
-		 * vm_vaddr_alloc, it may happen that some other page gets mapped
-		 * instead.
-		 * In order to skip these tests we detect this inside the guest
-		 */
+		 
 		skip = tests[*i].addr < (void *)4096 &&
 		       tests[*i].expected != TRANSL_UNAVAIL &&
 		       !mapped_0;
@@ -173,12 +134,12 @@ static void guest_code(void)
 	GUEST_SYNC(STAGE_INIT_SIMPLE);
 	GUEST_SYNC(perform_next_stage(&i, false));
 
-	/* Fetch-protection override */
+	 
 	mapped_0 = !set_storage_key((void *)0, 0x98);
 	GUEST_SYNC(STAGE_INIT_FETCH_PROT_OVERRIDE);
 	GUEST_SYNC(perform_next_stage(&i, mapped_0));
 
-	/* Storage-protection override */
+	 
 	GUEST_SYNC(perform_next_stage(&i, mapped_0));
 }
 
@@ -221,7 +182,7 @@ int main(int argc, char *argv[])
 
 	guest_0_page = vm_vaddr_alloc(vm, PAGE_SIZE, 0);
 	if (guest_0_page != 0) {
-		/* Use NO_TAP so we don't get a PASS print */
+		 
 		HOST_SYNC_NO_TAP(vcpu, STAGE_INIT_FETCH_PROT_OVERRIDE);
 		ksft_test_result_skip("STAGE_INIT_FETCH_PROT_OVERRIDE - "
 				      "Did not allocate page at 0\n");
@@ -240,5 +201,5 @@ int main(int argc, char *argv[])
 
 	kvm_vm_free(vm);
 
-	ksft_finished();	/* Print results and exit() accordingly */
+	ksft_finished();	 
 }

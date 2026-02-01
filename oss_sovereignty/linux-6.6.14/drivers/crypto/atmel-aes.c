@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Cryptographic API.
- *
- * Support for ATMEL AES HW acceleration.
- *
- * Copyright (c) 2012 Eukréa Electromatique - ATMEL
- * Author: Nicolas Royer <nicolas@eukrea.com>
- *
- * Some ideas are from omap-aes.c driver.
- */
+
+ 
 
 
 #include <linux/kernel.h>
@@ -53,8 +44,8 @@
 
 #define SIZE_IN_WORDS(x)	((x) >> 2)
 
-/* AES flags */
-/* Reserve bits [18:16] [14:12] [1:0] for mode (same as for AES_MR) */
+ 
+ 
 #define AES_FLAGS_ENCRYPT	AES_MR_CYPHER_ENC
 #define AES_FLAGS_GTAGEN	AES_MR_GTAGEN
 #define AES_FLAGS_OPMODE_MASK	(AES_MR_OPMOD_MASK | AES_MR_CFBS_MASK)
@@ -168,7 +159,7 @@ struct atmel_aes_authenc_reqctx {
 	size_t			textlen;
 	u32			digest[SHA512_DIGEST_SIZE / sizeof(u32)];
 
-	/* auth_req MUST be place last. */
+	 
 	struct ahash_request	auth_req;
 };
 #endif
@@ -340,9 +331,9 @@ static const char *atmel_aes_reg_name(u32 offset, char *tmp, size_t sz)
 
 	return tmp;
 }
-#endif /* VERBOSE_DEBUG */
+#endif  
 
-/* Shared functions */
+ 
 
 static inline u32 atmel_aes_read(struct atmel_aes_dev *dd, u32 offset)
 {
@@ -355,7 +346,7 @@ static inline u32 atmel_aes_read(struct atmel_aes_dev *dd, u32 offset)
 		dev_vdbg(dd->dev, "read 0x%08x from %s\n", value,
 			 atmel_aes_reg_name(offset, tmp, sizeof(tmp)));
 	}
-#endif /* VERBOSE_DEBUG */
+#endif  
 
 	return value;
 }
@@ -370,7 +361,7 @@ static inline void atmel_aes_write(struct atmel_aes_dev *dd,
 		dev_vdbg(dd->dev, "write 0x%08x into %s\n", value,
 			 atmel_aes_reg_name(offset, tmp, sizeof(tmp)));
 	}
-#endif /* VERBOSE_DEBUG */
+#endif  
 
 	writel_relaxed(value, dd->io_base + offset);
 }
@@ -425,7 +416,7 @@ static struct atmel_aes_dev *atmel_aes_dev_alloc(struct atmel_aes_base_ctx *ctx)
 	struct atmel_aes_dev *aes_dd;
 
 	spin_lock_bh(&atmel_aes.lock);
-	/* One AES IP per SoC. */
+	 
 	aes_dd = list_first_entry_or_null(&atmel_aes.dev_list,
 					  struct atmel_aes_dev, list);
 	spin_unlock_bh(&atmel_aes.lock);
@@ -470,7 +461,7 @@ static int atmel_aes_hw_version_init(struct atmel_aes_dev *dd)
 static inline void atmel_aes_set_mode(struct atmel_aes_dev *dd,
 				      const struct atmel_aes_reqctx *rctx)
 {
-	/* Clear all but persistent flags and set request flags. */
+	 
 	dd->flags = (dd->flags & AES_FLAGS_PERSISTENT) | rctx->mode;
 }
 
@@ -514,12 +505,7 @@ static void atmel_aes_ctr_update_req_iv(struct atmel_aes_dev *dd)
 	unsigned int ivsize = crypto_skcipher_ivsize(skcipher);
 	int i;
 
-	/*
-	 * The CTR transfer works in fragments of data of maximum 1 MByte
-	 * because of the 16 bit CTR counter embedded in the IP. When reaching
-	 * here, ctx->blocks contains the number of blocks of the last fragment
-	 * processed, there is no need to explicit cast it to u16.
-	 */
+	 
 	for (i = 0; i < ctx->blocks; i++)
 		crypto_inc((u8 *)ctx->iv, AES_BLOCK_SIZE);
 
@@ -560,7 +546,7 @@ static void atmel_aes_write_ctrl_key(struct atmel_aes_dev *dd, bool use_dma,
 {
 	u32 valmr = 0;
 
-	/* MR register must be set before IV registers */
+	 
 	if (keylen == AES_KEYSIZE_128)
 		valmr |= AES_MR_KEYSIZE_128;
 	else if (keylen == AES_KEYSIZE_192)
@@ -594,7 +580,7 @@ static inline void atmel_aes_write_ctrl(struct atmel_aes_dev *dd, bool use_dma,
 				 dd->ctx->key, dd->ctx->keylen);
 }
 
-/* CPU transfer */
+ 
 
 static int atmel_aes_cpu_transfer(struct atmel_aes_dev *dd)
 {
@@ -652,7 +638,7 @@ static int atmel_aes_cpu_start(struct atmel_aes_dev *dd,
 }
 
 
-/* DMA transfer */
+ 
 
 static void atmel_aes_dma_callback(void *data);
 
@@ -892,13 +878,13 @@ static int atmel_aes_dma_start(struct atmel_aes_dev *dd,
 
 	dd->resume = resume;
 
-	/* Set output DMA transfer first */
+	 
 	err = atmel_aes_dma_transfer_start(dd, addr_width, DMA_DEV_TO_MEM,
 					   maxburst);
 	if (err)
 		goto unmap;
 
-	/* Then set input DMA transfer */
+	 
 	err = atmel_aes_dma_transfer_start(dd, addr_width, DMA_MEM_TO_DEV,
 					   maxburst);
 	if (err)
@@ -958,13 +944,13 @@ static int atmel_aes_handle_queue(struct atmel_aes_dev *dd,
 	start_async = (areq != new_areq);
 	dd->is_async = start_async;
 
-	/* WARNING: ctx->start() MAY change dd->is_async. */
+	 
 	err = ctx->start(dd);
 	return (start_async) ? ret : err;
 }
 
 
-/* AES async block ciphers */
+ 
 
 static int atmel_aes_transfer_complete(struct atmel_aes_dev *dd)
 {
@@ -1005,17 +991,17 @@ static int atmel_aes_ctr_transfer(struct atmel_aes_dev *dd)
 	u16 start, end;
 	bool use_dma, fragmented = false;
 
-	/* Check for transfer completion. */
+	 
 	ctx->offset += dd->total;
 	if (ctx->offset >= req->cryptlen)
 		return atmel_aes_transfer_complete(dd);
 
-	/* Compute data length. */
+	 
 	datalen = req->cryptlen - ctx->offset;
 	ctx->blocks = DIV_ROUND_UP(datalen, AES_BLOCK_SIZE);
 	ctr = be32_to_cpu(ctx->iv[3]);
 
-	/* Check 16bit counter overflow. */
+	 
 	start = ctr & 0xffff;
 	end = start + ctx->blocks - 1;
 
@@ -1027,18 +1013,15 @@ static int atmel_aes_ctr_transfer(struct atmel_aes_dev *dd)
 
 	use_dma = (datalen >= ATMEL_AES_DMA_THRESHOLD);
 
-	/* Jump to offset. */
+	 
 	src = scatterwalk_ffwd(ctx->src, req->src, ctx->offset);
 	dst = ((req->src == req->dst) ? src :
 	       scatterwalk_ffwd(ctx->dst, req->dst, ctx->offset));
 
-	/* Configure hardware. */
+	 
 	atmel_aes_write_ctrl(dd, use_dma, ctx->iv);
 	if (unlikely(fragmented)) {
-		/*
-		 * Increment the counter manually to cope with the hardware
-		 * counter overflow.
-		 */
+		 
 		ctx->iv[3] = cpu_to_be32(ctr);
 		crypto_inc((u8 *)ctx->iv, AES_BLOCK_SIZE);
 	}
@@ -1102,10 +1085,7 @@ static int atmel_aes_crypt(struct skcipher_request *req, unsigned long mode)
 						      mode & AES_FLAGS_ENCRYPT);
 	}
 
-	/*
-	 * ECB, CBC, CFB, OFB or CTR mode require the plaintext and ciphertext
-	 * to have a positve integer length.
-	 */
+	 
 	if (!req->cryptlen && opmode != AES_FLAGS_XTS)
 		return 0;
 
@@ -1420,7 +1400,7 @@ static struct skcipher_alg aes_cfb64_alg = {
 };
 
 
-/* gcm aead functions */
+ 
 
 static int atmel_aes_gcm_ghash(struct atmel_aes_dev *dd,
 			       const u32 *data, size_t datalen,
@@ -1464,11 +1444,11 @@ static int atmel_aes_gcm_ghash_init(struct atmel_aes_dev *dd)
 {
 	struct atmel_aes_gcm_ctx *ctx = atmel_aes_gcm_ctx_cast(dd->ctx);
 
-	/* Set the data length. */
+	 
 	atmel_aes_write(dd, AES_AADLENR, dd->total);
 	atmel_aes_write(dd, AES_CLENR, 0);
 
-	/* If needed, overwrite the GCM Intermediate Hash Word Registers */
+	 
 	if (ctx->ghash_in)
 		atmel_aes_write_block(dd, AES_GHASHR(0), ctx->ghash_in);
 
@@ -1480,7 +1460,7 @@ static int atmel_aes_gcm_ghash_finalize(struct atmel_aes_dev *dd)
 	struct atmel_aes_gcm_ctx *ctx = atmel_aes_gcm_ctx_cast(dd->ctx);
 	u32 isr;
 
-	/* Write data into the Input Data Registers. */
+	 
 	while (dd->datalen > 0) {
 		atmel_aes_write_block(dd, AES_IDATAR(0), dd->data);
 		dd->data += 4;
@@ -1494,7 +1474,7 @@ static int atmel_aes_gcm_ghash_finalize(struct atmel_aes_dev *dd)
 		}
 	}
 
-	/* Read the computed hash from GHASHRx. */
+	 
 	atmel_aes_read_block(dd, AES_GHASHR(0), ctx->ghash_out);
 
 	return ctx->ghash_resume(dd);
@@ -1546,14 +1526,11 @@ static int atmel_aes_gcm_process(struct atmel_aes_dev *dd)
 	bool enc = atmel_aes_is_encrypt(dd);
 	u32 authsize;
 
-	/* Compute text length. */
+	 
 	authsize = crypto_aead_authsize(tfm);
 	ctx->textlen = req->cryptlen - (enc ? 0 : authsize);
 
-	/*
-	 * According to tcrypt test suite, the GCM Automatic Tag Generation
-	 * fails when both the message and its associated data are empty.
-	 */
+	 
 	if (likely(req->assoclen != 0 || ctx->textlen != 0))
 		dd->flags |= AES_FLAGS_GTAGEN;
 
@@ -1568,29 +1545,29 @@ static int atmel_aes_gcm_length(struct atmel_aes_dev *dd)
 	__be32 j0_lsw, *j0 = ctx->j0;
 	size_t padlen;
 
-	/* Write incr32(J0) into IV. */
+	 
 	j0_lsw = j0[3];
 	be32_add_cpu(&j0[3], 1);
 	atmel_aes_write_block(dd, AES_IVR(0), j0);
 	j0[3] = j0_lsw;
 
-	/* Set aad and text lengths. */
+	 
 	atmel_aes_write(dd, AES_AADLENR, req->assoclen);
 	atmel_aes_write(dd, AES_CLENR, ctx->textlen);
 
-	/* Check whether AAD are present. */
+	 
 	if (unlikely(req->assoclen == 0)) {
 		dd->datalen = 0;
 		return atmel_aes_gcm_data(dd);
 	}
 
-	/* Copy assoc data and add padding. */
+	 
 	padlen = atmel_aes_padlen(req->assoclen, AES_BLOCK_SIZE);
 	if (unlikely(req->assoclen + padlen > dd->buflen))
 		return atmel_aes_complete(dd, -EINVAL);
 	sg_copy_to_buffer(req->src, sg_nents(req->src), dd->buf, req->assoclen);
 
-	/* Write assoc data into the Input Data register. */
+	 
 	dd->data = (u32 *)dd->buf;
 	dd->datalen = req->assoclen + padlen;
 	return atmel_aes_gcm_data(dd);
@@ -1604,7 +1581,7 @@ static int atmel_aes_gcm_data(struct atmel_aes_dev *dd)
 	struct scatterlist *src, *dst;
 	u32 isr, mr;
 
-	/* Write AAD first. */
+	 
 	while (dd->datalen > 0) {
 		atmel_aes_write_block(dd, AES_IDATAR(0), dd->data);
 		dd->data += 4;
@@ -1618,17 +1595,17 @@ static int atmel_aes_gcm_data(struct atmel_aes_dev *dd)
 		}
 	}
 
-	/* GMAC only. */
+	 
 	if (unlikely(ctx->textlen == 0))
 		return atmel_aes_gcm_tag_init(dd);
 
-	/* Prepare src and dst scatter lists to transfer cipher/plain texts */
+	 
 	src = scatterwalk_ffwd(ctx->src, req->src, req->assoclen);
 	dst = ((req->src == req->dst) ? src :
 	       scatterwalk_ffwd(ctx->dst, req->dst, req->assoclen));
 
 	if (use_dma) {
-		/* Update the Mode Register for DMA transfers. */
+		 
 		mr = atmel_aes_read(dd, AES_MR);
 		mr &= ~(AES_MR_SMOD_MASK | AES_MR_DUALBUFF);
 		mr |= AES_MR_SMOD_IDATAR0;
@@ -1660,7 +1637,7 @@ static int atmel_aes_gcm_tag_init(struct atmel_aes_dev *dd)
 		return atmel_aes_gcm_finalize(dd);
 	}
 
-	/* Read the GCM Intermediate Hash Word Registers. */
+	 
 	atmel_aes_read_block(dd, AES_GHASHR(0), ctx->ghash);
 
 	data[0] = cpu_to_be64(req->assoclen * 8);
@@ -1675,10 +1652,7 @@ static int atmel_aes_gcm_tag(struct atmel_aes_dev *dd)
 	struct atmel_aes_gcm_ctx *ctx = atmel_aes_gcm_ctx_cast(dd->ctx);
 	unsigned long flags;
 
-	/*
-	 * Change mode to CTR to complete the tag generation.
-	 * Use J0 as Initialization Vector.
-	 */
+	 
 	flags = dd->flags;
 	dd->flags &= ~(AES_FLAGS_OPMODE_MASK | AES_FLAGS_GTAGEN);
 	dd->flags |= AES_FLAGS_CTR;
@@ -1698,7 +1672,7 @@ static int atmel_aes_gcm_finalize(struct atmel_aes_dev *dd)
 	u32 offset, authsize, itag[4], *otag = ctx->tag;
 	int err;
 
-	/* Read the computed tag. */
+	 
 	if (likely(dd->flags & AES_FLAGS_GTAGEN))
 		atmel_aes_read_block(dd, AES_TAGR(0), ctx->tag);
 	else
@@ -1799,7 +1773,7 @@ static struct aead_alg aes_gcm_alg = {
 };
 
 
-/* xts functions */
+ 
 
 static inline struct atmel_aes_xts_ctx *
 atmel_aes_xts_ctx_cast(struct atmel_aes_base_ctx *ctx)
@@ -1823,7 +1797,7 @@ static int atmel_aes_xts_start(struct atmel_aes_dev *dd)
 	if (err)
 		return atmel_aes_complete(dd, err);
 
-	/* Compute the tweak value from req->iv with ecb(aes). */
+	 
 	flags = dd->flags;
 	dd->flags &= ~AES_FLAGS_MODE_MASK;
 	dd->flags |= (AES_FLAGS_ECB | AES_FLAGS_ENCRYPT);
@@ -1844,17 +1818,13 @@ static int atmel_aes_xts_process_data(struct atmel_aes_dev *dd)
 	u8 *tweak_bytes = (u8 *)tweak;
 	int i;
 
-	/* Read the computed ciphered tweak value. */
+	 
 	atmel_aes_read_block(dd, AES_ODATAR(0), tweak);
-	/*
-	 * Hardware quirk:
-	 * the order of the ciphered tweak bytes need to be reversed before
-	 * writing them into the ODATARx registers.
-	 */
+	 
 	for (i = 0; i < AES_BLOCK_SIZE/2; ++i)
 		swap(tweak_bytes[i], tweak_bytes[AES_BLOCK_SIZE - 1 - i]);
 
-	/* Process the data. */
+	 
 	atmel_aes_write_ctrl(dd, use_dma, NULL);
 	atmel_aes_write_block(dd, AES_TWR(0), tweak);
 	atmel_aes_write_block(dd, AES_ALPHAR(0), one);
@@ -1949,7 +1919,7 @@ static struct skcipher_alg aes_xts_alg = {
 };
 
 #if IS_ENABLED(CONFIG_CRYPTO_DEV_ATMEL_AUTHENC)
-/* authenc aead functions */
+ 
 
 static int atmel_aes_authenc_start(struct atmel_aes_dev *dd);
 static int atmel_aes_authenc_init(struct atmel_aes_dev *dd, int err,
@@ -1999,10 +1969,10 @@ static int atmel_aes_authenc_init(struct atmel_aes_dev *dd, int err,
 	if (err)
 		return atmel_aes_complete(dd, err);
 
-	/* If here, we've got the ownership of the SHA device. */
+	 
 	dd->flags |= AES_FLAGS_OWN_SHA;
 
-	/* Configure the SHA device. */
+	 
 	return atmel_sha_authenc_init(&rctx->auth_req,
 				      req->src, req->assoclen,
 				      rctx->textlen,
@@ -2024,30 +1994,24 @@ static int atmel_aes_authenc_transfer(struct atmel_aes_dev *dd, int err,
 	if (err)
 		return atmel_aes_complete(dd, err);
 
-	/* Prepare src and dst scatter-lists to transfer cipher/plain texts. */
+	 
 	src = scatterwalk_ffwd(rctx->src, req->src, req->assoclen);
 	dst = src;
 
 	if (req->src != req->dst)
 		dst = scatterwalk_ffwd(rctx->dst, req->dst, req->assoclen);
 
-	/* Configure the AES device. */
+	 
 	memcpy(iv, req->iv, sizeof(iv));
 
-	/*
-	 * Here we always set the 2nd parameter of atmel_aes_write_ctrl() to
-	 * 'true' even if the data transfer is actually performed by the CPU (so
-	 * not by the DMA) because we must force the AES_MR_SMOD bitfield to the
-	 * value AES_MR_SMOD_IDATAR0. Indeed, both AES_MR_SMOD and SHA_MR_SMOD
-	 * must be set to *_MR_SMOD_IDATAR0.
-	 */
+	 
 	atmel_aes_write_ctrl(dd, true, iv);
 	emr = AES_EMR_PLIPEN;
 	if (!enc)
 		emr |= AES_EMR_PLIPD;
 	atmel_aes_write(dd, AES_EMR, emr);
 
-	/* Transfer data. */
+	 
 	return atmel_aes_dma_start(dd, src, dst, rctx->textlen,
 				   atmel_aes_authenc_digest);
 }
@@ -2057,7 +2021,7 @@ static int atmel_aes_authenc_digest(struct atmel_aes_dev *dd)
 	struct aead_request *req = aead_request_cast(dd->areq);
 	struct atmel_aes_authenc_reqctx *rctx = aead_request_ctx(req);
 
-	/* atmel_sha_authenc_final() releases the SHA device. */
+	 
 	dd->flags &= ~AES_FLAGS_OWN_SHA;
 	return atmel_sha_authenc_final(&rctx->auth_req,
 				       rctx->digest, sizeof(rctx->digest),
@@ -2106,7 +2070,7 @@ static int atmel_aes_authenc_setkey(struct crypto_aead *tfm, const u8 *key,
 	if (keys.enckeylen > sizeof(ctx->base.key))
 		goto badkey;
 
-	/* Save auth key. */
+	 
 	err = atmel_sha_authenc_setkey(ctx->auth,
 				       keys.authkey, keys.authkeylen,
 				       crypto_aead_get_flags(tfm));
@@ -2115,7 +2079,7 @@ static int atmel_aes_authenc_setkey(struct crypto_aead *tfm, const u8 *key,
 		return err;
 	}
 
-	/* Save enc key. */
+	 
 	ctx->base.keylen = keys.enckeylen;
 	memcpy(ctx->base.key, keys.enckey, keys.enckeylen);
 
@@ -2191,16 +2155,12 @@ static int atmel_aes_authenc_crypt(struct aead_request *req,
 	u32 authsize = crypto_aead_authsize(tfm);
 	bool enc = (mode & AES_FLAGS_ENCRYPT);
 
-	/* Compute text length. */
+	 
 	if (!enc && req->cryptlen < authsize)
 		return -EINVAL;
 	rctx->textlen = req->cryptlen - (enc ? 0 : authsize);
 
-	/*
-	 * Currently, empty messages are not supported yet:
-	 * the SHA auto-padding can be used only on non-empty messages.
-	 * Hence a special case needs to be implemented for empty message.
-	 */
+	 
 	if (!rctx->textlen && !req->assoclen)
 		return -EINVAL;
 
@@ -2303,9 +2263,9 @@ static struct aead_alg aes_authenc_algs[] = {
 	},
 },
 };
-#endif /* CONFIG_CRYPTO_DEV_ATMEL_AUTHENC */
+#endif  
 
-/* Probe functions */
+ 
 
 static int atmel_aes_buff_init(struct atmel_aes_dev *dd)
 {
@@ -2330,7 +2290,7 @@ static int atmel_aes_dma_init(struct atmel_aes_dev *dd)
 {
 	int ret;
 
-	/* Try to grab 2 DMA channels */
+	 
 	dd->src.chan = dma_request_chan(dd->dev, "tx");
 	if (IS_ERR(dd->src.chan)) {
 		ret = PTR_ERR(dd->src.chan);
@@ -2473,7 +2433,7 @@ static int atmel_aes_register_algs(struct atmel_aes_dev *dd)
 	return 0;
 
 #if IS_ENABLED(CONFIG_CRYPTO_DEV_ATMEL_AUTHENC)
-	/* i = ARRAY_SIZE(aes_authenc_algs); */
+	 
 err_aes_authenc_alg:
 	for (j = 0; j < i; j++)
 		crypto_unregister_aead(&aes_authenc_algs[j]);
@@ -2501,7 +2461,7 @@ static void atmel_aes_get_cap(struct atmel_aes_dev *dd)
 	dd->caps.has_authenc = 0;
 	dd->caps.max_burst_size = 1;
 
-	/* keep only major version number */
+	 
 	switch (dd->hw_version & 0xff0) {
 	case 0x700:
 	case 0x600:
@@ -2535,7 +2495,7 @@ static void atmel_aes_get_cap(struct atmel_aes_dev *dd)
 
 static const struct of_device_id atmel_aes_dt_ids[] = {
 	{ .compatible = "atmel,at91sam9g46-aes" },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, atmel_aes_dt_ids);
 
@@ -2571,7 +2531,7 @@ static int atmel_aes_probe(struct platform_device *pdev)
 	}
 	aes_dd->phys_base = aes_res->start;
 
-	/* Get the IRQ */
+	 
 	aes_dd->irq = platform_get_irq(pdev,  0);
 	if (aes_dd->irq < 0) {
 		err = aes_dd->irq;
@@ -2585,7 +2545,7 @@ static int atmel_aes_probe(struct platform_device *pdev)
 		goto err_tasklet_kill;
 	}
 
-	/* Initializing the clock */
+	 
 	aes_dd->iclk = devm_clk_get(&pdev->dev, "aes_clk");
 	if (IS_ERR(aes_dd->iclk)) {
 		dev_err(dev, "clock initialization failed.\n");

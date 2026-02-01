@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * This module provides an interface to trigger and test firmware loading.
- *
- * It is designed to be used for basic evaluation of the firmware loading
- * subsystem (for example when validating firmware verification). It lacks
- * any extra dependencies, and will not normally be loaded by the system
- * unless explicitly requested by name.
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -33,7 +26,7 @@ MODULE_IMPORT_NS(TEST_FIRMWARE);
 #define TEST_FIRMWARE_NUM_REQS	4
 #define TEST_FIRMWARE_BUF_SIZE	SZ_1K
 #define TEST_UPLOAD_MAX_SIZE	SZ_2K
-#define TEST_UPLOAD_BLK_SIZE	37	/* Avoid powers of two in testing */
+#define TEST_UPLOAD_BLK_SIZE	37	 
 
 static DEFINE_MUTEX(test_fw_mutex);
 static const struct firmware *test_firmware;
@@ -51,52 +44,7 @@ struct test_batched_req {
 	struct device *dev;
 };
 
-/**
- * struct test_config - represents configuration for the test for different triggers
- *
- * @name: the name of the firmware file to look for
- * @into_buf: when the into_buf is used if this is true
- *	request_firmware_into_buf() will be used instead.
- * @buf_size: size of buf to allocate when into_buf is true
- * @file_offset: file offset to request when calling request_firmware_into_buf
- * @partial: partial read opt when calling request_firmware_into_buf
- * @sync_direct: when the sync trigger is used if this is true
- *	request_firmware_direct() will be used instead.
- * @send_uevent: whether or not to send a uevent for async requests
- * @num_requests: number of requests to try per test case. This is trigger
- *	specific.
- * @reqs: stores all requests information
- * @read_fw_idx: index of thread from which we want to read firmware results
- *	from through the read_fw trigger.
- * @upload_name: firmware name to be used with upload_read sysfs node
- * @test_result: a test may use this to collect the result from the call
- *	of the request_firmware*() calls used in their tests. In order of
- *	priority we always keep first any setup error. If no setup errors were
- *	found then we move on to the first error encountered while running the
- *	API. Note that for async calls this typically will be a successful
- *	result (0) unless of course you've used bogus parameters, or the system
- *	is out of memory.  In the async case the callback is expected to do a
- *	bit more homework to figure out what happened, unfortunately the only
- *	information passed today on error is the fact that no firmware was
- *	found so we can only assume -ENOENT on async calls if the firmware is
- *	NULL.
- *
- *	Errors you can expect:
- *
- *	API specific:
- *
- *	0:		success for sync, for async it means request was sent
- *	-EINVAL:	invalid parameters or request
- *	-ENOENT:	files not found
- *
- *	System environment:
- *
- *	-ENOMEM:	memory pressure on system
- *	-ENODEV:	out of number of devices to test
- *	-EINVAL:	an unexpected error has occurred
- * @req_firmware: if @sync_direct is true this is set to
- *	request_firmware_direct(), otherwise request_firmware()
- */
+ 
 struct test_config {
 	char *name;
 	bool into_buf;
@@ -109,10 +57,7 @@ struct test_config {
 	u8 read_fw_idx;
 	char *upload_name;
 
-	/*
-	 * These below don't belong her but we'll move them once we create
-	 * a struct fw_test_device and stuff the misc_dev under there later.
-	 */
+	 
 	struct test_batched_req *reqs;
 	int test_result;
 	int (*req_firmware)(const struct firmware **fw, const char *name,
@@ -205,11 +150,7 @@ static void __test_firmware_config_free(void)
 	test_fw_config->name = NULL;
 }
 
-/*
- * XXX: move to kstrncpy() once merged.
- *
- * Users should use kfree_const() when freeing these.
- */
+ 
 static int __kstrncpy(char **dst, const char *name, size_t count, gfp_t gfp)
 {
 	*dst = kstrndup(name, count, gfp);
@@ -345,9 +286,7 @@ static ssize_t config_name_store(struct device *dev,
 	return ret;
 }
 
-/*
- * As per sysfs_kf_seq_show() the buf is max PAGE_SIZE.
- */
+ 
 static ssize_t config_test_show_str(char *dst,
 				    char *src)
 {
@@ -404,7 +343,7 @@ static int __test_dev_config_update_size_t(
 
 	*(size_t *)cfg = new;
 
-	/* Always return full write size even if we didn't consume all */
+	 
 	return size;
 }
 
@@ -429,7 +368,7 @@ static int __test_dev_config_update_u8(const char *buf, size_t size, u8 *cfg)
 
 	*(u8 *)cfg = val;
 
-	/* Always return full write size even if we didn't consume all */
+	 
 	return size;
 }
 
@@ -788,7 +727,7 @@ static ssize_t trigger_async_request_store(struct device *dev,
 		kfree(name);
 		goto out;
 	}
-	/* Free 'name' ASAP, to test for race conditions */
+	 
 	kfree(name);
 
 	wait_for_completion(&async_fw_done);
@@ -834,7 +773,7 @@ static ssize_t trigger_custom_fallback_store(struct device *dev,
 		kfree(name);
 		goto out;
 	}
-	/* Free 'name' ASAP, to test for race conditions */
+	 
 	kfree(name);
 
 	wait_for_completion(&async_fw_done);
@@ -912,12 +851,7 @@ static int test_fw_run_batch_request(void *data)
 	return 0;
 }
 
-/*
- * We use a kthread as otherwise the kernel serializes all our sync requests
- * and we would not be able to mimic batched requests on a sync call. Batched
- * requests on a sync call can for instance happen on a device driver when
- * multiple cards are used and firmware loading happens outside of probe.
- */
+ 
 static ssize_t trigger_batched_requests_store(struct device *dev,
 					      struct device_attribute *attr,
 					      const char *buf, size_t count)
@@ -964,13 +898,7 @@ static ssize_t trigger_batched_requests_store(struct device *dev,
 
 	rc = count;
 
-	/*
-	 * We require an explicit release to enable more time and delay of
-	 * calling release_firmware() to improve our chances of forcing a
-	 * batched request. If we instead called release_firmware() right away
-	 * then we might miss on an opportunity of having a successful firmware
-	 * request pass on the opportunity to be come a batched request.
-	 */
+	 
 
 out_bail:
 	for (i = 0; i < test_fw_config->num_requests; i++) {
@@ -979,7 +907,7 @@ out_bail:
 			wait_for_completion(&req->completion);
 	}
 
-	/* Override any worker error if we had a general setup error */
+	 
 	if (rc < 0)
 		test_fw_config->test_result = rc;
 
@@ -990,9 +918,7 @@ out_unlock:
 }
 static DEVICE_ATTR_WO(trigger_batched_requests);
 
-/*
- * We wait for each callback to return with the lock held, no need to lock here
- */
+ 
 static void trigger_batched_cb(const struct firmware *fw, void *context)
 {
 	struct test_batched_req *req = context;
@@ -1002,18 +928,13 @@ static void trigger_batched_cb(const struct firmware *fw, void *context)
 		return;
 	}
 
-	/* forces *some* batched requests to queue up */
+	 
 	if (!req->idx)
 		ssleep(2);
 
 	req->fw = fw;
 
-	/*
-	 * Unfortunately the firmware API gives us nothing other than a null FW
-	 * if the firmware was not found on async requests.  Best we can do is
-	 * just assume -ENOENT. A better API would pass the actual return
-	 * value to the callback.
-	 */
+	 
 	if (!fw && !test_fw_config->test_result)
 		test_fw_config->test_result = -ENOENT;
 
@@ -1075,13 +996,7 @@ ssize_t trigger_batched_requests_async_store(struct device *dev,
 
 out_bail:
 
-	/*
-	 * We require an explicit release to enable more time and delay of
-	 * calling release_firmware() to improve our chances of forcing a
-	 * batched request. If we instead called release_firmware() right away
-	 * then we might miss on an opportunity of having a successful firmware
-	 * request pass on the opportunity to be come a batched request.
-	 */
+	 
 
 	for (i = 0; i < test_fw_config->num_requests; i++) {
 		req = &test_fw_config->reqs[i];
@@ -1089,7 +1004,7 @@ out_bail:
 			wait_for_completion(&req->completion);
 	}
 
-	/* Override any worker error if we had a general setup error */
+	 
 	if (rc < 0)
 		test_fw_config->test_result = rc;
 
@@ -1119,10 +1034,7 @@ static void upload_release_all(void)
 	test_fw_config->upload_name = NULL;
 }
 
-/*
- * This table is replicated from .../firmware_loader/sysfs_upload.c
- * and needs to be kept in sync.
- */
+ 
 static const char * const fw_upload_err_str[] = {
 	[FW_UPLOAD_ERR_NONE]	     = "none",
 	[FW_UPLOAD_ERR_HW_ERROR]     = "hw-error",
@@ -1210,10 +1122,7 @@ static enum fw_upload_err test_fw_upload_prepare(struct fw_upload *fwl,
 		ret = tst->inject.err_code;
 
 err_out:
-	/*
-	 * The cleanup op only executes if the prepare op succeeds.
-	 * If the prepare op fails, it must do it's own clean-up.
-	 */
+	 
 	tst->inject.err_code = FW_UPLOAD_ERR_NONE;
 	tst->inject.prog = NULL;
 
@@ -1490,7 +1399,7 @@ static struct attribute *test_dev_attrs[] = {
 	TEST_FW_DEV_ATTR(config_read_fw_idx),
 	TEST_FW_DEV_ATTR(config_upload_name),
 
-	/* These don't use the config at all - they could be ported! */
+	 
 	TEST_FW_DEV_ATTR(trigger_request),
 	TEST_FW_DEV_ATTR(trigger_async_request),
 	TEST_FW_DEV_ATTR(trigger_custom_fallback),
@@ -1498,7 +1407,7 @@ static struct attribute *test_dev_attrs[] = {
 	TEST_FW_DEV_ATTR(trigger_request_platform),
 #endif
 
-	/* These use the config and can use the test_result */
+	 
 	TEST_FW_DEV_ATTR(trigger_batched_requests),
 	TEST_FW_DEV_ATTR(trigger_batched_requests_async),
 

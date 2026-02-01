@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Backlight driver for Wolfson Microelectronics WM831x PMICs
- *
- * Copyright 2009 Wolfson Microelectonics plc
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/init.h>
@@ -32,13 +28,13 @@ static int wm831x_backlight_set(struct backlight_device *bl, int brightness)
 	int ret;
 
 	if (power_up) {
-		/* Enable the ISINK */
+		 
 		ret = wm831x_set_bits(wm831x, data->isink_reg,
 				      WM831X_CS1_ENA, WM831X_CS1_ENA);
 		if (ret < 0)
 			goto err;
 
-		/* Enable the DC-DC */
+		 
 		ret = wm831x_set_bits(wm831x, WM831X_DCDC_ENABLE,
 				      WM831X_DC4_ENA, WM831X_DC4_ENA);
 		if (ret < 0)
@@ -46,27 +42,27 @@ static int wm831x_backlight_set(struct backlight_device *bl, int brightness)
 	}
 
 	if (power_down) {
-		/* DCDC first */
+		 
 		ret = wm831x_set_bits(wm831x, WM831X_DCDC_ENABLE,
 				      WM831X_DC4_ENA, 0);
 		if (ret < 0)
 			goto err;
 
-		/* ISINK */
+		 
 		ret = wm831x_set_bits(wm831x, data->isink_reg,
 				      WM831X_CS1_DRIVE | WM831X_CS1_ENA, 0);
 		if (ret < 0)
 			goto err;
 	}
 
-	/* Set the new brightness */
+	 
 	ret = wm831x_set_bits(wm831x, data->isink_reg,
 			      WM831X_CS1_ISEL_MASK, brightness);
 	if (ret < 0)
 		goto err;
 
 	if (power_up) {
-		/* Drive current through the ISINK */
+		 
 		ret = wm831x_set_bits(wm831x, data->isink_reg,
 				      WM831X_CS1_DRIVE, WM831X_CS1_DRIVE);
 		if (ret < 0)
@@ -78,9 +74,7 @@ static int wm831x_backlight_set(struct backlight_device *bl, int brightness)
 	return 0;
 
 err:
-	/* If we were in the middle of a power transition always shut down
-	 * for safety.
-	 */
+	 
 	if (power_up || power_down) {
 		wm831x_set_bits(wm831x, WM831X_DCDC_ENABLE, WM831X_DC4_ENA, 0);
 		wm831x_set_bits(wm831x, data->isink_reg, WM831X_CS1_ENA, 0);
@@ -117,7 +111,7 @@ static int wm831x_backlight_probe(struct platform_device *pdev)
 	struct backlight_properties props;
 	int ret, i, max_isel, isink_reg, dcdc_cfg;
 
-	/* We need platform data */
+	 
 	if (wm831x_pdata)
 		pdata = wm831x_pdata->backlight;
 	else
@@ -128,7 +122,7 @@ static int wm831x_backlight_probe(struct platform_device *pdev)
 		return -EINVAL;
 	}
 
-	/* Figure out the maximum current we can use */
+	 
 	for (i = 0; i < WM831X_ISINK_MAX_ISEL; i++) {
 		if (wm831x_isinkv_values[i] > pdata->max_uA)
 			break;
@@ -159,7 +153,7 @@ static int wm831x_backlight_probe(struct platform_device *pdev)
 		return -EINVAL;
 	}
 
-	/* Configure the ISINK to use for feedback */
+	 
 	ret = wm831x_reg_unlock(wm831x);
 	if (ret < 0)
 		return ret;
@@ -193,7 +187,7 @@ static int wm831x_backlight_probe(struct platform_device *pdev)
 
 	platform_set_drvdata(pdev, bl);
 
-	/* Disable the DCDC if it was started so we can bootstrap */
+	 
 	wm831x_set_bits(wm831x, WM831X_DCDC_ENABLE, WM831X_DC4_ENA, 0);
 
 	backlight_update_status(bl);

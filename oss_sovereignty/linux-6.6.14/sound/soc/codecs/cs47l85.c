@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0-only
-//
-// ALSA SoC Audio driver for CS47L85 codec
-//
-// Copyright (C) 2015-2019 Cirrus Logic, Inc. and
-//                         Cirrus Logic International Semiconductor Ltd.
-//
+
+
+
+
+
+
+
 
 #include <linux/module.h>
 #include <linux/moduleparam.h>
@@ -228,7 +228,7 @@ static void cs47l85_hp_post_disable(struct snd_soc_dapm_widget *w)
 		return;
 	}
 
-	/* Only get to here for OUT1L and OUT1R */
+	 
 	snd_soc_component_update_bits(component,
 				      MADERA_EDRE_HP_STEREO_CONTROL,
 				      0x0001, 0);
@@ -1133,10 +1133,7 @@ SND_SOC_DAPM_PGA("SPD1TX2", MADERA_SPD1_TX_CONTROL,
 SND_SOC_DAPM_OUT_DRV("SPD1", MADERA_SPD1_TX_CONTROL,
 		     MADERA_SPD1_ENA_SHIFT, 0, NULL, 0),
 
-/*
- * Input mux widgets arranged in order of sources in MADERA_MIXER_INPUT_ROUTES
- * to take advantage of cache lookup in DAPM
- */
+ 
 SND_SOC_DAPM_PGA("Noise Generator", MADERA_COMFORT_NOISE_GENERATOR,
 		 MADERA_NOISE_GEN_ENA_SHIFT, 0, NULL, 0),
 
@@ -1377,7 +1374,7 @@ WM_ADSP2("DSP5", 4, cs47l85_adsp_power_ev),
 WM_ADSP2("DSP6", 5, cs47l85_adsp_power_ev),
 WM_ADSP2("DSP7", 6, cs47l85_adsp_power_ev),
 
-/* End of ordered input mux widgets */
+ 
 
 MADERA_MIXER_WIDGETS(EQ1, "EQ1"),
 MADERA_MIXER_WIDGETS(EQ2, "EQ2"),
@@ -1669,7 +1666,7 @@ SND_SOC_DAPM_OUTPUT("MICSUPP"),
 	{ name, "DSP7.6", "DSP7" }
 
 static const struct snd_soc_dapm_route cs47l85_dapm_routes[] = {
-	/* Internal clock domains */
+	 
 	{ "EQ1", NULL, "FXCLK" },
 	{ "EQ2", NULL, "FXCLK" },
 	{ "EQ3", NULL, "FXCLK" },
@@ -2596,7 +2593,7 @@ static int cs47l85_probe(struct platform_device *pdev)
 
 	BUILD_BUG_ON(ARRAY_SIZE(cs47l85_dai) > MADERA_MAX_DAI);
 
-	/* quick exit if Madera irqchip driver hasn't completed probe */
+	 
 	if (!madera->irq_dev) {
 		dev_dbg(&pdev->dev, "irqchip driver not ready\n");
 		return -EPROBE_DEFER;
@@ -2664,7 +2661,7 @@ static int cs47l85_probe(struct platform_device *pdev)
 	for (i = 0; i < ARRAY_SIZE(cs47l85_dai); i++)
 		madera_init_dai(&cs47l85->core, i);
 
-	/* Latch volume update bits */
+	 
 	for (i = 0; i < ARRAY_SIZE(cs47l85_digital_vu); i++)
 		regmap_update_bits(madera->regmap, cs47l85_digital_vu[i],
 				   MADERA_DIG_VU, MADERA_DIG_VU);

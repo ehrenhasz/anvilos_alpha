@@ -1,38 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Renesas RIIC driver
- *
- * Copyright (C) 2013 Wolfram Sang <wsa@sang-engineering.com>
- * Copyright (C) 2013 Renesas Solutions Corp.
- */
 
-/*
- * This i2c core has a lot of interrupts, namely 8. We use their chaining as
- * some kind of state machine.
- *
- * 1) The main xfer routine kicks off a transmission by putting the start bit
- * (or repeated start) on the bus and enabling the transmit interrupt (TIE)
- * since we need to send the slave address + RW bit in every case.
- *
- * 2) TIE sends slave address + RW bit and selects how to continue.
- *
- * 3a) Write case: We keep utilizing TIE as long as we have data to send. If we
- * are done, we switch over to the transmission done interrupt (TEIE) and mark
- * the message as completed (includes sending STOP) there.
- *
- * 3b) Read case: We switch over to receive interrupt (RIE). One dummy read is
- * needed to start clocking, then we keep receiving until we are done. Note
- * that we use the RDRFS mode all the time, i.e. we ACK/NACK every byte by
- * writing to the ACKBT bit. I tried using the RDRFS mode only at the end of a
- * message to create the final NACK as sketched in the datasheet. This caused
- * some subtle races (when byte n was processed and byte n+1 was already
- * waiting), though, and I started with the safe approach.
- *
- * 4) If we got a NACK somewhere, we flag the error and stop the transmission
- * via NAKIE.
- *
- * Also check the comments in the interrupt routines for some gory details.
- */
+ 
+
+ 
 
 #include <linux/clk.h>
 #include <linux/completion.h>
@@ -83,7 +52,7 @@
 
 #define ICSR2_NACKF	0x10
 
-#define ICBR_RESERVED	0xe0 /* Should be 1 on writes */
+#define ICBR_RESERVED	0xe0  
 
 #define RIIC_INIT_MSG	-1
 
@@ -165,10 +134,10 @@ static irqreturn_t riic_tdre_isr(int irq, void *data)
 
 	if (riic->bytes_left == RIIC_INIT_MSG) {
 		if (riic->msg->flags & I2C_M_RD)
-			/* On read, switch over to receive interrupt */
+			 
 			riic_clear_set_bit(riic, ICIER_TIE, ICIER_RIE, RIIC_ICIER);
 		else
-			/* On write, initialize length */
+			 
 			riic->bytes_left = riic->msg->len;
 
 		val = i2c_8bit_addr_from_msg(riic->msg);
@@ -178,19 +147,11 @@ static irqreturn_t riic_tdre_isr(int irq, void *data)
 		riic->bytes_left--;
 	}
 
-	/*
-	 * Switch to transmission ended interrupt when done. Do check here
-	 * after bytes_left was initialized to support SMBUS_QUICK (new msg has
-	 * 0 length then)
-	 */
+	 
 	if (riic->bytes_left == 0)
 		riic_clear_set_bit(riic, ICIER_TIE, ICIER_TEIE, RIIC_ICIER);
 
-	/*
-	 * This acks the TIE interrupt. We get another TIE immediately if our
-	 * value could be moved to the shadow shift register right away. So
-	 * this must be after updates to ICIER (where we want to disable TIE)!
-	 */
+	 
 	writeb(val, riic->base + RIIC_ICDRT);
 
 	return IRQ_HANDLED;
@@ -201,8 +162,8 @@ static irqreturn_t riic_tend_isr(int irq, void *data)
 	struct riic_dev *riic = data;
 
 	if (readb(riic->base + RIIC_ICSR2) & ICSR2_NACKF) {
-		/* We got a NACKIE */
-		readb(riic->base + RIIC_ICDRR);	/* dummy read */
+		 
+		readb(riic->base + RIIC_ICDRR);	 
 		riic_clear_set_bit(riic, ICSR2_NACKF, 0, RIIC_ICSR2);
 		riic->err = -ENXIO;
 	} else if (riic->bytes_left) {
@@ -213,7 +174,7 @@ static irqreturn_t riic_tend_isr(int irq, void *data)
 		riic_clear_set_bit(riic, ICIER_TEIE, ICIER_SPIE, RIIC_ICIER);
 		writeb(ICCR2_SP, riic->base + RIIC_ICCR2);
 	} else {
-		/* Transfer is complete, but do not send STOP */
+		 
 		riic_clear_set_bit(riic, ICIER_TEIE, 0, RIIC_ICIER);
 		complete(&riic->msg_done);
 	}
@@ -230,12 +191,12 @@ static irqreturn_t riic_rdrf_isr(int irq, void *data)
 
 	if (riic->bytes_left == RIIC_INIT_MSG) {
 		riic->bytes_left = riic->msg->len;
-		readb(riic->base + RIIC_ICDRR);	/* dummy read */
+		readb(riic->base + RIIC_ICDRR);	 
 		return IRQ_HANDLED;
 	}
 
 	if (riic->bytes_left == 1) {
-		/* STOP must come before we set ACKBT! */
+		 
 		if (riic->is_last) {
 			riic_clear_set_bit(riic, 0, ICIER_SPIE, RIIC_ICIER);
 			writeb(ICCR2_SP, riic->base + RIIC_ICCR2);
@@ -247,7 +208,7 @@ static irqreturn_t riic_rdrf_isr(int irq, void *data)
 		riic_clear_set_bit(riic, ICMR3_ACKBT, 0, RIIC_ICMR3);
 	}
 
-	/* Reading acks the RIE interrupt */
+	 
 	*riic->buf = readb(riic->base + RIIC_ICDRR);
 	riic->buf++;
 	riic->bytes_left--;
@@ -259,7 +220,7 @@ static irqreturn_t riic_stop_isr(int irq, void *data)
 {
 	struct riic_dev *riic = data;
 
-	/* read back registers to confirm writes have fully propagated */
+	 
 	writeb(0, riic->base + RIIC_ICSR2);
 	readb(riic->base + RIIC_ICSR2);
 	writeb(0, riic->base + RIIC_ICIER);
@@ -298,28 +259,13 @@ static int riic_init_hw(struct riic_dev *riic, struct i2c_timings *t)
 
 	rate = clk_get_rate(riic->clk);
 
-	/*
-	 * Assume the default register settings:
-	 *  FER.SCLE = 1 (SCL sync circuit enabled, adds 2 or 3 cycles)
-	 *  FER.NFE = 1 (noise circuit enabled)
-	 *  MR3.NF = 0 (1 cycle of noise filtered out)
-	 *
-	 * Freq (CKS=000) = (I2CCLK + tr + tf)/ (BRH + 3 + 1) + (BRL + 3 + 1)
-	 * Freq (CKS!=000) = (I2CCLK + tr + tf)/ (BRH + 2 + 1) + (BRL + 2 + 1)
-	 */
+	 
 
-	/*
-	 * Determine reference clock rate. We must be able to get the desired
-	 * frequency with only 62 clock ticks max (31 high, 31 low).
-	 * Aim for a duty of 60% LOW, 40% HIGH.
-	 */
+	 
 	total_ticks = DIV_ROUND_UP(rate, t->bus_freq_hz);
 
 	for (cks = 0; cks < 7; cks++) {
-		/*
-		 * 60% low time must be less than BRL + 2 + 1
-		 * BRL max register value is 0x1F.
-		 */
+		 
 		brl = ((total_ticks * 6) / 10);
 		if (brl <= (0x1F + 3))
 			break;
@@ -337,7 +283,7 @@ static int riic_init_hw(struct riic_dev *riic, struct i2c_timings *t)
 
 	brh = total_ticks - brl;
 
-	/* Remove automatic clock ticks for sync circuit and NF */
+	 
 	if (cks == 0) {
 		brl -= 4;
 		brh -= 4;
@@ -346,14 +292,11 @@ static int riic_init_hw(struct riic_dev *riic, struct i2c_timings *t)
 		brh -= 3;
 	}
 
-	/*
-	 * Remove clock ticks for rise and fall times. Convert ns to clock
-	 * ticks.
-	 */
+	 
 	brl -= t->scl_fall_ns / (1000000000 / rate);
 	brh -= t->scl_rise_ns / (1000000000 / rate);
 
-	/* Adjust for min register values for when SCLE=1 and NFE=1 */
+	 
 	if (brl < 1)
 		brl = 1;
 	if (brh < 1)
@@ -364,7 +307,7 @@ static int riic_init_hw(struct riic_dev *riic, struct i2c_timings *t)
 		 t->scl_fall_ns / (1000000000 / rate),
 		 t->scl_rise_ns / (1000000000 / rate), cks, brl, brh);
 
-	/* Changing the order of accessing IICRST and ICE may break things! */
+	 
 	writeb(ICCR1_IICRST | ICCR1_SOWP, riic->base + RIIC_ICCR1);
 	riic_clear_set_bit(riic, 0, ICCR1_ICE, RIIC_ICCR1);
 
@@ -489,7 +432,7 @@ static void riic_i2c_remove(struct platform_device *pdev)
 
 static const struct of_device_id riic_i2c_dt_ids[] = {
 	{ .compatible = "renesas,riic-rz", },
-	{ /* Sentinel */ },
+	{   },
 };
 
 static struct platform_driver riic_i2c_driver = {

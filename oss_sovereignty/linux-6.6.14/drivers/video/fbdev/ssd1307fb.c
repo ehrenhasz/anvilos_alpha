@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Driver for the Solomon SSD1307 OLED controller
- *
- * Copyright 2012 Free Electrons
- */
+
+ 
 
 #include <linux/backlight.h>
 #include <linux/delay.h>
@@ -82,7 +78,7 @@ struct ssd1307fb_par {
 	struct regulator *vbat_reg;
 	u32 vcomh;
 	u32 width;
-	/* Cached address ranges */
+	 
 	u8 col_start;
 	u8 col_end;
 	u8 page_start;
@@ -224,34 +220,7 @@ static int ssd1307fb_update_rect(struct ssd1307fb_par *par, unsigned int x,
 	if (!array)
 		return -ENOMEM;
 
-	/*
-	 * The screen is divided in pages, each having a height of 8
-	 * pixels, and the width of the screen. When sending a byte of
-	 * data to the controller, it gives the 8 bits for the current
-	 * column. I.e, the first byte are the 8 bits of the first
-	 * column, then the 8 bits for the second column, etc.
-	 *
-	 *
-	 * Representation of the screen, assuming it is 5 bits
-	 * wide. Each letter-number combination is a bit that controls
-	 * one pixel.
-	 *
-	 * A0 A1 A2 A3 A4
-	 * B0 B1 B2 B3 B4
-	 * C0 C1 C2 C3 C4
-	 * D0 D1 D2 D3 D4
-	 * E0 E1 E2 E3 E4
-	 * F0 F1 F2 F3 F4
-	 * G0 G1 G2 G3 G4
-	 * H0 H1 H2 H3 H4
-	 *
-	 * If you want to update this screen, you need to send 5 bytes:
-	 *  (1) A0 B0 C0 D0 E0 F0 G0 H0
-	 *  (2) A1 B1 C1 D1 E1 F1 G1 H1
-	 *  (3) A2 B2 C2 D2 E2 F2 G2 H2
-	 *  (4) A3 B3 C3 D3 E3 F3 G3 H3
-	 *  (5) A4 B4 C4 D4 E4 F4 G4 H4
-	 */
+	 
 
 	ret = ssd1307fb_set_col_range(par, par->col_offset + x, width);
 	if (ret < 0)
@@ -264,7 +233,7 @@ static int ssd1307fb_update_rect(struct ssd1307fb_par *par, unsigned int x,
 	for (i = y / 8; i < y / 8 + pages; i++) {
 		int m = 8;
 
-		/* Last page may be partial */
+		 
 		if (8 * (i + 1) > par->height)
 			m = par->height % 8;
 		for (j = x; j < x + width; j++) {
@@ -349,14 +318,14 @@ static int ssd1307fb_init(struct ssd1307fb_par *par)
 		pwm_set_relative_duty_cycle(&pwmstate, 50, 100);
 		pwm_apply_state(par->pwm, &pwmstate);
 
-		/* Enable the PWM */
+		 
 		pwm_enable(par->pwm);
 
 		dev_dbg(&par->client->dev, "Using PWM %s with a %lluns period.\n",
 			par->pwm->label, pwm_get_period(par->pwm));
 	}
 
-	/* Set initial contrast */
+	 
 	ret = ssd1307fb_write_cmd(par->client, SSD1307FB_CONTRAST);
 	if (ret < 0)
 		return ret;
@@ -365,20 +334,20 @@ static int ssd1307fb_init(struct ssd1307fb_par *par)
 	if (ret < 0)
 		return ret;
 
-	/* Set segment re-map */
+	 
 	if (par->seg_remap) {
 		ret = ssd1307fb_write_cmd(par->client, SSD1307FB_SEG_REMAP_ON);
 		if (ret < 0)
 			return ret;
 	}
 
-	/* Set COM direction */
+	 
 	com_invdir = 0xc0 | par->com_invdir << 3;
 	ret = ssd1307fb_write_cmd(par->client,  com_invdir);
 	if (ret < 0)
 		return ret;
 
-	/* Set multiplex ratio value */
+	 
 	ret = ssd1307fb_write_cmd(par->client, SSD1307FB_SET_MULTIPLEX_RATIO);
 	if (ret < 0)
 		return ret;
@@ -387,7 +356,7 @@ static int ssd1307fb_init(struct ssd1307fb_par *par)
 	if (ret < 0)
 		return ret;
 
-	/* set display offset value */
+	 
 	ret = ssd1307fb_write_cmd(par->client, SSD1307FB_SET_DISPLAY_OFFSET);
 	if (ret < 0)
 		return ret;
@@ -396,7 +365,7 @@ static int ssd1307fb_init(struct ssd1307fb_par *par)
 	if (ret < 0)
 		return ret;
 
-	/* Set clock frequency */
+	 
 	ret = ssd1307fb_write_cmd(par->client, SSD1307FB_SET_CLOCK_FREQ);
 	if (ret < 0)
 		return ret;
@@ -406,7 +375,7 @@ static int ssd1307fb_init(struct ssd1307fb_par *par)
 	if (ret < 0)
 		return ret;
 
-	/* Set Area Color Mode ON/OFF & Low Power Display Mode */
+	 
 	if (par->area_color_enable || par->low_power) {
 		u32 mode;
 
@@ -422,7 +391,7 @@ static int ssd1307fb_init(struct ssd1307fb_par *par)
 			return ret;
 	}
 
-	/* Set precharge period in number of ticks from the internal clock */
+	 
 	ret = ssd1307fb_write_cmd(par->client, SSD1307FB_SET_PRECHARGE_PERIOD);
 	if (ret < 0)
 		return ret;
@@ -432,7 +401,7 @@ static int ssd1307fb_init(struct ssd1307fb_par *par)
 	if (ret < 0)
 		return ret;
 
-	/* Set COM pins configuration */
+	 
 	ret = ssd1307fb_write_cmd(par->client, SSD1307FB_SET_COM_PINS_CONFIG);
 	if (ret < 0)
 		return ret;
@@ -442,7 +411,7 @@ static int ssd1307fb_init(struct ssd1307fb_par *par)
 	if (ret < 0)
 		return ret;
 
-	/* Set VCOMH */
+	 
 	ret = ssd1307fb_write_cmd(par->client, SSD1307FB_SET_VCOMH);
 	if (ret < 0)
 		return ret;
@@ -451,7 +420,7 @@ static int ssd1307fb_init(struct ssd1307fb_par *par)
 	if (ret < 0)
 		return ret;
 
-	/* Turn on the DC-DC Charge Pump */
+	 
 	ret = ssd1307fb_write_cmd(par->client, SSD1307FB_CHARGE_PUMP);
 	if (ret < 0)
 		return ret;
@@ -461,7 +430,7 @@ static int ssd1307fb_init(struct ssd1307fb_par *par)
 	if (ret < 0)
 		return ret;
 
-	/* Set lookup table */
+	 
 	if (par->lookup_table_set) {
 		int i;
 
@@ -483,7 +452,7 @@ static int ssd1307fb_init(struct ssd1307fb_par *par)
 		}
 	}
 
-	/* Switch to horizontal addressing mode */
+	 
 	ret = ssd1307fb_write_cmd(par->client, SSD1307FB_SET_ADDRESS_MODE);
 	if (ret < 0)
 		return ret;
@@ -493,12 +462,12 @@ static int ssd1307fb_init(struct ssd1307fb_par *par)
 	if (ret < 0)
 		return ret;
 
-	/* Clear the screen */
+	 
 	ret = ssd1307fb_update_display(par);
 	if (ret < 0)
 		return ret;
 
-	/* Turn on the display */
+	 
 	ret = ssd1307fb_write_cmd(par->client, SSD1307FB_DISPLAY_ON);
 	if (ret < 0)
 		return ret;
@@ -667,7 +636,7 @@ static int ssd1307fb_probe(struct i2c_client *client)
 	par->contrast = 127;
 	par->vcomh = par->device_info->default_vcomh;
 
-	/* Setup display timing */
+	 
 	if (device_property_read_u32(dev, "solomon,dclk-div", &par->dclk_div))
 		par->dclk_div = par->device_info->default_dclk_div;
 	if (device_property_read_u32(dev, "solomon,dclk-frq", &par->dclk_frq))
@@ -714,7 +683,7 @@ static int ssd1307fb_probe(struct i2c_client *client)
 	i2c_set_clientdata(client, info);
 
 	if (par->reset) {
-		/* Reset the screen */
+		 
 		gpiod_set_value_cansleep(par->reset, 1);
 		udelay(4);
 		gpiod_set_value_cansleep(par->reset, 0);

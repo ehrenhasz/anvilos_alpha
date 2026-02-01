@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2020, Linaro Limited
+
+
 
 #include <linux/module.h>
 #include <linux/platform_device.h>
@@ -134,7 +134,7 @@ static int sm8250_platform_probe(struct platform_device *pdev)
 		return -ENOMEM;
 
 	card->owner = THIS_MODULE;
-	/* Allocate the private data */
+	 
 	data = devm_kzalloc(dev, sizeof(*data), GFP_KERNEL);
 	if (!data)
 		return -ENOMEM;

@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * r8a779a0 Clock Pulse Generator / Module Standby and Software Reset
- *
- * Copyright (C) 2020 Renesas Electronics Corp.
- *
- * Based on r8a7795-cpg-mssr.c
- *
- * Copyright (C) 2015 Glider bvba
- * Copyright (C) 2015 Renesas Electronics Corp.
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/clk.h>
@@ -25,14 +16,14 @@
 #include "rcar-gen4-cpg.h"
 
 enum clk_ids {
-	/* Core Clock Outputs exported to DT */
+	 
 	LAST_DT_CORE_CLK = R8A779A0_CLK_OSC,
 
-	/* External Input Clocks */
+	 
 	CLK_EXTAL,
 	CLK_EXTALR,
 
-	/* Internal Core Clocks */
+	 
 	CLK_MAIN,
 	CLK_PLL1,
 	CLK_PLL20,
@@ -53,7 +44,7 @@ enum clk_ids {
 	CLK_RPCSRC,
 	CLK_OCO,
 
-	/* Module Clocks */
+	 
 	MOD_CLK_BASE
 };
 
@@ -62,11 +53,11 @@ enum clk_ids {
 		 .offset = _offset)
 
 static const struct cpg_core_clk r8a779a0_core_clks[] __initconst = {
-	/* External Clock Inputs */
+	 
 	DEF_INPUT("extal",  CLK_EXTAL),
 	DEF_INPUT("extalr", CLK_EXTALR),
 
-	/* Internal Core Clocks */
+	 
 	DEF_BASE(".main", CLK_MAIN,	CLK_TYPE_GEN4_MAIN, CLK_EXTAL),
 	DEF_BASE(".pll1", CLK_PLL1,	CLK_TYPE_GEN4_PLL1, CLK_MAIN),
 	DEF_BASE(".pll5", CLK_PLL5,	CLK_TYPE_GEN4_PLL5, CLK_MAIN),
@@ -90,7 +81,7 @@ static const struct cpg_core_clk r8a779a0_core_clks[] __initconst = {
 
 	DEF_BASE(".rpcsrc",		CLK_RPCSRC,	CLK_TYPE_GEN4_RPCSRC, CLK_PLL5),
 
-	/* Core Clock Outputs */
+	 
 	DEF_GEN4_Z("z0",	R8A779A0_CLK_Z0,	CLK_TYPE_GEN4_Z,	CLK_PLL20,	2, 0),
 	DEF_GEN4_Z("z1",	R8A779A0_CLK_Z1,	CLK_TYPE_GEN4_Z,	CLK_PLL21,	2, 8),
 	DEF_FIXED("zx",		R8A779A0_CLK_ZX,	CLK_PLL20_DIV2,	2, 1),
@@ -236,25 +227,15 @@ static const struct mssr_mod_clk r8a779a0_mod_clks[] __initconst = {
 };
 
 static const unsigned int r8a779a0_crit_mod_clks[] __initconst = {
-	MOD_CLK_ID(907),	/* RWDT */
+	MOD_CLK_ID(907),	 
 };
 
-/*
- * CPG Clock Data
- */
-/*
- *   MD	 EXTAL		PLL1	PLL20	PLL30	PLL4	PLL5	OSC
- * 14 13 (MHz)			   21	   31
- * ----------------------------------------------------------------
- * 0  0	 16.66 x 1	x128	x216	x128	x144	x192	/16
- * 0  1	 20    x 1	x106	x180	x106	x120	x160	/19
- * 1  0	 Prohibited setting
- * 1  1	 33.33 / 2	x128	x216	x128	x144	x192	/32
- */
+ 
+ 
 #define CPG_PLL_CONFIG_INDEX(md)	((((md) & BIT(14)) >> 13) | \
 					 (((md) & BIT(13)) >> 13))
 static const struct rcar_gen4_cpg_pll_config cpg_pll_configs[4] = {
-	/* EXTAL div	PLL1 mult/div	PLL2 mult/div	PLL3 mult/div	PLL4 mult/div	PLL5 mult/div	PLL6 mult/div	OSC prediv */
+	 
 	{ 1,		128,	1,	0,	0,	0,	0,	144,	1,	192,	1,	0,	0,	16,	},
 	{ 1,		106,	1,	0,	0,	0,	0,	120,	1,	160,	1,	0,	0,	19,	},
 	{ 0,		0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	},
@@ -278,22 +259,22 @@ static int __init r8a779a0_cpg_mssr_init(struct device *dev)
 }
 
 const struct cpg_mssr_info r8a779a0_cpg_mssr_info __initconst = {
-	/* Core Clocks */
+	 
 	.core_clks = r8a779a0_core_clks,
 	.num_core_clks = ARRAY_SIZE(r8a779a0_core_clks),
 	.last_dt_core_clk = LAST_DT_CORE_CLK,
 	.num_total_core_clks = MOD_CLK_BASE,
 
-	/* Module Clocks */
+	 
 	.mod_clks = r8a779a0_mod_clks,
 	.num_mod_clks = ARRAY_SIZE(r8a779a0_mod_clks),
 	.num_hw_mod_clks = 15 * 32,
 
-	/* Critical Module Clocks */
+	 
 	.crit_mod_clks		= r8a779a0_crit_mod_clks,
 	.num_crit_mod_clks	= ARRAY_SIZE(r8a779a0_crit_mod_clks),
 
-	/* Callbacks */
+	 
 	.init = r8a779a0_cpg_mssr_init,
 	.cpg_clk_register = rcar_gen4_cpg_clk_register,
 

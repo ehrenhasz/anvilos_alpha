@@ -1,10 +1,8 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _ASM_X86_COMPAT_H
 #define _ASM_X86_COMPAT_H
 
-/*
- * Architecture specific compatibility types
- */
+ 
 #include <linux/types.h>
 #include <linux/sched.h>
 #include <linux/sched/task_stack.h>
@@ -54,10 +52,7 @@ struct compat_stat {
 	u32		__unused5;
 };
 
-/*
- * IA32 uses 4 byte alignment for 64 bit quantities, so we need to pack the
- * compat flock64 structure.
- */
+ 
 #define __ARCH_NEED_COMPAT_FLOCK64_PACKED
 
 struct compat_statfs {
@@ -69,7 +64,7 @@ struct compat_statfs {
 	int		f_files;
 	int		f_ffree;
 	compat_fsid_t	f_fsid;
-	int		f_namelen;	/* SunOS ignores this field. */
+	int		f_namelen;	 
 	int		f_frsize;
 	int		f_flags;
 	int		f_spare[4];
@@ -99,7 +94,7 @@ static inline bool in_compat_syscall(void)
 {
 	return in_32bit_syscall();
 }
-#define in_compat_syscall in_compat_syscall	/* override the generic impl */
+#define in_compat_syscall in_compat_syscall	 
 #define compat_need_64bit_alignment_fixup in_ia32_syscall
 #endif
 
@@ -109,6 +104,6 @@ struct compat_siginfo;
 int copy_siginfo_to_user32(struct compat_siginfo __user *to,
 		const kernel_siginfo_t *from);
 #define copy_siginfo_to_user32 copy_siginfo_to_user32
-#endif /* CONFIG_X86_X32_ABI */
+#endif  
 
-#endif /* _ASM_X86_COMPAT_H */
+#endif  

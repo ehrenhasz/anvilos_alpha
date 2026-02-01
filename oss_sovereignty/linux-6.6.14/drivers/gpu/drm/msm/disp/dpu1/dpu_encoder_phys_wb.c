@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2022 Qualcomm Innovation Center, Inc. All rights reserved.
- */
+
+ 
 
 #define pr_fmt(fmt)	"[drm:%s:%d] " fmt, __func__, __LINE__
 
@@ -24,20 +22,14 @@
 #define to_dpu_encoder_phys_wb(x) \
 	container_of(x, struct dpu_encoder_phys_wb, base)
 
-/**
- * dpu_encoder_phys_wb_is_master - report wb always as master encoder
- * @phys_enc:	Pointer to physical encoder
- */
+ 
 static bool dpu_encoder_phys_wb_is_master(struct dpu_encoder_phys *phys_enc)
 {
-	/* there is only one physical enc for dpu_writeback */
+	 
 	return true;
 }
 
-/**
- * dpu_encoder_phys_wb_set_ot_limit - set OT limit for writeback interface
- * @phys_enc:	Pointer to physical encoder
- */
+ 
 static void dpu_encoder_phys_wb_set_ot_limit(
 		struct dpu_encoder_phys *phys_enc)
 {
@@ -58,10 +50,7 @@ static void dpu_encoder_phys_wb_set_ot_limit(
 	dpu_vbif_set_ot_limit(phys_enc->dpu_kms, &ot_params);
 }
 
-/**
- * dpu_encoder_phys_wb_set_qos_remap - set QoS remapper for writeback
- * @phys_enc:	Pointer to physical encoder
- */
+ 
 static void dpu_encoder_phys_wb_set_qos_remap(
 		struct dpu_encoder_phys *phys_enc)
 {
@@ -95,10 +84,7 @@ static void dpu_encoder_phys_wb_set_qos_remap(
 	dpu_vbif_set_qos_remap(phys_enc->dpu_kms, &qos_params);
 }
 
-/**
- * dpu_encoder_phys_wb_set_qos - set QoS/danger/safe LUTs for writeback
- * @phys_enc:	Pointer to physical encoder
- */
+ 
 static void dpu_encoder_phys_wb_set_qos(struct dpu_encoder_phys *phys_enc)
 {
 	struct dpu_hw_wb *hw_wb;
@@ -129,11 +115,7 @@ static void dpu_encoder_phys_wb_set_qos(struct dpu_encoder_phys *phys_enc)
 		hw_wb->ops.setup_qos_lut(hw_wb, &qos_cfg);
 }
 
-/**
- * dpu_encoder_phys_wb_setup_fb - setup output framebuffer
- * @phys_enc:	Pointer to physical encoder
- * @fb:		Pointer to output framebuffer
- */
+ 
 static void dpu_encoder_phys_wb_setup_fb(struct dpu_encoder_phys *phys_enc,
 		struct drm_framebuffer *fb)
 {
@@ -172,10 +154,7 @@ static void dpu_encoder_phys_wb_setup_fb(struct dpu_encoder_phys *phys_enc,
 		hw_wb->ops.setup_outaddress(hw_wb, wb_cfg);
 }
 
-/**
- * dpu_encoder_phys_wb_setup_cdp - setup chroma down prefetch block
- * @phys_enc:Pointer to physical encoder
- */
+ 
 static void dpu_encoder_phys_wb_setup_cdp(struct dpu_encoder_phys *phys_enc)
 {
 	struct dpu_hw_wb *hw_wb;
@@ -208,7 +187,7 @@ static void dpu_encoder_phys_wb_setup_cdp(struct dpu_encoder_phys *phys_enc)
 			phys_enc->hw_pp->merge_3d->ops.setup_3d_mode(phys_enc->hw_pp->merge_3d,
 					mode_3d);
 
-		/* setup which pp blk will connect to this wb */
+		 
 		if (hw_pp && phys_enc->hw_wb->ops.bind_pingpong_blk)
 			phys_enc->hw_wb->ops.bind_pingpong_blk(phys_enc->hw_wb,
 					phys_enc->hw_pp->idx);
@@ -225,12 +204,7 @@ static void dpu_encoder_phys_wb_setup_cdp(struct dpu_encoder_phys *phys_enc)
 	}
 }
 
-/**
- * dpu_encoder_phys_wb_atomic_check - verify and fixup given atomic states
- * @phys_enc:	Pointer to physical encoder
- * @crtc_state:	Pointer to CRTC atomic state
- * @conn_state:	Pointer to connector atomic state
- */
+ 
 static int dpu_encoder_phys_wb_atomic_check(
 		struct dpu_encoder_phys *phys_enc,
 		struct drm_crtc_state *crtc_state,
@@ -278,10 +252,7 @@ static int dpu_encoder_phys_wb_atomic_check(
 }
 
 
-/**
- * _dpu_encoder_phys_wb_update_flush - flush hardware update
- * @phys_enc:	Pointer to physical encoder
- */
+ 
 static void _dpu_encoder_phys_wb_update_flush(struct dpu_encoder_phys *phys_enc)
 {
 	struct dpu_hw_wb *hw_wb;
@@ -318,10 +289,7 @@ static void _dpu_encoder_phys_wb_update_flush(struct dpu_encoder_phys *phys_enc)
 			hw_wb->idx - WB_0);
 }
 
-/**
- * dpu_encoder_phys_wb_setup - setup writeback encoder
- * @phys_enc:	Pointer to physical encoder
- */
+ 
 static void dpu_encoder_phys_wb_setup(
 		struct dpu_encoder_phys *phys_enc)
 {
@@ -367,25 +335,17 @@ static void _dpu_encoder_phys_wb_frame_done_helper(void *arg)
 	if (wb_enc->wb_conn)
 		drm_writeback_signal_completion(wb_enc->wb_conn, 0);
 
-	/* Signal any waiting atomic commit thread */
+	 
 	wake_up_all(&phys_enc->pending_kickoff_wq);
 }
 
-/**
- * dpu_encoder_phys_wb_done_irq - writeback interrupt handler
- * @arg:	Pointer to writeback encoder
- * @irq_idx:	interrupt index
- */
+ 
 static void dpu_encoder_phys_wb_done_irq(void *arg, int irq_idx)
 {
 	_dpu_encoder_phys_wb_frame_done_helper(arg);
 }
 
-/**
- * dpu_encoder_phys_wb_irq_ctrl - irq control of WB
- * @phys:	Pointer to physical encoder
- * @enable:	indicates enable or disable interrupts
- */
+ 
 static void dpu_encoder_phys_wb_irq_ctrl(
 		struct dpu_encoder_phys *phys, bool enable)
 {
@@ -422,7 +382,7 @@ static void _dpu_encoder_phys_wb_handle_wbdone_timeout(
 
 	atomic_add_unless(&phys_enc->pending_kickoff_cnt, -1, 0);
 
-	/* request a ctl reset before the next kickoff */
+	 
 	phys_enc->enable_state = DPU_ENC_ERR_NEEDS_HW_RESET;
 
 	if (wb_enc->wb_conn)
@@ -431,10 +391,7 @@ static void _dpu_encoder_phys_wb_handle_wbdone_timeout(
 	dpu_encoder_frame_done_callback(phys_enc->parent, phys_enc, frame_event);
 }
 
-/**
- * dpu_encoder_phys_wb_wait_for_commit_done - wait until request is committed
- * @phys_enc:	Pointer to physical encoder
- */
+ 
 static int dpu_encoder_phys_wb_wait_for_commit_done(
 		struct dpu_encoder_phys *phys_enc)
 {
@@ -457,11 +414,7 @@ static int dpu_encoder_phys_wb_wait_for_commit_done(
 	return ret;
 }
 
-/**
- * dpu_encoder_phys_wb_prepare_for_kickoff - pre-kickoff processing
- * @phys_enc:	Pointer to physical encoder
- * Returns:	Zero on success
- */
+ 
 static void dpu_encoder_phys_wb_prepare_for_kickoff(
 		struct dpu_encoder_phys *phys_enc)
 {
@@ -487,20 +440,14 @@ static void dpu_encoder_phys_wb_prepare_for_kickoff(
 	_dpu_encoder_phys_wb_update_flush(phys_enc);
 }
 
-/**
- * dpu_encoder_phys_wb_needs_single_flush - trigger flush processing
- * @phys_enc:	Pointer to physical encoder
- */
+ 
 static bool dpu_encoder_phys_wb_needs_single_flush(struct dpu_encoder_phys *phys_enc)
 {
 	DPU_DEBUG("[wb:%d]\n", phys_enc->hw_wb->idx - WB_0);
 	return false;
 }
 
-/**
- * dpu_encoder_phys_wb_handle_post_kickoff - post-kickoff processing
- * @phys_enc:	Pointer to physical encoder
- */
+ 
 static void dpu_encoder_phys_wb_handle_post_kickoff(
 		struct dpu_encoder_phys *phys_enc)
 {
@@ -508,19 +455,13 @@ static void dpu_encoder_phys_wb_handle_post_kickoff(
 
 }
 
-/**
- * dpu_encoder_phys_wb_enable - enable writeback encoder
- * @phys_enc:	Pointer to physical encoder
- */
+ 
 static void dpu_encoder_phys_wb_enable(struct dpu_encoder_phys *phys_enc)
 {
 	DPU_DEBUG("[wb:%d]\n", phys_enc->hw_wb->idx - WB_0);
 	phys_enc->enable_state = DPU_ENC_ENABLED;
 }
-/**
- * dpu_encoder_phys_wb_disable - disable writeback encoder
- * @phys_enc:	Pointer to physical encoder
- */
+ 
 static void dpu_encoder_phys_wb_disable(struct dpu_encoder_phys *phys_enc)
 {
 	struct dpu_hw_wb *hw_wb = phys_enc->hw_wb;
@@ -533,30 +474,18 @@ static void dpu_encoder_phys_wb_disable(struct dpu_encoder_phys *phys_enc)
 		return;
 	}
 
-	/* reset h/w before final flush */
+	 
 	if (phys_enc->hw_ctl->ops.clear_pending_flush)
 		phys_enc->hw_ctl->ops.clear_pending_flush(phys_enc->hw_ctl);
 
-	/*
-	 * New CTL reset sequence from 5.0 MDP onwards.
-	 * If has_3d_merge_reset is not set, legacy reset
-	 * sequence is executed.
-	 *
-	 * Legacy reset sequence has not been implemented yet.
-	 * Any target earlier than SM8150 will need it and when
-	 * WB support is added to those targets will need to add
-	 * the legacy teardown sequence as well.
-	 */
+	 
 	if (hw_ctl->caps->features & BIT(DPU_CTL_ACTIVE_CFG))
 		dpu_encoder_helper_phys_cleanup(phys_enc);
 
 	phys_enc->enable_state = DPU_ENC_DISABLED;
 }
 
-/**
- * dpu_encoder_phys_wb_destroy - destroy writeback encoder
- * @phys_enc:	Pointer to physical encoder
- */
+ 
 static void dpu_encoder_phys_wb_destroy(struct dpu_encoder_phys *phys_enc)
 {
 	if (!phys_enc)
@@ -598,7 +527,7 @@ static void dpu_encoder_phys_wb_prepare_wb_job(struct dpu_encoder_phys *phys_enc
 	wb_cfg->dest.format = dpu_get_dpu_format_ext(
 			format->pixel_format, job->fb->modifier);
 	if (!wb_cfg->dest.format) {
-		/* this error should be detected during atomic_check */
+		 
 		DPU_ERROR("failed to get format %x\n", format->pixel_format);
 		return;
 	}
@@ -652,10 +581,7 @@ static bool dpu_encoder_phys_wb_is_valid_for_commit(struct dpu_encoder_phys *phy
 		return false;
 }
 
-/**
- * dpu_encoder_phys_wb_init_ops - initialize writeback operations
- * @ops:	Pointer to encoder operation table
- */
+ 
 static void dpu_encoder_phys_wb_init_ops(struct dpu_encoder_phys_ops *ops)
 {
 	ops->is_master = dpu_encoder_phys_wb_is_master;
@@ -676,10 +602,7 @@ static void dpu_encoder_phys_wb_init_ops(struct dpu_encoder_phys_ops *ops)
 
 }
 
-/**
- * dpu_encoder_phys_wb_init - initialize writeback encoder
- * @p:	Pointer to init info structure with initialization params
- */
+ 
 struct dpu_encoder_phys *dpu_encoder_phys_wb_init(
 		struct dpu_enc_phys_init_params *p)
 {

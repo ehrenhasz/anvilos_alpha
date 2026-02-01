@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: MIT */
+ 
 #ifndef __NVBIOS_DP_H__
 #define __NVBIOS_DP_H__
 

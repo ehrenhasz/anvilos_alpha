@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Clock driver for DA8xx/AM17xx/AM18xx/OMAP-L13x CFGCHIP
- *
- * Copyright (C) 2018 David Lechner <david@lechnology.com>
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/clk.h>
@@ -18,7 +14,7 @@
 #include <linux/regmap.h>
 #include <linux/slab.h>
 
-/* --- Gate clocks --- */
+ 
 
 #define DA8XX_GATE_CLOCK_IS_DIV4P5	BIT(1)
 
@@ -66,7 +62,7 @@ static int da8xx_cfgchip_gate_clk_is_enabled(struct clk_hw *hw)
 static unsigned long da8xx_cfgchip_div4p5_recalc_rate(struct clk_hw *hw,
 						      unsigned long parent_rate)
 {
-	/* this clock divides by 4.5 */
+	 
 	return parent_rate * 2 / 9;
 }
 
@@ -190,7 +186,7 @@ static int __init of_da8xx_div4p5ena_init(struct device *dev,
 	return of_da8xx_cfgchip_gate_clk_init(dev, &da8xx_div4p5ena_info, regmap);
 }
 
-/* --- MUX clocks --- */
+ 
 
 struct da8xx_cfgchip_mux_clk_info {
 	const char *name;
@@ -308,7 +304,7 @@ static int __init da850_cfgchip_register_async3(struct device *dev,
 
 	clk_hw_register_clkdev(&mux->hw, "async3", "da850-psc1");
 
-	/* pll1_sysclk2 is not affected by CPU scaling, so use it for async3 */
+	 
 	parent = clk_hw_get_parent_by_index(&mux->hw, 1);
 	if (parent)
 		clk_set_parent(mux->hw.clk, parent->clk);
@@ -342,7 +338,7 @@ static int __init of_da850_async3_init(struct device *dev, struct regmap *regmap
 	return of_da8xx_cfgchip_init_mux_clock(dev, &da850_async3_info, regmap);
 }
 
-/* --- USB 2.0 PHY clock --- */
+ 
 
 struct da8xx_usb0_clk48 {
 	struct clk_hw hw;
@@ -357,10 +353,7 @@ static int da8xx_usb0_clk48_prepare(struct clk_hw *hw)
 {
 	struct da8xx_usb0_clk48 *usb0 = to_da8xx_usb0_clk48(hw);
 
-	/* The USB 2.0 PSC clock is only needed temporarily during the USB 2.0
-	 * PHY clock enable, but since clk_prepare() can't be called in an
-	 * atomic context (i.e. in clk_enable()), we have to prepare it here.
-	 */
+	 
 	return clk_prepare(usb0->fck);
 }
 
@@ -377,14 +370,10 @@ static int da8xx_usb0_clk48_enable(struct clk_hw *hw)
 	unsigned int mask, val;
 	int ret;
 
-	/* Locking the USB 2.O PLL requires that the USB 2.O PSC is enabled
-	 * temporaily. It can be turned back off once the PLL is locked.
-	 */
+	 
 	clk_enable(usb0->fck);
 
-	/* Turn on the USB 2.0 PHY, but just the PLL, and not OTG. The USB 1.1
-	 * PHY may use the USB 2.0 PLL clock without USB 2.0 OTG being used.
-	 */
+	 
 	mask = CFGCHIP2_RESET | CFGCHIP2_PHYPWRDN | CFGCHIP2_PHY_PLLON;
 	val = CFGCHIP2_PHY_PLLON;
 
@@ -422,7 +411,7 @@ static unsigned long da8xx_usb0_clk48_recalc_rate(struct clk_hw *hw,
 	struct da8xx_usb0_clk48 *usb0 = to_da8xx_usb0_clk48(hw);
 	unsigned int mask, val;
 
-	/* The parent clock rate must be one of the following */
+	 
 	mask = CFGCHIP2_REFFREQ_MASK;
 	switch (parent_rate) {
 	case 12000000:
@@ -458,7 +447,7 @@ static unsigned long da8xx_usb0_clk48_recalc_rate(struct clk_hw *hw,
 
 	regmap_write_bits(usb0->regmap, CFGCHIP(2), mask, val);
 
-	/* USB 2.0 PLL always supplies 48MHz */
+	 
 	return 48000000;
 }
 
@@ -537,7 +526,7 @@ da8xx_cfgchip_register_usb0_clk48(struct device *dev,
 	return usb0;
 }
 
-/* --- USB 1.1 PHY clock --- */
+ 
 
 struct da8xx_usb1_clk48 {
 	struct clk_hw hw;
@@ -572,11 +561,7 @@ static const struct clk_ops da8xx_usb1_clk48_ops = {
 	.get_parent	= da8xx_usb1_clk48_get_parent,
 };
 
-/**
- * da8xx_cfgchip_register_usb1_clk48 - Register a new USB 1.1 PHY clock
- * @dev: The device
- * @regmap: The CFGCHIP regmap
- */
+ 
 static struct da8xx_usb1_clk48 *
 da8xx_cfgchip_register_usb1_clk48(struct device *dev,
 				  struct regmap *regmap)
@@ -616,10 +601,7 @@ static int da8xx_cfgchip_register_usb_phy_clk(struct device *dev,
 	if (IS_ERR(usb0))
 		return PTR_ERR(usb0);
 
-	/*
-	 * All existing boards use pll0_auxclk as the parent and new boards
-	 * should use device tree, so hard-coding the value (1) here.
-	 */
+	 
 	parent = clk_hw_get_parent_by_index(&usb0->hw, 1);
 	if (parent)
 		clk_set_parent(usb0->hw.clk, parent->clk);
@@ -630,10 +612,7 @@ static int da8xx_cfgchip_register_usb_phy_clk(struct device *dev,
 	if (IS_ERR(usb1))
 		return PTR_ERR(usb1);
 
-	/*
-	 * All existing boards use usb0_clk48 as the parent and new boards
-	 * should use device tree, so hard-coding the value (0) here.
-	 */
+	 
 	parent = clk_hw_get_parent_by_index(&usb1->hw, 0);
 	if (parent)
 		clk_set_parent(usb1->hw.clk, parent->clk);
@@ -688,7 +667,7 @@ static int of_da8xx_usb_phy_clk_init(struct device *dev, struct regmap *regmap)
 	return devm_of_clk_add_hw_provider(dev, of_clk_hw_onecell_get, clk_data);
 }
 
-/* --- platform device --- */
+ 
 
 static const struct of_device_id da8xx_cfgchip_of_match[] = {
 	{
@@ -788,5 +767,5 @@ static int __init da8xx_cfgchip_driver_init(void)
 	return platform_driver_register(&da8xx_cfgchip_driver);
 }
 
-/* has to be postcore_initcall because PSC devices depend on the async3 clock */
+ 
 postcore_initcall(da8xx_cfgchip_driver_init);

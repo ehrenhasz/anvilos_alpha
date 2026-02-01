@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * n810.c  --  SoC audio for Nokia N810
- *
- * Copyright (C) 2008 Nokia Corporation
- *
- * Contact: Jarkko Nikula <jarkko.nikula@bitmer.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/i2c.h>
@@ -104,7 +98,7 @@ static int n810_hw_params(struct snd_pcm_substream *substream,
 	struct snd_soc_dai *codec_dai = asoc_rtd_to_codec(rtd, 0);
 	int err;
 
-	/* Set the codec system clock for DAC and ADC */
+	 
 	err = snd_soc_dai_set_sysclk(codec_dai, 0, 12000000,
 					    SND_SOC_CLOCK_IN);
 
@@ -222,10 +216,7 @@ static const struct snd_soc_dapm_route audio_map[] = {
 	{"DMic Rate 64", NULL, "DMic"},
 	{"DMic", NULL, "Mic Bias"},
 
-	/*
-	 * Note that the mic bias is coming from Retu/Vilma and we don't have
-	 * control over it atm. The analog HS mic is not working. <- TODO
-	 */
+	 
 	{"LINE1L", NULL, "HS Mic"},
 };
 
@@ -247,7 +238,7 @@ static const struct snd_kcontrol_new aic33_n810_controls[] = {
 		     n810_get_input, n810_set_input),
 };
 
-/* Digital audio interface glue - connects codec <--> CPU */
+ 
 SND_SOC_DAILINK_DEFS(aic33,
 	DAILINK_COMP_ARRAY(COMP_CPU("48076000.mcbsp")),
 	DAILINK_COMP_ARRAY(COMP_CODEC("tlv320aic3x-codec.1-0018",
@@ -263,7 +254,7 @@ static struct snd_soc_dai_link n810_dai = {
 	SND_SOC_DAILINK_REG(aic33),
 };
 
-/* Audio machine driver */
+ 
 static struct snd_soc_card snd_soc_n810 = {
 	.name = "N810",
 	.owner = THIS_MODULE,
@@ -314,10 +305,7 @@ static int __init n810_soc_init(void)
 		err = PTR_ERR(sys_clkout2);
 		goto err3;
 	}
-	/*
-	 * Configure 12 MHz output on SYS_CLKOUT2. Therefore we must use
-	 * 96 MHz as its parent in order to get 12 MHz
-	 */
+	 
 	func96m_clk = clk_get(dev, "func_96m_ck");
 	if (IS_ERR(func96m_clk)) {
 		dev_err(dev, "Could not get func 96M clock\n");

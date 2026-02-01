@@ -1,19 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2007, Intel Corporation.
- * All Rights Reserved.
- *
- * Authors: Thomas Hellstrom <thomas-at-tungstengraphics.com>
- *	    Alan Cox <alan@linux.intel.com>
- */
 
-#include "gem.h" /* TODO: for struct psb_gem_object, see psb_gtt_restore() */
+ 
+
+#include "gem.h"  
 #include "psb_drv.h"
 
 
-/*
- *	GTT resource allocator - manage page mappings in GTT space
- */
+ 
 
 int psb_gtt_allocate_resource(struct drm_psb_private *pdev, struct resource *res,
 			      const char *name, resource_size_t size, resource_size_t align,
@@ -24,11 +16,11 @@ int psb_gtt_allocate_resource(struct drm_psb_private *pdev, struct resource *res
 	int ret;
 
 	if (stolen) {
-		/* The start of the GTT is backed by stolen pages. */
+		 
 		start = root->start;
 		end = root->start + pdev->gtt.stolen_size - 1;
 	} else {
-		/* The rest is backed by system pages. */
+		 
 		start = root->start + pdev->gtt.stolen_size;
 		end = root->end;
 	}
@@ -42,19 +34,12 @@ int psb_gtt_allocate_resource(struct drm_psb_private *pdev, struct resource *res
 	return 0;
 }
 
-/**
- *	psb_gtt_mask_pte	-	generate GTT pte entry
- *	@pfn: page number to encode
- *	@type: type of memory in the GTT
- *
- *	Set the GTT entry for the appropriate memory type.
- */
+ 
 uint32_t psb_gtt_mask_pte(uint32_t pfn, int type)
 {
 	uint32_t mask = PSB_PTE_VALID;
 
-	/* Ensure we explode rather than put an invalid low mapping of
-	   a high mapping page into the gtt */
+	 
 	BUG_ON(pfn & ~(0xFFFFFFFF >> PAGE_SHIFT));
 
 	if (type & PSB_MMU_CACHED_MEMORY)
@@ -74,7 +59,7 @@ static u32 __iomem *psb_gtt_entry(struct drm_psb_private *pdev, const struct res
 	return pdev->gtt_map + (offset >> PAGE_SHIFT);
 }
 
-/* Acquires GTT mutex internally. */
+ 
 void psb_gtt_insert_pages(struct drm_psb_private *pdev, const struct resource *res,
 			  struct page **pages)
 {
@@ -84,7 +69,7 @@ void psb_gtt_insert_pages(struct drm_psb_private *pdev, const struct resource *r
 
 	mutex_lock(&pdev->gtt_mutex);
 
-	/* Write our page entries into the GTT itself */
+	 
 
 	npages = resource_size(res) >> PAGE_SHIFT;
 	gtt_slot = psb_gtt_entry(pdev, res);
@@ -94,13 +79,13 @@ void psb_gtt_insert_pages(struct drm_psb_private *pdev, const struct resource *r
 		iowrite32(pte, gtt_slot);
 	}
 
-	/* Make sure all the entries are set before we return */
+	 
 	ioread32(gtt_slot - 1);
 
 	mutex_unlock(&pdev->gtt_mutex);
 }
 
-/* Acquires GTT mutex internally. */
+ 
 void psb_gtt_remove_pages(struct drm_psb_private *pdev, const struct resource *res)
 {
 	resource_size_t npages, i;
@@ -109,7 +94,7 @@ void psb_gtt_remove_pages(struct drm_psb_private *pdev, const struct resource *r
 
 	mutex_lock(&pdev->gtt_mutex);
 
-	/* Install scratch page for the resource */
+	 
 
 	pte = psb_gtt_mask_pte(page_to_pfn(pdev->scratch_page), PSB_MMU_CACHED_MEMORY);
 
@@ -119,7 +104,7 @@ void psb_gtt_remove_pages(struct drm_psb_private *pdev, const struct resource *r
 	for (i = 0; i < npages; ++i, ++gtt_slot)
 		iowrite32(pte, gtt_slot);
 
-	/* Make sure all the entries are set before we return */
+	 
 	ioread32(gtt_slot - 1);
 
 	mutex_unlock(&pdev->gtt_mutex);
@@ -166,7 +151,7 @@ void psb_gtt_fini(struct drm_device *dev)
 	mutex_destroy(&dev_priv->gtt_mutex);
 }
 
-/* Clear GTT. Use a scratch page to avoid accidents or scribbles. */
+ 
 static void psb_gtt_clear(struct drm_psb_private *pdev)
 {
 	resource_size_t pfn_base;
@@ -191,21 +176,16 @@ static void psb_gtt_init_ranges(struct drm_psb_private *dev_priv)
 			gatt_start, gatt_pages;
 	struct resource *gtt_mem;
 
-	/* The root resource we allocate address space from */
+	 
 	gtt_phys_start = dev_priv->pge_ctl & PAGE_MASK;
 
-	/*
-	 * The video MMU has a HW bug when accessing 0x0d0000000. Make
-	 * GATT start at 0x0e0000000. This doesn't actually matter for
-	 * us now, but maybe will if the video acceleration ever gets
-	 * opened up.
-	 */
+	 
 	mmu_gatt_start = 0xe0000000;
 
 	gtt_start = pci_resource_start(pdev, PSB_GTT_RESOURCE);
 	gtt_pages = pci_resource_len(pdev, PSB_GTT_RESOURCE) >> PAGE_SHIFT;
 
-	/* CDV doesn't report this. In which case the system has 64 gtt pages */
+	 
 	if (!gtt_start || !gtt_pages) {
 		dev_dbg(dev->dev, "GTT PCI BAR not initialized.\n");
 		gtt_pages = 64;
@@ -216,23 +196,14 @@ static void psb_gtt_init_ranges(struct drm_psb_private *dev_priv)
 	gatt_pages = pci_resource_len(pdev, PSB_GATT_RESOURCE) >> PAGE_SHIFT;
 
 	if (!gatt_pages || !gatt_start) {
-		static struct resource fudge;	/* Preferably peppermint */
+		static struct resource fudge;	 
 
-		/*
-		 * This can occur on CDV systems. Fudge it in this case. We
-		 * really don't care what imaginary space is being allocated
-		 * at this point.
-		 */
+		 
 		dev_dbg(dev->dev, "GATT PCI BAR not initialized.\n");
 		gatt_start = 0x40000000;
 		gatt_pages = (128 * 1024 * 1024) >> PAGE_SHIFT;
 
-		/*
-		 * This is a little confusing but in fact the GTT is providing
-		 * a view from the GPU into memory and not vice versa. As such
-		 * this is really allocating space that is not the same as the
-		 * CPU address space on CDV.
-		 */
+		 
 		fudge.start = 0x40000000;
 		fudge.end = 0x40000000 + 128 * 1024 * 1024 - 1;
 		fudge.name = "fudge";
@@ -291,7 +262,7 @@ int psb_gtt_resume(struct drm_device *dev)
 	unsigned int old_gtt_pages = pg->gtt_pages;
 	int ret;
 
-	/* Enable the GTT */
+	 
 	ret = psb_gtt_enable(dev_priv);
 	if (ret)
 		return ret;

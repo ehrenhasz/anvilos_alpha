@@ -1,37 +1,4 @@
-/*
- * Copyright(c) 2011-2016 Intel Corporation. All rights reserved.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice (including the next
- * paragraph) shall be included in all copies or substantial portions of the
- * Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- *
- * Authors:
- *    Eddie Dong <eddie.dong@intel.com>
- *    Kevin Tian <kevin.tian@intel.com>
- *
- * Contributors:
- *    Zhi Wang <zhi.a.wang@intel.com>
- *    Changbin Du <changbin.du@intel.com>
- *    Zhenyu Wang <zhenyuw@linux.intel.com>
- *    Tina Zhang <tina.zhang@intel.com>
- *    Bing Niu <bing.niu@intel.com>
- *
- */
+ 
 
 #include "i915_drv.h"
 #include "i915_reg.h"
@@ -45,108 +12,108 @@
 
 #define GEN9_MOCS_SIZE		64
 
-/* Raw offset is appened to each line for convenience. */
+ 
 static struct engine_mmio gen8_engine_mmio_list[] __cacheline_aligned = {
-	{RCS0, RING_MODE_GEN7(RENDER_RING_BASE), 0xffff, false}, /* 0x229c */
-	{RCS0, GEN9_CTX_PREEMPT_REG, 0x0, false}, /* 0x2248 */
-	{RCS0, HWSTAM, 0x0, false}, /* 0x2098 */
-	{RCS0, INSTPM, 0xffff, true}, /* 0x20c0 */
-	{RCS0, RING_FORCE_TO_NONPRIV(RENDER_RING_BASE, 0), 0, false}, /* 0x24d0 */
-	{RCS0, RING_FORCE_TO_NONPRIV(RENDER_RING_BASE, 1), 0, false}, /* 0x24d4 */
-	{RCS0, RING_FORCE_TO_NONPRIV(RENDER_RING_BASE, 2), 0, false}, /* 0x24d8 */
-	{RCS0, RING_FORCE_TO_NONPRIV(RENDER_RING_BASE, 3), 0, false}, /* 0x24dc */
-	{RCS0, RING_FORCE_TO_NONPRIV(RENDER_RING_BASE, 4), 0, false}, /* 0x24e0 */
-	{RCS0, RING_FORCE_TO_NONPRIV(RENDER_RING_BASE, 5), 0, false}, /* 0x24e4 */
-	{RCS0, RING_FORCE_TO_NONPRIV(RENDER_RING_BASE, 6), 0, false}, /* 0x24e8 */
-	{RCS0, RING_FORCE_TO_NONPRIV(RENDER_RING_BASE, 7), 0, false}, /* 0x24ec */
-	{RCS0, RING_FORCE_TO_NONPRIV(RENDER_RING_BASE, 8), 0, false}, /* 0x24f0 */
-	{RCS0, RING_FORCE_TO_NONPRIV(RENDER_RING_BASE, 9), 0, false}, /* 0x24f4 */
-	{RCS0, RING_FORCE_TO_NONPRIV(RENDER_RING_BASE, 10), 0, false}, /* 0x24f8 */
-	{RCS0, RING_FORCE_TO_NONPRIV(RENDER_RING_BASE, 11), 0, false}, /* 0x24fc */
-	{RCS0, CACHE_MODE_1, 0xffff, true}, /* 0x7004 */
-	{RCS0, GEN7_GT_MODE, 0xffff, true}, /* 0x7008 */
-	{RCS0, CACHE_MODE_0_GEN7, 0xffff, true}, /* 0x7000 */
-	{RCS0, GEN7_COMMON_SLICE_CHICKEN1, 0xffff, true}, /* 0x7010 */
-	{RCS0, HDC_CHICKEN0, 0xffff, true}, /* 0x7300 */
-	{RCS0, VF_GUARDBAND, 0xffff, true}, /* 0x83a4 */
+	{RCS0, RING_MODE_GEN7(RENDER_RING_BASE), 0xffff, false},  
+	{RCS0, GEN9_CTX_PREEMPT_REG, 0x0, false},  
+	{RCS0, HWSTAM, 0x0, false},  
+	{RCS0, INSTPM, 0xffff, true},  
+	{RCS0, RING_FORCE_TO_NONPRIV(RENDER_RING_BASE, 0), 0, false},  
+	{RCS0, RING_FORCE_TO_NONPRIV(RENDER_RING_BASE, 1), 0, false},  
+	{RCS0, RING_FORCE_TO_NONPRIV(RENDER_RING_BASE, 2), 0, false},  
+	{RCS0, RING_FORCE_TO_NONPRIV(RENDER_RING_BASE, 3), 0, false},  
+	{RCS0, RING_FORCE_TO_NONPRIV(RENDER_RING_BASE, 4), 0, false},  
+	{RCS0, RING_FORCE_TO_NONPRIV(RENDER_RING_BASE, 5), 0, false},  
+	{RCS0, RING_FORCE_TO_NONPRIV(RENDER_RING_BASE, 6), 0, false},  
+	{RCS0, RING_FORCE_TO_NONPRIV(RENDER_RING_BASE, 7), 0, false},  
+	{RCS0, RING_FORCE_TO_NONPRIV(RENDER_RING_BASE, 8), 0, false},  
+	{RCS0, RING_FORCE_TO_NONPRIV(RENDER_RING_BASE, 9), 0, false},  
+	{RCS0, RING_FORCE_TO_NONPRIV(RENDER_RING_BASE, 10), 0, false},  
+	{RCS0, RING_FORCE_TO_NONPRIV(RENDER_RING_BASE, 11), 0, false},  
+	{RCS0, CACHE_MODE_1, 0xffff, true},  
+	{RCS0, GEN7_GT_MODE, 0xffff, true},  
+	{RCS0, CACHE_MODE_0_GEN7, 0xffff, true},  
+	{RCS0, GEN7_COMMON_SLICE_CHICKEN1, 0xffff, true},  
+	{RCS0, HDC_CHICKEN0, 0xffff, true},  
+	{RCS0, VF_GUARDBAND, 0xffff, true},  
 
-	{BCS0, RING_GFX_MODE(BLT_RING_BASE), 0xffff, false}, /* 0x2229c */
-	{BCS0, RING_MI_MODE(BLT_RING_BASE), 0xffff, false}, /* 0x2209c */
-	{BCS0, RING_INSTPM(BLT_RING_BASE), 0xffff, false}, /* 0x220c0 */
-	{BCS0, RING_HWSTAM(BLT_RING_BASE), 0x0, false}, /* 0x22098 */
-	{BCS0, RING_EXCC(BLT_RING_BASE), 0xffff, false}, /* 0x22028 */
-	{RCS0, INVALID_MMIO_REG, 0, false } /* Terminated */
+	{BCS0, RING_GFX_MODE(BLT_RING_BASE), 0xffff, false},  
+	{BCS0, RING_MI_MODE(BLT_RING_BASE), 0xffff, false},  
+	{BCS0, RING_INSTPM(BLT_RING_BASE), 0xffff, false},  
+	{BCS0, RING_HWSTAM(BLT_RING_BASE), 0x0, false},  
+	{BCS0, RING_EXCC(BLT_RING_BASE), 0xffff, false},  
+	{RCS0, INVALID_MMIO_REG, 0, false }  
 };
 
 static struct engine_mmio gen9_engine_mmio_list[] __cacheline_aligned = {
-	{RCS0, RING_MODE_GEN7(RENDER_RING_BASE), 0xffff, false}, /* 0x229c */
-	{RCS0, GEN9_CTX_PREEMPT_REG, 0x0, false}, /* 0x2248 */
-	{RCS0, HWSTAM, 0x0, false}, /* 0x2098 */
-	{RCS0, INSTPM, 0xffff, true}, /* 0x20c0 */
-	{RCS0, RING_FORCE_TO_NONPRIV(RENDER_RING_BASE, 0), 0, false}, /* 0x24d0 */
-	{RCS0, RING_FORCE_TO_NONPRIV(RENDER_RING_BASE, 1), 0, false}, /* 0x24d4 */
-	{RCS0, RING_FORCE_TO_NONPRIV(RENDER_RING_BASE, 2), 0, false}, /* 0x24d8 */
-	{RCS0, RING_FORCE_TO_NONPRIV(RENDER_RING_BASE, 3), 0, false}, /* 0x24dc */
-	{RCS0, RING_FORCE_TO_NONPRIV(RENDER_RING_BASE, 4), 0, false}, /* 0x24e0 */
-	{RCS0, RING_FORCE_TO_NONPRIV(RENDER_RING_BASE, 5), 0, false}, /* 0x24e4 */
-	{RCS0, RING_FORCE_TO_NONPRIV(RENDER_RING_BASE, 6), 0, false}, /* 0x24e8 */
-	{RCS0, RING_FORCE_TO_NONPRIV(RENDER_RING_BASE, 7), 0, false}, /* 0x24ec */
-	{RCS0, RING_FORCE_TO_NONPRIV(RENDER_RING_BASE, 8), 0, false}, /* 0x24f0 */
-	{RCS0, RING_FORCE_TO_NONPRIV(RENDER_RING_BASE, 9), 0, false}, /* 0x24f4 */
-	{RCS0, RING_FORCE_TO_NONPRIV(RENDER_RING_BASE, 10), 0, false}, /* 0x24f8 */
-	{RCS0, RING_FORCE_TO_NONPRIV(RENDER_RING_BASE, 11), 0, false}, /* 0x24fc */
-	{RCS0, CACHE_MODE_1, 0xffff, true}, /* 0x7004 */
-	{RCS0, GEN7_GT_MODE, 0xffff, true}, /* 0x7008 */
-	{RCS0, CACHE_MODE_0_GEN7, 0xffff, true}, /* 0x7000 */
-	{RCS0, GEN7_COMMON_SLICE_CHICKEN1, 0xffff, true}, /* 0x7010 */
-	{RCS0, HDC_CHICKEN0, 0xffff, true}, /* 0x7300 */
-	{RCS0, VF_GUARDBAND, 0xffff, true}, /* 0x83a4 */
+	{RCS0, RING_MODE_GEN7(RENDER_RING_BASE), 0xffff, false},  
+	{RCS0, GEN9_CTX_PREEMPT_REG, 0x0, false},  
+	{RCS0, HWSTAM, 0x0, false},  
+	{RCS0, INSTPM, 0xffff, true},  
+	{RCS0, RING_FORCE_TO_NONPRIV(RENDER_RING_BASE, 0), 0, false},  
+	{RCS0, RING_FORCE_TO_NONPRIV(RENDER_RING_BASE, 1), 0, false},  
+	{RCS0, RING_FORCE_TO_NONPRIV(RENDER_RING_BASE, 2), 0, false},  
+	{RCS0, RING_FORCE_TO_NONPRIV(RENDER_RING_BASE, 3), 0, false},  
+	{RCS0, RING_FORCE_TO_NONPRIV(RENDER_RING_BASE, 4), 0, false},  
+	{RCS0, RING_FORCE_TO_NONPRIV(RENDER_RING_BASE, 5), 0, false},  
+	{RCS0, RING_FORCE_TO_NONPRIV(RENDER_RING_BASE, 6), 0, false},  
+	{RCS0, RING_FORCE_TO_NONPRIV(RENDER_RING_BASE, 7), 0, false},  
+	{RCS0, RING_FORCE_TO_NONPRIV(RENDER_RING_BASE, 8), 0, false},  
+	{RCS0, RING_FORCE_TO_NONPRIV(RENDER_RING_BASE, 9), 0, false},  
+	{RCS0, RING_FORCE_TO_NONPRIV(RENDER_RING_BASE, 10), 0, false},  
+	{RCS0, RING_FORCE_TO_NONPRIV(RENDER_RING_BASE, 11), 0, false},  
+	{RCS0, CACHE_MODE_1, 0xffff, true},  
+	{RCS0, GEN7_GT_MODE, 0xffff, true},  
+	{RCS0, CACHE_MODE_0_GEN7, 0xffff, true},  
+	{RCS0, GEN7_COMMON_SLICE_CHICKEN1, 0xffff, true},  
+	{RCS0, HDC_CHICKEN0, 0xffff, true},  
+	{RCS0, VF_GUARDBAND, 0xffff, true},  
 
-	{RCS0, GEN8_PRIVATE_PAT_LO, 0, false}, /* 0x40e0 */
-	{RCS0, GEN8_PRIVATE_PAT_HI, 0, false}, /* 0x40e4 */
-	{RCS0, GEN8_CS_CHICKEN1, 0xffff, true}, /* 0x2580 */
-	{RCS0, COMMON_SLICE_CHICKEN2, 0xffff, true}, /* 0x7014 */
-	{RCS0, GEN9_CS_DEBUG_MODE1, 0xffff, false}, /* 0x20ec */
-	{RCS0, _MMIO(0xb118), 0, false}, /* GEN8_L3SQCREG4 */
-	{RCS0, _MMIO(0xb11c), 0, false}, /* GEN9_SCRATCH1 */
-	{RCS0, GEN9_SCRATCH_LNCF1, 0, false}, /* 0xb008 */
-	{RCS0, GEN7_HALF_SLICE_CHICKEN1, 0xffff, true}, /* 0xe100 */
-	{RCS0, _MMIO(0xe180), 0xffff, true}, /* HALF_SLICE_CHICKEN2 */
-	{RCS0, _MMIO(0xe184), 0xffff, true}, /* GEN8_HALF_SLICE_CHICKEN3 */
-	{RCS0, _MMIO(0xe188), 0xffff, true}, /* GEN9_HALF_SLICE_CHICKEN5 */
-	{RCS0, _MMIO(0xe194), 0xffff, true}, /* GEN9_HALF_SLICE_CHICKEN7 */
-	{RCS0, _MMIO(0xe4f0), 0xffff, true}, /* GEN8_ROW_CHICKEN */
-	{RCS0, TRVATTL3PTRDW(0), 0, true}, /* 0x4de0 */
-	{RCS0, TRVATTL3PTRDW(1), 0, true}, /* 0x4de4 */
-	{RCS0, TRNULLDETCT, 0, true}, /* 0x4de8 */
-	{RCS0, TRINVTILEDETCT, 0, true}, /* 0x4dec */
-	{RCS0, TRVADR, 0, true}, /* 0x4df0 */
-	{RCS0, TRTTE, 0, true}, /* 0x4df4 */
+	{RCS0, GEN8_PRIVATE_PAT_LO, 0, false},  
+	{RCS0, GEN8_PRIVATE_PAT_HI, 0, false},  
+	{RCS0, GEN8_CS_CHICKEN1, 0xffff, true},  
+	{RCS0, COMMON_SLICE_CHICKEN2, 0xffff, true},  
+	{RCS0, GEN9_CS_DEBUG_MODE1, 0xffff, false},  
+	{RCS0, _MMIO(0xb118), 0, false},  
+	{RCS0, _MMIO(0xb11c), 0, false},  
+	{RCS0, GEN9_SCRATCH_LNCF1, 0, false},  
+	{RCS0, GEN7_HALF_SLICE_CHICKEN1, 0xffff, true},  
+	{RCS0, _MMIO(0xe180), 0xffff, true},  
+	{RCS0, _MMIO(0xe184), 0xffff, true},  
+	{RCS0, _MMIO(0xe188), 0xffff, true},  
+	{RCS0, _MMIO(0xe194), 0xffff, true},  
+	{RCS0, _MMIO(0xe4f0), 0xffff, true},  
+	{RCS0, TRVATTL3PTRDW(0), 0, true},  
+	{RCS0, TRVATTL3PTRDW(1), 0, true},  
+	{RCS0, TRNULLDETCT, 0, true},  
+	{RCS0, TRINVTILEDETCT, 0, true},  
+	{RCS0, TRVADR, 0, true},  
+	{RCS0, TRTTE, 0, true},  
 	{RCS0, _MMIO(0x4dfc), 0, true},
 
-	{BCS0, RING_GFX_MODE(BLT_RING_BASE), 0xffff, false}, /* 0x2229c */
-	{BCS0, RING_MI_MODE(BLT_RING_BASE), 0xffff, false}, /* 0x2209c */
-	{BCS0, RING_INSTPM(BLT_RING_BASE), 0xffff, false}, /* 0x220c0 */
-	{BCS0, RING_HWSTAM(BLT_RING_BASE), 0x0, false}, /* 0x22098 */
-	{BCS0, RING_EXCC(BLT_RING_BASE), 0xffff, false}, /* 0x22028 */
+	{BCS0, RING_GFX_MODE(BLT_RING_BASE), 0xffff, false},  
+	{BCS0, RING_MI_MODE(BLT_RING_BASE), 0xffff, false},  
+	{BCS0, RING_INSTPM(BLT_RING_BASE), 0xffff, false},  
+	{BCS0, RING_HWSTAM(BLT_RING_BASE), 0x0, false},  
+	{BCS0, RING_EXCC(BLT_RING_BASE), 0xffff, false},  
 
-	{VCS1, RING_EXCC(GEN8_BSD2_RING_BASE), 0xffff, false}, /* 0x1c028 */
+	{VCS1, RING_EXCC(GEN8_BSD2_RING_BASE), 0xffff, false},  
 
-	{VECS0, RING_EXCC(VEBOX_RING_BASE), 0xffff, false}, /* 0x1a028 */
+	{VECS0, RING_EXCC(VEBOX_RING_BASE), 0xffff, false},  
 
-	{RCS0, GEN8_HDC_CHICKEN1, 0xffff, true}, /* 0x7304 */
-	{RCS0, GEN9_CTX_PREEMPT_REG, 0x0, false}, /* 0x2248 */
-	{RCS0, GEN7_UCGCTL4, 0x0, false}, /* 0x940c */
-	{RCS0, GAMT_CHKN_BIT_REG, 0x0, false}, /* 0x4ab8 */
+	{RCS0, GEN8_HDC_CHICKEN1, 0xffff, true},  
+	{RCS0, GEN9_CTX_PREEMPT_REG, 0x0, false},  
+	{RCS0, GEN7_UCGCTL4, 0x0, false},  
+	{RCS0, GAMT_CHKN_BIT_REG, 0x0, false},  
 
-	{RCS0, GEN9_GAMT_ECO_REG_RW_IA, 0x0, false}, /* 0x4ab0 */
-	{RCS0, GEN9_CSFE_CHICKEN1_RCS, 0xffff, false}, /* 0x20d4 */
-	{RCS0, _MMIO(0x20D8), 0xffff, true}, /* 0x20d8 */
+	{RCS0, GEN9_GAMT_ECO_REG_RW_IA, 0x0, false},  
+	{RCS0, GEN9_CSFE_CHICKEN1_RCS, 0xffff, false},  
+	{RCS0, _MMIO(0x20D8), 0xffff, true},  
 
-	{RCS0, GEN8_GARBCNTL, 0x0, false}, /* 0xb004 */
-	{RCS0, GEN7_FF_THREAD_MODE, 0x0, false}, /* 0x20a0 */
-	{RCS0, FF_SLICE_CS_CHICKEN2, 0xffff, false}, /* 0x20e4 */
-	{RCS0, INVALID_MMIO_REG, 0, false } /* Terminated */
+	{RCS0, GEN8_GARBCNTL, 0x0, false},  
+	{RCS0, GEN7_FF_THREAD_MODE, 0x0, false},  
+	{RCS0, FF_SLICE_CS_CHICKEN2, 0xffff, false},  
+	{RCS0, INVALID_MMIO_REG, 0, false }  
 };
 
 static struct {
@@ -172,7 +139,7 @@ static void load_render_mocs(const struct intel_engine_cs *engine)
 	i915_reg_t offset;
 	int ring_id, i;
 
-	/* Platform doesn't have mocs mmios. */
+	 
 	if (!regs)
 		return;
 
@@ -295,11 +262,7 @@ restore_render_mocs_l3cc_for_inhibit(struct intel_vgpu *vgpu,
 	return 0;
 }
 
-/*
- * Use lri command to initialize the mmio which is in context state image for
- * inhibit context, it contains tracked engine mmio, render_mocs and
- * render_mocs_l3cc.
- */
+ 
 int intel_vgpu_restore_inhibit_context(struct intel_vgpu *vgpu,
 				       struct i915_request *req)
 {
@@ -318,7 +281,7 @@ int intel_vgpu_restore_inhibit_context(struct intel_vgpu *vgpu,
 	if (ret)
 		goto out;
 
-	/* no MOCS register in context except render engine */
+	 
 	if (req->engine->id != RCS0)
 		goto out;
 
@@ -371,11 +334,7 @@ static void handle_tlb_pending_event(struct intel_vgpu *vgpu,
 
 	reg = _MMIO(regs[engine->id]);
 
-	/* WaForceWakeRenderDuringMmioTLBInvalidate:skl
-	 * we need to put a forcewake when invalidating RCS TLB caches,
-	 * otherwise device can go to RC6 state and interrupt invalidation
-	 * process
-	 */
+	 
 	fw = intel_uncore_forcewake_for_reg(uncore, reg,
 					    FW_REG_READ | FW_REG_WRITE);
 	if (engine->id == RCS0 && GRAPHICS_VER(engine->i915) >= 9)
@@ -469,7 +428,7 @@ bool is_inhibit_context(struct intel_context *ce)
 		(reg_state[CTX_CONTEXT_CONTROL_VAL] & inhibit_mask);
 }
 
-/* Switch ring mmio values (context). */
+ 
 static void switch_mmio(struct intel_vgpu *pre,
 			struct intel_vgpu *next,
 			const struct intel_engine_cs *engine)
@@ -486,15 +445,11 @@ static void switch_mmio(struct intel_vgpu *pre,
 	     i915_mmio_reg_valid(mmio->reg); mmio++) {
 		if (mmio->id != engine->id)
 			continue;
-		/*
-		 * No need to do save or restore of the mmio which is in context
-		 * state image on gen9, it's initialized by lri command and
-		 * save or restore with context together.
-		 */
+		 
 		if (GRAPHICS_VER(engine->i915) == 9 && mmio->in_context)
 			continue;
 
-		// save
+		
 		if (pre) {
 			vgpu_vreg_t(pre, mmio->reg) =
 				intel_uncore_read_fw(uncore, mmio->reg);
@@ -507,14 +462,10 @@ static void switch_mmio(struct intel_vgpu *pre,
 				intel_uncore_read_fw(uncore, mmio->reg);
 		}
 
-		// restore
+		
 		if (next) {
 			s = &next->submission;
-			/*
-			 * No need to restore the mmio which is in context state
-			 * image if it's not inhibit context, it will restore
-			 * itself.
-			 */
+			 
 			if (mmio->in_context &&
 			    !is_inhibit_context(s->shadow[engine->id]))
 				continue;
@@ -546,15 +497,7 @@ static void switch_mmio(struct intel_vgpu *pre,
 		handle_tlb_pending_event(next, engine);
 }
 
-/**
- * intel_gvt_switch_mmio - switch mmio context of specific engine
- * @pre: the last vGPU that own the engine
- * @next: the vGPU to switch to
- * @engine: the engine
- *
- * If pre is null indicates that host own the engine. If next is null
- * indicates that we are switching to host workload.
- */
+ 
 void intel_gvt_switch_mmio(struct intel_vgpu *pre,
 			   struct intel_vgpu *next,
 			   const struct intel_engine_cs *engine)
@@ -566,21 +509,13 @@ void intel_gvt_switch_mmio(struct intel_vgpu *pre,
 	gvt_dbg_render("switch ring %s from %s to %s\n", engine->name,
 		       pre ? "vGPU" : "host", next ? "vGPU" : "HOST");
 
-	/**
-	 * We are using raw mmio access wrapper to improve the
-	 * performace for batch mmio read/write, so we need
-	 * handle forcewake mannually.
-	 */
+	 
 	intel_uncore_forcewake_get(engine->uncore, FORCEWAKE_ALL);
 	switch_mmio(pre, next, engine);
 	intel_uncore_forcewake_put(engine->uncore, FORCEWAKE_ALL);
 }
 
-/**
- * intel_gvt_init_engine_mmio_context - Initiate the engine mmio list
- * @gvt: GVT device
- *
- */
+ 
 void intel_gvt_init_engine_mmio_context(struct intel_gvt *gvt)
 {
 	struct engine_mmio *mmio;

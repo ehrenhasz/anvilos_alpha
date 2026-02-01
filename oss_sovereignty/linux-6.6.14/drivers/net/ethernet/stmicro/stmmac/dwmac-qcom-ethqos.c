@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2018-19, Linaro Limited
+
+
 
 #include <linux/module.h>
 #include <linux/of.h>
@@ -22,7 +22,7 @@
 #define RGMII_IO_MACRO_DEBUG1		0x20
 #define EMAC_SYSTEM_LOW_POWER_DEBUG	0x28
 
-/* RGMII_IO_MACRO_CONFIG fields */
+ 
 #define RGMII_CONFIG_FUNC_CLK_EN		BIT(30)
 #define RGMII_CONFIG_POS_NEG_DATA_SEL		BIT(23)
 #define RGMII_CONFIG_GPIO_CFG_RX_INT		GENMASK(21, 20)
@@ -36,7 +36,7 @@
 #define RGMII_CONFIG_DDR_MODE			BIT(0)
 #define RGMII_CONFIG_SGMII_CLK_DVDR		GENMASK(18, 10)
 
-/* SDCC_HC_REG_DLL_CONFIG fields */
+ 
 #define SDCC_DLL_CONFIG_DLL_RST			BIT(30)
 #define SDCC_DLL_CONFIG_PDN			BIT(29)
 #define SDCC_DLL_CONFIG_MCLK_FREQ		GENMASK(26, 24)
@@ -48,7 +48,7 @@
 #define SDCC_DLL_MCLK_GATING_EN			BIT(5)
 #define SDCC_DLL_CDR_FINE_PHASE			GENMASK(3, 2)
 
-/* SDCC_HC_REG_DDR_CONFIG fields */
+ 
 #define SDCC_DDR_CONFIG_PRG_DLY_EN		BIT(31)
 #define SDCC_DDR_CONFIG_EXT_PRG_RCLK_DLY	GENMASK(26, 21)
 #define SDCC_DDR_CONFIG_EXT_PRG_RCLK_DLY_CODE	GENMASK(29, 27)
@@ -56,17 +56,17 @@
 #define SDCC_DDR_CONFIG_TCXO_CYCLES_CNT		GENMASK(11, 9)
 #define SDCC_DDR_CONFIG_PRG_RCLK_DLY		GENMASK(8, 0)
 
-/* SDCC_HC_REG_DLL_CONFIG2 fields */
+ 
 #define SDCC_DLL_CONFIG2_DLL_CLOCK_DIS		BIT(21)
 #define SDCC_DLL_CONFIG2_MCLK_FREQ_CALC		GENMASK(17, 10)
 #define SDCC_DLL_CONFIG2_DDR_TRAFFIC_INIT_SEL	GENMASK(3, 2)
 #define SDCC_DLL_CONFIG2_DDR_TRAFFIC_INIT_SW	BIT(1)
 #define SDCC_DLL_CONFIG2_DDR_CAL_EN		BIT(0)
 
-/* SDC4_STATUS bits */
+ 
 #define SDC4_STATUS_DLL_LOCK			BIT(7)
 
-/* RGMII_IO_MACRO_CONFIG2 fields */
+ 
 #define RGMII_CONFIG2_RSVD_CONFIG15		GENMASK(31, 17)
 #define RGMII_CONFIG2_RGMII_CLK_SEL_CFG		BIT(16)
 #define RGMII_CONFIG2_TX_TO_RX_LOOPBACK_EN	BIT(13)
@@ -75,7 +75,7 @@
 #define RGMII_CONFIG2_DATA_DIVIDE_CLK_SEL	BIT(6)
 #define RGMII_CONFIG2_TX_CLK_PHASE_SHIFT_EN	BIT(5)
 
-/* MAC_CTRL_REG bits */
+ 
 #define ETHQOS_MAC_CTRL_SPEED_MODE		BIT(14)
 #define ETHQOS_MAC_CTRL_PORT_SEL		BIT(15)
 
@@ -161,7 +161,7 @@ static void rgmii_dump(void *priv)
 		rgmii_readl(ethqos, EMAC_SYSTEM_LOW_POWER_DEBUG));
 }
 
-/* Clock rates */
+ 
 #define RGMII_1000_NOM_CLK_FREQ			(250 * 1000 * 1000UL)
 #define RGMII_ID_MODE_100_LOW_SVS_CLK_FREQ	 (50 * 1000 * 1000UL)
 #define RGMII_ID_MODE_10_LOW_SVS_CLK_FREQ	  (5 * 1000 * 1000UL)
@@ -296,19 +296,19 @@ static int ethqos_dll_configure(struct qcom_ethqos *ethqos)
 	unsigned int val;
 	int retry = 1000;
 
-	/* Set CDR_EN */
+	 
 	rgmii_updatel(ethqos, SDCC_DLL_CONFIG_CDR_EN,
 		      SDCC_DLL_CONFIG_CDR_EN, SDCC_HC_REG_DLL_CONFIG);
 
-	/* Set CDR_EXT_EN */
+	 
 	rgmii_updatel(ethqos, SDCC_DLL_CONFIG_CDR_EXT_EN,
 		      SDCC_DLL_CONFIG_CDR_EXT_EN, SDCC_HC_REG_DLL_CONFIG);
 
-	/* Clear CK_OUT_EN */
+	 
 	rgmii_updatel(ethqos, SDCC_DLL_CONFIG_CK_OUT_EN,
 		      0, SDCC_HC_REG_DLL_CONFIG);
 
-	/* Set DLL_EN */
+	 
 	rgmii_updatel(ethqos, SDCC_DLL_CONFIG_DLL_EN,
 		      SDCC_DLL_CONFIG_DLL_EN, SDCC_HC_REG_DLL_CONFIG);
 
@@ -320,7 +320,7 @@ static int ethqos_dll_configure(struct qcom_ethqos *ethqos)
 			      0, SDCC_HC_REG_DLL_CONFIG);
 	}
 
-	/* Wait for CK_OUT_EN clear */
+	 
 	do {
 		val = rgmii_readl(ethqos, SDCC_HC_REG_DLL_CONFIG);
 		val &= SDCC_DLL_CONFIG_CK_OUT_EN;
@@ -332,11 +332,11 @@ static int ethqos_dll_configure(struct qcom_ethqos *ethqos)
 	if (!retry)
 		dev_err(dev, "Clear CK_OUT_EN timedout\n");
 
-	/* Set CK_OUT_EN */
+	 
 	rgmii_updatel(ethqos, SDCC_DLL_CONFIG_CK_OUT_EN,
 		      SDCC_DLL_CONFIG_CK_OUT_EN, SDCC_HC_REG_DLL_CONFIG);
 
-	/* Wait for CK_OUT_EN set */
+	 
 	retry = 1000;
 	do {
 		val = rgmii_readl(ethqos, SDCC_HC_REG_DLL_CONFIG);
@@ -349,7 +349,7 @@ static int ethqos_dll_configure(struct qcom_ethqos *ethqos)
 	if (!retry)
 		dev_err(dev, "Set CK_OUT_EN timedout\n");
 
-	/* Set DDR_CAL_EN */
+	 
 	rgmii_updatel(ethqos, SDCC_DLL_CONFIG2_DDR_CAL_EN,
 		      SDCC_DLL_CONFIG2_DDR_CAL_EN, SDCC_HC_REG_DLL_CONFIG2);
 
@@ -377,24 +377,24 @@ static int ethqos_rgmii_macro_init(struct qcom_ethqos *ethqos)
 	int phase_shift;
 	int loopback;
 
-	/* Determine if the PHY adds a 2 ns TX delay or the MAC handles it */
+	 
 	if (ethqos->phy_mode == PHY_INTERFACE_MODE_RGMII_ID ||
 	    ethqos->phy_mode == PHY_INTERFACE_MODE_RGMII_TXID)
 		phase_shift = 0;
 	else
 		phase_shift = RGMII_CONFIG2_TX_CLK_PHASE_SHIFT_EN;
 
-	/* Disable loopback mode */
+	 
 	rgmii_updatel(ethqos, RGMII_CONFIG2_TX_TO_RX_LOOPBACK_EN,
 		      0, RGMII_IO_MACRO_CONFIG2);
 
-	/* Determine if this platform wants loopback enabled after programming */
+	 
 	if (ethqos->rgmii_config_loopback_en)
 		loopback = RGMII_CONFIG_LOOPBACK_EN;
 	else
 		loopback = 0;
 
-	/* Select RGMII, write 0 to interface select */
+	 
 	rgmii_updatel(ethqos, RGMII_CONFIG_INTF_SEL,
 		      0, RGMII_IO_MACRO_CONFIG);
 
@@ -420,15 +420,13 @@ static int ethqos_rgmii_macro_init(struct qcom_ethqos *ethqos)
 			      RGMII_CONFIG2_RX_PROG_SWAP,
 			      RGMII_IO_MACRO_CONFIG2);
 
-		/* PRG_RCLK_DLY = TCXO period * TCXO_CYCLES_CNT / 2 * RX delay ns,
-		 * in practice this becomes PRG_RCLK_DLY = 52 * 4 / 2 * RX delay ns
-		 */
+		 
 		if (ethqos->has_emac_ge_3) {
-			/* 0.9 ns */
+			 
 			rgmii_updatel(ethqos, SDCC_DDR_CONFIG_PRG_RCLK_DLY,
 				      115, SDCC_HC_REG_DDR_CONFIG);
 		} else {
-			/* 1.8 ns */
+			 
 			rgmii_updatel(ethqos, SDCC_DDR_CONFIG_PRG_RCLK_DLY,
 				      57, SDCC_HC_REG_DDR_CONFIG);
 		}
@@ -466,7 +464,7 @@ static int ethqos_rgmii_macro_init(struct qcom_ethqos *ethqos)
 			rgmii_updatel(ethqos, RGMII_CONFIG2_RX_PROG_SWAP,
 				      0, RGMII_IO_MACRO_CONFIG2);
 
-		/* Write 0x5 to PRG_RCLK_DLY_CODE */
+		 
 		rgmii_updatel(ethqos, SDCC_DDR_CONFIG_EXT_PRG_RCLK_DLY_CODE,
 			      (BIT(29) | BIT(27)), SDCC_HC_REG_DDR_CONFIG);
 		rgmii_updatel(ethqos, SDCC_DDR_CONFIG_EXT_PRG_RCLK_DLY,
@@ -505,7 +503,7 @@ static int ethqos_rgmii_macro_init(struct qcom_ethqos *ethqos)
 		else
 			rgmii_updatel(ethqos, RGMII_CONFIG2_RX_PROG_SWAP,
 				      0, RGMII_IO_MACRO_CONFIG2);
-		/* Write 0x5 to PRG_RCLK_DLY_CODE */
+		 
 		rgmii_updatel(ethqos, SDCC_DDR_CONFIG_EXT_PRG_RCLK_DLY_CODE,
 			      (BIT(29) | BIT(27)), SDCC_HC_REG_DDR_CONFIG);
 		rgmii_updatel(ethqos, SDCC_DDR_CONFIG_EXT_PRG_RCLK_DLY,
@@ -531,19 +529,19 @@ static int ethqos_configure_rgmii(struct qcom_ethqos *ethqos)
 	volatile unsigned int dll_lock;
 	unsigned int i, retry = 1000;
 
-	/* Reset to POR values and enable clk */
+	 
 	for (i = 0; i < ethqos->num_por; i++)
 		rgmii_writel(ethqos, ethqos->por[i].value,
 			     ethqos->por[i].offset);
 	ethqos_set_func_clk_en(ethqos);
 
-	/* Initialize the DLL first */
+	 
 
-	/* Set DLL_RST */
+	 
 	rgmii_updatel(ethqos, SDCC_DLL_CONFIG_DLL_RST,
 		      SDCC_DLL_CONFIG_DLL_RST, SDCC_HC_REG_DLL_CONFIG);
 
-	/* Set PDN */
+	 
 	rgmii_updatel(ethqos, SDCC_DLL_CONFIG_PDN,
 		      SDCC_DLL_CONFIG_PDN, SDCC_HC_REG_DLL_CONFIG);
 
@@ -558,30 +556,30 @@ static int ethqos_configure_rgmii(struct qcom_ethqos *ethqos)
 		}
 	}
 
-	/* Clear DLL_RST */
+	 
 	rgmii_updatel(ethqos, SDCC_DLL_CONFIG_DLL_RST, 0,
 		      SDCC_HC_REG_DLL_CONFIG);
 
-	/* Clear PDN */
+	 
 	rgmii_updatel(ethqos, SDCC_DLL_CONFIG_PDN, 0,
 		      SDCC_HC_REG_DLL_CONFIG);
 
 	if (ethqos->speed != SPEED_100 && ethqos->speed != SPEED_10) {
-		/* Set DLL_EN */
+		 
 		rgmii_updatel(ethqos, SDCC_DLL_CONFIG_DLL_EN,
 			      SDCC_DLL_CONFIG_DLL_EN, SDCC_HC_REG_DLL_CONFIG);
 
-		/* Set CK_OUT_EN */
+		 
 		rgmii_updatel(ethqos, SDCC_DLL_CONFIG_CK_OUT_EN,
 			      SDCC_DLL_CONFIG_CK_OUT_EN,
 			      SDCC_HC_REG_DLL_CONFIG);
 
-		/* Set USR_CTL bit 26 with mask of 3 bits */
+		 
 		if (!ethqos->has_emac_ge_3)
 			rgmii_updatel(ethqos, GENMASK(26, 24), BIT(26),
 				      SDCC_USR_CTL);
 
-		/* wait for DLL LOCK */
+		 
 		do {
 			mdelay(1);
 			dll_lock = rgmii_readl(ethqos, SDC4_STATUS);
@@ -601,9 +599,7 @@ static int ethqos_configure_rgmii(struct qcom_ethqos *ethqos)
 	return 0;
 }
 
-/* On interface toggle MAC registers gets reset.
- * Configure MAC block for SGMII on ethernet phy link up
- */
+ 
 static int ethqos_configure_sgmii(struct qcom_ethqos *ethqos)
 {
 	int val;
@@ -685,11 +681,7 @@ static int ethqos_clks_config(void *priv, bool enabled)
 			return ret;
 		}
 
-		/* Enable functional clock to prevent DMA reset to timeout due
-		 * to lacking PHY clock after the hardware block has been power
-		 * cycled. The actual configuration will be adjusted once
-		 * ethqos_fix_mac_speed() is invoked.
-		 */
+		 
 		ethqos_set_func_clk_en(ethqos);
 	} else {
 		clk_disable_unprepare(ethqos->link_clk);
@@ -711,7 +703,7 @@ static void ethqos_ptp_clk_freq_config(struct stmmac_priv *priv)
 	if (!plat_dat->clk_ptp_ref)
 		return;
 
-	/* Max the PTP ref clock out to get the best resolution possible */
+	 
 	err = clk_set_rate(plat_dat->clk_ptp_ref, ULONG_MAX);
 	if (err)
 		netdev_err(priv->dev, "Failed to max out clk_ptp_ref: %d\n", err);

@@ -1,7 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0-only
- *
- * Copyright © 2018-2020 Intel Corporation
- */
+ 
 
 #ifndef __KMB_PLANE_H__
 #define __KMB_PLANE_H__
@@ -43,7 +40,7 @@ enum layer_id {
 	LAYER_1,
 	LAYER_2,
 	LAYER_3,
-	/* KMB_MAX_PLANES */
+	 
 };
 
 enum sub_plane_id {
@@ -71,4 +68,4 @@ struct disp_cfg {
 
 struct kmb_plane *kmb_plane_init(struct drm_device *drm);
 void kmb_plane_destroy(struct drm_plane *plane);
-#endif /* __KMB_PLANE_H__ */
+#endif  

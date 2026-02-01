@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2020 Facebook
+
+
 
 #include <linux/bpf.h>
 #include <bpf/bpf_helpers.h>
@@ -15,7 +15,7 @@ struct sample {
 
 struct ringbuf_map {
 	__uint(type, BPF_MAP_TYPE_RINGBUF);
-	/* libbpf will adjust to valid page size */
+	 
 	__uint(max_entries, 1000);
 } ringbuf1 SEC(".maps"),
   ringbuf2 SEC(".maps");
@@ -43,12 +43,12 @@ struct {
 	},
 };
 
-/* inputs */
+ 
 int pid = 0;
 int target_ring = 0;
 long value = 0;
 
-/* outputs */
+ 
 long total = 0;
 long dropped = 0;
 long skipped = 0;

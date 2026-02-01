@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2016, Linaro Limited
- * Copyright (c) 2014, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/err.h>
@@ -57,7 +54,7 @@
 
 #define __DEFINE_CLK_SMD_RPM(_name, _active, type, r_id, key,\
 			     ao_rate, ao_flags)				      \
-	__DEFINE_CLK_SMD_RPM_PREFIX(/* empty */, _name, _active,	      \
+	__DEFINE_CLK_SMD_RPM_PREFIX( , _name, _active,	      \
 				    type, r_id, key, ao_rate, ao_flags)
 
 #define __DEFINE_CLK_SMD_RPM_BRANCH_PREFIX(_prefix, _name, _active,\
@@ -101,7 +98,7 @@
 	}
 
 #define __DEFINE_CLK_SMD_RPM_BRANCH(_name, _active, type, r_id, r, key)	      \
-		__DEFINE_CLK_SMD_RPM_BRANCH_PREFIX(/* empty */,		      \
+		__DEFINE_CLK_SMD_RPM_BRANCH_PREFIX( ,		      \
 		_name, _active, type, r_id, r, key, 0)
 
 #define DEFINE_CLK_SMD_RPM(_name, type, r_id)				      \
@@ -174,11 +171,7 @@ struct rpm_smd_clk_desc {
 	struct clk_smd_rpm **clks;
 	size_t num_clks;
 
-	/*
-	 * Interconnect clocks are managed by the icc framework, this driver
-	 * only kickstarts them so that they don't get gated between
-	 * clk_smd_rpm_enable_scaling() and interconnect driver initialization.
-	 */
+	 
 	const struct clk_smd_rpm ** const icc_clks;
 	size_t num_icc_clks;
 	bool scaling_before_handover;
@@ -215,7 +208,7 @@ static int clk_smd_rpm_set_rate_active(struct clk_smd_rpm *r,
 	struct clk_smd_rpm_req req = {
 		.key = cpu_to_le32(r->rpm_key),
 		.nbytes = cpu_to_le32(sizeof(u32)),
-		.value = cpu_to_le32(DIV_ROUND_UP(rate, 1000)), /* to kHz */
+		.value = cpu_to_le32(DIV_ROUND_UP(rate, 1000)),  
 	};
 
 	return qcom_rpm_smd_write(rpmcc_smd_rpm, QCOM_SMD_RPM_ACTIVE_STATE,
@@ -229,7 +222,7 @@ static int clk_smd_rpm_set_rate_sleep(struct clk_smd_rpm *r,
 	struct clk_smd_rpm_req req = {
 		.key = cpu_to_le32(r->rpm_key),
 		.nbytes = cpu_to_le32(sizeof(u32)),
-		.value = cpu_to_le32(DIV_ROUND_UP(rate, 1000)), /* to kHz */
+		.value = cpu_to_le32(DIV_ROUND_UP(rate, 1000)),  
 	};
 
 	return qcom_rpm_smd_write(rpmcc_smd_rpm, QCOM_SMD_RPM_SLEEP_STATE,
@@ -242,10 +235,7 @@ static void to_active_sleep(struct clk_smd_rpm *r, unsigned long rate,
 {
 	*active = rate;
 
-	/*
-	 * Active-only clocks don't care what the rate is during sleep. So,
-	 * they vote for zero.
-	 */
+	 
 	if (r->active_only)
 		*sleep = 0;
 	else
@@ -263,13 +253,13 @@ static int clk_smd_rpm_prepare(struct clk_hw *hw)
 
 	mutex_lock(&rpm_smd_clk_lock);
 
-	/* Don't send requests to the RPM if the rate has not been set. */
+	 
 	if (!r->rate)
 		goto out;
 
 	to_active_sleep(r, r->rate, &this_rate, &this_sleep_rate);
 
-	/* Take peer clock's rate into account only if it's enabled. */
+	 
 	if (peer->enabled)
 		to_active_sleep(peer, peer->rate,
 				&peer_rate, &peer_sleep_rate);
@@ -289,7 +279,7 @@ static int clk_smd_rpm_prepare(struct clk_hw *hw)
 
 	ret = clk_smd_rpm_set_rate_sleep(r, sleep_rate);
 	if (ret)
-		/* Undo the active set vote and restore it */
+		 
 		ret = clk_smd_rpm_set_rate_active(r, peer_rate);
 
 out:
@@ -314,7 +304,7 @@ static void clk_smd_rpm_unprepare(struct clk_hw *hw)
 	if (!r->rate)
 		goto out;
 
-	/* Take peer clock's rate into account only if it's enabled. */
+	 
 	if (peer->enabled)
 		to_active_sleep(peer, peer->rate, &peer_rate,
 				&peer_sleep_rate);
@@ -352,7 +342,7 @@ static int clk_smd_rpm_set_rate(struct clk_hw *hw, unsigned long rate,
 
 	to_active_sleep(r, rate, &this_rate, &this_sleep_rate);
 
-	/* Take peer clock's rate into account only if it's enabled. */
+	 
 	if (peer->enabled)
 		to_active_sleep(peer, peer->rate,
 				&peer_rate, &peer_sleep_rate);
@@ -378,11 +368,7 @@ out:
 static long clk_smd_rpm_round_rate(struct clk_hw *hw, unsigned long rate,
 				   unsigned long *parent_rate)
 {
-	/*
-	 * RPM handles rate rounding and we don't have a way to
-	 * know what the rate will be, so just return whatever
-	 * rate is requested.
-	 */
+	 
 	return rate;
 }
 
@@ -391,11 +377,7 @@ static unsigned long clk_smd_rpm_recalc_rate(struct clk_hw *hw,
 {
 	struct clk_smd_rpm *r = to_clk_smd_rpm(hw);
 
-	/*
-	 * RPM handles rate rounding and we don't have a way to
-	 * know what the rate will be, so just return whatever
-	 * rate was set.
-	 */
+	 
 	return r->rate;
 }
 
@@ -442,7 +424,7 @@ static const struct clk_ops clk_smd_rpm_branch_ops = {
 	.recalc_rate	= clk_smd_rpm_recalc_rate,
 };
 
-/* Disabling BI_TCXO_AO could gate the root clock source of the entire system. */
+ 
 DEFINE_CLK_SMD_RPM_BRANCH_A(bi_tcxo, QCOM_SMD_RPM_MISC_CLK, 0, 19200000, CLK_IS_CRITICAL);
 DEFINE_CLK_SMD_RPM_BRANCH(qdss, QCOM_SMD_RPM_MISC_CLK, 1, 19200000);
 DEFINE_CLK_SMD_RPM_QDSS(qdss, QCOM_SMD_RPM_MISC_CLK, 1);
@@ -1106,7 +1088,7 @@ static const struct rpm_smd_clk_desc rpm_clk_sm6125 = {
 	.num_icc_clks = ARRAY_SIZE(sm_qnoc_icc_clks)
 };
 
-/* SM6115 */
+ 
 static struct clk_smd_rpm *sm6115_clks[] = {
 	[RPM_SMD_XO_CLK_SRC] = &clk_smd_rpm_branch_bi_tcxo,
 	[RPM_SMD_XO_A_CLK_SRC] = &clk_smd_rpm_branch_bi_tcxo_a,
@@ -1315,7 +1297,7 @@ static int rpm_smd_clk_probe(struct platform_device *pdev)
 	if (IS_ERR(icc_pdev)) {
 		dev_err(&pdev->dev, "Failed to register icc_smd_rpm device: %pE\n",
 			icc_pdev);
-		/* No need to unregister clocks because of this */
+		 
 	} else {
 		ret = devm_add_action_or_reset(&pdev->dev, rpm_smd_unregister_icc,
 					       icc_pdev);

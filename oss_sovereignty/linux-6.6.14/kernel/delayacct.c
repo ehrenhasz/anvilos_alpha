@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* delayacct.c - per-task delay accounting
- *
- * Copyright (C) Shailabh Nagar, IBM Corp. 2006
- */
+
+ 
 
 #include <linux/sched.h>
 #include <linux/sched/task.h>
@@ -15,7 +12,7 @@
 #include <linux/module.h>
 
 DEFINE_STATIC_KEY_FALSE(delayacct_key);
-int delayacct_on __read_mostly;	/* Delay accounting turned on/off */
+int delayacct_on __read_mostly;	 
 struct kmem_cache *delayacct_cache;
 
 static void set_delayacct(bool enabled)
@@ -92,10 +89,7 @@ void __delayacct_tsk_init(struct task_struct *tsk)
 		raw_spin_lock_init(&tsk->delays->lock);
 }
 
-/*
- * Finish delay accounting for a statistic using its timestamps (@start),
- * accumalator (@total) and @count
- */
+ 
 static void delayacct_end(raw_spinlock_t *lock, u64 *start, u64 *total, u32 *count)
 {
 	s64 ns = local_clock() - *start;
@@ -114,10 +108,7 @@ void __delayacct_blkio_start(void)
 	current->delays->blkio_start = local_clock();
 }
 
-/*
- * We cannot rely on the `current` macro, as we haven't yet switched back to
- * the process being woken.
- */
+ 
 void __delayacct_blkio_end(struct task_struct *p)
 {
 	delayacct_end(&p->delays->lock,
@@ -144,10 +135,7 @@ int delayacct_add_tsk(struct taskstats *d, struct task_struct *tsk)
 	d->cpu_scaled_run_real_total =
 		(tmp < (s64)d->cpu_scaled_run_real_total) ? 0 : tmp;
 
-	/*
-	 * No locking available for sched_info (and too expensive to add one)
-	 * Mitigate by taking snapshot of values
-	 */
+	 
 	t1 = tsk->sched_info.pcount;
 	t2 = tsk->sched_info.run_delay;
 	t3 = tsk->se.sum_exec_runtime;
@@ -164,7 +152,7 @@ int delayacct_add_tsk(struct taskstats *d, struct task_struct *tsk)
 	if (!tsk->delays)
 		return 0;
 
-	/* zero XXX_total, non-zero XXX_count implies XXX stat overflowed */
+	 
 
 	raw_spin_lock_irqsave(&tsk->delays->lock, flags);
 	tmp = d->blkio_delay_total + tsk->delays->blkio_delay;

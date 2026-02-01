@@ -1,6 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
 
-/* Platform profile sysfs interface */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/bits.h>
@@ -70,7 +70,7 @@ static ssize_t platform_profile_show(struct device *dev,
 	if (err)
 		return err;
 
-	/* Check that profile is valid index */
+	 
 	if (WARN_ON((profile < 0) || (profile >= ARRAY_SIZE(profile_names))))
 		return -EIO;
 
@@ -92,14 +92,14 @@ static ssize_t platform_profile_store(struct device *dev,
 		return -ENODEV;
 	}
 
-	/* Scan for a matching profile */
+	 
 	i = sysfs_match_string(profile_names, buf);
 	if (i < 0) {
 		mutex_unlock(&profile_lock);
 		return -EINVAL;
 	}
 
-	/* Check that platform supports this profile choice */
+	 
 	if (!test_bit(i, cur_profile->choices)) {
 		mutex_unlock(&profile_lock);
 		return -EOPNOTSUPP;
@@ -141,13 +141,13 @@ int platform_profile_register(struct platform_profile_handler *pprof)
 	int err;
 
 	mutex_lock(&profile_lock);
-	/* We can only have one active profile */
+	 
 	if (cur_profile) {
 		mutex_unlock(&profile_lock);
 		return -EEXIST;
 	}
 
-	/* Sanity check the profile handler field are set */
+	 
 	if (!pprof || bitmap_empty(pprof->choices, PLATFORM_PROFILE_LAST) ||
 		!pprof->profile_set || !pprof->profile_get) {
 		mutex_unlock(&profile_lock);

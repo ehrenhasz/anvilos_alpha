@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * mt8195-reg.h  --  Mediatek 8195 audio driver reg definition
- *
- * Copyright (c) 2021 MediaTek Inc.
- * Author: Bicycle Tsai <bicycle.tsai@mediatek.com>
- *         Trevor Wu <trevor.wu@mediatek.com>
- */
+ 
+ 
 
 #ifndef _MT8195_REG_H_
 #define _MT8195_REG_H_
@@ -2499,14 +2493,14 @@
 
 #define AFE_MAX_REGISTER                  (AFE_GASRC19_NEW_CON14)
 
-/* ASYS_TOP_CON */
+ 
 #define ASYS_TOP_CON_A1SYS_TIMING_ON       BIT(0)
 #define ASYS_TOP_CON_A2SYS_TIMING_ON       BIT(1)
 #define ASYS_TOP_CON_A3SYS_TIMING_ON       BIT(4)
 #define ASYS_TOP_CON_A4SYS_TIMING_ON       BIT(5)
 #define ASYS_TOP_CON_26M_TIMING_ON         BIT(2)
 
-/* PWR2_TOP_CON0 */
+ 
 #define PWR2_TOP_CON_DMIC8_SRC_SEL_MASK     GENMASK(31, 29)
 #define PWR2_TOP_CON_DMIC7_SRC_SEL_MASK     GENMASK(28, 26)
 #define PWR2_TOP_CON_DMIC6_SRC_SEL_MASK     GENMASK(25, 23)
@@ -2524,10 +2518,10 @@
 #define PWR2_TOP_CON_DMIC2_SRC_SEL_VAL(x)   ((x) << 11)
 #define PWR2_TOP_CON_DMIC1_SRC_SEL_VAL(x)   ((x) << 8)
 
-/* PWR2_TOP_CON1 */
+ 
 #define PWR2_TOP_CON1_DMIC_CKDIV_ON        BIT(1)
 
-/* PCM_INTF_CON1 */
+ 
 #define PCM_INTF_CON1_SYNC_OUT_INV     BIT(23)
 #define PCM_INTF_CON1_BCLK_OUT_INV     BIT(22)
 #define PCM_INTF_CON1_CLK_OUT_INV_MASK GENMASK(23, 22)
@@ -2552,14 +2546,14 @@
 #define PCM_INTF_CON1_PCM_EN           BIT(0)
 #define PCM_INTF_CON1_PCM_EN_SHIFT     0
 
-/* PCM_INTF_CON2 */
+ 
 #define PCM_INTF_CON2_CLK_DOMAIN_SEL(x)   (((x) & 0x3) << 23)
 #define PCM_INTF_CON2_CLK_DOMAIN_SEL_MASK (0x3 << 23)
 #define PCM_INTF_CON2_SYNC_FREQ_MODE(x)   (((x) & 0x1f) << 12)
 #define PCM_INTF_CON2_SYNC_FREQ_MODE_MASK (0x1f << 12)
 #define PCM_INTF_CON2_PCM_TX2RX_LPBK      BIT(8)
 
-/* AFE_MPHONE_MULTIx_CON0 */
+ 
 #define AFE_MPHONE_MULTI_CON0_16BIT_SWAP       BIT(3)
 #define AFE_MPHONE_MULTI_CON0_16BIT_SWAP_MASK  BIT(3)
 #define AFE_MPHONE_MULTI_CON0_24BIT_DATA       (0x1 << 1)
@@ -2568,7 +2562,7 @@
 #define AFE_MPHONE_MULTI_CON0_EN               BIT(0)
 #define AFE_MPHONE_MULTI_CON0_EN_MASK          BIT(0)
 
-/* AFE_MPHONE_MULTIx_CON1 */
+ 
 #define AFE_MPHONE_MULTI_CON1_SYNC_ON                BIT(24)
 #define AFE_MPHONE_MULTI_CON1_SYNC_ON_MASK           BIT(24)
 #define AFE_MPHONE_MULTI_CON1_24BIT_SWAP_BYPASS      BIT(22)
@@ -2595,15 +2589,15 @@
 #define AFE_MPHONE_MULTI_CON1_CH_NUM(x)              ((((x) >> 1) - 1) & 0x3)
 #define AFE_MPHONE_MULTI_CON1_CH_NUM_MASK            GENMASK(1, 0)
 
-/* AFE_MPHONE_MULTIx_CON2 */
+ 
 #define AFE_MPHONE_MULTI_CON2_SEL_SPDIFIN        BIT(19)
 #define AFE_MPHONE_MULTI_CON2_SEL_SPDIFIN_MASK   BIT(19)
 
-/* AFE_AUD_PAD_TOP */
+ 
 #define RG_RX_PROTOCOL2			BIT(3)
 #define RG_RX_FIFO_ON			BIT(0)
 
-/* AFE_ADDA_MTKAIF_CFG0 */
+ 
 #define MTKAIF_RXIF_CLKINV_ADC		BIT(31)
 #define MTKAIF_RXIF_PROTOCOL2		BIT(16)
 #define MTKAIF_TXIF_PROTOCOL2		BIT(4)
@@ -2611,16 +2605,16 @@
 #define MTKAIF_RXIF_8TO5		BIT(1)
 #define MTKAIF_IF_LOOPBACK1		BIT(0)
 
-/* AFE_ADDA_MTKAIF_RX_CFG2 */
+ 
 #define MTKAIF_RXIF_DELAY_CYCLE(x)	((x) << 12)
 #define MTKAIF_RXIF_DELAY_CYCLE_MASK	GENMASK(15, 12)
 #define MTKAIF_RXIF_DELAY_DATA		BIT(8)
 #define MTKAIF_RXIF_DELAY_DATA_SHIFT	8
 
-/* AFE_ADDA_MTKAIF_SYNCWORD_CFG */
+ 
 #define ADDA6_MTKAIF_RX_SYNC_WORD2_DISABLE	BIT(23)
 
-/* AFE_DMICx_UL_SRC_CON0 */
+ 
 #define AFE_DMIC_UL_SRC_CON0_UL_PHASE_SEL_CH1(x)   (((x) & 0x7) << 27)
 #define AFE_DMIC_UL_SRC_CON0_UL_PHASE_SEL_CH2(x)   (((x) & 0x7) << 24)
 #define AFE_DMIC_UL_SRC_CON0_UL_TWO_WIRE_MODE_CTL  BIT(23)
@@ -2636,19 +2630,19 @@
 #define AFE_DMIC_UL_SRC_CON0_UL_SDM_3_LEVEL_CTL    BIT(1)
 #define AFE_DMIC_UL_SRC_CON0_UL_SRC_ON_TMP_CTL     BIT(0)
 
-/* ETDM_INx_AFIFO_CON */
+ 
 #define ETDM_IN_USE_AFIFO		BIT(8)
 #define ETDM_IN_AFIFO_CLOCK(x)		((x) << 5)
 #define ETDM_IN_AFIFO_CLOCK_MASK	GENMASK(7, 5)
 #define ETDM_IN_AFIFO_MODE(x)		((x) << 0)
 #define ETDM_IN_AFIFO_MODE_MASK		GENMASK(4, 0)
 
-/* ETDM_COWORK_CON0 */
+ 
 #define ETDM_OUT1_SLAVE_SEL(x)		((x) << 20)
 #define ETDM_OUT1_SLAVE_SEL_MASK	GENMASK(23, 20)
 #define ETDM_OUT1_SLAVE_SEL_SHIFT	20
 
-/* ETDM_COWORK_CON1 */
+ 
 #define ETDM_IN1_SDATA_SEL(x)		((x) << 20)
 #define ETDM_IN1_SDATA_SEL_MASK		GENMASK(23, 20)
 #define ETDM_IN1_SDATA_SEL_SHIFT	20
@@ -2659,7 +2653,7 @@
 #define ETDM_IN1_SLAVE_SEL_MASK		GENMASK(11, 8)
 #define ETDM_IN1_SLAVE_SEL_SHIFT	8
 
-/* ETDM_COWORK_CON2 */
+ 
 #define ETDM_IN2_SLAVE_SEL(x)		((x) << 24)
 #define ETDM_IN2_SLAVE_SEL_MASK		GENMASK(27, 24)
 #define ETDM_IN2_SLAVE_SEL_SHIFT	24
@@ -2670,7 +2664,7 @@
 #define ETDM_OUT2_SLAVE_SEL_MASK	GENMASK(11, 8)
 #define ETDM_OUT2_SLAVE_SEL_SHIFT	8
 
-/* ETDM_COWORK_CON3 */
+ 
 #define ETDM_IN2_SDATA_SEL(x)		((x) << 4)
 #define ETDM_IN2_SDATA_SEL_MASK		GENMASK(7, 4)
 #define ETDM_IN2_SDATA_SEL_SHIFT	4
@@ -2678,7 +2672,7 @@
 #define ETDM_IN2_SDATA0_SEL_MASK	GENMASK(3, 0)
 #define ETDM_IN2_SDATA0_SEL_SHIFT	0
 
-/* ETDM_x_CONx */
+ 
 #define ETDM_CON0_CH_NUM(x)		(((x) - 1) << 23)
 #define ETDM_CON0_CH_NUM_MASK		GENMASK(27, 23)
 #define ETDM_CON0_WORD_LEN(x)		(((x) - 1) << 16)
@@ -2741,7 +2735,7 @@
 #define ETDM_OUT_CON5_SLAVE_LRCK_INV		BIT(8)
 #define ETDM_OUT_CON5_SLAVE_BCK_INV		BIT(7)
 
-/* AFE_DPTX_CON */
+ 
 #define AFE_DPTX_CON_CH_EN(x)     (((x) & 0xff) << 8)
 #define AFE_DPTX_CON_CH_EN_2CH    (AFE_DPTX_CON_CH_EN(GENMASK(1, 0)))
 #define AFE_DPTX_CON_CH_EN_4CH    (AFE_DPTX_CON_CH_EN(GENMASK(3, 0)))
@@ -2758,10 +2752,10 @@
 #define AFE_DPTX_CON_ON           BIT(0)
 #define AFE_DPTX_CON_ON_MASK      BIT(0)
 
-/* AFE_ADDA_UL_DL_CON0 */
+ 
 #define ADDA_AFE_ON_SHIFT		0
 
-/* AFE_ADDA_DL_SRC2_CON0 */
+ 
 #define DL_2_INPUT_MODE_CTL(x)		((x) << 28)
 #define DL_2_INPUT_MODE_CTL_MASK	GENMASK(31, 28)
 #define DL_2_CH1_SATURATION_EN_CTL	BIT(27)
@@ -2772,20 +2766,20 @@
 #define DL_2_GAIN_ON_CTL_PRE_SHIFT	1
 #define DL_2_SRC_ON_TMP_CTRL_PRE_SHIFT	0
 
-/* AFE_ADDA_DL_SRC2_CON1 */
+ 
 #define DL_2_GAIN_CTL_PRE(x)		((x) << 16)
 #define DL_2_GAIN_CTL_PRE_MASK		GENMASK(31, 16)
 #define DL_2_GAIN_CTL_PRE_SHIFT		16
 
-/* AFE_ADDA_TOP_CON0 */
+ 
 #define C_LOOPBACK_MODE_CTL_MASK	GENMASK(15, 12)
 #define DL_INPUT_FROM_SINEGEN		(4 << 12)
 
-/* AFE_ADDA_DL_SDM_DCCOMP_CON */
+ 
 #define DL_USE_NEW_2ND_SDM		BIT(30)
 #define ATTGAIN_CTL_MASK		GENMASK(5, 0)
 
-/* AFE_ADDA_UL_SRC_CON0 */
+ 
 #define UL_MODE_3P25M_CH2_CTL		BIT(22)
 #define UL_MODE_3P25M_CH1_CTL		BIT(21)
 #define UL_VOICE_MODE_CTL(x)		((x) << 17)

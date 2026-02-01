@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *	phy-mvebu-sata.c: SATA Phy driver for the Marvell mvebu SoCs.
- *
- *	Copyright (C) 2013 Andrew Lunn <andrew@lunn.ch>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/init.h>
@@ -33,13 +29,13 @@ static int phy_mvebu_sata_power_on(struct phy *phy)
 
 	clk_prepare_enable(priv->clk);
 
-	/* Enable PLL and IVREF */
+	 
 	reg = readl(priv->base + SATA_PHY_MODE_2);
 	reg |= (MODE_2_FORCE_PU_TX | MODE_2_FORCE_PU_RX |
 		MODE_2_PU_PLL | MODE_2_PU_IVREF);
 	writel(reg , priv->base + SATA_PHY_MODE_2);
 
-	/* Enable PHY */
+	 
 	reg = readl(priv->base + SATA_IF_CTRL);
 	reg &= ~CTRL_PHY_SHUTDOWN;
 	writel(reg, priv->base + SATA_IF_CTRL);
@@ -56,13 +52,13 @@ static int phy_mvebu_sata_power_off(struct phy *phy)
 
 	clk_prepare_enable(priv->clk);
 
-	/* Disable PLL and IVREF */
+	 
 	reg = readl(priv->base + SATA_PHY_MODE_2);
 	reg &= ~(MODE_2_FORCE_PU_TX | MODE_2_FORCE_PU_RX |
 		 MODE_2_PU_PLL | MODE_2_PU_IVREF);
 	writel(reg, priv->base + SATA_PHY_MODE_2);
 
-	/* Disable PHY */
+	 
 	reg = readl(priv->base + SATA_IF_CTRL);
 	reg |= CTRL_PHY_SHUTDOWN;
 	writel(reg, priv->base + SATA_IF_CTRL);
@@ -107,7 +103,7 @@ static int phy_mvebu_sata_probe(struct platform_device *pdev)
 	if (IS_ERR(phy_provider))
 		return PTR_ERR(phy_provider);
 
-	/* The boot loader may of left it on. Turn it off. */
+	 
 	phy_mvebu_sata_power_off(phy);
 
 	return 0;

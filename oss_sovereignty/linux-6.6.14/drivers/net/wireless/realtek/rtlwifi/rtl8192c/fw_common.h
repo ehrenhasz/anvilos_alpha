@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright(c) 2009-2012  Realtek Corporation.*/
+ 
+ 
 
 #ifndef __RTL92C__FW__COMMON__H__
 #define __RTL92C__FW__COMMON__H__
@@ -19,7 +19,7 @@
 
 #define CUT_VERSION_MASK		(BIT(6)|BIT(7))
 #define CHIP_VENDOR_UMC			BIT(5)
-#define CHIP_VENDOR_UMC_B_CUT		BIT(6) /* Chip version for ECO */
+#define CHIP_VENDOR_UMC_B_CUT		BIT(6)  
 #define IS_CHIP_VER_B(version)  ((version & CHIP_VER_B) ? true : false)
 #define RF_TYPE_MASK			(BIT(0)|BIT(1))
 #define GET_CVID_RF_TYPE(version)	\

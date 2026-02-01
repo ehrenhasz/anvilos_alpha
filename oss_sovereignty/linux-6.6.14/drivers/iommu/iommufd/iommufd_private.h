@@ -1,6 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/* Copyright (c) 2021-2022, NVIDIA CORPORATION & AFFILIATES
- */
+ 
+ 
 #ifndef __IOMMUFD_PRIVATE_H
 #define __IOMMUFD_PRIVATE_H
 
@@ -20,21 +19,12 @@ struct iommufd_ctx {
 	struct xarray groups;
 
 	u8 account_mode;
-	/* Compatibility with VFIO no iommu */
+	 
 	u8 no_iommu_mode;
 	struct iommufd_ioas *vfio_ioas;
 };
 
-/*
- * The IOVA to PFN map. The map automatically copies the PFNs into multiple
- * domains and permits sharing of PFNs between io_pagetable instances. This
- * supports both a design where IOAS's are 1:1 with a domain (eg because the
- * domain is HW customized), or where the IOAS is 1:N with multiple generic
- * domains.  The io_pagetable holds an interval tree of iopt_areas which point
- * to shared iopt_pages which hold the pfns mapped to the page table.
- *
- * The locking order is domains_rwsem -> iova_rwsem -> pages::mutex
- */
+ 
 struct io_pagetable {
 	struct rw_semaphore domains_rwsem;
 	struct xarray domains;
@@ -43,9 +33,9 @@ struct io_pagetable {
 
 	struct rw_semaphore iova_rwsem;
 	struct rb_root_cached area_itree;
-	/* IOVA that cannot become reserved, struct iopt_allowed */
+	 
 	struct rb_root_cached allowed_itree;
-	/* IOVA that cannot be allocated, struct iopt_reserved */
+	 
 	struct rb_root_cached reserved_itree;
 	u8 disable_large_pages;
 	unsigned long iova_alignment;
@@ -99,7 +89,7 @@ struct iommufd_ucmd {
 int iommufd_vfio_ioctl(struct iommufd_ctx *ictx, unsigned int cmd,
 		       unsigned long arg);
 
-/* Copy the response in ucmd->cmd back to userspace. */
+ 
 static inline int iommufd_ucmd_respond(struct iommufd_ucmd *ucmd,
 				       size_t cmd_len)
 {
@@ -122,7 +112,7 @@ enum iommufd_object_type {
 	IOMMUFD_OBJ_MAX,
 };
 
-/* Base struct for all objects with a userspace ID handle. */
+ 
 struct iommufd_object {
 	struct rw_semaphore destroy_rwsem;
 	refcount_t users;
@@ -180,20 +170,7 @@ struct iommufd_object *_iommufd_object_alloc(struct iommufd_ctx *ictx,
 			     type),                                            \
 		     typeof(*(ptr)), obj)
 
-/*
- * The IO Address Space (IOAS) pagetable is a virtual page table backed by the
- * io_pagetable object. It is a user controlled mapping of IOVA -> PFNs. The
- * mapping is copied into all of the associated domains and made available to
- * in-kernel users.
- *
- * Every iommu_domain that is created is wrapped in a iommufd_hw_pagetable
- * object. When we go to attach a device to an IOAS we need to get an
- * iommu_domain and wrapping iommufd_hw_pagetable for it.
- *
- * An iommu_domain & iommfd_hw_pagetable will be automatically selected
- * for a device based on the hwpt_list. If no suitable iommu_domain
- * is found a new iommu_domain will be created.
- */
+ 
 struct iommufd_ioas {
 	struct iommufd_object obj;
 	struct io_pagetable iopt;
@@ -223,12 +200,7 @@ int iommufd_option_rlimit_mode(struct iommu_option *cmd,
 
 int iommufd_vfio_ioas(struct iommufd_ucmd *ucmd);
 
-/*
- * A HW pagetable is called an iommu_domain inside the kernel. This user object
- * allows directly creating and inspecting the domains. Domains that have kernel
- * owned page tables will be associated with an iommufd_ioas that provides the
- * IOVA to PFN map.
- */
+ 
 struct iommufd_hw_pagetable {
 	struct iommufd_object obj;
 	struct iommufd_ioas *ioas;
@@ -236,7 +208,7 @@ struct iommufd_hw_pagetable {
 	bool auto_domain : 1;
 	bool enforce_cache_coherency : 1;
 	bool msi_cookie : 1;
-	/* Head at iommufd_ioas::hwpt_list */
+	 
 	struct list_head hwpt_item;
 };
 
@@ -272,17 +244,13 @@ struct iommufd_group {
 	phys_addr_t sw_msi_start;
 };
 
-/*
- * A iommufd_device object represents the binding relationship between a
- * consuming driver and the iommufd. These objects are created/destroyed by
- * external drivers, not by userspace.
- */
+ 
 struct iommufd_device {
 	struct iommufd_object obj;
 	struct iommufd_ctx *ictx;
 	struct iommufd_group *igroup;
 	struct list_head group_item;
-	/* always the physical device */
+	 
 	struct device *dev;
 	bool enforce_cache_coherency;
 };

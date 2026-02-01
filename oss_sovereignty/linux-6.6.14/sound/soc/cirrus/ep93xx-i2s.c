@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * linux/sound/soc/ep93xx-i2s.c
- * EP93xx I2S driver
- *
- * Copyright (C) 2010 Ryan Mallon
- *
- * Based on the original driver by:
- *   Copyright (C) 2007 Chase Douglas <chasedouglas@gmail>
- *   Copyright (C) 2006 Lennert Buytenhek <buytenh@wantstofly.org>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -51,23 +42,19 @@
 #define EP93XX_I2S_WRDLEN_24		(1 << 0)
 #define EP93XX_I2S_WRDLEN_32		(2 << 0)
 
-#define EP93XX_I2S_RXLINCTRLDATA_R_JUST	BIT(1) /* Right justify */
+#define EP93XX_I2S_RXLINCTRLDATA_R_JUST	BIT(1)  
 
-#define EP93XX_I2S_TXLINCTRLDATA_R_JUST	BIT(2) /* Right justify */
+#define EP93XX_I2S_TXLINCTRLDATA_R_JUST	BIT(2)  
 
-/*
- * Transmit empty interrupt level select:
- * 0 - Generate interrupt when FIFO is half empty
- * 1 - Generate interrupt when FIFO is empty
- */
+ 
 #define EP93XX_I2S_TXCTRL_TXEMPTY_LVL	BIT(0)
-#define EP93XX_I2S_TXCTRL_TXUFIE	BIT(1) /* Transmit interrupt enable */
+#define EP93XX_I2S_TXCTRL_TXUFIE	BIT(1)  
 
-#define EP93XX_I2S_CLKCFG_LRS		(1 << 0) /* lrclk polarity */
-#define EP93XX_I2S_CLKCFG_CKP		(1 << 1) /* Bit clock polarity */
-#define EP93XX_I2S_CLKCFG_REL		(1 << 2) /* First bit transition */
-#define EP93XX_I2S_CLKCFG_MASTER	(1 << 3) /* Master mode */
-#define EP93XX_I2S_CLKCFG_NBCG		(1 << 4) /* Not bit clock gating */
+#define EP93XX_I2S_CLKCFG_LRS		(1 << 0)  
+#define EP93XX_I2S_CLKCFG_CKP		(1 << 1)  
+#define EP93XX_I2S_CLKCFG_REL		(1 << 2)  
+#define EP93XX_I2S_CLKCFG_MASTER	(1 << 3)  
+#define EP93XX_I2S_CLKCFG_NBCG		(1 << 4)  
 
 #define EP93XX_I2S_GLSTS_TX0_FIFO_FULL	BIT(12)
 
@@ -111,23 +98,23 @@ static void ep93xx_i2s_enable(struct ep93xx_i2s_info *info, int stream)
 
 	if ((ep93xx_i2s_read_reg(info, EP93XX_I2S_TX0EN) & 0x1) == 0 &&
 	    (ep93xx_i2s_read_reg(info, EP93XX_I2S_RX0EN) & 0x1) == 0) {
-		/* Enable clocks */
+		 
 		clk_prepare_enable(info->mclk);
 		clk_prepare_enable(info->sclk);
 		clk_prepare_enable(info->lrclk);
 
-		/* Enable i2s */
+		 
 		ep93xx_i2s_write_reg(info, EP93XX_I2S_GLCTRL, 1);
 	}
 
-	/* Enable fifo */
+	 
 	if (stream == SNDRV_PCM_STREAM_PLAYBACK)
 		base_reg = EP93XX_I2S_TX0EN;
 	else
 		base_reg = EP93XX_I2S_RX0EN;
 	ep93xx_i2s_write_reg(info, base_reg, 1);
 
-	/* Enable TX IRQs (FIFO empty or underflow) */
+	 
 	if (IS_ENABLED(CONFIG_SND_EP93XX_SOC_I2S_WATCHDOG) &&
 	    stream == SNDRV_PCM_STREAM_PLAYBACK)
 		ep93xx_i2s_write_reg(info, EP93XX_I2S_TXCTRL,
@@ -139,12 +126,12 @@ static void ep93xx_i2s_disable(struct ep93xx_i2s_info *info, int stream)
 {
 	unsigned base_reg;
 
-	/* Disable IRQs */
+	 
 	if (IS_ENABLED(CONFIG_SND_EP93XX_SOC_I2S_WATCHDOG) &&
 	    stream == SNDRV_PCM_STREAM_PLAYBACK)
 		ep93xx_i2s_write_reg(info, EP93XX_I2S_TXCTRL, 0);
 
-	/* Disable fifo */
+	 
 	if (stream == SNDRV_PCM_STREAM_PLAYBACK)
 		base_reg = EP93XX_I2S_TX0EN;
 	else
@@ -153,42 +140,30 @@ static void ep93xx_i2s_disable(struct ep93xx_i2s_info *info, int stream)
 
 	if ((ep93xx_i2s_read_reg(info, EP93XX_I2S_TX0EN) & 0x1) == 0 &&
 	    (ep93xx_i2s_read_reg(info, EP93XX_I2S_RX0EN) & 0x1) == 0) {
-		/* Disable i2s */
+		 
 		ep93xx_i2s_write_reg(info, EP93XX_I2S_GLCTRL, 0);
 
-		/* Disable clocks */
+		 
 		clk_disable_unprepare(info->lrclk);
 		clk_disable_unprepare(info->sclk);
 		clk_disable_unprepare(info->mclk);
 	}
 }
 
-/*
- * According to documentation I2S controller can handle underflow conditions
- * just fine, but in reality the state machine is sometimes confused so that
- * the whole stream is shifted by one byte. The watchdog below disables the TX
- * FIFO, fills the buffer with zeroes and re-enables the FIFO. State machine
- * is being reset and by filling the buffer we get some time before next
- * underflow happens.
- */
+ 
 static irqreturn_t ep93xx_i2s_interrupt(int irq, void *dev_id)
 {
 	struct ep93xx_i2s_info *info = dev_id;
 
-	/* Disable FIFO */
+	 
 	ep93xx_i2s_write_reg(info, EP93XX_I2S_TX0EN, 0);
-	/*
-	 * Fill TX FIFO with zeroes, this way we can defer next IRQs as much as
-	 * possible and get more time for DMA to catch up. Actually there are
-	 * only 8 samples in this FIFO, so even on 8kHz maximum deferral here is
-	 * 1ms.
-	 */
+	 
 	while (!(ep93xx_i2s_read_reg(info, EP93XX_I2S_GLSTS) &
 		 EP93XX_I2S_GLSTS_TX0_FIFO_FULL)) {
 		ep93xx_i2s_write_reg(info, EP93XX_I2S_I2STX0LFT, 0);
 		ep93xx_i2s_write_reg(info, EP93XX_I2S_I2STX0RT, 0);
 	}
-	/* Re-enable FIFO */
+	 
 	ep93xx_i2s_write_reg(info, EP93XX_I2S_TX0EN, 1);
 
 	return IRQ_HANDLED;
@@ -258,12 +233,12 @@ static int ep93xx_i2s_set_dai_fmt(struct snd_soc_dai *cpu_dai,
 
 	switch (fmt & SND_SOC_DAIFMT_CLOCK_PROVIDER_MASK) {
 	case SND_SOC_DAIFMT_BP_FP:
-		/* CPU is provider */
+		 
 		clk_cfg |= EP93XX_I2S_CLKCFG_MASTER;
 		break;
 
 	case SND_SOC_DAIFMT_BC_FC:
-		/* Codec is provider */
+		 
 		clk_cfg &= ~EP93XX_I2S_CLKCFG_MASTER;
 		break;
 
@@ -273,29 +248,29 @@ static int ep93xx_i2s_set_dai_fmt(struct snd_soc_dai *cpu_dai,
 
 	switch (fmt & SND_SOC_DAIFMT_INV_MASK) {
 	case SND_SOC_DAIFMT_NB_NF:
-		/* Negative bit clock, lrclk low on left word */
+		 
 		clk_cfg &= ~(EP93XX_I2S_CLKCFG_CKP | EP93XX_I2S_CLKCFG_LRS);
 		break;
 
 	case SND_SOC_DAIFMT_NB_IF:
-		/* Negative bit clock, lrclk low on right word */
+		 
 		clk_cfg &= ~EP93XX_I2S_CLKCFG_CKP;
 		clk_cfg |= EP93XX_I2S_CLKCFG_LRS;
 		break;
 
 	case SND_SOC_DAIFMT_IB_NF:
-		/* Positive bit clock, lrclk low on left word */
+		 
 		clk_cfg |= EP93XX_I2S_CLKCFG_CKP;
 		clk_cfg &= ~EP93XX_I2S_CLKCFG_LRS;
 		break;
 
 	case SND_SOC_DAIFMT_IB_IF:
-		/* Positive bit clock, lrclk low on right word */
+		 
 		clk_cfg |= EP93XX_I2S_CLKCFG_CKP | EP93XX_I2S_CLKCFG_LRS;
 		break;
 	}
 
-	/* Write new register values */
+	 
 	ep93xx_i2s_write_reg(info, EP93XX_I2S_RXCLKCFG, clk_cfg);
 	ep93xx_i2s_write_reg(info, EP93XX_I2S_TXCLKCFG, clk_cfg);
 	ep93xx_i2s_write_reg(info, EP93XX_I2S_RXLINCTRLDATA, rxlin_ctrl);
@@ -333,14 +308,7 @@ static int ep93xx_i2s_hw_params(struct snd_pcm_substream *substream,
 	else
 		ep93xx_i2s_write_reg(info, EP93XX_I2S_RXWRDLEN, word_len);
 
-	/*
-	 * EP93xx I2S module can be setup so SCLK / LRCLK value can be
-	 * 32, 64, 128. MCLK / SCLK value can be 2 and 4.
-	 * We set LRCLK equal to `rate' and minimum SCLK / LRCLK 
-	 * value is 64, because our sample size is 32 bit * 2 channels.
-	 * I2S standard permits us to transmit more bits than
-	 * the codec uses.
-	 */
+	 
 	div = clk_get_rate(info->mclk) / params_rate(params);
 	sdiv = 4;
 	if (div > (256 + 512) / 2) {

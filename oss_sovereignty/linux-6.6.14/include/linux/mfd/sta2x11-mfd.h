@@ -1,13 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2009-2011 Wind River Systems, Inc.
- * Copyright (c) 2011 ST Microelectronics (Alessandro Rubini)
- *
- * The STMicroelectronics ConneXt (STA2X11) chip has several unrelated
- * functions in one PCI endpoint functions. This driver simply
- * registers the platform devices in this iomemregion and exports a few
- * functions to access common registers
- */
+ 
+ 
 
 #ifndef __STA2X11_MFD_H
 #define __STA2X11_MFD_H
@@ -36,20 +28,17 @@ enum sta2x11_mfd_plat_dev {
 extern u32
 __sta2x11_mfd_mask(struct pci_dev *, u32, u32, u32, enum sta2x11_mfd_plat_dev);
 
-/*
- * The MFD PCI block includes the GPIO peripherals and other register blocks.
- * For GPIO, we have 32*4 bits (I use "gsta" for "gpio sta2x11".)
- */
+ 
 #define GSTA_GPIO_PER_BLOCK	32
 #define GSTA_NR_BLOCKS		4
 #define GSTA_NR_GPIO		(GSTA_GPIO_PER_BLOCK * GSTA_NR_BLOCKS)
 
-/* Pinconfig is set by the board definition: altfunc, pull-up, pull-down */
+ 
 struct sta2x11_gpio_pdata {
 	unsigned pinconfig[GSTA_NR_GPIO];
 };
 
-/* Macros below lifted from sh_pfc.h, with minor differences */
+ 
 #define PINMUX_TYPE_NONE		0
 #define PINMUX_TYPE_FUNCTION		1
 #define PINMUX_TYPE_OUTPUT_LOW		2
@@ -58,7 +47,7 @@ struct sta2x11_gpio_pdata {
 #define PINMUX_TYPE_INPUT_PULLUP	5
 #define PINMUX_TYPE_INPUT_PULLDOWN	6
 
-/* Give names to GPIO pins, like PXA does, taken from the manual */
+ 
 #define STA2X11_GPIO0			0
 #define STA2X11_GPIO1			1
 #define STA2X11_GPIO2			2
@@ -188,59 +177,53 @@ struct sta2x11_gpio_pdata {
 #define STA2X11_GPIO126_UART2_RXD	126
 #define STA2X11_GPIO127_UART3_TXD	127
 
-/*
- * The APB bridge has its own registers, needed by our users as well.
- * They are accessed with the following read/mask/write function.
- */
+ 
 static inline u32
 sta2x11_apbreg_mask(struct pci_dev *pdev, u32 reg, u32 mask, u32 val)
 {
 	return __sta2x11_mfd_mask(pdev, reg, mask, val, sta2x11_apbreg);
 }
 
-/* CAN and MLB */
-#define APBREG_BSR	0x00	/* Bridge Status Reg */
-#define APBREG_PAER	0x08	/* Peripherals Address Error Reg */
-#define APBREG_PWAC	0x20	/* Peripheral Write Access Control reg */
-#define APBREG_PRAC	0x40	/* Peripheral Read Access Control reg */
-#define APBREG_PCG	0x60	/* Peripheral Clock Gating Reg */
-#define APBREG_PUR	0x80	/* Peripheral Under Reset Reg */
-#define APBREG_EMU_PCG	0xA0	/* Emulator Peripheral Clock Gating Reg */
+ 
+#define APBREG_BSR	0x00	 
+#define APBREG_PAER	0x08	 
+#define APBREG_PWAC	0x20	 
+#define APBREG_PRAC	0x40	 
+#define APBREG_PCG	0x60	 
+#define APBREG_PUR	0x80	 
+#define APBREG_EMU_PCG	0xA0	 
 
 #define APBREG_CAN	(1 << 1)
 #define APBREG_MLB	(1 << 3)
 
-/* SARAC */
-#define APBREG_BSR_SARAC     0x100 /* Bridge Status Reg */
-#define APBREG_PAER_SARAC    0x108 /* Peripherals Address Error Reg */
-#define APBREG_PWAC_SARAC    0x120 /* Peripheral Write Access Control reg */
-#define APBREG_PRAC_SARAC    0x140 /* Peripheral Read Access Control reg */
-#define APBREG_PCG_SARAC     0x160 /* Peripheral Clock Gating Reg */
-#define APBREG_PUR_SARAC     0x180 /* Peripheral Under Reset Reg */
-#define APBREG_EMU_PCG_SARAC 0x1A0 /* Emulator Peripheral Clock Gating Reg */
+ 
+#define APBREG_BSR_SARAC     0x100  
+#define APBREG_PAER_SARAC    0x108  
+#define APBREG_PWAC_SARAC    0x120  
+#define APBREG_PRAC_SARAC    0x140  
+#define APBREG_PCG_SARAC     0x160  
+#define APBREG_PUR_SARAC     0x180  
+#define APBREG_EMU_PCG_SARAC 0x1A0  
 
 #define APBREG_SARAC	(1 << 2)
 
-/*
- * The system controller has its own registers. Some of these are accessed
- * by out users as well, using the following read/mask/write/function
- */
+ 
 static inline
 u32 sta2x11_sctl_mask(struct pci_dev *pdev, u32 reg, u32 mask, u32 val)
 {
 	return __sta2x11_mfd_mask(pdev, reg, mask, val, sta2x11_sctl);
 }
 
-#define SCTL_SCCTL		0x00	/* System controller control register */
-#define SCTL_ARMCFG		0x04	/* ARM configuration register */
-#define SCTL_SCPLLCTL		0x08	/* PLL control status register */
+#define SCTL_SCCTL		0x00	 
+#define SCTL_ARMCFG		0x04	 
+#define SCTL_SCPLLCTL		0x08	 
 
 #define SCTL_SCPLLCTL_AUDIO_PLL_PD	     BIT(1)
 #define SCTL_SCPLLCTL_FRAC_CONTROL	     BIT(3)
 #define SCTL_SCPLLCTL_STRB_BYPASS	     BIT(6)
 #define SCTL_SCPLLCTL_STRB_INPUT	     BIT(8)
 
-#define SCTL_SCPLLFCTRL		0x0c	/* PLL frequency control register */
+#define SCTL_SCPLLFCTRL		0x0c	 
 
 #define SCTL_SCPLLFCTRL_AUDIO_PLL_NDIV_MASK	0xff
 #define SCTL_SCPLLFCTRL_AUDIO_PLL_NDIV_SHIFT	  10
@@ -252,29 +235,29 @@ u32 sta2x11_sctl_mask(struct pci_dev *pdev, u32 reg, u32 mask, u32 val)
 #define SCTL_SCPLLFCTRL_DITHER_DISABLE_SHIFT       4
 
 
-#define SCTL_SCRESFRACT		0x10	/* PLL fractional input register */
+#define SCTL_SCRESFRACT		0x10	 
 
 #define SCTL_SCRESFRACT_MASK	0x0000ffff
 
 
-#define SCTL_SCRESCTRL1		0x14	/* Peripheral reset control 1 */
-#define SCTL_SCRESXTRL2		0x18	/* Peripheral reset control 2 */
-#define SCTL_SCPEREN0		0x1c	/* Peripheral clock enable register 0 */
-#define SCTL_SCPEREN1		0x20	/* Peripheral clock enable register 1 */
-#define SCTL_SCPEREN2		0x24	/* Peripheral clock enable register 2 */
-#define SCTL_SCGRST		0x28	/* Peripheral global reset */
-#define SCTL_SCPCIECSBRST       0x2c    /* PCIe PAB CSB reset status register */
-#define SCTL_SCPCIPMCR1		0x30	/* PCI power management control 1 */
-#define SCTL_SCPCIPMCR2		0x34	/* PCI power management control 2 */
-#define SCTL_SCPCIPMSR1		0x38	/* PCI power management status 1 */
-#define SCTL_SCPCIPMSR2		0x3c	/* PCI power management status 2 */
-#define SCTL_SCPCIPMSR3		0x40	/* PCI power management status 3 */
-#define SCTL_SCINTREN		0x44	/* Interrupt enable */
-#define SCTL_SCRISR		0x48	/* RAW interrupt status */
-#define SCTL_SCCLKSTAT0		0x4c	/* Peripheral clocks status 0 */
-#define SCTL_SCCLKSTAT1		0x50	/* Peripheral clocks status 1 */
-#define SCTL_SCCLKSTAT2		0x54	/* Peripheral clocks status 2 */
-#define SCTL_SCRSTSTA		0x58	/* Reset status register */
+#define SCTL_SCRESCTRL1		0x14	 
+#define SCTL_SCRESXTRL2		0x18	 
+#define SCTL_SCPEREN0		0x1c	 
+#define SCTL_SCPEREN1		0x20	 
+#define SCTL_SCPEREN2		0x24	 
+#define SCTL_SCGRST		0x28	 
+#define SCTL_SCPCIECSBRST       0x2c     
+#define SCTL_SCPCIPMCR1		0x30	 
+#define SCTL_SCPCIPMCR2		0x34	 
+#define SCTL_SCPCIPMSR1		0x38	 
+#define SCTL_SCPCIPMSR2		0x3c	 
+#define SCTL_SCPCIPMSR3		0x40	 
+#define SCTL_SCINTREN		0x44	 
+#define SCTL_SCRISR		0x48	 
+#define SCTL_SCCLKSTAT0		0x4c	 
+#define SCTL_SCCLKSTAT1		0x50	 
+#define SCTL_SCCLKSTAT2		0x54	 
+#define SCTL_SCRSTSTA		0x58	 
 
 #define SCTL_SCRESCTRL1_USB_PHY_POR	(1 << 0)
 #define SCTL_SCRESCTRL1_USB_OTG	(1 << 1)
@@ -361,9 +344,7 @@ u32 sta2x11_sctl_mask(struct pci_dev *pdev, u32 reg, u32 mask, u32 val)
 #define SCTL_SCPEREN1_I2C3		(1 << 16)
 #define SCTL_SCPEREN1_USB_PHY		(1 << 17)
 
-/*
- * APB-SOC registers
- */
+ 
 static inline
 u32 sta2x11_apb_soc_regs_mask(struct pci_dev *pdev, u32 reg, u32 mask, u32 val)
 {
@@ -491,9 +472,7 @@ u32 sta2x11_apb_soc_regs_mask(struct pci_dev *pdev, u32 reg, u32 mask, u32 val)
 #define COMPENSATION_REG3		0x3cc
 #define TEST_CTL_REG			0x3d0
 
-/*
- * SECR (OTP) registers
- */
+ 
 #define STA2X11_SECR_CR			0x00
 #define STA2X11_SECR_FVR0		0x10
 #define STA2X11_SECR_FVR1		0x14
@@ -503,4 +482,4 @@ extern int sta2x11_mfd_get_regs_data(struct platform_device *pdev,
 				     void __iomem **regs,
 				     spinlock_t **lock);
 
-#endif /* __STA2X11_MFD_H */
+#endif  

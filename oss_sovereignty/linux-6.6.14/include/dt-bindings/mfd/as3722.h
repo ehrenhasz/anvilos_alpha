@@ -1,22 +1,15 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * This header provides macros for ams AS3722 device bindings.
- *
- * Copyright (c) 2013, NVIDIA Corporation.
- *
- * Author: Laxman Dewangan <ldewangan@nvidia.com>
- *
- */
+ 
+ 
 
 #ifndef __DT_BINDINGS_AS3722_H__
 #define __DT_BINDINGS_AS3722_H__
 
-/* External control pins */
+ 
 #define AS3722_EXT_CONTROL_PIN_ENABLE1 1
 #define AS3722_EXT_CONTROL_PIN_ENABLE2 2
 #define AS3722_EXT_CONTROL_PIN_ENABLE3 3
 
-/* Interrupt numbers for AS3722 */
+ 
 #define AS3722_IRQ_LID			0
 #define AS3722_IRQ_ACOK			1
 #define AS3722_IRQ_ENABLE1		2
@@ -50,4 +43,4 @@
 #define AS3722_IRQ_OCCUR_ALARM_SD6	30
 #define AS3722_IRQ_ADC			31
 
-#endif /* __DT_BINDINGS_AS3722_H__ */
+#endif  

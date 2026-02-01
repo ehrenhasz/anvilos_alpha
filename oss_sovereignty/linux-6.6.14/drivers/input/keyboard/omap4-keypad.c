@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * OMAP4 Keypad Driver
- *
- * Copyright (C) 2010 Texas Instruments
- *
- * Author: Abraham Arce <x0066660@ti.com>
- * Initial Code: Syed Rafiuddin <rafiuddin.syed@ti.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/interrupt.h>
@@ -20,7 +13,7 @@
 #include <linux/pm_runtime.h>
 #include <linux/pm_wakeirq.h>
 
-/* OMAP4 registers */
+ 
 #define OMAP4_KBD_REVISION		0x00
 #define OMAP4_KBD_SYSCONFIG		0x10
 #define OMAP4_KBD_SYSSTATUS		0x14
@@ -38,7 +31,7 @@
 #define OMAP4_KBD_FULLCODE31_0		0x44
 #define OMAP4_KBD_FULLCODE63_32		0x48
 
-/* OMAP4 bit definitions */
+ 
 #define OMAP4_DEF_IRQENABLE_EVENTEN	BIT(0)
 #define OMAP4_DEF_IRQENABLE_LONGKEY	BIT(1)
 #define OMAP4_DEF_WUP_EVENT_ENA		BIT(0)
@@ -46,21 +39,16 @@
 #define OMAP4_DEF_CTRL_NOSOFTMODE	BIT(1)
 #define OMAP4_DEF_CTRL_PTV_SHIFT	2
 
-/* OMAP4 values */
+ 
 #define OMAP4_VAL_IRQDISABLE		0x0
 
-/*
- * Errata i689: If a key is released for a time shorter than debounce time,
- * the keyboard will idle and never detect the key release. The workaround
- * is to use at least a 12ms debounce time. See omap5432 TRM chapter
- * "26.4.6.2 Keyboard Controller Timer" for more information.
- */
+ 
 #define OMAP4_KEYPAD_PTV_DIV_128        0x6
 #define OMAP4_KEYPAD_DEBOUNCINGTIME_MS(dbms, ptv)     \
 	((((dbms) * 1000) / ((1 << ((ptv) + 1)) * (1000000 / 32768))) - 1)
 #define OMAP4_VAL_DEBOUNCINGTIME_16MS					\
 	OMAP4_KEYPAD_DEBOUNCINGTIME_MS(16, OMAP4_KEYPAD_PTV_DIV_128)
-#define OMAP4_KEYPAD_AUTOIDLE_MS	50	/* Approximate measured time */
+#define OMAP4_KEYPAD_AUTOIDLE_MS	50	 
 #define OMAP4_KEYPAD_IDLE_CHECK_MS	(OMAP4_KEYPAD_AUTOIDLE_MS / 2)
 
 enum {
@@ -73,7 +61,7 @@ struct omap4_keypad {
 
 	void __iomem *base;
 	unsigned int irq;
-	struct mutex lock;		/* for key scan */
+	struct mutex lock;		 
 
 	unsigned int rows;
 	unsigned int cols;
@@ -146,13 +134,10 @@ static void omap4_keypad_scan_keys(struct omap4_keypad *keypad_data, u64 keys)
 
 	changed = keys ^ keypad_data->keys;
 
-	/*
-	 * Report key up events separately and first. This matters in case we
-	 * lost key-up interrupt and just now catching up.
-	 */
+	 
 	omap4_keypad_report_keys(keypad_data, changed & ~keys, false);
 
-	/* Report key down events */
+	 
 	omap4_keypad_report_keys(keypad_data, changed & keys, true);
 
 	keypad_data->keys = keys;
@@ -160,7 +145,7 @@ static void omap4_keypad_scan_keys(struct omap4_keypad *keypad_data, u64 keys)
 	mutex_unlock(&keypad_data->lock);
 }
 
-/* Interrupt handlers */
+ 
 static irqreturn_t omap4_keypad_irq_handler(int irq, void *dev_id)
 {
 	struct omap4_keypad *keypad_data = dev_id;
@@ -189,7 +174,7 @@ static irqreturn_t omap4_keypad_irq_thread_fn(int irq, void *dev_id)
 
 	omap4_keypad_scan_keys(keypad_data, keys);
 
-	/* clear pending interrupts */
+	 
 	kbd_write_irqreg(keypad_data, OMAP4_KBD_IRQSTATUS,
 			 kbd_read_irqreg(keypad_data, OMAP4_KBD_IRQSTATUS));
 
@@ -216,7 +201,7 @@ static int omap4_keypad_open(struct input_dev *input)
 			(OMAP4_KEYPAD_PTV_DIV_128 << OMAP4_DEF_CTRL_PTV_SHIFT));
 	kbd_writel(keypad_data, OMAP4_KBD_DEBOUNCINGTIME,
 			OMAP4_VAL_DEBOUNCINGTIME_16MS);
-	/* clear pending interrupts */
+	 
 	kbd_write_irqreg(keypad_data, OMAP4_KBD_IRQSTATUS,
 			 kbd_read_irqreg(keypad_data, OMAP4_KBD_IRQSTATUS));
 	kbd_write_irqreg(keypad_data, OMAP4_KBD_IRQENABLE,
@@ -234,12 +219,12 @@ static int omap4_keypad_open(struct input_dev *input)
 
 static void omap4_keypad_stop(struct omap4_keypad *keypad_data)
 {
-	/* Disable interrupts and wake-up events */
+	 
 	kbd_write_irqreg(keypad_data, OMAP4_KBD_IRQENABLE,
 			 OMAP4_VAL_IRQDISABLE);
 	kbd_writel(keypad_data, OMAP4_KBD_WAKEUPENABLE, 0);
 
-	/* clear pending interrupts */
+	 
 	kbd_write_irqreg(keypad_data, OMAP4_KBD_IRQSTATUS,
 			 kbd_read_irqreg(keypad_data, OMAP4_KBD_IRQSTATUS));
 }
@@ -304,11 +289,7 @@ static int omap4_keypad_check_revision(struct device *dev,
 	return 0;
 }
 
-/*
- * Errata ID i689 "1.32 Keyboard Key Up Event Can Be Missed".
- * Interrupt may not happen for key-up events. We must clear stuck
- * key-up events after the keyboard hardware has auto-idled.
- */
+ 
 static int omap4_keypad_runtime_suspend(struct device *dev)
 {
 	struct platform_device *pdev = to_platform_device(dev);
@@ -377,10 +358,7 @@ static int omap4_keypad_probe(struct platform_device *pdev)
 		return error;
 	}
 
-	/*
-	 * Enable clocks for the keypad module so that we can read
-	 * revision register.
-	 */
+	 
 	error = pm_runtime_resume_and_get(dev);
 	if (error) {
 		dev_err(dev, "pm_runtime_resume_and_get() failed\n");
@@ -389,7 +367,7 @@ static int omap4_keypad_probe(struct platform_device *pdev)
 
 	error = omap4_keypad_check_revision(dev, keypad_data);
 	if (!error) {
-		/* Ensure device does not raise interrupts */
+		 
 		omap4_keypad_stop(keypad_data);
 	}
 
@@ -398,7 +376,7 @@ static int omap4_keypad_probe(struct platform_device *pdev)
 	if (error)
 		return error;
 
-	/* input device allocation */
+	 
 	keypad_data->input = input_dev = devm_input_allocate_device(dev);
 	if (!input_dev)
 		return -ENOMEM;

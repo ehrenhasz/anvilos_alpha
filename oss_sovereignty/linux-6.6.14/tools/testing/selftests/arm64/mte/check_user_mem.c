@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (C) 2020 ARM Limited
+
+
 
 #define _GNU_SOURCE
 
@@ -58,12 +58,12 @@ static int check_usermem_access_fault(int mem_type, int mode, int mapping,
 		return KSFT_FAIL;
 	}
 	mte_initialize_current_context(mode, (uintptr_t)ptr, len);
-	/* Copy from file into buffer with valid tag */
+	 
 	syscall_len = read(fd, ptr, len);
 	mte_wait_after_trig();
 	if (cur_mte_cxt.fault_valid || syscall_len < len)
 		goto usermem_acc_err;
-	/* Verify same pattern is read */
+	 
 	for (i = 0; i < len; i++)
 		if (*(char *)(ptr + i) != val)
 			break;
@@ -72,7 +72,7 @@ static int check_usermem_access_fault(int mem_type, int mode, int mapping,
 
 	if (!tag_len)
 		tag_len = len - tag_offset;
-	/* Tag a part of memory with different value */
+	 
 	ptr_next = (void *)((unsigned long)ptr + tag_offset);
 	ptr_next = mte_insert_new_tag(ptr_next);
 	mte_set_tag_address_range(ptr_next, tag_len);
@@ -83,7 +83,7 @@ static int check_usermem_access_fault(int mem_type, int mode, int mapping,
 				size = sizes[i];
 				lseek(fd, 0, 0);
 
-				/* perform file operation on buffer with invalid tag */
+				 
 				switch (test_type) {
 				case READ_TEST:
 					syscall_len = read(fd, ptr + ptroff, size);
@@ -110,18 +110,14 @@ static int check_usermem_access_fault(int mem_type, int mode, int mapping,
 				}
 
 				mte_wait_after_trig();
-				/*
-				 * Accessing user memory in kernel with invalid tag should fail in sync
-				 * mode without fault but may not fail in async mode as per the
-				 * implemented MTE userspace support in Arm64 kernel.
-				 */
+				 
 				if (cur_mte_cxt.fault_valid) {
 					goto usermem_acc_err;
 				}
 				if (mode == MTE_SYNC_ERR && syscall_len < len) {
-					/* test passed */
+					 
 				} else if (mode == MTE_ASYNC_ERR && syscall_len == size) {
-					/* test passed */
+					 
 				} else {
 					goto usermem_acc_err;
 				}
@@ -210,10 +206,10 @@ int main(int argc, char *argv[])
 	if (err)
 		return err;
 
-	/* Register signal handlers */
+	 
 	mte_register_signal(SIGSEGV, mte_default_handler);
 
-	/* Set test plan */
+	 
 	ksft_set_plan(64);
 
 	for (t = 0; t < LAST_TEST; t++) {

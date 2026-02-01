@@ -1,27 +1,4 @@
-/*
- * Copyright 2016 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 #include "dm_services.h"
 #include "core_types.h"
@@ -432,7 +409,7 @@ static unsigned int dcn10_get_otg_states(struct dc *dc, char *pBuf, unsigned int
 		optc1_read_otg_state(DCN10TG_FROM_TG(tg), &s);
 		pix_clk = dc->current_state->res_ctx.pipe_ctx[i].stream_res.pix_clk_params.requested_pix_clk_100hz / 10;
 
-		//only print if OTG master is enabled
+		
 		if (s.otg_enabled & 1) {
 			chars_printed = snprintf_count(pBuf, remaining_buffer, "%x,%d,%d,%d,%d,%d,%d,%d,%d,%d,"
 				"%d,%d,%d,%d,%d,%d,%d,%d,%d"
@@ -520,12 +497,7 @@ static void dcn10_clear_hubp_underflow(struct dc *dc)
 
 void dcn10_clear_status_bits(struct dc *dc, unsigned int mask)
 {
-	/*
-	 *  Mask Format
-	 *  Bit 0 - 31: Status bit to clear
-	 *
-	 *  Mask = 0x0 means clear all status bits
-	 */
+	 
 	const unsigned int DC_HW_STATE_MASK_HUBP_UNDERFLOW	= 0x1;
 	const unsigned int DC_HW_STATE_MASK_OTPC_UNDERFLOW	= 0x2;
 
@@ -541,11 +513,7 @@ void dcn10_clear_status_bits(struct dc *dc, unsigned int mask)
 
 void dcn10_get_hw_state(struct dc *dc, char *pBuf, unsigned int bufSize, unsigned int mask)
 {
-	/*
-	 *  Mask Format
-	 *  Bit 0 - 15: Hardware block mask
-	 *  Bit 15: 1 = Invariant Only, 0 = All
-	 */
+	 
 	const unsigned int DC_HW_STATE_MASK_HUBBUB			= 0x1;
 	const unsigned int DC_HW_STATE_MASK_HUBP			= 0x2;
 	const unsigned int DC_HW_STATE_MASK_RQ				= 0x4;
@@ -561,7 +529,7 @@ void dcn10_get_hw_state(struct dc *dc, char *pBuf, unsigned int bufSize, unsigne
 	unsigned int remaining_buf_size = bufSize;
 
 	if (mask == 0x0)
-		mask = 0xFFFF; // Default, capture all, invariant only
+		mask = 0xFFFF; 
 
 	if ((mask & DC_HW_STATE_MASK_HUBBUB) && remaining_buf_size > 0) {
 		chars_printed = dcn10_get_hubbub_state(dc, pBuf, remaining_buf_size);

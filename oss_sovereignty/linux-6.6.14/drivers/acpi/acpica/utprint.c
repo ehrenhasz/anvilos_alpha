@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
-/******************************************************************************
- *
- * Module Name: utprint - Formatted printing routines
- *
- * Copyright (C) 2000 - 2023, Intel Corp.
- *
- *****************************************************************************/
+
+ 
 
 #include <acpi/acpi.h>
 #include "accommon.h"
@@ -20,7 +14,7 @@ ACPI_MODULE_NAME("utprint")
 #define ACPI_FORMAT_LEFT            0x10
 #define ACPI_FORMAT_UPPER           0x20
 #define ACPI_FORMAT_PREFIX          0x40
-/* Local prototypes */
+ 
 static acpi_size
 acpi_ut_bound_string_length(const char *string, acpi_size count);
 
@@ -33,18 +27,7 @@ static char *acpi_ut_format_number(char *string,
 
 static char *acpi_ut_put_number(char *string, u64 number, u8 base, u8 upper);
 
-/*******************************************************************************
- *
- * FUNCTION:    acpi_ut_bound_string_length
- *
- * PARAMETERS:  string              - String with boundary
- *              count               - Boundary of the string
- *
- * RETURN:      Length of the string. Less than or equal to Count.
- *
- * DESCRIPTION: Calculate the length of a string with boundary.
- *
- ******************************************************************************/
+ 
 
 static acpi_size
 acpi_ut_bound_string_length(const char *string, acpi_size count)
@@ -60,19 +43,7 @@ acpi_ut_bound_string_length(const char *string, acpi_size count)
 	return (length);
 }
 
-/*******************************************************************************
- *
- * FUNCTION:    acpi_ut_bound_string_output
- *
- * PARAMETERS:  string              - String with boundary
- *              end                 - Boundary of the string
- *              c                   - Character to be output to the string
- *
- * RETURN:      Updated position for next valid character
- *
- * DESCRIPTION: Output a character into a string with boundary check.
- *
- ******************************************************************************/
+ 
 
 static char *acpi_ut_bound_string_output(char *string, const char *end, char c)
 {
@@ -85,21 +56,7 @@ static char *acpi_ut_bound_string_output(char *string, const char *end, char c)
 	return (string);
 }
 
-/*******************************************************************************
- *
- * FUNCTION:    acpi_ut_put_number
- *
- * PARAMETERS:  string              - Buffer to hold reverse-ordered string
- *              number              - Integer to be converted
- *              base                - Base of the integer
- *              upper               - Whether or not using upper cased digits
- *
- * RETURN:      Updated position for next valid character
- *
- * DESCRIPTION: Convert an integer into a string, note that, the string holds a
- *              reversed ordered number without the trailing zero.
- *
- ******************************************************************************/
+ 
 
 static char *acpi_ut_put_number(char *string, u64 number, u8 base, u8 upper)
 {
@@ -120,22 +77,11 @@ static char *acpi_ut_put_number(char *string, u64 number, u8 base, u8 upper)
 		}
 	}
 
-	/* *(Pos++) = '0'; */
+	 
 	return (pos);
 }
 
-/*******************************************************************************
- *
- * FUNCTION:    acpi_ut_scan_number
- *
- * PARAMETERS:  string              - String buffer
- *              number_ptr          - Where the number is returned
- *
- * RETURN:      Updated position for next valid character
- *
- * DESCRIPTION: Scan a string for a decimal integer.
- *
- ******************************************************************************/
+ 
 
 const char *acpi_ut_scan_number(const char *string, u64 *number_ptr)
 {
@@ -150,18 +96,7 @@ const char *acpi_ut_scan_number(const char *string, u64 *number_ptr)
 	return (string);
 }
 
-/*******************************************************************************
- *
- * FUNCTION:    acpi_ut_print_number
- *
- * PARAMETERS:  string              - String buffer
- *              number              - The number to be converted
- *
- * RETURN:      Updated position for next valid character
- *
- * DESCRIPTION: Print a decimal integer into a string.
- *
- ******************************************************************************/
+ 
 
 const char *acpi_ut_print_number(char *string, u64 number)
 {
@@ -180,23 +115,7 @@ const char *acpi_ut_print_number(char *string, u64 number)
 	return (string);
 }
 
-/*******************************************************************************
- *
- * FUNCTION:    acpi_ut_format_number
- *
- * PARAMETERS:  string              - String buffer with boundary
- *              end                 - Boundary of the string
- *              number              - The number to be converted
- *              base                - Base of the integer
- *              width               - Field width
- *              precision           - Precision of the integer
- *              type                - Special printing flags
- *
- * RETURN:      Updated position for next valid character
- *
- * DESCRIPTION: Print an integer into a string with any base and any precision.
- *
- ******************************************************************************/
+ 
 
 static char *acpi_ut_format_number(char *string,
 				   char *end,
@@ -211,7 +130,7 @@ static char *acpi_ut_format_number(char *string,
 	s32 i;
 	char reversed_string[66];
 
-	/* Parameter validation */
+	 
 
 	if (base < 2 || base > 16) {
 		return (NULL);
@@ -226,7 +145,7 @@ static char *acpi_ut_format_number(char *string,
 	upper = (type & ACPI_FORMAT_UPPER) ? TRUE : FALSE;
 	zero = (type & ACPI_FORMAT_ZERO) ? '0' : ' ';
 
-	/* Calculate size according to sign and prefix */
+	 
 
 	sign = '\0';
 	if (type & ACPI_FORMAT_SIGN) {
@@ -249,12 +168,12 @@ static char *acpi_ut_format_number(char *string,
 		}
 	}
 
-	/* Generate full string in reverse order */
+	 
 
 	pos = acpi_ut_put_number(reversed_string, number, base, upper);
 	i = (s32)ACPI_PTR_DIFF(pos, reversed_string);
 
-	/* Printing 100 using %2d gives "100", not "00" */
+	 
 
 	if (i > precision) {
 		precision = i;
@@ -262,7 +181,7 @@ static char *acpi_ut_format_number(char *string,
 
 	width -= precision;
 
-	/* Output the string */
+	 
 
 	if (!(type & (ACPI_FORMAT_ZERO | ACPI_FORMAT_LEFT))) {
 		while (--width >= 0) {
@@ -300,20 +219,7 @@ static char *acpi_ut_format_number(char *string,
 	return (string);
 }
 
-/*******************************************************************************
- *
- * FUNCTION:    vsnprintf
- *
- * PARAMETERS:  string              - String with boundary
- *              size                - Boundary of the string
- *              format              - Standard printf format
- *              args                - Argument list
- *
- * RETURN:      Number of bytes actually written.
- *
- * DESCRIPTION: Formatted output to a string using argument list pointer.
- *
- ******************************************************************************/
+ 
 
 int vsnprintf(char *string, acpi_size size, const char *format, va_list args)
 {
@@ -348,7 +254,7 @@ int vsnprintf(char *string, acpi_size size, const char *format, va_list args)
 		type = 0;
 		base = 10;
 
-		/* Process sign */
+		 
 
 		do {
 			++format;
@@ -368,7 +274,7 @@ int vsnprintf(char *string, acpi_size size, const char *format, va_list args)
 
 		} while (1);
 
-		/* Process width */
+		 
 
 		width = -1;
 		if (isdigit((int)*format)) {
@@ -383,7 +289,7 @@ int vsnprintf(char *string, acpi_size size, const char *format, va_list args)
 			}
 		}
 
-		/* Process precision */
+		 
 
 		precision = -1;
 		if (*format == '.') {
@@ -401,7 +307,7 @@ int vsnprintf(char *string, acpi_size size, const char *format, va_list args)
 			}
 		}
 
-		/* Process qualifier */
+		 
 
 		qualifier = -1;
 		if (*format == 'h' || *format == 'l' || *format == 'L') {
@@ -554,19 +460,7 @@ int vsnprintf(char *string, acpi_size size, const char *format, va_list args)
 	return ((int)ACPI_PTR_DIFF(pos, string));
 }
 
-/*******************************************************************************
- *
- * FUNCTION:    snprintf
- *
- * PARAMETERS:  string              - String with boundary
- *              size                - Boundary of the string
- *              Format, ...         - Standard printf format
- *
- * RETURN:      Number of bytes actually written.
- *
- * DESCRIPTION: Formatted output to a string.
- *
- ******************************************************************************/
+ 
 
 int snprintf(char *string, acpi_size size, const char *format, ...)
 {
@@ -580,18 +474,7 @@ int snprintf(char *string, acpi_size size, const char *format, ...)
 	return (length);
 }
 
-/*******************************************************************************
- *
- * FUNCTION:    sprintf
- *
- * PARAMETERS:  string              - String with boundary
- *              Format, ...         - Standard printf format
- *
- * RETURN:      Number of bytes actually written.
- *
- * DESCRIPTION: Formatted output to a string.
- *
- ******************************************************************************/
+ 
 
 int sprintf(char *string, const char *format, ...)
 {
@@ -606,18 +489,7 @@ int sprintf(char *string, const char *format, ...)
 }
 
 #ifdef ACPI_APPLICATION
-/*******************************************************************************
- *
- * FUNCTION:    vprintf
- *
- * PARAMETERS:  format              - Standard printf format
- *              args                - Argument list
- *
- * RETURN:      Number of bytes actually written.
- *
- * DESCRIPTION: Formatted output to stdout using argument list pointer.
- *
- ******************************************************************************/
+ 
 
 int vprintf(const char *format, va_list args)
 {
@@ -634,17 +506,7 @@ int vprintf(const char *format, va_list args)
 	return (length);
 }
 
-/*******************************************************************************
- *
- * FUNCTION:    printf
- *
- * PARAMETERS:  Format, ...         - Standard printf format
- *
- * RETURN:      Number of bytes actually written.
- *
- * DESCRIPTION: Formatted output to stdout.
- *
- ******************************************************************************/
+ 
 
 int printf(const char *format, ...)
 {
@@ -658,19 +520,7 @@ int printf(const char *format, ...)
 	return (length);
 }
 
-/*******************************************************************************
- *
- * FUNCTION:    vfprintf
- *
- * PARAMETERS:  file                - File descriptor
- *              format              - Standard printf format
- *              args                - Argument list
- *
- * RETURN:      Number of bytes actually written.
- *
- * DESCRIPTION: Formatted output to a file using argument list pointer.
- *
- ******************************************************************************/
+ 
 
 int vfprintf(FILE * file, const char *format, va_list args)
 {
@@ -687,18 +537,7 @@ int vfprintf(FILE * file, const char *format, va_list args)
 	return (length);
 }
 
-/*******************************************************************************
- *
- * FUNCTION:    fprintf
- *
- * PARAMETERS:  file                - File descriptor
- *              Format, ...         - Standard printf format
- *
- * RETURN:      Number of bytes actually written.
- *
- * DESCRIPTION: Formatted output to a file.
- *
- ******************************************************************************/
+ 
 
 int fprintf(FILE * file, const char *format, ...)
 {

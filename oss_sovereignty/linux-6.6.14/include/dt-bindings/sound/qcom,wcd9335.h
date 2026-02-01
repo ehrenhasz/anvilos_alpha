@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
+ 
 
 #ifndef __DT_SOUND_QCOM_WCD9335_H
 #define __DT_SOUND_QCOM_WCD9335_H

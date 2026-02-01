@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/* CacheFiles tracepoints
- *
- * Copyright (C) 2021 Red Hat, Inc. All Rights Reserved.
- * Written by David Howells (dhowells@redhat.com)
- */
+ 
+ 
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM cachefiles
 
@@ -12,9 +8,7 @@
 
 #include <linux/tracepoint.h>
 
-/*
- * Define enums for tracing information.
- */
+ 
 #ifndef __CACHEFILES_DECLARE_TRACE_ENUMS_ONCE_ONLY
 #define __CACHEFILES_DECLARE_TRACE_ENUMS_ONCE_ONLY
 
@@ -103,9 +97,7 @@ enum cachefiles_error_trace {
 
 #endif
 
-/*
- * Define enum -> string mappings for display.
- */
+ 
 #define cachefiles_obj_kill_traces				\
 	EM(FSCACHE_OBJECT_IS_STALE,	"stale")		\
 	EM(FSCACHE_OBJECT_IS_WEIRD,	"weird")		\
@@ -182,9 +174,7 @@ enum cachefiles_error_trace {
 	E_(cachefiles_trace_write_error,	"write")
 
 
-/*
- * Export enum symbols via userspace.
- */
+ 
 #undef EM
 #undef E_
 #define EM(a, b) TRACE_DEFINE_ENUM(a);
@@ -197,10 +187,7 @@ cachefiles_trunc_traces;
 cachefiles_prepare_read_traces;
 cachefiles_error_traces;
 
-/*
- * Now redefine the EM() and E_() macros to map the enums to the strings that
- * will be printed in the output.
- */
+ 
 #undef EM
 #undef E_
 #define EM(a, b)	{ a, b },
@@ -215,7 +202,7 @@ TRACE_EVENT(cachefiles_ref,
 
 	    TP_ARGS(object_debug_id, cookie_debug_id, usage, why),
 
-	    /* Note that obj may be NULL */
+	     
 	    TP_STRUCT__entry(
 		    __field(unsigned int,			obj		)
 		    __field(unsigned int,			cookie		)
@@ -328,7 +315,7 @@ TRACE_EVENT(cachefiles_unlink,
 
 	    TP_ARGS(obj, ino, why),
 
-	    /* Note that obj may be NULL */
+	     
 	    TP_STRUCT__entry(
 		    __field(unsigned int,		obj		)
 		    __field(unsigned int,		ino		)
@@ -353,7 +340,7 @@ TRACE_EVENT(cachefiles_rename,
 
 	    TP_ARGS(obj, ino, why),
 
-	    /* Note that obj may be NULL */
+	     
 	    TP_STRUCT__entry(
 		    __field(unsigned int,		obj		)
 		    __field(unsigned int,		ino		)
@@ -379,7 +366,7 @@ TRACE_EVENT(cachefiles_coherency,
 
 	    TP_ARGS(obj, ino, content, why),
 
-	    /* Note that obj may be NULL */
+	     
 	    TP_STRUCT__entry(
 		    __field(unsigned int,			obj	)
 		    __field(enum cachefiles_coherency_trace,	why	)
@@ -408,7 +395,7 @@ TRACE_EVENT(cachefiles_vol_coherency,
 
 	    TP_ARGS(volume, ino, why),
 
-	    /* Note that obj may be NULL */
+	     
 	    TP_STRUCT__entry(
 		    __field(unsigned int,			vol	)
 		    __field(enum cachefiles_coherency_trace,	why	)
@@ -563,7 +550,7 @@ TRACE_EVENT(cachefiles_mark_active,
 
 	    TP_ARGS(obj, inode),
 
-	    /* Note that obj may be NULL */
+	     
 	    TP_STRUCT__entry(
 		    __field(unsigned int,		obj		)
 		    __field(ino_t,			inode		)
@@ -584,7 +571,7 @@ TRACE_EVENT(cachefiles_mark_failed,
 
 	    TP_ARGS(obj, inode),
 
-	    /* Note that obj may be NULL */
+	     
 	    TP_STRUCT__entry(
 		    __field(unsigned int,		obj		)
 		    __field(ino_t,			inode		)
@@ -605,7 +592,7 @@ TRACE_EVENT(cachefiles_mark_inactive,
 
 	    TP_ARGS(obj, inode),
 
-	    /* Note that obj may be NULL */
+	     
 	    TP_STRUCT__entry(
 		    __field(unsigned int,		obj		)
 		    __field(ino_t,			inode		)
@@ -848,7 +835,7 @@ TRACE_EVENT(cachefiles_ondemand_fd_release,
 		      __entry->object_id)
 	    );
 
-#endif /* _TRACE_CACHEFILES_H */
+#endif  
 
-/* This part must be outside protection */
+ 
 #include <trace/define_trace.h>

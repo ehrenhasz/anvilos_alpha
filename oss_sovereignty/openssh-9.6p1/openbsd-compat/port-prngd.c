@@ -1,26 +1,4 @@
-/*
- * Copyright (c) 2001 Damien Miller.  All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- *
- * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
- * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
- * IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
- * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
- * NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
- * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+ 
 
 #include "includes.h"
 
@@ -38,23 +16,14 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include <stddef.h> /* for offsetof */
+#include <stddef.h>  
 
 #include "atomicio.h"
 #include "misc.h"
 #include "log.h"
 
 #if defined(PRNGD_PORT) || defined(PRNGD_SOCKET)
-/*
- * EGD/PRNGD interface.
- *
- * Collect 'len' bytes of entropy into 'buf' from PRNGD/EGD daemon
- * listening either on 'tcp_port', or via Unix domain socket at *
- * 'socket_path'.
- * Either a non-zero tcp_port or a non-null socket_path must be
- * supplied.
- * Returns 0 on success, -1 on error
- */
+ 
 static int
 get_random_bytes_prngd(unsigned char *buf, int len,
     unsigned short tcp_port, char *socket_path)
@@ -66,7 +35,7 @@ get_random_bytes_prngd(unsigned char *buf, int len,
 	struct sockaddr_un *addr_un = (struct sockaddr_un *)&addr;
 	sshsig_t old_sigpipe;
 
-	/* Sanity checks */
+	 
 	if (socket_path == NULL && tcp_port == 0)
 		fatal("You must specify a port or a socket");
 	if (socket_path != NULL &&
@@ -112,7 +81,7 @@ reopen:
 		goto done;
 	}
 
-	/* Send blocking read request to PRNGD */
+	 
 	msg[0] = 0x02;
 	msg[1] = len;
 
@@ -145,7 +114,7 @@ done:
 		close(fd);
 	return rval;
 }
-#endif /* PRNGD_PORT || PRNGD_SOCKET */
+#endif  
 
 int
 seed_from_prngd(unsigned char *buf, size_t bytes)

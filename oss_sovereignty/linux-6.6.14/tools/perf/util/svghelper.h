@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef __PERF_SVGHELPER_H
 #define __PERF_SVGHELPER_H
 
@@ -36,4 +36,4 @@ extern int svg_page_width;
 extern u64 svg_highlight;
 extern const char *svg_highlight_name;
 
-#endif /* __PERF_SVGHELPER_H */
+#endif  

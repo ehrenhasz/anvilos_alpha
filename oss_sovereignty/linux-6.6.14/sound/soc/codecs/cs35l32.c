@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * cs35l32.c -- CS35L32 ALSA SoC audio driver
- *
- * Copyright 2014 CirrusLogic, Inc.
- *
- * Author: Brian Austin <brian.austin@cirrus.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/moduleparam.h>
@@ -48,24 +42,24 @@ struct  cs35l32_private {
 
 static const struct reg_default cs35l32_reg_defaults[] = {
 
-	{ 0x06, 0x04 }, /* Power Ctl 1 */
-	{ 0x07, 0xE8 }, /* Power Ctl 2 */
-	{ 0x08, 0x40 }, /* Clock Ctl */
-	{ 0x09, 0x20 }, /* Low Battery Threshold */
-	{ 0x0A, 0x00 }, /* Voltage Monitor [RO] */
-	{ 0x0B, 0x40 }, /* Conv Peak Curr Protection CTL */
-	{ 0x0C, 0x07 }, /* IMON Scaling */
-	{ 0x0D, 0x03 }, /* Audio/LED Pwr Manager */
-	{ 0x0F, 0x20 }, /* Serial Port Control */
-	{ 0x10, 0x14 }, /* Class D Amp CTL */
-	{ 0x11, 0x00 }, /* Protection Release CTL */
-	{ 0x12, 0xFF }, /* Interrupt Mask 1 */
-	{ 0x13, 0xFF }, /* Interrupt Mask 2 */
-	{ 0x14, 0xFF }, /* Interrupt Mask 3 */
-	{ 0x19, 0x00 }, /* LED Flash Mode Current */
-	{ 0x1A, 0x00 }, /* LED Movie Mode Current */
-	{ 0x1B, 0x20 }, /* LED Flash Timer */
-	{ 0x1C, 0x00 }, /* LED Flash Inhibit Current */
+	{ 0x06, 0x04 },  
+	{ 0x07, 0xE8 },  
+	{ 0x08, 0x40 },  
+	{ 0x09, 0x20 },  
+	{ 0x0A, 0x00 },  
+	{ 0x0B, 0x40 },  
+	{ 0x0C, 0x07 },  
+	{ 0x0D, 0x03 },  
+	{ 0x0F, 0x20 },  
+	{ 0x10, 0x14 },  
+	{ 0x11, 0x00 },  
+	{ 0x12, 0xFF },  
+	{ 0x13, 0xFF },  
+	{ 0x14, 0xFF },  
+	{ 0x19, 0x00 },  
+	{ 0x1A, 0x00 },  
+	{ 0x1B, 0x20 },  
+	{ 0x1C, 0x00 },  
 };
 
 static bool cs35l32_readable_register(struct device *dev, unsigned int reg)
@@ -238,7 +232,7 @@ static const struct snd_soc_component_driver soc_component_dev_cs35l32 = {
 	.endianness		= 1,
 };
 
-/* Current and threshold powerup sequence Pg37 in datasheet */
+ 
 static const struct reg_sequence cs35l32_monitor_patch[] = {
 
 	{ 0x00, 0x99 },
@@ -402,7 +396,7 @@ static int cs35l32_i2c_probe(struct i2c_client *i2c_client)
 		return ret;
 	}
 
-	/* Reset the Device */
+	 
 	cs35l32->reset_gpio = devm_gpiod_get_optional(&i2c_client->dev,
 		"reset", GPIOD_OUT_LOW);
 	if (IS_ERR(cs35l32->reset_gpio)) {
@@ -412,7 +406,7 @@ static int cs35l32_i2c_probe(struct i2c_client *i2c_client)
 
 	gpiod_set_value_cansleep(cs35l32->reset_gpio, 1);
 
-	/* initialize codec */
+	 
 	devid = cirrus_read_device_id(cs35l32->regmap, CS35L32_DEVID_AB);
 	if (devid < 0) {
 		ret = devid;
@@ -444,41 +438,41 @@ static int cs35l32_i2c_probe(struct i2c_client *i2c_client)
 	dev_info(&i2c_client->dev,
 		 "Cirrus Logic CS35L32, Revision: %02X\n", reg & 0xFF);
 
-	/* Setup VBOOST Management */
+	 
 	if (cs35l32->pdata.boost_mng)
 		regmap_update_bits(cs35l32->regmap, CS35L32_AUDIO_LED_MNGR,
 				   CS35L32_BOOST_MASK,
 				cs35l32->pdata.boost_mng);
 
-	/* Setup ADSP Format Config */
+	 
 	if (cs35l32->pdata.sdout_share)
 		regmap_update_bits(cs35l32->regmap, CS35L32_ADSP_CTL,
 				    CS35L32_ADSP_SHARE_MASK,
 				cs35l32->pdata.sdout_share << 3);
 
-	/* Setup ADSP Data Configuration */
+	 
 	if (cs35l32->pdata.sdout_datacfg)
 		regmap_update_bits(cs35l32->regmap, CS35L32_ADSP_CTL,
 				   CS35L32_ADSP_DATACFG_MASK,
 				cs35l32->pdata.sdout_datacfg << 4);
 
-	/* Setup Low Battery Recovery  */
+	 
 	if (cs35l32->pdata.batt_recov)
 		regmap_update_bits(cs35l32->regmap, CS35L32_BATT_THRESHOLD,
 				   CS35L32_BATT_REC_MASK,
 				cs35l32->pdata.batt_recov << 1);
 
-	/* Setup Low Battery Threshold */
+	 
 	if (cs35l32->pdata.batt_thresh)
 		regmap_update_bits(cs35l32->regmap, CS35L32_BATT_THRESHOLD,
 				   CS35L32_BATT_THRESH_MASK,
 				cs35l32->pdata.batt_thresh << 4);
 
-	/* Power down the AMP */
+	 
 	regmap_update_bits(cs35l32->regmap, CS35L32_PWRCTL1, CS35L32_PDN_AMP,
 			    CS35L32_PDN_AMP);
 
-	/* Clear MCLK Error Bit since we don't have the clock yet */
+	 
 	regmap_read(cs35l32->regmap, CS35L32_INT_STATUS_1, &reg);
 
 	ret = devm_snd_soc_register_component(&i2c_client->dev,
@@ -501,7 +495,7 @@ static void cs35l32_i2c_remove(struct i2c_client *i2c_client)
 {
 	struct cs35l32_private *cs35l32 = i2c_get_clientdata(i2c_client);
 
-	/* Hold down reset */
+	 
 	gpiod_set_value_cansleep(cs35l32->reset_gpio, 0);
 }
 
@@ -513,10 +507,10 @@ static int cs35l32_runtime_suspend(struct device *dev)
 	regcache_cache_only(cs35l32->regmap, true);
 	regcache_mark_dirty(cs35l32->regmap);
 
-	/* Hold down reset */
+	 
 	gpiod_set_value_cansleep(cs35l32->reset_gpio, 0);
 
-	/* remove power */
+	 
 	regulator_bulk_disable(ARRAY_SIZE(cs35l32->supplies),
 			       cs35l32->supplies);
 
@@ -528,7 +522,7 @@ static int cs35l32_runtime_resume(struct device *dev)
 	struct cs35l32_private *cs35l32 = dev_get_drvdata(dev);
 	int ret;
 
-	/* Enable power */
+	 
 	ret = regulator_bulk_enable(ARRAY_SIZE(cs35l32->supplies),
 				    cs35l32->supplies);
 	if (ret != 0) {

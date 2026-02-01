@@ -1,40 +1,4 @@
-/*
- * Broadcom NetXtreme-E RoCE driver.
- *
- * Copyright (c) 2016 - 2017, Broadcom. All rights reserved.  The term
- * Broadcom refers to Broadcom Limited and/or its subsidiaries.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * BSD license below:
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- *
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in
- *    the documentation and/or other materials provided with the
- *    distribution.
- *
- * THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS''
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
- * THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS
- * BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR
- * BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
- * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
- * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
- * IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * Description: RDMA Controller HW interface
- */
+ 
 
 #define dev_fmt(fmt) "QPLIB: " fmt
 
@@ -53,29 +17,7 @@
 
 static void bnxt_qplib_service_creq(struct tasklet_struct *t);
 
-/**
- * bnxt_qplib_map_rc  -  map return type based on opcode
- * @opcode:  roce slow path opcode
- *
- * case #1
- * Firmware initiated error recovery is a safe state machine and
- * driver can consider all the underlying rdma resources are free.
- * In this state, it is safe to return success for opcodes related to
- * destroying rdma resources (like destroy qp, destroy cq etc.).
- *
- * case #2
- * If driver detect potential firmware stall, it is not safe state machine
- * and the driver can not consider all the underlying rdma resources are
- * freed.
- * In this state, it is not safe to return success for opcodes related to
- * destroying rdma resources (like destroy qp, destroy cq etc.).
- *
- * Scope of this helper function is only for case #1.
- *
- * Returns:
- * 0 to communicate success to caller.
- * Non zero error code to communicate failure to caller.
- */
+ 
 static int bnxt_qplib_map_rc(u8 opcode)
 {
 	switch (opcode) {
@@ -96,18 +38,7 @@ static int bnxt_qplib_map_rc(u8 opcode)
 	}
 }
 
-/**
- * bnxt_re_is_fw_stalled   -	Check firmware health
- * @rcfw:     rcfw channel instance of rdev
- * @cookie:   cookie to track the command
- *
- * If firmware has not responded any rcfw command within
- * rcfw->max_timeout, consider firmware as stalled.
- *
- * Returns:
- * 0 if firmware is responding
- * -ENODEV if firmware is not responding
- */
+ 
 static int bnxt_re_is_fw_stalled(struct bnxt_qplib_rcfw *rcfw,
 				 u16 cookie)
 {
@@ -131,17 +62,7 @@ static int bnxt_re_is_fw_stalled(struct bnxt_qplib_rcfw *rcfw,
 	return 0;
 }
 
-/**
- * __wait_for_resp   -	Don't hold the cpu context and wait for response
- * @rcfw:    rcfw channel instance of rdev
- * @cookie:  cookie to track the command
- *
- * Wait for command completion in sleepable context.
- *
- * Returns:
- * 0 if command is completed by firmware.
- * Non zero error code for rest of the case.
- */
+ 
 static int __wait_for_resp(struct bnxt_qplib_rcfw *rcfw, u16 cookie)
 {
 	struct bnxt_qplib_cmdq_ctx *cmdq;
@@ -177,18 +98,7 @@ static int __wait_for_resp(struct bnxt_qplib_rcfw *rcfw, u16 cookie)
 	} while (true);
 };
 
-/**
- * __block_for_resp   -	hold the cpu context and wait for response
- * @rcfw:    rcfw channel instance of rdev
- * @cookie:  cookie to track the command
- *
- * This function will hold the cpu (non-sleepable context) and
- * wait for command completion. Maximum holding interval is 8 second.
- *
- * Returns:
- * -ETIMEOUT if command is not completed in specific time interval.
- * 0 if command is completed by firmware.
- */
+ 
 static int __block_for_resp(struct bnxt_qplib_rcfw *rcfw, u16 cookie)
 {
 	struct bnxt_qplib_cmdq_ctx *cmdq = &rcfw->cmdq;
@@ -215,23 +125,7 @@ static int __block_for_resp(struct bnxt_qplib_rcfw *rcfw, u16 cookie)
 	return -ETIMEDOUT;
 };
 
-/*  __send_message_no_waiter -	get cookie and post the message.
- * @rcfw:   rcfw channel instance of rdev
- * @msg:    qplib message internal
- *
- * This function will just post and don't bother about completion.
- * Current design of this function is -
- * user must hold the completion queue hwq->lock.
- * user must have used existing completion and free the resources.
- * this function will not check queue full condition.
- * this function will explicitly set is_waiter_alive=false.
- * current use case is - send destroy_ah if create_ah is return
- * after waiter of create_ah is lost. It can be extended for other
- * use case as well.
- *
- * Returns: Nothing
- *
- */
+ 
 static void __send_message_no_waiter(struct bnxt_qplib_rcfw *rcfw,
 				     struct bnxt_qplib_cmdqmsg *msg)
 {
@@ -248,11 +142,9 @@ static void __send_message_no_waiter(struct bnxt_qplib_rcfw *rcfw,
 	__set_cmdq_base_cookie(msg->req, msg->req_sz, cpu_to_le16(cookie));
 	crsqe = &rcfw->crsqe_tbl[cookie];
 
-	/* Set cmd_size in terms of 16B slots in req. */
+	 
 	bsize = bnxt_qplib_set_cmd_slots(msg->req);
-	/* GET_CMD_SIZE would return number of slots in either case of tlv
-	 * and non-tlv commands after call to bnxt_qplib_set_cmd_slots()
-	 */
+	 
 	crsqe->is_internal_cmd = true;
 	crsqe->is_waiter_alive = false;
 	crsqe->is_in_used = true;
@@ -260,10 +152,10 @@ static void __send_message_no_waiter(struct bnxt_qplib_rcfw *rcfw,
 
 	preq = (u8 *)msg->req;
 	do {
-		/* Locate the next cmdq slot */
+		 
 		sw_prod = HWQ_CMP(hwq->prod, hwq);
 		cmdqe = bnxt_qplib_get_qe(hwq, sw_prod, NULL);
-		/* Copy a segment of the req cmd to the cmdq */
+		 
 		memset(cmdqe, 0, sizeof(*cmdqe));
 		memcpy(cmdqe, preq, min_t(u32, bsize, sizeof(*cmdqe)));
 		preq += min_t(u32, bsize, sizeof(*cmdqe));
@@ -274,7 +166,7 @@ static void __send_message_no_waiter(struct bnxt_qplib_rcfw *rcfw,
 
 	cmdq_prod = hwq->prod;
 	atomic_inc(&rcfw->timeout_send);
-	/* ring CMDQ DB */
+	 
 	wmb();
 	writel(cmdq_prod, cmdq->cmdq_mbox.prod);
 	writel(RCFW_CMDQ_TRIG_VAL, cmdq->cmdq_mbox.db);
@@ -298,9 +190,7 @@ static int __send_message(struct bnxt_qplib_rcfw *rcfw,
 	hwq = &cmdq->hwq;
 	pdev = rcfw->pdev;
 
-	/* Cmdq are in 16-byte units, each request can consume 1 or more
-	 * cmdqe
-	 */
+	 
 	spin_lock_irqsave(&hwq->lock, flags);
 	required_slots = bnxt_qplib_get_cmd_slots(msg->req);
 	free_slots = HWQ_FREE_SLOTS(hwq);
@@ -341,10 +231,10 @@ static int __send_message(struct bnxt_qplib_rcfw *rcfw,
 
 	preq = (u8 *)msg->req;
 	do {
-		/* Locate the next cmdq slot */
+		 
 		sw_prod = HWQ_CMP(hwq->prod, hwq);
 		cmdqe = bnxt_qplib_get_qe(hwq, sw_prod, NULL);
-		/* Copy a segment of the req cmd to the cmdq */
+		 
 		memset(cmdqe, 0, sizeof(*cmdqe));
 		memcpy(cmdqe, preq, min_t(u32, bsize, sizeof(*cmdqe)));
 		preq += min_t(u32, bsize, sizeof(*cmdqe));
@@ -355,36 +245,20 @@ static int __send_message(struct bnxt_qplib_rcfw *rcfw,
 
 	cmdq_prod = hwq->prod & 0xFFFF;
 	if (test_bit(FIRMWARE_FIRST_FLAG, &cmdq->flags)) {
-		/* The very first doorbell write
-		 * is required to set this flag
-		 * which prompts the FW to reset
-		 * its internal pointers
-		 */
+		 
 		cmdq_prod |= BIT(FIRMWARE_FIRST_FLAG);
 		clear_bit(FIRMWARE_FIRST_FLAG, &cmdq->flags);
 	}
-	/* ring CMDQ DB */
+	 
 	wmb();
 	writel(cmdq_prod, cmdq->cmdq_mbox.prod);
 	writel(RCFW_CMDQ_TRIG_VAL, cmdq->cmdq_mbox.db);
 	spin_unlock_irqrestore(&hwq->lock, flags);
-	/* Return the CREQ response pointer */
+	 
 	return 0;
 }
 
-/**
- * __poll_for_resp   -	self poll completion for rcfw command
- * @rcfw:     rcfw channel instance of rdev
- * @cookie:   cookie to track the command
- *
- * It works same as __wait_for_resp except this function will
- * do self polling in sort interval since interrupt is disabled.
- * This function can not be called from non-sleepable context.
- *
- * Returns:
- * -ETIMEOUT if command is not completed in specific time interval.
- * 0 if command is completed by firmware.
- */
+ 
 static int __poll_for_resp(struct bnxt_qplib_rcfw *rcfw, u16 cookie)
 {
 	struct bnxt_qplib_cmdq_ctx *cmdq = &rcfw->cmdq;
@@ -423,7 +297,7 @@ static int __send_message_basic_sanity(struct bnxt_qplib_rcfw *rcfw,
 
 	cmdq = &rcfw->cmdq;
 
-	/* Prevent posting if f/w is not in a state to process */
+	 
 	if (test_bit(ERR_DEVICE_DETACHED, &rcfw->cmdq.flags))
 		return bnxt_qplib_map_rc(opcode);
 	if (test_bit(FIRMWARE_STALL_DETECTED, &cmdq->flags))
@@ -448,7 +322,7 @@ static int __send_message_basic_sanity(struct bnxt_qplib_rcfw *rcfw,
 	return 0;
 }
 
-/* This function will just post and do not bother about completion */
+ 
 static void __destroy_timedout_ah(struct bnxt_qplib_rcfw *rcfw,
 				  struct creq_create_ah_resp *create_ah_resp)
 {
@@ -468,19 +342,7 @@ static void __destroy_timedout_ah(struct bnxt_qplib_rcfw *rcfw,
 			     atomic_read(&rcfw->timeout_send));
 }
 
-/**
- * __bnxt_qplib_rcfw_send_message   -	qplib interface to send
- * and complete rcfw command.
- * @rcfw:   rcfw channel instance of rdev
- * @msg:    qplib message internal
- *
- * This function does not account shadow queue depth. It will send
- * all the command unconditionally as long as send queue is not full.
- *
- * Returns:
- * 0 if command completed by firmware.
- * Non zero if the command is not completed by firmware.
- */
+ 
 static int __bnxt_qplib_rcfw_send_message(struct bnxt_qplib_rcfw *rcfw,
 					  struct bnxt_qplib_cmdqmsg *msg)
 {
@@ -522,7 +384,7 @@ static int __bnxt_qplib_rcfw_send_message(struct bnxt_qplib_rcfw *rcfw,
 	}
 
 	if (evnt->status) {
-		/* failed with status */
+		 
 		dev_err(&rcfw->pdev->dev, "cmdq[%#x]=%#x status %#x\n",
 			cookie, opcode, evnt->status);
 		rc = -EFAULT;
@@ -531,31 +393,7 @@ static int __bnxt_qplib_rcfw_send_message(struct bnxt_qplib_rcfw *rcfw,
 	return rc;
 }
 
-/**
- * bnxt_qplib_rcfw_send_message   -	qplib interface to send
- * and complete rcfw command.
- * @rcfw:   rcfw channel instance of rdev
- * @msg:    qplib message internal
- *
- * Driver interact with Firmware through rcfw channel/slow path in two ways.
- * a. Blocking rcfw command send. In this path, driver cannot hold
- * the context for longer period since it is holding cpu until
- * command is not completed.
- * b. Non-blocking rcfw command send. In this path, driver can hold the
- * context for longer period. There may be many pending command waiting
- * for completion because of non-blocking nature.
- *
- * Driver will use shadow queue depth. Current queue depth of 8K
- * (due to size of rcfw message there can be actual ~4K rcfw outstanding)
- * is not optimal for rcfw command processing in firmware.
- *
- * Restrict at max #RCFW_CMD_NON_BLOCKING_SHADOW_QD Non-Blocking rcfw commands.
- * Allow all blocking commands until there is no queue full.
- *
- * Returns:
- * 0 if command completed by firmware.
- * Non zero if the command is not completed by firmware.
- */
+ 
 int bnxt_qplib_rcfw_send_message(struct bnxt_qplib_rcfw *rcfw,
 				 struct bnxt_qplib_cmdqmsg *msg)
 {
@@ -572,7 +410,7 @@ int bnxt_qplib_rcfw_send_message(struct bnxt_qplib_rcfw *rcfw,
 	return ret;
 }
 
-/* Completions */
+ 
 static int bnxt_qplib_process_func_event(struct bnxt_qplib_rcfw *rcfw,
 					 struct creq_func_event *func_event)
 {
@@ -594,9 +432,7 @@ static int bnxt_qplib_process_func_event(struct bnxt_qplib_rcfw *rcfw,
 	case CREQ_FUNC_EVENT_EVENT_CFCQ_ERROR:
 		break;
 	case CREQ_FUNC_EVENT_EVENT_CFCS_ERROR:
-		/* SRQ ctx error, call srq_handler??
-		 * But there's no SRQ handle!
-		 */
+		 
 		break;
 	case CREQ_FUNC_EVENT_EVENT_CFCC_ERROR:
 		break;
@@ -650,14 +486,7 @@ static int bnxt_qplib_process_qp_event(struct bnxt_qplib_rcfw *rcfw,
 		rc = rcfw->creq.aeq_handler(rcfw, qp_event, qp);
 		break;
 	default:
-		/*
-		 * Command Response
-		 * cmdq->lock needs to be acquired to synchronie
-		 * the command send and completion reaping. This function
-		 * is always called with creq->lock held. Using
-		 * the nested variant of spin_lock.
-		 *
-		 */
+		 
 
 		spin_lock_irqsave_nested(&hwq->lock, flags,
 					 SINGLE_DEPTH_NESTING);
@@ -682,10 +511,7 @@ static int bnxt_qplib_process_qp_event(struct bnxt_qplib_rcfw *rcfw,
 		if (crsqe->is_waiter_alive) {
 			if (crsqe->resp) {
 				memcpy(crsqe->resp, qp_event, sizeof(*qp_event));
-				/* Insert write memory barrier to ensure that
-				 * response data is copied before clearing the
-				 * flags
-				 */
+				 
 				smp_wmb();
 			}
 			if (!blocked)
@@ -703,18 +529,7 @@ static int bnxt_qplib_process_qp_event(struct bnxt_qplib_rcfw *rcfw,
 
 		hwq->cons += req_size;
 
-		/* This is a case to handle below scenario -
-		 * Create AH is completed successfully by firmware,
-		 * but completion took more time and driver already lost
-		 * the context of create_ah from caller.
-		 * We have already return failure for create_ah verbs,
-		 * so let's destroy the same address vector since it is
-		 * no more used in stack. We don't care about completion
-		 * in __send_message_no_waiter.
-		 * If destroy_ah is failued by firmware, there will be AH
-		 * resource leak and relatively not critical +  unlikely
-		 * scenario. Current design is not to handle such case.
-		 */
+		 
 		if (!is_waiter_alive && !qp_event->status &&
 		    qp_event->event == CREQ_QP_EVENT_EVENT_CREATE_AH)
 			__destroy_timedout_ah(rcfw,
@@ -726,7 +541,7 @@ static int bnxt_qplib_process_qp_event(struct bnxt_qplib_rcfw *rcfw,
 	return rc;
 }
 
-/* SP - CREQ Completion handlers */
+ 
 static void bnxt_qplib_service_creq(struct tasklet_struct *t)
 {
 	struct bnxt_qplib_rcfw *rcfw = from_tasklet(rcfw, t, creq.creq_tasklet);
@@ -738,7 +553,7 @@ static void bnxt_qplib_service_creq(struct tasklet_struct *t)
 	unsigned long flags;
 	u32 num_wakeup = 0;
 
-	/* Service the CREQ until budget is over */
+	 
 	spin_lock_irqsave(&hwq->lock, flags);
 	raw_cons = hwq->cons;
 	while (budget > 0) {
@@ -746,9 +561,7 @@ static void bnxt_qplib_service_creq(struct tasklet_struct *t)
 		creqe = bnxt_qplib_get_qe(hwq, sw_cons, NULL);
 		if (!CREQ_CMP_VALID(creqe, raw_cons, hwq->max_elements))
 			break;
-		/* The valid test of the entry must be done first before
-		 * reading any further.
-		 */
+		 
 		dma_rmb();
 		rcfw->cmdq.last_seen = jiffies;
 
@@ -798,7 +611,7 @@ static irqreturn_t bnxt_qplib_creq_irq(int irq, void *dev_instance)
 
 	creq = &rcfw->creq;
 	hwq = &creq->hwq;
-	/* Prefetch the CREQ element */
+	 
 	sw_cons = HWQ_CMP(hwq->cons, hwq);
 	prefetch(bnxt_qplib_get_qe(hwq, sw_cons, NULL));
 
@@ -807,7 +620,7 @@ static irqreturn_t bnxt_qplib_creq_irq(int irq, void *dev_instance)
 	return IRQ_HANDLED;
 }
 
-/* RCFW */
+ 
 int bnxt_qplib_deinit_rcfw(struct bnxt_qplib_rcfw *rcfw)
 {
 	struct creq_deinitialize_fw_resp resp = {};
@@ -840,18 +653,10 @@ int bnxt_qplib_init_rcfw(struct bnxt_qplib_rcfw *rcfw,
 	bnxt_qplib_rcfw_cmd_prep((struct cmdq_base *)&req,
 				 CMDQ_BASE_OPCODE_INITIALIZE_FW,
 				 sizeof(req));
-	/* Supply (log-base-2-of-host-page-size - base-page-shift)
-	 * to bono to adjust the doorbell page sizes.
-	 */
+	 
 	req.log2_dbr_pg_size = cpu_to_le16(PAGE_SHIFT -
 					   RCFW_DBR_BASE_PAGE_SHIFT);
-	/*
-	 * Gen P5 devices doesn't require this allocation
-	 * as the L2 driver does the same for RoCE also.
-	 * Also, VFs need not setup the HW context area, PF
-	 * shall setup this area for VF. Skipping the
-	 * HW programming
-	 */
+	 
 	if (is_virtfn)
 		goto skip_ctx_setup;
 	if (bnxt_qplib_is_chip_gen_p5(rcfw->res->cctx))
@@ -972,7 +777,7 @@ int bnxt_qplib_alloc_rcfw_channel(struct bnxt_qplib_res *res,
 	if (!rcfw->crsqe_tbl)
 		goto fail;
 
-	/* Allocate one extra to hold the QP1 entries */
+	 
 	rcfw->qp_tbl_size = qp_tbl_sz + 1;
 	rcfw->qp_tbl = kcalloc(rcfw->qp_tbl_size, sizeof(struct bnxt_qplib_qp_node),
 			       GFP_KERNEL);
@@ -998,9 +803,9 @@ void bnxt_qplib_rcfw_stop_irq(struct bnxt_qplib_rcfw *rcfw, bool kill)
 		return;
 
 	creq->requested = false;
-	/* Mask h/w interrupts */
+	 
 	bnxt_qplib_ring_nq_db(&creq->creq_db.dbinfo, rcfw->res->cctx, false);
-	/* Sync with last running IRQ-handler */
+	 
 	synchronize_irq(creq->msix_vec);
 	free_irq(creq->msix_vec, rcfw);
 	kfree(creq->irq_name);
@@ -1018,7 +823,7 @@ void bnxt_qplib_disable_rcfw_channel(struct bnxt_qplib_rcfw *rcfw)
 
 	creq = &rcfw->creq;
 	cmdq = &rcfw->cmdq;
-	/* Make sure the HW channel is stopped! */
+	 
 	bnxt_qplib_rcfw_stop_irq(rcfw, true);
 
 	iounmap(cmdq->cmdq_mbox.reg.bar_reg);
@@ -1121,7 +926,7 @@ static int bnxt_qplib_map_creq_db(struct bnxt_qplib_rcfw *rcfw, u32 reg_offt)
 			creq_db->reg.bar_id);
 
 	bar_reg = creq_db->reg.bar_base + reg_offt;
-	/* Unconditionally map 8 bytes to support 57500 series */
+	 
 	creq_db->reg.len = 8;
 	creq_db->reg.bar_reg = ioremap(bar_reg, creq_db->reg.len);
 	if (!creq_db->reg.bar_reg) {
@@ -1156,7 +961,7 @@ static void bnxt_qplib_start_rcfw(struct bnxt_qplib_rcfw *rcfw)
 				      CMDQ_INIT_CMDQ_LVL_SFT) &
 				    CMDQ_INIT_CMDQ_LVL_MASK));
 	init.creq_ring_id = cpu_to_le16(creq->ring_id);
-	/* Write to the Bono mailbox register */
+	 
 	__iowrite32_copy(mbox->reg.bar_reg, &init, sizeof(init) / 4);
 }
 
@@ -1172,7 +977,7 @@ int bnxt_qplib_enable_rcfw_channel(struct bnxt_qplib_rcfw *rcfw,
 	cmdq = &rcfw->cmdq;
 	creq = &rcfw->creq;
 
-	/* Clear to defaults */
+	 
 
 	cmdq->seq_num = 0;
 	set_bit(FIRMWARE_FIRST_FLAG, &cmdq->flags);

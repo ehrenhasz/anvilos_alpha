@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-// Copyright (c) 2022 Google
+
+
 #include "vmlinux.h"
 #include <bpf/bpf_helpers.h>
 #include <bpf/bpf_tracing.h>
@@ -8,10 +8,10 @@
 
 #include "lock_data.h"
 
-/* for collect_lock_syms().  4096 was rejected by the verifier */
+ 
 #define MAX_CPUS  1024
 
-/* lock contention flags from include/trace/events/lock.h */
+ 
 #define LCB_F_SPIN	(1U << 0)
 #define LCB_F_READ	(1U << 1)
 #define LCB_F_WRITE	(1U << 2)
@@ -26,7 +26,7 @@ struct tstamp_data {
 	__s32 stack_id;
 };
 
-/* callstack storage  */
+ 
 struct {
 	__uint(type, BPF_MAP_TYPE_STACK_TRACE);
 	__uint(key_size, sizeof(__u32));
@@ -34,7 +34,7 @@ struct {
 	__uint(max_entries, MAX_ENTRIES);
 } stacks SEC(".maps");
 
-/* maintain timestamp at the beginning of contention */
+ 
 struct {
 	__uint(type, BPF_MAP_TYPE_HASH);
 	__type(key, int);
@@ -42,7 +42,7 @@ struct {
 	__uint(max_entries, MAX_ENTRIES);
 } tstamp SEC(".maps");
 
-/* actual lock contention statistics */
+ 
 struct {
 	__uint(type, BPF_MAP_TYPE_HASH);
 	__uint(key_size, sizeof(struct contention_key));
@@ -108,7 +108,7 @@ struct mm_struct___new {
 	struct rw_semaphore mmap_lock;
 } __attribute__((preserve_access_index));
 
-/* control flags */
+ 
 int enabled;
 int has_cpu;
 int has_task;
@@ -118,10 +118,10 @@ int needs_callstack;
 int stack_skip;
 int lock_owner;
 
-/* determine the key of lock stat */
+ 
 int aggr_mode;
 
-/* error stat */
+ 
 int task_fail;
 int stack_fail;
 int time_fail;
@@ -205,12 +205,7 @@ static inline struct task_struct *get_lock_owner(__u64 lock, __u32 flags)
 		struct mutex *mutex = (void *)lock;
 		owner = BPF_CORE_READ(mutex, owner.counter);
 	} else if (flags == LCB_F_READ || flags == LCB_F_WRITE) {
-	/*
-	 * Support for the BPF_TYPE_MATCHES argument to the
-	 * __builtin_preserve_type_info builtin was added at some point during
-	 * development of clang 15 and it's what is needed for
-	 * bpf_core_type_matches.
-	 */
+	 
 #if __has_builtin(__builtin_preserve_type_info) && __clang_major__ >= 15
 		if (bpf_core_type_matches(struct rw_semaphore___old)) {
 			struct rw_semaphore___old *rwsem = (void *)lock;
@@ -220,7 +215,7 @@ static inline struct task_struct *get_lock_owner(__u64 lock, __u32 flags)
 			owner = BPF_CORE_READ(rwsem, owner.counter);
 		}
 #else
-		/* assume new struct */
+		 
 		struct rw_semaphore *rwsem = (void *)lock;
 		owner = BPF_CORE_READ(rwsem, owner.counter);
 #endif
@@ -240,7 +235,7 @@ static inline __u32 check_lock_type(__u64 lock, __u32 flags)
 	struct mm_struct___new *mm_new;
 
 	switch (flags) {
-	case LCB_F_READ:  /* rwsem */
+	case LCB_F_READ:   
 	case LCB_F_WRITE:
 		curr = bpf_get_current_task_btf();
 		if (curr->mm == NULL)
@@ -257,7 +252,7 @@ static inline __u32 check_lock_type(__u64 lock, __u32 flags)
 				return LCD_F_MMAP_LOCK;
 		}
 		break;
-	case LCB_F_SPIN:  /* spinlock */
+	case LCB_F_SPIN:   
 		curr = bpf_get_current_task_btf();
 		if (&curr->sighand->siglock == (void *)lock)
 			return LCD_F_SIGHAND_LOCK;
@@ -308,7 +303,7 @@ int contention_begin(u64 *ctx)
 		if (lock_owner) {
 			task = get_lock_owner(pelem->lock, pelem->flags);
 
-			/* The flags is not used anymore.  Pass the owner pid. */
+			 
 			if (task)
 				pelem->flags = BPF_CORE_READ(task, pid);
 			else
@@ -369,7 +364,7 @@ int contention_end(u64 *ctx)
 			key.stack_id = pelem->stack_id;
 		break;
 	default:
-		/* should not happen */
+		 
 		return 0;
 	}
 
@@ -406,7 +401,7 @@ int contention_end(u64 *ctx)
 	__sync_fetch_and_add(&data->total_time, duration);
 	__sync_fetch_and_add(&data->count, 1);
 
-	/* FIXME: need atomic operations */
+	 
 	if (data->max_time < duration)
 		data->max_time = duration;
 	if (data->min_time > duration)

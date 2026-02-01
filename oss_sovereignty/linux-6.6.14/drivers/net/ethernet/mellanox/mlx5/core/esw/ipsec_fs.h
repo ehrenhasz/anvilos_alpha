@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB */
-/* Copyright (c) 2023, NVIDIA CORPORATION & AFFILIATES. All rights reserved. */
+ 
+ 
 
 #ifndef __MLX5_ESW_IPSEC_FS_H__
 #define __MLX5_ESW_IPSEC_FS_H__
@@ -48,5 +48,5 @@ static inline void mlx5_esw_ipsec_tx_create_attr_set(struct mlx5e_ipsec *ipsec,
 						     struct mlx5e_ipsec_tx_create_attr *attr) {}
 
 static inline void mlx5_esw_ipsec_restore_dest_uplink(struct mlx5_core_dev *mdev) {}
-#endif /* CONFIG_MLX5_ESWITCH */
-#endif /* __MLX5_ESW_IPSEC_FS_H__ */
+#endif  
+#endif  

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * PCIe controller EP driver for Freescale Layerscape SoCs
- *
- * Copyright (C) 2018 NXP Semiconductor.
- *
- * Author: Xiaowei Bao <xiaowei.bao@nxp.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/init.h>
@@ -21,7 +15,7 @@
 #define PEX_PF0_CONFIG			0xC0014
 #define PEX_PF0_CFG_READY		BIT(0)
 
-/* PEX PFa PCIE PME and message interrupt registers*/
+ 
 #define PEX_PF0_PME_MES_DR		0xC0020
 #define PEX_PF0_PME_MES_DR_LUD		BIT(7)
 #define PEX_PF0_PME_MES_DR_LDD		BIT(9)
@@ -86,12 +80,7 @@ static irqreturn_t ls_pcie_ep_event_handler(int irq, void *dev_id)
 
 		offset = dw_pcie_find_capability(pci, PCI_CAP_ID_EXP);
 
-		/*
-		 * The values of the Maximum Link Width and Supported Link
-		 * Speed from the Link Capabilities Register will be lost
-		 * during link down or hot reset. Restore initial value
-		 * that configured by the Reset Configuration Word (RCW).
-		 */
+		 
 		dw_pcie_dbi_ro_wr_en(pci);
 		dw_pcie_writel_dbi(pci, offset + PCI_EXP_LNKCAP, pcie->lnkcap);
 		dw_pcie_dbi_ro_wr_dis(pci);
@@ -129,7 +118,7 @@ static int ls_pcie_ep_interrupt_init(struct ls_pcie_ep *pcie,
 		return ret;
 	}
 
-	/* Enable interrupts */
+	 
 	val = ls_lut_readl(pcie, PEX_PF0_PME_MES_IER);
 	val |=  PEX_PF0_PME_MES_IER_LDDIE | PEX_PF0_PME_MES_IER_HRDIE |
 		PEX_PF0_PME_MES_IER_LUDIE;

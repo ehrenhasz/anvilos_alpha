@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2021 ARM Limited
- *
- * Verify that the ZA register context in signal frames is set up as
- * expected.
- */
+
+ 
 
 #include <signal.h>
 #include <ucontext.h>
@@ -24,9 +19,7 @@ static bool sme_get_vls(struct tdescr *td)
 {
 	int vq, vl;
 
-	/*
-	 * Enumerate up to SME_VQ_MAX vector lengths
-	 */
+	 
 	for (vq = SVE_VQ_MAX; vq > 0; --vq) {
 		vl = prctl(PR_SME_SET_VL, vq * 16);
 		if (vl == -1)
@@ -34,17 +27,17 @@ static bool sme_get_vls(struct tdescr *td)
 
 		vl &= PR_SME_VL_LEN_MASK;
 
-		/* Did we find the lowest supported VL? */
+		 
 		if (vq < sve_vq_from_vl(vl))
 			break;
 
-		/* Skip missing VLs */
+		 
 		vq = sve_vq_from_vl(vl);
 
 		vls[nvls++] = vl;
 	}
 
-	/* We need at least one VL */
+	 
 	if (nvls < 1) {
 		fprintf(stderr, "Only %d VL supported\n", nvls);
 		return false;
@@ -55,7 +48,7 @@ static bool sme_get_vls(struct tdescr *td)
 
 static void setup_za_regs(void)
 {
-	/* smstart za; real data is TODO */
+	 
 	asm volatile(".inst 0xd503457f" : : : );
 }
 
@@ -75,10 +68,7 @@ static int do_one_sme_vl(struct tdescr *td, siginfo_t *si, ucontext_t *uc,
 		return 1;
 	}
 
-	/*
-	 * Get a signal context which should have a SVE frame and registers
-	 * in it.
-	 */
+	 
 	setup_za_regs();
 	if (!get_current_context(td, &context.uc, sizeof(context)))
 		return 1;
@@ -104,7 +94,7 @@ static int do_one_sme_vl(struct tdescr *td, siginfo_t *si, ucontext_t *uc,
 	fprintf(stderr, "Got expected size %u and VL %d\n",
 		head->size, za->vl);
 
-	/* We didn't load any data into ZA so it should be all zeros */
+	 
 	if (memcmp(zeros, (char *)za + ZA_SIG_REGS_OFFSET,
 		   ZA_SIG_REGS_SIZE(sve_vq_from_vl(za->vl))) != 0) {
 		fprintf(stderr, "ZA data invalid\n");

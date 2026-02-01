@@ -1,15 +1,4 @@
-/*
- * omap3-rom-rng.c - RNG driver for TI OMAP3 CPU family
- *
- * Copyright (C) 2009 Nokia Corporation
- * Author: Juha Yrjola <juha.yrjola@solidboot.com>
- *
- * Copyright (C) 2013 Pali Rohár <pali@kernel.org>
- *
- * This file is licensed under  the terms of the GNU General Public
- * License version 2. This program is licensed "as is" without any
- * warranty of any kind, whether express or implied.
- */
+ 
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -155,7 +144,7 @@ static int omap3_rom_rng_probe(struct platform_device *pdev)
 
 static const struct of_device_id omap_rom_rng_match[] = {
 	{ .compatible = "nokia,n900-rom-rng", .data = omap3_rom_rng_read, },
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, omap_rom_rng_match);
 

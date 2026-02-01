@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 #include <linux/highmem.h>
 #include <linux/export.h>
-#include <linux/swap.h> /* for totalram_pages */
+#include <linux/swap.h>  
 #include <linux/memblock.h>
 #include <asm/numa.h>
 
@@ -10,10 +10,7 @@ void __init set_highmem_pages_init(void)
 	struct zone *zone;
 	int nid;
 
-	/*
-	 * Explicitly reset zone->managed_pages because set_highmem_pages_init()
-	 * is invoked before memblock_free_all()
-	 */
+	 
 	reset_all_zones_managed_pages();
 	for_each_zone(zone) {
 		unsigned long zone_start_pfn, zone_end_pfn;

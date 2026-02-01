@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * BGRT boot graphic support
- * Authors: Matthew Garrett, Josh Triplett <josh@joshtriplett.org>
- * Copyright 2012 Red Hat, Inc <mjg@redhat.com>
- * Copyright 2012 Intel Corporation
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/init.h>
@@ -36,7 +31,7 @@ static ssize_t image_read(struct file *file, struct kobject *kobj,
 	return count;
 }
 
-static BIN_ATTR_RO(image, 0);	/* size gets filled in later */
+static BIN_ATTR_RO(image, 0);	 
 
 static struct attribute *bgrt_attributes[] = {
 	&bgrt_attr_version.attr,

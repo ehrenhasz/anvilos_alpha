@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * PS3 RTC Driver
- *
- * Copyright 2009 Sony Corporation
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>

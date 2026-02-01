@@ -1,35 +1,4 @@
-/*
- * Copyright (c) 2016-2017, Mellanox Technologies. All rights reserved.
- * Copyright (c) 2016-2017, Dave Watson <davejwatson@fb.com>. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 
 #ifndef _TLS_OFFLOAD_H
 #define _TLS_OFFLOAD_H
@@ -51,7 +20,7 @@
 
 struct tls_rec;
 
-/* Maximum data size carried in a TLS record */
+ 
 #define TLS_MAX_PAYLOAD_SIZE		((size_t)1 << 14)
 
 #define TLS_HEADER_SIZE			5
@@ -66,13 +35,7 @@ struct tls_rec;
 #define TLS_MAX_REC_SEQ_SIZE		8
 #define TLS_MAX_AAD_SIZE		TLS_AAD_SPACE_SIZE
 
-/* For CCM mode, the full 16-bytes of IV is made of '4' fields of given sizes.
- *
- * IV[16] = b0[1] || implicit nonce[4] || explicit nonce[8] || length[3]
- *
- * The field 'length' is encoded in field 'b0' as '(length width - 1)'.
- * Hence b0 contains (3 - 1) = 2.
- */
+ 
 #define TLS_AES_CCM_IV_B0_BYTE		2
 #define TLS_SM4_CCM_IV_B0_BYTE		2
 
@@ -96,7 +59,7 @@ struct tls_sw_context_tx {
 	struct tls_rec *open_rec;
 	struct list_head tx_list;
 	atomic_t encrypt_pending;
-	/* protect crypto_wait with encrypt_pending */
+	 
 	spinlock_t encrypt_compl_lock;
 	int async_notify;
 	u8 async_capable:1;
@@ -124,7 +87,7 @@ struct tls_strparser {
 struct tls_sw_context_rx {
 	struct crypto_aead *aead_recv;
 	struct crypto_wait async_wait;
-	struct sk_buff_head rx_list;	/* list of decrypted 'data' records */
+	struct sk_buff_head rx_list;	 
 	void (*saved_data_ready)(struct sock *sk);
 
 	u8 reader_present;
@@ -135,7 +98,7 @@ struct tls_sw_context_rx {
 	struct tls_strparser strp;
 
 	atomic_t decrypt_pending;
-	/* protect crypto_wait with decrypt_pending*/
+	 
 	spinlock_t decrypt_compl_lock;
 	struct sk_buff_head async_hold;
 	struct wait_queue_head wq;
@@ -151,7 +114,7 @@ struct tls_record_info {
 
 struct tls_offload_context_tx {
 	struct crypto_aead *aead_send;
-	spinlock_t lock;	/* protects records list */
+	spinlock_t lock;	 
 	struct list_head records_list;
 	struct tls_record_info *open_record;
 	struct tls_record_info *retransmit_hint;
@@ -163,10 +126,7 @@ struct tls_offload_context_tx {
 	struct work_struct destruct_work;
 	struct tls_context *ctx;
 	u8 driver_state[] __aligned(8);
-	/* The TLS layer reserves room for driver specific state
-	 * Currently the belief is that there is not enough
-	 * driver specific state to justify another layer of indirection
-	 */
+	 
 #define TLS_DRIVER_STATE_SIZE_TX	16
 };
 
@@ -174,21 +134,11 @@ struct tls_offload_context_tx {
 	(sizeof(struct tls_offload_context_tx) + TLS_DRIVER_STATE_SIZE_TX)
 
 enum tls_context_flags {
-	/* tls_device_down was called after the netdev went down, device state
-	 * was released, and kTLS works in software, even though rx_conf is
-	 * still TLS_HW (needed for transition).
-	 */
+	 
 	TLS_RX_DEV_DEGRADED = 0,
-	/* Unlike RX where resync is driven entirely by the core in TX only
-	 * the driver knows when things went out of sync, so we need the flag
-	 * to be atomic.
-	 */
+	 
 	TLS_TX_SYNC_SCHED = 1,
-	/* tls_dev_del was called for the RX side, device state was released,
-	 * but tls_ctx->netdev might still be kept, because TX-side driver
-	 * resources might not be released yet. Used to prevent the second
-	 * tls_dev_del call in tls_device_down if it happens simultaneously.
-	 */
+	 
 	TLS_RX_DEV_CLOSED = 2,
 };
 
@@ -222,7 +172,7 @@ struct tls_prot_info {
 };
 
 struct tls_context {
-	/* read-only cache line */
+	 
 	struct tls_prot_info prot_info;
 
 	u8 tx_conf:3;
@@ -238,7 +188,7 @@ struct tls_context {
 
 	struct net_device __rcu *netdev;
 
-	/* rw cache line */
+	 
 	struct cipher_context tx;
 	struct cipher_context rx;
 
@@ -248,12 +198,10 @@ struct tls_context {
 	bool splicing_pages;
 	bool pending_open_record_frags;
 
-	struct mutex tx_lock; /* protects partially_sent_* fields and
-			       * per-type TX fields
-			       */
+	struct mutex tx_lock;  
 	unsigned long flags;
 
-	/* cache cold stuff */
+	 
 	struct proto *sk_proto;
 	struct sock *sk;
 
@@ -303,33 +251,30 @@ struct tls_offload_resync_async {
 };
 
 struct tls_offload_context_rx {
-	/* sw must be the first member of tls_offload_context_rx */
+	 
 	struct tls_sw_context_rx sw;
 	enum tls_offload_sync_type resync_type;
-	/* this member is set regardless of resync_type, to avoid branches */
+	 
 	u8 resync_nh_reset:1;
-	/* CORE_NEXT_HINT-only member, but use the hole here */
+	 
 	u8 resync_nh_do_now:1;
 	union {
-		/* TLS_OFFLOAD_SYNC_TYPE_DRIVER_REQ */
+		 
 		struct {
 			atomic64_t resync_req;
 		};
-		/* TLS_OFFLOAD_SYNC_TYPE_CORE_NEXT_HINT */
+		 
 		struct {
 			u32 decrypted_failed;
 			u32 decrypted_tgt;
 		} resync_nh;
-		/* TLS_OFFLOAD_SYNC_TYPE_DRIVER_REQ_ASYNC */
+		 
 		struct {
 			struct tls_offload_resync_async *resync_async;
 		};
 	};
 	u8 driver_state[] __aligned(8);
-	/* The TLS layer reserves room for driver specific state
-	 * Currently the belief is that there is not enough
-	 * driver specific state to justify another layer of indirection
-	 */
+	 
 #define TLS_DRIVER_STATE_SIZE_RX	8
 };
 
@@ -373,9 +318,7 @@ static inline struct tls_context *tls_get_ctx(const struct sock *sk)
 {
 	struct inet_connection_sock *icsk = inet_csk(sk);
 
-	/* Use RCU on icsk_ulp_data only for sock diag code,
-	 * TLS data path doesn't need rcu_dereference().
-	 */
+	 
 	return (__force void *)icsk->icsk_ulp_data;
 }
 
@@ -438,7 +381,7 @@ tls_driver_ctx(const struct sock *sk, enum tls_offload_ctx_dir direction)
 
 #define RESYNC_REQ BIT(0)
 #define RESYNC_REQ_ASYNC BIT(1)
-/* The TLS context is valid until sk_destruct is called */
+ 
 static inline void tls_offload_rx_resync_request(struct sock *sk, __be32 seq)
 {
 	struct tls_context *tls_ctx = tls_get_ctx(sk);
@@ -447,7 +390,7 @@ static inline void tls_offload_rx_resync_request(struct sock *sk, __be32 seq)
 	atomic64_set(&rx_ctx->resync_req, ((u64)ntohl(seq) << 32) | RESYNC_REQ);
 }
 
-/* Log all TLS record header TCP sequences in [seq, seq+len] */
+ 
 static inline void
 tls_offload_rx_resync_async_request_start(struct sock *sk, __be32 seq, u16 len)
 {
@@ -478,7 +421,7 @@ tls_offload_rx_resync_set_type(struct sock *sk, enum tls_offload_sync_type type)
 	tls_offload_ctx_rx(tls_ctx)->resync_type = type;
 }
 
-/* Driver's seq tracking has to be disabled until resync succeeded */
+ 
 static inline bool tls_offload_tx_resync_pending(struct sock *sk)
 {
 	struct tls_context *tls_ctx = tls_get_ctx(sk);
@@ -503,4 +446,4 @@ static inline bool tls_is_sk_rx_device_offloaded(struct sock *sk)
 	return tls_get_ctx(sk)->rx_conf == TLS_HW;
 }
 #endif
-#endif /* _TLS_OFFLOAD_H */
+#endif  

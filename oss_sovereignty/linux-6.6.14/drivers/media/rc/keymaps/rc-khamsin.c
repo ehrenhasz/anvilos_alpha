@@ -1,19 +1,15 @@
-// SPDX-License-Identifier: GPL-2.0+
-// Copyright (c) 2020 Christian Hewitt
+
+
 
 #include <media/rc-map.h>
 #include <linux/module.h>
 
-/*
- * KHAMSIN is an IR/Bluetooth RCU supplied with the SmartLabs
- * SML-5442TW DVB-S/VOD box. The RCU has separate IR (TV) and
- * BT (STB) modes. This keymap suppors the IR controls.
- */
+ 
 
 static struct rc_map_table khamsin[] = {
 	{ 0x70702, KEY_POWER},
 
-	{ 0x70701, KEY_VIDEO}, // source
+	{ 0x70701, KEY_VIDEO}, 
 
 	{ 0x7076c, KEY_RED},
 	{ 0x70714, KEY_GREEN},
@@ -29,7 +25,7 @@ static struct rc_map_table khamsin[] = {
 	{ 0x70762, KEY_RIGHT },
 	{ 0x70768, KEY_ENTER },
 
-	{ 0x7072d, KEY_ESC }, // back
+	{ 0x7072d, KEY_ESC }, 
 
 	{ 0x70707, KEY_VOLUMEUP },
 	{ 0x7070b, KEY_VOLUMEDOWN },

@@ -1,6 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0+
-// Cadence XSPI flash controller driver
-// Copyright (C) 2020-21 Cadence
+
+
+
 
 #include <linux/completion.h>
 #include <linux/delay.h>
@@ -24,27 +24,24 @@
 #define CDNS_XSPI_MAX_BANKS		8
 #define CDNS_XSPI_NAME			"cadence-xspi"
 
-/*
- * Note: below are additional auxiliary registers to
- * configure XSPI controller pin-strap settings
- */
+ 
 
-/* PHY DQ timing register */
+ 
 #define CDNS_XSPI_CCP_PHY_DQ_TIMING		0x0000
 
-/* PHY DQS timing register */
+ 
 #define CDNS_XSPI_CCP_PHY_DQS_TIMING		0x0004
 
-/* PHY gate loopback control register */
+ 
 #define CDNS_XSPI_CCP_PHY_GATE_LPBCK_CTRL	0x0008
 
-/* PHY DLL slave control register */
+ 
 #define CDNS_XSPI_CCP_PHY_DLL_SLAVE_CTRL	0x0010
 
-/* DLL PHY control register */
+ 
 #define CDNS_XSPI_DLL_PHY_CTRL			0x1034
 
-/* Command registers */
+ 
 #define CDNS_XSPI_CMD_REG_0			0x0000
 #define CDNS_XSPI_CMD_REG_1			0x0004
 #define CDNS_XSPI_CMD_REG_2			0x0008
@@ -52,17 +49,17 @@
 #define CDNS_XSPI_CMD_REG_4			0x0010
 #define CDNS_XSPI_CMD_REG_5			0x0014
 
-/* Command status registers */
+ 
 #define CDNS_XSPI_CMD_STATUS_REG		0x0044
 
-/* Controller status register */
+ 
 #define CDNS_XSPI_CTRL_STATUS_REG		0x0100
 #define CDNS_XSPI_INIT_COMPLETED		BIT(16)
 #define CDNS_XSPI_INIT_LEGACY			BIT(9)
 #define CDNS_XSPI_INIT_FAIL			BIT(8)
 #define CDNS_XSPI_CTRL_BUSY			BIT(7)
 
-/* Controller interrupt status register */
+ 
 #define CDNS_XSPI_INTR_STATUS_REG		0x0110
 #define CDNS_XSPI_STIG_DONE			BIT(23)
 #define CDNS_XSPI_SDMA_ERROR			BIT(22)
@@ -76,7 +73,7 @@
 #define CDNS_XSPI_TRD_ERR_INTR_STATUS		0x0130
 #define CDNS_XSPI_TRD_ERR_INTR_EN		0x0134
 
-/* Controller interrupt enable register */
+ 
 #define CDNS_XSPI_INTR_ENABLE_REG		0x0114
 #define CDNS_XSPI_INTR_EN			BIT(31)
 #define CDNS_XSPI_STIG_DONE_EN			BIT(23)
@@ -88,7 +85,7 @@
 	CDNS_XSPI_SDMA_ERROR_EN | \
 	CDNS_XSPI_SDMA_TRIGGER_EN)
 
-/* Controller config register */
+ 
 #define CDNS_XSPI_CTRL_CONFIG_REG		0x0230
 #define CDNS_XSPI_CTRL_WORK_MODE		GENMASK(6, 5)
 
@@ -96,23 +93,23 @@
 #define CDNS_XSPI_WORK_MODE_STIG		1
 #define CDNS_XSPI_WORK_MODE_ACMD		3
 
-/* SDMA trigger transaction registers */
+ 
 #define CDNS_XSPI_SDMA_SIZE_REG			0x0240
 #define CDNS_XSPI_SDMA_TRD_INFO_REG		0x0244
 #define CDNS_XSPI_SDMA_DIR			BIT(8)
 
-/* Controller features register */
+ 
 #define CDNS_XSPI_CTRL_FEATURES_REG		0x0F04
 #define CDNS_XSPI_NUM_BANKS			GENMASK(25, 24)
 #define CDNS_XSPI_DMA_DATA_WIDTH		BIT(21)
 #define CDNS_XSPI_NUM_THREADS			GENMASK(3, 0)
 
-/* Controller version register */
+ 
 #define CDNS_XSPI_CTRL_VERSION_REG		0x0F00
 #define CDNS_XSPI_MAGIC_NUM			GENMASK(31, 16)
 #define CDNS_XSPI_CTRL_REV			GENMASK(7, 0)
 
-/* STIG Profile 1.0 instruction fields (split into registers) */
+ 
 #define CDNS_XSPI_CMD_INSTR_TYPE		GENMASK(6, 0)
 #define CDNS_XSPI_CMD_P1_R1_ADDR0		GENMASK(31, 24)
 #define CDNS_XSPI_CMD_P1_R2_ADDR1		GENMASK(7, 0)
@@ -126,7 +123,7 @@
 #define CDNS_XSPI_CMD_P1_R4_CMD_IOS		GENMASK(9, 8)
 #define CDNS_XSPI_CMD_P1_R4_BANK		GENMASK(14, 12)
 
-/* STIG data sequence instruction fields (split into registers) */
+ 
 #define CDNS_XSPI_CMD_DSEQ_R2_DCNT_L		GENMASK(31, 16)
 #define CDNS_XSPI_CMD_DSEQ_R3_DCNT_H		GENMASK(15, 0)
 #define CDNS_XSPI_CMD_DSEQ_R3_NUM_OF_DUMMY	GENMASK(25, 20)
@@ -134,7 +131,7 @@
 #define CDNS_XSPI_CMD_DSEQ_R4_DATA_IOS		GENMASK(9, 8)
 #define CDNS_XSPI_CMD_DSEQ_R4_DIR		BIT(4)
 
-/* STIG command status fields */
+ 
 #define CDNS_XSPI_CMD_STATUS_COMPLETED		BIT(15)
 #define CDNS_XSPI_CMD_STATUS_FAILED		BIT(14)
 #define CDNS_XSPI_CMD_STATUS_DQS_ERROR		BIT(3)
@@ -145,7 +142,7 @@
 #define CDNS_XSPI_STIG_DONE_FLAG		BIT(0)
 #define CDNS_XSPI_TRD_STATUS			0x0104
 
-/* Helper macros for filling command registers */
+ 
 #define CDNS_XSPI_CMD_FLD_P1_INSTR_CMD_1(op, data_phase) ( \
 	FIELD_PREP(CDNS_XSPI_CMD_INSTR_TYPE, (data_phase) ? \
 		CDNS_XSPI_STIG_INSTR_TYPE_1 : CDNS_XSPI_STIG_INSTR_TYPE_0) | \
@@ -613,7 +610,7 @@ static const struct of_device_id cdns_xspi_of_match[] = {
 	{
 		.compatible = "cdns,xspi-nor",
 	},
-	{ /* end of table */}
+	{  }
 };
 MODULE_DEVICE_TABLE(of, cdns_xspi_of_match);
 

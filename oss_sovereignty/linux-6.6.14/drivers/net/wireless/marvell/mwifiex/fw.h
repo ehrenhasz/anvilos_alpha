@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * NXP Wireless LAN device driver: Firmware specific macros & structures
- *
- * Copyright 2011-2020 NXP
- */
+ 
+ 
 
 #ifndef _MWIFIEX_FW_H_
 #define _MWIFIEX_FW_H_
@@ -72,14 +68,7 @@ struct mwifiex_fw_dump_header {
 #define IS_SUPPORT_MULTI_BANDS(adapter)        \
 	(adapter->fw_cap_info & FW_MULTI_BANDS_SUPPORT)
 
-/* bit 13: 11ac BAND_AAC
- * bit 12: reserved for lab testing, will be reused for BAND_AN
- * bit 11: 11n  BAND_GN
- * bit 10: 11a  BAND_A
- * bit 9: 11g   BAND_G
- * bit 8: 11b   BAND_B
- * Map these bits to band capability by right shifting 8 bits.
- */
+ 
 #define GET_FW_DEFAULT_BANDS(adapter)  \
 	    (((adapter->fw_cap_info & 0x2f00) >> 8) & \
 	     ALL_802_11_BANDS)
@@ -249,19 +238,7 @@ enum MWIFIEX_802_11_PRIVACY_FILTER {
 
 #define MWIFIEX_DEF_AMPDU	IEEE80211_HT_AMPDU_PARM_FACTOR
 
-/* dev_cap bitmap
- * BIT
- * 0-16		reserved
- * 17		IEEE80211_HT_CAP_SUP_WIDTH_20_40
- * 18-22	reserved
- * 23		IEEE80211_HT_CAP_SGI_20
- * 24		IEEE80211_HT_CAP_SGI_40
- * 25		IEEE80211_HT_CAP_TX_STBC
- * 26		IEEE80211_HT_CAP_RX_STBC
- * 27-28	reserved
- * 29		IEEE80211_HT_CAP_GRN_FLD
- * 30-31	reserved
- */
+ 
 #define ISSUPP_CHANWIDTH40(Dot11nDevCap) (Dot11nDevCap & BIT(17))
 #define ISSUPP_SHORTGI20(Dot11nDevCap) (Dot11nDevCap & BIT(23))
 #define ISSUPP_SHORTGI40(Dot11nDevCap) (Dot11nDevCap & BIT(24))
@@ -274,27 +251,13 @@ enum MWIFIEX_802_11_PRIVACY_FILTER {
 #define ISALLOWED_CHANWIDTH40(ht_param) (ht_param & BIT(2))
 #define GETSUPP_TXBASTREAMS(Dot11nDevCap) ((Dot11nDevCap >> 18) & 0xF)
 
-/* httxcfg bitmap
- * 0		reserved
- * 1		20/40 Mhz enable(1)/disable(0)
- * 2-3		reserved
- * 4		green field enable(1)/disable(0)
- * 5		short GI in 20 Mhz enable(1)/disable(0)
- * 6		short GI in 40 Mhz enable(1)/disable(0)
- * 7-15		reserved
- */
+ 
 #define MWIFIEX_FW_DEF_HTTXCFG (BIT(1) | BIT(4) | BIT(5) | BIT(6))
 
-/* 11AC Tx and Rx MCS map for 1x1 mode:
- * IEEE80211_VHT_MCS_SUPPORT_0_9 for stream 1
- * IEEE80211_VHT_MCS_NOT_SUPPORTED for remaining 7 streams
- */
+ 
 #define MWIFIEX_11AC_MCS_MAP_1X1	0xfffefffe
 
-/* 11AC Tx and Rx MCS map for 2x2 mode:
- * IEEE80211_VHT_MCS_SUPPORT_0_9 for stream 1 and 2
- * IEEE80211_VHT_MCS_NOT_SUPPORTED for remaining 6 streams
- */
+ 
 #define MWIFIEX_11AC_MCS_MAP_2X2	0xfffafffa
 
 #define GET_RXMCSSUPP(DevMCSSupported) (DevMCSSupported & 0x0f)
@@ -306,7 +269,7 @@ enum MWIFIEX_802_11_PRIVACY_FILTER {
 
 #define LLC_SNAP_LEN    8
 
-/* HW_SPEC fw_cap_info */
+ 
 
 #define ISSUPP_11ACENABLED(fw_cap_info) (fw_cap_info & BIT(13))
 
@@ -317,9 +280,7 @@ enum MWIFIEX_802_11_PRIVACY_FILTER {
 #define GET_DEVTXMCSMAP(dev_mcs_map)      (dev_mcs_map >> 16)
 #define GET_DEVRXMCSMAP(dev_mcs_map)      (dev_mcs_map & 0xFFFF)
 
-/* Clear SU Beanformer, MU beanformer, MU beanformee and
- * sounding dimensions bits
- */
+ 
 #define MWIFIEX_DEF_11AC_CAP_BF_RESET_MASK \
 			(IEEE80211_VHT_CAP_SU_BEAMFORMER_CAPABLE | \
 			 IEEE80211_VHT_CAP_MU_BEAMFORMER_CAPABLE | \
@@ -693,21 +654,7 @@ struct rxpd {
 	s8 snr;
 	s8 nf;
 
-	/* For: Non-802.11 AC cards
-	 *
-	 * Ht Info [Bit 0] RxRate format: LG=0, HT=1
-	 * [Bit 1]  HT Bandwidth: BW20 = 0, BW40 = 1
-	 * [Bit 2]  HT Guard Interval: LGI = 0, SGI = 1
-	 *
-	 * For: 802.11 AC cards
-	 * [Bit 1] [Bit 0] RxRate format: legacy rate = 00 HT = 01 VHT = 10
-	 * [Bit 3] [Bit 2] HT/VHT Bandwidth BW20 = 00 BW40 = 01
-	 *						BW80 = 10  BW160 = 11
-	 * [Bit 4] HT/VHT Guard interval LGI = 0 SGI = 1
-	 * [Bit 5] STBC support Enabled = 1
-	 * [Bit 6] LDPC support Enabled = 1
-	 * [Bit 7] Reserved
-	 */
+	 
 	u8 ht_info;
 	u8 reserved[3];
 	u8 flags;
@@ -825,7 +772,7 @@ struct mwifiex_ie_types_bgscan_start_later {
 
 struct mwifiex_ie_types_scan_chan_gap {
 	struct mwifiex_ie_types_header header;
-	/* time gap in TUs to be used between two consecutive channels scan */
+	 
 	__le16 chan_gap;
 } __packed;
 
@@ -1074,8 +1021,8 @@ struct host_cmd_ds_get_hw_spec {
 	__le32 fw_cap_info;
 	__le32 dot_11n_dev_cap;
 	u8 dev_mcs_support;
-	__le16 mp_end_port;	/* SDIO only, reserved for other interfacces */
-	__le16 mgmt_buf_count;	/* mgmt IE buffer count */
+	__le16 mp_end_port;	 
+	__le16 mgmt_buf_count;	 
 	__le32 reserved_5;
 	__le32 reserved_6;
 	__le32 dot_11ac_dev_cap;
@@ -1227,11 +1174,7 @@ struct adhoc_bss_desc {
 	__le16 cap_info_bitmap;
 	u8 data_rates[HOSTCMD_SUPPORTED_RATES];
 
-	/*
-	 *  DO NOT ADD ANY FIELDS TO THIS STRUCTURE.
-	 *  It is used in the Adhoc join command and will cause a
-	 *  binary layout mismatch with the firmware
-	 */
+	 
 } __packed;
 
 struct host_cmd_ds_802_11_ad_hoc_join {
@@ -1259,7 +1202,7 @@ struct host_cmd_ds_802_11_get_log {
 	__le32 bcn_miss_cnt;
 } __packed;
 
-/* Enumeration for rate format */
+ 
 enum _mwifiex_rate_format {
 	MWIFIEX_RATE_FORMAT_LG = 0,
 	MWIFIEX_RATE_FORMAT_HT,
@@ -1269,17 +1212,7 @@ enum _mwifiex_rate_format {
 
 struct host_cmd_ds_tx_rate_query {
 	u8 tx_rate;
-	/* Tx Rate Info: For 802.11 AC cards
-	 *
-	 * [Bit 0-1] tx rate formate: LG = 0, HT = 1, VHT = 2
-	 * [Bit 2-3] HT/VHT Bandwidth: BW20 = 0, BW40 = 1, BW80 = 2, BW160 = 3
-	 * [Bit 4]   HT/VHT Guard Interval: LGI = 0, SGI = 1
-	 *
-	 * For non-802.11 AC cards
-	 * Ht Info [Bit 0] RxRate format: LG=0, HT=1
-	 * [Bit 1]  HT Bandwidth: BW20 = 0, BW40 = 1
-	 * [Bit 2]  HT Guard Interval: LGI = 0, SGI = 1
-	 */
+	 
 	u8 ht_info;
 } __packed;
 
@@ -1489,25 +1422,17 @@ struct tx_status_event {
 #define MWIFIEX_MAX_SSID_LIST_LENGTH         10
 
 struct mwifiex_scan_cmd_config {
-	/*
-	 *  BSS mode to be sent in the firmware command
-	 */
+	 
 	u8 bss_mode;
 
-	/* Specific BSSID used to filter scan results in the firmware */
+	 
 	u8 specific_bssid[ETH_ALEN];
 
-	/* Length of TLVs sent in command starting at tlvBuffer */
+	 
 	u32 tlv_buf_len;
 
-	/*
-	 *  SSID TLV(s) and ChanList TLVs to be sent in the firmware command
-	 *
-	 *  TLV_TYPE_CHANLIST, mwifiex_ie_types_chan_list_param_set
-	 *  WLAN_EID_SSID, mwifiex_ie_types_ssid_param_set
-	 */
-	u8 tlv_buf[1];	/* SSID TLV(s) and ChanList TLVs are stored
-				   here */
+	 
+	u8 tlv_buf[1];	 
 } __packed;
 
 struct mwifiex_user_scan_chan {
@@ -1519,19 +1444,17 @@ struct mwifiex_user_scan_chan {
 } __packed;
 
 struct mwifiex_user_scan_cfg {
-	/*
-	 *  BSS mode to be sent in the firmware command
-	 */
+	 
 	u8 bss_mode;
-	/* Configure the number of probe requests for active chan scans */
+	 
 	u8 num_probes;
 	u8 reserved;
-	/* BSSID filter sent in the firmware command to limit the results */
+	 
 	u8 specific_bssid[ETH_ALEN];
-	/* SSID filter list used in the firmware to limit the scan results */
+	 
 	struct cfg80211_ssid *ssid_list;
 	u8 num_ssids;
-	/* Variable number (fixed maximum) of channels to scan up */
+	 
 	struct mwifiex_user_scan_chan chan_list[MWIFIEX_USER_SCAN_CHAN_MAX];
 	u16 scan_chan_gap;
 	u8 random_mac[ETH_ALEN];
@@ -1542,11 +1465,11 @@ struct mwifiex_user_scan_cfg {
 #define MWIFIEX_BGSCAN_ACT_GET     0x0000
 #define MWIFIEX_BGSCAN_ACT_SET     0x0001
 #define MWIFIEX_BGSCAN_ACT_SET_ALL 0xff01
-/** ssid match */
+ 
 #define MWIFIEX_BGSCAN_SSID_MATCH          0x0001
-/** ssid match and RSSI exceeded */
+ 
 #define MWIFIEX_BGSCAN_SSID_RSSI_MATCH     0x0004
-/**wait for all channel scan to complete to report scan result*/
+ 
 #define MWIFIEX_BGSCAN_WAIT_ALL_CHAN_DONE  0x80000000
 
 struct mwifiex_bg_scan_cfg {
@@ -1688,13 +1611,13 @@ struct host_cmd_ds_11n_cfg {
 	__le16 action;
 	__le16 ht_tx_cap;
 	__le16 ht_tx_info;
-	__le16 misc_config;	/* Needed for 802.11AC cards only */
+	__le16 misc_config;	 
 } __packed;
 
 struct host_cmd_ds_txbuf_cfg {
 	__le16 action;
 	__le16 buff_size;
-	__le16 mp_end_port;	/* SDIO only, reserved for other interfacces */
+	__le16 mp_end_port;	 
 	__le16 reserved3;
 } __packed;
 
@@ -1764,15 +1687,7 @@ struct ieee_types_vendor_header {
 } __packed;
 
 struct ieee_types_wmm_parameter {
-	/*
-	 * WMM Parameter IE - Vendor Specific Header:
-	 *   element_id  [221/0xdd]
-	 *   Len         [24]
-	 *   Oui         [00:50:f2]
-	 *   OuiType     [2]
-	 *   OuiSubType  [1]
-	 *   Version     [1]
-	 */
+	 
 	struct ieee_types_vendor_header vend_hdr;
 	u8 oui_subtype;
 	u8 version;
@@ -1784,15 +1699,7 @@ struct ieee_types_wmm_parameter {
 
 struct ieee_types_wmm_info {
 
-	/*
-	 * WMM Info IE - Vendor Specific Header:
-	 *   element_id  [221/0xdd]
-	 *   Len         [7]
-	 *   Oui         [00:50:f2]
-	 *   OuiType     [2]
-	 *   OuiSubType  [0]
-	 *   Version     [1]
-	 */
+	 
 	struct ieee_types_vendor_header vend_hdr;
 	u8 oui_subtype;
 	u8 version;
@@ -1832,13 +1739,13 @@ struct mwifiex_ie_types_oper_mode_ntf {
 	u8 oper_mode;
 } __packed;
 
-/* VHT Operations IE */
+ 
 struct mwifiex_ie_types_vht_oper {
 	struct mwifiex_ie_types_header header;
 	u8 chan_width;
 	u8 chan_center_freq_1;
 	u8 chan_center_freq_2;
-	/* Basic MCS set map, each 2 bits stands for a NSS */
+	 
 	__le16 basic_mcs_map;
 } __packed;
 
@@ -2118,25 +2025,25 @@ struct host_cmd_ds_set_bss_mode {
 } __packed;
 
 struct host_cmd_ds_pcie_details {
-	/* TX buffer descriptor ring address */
+	 
 	__le32 txbd_addr_lo;
 	__le32 txbd_addr_hi;
-	/* TX buffer descriptor ring count */
+	 
 	__le32 txbd_count;
 
-	/* RX buffer descriptor ring address */
+	 
 	__le32 rxbd_addr_lo;
 	__le32 rxbd_addr_hi;
-	/* RX buffer descriptor ring count */
+	 
 	__le32 rxbd_count;
 
-	/* Event buffer descriptor ring address */
+	 
 	__le32 evtbd_addr_lo;
 	__le32 evtbd_addr_hi;
-	/* Event buffer descriptor ring count */
+	 
 	__le32 evtbd_count;
 
-	/* Sleep cookie buffer physical address */
+	 
 	__le32 sleep_cookie_addr_lo;
 	__le32 sleep_cookie_addr_hi;
 } __packed;
@@ -2153,8 +2060,8 @@ struct mwifiex_ie_types_rssi_threshold {
 
 struct mwifiex_radar_det_event {
 	__le32 detect_count;
-	u8 reg_domain;  /*1=fcc, 2=etsi, 3=mic*/
-	u8 det_type;  /*0=none, 1=pw(chirp), 2=pri(radar)*/
+	u8 reg_domain;   
+	u8 det_type;   
 	__le16 pw_chirp_type;
 	u8 pw_chirp_idx;
 	u8 pw_value;
@@ -2394,4 +2301,4 @@ struct hw_spec_max_conn {
 	u8 max_sta_conn;
 } __packed;
 
-#endif /* !_MWIFIEX_FW_H_ */
+#endif  

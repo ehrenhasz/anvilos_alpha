@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * RISC-V performance counter support.
- *
- * Copyright (C) 2021 Western Digital Corporation or its affiliates.
- *
- * This implementation is based on old RISC-V perf and ARM perf event code
- * which are in turn based on sparc64 and x86 code.
- */
+
+ 
 
 #include <linux/cpumask.h>
 #include <linux/irq.h>
@@ -40,11 +33,7 @@ void arch_perf_update_userpage(struct perf_event *event,
 	userpg->cap_user_rdpmc = riscv_perf_user_access(event);
 
 #ifdef CONFIG_RISCV_PMU
-	/*
-	 * The counters are 64-bit but the priv spec doesn't mandate all the
-	 * bits to be implemented: that's why, counter width can vary based on
-	 * the cpu vendor.
-	 */
+	 
 	if (userpg->cap_user_rdpmc)
 		userpg->pmc_width = to_riscv_pmu(event->pmu)->ctr_get_width(event->hw.idx) + 1;
 #endif
@@ -58,11 +47,7 @@ void arch_perf_update_userpage(struct perf_event *event,
 		userpg->time_cycles = rd->epoch_cyc;
 		userpg->time_mask = rd->sched_clock_mask;
 
-		/*
-		 * Subtract the cycle base, such that software that
-		 * doesn't know about cap_user_time_short still 'works'
-		 * assuming no wraps.
-		 */
+		 
 		ns = mul_u64_u32_shr(rd->epoch_cyc, rd->mult, rd->shift);
 		userpg->time_zero -= ns;
 
@@ -70,21 +55,13 @@ void arch_perf_update_userpage(struct perf_event *event,
 
 	userpg->time_offset = userpg->time_zero - now;
 
-	/*
-	 * time_shift is not expected to be greater than 31 due to
-	 * the original published conversion algorithm shifting a
-	 * 32-bit value (now specifies a 64-bit value) - refer
-	 * perf_event_mmap_page documentation in perf_event.h.
-	 */
+	 
 	if (userpg->time_shift == 32) {
 		userpg->time_shift = 31;
 		userpg->time_mult >>= 1;
 	}
 
-	/*
-	 * Internal timekeeping for enabled/running/stopped times
-	 * is always computed with the sched_clock.
-	 */
+	 
 	userpg->cap_user_time = 1;
 	userpg->cap_user_time_zero = 1;
 	userpg->cap_user_time_short = 1;
@@ -130,9 +107,7 @@ static unsigned long csr_read_num(int csr_num)
 #undef switchcase_csr_read
 }
 
-/*
- * Read the CSR of a corresponding counter.
- */
+ 
 unsigned long riscv_pmu_ctr_read_csr(unsigned long csr)
 {
 	if (csr < CSR_CYCLE || csr > CSR_HPMCOUNTER31H ||
@@ -151,14 +126,11 @@ u64 riscv_pmu_ctr_get_width_mask(struct perf_event *event)
 	struct hw_perf_event *hwc = &event->hw;
 
 	if (!rvpmu->ctr_get_width)
-	/**
-	 * If the pmu driver doesn't support counter width, set it to default
-	 * maximum allowed by the specification.
-	 */
+	 
 		cwidth = 63;
 	else {
 		if (hwc->idx == -1)
-			/* Handle init case where idx is not initialized yet */
+			 
 			cwidth = rvpmu->ctr_get_width(0);
 		else
 			cwidth = rvpmu->ctr_get_width(hwc->idx);
@@ -233,12 +205,7 @@ int riscv_pmu_event_set_period(struct perf_event *event)
 		overflow = 1;
 	}
 
-	/*
-	 * Limit the maximum period to prevent the counter value
-	 * from overtaking the one we are about to program. In
-	 * effect we are reducing max_period to account for
-	 * interrupt latency (and we are being very conservative).
-	 */
+	 
 	if (left > (max_period >> 1))
 		left = (max_period >> 1);
 
@@ -284,7 +251,7 @@ static int riscv_pmu_add(struct perf_event *event, int flags)
 	if (flags & PERF_EF_START)
 		riscv_pmu_start(event, PERF_EF_RELOAD);
 
-	/* Propagate our changes to the userspace mapping. */
+	 
 	perf_event_update_userpage(event);
 
 	return 0;
@@ -298,7 +265,7 @@ static void riscv_pmu_del(struct perf_event *event, int flags)
 
 	riscv_pmu_stop(event, PERF_EF_UPDATE);
 	cpuc->events[hwc->idx] = NULL;
-	/* The firmware need to reset the counter mapping */
+	 
 	if (rvpmu->ctr_stop)
 		rvpmu->ctr_stop(event, RISCV_PMU_STOP_FLAG_RESET);
 	cpuc->n_events--;
@@ -329,12 +296,7 @@ static int riscv_pmu_event_init(struct perf_event *event)
 		return mapped_event;
 	}
 
-	/*
-	 * idx is set to -1 because the index of a general event should not be
-	 * decided until binding to some counter in pmu->add().
-	 * config will contain the information about counter CSR
-	 * the idx will contain the counter index
-	 */
+	 
 	hwc->config = event_config;
 	hwc->idx = -1;
 	hwc->event_base = mapped_event;
@@ -343,12 +305,7 @@ static int riscv_pmu_event_init(struct perf_event *event)
 		rvpmu->event_init(event);
 
 	if (!is_sampling_event(event)) {
-		/*
-		 * For non-sampling runs, limit the sample_period to half
-		 * of the counter width. That way, the new counter value
-		 * is far less likely to overtake the previous one unless
-		 * you have some serious IRQ latency issues.
-		 */
+		 
 		cmask = riscv_pmu_ctr_get_width_mask(event);
 		hwc->sample_period  =  cmask >> 1;
 		hwc->last_period    = hwc->sample_period;

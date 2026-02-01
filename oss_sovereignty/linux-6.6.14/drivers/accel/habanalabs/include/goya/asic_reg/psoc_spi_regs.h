@@ -1,23 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0
- *
- * Copyright 2016-2018 HabanaLabs, Ltd.
- * All Rights Reserved.
- *
- */
+ 
 
-/************************************
- ** This is an auto-generated file **
- **       DO NOT EDIT BELOW        **
- ************************************/
+ 
 
 #ifndef ASIC_REG_PSOC_SPI_REGS_H_
 #define ASIC_REG_PSOC_SPI_REGS_H_
 
-/*
- *****************************************
- *   PSOC_SPI (Prototype: SPI)
- *****************************************
- */
+ 
 
 #define mmPSOC_SPI_CTRLR0                                            0xC43000
 
@@ -139,4 +127,4 @@
 
 #define mmPSOC_SPI_RSVD_2                                            0xC430FC
 
-#endif /* ASIC_REG_PSOC_SPI_REGS_H_ */
+#endif  

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  linux/drivers/irqchip/irq-zevio.c
- *
- *  Copyright (C) 2013 Daniel Tang <tangrs@tangrs.id.au>
- */
+
+ 
 
 #include <linux/io.h>
 #include <linux/irq.h>
@@ -56,13 +52,13 @@ static void __exception_irq_entry zevio_handle_irq(struct pt_regs *regs)
 
 static void __init zevio_init_irq_base(void __iomem *base)
 {
-	/* Disable all interrupts */
+	 
 	writel(~0, base + IO_DISABLE);
 
-	/* Accept interrupts of all priorities */
+	 
 	writel(0xF, base + IO_MAX_PRIOTY);
 
-	/* Reset existing interrupts */
+	 
 	readl(base + IO_RESET);
 }
 
@@ -79,16 +75,16 @@ static int __init zevio_of_init(struct device_node *node,
 	zevio_irq_io = of_iomap(node, 0);
 	BUG_ON(!zevio_irq_io);
 
-	/* Do not invert interrupt status bits */
+	 
 	writel(~0, zevio_irq_io + IO_INVERT_SEL);
 
-	/* Disable sticky interrupts */
+	 
 	writel(0, zevio_irq_io + IO_STICKY_SEL);
 
-	/* We don't use IRQ priorities. Set each IRQ to highest priority. */
+	 
 	memset_io(zevio_irq_io + IO_PRIORITY_SEL, 0, MAX_INTRS * sizeof(u32));
 
-	/* Init IRQ and FIQ */
+	 
 	zevio_init_irq_base(zevio_irq_io + IO_IRQ_BASE);
 	zevio_init_irq_base(zevio_irq_io + IO_FIQ_BASE);
 

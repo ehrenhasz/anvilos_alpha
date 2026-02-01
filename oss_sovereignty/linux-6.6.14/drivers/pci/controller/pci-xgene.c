@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * APM X-Gene PCIe Driver
- *
- * Copyright (c) 2014 Applied Micro Circuits Corporation.
- *
- * Author: Tanmay Inamdar <tinamdar@apm.com>.
- */
+
+ 
 #include <linux/clk.h>
 #include <linux/delay.h>
 #include <linux/io.h>
@@ -52,7 +46,7 @@
 
 #define XGENE_V1_PCI_EXP_CAP		0x40
 
-/* PCIe IP version */
+ 
 #define XGENE_PCIE_IP_VER_UNKN		0
 #define XGENE_PCIE_IP_VER_1		1
 #define XGENE_PCIE_IP_VER_2		2
@@ -95,10 +89,7 @@ static inline struct xgene_pcie *pcie_bus_to_port(struct pci_bus *bus)
 	return (struct xgene_pcie *)(cfg->priv);
 }
 
-/*
- * When the address bit [17:16] is 2'b01, the Configuration access will be
- * treated as Type 1 and it will be forwarded to external PCIe device.
- */
+ 
 static void __iomem *xgene_pcie_get_cfg_base(struct pci_bus *bus)
 {
 	struct xgene_pcie *port = pcie_bus_to_port(bus);
@@ -109,10 +100,7 @@ static void __iomem *xgene_pcie_get_cfg_base(struct pci_bus *bus)
 	return port->cfg_base;
 }
 
-/*
- * For Configuration request, RTDID register is used as Bus Number,
- * Device Number and Function number of the header fields.
- */
+ 
 static void xgene_pcie_set_rtdid_reg(struct pci_bus *bus, uint devfn)
 {
 	struct xgene_pcie *port = pcie_bus_to_port(bus);
@@ -127,18 +115,11 @@ static void xgene_pcie_set_rtdid_reg(struct pci_bus *bus, uint devfn)
 		rtdid_val = (b << 8) | (d << 3) | f;
 
 	xgene_pcie_writel(port, RTDID, rtdid_val);
-	/* read the register back to ensure flush */
+	 
 	xgene_pcie_readl(port, RTDID);
 }
 
-/*
- * X-Gene PCIe port uses BAR0-BAR1 of RC's configuration space as
- * the translation from PCI bus to native BUS.  Entire DDR region
- * is mapped into PCIe space using these registers, so it can be
- * reached by DMA from EP devices.  The BAR0/1 of bridge should be
- * hidden during enumeration to avoid the sizing and resource allocation
- * by PCIe core.
- */
+ 
 static bool xgene_pcie_hide_rc_bars(struct pci_bus *bus, int offset)
 {
 	if (pci_is_root_bus(bus) && ((offset == PCI_BASE_ADDRESS_0) ||
@@ -168,16 +149,7 @@ static int xgene_pcie_config_read32(struct pci_bus *bus, unsigned int devfn,
 	    PCIBIOS_SUCCESSFUL)
 		return PCIBIOS_DEVICE_NOT_FOUND;
 
-	/*
-	 * The v1 controller has a bug in its Configuration Request Retry
-	 * Status (CRS) logic: when CRS Software Visibility is enabled and
-	 * we read the Vendor and Device ID of a non-existent device, the
-	 * controller fabricates return data of 0xFFFF0001 ("device exists
-	 * but is not ready") instead of 0xFFFFFFFF (PCI_ERROR_RESPONSE)
-	 * ("device does not exist").  This causes the PCI core to retry
-	 * the read until it times out.  Avoid this by not claiming to
-	 * support CRS SV.
-	 */
+	 
 	if (pci_is_root_bus(bus) && (port->version == XGENE_PCIE_IP_VER_1) &&
 	    ((where & ~0x3) == XGENE_V1_PCI_EXP_CAP + PCI_EXP_RTCTL))
 		*val &= ~(PCI_EXP_RTCAP_CRSVIS << 16);
@@ -452,10 +424,7 @@ static void xgene_pcie_setup_pims(struct xgene_pcie *port, u32 pim_reg,
 	xgene_pcie_writel(port, pim_reg + 0x14, upper_32_bits(size));
 }
 
-/*
- * X-Gene PCIe support maximum 3 inbound memory regions
- * This function helps to select a region based on size of region
- */
+ 
 static int xgene_pcie_select_ib_reg(u8 *ib_reg_mask, u64 size)
 {
 	if ((size > 4) && (size < SZ_16M) && !(*ib_reg_mask & (1 << 1))) {
@@ -539,7 +508,7 @@ static int xgene_pcie_parse_map_dma_ranges(struct xgene_pcie *port)
 		return -EINVAL;
 	}
 
-	/* Get the dma-ranges from DT */
+	 
 	for_each_of_pci_range(&parser, &range) {
 		u64 end = range.cpu_addr + range.size - 1;
 
@@ -550,7 +519,7 @@ static int xgene_pcie_parse_map_dma_ranges(struct xgene_pcie *port)
 	return 0;
 }
 
-/* clear BAR configuration which was done by firmware */
+ 
 static void xgene_pcie_clear_config(struct xgene_pcie *port)
 {
 	int i;
@@ -567,7 +536,7 @@ static int xgene_pcie_setup(struct xgene_pcie *port)
 
 	xgene_pcie_clear_config(port);
 
-	/* setup the vendor and device IDs correctly */
+	 
 	val = (XGENE_PCIE_DEVICEID << 16) | PCI_VENDOR_ID_AMCC;
 	xgene_pcie_writel(port, BRIDGE_CFG_0, val);
 

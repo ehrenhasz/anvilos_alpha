@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: ISC
-/* Copyright (C) 2021 MediaTek Inc.
- *
- */
+
+ 
 #include <linux/module.h>
 #include <linux/firmware.h>
 
@@ -12,7 +10,7 @@
 
 #define VERSION "0.1"
 
-/* It is for mt79xx download rom patch*/
+ 
 #define MTK_FW_ROM_PATCH_HEADER_SIZE	32
 #define MTK_FW_ROM_PATCH_GD_SIZE	64
 #define MTK_FW_ROM_PATCH_SEC_MAP_SIZE	64
@@ -145,7 +143,7 @@ int btmtk_setup_firmware_79xx(struct hci_dev *hdev, const char *fwname,
 		if (dl_size > 0) {
 			retry = 20;
 			while (retry > 0) {
-				cmd[0] = 0; /* 0 means legacy dl mode. */
+				cmd[0] = 0;  
 				memcpy(cmd + 1,
 				       fw_ptr + MTK_FW_ROM_PATCH_HEADER_SIZE +
 				       MTK_FW_ROM_PATCH_GD_SIZE +
@@ -214,7 +212,7 @@ int btmtk_setup_firmware_79xx(struct hci_dev *hdev, const char *fwname,
 next_section:
 		continue;
 	}
-	/* Wait a few moments for firmware activation done */
+	 
 	usleep_range(100000, 120000);
 
 err_release_fw:
@@ -240,7 +238,7 @@ int btmtk_setup_firmware(struct hci_dev *hdev, const char *fwname,
 		return err;
 	}
 
-	/* Power on data RAM the firmware relies on. */
+	 
 	param = 1;
 	wmt_params.op = BTMTK_WMT_FUNC_CTRL;
 	wmt_params.flag = 3;
@@ -257,7 +255,7 @@ int btmtk_setup_firmware(struct hci_dev *hdev, const char *fwname,
 	fw_ptr = fw->data;
 	fw_size = fw->size;
 
-	/* The size of patch header is 30 bytes, should be skip */
+	 
 	if (fw_size < 30) {
 		err = -EINVAL;
 		goto err_release_fw;
@@ -273,7 +271,7 @@ int btmtk_setup_firmware(struct hci_dev *hdev, const char *fwname,
 	while (fw_size > 0) {
 		dlen = min_t(int, 250, fw_size);
 
-		/* Tell device the position in sequence */
+		 
 		if (fw_size - dlen <= 0)
 			flag = 3;
 		else if (fw_size < fw->size - 30)
@@ -300,14 +298,14 @@ int btmtk_setup_firmware(struct hci_dev *hdev, const char *fwname,
 	wmt_params.data = NULL;
 	wmt_params.status = NULL;
 
-	/* Activate funciton the firmware providing to */
+	 
 	err = wmt_cmd_sync(hdev, &wmt_params);
 	if (err < 0) {
 		bt_dev_err(hdev, "Failed to send wmt rst (%d)", err);
 		goto err_release_fw;
 	}
 
-	/* Wait a few moments for firmware activation done */
+	 
 	usleep_range(10000, 12000);
 
 err_release_fw:
@@ -382,7 +380,7 @@ int btmtk_process_coredump(struct hci_dev *hdev, struct sk_buff *skb)
 			break;
 		data->cd_info.cnt = 0;
 
-		/* It is supposed coredump can be done within 5 seconds */
+		 
 		schedule_delayed_work(&hdev->dump.dump_timeout,
 				      msecs_to_jiffies(5000));
 		fallthrough;
@@ -393,7 +391,7 @@ int btmtk_process_coredump(struct hci_dev *hdev, struct sk_buff *skb)
 			break;
 		data->cd_info.cnt++;
 
-		/* Mediatek coredump data would be more than MTK_COREDUMP_NUM */
+		 
 		if (data->cd_info.cnt > MTK_COREDUMP_NUM &&
 		    skb->len > MTK_COREDUMP_END_LEN)
 			if (!memcmp((char *)&skb->data[skb->len - MTK_COREDUMP_END_LEN],

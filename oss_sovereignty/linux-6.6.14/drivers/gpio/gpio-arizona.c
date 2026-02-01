@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * gpiolib support for Wolfson Arizona class devices
- *
- * Copyright 2012 Wolfson Microelectronics PLC.
- *
- * Author: Mark Brown <broonie@opensource.wolfsonmicro.com>
- */
+
+ 
 
 #include <linux/gpio/driver.h>
 #include <linux/kernel.h>
@@ -58,7 +52,7 @@ static int arizona_gpio_get(struct gpio_chip *chip, unsigned offset)
 	if (ret < 0)
 		return ret;
 
-	/* Resume to read actual registers for input pins */
+	 
 	if (val & ARIZONA_GPN_DIR) {
 		ret = pm_runtime_get_sync(chip->parent);
 		if (ret < 0) {
@@ -67,7 +61,7 @@ static int arizona_gpio_get(struct gpio_chip *chip, unsigned offset)
 			return ret;
 		}
 
-		/* Register is cached, drop it to ensure a physical read */
+		 
 		ret = regcache_drop_region(arizona->regmap, reg, reg);
 		if (ret < 0) {
 			dev_err(chip->parent, "Failed to drop cache: %d\n",

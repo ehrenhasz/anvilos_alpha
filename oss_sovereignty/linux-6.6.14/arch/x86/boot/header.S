@@ -1,20 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- *	header.S
- *
- *	Copyright (C) 1991, 1992 Linus Torvalds
- *
- *	Based on bootsect.S and setup.S
- *	modified by more people than can be counted
- *
- *	Rewritten as a common file by H. Peter Anvin (Apr 2007)
- *
- * BIG FAT NOTE: We're in real mode using 64k segments.  Therefore segment
- * addresses must be multiplied by 16 to obtain their respective linear
- * addresses. To avoid confusion, linear addresses are written using leading
- * hex while segment addresses are written as segment:offset.
- *
- */
+ 
+ 
 #include <linux/pe.h>
 #include <asm/segment.h>
 #include <asm/boot.h>
@@ -25,8 +10,8 @@
 #include "voffset.h"
 #include "zoffset.h"
 
-BOOTSEG		= 0x07C0		/* original address of boot-sector */
-SYSSEG		= 0x1000		/* historical load address >> 4 */
+BOOTSEG		= 0x07C0		 
+SYSSEG		= 0x1000		 
 
 #ifndef SVGA_MODE
 #define SVGA_MODE ASK_VGA
@@ -86,7 +71,7 @@ bs_die:
 	#
 	.long	LINUX_PE_MAGIC
 	.long	pe_header
-#endif /* CONFIG_EFI_STUB */
+#endif  
 
 	.section ".bsdata", "a"
 bugger_off_msg:
@@ -275,23 +260,23 @@ section_table:
 		IMAGE_SCN_ALIGN_16BYTES		# Characteristics
 
 	.set	section_count, (. - section_table) / 40
-#endif /* CONFIG_EFI_STUB */
+#endif  
 
 	# Kernel attributes; used by setup.  This is part 1 of the
 	# header, from the old boot sector.
 
 	.section ".header", "a"
 	.globl	sentinel
-sentinel:	.byte 0xff, 0xff        /* Used to detect broken loaders */
+sentinel:	.byte 0xff, 0xff         
 
 	.globl	hdr
 hdr:
-setup_sects:	.byte 0			/* Filled in by build.c */
+setup_sects:	.byte 0			 
 root_flags:	.word ROOT_RDONLY
-syssize:	.long 0			/* Filled in by build.c */
-ram_size:	.word 0			/* Obsolete */
+syssize:	.long 0			 
+ram_size:	.word 0			 
 vid_mode:	.word SVGA_MODE
-root_dev:	.word 0			/* Filled in by build.c */
+root_dev:	.word 0			 
 boot_flag:	.word 0xAA55
 
 	# offset 512, entry point
@@ -559,11 +544,7 @@ pref_address:		.quad LOAD_PHYSICAL_ADDR	# preferred load addr
 # define ZO_z_extract_offset	ZO_z_extra_bytes
 #endif
 
-/*
- * The extract_offset has to be bigger than ZO head section. Otherwise when
- * the head code is running to move ZO to the end of the buffer, it will
- * overwrite the head code itself.
- */
+ 
 #if (ZO__ehead - ZO_startup_32) > ZO_z_extract_offset
 # define ZO_z_min_extract_offset ((ZO__ehead - ZO_startup_32 + 4095) & ~4095)
 #else

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* RxRPC individual remote procedure call handling
- *
- * Copyright (C) 2007 Red Hat, Inc. All Rights Reserved.
- * Written by David Howells (dhowells@redhat.com)
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -88,10 +84,7 @@ static struct lock_class_key rxrpc_call_user_mutex_lock_class_key;
 
 static void rxrpc_destroy_call(struct work_struct *);
 
-/*
- * find an extant server call
- * - called in process context with IRQs enabled
- */
+ 
 struct rxrpc_call *rxrpc_find_call_by_user_ID(struct rxrpc_sock *rx,
 					      unsigned long user_call_ID)
 {
@@ -125,9 +118,7 @@ found_extant_call:
 	return call;
 }
 
-/*
- * allocate a new call
- */
+ 
 struct rxrpc_call *rxrpc_alloc_call(struct rxrpc_sock *rx, gfp_t gfp,
 				    unsigned int debug_id)
 {
@@ -140,9 +131,7 @@ struct rxrpc_call *rxrpc_alloc_call(struct rxrpc_sock *rx, gfp_t gfp,
 
 	mutex_init(&call->user_mutex);
 
-	/* Prevent lockdep reporting a deadlock false positive between the afs
-	 * filesystem and sys_sendmsg() via the mmap sem.
-	 */
+	 
 	if (rx->sk.sk_kern_sock)
 		lockdep_set_class(&call->user_mutex,
 				  &rxrpc_call_user_mutex_lock_class_key);
@@ -189,9 +178,7 @@ struct rxrpc_call *rxrpc_alloc_call(struct rxrpc_sock *rx, gfp_t gfp,
 	return call;
 }
 
-/*
- * Allocate a new client call.
- */
+ 
 static struct rxrpc_call *rxrpc_alloc_client_call(struct rxrpc_sock *rx,
 						  struct sockaddr_rxrpc *srx,
 						  struct rxrpc_conn_parameters *cp,
@@ -247,9 +234,7 @@ static struct rxrpc_call *rxrpc_alloc_client_call(struct rxrpc_sock *rx,
 	return call;
 }
 
-/*
- * Initiate the call ack/resend/expiry timer.
- */
+ 
 void rxrpc_start_call_timer(struct rxrpc_call *call)
 {
 	unsigned long now = jiffies;
@@ -266,9 +251,7 @@ void rxrpc_start_call_timer(struct rxrpc_call *call)
 	call->timer.expires = now;
 }
 
-/*
- * Wait for a call slot to become available.
- */
+ 
 static struct semaphore *rxrpc_get_call_slot(struct rxrpc_call_params *p, gfp_t gfp)
 {
 	struct semaphore *limiter = &rxrpc_call_limiter;
@@ -282,9 +265,7 @@ static struct semaphore *rxrpc_get_call_slot(struct rxrpc_call_params *p, gfp_t 
 	return down_interruptible(limiter) < 0 ? NULL : limiter;
 }
 
-/*
- * Release a call slot.
- */
+ 
 static void rxrpc_put_call_slot(struct rxrpc_call *call)
 {
 	struct semaphore *limiter = &rxrpc_call_limiter;
@@ -294,11 +275,7 @@ static void rxrpc_put_call_slot(struct rxrpc_call *call)
 	up(limiter);
 }
 
-/*
- * Start the process of connecting a call.  We obtain a peer and a connection
- * bundle, but the actual association of a call with a connection is offloaded
- * to the I/O thread to simplify locking.
- */
+ 
 static int rxrpc_connect_call(struct rxrpc_call *call, gfp_t gfp)
 {
 	struct rxrpc_local *local = call->local;
@@ -327,11 +304,7 @@ error:
 	return ret;
 }
 
-/*
- * Set up a call for the given parameters.
- * - Called with the socket lock held, which it must release.
- * - If it returns a call, the call's lock will need releasing by the caller.
- */
+ 
 struct rxrpc_call *rxrpc_new_client_call(struct rxrpc_sock *rx,
 					 struct rxrpc_conn_parameters *cp,
 					 struct sockaddr_rxrpc *srx,
@@ -363,12 +336,10 @@ struct rxrpc_call *rxrpc_new_client_call(struct rxrpc_sock *rx,
 		return call;
 	}
 
-	/* We need to protect a partially set up call against the user as we
-	 * will be acting outside the socket lock.
-	 */
+	 
 	mutex_lock(&call->user_mutex);
 
-	/* Publish the call, even though it is incompletely set up as yet */
+	 
 	write_lock(&rx->call_lock);
 
 	pp = &rx->calls.rb_node;
@@ -400,12 +371,10 @@ struct rxrpc_call *rxrpc_new_client_call(struct rxrpc_sock *rx,
 	list_add_tail_rcu(&call->link, &rxnet->calls);
 	spin_unlock(&rxnet->call_lock);
 
-	/* From this point on, the call is protected by its own lock. */
+	 
 	release_sock(&rx->sk);
 
-	/* Set up or get a connection record and set the protocol parameters,
-	 * including channel number and call ID.
-	 */
+	 
 	ret = rxrpc_connect_call(call, gfp);
 	if (ret < 0)
 		goto error_attached_to_socket;
@@ -413,11 +382,7 @@ struct rxrpc_call *rxrpc_new_client_call(struct rxrpc_sock *rx,
 	_leave(" = %p [new]", call);
 	return call;
 
-	/* We unexpectedly found the user ID in the list after taking
-	 * the call_lock.  This shouldn't happen unless the user races
-	 * with itself and tries to add the same user ID twice at the
-	 * same time in different threads.
-	 */
+	 
 error_dup_user_ID:
 	write_unlock(&rx->call_lock);
 	release_sock(&rx->sk);
@@ -429,11 +394,7 @@ error_dup_user_ID:
 	_leave(" = -EEXIST");
 	return ERR_PTR(-EEXIST);
 
-	/* We got an error, but the call is attached to the socket and is in
-	 * need of release.  However, we might now race with recvmsg() when it
-	 * completion notifies the socket.  Return 0 from sys_sendmsg() and
-	 * leave the error to recvmsg() to deal with.
-	 */
+	 
 error_attached_to_socket:
 	trace_rxrpc_call(call->debug_id, refcount_read(&call->ref), ret,
 			 rxrpc_call_see_connect_failed);
@@ -442,10 +403,7 @@ error_attached_to_socket:
 	return call;
 }
 
-/*
- * Set up an incoming call.  call->conn points to the connection.
- * This is called in BH context and isn't allowed to fail.
- */
+ 
 void rxrpc_incoming_call(struct rxrpc_sock *rx,
 			 struct rxrpc_call *call,
 			 struct sk_buff *skb)
@@ -486,12 +444,7 @@ void rxrpc_incoming_call(struct rxrpc_sock *rx,
 
 	rxrpc_get_call(call, rxrpc_call_get_io_thread);
 
-	/* Set the channel for this call.  We don't get channel_lock as we're
-	 * only defending against the data_ready handler (which we're called
-	 * from) and the RESPONSE packet parser (which is only really
-	 * interested in call_counter and can cope with a disagreement with the
-	 * call pointer).
-	 */
+	 
 	chan = sp->hdr.cid & RXRPC_CHANNELMASK;
 	conn->channels[chan].call_counter = call->call_id;
 	conn->channels[chan].call_id = call->call_id;
@@ -506,9 +459,7 @@ void rxrpc_incoming_call(struct rxrpc_sock *rx,
 	_leave("");
 }
 
-/*
- * Note the re-emergence of a call.
- */
+ 
 void rxrpc_see_call(struct rxrpc_call *call, enum rxrpc_call_trace why)
 {
 	if (call) {
@@ -529,9 +480,7 @@ struct rxrpc_call *rxrpc_try_get_call(struct rxrpc_call *call,
 	return call;
 }
 
-/*
- * Note the addition of a ref on a call.
- */
+ 
 void rxrpc_get_call(struct rxrpc_call *call, enum rxrpc_call_trace why)
 {
 	int r;
@@ -540,18 +489,14 @@ void rxrpc_get_call(struct rxrpc_call *call, enum rxrpc_call_trace why)
 	trace_rxrpc_call(call->debug_id, r + 1, 0, why);
 }
 
-/*
- * Clean up the Rx skb ring.
- */
+ 
 static void rxrpc_cleanup_ring(struct rxrpc_call *call)
 {
 	rxrpc_purge_queue(&call->recvmsg_queue);
 	rxrpc_purge_queue(&call->rx_oos_queue);
 }
 
-/*
- * Detach a call from its owning socket.
- */
+ 
 void rxrpc_release_call(struct rxrpc_sock *rx, struct rxrpc_call *call)
 {
 	struct rxrpc_connection *conn = call->conn;
@@ -567,7 +512,7 @@ void rxrpc_release_call(struct rxrpc_sock *rx, struct rxrpc_call *call)
 
 	rxrpc_put_call_slot(call);
 
-	/* Make sure we don't get any more notifications */
+	 
 	spin_lock(&rx->recvmsg_lock);
 
 	if (!list_empty(&call->recvmsg_link)) {
@@ -577,7 +522,7 @@ void rxrpc_release_call(struct rxrpc_sock *rx, struct rxrpc_call *call)
 		put = true;
 	}
 
-	/* list_empty() must return false in rxrpc_notify_socket() */
+	 
 	call->recvmsg_link.next = NULL;
 	call->recvmsg_link.prev = NULL;
 
@@ -604,9 +549,7 @@ void rxrpc_release_call(struct rxrpc_sock *rx, struct rxrpc_call *call)
 	_leave("");
 }
 
-/*
- * release all the calls associated with a socket
- */
+ 
 void rxrpc_release_calls_on_socket(struct rxrpc_sock *rx)
 {
 	struct rxrpc_call *call;
@@ -635,9 +578,7 @@ void rxrpc_release_calls_on_socket(struct rxrpc_sock *rx)
 	_leave("");
 }
 
-/*
- * release a call
- */
+ 
 void rxrpc_put_call(struct rxrpc_call *call, enum rxrpc_call_trace why)
 {
 	struct rxrpc_net *rxnet = call->rxnet;
@@ -662,9 +603,7 @@ void rxrpc_put_call(struct rxrpc_call *call, enum rxrpc_call_trace why)
 	}
 }
 
-/*
- * Free up the call under RCU.
- */
+ 
 static void rxrpc_rcu_free_call(struct rcu_head *rcu)
 {
 	struct rxrpc_call *call = container_of(rcu, struct rxrpc_call, rcu);
@@ -675,9 +614,7 @@ static void rxrpc_rcu_free_call(struct rcu_head *rcu)
 		wake_up_var(&rxnet->nr_calls);
 }
 
-/*
- * Final call destruction - but must be done in process context.
- */
+ 
 static void rxrpc_destroy_call(struct work_struct *work)
 {
 	struct rxrpc_call *call = container_of(work, struct rxrpc_call, destroyer);
@@ -706,9 +643,7 @@ static void rxrpc_destroy_call(struct work_struct *work)
 	call_rcu(&call->rcu, rxrpc_rcu_free_call);
 }
 
-/*
- * clean up a call
- */
+ 
 void rxrpc_cleanup_call(struct rxrpc_call *call)
 {
 	memset(&call->sock_node, 0xcd, sizeof(call->sock_node));
@@ -719,19 +654,13 @@ void rxrpc_cleanup_call(struct rxrpc_call *call)
 	del_timer(&call->timer);
 
 	if (rcu_read_lock_held())
-		/* Can't use the rxrpc workqueue as we need to cancel/flush
-		 * something that may be running/waiting there.
-		 */
+		 
 		schedule_work(&call->destroyer);
 	else
 		rxrpc_destroy_call(&call->destroyer);
 }
 
-/*
- * Make sure that all calls are gone from a network namespace.  To reach this
- * point, any open UDP sockets in that namespace must have been closed, so any
- * outstanding calls cannot be doing I/O.
- */
+ 
 void rxrpc_destroy_all_calls(struct rxrpc_net *rxnet)
 {
 	struct rxrpc_call *call;

@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0+ OR BSD-3-Clause)
-/* Copyright 2017-2019 NXP */
+
+ 
 
 #include <linux/ethtool_netlink.h>
 #include <linux/net_tstamp.h>
@@ -54,7 +54,7 @@ static int enetc_get_reglen(struct net_device *ndev)
 	if (hw->port && !!(priv->si->hw_features & ENETC_SI_F_QBU))
 		len += ARRAY_SIZE(enetc_port_mm_regs);
 
-	len *= sizeof(u32) * 2; /* store 2 entries per reg: addr and value */
+	len *= sizeof(u32) * 2;  
 
 	return len;
 }
@@ -504,7 +504,7 @@ static int enetc_get_rsshash(struct ethtool_rxnfc *rxnfc)
 	return 0;
 }
 
-/* current HW spec does byte reversal on everything including MAC addresses */
+ 
 static void ether_addr_copy_swap(u8 *dst, const u8 *src)
 {
 	int i;
@@ -547,7 +547,7 @@ l4ip4:
 		rfse.dport_m = ntohs(l4ip4_m->pdst);
 		if (l4ip4_m->tos)
 			netdev_warn(si->ndev, "ToS field is not supported and was ignored\n");
-		rfse.ethtype_h = ETH_P_IP; /* IPv4 */
+		rfse.ethtype_h = ETH_P_IP;  
 		rfse.ethtype_m = 0xffff;
 		break;
 	case IP_USER_FLOW:
@@ -560,7 +560,7 @@ l4ip4:
 		rfse.dip_m[0] = l3ip4_m->ip4dst;
 		if (l3ip4_m->tos)
 			netdev_warn(si->ndev, "ToS field is not supported and was ignored\n");
-		rfse.ethtype_h = ETH_P_IP; /* IPv4 */
+		rfse.ethtype_h = ETH_P_IP;  
 		rfse.ethtype_m = 0xffff;
 		break;
 	case ETHER_FLOW:
@@ -598,12 +598,12 @@ static int enetc_get_rxnfc(struct net_device *ndev, struct ethtool_rxnfc *rxnfc,
 		rxnfc->data = priv->num_rx_rings;
 		break;
 	case ETHTOOL_GRXFH:
-		/* get RSS hash config */
+		 
 		return enetc_get_rsshash(rxnfc);
 	case ETHTOOL_GRXCLSRLCNT:
-		/* total number of entries */
+		 
 		rxnfc->data = priv->si->num_fs_entries;
-		/* number of entries in use */
+		 
 		rxnfc->rule_cnt = 0;
 		for (i = 0; i < priv->si->num_fs_entries; i++)
 			if (priv->cls_rules[i].used)
@@ -613,13 +613,13 @@ static int enetc_get_rxnfc(struct net_device *ndev, struct ethtool_rxnfc *rxnfc,
 		if (rxnfc->fs.location >= priv->si->num_fs_entries)
 			return -EINVAL;
 
-		/* get entry x */
+		 
 		rxnfc->fs = priv->cls_rules[rxnfc->fs.location].fs;
 		break;
 	case ETHTOOL_GRXCLSRLALL:
-		/* total number of entries */
+		 
 		rxnfc->data = priv->si->num_fs_entries;
-		/* array of indexes of used entries */
+		 
 		j = 0;
 		for (i = 0; i < priv->si->num_fs_entries; i++) {
 			if (!priv->cls_rules[i].used)
@@ -628,7 +628,7 @@ static int enetc_get_rxnfc(struct net_device *ndev, struct ethtool_rxnfc *rxnfc,
 				return -EMSGSIZE;
 			rule_locs[j++] = i;
 		}
-		/* number of entries in use */
+		 
 		rxnfc->rule_cnt = j;
 		break;
 	default:
@@ -678,7 +678,7 @@ static u32 enetc_get_rxfh_key_size(struct net_device *ndev)
 {
 	struct enetc_ndev_priv *priv = netdev_priv(ndev);
 
-	/* return the size of the RX flow hash key.  PF only */
+	 
 	return (priv->si->hw.port) ? ENETC_RSSHASH_KEY_SIZE : 0;
 }
 
@@ -686,7 +686,7 @@ static u32 enetc_get_rxfh_indir_size(struct net_device *ndev)
 {
 	struct enetc_ndev_priv *priv = netdev_priv(ndev);
 
-	/* return the size of the RX flow hash indirection table */
+	 
 	return priv->si->num_rss;
 }
 
@@ -697,16 +697,16 @@ static int enetc_get_rxfh(struct net_device *ndev, u32 *indir, u8 *key,
 	struct enetc_hw *hw = &priv->si->hw;
 	int err = 0, i;
 
-	/* return hash function */
+	 
 	if (hfunc)
 		*hfunc = ETH_RSS_HASH_TOP;
 
-	/* return hash key */
+	 
 	if (key && hw->port)
 		for (i = 0; i < ENETC_RSSHASH_KEY_SIZE / 4; i++)
 			((u32 *)key)[i] = enetc_port_rd(hw, ENETC_PRSSK(i));
 
-	/* return RSS table */
+	 
 	if (indir)
 		err = enetc_get_rss_table(priv->si, indir, priv->si->num_rss);
 
@@ -729,11 +729,11 @@ static int enetc_set_rxfh(struct net_device *ndev, const u32 *indir,
 	struct enetc_hw *hw = &priv->si->hw;
 	int err = 0;
 
-	/* set hash key, if PF */
+	 
 	if (key && hw->port)
 		enetc_set_rss_key(hw, key);
 
-	/* set RSS table */
+	 
 	if (indir)
 		err = enetc_set_rss_table(priv->si, indir, priv->si->num_rss);
 
@@ -750,7 +750,7 @@ static void enetc_get_ringparam(struct net_device *ndev,
 	ring->rx_pending = priv->rx_bd_count;
 	ring->tx_pending = priv->tx_bd_count;
 
-	/* do some h/w sanity checks for BDR length */
+	 
 	if (netif_running(ndev)) {
 		struct enetc_hw *hw = &priv->si->hw;
 		u32 val = enetc_rxbdr_rd(hw, 0, ENETC_RBLENR);
@@ -813,7 +813,7 @@ static int enetc_set_coalesce(struct net_device *ndev,
 
 	ic_mode |= tx_ictt ? ENETC_IC_TX_MANUAL : 0;
 
-	/* commit the settings */
+	 
 	changed = (ic_mode != priv->ic_mode) || (priv->tx_ictt != tx_ictt);
 
 	priv->ic_mode = ic_mode;
@@ -827,9 +827,7 @@ static int enetc_set_coalesce(struct net_device *ndev,
 	}
 
 	if (netif_running(ndev) && changed) {
-		/* reconfigure the operation mode of h/w interrupts,
-		 * traffic needs to be paused in the process
-		 */
+		 
 		enetc_stop(ndev);
 		enetc_start(ndev);
 	}
@@ -992,15 +990,13 @@ static int enetc_get_mm(struct net_device *ndev, struct ethtool_mm_state *state)
 	state->tx_min_frag_size = ethtool_mm_frag_size_add_to_min(rafs);
 	lafs = ENETC_MMCSR_GET_LAFS(val);
 	state->rx_min_frag_size = ethtool_mm_frag_size_add_to_min(lafs);
-	state->tx_enabled = !!(val & ENETC_MMCSR_LPE); /* mirror of MMCSR_ME */
+	state->tx_enabled = !!(val & ENETC_MMCSR_LPE);  
 	state->tx_active = state->tx_enabled &&
 			   (state->verify_status == ETHTOOL_MM_VERIFY_STATUS_SUCCEEDED ||
 			    state->verify_status == ETHTOOL_MM_VERIFY_STATUS_DISABLED);
 	state->verify_enabled = !(val & ENETC_MMCSR_VDIS);
 	state->verify_time = ENETC_MMCSR_GET_VT(val);
-	/* A verifyTime of 128 ms would exceed the 7 bit width
-	 * of the ENETC_MMCSR_VT field
-	 */
+	 
 	state->max_verify_time = 127;
 
 	mutex_unlock(&priv->mm_lock);
@@ -1013,10 +1009,7 @@ static int enetc_mm_wait_tx_active(struct enetc_hw *hw, int verify_time)
 	int timeout = verify_time * USEC_PER_MSEC * ENETC_MM_VERIFY_RETRIES;
 	u32 val;
 
-	/* This will time out after the standard value of 3 verification
-	 * attempts. To not sleep forever, it relies on a non-zero verify_time,
-	 * guarantee which is provided by the ethtool nlattr policy.
-	 */
+	 
 	return read_poll_timeout(enetc_port_rd, val,
 				 ENETC_MMCSR_GET_VSTS(val) == 3,
 				 ENETC_MM_VERIFY_SLEEP_US, timeout,
@@ -1040,10 +1033,7 @@ static void enetc_set_ptcfpr(struct enetc_hw *hw, u8 preemptible_tcs)
 	}
 }
 
-/* ENETC does not have an IRQ to notify changes to the MAC Merge TX status
- * (active/inactive), but the preemptible traffic classes should only be
- * committed to hardware once TX is active. Resort to polling.
- */
+ 
 void enetc_mm_commit_preemptible_tcs(struct enetc_ndev_priv *priv)
 {
 	struct enetc_hw *hw = &priv->si->hw;
@@ -1066,10 +1056,7 @@ out:
 	enetc_set_ptcfpr(hw, preemptible_tcs);
 }
 
-/* FIXME: Workaround for the link partner's verification failing if ENETC
- * priorly received too much express traffic. The documentation doesn't
- * suggest this is needed.
- */
+ 
 static void enetc_restart_emac_rx(struct enetc_si *si)
 {
 	u32 val = enetc_port_rd(&si->hw, ENETC_PM0_CMD_CFG);
@@ -1118,7 +1105,7 @@ static int enetc_set_mm(struct net_device *ndev, struct ethtool_mm_cfg *cfg,
 	else
 		priv->active_offloads &= ~ENETC_F_QBU;
 
-	/* If link is up, enable/disable MAC Merge right away */
+	 
 	if (!(val & ENETC_MMCSR_LINK_FAIL)) {
 		if (!!(priv->active_offloads & ENETC_F_QBU))
 			val |= ENETC_MMCSR_ME;
@@ -1143,13 +1130,7 @@ static int enetc_set_mm(struct net_device *ndev, struct ethtool_mm_cfg *cfg,
 	return 0;
 }
 
-/* When the link is lost, the verification state machine goes to the FAILED
- * state and doesn't restart on its own after a new link up event.
- * According to 802.3 Figure 99-8 - Verify state diagram, the LINK_FAIL bit
- * should have been sufficient to re-trigger verification, but for ENETC it
- * doesn't. As a workaround, we need to toggle the Merge Enable bit to
- * re-trigger verification when link comes up.
- */
+ 
 void enetc_mm_link_state_update(struct enetc_ndev_priv *priv, bool link)
 {
 	struct enetc_hw *hw = &priv->si->hw;

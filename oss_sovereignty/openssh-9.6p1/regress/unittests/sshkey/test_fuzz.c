@@ -1,9 +1,5 @@
-/* 	$OpenBSD: test_fuzz.c,v 1.13 2021/12/14 21:25:27 deraadt Exp $ */
-/*
- * Fuzz tests for key parsing
- *
- * Placed in the public domain
- */
+ 
+ 
 
 #include "includes.h"
 
@@ -96,7 +92,7 @@ sig_fuzz(struct sshkey *k, const char *sig_alg)
 	free(sig);
 	TEST_ONERROR(onerror, fuzz);
 	for(; !fuzz_done(fuzz); fuzz_next(fuzz)) {
-		/* Ensure 1-bit difference at least */
+		 
 		if (fuzz_matches_original(fuzz))
 			continue;
 		ASSERT_INT_NE(sshkey_verify(k, fuzz_ptr(fuzz), fuzz_len(fuzz),
@@ -248,8 +244,8 @@ sshkey_fuzz_tests(void)
 	sshbuf_free(fuzzed);
 	fuzz_cleanup(fuzz);
 	TEST_DONE();
-#endif /* OPENSSL_HAS_ECC */
-#endif /* WITH_OPENSSL */
+#endif  
+#endif  
 
 	TEST_START("fuzz Ed25519 private");
 	buf = load_file("ed25519_1");
@@ -316,8 +312,8 @@ sshkey_fuzz_tests(void)
 	public_fuzz(k1);
 	sshkey_free(k1);
 	TEST_DONE();
-#endif /* OPENSSL_HAS_ECC */
-#endif /* WITH_OPENSSL */
+#endif  
+#endif  
 
 	TEST_START("fuzz Ed25519 public");
 	buf = load_file("ed25519_1");
@@ -374,8 +370,8 @@ sshkey_fuzz_tests(void)
 	sig_fuzz(k1, NULL);
 	sshkey_free(k1);
 	TEST_DONE();
-#endif /* OPENSSL_HAS_ECC */
-#endif /* WITH_OPENSSL */
+#endif  
+#endif  
 
 	TEST_START("fuzz Ed25519 sig");
 	buf = load_file("ed25519_1");
@@ -385,7 +381,7 @@ sshkey_fuzz_tests(void)
 	sshkey_free(k1);
 	TEST_DONE();
 
-/* XXX fuzz decoded new-format blobs too */
-/* XXX fuzz XMSS too */
+ 
+ 
 
 }

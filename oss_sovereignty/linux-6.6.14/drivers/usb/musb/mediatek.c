@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2019 MediaTek Inc.
- *
- * Author:
- *  Min Guo <min.guo@mediatek.com>
- *  Yonglong Wu <yonglong.wu@mediatek.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/dma-mapping.h>
@@ -22,7 +16,7 @@
 #define USB_L1INTM		0x00a4
 #define MTK_MUSB_TXFUNCADDR	0x0480
 
-/* MediaTek controller toggle enable and status reg */
+ 
 #define MUSB_RXTOG		0x80
 #define MUSB_RXTOGEN		0x82
 #define MUSB_TXTOG		0x84
@@ -158,7 +152,7 @@ static irqreturn_t generic_interrupt(int irq, void *__hci)
 	musb->int_tx = musb_clearw(musb->mregs, MUSB_INTRTX);
 
 	if ((musb->int_usb & MUSB_INTR_RESET) && !is_host_active(musb)) {
-		/* ep0 FADDR must be 0 when (re)entering peripheral mode */
+		 
 		musb_ep_select(musb->mregs, 0);
 		musb_writeb(musb->mregs, MUSB_FADDR, 0);
 	}
@@ -199,7 +193,7 @@ static u8 mtk_musb_clearb(void __iomem *addr, unsigned int offset)
 {
 	u8 data;
 
-	/* W1C */
+	 
 	data = musb_readb(addr, offset);
 	musb_writeb(addr, offset, data);
 	return data;
@@ -209,7 +203,7 @@ static u16 mtk_musb_clearw(void __iomem *addr, unsigned int offset)
 {
 	u16 data;
 
-	/* W1C */
+	 
 	data = musb_readw(addr, offset);
 	musb_writew(addr, offset, data);
 	return data;
@@ -264,7 +258,7 @@ static int mtk_musb_init(struct musb *musb)
 	musb->is_host = false;
 	musb->isr = mtk_musb_interrupt;
 
-	/* Set TX/RX toggle enable */
+	 
 	musb_writew(musb->mregs, MUSB_TXTOGEN, MTK_TOGGLE_EN);
 	musb_writew(musb->mregs, MUSB_RXTOGEN, MTK_TOGGLE_EN);
 

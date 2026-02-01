@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Chrontel CH7033 Video Encoder Driver
- *
- * Copyright (C) 2019,2020 Lubomir Rintel
- */
+
+ 
 
 #include <linux/gpio/consumer.h>
 #include <linux/i2c.h>
@@ -17,20 +13,20 @@
 #include <drm/drm_print.h>
 #include <drm/drm_probe_helper.h>
 
-/* Page 0, Register 0x07 */
+ 
 enum {
 	DRI_PD		= BIT(3),
 	IO_PD		= BIT(5),
 };
 
-/* Page 0, Register 0x08 */
+ 
 enum {
 	DRI_PDDRI	= GENMASK(7, 4),
 	PDDAC		= GENMASK(3, 1),
 	PANEN		= BIT(0),
 };
 
-/* Page 0, Register 0x09 */
+ 
 enum {
 	DPD		= BIT(7),
 	GCKOFF		= BIT(6),
@@ -42,7 +38,7 @@ enum {
 	HDMI_PD		= BIT(0),
 };
 
-/* Page 0, Register 0x0a */
+ 
 enum {
 	MEMINIT		= BIT(7),
 	MEMIDLE		= BIT(6),
@@ -54,7 +50,7 @@ enum {
 	MCU_PD		= BIT(0),
 };
 
-/* Page 0, Register 0x18 */
+ 
 enum {
 	IDF		= GENMASK(7, 4),
 	INTEN		= BIT(3),
@@ -70,7 +66,7 @@ enum {
 	BYTE_SWAP_BGR	= 5,
 };
 
-/* Page 0, Register 0x19 */
+ 
 enum {
 	HPO_I		= BIT(5),
 	VPO_I		= BIT(4),
@@ -79,7 +75,7 @@ enum {
 	GCLKFREQ	= GENMASK(2, 0),
 };
 
-/* Page 0, Register 0x2e */
+ 
 enum {
 	HFLIP		= BIT(7),
 	VFLIP		= BIT(6),
@@ -89,13 +85,13 @@ enum {
 	TE		= GENMASK(2, 0),
 };
 
-/* Page 0, Register 0x2b */
+ 
 enum {
 	SWAPS		= GENMASK(7, 4),
 	VFMT		= GENMASK(3, 0),
 };
 
-/* Page 0, Register 0x54 */
+ 
 enum {
 	COMP_BP		= BIT(7),
 	DAC_EN_T	= BIT(6),
@@ -103,14 +99,14 @@ enum {
 	HOO_HDMI_HI	= GENMASK(2, 0),
 };
 
-/* Page 0, Register 0x57 */
+ 
 enum {
 	FLDSEN		= BIT(7),
 	VWO_HDMI_HI	= GENMASK(5, 3),
 	VOO_HDMI_HI	= GENMASK(2, 0),
 };
 
-/* Page 0, Register 0x7e */
+ 
 enum {
 	HDMI_LVDS_SEL	= BIT(7),
 	DE_GEN		= BIT(6),
@@ -119,7 +115,7 @@ enum {
 	R_INT		= GENMASK(3, 0),
 };
 
-/* Page 1, Register 0x07 */
+ 
 enum {
 	BPCKSEL		= BIT(7),
 	DRI_CMFB_EN	= BIT(6),
@@ -130,7 +126,7 @@ enum {
 	DRI_CKS2	= BIT(0),
 };
 
-/* Page 1, Register 0x08 */
+ 
 enum {
 	DACG		= BIT(6),
 	DACKTST		= BIT(5),
@@ -140,7 +136,7 @@ enum {
 	DISPON		= BIT(0),
 };
 
-/* Page 1, Register 0x0c */
+ 
 enum {
 	DRI_PLL_CP	= GENMASK(7, 6),
 	DRI_PLL_DIVSEL	= BIT(5),
@@ -151,7 +147,7 @@ enum {
 	DRI_PLL_CKTSTEN = BIT(0),
 };
 
-/* Page 1, Register 0x6b */
+ 
 enum {
 	VCO3CS		= GENMASK(7, 6),
 	ICPGBK2_0	= GENMASK(5, 3),
@@ -160,7 +156,7 @@ enum {
 	DRI_PD_SER	= BIT(0),
 };
 
-/* Page 1, Register 0x6c */
+ 
 enum {
 	PLL2N11		= GENMASK(7, 4),
 	PLL2N5_4	= BIT(3),
@@ -169,7 +165,7 @@ enum {
 	PD_I2CM		= BIT(0),
 };
 
-/* Page 3, Register 0x28 */
+ 
 enum {
 	DIFF_EN		= GENMASK(7, 6),
 	CORREC_EN	= GENMASK(5, 4),
@@ -178,7 +174,7 @@ enum {
 	HD_VGA_SEL	= BIT(1),
 };
 
-/* Page 3, Register 0x2a */
+ 
 enum {
 	LVDSCLK_BP	= BIT(7),
 	HDTVCLK_BP	= BIT(6),
@@ -188,7 +184,7 @@ enum {
 	THRWL		= GENMASK(2, 0),
 };
 
-/* Page 4, Register 0x52 */
+ 
 enum {
 	PGM_ARSTB	= BIT(7),
 	MCU_ARSTB	= BIT(6),
@@ -356,29 +352,25 @@ static void ch7033_bridge_mode_set(struct drm_bridge *bridge,
 	int vbporch = mode->vsync_start - mode->vdisplay;
 	int vsynclen = mode->vsync_end - mode->vsync_start;
 
-	/*
-	 * Page 4
-	 */
+	 
 	regmap_write(priv->regmap, 0x03, 0x04);
 
-	/* Turn everything off to set all the registers to their defaults. */
+	 
 	regmap_write(priv->regmap, 0x52, 0x00);
-	/* Bring I/O block up. */
+	 
 	regmap_write(priv->regmap, 0x52, RESETIB);
 
-	/*
-	 * Page 0
-	 */
+	 
 	regmap_write(priv->regmap, 0x03, 0x00);
 
-	/* Bring up parts we need from the power down. */
+	 
 	regmap_update_bits(priv->regmap, 0x07, DRI_PD | IO_PD, 0);
 	regmap_update_bits(priv->regmap, 0x08, DRI_PDDRI | PDDAC | PANEN, 0);
 	regmap_update_bits(priv->regmap, 0x09, DPD | GCKOFF |
 					       HDMI_PD | VGA_PD, 0);
 	regmap_update_bits(priv->regmap, 0x0a, HD_DVIB, 0);
 
-	/* Horizontal input timing. */
+	 
 	regmap_write(priv->regmap, 0x0b, (mode->htotal >> 8) << 3 |
 					 (mode->hdisplay >> 8));
 	regmap_write(priv->regmap, 0x0c, mode->hdisplay);
@@ -388,7 +380,7 @@ static void ch7033_bridge_mode_set(struct drm_bridge *bridge,
 	regmap_write(priv->regmap, 0x0f, hbporch);
 	regmap_write(priv->regmap, 0x10, hsynclen);
 
-	/* Vertical input timing. */
+	 
 	regmap_write(priv->regmap, 0x11, (mode->vtotal >> 8) << 3 |
 					 (mode->vdisplay >> 8));
 	regmap_write(priv->regmap, 0x12, mode->vdisplay);
@@ -398,10 +390,10 @@ static void ch7033_bridge_mode_set(struct drm_bridge *bridge,
 	regmap_write(priv->regmap, 0x15, vbporch);
 	regmap_write(priv->regmap, 0x16, vsynclen);
 
-	/* Input color swap. */
+	 
 	regmap_update_bits(priv->regmap, 0x18, SWAP, BYTE_SWAP_BGR);
 
-	/* Input clock and sync polarity. */
+	 
 	regmap_update_bits(priv->regmap, 0x19, 0x1, mode->clock >> 16);
 	regmap_update_bits(priv->regmap, 0x19, HPO_I | VPO_I | GCLKFREQ,
 			   (mode->flags & DRM_MODE_FLAG_PHSYNC) ? HPO_I : 0 |
@@ -410,53 +402,51 @@ static void ch7033_bridge_mode_set(struct drm_bridge *bridge,
 	regmap_write(priv->regmap, 0x1a, mode->clock >> 8);
 	regmap_write(priv->regmap, 0x1b, mode->clock);
 
-	/* Horizontal output timing. */
+	 
 	regmap_write(priv->regmap, 0x1f, (mode->htotal >> 8) << 3 |
 					 (mode->hdisplay >> 8));
 	regmap_write(priv->regmap, 0x20, mode->hdisplay);
 	regmap_write(priv->regmap, 0x21, mode->htotal);
 
-	/* Vertical output timing. */
+	 
 	regmap_write(priv->regmap, 0x25, (mode->vtotal >> 8) << 3 |
 					 (mode->vdisplay >> 8));
 	regmap_write(priv->regmap, 0x26, mode->vdisplay);
 	regmap_write(priv->regmap, 0x27, mode->vtotal);
 
-	/* VGA channel bypass */
+	 
 	regmap_update_bits(priv->regmap, 0x2b, VFMT, 9);
 
-	/* Output sync polarity. */
+	 
 	regmap_update_bits(priv->regmap, 0x2e, HPO_O | VPO_O,
 			   (mode->flags & DRM_MODE_FLAG_PHSYNC) ? HPO_O : 0 |
 			   (mode->flags & DRM_MODE_FLAG_PVSYNC) ? VPO_O : 0);
 
-	/* HDMI horizontal output timing. */
+	 
 	regmap_update_bits(priv->regmap, 0x54, HWO_HDMI_HI | HOO_HDMI_HI,
 					       (hsynclen >> 8) << 3 |
 					       (hbporch >> 8));
 	regmap_write(priv->regmap, 0x55, hbporch);
 	regmap_write(priv->regmap, 0x56, hsynclen);
 
-	/* HDMI vertical output timing. */
+	 
 	regmap_update_bits(priv->regmap, 0x57, VWO_HDMI_HI | VOO_HDMI_HI,
 					       (vsynclen >> 8) << 3 |
 					       (vbporch >> 8));
 	regmap_write(priv->regmap, 0x58, vbporch);
 	regmap_write(priv->regmap, 0x59, vsynclen);
 
-	/* Pick HDMI, not LVDS. */
+	 
 	regmap_update_bits(priv->regmap, 0x7e, HDMI_LVDS_SEL, HDMI_LVDS_SEL);
 
-	/*
-	 * Page 1
-	 */
+	 
 	regmap_write(priv->regmap, 0x03, 0x01);
 
-	/* No idea what these do, but VGA is wobbly and blinky without them. */
+	 
 	regmap_update_bits(priv->regmap, 0x07, CKINV, CKINV);
 	regmap_update_bits(priv->regmap, 0x08, DISPON, DISPON);
 
-	/* DRI PLL */
+	 
 	regmap_update_bits(priv->regmap, 0x0c, DRI_PLL_DIVSEL, DRI_PLL_DIVSEL);
 	if (mode->clock <= 40000) {
 		regmap_update_bits(priv->regmap, 0x0c, DRI_PLL_N1_1 |
@@ -480,34 +470,30 @@ static void ch7033_bridge_mode_set(struct drm_bridge *bridge,
 						       DRI_PLL_N1_1);
 	}
 
-	/* This seems to be color calibration for VGA. */
-	regmap_write(priv->regmap, 0x64, 0x29); /* LSB Blue */
-	regmap_write(priv->regmap, 0x65, 0x29); /* LSB Green */
-	regmap_write(priv->regmap, 0x66, 0x29); /* LSB Red */
-	regmap_write(priv->regmap, 0x67, 0x00); /* MSB Blue */
-	regmap_write(priv->regmap, 0x68, 0x00); /* MSB Green */
-	regmap_write(priv->regmap, 0x69, 0x00); /* MSB Red */
+	 
+	regmap_write(priv->regmap, 0x64, 0x29);  
+	regmap_write(priv->regmap, 0x65, 0x29);  
+	regmap_write(priv->regmap, 0x66, 0x29);  
+	regmap_write(priv->regmap, 0x67, 0x00);  
+	regmap_write(priv->regmap, 0x68, 0x00);  
+	regmap_write(priv->regmap, 0x69, 0x00);  
 
 	regmap_update_bits(priv->regmap, 0x6b, DRI_PD_SER, 0x00);
 	regmap_update_bits(priv->regmap, 0x6c, DRI_PLL_PD, 0x00);
 
-	/*
-	 * Page 3
-	 */
+	 
 	regmap_write(priv->regmap, 0x03, 0x03);
 
-	/* More bypasses and apparently another HDMI/LVDS selector. */
+	 
 	regmap_update_bits(priv->regmap, 0x28, VGACLK_BP | HM_LV_SEL,
 					       VGACLK_BP | HM_LV_SEL);
 	regmap_update_bits(priv->regmap, 0x2a, HDMICLK_BP | HDMI_BP,
 					       HDMICLK_BP | HDMI_BP);
 
-	/*
-	 * Page 4
-	 */
+	 
 	regmap_write(priv->regmap, 0x03, 0x04);
 
-	/* Output clock. */
+	 
 	regmap_write(priv->regmap, 0x10, mode->clock >> 16);
 	regmap_write(priv->regmap, 0x11, mode->clock >> 8);
 	regmap_write(priv->regmap, 0x12, mode->clock);

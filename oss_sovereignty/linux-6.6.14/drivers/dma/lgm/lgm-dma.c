@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Lightning Mountain centralized DMA controller driver
- *
- * Copyright (c) 2016 - 2020 Intel Corporation.
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/clk.h>
@@ -58,7 +54,7 @@
 #define DMA_CCTRL_ON			BIT(0)
 #define DMA_CCTRL_RST			BIT(1)
 #define DMA_CCTRL_CH_POLL_EN		BIT(2)
-#define DMA_CCTRL_CH_ABC		BIT(3) /* Adaptive Burst Chop */
+#define DMA_CCTRL_CH_ABC		BIT(3)  
 #define DMA_CDBA_MSB			GENMASK(7, 4)
 #define DMA_CCTRL_DIR_TX		BIT(8)
 #define DMA_CCTRL_CLASS			GENMASK(11, 9)
@@ -103,15 +99,7 @@
 #define DMA_C_DP_TICK_TIKARB		GENMASK(31, 16)
 
 #define DMA_C_HDRM			0x110
-/*
- * If header mode is set in DMA descriptor,
- *   If bit 30 is disabled, HDR_LEN must be configured according to channel
- *     requirement.
- *   If bit 30 is enabled(checksum with heade mode), HDR_LEN has no need to
- *     be configured. It will enable check sum for switch
- * If header mode is not set in DMA descriptor,
- *   This register setting doesn't matter
- */
+ 
 #define DMA_C_HDRM_HDR_SUM		BIT(30)
 
 #define DMA_C_BOFF			0x120
@@ -128,7 +116,7 @@
 #define DMA_C_END_DESENDI		GENMASK(9, 8)
 #define DMA_C_END_DES_EN		BIT(16)
 
-/* DMA controller capability */
+ 
 #define DMA_ADDR_36BIT			BIT(0)
 #define DMA_DATA_128BIT			BIT(1)
 #define DMA_CHAN_FLOW_CTL		BIT(2)
@@ -153,14 +141,14 @@
 #define DMA_DFT_DESC_TCNT		50
 #define DMA_HDR_LEN_MAX			(SZ_16K - 1)
 
-/* DMA flags */
+ 
 #define DMA_TX_CH			BIT(0)
 #define DMA_RX_CH			BIT(1)
 #define DEVICE_ALLOC_DESC		BIT(2)
 #define CHAN_IN_USE			BIT(3)
 #define DMA_HW_DESC			BIT(4)
 
-/* Descriptor fields */
+ 
 #define DESC_DATA_LEN			GENMASK(15, 0)
 #define DESC_BYTE_OFF			GENMASK(25, 23)
 #define DESC_EOP			BIT(28)
@@ -193,14 +181,14 @@ struct ldma_port;
 
 struct ldma_chan {
 	struct virt_dma_chan	vchan;
-	struct ldma_port	*port; /* back pointer */
-	char			name[8]; /* Channel name */
-	int			nr; /* Channel id in hardware */
-	u32			flags; /* central way or channel based way */
+	struct ldma_port	*port;  
+	char			name[8];  
+	int			nr;  
+	u32			flags;  
 	enum ldma_chan_on_off	onoff;
 	dma_addr_t		desc_phys;
-	void			*desc_base; /* Virtual address */
-	u32			desc_cnt; /* Number of descriptors */
+	void			*desc_base;  
+	u32			desc_cnt;  
 	int			rst;
 	u32			hdrm_len;
 	bool			hdrm_csum;
@@ -213,7 +201,7 @@ struct ldma_chan {
 	bool			desc_endian_en;
 	bool			abc_en;
 	bool			desc_init;
-	struct dma_pool		*desc_pool; /* Descriptors pool */
+	struct dma_pool		*desc_pool;  
 	u32			desc_num;
 	struct dw2_desc_sw	*ds;
 	struct work_struct	work;
@@ -221,7 +209,7 @@ struct ldma_chan {
 };
 
 struct ldma_port {
-	struct ldma_dev		*ldev; /* back pointer */
+	struct ldma_dev		*ldev;  
 	u32			portid;
 	u32			rxbl;
 	u32			txbl;
@@ -230,13 +218,13 @@ struct ldma_port {
 	u32			pkt_drop;
 };
 
-/* Instance specific data */
+ 
 struct ldma_inst_data {
 	bool			desc_in_sram;
 	bool			chan_fc;
-	bool			desc_fod; /* Fetch On Demand */
+	bool			desc_fod;  
 	bool			valid_desc_fetch_ack;
-	u32			orrc; /* Outstanding read count */
+	u32			orrc;  
 	const char		*name;
 	u32			type;
 };
@@ -250,8 +238,8 @@ struct ldma_dev {
 	u32			ver;
 	int			irq;
 	struct ldma_port	*ports;
-	struct ldma_chan	*chans; /* channel list on this DMA or port */
-	spinlock_t		dev_lock; /* Controller register exclusive */
+	struct ldma_chan	*chans;  
+	spinlock_t		dev_lock;  
 	u32			chan_nrs;
 	u32			port_nrs;
 	u32			channels_mask;
@@ -526,13 +514,13 @@ static int ldma_chan_cctrl_cfg(struct ldma_chan *c, u32 val)
 	spin_lock_irqsave(&d->dev_lock, flags);
 	ldma_update_bits(d, DMA_CS_MASK, c->nr, DMA_CS);
 	reg = readl(d->base + DMA_CCTRL);
-	/* Read from hardware */
+	 
 	if (reg & DMA_CCTRL_DIR_TX)
 		c->flags |= DMA_TX_CH;
 	else
 		c->flags |= DMA_RX_CH;
 
-	/* Keep the class value unchanged */
+	 
 	class_low = FIELD_GET(DMA_CCTRL_CLASS, reg);
 	class_high = FIELD_GET(DMA_CCTRL_CLASSH, reg);
 	val &= ~DMA_CCTRL_CLASS;
@@ -564,7 +552,7 @@ static void ldma_chan_irq_init(struct ldma_chan *c)
 	spin_lock_irqsave(&d->dev_lock, flags);
 	ldma_update_bits(d, DMA_CS_MASK, c->nr, DMA_CS);
 
-	/* Clear all interrupts and disabled it */
+	 
 	writel(0, d->base + DMA_CIE);
 	writel(DMA_CI_ALL, d->base + DMA_CIS);
 
@@ -581,9 +569,9 @@ static void ldma_chan_set_class(struct ldma_chan *c, u32 val)
 	if (d->inst->type == DMA_TYPE_MCPY || val > DMA_MAX_CLASS)
 		return;
 
-	/* 3 bits low */
+	 
 	class_val = FIELD_PREP(DMA_CCTRL_CLASS, val & 0x7);
-	/* 2 bits high */
+	 
 	class_val |= FIELD_PREP(DMA_CCTRL_CLASSH, (val >> 3) & 0x3);
 
 	ldma_update_bits(d, DMA_CS_MASK, c->nr, DMA_CS);
@@ -596,7 +584,7 @@ static int ldma_chan_on(struct ldma_chan *c)
 	struct ldma_dev *d = to_ldma_dev(c->vchan.chan.device);
 	unsigned long flags;
 
-	/* If descriptors not configured, not allow to turn on channel */
+	 
 	if (WARN_ON(!c->desc_init))
 		return -EINVAL;
 
@@ -642,7 +630,7 @@ static void ldma_chan_desc_hw_cfg(struct ldma_chan *c, dma_addr_t desc_base,
 	ldma_update_bits(d, DMA_CS_MASK, c->nr, DMA_CS);
 	writel(lower_32_bits(desc_base), d->base + DMA_CDBA);
 
-	/* Higher 4 bits of 36 bit addressing */
+	 
 	if (IS_ENABLED(CONFIG_64BIT)) {
 		u32 hi = upper_32_bits(desc_base) & HIGH_4_BITS;
 
@@ -770,7 +758,7 @@ static void ldma_chan_hdr_mode_cfg(struct ldma_chan *c, u32 hdr_len, bool csum)
 	struct ldma_dev *d = to_ldma_dev(c->vchan.chan.device);
 	u32 mask, val;
 
-	/* NB, csum disabled, hdr length must be provided */
+	 
 	if (!csum && (!hdr_len || hdr_len > DMA_HDR_LEN_MAX))
 		return;
 
@@ -789,7 +777,7 @@ static void ldma_chan_rxwr_np_cfg(struct ldma_chan *c, bool enable)
 	struct ldma_dev *d = to_ldma_dev(c->vchan.chan.device);
 	u32 mask, val;
 
-	/* Only valid for RX channel */
+	 
 	if (ldma_chan_tx(c))
 		return;
 
@@ -851,7 +839,7 @@ static int ldma_port_cfg(struct ldma_port *p)
 	writel(reg, d->base + DMA_PCTRL);
 	spin_unlock_irqrestore(&d->dev_lock, flags);
 
-	reg = readl(d->base + DMA_PCTRL); /* read back */
+	reg = readl(d->base + DMA_PCTRL);  
 	dev_dbg(d->dev, "Port Control 0x%08x configuration done\n", reg);
 
 	return 0;
@@ -901,13 +889,13 @@ static void ldma_dev_init(struct ldma_dev *d)
 	ldma_dev_reset(d);
 	ldma_dev_cfg(d);
 
-	/* DMA port initialization */
+	 
 	for (i = 0; i < d->port_nrs; i++) {
 		p = &d->ports[i];
 		ldma_port_cfg(p);
 	}
 
-	/* DMA channel initialization */
+	 
 	for_each_set_bit(j, &ch_mask, d->chan_nrs) {
 		c = &d->chans[j];
 		ldma_chan_cfg(c);
@@ -1022,7 +1010,7 @@ static void ldma_issue_pending(struct dma_chan *chan)
 		if (vchan_issue_pending(&c->vchan)) {
 			struct virt_dma_desc *vdesc;
 
-			/* Get the next descriptor */
+			 
 			vdesc = vchan_next_desc(&c->vchan);
 			if (!vdesc) {
 				c->ds = NULL;
@@ -1043,10 +1031,7 @@ static void ldma_synchronize(struct dma_chan *chan)
 {
 	struct ldma_chan *c = to_ldma_chan(chan);
 
-	/*
-	 * clear any pending work if any. In that
-	 * case the resource needs to be free here.
-	 */
+	 
 	cancel_work_sync(&c->work);
 	vchan_synchronize(&c->vchan);
 	if (c->ds)
@@ -1103,7 +1088,7 @@ static void dma_chan_irq(int irq, void *data)
 	struct ldma_dev *d = to_ldma_dev(c->vchan.chan.device);
 	u32 stat;
 
-	/* Disable channel interrupts  */
+	 
 	writel(c->nr, d->base + DMA_CS);
 	stat = readl(d->base + DMA_CIS);
 	if (!stat)
@@ -1128,9 +1113,9 @@ static irqreturn_t dma_interrupt(int irq, void *dev_id)
 	}
 
 	for_each_set_bit(cid, &irncr, d->chan_nrs) {
-		/* Mask */
+		 
 		writel(readl(d->base + DMA_IRNEN) & ~BIT(cid), d->base + DMA_IRNEN);
-		/* Ack */
+		 
 		writel(readl(d->base + DMA_IRNCR) | BIT(cid), d->base + DMA_IRNCR);
 
 		c = &d->chans[cid];
@@ -1148,7 +1133,7 @@ static void prep_slave_burst_len(struct ldma_chan *c)
 	if (cfg->dst_maxburst)
 		cfg->src_maxburst = cfg->dst_maxburst;
 
-	/* TX and RX has the same burst length */
+	 
 	p->txbl = ilog2(cfg->src_maxburst);
 	p->rxbl = p->txbl;
 }
@@ -1186,7 +1171,7 @@ ldma_prep_slave_sg(struct dma_chan *chan, struct scatterlist *sgl,
 	c->ds = ds;
 
 	num = 0;
-	/* sop and eop has to be handled nicely */
+	 
 	for_each_sg(sgl, sg, sglen, i) {
 		addr = sg_dma_address(sg);
 		avail = sg_dma_len(sg);
@@ -1225,7 +1210,7 @@ ldma_prep_slave_sg(struct dma_chan *chan, struct scatterlist *sgl,
 				}
 				break;
 			}
-			/* Only 32 bit address supported */
+			 
 			hw_ds->addr = (u32)addr;
 
 			hw_ds->field &= ~DESC_DATA_LEN;
@@ -1237,12 +1222,12 @@ ldma_prep_slave_sg(struct dma_chan *chan, struct scatterlist *sgl,
 			hw_ds->field &= ~DESC_BYTE_OFF;
 			hw_ds->field |= FIELD_PREP(DESC_BYTE_OFF, addr & 0x3);
 
-			/* Ensure data ready before ownership change */
+			 
 			wmb();
 			hw_ds->field &= ~DESC_OWN;
 			hw_ds->field |= FIELD_PREP(DESC_OWN, DMA_OWN);
 
-			/* Ensure ownership changed before moving forward */
+			 
 			wmb();
 			num++;
 			addr += len;
@@ -1391,7 +1376,7 @@ static struct dma_chan *ldma_xlate(struct of_phandle_args *spec,
 	if (!spec->args_count)
 		return NULL;
 
-	/* if args_count is 1 driver use default settings */
+	 
 	if (spec->args_count > 1) {
 		ret = update_client_configs(ofdma, spec);
 		if (!ret)
@@ -1406,7 +1391,7 @@ static void ldma_dma_init_v22(int i, struct ldma_dev *d)
 	struct ldma_chan *c;
 
 	c = &d->chans[i];
-	c->nr = i; /* Real channel number */
+	c->nr = i;  
 	c->rst = DMA_CHAN_RST;
 	c->desc_num = DMA_DFT_DESC_NUM;
 	snprintf(c->name, sizeof(c->name), "chan%d", c->nr);
@@ -1576,7 +1561,7 @@ static int intel_ldma_probe(struct platform_device *pdev)
 	if (!d)
 		return -ENOMEM;
 
-	/* Link controller to platform device */
+	 
 	d->dev = &pdev->dev;
 
 	d->inst = device_get_match_data(dev);
@@ -1589,7 +1574,7 @@ static int intel_ldma_probe(struct platform_device *pdev)
 	if (IS_ERR(d->base))
 		return PTR_ERR(d->base);
 
-	/* Power up and reset the dma engine, some DMAs always on?? */
+	 
 	d->core_clk = devm_clk_get_optional(dev, NULL);
 	if (IS_ERR(d->core_clk))
 		return PTR_ERR(d->core_clk);
@@ -1642,15 +1627,15 @@ static int intel_ldma_probe(struct platform_device *pdev)
 	dma_cap_zero(dma_dev->cap_mask);
 	dma_cap_set(DMA_SLAVE, dma_dev->cap_mask);
 
-	/* Channel initializations */
+	 
 	INIT_LIST_HEAD(&dma_dev->channels);
 
-	/* Port Initializations */
+	 
 	d->ports = devm_kcalloc(dev, d->port_nrs, sizeof(*p), GFP_KERNEL);
 	if (!d->ports)
 		return -ENOMEM;
 
-	/* Channels Initializations */
+	 
 	d->chans = devm_kcalloc(d->dev, d->chan_nrs, sizeof(*c), GFP_KERNEL);
 	if (!d->chans)
 		return -ENOMEM;
@@ -1726,10 +1711,5 @@ static struct platform_driver intel_ldma_driver = {
 	},
 };
 
-/*
- * Perform this driver as device_initcall to make sure initialization happens
- * before its DMA clients of some are platform specific and also to provide
- * registered DMA channels and DMA capabilities to clients before their
- * initialization.
- */
+ 
 builtin_platform_driver(intel_ldma_driver);

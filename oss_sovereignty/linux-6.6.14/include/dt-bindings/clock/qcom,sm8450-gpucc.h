@@ -1,13 +1,10 @@
-/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
-/*
- * Copyright (c) 2020, The Linux Foundation. All rights reserved.
- * Copyright (c) 2023, Linaro Limited
- */
+ 
+ 
 
 #ifndef _DT_BINDINGS_CLK_QCOM_GPU_CC_SM8450_H
 #define _DT_BINDINGS_CLK_QCOM_GPU_CC_SM8450_H
 
-/* Clocks */
+ 
 #define GPU_CC_AHB_CLK				0
 #define GPU_CC_CRC_AHB_CLK			1
 #define GPU_CC_CX_APB_CLK			2
@@ -41,7 +38,7 @@
 #define GPU_CC_XO_CLK_SRC			30
 #define GPU_CC_XO_DIV_CLK_SRC			31
 
-/* GDSCs */
+ 
 #define GPU_GX_GDSC				0
 #define GPU_CX_GDSC				1
 

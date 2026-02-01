@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright(c) 2009-2012  Realtek Corporation.*/
+
+ 
 
 #include <linux/export.h>
 #include "dm_common.h"
@@ -287,7 +287,7 @@ static void rtl92c_dm_ctrl_initgain_by_rssi(struct ieee80211_hw *hw)
 	struct dig_t *digtable = &rtlpriv->dm_digtable;
 	u32 isbt;
 
-	/* modify DIG lower bound, deal with abnormally large false alarm */
+	 
 	if (rtlpriv->falsealm_cnt.cnt_all > 10000) {
 		digtable->large_fa_hit++;
 		if (digtable->forbidden_igi < digtable->cur_igvalue) {
@@ -301,10 +301,10 @@ static void rtl92c_dm_ctrl_initgain_by_rssi(struct ieee80211_hw *hw)
 				digtable->rx_gain_min = digtable->rx_gain_max;
 			else
 				digtable->rx_gain_min = (digtable->forbidden_igi + 1);
-			digtable->recover_cnt = 3600; /* 3600=2hr */
+			digtable->recover_cnt = 3600;  
 		}
 	} else {
-		/* Recovery mechanism for IGI lower bound */
+		 
 		if (digtable->recover_cnt != 0) {
 			digtable->recover_cnt--;
 		} else {
@@ -344,7 +344,7 @@ static void rtl92c_dm_ctrl_initgain_by_rssi(struct ieee80211_hw *hw)
 			digtable->back_val = DM_DIG_BACKOFF_DEFAULT;
 		}
 	} else {
-		/* Adjust initial gain by false alarm */
+		 
 		if (rtlpriv->falsealm_cnt.cnt_all > 1000)
 			digtable->cur_igvalue = digtable->pre_igvalue + 2;
 		else if (rtlpriv->falsealm_cnt.cnt_all > 750)
@@ -353,7 +353,7 @@ static void rtl92c_dm_ctrl_initgain_by_rssi(struct ieee80211_hw *hw)
 			digtable->cur_igvalue = digtable->pre_igvalue - 1;
 	}
 
-	/* Check initial gain by upper/lower bound */
+	 
 	if (digtable->cur_igvalue > digtable->rx_gain_max)
 		digtable->cur_igvalue = digtable->rx_gain_max;
 
@@ -365,7 +365,7 @@ static void rtl92c_dm_ctrl_initgain_by_rssi(struct ieee80211_hw *hw)
 
 static void rtl92c_dm_initial_gain_multi_sta(struct ieee80211_hw *hw)
 {
-	static u8 initialized; /* initialized to false */
+	static u8 initialized;  
 	struct rtl_priv *rtlpriv = rtl_priv(hw);
 	struct dig_t *dm_digtable = &rtlpriv->dm_digtable;
 	struct rtl_mac *mac = rtl_mac(rtl_priv(hw));
@@ -579,7 +579,7 @@ static void rtl92c_dm_pwdb_monitor(struct ieee80211_hw *hw)
 
 	if (mac->opmode == NL80211_IFTYPE_ADHOC ||
 	    mac->opmode == NL80211_IFTYPE_AP) {
-		/* TODO: Handle ADHOC and AP Mode */
+		 
 	}
 
 	if (tmpentry_max_pwdb != 0)
@@ -592,14 +592,7 @@ static void rtl92c_dm_pwdb_monitor(struct ieee80211_hw *hw)
 	else
 		rtlpriv->dm.entry_min_undec_sm_pwdb = 0;
 
-/* TODO:
- *	if (mac->opmode == NL80211_IFTYPE_STATION) {
- *		if (rtlpriv->rtlhal.fw_ready) {
- *			u32 param = (u32)(rtlpriv->dm.undec_sm_pwdb << 16);
- *			rtl8192c_set_rssi_cmd(hw, param);
- *		}
- *	}
- */
+ 
 }
 
 void rtl92c_dm_init_edca_turbo(struct ieee80211_hw *hw)
@@ -809,7 +802,7 @@ static void rtl92c_dm_txpower_tracking_callback_thermalmeter(struct ieee80211_hw
 				rtlpriv->dm.ofdm_index[i] = ofdm_index_old[i];
 			rtlpriv->dm.cck_index = cck_index_old;
 		}
-		/* Handle USB High PA boards */
+		 
 
 		delta = (thermalvalue > rtlpriv->dm.thermalvalue) ?
 		    (thermalvalue - rtlpriv->dm.thermalvalue) :
@@ -1272,7 +1265,7 @@ static void rtl92c_dm_dynamic_bb_powersaving(struct ieee80211_hw *hw)
 	struct rtl_mac *mac = rtl_mac(rtl_priv(hw));
 	struct rtl_hal *rtlhal = rtl_hal(rtl_priv(hw));
 
-	/* Determine the minimum RSSI */
+	 
 	if (((mac->link_state == MAC80211_NOLINK)) &&
 	    (rtlpriv->dm.entry_min_undec_sm_pwdb == 0)) {
 		dm_pstable->rssi_val_min = 0;
@@ -1301,9 +1294,9 @@ static void rtl92c_dm_dynamic_bb_powersaving(struct ieee80211_hw *hw)
 			dm_pstable->rssi_val_min);
 	}
 
-	/* Power Saving for 92C */
+	 
 	if (IS_92C_SERIAL(rtlhal->version))
-		;/* rtl92c_dm_1r_cca(hw); */
+		; 
 	else
 		rtl92c_dm_rf_saving(hw, false);
 }
@@ -1437,7 +1430,7 @@ void rtl92c_dm_watchdog(struct ieee80211_hw *hw)
 		rtl92c_dm_dynamic_bb_powersaving(hw);
 		rtl92c_dm_dynamic_txpower(hw);
 		rtl92c_dm_check_txpower_tracking(hw);
-		/* rtl92c_dm_refresh_rate_adaptive_mask(hw); */
+		 
 		rtl92c_dm_bt_coexist(hw);
 		rtl92c_dm_check_edca_turbo(hw);
 	}
@@ -1459,27 +1452,25 @@ u8 rtl92c_bt_rssi_state_change(struct ieee80211_hw *hw)
 			undec_sm_pwdb = rtlpriv->dm.entry_min_undec_sm_pwdb;
 	}
 
-	/* Check RSSI to determine HighPower/NormalPower state for
-	 * BT coexistence. */
+	 
 	if (undec_sm_pwdb >= 67)
 		curr_bt_rssi_state &= (~BT_RSSI_STATE_NORMAL_POWER);
 	else if (undec_sm_pwdb < 62)
 		curr_bt_rssi_state |= BT_RSSI_STATE_NORMAL_POWER;
 
-	/* Check RSSI to determine AMPDU setting for BT coexistence. */
+	 
 	if (undec_sm_pwdb >= 40)
 		curr_bt_rssi_state &= (~BT_RSSI_STATE_AMDPU_OFF);
 	else if (undec_sm_pwdb <= 32)
 		curr_bt_rssi_state |= BT_RSSI_STATE_AMDPU_OFF;
 
-	/* Marked RSSI state. It will be used to determine BT coexistence
-	 * setting later. */
+	 
 	if (undec_sm_pwdb < 35)
 		curr_bt_rssi_state |=  BT_RSSI_STATE_SPECIAL_LOW;
 	else
 		curr_bt_rssi_state &= (~BT_RSSI_STATE_SPECIAL_LOW);
 
-	/* Check BT state related to BT_Idle in B/G mode. */
+	 
 	if (undec_sm_pwdb < 15)
 		curr_bt_rssi_state |=  BT_RSSI_STATE_BG_EDCA_LOW;
 	else
@@ -1558,8 +1549,7 @@ static bool rtl92c_bt_state_change(struct ieee80211_hw *hw)
 			   ((rtlpriv->btcoexist.bt_service != BT_IDLE) ?
 			   0 : BIT(2));
 
-			/* Add interrupt migration when bt is not ini
-			 * idle state (no traffic). */
+			 
 			if (rtlpriv->btcoexist.bt_service != BT_IDLE) {
 				rtl_write_word(rtlpriv, 0x504, 0x0ccc);
 				rtl_write_byte(rtlpriv, 0x506, 0x54);
@@ -1633,7 +1623,7 @@ static void rtl92c_bt_ant_isolation(struct ieee80211_hw *hw, u8 tmp1byte)
 {
 	struct rtl_priv *rtlpriv = rtl_priv(hw);
 
-	/* Only enable HW BT coexist when BT in "Busy" state. */
+	 
 	if (rtlpriv->mac80211.vendor == PEER_CISCO &&
 	    rtlpriv->btcoexist.bt_service == BT_OTHER_ACTION) {
 		rtl_write_byte(rtlpriv, REG_GPIO_MUXCFG, 0xa0);

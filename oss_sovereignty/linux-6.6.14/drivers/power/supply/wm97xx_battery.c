@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Battery measurement code for WM97xx
- *
- * based on tosa_battery.c
- *
- * Copyright (C) 2008 Marek Vasut <marek.vasut@gmail.com>
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/kernel.h>
@@ -156,7 +150,7 @@ static const struct dev_pm_ops wm97xx_bat_pm_ops = {
 static int wm97xx_bat_probe(struct platform_device *dev)
 {
 	int ret = 0;
-	int props = 1;	/* POWER_SUPPLY_PROP_PRESENT */
+	int props = 1;	 
 	int i = 0;
 	struct wm97xx_batt_pdata *pdata = dev->dev.platform_data;
 	struct power_supply_config cfg = {};
@@ -184,19 +178,19 @@ static int wm97xx_bat_probe(struct platform_device *dev)
 		if (ret)
 			return dev_err_probe(&dev->dev, ret,
 					     "failed to request GPIO irq\n");
-		props++;	/* POWER_SUPPLY_PROP_STATUS */
+		props++;	 
 	}
 
 	if (pdata->batt_tech >= 0)
-		props++;	/* POWER_SUPPLY_PROP_TECHNOLOGY */
+		props++;	 
 	if (pdata->temp_aux >= 0)
-		props++;	/* POWER_SUPPLY_PROP_TEMP */
+		props++;	 
 	if (pdata->batt_aux >= 0)
-		props++;	/* POWER_SUPPLY_PROP_VOLTAGE_NOW */
+		props++;	 
 	if (pdata->max_voltage >= 0)
-		props++;	/* POWER_SUPPLY_PROP_VOLTAGE_MAX */
+		props++;	 
 	if (pdata->min_voltage >= 0)
-		props++;	/* POWER_SUPPLY_PROP_VOLTAGE_MIN */
+		props++;	 
 
 	prop = kcalloc(props, sizeof(*prop), GFP_KERNEL);
 	if (!prop) {

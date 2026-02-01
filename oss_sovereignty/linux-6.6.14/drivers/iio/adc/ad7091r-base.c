@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * AD7091RX Analog to Digital converter driver
- *
- * Copyright 2014-2019 Analog Devices Inc.
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/iio/events.h>
@@ -23,11 +19,11 @@
 #define AD7091R_REG_CH_HIGH_LIMIT(ch) ((ch) * 3 + 5)
 #define AD7091R_REG_CH_HYSTERESIS(ch) ((ch) * 3 + 6)
 
-/* AD7091R_REG_RESULT */
+ 
 #define AD7091R_REG_RESULT_CH_ID(x)	    (((x) >> 13) & 0x3)
 #define AD7091R_REG_RESULT_CONV_RESULT(x)   ((x) & 0xfff)
 
-/* AD7091R_REG_CONF */
+ 
 #define AD7091R_REG_CONF_AUTO   BIT(8)
 #define AD7091R_REG_CONF_CMD    BIT(10)
 
@@ -46,7 +42,7 @@ struct ad7091r_state {
 	struct regulator *vref;
 	const struct ad7091r_chip_info *chip_info;
 	enum ad7091r_mode mode;
-	struct mutex lock; /*lock to prevent concurent reads */
+	struct mutex lock;  
 };
 
 static int ad7091r_set_mode(struct ad7091r_state *st, enum ad7091r_mode mode)
@@ -82,16 +78,13 @@ static int ad7091r_set_channel(struct ad7091r_state *st, unsigned int channel)
 	unsigned int dummy;
 	int ret;
 
-	/* AD7091R_REG_CHANNEL specified which channels to be converted */
+	 
 	ret = regmap_write(st->map, AD7091R_REG_CHANNEL,
 			BIT(channel) | (BIT(channel) << 8));
 	if (ret)
 		return ret;
 
-	/*
-	 * There is a latency of one conversion before the channel conversion
-	 * sequence is updated
-	 */
+	 
 	return regmap_read(st->map, AD7091R_REG_RESULT, &dummy);
 }
 
@@ -253,7 +246,7 @@ int ad7091r_probe(struct device *dev, const char *name,
 			return ret;
 	}
 
-	/* Use command mode by default to convert only desired channels*/
+	 
 	ret = ad7091r_set_mode(st, AD7091R_MODE_COMMAND);
 	if (ret)
 		return ret;

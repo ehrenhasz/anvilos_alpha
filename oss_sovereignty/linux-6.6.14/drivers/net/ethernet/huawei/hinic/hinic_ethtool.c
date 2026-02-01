@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Huawei HiNIC PCI Express Linux driver
- * Copyright(c) 2017 Huawei Technologies Co., Ltd
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms and conditions of the GNU General Public License,
- * version 2, as published by the Free Software Foundation.
- *
- * This program is distributed in the hope it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
- * for more details.
- *
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/pci.h>
@@ -133,7 +121,7 @@ static struct hw2ethtool_link_mode
 	},
 };
 
-#define LP_DEFAULT_TIME                 5 /* seconds */
+#define LP_DEFAULT_TIME                 5  
 #define LP_PKT_LEN                      1514
 
 #define PORT_DOWN_ERR_IDX		0
@@ -398,7 +386,7 @@ static int get_link_settings_type(struct hinic_dev *nic_dev,
 	if (err)
 		return err;
 
-	/* always set autonegotiation */
+	 
 	if (port_cap.autoneg_cap)
 		*set_settings |= HILINK_LINK_SET_AUTONEG;
 
@@ -408,7 +396,7 @@ static int get_link_settings_type(struct hinic_dev *nic_dev,
 			return -EOPNOTSUPP;
 		}
 	} else if (speed != (u32)SPEED_UNKNOWN) {
-		/* set speed only when autoneg is disabled */
+		 
 		if (!hinic_is_speed_legal(nic_dev, speed))
 			return -EINVAL;
 		*set_settings |= HILINK_LINK_SET_SPEED;
@@ -521,7 +509,7 @@ static int set_link_settings(struct net_device *netdev, u8 autoneg, u32 speed)
 static int hinic_set_link_ksettings(struct net_device *netdev, const struct
 				    ethtool_link_ksettings *link_settings)
 {
-	/* only support to set autoneg and speed */
+	 
 	return set_link_settings(netdev, link_settings->base.autoneg,
 				 link_settings->base.speed);
 }
@@ -636,7 +624,7 @@ static int __hinic_get_coalesce(struct net_device *netdev,
 	struct hinic_intr_coal_info *tx_intr_coal_info;
 
 	if (queue == COALESCE_ALL_QUEUE) {
-		/* get tx/rx irq0 as default parameters */
+		 
 		rx_intr_coal_info = &nic_dev->rx_intr_coalesce[0];
 		tx_intr_coal_info = &nic_dev->tx_intr_coalesce[0];
 	} else {
@@ -649,10 +637,10 @@ static int __hinic_get_coalesce(struct net_device *netdev,
 		tx_intr_coal_info = &nic_dev->tx_intr_coalesce[queue];
 	}
 
-	/* coalesce_timer is in unit of 9us */
+	 
 	coal->rx_coalesce_usecs = rx_intr_coal_info->coalesce_timer_cfg *
 			COALESCE_TIMER_CFG_UNIT;
-	/* coalesced_frames is in unit of 8 */
+	 
 	coal->rx_max_coalesced_frames = rx_intr_coal_info->pending_limt *
 			COALESCE_PENDING_LIMIT_UNIT;
 	coal->tx_coalesce_usecs = tx_intr_coal_info->coalesce_timer_cfg *
@@ -690,9 +678,7 @@ static int set_queue_coalesce(struct hinic_dev *nic_dev, u16 q_id,
 	intr_coal->coalesce_timer_cfg = coal->coalesce_timer_cfg;
 	intr_coal->pending_limt = coal->pending_limt;
 
-	/* netdev not running or qp not in using,
-	 * don't need to set coalesce to hw
-	 */
+	 
 	if (!(nic_dev->flags & HINIC_INTF_UP) ||
 	    q_id >= nic_dev->num_qps)
 		return 0;
@@ -772,9 +758,7 @@ static int __hinic_set_coalesce(struct net_device *netdev,
 		set_tx_coal = true;
 	}
 
-	/* setting coalesce timer or pending limit to zero will disable
-	 * coalesce
-	 */
+	 
 	if (set_rx_coal && (!rx_intr_coal.coalesce_timer_cfg ||
 			    !rx_intr_coal.pending_limt))
 		netif_warn(nic_dev, drv, netdev, "RX coalesce will be disabled\n");
@@ -1011,14 +995,12 @@ static int hinic_set_rss_hash_opts(struct hinic_dev *nic_dev,
 		return -EOPNOTSUPP;
 	}
 
-	/* RSS does not support anything other than hashing
-	 * to queues on src and dst IPs and ports
-	 */
+	 
 	if (cmd->data & ~(RXH_IP_SRC | RXH_IP_DST | RXH_L4_B_0_1 |
 		RXH_L4_B_2_3))
 		return -EINVAL;
 
-	/* We need at least the IP SRC and DEST fields for hashing */
+	 
 	if (!(cmd->data & RXH_IP_SRC) || !(cmd->data & RXH_IP_DST))
 		return -EINVAL;
 
@@ -1551,7 +1533,7 @@ static int hinic_run_lp_test(struct hinic_dev *nic_dev, u32 test_time)
 				return -ENOMEM;
 			}
 
-			/* mark index for every pkt */
+			 
 			skb->data[LP_PKT_LEN - 1] = j;
 
 			if (hinic_lb_xmit_frame(skb, netdev)) {
@@ -1563,7 +1545,7 @@ static int hinic_run_lp_test(struct hinic_dev *nic_dev, u32 test_time)
 			}
 		}
 
-		/* wait till all pkts received to RX buffer */
+		 
 		msleep(200);
 
 		for (j = 0; j < LP_PKT_CNT; j++) {
@@ -1642,7 +1624,7 @@ static void hinic_diag_test(struct net_device *netdev,
 
 	memset(data, 0, DIAG_TEST_MAX * sizeof(u64));
 
-	/* don't support loopback test when netdev is closed. */
+	 
 	if (!(nic_dev->flags & HINIC_INTF_UP)) {
 		netif_err(nic_dev, drv, netdev,
 			  "Do not support loopback test when netdev is closed\n");

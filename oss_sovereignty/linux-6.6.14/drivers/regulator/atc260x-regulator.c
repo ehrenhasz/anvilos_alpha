@@ -1,9 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0+
-//
-// Regulator driver for ATC260x PMICs
-//
-// Copyright (C) 2019 Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-// Copyright (C) 2020 Cristian Ciocaltea <cristian.ciocaltea@gmail.com>
+
+
+
+
+
+
 
 #include <linux/mfd/atc260x/core.h>
 #include <linux/module.h>
@@ -147,10 +147,7 @@ static const struct regulator_ops atc260x_ldo_fixed_ops = {
 static const struct regulator_ops atc260x_no_ops = {
 };
 
-/*
- * Note LDO8 is not documented in datasheet (v2.4), but supported
- * in the vendor's driver implementation (xapp-le-kernel).
- */
+ 
 enum atc2603c_reg_ids {
 	ATC2603C_ID_DCDC1,
 	ATC2603C_ID_DCDC2,
@@ -508,7 +505,7 @@ static int atc260x_regulator_probe(struct platform_device *pdev)
 	config.regmap = atc260x->regmap;
 	config.driver_data = atc260x_data;
 
-	/* Instantiate the regulators */
+	 
 	for (i = 0; i < nregulators; i++) {
 		if (atc2603c_ver_b && regulators[i].id == ATC2603C_ID_DCDC2)
 			atc260x_rdev = devm_regulator_register(&pdev->dev,

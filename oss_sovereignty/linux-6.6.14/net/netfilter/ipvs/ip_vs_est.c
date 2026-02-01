@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * ip_vs_est.c: simple rate estimator for IPVS
- *
- * Authors:     Wensong Zhang <wensong@linuxvirtualserver.org>
- *
- * Changes:     Hans Schillstrom <hans.schillstrom@ericsson.com>
- *              Network name space (netns) aware.
- *              Global data moved to netns i.e struct netns_ipvs
- *              Affected data: est_list and est_lock.
- *              estimation_timer() runs with timer per netns.
- *              get_stats()) do the per cpu summing.
- */
+
+ 
 
 #define KMSG_COMPONENT "IPVS"
 #define pr_fmt(fmt) KMSG_COMPONENT ": " fmt
@@ -24,51 +13,7 @@
 
 #include <net/ip_vs.h>
 
-/*
-  This code is to estimate rate in a shorter interval (such as 8
-  seconds) for virtual services and real servers. For measure rate in a
-  long interval, it is easy to implement a user level daemon which
-  periodically reads those statistical counters and measure rate.
-
-  We measure rate during the last 8 seconds every 2 seconds:
-
-    avgrate = avgrate*(1-W) + rate*W
-
-    where W = 2^(-2)
-
-  NOTES.
-
-  * Average bps is scaled by 2^5, while average pps and cps are scaled by 2^10.
-
-  * Netlink users can see 64-bit values but sockopt users are restricted
-    to 32-bit values for conns, packets, bps, cps and pps.
-
-  * A lot of code is taken from net/core/gen_estimator.c
-
-  KEY POINTS:
-  - cpustats counters are updated per-cpu in SoftIRQ context with BH disabled
-  - kthreads read the cpustats to update the estimators (svcs, dests, total)
-  - the states of estimators can be read (get stats) or modified (zero stats)
-    from processes
-
-  KTHREADS:
-  - estimators are added initially to est_temp_list and later kthread 0
-    distributes them to one or many kthreads for estimation
-  - kthread contexts are created and attached to array
-  - the kthread tasks are started when first service is added, before that
-    the total stats are not estimated
-  - when configuration (cpulist/nice) is changed, the tasks are restarted
-    by work (est_reload_work)
-  - kthread tasks are stopped while the cpulist is empty
-  - the kthread context holds lists with estimators (chains) which are
-    processed every 2 seconds
-  - as estimators can be added dynamically and in bursts, we try to spread
-    them to multiple chains which are estimated at different time
-  - on start, kthread 0 enters calculation phase to determine the chain limits
-    and the limit of estimators per kthread
-  - est_add_ktid: ktid where to add new ests, can point to empty slot where
-    we should add kt data
- */
+ 
 
 static struct lock_class_key __ipvs_est_key;
 
@@ -118,7 +63,7 @@ static void ip_vs_chain_estimation(struct hlist_head *chain)
 		s->kstats.inbytes = kinbytes;
 		s->kstats.outbytes = koutbytes;
 
-		/* scaled by 2^10, but divided 2 seconds */
+		 
 		rate = (s->kstats.conns - e->last_conns) << 9;
 		e->last_conns = s->kstats.conns;
 		e->cps += ((s64)rate - (s64)e->cps) >> 2;
@@ -131,7 +76,7 @@ static void ip_vs_chain_estimation(struct hlist_head *chain)
 		e->last_outpkts = s->kstats.outpkts;
 		e->outpps += ((s64)rate - (s64)e->outpps) >> 2;
 
-		/* scaled by 2^5, but divided 2 seconds */
+		 
 		rate = (s->kstats.inbytes - e->last_inbytes) << 4;
 		e->last_inbytes = s->kstats.inbytes;
 		e->inbps += ((s64)rate - (s64)e->inbps) >> 2;
@@ -181,11 +126,11 @@ static int ip_vs_estimation_kthread(void *data)
 	} else {
 		if (!ipvs->est_chain_max) {
 			ipvs->est_calc_phase = 1;
-			/* commit est_calc_phase before reading est_genid */
+			 
 			smp_mb();
 		}
 
-		/* kthread 0 will handle the calc phase */
+		 
 		if (ipvs->est_calc_phase)
 			ip_vs_est_calc_phase(ipvs);
 	}
@@ -197,7 +142,7 @@ static int ip_vs_estimation_kthread(void *data)
 		if (kthread_should_stop())
 			break;
 
-		/* before estimation, check if we should sleep */
+		 
 		now = jiffies;
 		gap = kd->est_timer - now;
 		if (gap > 0) {
@@ -226,19 +171,19 @@ static int ip_vs_estimation_kthread(void *data)
 	return 0;
 }
 
-/* Schedule stop/start for kthread tasks */
+ 
 void ip_vs_est_reload_start(struct netns_ipvs *ipvs)
 {
-	/* Ignore reloads before first service is added */
+	 
 	if (!ipvs->enable)
 		return;
 	ip_vs_est_stopped_recalc(ipvs);
-	/* Bump the kthread configuration genid */
+	 
 	atomic_inc(&ipvs->est_genid);
 	queue_delayed_work(system_long_wq, &ipvs->est_reload_work, 0);
 }
 
-/* Start kthread task with current configuration */
+ 
 int ip_vs_est_kthread_start(struct netns_ipvs *ipvs,
 			    struct ip_vs_est_kt_data *kd)
 {
@@ -252,7 +197,7 @@ int ip_vs_est_kthread_start(struct netns_ipvs *ipvs,
 		goto out;
 	now = jiffies;
 	gap = kd->est_timer - now;
-	/* Sync est_timer if task is starting later */
+	 
 	if (abs(gap) > 4 * IPVS_EST_TICK)
 		kd->est_timer = now;
 	kd->task = kthread_create(ip_vs_estimation_kthread, kd, "ipvs-e:%d:%d",
@@ -282,19 +227,19 @@ void ip_vs_est_kthread_stop(struct ip_vs_est_kt_data *kd)
 	}
 }
 
-/* Apply parameters to kthread */
+ 
 static void ip_vs_est_set_params(struct netns_ipvs *ipvs,
 				 struct ip_vs_est_kt_data *kd)
 {
 	kd->chain_max = ipvs->est_chain_max;
-	/* We are using single chain on RCU preemption */
+	 
 	if (IPVS_EST_TICK_CHAINS == 1)
 		kd->chain_max *= IPVS_EST_CHAIN_FACTOR;
 	kd->tick_max = IPVS_EST_TICK_CHAINS * kd->chain_max;
 	kd->est_max_count = IPVS_EST_NTICKS * kd->tick_max;
 }
 
-/* Create and start estimation kthread in a free or new array slot */
+ 
 static int ip_vs_est_add_kthread(struct netns_ipvs *ipvs)
 {
 	struct ip_vs_est_kt_data *kd = NULL;
@@ -333,14 +278,14 @@ static int ip_vs_est_add_kthread(struct netns_ipvs *ipvs)
 	kd->id = id;
 	ip_vs_est_set_params(ipvs, kd);
 
-	/* Pre-allocate stats used in calc phase */
+	 
 	if (!id && !kd->calc_stats) {
 		kd->calc_stats = ip_vs_stats_alloc();
 		if (!kd->calc_stats)
 			goto out;
 	}
 
-	/* Start kthread tasks only when services are present */
+	 
 	if (ipvs->enable && !ip_vs_est_stopped(ipvs)) {
 		ret = ip_vs_est_kthread_start(ipvs, kd);
 		if (ret < 0)
@@ -351,7 +296,7 @@ static int ip_vs_est_add_kthread(struct netns_ipvs *ipvs)
 		ipvs->est_kt_count++;
 	ipvs->est_kt_arr[id] = kd;
 	kd = NULL;
-	/* Use most recent kthread for new ests */
+	 
 	ipvs->est_add_ktid = id;
 	ret = 0;
 
@@ -365,7 +310,7 @@ out:
 	return ret;
 }
 
-/* Select ktid where to add new ests: available, unused or new slot */
+ 
 static void ip_vs_est_update_ktid(struct netns_ipvs *ipvs)
 {
 	int ktid, best = ipvs->est_kt_count;
@@ -385,7 +330,7 @@ static void ip_vs_est_update_ktid(struct netns_ipvs *ipvs)
 	ipvs->est_add_ktid = best;
 }
 
-/* Add estimator to current kthread (est_add_ktid) */
+ 
 static int ip_vs_enqueue_estimator(struct netns_ipvs *ipvs,
 				   struct ip_vs_estimator *est)
 {
@@ -410,10 +355,7 @@ static int ip_vs_enqueue_estimator(struct netns_ipvs *ipvs,
 
 add_est:
 	ktid = kd->id;
-	/* For small number of estimators prefer to use few ticks,
-	 * otherwise try to add into the last estimated row.
-	 * est_row and add_row point after the row we should use
-	 */
+	 
 	if (kd->est_count >= 2 * kd->tick_max || delay < IPVS_EST_NTICKS - 1)
 		crow = READ_ONCE(kd->est_row);
 	else
@@ -421,9 +363,9 @@ add_est:
 	crow += delay;
 	if (crow >= IPVS_EST_NTICKS)
 		crow -= IPVS_EST_NTICKS;
-	/* Assume initial delay ? */
+	 
 	if (delay >= IPVS_EST_NTICKS - 1) {
-		/* Preserve initial delay or decrease it if no space in tick */
+		 
 		row = crow;
 		if (crow < IPVS_EST_NTICKS - 1) {
 			crow++;
@@ -432,7 +374,7 @@ add_est:
 		if (row >= crow)
 			row = find_last_bit(kd->avail, IPVS_EST_NTICKS);
 	} else {
-		/* Preserve delay or increase it if no space in tick */
+		 
 		row = IPVS_EST_NTICKS;
 		if (crow > 0)
 			row = find_next_bit(kd->avail, IPVS_EST_NTICKS, crow);
@@ -468,7 +410,7 @@ add_est:
 			__clear_bit(row, kd->avail);
 	}
 
-	/* Update est_add_ktid to point to first available/empty kt slot */
+	 
 	if (kd->est_count == kd->est_max_count)
 		ip_vs_est_update_ktid(ipvs);
 
@@ -478,7 +420,7 @@ out:
 	return ret;
 }
 
-/* Start estimation for stats */
+ 
 int ip_vs_start_estimator(struct netns_ipvs *ipvs, struct ip_vs_stats *stats)
 {
 	struct ip_vs_estimator *est = &stats->est;
@@ -488,12 +430,9 @@ int ip_vs_start_estimator(struct netns_ipvs *ipvs, struct ip_vs_stats *stats)
 		ipvs->est_max_threads = ip_vs_est_max_threads(ipvs);
 
 	est->ktid = -1;
-	est->ktrow = IPVS_EST_NTICKS - 1;	/* Initial delay */
+	est->ktrow = IPVS_EST_NTICKS - 1;	 
 
-	/* We prefer this code to be short, kthread 0 will requeue the
-	 * estimator to available chain. If tasks are disabled, we
-	 * will not allocate much memory, just for kt 0.
-	 */
+	 
 	ret = 0;
 	if (!ipvs->est_kt_count || !ipvs->est_kt_arr[0])
 		ret = ip_vs_est_add_kthread(ipvs);
@@ -516,7 +455,7 @@ static void ip_vs_est_kthread_destroy(struct ip_vs_est_kt_data *kd)
 	}
 }
 
-/* Unlink estimator from chain */
+ 
 void ip_vs_stop_estimator(struct netns_ipvs *ipvs, struct ip_vs_stats *stats)
 {
 	struct ip_vs_estimator *est = &stats->est;
@@ -526,13 +465,13 @@ void ip_vs_stop_estimator(struct netns_ipvs *ipvs, struct ip_vs_stats *stats)
 	int row = est->ktrow;
 	int cid = est->ktcid;
 
-	/* Failed to add to chain ? */
+	 
 	if (hlist_unhashed(&est->list))
 		return;
 
-	/* On return, estimator can be freed, dequeue it now */
+	 
 
-	/* In est_temp_list ? */
+	 
 	if (ktid < 0) {
 		hlist_del(&est->list);
 		goto end_kt0;
@@ -553,7 +492,7 @@ void ip_vs_stop_estimator(struct netns_ipvs *ipvs, struct ip_vs_stats *stats)
 	}
 	kd->est_count--;
 	if (kd->est_count) {
-		/* This kt slot can become available just now, prefer it */
+		 
 		if (ktid < ipvs->est_add_ktid)
 			ipvs->est_add_ktid = ktid;
 		return;
@@ -571,13 +510,13 @@ void ip_vs_stop_estimator(struct netns_ipvs *ipvs, struct ip_vs_stats *stats)
 		}
 		mutex_unlock(&ipvs->est_mutex);
 
-		/* This slot is now empty, prefer another available kt slot */
+		 
 		if (ktid == ipvs->est_add_ktid)
 			ip_vs_est_update_ktid(ipvs);
 	}
 
 end_kt0:
-	/* kt 0 is freed after all other kthreads and chains are empty */
+	 
 	if (ipvs->est_kt_count == 1 && hlist_empty(&ipvs->est_temp_list)) {
 		kd = ipvs->est_kt_arr[0];
 		if (!kd || !kd->est_count) {
@@ -593,7 +532,7 @@ end_kt0:
 	}
 }
 
-/* Register all ests from est_temp_list to kthreads */
+ 
 static void ip_vs_est_drain_temp_list(struct netns_ipvs *ipvs)
 {
 	struct ip_vs_estimator *est;
@@ -615,9 +554,7 @@ static void ip_vs_est_drain_temp_list(struct netns_ipvs *ipvs)
 				est->ktid = -1;
 				hlist_add_head(&est->list,
 					       &ipvs->est_temp_list);
-				/* Abort, some entries will not be estimated
-				 * until next attempt
-				 */
+				 
 			}
 			goto unlock;
 		}
@@ -629,7 +566,7 @@ unlock:
 	mutex_unlock(&__ip_vs_mutex);
 }
 
-/* Calculate limits for all kthreads */
+ 
 static int ip_vs_est_calc_limits(struct netns_ipvs *ipvs, int *chain_max)
 {
 	DECLARE_WAIT_QUEUE_HEAD_ONSTACK(wq);
@@ -655,10 +592,10 @@ static int ip_vs_est_calc_limits(struct netns_ipvs *ipvs, int *chain_max)
 	hlist_add_head(&s->est.list, &chain);
 
 	loops = 1;
-	/* Get best result from many tests */
+	 
 	for (ntest = 0; ntest < 12; ntest++) {
 		if (!(ntest & 3)) {
-			/* Wait for cpufreq frequency transition */
+			 
 			wait_event_idle_timeout(wq, kthread_should_stop(),
 						HZ / 50);
 			if (!ipvs->enable || kthread_should_stop())
@@ -668,7 +605,7 @@ static int ip_vs_est_calc_limits(struct netns_ipvs *ipvs, int *chain_max)
 		local_bh_disable();
 		rcu_read_lock();
 
-		/* Put stats in cache */
+		 
 		ip_vs_chain_estimation(&chain);
 
 		t1 = ktime_get();
@@ -685,7 +622,7 @@ static int ip_vs_est_calc_limits(struct netns_ipvs *ipvs, int *chain_max)
 
 		diff = ktime_to_ns(ktime_sub(t2, t1));
 		if (diff <= 1 * NSEC_PER_USEC) {
-			/* Do more loops on low time resolution */
+			 
 			loops *= 2;
 			continue;
 		}
@@ -695,7 +632,7 @@ static int ip_vs_est_calc_limits(struct netns_ipvs *ipvs, int *chain_max)
 		do_div(val, loops);
 		if (!min_est || val < min_est) {
 			min_est = val;
-			/* goal: 95usec per chain */
+			 
 			val = 95 * NSEC_PER_USEC;
 			if (val >= min_est) {
 				do_div(val, min_est);
@@ -717,21 +654,7 @@ stop:
 	goto out;
 }
 
-/* Calculate the parameters and apply them in context of kt #0
- * ECP: est_calc_phase
- * ECM: est_chain_max
- * ECP	ECM	Insert Chain	enable	Description
- * ---------------------------------------------------------------------------
- * 0	0	est_temp_list	0	create kt #0 context
- * 0	0	est_temp_list	0->1	service added, start kthread #0 task
- * 0->1	0	est_temp_list	1	kt task #0 started, enters calc phase
- * 1	0	est_temp_list	1	kt #0: determine est_chain_max,
- *					stop tasks, move ests to est_temp_list
- *					and free kd for kthreads 1..last
- * 1->0	0->N	kt chains	1	ests can go to kthreads
- * 0	N	kt chains	1	drain est_temp_list, create new kthread
- *					contexts, start tasks, estimate
- */
+ 
 static void ip_vs_est_calc_phase(struct netns_ipvs *ipvs)
 {
 	int genid = atomic_read(&ipvs->est_genid);
@@ -749,12 +672,10 @@ static void ip_vs_est_calc_phase(struct netns_ipvs *ipvs)
 
 	mutex_lock(&__ip_vs_mutex);
 
-	/* Stop all other tasks, so that we can immediately move the
-	 * estimators to est_temp_list without RCU grace period
-	 */
+	 
 	mutex_lock(&ipvs->est_mutex);
 	for (id = 1; id < ipvs->est_kt_count; id++) {
-		/* netns clean up started, abort */
+		 
 		if (!ipvs->enable)
 			goto unlock2;
 		kd = ipvs->est_kt_arr[id];
@@ -764,15 +685,10 @@ static void ip_vs_est_calc_phase(struct netns_ipvs *ipvs)
 	}
 	mutex_unlock(&ipvs->est_mutex);
 
-	/* Move all estimators to est_temp_list but carefully,
-	 * all estimators and kthread data can be released while
-	 * we reschedule. Even for kthread 0.
-	 */
+	 
 	step = 0;
 
-	/* Order entries in est_temp_list in ascending delay, so now
-	 * walk delay(desc), id(desc), cid(asc)
-	 */
+	 
 	delay = IPVS_EST_NTICKS;
 
 next_delay:
@@ -781,7 +697,7 @@ next_delay:
 		goto end_dequeue;
 
 last_kt:
-	/* Destroy contexts backwards */
+	 
 	id = ipvs->est_kt_count;
 
 next_kt:
@@ -793,7 +709,7 @@ next_kt:
 	kd = ipvs->est_kt_arr[id];
 	if (!kd)
 		goto next_kt;
-	/* kt 0 can exist with empty chains */
+	 
 	if (!id && kd->est_count <= 1)
 		goto next_delay;
 
@@ -811,22 +727,20 @@ walk_chain:
 		goto unlock;
 	step++;
 	if (!(step & 63)) {
-		/* Give chance estimators to be added (to est_temp_list)
-		 * and deleted (releasing kthread contexts)
-		 */
+		 
 		mutex_unlock(&__ip_vs_mutex);
 		cond_resched();
 		mutex_lock(&__ip_vs_mutex);
 
-		/* Current kt released ? */
+		 
 		if (id >= ipvs->est_kt_count)
 			goto last_kt;
 		if (kd != ipvs->est_kt_arr[id])
 			goto next_kt;
-		/* Current td released ? */
+		 
 		if (td != rcu_dereference_protected(kd->ticks[row], 1))
 			goto next_kt;
-		/* No fatal changes on the current kd and td */
+		 
 	}
 	est = hlist_entry_safe(td->chains[cid].first, struct ip_vs_estimator,
 			       list);
@@ -836,32 +750,30 @@ walk_chain:
 			goto next_kt;
 		goto walk_chain;
 	}
-	/* We can cheat and increase est_count to protect kt 0 context
-	 * from release but we prefer to keep the last estimator
-	 */
+	 
 	last = kd->est_count <= 1;
-	/* Do not free kt #0 data */
+	 
 	if (!id && last)
 		goto next_delay;
 	last_td = kd->tick_len[row] <= 1;
 	stats = container_of(est, struct ip_vs_stats, est);
 	ip_vs_stop_estimator(ipvs, stats);
-	/* Tasks are stopped, move without RCU grace period */
+	 
 	est->ktid = -1;
 	est->ktrow = row - kd->est_row;
 	if (est->ktrow < 0)
 		est->ktrow += IPVS_EST_NTICKS;
 	hlist_add_head(&est->list, &ipvs->est_temp_list);
-	/* kd freed ? */
+	 
 	if (last)
 		goto next_kt;
-	/* td freed ? */
+	 
 	if (last_td)
 		goto next_kt;
 	goto walk_chain;
 
 end_dequeue:
-	/* All estimators removed while calculating ? */
+	 
 	if (!ipvs->est_kt_count)
 		goto unlock;
 	kd = ipvs->est_kt_arr[0];
@@ -874,7 +786,7 @@ end_dequeue:
 	pr_info("using max %d ests per chain, %d per kthread\n",
 		kd->chain_max, kd->est_max_count);
 
-	/* Try to keep tot_stats in kt0, enqueue it early */
+	 
 	if (ipvs->tot_stats && !hlist_unhashed(&ipvs->tot_stats->s.est.list) &&
 	    ipvs->tot_stats->s.est.ktid == -1) {
 		hlist_del(&ipvs->tot_stats->s.est.list);
@@ -884,7 +796,7 @@ end_dequeue:
 
 	mutex_lock(&ipvs->est_mutex);
 
-	/* We completed the calc phase, new calc phase not requested */
+	 
 	if (genid == atomic_read(&ipvs->est_genid))
 		ipvs->est_calc_phase = 0;
 
@@ -900,7 +812,7 @@ void ip_vs_zero_estimator(struct ip_vs_stats *stats)
 	struct ip_vs_estimator *est = &stats->est;
 	struct ip_vs_kstats *k = &stats->kstats;
 
-	/* reset counters, caller must hold the stats->lock lock */
+	 
 	est->last_inbytes = k->inbytes;
 	est->last_outbytes = k->outbytes;
 	est->last_conns = k->conns;
@@ -913,7 +825,7 @@ void ip_vs_zero_estimator(struct ip_vs_stats *stats)
 	est->outbps = 0;
 }
 
-/* Get decoded rates */
+ 
 void ip_vs_read_estimator(struct ip_vs_kstats *dst, struct ip_vs_stats *stats)
 {
 	struct ip_vs_estimator *e = &stats->est;

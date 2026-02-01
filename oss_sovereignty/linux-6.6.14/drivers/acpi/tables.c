@@ -1,12 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  acpi_tables.c - ACPI Boot-Time Table Parsing
- *
- *  Copyright (C) 2001 Paul Diefenbaugh <paul.s.diefenbaugh@intel.com>
- */
 
-/* Uncomment next line to get verbose printout */
-/* #define DEBUG */
+ 
+
+ 
+ 
 #define pr_fmt(fmt) "ACPI: " fmt
 
 #include <linux/init.h>
@@ -49,10 +45,7 @@ struct acpi_subtable_entry {
 	enum acpi_subtable_type type;
 };
 
-/*
- * Disable table checksum verification for the early stage due to the size
- * limitation of the current x86 early mapping implementation.
- */
+ 
 static bool acpi_verify_table_checksum __initdata_or_acpilib = false;
 
 void acpi_table_print_madt_entry(struct acpi_subtable_header *header)
@@ -313,29 +306,7 @@ static __init_or_acpilib int call_handler(struct acpi_subtable_proc *proc,
 	return -EINVAL;
 }
 
-/**
- * acpi_parse_entries_array - for each proc_num find a suitable subtable
- *
- * @id: table id (for debugging purposes)
- * @table_size: size of the root table
- * @table_header: where does the table start?
- * @proc: array of acpi_subtable_proc struct containing entry id
- *        and associated handler with it
- * @proc_num: how big proc is?
- * @max_entries: how many entries can we process?
- *
- * For each proc_num find a subtable with proc->id and run proc->handler
- * on it. Assumption is that there's only single handler for particular
- * entry id.
- *
- * The table_size is not the size of the complete ACPI table (the length
- * field in the header struct), but only the size of the root table; i.e.,
- * the offset from the very first byte of the complete ACPI table, to the
- * first byte of the very first subtable.
- *
- * On success returns sum of all matching entries for all proc handlers.
- * Otherwise, -ENODEV or -EINVAL is returned.
- */
+ 
 static int __init_or_acpilib acpi_parse_entries_array(
 	char *id, unsigned long table_size,
 	struct acpi_table_header *table_header, struct acpi_subtable_proc *proc,
@@ -349,7 +320,7 @@ static int __init_or_acpilib acpi_parse_entries_array(
 
 	table_end = (unsigned long)table_header + table_header->length;
 
-	/* Parse all entries looking for a match. */
+	 
 
 	entry.type = acpi_get_subtable_type(id);
 	entry.hdr = (union acpi_subtable_headers *)
@@ -376,10 +347,7 @@ static int __init_or_acpilib acpi_parse_entries_array(
 		if (i != proc_num)
 			count++;
 
-		/*
-		 * If entry->length is 0, break from this loop to avoid
-		 * infinite loop.
-		 */
+		 
 		entry_len = acpi_get_entry_length(&entry);
 		if (entry_len == 0) {
 			pr_err("[%4.4s:0x%02x] Invalid zero length\n", id, proc->id);
@@ -474,16 +442,7 @@ int __init acpi_table_parse_madt(enum acpi_madt_type id,
 					    handler, max_entries);
 }
 
-/**
- * acpi_table_parse - find table with @id, run @handler on it
- * @id: table id to find
- * @handler: handler to run
- *
- * Scan the ACPI System Descriptor Table (STD) for a table matching @id,
- * run @handler on it.
- *
- * Return 0 if table found, -errno if not.
- */
+ 
 int __init acpi_table_parse(char *id, acpi_tbl_table_handler handler)
 {
 	struct acpi_table_header *table = NULL;
@@ -507,11 +466,7 @@ int __init acpi_table_parse(char *id, acpi_tbl_table_handler handler)
 		return -ENODEV;
 }
 
-/*
- * The BIOS is supposed to supply a single APIC/MADT,
- * but some report two.  Provide a knob to use either.
- * (don't you wish instance 0 and 1 were not the same?)
- */
+ 
 static void __init check_multiple_madt(void)
 {
 	struct acpi_table_header *table = NULL;
@@ -542,7 +497,7 @@ static void acpi_table_taint(struct acpi_table_header *table)
 static u64 acpi_tables_addr;
 static int all_tables_size;
 
-/* Copied from acpica/tbutils.c:acpi_tb_checksum() */
+ 
 static u8 __init acpi_table_checksum(u8 *buffer, u32 length)
 {
 	u8 sum = 0;
@@ -553,7 +508,7 @@ static u8 __init acpi_table_checksum(u8 *buffer, u32 length)
 	return sum;
 }
 
-/* All but ACPI_SIG_RSDP and ACPI_SIG_FACS: */
+ 
 static const char table_sigs[][ACPI_NAMESEG_SIZE] __initconst = {
 	ACPI_SIG_BERT, ACPI_SIG_BGRT, ACPI_SIG_CPEP, ACPI_SIG_ECDT,
 	ACPI_SIG_EINJ, ACPI_SIG_ERST, ACPI_SIG_HEST, ACPI_SIG_MADT,
@@ -656,25 +611,12 @@ void __init acpi_table_upgrade(void)
 		WARN_ON(1);
 		return;
 	}
-	/*
-	 * Only calling e820_add_reserve does not work and the
-	 * tables are invalid (memory got used) later.
-	 * memblock_reserve works as expected and the tables won't get modified.
-	 * But it's not enough on X86 because ioremap will
-	 * complain later (used by acpi_os_map_memory) that the pages
-	 * that should get mapped are not marked "reserved".
-	 * Both memblock_reserve and e820__range_add (via arch_reserve_mem_area)
-	 * works fine.
-	 */
+	 
 	arch_reserve_mem_area(acpi_tables_addr, all_tables_size);
 
 	kmemleak_ignore_phys(acpi_tables_addr);
 
-	/*
-	 * early_ioremap only can remap 256k one time. If we map all
-	 * tables one time, we will hit the limit. Need to map chunks
-	 * one by one during copying the same as that in relocate_initrd().
-	 */
+	 
 	for (no = 0; no < table_nr; no++) {
 		unsigned char *src_p = acpi_initrd_files[no].data;
 		phys_addr_t size = acpi_initrd_files[no].size;
@@ -725,7 +667,7 @@ acpi_table_initrd_override(struct acpi_table_header *existing_table,
 
 		table_length = table->length;
 
-		/* Only override tables matched */
+		 
 		if (memcmp(existing_table->signature, table->signature, 4) ||
 		    memcmp(table->oem_id, existing_table->oem_id,
 			   ACPI_OEM_ID_SIZE) ||
@@ -734,10 +676,7 @@ acpi_table_initrd_override(struct acpi_table_header *existing_table,
 			acpi_os_unmap_memory(table, ACPI_HEADER_SIZE);
 			goto next_table;
 		}
-		/*
-		 * Mark the table to avoid being used in
-		 * acpi_table_initrd_scan() and check the revision.
-		 */
+		 
 		if (test_and_set_bit(table_index, acpi_initrd_installed) ||
 		    existing_table->oem_revision >= table->oem_revision) {
 			acpi_os_unmap_memory(table, ACPI_HEADER_SIZE);
@@ -780,17 +719,13 @@ static void __init acpi_table_initrd_scan(void)
 
 		table_length = table->length;
 
-		/* Skip RSDT/XSDT which should only be used for override */
+		 
 		if (ACPI_COMPARE_NAMESEG(table->signature, ACPI_SIG_RSDT) ||
 		    ACPI_COMPARE_NAMESEG(table->signature, ACPI_SIG_XSDT)) {
 			acpi_os_unmap_memory(table, ACPI_HEADER_SIZE);
 			goto next_table;
 		}
-		/*
-		 * Mark the table to avoid being used in
-		 * acpi_table_initrd_override(). Though this is not possible
-		 * because override is disabled in acpi_install_physical_table().
-		 */
+		 
 		if (test_and_set_bit(table_index, acpi_initrd_installed)) {
 			acpi_os_unmap_memory(table, ACPI_HEADER_SIZE);
 			goto next_table;
@@ -820,7 +755,7 @@ acpi_table_initrd_override(struct acpi_table_header *existing_table,
 static void __init acpi_table_initrd_scan(void)
 {
 }
-#endif /* CONFIG_ACPI_TABLE_UPGRADE */
+#endif  
 
 acpi_status
 acpi_os_physical_table_override(struct acpi_table_header *existing_table,
@@ -856,14 +791,7 @@ acpi_status acpi_os_table_override(struct acpi_table_header *existing_table,
 	return AE_OK;
 }
 
-/*
- * acpi_locate_initial_tables()
- *
- * Get the RSDP, then find and checksum all the ACPI tables.
- *
- * result: initial_tables[] is initialized, and points to
- * a list of ACPI tables.
- */
+ 
 int __init acpi_locate_initial_tables(void)
 {
 	acpi_status status;

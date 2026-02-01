@@ -1,11 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0-only
-//
-// aw88395.h --  ALSA SoC AW88395 codec support
-//
-// Copyright (c) 2022-2023 AWINIC Technology CO., LTD
-//
-// Author: Bruce zhao <zhaolei@awinic.com>
-//
+
+
+
+
+
+
+
+
 
 #ifndef __AW88395_H__
 #define __AW88395_H__

@@ -1,34 +1,4 @@
-/*
- * Copyright (c) 2016 Hisilicon Limited.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 
 #include <rdma/ib_umem.h>
 #include <rdma/uverbs_ioctl.h>
@@ -72,7 +42,7 @@ static int alloc_cqn(struct hns_roce_dev *hr_dev, struct hns_roce_cq *hr_cq)
 		return id;
 	}
 
-	/* the lower 2 bits is bankid */
+	 
 	hr_cq->cqn = (id << CQ_BANKID_SHIFT) | bankid;
 	bank->inuse++;
 	mutex_unlock(&cq_table->bank_mutex);
@@ -82,7 +52,7 @@ static int alloc_cqn(struct hns_roce_dev *hr_dev, struct hns_roce_cq *hr_cq)
 
 static inline u8 get_cq_bankid(unsigned long cqn)
 {
-	/* The lower 2 bits of CQN are used to hash to different banks */
+	 
 	return (u8)(cqn & GENMASK(1, 0));
 }
 
@@ -143,7 +113,7 @@ static int alloc_cqc(struct hns_roce_dev *hr_dev, struct hns_roce_cq *hr_cq)
 		return -EINVAL;
 	}
 
-	/* Get CQC memory HEM(Hardware Entry Memory) table */
+	 
 	ret = hns_roce_table_get(hr_dev, &cq_table->table, hr_cq->cqn);
 	if (ret) {
 		ibdev_err(ibdev, "failed to get CQ(0x%lx) context, ret = %d.\n",
@@ -185,10 +155,10 @@ static void free_cqc(struct hns_roce_dev *hr_dev, struct hns_roce_cq *hr_cq)
 
 	xa_erase(&cq_table->array, hr_cq->cqn);
 
-	/* Waiting interrupt process procedure carried out */
+	 
 	synchronize_irq(hr_dev->eq_table.eq[hr_cq->vector].irq);
 
-	/* wait for all interrupt processed */
+	 
 	if (refcount_dec_and_test(&hr_cq->refcount))
 		complete(&hr_cq->free);
 	wait_for_completion(&hr_cq->free);
@@ -318,7 +288,7 @@ static void set_cq_param(struct hns_roce_cq *hr_cq, u32 cq_entries, int vector,
 
 	cq_entries = max(cq_entries, hr_dev->caps.min_cqes);
 	cq_entries = roundup_pow_of_two(cq_entries);
-	hr_cq->ib_cq.cqe = cq_entries - 1; /* used as cqe index */
+	hr_cq->ib_cq.cqe = cq_entries - 1;  
 	hr_cq->cq_depth = cq_entries;
 	hr_cq->vector = vector;
 

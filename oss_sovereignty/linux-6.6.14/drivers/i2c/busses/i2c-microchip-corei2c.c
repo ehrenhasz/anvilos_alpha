@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Microchip CoreI2C I2C controller driver
- *
- * Copyright (c) 2018-2022 Microchip Corporation. All rights reserved.
- *
- * Author: Daire McNamara <daire.mcnamara@microchip.com>
- * Author: Conor Dooley <conor.dooley@microchip.com>
- */
+
+ 
 #include <linux/clk.h>
 #include <linux/clkdev.h>
 #include <linux/err.h>
@@ -54,7 +47,7 @@
 #define STATUS_S_TX_DATA_NACK			(0xC0)
 #define STATUS_LAST_DATA_ACK			(0xC8)
 #define STATUS_M_SMB_MASTER_RESET		(0xD0)
-#define STATUS_S_SCL_LOW_TIMEOUT		(0xD8) /* 25 ms */
+#define STATUS_S_SCL_LOW_TIMEOUT		(0xD8)  
 #define STATUS_NO_STATE_INFO			(0xF8)
 
 #define CORE_I2C_STATUS		(0x04)
@@ -87,21 +80,7 @@
 #define BCLK_DIV_8	(CTRL_CR0 | CTRL_CR1 | CTRL_CR2)
 #define CLK_MASK	(CTRL_CR0 | CTRL_CR1 | CTRL_CR2)
 
-/**
- * struct mchp_corei2c_dev - Microchip CoreI2C device private data
- *
- * @base:		pointer to register struct
- * @dev:		device reference
- * @i2c_clk:		clock reference for i2c input clock
- * @buf:		pointer to msg buffer for easier use
- * @msg_complete:	xfer completion object
- * @adapter:		core i2c abstraction
- * @msg_err:		error code for completed message
- * @bus_clk_rate:	current i2c bus clock rate
- * @isr_status:		cached copy of local ISR status
- * @msg_len:		number of bytes transferred in msg
- * @addr:		address of the current slave
- */
+ 
 struct mchp_corei2c_dev {
 	void __iomem *base;
 	struct device *dev;
@@ -282,7 +261,7 @@ static irqreturn_t mchp_corei2c_handle_isr(struct mchp_corei2c_dev *idev)
 		break;
 	}
 
-	/* On the last byte to be transmitted, send STOP */
+	 
 	if (last_byte)
 		mchp_corei2c_stop(idev);
 
@@ -401,11 +380,7 @@ static int mchp_corei2c_probe(struct platform_device *pdev)
 				     "clock-frequency too high: %d\n",
 				     idev->bus_clk_rate);
 
-	/*
-	 * This driver supports both the hard peripherals & soft FPGA cores.
-	 * The hard peripherals do not have shared IRQs, but we don't have
-	 * control over what way the interrupts are wired for the soft cores.
-	 */
+	 
 	ret = devm_request_irq(&pdev->dev, irq, mchp_corei2c_isr, IRQF_SHARED,
 			       pdev->name, idev);
 	if (ret)

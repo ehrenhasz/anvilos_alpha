@@ -1,34 +1,4 @@
-/*
- * Copyright (c) 2012 Mellanox Technologies. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 
 #include <rdma/ib_mad.h>
 #include <rdma/ib_smi.h>
@@ -113,17 +83,13 @@ struct mcast_group {
 	struct ib_sa_mad	response_sa_mad;
 	__be64			last_req_tid;
 
-	char			name[33]; /* MGID string */
+	char			name[33];  
 	struct device_attribute	dentry;
 
-	/* refcount is the reference count for the following:
-	   1. Each queued request
-	   2. Each invocation of the worker thread
-	   3. Membership of the port at the SA
-	*/
+	 
 	atomic_t		refcount;
 
-	/* delayed work to clean pending SM request */
+	 
 	struct delayed_work	timeout_work;
 	struct list_head	cleanup_list;
 };
@@ -214,7 +180,7 @@ static int send_mad_to_wire(struct mlx4_ib_demux_ctx *ctx, struct ib_mad *mad)
 
 	spin_lock_irqsave(&dev->sm_lock, flags);
 	if (!dev->sm_ah[ctx->port - 1]) {
-		/* port is not yet Active, sm_ah not ready */
+		 
 		spin_unlock_irqrestore(&dev->sm_lock, flags);
 		return -EAGAIN;
 	}
@@ -233,7 +199,7 @@ static int send_mad_to_slave(int slave, struct mlx4_ib_demux_ctx *ctx,
 	struct ib_wc wc;
 	struct rdma_ah_attr ah_attr;
 
-	/* Our agent might not yet be registered when mads start to arrive */
+	 
 	if (!agent)
 		return -EAGAIN;
 
@@ -244,7 +210,7 @@ static int send_mad_to_slave(int slave, struct mlx4_ib_demux_ctx *ctx,
 	wc.sl = 0;
 	wc.dlid_path_bits = 0;
 	wc.port_num = ctx->port;
-	wc.slid = rdma_ah_get_dlid(&ah_attr);  /* opensm lid */
+	wc.slid = rdma_ah_get_dlid(&ah_attr);   
 	wc.src_qp = 1;
 	return mlx4_ib_send_to_slave(dev, slave, ctx->port, IB_QPT_GSI, &wc, NULL, mad);
 }
@@ -255,20 +221,20 @@ static int send_join_to_wire(struct mcast_group *group, struct ib_sa_mad *sa_mad
 	struct ib_sa_mcmember_data *sa_mad_data = (struct ib_sa_mcmember_data *)&mad.data;
 	int ret;
 
-	/* we rely on a mad request as arrived from a VF */
+	 
 	memcpy(&mad, sa_mad, sizeof mad);
 
-	/* fix port GID to be the real one (slave 0) */
+	 
 	sa_mad_data->port_gid.global.interface_id = group->demux->guid_cache[0];
 
-	/* assign our own TID */
+	 
 	mad.mad_hdr.tid = mlx4_ib_get_new_demux_tid(group->demux);
-	group->last_req_tid = mad.mad_hdr.tid; /* keep it for later validation */
+	group->last_req_tid = mad.mad_hdr.tid;  
 
 	ret = send_mad_to_wire(group->demux, (struct ib_mad *)&mad);
-	/* set timeout handler */
+	 
 	if (!ret) {
-		/* calls mlx4_ib_mcg_timeout_handler */
+		 
 		queue_delayed_work(group->demux->mcg_wq, &group->timeout_work,
 				msecs_to_jiffies(MAD_TIMEOUT_MS));
 	}
@@ -290,7 +256,7 @@ static int send_leave_to_wire(struct mcast_group *group, u8 join_state)
 	mad.mad_hdr.status = cpu_to_be16(0);
 	mad.mad_hdr.class_specific = cpu_to_be16(0);
 	mad.mad_hdr.tid = mlx4_ib_get_new_demux_tid(group->demux);
-	group->last_req_tid = mad.mad_hdr.tid; /* keep it for later validation */
+	group->last_req_tid = mad.mad_hdr.tid;  
 	mad.mad_hdr.attr_id = cpu_to_be16(IB_SA_ATTR_MC_MEMBER_REC);
 	mad.mad_hdr.attr_mod = cpu_to_be32(0);
 	mad.sa_hdr.sm_key = 0x0;
@@ -305,9 +271,9 @@ static int send_leave_to_wire(struct mcast_group *group, u8 join_state)
 	if (ret)
 		group->state = MCAST_IDLE;
 
-	/* set timeout handler */
+	 
 	if (!ret) {
-		/* calls mlx4_ib_mcg_timeout_handler */
+		 
 		queue_delayed_work(group->demux->mcg_wq, &group->timeout_work,
 				msecs_to_jiffies(MAD_TIMEOUT_MS));
 	}
@@ -331,16 +297,16 @@ static int send_reply_to_slave(int slave, struct mcast_group *group,
 	mad.mad_hdr.status = cpu_to_be16(status);
 	mad.mad_hdr.class_specific = cpu_to_be16(0);
 	mad.mad_hdr.tid = req_sa_mad->mad_hdr.tid;
-	*(u8 *)&mad.mad_hdr.tid = 0; /* resetting tid to 0 */
+	*(u8 *)&mad.mad_hdr.tid = 0;  
 	mad.mad_hdr.attr_id = cpu_to_be16(IB_SA_ATTR_MC_MEMBER_REC);
 	mad.mad_hdr.attr_mod = cpu_to_be32(0);
 	mad.sa_hdr.sm_key = req_sa_mad->sa_hdr.sm_key;
 	mad.sa_hdr.attr_offset = cpu_to_be16(7);
-	mad.sa_hdr.comp_mask = 0; /* ignored on responses, see IBTA spec */
+	mad.sa_hdr.comp_mask = 0;  
 
 	*sa_data = group->rec;
 
-	/* reconstruct VF's requested join_state and port_gid */
+	 
 	sa_data->scope_join_state &= 0xf0;
 	sa_data->scope_join_state |= (group->func[slave].join_state & 0x0f);
 	memcpy(&sa_data->port_gid, &req_sa_data->port_gid, sizeof req_sa_data->port_gid);
@@ -383,9 +349,9 @@ static int check_selector(ib_sa_comp_mask comp_mask,
 static u16 cmp_rec(struct ib_sa_mcmember_data *src,
 		   struct ib_sa_mcmember_data *dst, ib_sa_comp_mask comp_mask)
 {
-	/* src is group record, dst is request record */
-	/* MGID must already match */
-	/* Port_GID we always replace to our Port_GID, so it is a match */
+	 
+	 
+	 
 
 #define MAD_STATUS_REQ_INVALID 0x0200
 	if (comp_mask & IB_SA_MCMEMBER_REC_QKEY && src->qkey != dst->qkey)
@@ -427,13 +393,12 @@ static u16 cmp_rec(struct ib_sa_mcmember_data *src,
 			(dst->scope_join_state & 0xf0))
 		return MAD_STATUS_REQ_INVALID;
 
-	/* join_state checked separately, proxy_join ignored */
+	 
 
 	return 0;
 }
 
-/* release group, return 1 if this was last release and group is destroyed
- * timout work is canceled sync */
+ 
 static int release_group(struct mcast_group *group, int from_timeout_handler)
 {
 	struct mlx4_ib_demux_ctx *ctx = group->demux;
@@ -497,7 +462,7 @@ static int join_group(struct mcast_group *group, int slave, u8 join_mask)
 	int ret = 0;
 	u8 join_state;
 
-	/* remove bits that slave is already member of, and adjust */
+	 
 	join_state = join_mask & (~group->func[slave].join_state);
 	adjust_membership(group, join_state, 1);
 	group->func[slave].join_state |= join_state;
@@ -526,7 +491,7 @@ static int check_leave(struct mcast_group *group, int slave, u8 leave_mask)
 	if (group->func[slave].state != MCAST_MEMBER)
 		return MAD_STATUS_REQ_INVALID;
 
-	/* make sure we're not deleting unset bits */
+	 
 	if (~group->func[slave].join_state & leave_mask)
 		return MAD_STATUS_REQ_INVALID;
 
@@ -611,7 +576,7 @@ static int handle_join_req(struct mcast_group *group, u8 join_mask,
 	struct ib_sa_mcmember_data *sa_data = (struct ib_sa_mcmember_data *)req->sa_mad.data;
 
 	if (join_mask == (group_join_state & join_mask)) {
-		/* port's membership need not change */
+		 
 		status = cmp_rec(&group->rec, sa_data, req->sa_mad.sa_hdr.comp_mask);
 		if (!status)
 			join_group(group, req->func, join_mask);
@@ -623,7 +588,7 @@ static int handle_join_req(struct mcast_group *group, u8 join_mask,
 		kfree(req);
 		++ref;
 	} else {
-		/* port's membership needs to be updated */
+		 
 		group->prev_state = group->state;
 		if (send_join_to_wire(group, &req->sa_mad)) {
 			--group->func[req->func].num_pend_reqs;
@@ -645,7 +610,7 @@ static void mlx4_ib_mcg_work_handler(struct work_struct *work)
 	struct mcast_req *req = NULL;
 	struct ib_sa_mcmember_data *sa_data;
 	u8 req_join_state;
-	int rc = 1; /* release_count - this is for the scheduled work */
+	int rc = 1;  
 	u16 status;
 	u8 method;
 
@@ -653,12 +618,9 @@ static void mlx4_ib_mcg_work_handler(struct work_struct *work)
 
 	mutex_lock(&group->lock);
 
-	/* First, let's see if a response from SM is waiting regarding this group.
-	 * If so, we need to update the group's REC. If this is a bad response, we
-	 * may need to send a bad response to a VF waiting for it. If VF is waiting
-	 * and this is a good response, the VF will be answered later in this func. */
+	 
 	if (group->state == MCAST_RESP_READY) {
-		/* cancels mlx4_ib_mcg_timeout_handler */
+		 
 		cancel_delayed_work(&group->timeout_work);
 		status = be16_to_cpu(group->response_sa_mad.mad_hdr.status);
 		method = group->response_sa_mad.mad_hdr.method;
@@ -694,7 +656,7 @@ static void mlx4_ib_mcg_work_handler(struct work_struct *work)
 			cur_join_state = group->rec.scope_join_state & 0xf;
 
 			if (method == IB_MGMT_METHOD_GET_RESP) {
-				/* successfull join */
+				 
 				if (!cur_join_state && resp_join_state)
 					--rc;
 			} else if (!resp_join_state)
@@ -705,23 +667,21 @@ static void mlx4_ib_mcg_work_handler(struct work_struct *work)
 	}
 
 process_requests:
-	/* We should now go over pending join/leave requests, as long as we are idle. */
+	 
 	while (!list_empty(&group->pending_list) && group->state == MCAST_IDLE) {
 		req = list_first_entry(&group->pending_list, struct mcast_req,
 				       group_list);
 		sa_data = (struct ib_sa_mcmember_data *)req->sa_mad.data;
 		req_join_state = sa_data->scope_join_state & 0xf;
 
-		/* For a leave request, we will immediately answer the VF, and
-		 * update our internal counters. The actual leave will be sent
-		 * to SM later, if at all needed. We dequeue the request now. */
+		 
 		if (req->sa_mad.mad_hdr.method == IB_SA_METHOD_DELETE)
 			rc += handle_leave_req(group, req_join_state, req);
 		else
 			rc += handle_join_req(group, req_join_state, req);
 	}
 
-	/* Handle leaves */
+	 
 	if (group->state == MCAST_IDLE) {
 		req_join_state = get_leave_state(group);
 		if (req_join_state) {
@@ -762,7 +722,7 @@ static struct mcast_group *search_relocate_mgid0_group(struct mlx4_ib_demux_ctx 
 				list_del_init(&group->mgid0_list);
 				cur_group = mcast_insert(ctx, group);
 				if (cur_group) {
-					/* A race between our code and SM. Silently cleaning the new one */
+					 
 					req = list_first_entry(&group->pending_list,
 							       struct mcast_req, group_list);
 					--group->func[req->func].num_pend_reqs;
@@ -870,11 +830,11 @@ static void queue_req(struct mcast_req *req)
 {
 	struct mcast_group *group = req->group;
 
-	atomic_inc(&group->refcount); /* for the request */
-	atomic_inc(&group->refcount); /* for scheduling the work */
+	atomic_inc(&group->refcount);  
+	atomic_inc(&group->refcount);  
 	list_add_tail(&req->group_list, &group->pending_list);
 	list_add_tail(&req->func_list, &group->func[req->func].pending);
-	/* calls mlx4_ib_mcg_work_handler */
+	 
 	if (!queue_work(group->demux->mcg_wq, &group->work))
 		safe_atomic_dec(&group->refcount);
 }
@@ -896,7 +856,7 @@ int mlx4_ib_mcg_demux_handler(struct ib_device *ibdev, int port, int slave,
 		if (IS_ERR(group)) {
 			if (mad->mad_hdr.method == IB_MGMT_METHOD_GET_RESP) {
 				__be64 tid = mad->mad_hdr.tid;
-				*(u8 *)(&tid) = (u8)slave; /* in group we kept the modified TID */
+				*(u8 *)(&tid) = (u8)slave;  
 				group = search_relocate_mgid0_group(ctx, tid, &rec->mgid);
 			} else
 				group = NULL;
@@ -909,22 +869,22 @@ int mlx4_ib_mcg_demux_handler(struct ib_device *ibdev, int port, int slave,
 		group->response_sa_mad = *mad;
 		group->prev_state = group->state;
 		group->state = MCAST_RESP_READY;
-		/* calls mlx4_ib_mcg_work_handler */
+		 
 		atomic_inc(&group->refcount);
 		if (!queue_work(ctx->mcg_wq, &group->work))
 			safe_atomic_dec(&group->refcount);
 		mutex_unlock(&group->lock);
 		release_group(group, 0);
-		return 1; /* consumed */
+		return 1;  
 	case IB_MGMT_METHOD_SET:
 	case IB_SA_METHOD_GET_TABLE:
 	case IB_SA_METHOD_GET_TABLE_RESP:
 	case IB_SA_METHOD_DELETE:
-		return 0; /* not consumed, pass-through to guest over tunnel */
+		return 0;  
 	default:
 		mcg_warn("In demux, port %d: unexpected MCMember method: 0x%x, dropping\n",
 			port, mad->mad_hdr.method);
-		return 1; /* consumed */
+		return 1;  
 	}
 }
 
@@ -974,16 +934,16 @@ int mlx4_ib_mcg_multiplex_handler(struct ib_device *ibdev, int port,
 		queue_req(req);
 		mutex_unlock(&group->lock);
 		release_group(group, 0);
-		return 1; /* consumed */
+		return 1;  
 	case IB_SA_METHOD_GET_TABLE:
 	case IB_MGMT_METHOD_GET_RESP:
 	case IB_SA_METHOD_GET_TABLE_RESP:
 	case IB_SA_METHOD_DELETE_RESP:
-		return 0; /* not consumed, pass-through */
+		return 0;  
 	default:
 		mcg_warn("In multiplex, port %d, func %d: unexpected MCMember method: 0x%x, dropping\n",
 			port, slave, sa_mad->mad_hdr.method);
-		return 1; /* consumed */
+		return 1;  
 	}
 }
 
@@ -1242,7 +1202,7 @@ void clean_vf_mcast(struct mlx4_ib_demux_ctx *ctx, int slave)
 		group = rb_entry(p, struct mcast_group, node);
 		mutex_lock(&group->lock);
 		if (atomic_read(&group->refcount)) {
-			/* clear pending requests of this VF */
+			 
 			clear_pending_reqs(group, slave);
 			push_deleteing_req(group, slave);
 		}

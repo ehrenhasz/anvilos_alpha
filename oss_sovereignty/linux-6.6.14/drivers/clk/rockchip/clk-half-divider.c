@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2018 Fuzhou Rockchip Electronics Co., Ltd
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/io.h>
@@ -56,19 +54,12 @@ static int clk_half_divider_bestdiv(struct clk_hw *hw, unsigned long rate,
 		return bestdiv;
 	}
 
-	/*
-	 * The maximum divider we can use without overflowing
-	 * unsigned long in rate * i below
-	 */
+	 
 	maxdiv = min(ULONG_MAX / rate, maxdiv);
 
 	for (i = 0; i <= maxdiv; i++) {
 		if (((u64)rate * (i * 2 + 3)) == ((u64)parent_rate_saved * 2)) {
-			/*
-			 * It's the most ideal case if the requested rate can be
-			 * divided from parent clock without needing to change
-			 * parent rate, so return the divider immediately.
-			 */
+			 
 			*best_parent_rate = parent_rate_saved;
 			return i;
 		}
@@ -145,16 +136,7 @@ static const struct clk_ops clk_half_divider_ops = {
 	.set_rate = clk_half_divider_set_rate,
 };
 
-/*
- * Register a clock branch.
- * Most clock branches have a form like
- *
- * src1 --|--\
- *        |M |--[GATE]-[DIV]-
- * src2 --|--/
- *
- * sometimes without one of those components.
- */
+ 
 struct clk *rockchip_clk_register_halfdiv(const char *name,
 					  const char *const *parent_names,
 					  u8 num_parents, void __iomem *base,

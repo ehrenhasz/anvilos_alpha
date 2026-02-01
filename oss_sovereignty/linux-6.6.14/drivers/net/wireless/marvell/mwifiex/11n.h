@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * NXP Wireless LAN device driver: 802.11n
- *
- * Copyright 2011-2020 NXP
- */
+ 
+ 
 
 #ifndef _MWIFIEX_11N_H_
 #define _MWIFIEX_11N_H_
@@ -65,7 +61,7 @@ mwifiex_is_station_ampdu_allowed(struct mwifiex_private *priv,
 	return (node->ampdu_sta[tid] != BA_STREAM_NOT_ALLOWED) ? true : false;
 }
 
-/* This function checks whether AMPDU is allowed or not for a particular TID. */
+ 
 static inline u8
 mwifiex_is_ampdu_allowed(struct mwifiex_private *priv,
 			 struct mwifiex_ra_list_tbl *ptr, int tid)
@@ -83,9 +79,7 @@ mwifiex_is_ampdu_allowed(struct mwifiex_private *priv,
 	}
 }
 
-/*
- * This function checks whether AMSDU is allowed or not for a particular TID.
- */
+ 
 static inline u8
 mwifiex_is_amsdu_allowed(struct mwifiex_private *priv, int tid)
 {
@@ -94,9 +88,7 @@ mwifiex_is_amsdu_allowed(struct mwifiex_private *priv, int tid)
 		? true : false);
 }
 
-/*
- * This function checks whether a space is available for new BA stream or not.
- */
+ 
 static inline u8 mwifiex_space_avail_for_new_ba_stream(
 					struct mwifiex_adapter *adapter)
 {
@@ -123,11 +115,7 @@ static inline u8 mwifiex_space_avail_for_new_ba_stream(
 	return ((ba_stream_num < ba_stream_max) ? true : false);
 }
 
-/*
- * This function finds the correct Tx BA stream to delete.
- *
- * Upon successfully locating, both the TID and the RA are returned.
- */
+ 
 static inline u8
 mwifiex_find_stream_to_delete(struct mwifiex_private *priv, int ptr_tid,
 			      int *ptid, u8 *ra)
@@ -152,9 +140,7 @@ mwifiex_find_stream_to_delete(struct mwifiex_private *priv, int ptr_tid,
 	return ret;
 }
 
-/*
- * This function checks whether associated station is 11n enabled
- */
+ 
 static inline int mwifiex_is_sta_11n_enabled(struct mwifiex_private *priv,
 					     struct mwifiex_sta_node *node)
 {
@@ -176,4 +162,4 @@ mwifiex_tdls_peer_11n_enabled(struct mwifiex_private *priv, const u8 *ra)
 
 	return false;
 }
-#endif /* !_MWIFIEX_11N_H_ */
+#endif  

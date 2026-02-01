@@ -1,38 +1,4 @@
-/*
- * Copyright (c) 2005 Topspin Communications.  All rights reserved.
- * Copyright (c) 2005, 2006 Cisco Systems.  All rights reserved.
- * Copyright (c) 2005 Mellanox Technologies. All rights reserved.
- * Copyright (c) 2005 Voltaire, Inc. All rights reserved.
- * Copyright (c) 2005 PathScale, Inc. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -89,17 +55,10 @@ static const struct class uverbs_class = {
 	.devnode = uverbs_devnode,
 };
 
-/*
- * Must be called with the ufile->device->disassociate_srcu held, and the lock
- * must be held until use of the ucontext is finished.
- */
+ 
 struct ib_ucontext *ib_uverbs_get_ucontext_file(struct ib_uverbs_file *ufile)
 {
-	/*
-	 * We do not hold the hw_destroy_rwsem lock for this flow, instead
-	 * srcu is used. It does not matter if someone races this with
-	 * get_context, we get NULL or valid ucontext.
-	 */
+	 
 	struct ib_ucontext *ucontext = smp_load_acquire(&ufile->ucontext);
 
 	if (!srcu_dereference(ufile->device->ib_dev,
@@ -451,7 +410,7 @@ void ib_uverbs_cq_event_handler(struct ib_event *event, void *context_ptr)
 
 void ib_uverbs_qp_event_handler(struct ib_event *event, void *context_ptr)
 {
-	/* for XRC target qp's, check that qp is live */
+	 
 	if (!event->element.qp->uobject)
 		return;
 
@@ -494,10 +453,10 @@ void ib_uverbs_init_async_event_file(
 
 	ib_uverbs_init_event_queue(&async_file->ev_queue);
 
-	/* The first async_event_file becomes the default one for the file. */
+	 
 	mutex_lock(&uverbs_file->ucontext_lock);
 	if (!uverbs_file->default_async_file) {
-		/* Pairs with the put in ib_uverbs_release_file */
+		 
 		uverbs_uobject_get(&async_file->uobj);
 		smp_store_release(&uverbs_file->default_async_file, async_file);
 	}
@@ -542,18 +501,12 @@ static ssize_t verify_hdr(struct ib_uverbs_cmd_hdr *hdr,
 		return 0;
 	}
 
-	/* not extended command */
+	 
 	if (hdr->in_words * 4 != count)
 		return -EINVAL;
 
 	if (count < method_elm->req_size + sizeof(*hdr)) {
-		/*
-		 * rdma-core v18 and v19 have a bug where they send DESTROY_CQ
-		 * with a 16 byte write instead of 24. Old kernels didn't
-		 * check the size so they allowed this. Now that the size is
-		 * checked provide a compatibility work around to not break
-		 * those userspaces.
-		 */
+		 
 		if (hdr->command == IB_USER_VERBS_CMD_DESTROY_CQ &&
 		    count == 16) {
 			hdr->in_words = 6;
@@ -612,7 +565,7 @@ static ssize_t ib_uverbs_write(struct file *filp, const char __user *buf,
 
 	memset(bundle.attr_present, 0, sizeof(bundle.attr_present));
 	bundle.ufile = file;
-	bundle.context = NULL; /* only valid if bundle has uobject */
+	bundle.context = NULL;  
 	bundle.uobject = NULL;
 	if (!method_elm->is_ex) {
 		size_t in_len = hdr.in_words * 4 - sizeof(hdr);
@@ -633,11 +586,7 @@ static ssize_t ib_uverbs_write(struct file *filp, const char __user *buf,
 		}
 
 		if (method_elm->has_resp) {
-			/*
-			 * The macros check that if has_resp is set
-			 * then the command request structure starts
-			 * with a '__aligned u64 response' member.
-			 */
+			 
 			ret = get_user(response, (const u64 __user *)buf);
 			if (ret)
 				goto out_unlock;
@@ -707,10 +656,7 @@ out:
 	return ret;
 }
 
-/*
- * The VMA has been dup'd, initialize the vm_private_data with a new tracking
- * struct
- */
+ 
 static void rdma_umap_open(struct vm_area_struct *vma)
 {
 	struct ib_uverbs_file *ufile = vma->vm_file->private_data;
@@ -720,12 +666,10 @@ static void rdma_umap_open(struct vm_area_struct *vma)
 	if (!opriv)
 		return;
 
-	/* We are racing with disassociation */
+	 
 	if (!down_read_trylock(&ufile->hw_destroy_rwsem))
 		goto out_zap;
-	/*
-	 * Disassociation already completed, the VMA should already be zapped.
-	 */
+	 
 	if (!ufile->ucontext)
 		goto out_unlock;
 
@@ -740,11 +684,7 @@ static void rdma_umap_open(struct vm_area_struct *vma)
 out_unlock:
 	up_read(&ufile->hw_destroy_rwsem);
 out_zap:
-	/*
-	 * We can't allow the VMA to be created with the actual IO pages, that
-	 * would break our API contract, and it can't be stopped at this
-	 * point, so zap it.
-	 */
+	 
 	vma->vm_private_data = NULL;
 	zap_vma_ptes(vma, vma->vm_start, vma->vm_end - vma->vm_start);
 }
@@ -757,11 +697,7 @@ static void rdma_umap_close(struct vm_area_struct *vma)
 	if (!priv)
 		return;
 
-	/*
-	 * The vma holds a reference on the struct file that created it, which
-	 * in turn means that the ib_uverbs_file is guaranteed to exist at
-	 * this point.
-	 */
+	 
 	mutex_lock(&ufile->umap_lock);
 	if (priv->entry)
 		rdma_user_mmap_entry_put(priv->entry);
@@ -771,10 +707,7 @@ static void rdma_umap_close(struct vm_area_struct *vma)
 	kfree(priv);
 }
 
-/*
- * Once the zap_vma_ptes has been called touches to the VMA will come here and
- * we return a dummy writable zero page for all the pfns.
- */
+ 
 static vm_fault_t rdma_umap_fault(struct vm_fault *vmf)
 {
 	struct ib_uverbs_file *ufile = vmf->vma->vm_file->private_data;
@@ -784,7 +717,7 @@ static vm_fault_t rdma_umap_fault(struct vm_fault *vmf)
 	if (!priv)
 		return VM_FAULT_SIGBUS;
 
-	/* Read only pages can just use the system zero page. */
+	 
 	if (!(vmf->vma->vm_flags & (VM_WRITE | VM_MAYWRITE))) {
 		vmf->page = ZERO_PAGE(vmf->address);
 		get_page(vmf->page);
@@ -797,10 +730,7 @@ static vm_fault_t rdma_umap_fault(struct vm_fault *vmf)
 			alloc_pages(vmf->gfp_mask | __GFP_ZERO, 0);
 
 	if (ufile->disassociate_page) {
-		/*
-		 * This VMA is forced to always be shared so this doesn't have
-		 * to worry about COW.
-		 */
+		 
 		vmf->page = ufile->disassociate_page;
 		get_page(vmf->page);
 	} else {
@@ -826,7 +756,7 @@ void uverbs_user_mmap_disassociate(struct ib_uverbs_file *ufile)
 	while (1) {
 		struct mm_struct *mm = NULL;
 
-		/* Get an arbitrary mm pointer that hasn't been cleaned yet */
+		 
 		mutex_lock(&ufile->umap_lock);
 		while (!list_empty(&ufile->umaps)) {
 			int ret;
@@ -850,12 +780,7 @@ void uverbs_user_mmap_disassociate(struct ib_uverbs_file *ufile)
 		if (!mm)
 			return;
 
-		/*
-		 * The umap_lock is nested under mmap_lock since it used within
-		 * the vma_ops callbacks, so we have to clean the list one mm
-		 * at a time to get the lock ordering right. Typically there
-		 * will only be one mm, so no big deal.
-		 */
+		 
 		mmap_read_lock(mm);
 		mutex_lock(&ufile->umap_lock);
 		list_for_each_entry_safe (priv, next_priv, &ufile->umaps,
@@ -880,16 +805,7 @@ void uverbs_user_mmap_disassociate(struct ib_uverbs_file *ufile)
 	}
 }
 
-/*
- * ib_uverbs_open() does not need the BKL:
- *
- *  - the ib_uverbs_device structures are properly reference counted and
- *    everything else is purely local to the file being created, so
- *    races against other open calls are not a problem;
- *  - there is no ioctl method to race against;
- *  - the open method will either immediately run -ENXIO, or all
- *    required initialization will be done.
- */
+ 
 static int ib_uverbs_open(struct inode *inode, struct file *filp)
 {
 	struct ib_uverbs_device *dev;
@@ -918,9 +834,7 @@ static int ib_uverbs_open(struct inode *inode, struct file *filp)
 		goto err;
 	}
 
-	/* In case IB device supports disassociate ucontext, there is no hard
-	 * dependency between uverbs device and its low level device.
-	 */
+	 
 	module_dependent = !(ib_dev->ops.disassociate_ucontext);
 
 	if (module_dependent) {
@@ -1019,12 +933,7 @@ static int ib_uverbs_get_nl_info(struct ib_device *ibdev, void *client_data,
 	res->abi = ibdev->ops.uverbs_abi_ver;
 	res->cdev = &uverbs_dev->dev;
 
-	/*
-	 * To support DRIVER_ID binding in userspace some of the driver need
-	 * upgrading to expose their PCI dependent revision information
-	 * through get_context instead of relying on modalias matching. When
-	 * the drivers are fixed they can drop this flag.
-	 */
+	 
 	if (!ibdev->ops.uverbs_no_driver_id_binding) {
 		ret = nla_put_u32(res->nl_msg, RDMA_NLDEV_ATTR_UVERBS_DRIVER_ID,
 				  ibdev->ops.driver_id);
@@ -1187,7 +1096,7 @@ static void ib_uverbs_free_hw_resources(struct ib_uverbs_device *uverbs_dev,
 {
 	struct ib_uverbs_file *file;
 
-	/* Pending running commands to terminate */
+	 
 	uverbs_disassociate_api_pre(uverbs_dev);
 
 	mutex_lock(&uverbs_dev->lists_mutex);
@@ -1197,11 +1106,7 @@ static void ib_uverbs_free_hw_resources(struct ib_uverbs_device *uverbs_dev,
 		list_del_init(&file->list);
 		kref_get(&file->ref);
 
-		/* We must release the mutex before going ahead and calling
-		 * uverbs_cleanup_ufile, as it might end up indirectly calling
-		 * uverbs_close, for example due to freeing the resources (e.g
-		 * mmput).
-		 */
+		 
 		mutex_unlock(&uverbs_dev->lists_mutex);
 
 		uverbs_destroy_ufile_hw(file, RDMA_REMOVE_DRIVER_REMOVE);
@@ -1223,17 +1128,7 @@ static void ib_uverbs_remove_one(struct ib_device *device, void *client_data)
 	ida_free(&uverbs_ida, uverbs_dev->devnum);
 
 	if (device->ops.disassociate_ucontext) {
-		/* We disassociate HW resources and immediately return.
-		 * Userspace will see a EIO errno for all future access.
-		 * Upon returning, ib_device may be freed internally and is not
-		 * valid any more.
-		 * uverbs_device is still available until all clients close
-		 * their files, then the uverbs device ref count will be zero
-		 * and its resources will be freed.
-		 * Note: At this point no more files can be opened since the
-		 * cdev was deleted, however active clients can still issue
-		 * commands and close their open files.
-		 */
+		 
 		ib_uverbs_free_hw_resources(uverbs_dev, device);
 		wait_clients = 0;
 	}

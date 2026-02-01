@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * cec-api.c - HDMI Consumer Electronics Control framework - API
- *
- * Copyright 2016 Cisco Systems, Inc. and/or its affiliates. All rights reserved.
- */
+
+ 
 
 #include <linux/errno.h>
 #include <linux/init.h>
@@ -29,7 +25,7 @@ static inline struct cec_devnode *cec_devnode_data(struct file *filp)
 	return &fh->adap->devnode;
 }
 
-/* CEC file operations */
+ 
 
 static __poll_t cec_poll(struct file *filp,
 			     struct poll_table_struct *poll)
@@ -59,15 +55,10 @@ static bool cec_is_busy(const struct cec_adapter *adap,
 	bool valid_initiator = adap->cec_initiator && adap->cec_initiator == fh;
 	bool valid_follower = adap->cec_follower && adap->cec_follower == fh;
 
-	/*
-	 * Exclusive initiators and followers can always access the CEC adapter
-	 */
+	 
 	if (valid_initiator || valid_follower)
 		return false;
-	/*
-	 * All others can only access the CEC adapter if there is no
-	 * exclusive initiator and they are in INITIATOR mode.
-	 */
+	 
 	return adap->cec_initiator ||
 	       fh->mode_initiator == CEC_MODE_NO_INITIATOR;
 }
@@ -147,12 +138,7 @@ static long cec_adap_g_log_addrs(struct cec_adapter *adap,
 	struct cec_log_addrs log_addrs;
 
 	mutex_lock(&adap->lock);
-	/*
-	 * We use memcpy here instead of assignment since there is a
-	 * hole at the end of struct cec_log_addrs that an assignment
-	 * might ignore. So when we do copy_to_user() we could leak
-	 * one byte of memory.
-	 */
+	 
 	memcpy(&log_addrs, &adap->log_addrs, sizeof(log_addrs));
 	if (!adap->is_configured)
 		memset(log_addrs.log_addr, CEC_LOG_ADDR_INVALID,
@@ -236,7 +222,7 @@ static long cec_transmit(struct cec_adapter *adap, struct cec_fh *fh,
 	return 0;
 }
 
-/* Called by CEC_RECEIVE: wait for a message to arrive */
+ 
 static int cec_receive_msg(struct cec_fh *fh, struct cec_msg *msg, bool block)
 {
 	u32 timeout = msg->timeout;
@@ -244,9 +230,9 @@ static int cec_receive_msg(struct cec_fh *fh, struct cec_msg *msg, bool block)
 
 	do {
 		mutex_lock(&fh->lock);
-		/* Are there received messages queued up? */
+		 
 		if (fh->queued_msgs) {
-			/* Yes, return the first one */
+			 
 			struct cec_msg_entry *entry =
 				list_first_entry(&fh->msgs,
 						 struct cec_msg_entry, list);
@@ -256,20 +242,20 @@ static int cec_receive_msg(struct cec_fh *fh, struct cec_msg *msg, bool block)
 			kfree(entry);
 			fh->queued_msgs--;
 			mutex_unlock(&fh->lock);
-			/* restore original timeout value */
+			 
 			msg->timeout = timeout;
 			return 0;
 		}
 
-		/* No, return EAGAIN in non-blocking mode or wait */
+		 
 		mutex_unlock(&fh->lock);
 
-		/* Return when in non-blocking mode */
+		 
 		if (!block)
 			return -EAGAIN;
 
 		if (msg->timeout) {
-			/* The user specified a timeout */
+			 
 			res = wait_event_interruptible_timeout(fh->wait,
 							       fh->queued_msgs,
 				msecs_to_jiffies(msg->timeout));
@@ -278,11 +264,11 @@ static int cec_receive_msg(struct cec_fh *fh, struct cec_msg *msg, bool block)
 			else if (res > 0)
 				res = 0;
 		} else {
-			/* Wait indefinitely */
+			 
 			res = wait_event_interruptible(fh->wait,
 						       fh->queued_msgs);
 		}
-		/* Exit on error, otherwise loop to get the new message */
+		 
 	} while (!res);
 	return res;
 }
@@ -324,7 +310,7 @@ static long cec_dqevent(struct cec_adapter *adap, struct cec_fh *fh,
 		mutex_lock(&fh->lock);
 	}
 
-	/* Find the oldest event */
+	 
 	for (i = 0; i < CEC_NUM_EVENTS; i++) {
 		struct cec_event_entry *entry =
 			list_first_entry_or_null(&fh->events[i],
@@ -402,7 +388,7 @@ static long cec_s_mode(struct cec_adapter *adap, struct cec_fh *fh,
 		return -EINVAL;
 	}
 
-	/* Follower modes should always be able to send CEC messages */
+	 
 	if ((mode_initiator == CEC_MODE_NO_INITIATOR ||
 	     !(adap->capabilities & CEC_CAP_TRANSMIT)) &&
 	    mode_follower >= CEC_MODE_FOLLOWER &&
@@ -411,30 +397,24 @@ static long cec_s_mode(struct cec_adapter *adap, struct cec_fh *fh,
 		return -EINVAL;
 	}
 
-	/* Monitor modes require CEC_MODE_NO_INITIATOR */
+	 
 	if (mode_initiator && mode_follower >= CEC_MODE_MONITOR_PIN) {
 		dprintk(1, "%s: monitor modes require NO_INITIATOR\n",
 			__func__);
 		return -EINVAL;
 	}
 
-	/* Monitor modes require CAP_NET_ADMIN */
+	 
 	if (mode_follower >= CEC_MODE_MONITOR_PIN && !capable(CAP_NET_ADMIN))
 		return -EPERM;
 
 	mutex_lock(&adap->lock);
-	/*
-	 * You can't become exclusive follower if someone else already
-	 * has that job.
-	 */
+	 
 	if ((mode_follower == CEC_MODE_EXCL_FOLLOWER ||
 	     mode_follower == CEC_MODE_EXCL_FOLLOWER_PASSTHRU) &&
 	    adap->cec_follower && adap->cec_follower != fh)
 		err = -EBUSY;
-	/*
-	 * You can't become exclusive initiator if someone else already
-	 * has that job.
-	 */
+	 
 	if (mode_initiator == CEC_MODE_EXCL_INITIATOR &&
 	    adap->cec_initiator && adap->cec_initiator != fh)
 		err = -EBUSY;
@@ -556,10 +536,7 @@ static int cec_open(struct inode *inode, struct file *filp)
 		container_of(inode->i_cdev, struct cec_devnode, cdev);
 	struct cec_adapter *adap = to_cec_adapter(devnode);
 	struct cec_fh *fh = kzalloc(sizeof(*fh), GFP_KERNEL);
-	/*
-	 * Initial events that are automatically sent when the cec device is
-	 * opened.
-	 */
+	 
 	struct cec_event ev = {
 		.event = CEC_EVENT_STATE_CHANGE,
 		.flags = CEC_EVENT_FL_INITIAL_STATE,
@@ -588,7 +565,7 @@ static int cec_open(struct inode *inode, struct file *filp)
 
 	filp->private_data = fh;
 
-	/* Queue up initial state events */
+	 
 	ev.state_change.phys_addr = adap->phys_addr;
 	ev.state_change.log_addr_mask = adap->log_addrs.log_addr_mask;
 	ev.state_change.have_conn_info =
@@ -624,7 +601,7 @@ static int cec_open(struct inode *inode, struct file *filp)
 	return 0;
 }
 
-/* Override for the release function */
+ 
 static int cec_release(struct inode *inode, struct file *filp)
 {
 	struct cec_devnode *devnode = cec_devnode_data(filp);
@@ -653,7 +630,7 @@ static int cec_release(struct inode *inode, struct file *filp)
 	mutex_unlock(&devnode->lock_fhs);
 	mutex_unlock(&devnode->lock);
 
-	/* Unhook pending transmits from this filehandle. */
+	 
 	mutex_lock(&adap->lock);
 	while (!list_empty(&fh->xfer_list)) {
 		struct cec_data *data =

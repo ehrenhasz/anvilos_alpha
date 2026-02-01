@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Intel SOC Telemetry Platform Driver: Currently supports APL
- * Copyright (c) 2015, Intel Corporation.
- * All Rights Reserved.
- *
- * This file provides the platform specific telemetry implementation for APL.
- * It used the PUNIT and PMC IPC interfaces for configuring the counters.
- * The accumulated results are fetched from SRAM.
- */
+
+ 
 
 #include <linux/io.h>
 #include <linux/module.h>
@@ -79,10 +71,7 @@ struct telem_ssram_region {
 
 static struct telemetry_plt_config *telm_conf;
 
-/*
- * The following counters are programmed by default during setup.
- * Only 20 allocated to kernel driver
- */
+ 
 static struct telemetry_evtmap
 	telemetry_apl_ioss_default_events[TELEM_MAX_OS_ALLOCATED_EVENTS] = {
 	{"SOC_S0IX_TOTAL_RES",			0x4800},
@@ -156,7 +145,7 @@ static struct telemetry_evtmap
 	{"PC2_AND_MEM_SHALLOW_IDLE_RES",	0x1D40},
 };
 
-/* APL specific Data */
+ 
 static struct telemetry_plt_config telem_apl_config = {
 	.pss_config = {
 		.telem_evts = telemetry_apl_pss_default_events,
@@ -166,7 +155,7 @@ static struct telemetry_plt_config telem_apl_config = {
 	},
 };
 
-/* GLK specific Data */
+ 
 static struct telemetry_plt_config telem_glk_config = {
 	.pss_config = {
 		.telem_evts = telemetry_glk_pss_default_events,
@@ -282,7 +271,7 @@ static int telemetry_setup_iossevtconfig(struct telemetry_evtconfig evtconfig,
 	ioss_period = evtconfig.period;
 	ioss_evtmap = evtconfig.evtmap;
 
-	/* Get telemetry EVENT CTL */
+	 
 	ret = intel_scu_ipc_dev_command(scu, IOSS_TELEM,
 				    IOSS_TELEM_EVENT_CTL_READ, NULL, 0,
 				    &telem_ctrl, sizeof(telem_ctrl));
@@ -291,7 +280,7 @@ static int telemetry_setup_iossevtconfig(struct telemetry_evtconfig evtconfig,
 		return ret;
 	}
 
-	/* Disable Telemetry */
+	 
 	TELEM_DISABLE(telem_ctrl);
 
 	ret = intel_scu_ipc_dev_command(scu, IOSS_TELEM,
@@ -303,9 +292,9 @@ static int telemetry_setup_iossevtconfig(struct telemetry_evtconfig evtconfig,
 	}
 
 
-	/* Reset Everything */
+	 
 	if (action == TELEM_RESET) {
-		/* Clear All Events */
+		 
 		TELEM_CLEAR_EVENTS(telem_ctrl);
 
 		ret = intel_scu_ipc_dev_command(scu, IOSS_TELEM,
@@ -318,7 +307,7 @@ static int telemetry_setup_iossevtconfig(struct telemetry_evtconfig evtconfig,
 		}
 		telm_conf->ioss_config.ssram_evts_used = 0;
 
-		/* Configure Events */
+		 
 		for (idx = 0; idx < num_ioss_evts; idx++) {
 			if (telemetry_plt_config_ioss_event(
 			    telm_conf->ioss_config.telem_evts[idx].evt_id,
@@ -331,9 +320,9 @@ static int telemetry_setup_iossevtconfig(struct telemetry_evtconfig evtconfig,
 		}
 	}
 
-	/* Re-Configure Everything */
+	 
 	if (action == TELEM_UPDATE) {
-		/* Clear All Events */
+		 
 		TELEM_CLEAR_EVENTS(telem_ctrl);
 
 		ret = intel_scu_ipc_dev_command(scu, IOSS_TELEM,
@@ -346,7 +335,7 @@ static int telemetry_setup_iossevtconfig(struct telemetry_evtconfig evtconfig,
 		}
 		telm_conf->ioss_config.ssram_evts_used = 0;
 
-		/* Configure Events */
+		 
 		for (index = 0; index < num_ioss_evts; index++) {
 			telm_conf->ioss_config.telem_evts[index].evt_id =
 			ioss_evtmap[index];
@@ -362,9 +351,9 @@ static int telemetry_setup_iossevtconfig(struct telemetry_evtconfig evtconfig,
 		}
 	}
 
-	/* Add some Events */
+	 
 	if (action == TELEM_ADD) {
-		/* Configure Events */
+		 
 		for (index = telm_conf->ioss_config.ssram_evts_used, idx = 0;
 		     idx < num_ioss_evts; index++, idx++) {
 			telm_conf->ioss_config.telem_evts[index].evt_id =
@@ -381,7 +370,7 @@ static int telemetry_setup_iossevtconfig(struct telemetry_evtconfig evtconfig,
 		}
 	}
 
-	/* Enable Periodic Telemetry Events and enable SRAM trace */
+	 
 	TELEM_CLEAR_SAMPLE_PERIOD(telem_ctrl);
 	TELEM_ENABLE_SRAM_EVT_TRACE(telem_ctrl);
 	TELEM_ENABLE_PERIODIC(telem_ctrl);
@@ -413,8 +402,8 @@ static int telemetry_setup_pssevtconfig(struct telemetry_evtconfig evtconfig,
 	pss_period = evtconfig.period;
 	pss_evtmap = evtconfig.evtmap;
 
-	/* PSS Config */
-	/* Get telemetry EVENT CTL */
+	 
+	 
 	ret = intel_punit_ipc_command(IPC_PUNIT_BIOS_READ_TELE_EVENT_CTRL,
 				      0, 0, NULL, &telem_ctrl);
 	if (ret) {
@@ -422,7 +411,7 @@ static int telemetry_setup_pssevtconfig(struct telemetry_evtconfig evtconfig,
 		return ret;
 	}
 
-	/* Disable Telemetry */
+	 
 	TELEM_DISABLE(telem_ctrl);
 	ret = intel_punit_ipc_command(IPC_PUNIT_BIOS_WRITE_TELE_EVENT_CTRL,
 				      0, 0, &telem_ctrl, NULL);
@@ -431,9 +420,9 @@ static int telemetry_setup_pssevtconfig(struct telemetry_evtconfig evtconfig,
 		return ret;
 	}
 
-	/* Reset Everything */
+	 
 	if (action == TELEM_RESET) {
-		/* Clear All Events */
+		 
 		TELEM_CLEAR_EVENTS(telem_ctrl);
 
 		ret = intel_punit_ipc_command(
@@ -444,7 +433,7 @@ static int telemetry_setup_pssevtconfig(struct telemetry_evtconfig evtconfig,
 			return ret;
 		}
 		telm_conf->pss_config.ssram_evts_used = 0;
-		/* Configure Events */
+		 
 		for (idx = 0; idx < num_pss_evts; idx++) {
 			if (telemetry_plt_config_pss_event(
 			    telm_conf->pss_config.telem_evts[idx].evt_id,
@@ -457,9 +446,9 @@ static int telemetry_setup_pssevtconfig(struct telemetry_evtconfig evtconfig,
 		}
 	}
 
-	/* Re-Configure Everything */
+	 
 	if (action == TELEM_UPDATE) {
-		/* Clear All Events */
+		 
 		TELEM_CLEAR_EVENTS(telem_ctrl);
 
 		ret = intel_punit_ipc_command(
@@ -471,7 +460,7 @@ static int telemetry_setup_pssevtconfig(struct telemetry_evtconfig evtconfig,
 		}
 		telm_conf->pss_config.ssram_evts_used = 0;
 
-		/* Configure Events */
+		 
 		for (index = 0; index < num_pss_evts; index++) {
 			telm_conf->pss_config.telem_evts[index].evt_id =
 			pss_evtmap[index];
@@ -487,9 +476,9 @@ static int telemetry_setup_pssevtconfig(struct telemetry_evtconfig evtconfig,
 		}
 	}
 
-	/* Add some Events */
+	 
 	if (action == TELEM_ADD) {
-		/* Configure Events */
+		 
 		for (index = telm_conf->pss_config.ssram_evts_used, idx = 0;
 		     idx < num_pss_evts; index++, idx++) {
 
@@ -507,7 +496,7 @@ static int telemetry_setup_pssevtconfig(struct telemetry_evtconfig evtconfig,
 		}
 	}
 
-	/* Enable Periodic Telemetry Events and enable SRAM trace */
+	 
 	TELEM_CLEAR_SAMPLE_PERIOD(telem_ctrl);
 	TELEM_ENABLE_SRAM_EVT_TRACE(telem_ctrl);
 	TELEM_ENABLE_PERIODIC(telem_ctrl);
@@ -584,7 +573,7 @@ static int telemetry_setup(struct platform_device *pdev)
 		return ret;
 	}
 
-	/* Get telemetry Info */
+	 
 	events = (read_buf & TELEM_INFO_SRAMEVTS_MASK) >>
 		  TELEM_INFO_SRAMEVTS_SHIFT;
 	event_regs = read_buf & TELEM_INFO_NENABLES_MASK;
@@ -599,7 +588,7 @@ static int telemetry_setup(struct platform_device *pdev)
 	telm_conf->ioss_config.min_period = TELEM_MIN_PERIOD(read_buf);
 	telm_conf->ioss_config.max_period = TELEM_MAX_PERIOD(read_buf);
 
-	/* PUNIT Mailbox Setup */
+	 
 	ret = intel_punit_ipc_command(IPC_PUNIT_BIOS_READ_TELE_INFO, 0, 0,
 				      NULL, &read_buf);
 	if (ret) {
@@ -607,7 +596,7 @@ static int telemetry_setup(struct platform_device *pdev)
 		return ret;
 	}
 
-	/* Get telemetry Info */
+	 
 	events = (read_buf & TELEM_INFO_SRAMEVTS_MASK) >>
 		  TELEM_INFO_SRAMEVTS_SHIFT;
 	event_regs = read_buf & TELEM_INFO_SRAMEVTS_MASK;
@@ -680,7 +669,7 @@ static int telemetry_plt_set_sampling_period(u8 pss_period, u8 ioss_period)
 			goto out;
 		}
 
-		/* Get telemetry EVENT CTL */
+		 
 		ret = intel_scu_ipc_dev_command(scu, IOSS_TELEM,
 					    IOSS_TELEM_EVENT_CTL_READ, NULL, 0,
 					    &telem_ctrl, sizeof(telem_ctrl));
@@ -689,7 +678,7 @@ static int telemetry_plt_set_sampling_period(u8 pss_period, u8 ioss_period)
 			goto out;
 		}
 
-		/* Disable Telemetry */
+		 
 		TELEM_DISABLE(telem_ctrl);
 
 		ret = intel_scu_ipc_dev_command(scu, IOSS_TELEM,
@@ -701,7 +690,7 @@ static int telemetry_plt_set_sampling_period(u8 pss_period, u8 ioss_period)
 			goto out;
 		}
 
-		/* Enable Periodic Telemetry Events and enable SRAM trace */
+		 
 		TELEM_CLEAR_SAMPLE_PERIOD(telem_ctrl);
 		TELEM_ENABLE_SRAM_EVT_TRACE(telem_ctrl);
 		TELEM_ENABLE_PERIODIC(telem_ctrl);
@@ -725,7 +714,7 @@ static int telemetry_plt_set_sampling_period(u8 pss_period, u8 ioss_period)
 			goto out;
 		}
 
-		/* Get telemetry EVENT CTL */
+		 
 		ret = intel_punit_ipc_command(
 				IPC_PUNIT_BIOS_READ_TELE_EVENT_CTRL,
 				0, 0, NULL, &telem_ctrl);
@@ -734,7 +723,7 @@ static int telemetry_plt_set_sampling_period(u8 pss_period, u8 ioss_period)
 			goto out;
 		}
 
-		/* Disable Telemetry */
+		 
 		TELEM_DISABLE(telem_ctrl);
 		ret = intel_punit_ipc_command(
 				IPC_PUNIT_BIOS_WRITE_TELE_EVENT_CTRL,
@@ -744,7 +733,7 @@ static int telemetry_plt_set_sampling_period(u8 pss_period, u8 ioss_period)
 			goto out;
 		}
 
-		/* Enable Periodic Telemetry Events and enable SRAM trace */
+		 
 		TELEM_CLEAR_SAMPLE_PERIOD(telem_ctrl);
 		TELEM_ENABLE_SRAM_EVT_TRACE(telem_ctrl);
 		TELEM_ENABLE_PERIODIC(telem_ctrl);
@@ -941,7 +930,7 @@ static int telemetry_plt_raw_read_eventlog(enum telemetry_unit telem_unit,
 	if (ret < 0)
 		return ret;
 
-	/* Invalid evt-id array specified via length mismatch */
+	 
 	if ((!log_all_evts) && (len > ret))
 		return -EINVAL;
 
@@ -954,7 +943,7 @@ static int telemetry_plt_raw_read_eventlog(enum telemetry_unit telem_unit,
 		for (index = 0, readlen = 0; (index < ret) && (readlen < len);
 		     index++) {
 			for (idx1 = 0; idx1 < len; idx1++) {
-				/* Elements matched */
+				 
 				if (evtmap[index].evt_id ==
 				    evtlog[idx1].telem_evtid) {
 					evtlog[idx1].telem_evtlog =

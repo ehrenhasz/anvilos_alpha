@@ -1,35 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * linux/fs/ext2/namei.c
- *
- * Rewrite to pagecache. Almost all code had been changed, so blame me
- * if the things go wrong. Please, send bug reports to
- * viro@parcelfarce.linux.theplanet.co.uk
- *
- * Stuff here is basically a glue between the VFS and generic UNIXish
- * filesystem that keeps everything in pagecache. All knowledge of the
- * directory layout is in fs/ext2/dir.c - it turned out to be easily separatable
- * and it's easier to debug that way. In principle we might want to
- * generalize that a bit and turn it into a library. Or not.
- *
- * The only non-static object here is ext2_dir_inode_operations.
- *
- * TODO: get rid of kmap() use, add readahead.
- *
- * Copyright (C) 1992, 1993, 1994, 1995
- * Remy Card (card@masi.ibp.fr)
- * Laboratoire MASI - Institut Blaise Pascal
- * Universite Pierre et Marie Curie (Paris VI)
- *
- *  from
- *
- *  linux/fs/minix/namei.c
- *
- *  Copyright (C) 1991, 1992  Linus Torvalds
- *
- *  Big-endian to little-endian byte-swapping/bitmaps by
- *        David S. Miller (davem@caip.rutgers.edu), 1995
- */
+
+ 
 
 #include <linux/pagemap.h>
 #include <linux/quotaops.h>
@@ -49,9 +19,7 @@ static inline int ext2_add_nondir(struct dentry *dentry, struct inode *inode)
 	return err;
 }
 
-/*
- * Methods themselves.
- */
+ 
 
 static struct dentry *ext2_lookup(struct inode * dir, struct dentry *dentry, unsigned int flags)
 {
@@ -91,14 +59,7 @@ struct dentry *ext2_get_parent(struct dentry *child)
 	return d_obtain_alias(ext2_iget(child->d_sb, ino));
 } 
 
-/*
- * By the time this is called, we already have created
- * the directory cache entry for the new file, but it
- * is so far negative - it has no inode.
- *
- * If the create succeeds, we fill in the inode information
- * with d_instantiate(). 
- */
+ 
 static int ext2_create (struct mnt_idmap * idmap,
 			struct inode * dir, struct dentry * dentry,
 			umode_t mode, bool excl)
@@ -175,7 +136,7 @@ static int ext2_symlink (struct mnt_idmap * idmap, struct inode * dir,
 		goto out;
 
 	if (l > sizeof (EXT2_I(inode)->i_data)) {
-		/* slow symlink */
+		 
 		inode->i_op = &ext2_symlink_inode_operations;
 		inode_nohighmem(inode);
 		inode->i_mapping->a_ops = &ext2_aops;
@@ -183,7 +144,7 @@ static int ext2_symlink (struct mnt_idmap * idmap, struct inode * dir,
 		if (err)
 			goto out_fail;
 	} else {
-		/* fast symlink */
+		 
 		inode->i_op = &ext2_fast_symlink_inode_operations;
 		inode->i_link = (char*)EXT2_I(inode)->i_data;
 		memcpy(inode->i_link, symname, l);
@@ -379,10 +340,7 @@ static int ext2_rename (struct mnt_idmap * idmap,
 			inode_inc_link_count(new_dir);
 	}
 
-	/*
-	 * Like most other Unix systems, set the ctime for inodes on a
- 	 * rename.
-	 */
+	 
 	inode_set_ctime_current(old_inode);
 	mark_inode_dirty(old_inode);
 

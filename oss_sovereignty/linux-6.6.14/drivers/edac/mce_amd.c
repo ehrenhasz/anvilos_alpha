@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 #include <linux/module.h>
 #include <linux/slab.h>
 
@@ -28,33 +28,30 @@ void amd_unregister_ecc_decoder(void (*f)(int, struct mce *))
 }
 EXPORT_SYMBOL_GPL(amd_unregister_ecc_decoder);
 
-/*
- * string representation for the different MCA reported error types, see F3x48
- * or MSR0000_0411.
- */
+ 
 
-/* transaction type */
+ 
 static const char * const tt_msgs[] = { "INSN", "DATA", "GEN", "RESV" };
 
-/* cache level */
+ 
 static const char * const ll_msgs[] = { "RESV", "L1", "L2", "L3/GEN" };
 
-/* memory transaction type */
+ 
 static const char * const rrrr_msgs[] = {
        "GEN", "RD", "WR", "DRD", "DWR", "IRD", "PRF", "EV", "SNP"
 };
 
-/* participating processor */
+ 
 const char * const pp_msgs[] = { "SRC", "RES", "OBS", "GEN" };
 EXPORT_SYMBOL_GPL(pp_msgs);
 
-/* request timeout */
+ 
 static const char * const to_msgs[] = { "no timeout", "timed out" };
 
-/* memory or i/o */
+ 
 static const char * const ii_msgs[] = { "MEM", "RESV", "IO", "GEN" };
 
-/* internal error type */
+ 
 static const char * const uu_msgs[] = { "RESV", "RESV", "HWA", "RESV" };
 
 static const char * const f15h_mc1_mce_desc[] = {
@@ -69,8 +66,8 @@ static const char * const f15h_mc1_mce_desc[] = {
 	"Tag error during probe/victimization",
 	"Parity error for IC probe tag valid bit",
 	"PFB non-cacheable bit parity error",
-	"PFB valid bit parity error",			/* xec = 0xd */
-	"Microcode Patch Buffer",			/* xec = 010 */
+	"PFB valid bit parity error",			 
+	"Microcode Patch Buffer",			 
 	"uop queue",
 	"insn buffer",
 	"predecode buffer",
@@ -79,7 +76,7 @@ static const char * const f15h_mc1_mce_desc[] = {
 };
 
 static const char * const f15h_mc2_mce_desc[] = {
-	"Fill ECC error on data fills",			/* xec = 0x4 */
+	"Fill ECC error on data fills",			 
 	"Fill parity error on insn fills",
 	"Prefetcher request FIFO parity error",
 	"PRQ address parity error",
@@ -88,7 +85,7 @@ static const char * const f15h_mc2_mce_desc[] = {
 	"WCC Data ECC error",
 	"WCB Data parity error",
 	"VB Data ECC or parity error",
-	"L2 Tag ECC error",				/* xec = 0x10 */
+	"L2 Tag ECC error",				 
 	"Hard L2 Tag ECC error",
 	"Multiple hits on L2 tag",
 	"XAB parity error",
@@ -111,7 +108,7 @@ static const char * const mc4_mce_desc[] = {
 	"NB internal arrays parity error",
 	"DRAM addr/ctl signals parity error",
 	"IO link transmission error",
-	"L3 data cache ECC error",			/* xec = 0x1c */
+	"L3 data cache ECC error",			 
 	"L3 cache tag error",
 	"L3 LRU parity bits error",
 	"ECC Error in the Probe Filter directory"
@@ -143,7 +140,7 @@ static const char * const mc6_mce_desc[] = {
 	"Status Register File",
 };
 
-/* Scalable MCA error strings */
+ 
 static const char * const smca_ls_mce_desc[] = {
 	"Load queue parity error",
 	"Store queue parity error",
@@ -607,13 +604,13 @@ static struct smca_mce_desc smca_mce_descs[] = {
 	[SMCA_PCIE]	= { smca_pcie_mce_desc,	ARRAY_SIZE(smca_pcie_mce_desc)	},
 	[SMCA_PCIE_V2]	= { smca_pcie2_mce_desc,   ARRAY_SIZE(smca_pcie2_mce_desc)	},
 	[SMCA_XGMI_PCS]	= { smca_xgmipcs_mce_desc, ARRAY_SIZE(smca_xgmipcs_mce_desc)	},
-	/* NBIF and SHUB have the same error descriptions, for now. */
+	 
 	[SMCA_NBIF]	= { smca_nbif_mce_desc, ARRAY_SIZE(smca_nbif_mce_desc)	},
 	[SMCA_SHUB]	= { smca_nbif_mce_desc, ARRAY_SIZE(smca_nbif_mce_desc)	},
 	[SMCA_SATA]	= { smca_sata_mce_desc, ARRAY_SIZE(smca_sata_mce_desc)	},
 	[SMCA_USB]	= { smca_usb_mce_desc,	ARRAY_SIZE(smca_usb_mce_desc)	},
 	[SMCA_GMI_PCS]	= { smca_gmipcs_mce_desc,  ARRAY_SIZE(smca_gmipcs_mce_desc)	},
-	/* All the PHY bank types have the same error descriptions, for now. */
+	 
 	[SMCA_XGMI_PHY]	= { smca_xgmiphy_mce_desc, ARRAY_SIZE(smca_xgmiphy_mce_desc)	},
 	[SMCA_WAFL_PHY]	= { smca_xgmiphy_mce_desc, ARRAY_SIZE(smca_xgmiphy_mce_desc)	},
 	[SMCA_GMI_PHY]	= { smca_xgmiphy_mce_desc, ARRAY_SIZE(smca_xgmiphy_mce_desc)	},
@@ -768,7 +765,7 @@ static void decode_mc0_mce(struct mce *m)
 
 	pr_emerg(HW_ERR "MC0 Error: ");
 
-	/* TLB error signatures are the same across families */
+	 
 	if (TLB_ERROR(ec)) {
 		if (TT(ec) == TT_DATA) {
 			pr_cont("%s TLB %s.\n", LL_MSG(ec),
@@ -1070,9 +1067,9 @@ static void decode_mc4_mce(struct mce *m)
 	switch (xec) {
 	case 0x0 ... 0xe:
 
-		/* special handling for DRAM ECCs */
+		 
 		if (xec == 0x0 || xec == 0x8) {
-			/* no ECCs on F11h */
+			 
 			if (fam == 0x11)
 				goto wrong_mc4_mce;
 
@@ -1163,7 +1160,7 @@ static void decode_mc6_mce(struct mce *m)
 	pr_emerg(HW_ERR "Corrupted MC6 MCE info?\n");
 }
 
-/* Decode errors according to Scalable MCA specification */
+ 
 static void decode_smca_error(struct mce *m)
 {
 	enum smca_bank_types bank_type = smca_get_bank_type(m->extcpu, m->bank);
@@ -1182,7 +1179,7 @@ static void decode_smca_error(struct mce *m)
 
 	pr_emerg(HW_ERR "%s Ext. Error Code: %d", ip_name, xec);
 
-	/* Only print the decode of valid error codes */
+	 
 	if (xec < smca_mce_descs[bank_type].num_descs)
 		pr_cont(", %s.\n", smca_mce_descs[bank_type].descs[xec]);
 
@@ -1265,7 +1262,7 @@ amd_decode_mce(struct notifier_block *nb, unsigned long val, void *data)
 		pr_cont("|%s", ((m->status & MCI_STATUS_SYNDV) ? "SyndV" : "-"));
 	}
 
-	/* do the two bits[14:13] together */
+	 
 	ecc = (m->status >> 45) & 0x3;
 	if (ecc)
 		pr_cont("|%sECC", ((ecc == 2) ? "C" : "U"));
@@ -1273,7 +1270,7 @@ amd_decode_mce(struct notifier_block *nb, unsigned long val, void *data)
 	if (fam >= 0x15) {
 		pr_cont("|%s", (m->status & MCI_STATUS_DEFERRED ? "Deferred" : "-"));
 
-		/* F15h, bank4, bit 43 is part of McaStatSubCache. */
+		 
 		if (fam != 0x15 || m->bank != 4)
 			pr_cont("|%s", (m->status & MCI_STATUS_POISON ? "Poison" : "-"));
 	}
@@ -1304,7 +1301,7 @@ amd_decode_mce(struct notifier_block *nb, unsigned long val, void *data)
 	if (m->tsc)
 		pr_emerg(HW_ERR "TSC: %llu\n", m->tsc);
 
-	/* Doesn't matter which member to test. */
+	 
 	if (!fam_ops.mc0_mce)
 		goto err_code;
 

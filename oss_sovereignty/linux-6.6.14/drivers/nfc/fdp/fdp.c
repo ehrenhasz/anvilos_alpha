@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* -------------------------------------------------------------------------
- * Copyright (C) 2014-2016, Intel Corporation
- *
- * -------------------------------------------------------------------------
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/nfc.h>
@@ -85,7 +81,7 @@ static int fdp_nci_create_conn(struct nci_dev *ndev)
 	struct core_conn_create_dest_spec_params param;
 	int r;
 
-	/* proprietary destination specific paramerer without value */
+	 
 	param.type = FDP_PATCH_CONN_PARAM_TYPE;
 	param.length = 0x00;
 
@@ -149,13 +145,7 @@ static void fdp_nci_send_patch_cb(struct nci_dev *ndev)
 	wake_up(&info->setup_wq);
 }
 
-/*
- * Register a packet sent counter and a callback
- *
- * We have no other way of knowing when all firmware packets were sent out
- * on the i2c bus. We need to know that in order to close the connection and
- * send the patch end message.
- */
+ 
 static void fdp_nci_set_data_pkt_counter(struct nci_dev *ndev,
 				  void (*cb)(struct nci_dev *ndev), int count)
 {
@@ -167,17 +157,7 @@ static void fdp_nci_set_data_pkt_counter(struct nci_dev *ndev,
 	info->data_pkt_counter_cb = cb;
 }
 
-/*
- * The device is expecting a stream of packets. All packets need to
- * have the PBF flag set to 0x0 (last packet) even if the firmware
- * file is segmented and there are multiple packets. If we give the
- * whole firmware to nci_send_data it will segment it and it will set
- * the PBF flag to 0x01 so we need to do the segmentation here.
- *
- * The firmware will be analyzed and applied when we send NCI_OP_PROP_PATCH_CMD
- * command with NCI_PATCH_TYPE_EOT parameter. The device will send a
- * NFCC_PATCH_NTF packet and a NCI_OP_CORE_RESET_NTF packet.
- */
+ 
 static int fdp_nci_send_patch(struct nci_dev *ndev, u8 conn_id, u8 type)
 {
 	struct fdp_nci_info *info = nci_get_drvdata(ndev);
@@ -335,53 +315,50 @@ static int fdp_nci_patch_otp(struct nci_dev *ndev)
 	info->setup_reset_ntf = 0;
 	info->setup_patch_ntf = 0;
 
-	/* Patch init request */
+	 
 	r = fdp_nci_patch_cmd(ndev, NCI_PATCH_TYPE_OTP);
 	if (r)
 		return r;
 
-	/* Patch data connection creation */
+	 
 	conn_id = fdp_nci_create_conn(ndev);
 	if (conn_id < 0)
 		return conn_id;
 
-	/* Send the patch over the data connection */
+	 
 	r = fdp_nci_send_patch(ndev, conn_id, NCI_PATCH_TYPE_OTP);
 	if (r)
 		return r;
 
-	/* Wait for all the packets to be send over i2c */
+	 
 	wait_event_interruptible(info->setup_wq,
 				 info->setup_patch_sent == 1);
 
-	/* make sure that the NFCC processed the last data packet */
+	 
 	msleep(FDP_FW_UPDATE_SLEEP);
 
-	/* Close the data connection */
+	 
 	r = nci_core_conn_close(info->ndev, conn_id);
 	if (r)
 		return r;
 
-	/* Patch finish message */
+	 
 	if (fdp_nci_patch_cmd(ndev, NCI_PATCH_TYPE_EOT)) {
 		nfc_err(dev, "OTP patch error 0x%x\n", r);
 		return -EINVAL;
 	}
 
-	/* If the patch notification didn't arrive yet, wait for it */
+	 
 	wait_event_interruptible(info->setup_wq, info->setup_patch_ntf);
 
-	/* Check if the patching was successful */
+	 
 	r = info->setup_patch_status;
 	if (r) {
 		nfc_err(dev, "OTP patch error 0x%x\n", r);
 		return -EINVAL;
 	}
 
-	/*
-	 * We need to wait for the reset notification before we
-	 * can continue
-	 */
+	 
 	wait_event_interruptible(info->setup_wq, info->setup_reset_ntf);
 
 	return r;
@@ -401,53 +378,50 @@ static int fdp_nci_patch_ram(struct nci_dev *ndev)
 	info->setup_reset_ntf = 0;
 	info->setup_patch_ntf = 0;
 
-	/* Patch init request */
+	 
 	r = fdp_nci_patch_cmd(ndev, NCI_PATCH_TYPE_RAM);
 	if (r)
 		return r;
 
-	/* Patch data connection creation */
+	 
 	conn_id = fdp_nci_create_conn(ndev);
 	if (conn_id < 0)
 		return conn_id;
 
-	/* Send the patch over the data connection */
+	 
 	r = fdp_nci_send_patch(ndev, conn_id, NCI_PATCH_TYPE_RAM);
 	if (r)
 		return r;
 
-	/* Wait for all the packets to be send over i2c */
+	 
 	wait_event_interruptible(info->setup_wq,
 				 info->setup_patch_sent == 1);
 
-	/* make sure that the NFCC processed the last data packet */
+	 
 	msleep(FDP_FW_UPDATE_SLEEP);
 
-	/* Close the data connection */
+	 
 	r = nci_core_conn_close(info->ndev, conn_id);
 	if (r)
 		return r;
 
-	/* Patch finish message */
+	 
 	if (fdp_nci_patch_cmd(ndev, NCI_PATCH_TYPE_EOT)) {
 		nfc_err(dev, "RAM patch error 0x%x\n", r);
 		return -EINVAL;
 	}
 
-	/* If the patch notification didn't arrive yet, wait for it */
+	 
 	wait_event_interruptible(info->setup_wq, info->setup_patch_ntf);
 
-	/* Check if the patching was successful */
+	 
 	r = info->setup_patch_status;
 	if (r) {
 		nfc_err(dev, "RAM patch error 0x%x\n", r);
 		return -EINVAL;
 	}
 
-	/*
-	 * We need to wait for the reset notification before we
-	 * can continue
-	 */
+	 
 	wait_event_interruptible(info->setup_wq, info->setup_reset_ntf);
 
 	return r;
@@ -455,7 +429,7 @@ static int fdp_nci_patch_ram(struct nci_dev *ndev)
 
 static int fdp_nci_setup(struct nci_dev *ndev)
 {
-	/* Format: total length followed by an NCI packet */
+	 
 	struct fdp_nci_info *info = nci_get_drvdata(ndev);
 	struct device *dev = &info->phy->i2c_dev->dev;
 	int r;
@@ -465,17 +439,17 @@ static int fdp_nci_setup(struct nci_dev *ndev)
 	if (r)
 		goto error;
 
-	/* Get RAM and OTP version */
+	 
 	r = fdp_nci_get_versions(ndev);
 	if (r)
 		goto error;
 
-	/* Load firmware from disk */
+	 
 	r = fdp_nci_request_firmware(ndev);
 	if (r)
 		goto error;
 
-	/* Update OTP */
+	 
 	if (info->otp_version < info->otp_patch_version) {
 		r = fdp_nci_patch_otp(ndev);
 		if (r)
@@ -483,7 +457,7 @@ static int fdp_nci_setup(struct nci_dev *ndev)
 		patched = 1;
 	}
 
-	/* Update RAM */
+	 
 	if (info->ram_version < info->ram_patch_version) {
 		r = fdp_nci_patch_ram(ndev);
 		if (r)
@@ -491,10 +465,10 @@ static int fdp_nci_setup(struct nci_dev *ndev)
 		patched = 1;
 	}
 
-	/* Release the firmware buffers */
+	 
 	fdp_nci_release_firmware(ndev);
 
-	/* If a patch was applied the new version is checked */
+	 
 	if (patched) {
 		r = nci_core_init(ndev);
 		if (r)
@@ -512,10 +486,7 @@ static int fdp_nci_setup(struct nci_dev *ndev)
 		}
 	}
 
-	/*
-	 * We initialized the devices but the NFC subsystem expects
-	 * it to not be initialized.
-	 */
+	 
 	return nci_core_reset(ndev);
 
 error:
@@ -530,10 +501,10 @@ static int fdp_nci_post_setup(struct nci_dev *ndev)
 	struct device *dev = &info->phy->i2c_dev->dev;
 	int r;
 
-	/* Check if the device has VSC */
+	 
 	if (info->fw_vsc_cfg && info->fw_vsc_cfg[0]) {
 
-		/* Set the vendor specific configuration */
+		 
 		r = fdp_nci_set_production_data(ndev, info->fw_vsc_cfg[3],
 						&info->fw_vsc_cfg[4]);
 		if (r) {
@@ -543,24 +514,19 @@ static int fdp_nci_post_setup(struct nci_dev *ndev)
 		}
 	}
 
-	/* Set clock type and frequency */
+	 
 	r = fdp_nci_set_clock(ndev, info->clock_type, info->clock_freq);
 	if (r) {
 		nfc_err(dev, "Clock set error %d\n", r);
 		return r;
 	}
 
-	/*
-	 * In order to apply the VSC FDP needs a reset
-	 */
+	 
 	r = nci_core_reset(ndev);
 	if (r)
 		return r;
 
-	/**
-	 * The nci core was initialized when post setup was called
-	 * so we leave it like that
-	 */
+	 
 	return nci_core_init(ndev);
 }
 

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: MIT
+
 
 #include <drm/drm_exec.h>
 
@@ -12,78 +12,7 @@
 #include "nouveau_sched.h"
 #include "nouveau_uvmm.h"
 
-/**
- * DOC: Overview
- *
- * Nouveau's VM_BIND / EXEC UAPI consists of three ioctls: DRM_NOUVEAU_VM_INIT,
- * DRM_NOUVEAU_VM_BIND and DRM_NOUVEAU_EXEC.
- *
- * In order to use the UAPI firstly a user client must initialize the VA space
- * using the DRM_NOUVEAU_VM_INIT ioctl specifying which region of the VA space
- * should be managed by the kernel and which by the UMD.
- *
- * The DRM_NOUVEAU_VM_BIND ioctl provides clients an interface to manage the
- * userspace-managable portion of the VA space. It provides operations to map
- * and unmap memory. Mappings may be flagged as sparse. Sparse mappings are not
- * backed by a GEM object and the kernel will ignore GEM handles provided
- * alongside a sparse mapping.
- *
- * Userspace may request memory backed mappings either within or outside of the
- * bounds (but not crossing those bounds) of a previously mapped sparse
- * mapping. Subsequently requested memory backed mappings within a sparse
- * mapping will take precedence over the corresponding range of the sparse
- * mapping. If such memory backed mappings are unmapped the kernel will make
- * sure that the corresponding sparse mapping will take their place again.
- * Requests to unmap a sparse mapping that still contains memory backed mappings
- * will result in those memory backed mappings being unmapped first.
- *
- * Unmap requests are not bound to the range of existing mappings and can even
- * overlap the bounds of sparse mappings. For such a request the kernel will
- * make sure to unmap all memory backed mappings within the given range,
- * splitting up memory backed mappings which are only partially contained
- * within the given range. Unmap requests with the sparse flag set must match
- * the range of a previously mapped sparse mapping exactly though.
- *
- * While the kernel generally permits arbitrary sequences and ranges of memory
- * backed mappings being mapped and unmapped, either within a single or multiple
- * VM_BIND ioctl calls, there are some restrictions for sparse mappings.
- *
- * The kernel does not permit to:
- *   - unmap non-existent sparse mappings
- *   - unmap a sparse mapping and map a new sparse mapping overlapping the range
- *     of the previously unmapped sparse mapping within the same VM_BIND ioctl
- *   - unmap a sparse mapping and map new memory backed mappings overlapping the
- *     range of the previously unmapped sparse mapping within the same VM_BIND
- *     ioctl
- *
- * When using the VM_BIND ioctl to request the kernel to map memory to a given
- * virtual address in the GPU's VA space there is no guarantee that the actual
- * mappings are created in the GPU's MMU. If the given memory is swapped out
- * at the time the bind operation is executed the kernel will stash the mapping
- * details into it's internal alloctor and create the actual MMU mappings once
- * the memory is swapped back in. While this is transparent for userspace, it is
- * guaranteed that all the backing memory is swapped back in and all the memory
- * mappings, as requested by userspace previously, are actually mapped once the
- * DRM_NOUVEAU_EXEC ioctl is called to submit an exec job.
- *
- * A VM_BIND job can be executed either synchronously or asynchronously. If
- * exectued asynchronously, userspace may provide a list of syncobjs this job
- * will wait for and/or a list of syncobj the kernel will signal once the
- * VM_BIND job finished execution. If executed synchronously the ioctl will
- * block until the bind job is finished. For synchronous jobs the kernel will
- * not permit any syncobjs submitted to the kernel.
- *
- * To execute a push buffer the UAPI provides the DRM_NOUVEAU_EXEC ioctl. EXEC
- * jobs are always executed asynchronously, and, equal to VM_BIND jobs, provide
- * the option to synchronize them with syncobjs.
- *
- * Besides that, EXEC jobs can be scheduled for a specified channel to execute on.
- *
- * Since VM_BIND jobs update the GPU's VA space on job submit, EXEC jobs do have
- * an up to date view of the VA space. However, the actual mappings might still
- * be pending. Hence, EXEC jobs require to have the particular fences - of
- * the corresponding VM_BIND jobs they depent on - attached to them.
- */
+ 
 
 static int
 nouveau_exec_job_submit(struct nouveau_job *job)
@@ -96,7 +25,7 @@ nouveau_exec_job_submit(struct nouveau_job *job)
 	unsigned long index;
 	int ret;
 
-	/* Create a new fence, but do not emit yet. */
+	 
 	ret = nouveau_fence_create(&exec_job->fence, exec_job->chan);
 	if (ret)
 		return ret;
@@ -179,9 +108,7 @@ nouveau_exec_job_run(struct nouveau_job *job)
 		return ERR_PTR(ret);
 	}
 
-	/* The fence was emitted successfully, set the job's fence pointer to
-	 * NULL in order to avoid freeing it up when the job is cleaned up.
-	 */
+	 
 	exec_job->fence = NULL;
 
 	return &fence->base;
@@ -384,7 +311,7 @@ nouveau_exec_ioctl_exec(struct drm_device *dev,
 	if (unlikely(!abi16))
 		return -ENOMEM;
 
-	/* abi16 locks already */
+	 
 	if (unlikely(!nouveau_cli_uvmm(cli)))
 		return nouveau_abi16_put(abi16, -ENOSYS);
 

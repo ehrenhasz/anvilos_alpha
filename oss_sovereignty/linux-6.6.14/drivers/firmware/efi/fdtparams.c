@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 
 #define pr_fmt(fmt) "efi: " fmt
 
@@ -34,7 +34,7 @@ static __initconst const struct {
 	const char	params[PARAMCOUNT][26];
 } dt_params[] = {
 	{
-#ifdef CONFIG_XEN    //  <-------17------>
+#ifdef CONFIG_XEN    
 		.path = "/hypervisor/uefi",
 		.paravirt = 1,
 		.params = {
@@ -47,7 +47,7 @@ static __initconst const struct {
 	}, {
 #endif
 		.path = "/chosen",
-		.params = {	//  <-----------26----------->
+		.params = {	
 			[SYSTAB] = "linux,uefi-system-table",
 			[MMBASE] = "linux,uefi-mmap-start",
 			[MMSIZE] = "linux,uefi-mmap-size",
@@ -73,7 +73,7 @@ static int __init efi_get_fdt_prop(const void *fdt, int node, const char *pname,
 	if (size == 8)
 		*(u64 *)var = val;
 	else
-		*(u32 *)var = (val < U32_MAX) ? val : U32_MAX; // saturate
+		*(u32 *)var = (val < U32_MAX) ? val : U32_MAX; 
 
 	if (efi_enabled(EFI_DBG))
 		pr_info("  %s: 0x%0*llx\n", rname, size * 2, val);

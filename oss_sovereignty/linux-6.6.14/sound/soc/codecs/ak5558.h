@@ -1,10 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0
- *
- * Audio driver header for AK5558
- *
- * Copyright (C) 2016 Asahi Kasei Microdevices Corporation
- * Copyright 2018 NXP
- */
+ 
 
 #ifndef _AK5558_H
 #define _AK5558_H
@@ -16,7 +10,7 @@
 #define AK5558_04_CONTROL3             0x04
 #define AK5558_05_DSD                  0x05
 
-/* AK5558_02_CONTROL1 fields */
+ 
 #define AK5558_DIF			GENMASK(1, 1)
 #define AK5558_DIF_MSB_MODE		(0 << 1)
 #define AK5558_DIF_I2S_MODE		(1 << 1)
@@ -42,7 +36,7 @@
 #define AK5558_CKS_1024FS_16KHZ		(13 << 3)
 #define AK5558_CKS_AUTO			(15 << 3)
 
-/* AK5558_03_CONTROL2 fields */
+ 
 #define AK5558_MODE_BITS	GENMASK(6, 5)
 #define AK5558_MODE_NORMAL	(0 << 5)
 #define AK5558_MODE_TDM128	(1 << 5)

@@ -1,38 +1,4 @@
-/*======================================================================
-
-    A driver for Adaptec AHA152X-compatible PCMCIA SCSI cards.
-
-    This driver supports the Adaptec AHA-1460, the New Media Bus
-    Toaster, and the New Media Toast & Jam.
-    
-    aha152x_cs.c 1.54 2000/06/12 21:27:25
-
-    The contents of this file are subject to the Mozilla Public
-    License Version 1.1 (the "License"); you may not use this file
-    except in compliance with the License. You may obtain a copy of
-    the License at http://www.mozilla.org/MPL/
-
-    Software distributed under the License is distributed on an "AS
-    IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
-    implied. See the License for the specific language governing
-    rights and limitations under the License.
-
-    The initial developer of the original code is David A. Hinds
-    <dahinds@users.sourceforge.net>.  Portions created by David A. Hinds
-    are Copyright (C) 1999 David A. Hinds.  All Rights Reserved.
-
-    Alternatively, the contents of this file may be used under the
-    terms of the GNU General Public License version 2 (the "GPL"), in which
-    case the provisions of the GPL are applicable instead of the
-    above.  If you wish to allow the use of your version of this file
-    only under the terms of the GPL and not to allow others to use
-    your version of this file under the MPL, indicate your decision
-    by deleting the provisions above and replace them with the notice
-    and other provisions required by the GPL.  If you do not delete
-    the provisions above, a recipient may use your version of this
-    file under either the MPL or the GPL.
-    
-======================================================================*/
+ 
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -56,11 +22,11 @@
 #include <pcmcia/ds.h>
 
 
-/*====================================================================*/
+ 
 
-/* Parameters that can be set with 'insmod' */
+ 
 
-/* SCSI bus setup options */
+ 
 static int host_id = 7;
 static int reconnect = 1;
 static int parity = 1;
@@ -77,7 +43,7 @@ module_param(ext_trans, int, 0);
 
 MODULE_LICENSE("Dual MPL/GPL");
 
-/*====================================================================*/
+ 
 
 typedef struct scsi_info_t {
 	struct pcmcia_device	*p_dev;
@@ -94,7 +60,7 @@ static int aha152x_probe(struct pcmcia_device *link)
 
     dev_dbg(&link->dev, "aha152x_attach()\n");
 
-    /* Create new SCSI device */
+     
     info = kzalloc(sizeof(*info), GFP_KERNEL);
     if (!info) return -ENOMEM;
     info->p_dev = link;
@@ -104,9 +70,9 @@ static int aha152x_probe(struct pcmcia_device *link)
     link->config_regs = PRESENT_OPTION;
 
     return aha152x_config_cs(link);
-} /* aha152x_attach */
+}  
 
-/*====================================================================*/
+ 
 
 static void aha152x_detach(struct pcmcia_device *link)
 {
@@ -114,17 +80,17 @@ static void aha152x_detach(struct pcmcia_device *link)
 
     aha152x_release_cs(link);
 
-    /* Unlink device structure, free bits */
+     
     kfree(link->priv);
-} /* aha152x_detach */
+}  
 
-/*====================================================================*/
+ 
 
 static int aha152x_config_check(struct pcmcia_device *p_dev, void *priv_data)
 {
 	p_dev->io_lines = 10;
 
-	/* For New Media T&J, look for a SCSI window */
+	 
 	if ((p_dev->resource[0]->end < 0x20) &&
 		(p_dev->resource[1]->end >= 0x20))
 		p_dev->resource[0]->start = p_dev->resource[1]->start;
@@ -160,7 +126,7 @@ static int aha152x_config_cs(struct pcmcia_device *link)
     if (ret)
 	    goto failed;
     
-    /* Set configuration options for the aha152x driver */
+     
     memset(&s, 0, sizeof(s));
     s.conf        = "PCMCIA setup";
     s.io_port     = link->resource[0]->start;

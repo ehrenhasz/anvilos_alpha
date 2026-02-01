@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Greybus operations
- *
- * Copyright 2014 Google Inc.
- * Copyright 2014 Linaro Ltd.
- */
+ 
+ 
 
 #ifndef __OPERATION_H
 #define __OPERATION_H
@@ -18,13 +13,10 @@
 struct gb_host_device;
 struct gb_operation;
 
-/* The default amount of time a request is given to complete */
-#define GB_OPERATION_TIMEOUT_DEFAULT	1000	/* milliseconds */
+ 
+#define GB_OPERATION_TIMEOUT_DEFAULT	1000	 
 
-/*
- * The top bit of the type in an operation message header indicates
- * whether the message is a request (bit clear) or response (bit set)
- */
+ 
 #define GB_MESSAGE_TYPE_RESPONSE	((u8)0x80)
 
 enum gb_operation_result {
@@ -44,11 +36,7 @@ enum gb_operation_result {
 #define GB_OPERATION_MESSAGE_SIZE_MIN	sizeof(struct gb_operation_msg_hdr)
 #define GB_OPERATION_MESSAGE_SIZE_MAX	U16_MAX
 
-/*
- * Protocol code should only examine the payload and payload_size fields, and
- * host-controller drivers may use the hcpriv field. All other fields are
- * intended to be private to the operations core code.
- */
+ 
 struct gb_message {
 	struct gb_operation		*operation;
 	struct gb_operation_msg_hdr	*header;
@@ -69,25 +57,7 @@ struct gb_message {
 #define GB_OPERATION_FLAG_USER_MASK	(GB_OPERATION_FLAG_SHORT_RESPONSE | \
 					 GB_OPERATION_FLAG_UNIDIRECTIONAL)
 
-/*
- * A Greybus operation is a remote procedure call performed over a
- * connection between two UniPro interfaces.
- *
- * Every operation consists of a request message sent to the other
- * end of the connection coupled with a reply message returned to
- * the sender.  Every operation has a type, whose interpretation is
- * dependent on the protocol associated with the connection.
- *
- * Only four things in an operation structure are intended to be
- * directly usable by protocol handlers:  the operation's connection
- * pointer; the operation type; the request message payload (and
- * size); and the response message payload (and size).  Note that a
- * message with a 0-byte payload has a null message payload pointer.
- *
- * In addition, every operation has a result, which is an errno
- * value.  Protocol handlers access the operation result using
- * gb_operation_result().
- */
+ 
 typedef void (*gb_operation_callback)(struct gb_operation *);
 struct gb_operation {
 	struct gb_connection	*connection;
@@ -97,7 +67,7 @@ struct gb_operation {
 	unsigned long		flags;
 	u8			type;
 	u16			id;
-	int			errno;		/* Operation result */
+	int			errno;		 
 
 	struct work_struct	work;
 	gb_operation_callback	callback;
@@ -108,7 +78,7 @@ struct gb_operation {
 	atomic_t		waiters;
 
 	int			active;
-	struct list_head	links;		/* connection->operations */
+	struct list_head	links;		 
 
 	void			*private;
 };
@@ -226,4 +196,4 @@ static inline void gb_operation_set_data(struct gb_operation *operation,
 int gb_operation_init(void);
 void gb_operation_exit(void);
 
-#endif /* !__OPERATION_H */
+#endif  

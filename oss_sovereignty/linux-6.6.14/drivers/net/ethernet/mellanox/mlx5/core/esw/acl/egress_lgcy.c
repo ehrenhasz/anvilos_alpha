@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-/* Copyright (c) 2020 Mellanox Technologies Inc. All rights reserved. */
+
+ 
 
 #include "mlx5_core.h"
 #include "eswitch.h"
@@ -72,10 +72,7 @@ int esw_acl_egress_lgcy_setup(struct mlx5_eswitch *esw,
 	struct mlx5_flow_destination *dst = NULL;
 	struct mlx5_fc *drop_counter = NULL;
 	struct mlx5_flow_act flow_act = {};
-	/* The egress acl table contains 2 rules:
-	 * 1)Allow traffic with vlan_tag=vst_vlan_id
-	 * 2)Drop all other traffic.
-	 */
+	 
 	int table_size = 2;
 	int dest_num = 0;
 	int actions_flag;
@@ -120,7 +117,7 @@ int esw_acl_egress_lgcy_setup(struct mlx5_eswitch *esw,
 		  "vport[%d] configure egress rules, vlan(%d) qos(%d)\n",
 		  vport->vport, vport->info.vlan, vport->info.qos);
 
-	/* Allowed vlan rule */
+	 
 	actions_flag = MLX5_FLOW_CONTEXT_ACTION_ALLOW;
 	if (vst_mode_steering)
 		actions_flag |= MLX5_FLOW_CONTEXT_ACTION_VLAN_POP;
@@ -131,7 +128,7 @@ int esw_acl_egress_lgcy_setup(struct mlx5_eswitch *esw,
 
 	flow_act.action = MLX5_FLOW_CONTEXT_ACTION_DROP;
 
-	/* Attach egress drop flow counter */
+	 
 	if (drop_counter) {
 		flow_act.action |= MLX5_FLOW_CONTEXT_ACTION_COUNT;
 		drop_ctr_dst.type = MLX5_FLOW_DESTINATION_TYPE_COUNTER;

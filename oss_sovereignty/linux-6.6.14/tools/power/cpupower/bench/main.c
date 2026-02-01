@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*  cpufreq-bench CPUFreq microbenchmark
- *
- *  Copyright (C) 2008 Christian Kornacker <ckornacker@suse.de>
- */
+
+ 
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -32,9 +29,7 @@ static struct option long_options[] = {
 	{0, 0, 0, 0}
 };
 
-/*******************************************************************
- usage
-*******************************************************************/
+ 
 
 void usage()
 {
@@ -56,9 +51,7 @@ void usage()
 	exit(1);
 }
 
-/*******************************************************************
- main
-*******************************************************************/
+ 
 
 int main(int argc, char **argv)
 {

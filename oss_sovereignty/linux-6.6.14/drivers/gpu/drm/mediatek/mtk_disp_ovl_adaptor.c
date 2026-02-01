@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2021 MediaTek Inc.
- */
+
+ 
 
 #include <drm/drm_fourcc.h>
 #include <drm/drm_of.h>
@@ -119,7 +117,7 @@ void mtk_ovl_adaptor_layer_config(struct device *dev, unsigned int idx,
 		return;
 	}
 
-	/* ETHDR is in 1T2P domain, width needs to be 2 pixels align */
+	 
 	align_width = ALIGN_DOWN(pending->width, 2);
 
 	if (align_width > MTK_OVL_ADAPTOR_RDMA_MAX_WIDTH)

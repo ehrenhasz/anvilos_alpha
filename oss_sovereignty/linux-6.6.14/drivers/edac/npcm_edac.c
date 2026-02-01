@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-// Copyright (c) 2022 Nuvoton Technology Corporation
+
+
 
 #include <linux/debugfs.h>
 #include <linux/iopoll.h>
@@ -11,14 +11,14 @@
 #define EDAC_MOD_NAME			"npcm-edac"
 #define EDAC_MSG_SIZE			256
 
-/* chip serials */
+ 
 #define NPCM7XX_CHIP			BIT(0)
 #define NPCM8XX_CHIP			BIT(1)
 
-/* syndrome values */
+ 
 #define UE_SYNDROME			0x03
 
-/* error injection */
+ 
 #define ERROR_TYPE_CORRECTABLE		0
 #define ERROR_TYPE_UNCORRECTABLE	1
 #define ERROR_LOCATION_DATA		0
@@ -40,10 +40,10 @@ static char data_synd[] = {
 static struct regmap *npcm_regmap;
 
 struct npcm_platform_data {
-	/* chip serials */
+	 
 	int chip;
 
-	/* memory controller registers */
+	 
 	u32 ctl_ecc_en;
 	u32 ctl_int_status;
 	u32 ctl_int_ack;
@@ -63,7 +63,7 @@ struct npcm_platform_data {
 	u32 ctl_controller_busy;
 	u32 ctl_xor_check_bits;
 
-	/* masks and shifts */
+	 
 	u32 ecc_en_mask;
 	u32 int_status_ce_mask;
 	u32 int_status_ue_mask;
@@ -94,7 +94,7 @@ struct priv_data {
 	char message[EDAC_MSG_SIZE];
 	const struct npcm_platform_data *pdata;
 
-	/* error injection */
+	 
 	struct dentry *debugfs;
 	u8 error_type;
 	u8 location;
@@ -178,14 +178,14 @@ static irqreturn_t edac_ecc_isr(int irq, void *dev_id)
 	if (status & pdata->int_status_ce_mask) {
 		handle_ce(mci);
 
-		/* acknowledge the CE interrupt */
+		 
 		regmap_write(npcm_regmap, pdata->ctl_int_ack,
 			     pdata->int_ack_ce_mask);
 		return IRQ_HANDLED;
 	} else if (status & pdata->int_status_ue_mask) {
 		handle_ue(mci);
 
-		/* acknowledge the UE interrupt */
+		 
 		regmap_write(npcm_regmap, pdata->ctl_int_ack,
 			     pdata->int_ack_ue_mask);
 		return IRQ_HANDLED;
@@ -210,7 +210,7 @@ static ssize_t force_ecc_error(struct file *file, const char __user *data,
 		    "force an ECC error, type = %d, location = %d, bit = %d\n",
 		    priv->error_type, priv->location, priv->bit);
 
-	/* ensure no pending writes */
+	 
 	ret = regmap_read_poll_timeout(npcm_regmap, pdata->ctl_controller_busy,
 				       val, !(val & pdata->controller_busy_mask),
 				       1000, 10000);
@@ -223,7 +223,7 @@ static ssize_t force_ecc_error(struct file *file, const char __user *data,
 	regmap_read(npcm_regmap, pdata->ctl_xor_check_bits, &val);
 	val &= ~pdata->xor_check_bits_mask;
 
-	/* write syndrome to XOR_CHECK_BITS */
+	 
 	if (priv->error_type == ERROR_TYPE_CORRECTABLE) {
 		if (priv->location == ERROR_LOCATION_DATA &&
 		    priv->bit > ERROR_BIT_DATA_MAX) {
@@ -252,7 +252,7 @@ static ssize_t force_ecc_error(struct file *file, const char __user *data,
 			     val | (UE_SYNDROME << pdata->xor_check_bits_shift));
 	}
 
-	/* force write check */
+	 
 	regmap_update_bits(npcm_regmap, pdata->ctl_xor_check_bits,
 			   pdata->fwc_mask, pdata->fwc_mask);
 
@@ -265,26 +265,7 @@ static const struct file_operations force_ecc_error_fops = {
 	.llseek = generic_file_llseek,
 };
 
-/*
- * Setup debugfs for error injection.
- *
- * Nodes:
- *   error_type		- 0: CE, 1: UE
- *   location		- 0: data, 1: checkcode
- *   bit		- 0 ~ 63 for data and 0 ~ 7 for checkcode
- *   force_ecc_error	- trigger
- *
- * Examples:
- *   1. Inject a correctable error (CE) at checkcode bit 7.
- *      ~# echo 0 > /sys/kernel/debug/edac/npcm-edac/error_type
- *      ~# echo 1 > /sys/kernel/debug/edac/npcm-edac/location
- *      ~# echo 7 > /sys/kernel/debug/edac/npcm-edac/bit
- *      ~# echo 1 > /sys/kernel/debug/edac/npcm-edac/force_ecc_error
- *
- *   2. Inject an uncorrectable error (UE).
- *      ~# echo 1 > /sys/kernel/debug/edac/npcm-edac/error_type
- *      ~# echo 1 > /sys/kernel/debug/edac/npcm-edac/force_ecc_error
- */
+ 
 static void setup_debugfs(struct mem_ctl_info *mci)
 {
 	struct priv_data *priv = mci->pvt_info;
@@ -319,7 +300,7 @@ static int setup_irq(struct mem_ctl_info *mci, struct platform_device *pdev)
 		return ret;
 	}
 
-	/* enable the functional group of ECC and mask the others */
+	 
 	regmap_write(npcm_regmap, pdata->ctl_int_mask_master,
 		     pdata->int_mask_master_non_ecc_mask);
 
@@ -359,7 +340,7 @@ static int edac_probe(struct platform_device *pdev)
 	if (!pdata)
 		return -EINVAL;
 
-	/* bail out if ECC is not enabled */
+	 
 	regmap_read(npcm_regmap, pdata->ctl_ecc_en, &val);
 	if (!(val & pdata->ecc_en_mask)) {
 		edac_printk(KERN_ERR, EDAC_MOD_NAME, "ECC is not enabled\n");
@@ -433,7 +414,7 @@ static int edac_remove(struct platform_device *pdev)
 static const struct npcm_platform_data npcm750_edac = {
 	.chip				= NPCM7XX_CHIP,
 
-	/* memory controller registers */
+	 
 	.ctl_ecc_en			= 0x174,
 	.ctl_int_status			= 0x1d0,
 	.ctl_int_ack			= 0x1d4,
@@ -446,7 +427,7 @@ static const struct npcm_platform_data npcm750_edac = {
 	.ctl_ue_synd			= 0x180,
 	.ctl_source_id			= 0x194,
 
-	/* masks and shifts */
+	 
 	.ecc_en_mask			= BIT(24),
 	.int_status_ce_mask		= GENMASK(4, 3),
 	.int_status_ue_mask		= GENMASK(6, 5),
@@ -467,7 +448,7 @@ static const struct npcm_platform_data npcm750_edac = {
 static const struct npcm_platform_data npcm845_edac = {
 	.chip =				NPCM8XX_CHIP,
 
-	/* memory controller registers */
+	 
 	.ctl_ecc_en			= 0x16c,
 	.ctl_int_status			= 0x228,
 	.ctl_int_ack			= 0x244,
@@ -487,7 +468,7 @@ static const struct npcm_platform_data npcm845_edac = {
 	.ctl_controller_busy		= 0x20c,
 	.ctl_xor_check_bits		= 0x174,
 
-	/* masks and shifts */
+	 
 	.ecc_en_mask			= GENMASK(17, 16),
 	.int_status_ce_mask		= GENMASK(1, 0),
 	.int_status_ue_mask		= GENMASK(3, 2),

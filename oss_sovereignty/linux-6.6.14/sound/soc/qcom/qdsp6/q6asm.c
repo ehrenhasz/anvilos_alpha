@@ -1,6 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2011-2017, The Linux Foundation. All rights reserved.
-// Copyright (c) 2018, Linaro Limited
+
+
+
 
 #include <linux/mutex.h>
 #include <linux/wait.h>
@@ -56,14 +56,14 @@
 
 
 #define ASM_LEGACY_STREAM_SESSION	0
-/* Bit shift for the stream_perf_mode subfield. */
+ 
 #define ASM_SHIFT_STREAM_PERF_MODE_FLAG_IN_OPEN_READ              29
 #define ASM_END_POINT_DEVICE_MATRIX	0
 #define ASM_DEFAULT_APP_TYPE		0
 #define ASM_SYNC_IO_MODE		0x0001
 #define ASM_ASYNC_IO_MODE		0x0002
-#define ASM_TUN_READ_IO_MODE		0x0004	/* tunnel read write mode */
-#define ASM_TUN_WRITE_IO_MODE		0x0008	/* tunnel read write mode */
+#define ASM_TUN_READ_IO_MODE		0x0004	 
+#define ASM_TUN_WRITE_IO_MODE		0x0008	 
 #define ASM_SHIFT_GAPLESS_MODE_FLAG	31
 #define ADSP_MEMORY_MAP_SHMEM8_4K_POOL	3
 
@@ -239,7 +239,7 @@ struct asm_session_cmd_run_v2 {
 
 struct audio_buffer {
 	phys_addr_t phys;
-	uint32_t size;		/* size of buffer */
+	uint32_t size;		 
 };
 
 struct audio_port_data {
@@ -267,7 +267,7 @@ struct audio_client {
 	struct mutex cmd_lock;
 	spinlock_t lock;
 	struct kref refcount;
-	/* idx:1 out port, 0: in port */
+	 
 	struct audio_port_data port[2];
 	wait_queue_head_t cmd_wait;
 	struct aprv2_ibasic_rsp_result_t result;
@@ -381,14 +381,7 @@ static void q6asm_audio_client_free_buf(struct audio_client *ac,
 	spin_unlock_irqrestore(&ac->lock, flags);
 }
 
-/**
- * q6asm_unmap_memory_regions() - unmap memory regions in the dsp.
- *
- * @dir: direction of audio stream
- * @ac: audio client instanace
- *
- * Return: Will be an negative value on failure or zero on success
- */
+ 
 int q6asm_unmap_memory_regions(unsigned int dir, struct audio_client *ac)
 {
 	struct audio_port_data *port;
@@ -441,7 +434,7 @@ static int __q6asm_memory_map_regions(struct audio_client *ac, int dir,
 		num_regions = periods;
 	}
 
-	/* DSP expects size should be aligned to 4K */
+	 
 	buf_sz = ALIGN(buf_sz, 4096);
 
 	pkt_size = APR_HDR_SIZE + sizeof(*cmd) +
@@ -486,17 +479,7 @@ static int __q6asm_memory_map_regions(struct audio_client *ac, int dir,
 	return rc;
 }
 
-/**
- * q6asm_map_memory_regions() - map memory regions in the dsp.
- *
- * @dir: direction of audio stream
- * @ac: audio client instanace
- * @phys: physical address that needs mapping.
- * @period_sz: audio period size
- * @periods: number of periods
- *
- * Return: Will be an negative value on failure or zero on success
- */
+ 
 int q6asm_map_memory_regions(unsigned int dir, struct audio_client *ac,
 			     phys_addr_t phys,
 			     size_t period_sz, unsigned int periods)
@@ -561,11 +544,7 @@ static void q6asm_audio_client_release(struct kref *ref)
 	kfree(ac);
 }
 
-/**
- * q6asm_audio_client_free() - Freee allocated audio client
- *
- * @ac: audio client to free
- */
+ 
 void q6asm_audio_client_free(struct audio_client *ac)
 {
 	kref_put(&ac->refcount, q6asm_audio_client_release);
@@ -584,7 +563,7 @@ static struct audio_client *q6asm_get_audio_client(struct q6asm *a,
 		goto err;
 	}
 
-	/* check for valid session */
+	 
 	if (!a->session[session_id])
 		goto err;
 	else if (a->session[session_id]->session != session_id)
@@ -610,7 +589,7 @@ static int32_t q6asm_stream_callback(struct apr_device *adev,
 	int ret = 0;
 
 	ac = q6asm_get_audio_client(q6asm, session_id);
-	if (!ac)/* Audio client might already be freed by now */
+	if (!ac) 
 		return 0;
 
 	result = data->payload;
@@ -813,31 +792,14 @@ done:
 	return 0;
 }
 
-/**
- * q6asm_get_session_id() - get session id for audio client
- *
- * @c: audio client pointer
- *
- * Return: Will be an session id of the audio client.
- */
+ 
 int q6asm_get_session_id(struct audio_client *c)
 {
 	return c->session;
 }
 EXPORT_SYMBOL_GPL(q6asm_get_session_id);
 
-/**
- * q6asm_audio_client_alloc() - Allocate a new audio client
- *
- * @dev: Pointer to asm child device.
- * @cb: event callback.
- * @priv: private data associated with this client.
- * @session_id: session id
- * @perf_mode: performace mode for this client
- *
- * Return: Will be an error pointer on error or a valid audio client
- * on success.
- */
+ 
 struct audio_client *q6asm_audio_client_alloc(struct device *dev, q6asm_cb cb,
 					      void *priv, int session_id,
 					      int perf_mode)
@@ -912,17 +874,7 @@ err:
 	return rc;
 }
 
-/**
- * q6asm_open_write() - Open audio client for writing
- * @ac: audio client pointer
- * @stream_id: stream id of q6asm session
- * @format: audio sample format
- * @codec_profile: compressed format profile
- * @bits_per_sample: bits per sample
- * @is_gapless: flag to indicate if this is a gapless stream
- *
- * Return: Will be an negative value on error or zero on success
- */
+ 
 int q6asm_open_write(struct audio_client *ac, uint32_t stream_id,
 		     uint32_t format, u32 codec_profile,
 		     uint16_t bits_per_sample, bool is_gapless)
@@ -948,7 +900,7 @@ int q6asm_open_write(struct audio_client *ac, uint32_t stream_id,
 	if (is_gapless)
 		open->mode_flags |= BIT(ASM_SHIFT_GAPLESS_MODE_FLAG);
 
-	/* source endpoint : matrix */
+	 
 	open->sink_endpointype = ASM_END_POINT_DEVICE_MATRIX;
 	open->bits_per_sample = bits_per_sample;
 	open->postprocopo_id = ASM_NULL_POPP_TOPOLOGY;
@@ -1040,17 +992,7 @@ static int __q6asm_run(struct audio_client *ac, uint32_t stream_id,
 	return rc;
 }
 
-/**
- * q6asm_run() - start the audio client
- *
- * @ac: audio client pointer
- * @stream_id: stream id of q6asm session
- * @flags: flags associated with write
- * @msw_ts: timestamp msw
- * @lsw_ts: timestamp lsw
- *
- * Return: Will be an negative value on error or zero on success
- */
+ 
 int q6asm_run(struct audio_client *ac, uint32_t stream_id, uint32_t flags,
 	      uint32_t msw_ts, uint32_t lsw_ts)
 {
@@ -1058,17 +1000,7 @@ int q6asm_run(struct audio_client *ac, uint32_t stream_id, uint32_t flags,
 }
 EXPORT_SYMBOL_GPL(q6asm_run);
 
-/**
- * q6asm_run_nowait() - start the audio client withou blocking
- *
- * @ac: audio client pointer
- * @stream_id: stream id
- * @flags: flags associated with write
- * @msw_ts: timestamp msw
- * @lsw_ts: timestamp lsw
- *
- * Return: Will be an negative value on error or zero on success
- */
+ 
 int q6asm_run_nowait(struct audio_client *ac, uint32_t stream_id,
 		     uint32_t flags, uint32_t msw_ts, uint32_t lsw_ts)
 {
@@ -1076,18 +1008,7 @@ int q6asm_run_nowait(struct audio_client *ac, uint32_t stream_id,
 }
 EXPORT_SYMBOL_GPL(q6asm_run_nowait);
 
-/**
- * q6asm_media_format_block_multi_ch_pcm() - setup pcm configuration
- *
- * @ac: audio client pointer
- * @stream_id: stream id
- * @rate: audio sample rate
- * @channels: number of audio channels.
- * @channel_map: channel map pointer
- * @bits_per_sample: bits per sample
- *
- * Return: Will be an negative value on error or zero on success
- */
+ 
 int q6asm_media_format_block_multi_ch_pcm(struct audio_client *ac,
 					  uint32_t stream_id,
 					  uint32_t rate, uint32_t channels,
@@ -1382,17 +1303,7 @@ int q6asm_stream_remove_trailing_silence(struct audio_client *ac, uint32_t strea
 }
 EXPORT_SYMBOL_GPL(q6asm_stream_remove_trailing_silence);
 
-/**
- * q6asm_enc_cfg_blk_pcm_format_support() - setup pcm configuration for capture
- *
- * @ac: audio client pointer
- * @stream_id: stream id
- * @rate: audio sample rate
- * @channels: number of audio channels.
- * @bits_per_sample: bits per sample
- *
- * Return: Will be an negative value on error or zero on success
- */
+ 
 int q6asm_enc_cfg_blk_pcm_format_support(struct audio_client *ac,
 					 uint32_t stream_id, uint32_t rate,
 					 uint32_t channels,
@@ -1440,14 +1351,7 @@ err:
 EXPORT_SYMBOL_GPL(q6asm_enc_cfg_blk_pcm_format_support);
 
 
-/**
- * q6asm_read() - read data of period size from audio client
- *
- * @ac: audio client pointer
- * @stream_id: stream id
- *
- * Return: Will be an negative value on error or zero on success
- */
+ 
 int q6asm_read(struct audio_client *ac, uint32_t stream_id)
 {
 	struct asm_data_cmd_read_v2 *read;
@@ -1515,7 +1419,7 @@ static int __q6asm_open_read(struct audio_client *ac, uint32_t stream_id,
 
 	q6asm_add_hdr(ac, &pkt->hdr,  pkt_size, true, stream_id);
 	pkt->hdr.opcode = ASM_STREAM_CMD_OPEN_READ_V3;
-	/* Stream prio : High, provide meta info with encoded frames */
+	 
 	open->src_endpointype = ASM_END_POINT_DEVICE_MATRIX;
 
 	open->preprocopo_id = ASM_STREAM_POSTPROC_TOPO_ID_NONE;
@@ -1540,16 +1444,7 @@ static int __q6asm_open_read(struct audio_client *ac, uint32_t stream_id,
 	return rc;
 }
 
-/**
- * q6asm_open_read() - Open audio client for reading
- *
- * @ac: audio client pointer
- * @stream_id: stream id
- * @format: audio sample format
- * @bits_per_sample: bits per sample
- *
- * Return: Will be an negative value on error or zero on success
- */
+ 
 int q6asm_open_read(struct audio_client *ac, uint32_t stream_id,
 		    uint32_t format, uint16_t bits_per_sample)
 {
@@ -1557,18 +1452,7 @@ int q6asm_open_read(struct audio_client *ac, uint32_t stream_id,
 }
 EXPORT_SYMBOL_GPL(q6asm_open_read);
 
-/**
- * q6asm_write_async() - non blocking write
- *
- * @ac: audio client pointer
- * @stream_id: stream id
- * @len: length in bytes
- * @msw_ts: timestamp msw
- * @lsw_ts: timestamp lsw
- * @wflags: flags associated with write
- *
- * Return: Will be an negative value on error or zero on success
- */
+ 
 int q6asm_write_async(struct audio_client *ac, uint32_t stream_id, uint32_t len,
 		      uint32_t msw_ts, uint32_t lsw_ts, uint32_t wflags)
 {
@@ -1680,30 +1564,14 @@ static int __q6asm_cmd(struct audio_client *ac, uint32_t stream_id, int cmd,
 	return 0;
 }
 
-/**
- * q6asm_cmd() - run cmd on audio client
- *
- * @ac: audio client pointer
- * @stream_id: stream id
- * @cmd: command to run on audio client.
- *
- * Return: Will be an negative value on error or zero on success
- */
+ 
 int q6asm_cmd(struct audio_client *ac, uint32_t stream_id, int cmd)
 {
 	return __q6asm_cmd(ac, stream_id, cmd, true);
 }
 EXPORT_SYMBOL_GPL(q6asm_cmd);
 
-/**
- * q6asm_cmd_nowait() - non blocking, run cmd on audio client
- *
- * @ac: audio client pointer
- * @stream_id: stream id
- * @cmd: command to run on audio client.
- *
- * Return: Will be an negative value on error or zero on success
- */
+ 
 int q6asm_cmd_nowait(struct audio_client *ac, uint32_t stream_id, int cmd)
 {
 	return __q6asm_cmd(ac, stream_id, cmd, false);

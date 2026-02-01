@@ -1,27 +1,4 @@
-/*
- * Copyright 2017 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: Rafał Miłecki <zajec5@gmail.com>
- *          Alex Deucher <alexdeucher@gmail.com>
- */
+ 
 
 #include "amdgpu.h"
 #include "amdgpu_drv.h"
@@ -57,39 +34,7 @@ const char * const amdgpu_pp_profile_name[] = {
 	"UNCAPPED",
 };
 
-/**
- * DOC: power_dpm_state
- *
- * The power_dpm_state file is a legacy interface and is only provided for
- * backwards compatibility. The amdgpu driver provides a sysfs API for adjusting
- * certain power related parameters.  The file power_dpm_state is used for this.
- * It accepts the following arguments:
- *
- * - battery
- *
- * - balanced
- *
- * - performance
- *
- * battery
- *
- * On older GPUs, the vbios provided a special power state for battery
- * operation.  Selecting battery switched to this state.  This is no
- * longer provided on newer GPUs so the option does nothing in that case.
- *
- * balanced
- *
- * On older GPUs, the vbios provided a special power state for balanced
- * operation.  Selecting balanced switched to this state.  This is no
- * longer provided on newer GPUs so the option does nothing in that case.
- *
- * performance
- *
- * On older GPUs, the vbios provided a special power state for performance
- * operation.  Selecting performance switched to this state.  This is no
- * longer provided on newer GPUs so the option does nothing in that case.
- *
- */
+ 
 
 static ssize_t amdgpu_get_power_dpm_state(struct device *dev,
 					  struct device_attribute *attr,
@@ -160,64 +105,7 @@ static ssize_t amdgpu_set_power_dpm_state(struct device *dev,
 }
 
 
-/**
- * DOC: power_dpm_force_performance_level
- *
- * The amdgpu driver provides a sysfs API for adjusting certain power
- * related parameters.  The file power_dpm_force_performance_level is
- * used for this.  It accepts the following arguments:
- *
- * - auto
- *
- * - low
- *
- * - high
- *
- * - manual
- *
- * - profile_standard
- *
- * - profile_min_sclk
- *
- * - profile_min_mclk
- *
- * - profile_peak
- *
- * auto
- *
- * When auto is selected, the driver will attempt to dynamically select
- * the optimal power profile for current conditions in the driver.
- *
- * low
- *
- * When low is selected, the clocks are forced to the lowest power state.
- *
- * high
- *
- * When high is selected, the clocks are forced to the highest power state.
- *
- * manual
- *
- * When manual is selected, the user can manually adjust which power states
- * are enabled for each clock domain via the sysfs pp_dpm_mclk, pp_dpm_sclk,
- * and pp_dpm_pcie files and adjust the power state transition heuristics
- * via the pp_power_profile_mode sysfs file.
- *
- * profile_standard
- * profile_min_sclk
- * profile_min_mclk
- * profile_peak
- *
- * When the profiling modes are selected, clock and power gating are
- * disabled and the clocks are set for different profiling cases. This
- * mode is recommended for profiling specific work loads where you do
- * not want clock or power gating for clock fluctuation to interfere
- * with your results. profile_standard sets the clocks to a fixed clock
- * level which varies from asic to asic.  profile_min_sclk forces the sclk
- * to the lowest level.  profile_min_mclk forces the mclk to the lowest level.
- * profile_peak sets all clocks (mclk, sclk, pcie) to the highest levels.
- *
- */
+ 
 
 static ssize_t amdgpu_get_power_dpm_force_performance_level(struct device *dev,
 							    struct device_attribute *attr,
@@ -309,7 +197,7 @@ static ssize_t amdgpu_set_power_dpm_force_performance_level(struct device *dev,
 		mutex_unlock(&adev->pm.stable_pstate_ctx_lock);
 		return -EINVAL;
 	}
-	/* override whatever a user ctx may have set */
+	 
 	adev->pm.stable_pstate_ctx = NULL;
 	mutex_unlock(&adev->pm.stable_pstate_ctx_lock);
 
@@ -457,7 +345,7 @@ static ssize_t amdgpu_set_pp_force_state(struct device *dev,
 
 	state = data.states[idx];
 
-	/* only set user selected power states */
+	 
 	if (state != POWER_STATE_TYPE_INTERNAL_BOOT &&
 	    state != POWER_STATE_TYPE_DEFAULT) {
 		ret = amdgpu_dpm_dispatch_task(adev,
@@ -479,16 +367,7 @@ err_out:
 	return ret;
 }
 
-/**
- * DOC: pp_table
- *
- * The amdgpu driver provides a sysfs API for uploading new powerplay
- * tables.  The file pp_table is used for this.  Reading the file
- * will dump the current power play table.  Writing to the file
- * will attempt to upload a new powerplay table and re-initialize
- * powerplay using that new table.
- *
- */
+ 
 
 static ssize_t amdgpu_get_pp_table(struct device *dev,
 		struct device_attribute *attr,
@@ -557,161 +436,7 @@ static ssize_t amdgpu_set_pp_table(struct device *dev,
 	return count;
 }
 
-/**
- * DOC: pp_od_clk_voltage
- *
- * The amdgpu driver provides a sysfs API for adjusting the clocks and voltages
- * in each power level within a power state.  The pp_od_clk_voltage is used for
- * this.
- *
- * Note that the actual memory controller clock rate are exposed, not
- * the effective memory clock of the DRAMs. To translate it, use the
- * following formula:
- *
- * Clock conversion (Mhz):
- *
- * HBM: effective_memory_clock = memory_controller_clock * 1
- *
- * G5: effective_memory_clock = memory_controller_clock * 1
- *
- * G6: effective_memory_clock = memory_controller_clock * 2
- *
- * DRAM data rate (MT/s):
- *
- * HBM: effective_memory_clock * 2 = data_rate
- *
- * G5: effective_memory_clock * 4 = data_rate
- *
- * G6: effective_memory_clock * 8 = data_rate
- *
- * Bandwidth (MB/s):
- *
- * data_rate * vram_bit_width / 8 = memory_bandwidth
- *
- * Some examples:
- *
- * G5 on RX460:
- *
- * memory_controller_clock = 1750 Mhz
- *
- * effective_memory_clock = 1750 Mhz * 1 = 1750 Mhz
- *
- * data rate = 1750 * 4 = 7000 MT/s
- *
- * memory_bandwidth = 7000 * 128 bits / 8 = 112000 MB/s
- *
- * G6 on RX5700:
- *
- * memory_controller_clock = 875 Mhz
- *
- * effective_memory_clock = 875 Mhz * 2 = 1750 Mhz
- *
- * data rate = 1750 * 8 = 14000 MT/s
- *
- * memory_bandwidth = 14000 * 256 bits / 8 = 448000 MB/s
- *
- * < For Vega10 and previous ASICs >
- *
- * Reading the file will display:
- *
- * - a list of engine clock levels and voltages labeled OD_SCLK
- *
- * - a list of memory clock levels and voltages labeled OD_MCLK
- *
- * - a list of valid ranges for sclk, mclk, and voltage labeled OD_RANGE
- *
- * To manually adjust these settings, first select manual using
- * power_dpm_force_performance_level. Enter a new value for each
- * level by writing a string that contains "s/m level clock voltage" to
- * the file.  E.g., "s 1 500 820" will update sclk level 1 to be 500 MHz
- * at 820 mV; "m 0 350 810" will update mclk level 0 to be 350 MHz at
- * 810 mV.  When you have edited all of the states as needed, write
- * "c" (commit) to the file to commit your changes.  If you want to reset to the
- * default power levels, write "r" (reset) to the file to reset them.
- *
- *
- * < For Vega20 and newer ASICs >
- *
- * Reading the file will display:
- *
- * - minimum and maximum engine clock labeled OD_SCLK
- *
- * - minimum(not available for Vega20 and Navi1x) and maximum memory
- *   clock labeled OD_MCLK
- *
- * - three <frequency, voltage> points labeled OD_VDDC_CURVE.
- *   They can be used to calibrate the sclk voltage curve. This is
- *   available for Vega20 and NV1X.
- *
- * - voltage offset for the six anchor points of the v/f curve labeled
- *   OD_VDDC_CURVE. They can be used to calibrate the v/f curve. This
- *   is only availabe for some SMU13 ASICs.
- *
- * - voltage offset(in mV) applied on target voltage calculation.
- *   This is available for Sienna Cichlid, Navy Flounder and Dimgrey
- *   Cavefish. For these ASICs, the target voltage calculation can be
- *   illustrated by "voltage = voltage calculated from v/f curve +
- *   overdrive vddgfx offset"
- *
- * - a list of valid ranges for sclk, mclk, and voltage curve points
- *   labeled OD_RANGE
- *
- * < For APUs >
- *
- * Reading the file will display:
- *
- * - minimum and maximum engine clock labeled OD_SCLK
- *
- * - a list of valid ranges for sclk labeled OD_RANGE
- *
- * < For VanGogh >
- *
- * Reading the file will display:
- *
- * - minimum and maximum engine clock labeled OD_SCLK
- * - minimum and maximum core clocks labeled OD_CCLK
- *
- * - a list of valid ranges for sclk and cclk labeled OD_RANGE
- *
- * To manually adjust these settings:
- *
- * - First select manual using power_dpm_force_performance_level
- *
- * - For clock frequency setting, enter a new value by writing a
- *   string that contains "s/m index clock" to the file. The index
- *   should be 0 if to set minimum clock. And 1 if to set maximum
- *   clock. E.g., "s 0 500" will update minimum sclk to be 500 MHz.
- *   "m 1 800" will update maximum mclk to be 800Mhz. For core
- *   clocks on VanGogh, the string contains "p core index clock".
- *   E.g., "p 2 0 800" would set the minimum core clock on core
- *   2 to 800Mhz.
- *
- *   For sclk voltage curve,
- *     - For NV1X, enter the new values by writing a string that
- *       contains "vc point clock voltage" to the file. The points
- *       are indexed by 0, 1 and 2. E.g., "vc 0 300 600" will update
- *       point1 with clock set as 300Mhz and voltage as 600mV. "vc 2
- *       1000 1000" will update point3 with clock set as 1000Mhz and
- *       voltage 1000mV.
- *     - For SMU13 ASICs, enter the new values by writing a string that
- *       contains "vc anchor_point_index voltage_offset" to the file.
- *       There are total six anchor points defined on the v/f curve with
- *       index as 0 - 5.
- *       - "vc 0 10" will update the voltage offset for point1 as 10mv.
- *       - "vc 5 -10" will update the voltage offset for point6 as -10mv.
- *
- *   To update the voltage offset applied for gfxclk/voltage calculation,
- *   enter the new value by writing a string that contains "vo offset".
- *   This is supported by Sienna Cichlid, Navy Flounder and Dimgrey Cavefish.
- *   And the offset can be a positive or negative value.
- *
- * - When you have edited all of the states as needed, write "c" (commit)
- *   to the file to commit your changes
- *
- * - If you want to reset to the default power levels, write "r" (reset)
- *   to the file to reset them
- *
- */
+ 
 
 static ssize_t amdgpu_set_pp_od_clk_voltage(struct device *dev,
 		struct device_attribute *attr,
@@ -865,22 +590,7 @@ static ssize_t amdgpu_get_pp_od_clk_voltage(struct device *dev,
 	return size;
 }
 
-/**
- * DOC: pp_features
- *
- * The amdgpu driver provides a sysfs API for adjusting what powerplay
- * features to be enabled. The file pp_features is used for this. And
- * this is only available for Vega10 and later dGPUs.
- *
- * Reading back the file will show you the followings:
- * - Current ppfeature masks
- * - List of the all supported powerplay features with their naming,
- *   bitmasks and enablement status('Y'/'N' means "enabled"/"disabled").
- *
- * To manually enable or disable a specific feature, just set or clear
- * the corresponding bit from original ppfeature masks and input the
- * new ppfeature masks.
- */
+ 
 static ssize_t amdgpu_set_pp_features(struct device *dev,
 				      struct device_attribute *attr,
 				      const char *buf,
@@ -947,35 +657,7 @@ static ssize_t amdgpu_get_pp_features(struct device *dev,
 	return size;
 }
 
-/**
- * DOC: pp_dpm_sclk pp_dpm_mclk pp_dpm_socclk pp_dpm_fclk pp_dpm_dcefclk pp_dpm_pcie
- *
- * The amdgpu driver provides a sysfs API for adjusting what power levels
- * are enabled for a given power state.  The files pp_dpm_sclk, pp_dpm_mclk,
- * pp_dpm_socclk, pp_dpm_fclk, pp_dpm_dcefclk and pp_dpm_pcie are used for
- * this.
- *
- * pp_dpm_socclk and pp_dpm_dcefclk interfaces are only available for
- * Vega10 and later ASICs.
- * pp_dpm_fclk interface is only available for Vega20 and later ASICs.
- *
- * Reading back the files will show you the available power levels within
- * the power state and the clock information for those levels.
- *
- * To manually adjust these states, first select manual using
- * power_dpm_force_performance_level.
- * Secondly, enter a new value for each level by inputing a string that
- * contains " echo xx xx xx > pp_dpm_sclk/mclk/pcie"
- * E.g.,
- *
- * .. code-block:: bash
- *
- *	echo "4 5 6" > pp_dpm_sclk
- *
- * will enable sclk levels 4, 5, and 6.
- *
- * NOTE: change to the dcefclk max dpm level is not supported now
- */
+ 
 
 static ssize_t amdgpu_get_pp_dpm_clock(struct device *dev,
 		enum pp_clock_type type,
@@ -1010,10 +692,7 @@ static ssize_t amdgpu_get_pp_dpm_clock(struct device *dev,
 	return size;
 }
 
-/*
- * Worst case: 32 bits individually specified, in octal at 12 characters
- * per line (+1 for \n).
- */
+ 
 #define AMDGPU_MASK_BUF_MAX	(32 * 13)
 
 static ssize_t amdgpu_read_mask(const char *buf, size_t count, uint32_t *mask)
@@ -1355,25 +1034,7 @@ static ssize_t amdgpu_set_pp_mclk_od(struct device *dev,
 	return count;
 }
 
-/**
- * DOC: pp_power_profile_mode
- *
- * The amdgpu driver provides a sysfs API for adjusting the heuristics
- * related to switching between power levels in a power state.  The file
- * pp_power_profile_mode is used for this.
- *
- * Reading this file outputs a list of all of the predefined power profiles
- * and the relevant heuristics settings for that profile.
- *
- * To select a profile or create a custom profile, first select manual using
- * power_dpm_force_performance_level.  Writing the number of a predefined
- * profile to pp_power_profile_mode will enable those heuristics.  To
- * create a custom set of heuristics, write a string of numbers to the file
- * starting with the number of the custom profile along with a setting
- * for each heuristic parameter.  Due to differences across asic families
- * the heuristic parameters vary from family to family.
- *
- */
+ 
 
 static ssize_t amdgpu_get_pp_power_profile_mode(struct device *dev,
 		struct device_attribute *attr,
@@ -1488,7 +1149,7 @@ static unsigned int amdgpu_hwmon_get_sensor_generic(struct amdgpu_device *adev,
 		return r;
 	}
 
-	/* get the sensor value */
+	 
 	r = amdgpu_dpm_read_sensor(adev, sensor, query, &size);
 
 	pm_runtime_mark_last_busy(adev_to_drm(adev)->dev);
@@ -1497,14 +1158,7 @@ static unsigned int amdgpu_hwmon_get_sensor_generic(struct amdgpu_device *adev,
 	return r;
 }
 
-/**
- * DOC: gpu_busy_percent
- *
- * The amdgpu driver provides a sysfs API for reading how busy the GPU
- * is as a percentage.  The file gpu_busy_percent is used for this.
- * The SMU firmware computes a percentage of load based on the
- * aggregate activity level in the IP cores.
- */
+ 
 static ssize_t amdgpu_get_gpu_busy_percent(struct device *dev,
 					   struct device_attribute *attr,
 					   char *buf)
@@ -1521,14 +1175,7 @@ static ssize_t amdgpu_get_gpu_busy_percent(struct device *dev,
 	return sysfs_emit(buf, "%d\n", value);
 }
 
-/**
- * DOC: mem_busy_percent
- *
- * The amdgpu driver provides a sysfs API for reading how busy the VRAM
- * is as a percentage.  The file mem_busy_percent is used for this.
- * The SMU firmware computes a percentage of load based on the
- * aggregate activity level in the IP cores.
- */
+ 
 static ssize_t amdgpu_get_mem_busy_percent(struct device *dev,
 					   struct device_attribute *attr,
 					   char *buf)
@@ -1545,18 +1192,7 @@ static ssize_t amdgpu_get_mem_busy_percent(struct device *dev,
 	return sysfs_emit(buf, "%d\n", value);
 }
 
-/**
- * DOC: pcie_bw
- *
- * The amdgpu driver provides a sysfs API for estimating how much data
- * has been received and sent by the GPU in the last second through PCIe.
- * The file pcie_bw is used for this.
- * The Perf counters count the number of received and sent messages and return
- * those values, as well as the maximum payload size of a PCIe packet (mps).
- * Note that it is not possible to easily and quickly obtain the size of each
- * packet transmitted, so we output the max payload size (mps) to allow for
- * quick estimation of the PCIe bandwidth usage
- */
+ 
 static ssize_t amdgpu_get_pcie_bw(struct device *dev,
 		struct device_attribute *attr,
 		char *buf)
@@ -1592,16 +1228,7 @@ static ssize_t amdgpu_get_pcie_bw(struct device *dev,
 			  count0, count1, pcie_get_mps(adev->pdev));
 }
 
-/**
- * DOC: unique_id
- *
- * The amdgpu driver provides a sysfs API for providing a unique ID for the GPU
- * The file unique_id is used for this.
- * This will provide a Unique ID that will persist from machine to machine
- *
- * NOTE: This will only work for GFX9 and newer. This file will be absent
- * on unsupported ASICs (GFX8 and older)
- */
+ 
 static ssize_t amdgpu_get_unique_id(struct device *dev,
 		struct device_attribute *attr,
 		char *buf)
@@ -1620,21 +1247,7 @@ static ssize_t amdgpu_get_unique_id(struct device *dev,
 	return 0;
 }
 
-/**
- * DOC: thermal_throttling_logging
- *
- * Thermal throttling pulls down the clock frequency and thus the performance.
- * It's an useful mechanism to protect the chip from overheating. Since it
- * impacts performance, the user controls whether it is enabled and if so,
- * the log frequency.
- *
- * Reading back the file shows you the status(enabled or disabled) and
- * the interval(in seconds) between each thermal logging.
- *
- * Writing an integer to the file, sets a new logging interval, in seconds.
- * The value should be between 1 and 3600. If the value is less than 1,
- * thermal logging is disabled. Values greater than 3600 are ignored.
- */
+ 
 static ssize_t amdgpu_get_thermal_throttling_logging(struct device *dev,
 						     struct device_attribute *attr,
 						     char *buf)
@@ -1668,10 +1281,7 @@ static ssize_t amdgpu_set_thermal_throttling_logging(struct device *dev,
 
 	if (throttling_logging_interval > 0) {
 		raw_spin_lock_irqsave(&adev->throttling_logging_rs.lock, flags);
-		/*
-		 * Reset the ratelimit timer internals.
-		 * This can effectively restart the timer.
-		 */
+		 
 		adev->throttling_logging_rs.interval =
 			(throttling_logging_interval - 1) * HZ;
 		adev->throttling_logging_rs.begin = 0;
@@ -1687,18 +1297,7 @@ static ssize_t amdgpu_set_thermal_throttling_logging(struct device *dev,
 	return count;
 }
 
-/**
- * DOC: apu_thermal_cap
- *
- * The amdgpu driver provides a sysfs API for retrieving/updating thermal
- * limit temperature in millidegrees Celsius
- *
- * Reading back the file shows you core limit value
- *
- * Writing an integer to the file, sets a new thermal limit. The value
- * should be between 0 and 100. If the value is less than 0 or greater
- * than 100, then the write request will be ignored.
- */
+ 
 static ssize_t amdgpu_get_apu_thermal_cap(struct device *dev,
 					 struct device_attribute *attr,
 					 char *buf)
@@ -1763,18 +1362,7 @@ static ssize_t amdgpu_set_apu_thermal_cap(struct device *dev,
 	return count;
 }
 
-/**
- * DOC: gpu_metrics
- *
- * The amdgpu driver provides a sysfs API for retrieving current gpu
- * metrics data. The file gpu_metrics is used for this. Reading the
- * file will dump all the current gpu metrics data.
- *
- * These data include temperature, frequency, engines utilization,
- * power consume, throttler status, fan speed and cpu core statistics(
- * available for APU only). That's it will give a snapshot of all sensors
- * at the same time.
- */
+ 
 static ssize_t amdgpu_get_gpu_metrics(struct device *dev,
 				      struct device_attribute *attr,
 				      char *buf)
@@ -1822,7 +1410,7 @@ static int amdgpu_show_powershift_percent(struct device *dev,
 
 	r = amdgpu_hwmon_get_sensor_generic(adev, sensor, (void *)&ss_power);
 	if (r == -EOPNOTSUPP) {
-		/* sensor not available on dGPU, try to read from APU */
+		 
 		adev = NULL;
 		mutex_lock(&mgpu_info.mutex);
 		for (i = 0; i < mgpu_info.num_gpu; i++) {
@@ -1842,15 +1430,7 @@ static int amdgpu_show_powershift_percent(struct device *dev,
 	return sysfs_emit(buf, "%u%%\n", ss_power);
 }
 
-/**
- * DOC: smartshift_apu_power
- *
- * The amdgpu driver provides a sysfs API for reporting APU power
- * shift in percentage if platform supports smartshift. Value 0 means that
- * there is no powershift and values between [1-100] means that the power
- * is shifted to APU, the percentage of boost is with respect to APU power
- * limit on the platform.
- */
+ 
 
 static ssize_t amdgpu_get_smartshift_apu_power(struct device *dev, struct device_attribute *attr,
 					       char *buf)
@@ -1858,15 +1438,7 @@ static ssize_t amdgpu_get_smartshift_apu_power(struct device *dev, struct device
 	return amdgpu_show_powershift_percent(dev, buf, AMDGPU_PP_SENSOR_SS_APU_SHARE);
 }
 
-/**
- * DOC: smartshift_dgpu_power
- *
- * The amdgpu driver provides a sysfs API for reporting dGPU power
- * shift in percentage if platform supports smartshift. Value 0 means that
- * there is no powershift and values between [1-100] means that the power is
- * shifted to dGPU, the percentage of boost is with respect to dGPU power
- * limit on the platform.
- */
+ 
 
 static ssize_t amdgpu_get_smartshift_dgpu_power(struct device *dev, struct device_attribute *attr,
 						char *buf)
@@ -1874,14 +1446,7 @@ static ssize_t amdgpu_get_smartshift_dgpu_power(struct device *dev, struct devic
 	return amdgpu_show_powershift_percent(dev, buf, AMDGPU_PP_SENSOR_SS_DGPU_SHARE);
 }
 
-/**
- * DOC: smartshift_bias
- *
- * The amdgpu driver provides a sysfs API for reporting the
- * smartshift(SS2.0) bias level. The value ranges from -100 to 100
- * and the default is 0. -100 sets maximum preference to APU
- * and 100 sets max perference to dGPU.
- */
+ 
 
 static ssize_t amdgpu_get_smartshift_bias(struct device *dev,
 					  struct device_attribute *attr,
@@ -1926,7 +1491,7 @@ static ssize_t amdgpu_set_smartshift_bias(struct device *dev,
 	amdgpu_smartshift_bias = bias;
 	r = count;
 
-	/* TODO: update bias level with SMU message */
+	 
 
 out:
 	pm_runtime_mark_last_busy(ddev->dev);
@@ -2030,7 +1595,7 @@ static int default_attr_update(struct amdgpu_device *adev, struct amdgpu_device_
 		if (adev->flags & AMD_IS_APU || gc_ver == IP_VERSION(9, 0, 1))
 			*states = ATTR_STATE_UNSUPPORTED;
 	} else if (DEVICE_ATTR_IS(pcie_bw)) {
-		/* PCIe Perf counters won't work on APU nodes */
+		 
 		if (adev->flags & AMD_IS_APU)
 			*states = ATTR_STATE_UNSUPPORTED;
 	} else if (DEVICE_ATTR_IS(unique_id)) {
@@ -2098,7 +1663,7 @@ static int default_attr_update(struct amdgpu_device *adev, struct amdgpu_device_
 	switch (gc_ver) {
 	case IP_VERSION(9, 4, 1):
 	case IP_VERSION(9, 4, 2):
-		/* the Mi series card does not support standalone mclk/socclk/fclk level setting */
+		 
 		if (DEVICE_ATTR_IS(pp_dpm_mclk) ||
 		    DEVICE_ATTR_IS(pp_dpm_socclk) ||
 		    DEVICE_ATTR_IS(pp_dpm_fclk)) {
@@ -2118,14 +1683,14 @@ static int default_attr_update(struct amdgpu_device *adev, struct amdgpu_device_
 	}
 
 	if (DEVICE_ATTR_IS(pp_dpm_dcefclk)) {
-		/* SMU MP1 does not support dcefclk level setting */
+		 
 		if (gc_ver >= IP_VERSION(10, 0, 0)) {
 			dev_attr->attr.mode &= ~S_IWUGO;
 			dev_attr->store = NULL;
 		}
 	}
 
-	/* setting should not be allowed from VF if not in one VF mode */
+	 
 	if (amdgpu_sriov_vf(adev) && !amdgpu_sriov_is_pp_one_vf(adev)) {
 		dev_attr->attr.mode &= ~S_IWUGO;
 		dev_attr->store = NULL;
@@ -2247,17 +1812,17 @@ static ssize_t amdgpu_hwmon_show_temp(struct device *dev,
 
 	switch (channel) {
 	case PP_TEMP_JUNCTION:
-		/* get current junction temperature */
+		 
 		r = amdgpu_hwmon_get_sensor_generic(adev, AMDGPU_PP_SENSOR_HOTSPOT_TEMP,
 					   (void *)&temp);
 		break;
 	case PP_TEMP_EDGE:
-		/* get current edge temperature */
+		 
 		r = amdgpu_hwmon_get_sensor_generic(adev, AMDGPU_PP_SENSOR_EDGE_TEMP,
 					   (void *)&temp);
 		break;
 	case PP_TEMP_MEM:
-		/* get current memory temperature */
+		 
 		r = amdgpu_hwmon_get_sensor_generic(adev, AMDGPU_PP_SENSOR_MEM_TEMP,
 					   (void *)&temp);
 		break;
@@ -2733,7 +2298,7 @@ static ssize_t amdgpu_hwmon_show_vddgfx(struct device *dev,
 	u32 vddgfx;
 	int r;
 
-	/* get the voltage */
+	 
 	r = amdgpu_hwmon_get_sensor_generic(adev, AMDGPU_PP_SENSOR_VDDGFX,
 				   (void *)&vddgfx);
 	if (r)
@@ -2757,11 +2322,11 @@ static ssize_t amdgpu_hwmon_show_vddnb(struct device *dev,
 	u32 vddnb;
 	int r;
 
-	/* only APUs have vddnb */
+	 
 	if  (!(adev->flags & AMD_IS_APU))
 		return -EINVAL;
 
-	/* get the voltage */
+	 
 	r = amdgpu_hwmon_get_sensor_generic(adev, AMDGPU_PP_SENSOR_VDDNB,
 				   (void *)&vddnb);
 	if (r)
@@ -2789,7 +2354,7 @@ static unsigned int amdgpu_hwmon_get_power(struct device *dev,
 	if (r)
 		return r;
 
-	/* convert to microwatts */
+	 
 	uw = (query >> 8) * 1000000 + (query & 0xff) * 1000;
 
 	return uw;
@@ -2927,7 +2492,7 @@ static ssize_t amdgpu_hwmon_set_power_cap(struct device *dev,
 	if (err)
 		return err;
 
-	value = value / 1000000; /* convert to Watt */
+	value = value / 1000000;  
 	value |= limit_type << 24;
 
 	err = pm_runtime_get_sync(adev_to_drm(adev)->dev);
@@ -2955,7 +2520,7 @@ static ssize_t amdgpu_hwmon_show_sclk(struct device *dev,
 	uint32_t sclk;
 	int r;
 
-	/* get the sclk */
+	 
 	r = amdgpu_hwmon_get_sensor_generic(adev, AMDGPU_PP_SENSOR_GFX_SCLK,
 				   (void *)&sclk);
 	if (r)
@@ -2979,7 +2544,7 @@ static ssize_t amdgpu_hwmon_show_mclk(struct device *dev,
 	uint32_t mclk;
 	int r;
 
-	/* get the sclk */
+	 
 	r = amdgpu_hwmon_get_sensor_generic(adev, AMDGPU_PP_SENSOR_GFX_MCLK,
 				   (void *)&mclk);
 	if (r)
@@ -2995,92 +2560,7 @@ static ssize_t amdgpu_hwmon_show_mclk_label(struct device *dev,
 	return sysfs_emit(buf, "mclk\n");
 }
 
-/**
- * DOC: hwmon
- *
- * The amdgpu driver exposes the following sensor interfaces:
- *
- * - GPU temperature (via the on-die sensor)
- *
- * - GPU voltage
- *
- * - Northbridge voltage (APUs only)
- *
- * - GPU power
- *
- * - GPU fan
- *
- * - GPU gfx/compute engine clock
- *
- * - GPU memory clock (dGPU only)
- *
- * hwmon interfaces for GPU temperature:
- *
- * - temp[1-3]_input: the on die GPU temperature in millidegrees Celsius
- *   - temp2_input and temp3_input are supported on SOC15 dGPUs only
- *
- * - temp[1-3]_label: temperature channel label
- *   - temp2_label and temp3_label are supported on SOC15 dGPUs only
- *
- * - temp[1-3]_crit: temperature critical max value in millidegrees Celsius
- *   - temp2_crit and temp3_crit are supported on SOC15 dGPUs only
- *
- * - temp[1-3]_crit_hyst: temperature hysteresis for critical limit in millidegrees Celsius
- *   - temp2_crit_hyst and temp3_crit_hyst are supported on SOC15 dGPUs only
- *
- * - temp[1-3]_emergency: temperature emergency max value(asic shutdown) in millidegrees Celsius
- *   - these are supported on SOC15 dGPUs only
- *
- * hwmon interfaces for GPU voltage:
- *
- * - in0_input: the voltage on the GPU in millivolts
- *
- * - in1_input: the voltage on the Northbridge in millivolts
- *
- * hwmon interfaces for GPU power:
- *
- * - power1_average: average power used by the SoC in microWatts.  On APUs this includes the CPU.
- *
- * - power1_input: instantaneous power used by the SoC in microWatts.  On APUs this includes the CPU.
- *
- * - power1_cap_min: minimum cap supported in microWatts
- *
- * - power1_cap_max: maximum cap supported in microWatts
- *
- * - power1_cap: selected power cap in microWatts
- *
- * hwmon interfaces for GPU fan:
- *
- * - pwm1: pulse width modulation fan level (0-255)
- *
- * - pwm1_enable: pulse width modulation fan control method (0: no fan speed control, 1: manual fan speed control using pwm interface, 2: automatic fan speed control)
- *
- * - pwm1_min: pulse width modulation fan control minimum level (0)
- *
- * - pwm1_max: pulse width modulation fan control maximum level (255)
- *
- * - fan1_min: a minimum value Unit: revolution/min (RPM)
- *
- * - fan1_max: a maximum value Unit: revolution/max (RPM)
- *
- * - fan1_input: fan speed in RPM
- *
- * - fan[1-\*]_target: Desired fan speed Unit: revolution/min (RPM)
- *
- * - fan[1-\*]_enable: Enable or disable the sensors.1: Enable 0: Disable
- *
- * NOTE: DO NOT set the fan speed via "pwm1" and "fan[1-\*]_target" interfaces at the same time.
- *       That will get the former one overridden.
- *
- * hwmon interfaces for GPU clocks:
- *
- * - freq1_input: the gfx/compute clock in hertz
- *
- * - freq2_input: the memory clock in hertz
- *
- * You can use hwmon tools like sensors to view this information on your system.
- *
- */
+ 
 
 static SENSOR_DEVICE_ATTR(temp1_input, S_IRUGO, amdgpu_hwmon_show_temp, NULL, PP_TEMP_EDGE);
 static SENSOR_DEVICE_ATTR(temp1_crit, S_IRUGO, amdgpu_hwmon_show_temp_thresh, NULL, 0);
@@ -3186,15 +2666,15 @@ static umode_t hwmon_attributes_visible(struct kobject *kobj,
 	uint32_t gc_ver = adev->ip_versions[GC_HWIP][0];
 	uint32_t tmp;
 
-	/* under multi-vf mode, the hwmon attributes are all not supported */
+	 
 	if (amdgpu_sriov_vf(adev) && !amdgpu_sriov_is_pp_one_vf(adev))
 		return 0;
 
-	/* under pp one vf mode manage of hwmon attributes is not supported */
+	 
 	if (amdgpu_sriov_is_pp_one_vf(adev))
 		effective_mode &= ~S_IWUSR;
 
-	/* Skip fan attributes if fan is not present */
+	 
 	if (adev->pm.no_fan && (attr == &sensor_dev_attr_pwm1.dev_attr.attr ||
 	    attr == &sensor_dev_attr_pwm1_enable.dev_attr.attr ||
 	    attr == &sensor_dev_attr_pwm1_max.dev_attr.attr ||
@@ -3206,7 +2686,7 @@ static umode_t hwmon_attributes_visible(struct kobject *kobj,
 	    attr == &sensor_dev_attr_fan1_enable.dev_attr.attr))
 		return 0;
 
-	/* Skip fan attributes on APU */
+	 
 	if ((adev->flags & AMD_IS_APU) &&
 	    (attr == &sensor_dev_attr_pwm1.dev_attr.attr ||
 	     attr == &sensor_dev_attr_pwm1_enable.dev_attr.attr ||
@@ -3219,14 +2699,14 @@ static umode_t hwmon_attributes_visible(struct kobject *kobj,
 	     attr == &sensor_dev_attr_fan1_enable.dev_attr.attr))
 		return 0;
 
-	/* Skip crit temp on APU */
+	 
 	if ((((adev->flags & AMD_IS_APU) && (adev->family >= AMDGPU_FAMILY_CZ)) ||
 	    (gc_ver == IP_VERSION(9, 4, 3))) &&
 	    (attr == &sensor_dev_attr_temp1_crit.dev_attr.attr ||
 	     attr == &sensor_dev_attr_temp1_crit_hyst.dev_attr.attr))
 		return 0;
 
-	/* Skip limit attributes if DPM is not enabled */
+	 
 	if (!adev->pm.dpm_enabled &&
 	    (attr == &sensor_dev_attr_temp1_crit.dev_attr.attr ||
 	     attr == &sensor_dev_attr_temp1_crit_hyst.dev_attr.attr ||
@@ -3241,20 +2721,20 @@ static umode_t hwmon_attributes_visible(struct kobject *kobj,
 	     attr == &sensor_dev_attr_fan1_enable.dev_attr.attr))
 		return 0;
 
-	/* mask fan attributes if we have no bindings for this asic to expose */
+	 
 	if (((amdgpu_dpm_get_fan_speed_pwm(adev, NULL) == -EOPNOTSUPP) &&
-	      attr == &sensor_dev_attr_pwm1.dev_attr.attr) || /* can't query fan */
+	      attr == &sensor_dev_attr_pwm1.dev_attr.attr) ||  
 	    ((amdgpu_dpm_get_fan_control_mode(adev, NULL) == -EOPNOTSUPP) &&
-	     attr == &sensor_dev_attr_pwm1_enable.dev_attr.attr)) /* can't query state */
+	     attr == &sensor_dev_attr_pwm1_enable.dev_attr.attr))  
 		effective_mode &= ~S_IRUGO;
 
 	if (((amdgpu_dpm_set_fan_speed_pwm(adev, U32_MAX) == -EOPNOTSUPP) &&
-	      attr == &sensor_dev_attr_pwm1.dev_attr.attr) || /* can't manage fan */
+	      attr == &sensor_dev_attr_pwm1.dev_attr.attr) ||  
 	      ((amdgpu_dpm_set_fan_control_mode(adev, U32_MAX) == -EOPNOTSUPP) &&
-	      attr == &sensor_dev_attr_pwm1_enable.dev_attr.attr)) /* can't manage state */
+	      attr == &sensor_dev_attr_pwm1_enable.dev_attr.attr))  
 		effective_mode &= ~S_IWUSR;
 
-	/* not implemented yet for APUs other than GC 10.3.1 (vangogh) and 9.4.3 */
+	 
 	if (((adev->family == AMDGPU_FAMILY_SI) ||
 	     ((adev->flags & AMD_IS_APU) && (gc_ver != IP_VERSION(10, 3, 1)) &&
 	      (gc_ver != IP_VERSION(9, 4, 3)))) &&
@@ -3264,13 +2744,13 @@ static umode_t hwmon_attributes_visible(struct kobject *kobj,
 	     attr == &sensor_dev_attr_power1_cap_default.dev_attr.attr))
 		return 0;
 
-	/* not implemented yet for APUs having < GC 9.3.0 (Renoir) */
+	 
 	if (((adev->family == AMDGPU_FAMILY_SI) ||
 	     ((adev->flags & AMD_IS_APU) && (gc_ver < IP_VERSION(9, 3, 0)))) &&
 	    (attr == &sensor_dev_attr_power1_average.dev_attr.attr))
 		return 0;
 
-	/* not all products support both average and instantaneous */
+	 
 	if (attr == &sensor_dev_attr_power1_average.dev_attr.attr &&
 	    amdgpu_hwmon_get_sensor_generic(adev, AMDGPU_PP_SENSOR_GPU_AVG_POWER, (void *)&tmp) == -EOPNOTSUPP)
 		return 0;
@@ -3278,7 +2758,7 @@ static umode_t hwmon_attributes_visible(struct kobject *kobj,
 	    amdgpu_hwmon_get_sensor_generic(adev, AMDGPU_PP_SENSOR_GPU_INPUT_POWER, (void *)&tmp) == -EOPNOTSUPP)
 		return 0;
 
-	/* hide max/min values if we can't both query and manage the fan */
+	 
 	if (((amdgpu_dpm_set_fan_speed_pwm(adev, U32_MAX) == -EOPNOTSUPP) &&
 	      (amdgpu_dpm_get_fan_speed_pwm(adev, NULL) == -EOPNOTSUPP) &&
 	      (amdgpu_dpm_set_fan_speed_rpm(adev, U32_MAX) == -EOPNOTSUPP) &&
@@ -3293,20 +2773,20 @@ static umode_t hwmon_attributes_visible(struct kobject *kobj,
 	     attr == &sensor_dev_attr_fan1_min.dev_attr.attr))
 		return 0;
 
-	if ((adev->family == AMDGPU_FAMILY_SI ||	/* not implemented yet */
-	     adev->family == AMDGPU_FAMILY_KV ||	/* not implemented yet */
+	if ((adev->family == AMDGPU_FAMILY_SI ||	 
+	     adev->family == AMDGPU_FAMILY_KV ||	 
 	     (gc_ver == IP_VERSION(9, 4, 3))) &&
 	    (attr == &sensor_dev_attr_in0_input.dev_attr.attr ||
 	     attr == &sensor_dev_attr_in0_label.dev_attr.attr))
 		return 0;
 
-	/* only APUs other than gc 9,4,3 have vddnb */
+	 
 	if ((!(adev->flags & AMD_IS_APU) || (gc_ver == IP_VERSION(9, 4, 3))) &&
 	    (attr == &sensor_dev_attr_in1_input.dev_attr.attr ||
 	     attr == &sensor_dev_attr_in1_label.dev_attr.attr))
 		return 0;
 
-	/* no mclk on APUs other than gc 9,4,3*/
+	 
 	if (((adev->flags & AMD_IS_APU) && (gc_ver != IP_VERSION(9, 4, 3))) &&
 	    (attr == &sensor_dev_attr_freq2_input.dev_attr.attr ||
 	     attr == &sensor_dev_attr_freq2_label.dev_attr.attr))
@@ -3322,13 +2802,13 @@ static umode_t hwmon_attributes_visible(struct kobject *kobj,
 	     attr == &sensor_dev_attr_temp3_crit.dev_attr.attr))
 		return 0;
 
-	/* hotspot temperature for gc 9,4,3*/
+	 
 	if ((gc_ver == IP_VERSION(9, 4, 3)) &&
 	    (attr == &sensor_dev_attr_temp1_input.dev_attr.attr ||
 	     attr == &sensor_dev_attr_temp1_label.dev_attr.attr))
 		return 0;
 
-	/* only SOC15 dGPUs support hotspot and mem temperatures */
+	 
 	if (((adev->flags & AMD_IS_APU) || gc_ver < IP_VERSION(9, 0, 0) ||
 	    (gc_ver == IP_VERSION(9, 4, 3))) &&
 	     (attr == &sensor_dev_attr_temp2_crit_hyst.dev_attr.attr ||
@@ -3338,7 +2818,7 @@ static umode_t hwmon_attributes_visible(struct kobject *kobj,
 	     attr == &sensor_dev_attr_temp3_emergency.dev_attr.attr))
 		return 0;
 
-	/* only Vangogh has fast PPT limit and power labels */
+	 
 	if (!(gc_ver == IP_VERSION(10, 3, 1)) &&
 	    (attr == &sensor_dev_attr_power2_average.dev_attr.attr ||
 	     attr == &sensor_dev_attr_power2_cap_max.dev_attr.attr ||
@@ -3418,9 +2898,7 @@ void amdgpu_pm_sysfs_fini(struct amdgpu_device *adev)
 	amdgpu_device_attr_remove_groups(adev, &adev->pm.pm_attr_list);
 }
 
-/*
- * Debugfs info
- */
+ 
 #if defined(CONFIG_DEBUG_FS)
 
 static void amdgpu_debugfs_prints_cpu_info(struct seq_file *m,
@@ -3455,7 +2933,7 @@ static int amdgpu_debugfs_pm_info_pp(struct seq_file *m, struct amdgpu_device *a
 	uint32_t query = 0;
 	int size;
 
-	/* GPU Clocks */
+	 
 	size = sizeof(value);
 	seq_printf(m, "GFX Clocks and Power:\n");
 
@@ -3482,26 +2960,26 @@ static int amdgpu_debugfs_pm_info_pp(struct seq_file *m, struct amdgpu_device *a
 	size = sizeof(value);
 	seq_printf(m, "\n");
 
-	/* GPU Temp */
+	 
 	if (!amdgpu_dpm_read_sensor(adev, AMDGPU_PP_SENSOR_GPU_TEMP, (void *)&value, &size))
 		seq_printf(m, "GPU Temperature: %u C\n", value/1000);
 
-	/* GPU Load */
+	 
 	if (!amdgpu_dpm_read_sensor(adev, AMDGPU_PP_SENSOR_GPU_LOAD, (void *)&value, &size))
 		seq_printf(m, "GPU Load: %u %%\n", value);
-	/* MEM Load */
+	 
 	if (!amdgpu_dpm_read_sensor(adev, AMDGPU_PP_SENSOR_MEM_LOAD, (void *)&value, &size))
 		seq_printf(m, "MEM Load: %u %%\n", value);
 
 	seq_printf(m, "\n");
 
-	/* SMC feature mask */
+	 
 	if (!amdgpu_dpm_read_sensor(adev, AMDGPU_PP_SENSOR_ENABLED_SMC_FEATURES_MASK, (void *)&value64, &size))
 		seq_printf(m, "SMC Feature Mask: 0x%016llx\n", value64);
 
-	/* ASICs greater than CHIP_VEGA20 supports these sensors */
+	 
 	if (gc_ver != IP_VERSION(9, 4, 0) && mp1_ver > IP_VERSION(9, 0, 0)) {
-		/* VCN clocks */
+		 
 		if (!amdgpu_dpm_read_sensor(adev, AMDGPU_PP_SENSOR_VCN_POWER_STATE, (void *)&value, &size)) {
 			if (!value) {
 				seq_printf(m, "VCN: Disabled\n");
@@ -3515,7 +2993,7 @@ static int amdgpu_debugfs_pm_info_pp(struct seq_file *m, struct amdgpu_device *a
 		}
 		seq_printf(m, "\n");
 	} else {
-		/* UVD clocks */
+		 
 		if (!amdgpu_dpm_read_sensor(adev, AMDGPU_PP_SENSOR_UVD_POWER, (void *)&value, &size)) {
 			if (!value) {
 				seq_printf(m, "UVD: Disabled\n");
@@ -3529,7 +3007,7 @@ static int amdgpu_debugfs_pm_info_pp(struct seq_file *m, struct amdgpu_device *a
 		}
 		seq_printf(m, "\n");
 
-		/* VCE clocks */
+		 
 		if (!amdgpu_dpm_read_sensor(adev, AMDGPU_PP_SENSOR_VCE_POWER, (void *)&value, &size)) {
 			if (!value) {
 				seq_printf(m, "VCE: Disabled\n");
@@ -3630,11 +3108,7 @@ out:
 
 DEFINE_SHOW_ATTRIBUTE(amdgpu_debugfs_pm_info);
 
-/*
- * amdgpu_pm_priv_buffer_read - Read memory region allocated to FW
- *
- * Reads debug memory region allocated to PMFW
- */
+ 
 static ssize_t amdgpu_pm_prv_buffer_read(struct file *f, char __user *buf,
 					 size_t size, loff_t *pos)
 {

@@ -1,17 +1,4 @@
-/*
- * Copyright (C) 2017 Netronome Systems, Inc.
- *
- * This software is licensed under the GNU General License Version 2,
- * June 1991 as shown in the file COPYING in the top-level directory of this
- * source tree.
- *
- * THE COPYRIGHT HOLDERS AND/OR OTHER PARTIES PROVIDE THE PROGRAM "AS IS"
- * WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING,
- * BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE. THE ENTIRE RISK AS TO THE QUALITY AND PERFORMANCE
- * OF THE PROGRAM IS WITH YOU. SHOULD THE PROGRAM PROVE DEFECTIVE, YOU ASSUME
- * THE COST OF ALL NECESSARY SERVICING, REPAIR OR CORRECTION.
- */
+ 
 
 #include <linux/debugfs.h>
 #include <linux/etherdevice.h>
@@ -84,7 +71,7 @@ static int nsim_set_vf_mac(struct net_device *dev, int vf, u8 *mac)
 	struct netdevsim *ns = netdev_priv(dev);
 	struct nsim_dev *nsim_dev = ns->nsim_dev;
 
-	/* Only refuse multicast addresses, zero address can mean unset/any. */
+	 
 	if (vf >= nsim_dev_get_vfs(nsim_dev) || is_multicast_ether_addr(mac))
 		return -EINVAL;
 	memcpy(nsim_dev->vfconfigs[vf].vf_mac, mac, ETH_ALEN);

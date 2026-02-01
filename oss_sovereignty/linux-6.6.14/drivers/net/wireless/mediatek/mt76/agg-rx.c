@@ -1,14 +1,10 @@
-// SPDX-License-Identifier: ISC
-/*
- * Copyright (C) 2018 Felix Fietkau <nbd@nbd.name>
- */
+
+ 
 #include "mt76.h"
 
 static unsigned long mt76_aggr_tid_to_timeo(u8 tidno)
 {
-	/* Currently voice traffic (AC_VO) always runs without aggregation,
-	 * no special handling is needed. AC_BE/AC_BK use tids 0-3. Just check
-	 * for non AC_BK/AC_BE and set smaller timeout for it. */
+	 
 	return HZ / (tidno >= 4 ? 25 : 10);
 }
 
@@ -168,7 +164,7 @@ void mt76_rx_aggr_reorder(struct sk_buff *skb, struct sk_buff_head *frames)
 		return;
 	}
 
-	/* not part of a BA session */
+	 
 	ackp = status->qos_ctl & IEEE80211_QOS_CTL_ACK_POLICY_MASK;
 	if (ackp == IEEE80211_QOS_CTL_ACK_POLICY_NOACK)
 		return;
@@ -210,10 +206,7 @@ void mt76_rx_aggr_reorder(struct sk_buff *skb, struct sk_buff_head *frames)
 
 	__skb_unlink(skb, frames);
 
-	/*
-	 * Frame sequence number exceeds buffering window, free up some space
-	 * by releasing previous frames
-	 */
+	 
 	if (!ieee80211_sn_less(seqno, head + size)) {
 		head = ieee80211_sn_inc(ieee80211_sn_sub(seqno, size));
 		mt76_rx_aggr_release_frames(tid, frames, head);
@@ -221,7 +214,7 @@ void mt76_rx_aggr_reorder(struct sk_buff *skb, struct sk_buff_head *frames)
 
 	idx = seqno % size;
 
-	/* Discard if the current slot is already in use */
+	 
 	if (tid->reorder_buf[idx]) {
 		dev_kfree_skb(skb);
 		goto out;

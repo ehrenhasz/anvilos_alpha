@@ -1,27 +1,4 @@
-/*
- * Copyright 2012-15 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 
 #ifndef __DAL_DPP_H__
@@ -44,12 +21,7 @@ union defer_reg_writes {
 struct dpp {
 	const struct dpp_funcs *funcs;
 	struct dc_context *ctx;
-	/**
-	 * @inst:
-	 *
-	 * inst stands for "instance," and it is an id number that references a
-	 * specific DPP.
-	 */
+	 
 	int inst;
 	struct dpp_caps *caps;
 	struct pwl_params regamma_params;
@@ -122,12 +94,7 @@ struct cnv_color_keyer_params {
 	int color_keyer_blue_high;
 };
 
-/* new for dcn2: set the 8bit alpha values based on the 2 bit alpha
- *ALPHA_2BIT_LUT. ALPHA_2BIT_LUT0   default: 0b00000000
- *ALPHA_2BIT_LUT. ALPHA_2BIT_LUT1   default: 0b01010101
- *ALPHA_2BIT_LUT. ALPHA_2BIT_LUT2   default: 0b10101010
- *ALPHA_2BIT_LUT. ALPHA_2BIT_LUT3   default: 0b11111111
- */
+ 
 struct cnv_alpha_2bit_lut {
 	int lut0;
 	int lut1;

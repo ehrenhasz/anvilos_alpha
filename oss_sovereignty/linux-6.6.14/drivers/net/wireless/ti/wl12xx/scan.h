@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * This file is part of wl12xx
- *
- * Copyright (C) 2012 Texas Instruments. All rights reserved.
- */
+ 
+ 
 
 #ifndef __WL12XX_SCAN_H__
 #define __WL12XX_SCAN_H__
@@ -15,23 +11,22 @@
 #define WL12XX_MAX_CHANNELS_5GHZ 23
 
 struct basic_scan_params {
-	/* Scan option flags (WL1271_SCAN_OPT_*) */
+	 
 	__le16 scan_options;
 	u8 role_id;
-	/* Number of scan channels in the list (maximum 30) */
+	 
 	u8 n_ch;
-	/* This field indicates the number of probe requests to send
-	   per channel for an active scan */
+	 
 	u8 n_probe_reqs;
 	u8 tid_trigger;
 	u8 ssid_len;
 	u8 use_ssid_list;
 
-	/* Rate bit field for sending the probes */
+	 
 	__le32 tx_rate;
 
 	u8 ssid[IEEE80211_MAX_SSID_LEN];
-	/* Band to scan */
+	 
 	u8 band;
 
 	u8 scan_tag;
@@ -39,7 +34,7 @@ struct basic_scan_params {
 } __packed;
 
 struct basic_scan_channel_params {
-	/* Duration in TU to wait for frames on a channel for active scan */
+	 
 	__le32 min_duration;
 	__le32 max_duration;
 	__le32 bssid_lsb;
@@ -47,7 +42,7 @@ struct basic_scan_channel_params {
 	u8 early_termination;
 	u8 tx_power_att;
 	u8 channel;
-	/* FW internal use only! */
+	 
 	u8 dfs_candidate;
 	u8 activity_detected;
 	u8 pad;
@@ -59,7 +54,7 @@ struct wl1271_cmd_scan {
 	struct basic_scan_params params;
 	struct basic_scan_channel_params channels[WL1271_SCAN_MAX_CHANNELS];
 
-	/* src mac address */
+	 
 	u8 addr[ETH_ALEN];
 	u8 padding[2];
 } __packed;
@@ -69,29 +64,28 @@ struct wl1271_cmd_sched_scan_config {
 
 	__le32 intervals[SCAN_MAX_CYCLE_INTERVALS];
 
-	s8 rssi_threshold; /* for filtering (in dBm) */
-	s8 snr_threshold;  /* for filtering (in dB) */
+	s8 rssi_threshold;  
+	s8 snr_threshold;   
 
-	u8 cycles;       /* maximum number of scan cycles */
-	u8 report_after; /* report when this number of results are received */
-	u8 terminate;    /* stop scanning after reporting */
+	u8 cycles;        
+	u8 report_after;  
+	u8 terminate;     
 
 	u8 tag;
-	u8 bss_type; /* for filtering */
+	u8 bss_type;  
 	u8 filter_type;
 
-	u8 ssid_len;     /* For SCAN_SSID_FILTER_SPECIFIC */
+	u8 ssid_len;      
 	u8 ssid[IEEE80211_MAX_SSID_LEN];
 
-	u8 n_probe_reqs; /* Number of probes requests per channel */
+	u8 n_probe_reqs;  
 
 	u8 passive[SCAN_MAX_BANDS];
 	u8 active[SCAN_MAX_BANDS];
 
 	u8 dfs;
 
-	u8 n_pactive_ch; /* number of pactive (passive until fw detects energy)
-			    channels in BG band */
+	u8 n_pactive_ch;  
 	u8 role_id;
 	u8 padding[1];
 	struct conn_scan_ch_params channels_2[MAX_CHANNELS_2GHZ];

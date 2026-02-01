@@ -1,22 +1,4 @@
-/*
- * MAX8925 ONKEY driver
- *
- * Copyright (C) 2009 Marvell International Ltd.
- *      Haojian Zhuang <haojian.zhuang@marvell.com>
- *
- * This file is subject to the terms and conditions of the GNU General
- * Public License. See the file "COPYING" in the main directory of this
- * archive for more details.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- */
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -28,7 +10,7 @@
 #include <linux/slab.h>
 #include <linux/device.h>
 
-#define SW_INPUT		(1 << 7)	/* 0/1 -- up/down */
+#define SW_INPUT		(1 << 7)	 
 #define HARDRESET_EN		(1 << 7)
 #define PWREN_EN		(1 << 7)
 
@@ -39,11 +21,7 @@ struct max8925_onkey_info {
 	unsigned int		irq[2];
 };
 
-/*
- * MAX8925 gives us an interrupt when ONKEY is pressed or released.
- * max8925_set_bits() operates I2C bus and may sleep. So implement
- * it in thread IRQ handler.
- */
+ 
 static irqreturn_t max8925_onkey_handler(int irq, void *data)
 {
 	struct max8925_onkey_info *info = data;
@@ -56,7 +34,7 @@ static irqreturn_t max8925_onkey_handler(int irq, void *data)
 
 	dev_dbg(info->dev, "onkey state:%d\n", state);
 
-	/* Enable hardreset to halt if system isn't shutdown on time */
+	 
 	max8925_set_bits(info->i2c, MAX8925_SYSENSEL,
 			 HARDRESET_EN, HARDRESET_EN);
 

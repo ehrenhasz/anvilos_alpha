@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* Applied Micro X-Gene SoC Ethernet Driver
- *
- * Copyright (c) 2014, Applied Micro Circuits Corporation
- * Authors: Iyappan Subramanian <isubramanian@apm.com>
- *	    Keyur Chudgar <kchudgar@apm.com>
- */
+
+ 
 
 #include <linux/of_gpio.h>
 #include <linux/gpio.h>
@@ -47,7 +42,7 @@ static bool xgene_enet_wr_indirect(void __iomem *addr, void __iomem *wr,
 	iowrite32(wr_data, wr);
 	iowrite32(XGENE_ENET_WR_CMD, cmd);
 
-	/* wait for write command to complete */
+	 
 	while (!(done = ioread32(cmd_done)) && wait--)
 		udelay(1);
 
@@ -108,7 +103,7 @@ static bool xgene_enet_rd_indirect(void __iomem *addr, void __iomem *rd,
 	iowrite32(rd_addr, addr);
 	iowrite32(XGENE_ENET_RD_CMD, cmd);
 
-	/* wait for read command to complete */
+	 
 	while (!(done = ioread32(cmd_done)) && wait--)
 		udelay(1);
 
@@ -176,7 +171,7 @@ static void xgene_xgmac_get_drop_cnt(struct xgene_enet_pdata *pdata,
 	xgene_enet_rd_axg_csr(pdata, XGENET_ICM_ECM_DROP_COUNT_REG0, &count);
 	*rx = ICM_DROP_COUNT(count);
 	*tx = ECM_DROP_COUNT(count);
-	/* Errata: 10GE_4 - ICM_ECM_DROP_COUNT not clear-on-read */
+	 
 	xgene_enet_rd_axg_csr(pdata, XGENET_ECM_CONFIG0_REG_0, &count);
 }
 
@@ -311,11 +306,11 @@ static void xgene_xgmac_init(struct xgene_enet_pdata *pdata)
 
 	xgene_enet_rd_csr(pdata, XG_RSIF_CONFIG_REG_ADDR, &data);
 	data |= CFG_RSIF_FPBUFF_TIMEOUT_EN;
-	/* Errata 10GE_1 - FIFO threshold default value incorrect */
+	 
 	RSIF_CLE_BUFF_THRESH_SET(&data, XG_RSIF_CLE_BUFF_THRESH);
 	xgene_enet_wr_csr(pdata, XG_RSIF_CONFIG_REG_ADDR, data);
 
-	/* Errata 10GE_1 - FIFO threshold default value incorrect */
+	 
 	xgene_enet_rd_csr(pdata, XG_RSIF_CONFIG1_REG_ADDR, &data);
 	RSIF_PLC_CLE_BUFF_THRESH_SET(&data, XG_RSIF_PLC_CLE_BUFF_THRESH);
 	xgene_enet_wr_csr(pdata, XG_RSIF_CONFIG1_REG_ADDR, data);
@@ -327,7 +322,7 @@ static void xgene_xgmac_init(struct xgene_enet_pdata *pdata)
 	xgene_enet_wr_csr(pdata, XGENET_RX_DV_GATE_REG_0_ADDR, 0);
 	xgene_enet_wr_csr(pdata, XG_CFG_BYPASS_ADDR, RESUME_TX);
 
-	/* Configure HW pause frame generation */
+	 
 	xgene_enet_rd_axg_csr(pdata, XGENET_CSR_MULTI_DPF0_ADDR, &data);
 	data = (DEF_QUANTA << 16) | (data & 0xFFFF);
 	xgene_enet_wr_axg_csr(pdata, XGENET_CSR_MULTI_DPF0_ADDR, data);

@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Board info for Lenovo X86 tablets which ship with Android as the factory image
- * and which have broken DSDT tables. The factory kernels shipped on these
- * devices typically have a bunch of things hardcoded, rather than specified
- * in their DSDT.
- *
- * Copyright (C) 2021-2023 Hans de Goede <hdegoede@redhat.com>
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -24,21 +17,13 @@
 #include "shared-psy-info.h"
 #include "x86-android-tablets.h"
 
-/*
- * Various Lenovo models use a TI LP8557 LED backlight controller with its PWM
- * input connected to a PWM output coming from the LCD panel's controller.
- * The Android kernels have a hack in the i915 driver to write a non-standard
- * panel specific DSI register to set the duty-cycle of the LCD's PWM output.
- *
- * To avoid having to have a similar hack in the mainline kernel program the
- * LP8557 to directly set the level and use the lp855x_bl driver for control.
- */
+ 
 static struct lp855x_platform_data lenovo_lp8557_pdata = {
 	.device_control = 0x86,
 	.initial_brightness = 128,
 };
 
-/* Lenovo Yoga Book X90F / X90L's Android factory img has everything hardcoded */
+ 
 
 static const struct property_entry lenovo_yb1_x90_wacom_props[] = {
 	PROPERTY_ENTRY_U32("hid-descr-addr", 0x0001),
@@ -50,15 +35,7 @@ static const struct software_node lenovo_yb1_x90_wacom_node = {
 	.properties = lenovo_yb1_x90_wacom_props,
 };
 
-/*
- * The HiDeep IST940E touchscreen comes up in I2C-HID mode. The native protocol
- * reports ABS_MT_PRESSURE and ABS_MT_TOUCH_MAJOR which are not reported in HID
- * mode, so using native mode is preferred.
- * It could alternatively be used in HID mode by changing the properties to:
- *	PROPERTY_ENTRY_U32("hid-descr-addr", 0x0020),
- *	PROPERTY_ENTRY_U32("post-reset-deassert-delay-ms", 120),
- * and changing board_info.type to "hid-over-i2c".
- */
+ 
 static const struct property_entry lenovo_yb1_x90_hideep_ts_props[] = {
 	PROPERTY_ENTRY_U32("touchscreen-size-x", 1200),
 	PROPERTY_ENTRY_U32("touchscreen-size-y", 1920),
@@ -73,7 +50,7 @@ static const struct software_node lenovo_yb1_x90_hideep_ts_node = {
 
 static const struct x86_i2c_client_info lenovo_yb1_x90_i2c_clients[] __initconst = {
 	{
-		/* BQ27542 fuel-gauge */
+		 
 		.board_info = {
 			.type = "bq27542",
 			.addr = 0x55,
@@ -82,7 +59,7 @@ static const struct x86_i2c_client_info lenovo_yb1_x90_i2c_clients[] __initconst
 		},
 		.adapter_path = "\\_SB_.PCI0.I2C1",
 	}, {
-		/* Goodix Touchscreen in keyboard half */
+		 
 		.board_info = {
 			.type = "GDIX1001:00",
 			.addr = 0x14,
@@ -97,7 +74,7 @@ static const struct x86_i2c_client_info lenovo_yb1_x90_i2c_clients[] __initconst
 			.polarity = ACPI_ACTIVE_LOW,
 		},
 	}, {
-		/* Wacom Digitizer in keyboard half */
+		 
 		.board_info = {
 			.type = "hid-over-i2c",
 			.addr = 0x09,
@@ -113,7 +90,7 @@ static const struct x86_i2c_client_info lenovo_yb1_x90_i2c_clients[] __initconst
 			.polarity = ACPI_ACTIVE_LOW,
 		},
 	}, {
-		/* LP8557 Backlight controller */
+		 
 		.board_info = {
 			.type = "lp8557",
 			.addr = 0x2c,
@@ -122,7 +99,7 @@ static const struct x86_i2c_client_info lenovo_yb1_x90_i2c_clients[] __initconst
 		},
 		.adapter_path = "\\_SB_.PCI0.I2C4",
 	}, {
-		/* HiDeep IST940E Touchscreen in display half */
+		 
 		.board_info = {
 			.type = "hideep_ts",
 			.addr = 0x6c,
@@ -147,10 +124,7 @@ static const struct platform_device_info lenovo_yb1_x90_pdevs[] __initconst = {
 	},
 };
 
-/*
- * DSDT says UART path is "\\_SB.PCIO.URT1" with a letter 'O' instead of
- * the number '0' add the link manually.
- */
+ 
 static const struct x86_serdev_info lenovo_yb1_x90_serdevs[] __initconst = {
 	{
 		.ctrl_hid = "8086228A",
@@ -207,18 +181,18 @@ static struct gpiod_lookup_table * const lenovo_yb1_x90_gpios[] = {
 
 static int __init lenovo_yb1_x90_init(void)
 {
-	/* Enable the regulators used by the touchscreens */
+	 
 
-	/* Vprog3B 3.0V used by the goodix touchscreen in the keyboard half */
+	 
 	intel_soc_pmic_exec_mipi_pmic_seq_element(0x6e, 0x9b, 0x02, 0xff);
 
-	/* Vprog4D 3.0V used by the HiDeep touchscreen in the display half */
+	 
 	intel_soc_pmic_exec_mipi_pmic_seq_element(0x6e, 0x9f, 0x02, 0xff);
 
-	/* Vprog5A 1.8V used by the HiDeep touchscreen in the display half */
+	 
 	intel_soc_pmic_exec_mipi_pmic_seq_element(0x6e, 0xa0, 0x02, 0xff);
 
-	/* Vprog5B 1.8V used by the goodix touchscreen in the keyboard half */
+	 
 	intel_soc_pmic_exec_mipi_pmic_seq_element(0x6e, 0xa1, 0x02, 0xff);
 
 	return 0;
@@ -237,10 +211,10 @@ const struct x86_dev_info lenovo_yogabook_x90_info __initconst = {
 	.init = lenovo_yb1_x90_init,
 };
 
-/* Lenovo Yoga Book X91F/L Windows tablet needs manual instantiation of the fg client */
+ 
 static const struct x86_i2c_client_info lenovo_yogabook_x91_i2c_clients[] __initconst = {
 	{
-		/* BQ27542 fuel-gauge */
+		 
 		.board_info = {
 			.type = "bq27542",
 			.addr = 0x55,
@@ -256,7 +230,7 @@ const struct x86_dev_info lenovo_yogabook_x91_info __initconst = {
 	.i2c_client_count = ARRAY_SIZE(lenovo_yogabook_x91_i2c_clients),
 };
 
-/* Lenovo Yoga Tablet 2 1050F/L's Android factory img has everything hardcoded */
+ 
 static const struct property_entry lenovo_yoga_tab2_830_1050_bq24190_props[] = {
 	PROPERTY_ENTRY_STRING_ARRAY_LEN("supplied-from", tusb1211_chg_det_psy, 1),
 	PROPERTY_ENTRY_REF("monitored-battery", &generic_lipo_hv_4v35_battery_node),
@@ -282,15 +256,12 @@ static const struct x86_gpio_button lenovo_yoga_tab2_830_1050_lid __initconst = 
 	.pin = 26,
 };
 
-/* This gets filled by lenovo_yoga_tab2_830_1050_init() */
+ 
 static struct rmi_device_platform_data lenovo_yoga_tab2_830_1050_rmi_pdata = { };
 
 static struct x86_i2c_client_info lenovo_yoga_tab2_830_1050_i2c_clients[] __initdata = {
 	{
-		/*
-		 * This must be the first entry because lenovo_yoga_tab2_830_1050_init()
-		 * may update its swnode. LSM303DA accelerometer + magnetometer.
-		 */
+		 
 		.board_info = {
 			.type = "lsm303d",
 			.addr = 0x1d,
@@ -298,7 +269,7 @@ static struct x86_i2c_client_info lenovo_yoga_tab2_830_1050_i2c_clients[] __init
 		},
 		.adapter_path = "\\_SB_.I2C5",
 	}, {
-		/* AL3320A ambient light sensor */
+		 
 		.board_info = {
 			.type = "al3320a",
 			.addr = 0x1c,
@@ -306,7 +277,7 @@ static struct x86_i2c_client_info lenovo_yoga_tab2_830_1050_i2c_clients[] __init
 		},
 		.adapter_path = "\\_SB_.I2C5",
 	}, {
-		/* bq24292i battery charger */
+		 
 		.board_info = {
 			.type = "bq24190",
 			.addr = 0x6b,
@@ -323,7 +294,7 @@ static struct x86_i2c_client_info lenovo_yoga_tab2_830_1050_i2c_clients[] __init
 			.polarity = ACPI_ACTIVE_HIGH,
 		},
 	}, {
-		/* BQ27541 fuel-gauge */
+		 
 		.board_info = {
 			.type = "bq27541",
 			.addr = 0x55,
@@ -332,7 +303,7 @@ static struct x86_i2c_client_info lenovo_yoga_tab2_830_1050_i2c_clients[] __init
 		},
 		.adapter_path = "\\_SB_.I2C1",
 	}, {
-		/* Synaptics RMI touchscreen */
+		 
 		.board_info = {
 			.type = "rmi4_i2c",
 			.addr = 0x38,
@@ -347,7 +318,7 @@ static struct x86_i2c_client_info lenovo_yoga_tab2_830_1050_i2c_clients[] __init
 			.polarity = ACPI_ACTIVE_HIGH,
 		},
 	}, {
-		/* LP8557 Backlight controller */
+		 
 		.board_info = {
 			.type = "lp8557",
 			.addr = 0x2c,
@@ -403,13 +374,7 @@ const struct x86_dev_info lenovo_yoga_tab2_830_1050_info __initconst = {
 	.exit = lenovo_yoga_tab2_830_1050_exit,
 };
 
-/*
- * The Lenovo Yoga Tablet 2 830 and 1050 (8" vs 10") versions use the same
- * mainboard, but the 830 uses a portrait LCD panel with a landscape touchscreen,
- * requiring the touchscreen driver to adjust the touch-coords to match the LCD.
- * And requiring the accelerometer to have a mount-matrix set to correct for
- * the 90° rotation of the LCD vs the frame.
- */
+ 
 static const char * const lenovo_yoga_tab2_830_lms303d_mount_matrix[] = {
 	"0", "1", "0",
 	"-1", "0", "0",
@@ -430,7 +395,7 @@ static int __init lenovo_yoga_tab2_830_1050_init_touchscreen(void)
 	struct gpio_desc *gpiod;
 	int ret;
 
-	/* Use PMIC GPIO 10 bootstrap pin to differentiate 830 vs 1050 */
+	 
 	ret = x86_android_tablet_get_gpiod("gpio_crystalcove", 10, &gpiod);
 	if (ret)
 		return ret;
@@ -449,7 +414,7 @@ static int __init lenovo_yoga_tab2_830_1050_init_touchscreen(void)
 	return 0;
 }
 
-/* SUS (INT33FC:02) pin 6 needs to be configured as pmu_clk for the audio codec */
+ 
 static const struct pinctrl_map lenovo_yoga_tab2_830_1050_codec_pinctrl_map =
 	PIN_MAP_MUX_GROUP(LENOVO_YOGA_TAB2_830_1050_CODEC_NAME, "codec_32khz_clk",
 			  "INT33FC:02", "pmu_clk2_grp", "pmu_clk");
@@ -480,7 +445,7 @@ static int __init lenovo_yoga_tab2_830_1050_init_codec(void)
 		goto err_unregister_mappings;
 	}
 
-	/* We're done with the codec_dev now */
+	 
 	put_device(codec_dev);
 
 	lenovo_yoga_tab2_830_1050_codec_pinctrl = pinctrl;
@@ -493,13 +458,7 @@ err_put_device:
 	return ret;
 }
 
-/*
- * These tablet's DSDT does not set acpi_gbl_reduced_hardware, so acpi_power_off
- * gets used as pm_power_off handler. This causes "poweroff" on these tablets
- * to hang hard. Requiring pressing the powerbutton for 30 seconds *twice*
- * followed by a normal 3 second press to recover. Avoid this by doing an EFI
- * poweroff instead.
- */
+ 
 static int lenovo_yoga_tab2_830_1050_power_off(struct sys_off_data *data)
 {
 	efi.reset_system(EFI_RESET_SHUTDOWN, EFI_SUCCESS, 0, NULL);
@@ -519,7 +478,7 @@ static int __init lenovo_yoga_tab2_830_1050_init(void)
 	if (ret)
 		return ret;
 
-	/* SYS_OFF_PRIO_FIRMWARE + 1 so that it runs before acpi_power_off */
+	 
 	lenovo_yoga_tab2_830_1050_sys_off_handler =
 		register_sys_off_handler(SYS_OFF_MODE_POWER_OFF, SYS_OFF_PRIO_FIRMWARE + 1,
 					 lenovo_yoga_tab2_830_1050_power_off, NULL);
@@ -539,12 +498,9 @@ static void lenovo_yoga_tab2_830_1050_exit(void)
 	}
 }
 
-/* Lenovo Yoga Tab 3 Pro YT3-X90F */
+ 
 
-/*
- * There are 2 batteries, with 2 bq27500 fuel-gauges and 2 bq25892 chargers,
- * "bq25890-charger-1" is instantiated from: drivers/i2c/busses/i2c-cht-wc.c.
- */
+ 
 static const char * const lenovo_yt3_bq25892_0_suppliers[] = { "cht_wcove_pwrsrc" };
 static const char * const bq25890_1_psy[] = { "bq25890-charger-1" };
 
@@ -557,13 +513,13 @@ static const struct software_node fg_bq25890_1_supply_node = {
 	.properties = fg_bq25890_1_supply_props,
 };
 
-/* bq25892 charger settings for the flat lipo battery behind the screen */
+ 
 static const struct property_entry lenovo_yt3_bq25892_0_props[] = {
 	PROPERTY_ENTRY_STRING_ARRAY("supplied-from", lenovo_yt3_bq25892_0_suppliers),
 	PROPERTY_ENTRY_STRING("linux,power-supply-name", "bq25892-second-chrg"),
 	PROPERTY_ENTRY_U32("linux,iinlim-percentage", 40),
 	PROPERTY_ENTRY_BOOL("linux,skip-reset"),
-	/* Values taken from Android Factory Image */
+	 
 	PROPERTY_ENTRY_U32("ti,charge-current", 2048000),
 	PROPERTY_ENTRY_U32("ti,battery-regulation-voltage", 4352000),
 	PROPERTY_ENTRY_U32("ti,termination-current", 128000),
@@ -592,7 +548,7 @@ static const struct software_node lenovo_yt3_hideep_ts_node = {
 
 static const struct x86_i2c_client_info lenovo_yt3_i2c_clients[] __initconst = {
 	{
-		/* bq27500 fuel-gauge for the flat lipo battery behind the screen */
+		 
 		.board_info = {
 			.type = "bq27500",
 			.addr = 0x55,
@@ -601,7 +557,7 @@ static const struct x86_i2c_client_info lenovo_yt3_i2c_clients[] __initconst = {
 		},
 		.adapter_path = "\\_SB_.PCI0.I2C1",
 	}, {
-		/* bq25892 charger for the flat lipo battery behind the screen */
+		 
 		.board_info = {
 			.type = "bq25892",
 			.addr = 0x6b,
@@ -617,7 +573,7 @@ static const struct x86_i2c_client_info lenovo_yt3_i2c_clients[] __initconst = {
 			.polarity = ACPI_ACTIVE_LOW,
 		},
 	}, {
-		/* bq27500 fuel-gauge for the round li-ion cells in the hinge */
+		 
 		.board_info = {
 			.type = "bq27500",
 			.addr = 0x55,
@@ -626,7 +582,7 @@ static const struct x86_i2c_client_info lenovo_yt3_i2c_clients[] __initconst = {
 		},
 		.adapter_path = "\\_SB_.PCI0.I2C2",
 	}, {
-		/* HiDeep IST520E Touchscreen */
+		 
 		.board_info = {
 			.type = "hideep_ts",
 			.addr = 0x6c,
@@ -642,7 +598,7 @@ static const struct x86_i2c_client_info lenovo_yt3_i2c_clients[] __initconst = {
 			.polarity = ACPI_ACTIVE_LOW,
 		},
 	}, {
-		/* LP8557 Backlight controller */
+		 
 		.board_info = {
 			.type = "lp8557",
 			.addr = 0x2c,
@@ -658,39 +614,24 @@ static int __init lenovo_yt3_init(void)
 	struct gpio_desc *gpiod;
 	int ret;
 
-	/*
-	 * The "bq25892_0" charger IC has its /CE (Charge-Enable) and OTG pins
-	 * connected to GPIOs, rather then having them hardwired to the correct
-	 * values as is normally done.
-	 *
-	 * The bq25890_charger driver controls these through I2C, but this only
-	 * works if not overridden by the pins. Set these pins here:
-	 * 1. Set /CE to 0 to allow charging.
-	 * 2. Set OTG to 0 disable V5 boost output since the 5V boost output of
-	 *    the main "bq25892_1" charger is used when necessary.
-	 */
+	 
 
-	/* /CE pin */
+	 
 	ret = x86_android_tablet_get_gpiod("INT33FF:02", 22, &gpiod);
 	if (ret < 0)
 		return ret;
 
-	/*
-	 * The gpio_desc returned by x86_android_tablet_get_gpiod() is a "raw"
-	 * gpio_desc, that is there is no way to pass lookup-flags like
-	 * GPIO_ACTIVE_LOW. Set the GPIO to 0 here to enable charging since
-	 * the /CE pin is active-low, but not marked as such in the gpio_desc.
-	 */
+	 
 	gpiod_set_value(gpiod, 0);
 
-	/* OTG pin */
+	 
 	ret = x86_android_tablet_get_gpiod("INT33FF:03", 19, &gpiod);
 	if (ret < 0)
 		return ret;
 
 	gpiod_set_value(gpiod, 0);
 
-	/* Enable the regulators used by the touchscreen */
+	 
 	intel_soc_pmic_exec_mipi_pmic_seq_element(0x6e, 0x9b, 0x02, 0xff);
 	intel_soc_pmic_exec_mipi_pmic_seq_element(0x6e, 0xa0, 0x02, 0xff);
 

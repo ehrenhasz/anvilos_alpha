@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2018, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/platform_device.h>
@@ -43,7 +41,7 @@ static struct clk_branch lpass_q6ss_ahbs_aon_clk = {
 
 static struct clk_branch lpass_qdsp6ss_core_clk = {
 	.halt_reg = 0x20,
-	/* CLK_OFF would not toggle until LPASS is out of reset */
+	 
 	.halt_check = BRANCH_HALT_SKIP,
 	.clkr = {
 		.enable_reg = 0x20,
@@ -57,7 +55,7 @@ static struct clk_branch lpass_qdsp6ss_core_clk = {
 
 static struct clk_branch lpass_qdsp6ss_xo_clk = {
 	.halt_reg = 0x38,
-	/* CLK_OFF would not toggle until LPASS is out of reset */
+	 
 	.halt_check = BRANCH_HALT_SKIP,
 	.clkr = {
 		.enable_reg = 0x38,
@@ -71,7 +69,7 @@ static struct clk_branch lpass_qdsp6ss_xo_clk = {
 
 static struct clk_branch lpass_qdsp6ss_sleep_clk = {
 	.halt_reg = 0x3c,
-	/* CLK_OFF would not toggle until LPASS is out of reset */
+	 
 	.halt_check = BRANCH_HALT_SKIP,
 	.clkr = {
 		.enable_reg = 0x3c,

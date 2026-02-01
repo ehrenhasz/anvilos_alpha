@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *
- * Copyright (C) Jonathan Naylor G4KLX (g4klx@g4klx.demon.co.uk)
- */
+
+ 
 #include <linux/errno.h>
 #include <linux/types.h>
 #include <linux/socket.h>
@@ -22,7 +19,7 @@
 #include <net/sock.h>
 #include <linux/uaccess.h>
 #include <linux/fcntl.h>
-#include <linux/termios.h>	/* For TIOCINQ/OUTQ */
+#include <linux/termios.h>	 
 #include <linux/mm.h>
 #include <linux/interrupt.h>
 #include <linux/notifier.h>
@@ -32,13 +29,9 @@
 #include <net/ip.h>
 #include <net/arp.h>
 
-/*
- *	IP over AX.25 encapsulation.
- */
+ 
 
-/*
- *	Shove an AX.25 UI header on an IP packet and handle ARP
- */
+ 
 
 #ifdef CONFIG_INET
 
@@ -48,16 +41,16 @@ static int ax25_hard_header(struct sk_buff *skb, struct net_device *dev,
 {
 	unsigned char *buff;
 
-	/* they sometimes come back to us... */
+	 
 	if (type == ETH_P_AX25)
 		return 0;
 
-	/* header is an AX.25 UI frame from us to them */
+	 
 	buff = skb_push(skb, AX25_HEADER_LEN);
-	*buff++ = 0x00;	/* KISS DATA */
+	*buff++ = 0x00;	 
 
 	if (daddr != NULL)
-		memcpy(buff, daddr, dev->addr_len);	/* Address specified */
+		memcpy(buff, daddr, dev->addr_len);	 
 
 	buff[6] &= ~AX25_CBIT;
 	buff[6] &= ~AX25_EBIT;
@@ -74,9 +67,9 @@ static int ax25_hard_header(struct sk_buff *skb, struct net_device *dev,
 	buff[6] |= AX25_SSSID_SPARE;
 	buff    += AX25_ADDR_LEN;
 
-	*buff++  = AX25_UI;	/* UI */
+	*buff++  = AX25_UI;	 
 
-	/* Append a suitable AX.25 PID */
+	 
 	switch (type) {
 	case ETH_P_IP:
 		*buff++ = AX25_P_IP;
@@ -93,7 +86,7 @@ static int ax25_hard_header(struct sk_buff *skb, struct net_device *dev,
 	if (daddr != NULL)
 		return AX25_HEADER_LEN;
 
-	return -AX25_HEADER_LEN;	/* Unfinished header */
+	return -AX25_HEADER_LEN;	 
 }
 
 netdev_tx_t ax25_ip_xmit(struct sk_buff *skb)
@@ -129,21 +122,7 @@ netdev_tx_t ax25_ip_xmit(struct sk_buff *skb)
 
 	if (bp[16] == AX25_P_IP) {
 		if (ip_mode == 'V' || (ip_mode == ' ' && ax25_dev->values[AX25_VALUES_IPDEFMODE])) {
-			/*
-			 *	We copy the buffer and release the original thereby
-			 *	keeping it straight
-			 *
-			 *	Note: we report 1 back so the caller will
-			 *	not feed the frame direct to the physical device
-			 *	We don't want that to happen. (It won't be upset
-			 *	as we have pulled the frame from the queue by
-			 *	freeing it).
-			 *
-			 *	NB: TCP modifies buffers that are still
-			 *	on a device queue, thus we use skb_copy()
-			 *      instead of using skb_clone() unless this
-			 *	gets fixed.
-			 */
+			 
 
 			ax25_address src_c;
 			ax25_address dst_c;
@@ -157,17 +136,12 @@ netdev_tx_t ax25_ip_xmit(struct sk_buff *skb)
 				skb_set_owner_w(ourskb, skb->sk);
 
 			kfree_skb(skb);
-			/* dl9sau: bugfix
-			 * after kfree_skb(), dst and src which were pointer
-			 * to bp which is part of skb->data would not be valid
-			 * anymore hope that after skb_pull(ourskb, ..) our
-			 * dsc_c and src_c will not become invalid
-			 */
+			 
 			bp  = ourskb->data;
 			dst_c = *(ax25_address *)(bp + 1);
 			src_c = *(ax25_address *)(bp + 8);
 
-			skb_pull(ourskb, AX25_HEADER_LEN - 1);	/* Keep PID */
+			skb_pull(ourskb, AX25_HEADER_LEN - 1);	 
 			skb_reset_network_header(ourskb);
 
 			ax25=ax25_send_frame(
@@ -207,7 +181,7 @@ put:
 	return NETDEV_TX_OK;
 }
 
-#else	/* INET */
+#else	 
 
 static int ax25_hard_header(struct sk_buff *skb, struct net_device *dev,
 			    unsigned short type, const void *daddr,

@@ -1,40 +1,4 @@
-/*
- * Shared Atheros AR9170 Header
- *
- * RX/TX meta descriptor format
- *
- * Copyright 2008, Johannes Berg <johannes@sipsolutions.net>
- * Copyright 2009-2011 Christian Lamparter <chunkeey@googlemail.com>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; see the file COPYING.  If not, see
- * http://www.gnu.org/licenses/.
- *
- * This file incorporates work covered by the following copyright and
- * permission notice:
- *    Copyright (c) 2007-2008 Atheros Communications, Inc.
- *
- *    Permission to use, copy, modify, and/or distribute this software for any
- *    purpose with or without fee is hereby granted, provided that the above
- *    copyright notice and this permission notice appear in all copies.
- *
- *    THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- *    WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- *    MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- *    ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- *    WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- *    ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- *    OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
+ 
 
 #ifndef __CARL9170_SHARED_WLAN_H
 #define __CARL9170_SHARED_WLAN_H
@@ -63,7 +27,7 @@
 #define	AR9170_RX_STATUS_MODULATION_HT		0x02
 #define	AR9170_RX_STATUS_MODULATION_DUPOFDM	0x03
 
-/* depends on modulation */
+ 
 #define	AR9170_RX_STATUS_SHORT_PREAMBLE		0x08
 #define	AR9170_RX_STATUS_GREENFIELD		0x08
 
@@ -85,18 +49,18 @@
 #define	AR9170_RX_ERROR_PLCP			0x20
 #define	AR9170_RX_ERROR_MMIC			0x40
 
-/* these are either-or */
+ 
 #define	AR9170_TX_MAC_PROT_RTS			0x0001
 #define	AR9170_TX_MAC_PROT_CTS			0x0002
 #define	AR9170_TX_MAC_PROT			0x0003
 
 #define	AR9170_TX_MAC_NO_ACK			0x0004
-/* if unset, MAC will only do SIFS space before frame */
+ 
 #define	AR9170_TX_MAC_BACKOFF			0x0008
 #define	AR9170_TX_MAC_BURST			0x0010
 #define	AR9170_TX_MAC_AGGR			0x0020
 
-/* encryption is a two-bit field */
+ 
 #define	AR9170_TX_MAC_ENCR_NONE			0x0000
 #define	AR9170_TX_MAC_ENCR_RC4			0x0040
 #define	AR9170_TX_MAC_ENCR_CENC			0x0080
@@ -110,12 +74,12 @@
 #define	AR9170_TX_MAC_TXOP_RIFS			0x2000
 #define	AR9170_TX_MAC_IMM_BA			0x4000
 
-/* either-or */
+ 
 #define	AR9170_TX_PHY_MOD_CCK			0x00000000
 #define	AR9170_TX_PHY_MOD_OFDM			0x00000001
 #define	AR9170_TX_PHY_MOD_HT			0x00000002
 
-/* depends on modulation */
+ 
 #define	AR9170_TX_PHY_SHORT_PREAMBLE		0x00000004
 #define	AR9170_TX_PHY_GREENFIELD		0x00000004
 
@@ -137,7 +101,7 @@
 #define	AR9170_TX_PHY_TXCHAIN			(7 << \
 						 AR9170_TX_PHY_TXCHAIN_S)
 #define	AR9170_TX_PHY_TXCHAIN_1			1
-/* use for cck, ofdm 6/9/12/18/24 and HT if capable */
+ 
 #define	AR9170_TX_PHY_TXCHAIN_2			5
 
 #define	AR9170_TX_PHY_MCS_S			18
@@ -149,7 +113,7 @@
 #define	AR9170_TX_PHY_RATE_CCK_5M		0x2
 #define	AR9170_TX_PHY_RATE_CCK_11M		0x3
 
-/* same as AR9170_RX_PHY_RATE */
+ 
 #define	AR9170_TXRX_PHY_RATE_OFDM_6M		0xb
 #define	AR9170_TXRX_PHY_RATE_OFDM_9M		0xf
 #define	AR9170_TXRX_PHY_RATE_OFDM_12M		0xa
@@ -182,9 +146,7 @@
 struct ar9170_tx_hw_mac_control {
 	union {
 		struct {
-			/*
-			 * Beware of compiler bugs in all gcc pre 4.4!
-			 */
+			 
 
 			u8 erp_prot:2;
 			u8 no_ack:1;
@@ -213,9 +175,7 @@ struct ar9170_tx_hw_mac_control {
 struct ar9170_tx_hw_phy_control {
 	union {
 		struct {
-			/*
-			 * Beware of compiler bugs in all gcc pre 4.4!
-			 */
+			 
 
 			u8 modulation:2;
 			u8 preamble:1;
@@ -237,7 +197,7 @@ struct ar9170_tx_rate_info {
 	u8 tries:3;
 	u8 erp_prot:2;
 	u8 ampdu:1;
-	u8 free:2; /* free for use (e.g.:RIFS/TXOP/AMPDU) */
+	u8 free:2;  
 } __packed;
 
 struct carl9170_tx_superdesc {
@@ -280,7 +240,7 @@ struct carl9170_tx_superframe {
 	struct ar9170_tx_frame f;
 } __packed __aligned(4);
 
-#endif /* __CARL9170FW__ */
+#endif  
 
 struct _ar9170_tx_hwdesc {
 	__le16 length;
@@ -404,32 +364,16 @@ static inline u8 ar9170_get_decrypt_type(struct ar9170_rx_macstatus *t)
 	       (t->DAidx & 0xc0) >> 6;
 }
 
-/*
- * This is an workaround for several undocumented bugs.
- * Don't mess with the QoS/AC <-> HW Queue map, if you don't
- * know what you are doing.
- *
- * Known problems [hardware]:
- *  * The MAC does not aggregate frames on anything other
- *    than the first HW queue.
- *  * when an AMPDU is placed [in the first hw queue] and
- *    additional frames are already queued on a different
- *    hw queue, the MAC will ALWAYS freeze.
- *
- * In a nutshell: The hardware can either do QoS or
- * Aggregation but not both at the same time. As a
- * result, this makes the device pretty much useless
- * for any serious 802.11n setup.
- */
+ 
 enum ar9170_txq {
-	AR9170_TXQ_BK = 0,	/* TXQ0 */
-	AR9170_TXQ_BE,		/* TXQ1	*/
-	AR9170_TXQ_VI,		/* TXQ2	*/
-	AR9170_TXQ_VO,		/* TXQ3 */
+	AR9170_TXQ_BK = 0,	 
+	AR9170_TXQ_BE,		 
+	AR9170_TXQ_VI,		 
+	AR9170_TXQ_VO,		 
 
 	__AR9170_NUM_TXQ,
 };
 
 #define	AR9170_TXQ_DEPTH			32
 
-#endif /* __CARL9170_SHARED_WLAN_H */
+#endif  

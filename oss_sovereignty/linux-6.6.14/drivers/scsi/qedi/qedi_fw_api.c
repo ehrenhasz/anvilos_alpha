@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* QLogic iSCSI Offload Driver
- * Copyright (c) 2016 Cavium Inc.
- */
+
+ 
 
 #include <linux/types.h>
 #include <asm/byteorder.h>
@@ -30,7 +28,7 @@ void init_scsi_sgl_context(struct scsi_sgl_params *ctx_sgl_params,
 	num_sges = (sgl_task_params->num_sges > SCSI_NUM_SGES_IN_CACHE) ?
 			     SCSI_NUM_SGES_IN_CACHE : sgl_task_params->num_sges;
 
-	/* sgl params */
+	 
 	val = cpu_to_le32(sgl_task_params->sgl_phys_addr.lo);
 	ctx_sgl_params->sgl_addr.lo = val;
 	val = cpu_to_le32(sgl_task_params->sgl_phys_addr.hi);

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright 2014, Michael Ellerman, IBM Corp.
- */
+
+ 
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -11,10 +9,7 @@
 #include "ebb.h"
 
 
-/*
- * Test that closing the EBB event clears MMCR0_PMCC, preventing further access
- * by userspace to the PMU hardware.
- */
+ 
 
 int close_clears_pmcc(void)
 {
@@ -42,12 +37,11 @@ int close_clears_pmcc(void)
 
 	FAIL_IF(ebb_state.stats.ebb_count == 0);
 
-	/* The real test is here, do we take a SIGILL when writing PMU regs now
-	 * that we have closed the event. We expect that we will. */
+	 
 
 	FAIL_IF(catch_sigill(write_pmc1));
 
-	/* We should still be able to read EBB regs though */
+	 
 	mfspr(SPRN_EBBHR);
 	mfspr(SPRN_EBBRR);
 	mfspr(SPRN_BESCR);

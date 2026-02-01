@@ -1,15 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copyright (C) 2016 BayLibre, SAS
- * Author: Neil Armstrong <narmstrong@baylibre.com>
- */
+ 
+ 
 
-/*
- * Video Encoders
- * - ENCI : Interlace Video Encoder
- * - ENCI_DVI : Interlace Video Encoder for DVI/HDMI
- * - ENCP : Progressive Video Encoder
- */
+ 
 
 #ifndef __MESON_VENC_H
 #define __MESON_VENC_H
@@ -26,11 +18,11 @@ enum {
 
 struct meson_cvbs_enci_mode {
 	unsigned int mode_tag;
-	unsigned int hso_begin; /* HSO begin position */
-	unsigned int hso_end; /* HSO end position */
-	unsigned int vso_even; /* VSO even line */
-	unsigned int vso_odd; /* VSO odd line */
-	unsigned int macv_max_amp; /* Macrovision max amplitude */
+	unsigned int hso_begin;  
+	unsigned int hso_end;  
+	unsigned int vso_even;  
+	unsigned int vso_odd;  
+	unsigned int macv_max_amp;  
 	unsigned int video_prog_mode;
 	unsigned int video_mode;
 	unsigned int sch_adjust;
@@ -48,16 +40,16 @@ struct meson_cvbs_enci_mode {
 	unsigned int analog_sync_adj;
 };
 
-/* LCD Encoder gamma setup */
+ 
 void meson_encl_load_gamma(struct meson_drm *priv);
 
-/* HDMI Clock parameters */
+ 
 enum drm_mode_status
 meson_venc_hdmi_supported_mode(const struct drm_display_mode *mode);
 bool meson_venc_hdmi_supported_vic(int vic);
 bool meson_venc_hdmi_venc_repeat(int vic);
 
-/* CVBS Timings and Parameters */
+ 
 extern struct meson_cvbs_enci_mode meson_cvbs_enci_pal;
 extern struct meson_cvbs_enci_mode meson_cvbs_enci_ntsc;
 
@@ -76,4 +68,4 @@ void meson_venc_disable_vsync(struct meson_drm *priv);
 
 void meson_venc_init(struct meson_drm *priv);
 
-#endif /* __MESON_VENC_H */
+#endif  

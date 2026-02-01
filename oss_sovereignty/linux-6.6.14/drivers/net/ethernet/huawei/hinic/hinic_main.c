@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Huawei HiNIC PCI Express Linux driver
- * Copyright(c) 2017 Huawei Technologies Co., Ltd
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -120,12 +117,7 @@ static void gather_nic_stats(struct hinic_dev *nic_dev,
 		gather_tx_stats(nic_tx_stats, &nic_dev->txqs[i]);
 }
 
-/**
- * create_txqs - Create the Logical Tx Queues of specific NIC device
- * @nic_dev: the specific NIC device
- *
- * Return 0 - Success, negative - Failure
- **/
+ 
 static int create_txqs(struct hinic_dev *nic_dev)
 {
 	int err, i, j, num_txqs = hinic_hwdev_num_qps(nic_dev->hwdev);
@@ -193,10 +185,7 @@ static void disable_txqs_napi(struct hinic_dev *nic_dev)
 		napi_disable(&nic_dev->txqs[i].napi);
 }
 
-/**
- * free_txqs - Free the Logical Tx Queues of specific NIC device
- * @nic_dev: the specific NIC device
- **/
+ 
 static void free_txqs(struct hinic_dev *nic_dev)
 {
 	int i, num_txqs = hinic_hwdev_num_qps(nic_dev->hwdev);
@@ -216,12 +205,7 @@ static void free_txqs(struct hinic_dev *nic_dev)
 	nic_dev->txqs = NULL;
 }
 
-/**
- * create_rxqs - Create the Logical Rx Queues of specific NIC device
- * @nic_dev: the specific NIC device
- *
- * Return 0 - Success, negative - Failure
- **/
+ 
 static int create_rxqs(struct hinic_dev *nic_dev)
 {
 	int err, i, j, num_rxqs = hinic_hwdev_num_qps(nic_dev->hwdev);
@@ -271,10 +255,7 @@ err_init_rxq:
 	return err;
 }
 
-/**
- * free_rxqs - Free the Logical Rx Queues of specific NIC device
- * @nic_dev: the specific NIC device
- **/
+ 
 static void free_rxqs(struct hinic_dev *nic_dev)
 {
 	int i, num_rxqs = hinic_hwdev_num_qps(nic_dev->hwdev);
@@ -535,7 +516,7 @@ int hinic_close(struct net_device *netdev)
 	struct hinic_dev *nic_dev = netdev_priv(netdev);
 	unsigned int flags;
 
-	/* Disable txq napi firstly to aviod rewaking txq in free_tx_poll */
+	 
 	disable_txqs_napi(nic_dev);
 
 	down(&nic_dev->mgmt_lock);
@@ -586,13 +567,7 @@ static int hinic_change_mtu(struct net_device *netdev, int new_mtu)
 	return err;
 }
 
-/**
- * change_mac_addr - change the main mac address of network device
- * @netdev: network device
- * @addr: mac address to set
- *
- * Return 0 - Success, negative - Failure
- **/
+ 
 static int change_mac_addr(struct net_device *netdev, const u8 *addr)
 {
 	struct hinic_dev *nic_dev = netdev_priv(netdev);
@@ -643,13 +618,7 @@ static int hinic_set_mac_addr(struct net_device *netdev, void *addr)
 	return err;
 }
 
-/**
- * add_mac_addr - add mac address to network device
- * @netdev: network device
- * @addr: mac address to add
- *
- * Return 0 - Success, negative - Failure
- **/
+ 
 static int add_mac_addr(struct net_device *netdev, const u8 *addr)
 {
 	struct hinic_dev *nic_dev = netdev_priv(netdev);
@@ -675,13 +644,7 @@ static int add_mac_addr(struct net_device *netdev, const u8 *addr)
 	return err;
 }
 
-/**
- * remove_mac_addr - remove mac address from network device
- * @netdev: network device
- * @addr: mac address to remove
- *
- * Return 0 - Success, negative - Failure
- **/
+ 
 static int remove_mac_addr(struct net_device *netdev, const u8 *addr)
 {
 	struct hinic_dev *nic_dev = netdev_priv(netdev);
@@ -868,7 +831,7 @@ static netdev_features_t hinic_fix_features(struct net_device *netdev,
 {
 	struct hinic_dev *nic_dev = netdev_priv(netdev);
 
-	/* If Rx checksum is disabled, then LRO should also be disabled */
+	 
 	if (!(features & NETIF_F_RXCSUM)) {
 		netif_info(nic_dev, drv, netdev, "disabling LRO as RXCSUM is off\n");
 		features &= ~NETIF_F_LRO;
@@ -953,14 +916,7 @@ static void hinic_refresh_nic_cfg(struct hinic_dev *nic_dev)
 	mutex_unlock(&nic_cfg->cfg_mutex);
 }
 
-/**
- * link_status_event_handler - link event handler
- * @handle: nic device for the handler
- * @buf_in: input buffer
- * @in_size: input size
- * @buf_out: output buffer
- * @out_size: returned output size
- **/
+ 
 static void link_status_event_handler(void *handle, void *buf_in, u16 in_size,
 				      void *buf_out, u16 *out_size)
 {
@@ -1149,12 +1105,7 @@ static void hinic_free_intr_coalesce(struct hinic_dev *nic_dev)
 	kfree(nic_dev->rx_intr_coalesce);
 }
 
-/**
- * nic_dev_init - Initialize the NIC device
- * @pdev: the NIC pci device
- *
- * Return 0 - Success, negative - Failure
- **/
+ 
 static int nic_dev_init(struct pci_dev *pdev)
 {
 	struct hinic_rx_mode_work *rx_mode_work;
@@ -1286,7 +1237,7 @@ static int nic_dev_init(struct pci_dev *pdev)
 	if (err)
 		goto err_set_features;
 
-	/* enable pause and disable pfc by default */
+	 
 	err = hinic_dcb_set_pfc(nic_dev->hwdev, 0, 0);
 	if (err)
 		goto err_set_pfc;

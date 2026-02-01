@@ -1,36 +1,4 @@
-/*
- * Linux ARCnet driver - COM20020 PCMCIA support
- *
- * Written 1994-1999 by Avery Pennarun,
- *    based on an ISA version by David Woodhouse.
- * Derived from ibmtr_cs.c by Steve Kipisz (pcmcia-cs 3.1.4)
- *    which was derived from pcnet_cs.c by David Hinds.
- * Some additional portions derived from skeleton.c by Donald Becker.
- *
- * Special thanks to Contemporary Controls, Inc. (www.ccontrols.com)
- *  for sponsoring the further development of this driver.
- *
- * **********************
- *
- * The original copyright of skeleton.c was as follows:
- *
- * skeleton.c Written 1993 by Donald Becker.
- * Copyright 1993 United States Government as represented by the
- * Director, National Security Agency.  This software may only be used
- * and distributed according to the terms of the GNU General Public License as
- * modified by SRC, incorporated herein by reference.
- *
- * **********************
- * Changes:
- * Arnaldo Carvalho de Melo <acme@conectiva.com.br> - 08/08/2000
- * - reorganize kmallocs in com20020_attach, checking all for failure
- *   and releasing the previous allocations if one fails
- * **********************
- *
- * For more details, see drivers/net/arcnet.c
- *
- * **********************
- */
+ 
 
 #define pr_fmt(fmt) "arcnet:" KBUILD_MODNAME ": " fmt
 
@@ -64,7 +32,7 @@ static void regdump(struct net_device *dev)
 	pr_cont("\n");
 
 	netdev_dbg(dev, "buffer0 dump:\n");
-	/* set up the address register */
+	 
 	count = 0;
 	arcnet_outb((count >> 8) | RDDATAflag | AUTOINCflag,
 		    ioaddr, COM20020_REG_W_ADDR_HI);
@@ -74,16 +42,16 @@ static void regdump(struct net_device *dev)
 		if (!(count % 16))
 			pr_cont("%04X:", count);
 
-		/* copy the data */
+		 
 		pr_cont(" %02X", arcnet_inb(ioaddr, COM20020_REG_RW_MEMDATA));
 	}
 	pr_cont("\n");
 #endif
 }
 
-/*====================================================================*/
+ 
 
-/* Parameters that can be set with 'insmod' */
+ 
 
 static int node;
 static int timeout = 3;
@@ -99,14 +67,14 @@ module_param(clockm, int, 0);
 
 MODULE_LICENSE("GPL");
 
-/*====================================================================*/
+ 
 
 static int com20020_config(struct pcmcia_device *link);
 static void com20020_release(struct pcmcia_device *link);
 
 static void com20020_detach(struct pcmcia_device *p_dev);
 
-/*====================================================================*/
+ 
 
 static int com20020_probe(struct pcmcia_device *p_dev)
 {
@@ -117,7 +85,7 @@ static int com20020_probe(struct pcmcia_device *p_dev)
 
 	dev_dbg(&p_dev->dev, "com20020_attach()\n");
 
-	/* Create new network device */
+	 
 	info = kzalloc(sizeof(*info), GFP_KERNEL);
 	if (!info)
 		goto fail_alloc_info;
@@ -133,7 +101,7 @@ static int com20020_probe(struct pcmcia_device *p_dev)
 	lp->clockm = clockm & 3;
 	lp->hw.owner = THIS_MODULE;
 
-	/* fill in our module parameters as defaults */
+	 
 	arcnet_set_addr(dev, node);
 
 	p_dev->resource[0]->flags |= IO_DATA_PATH_WIDTH_8;
@@ -155,7 +123,7 @@ fail_alloc_dev:
 	kfree(info);
 fail_alloc_info:
 	return ret;
-} /* com20020_attach */
+}  
 
 static void com20020_detach(struct pcmcia_device *link)
 {
@@ -170,15 +138,13 @@ static void com20020_detach(struct pcmcia_device *link)
 
 	unregister_netdev(dev);
 
-	/* this is necessary because we register our IRQ separately
-	 * from card services.
-	 */
+	 
 	if (dev->irq)
 		free_irq(dev->irq, dev);
 
 	com20020_release(link);
 
-	/* Unlink device structure, free bits */
+	 
 	dev_dbg(&link->dev, "unlinking...\n");
 	if (link->priv) {
 		dev = info->dev;
@@ -190,7 +156,7 @@ static void com20020_detach(struct pcmcia_device *link)
 		kfree(info);
 	}
 
-} /* com20020_detach */
+}  
 
 static int com20020_config(struct pcmcia_device *link)
 {
@@ -252,11 +218,11 @@ static int com20020_config(struct pcmcia_device *link)
 
 	lp = netdev_priv(dev);
 	lp->card_name = "PCMCIA COM20020";
-	lp->card_flags = ARC_CAN_10MBIT; /* pretend all of them can 10Mbit */
+	lp->card_flags = ARC_CAN_10MBIT;  
 
 	SET_NETDEV_DEV(dev, &link->dev);
 
-	i = com20020_found(dev, 0);	/* calls register_netdev */
+	i = com20020_found(dev, 0);	 
 
 	if (i != 0) {
 		dev_notice(&link->dev,
@@ -272,7 +238,7 @@ failed:
 	dev_dbg(&link->dev, "com20020_config failed...\n");
 	com20020_release(link);
 	return -ENODEV;
-} /* com20020_config */
+}  
 
 static void com20020_release(struct pcmcia_device *link)
 {

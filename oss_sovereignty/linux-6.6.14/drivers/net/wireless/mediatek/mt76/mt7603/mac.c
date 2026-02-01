@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: ISC
+
 
 #include <linux/etherdevice.h>
 #include <linux/timekeeping.h>
@@ -101,7 +101,7 @@ mt7603_wtbl1_addr(int idx)
 static u32
 mt7603_wtbl2_addr(int idx)
 {
-	/* Mapped to WTBL2 */
+	 
 	return MT_PCIE_REMAP_BASE_1 + idx * MT_WTBL2_SIZE;
 }
 
@@ -184,11 +184,11 @@ void mt7603_filter_tx(struct mt7603_dev *dev, int mac_idx, int idx, bool abort)
 	int i, port, queue;
 
 	if (abort) {
-		port = 3; /* PSE */
-		queue = 8; /* free queue */
+		port = 3;  
+		queue = 8;  
 	} else {
-		port = 0; /* HIF */
-		queue = 1; /* MCU queue */
+		port = 0;  
+		queue = 1;  
 	}
 
 	mt7603_wtbl_set_skip_tx(dev, idx, true);
@@ -313,7 +313,7 @@ void mt7603_wtbl_clear(struct mt7603_dev *dev, int idx)
 
 	addr = mt7603_wtbl2_addr(idx);
 
-	/* Clear BA information */
+	 
 	mt76_wr(dev, addr + (15 * 4), 0);
 
 	mt76_stop_tx_ac(dev, GENMASK(3, 0));
@@ -387,7 +387,7 @@ void mt7603_mac_tx_ba_reset(struct mt7603_dev *dev, int wcid, int tid,
 	int i;
 
 	if (ba_size < 0) {
-		/* disable */
+		 
 		mt76_clear(dev, addr + (15 * 4), tid_mask);
 		return;
 	}
@@ -539,7 +539,7 @@ mt7603_mac_fill_rx(struct mt7603_dev *dev, struct sk_buff *skb)
 	if (rxd2 & MT_RXD2_NORMAL_TKIP_MIC_ERR)
 		status->flag |= RX_FLAG_MMIC_ERROR;
 
-	/* ICV error or CCMP/BIP/WPI MIC error */
+	 
 	if (rxd2 & MT_RXD2_NORMAL_ICV_ERR)
 		status->flag |= RX_FLAG_ONLY_MONITOR;
 
@@ -603,7 +603,7 @@ mt7603_mac_fill_rx(struct mt7603_dev *dev, struct sk_buff *skb)
 			      MT_RXD2_NORMAL_NON_AMPDU))) {
 			status->flag |= RX_FLAG_AMPDU_DETAILS;
 
-			/* all subframes of an A-MPDU have the same timestamp */
+			 
 			if (dev->rx_ampdu_ts != status->timestamp) {
 				if (!++dev->ampdu_ref)
 					dev->ampdu_ref++;
@@ -762,13 +762,7 @@ void mt7603_wtbl_set_rates(struct mt7603_dev *dev, struct mt7603_sta *sta,
 
 	rates = sta->rateset[rateset].rates;
 	for (i = 0; i < ARRAY_SIZE(sta->rateset[rateset].rates); i++) {
-		/*
-		 * We don't support switching between short and long GI
-		 * within the rate set. For accurate tx status reporting, we
-		 * need to make sure that flags match.
-		 * For improved performance, avoid duplicate entries by
-		 * decrementing the MCS index if necessary
-		 */
+		 
 		if ((ref->flags ^ rates[i].flags) & IEEE80211_TX_RC_SHORT_GI)
 			rates[i].flags ^= IEEE80211_TX_RC_SHORT_GI;
 
@@ -842,7 +836,7 @@ void mt7603_wtbl_set_rates(struct mt7603_dev *dev, struct mt7603_sta *sta,
 		FIELD_PREP(MT_WTBL_RIUCR3_RATE6, val[3]) |
 		FIELD_PREP(MT_WTBL_RIUCR3_RATE7, val[3]));
 
-	mt76_set(dev, MT_LPON_T0CR, MT_LPON_T0CR_MODE); /* TSF read */
+	mt76_set(dev, MT_LPON_T0CR, MT_LPON_T0CR_MODE);  
 	sta->rate_set_tsf = (mt76_rr(dev, MT_LPON_UTTR0) & ~BIT(0)) | rateset;
 
 	mt76_wr(dev, MT_WTBL_UPDATE,
@@ -875,7 +869,7 @@ mt7603_mac_get_key_info(struct ieee80211_key_conf *key, u8 *key_data)
 	case WLAN_CIPHER_SUITE_WEP104:
 		return MT_CIPHER_WEP104;
 	case WLAN_CIPHER_SUITE_TKIP:
-		/* Rx/Tx MIC keys are swapped */
+		 
 		memcpy(key_data + 16, key->key + 24, 8);
 		memcpy(key_data + 24, key->key + 16, 8);
 		return MT_CIPHER_TKIP;
@@ -1013,7 +1007,7 @@ mt7603_mac_write_txwi(struct mt7603_dev *dev, __le32 *txwi,
 		tx_count = rate->count;
 	}
 
-	/* use maximum tx count for beacons and buffered multicast */
+	 
 	if (qid >= MT_TXQ_BEACON)
 		tx_count = 0x1f;
 
@@ -1325,11 +1319,11 @@ wait_for_wpdma(struct mt7603_dev *dev)
 
 static void mt7603_pse_reset(struct mt7603_dev *dev)
 {
-	/* Clear previous reset result */
+	 
 	if (!dev->reset_cause[RESET_CAUSE_RESET_FAILED])
 		mt76_clear(dev, MT_MCU_DEBUG_RESET, MT_MCU_DEBUG_RESET_PSE_S);
 
-	/* Reset PSE */
+	 
 	mt76_set(dev, MT_MCU_DEBUG_RESET, MT_MCU_DEBUG_RESET_PSE);
 
 	if (!mt76_poll_msec(dev, MT_MCU_DEBUG_RESET,
@@ -1385,14 +1379,14 @@ void mt7603_pse_client_reset(struct mt7603_dev *dev)
 	addr = mt7603_reg_map(dev, MT_CLIENT_BASE_PHYS_ADDR +
 				   MT_CLIENT_RESET_TX);
 
-	/* Clear previous reset state */
+	 
 	mt76_clear(dev, addr,
 		   MT_CLIENT_RESET_TX_R_E_1 |
 		   MT_CLIENT_RESET_TX_R_E_2 |
 		   MT_CLIENT_RESET_TX_R_E_1_S |
 		   MT_CLIENT_RESET_TX_R_E_2_S);
 
-	/* Start PSE client TX abort */
+	 
 	mt76_set(dev, addr, MT_CLIENT_RESET_TX_R_E_1);
 	mt76_poll_msec(dev, addr, MT_CLIENT_RESET_TX_R_E_1_S,
 		       MT_CLIENT_RESET_TX_R_E_1_S, 500);
@@ -1400,11 +1394,11 @@ void mt7603_pse_client_reset(struct mt7603_dev *dev)
 	mt76_set(dev, addr, MT_CLIENT_RESET_TX_R_E_2);
 	mt76_set(dev, MT_WPDMA_GLO_CFG, MT_WPDMA_GLO_CFG_SW_RESET);
 
-	/* Wait for PSE client to clear TX FIFO */
+	 
 	mt76_poll_msec(dev, addr, MT_CLIENT_RESET_TX_R_E_2_S,
 		       MT_CLIENT_RESET_TX_R_E_2_S, 500);
 
-	/* Clear PSE client TX abort state */
+	 
 	mt76_clear(dev, addr,
 		   MT_CLIENT_RESET_TX_R_E_1 |
 		   MT_CLIENT_RESET_TX_R_E_2);
@@ -1428,7 +1422,7 @@ static void mt7603_mac_watchdog_reset(struct mt7603_dev *dev)
 	ieee80211_stop_queues(dev->mt76.hw);
 	set_bit(MT76_RESET, &dev->mphy.state);
 
-	/* lock/unlock all queues to ensure that no tx is pending */
+	 
 	mt76_txq_schedule_all(&dev->mphy);
 
 	mt76_worker_disable(&dev->mt76.tx_worker);
@@ -1636,7 +1630,7 @@ mt7603_edcca_set_strict(struct mt7603_dev *dev, bool val)
 
 	dev->ed_strict_mode = val;
 
-	/* Ensure that ED/CCA does not trigger if disabled */
+	 
 	if (!dev->ed_monitor)
 		rxtd_6 |= FIELD_PREP(MT_RXTD_6_CCAED_TH, 0x34);
 	else

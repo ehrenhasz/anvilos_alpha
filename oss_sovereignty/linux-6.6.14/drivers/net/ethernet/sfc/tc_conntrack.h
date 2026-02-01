@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/****************************************************************************
- * Driver for Solarflare network controllers and boards
- * Copyright 2023, Advanced Micro Devices, Inc.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License version 2 as published
- * by the Free Software Foundation, incorporated herein by reference.
- */
+ 
+ 
 
 #ifndef EFX_TC_CONNTRACK_H
 #define EFX_TC_CONNTRACK_H
@@ -22,11 +15,11 @@ struct efx_tc_ct_zone {
 	refcount_t ref;
 	struct nf_flowtable *nf_ft;
 	struct efx_nic *efx;
-	struct mutex mutex; /* protects cts list */
-	struct list_head cts; /* list of efx_tc_ct_entry in this zone */
+	struct mutex mutex;  
+	struct list_head cts;  
 };
 
-/* create/uncreate/teardown hashtables */
+ 
 int efx_tc_init_conntrack(struct efx_nic *efx);
 void efx_tc_destroy_conntrack(struct efx_nic *efx);
 void efx_tc_fini_conntrack(struct efx_nic *efx);
@@ -44,12 +37,12 @@ struct efx_tc_ct_entry {
 	bool dnat;
 	__be32 src_ip, dst_ip, nat_ip;
 	struct in6_addr src_ip6, dst_ip6;
-	__be16 l4_sport, l4_dport, l4_natport; /* Ports (UDP, TCP) */
+	__be16 l4_sport, l4_dport, l4_natport;  
 	struct efx_tc_ct_zone *zone;
 	u32 mark;
 	struct efx_tc_counter *cnt;
-	struct list_head list; /* entry on zone->cts */
+	struct list_head list;  
 };
 
-#endif /* CONFIG_SFC_SRIOV */
-#endif /* EFX_TC_CONNTRACK_H */
+#endif  
+#endif  

@@ -1,15 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 #include <linux/bitmap.h>
 #include <linux/math.h>
 #include <linux/minmax.h>
 
-/*
- * Common helper for find_next_bit() function family
- * @FETCH: The expression that fetches and pre-processes each word of bitmap(s)
- * @MUNGE: The expression that post-processes a word containing found bit (may be empty)
- * @size: The bitmap size in bits
- * @start: The bitnumber to start searching at
- */
+ 
 #define FIND_NEXT_BIT(FETCH, MUNGE, size, start)				\
 ({										\
 	unsigned long mask, idx, tmp, sz = (size), __start = (start);		\
@@ -33,11 +27,11 @@ out:										\
 
 unsigned long _find_next_bit(const unsigned long *addr, unsigned long nbits, unsigned long start)
 {
-	return FIND_NEXT_BIT(addr[idx], /* nop */, nbits, start);
+	return FIND_NEXT_BIT(addr[idx],  , nbits, start);
 }
 
 unsigned long _find_next_zero_bit(const unsigned long *addr, unsigned long nbits,
 					 unsigned long start)
 {
-	return FIND_NEXT_BIT(~addr[idx], /* nop */, nbits, start);
+	return FIND_NEXT_BIT(~addr[idx],  , nbits, start);
 }

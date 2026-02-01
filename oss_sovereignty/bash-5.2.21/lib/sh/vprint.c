@@ -1,22 +1,6 @@
-/* vprint.c -- v[fs]printf() for 4.[23] BSD systems. */
+ 
 
-/* Copyright (C) 1987,1989 Free Software Foundation, Inc.
-
-   This file is part of GNU Bash, the Bourne Again SHell.
-
-   Bash is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   Bash is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with Bash.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ 
 
 #include <config.h>
 
@@ -29,14 +13,10 @@
 #    define NULL ((void *)0)
 #  else
 #    define NULL 0x0
-#  endif /* __STDC__ */
-#endif /* !NULL */
+#  endif  
+#endif  
 
-/*
- * Beware!  Don't trust the value returned by either of these functions; it
- * seems that pre-4.3-tahoe implementations of _doprnt () return the first
- * argument, i.e. a char *.
- */
+ 
 #include <varargs.h>
 
 int
@@ -64,9 +44,7 @@ vfprintf (iop, fmt, ap)
   return (ferror (iop) ? EOF : len);
 }
 
-/*
- * Ditto for vsprintf
- */
+ 
 int
 vsprintf (str, fmt, ap)
      char *str, *fmt;
@@ -82,4 +60,4 @@ vsprintf (str, fmt, ap)
   *f._ptr = 0;
   return (len);
 }
-#endif /* USE_VFPRINTF_EMULATION */
+#endif  

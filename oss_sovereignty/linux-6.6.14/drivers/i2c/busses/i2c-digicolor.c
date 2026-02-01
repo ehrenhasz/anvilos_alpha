@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * I2C bus driver for Conexant Digicolor SoCs
- *
- * Author: Baruch Siach <baruch@tkos.co.il>
- *
- * Copyright (C) 2015 Paradox Innovation Ltd.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/completion.h>

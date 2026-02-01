@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2017 exceet electronics GmbH
- *
- * Authors:
- *	Frieder Schrempf <frieder.schrempf@exceet.de>
- *	Boris Brezillon <boris.brezillon@bootlin.com>
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/kernel.h>
@@ -118,11 +112,7 @@ static int w25n02kv_ecc_get_status(struct spinand_device *spinand,
 		return -EBADMSG;
 
 	case STATUS_ECC_HAS_BITFLIPS:
-		/*
-		 * Let's try to retrieve the real maximum number of bitflips
-		 * in order to avoid forcing the wear-leveling layer to move
-		 * data around if it's not necessary.
-		 */
+		 
 		if (spi_mem_exec_op(spinand->spimem, &op))
 			return nanddev_get_ecc_conf(nand)->strength;
 
@@ -176,10 +166,7 @@ static int winbond_spinand_init(struct spinand_device *spinand)
 	struct nand_device *nand = spinand_to_nand(spinand);
 	unsigned int i;
 
-	/*
-	 * Make sure all dies are in buffer read mode and not continuous read
-	 * mode.
-	 */
+	 
 	for (i = 0; i < nand->memorg.ntargets; i++) {
 		spinand_select_target(spinand, i);
 		spinand_upd_cfg(spinand, WINBOND_CFG_BUF_READ,

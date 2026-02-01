@@ -1,14 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Quick & dirty crypto testing module.
- *
- * This will only exist until we have a better testing mechanism
- * (e.g. a char device).
- *
- * Copyright (c) 2002 James Morris <jmorris@intercode.com.au>
- * Copyright (c) 2002 Jean-Francois Dive <jef@linuxbe.org>
- * Copyright (c) 2007 Nokia Siemens Networks
- */
+ 
+ 
 #ifndef _CRYPTO_TCRYPT_H
 #define _CRYPTO_TCRYPT_H
 
@@ -23,13 +14,11 @@ struct aead_speed_template {
 };
 
 struct hash_speed {
-	unsigned int blen;	/* buffer length */
-	unsigned int plen;	/* per-update length */
+	unsigned int blen;	 
+	unsigned int plen;	 
 };
 
-/*
- * DES test vectors.
- */
+ 
 #define DES3_SPEED_VECTORS	1
 
 static struct cipher_speed_template des3_speed_template[] = {
@@ -41,9 +30,7 @@ static struct cipher_speed_template des3_speed_template[] = {
 	}
 };
 
-/*
- * Cipher speed tests
- */
+ 
 static u8 speed_template_8[] = {8, 0};
 static u8 speed_template_16[] = {16, 0};
 static u8 speed_template_24[] = {24, 0};
@@ -58,16 +45,12 @@ static u8 speed_template_32_48_64[] = {32, 48, 64, 0};
 static u8 speed_template_32_64[] = {32, 64, 0};
 static u8 speed_template_32[] = {32, 0};
 
-/*
- * AEAD speed tests
- */
+ 
 static u8 aead_speed_template_19[] = {19, 0};
 static u8 aead_speed_template_20_28_36[] = {20, 28, 36, 0};
 static u8 aead_speed_template_36[] = {36, 0};
 
-/*
- * Digest speed tests
- */
+ 
 static struct hash_speed generic_hash_speed_template[] = {
 	{ .blen = 16,	.plen = 16, },
 	{ .blen = 64,	.plen = 16, },
@@ -92,7 +75,7 @@ static struct hash_speed generic_hash_speed_template[] = {
 	{ .blen = 8192,	.plen = 4096, },
 	{ .blen = 8192,	.plen = 8192, },
 
-	/* End marker */
+	 
 	{  .blen = 0,	.plen = 0, }
 };
 
@@ -110,8 +93,8 @@ static struct hash_speed poly1305_speed_template[] = {
 	{ .blen = 4128,	.plen = 4128, },
 	{ .blen = 8224,	.plen = 8224, },
 
-	/* End marker */
+	 
 	{  .blen = 0,	.plen = 0, }
 };
 
-#endif	/* _CRYPTO_TCRYPT_H */
+#endif	 

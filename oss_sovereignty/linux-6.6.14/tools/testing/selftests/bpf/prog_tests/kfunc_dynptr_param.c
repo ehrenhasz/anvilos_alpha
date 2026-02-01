@@ -1,11 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
 
-/*
- * Copyright (c) 2022 Facebook
- * Copyright (C) 2022 Huawei Technologies Duesseldorf GmbH
- *
- * Author: Roberto Sassu <roberto.sassu@huawei.com>
- */
+
+ 
 
 #include <test_progs.h>
 #include "test_kfunc_dynptr_param.skel.h"

@@ -1,96 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Comedi driver for NI PCI-MIO E series cards
- *
- * COMEDI - Linux Control and Measurement Device Interface
- * Copyright (C) 1997-8 David A. Schleef <ds@schleef.org>
- */
 
-/*
- * Driver: ni_pcimio
- * Description: National Instruments PCI-MIO-E series and M series (all boards)
- * Author: ds, John Hallen, Frank Mori Hess, Rolf Mueller, Herbert Peremans,
- *   Herman Bruyninckx, Terry Barnaby
- * Status: works
- * Devices: [National Instruments] PCI-MIO-16XE-50 (ni_pcimio),
- *   PCI-MIO-16XE-10, PXI-6030E, PCI-MIO-16E-1, PCI-MIO-16E-4, PCI-6014,
- *   PCI-6040E, PXI-6040E, PCI-6030E, PCI-6031E, PCI-6032E, PCI-6033E,
- *   PCI-6071E, PCI-6023E, PCI-6024E, PCI-6025E, PXI-6025E, PCI-6034E,
- *   PCI-6035E, PCI-6052E, PCI-6110, PCI-6111, PCI-6220, PXI-6220,
- *   PCI-6221, PXI-6221, PCI-6224, PXI-6224, PCI-6225, PXI-6225,
- *   PCI-6229, PXI-6229, PCI-6250, PXI-6250, PCI-6251, PXI-6251,
- *   PCIe-6251, PXIe-6251, PCI-6254, PXI-6254, PCI-6259, PXI-6259,
- *   PCIe-6259, PXIe-6259, PCI-6280, PXI-6280, PCI-6281, PXI-6281,
- *   PCI-6284, PXI-6284, PCI-6289, PXI-6289, PCI-6711, PXI-6711,
- *   PCI-6713, PXI-6713, PXI-6071E, PCI-6070E, PXI-6070E,
- *   PXI-6052E, PCI-6036E, PCI-6731, PCI-6733, PXI-6733,
- *   PCI-6143, PXI-6143
- * Updated: Mon, 16 Jan 2017 12:56:04 +0000
- *
- * These boards are almost identical to the AT-MIO E series, except that
- * they use the PCI bus instead of ISA (i.e., AT). See the notes for the
- * ni_atmio.o driver for additional information about these boards.
- *
- * Autocalibration is supported on many of the devices, using the
- * comedi_calibrate (or comedi_soft_calibrate for m-series) utility.
- * M-Series boards do analog input and analog output calibration entirely
- * in software. The software calibration corrects the analog input for
- * offset, gain and nonlinearity. The analog outputs are corrected for
- * offset and gain. See the comedilib documentation on
- * comedi_get_softcal_converter() for more information.
- *
- * By default, the driver uses DMA to transfer analog input data to
- * memory.  When DMA is enabled, not all triggering features are
- * supported.
- *
- * Digital I/O may not work on 673x.
- *
- * Note that the PCI-6143 is a simultaineous sampling device with 8
- * convertors. With this board all of the convertors perform one
- * simultaineous sample during a scan interval. The period for a scan
- * is used for the convert time in a Comedi cmd. The convert trigger
- * source is normally set to TRIG_NOW by default.
- *
- * The RTSI trigger bus is supported on these cards on subdevice 10.
- * See the comedilib documentation for details.
- *
- * Information (number of channels, bits, etc.) for some devices may be
- * incorrect. Please check this and submit a bug if there are problems
- * for your device.
- *
- * SCXI is probably broken for m-series boards.
- *
- * Bugs:
- * - When DMA is enabled, COMEDI_EV_CONVERT does not work correctly.
- */
+ 
 
-/*
- * The PCI-MIO E series driver was originally written by
- * Tomasz Motylewski <...>, and ported to comedi by ds.
- *
- * References:
- *	341079b.pdf  PCI E Series Register-Level Programmer Manual
- *	340934b.pdf  DAQ-STC reference manual
- *
- *	322080b.pdf  6711/6713/6715 User Manual
- *
- *	320945c.pdf  PCI E Series User Manual
- *	322138a.pdf  PCI-6052E and DAQPad-6052E User Manual
- *
- * ISSUES:
- * - need to deal with external reference for DAC, and other DAC
- *   properties in board properties
- * - deal with at-mio-16de-10 revision D to N changes, etc.
- * - need to add other CALDAC type
- * - need to slow down DAC loading. I don't trust NI's claim that
- *   two writes to the PCI bus slows IO enough. I would prefer to
- *   use udelay().
- *   Timing specs: (clock)
- *	AD8522		30ns
- *	DAC8043		120ns
- *	DAC8800		60ns
- *	MB88341		?
- */
+ 
+
+ 
 
 #include <linux/module.h>
 #include <linux/delay.h>
@@ -102,14 +15,7 @@
 
 #define PCIDMA
 
-/*
- * These are not all the possible ao ranges for 628x boards.
- * They can do OFFSET +- REFERENCE where OFFSET can be
- * 0V, 5V, APFI<0,1>, or AO<0...3> and RANGE can
- * be 10V, 5V, 2V, 1V, APFI<0,1>, AO<0...3>.  That's
- * 63 different possibilities.  An AO channel
- * can not act as it's own OFFSET or REFERENCE.
- */
+ 
 static const struct comedi_lrange range_ni_M_628x_ao = {
 	8, {
 		BIP_RANGE(10),
@@ -153,14 +59,14 @@ enum ni_pcimio_boardid {
 	BOARD_PCI6052E,
 	BOARD_PCI6110,
 	BOARD_PCI6111,
-	/* BOARD_PCI6115, */
-	/* BOARD_PXI6115, */
+	 
+	 
 	BOARD_PCI6711,
 	BOARD_PXI6711,
 	BOARD_PCI6713,
 	BOARD_PXI6713,
 	BOARD_PCI6731,
-	/* BOARD_PXI6731, */
+	 
 	BOARD_PCI6733,
 	BOARD_PXI6733,
 	BOARD_PXI6071E,
@@ -219,7 +125,7 @@ static const struct ni_board_struct ni_boards[] = {
 		.caldac		= { dac8800, dac8043 },
 	},
 	[BOARD_PCIMIO_16XE_10] = {
-		.name		= "pci-mio-16xe-10",	/*  aka pci-6030E */
+		.name		= "pci-mio-16xe-10",	 
 		.n_adchan	= 16,
 		.ai_maxdata	= 0xffff,
 		.ai_fifo_depth	= 512,
@@ -263,7 +169,7 @@ static const struct ni_board_struct ni_boards[] = {
 		.caldac		= { dac8800, dac8043, ad8522 },
 	},
 	[BOARD_PCIMIO_16E_1] = {
-		.name		= "pci-mio-16e-1",	/* aka pci-6070e */
+		.name		= "pci-mio-16e-1",	 
 		.n_adchan	= 16,
 		.ai_maxdata	= 0x0fff,
 		.ai_fifo_depth	= 512,
@@ -277,22 +183,19 @@ static const struct ni_board_struct ni_boards[] = {
 		.caldac		= { mb88341 },
 	},
 	[BOARD_PCIMIO_16E_4] = {
-		.name		= "pci-mio-16e-4",	/* aka pci-6040e */
+		.name		= "pci-mio-16e-4",	 
 		.n_adchan	= 16,
 		.ai_maxdata	= 0x0fff,
 		.ai_fifo_depth	= 512,
 		.gainlkup	= ai_gain_16,
-		/*
-		 * there have been reported problems with
-		 * full speed on this board
-		 */
+		 
 		.ai_speed	= 2000,
 		.n_aochan	= 2,
 		.ao_maxdata	= 0x0fff,
 		.ao_fifo_depth	= 512,
 		.ao_range_table	= &range_ni_E_ao_ext,
 		.ao_speed	= 1000,
-		.caldac		= { ad8804_debug },	/* doc says mb88341 */
+		.caldac		= { ad8804_debug },	 
 	},
 	[BOARD_PXI6040E] = {
 		.name		= "pxi-6040e",
@@ -365,7 +268,7 @@ static const struct ni_board_struct ni_boards[] = {
 		.ai_fifo_depth	= 512,
 		.gainlkup	= ai_gain_4,
 		.ai_speed	= 5000,
-		.caldac		= { ad8804_debug },	/* manual is wrong */
+		.caldac		= { ad8804_debug },	 
 	},
 	[BOARD_PCI6024E] = {
 		.name		= "pci-6024e",
@@ -378,7 +281,7 @@ static const struct ni_board_struct ni_boards[] = {
 		.ao_maxdata	= 0x0fff,
 		.ao_range_table	= &range_bipolar10,
 		.ao_speed	= 100000,
-		.caldac		= { ad8804_debug },	/* manual is wrong */
+		.caldac		= { ad8804_debug },	 
 	},
 	[BOARD_PCI6025E] = {
 		.name		= "pci-6025e",
@@ -391,7 +294,7 @@ static const struct ni_board_struct ni_boards[] = {
 		.ao_maxdata	= 0x0fff,
 		.ao_range_table	= &range_bipolar10,
 		.ao_speed	= 100000,
-		.caldac		= { ad8804_debug },	/* manual is wrong */
+		.caldac		= { ad8804_debug },	 
 		.has_8255	= 1,
 	},
 	[BOARD_PXI6025E] = {
@@ -405,7 +308,7 @@ static const struct ni_board_struct ni_boards[] = {
 		.ao_maxdata	= 0x0fff,
 		.ao_range_table	= &range_ni_E_ao_ext,
 		.ao_speed	= 100000,
-		.caldac		= { ad8804_debug },	/* manual is wrong */
+		.caldac		= { ad8804_debug },	 
 		.has_8255	= 1,
 	},
 	[BOARD_PCI6034E] = {
@@ -445,7 +348,7 @@ static const struct ni_board_struct ni_boards[] = {
 		.ao_fifo_depth	= 2048,
 		.ao_range_table	= &range_ni_E_ao_ext,
 		.ao_speed	= 3000,
-		/* manual is wrong */
+		 
 		.caldac		= { ad8804_debug, ad8804_debug, ad8522 },
 	},
 	[BOARD_PCI6110] = {
@@ -480,8 +383,8 @@ static const struct ni_board_struct ni_boards[] = {
 		.caldac		= { ad8804, ad8804 },
 	},
 #if 0
-	/* The 6115 boards probably need their own driver */
-	[BOARD_PCI6115] = {	/* .device_id = 0x2ed0, */
+	 
+	[BOARD_PCI6115] = {	 
 		.name		= "pci-6115",
 		.n_adchan	= 4,
 		.ai_maxdata	= 0x0fff,
@@ -494,12 +397,12 @@ static const struct ni_board_struct ni_boards[] = {
 		.ao_fifo_depth	= 2048,
 		.ao_speed	= 250,
 		.reg_611x	= 1,
-		/* XXX */
+		 
 		.caldac		= { ad8804_debug, ad8804_debug, ad8804_debug },
 	},
 #endif
 #if 0
-	[BOARD_PXI6115] = {	/* .device_id = ????, */
+	[BOARD_PXI6115] = {	 
 		.name		= "pxi-6115",
 		.n_adchan	= 4,
 		.ai_maxdata	= 0x0fff,
@@ -512,7 +415,7 @@ static const struct ni_board_struct ni_boards[] = {
 		.ao_fifo_depth	= 2048,
 		.ao_speed	= 250,
 		.reg_611x	= 1,
-		/* XXX */
+		 
 		.caldac		= { ad8804_debug, ad8804_debug, ad8804_debug },
 	},
 #endif
@@ -520,7 +423,7 @@ static const struct ni_board_struct ni_boards[] = {
 		.name = "pci-6711",
 		.n_aochan	= 4,
 		.ao_maxdata	= 0x0fff,
-		/* data sheet says 8192, but fifo really holds 16384 samples */
+		 
 		.ao_fifo_depth	= 16384,
 		.ao_range_table	= &range_bipolar10,
 		.ao_speed	= 1000,
@@ -568,7 +471,7 @@ static const struct ni_board_struct ni_boards[] = {
 		.caldac		= { ad8804_debug },
 	},
 #if 0
-	[BOARD_PXI6731] = {	/* .device_id = ????, */
+	[BOARD_PXI6731] = {	 
 		.name		= "pxi-6731",
 		.n_aochan	= 4,
 		.ao_maxdata	= 0xffff,
@@ -676,7 +579,7 @@ static const struct ni_board_struct ni_boards[] = {
 		.name		= "pci-6220",
 		.n_adchan	= 16,
 		.ai_maxdata	= 0xffff,
-		.ai_fifo_depth	= 512,		/* FIXME: guess */
+		.ai_fifo_depth	= 512,		 
 		.gainlkup	= ai_gain_622x,
 		.ai_speed	= 4000,
 		.reg_type	= ni_reg_622x,
@@ -686,7 +589,7 @@ static const struct ni_board_struct ni_boards[] = {
 		.name		= "pxi-6220",
 		.n_adchan	= 16,
 		.ai_maxdata	= 0xffff,
-		.ai_fifo_depth	= 512,		/* FIXME: guess */
+		.ai_fifo_depth	= 512,		 
 		.gainlkup	= ai_gain_622x,
 		.ai_speed	= 4000,
 		.reg_type	= ni_reg_622x,
@@ -1219,7 +1122,7 @@ static void m_series_init_eeprom_buffer(struct comedi_device *dev)
 	unsigned int old_iodwcr1_bits;
 	int i;
 
-	/* IO Window 1 needs to be temporarily mapped to read the eeprom */
+	 
 	daq_phys_addr = pci_resource_start(mite->pcidev, 1);
 
 	old_iodwbsr_bits = readl(mite->mmio + MITE_IODWBSR);
@@ -1245,22 +1148,22 @@ static void init_6143(struct comedi_device *dev)
 	const struct ni_board_struct *board = dev->board_ptr;
 	struct ni_private *devpriv = dev->private;
 
-	/*  Disable interrupts */
+	 
 	ni_stc_writew(dev, 0, NISTC_INT_CTRL_REG);
 
-	/*  Initialise 6143 AI specific bits */
+	 
 
-	/* Set G0,G1 DMA mode to E series version */
+	 
 	ni_writeb(dev, 0x00, NI6143_MAGIC_REG);
-	/* Set EOCMode, ADCMode and pipelinedelay */
+	 
 	ni_writeb(dev, 0x80, NI6143_PIPELINE_DELAY_REG);
-	/* Set EOC Delay */
+	 
 	ni_writeb(dev, 0x00, NI6143_EOC_SET_REG);
 
-	/* Set the FIFO half full level */
+	 
 	ni_writel(dev, board->ai_fifo_depth / 2, NI6143_AI_FIFO_FLAG_REG);
 
-	/*  Strobe Relay disable bit */
+	 
 	devpriv->ai_calib_source_enabled = 0;
 	ni_writew(dev, devpriv->ai_calib_source | NI6143_CALIB_CHAN_RELAY_OFF,
 		  NI6143_CALIB_CHAN_REG);
@@ -1312,7 +1215,7 @@ static int pcimio_auto_attach(struct comedi_device *dev,
 		return ret;
 	devpriv = dev->private;
 
-	devpriv->mite = mite_attach(dev, false);	/* use win0 */
+	devpriv->mite = mite_attach(dev, false);	 
 	if (!devpriv->mite)
 		return -ENOMEM;
 
@@ -1393,7 +1296,7 @@ static int ni_pcimio_pci_probe(struct pci_dev *dev,
 }
 
 static const struct pci_device_id ni_pcimio_pci_table[] = {
-	{ PCI_VDEVICE(NI, 0x0162), BOARD_PCIMIO_16XE_50 },	/* 0x1620? */
+	{ PCI_VDEVICE(NI, 0x0162), BOARD_PCIMIO_16XE_50 },	 
 	{ PCI_VDEVICE(NI, 0x1170), BOARD_PCIMIO_16XE_10 },
 	{ PCI_VDEVICE(NI, 0x1180), BOARD_PCIMIO_16E_1 },
 	{ PCI_VDEVICE(NI, 0x1190), BOARD_PCIMIO_16E_4 },

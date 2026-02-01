@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
-/*
- * Copyright (C) 2017 Intel Deutschland GmbH
- * Copyright (C) 2019-2021 Intel Corporation
- */
+
+ 
 #include "iwl-drv.h"
 #include "runtime.h"
 #include "dbg.h"
@@ -53,7 +50,7 @@ void iwl_fw_runtime_resume(struct iwl_fw_runtime *fwrt)
 }
 IWL_EXPORT_SYMBOL(iwl_fw_runtime_resume);
 
-/* set device type and latency */
+ 
 int iwl_set_soc_latency(struct iwl_fw_runtime *fwrt)
 {
 	struct iwl_soc_configuration_cmd cmd = {};
@@ -64,12 +61,7 @@ int iwl_set_soc_latency(struct iwl_fw_runtime *fwrt)
 	};
 	int ret;
 
-	/*
-	 * In VER_1 of this command, the discrete value is considered
-	 * an integer; In VER_2, it's a bitmask.  Since we have only 2
-	 * values in VER_1, this is backwards-compatible with VER_2,
-	 * as long as we don't set any other bits.
-	 */
+	 
 	if (!fwrt->trans->trans_cfg->integrated)
 		cmd.flags = cpu_to_le32(SOC_CONFIG_CMD_FLAGS_DISCRETE);
 
@@ -110,17 +102,14 @@ int iwl_configure_rxq(struct iwl_fw_runtime *fwrt)
 		.dataflags[0] = IWL_HCMD_DFL_NOCOPY,
 	};
 
-	/*
-	 * The default queue is configured via context info, so if we
-	 * have a single queue, there's nothing to do here.
-	 */
+	 
 	if (fwrt->trans->num_rx_queues == 1)
 		return 0;
 
 	if (fwrt->trans->trans_cfg->device_family < IWL_DEVICE_FAMILY_22000)
 		return 0;
 
-	/* skip the default queue */
+	 
 	num_queues = fwrt->trans->num_rx_queues - 1;
 
 	size = struct_size(cmd, data, num_queues);

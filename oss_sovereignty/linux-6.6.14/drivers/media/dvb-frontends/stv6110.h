@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * stv6110.h
- *
- * Driver for ST STV6110 satellite tuner IC.
- *
- * Copyright (C) 2009 NetUP Inc.
- * Copyright (C) 2009 Igor M. Liplianin <liplianin@netup.ru>
- */
+ 
+ 
 
 #ifndef __DVB_STV6110_H__
 #define __DVB_STV6110_H__
@@ -14,7 +7,7 @@
 #include <linux/i2c.h>
 #include <media/dvb_frontend.h>
 
-/* registers */
+ 
 #define RSTV6110_CTRL1		0
 #define RSTV6110_CTRL2		1
 #define RSTV6110_TUNING1	2
@@ -28,7 +21,7 @@ struct stv6110_config {
 	u8 i2c_address;
 	u32 mclk;
 	u8 gain;
-	u8 clk_div;	/* divisor value for the output clock */
+	u8 clk_div;	 
 };
 
 #if IS_REACHABLE(CONFIG_DVB_STV6110)

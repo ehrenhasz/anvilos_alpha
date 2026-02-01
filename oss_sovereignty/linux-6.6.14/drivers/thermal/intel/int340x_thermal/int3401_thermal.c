@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * INT3401 processor thermal device
- * Copyright (c) 2020, Intel Corporation.
- */
+
+ 
 #include <linux/acpi.h>
 #include <linux/kernel.h>
 #include <linux/module.h>

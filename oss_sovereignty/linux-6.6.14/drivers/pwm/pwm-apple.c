@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR MIT
-/*
- * Driver for the Apple SoC PWM controller
- *
- * Copyright The Asahi Linux Contributors
- *
- * Limitations:
- * - The writes to cycle registers are shadowed until a write to
- *   the control register.
- * - If both OFF_CYCLES and ON_CYCLES are set to 0, the output
- *   is a constant off signal.
- * - When APPLE_PWM_CTRL is set to 0, the output is constant low
- */
+
+ 
 
 #include <linux/mod_devicetable.h>
 #include <linux/module.h>
@@ -88,7 +77,7 @@ static int apple_pwm_get_state(struct pwm_chip *chip, struct pwm_device *pwm,
 
 	state->enabled = (ctrl & APPLE_PWM_CTRL_ENABLE) && (ctrl & APPLE_PWM_CTRL_OUTPUT_ENABLE);
 	state->polarity = PWM_POLARITY_NORMAL;
-	// on_cycles + off_cycles is 33 bits, NSEC_PER_SEC is 30, there is no overflow
+	
 	state->duty_cycle = DIV64_U64_ROUND_UP((u64)on_cycles * NSEC_PER_SEC, fpwm->clkrate);
 	state->period = DIV64_U64_ROUND_UP(((u64)off_cycles + (u64)on_cycles) *
 					    NSEC_PER_SEC, fpwm->clkrate);
@@ -120,12 +109,7 @@ static int apple_pwm_probe(struct platform_device *pdev)
 	if (IS_ERR(clk))
 		return dev_err_probe(&pdev->dev, PTR_ERR(clk), "unable to get the clock");
 
-	/*
-	 * Uses the 24MHz system clock on all existing devices, can only
-	 * happen if the device tree is broken
-	 *
-	 * This check is done to prevent an overflow in .apply
-	 */
+	 
 	fpwm->clkrate = clk_get_rate(clk);
 	if (fpwm->clkrate > NSEC_PER_SEC)
 		return dev_err_probe(&pdev->dev, -EINVAL, "pwm clock out of range");

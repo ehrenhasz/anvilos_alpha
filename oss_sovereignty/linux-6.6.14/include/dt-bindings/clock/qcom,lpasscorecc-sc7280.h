@@ -1,12 +1,10 @@
-/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
-/*
- * Copyright (c) 2021, The Linux Foundation. All rights reserved.
- */
+ 
+ 
 
 #ifndef _DT_BINDINGS_CLK_QCOM_LPASS_CORE_CC_SC7280_H
 #define _DT_BINDINGS_CLK_QCOM_LPASS_CORE_CC_SC7280_H
 
-/* LPASS_CORE_CC clocks */
+ 
 #define LPASS_CORE_CC_DIG_PLL				0
 #define LPASS_CORE_CC_DIG_PLL_OUT_MAIN_DIV_CLK_SRC	1
 #define LPASS_CORE_CC_DIG_PLL_OUT_ODD			2
@@ -22,7 +20,7 @@
 #define LPASS_CORE_CC_EXT_MCLK0_CLK			12
 #define LPASS_CORE_CC_EXT_MCLK0_CLK_SRC			13
 
-/* LPASS_CORE_CC power domains */
+ 
 #define LPASS_CORE_CC_LPASS_CORE_HM_GDSC		0
 
 #endif

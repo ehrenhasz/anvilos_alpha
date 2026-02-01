@@ -1,16 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Roccat Savu driver for Linux
- *
- * Copyright (c) 2012 Stefan Achatz <erazor_de@users.sourceforge.net>
- */
 
-/*
- */
+ 
 
-/* Roccat Savu is a gamer mouse with macro keys that can be configured in
- * 5 profiles.
- */
+ 
+
+ 
 
 #include <linux/device.h>
 #include <linux/input.h>

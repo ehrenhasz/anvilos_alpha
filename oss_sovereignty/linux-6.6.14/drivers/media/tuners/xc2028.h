@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * xc2028
- *
- * Copyright (c) 2007-2008 Mauro Carvalho Chehab <mchehab@kernel.org>
- */
+ 
+ 
 
 #ifndef __TUNER_XC2028_H__
 #define __TUNER_XC2028_H__
@@ -13,8 +9,8 @@
 #define XC2028_DEFAULT_FIRMWARE "xc3028-v27.fw"
 #define XC3028L_DEFAULT_FIRMWARE "xc3028L-v36.fw"
 
-/*      Dmoduler		IF (kHz) */
-#define	XC3028_FE_DEFAULT	0		/* Don't load SCODE */
+ 
+#define	XC3028_FE_DEFAULT	0		 
 #define XC3028_FE_LG60		6000
 #define	XC3028_FE_ATI638	6380
 #define	XC3028_FE_OREN538	5380
@@ -26,7 +22,7 @@
 #define	XC3028_FE_CHINA		5200
 
 enum firmware_type {
-	XC2028_AUTO = 0,        /* By default, auto-detects */
+	XC2028_AUTO = 0,         
 	XC2028_D2633,
 	XC2028_D2620,
 };
@@ -52,7 +48,7 @@ struct xc2028_config {
 	struct xc2028_ctrl *ctrl;
 };
 
-/* xc2028 commands for callback */
+ 
 #define XC2028_TUNER_RESET	0
 #define XC2028_RESET_CLK	1
 #define XC2028_I2C_FLUSH	2
@@ -70,4 +66,4 @@ static inline struct dvb_frontend *xc2028_attach(struct dvb_frontend *fe,
 }
 #endif
 
-#endif /* __TUNER_XC2028_H__ */
+#endif  

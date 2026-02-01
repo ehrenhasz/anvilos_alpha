@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright(c) 2021-2022, Intel Corporation. All rights reserved.
- */
+
+ 
 
 #include "i915_drv.h"
 
@@ -33,7 +31,7 @@ int intel_pxp_huc_load_and_auth(struct intel_pxp *pxp)
 
 	huc_phys_addr = i915_gem_object_get_dma_address(huc->fw.obj, 0);
 
-	/* write the PXP message into the lmem (the sg list) */
+	 
 	huc_in.header.api_version = PXP_APIVER(4, 3);
 	huc_in.header.command_id  = PXP43_CMDID_START_HUC_AUTH;
 	huc_in.header.status      = 0;
@@ -50,15 +48,7 @@ int intel_pxp_huc_load_and_auth(struct intel_pxp *pxp)
 		return err;
 	}
 
-	/*
-	 * HuC does sometimes survive suspend/resume (it depends on how "deep"
-	 * a sleep state the device reaches) so we can end up here on resume
-	 * with HuC already loaded, in which case the GSC will return
-	 * PXP_STATUS_OP_NOT_PERMITTED. We can therefore consider the GuC
-	 * correctly transferred in this scenario; if the same error is ever
-	 * returned with HuC not loaded we'll still catch it when we check the
-	 * authentication bit later.
-	 */
+	 
 	if (huc_out.header.status != PXP_STATUS_SUCCESS &&
 	    huc_out.header.status != PXP_STATUS_OP_NOT_PERMITTED) {
 		drm_err(&gt->i915->drm,

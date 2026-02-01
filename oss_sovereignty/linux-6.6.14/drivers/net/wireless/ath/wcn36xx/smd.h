@@ -1,25 +1,11 @@
-/*
- * Copyright (c) 2013 Eugene Krasnikov <k.eugene.e@gmail.com>
- *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY
- * SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION
- * OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
- * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
+ 
 
 #ifndef _SMD_H_
 #define _SMD_H_
 
 #include "wcn36xx.h"
 
-/* Max shared size is 4k but we take less.*/
+ 
 #define WCN36XX_NV_FRAGMENT_SIZE			3072
 
 #define WCN36XX_HAL_BUF_SIZE				4096
@@ -27,7 +13,7 @@
 #define HAL_MSG_TIMEOUT 10000
 #define WCN36XX_SMSM_WLAN_TX_ENABLE			0x00000400
 #define WCN36XX_SMSM_WLAN_TX_RINGS_EMPTY		0x00000200
-/* The PNO version info be contained in the rsp msg */
+ 
 #define WCN36XX_FW_MSG_PNO_VERSION_MASK			0x8000
 
 enum wcn36xx_fw_msg_result {
@@ -37,9 +23,9 @@ enum wcn36xx_fw_msg_result {
 	WCN36XX_FW_MSG_RESULT_MEM_FAIL			= 5,
 };
 
-/******************************/
-/* SMD requests and responses */
-/******************************/
+ 
+ 
+ 
 struct wcn36xx_fw_msg_status_rsp {
 	u32	status;
 } __packed;
@@ -169,4 +155,4 @@ int wcn36xx_smd_exit_imps(struct wcn36xx *wcn);
 int wcn36xx_smd_add_beacon_filter(struct wcn36xx *wcn,
 				  struct ieee80211_vif *vif);
 
-#endif	/* _SMD_H_ */
+#endif	 

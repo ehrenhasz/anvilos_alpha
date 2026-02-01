@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * lg-laptop.c - LG Gram ACPI features and hotkeys Driver
- *
- * Copyright (C) 2018 Matan Ziv-Av <matan@svgalib.org>
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -77,13 +73,10 @@ static struct led_classdev kbd_backlight;
 static enum led_brightness get_kbd_backlight_level(void);
 
 static const struct key_entry wmi_keymap[] = {
-	{KE_KEY, 0x70, {KEY_F15} },	 /* LG control panel (F1) */
-	{KE_KEY, 0x74, {KEY_F21} },	 /* Touchpad toggle (F5) */
-	{KE_KEY, 0xf020000, {KEY_F14} }, /* Read mode (F9) */
-	{KE_KEY, 0x10000000, {KEY_F16} },/* Keyboard backlight (F8) - pressing
-					  * this key both sends an event and
-					  * changes backlight level.
-					  */
+	{KE_KEY, 0x70, {KEY_F15} },	  
+	{KE_KEY, 0x74, {KEY_F21} },	  
+	{KE_KEY, 0xf020000, {KEY_F14} },  
+	{KE_KEY, 0x10000000, {KEY_F16} }, 
 	{KE_KEY, 0x80, {KEY_RFKILL} },
 	{KE_END, 0}
 };
@@ -174,9 +167,9 @@ static union acpi_object *lg_wmbb(u32 method_id, u32 arg1, u32 arg2)
 	*(u32 *)(buf + 4) = arg1;
 	*(u32 *)(buf + 16) = arg2;
 	args[0].type = ACPI_TYPE_INTEGER;
-	args[0].integer.value = 0; /* ignored */
+	args[0].integer.value = 0;  
 	args[1].type = ACPI_TYPE_INTEGER;
-	args[1].integer.value = 1; /* Must be 1 or 2. Does not matter which */
+	args[1].integer.value = 1;  
 	args[2].type = ACPI_TYPE_BUFFER;
 	args[2].buffer.length = 32;
 	args[2].buffer.pointer = buf;
@@ -745,7 +738,7 @@ static int acpi_add(struct acpi_device *device)
 	if (ret)
 		goto out_platform_device;
 
-	/* LEDs are optional */
+	 
 	led_classdev_register(&pf_device->dev, &kbd_backlight);
 	led_classdev_register(&pf_device->dev, &tpad_led);
 

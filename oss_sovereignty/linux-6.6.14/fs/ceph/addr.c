@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/ceph/ceph_debug.h>
 
 #include <linux/backing-dev.h>
@@ -22,41 +22,7 @@
 #include <linux/ceph/osd_client.h>
 #include <linux/ceph/striper.h>
 
-/*
- * Ceph address space ops.
- *
- * There are a few funny things going on here.
- *
- * The page->private field is used to reference a struct
- * ceph_snap_context for _every_ dirty page.  This indicates which
- * snapshot the page was logically dirtied in, and thus which snap
- * context needs to be associated with the osd write during writeback.
- *
- * Similarly, struct ceph_inode_info maintains a set of counters to
- * count dirty pages on the inode.  In the absence of snapshots,
- * i_wrbuffer_ref == i_wrbuffer_ref_head == the dirty page count.
- *
- * When a snapshot is taken (that is, when the client receives
- * notification that a snapshot was taken), each inode with caps and
- * with dirty pages (dirty pages implies there is a cap) gets a new
- * ceph_cap_snap in the i_cap_snaps list (which is sorted in ascending
- * order, new snaps go to the tail).  The i_wrbuffer_ref_head count is
- * moved to capsnap->dirty. (Unless a sync write is currently in
- * progress.  In that case, the capsnap is said to be "pending", new
- * writes cannot start, and the capsnap isn't "finalized" until the
- * write completes (or fails) and a final size/mtime for the inode for
- * that snap can be settled upon.)  i_wrbuffer_ref_head is reset to 0.
- *
- * On writeback, we must submit writes to the osd IN SNAP ORDER.  So,
- * we look for the first capsnap in i_cap_snaps and write out pages in
- * that snap context _only_.  Then we move on to the next capsnap,
- * eventually reaching the "live" or "head" context (i.e., pages that
- * are not yet snapped) and are writing the most recently dirtied
- * pages.
- *
- * Invalidate and so forth must take care to ensure the dirty page
- * accounting is preserved.
- */
+ 
 
 #define CONGESTION_ON_THRESH(congestion_kb) (congestion_kb >> (PAGE_SHIFT-10))
 #define CONGESTION_OFF_THRESH(congestion_kb)				\
@@ -73,10 +39,7 @@ static inline struct ceph_snap_context *page_snap_context(struct page *page)
 	return NULL;
 }
 
-/*
- * Dirty a page.  Optimistically adjust accounting, on the assumption
- * that we won't race with invalidate.  If we do, readjust.
- */
+ 
 static bool ceph_dirty_folio(struct address_space *mapping, struct folio *folio)
 {
 	struct inode *inode;
@@ -93,9 +56,9 @@ static bool ceph_dirty_folio(struct address_space *mapping, struct folio *folio)
 	inode = mapping->host;
 	ci = ceph_inode(inode);
 
-	/* dirty the head */
+	 
 	spin_lock(&ci->i_ceph_lock);
-	BUG_ON(ci->i_wr_ref == 0); // caller should hold Fw reference
+	BUG_ON(ci->i_wr_ref == 0);  
 	if (__ceph_have_pending_cap_snap(ci)) {
 		struct ceph_cap_snap *capsnap =
 				list_last_entry(&ci->i_cap_snaps,
@@ -119,21 +82,14 @@ static bool ceph_dirty_folio(struct address_space *mapping, struct folio *folio)
 	     snapc, snapc->seq, snapc->num_snaps);
 	spin_unlock(&ci->i_ceph_lock);
 
-	/*
-	 * Reference snap context in folio->private.  Also set
-	 * PagePrivate so that we get invalidate_folio callback.
-	 */
+	 
 	VM_WARN_ON_FOLIO(folio->private, folio);
 	folio_attach_private(folio, snapc);
 
 	return ceph_fscache_dirty_folio(mapping, folio);
 }
 
-/*
- * If we are truncating the full folio (i.e. offset == 0), adjust the
- * dirty folio counters appropriately.  Only called if there is private
- * data on the folio.
- */
+ 
 static void ceph_invalidate_folio(struct folio *folio, size_t offset,
 				size_t length)
 {
@@ -195,7 +151,7 @@ static void ceph_netfs_expand_readahead(struct netfs_io_request *rreq)
 	u32 blockoff;
 
 	if (priv) {
-		/* Readahead is disabled by posix_fadvise POSIX_FADV_RANDOM */
+		 
 		if (priv->file_ra_disabled)
 			max_pages = 0;
 		else
@@ -203,22 +159,18 @@ static void ceph_netfs_expand_readahead(struct netfs_io_request *rreq)
 
 	}
 
-	/* Readahead is disabled */
+	 
 	if (!max_pages)
 		return;
 
 	max_len = max_pages << PAGE_SHIFT;
 
-	/*
-	 * Try to expand the length forward by rounding up it to the next
-	 * block, but do not exceed the file size, unless the original
-	 * request already exceeds it.
-	 */
+	 
 	new_end = min(round_up(end, lo->stripe_unit), rreq->i_size);
 	if (new_end > end && new_end <= rreq->start + max_len)
 		rreq->len = new_end - rreq->start;
 
-	/* Try to expand the start downward */
+	 
 	div_u64_rem(rreq->start, lo->stripe_unit, &blockoff);
 	if (rreq->len + blockoff <= max_len) {
 		rreq->start -= blockoff;
@@ -234,7 +186,7 @@ static bool ceph_netfs_clamp_length(struct netfs_io_subrequest *subreq)
 	u64 objno, objoff;
 	u32 xlen;
 
-	/* Truncate the extent at the end of the current block */
+	 
 	ceph_calc_file_object_mapping(&ci->i_layout, subreq->start, subreq->len,
 				      &objno, &objoff, &xlen);
 	subreq->len = min(xlen, fsc->mount_options->rsize);
@@ -257,7 +209,7 @@ static void finish_netfs_read(struct ceph_osd_request *req)
 	dout("%s: result %d subreq->len=%zu i_size=%lld\n", __func__, req->r_result,
 	     subreq->len, i_size_read(req->r_inode));
 
-	/* no object means success but no data */
+	 
 	if (err == -ENOENT)
 		err = 0;
 	else if (err == -EBLOCKLISTED)
@@ -308,7 +260,7 @@ static bool ceph_netfs_issue_op_inline(struct netfs_io_subrequest *subreq)
 	if (subreq->start >= inode->i_size)
 		goto out;
 
-	/* We need to fetch the inline data. */
+	 
 	mode = ceph_try_to_choose_auth_mds(inode, CEPH_STAT_CAP_INLINE_DATA);
 	req = ceph_mdsc_create_request(mdsc, CEPH_MDS_OP_GETATTR, mode);
 	if (IS_ERR(req)) {
@@ -326,7 +278,7 @@ static bool ceph_netfs_issue_op_inline(struct netfs_io_subrequest *subreq)
 	rinfo = &req->r_reply_info;
 	iinfo = &rinfo->targeti;
 	if (iinfo->inline_version == CEPH_INLINE_NONE) {
-		/* The data got uninlined */
+		 
 		ceph_mdsc_put_request(req);
 		return false;
 	}
@@ -387,13 +339,7 @@ static void ceph_netfs_issue_read(struct netfs_io_subrequest *subreq)
 
 	iov_iter_xarray(&iter, ITER_DEST, &rreq->mapping->i_pages, subreq->start, len);
 
-	/*
-	 * FIXME: For now, use CEPH_OSD_DATA_TYPE_PAGES instead of _ITER for
-	 * encrypted inodes. We'd need infrastructure that handles an iov_iter
-	 * instead of page arrays, and we don't have that as of yet. Once the
-	 * dust settles on the write helpers and encrypt/decrypt routines for
-	 * netfs, we should be able to rework this.
-	 */
+	 
 	if (IS_ENCRYPTED(inode)) {
 		struct page **pages;
 		size_t page_off;
@@ -405,7 +351,7 @@ static void ceph_netfs_issue_read(struct netfs_io_subrequest *subreq)
 			goto out;
 		}
 
-		/* should always give us a page-aligned read */
+		 
 		WARN_ON_ONCE(page_off);
 		len = err;
 		err = 0;
@@ -460,10 +406,7 @@ static int ceph_init_request(struct netfs_io_request *rreq, struct file *file)
 		}
 	}
 
-	/*
-	 * readahead callers do not necessarily hold Fcb caps
-	 * (e.g. fadvise, madvise).
-	 */
+	 
 	ret = ceph_try_get_caps(inode, CEPH_CAP_FILE_RD, want, true, &got);
 	if (ret < 0) {
 		dout("start_read %p, error getting cap\n", inode);
@@ -543,7 +486,7 @@ static inline void ceph_set_page_fscache(struct page *page)
 static inline void ceph_fscache_write_to_cache(struct inode *inode, u64 off, u64 len, bool caching)
 {
 }
-#endif /* CONFIG_CEPH_FSCACHE */
+#endif  
 
 struct ceph_writeback_ctl
 {
@@ -554,10 +497,7 @@ struct ceph_writeback_ctl
 	bool head_snapc;
 };
 
-/*
- * Get ref for the oldest snapc for an inode with dirty data... that is, the
- * only snap context we are allowed to write back.
- */
+ 
 static struct ceph_snap_context *
 get_oldest_context(struct inode *inode, struct ceph_writeback_ctl *ctl,
 		   struct ceph_snap_context *page_snapc)
@@ -573,7 +513,7 @@ get_oldest_context(struct inode *inode, struct ceph_writeback_ctl *ctl,
 		if (!capsnap->dirty_pages)
 			continue;
 
-		/* get i_size, truncate_{seq,size} for page_snapc? */
+		 
 		if (snapc && capsnap->context != page_snapc)
 			continue;
 
@@ -647,12 +587,7 @@ static u64 get_writepages_data_length(struct inode *inode,
 	return ret;
 }
 
-/*
- * Write a single page, but leave the page locked.
- *
- * If we get a write error, mark the mapping for error, but still adjust the
- * dirty page accounting (i.e., page is no longer dirty).
- */
+ 
 static int writepage_nounlock(struct page *page, struct writeback_control *wbc)
 {
 	struct folio *folio = page_folio(page);
@@ -675,7 +610,7 @@ static int writepage_nounlock(struct page *page, struct writeback_control *wbc)
 	if (ceph_inode_is_shutdown(inode))
 		return -EIO;
 
-	/* verify this is a writeable snap context */
+	 
 	snapc = page_snap_context(page);
 	if (!snapc) {
 		dout("writepage %p page %p not dirty?\n", inode, page);
@@ -685,7 +620,7 @@ static int writepage_nounlock(struct page *page, struct writeback_control *wbc)
 	if (snapc->seq > oldest->seq) {
 		dout("writepage %p page %p snapc %p not writeable - noop\n",
 		     inode, page, snapc);
-		/* we should only noop if called by kswapd */
+		 
 		WARN_ON(!(current->flags & PF_MEMALLOC));
 		ceph_put_snap_context(oldest);
 		redirty_page_for_writepage(wbc, page);
@@ -693,7 +628,7 @@ static int writepage_nounlock(struct page *page, struct writeback_control *wbc)
 	}
 	ceph_put_snap_context(oldest);
 
-	/* is this a partial page at end of file? */
+	 
 	if (page_off >= ceph_wbc.i_size) {
 		dout("folio at %lu beyond eof %llu\n", folio->index,
 				ceph_wbc.i_size);
@@ -742,7 +677,7 @@ static int writepage_nounlock(struct page *page, struct writeback_control *wbc)
 		}
 	}
 
-	/* it may be a short write due to an object boundary */
+	 
 	WARN_ON_ONCE(len > thp_size(page));
 	osd_req_op_extent_osd_data_pages(req, 0,
 			bounce_page ? &bounce_page : &page, wlen, 0,
@@ -766,7 +701,7 @@ static int writepage_nounlock(struct page *page, struct writeback_control *wbc)
 		if (!wbc)
 			wbc = &tmp_wbc;
 		if (err == -ERESTARTSYS) {
-			/* killed by SIGKILL */
+			 
 			dout("writepage interrupted page %p\n", page);
 			redirty_page_for_writepage(wbc, page);
 			end_page_writeback(page);
@@ -780,13 +715,13 @@ static int writepage_nounlock(struct page *page, struct writeback_control *wbc)
 		wbc->pages_skipped++;
 	} else {
 		dout("writepage cleaned page %p\n", page);
-		err = 0;  /* vfs expects us to return 0 */
+		err = 0;   
 	}
 	oldest = detach_page_private(page);
 	WARN_ON_ONCE(oldest != snapc);
 	end_page_writeback(page);
 	ceph_put_wrbuffer_cap_refs(ci, 1, snapc);
-	ceph_put_snap_context(snapc);  /* page's reference */
+	ceph_put_snap_context(snapc);   
 
 	if (atomic_long_dec_return(&fsc->writeback_count) <
 	    CONGESTION_OFF_THRESH(fsc->mount_options->congestion_kb))
@@ -810,8 +745,7 @@ static int ceph_writepage(struct page *page, struct writeback_control *wbc)
 
 	err = writepage_nounlock(page, wbc);
 	if (err == -ERESTARTSYS) {
-		/* direct memory reclaimer was killed by SIGKILL. return 0
-		 * to prevent caller from setting mapping/page error */
+		 
 		err = 0;
 	}
 	unlock_page(page);
@@ -819,12 +753,7 @@ static int ceph_writepage(struct page *page, struct writeback_control *wbc)
 	return err;
 }
 
-/*
- * async writeback completion handler.
- *
- * If we get an error, set the mapping error bit, but not the individual
- * page error bits.
- */
+ 
 static void writepages_finish(struct ceph_osd_request *req)
 {
 	struct inode *inode = req->r_inode;
@@ -850,16 +779,11 @@ static void writepages_finish(struct ceph_osd_request *req)
 		ceph_clear_error_write(ci);
 	}
 
-	/*
-	 * We lost the cache cap, need to truncate the page before
-	 * it is unlocked, otherwise we'd truncate it later in the
-	 * page truncation thread, possibly losing some data that
-	 * raced its way in
-	 */
+	 
 	remove_page = !(ceph_caps_issued(ci) &
 			(CEPH_CAP_FILE_CACHE|CEPH_CAP_FILE_LAZYIO));
 
-	/* clean all pages */
+	 
 	for (i = 0; i < req->r_num_ops; i++) {
 		if (req->r_ops[i].op != CEPH_OSD_OP_WRITE) {
 			pr_warn("%s incorrect op %d req %p index %d tid %llu\n",
@@ -918,9 +842,7 @@ static void writepages_finish(struct ceph_osd_request *req)
 	ceph_dec_osd_stopping_blocker(fsc->mdsc);
 }
 
-/*
- * initiate async writeback
- */
+ 
 static int ceph_writepages_start(struct address_space *mapping,
 				 struct writeback_control *wbc)
 {
@@ -955,7 +877,7 @@ static int ceph_writepages_start(struct address_space *mapping,
 				inode, ceph_ino(inode));
 		}
 		mapping_set_error(mapping, -EIO);
-		return -EIO; /* we're in a forced umount, don't write! */
+		return -EIO;  
 	}
 	if (fsc->mount_options->wsize < wsize)
 		wsize = fsc->mount_options->wsize;
@@ -971,11 +893,10 @@ static int ceph_writepages_start(struct address_space *mapping,
 		tag = PAGECACHE_TAG_DIRTY;
 	}
 retry:
-	/* find oldest snap context with dirty data */
+	 
 	snapc = get_oldest_context(inode, &ceph_wbc, NULL);
 	if (!snapc) {
-		/* hmm, why does writepages get called when there
-		   is no dirty data? */
+		 
 		dout(" no snap context with dirty data?\n");
 		goto out;
 	}
@@ -984,7 +905,7 @@ retry:
 
 	should_loop = false;
 	if (ceph_wbc.head_snapc && snapc != last_snapc) {
-		/* where to start/end? */
+		 
 		if (wbc->range_cyclic) {
 			index = start_index;
 			end = -1;
@@ -999,10 +920,7 @@ retry:
 			dout(" not cyclic, %lu to %lu\n", index, end);
 		}
 	} else if (!ceph_wbc.head_snapc) {
-		/* Do not respect wbc->range_{start,end}. Dirty pages
-		 * in that range can be associated with newer snapc.
-		 * They are not writeable until we write all dirty pages
-		 * associated with 'snapc' get written */
+		 
 		if (index > 0)
 			should_loop = true;
 		dout(" non-head snapc, range whole\n");
@@ -1035,18 +953,18 @@ get_more_pages:
 			page = &fbatch.folios[i]->page;
 			dout("? %p idx %lu\n", page, page->index);
 			if (locked_pages == 0)
-				lock_page(page);  /* first page */
+				lock_page(page);   
 			else if (!trylock_page(page))
 				break;
 
-			/* only dirty pages, or our accounting breaks */
+			 
 			if (unlikely(!PageDirty(page)) ||
 			    unlikely(page->mapping != mapping)) {
 				dout("!dirty or !mapping %p\n", page);
 				unlock_page(page);
 				continue;
 			}
-			/* only if matching snap context */
+			 
 			pgsnapc = page_snap_context(page);
 			if (pgsnapc != snapc) {
 				dout("page snapc %p %lld != oldest %p %lld\n",
@@ -1093,18 +1011,13 @@ get_more_pages:
 				continue;
 			}
 
-			/*
-			 * We have something to write.  If this is
-			 * the first locked page this time through,
-			 * calculate max possinle write size and
-			 * allocate a page array
-			 */
+			 
 			if (locked_pages == 0) {
 				u64 objnum;
 				u64 objoff;
 				u32 xlen;
 
-				/* prepare async write request */
+				 
 				offset = (u64)page_offset(page);
 				ceph_calc_file_object_mapping(&ci->i_layout,
 							      offset, wsize,
@@ -1142,7 +1055,7 @@ get_more_pages:
 				len = 0;
 			}
 
-			/* note position of first page in fbatch */
+			 
 			dout("%p will write page %p idx %lu\n",
 			     inode, page, page->index);
 
@@ -1160,7 +1073,7 @@ get_more_pages:
 					if (PTR_ERR(pages[locked_pages]) == -EINVAL)
 						pr_err("%s: inode->i_blkbits=%hhu\n",
 							__func__, inode->i_blkbits);
-					/* better not fail on first page! */
+					 
 					BUG_ON(locked_pages == 0);
 					pages[locked_pages] = NULL;
 					redirty_page_for_writepage(wbc, page);
@@ -1176,12 +1089,12 @@ get_more_pages:
 			len += thp_size(page);
 		}
 
-		/* did we get anything? */
+		 
 		if (!locked_pages)
 			goto release_folios;
 		if (i) {
 			unsigned j, n = 0;
-			/* shift unused page to beginning of fbatch */
+			 
 			for (j = 0; j < nr_folios; j++) {
 				if (!fbatch.folios[j])
 					continue;
@@ -1231,7 +1144,7 @@ new_request:
 		req->r_callback = writepages_finish;
 		req->r_inode = inode;
 
-		/* Format the osd request message and submit the write */
+		 
 		len = 0;
 		data_pages = pages;
 		op_idx = 0;
@@ -1239,19 +1152,16 @@ new_request:
 			struct page *page = ceph_fscrypt_pagecache_page(pages[i]);
 
 			u64 cur_offset = page_offset(page);
-			/*
-			 * Discontinuity in page range? Ceph can handle that by just passing
-			 * multiple extents in the write op.
-			 */
+			 
 			if (offset + len != cur_offset) {
-				/* If it's full, stop here */
+				 
 				if (op_idx + 1 == req->r_num_ops)
 					break;
 
-				/* Kick off an fscache write with what we have so far. */
+				 
 				ceph_fscache_write_to_cache(inode, offset, len, caching);
 
-				/* Start a new extent */
+				 
 				osd_req_op_extent_dup_last(req, op_idx,
 							   cur_offset - offset);
 				dout("writepages got pages at %llu~%llu\n",
@@ -1277,9 +1187,7 @@ new_request:
 		if (ceph_wbc.size_stable) {
 			len = min(len, ceph_wbc.i_size - offset);
 		} else if (i == locked_pages) {
-			/* writepages_finish() clears writeback pages
-			 * according to the data length, so make sure
-			 * data length covers all locked pages */
+			 
 			u64 min_len = len + 1 - thp_size(page);
 			len = get_writepages_data_length(inode, pages[i - 1],
 							 offset);
@@ -1307,7 +1215,7 @@ new_request:
 			num_ops -= req->r_num_ops;
 			locked_pages -= i;
 
-			/* allocate new pages array for next request */
+			 
 			data_pages = pages;
 			pages = kmalloc_array(locked_pages, sizeof(*pages),
 					      GFP_NOFS);
@@ -1323,7 +1231,7 @@ new_request:
 		} else {
 			BUG_ON(num_ops != req->r_num_ops);
 			index = pages[i - 1]->index + 1;
-			/* request message now owns the pages array */
+			 
 			pages = NULL;
 		}
 
@@ -1335,12 +1243,7 @@ new_request:
 		if (pages)
 			goto new_request;
 
-		/*
-		 * We stop writing back only if we are not doing
-		 * integrity sync. In case of integrity sync we have to
-		 * keep going until we have written all the pages
-		 * we tagged for writeback prior to entering this loop.
-		 */
+		 
 		if (wbc->nr_to_write <= 0 && wbc->sync_mode == WB_SYNC_NONE)
 			done = true;
 
@@ -1351,14 +1254,13 @@ release_folios:
 	}
 
 	if (should_loop && !done) {
-		/* more to do; loop back to beginning of file */
+		 
 		dout("writepages looping back to beginning of file\n");
-		end = start_index - 1; /* OK even when start_index == 0 */
+		end = start_index - 1;  
 
-		/* to write dirty pages associated with next snapc,
-		 * we need to wait until current writes complete */
+		 
 		if (wbc->sync_mode != WB_SYNC_NONE &&
-		    start_index == 0 && /* all dirty pages were checked */
+		    start_index == 0 &&  
 		    !ceph_wbc.head_snapc) {
 			struct page *page;
 			unsigned i, nr;
@@ -1396,9 +1298,7 @@ out:
 
 
 
-/*
- * See if a given @snapc is either writeable, or already written.
- */
+ 
 static int context_is_writeable_or_written(struct inode *inode,
 					   struct ceph_snap_context *snapc)
 {
@@ -1409,17 +1309,7 @@ static int context_is_writeable_or_written(struct inode *inode,
 	return ret;
 }
 
-/**
- * ceph_find_incompatible - find an incompatible context and return it
- * @page: page being dirtied
- *
- * We are only allowed to write into/dirty a page if the page is
- * clean, or already dirty within the same snap context. Returns a
- * conflicting context if there is one, NULL if there isn't, or a
- * negative error code on other errors.
- *
- * Must be called with page lock held.
- */
+ 
 static struct ceph_snap_context *
 ceph_find_incompatible(struct page *page)
 {
@@ -1441,20 +1331,17 @@ ceph_find_incompatible(struct page *page)
 		if (!snapc || snapc == ci->i_head_snapc)
 			break;
 
-		/*
-		 * this page is already dirty in another (older) snap
-		 * context!  is it writeable now?
-		 */
+		 
 		oldest = get_oldest_context(inode, NULL, NULL);
 		if (snapc->seq > oldest->seq) {
-			/* not writeable -- return it for the caller to deal with */
+			 
 			ceph_put_snap_context(oldest);
 			dout(" page %p snapc %p not current or oldest\n", page, snapc);
 			return ceph_get_snap_context(snapc);
 		}
 		ceph_put_snap_context(oldest);
 
-		/* yay, writeable, do it now (without dropping page lock) */
+		 
 		dout(" page %p snapc %p not current, but oldest\n", page, snapc);
 		if (clear_page_dirty_for_io(page)) {
 			int r = writepage_nounlock(page, NULL);
@@ -1491,10 +1378,7 @@ static int ceph_netfs_check_write_begin(struct file *file, loff_t pos, unsigned 
 	return 0;
 }
 
-/*
- * We are only allowed to write into/dirty the page if the page is
- * clean, or already dirty within the same snap context.
- */
+ 
 static int ceph_write_begin(struct file *file, struct address_space *mapping,
 			    loff_t pos, unsigned len,
 			    struct page **pagep, void **fsdata)
@@ -1514,10 +1398,7 @@ static int ceph_write_begin(struct file *file, struct address_space *mapping,
 	return 0;
 }
 
-/*
- * we don't do anything in here that simple_write_end doesn't do
- * except adjust dirty page accounting
- */
+ 
 static int ceph_write_end(struct file *file, struct address_space *mapping,
 			  loff_t pos, unsigned len, unsigned copied,
 			  struct page *subpage, void *fsdata)
@@ -1530,7 +1411,7 @@ static int ceph_write_end(struct file *file, struct address_space *mapping,
 	     inode, folio, (int)pos, (int)copied, (int)len);
 
 	if (!folio_test_uptodate(folio)) {
-		/* just return that nothing was copied on a short copy */
+		 
 		if (copied < len) {
 			copied = 0;
 			goto out;
@@ -1538,7 +1419,7 @@ static int ceph_write_end(struct file *file, struct address_space *mapping,
 		folio_mark_uptodate(folio);
 	}
 
-	/* did file size increase? */
+	 
 	if (pos+copied > i_size_read(inode))
 		check_cap = ceph_inode_set_size(inode, pos+copied);
 
@@ -1579,9 +1460,7 @@ static void ceph_restore_sigs(sigset_t *oldset)
 	sigprocmask(SIG_SETMASK, oldset, NULL);
 }
 
-/*
- * vm ops
- */
+ 
 static vm_fault_t ceph_filemap_fault(struct vm_fault *vmf)
 {
 	struct vm_area_struct *vma = vmf->vma;
@@ -1629,9 +1508,9 @@ static vm_fault_t ceph_filemap_fault(struct vm_fault *vmf)
 	if (err != -EAGAIN)
 		goto out_restore;
 
-	/* read inline data */
+	 
 	if (off >= PAGE_SIZE) {
-		/* does not support inline data > PAGE_SIZE */
+		 
 		ret = VM_FAULT_SIGBUS;
 	} else {
 		struct address_space *mapping = inode->i_mapping;
@@ -1717,7 +1596,7 @@ static vm_fault_t ceph_page_mkwrite(struct vm_fault *vmf)
 	dout("page_mkwrite %p %llu~%zd got cap refs on %s\n",
 	     inode, off, len, ceph_cap_string(got));
 
-	/* Update time before taking page lock */
+	 
 	file_update_time(vma->vm_file);
 	inode_inc_iversion_raw(inode);
 
@@ -1734,7 +1613,7 @@ static vm_fault_t ceph_page_mkwrite(struct vm_fault *vmf)
 
 		snapc = ceph_find_incompatible(page);
 		if (!snapc) {
-			/* success.  we'll keep the page locked. */
+			 
 			set_page_dirty(page);
 			ret = VM_FAULT_LOCKED;
 			break;
@@ -1851,7 +1730,7 @@ int ceph_uninline_data(struct file *file)
 	if (!prealloc_cf)
 		return -ENOMEM;
 
-	if (inline_version == 1) /* initial version, no data */
+	if (inline_version == 1)  
 		goto out_uninline;
 
 	folio = read_mapping_folio(inode->i_mapping, 0, file);
@@ -1928,7 +1807,7 @@ out_uninline:
 	if (!err) {
 		int dirty;
 
-		/* Set to CAP_INLINE_NONE and dirty the caps */
+		 
 		down_read(&fsc->mdsc->snap_rwsem);
 		spin_lock(&ci->i_ceph_lock);
 		ci->i_inline_version = CEPH_INLINE_NONE;
@@ -2081,7 +1960,7 @@ static int __ceph_pool_perm_get(struct ceph_inode_info *ci,
 	if (err)
 		goto out_unlock;
 
-	/* one page should be large enough for STAT data */
+	 
 	pages = ceph_alloc_page_vector(1, GFP_KERNEL);
 	if (IS_ERR(pages)) {
 		err = PTR_ERR(pages);
@@ -2155,16 +2034,12 @@ int ceph_pool_perm_check(struct inode *inode, int need)
 	s64 pool;
 	int ret, flags;
 
-	/* Only need to do this for regular files */
+	 
 	if (!S_ISREG(inode->i_mode))
 		return 0;
 
 	if (ci->i_vino.snap != CEPH_NOSNAP) {
-		/*
-		 * Pool permission check needs to write to the first object.
-		 * But for snapshot, head of the first object may have alread
-		 * been deleted. Skip check to avoid creating orphan object.
-		 */
+		 
 		return 0;
 	}
 

@@ -1,45 +1,4 @@
-/*
- *  linux/drivers/scsi/esas2r/esas2r_init.c
- *      For use with ATTO ExpressSAS R6xx SAS/SATA RAID controllers
- *
- *  Copyright (c) 2001-2013 ATTO Technology, Inc.
- *  (mailto:linuxdrivers@attotech.com)mpt3sas/mpt3sas_trigger_diag.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * NO WARRANTY
- * THE PROGRAM IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OR
- * CONDITIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED INCLUDING, WITHOUT
- * LIMITATION, ANY WARRANTIES OR CONDITIONS OF TITLE, NON-INFRINGEMENT,
- * MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE. Each Recipient is
- * solely responsible for determining the appropriateness of using and
- * distributing the Program and assumes all risks associated with its
- * exercise of rights under this Agreement, including but not limited to
- * the risks and costs of program errors, damage to or loss of data,
- * programs or equipment, and unavailability or interruption of operations.
- *
- * DISCLAIMER OF LIABILITY
- * NEITHER RECIPIENT NOR ANY CONTRIBUTORS SHALL HAVE ANY LIABILITY FOR ANY
- * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING WITHOUT LIMITATION LOST PROFITS), HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR
- * TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE
- * USE OR DISTRIBUTION OF THE PROGRAM OR THE EXERCISE OF ANY RIGHTS GRANTED
- * HEREUNDER, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGES
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301,
- * USA.
- */
+ 
 
 #include "esas2r.h"
 
@@ -78,13 +37,7 @@ static void esas2r_initmem_free(struct esas2r_adapter *a,
 	if (mem_desc->virt_addr == NULL)
 		return;
 
-	/*
-	 * Careful!  phys_addr and virt_addr may have been adjusted from the
-	 * original allocation in order to return the desired alignment.  That
-	 * means we have to use the original address (in esas2r_data) and size
-	 * (esas2r_param) and calculate the original physical address based on
-	 * the difference between the requested and actual allocation size.
-	 */
+	 
 	if (mem_desc->phys_addr) {
 		int unalign = ((u8 *)mem_desc->virt_addr) -
 			      ((u8 *)mem_desc->esas2r_data);
@@ -198,7 +151,7 @@ static void esas2r_setup_interrupts(struct esas2r_adapter *a, int intr_mode)
 {
 	int i;
 
-	/* Set up interrupt mode based on the requested value */
+	 
 	switch (intr_mode) {
 	case INTR_MODE_LEGACY:
 use_legacy_interrupts:
@@ -356,7 +309,7 @@ int esas2r_init_adapter(struct Scsi_Host *host, struct pci_dev *pcid,
 
 	a->index = index;
 
-	/* interrupts will be disabled until we are done with init */
+	 
 	atomic_inc(&a->dis_ints_cnt);
 	atomic_inc(&a->disable_cnt);
 	set_bit(AF_CHPRST_PENDING, &a->flags);
@@ -405,10 +358,7 @@ int esas2r_init_adapter(struct Scsi_Host *host, struct pci_dev *pcid,
 		     esas2r_adapter_tasklet,
 		     (unsigned long)a);
 
-	/*
-	 * Disable chip interrupts to prevent spurious interrupts
-	 * until we claim the IRQ.
-	 */
+	 
 	esas2r_disable_chip_interrupts(a);
 	esas2r_check_adapter(a);
 
@@ -445,16 +395,12 @@ static void esas2r_adapter_power_down(struct esas2r_adapter *a,
 		}
 		esas2r_power_down(a);
 
-		/*
-		 * There are versions of firmware that do not handle the sync
-		 * cache command correctly.  Stall here to ensure that the
-		 * cache is lazily flushed.
-		 */
+		 
 		mdelay(500);
 		esas2r_debug("chip halted");
 	}
 
-	/* Remove sysfs binary files */
+	 
 	if (a->sysfs_fw_created) {
 		sysfs_remove_bin_file(&a->host->shost_dev.kobj, &bin_attr_fw);
 		a->sysfs_fw_created = 0;
@@ -487,7 +433,7 @@ static void esas2r_adapter_power_down(struct esas2r_adapter *a,
 		a->sysfs_default_nvram_created = 0;
 	}
 
-	/* Clean up interrupts */
+	 
 	if (test_bit(AF2_IRQ_CLAIMED, &a->flags2)) {
 		esas2r_log_dev(ESAS2R_LOG_INFO,
 			       &(a->pcid->dev),
@@ -515,7 +461,7 @@ static void esas2r_adapter_power_down(struct esas2r_adapter *a,
 		esas2r_initmem_free(a, memdesc);
 	}
 
-	/* Following frees everything allocated via alloc_vda_req */
+	 
 	list_for_each_entry_safe(memdesc, next, &a->vrq_mds_head, next_desc) {
 		esas2r_initmem_free(a, memdesc);
 		list_del(&memdesc->next_desc);
@@ -539,7 +485,7 @@ static void esas2r_adapter_power_down(struct esas2r_adapter *a,
 	}
 }
 
-/* Release/free allocated resources for specified adapters. */
+ 
 void esas2r_kill_adapter(int i)
 {
 	struct esas2r_adapter *a = esas2r_adapters[i];
@@ -674,13 +620,10 @@ static int __maybe_unused esas2r_resume(struct device *dev)
 		goto error_exit;
 	}
 
-	/* Set up interupt mode */
+	 
 	esas2r_setup_interrupts(a, a->intr_mode);
 
-	/*
-	 * Disable chip interrupts to prevent spurious interrupts until we
-	 * claim the IRQ.
-	 */
+	 
 	esas2r_disable_chip_interrupts(a);
 	if (!esas2r_power_up(a, true)) {
 		esas2r_debug("yikes, esas2r_power_up failed");
@@ -691,10 +634,7 @@ static int __maybe_unused esas2r_resume(struct device *dev)
 	esas2r_claim_interrupts(a);
 
 	if (test_bit(AF2_IRQ_CLAIMED, &a->flags2)) {
-		/*
-		 * Now that system interrupt(s) are claimed, we can enable
-		 * chip interrupts.
-		 */
+		 
 		esas2r_enable_chip_interrupts(a);
 		esas2r_kickoff_timer(a);
 	} else {
@@ -724,7 +664,7 @@ u32 esas2r_get_uncached_size(struct esas2r_adapter *a)
 {
 	return sizeof(struct esas2r_sas_nvram)
 	       + ALIGN(ESAS2R_DISC_BUF_LEN, 8)
-	       + ALIGN(sizeof(u32), 8) /* outbound list copy pointer */
+	       + ALIGN(sizeof(u32), 8)  
 	       + 8
 	       + (num_sg_lists * (u16)sgl_page_size)
 	       + ALIGN((num_requests + num_ae_requests + 1 +
@@ -734,7 +674,7 @@ u32 esas2r_get_uncached_size(struct esas2r_adapter *a)
 	       + ALIGN((num_requests + num_ae_requests + 1 +
 			ESAS2R_LIST_EXTRA) *
 		       sizeof(struct atto_vda_ob_rsp), 8)
-	       + 256; /* VDA request and buffer align */
+	       + 256;  
 }
 
 static void esas2r_init_pci_cfg_space(struct esas2r_adapter *a)
@@ -757,10 +697,7 @@ static void esas2r_init_pci_cfg_space(struct esas2r_adapter *a)
 	}
 }
 
-/*
- * Determine the organization of the uncached data area and
- * finish initializing the adapter structure
- */
+ 
 bool esas2r_init_adapter_struct(struct esas2r_adapter *a,
 				void **uncached_area)
 {
@@ -782,7 +719,7 @@ bool esas2r_init_adapter_struct(struct esas2r_adapter *a,
 		return false;
 	}
 
-	/* allocate requests for asynchronous events */
+	 
 	a->first_ae_req =
 		kcalloc(num_ae_requests, sizeof(struct esas2r_request),
 			GFP_KERNEL);
@@ -793,7 +730,7 @@ bool esas2r_init_adapter_struct(struct esas2r_adapter *a,
 		return false;
 	}
 
-	/* allocate the S/G list memory descriptors */
+	 
 	a->sg_list_mds = kcalloc(num_sg_lists, sizeof(struct esas2r_mem_desc),
 				 GFP_KERNEL);
 
@@ -803,7 +740,7 @@ bool esas2r_init_adapter_struct(struct esas2r_adapter *a,
 		return false;
 	}
 
-	/* allocate the request table */
+	 
 	a->req_table =
 		kcalloc(num_requests + num_ae_requests + 1,
 			sizeof(struct esas2r_request *),
@@ -815,13 +752,10 @@ bool esas2r_init_adapter_struct(struct esas2r_adapter *a,
 		return false;
 	}
 
-	/* initialize PCI configuration space */
+	 
 	esas2r_init_pci_cfg_space(a);
 
-	/*
-	 * the thunder_stream boards all have a serial flash part that has a
-	 * different base address on the AHB bus.
-	 */
+	 
 	if ((a->pcid->subsystem_vendor == ATTO_VENDOR_ID)
 	    && (a->pcid->subsystem_device & ATTO_SSDID_TBT))
 		a->flags2 |= AF2_THUNDERBOLT;
@@ -832,10 +766,10 @@ bool esas2r_init_adapter_struct(struct esas2r_adapter *a,
 	if (a->pcid->subsystem_device == ATTO_TLSH_1068)
 		a->flags2 |= AF2_THUNDERLINK;
 
-	/* Uncached Area */
+	 
 	high = (u8 *)*uncached_area;
 
-	/* initialize the scatter/gather table pages */
+	 
 
 	for (i = 0, sgl = a->sg_list_mds; i < num_sg_lists; i++, sgl++) {
 		sgl->size = sgl_page_size;
@@ -843,17 +777,17 @@ bool esas2r_init_adapter_struct(struct esas2r_adapter *a,
 		list_add_tail(&sgl->next_desc, &a->free_sg_list_head);
 
 		if (!esas2r_initmem_alloc(a, sgl, ESAS2R_SGL_ALIGN)) {
-			/* Allow the driver to load if the minimum count met. */
+			 
 			if (i < NUM_SGL_MIN)
 				return false;
 			break;
 		}
 	}
 
-	/* compute the size of the lists */
+	 
 	a->list_size = num_requests + ESAS2R_LIST_EXTRA;
 
-	/* allocate the inbound list */
+	 
 	a->inbound_list_md.size = a->list_size *
 				  sizeof(struct
 					 esas2r_inbound_list_source_entry);
@@ -863,7 +797,7 @@ bool esas2r_init_adapter_struct(struct esas2r_adapter *a,
 		return false;
 	}
 
-	/* allocate the outbound list */
+	 
 	a->outbound_list_md.size = a->list_size *
 				   sizeof(struct atto_vda_ob_rsp);
 
@@ -873,30 +807,30 @@ bool esas2r_init_adapter_struct(struct esas2r_adapter *a,
 		return false;
 	}
 
-	/* allocate the NVRAM structure */
+	 
 	a->nvram = (struct esas2r_sas_nvram *)high;
 	high += sizeof(struct esas2r_sas_nvram);
 
-	/* allocate the discovery buffer */
+	 
 	a->disc_buffer = high;
 	high += ESAS2R_DISC_BUF_LEN;
 	high = PTR_ALIGN(high, 8);
 
-	/* allocate the outbound list copy pointer */
+	 
 	a->outbound_copy = (u32 volatile *)high;
 	high += sizeof(u32);
 
 	if (!test_bit(AF_NVR_VALID, &a->flags))
 		esas2r_nvram_set_defaults(a);
 
-	/* update the caller's uncached memory area pointer */
+	 
 	*uncached_area = (void *)high;
 
-	/* initialize the allocated memory */
+	 
 	if (test_bit(AF_FIRST_INIT, &a->flags)) {
 		esas2r_targ_db_initialize(a);
 
-		/* prime parts of the inbound list */
+		 
 		element =
 			(struct esas2r_inbound_list_source_entry *)a->
 			inbound_list_md.
@@ -913,7 +847,7 @@ bool esas2r_init_adapter_struct(struct esas2r_adapter *a,
 			element++;
 		}
 
-		/* init the AE requests */
+		 
 		for (rq = a->first_ae_req, i = 0; i < num_ae_requests; rq++,
 		     i++) {
 			INIT_LIST_HEAD(&rq->req_list);
@@ -925,7 +859,7 @@ bool esas2r_init_adapter_struct(struct esas2r_adapter *a,
 
 			esas2r_rq_init_request(rq, a);
 
-			/* override the completion function */
+			 
 			rq->comp_cb = esas2r_ae_complete;
 		}
 	}
@@ -933,7 +867,7 @@ bool esas2r_init_adapter_struct(struct esas2r_adapter *a,
 	return true;
 }
 
-/* This code will verify that the chip is operational. */
+ 
 bool esas2r_check_adapter(struct esas2r_adapter *a)
 {
 	u32 starttime;
@@ -941,44 +875,29 @@ bool esas2r_check_adapter(struct esas2r_adapter *a)
 	u64 ppaddr;
 	u32 dw;
 
-	/*
-	 * if the chip reset detected flag is set, we can bypass a bunch of
-	 * stuff.
-	 */
+	 
 	if (test_bit(AF_CHPRST_DETECTED, &a->flags))
 		goto skip_chip_reset;
 
-	/*
-	 * BEFORE WE DO ANYTHING, disable the chip interrupts!  the boot driver
-	 * may have left them enabled or we may be recovering from a fault.
-	 */
+	 
 	esas2r_write_register_dword(a, MU_INT_MASK_OUT, ESAS2R_INT_DIS_MASK);
 	esas2r_flush_register_dword(a, MU_INT_MASK_OUT);
 
-	/*
-	 * wait for the firmware to become ready by forcing an interrupt and
-	 * waiting for a response.
-	 */
+	 
 	starttime = jiffies_to_msecs(jiffies);
 
 	while (true) {
 		esas2r_force_interrupt(a);
 		doorbell = esas2r_read_register_dword(a, MU_DOORBELL_OUT);
 		if (doorbell == 0xFFFFFFFF) {
-			/*
-			 * Give the firmware up to two seconds to enable
-			 * register access after a reset.
-			 */
+			 
 			if ((jiffies_to_msecs(jiffies) - starttime) > 2000)
 				return esas2r_set_degraded_mode(a,
 								"unable to access registers");
 		} else if (doorbell & DRBL_FORCE_INT) {
 			u32 ver = (doorbell & DRBL_FW_VER_MSK);
 
-			/*
-			 * This driver supports version 0 and version 1 of
-			 * the API
-			 */
+			 
 			esas2r_write_register_dword(a, MU_DOORBELL_OUT,
 						    doorbell);
 
@@ -1010,7 +929,7 @@ bool esas2r_check_adapter(struct esas2r_adapter *a)
 		}
 	}
 
-	/* purge any asynchronous events since we will repost them later */
+	 
 	esas2r_write_register_dword(a, MU_DOORBELL_IN, DRBL_MSG_IFC_DOWN);
 	starttime = jiffies_to_msecs(jiffies);
 
@@ -1030,10 +949,7 @@ bool esas2r_check_adapter(struct esas2r_adapter *a)
 		}
 	}
 skip_chip_reset:
-	/*
-	 * first things first, before we go changing any of these registers
-	 * disable the communication lists.
-	 */
+	 
 	dw = esas2r_read_register_dword(a, MU_IN_LIST_CONFIG);
 	dw &= ~MU_ILC_ENABLE;
 	esas2r_write_register_dword(a, MU_IN_LIST_CONFIG, dw);
@@ -1041,7 +957,7 @@ skip_chip_reset:
 	dw &= ~MU_OLC_ENABLE;
 	esas2r_write_register_dword(a, MU_OUT_LIST_CONFIG, dw);
 
-	/* configure the communication list addresses */
+	 
 	ppaddr = a->inbound_list_md.phys_addr;
 	esas2r_write_register_dword(a, MU_IN_LIST_ADDR_LO,
 				    lower_32_bits(ppaddr));
@@ -1059,7 +975,7 @@ skip_chip_reset:
 	esas2r_write_register_dword(a, MU_OUT_LIST_COPY_PTR_HI,
 				    upper_32_bits(ppaddr));
 
-	/* reset the read and write pointers */
+	 
 	*a->outbound_copy =
 		a->last_write =
 			a->last_read = a->list_size - 1;
@@ -1073,7 +989,7 @@ skip_chip_reset:
 	esas2r_write_register_dword(a, MU_OUT_LIST_WRITE,
 				    MU_OLW_TOGGLE | a->last_write);
 
-	/* configure the interface select fields */
+	 
 	dw = esas2r_read_register_dword(a, MU_IN_LIST_IFC_CONFIG);
 	dw &= ~(MU_ILIC_LIST | MU_ILIC_DEST);
 	esas2r_write_register_dword(a, MU_IN_LIST_IFC_CONFIG,
@@ -1084,7 +1000,7 @@ skip_chip_reset:
 				    (dw | MU_OLIC_LIST_F0 |
 				     MU_OLIC_SOURCE_DDR));
 
-	/* finish configuring the communication lists */
+	 
 	dw = esas2r_read_register_dword(a, MU_IN_LIST_CONFIG);
 	dw &= ~(MU_ILC_ENTRY_MASK | MU_ILC_NUMBER_MASK);
 	dw |= MU_ILC_ENTRY_4_DW | MU_ILC_DYNAMIC_SRC
@@ -1095,11 +1011,7 @@ skip_chip_reset:
 	dw |= MU_OLC_ENTRY_4_DW | (a->list_size << MU_OLC_NUMBER_SHIFT);
 	esas2r_write_register_dword(a, MU_OUT_LIST_CONFIG, dw);
 
-	/*
-	 * notify the firmware that we're done setting up the communication
-	 * list registers.  wait here until the firmware is done configuring
-	 * its lists.  it will signal that it is done by enabling the lists.
-	 */
+	 
 	esas2r_write_register_dword(a, MU_DOORBELL_IN, DRBL_MSG_IFC_INIT);
 	starttime = jiffies_to_msecs(jiffies);
 
@@ -1122,26 +1034,20 @@ skip_chip_reset:
 		}
 	}
 
-	/*
-	 * flag whether the firmware supports the power down doorbell.  we
-	 * determine this by reading the inbound doorbell enable mask.
-	 */
+	 
 	doorbell = esas2r_read_register_dword(a, MU_DOORBELL_IN_ENB);
 	if (doorbell & DRBL_POWER_DOWN)
 		set_bit(AF2_VDA_POWER_DOWN, &a->flags2);
 	else
 		clear_bit(AF2_VDA_POWER_DOWN, &a->flags2);
 
-	/*
-	 * enable assertion of outbound queue and doorbell interrupts in the
-	 * main interrupt cause register.
-	 */
+	 
 	esas2r_write_register_dword(a, MU_OUT_LIST_INT_MASK, MU_OLIS_MASK);
 	esas2r_write_register_dword(a, MU_DOORBELL_OUT_ENB, DRBL_ENB_MASK);
 	return true;
 }
 
-/* Process the initialization message just completed and format the next one. */
+ 
 static bool esas2r_format_init_msg(struct esas2r_adapter *a,
 				   struct esas2r_request *rq)
 {
@@ -1162,7 +1068,7 @@ static bool esas2r_format_init_msg(struct esas2r_adapter *a,
 				     NULL);
 		ci = (struct atto_vda_cfg_init *)&rq->vrq->cfg.data.init;
 		ci->sgl_page_size = cpu_to_le32(sgl_page_size);
-		/* firmware interface overflows in y2106 */
+		 
 		ci->epoch_time = cpu_to_le32(ktime_get_real_seconds());
 		rq->flags |= RF_FAILURE_OK;
 		a->init_msg = ESAS2R_INIT_MSG_INIT;
@@ -1187,10 +1093,7 @@ static bool esas2r_format_init_msg(struct esas2r_adapter *a,
 			esas2r_hdebug("FAILED");
 		}
 
-		/*
-		 * the 2.71 and earlier releases of R6xx firmware did not error
-		 * unsupported config requests correctly.
-		 */
+		 
 
 		if ((test_bit(AF2_THUNDERBOLT, &a->flags2))
 		    || (be32_to_cpu(a->fw_version) > 0x00524702)) {
@@ -1236,10 +1139,7 @@ static bool esas2r_format_init_msg(struct esas2r_adapter *a,
 	return true;
 }
 
-/*
- * Perform initialization messages via the request queue.  Messages are
- * performed with interrupts disabled.
- */
+ 
 bool esas2r_init_msgs(struct esas2r_adapter *a)
 {
 	bool success = true;
@@ -1280,7 +1180,7 @@ bool esas2r_init_msgs(struct esas2r_adapter *a)
 	return success;
 }
 
-/* Initialize the adapter chip */
+ 
 bool esas2r_init_adapter_hw(struct esas2r_adapter *a, bool init_poll)
 {
 	bool rslt = false;
@@ -1301,11 +1201,11 @@ bool esas2r_init_adapter_hw(struct esas2r_adapter *a, bool init_poll)
 		goto exit;
 	}
 
-	/* The firmware is ready. */
+	 
 	clear_bit(AF_DEGRADED_MODE, &a->flags);
 	clear_bit(AF_CHPRST_PENDING, &a->flags);
 
-	/* Post all the async event requests */
+	 
 	for (i = 0, rq = a->first_ae_req; i < num_ae_requests; i++, rq++)
 		esas2r_start_ae_request(a, rq);
 
@@ -1330,62 +1230,38 @@ bool esas2r_init_adapter_hw(struct esas2r_adapter *a, bool init_poll)
 		return true;
 	}
 
-	/* initialize discovery */
+	 
 	esas2r_disc_initialize(a);
 
-	/*
-	 * wait for the device wait time to expire here if requested.  this is
-	 * usually requested during initial driver load and possibly when
-	 * resuming from a low power state.  deferred device waiting will use
-	 * interrupts.  chip reset recovery always defers device waiting to
-	 * avoid being in a TASKLET too long.
-	 */
+	 
 	if (init_poll) {
 		u32 currtime = a->disc_start_time;
 		u32 nexttick = 100;
 		u32 deltatime;
 
-		/*
-		 * Block Tasklets from getting scheduled and indicate this is
-		 * polled discovery.
-		 */
+		 
 		set_bit(AF_TASKLET_SCHEDULED, &a->flags);
 		set_bit(AF_DISC_POLLED, &a->flags);
 
-		/*
-		 * Temporarily bring the disable count to zero to enable
-		 * deferred processing.  Note that the count is already zero
-		 * after the first initialization.
-		 */
+		 
 		if (test_bit(AF_FIRST_INIT, &a->flags))
 			atomic_dec(&a->disable_cnt);
 
 		while (test_bit(AF_DISC_PENDING, &a->flags)) {
 			schedule_timeout_interruptible(msecs_to_jiffies(100));
 
-			/*
-			 * Determine the need for a timer tick based on the
-			 * delta time between this and the last iteration of
-			 * this loop.  We don't use the absolute time because
-			 * then we would have to worry about when nexttick
-			 * wraps and currtime hasn't yet.
-			 */
+			 
 			deltatime = jiffies_to_msecs(jiffies) - currtime;
 			currtime += deltatime;
 
-			/*
-			 * Process any waiting discovery as long as the chip is
-			 * up.  If a chip reset happens during initial polling,
-			 * we have to make sure the timer tick processes the
-			 * doorbell indicating the firmware is ready.
-			 */
+			 
 			if (!test_bit(AF_CHPRST_PENDING, &a->flags))
 				esas2r_disc_check_for_work(a);
 
-			/* Simulate a timer tick. */
+			 
 			if (nexttick <= deltatime) {
 
-				/* Time for a timer tick */
+				 
 				nexttick += 100;
 				esas2r_timer_tick(a);
 			}
@@ -1393,7 +1269,7 @@ bool esas2r_init_adapter_hw(struct esas2r_adapter *a, bool init_poll)
 			if (nexttick > deltatime)
 				nexttick -= deltatime;
 
-			/* Do any deferred processing */
+			 
 			if (esas2r_is_tasklet_pending(a))
 				esas2r_do_tasklet_tasks(a);
 
@@ -1409,45 +1285,32 @@ bool esas2r_init_adapter_hw(struct esas2r_adapter *a, bool init_poll)
 
 	esas2r_targ_db_report_changes(a);
 
-	/*
-	 * For cases where (a) the initialization messages processing may
-	 * handle an interrupt for a port event and a discovery is waiting, but
-	 * we are not waiting for devices, or (b) the device wait time has been
-	 * exhausted but there is still discovery pending, start any leftover
-	 * discovery in interrupt driven mode.
-	 */
+	 
 	esas2r_disc_start_waiting(a);
 
-	/* Enable chip interrupts */
+	 
 	a->int_mask = ESAS2R_INT_STS_MASK;
 	esas2r_enable_chip_interrupts(a);
 	esas2r_enable_heartbeat(a);
 	rslt = true;
 
 exit:
-	/*
-	 * Regardless of whether initialization was successful, certain things
-	 * need to get done before we exit.
-	 */
+	 
 
 	if (test_bit(AF_CHPRST_DETECTED, &a->flags) &&
 	    test_bit(AF_FIRST_INIT, &a->flags)) {
-		/*
-		 * Reinitialization was performed during the first
-		 * initialization.  Only clear the chip reset flag so the
-		 * original device polling is not cancelled.
-		 */
+		 
 		if (!rslt)
 			clear_bit(AF_CHPRST_PENDING, &a->flags);
 	} else {
-		/* First initialization or a subsequent re-init is complete. */
+		 
 		if (!rslt) {
 			clear_bit(AF_CHPRST_PENDING, &a->flags);
 			clear_bit(AF_DISC_PENDING, &a->flags);
 		}
 
 
-		/* Enable deferred processing after the first initialization. */
+		 
 		if (test_bit(AF_FIRST_INIT, &a->flags)) {
 			clear_bit(AF_FIRST_INIT, &a->flags);
 
@@ -1471,11 +1334,7 @@ void esas2r_reset_chip(struct esas2r_adapter *a)
 	if (!esas2r_is_adapter_present(a))
 		return;
 
-	/*
-	 * Before we reset the chip, save off the VDA core dump.  The VDA core
-	 * dump is located in the upper 512KB of the onchip SRAM.  Make sure
-	 * to not overwrite a previous crash that was saved.
-	 */
+	 
 	if (test_bit(AF2_COREDUMP_AVAIL, &a->flags2) &&
 	    !test_bit(AF2_COREDUMP_SAVED, &a->flags2)) {
 		esas2r_read_mem_block(a,
@@ -1488,7 +1347,7 @@ void esas2r_reset_chip(struct esas2r_adapter *a)
 
 	clear_bit(AF2_COREDUMP_AVAIL, &a->flags2);
 
-	/* Reset the chip */
+	 
 	if (a->pcid->revision == MVR_FREY_B2)
 		esas2r_write_register_dword(a, MU_CTL_STATUS_IN_B2,
 					    MU_CTL_IN_FULL_RST2);
@@ -1497,7 +1356,7 @@ void esas2r_reset_chip(struct esas2r_adapter *a)
 					    MU_CTL_IN_FULL_RST);
 
 
-	/* Stall a little while to let the reset condition clear */
+	 
 	mdelay(10);
 }
 
@@ -1526,10 +1385,7 @@ static void esas2r_power_down_notify_firmware(struct esas2r_adapter *a)
 	}
 }
 
-/*
- * Perform power management processing including managing device states, adapter
- * states, interrupts, and I/O.
- */
+ 
 void esas2r_power_down(struct esas2r_adapter *a)
 {
 	set_bit(AF_POWER_MGT, &a->flags);
@@ -1539,16 +1395,11 @@ void esas2r_power_down(struct esas2r_adapter *a)
 		u32 starttime;
 		u32 doorbell;
 
-		/*
-		 * We are currently running OK and will be reinitializing later.
-		 * increment the disable count to coordinate with
-		 * esas2r_init_adapter.  We don't have to do this in degraded
-		 * mode since we never enabled interrupts in the first place.
-		 */
+		 
 		esas2r_disable_chip_interrupts(a);
 		esas2r_disable_heartbeat(a);
 
-		/* wait for any VDA activity to clear before continuing */
+		 
 		esas2r_write_register_dword(a, MU_DOORBELL_IN,
 					    DRBL_MSG_IFC_DOWN);
 		starttime = jiffies_to_msecs(jiffies);
@@ -1571,30 +1422,24 @@ void esas2r_power_down(struct esas2r_adapter *a)
 			}
 		}
 
-		/*
-		 * For versions of firmware that support it tell them the driver
-		 * is powering down.
-		 */
+		 
 		if (test_bit(AF2_VDA_POWER_DOWN, &a->flags2))
 			esas2r_power_down_notify_firmware(a);
 	}
 
-	/* Suspend I/O processing. */
+	 
 	set_bit(AF_OS_RESET, &a->flags);
 	set_bit(AF_DISC_PENDING, &a->flags);
 	set_bit(AF_CHPRST_PENDING, &a->flags);
 
 	esas2r_process_adapter_reset(a);
 
-	/* Remove devices now that I/O is cleaned up. */
+	 
 	a->prev_dev_cnt = esas2r_targ_db_get_tgt_cnt(a);
 	esas2r_targ_db_remove_all(a, false);
 }
 
-/*
- * Perform power management processing including managing device states, adapter
- * states, interrupts, and I/O.
- */
+ 
 bool esas2r_power_up(struct esas2r_adapter *a, bool init_poll)
 {
 	bool ret;
@@ -1604,15 +1449,15 @@ bool esas2r_power_up(struct esas2r_adapter *a, bool init_poll)
 	set_bit(AF_FIRST_INIT, &a->flags);
 	atomic_inc(&a->disable_cnt);
 
-	/* reinitialize the adapter */
+	 
 	ret = esas2r_check_adapter(a);
 	if (!esas2r_init_adapter_hw(a, init_poll))
 		ret = false;
 
-	/* send the reset asynchronous event */
+	 
 	esas2r_send_reset_ae(a, true);
 
-	/* clear this flag after initialization. */
+	 
 	clear_bit(AF_POWER_MGT, &a->flags);
 	return ret;
 }

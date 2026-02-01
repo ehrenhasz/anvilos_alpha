@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-/* Copyright (C) 2018 Netronome Systems, Inc. */
+
+ 
 
 #include <linux/kernel.h>
 #include <net/devlink.h>
@@ -109,7 +109,7 @@ int nfp_shared_buf_register(struct nfp_pf *pf)
 	for (i = 0; i < num_entries; i++) {
 		struct nfp_shared_buf *sb = &pf->shared_bufs[i];
 
-		/* Entries may be larger in future FW */
+		 
 		memcpy_fromio(sb, sb_desc + i * entry_sz, sizeof(*sb));
 
 		err = devlink_sb_register(devlink,

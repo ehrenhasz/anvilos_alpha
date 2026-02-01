@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2017 Cadence
-// Cadence PCIe endpoint controller driver.
-// Author: Cyrille Pitchen <cyrille.pitchen@free-electrons.com>
+
+
+
+
 
 #include <linux/delay.h>
 #include <linux/kernel.h>
@@ -12,7 +12,7 @@
 
 #include "pcie-cadence.h"
 
-#define CDNS_PCIE_EP_MIN_APERTURE		128	/* 128 bytes */
+#define CDNS_PCIE_EP_MIN_APERTURE		128	 
 #define CDNS_PCIE_EP_IRQ_PCI_ADDR_NONE		0x1
 #define CDNS_PCIE_EP_IRQ_PCI_ADDR_LEGACY	0x3
 
@@ -58,12 +58,9 @@ static int cdns_pcie_ep_write_header(struct pci_epc *epc, u8 fn, u8 vfn,
 	cdns_pcie_ep_fn_writew(pcie, fn, PCI_SUBSYSTEM_ID, hdr->subsys_id);
 	cdns_pcie_ep_fn_writeb(pcie, fn, PCI_INTERRUPT_PIN, hdr->interrupt_pin);
 
-	/*
-	 * Vendor ID can only be modified from function 0, all other functions
-	 * use the same vendor ID as function 0.
-	 */
+	 
 	if (fn == 0) {
-		/* Update the vendor IDs. */
+		 
 		u32 id = CDNS_PCIE_LM_ID_VENDOR(hdr->vendorid) |
 			 CDNS_PCIE_LM_ID_SUBSYS(hdr->subsys_vendor_id);
 
@@ -85,14 +82,11 @@ static int cdns_pcie_ep_set_bar(struct pci_epc *epc, u8 fn, u8 vfn,
 	u32 addr0, addr1, reg, cfg, b, aperture, ctrl;
 	u64 sz;
 
-	/* BAR size is 2^(aperture + 7) */
+	 
 	sz = max_t(size_t, epf_bar->size, CDNS_PCIE_EP_MIN_APERTURE);
-	/*
-	 * roundup_pow_of_two() returns an unsigned long, which is not suited
-	 * for 64bit values.
-	 */
+	 
 	sz = 1ULL << fls64(sz - 1);
-	aperture = ilog2(sz) - 7; /* 128B -> 0, 256B -> 1, 512B -> 2, ... */
+	aperture = ilog2(sz) - 7;  
 
 	if ((flags & PCI_BASE_ADDRESS_SPACE) == PCI_BASE_ADDRESS_SPACE_IO) {
 		ctrl = CDNS_PCIE_LM_BAR_CFG_CTRL_IO_32BITS;
@@ -231,10 +225,7 @@ static int cdns_pcie_ep_set_msi(struct pci_epc *epc, u8 fn, u8 vfn, u8 mmc)
 
 	fn = cdns_pcie_get_fn_from_vfn(pcie, fn, vfn);
 
-	/*
-	 * Set the Multiple Message Capable bitfield into the Message Control
-	 * register.
-	 */
+	 
 	flags = cdns_pcie_ep_fn_readw(pcie, fn, cap + PCI_MSI_FLAGS);
 	flags = (flags & ~PCI_MSI_FLAGS_QMASK) | (mmc << 1);
 	flags |= PCI_MSI_FLAGS_64BIT;
@@ -253,15 +244,12 @@ static int cdns_pcie_ep_get_msi(struct pci_epc *epc, u8 fn, u8 vfn)
 
 	fn = cdns_pcie_get_fn_from_vfn(pcie, fn, vfn);
 
-	/* Validate that the MSI feature is actually enabled. */
+	 
 	flags = cdns_pcie_ep_fn_readw(pcie, fn, cap + PCI_MSI_FLAGS);
 	if (!(flags & PCI_MSI_FLAGS_ENABLE))
 		return -EINVAL;
 
-	/*
-	 * Get the Multiple Message Enable bitfield from the Message Control
-	 * register.
-	 */
+	 
 	mme = (flags & PCI_MSI_FLAGS_QSIZE) >> 4;
 
 	return mme;
@@ -303,12 +291,12 @@ static int cdns_pcie_ep_set_msix(struct pci_epc *epc, u8 fn, u8 vfn,
 	val |= interrupts;
 	cdns_pcie_ep_fn_writew(pcie, fn, reg, val);
 
-	/* Set MSIX BAR and offset */
+	 
 	reg = cap + PCI_MSIX_TABLE;
 	val = offset | bir;
 	cdns_pcie_ep_fn_writel(pcie, fn, reg, val);
 
-	/* Set PBA BAR and offset.  BAR must match MSIX BAR */
+	 
 	reg = cap + PCI_MSIX_PBA;
 	val = (offset + (interrupts * PCI_MSIX_ENTRY_SIZE)) | bir;
 	cdns_pcie_ep_fn_writel(pcie, fn, reg, val);
@@ -327,10 +315,10 @@ static void cdns_pcie_ep_assert_intx(struct cdns_pcie_ep *ep, u8 fn, u8 intx,
 
 	intx &= 3;
 
-	/* Set the outbound region if needed. */
+	 
 	if (unlikely(ep->irq_pci_addr != CDNS_PCIE_EP_IRQ_PCI_ADDR_LEGACY ||
 		     ep->irq_pci_fn != fn)) {
-		/* First region was reserved for IRQ writes. */
+		 
 		cdns_pcie_set_outbound_region_for_normal_msg(pcie, 0, fn, 0,
 							     ep->irq_phys_addr);
 		ep->irq_pci_addr = CDNS_PCIE_EP_IRQ_PCI_ADDR_LEGACY;
@@ -369,9 +357,7 @@ static int cdns_pcie_ep_send_legacy_irq(struct cdns_pcie_ep *ep, u8 fn, u8 vfn,
 		return -EINVAL;
 
 	cdns_pcie_ep_assert_intx(ep, fn, intx, true);
-	/*
-	 * The mdelay() value was taken from dra7xx_pcie_raise_legacy_irq()
-	 */
+	 
 	mdelay(1);
 	cdns_pcie_ep_assert_intx(ep, fn, intx, false);
 	return 0;
@@ -388,32 +374,32 @@ static int cdns_pcie_ep_send_msi_irq(struct cdns_pcie_ep *ep, u8 fn, u8 vfn,
 
 	fn = cdns_pcie_get_fn_from_vfn(pcie, fn, vfn);
 
-	/* Check whether the MSI feature has been enabled by the PCI host. */
+	 
 	flags = cdns_pcie_ep_fn_readw(pcie, fn, cap + PCI_MSI_FLAGS);
 	if (!(flags & PCI_MSI_FLAGS_ENABLE))
 		return -EINVAL;
 
-	/* Get the number of enabled MSIs */
+	 
 	mme = (flags & PCI_MSI_FLAGS_QSIZE) >> 4;
 	msi_count = 1 << mme;
 	if (!interrupt_num || interrupt_num > msi_count)
 		return -EINVAL;
 
-	/* Compute the data value to be written. */
+	 
 	data_mask = msi_count - 1;
 	data = cdns_pcie_ep_fn_readw(pcie, fn, cap + PCI_MSI_DATA_64);
 	data = (data & ~data_mask) | ((interrupt_num - 1) & data_mask);
 
-	/* Get the PCI address where to write the data into. */
+	 
 	pci_addr = cdns_pcie_ep_fn_readl(pcie, fn, cap + PCI_MSI_ADDRESS_HI);
 	pci_addr <<= 32;
 	pci_addr |= cdns_pcie_ep_fn_readl(pcie, fn, cap + PCI_MSI_ADDRESS_LO);
 	pci_addr &= GENMASK_ULL(63, 2);
 
-	/* Set the outbound region if needed. */
+	 
 	if (unlikely(ep->irq_pci_addr != (pci_addr & ~pci_addr_mask) ||
 		     ep->irq_pci_fn != fn)) {
-		/* First region was reserved for IRQ writes. */
+		 
 		cdns_pcie_set_outbound_region(pcie, 0, fn, 0,
 					      false,
 					      ep->irq_phys_addr,
@@ -443,23 +429,23 @@ static int cdns_pcie_ep_map_msi_irq(struct pci_epc *epc, u8 fn, u8 vfn,
 
 	fn = cdns_pcie_get_fn_from_vfn(pcie, fn, vfn);
 
-	/* Check whether the MSI feature has been enabled by the PCI host. */
+	 
 	flags = cdns_pcie_ep_fn_readw(pcie, fn, cap + PCI_MSI_FLAGS);
 	if (!(flags & PCI_MSI_FLAGS_ENABLE))
 		return -EINVAL;
 
-	/* Get the number of enabled MSIs */
+	 
 	mme = (flags & PCI_MSI_FLAGS_QSIZE) >> 4;
 	msi_count = 1 << mme;
 	if (!interrupt_num || interrupt_num > msi_count)
 		return -EINVAL;
 
-	/* Compute the data value to be written. */
+	 
 	data_mask = msi_count - 1;
 	data = cdns_pcie_ep_fn_readw(pcie, fn, cap + PCI_MSI_DATA_64);
 	data = data & ~data_mask;
 
-	/* Get the PCI address where to write the data into. */
+	 
 	pci_addr = cdns_pcie_ep_fn_readl(pcie, fn, cap + PCI_MSI_ADDRESS_HI);
 	pci_addr <<= 32;
 	pci_addr |= cdns_pcie_ep_fn_readl(pcie, fn, cap + PCI_MSI_ADDRESS_LO);
@@ -499,7 +485,7 @@ static int cdns_pcie_ep_send_msix_irq(struct cdns_pcie_ep *ep, u8 fn, u8 vfn,
 
 	fn = cdns_pcie_get_fn_from_vfn(pcie, fn, vfn);
 
-	/* Check whether the MSI-X feature has been enabled by the PCI host. */
+	 
 	flags = cdns_pcie_ep_fn_readw(pcie, fn, cap + PCI_MSIX_FLAGS);
 	if (!(flags & PCI_MSIX_FLAGS_ENABLE))
 		return -EINVAL;
@@ -513,10 +499,10 @@ static int cdns_pcie_ep_send_msix_irq(struct cdns_pcie_ep *ep, u8 fn, u8 vfn,
 	msg_addr = msix_tbl[(interrupt_num - 1)].msg_addr;
 	msg_data = msix_tbl[(interrupt_num - 1)].msg_data;
 
-	/* Set the outbound region if needed. */
+	 
 	if (ep->irq_pci_addr != (msg_addr & ~pci_addr_mask) ||
 	    ep->irq_pci_fn != fn) {
-		/* First region was reserved for IRQ writes. */
+		 
 		cdns_pcie_set_outbound_region(pcie, 0, fn, 0,
 					      false,
 					      ep->irq_phys_addr,
@@ -567,10 +553,7 @@ static int cdns_pcie_ep_start(struct pci_epc *epc)
 	int max_epfs = sizeof(epc->function_num_map) * 8;
 	int ret, value, epf;
 
-	/*
-	 * BIT(0) is hardwired to 1, hence function 0 is always enabled
-	 * and can't be disabled anyway.
-	 */
+	 
 	cdns_pcie_writel(pcie, CDNS_PCIE_LM_EP_FUNC_CFG, epc->function_num_map);
 
 	if (ep->quirk_disable_flr) {
@@ -673,7 +656,7 @@ int cdns_pcie_ep_setup(struct cdns_pcie_ep *ep)
 	if (!ep->ob_addr)
 		return -ENOMEM;
 
-	/* Disable all but function 0 (anyway BIT(0) is hardwired to 1). */
+	 
 	cdns_pcie_writel(pcie, CDNS_PCIE_LM_EP_FUNC_CFG, BIT(0));
 
 	epc = devm_pci_epc_create(dev, &cdns_pcie_epc_ops);
@@ -726,7 +709,7 @@ int cdns_pcie_ep_setup(struct cdns_pcie_ep *ep)
 		goto free_epc_mem;
 	}
 	ep->irq_pci_addr = CDNS_PCIE_EP_IRQ_PCI_ADDR_NONE;
-	/* Reserve region 0 for IRQs */
+	 
 	set_bit(0, &ep->ob_region_map);
 
 	if (ep->quirk_detect_quiet_flag)

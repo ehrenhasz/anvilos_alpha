@@ -1,34 +1,14 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * virtio-snd: Virtio sound device
- * Copyright (C) 2021 OpenSynergy GmbH
- */
+
+ 
 #include <linux/virtio_config.h>
 #include <sound/jack.h>
 #include <sound/hda_verbs.h>
 
 #include "virtio_card.h"
 
-/**
- * DOC: Implementation Status
- *
- * At the moment jacks have a simple implementation and can only be used to
- * receive notifications about a plugged in/out device.
- *
- * VIRTIO_SND_R_JACK_REMAP
- *   is not supported
- */
+ 
 
-/**
- * struct virtio_jack - VirtIO jack.
- * @jack: Kernel jack control.
- * @nid: Functional group node identifier.
- * @features: Jack virtio feature bit map (1 << VIRTIO_SND_JACK_F_XXX).
- * @defconf: Pin default configuration value.
- * @caps: Pin capabilities value.
- * @connected: Current jack connection status.
- * @type: Kernel jack type (SND_JACK_XXX).
- */
+ 
 struct virtio_jack {
 	struct snd_jack *jack;
 	u32 nid;
@@ -39,16 +19,7 @@ struct virtio_jack {
 	int type;
 };
 
-/**
- * virtsnd_jack_get_label() - Get the name string for the jack.
- * @vjack: VirtIO jack.
- *
- * Returns the jack name based on the default pin configuration value (see HDA
- * specification).
- *
- * Context: Any context.
- * Return: Name string.
- */
+ 
 static const char *virtsnd_jack_get_label(struct virtio_jack *vjack)
 {
 	unsigned int defconf = vjack->defconf;
@@ -87,16 +58,7 @@ static const char *virtsnd_jack_get_label(struct virtio_jack *vjack)
 	}
 }
 
-/**
- * virtsnd_jack_get_type() - Get the type for the jack.
- * @vjack: VirtIO jack.
- *
- * Returns the jack type based on the default pin configuration value (see HDA
- * specification).
- *
- * Context: Any context.
- * Return: SND_JACK_XXX value.
- */
+ 
 static int virtsnd_jack_get_type(struct virtio_jack *vjack)
 {
 	unsigned int defconf = vjack->defconf;
@@ -119,15 +81,7 @@ static int virtsnd_jack_get_type(struct virtio_jack *vjack)
 	}
 }
 
-/**
- * virtsnd_jack_parse_cfg() - Parse the jack configuration.
- * @snd: VirtIO sound device.
- *
- * This function is called during initial device initialization.
- *
- * Context: Any context that permits to sleep.
- * Return: 0 on success, -errno on failure.
- */
+ 
 int virtsnd_jack_parse_cfg(struct virtio_snd *snd)
 {
 	struct virtio_device *vdev = snd->vdev;
@@ -169,13 +123,7 @@ on_exit:
 	return rc;
 }
 
-/**
- * virtsnd_jack_build_devs() - Build ALSA controls for jacks.
- * @snd: VirtIO sound device.
- *
- * Context: Any context that permits to sleep.
- * Return: 0 on success, -errno on failure.
- */
+ 
 int virtsnd_jack_build_devs(struct virtio_snd *snd)
 {
 	u32 i;
@@ -201,13 +149,7 @@ int virtsnd_jack_build_devs(struct virtio_snd *snd)
 	return 0;
 }
 
-/**
- * virtsnd_jack_event() - Handle the jack event notification.
- * @snd: VirtIO sound device.
- * @event: VirtIO sound event.
- *
- * Context: Interrupt context.
- */
+ 
 void virtsnd_jack_event(struct virtio_snd *snd, struct virtio_snd_event *event)
 {
 	u32 jack_id = le32_to_cpu(event->data);

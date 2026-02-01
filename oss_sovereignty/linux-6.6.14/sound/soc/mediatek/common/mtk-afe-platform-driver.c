@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * mtk-afe-platform-driver.c  --  Mediatek afe platform driver
- *
- * Copyright (c) 2016 MediaTek Inc.
- * Author: Garlic Tseng <garlic.tseng@mediatek.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/dma-mapping.h>
@@ -18,14 +13,14 @@ int mtk_afe_combine_sub_dai(struct mtk_base_afe *afe)
 	struct mtk_base_afe_dai *dai;
 	size_t num_dai_drivers = 0, dai_idx = 0;
 
-	/* calcualte total dai driver size */
+	 
 	list_for_each_entry(dai, &afe->sub_dais, list) {
 		num_dai_drivers += dai->num_dai_drivers;
 	}
 
 	dev_info(afe->dev, "%s(), num of dai %zd\n", __func__, num_dai_drivers);
 
-	/* combine sub_dais */
+	 
 	afe->num_dai_drivers = num_dai_drivers;
 	afe->dai_drivers = devm_kcalloc(afe->dev,
 					num_dai_drivers,
@@ -35,7 +30,7 @@ int mtk_afe_combine_sub_dai(struct mtk_base_afe *afe)
 		return -ENOMEM;
 
 	list_for_each_entry(dai, &afe->sub_dais, list) {
-		/* dai driver */
+		 
 		memcpy(&afe->dai_drivers[dai_idx],
 		       dai->dai_drivers,
 		       dai->num_dai_drivers *
@@ -62,7 +57,7 @@ int mtk_afe_add_sub_dai_control(struct snd_soc_component *component)
 						  dai->dapm_widgets,
 						  dai->num_dapm_widgets);
 	}
-	/* add routes after all widgets are added */
+	 
 	list_for_each_entry(dai, &afe->sub_dais, list) {
 		if (dai->dapm_routes)
 			snd_soc_dapm_add_routes(&component->dapm,

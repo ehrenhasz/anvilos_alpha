@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef __PERF_DUMP_INSN_H
 #define __PERF_DUMP_INSN_H 1
 
@@ -9,12 +9,12 @@
 struct thread;
 
 struct perf_insn {
-	/* Initialized by callers: */
+	 
 	struct thread *thread;
 	u8	      cpumode;
 	bool	      is64bit;
 	int	      cpu;
-	/* Temporary */
+	 
 	char	      out[256];
 };
 

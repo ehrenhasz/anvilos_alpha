@@ -1,27 +1,4 @@
-/*
- * Copyright 2012-15 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 
 #include "reg_helper.h"
@@ -41,14 +18,7 @@
 
 #define STATIC_SCREEN_EVENT_MASK_RANGETIMING_DOUBLE_BUFFER_UPDATE_EN 0x100
 
-/**
- * apply_front_porch_workaround() - This is a workaround for a bug that has
- *                                  existed since R5xx and has not been fixed
- *                                  keep Front porch at minimum 2 for Interlaced
- *                                  mode or 1 for progressive.
- *
- * @timing: Timing parameters used to configure DCN blocks.
- */
+ 
 static void apply_front_porch_workaround(struct dc_crtc_timing *timing)
 {
 	if (timing->flags.INTERLACE == 1) {
@@ -134,22 +104,7 @@ void optc1_setup_vertical_interrupt2(
 			OTG_VERTICAL_INTERRUPT2_LINE_START, start_line);
 }
 
-/**
- * optc1_program_timing() - used by mode timing set Program
- *                          CRTC Timing Registers - OTG_H_*,
- *                          OTG_V_*, Pixel repetition.
- *                          Including SYNC. Call BIOS command table to program Timings.
- *
- * @optc: timing_generator instance.
- * @dc_crtc_timing: Timing parameters used to configure DCN blocks.
- * @vready_offset: Vready's starting position.
- * @vstartup_start: Vstartup period.
- * @vupdate_offset: Vupdate starting position.
- * @vupdate_width: Vupdate duration.
- * @signal: DC signal types.
- * @use_vbios: to program timings from BIOS command table.
- *
- */
+ 
 void optc1_program_timing(
 	struct timing_generator *optc,
 	const struct dc_crtc_timing *dc_crtc_timing,
@@ -181,22 +136,22 @@ void optc1_program_timing(
 	apply_front_porch_workaround(&patched_crtc_timing);
 	optc1->orginal_patched_timing = patched_crtc_timing;
 
-	/* Load horizontal timing */
+	 
 
-	/* CRTC_H_TOTAL = vesa.h_total - 1 */
+	 
 	REG_SET(OTG_H_TOTAL, 0,
 			OTG_H_TOTAL,  patched_crtc_timing.h_total - 1);
 
-	/* h_sync_start = 0, h_sync_end = vesa.h_sync_width */
+	 
 	REG_UPDATE_2(OTG_H_SYNC_A,
 			OTG_H_SYNC_A_START, 0,
 			OTG_H_SYNC_A_END, patched_crtc_timing.h_sync_width);
 
-	/* blank_start = line end - front porch */
+	 
 	asic_blank_start = patched_crtc_timing.h_total -
 			patched_crtc_timing.h_front_porch;
 
-	/* blank_end = blank_start - active */
+	 
 	asic_blank_end = asic_blank_start -
 			patched_crtc_timing.h_border_right -
 			patched_crtc_timing.h_addressable -
@@ -206,7 +161,7 @@ void optc1_program_timing(
 			OTG_H_BLANK_START, asic_blank_start,
 			OTG_H_BLANK_END, asic_blank_end);
 
-	/* h_sync polarity */
+	 
 	h_sync_polarity = patched_crtc_timing.flags.HSYNC_POSITIVE_POLARITY ?
 			0 : 1;
 
@@ -218,23 +173,21 @@ void optc1_program_timing(
 	REG_SET(OTG_V_TOTAL, 0,
 			OTG_V_TOTAL, v_total);
 
-	/* In case of V_TOTAL_CONTROL is on, make sure OTG_V_TOTAL_MAX and
-	 * OTG_V_TOTAL_MIN are equal to V_TOTAL.
-	 */
+	 
 	optc->funcs->set_vtotal_min_max(optc, v_total, v_total);
 
-	/* v_sync_start = 0, v_sync_end = v_sync_width */
+	 
 	v_sync_end = patched_crtc_timing.v_sync_width;
 
 	REG_UPDATE_2(OTG_V_SYNC_A,
 			OTG_V_SYNC_A_START, 0,
 			OTG_V_SYNC_A_END, v_sync_end);
 
-	/* blank_start = frame end - front porch */
+	 
 	asic_blank_start = patched_crtc_timing.v_total -
 			patched_crtc_timing.v_front_porch;
 
-	/* blank_end = blank_start - active */
+	 
 	asic_blank_end = asic_blank_start -
 			patched_crtc_timing.v_border_bottom -
 			patched_crtc_timing.v_addressable -
@@ -244,7 +197,7 @@ void optc1_program_timing(
 			OTG_V_BLANK_START, asic_blank_start,
 			OTG_V_BLANK_END, asic_blank_end);
 
-	/* v_sync polarity */
+	 
 	v_sync_polarity = patched_crtc_timing.flags.VSYNC_POSITIVE_POLARITY ?
 			0 : 1;
 
@@ -259,7 +212,7 @@ void optc1_program_timing(
 			field_num = 1;
 	}
 
-	/* Interlace */
+	 
 	if (REG(OTG_INTERLACE_CONTROL)) {
 		if (patched_crtc_timing.flags.INTERLACE == 1)
 			REG_UPDATE(OTG_INTERLACE_CONTROL,
@@ -269,11 +222,11 @@ void optc1_program_timing(
 					OTG_INTERLACE_ENABLE, 0);
 	}
 
-	/* VTG enable set to 0 first VInit */
+	 
 	REG_UPDATE(CONTROL,
 			VTG0_ENABLE, 0);
 
-	/* original code is using VTG offset to address OTG reg, seems wrong */
+	 
 	REG_UPDATE_2(OTG_CONTROL,
 			OTG_START_POINT_CNTL, start_point,
 			OTG_FIELD_NUMBER_CNTL, field_num);
@@ -286,16 +239,9 @@ void optc1_program_timing(
 
 	optc->funcs->set_vtg_params(optc, dc_crtc_timing, true);
 
-	/* TODO
-	 * patched_crtc_timing.flags.HORZ_COUNT_BY_TWO == 1
-	 * program_horz_count_by_2
-	 * for DVI 30bpp mode, 0 otherwise
-	 * program_horz_count_by_2(optc, &patched_crtc_timing);
-	 */
+	 
 
-	/* Enable stereo - only when we need to pack 3D frame. Other types
-	 * of stereo handled in explicit call
-	 */
+	 
 
 	if (optc1_is_two_pixels_per_containter(&patched_crtc_timing) || optc1->opp_count == 2)
 		h_div = H_TIMING_DIV_BY2;
@@ -323,20 +269,7 @@ void optc1_program_timing(
 	}
 }
 
-/**
- * optc1_set_vtg_params - Set Vertical Timing Generator (VTG) parameters
- *
- * @optc: timing_generator struct used to extract the optc parameters
- * @dc_crtc_timing: Timing parameters configured
- * @program_fp2: Boolean value indicating if FP2 will be programmed or not
- *
- * OTG is responsible for generating the global sync signals, including
- * vertical timing information for each HUBP in the dcfclk domain. Each VTG is
- * associated with one OTG that provides HUBP with vertical timing information
- * (i.e., there is 1:1 correspondence between OTG and VTG). This function is
- * responsible for setting the OTG parameters to the VTG during the pipe
- * programming.
- */
+ 
 void optc1_set_vtg_params(struct timing_generator *optc,
 		const struct dc_crtc_timing *dc_crtc_timing, bool program_fp2)
 {
@@ -351,21 +284,21 @@ void optc1_set_vtg_params(struct timing_generator *optc,
 	patched_crtc_timing = *dc_crtc_timing;
 	apply_front_porch_workaround(&patched_crtc_timing);
 
-	/* VCOUNT_INIT is the start of blank */
+	 
 	v_init = patched_crtc_timing.v_total - patched_crtc_timing.v_front_porch;
 
-	/* end of blank = v_init - active */
+	 
 	asic_blank_end = v_init -
 			patched_crtc_timing.v_border_bottom -
 			patched_crtc_timing.v_addressable -
 			patched_crtc_timing.v_border_top;
 
-	/* if VSTARTUP is before VSYNC, FP2 is the offset, otherwise 0 */
+	 
 	vertical_line_start = asic_blank_end - optc1->vstartup_start + 1;
 	if (vertical_line_start < 0)
 		v_fp2 = -vertical_line_start;
 
-	/* Interlace */
+	 
 	if (REG(OTG_INTERLACE_CONTROL)) {
 		if (patched_crtc_timing.flags.INTERLACE == 1) {
 			v_init = v_init / 2;
@@ -392,17 +325,7 @@ void optc1_set_blank_data_double_buffer(struct timing_generator *optc, bool enab
 			OTG_BLANK_DATA_DOUBLE_BUFFER_EN, blank_data_double_buffer_enable);
 }
 
-/**
- * optc1_set_timing_double_buffer() - DRR double buffering control
- *
- * Sets double buffer point for V_TOTAL, H_TOTAL, VTOTAL_MIN,
- * VTOTAL_MAX, VTOTAL_MIN_SEL and VTOTAL_MAX_SEL registers.
- *
- * @optc: timing_generator instance.
- * @enable: Enable DRR double buffering control if true, disable otherwise.
- *
- * Options: any time,  start of frame, dp start of frame (range timing)
- */
+ 
 void optc1_set_timing_double_buffer(struct timing_generator *optc, bool enable)
 {
 	struct optc *optc1 = DCN10TG_FROM_TG(optc);
@@ -412,11 +335,7 @@ void optc1_set_timing_double_buffer(struct timing_generator *optc, bool enable)
 		   OTG_RANGE_TIMING_DBUF_UPDATE_MODE, mode);
 }
 
-/**
- * optc1_unblank_crtc() - Call ASIC Control Object to UnBlank CRTC.
- *
- * @optc: timing_generator instance.
- */
+ 
 static void optc1_unblank_crtc(struct timing_generator *optc)
 {
 	struct optc *optc1 = DCN10TG_FROM_TG(optc);
@@ -425,21 +344,11 @@ static void optc1_unblank_crtc(struct timing_generator *optc)
 			OTG_BLANK_DATA_EN, 0,
 			OTG_BLANK_DE_MODE, 0);
 
-	/* W/A for automated testing
-	 * Automated testing will fail underflow test as there
-	 * sporadic underflows which occur during the optc blank
-	 * sequence.  As a w/a, clear underflow on unblank.
-	 * This prevents the failure, but will not mask actual
-	 * underflow that affect real use cases.
-	 */
+	 
 	optc1_clear_optc_underflow(optc);
 }
 
-/**
- * optc1_blank_crtc() - Call ASIC Control Object to Blank CRTC.
- *
- * @optc: timing_generator instance.
- */
+ 
 
 static void optc1_blank_crtc(struct timing_generator *optc)
 {
@@ -487,7 +396,7 @@ void optc1_enable_optc_clock(struct timing_generator *optc, bool enable)
 				OPTC_INPUT_CLK_ON, 1,
 				1, 1000);
 
-		/* Enable clock */
+		 
 		REG_UPDATE_2(OTG_CLOCK_CONTROL,
 				OTG_CLOCK_EN, 1,
 				OTG_CLOCK_GATE_DIS, 1);
@@ -496,7 +405,7 @@ void optc1_enable_optc_clock(struct timing_generator *optc, bool enable)
 				1, 1000);
 	} else  {
 
-		//last chance to clear underflow, otherwise, it will always there due to clock is off.
+		 
 		if (optc->funcs->is_optc_underflow_occurred(optc) == true)
 			optc->funcs->clear_optc_underflow(optc);
 
@@ -510,32 +419,23 @@ void optc1_enable_optc_clock(struct timing_generator *optc, bool enable)
 	}
 }
 
-/**
- * optc1_enable_crtc() - Enable CRTC - call ASIC Control Object to enable Timing generator.
- *
- * @optc: timing_generator instance.
- */
+ 
 static bool optc1_enable_crtc(struct timing_generator *optc)
 {
-	/* TODO FPGA wait for answer
-	 * OTG_MASTER_UPDATE_MODE != CRTC_MASTER_UPDATE_MODE
-	 * OTG_MASTER_UPDATE_LOCK != CRTC_MASTER_UPDATE_LOCK
-	 */
+	 
 	struct optc *optc1 = DCN10TG_FROM_TG(optc);
 
-	/* opp instance for OTG. For DCN1.0, ODM is remoed.
-	 * OPP and OPTC should 1:1 mapping
-	 */
+	 
 	REG_UPDATE(OPTC_DATA_SOURCE_SELECT,
 			OPTC_SRC_SEL, optc->inst);
 
-	/* VTG enable first is for HW workaround */
+	 
 	REG_UPDATE(CONTROL,
 			VTG0_ENABLE, 1);
 
 	REG_SEQ_START();
 
-	/* Enable CRTC */
+	 
 	REG_UPDATE_2(OTG_CONTROL,
 			OTG_DISABLE_POINT_CNTL, 3,
 			OTG_MASTER_EN, 1);
@@ -546,14 +446,12 @@ static bool optc1_enable_crtc(struct timing_generator *optc)
 	return true;
 }
 
-/* disable_crtc - call ASIC Control Object to disable Timing generator. */
+ 
 bool optc1_disable_crtc(struct timing_generator *optc)
 {
 	struct optc *optc1 = DCN10TG_FROM_TG(optc);
 
-	/* disable otg request until end of the first line
-	 * in the vertical blank region
-	 */
+	 
 	REG_UPDATE_2(OTG_CONTROL,
 			OTG_DISABLE_POINT_CNTL, 3,
 			OTG_MASTER_EN, 0);
@@ -561,7 +459,7 @@ bool optc1_disable_crtc(struct timing_generator *optc)
 	REG_UPDATE(CONTROL,
 			VTG0_ENABLE, 0);
 
-	/* CRTC disabled, so disable  clock. */
+	 
 	REG_WAIT(OTG_CLOCK_CONTROL,
 			OTG_BUSY, 0,
 			1, 100000);
@@ -608,15 +506,11 @@ bool optc1_validate_timing(
 		timing->timing_3d_format != TIMING_3D_FORMAT_INBAND_FA)
 		return false;
 
-	/* Temporarily blocking interlacing mode until it's supported */
+	 
 	if (timing->flags.INTERLACE == 1)
 		return false;
 
-	/* Check maximum number of pixels supported by Timing Generator
-	 * (Currently will never fail, in order to fail needs display which
-	 * needs more than 8192 horizontal and
-	 * more than 8192 vertical total pixels)
-	 */
+	 
 	if (timing->h_total > optc1->max_h_total ||
 		timing->v_total > optc1->max_v_total)
 		return false;
@@ -638,20 +532,7 @@ bool optc1_validate_timing(
 
 }
 
-/*
- * get_vblank_counter
- *
- * @brief
- * Get counter for vertical blanks. use register CRTC_STATUS_FRAME_COUNT which
- * holds the counter of frames.
- *
- * @param
- * struct timing_generator *optc - [in] timing generator which controls the
- * desired CRTC
- *
- * @return
- * Counter of frames, which should equal to number of vblanks.
- */
+ 
 uint32_t optc1_get_vblank_counter(struct timing_generator *optc)
 {
 	struct optc *optc1 = DCN10TG_FROM_TG(optc);
@@ -754,27 +635,21 @@ void optc1_enable_reset_trigger(struct timing_generator *optc, int source_tg_ins
 
 	if (falling_edge)
 		REG_SET_3(OTG_TRIGA_CNTL, 0,
-				/* vsync signal from selected OTG pipe based
-				 * on OTG_TRIG_SOURCE_PIPE_SELECT setting
-				 */
+				 
 				OTG_TRIGA_SOURCE_SELECT, 20,
 				OTG_TRIGA_SOURCE_PIPE_SELECT, source_tg_inst,
-				/* always detect falling edge */
+				 
 				OTG_TRIGA_FALLING_EDGE_DETECT_CNTL, 1);
 	else
 		REG_SET_3(OTG_TRIGA_CNTL, 0,
-				/* vsync signal from selected OTG pipe based
-				 * on OTG_TRIG_SOURCE_PIPE_SELECT setting
-				 */
+				 
 				OTG_TRIGA_SOURCE_SELECT, 20,
 				OTG_TRIGA_SOURCE_PIPE_SELECT, source_tg_inst,
-				/* always detect rising edge */
+				 
 				OTG_TRIGA_RISING_EDGE_DETECT_CNTL, 1);
 
 	REG_SET(OTG_FORCE_COUNT_NOW_CNTL, 0,
-			/* force H count to H_TOTAL and V count to V_TOTAL in
-			 * progressive mode and V_TOTAL-1 in interlaced mode
-			 */
+			 
 			OTG_FORCE_COUNT_NOW_MODE, 2);
 }
 
@@ -799,12 +674,10 @@ void optc1_enable_crtc_reset(
 	}
 
 	REG_SET_4(OTG_TRIGA_CNTL, 0,
-		 /* vsync signal from selected OTG pipe based
-		  * on OTG_TRIG_SOURCE_PIPE_SELECT setting
-		  */
+		  
 		  OTG_TRIGA_SOURCE_SELECT, 20,
 		  OTG_TRIGA_SOURCE_PIPE_SELECT, source_tg_inst,
-		  /* always detect falling edge */
+		   
 		  OTG_TRIGA_RISING_EDGE_DETECT_CNTL, rising_edge,
 		  OTG_TRIGA_FALLING_EDGE_DETECT_CNTL, falling_edge);
 
@@ -815,9 +688,7 @@ void optc1_enable_crtc_reset(
 		break;
 	case TRIGGER_DELAY_NEXT_PIXEL:
 		REG_SET(OTG_FORCE_COUNT_NOW_CNTL, 0,
-			/* force H count to H_TOTAL and V count to V_TOTAL in
-			 * progressive mode and V_TOTAL-1 in interlaced mode
-			 */
+			 
 			OTG_FORCE_COUNT_NOW_MODE, 2);
 		break;
 	}
@@ -832,13 +703,13 @@ void optc1_wait_for_state(struct timing_generator *optc,
 	case CRTC_STATE_VBLANK:
 		REG_WAIT(OTG_STATUS,
 				OTG_V_BLANK, 1,
-				1, 100000); /* 1 vupdate at 10hz */
+				1, 100000);  
 		break;
 
 	case CRTC_STATE_VACTIVE:
 		REG_WAIT(OTG_STATUS,
 				OTG_V_ACTIVE_DISP, 1,
-				1, 100000); /* 1 vupdate at 10hz */
+				1, 100000);  
 		break;
 
 	default:
@@ -850,9 +721,7 @@ void optc1_set_early_control(
 	struct timing_generator *optc,
 	uint32_t early_cntl)
 {
-	/* asic design change, do not need this control
-	 * empty for share caller logic
-	 */
+	 
 }
 
 
@@ -863,13 +732,11 @@ void optc1_set_static_screen_control(
 {
 	struct optc *optc1 = DCN10TG_FROM_TG(optc);
 
-	// By register spec, it only takes 8 bit value
+	
 	if (num_frames > 0xFF)
 		num_frames = 0xFF;
 
-	/* Bit 8 is no longer applicable in RV for PSR case,
-	 * set bit 8 to 0 if given
-	 */
+	 
 	if ((event_triggers & STATIC_SCREEN_EVENT_MASK_RANGETIMING_DOUBLE_BUFFER_UPDATE_EN)
 			!= 0)
 		event_triggers = event_triggers &
@@ -909,12 +776,7 @@ static void optc1_program_manual_trigger(struct timing_generator *optc)
 			MANUAL_FLOW_CONTROL, 0);
 }
 
-/**
- * optc1_set_drr() - Program dynamic refresh rate registers m_OTGx_OTG_V_TOTAL_*.
- *
- * @optc: timing_generator instance.
- * @params: parameters used for Dynamic Refresh Rate.
- */
+ 
 void optc1_set_drr(
 	struct timing_generator *optc,
 	const struct drr_params *params)
@@ -947,7 +809,7 @@ void optc1_set_drr(
 				OTG_SET_V_TOTAL_MIN_MASK, 0);
 	}
 
-	// Setup manual flow control for EOF via TRIG_A
+	
 	optc->funcs->setup_manual_trigger(optc);
 }
 
@@ -964,9 +826,7 @@ void optc1_set_vtotal_min_max(struct timing_generator *optc, int vtotal_min, int
 
 static void optc1_set_test_pattern(
 	struct timing_generator *optc,
-	/* TODO: replace 'controller_dp_test_pattern' by 'test_pattern_mode'
-	 * because this is not DP-specific (which is probably somewhere in DP
-	 * encoder) */
+	 
 	enum controller_dp_test_pattern test_pattern,
 	enum dc_color_depth color_depth)
 {
@@ -976,23 +836,19 @@ static void optc1_set_test_pattern(
 	enum test_pattern_mode mode;
 	uint32_t pattern_mask;
 	uint32_t pattern_data;
-	/* color ramp generator mixes 16-bits color */
+	 
 	uint32_t src_bpc = 16;
-	/* requested bpc */
+	 
 	uint32_t dst_bpc;
 	uint32_t index;
-	/* RGB values of the color bars.
-	 * Produce two RGB colors: RGB0 - white (all Fs)
-	 * and RGB1 - black (all 0s)
-	 * (three RGB components for two colors)
-	 */
+	 
 	uint16_t src_color[6] = {0xFFFF, 0xFFFF, 0xFFFF, 0x0000,
 						0x0000, 0x0000};
-	/* dest color (converted to the specified color format) */
+	 
 	uint16_t dst_color[6];
 	uint32_t inc_base;
 
-	/* translate to bit depth */
+	 
 	switch (color_depth) {
 	case COLOR_DEPTH_666:
 		bit_depth = TEST_PATTERN_COLOR_FORMAT_BPC_6;
@@ -1056,75 +912,39 @@ static void optc1_set_test_pattern(
 		break;
 		}
 
-		/* adjust color to the required colorFormat */
+		 
 		for (index = 0; index < 6; index++) {
-			/* dst = 2^dstBpc * src / 2^srcBpc = src >>
-			 * (srcBpc - dstBpc);
-			 */
+			 
 			dst_color[index] =
 				src_color[index] >> (src_bpc - dst_bpc);
-		/* CRTC_TEST_PATTERN_DATA has 16 bits,
-		 * lowest 6 are hardwired to ZERO
-		 * color bits should be left aligned to MSB
-		 * XXXXXXXXXX000000 for 10 bit,
-		 * XXXXXXXX00000000 for 8 bit and XXXXXX0000000000 for 6
-		 */
+		 
 			dst_color[index] <<= (16 - dst_bpc);
 		}
 
 		REG_WRITE(OTG_TEST_PATTERN_PARAMETERS, 0);
 
-		/* We have to write the mask before data, similar to pipeline.
-		 * For example, for 8 bpc, if we want RGB0 to be magenta,
-		 * and RGB1 to be cyan,
-		 * we need to make 7 writes:
-		 * MASK   DATA
-		 * 000001 00000000 00000000                     set mask to R0
-		 * 000010 11111111 00000000     R0 255, 0xFF00, set mask to G0
-		 * 000100 00000000 00000000     G0 0,   0x0000, set mask to B0
-		 * 001000 11111111 00000000     B0 255, 0xFF00, set mask to R1
-		 * 010000 00000000 00000000     R1 0,   0x0000, set mask to G1
-		 * 100000 11111111 00000000     G1 255, 0xFF00, set mask to B1
-		 * 100000 11111111 00000000     B1 255, 0xFF00
-		 *
-		 * we will make a loop of 6 in which we prepare the mask,
-		 * then write, then prepare the color for next write.
-		 * first iteration will write mask only,
-		 * but each next iteration color prepared in
-		 * previous iteration will be written within new mask,
-		 * the last component will written separately,
-		 * mask is not changing between 6th and 7th write
-		 * and color will be prepared by last iteration
-		 */
+		 
 
-		/* write color, color values mask in CRTC_TEST_PATTERN_MASK
-		 * is B1, G1, R1, B0, G0, R0
-		 */
+		 
 		pattern_data = 0;
 		for (index = 0; index < 6; index++) {
-			/* prepare color mask, first write PATTERN_DATA
-			 * will have all zeros
-			 */
+			 
 			pattern_mask = (1 << index);
 
-			/* write color component */
+			 
 			REG_SET_2(OTG_TEST_PATTERN_COLOR, 0,
 					OTG_TEST_PATTERN_MASK, pattern_mask,
 					OTG_TEST_PATTERN_DATA, pattern_data);
 
-			/* prepare next color component,
-			 * will be written in the next iteration
-			 */
+			 
 			pattern_data = dst_color[index];
 		}
-		/* write last color component,
-		 * it's been already prepared in the loop
-		 */
+		 
 		REG_SET_2(OTG_TEST_PATTERN_COLOR, 0,
 				OTG_TEST_PATTERN_MASK, pattern_mask,
 				OTG_TEST_PATTERN_DATA, pattern_data);
 
-		/* enable test pattern */
+		 
 		REG_UPDATE_4(OTG_TEST_PATTERN_CONTROL,
 				OTG_TEST_PATTERN_EN, 1,
 				OTG_TEST_PATTERN_MODE, mode,
@@ -1155,10 +975,7 @@ static void optc1_set_test_pattern(
 		break;
 		}
 
-		/* increment for the first ramp for one color gradation
-		 * 1 gradation for 6-bit color is 2^10
-		 * gradations in 16-bit color
-		 */
+		 
 		inc_base = (src_bpc - dst_bpc);
 
 		switch (bit_depth) {
@@ -1198,7 +1015,7 @@ static void optc1_set_test_pattern(
 
 		REG_WRITE(OTG_TEST_PATTERN_COLOR, 0);
 
-		/* enable test pattern */
+		 
 		REG_WRITE(OTG_TEST_PATTERN_CONTROL, 0);
 
 		REG_SET_4(OTG_TEST_PATTERN_CONTROL, 0,
@@ -1458,7 +1275,7 @@ bool optc1_configure_crc(struct timing_generator *optc,
 {
 	struct optc *optc1 = DCN10TG_FROM_TG(optc);
 
-	/* Cannot configure crc on a CRTC that is disabled */
+	 
 	if (!optc1_is_tg_enabled(optc))
 		return false;
 
@@ -1467,28 +1284,28 @@ bool optc1_configure_crc(struct timing_generator *optc,
 	if (!params->enable)
 		return true;
 
-	/* Program frame boundaries */
-	/* Window A x axis start and end. */
+	 
+	 
 	REG_UPDATE_2(OTG_CRC0_WINDOWA_X_CONTROL,
 			OTG_CRC0_WINDOWA_X_START, params->windowa_x_start,
 			OTG_CRC0_WINDOWA_X_END, params->windowa_x_end);
 
-	/* Window A y axis start and end. */
+	 
 	REG_UPDATE_2(OTG_CRC0_WINDOWA_Y_CONTROL,
 			OTG_CRC0_WINDOWA_Y_START, params->windowa_y_start,
 			OTG_CRC0_WINDOWA_Y_END, params->windowa_y_end);
 
-	/* Window B x axis start and end. */
+	 
 	REG_UPDATE_2(OTG_CRC0_WINDOWB_X_CONTROL,
 			OTG_CRC0_WINDOWB_X_START, params->windowb_x_start,
 			OTG_CRC0_WINDOWB_X_END, params->windowb_x_end);
 
-	/* Window B y axis start and end. */
+	 
 	REG_UPDATE_2(OTG_CRC0_WINDOWB_Y_CONTROL,
 			OTG_CRC0_WINDOWB_Y_START, params->windowb_y_start,
 			OTG_CRC0_WINDOWB_Y_END, params->windowb_y_end);
 
-	/* Set crc mode and selection, and enable. Only using CRC0*/
+	 
 	REG_UPDATE_3(OTG_CRC_CNTL,
 			OTG_CRC_CONT_EN, params->continuous_mode ? 1 : 0,
 			OTG_CRC0_SELECT, params->selection,
@@ -1497,21 +1314,7 @@ bool optc1_configure_crc(struct timing_generator *optc,
 	return true;
 }
 
-/**
- * optc1_get_crc - Capture CRC result per component
- *
- * @optc: timing_generator instance.
- * @r_cr: 16-bit primary CRC signature for red data.
- * @g_y: 16-bit primary CRC signature for green data.
- * @b_cb: 16-bit primary CRC signature for blue data.
- *
- * This function reads the CRC signature from the OPTC registers. Notice that
- * we have three registers to keep the CRC result per color component (RGB).
- *
- * Returns:
- * If CRC is disabled, return false; otherwise, return true, and the CRC
- * results in the parameters.
- */
+ 
 bool optc1_get_crc(struct timing_generator *optc,
 		   uint32_t *r_cr, uint32_t *g_y, uint32_t *b_cb)
 {
@@ -1520,16 +1323,16 @@ bool optc1_get_crc(struct timing_generator *optc,
 
 	REG_GET(OTG_CRC_CNTL, OTG_CRC_EN, &field);
 
-	/* Early return if CRC is not enabled for this CRTC */
+	 
 	if (!field)
 		return false;
 
-	/* OTG_CRC0_DATA_RG has the CRC16 results for the red and green component */
+	 
 	REG_GET_2(OTG_CRC0_DATA_RG,
 		  CRC0_R_CR, r_cr,
 		  CRC0_G_Y, g_y);
 
-	/* OTG_CRC0_DATA_B has the CRC16 results for the blue component */
+	 
 	REG_GET(OTG_CRC0_DATA_B,
 		CRC0_B_CB, b_cb);
 
@@ -1545,14 +1348,14 @@ static const struct timing_generator_funcs dcn10_tg_funcs = {
 		.program_global_sync = optc1_program_global_sync,
 		.enable_crtc = optc1_enable_crtc,
 		.disable_crtc = optc1_disable_crtc,
-		/* used by enable_timing_synchronization. Not need for FPGA */
+		 
 		.is_counter_moving = optc1_is_counter_moving,
 		.get_position = optc1_get_position,
 		.get_frame_count = optc1_get_vblank_counter,
 		.get_scanoutpos = optc1_get_crtc_scanoutpos,
 		.get_otg_active_size = optc1_get_otg_active_size,
 		.set_early_control = optc1_set_early_control,
-		/* used by enable_timing_synchronization. Not need for FPGA */
+		 
 		.wait_for_state = optc1_wait_for_state,
 		.set_blank = optc1_set_blank,
 		.is_blanked = optc1_is_blanked,
@@ -1598,18 +1401,7 @@ void dcn10_timing_generator_init(struct optc *optc1)
 	optc1->min_v_sync_width = 1;
 }
 
-/* "Containter" vs. "pixel" is a concept within HW blocks, mostly those closer to the back-end. It works like this:
- *
- * - In most of the formats (RGB or YCbCr 4:4:4, 4:2:2 uncompressed and DSC 4:2:2 Simple) pixel rate is the same as
- *   containter rate.
- *
- * - In 4:2:0 (DSC or uncompressed) there are two pixels per container, hence the target container rate has to be
- *   halved to maintain the correct pixel rate.
- *
- * - Unlike 4:2:2 uncompressed, DSC 4:2:2 Native also has two pixels per container (this happens when DSC is applied
- *   to it) and has to be treated the same as 4:2:0, i.e. target containter rate has to be halved in this case as well.
- *
- */
+ 
 bool optc1_is_two_pixels_per_containter(const struct dc_crtc_timing *timing)
 {
 	bool two_pix = timing->pixel_encoding == PIXEL_ENCODING_YCBCR420;

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Machine driver for AMD Pink Sardine platform using DMIC
- *
- * Copyright 2022 Advanced Micro Devices, Inc.
- */
+
+ 
 
 #include <sound/soc.h>
 #include <sound/soc-dapm.h>

@@ -1,13 +1,6 @@
 #ifndef _LINUX_TIME32_H
 #define _LINUX_TIME32_H
-/*
- * These are all interfaces based on the old time_t definition
- * that overflows in 2038 on 32-bit architectures. New code
- * should use the replacements based on time64_t and timespec64.
- *
- * Any interfaces in here that become unused as we migrate
- * code to time64_t should get removed.
- */
+ 
 
 #include <linux/time64.h>
 #include <linux/timex.h>
@@ -61,12 +54,7 @@ struct __kernel_timex;
 int get_old_timex32(struct __kernel_timex *, const struct old_timex32 __user *);
 int put_old_timex32(struct old_timex32 __user *, const struct __kernel_timex *);
 
-/**
- * ns_to_kernel_old_timeval - Convert nanoseconds to timeval
- * @nsec:	the nanoseconds value to be converted
- *
- * Returns the timeval representation of the nsec parameter.
- */
+ 
 extern struct __kernel_old_timeval ns_to_kernel_old_timeval(s64 nsec);
 
 #endif

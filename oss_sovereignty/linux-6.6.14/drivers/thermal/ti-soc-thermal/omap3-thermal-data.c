@@ -1,30 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * OMAP3 thermal driver.
- *
- * Copyright (C) 2011-2012 Texas Instruments Inc.
- * Copyright (C) 2014 Pavel Machek <pavel@ucw.cz>
- *
- * Note
- * http://www.ti.com/lit/er/sprz278f/sprz278f.pdf "Advisory
- * 3.1.1.186 MMC OCP Clock Not Gated When Thermal Sensor Is Used"
- *
- * Also TI says:
- * Just be careful when you try to make thermal policy like decisions
- * based on this sensor. Placement of the sensor w.r.t the actual logic
- * generating heat has to be a factor as well. If you are just looking
- * for an approximation temperature (thermometerish kind), you might be
- * ok with this. I am not sure we'd find any TI data around this.. just a
- * heads up.
- */
+
+ 
 
 #include "ti-thermal.h"
 #include "ti-bandgap.h"
 
-/*
- * OMAP34XX has one instance of thermal sensor for MPU
- * need to describe the individual bit fields
- */
+ 
 static struct temp_sensor_registers
 omap34xx_mpu_temp_sensor_registers = {
 	.temp_sensor_ctrl = 0,
@@ -36,15 +16,13 @@ omap34xx_mpu_temp_sensor_registers = {
 	.mode_ctrl_mask = BIT(9),
 };
 
-/* Thresholds and limits for OMAP34XX MPU temperature sensor */
+ 
 static struct temp_sensor_data omap34xx_mpu_temp_sensor_data = {
 	.min_freq = 32768,
 	.max_freq = 32768,
 };
 
-/*
- * Temperature values in milli degree celsius
- */
+ 
 static const int
 omap34xx_adc_to_temp[128] = {
 	-40000, -40000, -40000, -40000, -40000, -39000, -38000, -36000,
@@ -64,7 +42,7 @@ omap34xx_adc_to_temp[128] = {
 	124000, 124000, 125000, 125000, 125000, 125000,	125000
 };
 
-/* OMAP34XX data */
+ 
 const struct ti_bandgap_data omap34xx_data = {
 	.features = TI_BANDGAP_FEATURE_CLK_CTRL | TI_BANDGAP_FEATURE_UNRELIABLE,
 	.fclock_name = "ts_fck",
@@ -89,10 +67,7 @@ const struct ti_bandgap_data omap34xx_data = {
 	.sensor_count = 1,
 };
 
-/*
- * OMAP36XX has one instance of thermal sensor for MPU
- * need to describe the individual bit fields
- */
+ 
 static struct temp_sensor_registers
 omap36xx_mpu_temp_sensor_registers = {
 	.temp_sensor_ctrl = 0,
@@ -104,15 +79,13 @@ omap36xx_mpu_temp_sensor_registers = {
 	.mode_ctrl_mask = BIT(10),
 };
 
-/* Thresholds and limits for OMAP36XX MPU temperature sensor */
+ 
 static struct temp_sensor_data omap36xx_mpu_temp_sensor_data = {
 	.min_freq = 32768,
 	.max_freq = 32768,
 };
 
-/*
- * Temperature values in milli degree celsius
- */
+ 
 static const int
 omap36xx_adc_to_temp[128] = {
 	-40000, -40000, -40000, -40000, -40000, -40000, -40000, -40000,
@@ -132,7 +105,7 @@ omap36xx_adc_to_temp[128] = {
 	125000, 125000, 125000, 125000, 125000, 125000,	125000
 };
 
-/* OMAP36XX data */
+ 
 const struct ti_bandgap_data omap36xx_data = {
 	.features = TI_BANDGAP_FEATURE_CLK_CTRL | TI_BANDGAP_FEATURE_UNRELIABLE,
 	.fclock_name = "ts_fck",

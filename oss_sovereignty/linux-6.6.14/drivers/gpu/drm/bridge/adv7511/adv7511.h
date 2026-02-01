@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Analog Devices ADV7511 HDMI transmitter driver
- *
- * Copyright 2012 Analog Devices Inc.
- */
+ 
+ 
 
 #ifndef __DRM_I2C_ADV7511_H__
 #define __DRM_I2C_ADV7511_H__
@@ -59,34 +55,34 @@
 #define ADV7511_REG_DSD_ENABLE			0x46
 #define ADV7511_REG_VIDEO_INPUT_CFG2		0x48
 #define ADV7511_REG_INFOFRAME_UPDATE		0x4a
-#define ADV7511_REG_GC(x)			(0x4b + (x)) /* 0x4b - 0x51 */
+#define ADV7511_REG_GC(x)			(0x4b + (x))  
 #define ADV7511_REG_AVI_INFOFRAME_VERSION	0x52
 #define ADV7511_REG_AVI_INFOFRAME_LENGTH	0x53
 #define ADV7511_REG_AVI_INFOFRAME_CHECKSUM	0x54
-#define ADV7511_REG_AVI_INFOFRAME(x)		(0x55 + (x)) /* 0x55 - 0x6f */
+#define ADV7511_REG_AVI_INFOFRAME(x)		(0x55 + (x))  
 #define ADV7511_REG_AUDIO_INFOFRAME_VERSION	0x70
 #define ADV7511_REG_AUDIO_INFOFRAME_LENGTH	0x71
 #define ADV7511_REG_AUDIO_INFOFRAME_CHECKSUM	0x72
-#define ADV7511_REG_AUDIO_INFOFRAME(x)		(0x73 + (x)) /* 0x73 - 0x7c */
+#define ADV7511_REG_AUDIO_INFOFRAME(x)		(0x73 + (x))  
 #define ADV7511_REG_INT_ENABLE(x)		(0x94 + (x))
 #define ADV7511_REG_INT(x)			(0x96 + (x))
 #define ADV7511_REG_INPUT_CLK_DIV		0x9d
 #define ADV7511_REG_PLL_STATUS			0x9e
 #define ADV7511_REG_HDMI_POWER			0xa1
 #define ADV7511_REG_HDCP_HDMI_CFG		0xaf
-#define ADV7511_REG_AN(x)			(0xb0 + (x)) /* 0xb0 - 0xb7 */
+#define ADV7511_REG_AN(x)			(0xb0 + (x))  
 #define ADV7511_REG_HDCP_STATUS			0xb8
 #define ADV7511_REG_BCAPS			0xbe
-#define ADV7511_REG_BKSV(x)			(0xc0 + (x)) /* 0xc0 - 0xc3 */
+#define ADV7511_REG_BKSV(x)			(0xc0 + (x))  
 #define ADV7511_REG_EDID_SEGMENT		0xc4
 #define ADV7511_REG_DDC_STATUS			0xc8
 #define ADV7511_REG_EDID_READ_CTRL		0xc9
-#define ADV7511_REG_BSTATUS(x)			(0xca + (x)) /* 0xca - 0xcb */
+#define ADV7511_REG_BSTATUS(x)			(0xca + (x))  
 #define ADV7511_REG_TIMING_GEN_SEQ		0xd0
 #define ADV7511_REG_POWER2			0xd6
 #define ADV7511_REG_HSYNC_PLACEMENT_MSB		0xfa
 
-#define ADV7511_REG_SYNC_ADJUSTMENT(x)		(0xd7 + (x)) /* 0xd7 - 0xdc */
+#define ADV7511_REG_SYNC_ADJUSTMENT(x)		(0xd7 + (x))  
 #define ADV7511_REG_TMDS_CLOCK_INV		0xde
 #define ADV7511_REG_ARC_CTRL			0xdf
 #define ADV7511_REG_CEC_I2C_ADDR		0xe1
@@ -94,7 +90,7 @@
 #define ADV7511_REG_CHIP_ID_HIGH		0xf5
 #define ADV7511_REG_CHIP_ID_LOW			0xf6
 
-/* Hardware defined default addresses for I2C register maps */
+ 
 #define ADV7511_CEC_I2C_ADDR_DEFAULT		0x3c
 #define ADV7511_EDID_I2C_ADDR_DEFAULT		0x3f
 #define ADV7511_PACKET_I2C_ADDR_DEFAULT		0x38
@@ -247,40 +243,14 @@ enum adv7511_input_sync_pulse {
 	ADV7511_INPUT_SYNC_PULSE_NONE = 3,
 };
 
-/**
- * enum adv7511_sync_polarity - Polarity for the input sync signals
- * @ADV7511_SYNC_POLARITY_PASSTHROUGH:  Sync polarity matches that of
- *				       the currently configured mode.
- * @ADV7511_SYNC_POLARITY_LOW:	    Sync polarity is low
- * @ADV7511_SYNC_POLARITY_HIGH:	    Sync polarity is high
- *
- * If the polarity is set to either LOW or HIGH the driver will configure the
- * ADV7511 to internally invert the sync signal if required to match the sync
- * polarity setting for the currently selected output mode.
- *
- * If the polarity is set to PASSTHROUGH, the ADV7511 will route the signal
- * unchanged. This is used when the upstream graphics core already generates
- * the sync signals with the correct polarity.
- */
+ 
 enum adv7511_sync_polarity {
 	ADV7511_SYNC_POLARITY_PASSTHROUGH,
 	ADV7511_SYNC_POLARITY_LOW,
 	ADV7511_SYNC_POLARITY_HIGH,
 };
 
-/**
- * struct adv7511_link_config - Describes adv7511 hardware configuration
- * @input_color_depth:		Number of bits per color component (8, 10 or 12)
- * @input_colorspace:		The input colorspace (RGB, YUV444, YUV422)
- * @input_clock:		The input video clock style (1x, 2x, DDR)
- * @input_style:		The input component arrangement variant
- * @input_justification:	Video input format bit justification
- * @clock_delay:		Clock delay for the input clock (in ps)
- * @embedded_sync:		Video input uses BT.656-style embedded sync
- * @sync_pulse:			Select the sync pulse
- * @vsync_polarity:		vsync input signal configuration
- * @hsync_polarity:		hsync input signal configuration
- */
+ 
 struct adv7511_link_config {
 	unsigned int input_color_depth;
 	enum hdmi_colorspace input_colorspace;
@@ -296,26 +266,14 @@ struct adv7511_link_config {
 	enum adv7511_sync_polarity hsync_polarity;
 };
 
-/**
- * enum adv7511_csc_scaling - Scaling factor for the ADV7511 CSC
- * @ADV7511_CSC_SCALING_1: CSC results are not scaled
- * @ADV7511_CSC_SCALING_2: CSC results are scaled by a factor of two
- * @ADV7511_CSC_SCALING_4: CSC results are scalled by a factor of four
- */
+ 
 enum adv7511_csc_scaling {
 	ADV7511_CSC_SCALING_1 = 0,
 	ADV7511_CSC_SCALING_2 = 1,
 	ADV7511_CSC_SCALING_4 = 2,
 };
 
-/**
- * struct adv7511_video_config - Describes adv7511 hardware configuration
- * @csc_enable:			Whether to enable color space conversion
- * @csc_scaling_factor:		Color space conversion scaling factor
- * @csc_coefficents:		Color space conversion coefficents
- * @hdmi_mode:			Whether to use HDMI or DVI output mode
- * @avi_infoframe:		HDMI infoframe
- */
+ 
 struct adv7511_video_config {
 	bool csc_enable;
 	enum adv7511_csc_scaling csc_scaling_factor;
@@ -371,7 +329,7 @@ struct adv7511 {
 	struct regulator_bulk_data *supplies;
 	unsigned int num_supplies;
 
-	/* ADV7533 DSI RX related params */
+	 
 	struct device_node *host_node;
 	struct mipi_dsi_device *dsi;
 	u8 num_dsi_lanes;
@@ -412,7 +370,7 @@ int adv7533_parse_dt(struct device_node *np, struct adv7511 *adv);
 #ifdef CONFIG_DRM_I2C_ADV7511_AUDIO
 int adv7511_audio_init(struct device *dev, struct adv7511 *adv7511);
 void adv7511_audio_exit(struct adv7511 *adv7511);
-#else /*CONFIG_DRM_I2C_ADV7511_AUDIO */
+#else  
 static inline int adv7511_audio_init(struct device *dev, struct adv7511 *adv7511)
 {
 	return 0;
@@ -420,6 +378,6 @@ static inline int adv7511_audio_init(struct device *dev, struct adv7511 *adv7511
 static inline void adv7511_audio_exit(struct adv7511 *adv7511)
 {
 }
-#endif /* CONFIG_DRM_I2C_ADV7511_AUDIO */
+#endif  
 
-#endif /* __DRM_I2C_ADV7511_H__ */
+#endif  

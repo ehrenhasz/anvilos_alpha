@@ -1,50 +1,11 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
-/*
- * Copyright (c) 2010, Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2014, 2015 by Delphix. All rights reserved.
- * Copyright 2016 The MathWorks, Inc. All rights reserved.
- */
+ 
+ 
 
-/*
- * A Zero Reference Lock (ZRL) is a reference count that can lock out new
- * references only when the count is zero and only without waiting if the count
- * is not already zero. It is similar to a read-write lock in that it allows
- * multiple readers and only a single writer, but it does not allow a writer to
- * block while waiting for readers to exit, and therefore the question of
- * reader/writer priority is moot (no WRWANT bit). Since the equivalent of
- * rw_enter(&lock, RW_WRITER) is disallowed and only tryenter() is allowed, it
- * is perfectly safe for the same reader to acquire the same lock multiple
- * times. The fact that a ZRL is reentrant for readers (through multiple calls
- * to zrl_add()) makes it convenient for determining whether something is
- * actively referenced without the fuss of flagging lock ownership across
- * function calls.
- */
+ 
 #include <sys/zrlock.h>
 #include <sys/trace_zfs.h>
 
-/*
- * A ZRL can be locked only while there are zero references, so ZRL_LOCKED is
- * treated as zero references.
- */
+ 
 #define	ZRL_LOCKED	-1
 #define	ZRL_DESTROYED	-2
 
@@ -149,7 +110,7 @@ zrl_exit(zrlock_t *zrl)
 #ifdef	ZFS_DEBUG
 	ASSERT3P(zrl->zr_owner, ==, curthread);
 	zrl->zr_owner = NULL;
-	membar_producer();	/* make sure the owner store happens first */
+	membar_producer();	 
 #endif
 	zrl->zr_refcount = 0;
 	cv_broadcast(&zrl->zr_cv);

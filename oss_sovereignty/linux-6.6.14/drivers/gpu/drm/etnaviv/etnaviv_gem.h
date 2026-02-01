@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) 2015-2018 Etnaviv Project
- */
+ 
+ 
 
 #ifndef __ETNAVIV_GEM_H__
 #define __ETNAVIV_GEM_H__
@@ -39,7 +37,7 @@ struct etnaviv_gem_object {
 	u32 flags;
 
 	struct list_head gem_node;
-	struct etnaviv_gpu *gpu;     /* non-null if active */
+	struct etnaviv_gpu *gpu;      
 	atomic_t gpu_active;
 	u32 access;
 
@@ -49,7 +47,7 @@ struct etnaviv_gem_object {
 
 	struct list_head vram_list;
 
-	/* cache maintenance */
+	 
 	u32 last_cpu_prep_op;
 
 	struct etnaviv_gem_userptr userptr;
@@ -82,10 +80,7 @@ struct etnaviv_gem_submit_bo {
 	struct etnaviv_vram_mapping *mapping;
 };
 
-/* Created per submit-ioctl, to track bo's and cmdstream bufs, etc,
- * associated with the cmdstream submission for synchronization (and
- * make it easier to unwind when things go wrong, etc).
- */
+ 
 struct etnaviv_gem_submit {
 	struct drm_sched_job sched_job;
 	struct kref refcount;
@@ -94,16 +89,16 @@ struct etnaviv_gem_submit {
 	struct etnaviv_iommu_context *mmu_context, *prev_mmu_context;
 	struct dma_fence *out_fence;
 	int out_fence_id;
-	struct list_head node; /* GPU active submit list */
+	struct list_head node;  
 	struct etnaviv_cmdbuf cmdbuf;
-	struct pid *pid;       /* submitting process */
+	struct pid *pid;        
 	u32 exec_state;
 	u32 flags;
 	unsigned int nr_pmrs;
 	struct etnaviv_perfmon_request *pmrs;
 	unsigned int nr_bos;
 	struct etnaviv_gem_submit_bo bos[];
-	/* No new members here, the previous one is variable-length! */
+	 
 };
 
 void etnaviv_submit_put(struct etnaviv_gem_submit * submit);
@@ -121,4 +116,4 @@ struct etnaviv_vram_mapping *etnaviv_gem_mapping_get(
 	u64 va);
 void etnaviv_gem_mapping_unreference(struct etnaviv_vram_mapping *mapping);
 
-#endif /* __ETNAVIV_GEM_H__ */
+#endif  

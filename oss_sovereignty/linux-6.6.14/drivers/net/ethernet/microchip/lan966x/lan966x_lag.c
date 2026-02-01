@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0+
+
 
 #include <linux/if_bridge.h>
 
@@ -9,7 +9,7 @@ static void lan966x_lag_set_aggr_pgids(struct lan966x *lan966x)
 	u32 visited = GENMASK(lan966x->num_phys_ports - 1, 0);
 	int p, lag, i;
 
-	/* Reset destination and aggregation PGIDS */
+	 
 	for (p = 0; p < lan966x->num_phys_ports; ++p)
 		lan_wr(ANA_PGID_PGID_SET(BIT(p)),
 		       lan966x, ANA_PGID(p));
@@ -18,14 +18,7 @@ static void lan966x_lag_set_aggr_pgids(struct lan966x *lan966x)
 		lan_wr(ANA_PGID_PGID_SET(visited),
 		       lan966x, ANA_PGID(p));
 
-	/* The visited ports bitmask holds the list of ports offloading any
-	 * bonding interface. Initially we mark all these ports as unvisited,
-	 * then every time we visit a port in this bitmask, we know that it is
-	 * the lowest numbered port, i.e. the one whose logical ID == physical
-	 * port ID == LAG ID. So we mark as visited all further ports in the
-	 * bitmask that are offloading the same bonding interface. This way,
-	 * we set up the aggregation PGIDs only once per bonding interface.
-	 */
+	 
 	for (p = 0; p < lan966x->num_phys_ports; ++p) {
 		struct lan966x_port *port = lan966x->ports[p];
 
@@ -35,7 +28,7 @@ static void lan966x_lag_set_aggr_pgids(struct lan966x *lan966x)
 		visited &= ~BIT(p);
 	}
 
-	/* Now, set PGIDs for each active LAG */
+	 
 	for (lag = 0; lag < lan966x->num_phys_ports; ++lag) {
 		struct net_device *bond = lan966x->ports[lag]->bond;
 		int num_active_ports = 0;
@@ -61,18 +54,14 @@ static void lan966x_lag_set_aggr_pgids(struct lan966x *lan966x)
 
 			ac = lan_rd(lan966x, ANA_PGID(i));
 			ac &= ~bond_mask;
-			/* Don't do division by zero if there was no active
-			 * port. Just make all aggregation codes zero.
-			 */
+			 
 			if (num_active_ports)
 				ac |= BIT(aggr_idx[i % num_active_ports]);
 			lan_wr(ANA_PGID_PGID_SET(ac),
 			       lan966x, ANA_PGID(i));
 		}
 
-		/* Mark all ports in the same LAG as visited to avoid applying
-		 * the same config again.
-		 */
+		 
 		for (p = lag; p < lan966x->num_phys_ports; p++) {
 			struct lan966x_port *port = lan966x->ports[p];
 

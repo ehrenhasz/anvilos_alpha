@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * KVM selftest s390x library code - CPU-related functions (page tables...)
- *
- * Copyright (C) 2019, Red Hat, Inc.
- */
+
+ 
 
 #include "processor.h"
 #include "kvm_util.h"
@@ -29,11 +25,7 @@ void virt_arch_pgd_alloc(struct kvm_vm *vm)
 	vm->pgd_created = true;
 }
 
-/*
- * Allocate 4 pages for a region/segment table (ri < 4), or one page for
- * a page table (ri == 4). Returns a suitable region/segment table entry
- * which points to the freshly allocated pages.
- */
+ 
 static uint64_t virt_alloc_region(struct kvm_vm *vm, int ri)
 {
 	uint64_t taddr;
@@ -69,7 +61,7 @@ void virt_arch_pg_map(struct kvm_vm *vm, uint64_t gva, uint64_t gpa)
 		"  paddr: 0x%lx vm->max_gfn: 0x%lx vm->page_size: 0x%x",
 		gva, vm->max_gfn, vm->page_size);
 
-	/* Walk through region and segment tables */
+	 
 	entry = addr_gpa2hva(vm, vm->pgd);
 	for (ri = 1; ri <= 4; ri++) {
 		idx = (gva >> (64 - 11 * ri)) & 0x7ffu;
@@ -78,8 +70,8 @@ void virt_arch_pg_map(struct kvm_vm *vm, uint64_t gva, uint64_t gpa)
 		entry = addr_gpa2hva(vm, entry[idx] & REGION_ENTRY_ORIGIN);
 	}
 
-	/* Fill in page table entry */
-	idx = (gva >> 12) & 0x0ffu;		/* page index */
+	 
+	idx = (gva >> 12) & 0x0ffu;		 
 	if (!(entry[idx] & PAGE_INVALID))
 		fprintf(stderr,
 			"WARNING: PTE for gpa=0x%"PRIx64" already set!\n", gpa);
@@ -103,7 +95,7 @@ vm_paddr_t addr_arch_gva2gpa(struct kvm_vm *vm, vm_vaddr_t gva)
 		entry = addr_gpa2hva(vm, entry[idx] & REGION_ENTRY_ORIGIN);
 	}
 
-	idx = (gva >> 12) & 0x0ffu;		/* page index */
+	idx = (gva >> 12) & 0x0ffu;		 
 
 	TEST_ASSERT(!(entry[idx] & PAGE_INVALID),
 		    "No page mapping for vm virtual address 0x%lx", gva);
@@ -174,18 +166,18 @@ struct kvm_vcpu *vm_arch_vcpu_add(struct kvm_vm *vm, uint32_t vcpu_id,
 
 	vcpu = __vm_vcpu_add(vm, vcpu_id);
 
-	/* Setup guest registers */
+	 
 	vcpu_regs_get(vcpu, &regs);
 	regs.gprs[15] = stack_vaddr + (DEFAULT_STACK_PGS * getpagesize()) - 160;
 	vcpu_regs_set(vcpu, &regs);
 
 	vcpu_sregs_get(vcpu, &sregs);
-	sregs.crs[0] |= 0x00040000;		/* Enable floating point regs */
-	sregs.crs[1] = vm->pgd | 0xf;		/* Primary region table */
+	sregs.crs[0] |= 0x00040000;		 
+	sregs.crs[1] = vm->pgd | 0xf;		 
 	vcpu_sregs_set(vcpu, &sregs);
 
 	run = vcpu->run;
-	run->psw_mask = 0x0400000180000000ULL;  /* DAT enabled + 64 bit mode */
+	run->psw_mask = 0x0400000180000000ULL;   
 	run->psw_addr = (uintptr_t)guest_code;
 
 	return vcpu;

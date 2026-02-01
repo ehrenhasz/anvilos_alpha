@@ -1,28 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright 2022 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+
+ 
 
 
 #include "dm_services.h"
@@ -85,7 +62,7 @@ static int calc_mpc_flow_ctrl_cnt(const struct dc_stream_state *stream,
 	if (hblank_halved)
 		flow_ctrl_cnt /= 2;
 
-	/* ODM combine 4:1 case */
+	 
 	if (opp_cnt == 4)
 		flow_ctrl_cnt /= 2;
 
@@ -108,7 +85,7 @@ static void update_dsc_on_stream(struct pipe_ctx *pipe_ctx, bool enable)
 		struct dsc_optc_config dsc_optc_cfg;
 		enum optc_dsc_mode optc_dsc_mode;
 
-		/* Enable DSC hw block */
+		 
 		dsc_cfg.pic_width = (stream->timing.h_addressable + stream->timing.h_border_left + stream->timing.h_border_right) / opp_cnt;
 		dsc_cfg.pic_height = stream->timing.v_addressable + stream->timing.v_border_top + stream->timing.v_border_bottom;
 		dsc_cfg.pixel_encoding = stream->timing.pixel_encoding;
@@ -132,19 +109,19 @@ static void update_dsc_on_stream(struct pipe_ctx *pipe_ctx, bool enable)
 
 		optc_dsc_mode = dsc_optc_cfg.is_pixel_format_444 ? OPTC_DSC_ENABLED_444 : OPTC_DSC_ENABLED_NATIVE_SUBSAMPLED;
 
-		/* Enable DSC in OPTC */
+		 
 		DC_LOG_DSC("Setting optc DSC config for tg instance %d:", pipe_ctx->stream_res.tg->inst);
 		pipe_ctx->stream_res.tg->funcs->set_dsc_config(pipe_ctx->stream_res.tg,
 							optc_dsc_mode,
 							dsc_optc_cfg.bytes_per_pixel,
 							dsc_optc_cfg.slice_width);
 	} else {
-		/* disable DSC in OPTC */
+		 
 		pipe_ctx->stream_res.tg->funcs->set_dsc_config(
 				pipe_ctx->stream_res.tg,
 				OPTC_DSC_DISABLED, 0, 0);
 
-		/* disable DSC block */
+		 
 		dsc->funcs->dsc_disable(pipe_ctx->stream_res.dsc);
 		for (odm_pipe = pipe_ctx->next_odm_pipe; odm_pipe; odm_pipe = odm_pipe->next_odm_pipe) {
 			ASSERT(odm_pipe->stream_res.dsc);
@@ -153,22 +130,22 @@ static void update_dsc_on_stream(struct pipe_ctx *pipe_ctx, bool enable)
 	}
 }
 
-// Given any pipe_ctx, return the total ODM combine factor, and optionally return
-// the OPPids which are used
+
+
 static unsigned int get_odm_config(struct pipe_ctx *pipe_ctx, unsigned int *opp_instances)
 {
 	unsigned int opp_count = 1;
 	struct pipe_ctx *odm_pipe;
 
-	// First get to the top pipe
+	
 	for (odm_pipe = pipe_ctx; odm_pipe->prev_odm_pipe; odm_pipe = odm_pipe->prev_odm_pipe)
 		;
 
-	// First pipe is always used
+	
 	if (opp_instances)
 		opp_instances[0] = odm_pipe->stream_res.opp->inst;
 
-	// Find and count odm pipes, if any
+	
 	for (odm_pipe = odm_pipe->next_odm_pipe; odm_pipe; odm_pipe = odm_pipe->next_odm_pipe) {
 		if (opp_instances)
 			opp_instances[opp_count] = odm_pipe->stream_res.opp->inst;
@@ -224,11 +201,11 @@ void dcn314_update_odm(struct dc *dc, struct dc_state *context, struct pipe_ctx 
 
 		update_dsc_on_stream(pipe_ctx, pipe_ctx->stream->timing.flags.DSC);
 
-		/* Check if no longer using pipe for ODM, then need to disconnect DSC for that pipe */
+		 
 		if (!pipe_ctx->next_odm_pipe && current_pipe_ctx->next_odm_pipe &&
 				current_pipe_ctx->next_odm_pipe->stream_res.dsc) {
 			struct display_stream_compressor *dsc = current_pipe_ctx->next_odm_pipe->stream_res.dsc;
-			/* disconnect DSC block from stream */
+			 
 			dsc->funcs->dsc_disconnect(dsc);
 		}
 	}
@@ -257,7 +234,7 @@ void dcn314_dsc_pg_control(
 		REG_SET(DC_IP_REQUEST_CNTL, 0, IP_REQUEST_EN, 1);
 
 	switch (dsc_inst) {
-	case 0: /* DSC0 */
+	case 0:  
 		REG_UPDATE(DOMAIN16_PG_CONFIG,
 				DOMAIN_POWER_GATE, power_gate);
 
@@ -265,7 +242,7 @@ void dcn314_dsc_pg_control(
 				DOMAIN_PGFSM_PWR_STATUS, pwr_status,
 				1, 1000);
 		break;
-	case 1: /* DSC1 */
+	case 1:  
 		REG_UPDATE(DOMAIN17_PG_CONFIG,
 				DOMAIN_POWER_GATE, power_gate);
 
@@ -273,7 +250,7 @@ void dcn314_dsc_pg_control(
 				DOMAIN_PGFSM_PWR_STATUS, pwr_status,
 				1, 1000);
 		break;
-	case 2: /* DSC2 */
+	case 2:  
 		REG_UPDATE(DOMAIN18_PG_CONFIG,
 				DOMAIN_POWER_GATE, power_gate);
 
@@ -281,7 +258,7 @@ void dcn314_dsc_pg_control(
 				DOMAIN_PGFSM_PWR_STATUS, pwr_status,
 				1, 1000);
 		break;
-	case 3: /* DSC3 */
+	case 3:  
 		REG_UPDATE(DOMAIN19_PG_CONFIG,
 				DOMAIN_POWER_GATE, power_gate);
 
@@ -307,7 +284,7 @@ void dcn314_dsc_pg_control(
 
 void dcn314_enable_power_gating_plane(struct dce_hwseq *hws, bool enable)
 {
-	bool force_on = true; /* disable power gating */
+	bool force_on = true;  
 	uint32_t org_ip_request_cntl = 0;
 
 	if (enable && !hws->ctx->dc->debug.disable_hubp_power_gate)
@@ -316,18 +293,18 @@ void dcn314_enable_power_gating_plane(struct dce_hwseq *hws, bool enable)
 	REG_GET(DC_IP_REQUEST_CNTL, IP_REQUEST_EN, &org_ip_request_cntl);
 	if (org_ip_request_cntl == 0)
 		REG_SET(DC_IP_REQUEST_CNTL, 0, IP_REQUEST_EN, 1);
-	/* DCHUBP0/1/2/3/4/5 */
+	 
 	REG_UPDATE(DOMAIN0_PG_CONFIG, DOMAIN_POWER_FORCEON, force_on);
 	REG_UPDATE(DOMAIN2_PG_CONFIG, DOMAIN_POWER_FORCEON, force_on);
-	/* DPP0/1/2/3/4/5 */
+	 
 	REG_UPDATE(DOMAIN1_PG_CONFIG, DOMAIN_POWER_FORCEON, force_on);
 	REG_UPDATE(DOMAIN3_PG_CONFIG, DOMAIN_POWER_FORCEON, force_on);
 
-	force_on = true; /* disable power gating */
+	force_on = true;  
 	if (enable && !hws->ctx->dc->debug.disable_dsc_power_gate)
 		force_on = false;
 
-	/* DCS0/1/2/3/4 */
+	 
 	REG_UPDATE(DOMAIN16_PG_CONFIG, DOMAIN_POWER_FORCEON, force_on);
 	REG_UPDATE(DOMAIN17_PG_CONFIG, DOMAIN_POWER_FORCEON, force_on);
 	REG_UPDATE(DOMAIN18_PG_CONFIG, DOMAIN_POWER_FORCEON, force_on);
@@ -431,20 +408,7 @@ void dcn314_dpp_root_clock_control(struct dce_hwseq *hws, unsigned int dpp_inst,
 
 static void apply_symclk_on_tx_off_wa(struct dc_link *link)
 {
-	/* There are use cases where SYMCLK is referenced by OTG. For instance
-	 * for TMDS signal, OTG relies SYMCLK even if TX video output is off.
-	 * However current link interface will power off PHY when disabling link
-	 * output. This will turn off SYMCLK generated by PHY. The workaround is
-	 * to identify such case where SYMCLK is still in use by OTG when we
-	 * power off PHY. When this is detected, we will temporarily power PHY
-	 * back on and move PHY's SYMCLK state to SYMCLK_ON_TX_OFF by calling
-	 * program_pix_clk interface. When OTG is disabled, we will then power
-	 * off PHY by calling disable link output again.
-	 *
-	 * In future dcn generations, we plan to rework transmitter control
-	 * interface so that we could have an option to set SYMCLK ON TX OFF
-	 * state in one step without this workaround
-	 */
+	 
 
 	struct dc *dc = link->ctx->dc;
 	struct pipe_ctx *pipe_ctx = NULL;
@@ -484,11 +448,7 @@ void dcn314_disable_link_output(struct dc_link *link,
 
 	link_hwss->disable_link_output(link, link_res, signal);
 	link->phy_state.symclk_state = SYMCLK_OFF_TX_OFF;
-	/*
-	 * Add the logic to extract BOTH power up and power down sequences
-	 * from enable/disable link output and only call edp panel control
-	 * in enable_link_dp and disable_link_dp once.
-	 */
+	 
 	if (dmcu != NULL && dmcu->funcs->lock_phy)
 		dmcu->funcs->unlock_phy(dmcu);
 	dc->link_srv->dp_trace_source_sequence(link, DPCD_SOURCE_SEQ_AFTER_DISABLE_LINK_PHY);

@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (C) 2020 ARM Limited
+
+
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -15,9 +15,7 @@ int main(void)
 
 	fread(&val, sizeof(size_t), 1, stdin);
 
-	/* don't try to execute illegal (unimplemented) instructions) caller
-	 * should have checked this and keep worker simple
-	 */
+	 
 	hwcaps = getauxval(AT_HWCAP);
 
 	if (hwcaps & HWCAP_PACA) {

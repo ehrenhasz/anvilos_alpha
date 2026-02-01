@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0+
+
 
 #include <linux/crc32.h>
 
@@ -22,21 +22,7 @@ static u16 pre_mul_blend_channel(u16 src, u16 dst, u16 alpha)
 	return DIV_ROUND_CLOSEST(new_color, 0xffff);
 }
 
-/**
- * pre_mul_alpha_blend - alpha blending equation
- * @frame_info: Source framebuffer's metadata
- * @stage_buffer: The line with the pixels from src_plane
- * @output_buffer: A line buffer that receives all the blends output
- *
- * Using the information from the `frame_info`, this blends only the
- * necessary pixels from the `stage_buffer` to the `output_buffer`
- * using premultiplied blend formula.
- *
- * The current DRM assumption is that pixel color values have been already
- * pre-multiplied with the alpha channel values. See more
- * drm_plane_create_blend_mode_property(). Also, this formula assumes a
- * completely opaque background.
- */
+ 
 static void pre_mul_alpha_blend(struct vkms_frame_info *frame_info,
 				struct line_buffer *stage_buffer,
 				struct line_buffer *output_buffer)
@@ -90,7 +76,7 @@ static void fill_background(const struct pixel_argb_u16 *background_color,
 		output_buffer->pixels[i] = *background_color;
 }
 
-// lerp(a, b, t) = a + (b - a) * t
+ 
 static u16 lerp_u16(u16 a, u16 b, s64 t)
 {
 	s64 a_fp = drm_int2fixp(a);
@@ -108,10 +94,7 @@ static s64 get_lut_index(const struct vkms_color_lut *lut, u16 channel_value)
 	return drm_fixp_mul(color_channel_fp, lut->channel_value2index_ratio);
 }
 
-/*
- * This enum is related to the positions of the variables inside
- * `struct drm_color_lut`, so the order of both needs to be the same.
- */
+ 
 enum lut_channel {
 	LUT_RED = 0,
 	LUT_GREEN,
@@ -124,10 +107,7 @@ static u16 apply_lut_to_channel_value(const struct vkms_color_lut *lut, u16 chan
 {
 	s64 lut_index = get_lut_index(lut, channel_value);
 
-	/*
-	 * This checks if `struct drm_color_lut` has any gap added by the compiler
-	 * between the struct fields.
-	 */
+	 
 	static_assert(sizeof(struct drm_color_lut) == sizeof(__u16) * 4);
 
 	u16 *floor_lut_value = (__u16 *)&lut->base[drm_fixp2int(lut_index)];
@@ -157,19 +137,7 @@ static void apply_lut(const struct vkms_crtc_state *crtc_state, struct line_buff
 	}
 }
 
-/**
- * blend - blend the pixels from all planes and compute crc
- * @wb: The writeback frame buffer metadata
- * @crtc_state: The crtc state
- * @crc32: The crc output of the final frame
- * @output_buffer: A buffer of a row that will receive the result of the blend(s)
- * @stage_buffer: The line with the pixels from plane being blend to the output
- * @row_size: The size, in bytes, of a single row
- *
- * This function blends the pixels (Using the `pre_mul_alpha_blend`)
- * from all planes, calculates the crc32 of the output from the former step,
- * and, if necessary, convert and store the output to the writeback buffer.
- */
+ 
 static void blend(struct vkms_writeback_job *wb,
 		  struct vkms_crtc_state *crtc_state,
 		  u32 *crc32, struct line_buffer *stage_buffer,
@@ -186,7 +154,7 @@ static void blend(struct vkms_writeback_job *wb,
 	for (size_t y = 0; y < crtc_y_limit; y++) {
 		fill_background(&background_color, output_buffer);
 
-		/* The active planes are composed associatively in z-order. */
+		 
 		for (size_t i = 0; i < n_active_planes; i++) {
 			y_pos = get_y_pos(plane[i]->frame_info, y);
 
@@ -243,12 +211,7 @@ static int compose_active_planes(struct vkms_writeback_job *active_wb,
 	struct line_buffer output_buffer, stage_buffer;
 	int ret = 0;
 
-	/*
-	 * This check exists so we can call `crc32_le` for the entire line
-	 * instead doing it for each channel of each pixel in case
-	 * `struct `pixel_argb_u16` had any gap added by the compiler
-	 * between the struct fields.
-	 */
+	 
 	static_assert(sizeof(struct pixel_argb_u16) == 8);
 
 	if (WARN_ON(check_iosys_map(crtc_state)))
@@ -284,15 +247,7 @@ free_stage_buffer:
 	return ret;
 }
 
-/**
- * vkms_composer_worker - ordered work_struct to compute CRC
- *
- * @work: work_struct
- *
- * Work handler for composing and computing CRCs. work_struct scheduled in
- * an ordered workqueue that's periodically scheduled to run by
- * vkms_vblank_simulate() and flushed at vkms_atomic_commit_tail().
- */
+ 
 void vkms_composer_worker(struct work_struct *work)
 {
 	struct vkms_crtc_state *crtc_state = container_of(work,
@@ -332,10 +287,7 @@ void vkms_composer_worker(struct work_struct *work)
 
 	spin_unlock_irq(&out->composer_lock);
 
-	/*
-	 * We raced with the vblank hrtimer and previous work already computed
-	 * the crc, nothing to do.
-	 */
+	 
 	if (!crc_pending)
 		return;
 
@@ -354,9 +306,7 @@ void vkms_composer_worker(struct work_struct *work)
 		spin_unlock_irq(&out->composer_lock);
 	}
 
-	/*
-	 * The worker can fall behind the vblank hrtimer, make sure we catch up.
-	 */
+	 
 	while (frame_start <= frame_end)
 		drm_crtc_add_crc_entry(crtc, true, frame_start++, &crc32);
 }

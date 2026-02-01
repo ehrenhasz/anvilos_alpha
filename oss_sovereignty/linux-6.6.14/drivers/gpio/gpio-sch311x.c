@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * GPIO driver for the SMSC SCH311x Super-I/O chips
- *
- * Copyright (C) 2013 Bruno Randolf <br1@einfach.org>
- *
- * SuperIO functions and chip detection:
- * (c) Copyright 2008 Wim Van Sebroeck <wim@iguana.be>.
- */
+
+ 
 
 #include <linux/ioport.h>
 #include <linux/module.h>
@@ -32,70 +25,68 @@ static int sch311x_ioports[] = { 0x2e, 0x4e, 0x162e, 0x164e };
 
 static struct platform_device *sch311x_gpio_pdev;
 
-struct sch311x_pdev_data {		/* platform device data */
-	unsigned short runtime_reg;	/* runtime register base address */
+struct sch311x_pdev_data {		 
+	unsigned short runtime_reg;	 
 };
 
-struct sch311x_gpio_block {		/* one GPIO block runtime data */
+struct sch311x_gpio_block {		 
 	struct gpio_chip chip;
-	unsigned short data_reg;	/* from definition below */
-	unsigned short *config_regs;	/* pointer to definition below */
-	unsigned short runtime_reg;	/* runtime register */
-	spinlock_t lock;		/* lock for this GPIO block */
+	unsigned short data_reg;	 
+	unsigned short *config_regs;	 
+	unsigned short runtime_reg;	 
+	spinlock_t lock;		 
 };
 
-struct sch311x_gpio_priv {		/* driver private data */
+struct sch311x_gpio_priv {		 
 	struct sch311x_gpio_block blocks[6];
 };
 
-struct sch311x_gpio_block_def {		/* register address definitions */
+struct sch311x_gpio_block_def {		 
 	unsigned short data_reg;
 	unsigned short config_regs[8];
 	unsigned short base;
 };
 
-/* Note: some GPIOs are not available, these are marked with 0x00 */
+ 
 
 static struct sch311x_gpio_block_def sch311x_gpio_blocks[] = {
 	{
-		.data_reg = 0x4b,	/* GP1 */
+		.data_reg = 0x4b,	 
 		.config_regs = {0x23, 0x24, 0x25, 0x26, 0x27, 0x29, 0x2a, 0x2b},
 		.base = 10,
 	},
 	{
-		.data_reg = 0x4c,	/* GP2 */
+		.data_reg = 0x4c,	 
 		.config_regs = {0x00, 0x2c, 0x2d, 0x00, 0x00, 0x00, 0x00, 0x32},
 		.base = 20,
 	},
 	{
-		.data_reg = 0x4d,	/* GP3 */
+		.data_reg = 0x4d,	 
 		.config_regs = {0x33, 0x34, 0x35, 0x36, 0x37, 0x00, 0x39, 0x3a},
 		.base = 30,
 	},
 	{
-		.data_reg = 0x4e,	/* GP4 */
+		.data_reg = 0x4e,	 
 		.config_regs = {0x3b, 0x00, 0x3d, 0x00, 0x6e, 0x6f, 0x72, 0x73},
 		.base = 40,
 	},
 	{
-		.data_reg = 0x4f,	/* GP5 */
+		.data_reg = 0x4f,	 
 		.config_regs = {0x3f, 0x40, 0x41, 0x42, 0x43, 0x44, 0x45, 0x46},
 		.base = 50,
 	},
 	{
-		.data_reg = 0x50,	/* GP6 */
+		.data_reg = 0x50,	 
 		.config_regs = {0x47, 0x48, 0x54, 0x55, 0x56, 0x57, 0x58, 0x59},
 		.base = 60,
 	},
 };
 
-/*
- *	Super-IO functions
- */
+ 
 
 static inline int sch311x_sio_enter(int sio_config_port)
 {
-	/* Don't step on other drivers' I/O space by accident. */
+	 
 	if (!request_muxed_region(sio_config_port, 2, DRV_NAME)) {
 		pr_err(DRV_NAME "I/O address 0x%04x already in use\n",
 		       sio_config_port);
@@ -125,15 +116,13 @@ static inline void sch311x_sio_outb(int sio_config_port, int reg, int val)
 }
 
 
-/*
- *	GPIO functions
- */
+ 
 
 static int sch311x_gpio_request(struct gpio_chip *chip, unsigned offset)
 {
 	struct sch311x_gpio_block *block = gpiochip_get_data(chip);
 
-	if (block->config_regs[offset] == 0) /* GPIO is not available */
+	if (block->config_regs[offset] == 0)  
 		return -ENODEV;
 
 	if (!request_region(block->runtime_reg + block->config_regs[offset],
@@ -149,7 +138,7 @@ static void sch311x_gpio_free(struct gpio_chip *chip, unsigned offset)
 {
 	struct sch311x_gpio_block *block = gpiochip_get_data(chip);
 
-	if (block->config_regs[offset] == 0) /* GPIO is not available */
+	if (block->config_regs[offset] == 0)  
 		return;
 
 	release_region(block->runtime_reg + block->config_regs[offset], 1);
@@ -269,7 +258,7 @@ static int sch311x_gpio_probe(struct platform_device *pdev)
 	struct sch311x_gpio_block *block;
 	int err, i;
 
-	/* we can register all GPIO data registers at once */
+	 
 	if (!devm_request_region(&pdev->dev, pdata->runtime_reg + GP1, 6,
 		DRV_NAME)) {
 		dev_err(&pdev->dev, "Failed to request region 0x%04x-0x%04x.\n",
@@ -322,9 +311,7 @@ static struct platform_driver sch311x_gpio_driver = {
 };
 
 
-/*
- *	Init & exit routines
- */
+ 
 
 static int __init sch311x_detect(int sio_config_port, unsigned short *addr)
 {
@@ -336,16 +323,16 @@ static int __init sch311x_detect(int sio_config_port, unsigned short *addr)
 	if (err)
 		return err;
 
-	/* Check device ID. */
+	 
 	reg = sch311x_sio_inb(sio_config_port, 0x20);
 	switch (reg) {
-	case 0x7c: /* SCH3112 */
+	case 0x7c:  
 		dev_id = 2;
 		break;
-	case 0x7d: /* SCH3114 */
+	case 0x7d:  
 		dev_id = 4;
 		break;
-	case 0x7f: /* SCH3116 */
+	case 0x7f:  
 		dev_id = 6;
 		break;
 	default:
@@ -353,14 +340,14 @@ static int __init sch311x_detect(int sio_config_port, unsigned short *addr)
 		goto exit;
 	}
 
-	/* Select logical device A (runtime registers) */
+	 
 	sch311x_sio_outb(sio_config_port, 0x07, 0x0a);
 
-	/* Check if Logical Device Register is currently active */
+	 
 	if ((sch311x_sio_inb(sio_config_port, 0x30) & 0x01) == 0)
 		pr_info("Seems that LDN 0x0a is not active...\n");
 
-	/* Get the base address of the runtime registers */
+	 
 	base_addr = (sch311x_sio_inb(sio_config_port, 0x60) << 8) |
 			   sch311x_sio_inb(sio_config_port, 0x61);
 	if (!base_addr) {

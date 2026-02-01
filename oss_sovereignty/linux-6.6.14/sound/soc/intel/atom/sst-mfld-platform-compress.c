@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  sst_mfld_platform.c - Intel MID Platform driver
- *
- *  Copyright (C) 2010-2014 Intel Corp
- *  Author: Vinod Koul <vinod.koul@intel.com>
- *  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- *
- * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- */
+
+ 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
 #include <linux/slab.h>
@@ -20,7 +12,7 @@
 #include <sound/compress_driver.h>
 #include "sst-mfld-platform.h"
 
-/* compress stream operations */
+ 
 static void sst_compr_fragment_elapsed(void *arg)
 {
 	struct snd_compr_stream *cstream = (struct snd_compr_stream *)arg;
@@ -52,7 +44,7 @@ static int sst_platform_compr_open(struct snd_soc_component *component,
 
 	spin_lock_init(&stream->status_lock);
 
-	/* get the sst ops */
+	 
 	if (!sst || !try_module_get(sst->dev->driver->owner)) {
 		pr_err("no device available to run\n");
 		ret_val = -ENODEV;
@@ -61,7 +53,7 @@ static int sst_platform_compr_open(struct snd_soc_component *component,
 	stream->compr_ops = sst->compr_ops;
 	stream->id = 0;
 
-	/* Turn on LPE */
+	 
 	sst->compr_ops->power(sst->dev, true);
 
 	sst_set_stream_status(stream, SST_PLATFORM_INIT);
@@ -79,10 +71,10 @@ static int sst_platform_compr_free(struct snd_soc_component *component,
 	int ret_val = 0, str_id;
 
 	stream = cstream->runtime->private_data;
-	/* Turn off LPE */
+	 
 	sst->compr_ops->power(sst->dev, false);
 
-	/*need to check*/
+	 
 	str_id = stream->id;
 	if (str_id)
 		ret_val = stream->compr_ops->close(sst->dev, str_id);
@@ -103,10 +95,10 @@ static int sst_platform_compr_set_params(struct snd_soc_component *component,
 	struct sst_data *ctx = snd_soc_component_get_drvdata(component);
 
 	stream = cstream->runtime->private_data;
-	/* construct fw structure for this*/
+	 
 	memset(&str_params, 0, sizeof(str_params));
 
-	/* fill the device type and stream id to pass to SST driver */
+	 
 	retval = sst_fill_stream_params(cstream, ctx, &str_params, true);
 	pr_debug("compr_set_params: fill stream params ret_val = 0x%x\n", retval);
 	if (retval < 0)

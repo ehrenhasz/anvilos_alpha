@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/kernel.h>
 #include <linux/errno.h>
 #include <linux/fs.h>
@@ -33,12 +33,7 @@ struct io_close {
 
 static bool io_openat_force_async(struct io_open *open)
 {
-	/*
-	 * Don't bother trying for O_TRUNC, O_CREAT, or O_TMPFILE open,
-	 * it'll always -EAGAIN. Note that we test for __O_TMPFILE because
-	 * O_TMPFILE includes O_DIRECTORY, which isn't a flag we need to force
-	 * async for.
-	 */
+	 
 	return open->how.flags & (O_TRUNC | O_CREAT | __O_TMPFILE);
 }
 
@@ -53,7 +48,7 @@ static int __io_openat_prep(struct io_kiocb *req, const struct io_uring_sqe *sqe
 	if (unlikely(req->flags & REQ_F_FIXED_FILE))
 		return -EBADF;
 
-	/* open.how should be already initialised */
+	 
 	if (!(open->how.flags & O_PATH) && force_o_largefile())
 		open->how.flags |= O_LARGEFILE;
 
@@ -134,16 +129,12 @@ int io_openat2(struct io_kiocb *req, unsigned int issue_flags)
 
 	file = do_filp_open(open->dfd, open->filename, &op);
 	if (IS_ERR(file)) {
-		/*
-		 * We could hang on to this 'fd' on retrying, but seems like
-		 * marginal gain for something that is now known to be a slower
-		 * path. So just put it, and we'll get a new one when we retry.
-		 */
+		 
 		if (!fixed)
 			put_unused_fd(ret);
 
 		ret = PTR_ERR(file);
-		/* only retry if RESOLVE_CACHED wasn't already set by application */
+		 
 		if (ret == -EAGAIN &&
 		    (!resolve_nonblock && (issue_flags & IO_URING_F_NONBLOCK)))
 			return -EAGAIN;
@@ -242,7 +233,7 @@ int io_close(struct io_kiocb *req, unsigned int issue_flags)
 		goto err;
 	}
 
-	/* if the file has a flush method, be safe and punt to async */
+	 
 	if (file->f_op->flush && (issue_flags & IO_URING_F_NONBLOCK)) {
 		spin_unlock(&files->file_lock);
 		return -EAGAIN;
@@ -253,7 +244,7 @@ int io_close(struct io_kiocb *req, unsigned int issue_flags)
 	if (!file)
 		goto err;
 
-	/* No ->flush() or already async, safely close from here */
+	 
 	ret = filp_close(file, current->files);
 err:
 	if (ret < 0)

@@ -1,26 +1,4 @@
-/*
- * Copyright © 2016 Intel Corporation
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice (including the next
- * paragraph) shall be included in all copies or substantial portions of the
- * Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
- * IN THE SOFTWARE.
- *
- */
+ 
 
 #include <linux/list_sort.h>
 #include <linux/prime_numbers.h>
@@ -68,7 +46,7 @@ static int fake_get_pages(struct drm_i915_gem_object *obj)
 		return -ENOMEM;
 
 	rem = round_up(obj->base.size, BIT(31)) >> 31;
-	/* restricted by sg_alloc_table */
+	 
 	if (overflows_type(rem, unsigned int)) {
 		kfree(pages);
 		return -E2BIG;
@@ -137,7 +115,7 @@ fake_dma_object(struct drm_i915_private *i915, u64 size)
 	obj->read_domains = I915_GEM_DOMAIN_CPU;
 	obj->pat_index = i915_gem_get_pat_index(i915, I915_CACHE_NONE);
 
-	/* Preallocate the "backing storage" */
+	 
 	if (i915_gem_object_pin_pages_unlocked(obj))
 		goto err_obj;
 
@@ -158,7 +136,7 @@ static int igt_ppgtt_alloc(void *arg)
 	u64 size, last, limit;
 	int err = 0;
 
-	/* Allocate a ppggt and try to fill the entire range */
+	 
 
 	if (!HAS_PPGTT(dev_priv))
 		return 0;
@@ -170,13 +148,7 @@ static int igt_ppgtt_alloc(void *arg)
 	if (!ppgtt->vm.allocate_va_range)
 		goto err_ppgtt_cleanup;
 
-	/*
-	 * While we only allocate the page tables here and so we could
-	 * address a much larger GTT than we could actually fit into
-	 * RAM, a practical limit is the amount of physical pages in the system.
-	 * This should ensure that we do not run into the oomkiller during
-	 * the test and take down the machine wilfully.
-	 */
+	 
 	limit = totalram_pages() << PAGE_SHIFT;
 	limit = min(ppgtt->vm.total, limit);
 
@@ -186,7 +158,7 @@ retry:
 	if (err)
 		goto err_ppgtt_cleanup;
 
-	/* Check we can allocate the entire range */
+	 
 	for (size = 4096; size <= limit; size <<= 2) {
 		struct i915_vm_pt_stash stash = {};
 
@@ -208,7 +180,7 @@ retry:
 		i915_vm_free_pt_stash(&ppgtt->vm, &stash);
 	}
 
-	/* Check we can incrementally allocate the entire range */
+	 
 	for (last = 0, size = 4096; size <= limit; last = size, size <<= 2) {
 		struct i915_vm_pt_stash stash = {};
 
@@ -255,7 +227,7 @@ static int lowlevel_hole(struct i915_address_space *vm,
 	if (!mock_vma_res)
 		return -ENOMEM;
 
-	/* Keep creating larger objects until one cannot fit into the hole */
+	 
 	for (size = 12; (hole_end - hole_start) >> size; size++) {
 		I915_RND_SUBSTATE(prng, seed_prng);
 		struct drm_i915_gem_object *obj;
@@ -287,11 +259,7 @@ static int lowlevel_hole(struct i915_address_space *vm,
 		GEM_BUG_ON(count * BIT_ULL(aligned_size) > vm->total);
 		GEM_BUG_ON(hole_start + count * BIT_ULL(aligned_size) > hole_end);
 
-		/* Ignore allocation failures (i.e. don't report them as
-		 * a test failure) as we are purposefully allocating very
-		 * large objects without checking that we have sufficient
-		 * memory. We expect to hit -ENOMEM.
-		 */
+		 
 
 		obj = fake_dma_object(vm->i915, BIT_ULL(size));
 		if (IS_ERR(obj)) {
@@ -316,7 +284,7 @@ static int lowlevel_hole(struct i915_address_space *vm,
 			if (igt_timeout(end_time,
 					"%s timed out before %d/%d\n",
 					__func__, n, count)) {
-				hole_end = hole_start; /* quit */
+				hole_end = hole_start;  
 				break;
 			}
 
@@ -421,7 +389,7 @@ static int fill_hole(struct i915_address_space *vm,
 	LIST_HEAD(objects);
 	int err;
 
-	/* Try binding many VMA working inwards from either edge */
+	 
 
 	flags = PIN_OFFSET_FIXED | PIN_USER;
 	if (i915_is_ggtt(vm))
@@ -446,10 +414,7 @@ static int fill_hole(struct i915_address_space *vm,
 
 			list_add(&obj->st_link, &objects);
 
-			/* Align differing sized objects against the edges, and
-			 * check we don't walk off into the void when binding
-			 * them into the GTT.
-			 */
+			 
 			for (p = phases; p->name; p++) {
 				u64 offset;
 
@@ -641,7 +606,7 @@ static int walk_hole(struct i915_address_space *vm,
 	unsigned long flags;
 	u64 size;
 
-	/* Try binding a single VMA in different positions within the hole */
+	 
 
 	flags = PIN_OFFSET_FIXED | PIN_USER;
 	if (i915_is_ggtt(vm))
@@ -740,7 +705,7 @@ static int pot_hole(struct i915_address_space *vm,
 		goto err_obj;
 	}
 
-	/* Insert a pair of pages across every pot boundary within the hole */
+	 
 	for (pot = fls64(hole_end - 1) - 1;
 	     pot > ilog2(2 * min_alignment);
 	     pot--) {
@@ -803,7 +768,7 @@ static int drunk_hole(struct i915_address_space *vm,
 
 	min_alignment = i915_vm_min_alignment(vm, INTEL_MEMORY_SYSTEM);
 
-	/* Keep creating larger objects until one cannot fit into the hole */
+	 
 	for (size = 12; (hole_end - hole_start) >> size; size++) {
 		struct drm_i915_gem_object *obj;
 		unsigned int *order, count, n;
@@ -831,11 +796,7 @@ static int drunk_hole(struct i915_address_space *vm,
 			return -ENOMEM;
 		GEM_BUG_ON(!order);
 
-		/* Ignore allocation failures (i.e. don't report them as
-		 * a test failure) as we are purposefully allocating very
-		 * large objects without checking that we have sufficient
-		 * memory. We expect to hit -ENOMEM.
-		 */
+		 
 
 		obj = fake_dma_object(vm->i915, BIT_ULL(size));
 		if (IS_ERR(obj)) {
@@ -912,7 +873,7 @@ static int __shrink_hole(struct i915_address_space *vm,
 
 	min_alignment = i915_vm_min_alignment(vm, INTEL_MEMORY_SYSTEM);
 
-	/* Keep creating larger objects until one cannot fit into the hole */
+	 
 	for (addr = hole_start; addr < hole_end; ) {
 		struct i915_vma *vma;
 		u64 size = BIT_ULL(order++);
@@ -954,11 +915,7 @@ static int __shrink_hole(struct i915_address_space *vm,
 		i915_vma_unpin(vma);
 		addr += round_up(size, min_alignment);
 
-		/*
-		 * Since we are injecting allocation faults at random intervals,
-		 * wait for this allocation to complete before we change the
-		 * faultinjection.
-		 */
+		 
 		err = i915_vma_sync(vma);
 		if (err)
 			break;
@@ -1008,12 +965,7 @@ static int shrink_boom(struct i915_address_space *vm,
 	int err;
 	int i;
 
-	/*
-	 * Catch the case which shrink_hole seems to miss. The setup here
-	 * requires invoking the shrinker as we do the alloc_pt/alloc_pd, while
-	 * ensuring that all vma assiocated with the respective pd/pdp are
-	 * unpinned at the time.
-	 */
+	 
 
 	for (i = 0; i < ARRAY_SIZE(sizes); ++i) {
 		unsigned int flags = PIN_USER | PIN_OFFSET_FIXED;
@@ -1034,7 +986,7 @@ static int shrink_boom(struct i915_address_space *vm,
 		if (err)
 			goto err_purge;
 
-		/* Should now be ripe for purging */
+		 
 		i915_vma_unpin(vma);
 
 		explode = fake_dma_object(vm->i915, size);
@@ -1088,7 +1040,7 @@ static int misaligned_case(struct i915_address_space *vm, struct intel_memory_re
 
 	obj = i915_gem_object_create_region(mr, size, 0, I915_BO_ALLOC_GPU_ONLY);
 	if (IS_ERR(obj)) {
-		/* if iGVT-g or DMAR is active, stolen mem will be uninitialized */
+		 
 		if (PTR_ERR(obj) == -ENODEV && is_stolen)
 			return 0;
 		return PTR_ERR(obj);
@@ -1159,26 +1111,26 @@ static int misaligned_pin(struct i915_address_space *vm,
 		u64 size = min_alignment;
 		u64 addr = round_down(hole_start + (hole_size / 2), min_alignment);
 
-		/* avoid -ENOSPC on very small hole setups */
+		 
 		if (hole_size < 3 * min_alignment)
 			continue;
 
-		/* we can't test < 4k alignment due to flags being encoded in lower bits */
+		 
 		if (min_alignment != I915_GTT_PAGE_SIZE_4K) {
 			err = misaligned_case(vm, mr, addr + (min_alignment / 2), size, flags);
-			/* misaligned should error with -EINVAL*/
+			 
 			if (!err)
 				err = -EBADSLT;
 			if (err != -EINVAL)
 				return err;
 		}
 
-		/* test for vma->size expansion to min page size */
+		 
 		err = misaligned_case(vm, mr, addr, PAGE_SIZE, flags);
 		if (err)
 			return err;
 
-		/* test for intermediate size not expanding vma->size for large alignments */
+		 
 		err = misaligned_case(vm, mr, addr, size / 2, flags);
 		if (err)
 			return err;
@@ -1300,7 +1252,7 @@ restart:
 		if (err)
 			break;
 
-		/* As we have manipulated the drm_mm, the list may be corrupt */
+		 
 		last = hole_end;
 		goto restart;
 	}
@@ -1537,12 +1489,9 @@ static int igt_gtt_reserve(void *arg)
 	u64 total;
 	int err = -ENODEV;
 
-	/* i915_gem_gtt_reserve() tries to reserve the precise range
-	 * for the node, and evicts if it has to. So our test checks that
-	 * it can give us the requsted space and prevent overlaps.
-	 */
+	 
 
-	/* Start by filling the GGTT */
+	 
 	for (total = 0;
 	     total + 2 * I915_GTT_PAGE_SIZE <= ggtt->vm.total;
 	     total += 2 * I915_GTT_PAGE_SIZE) {
@@ -1587,7 +1536,7 @@ static int igt_gtt_reserve(void *arg)
 		}
 	}
 
-	/* Now we start forcing evictions */
+	 
 	for (total = I915_GTT_PAGE_SIZE;
 	     total + 2 * I915_GTT_PAGE_SIZE <= ggtt->vm.total;
 	     total += 2 * I915_GTT_PAGE_SIZE) {
@@ -1633,7 +1582,7 @@ static int igt_gtt_reserve(void *arg)
 		}
 	}
 
-	/* And then try at random */
+	 
 	list_for_each_entry_safe(obj, on, &objects, st_link) {
 		struct i915_vma *vma;
 		u64 offset;
@@ -1743,11 +1692,9 @@ static int igt_gtt_insert(void *arg)
 	u64 total;
 	int err = -ENODEV;
 
-	/* i915_gem_gtt_insert() tries to allocate some free space in the GTT
-	 * to the node, evicting if required.
-	 */
+	 
 
-	/* Check a couple of obviously invalid requests */
+	 
 	for (ii = invalid_insert; ii->size; ii++) {
 		mutex_lock(&ggtt->vm.mutex);
 		err = i915_gem_gtt_insert(&ggtt->vm, NULL, &tmp,
@@ -1764,7 +1711,7 @@ static int igt_gtt_insert(void *arg)
 		}
 	}
 
-	/* Start by filling the GGTT */
+	 
 	for (total = 0;
 	     total + I915_GTT_PAGE_SIZE <= ggtt->vm.total;
 	     total += I915_GTT_PAGE_SIZE) {
@@ -1793,7 +1740,7 @@ static int igt_gtt_insert(void *arg)
 
 		err = insert_gtt_with_resource(vma);
 		if (err == -ENOSPC) {
-			/* maxed out the GGTT space */
+			 
 			i915_gem_object_put(obj);
 			break;
 		}
@@ -1826,7 +1773,7 @@ static int igt_gtt_insert(void *arg)
 		__i915_vma_unpin(vma);
 	}
 
-	/* If we then reinsert, we should find the same hole */
+	 
 	list_for_each_entry_safe(obj, on, &objects, st_link) {
 		struct i915_vma *vma;
 		u64 offset;
@@ -1863,7 +1810,7 @@ static int igt_gtt_insert(void *arg)
 		}
 	}
 
-	/* And then force evictions */
+	 
 	for (total = 0;
 	     total + 2 * I915_GTT_PAGE_SIZE <= ggtt->vm.total;
 	     total += 2 * I915_GTT_PAGE_SIZE) {
@@ -1927,7 +1874,7 @@ int i915_gem_gtt_mock_selftests(void)
 	if (!i915)
 		return -ENOMEM;
 
-	/* allocate the ggtt */
+	 
 	err = intel_gt_assign_ggtt(to_gt(i915));
 	if (err)
 		goto out_put;

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: ISC
-/*
- * Copyright (c) 2010 Broadcom Corporation
- */
+
+ 
 
 #ifndef _BRCM_PHY_INT_H_
 #define _BRCM_PHY_INT_H_
@@ -17,15 +15,15 @@
 struct phy_shim_info;
 
 struct brcms_phy_srom_fem {
-	/* TSSI positive slope, 1: positive, 0: negative */
+	 
 	u8 tssipos;
-	/* Ext PA gain-type: full-gain: 0, pa-lite: 1, no_pa: 2 */
+	 
 	u8 extpagain;
-	/* support 32 combinations of different Pdet dynamic ranges */
+	 
 	u8 pdetrange;
-	/* TR switch isolation */
+	 
 	u8 triso;
-	/* antswctrl lookup table configuration: 32 possible choices */
+	 
 	u8 antswctrllut;
 };
 
@@ -1121,4 +1119,4 @@ void wlc_phy_get_pwrdet_offsets(struct brcms_phy *pi, s8 *cckoffset,
 s8 wlc_phy_upd_rssi_offset(struct brcms_phy *pi, s8 rssi, u16 chanspec);
 
 bool wlc_phy_n_txpower_ipa_ison(struct brcms_phy *pih);
-#endif				/* _BRCM_PHY_INT_H_ */
+#endif				 

@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * PCIe host controller driver for Mobiveil PCIe Host controller
- *
- * Copyright (c) 2018 Mobiveil Inc.
- * Copyright 2019 NXP
- *
- * Author: Subrahmanya Lingappa <l.subrahmanya@mobiveil.co.in>
- *	   Hou Zhiqiang <Zhiqiang.Hou@nxp.com>
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/kernel.h>
@@ -25,7 +17,7 @@ static int mobiveil_pcie_probe(struct platform_device *pdev)
 	struct pci_host_bridge *bridge;
 	struct device *dev = &pdev->dev;
 
-	/* allocate the PCIe port */
+	 
 	bridge = devm_pci_alloc_host_bridge(dev, sizeof(*pcie));
 	if (!bridge)
 		return -ENOMEM;

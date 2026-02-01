@@ -1,17 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * XDR support for nfsd
- *
- * Copyright (C) 1995, 1996 Olaf Kirch <okir@monad.swb.de>
- */
+
+ 
 
 #include "vfs.h"
 #include "xdr.h"
 #include "auth.h"
 
-/*
- * Mapping of S_IF* types to NFS file types
- */
+ 
 static const u32 nfs_ftypes[] = {
 	NFNON,  NFCHR,  NFCHR, NFBAD,
 	NFDIR,  NFBAD,  NFBLK, NFBAD,
@@ -20,19 +14,9 @@ static const u32 nfs_ftypes[] = {
 };
 
 
-/*
- * Basic NFSv2 data types (RFC 1094 Section 2.3)
- */
+ 
 
-/**
- * svcxdr_encode_stat - Encode an NFSv2 status code
- * @xdr: XDR stream
- * @status: status value to encode
- *
- * Return values:
- *   %false: Send buffer space was exhausted
- *   %true: Success
- */
+ 
 bool
 svcxdr_encode_stat(struct xdr_stream *xdr, __be32 status)
 {
@@ -46,15 +30,7 @@ svcxdr_encode_stat(struct xdr_stream *xdr, __be32 status)
 	return true;
 }
 
-/**
- * svcxdr_decode_fhandle - Decode an NFSv2 file handle
- * @xdr: XDR stream positioned at an encoded NFSv2 FH
- * @fhp: OUT: filled-in server file handle
- *
- * Return values:
- *  %false: The encoded file handle was not valid
- *  %true: @fhp has been initialized
- */
+ 
 bool
 svcxdr_decode_fhandle(struct xdr_stream *xdr, struct svc_fh *fhp)
 {
@@ -139,10 +115,7 @@ svcxdr_decode_sattr(struct svc_rqst *rqstp, struct xdr_stream *xdr,
 
 	iap->ia_valid = 0;
 
-	/*
-	 * Some Sun clients put 0xffff in the mode field when they
-	 * mean 0xffffffff.
-	 */
+	 
 	tmp1 = be32_to_cpup(p++);
 	if (tmp1 != (u32)-1 && tmp1 != 0xffff) {
 		iap->ia_valid |= ATTR_MODE;
@@ -183,15 +156,7 @@ svcxdr_decode_sattr(struct svc_rqst *rqstp, struct xdr_stream *xdr,
 		iap->ia_valid |= ATTR_MTIME | ATTR_MTIME_SET;
 		iap->ia_mtime.tv_sec = tmp1;
 		iap->ia_mtime.tv_nsec = tmp2 * NSEC_PER_USEC;
-		/*
-		 * Passing the invalid value useconds=1000000 for mtime
-		 * is a Sun convention for "set both mtime and atime to
-		 * current server time".  It's needed to make permissions
-		 * checks for the "touch" program across v2 mounts to
-		 * Solaris and Irix boxes work correctly. See description of
-		 * sattr in section 6.1 of "NFS Illustrated" by
-		 * Brent Callaghan, Addison-Wesley, ISBN 0-201-32750-5
-		 */
+		 
 		if (tmp2 == 1000000)
 			iap->ia_valid &= ~(ATTR_ATIME_SET|ATTR_MTIME_SET);
 	}
@@ -199,17 +164,7 @@ svcxdr_decode_sattr(struct svc_rqst *rqstp, struct xdr_stream *xdr,
 	return true;
 }
 
-/**
- * svcxdr_encode_fattr - Encode NFSv2 file attributes
- * @rqstp: Context of a completed RPC transaction
- * @xdr: XDR stream
- * @fhp: File handle to encode
- * @stat: Attributes to encode
- *
- * Return values:
- *   %false: Send buffer space was exhausted
- *   %true: Success
- */
+ 
 bool
 svcxdr_encode_fattr(struct svc_rqst *rqstp, struct xdr_stream *xdr,
 		    const struct svc_fh *fhp, const struct kstat *stat)
@@ -268,9 +223,7 @@ svcxdr_encode_fattr(struct svc_rqst *rqstp, struct xdr_stream *xdr,
 	return true;
 }
 
-/*
- * XDR decode functions
- */
+ 
 
 bool
 nfssvc_decode_fhandleargs(struct svc_rqst *rqstp, struct xdr_stream *xdr)
@@ -309,7 +262,7 @@ nfssvc_decode_readargs(struct svc_rqst *rqstp, struct xdr_stream *xdr)
 		return false;
 	if (xdr_stream_decode_u32(xdr, &args->count) < 0)
 		return false;
-	/* totalcount is ignored */
+	 
 	if (xdr_stream_decode_u32(xdr, &totalcount) < 0)
 		return false;
 
@@ -324,16 +277,16 @@ nfssvc_decode_writeargs(struct svc_rqst *rqstp, struct xdr_stream *xdr)
 
 	if (!svcxdr_decode_fhandle(xdr, &args->fh))
 		return false;
-	/* beginoffset is ignored */
+	 
 	if (xdr_stream_decode_u32(xdr, &beginoffset) < 0)
 		return false;
 	if (xdr_stream_decode_u32(xdr, &args->offset) < 0)
 		return false;
-	/* totalcount is ignored */
+	 
 	if (xdr_stream_decode_u32(xdr, &totalcount) < 0)
 		return false;
 
-	/* opaque data */
+	 
 	if (xdr_stream_decode_u32(xdr, &args->len) < 0)
 		return false;
 	if (args->len > NFSSVC_MAXBLKSIZE_V2)
@@ -408,9 +361,7 @@ nfssvc_decode_readdirargs(struct svc_rqst *rqstp, struct xdr_stream *xdr)
 	return true;
 }
 
-/*
- * XDR encode functions
- */
+ 
 
 bool
 nfssvc_encode_statres(struct svc_rqst *rqstp, struct xdr_stream *xdr)
@@ -515,7 +466,7 @@ nfssvc_encode_readdirres(struct svc_rqst *rqstp, struct xdr_stream *xdr)
 	case nfs_ok:
 		svcxdr_encode_opaque_pages(rqstp, xdr, dirlist->pages, 0,
 					   dirlist->len);
-		/* no more entries */
+		 
 		if (xdr_stream_encode_item_absent(xdr) < 0)
 			return false;
 		if (xdr_stream_encode_bool(xdr, resp->common.err == nfserr_eof) < 0)
@@ -551,14 +502,7 @@ nfssvc_encode_statfsres(struct svc_rqst *rqstp, struct xdr_stream *xdr)
 	return true;
 }
 
-/**
- * nfssvc_encode_nfscookie - Encode a directory offset cookie
- * @resp: readdir result context
- * @offset: offset cookie to encode
- *
- * The buffer space for the offset cookie has already been reserved
- * by svcxdr_encode_entry_common().
- */
+ 
 void nfssvc_encode_nfscookie(struct nfsd_readdirres *resp, u32 offset)
 {
 	__be32 cookie = cpu_to_be32(offset);
@@ -580,13 +524,13 @@ svcxdr_encode_entry_common(struct nfsd_readdirres *resp, const char *name,
 
 	if (xdr_stream_encode_item_present(xdr) < 0)
 		return false;
-	/* fileid */
+	 
 	if (xdr_stream_encode_u32(xdr, (u32)ino) < 0)
 		return false;
-	/* name */
+	 
 	if (xdr_stream_encode_opaque(xdr, name, min(namlen, NFS2_MAXNAMLEN)) < 0)
 		return false;
-	/* cookie */
+	 
 	resp->cookie_offset = dirlist->len;
 	if (xdr_stream_encode_u32(xdr, ~0U) < 0)
 		return false;
@@ -594,24 +538,7 @@ svcxdr_encode_entry_common(struct nfsd_readdirres *resp, const char *name,
 	return true;
 }
 
-/**
- * nfssvc_encode_entry - encode one NFSv2 READDIR entry
- * @data: directory context
- * @name: name of the object to be encoded
- * @namlen: length of that name, in bytes
- * @offset: the offset of the previous entry
- * @ino: the fileid of this entry
- * @d_type: unused
- *
- * Return values:
- *   %0: Entry was successfully encoded.
- *   %-EINVAL: An encoding problem occured, secondary status code in resp->common.err
- *
- * On exit, the following fields are updated:
- *   - resp->xdr
- *   - resp->common.err
- *   - resp->cookie_offset
- */
+ 
 int nfssvc_encode_entry(void *data, const char *name, int namlen,
 			loff_t offset, u64 ino, unsigned int d_type)
 {
@@ -621,7 +548,7 @@ int nfssvc_encode_entry(void *data, const char *name, int namlen,
 						    common);
 	unsigned int starting_length = resp->dirlist.len;
 
-	/* The offset cookie for the previous entry */
+	 
 	nfssvc_encode_nfscookie(resp, offset);
 
 	if (!svcxdr_encode_entry_common(resp, name, namlen, offset, ino))
@@ -638,9 +565,7 @@ out_toosmall:
 	return -EINVAL;
 }
 
-/*
- * XDR release functions
- */
+ 
 void nfssvc_release_attrstat(struct svc_rqst *rqstp)
 {
 	struct nfsd_attrstat *resp = rqstp->rq_resp;

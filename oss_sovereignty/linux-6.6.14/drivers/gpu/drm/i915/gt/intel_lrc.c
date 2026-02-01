@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright © 2014 Intel Corporation
- */
+
+ 
 
 #include "gem/i915_gem_lmem.h"
 
@@ -20,30 +18,7 @@
 #include "intel_ring.h"
 #include "shmem_utils.h"
 
-/*
- * The per-platform tables are u8-encoded in @data. Decode @data and set the
- * addresses' offset and commands in @regs. The following encoding is used
- * for each byte. There are 2 steps: decoding commands and decoding addresses.
- *
- * Commands:
- * [7]: create NOPs - number of NOPs are set in lower bits
- * [6]: When creating MI_LOAD_REGISTER_IMM command, allow to set
- *      MI_LRI_FORCE_POSTED
- * [5:0]: Number of NOPs or registers to set values to in case of
- *        MI_LOAD_REGISTER_IMM
- *
- * Addresses: these are decoded after a MI_LOAD_REGISTER_IMM command by "count"
- * number of registers. They are set by using the REG/REG16 macros: the former
- * is used for offsets smaller than 0x200 while the latter is for values bigger
- * than that. Those macros already set all the bits documented below correctly:
- *
- * [7]: When a register offset needs more than 6 bits, use additional bytes, to
- *      follow, for the lower bits
- * [6:0]: Register offset, without considering the engine base.
- *
- * This function only tweaks the commands and register offsets. Values are not
- * filled out.
- */
+ 
 static void set_offsets(u32 *regs,
 			const u8 *data,
 			const struct intel_engine_cs *engine,
@@ -62,7 +37,7 @@ static void set_offsets(u32 *regs,
 	while (*data) {
 		u8 count, flags;
 
-		if (*data & BIT(7)) { /* skip */
+		if (*data & BIT(7)) {  
 			count = *data++ & ~BIT(7);
 			regs += count;
 			continue;
@@ -96,7 +71,7 @@ static void set_offsets(u32 *regs,
 	}
 
 	if (close) {
-		/* Close the batch; used mainly by live_lrc_layout() */
+		 
 		*regs = MI_BATCH_BUFFER_END;
 		if (GRAPHICS_VER(engine->i915) >= 11)
 			*regs |= BIT(0);
@@ -681,12 +656,7 @@ static const u8 mtl_rcs_offsets[] = {
 
 static const u8 *reg_offsets(const struct intel_engine_cs *engine)
 {
-	/*
-	 * The gen12+ lists only have the registers we program in the basic
-	 * default state. We rely on the context image using relative
-	 * addressing to automatic fixup the register state between the
-	 * physical engines for virtual engine.
-	 */
+	 
 	GEM_BUG_ON(GRAPHICS_VER(engine->i915) >= 12 &&
 		   !intel_engine_has_relative_mmio(engine));
 
@@ -796,10 +766,7 @@ static int lrc_ring_cmd_buf_cctl(const struct intel_engine_cs *engine)
 {
 
 	if (GRAPHICS_VER_FULL(engine->i915) >= IP_VER(12, 50))
-		/*
-		 * Note that the CSFE context has a dummy slot for CMD_BUF_CCTL
-		 * simply to match the RCS context image layout.
-		 */
+		 
 		return 0xc6;
 	else if (engine->class != RENDER_CLASS)
 		return -1;
@@ -893,10 +860,7 @@ static void init_wa_bb_regs(u32 * const regs,
 static void init_ppgtt_regs(u32 *regs, const struct i915_ppgtt *ppgtt)
 {
 	if (i915_vm_is_4lvl(&ppgtt->vm)) {
-		/* 64b PPGTT (48bit canonical)
-		 * PDP0_DESCRIPTOR contains the base address to PML4 and
-		 * other PDP Descriptors are ignored.
-		 */
+		 
 		ASSIGN_CTX_PML4(ppgtt, regs);
 	} else {
 		ASSIGN_CTX_PDP(ppgtt, regs, 3);
@@ -930,16 +894,7 @@ static void __lrc_init_regs(u32 *regs,
 			    const struct intel_engine_cs *engine,
 			    bool inhibit)
 {
-	/*
-	 * A context is actually a big batch buffer with several
-	 * MI_LOAD_REGISTER_IMM commands followed by (reg, value) pairs. The
-	 * values we are setting here are only for the first context restore:
-	 * on a subsequent save, the GPU will recreate this batchbuffer with new
-	 * values (including all the missing MI_LOAD_REGISTER_IMM commands that
-	 * we are not initializing here).
-	 *
-	 * Must keep consistent with virtual_update_register_offsets().
-	 */
+	 
 
 	if (inhibit)
 		memset(regs, 0, PAGE_SIZE);
@@ -1004,7 +959,7 @@ static u32 *context_indirect_bb(const struct intel_context *ce)
 	GEM_BUG_ON(!ce->wa_bb_page);
 
 	ptr = ce->lrc_reg_state;
-	ptr -= LRC_STATE_OFFSET; /* back to start of context image */
+	ptr -= LRC_STATE_OFFSET;  
 	ptr += context_wa_bb_offset(ce);
 
 	return ptr;
@@ -1025,17 +980,14 @@ void lrc_init_state(struct intel_context *ce,
 		inhibit = false;
 	}
 
-	/* Clear the ppHWSP (inc. per-context counters) */
+	 
 	memset(state, 0, PAGE_SIZE);
 
-	/* Clear the indirect wa and storage */
+	 
 	if (ce->wa_bb_page)
 		memset(state + context_wa_bb_offset(ce), 0, PAGE_SIZE);
 
-	/*
-	 * The second page of the context object contains some registers which
-	 * must be set up prior to the first execution.
-	 */
+	 
 	__lrc_init_regs(state + LRC_STATE_OFFSET, ce, engine, inhibit);
 }
 
@@ -1046,21 +998,21 @@ u32 lrc_indirect_bb(const struct intel_context *ce)
 
 static u32 *setup_predicate_disable_wa(const struct intel_context *ce, u32 *cs)
 {
-	/* If predication is active, this will be noop'ed */
+	 
 	*cs++ = MI_STORE_DWORD_IMM_GEN4 | MI_USE_GGTT | (4 - 2);
 	*cs++ = lrc_indirect_bb(ce) + DG2_PREDICATE_RESULT_WA;
 	*cs++ = 0;
-	*cs++ = 0; /* No predication */
+	*cs++ = 0;  
 
-	/* predicated end, only terminates if SET_PREDICATE_RESULT:0 is clear */
+	 
 	*cs++ = MI_BATCH_BUFFER_END | BIT(15);
 	*cs++ = MI_SET_PREDICATE | MI_SET_PREDICATE_DISABLE;
 
-	/* Instructions are no longer predicated (disabled), we can proceed */
+	 
 	*cs++ = MI_STORE_DWORD_IMM_GEN4 | MI_USE_GGTT | (4 - 2);
 	*cs++ = lrc_indirect_bb(ce) + DG2_PREDICATE_RESULT_WA;
 	*cs++ = 0;
-	*cs++ = 1; /* enable predication before the next BB */
+	*cs++ = 1;  
 
 	*cs++ = MI_BATCH_BUFFER_END;
 	GEM_BUG_ON(offset_in_page(cs) > DG2_PREDICATE_RESULT_WA);
@@ -1078,7 +1030,7 @@ __lrc_alloc_state(struct intel_context *ce, struct intel_engine_cs *engine)
 	context_size = round_up(engine->context_size, I915_GTT_PAGE_SIZE);
 
 	if (IS_ENABLED(CONFIG_DRM_I915_DEBUG_GEM))
-		context_size += I915_GTT_PAGE_SIZE; /* for redzone */
+		context_size += I915_GTT_PAGE_SIZE;  
 
 	if (GRAPHICS_VER(engine->i915) >= 12) {
 		ce->wa_bb_page = context_size / PAGE_SIZE;
@@ -1097,11 +1049,7 @@ __lrc_alloc_state(struct intel_context *ce, struct intel_engine_cs *engine)
 		if (IS_ERR(obj))
 			return ERR_CAST(obj);
 
-		/*
-		 * Wa_22016122933: For Media version 13.0, all Media GT shared
-		 * memory needs to be mapped as WC on CPU side and UC (PAT
-		 * index 2) on GPU side.
-		 */
+		 
 		if (intel_gt_needs_wa_22016122933(engine->gt))
 			i915_gem_object_set_cache_coherency(obj, I915_CACHE_NONE);
 	}
@@ -1144,10 +1092,7 @@ int lrc_alloc(struct intel_context *ce, struct intel_engine_cs *engine)
 	if (!page_mask_bits(ce->timeline)) {
 		struct intel_timeline *tl;
 
-		/*
-		 * Use the static global HWSP for the kernel context, and
-		 * a dynamically allocated cacheline for everyone else.
-		 */
+		 
 		if (unlikely(ce->timeline))
 			tl = pinned_timeline(ce, engine);
 		else
@@ -1178,7 +1123,7 @@ void lrc_reset(struct intel_context *ce)
 
 	intel_ring_reset(ce->ring, ce->ring->emit);
 
-	/* Scrub away the garbage */
+	 
 	lrc_init_regs(ce, ce->engine, true);
 	ce->lrc.lrca = lrc_update_regs(ce, ce->engine, ce->ring->tail);
 }
@@ -1316,11 +1261,7 @@ gen12_emit_cmd_buf_wa(const struct intel_context *ce, u32 *cs)
 	return cs;
 }
 
-/*
- * On DG2 during context restore of a preempted context in GPGPU mode,
- * RCS restore hang is detected. This is extremely timing dependent.
- * To address this below sw wabb is implemented for DG2 A steppings.
- */
+ 
 static u32 *
 dg2_emit_rcs_hang_wabb(const struct intel_context *ce, u32 *cs)
 {
@@ -1339,13 +1280,7 @@ dg2_emit_rcs_hang_wabb(const struct intel_context *ce, u32 *cs)
 	return cs;
 }
 
-/*
- * The bspec's tuning guide asks us to program a vertical watermark value of
- * 0x3FF.  However this register is not saved/restored properly by the
- * hardware, so we're required to apply the desired value via INDIRECT_CTX
- * batch buffer to ensure the value takes effect properly.  All other bits
- * in this register should remain at 0 (the hardware default).
- */
+ 
 static u32 *
 dg2_emit_draw_watermark_setting(u32 *cs)
 {
@@ -1363,19 +1298,19 @@ gen12_emit_indirect_ctx_rcs(const struct intel_context *ce, u32 *cs)
 	cs = gen12_emit_cmd_buf_wa(ce, cs);
 	cs = gen12_emit_restore_scratch(ce, cs);
 
-	/* Wa_22011450934:dg2 */
+	 
 	if (IS_DG2_GRAPHICS_STEP(ce->engine->i915, G10, STEP_A0, STEP_B0) ||
 	    IS_DG2_GRAPHICS_STEP(ce->engine->i915, G11, STEP_A0, STEP_B0))
 		cs = dg2_emit_rcs_hang_wabb(ce, cs);
 
-	/* Wa_16013000631:dg2 */
+	 
 	if (IS_DG2_GRAPHICS_STEP(ce->engine->i915, G10, STEP_B0, STEP_C0) ||
 	    IS_DG2_G11(ce->engine->i915))
 		cs = gen8_emit_pipe_control(cs, PIPE_CONTROL_INSTRUCTION_CACHE_INVALIDATE, 0);
 
 	cs = gen12_emit_aux_table_inv(ce->engine, cs);
 
-	/* Wa_16014892111 */
+	 
 	if (IS_MTL_GRAPHICS_STEP(ce->engine->i915, M, STEP_A0, STEP_B0) ||
 	    IS_MTL_GRAPHICS_STEP(ce->engine->i915, P, STEP_A0, STEP_B0) ||
 	    IS_DG2(ce->engine->i915))
@@ -1390,7 +1325,7 @@ gen12_emit_indirect_ctx_xcs(const struct intel_context *ce, u32 *cs)
 	cs = gen12_emit_timestamp_wa(ce, cs);
 	cs = gen12_emit_restore_scratch(ce, cs);
 
-	/* Wa_16013000631:dg2 */
+	 
 	if (IS_DG2_GRAPHICS_STEP(ce->engine->i915, G10, STEP_B0, STEP_C0) ||
 	    IS_DG2_G11(ce->engine->i915))
 		if (ce->engine->class == COMPUTE_CLASS)
@@ -1422,40 +1357,7 @@ setup_indirect_ctx_bb(const struct intel_context *ce,
 			       (cs - start) * sizeof(*cs));
 }
 
-/*
- * The context descriptor encodes various attributes of a context,
- * including its GTT address and some flags. Because it's fairly
- * expensive to calculate, we'll just do it once and cache the result,
- * which remains valid until the context is unpinned.
- *
- * This is what a descriptor looks like, from LSB to MSB::
- *
- *      bits  0-11:    flags, GEN8_CTX_* (cached in ctx->desc_template)
- *      bits 12-31:    LRCA, GTT address of (the HWSP of) this context
- *      bits 32-52:    ctx ID, a globally unique tag (highest bit used by GuC)
- *      bits 53-54:    mbz, reserved for use by hardware
- *      bits 55-63:    group ID, currently unused and set to 0
- *
- * Starting from Gen11, the upper dword of the descriptor has a new format:
- *
- *      bits 32-36:    reserved
- *      bits 37-47:    SW context ID
- *      bits 48:53:    engine instance
- *      bit 54:        mbz, reserved for use by hardware
- *      bits 55-60:    SW counter
- *      bits 61-63:    engine class
- *
- * On Xe_HP, the upper dword of the descriptor has a new format:
- *
- *      bits 32-37:    virtual function number
- *      bit 38:        mbz, reserved for use by hardware
- *      bits 39-54:    SW context ID
- *      bits 55-57:    reserved
- *      bits 58-63:    SW counter
- *
- * engine info, SW context ID and SW counter need to form a unique number
- * (Context ID) per lrc.
- */
+ 
 static u32 lrc_descriptor(const struct intel_context *ce)
 {
 	u32 desc;
@@ -1487,7 +1389,7 @@ u32 lrc_update_regs(const struct intel_context *ce,
 	regs[CTX_RING_TAIL] = ring->tail;
 	regs[CTX_RING_CTL] = RING_CTL_SIZE(ring->size) | RING_VALID;
 
-	/* RPCS */
+	 
 	if (engine->class == RENDER_CLASS) {
 		regs[CTX_R_PWR_CLK_STATE] =
 			intel_sseu_make_rpcs(engine->gt, &ce->sseu);
@@ -1502,7 +1404,7 @@ u32 lrc_update_regs(const struct intel_context *ce,
 		if (ce->engine->class == RENDER_CLASS)
 			fn = gen12_emit_indirect_ctx_rcs;
 
-		/* Mutually exclusive wrt to global indirect bb */
+		 
 		GEM_BUG_ON(engine->wa_ctx.indirect_ctx.size);
 		setup_indirect_ctx_bb(ce, engine, fn);
 	}
@@ -1556,26 +1458,11 @@ void lrc_check_regs(const struct intel_context *ce,
 	WARN_ONCE(!valid, "Invalid lrc state found %s submission\n", when);
 }
 
-/*
- * In this WA we need to set GEN8_L3SQCREG4[21:21] and reset it after
- * PIPE_CONTROL instruction. This is required for the flush to happen correctly
- * but there is a slight complication as this is applied in WA batch where the
- * values are only initialized once so we cannot take register value at the
- * beginning and reuse it further; hence we save its value to memory, upload a
- * constant value with bit21 set and then we restore it back with the saved value.
- * To simplify the WA, a constant value is formed by using the default value
- * of this register. This shouldn't be a problem because we are only modifying
- * it for a short period and this batch in non-premptible. We can ofcourse
- * use additional instructions that read the actual value of the register
- * at that time and set our bit of interest but it makes the WA complicated.
- *
- * This WA is also required for Gen9 so extracting as a function avoids
- * code duplication.
- */
+ 
 static u32 *
 gen8_emit_flush_coherentl3_wa(struct intel_engine_cs *engine, u32 *batch)
 {
-	/* NB no one else is allowed to scribble over scratch + 256! */
+	 
 	*batch++ = MI_STORE_REGISTER_MEM_GEN8 | MI_SRM_LRM_GLOBAL_GTT;
 	*batch++ = i915_mmio_reg_offset(GEN8_L3SQCREG4);
 	*batch++ = intel_gt_scratch_offset(engine->gt,
@@ -1600,32 +1487,18 @@ gen8_emit_flush_coherentl3_wa(struct intel_engine_cs *engine, u32 *batch)
 	return batch;
 }
 
-/*
- * Typically we only have one indirect_ctx and per_ctx batch buffer which are
- * initialized at the beginning and shared across all contexts but this field
- * helps us to have multiple batches at different offsets and select them based
- * on a criteria. At the moment this batch always start at the beginning of the page
- * and at this point we don't have multiple wa_ctx batch buffers.
- *
- * The number of WA applied are not known at the beginning; we use this field
- * to return the no of DWORDS written.
- *
- * It is to be noted that this batch does not contain MI_BATCH_BUFFER_END
- * so it adds NOOPs as padding to make it cacheline aligned.
- * MI_BATCH_BUFFER_END will be added to perctx batch and both of them together
- * makes a complete batch buffer.
- */
+ 
 static u32 *gen8_init_indirectctx_bb(struct intel_engine_cs *engine, u32 *batch)
 {
-	/* WaDisableCtxRestoreArbitration:bdw,chv */
+	 
 	*batch++ = MI_ARB_ON_OFF | MI_ARB_DISABLE;
 
-	/* WaFlushCoherentL3CacheLinesAtContextSwitch:bdw */
+	 
 	if (IS_BROADWELL(engine->i915))
 		batch = gen8_emit_flush_coherentl3_wa(engine, batch);
 
-	/* WaClearSlmSpaceAtContextSwitch:bdw,chv */
-	/* Actual scratch location is at 128 bytes offset */
+	 
+	 
 	batch = gen8_emit_pipe_control(batch,
 				       PIPE_CONTROL_FLUSH_L3 |
 				       PIPE_CONTROL_STORE_DATA_INDEX |
@@ -1635,15 +1508,11 @@ static u32 *gen8_init_indirectctx_bb(struct intel_engine_cs *engine, u32 *batch)
 
 	*batch++ = MI_ARB_ON_OFF | MI_ARB_ENABLE;
 
-	/* Pad to end of cacheline */
+	 
 	while ((unsigned long)batch % CACHELINE_BYTES)
 		*batch++ = MI_NOOP;
 
-	/*
-	 * MI_BATCH_BUFFER_END is not required in Indirect ctx BB because
-	 * execution depends on the length specified in terms of cache lines
-	 * in the register CTX_RCS_INDIRECT_CTX
-	 */
+	 
 
 	return batch;
 }
@@ -1670,21 +1539,21 @@ static u32 *emit_lri(u32 *batch, const struct lri *lri, unsigned int count)
 static u32 *gen9_init_indirectctx_bb(struct intel_engine_cs *engine, u32 *batch)
 {
 	static const struct lri lri[] = {
-		/* WaDisableGatherAtSetShaderCommonSlice:skl,bxt,kbl,glk */
+		 
 		{
 			COMMON_SLICE_CHICKEN2,
 			__MASKED_FIELD(GEN9_DISABLE_GATHER_AT_SET_SHADER_COMMON_SLICE,
 				       0),
 		},
 
-		/* BSpec: 11391 */
+		 
 		{
 			FF_SLICE_CHICKEN,
 			__MASKED_FIELD(FF_SLICE_CHICKEN_CL_PROVOKING_VERTEX_FIX,
 				       FF_SLICE_CHICKEN_CL_PROVOKING_VERTEX_FIX),
 		},
 
-		/* BSpec: 11299 */
+		 
 		{
 			_3D_CHICKEN3,
 			__MASKED_FIELD(_3D_CHICKEN_SF_PROVOKING_VERTEX_FIX,
@@ -1694,10 +1563,10 @@ static u32 *gen9_init_indirectctx_bb(struct intel_engine_cs *engine, u32 *batch)
 
 	*batch++ = MI_ARB_ON_OFF | MI_ARB_DISABLE;
 
-	/* WaFlushCoherentL3CacheLinesAtContextSwitch:skl,bxt,glk */
+	 
 	batch = gen8_emit_flush_coherentl3_wa(engine, batch);
 
-	/* WaClearSlmSpaceAtContextSwitch:skl,bxt,kbl,glk,cfl */
+	 
 	batch = gen8_emit_pipe_control(batch,
 				       PIPE_CONTROL_FLUSH_L3 |
 				       PIPE_CONTROL_STORE_DATA_INDEX |
@@ -1707,21 +1576,9 @@ static u32 *gen9_init_indirectctx_bb(struct intel_engine_cs *engine, u32 *batch)
 
 	batch = emit_lri(batch, lri, ARRAY_SIZE(lri));
 
-	/* WaMediaPoolStateCmdInWABB:bxt,glk */
+	 
 	if (HAS_POOLED_EU(engine->i915)) {
-		/*
-		 * EU pool configuration is setup along with golden context
-		 * during context initialization. This value depends on
-		 * device type (2x6 or 3x6) and needs to be updated based
-		 * on which subslice is disabled especially for 2x6
-		 * devices, however it is safe to load default
-		 * configuration of 3x6 device instead of masking off
-		 * corresponding bits because HW ignores bits of a disabled
-		 * subslice and drops down to appropriate config. Please
-		 * see render_state_setup() in i915_gem_render_state.c for
-		 * possible configurations, to avoid duplication they are
-		 * not shown here again.
-		 */
+		 
 		*batch++ = GEN9_MEDIA_POOL_STATE;
 		*batch++ = GEN9_MEDIA_POOL_ENABLE;
 		*batch++ = 0x00777000;
@@ -1732,7 +1589,7 @@ static u32 *gen9_init_indirectctx_bb(struct intel_engine_cs *engine, u32 *batch)
 
 	*batch++ = MI_ARB_ON_OFF | MI_ARB_ENABLE;
 
-	/* Pad to end of cacheline */
+	 
 	while ((unsigned long)batch % CACHELINE_BYTES)
 		*batch++ = MI_NOOP;
 
@@ -1798,11 +1655,7 @@ void lrc_init_wa_ctx(struct intel_engine_cs *engine)
 
 	err = lrc_create_wa_ctx(engine);
 	if (err) {
-		/*
-		 * We continue even if we fail to initialize WA batch
-		 * because we only expect rare glitches but nothing
-		 * critical to prevent us from using GPU
-		 */
+		 
 		drm_err(&engine->i915->drm,
 			"Ignoring context switch w/a allocation error:%d\n",
 			err);
@@ -1826,11 +1679,7 @@ retry:
 		goto err_unpin;
 	}
 
-	/*
-	 * Emit the two workaround batch buffers, recording the offset from the
-	 * start of the workaround batch buffer object for each and their
-	 * respective sizes.
-	 */
+	 
 	batch_ptr = batch;
 	for (i = 0; i < ARRAY_SIZE(wa_bb_fn); i++) {
 		wa_bb[i]->offset = batch_ptr - batch;
@@ -1848,7 +1697,7 @@ retry:
 	__i915_gem_object_flush_map(wa_ctx->vma->obj, 0, batch_ptr - batch);
 	__i915_gem_object_release_map(wa_ctx->vma->obj);
 
-	/* Verify that we can handle failure to setup the wa_ctx */
+	 
 	if (!err)
 		err = i915_inject_probe_error(engine->i915, -ENODEV);
 
@@ -1866,7 +1715,7 @@ err:
 	if (err) {
 		i915_vma_put(engine->wa_ctx.vma);
 
-		/* Clear all flags to prevent further use */
+		 
 		memset(wa_ctx, 0, sizeof(*wa_ctx));
 	}
 }
@@ -1882,12 +1731,7 @@ static void st_runtime_underflow(struct intel_context_stats *stats, s32 dt)
 
 static u32 lrc_get_runtime(const struct intel_context *ce)
 {
-	/*
-	 * We can use either ppHWSP[16] which is recorded before the context
-	 * switch (and so excludes the cost of context switches) or use the
-	 * value from the context image itself, which is saved/restored earlier
-	 * and so includes the cost of the save.
-	 */
+	 
 	return READ_ONCE(ce->lrc_reg_state[CTX_TIMESTAMP]);
 }
 

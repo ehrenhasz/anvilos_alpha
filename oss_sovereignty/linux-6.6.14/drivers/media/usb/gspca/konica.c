@@ -1,19 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Driver for USB webcams based on Konica chipset. This
- * chipset is used in Intel YC76 camera.
- *
- * Copyright (C) 2010 Hans de Goede <hdegoede@redhat.com>
- *
- * Based on the usbvideo v4l1 konicawc driver which is:
- *
- * Copyright (C) 2002 Simon Evans <spse@secret.org.uk>
- *
- * The code for making gspca work with a webcam with 2 isoc endpoints was
- * taken from the benq gspca subdriver which is:
- *
- * Copyright (C) 2009 Jean-Francois Moine (http://moinejf.free.fr)
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -32,28 +18,15 @@ MODULE_LICENSE("GPL");
 #define CONTRAST_REG   0x04
 #define SATURATION_REG 0x05
 
-/* specific webcam descriptor */
+ 
 struct sd {
-	struct gspca_dev gspca_dev;	/* !! must be the first item */
+	struct gspca_dev gspca_dev;	 
 	struct urb *last_data_urb;
 	u8 snapshot_pressed;
 };
 
 
-/* .priv is what goes to register 8 for this mode, known working values:
-   0x00 -> 176x144, cropped
-   0x01 -> 176x144, cropped
-   0x02 -> 176x144, cropped
-   0x03 -> 176x144, cropped
-   0x04 -> 176x144, binned
-   0x05 -> 320x240
-   0x06 -> 320x240
-   0x07 -> 160x120, cropped
-   0x08 -> 160x120, cropped
-   0x09 -> 160x120, binned (note has 136 lines)
-   0x0a -> 160x120, binned (note has 136 lines)
-   0x0b -> 160x120, cropped
-*/
+ 
 static const struct v4l2_pix_format vga_mode[] = {
 	{160, 120, V4L2_PIX_FMT_KONICA420, V4L2_FIELD_NONE,
 		.bytesperline = 160,
@@ -114,10 +87,7 @@ static void reg_r(struct gspca_dev *gspca_dev, u16 value, u16 index)
 	if (ret < 0) {
 		pr_err("reg_r err %d\n", ret);
 		gspca_dev->usb_err = ret;
-		/*
-		 * Make sure the buffer is zeroed to avoid uninitialized
-		 * values.
-		 */
+		 
 		memset(gspca_dev->usb_buf, 0, 2);
 	}
 }
@@ -132,7 +102,7 @@ static void konica_stream_off(struct gspca_dev *gspca_dev)
 	reg_w(gspca_dev, 0, 0x0b);
 }
 
-/* this function is called at probe time */
+ 
 static int sd_config(struct gspca_dev *gspca_dev,
 			const struct usb_device_id *id)
 {
@@ -143,16 +113,12 @@ static int sd_config(struct gspca_dev *gspca_dev,
 	return 0;
 }
 
-/* this function is called at probe and resume time */
+ 
 static int sd_init(struct gspca_dev *gspca_dev)
 {
 	int i;
 
-	/*
-	 * The konica needs a freaking large time to "boot" (approx 6.5 sec.),
-	 * and does not want to be bothered while doing so :|
-	 * Register 0x10 counts from 1 - 3, with 3 being "ready"
-	 */
+	 
 	msleep(6000);
 	for (i = 0; i < 20; i++) {
 		reg_r(gspca_dev, 0, 0x10);
@@ -193,7 +159,7 @@ static int sd_start(struct gspca_dev *gspca_dev)
 	if (gspca_dev->usb_err)
 		return gspca_dev->usb_err;
 
-	/* create 4 URBs - 2 on endpoint 0x83 and 2 on 0x082 */
+	 
 #if MAX_NURBS < 4
 #error "Not enough URBs in the gspca table"
 #endif
@@ -240,8 +206,7 @@ static void sd_stopN(struct gspca_dev *gspca_dev)
 
 	konica_stream_off(gspca_dev);
 #if IS_ENABLED(CONFIG_INPUT)
-	/* Don't keep the button in the pressed state "forever" if it was
-	   pressed when streaming is stopped */
+	 
 	if (sd->snapshot_pressed) {
 		input_report_key(gspca_dev->input_dev, KEY_CAMERA, 0);
 		input_sync(gspca_dev->input_dev);
@@ -250,7 +215,7 @@ static void sd_stopN(struct gspca_dev *gspca_dev)
 #endif
 }
 
-/* reception of an URB */
+ 
 static void sd_isoc_irq(struct urb *urb)
 {
 	struct gspca_dev *gspca_dev = (struct gspca_dev *) urb->context;
@@ -265,7 +230,7 @@ static void sd_isoc_irq(struct urb *urb)
 
 	if (urb->status != 0) {
 		if (urb->status == -ESHUTDOWN)
-			return;		/* disconnection */
+			return;		 
 #ifdef CONFIG_PM
 		if (gspca_dev->frozen)
 			return;
@@ -277,7 +242,7 @@ static void sd_isoc_irq(struct urb *urb)
 		return;
 	}
 
-	/* if this is a data URB (ep 0x82), wait */
+	 
 	if (urb->transfer_buffer_length > 32) {
 		sd->last_data_urb = urb;
 		return;
@@ -323,15 +288,7 @@ static void sd_isoc_irq(struct urb *urb)
 		data = (u8 *)data_urb->transfer_buffer
 				+ data_urb->iso_frame_desc[i].offset;
 
-		/* st: 0x80-0xff: frame start with frame number (ie 0-7f)
-		 * otherwise:
-		 * bit 0 0: keep packet
-		 *	 1: drop packet (padding data)
-		 *
-		 * bit 4 0 button not clicked
-		 *       1 button clicked
-		 * button is used to `take a picture' (in software)
-		 */
+		 
 		if (st & 0x80) {
 			gspca_frame_add(gspca_dev, LAST_PACKET, NULL, 0);
 			gspca_frame_add(gspca_dev, FIRST_PACKET, NULL, 0);
@@ -417,7 +374,7 @@ static int sd_init_controls(struct gspca_dev *gspca_dev)
 	v4l2_ctrl_handler_init(hdl, 5);
 	v4l2_ctrl_new_std(hdl, &sd_ctrl_ops,
 			V4L2_CID_BRIGHTNESS, 0, 9, 1, 4);
-	/* Needs to be verified */
+	 
 	v4l2_ctrl_new_std(hdl, &sd_ctrl_ops,
 			V4L2_CID_CONTRAST, 0, 9, 1, 4);
 	v4l2_ctrl_new_std(hdl, &sd_ctrl_ops,
@@ -435,7 +392,7 @@ static int sd_init_controls(struct gspca_dev *gspca_dev)
 	return 0;
 }
 
-/* sub-driver description */
+ 
 static const struct sd_desc sd_desc = {
 	.name = MODULE_NAME,
 	.config = sd_config,
@@ -448,14 +405,14 @@ static const struct sd_desc sd_desc = {
 #endif
 };
 
-/* -- module initialisation -- */
+ 
 static const struct usb_device_id device_table[] = {
-	{USB_DEVICE(0x04c8, 0x0720)}, /* Intel YC 76 */
+	{USB_DEVICE(0x04c8, 0x0720)},  
 	{}
 };
 MODULE_DEVICE_TABLE(usb, device_table);
 
-/* -- device connect -- */
+ 
 static int sd_probe(struct usb_interface *intf,
 			const struct usb_device_id *id)
 {

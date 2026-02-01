@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2000-2002,2005 Silicon Graphics, Inc.
- * All Rights Reserved.
- */
+ 
+ 
 #ifndef __XFS_ALLOC_H__
 #define	__XFS_ALLOC_H__
 
@@ -16,58 +13,50 @@ extern struct workqueue_struct *xfs_alloc_wq;
 
 unsigned int xfs_agfl_size(struct xfs_mount *mp);
 
-/*
- * Flags for xfs_alloc_fix_freelist.
- */
-#define	XFS_ALLOC_FLAG_TRYLOCK	(1U << 0)  /* use trylock for buffer locking */
-#define	XFS_ALLOC_FLAG_FREEING	(1U << 1)  /* indicate caller is freeing extents*/
-#define	XFS_ALLOC_FLAG_NORMAP	(1U << 2)  /* don't modify the rmapbt */
-#define	XFS_ALLOC_FLAG_NOSHRINK	(1U << 3)  /* don't shrink the freelist */
-#define	XFS_ALLOC_FLAG_CHECK	(1U << 4)  /* test only, don't modify args */
-#define	XFS_ALLOC_FLAG_TRYFLUSH	(1U << 5)  /* don't wait in busy extent flush */
+ 
+#define	XFS_ALLOC_FLAG_TRYLOCK	(1U << 0)   
+#define	XFS_ALLOC_FLAG_FREEING	(1U << 1)   
+#define	XFS_ALLOC_FLAG_NORMAP	(1U << 2)   
+#define	XFS_ALLOC_FLAG_NOSHRINK	(1U << 3)   
+#define	XFS_ALLOC_FLAG_CHECK	(1U << 4)   
+#define	XFS_ALLOC_FLAG_TRYFLUSH	(1U << 5)   
 
-/*
- * Argument structure for xfs_alloc routines.
- * This is turned into a structure to avoid having 20 arguments passed
- * down several levels of the stack.
- */
+ 
 typedef struct xfs_alloc_arg {
-	struct xfs_trans *tp;		/* transaction pointer */
-	struct xfs_mount *mp;		/* file system mount point */
-	struct xfs_buf	*agbp;		/* buffer for a.g. freelist header */
-	struct xfs_perag *pag;		/* per-ag struct for this agno */
-	xfs_fsblock_t	fsbno;		/* file system block number */
-	xfs_agnumber_t	agno;		/* allocation group number */
-	xfs_agblock_t	agbno;		/* allocation group-relative block # */
-	xfs_extlen_t	minlen;		/* minimum size of extent */
-	xfs_extlen_t	maxlen;		/* maximum size of extent */
-	xfs_extlen_t	mod;		/* mod value for extent size */
-	xfs_extlen_t	prod;		/* prod value for extent size */
-	xfs_extlen_t	minleft;	/* min blocks must be left after us */
-	xfs_extlen_t	total;		/* total blocks needed in xaction */
-	xfs_extlen_t	alignment;	/* align answer to multiple of this */
-	xfs_extlen_t	minalignslop;	/* slop for minlen+alignment calcs */
-	xfs_agblock_t	min_agbno;	/* set an agbno range for NEAR allocs */
-	xfs_agblock_t	max_agbno;	/* ... */
-	xfs_extlen_t	len;		/* output: actual size of extent */
-	int		datatype;	/* mask defining data type treatment */
-	char		wasdel;		/* set if allocation was prev delayed */
-	char		wasfromfl;	/* set if allocation is from freelist */
-	struct xfs_owner_info	oinfo;	/* owner of blocks being allocated */
-	enum xfs_ag_resv_type	resv;	/* block reservation to use */
+	struct xfs_trans *tp;		 
+	struct xfs_mount *mp;		 
+	struct xfs_buf	*agbp;		 
+	struct xfs_perag *pag;		 
+	xfs_fsblock_t	fsbno;		 
+	xfs_agnumber_t	agno;		 
+	xfs_agblock_t	agbno;		 
+	xfs_extlen_t	minlen;		 
+	xfs_extlen_t	maxlen;		 
+	xfs_extlen_t	mod;		 
+	xfs_extlen_t	prod;		 
+	xfs_extlen_t	minleft;	 
+	xfs_extlen_t	total;		 
+	xfs_extlen_t	alignment;	 
+	xfs_extlen_t	minalignslop;	 
+	xfs_agblock_t	min_agbno;	 
+	xfs_agblock_t	max_agbno;	 
+	xfs_extlen_t	len;		 
+	int		datatype;	 
+	char		wasdel;		 
+	char		wasfromfl;	 
+	struct xfs_owner_info	oinfo;	 
+	enum xfs_ag_resv_type	resv;	 
 #ifdef DEBUG
-	bool		alloc_minlen_only; /* allocate exact minlen extent */
+	bool		alloc_minlen_only;  
 #endif
 } xfs_alloc_arg_t;
 
-/*
- * Defines for datatype
- */
-#define XFS_ALLOC_USERDATA		(1 << 0)/* allocation is for user data*/
-#define XFS_ALLOC_INITIAL_USER_DATA	(1 << 1)/* special case start of file */
-#define XFS_ALLOC_NOBUSY		(1 << 2)/* Busy extents not allowed */
+ 
+#define XFS_ALLOC_USERDATA		(1 << 0) 
+#define XFS_ALLOC_INITIAL_USER_DATA	(1 << 1) 
+#define XFS_ALLOC_NOBUSY		(1 << 2) 
 
-/* freespace limit calculations */
+ 
 unsigned int xfs_alloc_set_aside(struct xfs_mount *mp);
 unsigned int xfs_alloc_ag_max_usable(struct xfs_mount *mp);
 
@@ -81,72 +70,46 @@ int xfs_alloc_put_freelist(struct xfs_perag *pag, struct xfs_trans *tp,
 		struct xfs_buf *agfbp, struct xfs_buf *agflbp,
 		xfs_agblock_t bno, int btreeblk);
 
-/*
- * Compute and fill in value of m_alloc_maxlevels.
- */
+ 
 void
 xfs_alloc_compute_maxlevels(
-	struct xfs_mount	*mp);	/* file system mount structure */
+	struct xfs_mount	*mp);	 
 
-/*
- * Log the given fields from the agf structure.
- */
+ 
 void
 xfs_alloc_log_agf(
-	struct xfs_trans *tp,	/* transaction pointer */
-	struct xfs_buf	*bp,	/* buffer for a.g. freelist header */
-	uint32_t	fields);/* mask of fields to be logged (XFS_AGF_...) */
+	struct xfs_trans *tp,	 
+	struct xfs_buf	*bp,	 
+	uint32_t	fields); 
 
-/*
- * Allocate an extent anywhere in the specific AG given. If there is no
- * space matching the requirements in that AG, then the allocation will fail.
- */
+ 
 int xfs_alloc_vextent_this_ag(struct xfs_alloc_arg *args, xfs_agnumber_t agno);
 
-/*
- * Allocate an extent as close to the target as possible. If there are not
- * viable candidates in the AG, then fail the allocation.
- */
+ 
 int xfs_alloc_vextent_near_bno(struct xfs_alloc_arg *args,
 		xfs_fsblock_t target);
 
-/*
- * Allocate an extent exactly at the target given. If this is not possible
- * then the allocation fails.
- */
+ 
 int xfs_alloc_vextent_exact_bno(struct xfs_alloc_arg *args,
 		xfs_fsblock_t target);
 
-/*
- * Best effort full filesystem allocation scan.
- *
- * Locality aware allocation will be attempted in the initial AG, but on failure
- * non-localised attempts will be made. The AGs are constrained by previous
- * allocations in the current transaction. Two passes will be made - the first
- * non-blocking, the second blocking.
- */
+ 
 int xfs_alloc_vextent_start_ag(struct xfs_alloc_arg *args,
 		xfs_fsblock_t target);
 
-/*
- * Iterate from the AG indicated from args->fsbno through to the end of the
- * filesystem attempting blocking allocation. This is for use in last
- * resort allocation attempts when everything else has failed.
- */
+ 
 int xfs_alloc_vextent_first_ag(struct xfs_alloc_arg *args,
 		xfs_fsblock_t target);
 
-/*
- * Free an extent.
- */
-int				/* error */
+ 
+int				 
 __xfs_free_extent(
-	struct xfs_trans	*tp,	/* transaction pointer */
+	struct xfs_trans	*tp,	 
 	struct xfs_perag	*pag,
 	xfs_agblock_t		agbno,
-	xfs_extlen_t		len,	/* length of extent */
-	const struct xfs_owner_info	*oinfo,	/* extent owner */
-	enum xfs_ag_resv_type	type,	/* block reservation type */
+	xfs_extlen_t		len,	 
+	const struct xfs_owner_info	*oinfo,	 
+	enum xfs_ag_resv_type	type,	 
 	bool			skip_discard);
 
 static inline int
@@ -161,26 +124,26 @@ xfs_free_extent(
 	return __xfs_free_extent(tp, pag, agbno, len, oinfo, type, false);
 }
 
-int				/* error */
+int				 
 xfs_alloc_lookup_le(
-	struct xfs_btree_cur	*cur,	/* btree cursor */
-	xfs_agblock_t		bno,	/* starting block of extent */
-	xfs_extlen_t		len,	/* length of extent */
-	int			*stat);	/* success/failure */
+	struct xfs_btree_cur	*cur,	 
+	xfs_agblock_t		bno,	 
+	xfs_extlen_t		len,	 
+	int			*stat);	 
 
-int				/* error */
+int				 
 xfs_alloc_lookup_ge(
-	struct xfs_btree_cur	*cur,	/* btree cursor */
-	xfs_agblock_t		bno,	/* starting block of extent */
-	xfs_extlen_t		len,	/* length of extent */
-	int			*stat);	/* success/failure */
+	struct xfs_btree_cur	*cur,	 
+	xfs_agblock_t		bno,	 
+	xfs_extlen_t		len,	 
+	int			*stat);	 
 
-int					/* error */
+int					 
 xfs_alloc_get_rec(
-	struct xfs_btree_cur	*cur,	/* btree cursor */
-	xfs_agblock_t		*bno,	/* output: starting block of extent */
-	xfs_extlen_t		*len,	/* output: length of extent */
-	int			*stat);	/* output: success/failure */
+	struct xfs_btree_cur	*cur,	 
+	xfs_agblock_t		*bno,	 
+	xfs_extlen_t		*len,	 
+	int			*stat);	 
 
 union xfs_btree_rec;
 void xfs_alloc_btrec_to_irec(const union xfs_btree_rec *rec,
@@ -235,15 +198,12 @@ int __xfs_free_extent_later(struct xfs_trans *tp, xfs_fsblock_t bno,
 		xfs_filblks_t len, const struct xfs_owner_info *oinfo,
 		enum xfs_ag_resv_type type, bool skip_discard);
 
-/*
- * List of extents to be free "later".
- * The list is kept sorted on xbf_startblock.
- */
+ 
 struct xfs_extent_free_item {
 	struct list_head	xefi_list;
 	uint64_t		xefi_owner;
-	xfs_fsblock_t		xefi_startblock;/* starting fs block number */
-	xfs_extlen_t		xefi_blockcount;/* number of blocks in extent */
+	xfs_fsblock_t		xefi_startblock; 
+	xfs_extlen_t		xefi_blockcount; 
 	struct xfs_perag	*xefi_pag;
 	unsigned int		xefi_flags;
 	enum xfs_ag_resv_type	xefi_agresv;
@@ -252,9 +212,9 @@ struct xfs_extent_free_item {
 void xfs_extent_free_get_group(struct xfs_mount *mp,
 		struct xfs_extent_free_item *xefi);
 
-#define XFS_EFI_SKIP_DISCARD	(1U << 0) /* don't issue discard */
-#define XFS_EFI_ATTR_FORK	(1U << 1) /* freeing attr fork block */
-#define XFS_EFI_BMBT_BLOCK	(1U << 2) /* freeing bmap btree block */
+#define XFS_EFI_SKIP_DISCARD	(1U << 0)  
+#define XFS_EFI_ATTR_FORK	(1U << 1)  
+#define XFS_EFI_BMBT_BLOCK	(1U << 2)  
 
 static inline int
 xfs_free_extent_later(
@@ -276,4 +236,4 @@ void xfs_extfree_intent_destroy_cache(void);
 xfs_failaddr_t xfs_validate_ag_length(struct xfs_buf *bp, uint32_t seqno,
 		uint32_t length);
 
-#endif	/* __XFS_ALLOC_H__ */
+#endif	 

@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * lmp91000.c - Support for Texas Instruments digital potentiostats
- *
- * Copyright (C) 2016, 2018
- * Author: Matt Ranostay <matt.ranostay@konsulko.com>
- *
- * TODO: bias voltage + polarity control, and multiple chip support
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/i2c.h>
@@ -71,12 +64,12 @@ struct lmp91000_data {
 
 	struct completion completion;
 	u8 chan_select;
-	/* 64-bit data + 64-bit naturally aligned timestamp */
+	 
 	u32 buffer[4] __aligned(8);
 };
 
 static const struct iio_chan_spec lmp91000_channels[] = {
-	{ /* chemical channel mV */
+	{  
 		.type = IIO_VOLTAGE,
 		.channel = 0,
 		.address = LMP91000_REG_MODECN_3LEAD,
@@ -91,7 +84,7 @@ static const struct iio_chan_spec lmp91000_channels[] = {
 		},
 	},
 	IIO_CHAN_SOFT_TIMESTAMP(1),
-	{ /* temperature channel mV */
+	{  
 		.type = IIO_TEMP,
 		.channel = 1,
 		.address = LMP91000_REG_MODECN_TEMP,
@@ -112,7 +105,7 @@ static int lmp91000_read(struct lmp91000_data *data, int channel, int *val)
 	if (ret)
 		return -EINVAL;
 
-	/* delay till first temperature reading is complete */
+	 
 	if (state != channel && channel == LMP91000_REG_MODECN_TEMP)
 		usleep_range(3000, 4000);
 

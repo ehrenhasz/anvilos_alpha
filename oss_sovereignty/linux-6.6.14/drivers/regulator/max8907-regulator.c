@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * max8907-regulator.c -- support regulators in max8907
- *
- * Copyright (C) 2010 Gyungoh Yoo <jack.yoo@maxim-ic.com>
- * Copyright (C) 2010-2012, NVIDIA CORPORATION. All rights reserved.
- *
- * Portions based on drivers/regulator/tps65910-regulator.c,
- *     Copyright 2010 Texas Instruments Inc.
- *     Author: Graeme Gregory <gg@slimlogic.co.uk>
- *     Author: Jorge Eduardo Candelaria <jedu@slimlogic.co.uk>
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/init.h>
@@ -295,7 +285,7 @@ static int max8907_regulator_probe(struct platform_device *pdev)
 
 	memcpy(pmic->desc, max8907_regulators, sizeof(pmic->desc));
 
-	/* Backwards compatibility with MAX8907B; SD1 uses different voltages */
+	 
 	ret = regmap_read(max8907->regmap_gen, MAX8907_REG_II2RR, &val);
 	if (ret)
 		return ret;

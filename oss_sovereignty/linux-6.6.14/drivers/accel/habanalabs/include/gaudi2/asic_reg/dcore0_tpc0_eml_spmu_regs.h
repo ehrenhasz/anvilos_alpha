@@ -1,24 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0
- *
- * Copyright 2016-2020 HabanaLabs, Ltd.
- * All Rights Reserved.
- *
- */
+ 
 
-/************************************
- ** This is an auto-generated file **
- **       DO NOT EDIT BELOW        **
- ************************************/
+ 
 
 #ifndef ASIC_REG_DCORE0_TPC0_EML_SPMU_REGS_H_
 #define ASIC_REG_DCORE0_TPC0_EML_SPMU_REGS_H_
 
-/*
- *****************************************
- *   DCORE0_TPC0_EML_SPMU
- *   (Prototype: SPMU)
- *****************************************
- */
+ 
 
 #define mmDCORE0_TPC0_EML_SPMU_PMEVCNTR0_EL0 0x1000
 
@@ -148,4 +135,4 @@
 
 #define mmDCORE0_TPC0_EML_SPMU_PMCIDR3 0x1FFC
 
-#endif /* ASIC_REG_DCORE0_TPC0_EML_SPMU_REGS_H_ */
+#endif  

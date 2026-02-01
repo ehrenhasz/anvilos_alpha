@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2018-2019 Synopsys, Inc. and/or its affiliates.
- * Synopsys DesignWare eDMA v0 core
- *
- * Author: Gustavo Pimentel <gustavo.pimentel@synopsys.com>
- */
+
+ 
 
 #include <linux/debugfs.h>
 #include <linux/bitfield.h>
@@ -140,12 +135,12 @@ static noinline_for_stack void
 dw_edma_debugfs_regs_wr(struct dw_edma *dw, struct dentry *dent)
 {
 	const struct dw_edma_debugfs_entry debugfs_regs[] = {
-		/* eDMA global registers */
+		 
 		WR_REGISTER(dw, engine_en),
 		WR_REGISTER(dw, doorbell),
 		WR_REGISTER(dw, ch_arb_weight.lsb),
 		WR_REGISTER(dw, ch_arb_weight.msb),
-		/* eDMA interrupts registers */
+		 
 		WR_REGISTER(dw, int_status),
 		WR_REGISTER(dw, int_mask),
 		WR_REGISTER(dw, int_clear),
@@ -161,7 +156,7 @@ dw_edma_debugfs_regs_wr(struct dw_edma *dw, struct dentry *dent)
 		WR_REGISTER(dw, linked_list_err_en),
 	};
 	const struct dw_edma_debugfs_entry debugfs_unroll_regs[] = {
-		/* eDMA channel context grouping */
+		 
 		WR_REGISTER_UNROLL(dw, engine_chgroup),
 		WR_REGISTER_UNROLL(dw, engine_hshake_cnt.lsb),
 		WR_REGISTER_UNROLL(dw, engine_hshake_cnt.msb),
@@ -202,12 +197,12 @@ static noinline_for_stack void dw_edma_debugfs_regs_rd(struct dw_edma *dw,
 						       struct dentry *dent)
 {
 	const struct dw_edma_debugfs_entry debugfs_regs[] = {
-		/* eDMA global registers */
+		 
 		RD_REGISTER(dw, engine_en),
 		RD_REGISTER(dw, doorbell),
 		RD_REGISTER(dw, ch_arb_weight.lsb),
 		RD_REGISTER(dw, ch_arb_weight.msb),
-		/* eDMA interrupts registers */
+		 
 		RD_REGISTER(dw, int_status),
 		RD_REGISTER(dw, int_mask),
 		RD_REGISTER(dw, int_clear),
@@ -224,7 +219,7 @@ static noinline_for_stack void dw_edma_debugfs_regs_rd(struct dw_edma *dw,
 		RD_REGISTER(dw, ch67_imwr_data),
 	};
 	const struct dw_edma_debugfs_entry debugfs_unroll_regs[] = {
-		/* eDMA channel context grouping */
+		 
 		RD_REGISTER_UNROLL(dw, engine_chgroup),
 		RD_REGISTER_UNROLL(dw, engine_hshake_cnt.lsb),
 		RD_REGISTER_UNROLL(dw, engine_hshake_cnt.msb),

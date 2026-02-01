@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Dell WMI descriptor driver
- *
- * Copyright (C) 2017 Dell Inc. All Rights Reserved.
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -88,16 +84,7 @@ bool dell_wmi_get_hotfix(u32 *hotfix)
 }
 EXPORT_SYMBOL_GPL(dell_wmi_get_hotfix);
 
-/*
- * Descriptor buffer is 128 byte long and contains:
- *
- *       Name             Offset  Length  Value
- * Vendor Signature          0       4    "DELL"
- * Object Signature          4       4    " WMI"
- * WMI Interface Version     8       4    <version>
- * WMI buffer length        12       4    <length>
- * WMI hotfix number        16       4    <hotfix>
- */
+ 
 static int dell_wmi_descriptor_probe(struct wmi_device *wdev,
 				     const void *context)
 {
@@ -120,9 +107,7 @@ static int dell_wmi_descriptor_probe(struct wmi_device *wdev,
 		goto out;
 	}
 
-	/* Although it's not technically a failure, this would lead to
-	 * unexpected behavior
-	 */
+	 
 	if (obj->buffer.length != 128) {
 		dev_err(&wdev->dev,
 			"Dell descriptor buffer has unexpected length (%d)\n",

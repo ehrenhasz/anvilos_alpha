@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (c) 2015-2016, IBM Corporation.
- */
+
+ 
 
 #include <linux/atomic.h>
 #include <linux/bt-bmc.h>
@@ -16,9 +14,7 @@
 #include <linux/sched.h>
 #include <linux/timer.h>
 
-/*
- * This is a BMC device used to communicate to the host
- */
+ 
 #define DEVICE_NAME	"ipmi-bt-host"
 
 #define BT_IO_BASE	0xe4
@@ -159,19 +155,7 @@ static int bt_bmc_open(struct inode *inode, struct file *file)
 	return -EBUSY;
 }
 
-/*
- * The BT (Block Transfer) interface means that entire messages are
- * buffered by the host before a notification is sent to the BMC that
- * there is data to be read. The first byte is the length and the
- * message data follows. The read operation just tries to capture the
- * whole before returning it to userspace.
- *
- * BT Message format :
- *
- *    Byte 1  Byte 2     Byte 3  Byte 4  Byte 5:N
- *    Length  NetFn/LUN  Seq     Cmd     Data
- *
- */
+ 
 static ssize_t bt_bmc_read(struct file *file, char __user *buf,
 			   size_t count, loff_t *ppos)
 {
@@ -199,14 +183,11 @@ static ssize_t bt_bmc_read(struct file *file, char __user *buf,
 	clr_h2b_atn(bt_bmc);
 	clr_rd_ptr(bt_bmc);
 
-	/*
-	 * The BT frames start with the message length, which does not
-	 * include the length byte.
-	 */
+	 
 	kbuffer[0] = bt_read(bt_bmc);
 	len = kbuffer[0];
 
-	/* We pass the length back to userspace as well */
+	 
 	if (len + 1 > count)
 		len = count - 1;
 
@@ -232,12 +213,7 @@ out_unlock:
 	return ret;
 }
 
-/*
- * BT Message response format :
- *
- *    Byte 1  Byte 2     Byte 3  Byte 4  Byte 5  Byte 6:N
- *    Length  NetFn/LUN  Seq     Cmd     Code    Data
- */
+ 
 static ssize_t bt_bmc_write(struct file *file, const char __user *buf,
 			    size_t count, loff_t *ppos)
 {
@@ -246,18 +222,13 @@ static ssize_t bt_bmc_write(struct file *file, const char __user *buf,
 	ssize_t ret = 0;
 	ssize_t nwritten;
 
-	/*
-	 * send a minimum response size
-	 */
+	 
 	if (count < 5)
 		return -EINVAL;
 
 	WARN_ON(*ppos);
 
-	/*
-	 * There's no interrupt for clearing bmc busy so we have to
-	 * poll
-	 */
+	 
 	if (wait_event_interruptible(bt_bmc->queue,
 				     !(bt_inb(bt_bmc, BT_CTRL) &
 				       (BT_CTRL_H_BUSY | BT_CTRL_B2H_ATN))))
@@ -365,7 +336,7 @@ static irqreturn_t bt_bmc_irq(int irq, void *arg)
 	if (!reg)
 		return IRQ_NONE;
 
-	/* ack pending IRQs */
+	 
 	writel(reg, bt_bmc->base + BT_CR2);
 
 	wake_up(&bt_bmc->queue);
@@ -391,12 +362,7 @@ static int bt_bmc_config_irq(struct bt_bmc *bt_bmc,
 		return rc;
 	}
 
-	/*
-	 * Configure IRQs on the bmc clearing the H2B and HBUSY bits;
-	 * H2B will be asserted when the bmc has data for us; HBUSY
-	 * will be cleared (along with B2H) when we can write the next
-	 * message to the BT buffer
-	 */
+	 
 	reg = readl(bt_bmc->base + BT_CR1);
 	reg |= BT_CR1_IRQ_H2B | BT_CR1_IRQ_HBUSY;
 	writel(reg, bt_bmc->base + BT_CR1);

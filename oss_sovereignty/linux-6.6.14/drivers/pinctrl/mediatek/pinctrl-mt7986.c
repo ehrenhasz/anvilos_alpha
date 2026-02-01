@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * The MT7986 driver based on Linux generic pinctrl binding.
- *
- * Copyright (C) 2021 MediaTek Inc.
- * Author: Sam Shih <sam.shih@mediatek.com>
- */
+
+ 
 
 #include "pinctrl-moore.h"
 
@@ -16,46 +11,7 @@
 		PIN_FIELD_CALC(_s_pin, _e_pin, _i_base, _s_addr, _x_addrs, _s_bit,	\
 			_x_bits, 32, 0)
 
-/**
- * enum - Locking variants of the iocfg bases
- *
- * MT7986 have multiple bases to program pin configuration listed as the below:
- * iocfg_rt:0x11c30000, iocfg_rb:0x11c40000, iocfg_lt:0x11e20000,
- * iocfg_lb:0x11e30000, iocfg_tr:0x11f00000, iocfg_tl:0x11f10000,
- * _i_based could be used to indicate what base the pin should be mapped into.
- *
- * Each iocfg register base control different group of pads on the SoC
- *
- *
- *  chip carrier
- *
- *      A  B  C  D  E  F  G  H
- *    +------------------------+
- *  8 | o  o  o  o  o  o  o  o |
- *  7 | o  o  o  o  o  o  o  o |
- *  6 | o  o  o  o  o  o  o  o |
- *  5 | o  o  o  o  o  o  o  o |
- *  4 | o  o  o  o  o  o  o  o |
- *  3 | o  o  o  o  o  o  o  o |
- *  2 | o  o  o  o  o  o  o  o |
- *  1 | o  o  o  o  o  o  o  o |
- *    +------------------------+
- *
- *  inside Chip carrier
- *
- *      A  B  C  D  E  F  G  H
- *    +------------------------+
- *  8 |                        |
- *  7 |        TL  TR          |
- *  6 |      +---------+       |
- *  5 |   LT |         | RT    |
- *  4 |      |         |       |
- *  3 |   LB |         | RB    |
- *  2 |      +---------+       |
- *  1 |                        |
- *    +------------------------+
- *
- */
+ 
 
 enum {
 	GPIO_BASE,
@@ -408,57 +364,57 @@ static const struct mtk_pin_field_calc mt7986_pin_r1_range[] = {
 };
 
 static const unsigned int mt7986_pull_type[] = {
-	MTK_PULL_PUPD_R1R0_TYPE,/*0*/ MTK_PULL_PUPD_R1R0_TYPE,/*1*/
-	MTK_PULL_PUPD_R1R0_TYPE,/*2*/ MTK_PULL_PUPD_R1R0_TYPE,/*3*/
-	MTK_PULL_PUPD_R1R0_TYPE,/*4*/ MTK_PULL_PUPD_R1R0_TYPE,/*5*/
-	MTK_PULL_PUPD_R1R0_TYPE,/*6*/ MTK_PULL_PUPD_R1R0_TYPE,/*7*/
-	MTK_PULL_PUPD_R1R0_TYPE,/*8*/ MTK_PULL_PUPD_R1R0_TYPE,/*9*/
-	MTK_PULL_PUPD_R1R0_TYPE,/*10*/ MTK_PULL_PUPD_R1R0_TYPE,/*11*/
-	MTK_PULL_PUPD_R1R0_TYPE,/*12*/ MTK_PULL_PUPD_R1R0_TYPE,/*13*/
-	MTK_PULL_PUPD_R1R0_TYPE,/*14*/ MTK_PULL_PUPD_R1R0_TYPE,/*15*/
-	MTK_PULL_PUPD_R1R0_TYPE,/*16*/ MTK_PULL_PUPD_R1R0_TYPE,/*17*/
-	MTK_PULL_PUPD_R1R0_TYPE,/*18*/ MTK_PULL_PUPD_R1R0_TYPE,/*19*/
-	MTK_PULL_PUPD_R1R0_TYPE,/*20*/ MTK_PULL_PUPD_R1R0_TYPE,/*21*/
-	MTK_PULL_PUPD_R1R0_TYPE,/*22*/ MTK_PULL_PUPD_R1R0_TYPE,/*23*/
-	MTK_PULL_PUPD_R1R0_TYPE,/*24*/ MTK_PULL_PUPD_R1R0_TYPE,/*25*/
-	MTK_PULL_PUPD_R1R0_TYPE,/*26*/ MTK_PULL_PUPD_R1R0_TYPE,/*27*/
-	MTK_PULL_PUPD_R1R0_TYPE,/*28*/ MTK_PULL_PUPD_R1R0_TYPE,/*29*/
-	MTK_PULL_PUPD_R1R0_TYPE,/*30*/ MTK_PULL_PUPD_R1R0_TYPE,/*31*/
-	MTK_PULL_PUPD_R1R0_TYPE,/*32*/ MTK_PULL_PUPD_R1R0_TYPE,/*33*/
-	MTK_PULL_PUPD_R1R0_TYPE,/*34*/ MTK_PULL_PUPD_R1R0_TYPE,/*35*/
-	MTK_PULL_PUPD_R1R0_TYPE,/*36*/ MTK_PULL_PUPD_R1R0_TYPE,/*37*/
-	MTK_PULL_PUPD_R1R0_TYPE,/*38*/ MTK_PULL_PUPD_R1R0_TYPE,/*39*/
-	MTK_PULL_PUPD_R1R0_TYPE,/*40*/ MTK_PULL_PUPD_R1R0_TYPE,/*41*/
-	MTK_PULL_PUPD_R1R0_TYPE,/*42*/ MTK_PULL_PUPD_R1R0_TYPE,/*43*/
-	MTK_PULL_PUPD_R1R0_TYPE,/*44*/ MTK_PULL_PUPD_R1R0_TYPE,/*45*/
-	MTK_PULL_PUPD_R1R0_TYPE,/*46*/ MTK_PULL_PUPD_R1R0_TYPE,/*47*/
-	MTK_PULL_PUPD_R1R0_TYPE,/*48*/ MTK_PULL_PUPD_R1R0_TYPE,/*49*/
-	MTK_PULL_PUPD_R1R0_TYPE,/*50*/ MTK_PULL_PUPD_R1R0_TYPE,/*51*/
-	MTK_PULL_PUPD_R1R0_TYPE,/*52*/ MTK_PULL_PUPD_R1R0_TYPE,/*53*/
-	MTK_PULL_PUPD_R1R0_TYPE,/*54*/ MTK_PULL_PUPD_R1R0_TYPE,/*55*/
-	MTK_PULL_PUPD_R1R0_TYPE,/*56*/ MTK_PULL_PUPD_R1R0_TYPE,/*57*/
-	MTK_PULL_PUPD_R1R0_TYPE,/*58*/ MTK_PULL_PUPD_R1R0_TYPE,/*59*/
-	MTK_PULL_PUPD_R1R0_TYPE,/*60*/ MTK_PULL_PUPD_R1R0_TYPE,/*61*/
-	MTK_PULL_PUPD_R1R0_TYPE,/*62*/ MTK_PULL_PUPD_R1R0_TYPE,/*63*/
-	MTK_PULL_PUPD_R1R0_TYPE,/*64*/ MTK_PULL_PUPD_R1R0_TYPE,/*65*/
-	MTK_PULL_PUPD_R1R0_TYPE,/*66*/ MTK_PULL_PUPD_R1R0_TYPE,/*67*/
-	MTK_PULL_PUPD_R1R0_TYPE,/*68*/ MTK_PULL_PU_PD_TYPE,/*69*/
-	MTK_PULL_PU_PD_TYPE,/*70*/ MTK_PULL_PU_PD_TYPE,/*71*/
-	MTK_PULL_PU_PD_TYPE,/*72*/ MTK_PULL_PU_PD_TYPE,/*73*/
-	MTK_PULL_PU_PD_TYPE,/*74*/ MTK_PULL_PU_PD_TYPE,/*75*/
-	MTK_PULL_PU_PD_TYPE,/*76*/ MTK_PULL_PU_PD_TYPE,/*77*/
-	MTK_PULL_PU_PD_TYPE,/*78*/ MTK_PULL_PU_PD_TYPE,/*79*/
-	MTK_PULL_PU_PD_TYPE,/*80*/ MTK_PULL_PU_PD_TYPE,/*81*/
-	MTK_PULL_PU_PD_TYPE,/*82*/ MTK_PULL_PU_PD_TYPE,/*83*/
-	MTK_PULL_PU_PD_TYPE,/*84*/ MTK_PULL_PU_PD_TYPE,/*85*/
-	MTK_PULL_PU_PD_TYPE,/*86*/ MTK_PULL_PU_PD_TYPE,/*87*/
-	MTK_PULL_PU_PD_TYPE,/*88*/ MTK_PULL_PU_PD_TYPE,/*89*/
-	MTK_PULL_PU_PD_TYPE,/*90*/ MTK_PULL_PU_PD_TYPE,/*91*/
-	MTK_PULL_PU_PD_TYPE,/*92*/ MTK_PULL_PU_PD_TYPE,/*93*/
-	MTK_PULL_PU_PD_TYPE,/*94*/ MTK_PULL_PU_PD_TYPE,/*95*/
-	MTK_PULL_PU_PD_TYPE,/*96*/ MTK_PULL_PU_PD_TYPE,/*97*/
-	MTK_PULL_PU_PD_TYPE,/*98*/ MTK_PULL_PU_PD_TYPE,/*99*/
-	MTK_PULL_PU_PD_TYPE,/*100*/
+	MTK_PULL_PUPD_R1R0_TYPE,  MTK_PULL_PUPD_R1R0_TYPE, 
+	MTK_PULL_PUPD_R1R0_TYPE,  MTK_PULL_PUPD_R1R0_TYPE, 
+	MTK_PULL_PUPD_R1R0_TYPE,  MTK_PULL_PUPD_R1R0_TYPE, 
+	MTK_PULL_PUPD_R1R0_TYPE,  MTK_PULL_PUPD_R1R0_TYPE, 
+	MTK_PULL_PUPD_R1R0_TYPE,  MTK_PULL_PUPD_R1R0_TYPE, 
+	MTK_PULL_PUPD_R1R0_TYPE,  MTK_PULL_PUPD_R1R0_TYPE, 
+	MTK_PULL_PUPD_R1R0_TYPE,  MTK_PULL_PUPD_R1R0_TYPE, 
+	MTK_PULL_PUPD_R1R0_TYPE,  MTK_PULL_PUPD_R1R0_TYPE, 
+	MTK_PULL_PUPD_R1R0_TYPE,  MTK_PULL_PUPD_R1R0_TYPE, 
+	MTK_PULL_PUPD_R1R0_TYPE,  MTK_PULL_PUPD_R1R0_TYPE, 
+	MTK_PULL_PUPD_R1R0_TYPE,  MTK_PULL_PUPD_R1R0_TYPE, 
+	MTK_PULL_PUPD_R1R0_TYPE,  MTK_PULL_PUPD_R1R0_TYPE, 
+	MTK_PULL_PUPD_R1R0_TYPE,  MTK_PULL_PUPD_R1R0_TYPE, 
+	MTK_PULL_PUPD_R1R0_TYPE,  MTK_PULL_PUPD_R1R0_TYPE, 
+	MTK_PULL_PUPD_R1R0_TYPE,  MTK_PULL_PUPD_R1R0_TYPE, 
+	MTK_PULL_PUPD_R1R0_TYPE,  MTK_PULL_PUPD_R1R0_TYPE, 
+	MTK_PULL_PUPD_R1R0_TYPE,  MTK_PULL_PUPD_R1R0_TYPE, 
+	MTK_PULL_PUPD_R1R0_TYPE,  MTK_PULL_PUPD_R1R0_TYPE, 
+	MTK_PULL_PUPD_R1R0_TYPE,  MTK_PULL_PUPD_R1R0_TYPE, 
+	MTK_PULL_PUPD_R1R0_TYPE,  MTK_PULL_PUPD_R1R0_TYPE, 
+	MTK_PULL_PUPD_R1R0_TYPE,  MTK_PULL_PUPD_R1R0_TYPE, 
+	MTK_PULL_PUPD_R1R0_TYPE,  MTK_PULL_PUPD_R1R0_TYPE, 
+	MTK_PULL_PUPD_R1R0_TYPE,  MTK_PULL_PUPD_R1R0_TYPE, 
+	MTK_PULL_PUPD_R1R0_TYPE,  MTK_PULL_PUPD_R1R0_TYPE, 
+	MTK_PULL_PUPD_R1R0_TYPE,  MTK_PULL_PUPD_R1R0_TYPE, 
+	MTK_PULL_PUPD_R1R0_TYPE,  MTK_PULL_PUPD_R1R0_TYPE, 
+	MTK_PULL_PUPD_R1R0_TYPE,  MTK_PULL_PUPD_R1R0_TYPE, 
+	MTK_PULL_PUPD_R1R0_TYPE,  MTK_PULL_PUPD_R1R0_TYPE, 
+	MTK_PULL_PUPD_R1R0_TYPE,  MTK_PULL_PUPD_R1R0_TYPE, 
+	MTK_PULL_PUPD_R1R0_TYPE,  MTK_PULL_PUPD_R1R0_TYPE, 
+	MTK_PULL_PUPD_R1R0_TYPE,  MTK_PULL_PUPD_R1R0_TYPE, 
+	MTK_PULL_PUPD_R1R0_TYPE,  MTK_PULL_PUPD_R1R0_TYPE, 
+	MTK_PULL_PUPD_R1R0_TYPE,  MTK_PULL_PUPD_R1R0_TYPE, 
+	MTK_PULL_PUPD_R1R0_TYPE,  MTK_PULL_PUPD_R1R0_TYPE, 
+	MTK_PULL_PUPD_R1R0_TYPE,  MTK_PULL_PU_PD_TYPE, 
+	MTK_PULL_PU_PD_TYPE,  MTK_PULL_PU_PD_TYPE, 
+	MTK_PULL_PU_PD_TYPE,  MTK_PULL_PU_PD_TYPE, 
+	MTK_PULL_PU_PD_TYPE,  MTK_PULL_PU_PD_TYPE, 
+	MTK_PULL_PU_PD_TYPE,  MTK_PULL_PU_PD_TYPE, 
+	MTK_PULL_PU_PD_TYPE,  MTK_PULL_PU_PD_TYPE, 
+	MTK_PULL_PU_PD_TYPE,  MTK_PULL_PU_PD_TYPE, 
+	MTK_PULL_PU_PD_TYPE,  MTK_PULL_PU_PD_TYPE, 
+	MTK_PULL_PU_PD_TYPE,  MTK_PULL_PU_PD_TYPE, 
+	MTK_PULL_PU_PD_TYPE,  MTK_PULL_PU_PD_TYPE, 
+	MTK_PULL_PU_PD_TYPE,  MTK_PULL_PU_PD_TYPE, 
+	MTK_PULL_PU_PD_TYPE,  MTK_PULL_PU_PD_TYPE, 
+	MTK_PULL_PU_PD_TYPE,  MTK_PULL_PU_PD_TYPE, 
+	MTK_PULL_PU_PD_TYPE,  MTK_PULL_PU_PD_TYPE, 
+	MTK_PULL_PU_PD_TYPE,  MTK_PULL_PU_PD_TYPE, 
+	MTK_PULL_PU_PD_TYPE,  MTK_PULL_PU_PD_TYPE, 
+	MTK_PULL_PU_PD_TYPE, 
 };
 
 static const struct mtk_pin_reg_calc mt7986_reg_cals[] = {
@@ -684,10 +640,7 @@ static const struct mtk_pin_desc mt7986b_pins[] = {
 	MT7986_PIN(100, "WF1_HB8"),
 };
 
-/* List all groups consisting of these pins dedicated to the enablement of
- * certain hardware block and the corresponding mode for all of the pins.
- * The hardware probably has multiple combinations of these pinouts.
- */
+ 
 
 static int mt7986_watchdog_pins[] = { 0, };
 static int mt7986_watchdog_funcs[] = { 1, };
@@ -852,9 +805,7 @@ static const struct group_desc mt7986_groups[] = {
 	PINCTRL_PIN_GROUP("wf_dbdc", mt7986_wf_dbdc),
 };
 
-/* Joint those groups owning the same capability in user point of view which
- * allows that people tend to use through the device tree.
- */
+ 
 
 static const char *mt7986_audio_groups[] = { "pcm", "i2s" };
 static const char *mt7986_emmc_groups[] = {

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2022 Meta Platforms Inc.
- * Copyright (C) 2022 Jonathan Lemon <jonathan.lemon@gmail.com>
- */
+
+ 
 
 #include <asm/unaligned.h>
 #include <linux/mii.h>
@@ -15,7 +12,7 @@
 
 #include "bcm-phy-lib.h"
 
-/* IEEE 1588 Expansion registers */
+ 
 #define SLICE_CTRL		0x0810
 #define  SLICE_TX_EN			BIT(0)
 #define  SLICE_RX_EN			BIT(8)
@@ -42,7 +39,7 @@
 #define TX_MODE_SEL(sel, evt, act) \
 	(((MODE_TX_##act) << (MODE_EVT_SHIFT_##evt)) << (MODE_SEL_SHIFT_##sel))
 
-/* needs global TS capture first */
+ 
 #define TX_TS_CAPTURE		0x0821
 #define  TX_TS_CAP_EN			BIT(0)
 #define RX_TS_CAPTURE		0x0822
@@ -156,7 +153,7 @@ struct bcm_ptp_capture {
 };
 
 #define BCM_SKB_CB(skb)		((struct bcm_ptp_skb_cb *)(skb)->cb)
-#define SKB_TS_TIMEOUT		10			/* jiffies */
+#define SKB_TS_TIMEOUT		10			 
 
 #define BCM_MAX_PULSE_8NS	((1U << 9) - 1)
 #define BCM_MAX_PERIOD_8NS	((1U << 30) - 1)
@@ -210,7 +207,7 @@ static void bcm_ptp_framesync_restore(struct phy_device *phydev, u16 orig_ctrl)
 
 static void bcm_ptp_framesync(struct phy_device *phydev, u16 ctrl)
 {
-	/* trigger framesync - must have 0->1 transition. */
+	 
 	bcm_phy_write_exp(phydev, NSE_CTRL, ctrl | NSE_CPU_FRAMESYNC);
 }
 
@@ -226,12 +223,12 @@ static int bcm_ptp_framesync_ts(struct phy_device *phydev,
 
 	ptp_read_system_prets(sts);
 
-	/* trigger framesync + capture */
+	 
 	bcm_ptp_framesync(phydev, ctrl | NSE_CAPTURE_EN);
 
 	ptp_read_system_postts(sts);
 
-	/* poll for FSYNC interrupt from TS capture */
+	 
 	for (i = 0; i < 10; i++) {
 		reg = bcm_phy_read_exp(phydev, INTR_STATUS);
 		if (reg & INTC_FSYNC) {
@@ -268,23 +265,23 @@ static int bcm_ptp_settime_locked(struct bcm_ptp_private *priv,
 
 	ctrl = bcm_ptp_framesync_disable(phydev, priv->nse_ctrl);
 
-	/* set up time code */
+	 
 	bcm_phy_write_exp(phydev, TIME_CODE_0, ts->tv_nsec);
 	bcm_phy_write_exp(phydev, TIME_CODE_1, ts->tv_nsec >> 16);
 	bcm_phy_write_exp(phydev, TIME_CODE_2, ts->tv_sec);
 	bcm_phy_write_exp(phydev, TIME_CODE_3, ts->tv_sec >> 16);
 	bcm_phy_write_exp(phydev, TIME_CODE_4, ts->tv_sec >> 32);
 
-	/* set NCO counter to match */
+	 
 	ns = timespec64_to_ns(ts);
 	bcm_phy_write_exp(phydev, NCO_TIME_0, ns >> 4);
 	bcm_phy_write_exp(phydev, NCO_TIME_1, ns >> 20);
 	bcm_phy_write_exp(phydev, NCO_TIME_2_CTRL, (ns >> 36) & 0xfff);
 
-	/* set up load on next frame sync (auto-clears due to NSE_INIT) */
+	 
 	bcm_phy_write_exp(phydev, SHADOW_LOAD, TIME_CODE_LOAD | NCO_TIME_LOAD);
 
-	/* must have NSE_INIT in order to write time code */
+	 
 	bcm_ptp_framesync(phydev, ctrl | NSE_INIT);
 
 	bcm_ptp_framesync_restore(phydev, priv->nse_ctrl);
@@ -333,14 +330,7 @@ static int bcm_ptp_adjtime(struct ptp_clock_info *info, s64 delta_ns)
 	return err;
 }
 
-/* A 125Mhz clock should adjust 8ns per pulse.
- * The frequency adjustment base is 0x8000 0000, or 8*2^28.
- *
- * Frequency adjustment is
- * adj = scaled_ppm * 8*2^28 / (10^6 * 2^16)
- *   which simplifies to:
- * adj = scaled_ppm * 2^9 / 5^6
- */
+ 
 static int bcm_ptp_adjfine(struct ptp_clock_info *info, long scaled_ppm)
 {
 	struct bcm_ptp_private *priv = ptp2priv(info);
@@ -367,12 +357,12 @@ static int bcm_ptp_adjfine(struct ptp_clock_info *info, long scaled_ppm)
 
 	bcm_phy_write_exp(priv->phydev, NCO_TIME_2_CTRL, FREQ_MDIO_SEL);
 
-	/* load on next framesync */
+	 
 	bcm_phy_write_exp(priv->phydev, SHADOW_LOAD, FREQ_LOAD);
 
 	bcm_ptp_framesync(priv->phydev, ctrl);
 
-	/* clear load */
+	 
 	bcm_phy_write_exp(priv->phydev, SHADOW_LOAD, 0);
 
 	bcm_ptp_framesync_restore(priv->phydev, priv->nse_ctrl);
@@ -437,7 +427,7 @@ static bool bcm_ptp_get_tstamp(struct bcm_ptp_private *priv,
 	ts[2] = bcm_phy_read_exp(phydev, TS_REG_2);
 	ts[3] = bcm_phy_read_exp(phydev, TS_REG_3);
 
-	/* not in be32 format for some reason */
+	 
 	capts->seq_id = bcm_phy_read_exp(priv->phydev, TS_INFO_0);
 
 	reg = bcm_phy_read_exp(phydev, TS_INFO_1);
@@ -477,7 +467,7 @@ static void bcm_ptp_match_tstamp(struct bcm_ptp_private *priv,
 	}
 	spin_unlock_irqrestore(&priv->tx_queue.lock, flags);
 
-	/* TX captures one-step packets, discard them if needed. */
+	 
 	if (ts_skb) {
 		if (BCM_SKB_CB(ts_skb)->discard) {
 			kfree_skb(ts_skb);
@@ -488,7 +478,7 @@ static void bcm_ptp_match_tstamp(struct bcm_ptp_private *priv,
 		}
 	}
 
-	/* not first match, try and expire entries */
+	 
 	if (!first) {
 		while ((skb = skb_dequeue(&priv->tx_queue))) {
 			if (!time_after(jiffies, BCM_SKB_CB(skb)->timeout)) {
@@ -544,7 +534,7 @@ static void bcm_ptp_perout_work(struct work_struct *pin_work)
 
 	mutex_lock(&priv->mutex);
 
-	/* no longer running */
+	 
 	if (!priv->pin_active) {
 		mutex_unlock(&priv->mutex);
 		return;
@@ -552,14 +542,14 @@ static void bcm_ptp_perout_work(struct work_struct *pin_work)
 
 	bcm_ptp_framesync_ts(phydev, NULL, &ts, priv->nse_ctrl);
 
-	/* this is 1PPS only */
+	 
 	next = NSEC_PER_SEC - ts.tv_nsec;
 	ts.tv_sec += next < NSEC_PER_MSEC ? 2 : 1;
 	ts.tv_nsec = 0;
 
 	ns = timespec64_to_ns(&ts);
 
-	/* force 0->1 transition for ONESHOT */
+	 
 	ctrl = bcm_ptp_framesync_disable(phydev,
 					 priv->nse_ctrl & ~NSE_ONESHOT_EN);
 
@@ -567,7 +557,7 @@ static void bcm_ptp_perout_work(struct work_struct *pin_work)
 	bcm_phy_write_exp(phydev, SYNOUT_TS_1, ns >> 16);
 	bcm_phy_write_exp(phydev, SYNOUT_TS_2, ns >> 32);
 
-	/* load values on next framesync */
+	 
 	bcm_phy_write_exp(phydev, SHADOW_LOAD, SYNC_OUT_LOAD);
 
 	bcm_ptp_framesync(phydev, ctrl | NSE_ONESHOT_EN | NSE_INIT);
@@ -591,11 +581,11 @@ static int bcm_ptp_perout_locked(struct bcm_ptp_private *priv,
 	if (!on)
 		return bcm_ptp_cancel_func(priv);
 
-	/* 1PPS */
+	 
 	if (req->period.sec != 1 || req->period.nsec != 0)
 		return -EINVAL;
 
-	period = BCM_MAX_PERIOD_8NS;	/* write nonzero value */
+	period = BCM_MAX_PERIOD_8NS;	 
 
 	if (req->flags & PTP_PEROUT_PHASE)
 		return -EOPNOTSUPP;
@@ -605,7 +595,7 @@ static int bcm_ptp_perout_locked(struct bcm_ptp_private *priv,
 	else
 		pulse = (u64)BCM_MAX_PULSE_8NS << 3;
 
-	/* convert to 8ns units */
+	 
 	pulse >>= 3;
 
 	if (!pulse || pulse > period || pulse > BCM_MAX_PULSE_8NS)
@@ -640,7 +630,7 @@ static void bcm_ptp_extts_work(struct work_struct *pin_work)
 
 	mutex_lock(&priv->mutex);
 
-	/* no longer running */
+	 
 	if (!priv->pin_active) {
 		mutex_unlock(&priv->mutex);
 		return;
@@ -837,7 +827,7 @@ static int bcm_ptp_hwtstamp(struct mii_timestamper *mii_ts,
 	else
 		ptp_cancel_worker_sync(priv->ptp_clock);
 
-	/* purge existing data */
+	 
 	skb_queue_purge(&priv->tx_queue);
 
 	return copy_to_user(ifr->ifr_data, &cfg, sizeof(cfg)) ? -EFAULT : 0;
@@ -874,19 +864,19 @@ EXPORT_SYMBOL_GPL(bcm_ptp_stop);
 
 void bcm_ptp_config_init(struct phy_device *phydev)
 {
-	/* init network sync engine */
+	 
 	bcm_phy_write_exp(phydev, NSE_CTRL, NSE_GMODE_EN | NSE_INIT);
 
-	/* enable time sync (TX/RX SOP capture) */
+	 
 	bcm_phy_write_exp(phydev, TIME_SYNC, TIME_SYNC_EN);
 
-	/* use sec.nsec heartbeat capture */
+	 
 	bcm_phy_write_exp(phydev, DPLL_SELECT, DPLL_HB_MODE2);
 
-	/* use 64 bit timecode for TX */
+	 
 	bcm_phy_write_exp(phydev, TIMECODE_CTRL, TX_TIMECODE_SEL);
 
-	/* always allow FREQ_LOAD on framesync */
+	 
 	bcm_phy_write_exp(phydev, SHADOW_CTRL, FREQ_LOAD);
 
 	bcm_phy_write_exp(phydev, SYNC_IN_DIVIDER, 1);

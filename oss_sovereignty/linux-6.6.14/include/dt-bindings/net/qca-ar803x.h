@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Device Tree constants for the Qualcomm Atheros AR803x PHYs
- */
+ 
+ 
 
 #ifndef _DT_BINDINGS_QCA_AR803X_H
 #define _DT_BINDINGS_QCA_AR803X_H

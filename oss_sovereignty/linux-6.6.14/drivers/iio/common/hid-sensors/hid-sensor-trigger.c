@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * HID Sensors Driver
- * Copyright (c) 2012, Intel Corporation.
- */
+
+ 
 #include <linux/device.h>
 #include <linux/platform_device.h>
 #include <linux/module.h>
@@ -277,7 +274,7 @@ int hid_sensor_setup_trigger(struct iio_dev *indio_dev, const char *name,
 	INIT_WORK(&attrb->work, hid_sensor_set_power_work);
 
 	pm_suspend_ignore_children(&attrb->pdev->dev, true);
-	/* Default to 3 seconds, but can be changed from sysfs */
+	 
 	pm_runtime_set_autosuspend_delay(&attrb->pdev->dev,
 					 3000);
 	return ret;

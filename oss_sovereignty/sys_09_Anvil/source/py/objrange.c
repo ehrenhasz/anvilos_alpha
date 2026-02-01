@@ -1,39 +1,15 @@
-/*
- * This file is part of the MicroPython project, http://micropython.org/
- *
- * The MIT License (MIT)
- *
- * Copyright (c) 2013, 2014 Damien P. George
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
+ 
 
 #include <stdlib.h>
 
 #include "py/runtime.h"
 
-/******************************************************************************/
-/* range iterator                                                             */
+ 
+ 
 
 typedef struct _mp_obj_range_it_t {
     mp_obj_base_t base;
-    // TODO make these values generic objects or something
+    
     mp_int_t cur;
     mp_int_t stop;
     mp_int_t step;
@@ -67,12 +43,12 @@ static mp_obj_t mp_obj_new_range_iterator(mp_int_t cur, mp_int_t stop, mp_int_t 
     return MP_OBJ_FROM_PTR(o);
 }
 
-/******************************************************************************/
-/* range                                                                      */
+ 
+ 
 
 typedef struct _mp_obj_range_t {
     mp_obj_base_t base;
-    // TODO make these values generic objects or something
+    
     mp_int_t start;
     mp_int_t stop;
     mp_int_t step;
@@ -113,7 +89,7 @@ static mp_obj_t range_make_new(const mp_obj_type_t *type, size_t n_args, size_t 
 }
 
 static mp_int_t range_len(mp_obj_range_t *self) {
-    // When computing length, need to take into account step!=1 and step<0.
+    
     mp_int_t len = self->stop - self->start + self->step;
     if (self->step > 0) {
         len -= 1;
@@ -136,14 +112,14 @@ static mp_obj_t range_unary_op(mp_unary_op_t op, mp_obj_t self_in) {
         case MP_UNARY_OP_LEN:
             return MP_OBJ_NEW_SMALL_INT(len);
         default:
-            return MP_OBJ_NULL;      // op not supported
+            return MP_OBJ_NULL;      
     }
 }
 
 #if MICROPY_PY_BUILTINS_RANGE_BINOP
 static mp_obj_t range_binary_op(mp_binary_op_t op, mp_obj_t lhs_in, mp_obj_t rhs_in) {
     if (!mp_obj_is_type(rhs_in, &mp_type_range) || op != MP_BINARY_OP_EQUAL) {
-        return MP_OBJ_NULL; // op not supported
+        return MP_OBJ_NULL; 
     }
     mp_obj_range_t *lhs = MP_OBJ_TO_PTR(lhs_in);
     mp_obj_range_t *rhs = MP_OBJ_TO_PTR(rhs_in);
@@ -160,7 +136,7 @@ static mp_obj_t range_binary_op(mp_binary_op_t op, mp_obj_t lhs_in, mp_obj_t rhs
 
 static mp_obj_t range_subscr(mp_obj_t self_in, mp_obj_t index, mp_obj_t value) {
     if (value == MP_OBJ_SENTINEL) {
-        // load
+        
         mp_obj_range_t *self = MP_OBJ_TO_PTR(self_in);
         mp_int_t len = range_len(self);
         #if MICROPY_PY_BUILTINS_SLICE
@@ -172,7 +148,7 @@ static mp_obj_t range_subscr(mp_obj_t self_in, mp_obj_t index, mp_obj_t value) {
             o->stop = self->start + slice.stop * self->step;
             o->step = slice.step * self->step;
             if (slice.step < 0) {
-                // Negative slice steps have inclusive stop, so adjust for exclusive
+                
                 o->stop -= self->step;
             }
             return MP_OBJ_FROM_PTR(o);
@@ -181,7 +157,7 @@ static mp_obj_t range_subscr(mp_obj_t self_in, mp_obj_t index, mp_obj_t value) {
         size_t index_val = mp_get_index(self->base.type, len, index, false);
         return MP_OBJ_NEW_SMALL_INT(self->start + index_val * self->step);
     } else {
-        return MP_OBJ_NULL; // op not supported
+        return MP_OBJ_NULL; 
     }
 }
 
@@ -194,7 +170,7 @@ static mp_obj_t range_getiter(mp_obj_t o_in, mp_obj_iter_buf_t *iter_buf) {
 #if MICROPY_PY_BUILTINS_RANGE_ATTRS
 static void range_attr(mp_obj_t o_in, qstr attr, mp_obj_t *dest) {
     if (dest[0] != MP_OBJ_NULL) {
-        // not load attribute
+        
         return;
     }
     mp_obj_range_t *o = MP_OBJ_TO_PTR(o_in);

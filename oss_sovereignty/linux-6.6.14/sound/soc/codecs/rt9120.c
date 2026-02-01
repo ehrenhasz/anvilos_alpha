@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #include <linux/bits.h>
 #include <linux/bitfield.h>
@@ -60,7 +60,7 @@
 #define RT9120_AMPOFF_WAITMS	100
 #define RT9120_LVAPP_THRESUV	2000000
 
-/* 8000 to 192000 supported , only 176400 not support */
+ 
 #define RT9120_RATES_MASK	(SNDRV_PCM_RATE_8000_192000 &\
 				 ~SNDRV_PCM_RATE_176400)
 #define RT9120_FMTS_MASK	(SNDRV_PCM_FMTBIT_S16_LE |\
@@ -80,10 +80,10 @@ struct rt9120_data {
 	int chip_idx;
 };
 
-/* 11bit [min,max,step] = [-103.9375dB, 24dB, 0.0625dB] */
+ 
 static const DECLARE_TLV_DB_SCALE(digital_tlv, -1039375, 625, 1);
 
-/* {6, 8, 10, 12, 13, 14, 15, 16}dB */
+ 
 static const DECLARE_TLV_DB_RANGE(classd_tlv,
 	0, 3, TLV_DB_SCALE_ITEM(600, 200, 0),
 	4, 7, TLV_DB_SCALE_ITEM(1300, 100, 0)
@@ -141,17 +141,17 @@ static const struct snd_soc_dapm_widget rt9120_dapm_widgets[] = {
 
 static const struct snd_soc_dapm_route rt9120_dapm_routes[] = {
 	{ "DMIX", NULL, "AIF Playback" },
-	/* SPKL */
+	 
 	{ "LDAC", NULL, "PWND" },
 	{ "LDAC", NULL, "DMIX" },
 	{ "SPKL PA", NULL, "LDAC" },
 	{ "SPKL", NULL, "SPKL PA" },
-	/* SPKR */
+	 
 	{ "RDAC", NULL, "PWND" },
 	{ "RDAC", NULL, "DMIX" },
 	{ "SPKR PA", NULL, "RDAC" },
 	{ "SPKR", NULL, "SPKR PA" },
-	/* Cap */
+	 
 	{ "AIF Capture", NULL, "LDAC" },
 	{ "AIF Capture", NULL, "RDAC" },
 };
@@ -164,7 +164,7 @@ static int rt9120_codec_probe(struct snd_soc_component *comp)
 
 	pm_runtime_get_sync(comp->dev);
 
-	/* Internal setting */
+	 
 	if (data->chip_idx == CHIP_IDX_RT9120S) {
 		snd_soc_component_write(comp, RT9120_REG_INTERCFG, 0xde);
 		snd_soc_component_write(comp, RT9120_REG_INTERNAL0, 0x66);
@@ -278,7 +278,7 @@ static int rt9120_hw_params(struct snd_pcm_substream *substream,
 				      RT9120_AUDWL_MASK, param_slot_width);
 
 	fs = width * params_channels(param);
-	/* If fs is divided by 48, disable auto sync */
+	 
 	if (fs % 48 == 0)
 		auto_sync = 0;
 	else

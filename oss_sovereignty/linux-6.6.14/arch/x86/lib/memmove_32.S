@@ -1,20 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 
 #include <linux/linkage.h>
 #include <asm/export.h>
 
 SYM_FUNC_START(memmove)
-/*
- * void *memmove(void *dest_in, const void *src_in, size_t n)
- * -mregparm=3 passes these in registers:
- * dest_in: %eax
- * src_in: %edx
- * n: %ecx
- * See also: arch/x86/entry/calling.h for description of the calling convention.
- *
- * n can remain in %ecx, but for `rep movsl`, we'll need dest in %edi and src
- * in %esi.
- */
+ 
 .set dest_in, %eax
 .set dest, %edi
 .set src_in, %edx
@@ -27,36 +17,30 @@ SYM_FUNC_START(memmove)
 .set tmp2, %eax
 .set tmp3b, %cl
 
-/*
- * Save all callee-saved registers, because this function is going to clobber
- * all of them:
- */
+ 
 	pushl	%ebp
-	movl	%esp, %ebp	// set standard frame pointer
+	movl	%esp, %ebp	 
 
 	pushl	%ebx
 	pushl	%edi
 	pushl	%esi
-	pushl	%eax		// save 'dest_in' parameter [eax] as the return value
+	pushl	%eax		 
 
 	movl src_in, src
 	movl dest_in, dest
 
-	/* Handle more 16 bytes in loop */
+	 
 	cmpl	$0x10, n
 	jb	.Lmove_16B
 
-	/* Decide forward/backward copy mode */
+	 
 	cmpl	dest, src
 	jb	.Lbackwards_header
 
-	/*
-	 * movs instruction have many startup latency
-	 * so we handle small size by general register.
-	 */
+	 
 	cmpl	$680, n
 	jb	.Ltoo_small_forwards
-	/* movs instruction is only good for aligned case. */
+	 
 	movl	src, tmp0
 	xorl	dest, tmp0
 	andl	$0xff, tmp0
@@ -64,7 +48,7 @@ SYM_FUNC_START(memmove)
 .Ltoo_small_forwards:
 	subl	$0x10, n
 
-	/* We gobble 16 bytes forward in each loop. */
+	 
 .Lmove_16B_forwards_loop:
 	subl	$0x10, n
 	movl	0*4(src), tmp0
@@ -81,7 +65,7 @@ SYM_FUNC_START(memmove)
 	addl	$0x10, n
 	jmp	.Lmove_16B
 
-	/* Handle data forward by movs. */
+	 
 .p2align 4
 .Lforward_movs:
 	movl	-4(src, n), tmp0
@@ -91,7 +75,7 @@ SYM_FUNC_START(memmove)
 	movl	tmp0, (tmp1)
 	jmp	.Ldone
 
-	/* Handle data backward by movs. */
+	 
 .p2align 4
 .Lbackwards_movs:
 	movl	(src), tmp0
@@ -105,7 +89,7 @@ SYM_FUNC_START(memmove)
 	cld
 	jmp	.Ldone
 
-	/* Start to prepare for backward copy. */
+	 
 .p2align 4
 .Lbackwards_header:
 	cmpl	$680, n
@@ -115,13 +99,13 @@ SYM_FUNC_START(memmove)
 	andl	$0xff, tmp0
 	jz	.Lbackwards_movs
 
-	/* Calculate copy position to tail. */
+	 
 .Ltoo_small_backwards:
 	addl	n, src
 	addl	n, dest
 	subl	$0x10, n
 
-	/* We gobble 16 bytes backward in each loop. */
+	 
 .Lmove_16B_backwards_loop:
 	subl	$0x10, n
 
@@ -136,12 +120,12 @@ SYM_FUNC_START(memmove)
 	leal	-0x10(src), src
 	leal	-0x10(dest), dest
 	jae	.Lmove_16B_backwards_loop
-	/* Calculate copy position to head. */
+	 
 	addl	$0x10, n
 	subl	n, src
 	subl	n, dest
 
-	/* Move data from 8 bytes to 15 bytes. */
+	 
 .p2align 4
 .Lmove_16B:
 	cmpl	$8, n
@@ -157,7 +141,7 @@ SYM_FUNC_START(memmove)
 	movl	src, -1*4(dest, n)
 	jmp	.Ldone
 
-	/* Move data from 4 bytes to 7 bytes. */
+	 
 .p2align 4
 .Lmove_8B:
 	cmpl	$4, n
@@ -168,7 +152,7 @@ SYM_FUNC_START(memmove)
 	movl	tmp1, -1*4(dest, n)
 	jmp	.Ldone
 
-	/* Move data from 2 bytes to 3 bytes. */
+	 
 .p2align 4
 .Lmove_4B:
 	cmpl	$2, n
@@ -179,7 +163,7 @@ SYM_FUNC_START(memmove)
 	movw	tmp1w, -1*2(dest, n)
 	jmp	.Ldone
 
-	/* Move data for 1 byte. */
+	 
 .p2align 4
 .Lmove_1B:
 	cmpl	$1, n
@@ -188,8 +172,8 @@ SYM_FUNC_START(memmove)
 	movb	tmp3b, (dest)
 .p2align 4
 .Ldone:
-	popl	dest_in	// restore 'dest_in' [eax] as the return value
-	/* Restore all callee-saved registers: */
+	popl	dest_in	 
+	 
 	popl	%esi
 	popl	%edi
 	popl	%ebx

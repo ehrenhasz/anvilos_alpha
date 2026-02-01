@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
 
-  Broadcom B43legacy wireless driver
-
-  SYSFS support routines
-
-  Copyright (c) 2006 Michael Buesch <m@bues.ch>
-
-
-*/
+ 
 
 #include "sysfs.h"
 #include "b43legacy.h"

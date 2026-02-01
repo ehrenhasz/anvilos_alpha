@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: ISC
-/* Copyright (C) 2023 MediaTek Inc.
- *
- * Author: Lorenzo Bianconi <lorenzo@kernel.org>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -169,7 +166,7 @@ static void mt792xu_wfdma_init(struct mt792x_dev *dev)
 		 MT_WFDMA0_GLO_CFG_TX_DMA_EN |
 		 MT_WFDMA0_GLO_CFG_RX_DMA_EN);
 
-	/* disable dmashdl */
+	 
 	mt76_clear(dev, MT_UWFDMA0_GLO_CFG_EXT0,
 		   MT_WFDMA0_CSR_TX_DMASHDL_ENABLE);
 	mt76_set(dev, MT_DMASHDL_SW_CONTROL, MT_DMASHDL_DMASHDL_BYPASS);
@@ -195,11 +192,7 @@ static void mt792xu_epctl_rst_opt(struct mt792x_dev *dev, bool reset)
 {
 	u32 val;
 
-	/* usb endpoint reset opt
-	 * bits[4,9]: out blk ep 4-9
-	 * bits[20,21]: in blk ep 4-5
-	 * bits[22]: in int ep 6
-	 */
+	 
 	val = mt792xu_uhw_rr(&dev->mt76, MT_SSUSB_EPCTL_CSR_EP_RST_OPT);
 	if (reset)
 		val |= GENMASK(9, 4) | GENMASK(22, 20);

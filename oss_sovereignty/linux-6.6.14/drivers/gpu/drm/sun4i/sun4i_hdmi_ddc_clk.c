@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2016 Free Electrons
- * Copyright (C) 2016 NextThing Co
- *
- * Maxime Ripard <maxime.ripard@free-electrons.com>
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/regmap.h>

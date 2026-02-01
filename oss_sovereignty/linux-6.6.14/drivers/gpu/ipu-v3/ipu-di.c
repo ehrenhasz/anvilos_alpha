@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (c) 2010 Sascha Hauer <s.hauer@pengutronix.de>
- * Copyright (C) 2005-2009 Freescale Semiconductor, Inc.
- */
+
+ 
 #include <linux/export.h>
 #include <linux/module.h>
 #include <linux/types.h>
@@ -18,9 +15,9 @@ struct ipu_di {
 	void __iomem *base;
 	int id;
 	u32 module;
-	struct clk *clk_di;	/* display input clock */
-	struct clk *clk_ipu;	/* IPU bus clock */
-	struct clk *clk_di_pixel; /* resulting pixel clock */
+	struct clk *clk_di;	 
+	struct clk *clk_ipu;	 
+	struct clk *clk_di_pixel;  
 	bool inuse;
 	struct ipu_soc *ipu;
 };
@@ -63,9 +60,9 @@ enum di_sync_wave {
 	DI_SYNC_VSYNC = 4,
 	DI_SYNC_DE = 6,
 
-	DI_SYNC_CNT1 = 2,	/* counter >= 2 only */
-	DI_SYNC_CNT4 = 5,	/* counter >= 5 only */
-	DI_SYNC_CNT5 = 6,	/* counter >= 6 only */
+	DI_SYNC_CNT1 = 2,	 
+	DI_SYNC_CNT4 = 5,	 
+	DI_SYNC_CNT5 = 6,	 
 };
 
 #define SYNC_WAVE 0
@@ -186,7 +183,7 @@ static void ipu_di_sync_config(struct ipu_di *di, struct di_sync_config *config,
 			DI_SW_GEN1_CNT_DOWN(c->cnt_down) |
 			DI_SW_GEN1_CNT_UP(c->cnt_up);
 
-		/* Enable auto reload */
+		 
 		if (c->repeat_count == 0)
 			reg |= DI_SW_GEN1_AUTO_RELOAD;
 
@@ -208,26 +205,26 @@ static void ipu_di_sync_config_interlaced(struct ipu_di *di,
 		sig->mode.vback_porch + sig->mode.vfront_porch;
 	struct di_sync_config cfg[] = {
 		{
-			/* 1: internal VSYNC for each frame */
+			 
 			.run_count = v_total * 2 - 1,
-			.run_src = 3,			/* == counter 7 */
+			.run_src = 3,			 
 		}, {
-			/* PIN2: HSYNC waveform */
+			 
 			.run_count = h_total - 1,
 			.run_src = DI_SYNC_CLK,
 			.cnt_polarity_gen_en = 1,
 			.cnt_polarity_trigger_src = DI_SYNC_CLK,
 			.cnt_down = sig->mode.hsync_len * 2,
 		}, {
-			/* PIN3: VSYNC waveform */
+			 
 			.run_count = v_total - 1,
-			.run_src = 4,			/* == counter 7 */
+			.run_src = 4,			 
 			.cnt_polarity_gen_en = 1,
-			.cnt_polarity_trigger_src = 4,	/* == counter 7 */
+			.cnt_polarity_trigger_src = 4,	 
 			.cnt_down = sig->mode.vsync_len * 2,
 			.cnt_clr_src = DI_SYNC_CNT1,
 		}, {
-			/* 4: Field */
+			 
 			.run_count = v_total / 2,
 			.run_src = DI_SYNC_HSYNC,
 			.offset_count = h_total / 2,
@@ -235,7 +232,7 @@ static void ipu_di_sync_config_interlaced(struct ipu_di *di,
 			.repeat_count = 2,
 			.cnt_clr_src = DI_SYNC_CNT1,
 		}, {
-			/* 5: Active lines */
+			 
 			.run_src = DI_SYNC_HSYNC,
 			.offset_count = (sig->mode.vsync_len +
 					 sig->mode.vback_porch) / 2,
@@ -243,7 +240,7 @@ static void ipu_di_sync_config_interlaced(struct ipu_di *di,
 			.repeat_count = sig->mode.vactive / 2,
 			.cnt_clr_src = DI_SYNC_CNT4,
 		}, {
-			/* 6: Active pixel, referenced by DC */
+			 
 			.run_src = DI_SYNC_CLK,
 			.offset_count = sig->mode.hsync_len +
 					sig->mode.hback_porch,
@@ -251,7 +248,7 @@ static void ipu_di_sync_config_interlaced(struct ipu_di *di,
 			.repeat_count = sig->mode.hactive,
 			.cnt_clr_src = DI_SYNC_CNT5,
 		}, {
-			/* 7: Half line HSYNC */
+			 
 			.run_count = h_total / 2 - 1,
 			.run_src = DI_SYNC_CLK,
 		}
@@ -271,11 +268,11 @@ static void ipu_di_sync_config_noninterlaced(struct ipu_di *di,
 		sig->mode.vback_porch + sig->mode.vfront_porch;
 	struct di_sync_config cfg[] = {
 		{
-			/* 1: INT_HSYNC */
+			 
 			.run_count = h_total - 1,
 			.run_src = DI_SYNC_CLK,
 		} , {
-			/* PIN2: HSYNC */
+			 
 			.run_count = h_total - 1,
 			.run_src = DI_SYNC_CLK,
 			.offset_count = div * sig->v_to_h_sync,
@@ -284,14 +281,14 @@ static void ipu_di_sync_config_noninterlaced(struct ipu_di *di,
 			.cnt_polarity_trigger_src = DI_SYNC_CLK,
 			.cnt_down = sig->mode.hsync_len * 2,
 		} , {
-			/* PIN3: VSYNC */
+			 
 			.run_count = v_total - 1,
 			.run_src = DI_SYNC_INT_HSYNC,
 			.cnt_polarity_gen_en = 1,
 			.cnt_polarity_trigger_src = DI_SYNC_INT_HSYNC,
 			.cnt_down = sig->mode.vsync_len * 2,
 		} , {
-			/* 4: Line Active */
+			 
 			.run_src = DI_SYNC_HSYNC,
 			.offset_count = sig->mode.vsync_len +
 					sig->mode.vback_porch,
@@ -299,83 +296,83 @@ static void ipu_di_sync_config_noninterlaced(struct ipu_di *di,
 			.repeat_count = sig->mode.vactive,
 			.cnt_clr_src = DI_SYNC_VSYNC,
 		} , {
-			/* 5: Pixel Active, referenced by DC */
+			 
 			.run_src = DI_SYNC_CLK,
 			.offset_count = sig->mode.hsync_len +
 					sig->mode.hback_porch,
 			.offset_src = DI_SYNC_CLK,
 			.repeat_count = sig->mode.hactive,
-			.cnt_clr_src = 5, /* Line Active */
+			.cnt_clr_src = 5,  
 		} , {
-			/* unused */
+			 
 		} , {
-			/* unused */
+			 
 		},
 	};
-	/* can't use #7 and #8 for line active and pixel active counters */
+	 
 	struct di_sync_config cfg_vga[] = {
 		{
-			/* 1: INT_HSYNC */
+			 
 			.run_count = h_total - 1,
 			.run_src = DI_SYNC_CLK,
 		} , {
-			/* 2: VSYNC */
+			 
 			.run_count = v_total - 1,
 			.run_src = DI_SYNC_INT_HSYNC,
 		} , {
-			/* 3: Line Active */
+			 
 			.run_src = DI_SYNC_INT_HSYNC,
 			.offset_count = sig->mode.vsync_len +
 					sig->mode.vback_porch,
 			.offset_src = DI_SYNC_INT_HSYNC,
 			.repeat_count = sig->mode.vactive,
-			.cnt_clr_src = 3 /* VSYNC */,
+			.cnt_clr_src = 3  ,
 		} , {
-			/* PIN4: HSYNC for VGA via TVEv2 on TQ MBa53 */
+			 
 			.run_count = h_total - 1,
 			.run_src = DI_SYNC_CLK,
-			.offset_count = div * sig->v_to_h_sync + 18, /* magic value from Freescale TVE driver */
+			.offset_count = div * sig->v_to_h_sync + 18,  
 			.offset_src = DI_SYNC_CLK,
 			.cnt_polarity_gen_en = 1,
 			.cnt_polarity_trigger_src = DI_SYNC_CLK,
 			.cnt_down = sig->mode.hsync_len * 2,
 		} , {
-			/* 5: Pixel Active signal to DC */
+			 
 			.run_src = DI_SYNC_CLK,
 			.offset_count = sig->mode.hsync_len +
 					sig->mode.hback_porch,
 			.offset_src = DI_SYNC_CLK,
 			.repeat_count = sig->mode.hactive,
-			.cnt_clr_src = 4, /* Line Active */
+			.cnt_clr_src = 4,  
 		} , {
-			/* PIN6: VSYNC for VGA via TVEv2 on TQ MBa53 */
+			 
 			.run_count = v_total - 1,
 			.run_src = DI_SYNC_INT_HSYNC,
-			.offset_count = 1, /* magic value from Freescale TVE driver */
+			.offset_count = 1,  
 			.offset_src = DI_SYNC_INT_HSYNC,
 			.cnt_polarity_gen_en = 1,
 			.cnt_polarity_trigger_src = DI_SYNC_INT_HSYNC,
 			.cnt_down = sig->mode.vsync_len * 2,
 		} , {
-			/* PIN4: HSYNC for VGA via TVEv2 on i.MX53-QSB */
+			 
 			.run_count = h_total - 1,
 			.run_src = DI_SYNC_CLK,
-			.offset_count = div * sig->v_to_h_sync + 18, /* magic value from Freescale TVE driver */
+			.offset_count = div * sig->v_to_h_sync + 18,  
 			.offset_src = DI_SYNC_CLK,
 			.cnt_polarity_gen_en = 1,
 			.cnt_polarity_trigger_src = DI_SYNC_CLK,
 			.cnt_down = sig->mode.hsync_len * 2,
 		} , {
-			/* PIN6: VSYNC for VGA via TVEv2 on i.MX53-QSB */
+			 
 			.run_count = v_total - 1,
 			.run_src = DI_SYNC_INT_HSYNC,
-			.offset_count = 1, /* magic value from Freescale TVE driver */
+			.offset_count = 1,  
 			.offset_src = DI_SYNC_INT_HSYNC,
 			.cnt_polarity_gen_en = 1,
 			.cnt_polarity_trigger_src = DI_SYNC_INT_HSYNC,
 			.cnt_down = sig->mode.vsync_len * 2,
 		} , {
-			/* unused */
+			 
 		},
 	};
 
@@ -394,30 +391,14 @@ static void ipu_di_config_clock(struct ipu_di *di,
 	uint32_t val;
 
 	if (sig->clkflags & IPU_DI_CLKMODE_EXT) {
-		/*
-		 * CLKMODE_EXT means we must use the DI clock: this is
-		 * needed for things like LVDS which needs to feed the
-		 * DI and LDB with the same pixel clock.
-		 */
+		 
 		clk = di->clk_di;
 
 		if (sig->clkflags & IPU_DI_CLKMODE_SYNC) {
-			/*
-			 * CLKMODE_SYNC means that we want the DI to be
-			 * clocked at the same rate as the parent clock.
-			 * This is needed (eg) for LDB which needs to be
-			 * fed with the same pixel clock.  We assume that
-			 * the LDB clock has already been set correctly.
-			 */
+			 
 			clkgen0 = 1 << 4;
 		} else {
-			/*
-			 * We can use the divider.  We should really have
-			 * a flag here indicating whether the bridge can
-			 * cope with a fractional divider or not.  For the
-			 * time being, let's go for simplicitly and
-			 * reliability.
-			 */
+			 
 			unsigned long in_rate;
 			unsigned div;
 
@@ -430,13 +411,7 @@ static void ipu_di_config_clock(struct ipu_di *di,
 			clkgen0 = div << 4;
 		}
 	} else {
-		/*
-		 * For other interfaces, we can arbitarily select between
-		 * the DI specific clock and the internal IPU clock.  See
-		 * DI_GENERAL bit 20.  We select the IPU clock if it can
-		 * give us a clock rate within 1% of the requested frequency,
-		 * otherwise we use the DI clock.
-		 */
+		 
 		unsigned long rate, clkrate;
 		unsigned div, error;
 
@@ -451,7 +426,7 @@ static void ipu_di_config_clock(struct ipu_di *di,
 			rate, div, error < 1000 ? '-' : '+',
 			abs(error - 1000) / 10, abs(error - 1000) % 10);
 
-		/* Allow a 1% error */
+		 
 		if (error < 1010 && error >= 990) {
 			clk = di->clk_ipu;
 
@@ -474,18 +449,13 @@ static void ipu_di_config_clock(struct ipu_di *di,
 
 	di->clk_di_pixel = clk;
 
-	/* Set the divider */
+	 
 	ipu_di_write(di, clkgen0, DI_BS_CLKGEN0);
 
-	/*
-	 * Set the high/low periods.  Bits 24:16 give us the falling edge,
-	 * and bits 8:0 give the rising edge.  LSB is fraction, and is
-	 * based on the divider above.  We want a 50% duty cycle, so set
-	 * the falling edge to be half the divider.
-	 */
+	 
 	ipu_di_write(di, (clkgen0 >> 4) << 16, DI_BS_CLKGEN1);
 
-	/* Finally select the input clock */
+	 
 	val = ipu_di_read(di, DI_GENERAL) & ~DI_GEN_DI_CLK_EXT;
 	if (clk == di->clk_di)
 		val |= DI_GEN_DI_CLK_EXT;
@@ -499,10 +469,7 @@ static void ipu_di_config_clock(struct ipu_di *di,
 		clk_get_rate(di->clk_di_pixel) / (clkgen0 >> 4));
 }
 
-/*
- * This function is called to adjust a video mode to IPU restrictions.
- * It is meant to be called from drm crtc mode_fixup() methods.
- */
+ 
 int ipu_di_adjust_videomode(struct ipu_di *di, struct videomode *mode)
 {
 	u32 diff;
@@ -577,10 +544,10 @@ int ipu_di_init_sync_panel(struct ipu_di *di, struct ipu_di_signal_cfg *sig)
 	ipu_di_config_clock(di, sig);
 
 	div = ipu_di_read(di, DI_BS_CLKGEN0) & 0xfff;
-	div = div / 16;		/* Now divider is integer portion */
+	div = div / 16;		 
 
-	/* Setup pixel clock timing */
-	/* Down time is half of period */
+	 
+	 
 	ipu_di_write(di, (div << 16), DI_BS_CLKGEN1);
 
 	ipu_di_data_wave_config(di, SYNC_WAVE, div - 1, div - 1);
@@ -592,7 +559,7 @@ int ipu_di_init_sync_panel(struct ipu_di *di, struct ipu_di_signal_cfg *sig)
 	if (sig->mode.flags & DISPLAY_FLAGS_INTERLACED) {
 		ipu_di_sync_config_interlaced(di, sig);
 
-		/* set y_sel = 1 */
+		 
 		di_gen |= 0x10000000;
 
 		vsync_cnt = 3;
@@ -601,10 +568,7 @@ int ipu_di_init_sync_panel(struct ipu_di *di, struct ipu_di_signal_cfg *sig)
 
 		vsync_cnt = 3;
 		if (di->id == 1)
-			/*
-			 * TODO: change only for TVEv2, parallel display
-			 * uses pin 2 / 3
-			 */
+			 
 			if (!(sig->hsync_pin == 2 && sig->vsync_pin == 3))
 				vsync_cnt = 6;
 	}

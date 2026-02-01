@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2018, NVIDIA CORPORATION.  All rights reserved.
- */
+
+ 
 
 #include <asm/div64.h>
 

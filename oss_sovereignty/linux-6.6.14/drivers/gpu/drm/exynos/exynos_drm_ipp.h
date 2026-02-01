@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copyright (c) 2017 Samsung Electronics Co., Ltd.
- */
+ 
+ 
 
 #ifndef _EXYNOS_DRM_IPP_H_
 #define _EXYNOS_DRM_IPP_H_
@@ -9,44 +7,18 @@
 struct exynos_drm_ipp;
 struct exynos_drm_ipp_task;
 
-/**
- * struct exynos_drm_ipp_funcs - exynos_drm_ipp control functions
- */
+ 
 struct exynos_drm_ipp_funcs {
-	/**
-	 * @commit:
-	 *
-	 * This is the main entry point to start framebuffer processing
-	 * in the hardware. The exynos_drm_ipp_task has been already validated.
-	 * This function must not wait until the device finishes processing.
-	 * When the driver finishes processing, it has to call
-	 * exynos_exynos_drm_ipp_task_done() function.
-	 *
-	 * RETURNS:
-	 *
-	 * 0 on success or negative error codes in case of failure.
-	 */
+	 
 	int (*commit)(struct exynos_drm_ipp *ipp,
 		      struct exynos_drm_ipp_task *task);
 
-	/**
-	 * @abort:
-	 *
-	 * Informs the driver that it has to abort the currently running
-	 * task as soon as possible (i.e. as soon as it can stop the device
-	 * safely), even if the task would not have been finished by then.
-	 * After the driver performs the necessary steps, it has to call
-	 * exynos_drm_ipp_task_done() (as if the task ended normally).
-	 * This function does not have to (and will usually not) wait
-	 * until the device enters a state when it can be stopped.
-	 */
+	 
 	void (*abort)(struct exynos_drm_ipp *ipp,
 		      struct exynos_drm_ipp_task *task);
 };
 
-/**
- * struct exynos_drm_ipp - central picture processor module structure
- */
+ 
 struct exynos_drm_ipp {
 	struct drm_device *drm_dev;
 	struct device *dev;
@@ -75,10 +47,7 @@ struct exynos_drm_ipp_buffer {
 	dma_addr_t dma_addr[MAX_FB_BUFFER];
 };
 
-/**
- * struct exynos_drm_ipp_task - a structure describing transformation that
- * has to be performed by the picture processor hardware module
- */
+ 
 struct exynos_drm_ipp_task {
 	struct device *dev;
 	struct exynos_drm_ipp *ipp;
@@ -108,7 +77,7 @@ struct exynos_drm_ipp_formats {
 	unsigned int num_limits;
 };
 
-/* helper macros to set exynos_drm_ipp_formats structure and limits*/
+ 
 #define IPP_SRCDST_MFORMAT(f, m, l) \
 	.fourcc = DRM_FORMAT_##f, .modifier = m, .limits = l, \
 	.num_limits = ARRAY_SIZE(l), \

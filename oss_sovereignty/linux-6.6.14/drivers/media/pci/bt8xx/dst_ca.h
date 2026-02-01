@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
-	CA-driver for TwinHan DST Frontend/Card
-
-	Copyright (C) 2004, 2005 Manu Abraham (manu@kromtek.com)
-
-*/
+ 
+ 
 
 #ifndef _DST_CA_H_
 #define _DST_CA_H_

@@ -1,29 +1,4 @@
-/*
- * include/linux/topology.h
- *
- * Written by: Matthew Dobson, IBM Corporation
- *
- * Copyright (C) 2002, IBM Corp.
- *
- * All rights reserved.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE, GOOD TITLE or
- * NON INFRINGEMENT.  See the GNU General Public License for more
- * details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
- *
- * Send feedback to <colpatch@us.ibm.com>
- */
+ 
 #ifndef _LINUX_TOPOLOGY_H
 #define _LINUX_TOPOLOGY_H
 
@@ -45,7 +20,7 @@
 
 int arch_update_cpu_topology(void);
 
-/* Conform to ACPI 2.0 SLIT distance definitions */
+ 
 #define LOCAL_DISTANCE		10
 #define REMOTE_DISTANCE		20
 #define DISTANCE_BITS           8
@@ -53,26 +28,11 @@ int arch_update_cpu_topology(void);
 #define node_distance(from,to)	((from) == (to) ? LOCAL_DISTANCE : REMOTE_DISTANCE)
 #endif
 #ifndef RECLAIM_DISTANCE
-/*
- * If the distance between nodes in a system is larger than RECLAIM_DISTANCE
- * (in whatever arch specific measurement units returned by node_distance())
- * and node_reclaim_mode is enabled then the VM will only call node_reclaim()
- * on nodes within this distance.
- */
+ 
 #define RECLAIM_DISTANCE 30
 #endif
 
-/*
- * The following tunable allows platforms to override the default node
- * reclaim distance (RECLAIM_DISTANCE) if remote memory accesses are
- * sufficiently fast that the default value actually hurts
- * performance.
- *
- * AMD EPYC machines use this because even though the 2-hop distance
- * is 32 (3.2x slower than a local memory access) performance actually
- * *improves* if allowed to reclaim memory and load balance tasks
- * between NUMA nodes 2-hops apart.
- */
+ 
 extern int __read_mostly node_reclaim_distance;
 
 #ifndef PENALTY_FOR_NODE_WITH_CPUS
@@ -83,7 +43,7 @@ extern int __read_mostly node_reclaim_distance;
 DECLARE_PER_CPU(int, numa_node);
 
 #ifndef numa_node_id
-/* Returns the number of the current Node. */
+ 
 static inline int numa_node_id(void)
 {
 	return raw_cpu_read(numa_node);
@@ -111,9 +71,9 @@ static inline void set_cpu_numa_node(int cpu, int node)
 }
 #endif
 
-#else	/* !CONFIG_USE_PERCPU_NUMA_NODE_ID */
+#else	 
 
-/* Returns the number of the current Node. */
+ 
 #ifndef numa_node_id
 static inline int numa_node_id(void)
 {
@@ -121,15 +81,11 @@ static inline int numa_node_id(void)
 }
 #endif
 
-#endif	/* [!]CONFIG_USE_PERCPU_NUMA_NODE_ID */
+#endif	 
 
 #ifdef CONFIG_HAVE_MEMORYLESS_NODES
 
-/*
- * N.B., Do NOT reference the '_numa_mem_' per cpu variable directly.
- * It will not be defined when CONFIG_HAVE_MEMORYLESS_NODES is not defined.
- * Use the accessor functions set_numa_mem(), numa_mem_id() and cpu_to_mem().
- */
+ 
 DECLARE_PER_CPU(int, _numa_mem_);
 
 #ifndef set_numa_mem
@@ -140,7 +96,7 @@ static inline void set_numa_mem(int node)
 #endif
 
 #ifndef numa_mem_id
-/* Returns the number of the nearest Node with memory */
+ 
 static inline int numa_mem_id(void)
 {
 	return raw_cpu_read(_numa_mem_);
@@ -161,10 +117,10 @@ static inline void set_cpu_numa_mem(int cpu, int node)
 }
 #endif
 
-#else	/* !CONFIG_HAVE_MEMORYLESS_NODES */
+#else	 
 
 #ifndef numa_mem_id
-/* Returns the number of the nearest Node with memory */
+ 
 static inline int numa_mem_id(void)
 {
 	return numa_node_id();
@@ -178,7 +134,7 @@ static inline int cpu_to_mem(int cpu)
 }
 #endif
 
-#endif	/* [!]CONFIG_HAVE_MEMORYLESS_NODES */
+#endif	 
 
 #if defined(topology_die_id) && defined(topology_die_cpumask)
 #define TOPOLOGY_DIE_SYSFS
@@ -259,18 +215,9 @@ sched_numa_hop_mask(unsigned int node, unsigned int hops)
 {
 	return ERR_PTR(-EOPNOTSUPP);
 }
-#endif	/* CONFIG_NUMA */
+#endif	 
 
-/**
- * for_each_numa_hop_mask - iterate over cpumasks of increasing NUMA distance
- *                          from a given node.
- * @mask: the iteration variable.
- * @node: the NUMA node to start the search from.
- *
- * Requires rcu_lock to be held.
- *
- * Yields cpu_online_mask for @node == NUMA_NO_NODE.
- */
+ 
 #define for_each_numa_hop_mask(mask, node)				       \
 	for (unsigned int __hops = 0;					       \
 	     mask = (node != NUMA_NO_NODE || __hops) ?			       \
@@ -279,4 +226,4 @@ sched_numa_hop_mask(unsigned int node, unsigned int hops)
 	     !IS_ERR_OR_NULL(mask);					       \
 	     __hops++)
 
-#endif /* _LINUX_TOPOLOGY_H */
+#endif  

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright 2020 Google LLC
- *
- * This driver provides the ability to view and manage Type C ports through the
- * Chrome OS EC.
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/module.h>
@@ -54,7 +49,7 @@ static int cros_typec_parse_port_props(struct typec_capability *cap,
 		return ret;
 	cap->data = ret;
 
-	/* Try-power-role is optional. */
+	 
 	ret = fwnode_property_read_string(fwnode, "try-power-role", &buf);
 	if (ret) {
 		dev_warn(dev, "try-power-role not found: %d\n", ret);
@@ -129,10 +124,7 @@ static int cros_typec_add_partner(struct cros_typec_data *typec, int port_num,
 	};
 	int ret = 0;
 
-	/*
-	 * Fill an initial PD identity, which will then be updated with info
-	 * from the EC.
-	 */
+	 
 	p_desc.identity = &port->p_identity;
 
 	port->partner = typec_register_partner(port->port, &p_desc);
@@ -159,10 +151,7 @@ static void cros_typec_unregister_altmodes(struct cros_typec_data *typec, int po
 	}
 }
 
-/*
- * Map the Type-C Mux state to retimer state and call the retimer set function. We need this
- * because we re-use the Type-C mux state for retimers.
- */
+ 
 static int cros_typec_retimer_set(struct typec_retimer *retimer, struct typec_mux_state state)
 {
 	struct typec_retimer_state rstate = {
@@ -259,10 +248,7 @@ static void cros_unregister_ports(struct cros_typec_data *typec)
 	}
 }
 
-/*
- * Register port alt modes with known values till we start retrieving
- * port capabilities from the EC.
- */
+ 
 static int cros_typec_register_port_altmodes(struct cros_typec_data *typec,
 					      int port_num)
 {
@@ -270,7 +256,7 @@ static int cros_typec_register_port_altmodes(struct cros_typec_data *typec,
 	struct typec_altmode_desc desc;
 	struct typec_altmode *amode;
 
-	/* All PD capable CrOS devices are assumed to support DP altmode. */
+	 
 	desc.svid = USB_TYPEC_DP_SID,
 	desc.mode = USB_TYPEC_DP_MODE,
 	desc.vdo = DP_PORT_VDO,
@@ -281,11 +267,7 @@ static int cros_typec_register_port_altmodes(struct cros_typec_data *typec,
 	typec_altmode_set_drvdata(amode, port);
 	amode->ops = &port_amode_ops;
 
-	/*
-	 * Register TBT compatibility alt mode. The EC will not enter the mode
-	 * if it doesn't support it, so it's safe to register it unconditionally
-	 * here for now.
-	 */
+	 
 	memset(&desc, 0, sizeof(desc));
 	desc.svid = USB_TYPEC_TBT_SID,
 	desc.mode = TYPEC_ANY_MODE,
@@ -325,7 +307,7 @@ static int cros_typec_init_ports(struct cros_typec_data *typec)
 		return -EINVAL;
 	}
 
-	/* DT uses "reg" to specify port number. */
+	 
 	port_prop = dev->of_node ? "reg" : "port-number";
 	device_for_each_child_node(dev, fwnode) {
 		if (fwnode_property_read_u32(fwnode, port_prop, &port_num)) {
@@ -406,13 +388,7 @@ static int cros_typec_usb_safe_state(struct cros_typec_port *port)
 	return ret;
 }
 
-/**
- * cros_typec_get_cable_vdo() - Get Cable VDO of the connected cable
- * @port: Type-C port data
- * @svid: Standard or Vendor ID to match
- *
- * Returns the Cable VDO if match is found and returns 0 if match is not found.
- */
+ 
 static int cros_typec_get_cable_vdo(struct cros_typec_port *port, u16 svid)
 {
 	struct list_head *head = &port->plug_mode_list;
@@ -427,10 +403,7 @@ static int cros_typec_get_cable_vdo(struct cros_typec_port *port, u16 svid)
 	return ret;
 }
 
-/*
- * Spoof the VDOs that were likely communicated by the partner for TBT alt
- * mode.
- */
+ 
 static int cros_typec_enable_tbt(struct cros_typec_data *typec,
 				 int port_num,
 				 struct ec_response_usb_pd_control_v2 *pd_ctrl)
@@ -445,13 +418,13 @@ static int cros_typec_enable_tbt(struct cros_typec_data *typec,
 		return -ENOTSUPP;
 	}
 
-	/* Device Discover Mode VDO */
+	 
 	data.device_mode = TBT_MODE;
 
 	if (pd_ctrl->control_flags & USB_PD_CTRL_TBT_LEGACY_ADAPTER)
 		data.device_mode = TBT_SET_ADAPTER(TBT_ADAPTER_TBT3);
 
-	/* Cable Discover Mode VDO */
+	 
 	data.cable_mode = TBT_MODE;
 
 	data.cable_mode |= cros_typec_get_cable_vdo(port, USB_TYPEC_TBT_SID);
@@ -466,7 +439,7 @@ static int cros_typec_enable_tbt(struct cros_typec_data *typec,
 
 	data.cable_mode |= TBT_SET_CABLE_ROUNDED(pd_ctrl->cable_gen);
 
-	/* Enter Mode VDO */
+	 
 	data.enter_vdo = TBT_SET_CABLE_SPEED(pd_ctrl->cable_speed);
 
 	if (pd_ctrl->control_flags & USB_PD_CTRL_ACTIVE_CABLE)
@@ -485,7 +458,7 @@ static int cros_typec_enable_tbt(struct cros_typec_data *typec,
 	return typec_mux_set(port->mux, &port->state);
 }
 
-/* Spoof the VDOs that were likely communicated by the partner. */
+ 
 static int cros_typec_enable_dp(struct cros_typec_data *typec,
 				int port_num,
 				struct ec_response_usb_pd_control_v2 *pd_ctrl)
@@ -505,14 +478,14 @@ static int cros_typec_enable_dp(struct cros_typec_data *typec,
 		return -EINVAL;
 	}
 
-	/* Status VDO. */
+	 
 	dp_data.status = DP_STATUS_ENABLED;
 	if (port->mux_flags & USB_PD_MUX_HPD_IRQ)
 		dp_data.status |= DP_STATUS_IRQ_HPD;
 	if (port->mux_flags & USB_PD_MUX_HPD_LVL)
 		dp_data.status |= DP_STATUS_HPD_STATE;
 
-	/* Configuration VDO. */
+	 
 	dp_data.conf = DP_CONF_SET_PIN_ASSIGN(pd_ctrl->dp_mode);
 	if (!port->state.alt) {
 		port->state.alt = port->port_altmode[CROS_EC_ALTMODE_DP];
@@ -540,10 +513,10 @@ static int cros_typec_enable_usb4(struct cros_typec_data *typec,
 
 	data.eudo = EUDO_USB_MODE_USB4 << EUDO_USB_MODE_SHIFT;
 
-	/* Cable Speed */
+	 
 	data.eudo |= pd_ctrl->cable_speed << EUDO_CABLE_SPEED_SHIFT;
 
-	/* Cable Type */
+	 
 	if (pd_ctrl->control_flags & USB_PD_CTRL_OPTICAL_CABLE)
 		data.eudo |= EUDO_CABLE_TYPE_OPTICAL << EUDO_CABLE_TYPE_SHIFT;
 	else if (cros_typec_get_cable_vdo(port, USB_TYPEC_TBT_SID) & TBT_CABLE_RETIMER)
@@ -581,7 +554,7 @@ static int cros_typec_configure_mux(struct cros_typec_data *typec, int port_num,
 		return ret;
 	}
 
-	/* No change needs to be made, let's exit early. */
+	 
 	if (port->mux_flags == resp.flags && port->role == pd_ctrl->role)
 		return 0;
 
@@ -633,7 +606,7 @@ mux_ack:
 	if (!typec->needs_mux_ack)
 		return ret;
 
-	/* Sending Acknowledgment to EC */
+	 
 	mux_ack.port = port_num;
 
 	if (cros_ec_cmd(typec->ec, 0, EC_CMD_USB_PD_MUX_ACK, &mux_ack,
@@ -684,7 +657,7 @@ static void cros_typec_set_port_params_v1(struct cros_typec_data *typec,
 	typec_set_vconn_role(port, resp->role & PD_CTRL_RESP_ROLE_VCONN ?
 			TYPEC_SOURCE : TYPEC_SINK);
 
-	/* Register/remove partners when a connect/disconnect occurs. */
+	 
 	if (resp->enabled & PD_CTRL_RESP_ENABLED_CONNECTED) {
 		if (typec->ports[port_num]->partner)
 			return;
@@ -701,9 +674,7 @@ static void cros_typec_set_port_params_v1(struct cros_typec_data *typec,
 	}
 }
 
-/*
- * Helper function to register partner/plug altmodes.
- */
+ 
 static int cros_typec_register_altmodes(struct cros_typec_data *typec, int port_num,
 					bool is_partner)
 {
@@ -733,7 +704,7 @@ static int cros_typec_register_altmodes(struct cros_typec_data *typec, int port_
 				goto err_cleanup;
 			}
 
-			/* If no memory is available we should unregister and exit. */
+			 
 			node = devm_kzalloc(typec->dev, sizeof(*node), GFP_KERNEL);
 			if (!node) {
 				ret = -ENOMEM;
@@ -769,16 +740,13 @@ err_cleanup:
 	return ret;
 }
 
-/*
- * Parse the PD identity data from the EC PD discovery responses and copy that to the supplied
- * PD identity struct.
- */
+ 
 static void cros_typec_parse_pd_identity(struct usb_pd_identity *id,
 					 struct ec_response_typec_discovery *disc)
 {
 	int i;
 
-	/* First, update the PD identity VDOs for the partner. */
+	 
 	if (disc->identity_count > 0)
 		id->id_header = disc->discovery_vdo[0];
 	if (disc->identity_count > 1)
@@ -786,7 +754,7 @@ static void cros_typec_parse_pd_identity(struct usb_pd_identity *id,
 	if (disc->identity_count > 2)
 		id->product = disc->discovery_vdo[2];
 
-	/* Copy the remaining identity VDOs till a maximum of 6. */
+	 
 	for (i = 3; i < disc->identity_count && i < VDO_MAX_OBJECTS; i++)
 		id->vdo[i - 3] = disc->discovery_vdo[i];
 }
@@ -812,7 +780,7 @@ static int cros_typec_handle_sop_prime_disc(struct cros_typec_data *typec, int p
 		goto sop_prime_disc_exit;
 	}
 
-	/* Parse the PD identity data, even if only 0s were returned. */
+	 
 	cros_typec_parse_pd_identity(&port->c_identity, disc);
 
 	if (disc->identity_count != 0) {
@@ -937,7 +905,7 @@ static void cros_typec_register_partner_pdos(struct cros_typec_data *typec,
 	if (!port->partner || port->partner_pd)
 		return;
 
-	/* If no caps are available, don't bother creating a device. */
+	 
 	if (!resp->source_cap_count && !resp->sink_cap_count)
 		return;
 
@@ -980,7 +948,7 @@ static void cros_typec_handle_status(struct cros_typec_data *typec, int port_num
 		return;
 	}
 
-	/* If we got a hard reset, unregister everything and return. */
+	 
 	if (resp.events & PD_STATUS_EVENT_HARD_RESET) {
 		cros_typec_remove_partner(typec, port_num);
 		cros_typec_remove_cable(typec, port_num);
@@ -993,11 +961,11 @@ static void cros_typec_handle_status(struct cros_typec_data *typec, int port_num
 		return;
 	}
 
-	/* Handle any events appropriately. */
+	 
 	if (resp.events & PD_STATUS_EVENT_SOP_DISC_DONE && !typec->ports[port_num]->sop_disc_done) {
 		u16 sop_revision;
 
-		/* Convert BCD to the format preferred by the TypeC framework */
+		 
 		sop_revision = (le16_to_cpu(resp.sop_revision) & 0xff00) >> 4;
 		ret = cros_typec_handle_sop_disc(typec, port_num, sop_revision);
 		if (ret < 0)
@@ -1020,7 +988,7 @@ static void cros_typec_handle_status(struct cros_typec_data *typec, int port_num
 	    !typec->ports[port_num]->sop_prime_disc_done) {
 		u16 sop_prime_revision;
 
-		/* Convert BCD to the format preferred by the TypeC framework */
+		 
 		sop_prime_revision = (le16_to_cpu(resp.sop_prime_revision) & 0xff00) >> 4;
 		ret = cros_typec_handle_sop_prime_disc(typec, port_num, sop_prime_revision);
 		if (ret < 0)
@@ -1074,7 +1042,7 @@ static int cros_typec_port_update(struct cros_typec_data *typec, int port_num)
 	if (ret < 0)
 		return ret;
 
-	/* Update the switches if they exist, according to requested state */
+	 
 	ret = cros_typec_configure_mux(typec, port_num, &resp);
 	if (ret)
 		dev_warn(typec->dev, "Configure muxes failed, err = %d\n", ret);
@@ -1103,7 +1071,7 @@ static int cros_typec_get_cmd_version(struct cros_typec_data *typec)
 	struct ec_response_get_cmd_versions resp;
 	int ret;
 
-	/* We're interested in the PD control command version. */
+	 
 	req_v1.cmd = EC_CMD_USB_PD_CONTROL;
 	ret = cros_ec_cmd(typec->ec, 1, EC_CMD_GET_CMD_VERSIONS,
 			  &req_v1, sizeof(req_v1), &resp, sizeof(resp));
@@ -1216,10 +1184,7 @@ static int cros_typec_probe(struct platform_device *pdev)
 
 	INIT_WORK(&typec->port_work, cros_typec_port_work);
 
-	/*
-	 * Safe to call port update here, since we haven't registered the
-	 * PD notifier yet.
-	 */
+	 
 	for (i = 0; i < typec->num_ports; i++) {
 		ret = cros_typec_port_update(typec, i);
 		if (ret < 0)
@@ -1251,7 +1216,7 @@ static int __maybe_unused cros_typec_resume(struct device *dev)
 {
 	struct cros_typec_data *typec = dev_get_drvdata(dev);
 
-	/* Refresh port state. */
+	 
 	schedule_work(&typec->port_work);
 
 	return 0;

@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- *  Copyright (c) 2007 Jiri Kosina
- */
+ 
+ 
 #ifndef _HIDRAW_H
 #define _HIDRAW_H
 

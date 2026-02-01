@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Driver for NXP PN533 NFC Chip - I2C transport layer
- *
- * Copyright (C) 2011 Instituto Nokia de Tecnologia
- * Copyright (C) 2012-2013 Tieto Poland
- * Copyright (C) 2016 HALE electronic
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/kernel.h>
@@ -28,10 +22,7 @@ struct pn533_i2c_phy {
 
 	bool aborted;
 
-	int hard_fault;		/*
-				 * < 0 if hardware error occurred (e.g. i2c err)
-				 * and prevents normal operation.
-				 */
+	int hard_fault;		 
 };
 
 static int pn533_i2c_send_ack(struct pn533 *dev, gfp_t flags)
@@ -39,7 +30,7 @@ static int pn533_i2c_send_ack(struct pn533 *dev, gfp_t flags)
 	struct pn533_i2c_phy *phy = dev->phy;
 	struct i2c_client *client = phy->i2c_dev;
 	static const u8 ack[6] = {0x00, 0x00, 0xff, 0x00, 0xff, 0x00};
-	/* spec 6.2.1.3:  Preamble, SoPC (2), ACK Code (2), Postamble */
+	 
 
 	return i2c_master_send(client, ack, 6);
 }
@@ -64,7 +55,7 @@ static int pn533_i2c_send_frame(struct pn533 *dev,
 
 	rc = i2c_master_send(client, out->data, out->len);
 
-	if (rc == -EREMOTEIO) { /* Retry, chip was in power down */
+	if (rc == -EREMOTEIO) {  
 		usleep_range(6000, 10000);
 		rc = i2c_master_send(client, out->data, out->len);
 	}
@@ -85,10 +76,10 @@ static void pn533_i2c_abort_cmd(struct pn533 *dev, gfp_t flags)
 
 	phy->aborted = true;
 
-	/* An ack will cancel the last issued command */
+	 
 	pn533_i2c_send_ack(dev, flags);
 
-	/* schedule cmd_complete_work to finish current command execution */
+	 
 	pn533_recv_frame(phy->priv, NULL, -ENOENT);
 }
 
@@ -117,9 +108,9 @@ static int pn533_i2c_read(struct pn533_i2c_phy *phy, struct sk_buff **skb)
 		return -EBUSY;
 	}
 
-	/* remove READY byte */
+	 
 	skb_pull(*skb, 1);
-	/* trim to frame size */
+	 
 	skb_trim(*skb, phy->priv->ops->rx_frame_size((*skb)->data));
 
 	return 0;
@@ -238,10 +229,7 @@ static void pn533_i2c_remove(struct i2c_client *client)
 
 static const struct of_device_id of_pn533_i2c_match[] __maybe_unused = {
 	{ .compatible = "nxp,pn532", },
-	/*
-	 * NOTE: The use of the compatibles with the trailing "...-i2c" is
-	 * deprecated and will be removed.
-	 */
+	 
 	{ .compatible = "nxp,pn533-i2c", },
 	{ .compatible = "nxp,pn532-i2c", },
 	{},

@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 or Linux-OpenIB */
-/* Copyright (c) 2017 - 2021 Intel Corporation */
+ 
+ 
 #ifndef ICRDMA_HW_H
 #define ICRDMA_HW_H
 
@@ -16,7 +16,7 @@
 #define VFPE_AEQALLOC1		0x0000a400
 #define VFPE_CQPERRCODES1	0x00009c00
 #define VFPE_WQEALLOC1		0x0000c000
-#define VFINT_DYN_CTLN(_i)	(0x00003800 + ((_i) * 4)) /* _i=0...63 */
+#define VFINT_DYN_CTLN(_i)	(0x00003800 + ((_i) * 4))  
 
 #define PFPE_CQPTAIL		0x00500880
 #define PFPE_CQPDB		0x00500800
@@ -26,7 +26,7 @@
 #define PFPE_CQARM		0x00502c00
 #define PFPE_CQACK		0x00502c80
 #define PFPE_AEQALLOC		0x00502d00
-#define GLINT_DYN_CTL(_INT)	(0x00160000 + ((_INT) * 4)) /* _i=0...2047 */
+#define GLINT_DYN_CTL(_INT)	(0x00160000 + ((_INT) * 4))  
 #define GLPCI_LBARCTRL		0x0009de74
 #define GLPE_CPUSTATUS0		0x0050ba5c
 #define GLPE_CPUSTATUS1		0x0050ba60
@@ -34,18 +34,18 @@
 #define PFINT_AEQCTL		0x0016cb00
 #define PFPE_CQPERRCODES	0x0050a200
 #define PFPE_WQEALLOC		0x00504400
-#define GLINT_CEQCTL(_INT)	(0x0015c000 + ((_INT) * 4)) /* _i=0...2047 */
-#define VSIQF_PE_CTL1(_VSI)	(0x00414000 + ((_VSI) * 4)) /* _i=0...767 */
+#define GLINT_CEQCTL(_INT)	(0x0015c000 + ((_INT) * 4))  
+#define VSIQF_PE_CTL1(_VSI)	(0x00414000 + ((_VSI) * 4))  
 #define PFHMC_PDINV		0x00520300
-#define GLHMC_VFPDINV(_i)	(0x00528300 + ((_i) * 4)) /* _i=0...31 */
+#define GLHMC_VFPDINV(_i)	(0x00528300 + ((_i) * 4))  
 #define GLPE_CRITERR		0x00534000
-#define GLINT_RATE(_INT)	(0x0015A000 + ((_INT) * 4)) /* _i=0...2047 */ /* Reset Source: CORER */
+#define GLINT_RATE(_INT)	(0x0015A000 + ((_INT) * 4))    
 
 #define ICRDMA_DB_ADDR_OFFSET		(8 * 1024 * 1024 - 64 * 1024)
 
 #define ICRDMA_VF_DB_ADDR_OFFSET	(64 * 1024)
 
-/* shifts/masks for FLD_[LS/RS]_64 macros used in device table */
+ 
 #define ICRDMA_CCQPSTATUS_CCQP_DONE_S 0
 #define ICRDMA_CCQPSTATUS_CCQP_DONE BIT_ULL(0)
 #define ICRDMA_CCQPSTATUS_CCQP_ERR_S 31
@@ -64,9 +64,9 @@ enum icrdma_device_caps_const {
 
 	ICRDMA_MAX_IRD_SIZE			= 127,
 	ICRDMA_MAX_ORD_SIZE			= 255,
-	ICRDMA_MIN_WQ_SIZE                      = 8 /* WQEs */,
+	ICRDMA_MIN_WQ_SIZE                      = 8  ,
 
 };
 
 void icrdma_init_hw(struct irdma_sc_dev *dev);
-#endif /* ICRDMA_HW_H*/
+#endif  

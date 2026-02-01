@@ -1,26 +1,4 @@
-/* Key type used to cache DNS lookups made by the kernel
- *
- * See Documentation/networking/dns_resolver.rst
- *
- *   Copyright (c) 2007 Igor Mammedov
- *   Author(s): Igor Mammedov (niallain@gmail.com)
- *              Steve French (sfrench@us.ibm.com)
- *              Wang Lei (wang840925@gmail.com)
- *		David Howells (dhowells@redhat.com)
- *
- *   This library is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU Lesser General Public License as published
- *   by the Free Software Foundation; either version 2.1 of the License, or
- *   (at your option) any later version.
- *
- *   This library is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
- *   the GNU Lesser General Public License for more details.
- *
- *   You should have received a copy of the GNU Lesser General Public License
- *   along with this library; if not, see <http://www.gnu.org/licenses/>.
- */
+ 
 #include <linux/module.h>
 #include <linux/moduleparam.h>
 #include <linux/slab.h>
@@ -46,48 +24,7 @@ const struct cred *dns_resolver_cache;
 
 #define	DNS_ERRORNO_OPTION	"dnserror"
 
-/*
- * Preparse instantiation data for a dns_resolver key.
- *
- * For normal hostname lookups, the data must be a NUL-terminated string, with
- * the NUL char accounted in datalen.
- *
- * If the data contains a '#' characters, then we take the clause after each
- * one to be an option of the form 'key=value'.  The actual data of interest is
- * the string leading up to the first '#'.  For instance:
- *
- *        "ip1,ip2,...#foo=bar"
- *
- * For server list requests, the data must begin with a NUL char and be
- * followed by a byte indicating the version of the data format.  Version 1
- * looks something like (note this is packed):
- *
- *	u8      Non-string marker (ie. 0)
- *	u8	Content (DNS_PAYLOAD_IS_*)
- *	u8	Version (e.g. 1)
- *	u8	Source of server list
- *	u8	Lookup status of server list
- *	u8	Number of servers
- *	foreach-server {
- *		__le16	Name length
- *		__le16	Priority (as per SRV record, low first)
- *		__le16	Weight (as per SRV record, higher first)
- *		__le16	Port
- *		u8	Source of address list
- *		u8	Lookup status of address list
- *		u8	Protocol (DNS_SERVER_PROTOCOL_*)
- *		u8	Number of addresses
- *		char[]	Name (not NUL-terminated)
- *		foreach-address {
- *			u8		Family (DNS_ADDRESS_IS_*)
- *			union {
- *				u8[4]	ipv4_addr
- *				u8[16]	ipv6_addr
- *			}
- *		}
- *	}
- *
- */
+ 
 static int
 dns_resolver_preparse(struct key_preparsed_payload *prep)
 {
@@ -103,7 +40,7 @@ dns_resolver_preparse(struct key_preparsed_payload *prep)
 	if (data[0] == 0) {
 		const struct dns_server_list_v1_header *v1;
 
-		/* It may be a server list. */
+		 
 		if (datalen < sizeof(*v1))
 			return -EINVAL;
 
@@ -139,11 +76,11 @@ dns_resolver_preparse(struct key_preparsed_payload *prep)
 		return -EINVAL;
 	datalen--;
 
-	/* deal with any options embedded in the data */
+	 
 	end = data + datalen;
 	opt = memchr(data, '#', datalen);
 	if (!opt) {
-		/* no options: the entire data is the result */
+		 
 		kdebug("no options");
 		result_len = datalen;
 	} else {
@@ -179,8 +116,7 @@ dns_resolver_preparse(struct key_preparsed_payload *prep)
 			kdebug("option '%*.*s' val '%s'",
 			       opt_nlen, opt_nlen, opt, optval);
 
-			/* see if it's an error number representing a DNS error
-			 * that's to be recorded as the result in this key */
+			 
 			if (opt_nlen == sizeof(DNS_ERRORNO_OPTION) - 1 &&
 			    memcmp(opt, DNS_ERRORNO_OPTION, opt_nlen) == 0) {
 				kdebug("dns error number option");
@@ -204,8 +140,7 @@ dns_resolver_preparse(struct key_preparsed_payload *prep)
 		} while (opt = next_opt + 1, opt < end);
 	}
 
-	/* don't cache the result if we're caching an error saying there's no
-	 * result */
+	 
 	if (prep->payload.data[dns_key_error]) {
 		kleave(" = 0 [h_error %ld]", PTR_ERR(prep->payload.data[dns_key_error]));
 		return 0;
@@ -230,9 +165,7 @@ store_result:
 	return 0;
 }
 
-/*
- * Clean up the preparse data
- */
+ 
 static void dns_resolver_free_preparse(struct key_preparsed_payload *prep)
 {
 	pr_devel("==>%s()\n", __func__);
@@ -240,12 +173,7 @@ static void dns_resolver_free_preparse(struct key_preparsed_payload *prep)
 	kfree(prep->payload.data[dns_key_data]);
 }
 
-/*
- * The description is of the form "[<type>:]<domain_name>"
- *
- * The domain name may be a simple name or an absolute domain name (which
- * should end with a period).  The domain name is case-independent.
- */
+ 
 static bool dns_resolver_cmp(const struct key *key,
 			     const struct key_match_data *match_data)
 {
@@ -278,9 +206,7 @@ no_match:
 	return ret;
 }
 
-/*
- * Preparse the match criterion.
- */
+ 
 static int dns_resolver_match_preparse(struct key_match_data *match_data)
 {
 	match_data->lookup_type = KEYRING_SEARCH_LOOKUP_ITERATE;
@@ -288,9 +214,7 @@ static int dns_resolver_match_preparse(struct key_match_data *match_data)
 	return 0;
 }
 
-/*
- * Describe a DNS key
- */
+ 
 static void dns_resolver_describe(const struct key *key, struct seq_file *m)
 {
 	seq_puts(m, key->description);
@@ -304,10 +228,7 @@ static void dns_resolver_describe(const struct key *key, struct seq_file *m)
 	}
 }
 
-/*
- * read the DNS data
- * - the key's semaphore is read-locked
- */
+ 
 static long dns_resolver_read(const struct key *key,
 			      char *buffer, size_t buflen)
 {
@@ -338,12 +259,7 @@ static int __init init_dns_resolver(void)
 	struct key *keyring;
 	int ret;
 
-	/* create an override credential set with a special thread keyring in
-	 * which DNS requests are cached
-	 *
-	 * this is used to prevent malicious redirections from being installed
-	 * with add_key().
-	 */
+	 
 	cred = prepare_kernel_cred(&init_task);
 	if (!cred)
 		return -ENOMEM;
@@ -362,8 +278,7 @@ static int __init init_dns_resolver(void)
 	if (ret < 0)
 		goto failed_put_key;
 
-	/* instruct request_key() to use this special keyring as a cache for
-	 * the results it looks up */
+	 
 	set_bit(KEY_FLAG_ROOT_CAN_CLEAR, &keyring->flags);
 	cred->thread_keyring = keyring;
 	cred->jit_keyring = KEY_REQKEY_DEFL_THREAD_KEYRING;

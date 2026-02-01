@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2014-2021 Intel Corporation
- */
+ 
+ 
 
 #ifndef _ABI_GUC_ERRORS_ABI_H
 #define _ABI_GUC_ERRORS_ABI_H
@@ -56,4 +54,4 @@ enum intel_bootrom_load_status {
 	INTEL_BOOTROM_STATUS_EXCEPTION                    = 0x7E,
 };
 
-#endif /* _ABI_GUC_ERRORS_ABI_H */
+#endif  

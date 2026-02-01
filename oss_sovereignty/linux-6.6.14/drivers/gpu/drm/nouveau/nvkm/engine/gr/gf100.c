@@ -1,26 +1,4 @@
-/*
- * Copyright 2012 Red Hat Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: Ben Skeggs
- */
+ 
 #include "gf100.h"
 #include "ctxgf100.h"
 #include "fuc/os.h"
@@ -41,9 +19,7 @@
 #include <nvif/if900d.h>
 #include <nvif/unpack.h>
 
-/*******************************************************************************
- * Zero Bandwidth Clear
- ******************************************************************************/
+ 
 
 static void
 gf100_gr_zbc_clear_color(struct gf100_gr *gr, int zbc)
@@ -57,7 +33,7 @@ gf100_gr_zbc_clear_color(struct gf100_gr *gr, int zbc)
 	}
 	nvkm_wr32(device, 0x405814, gr->zbc_color[zbc].format);
 	nvkm_wr32(device, 0x405820, zbc);
-	nvkm_wr32(device, 0x405824, 0x00000004); /* TRIGGER | WRITE | COLOR */
+	nvkm_wr32(device, 0x405824, 0x00000004);  
 }
 
 static int
@@ -104,7 +80,7 @@ gf100_gr_zbc_clear_depth(struct gf100_gr *gr, int zbc)
 		nvkm_wr32(device, 0x405818, gr->zbc_depth[zbc].ds);
 	nvkm_wr32(device, 0x40581c, gr->zbc_depth[zbc].format);
 	nvkm_wr32(device, 0x405820, zbc);
-	nvkm_wr32(device, 0x405824, 0x00000005); /* TRIGGER | WRITE | DEPTH */
+	nvkm_wr32(device, 0x405824, 0x00000005);  
 }
 
 static int
@@ -147,9 +123,7 @@ gf100_gr_zbc = {
 	.clear_depth = gf100_gr_zbc_clear_depth,
 };
 
-/*******************************************************************************
- * Graphics object classes
- ******************************************************************************/
+ 
 #define gf100_gr_object(p) container_of((p), struct gf100_gr_object, object)
 
 struct gf100_gr_object {
@@ -312,9 +286,7 @@ gf100_gr_object_get(struct nvkm_gr *base, int index, struct nvkm_sclass *sclass)
 	return c;
 }
 
-/*******************************************************************************
- * PGRAPH context
- ******************************************************************************/
+ 
 
 static int
 gf100_gr_chan_bind(struct nvkm_object *object, struct nvkm_gpuobj *parent,
@@ -391,7 +363,7 @@ gf100_gr_chan_new(struct nvkm_gr *base, struct nvkm_chan *fifoch,
 	chan->vmm = nvkm_vmm_ref(fifoch->vmm);
 	*pobject = &chan->object;
 
-	/* Map pagepool. */
+	 
 	ret = nvkm_vmm_get(chan->vmm, 12, nvkm_memory_size(gr->pagepool), &chan->pagepool);
 	if (ret)
 		return ret;
@@ -400,7 +372,7 @@ gf100_gr_chan_new(struct nvkm_gr *base, struct nvkm_chan *fifoch,
 	if (ret)
 		return ret;
 
-	/* Map bundle circular buffer. */
+	 
 	ret = nvkm_vmm_get(chan->vmm, 12, nvkm_memory_size(gr->bundle_cb), &chan->bundle_cb);
 	if (ret)
 		return ret;
@@ -409,7 +381,7 @@ gf100_gr_chan_new(struct nvkm_gr *base, struct nvkm_chan *fifoch,
 	if (ret)
 		return ret;
 
-	/* Map attribute circular buffer. */
+	 
 	ret = nvkm_vmm_get(chan->vmm, 12, nvkm_memory_size(gr->attrib_cb), &chan->attrib_cb);
 	if (ret)
 		return ret;
@@ -425,7 +397,7 @@ gf100_gr_chan_new(struct nvkm_gr *base, struct nvkm_chan *fifoch,
 			return ret;
 	}
 
-	/* Map some context buffer of unknown purpose. */
+	 
 	if (gr->func->grctx->unknown_size) {
 		ret = nvkm_vmm_get(chan->vmm, 12, nvkm_memory_size(gr->unknown), &chan->unknown);
 		if (ret)
@@ -437,7 +409,7 @@ gf100_gr_chan_new(struct nvkm_gr *base, struct nvkm_chan *fifoch,
 			return ret;
 	}
 
-	/* Generate golden context image. */
+	 
 	mutex_lock(&gr->fecs.mutex);
 	if (gr->data == NULL) {
 		ret = gf100_grctx_generate(gr, chan, fifoch->inst);
@@ -448,10 +420,7 @@ gf100_gr_chan_new(struct nvkm_gr *base, struct nvkm_chan *fifoch,
 	}
 	mutex_unlock(&gr->fecs.mutex);
 
-	/* allocate memory for a "mmio list" buffer that's used by the HUB
-	 * fuc to modify some per-context register settings on first load
-	 * of the context.
-	 */
+	 
 	ret = nvkm_memory_new(device, NVKM_MEM_TARGET_INST, 0x1000, 0x100,
 			      false, &chan->mmio);
 	if (ret)
@@ -466,7 +435,7 @@ gf100_gr_chan_new(struct nvkm_gr *base, struct nvkm_chan *fifoch,
 	if (ret)
 		return ret;
 
-	/* finally, fill in the mmio list and point the context at it */
+	 
 	nvkm_kmap(chan->mmio);
 	gr->func->grctx->pagepool(chan, chan->pagepool->addr);
 	gr->func->grctx->bundle(chan, chan->bundle_cb->addr, gr->func->grctx->bundle_size);
@@ -480,9 +449,7 @@ gf100_gr_chan_new(struct nvkm_gr *base, struct nvkm_chan *fifoch,
 	return 0;
 }
 
-/*******************************************************************************
- * PGRAPH register lists
- ******************************************************************************/
+ 
 
 const struct gf100_gr_init
 gf100_gr_init_main_0[] = {
@@ -736,9 +703,7 @@ gf100_gr_pack_mmio[] = {
 	{}
 };
 
-/*******************************************************************************
- * PGRAPH engine/subdev functions
- ******************************************************************************/
+ 
 
 static u32
 gf100_gr_ctxsw_inst(struct nvkm_gr *gr)
@@ -908,10 +873,7 @@ gf100_gr_fecs_elpg_bind(struct gf100_gr *gr)
 	if (ret)
 		return ret;
 
-	/*XXX: We need to allocate + map the above into PMU's inst block,
-	 *     which which means we probably need a proper PMU before we
-	 *     even bother.
-	 */
+	 
 
 	ret = gf100_gr_fecs_set_reglist_bind_instance(gr, 0);
 	if (ret)
@@ -1040,11 +1002,7 @@ gf100_gr_zbc_init(struct gf100_gr *gr)
 	}
 }
 
-/**
- * Wait until GR goes idle. GR is considered idle if it is disabled by the
- * MC (0x200) register, or GR is not busy and a context switch is not in
- * progress.
- */
+ 
 int
 gf100_gr_wait_idle(struct gf100_gr *gr)
 {
@@ -1054,10 +1012,7 @@ gf100_gr_wait_idle(struct gf100_gr *gr)
 	bool gr_enabled, ctxsw_active, gr_busy;
 
 	do {
-		/*
-		 * required to make sure FIFO_ENGINE_STATUS (0x2640) is
-		 * up-to-date
-		 */
+		 
 		nvkm_rd32(device, 0x400700);
 
 		gr_enabled = nvkm_rd32(device, 0x200) & 0x1000;
@@ -1114,10 +1069,7 @@ gf100_gr_icmd(struct gf100_gr *gr, const struct gf100_gr_pack *p)
 
 		while (addr < next) {
 			nvkm_wr32(device, 0x400200, addr);
-			/**
-			 * Wait for GR to go idle after submitting a
-			 * GO_IDLE bundle
-			 */
+			 
 			if ((addr & 0xffff) == 0xe100)
 				gf100_gr_wait_idle(gr);
 			nvkm_msec(device, 2000,
@@ -1633,10 +1585,7 @@ gf100_gr_intr(struct nvkm_inth *inth)
 		class = 0x0000;
 
 	if (stat & 0x00000001) {
-		/*
-		 * notifier interrupt, only needed for cyclestats
-		 * can be safely ignored
-		 */
+		 
 		nvkm_wr32(device, 0x400100, 0x00000001);
 		stat &= ~0x00000001;
 	}
@@ -1745,7 +1694,7 @@ gf100_gr_init_csdata(struct gf100_gr *gr,
 	nvkm_wr32(device, falcon + 0x01c4, star + 4);
 }
 
-/* Initialize context from an external (secure or not) firmware */
+ 
 static int
 gf100_gr_init_ctxctl_ext(struct gf100_gr *gr)
 {
@@ -1754,10 +1703,10 @@ gf100_gr_init_ctxctl_ext(struct gf100_gr *gr)
 	u32 lsf_mask = 0;
 	int ret;
 
-	/* load fuc microcode */
+	 
 	nvkm_mc_unk260(device, 0);
 
-	/* securely-managed falcons must be reset using secure boot */
+	 
 
 	if (!nvkm_acr_managed_falcon(device, NVKM_ACR_LSF_FECS)) {
 		gf100_gr_init_fw(&gr->fecs.falcon, &gr->fecs.inst,
@@ -1781,7 +1730,7 @@ gf100_gr_init_ctxctl_ext(struct gf100_gr *gr)
 
 	nvkm_mc_unk260(device, 1);
 
-	/* start both of them running */
+	 
 	nvkm_wr32(device, 0x409800, 0x00000000);
 	nvkm_wr32(device, 0x41a10c, 0x00000000);
 	nvkm_wr32(device, 0x40910c, 0x00000000);
@@ -1797,27 +1746,22 @@ gf100_gr_init_ctxctl_ext(struct gf100_gr *gr)
 
 	gf100_gr_fecs_set_watchdog_timeout(gr, 0x7fffffff);
 
-	/* Determine how much memory is required to store main context image. */
+	 
 	ret = gf100_gr_fecs_discover_image_size(gr, &gr->size);
 	if (ret)
 		return ret;
 
-	/* Determine how much memory is required to store ZCULL image. */
+	 
 	ret = gf100_gr_fecs_discover_zcull_image_size(gr, &gr->size_zcull);
 	if (ret)
 		return ret;
 
-	/* Determine how much memory is required to store PerfMon image. */
+	 
 	ret = gf100_gr_fecs_discover_pm_image_size(gr, &gr->size_pm);
 	if (ret)
 		return ret;
 
-	/*XXX: We (likely) require PMU support to even bother with this.
-	 *
-	 *     Also, it seems like not all GPUs support ELPG.  Traces I
-	 *     have here show RM enabling it on Kepler/Turing, but none
-	 *     of the GPUs between those.  NVGPU decides this by PCIID.
-	 */
+	 
 	if (0) {
 		ret = gf100_gr_fecs_elpg_bind(gr);
 		if (ret)
@@ -1838,7 +1782,7 @@ gf100_gr_init_ctxctl_int(struct gf100_gr *gr)
 		return -ENOSYS;
 	}
 
-	/* load HUB microcode */
+	 
 	nvkm_mc_unk260(device, 0);
 	nvkm_falcon_load_dmem(&gr->fecs.falcon,
 			      gr->func->fecs.ucode->data.data, 0x0,
@@ -1847,7 +1791,7 @@ gf100_gr_init_ctxctl_int(struct gf100_gr *gr)
 			      gr->func->fecs.ucode->code.data, 0x0,
 			      gr->func->fecs.ucode->code.size, 0, 0, false);
 
-	/* load GPC microcode */
+	 
 	nvkm_falcon_load_dmem(&gr->gpccs.falcon,
 			      gr->func->gpccs.ucode->data.data, 0x0,
 			      gr->func->gpccs.ucode->data.size, 0);
@@ -1856,14 +1800,14 @@ gf100_gr_init_ctxctl_int(struct gf100_gr *gr)
 			      gr->func->gpccs.ucode->code.size, 0, 0, false);
 	nvkm_mc_unk260(device, 1);
 
-	/* load register lists */
+	 
 	gf100_gr_init_csdata(gr, grctx->hub, 0x409000, 0x000, 0x000000);
 	gf100_gr_init_csdata(gr, grctx->gpc_0, 0x41a000, 0x000, 0x418000);
 	gf100_gr_init_csdata(gr, grctx->gpc_1, 0x41a000, 0x000, 0x418000);
 	gf100_gr_init_csdata(gr, grctx->tpc, 0x41a000, 0x004, 0x419800);
 	gf100_gr_init_csdata(gr, grctx->ppc, 0x41a000, 0x008, 0x41be00);
 
-	/* start HUB ucode running, it'll init the GPCs */
+	 
 	nvkm_wr32(device, 0x40910c, 0x00000000);
 	nvkm_wr32(device, 0x409100, 0x00000002);
 	if (nvkm_msec(device, 2000,
@@ -1941,7 +1885,7 @@ gf100_gr_oneinit_tiles(struct gf100_gr *gr)
 		break;
 	}
 
-	/* Sort GPCs by TPC count, highest-to-lowest. */
+	 
 	for (i = 0; i < gr->gpc_nr; i++)
 		gpc_map[i] = i;
 	sorted = false;
@@ -1958,7 +1902,7 @@ gf100_gr_oneinit_tiles(struct gf100_gr *gr)
 		}
 	}
 
-	/* Determine tile->GPC mapping */
+	 
 	mul_factor = gr->gpc_nr * gr->tpc_max;
 	if (mul_factor & 1)
 		mul_factor = 2;
@@ -2031,7 +1975,7 @@ gf100_gr_oneinit(struct nvkm_gr *base)
 		gr->ppc_total += gr->ppc_nr[i];
 	}
 
-	/* Allocate global context buffers. */
+	 
 	ret = nvkm_memory_new(device, NVKM_MEM_TARGET_INST, gr->func->grctx->pagepool_size,
 			      0x100, false, &gr->pagepool);
 	if (ret)
@@ -2069,21 +2013,7 @@ gf100_gr_init_(struct nvkm_gr *base)
 	bool reset = device->chipset == 0x137 || device->chipset == 0x138;
 	int ret;
 
-	/* On certain GP107/GP108 boards, we trigger a weird issue where
-	 * GR will stop responding to PRI accesses after we've asked the
-	 * SEC2 RTOS to boot the GR falcons.  This happens with far more
-	 * frequency when cold-booting a board (ie. returning from D3).
-	 *
-	 * The root cause for this is not known and has proven difficult
-	 * to isolate, with many avenues being dead-ends.
-	 *
-	 * A workaround was discovered by Karol, whereby putting GR into
-	 * reset for an extended period right before initialisation
-	 * prevents the problem from occuring.
-	 *
-	 * XXX: As RM does not require any such workaround, this is more
-	 *      of a hack than a true fix.
-	 */
+	 
 	reset = nvkm_boolopt(device->cfgopt, "NvGrResetWar", reset);
 	if (reset) {
 		nvkm_mask(device, 0x000200, 0x00001000, 0x00000000);

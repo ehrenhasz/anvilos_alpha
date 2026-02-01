@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Firmware loading and handling functions.
- */
+
+ 
 
 #include <linux/sched.h>
 #include <linux/firmware.h>
@@ -19,7 +17,7 @@ static void lbs_fw_loaded(struct lbs_private *priv, int ret,
 
 	lbs_deb_fw("firmware load complete, code %d\n", ret);
 
-	/* User must free helper/mainfw */
+	 
 	priv->fw_callback(priv, ret, helper, mainfw);
 
 	spin_lock_irqsave(&priv->driver_lock, flags);
@@ -47,12 +45,12 @@ static void main_firmware_cb(const struct firmware *firmware, void *context)
 	struct lbs_private *priv = context;
 
 	if (!firmware) {
-		/* Failed to find firmware: try next table entry */
+		 
 		load_next_firmware_from_table(priv);
 		return;
 	}
 
-	/* Firmware found! */
+	 
 	lbs_fw_loaded(priv, 0, priv->helper_fw, firmware);
 	if (priv->helper_fw) {
 		release_firmware (priv->helper_fw);
@@ -66,17 +64,17 @@ static void helper_firmware_cb(const struct firmware *firmware, void *context)
 	struct lbs_private *priv = context;
 
 	if (!firmware) {
-		/* Failed to find firmware: try next table entry */
+		 
 		load_next_firmware_from_table(priv);
 		return;
 	}
 
-	/* Firmware found! */
+	 
 	if (priv->fw_iter->fwname) {
 		priv->helper_fw = firmware;
 		do_load_firmware(priv, priv->fw_iter->fwname, main_firmware_cb);
 	} else {
-		/* No main firmware needed for this helper --> success! */
+		 
 		lbs_fw_loaded(priv, 0, firmware, NULL);
 	}
 }
@@ -97,7 +95,7 @@ static void load_next_firmware_from_table(struct lbs_private *priv)
 
 next:
 	if (!iter->helper) {
-		/* End of table hit. */
+		 
 		lbs_fw_loaded(priv, -ENOENT, NULL, NULL);
 		return;
 	}
@@ -116,18 +114,7 @@ void lbs_wait_for_firmware_load(struct lbs_private *priv)
 	wait_event(priv->fw_waitq, priv->fw_callback == NULL);
 }
 
-/**
- *  lbs_get_firmware_async - Retrieves firmware asynchronously. Can load
- *  either a helper firmware and a main firmware (2-stage), or just the helper.
- *
- *  @priv:      Pointer to lbs_private instance
- *  @device:   	A pointer to &device structure
- *  @card_model: Bus-specific card model ID used to filter firmware table
- *		elements
- *  @fw_table:	Table of firmware file names and device model numbers
- *		terminated by an entry with a NULL helper name
- *  @callback:	User callback to invoke when firmware load succeeds or fails.
- */
+ 
 int lbs_get_firmware_async(struct lbs_private *priv, struct device *device,
 			    u32 card_model, const struct lbs_fw_table *fw_table,
 			    lbs_fw_cb callback)
@@ -154,21 +141,7 @@ int lbs_get_firmware_async(struct lbs_private *priv, struct device *device,
 }
 EXPORT_SYMBOL_GPL(lbs_get_firmware_async);
 
-/**
- *  lbs_get_firmware - Retrieves two-stage firmware
- *
- *  @dev:     	A pointer to &device structure
- *  @card_model: Bus-specific card model ID used to filter firmware table
- *		elements
- *  @fw_table:	Table of firmware file names and device model numbers
- *		terminated by an entry with a NULL helper name
- *  @helper:	On success, the helper firmware; caller must free
- *  @mainfw:	On success, the main firmware; caller must free
- *
- * Deprecated: use lbs_get_firmware_async() instead.
- *
- *  returns:		0 on success, non-zero on failure
- */
+ 
 int lbs_get_firmware(struct device *dev, u32 card_model,
 			const struct lbs_fw_table *fw_table,
 			const struct firmware **helper,
@@ -180,7 +153,7 @@ int lbs_get_firmware(struct device *dev, u32 card_model,
 	BUG_ON(helper == NULL);
 	BUG_ON(mainfw == NULL);
 
-	/* Search for firmware to use from the table. */
+	 
 	iter = fw_table;
 	while (iter && iter->helper) {
 		if (iter->model != card_model)
@@ -191,10 +164,7 @@ int lbs_get_firmware(struct device *dev, u32 card_model,
 			if (ret)
 				goto next;
 
-			/* If the device has one-stage firmware (ie cf8305) and
-			 * we've got it then we don't need to bother with the
-			 * main firmware.
-			 */
+			 
 			if (iter->fwname == NULL)
 				return 0;
 		}
@@ -202,9 +172,7 @@ int lbs_get_firmware(struct device *dev, u32 card_model,
 		if (*mainfw == NULL) {
 			ret = request_firmware(mainfw, iter->fwname, dev);
 			if (ret) {
-				/* Clear the helper to ensure we don't have
-				 * mismatched firmware pairs.
-				 */
+				 
 				release_firmware(*helper);
 				*helper = NULL;
 			}
@@ -217,7 +185,7 @@ int lbs_get_firmware(struct device *dev, u32 card_model,
 		iter++;
 	}
 
-	/* Failed */
+	 
 	release_firmware(*helper);
 	*helper = NULL;
 	release_firmware(*mainfw);

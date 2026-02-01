@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Driver for Amlogic A1 SPI flash controller (SPIFC)
- *
- * Copyright (c) 2023, SberDevices. All Rights Reserved.
- *
- * Author: Martin Kurbanov <mmkurbanov@sberdevices.ru>
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/clk.h>
@@ -404,7 +398,7 @@ static int amlogic_spifc_a1_resume(struct device *dev)
 
 	return ret;
 }
-#endif /* CONFIG_PM_SLEEP */
+#endif  
 
 #ifdef CONFIG_PM
 static int amlogic_spifc_a1_runtime_suspend(struct device *dev)
@@ -427,7 +421,7 @@ static int amlogic_spifc_a1_runtime_resume(struct device *dev)
 
 	return ret;
 }
-#endif /* CONFIG_PM */
+#endif  
 
 static const struct dev_pm_ops amlogic_spifc_a1_pm_ops = {
 	SET_SYSTEM_SLEEP_PM_OPS(amlogic_spifc_a1_suspend,
@@ -443,7 +437,7 @@ static const struct of_device_id amlogic_spifc_a1_dt_match[] = {
 	{ },
 };
 MODULE_DEVICE_TABLE(of, amlogic_spifc_a1_dt_match);
-#endif /* CONFIG_OF */
+#endif  
 
 static struct platform_driver amlogic_spifc_a1_driver = {
 	.probe	= amlogic_spifc_a1_probe,

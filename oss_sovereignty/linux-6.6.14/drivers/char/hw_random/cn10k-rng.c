@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Marvell CN10K RVU Hardware Random Number Generator.
- *
- * Copyright (C) 2021 Marvell.
- *
- */
+
+ 
 
 #include <linux/hw_random.h>
 #include <linux/io.h>
@@ -14,7 +10,7 @@
 
 #include <linux/arm-smccc.h>
 
-/* CSRs */
+ 
 #define RNM_CTL_STATUS		0x000
 #define RNM_ENTROPY_STATUS	0x008
 #define RNM_CONST		0x030
@@ -23,7 +19,7 @@
 #define RNM_PF_RANDOM		0x400
 #define RNM_TRNG_RESULT		0x408
 
-/* Extended TRNG Read and Status Registers */
+ 
 #define RNM_PF_TRNG_DAT		0x1000
 #define RNM_PF_TRNG_RES		0x1008
 
@@ -31,9 +27,7 @@ struct cn10k_rng {
 	void __iomem *reg_base;
 	struct hwrng ops;
 	struct pci_dev *pdev;
-	/* Octeon CN10K-A A0/A1, CNF10K-A A0/A1 and CNF10K-B A0/B0
-	 * does not support extended TRNG registers
-	 */
+	 
 	bool extended_trng_regs;
 };
 
@@ -45,19 +39,19 @@ struct cn10k_rng {
 
 static bool cn10k_is_extended_trng_regs_supported(struct pci_dev *pdev)
 {
-	/* CN10K-A A0/A1 */
+	 
 	if ((pdev->subsystem_device == PCI_SUBSYS_DEVID_CN10K_A_RNG) &&
 	    (!pdev->revision || (pdev->revision & 0xff) == 0x50 ||
 	     (pdev->revision & 0xff) == 0x51))
 		return false;
 
-	/* CNF10K-A A0 */
+	 
 	if ((pdev->subsystem_device == PCI_SUBSYS_DEVID_CNF10K_A_RNG) &&
 	    (!pdev->revision || (pdev->revision & 0xff) == 0x60 ||
 	     (pdev->revision & 0xff) == 0x61))
 		return false;
 
-	/* CNF10K-B A0/B0 */
+	 
 	if ((pdev->subsystem_device == PCI_SUBSYS_DEVID_CNF10K_B_RNG) &&
 	    (!pdev->revision || (pdev->revision & 0xff) == 0x70 ||
 	     (pdev->revision & 0xff) == 0x74))
@@ -70,7 +64,7 @@ static unsigned long reset_rng_health_state(struct cn10k_rng *rng)
 {
 	struct arm_smccc_res res;
 
-	/* Send SMC service call to reset EBG health state */
+	 
 	arm_smccc_smc(PLAT_OCTEONTX_RESET_RNG_EBG_HEALTH_STATE, 0, 0, 0, 0, 0, 0, 0, &res);
 	return res.a0;
 }
@@ -80,7 +74,7 @@ static int check_rng_health(struct cn10k_rng *rng)
 	u64 status;
 	unsigned long err;
 
-	/* Skip checking health */
+	 
 	if (!rng->reg_base)
 		return -ENODEV;
 
@@ -98,7 +92,7 @@ static int check_rng_health(struct cn10k_rng *rng)
 	return 0;
 }
 
-/* Returns true when valid data available otherwise return false */
+ 
 static bool cn10k_read_trng(struct cn10k_rng *rng, u64 *value)
 {
 	u16 retry_count = 0;
@@ -118,9 +112,7 @@ static bool cn10k_read_trng(struct cn10k_rng *rng, u64 *value)
 
 	*value = readq(rng->reg_base + RNM_PF_RANDOM);
 
-	/* HW can run out of entropy if large amount random data is read in
-	 * quick succession. Zeros may not be real random data from HW.
-	 */
+	 
 	if (!*value) {
 		upper = readq(rng->reg_base + RNM_PF_RANDOM);
 		lower = readq(rng->reg_base + RNM_PF_RANDOM);
@@ -210,7 +202,7 @@ static int cn10k_rng_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 }
 
 static const struct pci_device_id cn10k_rng_id_table[] = {
-	{ PCI_DEVICE(PCI_VENDOR_ID_CAVIUM, 0xA098) }, /* RNG PF */
+	{ PCI_DEVICE(PCI_VENDOR_ID_CAVIUM, 0xA098) },  
 	{0,},
 };
 

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/**************************************************************************
- * Copyright (c) 2007, Intel Corporation.
- *
- **************************************************************************/
+
+ 
 
 #include <linux/highmem.h>
 
@@ -10,33 +7,13 @@
 #include "psb_drv.h"
 #include "psb_reg.h"
 
-/*
- * Code for the SGX MMU:
- */
+ 
 
-/*
- * clflush on one processor only:
- * clflush should apparently flush the cache line on all processors in an
- * SMP system.
- */
+ 
 
-/*
- * kmap atomic:
- * The usage of the slots must be completely encapsulated within a spinlock, and
- * no other functions that may be using the locks for other purposed may be
- * called from within the locked region.
- * Since the slots are per processor, this will guarantee that we are the only
- * user.
- */
+ 
 
-/*
- * TODO: Inserting ptes from an interrupt handler:
- * This may be desirable for some SGX functionality where the GPU can fault in
- * needed pages. For that, we need to make an atomic insert_pages function, that
- * may fail.
- * If it fails, the caller need to insert the page using a workqueue function,
- * but on average it should be fast.
- */
+ 
 
 static inline uint32_t psb_mmu_pt_index(uint32_t offset)
 {
@@ -72,7 +49,7 @@ static void psb_mmu_flush_pd_locked(struct psb_mmu_driver *driver, int force)
 		uint32_t val = PSB_RSGX32(PSB_CR_BIF_CTRL);
 		PSB_WSGX32(val | _PSB_CB_CTRL_INVALDC, PSB_CR_BIF_CTRL);
 
-		/* Make sure data cache is turned off before enabling it */
+		 
 		wmb();
 		PSB_WSGX32(val & ~_PSB_CB_CTRL_INVALDC, PSB_CR_BIF_CTRL);
 		(void)PSB_RSGX32(PSB_CR_BIF_CTRL);
@@ -104,8 +81,7 @@ void psb_mmu_flush(struct psb_mmu_driver *driver)
 	else
 		PSB_WSGX32(val | _PSB_CB_CTRL_FLUSH, PSB_CR_BIF_CTRL);
 
-	/* Make sure data cache is turned off and MMU is flushed before
-	   restoring bank interface control register */
+	 
 	wmb();
 	PSB_WSGX32(val & ~(_PSB_CB_CTRL_FLUSH | _PSB_CB_CTRL_INVALDC),
 		   PSB_CR_BIF_CTRL);
@@ -240,8 +216,7 @@ void psb_mmu_free_pagedir(struct psb_mmu_pd *pd)
 		psb_mmu_flush_pd_locked(driver, 1);
 	}
 
-	/* Should take the spinlock here, but we don't need to do that
-	   since we have the semaphore in write mode. */
+	 
 
 	for (i = 0; i < 1024; ++i) {
 		pt = pd->tables[i];
@@ -452,10 +427,7 @@ struct psb_mmu_driver *psb_mmu_driver_init(struct drm_device *dev,
 	if (boot_cpu_has(X86_FEATURE_CLFLUSH)) {
 		uint32_t tfms, misc, cap0, cap4, clflush_size;
 
-		/*
-		 * clflush size is determined at kernel setup for x86_64 but not
-		 * for i386. We have to do it here.
-		 */
+		 
 
 		cpuid(0x00000001, &tfms, &misc, &cap0, &cap4);
 		clflush_size = ((misc >> 8) & 0xff) * 8;
@@ -585,7 +557,7 @@ void psb_mmu_remove_pages(struct psb_mmu_pd *pd, unsigned long address,
 
 	down_read(&pd->driver->sem);
 
-	/* Make sure we only need to flush this processor's cache */
+	 
 
 	for (i = 0; i < rows; ++i) {
 

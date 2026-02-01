@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * An RTC test device/driver
- * Copyright (C) 2005 Tower Technologies
- * Author: Alessandro Zummo <a.zummo@towertech.it>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/err.h>

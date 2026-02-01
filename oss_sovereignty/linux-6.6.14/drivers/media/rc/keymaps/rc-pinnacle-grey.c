@@ -1,9 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0+
-// pinnacle-grey.h - Keytable for pinnacle_grey Remote Controller
-//
-// keymap imported from ir-keymaps.c
-//
-// Copyright (c) 2010 by Mauro Carvalho Chehab
+
+
+
+
+
+
 
 #include <media/rc-map.h>
 #include <linux/module.h>
@@ -63,7 +63,7 @@ static struct rc_map_list pinnacle_grey_map = {
 	.map = {
 		.scan     = pinnacle_grey,
 		.size     = ARRAY_SIZE(pinnacle_grey),
-		.rc_proto = RC_PROTO_UNKNOWN,	/* Legacy IR type */
+		.rc_proto = RC_PROTO_UNKNOWN,	 
 		.name     = RC_MAP_PINNACLE_GREY,
 	}
 };

@@ -1,6 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
 
-/* Copyright (C) 2023 Linaro Ltd. */
+
+ 
 
 #include <linux/types.h>
 
@@ -19,9 +19,9 @@ static const u32 reg_ch_c_cntxt_0_fmask[] = {
 	[CHTYPE_DIR]					= BIT(3),
 	[CH_EE]						= GENMASK(7, 4),
 	[CHID]						= GENMASK(12, 8),
-						/* Bit 13 reserved */
+						 
 	[ERINDEX]					= GENMASK(18, 14),
-						/* Bit 19 reserved */
+						 
 	[CHSTATE]					= GENMASK(23, 20),
 	[ELEMENT_SIZE]					= GENMASK(31, 24),
 };
@@ -31,7 +31,7 @@ REG_STRIDE_FIELDS(CH_C_CNTXT_0, ch_c_cntxt_0,
 
 static const u32 reg_ch_c_cntxt_1_fmask[] = {
 	[CH_R_LENGTH]					= GENMASK(15, 0),
-						/* Bits 16-31 reserved */
+						 
 };
 
 REG_STRIDE_FIELDS(CH_C_CNTXT_1, ch_c_cntxt_1,
@@ -43,11 +43,11 @@ REG_STRIDE(CH_C_CNTXT_3, ch_c_cntxt_3, 0x0001c00c + 0x4000 * GSI_EE_AP, 0x80);
 
 static const u32 reg_ch_c_qos_fmask[] = {
 	[WRR_WEIGHT]					= GENMASK(3, 0),
-						/* Bits 4-7 reserved */
+						 
 	[MAX_PREFETCH]					= BIT(8),
 	[USE_DB_ENG]					= BIT(9),
 	[USE_ESCAPE_BUF_ONLY]				= BIT(10),
-						/* Bits 11-31 reserved */
+						 
 };
 
 REG_STRIDE_FIELDS(CH_C_QOS, ch_c_qos, 0x0001c05c + 0x4000 * GSI_EE_AP, 0x80);
@@ -57,7 +57,7 @@ static const u32 reg_error_log_fmask[] = {
 	[ERR_ARG2]					= GENMASK(7, 4),
 	[ERR_ARG1]					= GENMASK(11, 8),
 	[ERR_CODE]					= GENMASK(15, 12),
-						/* Bits 16-18 reserved */
+						 
 	[ERR_VIRT_IDX]					= GENMASK(23, 19),
 	[ERR_TYPE]					= GENMASK(27, 24),
 	[ERR_EE]					= GENMASK(31, 28),
@@ -80,7 +80,7 @@ static const u32 reg_ev_ch_e_cntxt_0_fmask[] = {
 	[EV_EE]						= GENMASK(7, 4),
 	[EV_EVCHID]					= GENMASK(15, 8),
 	[EV_INTYPE]					= BIT(16),
-						/* Bits 17-19 reserved */
+						 
 	[EV_CHSTATE]					= GENMASK(23, 20),
 	[EV_ELEMENT_SIZE]				= GENMASK(31, 24),
 };
@@ -142,14 +142,14 @@ REG_STRIDE(EV_CH_E_DOORBELL_0, ev_ch_e_doorbell_0,
 
 static const u32 reg_gsi_status_fmask[] = {
 	[ENABLED]					= BIT(0),
-						/* Bits 1-31 reserved */
+						 
 };
 
 REG_FIELDS(GSI_STATUS, gsi_status, 0x0001f000 + 0x4000 * GSI_EE_AP);
 
 static const u32 reg_ch_cmd_fmask[] = {
 	[CH_CHID]					= GENMASK(7, 0),
-						/* Bits 8-23 reserved */
+						 
 	[CH_OPCODE]					= GENMASK(31, 24),
 };
 
@@ -157,7 +157,7 @@ REG_FIELDS(CH_CMD, ch_cmd, 0x0001f008 + 0x4000 * GSI_EE_AP);
 
 static const u32 reg_ev_ch_cmd_fmask[] = {
 	[EV_CHID]					= GENMASK(7, 0),
-						/* Bits 8-23 reserved */
+						 
 	[EV_OPCODE]					= GENMASK(31, 24),
 };
 
@@ -167,7 +167,7 @@ static const u32 reg_generic_cmd_fmask[] = {
 	[GENERIC_OPCODE]				= GENMASK(4, 0),
 	[GENERIC_CHID]					= GENMASK(9, 5),
 	[GENERIC_EE]					= GENMASK(13, 10),
-						/* Bits 14-31 reserved */
+						 
 };
 
 REG_FIELDS(GENERIC_CMD, generic_cmd, 0x0001f018 + 0x4000 * GSI_EE_AP);
@@ -182,7 +182,7 @@ static const u32 reg_hw_param_2_fmask[] = {
 	[GSI_SDMA_N_INT]				= GENMASK(18, 16),
 	[GSI_SDMA_MAX_BURST]				= GENMASK(26, 19),
 	[GSI_SDMA_N_IOVEC]				= GENMASK(29, 27),
-						/* Bits 30-31 reserved */
+						 
 };
 
 REG_FIELDS(HW_PARAM_2, hw_param_2, 0x0001f040 + 0x4000 * GSI_EE_AP);
@@ -229,7 +229,7 @@ REG(CNTXT_GSI_IRQ_CLR, cntxt_gsi_irq_clr, 0x0001f128 + 0x4000 * GSI_EE_AP);
 
 static const u32 reg_cntxt_intset_fmask[] = {
 	[INTYPE]					= BIT(0)
-						/* Bits 1-31 reserved */
+						 
 };
 
 REG_FIELDS(CNTXT_INTSET, cntxt_intset, 0x0001f180 + 0x4000 * GSI_EE_AP);
@@ -240,9 +240,9 @@ REG(ERROR_LOG_CLR, error_log_clr, 0x0001f210 + 0x4000 * GSI_EE_AP);
 
 static const u32 reg_cntxt_scratch_0_fmask[] = {
 	[INTER_EE_RESULT]				= GENMASK(2, 0),
-						/* Bits 3-4 reserved */
+						 
 	[GENERIC_EE_RESULT]				= GENMASK(7, 5),
-						/* Bits 8-31 reserved */
+						 
 };
 
 REG_FIELDS(CNTXT_SCRATCH_0, cntxt_scratch_0, 0x0001f400 + 0x4000 * GSI_EE_AP);

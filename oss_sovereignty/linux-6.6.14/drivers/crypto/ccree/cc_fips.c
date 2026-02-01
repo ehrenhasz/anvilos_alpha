@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (C) 2012-2019 ARM Limited (or its affiliates). */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/fips.h>
@@ -16,27 +16,22 @@ struct cc_fips_handle {
 	struct cc_drvdata *drvdata;
 };
 
-/* The function called once at driver entry point to check
- * whether TEE FIPS error occurred.
- */
+ 
 static bool cc_get_tee_fips_status(struct cc_drvdata *drvdata)
 {
 	u32 reg;
 
 	reg = cc_ioread(drvdata, CC_REG(GPR_HOST));
-	/* Did the TEE report status? */
+	 
 	if (reg & CC_FIPS_SYNC_TEE_STATUS)
-		/* Yes. Is it OK? */
+		 
 		return (reg & CC_FIPS_SYNC_MODULE_OK);
 
-	/* No. It's either not in use or will be reported later */
+	 
 	return true;
 }
 
-/*
- * This function should push the FIPS REE library status towards the TEE library
- * by writing the error state to HOST_GPR0 register.
- */
+ 
 void cc_set_ree_fips_status(struct cc_drvdata *drvdata, bool status)
 {
 	int val = CC_FIPS_SYNC_REE_STATUS;
@@ -49,7 +44,7 @@ void cc_set_ree_fips_status(struct cc_drvdata *drvdata, bool status)
 	cc_iowrite(drvdata, CC_REG(HOST_GPR0), val);
 }
 
-/* Push REE side FIPS test failure to TEE side */
+ 
 static int cc_ree_fips_failure(struct notifier_block *nb, unsigned long unused1,
 			       void *unused2)
 {
@@ -73,7 +68,7 @@ void cc_fips_fini(struct cc_drvdata *drvdata)
 
 	atomic_notifier_chain_unregister(&fips_fail_notif_chain, &fips_h->nb);
 
-	/* Kill tasklet */
+	 
 	tasklet_kill(&fips_h->tasklet);
 	drvdata->fips_handle = NULL;
 }
@@ -96,10 +91,7 @@ static inline void tee_fips_error(struct device *dev)
 		dev_err(dev, "TEE reported error!\n");
 }
 
-/*
- * This function check if cryptocell tee fips error occurred
- * and in such case triggers system error
- */
+ 
 void cc_tee_handle_fips_error(struct cc_drvdata *p_drvdata)
 {
 	struct device *dev = drvdata_to_dev(p_drvdata);
@@ -108,7 +100,7 @@ void cc_tee_handle_fips_error(struct cc_drvdata *p_drvdata)
 		tee_fips_error(dev);
 }
 
-/* Deferred service handler, run as interrupt-fired tasklet */
+ 
 static void fips_dsr(unsigned long devarg)
 {
 	struct cc_drvdata *drvdata = (struct cc_drvdata *)devarg;
@@ -120,14 +112,12 @@ static void fips_dsr(unsigned long devarg)
 		cc_tee_handle_fips_error(drvdata);
 	}
 
-	/* after verifying that there is nothing to do,
-	 * unmask AXI completion interrupt.
-	 */
+	 
 	val = (CC_REG(HOST_IMR) & ~irq);
 	cc_iowrite(drvdata, CC_REG(HOST_IMR), val);
 }
 
-/* The function called once at driver entry point .*/
+ 
 int cc_fips_init(struct cc_drvdata *p_drvdata)
 {
 	struct cc_fips_handle *fips_h;

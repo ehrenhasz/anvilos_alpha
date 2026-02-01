@@ -1,28 +1,4 @@
-/*
- * This file is part of the MicroPython project, http://micropython.org/
- *
- * The MIT License (MIT)
- *
- * Copyright (c) 2023 Damien P. George
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
+ 
 
 #include "py/runtime.h"
 
@@ -35,7 +11,7 @@
 #include "drivers/dht/dht.h"
 #endif
 
-// The port must provide implementations of these low-level machine functions.
+
 
 static void mp_machine_idle(void);
 
@@ -56,7 +32,7 @@ static void mp_machine_lightsleep(size_t n_args, const mp_obj_t *args);
 NORETURN static void mp_machine_deepsleep(size_t n_args, const mp_obj_t *args);
 #endif
 
-// The port can provide additional machine-module implementation in this file.
+
 #ifdef MICROPY_PY_MACHINE_INCLUDEFILE
 #include MICROPY_PY_MACHINE_INCLUDEFILE
 #endif
@@ -144,19 +120,19 @@ static MP_DEFINE_CONST_FUN_OBJ_1(machine_enable_irq_obj, machine_enable_irq);
 static const mp_rom_map_elem_t machine_module_globals_table[] = {
     { MP_ROM_QSTR(MP_QSTR___name__), MP_ROM_QSTR(MP_QSTR_machine) },
 
-    // Memory access objects.
+    
     #if MICROPY_PY_MACHINE_MEMX
     { MP_ROM_QSTR(MP_QSTR_mem8), MP_ROM_PTR(&machine_mem8_obj) },
     { MP_ROM_QSTR(MP_QSTR_mem16), MP_ROM_PTR(&machine_mem16_obj) },
     { MP_ROM_QSTR(MP_QSTR_mem32), MP_ROM_PTR(&machine_mem32_obj) },
     #endif
 
-    // Miscellaneous functions.
+    
     #if MICROPY_PY_MACHINE_BARE_METAL_FUNCS
     { MP_ROM_QSTR(MP_QSTR_unique_id), MP_ROM_PTR(&machine_unique_id_obj) },
     #endif
 
-    // Reset related functions.
+    
     { MP_ROM_QSTR(MP_QSTR_soft_reset), MP_ROM_PTR(&machine_soft_reset_obj) },
     #if MICROPY_PY_MACHINE_BOOTLOADER
     { MP_ROM_QSTR(MP_QSTR_bootloader), MP_ROM_PTR(&machine_bootloader_obj) },
@@ -166,7 +142,7 @@ static const mp_rom_map_elem_t machine_module_globals_table[] = {
     { MP_ROM_QSTR(MP_QSTR_reset_cause), MP_ROM_PTR(&machine_reset_cause_obj) },
     #endif
 
-    // Power related functions.
+    
     { MP_ROM_QSTR(MP_QSTR_idle), MP_ROM_PTR(&machine_idle_obj) },
     #if MICROPY_PY_MACHINE_BARE_METAL_FUNCS
     { MP_ROM_QSTR(MP_QSTR_freq), MP_ROM_PTR(&machine_freq_obj) },
@@ -174,13 +150,13 @@ static const mp_rom_map_elem_t machine_module_globals_table[] = {
     { MP_ROM_QSTR(MP_QSTR_deepsleep), MP_ROM_PTR(&machine_deepsleep_obj) },
     #endif
 
-    // Interrupt related functions.
+    
     #if MICROPY_PY_MACHINE_DISABLE_IRQ_ENABLE_IRQ
     { MP_ROM_QSTR(MP_QSTR_disable_irq), MP_ROM_PTR(&machine_disable_irq_obj) },
     { MP_ROM_QSTR(MP_QSTR_enable_irq), MP_ROM_PTR(&machine_enable_irq_obj) },
     #endif
 
-    // Functions for bit protocols.
+    
     #if MICROPY_PY_MACHINE_BITSTREAM
     { MP_ROM_QSTR(MP_QSTR_bitstream), MP_ROM_PTR(&machine_bitstream_obj) },
     #endif
@@ -191,7 +167,7 @@ static const mp_rom_map_elem_t machine_module_globals_table[] = {
     { MP_ROM_QSTR(MP_QSTR_time_pulse_us), MP_ROM_PTR(&machine_time_pulse_us_obj) },
     #endif
 
-    // Classes for PinBase and Signal.
+    
     #if MICROPY_PY_MACHINE_PIN_BASE
     { MP_ROM_QSTR(MP_QSTR_PinBase), MP_ROM_PTR(&machine_pinbase_type) },
     #endif
@@ -199,7 +175,7 @@ static const mp_rom_map_elem_t machine_module_globals_table[] = {
     { MP_ROM_QSTR(MP_QSTR_Signal), MP_ROM_PTR(&machine_signal_type) },
     #endif
 
-    // Classes for software bus protocols.
+    
     #if MICROPY_PY_MACHINE_SOFTI2C
     { MP_ROM_QSTR(MP_QSTR_SoftI2C), MP_ROM_PTR(&mp_machine_soft_i2c_type) },
     #endif
@@ -207,7 +183,7 @@ static const mp_rom_map_elem_t machine_module_globals_table[] = {
     { MP_ROM_QSTR(MP_QSTR_SoftSPI), MP_ROM_PTR(&mp_machine_soft_spi_type) },
     #endif
 
-    // Classes for hardware peripherals.
+    
     #if MICROPY_PY_MACHINE_ADC
     { MP_ROM_QSTR(MP_QSTR_ADC), MP_ROM_PTR(&machine_adc_type) },
     #endif
@@ -239,7 +215,7 @@ static const mp_rom_map_elem_t machine_module_globals_table[] = {
     { MP_ROM_QSTR(MP_QSTR_WDT), MP_ROM_PTR(&machine_wdt_type) },
     #endif
 
-    // A port can add extra entries to the module by defining the following macro.
+    
     #ifdef MICROPY_PY_MACHINE_EXTRA_GLOBALS
     MICROPY_PY_MACHINE_EXTRA_GLOBALS
     #endif
@@ -253,4 +229,4 @@ const mp_obj_module_t mp_module_machine = {
 
 MP_REGISTER_EXTENSIBLE_MODULE(MP_QSTR_machine, mp_module_machine);
 
-#endif // MICROPY_PY_MACHINE
+#endif 

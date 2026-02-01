@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2007-2008 BalaBit IT Ltd.
- * Author: Krisztian Kovacs
- */
+
+ 
 
 #include <net/netfilter/nf_tproxy.h>
 #include <linux/module.h>
@@ -29,8 +26,7 @@ nf_tproxy_handle_time_wait4(struct net *net, struct sk_buff *skb,
 	}
 
 	if (hp->syn && !hp->rst && !hp->ack && !hp->fin) {
-		/* SYN to a TIME_WAIT socket, we'd rather redirect it
-		 * to a listener socket if there's one */
+		 
 		struct sock *sk2;
 
 		sk2 = nf_tproxy_get_sock_v4(net, skb, iph->protocol,
@@ -100,11 +96,7 @@ nf_tproxy_get_sock_v4(struct net *net, struct sk_buff *skb,
 
 			if (sk && !refcount_inc_not_zero(&sk->sk_refcnt))
 				sk = NULL;
-			/* NOTE: we return listeners even if bound to
-			 * 0.0.0.0, those are filtered out in
-			 * xt_socket, since xt_TPROXY needs 0 bound
-			 * listeners too
-			 */
+			 
 			break;
 		case NF_TPROXY_LOOKUP_ESTABLISHED:
 			sk = inet_lookup_established(net, hinfo, saddr, sport,
@@ -122,11 +114,7 @@ nf_tproxy_get_sock_v4(struct net *net, struct sk_buff *skb,
 			int connected = (sk->sk_state == TCP_ESTABLISHED);
 			int wildcard = (inet_sk(sk)->inet_rcv_saddr == 0);
 
-			/* NOTE: we return listeners even if bound to
-			 * 0.0.0.0, those are filtered out in
-			 * xt_socket, since xt_TPROXY needs 0 bound
-			 * listeners too
-			 */
+			 
 			if ((lookup_type == NF_TPROXY_LOOKUP_ESTABLISHED &&
 			      (!connected || wildcard)) ||
 			    (lookup_type == NF_TPROXY_LOOKUP_LISTENER && connected)) {

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Sensortek STK8BA50 3-Axis Accelerometer
- *
- * Copyright (c) 2015, Intel Corporation.
- *
- * STK8BA50 7-bit I2C address: 0x18.
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/i2c.h>
@@ -45,22 +39,7 @@
 
 #define STK8BA50_SCALE_AVAIL			"0.0384 0.0767 0.1534 0.3069"
 
-/*
- * The accelerometer has four measurement ranges:
- * +/-2g; +/-4g; +/-8g; +/-16g
- *
- * Acceleration values are 10-bit, 2's complement.
- * Scales are calculated as following:
- *
- * scale1 = (2 + 2) * 9.81 / (2^10 - 1)   = 0.0384
- * scale2 = (4 + 4) * 9.81 / (2^10 - 1)   = 0.0767
- * etc.
- *
- * Scales are stored in this format:
- * { <register value>, <scale value> }
- *
- * Locally, the range is stored as a table index.
- */
+ 
 static const struct {
 	u8 reg_val;
 	u32 scale_val;
@@ -68,7 +47,7 @@ static const struct {
 	{3, 38400}, {5, 76700}, {8, 153400}, {12, 306900}
 };
 
-/* Sample rates are stored as { <register value>, <Hz value> } */
+ 
 static const struct {
 	u8 reg_val;
 	u16 samp_freq;
@@ -77,7 +56,7 @@ static const struct {
 	{0x0C, 224}, {0x0D, 448}, {0x0E, 896}, {0x0F, 1792}
 };
 
-/* Used to map scan mask bits to their corresponding channel register. */
+ 
 static const int stk8ba50_channel_table[] = {
 	STK8BA50_REG_XOUT,
 	STK8BA50_REG_YOUT,
@@ -91,7 +70,7 @@ struct stk8ba50_data {
 	u8 sample_rate_idx;
 	struct iio_trigger *dready_trig;
 	bool dready_trigger_on;
-	/* Ensure timestamp is naturally aligned */
+	 
 	struct {
 		s16 chans[3];
 		s64 timetamp __aligned(8);
@@ -316,10 +295,7 @@ static irqreturn_t stk8ba50_trigger_handler(int irq, void *p)
 	int bit, ret, i = 0;
 
 	mutex_lock(&data->lock);
-	/*
-	 * Do a bulk read if all channels are requested,
-	 * from 0x02 (XOUT1) to 0x07 (ZOUT2)
-	 */
+	 
 	if (*(indio_dev->active_scan_mask) == STK8BA50_ALL_CHANNEL_MASK) {
 		ret = i2c_smbus_read_i2c_block_data(data->client,
 						    STK8BA50_REG_XOUT,
@@ -402,7 +378,7 @@ static int stk8ba50_probe(struct i2c_client *client)
 	indio_dev->channels = stk8ba50_channels;
 	indio_dev->num_channels = ARRAY_SIZE(stk8ba50_channels);
 
-	/* Reset all registers on startup */
+	 
 	ret = i2c_smbus_write_byte_data(client,
 			STK8BA50_REG_SWRST, STK8BA50_RESET_CMD);
 	if (ret < 0) {
@@ -410,13 +386,13 @@ static int stk8ba50_probe(struct i2c_client *client)
 		goto err_power_off;
 	}
 
-	/* The default range is +/-2g */
+	 
 	data->range = 0;
 
-	/* The default sampling rate is 1792 Hz (maximum) */
+	 
 	data->sample_rate_idx = STK8BA50_SR_1792HZ_IDX;
 
-	/* Set up interrupts */
+	 
 	ret = i2c_smbus_write_byte_data(client,
 			STK8BA50_REG_INTEN2, STK8BA50_DREADY_INT_MASK);
 	if (ret < 0) {

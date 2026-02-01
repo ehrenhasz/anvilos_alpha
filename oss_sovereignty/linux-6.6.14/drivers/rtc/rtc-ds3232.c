@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * RTC client/driver for the Maxim/Dallas DS3232/DS3234 Real-Time Clock
- *
- * Copyright (C) 2009-2011 Freescale Semiconductor.
- * Author: Jack Lan <jack.lan@freescale.com>
- * Copyright (C) 2008 MIMOMax Wireless Ltd.
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -29,15 +23,15 @@
 #define DS3232_REG_MONTH        0x05
 #define DS3232_REG_CENTURY      0x05
 #define DS3232_REG_YEAR         0x06
-#define DS3232_REG_ALARM1       0x07       /* Alarm 1 BASE */
-#define DS3232_REG_ALARM2       0x0B       /* Alarm 2 BASE */
-#define DS3232_REG_CR           0x0E       /* Control register */
+#define DS3232_REG_ALARM1       0x07        
+#define DS3232_REG_ALARM2       0x0B        
+#define DS3232_REG_CR           0x0E        
 #       define DS3232_REG_CR_nEOSC   0x80
 #       define DS3232_REG_CR_INTCN   0x04
 #       define DS3232_REG_CR_A2IE    0x02
 #       define DS3232_REG_CR_A1IE    0x01
 
-#define DS3232_REG_SR           0x0F       /* control/status register */
+#define DS3232_REG_SR           0x0F        
 #       define DS3232_REG_SR_OSF     0x80
 #       define DS3232_REG_SR_BSY     0x04
 #       define DS3232_REG_SR_A2F     0x02
@@ -79,10 +73,7 @@ static int ds3232_check_rtc_status(struct device *dev)
 	if (ret)
 		return ret;
 
-	/* If the alarm is pending, clear it before requesting
-	 * the interrupt, so an interrupt event isn't reported
-	 * before everything is initialized.
-	 */
+	 
 
 	ret = regmap_read(ds3232->regmap, DS3232_REG_CR, &control);
 	if (ret)
@@ -115,18 +106,18 @@ static int ds3232_read_time(struct device *dev, struct rtc_time *time)
 	month = buf[5];
 	year = buf[6];
 
-	/* Extract additional information for AM/PM and century */
+	 
 
 	twelve_hr = hour & 0x40;
 	am_pm = hour & 0x20;
 	century = month & 0x80;
 
-	/* Write to rtc_time structure */
+	 
 
 	time->tm_sec = bcd2bin(second);
 	time->tm_min = bcd2bin(minute);
 	if (twelve_hr) {
-		/* Convert to 24 hr */
+		 
 		if (am_pm)
 			time->tm_hour = bcd2bin(hour & 0x1F) + 12;
 		else
@@ -135,10 +126,10 @@ static int ds3232_read_time(struct device *dev, struct rtc_time *time)
 		time->tm_hour = bcd2bin(hour);
 	}
 
-	/* Day of the week in linux range is 0~6 while 1~7 in RTC chip */
+	 
 	time->tm_wday = bcd2bin(week) - 1;
 	time->tm_mday = bcd2bin(day);
-	/* linux tm_mon range:0~11, while month range is 1~12 in RTC chip */
+	 
 	time->tm_mon = bcd2bin(month & 0x7F) - 1;
 	if (century)
 		add_century = 100;
@@ -153,15 +144,15 @@ static int ds3232_set_time(struct device *dev, struct rtc_time *time)
 	struct ds3232 *ds3232 = dev_get_drvdata(dev);
 	u8 buf[7];
 
-	/* Extract time from rtc_time and load into ds3232*/
+	 
 
 	buf[0] = bin2bcd(time->tm_sec);
 	buf[1] = bin2bcd(time->tm_min);
 	buf[2] = bin2bcd(time->tm_hour);
-	/* Day of the week in linux range is 0~6 while 1~7 in RTC chip */
+	 
 	buf[3] = bin2bcd(time->tm_wday + 1);
-	buf[4] = bin2bcd(time->tm_mday); /* Date */
-	/* linux tm_mon range:0~11, while month range is 1~12 in RTC chip */
+	buf[4] = bin2bcd(time->tm_mday);  
+	 
 	buf[5] = bin2bcd(time->tm_mon + 1);
 	if (time->tm_year >= 100) {
 		buf[5] |= 0x80;
@@ -173,11 +164,7 @@ static int ds3232_set_time(struct device *dev, struct rtc_time *time)
 	return regmap_bulk_write(ds3232->regmap, DS3232_REG_SECONDS, buf, 7);
 }
 
-/*
- * DS3232 has two alarm, we only use alarm1
- * According to linux specification, only support one-shot alarm
- * no periodic alarm mode
- */
+ 
 static int ds3232_read_alarm(struct device *dev, struct rtc_wkalrm *alarm)
 {
 	struct ds3232 *ds3232 = dev_get_drvdata(dev);
@@ -208,10 +195,7 @@ out:
 	return ret;
 }
 
-/*
- * linux rtc-module does not support wday alarm
- * and only 24h time mode supported indeed
- */
+ 
 static int ds3232_set_alarm(struct device *dev, struct rtc_wkalrm *alarm)
 {
 	struct ds3232 *ds3232 = dev_get_drvdata(dev);
@@ -227,7 +211,7 @@ static int ds3232_set_alarm(struct device *dev, struct rtc_wkalrm *alarm)
 	buf[2] = bin2bcd(alarm->time.tm_hour);
 	buf[3] = bin2bcd(alarm->time.tm_mday);
 
-	/* clear alarm interrupt enable bit */
+	 
 	ret = regmap_read(ds3232->regmap, DS3232_REG_CR, &control);
 	if (ret)
 		goto out;
@@ -236,7 +220,7 @@ static int ds3232_set_alarm(struct device *dev, struct rtc_wkalrm *alarm)
 	if (ret)
 		goto out;
 
-	/* clear any pending alarm flag */
+	 
 	ret = regmap_read(ds3232->regmap, DS3232_REG_SR, &stat);
 	if (ret)
 		goto out;
@@ -268,21 +252,17 @@ static int ds3232_update_alarm(struct device *dev, unsigned int enabled)
 		return ret;
 
 	if (enabled)
-		/* enable alarm1 interrupt */
+		 
 		control |= DS3232_REG_CR_A1IE;
 	else
-		/* disable alarm1 interrupt */
+		 
 		control &= ~(DS3232_REG_CR_A1IE);
 	ret = regmap_write(ds3232->regmap, DS3232_REG_CR, control);
 
 	return ret;
 }
 
-/*
- * Temperature sensor support for ds3232/ds3234 devices.
- * A user-initiated temperature conversion is not started by this function,
- * so the temperature is updated once every 64 seconds.
- */
+ 
 static int ds3232_hwmon_read_temp(struct device *dev, long int *mC)
 {
 	struct ds3232 *ds3232 = dev_get_drvdata(dev);
@@ -295,10 +275,7 @@ static int ds3232_hwmon_read_temp(struct device *dev, long int *mC)
 	if (ret < 0)
 		return ret;
 
-	/*
-	 * Temperature is represented as a 10-bit code with a resolution of
-	 * 0.25 degree celsius and encoded in two's complement format.
-	 */
+	 
 	temp = (temp_buf[0] << 8) | temp_buf[1];
 	temp >>= 6;
 	*mC = temp * 250;
@@ -421,7 +398,7 @@ static irqreturn_t ds3232_irq(int irq, void *dev_id)
 			dev_warn(ds3232->dev,
 				 "Read Control Register error %d\n", ret);
 		} else {
-			/* disable alarm1 interrupt */
+			 
 			control &= ~(DS3232_REG_CR_A1IE);
 			ret = regmap_write(ds3232->regmap, DS3232_REG_CR,
 					   control);
@@ -432,7 +409,7 @@ static irqreturn_t ds3232_irq(int irq, void *dev_id)
 				goto unlock;
 			}
 
-			/* clear the alarm pend flag */
+			 
 			stat &= ~DS3232_REG_SR_A1F;
 			ret = regmap_write(ds3232->regmap, DS3232_REG_SR, stat);
 			if (ret) {
@@ -659,20 +636,7 @@ static int ds3234_probe(struct spi_device *spi)
 	if (res)
 		return res;
 
-	/* Control settings
-	 *
-	 * CONTROL_REG
-	 * BIT 7	6	5	4	3	2	1	0
-	 *     EOSC	BBSQW	CONV	RS2	RS1	INTCN	A2IE	A1IE
-	 *
-	 *     0	0	0	1	1	1	0	0
-	 *
-	 * CONTROL_STAT_REG
-	 * BIT 7	6	5	4	3	2	1	0
-	 *     OSF	BB32kHz	CRATE1	CRATE0	EN32kHz	BSY	A2F	A1F
-	 *
-	 *     1	0	0	0	1	0	0	0
-	 */
+	 
 	res = regmap_read(regmap, DS3232_REG_CR, &tmp);
 	if (res)
 		return res;
@@ -687,7 +651,7 @@ static int ds3234_probe(struct spi_device *spi)
 	if (res)
 		return res;
 
-	/* Print our settings */
+	 
 	res = regmap_read(regmap, DS3232_REG_CR, &tmp);
 	if (res)
 		return res;

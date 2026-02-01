@@ -1,21 +1,4 @@
-/*
- * TI TPS65132 Regulator driver
- *
- * Copyright (C) 2017 NVIDIA CORPORATION. All rights reserved.
- *
- * Author: Venkat Reddy Talla <vreddytalla@nvidia.com>
- *		Laxman Dewangan <ldewangan@nvidia.com>
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation; either version 2 of the
- * License, or (at your option) any later version.
- *
- * This program is distributed "as is" WITHOUT ANY WARRANTY of any kind,
- * whether express or implied; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.
- */
+ 
 
 #include <linux/delay.h>
 #include <linux/err.h>
@@ -70,7 +53,7 @@ static int tps65132_regulator_enable(struct regulator_dev *rdev)
 		rpdata->ena_gpio_state = 1;
 	}
 
-	/* Hardware automatically enable discharge bit in enable */
+	 
 	if (rdev->constraints->active_discharge ==
 			REGULATOR_ACTIVE_DISCHARGE_DISABLE) {
 		ret = regulator_set_active_discharge_regmap(rdev, false);
@@ -142,7 +125,7 @@ static int tps65132_of_parse_cb(struct device_node *np,
 	if (IS_ERR(rpdata->en_gpiod)) {
 		ret = PTR_ERR(rpdata->en_gpiod);
 
-		/* Ignore the error other than probe defer */
+		 
 		if (ret == -EPROBE_DEFER)
 			return ret;
 		return 0;
@@ -156,7 +139,7 @@ static int tps65132_of_parse_cb(struct device_node *np,
 	if (IS_ERR(rpdata->act_dis_gpiod)) {
 		ret = PTR_ERR(rpdata->act_dis_gpiod);
 
-		/* Ignore the error other than probe defer */
+		 
 		if (ret == -EPROBE_DEFER)
 			return ret;
 

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 
 #include <linux/module.h>
 #include <linux/platform_device.h>
@@ -17,24 +17,10 @@
 
 #include <linux/mfd/syscon.h>
 
-/*
- * TRM has two sets of USB_CTRL registers.. The correct register bits
- * are in TRM section 24.9.8.2 USB_CTRL Register. The TRM documents the
- * phy as being SR70LX Synopsys USB 2.0 OTG nanoPHY. It also seems at
- * least dm816x rev c ignores writes to USB_CTRL register, but the TI
- * kernel is writing to those so it's possible that later revisions
- * have worknig USB_CTRL register.
- *
- * Also note that At least USB_CTRL register seems to be dm816x specific
- * according to the TRM. It's possible that USBPHY_CTRL is more generic,
- * but that would have to be checked against the SR70LX documentation
- * which does not seem to be publicly available.
- *
- * Finally, the phy on dm814x and am335x is different from dm816x.
- */
-#define DM816X_USB_CTRL_PHYCLKSRC	BIT(8)	/* 1 = PLL ref clock */
-#define DM816X_USB_CTRL_PHYSLEEP1	BIT(1)	/* Enable the first phy */
-#define DM816X_USB_CTRL_PHYSLEEP0	BIT(0)	/* Enable the second phy */
+ 
+#define DM816X_USB_CTRL_PHYCLKSRC	BIT(8)	 
+#define DM816X_USB_CTRL_PHYSLEEP1	BIT(1)	 
+#define DM816X_USB_CTRL_PHYSLEEP0	BIT(0)	 
 
 #define DM816X_USBPHY_CTRL_TXRISETUNE	1
 #define DM816X_USBPHY_CTRL_TXVREFTUNE	0xc
@@ -46,7 +32,7 @@ struct dm816x_usb_phy {
 	unsigned int instance;
 	struct clk *refclk;
 	struct usb_phy phy;
-	unsigned int usb_ctrl;		/* Shared between phy0 and phy1 */
+	unsigned int usb_ctrl;		 
 	unsigned int usbphy_ctrl;
 };
 
@@ -77,7 +63,7 @@ static int dm816x_usb_phy_init(struct phy *x)
 	if (clk_get_rate(phy->refclk) != 24000000)
 		dev_warn(phy->dev, "nonstandard phy refclk\n");
 
-	/* Set PLL ref clock and put phys to sleep */
+	 
 	regmap_update_bits(phy->syscon, phy->usb_ctrl,
 			   DM816X_USB_CTRL_PHYCLKSRC |
 			   DM816X_USB_CTRL_PHYSLEEP1 |
@@ -89,11 +75,7 @@ static int dm816x_usb_phy_init(struct phy *x)
 			 "Working dm816x USB_CTRL! (0x%08x)\n",
 			 val);
 
-	/*
-	 * TI kernel sets these values for "symmetrical eye diagram and
-	 * better signal quality" so let's assume somebody checked the
-	 * values with a scope and set them here too.
-	 */
+	 
 	regmap_read(phy->syscon, phy->usbphy_ctrl, &val);
 	val |= DM816X_USBPHY_CTRL_TXRISETUNE |
 		DM816X_USBPHY_CTRL_TXVREFTUNE |
@@ -136,12 +118,7 @@ static int __maybe_unused dm816x_usb_phy_runtime_resume(struct device *dev)
 	if (error)
 		return error;
 
-	/*
-	 * Note that at least dm816x rev c does not seem to do
-	 * anything with the USB_CTRL register. But let's follow
-	 * what the TI tree is doing in case later revisions use
-	 * USB_CTRL.
-	 */
+	 
 	mask = BIT(phy->instance);
 	val = BIT(phy->instance);
 	error = regmap_update_bits(phy->syscon, phy->usb_ctrl,
@@ -199,11 +176,7 @@ static int dm816x_usb_phy_probe(struct platform_device *pdev)
 	if (IS_ERR(phy->syscon))
 		return PTR_ERR(phy->syscon);
 
-	/*
-	 * According to sprs614e.pdf, the first usb_ctrl is shared and
-	 * the second instance for usb_ctrl is reserved.. Also the
-	 * register bits are different from earlier TRMs.
-	 */
+	 
 	phy->usb_ctrl = 0x20;
 	phy->usbphy_ctrl = (res->start & 0xff) + 4;
 	if (phy->usbphy_ctrl == 0x2c)

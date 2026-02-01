@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * This program reserves and uses hugetlb memory, supporting a bunch of
- * scenarios needed by the charged_reserved_hugetlb.sh test.
- */
+
+ 
 
 #include <err.h>
 #include <errno.h>
@@ -17,7 +14,7 @@
 #include <sys/stat.h>
 #include <sys/mman.h>
 
-/* Global definitions. */
+ 
 enum method {
 	HUGETLBFS,
 	MMAP_MAP_HUGETLB,
@@ -26,14 +23,12 @@ enum method {
 };
 
 
-/* Global variables. */
+ 
 static const char *self;
 static char *shmaddr;
 static int shmid;
 
-/*
- * Show usage and exit.
- */
+ 
 static void exit_usage(void)
 {
 	printf("Usage: %s -p <path to hugetlbfs file> -s <size to map> "
@@ -77,7 +72,7 @@ int main(int argc, char **argv)
 	if (signal(SIGINT, sig_handler) == SIG_ERR)
 		err(1, "\ncan't catch SIGINT\n");
 
-	/* Parse command-line arguments. */
+	 
 	setvbuf(stdout, NULL, _IONBF, 0);
 	self = argv[0];
 
@@ -225,10 +220,10 @@ int main(int argc, char **argv)
 	}
 
 	if (want_sleep) {
-		/* Signal to caller that we're done. */
+		 
 		printf("DONE\n");
 
-		/* Hold memory until external kill signal is delivered. */
+		 
 		while (1)
 			sleep(100);
 	}

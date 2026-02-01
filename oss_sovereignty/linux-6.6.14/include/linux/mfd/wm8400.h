@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * wm8400 client interface
- *
- * Copyright 2008 Wolfson Microelectronics plc
- */
+ 
+ 
 
 #ifndef __LINUX_MFD_WM8400_H
 #define __LINUX_MFD_WM8400_H

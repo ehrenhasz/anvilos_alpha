@@ -1,12 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
+ 
 
-/*
- * msi-ec: MSI laptops' embedded controller driver.
- *
- * Copyright (C) 2023 Jose Angel Pastrana <japp0005@red.ujaen.es>
- * Copyright (C) 2023 Aakash Singh <mail@singhaakash.dev>
- * Copyright (C) 2023 Nikita Kravets <teackot@gmail.com>
- */
+ 
 
 #ifndef _MSI_EC_H_
 #define _MSI_EC_H_
@@ -15,10 +9,10 @@
 
 #define MSI_EC_DRIVER_NAME "msi-ec"
 
-#define MSI_EC_ADDR_UNKNOWN 0xff01 // unknown address
-#define MSI_EC_ADDR_UNSUPP  0xff01 // unsupported parameter
+#define MSI_EC_ADDR_UNKNOWN 0xff01 
+#define MSI_EC_ADDR_UNSUPP  0xff01 
 
-// Firmware info addresses are universal
+
 #define MSI_EC_FW_VERSION_ADDRESS 0xa0
 #define MSI_EC_FW_DATE_ADDRESS    0xac
 #define MSI_EC_FW_TIME_ADDRESS    0xb4
@@ -58,7 +52,7 @@ struct msi_ec_mode {
 
 struct msi_ec_shift_mode_conf {
 	int address;
-	struct msi_ec_mode modes[5]; // fixed size for easier hard coding
+	struct msi_ec_mode modes[5]; 
 };
 
 struct msi_ec_super_battery_conf {
@@ -68,22 +62,22 @@ struct msi_ec_super_battery_conf {
 
 struct msi_ec_fan_mode_conf {
 	int address;
-	struct msi_ec_mode modes[5]; // fixed size for easier hard coding
+	struct msi_ec_mode modes[5]; 
 };
 
 struct msi_ec_cpu_conf {
 	int rt_temp_address;
-	int rt_fan_speed_address; // realtime
+	int rt_fan_speed_address; 
 	int rt_fan_speed_base_min;
 	int rt_fan_speed_base_max;
-	int bs_fan_speed_address; // basic
+	int bs_fan_speed_address; 
 	int bs_fan_speed_base_min;
 	int bs_fan_speed_base_max;
 };
 
 struct msi_ec_gpu_conf {
 	int rt_temp_address;
-	int rt_fan_speed_address; // realtime
+	int rt_fan_speed_address; 
 };
 
 struct msi_ec_led_conf {
@@ -119,4 +113,4 @@ struct msi_ec_conf {
 	struct msi_ec_kbd_bl_conf         kbd_bl;
 };
 
-#endif // _MSI_EC_H_
+#endif 

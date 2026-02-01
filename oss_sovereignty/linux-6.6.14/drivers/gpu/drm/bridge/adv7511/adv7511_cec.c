@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * adv7511_cec.c - Analog Devices ADV7511/33 cec driver
- *
- * Copyright 2017 Cisco Systems, Inc. and/or its affiliates. All rights reserved.
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/module.h>
@@ -55,10 +51,7 @@ static void adv_cec_tx_raw_status(struct adv7511 *adv7511, u8 tx_raw_status)
 		u8 low_drive_cnt = 0;
 		unsigned int cnt;
 
-		/*
-		 * We set this status bit since this hardware performs
-		 * retransmissions.
-		 */
+		 
 		status = CEC_TX_STATUS_MAX_RETRIES;
 		if (regmap_read(adv7511->regmap_cec,
 			    ADV7511_REG_CEC_TX_LOW_DRV_CNT + offset, &cnt)) {
@@ -109,7 +102,7 @@ static void adv7511_cec_rx(struct adv7511 *adv7511, int rx_buf)
 		msg.msg[i] = val;
 	}
 
-	/* Toggle RX Ready Clear bit to re-enable this RX buffer */
+	 
 	regmap_update_bits(adv7511->regmap_cec,
 			   ADV7511_REG_CEC_RX_BUFFERS + offset, BIT(rx_buf),
 			   BIT(rx_buf));
@@ -142,20 +135,7 @@ void adv7511_cec_irq_process(struct adv7511 *adv7511, unsigned int irq1)
 			ADV7511_REG_CEC_RX_STATUS + offset, &rx_status))
 		return;
 
-	/*
-	 * ADV7511_REG_CEC_RX_STATUS[5:0] contains the reception order of RX
-	 * buffers 0, 1, and 2 in bits [1:0], [3:2], and [5:4] respectively.
-	 * The values are to be interpreted as follows:
-	 *
-	 *   0 = buffer unused
-	 *   1 = buffer contains oldest received frame (if applicable)
-	 *   2 = buffer contains second oldest received frame (if applicable)
-	 *   3 = buffer contains third oldest received frame (if applicable)
-	 *
-	 * Fill rx_order with the sequence of RX buffer indices to
-	 * read from in order, where -1 indicates that there are no
-	 * more buffers to process.
-	 */
+	 
 	for (i = 0; i < 3; i++) {
 		unsigned int timestamp = (rx_status >> (2 * i)) & 0x3;
 
@@ -163,7 +143,7 @@ void adv7511_cec_irq_process(struct adv7511 *adv7511, unsigned int irq1)
 			rx_order[timestamp - 1] = i;
 	}
 
-	/* Read CEC RX buffers in the appropriate order as prescribed above */
+	 
 	for (i = 0; i < 3; i++) {
 		int rx_buf = rx_order[i];
 
@@ -183,34 +163,34 @@ static int adv7511_cec_adap_enable(struct cec_adapter *adap, bool enable)
 		return -EIO;
 
 	if (!adv7511->cec_enabled_adap && enable) {
-		/* power up cec section */
+		 
 		regmap_update_bits(adv7511->regmap_cec,
 				   ADV7511_REG_CEC_CLK_DIV + offset,
 				   0x03, 0x01);
-		/* non-legacy mode and clear all rx buffers */
+		 
 		regmap_write(adv7511->regmap_cec,
 			     ADV7511_REG_CEC_RX_BUFFERS + offset, 0x0f);
 		regmap_write(adv7511->regmap_cec,
 			     ADV7511_REG_CEC_RX_BUFFERS + offset, 0x08);
-		/* initially disable tx */
+		 
 		regmap_update_bits(adv7511->regmap_cec,
 				   ADV7511_REG_CEC_TX_ENABLE + offset, 1, 0);
-		/* enabled irqs: */
-		/* tx: ready */
-		/* tx: arbitration lost */
-		/* tx: retry timeout */
-		/* rx: ready 1-3 */
+		 
+		 
+		 
+		 
+		 
 		regmap_update_bits(adv7511->regmap,
 				   ADV7511_REG_INT_ENABLE(1), 0x3f,
 				   ADV7511_INT1_CEC_MASK);
 	} else if (adv7511->cec_enabled_adap && !enable) {
 		regmap_update_bits(adv7511->regmap,
 				   ADV7511_REG_INT_ENABLE(1), 0x3f, 0);
-		/* disable address mask 1-3 */
+		 
 		regmap_update_bits(adv7511->regmap_cec,
 				   ADV7511_REG_CEC_LOG_ADDR_MASK + offset,
 				   0x70, 0x00);
-		/* power down cec section */
+		 
 		regmap_update_bits(adv7511->regmap_cec,
 				   ADV7511_REG_CEC_CLK_DIV + offset,
 				   0x03, 0x00);
@@ -255,31 +235,31 @@ static int adv7511_cec_adap_log_addr(struct cec_adapter *adap, u8 addr)
 
 	switch (i) {
 	case 0:
-		/* enable address mask 0 */
+		 
 		regmap_update_bits(adv7511->regmap_cec,
 				   ADV7511_REG_CEC_LOG_ADDR_MASK + offset,
 				   0x10, 0x10);
-		/* set address for mask 0 */
+		 
 		regmap_update_bits(adv7511->regmap_cec,
 				   ADV7511_REG_CEC_LOG_ADDR_0_1 + offset,
 				   0x0f, addr);
 		break;
 	case 1:
-		/* enable address mask 1 */
+		 
 		regmap_update_bits(adv7511->regmap_cec,
 				   ADV7511_REG_CEC_LOG_ADDR_MASK + offset,
 				   0x20, 0x20);
-		/* set address for mask 1 */
+		 
 		regmap_update_bits(adv7511->regmap_cec,
 				   ADV7511_REG_CEC_LOG_ADDR_0_1 + offset,
 				   0xf0, addr << 4);
 		break;
 	case 2:
-		/* enable address mask 2 */
+		 
 		regmap_update_bits(adv7511->regmap_cec,
 				   ADV7511_REG_CEC_LOG_ADDR_MASK + offset,
 				   0x40, 0x40);
-		/* set address for mask 1 */
+		 
 		regmap_update_bits(adv7511->regmap_cec,
 				   ADV7511_REG_CEC_LOG_ADDR_2 + offset,
 				   0x0f, addr);
@@ -296,28 +276,24 @@ static int adv7511_cec_adap_transmit(struct cec_adapter *adap, u8 attempts,
 	u8 len = msg->len;
 	unsigned int i;
 
-	/*
-	 * The number of retries is the number of attempts - 1, but retry
-	 * at least once. It's not clear if a value of 0 is allowed, so
-	 * let's do at least one retry.
-	 */
+	 
 	regmap_update_bits(adv7511->regmap_cec,
 			   ADV7511_REG_CEC_TX_RETRY + offset,
 			   0x70, max(1, attempts - 1) << 4);
 
-	/* blocking, clear cec tx irq status */
+	 
 	regmap_update_bits(adv7511->regmap, ADV7511_REG_INT(1), 0x38, 0x38);
 
-	/* write data */
+	 
 	for (i = 0; i < len; i++)
 		regmap_write(adv7511->regmap_cec,
 			     i + ADV7511_REG_CEC_TX_FRAME_HDR + offset,
 			     msg->msg[i]);
 
-	/* set length (data + header) */
+	 
 	regmap_write(adv7511->regmap_cec,
 		     ADV7511_REG_CEC_TX_FRAME_LEN + offset, len);
-	/* start transmit, enable tx */
+	 
 	regmap_write(adv7511->regmap_cec,
 		     ADV7511_REG_CEC_TX_ENABLE + offset, 0x01);
 	return 0;
@@ -359,13 +335,13 @@ int adv7511_cec_init(struct device *dev, struct adv7511 *adv7511)
 	}
 
 	regmap_write(adv7511->regmap, ADV7511_REG_CEC_CTRL, 0);
-	/* cec soft reset */
+	 
 	regmap_write(adv7511->regmap_cec,
 		     ADV7511_REG_CEC_SOFT_RESET + offset, 0x01);
 	regmap_write(adv7511->regmap_cec,
 		     ADV7511_REG_CEC_SOFT_RESET + offset, 0x00);
 
-	/* non-legacy mode - use all three RX buffers */
+	 
 	regmap_write(adv7511->regmap_cec,
 		     ADV7511_REG_CEC_RX_BUFFERS + offset, 0x08);
 

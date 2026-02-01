@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2012 Texas Instruments
- * Author: Rob Clark <robdclark@gmail.com>
- */
+
+ 
 
 #include <linux/backlight.h>
 #include <linux/gpio/consumer.h>
@@ -32,9 +29,7 @@ struct panel_module {
 #define to_panel_module(x) container_of(x, struct panel_module, base)
 
 
-/*
- * Encoder:
- */
+ 
 
 struct panel_encoder {
 	struct drm_encoder base;
@@ -73,7 +68,7 @@ static void panel_encoder_mode_set(struct drm_encoder *encoder,
 		struct drm_display_mode *mode,
 		struct drm_display_mode *adjusted_mode)
 {
-	/* nothing needed */
+	 
 }
 
 static const struct drm_encoder_helper_funcs panel_encoder_helper_funcs = {
@@ -113,14 +108,12 @@ fail:
 	return NULL;
 }
 
-/*
- * Connector:
- */
+ 
 
 struct panel_connector {
 	struct drm_connector base;
 
-	struct drm_encoder *encoder;  /* our connected encoder */
+	struct drm_encoder *encoder;   
 	struct panel_module *mod;
 };
 #define to_panel_connector(x) container_of(x, struct panel_connector, base)
@@ -219,9 +212,7 @@ fail:
 	return NULL;
 }
 
-/*
- * Module:
- */
+ 
 
 static int panel_modeset_init(struct tilcdc_module *mod, struct drm_device *dev)
 {
@@ -251,11 +242,9 @@ static const struct tilcdc_module_ops panel_module_ops = {
 		.modeset_init = panel_modeset_init,
 };
 
-/*
- * Device:
- */
+ 
 
-/* maybe move this somewhere common if it is needed by other outputs? */
+ 
 static struct tilcdc_panel_info *of_get_panel_info(struct device_node *np)
 {
 	struct device_node *info_np;
@@ -287,7 +276,7 @@ static struct tilcdc_panel_info *of_get_panel_info(struct device_node *np)
 	ret |= of_property_read_u32(info_np, "raster-order", &info->raster_order);
 	ret |= of_property_read_u32(info_np, "fifo-th", &info->fifo_th);
 
-	/* optional: */
+	 
 	info->tft_alt_mode      = of_property_read_bool(info_np, "tft-alt-mode");
 	info->invert_pxl_clk    = of_property_read_bool(info_np, "invert-pxl-clk");
 
@@ -311,7 +300,7 @@ static int panel_probe(struct platform_device *pdev)
 	struct pinctrl *pinctrl;
 	int ret;
 
-	/* bail out early if no DT data: */
+	 
 	if (!node) {
 		dev_err(&pdev->dev, "device-tree data is missing\n");
 		return -ENXIO;

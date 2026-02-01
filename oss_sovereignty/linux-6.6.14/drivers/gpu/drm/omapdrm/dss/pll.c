@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2014 Texas Instruments Incorporated - https://www.ti.com/
- */
+
+ 
 
 #define DSS_SUBSYS_NAME "PLL"
 
@@ -198,10 +196,7 @@ bool dss_pll_hsdiv_calc_a(const struct dss_pll *pll, unsigned long clkdco,
 	return false;
 }
 
-/*
- * clkdco = clkin / n * m * 2
- * clkoutX = clkdco / mX
- */
+ 
 bool dss_pll_calc_a(const struct dss_pll *pll, unsigned long clkin,
 		unsigned long pll_min, unsigned long pll_max,
 		dss_pll_calc_func func, void *data)
@@ -261,14 +256,7 @@ bool dss_pll_calc_a(const struct dss_pll *pll, unsigned long clkin,
 	return false;
 }
 
-/*
- * This calculates a PLL config that will provide the target_clkout rate
- * for clkout. Additionally clkdco rate will be the same as clkout rate
- * when clkout rate is >= min_clkdco.
- *
- * clkdco = clkin / n * m + clkin / n * mf / 262144
- * clkout = clkdco / m2
- */
+ 
 bool dss_pll_calc_b(const struct dss_pll *pll, unsigned long clkin,
 	unsigned long target_clkout, struct dss_pll_clock_info *cinfo)
 {
@@ -280,11 +268,11 @@ bool dss_pll_calc_b(const struct dss_pll *pll, unsigned long clkin,
 
 	DSSDBG("clkin %lu, target clkout %lu\n", clkin, target_clkout);
 
-	/* Fint */
+	 
 	n = DIV_ROUND_UP(clkin, hw->fint_max);
 	fint = clkin / n;
 
-	/* adjust m2 so that the clkdco will be high enough */
+	 
 	min_dco = roundup(hw->clkdco_min, fint);
 	m2 = DIV_ROUND_UP(min_dco, target_clkout);
 	if (m2 == 0)
@@ -295,7 +283,7 @@ bool dss_pll_calc_b(const struct dss_pll *pll, unsigned long clkin,
 
 	clkdco = fint * m;
 
-	/* adjust clkdco with fractional mf */
+	 
 	if (WARN_ON(target_clkdco - clkdco > fint))
 		mf = 0;
 	else
@@ -306,7 +294,7 @@ bool dss_pll_calc_b(const struct dss_pll *pll, unsigned long clkin,
 
 	clkout = clkdco / m2;
 
-	/* sigma-delta */
+	 
 	sd = DIV_ROUND_UP(fint * m, 250000000);
 
 	DSSDBG("N = %u, M = %u, M.f = %u, M2 = %u, SD = %u\n",
@@ -332,14 +320,14 @@ static int wait_for_bit_change(void __iomem *reg, int bitnum, int value)
 	ktime_t wait;
 	int t;
 
-	/* first busyloop to see if the bit changes right away */
+	 
 	t = 100;
 	while (t-- > 0) {
 		if (FLD_GET(readl_relaxed(reg), bitnum, bitnum) == value)
 			return value;
 	}
 
-	/* then loop for 500ms, sleeping for 1ms in between */
+	 
 	timeout = jiffies + msecs_to_jiffies(500);
 	while (time_before(jiffies, timeout)) {
 		if (FLD_GET(readl_relaxed(reg), bitnum, bitnum) == value)
@@ -379,17 +367,7 @@ static int dss_wait_hsdiv_ack(struct dss_pll *pll, u32 hsdiv_ack_mask)
 
 static bool pll_is_locked(u32 stat)
 {
-	/*
-	 * Required value for each bitfield listed below
-	 *
-	 * PLL_STATUS[6] = 0  PLL_BYPASS
-	 * PLL_STATUS[5] = 0  PLL_HIGHJITTER
-	 *
-	 * PLL_STATUS[3] = 0  PLL_LOSSREF
-	 * PLL_STATUS[2] = 0  PLL_RECAL
-	 * PLL_STATUS[1] = 1  PLL_LOCK
-	 * PLL_STATUS[0] = 1  PLL_CTRL_RESET_DONE
-	 */
+	 
 	return ((stat & 0x6f) == 0x3);
 }
 
@@ -403,22 +381,22 @@ int dss_pll_write_config_type_a(struct dss_pll *pll,
 
 	l = 0;
 	if (hw->has_stopmode)
-		l = FLD_MOD(l, 1, 0, 0);		/* PLL_STOPMODE */
-	l = FLD_MOD(l, cinfo->n - 1, hw->n_msb, hw->n_lsb);	/* PLL_REGN */
-	l = FLD_MOD(l, cinfo->m, hw->m_msb, hw->m_lsb);		/* PLL_REGM */
-	/* M4 */
+		l = FLD_MOD(l, 1, 0, 0);		 
+	l = FLD_MOD(l, cinfo->n - 1, hw->n_msb, hw->n_lsb);	 
+	l = FLD_MOD(l, cinfo->m, hw->m_msb, hw->m_lsb);		 
+	 
 	l = FLD_MOD(l, cinfo->mX[0] ? cinfo->mX[0] - 1 : 0,
 			hw->mX_msb[0], hw->mX_lsb[0]);
-	/* M5 */
+	 
 	l = FLD_MOD(l, cinfo->mX[1] ? cinfo->mX[1] - 1 : 0,
 			hw->mX_msb[1], hw->mX_lsb[1]);
 	writel_relaxed(l, base + PLL_CONFIGURATION1);
 
 	l = 0;
-	/* M6 */
+	 
 	l = FLD_MOD(l, cinfo->mX[2] ? cinfo->mX[2] - 1 : 0,
 			hw->mX_msb[2], hw->mX_lsb[2]);
-	/* M7 */
+	 
 	l = FLD_MOD(l, cinfo->mX[3] ? cinfo->mX[3] - 1 : 0,
 			hw->mX_msb[3], hw->mX_lsb[3]);
 	writel_relaxed(l, base + PLL_CONFIGURATION3);
@@ -431,21 +409,21 @@ int dss_pll_write_config_type_a(struct dss_pll *pll,
 			cinfo->fint < 1750000 ? 0x6 :
 			0x7;
 
-		l = FLD_MOD(l, f, 4, 1);	/* PLL_FREQSEL */
+		l = FLD_MOD(l, f, 4, 1);	 
 	} else if (hw->has_selfreqdco) {
 		u32 f = cinfo->clkdco < hw->clkdco_low ? 0x2 : 0x4;
 
-		l = FLD_MOD(l, f, 3, 1);	/* PLL_SELFREQDCO */
+		l = FLD_MOD(l, f, 3, 1);	 
 	}
-	l = FLD_MOD(l, 1, 13, 13);		/* PLL_REFEN */
-	l = FLD_MOD(l, 0, 14, 14);		/* PHY_CLKINEN */
-	l = FLD_MOD(l, 0, 16, 16);		/* M4_CLOCK_EN */
-	l = FLD_MOD(l, 0, 18, 18);		/* M5_CLOCK_EN */
-	l = FLD_MOD(l, 1, 20, 20);		/* HSDIVBYPASS */
+	l = FLD_MOD(l, 1, 13, 13);		 
+	l = FLD_MOD(l, 0, 14, 14);		 
+	l = FLD_MOD(l, 0, 16, 16);		 
+	l = FLD_MOD(l, 0, 18, 18);		 
+	l = FLD_MOD(l, 1, 20, 20);		 
 	if (hw->has_refsel)
-		l = FLD_MOD(l, 3, 22, 21);	/* REFSEL = sysclk */
-	l = FLD_MOD(l, 0, 23, 23);		/* M6_CLOCK_EN */
-	l = FLD_MOD(l, 0, 25, 25);		/* M7_CLOCK_EN */
+		l = FLD_MOD(l, 3, 22, 21);	 
+	l = FLD_MOD(l, 0, 23, 23);		 
+	l = FLD_MOD(l, 0, 25, 25);		 
 	writel_relaxed(l, base + PLL_CONFIGURATION2);
 
 	if (hw->errata_i932) {
@@ -453,19 +431,13 @@ int dss_pll_write_config_type_a(struct dss_pll *pll,
 		u32 sleep_time;
 		const u32 max_lock_retries = 20;
 
-		/*
-		 * Calculate wait time for PLL LOCK
-		 * 1000 REFCLK cycles in us.
-		 */
+		 
 		sleep_time = DIV_ROUND_UP(1000*1000*1000, cinfo->fint);
 
 		for (cnt = 0; cnt < max_lock_retries; cnt++) {
-			writel_relaxed(1, base + PLL_GO);	/* PLL_GO */
+			writel_relaxed(1, base + PLL_GO);	 
 
-			/**
-			 * read the register back to ensure the write is
-			 * flushed
-			 */
+			 
 			readl_relaxed(base + PLL_GO);
 
 			usleep_range(sleep_time, sleep_time + 5);
@@ -483,7 +455,7 @@ int dss_pll_write_config_type_a(struct dss_pll *pll,
 			goto err;
 		}
 	} else {
-		writel_relaxed(1, base + PLL_GO);	/* PLL_GO */
+		writel_relaxed(1, base + PLL_GO);	 
 
 		if (wait_for_bit_change(base + PLL_GO, 0, 0) != 0) {
 			DSSERR("DSS DPLL GO bit not going down.\n");
@@ -499,12 +471,12 @@ int dss_pll_write_config_type_a(struct dss_pll *pll,
 	}
 
 	l = readl_relaxed(base + PLL_CONFIGURATION2);
-	l = FLD_MOD(l, 1, 14, 14);			/* PHY_CLKINEN */
-	l = FLD_MOD(l, cinfo->mX[0] ? 1 : 0, 16, 16);	/* M4_CLOCK_EN */
-	l = FLD_MOD(l, cinfo->mX[1] ? 1 : 0, 18, 18);	/* M5_CLOCK_EN */
-	l = FLD_MOD(l, 0, 20, 20);			/* HSDIVBYPASS */
-	l = FLD_MOD(l, cinfo->mX[2] ? 1 : 0, 23, 23);	/* M6_CLOCK_EN */
-	l = FLD_MOD(l, cinfo->mX[3] ? 1 : 0, 25, 25);	/* M7_CLOCK_EN */
+	l = FLD_MOD(l, 1, 14, 14);			 
+	l = FLD_MOD(l, cinfo->mX[0] ? 1 : 0, 16, 16);	 
+	l = FLD_MOD(l, cinfo->mX[1] ? 1 : 0, 18, 18);	 
+	l = FLD_MOD(l, 0, 20, 20);			 
+	l = FLD_MOD(l, cinfo->mX[2] ? 1 : 0, 23, 23);	 
+	l = FLD_MOD(l, cinfo->mX[3] ? 1 : 0, 25, 25);	 
 	writel_relaxed(l, base + PLL_CONFIGURATION2);
 
 	r = dss_wait_hsdiv_ack(pll,
@@ -529,18 +501,18 @@ int dss_pll_write_config_type_b(struct dss_pll *pll,
 	u32 l;
 
 	l = 0;
-	l = FLD_MOD(l, cinfo->m, 20, 9);	/* PLL_REGM */
-	l = FLD_MOD(l, cinfo->n - 1, 8, 1);	/* PLL_REGN */
+	l = FLD_MOD(l, cinfo->m, 20, 9);	 
+	l = FLD_MOD(l, cinfo->n - 1, 8, 1);	 
 	writel_relaxed(l, base + PLL_CONFIGURATION1);
 
 	l = readl_relaxed(base + PLL_CONFIGURATION2);
-	l = FLD_MOD(l, 0x0, 12, 12);	/* PLL_HIGHFREQ divide by 2 */
-	l = FLD_MOD(l, 0x1, 13, 13);	/* PLL_REFEN */
-	l = FLD_MOD(l, 0x0, 14, 14);	/* PHY_CLKINEN */
+	l = FLD_MOD(l, 0x0, 12, 12);	 
+	l = FLD_MOD(l, 0x1, 13, 13);	 
+	l = FLD_MOD(l, 0x0, 14, 14);	 
 	if (hw->has_refsel)
-		l = FLD_MOD(l, 0x3, 22, 21);	/* REFSEL = SYSCLK */
+		l = FLD_MOD(l, 0x3, 22, 21);	 
 
-	/* PLL_SELFREQDCO */
+	 
 	if (cinfo->clkdco > hw->clkdco_low)
 		l = FLD_MOD(l, 0x4, 3, 1);
 	else
@@ -548,15 +520,15 @@ int dss_pll_write_config_type_b(struct dss_pll *pll,
 	writel_relaxed(l, base + PLL_CONFIGURATION2);
 
 	l = readl_relaxed(base + PLL_CONFIGURATION3);
-	l = FLD_MOD(l, cinfo->sd, 17, 10);	/* PLL_REGSD */
+	l = FLD_MOD(l, cinfo->sd, 17, 10);	 
 	writel_relaxed(l, base + PLL_CONFIGURATION3);
 
 	l = readl_relaxed(base + PLL_CONFIGURATION4);
-	l = FLD_MOD(l, cinfo->mX[0], 24, 18);	/* PLL_REGM2 */
-	l = FLD_MOD(l, cinfo->mf, 17, 0);	/* PLL_REGM_F */
+	l = FLD_MOD(l, cinfo->mX[0], 24, 18);	 
+	l = FLD_MOD(l, cinfo->mf, 17, 0);	 
 	writel_relaxed(l, base + PLL_CONFIGURATION4);
 
-	writel_relaxed(1, base + PLL_GO);	/* PLL_GO */
+	writel_relaxed(1, base + PLL_GO);	 
 
 	if (wait_for_bit_change(base + PLL_GO, 0, 0) != 0) {
 		DSSERR("DSS DPLL GO bit not going down.\n");

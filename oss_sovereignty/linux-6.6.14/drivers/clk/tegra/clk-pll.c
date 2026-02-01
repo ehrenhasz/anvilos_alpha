@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2012, 2013, NVIDIA CORPORATION.  All rights reserved.
- */
+
+ 
 
 #include <linux/slab.h>
 #include <linux/io.h>
@@ -313,7 +311,7 @@ static int clk_pll_wait_for_lock(struct tegra_clk_pll *pll)
 			udelay(PLL_POST_LOCK_DELAY);
 			return 0;
 		}
-		udelay(2); /* timeout = 2 * lock time */
+		udelay(2);  
 	}
 
 	pr_err("%s: Timed out waiting for pll %s lock\n", __func__,
@@ -340,11 +338,7 @@ static int clk_pll_is_enabled(struct clk_hw *hw)
 	struct tegra_clk_pll *pll = to_clk_pll(hw);
 	u32 val;
 
-	/*
-	 * Power Management Controller (PMC) can override the PLLM clock
-	 * settings, including the enable-state. The PLLM is enabled when
-	 * PLLM's CaR state is ON and when PLLM isn't gated by PMC.
-	 */
+	 
 	if ((pll->params->flags & TEGRA_PLLM) && pllm_clk_is_gated_by_pmc(pll))
 		return 0;
 
@@ -575,9 +569,7 @@ static int _calc_rate(struct clk_hw *hw, struct tegra_clk_pll_freq_table *cfg,
 		break;
 	case 9600000:
 	case 28800000:
-		/*
-		 * PLL_P_OUT1 rate is not listed in PLLA table
-		 */
+		 
 		cfreq = parent_rate / (parent_rate / 1000000);
 		break;
 	default:
@@ -586,7 +578,7 @@ static int _calc_rate(struct clk_hw *hw, struct tegra_clk_pll_freq_table *cfg,
 		BUG();
 	}
 
-	/* Raise VCO to guarantee 0.5% accuracy */
+	 
 	for (cfg->output_rate = rate; cfg->output_rate < 200 * cfreq;
 	     cfg->output_rate <<= 1)
 		p_div++;
@@ -616,14 +608,7 @@ static int _calc_rate(struct clk_hw *hw, struct tegra_clk_pll_freq_table *cfg,
 	return 0;
 }
 
-/*
- * SDM (Sigma Delta Modulator) divisor is 16-bit 2's complement signed number
- * within (-2^12 ... 2^12-1) range. Represented in PLL data structure as
- * unsigned 16-bit value, with "0" divisor mapped to 0xFFFF. Data "0" is used
- * to indicate that SDM is disabled.
- *
- * Effective ndiv value when SDM is enabled: ndiv + 1/2 + sdm_din/2^13
- */
+ 
 static void clk_pll_set_sdm_data(struct clk_hw *hw,
 				 struct tegra_clk_pll_freq_table *cfg)
 {
@@ -847,7 +832,7 @@ static long clk_pll_round_rate(struct clk_hw *hw, unsigned long rate,
 	struct tegra_clk_pll_freq_table cfg;
 
 	if (pll->params->flags & TEGRA_PLL_FIXED) {
-		/* PLLM/MB are used for memory; we do not change rate */
+		 
 		if (pll->params->flags & (TEGRA_PLLM | TEGRA_PLLMB))
 			return clk_hw_get_rate(hw);
 		return pll->params->fixed_rate;
@@ -919,10 +904,7 @@ static int clk_plle_training(struct tegra_clk_pll *pll)
 	if (!pll->pmc)
 		return -ENOSYS;
 
-	/*
-	 * PLLE is already disabled, and setup cleared;
-	 * create falling edge on PLLE IDDQ input.
-	 */
+	 
 	val = readl(pll->pmc + PMC_SATA_PWRGT);
 	val |= PMC_SATA_PWRGT_PLLE_IDDQ_VALUE;
 	writel(val, pll->pmc + PMC_SATA_PWRGT);
@@ -982,7 +964,7 @@ static int clk_plle_enable(struct clk_hw *hw)
 	}
 
 	if (pll->params->flags & TEGRA_PLLE_CONFIGURE) {
-		/* configure dividers */
+		 
 		val = pll_readl_base(pll);
 		val &= ~(divp_mask_shifted(pll) | divn_mask_shifted(pll) |
 			 divm_mask_shifted(pll));
@@ -1069,19 +1051,17 @@ const struct clk_ops tegra_clk_plle_ops = {
 	.enable = clk_plle_enable,
 };
 
-/*
- * Structure defining the fields for USB UTMI clocks Parameters.
- */
+ 
 struct utmi_clk_param {
-	/* Oscillator Frequency in Hz */
+	 
 	u32 osc_frequency;
-	/* UTMIP PLL Enable Delay Count  */
+	 
 	u8 enable_delay_count;
-	/* UTMIP PLL Stable count */
+	 
 	u8 stable_count;
-	/*  UTMIP PLL Active delay count */
+	 
 	u8 active_delay_count;
-	/* UTMIP PLL Xtal frequency count */
+	 
 	u8 xtal_freq_count;
 };
 
@@ -1160,24 +1140,24 @@ static int clk_pllu_enable(struct clk_hw *hw)
 	pll_writel_base(value, pll);
 
 	value = readl_relaxed(pll->clk_base + UTMIP_PLL_CFG2);
-	/* Program UTMIP PLL stable and active counts */
+	 
 	value &= ~UTMIP_PLL_CFG2_STABLE_COUNT(~0);
 	value |= UTMIP_PLL_CFG2_STABLE_COUNT(params->stable_count);
 	value &= ~UTMIP_PLL_CFG2_ACTIVE_DLY_COUNT(~0);
 	value |= UTMIP_PLL_CFG2_ACTIVE_DLY_COUNT(params->active_delay_count);
-	/* Remove power downs from UTMIP PLL control bits */
+	 
 	value &= ~UTMIP_PLL_CFG2_FORCE_PD_SAMP_A_POWERDOWN;
 	value &= ~UTMIP_PLL_CFG2_FORCE_PD_SAMP_B_POWERDOWN;
 	value &= ~UTMIP_PLL_CFG2_FORCE_PD_SAMP_C_POWERDOWN;
 	writel_relaxed(value, pll->clk_base + UTMIP_PLL_CFG2);
 
 	value = readl_relaxed(pll->clk_base + UTMIP_PLL_CFG1);
-	/* Program UTMIP PLL delay and oscillator frequency counts */
+	 
 	value &= ~UTMIP_PLL_CFG1_ENABLE_DLY_COUNT(~0);
 	value |= UTMIP_PLL_CFG1_ENABLE_DLY_COUNT(params->enable_delay_count);
 	value &= ~UTMIP_PLL_CFG1_XTAL_FREQ_COUNT(~0);
 	value |= UTMIP_PLL_CFG1_XTAL_FREQ_COUNT(params->xtal_freq_count);
-	/* Remove power downs from UTMIP PLL control bits */
+	 
 	value &= ~UTMIP_PLL_CFG1_FORCE_PLL_ENABLE_POWERDOWN;
 	value &= ~UTMIP_PLL_CFG1_FORCE_PLL_ACTIVE_POWERDOWN;
 	value &= ~UTMIP_PLL_CFG1_FORCE_PLLU_POWERDOWN;
@@ -1624,7 +1604,7 @@ static int clk_plle_tegra114_enable(struct clk_hw *hw)
 		spin_lock_irqsave(pll->lock, flags);
 
 	val = pll_readl_base(pll);
-	val &= ~BIT(29); /* Disable lock override */
+	val &= ~BIT(29);  
 	pll_writel_base(val, pll);
 
 	val = pll_readl(pll->params->aux_reg, pll);
@@ -1674,7 +1654,7 @@ static int clk_plle_tegra114_enable(struct clk_hw *hw)
 	pll_writel(val, PLLE_SS_CTRL, pll);
 	udelay(1);
 
-	/* Enable HW control of XUSB brick PLL */
+	 
 	val = pll_readl_misc(pll);
 	val &= ~PLLE_MISC_IDDQ_SW_CTRL;
 	pll_writel_misc(val, pll);
@@ -1697,7 +1677,7 @@ static int clk_plle_tegra114_enable(struct clk_hw *hw)
 	val |= XUSBIO_PLL_CFG0_SEQ_ENABLE;
 	pll_writel(val, XUSBIO_PLL_CFG0, pll);
 
-	/* Enable HW control of SATA PLL */
+	 
 	val = pll_readl(SATA_PLL_CFG0, pll);
 	val &= ~SATA_PLL_CFG0_PADPLL_RESET_SWCTL;
 	val |= SATA_PLL_CFG0_PADPLL_USE_LOCKDET;
@@ -1783,31 +1763,31 @@ static int clk_pllu_tegra114_enable(struct clk_hw *hw)
 	pll_writel_base(value, pll);
 
 	value = readl_relaxed(pll->clk_base + UTMIP_PLL_CFG2);
-	/* Program UTMIP PLL stable and active counts */
+	 
 	value &= ~UTMIP_PLL_CFG2_STABLE_COUNT(~0);
 	value |= UTMIP_PLL_CFG2_STABLE_COUNT(params->stable_count);
 	value &= ~UTMIP_PLL_CFG2_ACTIVE_DLY_COUNT(~0);
 	value |= UTMIP_PLL_CFG2_ACTIVE_DLY_COUNT(params->active_delay_count);
-	/* Remove power downs from UTMIP PLL control bits */
+	 
 	value &= ~UTMIP_PLL_CFG2_FORCE_PD_SAMP_A_POWERDOWN;
 	value &= ~UTMIP_PLL_CFG2_FORCE_PD_SAMP_B_POWERDOWN;
 	value &= ~UTMIP_PLL_CFG2_FORCE_PD_SAMP_C_POWERDOWN;
 	writel_relaxed(value, pll->clk_base + UTMIP_PLL_CFG2);
 
 	value = readl_relaxed(pll->clk_base + UTMIP_PLL_CFG1);
-	/* Program UTMIP PLL delay and oscillator frequency counts */
+	 
 	value &= ~UTMIP_PLL_CFG1_ENABLE_DLY_COUNT(~0);
 	value |= UTMIP_PLL_CFG1_ENABLE_DLY_COUNT(params->enable_delay_count);
 	value &= ~UTMIP_PLL_CFG1_XTAL_FREQ_COUNT(~0);
 	value |= UTMIP_PLL_CFG1_XTAL_FREQ_COUNT(params->xtal_freq_count);
-	/* Remove power downs from UTMIP PLL control bits */
+	 
 	value &= ~UTMIP_PLL_CFG1_FORCE_PLL_ENABLE_POWERDOWN;
 	value &= ~UTMIP_PLL_CFG1_FORCE_PLL_ACTIVE_POWERDOWN;
 	value &= ~UTMIP_PLL_CFG1_FORCE_PLLU_POWERUP;
 	value &= ~UTMIP_PLL_CFG1_FORCE_PLLU_POWERDOWN;
 	writel_relaxed(value, pll->clk_base + UTMIP_PLL_CFG1);
 
-	/* Setup HW control of UTMIPLL */
+	 
 	value = readl_relaxed(pll->clk_base + UTMIPLL_HW_PWRDN_CFG0);
 	value |= UTMIPLL_HW_PWRDN_CFG0_USE_LOCKDET;
 	value &= ~UTMIPLL_HW_PWRDN_CFG0_CLK_ENABLE_SWCTL;
@@ -1821,10 +1801,7 @@ static int clk_pllu_tegra114_enable(struct clk_hw *hw)
 
 	udelay(1);
 
-	/*
-	 * Setup SW override of UTMIPLL assuming USB2.0 ports are assigned
-	 * to USB2
-	 */
+	 
 	value = readl_relaxed(pll->clk_base + UTMIPLL_HW_PWRDN_CFG0);
 	value |= UTMIPLL_HW_PWRDN_CFG0_IDDQ_SWCTL;
 	value &= ~UTMIPLL_HW_PWRDN_CFG0_IDDQ_OVERRIDE;
@@ -1832,7 +1809,7 @@ static int clk_pllu_tegra114_enable(struct clk_hw *hw)
 
 	udelay(1);
 
-	/* Enable HW control of UTMIPLL */
+	 
 	value = readl_relaxed(pll->clk_base + UTMIPLL_HW_PWRDN_CFG0);
 	value |= UTMIPLL_HW_PWRDN_CFG0_SEQ_ENABLE;
 	writel_relaxed(value, pll->clk_base + UTMIPLL_HW_PWRDN_CFG0);
@@ -1848,7 +1825,7 @@ static void _clk_plle_tegra_init_parent(struct tegra_clk_pll *pll)
 {
 	u32 val, val_aux;
 
-	/* ensure parent is set to pll_ref */
+	 
 	val = pll_readl_base(pll);
 	val_aux = pll_readl(pll->params->aux_reg, pll);
 
@@ -1900,7 +1877,7 @@ static struct clk *_tegra_clk_register_pll(struct tegra_clk_pll *pll,
 	init.parent_names = (parent_name ? &parent_name : NULL);
 	init.num_parents = (parent_name ? 1 : 0);
 
-	/* Default to _calc_rate if unspecified */
+	 
 	if (!pll->params->calc_rate) {
 		if (pll->params->flags & TEGRA_PLLM)
 			pll->params->calc_rate = _calc_dynamic_ramp_rate;
@@ -1911,7 +1888,7 @@ static struct clk *_tegra_clk_register_pll(struct tegra_clk_pll *pll,
 	if (pll->params->set_defaults)
 		pll->params->set_defaults(pll);
 
-	/* Data in .init is copied by clk_register(), so stack variable OK */
+	 
 	pll->hw.init = &init;
 
 	return tegra_clk_dev_register(&pll->hw);
@@ -2068,10 +2045,7 @@ struct clk *tegra_clk_register_pllxc(const char *name, const char *parent_name,
 		pll_params->vco_min = pll_params->adjust_vco(pll_params,
 							     parent_rate);
 
-	/*
-	 * If the pll has a set_defaults callback, it will take care of
-	 * configuring dynamic ramping and setting IDDQ in that path.
-	 */
+	 
 	if (!pll_params->set_defaults) {
 		int err;
 
@@ -2123,7 +2097,7 @@ struct clk *tegra_clk_register_pllre(const char *name, const char *parent_name,
 	if (IS_ERR(pll))
 		return ERR_CAST(pll);
 
-	/* program minimum rate by default */
+	 
 
 	val = pll_readl_base(pll);
 	if (val & PLL_BASE_ENABLE)
@@ -2138,7 +2112,7 @@ struct clk *tegra_clk_register_pllre(const char *name, const char *parent_name,
 		pll_writel_base(val, pll);
 	}
 
-	/* disable lock override */
+	 
 
 	val = pll_readl_misc(pll);
 	val &= ~BIT(29);
@@ -2225,14 +2199,7 @@ struct clk *tegra_clk_register_pllc(const char *name, const char *parent_name,
 	if (IS_ERR(pll))
 		return ERR_CAST(pll);
 
-	/*
-	 * Most of PLLC register fields are shadowed, and can not be read
-	 * directly from PLL h/w. Hence, actual PLLC boot state is unknown.
-	 * Initialize PLL to default state: disabled, reset; shadow registers
-	 * loaded with default parameters; dividers are preset for half of
-	 * minimum VCO rate (the latter assured that shadowed divider settings
-	 * are within supported range).
-	 */
+	 
 
 	cfg.m = _pll_fixed_mdiv(pll_params, parent_rate);
 	cfg.n = cfg.m * pll_params->vco_min / parent_rate;
@@ -2360,7 +2327,7 @@ struct clk *tegra_clk_register_pllss(const char *name, const char *parent_name,
 
 	pll_params->vco_min = _clip_vco_min(pll_params->vco_min, parent_rate);
 
-	/* initialize PLL to minimum rate */
+	 
 
 	cfg.m = _pll_fixed_mdiv(pll_params, parent_rate);
 	cfg.n = cfg.m * pll_params->vco_min / parent_rate;
@@ -2470,7 +2437,7 @@ static int clk_plle_tegra210_enable(struct clk_hw *hw)
 		goto out;
 
 	val = pll_readl_base(pll);
-	val &= ~BIT(30); /* Disable lock override */
+	val &= ~BIT(30);  
 	pll_writel_base(val, pll);
 
 	val = pll_readl_misc(pll);
@@ -2533,7 +2500,7 @@ static void clk_plle_tegra210_disable(struct clk_hw *hw)
 	if (pll->lock)
 		spin_lock_irqsave(pll->lock, flags);
 
-	/* If PLLE HW sequencer is enabled, SW should not disable PLLE */
+	 
 	val = pll_readl(pll->params->aux_reg, pll);
 	if (val & PLLE_AUX_SEQ_ENABLE)
 		goto out;

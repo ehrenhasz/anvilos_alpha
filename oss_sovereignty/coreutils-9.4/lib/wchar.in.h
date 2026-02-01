@@ -1,29 +1,6 @@
-/* A substitute for ISO C99 <wchar.h>, for platforms that have issues.
+ 
 
-   Copyright (C) 2007-2023 Free Software Foundation, Inc.
-
-   This file is free software: you can redistribute it and/or modify
-   it under the terms of the GNU Lesser General Public License as
-   published by the Free Software Foundation; either version 2.1 of the
-   License, or (at your option) any later version.
-
-   This file is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU Lesser General Public License for more details.
-
-   You should have received a copy of the GNU Lesser General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* Written by Eric Blake.  */
-
-/*
- * ISO C 99 <wchar.h> for platforms that have issues.
- * <https://pubs.opengroup.org/onlinepubs/9699919799/basedefs/wchar.h.html>
- *
- * For now, this just ensures proper prerequisite inclusion order and
- * the declaration of wcwidth().
- */
+ 
 
 #if __GNUC__ >= 3
 @PRAGMA_SYSTEM_HEADER@
@@ -38,43 +15,28 @@
              || defined _GL_JUST_INCLUDE_SYSTEM_WCHAR_H))               \
      || (defined __MINGW32__ && defined __STRING_H_SOURCED__)           \
      || defined _GL_ALREADY_INCLUDING_WCHAR_H)
-/* Special invocation convention:
-   - Inside glibc and uClibc header files, but not MinGW.
-   - On HP-UX 11.00 we have a sequence of nested includes
-     <wchar.h> -> <stdlib.h> -> <stdint.h>, and the latter includes <wchar.h>,
-     once indirectly <stdint.h> -> <sys/types.h> -> <inttypes.h> -> <wchar.h>
-     and once directly.  In both situations 'wint_t' is not yet defined,
-     therefore we cannot provide the function overrides; instead include only
-     the system's <wchar.h>.
-   - With MinGW 3.22, when <string.h> includes <wchar.h>, only some part of
-     <wchar.h> is actually processed, and that doesn't include 'mbstate_t'.
-   - On IRIX 6.5, similarly, we have an include <wchar.h> -> <wctype.h>, and
-     the latter includes <wchar.h>.  But here, we have no way to detect whether
-     <wctype.h> is completely included or is still being included.  */
+ 
 
 #@INCLUDE_NEXT@ @NEXT_WCHAR_H@
 
 #else
-/* Normal invocation convention.  */
+ 
 
 #ifndef _@GUARD_PREFIX@_WCHAR_H
 
 #define _GL_ALREADY_INCLUDING_WCHAR_H
 
 #if @HAVE_FEATURES_H@
-# include <features.h> /* for __GLIBC__ */
+# include <features.h>  
 #endif
 
-/* In some builds of uClibc, <wchar.h> is nonexistent and wchar_t is defined
-   by <stddef.h>.
-   But avoid namespace pollution on glibc systems.  */
+ 
 #if !(defined __GLIBC__ && !defined __UCLIBC__)
 # include <stddef.h>
 #endif
 
-/* Include the original <wchar.h> if it exists.
-   Some builds of uClibc lack it.  */
-/* The include_next requires a split double-inclusion guard.  */
+ 
+ 
 #if @HAVE_WCHAR_H@
 # @INCLUDE_NEXT@ @NEXT_WCHAR_H@
 #endif
@@ -84,15 +46,12 @@
 #ifndef _@GUARD_PREFIX@_WCHAR_H
 #define _@GUARD_PREFIX@_WCHAR_H
 
-/* This file uses _GL_ATTRIBUTE_DEALLOC, _GL_ATTRIBUTE_MALLOC,
-   _GL_ATTRIBUTE_PURE, GNULIB_POSIXCHECK, HAVE_RAW_DECL_*.  */
+ 
 #if !_GL_CONFIG_H_INCLUDED
  #error "Please include config.h first."
 #endif
 
-/* _GL_ATTRIBUTE_DEALLOC (F, I) declares that the function returns pointers
-   that can be freed by passing them as the Ith argument to the
-   function F.  */
+ 
 #ifndef _GL_ATTRIBUTE_DEALLOC
 # if __GNUC__ >= 11
 #  define _GL_ATTRIBUTE_DEALLOC(f, i) __attribute__ ((__malloc__ (f, i)))
@@ -101,23 +60,12 @@
 # endif
 #endif
 
-/* _GL_ATTRIBUTE_DEALLOC_FREE declares that the function returns pointers that
-   can be freed via 'free'; it can be used only after declaring 'free'.  */
-/* Applies to: functions.  Cannot be used on inline functions.  */
+ 
+ 
 #ifndef _GL_ATTRIBUTE_DEALLOC_FREE
 # if defined __cplusplus && defined __GNUC__ && !defined __clang__
-/* Work around GCC bug <https://gcc.gnu.org/bugzilla/show_bug.cgi?id=108231> */
-#  define _GL_ATTRIBUTE_DEALLOC_FREE \
-     _GL_ATTRIBUTE_DEALLOC ((void (*) (void *)) free, 1)
-# else
-#  define _GL_ATTRIBUTE_DEALLOC_FREE \
-     _GL_ATTRIBUTE_DEALLOC (free, 1)
-# endif
-#endif
-
-/* _GL_ATTRIBUTE_MALLOC declares that the function returns a pointer to freshly
-   allocated memory.  */
-/* Applies to: functions.  */
+ 
+ 
 #ifndef _GL_ATTRIBUTE_MALLOC
 # if __GNUC__ >= 3 || defined __clang__
 #  define _GL_ATTRIBUTE_MALLOC __attribute__ ((__malloc__))
@@ -126,33 +74,30 @@
 # endif
 #endif
 
-/* The __attribute__ feature is available in gcc versions 2.5 and later.
-   The attribute __pure__ was added in gcc 2.96.  */
+ 
 #ifndef _GL_ATTRIBUTE_PURE
 # if __GNUC__ > 2 || (__GNUC__ == 2 && __GNUC_MINOR__ >= 96) || defined __clang__
 #  define _GL_ATTRIBUTE_PURE __attribute__ ((__pure__))
 # else
-#  define _GL_ATTRIBUTE_PURE /* empty */
+#  define _GL_ATTRIBUTE_PURE  
 # endif
 #endif
 
-/* The definitions of _GL_FUNCDECL_RPL etc. are copied here.  */
+ 
 
-/* The definition of _GL_ARG_NONNULL is copied here.  */
+ 
 
-/* The definition of _GL_WARN_ON_USE is copied here.  */
+ 
 
 
-/* Define wint_t and WEOF.  (Also done in wctype.in.h.)  */
+ 
 #if !@HAVE_WINT_T@ && !defined wint_t
 # define wint_t int
 # ifndef WEOF
 #  define WEOF -1
 # endif
 #else
-/* mingw and MSVC define wint_t as 'unsigned short' in <crtdefs.h> or
-   <stddef.h>.  This is too small: ISO C 99 section 7.24.1.(2) says that
-   wint_t must be "unchanged by default argument promotions".  Override it.  */
+ 
 # if @GNULIBHEADERS_OVERRIDE_WINT_T@
 #  if !GNULIB_defined_wint_t
 #   if @HAVE_CRTDEFS_H@
@@ -172,11 +117,7 @@ typedef unsigned int rpl_wint_t;
 #endif
 
 
-/* Override mbstate_t if it is too small.
-   On IRIX 6.5, sizeof (mbstate_t) == 1, which is not sufficient for
-   implementing mbrtowc for encodings like UTF-8.
-   On AIX and MSVC, mbrtowc needs to be overridden, but mbstate_t exists and is
-   large enough and overriding it would cause problems in C++ mode.  */
+ 
 #if !(((defined _WIN32 && !defined __CYGWIN__) || @HAVE_MBSINIT@) && @HAVE_MBRTOWC@) || @REPLACE_MBSTATE_T@
 # if !GNULIB_defined_mbstate_t
 #  if !(defined _AIX || defined _MSC_VER)
@@ -188,12 +129,11 @@ typedef int rpl_mbstate_t;
 # endif
 #endif
 
-/* Make _GL_ATTRIBUTE_DEALLOC_FREE work, even though <stdlib.h> may not have
-   been included yet.  */
+ 
 #if @GNULIB_FREE_POSIX@
 # if (@REPLACE_FREE@ && !defined free \
       && !(defined __cplusplus && defined GNULIB_NAMESPACE))
-/* We can't do '#define free rpl_free' here.  */
+ 
 #  if defined __cplusplus && (__GLIBC__ + (__GLIBC_MINOR__ >= 14) > 2)
 _GL_EXTERN_C void rpl_free (void *) throw ();
 #  else
@@ -234,12 +174,12 @@ _GL_EXTERN_C void free (void *);
 
 
 #if @GNULIB_MBSZERO@
-/* Get memset().  */
+ 
 # include <string.h>
 #endif
 
 
-/* Convert a single-byte character to a wide character.  */
+ 
 #if @GNULIB_BTOWC@
 # if @REPLACE_BTOWC@
 #  if !(defined __cplusplus && defined GNULIB_NAMESPACE)
@@ -252,7 +192,7 @@ _GL_CXXALIAS_RPL (btowc, wint_t, (int c));
 #  if !@HAVE_BTOWC@
 _GL_FUNCDECL_SYS (btowc, wint_t, (int c) _GL_ATTRIBUTE_PURE);
 #  endif
-/* Need to cast, because on mingw, the return type is 'unsigned short'.  */
+ 
 _GL_CXXALIAS_SYS_CAST (btowc, wint_t, (int c));
 # endif
 # if __GLIBC__ >= 2
@@ -267,7 +207,7 @@ _GL_WARN_ON_USE (btowc, "btowc is unportable - "
 #endif
 
 
-/* Convert a wide character to a single-byte character.  */
+ 
 #if @GNULIB_WCTOB@
 # if @REPLACE_WCTOB@
 #  if !(defined __cplusplus && defined GNULIB_NAMESPACE)
@@ -278,7 +218,7 @@ _GL_FUNCDECL_RPL (wctob, int, (wint_t wc) _GL_ATTRIBUTE_PURE);
 _GL_CXXALIAS_RPL (wctob, int, (wint_t wc));
 # else
 #  if !defined wctob && !@HAVE_DECL_WCTOB@
-/* wctob is provided by gnulib, or wctob exists but is not declared.  */
+ 
 _GL_FUNCDECL_SYS (wctob, int, (wint_t wc) _GL_ATTRIBUTE_PURE);
 #  endif
 _GL_CXXALIAS_SYS (wctob, int, (wint_t wc));
@@ -295,7 +235,7 @@ _GL_WARN_ON_USE (wctob, "wctob is unportable - "
 #endif
 
 
-/* Test whether *PS is in an initial state.  */
+ 
 #if @GNULIB_MBSINIT@
 # if @REPLACE_MBSINIT@
 #  if !(defined __cplusplus && defined GNULIB_NAMESPACE)
@@ -322,185 +262,63 @@ _GL_WARN_ON_USE (mbsinit, "mbsinit is unportable - "
 #endif
 
 
-/* Put *PS into an initial state.  */
+ 
 #if @GNULIB_MBSZERO@
-/* ISO C 23 § 7.31.6.(3) says that zeroing an mbstate_t is a way to put the
-   mbstate_t into an initial state.  However, on many platforms an mbstate_t
-   is large, and it is possible - as an optimization - to get away with zeroing
-   only part of it.  So, instead of
-
-        mbstate_t state = { 0 };
-
-   or
-
-        mbstate_t state;
-        memset (&state, 0, sizeof (mbstate_t));
-
-   we can write this faster code:
-
-        mbstate_t state;
-        mbszero (&state);
- */
-/* _GL_MBSTATE_INIT_SIZE describes how mbsinit() behaves: It is the number of
-   bytes at the beginning of an mbstate_t that need to be zero, for mbsinit()
-   to return true.
-   _GL_MBSTATE_ZERO_SIZE is the number of bytes at the beginning of an mbstate_t
-   that need to be zero,
-     - for mbsinit() to return true, and
-     - for all other multibyte-aware functions to operate properly.
-   0 < _GL_MBSTATE_INIT_SIZE <= _GL_MBSTATE_ZERO_SIZE <= sizeof (mbstate_t).
-   These values are determined by source code inspection, where possible, and
-   by running the gnulib unit tests.
-   We need _GL_MBSTATE_INIT_SIZE because if we define _GL_MBSTATE_ZERO_SIZE
-   without considering what mbsinit() does, we get test failures such as
-     assertion "mbsinit (&iter->state)" failed
- */
-# if GNULIB_defined_mbstate_t                             /* AIX, IRIX */
-/* mbstate_t has at least 4 bytes.  They are used as coded in
-   gnulib/lib/mbrtowc.c.  */
+ 
+ 
+# if GNULIB_defined_mbstate_t                              
+ 
 #  define _GL_MBSTATE_INIT_SIZE 1
-/* define _GL_MBSTATE_ZERO_SIZE 4
-   does not work: it causes test failures.
-   So, use the safe fallback value, below.  */
-# elif __GLIBC__ + (__GLIBC_MINOR__ >= 2) > 2             /* glibc */
-/* mbstate_t is defined in <bits/types/__mbstate_t.h>.
-   For more details, see glibc/iconv/skeleton.c.  */
-#  define _GL_MBSTATE_INIT_SIZE 4 /* sizeof (((mbstate_t) {0}).__count) */
-#  define _GL_MBSTATE_ZERO_SIZE /* 8 */ sizeof (mbstate_t)
-# elif defined MUSL_LIBC                                  /* musl libc */
-/* mbstate_t is defined in <bits/alltypes.h>.
-   It is an opaque aligned 8-byte struct, of which at most the first
-   4 bytes are used.
-   For more details, see src/multibyte/mbrtowc.c.  */
-#  define _GL_MBSTATE_INIT_SIZE 4 /* sizeof (unsigned) */
+ 
+# elif __GLIBC__ + (__GLIBC_MINOR__ >= 2) > 2              
+ 
+#  define _GL_MBSTATE_INIT_SIZE 4  
+#  define _GL_MBSTATE_ZERO_SIZE   sizeof (mbstate_t)
+# elif defined MUSL_LIBC                                   
+ 
+#  define _GL_MBSTATE_INIT_SIZE 4  
 #  define _GL_MBSTATE_ZERO_SIZE 4
-# elif defined __APPLE__ && defined __MACH__              /* macOS */
-/* On macOS, mbstate_t is defined in <machine/_types.h>.
-   It is an opaque aligned 128-byte struct, of which at most the first
-   12 bytes are used.
-   For more details, see the __mbsinit implementations in
-   Libc-<version>/locale/FreeBSD/
-   {ascii,none,euc,mskanji,big5,gb2312,gbk,gb18030,utf8,utf2}.c.  */
-/* File       INIT_SIZE  ZERO_SIZE
-   ascii.c        0          0
-   none.c         0          0
-   euc.c         12         12
-   mskanji.c      4          4
-   big5.c         4          4
-   gb2312.c       4          6
-   gbk.c          4          4
-   gb18030.c      4          8
-   utf8.c         8         10
-   utf2.c         8         12 */
+# elif defined __APPLE__ && defined __MACH__               
+ 
+ 
 #  define _GL_MBSTATE_INIT_SIZE 12
 #  define _GL_MBSTATE_ZERO_SIZE 12
-# elif defined __FreeBSD__                                /* FreeBSD */
-/* On FreeBSD, mbstate_t is defined in src/sys/sys/_types.h.
-   It is an opaque aligned 128-byte struct, of which at most the first
-   12 bytes are used.
-   For more details, see the __mbsinit implementations in
-   src/lib/libc/locale/
-   {ascii,none,euc,mskanji,big5,gb2312,gbk,gb18030,utf8}.c.  */
-/* File       INIT_SIZE  ZERO_SIZE
-   ascii.c        0          0
-   none.c         0          0
-   euc.c         12         12
-   mskanji.c      4          4
-   big5.c         4          4
-   gb2312.c       4          6
-   gbk.c          4          4
-   gb18030.c      4          8
-   utf8.c         8         12 */
+# elif defined __FreeBSD__                                 
+ 
+ 
 #  define _GL_MBSTATE_INIT_SIZE 12
 #  define _GL_MBSTATE_ZERO_SIZE 12
-# elif defined __NetBSD__                                 /* NetBSD */
-/* On NetBSD, mbstate_t is defined in src/sys/sys/ansi.h.
-   It is an opaque aligned 128-byte struct, of which at most the first
-   28 bytes are used.
-   For more details, see the *State types in
-   src/lib/libc/citrus/modules/citrus_*.c
-   (ignoring citrus_{hz,iso2022,utf7,viqr,zw}.c, since these implement
-   stateful encodings, not usable as locale encodings).  */
-/* File                                ZERO_SIZE
-   citrus/citrus_none.c                    0
-   citrus/modules/citrus_euc.c             8
-   citrus/modules/citrus_euctw.c           8
-   citrus/modules/citrus_mskanji.c         8
-   citrus/modules/citrus_big5.c            8
-   citrus/modules/citrus_gbk2k.c           8
-   citrus/modules/citrus_dechanyu.c        8
-   citrus/modules/citrus_johab.c           6
-   citrus/modules/citrus_utf8.c           12 */
-/* But 12 is not the correct value for _GL_MBSTATE_ZERO_SIZE: we get test
-   failures for values < 28.  */
+# elif defined __NetBSD__                                  
+ 
+ 
+ 
 #  define _GL_MBSTATE_ZERO_SIZE 28
-# elif defined __OpenBSD__                                /* OpenBSD */
-/* On OpenBSD, mbstate_t is defined in src/sys/sys/_types.h.
-   It is an opaque aligned 128-byte struct, of which at most the first
-   12 bytes are used.
-   For more details, see src/lib/libc/citrus/citrus_*.c.  */
-/* File           INIT_SIZE  ZERO_SIZE
-   citrus_none.c      0          0
-   citrus_utf8.c     12         12 */
+# elif defined __OpenBSD__                                 
+ 
+ 
 #  define _GL_MBSTATE_INIT_SIZE 12
 #  define _GL_MBSTATE_ZERO_SIZE 12
-# elif defined __minix                                    /* Minix */
-/* On Minix, mbstate_t is defined in sys/sys/ansi.h.
-   It is an opaque aligned 128-byte struct.
-   For more details, see the *State types in
-   lib/libc/citrus/citrus_*.c.  */
-/* File           INIT_SIZE  ZERO_SIZE
-   citrus_none.c      0          0 */
-/* But 1 is not the correct value for _GL_MBSTATE_ZERO_SIZE: we get test
-   failures for values < 4.  */
+# elif defined __minix                                     
+ 
+ 
+ 
 #  define _GL_MBSTATE_ZERO_SIZE 4
-# elif defined __sun                                      /* Solaris */
-/* On Solaris, mbstate_t is defined in <wchar_impl.h>.
-   It is an opaque aligned 24-byte or 32-byte struct, of which at most the first
-   20 or 28 bytes are used.
-   For more details on OpenSolaris derivatives, see the *State types in
-   illumos-gate/usr/src/lib/libc/port/locale/
-   {none,euc,mskanji,big5,gb2312,gbk,gb18030,utf8}.c.  */
-/* File       INIT_SIZE  ZERO_SIZE
-   none.c         0          0
-   euc.c         12         12
-   mskanji.c      4          4
-   big5.c         4          4
-   gb2312.c       4          6
-   gbk.c          4          4
-   gb18030.c      4          8
-   utf8.c        12         12 */
-/* But 12 is not the correct value for _GL_MBSTATE_ZERO_SIZE: we get test
-   failures
-     - in OpenIndiana and OmniOS: for values < 16,
-     - in Solaris 10 and 11: for values < 20 (in 32-bit mode)
-       or < 28 (in 64-bit mode).
-   Since we don't have a good way to distinguish the OpenSolaris derivatives
-   from the proprietary Solaris versions, and can't inspect the Solaris source
-   code, use the safe fallback values, below.  */
-# elif defined __CYGWIN__                                 /* Cygwin */
-/* On Cygwin, mbstate_t is defined in <sys/_types.h>.
-   For more details, see newlib/libc/stdlib/mbtowc_r.c and
-   winsup/cygwin/strfuncs.cc.  */
-#  define _GL_MBSTATE_INIT_SIZE 4 /* sizeof (int) */
+# elif defined __sun                                       
+ 
+ 
+ 
+# elif defined __CYGWIN__                                  
+ 
+#  define _GL_MBSTATE_INIT_SIZE 4  
 #  define _GL_MBSTATE_ZERO_SIZE 8
-# elif defined _WIN32 && !defined __CYGWIN__              /* Native Windows.  */
-/* MSVC defines 'mbstate_t' as an aligned 8-byte struct.
-   On mingw, 'mbstate_t' is sometimes defined as 'int', sometimes defined
-   as an aligned 8-byte struct, of which the first 4 bytes matter.
-   Use the safe values, below.  */
-# elif defined __ANDROID__                                /* Android */
-/* Android defines 'mbstate_t' in <bits/mbstate_t.h>.
-   It is an opaque 4-byte or 8-byte struct.
-   For more details, see
-   bionic/libc/private/bionic_mbstate.h
-   bionic/libc/bionic/mbrtoc32.cpp
-   bionic/libc/bionic/mbrtoc16.cpp
- */
+# elif defined _WIN32 && !defined __CYGWIN__               
+ 
+# elif defined __ANDROID__                                 
+ 
 #  define _GL_MBSTATE_INIT_SIZE 4
 #  define _GL_MBSTATE_ZERO_SIZE 4
 # endif
-/* Use safe values as defaults.  */
+ 
 # ifndef _GL_MBSTATE_INIT_SIZE
 #  define _GL_MBSTATE_INIT_SIZE sizeof (mbstate_t)
 # endif
@@ -524,7 +342,7 @@ _GL_CXXALIASWARN (mbszero);
 #endif
 
 
-/* Convert a multibyte character to a wide character.  */
+ 
 #if @GNULIB_MBRTOWC@
 # if @REPLACE_MBRTOWC@
 #  if !(defined __cplusplus && defined GNULIB_NAMESPACE)
@@ -559,7 +377,7 @@ _GL_WARN_ON_USE (mbrtowc, "mbrtowc is unportable - "
 #endif
 
 
-/* Recognize a multibyte character.  */
+ 
 #if @GNULIB_MBRLEN@
 # if @REPLACE_MBRLEN@
 #  if !(defined __cplusplus && defined GNULIB_NAMESPACE)
@@ -590,7 +408,7 @@ _GL_WARN_ON_USE (mbrlen, "mbrlen is unportable - "
 #endif
 
 
-/* Convert a string to a wide string.  */
+ 
 #if @GNULIB_MBSRTOWCS@
 # if @REPLACE_MBSRTOWCS@
 #  if !(defined __cplusplus && defined GNULIB_NAMESPACE)
@@ -631,7 +449,7 @@ _GL_WARN_ON_USE (mbsrtowcs, "mbsrtowcs is unportable - "
 #endif
 
 
-/* Convert a string to a wide string.  */
+ 
 #if @GNULIB_MBSNRTOWCS@
 # if @REPLACE_MBSNRTOWCS@
 #  if !(defined __cplusplus && defined GNULIB_NAMESPACE)
@@ -672,7 +490,7 @@ _GL_WARN_ON_USE (mbsnrtowcs, "mbsnrtowcs is unportable - "
 #endif
 
 
-/* Convert a wide character to a multibyte character.  */
+ 
 #if @GNULIB_WCRTOMB@
 # if @REPLACE_WCRTOMB@
 #  if !(defined __cplusplus && defined GNULIB_NAMESPACE)
@@ -703,7 +521,7 @@ _GL_WARN_ON_USE (wcrtomb, "wcrtomb is unportable - "
 #endif
 
 
-/* Convert a wide string to a string.  */
+ 
 #if @GNULIB_WCSRTOMBS@
 # if @REPLACE_WCSRTOMBS@
 #  if !(defined __cplusplus && defined GNULIB_NAMESPACE)
@@ -744,7 +562,7 @@ _GL_WARN_ON_USE (wcsrtombs, "wcsrtombs is unportable - "
 #endif
 
 
-/* Convert a wide string to a string.  */
+ 
 #if @GNULIB_WCSNRTOMBS@
 # if @REPLACE_WCSNRTOMBS@
 #  if !(defined __cplusplus && defined GNULIB_NAMESPACE)
@@ -789,7 +607,7 @@ _GL_WARN_ON_USE (wcsnrtombs, "wcsnrtombs is unportable - "
 #endif
 
 
-/* Return the number of screen columns needed for WC.  */
+ 
 #if @GNULIB_WCWIDTH@
 # if @REPLACE_WCWIDTH@
 #  if !(defined __cplusplus && defined GNULIB_NAMESPACE)
@@ -800,7 +618,7 @@ _GL_FUNCDECL_RPL (wcwidth, int, (wchar_t) _GL_ATTRIBUTE_PURE);
 _GL_CXXALIAS_RPL (wcwidth, int, (wchar_t));
 # else
 #  if !@HAVE_DECL_WCWIDTH@
-/* wcwidth exists but is not declared.  */
+ 
 _GL_FUNCDECL_SYS (wcwidth, int, (wchar_t) _GL_ATTRIBUTE_PURE);
 #  endif
 _GL_CXXALIAS_SYS (wcwidth, int, (wchar_t));
@@ -817,17 +635,13 @@ _GL_WARN_ON_USE (wcwidth, "wcwidth is unportable - "
 #endif
 
 
-/* Search N wide characters of S for C.  */
+ 
 #if @GNULIB_WMEMCHR@
 # if !@HAVE_WMEMCHR@
 _GL_FUNCDECL_SYS (wmemchr, wchar_t *, (const wchar_t *s, wchar_t c, size_t n)
                                       _GL_ATTRIBUTE_PURE);
 # endif
-  /* On some systems, this function is defined as an overloaded function:
-       extern "C++" {
-         const wchar_t * std::wmemchr (const wchar_t *, wchar_t, size_t);
-         wchar_t * std::wmemchr (wchar_t *, wchar_t, size_t);
-       }  */
+   
 _GL_CXXALIAS_SYS_CAST2 (wmemchr,
                         wchar_t *, (const wchar_t *, wchar_t, size_t),
                         const wchar_t *, (const wchar_t *, wchar_t, size_t));
@@ -848,7 +662,7 @@ _GL_WARN_ON_USE (wmemchr, "wmemchr is unportable - "
 #endif
 
 
-/* Compare N wide characters of S1 and S2.  */
+ 
 #if @GNULIB_WMEMCMP@
 # if @REPLACE_WMEMCMP@
 #  if !(defined __cplusplus && defined GNULIB_NAMESPACE)
@@ -881,7 +695,7 @@ _GL_WARN_ON_USE (wmemcmp, "wmemcmp is unportable - "
 #endif
 
 
-/* Copy N wide characters of SRC to DEST.  */
+ 
 #if @GNULIB_WMEMCPY@
 # if !@HAVE_WMEMCPY@
 _GL_FUNCDECL_SYS (wmemcpy, wchar_t *,
@@ -903,8 +717,7 @@ _GL_WARN_ON_USE (wmemcpy, "wmemcpy is unportable - "
 #endif
 
 
-/* Copy N wide characters of SRC to DEST, guaranteeing correct behavior for
-   overlapping memory areas.  */
+ 
 #if @GNULIB_WMEMMOVE@
 # if !@HAVE_WMEMMOVE@
 _GL_FUNCDECL_SYS (wmemmove, wchar_t *,
@@ -924,8 +737,7 @@ _GL_WARN_ON_USE (wmemmove, "wmemmove is unportable - "
 #endif
 
 
-/* Copy N wide characters of SRC to DEST.
-   Return pointer to wide characters after the last written wide character.  */
+ 
 #if @GNULIB_WMEMPCPY@
 # if @REPLACE_WMEMPCPY@
 #  if !(defined __cplusplus && defined GNULIB_NAMESPACE)
@@ -960,7 +772,7 @@ _GL_WARN_ON_USE (wmempcpy, "wmempcpy is unportable - "
 #endif
 
 
-/* Set N wide characters of S to C.  */
+ 
 #if @GNULIB_WMEMSET@
 # if !@HAVE_WMEMSET@
 _GL_FUNCDECL_SYS (wmemset, wchar_t *, (wchar_t *s, wchar_t c, size_t n));
@@ -978,7 +790,7 @@ _GL_WARN_ON_USE (wmemset, "wmemset is unportable - "
 #endif
 
 
-/* Return the number of wide characters in S.  */
+ 
 #if @GNULIB_WCSLEN@
 # if !@HAVE_WCSLEN@
 _GL_FUNCDECL_SYS (wcslen, size_t, (const wchar_t *s) _GL_ATTRIBUTE_PURE);
@@ -996,11 +808,9 @@ _GL_WARN_ON_USE (wcslen, "wcslen is unportable - "
 #endif
 
 
-/* Return the number of wide characters in S, but at most MAXLEN.  */
+ 
 #if @GNULIB_WCSNLEN@
-/* On Solaris 11.3, the header files declare the function in the std::
-   namespace, not in the global namespace.  So, force a declaration in
-   the global namespace.  */
+ 
 # if !@HAVE_WCSNLEN@ || (defined __sun && defined __cplusplus)
 _GL_FUNCDECL_SYS (wcsnlen, size_t, (const wchar_t *s, size_t maxlen)
                                    _GL_ATTRIBUTE_PURE);
@@ -1016,7 +826,7 @@ _GL_WARN_ON_USE (wcsnlen, "wcsnlen is unportable - "
 #endif
 
 
-/* Copy SRC to DEST.  */
+ 
 #if @GNULIB_WCSCPY@
 # if !@HAVE_WCSCPY@
 _GL_FUNCDECL_SYS (wcscpy, wchar_t *,
@@ -1036,11 +846,9 @@ _GL_WARN_ON_USE (wcscpy, "wcscpy is unportable - "
 #endif
 
 
-/* Copy SRC to DEST, returning the address of the terminating L'\0' in DEST.  */
+ 
 #if @GNULIB_WCPCPY@
-/* On Solaris 11.3, the header files declare the function in the std::
-   namespace, not in the global namespace.  So, force a declaration in
-   the global namespace.  */
+ 
 # if !@HAVE_WCPCPY@ || (defined __sun && defined __cplusplus)
 _GL_FUNCDECL_SYS (wcpcpy, wchar_t *,
                   (wchar_t *restrict dest, const wchar_t *restrict src));
@@ -1057,7 +865,7 @@ _GL_WARN_ON_USE (wcpcpy, "wcpcpy is unportable - "
 #endif
 
 
-/* Copy no more than N wide characters of SRC to DEST.  */
+ 
 #if @GNULIB_WCSNCPY@
 # if !@HAVE_WCSNCPY@
 _GL_FUNCDECL_SYS (wcsncpy, wchar_t *,
@@ -1079,12 +887,9 @@ _GL_WARN_ON_USE (wcsncpy, "wcsncpy is unportable - "
 #endif
 
 
-/* Copy no more than N characters of SRC to DEST, returning the address of
-   the last character written into DEST.  */
+ 
 #if @GNULIB_WCPNCPY@
-/* On Solaris 11.3, the header files declare the function in the std::
-   namespace, not in the global namespace.  So, force a declaration in
-   the global namespace.  */
+ 
 # if !@HAVE_WCPNCPY@ || (defined __sun && defined __cplusplus)
 _GL_FUNCDECL_SYS (wcpncpy, wchar_t *,
                   (wchar_t *restrict dest,
@@ -1103,7 +908,7 @@ _GL_WARN_ON_USE (wcpncpy, "wcpncpy is unportable - "
 #endif
 
 
-/* Append SRC onto DEST.  */
+ 
 #if @GNULIB_WCSCAT@
 # if !@HAVE_WCSCAT@
 _GL_FUNCDECL_SYS (wcscat, wchar_t *,
@@ -1123,7 +928,7 @@ _GL_WARN_ON_USE (wcscat, "wcscat is unportable - "
 #endif
 
 
-/* Append no more than N wide characters of SRC onto DEST.  */
+ 
 #if @GNULIB_WCSNCAT@
 # if !@HAVE_WCSNCAT@
 _GL_FUNCDECL_SYS (wcsncat, wchar_t *,
@@ -1145,7 +950,7 @@ _GL_WARN_ON_USE (wcsncat, "wcsncat is unportable - "
 #endif
 
 
-/* Compare S1 and S2.  */
+ 
 #if @GNULIB_WCSCMP@
 # if @REPLACE_WCSCMP@
 #  if !(defined __cplusplus && defined GNULIB_NAMESPACE)
@@ -1174,7 +979,7 @@ _GL_WARN_ON_USE (wcscmp, "wcscmp is unportable - "
 #endif
 
 
-/* Compare no more than N wide characters of S1 and S2.  */
+ 
 #if @GNULIB_WCSNCMP@
 # if @REPLACE_WCSNCMP@
 #  if !(defined __cplusplus && defined GNULIB_NAMESPACE)
@@ -1207,11 +1012,9 @@ _GL_WARN_ON_USE (wcsncmp, "wcsncmp is unportable - "
 #endif
 
 
-/* Compare S1 and S2, ignoring case.  */
+ 
 #if @GNULIB_WCSCASECMP@
-/* On Solaris 11.3, the header files declare the function in the std::
-   namespace, not in the global namespace.  So, force a declaration in
-   the global namespace.  */
+ 
 # if !@HAVE_WCSCASECMP@ || (defined __sun && defined __cplusplus)
 _GL_FUNCDECL_SYS (wcscasecmp, int, (const wchar_t *s1, const wchar_t *s2)
                                    _GL_ATTRIBUTE_PURE);
@@ -1227,11 +1030,9 @@ _GL_WARN_ON_USE (wcscasecmp, "wcscasecmp is unportable - "
 #endif
 
 
-/* Compare no more than N chars of S1 and S2, ignoring case.  */
+ 
 #if @GNULIB_WCSNCASECMP@
-/* On Solaris 11.3, the header files declare the function in the std::
-   namespace, not in the global namespace.  So, force a declaration in
-   the global namespace.  */
+ 
 # if !@HAVE_WCSNCASECMP@ || (defined __sun && defined __cplusplus)
 _GL_FUNCDECL_SYS (wcsncasecmp, int,
                   (const wchar_t *s1, const wchar_t *s2, size_t n)
@@ -1249,8 +1050,7 @@ _GL_WARN_ON_USE (wcsncasecmp, "wcsncasecmp is unportable - "
 #endif
 
 
-/* Compare S1 and S2, both interpreted as appropriate to the LC_COLLATE
-   category of the current locale.  */
+ 
 #if @GNULIB_WCSCOLL@
 # if !@HAVE_WCSCOLL@
 _GL_FUNCDECL_SYS (wcscoll, int, (const wchar_t *s1, const wchar_t *s2));
@@ -1268,9 +1068,7 @@ _GL_WARN_ON_USE (wcscoll, "wcscoll is unportable - "
 #endif
 
 
-/* Transform S2 into array pointed to by S1 such that if wcscmp is applied
-   to two transformed strings the result is the as applying 'wcscoll' to the
-   original strings.  */
+ 
 #if @GNULIB_WCSXFRM@
 # if !@HAVE_WCSXFRM@
 _GL_FUNCDECL_SYS (wcsxfrm, size_t,
@@ -1290,7 +1088,7 @@ _GL_WARN_ON_USE (wcsxfrm, "wcsxfrm is unportable - "
 #endif
 
 
-/* Duplicate S, returning an identical malloc'd string.  */
+ 
 #if @GNULIB_WCSDUP@
 # if defined _WIN32 && !defined __CYGWIN__
 #  if !(defined __cplusplus && defined GNULIB_NAMESPACE)
@@ -1299,9 +1097,7 @@ _GL_WARN_ON_USE (wcsxfrm, "wcsxfrm is unportable - "
 #  endif
 _GL_CXXALIAS_MDA (wcsdup, wchar_t *, (const wchar_t *s));
 # else
-/* On Solaris 11.3, the header files declare the function in the std::
-   namespace, not in the global namespace.  So, force a declaration in
-   the global namespace.  */
+ 
 #  if !@HAVE_WCSDUP@ || (defined __sun && defined __cplusplus) || __GNUC__ >= 11
 _GL_FUNCDECL_SYS (wcsdup, wchar_t *,
                   (const wchar_t *s)
@@ -1312,7 +1108,7 @@ _GL_CXXALIAS_SYS (wcsdup, wchar_t *, (const wchar_t *s));
 _GL_CXXALIASWARN (wcsdup);
 #else
 # if __GNUC__ >= 11 && !defined wcsdup
-/* For -Wmismatched-dealloc: Associate wcsdup with free or rpl_free.  */
+ 
 _GL_FUNCDECL_SYS (wcsdup, wchar_t *,
                   (const wchar_t *s)
                   _GL_ATTRIBUTE_MALLOC _GL_ATTRIBUTE_DEALLOC_FREE);
@@ -1324,9 +1120,7 @@ _GL_WARN_ON_USE (wcsdup, "wcsdup is unportable - "
                  "use gnulib module wcsdup for portability");
 #  endif
 # elif @GNULIB_MDA_WCSDUP@
-/* On native Windows, map 'wcsdup' to '_wcsdup', so that -loldnames is not
-   required.  In C++ with GNULIB_NAMESPACE, avoid differences between
-   platforms by defining GNULIB_NAMESPACE::wcsdup always.  */
+ 
 #  if defined _WIN32 && !defined __CYGWIN__
 #   if !(defined __cplusplus && defined GNULIB_NAMESPACE)
 #    undef wcsdup
@@ -1348,17 +1142,13 @@ _GL_CXXALIASWARN (wcsdup);
 #endif
 
 
-/* Find the first occurrence of WC in WCS.  */
+ 
 #if @GNULIB_WCSCHR@
 # if !@HAVE_WCSCHR@
 _GL_FUNCDECL_SYS (wcschr, wchar_t *, (const wchar_t *wcs, wchar_t wc)
                                      _GL_ATTRIBUTE_PURE);
 # endif
-  /* On some systems, this function is defined as an overloaded function:
-       extern "C++" {
-         const wchar_t * std::wcschr (const wchar_t *, wchar_t);
-         wchar_t * std::wcschr (wchar_t *, wchar_t);
-       }  */
+   
 _GL_CXXALIAS_SYS_CAST2 (wcschr,
                         wchar_t *, (const wchar_t *, wchar_t),
                         const wchar_t *, (const wchar_t *, wchar_t));
@@ -1378,17 +1168,13 @@ _GL_WARN_ON_USE (wcschr, "wcschr is unportable - "
 #endif
 
 
-/* Find the last occurrence of WC in WCS.  */
+ 
 #if @GNULIB_WCSRCHR@
 # if !@HAVE_WCSRCHR@
 _GL_FUNCDECL_SYS (wcsrchr, wchar_t *, (const wchar_t *wcs, wchar_t wc)
                                       _GL_ATTRIBUTE_PURE);
 # endif
-  /* On some systems, this function is defined as an overloaded function:
-       extern "C++" {
-         const wchar_t * std::wcsrchr (const wchar_t *, wchar_t);
-         wchar_t * std::wcsrchr (wchar_t *, wchar_t);
-       }  */
+   
 _GL_CXXALIAS_SYS_CAST2 (wcsrchr,
                         wchar_t *, (const wchar_t *, wchar_t),
                         const wchar_t *, (const wchar_t *, wchar_t));
@@ -1408,8 +1194,7 @@ _GL_WARN_ON_USE (wcsrchr, "wcsrchr is unportable - "
 #endif
 
 
-/* Return the length of the initial segment of WCS which consists entirely
-   of wide characters not in REJECT.  */
+ 
 #if @GNULIB_WCSCSPN@
 # if !@HAVE_WCSCSPN@
 _GL_FUNCDECL_SYS (wcscspn, size_t, (const wchar_t *wcs, const wchar_t *reject)
@@ -1428,8 +1213,7 @@ _GL_WARN_ON_USE (wcscspn, "wcscspn is unportable - "
 #endif
 
 
-/* Return the length of the initial segment of WCS which consists entirely
-   of wide characters in ACCEPT.  */
+ 
 #if @GNULIB_WCSSPN@
 # if !@HAVE_WCSSPN@
 _GL_FUNCDECL_SYS (wcsspn, size_t, (const wchar_t *wcs, const wchar_t *accept)
@@ -1448,18 +1232,14 @@ _GL_WARN_ON_USE (wcsspn, "wcsspn is unportable - "
 #endif
 
 
-/* Find the first occurrence in WCS of any character in ACCEPT.  */
+ 
 #if @GNULIB_WCSPBRK@
 # if !@HAVE_WCSPBRK@
 _GL_FUNCDECL_SYS (wcspbrk, wchar_t *,
                   (const wchar_t *wcs, const wchar_t *accept)
                   _GL_ATTRIBUTE_PURE);
 # endif
-  /* On some systems, this function is defined as an overloaded function:
-       extern "C++" {
-         const wchar_t * std::wcspbrk (const wchar_t *, const wchar_t *);
-         wchar_t * std::wcspbrk (wchar_t *, const wchar_t *);
-       }  */
+   
 _GL_CXXALIAS_SYS_CAST2 (wcspbrk,
                         wchar_t *, (const wchar_t *, const wchar_t *),
                         const wchar_t *, (const wchar_t *, const wchar_t *));
@@ -1481,7 +1261,7 @@ _GL_WARN_ON_USE (wcspbrk, "wcspbrk is unportable - "
 #endif
 
 
-/* Find the first occurrence of NEEDLE in HAYSTACK.  */
+ 
 #if @GNULIB_WCSSTR@
 # if @REPLACE_WCSSTR@
 #  if !(defined __cplusplus && defined GNULIB_NAMESPACE)
@@ -1502,11 +1282,7 @@ _GL_FUNCDECL_SYS (wcsstr, wchar_t *,
                    const wchar_t *restrict needle)
                   _GL_ATTRIBUTE_PURE);
 #  endif
-  /* On some systems, this function is defined as an overloaded function:
-       extern "C++" {
-         const wchar_t * std::wcsstr (const wchar_t *, const wchar_t *);
-         wchar_t * std::wcsstr (wchar_t *, const wchar_t *);
-       }  */
+   
 _GL_CXXALIAS_SYS_CAST2 (wcsstr,
                         wchar_t *,
                         (const wchar_t *restrict, const wchar_t *restrict),
@@ -1533,7 +1309,7 @@ _GL_WARN_ON_USE (wcsstr, "wcsstr is unportable - "
 #endif
 
 
-/* Divide WCS into tokens separated by characters in DELIM.  */
+ 
 #if @GNULIB_WCSTOK@
 # if @REPLACE_WCSTOK@
 #  if !(defined __cplusplus && defined GNULIB_NAMESPACE)
@@ -1568,8 +1344,7 @@ _GL_WARN_ON_USE (wcstok, "wcstok is unportable - "
 #endif
 
 
-/* Determine number of column positions required for first N wide
-   characters (or fewer if S ends before this) in S.  */
+ 
 #if @GNULIB_WCSWIDTH@
 # if @REPLACE_WCSWIDTH@
 #  if !(defined __cplusplus && defined GNULIB_NAMESPACE)
@@ -1598,48 +1373,6 @@ _GL_WARN_ON_USE (wcswidth, "wcswidth is unportable - "
 #endif
 
 
-/* Convert *TP to a date and time wide string.  See
-   <https://pubs.opengroup.org/onlinepubs/9699919799/functions/wcsftime.html>.  */
-#if @GNULIB_WCSFTIME@
-# if @REPLACE_WCSFTIME@
-#  if !(defined __cplusplus && defined GNULIB_NAMESPACE)
-#   undef wcsftime
-#   define wcsftime rpl_wcsftime
-#  endif
-_GL_FUNCDECL_RPL (wcsftime, size_t,
-                  (wchar_t *restrict __buf, size_t __bufsize,
-                   const wchar_t *restrict __fmt,
-                   const struct tm *restrict __tp)
-                  _GL_ARG_NONNULL ((1, 3, 4)));
-_GL_CXXALIAS_RPL (wcsftime, size_t,
-                  (wchar_t *restrict __buf, size_t __bufsize,
-                   const wchar_t *restrict __fmt,
-                   const struct tm *restrict __tp));
-# else
-#  if !@HAVE_WCSFTIME@
-_GL_FUNCDECL_SYS (wcsftime, size_t,
-                  (wchar_t *restrict __buf, size_t __bufsize,
-                   const wchar_t *restrict __fmt,
-                   const struct tm *restrict __tp)
-                  _GL_ARG_NONNULL ((1, 3, 4)));
-#  endif
-_GL_CXXALIAS_SYS (wcsftime, size_t,
-                  (wchar_t *restrict __buf, size_t __bufsize,
-                   const wchar_t *restrict __fmt,
-                   const struct tm *restrict __tp));
-# endif
-# if __GLIBC__ >= 2
-_GL_CXXALIASWARN (wcsftime);
-# endif
-#elif defined GNULIB_POSIXCHECK
-# undef wcsftime
-# if HAVE_RAW_DECL_WCSFTIME
-_GL_WARN_ON_USE (wcsftime, "wcsftime is unportable - "
-                 "use gnulib module wcsftime for portability");
-# endif
-#endif
-
-
-#endif /* _@GUARD_PREFIX@_WCHAR_H */
-#endif /* _@GUARD_PREFIX@_WCHAR_H */
+ 
+#endif  
 #endif

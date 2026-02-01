@@ -1,36 +1,5 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
-/*
- * Copyright (c) 2005, 2010, Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2011, 2020 by Delphix. All rights reserved.
- * Copyright (c) 2013 by Saso Kiselkov. All rights reserved.
- * Copyright (c) 2013, Joyent, Inc. All rights reserved.
- * Copyright (c) 2016, Nexenta Systems, Inc. All rights reserved.
- * Copyright (c) 2015 by Chunwei Chen. All rights reserved.
- * Copyright (c) 2019 Datto Inc.
- * Copyright (c) 2019, Klara Inc.
- * Copyright (c) 2019, Allan Jude
- * Copyright (c) 2022 Hewlett Packard Enterprise Development LP.
- * Copyright (c) 2021, 2022 by Pawel Jakub Dawidek
- */
+ 
+ 
 
 #include <sys/dmu.h>
 #include <sys/dmu_impl.h>
@@ -62,33 +31,16 @@
 #include <sys/zfs_znode.h>
 #endif
 
-/*
- * Enable/disable nopwrite feature.
- */
+ 
 static int zfs_nopwrite_enabled = 1;
 
-/*
- * Tunable to control percentage of dirtied L1 blocks from frees allowed into
- * one TXG. After this threshold is crossed, additional dirty blocks from frees
- * will wait until the next TXG.
- * A value of zero will disable this throttle.
- */
+ 
 static uint_t zfs_per_txg_dirty_frees_percent = 30;
 
-/*
- * Enable/disable forcing txg sync when dirty checking for holes with lseek().
- * By default this is enabled to ensure accurate hole reporting, it can result
- * in a significant performance penalty for lseek(SEEK_HOLE) heavy workloads.
- * Disabling this option will result in holes never being reported in dirty
- * files which is always safe.
- */
+ 
 static int zfs_dmu_offset_next_sync = 1;
 
-/*
- * Limit the amount we can prefetch with one call to this amount.  This
- * helps to limit the amount of memory that can be used by prefetching.
- * Larger objects should be prefetched a bit at a time.
- */
+ 
 #ifdef _ILP32
 uint_t dmu_prefetch_max = 8 * 1024 * 1024;
 #else
@@ -345,11 +297,7 @@ dmu_rm_spill(objset_t *os, uint64_t object, dmu_tx_t *tx)
 	return (error);
 }
 
-/*
- * Lookup and hold the bonus buffer for the provided dnode.  If the dnode
- * has not yet been allocated a new bonus dbuf a will be allocated.
- * Returns ENOENT, EIO, or 0.
- */
+ 
 int dmu_bonus_hold_by_dnode(dnode_t *dn, const void *tag, dmu_buf_t **dbp,
     uint32_t flags)
 {
@@ -373,17 +321,13 @@ int dmu_bonus_hold_by_dnode(dnode_t *dn, const void *tag, dmu_buf_t **dbp,
 	}
 	db = dn->dn_bonus;
 
-	/* as long as the bonus buf is held, the dnode will be held */
+	 
 	if (zfs_refcount_add(&db->db_holds, tag) == 1) {
 		VERIFY(dnode_add_ref(dn, db));
 		atomic_inc_32(&dn->dn_dbufs_count);
 	}
 
-	/*
-	 * Wait to drop dn_struct_rwlock until after adding the bonus dbuf's
-	 * hold and incrementing the dbuf count to ensure that dnode_move() sees
-	 * a dnode hold for every dbuf.
-	 */
+	 
 	rw_exit(&dn->dn_struct_rwlock);
 
 	error = dbuf_read(db, NULL, db_flags);
@@ -414,15 +358,7 @@ dmu_bonus_hold(objset_t *os, uint64_t object, const void *tag, dmu_buf_t **dbp)
 	return (error);
 }
 
-/*
- * returns ENOENT, EIO, or 0.
- *
- * This interface will allocate a blank spill dbuf when a spill blk
- * doesn't already exist on the dnode.
- *
- * if you only want to find an already existing spill db, then
- * dmu_spill_hold_existing() should be used.
- */
+ 
 int
 dmu_spill_hold_by_dnode(dnode_t *dn, uint32_t flags, const void *tag,
     dmu_buf_t **dbp)
@@ -501,12 +437,7 @@ dmu_spill_hold_by_bonus(dmu_buf_t *bonus, uint32_t flags, const void *tag,
 	return (err);
 }
 
-/*
- * Note: longer-term, we should modify all of the dmu_buf_*() interfaces
- * to take a held dnode rather than <os, object> -- the lookup is wasteful,
- * and can induce severe lock contention when writing to several files
- * whose dnodes are in the same block.
- */
+ 
 int
 dmu_buf_hold_array_by_dnode(dnode_t *dn, uint64_t offset, uint64_t length,
     boolean_t read, const void *tag, int *numbufsp, dmu_buf_t ***dbpp,
@@ -522,11 +453,7 @@ dmu_buf_hold_array_by_dnode(dnode_t *dn, uint64_t offset, uint64_t length,
 
 	ASSERT(!read || length <= DMU_MAX_ACCESS);
 
-	/*
-	 * Note: We directly notify the prefetch code of this read, so that
-	 * we can tell it about the multi-block read.  dbuf_read() only knows
-	 * about the one block it is accessing.
-	 */
+	 
 	dbuf_flags = DB_RF_CANFAIL | DB_RF_NEVERWAIT | DB_RF_HAVESTRUCT |
 	    DB_RF_NOPREFETCH;
 
@@ -558,11 +485,7 @@ dmu_buf_hold_array_by_dnode(dnode_t *dn, uint64_t offset, uint64_t length,
 		    ZIO_FLAG_CANFAIL);
 	blkid = dbuf_whichblock(dn, 0, offset);
 	if ((flags & DMU_READ_NO_PREFETCH) == 0) {
-		/*
-		 * Prepare the zfetch before initiating the demand reads, so
-		 * that if multiple threads block on same indirect block, we
-		 * base predictions on the original less racy request order.
-		 */
+		 
 		zs = dmu_zfetch_prepare(&dn->dn_zfetch, blkid, nblks, read,
 		    B_TRUE);
 	}
@@ -578,14 +501,7 @@ dmu_buf_hold_array_by_dnode(dnode_t *dn, uint64_t offset, uint64_t length,
 			return (SET_ERROR(EIO));
 		}
 
-		/*
-		 * Initiate async demand data read.
-		 * We check the db_state after calling dbuf_read() because
-		 * (1) dbuf_read() may change the state to CACHED due to a
-		 * hit in the ARC, and (2) on a cache miss, a child will
-		 * have been added to "zio" but not yet completed, so the
-		 * state will not yet be CACHED.
-		 */
+		 
 		if (read) {
 			if (i == nblks - 1 && blkid + i < dn->dn_maxblkid &&
 			    offset + length < db->db.db_offset +
@@ -610,14 +526,14 @@ dmu_buf_hold_array_by_dnode(dnode_t *dn, uint64_t offset, uint64_t length,
 	rw_exit(&dn->dn_struct_rwlock);
 
 	if (read) {
-		/* wait for async read i/o */
+		 
 		err = zio_wait(zio);
 		if (err) {
 			dmu_buf_rele_array(dbp, nblks, tag);
 			return (err);
 		}
 
-		/* wait for other io to complete */
+		 
 		for (i = 0; i < nblks; i++) {
 			dmu_buf_impl_t *db = (dmu_buf_impl_t *)dbp[i];
 			mutex_enter(&db->db_mtx);
@@ -694,14 +610,7 @@ dmu_buf_rele_array(dmu_buf_t **dbp_fake, int numbufs, const void *tag)
 	kmem_free(dbp, sizeof (dmu_buf_t *) * numbufs);
 }
 
-/*
- * Issue prefetch i/os for the given blocks.  If level is greater than 0, the
- * indirect blocks prefetched will be those that point to the blocks containing
- * the data starting at offset, and continuing to offset + len.
- *
- * Note that if the indirect blocks above the blocks being prefetched are not
- * in cache, they will be asynchronously read in.
- */
+ 
 void
 dmu_prefetch(objset_t *os, uint64_t object, int64_t level, uint64_t offset,
     uint64_t len, zio_priority_t pri)
@@ -710,7 +619,7 @@ dmu_prefetch(objset_t *os, uint64_t object, int64_t level, uint64_t offset,
 	uint64_t blkid;
 	int nblks, err;
 
-	if (len == 0) {  /* they're interested in the bonus buffer */
+	if (len == 0) {   
 		dn = DMU_META_DNODE(os);
 
 		if (object == 0 || object >= DN_MAX_OBJECT)
@@ -724,27 +633,15 @@ dmu_prefetch(objset_t *os, uint64_t object, int64_t level, uint64_t offset,
 		return;
 	}
 
-	/*
-	 * See comment before the definition of dmu_prefetch_max.
-	 */
+	 
 	len = MIN(len, dmu_prefetch_max);
 
-	/*
-	 * XXX - Note, if the dnode for the requested object is not
-	 * already cached, we will do a *synchronous* read in the
-	 * dnode_hold() call.  The same is true for any indirects.
-	 */
+	 
 	err = dnode_hold(os, object, FTAG, &dn);
 	if (err != 0)
 		return;
 
-	/*
-	 * offset + len - 1 is the last byte we want to prefetch for, and offset
-	 * is the first.  Then dbuf_whichblk(dn, level, off + len - 1) is the
-	 * last block we want to prefetch, and dbuf_whichblock(dn, level,
-	 * offset)  is the first.  Then the number we need to prefetch is the
-	 * last - first + 1.
-	 */
+	 
 	rw_enter(&dn->dn_struct_rwlock, RW_READER);
 	if (level > 0 || dn->dn_datablkshift != 0) {
 		nblks = dbuf_whichblock(dn, level, offset + len - 1) -
@@ -763,34 +660,19 @@ dmu_prefetch(objset_t *os, uint64_t object, int64_t level, uint64_t offset,
 	dnode_rele(dn, FTAG);
 }
 
-/*
- * Get the next "chunk" of file data to free.  We traverse the file from
- * the end so that the file gets shorter over time (if we crashes in the
- * middle, this will leave us in a better state).  We find allocated file
- * data by simply searching the allocated level 1 indirects.
- *
- * On input, *start should be the first offset that does not need to be
- * freed (e.g. "offset + length").  On return, *start will be the first
- * offset that should be freed and l1blks is set to the number of level 1
- * indirect blocks found within the chunk.
- */
+ 
 static int
 get_next_chunk(dnode_t *dn, uint64_t *start, uint64_t minimum, uint64_t *l1blks)
 {
 	uint64_t blks;
 	uint64_t maxblks = DMU_MAX_ACCESS >> (dn->dn_indblkshift + 1);
-	/* bytes of data covered by a level-1 indirect block */
+	 
 	uint64_t iblkrange = (uint64_t)dn->dn_datablksz *
 	    EPB(dn->dn_indblkshift, SPA_BLKPTRSHIFT);
 
 	ASSERT3U(minimum, <=, *start);
 
-	/*
-	 * Check if we can free the entire range assuming that all of the
-	 * L1 blocks in this range have data. If we can, we use this
-	 * worst case value as an estimate so we can avoid having to look
-	 * at the object's actual data.
-	 */
+	 
 	uint64_t total_l1blks =
 	    (roundup(*start, iblkrange) - (minimum / iblkrange * iblkrange)) /
 	    iblkrange;
@@ -804,18 +686,13 @@ get_next_chunk(dnode_t *dn, uint64_t *start, uint64_t minimum, uint64_t *l1blks)
 	for (blks = 0; *start > minimum && blks < maxblks; blks++) {
 		int err;
 
-		/*
-		 * dnode_next_offset(BACKWARDS) will find an allocated L1
-		 * indirect block at or before the input offset.  We must
-		 * decrement *start so that it is at the end of the region
-		 * to search.
-		 */
+		 
 		(*start)--;
 
 		err = dnode_next_offset(dn,
 		    DNODE_FIND_BACKWARDS, start, 2, 1, 0);
 
-		/* if there are no indirect blocks before start, we are done */
+		 
 		if (err == ESRCH) {
 			*start = minimum;
 			break;
@@ -824,7 +701,7 @@ get_next_chunk(dnode_t *dn, uint64_t *start, uint64_t minimum, uint64_t *l1blks)
 			return (err);
 		}
 
-		/* set start to the beginning of this L1 indirect */
+		 
 		*start = P2ALIGN(*start, iblkrange);
 	}
 	if (*start < minimum)
@@ -834,11 +711,7 @@ get_next_chunk(dnode_t *dn, uint64_t *start, uint64_t minimum, uint64_t *l1blks)
 	return (0);
 }
 
-/*
- * If this objset is of type OST_ZFS return true if vfs's unmounted flag is set,
- * otherwise return false.
- * Used below in dmu_free_long_range_impl() to enable abort when unmounting
- */
+ 
 static boolean_t
 dmu_objset_zfs_unmounting(objset_t *os)
 {
@@ -886,7 +759,7 @@ dmu_free_long_range_impl(objset_t *os, dnode_t *dn, uint64_t offset,
 
 		chunk_end = chunk_begin = offset + length;
 
-		/* move chunk_begin backwards to the beginning of this chunk */
+		 
 		err = get_next_chunk(dn, &chunk_begin, offset, &l1blks);
 		if (err)
 			return (err);
@@ -898,10 +771,7 @@ dmu_free_long_range_impl(objset_t *os, dnode_t *dn, uint64_t offset,
 		tx = dmu_tx_create(os);
 		dmu_tx_hold_free(tx, dn->dn_object, chunk_begin, chunk_len);
 
-		/*
-		 * Mark this transaction as typically resulting in a net
-		 * reduction in space used.
-		 */
+		 
 		dmu_tx_mark_netfree(tx);
 		err = dmu_tx_assign(tx, TXG_WAIT);
 		if (err) {
@@ -916,11 +786,7 @@ dmu_free_long_range_impl(objset_t *os, dnode_t *dn, uint64_t offset,
 		    dp->dp_long_free_dirty_pertxg[txg & TXG_MASK];
 		mutex_exit(&dp->dp_lock);
 
-		/*
-		 * To avoid filling up a TXG with just frees, wait for
-		 * the next TXG to open before freeing more chunks if
-		 * we have reached the threshold of frees.
-		 */
+		 
 		if (dirty_frees_threshold != 0 &&
 		    long_free_dirty >= dirty_frees_threshold) {
 			DMU_TX_STAT_BUMP(dmu_tx_dirty_frees_delay);
@@ -929,16 +795,7 @@ dmu_free_long_range_impl(objset_t *os, dnode_t *dn, uint64_t offset,
 			continue;
 		}
 
-		/*
-		 * In order to prevent unnecessary write throttling, for each
-		 * TXG, we track the cumulative size of L1 blocks being dirtied
-		 * in dnode_free_range() below. We compare this number to a
-		 * tunable threshold, past which we prevent new L1 dirty freeing
-		 * blocks from being added into the open TXG. See
-		 * dmu_free_long_range_impl() for details. The threshold
-		 * prevents write throttle activation due to dirty freeing L1
-		 * blocks taking up a large percentage of zfs_dirty_data_max.
-		 */
+		 
 		mutex_enter(&dp->dp_lock);
 		dp->dp_long_free_dirty_pertxg[txg & TXG_MASK] +=
 		    l1blks << dn->dn_indblkshift;
@@ -967,12 +824,7 @@ dmu_free_long_range(objset_t *os, uint64_t object,
 		return (err);
 	err = dmu_free_long_range_impl(os, dn, offset, length);
 
-	/*
-	 * It is important to zero out the maxblkid when freeing the entire
-	 * file, so that (a) subsequent calls to dmu_free_long_range_impl()
-	 * will take the fast path, and (b) dnode_reallocate() can verify
-	 * that the entire file has been freed.
-	 */
+	 
 	if (err == 0 && offset == 0 && length == DMU_OBJECT_END)
 		dn->dn_maxblkid = 0;
 
@@ -1027,11 +879,7 @@ dmu_read_impl(dnode_t *dn, uint64_t offset, uint64_t size,
 	dmu_buf_t **dbp;
 	int numbufs, err = 0;
 
-	/*
-	 * Deal with odd block sizes, where there can't be data past the first
-	 * block.  If we ever do the tail block optimization, we will need to
-	 * handle that here as well.
-	 */
+	 
 	if (dn->dn_maxblkid == 0) {
 		uint64_t newsz = offset > dn->dn_datablksz ? 0 :
 		    MIN(size, dn->dn_datablksz - offset);
@@ -1043,10 +891,7 @@ dmu_read_impl(dnode_t *dn, uint64_t offset, uint64_t size,
 		uint64_t mylen = MIN(size, DMU_MAX_ACCESS / 2);
 		int i;
 
-		/*
-		 * NB: we could do this block-at-a-time, but it's nice
-		 * to be reading in parallel.
-		 */
+		 
 		err = dmu_buf_hold_array_by_dnode(dn, offset, mylen,
 		    TRUE, FTAG, &numbufs, &dbp, flags);
 		if (err)
@@ -1146,9 +991,7 @@ dmu_write(objset_t *os, uint64_t object, uint64_t offset, uint64_t size,
 	dmu_buf_rele_array(dbp, numbufs, FTAG);
 }
 
-/*
- * Note: Lustre is an external consumer of this interface.
- */
+ 
 void
 dmu_write_by_dnode(dnode_t *dn, uint64_t offset, uint64_t size,
     const void *buf, dmu_tx_t *tx)
@@ -1226,10 +1069,7 @@ dmu_read_uio_dnode(dnode_t *dn, zfs_uio_t *uio, uint64_t size)
 	dmu_buf_t **dbp;
 	int numbufs, i, err;
 
-	/*
-	 * NB: we could do this block-at-a-time, but it's nice
-	 * to be reading in parallel.
-	 */
+	 
 	err = dmu_buf_hold_array_by_dnode(dn, zfs_uio_offset(uio), size,
 	    TRUE, FTAG, &numbufs, &dbp, 0);
 	if (err)
@@ -1258,15 +1098,7 @@ dmu_read_uio_dnode(dnode_t *dn, zfs_uio_t *uio, uint64_t size)
 	return (err);
 }
 
-/*
- * Read 'size' bytes into the uio buffer.
- * From object zdb->db_object.
- * Starting at zfs_uio_offset(uio).
- *
- * If the caller already has a dbuf in the target object
- * (e.g. its bonus buffer), this routine is faster than dmu_read_uio(),
- * because we don't have to find the dnode_t for the object.
- */
+ 
 int
 dmu_read_uio_dbuf(dmu_buf_t *zdb, zfs_uio_t *uio, uint64_t size)
 {
@@ -1285,11 +1117,7 @@ dmu_read_uio_dbuf(dmu_buf_t *zdb, zfs_uio_t *uio, uint64_t size)
 	return (err);
 }
 
-/*
- * Read 'size' bytes into the uio buffer.
- * From the specified object
- * Starting at offset zfs_uio_offset(uio).
- */
+ 
 int
 dmu_read_uio(objset_t *os, uint64_t object, zfs_uio_t *uio, uint64_t size)
 {
@@ -1340,12 +1168,7 @@ dmu_write_uio_dnode(dnode_t *dn, zfs_uio_t *uio, uint64_t size, dmu_tx_t *tx)
 		else
 			dmu_buf_will_dirty(db, tx);
 
-		/*
-		 * XXX zfs_uiomove could block forever (eg.nfs-backed
-		 * pages).  There needs to be a uiolockdown() function
-		 * to lock the pages in memory, so that zfs_uiomove won't
-		 * block.
-		 */
+		 
 		err = zfs_uio_fault_move((char *)db->db_data + bufoff,
 		    tocpy, UIO_WRITE, uio);
 
@@ -1362,15 +1185,7 @@ dmu_write_uio_dnode(dnode_t *dn, zfs_uio_t *uio, uint64_t size, dmu_tx_t *tx)
 	return (err);
 }
 
-/*
- * Write 'size' bytes from the uio buffer.
- * To object zdb->db_object.
- * Starting at offset zfs_uio_offset(uio).
- *
- * If the caller already has a dbuf in the target object
- * (e.g. its bonus buffer), this routine is faster than dmu_write_uio(),
- * because we don't have to find the dnode_t for the object.
- */
+ 
 int
 dmu_write_uio_dbuf(dmu_buf_t *zdb, zfs_uio_t *uio, uint64_t size,
     dmu_tx_t *tx)
@@ -1390,11 +1205,7 @@ dmu_write_uio_dbuf(dmu_buf_t *zdb, zfs_uio_t *uio, uint64_t size,
 	return (err);
 }
 
-/*
- * Write 'size' bytes from the uio buffer.
- * To the specified object.
- * Starting at offset zfs_uio_offset(uio).
- */
+ 
 int
 dmu_write_uio(objset_t *os, uint64_t object, zfs_uio_t *uio, uint64_t size,
     dmu_tx_t *tx)
@@ -1415,11 +1226,9 @@ dmu_write_uio(objset_t *os, uint64_t object, zfs_uio_t *uio, uint64_t size,
 
 	return (err);
 }
-#endif /* _KERNEL */
+#endif  
 
-/*
- * Allocate a loaned anonymous arc buffer.
- */
+ 
 arc_buf_t *
 dmu_request_arcbuf(dmu_buf_t *handle, int size)
 {
@@ -1428,9 +1237,7 @@ dmu_request_arcbuf(dmu_buf_t *handle, int size)
 	return (arc_loan_buf(db->db_objset->os_spa, B_FALSE, size));
 }
 
-/*
- * Free a loaned arc buffer.
- */
+ 
 void
 dmu_return_arcbuf(arc_buf_t *buf)
 {
@@ -1438,18 +1245,7 @@ dmu_return_arcbuf(arc_buf_t *buf)
 	arc_buf_destroy(buf, FTAG);
 }
 
-/*
- * A "lightweight" write is faster than a regular write (e.g.
- * dmu_write_by_dnode() or dmu_assign_arcbuf_by_dnode()), because it avoids the
- * CPU cost of creating a dmu_buf_impl_t and arc_buf_[hdr_]_t.  However, the
- * data can not be read or overwritten until the transaction's txg has been
- * synced.  This makes it appropriate for workloads that are known to be
- * (temporarily) write-only, like "zfs receive".
- *
- * A single block is written, starting at the specified offset in bytes.  If
- * the call is successful, it returns 0 and the provided abd has been
- * consumed (the caller should not free it).
- */
+ 
 int
 dmu_lightweight_write_by_dnode(dnode_t *dn, uint64_t offset, abd_t *abd,
     const zio_prop_t *zp, zio_flag_t flags, dmu_tx_t *tx)
@@ -1464,11 +1260,7 @@ dmu_lightweight_write_by_dnode(dnode_t *dn, uint64_t offset, abd_t *abd,
 	return (0);
 }
 
-/*
- * When possible directly assign passed loaned arc buffer to a dbuf.
- * If this is not possible copy the contents of passed arc buf via
- * dmu_write().
- */
+ 
 int
 dmu_assign_arcbuf_by_dnode(dnode_t *dn, uint64_t offset, arc_buf_t *buf,
     dmu_tx_t *tx)
@@ -1486,16 +1278,13 @@ dmu_assign_arcbuf_by_dnode(dnode_t *dn, uint64_t offset, arc_buf_t *buf,
 		return (SET_ERROR(EIO));
 	rw_exit(&dn->dn_struct_rwlock);
 
-	/*
-	 * We can only assign if the offset is aligned and the arc buf is the
-	 * same size as the dbuf.
-	 */
+	 
 	if (offset == db->db.db_offset && blksz == db->db.db_size) {
 		zfs_racct_write(blksz, 1);
 		dbuf_assign_arcbuf(db, buf, tx);
 		dbuf_rele(db, FTAG);
 	} else {
-		/* compressed bufs must always be assignable to their dbuf */
+		 
 		ASSERT3U(arc_get_compression(buf), ==, ZIO_COMPRESS_OFF);
 		ASSERT(!(buf->b_flags & ARC_BUF_FLAG_COMPRESSED));
 
@@ -1538,10 +1327,7 @@ dmu_sync_ready(zio_t *zio, arc_buf_t *buf, void *varg)
 
 	if (zio->io_error == 0) {
 		if (BP_IS_HOLE(bp)) {
-			/*
-			 * A block of zeros may compress to a hole, but the
-			 * block size still needs to be known for replay.
-			 */
+			 
 			BP_SET_LSIZE(bp, db->db_size);
 		} else if (!BP_IS_EMBEDDED(bp)) {
 			ASSERT(BP_GET_LEVEL(bp) == 0);
@@ -1565,10 +1351,7 @@ dmu_sync_done(zio_t *zio, arc_buf_t *buf, void *varg)
 	dmu_buf_impl_t *db = dr->dr_dbuf;
 	zgd_t *zgd = dsa->dsa_zgd;
 
-	/*
-	 * Record the vdev(s) backing this blkptr so they can be flushed after
-	 * the writes for the lwb have completed.
-	 */
+	 
 	if (zio->io_error == 0) {
 		zil_lwb_add_block(zgd->zgd_lwb, zgd->zgd_bp);
 	}
@@ -1592,16 +1375,7 @@ dmu_sync_done(zio_t *zio, arc_buf_t *buf, void *varg)
 		dr->dt.dl.dr_override_state = DR_OVERRIDDEN;
 		dr->dt.dl.dr_copies = zio->io_prop.zp_copies;
 
-		/*
-		 * Old style holes are filled with all zeros, whereas
-		 * new-style holes maintain their lsize, type, level,
-		 * and birth time (see zio_write_compress). While we
-		 * need to reset the BP_SET_LSIZE() call that happened
-		 * in dmu_sync_ready for old style holes, we do *not*
-		 * want to wipe out the information contained in new
-		 * style holes. Thus, only zero out the block pointer if
-		 * it's an old style hole.
-		 */
+		 
 		if (BP_IS_HOLE(&dr->dt.dl.dr_overridden_by) &&
 		    dr->dt.dl.dr_overridden_by.blk_birth == 0)
 			BP_ZERO(&dr->dt.dl.dr_overridden_by);
@@ -1624,10 +1398,7 @@ dmu_sync_late_arrival_done(zio_t *zio)
 	zgd_t *zgd = dsa->dsa_zgd;
 
 	if (zio->io_error == 0) {
-		/*
-		 * Record the vdev(s) backing this blkptr so they can be
-		 * flushed after the writes for the lwb have completed.
-		 */
+		 
 		zil_lwb_add_block(zgd->zgd_lwb, zgd->zgd_bp);
 
 		if (!BP_IS_HOLE(bp)) {
@@ -1663,23 +1434,14 @@ dmu_sync_late_arrival(zio_t *pio, objset_t *os, dmu_sync_cb_t *done, zgd_t *zgd,
 
 	tx = dmu_tx_create(os);
 	dmu_tx_hold_space(tx, zgd->zgd_db->db_size);
-	/*
-	 * This transaction does not produce any dirty data or log blocks, so
-	 * it should not be throttled.  All other cases wait for TXG sync, by
-	 * which time the log block we are writing will be obsolete, so we can
-	 * skip waiting and just return error here instead.
-	 */
+	 
 	if (dmu_tx_assign(tx, TXG_NOWAIT | TXG_NOTHROTTLE) != 0) {
 		dmu_tx_abort(tx);
-		/* Make zl_get_data do txg_waited_synced() */
+		 
 		return (SET_ERROR(EIO));
 	}
 
-	/*
-	 * In order to prevent the zgd's lwb from being free'd prior to
-	 * dmu_sync_late_arrival_done() being called, we have to ensure
-	 * the lwb's "max txg" takes this tx's txg into account.
-	 */
+	 
 	zil_lwb_add_txg(zgd->zgd_lwb, dmu_tx_get_txg(tx));
 
 	dsa = kmem_alloc(sizeof (dmu_sync_arg_t), KM_SLEEP);
@@ -1688,27 +1450,7 @@ dmu_sync_late_arrival(zio_t *pio, objset_t *os, dmu_sync_cb_t *done, zgd_t *zgd,
 	dsa->dsa_zgd = zgd;
 	dsa->dsa_tx = tx;
 
-	/*
-	 * Since we are currently syncing this txg, it's nontrivial to
-	 * determine what BP to nopwrite against, so we disable nopwrite.
-	 *
-	 * When syncing, the db_blkptr is initially the BP of the previous
-	 * txg.  We can not nopwrite against it because it will be changed
-	 * (this is similar to the non-late-arrival case where the dbuf is
-	 * dirty in a future txg).
-	 *
-	 * Then dbuf_write_ready() sets bp_blkptr to the location we will write.
-	 * We can not nopwrite against it because although the BP will not
-	 * (typically) be changed, the data has not yet been persisted to this
-	 * location.
-	 *
-	 * Finally, when dbuf_write_done() is called, it is theoretically
-	 * possible to always nopwrite, because the data that was written in
-	 * this txg is the same data that we are trying to write.  However we
-	 * would need to check that this dbuf is not dirty in any future
-	 * txg's (as we do in the normal dmu_sync() path). For simplicity, we
-	 * don't nopwrite in this case.
-	 */
+	 
 	zp->zp_nopwrite = B_FALSE;
 
 	zio_nowait(zio_write(pio, os->os_spa, dmu_tx_get_txg(tx), zgd->zgd_bp,
@@ -1720,31 +1462,7 @@ dmu_sync_late_arrival(zio_t *pio, objset_t *os, dmu_sync_cb_t *done, zgd_t *zgd,
 	return (0);
 }
 
-/*
- * Intent log support: sync the block associated with db to disk.
- * N.B. and XXX: the caller is responsible for making sure that the
- * data isn't changing while dmu_sync() is writing it.
- *
- * Return values:
- *
- *	EEXIST: this txg has already been synced, so there's nothing to do.
- *		The caller should not log the write.
- *
- *	ENOENT: the block was dbuf_free_range()'d, so there's nothing to do.
- *		The caller should not log the write.
- *
- *	EALREADY: this block is already in the process of being synced.
- *		The caller should track its progress (somehow).
- *
- *	EIO: could not do the I/O.
- *		The caller should do a txg_wait_synced().
- *
- *	0: the I/O has been initiated.
- *		The caller should log this blkptr in the done callback.
- *		It is possible that the I/O will fail, in which case
- *		the error will be reported to the done callback and
- *		propagated to pio from zio_done().
- */
+ 
 int
 dmu_sync(zio_t *pio, uint64_t txg, dmu_sync_cb_t *done, zgd_t *zgd)
 {
@@ -1768,33 +1486,21 @@ dmu_sync(zio_t *pio, uint64_t txg, dmu_sync_cb_t *done, zgd_t *zgd)
 	dmu_write_policy(os, dn, db->db_level, WP_DMU_SYNC, &zp);
 	DB_DNODE_EXIT(db);
 
-	/*
-	 * If we're frozen (running ziltest), we always need to generate a bp.
-	 */
+	 
 	if (txg > spa_freeze_txg(os->os_spa))
 		return (dmu_sync_late_arrival(pio, os, done, zgd, &zp, &zb));
 
-	/*
-	 * Grabbing db_mtx now provides a barrier between dbuf_sync_leaf()
-	 * and us.  If we determine that this txg is not yet syncing,
-	 * but it begins to sync a moment later, that's OK because the
-	 * sync thread will block in dbuf_sync_leaf() until we drop db_mtx.
-	 */
+	 
 	mutex_enter(&db->db_mtx);
 
 	if (txg <= spa_last_synced_txg(os->os_spa)) {
-		/*
-		 * This txg has already synced.  There's nothing to do.
-		 */
+		 
 		mutex_exit(&db->db_mtx);
 		return (SET_ERROR(EEXIST));
 	}
 
 	if (txg <= spa_syncing_txg(os->os_spa)) {
-		/*
-		 * This txg is currently syncing, so we can't mess with
-		 * the dirty record anymore; just write a new log block.
-		 */
+		 
 		mutex_exit(&db->db_mtx);
 		return (dmu_sync_late_arrival(pio, os, done, zgd, &zp, &zb));
 	}
@@ -1802,10 +1508,7 @@ dmu_sync(zio_t *pio, uint64_t txg, dmu_sync_cb_t *done, zgd_t *zgd)
 	dr = dbuf_find_dirty_eq(db, txg);
 
 	if (dr == NULL) {
-		/*
-		 * There's no dr for this dbuf, so it must have been freed.
-		 * There's no need to log writes to freed blocks, so we're done.
-		 */
+		 
 		mutex_exit(&db->db_mtx);
 		return (SET_ERROR(ENOENT));
 	}
@@ -1814,42 +1517,11 @@ dmu_sync(zio_t *pio, uint64_t txg, dmu_sync_cb_t *done, zgd_t *zgd)
 	ASSERT(dr_next == NULL || dr_next->dr_txg < txg);
 
 	if (db->db_blkptr != NULL) {
-		/*
-		 * We need to fill in zgd_bp with the current blkptr so that
-		 * the nopwrite code can check if we're writing the same
-		 * data that's already on disk.  We can only nopwrite if we
-		 * are sure that after making the copy, db_blkptr will not
-		 * change until our i/o completes.  We ensure this by
-		 * holding the db_mtx, and only allowing nopwrite if the
-		 * block is not already dirty (see below).  This is verified
-		 * by dmu_sync_done(), which VERIFYs that the db_blkptr has
-		 * not changed.
-		 */
+		 
 		*zgd->zgd_bp = *db->db_blkptr;
 	}
 
-	/*
-	 * Assume the on-disk data is X, the current syncing data (in
-	 * txg - 1) is Y, and the current in-memory data is Z (currently
-	 * in dmu_sync).
-	 *
-	 * We usually want to perform a nopwrite if X and Z are the
-	 * same.  However, if Y is different (i.e. the BP is going to
-	 * change before this write takes effect), then a nopwrite will
-	 * be incorrect - we would override with X, which could have
-	 * been freed when Y was written.
-	 *
-	 * (Note that this is not a concern when we are nop-writing from
-	 * syncing context, because X and Y must be identical, because
-	 * all previous txgs have been synced.)
-	 *
-	 * Therefore, we disable nopwrite if the current BP could change
-	 * before this TXG.  There are two ways it could change: by
-	 * being dirty (dr_next is non-NULL), or by being freed
-	 * (dnode_block_freed()).  This behavior is verified by
-	 * zio_done(), which VERIFYs that the override BP is identical
-	 * to the on-disk BP.
-	 */
+	 
 	DB_DNODE_ENTER(db);
 	dn = DB_DNODE(db);
 	if (dr_next != NULL || dnode_block_freed(dn, db->db_blkid))
@@ -1859,11 +1531,7 @@ dmu_sync(zio_t *pio, uint64_t txg, dmu_sync_cb_t *done, zgd_t *zgd)
 	ASSERT(dr->dr_txg == txg);
 	if (dr->dt.dl.dr_override_state == DR_IN_DMU_SYNC ||
 	    dr->dt.dl.dr_override_state == DR_OVERRIDDEN) {
-		/*
-		 * We have already issued a sync write for this buffer,
-		 * or this buffer has already been synced.  It could not
-		 * have been dirtied since, or we would have cleared the state.
-		 */
+		 
 		mutex_exit(&db->db_mtx);
 		return (SET_ERROR(EALREADY));
 	}
@@ -1938,11 +1606,7 @@ dmu_object_set_checksum(objset_t *os, uint64_t object, uint8_t checksum,
 {
 	dnode_t *dn;
 
-	/*
-	 * Send streams include each object's checksum function.  This
-	 * check ensures that the receiving system can understand the
-	 * checksum function transmitted.
-	 */
+	 
 	ASSERT3U(checksum, <, ZIO_CHECKSUM_LEGACY_FUNCTIONS);
 
 	VERIFY0(dnode_hold(os, object, FTAG, &dn));
@@ -1958,11 +1622,7 @@ dmu_object_set_compress(objset_t *os, uint64_t object, uint8_t compress,
 {
 	dnode_t *dn;
 
-	/*
-	 * Send streams include each object's compression function.  This
-	 * check ensures that the receiving system can understand the
-	 * compression function transmitted.
-	 */
+	 
 	ASSERT3U(compress, <, ZIO_COMPRESS_LEGACY_FUNCTIONS);
 
 	VERIFY0(dnode_hold(os, object, FTAG, &dn));
@@ -1971,10 +1631,7 @@ dmu_object_set_compress(objset_t *os, uint64_t object, uint8_t compress,
 	dnode_rele(dn, FTAG);
 }
 
-/*
- * When the "redundant_metadata" property is set to "most", only indirect
- * blocks of this level and higher will have an additional ditto block.
- */
+ 
 static const int zfs_redundant_metadata_most_ditto_level = 2;
 
 void
@@ -1993,28 +1650,13 @@ dmu_write_policy(objset_t *os, dnode_t *dn, int level, int wp, zio_prop_t *zp)
 	boolean_t encrypt = B_FALSE;
 	int copies = os->os_copies;
 
-	/*
-	 * We maintain different write policies for each of the following
-	 * types of data:
-	 *	 1. metadata
-	 *	 2. preallocated blocks (i.e. level-0 blocks of a dump device)
-	 *	 3. all other level 0 blocks
-	 */
+	 
 	if (ismd) {
-		/*
-		 * XXX -- we should design a compression algorithm
-		 * that specializes in arrays of bps.
-		 */
+		 
 		compress = zio_compress_select(os->os_spa,
 		    ZIO_COMPRESS_ON, ZIO_COMPRESS_ON);
 
-		/*
-		 * Metadata always gets checksummed.  If the data
-		 * checksum is multi-bit correctable, and it's not a
-		 * ZBT-style checksum, then it's suitable for metadata
-		 * as well.  Otherwise, the metadata checksum defaults
-		 * to fletcher4.
-		 */
+		 
 		if (!(zio_checksum_table[checksum].ci_flags &
 		    ZCHECKSUM_FLAG_METADATA) ||
 		    (zio_checksum_table[checksum].ci_flags &
@@ -2040,13 +1682,7 @@ dmu_write_policy(objset_t *os, dnode_t *dn, int level, int wp, zio_prop_t *zp)
 	} else if (wp & WP_NOFILL) {
 		ASSERT(level == 0);
 
-		/*
-		 * If we're writing preallocated blocks, we aren't actually
-		 * writing them so don't set any policy properties.  These
-		 * blocks are currently only used by an external subsystem
-		 * outside of zfs (i.e. dump) and not written by the zio
-		 * pipeline.
-		 */
+		 
 		compress = ZIO_COMPRESS_OFF;
 		checksum = ZIO_CHECKSUM_OFF;
 	} else {
@@ -2059,14 +1695,7 @@ dmu_write_policy(objset_t *os, dnode_t *dn, int level, int wp, zio_prop_t *zp)
 		    zio_checksum_select(dn->dn_checksum, checksum) :
 		    dedup_checksum;
 
-		/*
-		 * Determine dedup setting.  If we are in dmu_sync(),
-		 * we won't actually dedup now because that's all
-		 * done in syncing context; but we do want to use the
-		 * dedup checksum.  If the checksum is not strong
-		 * enough to ensure unique signatures, force
-		 * dedup_verify.
-		 */
+		 
 		if (dedup_checksum != ZIO_CHECKSUM_OFF) {
 			dedup = (wp & WP_DMU_SYNC) ? B_FALSE : B_TRUE;
 			if (!(zio_checksum_table[checksum].ci_flags &
@@ -2074,27 +1703,13 @@ dmu_write_policy(objset_t *os, dnode_t *dn, int level, int wp, zio_prop_t *zp)
 				dedup_verify = B_TRUE;
 		}
 
-		/*
-		 * Enable nopwrite if we have secure enough checksum
-		 * algorithm (see comment in zio_nop_write) and
-		 * compression is enabled.  We don't enable nopwrite if
-		 * dedup is enabled as the two features are mutually
-		 * exclusive.
-		 */
+		 
 		nopwrite = (!dedup && (zio_checksum_table[checksum].ci_flags &
 		    ZCHECKSUM_FLAG_NOPWRITE) &&
 		    compress != ZIO_COMPRESS_OFF && zfs_nopwrite_enabled);
 	}
 
-	/*
-	 * All objects in an encrypted objset are protected from modification
-	 * via a MAC. Encrypted objects store their IV and salt in the last DVA
-	 * in the bp, so we cannot use all copies. Encrypted objects are also
-	 * not subject to nopwrite since writing the same data will still
-	 * result in a new ciphertext. Only encrypted blocks can be dedup'd
-	 * to avoid ambiguity in the dedup code since the DDT does not store
-	 * object types.
-	 */
+	 
 	if (os->os_encrypted && (wp & WP_NOFILL) == 0) {
 		encrypt = B_TRUE;
 
@@ -2131,14 +1746,7 @@ dmu_write_policy(objset_t *os, dnode_t *dn, int level, int wp, zio_prop_t *zp)
 	ASSERT3U(zp->zp_compress, !=, ZIO_COMPRESS_INHERIT);
 }
 
-/*
- * Reports the location of data and holes in an object.  In order to
- * accurately report holes all dirty data must be synced to disk.  This
- * causes extremely poor performance when seeking for holes in a dirty file.
- * As a compromise, only provide hole data when the dnode is clean.  When
- * a dnode is dirty report the dnode as having no holes by returning EBUSY
- * which is always safe to do.
- */
+ 
 int
 dmu_offset_next(objset_t *os, uint64_t object, boolean_t hole, uint64_t *off)
 {
@@ -2153,16 +1761,7 @@ restart:
 	rw_enter(&dn->dn_struct_rwlock, RW_READER);
 
 	if (dnode_is_dirty(dn)) {
-		/*
-		 * If the zfs_dmu_offset_next_sync module option is enabled
-		 * then hole reporting has been requested.  Dirty dnodes
-		 * must be synced to disk to accurately report holes.
-		 *
-		 * Provided a RL_READER rangelock spanning 0-UINT64_MAX is
-		 * held by the caller only a single restart will be required.
-		 * We tolerate callers which do not hold the rangelock by
-		 * returning EBUSY and not reporting holes after one restart.
-		 */
+		 
 		if (zfs_dmu_offset_next_sync) {
 			rw_exit(&dn->dn_struct_rwlock);
 			dnode_rele(dn, FTAG);
@@ -2218,17 +1817,10 @@ dmu_read_l0_bps(objset_t *os, uint64_t object, uint64_t offset, uint64_t length,
 
 			dr = list_head(&db->db_dirty_records);
 			if (dr->dt.dl.dr_brtwrite) {
-				/*
-				 * This is very special case where we clone a
-				 * block and in the same transaction group we
-				 * read its BP (most likely to clone the clone).
-				 */
+				 
 				bp = &dr->dt.dl.dr_overridden_by;
 			} else {
-				/*
-				 * The block was modified in the same
-				 * transaction group.
-				 */
+				 
 				mutex_exit(&db->db_mtx);
 				error = SET_ERROR(EAGAIN);
 				goto out;
@@ -2240,16 +1832,11 @@ dmu_read_l0_bps(objset_t *os, uint64_t object, uint64_t offset, uint64_t length,
 		mutex_exit(&db->db_mtx);
 
 		if (bp == NULL) {
-			/*
-			 * The block was created in this transaction group,
-			 * so it has no BP yet.
-			 */
+			 
 			error = SET_ERROR(EAGAIN);
 			goto out;
 		}
-		/*
-		 * Make sure we clone only data blocks.
-		 */
+		 
 		if (BP_IS_METADATA(bp) && !BP_IS_HOLE(bp)) {
 			error = SET_ERROR(EINVAL);
 			goto out;
@@ -2283,11 +1870,7 @@ dmu_brt_clone(objset_t *os, uint64_t object, uint64_t offset, uint64_t length,
 	    &numbufs, &dbp));
 	ASSERT3U(nbps, ==, numbufs);
 
-	/*
-	 * Before we start cloning make sure that the dbufs sizes match new BPs
-	 * sizes. If they don't, that's a no-go, as we are not able to shrink
-	 * dbufs.
-	 */
+	 
 	for (i = 0; i < numbufs; i++) {
 		dbuf = dbp[i];
 		db = (dmu_buf_impl_t *)dbuf;
@@ -2337,11 +1920,7 @@ dmu_brt_clone(objset_t *os, uint64_t object, uint64_t offset, uint64_t length,
 
 		mutex_exit(&db->db_mtx);
 
-		/*
-		 * When data in embedded into BP there is no need to create
-		 * BRT entry as there is no data block. Just copy the BP as
-		 * it contains the data.
-		 */
+		 
 		if (!BP_IS_HOLE(bp) && !BP_IS_EMBEDDED(bp)) {
 			brt_pending_add(spa, bp, tx);
 		}
@@ -2387,10 +1966,7 @@ dmu_object_info_from_dnode(dnode_t *dn, dmu_object_info_t *doi)
 	rw_exit(&dn->dn_struct_rwlock);
 }
 
-/*
- * Get information on a DMU object.
- * If doi is NULL, just indicates whether the object exists.
- */
+ 
 int
 dmu_object_info(objset_t *os, uint64_t object, dmu_object_info_t *doi)
 {
@@ -2407,9 +1983,7 @@ dmu_object_info(objset_t *os, uint64_t object, dmu_object_info_t *doi)
 	return (0);
 }
 
-/*
- * As above, but faster; can be used when you have a held dbuf in hand.
- */
+ 
 void
 dmu_object_info_from_db(dmu_buf_t *db_fake, dmu_object_info_t *doi)
 {
@@ -2420,9 +1994,7 @@ dmu_object_info_from_db(dmu_buf_t *db_fake, dmu_object_info_t *doi)
 	DB_DNODE_EXIT(db);
 }
 
-/*
- * Faster still when you only care about the size.
- */
+ 
 void
 dmu_object_size_from_db(dmu_buf_t *db_fake, uint32_t *blksize,
     u_longlong_t *nblk512)
@@ -2434,7 +2006,7 @@ dmu_object_size_from_db(dmu_buf_t *db_fake, uint32_t *blksize,
 	dn = DB_DNODE(db);
 
 	*blksize = dn->dn_datablksz;
-	/* add in number of slots used for the dnode itself */
+	 
 	*nblk512 = ((DN_USED_BYTES(dn->dn_phys) + SPA_MINBLOCKSIZE/2) >>
 	    SPA_MINBLOCKSHIFT) + dn->dn_num_slots;
 	DB_DNODE_EXIT(db);
@@ -2515,7 +2087,7 @@ dmu_init(void)
 void
 dmu_fini(void)
 {
-	arc_fini(); /* arc depends on l2arc, so arc must go first */
+	arc_fini();  
 	l2arc_fini();
 	dmu_tx_fini();
 	zfetch_fini();
@@ -2569,6 +2141,6 @@ ZFS_MODULE_PARAM(zfs, zfs_, per_txg_dirty_frees_percent, UINT, ZMOD_RW,
 ZFS_MODULE_PARAM(zfs, zfs_, dmu_offset_next_sync, INT, ZMOD_RW,
 	"Enable forcing txg sync to find holes");
 
-/* CSTYLED */
+ 
 ZFS_MODULE_PARAM(zfs, , dmu_prefetch_max, UINT, ZMOD_RW,
 	"Limit one prefetch call to this size");

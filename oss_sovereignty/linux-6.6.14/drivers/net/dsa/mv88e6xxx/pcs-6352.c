@@ -1,18 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Marvell 88E6352 family SERDES PCS support
- *
- * Copyright (c) 2008 Marvell Semiconductor
- *
- * Copyright (c) 2017 Andrew Lunn <andrew@lunn.ch>
- */
+
+ 
 #include <linux/phylink.h>
 
 #include "global2.h"
 #include "port.h"
 #include "serdes.h"
 
-/* Definitions from drivers/net/phy/marvell.c, which would be good to reuse. */
+ 
 #define MII_M1011_PHY_STATUS		17
 #define MII_M1011_IMASK			18
 #define MII_M1011_IMASK_LINK_CHANGE	BIT(10)
@@ -213,9 +207,7 @@ static int marvell_c22_pcs_config(struct phylink_pcs *pcs,
 		goto restore;
 	}
 
-	/* If the ANENABLE bit was changed, the PHY will restart negotiation,
-	 * so we don't need to flag a change to trigger its own restart.
-	 */
+	 
 	if (err)
 		ret = 0;
 
@@ -298,7 +290,7 @@ static int marvell_c22_pcs_setup_irq(struct marvell_c22_pcs *mpcs,
 	return 0;
 }
 
-/* mv88e6352 specifics */
+ 
 
 static bool mv88e6352_pcs_link_check(struct marvell_c22_pcs *mpcs)
 {
@@ -306,9 +298,7 @@ static bool mv88e6352_pcs_link_check(struct marvell_c22_pcs *mpcs)
 	struct mv88e6xxx_chip *chip = port->chip;
 	u8 cmode;
 
-	/* Port 4 can be in auto-media mode. Check that the port is
-	 * associated with the mpcs.
-	 */
+	 
 	mv88e6xxx_reg_lock(chip);
 	chip->info->ops->port_get_cmode(chip, port->port, &cmode);
 	mv88e6xxx_reg_unlock(chip);

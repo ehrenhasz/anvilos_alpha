@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright 2018 NXP
- *	Dong Aisheng <aisheng.dong@nxp.com>
- */
+
+ 
 
 #include <linux/bits.h>
 #include <linux/clk-provider.h>
@@ -19,23 +16,14 @@ static DEFINE_SPINLOCK(imx_lpcg_scu_lock);
 #define CLK_GATE_SCU_LPCG_HW_SEL	BIT(0)
 #define CLK_GATE_SCU_LPCG_SW_SEL	BIT(1)
 
-/*
- * struct clk_lpcg_scu - Description of LPCG clock
- *
- * @hw: clk_hw of this LPCG
- * @reg: register of this LPCG clock
- * @bit_idx: bit index of this LPCG clock
- * @hw_gate: HW auto gate enable
- *
- * This structure describes one LPCG clock
- */
+ 
 struct clk_lpcg_scu {
 	struct clk_hw hw;
 	void __iomem *reg;
 	u8 bit_idx;
 	bool hw_gate;
 
-	/* for state save&restore */
+	 
 	u32 state;
 };
 
@@ -145,10 +133,7 @@ static int __maybe_unused imx_clk_lpcg_scu_resume(struct device *dev)
 {
 	struct clk_lpcg_scu *clk = dev_get_drvdata(dev);
 
-	/*
-	 * FIXME: Sometimes writes don't work unless the CPU issues
-	 * them twice
-	 */
+	 
 
 	writel(clk->state, clk->reg);
 	writel(clk->state, clk->reg);

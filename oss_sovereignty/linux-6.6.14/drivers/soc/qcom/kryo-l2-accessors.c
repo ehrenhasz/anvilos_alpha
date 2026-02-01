@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2018, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/spinlock.h>
 #include <asm/barrier.h>
@@ -13,14 +11,7 @@
 
 static DEFINE_RAW_SPINLOCK(l2_access_lock);
 
-/**
- * kryo_l2_set_indirect_reg() - write value to an L2 register
- * @reg: Address of L2 register.
- * @val: Value to be written to register.
- *
- * Use architecturally required barriers for ordering between system register
- * accesses, and system registers with respect to device memory
- */
+ 
 void kryo_l2_set_indirect_reg(u64 reg, u64 val)
 {
 	unsigned long flags;
@@ -34,13 +25,7 @@ void kryo_l2_set_indirect_reg(u64 reg, u64 val)
 }
 EXPORT_SYMBOL(kryo_l2_set_indirect_reg);
 
-/**
- * kryo_l2_get_indirect_reg() - read an L2 register value
- * @reg: Address of L2 register.
- *
- * Use architecturally required barriers for ordering between system register
- * accesses, and system registers with respect to device memory
- */
+ 
 u64 kryo_l2_get_indirect_reg(u64 reg)
 {
 	u64 val;

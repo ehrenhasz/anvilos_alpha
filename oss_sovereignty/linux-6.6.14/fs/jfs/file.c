@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *   Copyright (C) International Business Machines Corp., 2000-2002
- *   Portions Copyright (C) Christoph Hellwig, 2001-2002
- */
+
+ 
 
 #include <linux/mm.h>
 #include <linux/fs.h>
@@ -28,7 +25,7 @@ int jfs_fsync(struct file *file, loff_t start, loff_t end, int datasync)
 	inode_lock(inode);
 	if (!(inode->i_state & I_DIRTY_ALL) ||
 	    (datasync && !(inode->i_state & I_DIRTY_DATASYNC))) {
-		/* Make sure committed changes hit the disk */
+		 
 		jfs_flush_journal(JFS_SBI(inode->i_sb)->log, 1);
 		inode_unlock(inode);
 		return rc;
@@ -47,15 +44,7 @@ static int jfs_open(struct inode *inode, struct file *file)
 	if ((rc = dquot_file_open(inode, file)))
 		return rc;
 
-	/*
-	 * We attempt to allow only one "active" file open per aggregate
-	 * group.  Otherwise, appending to files in parallel can cause
-	 * fragmentation within the files.
-	 *
-	 * If the file is empty, it was probably just created and going
-	 * to be written to.  If it has a size, we'll hold off until the
-	 * file is actually grown.
-	 */
+	 
 	if (S_ISREG(inode->i_mode) && file->f_mode & FMODE_WRITE &&
 	    (inode->i_size == 0)) {
 		struct jfs_inode_info *ji = JFS_IP(inode);

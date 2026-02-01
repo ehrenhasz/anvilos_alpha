@@ -1,23 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *  linux/fs/ext2/file.c
- *
- * Copyright (C) 1992, 1993, 1994, 1995
- * Remy Card (card@masi.ibp.fr)
- * Laboratoire MASI - Institut Blaise Pascal
- * Universite Pierre et Marie Curie (Paris VI)
- *
- *  from
- *
- *  linux/fs/minix/file.c
- *
- *  Copyright (C) 1991, 1992  Linus Torvalds
- *
- *  ext2 fs regular file handling primitives
- *
- *  64-bit file support on 64-bit platforms by Jakub Jelinek
- * 	(jj@sunsite.ms.mff.cuni.cz)
- */
+
+ 
 
 #include <linux/time.h>
 #include <linux/pagemap.h>
@@ -38,7 +20,7 @@ static ssize_t ext2_dax_read_iter(struct kiocb *iocb, struct iov_iter *to)
 	ssize_t ret;
 
 	if (!iov_iter_count(to))
-		return 0; /* skip atime */
+		return 0;  
 
 	inode_lock_shared(inode);
 	ret = dax_iomap_rw(iocb, to, &ext2_iomap_ops);
@@ -78,18 +60,7 @@ out_unlock:
 	return ret;
 }
 
-/*
- * The lock ordering for ext2 DAX fault paths is:
- *
- * mmap_lock (MM)
- *   sb_start_pagefault (vfs, freeze)
- *     address_space->invalidate_lock
- *       address_space->i_mmap_rwsem or page_lock (mutually exclusive in DAX)
- *         ext2_inode_info->truncate_mutex
- *
- * The default page_lock and i_size verification done by non-DAX fault paths
- * is sufficient because ext2 doesn't support hole punching.
- */
+ 
 static vm_fault_t ext2_dax_fault(struct vm_fault *vmf)
 {
 	struct inode *inode = file_inode(vmf->vma->vm_file);
@@ -113,11 +84,7 @@ static vm_fault_t ext2_dax_fault(struct vm_fault *vmf)
 
 static const struct vm_operations_struct ext2_dax_vm_ops = {
 	.fault		= ext2_dax_fault,
-	/*
-	 * .huge_fault is not supported for DAX because allocation in ext2
-	 * cannot be reliably aligned to huge page sizes and so pmd faults
-	 * will always fail and fail back to regular faults.
-	 */
+	 
 	.page_mkwrite	= ext2_dax_fault,
 	.pfn_mkwrite	= ext2_dax_fault,
 };
@@ -135,11 +102,7 @@ static int ext2_file_mmap(struct file *file, struct vm_area_struct *vma)
 #define ext2_file_mmap	generic_file_mmap
 #endif
 
-/*
- * Called when filp is released. This happens when all file descriptors
- * for a single struct file are closed. Note that different open() calls
- * for the same file yield different struct file structures.
- */
+ 
 static int ext2_release_file (struct inode * inode, struct file * filp)
 {
 	if (filp->f_mode & FMODE_WRITE) {
@@ -157,7 +120,7 @@ int ext2_fsync(struct file *file, loff_t start, loff_t end, int datasync)
 
 	ret = generic_buffers_fsync(file, start, end, datasync);
 	if (ret == -EIO)
-		/* We don't really know where the IO error happened... */
+		 
 		ext2_error(sb, __func__,
 			   "detected IO error when writing metadata buffers");
 	return ret;
@@ -187,14 +150,7 @@ static int ext2_dio_write_end_io(struct kiocb *iocb, ssize_t size,
 	if (error)
 		goto out;
 
-	/*
-	 * If we are extending the file, we have to update i_size here before
-	 * page cache gets invalidated in iomap_dio_rw(). This prevents racing
-	 * buffered reads from zeroing out too much from page cache pages.
-	 * Note that all extending writes always happens synchronously with
-	 * inode lock held by ext2_dio_write_iter(). So it is safe to update
-	 * inode size here for extending file writes.
-	 */
+	 
 	pos += size;
 	if (pos > i_size_read(inode)) {
 		i_size_write(inode, pos);
@@ -230,7 +186,7 @@ static ssize_t ext2_dio_write_iter(struct kiocb *iocb, struct iov_iter *from)
 	if (ret)
 		goto out_unlock;
 
-	/* use IOMAP_DIO_FORCE_WAIT for unaligned or extending writes */
+	 
 	if (iocb->ki_pos + iov_iter_count(from) > i_size_read(inode) ||
 	   (!IS_ALIGNED(iocb->ki_pos | iov_iter_alignment(from), blocksize)))
 		flags |= IOMAP_DIO_FORCE_WAIT;
@@ -238,14 +194,14 @@ static ssize_t ext2_dio_write_iter(struct kiocb *iocb, struct iov_iter *from)
 	ret = iomap_dio_rw(iocb, from, &ext2_iomap_ops, &ext2_dio_write_ops,
 			   flags, NULL, 0);
 
-	/* ENOTBLK is magic return value for fallback to buffered-io */
+	 
 	if (ret == -ENOTBLK)
 		ret = 0;
 
 	if (ret < 0 && ret != -EIOCBQUEUED)
 		ext2_write_failed(inode->i_mapping, offset + count);
 
-	/* handle case for partial write and for fallback to buffered write */
+	 
 	if (ret >= 0 && iov_iter_count(from)) {
 		loff_t pos, endbyte;
 		int ret2;

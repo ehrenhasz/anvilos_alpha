@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2011 Samsung Electronics Co., Ltd.
- *		http://www.samsung.com/
- *
- * samsung - Common hr-timer support (s3c and s5p)
- */
+
+ 
 
 #include <linux/interrupt.h>
 #include <linux/irq.h>
@@ -22,9 +17,7 @@
 
 #include <clocksource/samsung_pwm.h>
 
-/*
- * Clocksource driver
- */
+ 
 
 #define REG_TCFG0			0x00
 #define REG_TCFG1			0x04
@@ -40,14 +33,7 @@
 #define TCFG1_SHIFT(x)			((x) * 4)
 #define TCFG1_MUX_MASK			0xf
 
-/*
- * Each channel occupies 4 bits in TCON register, but there is a gap of 4
- * bits (one channel) after channel 0, so channels have different numbering
- * when accessing TCON register.
- *
- * In addition, the location of autoreload bit for channel 4 (TCON channel 5)
- * in its set of bits is 2 as opposed to 3 for other channels.
- */
+ 
 #define TCON_START(chan)		(1 << (4 * (chan) + 0))
 #define TCON_MANUALUPDATE(chan)		(1 << (4 * (chan) + 1))
 #define TCON_INVERT(chan)		(1 << (4 * (chan) + 2))
@@ -184,16 +170,7 @@ static void samsung_time_start(unsigned int channel, bool periodic)
 static int samsung_set_next_event(unsigned long cycles,
 				  struct clock_event_device *evt)
 {
-	/*
-	 * This check is needed to account for internal rounding
-	 * errors inside clockevents core, which might result in
-	 * passing cycles = 0, which in turn would not generate any
-	 * timer interrupt and hang the system.
-	 *
-	 * Another solution would be to set up the clockevent device
-	 * with min_delta = 2, but this would unnecessarily increase
-	 * the minimum sleep period.
-	 */
+	 
 	if (!cycles)
 		cycles = 1;
 
@@ -316,13 +293,7 @@ static struct clocksource samsung_clocksource = {
 	.flags		= CLOCK_SOURCE_IS_CONTINUOUS,
 };
 
-/*
- * Override the global weak sched_clock symbol with this
- * local implementation which uses the clocksource to get some
- * better resolution when scheduling the kernel. We accept that
- * this wraps around for now, since it is just a relative time
- * stamp. (Inspired by U300 implementation.)
- */
+ 
 static u64 notrace samsung_read_sched_clock(void)
 {
 	return samsung_clocksource_read(NULL);
@@ -369,9 +340,7 @@ static void __init samsung_timer_resources(void)
 	}
 }
 
-/*
- * PWM master driver
- */
+ 
 static int __init _samsung_pwm_clocksource_init(void)
 {
 	u8 mask;

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2018 Texas Instruments Incorporated - https://www.ti.com/
- * Author: Tomi Valkeinen <tomi.valkeinen@ti.com>
- */
+
+ 
 
 #include <drm/drm_atomic.h>
 #include <drm/drm_atomic_helper.h>
@@ -16,7 +13,7 @@
 #include "tidss_irq.h"
 #include "tidss_plane.h"
 
-/* Page flip and frame done IRQs */
+ 
 
 static void tidss_crtc_finish_page_flip(struct tidss_crtc *tcrtc)
 {
@@ -28,12 +25,7 @@ static void tidss_crtc_finish_page_flip(struct tidss_crtc *tcrtc)
 
 	spin_lock_irqsave(&ddev->event_lock, flags);
 
-	/*
-	 * New settings are taken into use at VFP, and GO bit is cleared at
-	 * the same time. This happens before the vertical blank interrupt.
-	 * So there is a small change that the driver sets GO bit after VFP, but
-	 * before vblank, and we have to check for that case here.
-	 */
+	 
 	busy = dispc_vp_go_busy(tidss->dispc, tcrtc->hw_videoport);
 	if (busy) {
 		spin_unlock_irqrestore(&ddev->event_lock, flags);
@@ -79,7 +71,7 @@ void tidss_crtc_error_irq(struct drm_crtc *crtc, u64 irqstatus)
 			    tcrtc->hw_videoport, irqstatus);
 }
 
-/* drm_crtc_helper_funcs */
+ 
 
 static int tidss_crtc_atomic_check(struct drm_crtc *crtc,
 				   struct drm_atomic_state *state)
@@ -111,11 +103,7 @@ static int tidss_crtc_atomic_check(struct drm_crtc *crtc,
 	return dispc_vp_bus_check(dispc, hw_videoport, crtc_state);
 }
 
-/*
- * This needs all affected planes to be present in the atomic
- * state. The untouched planes are added to the state in
- * tidss_atomic_check().
- */
+ 
 static void tidss_crtc_position_planes(struct tidss_device *tidss,
 				       struct drm_crtc *crtc,
 				       struct drm_crtc_state *old_state,
@@ -174,29 +162,26 @@ static void tidss_crtc_atomic_flush(struct drm_crtc *crtc,
 		crtc->name, drm_atomic_crtc_needs_modeset(crtc->state),
 		crtc->state->enable, crtc->state->event);
 
-	/* There is nothing to do if CRTC is not going to be enabled. */
+	 
 	if (!crtc->state->enable)
 		return;
 
-	/*
-	 * Flush CRTC changes with go bit only if new modeset is not
-	 * coming, so CRTC is enabled trough out the commit.
-	 */
+	 
 	if (drm_atomic_crtc_needs_modeset(crtc->state))
 		return;
 
-	/* If the GO bit is stuck we better quit here. */
+	 
 	if (WARN_ON(dispc_vp_go_busy(tidss->dispc, tcrtc->hw_videoport)))
 		return;
 
-	/* We should have event if CRTC is enabled through out this commit. */
+	 
 	if (WARN_ON(!crtc->state->event))
 		return;
 
-	/* Write vp properties to HW if needed. */
+	 
 	dispc_vp_setup(tidss->dispc, tcrtc->hw_videoport, crtc->state, false);
 
-	/* Update plane positions if needed. */
+	 
 	tidss_crtc_position_planes(tidss, crtc, old_crtc_state, false);
 
 	WARN_ON(drm_crtc_vblank_get(crtc) != 0);
@@ -240,7 +225,7 @@ static void tidss_crtc_atomic_enable(struct drm_crtc *crtc,
 	dispc_vp_setup(tidss->dispc, tcrtc->hw_videoport, crtc->state, true);
 	tidss_crtc_position_planes(tidss, crtc, old_state, true);
 
-	/* Turn vertical blanking interrupt reporting on. */
+	 
 	drm_crtc_vblank_on(crtc);
 
 	dispc_vp_prepare(tidss->dispc, tcrtc->hw_videoport, crtc->state);
@@ -312,7 +297,7 @@ static const struct drm_crtc_helper_funcs tidss_crtc_helper_funcs = {
 	.mode_valid = tidss_crtc_mode_valid,
 };
 
-/* drm_crtc_funcs */
+ 
 
 static int tidss_crtc_enable_vblank(struct drm_crtc *crtc)
 {
@@ -428,11 +413,7 @@ struct tidss_crtc *tidss_crtc_create(struct tidss_device *tidss,
 
 	drm_crtc_helper_add(crtc, &tidss_crtc_helper_funcs);
 
-	/*
-	 * The dispc gamma functions adapt to what ever size we ask
-	 * from it no matter what HW supports. X-server assumes 256
-	 * element gamma tables so lets use that.
-	 */
+	 
 	if (tidss->feat->vp_feat.color.gamma_size)
 		gamma_lut_size = 256;
 

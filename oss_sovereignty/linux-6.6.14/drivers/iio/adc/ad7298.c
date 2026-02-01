@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * AD7298 SPI ADC driver
- *
- * Copyright 2011 Analog Devices Inc.
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/kernel.h>
@@ -24,13 +20,13 @@
 #include <linux/iio/trigger_consumer.h>
 #include <linux/iio/triggered_buffer.h>
 
-#define AD7298_WRITE	BIT(15) /* write to the control register */
-#define AD7298_REPEAT	BIT(14) /* repeated conversion enable */
-#define AD7298_CH(x)	BIT(13 - (x)) /* channel select */
-#define AD7298_TSENSE	BIT(5) /* temperature conversion enable */
-#define AD7298_EXTREF	BIT(2) /* external reference enable */
-#define AD7298_TAVG	BIT(1) /* temperature sensor averaging enable */
-#define AD7298_PDD	BIT(0) /* partial power down enable */
+#define AD7298_WRITE	BIT(15)  
+#define AD7298_REPEAT	BIT(14)  
+#define AD7298_CH(x)	BIT(13 - (x))  
+#define AD7298_TSENSE	BIT(5)  
+#define AD7298_EXTREF	BIT(2)  
+#define AD7298_TAVG	BIT(1)  
+#define AD7298_PDD	BIT(0)  
 
 #define AD7298_MAX_CHAN		8
 #define AD7298_INTREF_mV	2500
@@ -45,10 +41,7 @@ struct ad7298_state {
 	struct spi_transfer		scan_single_xfer[3];
 	struct spi_message		ring_msg;
 	struct spi_message		scan_single_msg;
-	/*
-	 * DMA (thus cache coherency maintenance) requires the
-	 * transfer buffers to live in their own cache lines.
-	 */
+	 
 	__be16				rx_buf[12] __aligned(IIO_DMA_MINALIGN);
 	__be16				tx_buf[2];
 };
@@ -97,9 +90,7 @@ static const struct iio_chan_spec ad7298_channels[] = {
 	IIO_CHAN_SOFT_TIMESTAMP(8),
 };
 
-/*
- * ad7298_update_scan_mode() setup the spi transfer buffer for the new scan mask
- */
+ 
 static int ad7298_update_scan_mode(struct iio_dev *indio_dev,
 	const unsigned long *active_scan_mask)
 {
@@ -108,7 +99,7 @@ static int ad7298_update_scan_mode(struct iio_dev *indio_dev,
 	unsigned short command;
 	int scan_count;
 
-	/* Now compute overall size */
+	 
 	scan_count = bitmap_weight(active_scan_mask, indio_dev->masklength);
 
 	command = AD7298_WRITE | st->ext_ref;
@@ -119,7 +110,7 @@ static int ad7298_update_scan_mode(struct iio_dev *indio_dev,
 
 	st->tx_buf[0] = cpu_to_be16(command);
 
-	/* build spi ring message */
+	 
 	st->ring_xfer[0].tx_buf = &st->tx_buf[0];
 	st->ring_xfer[0].len = 2;
 	st->ring_xfer[0].cs_change = 1;
@@ -137,7 +128,7 @@ static int ad7298_update_scan_mode(struct iio_dev *indio_dev,
 		st->ring_xfer[i + 2].cs_change = 1;
 		spi_message_add_tail(&st->ring_xfer[i + 2], &st->ring_msg);
 	}
-	/* make sure last transfer cs_change is not set */
+	 
 	st->ring_xfer[i + 1].cs_change = 0;
 
 	return 0;
@@ -194,7 +185,7 @@ static int ad7298_scan_temp(struct ad7298_state *st, int *val)
 	if (ret)
 		return ret;
 
-	usleep_range(101, 1000); /* sleep > 100us */
+	usleep_range(101, 1000);  
 
 	ret = spi_read(st->spi, (u8 *)&buf, 2);
 	if (ret)
@@ -323,7 +314,7 @@ static int ad7298_probe(struct spi_device *spi)
 	indio_dev->num_channels = ARRAY_SIZE(ad7298_channels);
 	indio_dev->info = &ad7298_info;
 
-	/* Setup default message */
+	 
 
 	st->scan_single_xfer[0].tx_buf = &st->tx_buf[0];
 	st->scan_single_xfer[0].len = 2;

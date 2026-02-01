@@ -1,20 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * IEEE802154.4 socket interface
- *
- * Copyright 2007, 2008 Siemens AG
- *
- * Written by:
- * Sergey Lapin <slapin@ossfans.org>
- * Maxim Gorbachyov <maxim.gorbachev@siemens.com>
- */
+
+ 
 
 #include <linux/net.h>
 #include <linux/capability.h>
 #include <linux/module.h>
 #include <linux/if_arp.h>
 #include <linux/if.h>
-#include <linux/termios.h>	/* For TIOCOUTQ/INQ */
+#include <linux/termios.h>	 
 #include <linux/list.h>
 #include <linux/slab.h>
 #include <linux/socket.h>
@@ -27,7 +19,7 @@
 #include <net/af_ieee802154.h>
 #include <net/ieee802154_netdev.h>
 
-/* Utility function for families */
+ 
 static struct net_device*
 ieee802154_get_dev(struct net *net, const struct ieee802154_addr *addr)
 {
@@ -166,7 +158,7 @@ static int ieee802154_sock_ioctl(struct socket *sock, unsigned int cmd,
 	}
 }
 
-/* RAW Sockets (802.15.4 created in userspace) */
+ 
 static HLIST_HEAD(raw_head);
 static DEFINE_RWLOCK(raw_lock);
 
@@ -428,7 +420,7 @@ static const struct proto_ops ieee802154_raw_ops = {
 	.mmap		   = sock_no_mmap,
 };
 
-/* DGRAM Sockets (802.15.4 dataframes) */
+ 
 static HLIST_HEAD(dgram_head);
 static DEFINE_RWLOCK(dgram_lock);
 
@@ -548,10 +540,7 @@ static int dgram_ioctl(struct sock *sk, int cmd, int *karg)
 		spin_lock_bh(&sk->sk_receive_queue.lock);
 		skb = skb_peek(&sk->sk_receive_queue);
 		if (skb) {
-			/* We will only return the amount
-			 * of this packet since that is all
-			 * that will be read.
-			 */
+			 
 			*karg = skb->len - ieee802154_hdr_length(skb);
 		}
 		spin_unlock_bh(&sk->sk_receive_queue.lock);
@@ -562,7 +551,7 @@ static int dgram_ioctl(struct sock *sk, int cmd, int *karg)
 	return -ENOIOCTLCMD;
 }
 
-/* FIXME: autobind */
+ 
 static int dgram_connect(struct sock *sk, struct sockaddr *uaddr,
 			 int len)
 {
@@ -721,7 +710,7 @@ static int dgram_recvmsg(struct sock *sk, struct msghdr *msg, size_t len,
 		copied = len;
 	}
 
-	/* FIXME: skip headers if necessary ?! */
+	 
 	err = skb_copy_datagram_msg(skb, 0, msg, copied);
 	if (err)
 		goto done;
@@ -729,10 +718,7 @@ static int dgram_recvmsg(struct sock *sk, struct msghdr *msg, size_t len,
 	sock_recv_cmsgs(msg, sk, skb);
 
 	if (saddr) {
-		/* Clear the implicit padding in struct sockaddr_ieee802154
-		 * (16 bits between 'family' and 'addr') and in struct
-		 * ieee802154_addr_sa (16 bits at the end of the structure).
-		 */
+		 
 		memset(saddr, 0, sizeof(*saddr));
 
 		saddr->family = AF_IEEE802154;
@@ -797,7 +783,7 @@ static int ieee802154_dgram_deliver(struct net_device *dev, struct sk_buff *skb)
 	__le16 pan_id, short_addr;
 	__le64 hw_addr;
 
-	/* Data frame processing */
+	 
 	BUG_ON(dev->type != ARPHRD_IEEE802154);
 
 	pan_id = dev->ieee802154_ptr->pan_id;
@@ -995,9 +981,7 @@ static void ieee802154_sock_destruct(struct sock *sk)
 	skb_queue_purge(&sk->sk_receive_queue);
 }
 
-/* Create a socket. Initialise the socket, blank the addresses
- * set the state.
- */
+ 
 static int ieee802154_create(struct net *net, struct socket *sock,
 			     int protocol, int kern)
 {
@@ -1038,7 +1022,7 @@ static int ieee802154_create(struct net *net, struct socket *sock,
 	sk->sk_destruct = ieee802154_sock_destruct;
 	sk->sk_family = PF_IEEE802154;
 
-	/* Checksums on by default */
+	 
 	sock_set_flag(sk, SOCK_ZAPPED);
 
 	if (sk->sk_prot->hash) {
@@ -1108,7 +1092,7 @@ static int __init af_ieee802154_init(void)
 	if (rc)
 		goto err_dgram;
 
-	/* Tell SOCKET that we are alive */
+	 
 	rc = sock_register(&ieee802154_family_ops);
 	if (rc)
 		goto err_sock;

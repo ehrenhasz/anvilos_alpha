@@ -1,15 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Driver for IDT Versaclock 5
- *
- * Copyright (C) 2017 Marek Vasut <marek.vasut@gmail.com>
- */
 
-/*
- * Possible optimizations:
- * - Use spread spectrum
- * - Use integer divider in FOD if applicable
- */
+ 
+
+ 
 
 #include <linux/clk.h>
 #include <linux/clk-provider.h>
@@ -25,10 +17,10 @@
 
 #include <dt-bindings/clock/versaclock.h>
 
-/* VersaClock5 registers */
+ 
 #define VC5_OTP_CONTROL				0x00
 
-/* Factory-reserved register block */
+ 
 #define VC5_RSVD_DEVICE_ID			0x01
 #define VC5_RSVD_ADC_GAIN_7_0			0x02
 #define VC5_RSVD_ADC_GAIN_15_8			0x03
@@ -45,7 +37,7 @@
 #define VC5_RSVD_CLK_R_34_CLK_AMP_4		0x0e
 #define VC5_RSVD_CLK_AMP_123			0x0f
 
-/* Configuration register block */
+ 
 #define VC5_PRIM_SRC_SHDN			0x10
 #define VC5_PRIM_SRC_SHDN_EN_XTAL		BIT(7)
 #define VC5_PRIM_SRC_SHDN_EN_CLKIN		BIT(6)
@@ -69,11 +61,11 @@
 #define VC5_RC_CONTROL0				0x1e
 #define VC5_RC_CONTROL1				0x1f
 
-/* These registers are named "Unused Factory Reserved Registers" */
+ 
 #define VC5_RESERVED_X0(idx)		(0x20 + ((idx) * 0x10))
-#define VC5_RESERVED_X0_BYPASS_SYNC	BIT(7) /* bypass_sync<idx> bit */
+#define VC5_RESERVED_X0_BYPASS_SYNC	BIT(7)  
 
-/* Output divider control for divider 1,2,3,4 */
+ 
 #define VC5_OUT_DIV_CONTROL(idx)	(0x21 + ((idx) * 0x10))
 #define VC5_OUT_DIV_CONTROL_RESET	BIT(7)
 #define VC5_OUT_DIV_CONTROL_SELB_NORM	BIT(3)
@@ -90,7 +82,7 @@
 #define VC5_OUT_DIV_INT(idx, n)		(0x2d + ((idx) * 0x10) + (n))
 #define VC5_OUT_DIV_SKEW_FRAC(idx)	(0x2f + ((idx) * 0x10))
 
-/* Clock control register for clock 1,2 */
+ 
 #define VC5_CLK_OUTPUT_CFG(idx, n)	(0x60 + ((idx) * 0x2) + (n))
 #define VC5_CLK_OUTPUT_CFG0_CFG_SHIFT	5
 #define VC5_CLK_OUTPUT_CFG0_CFG_MASK GENMASK(7, VC5_CLK_OUTPUT_CFG0_CFG_SHIFT)
@@ -122,28 +114,28 @@
 #define VC5_GLOBAL_REGISTER			0x76
 #define VC5_GLOBAL_REGISTER_GLOBAL_RESET	BIT(5)
 
-/* The minimum VCO frequency is 2.5 GHz. The maximum is variant specific. */
+ 
 #define VC5_PLL_VCO_MIN				2500000000UL
 
-/* VC5 Input mux settings */
+ 
 #define VC5_MUX_IN_XIN		BIT(0)
 #define VC5_MUX_IN_CLKIN	BIT(1)
 
-/* Maximum number of clk_out supported by this driver */
+ 
 #define VC5_MAX_CLK_OUT_NUM	5
 
-/* Maximum number of FODs supported by this driver */
+ 
 #define VC5_MAX_FOD_NUM	4
 
-/* flags to describe chip features */
-/* chip has built-in oscilator */
+ 
+ 
 #define VC5_HAS_INTERNAL_XTAL	BIT(0)
-/* chip has PFD requency doubler */
+ 
 #define VC5_HAS_PFD_FREQ_DBL	BIT(1)
-/* chip has bits to disable FOD sync */
+ 
 #define VC5_HAS_BYPASS_SYNC_BIT	BIT(2)
 
-/* Supported IDT VC5 models. */
+ 
 enum vc5_model {
 	IDT_VC5_5P49V5923,
 	IDT_VC5_5P49V5925,
@@ -155,7 +147,7 @@ enum vc5_model {
 	IDT_VC6_5P49V6975,
 };
 
-/* Structure to describe features of a particular VC5 model */
+ 
 struct vc5_chip_info {
 	const enum vc5_model	model;
 	const unsigned int	clk_fod_cnt;
@@ -198,16 +190,14 @@ struct vc5_driver_data {
 	struct vc5_out_data	clk_out[VC5_MAX_CLK_OUT_NUM];
 };
 
-/*
- * VersaClock5 i2c regmap
- */
+ 
 static bool vc5_regmap_is_writeable(struct device *dev, unsigned int reg)
 {
-	/* Factory reserved regs, make them read-only */
+	 
 	if (reg <= 0xf)
 		return false;
 
-	/* Factory reserved regs, make them read-only */
+	 
 	if (reg == 0x14 || reg == 0x1c || reg == 0x1d)
 		return false;
 
@@ -222,9 +212,7 @@ static const struct regmap_config vc5_regmap_config = {
 	.writeable_reg = vc5_regmap_is_writeable,
 };
 
-/*
- * VersaClock5 input multiplexer between XTAL and CLKIN divider
- */
+ 
 static unsigned char vc5_mux_get_parent(struct clk_hw *hw)
 {
 	struct vc5_driver_data *vc5 =
@@ -273,7 +261,7 @@ static int vc5_mux_set_parent(struct clk_hw *hw, u8 index)
 			src = VC5_PRIM_SRC_SHDN_EN_XTAL;
 		else if (vc5->clk_mux_ins == VC5_MUX_IN_CLKIN)
 			src = VC5_PRIM_SRC_SHDN_EN_CLKIN;
-		else /* Invalid; should have been caught by vc5_probe() */
+		else  
 			return -EINVAL;
 	}
 
@@ -348,7 +336,7 @@ static unsigned long vc5_pfd_recalc_rate(struct clk_hw *hw,
 	if (ret)
 		return 0;
 
-	/* The bypass_prediv is set, PLL fed from Ref_in directly. */
+	 
 	if (prediv & VC5_VCO_CTRL_AND_PREDIV_BYPASS_PREDIV)
 		return parent_rate;
 
@@ -356,7 +344,7 @@ static unsigned long vc5_pfd_recalc_rate(struct clk_hw *hw,
 	if (ret)
 		return 0;
 
-	/* The Sel_prediv2 is set, PLL fed from prediv2 (Ref_in / 2) */
+	 
 	if (div & VC5_REF_DIVIDER_SEL_PREDIV2)
 		return parent_rate / 2;
 	else
@@ -368,11 +356,11 @@ static long vc5_pfd_round_rate(struct clk_hw *hw, unsigned long rate,
 {
 	unsigned long idiv;
 
-	/* PLL cannot operate with input clock above 50 MHz. */
+	 
 	if (rate > 50000000)
 		return -EINVAL;
 
-	/* CLKIN within range of PLL input, feed directly to PLL. */
+	 
 	if (*parent_rate <= 50000000)
 		return *parent_rate;
 
@@ -392,7 +380,7 @@ static int vc5_pfd_set_rate(struct clk_hw *hw, unsigned long rate,
 	int ret;
 	u8 div;
 
-	/* CLKIN within range of PLL input, feed directly to PLL. */
+	 
 	if (parent_rate <= 50000000) {
 		ret = regmap_set_bits(vc5->regmap, VC5_VCO_CTRL_AND_PREDIV,
 				      VC5_VCO_CTRL_AND_PREDIV_BYPASS_PREDIV);
@@ -404,7 +392,7 @@ static int vc5_pfd_set_rate(struct clk_hw *hw, unsigned long rate,
 
 	idiv = DIV_ROUND_UP(parent_rate, rate);
 
-	/* We have dedicated div-2 predivider. */
+	 
 	if (idiv == 2)
 		div = VC5_REF_DIVIDER_SEL_PREDIV2;
 	else
@@ -424,9 +412,7 @@ static const struct clk_ops vc5_pfd_ops = {
 	.set_rate	= vc5_pfd_set_rate,
 };
 
-/*
- * VersaClock5 PLL/VCO
- */
+ 
 static unsigned long vc5_pll_recalc_rate(struct clk_hw *hw,
 					 unsigned long parent_rate)
 {
@@ -440,7 +426,7 @@ static unsigned long vc5_pll_recalc_rate(struct clk_hw *hw,
 	div_int = (fb[0] << 4) | (fb[1] >> 4);
 	div_frc = (fb[2] << 16) | (fb[3] << 8) | fb[4];
 
-	/* The PLL divider has 12 integer bits and 24 fractional bits */
+	 
 	return (parent_rate * div_int) + ((parent_rate * div_frc) >> 24);
 }
 
@@ -454,12 +440,12 @@ static long vc5_pll_round_rate(struct clk_hw *hw, unsigned long rate,
 
 	rate = clamp(rate, VC5_PLL_VCO_MIN, vc5->chip_info->vco_max);
 
-	/* Determine integer part, which is 12 bit wide */
+	 
 	div_int = rate / *parent_rate;
 	if (div_int > 0xfff)
 		rate = *parent_rate * 0xfff;
 
-	/* Determine best fractional part, which is 24 bit wide */
+	 
 	div_frc = rate % *parent_rate;
 	div_frc *= BIT(24) - 1;
 	do_div(div_frc, *parent_rate);
@@ -497,7 +483,7 @@ static unsigned long vc5_fod_recalc_rate(struct clk_hw *hw,
 {
 	struct vc5_hw_data *hwdata = container_of(hw, struct vc5_hw_data, hw);
 	struct vc5_driver_data *vc5 = hwdata->vc5;
-	/* VCO frequency is divided by two before entering FOD */
+	 
 	u32 f_in = parent_rate / 2;
 	u32 div_int, div_frc;
 	u8 od_int[2];
@@ -512,11 +498,11 @@ static unsigned long vc5_fod_recalc_rate(struct clk_hw *hw,
 	div_frc = (od_frc[0] << 22) | (od_frc[1] << 14) |
 		  (od_frc[2] << 6) | (od_frc[3] >> 2);
 
-	/* Avoid division by zero if the output is not configured. */
+	 
 	if (div_int == 0 && div_frc == 0)
 		return 0;
 
-	/* The PLL divider has 12 integer bits and 30 fractional bits */
+	 
 	return div64_u64((u64)f_in << 24ULL, ((u64)div_int << 24ULL) + div_frc);
 }
 
@@ -524,24 +510,20 @@ static long vc5_fod_round_rate(struct clk_hw *hw, unsigned long rate,
 			       unsigned long *parent_rate)
 {
 	struct vc5_hw_data *hwdata = container_of(hw, struct vc5_hw_data, hw);
-	/* VCO frequency is divided by two before entering FOD */
+	 
 	u32 f_in = *parent_rate / 2;
 	u32 div_int;
 	u64 div_frc;
 
-	/* Determine integer part, which is 12 bit wide */
+	 
 	div_int = f_in / rate;
-	/*
-	 * WARNING: The clock chip does not output signal if the integer part
-	 *          of the divider is 0xfff and fractional part is non-zero.
-	 *          Clamp the divider at 0xffe to keep the code simple.
-	 */
+	 
 	if (div_int > 0xffe) {
 		div_int = 0xffe;
 		rate = f_in / div_int;
 	}
 
-	/* Determine best fractional part, which is 30 bit wide */
+	 
 	div_frc = f_in % rate;
 	div_frc <<= 24;
 	do_div(div_frc, rate);
@@ -572,12 +554,7 @@ static int vc5_fod_set_rate(struct clk_hw *hw, unsigned long rate,
 	if (ret)
 		return ret;
 
-	/*
-	 * Toggle magic bit in undocumented register for unknown reason.
-	 * This is what the IDT timing commander tool does and the chip
-	 * datasheet somewhat implies this is needed, but the register
-	 * and the bit is not documented.
-	 */
+	 
 	ret = regmap_clear_bits(vc5->regmap, VC5_GLOBAL_REGISTER,
 				VC5_GLOBAL_REGISTER_GLOBAL_RESET);
 	if (ret)
@@ -603,14 +580,7 @@ static int vc5_clk_out_prepare(struct clk_hw *hw)
 	unsigned int src;
 	int ret;
 
-	/*
-	 * When enabling a FOD, all currently enabled FODs are briefly
-	 * stopped in order to synchronize all of them. This causes a clock
-	 * disruption to any unrelated chips that might be already using
-	 * other clock outputs. Bypass the sync feature to avoid the issue,
-	 * which is possible on the VersaClock 6E family via reserved
-	 * registers.
-	 */
+	 
 	if (vc5->chip_info->flags & VC5_HAS_BYPASS_SYNC_BIT) {
 		ret = regmap_set_bits(vc5->regmap,
 				      VC5_RESERVED_X0(hwdata->num),
@@ -619,10 +589,7 @@ static int vc5_clk_out_prepare(struct clk_hw *hw)
 			return ret;
 	}
 
-	/*
-	 * If the input mux is disabled, enable it first and
-	 * select source from matching FOD.
-	 */
+	 
 	ret = regmap_read(vc5->regmap, VC5_OUT_DIV_CONTROL(hwdata->num), &src);
 	if (ret)
 		return ret;
@@ -636,7 +603,7 @@ static int vc5_clk_out_prepare(struct clk_hw *hw)
 			return ret;
 	}
 
-	/* Enable the clock buffer */
+	 
 	ret = regmap_set_bits(vc5->regmap, VC5_CLK_OUTPUT_CFG(hwdata->num, 1),
 			      VC5_CLK_OUTPUT_CFG1_EN_CLKBUF);
 	if (ret)
@@ -663,7 +630,7 @@ static void vc5_clk_out_unprepare(struct clk_hw *hw)
 	struct vc5_out_data *hwdata = container_of(hw, struct vc5_out_data, hw);
 	struct vc5_driver_data *vc5 = hwdata->vc5;
 
-	/* Disable the clock buffer */
+	 
 	regmap_clear_bits(vc5->regmap, VC5_CLK_OUTPUT_CFG(hwdata->num, 1),
 			  VC5_CLK_OUTPUT_CFG1_EN_CLKBUF);
 }
@@ -688,7 +655,7 @@ static unsigned char vc5_clk_out_get_parent(struct clk_hw *hw)
 
 	src &= mask;
 
-	if (src == 0)	/* Input mux set to DISABLED */
+	if (src == 0)	 
 		return 0;
 
 	if ((src & fodclkmask) == VC5_OUT_DIV_CONTROL_EN_FOD)
@@ -814,30 +781,14 @@ static int vc5_map_cap_value(u32 femtofarads)
 {
 	int mapped_value;
 
-	/*
-	 * The datasheet explicitly states 9000 - 25000 with 0.5pF
-	 * steps, but the Programmer's guide shows the steps are 0.430pF.
-	 * After getting feedback from Renesas, the .5pF steps were the
-	 * goal, but 430nF was the actual values.
-	 * Because of this, the actual range goes to 22760 instead of 25000
-	 */
+	 
 	if (femtofarads < 9000 || femtofarads > 22760)
 		return -EINVAL;
 
-	/*
-	 * The Programmer's guide shows XTAL[5:0] but in reality,
-	 * XTAL[0] and XTAL[1] are both LSB which makes the math
-	 * strange.  With clarfication from Renesas, setting the
-	 * values should be simpler by ignoring XTAL[0]
-	 */
+	 
 	mapped_value = DIV_ROUND_CLOSEST(femtofarads - 9000, 430);
 
-	/*
-	 * Since the calculation ignores XTAL[0], there is one
-	 * special case where mapped_value = 32.  In reality, this means
-	 * the real mapped value should be 111111b.  In other cases,
-	 * the mapped_value needs to be shifted 1 to the left.
-	 */
+	 
 	if (mapped_value > 31)
 		mapped_value = 0x3f;
 	else
@@ -858,11 +809,7 @@ static int vc5_update_cap_load(struct device_node *node, struct vc5_driver_data 
 	if (mapped_value < 0)
 		return mapped_value;
 
-	/*
-	 * The mapped_value is really the high 6 bits of
-	 * VC5_XTAL_X1_LOAD_CAP and VC5_XTAL_X2_LOAD_CAP, so
-	 * shift the value 2 places.
-	 */
+	 
 	ret = regmap_update_bits(vc5->regmap, VC5_XTAL_X1_LOAD_CAP, ~0x03,
 				 mapped_value << 2);
 	if (ret)
@@ -996,7 +943,7 @@ static int vc5_probe(struct i2c_client *client)
 	if (ret)
 		return ret;
 
-	/* Register clock input mux */
+	 
 	memset(&init, 0, sizeof(init));
 
 	if (!IS_ERR(vc5->pin_xin)) {
@@ -1022,7 +969,7 @@ static int vc5_probe(struct i2c_client *client)
 		return dev_err_probe(&client->dev, -EINVAL,
 				     "no input clock specified!\n");
 
-	/* Configure Optional Loading Capacitance for external XTAL */
+	 
 	if (!(vc5->chip_info->flags & VC5_HAS_INTERNAL_XTAL)) {
 		ret = vc5_update_cap_load(client->dev.of_node, vc5);
 		if (ret)
@@ -1042,10 +989,10 @@ static int vc5_probe(struct i2c_client *client)
 	ret = devm_clk_hw_register(&client->dev, &vc5->clk_mux);
 	if (ret)
 		goto err_clk_register;
-	kfree(init.name);	/* clock framework made a copy of the name */
+	kfree(init.name);	 
 
 	if (vc5->chip_info->flags & VC5_HAS_PFD_FREQ_DBL) {
-		/* Register frequency doubler */
+		 
 		memset(&init, 0, sizeof(init));
 		init.name = kasprintf(GFP_KERNEL, "%pOFn.dbl",
 				      client->dev.of_node);
@@ -1062,10 +1009,10 @@ static int vc5_probe(struct i2c_client *client)
 		ret = devm_clk_hw_register(&client->dev, &vc5->clk_mul);
 		if (ret)
 			goto err_clk_register;
-		kfree(init.name); /* clock framework made a copy of the name */
+		kfree(init.name);  
 	}
 
-	/* Register PFD */
+	 
 	memset(&init, 0, sizeof(init));
 	init.name = kasprintf(GFP_KERNEL, "%pOFn.pfd", client->dev.of_node);
 	if (!init.name) {
@@ -1084,9 +1031,9 @@ static int vc5_probe(struct i2c_client *client)
 	ret = devm_clk_hw_register(&client->dev, &vc5->clk_pfd);
 	if (ret)
 		goto err_clk_register;
-	kfree(init.name);	/* clock framework made a copy of the name */
+	kfree(init.name);	 
 
-	/* Register PLL */
+	 
 	memset(&init, 0, sizeof(init));
 	init.name = kasprintf(GFP_KERNEL, "%pOFn.pll", client->dev.of_node);
 	if (!init.name) {
@@ -1104,9 +1051,9 @@ static int vc5_probe(struct i2c_client *client)
 	ret = devm_clk_hw_register(&client->dev, &vc5->clk_pll.hw);
 	if (ret)
 		goto err_clk_register;
-	kfree(init.name); /* clock framework made a copy of the name */
+	kfree(init.name);  
 
-	/* Register FODs */
+	 
 	for (n = 0; n < vc5->chip_info->clk_fod_cnt; n++) {
 		idx = vc5_map_index_to_output(vc5->chip_info->model, n);
 		memset(&init, 0, sizeof(init));
@@ -1127,10 +1074,10 @@ static int vc5_probe(struct i2c_client *client)
 		ret = devm_clk_hw_register(&client->dev, &vc5->clk_fod[n].hw);
 		if (ret)
 			goto err_clk_register;
-		kfree(init.name); /* clock framework made a copy of the name */
+		kfree(init.name);  
 	}
 
-	/* Register MUX-connected OUT0_I2C_SELB output */
+	 
 	memset(&init, 0, sizeof(init));
 	init.name = kasprintf(GFP_KERNEL, "%pOFn.out0_sel_i2cb",
 			      client->dev.of_node);
@@ -1149,9 +1096,9 @@ static int vc5_probe(struct i2c_client *client)
 	ret = devm_clk_hw_register(&client->dev, &vc5->clk_out[0].hw);
 	if (ret)
 		goto err_clk_register;
-	kfree(init.name); /* clock framework made a copy of the name */
+	kfree(init.name);  
 
-	/* Register FOD-connected OUTx outputs */
+	 
 	for (n = 1; n < vc5->chip_info->clk_out_cnt; n++) {
 		idx = vc5_map_index_to_output(vc5->chip_info->model, n - 1);
 		parent_names[0] = clk_hw_get_name(&vc5->clk_fod[idx].hw);
@@ -1178,9 +1125,9 @@ static int vc5_probe(struct i2c_client *client)
 		ret = devm_clk_hw_register(&client->dev, &vc5->clk_out[n].hw);
 		if (ret)
 			goto err_clk_register;
-		kfree(init.name); /* clock framework made a copy of the name */
+		kfree(init.name);  
 
-		/* Fetch Clock Output configuration from DT (if specified) */
+		 
 		ret = vc5_get_output_config(client, &vc5->clk_out[n]);
 		if (ret)
 			goto err_clk;
@@ -1198,7 +1145,7 @@ static int vc5_probe(struct i2c_client *client)
 err_clk_register:
 	dev_err_probe(&client->dev, ret,
 		      "unable to register %s\n", init.name);
-	kfree(init.name); /* clock framework made a copy of the name */
+	kfree(init.name);  
 err_clk:
 	if (vc5->chip_info->flags & VC5_HAS_INTERNAL_XTAL)
 		clk_unregister_fixed_rate(vc5->pin_xin);

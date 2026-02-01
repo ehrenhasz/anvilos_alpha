@@ -1,6 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (C) 2018 ROHM Semiconductors
-// bd71837-regulator.c ROHM BD71837MWV/BD71847MWV regulator driver
+
+
+
 
 #include <linux/delay.h>
 #include <linux/err.h>
@@ -15,7 +15,7 @@
 #include <linux/regulator/of_regulator.h>
 #include <linux/slab.h>
 
-/* Typical regulator startup times as per data sheet in uS */
+ 
 #define BD71847_BUCK1_STARTUP_TIME 144
 #define BD71847_BUCK2_STARTUP_TIME 162
 #define BD71847_BUCK3_STARTUP_TIME 162
@@ -45,13 +45,7 @@
 #define BD71837_LDO6_STARTUP_TIME  400
 #define BD71837_LDO7_STARTUP_TIME  530
 
-/*
- * BD718(37/47/50) have two "enable control modes". ON/OFF can either be
- * controlled by software - or by PMIC internal HW state machine. Whether
- * regulator should be under SW or HW control can be defined from device-tree.
- * Let's provide separate ops for regulators to use depending on the "enable
- * control mode".
- */
+ 
 #define BD718XX_HWOPNAME(swopname) swopname##_hwcontrol
 
 #define BD718XX_OPS(name, _list_voltage, _map_voltage, _set_voltage_sel, \
@@ -83,27 +77,10 @@ static const struct regulator_ops BD718XX_HWOPNAME(name) = {	\
 	.set_over_voltage_protection = (_set_ovp),		\
 }								\
 
-/*
- * BUCK1/2/3/4
- * BUCK1RAMPRATE[1:0] BUCK1 DVS ramp rate setting
- * 00: 10.00mV/usec 10mV 1uS
- * 01: 5.00mV/usec	10mV 2uS
- * 10: 2.50mV/usec	10mV 4uS
- * 11: 1.25mV/usec	10mV 8uS
- */
+ 
 static const unsigned int bd718xx_ramp_delay[] = { 10000, 5000, 2500, 1250 };
 
-/* These functions are used when regulators are under HW state machine control.
- * We assume PMIC is in RUN state because SW running and able to query the
- * status. Most of the regulators have fixed ON or OFF state at RUN/IDLE so for
- * them we just return a constant. BD71837 BUCK3 and BUCK4 are exceptions as
- * they support configuring the ON/OFF state for RUN.
- *
- * Note for next hacker - these PMICs have a register where the HW state can be
- * read. If assuming RUN appears to be false in your use-case - you can
- * implement state reading (although that is not going to be atomic) before
- * returning the enable state.
- */
+ 
 static int always_enabled_by_hwstate(struct regulator_dev *rdev)
 {
 	return 1;
@@ -132,11 +109,7 @@ static void voltage_change_done(struct regulator_dev *rdev, unsigned int sel,
 	int ret;
 
 	if (*mask) {
-		/*
-		 * Let's allow scheduling as we use I2C anyways. We just need to
-		 * guarantee minimum of 1ms sleep - it shouldn't matter if we
-		 * exceed it due to the scheduling.
-		 */
+		 
 		msleep(1);
 
 		ret = regmap_clear_bits(rdev->regmap, BD718XX_REG_MVRFLTMASK2,
@@ -169,20 +142,7 @@ static int voltage_change_prepare(struct regulator_dev *rdev, unsigned int sel,
 		if (new < 0)
 			return new;
 
-		/*
-		 * If we increase LDO voltage when LDO is enabled we need to
-		 * disable the power-good detection until voltage has reached
-		 * the new level. According to HW colleagues the maximum time
-		 * it takes is 1000us. I assume that on systems with light load
-		 * this might be less - and we could probably use DT to give
-		 * system specific delay value if performance matters.
-		 *
-		 * Well, knowing we use I2C here and can add scheduling delays
-		 * I don't think it is worth the hassle and I just add fixed
-		 * 1ms sleep here (and allow scheduling). If this turns out to
-		 * be a problem we can change it to delay and make the delay
-		 * time configurable.
-		 */
+		 
 		if (new > now) {
 			int tmp;
 			int prot_bit;
@@ -198,11 +158,11 @@ static int voltage_change_prepare(struct regulator_dev *rdev, unsigned int sel,
 			}
 
 			if (!(tmp & prot_bit)) {
-				/* We disable protection if it was enabled... */
+				 
 				ret = regmap_set_bits(rdev->regmap,
 						      BD718XX_REG_MVRFLTMASK2,
 						      prot_bit);
-				/* ...and we also want to re-enable it */
+				 
 				*mask = prot_bit;
 			}
 			if (ret) {
@@ -257,52 +217,38 @@ static int bd71837_set_voltage_sel_pickable_restricted(
 	return regulator_set_voltage_sel_pickable_regmap(rdev, sel);
 }
 
-/*
- * BD71837 BUCK1/2/3/4
- * BD71847 BUCK1/2
- * 0.70 to 1.30V (10mV step)
- */
+ 
 static const struct linear_range bd718xx_dvs_buck_volts[] = {
 	REGULATOR_LINEAR_RANGE(700000, 0x00, 0x3C, 10000),
 	REGULATOR_LINEAR_RANGE(1300000, 0x3D, 0x3F, 0),
 };
 
-/*
- * BD71837 BUCK5
- * 0.7V to 1.35V  (range 0)
- * and
- * 0.675 to 1.325 (range 1)
- */
+ 
 static const struct linear_range bd71837_buck5_volts[] = {
-	/* Ranges when VOLT_SEL bit is 0 */
+	 
 	REGULATOR_LINEAR_RANGE(700000, 0x00, 0x03, 100000),
 	REGULATOR_LINEAR_RANGE(1050000, 0x04, 0x05, 50000),
 	REGULATOR_LINEAR_RANGE(1200000, 0x06, 0x07, 150000),
-	/* Ranges when VOLT_SEL bit is 1  */
+	 
 	REGULATOR_LINEAR_RANGE(675000, 0x0, 0x3, 100000),
 	REGULATOR_LINEAR_RANGE(1025000, 0x4, 0x5, 50000),
 	REGULATOR_LINEAR_RANGE(1175000, 0x6, 0x7, 150000),
 };
 
-/*
- * Range selector for first 3 linear ranges is 0x0
- * and 0x1 for last 3 ranges.
- */
+ 
 static const unsigned int bd71837_buck5_volt_range_sel[] = {
 	0x0, 0x0, 0x0, 0x1, 0x1, 0x1
 };
 
-/*
- * BD71847 BUCK3
- */
+ 
 static const struct linear_range bd71847_buck3_volts[] = {
-	/* Ranges when VOLT_SEL bits are 00 */
+	 
 	REGULATOR_LINEAR_RANGE(700000, 0x00, 0x03, 100000),
 	REGULATOR_LINEAR_RANGE(1050000, 0x04, 0x05, 50000),
 	REGULATOR_LINEAR_RANGE(1200000, 0x06, 0x07, 150000),
-	/* Ranges when VOLT_SEL bits are 01 */
+	 
 	REGULATOR_LINEAR_RANGE(550000, 0x0, 0x7, 50000),
-	/* Ranges when VOLT_SEL bits are 11 */
+	 
 	REGULATOR_LINEAR_RANGE(675000, 0x0, 0x3, 100000),
 	REGULATOR_LINEAR_RANGE(1025000, 0x4, 0x5, 50000),
 	REGULATOR_LINEAR_RANGE(1175000, 0x6, 0x7, 150000),
@@ -319,42 +265,22 @@ static const struct linear_range bd71847_buck4_volts[] = {
 
 static const unsigned int bd71847_buck4_volt_range_sel[] = { 0x0, 0x1 };
 
-/*
- * BUCK6
- * 3.0V to 3.3V (step 100mV)
- */
+ 
 static const struct linear_range bd71837_buck6_volts[] = {
 	REGULATOR_LINEAR_RANGE(3000000, 0x00, 0x03, 100000),
 };
 
-/*
- * BD71837 BUCK7
- * BD71847 BUCK5
- * 000 = 1.605V
- * 001 = 1.695V
- * 010 = 1.755V
- * 011 = 1.8V (Initial)
- * 100 = 1.845V
- * 101 = 1.905V
- * 110 = 1.95V
- * 111 = 1.995V
- */
+ 
 static const unsigned int bd718xx_3rd_nodvs_buck_volts[] = {
 	1605000, 1695000, 1755000, 1800000, 1845000, 1905000, 1950000, 1995000
 };
 
-/*
- * BUCK8
- * 0.8V to 1.40V (step 10mV)
- */
+ 
 static const struct linear_range bd718xx_4th_nodvs_buck_volts[] = {
 	REGULATOR_LINEAR_RANGE(800000, 0x00, 0x3C, 10000),
 };
 
-/*
- * LDO1
- * 3.0 to 3.3V (100mV step)
- */
+ 
 static const struct linear_range bd718xx_ldo1_volts[] = {
 	REGULATOR_LINEAR_RANGE(3000000, 0x00, 0x03, 100000),
 	REGULATOR_LINEAR_RANGE(1600000, 0x00, 0x03, 100000),
@@ -362,42 +288,27 @@ static const struct linear_range bd718xx_ldo1_volts[] = {
 
 static const unsigned int bd718xx_ldo1_volt_range_sel[] = { 0x0, 0x1 };
 
-/*
- * LDO2
- * 0.8 or 0.9V
- */
+ 
 static const unsigned int ldo_2_volts[] = {
 	900000, 800000
 };
 
-/*
- * LDO3
- * 1.8 to 3.3V (100mV step)
- */
+ 
 static const struct linear_range bd718xx_ldo3_volts[] = {
 	REGULATOR_LINEAR_RANGE(1800000, 0x00, 0x0F, 100000),
 };
 
-/*
- * LDO4
- * 0.9 to 1.8V (100mV step)
- */
+ 
 static const struct linear_range bd718xx_ldo4_volts[] = {
 	REGULATOR_LINEAR_RANGE(900000, 0x00, 0x09, 100000),
 };
 
-/*
- * LDO5 for BD71837
- * 1.8 to 3.3V (100mV step)
- */
+ 
 static const struct linear_range bd71837_ldo5_volts[] = {
 	REGULATOR_LINEAR_RANGE(1800000, 0x00, 0x0F, 100000),
 };
 
-/*
- * LDO5 for BD71837
- * 1.8 to 3.3V (100mV step)
- */
+ 
 static const struct linear_range bd71847_ldo5_volts[] = {
 	REGULATOR_LINEAR_RANGE(1800000, 0x00, 0x0F, 100000),
 	REGULATOR_LINEAR_RANGE(800000, 0x00, 0x0F, 100000),
@@ -405,18 +316,12 @@ static const struct linear_range bd71847_ldo5_volts[] = {
 
 static const unsigned int bd71847_ldo5_volt_range_sel[] = { 0x0, 0x1 };
 
-/*
- * LDO6
- * 0.9 to 1.8V (100mV step)
- */
+ 
 static const struct linear_range bd718xx_ldo6_volts[] = {
 	REGULATOR_LINEAR_RANGE(900000, 0x00, 0x09, 100000),
 };
 
-/*
- * LDO7
- * 1.8 to 3.3V (100mV step)
- */
+ 
 static const struct linear_range bd71837_ldo7_volts[] = {
 	REGULATOR_LINEAR_RANGE(1800000, 0x00, 0x0F, 100000),
 };
@@ -437,20 +342,14 @@ struct bd718xx_regulator_data {
 static int bd718x7_xvp_sanity_check(struct regulator_dev *rdev, int lim_uV,
 				    int severity)
 {
-	/*
-	 * BD71837/47/50 ... (ICs supported by this driver) do not provide
-	 * warnings, only protection
-	 */
+	 
 	if (severity != REGULATOR_SEVERITY_PROT) {
 		dev_err(&rdev->dev,
 			"Unsupported Under Voltage protection level\n");
 		return -EINVAL;
 	}
 
-	/*
-	 * And protection limit is not changeable. It can only be enabled
-	 * or disabled
-	 */
+	 
 	if (lim_uV)
 		return -EINVAL;
 
@@ -559,16 +458,14 @@ static int bd718x7_set_buck_ovp(struct regulator_dev *rdev, int lim_uV,
 	return regmap_set_bits(rdev->regmap, reg, bit);
 }
 
-/*
- * OPS common for BD71847 and BD71850
- */
+ 
 BD718XX_OPS(bd718xx_pickable_range_ldo_ops,
 	    regulator_list_voltage_pickable_linear_range, NULL,
 	    bd718xx_set_voltage_sel_pickable_restricted,
 	    regulator_get_voltage_sel_pickable_regmap, NULL, NULL,
 	    bd718x7_set_ldo_uvp, NULL);
 
-/* BD71847 and BD71850 LDO 5 is by default OFF at RUN state */
+ 
 static const struct regulator_ops bd718xx_ldo5_ops_hwstate = {
 	.is_enabled = never_enabled_by_hwstate,
 	.list_voltage = regulator_list_voltage_pickable_linear_range,
@@ -604,9 +501,7 @@ BD718XX_OPS(bd718xx_buck_regulator_nolinear_ops, regulator_list_voltage_table,
 	    regulator_get_voltage_sel_regmap, regulator_set_voltage_time_sel,
 	    NULL, bd718x7_set_buck_uvp, bd718x7_set_buck_ovp);
 
-/*
- * OPS for BD71837
- */
+ 
 BD718XX_OPS(bd71837_pickable_range_ldo_ops,
 	    regulator_list_voltage_pickable_linear_range, NULL,
 	    bd71837_set_voltage_sel_pickable_restricted,
@@ -639,11 +534,7 @@ BD718XX_OPS(bd71837_buck_regulator_nolinear_ops, regulator_list_voltage_table,
 	    regulator_map_voltage_ascend, rohm_regulator_set_voltage_sel_restricted,
 	    regulator_get_voltage_sel_regmap, regulator_set_voltage_time_sel,
 	    NULL, bd718x7_set_buck_uvp, bd718x7_set_buck_ovp);
-/*
- * BD71837 bucks 3 and 4 support defining their enable/disable state also
- * when buck enable state is under HW state machine control. In that case the
- * bit [2] in CTRL register is used to indicate if regulator should be ON.
- */
+ 
 static const struct regulator_ops bd71837_buck34_ops_hwctrl = {
 	.is_enabled = bd71837_get_buck34_enable_hwctrl,
 	.list_voltage = regulator_list_voltage_linear_range,
@@ -655,9 +546,7 @@ static const struct regulator_ops bd71837_buck34_ops_hwctrl = {
 	.set_over_voltage_protection = bd718x7_set_buck_ovp,
 };
 
-/*
- * OPS for all of the ICs - BD718(37/47/50)
- */
+ 
 BD718XX_OPS(bd718xx_dvs_buck_regulator_ops, regulator_list_voltage_linear_range,
 	    NULL, regulator_set_voltage_sel_regmap,
 	    regulator_get_voltage_sel_regmap, regulator_set_voltage_time_sel,
@@ -666,16 +555,7 @@ BD718XX_OPS(bd718xx_dvs_buck_regulator_ops, regulator_list_voltage_linear_range,
 
 
 
-/*
- * There is a HW quirk in BD71837. The shutdown sequence timings for
- * bucks/LDOs which are controlled via register interface are changed.
- * At PMIC poweroff the voltage for BUCK6/7 is cut immediately at the
- * beginning of shut-down sequence. As bucks 6 and 7 are parent
- * supplies for LDO5 and LDO6 - this causes LDO5/6 voltage
- * monitoring to errorneously detect under voltage and force PMIC to
- * emergency state instead of poweroff. In order to avoid this we
- * disable voltage monitoring for LDO5 and LDO6
- */
+ 
 static const struct reg_init bd71837_ldo5_inits[] = {
 	{
 		.reg = BD718XX_REG_MVRFLTMASK2,
@@ -1032,7 +912,7 @@ static struct bd718xx_regulator_data bd71847_regulators[] = {
 			.n_voltages = BD718XX_LDO6_VOLTAGE_NUM,
 			.linear_ranges = bd718xx_ldo6_volts,
 			.n_linear_ranges = ARRAY_SIZE(bd718xx_ldo6_volts),
-			/* LDO6 is supplied by buck5 */
+			 
 			.supply_name = "buck5",
 			.vsel_reg = BD718XX_REG_LDO6_VOLT,
 			.vsel_mask = BD718XX_LDO6_MASK,
@@ -1418,7 +1298,7 @@ static struct bd718xx_regulator_data bd71837_regulators[] = {
 			.n_voltages = BD71837_LDO5_VOLTAGE_NUM,
 			.linear_ranges = bd71837_ldo5_volts,
 			.n_linear_ranges = ARRAY_SIZE(bd71837_ldo5_volts),
-			/* LDO5 is supplied by buck6 */
+			 
 			.supply_name = "buck6",
 			.vsel_reg = BD718XX_REG_LDO5_VOLT,
 			.vsel_mask = BD71837_LDO5_MASK,
@@ -1445,7 +1325,7 @@ static struct bd718xx_regulator_data bd71837_regulators[] = {
 			.n_voltages = BD718XX_LDO6_VOLTAGE_NUM,
 			.linear_ranges = bd718xx_ldo6_volts,
 			.n_linear_ranges = ARRAY_SIZE(bd718xx_ldo6_volts),
-			/* LDO6 is supplied by buck7 */
+			 
 			.supply_name = "buck7",
 			.vsel_reg = BD718XX_REG_LDO6_VOLT,
 			.vsel_mask = BD718XX_LDO6_MASK,
@@ -1504,70 +1384,14 @@ static void mark_hw_controlled(struct device *dev, struct device_node *np,
 	dev_warn(dev, "Bad regulator node\n");
 }
 
-/*
- * Setups where regulator (especially the buck8) output voltage is scaled
- * by adding external connection where some other regulator output is connected
- * to feedback-pin (over suitable resistors) is getting popular amongst users
- * of BD71837. (This allows for example scaling down the buck8 voltages to suit
- * lover GPU voltages for projects where buck8 is (ab)used to supply power
- * for GPU. Additionally some setups do allow DVS for buck8 but as this do
- * produce voltage spikes the HW must be evaluated to be able to survive this
- * - hence I keep the DVS disabled for non DVS bucks by default. I don't want
- * to help you burn your proto board)
- *
- * So we allow describing this external connection from DT and scale the
- * voltages accordingly. This is what the connection should look like:
- *
- * |------------|
- * |	buck 8  |-------+----->Vout
- * |		|	|
- * |------------|	|
- *	| FB pin	|
- *	|		|
- *	+-------+--R2---+
- *		|
- *		R1
- *		|
- *	V FB-pull-up
- *
- *	Here the buck output is sifted according to formula:
- *
- * Vout_o = Vo - (Vpu - Vo)*R2/R1
- * Linear_step = step_orig*(R1+R2)/R1
- *
- * where:
- * Vout_o is adjusted voltage output at vsel reg value 0
- * Vo is original voltage output at vsel reg value 0
- * Vpu is the pull-up voltage V FB-pull-up in the picture
- * R1 and R2 are resistor values.
- *
- * As a real world example for buck8 and a specific GPU:
- * VLDO = 1.6V (used as FB-pull-up)
- * R1 = 1000ohms
- * R2 = 150ohms
- * VSEL 0x0 => 0.8V – (VLDO – 0.8) * R2 / R1 = 0.68V
- * Linear Step = 10mV * (R1 + R2) / R1 = 11.5mV
- */
+ 
 static int setup_feedback_loop(struct device *dev, struct device_node *np,
 			       struct bd718xx_regulator_data *reg_data,
 			       unsigned int num_reg_data, int fb_uv)
 {
 	int i, r1, r2, ret;
 
-	/*
-	 * We do adjust the values in the global desc based on DT settings.
-	 * This may not be best approach as it can cause problems if more than
-	 * one PMIC is controlled from same processor. I don't see such use-case
-	 * for BD718x7 now - so we spare some bits.
-	 *
-	 * If this will point out to be a problem - then we can allocate new
-	 * bd718xx_regulator_data array at probe and just use the global
-	 * array as a template where we copy initial values. Then we can
-	 * use allocated descs for regultor registration and do IC specific
-	 * modifications to this copy while leaving other PMICs untouched. But
-	 * that means allocating new array for each PMIC - and currently I see
-	 * no need for that.
-	 */
+	 
 
 	for (i = 0; i < num_reg_data; i++) {
 		struct regulator_desc *desc = &reg_data[i].desc;
@@ -1576,7 +1400,7 @@ static int setup_feedback_loop(struct device *dev, struct device_node *np,
 		if (!of_node_name_eq(np, desc->of_match))
 			continue;
 
-		/* The feedback loop connection does not make sense for LDOs */
+		 
 		if (desc->id >= BD718XX_LDO1)
 			return -EINVAL;
 
@@ -1709,7 +1533,7 @@ static int bd718xx_probe(struct platform_device *pdev)
 		return -EINVAL;
 	}
 
-	/* Register LOCK release */
+	 
 	err = regmap_update_bits(regmap, BD718XX_REG_REGLOCK,
 				 (REGLOCK_PWRSEQ | REGLOCK_VREG), 0);
 	if (err)
@@ -1721,11 +1545,7 @@ static int bd718xx_probe(struct platform_device *pdev)
 	use_snvs = of_property_read_bool(pdev->dev.parent->of_node,
 					 "rohm,reset-snvs-powered");
 
-	/*
-	 * Change the next stage from poweroff to be READY instead of SNVS
-	 * for all reset types because OTP loading at READY will clear SEL
-	 * bit allowing HW defaults for power rails to be used
-	 */
+	 
 	if (!use_snvs) {
 		err = regmap_update_bits(regmap, BD718XX_REG_TRANS_COND1,
 					 BD718XX_ON_REQ_POWEROFF_MASK |
@@ -1742,16 +1562,7 @@ static int bd718xx_probe(struct platform_device *pdev)
 
 	config.dev = pdev->dev.parent;
 	config.regmap = regmap;
-	/*
-	 * There are cases when we want to leave the enable-control for
-	 * the HW state machine and use this driver only for voltage control.
-	 * One special case is when we use PMIC_STBY_REQ line from SoC to PMIC
-	 * in order to set the system to SUSPEND state.
-	 *
-	 * If regulator is taken under SW control the regulator state will not
-	 * be affected by PMIC state machine - Eg. regulator is likely to stay
-	 * on even in SUSPEND
-	 */
+	 
 	err = get_special_regulators(pdev->dev.parent, reg_data, num_reg_data,
 				     &omit_enable);
 	if (err)
@@ -1778,22 +1589,7 @@ static int bd718xx_probe(struct platform_device *pdev)
 					     "failed to register %s regulator\n",
 					     desc->name);
 
-		/*
-		 * Regulator register gets the regulator constraints and
-		 * applies them (set_machine_constraints). This should have
-		 * turned the control register(s) to correct values and we
-		 * can now switch the control from PMIC state machine to the
-		 * register interface
-		 *
-		 * At poweroff transition PMIC HW disables EN bit for
-		 * regulators but leaves SEL bit untouched. So if state
-		 * transition from POWEROFF is done to SNVS - then all power
-		 * rails controlled by SW (having SEL bit set) stay disabled
-		 * as EN is cleared. This will result boot failure if any
-		 * crucial systems are powered by these rails. We don't
-		 * enable SW control for crucial regulators if snvs state is
-		 * used
-		 */
+		 
 		if (!no_enable_control && (!use_snvs ||
 		    !rdev->constraints->always_on ||
 		    !rdev->constraints->boot_on)) {

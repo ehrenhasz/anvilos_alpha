@@ -1,24 +1,4 @@
-/*
- * SPI slave handler controlling system state
- *
- * This SPI slave handler allows remote control of system reboot, power off,
- * halt, and suspend.
- *
- * Copyright (C) 2016-2017 Glider bvba
- *
- * This file is subject to the terms and conditions of the GNU General Public
- * License.  See the file "COPYING" in the main directory of this archive
- * for more details.
- *
- * Usage (assuming /dev/spidev2.0 corresponds to the SPI master on the remote
- * system):
- *
- *   # reboot='\x7c\x50'
- *   # poweroff='\x71\x3f'
- *   # halt='\x38\x76'
- *   # suspend='\x1b\x1b'
- *   # spidev_test -D /dev/spidev2.0 -p $suspend # or $reboot, $poweroff, $halt
- */
+ 
 
 #include <linux/completion.h>
 #include <linux/module.h>
@@ -26,14 +6,11 @@
 #include <linux/suspend.h>
 #include <linux/spi/spi.h>
 
-/*
- * The numbers are chosen to display something human-readable on two 7-segment
- * displays connected to two 74HC595 shift registers
- */
-#define CMD_REBOOT	0x7c50	/* rb */
-#define CMD_POWEROFF	0x713f	/* OF */
-#define CMD_HALT	0x3876	/* HL */
-#define CMD_SUSPEND	0x1b1b	/* ZZ */
+ 
+#define CMD_REBOOT	0x7c50	 
+#define CMD_POWEROFF	0x713f	 
+#define CMD_HALT	0x3876	 
+#define CMD_SUSPEND	0x1b1b	 
 
 struct spi_slave_system_control_priv {
 	struct spi_device *spi;

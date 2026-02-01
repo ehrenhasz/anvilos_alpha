@@ -1,22 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Support for Medifield PNW Camera Imaging ISP subsystem.
- *
- * Copyright (c) 2010-2017 Intel Corporation. All Rights Reserved.
- *
- * Copyright (c) 2010 Silicon Hive www.siliconhive.com.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License version
- * 2 as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- *
- */
+
+ 
 #include <linux/module.h>
 #include <linux/pci.h>
 #include <linux/pm_domain.h>
@@ -48,23 +31,23 @@
 
 #include "device_access.h"
 
-/* Timeouts to wait for all subdevs to be registered */
-#define SUBDEV_WAIT_TIMEOUT		50 /* ms */
-#define SUBDEV_WAIT_TIMEOUT_MAX_COUNT	40 /* up to 2 seconds */
+ 
+#define SUBDEV_WAIT_TIMEOUT		50  
+#define SUBDEV_WAIT_TIMEOUT_MAX_COUNT	40  
 
-/* G-Min addition: pull this in from intel_mid_pm.h */
+ 
 #define CSTATE_EXIT_LATENCY_C1  1
 
 static uint skip_fwload;
 module_param(skip_fwload, uint, 0644);
 MODULE_PARM_DESC(skip_fwload, "Skip atomisp firmware load");
 
-/* cross componnet debug message flag */
+ 
 int dbg_level;
 module_param(dbg_level, int, 0644);
 MODULE_PARM_DESC(dbg_level, "debug message level (default:0)");
 
-/* log function switch */
+ 
 int dbg_func = 1;
 module_param(dbg_func, int, 0644);
 MODULE_PARM_DESC(dbg_func,
@@ -78,13 +61,7 @@ static char firmware_name[256];
 module_param_string(firmware_name, firmware_name, sizeof(firmware_name), 0);
 MODULE_PARM_DESC(firmware_name, "Firmware file name. Allows overriding the default firmware name.");
 
-/*set to 16x16 since this is the amount of lines and pixels the sensor
-exports extra. If these are kept at the 10x8 that they were on, in yuv
-downscaling modes incorrect resolutions where requested to the sensor
-driver with strange outcomes as a result. The proper way tot do this
-would be to have a list of tables the specify the sensor res, mipi rec,
-output res, and isp output res. however since we do not have this yet,
-the chosen solution is the next best thing. */
+ 
 int pad_w = 16;
 module_param(pad_w, int, 0644);
 MODULE_PARM_DESC(pad_w, "extra data for ISP processing");
@@ -93,15 +70,7 @@ int pad_h = 16;
 module_param(pad_h, int, 0644);
 MODULE_PARM_DESC(pad_h, "extra data for ISP processing");
 
-/*
- * FIXME: this is a hack to make easier to support ISP2401 variant.
- * As a given system will either be ISP2401 or not, we can just use
- * a boolean, in order to replace existing #ifdef ISP2401 everywhere.
- *
- * Once this driver gets into a better shape, however, the best would
- * be to replace this to something stored inside atomisp allocated
- * structures.
- */
+ 
 
 struct device *atomisp_dev;
 
@@ -129,7 +98,7 @@ static const struct atomisp_freq_scaling_rule dfs_rules_merr[] = {
 	},
 };
 
-/* Merrifield and Moorefield DFS rules */
+ 
 static const struct atomisp_dfs_config dfs_config_merr = {
 	.lowest_freq = ISP_FREQ_200MHZ,
 	.max_freq_at_vmin = ISP_FREQ_400MHZ,
@@ -325,7 +294,7 @@ static const struct atomisp_dfs_config dfs_config_cht = {
 	.dfs_table_size = ARRAY_SIZE(dfs_rules_cht),
 };
 
-/* This one should be visible also by atomisp_cmd.c */
+ 
 const struct atomisp_dfs_config dfs_config_cht_soc = {
 	.lowest_freq = ISP_FREQ_100MHZ,
 	.max_freq_at_vmin = ISP_FREQ_356MHZ,
@@ -343,7 +312,7 @@ int atomisp_video_init(struct atomisp_video_pipe *video)
 	if (ret < 0)
 		return ret;
 
-	/* Initialize the video device. */
+	 
 	strscpy(video->vdev.name, "ATOMISP video output", sizeof(video->vdev.name));
 	video->vdev.fops = &atomisp_fops;
 	video->vdev.ioctl_ops = &atomisp_ioctl_ops;
@@ -369,7 +338,7 @@ static int atomisp_save_iunit_reg(struct atomisp_device *isp)
 	dev_dbg(isp->dev, "%s\n", __func__);
 
 	pci_read_config_word(pdev, PCI_COMMAND, &isp->saved_regs.pcicmdsts);
-	/* isp->saved_regs.ispmmadr is set from the atomisp_pci_probe() */
+	 
 	pci_read_config_dword(pdev, PCI_MSI_CAPID, &isp->saved_regs.msicap);
 	pci_read_config_dword(pdev, PCI_MSI_ADDR, &isp->saved_regs.msi_addr);
 	pci_read_config_word(pdev, PCI_MSI_DATA,  &isp->saved_regs.msi_data);
@@ -377,7 +346,7 @@ static int atomisp_save_iunit_reg(struct atomisp_device *isp)
 	pci_read_config_dword(pdev, PCI_INTERRUPT_CTRL, &isp->saved_regs.interrupt_control);
 
 	pci_read_config_dword(pdev, MRFLD_PCI_PMCS, &isp->saved_regs.pmcs);
-	/* Ensure read/write combining is enabled. */
+	 
 	pci_read_config_dword(pdev, PCI_I_CONTROL, &isp->saved_regs.i_control);
 	isp->saved_regs.i_control |=
 	    MRFLD_PCI_I_CONTROL_ENABLE_READ_COMBINING |
@@ -386,14 +355,7 @@ static int atomisp_save_iunit_reg(struct atomisp_device *isp)
 			      &isp->saved_regs.csi_access_viol);
 	pci_read_config_dword(pdev, MRFLD_PCI_CSI_RCOMP_CONTROL,
 			      &isp->saved_regs.csi_rcomp_config);
-	/*
-	 * Hardware bugs require setting CSI_HS_OVR_CLK_GATE_ON_UPDATE.
-	 * ANN/CHV: RCOMP updates do not happen when using CSI2+ path
-	 * and sensor sending "continuous clock".
-	 * TNG/ANN/CHV: MIPI packets are lost if the HS entry sequence
-	 * is missed, and IUNIT can hang.
-	 * For both issues, setting this bit is a workaround.
-	 */
+	 
 	isp->saved_regs.csi_rcomp_config |= MRFLD_PCI_CSI_HS_OVR_CLK_GATE_ON_UPDATE;
 	pci_read_config_dword(pdev, MRFLD_PCI_CSI_AFE_TRIM_CONTROL,
 			      &isp->saved_regs.csi_afe_dly);
@@ -402,9 +364,7 @@ static int atomisp_save_iunit_reg(struct atomisp_device *isp)
 	if (isp->media_dev.hw_revision >=
 	    (ATOMISP_HW_REVISION_ISP2401 << ATOMISP_HW_REVISION_SHIFT))
 		isp->saved_regs.csi_control |= MRFLD_PCI_CSI_CONTROL_PARPATHEN;
-	/*
-	 * On CHT CSI_READY bit should be enabled before stream on
-	 */
+	 
 	if (IS_CHT && (isp->media_dev.hw_revision >= ((ATOMISP_HW_REVISION_ISP2401 <<
 		       ATOMISP_HW_REVISION_SHIFT) | ATOMISP_HW_STEPPING_B0)))
 		isp->saved_regs.csi_control |= MRFLD_PCI_CSI_CONTROL_CSI_READY;
@@ -448,13 +408,7 @@ static int atomisp_restore_iunit_reg(struct atomisp_device *isp)
 	pci_write_config_dword(pdev, MRFLD_PCI_CSI_DEADLINE_CONTROL,
 			       isp->saved_regs.csi_deadline_control);
 
-	/*
-	 * for MRFLD, Software/firmware needs to write a 1 to bit0
-	 * of the register at CSI_RECEIVER_SELECTION_REG to enable
-	 * SH CSI backend write 0 will enable Arasan CSI backend,
-	 * which has bugs(like sighting:4567697 and 4567699) and
-	 * will be removed in B0
-	 */
+	 
 	atomisp_css2_hw_store_32(MRFLD_CSI_RECEIVER_SELECTION_REG, 1);
 	return 0;
 }
@@ -467,12 +421,7 @@ static int atomisp_mrfld_pre_power_down(struct atomisp_device *isp)
 
 	spin_lock_irqsave(&isp->lock, flags);
 
-	/*
-	 * MRFLD HAS requirement: cannot power off i-unit if
-	 * ISP has IRQ not serviced.
-	 * So, here we need to check if there is any pending
-	 * IRQ, if so, waiting for it to be served
-	 */
+	 
 	pci_read_config_dword(pdev, PCI_INTERRUPT_CTRL, &irq);
 	irq &= BIT(INTR_IIR);
 	pci_write_config_dword(pdev, PCI_INTERRUPT_CTRL, irq);
@@ -506,13 +455,7 @@ static int atomisp_mrfld_pre_power_down(struct atomisp_device *isp)
 		return -EAGAIN;
 	}
 done:
-	/*
-	* MRFLD WORKAROUND:
-	* before powering off IUNIT, clear the pending interrupts
-	* and disable the interrupt. driver should avoid writing 0
-	* to IIR. It could block subsequent interrupt messages.
-	* HW sighting:4568410.
-	*/
+	 
 	pci_read_config_dword(pdev, PCI_INTERRUPT_CTRL, &irq);
 	irq &= ~BIT(INTR_IER);
 	pci_write_config_dword(pdev, PCI_INTERRUPT_CTRL, irq);
@@ -524,10 +467,7 @@ done:
 	return 0;
 }
 
-/*
-* WA for DDR DVFS enable/disable
-* By default, ISP will force DDR DVFS 1600MHz before disable DVFS
-*/
+ 
 static void punit_ddr_dvfs_enable(bool enable)
 {
 	int reg;
@@ -551,31 +491,26 @@ static int atomisp_mrfld_power(struct atomisp_device *isp, bool enable)
 
 	dev_dbg(isp->dev, "IUNIT power-%s.\n", enable ? "on" : "off");
 
-	/* WA for P-Unit, if DVFS enabled, ISP timeout observed */
+	 
 	if (IS_CHT && enable) {
 		punit_ddr_dvfs_enable(false);
 		msleep(20);
 	}
 
-	/* Write to ISPSSPM0 bit[1:0] to power on/off the IUNIT */
+	 
 	iosf_mbi_modify(BT_MBI_UNIT_PMC, MBI_REG_READ, MRFLD_ISPSSPM0,
 			val, MRFLD_ISPSSPM0_ISPSSC_MASK);
 
-	/* WA:Enable DVFS */
+	 
 	if (IS_CHT && !enable)
 		punit_ddr_dvfs_enable(true);
 
-	/*
-	 * There should be no IUNIT access while power-down is
-	 * in progress. HW sighting: 4567865.
-	 * Wait up to 50 ms for the IUNIT to shut down.
-	 * And we do the same for power on.
-	 */
+	 
 	timeout = jiffies + msecs_to_jiffies(50);
 	do {
 		u32 tmp;
 
-		/* Wait until ISPSSPM0 bit[25:24] shows the right value */
+		 
 		iosf_mbi_read(BT_MBI_UNIT_PMC, MBI_REG_READ, MRFLD_ISPSSPM0, &tmp);
 		tmp = (tmp >> MRFLD_ISPSSPM0_ISPSSS_OFFSET) & MRFLD_ISPSSPM0_ISPSSC_MASK;
 		if (tmp == val) {
@@ -587,7 +522,7 @@ static int atomisp_mrfld_power(struct atomisp_device *isp, bool enable)
 		if (time_after(jiffies, timeout))
 			break;
 
-		/* FIXME: experienced value for delay */
+		 
 		usleep_range(100, 150);
 	} while (1);
 
@@ -611,11 +546,7 @@ int atomisp_power_off(struct device *dev)
 	if (ret)
 		return ret;
 
-	/*
-	 * MRFLD IUNIT DPHY is located in an always-power-on island
-	 * MRFLD HW design need all CSI ports are disabled before
-	 * powering down the IUNIT.
-	 */
+	 
 	pci_read_config_dword(pdev, MRFLD_PCI_CSI_CONTROL, &reg);
 	reg |= MRFLD_ALL_CSI_PORTS_OFF_MASK;
 	pci_write_config_dword(pdev, MRFLD_PCI_CSI_CONTROL, reg);
@@ -638,7 +569,7 @@ int atomisp_power_on(struct device *dev)
 	pci_restore_state(to_pci_dev(dev));
 	cpu_latency_qos_update_request(&isp->pm_qos, isp->max_isr_latency);
 
-	/*restore register values for iUnit and iUnitPHY registers*/
+	 
 	if (isp->saved_regs.pcicmdsts)
 		atomisp_restore_iunit_reg(isp);
 
@@ -653,7 +584,7 @@ static int atomisp_suspend(struct device *dev)
 				     dev_get_drvdata(dev);
 	unsigned long flags;
 
-	/* FIXME: Suspend is not supported by sensors. Abort if streaming. */
+	 
 	spin_lock_irqsave(&isp->lock, flags);
 	if (isp->asd.streaming) {
 		spin_unlock_irqrestore(&isp->lock, flags);
@@ -692,25 +623,25 @@ int atomisp_csi_lane_config(struct atomisp_device *isp)
 		u8 code;
 		u8 lanes[N_MIPI_PORT_ID];
 	} portconfigs[] = {
-		/* Tangier/Merrifield available lane configurations */
-		{ 0x00, { 4, 1, 0 } },		/* 00000 */
-		{ 0x01, { 3, 1, 0 } },		/* 00001 */
-		{ 0x02, { 2, 1, 0 } },		/* 00010 */
-		{ 0x03, { 1, 1, 0 } },		/* 00011 */
-		{ 0x04, { 2, 1, 2 } },		/* 00100 */
-		{ 0x08, { 3, 1, 1 } },		/* 01000 */
-		{ 0x09, { 2, 1, 1 } },		/* 01001 */
-		{ 0x0a, { 1, 1, 1 } },		/* 01010 */
+		 
+		{ 0x00, { 4, 1, 0 } },		 
+		{ 0x01, { 3, 1, 0 } },		 
+		{ 0x02, { 2, 1, 0 } },		 
+		{ 0x03, { 1, 1, 0 } },		 
+		{ 0x04, { 2, 1, 2 } },		 
+		{ 0x08, { 3, 1, 1 } },		 
+		{ 0x09, { 2, 1, 1 } },		 
+		{ 0x0a, { 1, 1, 1 } },		 
 
-		/* Anniedale/Moorefield only configurations */
-		{ 0x10, { 4, 2, 0 } },		/* 10000 */
-		{ 0x11, { 3, 2, 0 } },		/* 10001 */
-		{ 0x12, { 2, 2, 0 } },		/* 10010 */
-		{ 0x13, { 1, 2, 0 } },		/* 10011 */
-		{ 0x14, { 2, 2, 2 } },		/* 10100 */
-		{ 0x18, { 3, 2, 1 } },		/* 11000 */
-		{ 0x19, { 2, 2, 1 } },		/* 11001 */
-		{ 0x1a, { 1, 2, 1 } },		/* 11010 */
+		 
+		{ 0x10, { 4, 2, 0 } },		 
+		{ 0x11, { 3, 2, 0 } },		 
+		{ 0x12, { 2, 2, 0 } },		 
+		{ 0x13, { 1, 2, 0 } },		 
+		{ 0x14, { 2, 2, 2 } },		 
+		{ 0x18, { 3, 2, 1 } },		 
+		{ 0x19, { 2, 2, 1 } },		 
+		{ 0x1a, { 1, 2, 1 } },		 
 	};
 
 	unsigned int i, j;
@@ -722,11 +653,11 @@ int atomisp_csi_lane_config(struct atomisp_device *isp)
 	if (isp->media_dev.hw_revision <
 	    ATOMISP_HW_REVISION_ISP2401_LEGACY <<
 	    ATOMISP_HW_REVISION_SHIFT) {
-		/* Merrifield */
+		 
 		port_config_mask = MRFLD_PORT_CONFIG_MASK;
 		port3_lanes_shift = MRFLD_PORT3_LANES_SHIFT;
 	} else {
-		/* Moorefield / Cherryview */
+		 
 		port_config_mask = CHV_PORT_CONFIG_MASK;
 		port3_lanes_shift = CHV_PORT3_LANES_SHIFT;
 	}
@@ -734,10 +665,10 @@ int atomisp_csi_lane_config(struct atomisp_device *isp)
 	if (isp->media_dev.hw_revision <
 	    ATOMISP_HW_REVISION_ISP2401 <<
 	    ATOMISP_HW_REVISION_SHIFT) {
-		/* Merrifield / Moorefield legacy input system */
+		 
 		nportconfigs = MRFLD_PORT_CONFIG_NUM;
 	} else {
-		/* Moorefield / Cherryview new input system */
+		 
 		nportconfigs = ARRAY_SIZE(portconfigs);
 	}
 
@@ -748,7 +679,7 @@ int atomisp_csi_lane_config(struct atomisp_device *isp)
 				break;
 
 		if (j == N_MIPI_PORT_ID)
-			break;			/* Found matching setting */
+			break;			 
 	}
 
 	if (i >= nportconfigs) {
@@ -795,12 +726,7 @@ static int atomisp_subdev_probe(struct atomisp_device *isp)
 		return 0;
 	}
 
-	/*
-	 * TODO: this is left here for now to allow testing atomisp-sensor
-	 * drivers which are still using the atomisp_gmin_platform infra before
-	 * converting them to standard v4l2 sensor drivers using runtime-pm +
-	 * ACPI for pm and v4l2_async_register_subdev_sensor() registration.
-	 */
+	 
 	for (subdevs = pdata->subdevs; subdevs->type; ++subdevs) {
 		ret = v4l2_device_register_subdev(&isp->v4l2_dev, subdevs->subdev);
 		if (ret)
@@ -887,16 +813,16 @@ static int atomisp_register_entities(struct atomisp_device *isp)
 	if (ret < 0)
 		goto csi_and_subdev_probe_failed;
 
-	/* Register internal entities */
+	 
 	for (i = 0; i < ATOMISP_CAMERA_NR_PORTS; i++) {
 		ret = atomisp_mipi_csi2_register_entities(&isp->csi2_port[i],
 			&isp->v4l2_dev);
 		if (ret == 0)
 			continue;
 
-		/* error case */
+		 
 		dev_err(isp->dev, "failed to register the CSI port: %d\n", i);
-		/* deregister all registered CSI ports */
+		 
 		while (i--)
 			atomisp_mipi_csi2_unregister_entities(
 			    &isp->csi2_port[i]);
@@ -962,12 +888,7 @@ static void atomisp_init_sensor(struct atomisp_input_subdev *input)
 
 	input->active_rect = sel.r;
 
-	/*
-	 * Check for a framesize with half active_rect width and height,
-	 * if found assume the sensor supports binning.
-	 * Do this before changing the crop-rect since that may influence
-	 * enum_frame_size results.
-	 */
+	 
 	for (i = 0; ; i++) {
 		fse.index = i;
 		fse.code = input->code;
@@ -984,14 +905,7 @@ static void atomisp_init_sensor(struct atomisp_input_subdev *input)
 		}
 	}
 
-	/*
-	 * The ISP also wants the non-active pixels at the border of the sensor
-	 * for padding, set the crop rect to cover the entire sensor instead
-	 * of only the default active area.
-	 *
-	 * Do this for both try and active formats since the try_crop rect in
-	 * pad_cfg may influence (clamp) future try_fmt calls with which == try.
-	 */
+	 
 	sel.which = V4L2_SUBDEV_FORMAT_TRY;
 	sel.target = V4L2_SEL_TGT_CROP;
 	sel.r = input->native_rect;
@@ -1037,11 +951,7 @@ int atomisp_register_device_nodes(struct atomisp_device *isp)
 
 		atomisp_init_sensor(input);
 
-		/*
-		 * HACK: Currently VCM belongs to primary sensor only, but correct
-		 * approach must be to acquire from platform code which sensor
-		 * owns it.
-		 */
+		 
 		if (i == ATOMISP_CAMERA_PORT_PRIMARY)
 			input->motor = isp->motor;
 
@@ -1170,10 +1080,7 @@ atomisp_load_firmware(struct atomisp_device *isp)
 	return fw;
 }
 
-/*
- * Check for flags the driver was compiled with against the PCI
- * device. Always returns true on other than ISP 2400.
- */
+ 
 static bool is_valid_device(struct pci_dev *pdev, const struct pci_device_id *id)
 {
 	const char *name;
@@ -1206,10 +1113,7 @@ static bool is_valid_device(struct pci_dev *pdev, const struct pci_device_id *id
 		return false;
 	}
 
-	/*
-	 * FIXME:
-	 * remove the if once the driver become generic
-	 */
+	 
 
 #ifndef ISP2401
 	if (IS_ISP2401) {
@@ -1244,7 +1148,7 @@ static int atomisp_pci_probe(struct pci_dev *pdev, const struct pci_device_id *i
 	if (!is_valid_device(pdev, id))
 		return -ENODEV;
 
-	/* Pointer to struct device. */
+	 
 	atomisp_dev = &pdev->dev;
 
 	pdata = atomisp_get_platform_data();
@@ -1281,7 +1185,7 @@ static int atomisp_pci_probe(struct pci_dev *pdev, const struct pci_device_id *i
 	mutex_init(&isp->mutex);
 	spin_lock_init(&isp->lock);
 
-	/* This is not a true PCI device on SoC, so the delay is not needed. */
+	 
 	pdev->d3hot_delay = 0;
 
 	pci_set_drvdata(pdev, isp);
@@ -1313,35 +1217,13 @@ static int atomisp_pci_probe(struct pci_dev *pdev, const struct pci_device_id *i
 		     << ATOMISP_HW_REVISION_SHIFT) |
 		    ATOMISP_HW_STEPPING_B0;
 
-		/*
-		 * Note: some Intel-based tablets with Android use a different
-		 * DFS table. Based on the comments at the Yocto Aero meta
-		 * version of this driver (at the ssid.h header), they're
-		 * identified via a "spid" var:
-		 *
-		 *	androidboot.spid=vend:cust:manu:plat:prod:hard
-		 *
-		 * As we don't have this upstream, nor we know enough details
-		 * to use a DMI or PCI match table, the old code was just
-		 * removed, but let's keep a note here as a reminder that,
-		 * for certain devices, we may need to limit the max DFS
-		 * frequency to be below certain values, adjusting the
-		 * resolution accordingly.
-		 */
+		 
 		isp->dfs = &dfs_config_byt;
 
-		/*
-		 * HPLL frequency is known to be device-specific, but we don't
-		 * have specs yet for exactly how it varies.  Default to
-		 * BYT-CR but let provisioning set it via EFI variable
-		 */
+		 
 		isp->hpll_freq = gmin_get_var_int(&pdev->dev, false, "HpllFreq", HPLL_FREQ_2000MHZ);
 
-		/*
-		 * for BYT/CHT we are put isp into D3cold to avoid pci registers access
-		 * in power off. Set d3cold_delay to 0 since default 100ms is not
-		 * necessary.
-		 */
+		 
 		pdev->d3cold_delay = 0;
 		break;
 	case ATOMISP_PCI_DEVICE_SOC_ANN:
@@ -1387,7 +1269,7 @@ static int atomisp_pci_probe(struct pci_dev *pdev, const struct pci_device_id *i
 
 	isp->max_isr_latency = ATOMISP_MAX_ISR_LATENCY;
 
-	/* Load isp firmware from user space */
+	 
 	isp->firmware = atomisp_load_firmware(isp);
 	if (!isp->firmware) {
 		err = -ENOENT;
@@ -1413,23 +1295,14 @@ static int atomisp_pci_probe(struct pci_dev *pdev, const struct pci_device_id *i
 
 	cpu_latency_qos_add_request(&isp->pm_qos, PM_QOS_DEFAULT_VALUE);
 
-	/*
-	 * for MRFLD, Software/firmware needs to write a 1 to bit 0 of
-	 * the register at CSI_RECEIVER_SELECTION_REG to enable SH CSI
-	 * backend write 0 will enable Arasan CSI backend, which has
-	 * bugs(like sighting:4567697 and 4567699) and will be removed
-	 * in B0
-	 */
+	 
 	atomisp_css2_hw_store_32(MRFLD_CSI_RECEIVER_SELECTION_REG, 1);
 
 	if ((id->device & ATOMISP_PCI_DEVICE_SOC_MASK) ==
 	    ATOMISP_PCI_DEVICE_SOC_MRFLD) {
 		u32 csi_afe_trim;
 
-		/*
-		 * Workaround for imbalance data eye issue which is observed
-		 * on TNG B0.
-		 */
+		 
 		pci_read_config_dword(pdev, MRFLD_PCI_CSI_AFE_TRIM_CONTROL, &csi_afe_trim);
 		csi_afe_trim &= ~((MRFLD_PCI_CSI_HSRXCLKTRIM_MASK <<
 				   MRFLD_PCI_CSI1_HSRXCLKTRIM_SHIFT) |
@@ -1460,22 +1333,10 @@ static int atomisp_pci_probe(struct pci_dev *pdev, const struct pci_device_id *i
 
 	INIT_WORK(&isp->assert_recovery_work, atomisp_assert_recovery_work);
 
-	/* save the iunit context only once after all the values are init'ed. */
+	 
 	atomisp_save_iunit_reg(isp);
 
-	/*
-	 * The atomisp does not use standard PCI power-management through the
-	 * PCI config space. Instead this driver directly tells the P-Unit to
-	 * disable the ISP over the IOSF. The standard PCI subsystem pm_ops will
-	 * try to access the config space before (resume) / after (suspend) this
-	 * driver has turned the ISP on / off, resulting in the following errors:
-	 *
-	 * "Unable to change power state from D0 to D3hot, device inaccessible"
-	 * "Unable to change power state from D3cold to D0, device inaccessible"
-	 *
-	 * To avoid these errors override the pm_domain so that all the PCI
-	 * subsys suspend / resume handling is skipped.
-	 */
+	 
 	isp->pm_domain.ops.runtime_suspend = atomisp_power_off;
 	isp->pm_domain.ops.runtime_resume = atomisp_power_on;
 	isp->pm_domain.ops.suspend = atomisp_suspend;
@@ -1486,7 +1347,7 @@ static int atomisp_pci_probe(struct pci_dev *pdev, const struct pci_device_id *i
 	pm_runtime_put_noidle(&pdev->dev);
 	pm_runtime_allow(&pdev->dev);
 
-	/* Init ISP memory management */
+	 
 	hmm_init();
 
 	err = devm_request_threaded_irq(&pdev->dev, pdev->irq,
@@ -1497,13 +1358,13 @@ static int atomisp_pci_probe(struct pci_dev *pdev, const struct pci_device_id *i
 		goto request_irq_fail;
 	}
 
-	/* Load firmware into ISP memory */
+	 
 	err = atomisp_css_load_firmware(isp);
 	if (err) {
 		dev_err(&pdev->dev, "Failed to init css.\n");
 		goto css_init_fail;
 	}
-	/* Clear FW image from memory */
+	 
 	release_firmware(isp->firmware);
 	isp->firmware = NULL;
 	isp->css_env.isp_css_fw.data = NULL;
@@ -1535,12 +1396,7 @@ enable_msi_fail:
 fw_validation_fail:
 	release_firmware(isp->firmware);
 load_fw_fail:
-	/*
-	 * Switch off ISP, as keeping it powered on would prevent
-	 * reaching S0ix states.
-	 *
-	 * The following lines have been copied from atomisp suspend path
-	 */
+	 
 
 	pci_read_config_dword(pdev, PCI_INTERRUPT_CTRL, &irq);
 	irq &= BIT(INTR_IIR);
@@ -1552,7 +1408,7 @@ load_fw_fail:
 
 	atomisp_msi_irq_uninit(isp);
 
-	/* Address later when we worry about the ...field chips */
+	 
 	if (IS_ENABLED(CONFIG_PM) && atomisp_mrfld_power(isp, false))
 		dev_err(&pdev->dev, "Failed to switch off ISP\n");
 
@@ -1586,15 +1442,15 @@ static void atomisp_pci_remove(struct pci_dev *pdev)
 }
 
 static const struct pci_device_id atomisp_pci_tbl[] = {
-	/* Merrifield */
+	 
 	{PCI_DEVICE(PCI_VENDOR_ID_INTEL, ATOMISP_PCI_DEVICE_SOC_MRFLD)},
 	{PCI_DEVICE(PCI_VENDOR_ID_INTEL, ATOMISP_PCI_DEVICE_SOC_MRFLD_1179)},
 	{PCI_DEVICE(PCI_VENDOR_ID_INTEL, ATOMISP_PCI_DEVICE_SOC_MRFLD_117A)},
-	/* Baytrail */
+	 
 	{PCI_DEVICE(PCI_VENDOR_ID_INTEL, ATOMISP_PCI_DEVICE_SOC_BYT)},
-	/* Anniedale (Merrifield+ / Moorefield) */
+	 
 	{PCI_DEVICE(PCI_VENDOR_ID_INTEL, ATOMISP_PCI_DEVICE_SOC_ANN)},
-	/* Cherrytrail */
+	 
 	{PCI_DEVICE(PCI_VENDOR_ID_INTEL, ATOMISP_PCI_DEVICE_SOC_CHT)},
 	{0,}
 };

@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  Atheros Communication Bluetooth HCIATH3K UART protocol
- *
- *  HCIATH3K (HCI Atheros AR300x Protocol) is a Atheros Communication's
- *  power management protocol extension to H4 to support AR300x Bluetooth Chip.
- *
- *  Copyright (c) 2009-2010 Atheros Communications Inc.
- *
- *  Acknowledgements:
- *  This file is based on hci_h4.c, which was written
- *  by Maxim Krasnyansky and Marcel Holtmann.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -54,12 +43,12 @@ static int ath_wakeup_ar3k(struct tty_struct *tty)
 	if (status & TIOCM_CTS)
 		return status;
 
-	/* Clear RTS first */
+	 
 	tty->driver->ops->tiocmget(tty);
 	tty->driver->ops->tiocmset(tty, 0x00, TIOCM_RTS);
 	msleep(20);
 
-	/* Set RTS, wake up board */
+	 
 	tty->driver->ops->tiocmget(tty);
 	tty->driver->ops->tiocmset(tty, TIOCM_RTS, 0x00);
 	msleep(20);
@@ -80,14 +69,14 @@ static void ath_hci_uart_work(struct work_struct *work)
 	hu = ath->hu;
 	tty = hu->tty;
 
-	/* verify and wake up controller */
+	 
 	if (ath->cur_sleep) {
 		status = ath_wakeup_ar3k(tty);
 		if (!(status & TIOCM_CTS))
 			return;
 	}
 
-	/* Ready to send Data */
+	 
 	clear_bit(HCI_UART_SENDING, &hu->tx_state);
 	hci_uart_tx_wakeup(hu);
 }
@@ -214,9 +203,7 @@ static int ath_enqueue(struct hci_uart *hu, struct sk_buff *skb)
 		return 0;
 	}
 
-	/* Update power management enable flag with parameters of
-	 * HCI sleep enable vendor specific HCI command.
-	 */
+	 
 	if (hci_skb_pkt_type(skb) == HCI_COMMAND_PKT) {
 		struct hci_command_hdr *hdr = (void *)skb->data;
 
@@ -226,7 +213,7 @@ static int ath_enqueue(struct hci_uart *hu, struct sk_buff *skb)
 
 	BT_DBG("hu %p skb %p", hu, skb);
 
-	/* Prepend skb with frame type */
+	 
 	memcpy(skb_push(skb, 1), &hci_skb_pkt_type(skb), 1);
 
 	skb_queue_tail(&ath->txq, skb);

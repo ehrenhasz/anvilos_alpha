@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* incoming call handling
- *
- * Copyright (C) 2007 Red Hat, Inc. All Rights Reserved.
- * Written by David Howells (dhowells@redhat.com)
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -27,10 +23,7 @@ static void rxrpc_dummy_notify(struct sock *sk, struct rxrpc_call *call,
 {
 }
 
-/*
- * Preallocate a single service call, connection and peer and, if possible,
- * give them a user ID and attach the user's side of the ID to them.
- */
+ 
 static int rxrpc_service_prealloc_one(struct rxrpc_sock *rx,
 				      struct rxrpc_backlog *b,
 				      rxrpc_notify_rx_t notify_rx,
@@ -53,10 +46,7 @@ static int rxrpc_service_prealloc_one(struct rxrpc_sock *rx,
 	}
 	max -= tmp;
 
-	/* We don't need more conns and peers than we have calls, but on the
-	 * other hand, we shouldn't ever use more peers than conns or conns
-	 * than calls.
-	 */
+	 
 	call_head = b->call_backlog_head;
 	call_tail = READ_ONCE(b->call_backlog_tail);
 	tmp = CIRC_CNT(call_head, call_tail, size);
@@ -92,9 +82,7 @@ static int rxrpc_service_prealloc_one(struct rxrpc_sock *rx,
 				  (head + 1) & (size - 1));
 	}
 
-	/* Now it gets complicated, because calls get registered with the
-	 * socket here, with a user ID preassigned by the user.
-	 */
+	 
 	call = rxrpc_alloc_call(rx, gfp, debug_id);
 	if (!call)
 		return -ENOMEM;
@@ -107,7 +95,7 @@ static int rxrpc_service_prealloc_one(struct rxrpc_sock *rx,
 
 	write_lock(&rx->call_lock);
 
-	/* Check the user ID isn't already in use */
+	 
 	pp = &rx->calls.rb_node;
 	parent = NULL;
 	while (*pp) {
@@ -154,10 +142,7 @@ id_in_use:
 	return -EBADSLT;
 }
 
-/*
- * Allocate the preallocation buffers for incoming service calls.  These must
- * be charged manually.
- */
+ 
 int rxrpc_service_prealloc(struct rxrpc_sock *rx, gfp_t gfp)
 {
 	struct rxrpc_backlog *b = rx->backlog;
@@ -172,9 +157,7 @@ int rxrpc_service_prealloc(struct rxrpc_sock *rx, gfp_t gfp)
 	return 0;
 }
 
-/*
- * Discard the preallocation on a service.
- */
+ 
 void rxrpc_discard_prealloc(struct rxrpc_sock *rx)
 {
 	struct rxrpc_backlog *b = rx->backlog;
@@ -185,9 +168,7 @@ void rxrpc_discard_prealloc(struct rxrpc_sock *rx)
 		return;
 	rx->backlog = NULL;
 
-	/* Make sure that there aren't any incoming calls in progress before we
-	 * clear the preallocation buffers.
-	 */
+	 
 	spin_lock(&rx->incoming_lock);
 	spin_unlock(&rx->incoming_lock);
 
@@ -235,10 +216,7 @@ void rxrpc_discard_prealloc(struct rxrpc_sock *rx)
 	kfree(b);
 }
 
-/*
- * Allocate a new incoming call from the prealloc pool, along with a connection
- * and a peer as necessary.
- */
+ 
 static struct rxrpc_call *rxrpc_alloc_incoming_call(struct rxrpc_sock *rx,
 						    struct rxrpc_local *local,
 						    struct rxrpc_peer *peer,
@@ -253,7 +231,7 @@ static struct rxrpc_call *rxrpc_alloc_incoming_call(struct rxrpc_sock *rx,
 	unsigned short call_tail, conn_tail, peer_tail;
 	unsigned short call_count, conn_count;
 
-	/* #calls >= #conns >= #peers must hold true. */
+	 
 	call_head = smp_load_acquire(&b->call_backlog_head);
 	call_tail = b->call_backlog_tail;
 	call_count = CIRC_CNT(call_head, call_tail, RXRPC_BACKLOG_MAX);
@@ -283,7 +261,7 @@ static struct rxrpc_call *rxrpc_alloc_incoming_call(struct rxrpc_sock *rx,
 			rxrpc_new_incoming_peer(local, peer);
 		}
 
-		/* Now allocate and set up the connection */
+		 
 		conn = b->conn_backlog[conn_tail];
 		b->conn_backlog[conn_tail] = NULL;
 		smp_store_release(&b->conn_backlog_tail,
@@ -297,7 +275,7 @@ static struct rxrpc_call *rxrpc_alloc_incoming_call(struct rxrpc_sock *rx,
 		atomic_inc(&conn->active);
 	}
 
-	/* And now we can allocate and set up a new call */
+	 
 	call = b->call_backlog[call_tail];
 	b->call_backlog[call_tail] = NULL;
 	smp_store_release(&b->call_backlog_tail,
@@ -315,17 +293,7 @@ static struct rxrpc_call *rxrpc_alloc_incoming_call(struct rxrpc_sock *rx,
 	return call;
 }
 
-/*
- * Set up a new incoming call.  Called from the I/O thread.
- *
- * If this is for a kernel service, when we allocate the call, it will have
- * three refs on it: (1) the kernel service, (2) the user_call_ID tree, (3) the
- * retainer ref obtained from the backlog buffer.  Prealloc calls for userspace
- * services only have the ref from the backlog buffer.
- *
- * If we want to report an error, we mark the skb with the packet type and
- * abort code and return false.
- */
+ 
 bool rxrpc_new_incoming_call(struct rxrpc_local *local,
 			     struct rxrpc_peer *peer,
 			     struct rxrpc_connection *conn,
@@ -339,16 +307,13 @@ bool rxrpc_new_incoming_call(struct rxrpc_local *local,
 
 	_enter("");
 
-	/* Don't set up a call for anything other than a DATA packet. */
+	 
 	if (sp->hdr.type != RXRPC_PACKET_TYPE_DATA)
 		return rxrpc_protocol_error(skb, rxrpc_eproto_no_service_call);
 
 	read_lock(&local->services_lock);
 
-	/* Weed out packets to services we're not offering.  Packets that would
-	 * begin a call are explicitly rejected and the rest are just
-	 * discarded.
-	 */
+	 
 	rx = local->service;
 	if (!rx || (sp->hdr.serviceId != rx->srx.srx_service &&
 		    sp->hdr.serviceId != rx->second_service)
@@ -383,7 +348,7 @@ bool rxrpc_new_incoming_call(struct rxrpc_local *local,
 	trace_rxrpc_receive(call, rxrpc_receive_incoming,
 			    sp->hdr.serial, sp->hdr.seq);
 
-	/* Make the call live. */
+	 
 	rxrpc_incoming_call(rx, call, skb);
 	conn = call->conn;
 
@@ -430,9 +395,7 @@ discard:
 	return true;
 }
 
-/*
- * Charge up socket with preallocated calls, attaching user call IDs.
- */
+ 
 int rxrpc_user_charge_accept(struct rxrpc_sock *rx, unsigned long user_call_ID)
 {
 	struct rxrpc_backlog *b = rx->backlog;
@@ -445,21 +408,7 @@ int rxrpc_user_charge_accept(struct rxrpc_sock *rx, unsigned long user_call_ID)
 					  atomic_inc_return(&rxrpc_debug_id));
 }
 
-/*
- * rxrpc_kernel_charge_accept - Charge up socket with preallocated calls
- * @sock: The socket on which to preallocate
- * @notify_rx: Event notification function for the call
- * @user_attach_call: Func to attach call to user_call_ID
- * @user_call_ID: The tag to attach to the preallocated call
- * @gfp: The allocation conditions.
- * @debug_id: The tracing debug ID.
- *
- * Charge up the socket with preallocated calls, each with a user ID.  A
- * function should be provided to effect the attachment from the user's side.
- * The user is given a ref to hold on the call.
- *
- * Note that the call may be come connected before this function returns.
- */
+ 
 int rxrpc_kernel_charge_accept(struct socket *sock,
 			       rxrpc_notify_rx_t notify_rx,
 			       rxrpc_user_attach_call_t user_attach_call,

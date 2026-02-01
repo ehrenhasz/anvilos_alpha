@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Abstract code for CPUFreq governor tunable sysfs attributes.
- *
- * Copyright (C) 2016, Intel Corporation
- * Author: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
- */
+
+ 
 
 #include "cpufreq_governor.h"
 

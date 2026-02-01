@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright © 2020 Intel Corporation
- */
+
+ 
 
 #include "display/intel_audio_regs.h"
 #include "display/intel_backlight_regs.h"
@@ -79,7 +77,7 @@ static int iterate_generic_mmio(struct intel_gvt_mmio_table_iter *iter)
 	MMIO_RING_D(RING_ACTHD);
 	MMIO_RING_D(RING_START);
 
-	/* RING MODE */
+	 
 #define RING_REG(base) _MMIO((base) + 0x29c)
 	MMIO_RING_D(RING_REG);
 #undef RING_REG
@@ -111,7 +109,7 @@ static int iterate_generic_mmio(struct intel_gvt_mmio_table_iter *iter)
 	MMIO_D(_MMIO(0x7018));
 	MMIO_D(HSW_HALF_SLICE_CHICKEN3);
 	MMIO_D(GEN7_HALF_SLICE_CHICKEN1);
-	/* display */
+	 
 	MMIO_F(_MMIO(0x60220), 0x20);
 	MMIO_D(_MMIO(0x602a0));
 	MMIO_D(_MMIO(0x65050));
@@ -1042,7 +1040,7 @@ static int iterate_skl_plus_mmio(struct intel_gvt_mmio_table_iter *iter)
 	MMIO_D(RC6_LOCATION);
 	MMIO_D(GEN7_FF_SLICE_CS_CHICKEN1);
 	MMIO_D(GEN9_CS_DEBUG_MODE1);
-	/* TRTT */
+	 
 	MMIO_D(TRVATTL3PTRDW(0));
 	MMIO_D(TRVATTL3PTRDW(1));
 	MMIO_D(TRVATTL3PTRDW(2));
@@ -1248,13 +1246,7 @@ static int iterate_bxt_mmio(struct intel_gvt_mmio_table_iter *iter)
 	return 0;
 }
 
-/**
- * intel_gvt_iterate_mmio_table - Iterate the GVT MMIO table
- * @iter: the interator
- *
- * This function is called for iterating the GVT MMIO table when i915 is
- * taking the snapshot of the HW and GVT is building MMIO tracking table.
- */
+ 
 int intel_gvt_iterate_mmio_table(struct intel_gvt_mmio_table_iter *iter)
 {
 	struct drm_i915_private *i915 = iter->i915;

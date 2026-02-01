@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * USB Type-C Connector Class
- *
- * Copyright (C) 2017, Intel Corporation
- * Author: Heikki Krogerus <heikki.krogerus@linux.intel.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/mutex.h>
@@ -24,8 +19,8 @@ struct class typec_class = {
 	.name = "typec",
 };
 
-/* ------------------------------------------------------------------------- */
-/* Common attributes */
+ 
+ 
 
 static const char * const typec_accessory_modes[] = {
 	[TYPEC_ACCESSORY_NONE]		= "none",
@@ -33,7 +28,7 @@ static const char * const typec_accessory_modes[] = {
 	[TYPEC_ACCESSORY_DEBUG]		= "debug",
 };
 
-/* Product types defined in USB PD Specification R3.0 V2.0 */
+ 
 static const char * const product_type_ufp[8] = {
 	[IDH_PTYPE_NOT_UFP]		= "not_ufp",
 	[IDH_PTYPE_HUB]			= "hub",
@@ -218,8 +213,8 @@ static ssize_t usb_power_delivery_revision_show(struct device *dev,
 						char *buf);
 static DEVICE_ATTR_RO(usb_power_delivery_revision);
 
-/* ------------------------------------------------------------------------- */
-/* Alternate Modes */
+ 
+ 
 
 static int altmode_match(struct device *dev, void *data)
 {
@@ -244,11 +239,11 @@ static void typec_altmode_set_partner(struct altmode *altmode)
 	if (!dev)
 		return;
 
-	/* Bind the port alt mode to the partner/plug alt mode. */
+	 
 	partner = to_altmode(to_typec_altmode(dev));
 	altmode->partner = partner;
 
-	/* Bind the partner/plug alt mode to the port alt mode. */
+	 
 	if (is_typec_plug(adev->dev.parent)) {
 		struct typec_plug *plug = to_typec_plug(adev->dev.parent);
 
@@ -280,14 +275,7 @@ static void typec_altmode_put_partner(struct altmode *altmode)
 	put_device(&partner_adev->dev);
 }
 
-/**
- * typec_altmode_update_active - Report Enter/Exit mode
- * @adev: Handle to the alternate mode
- * @active: True when the mode has been entered
- *
- * If a partner or cable plug executes Enter/Exit Mode command successfully, the
- * drivers use this routine to report the updated state of the mode.
- */
+ 
 void typec_altmode_update_active(struct typec_altmode *adev, bool active)
 {
 	char dir[6];
@@ -310,13 +298,7 @@ void typec_altmode_update_active(struct typec_altmode *adev, bool active)
 }
 EXPORT_SYMBOL_GPL(typec_altmode_update_active);
 
-/**
- * typec_altmode2port - Alternate Mode to USB Type-C port
- * @alt: The Alternate Mode
- *
- * Returns handle to the port that a cable plug or partner with @alt is
- * connected to.
- */
+ 
 struct typec_port *typec_altmode2port(struct typec_altmode *alt)
 {
 	if (is_typec_plug(alt->dev.parent))
@@ -374,7 +356,7 @@ static ssize_t active_store(struct device *dev, struct device_attribute *attr,
 	if (is_typec_port(adev->dev.parent)) {
 		typec_altmode_update_active(adev, enter);
 
-		/* Make sure that the partner exits the mode before disabling */
+		 
 		if (altmode->partner && !enter && altmode->partner->adev.active)
 			typec_altmode_exit(&altmode->partner->adev);
 	} else if (altmode->partner) {
@@ -384,7 +366,7 @@ static ssize_t active_store(struct device *dev, struct device_attribute *attr,
 		}
 	}
 
-	/* Note: If there is no driver, the mode will not be entered */
+	 
 	if (adev->ops && adev->ops->activate) {
 		ret = adev->ops->activate(adev, enter);
 		if (ret)
@@ -538,7 +520,7 @@ typec_register_altmode(struct device *parent,
 
 	if (is_port) {
 		alt->attrs[3] = &dev_attr_supported_roles.attr;
-		alt->adev.active = true; /* Enabled by default */
+		alt->adev.active = true;  
 	}
 
 	sprintf(alt->group_name, "mode%d", desc->mode);
@@ -551,15 +533,15 @@ typec_register_altmode(struct device *parent,
 	alt->adev.dev.type = &typec_altmode_dev_type;
 	dev_set_name(&alt->adev.dev, "%s.%u", dev_name(parent), id);
 
-	/* Link partners and plugs with the ports */
+	 
 	if (!is_port)
 		typec_altmode_set_partner(alt);
 
-	/* The partners are bind to drivers */
+	 
 	if (is_typec_partner(parent))
 		alt->adev.dev.bus = &typec_bus;
 
-	/* Plug alt modes need a class to generate udev events. */
+	 
 	if (is_typec_plug(parent))
 		alt->adev.dev.class = &typec_class;
 
@@ -574,13 +556,7 @@ typec_register_altmode(struct device *parent,
 	return &alt->adev;
 }
 
-/**
- * typec_unregister_altmode - Unregister Alternate Mode
- * @adev: The alternate mode to be unregistered
- *
- * Unregister device created with typec_partner_register_altmode(),
- * typec_plug_register_altmode() or typec_port_register_altmode().
- */
+ 
 void typec_unregister_altmode(struct typec_altmode *adev)
 {
 	if (IS_ERR_OR_NULL(adev))
@@ -591,8 +567,8 @@ void typec_unregister_altmode(struct typec_altmode *adev)
 }
 EXPORT_SYMBOL_GPL(typec_unregister_altmode);
 
-/* ------------------------------------------------------------------------- */
-/* Type-C Partners */
+ 
+ 
 
 static ssize_t accessory_mode_show(struct device *dev,
 				   struct device_attribute *attr,
@@ -684,13 +660,7 @@ const struct device_type typec_partner_dev_type = {
 	.release = typec_partner_release,
 };
 
-/**
- * typec_partner_set_identity - Report result from Discover Identity command
- * @partner: The partner updated identity values
- *
- * This routine is used to report that the result of Discover Identity USB power
- * delivery command has become available.
- */
+ 
 int typec_partner_set_identity(struct typec_partner *partner)
 {
 	if (!partner->identity)
@@ -701,14 +671,7 @@ int typec_partner_set_identity(struct typec_partner *partner)
 }
 EXPORT_SYMBOL_GPL(typec_partner_set_identity);
 
-/**
- * typec_partner_set_pd_revision - Set the PD revision supported by the partner
- * @partner: The partner to be updated.
- * @pd_revision:  USB Power Delivery Specification Revision supported by partner
- *
- * This routine is used to report that the PD revision of the port partner has
- * become available.
- */
+ 
 void typec_partner_set_pd_revision(struct typec_partner *partner, u16 pd_revision)
 {
 	if (partner->pd_revision == pd_revision)
@@ -725,17 +688,7 @@ void typec_partner_set_pd_revision(struct typec_partner *partner, u16 pd_revisio
 }
 EXPORT_SYMBOL_GPL(typec_partner_set_pd_revision);
 
-/**
- * typec_partner_set_usb_power_delivery - Declare USB Power Delivery Contract.
- * @partner: The partner device.
- * @pd: The USB PD instance.
- *
- * This routine can be used to declare USB Power Delivery Contract with @partner
- * by linking @partner to @pd which contains the objects that were used during the
- * negotiation of the contract.
- *
- * If @pd is NULL, the link is removed and the contract with @partner has ended.
- */
+ 
 int typec_partner_set_usb_power_delivery(struct typec_partner *partner,
 					 struct usb_power_delivery *pd)
 {
@@ -758,19 +711,7 @@ int typec_partner_set_usb_power_delivery(struct typec_partner *partner,
 }
 EXPORT_SYMBOL_GPL(typec_partner_set_usb_power_delivery);
 
-/**
- * typec_partner_set_num_altmodes - Set the number of available partner altmodes
- * @partner: The partner to be updated.
- * @num_altmodes: The number of altmodes we want to specify as available.
- *
- * This routine is used to report the number of alternate modes supported by the
- * partner. This value is *not* enforced in alternate mode registration routines.
- *
- * @partner.num_altmodes is set to -1 on partner registration, denoting that
- * a valid value has not been set for it yet.
- *
- * Returns 0 on success or negative error number on failure.
- */
+ 
 int typec_partner_set_num_altmodes(struct typec_partner *partner, int num_altmodes)
 {
 	int ret;
@@ -790,18 +731,7 @@ int typec_partner_set_num_altmodes(struct typec_partner *partner, int num_altmod
 }
 EXPORT_SYMBOL_GPL(typec_partner_set_num_altmodes);
 
-/**
- * typec_partner_register_altmode - Register USB Type-C Partner Alternate Mode
- * @partner: USB Type-C Partner that supports the alternate mode
- * @desc: Description of the alternate mode
- *
- * This routine is used to register each alternate mode individually that
- * @partner has listed in response to Discover SVIDs command. The modes for a
- * SVID listed in response to Discover Modes command need to be listed in an
- * array in @desc.
- *
- * Returns handle to the alternate mode on success or ERR_PTR on failure.
- */
+ 
 struct typec_altmode *
 typec_partner_register_altmode(struct typec_partner *partner,
 			       const struct typec_altmode_desc *desc)
@@ -810,13 +740,7 @@ typec_partner_register_altmode(struct typec_partner *partner,
 }
 EXPORT_SYMBOL_GPL(typec_partner_register_altmode);
 
-/**
- * typec_partner_set_svdm_version - Set negotiated Structured VDM (SVDM) Version
- * @partner: USB Type-C Partner that supports SVDM
- * @svdm_version: Negotiated SVDM Version
- *
- * This routine is used to save the negotiated SVDM Version.
- */
+ 
 void typec_partner_set_svdm_version(struct typec_partner *partner,
 				   enum usb_pd_svdm_ver svdm_version)
 {
@@ -824,17 +748,7 @@ void typec_partner_set_svdm_version(struct typec_partner *partner,
 }
 EXPORT_SYMBOL_GPL(typec_partner_set_svdm_version);
 
-/**
- * typec_partner_usb_power_delivery_register - Register Type-C partner USB Power Delivery Support
- * @partner: Type-C partner device.
- * @desc: Description of the USB PD contract.
- *
- * This routine is a wrapper around usb_power_delivery_register(). It registers
- * USB Power Delivery Capabilities for a Type-C partner device. Specifically,
- * it sets the Type-C partner device as a parent for the resulting USB Power Delivery object.
- *
- * Returns handle to struct usb_power_delivery or ERR_PTR.
- */
+ 
 struct usb_power_delivery *
 typec_partner_usb_power_delivery_register(struct typec_partner *partner,
 					  struct usb_power_delivery_desc *desc)
@@ -843,15 +757,7 @@ typec_partner_usb_power_delivery_register(struct typec_partner *partner,
 }
 EXPORT_SYMBOL_GPL(typec_partner_usb_power_delivery_register);
 
-/**
- * typec_register_partner - Register a USB Type-C Partner
- * @port: The USB Type-C Port the partner is connected to
- * @desc: Description of the partner
- *
- * Registers a device for USB Type-C Partner described in @desc.
- *
- * Returns handle to the partner on success or ERR_PTR on failure.
- */
+ 
 struct typec_partner *typec_register_partner(struct typec_port *port,
 					     struct typec_partner_desc *desc)
 {
@@ -870,10 +776,7 @@ struct typec_partner *typec_register_partner(struct typec_port *port,
 	partner->svdm_version = port->cap->svdm_version;
 
 	if (desc->identity) {
-		/*
-		 * Creating directory for the identity only if the driver is
-		 * able to provide data to it.
-		 */
+		 
 		partner->dev.groups = usb_pd_id_groups;
 		partner->identity = desc->identity;
 	}
@@ -894,12 +797,7 @@ struct typec_partner *typec_register_partner(struct typec_port *port,
 }
 EXPORT_SYMBOL_GPL(typec_register_partner);
 
-/**
- * typec_unregister_partner - Unregister a USB Type-C Partner
- * @partner: The partner to be unregistered
- *
- * Unregister device created with typec_register_partner().
- */
+ 
 void typec_unregister_partner(struct typec_partner *partner)
 {
 	if (!IS_ERR_OR_NULL(partner))
@@ -907,8 +805,8 @@ void typec_unregister_partner(struct typec_partner *partner)
 }
 EXPORT_SYMBOL_GPL(typec_unregister_partner);
 
-/* ------------------------------------------------------------------------- */
-/* Type-C Cable Plugs */
+ 
+ 
 
 static void typec_plug_release(struct device *dev)
 {
@@ -951,19 +849,7 @@ const struct device_type typec_plug_dev_type = {
 	.release = typec_plug_release,
 };
 
-/**
- * typec_plug_set_num_altmodes - Set the number of available plug altmodes
- * @plug: The plug to be updated.
- * @num_altmodes: The number of altmodes we want to specify as available.
- *
- * This routine is used to report the number of alternate modes supported by the
- * plug. This value is *not* enforced in alternate mode registration routines.
- *
- * @plug.num_altmodes is set to -1 on plug registration, denoting that
- * a valid value has not been set for it yet.
- *
- * Returns 0 on success or negative error number on failure.
- */
+ 
 int typec_plug_set_num_altmodes(struct typec_plug *plug, int num_altmodes)
 {
 	int ret;
@@ -983,18 +869,7 @@ int typec_plug_set_num_altmodes(struct typec_plug *plug, int num_altmodes)
 }
 EXPORT_SYMBOL_GPL(typec_plug_set_num_altmodes);
 
-/**
- * typec_plug_register_altmode - Register USB Type-C Cable Plug Alternate Mode
- * @plug: USB Type-C Cable Plug that supports the alternate mode
- * @desc: Description of the alternate mode
- *
- * This routine is used to register each alternate mode individually that @plug
- * has listed in response to Discover SVIDs command. The modes for a SVID that
- * the plug lists in response to Discover Modes command need to be listed in an
- * array in @desc.
- *
- * Returns handle to the alternate mode on success or ERR_PTR on failure.
- */
+ 
 struct typec_altmode *
 typec_plug_register_altmode(struct typec_plug *plug,
 			    const struct typec_altmode_desc *desc)
@@ -1003,17 +878,7 @@ typec_plug_register_altmode(struct typec_plug *plug,
 }
 EXPORT_SYMBOL_GPL(typec_plug_register_altmode);
 
-/**
- * typec_register_plug - Register a USB Type-C Cable Plug
- * @cable: USB Type-C Cable with the plug
- * @desc: Description of the cable plug
- *
- * Registers a device for USB Type-C Cable Plug described in @desc. A USB Type-C
- * Cable Plug represents a plug with electronics in it that can response to USB
- * Power Delivery SOP Prime or SOP Double Prime packages.
- *
- * Returns handle to the cable plug on success or ERR_PTR on failure.
- */
+ 
 struct typec_plug *typec_register_plug(struct typec_cable *cable,
 				       struct typec_plug_desc *desc)
 {
@@ -1046,12 +911,7 @@ struct typec_plug *typec_register_plug(struct typec_cable *cable,
 }
 EXPORT_SYMBOL_GPL(typec_register_plug);
 
-/**
- * typec_unregister_plug - Unregister a USB Type-C Cable Plug
- * @plug: The cable plug to be unregistered
- *
- * Unregister device created with typec_register_plug().
- */
+ 
 void typec_unregister_plug(struct typec_plug *plug)
 {
 	if (!IS_ERR_OR_NULL(plug))
@@ -1059,7 +919,7 @@ void typec_unregister_plug(struct typec_plug *plug)
 }
 EXPORT_SYMBOL_GPL(typec_unregister_plug);
 
-/* Type-C Cables */
+ 
 
 static const char * const typec_plug_types[] = {
 	[USB_PLUG_NONE]		= "unknown",
@@ -1104,13 +964,7 @@ static int cable_match(struct device *dev, void *data)
 	return is_typec_cable(dev);
 }
 
-/**
- * typec_cable_get - Get a reference to the USB Type-C cable
- * @port: The USB Type-C Port the cable is connected to
- *
- * The caller must decrement the reference count with typec_cable_put() after
- * use.
- */
+ 
 struct typec_cable *typec_cable_get(struct typec_port *port)
 {
 	struct device *dev;
@@ -1123,35 +977,21 @@ struct typec_cable *typec_cable_get(struct typec_port *port)
 }
 EXPORT_SYMBOL_GPL(typec_cable_get);
 
-/**
- * typec_cable_put - Decrement the reference count on USB Type-C cable
- * @cable: The USB Type-C cable
- */
+ 
 void typec_cable_put(struct typec_cable *cable)
 {
 	put_device(&cable->dev);
 }
 EXPORT_SYMBOL_GPL(typec_cable_put);
 
-/**
- * typec_cable_is_active - Check is the USB Type-C cable active or passive
- * @cable: The USB Type-C Cable
- *
- * Return 1 if the cable is active or 0 if it's passive.
- */
+ 
 int typec_cable_is_active(struct typec_cable *cable)
 {
 	return cable->active;
 }
 EXPORT_SYMBOL_GPL(typec_cable_is_active);
 
-/**
- * typec_cable_set_identity - Report result from Discover Identity command
- * @cable: The cable updated identity values
- *
- * This routine is used to report that the result of Discover Identity USB power
- * delivery command has become available.
- */
+ 
 int typec_cable_set_identity(struct typec_cable *cable)
 {
 	if (!cable->identity)
@@ -1162,16 +1002,7 @@ int typec_cable_set_identity(struct typec_cable *cable)
 }
 EXPORT_SYMBOL_GPL(typec_cable_set_identity);
 
-/**
- * typec_register_cable - Register a USB Type-C Cable
- * @port: The USB Type-C Port the cable is connected to
- * @desc: Description of the cable
- *
- * Registers a device for USB Type-C Cable described in @desc. The cable will be
- * parent for the optional cable plug devises.
- *
- * Returns handle to the cable on success or ERR_PTR on failure.
- */
+ 
 struct typec_cable *typec_register_cable(struct typec_port *port,
 					 struct typec_cable_desc *desc)
 {
@@ -1187,10 +1018,7 @@ struct typec_cable *typec_register_cable(struct typec_port *port,
 	cable->pd_revision = desc->pd_revision;
 
 	if (desc->identity) {
-		/*
-		 * Creating directory for the identity only if the driver is
-		 * able to provide data to it.
-		 */
+		 
 		cable->dev.groups = usb_pd_id_groups;
 		cable->identity = desc->identity;
 	}
@@ -1211,12 +1039,7 @@ struct typec_cable *typec_register_cable(struct typec_port *port,
 }
 EXPORT_SYMBOL_GPL(typec_register_cable);
 
-/**
- * typec_unregister_cable - Unregister a USB Type-C Cable
- * @cable: The cable to be unregistered
- *
- * Unregister device created with typec_register_cable().
- */
+ 
 void typec_unregister_cable(struct typec_cable *cable)
 {
 	if (!IS_ERR_OR_NULL(cable))
@@ -1224,19 +1047,10 @@ void typec_unregister_cable(struct typec_cable *cable)
 }
 EXPORT_SYMBOL_GPL(typec_unregister_cable);
 
-/* ------------------------------------------------------------------------- */
-/* USB Type-C ports */
+ 
+ 
 
-/**
- * typec_port_set_usb_power_delivery - Assign USB PD for port.
- * @port: USB Type-C port.
- * @pd: USB PD instance.
- *
- * This routine can be used to set the USB Power Delivery Capabilities for @port
- * that it will advertise to the partner.
- *
- * If @pd is NULL, the assignment is removed.
- */
+ 
 int typec_port_set_usb_power_delivery(struct typec_port *port, struct usb_power_delivery *pd)
 {
 	int ret;
@@ -1770,21 +1584,15 @@ const struct device_type typec_port_dev_type = {
 	.release = typec_release,
 };
 
-/* --------------------------------------- */
-/* Driver callbacks to report role updates */
+ 
+ 
 
 static int partner_match(struct device *dev, void *data)
 {
 	return is_typec_partner(dev);
 }
 
-/**
- * typec_set_data_role - Report data role change
- * @port: The USB Type-C Port where the role was changed
- * @role: The new data role
- *
- * This routine is used by the port drivers to report data role changes.
- */
+ 
 void typec_set_data_role(struct typec_port *port, enum typec_data_role role)
 {
 	struct device *partner_dev;
@@ -1807,13 +1615,7 @@ void typec_set_data_role(struct typec_port *port, enum typec_data_role role)
 }
 EXPORT_SYMBOL_GPL(typec_set_data_role);
 
-/**
- * typec_set_pwr_role - Report power role change
- * @port: The USB Type-C Port where the role was changed
- * @role: The new data role
- *
- * This routine is used by the port drivers to report power role changes.
- */
+ 
 void typec_set_pwr_role(struct typec_port *port, enum typec_role role)
 {
 	if (port->pwr_role == role)
@@ -1825,14 +1627,7 @@ void typec_set_pwr_role(struct typec_port *port, enum typec_role role)
 }
 EXPORT_SYMBOL_GPL(typec_set_pwr_role);
 
-/**
- * typec_set_vconn_role - Report VCONN source change
- * @port: The USB Type-C Port which VCONN role changed
- * @role: Source when @port is sourcing VCONN, or Sink when it's not
- *
- * This routine is used by the port drivers to report if the VCONN source is
- * changes.
- */
+ 
 void typec_set_vconn_role(struct typec_port *port, enum typec_role role)
 {
 	if (port->vconn_role == role)
@@ -1844,16 +1639,7 @@ void typec_set_vconn_role(struct typec_port *port, enum typec_role role)
 }
 EXPORT_SYMBOL_GPL(typec_set_vconn_role);
 
-/**
- * typec_set_pwr_opmode - Report changed power operation mode
- * @port: The USB Type-C Port where the mode was changed
- * @opmode: New power operation mode
- *
- * This routine is used by the port drivers to report changed power operation
- * mode in @port. The modes are USB (default), 1.5A, 3.0A as defined in USB
- * Type-C specification, and "USB Power Delivery" when the power levels are
- * negotiated with methods defined in USB Power Delivery specification.
- */
+ 
 void typec_set_pwr_opmode(struct typec_port *port,
 			  enum typec_pwr_opmode opmode)
 {
@@ -1881,14 +1667,7 @@ void typec_set_pwr_opmode(struct typec_port *port,
 }
 EXPORT_SYMBOL_GPL(typec_set_pwr_opmode);
 
-/**
- * typec_find_pwr_opmode - Get the typec power operation mode capability
- * @name: power operation mode string
- *
- * This routine is used to find the typec_pwr_opmode by its string @name.
- *
- * Returns typec_pwr_opmode if success, otherwise negative error code.
- */
+ 
 int typec_find_pwr_opmode(const char *name)
 {
 	return match_string(typec_pwr_opmodes,
@@ -1896,14 +1675,7 @@ int typec_find_pwr_opmode(const char *name)
 }
 EXPORT_SYMBOL_GPL(typec_find_pwr_opmode);
 
-/**
- * typec_find_orientation - Convert orientation string to enum typec_orientation
- * @name: Orientation string
- *
- * This routine is used to find the typec_orientation by its string name @name.
- *
- * Returns the orientation value on success, otherwise negative error code.
- */
+ 
 int typec_find_orientation(const char *name)
 {
 	return match_string(typec_orientations, ARRAY_SIZE(typec_orientations),
@@ -1911,14 +1683,7 @@ int typec_find_orientation(const char *name)
 }
 EXPORT_SYMBOL_GPL(typec_find_orientation);
 
-/**
- * typec_find_port_power_role - Get the typec port power capability
- * @name: port power capability string
- *
- * This routine is used to find the typec_port_type by its string name.
- *
- * Returns typec_port_type if success, otherwise negative error code.
- */
+ 
 int typec_find_port_power_role(const char *name)
 {
 	return match_string(typec_port_power_roles,
@@ -1926,28 +1691,14 @@ int typec_find_port_power_role(const char *name)
 }
 EXPORT_SYMBOL_GPL(typec_find_port_power_role);
 
-/**
- * typec_find_power_role - Find the typec one specific power role
- * @name: power role string
- *
- * This routine is used to find the typec_role by its string name.
- *
- * Returns typec_role if success, otherwise negative error code.
- */
+ 
 int typec_find_power_role(const char *name)
 {
 	return match_string(typec_roles, ARRAY_SIZE(typec_roles), name);
 }
 EXPORT_SYMBOL_GPL(typec_find_power_role);
 
-/**
- * typec_find_port_data_role - Get the typec port data capability
- * @name: port data capability string
- *
- * This routine is used to find the typec_port_data by its string name.
- *
- * Returns typec_port_data if success, otherwise negative error code.
- */
+ 
 int typec_find_port_data_role(const char *name)
 {
 	return match_string(typec_port_data_roles,
@@ -1955,16 +1706,10 @@ int typec_find_port_data_role(const char *name)
 }
 EXPORT_SYMBOL_GPL(typec_find_port_data_role);
 
-/* ------------------------------------------ */
-/* API for Multiplexer/DeMultiplexer Switches */
+ 
+ 
 
-/**
- * typec_set_orientation - Set USB Type-C cable plug orientation
- * @port: USB Type-C Port
- * @orientation: USB Type-C cable plug orientation
- *
- * Set cable plug orientation for @port.
- */
+ 
 int typec_set_orientation(struct typec_port *port,
 			  enum typec_orientation orientation)
 {
@@ -1982,26 +1727,14 @@ int typec_set_orientation(struct typec_port *port,
 }
 EXPORT_SYMBOL_GPL(typec_set_orientation);
 
-/**
- * typec_get_orientation - Get USB Type-C cable plug orientation
- * @port: USB Type-C Port
- *
- * Get current cable plug orientation for @port.
- */
+ 
 enum typec_orientation typec_get_orientation(struct typec_port *port)
 {
 	return port->orientation;
 }
 EXPORT_SYMBOL_GPL(typec_get_orientation);
 
-/**
- * typec_set_mode - Set mode of operation for USB Type-C connector
- * @port: USB Type-C connector
- * @mode: Accessory Mode, USB Operation or Safe State
- *
- * Configure @port for Accessory Mode @mode. This function will configure the
- * muxes needed for @mode.
- */
+ 
 int typec_set_mode(struct typec_port *port, int mode)
 {
 	struct typec_mux_state state = { };
@@ -2012,19 +1745,9 @@ int typec_set_mode(struct typec_port *port, int mode)
 }
 EXPORT_SYMBOL_GPL(typec_set_mode);
 
-/* --------------------------------------- */
+ 
 
-/**
- * typec_get_negotiated_svdm_version - Get negotiated SVDM Version
- * @port: USB Type-C Port.
- *
- * Get the negotiated SVDM Version. The Version is set to the port default
- * value stored in typec_capability on partner registration, and updated after
- * a successful Discover Identity if the negotiated value is less than the
- * default value.
- *
- * Returns usb_pd_svdm_ver if the partner has been registered otherwise -ENODEV.
- */
+ 
 int typec_get_negotiated_svdm_version(struct typec_port *port)
 {
 	enum usb_pd_svdm_ver svdm_version;
@@ -2041,10 +1764,7 @@ int typec_get_negotiated_svdm_version(struct typec_port *port)
 }
 EXPORT_SYMBOL_GPL(typec_get_negotiated_svdm_version);
 
-/**
- * typec_get_drvdata - Return private driver data pointer
- * @port: USB Type-C port
- */
+ 
 void *typec_get_drvdata(struct typec_port *port)
 {
 	return dev_get_drvdata(&port->dev);
@@ -2068,7 +1788,7 @@ int typec_get_fw_cap(struct typec_capability *cap,
 		return ret;
 	cap->type = ret;
 
-	/* USB data support is optional */
+	 
 	ret = fwnode_property_read_string(fwnode, "data-role", &cap_str);
 	if (ret == 0) {
 		ret = typec_find_port_data_role(cap_str);
@@ -2077,7 +1797,7 @@ int typec_get_fw_cap(struct typec_capability *cap,
 		cap->data = ret;
 	}
 
-	/* Get the preferred power role for a DRP */
+	 
 	if (cap->type == TYPEC_PORT_DRP) {
 		cap->prefer_role = TYPEC_NO_PREFERRED_ROLE;
 
@@ -2094,16 +1814,7 @@ int typec_get_fw_cap(struct typec_capability *cap,
 }
 EXPORT_SYMBOL_GPL(typec_get_fw_cap);
 
-/**
- * typec_port_register_altmode - Register USB Type-C Port Alternate Mode
- * @port: USB Type-C Port that supports the alternate mode
- * @desc: Description of the alternate mode
- *
- * This routine is used to register an alternate mode that @port is capable of
- * supporting.
- *
- * Returns handle to the alternate mode on success or ERR_PTR on failure.
- */
+ 
 struct typec_altmode *
 typec_port_register_altmode(struct typec_port *port,
 			    const struct typec_altmode_desc *desc)
@@ -2148,7 +1859,7 @@ void typec_port_register_altmodes(struct typec_port *port,
 
 	altmodes_node = device_get_named_child_node(&port->dev, "altmodes");
 	if (!altmodes_node)
-		return; /* No altmodes specified */
+		return;  
 
 	fwnode_for_each_child_node(altmodes_node, child) {
 		ret = fwnode_property_read_u32(child, "svid", &svid);
@@ -2189,15 +1900,7 @@ void typec_port_register_altmodes(struct typec_port *port,
 }
 EXPORT_SYMBOL_GPL(typec_port_register_altmodes);
 
-/**
- * typec_register_port - Register a USB Type-C Port
- * @parent: Parent device
- * @cap: Description of the port
- *
- * Registers a device for USB Type-C Port described in @cap.
- *
- * Returns handle to the port on success or ERR_PTR on failure.
- */
+ 
 struct typec_port *typec_register_port(struct device *parent,
 				       const struct typec_capability *cap)
 {
@@ -2314,12 +2017,7 @@ struct typec_port *typec_register_port(struct device *parent,
 }
 EXPORT_SYMBOL_GPL(typec_register_port);
 
-/**
- * typec_unregister_port - Unregister a USB Type-C Port
- * @port: The port to be unregistered
- *
- * Unregister device created with typec_register_port().
- */
+ 
 void typec_unregister_port(struct typec_port *port)
 {
 	if (!IS_ERR_OR_NULL(port)) {

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Alibaba DDR Sub-System Driveway PMU driver
- *
- * Copyright (C) 2022 Alibaba Inc
- */
+
+ 
 
 #define ALI_DRW_PMUNAME		"ali_drw"
 #define ALI_DRW_DRVNAME		ALI_DRW_PMUNAME "_pmu"
@@ -52,9 +48,9 @@
 #define ALI_DRW_PMU_CYCLE_CNT_HIGH		0xC10
 #define ALI_DRW_PMU_CYCLE_CNT_LOW		0xC14
 
-/* PMU EVENT SEL 0-3 are paired in 32-bit registers on a 4-byte stride */
+ 
 #define ALI_DRW_PMU_EVENT_SEL0			0xC68
-/* counter 0-3 use sel0, counter 4-7 use sel1...*/
+ 
 #define ALI_DRW_PMU_EVENT_SELn(n) \
 	(ALI_DRW_PMU_EVENT_SEL0 + (n / 4) * 0x4)
 #define ALI_DRW_PMCOM_CNT_EN			BIT(7)
@@ -62,7 +58,7 @@
 #define ALI_DRW_PMCOM_CNT_EVENT_OFFSET(n) \
 	(8 * (n % 4))
 
-/* PMU COMMON COUNTER 0-15, are paired in 32-bit registers on a 4-byte stride */
+ 
 #define ALI_DRW_PMU_COMMON_COUNTER0		0xC78
 #define ALI_DRW_PMU_COMMON_COUNTERn(n) \
 	(ALI_DRW_PMU_COMMON_COUNTER0 + 0x4 * (n))
@@ -120,9 +116,7 @@ static ssize_t ali_drw_pmu_format_show(struct device *dev,
 	return sprintf(buf, "%s\n", (char *)eattr->var);
 }
 
-/*
- * PMU event attributes
- */
+ 
 static ssize_t ali_drw_pmu_event_show(struct device *dev,
 			       struct device_attribute *attr, char *page)
 {
@@ -270,7 +264,7 @@ static const struct attribute_group *ali_drw_pmu_attr_groups[] = {
 	NULL,
 };
 
-/* find a counter for event, then in add func, hw.idx will equal to counter */
+ 
 static int ali_drw_get_counter_idx(struct perf_event *event)
 {
 	struct ali_drw_pmu *drw_pmu = to_ali_drw_pmu(event->pmu);
@@ -281,7 +275,7 @@ static int ali_drw_get_counter_idx(struct perf_event *event)
 			return idx;
 	}
 
-	/* The counters are all in use. */
+	 
 	return -EBUSY;
 }
 
@@ -312,7 +306,7 @@ static void ali_drw_pmu_event_update(struct perf_event *event)
 		now = ali_drw_pmu_read_counter(event);
 	} while (local64_cmpxchg(&hwc->prev_count, prev, now) != prev);
 
-	/* handle overflow. */
+	 
 	delta = now - prev;
 	if (GET_DRW_EVENTID(event) == ALI_DRW_PMU_CYCLE_EVT_ID)
 		delta &= ALI_DRW_PMU_OV_INTR_MASK;
@@ -326,16 +320,16 @@ static void ali_drw_pmu_event_set_period(struct perf_event *event)
 	u64 pre_val;
 	struct ali_drw_pmu *drw_pmu = to_ali_drw_pmu(event->pmu);
 
-	/* set a preload counter for test purpose */
+	 
 	writel(ALI_DRW_PMU_TEST_SEL_COMMON_COUNTER_BASE + event->hw.idx,
 	       drw_pmu->cfg_base + ALI_DRW_PMU_TEST_CTRL);
 
-	/* set conunter initial value */
+	 
 	pre_val = ALI_DRW_PMU_CNT_INIT;
 	writel(pre_val, drw_pmu->cfg_base + ALI_DRW_PMU_CNT_PRELOAD);
 	local64_set(&event->hw.prev_count, pre_val);
 
-	/* set sel mode to zero to start test */
+	 
 	writel(0x0, drw_pmu->cfg_base + ALI_DRW_PMU_TEST_CTRL);
 }
 
@@ -394,7 +388,7 @@ static irqreturn_t ali_drw_pmu_isr(int irq_num, void *data)
 			ali_drw_pmu_disable_counter(event);
 		}
 
-		/* common counter intr status */
+		 
 		status = readl(drw_pmu->cfg_base + ALI_DRW_PMU_OV_INTR_STATUS);
 		status = FIELD_GET(ALI_DRW_PMCOM_CNT_OV_INTR_MASK, status);
 		if (status) {
@@ -407,7 +401,7 @@ static irqreturn_t ali_drw_pmu_isr(int irq_num, void *data)
 				ali_drw_pmu_event_set_period(event);
 			}
 
-			/* clear common counter intr status */
+			 
 			clr_status = FIELD_PREP(ALI_DRW_PMCOM_CNT_OV_INTR_MASK, 1);
 			writel(clr_status,
 			       drw_pmu->cfg_base + ALI_DRW_PMU_OV_INTR_CLR);
@@ -445,16 +439,11 @@ static struct ali_drw_pmu_irq *__ali_drw_pmu_init_irq(struct platform_device
 
 	INIT_LIST_HEAD(&irq->pmus_node);
 
-	/* Pick one CPU to be the preferred one to use */
+	 
 	irq->cpu = smp_processor_id();
 	refcount_set(&irq->refcount, 1);
 
-	/*
-	 * FIXME: one of DDRSS Driveway PMU overflow interrupt shares the same
-	 * irq number with MPAM ERR_IRQ. To register DDRSS PMU and MPAM drivers
-	 * successfully, add IRQF_SHARED flag. Howerer, PMU interrupt should not
-	 * share with other component.
-	 */
+	 
 	ret = devm_request_irq(&pdev->dev, irq_num, ali_drw_pmu_isr,
 			       IRQF_SHARED, dev_name(&pdev->dev), irq);
 	if (ret < 0) {
@@ -488,7 +477,7 @@ static int ali_drw_pmu_init_irq(struct ali_drw_pmu *drw_pmu,
 	int irq_num;
 	struct ali_drw_pmu_irq *irq;
 
-	/* Read and init IRQ */
+	 
 	irq_num = platform_get_irq(pdev, 0);
 	if (irq_num < 0)
 		return irq_num;
@@ -569,7 +558,7 @@ static int ali_drw_pmu_event_init(struct perf_event *event)
 		}
 	}
 
-	/* reset all the pmu counters */
+	 
 	writel(ALI_DRW_PMU_CNT_RST, drw_pmu->cfg_base + ALI_DRW_PMU_CNT_CTRL);
 
 	hwc->idx = -1;
@@ -641,7 +630,7 @@ static int ali_drw_pmu_add(struct perf_event *event, int flags)
 	if (flags & PERF_EF_START)
 		ali_drw_pmu_start(event, PERF_EF_RELOAD);
 
-	/* Propagate our changes to the userspace mapping. */
+	 
 	perf_event_update_userpage(event);
 
 	return 0;
@@ -694,11 +683,11 @@ static int ali_drw_pmu_probe(struct platform_device *pdev)
 
 	writel(ALI_DRW_PMU_CNT_RST, drw_pmu->cfg_base + ALI_DRW_PMU_CNT_CTRL);
 
-	/* enable the generation of interrupt by all common counters */
+	 
 	writel(ALI_DRW_PMCOM_CNT_OV_INTR_MASK,
 	       drw_pmu->cfg_base + ALI_DRW_PMU_OV_INTR_ENABLE_CTL);
 
-	/* clearing interrupt status */
+	 
 	writel(0xffffff, drw_pmu->cfg_base + ALI_DRW_PMU_OV_INTR_CLR);
 
 	drw_pmu->cpu = smp_processor_id();
@@ -733,7 +722,7 @@ static int ali_drw_pmu_remove(struct platform_device *pdev)
 {
 	struct ali_drw_pmu *drw_pmu = platform_get_drvdata(pdev);
 
-	/* disable the generation of interrupt by all common counters */
+	 
 	writel(ALI_DRW_PMCOM_CNT_OV_INTR_MASK,
 	       drw_pmu->cfg_base + ALI_DRW_PMU_OV_INTR_DISABLE_CTL);
 
@@ -765,7 +754,7 @@ static int ali_drw_pmu_offline_cpu(unsigned int cpu, struct hlist_node *node)
 	if (target >= nr_cpu_ids)
 		return 0;
 
-	/* We're only reading, but this isn't the place to be involving RCU */
+	 
 	mutex_lock(&ali_drw_pmu_irqs_lock);
 	list_for_each_entry(drw_pmu, &irq->pmus_node, pmus_node)
 		perf_pmu_migrate_context(&drw_pmu->pmu, irq->cpu, target);
@@ -777,10 +766,7 @@ static int ali_drw_pmu_offline_cpu(unsigned int cpu, struct hlist_node *node)
 	return 0;
 }
 
-/*
- * Due to historical reasons, the HID used in the production environment is
- * ARMHD700, so we leave ARMHD700 as Compatible ID.
- */
+ 
 static const struct acpi_device_id ali_drw_acpi_match[] = {
 	{"BABA5000", 0},
 	{"ARMHD700", 0},

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2013 STMicroelectronics
- *
- * I2C master mode controller driver, used in STMicroelectronics devices.
- *
- * Author: Maxime Coquelin <maxime.coquelin@st.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -20,7 +14,7 @@
 #include <linux/pinctrl/consumer.h>
 #include <linux/platform_device.h>
 
-/* SSC registers */
+ 
 #define SSC_BRG				0x000
 #define SSC_TBUF			0x004
 #define SSC_RBUF			0x008
@@ -44,7 +38,7 @@
 #define SSC_NOISE_SUPP_WIDTH_DATAOUT	0x108
 #define SSC_PRSCALER_DATAOUT		0x10c
 
-/* SSC Control */
+ 
 #define SSC_CTL_DATA_WIDTH_9		0x8
 #define SSC_CTL_DATA_WIDTH_MSK		0xf
 #define SSC_CTL_BM			0xf
@@ -59,7 +53,7 @@
 #define SSC_CTL_EN_RX_FIFO		BIT(12)
 #define SSC_CTL_EN_CLST_RX		BIT(13)
 
-/* SSC Interrupt Enable */
+ 
 #define SSC_IEN_RIEN			BIT(0)
 #define SSC_IEN_TIEN			BIT(1)
 #define SSC_IEN_TEEN			BIT(2)
@@ -73,7 +67,7 @@
 #define SSC_IEN_TX_FIFO_HALF		BIT(12)
 #define SSC_IEN_RX_FIFO_HALF_FULL	BIT(14)
 
-/* SSC Status */
+ 
 #define SSC_STA_RIR			BIT(0)
 #define SSC_STA_TIR			BIT(1)
 #define SSC_STA_TE			BIT(2)
@@ -90,7 +84,7 @@
 #define SSC_STA_TX_FIFO_FULL		BIT(13)
 #define SSC_STA_RX_FIFO_HALF		BIT(14)
 
-/* SSC I2C Control */
+ 
 #define SSC_I2C_I2CM			BIT(0)
 #define SSC_I2C_STRTG			BIT(1)
 #define SSC_I2C_STOPG			BIT(2)
@@ -100,20 +94,20 @@
 #define SSC_I2C_REPSTRTG		BIT(11)
 #define SSC_I2C_SLAVE_DISABLE		BIT(12)
 
-/* SSC Tx FIFO Status */
+ 
 #define SSC_TX_FSTAT_STATUS		0x07
 
-/* SSC Rx FIFO Status */
+ 
 #define SSC_RX_FSTAT_STATUS		0x07
 
-/* SSC Clear bit operation */
+ 
 #define SSC_CLR_SSCAAS			BIT(6)
 #define SSC_CLR_SSCSTOP			BIT(7)
 #define SSC_CLR_SSCARBL			BIT(8)
 #define SSC_CLR_NACK			BIT(10)
 #define SSC_CLR_REPSTRT			BIT(11)
 
-/* SSC Clock Prescaler */
+ 
 #define SSC_PRSC_VALUE			0x0f
 
 
@@ -126,17 +120,7 @@ enum st_i2c_mode {
 	I2C_MODE_END,
 };
 
-/**
- * struct st_i2c_timings - per-Mode tuning parameters
- * @rate: I2C bus rate
- * @rep_start_hold: I2C repeated start hold time requirement
- * @rep_start_setup: I2C repeated start set up time requirement
- * @start_hold: I2C start hold time requirement
- * @data_setup_time: I2C data set up time requirement
- * @stop_setup_time: I2C stop set up time requirement
- * @bus_free_time: I2C bus free time requirement
- * @sda_pulse_min_limit: I2C SDA pulse mini width limit
- */
+ 
 struct st_i2c_timings {
 	u32 rate;
 	u32 rep_start_hold;
@@ -148,15 +132,7 @@ struct st_i2c_timings {
 	u32 sda_pulse_min_limit;
 };
 
-/**
- * struct st_i2c_client - client specific data
- * @addr: 8-bit slave addr, including r/w bit
- * @count: number of bytes to be transfered
- * @xfered: number of bytes already transferred
- * @buf: data buffer
- * @result: result of the transfer
- * @stop: last I2C msg to be sent, i.e. STOP to be generated
- */
+ 
 struct st_i2c_client {
 	u8	addr;
 	u32	count;
@@ -166,20 +142,7 @@ struct st_i2c_client {
 	bool	stop;
 };
 
-/**
- * struct st_i2c_dev - private data of the controller
- * @adap: I2C adapter for this controller
- * @dev: device for this controller
- * @base: virtual memory area
- * @complete: completion of I2C message
- * @irq: interrupt line for th controller
- * @clk: hw ssc block clock
- * @mode: I2C mode of the controller. Standard or Fast only supported
- * @scl_min_width_us: SCL line minimum pulse width in us
- * @sda_min_width_us: SDA line minimum pulse width in us
- * @client: I2C transfert information
- * @busy: I2C transfer on-going
- */
+ 
 struct st_i2c_dev {
 	struct i2c_adapter	adap;
 	struct device		*dev;
@@ -204,13 +167,7 @@ static inline void st_i2c_clr_bits(void __iomem *reg, u32 mask)
 	writel_relaxed(readl_relaxed(reg) & ~mask, reg);
 }
 
-/*
- * From I2C Specifications v0.5.
- *
- * All the values below have +10% margin added to be
- * compatible with some out-of-spec devices,
- * like HDMI link of the Toshiba 19AV600 TV.
- */
+ 
 static struct st_i2c_timings i2c_timings[] = {
 	[I2C_MODE_STANDARD] = {
 		.rate			= I2C_MAX_STANDARD_MODE_FREQ,
@@ -236,11 +193,7 @@ static void st_i2c_flush_rx_fifo(struct st_i2c_dev *i2c_dev)
 {
 	int count, i;
 
-	/*
-	 * Counter only counts up to 7 but fifo size is 8...
-	 * When fifo is full, counter is 0 and RIR bit of status register is
-	 * set
-	 */
+	 
 	if (readl_relaxed(i2c_dev->base + SSC_STA) & SSC_STA_RIR)
 		count = SSC_RXFIFO_SIZE;
 	else
@@ -253,20 +206,14 @@ static void st_i2c_flush_rx_fifo(struct st_i2c_dev *i2c_dev)
 
 static void st_i2c_soft_reset(struct st_i2c_dev *i2c_dev)
 {
-	/*
-	 * FIFO needs to be emptied before reseting the IP,
-	 * else the controller raises a BUSY error.
-	 */
+	 
 	st_i2c_flush_rx_fifo(i2c_dev);
 
 	st_i2c_set_bits(i2c_dev->base + SSC_CTL, SSC_CTL_SR);
 	st_i2c_clr_bits(i2c_dev->base + SSC_CTL, SSC_CTL_SR);
 }
 
-/**
- * st_i2c_hw_config() - Prepare SSC block, calculate and apply tuning timings
- * @i2c_dev: Controller's private data
- */
+ 
 static void st_i2c_hw_config(struct st_i2c_dev *i2c_dev)
 {
 	unsigned long rate;
@@ -279,57 +226,57 @@ static void st_i2c_hw_config(struct st_i2c_dev *i2c_dev)
 		SSC_CLR_SSCAAS | SSC_CLR_SSCSTOP;
 	writel_relaxed(val, i2c_dev->base + SSC_CLR);
 
-	/* SSC Control register setup */
+	 
 	val = SSC_CTL_PO | SSC_CTL_PH | SSC_CTL_HB | SSC_CTL_DATA_WIDTH_9;
 	writel_relaxed(val, i2c_dev->base + SSC_CTL);
 
 	rate = clk_get_rate(i2c_dev->clk);
 	ns_per_clk = 1000000000 / rate;
 
-	/* Baudrate */
+	 
 	val = rate / (2 * t->rate);
 	writel_relaxed(val, i2c_dev->base + SSC_BRG);
 
-	/* Pre-scaler baudrate */
+	 
 	writel_relaxed(1, i2c_dev->base + SSC_PRE_SCALER_BRG);
 
-	/* Enable I2C mode */
+	 
 	writel_relaxed(SSC_I2C_I2CM, i2c_dev->base + SSC_I2C);
 
-	/* Repeated start hold time */
+	 
 	val = t->rep_start_hold / ns_per_clk;
 	writel_relaxed(val, i2c_dev->base + SSC_REP_START_HOLD);
 
-	/* Repeated start set up time */
+	 
 	val = t->rep_start_setup / ns_per_clk;
 	writel_relaxed(val, i2c_dev->base + SSC_REP_START_SETUP);
 
-	/* Start hold time */
+	 
 	val = t->start_hold / ns_per_clk;
 	writel_relaxed(val, i2c_dev->base + SSC_START_HOLD);
 
-	/* Data set up time */
+	 
 	val = t->data_setup_time / ns_per_clk;
 	writel_relaxed(val, i2c_dev->base + SSC_DATA_SETUP);
 
-	/* Stop set up time */
+	 
 	val = t->stop_setup_time / ns_per_clk;
 	writel_relaxed(val, i2c_dev->base + SSC_STOP_SETUP);
 
-	/* Bus free time */
+	 
 	val = t->bus_free_time / ns_per_clk;
 	writel_relaxed(val, i2c_dev->base + SSC_BUS_FREE);
 
-	/* Prescalers set up */
+	 
 	val = rate / 10000000;
 	writel_relaxed(val, i2c_dev->base + SSC_PRSCALER);
 	writel_relaxed(val, i2c_dev->base + SSC_PRSCALER_DATAOUT);
 
-	/* Noise suppression witdh */
+	 
 	val = i2c_dev->scl_min_width_us * rate / 100000000;
 	writel_relaxed(val, i2c_dev->base + SSC_NOISE_SUPP_WIDTH);
 
-	/* Noise suppression max output data delay width */
+	 
 	val = i2c_dev->sda_min_width_us * rate / 100000000;
 	writel_relaxed(val, i2c_dev->base + SSC_NOISE_SUPP_WIDTH_DATAOUT);
 }
@@ -341,14 +288,9 @@ static int st_i2c_recover_bus(struct i2c_adapter *i2c_adap)
 
 	dev_dbg(i2c_dev->dev, "Trying to recover bus\n");
 
-	/*
-	 * SSP IP is dual role SPI/I2C to generate 9 clock pulses
-	 * we switch to SPI node, 9 bit words and write a 0. This
-	 * has been validate with a oscilloscope and is easier
-	 * than switching to GPIO mode.
-	 */
+	 
 
-	/* Disable interrupts */
+	 
 	writel_relaxed(0, i2c_dev->base + SSC_IEN);
 
 	st_i2c_hw_config(i2c_dev);
@@ -390,11 +332,7 @@ static int st_i2c_wait_free_bus(struct st_i2c_dev *i2c_dev)
 	return -EBUSY;
 }
 
-/**
- * st_i2c_write_tx_fifo() - Write a byte in the Tx FIFO
- * @i2c_dev: Controller's private data
- * @byte: Data to write in the Tx FIFO
- */
+ 
 static inline void st_i2c_write_tx_fifo(struct st_i2c_dev *i2c_dev, u8 byte)
 {
 	u16 tbuf = byte << 1;
@@ -402,13 +340,7 @@ static inline void st_i2c_write_tx_fifo(struct st_i2c_dev *i2c_dev, u8 byte)
 	writel_relaxed(tbuf | 1, i2c_dev->base + SSC_TBUF);
 }
 
-/**
- * st_i2c_wr_fill_tx_fifo() - Fill the Tx FIFO in write mode
- * @i2c_dev: Controller's private data
- *
- * This functions fills the Tx FIFO with I2C transfert buffer when
- * in write mode.
- */
+ 
 static void st_i2c_wr_fill_tx_fifo(struct st_i2c_dev *i2c_dev)
 {
 	struct st_i2c_client *c = &i2c_dev->client;
@@ -431,14 +363,7 @@ static void st_i2c_wr_fill_tx_fifo(struct st_i2c_dev *i2c_dev)
 		st_i2c_write_tx_fifo(i2c_dev, *c->buf);
 }
 
-/**
- * st_i2c_rd_fill_tx_fifo() - Fill the Tx FIFO in read mode
- * @i2c_dev: Controller's private data
- * @max: Maximum amount of data to fill into the Tx FIFO
- *
- * This functions fills the Tx FIFO with fixed pattern when
- * in read mode to trigger clock.
- */
+ 
 static void st_i2c_rd_fill_tx_fifo(struct st_i2c_dev *i2c_dev, int max)
 {
 	struct st_i2c_client *c = &i2c_dev->client;
@@ -486,10 +411,7 @@ static void st_i2c_read_rx_fifo(struct st_i2c_dev *i2c_dev)
 	}
 }
 
-/**
- * st_i2c_terminate_xfer() - Send either STOP or REPSTART condition
- * @i2c_dev: Controller's private data
- */
+ 
 static void st_i2c_terminate_xfer(struct st_i2c_dev *i2c_dev)
 {
 	struct st_i2c_client *c = &i2c_dev->client;
@@ -506,10 +428,7 @@ static void st_i2c_terminate_xfer(struct st_i2c_dev *i2c_dev)
 	}
 }
 
-/**
- * st_i2c_handle_write() - Handle FIFO empty interrupt in case of write
- * @i2c_dev: Controller's private data
- */
+ 
 static void st_i2c_handle_write(struct st_i2c_dev *i2c_dev)
 {
 	struct st_i2c_client *c = &i2c_dev->client;
@@ -517,22 +436,19 @@ static void st_i2c_handle_write(struct st_i2c_dev *i2c_dev)
 	st_i2c_flush_rx_fifo(i2c_dev);
 
 	if (!c->count)
-		/* End of xfer, send stop or repstart */
+		 
 		st_i2c_terminate_xfer(i2c_dev);
 	else
 		st_i2c_wr_fill_tx_fifo(i2c_dev);
 }
 
-/**
- * st_i2c_handle_read() - Handle FIFO empty interrupt in case of read
- * @i2c_dev: Controller's private data
- */
+ 
 static void st_i2c_handle_read(struct st_i2c_dev *i2c_dev)
 {
 	struct st_i2c_client *c = &i2c_dev->client;
 	u32 ien;
 
-	/* Trash the address read back */
+	 
 	if (!c->xfered) {
 		readl_relaxed(i2c_dev->base + SSC_RBUF);
 		st_i2c_clr_bits(i2c_dev->base + SSC_I2C, SSC_I2C_TXENB);
@@ -541,13 +457,13 @@ static void st_i2c_handle_read(struct st_i2c_dev *i2c_dev)
 	}
 
 	if (!c->count) {
-		/* End of xfer, send stop or repstart */
+		 
 		st_i2c_terminate_xfer(i2c_dev);
 	} else if (c->count == 1) {
-		/* Penultimate byte to xfer, disable ACK gen. */
+		 
 		st_i2c_clr_bits(i2c_dev->base + SSC_I2C, SSC_I2C_ACKG);
 
-		/* Last received byte is to be handled by NACK interrupt */
+		 
 		ien = SSC_IEN_NACKEN | SSC_IEN_ARBLEN;
 		writel_relaxed(ien, i2c_dev->base + SSC_IEN);
 
@@ -557,11 +473,7 @@ static void st_i2c_handle_read(struct st_i2c_dev *i2c_dev)
 	}
 }
 
-/**
- * st_i2c_isr_thread() - Interrupt routine
- * @irq: interrupt number
- * @data: Controller's private data
- */
+ 
 static irqreturn_t st_i2c_isr_thread(int irq, void *data)
 {
 	struct st_i2c_dev *i2c_dev = data;
@@ -572,7 +484,7 @@ static irqreturn_t st_i2c_isr_thread(int irq, void *data)
 	ien = readl_relaxed(i2c_dev->base + SSC_IEN);
 	sta = readl_relaxed(i2c_dev->base + SSC_STA);
 
-	/* Use __fls() to check error bits first */
+	 
 	it = __fls(sta & ien);
 	if (it < 0) {
 		dev_dbg(i2c_dev->dev, "spurious it (sta=0x%04x, ien=0x%04x)\n",
@@ -597,7 +509,7 @@ static irqreturn_t st_i2c_isr_thread(int irq, void *data)
 	case SSC_STA_NACK:
 		writel_relaxed(SSC_CLR_NACK, i2c_dev->base + SSC_CLR);
 
-		/* Last received byte handled by NACK interrupt */
+		 
 		if ((c->addr & I2C_M_RD) && (c->count == 1) && (c->xfered)) {
 			st_i2c_handle_read(i2c_dev);
 			break;
@@ -625,23 +537,13 @@ static irqreturn_t st_i2c_isr_thread(int irq, void *data)
 				"it %d unhandled (sta=0x%04x)\n", it, sta);
 	}
 
-	/*
-	 * Read IEN register to ensure interrupt mask write is effective
-	 * before re-enabling interrupt at GIC level, and thus avoid spurious
-	 * interrupts.
-	 */
+	 
 	readl(i2c_dev->base + SSC_IEN);
 
 	return IRQ_HANDLED;
 }
 
-/**
- * st_i2c_xfer_msg() - Transfer a single I2C message
- * @i2c_dev: Controller's private data
- * @msg: I2C message to transfer
- * @is_first: first message of the sequence
- * @is_last: last message of the sequence
- */
+ 
 static int st_i2c_xfer_msg(struct st_i2c_dev *i2c_dev, struct i2c_msg *msg,
 			    bool is_first, bool is_last)
 {
@@ -667,10 +569,10 @@ static int st_i2c_xfer_msg(struct st_i2c_dev *i2c_dev, struct i2c_msg *msg,
 		i2c |= SSC_I2C_ACKG;
 	st_i2c_set_bits(i2c_dev->base + SSC_I2C, i2c);
 
-	/* Write slave address */
+	 
 	st_i2c_write_tx_fifo(i2c_dev, c->addr);
 
-	/* Pre-fill Tx fifo with data in case of write */
+	 
 	if (!(c->addr & I2C_M_RD))
 		st_i2c_wr_fill_tx_fifo(i2c_dev);
 
@@ -704,12 +606,7 @@ static int st_i2c_xfer_msg(struct st_i2c_dev *i2c_dev, struct i2c_msg *msg,
 	return ret;
 }
 
-/**
- * st_i2c_xfer() - Transfer a single I2C message
- * @i2c_adap: Adapter pointer to the controller
- * @msgs: Pointer to data to be written.
- * @num: Number of messages to be executed
- */
+ 
 static int st_i2c_xfer(struct i2c_adapter *i2c_adap,
 			struct i2c_msg msgs[], int num)
 {
@@ -755,7 +652,7 @@ static int st_i2c_suspend(struct device *dev)
 static int st_i2c_resume(struct device *dev)
 {
 	pinctrl_pm_select_default_state(dev);
-	/* Go in idle state if available */
+	 
 	pinctrl_pm_select_idle_state(dev);
 
 	return 0;
@@ -844,7 +741,7 @@ static int st_i2c_probe(struct platform_device *pdev)
 	}
 
 	pinctrl_pm_select_default_state(i2c_dev->dev);
-	/* In case idle state available, select it */
+	 
 	pinctrl_pm_select_idle_state(i2c_dev->dev);
 
 	ret = st_i2c_of_get_deglitch(np, i2c_dev);

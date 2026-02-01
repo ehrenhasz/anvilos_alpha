@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
+ 
 
 #ifndef __TEGRA_ASOC_MACHINE_H__
 #define __TEGRA_ASOC_MACHINE_H__

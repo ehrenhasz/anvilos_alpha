@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2020 Facebook */
+
+ 
 
 #define _GNU_SOURCE
 #include <netinet/in.h>
@@ -44,9 +44,7 @@ static int prepare_netns(void)
 		       "filter add dev lo ingress"))
 		return -1;
 
-	/* Ensure 20 bytes options (i.e. in total 40 bytes tcp header) for the
-	 * bpf_tcp_gen_syncookie() helper.
-	 */
+	 
 	if (write_sysctl("/proc/sys/net/ipv4/tcp_window_scaling", "1") ||
 	    write_sysctl("/proc/sys/net/ipv4/tcp_timestamps", "1") ||
 	    write_sysctl("/proc/sys/net/ipv4/tcp_sack", "1"))
@@ -131,7 +129,7 @@ static void test_syncookie(void)
 	socklen_t addrlen = sizeof(srv_sa6);
 	int srv_port;
 
-	/* Enforce syncookie mode */
+	 
 	if (write_sysctl("/proc/sys/net/ipv4/tcp_syncookies", "2"))
 		return;
 

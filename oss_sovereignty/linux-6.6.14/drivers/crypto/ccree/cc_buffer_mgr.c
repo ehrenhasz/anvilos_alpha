@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (C) 2012-2019 ARM Limited (or its affiliates). */
+
+ 
 
 #include <crypto/internal/aead.h>
 #include <crypto/authenc.h>
@@ -42,13 +42,7 @@ static inline char *cc_dma_buf_type(enum cc_req_dma_buf_type type)
 	}
 }
 
-/**
- * cc_copy_mac() - Copy MAC to temporary location
- *
- * @dev: device object
- * @req: aead request object
- * @dir: [IN] copy from/to sgl
- */
+ 
 static void cc_copy_mac(struct device *dev, struct aead_request *req,
 			enum cc_sg_cpy_direct dir)
 {
@@ -59,17 +53,7 @@ static void cc_copy_mac(struct device *dev, struct aead_request *req,
 			   (skip - areq_ctx->req_authsize), skip, dir);
 }
 
-/**
- * cc_get_sgl_nents() - Get scatterlist number of entries.
- *
- * @dev: Device object
- * @sg_list: SG list
- * @nbytes: [IN] Total SGL data bytes.
- * @lbytes: [OUT] Returns the amount of bytes at the last entry
- *
- * Return:
- * Number of entries in the scatterlist
- */
+ 
 static unsigned int cc_get_sgl_nents(struct device *dev,
 				     struct scatterlist *sg_list,
 				     unsigned int nbytes, u32 *lbytes)
@@ -80,7 +64,7 @@ static unsigned int cc_get_sgl_nents(struct device *dev,
 
 	while (nbytes && sg_list) {
 		nents++;
-		/* get the number of bytes in the last entry */
+		 
 		*lbytes = nbytes;
 		nbytes -= (sg_list->length > nbytes) ?
 				nbytes : sg_list->length;
@@ -91,18 +75,7 @@ static unsigned int cc_get_sgl_nents(struct device *dev,
 	return nents;
 }
 
-/**
- * cc_copy_sg_portion() - Copy scatter list data,
- * from to_skip to end, to dest and vice versa
- *
- * @dev: Device object
- * @dest: Buffer to copy to/from
- * @sg: SG list
- * @to_skip: Number of bytes to skip before copying
- * @end: Offset of last byte to copy
- * @direct: Transfer direction (true == from SG list to buffer, false == from
- *          buffer to SG list)
- */
+ 
 void cc_copy_sg_portion(struct device *dev, u8 *dest, struct scatterlist *sg,
 			u32 to_skip, u32 end, enum cc_sg_cpy_direct direct)
 {
@@ -120,7 +93,7 @@ static int cc_render_buff_to_mlli(struct device *dev, dma_addr_t buff_dma,
 	u32 *mlli_entry_p = *mlli_entry_pp;
 	u32 new_nents;
 
-	/* Verify there is no memory overflow*/
+	 
 	new_nents = (*curr_nents + buff_size / CC_MAX_MLLI_ENTRY_SIZE + 1);
 	if (new_nents > MAX_NUM_OF_TOTAL_MLLI_ENTRIES) {
 		dev_err(dev, "Too many mlli entries. current %d max %d\n",
@@ -128,7 +101,7 @@ static int cc_render_buff_to_mlli(struct device *dev, dma_addr_t buff_dma,
 		return -ENOMEM;
 	}
 
-	/*handle buffer longer than 64 kbytes */
+	 
 	while (buff_size > CC_MAX_MLLI_ENTRY_SIZE) {
 		cc_lli_set_addr(mlli_entry_p, buff_dma);
 		cc_lli_set_size(mlli_entry_p, CC_MAX_MLLI_ENTRY_SIZE);
@@ -140,7 +113,7 @@ static int cc_render_buff_to_mlli(struct device *dev, dma_addr_t buff_dma,
 		mlli_entry_p = mlli_entry_p + 2;
 		(*curr_nents)++;
 	}
-	/*Last entry */
+	 
 	cc_lli_set_addr(mlli_entry_p, buff_dma);
 	cc_lli_set_size(mlli_entry_p, buff_size);
 	dev_dbg(dev, "entry[%d]: single_buff=0x%08X size=%08X\n",
@@ -188,7 +161,7 @@ static int cc_generate_mlli(struct device *dev, struct buffer_array *sg_data,
 
 	dev_dbg(dev, "NUM of SG's = %d\n", sg_data->num_of_buffers);
 
-	/* Allocate memory from the pointed pool */
+	 
 	mlli_params->mlli_virt_addr =
 		dma_pool_alloc(mlli_params->curr_pool, flags,
 			       &mlli_params->mlli_dma_addr);
@@ -197,9 +170,9 @@ static int cc_generate_mlli(struct device *dev, struct buffer_array *sg_data,
 		rc = -ENOMEM;
 		goto build_mlli_exit;
 	}
-	/* Point to start of MLLI */
+	 
 	mlli_p = mlli_params->mlli_virt_addr;
-	/* go over all SG's and link it to one MLLI table */
+	 
 	for (i = 0; i < sg_data->num_of_buffers; i++) {
 		union buffer_array_entry *entry = &sg_data->entry[i];
 		u32 tot_len = sg_data->total_data_len[i];
@@ -210,18 +183,16 @@ static int cc_generate_mlli(struct device *dev, struct buffer_array *sg_data,
 		if (rc)
 			return rc;
 
-		/* set last bit in the current table */
+		 
 		if (sg_data->mlli_nents[i]) {
-			/*Calculate the current MLLI table length for the
-			 *length field in the descriptor
-			 */
+			 
 			*sg_data->mlli_nents[i] +=
 				(total_nents - prev_total_nents);
 			prev_total_nents = total_nents;
 		}
 	}
 
-	/* Set MLLI size for the bypass operation */
+	 
 	mlli_params->mlli_len = (total_nents * LLI_ENTRY_BYTE_SIZE);
 
 	dev_dbg(dev, "MLLI params: virt_addr=%pK dma_addr=%pad mlli_len=0x%X\n",
@@ -291,7 +262,7 @@ cc_set_aead_conf_buf(struct device *dev, struct aead_req_ctx *areq_ctx,
 		     unsigned int assoclen)
 {
 	dev_dbg(dev, " handle additional data config set to DLLI\n");
-	/* create sg for the current buffer */
+	 
 	sg_init_one(&areq_ctx->ccm_adata_sg, config_data,
 		    AES_BLOCK_SIZE + areq_ctx->ccm_hdr_size);
 	if (dma_map_sg(dev, &areq_ctx->ccm_adata_sg, 1, DMA_TO_DEVICE) != 1) {
@@ -303,7 +274,7 @@ cc_set_aead_conf_buf(struct device *dev, struct aead_req_ctx *areq_ctx,
 		sg_page(&areq_ctx->ccm_adata_sg),
 		sg_virt(&areq_ctx->ccm_adata_sg),
 		areq_ctx->ccm_adata_sg.offset, areq_ctx->ccm_adata_sg.length);
-	/* prepare for case of MLLI */
+	 
 	if (assoclen > 0) {
 		cc_add_sg_entry(dev, sg_data, 1, &areq_ctx->ccm_adata_sg,
 				(AES_BLOCK_SIZE + areq_ctx->ccm_hdr_size),
@@ -317,7 +288,7 @@ static int cc_set_hash_buf(struct device *dev, struct ahash_req_ctx *areq_ctx,
 			   struct buffer_array *sg_data)
 {
 	dev_dbg(dev, " handle curr buff %x set to   DLLI\n", curr_buff_cnt);
-	/* create sg for the current buffer */
+	 
 	sg_init_one(areq_ctx->buff_sg, curr_buff, curr_buff_cnt);
 	if (dma_map_sg(dev, areq_ctx->buff_sg, 1, DMA_TO_DEVICE) != 1) {
 		dev_err(dev, "dma_map_sg() src buffer failed\n");
@@ -330,7 +301,7 @@ static int cc_set_hash_buf(struct device *dev, struct ahash_req_ctx *areq_ctx,
 	areq_ctx->data_dma_buf_type = CC_DMA_BUF_DLLI;
 	areq_ctx->curr_sg = areq_ctx->buff_sg;
 	areq_ctx->in_nents = 0;
-	/* prepare for case of MLLI */
+	 
 	cc_add_sg_entry(dev, sg_data, 1, areq_ctx->buff_sg, curr_buff_cnt, 0,
 			false, NULL);
 	return 0;
@@ -348,7 +319,7 @@ void cc_unmap_cipher_request(struct device *dev, void *ctx,
 		dma_unmap_single(dev, req_ctx->gen_ctx.iv_dma_addr,
 				 ivsize, DMA_BIDIRECTIONAL);
 	}
-	/* Release pool */
+	 
 	if (req_ctx->dma_buf_type == CC_DMA_BUF_MLLI &&
 	    req_ctx->mlli_params.mlli_virt_addr) {
 		dma_pool_free(req_ctx->mlli_params.curr_pool,
@@ -385,7 +356,7 @@ int cc_map_cipher_request(struct cc_drvdata *drvdata, void *ctx,
 	mlli_params->curr_pool = NULL;
 	sg_data.num_of_buffers = 0;
 
-	/* Map IV buffer */
+	 
 	if (ivsize) {
 		dump_byte_array("iv", info, ivsize);
 		req_ctx->gen_ctx.iv_dma_addr =
@@ -401,7 +372,7 @@ int cc_map_cipher_request(struct cc_drvdata *drvdata, void *ctx,
 		req_ctx->gen_ctx.iv_dma_addr = 0;
 	}
 
-	/* Map the src SGL */
+	 
 	rc = cc_map_sg(dev, src, nbytes, src_direction, &req_ctx->in_nents,
 		       LLI_MAX_NUM_OF_DATA_ENTRIES, &dummy, &mapped_nents);
 	if (rc)
@@ -410,7 +381,7 @@ int cc_map_cipher_request(struct cc_drvdata *drvdata, void *ctx,
 		req_ctx->dma_buf_type = CC_DMA_BUF_MLLI;
 
 	if (src == dst) {
-		/* Handle inplace operation */
+		 
 		if (req_ctx->dma_buf_type == CC_DMA_BUF_MLLI) {
 			req_ctx->out_nents = 0;
 			cc_add_sg_entry(dev, &sg_data, req_ctx->in_nents, src,
@@ -418,7 +389,7 @@ int cc_map_cipher_request(struct cc_drvdata *drvdata, void *ctx,
 					&req_ctx->in_mlli_nents);
 		}
 	} else {
-		/* Map the dst sg */
+		 
 		rc = cc_map_sg(dev, dst, nbytes, DMA_FROM_DEVICE,
 			       &req_ctx->out_nents, LLI_MAX_NUM_OF_DATA_ENTRIES,
 			       &dummy, &mapped_nents);
@@ -502,7 +473,7 @@ void cc_unmap_aead_request(struct device *dev, struct aead_request *req)
 		kfree_sensitive(areq_ctx->gen_ctx.iv);
 	}
 
-	/* Release pool */
+	 
 	if ((areq_ctx->assoc_buff_type == CC_DMA_BUF_MLLI ||
 	     areq_ctx->data_buff_type == CC_DMA_BUF_MLLI) &&
 	    (areq_ctx->mlli_params.mlli_virt_addr)) {
@@ -527,10 +498,7 @@ void cc_unmap_aead_request(struct device *dev, struct aead_request *req)
 	if (drvdata->coherent &&
 	    areq_ctx->gen_ctx.op_type == DRV_CRYPTO_DIRECTION_DECRYPT &&
 	    req->src == req->dst) {
-		/* copy back mac from temporary location to deal with possible
-		 * data memory overriding that caused by cache coherence
-		 * problem.
-		 */
+		 
 		cc_copy_mac(dev, req, CC_SG_FROM_BUF);
 	}
 }
@@ -617,9 +585,7 @@ static int cc_aead_chain_assoc(struct cc_drvdata *drvdata,
 	}
 	areq_ctx->assoc.nents = mapped_nents;
 
-	/* in CCM case we have additional entry for
-	 * ccm header configurations
-	 */
+	 
 	if (areq_ctx->ccm_hdr_size != ccm_header_size_null) {
 		if ((mapped_nents + 1) > LLI_MAX_NUM_OF_ASSOC_DATA_ENTRIES) {
 			dev_err(dev, "CCM case.Too many fragments. Current %d max %d\n",
@@ -685,7 +651,7 @@ static void cc_prepare_aead_data_mlli(struct cc_drvdata *drvdata,
 	struct scatterlist *sg;
 
 	if (req->src == req->dst) {
-		/*INPLACE*/
+		 
 		cc_add_sg_entry(dev, sg_data, areq_ctx->src.nents,
 				areq_ctx->src_sgl, areq_ctx->cryptlen,
 				areq_ctx->src_offset, is_last_table,
@@ -696,16 +662,9 @@ static void cc_prepare_aead_data_mlli(struct cc_drvdata *drvdata,
 				       *src_last_bytes);
 
 		if (areq_ctx->is_icv_fragmented) {
-			/* Backup happens only when ICV is fragmented, ICV
-			 * verification is made by CPU compare in order to
-			 * simplify MAC verification upon request completion
-			 */
+			 
 			if (direct == DRV_CRYPTO_DIRECTION_DECRYPT) {
-				/* In coherent platforms (e.g. ACP)
-				 * already copying ICV for any
-				 * INPLACE-DECRYPT operation, hence
-				 * we must neglect this code.
-				 */
+				 
 				if (!drvdata->coherent)
 					cc_copy_mac(dev, req, CC_SG_TO_BUF);
 
@@ -715,9 +674,9 @@ static void cc_prepare_aead_data_mlli(struct cc_drvdata *drvdata,
 				areq_ctx->icv_dma_addr =
 					areq_ctx->mac_buf_dma_addr;
 			}
-		} else { /* Contig. ICV */
+		} else {  
 			sg = &areq_ctx->src_sgl[areq_ctx->src.nents - 1];
-			/*Should hanlde if the sg is not contig.*/
+			 
 			areq_ctx->icv_dma_addr = sg_dma_address(sg) +
 				(*src_last_bytes - authsize);
 			areq_ctx->icv_virt_addr = sg_virt(sg) +
@@ -725,7 +684,7 @@ static void cc_prepare_aead_data_mlli(struct cc_drvdata *drvdata,
 		}
 
 	} else if (direct == DRV_CRYPTO_DIRECTION_DECRYPT) {
-		/*NON-INPLACE and DECRYPT*/
+		 
 		cc_add_sg_entry(dev, sg_data, areq_ctx->src.nents,
 				areq_ctx->src_sgl, areq_ctx->cryptlen,
 				areq_ctx->src_offset, is_last_table,
@@ -738,18 +697,14 @@ static void cc_prepare_aead_data_mlli(struct cc_drvdata *drvdata,
 		areq_ctx->is_icv_fragmented =
 			cc_is_icv_frag(areq_ctx->src.nents, authsize,
 				       *src_last_bytes);
-		/* Backup happens only when ICV is fragmented, ICV
-
-		 * verification is made by CPU compare in order to simplify
-		 * MAC verification upon request completion
-		 */
+		 
 		if (areq_ctx->is_icv_fragmented) {
 			cc_copy_mac(dev, req, CC_SG_TO_BUF);
 			areq_ctx->icv_virt_addr = areq_ctx->backup_mac;
 
-		} else { /* Contig. ICV */
+		} else {  
 			sg = &areq_ctx->src_sgl[areq_ctx->src.nents - 1];
-			/*Should hanlde if the sg is not contig.*/
+			 
 			areq_ctx->icv_dma_addr = sg_dma_address(sg) +
 				(*src_last_bytes - authsize);
 			areq_ctx->icv_virt_addr = sg_virt(sg) +
@@ -757,7 +712,7 @@ static void cc_prepare_aead_data_mlli(struct cc_drvdata *drvdata,
 		}
 
 	} else {
-		/*NON-INPLACE and ENCRYPT*/
+		 
 		cc_add_sg_entry(dev, sg_data, areq_ctx->dst.nents,
 				areq_ctx->dst_sgl, areq_ctx->cryptlen,
 				areq_ctx->dst_offset, is_last_table,
@@ -773,7 +728,7 @@ static void cc_prepare_aead_data_mlli(struct cc_drvdata *drvdata,
 
 		if (!areq_ctx->is_icv_fragmented) {
 			sg = &areq_ctx->dst_sgl[areq_ctx->dst.nents - 1];
-			/* Contig. ICV */
+			 
 			areq_ctx->icv_dma_addr = sg_dma_address(sg) +
 				(*dst_last_bytes - authsize);
 			areq_ctx->icv_virt_addr = sg_virt(sg) +
@@ -798,7 +753,7 @@ static int cc_aead_chain_data(struct cc_drvdata *drvdata,
 	int rc = 0;
 	u32 src_mapped_nents = 0, dst_mapped_nents = 0;
 	u32 offset = 0;
-	/* non-inplace mode */
+	 
 	unsigned int size_for_map = req->assoclen + req->cryptlen;
 	u32 sg_index = 0;
 	u32 size_to_skip = req->assoclen;
@@ -817,7 +772,7 @@ static int cc_aead_chain_data(struct cc_drvdata *drvdata,
 	src_mapped_nents = cc_get_sgl_nents(dev, req->src, size_for_map,
 					    &src_last_bytes);
 	sg_index = areq_ctx->src_sgl->length;
-	//check where the data starts
+	
 	while (src_mapped_nents && (sg_index <= size_to_skip)) {
 		src_mapped_nents--;
 		offset -= areq_ctx->src_sgl->length;
@@ -858,7 +813,7 @@ static int cc_aead_chain_data(struct cc_drvdata *drvdata,
 	sg_index = areq_ctx->dst_sgl->length;
 	offset = size_to_skip;
 
-	//check where the data starts
+	
 	while (dst_mapped_nents && sg_index <= size_to_skip) {
 		dst_mapped_nents--;
 		offset -= areq_ctx->dst_sgl->length;
@@ -905,7 +860,7 @@ static void cc_update_aead_mlli_nents(struct cc_drvdata *drvdata,
 	}
 
 	if (areq_ctx->data_buff_type == CC_DMA_BUF_MLLI) {
-		/*Inplace case dst nents equal to src nents*/
+		 
 		if (req->src == req->dst) {
 			areq_ctx->dst.mlli_nents = areq_ctx->src.mlli_nents;
 			areq_ctx->src.sram_addr = drvdata->mlli_sram_addr +
@@ -953,22 +908,20 @@ int cc_map_aead_request(struct cc_drvdata *drvdata, struct aead_request *req)
 	int rc = 0;
 	dma_addr_t dma_addr;
 	u32 mapped_nents = 0;
-	u32 dummy = 0; /*used for the assoc data fragments */
+	u32 dummy = 0;  
 	u32 size_to_map;
 	gfp_t flags = cc_gfp_flags(&req->base);
 
 	mlli_params->curr_pool = NULL;
 	sg_data.num_of_buffers = 0;
 
-	/* copy mac to a temporary location to deal with possible
-	 * data memory overriding that caused by cache coherence problem.
-	 */
+	 
 	if (drvdata->coherent &&
 	    areq_ctx->gen_ctx.op_type == DRV_CRYPTO_DIRECTION_DECRYPT &&
 	    req->src == req->dst)
 		cc_copy_mac(dev, req, CC_SG_TO_BUF);
 
-	/* cacluate the size for cipher remove ICV in decrypt*/
+	 
 	areq_ctx->cryptlen = (areq_ctx->gen_ctx.op_type ==
 				 DRV_CRYPTO_DIRECTION_ENCRYPT) ?
 				req->cryptlen :
@@ -1052,7 +1005,7 @@ int cc_map_aead_request(struct cc_drvdata *drvdata, struct aead_request *req)
 	}
 
 	size_to_map = req->cryptlen + req->assoclen;
-	/* If we do in-place encryption, we also need the auth tag */
+	 
 	if ((areq_ctx->gen_ctx.op_type == DRV_CRYPTO_DIRECTION_ENCRYPT) &&
 	   (req->src == req->dst)) {
 		size_to_map += authsize;
@@ -1068,12 +1021,7 @@ int cc_map_aead_request(struct cc_drvdata *drvdata, struct aead_request *req)
 		goto aead_map_failure;
 
 	if (areq_ctx->is_single_pass) {
-		/*
-		 * Create MLLI table for:
-		 *   (1) Assoc. data
-		 *   (2) Src/Dst SGLs
-		 *   Note: IV is contg. buffer (not an SGL)
-		 */
+		 
 		rc = cc_aead_chain_assoc(drvdata, req, &sg_data, true, false);
 		if (rc)
 			goto aead_map_failure;
@@ -1083,27 +1031,8 @@ int cc_map_aead_request(struct cc_drvdata *drvdata, struct aead_request *req)
 		rc = cc_aead_chain_data(drvdata, req, &sg_data, true, false);
 		if (rc)
 			goto aead_map_failure;
-	} else { /* DOUBLE-PASS flow */
-		/*
-		 * Prepare MLLI table(s) in this order:
-		 *
-		 * If ENCRYPT/DECRYPT (inplace):
-		 *   (1) MLLI table for assoc
-		 *   (2) IV entry (chained right after end of assoc)
-		 *   (3) MLLI for src/dst (inplace operation)
-		 *
-		 * If ENCRYPT (non-inplace)
-		 *   (1) MLLI table for assoc
-		 *   (2) IV entry (chained right after end of assoc)
-		 *   (3) MLLI for dst
-		 *   (4) MLLI for src
-		 *
-		 * If DECRYPT (non-inplace)
-		 *   (1) MLLI table for assoc
-		 *   (2) IV entry (chained right after end of assoc)
-		 *   (3) MLLI for src
-		 *   (4) MLLI for dst
-		 */
+	} else {  
+		 
 		rc = cc_aead_chain_assoc(drvdata, req, &sg_data, false, true);
 		if (rc)
 			goto aead_map_failure;
@@ -1115,9 +1044,7 @@ int cc_map_aead_request(struct cc_drvdata *drvdata, struct aead_request *req)
 			goto aead_map_failure;
 	}
 
-	/* Mlli support -start building the MLLI according to the above
-	 * results
-	 */
+	 
 	if (areq_ctx->assoc_buff_type == CC_DMA_BUF_MLLI ||
 	    areq_ctx->data_buff_type == CC_DMA_BUF_MLLI) {
 		mlli_params->curr_pool = drvdata->mlli_buffs_pool;
@@ -1154,18 +1081,18 @@ int cc_map_hash_request_final(struct cc_drvdata *drvdata, void *ctx,
 
 	dev_dbg(dev, "final params : curr_buff=%pK curr_buff_cnt=0x%X nbytes = 0x%X src=%pK curr_index=%u\n",
 		curr_buff, *curr_buff_cnt, nbytes, src, areq_ctx->buff_index);
-	/* Init the type of the dma buffer */
+	 
 	areq_ctx->data_dma_buf_type = CC_DMA_BUF_NULL;
 	mlli_params->curr_pool = NULL;
 	sg_data.num_of_buffers = 0;
 	areq_ctx->in_nents = 0;
 
 	if (nbytes == 0 && *curr_buff_cnt == 0) {
-		/* nothing to do */
+		 
 		return 0;
 	}
 
-	/* map the previous buffer */
+	 
 	if (*curr_buff_cnt) {
 		rc = cc_set_hash_buf(dev, areq_ctx, curr_buff, *curr_buff_cnt,
 				     &sg_data);
@@ -1191,17 +1118,17 @@ int cc_map_hash_request_final(struct cc_drvdata *drvdata, void *ctx,
 		}
 	}
 
-	/*build mlli */
+	 
 	if (areq_ctx->data_dma_buf_type == CC_DMA_BUF_MLLI) {
 		mlli_params->curr_pool = drvdata->mlli_buffs_pool;
-		/* add the src data to the sg_data */
+		 
 		cc_add_sg_entry(dev, &sg_data, areq_ctx->in_nents, src, nbytes,
 				0, true, &areq_ctx->mlli_nents);
 		rc = cc_generate_mlli(dev, &sg_data, mlli_params, flags);
 		if (rc)
 			goto fail_unmap_din;
 	}
-	/* change the buffer index for the unmap function */
+	 
 	areq_ctx->buff_index = (areq_ctx->buff_index ^ 1);
 	dev_dbg(dev, "areq_ctx->data_dma_buf_type = %s\n",
 		cc_dma_buf_type(areq_ctx->data_dma_buf_type));
@@ -1238,7 +1165,7 @@ int cc_map_hash_request_update(struct cc_drvdata *drvdata, void *ctx,
 
 	dev_dbg(dev, " update params : curr_buff=%pK curr_buff_cnt=0x%X nbytes=0x%X src=%pK curr_index=%u\n",
 		curr_buff, *curr_buff_cnt, nbytes, src, areq_ctx->buff_index);
-	/* Init the type of the dma buffer */
+	 
 	areq_ctx->data_dma_buf_type = CC_DMA_BUF_NULL;
 	mlli_params->curr_pool = NULL;
 	areq_ctx->curr_sg = NULL;
@@ -1255,15 +1182,15 @@ int cc_map_hash_request_update(struct cc_drvdata *drvdata, void *ctx,
 		return 1;
 	}
 
-	/* Calculate the residue size*/
+	 
 	*next_buff_cnt = total_in_len & (block_size - 1);
-	/* update data len */
+	 
 	update_data_len = total_in_len - *next_buff_cnt;
 
 	dev_dbg(dev, " temp length : *next_buff_cnt=0x%X update_data_len=0x%X\n",
 		*next_buff_cnt, update_data_len);
 
-	/* Copy the new residue to next buffer */
+	 
 	if (*next_buff_cnt) {
 		dev_dbg(dev, " handle residue: next buff %pK skip data %u residue %u\n",
 			next_buff, (update_data_len - *curr_buff_cnt),
@@ -1271,7 +1198,7 @@ int cc_map_hash_request_update(struct cc_drvdata *drvdata, void *ctx,
 		cc_copy_sg_portion(dev, next_buff, src,
 				   (update_data_len - *curr_buff_cnt),
 				   nbytes, CC_SG_TO_BUF);
-		/* change the buffer index for next operation */
+		 
 		swap_index = 1;
 	}
 
@@ -1280,7 +1207,7 @@ int cc_map_hash_request_update(struct cc_drvdata *drvdata, void *ctx,
 				     &sg_data);
 		if (rc)
 			return rc;
-		/* change the buffer index for next operation */
+		 
 		swap_index = 1;
 	}
 
@@ -1293,7 +1220,7 @@ int cc_map_hash_request_update(struct cc_drvdata *drvdata, void *ctx,
 			goto unmap_curr_buff;
 		if (mapped_nents == 1 &&
 		    areq_ctx->data_dma_buf_type == CC_DMA_BUF_NULL) {
-			/* only one entry in the SG and no previous data */
+			 
 			memcpy(areq_ctx->buff_sg, src,
 			       sizeof(struct scatterlist));
 			areq_ctx->buff_sg->length = update_data_len;
@@ -1306,7 +1233,7 @@ int cc_map_hash_request_update(struct cc_drvdata *drvdata, void *ctx,
 
 	if (areq_ctx->data_dma_buf_type == CC_DMA_BUF_MLLI) {
 		mlli_params->curr_pool = drvdata->mlli_buffs_pool;
-		/* add the src data to the sg_data */
+		 
 		cc_add_sg_entry(dev, &sg_data, areq_ctx->in_nents, src,
 				(update_data_len - *curr_buff_cnt), 0, true,
 				&areq_ctx->mlli_nents);
@@ -1334,9 +1261,7 @@ void cc_unmap_hash_request(struct device *dev, void *ctx,
 	struct ahash_req_ctx *areq_ctx = (struct ahash_req_ctx *)ctx;
 	u32 *prev_len = cc_next_buf_cnt(areq_ctx);
 
-	/*In case a pool was set, a table was
-	 *allocated and should be released
-	 */
+	 
 	if (areq_ctx->mlli_params.curr_pool) {
 		dev_dbg(dev, "free MLLI buffer: dma=%pad virt=%pK\n",
 			&areq_ctx->mlli_params.mlli_dma_addr,
@@ -1360,9 +1285,7 @@ void cc_unmap_hash_request(struct device *dev, void *ctx,
 			sg_dma_len(areq_ctx->buff_sg));
 		dma_unmap_sg(dev, areq_ctx->buff_sg, 1, DMA_TO_DEVICE);
 		if (!do_revert) {
-			/* clean the previous data length for update
-			 * operation
-			 */
+			 
 			*prev_len = 0;
 		} else {
 			areq_ctx->buff_index ^= 1;

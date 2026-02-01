@@ -1,18 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2018, Intel Corporation. */
 
-/* This provides a net_failover interface for paravirtual drivers to
- * provide an alternate datapath by exporting APIs to create and
- * destroy a upper 'net_failover' netdev. The upper dev manages the
- * original paravirtual interface as a 'standby' netdev and uses the
- * generic failover infrastructure to register and manage a direct
- * attached VF as a 'primary' netdev. This enables live migration of
- * a VM with direct attached VF by failing over to the paravirtual
- * datapath when the VF is unplugged.
- *
- * Some of the netdev management routines are based on bond/team driver as
- * this driver provides active-backup functionality similar to those drivers.
- */
+ 
+
+ 
 
 #include <linux/netdevice.h>
 #include <linux/etherdevice.h>
@@ -100,7 +89,7 @@ static netdev_tx_t net_failover_start_xmit(struct sk_buff *skb,
 	struct net_failover_info *nfo_info = netdev_priv(dev);
 	struct net_device *xmit_dev;
 
-	/* Try xmit via primary netdev followed by standby netdev */
+	 
 	xmit_dev = rcu_dereference_bh(nfo_info->primary_dev);
 	if (!xmit_dev || !net_failover_xmit_ready(xmit_dev)) {
 		xmit_dev = rcu_dereference_bh(nfo_info->standby_dev);
@@ -134,7 +123,7 @@ static u16 net_failover_select_queue(struct net_device *dev,
 		txq = skb_rx_queue_recorded(skb) ? skb_get_rx_queue(skb) : 0;
 	}
 
-	/* Save the original txq to restore before passing to the driver */
+	 
 	qdisc_skb_cb(skb)->slave_dev_queue_mapping = skb->queue_mapping;
 
 	if (unlikely(txq >= dev->real_num_tx_queues)) {
@@ -146,9 +135,7 @@ static u16 net_failover_select_queue(struct net_device *dev,
 	return txq;
 }
 
-/* fold stats, assuming all rtnl_link_stats64 fields are u64, but
- * that some drivers can provide 32bit values only.
- */
+ 
 static void net_failover_fold_stats(struct rtnl_link_stats64 *_res,
 				    const struct rtnl_link_stats64 *_new,
 				    const struct rtnl_link_stats64 *_old)
@@ -163,13 +150,11 @@ static void net_failover_fold_stats(struct rtnl_link_stats64 *_res,
 		u64 ov = old[i];
 		s64 delta = nv - ov;
 
-		/* detects if this particular field is 32bit only */
+		 
 		if (((nv | ov) >> 32) == 0)
 			delta = (s64)(s32)((u32)nv - (u32)ov);
 
-		/* filter anomalies, some drivers reset their stats
-		 * at down/up events.
-		 */
+		 
 		if (delta > 0)
 			res[i] += delta;
 	}
@@ -351,10 +336,7 @@ static const struct ethtool_ops failover_ethtool_ops = {
 	.get_link_ksettings     = nfo_ethtool_get_link_ksettings,
 };
 
-/* Called when slave dev is injecting data into network stack.
- * Change the associated network device from lower dev to failover dev.
- * note: already called with rcu_read_lock
- */
+ 
 static rx_handler_result_t net_failover_handle_frame(struct sk_buff **pskb)
 {
 	struct sk_buff *skb = *pskb;
@@ -473,10 +455,7 @@ static int net_failover_slave_pre_register(struct net_device *slave_dev,
 		return -EINVAL;
 	}
 
-	/* We want to allow only a direct attached VF device as a primary
-	 * netdev. As there is no easy way to check for a VF device, restrict
-	 * this to a pci device.
-	 */
+	 
 	if (!slave_is_standby && (!slave_dev->dev.parent ||
 				  !dev_is_pci(slave_dev->dev.parent)))
 		return -EINVAL;
@@ -500,7 +479,7 @@ static int net_failover_slave_register(struct net_device *slave_dev,
 	u32 orig_mtu;
 	int err;
 
-	/* Align MTU of slave with failover dev */
+	 
 	orig_mtu = slave_dev->mtu;
 	err = dev_set_mtu(slave_dev, failover_dev->mtu);
 	if (err) {
@@ -672,9 +651,7 @@ static int net_failover_slave_name_change(struct net_device *slave_dev,
 	if (slave_dev != primary_dev && slave_dev != standby_dev)
 		return -ENODEV;
 
-	/* We need to bring up the slave after the rename by udev in case
-	 * open failed with EBUSY when it was registered.
-	 */
+	 
 	dev_open(slave_dev, NULL);
 
 	return 0;
@@ -690,19 +667,7 @@ static struct failover_ops net_failover_ops = {
 	.slave_handle_frame	= net_failover_handle_frame,
 };
 
-/**
- * net_failover_create - Create and register a failover instance
- *
- * @standby_dev: standby netdev
- *
- * Creates a failover netdev and registers a failover instance for a standby
- * netdev. Used by paravirtual drivers that use 3-netdev model.
- * The failover netdev acts as a master device and controls 2 slave devices -
- * the original standby netdev and a VF netdev with the same MAC gets
- * registered as primary netdev.
- *
- * Return: pointer to failover instance
- */
+ 
 struct failover *net_failover_create(struct net_device *standby_dev)
 {
 	struct device *dev = standby_dev->dev.parent;
@@ -710,9 +675,7 @@ struct failover *net_failover_create(struct net_device *standby_dev)
 	struct failover *failover;
 	int err;
 
-	/* Alloc at least 2 queues, for now we are going with 16 assuming
-	 * that VF devices being enslaved won't have too many queues.
-	 */
+	 
 	failover_dev = alloc_etherdev_mq(sizeof(struct net_failover_info), 16);
 	if (!failover_dev) {
 		dev_err(dev, "Unable to allocate failover_netdev!\n");
@@ -725,15 +688,15 @@ struct failover *net_failover_create(struct net_device *standby_dev)
 	failover_dev->netdev_ops = &failover_dev_ops;
 	failover_dev->ethtool_ops = &failover_ethtool_ops;
 
-	/* Initialize the device options */
+	 
 	failover_dev->priv_flags |= IFF_UNICAST_FLT | IFF_NO_QUEUE;
 	failover_dev->priv_flags &= ~(IFF_XMIT_DST_RELEASE |
 				       IFF_TX_SKB_SHARING);
 
-	/* don't acquire failover netdev's netif_tx_lock when transmitting */
+	 
 	failover_dev->features |= NETIF_F_LLTX;
 
-	/* Don't allow failover devices to change network namespaces. */
+	 
 	failover_dev->features |= NETIF_F_NETNS_LOCAL;
 
 	failover_dev->hw_features = FAILOVER_VLAN_FEATURES |
@@ -774,17 +737,7 @@ err_register_netdev:
 }
 EXPORT_SYMBOL_GPL(net_failover_create);
 
-/**
- * net_failover_destroy - Destroy a failover instance
- *
- * @failover: pointer to failover instance
- *
- * Unregisters any slave netdevs associated with the failover instance by
- * calling failover_slave_unregister().
- * unregisters the failover instance itself and finally frees the failover
- * netdev. Used by paravirtual drivers that use 3-netdev model.
- *
- */
+ 
 void net_failover_destroy(struct failover *failover)
 {
 	struct net_failover_info *nfo_info;

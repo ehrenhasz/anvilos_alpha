@@ -1,15 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * DW100 Hardware dewarper
- *
- * Copyright 2022 NXP
- * Author: Xavier Roumegue (xavier.roumegue@oss.nxp.com)
- */
+ 
+ 
 
 #ifndef _DW100_REGS_H_
 #define _DW100_REGS_H_
 
-/* AHB register offset */
+ 
 #define DW100_DEWARP_ID			0x00
 #define DW100_DEWARP_CTRL		0x04
 #define DW100_DEWARP_CTRL_ENABLE			BIT(0)
@@ -114,4 +109,4 @@
 #define DW100_DST_IMG_Y_SIZE2		0x88
 #define DW100_DST_IMG_UV_SIZE2		0x8c
 
-#endif /* _DW100_REGS_H_ */
+#endif  

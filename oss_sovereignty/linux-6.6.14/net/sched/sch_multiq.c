@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2008, Intel Corporation.
- *
- * Author: Alexander Duyck <alexander.h.duyck@intel.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/slab.h>
@@ -92,14 +88,12 @@ static struct sk_buff *multiq_dequeue(struct Qdisc *sch)
 	int band;
 
 	for (band = 0; band < q->bands; band++) {
-		/* cycle through bands to ensure fairness */
+		 
 		q->curband++;
 		if (q->curband >= q->bands)
 			q->curband = 0;
 
-		/* Check that target subqueue is available before
-		 * pulling an skb to avoid head-of-line blocking.
-		 */
+		 
 		if (!netif_xmit_stopped(
 		    netdev_get_tx_queue(qdisc_dev(sch), q->curband))) {
 			qdisc = q->queues[q->curband];
@@ -124,14 +118,12 @@ static struct sk_buff *multiq_peek(struct Qdisc *sch)
 	int band;
 
 	for (band = 0; band < q->bands; band++) {
-		/* cycle through bands to ensure fairness */
+		 
 		curband++;
 		if (curband >= q->bands)
 			curband = 0;
 
-		/* Check that target subqueue is available before
-		 * pulling an skb to avoid head-of-line blocking.
-		 */
+		 
 		if (!netif_xmit_stopped(
 		    netdev_get_tx_queue(qdisc_dev(sch), curband))) {
 			qdisc = q->queues[curband];

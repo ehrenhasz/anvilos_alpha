@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2016, Linaro Ltd.
- * Copyright (c) 2015, Sony Mobile Communications Inc.
- */
+
+ 
 #include <linux/firmware.h>
 #include <linux/module.h>
 #include <linux/slab.h>
@@ -22,15 +19,7 @@
 #define NV_FRAGMENT_SIZE	3072
 #define NVBIN_FILE		"wlan/prima/WCNSS_qcom_wlan_nv.bin"
 
-/**
- * struct wcnss_ctrl - driver context
- * @dev:	device handle
- * @channel:	SMD channel handle
- * @ack:	completion for outstanding requests
- * @cbc:	completion for cbc complete indication
- * @ack_status:	status of the outstanding request
- * @probe_work: worker for uploading nv binary
- */
+ 
 struct wcnss_ctrl {
 	struct device *dev;
 	struct rpmsg_endpoint *channel;
@@ -42,7 +31,7 @@ struct wcnss_ctrl {
 	struct work_struct probe_work;
 };
 
-/* message types */
+ 
 enum {
 	WCNSS_VERSION_REQ = 0x01000000,
 	WCNSS_VERSION_RESP,
@@ -59,19 +48,13 @@ enum {
 	WCNSS_CBC_COMPLETE_IND,
 };
 
-/**
- * struct wcnss_msg_hdr - common packet header for requests and responses
- * @type:	packet message type
- * @len:	total length of the packet, including this header
- */
+ 
 struct wcnss_msg_hdr {
 	u32 type;
 	u32 len;
 } __packed;
 
-/*
- * struct wcnss_version_resp - version request response
- */
+ 
 struct wcnss_version_resp {
 	struct wcnss_msg_hdr hdr;
 	u8 major;
@@ -80,14 +63,7 @@ struct wcnss_version_resp {
 	u8 revision;
 } __packed;
 
-/**
- * struct wcnss_download_nv_req - firmware fragment request
- * @hdr:	common packet wcnss_msg_hdr header
- * @seq:	sequence number of this fragment
- * @last:	boolean indicator of this being the last fragment of the binary
- * @frag_size:	length of this fragment
- * @fragment:	fragment data
- */
+ 
 struct wcnss_download_nv_req {
 	struct wcnss_msg_hdr hdr;
 	u16 seq;
@@ -96,26 +72,13 @@ struct wcnss_download_nv_req {
 	u8 fragment[];
 } __packed;
 
-/**
- * struct wcnss_download_nv_resp - firmware download response
- * @hdr:	common packet wcnss_msg_hdr header
- * @status:	boolean to indicate success of the download
- */
+ 
 struct wcnss_download_nv_resp {
 	struct wcnss_msg_hdr hdr;
 	u8 status;
 } __packed;
 
-/**
- * wcnss_ctrl_smd_callback() - handler from SMD responses
- * @rpdev:	remote processor message device pointer
- * @data:	pointer to the incoming data packet
- * @count:	size of the incoming data packet
- * @priv:	unused
- * @addr:	unused
- *
- * Handles any incoming packets from the remote WCNSS_CTRL service.
- */
+ 
 static int wcnss_ctrl_smd_callback(struct rpmsg_device *rpdev,
 				   void *data,
 				   int count,
@@ -165,10 +128,7 @@ static int wcnss_ctrl_smd_callback(struct rpmsg_device *rpdev,
 	return 0;
 }
 
-/**
- * wcnss_request_version() - send a version request to WCNSS
- * @wcnss:	wcnss ctrl driver context
- */
+ 
 static int wcnss_request_version(struct wcnss_ctrl *wcnss)
 {
 	struct wcnss_msg_hdr msg;
@@ -189,13 +149,7 @@ static int wcnss_request_version(struct wcnss_ctrl *wcnss)
 	return 0;
 }
 
-/**
- * wcnss_download_nv() - send nv binary to WCNSS
- * @wcnss:	wcnss_ctrl state handle
- * @expect_cbc:	indicator to caller that an cbc event is expected
- *
- * Returns 0 on success. Negative errno on failure.
- */
+ 
 static int wcnss_download_nv(struct wcnss_ctrl *wcnss, bool *expect_cbc)
 {
 	struct wcnss_download_nv_req *req;
@@ -245,7 +199,7 @@ static int wcnss_download_nv(struct wcnss_ctrl *wcnss, bool *expect_cbc)
 			goto release_fw;
 		}
 
-		/* Increment for next fragment */
+		 
 		req->seq++;
 
 		data += NV_FRAGMENT_SIZE;
@@ -269,13 +223,7 @@ free_req:
 	return ret;
 }
 
-/**
- * qcom_wcnss_open_channel() - open additional SMD channel to WCNSS
- * @wcnss:	wcnss handle, retrieved from drvdata
- * @name:	SMD channel name
- * @cb:		callback to handle incoming data on the channel
- * @priv:	private data for use in the call-back
- */
+ 
 struct rpmsg_endpoint *qcom_wcnss_open_channel(void *wcnss, const char *name, rpmsg_rx_cb_t cb, void *priv)
 {
 	struct rpmsg_channel_info chinfo;
@@ -303,7 +251,7 @@ static void wcnss_async_probe(struct work_struct *work)
 	if (ret < 0)
 		return;
 
-	/* Wait for pending cold boot completion if indicated by the nv downloader */
+	 
 	if (expect_cbc) {
 		ret = wait_for_completion_timeout(&wcnss->cbc, WCNSS_REQUEST_TIMEOUT);
 		if (!ret)

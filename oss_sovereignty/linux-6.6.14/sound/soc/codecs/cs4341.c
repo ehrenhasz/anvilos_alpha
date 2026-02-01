@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- *  Cirrus Logic CS4341A ALSA SoC Codec Driver
- *  Author: Alexander Shiyan <shc_work@mail.ru>
- */
+ 
+ 
 
 #include <linux/i2c.h>
 #include <linux/module.h>

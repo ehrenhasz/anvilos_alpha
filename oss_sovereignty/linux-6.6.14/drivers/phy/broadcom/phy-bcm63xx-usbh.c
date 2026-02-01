@@ -1,18 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * BCM6328 USBH PHY Controller Driver
- *
- * Copyright (C) 2020 Álvaro Fernández Rojas <noltari@gmail.com>
- * Copyright (C) 2015 Simon Arlott
- *
- * Derived from bcm963xx_4.12L.06B_consumer/kernel/linux/arch/mips/bcm963xx/setup.c:
- * Copyright (C) 2002 Broadcom Corporation
- *
- * Derived from OpenWrt patches:
- * Copyright (C) 2013 Jonas Gorski <jonas.gorski@gmail.com>
- * Copyright (C) 2013 Florian Fainelli <f.fainelli@gmail.com>
- * Copyright (C) 2008 Maxime Bizon <mbizon@freebox.fr>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/io.h>
@@ -22,7 +9,7 @@
 #include <linux/platform_device.h>
 #include <linux/reset.h>
 
-/* USBH control register offsets */
+ 
 enum usbh_regs {
 	USBH_BRT_CONTROL1 = 0,
 	USBH_BRT_CONTROL2,
@@ -70,27 +57,27 @@ enum usbh_regs {
 };
 
 struct bcm63xx_usbh_phy_variant {
-	/* Registers */
+	 
 	long regs[__USBH_ENUM_SIZE];
 
-	/* PLLC bits to set/clear for power on */
+	 
 	u32 power_pllc_clr;
 	u32 power_pllc_set;
 
-	/* Setup bits to set/clear for power on */
+	 
 	u32 setup_clr;
 	u32 setup_set;
 
-	/* Swap Control bits to set */
+	 
 	u32 swapctl_dev_set;
 
-	/* Test Port Control value to set if non-zero */
+	 
 	u32 tpc_val;
 
-	/* USB Sim Control bits to set */
+	 
 	u32 usc_set;
 
-	/* UTMI Control 1 bits to set */
+	 
 	u32 utmictl1_dev_set;
 };
 
@@ -167,11 +154,7 @@ static const struct bcm63xx_usbh_phy_variant usbh_bcm6358 = {
 		[USBH_MDIO32] = -1,
 		[USBH_USB_SIM_CONTROL] = -1,
 	},
-	/*
-	 * The magic value comes for the original vendor BSP
-	 * and is needed for USB to work. Datasheet does not
-	 * help, so the magic value is used as-is.
-	 */
+	 
 	.tpc_val = 0x1c0020,
 };
 
@@ -264,7 +247,7 @@ static int bcm63xx_usbh_phy_init(struct phy *phy)
 		return ret;
 	}
 
-	/* Configure to work in native CPU endian */
+	 
 	if (usbh_has_reg(usbh, USBH_SWAP_CONTROL)) {
 		u32 val = usbh_readl(usbh, USBH_SWAP_CONTROL);
 
@@ -439,7 +422,7 @@ static const struct of_device_id bcm63xx_usbh_phy_ids[] __initconst = {
 	{ .compatible = "brcm,bcm6362-usbh-phy", .data = &usbh_bcm6368 },
 	{ .compatible = "brcm,bcm6368-usbh-phy", .data = &usbh_bcm6368 },
 	{ .compatible = "brcm,bcm63268-usbh-phy", .data = &usbh_bcm63268 },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, bcm63xx_usbh_phy_ids);
 

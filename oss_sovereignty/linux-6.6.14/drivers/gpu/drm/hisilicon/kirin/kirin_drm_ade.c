@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Hisilicon Hi6220 SoC ADE(Advanced Display Engine)'s crtc&plane driver
- *
- * Copyright (c) 2016 Linaro Limited.
- * Copyright (c) 2014-2016 HiSilicon Limited.
- *
- * Author:
- *	Xinliang Liu <z.liuxinliang@hisilicon.com>
- *	Xinliang Liu <xinliang.liu@linaro.org>
- *	Xinwei Kong <kong.kongxinwei@hisilicon.com>
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/clk.h>
@@ -35,7 +25,7 @@
 #include "kirin_drm_drv.h"
 #include "kirin_ade_reg.h"
 
-#define OUT_OVLY	ADE_OVLY2 /* output overlay compositor */
+#define OUT_OVLY	ADE_OVLY2  
 #define ADE_DEBUG	1
 
 
@@ -53,13 +43,13 @@ struct ade_hw_ctx {
 };
 
 static const struct kirin_format ade_formats[] = {
-	/* 16bpp RGB: */
+	 
 	{ DRM_FORMAT_RGB565, ADE_RGB_565 },
 	{ DRM_FORMAT_BGR565, ADE_BGR_565 },
-	/* 24bpp RGB: */
+	 
 	{ DRM_FORMAT_RGB888, ADE_RGB_888 },
 	{ DRM_FORMAT_BGR888, ADE_BGR_888 },
-	/* 32bpp [A]RGB: */
+	 
 	{ DRM_FORMAT_XRGB8888, ADE_XRGB_8888 },
 	{ DRM_FORMAT_XBGR8888, ADE_XBGR_8888 },
 	{ DRM_FORMAT_RGBA8888, ADE_RGBA_8888 },
@@ -69,14 +59,14 @@ static const struct kirin_format ade_formats[] = {
 };
 
 static const u32 channel_formats[] = {
-	/* channel 1,2,3,4 */
+	 
 	DRM_FORMAT_RGB565, DRM_FORMAT_BGR565, DRM_FORMAT_RGB888,
 	DRM_FORMAT_BGR888, DRM_FORMAT_XRGB8888, DRM_FORMAT_XBGR8888,
 	DRM_FORMAT_RGBA8888, DRM_FORMAT_BGRA8888, DRM_FORMAT_ARGB8888,
 	DRM_FORMAT_ABGR8888
 };
 
-/* convert from fourcc format to ade format */
+ 
 static u32 ade_get_format(u32 pixel_format)
 {
 	int i;
@@ -85,7 +75,7 @@ static u32 ade_get_format(u32 pixel_format)
 		if (ade_formats[i].pixel_format == pixel_format)
 			return ade_formats[i].hw_format;
 
-	/* not found */
+	 
 	DRM_ERROR("Not found pixel format!!fourcc_format= %d\n",
 		  pixel_format);
 	return ADE_FORMAT_UNSUPPORT;
@@ -117,22 +107,19 @@ static void ade_init(struct ade_hw_ctx *ctx)
 {
 	void __iomem *base = ctx->base;
 
-	/* enable clk gate */
+	 
 	ade_update_bits(base + ADE_CTRL1, AUTO_CLK_GATE_EN_OFST,
 			AUTO_CLK_GATE_EN, ADE_ENABLE);
-	/* clear overlay */
+	 
 	writel(0, base + ADE_OVLY1_TRANS_CFG);
 	writel(0, base + ADE_OVLY_CTL);
 	writel(0, base + ADE_OVLYX_CTL(OUT_OVLY));
-	/* clear reset and reload regs */
+	 
 	writel(MASK(32), base + ADE_SOFT_RST_SEL(0));
 	writel(MASK(32), base + ADE_SOFT_RST_SEL(1));
 	writel(MASK(32), base + ADE_RELOAD_DIS(0));
 	writel(MASK(32), base + ADE_RELOAD_DIS(1));
-	/*
-	 * for video mode, all the ade registers should
-	 * become effective at frame end.
-	 */
+	 
 	ade_update_bits(base + ADE_CTRL, FRM_END_START_OFST,
 			FRM_END_START_MASK, REG_EFFECTIVE_IN_ADEEN_FRMEND);
 }
@@ -157,10 +144,7 @@ static void ade_set_pix_clk(struct ade_hw_ctx *ctx,
 	u32 clk_Hz = mode->clock * 1000;
 	int ret;
 
-	/*
-	 * Success should be guaranteed in mode_valid call back,
-	 * so failure shouldn't happen here
-	 */
+	 
 	ret = clk_set_rate(ctx->ade_pix_clk, clk_Hz);
 	if (ret)
 		DRM_ERROR("failed to set pixel clk %dHz (%d)\n", clk_Hz, ret);
@@ -191,23 +175,23 @@ static void ade_ldi_set_mode(struct ade_hw_ctx *ctx,
 	}
 
 	writel((hbp << HBP_OFST) | hfp, base + LDI_HRZ_CTRL0);
-	 /* the configured value is actual value - 1 */
+	  
 	writel(hsw - 1, base + LDI_HRZ_CTRL1);
 	writel((vbp << VBP_OFST) | vfp, base + LDI_VRT_CTRL0);
-	 /* the configured value is actual value - 1 */
+	  
 	writel(vsw - 1, base + LDI_VRT_CTRL1);
-	 /* the configured value is actual value - 1 */
+	  
 	writel(((height - 1) << VSIZE_OFST) | (width - 1),
 	       base + LDI_DSP_SIZE);
 	writel(plr_flags, base + LDI_PLR_CTRL);
 
-	/* set overlay compositor output size */
+	 
 	writel(((width - 1) << OUTPUT_XSIZE_OFST) | (height - 1),
 	       base + ADE_OVLY_OUTPUT_SIZE(OUT_OVLY));
 
-	/* ctran6 setting */
+	 
 	writel(CTRAN_BYPASS_ON, base + ADE_CTRAN_DIS(ADE_CTRAN6));
-	 /* the configured value is actual value - 1 */
+	  
 	writel(width * height - 1, base + ADE_CTRAN_IMAGE_SIZE(ADE_CTRAN6));
 	ade_update_reload_bit(base, CTRAN_OFST + ADE_CTRAN6, 0);
 
@@ -248,7 +232,7 @@ static void ade_power_down(struct ade_hw_ctx *ctx)
 	void __iomem *base = ctx->base;
 
 	writel(ADE_DISABLE, base + LDI_CTRL);
-	/* dsi pixel off */
+	 
 	writel(DSI_PCLK_OFF, base + LDI_HDMI_DSI_GT);
 
 	clk_disable_unprepare(ctx->ade_core_clk);
@@ -312,7 +296,7 @@ static irqreturn_t ade_irq_handler(int irq, void *data)
 	status = readl(base + LDI_MSK_INT);
 	DRM_DEBUG_VBL("LDI IRQ: status=0x%X\n", status);
 
-	/* vblank irq */
+	 
 	if (status & BIT(FRAME_END_INT_EN_OFST)) {
 		ade_update_bits(base + LDI_INT_CLR, FRAME_END_INT_EN_OFST,
 				MASK(1), 1);
@@ -327,20 +311,20 @@ static void ade_display_enable(struct ade_hw_ctx *ctx)
 	void __iomem *base = ctx->base;
 	u32 out_fmt = LDI_OUT_RGB_888;
 
-	/* enable output overlay compositor */
+	 
 	writel(ADE_ENABLE, base + ADE_OVLYX_CTL(OUT_OVLY));
 	ade_update_reload_bit(base, OVLY_OFST + OUT_OVLY, 0);
 
-	/* display source setting */
+	 
 	writel(DISP_SRC_OVLY2, base + ADE_DISP_SRC_CFG);
 
-	/* enable ade */
+	 
 	writel(ADE_ENABLE, base + ADE_EN);
-	/* enable ldi */
+	 
 	writel(NORMAL_MODE, base + LDI_WORK_MODE);
 	writel((out_fmt << BPP_OFST) | DATA_GATE_EN | LDI_EN,
 	       base + LDI_CTRL);
-	/* dsi pixel on */
+	 
 	writel(DSI_PCLK_ON, base + LDI_HDMI_DSI_GT);
 }
 
@@ -389,7 +373,7 @@ static void ade_clip_dump_regs(void __iomem *base, u32 ch)
 
 static void ade_compositor_routing_dump_regs(void __iomem *base, u32 ch)
 {
-	u8 ovly_ch = 0; /* TODO: Only primary plane now */
+	u8 ovly_ch = 0;  
 	u32 val;
 
 	val = readl(base + ADE_OVLY_CH_XY0(ovly_ch));
@@ -416,19 +400,19 @@ static void ade_dump_regs(void __iomem *base)
 {
 	u32 i;
 
-	/* dump channel regs */
+	 
 	for (i = 0; i < ADE_CH_NUM; i++) {
-		/* dump rdma regs */
+		 
 		ade_rdma_dump_regs(base, i);
 
-		/* dump clip regs */
+		 
 		ade_clip_dump_regs(base, i);
 
-		/* dump compositor routing regs */
+		 
 		ade_compositor_routing_dump_regs(base, i);
 	}
 
-	/* dump overlay compositor regs */
+	 
 	ade_dump_overlay_compositor_regs(base, OUT_OVLY);
 }
 #else
@@ -506,10 +490,10 @@ static void ade_crtc_atomic_flush(struct drm_crtc *crtc,
 	struct drm_pending_vblank_event *event = crtc->state->event;
 	void __iomem *base = ctx->base;
 
-	/* only crtc is enabled regs take effect */
+	 
 	if (kcrtc->enable) {
 		ade_dump_regs(base);
-		/* flush ade registers */
+		 
 		writel(ADE_ENABLE, base + ADE_EN);
 	}
 
@@ -559,7 +543,7 @@ static void ade_rdma_set(void __iomem *base, struct drm_framebuffer *fb,
 			 addr, fb->width, fb->height, fmt,
 			 &fb->format->format);
 
-	/* get reg offset */
+	 
 	reg_ctrl = RD_CH_CTRL(ch);
 	reg_addr = RD_CH_ADDR(ch);
 	reg_size = RD_CH_SIZE(ch);
@@ -567,9 +551,7 @@ static void ade_rdma_set(void __iomem *base, struct drm_framebuffer *fb,
 	reg_space = RD_CH_SPACE(ch);
 	reg_en = RD_CH_EN(ch);
 
-	/*
-	 * TODO: set rotation
-	 */
+	 
 	writel((fmt << 16) & 0x1f0000, base + reg_ctrl);
 	writel(addr, base + reg_addr);
 	writel((in_h << 16) | stride, base + reg_size);
@@ -583,7 +565,7 @@ static void ade_rdma_disable(void __iomem *base, u32 ch)
 {
 	u32 reg_en;
 
-	/* get reg offset */
+	 
 	reg_en = RD_CH_EN(ch);
 	writel(0, base + reg_en);
 	ade_update_reload_bit(base, RDMA_OFST + ch, 1);
@@ -596,10 +578,8 @@ static void ade_clip_set(void __iomem *base, u32 ch, u32 fb_w, u32 x,
 	u32 clip_left;
 	u32 clip_right;
 
-	/*
-	 * clip width, no need to clip height
-	 */
-	if (fb_w == in_w) { /* bypass */
+	 
+	if (fb_w == in_w) {  
 		disable_val = 1;
 		clip_left = 0;
 		clip_right = 0;
@@ -642,9 +622,7 @@ static void ade_get_blending_params(u32 fmt, u8 glb_alpha, u8 *alp_mode,
 {
 	bool has_alpha = has_Alpha_channel(fmt);
 
-	/*
-	 * get alp_mode
-	 */
+	 
 	if (has_alpha && glb_alpha < 255)
 		*alp_mode = ADE_ALP_PIXEL_AND_GLB;
 	else if (has_alpha)
@@ -652,18 +630,16 @@ static void ade_get_blending_params(u32 fmt, u8 glb_alpha, u8 *alp_mode,
 	else
 		*alp_mode = ADE_ALP_GLOBAL;
 
-	/*
-	 * get alp sel
-	 */
-	*alp_sel = ADE_ALP_MUL_COEFF_3; /* 1 */
-	*under_alp_sel = ADE_ALP_MUL_COEFF_2; /* 0 */
+	 
+	*alp_sel = ADE_ALP_MUL_COEFF_3;  
+	*under_alp_sel = ADE_ALP_MUL_COEFF_2;  
 }
 
 static void ade_compositor_routing_set(void __iomem *base, u8 ch,
 				       u32 x0, u32 y0,
 				       u32 in_w, u32 in_h, u32 fmt)
 {
-	u8 ovly_ch = 0; /* TODO: This is the zpos, only one plane now */
+	u8 ovly_ch = 0;  
 	u8 glb_alpha = 255;
 	u32 x1 = x0 + in_w - 1;
 	u32 y1 = y0 + in_h - 1;
@@ -675,8 +651,7 @@ static void ade_compositor_routing_set(void __iomem *base, u8 ch,
 	ade_get_blending_params(fmt, glb_alpha, &alp_mode, &alp_sel,
 				&under_alp_sel);
 
-	/* overlay routing setting
-	 */
+	 
 	writel(x0 << 16 | y0, base + ADE_OVLY_CH_XY0(ovly_ch));
 	writel(x1 << 16 | y1, base + ADE_OVLY_CH_XY1(ovly_ch));
 	val = (ch + 1) << CH_SEL_OFST | BIT(CH_EN_OFST) |
@@ -685,26 +660,24 @@ static void ade_compositor_routing_set(void __iomem *base, u8 ch,
 		glb_alpha << CH_ALP_GBL_OFST |
 		alp_mode << CH_ALP_MODE_OFST;
 	writel(val, base + ADE_OVLY_CH_CTL(ovly_ch));
-	/* connect this plane/channel to overlay2 compositor */
+	 
 	ade_update_bits(base + ADE_OVLY_CTL, CH_OVLY_SEL_OFST(ovly_ch),
 			CH_OVLY_SEL_MASK, CH_OVLY_SEL_VAL(OUT_OVLY));
 }
 
 static void ade_compositor_routing_disable(void __iomem *base, u32 ch)
 {
-	u8 ovly_ch = 0; /* TODO: Only primary plane now */
+	u8 ovly_ch = 0;  
 
-	/* disable this plane/channel */
+	 
 	ade_update_bits(base + ADE_OVLY_CH_CTL(ovly_ch), CH_EN_OFST,
 			MASK(1), 0);
-	/* dis-connect this plane/channel of overlay2 compositor */
+	 
 	ade_update_bits(base + ADE_OVLY_CTL, CH_OVLY_SEL_OFST(ovly_ch),
 			CH_OVLY_SEL_MASK, 0);
 }
 
-/*
- * Typicaly, a channel looks like: DMA-->clip-->scale-->ctrans-->compositor
- */
+ 
 static void ade_update_channel(struct kirin_plane *kplane,
 			       struct drm_framebuffer *fb, int crtc_x,
 			       int crtc_y, unsigned int crtc_w,
@@ -722,19 +695,19 @@ static void ade_update_channel(struct kirin_plane *kplane,
 			 ch + 1, src_x, src_y, src_w, src_h,
 			 crtc_x, crtc_y, crtc_w, crtc_h);
 
-	/* 1) DMA setting */
+	 
 	in_w = src_w;
 	in_h = src_h;
 	ade_rdma_set(base, fb, ch, src_y, in_h, fmt);
 
-	/* 2) clip setting */
+	 
 	ade_clip_set(base, ch, fb->width, src_x, in_w, in_h);
 
-	/* 3) TODO: scale setting for overlay planes */
+	 
 
-	/* 4) TODO: ctran/csc setting for overlay planes */
+	 
 
-	/* 5) compositor routing setting */
+	 
 	ade_compositor_routing_set(base, ch, crtc_x, crtc_y, in_w, in_h, fmt);
 }
 
@@ -746,13 +719,13 @@ static void ade_disable_channel(struct kirin_plane *kplane)
 
 	DRM_DEBUG_DRIVER("disable channel%d\n", ch + 1);
 
-	/* disable read DMA */
+	 
 	ade_rdma_disable(base, ch);
 
-	/* disable clip */
+	 
 	ade_clip_disable(base, ch);
 
-	/* disable compositor routing */
+	 
 	ade_compositor_routing_disable(base, ch);
 }
 
@@ -897,7 +870,7 @@ static void *ade_hw_ctx_alloc(struct platform_device *pdev,
 		return ERR_PTR(-ENODEV);
 	}
 
-	/* vblank irq init */
+	 
 	ret = devm_request_irq(dev, ctx->irq, ade_irq_handler,
 			       IRQF_SHARED, dev->driver->name, ctx);
 	if (ret)

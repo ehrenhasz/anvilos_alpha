@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2015-2016 MediaTek Inc.
- * Author: Yong Wu <yong.wu@mediatek.com>
- */
+
+ 
 #include <linux/arm-smccc.h>
 #include <linux/bitfield.h>
 #include <linux/bug.h>
@@ -78,7 +75,7 @@
 #define F_INT_CLR_BIT				BIT(12)
 
 #define REG_MMU_INT_MAIN_CONTROL		0x124
-						/* mmu0 | mmu1 */
+						 
 #define F_INT_TRANSLATION_FAULT			(BIT(0) | BIT(7))
 #define F_INT_MAIN_MULTI_HIT_FAULT		(BIT(1) | BIT(8))
 #define F_INT_INVALID_PA_FAULT			(BIT(2) | BIT(9))
@@ -109,10 +106,10 @@
 #define F_MMU_INT_ID_SUB_COMM_ID(a)		(((a) >> 7) & 0x3)
 #define F_MMU_INT_ID_COMM_ID_EXT(a)		(((a) >> 10) & 0x7)
 #define F_MMU_INT_ID_SUB_COMM_ID_EXT(a)		(((a) >> 7) & 0x7)
-/* Macro for 5 bits length port ID field (default) */
+ 
 #define F_MMU_INT_ID_LARB_ID(a)			(((a) >> 7) & 0x7)
 #define F_MMU_INT_ID_PORT_ID(a)			(((a) >> 2) & 0x1f)
-/* Macro for 6 bits length port ID field */
+ 
 #define F_MMU_INT_ID_LARB_ID_WID_6(a)		(((a) >> 8) & 0x7)
 #define F_MMU_INT_ID_PORT_ID_WID_6(a)		(((a) >> 2) & 0x3f)
 
@@ -122,7 +119,7 @@
 #define PERICFG_IOMMU_1				0x714
 
 #define HAS_4GB_MODE			BIT(0)
-/* HW will use the EMI clock if there isn't the "bclk". */
+ 
 #define HAS_BCLK			BIT(1)
 #define HAS_VLD_PA_RNG			BIT(2)
 #define RESET_AXI			BIT(3)
@@ -132,14 +129,14 @@
 #define WR_THROT_EN			BIT(7)
 #define HAS_LEGACY_IVRP_PADDR		BIT(8)
 #define IOVA_34_EN			BIT(9)
-#define SHARE_PGTABLE			BIT(10) /* 2 HW share pgtable */
+#define SHARE_PGTABLE			BIT(10)  
 #define DCM_DISABLE			BIT(11)
-#define STD_AXI_MODE			BIT(12) /* For non MM iommu */
-/* 2 bits: iommu type */
+#define STD_AXI_MODE			BIT(12)  
+ 
 #define MTK_IOMMU_TYPE_MM		(0x0 << 13)
 #define MTK_IOMMU_TYPE_INFRA		(0x1 << 13)
 #define MTK_IOMMU_TYPE_MASK		(0x3 << 13)
-/* PM and clock always on. e.g. infra iommu */
+ 
 #define PM_CLK_AO			BIT(15)
 #define IFA_IOMMU_PCIE_SUPPORT		BIT(16)
 #define PGTABLE_PA_35_EN		BIT(17)
@@ -201,35 +198,15 @@ struct mtk_iommu_plat_data {
 	char			*pericfg_comp_str;
 	struct list_head	*hw_list;
 
-	/*
-	 * The IOMMU HW may support 16GB iova. In order to balance the IOVA ranges,
-	 * different masters will be put in different iova ranges, for example vcodec
-	 * is in 4G-8G and cam is in 8G-12G. Meanwhile, some masters may have the
-	 * special IOVA range requirement, like CCU can only support the address
-	 * 0x40000000-0x44000000.
-	 * Here list the iova ranges this SoC supports and which larbs/ports are in
-	 * which region.
-	 *
-	 * 16GB iova all use one pgtable, but each a region is a iommu group.
-	 */
+	 
 	struct {
 		unsigned int	iova_region_nr;
 		const struct mtk_iommu_iova_region	*iova_region;
-		/*
-		 * Indicate the correspondance between larbs, ports and regions.
-		 *
-		 * The index is the same as iova_region and larb port numbers are
-		 * described as bit positions.
-		 * For example, storing BIT(0) at index 2,1 means "larb 1, port0 is in region 2".
-		 *              [2] = { [1] = BIT(0) }
-		 */
+		 
 		const u32	(*iova_region_larb_msk)[MTK_LARB_NR_MAX];
 	};
 
-	/*
-	 * The IOMMU HW may have 5 banks. Each bank has a independent pgtable.
-	 * Here list how many banks this SoC supports/enables and which ports are in which bank.
-	 */
+	 
 	struct {
 		u8		banks_num;
 		bool		banks_enable[MTK_IOMMU_BANK_MAX];
@@ -245,14 +222,14 @@ struct mtk_iommu_bank_data {
 	u8				id;
 	struct device			*parent_dev;
 	struct mtk_iommu_data		*parent_data;
-	spinlock_t			tlb_lock; /* lock for tlb range flush */
-	struct mtk_iommu_domain		*m4u_dom; /* Each bank has a domain */
+	spinlock_t			tlb_lock;  
+	struct mtk_iommu_domain		*m4u_dom;  
 };
 
 struct mtk_iommu_data {
 	struct device			*dev;
 	struct clk			*bclk;
-	phys_addr_t			protect_base; /* protect memory base */
+	phys_addr_t			protect_base;  
 	struct mtk_iommu_suspend_reg	reg;
 	struct iommu_group		*m4u_group[MTK_IOMMU_GROUP_MAX];
 	bool                            enable_4GB;
@@ -265,12 +242,9 @@ struct mtk_iommu_data {
 	struct mtk_iommu_domain		*share_dom;
 
 	struct regmap			*pericfg;
-	struct mutex			mutex; /* Protect m4u_group/m4u_dom above */
+	struct mutex			mutex;  
 
-	/*
-	 * In the sharing pgtable case, list data->list to the global list like m4ulist.
-	 * In the non-sharing pgtable case, list data->list to the itself hw_list_head.
-	 */
+	 
 	struct list_head		*hw_list;
 	struct list_head		hw_list_head;
 	struct list_head		list;
@@ -284,7 +258,7 @@ struct mtk_iommu_domain {
 	struct mtk_iommu_bank_data	*bank;
 	struct iommu_domain		domain;
 
-	struct mutex			mutex; /* Protect "data" in this structure */
+	struct mutex			mutex;  
 };
 
 static int mtk_iommu_bind(struct device *dev)
@@ -310,35 +284,14 @@ static int mtk_iommu_hw_init(const struct mtk_iommu_data *data, unsigned int ban
 	((lower_32_bits(_addr) & GENMASK(31, 12)) | upper_32_bits(_addr));\
 })
 
-/*
- * In M4U 4GB mode, the physical address is remapped as below:
- *
- * CPU Physical address:
- * ====================
- *
- * 0      1G       2G     3G       4G     5G
- * |---A---|---B---|---C---|---D---|---E---|
- * +--I/O--+------------Memory-------------+
- *
- * IOMMU output physical address:
- *  =============================
- *
- *                                 4G      5G     6G      7G      8G
- *                                 |---E---|---B---|---C---|---D---|
- *                                 +------------Memory-------------+
- *
- * The Region 'A'(I/O) can NOT be mapped by M4U; For Region 'B'/'C'/'D', the
- * bit32 of the CPU physical address always is needed to set, and for Region
- * 'E', the CPU physical address keep as is.
- * Additionally, The iommu consumers always use the CPU phyiscal address.
- */
+ 
 #define MTK_IOMMU_4GB_MODE_REMAP_BASE	 0x140000000UL
 
-static LIST_HEAD(m4ulist);	/* List all the M4U HWs */
+static LIST_HEAD(m4ulist);	 
 
 #define for_each_m4u(data, head)  list_for_each_entry(data, head, list)
 
-#define MTK_IOMMU_IOVA_SZ_4G		(SZ_4G - SZ_8M) /* 8M as gap */
+#define MTK_IOMMU_IOVA_SZ_4G		(SZ_4G - SZ_8M)  
 
 static const struct mtk_iommu_iova_region single_domain[] = {
 	{.iova_base = 0,		.size = MTK_IOMMU_IOVA_SZ_4G},
@@ -350,18 +303,18 @@ static const struct mtk_iommu_iova_region single_domain[] = {
 				 MT8192_MULTI_REGION_NR_MAX : 1)
 
 static const struct mtk_iommu_iova_region mt8192_multi_dom[MT8192_MULTI_REGION_NR] = {
-	{ .iova_base = 0x0,		.size = MTK_IOMMU_IOVA_SZ_4G},	/* 0 ~ 4G,  */
+	{ .iova_base = 0x0,		.size = MTK_IOMMU_IOVA_SZ_4G},	 
 	#if IS_ENABLED(CONFIG_ARCH_DMA_ADDR_T_64BIT)
-	{ .iova_base = SZ_4G,		.size = MTK_IOMMU_IOVA_SZ_4G},	/* 4G ~ 8G */
-	{ .iova_base = SZ_4G * 2,	.size = MTK_IOMMU_IOVA_SZ_4G},	/* 8G ~ 12G */
-	{ .iova_base = SZ_4G * 3,	.size = MTK_IOMMU_IOVA_SZ_4G},	/* 12G ~ 16G */
+	{ .iova_base = SZ_4G,		.size = MTK_IOMMU_IOVA_SZ_4G},	 
+	{ .iova_base = SZ_4G * 2,	.size = MTK_IOMMU_IOVA_SZ_4G},	 
+	{ .iova_base = SZ_4G * 3,	.size = MTK_IOMMU_IOVA_SZ_4G},	 
 
-	{ .iova_base = 0x240000000ULL,	.size = 0x4000000},	/* CCU0 */
-	{ .iova_base = 0x244000000ULL,	.size = 0x4000000},	/* CCU1 */
+	{ .iova_base = 0x240000000ULL,	.size = 0x4000000},	 
+	{ .iova_base = 0x244000000ULL,	.size = 0x4000000},	 
 	#endif
 };
 
-/* If 2 M4U share a domain(use the same hwlist), Put the corresponding info in first data.*/
+ 
 static struct mtk_iommu_data *mtk_iommu_get_frst_data(struct list_head *hwlist)
 {
 	return list_first_entry(hwlist, struct mtk_iommu_data, list);
@@ -374,7 +327,7 @@ static struct mtk_iommu_domain *to_mtk_domain(struct iommu_domain *dom)
 
 static void mtk_iommu_tlb_flush_all(struct mtk_iommu_data *data)
 {
-	/* Tlb flush all always is in bank0. */
+	 
 	struct mtk_iommu_bank_data *bank = &data->bank[0];
 	void __iomem *base = bank->base;
 	unsigned long flags;
@@ -382,7 +335,7 @@ static void mtk_iommu_tlb_flush_all(struct mtk_iommu_data *data)
 	spin_lock_irqsave(&bank->tlb_lock, flags);
 	writel_relaxed(F_INVLD_EN1 | F_INVLD_EN0, base + data->plat_data->inv_sel_reg);
 	writel_relaxed(F_ALL_INVLD, base + REG_MMU_INVALIDATE);
-	wmb(); /* Make sure the tlb flush all done */
+	wmb();  
 	spin_unlock_irqrestore(&bank->tlb_lock, flags);
 }
 
@@ -399,21 +352,7 @@ static void mtk_iommu_tlb_flush_range_sync(unsigned long iova, size_t size,
 	u32 tmp;
 
 	for_each_m4u(data, head) {
-		/*
-		 * To avoid resume the iommu device frequently when the iommu device
-		 * is not active, it doesn't always call pm_runtime_get here, then tlb
-		 * flush depends on the tlb flush all in the runtime resume.
-		 *
-		 * There are 2 special cases:
-		 *
-		 * Case1: The iommu dev doesn't have power domain but has bclk. This case
-		 * should also avoid the tlb flush while the dev is not active to mute
-		 * the tlb timeout log. like mt8173.
-		 *
-		 * Case2: The power/clock of infra iommu is always on, and it doesn't
-		 * have the device link with the master devices. This case should avoid
-		 * the PM status check.
-		 */
+		 
 		check_pm_status = !MTK_IOMMU_HAS_FLAG(data->plat_data, PM_CLK_AO);
 
 		if (check_pm_status) {
@@ -433,11 +372,11 @@ static void mtk_iommu_tlb_flush_range_sync(unsigned long iova, size_t size,
 			       base + REG_MMU_INVLD_END_A);
 		writel_relaxed(F_MMU_INV_RANGE, base + REG_MMU_INVALIDATE);
 
-		/* tlb sync */
+		 
 		ret = readl_poll_timeout_atomic(base + REG_MMU_CPE_DONE,
 						tmp, tmp != 0, 10, 1000);
 
-		/* Clear the CPE status */
+		 
 		writel_relaxed(0, base + REG_MMU_CPE_DONE);
 		spin_unlock_irqrestore(&curbank->tlb_lock, flags);
 
@@ -464,7 +403,7 @@ static irqreturn_t mtk_iommu_isr(int irq, void *dev_id)
 	u64 fault_iova, fault_pa;
 	bool layer, write;
 
-	/* Read error info from registers */
+	 
 	int_state = readl_relaxed(base + REG_MMU_FAULT_ST1);
 	if (int_state & F_REG_MMU0_FAULT_MASK) {
 		regval = readl_relaxed(base + REG_MMU0_INT_ID);
@@ -513,7 +452,7 @@ static irqreturn_t mtk_iommu_isr(int irq, void *dev_id)
 			layer, write ? "write" : "read");
 	}
 
-	/* Interrupt clear */
+	 
 	regval = readl_relaxed(base + REG_MMU_INT_CONTROL0);
 	regval |= F_INT_CLR_BIT;
 	writel_relaxed(regval, base + REG_MMU_INT_CONTROL0);
@@ -544,7 +483,7 @@ static unsigned int mtk_iommu_get_bank_id(struct device *dev,
 			break;
 		}
 	}
-	return bankid; /* default is 0 */
+	return bankid;  
 }
 
 static int mtk_iommu_get_iova_region_id(struct device *dev,
@@ -593,7 +532,7 @@ static int mtk_iommu_config(struct mtk_iommu_data *data, struct device *dev,
 	}
 
 	if (MTK_IOMMU_IS_TYPE(data->plat_data, MTK_IOMMU_TYPE_MM)) {
-		/* All ports should be in the same larb. just use 0 here */
+		 
 		larbid = MTK_M4U_TO_LARB(fwspec->ids[0]);
 		larb_mmu = &data->larb_imu[larbid];
 		region = data->plat_data->iova_region + regionid;
@@ -616,7 +555,7 @@ static int mtk_iommu_config(struct mtk_iommu_data *data, struct device *dev,
 				      portid_msk, enable, 0, 0, 0, 0, &res);
 			ret = res.a0;
 		} else {
-			/* PCI dev has only one output id, enable the next writing bit for PCIe */
+			 
 			if (dev_is_pci(dev)) {
 				if (fwspec->num_ids != 1) {
 					dev_err(dev, "PCI dev can only have one port.\n");
@@ -643,7 +582,7 @@ static int mtk_iommu_domain_finalise(struct mtk_iommu_domain *dom,
 	struct mtk_iommu_domain	*share_dom = data->share_dom;
 	const struct mtk_iommu_iova_region *region;
 
-	/* Share pgtable when 2 MM IOMMU share the pgtable or one IOMMU use multiple iova ranges */
+	 
 	if (share_dom) {
 		dom->iop = share_dom->iop;
 		dom->cfg = share_dom->cfg;
@@ -674,13 +613,13 @@ static int mtk_iommu_domain_finalise(struct mtk_iommu_domain *dom,
 		return -ENOMEM;
 	}
 
-	/* Update our support page sizes bitmap */
+	 
 	dom->domain.pgsize_bitmap = dom->cfg.pgsize_bitmap;
 
 	data->share_dom = dom;
 
 update_iova_region:
-	/* Update the iova region for this domain */
+	 
 	region = data->plat_data->iova_region + region_id;
 	dom->domain.geometry.aperture_start = region->iova_base;
 	dom->domain.geometry.aperture_end = region->iova_base + region->size - 1;
@@ -726,7 +665,7 @@ static int mtk_iommu_attach_device(struct iommu_domain *domain,
 	bankid = mtk_iommu_get_bank_id(dev, data->plat_data);
 	mutex_lock(&dom->mutex);
 	if (!dom->bank) {
-		/* Data is in the frstdata in sharing pgtable case. */
+		 
 		frstdata = mtk_iommu_get_frst_data(hw_list);
 
 		mutex_lock(&frstdata->mutex);
@@ -742,7 +681,7 @@ static int mtk_iommu_attach_device(struct iommu_domain *domain,
 
 	mutex_lock(&data->mutex);
 	bank = &data->bank[bankid];
-	if (!bank->m4u_dom) { /* Initialize the M4U HW for each a BANK */
+	if (!bank->m4u_dom) {  
 		ret = pm_runtime_resume_and_get(m4udev);
 		if (ret < 0) {
 			dev_err(m4udev, "pm get fail(%d) in attach.\n", ret);
@@ -782,11 +721,11 @@ static int mtk_iommu_map(struct iommu_domain *domain, unsigned long iova,
 {
 	struct mtk_iommu_domain *dom = to_mtk_domain(domain);
 
-	/* The "4GB mode" M4U physically can not use the lower remap of Dram. */
+	 
 	if (dom->bank->parent_data->enable_4GB)
 		paddr |= BIT_ULL(32);
 
-	/* Synchronize with the tlb_lock */
+	 
 	return dom->iop->map_pages(dom->iop, iova, paddr, pgsize, pgcount, prot, gfp, mapped);
 }
 
@@ -849,18 +788,14 @@ static struct iommu_device *mtk_iommu_probe_device(struct device *dev)
 	unsigned int larbid, larbidx, i;
 
 	if (!fwspec || fwspec->ops != &mtk_iommu_ops)
-		return ERR_PTR(-ENODEV); /* Not a iommu client device */
+		return ERR_PTR(-ENODEV);  
 
 	data = dev_iommu_priv_get(dev);
 
 	if (!MTK_IOMMU_IS_TYPE(data->plat_data, MTK_IOMMU_TYPE_MM))
 		return &data->iommu;
 
-	/*
-	 * Link the consumer device with the smi-larb device(supplier).
-	 * The device that connects with each a larb is a independent HW.
-	 * All the ports in each a device should be in the same larbs.
-	 */
+	 
 	larbid = MTK_M4U_TO_LARB(fwspec->ids[0]);
 	if (larbid >= MTK_LARB_NR_MAX)
 		return ERR_PTR(-EINVAL);
@@ -903,10 +838,7 @@ static int mtk_iommu_get_group_id(struct device *dev, const struct mtk_iommu_pla
 {
 	unsigned int bankid;
 
-	/*
-	 * If the bank function is enabled, each bank is a iommu group/domain.
-	 * Otherwise, each iova region is a iommu group/domain.
-	 */
+	 
 	bankid = mtk_iommu_get_bank_id(dev, plat_data);
 	if (bankid)
 		return bankid;
@@ -953,7 +885,7 @@ static int mtk_iommu_of_xlate(struct device *dev, struct of_phandle_args *args)
 	}
 
 	if (!dev_iommu_priv_get(dev)) {
-		/* Get the m4u device */
+		 
 		m4updev = of_find_device_by_node(args->np);
 		if (WARN_ON(!m4updev))
 			return -EINVAL;
@@ -979,7 +911,7 @@ static void mtk_iommu_get_resv_regions(struct device *dev,
 	for (i = 0; i < data->plat_data->iova_region_nr; i++) {
 		resv = data->plat_data->iova_region + i;
 
-		/* Only reserve when the region is inside the current domain */
+		 
 		if (resv->iova_base <= curdom->iova_base ||
 		    resv->iova_base + resv->size >= curdom->iova_base + curdom->size)
 			continue;
@@ -1021,10 +953,7 @@ static int mtk_iommu_hw_init(const struct mtk_iommu_data *data, unsigned int ban
 	const struct mtk_iommu_bank_data *bank0 = &data->bank[0];
 	u32 regval;
 
-	/*
-	 * Global control settings are in bank0. May re-init these global registers
-	 * since no sure if there is bank0 consumers.
-	 */
+	 
 	if (MTK_IOMMU_HAS_FLAG(data->plat_data, TF_PORT_TO_ADDR_MT8173)) {
 		regval = F_MMU_PREFETCH_RT_REPLACE_MOD |
 			 F_MMU_TF_PROT_TO_PROGRAM_ADDR_MT8173;
@@ -1036,10 +965,7 @@ static int mtk_iommu_hw_init(const struct mtk_iommu_data *data, unsigned int ban
 
 	if (data->enable_4GB &&
 	    MTK_IOMMU_HAS_FLAG(data->plat_data, HAS_VLD_PA_RNG)) {
-		/*
-		 * If 4GB mode is enabled, the validate PA range is from
-		 * 0x1_0000_0000 to 0x1_ffff_ffff. here record bit[32:30].
-		 */
+		 
 		regval = F_MMU_VLD_PA_RNG(7, 4);
 		writel_relaxed(regval, bank0->base + REG_MMU_VLD_PA_RNG);
 	}
@@ -1049,14 +975,14 @@ static int mtk_iommu_hw_init(const struct mtk_iommu_data *data, unsigned int ban
 		writel_relaxed(0, bank0->base + REG_MMU_DCM_DIS);
 
 	if (MTK_IOMMU_HAS_FLAG(data->plat_data, WR_THROT_EN)) {
-		/* write command throttling mode */
+		 
 		regval = readl_relaxed(bank0->base + REG_MMU_WR_LEN_CTRL);
 		regval &= ~F_MMU_WR_THROT_DIS_MASK;
 		writel_relaxed(regval, bank0->base + REG_MMU_WR_LEN_CTRL);
 	}
 
 	if (MTK_IOMMU_HAS_FLAG(data->plat_data, RESET_AXI)) {
-		/* The register is called STANDARD_AXI_MODE in this case */
+		 
 		regval = 0;
 	} else {
 		regval = readl_relaxed(bank0->base + REG_MMU_MISC_CTRL);
@@ -1067,7 +993,7 @@ static int mtk_iommu_hw_init(const struct mtk_iommu_data *data, unsigned int ban
 	}
 	writel_relaxed(regval, bank0->base + REG_MMU_MISC_CTRL);
 
-	/* Independent settings for each bank */
+	 
 	regval = F_L2_MULIT_HIT_EN |
 		F_TABLE_WALK_FAULT_INT_EN |
 		F_PREETCH_FIFO_OVERFLOW_INT_EN |
@@ -1137,7 +1063,7 @@ static int mtk_iommu_mm_dts_parse(struct device *dev, struct component_match **m
 		}
 
 		ret = of_property_read_u32(larbnode, "mediatek,larb-id", &id);
-		if (ret)/* The id is consecutive if there is no this property */
+		if (ret) 
 			id = i;
 		if (id >= MTK_LARB_NR_MAX) {
 			of_node_put(larbnode);
@@ -1163,27 +1089,21 @@ static int mtk_iommu_mm_dts_parse(struct device *dev, struct component_match **m
 			goto err_larbdev_put;
 		}
 
-		/* Get smi-(sub)-common dev from the last larb. */
+		 
 		smi_subcomm_node = of_parse_phandle(larbnode, "mediatek,smi", 0);
 		if (!smi_subcomm_node) {
 			ret = -EINVAL;
 			goto err_larbdev_put;
 		}
 
-		/*
-		 * It may have two level smi-common. the node is smi-sub-common if it
-		 * has a new mediatek,smi property. otherwise it is smi-commmon.
-		 */
+		 
 		smicomm_node = of_parse_phandle(smi_subcomm_node, "mediatek,smi", 0);
 		if (smicomm_node)
 			of_node_put(smi_subcomm_node);
 		else
 			smicomm_node = smi_subcomm_node;
 
-		/*
-		 * All the larbs that connect to one IOMMU must connect with the same
-		 * smi-common.
-		 */
+		 
 		if (!frst_avail_smicomm_node) {
 			frst_avail_smicomm_node = smicomm_node;
 		} else if (frst_avail_smicomm_node != smicomm_node) {
@@ -1247,7 +1167,7 @@ static int mtk_iommu_probe(struct platform_device *pdev)
 	data->dev = dev;
 	data->plat_data = of_device_get_match_data(dev);
 
-	/* Protect memory. HW will access here while translation fault.*/
+	 
 	protect = devm_kzalloc(dev, MTK_PROTECT_PA_ALIGN * 2, GFP_KERNEL);
 	if (!protect)
 		return -ENOMEM;
@@ -1256,14 +1176,7 @@ static int mtk_iommu_probe(struct platform_device *pdev)
 	if (MTK_IOMMU_HAS_FLAG(data->plat_data, HAS_4GB_MODE)) {
 		infracfg = syscon_regmap_lookup_by_phandle(dev->of_node, "mediatek,infracfg");
 		if (IS_ERR(infracfg)) {
-			/*
-			 * Legacy devicetrees will not specify a phandle to
-			 * mediatek,infracfg: in that case, we use the older
-			 * way to retrieve a syscon to infra.
-			 *
-			 * This is for retrocompatibility purposes only, hence
-			 * no more compatibles shall be added to this.
-			 */
+			 
 			switch (data->plat_data->m4u_plat) {
 			case M4U_MT2712:
 				p = "mediatek,mt2712-infracfg";
@@ -1455,10 +1368,7 @@ static int __maybe_unused mtk_iommu_runtime_resume(struct device *dev)
 		return ret;
 	}
 
-	/*
-	 * Uppon first resume, only enable the clk and return, since the values of the
-	 * registers are not yet set.
-	 */
+	 
 	if (!reg->wr_len_ctrl)
 		return 0;
 
@@ -1479,11 +1389,7 @@ static int __maybe_unused mtk_iommu_runtime_resume(struct device *dev)
 		writel(m4u_dom->cfg.arm_v7s_cfg.ttbr, base + REG_MMU_PT_BASE_ADDR);
 	} while (++i < data->plat_data->banks_num);
 
-	/*
-	 * Users may allocate dma buffer before they call pm_runtime_get,
-	 * in which case it will lack the necessary tlb flush.
-	 * Thus, make sure to update the tlb after each PM resume.
-	 */
+	 
 	mtk_iommu_tlb_flush_all(data);
 	return 0;
 }
@@ -1529,7 +1435,7 @@ static const struct mtk_iommu_plat_data mt6795_data = {
 	.banks_enable = {true},
 	.iova_region  = single_domain,
 	.iova_region_nr = ARRAY_SIZE(single_domain),
-	.larbid_remap = {{0}, {1}, {2}, {3}, {4}}, /* Linear mapping. */
+	.larbid_remap = {{0}, {1}, {2}, {3}, {4}},  
 };
 
 static const struct mtk_iommu_plat_data mt8167_data = {
@@ -1540,7 +1446,7 @@ static const struct mtk_iommu_plat_data mt8167_data = {
 	.banks_enable = {true},
 	.iova_region  = single_domain,
 	.iova_region_nr = ARRAY_SIZE(single_domain),
-	.larbid_remap = {{0}, {1}, {2}}, /* Linear mapping. */
+	.larbid_remap = {{0}, {1}, {2}},  
 };
 
 static const struct mtk_iommu_plat_data mt8173_data = {
@@ -1553,7 +1459,7 @@ static const struct mtk_iommu_plat_data mt8173_data = {
 	.banks_enable = {true},
 	.iova_region  = single_domain,
 	.iova_region_nr = ARRAY_SIZE(single_domain),
-	.larbid_remap = {{0}, {1}, {2}, {3}, {4}, {5}}, /* Linear mapping. */
+	.larbid_remap = {{0}, {1}, {2}, {3}, {4}, {5}},  
 };
 
 static const struct mtk_iommu_plat_data mt8183_data = {
@@ -1568,15 +1474,15 @@ static const struct mtk_iommu_plat_data mt8183_data = {
 };
 
 static const unsigned int mt8186_larb_region_msk[MT8192_MULTI_REGION_NR_MAX][MTK_LARB_NR_MAX] = {
-	[0] = {~0, ~0, ~0},			/* Region0: all ports for larb0/1/2 */
-	[1] = {0, 0, 0, 0, ~0, 0, 0, ~0},	/* Region1: larb4/7 */
-	[2] = {0, 0, 0, 0, 0, 0, 0, 0,		/* Region2: larb8/9/11/13/16/17/19/20 */
+	[0] = {~0, ~0, ~0},			 
+	[1] = {0, 0, 0, 0, ~0, 0, 0, ~0},	 
+	[2] = {0, 0, 0, 0, 0, 0, 0, 0,		 
 	       ~0, ~0, 0, ~0, 0, ~(u32)(BIT(9) | BIT(10)), 0, 0,
-						/* larb13: the other ports except port9/10 */
+						 
 	       ~0, ~0, 0, ~0, ~0},
 	[3] = {0},
-	[4] = {[13] = BIT(9) | BIT(10)},	/* larb13 port9/10 */
-	[5] = {[14] = ~0},			/* larb14 */
+	[4] = {[13] = BIT(9) | BIT(10)},	 
+	[5] = {[14] = ~0},			 
 };
 
 static const struct mtk_iommu_plat_data mt8186_data_mm = {
@@ -1607,17 +1513,17 @@ static const struct mtk_iommu_plat_data mt8188_data_infra = {
 };
 
 static const u32 mt8188_larb_region_msk[MT8192_MULTI_REGION_NR_MAX][MTK_LARB_NR_MAX] = {
-	[0] = {~0, ~0, ~0, ~0},               /* Region0: all ports for larb0/1/2/3 */
+	[0] = {~0, ~0, ~0, ~0},                
 	[1] = {0, 0, 0, 0, 0, 0, 0, 0,
 	       0, 0, 0, 0, 0, 0, 0, 0,
-	       0, 0, 0, 0, 0, ~0, ~0, ~0},    /* Region1: larb19(21)/21(22)/23 */
-	[2] = {0, 0, 0, 0, ~0, ~0, ~0, ~0,    /* Region2: the other larbs. */
+	       0, 0, 0, 0, 0, ~0, ~0, ~0},     
+	[2] = {0, 0, 0, 0, ~0, ~0, ~0, ~0,     
 	       ~0, ~0, ~0, ~0, ~0, ~0, ~0, ~0,
 	       ~0, ~0, ~0, ~0, ~0, 0, 0, 0,
 	       0, ~0},
 	[3] = {0},
-	[4] = {[24] = BIT(0) | BIT(1)},       /* Only larb27(24) port0/1 */
-	[5] = {[24] = BIT(2) | BIT(3)},       /* Only larb27(24) port2/3 */
+	[4] = {[24] = BIT(0) | BIT(1)},        
+	[5] = {[24] = BIT(2) | BIT(3)},        
 };
 
 static const struct mtk_iommu_plat_data mt8188_data_vdo = {
@@ -1633,8 +1539,8 @@ static const struct mtk_iommu_plat_data mt8188_data_vdo = {
 	.iova_region_nr = ARRAY_SIZE(mt8192_multi_dom),
 	.iova_region_larb_msk = mt8188_larb_region_msk,
 	.larbid_remap   = {{2}, {0}, {21}, {0}, {19}, {9, 10,
-			   11 /* 11a */, 25 /* 11c */},
-			   {13, 0, 29 /* 16b */, 30 /* 17b */, 0}, {5}},
+			   11  , 25  },
+			   {13, 0, 29  , 30  , 0}, {5}},
 };
 
 static const struct mtk_iommu_plat_data mt8188_data_vpp = {
@@ -1650,20 +1556,20 @@ static const struct mtk_iommu_plat_data mt8188_data_vpp = {
 	.iova_region_nr = ARRAY_SIZE(mt8192_multi_dom),
 	.iova_region_larb_msk = mt8188_larb_region_msk,
 	.larbid_remap   = {{1}, {3}, {23}, {7}, {MTK_INVALID_LARBID},
-			   {12, 15, 24 /* 11b */}, {14, MTK_INVALID_LARBID,
-			   16 /* 16a */, 17 /* 17a */, MTK_INVALID_LARBID,
-			   27, 28 /* ccu0 */, MTK_INVALID_LARBID}, {4, 6}},
+			   {12, 15, 24  }, {14, MTK_INVALID_LARBID,
+			   16  , 17  , MTK_INVALID_LARBID,
+			   27, 28  , MTK_INVALID_LARBID}, {4, 6}},
 };
 
 static const unsigned int mt8192_larb_region_msk[MT8192_MULTI_REGION_NR_MAX][MTK_LARB_NR_MAX] = {
-	[0] = {~0, ~0},				/* Region0: larb0/1 */
-	[1] = {0, 0, 0, 0, ~0, ~0, 0, ~0},	/* Region1: larb4/5/7 */
-	[2] = {0, 0, ~0, 0, 0, 0, 0, 0,		/* Region2: larb2/9/11/13/14/16/17/18/19/20 */
+	[0] = {~0, ~0},				 
+	[1] = {0, 0, 0, 0, ~0, ~0, 0, ~0},	 
+	[2] = {0, 0, ~0, 0, 0, 0, 0, 0,		 
 	       0, ~0, 0, ~0, 0, ~(u32)(BIT(9) | BIT(10)), ~(u32)(BIT(4) | BIT(5)), 0,
 	       ~0, ~0, ~0, ~0, ~0},
 	[3] = {0},
-	[4] = {[13] = BIT(9) | BIT(10)},	/* larb13 port9/10 */
-	[5] = {[14] = BIT(4) | BIT(5)},		/* larb14 port4/5 */
+	[4] = {[13] = BIT(9) | BIT(10)},	 
+	[5] = {[14] = BIT(4) | BIT(5)},		 
 };
 
 static const struct mtk_iommu_plat_data mt8192_data = {
@@ -1688,26 +1594,26 @@ static const struct mtk_iommu_plat_data mt8195_data_infra = {
 	.inv_sel_reg      = REG_MMU_INV_SEL_GEN2,
 	.banks_num	  = 5,
 	.banks_enable     = {true, false, false, false, true},
-	.banks_portmsk    = {[0] = GENMASK(19, 16),     /* PCIe */
-			     [4] = GENMASK(31, 20),     /* USB */
+	.banks_portmsk    = {[0] = GENMASK(19, 16),      
+			     [4] = GENMASK(31, 20),      
 			    },
 	.iova_region      = single_domain,
 	.iova_region_nr   = ARRAY_SIZE(single_domain),
 };
 
 static const unsigned int mt8195_larb_region_msk[MT8192_MULTI_REGION_NR_MAX][MTK_LARB_NR_MAX] = {
-	[0] = {~0, ~0, ~0, ~0},               /* Region0: all ports for larb0/1/2/3 */
+	[0] = {~0, ~0, ~0, ~0},                
 	[1] = {0, 0, 0, 0, 0, 0, 0, 0,
 	       0, 0, 0, 0, 0, 0, 0, 0,
-	       0, 0, 0, ~0, ~0, ~0, ~0, ~0,   /* Region1: larb19/20/21/22/23/24 */
+	       0, 0, 0, ~0, ~0, ~0, ~0, ~0,    
 	       ~0},
-	[2] = {0, 0, 0, 0, ~0, ~0, ~0, ~0,    /* Region2: the other larbs. */
+	[2] = {0, 0, 0, 0, ~0, ~0, ~0, ~0,     
 	       ~0, ~0, ~0, ~0, ~0, ~0, ~0, ~0,
 	       ~0, ~0, 0, 0, 0, 0, 0, 0,
 	       0, ~0, ~0, ~0, ~0},
 	[3] = {0},
-	[4] = {[18] = BIT(0) | BIT(1)},       /* Only larb18 port0/1 */
-	[5] = {[18] = BIT(2) | BIT(3)},       /* Only larb18 port2/3 */
+	[4] = {[18] = BIT(0) | BIT(1)},        
+	[5] = {[18] = BIT(2) | BIT(3)},        
 };
 
 static const struct mtk_iommu_plat_data mt8195_data_vdo = {
@@ -1722,7 +1628,7 @@ static const struct mtk_iommu_plat_data mt8195_data_vdo = {
 	.iova_region_nr	= ARRAY_SIZE(mt8192_multi_dom),
 	.iova_region_larb_msk = mt8195_larb_region_msk,
 	.larbid_remap   = {{2, 0}, {21}, {24}, {7}, {19}, {9, 10, 11},
-			   {13, 17, 15/* 17b */, 25}, {5}},
+			   {13, 17, 15 , 25}, {5}},
 };
 
 static const struct mtk_iommu_plat_data mt8195_data_vpp = {
@@ -1739,7 +1645,7 @@ static const struct mtk_iommu_plat_data mt8195_data_vpp = {
 	.larbid_remap   = {{1}, {3},
 			   {22, MTK_INVALID_LARBID, MTK_INVALID_LARBID, MTK_INVALID_LARBID, 23},
 			   {8}, {20}, {12},
-			   /* 16: 16a; 29: 16b; 30: CCUtop0; 31: CCUtop1 */
+			    
 			   {14, 16, 29, 26, 30, 31, 18},
 			   {4, MTK_INVALID_LARBID, MTK_INVALID_LARBID, MTK_INVALID_LARBID, 6}},
 };
@@ -1752,7 +1658,7 @@ static const struct mtk_iommu_plat_data mt8365_data = {
 	.banks_enable	= {true},
 	.iova_region	= single_domain,
 	.iova_region_nr	= ARRAY_SIZE(single_domain),
-	.larbid_remap	= {{0}, {1}, {2}, {3}, {4}, {5}}, /* Linear mapping. */
+	.larbid_remap	= {{0}, {1}, {2}, {3}, {4}, {5}},  
 };
 
 static const struct of_device_id mtk_iommu_of_ids[] = {
@@ -1762,7 +1668,7 @@ static const struct of_device_id mtk_iommu_of_ids[] = {
 	{ .compatible = "mediatek,mt8167-m4u", .data = &mt8167_data},
 	{ .compatible = "mediatek,mt8173-m4u", .data = &mt8173_data},
 	{ .compatible = "mediatek,mt8183-m4u", .data = &mt8183_data},
-	{ .compatible = "mediatek,mt8186-iommu-mm",    .data = &mt8186_data_mm}, /* mm: m4u */
+	{ .compatible = "mediatek,mt8186-iommu-mm",    .data = &mt8186_data_mm},  
 	{ .compatible = "mediatek,mt8188-iommu-infra", .data = &mt8188_data_infra},
 	{ .compatible = "mediatek,mt8188-iommu-vdo",   .data = &mt8188_data_vdo},
 	{ .compatible = "mediatek,mt8188-iommu-vpp",   .data = &mt8188_data_vpp},

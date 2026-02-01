@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * DMA Engine support for Tsi721 PCIExpress-to-SRIO bridge
- *
- * Copyright (c) 2011-2014 Integrated Device Technology, Inc.
- * Alexandre Bounine <alexandre.bounine@idt.com>
- */
+
+ 
 
 #include <linux/io.h>
 #include <linux/errno.h>
@@ -74,10 +69,7 @@ static int tsi721_bdma_ch_init(struct tsi721_bdma_chan *bdma_chan, int bd_num)
 
 	tsi_debug(DMA, &bdma_chan->dchan.dev->device, "DMAC%d", bdma_chan->id);
 
-	/*
-	 * Allocate space for DMA descriptors
-	 * (add an extra element for link descriptor)
-	 */
+	 
 	bd_ptr = dma_alloc_coherent(dev,
 				    (bd_num + 1) * sizeof(struct tsi721_dma_desc),
 				    &bd_phys, GFP_ATOMIC);
@@ -92,7 +84,7 @@ static int tsi721_bdma_ch_init(struct tsi721_bdma_chan *bdma_chan, int bd_num)
 		  "DMAC%d descriptors @ %p (phys = %pad)",
 		  bdma_chan->id, bd_ptr, &bd_phys);
 
-	/* Allocate space for descriptor status FIFO */
+	 
 	sts_size = ((bd_num + 1) >= TSI721_DMA_MINSTSSZ) ?
 					(bd_num + 1) : TSI721_DMA_MINSTSSZ;
 	sts_size = roundup_pow_of_two(sts_size);
@@ -100,7 +92,7 @@ static int tsi721_bdma_ch_init(struct tsi721_bdma_chan *bdma_chan, int bd_num)
 				     sts_size * sizeof(struct tsi721_dma_sts),
 				     &sts_phys, GFP_ATOMIC);
 	if (!sts_ptr) {
-		/* Free space allocated for DMA descriptors */
+		 
 		dma_free_coherent(dev,
 				  (bd_num + 1) * sizeof(struct tsi721_dma_desc),
 				  bd_ptr, bd_phys);
@@ -116,19 +108,19 @@ static int tsi721_bdma_ch_init(struct tsi721_bdma_chan *bdma_chan, int bd_num)
 		"DMAC%d desc status FIFO @ %p (phys = %pad) size=0x%x",
 		bdma_chan->id, sts_ptr, &sts_phys, sts_size);
 
-	/* Initialize DMA descriptors ring using added link descriptor */
+	 
 	bd_ptr[bd_num].type_id = cpu_to_le32(DTYPE3 << 29);
 	bd_ptr[bd_num].next_lo = cpu_to_le32((u64)bd_phys &
 						 TSI721_DMAC_DPTRL_MASK);
 	bd_ptr[bd_num].next_hi = cpu_to_le32((u64)bd_phys >> 32);
 
-	/* Setup DMA descriptor pointers */
+	 
 	iowrite32(((u64)bd_phys >> 32),
 		bdma_chan->regs + TSI721_DMAC_DPTRH);
 	iowrite32(((u64)bd_phys & TSI721_DMAC_DPTRL_MASK),
 		bdma_chan->regs + TSI721_DMAC_DPTRL);
 
-	/* Setup descriptor status FIFO */
+	 
 	iowrite32(((u64)sts_phys >> 32),
 		bdma_chan->regs + TSI721_DMAC_DSBH);
 	iowrite32(((u64)sts_phys & TSI721_DMAC_DSBL_MASK),
@@ -136,14 +128,14 @@ static int tsi721_bdma_ch_init(struct tsi721_bdma_chan *bdma_chan, int bd_num)
 	iowrite32(TSI721_DMAC_DSSZ_SIZE(sts_size),
 		bdma_chan->regs + TSI721_DMAC_DSSZ);
 
-	/* Clear interrupt bits */
+	 
 	iowrite32(TSI721_DMAC_INT_ALL,
 		bdma_chan->regs + TSI721_DMAC_INT);
 
 	ioread32(bdma_chan->regs + TSI721_DMAC_INT);
 
 #ifdef CONFIG_PCI_MSI
-	/* Request interrupt service if we are in MSI-X mode */
+	 
 	if (priv->flags & TSI721_USING_MSIX) {
 		int rc, idx;
 
@@ -176,13 +168,13 @@ static int tsi721_bdma_ch_init(struct tsi721_bdma_chan *bdma_chan, int bd_num)
 
 err_out:
 		if (rc) {
-			/* Free space allocated for DMA descriptors */
+			 
 			dma_free_coherent(dev,
 				(bd_num + 1) * sizeof(struct tsi721_dma_desc),
 				bd_ptr, bd_phys);
 			bdma_chan->bd_base = NULL;
 
-			/* Free space allocated for status descriptors */
+			 
 			dma_free_coherent(dev,
 				sts_size * sizeof(struct tsi721_dma_sts),
 				sts_ptr, sts_phys);
@@ -191,9 +183,9 @@ err_out:
 			return -EIO;
 		}
 	}
-#endif /* CONFIG_PCI_MSI */
+#endif  
 
-	/* Toggle DMA channel initialization */
+	 
 	iowrite32(TSI721_DMAC_CTL_INIT,	bdma_chan->regs + TSI721_DMAC_CTL);
 	ioread32(bdma_chan->regs + TSI721_DMAC_CTL);
 	bdma_chan->wr_count = bdma_chan->wr_count_next = 0;
@@ -213,12 +205,12 @@ static int tsi721_bdma_ch_free(struct tsi721_bdma_chan *bdma_chan)
 	if (!bdma_chan->bd_base)
 		return 0;
 
-	/* Check if DMA channel still running */
+	 
 	ch_stat = ioread32(bdma_chan->regs + TSI721_DMAC_STS);
 	if (ch_stat & TSI721_DMAC_STS_RUN)
 		return -EFAULT;
 
-	/* Put DMA channel into init state */
+	 
 	iowrite32(TSI721_DMAC_CTL_INIT,	bdma_chan->regs + TSI721_DMAC_CTL);
 
 #ifdef CONFIG_PCI_MSI
@@ -228,15 +220,15 @@ static int tsi721_bdma_ch_free(struct tsi721_bdma_chan *bdma_chan)
 		free_irq(priv->msix[TSI721_VECT_DMA0_INT +
 				    bdma_chan->id].vector, (void *)bdma_chan);
 	}
-#endif /* CONFIG_PCI_MSI */
+#endif  
 
-	/* Free space allocated for DMA descriptors */
+	 
 	dma_free_coherent(bdma_chan->dchan.device->dev,
 		(bdma_chan->bd_num + 1) * sizeof(struct tsi721_dma_desc),
 		bdma_chan->bd_base, bdma_chan->bd_phys);
 	bdma_chan->bd_base = NULL;
 
-	/* Free space allocated for status FIFO */
+	 
 	dma_free_coherent(bdma_chan->dchan.device->dev,
 		bdma_chan->sts_size * sizeof(struct tsi721_dma_sts),
 		bdma_chan->sts_base, bdma_chan->sts_phys);
@@ -248,17 +240,17 @@ static void
 tsi721_bdma_interrupt_enable(struct tsi721_bdma_chan *bdma_chan, int enable)
 {
 	if (enable) {
-		/* Clear pending BDMA channel interrupts */
+		 
 		iowrite32(TSI721_DMAC_INT_ALL,
 			bdma_chan->regs + TSI721_DMAC_INT);
 		ioread32(bdma_chan->regs + TSI721_DMAC_INT);
-		/* Enable BDMA channel interrupts */
+		 
 		iowrite32(TSI721_DMAC_INT_ALL,
 			bdma_chan->regs + TSI721_DMAC_INTE);
 	} else {
-		/* Disable BDMA channel interrupts */
+		 
 		iowrite32(0, bdma_chan->regs + TSI721_DMAC_INTE);
-		/* Clear pending BDMA channel interrupts */
+		 
 		iowrite32(TSI721_DMAC_INT_ALL,
 			bdma_chan->regs + TSI721_DMAC_INT);
 	}
@@ -275,20 +267,14 @@ static bool tsi721_dma_is_idle(struct tsi721_bdma_chan *bdma_chan)
 
 void tsi721_bdma_handler(struct tsi721_bdma_chan *bdma_chan)
 {
-	/* Disable BDMA channel interrupts */
+	 
 	iowrite32(0, bdma_chan->regs + TSI721_DMAC_INTE);
 	if (bdma_chan->active)
 		tasklet_hi_schedule(&bdma_chan->tasklet);
 }
 
 #ifdef CONFIG_PCI_MSI
-/**
- * tsi721_omsg_msix - MSI-X interrupt handler for BDMA channels
- * @irq: Linux interrupt number
- * @ptr: Pointer to interrupt-specific data (BDMA channel structure)
- *
- * Handles BDMA channel interrupts signaled using MSI-X.
- */
+ 
 static irqreturn_t tsi721_bdma_msix(int irq, void *ptr)
 {
 	struct tsi721_bdma_chan *bdma_chan = ptr;
@@ -297,9 +283,9 @@ static irqreturn_t tsi721_bdma_msix(int irq, void *ptr)
 		tasklet_hi_schedule(&bdma_chan->tasklet);
 	return IRQ_HANDLED;
 }
-#endif /* CONFIG_PCI_MSI */
+#endif  
 
-/* Must be called with the spinlock held */
+ 
 static void tsi721_start_dma(struct tsi721_bdma_chan *bdma_chan)
 {
 	if (!tsi721_dma_is_idle(bdma_chan)) {
@@ -337,7 +323,7 @@ tsi721_desc_fill_init(struct tsi721_tx_desc *desc,
 	if (!bd_ptr)
 		return -EINVAL;
 
-	/* Initialize DMA descriptor */
+	 
 	bd_ptr->type_id = cpu_to_le32((DTYPE1 << 29) |
 				      (desc->rtype << 19) | desc->destid);
 	bd_ptr->bcount = cpu_to_le32(((desc->rio_addr & 0x3) << 30) |
@@ -361,7 +347,7 @@ tsi721_desc_fill_end(struct tsi721_dma_desc *bd_ptr, u32 bcount, bool interrupt)
 	if (!bd_ptr)
 		return -EINVAL;
 
-	/* Update DMA descriptor */
+	 
 	if (interrupt)
 		bd_ptr->type_id |= cpu_to_le32(TSI721_DMAD_IOF);
 	bd_ptr->bcount |= cpu_to_le32(bcount & TSI721_DMAD_BCOUNT1);
@@ -388,7 +374,7 @@ static void tsi721_clr_stat(struct tsi721_bdma_chan *bdma_chan)
 	u64 *sts_ptr;
 	int i, j;
 
-	/* Check and clear descriptor status FIFO entries */
+	 
 	srd_ptr = bdma_chan->sts_rdptr;
 	sts_ptr = bdma_chan->sts_base;
 	j = srd_ptr * 8;
@@ -405,7 +391,7 @@ static void tsi721_clr_stat(struct tsi721_bdma_chan *bdma_chan)
 	bdma_chan->sts_rdptr = srd_ptr;
 }
 
-/* Must be called with the channel spinlock held */
+ 
 static int tsi721_submit_sg(struct tsi721_tx_desc *desc)
 {
 	struct dma_chan *dchan = desc->txd.chan;
@@ -428,10 +414,7 @@ static int tsi721_submit_sg(struct tsi721_tx_desc *desc)
 		return -EIO;
 	}
 
-	/*
-	 * Fill DMA channel's hardware buffer descriptors.
-	 * (NOTE: RapidIO destination address is limited to 64 bits for now)
-	 */
+	 
 	rio_addr = desc->rio_addr;
 	next_addr = -1;
 	bcount = 0;
@@ -442,7 +425,7 @@ static int tsi721_submit_sg(struct tsi721_tx_desc *desc)
 
 	idx = bdma_chan->wr_count_next % (bdma_chan->bd_num + 1);
 	if (idx == bdma_chan->bd_num) {
-		/* wrap around link descriptor */
+		 
 		idx = 0;
 		add_count++;
 	}
@@ -463,17 +446,14 @@ static int tsi721_submit_sg(struct tsi721_tx_desc *desc)
 			break;
 		}
 
-		/*
-		 * If this sg entry forms contiguous block with previous one,
-		 * try to merge it into existing DMA descriptor
-		 */
+		 
 		if (next_addr == sg_dma_address(sg) &&
 		    bcount + sg_dma_len(sg) <= TSI721_BDMA_MAX_BCOUNT) {
-			/* Adjust byte count of the descriptor */
+			 
 			bcount += sg_dma_len(sg);
 			goto entry_done;
 		} else if (next_addr != -1) {
-			/* Finalize descriptor using total byte count value */
+			 
 			tsi721_desc_fill_end(bd_ptr, bcount, 0);
 			tsi_debug(DMAV, ch_dev,	"DMAC%d prev desc final len: %d",
 				  bdma_chan->id, bcount);
@@ -505,7 +485,7 @@ static int tsi721_submit_sg(struct tsi721_tx_desc *desc)
 
 		add_count++;
 		if (++idx == bdma_chan->bd_num) {
-			/* wrap around link descriptor */
+			 
 			idx = 0;
 			add_count++;
 		}
@@ -539,10 +519,7 @@ static void tsi721_advance_work(struct tsi721_bdma_chan *bdma_chan,
 	if (!tsi721_dma_is_idle(bdma_chan))
 		return;
 
-	/*
-	 * If there is no data transfer in progress, fetch new descriptor from
-	 * the pending queue.
-	*/
+	 
 	if (!desc && !bdma_chan->active_tx && !list_empty(&bdma_chan->queue)) {
 		desc = list_first_entry(&bdma_chan->queue,
 					struct tsi721_tx_desc, desc_node);
@@ -574,7 +551,7 @@ static void tsi721_dma_tasklet(unsigned long data)
 	dmac_int = ioread32(bdma_chan->regs + TSI721_DMAC_INT);
 	tsi_debug(DMA, &bdma_chan->dchan.dev->device, "DMAC%d_INT = 0x%x",
 		  bdma_chan->id, dmac_int);
-	/* Clear channel interrupts */
+	 
 	iowrite32(dmac_int, bdma_chan->regs + TSI721_DMAC_INT);
 
 	if (dmac_int & TSI721_DMAC_INT_ERR) {
@@ -587,7 +564,7 @@ static void tsi721_dma_tasklet(unsigned long data)
 			"DMAC%d_STS = 0x%x did=%d raddr=0x%llx",
 			bdma_chan->id, dmac_sts, desc->destid, desc->rio_addr);
 
-		/* Re-initialize DMA channel if possible */
+		 
 
 		if ((dmac_sts & TSI721_DMAC_STS_ABORT) == 0)
 			goto err_out;
@@ -596,7 +573,7 @@ static void tsi721_dma_tasklet(unsigned long data)
 
 		spin_lock(&bdma_chan->lock);
 
-		/* Put DMA channel into init state */
+		 
 		iowrite32(TSI721_DMAC_CTL_INIT,
 			  bdma_chan->regs + TSI721_DMAC_CTL);
 		do {
@@ -612,13 +589,13 @@ static void tsi721_dma_tasklet(unsigned long data)
 			goto err_out;
 		}
 
-		/* Setup DMA descriptor pointers */
+		 
 		iowrite32(((u64)bdma_chan->bd_phys >> 32),
 			bdma_chan->regs + TSI721_DMAC_DPTRH);
 		iowrite32(((u64)bdma_chan->bd_phys & TSI721_DMAC_DPTRL_MASK),
 			bdma_chan->regs + TSI721_DMAC_DPTRL);
 
-		/* Setup descriptor status FIFO */
+		 
 		iowrite32(((u64)bdma_chan->sts_phys >> 32),
 			bdma_chan->regs + TSI721_DMAC_DSBH);
 		iowrite32(((u64)bdma_chan->sts_phys & TSI721_DMAC_DSBL_MASK),
@@ -626,7 +603,7 @@ static void tsi721_dma_tasklet(unsigned long data)
 		iowrite32(TSI721_DMAC_DSSZ_SIZE(bdma_chan->sts_size),
 			bdma_chan->regs + TSI721_DMAC_DSSZ);
 
-		/* Clear interrupt bits */
+		 
 		iowrite32(TSI721_DMAC_INT_ALL,
 			bdma_chan->regs + TSI721_DMAC_INT);
 
@@ -684,7 +661,7 @@ static void tsi721_dma_tasklet(unsigned long data)
 		}
 	}
 err_out:
-	/* Re-Enable BDMA channel interrupts */
+	 
 	iowrite32(TSI721_DMAC_INT_ALL, bdma_chan->regs + TSI721_DMAC_INTE);
 }
 
@@ -694,7 +671,7 @@ static dma_cookie_t tsi721_tx_submit(struct dma_async_tx_descriptor *txd)
 	struct tsi721_bdma_chan *bdma_chan = to_tsi721_chan(txd->chan);
 	dma_cookie_t cookie;
 
-	/* Check if the descriptor is detached from any lists */
+	 
 	if (!list_empty(&desc->desc_node)) {
 		tsi_err(&bdma_chan->dchan.dev->device,
 			"DMAC%d wrong state of descriptor %p",
@@ -729,14 +706,14 @@ static int tsi721_alloc_chan_resources(struct dma_chan *dchan)
 	if (bdma_chan->bd_base)
 		return dma_txqueue_sz;
 
-	/* Initialize BDMA channel */
+	 
 	if (tsi721_bdma_ch_init(bdma_chan, dma_desc_per_channel)) {
 		tsi_err(&dchan->dev->device, "Unable to initialize DMAC%d",
 			bdma_chan->id);
 		return -ENODEV;
 	}
 
-	/* Allocate queue of transaction descriptors */
+	 
 	desc = kcalloc(dma_txqueue_sz, sizeof(struct tsi721_tx_desc),
 			GFP_ATOMIC);
 	if (!desc) {
@@ -906,11 +883,11 @@ static int tsi721_terminate_all(struct dma_chan *dchan)
 
 		udelay(5);
 #if (0)
-		/* make sure to stop the transfer */
+		 
 		iowrite32(TSI721_DMAC_CTL_SUSP,
 			  bdma_chan->regs + TSI721_DMAC_CTL);
 
-		/* Wait until DMA channel stops */
+		 
 		do {
 			dmac_int = ioread32(bdma_chan->regs + TSI721_DMAC_INT);
 		} while ((dmac_int & TSI721_DMAC_INT_SUSP) == 0);
@@ -937,11 +914,11 @@ static void tsi721_dma_stop(struct tsi721_bdma_chan *bdma_chan)
 	if (!tsi721_dma_is_idle(bdma_chan)) {
 		int timeout = 100000;
 
-		/* stop the transfer in progress */
+		 
 		iowrite32(TSI721_DMAC_CTL_SUSP,
 			  bdma_chan->regs + TSI721_DMAC_CTL);
 
-		/* Wait until DMA channel stops */
+		 
 		while (!tsi721_dma_is_idle(bdma_chan) && --timeout)
 			udelay(1);
 	}

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  Driver for the Auvitek USB bridge
- *
- *  Copyright (c) 2008 Steven Toth <stoth@linuxtv.org>
- */
+
+ 
 
 #include "au0828.h"
 #include "au8522.h"
@@ -14,16 +10,10 @@
 #include <media/v4l2-common.h>
 #include <linux/mutex.h>
 
-/* Due to enum tuner_pad_index */
+ 
 #include <media/tuner.h>
 
-/*
- * 1 = General debug messages
- * 2 = USB handling
- * 4 = I2C related
- * 8 = Bridge related
- * 16 = IR related
- */
+ 
 int au0828_debug;
 module_param_named(debug, au0828_debug, int, 0644);
 MODULE_PARM_DESC(debug,
@@ -42,7 +32,7 @@ static int send_control_msg(struct au0828_dev *dev, u16 request, u32 value,
 static int recv_control_msg(struct au0828_dev *dev, u16 request, u32 value,
 	u16 index, unsigned char *cp, u16 size);
 
-/* USB Direction */
+ 
 #define CMD_REQUEST_IN		0x00
 #define CMD_REQUEST_OUT		0x01
 
@@ -69,7 +59,7 @@ static int send_control_msg(struct au0828_dev *dev, u16 request, u32 value,
 
 	if (dev->usbdev) {
 
-		/* cp must be memory that has been allocated by kmalloc */
+		 
 		status = usb_control_msg(dev->usbdev,
 				usb_sndctrlpipe(dev->usbdev, 0),
 				request,
@@ -109,8 +99,7 @@ static int recv_control_msg(struct au0828_dev *dev, u16 request, u32 value,
 				__func__, status);
 		}
 
-		/* the host controller requires heap allocated memory, which
-		   is why we didn't just pass "cp" into usb_control_msg */
+		 
 		memcpy(cp, dev->ctrlmsg, size);
 	}
 	mutex_unlock(&dev->mutex);
@@ -131,14 +120,14 @@ static void au0828_unregister_media_device(struct au0828_dev *dev)
 	if (!mdev || !media_devnode_is_registered(mdev->devnode))
 		return;
 
-	/* Remove au0828 entity_notify callbacks */
+	 
 	list_for_each_entry_safe(notify, nextp, &mdev->entity_notify, list) {
 		if (notify->notify != au0828_media_graph_notify)
 			continue;
 		media_device_unregister_entity_notify(mdev, notify);
 	}
 
-	/* clear enable_source, disable_source */
+	 
 	mutex_lock(&mdev->graph_mutex);
 	dev->media_dev->source_priv = NULL;
 	dev->media_dev->enable_source = NULL;
@@ -154,7 +143,7 @@ void au0828_usb_release(struct au0828_dev *dev)
 {
 	au0828_unregister_media_device(dev);
 
-	/* I2C */
+	 
 	au0828_i2c_unregister(dev);
 
 	kfree(dev);
@@ -166,16 +155,11 @@ static void au0828_usb_disconnect(struct usb_interface *interface)
 
 	dprintk(1, "%s()\n", __func__);
 
-	/* there is a small window after disconnect, before
-	   dev->usbdev is NULL, for poll (e.g: IR) try to access
-	   the device and fill the dmesg with error messages.
-	   Set the status so poll routines can check and avoid
-	   access after disconnect.
-	*/
+	 
 	set_bit(DEV_DISCONNECTED, &dev->dev_state);
 
 	au0828_rc_unregister(dev);
-	/* Digital TV */
+	 
 	au0828_dvb_unregister(dev);
 
 	usb_set_intfdata(interface, NULL);
@@ -183,10 +167,7 @@ static void au0828_usb_disconnect(struct usb_interface *interface)
 	dev->usbdev = NULL;
 	mutex_unlock(&dev->mutex);
 	if (au0828_analog_unregister(dev)) {
-		/*
-		 * No need to call au0828_usb_release() if V4L2 is enabled,
-		 * as this is already called via au0828_usb_v4l2_release()
-		 */
+		 
 		return;
 	}
 	au0828_usb_release(dev);
@@ -216,11 +197,7 @@ static void au0828_media_graph_notify(struct media_entity *new,
 	struct media_entity *entity, *mixer = NULL, *decoder = NULL;
 
 	if (!new) {
-		/*
-		 * Called during au0828 probe time to connect
-		 * entities that were created prior to registering
-		 * the notify handler. Find mixer and decoder.
-		*/
+		 
 		media_device_for_each_entity(entity, dev->media_dev) {
 			if (entity->function == MEDIA_ENT_F_AUDIO_MIXER)
 				mixer = entity;
@@ -237,7 +214,7 @@ static void au0828_media_graph_notify(struct media_entity *new,
 			decoder = dev->decoder;
 		break;
 	case MEDIA_ENT_F_ATV_DECODER:
-		/* In case, Mixer is added first, find mixer and create link */
+		 
 		media_device_for_each_entity(entity, dev->media_dev) {
 			if (entity->function == MEDIA_ENT_F_AUDIO_MIXER)
 				mixer = entity;
@@ -267,7 +244,7 @@ static bool au0828_is_link_shareable(struct media_entity *owner,
 {
 	bool shareable = false;
 
-	/* Tuner link can be shared by audio, video, and VBI */
+	 
 	switch (owner->function) {
 	case MEDIA_ENT_F_IO_V4L:
 	case MEDIA_ENT_F_AUDIO_CAPTURE:
@@ -284,7 +261,7 @@ static bool au0828_is_link_shareable(struct media_entity *owner,
 	return shareable;
 }
 
-/* Callers should hold graph_mutex */
+ 
 static int au0828_enable_source(struct media_entity *entity,
 				struct media_pipeline *pipe)
 {
@@ -300,22 +277,12 @@ static int au0828_enable_source(struct media_entity *entity,
 
 	dev = mdev->source_priv;
 
-	/*
-	 * For Audio and V4L2 entity, find the link to which decoder
-	 * is the sink. Look for an active link between decoder and
-	 * source (tuner/s-video/Composite), if one exists, nothing
-	 * to do. If not, look for any  active links between source
-	 * and any other entity. If one exists, source is busy. If
-	 * source is free, setup link and start pipeline from source.
-	 * For DVB FE entity, the source for the link is the tuner.
-	 * Check if tuner is available and setup link and start
-	 * pipeline.
-	*/
+	 
 	if (entity->function == MEDIA_ENT_F_DTV_DEMOD) {
 		sink = entity;
 		find_source = dev->tuner;
 	} else {
-		/* Analog isn't configured or register failed */
+		 
 		if (!dev->decoder) {
 			ret = -ENODEV;
 			goto end;
@@ -323,57 +290,31 @@ static int au0828_enable_source(struct media_entity *entity,
 
 		sink = dev->decoder;
 
-		/*
-		 * Default input is tuner and default input_type
-		 * is AU0828_VMUX_TELEVISION.
-		 *
-		 * There is a problem when s_input is called to
-		 * change the default input. s_input will try to
-		 * enable_source before attempting to change the
-		 * input on the device, and will end up enabling
-		 * default source which is tuner.
-		 *
-		 * Additional logic is necessary in au0828 to detect
-		 * that the input has changed and enable the right
-		 * source. au0828 handles this case in its s_input.
-		 * It will disable the old source and enable the new
-		 * source.
-		 *
-		*/
+		 
 		if (dev->input_type == AU0828_VMUX_TELEVISION)
 			find_source = dev->tuner;
 		else if (dev->input_type == AU0828_VMUX_SVIDEO ||
 			 dev->input_type == AU0828_VMUX_COMPOSITE)
 			find_source = &dev->input_ent[dev->input_type];
 		else {
-			/* unknown input - let user select input */
+			 
 			ret = 0;
 			goto end;
 		}
 	}
 
-	/* Is there an active link between sink and source */
+	 
 	if (dev->active_link) {
 		if (dev->active_link_owner == entity) {
-			/* This check is necessary to handle multiple
-			 * enable_source calls from v4l_ioctls during
-			 * the course of video/vbi application run-time.
-			*/
+			 
 			pr_debug("%s already owns the tuner\n", entity->name);
 			ret = 0;
 			goto end;
 		} else if (au0828_is_link_shareable(dev->active_link_owner,
 			   entity)) {
-			/* Either ALSA or Video own tuner. Sink is the same
-			 * for both. Allow sharing the active link between
-			 * their common source (tuner) and sink (decoder).
-			 * Starting pipeline between sharing entity and sink
-			 * will fail with pipe mismatch, while owner has an
-			 * active pipeline. Switch pipeline ownership from
-			 * user to owner when owner disables the source.
-			 */
+			 
 			dev->active_link_shared = true;
-			/* save the user info to use from disable */
+			 
 			dev->active_link_user = entity;
 			dev->active_link_user_pipe = pipe;
 			pr_debug("%s owns the tuner %s can share!\n",
@@ -388,7 +329,7 @@ static int au0828_enable_source(struct media_entity *entity,
 	}
 
 	list_for_each_entry(link, &sink->links, list) {
-		/* Check sink, and source */
+		 
 		if (link->sink->entity == sink &&
 		    link->source->entity == find_source) {
 			found_link = link;
@@ -401,7 +342,7 @@ static int au0828_enable_source(struct media_entity *entity,
 		goto end;
 	}
 
-	/* activate link between source and sink and start pipeline */
+	 
 	source = found_link->source->entity;
 	ret = __media_entity_setup_link(found_link, MEDIA_LNK_FL_ENABLED);
 	if (ret) {
@@ -420,10 +361,7 @@ static int au0828_enable_source(struct media_entity *entity,
 		goto end;
 	}
 
-	/* save link state to allow audio and video share the link
-	 * and not disable the link while the other is using it.
-	 * active_link_owner is used to deactivate the link.
-	*/
+	 
 	dev->active_link = found_link;
 	dev->active_link_owner = entity;
 	dev->active_source = source;
@@ -438,7 +376,7 @@ end:
 	return ret;
 }
 
-/* Callers should hold graph_mutex */
+ 
 static void au0828_disable_source(struct media_entity *entity)
 {
 	int ret = 0;
@@ -453,19 +391,10 @@ static void au0828_disable_source(struct media_entity *entity)
 	if (!dev->active_link)
 		return;
 
-	/* link is active - stop pipeline from source
-	 * (tuner/s-video/Composite) to the entity
-	 * When DVB/s-video/Composite owns tuner, it won't be in
-	 * shared state.
-	 */
+	 
 	if (dev->active_link->sink->entity == dev->active_sink &&
 	    dev->active_link->source->entity == dev->active_source) {
-		/*
-		 * Prevent video from deactivating link when audio
-		 * has active pipeline and vice versa. In addition
-		 * handle the case when more than one video/vbi
-		 * application is sharing the link.
-		*/
+		 
 		bool owner_is_audio = false;
 
 		if (dev->active_link_owner->function ==
@@ -477,16 +406,9 @@ static void au0828_disable_source(struct media_entity *entity)
 				 dev->active_link_owner->name,
 				 entity->name, dev->users);
 
-			/* Handle video device users > 1
-			 * When audio owns the shared link with
-			 * more than one video users, avoid
-			 * disabling the source and/or switching
-			 * the owner until the last disable_source
-			 * call from video _close(). Use dev->users to
-			 * determine when to switch/disable.
-			 */
+			 
 			if (dev->active_link_owner != entity) {
-				/* video device has users > 1 */
+				 
 				if (owner_is_audio && dev->users > 1)
 					return;
 
@@ -496,11 +418,11 @@ static void au0828_disable_source(struct media_entity *entity)
 				return;
 			}
 
-			/* video owns the link and has users > 1 */
+			 
 			if (!owner_is_audio && dev->users > 1)
 				return;
 
-			/* stop pipeline */
+			 
 			__media_pipeline_stop(dev->active_link_owner->pads);
 			pr_debug("Pipeline stop for %s\n",
 				dev->active_link_owner->name);
@@ -515,7 +437,7 @@ static void au0828_disable_source(struct media_entity *entity)
 					ret);
 				goto deactivate_link;
 			}
-			/* link user is now the owner */
+			 
 			dev->active_link_owner = dev->active_link_user;
 			dev->active_link_user = NULL;
 			dev->active_link_user_pipe = NULL;
@@ -525,13 +447,13 @@ static void au0828_disable_source(struct media_entity *entity)
 				dev->active_link_owner->name);
 			return;
 		} else if (!owner_is_audio && dev->users > 1)
-			/* video/vbi owns the link and has users > 1 */
+			 
 			return;
 
 		if (dev->active_link_owner != entity)
 			return;
 
-		/* stop pipeline */
+		 
 		__media_pipeline_stop(dev->active_link_owner->pads);
 		pr_debug("Pipeline stop for %s\n",
 			dev->active_link_owner->name);
@@ -568,7 +490,7 @@ static int au0828_media_device_register(struct au0828_dev *dev,
 
 	if (!media_devnode_is_registered(dev->media_dev->devnode)) {
 
-		/* register media device */
+		 
 		ret = media_device_register(dev->media_dev);
 		if (ret) {
 			media_device_delete(dev->media_dev, KBUILD_MODNAME,
@@ -579,27 +501,11 @@ static int au0828_media_device_register(struct au0828_dev *dev,
 			return ret;
 		}
 	} else {
-		/*
-		 * Call au0828_media_graph_notify() to connect
-		 * audio graph to our graph. In this case, audio
-		 * driver registered the device and there is no
-		 * entity_notify to be called when new entities
-		 * are added. Invoke it now.
-		*/
+		 
 		au0828_media_graph_notify(NULL, (void *) dev);
 	}
 
-	/*
-	 * Find tuner, decoder and demod.
-	 *
-	 * The tuner and decoder should be cached, as they'll be used by
-	 *	au0828_enable_source.
-	 *
-	 * It also needs to disable the link between tuner and
-	 * decoder/demod, to avoid disable step when tuner is requested
-	 * by video or audio. Note that this step can't be done until dvb
-	 * graph is created during dvb register.
-	*/
+	 
 	media_device_for_each_entity(entity, dev->media_dev) {
 		switch (entity->function) {
 		case MEDIA_ENT_F_TUNER:
@@ -614,7 +520,7 @@ static int au0828_media_device_register(struct au0828_dev *dev,
 		}
 	}
 
-	/* Disable link between tuner->demod and/or tuner->decoder */
+	 
 	if (dev->tuner) {
 		list_for_each_entry(link, &dev->tuner->links, list) {
 			if (demod && link->sink->entity == demod)
@@ -624,13 +530,13 @@ static int au0828_media_device_register(struct au0828_dev *dev,
 		}
 	}
 
-	/* register entity_notify callback */
+	 
 	dev->entity_notify.notify_data = (void *) dev;
 	dev->entity_notify.notify = (void *) au0828_media_graph_notify;
 	media_device_register_entity_notify(dev->media_dev,
 						  &dev->entity_notify);
 
-	/* set enable_source */
+	 
 	mutex_lock(&dev->media_dev->graph_mutex);
 	dev->media_dev->source_priv = (void *) dev;
 	dev->media_dev->enable_source = au0828_enable_source;
@@ -659,11 +565,7 @@ static int au0828_usb_probe(struct usb_interface *interface,
 		le16_to_cpu(usbdev->descriptor.idProduct),
 		ifnum);
 
-	/*
-	 * Make sure we have 480 Mbps of bandwidth, otherwise things like
-	 * video stream wouldn't likely work, since 12 Mbps is generally
-	 * not enough even for most Digital TV streams.
-	 */
+	 
 	if (usbdev->speed != USB_SPEED_HIGH && disable_usb_speed_check == 0) {
 		pr_err("au0828: Device initialization failed.\n");
 		pr_err("au0828: Device must be connected to a high-speed USB 2.0 port.\n");
@@ -684,7 +586,7 @@ static int au0828_usb_probe(struct usb_interface *interface,
 	dev->boardnr = id->driver_info;
 	dev->board = au0828_boards[dev->boardnr];
 
-	/* Initialize the media controller */
+	 
 	retval = au0828_media_device_init(dev, usbdev);
 	if (retval) {
 		pr_err("%s() au0828_media_device_init failed\n",
@@ -702,25 +604,22 @@ static int au0828_usb_probe(struct usb_interface *interface,
 		return retval;
 	}
 
-	/* Power Up the bridge */
+	 
 	au0828_write(dev, REG_600, 1 << 4);
 
-	/* Bring up the GPIO's and supporting devices */
+	 
 	au0828_gpio_setup(dev);
 
-	/* I2C */
+	 
 	au0828_i2c_register(dev);
 
-	/* Setup */
+	 
 	au0828_card_setup(dev);
 
-	/*
-	 * Store the pointer to the au0828_dev so it can be accessed in
-	 * au0828_usb_disconnect
-	 */
+	 
 	usb_set_intfdata(interface, dev);
 
-	/* Analog TV */
+	 
 	retval = au0828_analog_register(dev, interface);
 	if (retval) {
 		pr_err("%s() au0828_analog_register failed to register on V4L2\n",
@@ -729,13 +628,13 @@ static int au0828_usb_probe(struct usb_interface *interface,
 		goto done;
 	}
 
-	/* Digital TV */
+	 
 	retval = au0828_dvb_register(dev);
 	if (retval)
 		pr_err("%s() au0828_dvb_register failed\n",
 		       __func__);
 
-	/* Remote controller */
+	 
 	au0828_rc_register(dev);
 
 	pr_info("Registered device AU0828 [%s]\n",
@@ -766,7 +665,7 @@ static int au0828_suspend(struct usb_interface *interface,
 	au0828_v4l2_suspend(dev);
 	au0828_dvb_suspend(dev);
 
-	/* FIXME: should suspend also ATV/DTV */
+	 
 
 	return 0;
 }
@@ -779,17 +678,17 @@ static int au0828_resume(struct usb_interface *interface)
 
 	pr_info("Resume\n");
 
-	/* Power Up the bridge */
+	 
 	au0828_write(dev, REG_600, 1 << 4);
 
-	/* Bring up the GPIO's and supporting devices */
+	 
 	au0828_gpio_setup(dev);
 
 	au0828_rc_resume(dev);
 	au0828_v4l2_resume(dev);
 	au0828_dvb_resume(dev);
 
-	/* FIXME: should resume also ATV/DTV */
+	 
 
 	return 0;
 }

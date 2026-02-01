@@ -1,28 +1,4 @@
-/*
- * Copyright (c) 2006-2007 Pawel Jakub Dawidek <pjd@FreeBSD.org>
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- *
- * THIS SOFTWARE IS PROVIDED BY THE AUTHORS AND CONTRIBUTORS ``AS IS'' AND
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHORS OR CONTRIBUTORS BE LIABLE
- * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
- * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
- * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
- * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
- * SUCH DAMAGE.
- */
+ 
 
 #include <sys/cdefs.h>
 __FBSDID("$FreeBSD$");
@@ -65,7 +41,7 @@ struct kmem_item {
 static LIST_HEAD(, kmem_item) kmem_items;
 static struct mtx kmem_items_mtx;
 MTX_SYSINIT(kmem_items_mtx, &kmem_items_mtx, "kmem_items", MTX_DEF);
-#endif	/* KMEM_DEBUG */
+#endif	 
 
 #include <sys/vmem.h>
 
@@ -217,13 +193,7 @@ kmem_cache_free(kmem_cache_t *cache, void *buf)
 #endif
 }
 
-/*
- * Allow our caller to determine if there are running reaps.
- *
- * This call is very conservative and may return B_TRUE even when
- * reaping activity isn't active. If it returns B_FALSE, then reaping
- * activity is definitely inactive.
- */
+ 
 boolean_t
 kmem_cache_reap_active(void)
 {
@@ -231,13 +201,7 @@ kmem_cache_reap_active(void)
 	return (B_FALSE);
 }
 
-/*
- * Reap (almost) everything soon.
- *
- * Note: this does not wait for the reap-tasks to complete. Caller
- * should use kmem_cache_reap_active() (above) and/or moderation to
- * avoid scheduling too many reap-tasks.
- */
+ 
 #ifdef _KERNEL
 void
 kmem_cache_reap_soon(kmem_cache_t *cache)
@@ -316,10 +280,7 @@ spl_kmem_cache_entry_size(kmem_cache_t *cache)
 	return (cache->kc_zone->uz_size);
 }
 
-/*
- * Register a move callback for cache defragmentation.
- * XXX: Unimplemented but harmless to stub out for now.
- */
+ 
 void
 spl_kmem_cache_set_move(kmem_cache_t *skc,
     kmem_cbrc_t (move)(void *, void *, size_t, void *))
@@ -349,4 +310,4 @@ kmem_show(void *dummy __unused)
 }
 
 SYSUNINIT(sol_kmem, SI_SUB_CPU, SI_ORDER_FIRST, kmem_show, NULL);
-#endif	/* KMEM_DEBUG */
+#endif	 

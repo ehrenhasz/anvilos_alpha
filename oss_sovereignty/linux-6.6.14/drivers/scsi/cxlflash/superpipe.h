@@ -1,33 +1,20 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * CXL Flash Device Driver
- *
- * Written by: Manoj N. Kumar <manoj@linux.vnet.ibm.com>, IBM Corporation
- *             Matthew R. Ochs <mrochs@linux.vnet.ibm.com>, IBM Corporation
- *
- * Copyright (C) 2015 IBM Corporation
- */
+ 
+ 
 
 #ifndef _CXLFLASH_SUPERPIPE_H
 #define _CXLFLASH_SUPERPIPE_H
 
 extern struct cxlflash_global global;
 
-/*
- * Terminology: use afu (and not adapter) to refer to the HW.
- * Adapter is the entire slot and includes PSL out of which
- * only the AFU is visible to user space.
- */
+ 
 
-/* Chunk size parms: note sislite minimum chunk size is
- * 0x10000 LBAs corresponding to a NMASK or 16.
- */
-#define MC_CHUNK_SIZE     (1 << MC_RHT_NMASK)	/* in LBAs */
+ 
+#define MC_CHUNK_SIZE     (1 << MC_RHT_NMASK)	 
 
-#define CMD_TIMEOUT 30  /* 30 secs */
-#define CMD_RETRIES 5   /* 5 retries for scsi_execute */
+#define CMD_TIMEOUT 30   
+#define CMD_RETRIES 5    
 
-#define MAX_SECTOR_UNIT  512 /* max_sector is in 512 byte multiples */
+#define MAX_SECTOR_UNIT  512  
 
 enum lun_mode {
 	MODE_NONE = 0,
@@ -35,12 +22,12 @@ enum lun_mode {
 	MODE_PHYSICAL
 };
 
-/* Global (entire driver, spans adapters) lun_info structure */
+ 
 struct glun_info {
-	u64 max_lba;		/* from read cap(16) */
-	u32 blk_len;		/* from read cap(16) */
-	enum lun_mode mode;	/* NONE, VIRTUAL, PHYSICAL */
-	int users;		/* Number of users w/ references to LUN */
+	u64 max_lba;		 
+	u32 blk_len;		 
+	enum lun_mode mode;	 
+	int users;		 
 
 	u8 wwid[16];
 
@@ -50,17 +37,17 @@ struct glun_info {
 	struct list_head list;
 };
 
-/* Local (per-adapter) lun_info structure */
+ 
 struct llun_info {
-	u64 lun_id[MAX_FC_PORTS]; /* from REPORT_LUNS */
-	u32 lun_index;		/* Index in the LUN table */
-	u32 host_no;		/* host_no from Scsi_host */
-	u32 port_sel;		/* What port to use for this LUN */
-	bool in_table;		/* Whether a LUN table entry was created */
+	u64 lun_id[MAX_FC_PORTS];  
+	u32 lun_index;		 
+	u32 host_no;		 
+	u32 port_sel;		 
+	bool in_table;		 
 
-	u8 wwid[16];		/* Keep a duplicate copy here? */
+	u8 wwid[16];		 
 
-	struct glun_info *parent; /* Pointer to entry in global LUN structure */
+	struct glun_info *parent;  
 	struct scsi_device *sdev;
 	struct list_head list;
 };
@@ -83,35 +70,33 @@ enum ctx_ctrl {
 #define DECODE_CTXID(_val)	(_val & 0xFFFFFFFF)
 
 struct ctx_info {
-	struct sisl_ctrl_map __iomem *ctrl_map; /* initialized at startup */
-	struct sisl_rht_entry *rht_start; /* 1 page (req'd for alignment),
-					   * alloc/free on attach/detach
-					   */
-	u32 rht_out;		/* Number of checked out RHT entries */
-	u32 rht_perms;		/* User-defined permissions for RHT entries */
-	struct llun_info **rht_lun;       /* Mapping of RHT entries to LUNs */
-	u8 *rht_needs_ws;	/* User-desired write-same function per RHTE */
+	struct sisl_ctrl_map __iomem *ctrl_map;  
+	struct sisl_rht_entry *rht_start;  
+	u32 rht_out;		 
+	u32 rht_perms;		 
+	struct llun_info **rht_lun;        
+	u8 *rht_needs_ws;	 
 
 	u64 ctxid;
-	u64 irqs; /* Number of interrupts requested for context */
+	u64 irqs;  
 	pid_t pid;
 	bool initialized;
 	bool unavail;
 	bool err_recovery_active;
-	struct mutex mutex; /* Context protection */
+	struct mutex mutex;  
 	struct kref kref;
 	void *ctx;
 	struct cxlflash_cfg *cfg;
-	struct list_head luns;	/* LUNs attached to this context */
+	struct list_head luns;	 
 	const struct vm_operations_struct *cxl_mmap_vmops;
 	struct file *file;
-	struct list_head list; /* Link contexts in error recovery */
+	struct list_head list;  
 };
 
 struct cxlflash_global {
 	struct mutex mutex;
-	struct list_head gluns;/* list of glun_info structs */
-	struct page *err_page; /* One page of all 0xF for error notification */
+	struct list_head gluns; 
+	struct page *err_page;  
 };
 
 int cxlflash_vlun_resize(struct scsi_device *sdev,
@@ -150,4 +135,4 @@ int cxlflash_manage_lun(struct scsi_device *sdev,
 
 int check_state(struct cxlflash_cfg *cfg);
 
-#endif /* ifndef _CXLFLASH_SUPERPIPE_H */
+#endif  

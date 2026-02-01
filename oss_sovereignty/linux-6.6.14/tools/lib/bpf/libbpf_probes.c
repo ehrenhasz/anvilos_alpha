@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: (LGPL-2.1 OR BSD-2-Clause)
-/* Copyright (c) 2019 Netronome Systems, Inc. */
+
+ 
 
 #include <errno.h>
 #include <fcntl.h>
@@ -18,16 +18,7 @@
 #include "libbpf.h"
 #include "libbpf_internal.h"
 
-/* On Ubuntu LINUX_VERSION_CODE doesn't correspond to info.release,
- * but Ubuntu provides /proc/version_signature file, as described at
- * https://ubuntu.com/kernel, with an example contents below, which we
- * can use to get a proper LINUX_VERSION_CODE.
- *
- *   Ubuntu 5.4.0-12.15-generic 5.4.8
- *
- * In the above, 5.4.8 is what kernel is actually expecting, while
- * uname() call will return 5.4.0 in info.release.
- */
+ 
 static __u32 get_ubuntu_kernel_version(void)
 {
 	const char *ubuntu_kver_file = "/proc/version_signature";
@@ -50,16 +41,7 @@ static __u32 get_ubuntu_kernel_version(void)
 	return KERNEL_VERSION(major, minor, patch);
 }
 
-/* On Debian LINUX_VERSION_CODE doesn't correspond to info.release.
- * Instead, it is provided in info.version. An example content of
- * Debian 10 looks like the below.
- *
- *   utsname::release   4.19.0-22-amd64
- *   utsname::version   #1 SMP Debian 4.19.260-1 (2022-09-29)
- *
- * In the above, 4.19.260 is what kernel is actually expecting, while
- * uname() call will return 4.19.0 in info.release.
- */
+ 
 static __u32 get_debian_kernel_version(struct utsname *info)
 {
 	__u32 major, minor, patch;
@@ -67,7 +49,7 @@ static __u32 get_debian_kernel_version(struct utsname *info)
 
 	p = strstr(info->version, "Debian ");
 	if (!p) {
-		/* This is not a Debian kernel. */
+		 
 		return 0;
 	}
 
@@ -82,14 +64,14 @@ __u32 get_kernel_version(void)
 	__u32 major, minor, patch, version;
 	struct utsname info;
 
-	/* Check if this is an Ubuntu kernel. */
+	 
 	version = get_ubuntu_kernel_version();
 	if (version != 0)
 		return version;
 
 	uname(&info);
 
-	/* Check if this is a Debian kernel. */
+	 
 	version = get_debian_kernel_version(&info);
 	if (version != 0)
 		return version;
@@ -156,7 +138,7 @@ static int probe_prog_load(enum bpf_prog_type prog_type,
 		opts.prog_flags = BPF_F_SLEEPABLE;
 		break;
 	case BPF_PROG_TYPE_STRUCT_OPS:
-		exp_err = -524; /* -ENOTSUPP */
+		exp_err = -524;  
 		break;
 	case BPF_PROG_TYPE_UNSPEC:
 	case BPF_PROG_TYPE_SOCKET_FILTER:
@@ -250,24 +232,17 @@ int libbpf__load_raw_btf(const char *raw_types, size_t types_len,
 static int load_local_storage_btf(void)
 {
 	const char strs[] = "\0bpf_spin_lock\0val\0cnt\0l";
-	/* struct bpf_spin_lock {
-	 *   int val;
-	 * };
-	 * struct val {
-	 *   int cnt;
-	 *   struct bpf_spin_lock l;
-	 * };
-	 */
+	 
 	__u32 types[] = {
-		/* int */
-		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),  /* [1] */
-		/* struct bpf_spin_lock */                      /* [2] */
+		 
+		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),   
+		                        
 		BTF_TYPE_ENC(1, BTF_INFO_ENC(BTF_KIND_STRUCT, 0, 1), 4),
-		BTF_MEMBER_ENC(15, 1, 0), /* int val; */
-		/* struct val */                                /* [3] */
+		BTF_MEMBER_ENC(15, 1, 0),  
+		                                  
 		BTF_TYPE_ENC(15, BTF_INFO_ENC(BTF_KIND_STRUCT, 0, 2), 8),
-		BTF_MEMBER_ENC(19, 1, 0), /* int cnt; */
-		BTF_MEMBER_ENC(23, 2, 32),/* struct bpf_spin_lock l; */
+		BTF_MEMBER_ENC(19, 1, 0),  
+		BTF_MEMBER_ENC(23, 2, 32), 
 	};
 
 	return libbpf__load_raw_btf((char *)types, sizeof(types),
@@ -324,9 +299,9 @@ static int probe_map_create(enum bpf_map_type map_type)
 		max_entries = sysconf(_SC_PAGE_SIZE);
 		break;
 	case BPF_MAP_TYPE_STRUCT_OPS:
-		/* we'll get -ENOTSUPP for invalid BTF type ID for struct_ops */
+		 
 		opts.btf_vmlinux_value_type_id = 1;
-		exp_err = -524; /* -ENOTSUPP */
+		exp_err = -524;  
 		break;
 	case BPF_MAP_TYPE_BLOOM_FILTER:
 		key_size = 0;
@@ -414,9 +389,7 @@ int libbpf_probe_bpf_helper(enum bpf_prog_type prog_type, enum bpf_func_id helpe
 	if (opts)
 		return libbpf_err(-EINVAL);
 
-	/* we can't successfully load all prog types to check for BPF helper
-	 * support, so bail out with -EOPNOTSUPP error
-	 */
+	 
 	switch (prog_type) {
 	case BPF_PROG_TYPE_TRACING:
 	case BPF_PROG_TYPE_EXT:
@@ -432,19 +405,8 @@ int libbpf_probe_bpf_helper(enum bpf_prog_type prog_type, enum bpf_func_id helpe
 	if (ret < 0)
 		return libbpf_err(ret);
 
-	/* If BPF verifier doesn't recognize BPF helper ID (enum bpf_func_id)
-	 * at all, it will emit something like "invalid func unknown#181".
-	 * If BPF verifier recognizes BPF helper but it's not supported for
-	 * given BPF program type, it will emit "unknown func bpf_sys_bpf#166".
-	 * In both cases, provided combination of BPF program type and BPF
-	 * helper is not supported by the kernel.
-	 * In all other cases, probe_prog_load() above will either succeed (e.g.,
-	 * because BPF helper happens to accept no input arguments or it
-	 * accepts one input argument and initial PTR_TO_CTX is fine for
-	 * that), or we'll get some more specific BPF verifier error about
-	 * some unsatisfied conditions.
-	 */
+	 
 	if (ret == 0 && (strstr(buf, "invalid func ") || strstr(buf, "unknown func ")))
 		return 0;
-	return 1; /* assume supported */
+	return 1;  
 }

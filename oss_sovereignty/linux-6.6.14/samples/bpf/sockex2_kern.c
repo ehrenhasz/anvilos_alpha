@@ -74,7 +74,7 @@ static inline __u64 parse_ip(struct __sk_buff *skb, __u64 nhoff, __u64 *ip_proto
 		flow->dst = load_word(skb, nhoff + offsetof(struct iphdr, daddr));
 	}
 
-	verlen = load_byte(skb, nhoff + 0/*offsetof(struct iphdr, ihl)*/);
+	verlen = load_byte(skb, nhoff + 0 );
 	if (likely(verlen == 0x45))
 		nhoff += 20;
 	else

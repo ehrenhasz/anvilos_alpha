@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * ALSA SoC Texas Instruments TAS6424 Quad-Channel Audio Amplifier
- *
- * Copyright (C) 2016-2017 Texas Instruments Incorporated - https://www.ti.com/
- *	Author: Andreas Dannenberg <dannenberg@ti.com>
- *	Andrew F. Davis <afd@ti.com>
- */
+
+ 
 
 #ifndef __TAS6424_H__
 #define __TAS6424_H__
@@ -17,7 +11,7 @@
 #define TAS6424_FORMATS (SNDRV_PCM_FMTBIT_S16_LE | \
 			 SNDRV_PCM_FMTBIT_S24_LE)
 
-/* Register Address Map */
+ 
 #define TAS6424_MODE_CTRL		0x00
 #define TAS6424_MISC_CTRL1		0x01
 #define TAS6424_MISC_CTRL2		0x02
@@ -53,10 +47,10 @@
 #define TAS6424_MISC_CTRL4		0x26
 #define TAS6424_MAX			TAS6424_MISC_CTRL4
 
-/* TAS6424_MODE_CTRL_REG */
+ 
 #define TAS6424_RESET			BIT(7)
 
-/* TAS6424_SAP_CTRL_REG */
+ 
 #define TAS6424_SAP_RATE_MASK		GENMASK(7, 6)
 #define TAS6424_SAP_RATE_44100		(0x00 << 6)
 #define TAS6424_SAP_RATE_48000		(0x01 << 6)
@@ -73,7 +67,7 @@
 #define TAS6424_SAP_LEFTJ		(0x05 << 0)
 #define TAS6424_SAP_DSP			(0x06 << 0)
 
-/* TAS6424_CH_STATE_CTRL_REG */
+ 
 #define TAS6424_CH1_STATE_MASK		GENMASK(7, 6)
 #define TAS6424_CH1_STATE_PLAY		(0x00 << 6)
 #define TAS6424_CH1_STATE_HIZ		(0x01 << 6)
@@ -111,11 +105,11 @@
 					 TAS6424_CH3_STATE_DIAG | \
 					 TAS6424_CH4_STATE_DIAG)
 
-/* TAS6424_DC_DIAG_CTRL1 */
+ 
 #define TAS6424_LDGBYPASS_SHIFT		0
 #define TAS6424_LDGBYPASS_MASK		BIT(TAS6424_LDGBYPASS_SHIFT)
 
-/* TAS6424_GLOB_FAULT1_REG */
+ 
 #define TAS6424_FAULT_OC_CH1		BIT(7)
 #define TAS6424_FAULT_OC_CH2		BIT(6)
 #define TAS6424_FAULT_OC_CH3		BIT(5)
@@ -125,21 +119,21 @@
 #define TAS6424_FAULT_DC_CH3		BIT(1)
 #define TAS6424_FAULT_DC_CH4		BIT(0)
 
-/* TAS6424_GLOB_FAULT1_REG */
+ 
 #define TAS6424_FAULT_CLOCK		BIT(4)
 #define TAS6424_FAULT_PVDD_OV		BIT(3)
 #define TAS6424_FAULT_VBAT_OV		BIT(2)
 #define TAS6424_FAULT_PVDD_UV		BIT(1)
 #define TAS6424_FAULT_VBAT_UV		BIT(0)
 
-/* TAS6424_GLOB_FAULT2_REG */
+ 
 #define TAS6424_FAULT_OTSD		BIT(4)
 #define TAS6424_FAULT_OTSD_CH1		BIT(3)
 #define TAS6424_FAULT_OTSD_CH2		BIT(2)
 #define TAS6424_FAULT_OTSD_CH3		BIT(1)
 #define TAS6424_FAULT_OTSD_CH4		BIT(0)
 
-/* TAS6424_WARN_REG */
+ 
 #define TAS6424_WARN_VDD_UV		BIT(6)
 #define TAS6424_WARN_VDD_POR		BIT(5)
 #define TAS6424_WARN_VDD_OTW		BIT(4)
@@ -148,11 +142,11 @@
 #define TAS6424_WARN_VDD_OTW_CH3	BIT(1)
 #define TAS6424_WARN_VDD_OTW_CH4	BIT(0)
 
-/* TAS6424_MISC_CTRL3_REG */
+ 
 #define TAS6424_CLEAR_FAULT		BIT(7)
 #define TAS6424_PBTL_CH_SEL		BIT(6)
 #define TAS6424_MASK_CBC_WARN		BIT(5)
 #define TAS6424_MASK_VDD_UV		BIT(4)
 #define TAS6424_OTSD_AUTO_RECOVERY	BIT(3)
 
-#endif /* __TAS6424_H__ */
+#endif  

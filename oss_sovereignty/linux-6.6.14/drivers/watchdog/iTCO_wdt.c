@@ -1,115 +1,75 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- *	intel TCO Watchdog Driver
- *
- *	(c) Copyright 2006-2011 Wim Van Sebroeck <wim@iguana.be>.
- *
- *	Neither Wim Van Sebroeck nor Iguana vzw. admit liability nor
- *	provide warranty for any of this software. This material is
- *	provided "AS-IS" and at no charge.
- *
- *	The TCO watchdog is implemented in the following I/O controller hubs:
- *	(See the intel documentation on http://developer.intel.com.)
- *	document number 290655-003, 290677-014: 82801AA (ICH), 82801AB (ICHO)
- *	document number 290687-002, 298242-027: 82801BA (ICH2)
- *	document number 290733-003, 290739-013: 82801CA (ICH3-S)
- *	document number 290716-001, 290718-007: 82801CAM (ICH3-M)
- *	document number 290744-001, 290745-025: 82801DB (ICH4)
- *	document number 252337-001, 252663-008: 82801DBM (ICH4-M)
- *	document number 273599-001, 273645-002: 82801E (C-ICH)
- *	document number 252516-001, 252517-028: 82801EB (ICH5), 82801ER (ICH5R)
- *	document number 300641-004, 300884-013: 6300ESB
- *	document number 301473-002, 301474-026: 82801F (ICH6)
- *	document number 313082-001, 313075-006: 631xESB, 632xESB
- *	document number 307013-003, 307014-024: 82801G (ICH7)
- *	document number 322896-001, 322897-001: NM10
- *	document number 313056-003, 313057-017: 82801H (ICH8)
- *	document number 316972-004, 316973-012: 82801I (ICH9)
- *	document number 319973-002, 319974-002: 82801J (ICH10)
- *	document number 322169-001, 322170-003: 5 Series, 3400 Series (PCH)
- *	document number 320066-003, 320257-008: EP80597 (IICH)
- *	document number 324645-001, 324646-001: Cougar Point (CPT)
- *	document number TBD                   : Patsburg (PBG)
- *	document number TBD                   : DH89xxCC
- *	document number TBD                   : Panther Point
- *	document number TBD                   : Lynx Point
- *	document number TBD                   : Lynx Point-LP
- */
 
-/*
- *	Includes, defines, variables, module parameters, ...
- */
+ 
 
-/* Module and version information */
+ 
+
+ 
 #define DRV_NAME	"iTCO_wdt"
 #define DRV_VERSION	"1.11"
 
-/* Includes */
-#include <linux/acpi.h>			/* For ACPI support */
-#include <linux/bits.h>			/* For BIT() */
-#include <linux/module.h>		/* For module specific items */
-#include <linux/moduleparam.h>		/* For new moduleparam's */
-#include <linux/types.h>		/* For standard types (like size_t) */
-#include <linux/errno.h>		/* For the -ENODEV/... values */
-#include <linux/kernel.h>		/* For printk/panic/... */
-#include <linux/watchdog.h>		/* For the watchdog specific items */
-#include <linux/init.h>			/* For __init/__exit/... */
-#include <linux/fs.h>			/* For file operations */
-#include <linux/platform_device.h>	/* For platform_driver framework */
-#include <linux/pci.h>			/* For pci functions */
-#include <linux/ioport.h>		/* For io-port access */
-#include <linux/spinlock.h>		/* For spin_lock/spin_unlock/... */
-#include <linux/uaccess.h>		/* For copy_to_user/put_user/... */
-#include <linux/io.h>			/* For inb/outb/... */
+ 
+#include <linux/acpi.h>			 
+#include <linux/bits.h>			 
+#include <linux/module.h>		 
+#include <linux/moduleparam.h>		 
+#include <linux/types.h>		 
+#include <linux/errno.h>		 
+#include <linux/kernel.h>		 
+#include <linux/watchdog.h>		 
+#include <linux/init.h>			 
+#include <linux/fs.h>			 
+#include <linux/platform_device.h>	 
+#include <linux/pci.h>			 
+#include <linux/ioport.h>		 
+#include <linux/spinlock.h>		 
+#include <linux/uaccess.h>		 
+#include <linux/io.h>			 
 #include <linux/platform_data/itco_wdt.h>
 #include <linux/mfd/intel_pmc_bxt.h>
 
 #include "iTCO_vendor.h"
 
-/* Address definitions for the TCO */
-/* TCO base address */
+ 
+ 
 #define TCOBASE(p)	((p)->tco_res->start)
-/* SMI Control and Enable Register */
+ 
 #define SMI_EN(p)	((p)->smi_res->start)
 
-#define TCO_RLD(p)	(TCOBASE(p) + 0x00) /* TCO Timer Reload/Curr. Value */
-#define TCOv1_TMR(p)	(TCOBASE(p) + 0x01) /* TCOv1 Timer Initial Value*/
-#define TCO_DAT_IN(p)	(TCOBASE(p) + 0x02) /* TCO Data In Register	*/
-#define TCO_DAT_OUT(p)	(TCOBASE(p) + 0x03) /* TCO Data Out Register	*/
-#define TCO1_STS(p)	(TCOBASE(p) + 0x04) /* TCO1 Status Register	*/
-#define TCO2_STS(p)	(TCOBASE(p) + 0x06) /* TCO2 Status Register	*/
-#define TCO1_CNT(p)	(TCOBASE(p) + 0x08) /* TCO1 Control Register	*/
-#define TCO2_CNT(p)	(TCOBASE(p) + 0x0a) /* TCO2 Control Register	*/
-#define TCOv2_TMR(p)	(TCOBASE(p) + 0x12) /* TCOv2 Timer Initial Value*/
+#define TCO_RLD(p)	(TCOBASE(p) + 0x00)  
+#define TCOv1_TMR(p)	(TCOBASE(p) + 0x01)  
+#define TCO_DAT_IN(p)	(TCOBASE(p) + 0x02)  
+#define TCO_DAT_OUT(p)	(TCOBASE(p) + 0x03)  
+#define TCO1_STS(p)	(TCOBASE(p) + 0x04)  
+#define TCO2_STS(p)	(TCOBASE(p) + 0x06)  
+#define TCO1_CNT(p)	(TCOBASE(p) + 0x08)  
+#define TCO2_CNT(p)	(TCOBASE(p) + 0x0a)  
+#define TCOv2_TMR(p)	(TCOBASE(p) + 0x12)  
 
-/* internal variables */
+ 
 struct iTCO_wdt_private {
 	struct watchdog_device wddev;
 
-	/* TCO version/generation */
+	 
 	unsigned int iTCO_version;
 	struct resource *tco_res;
 	struct resource *smi_res;
-	/*
-	 * NO_REBOOT flag is Memory-Mapped GCS register bit 5 (TCO version 2),
-	 * or memory-mapped PMC register bit 4 (TCO version 3).
-	 */
+	 
 	unsigned long __iomem *gcs_pmc;
-	/* the lock for io operations */
+	 
 	spinlock_t io_lock;
-	/* the PCI-device */
+	 
 	struct pci_dev *pci_dev;
-	/* whether or not the watchdog has been suspended */
+	 
 	bool suspended;
-	/* no reboot API private data */
+	 
 	void *no_reboot_priv;
-	/* no reboot update function pointer */
+	 
 	int (*update_no_reboot_bit)(void *p, bool set);
 };
 
-/* module parameters */
-#define WATCHDOG_TIMEOUT 30	/* 30 sec default heartbeat */
-static int heartbeat = WATCHDOG_TIMEOUT;  /* in seconds */
+ 
+#define WATCHDOG_TIMEOUT 30	 
+static int heartbeat = WATCHDOG_TIMEOUT;   
 module_param(heartbeat, int, 0);
 MODULE_PARM_DESC(heartbeat, "Watchdog timeout in seconds. "
 	"5..76 (TCO v1) or 3..614 (TCO v2), default="
@@ -126,15 +86,9 @@ module_param(turn_SMI_watchdog_clear_off, int, 0);
 MODULE_PARM_DESC(turn_SMI_watchdog_clear_off,
 	"Turn off SMI clearing watchdog (depends on TCO-version)(default=1)");
 
-/*
- * Some TCO specific functions
- */
+ 
 
-/*
- * The iTCO v1 and v2's internal timer is stored as ticks which decrement
- * every 0.6 seconds.  v3's internal timer is stored as seconds (some
- * datasheets incorrectly state 0.6 seconds).
- */
+ 
 static inline unsigned int seconds_to_ticks(struct iTCO_wdt_private *p,
 					    int secs)
 {
@@ -187,7 +141,7 @@ static int update_no_reboot_bit_pci(void *priv, bool set)
 	pci_write_config_dword(p->pci_dev, 0xd4, val32);
 	pci_read_config_dword(p->pci_dev, 0xd4, &newval32);
 
-	/* make sure the update is successful */
+	 
 	if (val32 != newval32)
 		return -EIO;
 
@@ -207,7 +161,7 @@ static int update_no_reboot_bit_mem(void *priv, bool set)
 	writel(val32, p->gcs_pmc);
 	newval32 = readl(p->gcs_pmc);
 
-	/* make sure the update is successful */
+	 
 	if (val32 != newval32)
 		return -EIO;
 
@@ -227,7 +181,7 @@ static int update_no_reboot_bit_cnt(void *priv, bool set)
 	outw(val, TCO1_CNT(p));
 	newval = inw(TCO1_CNT(p));
 
-	/* make sure the update is successful */
+	 
 	return val != newval ? -EIO : 0;
 }
 
@@ -273,21 +227,20 @@ static int iTCO_wdt_start(struct watchdog_device *wd_dev)
 
 	iTCO_vendor_pre_start(p->smi_res, wd_dev->timeout);
 
-	/* disable chipset's NO_REBOOT bit */
+	 
 	if (p->update_no_reboot_bit(p->no_reboot_priv, false)) {
 		spin_unlock(&p->io_lock);
 		dev_err(wd_dev->parent, "failed to reset NO_REBOOT flag, reboot disabled by hardware/BIOS\n");
 		return -EIO;
 	}
 
-	/* Force the timer to its reload value by writing to the TCO_RLD
-	   register */
+	 
 	if (p->iTCO_version >= 2)
 		outw(0x01, TCO_RLD(p));
 	else if (p->iTCO_version == 1)
 		outb(0x01, TCO_RLD(p));
 
-	/* Bit 11: TCO Timer Halt -> 0 = The TCO timer is enabled to count */
+	 
 	val = inw(TCO1_CNT(p));
 	val &= 0xf7ff;
 	outw(val, TCO1_CNT(p));
@@ -308,13 +261,13 @@ static int iTCO_wdt_stop(struct watchdog_device *wd_dev)
 
 	iTCO_vendor_pre_stop(p->smi_res);
 
-	/* Bit 11: TCO Timer Halt -> 1 = The TCO timer is disabled */
+	 
 	val = inw(TCO1_CNT(p));
 	val |= 0x0800;
 	outw(val, TCO1_CNT(p));
 	val = inw(TCO1_CNT(p));
 
-	/* Set the NO_REBOOT bit to prevent later reboots, just for sure */
+	 
 	p->update_no_reboot_bit(p->no_reboot_priv, true);
 
 	spin_unlock(&p->io_lock);
@@ -330,13 +283,12 @@ static int iTCO_wdt_ping(struct watchdog_device *wd_dev)
 
 	spin_lock(&p->io_lock);
 
-	/* Reload the timer by writing to the TCO Timer Counter register */
+	 
 	if (p->iTCO_version >= 2) {
 		outw(0x01, TCO_RLD(p));
 	} else if (p->iTCO_version == 1) {
-		/* Reset the timeout status bit so that the timer
-		 * needs to count down twice again before rebooting */
-		outw(0x0008, TCO1_STS(p));	/* write 1 to clear bit */
+		 
+		outw(0x0008, TCO1_STS(p));	 
 
 		outb(0x01, TCO_RLD(p));
 	}
@@ -354,19 +306,19 @@ static int iTCO_wdt_set_timeout(struct watchdog_device *wd_dev, unsigned int t)
 
 	tmrval = seconds_to_ticks(p, t);
 
-	/* For TCO v1 the timer counts down twice before rebooting */
+	 
 	if (p->iTCO_version == 1)
 		tmrval /= 2;
 
-	/* from the specs: */
-	/* "Values of 0h-3h are ignored and should not be attempted" */
+	 
+	 
 	if (tmrval < 0x04)
 		return -EINVAL;
 	if ((p->iTCO_version >= 2 && tmrval > 0x3ff) ||
 	    (p->iTCO_version == 1 && tmrval > 0x03f))
 		return -EINVAL;
 
-	/* Write new heartbeat to watchdog */
+	 
 	if (p->iTCO_version >= 2) {
 		spin_lock(&p->io_lock);
 		val16 = inw(TCOv2_TMR(p));
@@ -402,7 +354,7 @@ static unsigned int iTCO_wdt_get_timeleft(struct watchdog_device *wd_dev)
 	unsigned char val8;
 	unsigned int time_left = 0;
 
-	/* read the TCO Timer */
+	 
 	if (p->iTCO_version >= 2) {
 		spin_lock(&p->io_lock);
 		val16 = inw(TCO_RLD(p));
@@ -423,12 +375,12 @@ static unsigned int iTCO_wdt_get_timeleft(struct watchdog_device *wd_dev)
 	return time_left;
 }
 
-/* Returns true if the watchdog was running */
+ 
 static bool iTCO_wdt_set_running(struct iTCO_wdt_private *p)
 {
 	u16 val;
 
-	/* Bit 11: TCO Timer Halt -> 0 = The TCO timer is enabled */
+	 
 	val = inw(TCO1_CNT(p));
 	if (!(val & BIT(11))) {
 		set_bit(WDOG_HW_RUNNING, &p->wddev.status);
@@ -437,9 +389,7 @@ static bool iTCO_wdt_set_running(struct iTCO_wdt_private *p)
 	return false;
 }
 
-/*
- *	Kernel Interfaces
- */
+ 
 
 static struct watchdog_info ident = {
 	.options =		WDIOF_SETTIMEOUT |
@@ -457,9 +407,7 @@ static const struct watchdog_ops iTCO_wdt_ops = {
 	.get_timeleft =		iTCO_wdt_get_timeleft,
 };
 
-/*
- *	Init & exit routines
- */
+ 
 
 static int iTCO_wdt_probe(struct platform_device *pdev)
 {
@@ -487,7 +435,7 @@ static int iTCO_wdt_probe(struct platform_device *pdev)
 
 	p->smi_res = platform_get_resource(pdev, IORESOURCE_IO, ICH_RES_IO_SMI);
 	if (p->smi_res) {
-		/* The TCO logic uses the TCO_EN bit in the SMI_EN register */
+		 
 		if (!devm_request_region(dev, p->smi_res->start,
 					 resource_size(p->smi_res),
 					 pdev->name)) {
@@ -503,10 +451,7 @@ static int iTCO_wdt_probe(struct platform_device *pdev)
 
 	iTCO_wdt_no_reboot_bit_setup(p, pdev, pdata);
 
-	/*
-	 * Get the Memory-Mapped GCS or PMC register, we need it for the
-	 * NO_REBOOT flag (TCO v2 and v3).
-	 */
+	 
 	if (p->iTCO_version >= 2 && p->iTCO_version < 6 &&
 	    !pdata->no_reboot_use_pmc) {
 		p->gcs_pmc = devm_platform_ioremap_resource(pdev, ICH_RES_MEM_GCS_PMC);
@@ -514,20 +459,17 @@ static int iTCO_wdt_probe(struct platform_device *pdev)
 			return PTR_ERR(p->gcs_pmc);
 	}
 
-	/* Check chipset's NO_REBOOT bit */
+	 
 	if (p->update_no_reboot_bit(p->no_reboot_priv, false) &&
 	    iTCO_vendor_check_noreboot_on()) {
 		dev_info(dev, "unable to reset NO_REBOOT flag, device disabled by hardware/BIOS\n");
-		return -ENODEV;	/* Cannot reset NO_REBOOT bit */
+		return -ENODEV;	 
 	}
 
 	if (turn_SMI_watchdog_clear_off >= p->iTCO_version) {
-		/*
-		 * Bit 13: TCO_EN -> 0
-		 * Disables TCO logic generating an SMI#
-		 */
+		 
 		val32 = inl(SMI_EN(p));
-		val32 &= 0xffffdfff;	/* Turn off SMI clearing watchdog */
+		val32 &= 0xffffdfff;	 
 		outl(val32, SMI_EN(p));
 	}
 
@@ -542,13 +484,13 @@ static int iTCO_wdt_probe(struct platform_device *pdev)
 	dev_info(dev, "Found a %s TCO device (Version=%d, TCOBASE=0x%04llx)\n",
 		pdata->name, pdata->version, (u64)TCOBASE(p));
 
-	/* Clear out the (probably old) status */
+	 
 	switch (p->iTCO_version) {
 	case 6:
 	case 5:
 	case 4:
-		outw(0x0008, TCO1_STS(p)); /* Clear the Time Out Status bit */
-		outw(0x0002, TCO2_STS(p)); /* Clear SECOND_TO_STS bit */
+		outw(0x0008, TCO1_STS(p));  
+		outw(0x0002, TCO2_STS(p));  
 		break;
 	case 3:
 		outl(0x20008, TCO1_STS(p));
@@ -556,9 +498,9 @@ static int iTCO_wdt_probe(struct platform_device *pdev)
 	case 2:
 	case 1:
 	default:
-		outw(0x0008, TCO1_STS(p)); /* Clear the Time Out Status bit */
-		outw(0x0002, TCO2_STS(p)); /* Clear SECOND_TO_STS bit */
-		outw(0x0004, TCO2_STS(p)); /* Clear BOOT_STS bit */
+		outw(0x0008, TCO1_STS(p));  
+		outw(0x0002, TCO2_STS(p));  
+		outw(0x0004, TCO2_STS(p));  
 		break;
 	}
 
@@ -574,15 +516,11 @@ static int iTCO_wdt_probe(struct platform_device *pdev)
 	platform_set_drvdata(pdev, p);
 
 	if (!iTCO_wdt_set_running(p)) {
-		/*
-		 * If the watchdog was not running set NO_REBOOT now to
-		 * prevent later reboots.
-		 */
+		 
 		p->update_no_reboot_bit(p->no_reboot_priv, true);
 	}
 
-	/* Check that the heartbeat value is within it's range;
-	   if not reset to the default */
+	 
 	if (iTCO_wdt_set_timeout(&p->wddev, heartbeat)) {
 		iTCO_wdt_set_timeout(&p->wddev, WATCHDOG_TIMEOUT);
 		dev_info(dev, "timeout value out of range, using %d\n",
@@ -603,11 +541,7 @@ static int iTCO_wdt_probe(struct platform_device *pdev)
 	return 0;
 }
 
-/*
- * Suspend-to-idle requires this, because it stops the ticks and timekeeping, so
- * the watchdog cannot be pinged while in that state.  In ACPI sleep states the
- * watchdog is stopped by the platform firmware.
- */
+ 
 
 #ifdef CONFIG_ACPI
 static inline bool __maybe_unused need_suspend(void)

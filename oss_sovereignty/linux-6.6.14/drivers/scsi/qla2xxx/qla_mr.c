@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * QLogic Fibre Channel HBA Driver
- * Copyright (c)  2003-2014 QLogic Corporation
- */
+
+ 
 #include "qla_def.h"
 #include <linux/delay.h>
 #include <linux/ktime.h>
@@ -13,27 +10,9 @@
 #include <linux/utsname.h>
 
 
-/* QLAFX00 specific Mailbox implementation functions */
+ 
 
-/*
- * qlafx00_mailbox_command
- *	Issue mailbox command and waits for completion.
- *
- * Input:
- *	ha = adapter block pointer.
- *	mcp = driver internal mbx struct pointer.
- *
- * Output:
- *	mb[MAX_MAILBOX_REGISTER_COUNT] = returned mailbox data.
- *
- * Returns:
- *	0 : QLA_SUCCESS = cmd performed success
- *	1 : QLA_FUNCTION_FAILED   (error encountered)
- *	6 : QLA_FUNCTION_TIMEOUT (timeout condition encountered)
- *
- * Context:
- *	Kernel context.
- */
+ 
 static int
 qlafx00_mailbox_command(scsi_qla_host_t *vha, struct mbx_cmd_32 *mcp)
 
@@ -77,7 +56,7 @@ qlafx00_mailbox_command(scsi_qla_host_t *vha, struct mbx_cmd_32 *mcp)
 	}
 
 	if (ha->flags.isp82xx_fw_hung) {
-		/* Setting Link-Down error */
+		 
 		mcp->mb[0] = MBS_LINK_DOWN_ERROR;
 		ql_log(ql_log_warn, vha, 0x1176,
 		    "FW hung = %d.\n", ha->flags.isp82xx_fw_hung);
@@ -85,13 +64,9 @@ qlafx00_mailbox_command(scsi_qla_host_t *vha, struct mbx_cmd_32 *mcp)
 		goto premature_exit;
 	}
 
-	/*
-	 * Wait for active mailbox commands to finish by waiting at most tov
-	 * seconds. This is to serialize actual issuing of mailbox cmds during
-	 * non ISP abort time.
-	 */
+	 
 	if (!wait_for_completion_timeout(&ha->mbx_cmd_comp, mcp->tov * HZ)) {
-		/* Timeout occurred. Return error. */
+		 
 		ql_log(ql_log_warn, vha, 0x1177,
 		    "Cmd access timeout, cmd=0x%x, Exiting.\n",
 		    mcp->mb[0]);
@@ -99,7 +74,7 @@ qlafx00_mailbox_command(scsi_qla_host_t *vha, struct mbx_cmd_32 *mcp)
 	}
 
 	ha->flags.mbox_busy = 1;
-	/* Save mailbox command for debug */
+	 
 	ha->mcp32 = mcp;
 
 	ql_dbg(ql_dbg_mbx, vha, 0x1178,
@@ -107,7 +82,7 @@ qlafx00_mailbox_command(scsi_qla_host_t *vha, struct mbx_cmd_32 *mcp)
 
 	spin_lock_irqsave(&ha->hardware_lock, flags);
 
-	/* Load mailbox registers. */
+	 
 	optr = &reg->ispfx00.mailbox0;
 
 	iptr = mcp->mb;
@@ -123,7 +98,7 @@ qlafx00_mailbox_command(scsi_qla_host_t *vha, struct mbx_cmd_32 *mcp)
 		iptr++;
 	}
 
-	/* Issue set host interrupt command to send cmd out. */
+	 
 	ha->flags.mbox_int = 0;
 	clear_bit(MBX_INTERRUPT, &ha->mbx_cmd_flags);
 
@@ -134,12 +109,12 @@ qlafx00_mailbox_command(scsi_qla_host_t *vha, struct mbx_cmd_32 *mcp)
 	ql_dump_buffer(ql_dbg_mbx + ql_dbg_buffer, vha, 0x1174,
 	    ((uint8_t *)mcp->mb + 0x20), 8);
 
-	/* Unlock mbx registers and wait for interrupt */
+	 
 	ql_dbg(ql_dbg_mbx, vha, 0x1179,
 	    "Going to unlock irq & waiting for interrupts. "
 	    "jiffies=%lx.\n", jiffies);
 
-	/* Wait for mbx cmd completion until timeout */
+	 
 	if ((!abort_active && io_lock_on) || IS_NOPOLLING_TYPE(ha)) {
 		set_bit(MBX_INTR_WAIT, &ha->mbx_cmd_flags);
 
@@ -155,39 +130,39 @@ qlafx00_mailbox_command(scsi_qla_host_t *vha, struct mbx_cmd_32 *mcp)
 		QLAFX00_SET_HST_INTR(ha, ha->mbx_intr_code);
 		spin_unlock_irqrestore(&ha->hardware_lock, flags);
 
-		wait_time = jiffies + mcp->tov * HZ; /* wait at most tov secs */
+		wait_time = jiffies + mcp->tov * HZ;  
 		while (!ha->flags.mbox_int) {
 			if (time_after(jiffies, wait_time))
 				break;
 
-			/* Check for pending interrupts. */
+			 
 			qla2x00_poll(ha->rsp_q_map[0]);
 
 			if (!ha->flags.mbox_int &&
 			    !(IS_QLA2200(ha) &&
 			    command == MBC_LOAD_RISC_RAM_EXTENDED))
 				usleep_range(10000, 11000);
-		} /* while */
+		}  
 		ql_dbg(ql_dbg_mbx, vha, 0x112d,
 		    "Waited %d sec.\n",
 		    (uint)((jiffies - (wait_time - (mcp->tov * HZ)))/HZ));
 	}
 
-	/* Check whether we timed out */
+	 
 	if (ha->flags.mbox_int) {
 		uint32_t *iptr2;
 
 		ql_dbg(ql_dbg_mbx, vha, 0x112e,
 		    "Cmd=%x completed.\n", command);
 
-		/* Got interrupt. Clear the flag. */
+		 
 		ha->flags.mbox_int = 0;
 		clear_bit(MBX_INTERRUPT, &ha->mbx_cmd_flags);
 
 		if (ha->mailbox_out32[0] != MBS_COMMAND_COMPLETE)
 			rval = QLA_FUNCTION_FAILED;
 
-		/* Load return mailbox registers. */
+		 
 		iptr2 = mcp->mb;
 		iptr = (uint32_t *)&ha->mailbox_out32[0];
 		mboxes = mcp->in_mb;
@@ -206,14 +181,14 @@ qlafx00_mailbox_command(scsi_qla_host_t *vha, struct mbx_cmd_32 *mcp)
 
 	ha->flags.mbox_busy = 0;
 
-	/* Clean up */
+	 
 	ha->mcp32 = NULL;
 
 	if ((abort_active || !io_lock_on) && !IS_NOPOLLING_TYPE(ha)) {
 		ql_dbg(ql_dbg_mbx, vha, 0x113a,
 		    "checking for additional resp interrupt.\n");
 
-		/* polling mode for non isp_abort commands. */
+		 
 		qla2x00_poll(ha->rsp_q_map[0]);
 	}
 
@@ -221,7 +196,7 @@ qlafx00_mailbox_command(scsi_qla_host_t *vha, struct mbx_cmd_32 *mcp)
 	    mcp->mb[0] != MBC_GEN_SYSTEM_ERROR) {
 		if (!io_lock_on || (mcp->flags & IOCTL_CMD) ||
 		    ha->flags.eeh_busy) {
-			/* not in dpc. schedule it for dpc to take over. */
+			 
 			ql_dbg(ql_dbg_mbx, vha, 0x115d,
 			    "Timeout, schedule isp_abort_needed.\n");
 
@@ -238,7 +213,7 @@ qlafx00_mailbox_command(scsi_qla_host_t *vha, struct mbx_cmd_32 *mcp)
 				qla2xxx_wake_dpc(vha);
 			}
 		} else if (!abort_active) {
-			/* call abort directly since we are in the DPC thread */
+			 
 			ql_dbg(ql_dbg_mbx, vha, 0x1160,
 			    "Timeout, calling abort_isp.\n");
 
@@ -254,7 +229,7 @@ qlafx00_mailbox_command(scsi_qla_host_t *vha, struct mbx_cmd_32 *mcp)
 				set_bit(ABORT_ISP_ACTIVE, &vha->dpc_flags);
 				clear_bit(ISP_ABORT_NEEDED, &vha->dpc_flags);
 				if (ha->isp_ops->abort_isp(vha)) {
-					/* Failed. retry later. */
+					 
 					set_bit(ISP_ABORT_NEEDED,
 					    &vha->dpc_flags);
 				}
@@ -266,7 +241,7 @@ qlafx00_mailbox_command(scsi_qla_host_t *vha, struct mbx_cmd_32 *mcp)
 	}
 
 premature_exit:
-	/* Allow next mbx cmd to come in. */
+	 
 	complete(&ha->mbx_cmd_comp);
 
 	if (rval) {
@@ -281,19 +256,7 @@ premature_exit:
 	return rval;
 }
 
-/*
- * qlafx00_driver_shutdown
- *	Indicate a driver shutdown to firmware.
- *
- * Input:
- *	ha = adapter block pointer.
- *
- * Returns:
- *	local function return status code.
- *
- * Context:
- *	Kernel context.
- */
+ 
 int
 qlafx00_driver_shutdown(scsi_qla_host_t *vha, int tmo)
 {
@@ -325,21 +288,7 @@ qlafx00_driver_shutdown(scsi_qla_host_t *vha, int tmo)
 	return rval;
 }
 
-/*
- * qlafx00_get_firmware_state
- *	Get adapter firmware state.
- *
- * Input:
- *	ha = adapter block pointer.
- *	TARGET_QUEUE_LOCK must be released.
- *	ADAPTER_STATE_LOCK must be released.
- *
- * Returns:
- *	qla7xxx local function return status code.
- *
- * Context:
- *	Kernel context.
- */
+ 
 static int
 qlafx00_get_firmware_state(scsi_qla_host_t *vha, uint32_t *states)
 {
@@ -357,7 +306,7 @@ qlafx00_get_firmware_state(scsi_qla_host_t *vha, uint32_t *states)
 	mcp->flags = 0;
 	rval = qlafx00_mailbox_command(vha, mcp);
 
-	/* Return firmware states. */
+	 
 	states[0] = mcp->mb[1];
 
 	if (rval != QLA_SUCCESS) {
@@ -370,23 +319,7 @@ qlafx00_get_firmware_state(scsi_qla_host_t *vha, uint32_t *states)
 	return rval;
 }
 
-/*
- * qlafx00_init_firmware
- *	Initialize adapter firmware.
- *
- * Input:
- *	ha = adapter block pointer.
- *	dptr = Initialization control block pointer.
- *	size = size of initialization control block.
- *	TARGET_QUEUE_LOCK must be released.
- *	ADAPTER_STATE_LOCK must be released.
- *
- * Returns:
- *	qlafx00 local function return status code.
- *
- * Context:
- *	Kernel context.
- */
+ 
 int
 qlafx00_init_firmware(scsi_qla_host_t *vha, uint16_t size)
 {
@@ -421,9 +354,7 @@ qlafx00_init_firmware(scsi_qla_host_t *vha, uint16_t size)
 	return rval;
 }
 
-/*
- * qlafx00_mbx_reg_test
- */
+ 
 static int
 qlafx00_mbx_reg_test(scsi_qla_host_t *vha)
 {
@@ -486,12 +417,7 @@ qlafx00_mbx_reg_test(scsi_qla_host_t *vha)
 	return rval;
 }
 
-/**
- * qlafx00_pci_config() - Setup ISPFx00 PCI configuration registers.
- * @vha: HA context
- *
- * Returns 0 on success.
- */
+ 
 int
 qlafx00_pci_config(scsi_qla_host_t *vha)
 {
@@ -506,7 +432,7 @@ qlafx00_pci_config(scsi_qla_host_t *vha)
 	w &= ~PCI_COMMAND_INTX_DISABLE;
 	pci_write_config_word(ha->pdev, PCI_COMMAND, w);
 
-	/* PCIe -- adjust Maximum Read Request Size (2048). */
+	 
 	if (pci_is_pcie(ha->pdev))
 		pcie_set_readrq(ha->pdev, 2048);
 
@@ -515,11 +441,7 @@ qlafx00_pci_config(scsi_qla_host_t *vha)
 	return QLA_SUCCESS;
 }
 
-/**
- * qlafx00_soc_cpu_reset() - Perform warm reset of iSA(CPUs being reset on SOC).
- * @vha: HA context
- *
- */
+ 
 static inline void
 qlafx00_soc_cpu_reset(scsi_qla_host_t *vha)
 {
@@ -534,13 +456,13 @@ qlafx00_soc_cpu_reset(scsi_qla_host_t *vha)
 	QLAFX00_SET_HBA_SOC_REG(ha, 0x80004, 0);
 	QLAFX00_SET_HBA_SOC_REG(ha, 0x82004, 0);
 
-	/* stop the XOR DMA engines */
+	 
 	QLAFX00_SET_HBA_SOC_REG(ha, 0x60920, 0x02);
 	QLAFX00_SET_HBA_SOC_REG(ha, 0x60924, 0x02);
 	QLAFX00_SET_HBA_SOC_REG(ha, 0xf0920, 0x02);
 	QLAFX00_SET_HBA_SOC_REG(ha, 0xf0924, 0x02);
 
-	/* stop the IDMA engines */
+	 
 	reg_val = QLAFX00_GET_HBA_SOC_REG(ha, 0x60840);
 	reg_val &= ~(1<<12);
 	QLAFX00_SET_HBA_SOC_REG(ha, 0x60840, reg_val);
@@ -564,7 +486,7 @@ qlafx00_soc_cpu_reset(scsi_qla_host_t *vha)
 		udelay(100);
 	}
 
-	/* Set all 4 cores in reset */
+	 
 	for (i = 0; i < 4; i++) {
 		QLAFX00_SET_HBA_SOC_REG(ha,
 		    (SOC_SW_RST_CONTROL_REG_CORE0 + 8*i), (0xF01));
@@ -572,61 +494,56 @@ qlafx00_soc_cpu_reset(scsi_qla_host_t *vha)
 		    (SOC_SW_RST_CONTROL_REG_CORE0 + 4 + 8*i), (0x01010101));
 	}
 
-	/* Reset all units in Fabric */
+	 
 	QLAFX00_SET_HBA_SOC_REG(ha, SOC_FABRIC_RST_CONTROL_REG, (0x011f0101));
 
-	/* */
+	 
 	QLAFX00_SET_HBA_SOC_REG(ha, 0x10610, 1);
 	QLAFX00_SET_HBA_SOC_REG(ha, 0x10600, 0);
 
-	/* Set all 4 core Memory Power Down Registers */
+	 
 	for (i = 0; i < 5; i++) {
 		QLAFX00_SET_HBA_SOC_REG(ha,
 		    (SOC_PWR_MANAGEMENT_PWR_DOWN_REG + 4*i), (0x0));
 	}
 
-	/* Reset all interrupt control registers */
+	 
 	for (i = 0; i < 115; i++) {
 		QLAFX00_SET_HBA_SOC_REG(ha,
 		    (SOC_INTERRUPT_SOURCE_I_CONTROL_REG + 4*i), (0x0));
 	}
 
-	/* Reset Timers control registers. per core */
+	 
 	for (core = 0; core < 4; core++)
 		for (i = 0; i < 8; i++)
 			QLAFX00_SET_HBA_SOC_REG(ha,
 			    (SOC_CORE_TIMER_REG + 0x100*core + 4*i), (0x0));
 
-	/* Reset per core IRQ ack register */
+	 
 	for (core = 0; core < 4; core++)
 		QLAFX00_SET_HBA_SOC_REG(ha,
 		    (SOC_IRQ_ACK_REG + 0x100*core), (0x3FF));
 
-	/* Set Fabric control and config to defaults */
+	 
 	QLAFX00_SET_HBA_SOC_REG(ha, SOC_FABRIC_CONTROL_REG, (0x2));
 	QLAFX00_SET_HBA_SOC_REG(ha, SOC_FABRIC_CONFIG_REG, (0x3));
 
-	/* Kick in Fabric units */
+	 
 	QLAFX00_SET_HBA_SOC_REG(ha, SOC_FABRIC_RST_CONTROL_REG, (0x0));
 
-	/* Kick in Core0 to start boot process */
+	 
 	QLAFX00_SET_HBA_SOC_REG(ha, SOC_SW_RST_CONTROL_REG_CORE0, (0xF00));
 
 	spin_unlock_irqrestore(&ha->hardware_lock, flags);
 
-	/* Wait 10secs for soft-reset to complete. */
+	 
 	for (cnt = 10; cnt; cnt--) {
 		msleep(1000);
 		barrier();
 	}
 }
 
-/**
- * qlafx00_soft_reset() - Soft Reset ISPFx00.
- * @vha: HA context
- *
- * Returns 0 on success.
- */
+ 
 int
 qlafx00_soft_reset(scsi_qla_host_t *vha)
 {
@@ -643,12 +560,7 @@ qlafx00_soft_reset(scsi_qla_host_t *vha)
 	return QLA_SUCCESS;
 }
 
-/**
- * qlafx00_chip_diag() - Test ISPFx00 for proper operation.
- * @vha: HA context
- *
- * Returns 0 on success.
- */
+ 
 int
 qlafx00_chip_diag(scsi_qla_host_t *vha)
 {
@@ -663,7 +575,7 @@ qlafx00_chip_diag(scsi_qla_host_t *vha)
 		ql_log(ql_log_warn, vha, 0x1165,
 		    "Failed mailbox send register test\n");
 	} else {
-		/* Flag a successful rval */
+		 
 		rval = QLA_SUCCESS;
 	}
 	return rval;
@@ -681,7 +593,7 @@ qlafx00_config_rings(struct scsi_qla_host *vha)
 	wrt_reg_dword(&reg->rsp_q_in, 0);
 	wrt_reg_dword(&reg->rsp_q_out, 0);
 
-	/* PCI posting */
+	 
 	rd_reg_dword(&reg->rsp_q_out);
 }
 
@@ -749,7 +661,7 @@ qlafx00_iospace_config(struct qla_hw_data *ha)
 		goto iospace_error_exit;
 	}
 
-	/* Use MMIO operations for all accesses. */
+	 
 	if (!(pci_resource_flags(ha->pdev, 0) & IORESOURCE_MEM)) {
 		ql_log_pci(ql_log_warn, ha->pdev, 0x014f,
 		    "Invalid pci I/O region size (%s).\n",
@@ -792,7 +704,7 @@ qlafx00_iospace_config(struct qla_hw_data *ha)
 		goto iospace_error_exit;
 	}
 
-	/* Determine queue resources */
+	 
 	ha->max_req_queues = ha->max_rsp_queues = 1;
 
 	ql_log_pci(ql_log_info, ha->pdev, 0x012c,
@@ -877,7 +789,7 @@ qlafx00_init_fw_ready(scsi_qla_host_t *vha)
 {
 	int rval = 0;
 	unsigned long wtime;
-	uint16_t wait_time;	/* Wait time */
+	uint16_t wait_time;	 
 	struct qla_hw_data *ha = vha->hw;
 	struct device_reg_fx00 __iomem *reg = &ha->iobase->ispfx00;
 	uint32_t aenmbx, aenmbx7 = 0;
@@ -885,7 +797,7 @@ qlafx00_init_fw_ready(scsi_qla_host_t *vha)
 	uint32_t state[5];
 	bool done = false;
 
-	/* 30 seconds wait - Adjust if required */
+	 
 	wait_time = 30;
 
 	pseudo_aen = rd_reg_dword(&reg->pseudoaen);
@@ -898,7 +810,7 @@ qlafx00_init_fw_ready(scsi_qla_host_t *vha)
 			qlafx00_soft_reset(vha);
 	}
 
-	/* wait time before firmware ready */
+	 
 	wtime = jiffies + (wait_time * HZ);
 	do {
 		aenmbx = rd_reg_dword(&reg->aenmailbox0);
@@ -919,7 +831,7 @@ qlafx00_init_fw_ready(scsi_qla_host_t *vha)
 			break;
 
 		case MBA_FW_RESTART_CMPLT:
-			/* Set the mbx and rqstq intr code */
+			 
 			aenmbx7 = rd_reg_dword(&reg->aenmailbox7);
 			ha->mbx_intr_code = MSW(aenmbx7);
 			ha->rqstq_intr_code = LSW(aenmbx7);
@@ -942,22 +854,7 @@ qlafx00_init_fw_ready(scsi_qla_host_t *vha)
 			if ((aenmbx & 0xFF00) == MBA_FW_INIT_INPROGRESS)
 				break;
 
-			/* If fw is apparently not ready. In order to continue,
-			 * we might need to issue Mbox cmd, but the problem is
-			 * that the DoorBell vector values that come with the
-			 * 8060 AEN are most likely gone by now (and thus no
-			 * bell would be rung on the fw side when mbox cmd is
-			 * issued). We have to therefore grab the 8060 AEN
-			 * shadow regs (filled in by FW when the last 8060
-			 * AEN was being posted).
-			 * Do the following to determine what is needed in
-			 * order to get the FW ready:
-			 * 1. reload the 8060 AEN values from the shadow regs
-			 * 2. clear int status to get rid of possible pending
-			 *    interrupts
-			 * 3. issue Get FW State Mbox cmd to determine fw state
-			 * Set the mbx and rqstq intr code from Shadow Regs
-			 */
+			 
 			aenmbx7 = rd_reg_dword(&reg->initval7);
 			ha->mbx_intr_code = MSW(aenmbx7);
 			ha->rqstq_intr_code = LSW(aenmbx7);
@@ -971,26 +868,21 @@ qlafx00_init_fw_ready(scsi_qla_host_t *vha)
 			    ha->mbx_intr_code, ha->rqstq_intr_code);
 			QLAFX00_CLR_INTR_REG(ha, QLAFX00_HST_INT_STS_BITS);
 
-			/* Get the FW state */
+			 
 			rval = qlafx00_get_firmware_state(vha, state);
 			if (rval != QLA_SUCCESS) {
-				/* Retry if timer has not expired */
+				 
 				break;
 			}
 
 			if (state[0] == FSTATE_FX00_CONFIG_WAIT) {
-				/* Firmware is waiting to be
-				 * initialized by driver
-				 */
+				 
 				rval = QLA_SUCCESS;
 				done = true;
 				break;
 			}
 
-			/* Issue driver shutdown and wait until f/w recovers.
-			 * Driver should continue to poll until 8060 AEN is
-			 * received indicating firmware recovery.
-			 */
+			 
 			ql_dbg(ql_dbg_init, vha, 0x0136,
 			    "Sending Driver shutdown fw_state 0x%x\n",
 			    state[0]);
@@ -1015,7 +907,7 @@ qlafx00_init_fw_ready(scsi_qla_host_t *vha)
 				done = true;
 				break;
 			}
-			/* Delay for a while */
+			 
 			msleep(500);
 		}
 	} while (!done);
@@ -1030,28 +922,23 @@ qlafx00_init_fw_ready(scsi_qla_host_t *vha)
 	return rval;
 }
 
-/*
- * qlafx00_fw_ready() - Waits for firmware ready.
- * @ha: HA context
- *
- * Returns 0 on success.
- */
+ 
 int
 qlafx00_fw_ready(scsi_qla_host_t *vha)
 {
 	int		rval;
 	unsigned long	wtime;
-	uint16_t	wait_time;	/* Wait time if loop is coming ready */
+	uint16_t	wait_time;	 
 	uint32_t	state[5];
 
 	rval = QLA_SUCCESS;
 
 	wait_time = 10;
 
-	/* wait time before firmware ready */
+	 
 	wtime = jiffies + (wait_time * HZ);
 
-	/* Wait for ISP to finish init */
+	 
 	if (!vha->flags.init_done)
 		ql_dbg(ql_dbg_init, vha, 0x013a,
 		    "Waiting for init to complete...\n");
@@ -1072,7 +959,7 @@ qlafx00_fw_ready(scsi_qla_host_t *vha)
 		if (time_after_eq(jiffies, wtime))
 			break;
 
-		/* Delay for a while */
+		 
 		msleep(500);
 
 		ql_dbg(ql_dbg_init, vha, 0x013c,
@@ -1117,7 +1004,7 @@ qlafx00_find_all_targets(scsi_qla_host_t *vha,
 	ql_dump_buffer(ql_dbg_disc + ql_dbg_init, vha, 0x2089,
 	    ha->gid_list, 32);
 
-	/* Allocate temporary rmtport for any new rmtports discovered. */
+	 
 	new_fcport = qla2x00_alloc_fcport(vha, GFP_KERNEL);
 	if (new_fcport == NULL)
 		return QLA_MEMORY_ALLOC_FAILED;
@@ -1125,7 +1012,7 @@ qlafx00_find_all_targets(scsi_qla_host_t *vha,
 	for_each_set_bit(tgt_id, (void *)ha->gid_list,
 	    QLAFX00_TGT_NODE_LIST_SIZE) {
 
-		/* Send get target node info */
+		 
 		new_fcport->tgt_id = tgt_id;
 		rval = qlafx00_fx_disc(vha, new_fcport,
 		    FXDISC_GET_TGT_NODE_INFO);
@@ -1136,7 +1023,7 @@ qlafx00_find_all_targets(scsi_qla_host_t *vha,
 			continue;
 		}
 
-		/* Locate matching device in database. */
+		 
 		found = 0;
 		list_for_each_entry(fcport, &vha->vp_fcports, list) {
 			if (memcmp(new_fcport->port_name,
@@ -1145,17 +1032,12 @@ qlafx00_find_all_targets(scsi_qla_host_t *vha,
 
 			found++;
 
-			/*
-			 * If tgt_id is same and state FCS_ONLINE, nothing
-			 * changed.
-			 */
+			 
 			if (fcport->tgt_id == new_fcport->tgt_id &&
 			    atomic_read(&fcport->state) == FCS_ONLINE)
 				break;
 
-			/*
-			 * Tgt ID changed or device was marked to be updated.
-			 */
+			 
 			ql_dbg(ql_dbg_disc + ql_dbg_init, vha, 0x208b,
 			    "TGT-ID Change(%s): Present tgt id: "
 			    "0x%x state: 0x%x "
@@ -1196,10 +1078,10 @@ qlafx00_find_all_targets(scsi_qla_host_t *vha,
 		if (found)
 			continue;
 
-		/* If device was not in our fcports list, then add it. */
+		 
 		list_add_tail(&new_fcport->list, new_fcports);
 
-		/* Allocate a new replacement fcport. */
+		 
 		new_fcport = qla2x00_alloc_fcport(vha, GFP_KERNEL);
 		if (new_fcport == NULL)
 			return QLA_MEMORY_ALLOC_FAILED;
@@ -1209,17 +1091,7 @@ qlafx00_find_all_targets(scsi_qla_host_t *vha,
 	return rval;
 }
 
-/*
- * qlafx00_configure_all_targets
- *      Setup target devices with node ID's.
- *
- * Input:
- *      ha = adapter block pointer.
- *
- * Returns:
- *      0 = success.
- *      BIT_0 = error
- */
+ 
 static int
 qlafx00_configure_all_targets(scsi_qla_host_t *vha)
 {
@@ -1240,9 +1112,7 @@ qlafx00_configure_all_targets(scsi_qla_host_t *vha)
 		return rval;
 	}
 
-	/*
-	 * Delete all previous devices marked lost.
-	 */
+	 
 	list_for_each_entry(fcport, &vha->vp_fcports, list) {
 		if (test_bit(LOOP_RESYNC_NEEDED, &vha->dpc_flags))
 			break;
@@ -1253,9 +1123,7 @@ qlafx00_configure_all_targets(scsi_qla_host_t *vha)
 		}
 	}
 
-	/*
-	 * Add the new devices to our devices list.
-	 */
+	 
 	list_for_each_entry_safe(fcport, rmptemp, &new_fcports, list) {
 		if (test_bit(LOOP_RESYNC_NEEDED, &vha->dpc_flags))
 			break;
@@ -1270,7 +1138,7 @@ qlafx00_configure_all_targets(scsi_qla_host_t *vha)
 		    (unsigned long long)wwn_to_u64(fcport->port_name));
 	}
 
-	/* Free all new device structures not processed. */
+	 
 	list_for_each_entry_safe(fcport, rmptemp, &new_fcports, list) {
 		list_del(&fcport->list);
 		qla2x00_free_fcport(fcport);
@@ -1279,18 +1147,7 @@ qlafx00_configure_all_targets(scsi_qla_host_t *vha)
 	return rval;
 }
 
-/*
- * qlafx00_configure_devices
- *      Updates Fibre Channel Device Database with what is actually on loop.
- *
- * Input:
- *      ha                = adapter block pointer.
- *
- * Returns:
- *      0 = success.
- *      1 = error.
- *      2 = database was full and device was not configured.
- */
+ 
 int
 qlafx00_configure_devices(scsi_qla_host_t *vha)
 {
@@ -1354,7 +1211,7 @@ qlafx00_abort_isp_cleanup(scsi_qla_host_t *vha, bool critemp)
 			    QLAFX00_LOOP_DOWN_TIME);
 	}
 
-	/* Clear all async request states across all VPs. */
+	 
 	list_for_each_entry(fcport, &vha->vp_fcports, list) {
 		fcport->flags = 0;
 		if (atomic_read(&fcport->state) == FCS_ONLINE)
@@ -1365,7 +1222,7 @@ qlafx00_abort_isp_cleanup(scsi_qla_host_t *vha, bool critemp)
 		if (critemp) {
 			qla2x00_abort_all_cmds(vha, DID_NO_CONNECT << 16);
 		} else {
-			/* Requeue all commands in outstanding command list. */
+			 
 			qla2x00_abort_all_cmds(vha, DID_RESET << 16);
 		}
 	}
@@ -1376,22 +1233,14 @@ qlafx00_abort_isp_cleanup(scsi_qla_host_t *vha, bool critemp)
 	else
 		set_bit(FX00_RESET_RECOVERY, &vha->dpc_flags);
 
-	/* Clear the Interrupts */
+	 
 	QLAFX00_CLR_INTR_REG(ha, QLAFX00_HST_INT_STS_BITS);
 
 	ql_log(ql_log_info, vha, 0x0140,
 	    "%s Done done - ha=%p.\n", __func__, ha);
 }
 
-/**
- * qlafx00_init_response_q_entries() - Initializes response queue entries.
- * @rsp: response queue
- *
- * Beginning of request ring has initialization control block already built
- * by nvram config routine.
- *
- * Returns 0 on success.
- */
+ 
 void
 qlafx00_init_response_q_entries(struct rsp_que *rsp)
 {
@@ -1434,17 +1283,17 @@ qlafx00_rescan_isp(scsi_qla_host_t *vha)
 	    ha->mbx_intr_code, ha->rqstq_intr_code,
 	    ha->req_que_off, ha->rsp_que_len);
 
-	/* Clear the Interrupts */
+	 
 	QLAFX00_CLR_INTR_REG(ha, QLAFX00_HST_INT_STS_BITS);
 
 	status = qla2x00_init_rings(vha);
 	if (!status) {
 		vha->flags.online = 1;
 
-		/* if no cable then assume it's good */
+		 
 		if ((vha->device_flags & DFLG_NO_CABLE))
 			status = 0;
-		/* Register system information */
+		 
 		if (qlafx00_fx_disc(vha,
 		    &vha->hw->mr.fcport, FXDISC_REG_HOST_INFO))
 			ql_dbg(ql_dbg_disc, vha, 0x2095,
@@ -1463,7 +1312,7 @@ qlafx00_timer_routine(scsi_qla_host_t *vha)
 	struct device_reg_fx00 __iomem *reg = &ha->iobase->ispfx00;
 	uint32_t tempc;
 
-	/* Check firmware health */
+	 
 	if (ha->mr.fw_hbt_cnt)
 		ha->mr.fw_hbt_cnt--;
 	else {
@@ -1490,14 +1339,14 @@ qlafx00_timer_routine(scsi_qla_host_t *vha)
 	}
 
 	if (test_bit(FX00_RESET_RECOVERY, &vha->dpc_flags)) {
-		/* Reset recovery to be performed in timer routine */
+		 
 		aenmbx0 = rd_reg_dword(&reg->aenmailbox0);
 		if (ha->mr.fw_reset_timer_exp) {
 			set_bit(ISP_ABORT_NEEDED, &vha->dpc_flags);
 			qla2xxx_wake_dpc(vha);
 			ha->mr.fw_reset_timer_exp = 0;
 		} else if (aenmbx0 == MBA_FW_RESTART_CMPLT) {
-			/* Wake up DPC to rescan the targets */
+			 
 			set_bit(FX00_TARGET_SCAN, &vha->dpc_flags);
 			clear_bit(FX00_RESET_RECOVERY, &vha->dpc_flags);
 			qla2xxx_wake_dpc(vha);
@@ -1537,10 +1386,7 @@ qlafx00_timer_routine(scsi_qla_host_t *vha)
 		ha->mr.fw_reset_timer_tick--;
 	}
 	if (test_bit(FX00_CRITEMP_RECOVERY, &vha->dpc_flags)) {
-		/*
-		 * Critical temperature recovery to be
-		 * performed in timer routine
-		 */
+		 
 		if (ha->mr.fw_critemp_timer_tick == 0) {
 			tempc = QLAFX00_GET_TEMPERATURE(ha);
 			ql_dbg(ql_dbg_timer, vha, 0x6012,
@@ -1560,10 +1406,7 @@ qlafx00_timer_routine(scsi_qla_host_t *vha)
 		}
 	}
 	if (ha->mr.host_info_resend) {
-		/*
-		 * Incomplete host info might be sent to firmware
-		 * durinng system boot - info should be resend
-		 */
+		 
 		if (ha->mr.hinfo_resend_timer_tick == 0) {
 			ha->mr.host_info_resend = false;
 			set_bit(FX00_HOST_INFO_RESEND, &vha->dpc_flags);
@@ -1577,16 +1420,7 @@ qlafx00_timer_routine(scsi_qla_host_t *vha)
 
 }
 
-/*
- *  qlfx00a_reset_initialize
- *      Re-initialize after a iSA device reset.
- *
- * Input:
- *      ha  = adapter block pointer.
- *
- * Returns:
- *      0 = success
- */
+ 
 int
 qlafx00_reset_initialize(scsi_qla_host_t *vha)
 {
@@ -1611,16 +1445,7 @@ qlafx00_reset_initialize(scsi_qla_host_t *vha)
 	return QLA_SUCCESS;
 }
 
-/*
- *  qlafx00_abort_isp
- *      Resets ISP and aborts all outstanding commands.
- *
- * Input:
- *      ha  = adapter block pointer.
- *
- * Returns:
- *      0 = success
- */
+ 
 int
 qlafx00_abort_isp(scsi_qla_host_t *vha)
 {
@@ -1641,7 +1466,7 @@ qlafx00_abort_isp(scsi_qla_host_t *vha)
 		vha->qla_stats.total_isp_aborts++;
 		ha->isp_ops->reset_chip(vha);
 		set_bit(FX00_RESET_RECOVERY, &vha->dpc_flags);
-		/* Clear the Interrupts */
+		 
 		QLAFX00_CLR_INTR_REG(ha, QLAFX00_HST_INT_STS_BITS);
 	}
 
@@ -1656,7 +1481,7 @@ qlafx00_get_fcport(struct scsi_qla_host *vha, int tgt_id)
 {
 	fc_port_t	*fcport;
 
-	/* Check for matching device in remote port list. */
+	 
 	list_for_each_entry(fcport, &vha->vp_fcports, list) {
 		if (fcport->tgt_id == tgt_id) {
 			ql_dbg(ql_dbg_async, vha, 0x5072,
@@ -1695,7 +1520,7 @@ qlafx00_process_aen(struct scsi_qla_host *vha, struct qla_work_evt *evt)
 	aen_data = evt->u.aenfx.evtcode;
 
 	switch (evt->u.aenfx.evtcode) {
-	case QLAFX00_MBA_PORT_UPDATE:		/* Port database update */
+	case QLAFX00_MBA_PORT_UPDATE:		 
 		if (evt->u.aenfx.mbx[1] == 0) {
 			if (evt->u.aenfx.mbx[2] == 1) {
 				if (!vha->flags.fw_tgt_reported)
@@ -1726,7 +1551,7 @@ qlafx00_process_aen(struct scsi_qla_host *vha, struct qla_work_evt *evt)
 		aen_code = FCH_EVT_LINKDOWN;
 		aen_data = 0;
 		break;
-	case QLAFX00_MBA_TEMP_CRIT:	/* Critical temperature event */
+	case QLAFX00_MBA_TEMP_CRIT:	 
 		ql_log(ql_log_info, vha, 0x5082,
 		    "Process critical temperature event "
 		    "aenmb[0]: %x\n",
@@ -1787,7 +1612,7 @@ qlafx00_fx_disc(scsi_qla_host_t *vha, fc_port_t *fcport, uint16_t fx_type)
 	struct register_host_info *preg_hsi;
 	struct new_utsname *p_sysid = NULL;
 
-	/* ref: INIT */
+	 
 	sp = qla2x00_get_sp(vha, fcport, GFP_KERNEL);
 	if (!sp)
 		goto done;
@@ -1974,22 +1799,13 @@ done_unmap_req:
 		dma_free_coherent(&ha->pdev->dev, fdisc->u.fxiocb.req_len,
 		    fdisc->u.fxiocb.req_addr, fdisc->u.fxiocb.req_dma_handle);
 done_free_sp:
-	/* ref: INIT */
+	 
 	kref_put(&sp->cmd_kref, qla2x00_sp_release);
 done:
 	return rval;
 }
 
-/*
- * qlafx00_initialize_adapter
- *      Initialize board.
- *
- * Input:
- *      ha = adapter block pointer.
- *
- * Returns:
- *      0 = success
- */
+ 
 int
 qlafx00_initialize_adapter(scsi_qla_host_t *vha)
 {
@@ -1997,7 +1813,7 @@ qlafx00_initialize_adapter(scsi_qla_host_t *vha)
 	struct qla_hw_data *ha = vha->hw;
 	uint32_t tempc;
 
-	/* Clear adapter flags. */
+	 
 	vha->flags.online = 0;
 	ha->flags.chip_reset_done = 0;
 	vha->flags.reset_active = 0;
@@ -2034,10 +1850,7 @@ qlafx00_initialize_adapter(scsi_qla_host_t *vha)
 	if (rval != QLA_SUCCESS)
 		return rval;
 
-	/*
-	 * Allocate the array of outstanding commands
-	 * now that we know the firmware resources.
-	 */
+	 
 	rval = qla2x00_alloc_outstanding_cmds(ha, vha->req);
 	if (rval != QLA_SUCCESS)
 		return rval;
@@ -2097,7 +1910,7 @@ qlafx00_get_host_speed(struct Scsi_Host *shost)
 	fc_host_speed(shost) = speed;
 }
 
-/** QLAFX00 specific ISR implementation functions */
+ 
 
 static inline void
 qlafx00_handle_sense(srb_t *sp, uint8_t *sense_data, uint32_t par_sense_len,
@@ -2240,12 +2053,7 @@ qlafx00_ioctl_iosb_entry(scsi_qla_host_t *vha, struct req_que *req,
 	sp->done(sp, res);
 }
 
-/**
- * qlafx00_status_entry() - Process a Status IOCB entry.
- * @vha: SCSI driver HA context
- * @rsp: response queue
- * @pkt: Entry pointer
- */
+ 
 static void
 qlafx00_status_entry(scsi_qla_host_t *vha, struct rsp_que *rsp, void *pkt)
 {
@@ -2277,7 +2085,7 @@ qlafx00_status_entry(scsi_qla_host_t *vha, struct rsp_que *rsp, void *pkt)
 	que = MSW(hindex);
 	req = ha->req_q_map[que];
 
-	/* Validate handle. */
+	 
 	if (handle < req->num_outstanding_cmds)
 		sp = req->outstanding_cmds[handle];
 	else
@@ -2299,7 +2107,7 @@ qlafx00_status_entry(scsi_qla_host_t *vha, struct rsp_que *rsp, void *pkt)
 		return;
 	}
 
-	/* Fast path completion. */
+	 
 	if (comp_status == CS_COMPLETE && scsi_status == 0) {
 		qla2x00_process_completed_request(vha, req, handle);
 		return;
@@ -2331,14 +2139,12 @@ qlafx00_status_entry(scsi_qla_host_t *vha, struct rsp_que *rsp, void *pkt)
 	rsp_info = sense_data = sts->data;
 	par_sense_len = sizeof(sts->data);
 
-	/* Check for overrun. */
+	 
 	if (comp_status == CS_COMPLETE &&
 	    scsi_status & cpu_to_le16((uint16_t)SS_RESIDUAL_OVER))
 		comp_status = cpu_to_le16((uint16_t)CS_DATA_OVERRUN);
 
-	/*
-	 * Based on Host and scsi status generate status code for Linux
-	 */
+	 
 	switch (le16_to_cpu(comp_status)) {
 	case CS_COMPLETE:
 	case CS_QUEUE_FULL:
@@ -2384,7 +2190,7 @@ qlafx00_status_entry(scsi_qla_host_t *vha, struct rsp_que *rsp, void *pkt)
 		break;
 
 	case CS_DATA_UNDERRUN:
-		/* Use F/W calculated residual length. */
+		 
 		if (IS_FWI2_CAPABLE(ha) || IS_QLAFX00(ha))
 			resid = fw_resid_len;
 		else
@@ -2418,10 +2224,7 @@ qlafx00_status_entry(scsi_qla_host_t *vha, struct rsp_que *rsp, void *pkt)
 		} else if (lscsi_status !=
 		    cpu_to_le16((uint16_t)SAM_STAT_TASK_SET_FULL) &&
 		    lscsi_status != cpu_to_le16((uint16_t)SAM_STAT_BUSY)) {
-			/*
-			 * scsi status of task set and busy are considered
-			 * to be task not completed.
-			 */
+			 
 
 			ql_dbg(ql_dbg_io, fcport->vha, 0x3054,
 			    "Dropped frame(s) detected (0x%x "
@@ -2440,10 +2243,7 @@ qlafx00_status_entry(scsi_qla_host_t *vha, struct rsp_que *rsp, void *pkt)
 		logit = 0;
 
 check_scsi_status:
-		/*
-		 * Check to see if SCSI Status is non zero. If so report SCSI
-		 * Status.
-		 */
+		 
 		if (lscsi_status != 0) {
 			if (lscsi_status ==
 			    cpu_to_le16((uint16_t)SAM_STAT_TASK_SET_FULL)) {
@@ -2474,11 +2274,7 @@ check_scsi_status:
 	case CS_TIMEOUT:
 	case CS_RESET:
 
-		/*
-		 * We are going to have the fc class block the rport
-		 * while we try to recover so instruct the mid layer
-		 * to requeue until the class decides how to handle this.
-		 */
+		 
 		res = DID_TRANSPORT_DISRUPTED << 16;
 
 		ql_dbg(ql_dbg_io, fcport->vha, 0x3057,
@@ -2516,13 +2312,7 @@ check_scsi_status:
 		WARN_ON_ONCE(true);
 }
 
-/**
- * qlafx00_status_cont_entry() - Process a Status Continuations entry.
- * @rsp: response queue
- * @pkt: Entry pointer
- *
- * Extended sense data.
- */
+ 
 static void
 qlafx00_status_cont_entry(struct rsp_que *rsp, sts_cont_entry_t *pkt)
 {
@@ -2569,7 +2359,7 @@ qlafx00_status_cont_entry(struct rsp_que *rsp, sts_cont_entry_t *pkt)
 		else
 			sense_sz = sense_len;
 
-		/* Move sense data. */
+		 
 		ql_dump_buffer(ql_dbg_io + ql_dbg_buffer, vha, 0x304e,
 		    pkt, sizeof(*pkt));
 		memcpy(sense_ptr, pkt->data, sense_sz);
@@ -2587,7 +2377,7 @@ qlafx00_status_cont_entry(struct rsp_que *rsp, sts_cont_entry_t *pkt)
 	    (sense_len - sizeof(pkt->data)) : 0;
 	SET_FW_SENSE_LEN(sp, sense_len);
 
-	/* Place command on done queue. */
+	 
 	if (sense_len == 0) {
 		rsp->status_srb = NULL;
 		sp->done(sp, cp->result);
@@ -2596,12 +2386,7 @@ qlafx00_status_cont_entry(struct rsp_que *rsp, sts_cont_entry_t *pkt)
 	}
 }
 
-/**
- * qlafx00_multistatus_entry() - Process Multi response queue entries.
- * @vha: SCSI driver HA context
- * @rsp: response queue
- * @pkt: received packet
- */
+ 
 static void
 qlafx00_multistatus_entry(struct scsi_qla_host *vha,
 	struct rsp_que *rsp, void *pkt)
@@ -2634,7 +2419,7 @@ qlafx00_multistatus_entry(struct scsi_qla_host *vha,
 		que = MSW(hindex);
 		req = ha->req_q_map[que];
 
-		/* Validate handle. */
+		 
 		if (handle < req->num_outstanding_cmds)
 			sp = req->outstanding_cmds[handle];
 		else
@@ -2652,12 +2437,7 @@ qlafx00_multistatus_entry(struct scsi_qla_host *vha,
 	}
 }
 
-/**
- * qlafx00_error_entry() - Process an error entry.
- * @vha: SCSI driver HA context
- * @rsp: response queue
- * @pkt: Entry pointer
- */
+ 
 static void
 qlafx00_error_entry(scsi_qla_host_t *vha, struct rsp_que *rsp,
 		    struct sts_entry_fx00 *pkt)
@@ -2681,11 +2461,7 @@ qlafx00_error_entry(scsi_qla_host_t *vha, struct rsp_que *rsp,
 	qla2xxx_wake_dpc(vha);
 }
 
-/**
- * qlafx00_process_response_queue() - Process response queue entries.
- * @vha: SCSI driver HA context
- * @rsp: response queue
- */
+ 
 static void
 qlafx00_process_response_queue(struct scsi_qla_host *vha,
 	struct rsp_que *rsp)
@@ -2747,7 +2523,7 @@ qlafx00_process_response_queue(struct scsi_qla_host *vha,
 			    (struct ioctl_iocb_entry_fx00 *)pkt);
 			break;
 		default:
-			/* Type Not Supported. */
+			 
 			ql_dbg(ql_dbg_async, vha, 0x5081,
 			    "Received unknown response pkt type %x "
 			    "entry status=%x.\n",
@@ -2756,14 +2532,11 @@ qlafx00_process_response_queue(struct scsi_qla_host *vha,
 		}
 	}
 
-	/* Adjust ring index */
+	 
 	wrt_reg_dword(rsp->rsp_q_out, rsp->ring_index);
 }
 
-/**
- * qlafx00_async_event() - Process aynchronous events.
- * @vha: SCSI driver HA context
- */
+ 
 static void
 qlafx00_async_event(scsi_qla_host_t *vha)
 {
@@ -2772,22 +2545,22 @@ qlafx00_async_event(scsi_qla_host_t *vha)
 	int data_size = 1;
 
 	reg = &ha->iobase->ispfx00;
-	/* Setup to process RIO completion. */
+	 
 	switch (ha->aenmb[0]) {
-	case QLAFX00_MBA_SYSTEM_ERR:		/* System Error */
+	case QLAFX00_MBA_SYSTEM_ERR:		 
 		ql_log(ql_log_warn, vha, 0x5079,
 		    "ISP System Error - mbx1=%x\n", ha->aenmb[0]);
 		set_bit(ISP_ABORT_NEEDED, &vha->dpc_flags);
 		break;
 
-	case QLAFX00_MBA_SHUTDOWN_RQSTD:	/* Shutdown requested */
+	case QLAFX00_MBA_SHUTDOWN_RQSTD:	 
 		ql_dbg(ql_dbg_async, vha, 0x5076,
 		    "Asynchronous FW shutdown requested.\n");
 		set_bit(ISP_ABORT_NEEDED, &vha->dpc_flags);
 		qla2xxx_wake_dpc(vha);
 		break;
 
-	case QLAFX00_MBA_PORT_UPDATE:		/* Port database update */
+	case QLAFX00_MBA_PORT_UPDATE:		 
 		ha->aenmb[1] = rd_reg_dword(&reg->aenmailbox1);
 		ha->aenmb[2] = rd_reg_dword(&reg->aenmailbox2);
 		ha->aenmb[3] = rd_reg_dword(&reg->aenmailbox3);
@@ -2798,21 +2571,21 @@ qlafx00_async_event(scsi_qla_host_t *vha)
 		data_size = 4;
 		break;
 
-	case QLAFX00_MBA_TEMP_OVER:	/* Over temperature event */
+	case QLAFX00_MBA_TEMP_OVER:	 
 		ql_log(ql_log_info, vha, 0x5085,
 		    "Asynchronous over temperature event received "
 		    "aenmb[0]: %x\n",
 		    ha->aenmb[0]);
 		break;
 
-	case QLAFX00_MBA_TEMP_NORM:	/* Normal temperature event */
+	case QLAFX00_MBA_TEMP_NORM:	 
 		ql_log(ql_log_info, vha, 0x5086,
 		    "Asynchronous normal temperature event received "
 		    "aenmb[0]: %x\n",
 		    ha->aenmb[0]);
 		break;
 
-	case QLAFX00_MBA_TEMP_CRIT:	/* Critical temperature event */
+	case QLAFX00_MBA_TEMP_CRIT:	 
 		ql_log(ql_log_info, vha, 0x5083,
 		    "Asynchronous critical temperature event received "
 		    "aenmb[0]: %x\n",
@@ -2837,11 +2610,7 @@ qlafx00_async_event(scsi_qla_host_t *vha)
 	    (uint32_t *)ha->aenmb, data_size);
 }
 
-/**
- * qlafx00_mbx_completion() - Process mailbox command completions.
- * @vha: SCSI driver HA context
- * @mb0: value to be written into mailbox register 0
- */
+ 
 static void
 qlafx00_mbx_completion(scsi_qla_host_t *vha, uint32_t mb0)
 {
@@ -2853,7 +2622,7 @@ qlafx00_mbx_completion(scsi_qla_host_t *vha, uint32_t mb0)
 	if (!ha->mcp32)
 		ql_dbg(ql_dbg_async, vha, 0x507e, "MBX pointer ERROR.\n");
 
-	/* Load return mailbox registers. */
+	 
 	ha->flags.mbox_int = 1;
 	ha->mailbox_out32[0] = mb0;
 	wptr = &reg->mailbox17;
@@ -2864,15 +2633,7 @@ qlafx00_mbx_completion(scsi_qla_host_t *vha, uint32_t mb0)
 	}
 }
 
-/**
- * qlafx00_intr_handler() - Process interrupts for the ISPFX00.
- * @irq: interrupt number
- * @dev_id: SCSI driver HA context
- *
- * Called by system whenever the host adapter generates an interrupt.
- *
- * Returns handled flag.
- */
+ 
 irqreturn_t
 qlafx00_intr_handler(int irq, void *dev_id)
 {
@@ -2938,7 +2699,7 @@ qlafx00_intr_handler(int irq, void *dev_id)
 	return IRQ_HANDLED;
 }
 
-/** QLAFX00 specific IOCB implementation functions */
+ 
 
 static inline cont_a64_entry_t *
 qlafx00_prep_cont_type1_iocb(struct req_que *req,
@@ -2946,7 +2707,7 @@ qlafx00_prep_cont_type1_iocb(struct req_que *req,
 {
 	cont_a64_entry_t *cont_pkt;
 
-	/* Adjust ring index. */
+	 
 	req->ring_index++;
 	if (req->ring_index == req->length) {
 		req->ring_index = 0;
@@ -2957,7 +2718,7 @@ qlafx00_prep_cont_type1_iocb(struct req_que *req,
 
 	cont_pkt = (cont_a64_entry_t *)req->ring_ptr;
 
-	/* Load packet defaults. */
+	 
 	lcont_pkt->entry_type = CONTINUE_A64_TYPE_FX00;
 
 	return cont_pkt;
@@ -2984,16 +2745,16 @@ qlafx00_build_scsi_iocbs(srb_t *sp, struct cmd_type_7_fx00 *cmd_pkt,
 	cont = 0;
 	cont_pkt = NULL;
 
-	/* Update entry type to indicate Command Type 3 IOCB */
+	 
 	lcmd_pkt->entry_type = FX00_COMMAND_TYPE_7;
 
-	/* No data transfer */
+	 
 	if (!scsi_bufflen(cmd) || cmd->sc_data_direction == DMA_NONE) {
 		lcmd_pkt->byte_count = cpu_to_le32(0);
 		return;
 	}
 
-	/* Set transfer direction */
+	 
 	if (cmd->sc_data_direction == DMA_TO_DEVICE) {
 		lcmd_pkt->cntrl_flags = TMF_WRITE_DATA;
 		vha->qla_stats.output_bytes += scsi_bufflen(cmd);
@@ -3002,18 +2763,15 @@ qlafx00_build_scsi_iocbs(srb_t *sp, struct cmd_type_7_fx00 *cmd_pkt,
 		vha->qla_stats.input_bytes += scsi_bufflen(cmd);
 	}
 
-	/* One DSD is available in the Command Type 3 IOCB */
+	 
 	avail_dsds = 1;
 	cur_dsd = &lcmd_pkt->dsd;
 
-	/* Load data segments */
+	 
 	scsi_for_each_sg(cmd, sg, tot_dsds, i) {
-		/* Allocate additional continuation packets? */
+		 
 		if (avail_dsds == 0) {
-			/*
-			 * Five DSDs are available in the Continuation
-			 * Type 1 IOCB.
-			 */
+			 
 			memset(&lcont_pkt, 0, REQUEST_ENTRY_SIZE);
 			cont_pkt =
 			    qlafx00_prep_cont_type1_iocb(req, &lcont_pkt);
@@ -3037,12 +2795,7 @@ qlafx00_build_scsi_iocbs(srb_t *sp, struct cmd_type_7_fx00 *cmd_pkt,
 	}
 }
 
-/**
- * qlafx00_start_scsi() - Send a SCSI command to the ISP
- * @sp: command to send to the ISP
- *
- * Returns non-zero if a failure occurred, else zero.
- */
+ 
 int
 qlafx00_start_scsi(srb_t *sp)
 {
@@ -3061,21 +2814,21 @@ qlafx00_start_scsi(srb_t *sp)
 	struct cmd_type_7_fx00 lcmd_pkt;
 	struct scsi_lun llun;
 
-	/* Setup device pointers. */
+	 
 	rsp = ha->rsp_q_map[0];
 	req = vha->req;
 
-	/* So we know we haven't pci_map'ed anything yet */
+	 
 	tot_dsds = 0;
 
-	/* Acquire ring specific lock */
+	 
 	spin_lock_irqsave(&ha->hardware_lock, flags);
 
 	handle = qla2xxx_get_next_handle(req);
 	if (handle == 0)
 		goto queuing_error;
 
-	/* Map the sg table so we have an accurate count of sg entries needed */
+	 
 	if (scsi_sg_count(cmd)) {
 		nseg = dma_map_sg(&ha->pdev->dev, scsi_sglist(cmd),
 		    scsi_sg_count(cmd), cmd->sc_data_direction);
@@ -3098,7 +2851,7 @@ qlafx00_start_scsi(srb_t *sp)
 			goto queuing_error;
 	}
 
-	/* Build command packet. */
+	 
 	req->current_outstanding_cmd = handle;
 	req->outstanding_cmds[handle] = sp;
 	sp->handle = handle;
@@ -3120,17 +2873,17 @@ qlafx00_start_scsi(srb_t *sp)
 	host_to_adap((uint8_t *)&llun, (uint8_t *)&lcmd_pkt.lun,
 	    sizeof(lcmd_pkt.lun));
 
-	/* Load SCSI command packet. */
+	 
 	host_to_adap(cmd->cmnd, lcmd_pkt.fcp_cdb, sizeof(lcmd_pkt.fcp_cdb));
 	lcmd_pkt.byte_count = cpu_to_le32((uint32_t)scsi_bufflen(cmd));
 
-	/* Build IOCB segments */
+	 
 	qlafx00_build_scsi_iocbs(sp, cmd_pkt, tot_dsds, &lcmd_pkt);
 
-	/* Set total data segment count. */
+	 
 	lcmd_pkt.entry_count = (uint8_t)req_cnt;
 
-	/* Specify response queue number where completion should happen */
+	 
 	lcmd_pkt.entry_status = (uint8_t) rsp->id;
 
 	ql_dump_buffer(ql_dbg_io + ql_dbg_buffer, vha, 0x302e,
@@ -3141,7 +2894,7 @@ qlafx00_start_scsi(srb_t *sp)
 	memcpy_toio((void __iomem *)cmd_pkt, &lcmd_pkt, REQUEST_ENTRY_SIZE);
 	wmb();
 
-	/* Adjust ring index. */
+	 
 	req->ring_index++;
 	if (req->ring_index == req->length) {
 		req->ring_index = 0;
@@ -3151,7 +2904,7 @@ qlafx00_start_scsi(srb_t *sp)
 
 	sp->flags |= SRB_DMA_VALID;
 
-	/* Set chip new ring index. */
+	 
 	wrt_reg_dword(req->req_q_in, req->ring_index);
 	QLAFX00_SET_HST_INTR(ha, ha->rqstq_intr_code);
 
@@ -3296,12 +3049,9 @@ qlafx00_fxdisc_iocb(srb_t *sp, struct fxdisc_entry_fx00 *pfxiocb)
 			avail_dsds = 1;
 			for_each_sg(bsg_job->request_payload.sg_list, sg,
 			    tot_dsds, index) {
-				/* Allocate additional continuation packets? */
+				 
 				if (avail_dsds == 0) {
-					/*
-					 * Five DSDs are available in the Cont.
-					 * Type 1 IOCB.
-					 */
+					 
 					memset(&lcont_pkt, 0,
 					    REQUEST_ENTRY_SIZE);
 					cont_pkt =
@@ -3352,12 +3102,9 @@ qlafx00_fxdisc_iocb(srb_t *sp, struct fxdisc_entry_fx00 *pfxiocb)
 
 			for_each_sg(bsg_job->reply_payload.sg_list, sg,
 			    tot_dsds, index) {
-				/* Allocate additional continuation packets? */
+				 
 				if (avail_dsds == 0) {
-					/*
-					* Five DSDs are available in the Cont.
-					* Type 1 IOCB.
-					*/
+					 
 					memset(&lcont_pkt, 0,
 					    REQUEST_ENTRY_SIZE);
 					cont_pkt =

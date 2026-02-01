@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* Request key authorisation token key definition.
- *
- * Copyright (C) 2005 Red Hat, Inc. All Rights Reserved.
- * Written by David Howells (dhowells@redhat.com)
- *
- * See Documentation/security/keys/request-key.rst
- */
+
+ 
 
 #include <linux/sched.h>
 #include <linux/err.h>
@@ -24,9 +18,7 @@ static void request_key_auth_revoke(struct key *);
 static void request_key_auth_destroy(struct key *);
 static long request_key_auth_read(const struct key *, char *, size_t);
 
-/*
- * The request-key authorisation key type definition.
- */
+ 
 struct key_type key_type_request_key_auth = {
 	.name		= ".request_key_auth",
 	.def_datalen	= sizeof(struct request_key_auth),
@@ -48,9 +40,7 @@ static void request_key_auth_free_preparse(struct key_preparsed_payload *prep)
 {
 }
 
-/*
- * Instantiate a request-key authorisation key.
- */
+ 
 static int request_key_auth_instantiate(struct key *key,
 					struct key_preparsed_payload *prep)
 {
@@ -58,9 +48,7 @@ static int request_key_auth_instantiate(struct key *key,
 	return 0;
 }
 
-/*
- * Describe an authorisation token.
- */
+ 
 static void request_key_auth_describe(const struct key *key,
 				      struct seq_file *m)
 {
@@ -75,10 +63,7 @@ static void request_key_auth_describe(const struct key *key,
 		seq_printf(m, " pid:%d ci:%zu", rka->pid, rka->callout_len);
 }
 
-/*
- * Read the callout_info data (retrieves the callout information).
- * - the key's semaphore is read-locked
- */
+ 
 static long request_key_auth_read(const struct key *key,
 				  char *buffer, size_t buflen)
 {
@@ -92,7 +77,7 @@ static long request_key_auth_read(const struct key *key,
 	datalen = rka->callout_len;
 	ret = datalen;
 
-	/* we can return the data as is */
+	 
 	if (buffer && buflen > 0) {
 		if (buflen > datalen)
 			buflen = datalen;
@@ -115,9 +100,7 @@ static void free_request_key_auth(struct request_key_auth *rka)
 	kfree(rka);
 }
 
-/*
- * Dispose of the request_key_auth record under RCU conditions
- */
+ 
 static void request_key_auth_rcu_disposal(struct rcu_head *rcu)
 {
 	struct request_key_auth *rka =
@@ -126,11 +109,7 @@ static void request_key_auth_rcu_disposal(struct rcu_head *rcu)
 	free_request_key_auth(rka);
 }
 
-/*
- * Handle revocation of an authorisation token key.
- *
- * Called with the key sem write-locked.
- */
+ 
 static void request_key_auth_revoke(struct key *key)
 {
 	struct request_key_auth *rka = dereference_key_locked(key);
@@ -140,9 +119,7 @@ static void request_key_auth_revoke(struct key *key)
 	call_rcu(&rka->rcu, request_key_auth_rcu_disposal);
 }
 
-/*
- * Destroy an instantiation authorisation token key.
- */
+ 
 static void request_key_auth_destroy(struct key *key)
 {
 	struct request_key_auth *rka = rcu_access_pointer(key->payload.rcu_data0);
@@ -154,10 +131,7 @@ static void request_key_auth_destroy(struct key *key)
 	}
 }
 
-/*
- * Create an authorisation token for /sbin/request-key or whoever to gain
- * access to the caller's security data.
- */
+ 
 struct key *request_key_auth_new(struct key *target, const char *op,
 				 const void *callout_info, size_t callout_len,
 				 struct key *dest_keyring)
@@ -170,7 +144,7 @@ struct key *request_key_auth_new(struct key *target, const char *op,
 
 	kenter("%d,", target->serial);
 
-	/* allocate a auth record */
+	 
 	rka = kzalloc(sizeof(*rka), GFP_KERNEL);
 	if (!rka)
 		goto error;
@@ -180,14 +154,12 @@ struct key *request_key_auth_new(struct key *target, const char *op,
 	rka->callout_len = callout_len;
 	strscpy(rka->op, op, sizeof(rka->op));
 
-	/* see if the calling process is already servicing the key request of
-	 * another process */
+	 
 	if (cred->request_key_auth) {
-		/* it is - use that instantiation context here too */
+		 
 		down_read(&cred->request_key_auth->sem);
 
-		/* if the auth key has been revoked, then the key we're
-		 * servicing is already instantiated */
+		 
 		if (test_bit(KEY_FLAG_REVOKED,
 			     &cred->request_key_auth->flags)) {
 			up_read(&cred->request_key_auth->sem);
@@ -202,7 +174,7 @@ struct key *request_key_auth_new(struct key *target, const char *op,
 		up_read(&cred->request_key_auth->sem);
 	}
 	else {
-		/* it isn't - use this process as the context */
+		 
 		rka->cred = get_cred(cred);
 		rka->pid = current->pid;
 	}
@@ -210,7 +182,7 @@ struct key *request_key_auth_new(struct key *target, const char *op,
 	rka->target_key = key_get(target);
 	rka->dest_keyring = key_get(dest_keyring);
 
-	/* allocate the auth key */
+	 
 	sprintf(desc, "%x", target->serial);
 
 	authkey = key_alloc(&key_type_request_key_auth, desc,
@@ -222,7 +194,7 @@ struct key *request_key_auth_new(struct key *target, const char *op,
 		goto error_free_rka;
 	}
 
-	/* construct the auth key */
+	 
 	ret = key_instantiate_and_link(authkey, rka, 0, NULL, NULL);
 	if (ret < 0)
 		goto error_put_authkey;
@@ -239,10 +211,7 @@ error:
 	return ERR_PTR(ret);
 }
 
-/*
- * Search the current process's keyrings for the authorisation key for
- * instantiation of a key.
- */
+ 
 struct key *key_get_instantiation_authkey(key_serial_t target_id)
 {
 	char description[16];

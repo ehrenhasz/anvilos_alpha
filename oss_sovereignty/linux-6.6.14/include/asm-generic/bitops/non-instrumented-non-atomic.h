@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 
 #ifndef __ASM_GENERIC_BITOPS_NON_INSTRUMENTED_NON_ATOMIC_H
 #define __ASM_GENERIC_BITOPS_NON_INSTRUMENTED_NON_ATOMIC_H
@@ -14,4 +14,4 @@
 #define _test_bit		arch_test_bit
 #define _test_bit_acquire	arch_test_bit_acquire
 
-#endif /* __ASM_GENERIC_BITOPS_NON_INSTRUMENTED_NON_ATOMIC_H */
+#endif  

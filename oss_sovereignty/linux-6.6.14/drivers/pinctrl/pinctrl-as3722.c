@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * ams AS3722 pin control and GPIO driver.
- *
- * Copyright (c) 2013, NVIDIA Corporation.
- *
- * Author: Laxman Dewangan <ldewangan@nvidia.com>
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/gpio/driver.h>

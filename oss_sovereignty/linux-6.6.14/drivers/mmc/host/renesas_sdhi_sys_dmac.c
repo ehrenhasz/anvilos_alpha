@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * DMA support use of SYS DMAC with SDHI SD/SDIO controller
- *
- * Copyright (C) 2016-19 Renesas Electronics Corporation
- * Copyright (C) 2016-19 Sang Engineering, Wolfram Sang
- * Copyright (C) 2017 Horms Solutions, Simon Horman
- * Copyright (C) 2010-2011 Guennadi Liakhovetski
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/dma-mapping.h>
@@ -45,7 +38,7 @@ static const struct renesas_sdhi_of_data of_rcar_gen1_compatible = {
 	.capabilities2	= MMC_CAP2_NO_WRITE_PROTECT,
 };
 
-/* Definitions for sampling clocks */
+ 
 static struct renesas_sdhi_scc rcar_gen2_scc_taps[] = {
 	{
 		.clk_rate = 156000000,
@@ -161,7 +154,7 @@ static void renesas_sdhi_sys_dmac_start_dma_rx(struct tmio_mmc_host *host)
 	dma_cookie_t cookie;
 	int ret, i;
 	bool aligned = true, multiple = true;
-	unsigned int align = 1;	/* 2-byte alignment */
+	unsigned int align = 1;	 
 
 	for_each_sg(sg, sg_tmp, host->sg_len, i) {
 		if (sg_tmp->offset & align)
@@ -181,7 +174,7 @@ static void renesas_sdhi_sys_dmac_start_dma_rx(struct tmio_mmc_host *host)
 	if (sg->length < TMIO_MMC_MIN_DMA_LEN)
 		return;
 
-	/* The only sg element can be unaligned, use our bounce buffer then */
+	 
 	if (!aligned) {
 		sg_init_one(&host->bounce_sg, host->bounce_buf, sg->length);
 		host->sg_ptr = &host->bounce_sg;
@@ -207,13 +200,13 @@ static void renesas_sdhi_sys_dmac_start_dma_rx(struct tmio_mmc_host *host)
 	}
 pio:
 	if (!desc) {
-		/* DMA failed, fall back to PIO */
+		 
 		renesas_sdhi_sys_dmac_enable_dma(host, false);
 		if (ret >= 0)
 			ret = -EIO;
 		host->chan_rx = NULL;
 		dma_release_channel(chan);
-		/* Free the Tx channel too */
+		 
 		chan = host->chan_tx;
 		if (chan) {
 			host->chan_tx = NULL;
@@ -233,7 +226,7 @@ static void renesas_sdhi_sys_dmac_start_dma_tx(struct tmio_mmc_host *host)
 	dma_cookie_t cookie;
 	int ret, i;
 	bool aligned = true, multiple = true;
-	unsigned int align = 1;	/* 2-byte alignment */
+	unsigned int align = 1;	 
 
 	for_each_sg(sg, sg_tmp, host->sg_len, i) {
 		if (sg_tmp->offset & align)
@@ -253,7 +246,7 @@ static void renesas_sdhi_sys_dmac_start_dma_tx(struct tmio_mmc_host *host)
 	if (sg->length < TMIO_MMC_MIN_DMA_LEN)
 		return;
 
-	/* The only sg element can be unaligned, use our bounce buffer then */
+	 
 	if (!aligned) {
 		void *sg_vaddr = kmap_local_page(sg_page(sg));
 
@@ -283,13 +276,13 @@ static void renesas_sdhi_sys_dmac_start_dma_tx(struct tmio_mmc_host *host)
 	}
 pio:
 	if (!desc) {
-		/* DMA failed, fall back to PIO */
+		 
 		renesas_sdhi_sys_dmac_enable_dma(host, false);
 		if (ret >= 0)
 			ret = -EIO;
 		host->chan_tx = NULL;
 		dma_release_channel(chan);
-		/* Free the Rx channel too */
+		 
 		chan = host->chan_rx;
 		if (chan) {
 			host->chan_rx = NULL;
@@ -339,7 +332,7 @@ static void renesas_sdhi_sys_dmac_request_dma(struct tmio_mmc_host *host,
 {
 	struct renesas_sdhi *priv = host_to_priv(host);
 
-	/* We can only either use DMA for both Tx and Rx or not use it at all */
+	 
 	if (!host->pdev->dev.of_node &&
 	    (!pdata->chan_priv_tx || !pdata->chan_priv_rx))
 		return;

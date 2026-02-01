@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * 3-axis accelerometer driver supporting following Bosch-Sensortec chips:
- *  - BMI088
- *
- * Copyright (c) 2018-2021, Topic Embedded Products
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/delay.h>
@@ -93,14 +88,14 @@ static const int bmi088_sample_freqs[] = {
 	1600, 0,
 };
 
-/* Available OSR (over sampling rate) sets the 3dB cut-off frequency */
+ 
 enum bmi088_osr_modes {
 	BMI088_ACCEL_MODE_OSR_NORMAL = 0xA,
 	BMI088_ACCEL_MODE_OSR_2 = 0x9,
 	BMI088_ACCEL_MODE_OSR_4 = 0x8,
 };
 
-/* Available ODR (output data rates) in Hz */
+ 
 enum bmi088_odr_modes {
 	BMI088_ACCEL_MODE_ODR_12_5 = 0x5,
 	BMI088_ACCEL_MODE_ODR_25 = 0x6,
@@ -128,13 +123,13 @@ struct bmi088_accel_chip_info {
 struct bmi088_accel_data {
 	struct regmap *regmap;
 	const struct bmi088_accel_chip_info *chip_info;
-	u8 buffer[2] __aligned(IIO_DMA_MINALIGN); /* shared DMA safe buffer */
+	u8 buffer[2] __aligned(IIO_DMA_MINALIGN);  
 };
 
 static const struct regmap_range bmi088_volatile_ranges[] = {
-	/* All registers below 0x40 are volatile, except the CHIP ID. */
+	 
 	regmap_reg_range(BMI088_ACCEL_REG_ERROR, 0x3f),
-	/* Mark the RESET as volatile too, it is self-clearing */
+	 
 	regmap_reg_range(BMI088_ACCEL_REG_RESET, BMI088_ACCEL_REG_RESET),
 };
 
@@ -156,20 +151,20 @@ static int bmi088_accel_power_up(struct bmi088_accel_data *data)
 {
 	int ret;
 
-	/* Enable accelerometer and temperature sensor */
+	 
 	ret = regmap_write(data->regmap, BMI088_ACCEL_REG_PWR_CTRL, 0x4);
 	if (ret)
 		return ret;
 
-	/* Datasheet recommends to wait at least 5ms before communication */
+	 
 	usleep_range(5000, 6000);
 
-	/* Disable suspend mode */
+	 
 	ret = regmap_write(data->regmap, BMI088_ACCEL_REG_PWR_CONF, 0x0);
 	if (ret)
 		return ret;
 
-	/* Recommended at least 1ms before further communication */
+	 
 	usleep_range(1000, 1200);
 
 	return 0;
@@ -179,20 +174,20 @@ static int bmi088_accel_power_down(struct bmi088_accel_data *data)
 {
 	int ret;
 
-	/* Enable suspend mode */
+	 
 	ret = regmap_write(data->regmap, BMI088_ACCEL_REG_PWR_CONF, 0x3);
 	if (ret)
 		return ret;
 
-	/* Recommended at least 1ms before further communication */
+	 
 	usleep_range(1000, 1200);
 
-	/* Disable accelerometer and temperature sensor */
+	 
 	ret = regmap_write(data->regmap, BMI088_ACCEL_REG_PWR_CTRL, 0x0);
 	if (ret)
 		return ret;
 
-	/* Datasheet recommends to wait at least 5ms before communication */
+	 
 	usleep_range(5000, 6000);
 
 	return 0;
@@ -265,7 +260,7 @@ static int bmi088_accel_get_temp(struct bmi088_accel_data *data, int *val)
 	if (ret)
 		return ret;
 
-	/* data->buffer is cacheline aligned */
+	 
 	temp = be16_to_cpu(*(__be16 *)data->buffer);
 
 	*val = temp >> BMI088_ACCEL_REG_TEMP_SHIFT;
@@ -332,7 +327,7 @@ static int bmi088_accel_read_raw(struct iio_dev *indio_dev,
 	case IIO_CHAN_INFO_OFFSET:
 		switch (chan->type) {
 		case IIO_TEMP:
-			/* Offset applies before scale */
+			 
 			*val = BMI088_ACCEL_TEMP_OFFSET/BMI088_ACCEL_TEMP_UNIT;
 			return IIO_VAL_INT;
 		default:
@@ -341,7 +336,7 @@ static int bmi088_accel_read_raw(struct iio_dev *indio_dev,
 	case IIO_CHAN_INFO_SCALE:
 		switch (chan->type) {
 		case IIO_TEMP:
-			/* 0.125 degrees per LSB */
+			 
 			*val = BMI088_ACCEL_TEMP_UNIT;
 			return IIO_VAL_INT;
 		case IIO_ACCEL:
@@ -508,13 +503,10 @@ static int bmi088_accel_chip_init(struct bmi088_accel_data *data, enum bmi_devic
 	if (type >= BOSCH_UNKNOWN)
 		return -ENODEV;
 
-	/* Do a dummy read to enable SPI interface, won't harm I2C */
+	 
 	regmap_read(data->regmap, BMI088_ACCEL_REG_INT_STATUS, &val);
 
-	/*
-	 * Reset chip to get it in a known good state. A delay of 1ms after
-	 * reset is required according to the data sheet
-	 */
+	 
 	ret = regmap_write(data->regmap, BMI088_ACCEL_REG_RESET,
 			   BMI088_ACCEL_RESET_VAL);
 	if (ret)
@@ -522,17 +514,17 @@ static int bmi088_accel_chip_init(struct bmi088_accel_data *data, enum bmi_devic
 
 	usleep_range(1000, 2000);
 
-	/* Do a dummy read again after a reset to enable the SPI interface */
+	 
 	regmap_read(data->regmap, BMI088_ACCEL_REG_INT_STATUS, &val);
 
-	/* Read chip ID */
+	 
 	ret = regmap_read(data->regmap, BMI088_ACCEL_REG_CHIP_ID, &val);
 	if (ret) {
 		dev_err(dev, "Error: Reading chip id\n");
 		return ret;
 	}
 
-	/* Validate chip ID */
+	 
 	for (i = 0; i < ARRAY_SIZE(bmi088_accel_chip_info_tbl); i++)
 		if (bmi088_accel_chip_info_tbl[i].chip_id == val)
 			break;
@@ -575,11 +567,11 @@ int bmi088_accel_core_probe(struct device *dev, struct regmap *regmap,
 	indio_dev->modes = INDIO_DIRECT_MODE;
 	indio_dev->info = &bmi088_accel_info;
 
-	/* Enable runtime PM */
+	 
 	pm_runtime_get_noresume(dev);
 	pm_runtime_set_suspended(dev);
 	pm_runtime_enable(dev);
-	/* We need ~6ms to startup, so set the delay to 6 seconds */
+	 
 	pm_runtime_set_autosuspend_delay(dev, 6000);
 	pm_runtime_use_autosuspend(dev);
 	pm_runtime_put(dev);

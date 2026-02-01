@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/clk-provider.h>
 #include <linux/mfd/syscon.h>
 #include <linux/slab.h>
@@ -78,10 +78,7 @@ static const struct {
 	unsigned long flags;
 	u8 id;
 } sam9x60_systemck[] = {
-	/*
-	 * ddrck feeds DDR controller and is enabled by bootloader thus we need
-	 * to keep it enabled in case there is no Linux consumer for it.
-	 */
+	 
 	{ .n = "ddrck",  .p = "masterck_div", .id = 2, .flags = CLK_IS_CRITICAL },
 	{ .n = "uhpck",  .p = "usbck",    .id = 6 },
 	{ .n = "pck0",   .p = "prog0",    .id = 8 },
@@ -138,10 +135,7 @@ static const struct {
 	{ .n = "pioD_clk",   .id = 44, },
 	{ .n = "tcb1_clk",   .id = 45, },
 	{ .n = "dbgu_clk",   .id = 47, },
-	/*
-	 * mpddr_clk feeds DDR controller and is enabled by bootloader thus we
-	 * need to keep it enabled in case there is no Linux consumer for it.
-	 */
+	 
 	{ .n = "mpddr_clk",  .id = 49, .flags = CLK_IS_CRITICAL },
 };
 
@@ -236,11 +230,7 @@ static void __init sam9x60_pmc_setup(struct device_node *np)
 					   "mainck", sam9x60_pmc->chws[PMC_MAIN],
 					   0, &plla_characteristics,
 					   &pll_frac_layout,
-					   /*
-					    * This feeds pllack_divck which
-					    * feeds CPU. It should not be
-					    * disabled.
-					    */
+					    
 					   CLK_IS_CRITICAL | CLK_SET_RATE_GATE);
 	if (IS_ERR(hw))
 		goto err_free;
@@ -248,10 +238,7 @@ static void __init sam9x60_pmc_setup(struct device_node *np)
 	hw = sam9x60_clk_register_div_pll(regmap, &pmc_pll_lock, "pllack_divck",
 					  "pllack_fracck", NULL, 0, &plla_characteristics,
 					  &pll_div_layout,
-					   /*
-					    * This feeds CPU. It should not
-					    * be disabled.
-					    */
+					    
 					  CLK_IS_CRITICAL | CLK_SET_RATE_GATE, 0);
 	if (IS_ERR(hw))
 		goto err_free;
@@ -367,5 +354,5 @@ static void __init sam9x60_pmc_setup(struct device_node *np)
 err_free:
 	kfree(sam9x60_pmc);
 }
-/* Some clks are used for a clocksource */
+ 
 CLK_OF_DECLARE(sam9x60_pmc, "microchip,sam9x60-pmc", sam9x60_pmc_setup);

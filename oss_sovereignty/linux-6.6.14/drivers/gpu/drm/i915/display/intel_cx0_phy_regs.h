@@ -1,7 +1,4 @@
-/* SPDX-License-Identifier: MIT
- *
- * Copyright © 2023 Intel Corporation
- */
+ 
 
 #ifndef __INTEL_CX0_PHY_REGS_H__
 #define __INTEL_CX0_PHY_REGS_H__
@@ -140,7 +137,7 @@
 #define   XELPDP_SSC_ENABLE_PLLA			REG_BIT(1)
 #define   XELPDP_SSC_ENABLE_PLLB			REG_BIT(0)
 
-/* C10 Vendor Registers */
+ 
 #define PHY_C10_VDR_PLL(idx)		(0xC00 + (idx))
 #define   C10_PLL0_FRACEN		REG_BIT8(4)
 #define   C10_PLL3_MULTIPLIERH_MASK	REG_GENMASK8(3, 0)
@@ -173,11 +170,11 @@
 					(PHY_C10_VDR_PRE_OVRD_TX1 +	\
 					 ((lane) ^ (tx)) * 0x10 + (control))
 
-/* PIPE SPEC Defined Registers */
+ 
 #define PHY_CX0_TX_CONTROL(tx, control)	(0x400 + ((tx) - 1) * 0x200 + (control))
 #define   CONTROL2_DISABLE_SINGLE_TX	REG_BIT(6)
 
-/* C20 Registers */
+ 
 #define PHY_C20_WR_ADDRESS_L		0xC02
 #define PHY_C20_WR_ADDRESS_H		0xC03
 #define PHY_C20_WR_DATA_L		0xC04
@@ -212,13 +209,13 @@
 #define   C20_MULTIPLIER_MASK		REG_GENMASK(11, 0)
 #define   C20_PHY_USE_MPLLB		REG_BIT(7)
 
-/* C20 Phy VSwing Masks */
+ 
 #define C20_PHY_VSWING_PREEMPH_MASK	REG_GENMASK8(5, 0)
 #define C20_PHY_VSWING_PREEMPH(val)	REG_FIELD_PREP8(C20_PHY_VSWING_PREEMPH_MASK, val)
 
 #define RAWLANEAONX_DIG_TX_MPLLB_CAL_DONE_BANK(idx) (0x303D + (idx))
 
-/* C20 HDMI computed pll definitions */
+ 
 #define REFCLK_38_4_MHZ		38400000
 #define CLOCK_4999MHZ		4999999999
 #define CLOCK_9999MHZ		9999999999
@@ -271,4 +268,4 @@
 #define HDMI_DIV_MASK		REG_GENMASK16(2, 0)
 #define HDMI_DIV(val)		REG_FIELD_PREP16(HDMI_DIV_MASK, val)
 
-#endif /* __INTEL_CX0_REG_DEFS_H__ */
+#endif  

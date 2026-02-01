@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2016 Icenowy Zheng <icenowy@aosc.xyz>
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/module.h>
@@ -54,11 +52,7 @@ static CLK_FIXED_FACTOR_HW(ahb0_clk, "ahb0", &ar100_clk.common.hw, 1, 1, 0);
 
 static SUNXI_CCU_M(apb0_clk, "apb0", "ahb0", 0x0c, 0, 2, 0);
 
-/*
- * Define the parent as an array that can be reused to save space
- * instead of having compound literals for each gate. Also have it
- * non-const so we can change it on the A83T.
- */
+ 
 static const struct clk_hw *apb0_gate_parent[] = { &apb0_clk.common.hw };
 static SUNXI_CCU_GATE_HWS(apb0_pio_clk,		"apb0-pio",
 			  apb0_gate_parent, 0x28, BIT(0), 0);
@@ -78,10 +72,10 @@ static SUNXI_CCU_GATE_HWS(apb0_twd_clk,		"apb0-twd",
 static const char * const r_mod0_default_parents[] = { "osc32k", "osc24M" };
 static SUNXI_CCU_MP_WITH_MUX_GATE(ir_clk, "ir",
 				  r_mod0_default_parents, 0x54,
-				  0, 4,		/* M */
-				  16, 2,	/* P */
-				  24, 2,	/* mux */
-				  BIT(31),	/* gate */
+				  0, 4,		 
+				  16, 2,	 
+				  24, 2,	 
+				  BIT(31),	 
 				  0);
 
 static const struct clk_parent_data a83t_r_mod0_parents[] = {

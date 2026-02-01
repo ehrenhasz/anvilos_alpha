@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * I2C bus interface for ATC260x PMICs
- *
- * Copyright (C) 2019 Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
- * Copyright (C) 2020 Cristian Ciocaltea <cristian.ciocaltea@gmail.com>
- */
+
+ 
 
 #include <linux/i2c.h>
 #include <linux/mfd/atc260x/core.h>

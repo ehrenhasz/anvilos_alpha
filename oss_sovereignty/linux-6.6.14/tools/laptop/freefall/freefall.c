@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Disk protection for HP/DELL machines.
- *
- * Copyright 2008 Eric Piel
- * Copyright 2009 Pavel Machek <pavel@ucw.cz>
- * Copyright 2012 Sonal Santan
- * Copyright 2014 Pali Rohár <pali@kernel.org>
- */
+
+ 
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -87,13 +81,13 @@ static void protect(int seconds)
 
 static int on_ac(void)
 {
-	/* /sys/class/power_supply/AC0/online */
+	 
 	return 1;
 }
 
 static int lid_open(void)
 {
-	/* /proc/acpi/button/lid/LID/state */
+	 
 	return 1;
 }
 
@@ -150,7 +144,7 @@ int main(int argc, char **argv)
 		ret = read(fd, &count, sizeof(count));
 		alarm(0);
 		if ((ret == -1) && (errno == EINTR)) {
-			/* Alarm expired, time to unpark the heads */
+			 
 			continue;
 		}
 

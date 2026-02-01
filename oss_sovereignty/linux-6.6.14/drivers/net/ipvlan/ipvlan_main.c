@@ -1,6 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* Copyright (c) 2014 Mahesh Bandewar <maheshb@google.com>
- */
+
+ 
 
 #include <linux/ethtool.h>
 
@@ -30,12 +29,12 @@ static int ipvlan_set_port_mode(struct ipvl_port *port, u16 nval,
 				goto fail;
 		}
 		if (nval == IPVLAN_MODE_L3S) {
-			/* New mode is L3S */
+			 
 			err = ipvlan_l3s_register(port);
 			if (err)
 				goto fail;
 		} else if (port->mode == IPVLAN_MODE_L3S) {
-			/* Old mode was L3S */
+			 
 			ipvlan_l3s_unregister(port);
 		}
 		port->mode = nval;
@@ -43,7 +42,7 @@ static int ipvlan_set_port_mode(struct ipvl_port *port, u16 nval,
 	return 0;
 
 fail:
-	/* Undo the flags changes that have been done so far. */
+	 
 	list_for_each_entry_continue_reverse(ipvlan, &port->ipvlans, pnode) {
 		flags = ipvlan->dev->flags;
 		if (port->mode == IPVLAN_MODE_L3 ||
@@ -122,7 +121,7 @@ static void ipvlan_port_destroy(struct net_device *dev)
 	 NETIF_F_GRO | NETIF_F_RXCSUM | \
 	 NETIF_F_HW_VLAN_CTAG_FILTER | NETIF_F_HW_VLAN_STAG_FILTER)
 
-	/* NETIF_F_GSO_ENCAP_ALL NETIF_F_GSO_SOFTWARE Newly added */
+	 
 
 #define IPVLAN_STATE_MASK \
 	((1<<__LINK_STATE_NOCARRIER) | (1<<__LINK_STATE_DORMANT))
@@ -273,10 +272,7 @@ static void ipvlan_set_multicast_mac_filter(struct net_device *dev)
 		netdev_for_each_mc_addr(ha, dev)
 			__set_bit(ipvlan_mac_hash(ha->addr), mc_filters);
 
-		/* Turn-on broadcast bit irrespective of address family,
-		 * since broadcast is deferred to a work-queue, hence no
-		 * impact on fast-path processing.
-		 */
+		 
 		__set_bit(ipvlan_mac_hash(dev->broadcast), mc_filters);
 
 		bitmap_copy(ipvlan->mac_filters, mc_filters,
@@ -316,7 +312,7 @@ static void ipvlan_get_stats64(struct net_device *dev,
 			s->tx_packets += tx_pkts;
 			s->tx_bytes += tx_bytes;
 
-			/* u32 values are updated without syncp protection. */
+			 
 			rx_errs += READ_ONCE(pcptr->rx_errs);
 			tx_drps += READ_ONCE(pcptr->tx_drps);
 		}
@@ -374,10 +370,7 @@ static int ipvlan_hard_header(struct sk_buff *skb, struct net_device *dev,
 	const struct ipvl_dev *ipvlan = netdev_priv(dev);
 	struct net_device *phy_dev = ipvlan->phy_dev;
 
-	/* TODO Probably use a different field than dev_addr so that the
-	 * mac-address on the virtual device is portable and can be carried
-	 * while the packets use the mac-addr on the physical device.
-	 */
+	 
 	return dev_hard_header(skb, phy_dev, type, daddr,
 			       saddr ? : phy_dev->dev_addr, len);
 }
@@ -396,7 +389,7 @@ static void ipvlan_adjust_mtu(struct ipvl_dev *ipvlan, struct net_device *dev)
 
 static bool netif_is_ipvlan(const struct net_device *dev)
 {
-	/* both ipvlan and ipvtap devices use the same netdev_ops */
+	 
 	return dev->netdev_ops == &ipvlan_netdev_ops;
 }
 
@@ -476,8 +469,8 @@ static int ipvlan_nl_changelink(struct net_device *dev,
 static size_t ipvlan_nl_getsize(const struct net_device *dev)
 {
 	return (0
-		+ nla_total_size(2) /* IFLA_IPVLAN_MODE */
-		+ nla_total_size(2) /* IFLA_IPVLAN_FLAGS */
+		+ nla_total_size(2)  
+		+ nla_total_size(2)  
 		);
 }
 
@@ -496,10 +489,10 @@ static int ipvlan_nl_validate(struct nlattr *tb[], struct nlattr *data[],
 	if (data[IFLA_IPVLAN_FLAGS]) {
 		u16 flags = nla_get_u16(data[IFLA_IPVLAN_FLAGS]);
 
-		/* Only two bits are used at this moment. */
+		 
 		if (flags & ~(IPVLAN_F_PRIVATE | IPVLAN_F_VEPA))
 			return -EINVAL;
-		/* Also both flags can't be active at the same time. */
+		 
 		if ((flags & (IPVLAN_F_PRIVATE | IPVLAN_F_VEPA)) ==
 		    (IPVLAN_F_PRIVATE | IPVLAN_F_VEPA))
 			return -EINVAL;
@@ -554,7 +547,7 @@ int ipvlan_link_new(struct net *src_net, struct net_device *dev,
 		if (!ns_capable(dev_net(phy_dev)->user_ns, CAP_NET_ADMIN))
 			return -EPERM;
 	} else if (!netif_is_ipvlan_port(phy_dev)) {
-		/* Exit early if the underlying link is invalid or busy */
+		 
 		if (phy_dev->type != ARPHRD_ETHER ||
 		    phy_dev->flags & IFF_LOOPBACK) {
 			netdev_err(phy_dev,
@@ -576,10 +569,7 @@ int ipvlan_link_new(struct net *src_net, struct net_device *dev,
 	INIT_LIST_HEAD(&ipvlan->addrs);
 	spin_lock_init(&ipvlan->addrs_lock);
 
-	/* TODO Probably put random address here to be presented to the
-	 * world but keep using the physical-dev address for the outgoing
-	 * packets.
-	 */
+	 
 	eth_hw_addr_set(dev, phy_dev->dev_addr);
 
 	dev->priv_flags |= IFF_NO_RX_HANDLER;
@@ -588,22 +578,15 @@ int ipvlan_link_new(struct net *src_net, struct net_device *dev,
 	if (err < 0)
 		return err;
 
-	/* ipvlan_init() would have created the port, if required */
+	 
 	port = ipvlan_port_get_rtnl(phy_dev);
 	ipvlan->port = port;
 
-	/* If the port-id base is at the MAX value, then wrap it around and
-	 * begin from 0x1 again. This may be due to a busy system where lots
-	 * of slaves are getting created and deleted.
-	 */
+	 
 	if (port->dev_id_start == 0xFFFE)
 		port->dev_id_start = 0x1;
 
-	/* Since L2 address is shared among all IPvlan slaves including
-	 * master, use unique 16 bit dev-ids to diffentiate among them.
-	 * Assign IDs between 0x1 and 0xFFFE (used by the master) to each
-	 * slave link [see addrconf_ifid_eui48()].
-	 */
+	 
 	err = ida_simple_get(&port->ida, port->dev_id_start, 0xFFFE,
 			     GFP_KERNEL);
 	if (err < 0)
@@ -613,16 +596,14 @@ int ipvlan_link_new(struct net *src_net, struct net_device *dev,
 		goto unregister_netdev;
 	dev->dev_id = err;
 
-	/* Increment id-base to the next slot for the future assignment */
+	 
 	port->dev_id_start = err + 1;
 
 	err = netdev_upper_dev_link(phy_dev, dev, extack);
 	if (err)
 		goto remove_ida;
 
-	/* Flags are per port and latest update overrides. User has
-	 * to be consistent in setting it just like the mode attribute.
-	 */
+	 
 	if (data && data[IFLA_IPVLAN_FLAGS])
 		port->flags = nla_get_u16(data[IFLA_IPVLAN_FLAGS]);
 
@@ -794,13 +775,13 @@ static int ipvlan_device_event(struct notifier_block *unused,
 		break;
 
 	case NETDEV_PRE_TYPE_CHANGE:
-		/* Forbid underlying device to change its type. */
+		 
 		return NOTIFY_BAD;
 	}
 	return NOTIFY_DONE;
 }
 
-/* the caller must held the addrs lock */
+ 
 static int ipvlan_add_addr(struct ipvl_dev *ipvlan, void *iaddr, bool is_v6)
 {
 	struct ipvl_addr *addr;
@@ -822,9 +803,7 @@ static int ipvlan_add_addr(struct ipvl_dev *ipvlan, void *iaddr, bool is_v6)
 
 	list_add_tail_rcu(&addr->anode, &ipvlan->addrs);
 
-	/* If the interface is not up, the address will be added to the hash
-	 * list by ipvlan_open.
-	 */
+	 
 	if (netif_running(ipvlan->dev))
 		ipvlan_ht_addr_add(ipvlan, addr);
 

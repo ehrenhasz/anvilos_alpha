@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * USB-ACPI glue code
- *
- * Copyright 2012 Red Hat <mjg@redhat.com>
- */
+
+ 
 #include <linux/module.h>
 #include <linux/usb.h>
 #include <linux/device.h>
@@ -15,14 +11,7 @@
 
 #include "hub.h"
 
-/**
- * usb_acpi_power_manageable - check whether usb port has
- * acpi power resource.
- * @hdev: USB device belonging to the usb hub
- * @index: port index based zero
- *
- * Return true if the port has acpi power resource and false if no.
- */
+ 
 bool usb_acpi_power_manageable(struct usb_device *hdev, int index)
 {
 	acpi_handle port_handle;
@@ -40,21 +29,7 @@ EXPORT_SYMBOL_GPL(usb_acpi_power_manageable);
 #define UUID_USB_CONTROLLER_DSM "ce2ee385-00e6-48cb-9f05-2edb927c4899"
 #define USB_DSM_DISABLE_U1_U2_FOR_PORT	5
 
-/**
- * usb_acpi_port_lpm_incapable - check if lpm should be disabled for a port.
- * @hdev: USB device belonging to the usb hub
- * @index: zero based port index
- *
- * Some USB3 ports may not support USB3 link power management U1/U2 states
- * due to different retimer setup. ACPI provides _DSM method which returns 0x01
- * if U1 and U2 states should be disabled. Evaluate _DSM with:
- * Arg0: UUID = ce2ee385-00e6-48cb-9f05-2edb927c4899
- * Arg1: Revision ID = 0
- * Arg2: Function Index = 5
- * Arg3: (empty)
- *
- * Return 1 if USB3 port is LPM incapable, negative on error, otherwise 0
- */
+ 
 
 int usb_acpi_port_lpm_incapable(struct usb_device *hdev, int index)
 {
@@ -98,18 +73,7 @@ int usb_acpi_port_lpm_incapable(struct usb_device *hdev, int index)
 }
 EXPORT_SYMBOL_GPL(usb_acpi_port_lpm_incapable);
 
-/**
- * usb_acpi_set_power_state - control usb port's power via acpi power
- * resource
- * @hdev: USB device belonging to the usb hub
- * @index: port index based zero
- * @enable: power state expected to be set
- *
- * Notice to use usb_acpi_power_manageable() to check whether the usb port
- * has acpi power resource before invoking this function.
- *
- * Returns 0 on success, else negative errno.
- */
+ 
 int usb_acpi_set_power_state(struct usb_device *hdev, int index, bool enable)
 {
 	struct usb_hub *hub = usb_hub_to_struct_hub(hdev);
@@ -150,14 +114,7 @@ static enum usb_port_connect_type usb_acpi_get_connect_type(acpi_handle handle,
 	union acpi_object *upc = NULL;
 	acpi_status status;
 
-	/*
-	 * According to 9.14 in ACPI Spec 6.2. _PLD indicates whether usb port
-	 * is user visible and _UPC indicates whether it is connectable. If
-	 * the port was visible and connectable, it could be freely connected
-	 * and disconnected with USB devices. If no visible and connectable,
-	 * a usb device is directly hard-wired to the port. If no visible and
-	 * no connectable, the port would be not used.
-	 */
+	 
 	status = acpi_evaluate_object(handle, "_UPC", NULL, &buffer);
 	if (ACPI_FAILURE(status))
 		goto out;
@@ -179,10 +136,7 @@ out:
 }
 
 
-/*
- * Private to usb-acpi, all the core needs to know is that
- * port_dev->location is non-zero when it has been set by the firmware.
- */
+ 
 #define USB_ACPI_LOCATION_VALID (1 << 31)
 
 static struct acpi_device *
@@ -193,14 +147,10 @@ usb_acpi_get_companion_for_port(struct usb_port *port_dev)
 	acpi_handle *parent_handle;
 	int port1;
 
-	/* Get the struct usb_device point of port's hub */
+	 
 	udev = to_usb_device(port_dev->dev.parent->parent);
 
-	/*
-	 * The root hub ports' parent is the root hub. The non-root-hub
-	 * ports' parent is the parent hub port which the hub is
-	 * connected to.
-	 */
+	 
 	if (!udev->parent) {
 		adev = ACPI_COMPANION(&udev->dev);
 		port1 = usb_hcd_find_raw_port_number(bus_to_hcd(udev->bus),
@@ -250,10 +200,7 @@ usb_acpi_find_companion_for_device(struct usb_device *udev)
 	struct usb_hub *hub;
 
 	if (!udev->parent) {
-		/*
-		 * root hub is only child (_ADR=0) under its parent, the HC.
-		 * sysdev pointer is the HC as seen from firmware.
-		 */
+		 
 		adev = ACPI_COMPANION(udev->bus->sysdev);
 		return acpi_find_child_device(adev, 0, false);
 	}
@@ -262,44 +209,14 @@ usb_acpi_find_companion_for_device(struct usb_device *udev)
 	if (!hub)
 		return NULL;
 
-	/*
-	 * This is an embedded USB device connected to a port and such
-	 * devices share port's ACPI companion.
-	 */
+	 
 	port_dev = hub->ports[udev->portnum - 1];
 	return usb_acpi_get_companion_for_port(port_dev);
 }
 
 static struct acpi_device *usb_acpi_find_companion(struct device *dev)
 {
-	/*
-	 * The USB hierarchy like following:
-	 *
-	 * Device (EHC1)
-	 *	Device (HUBN)
-	 *		Device (PR01)
-	 *			Device (PR11)
-	 *			Device (PR12)
-	 *				Device (FN12)
-	 *				Device (FN13)
-	 *			Device (PR13)
-	 *			...
-	 * where HUBN is root hub, and PRNN are USB ports and devices
-	 * connected to them, and FNNN are individualk functions for
-	 * connected composite USB devices. PRNN and FNNN may contain
-	 * _CRS and other methods describing sideband resources for
-	 * the connected device.
-	 *
-	 * On the kernel side both root hub and embedded USB devices are
-	 * represented as instances of usb_device structure, and ports
-	 * are represented as usb_port structures, so the whole process
-	 * is split into 2 parts: finding companions for devices and
-	 * finding companions for ports.
-	 *
-	 * Note that we do not handle individual functions of composite
-	 * devices yet, for that we would need to assign companions to
-	 * devices corresponding to USB interfaces.
-	 */
+	 
 	if (is_usb_device(dev))
 		return usb_acpi_find_companion_for_device(to_usb_device(dev));
 	else if (is_usb_port(dev))

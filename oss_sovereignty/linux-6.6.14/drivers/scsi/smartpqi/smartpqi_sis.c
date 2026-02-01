@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *    driver for Microchip PQI-based storage controllers
- *    Copyright (c) 2019-2023 Microchip Technology Inc. and its subsidiaries
- *    Copyright (c) 2016-2018 Microsemi Corporation
- *    Copyright (c) 2016 PMC-Sierra, Inc.
- *
- *    Questions/Comments/Bugfixes to storagedev@microchip.com
- *
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -18,12 +10,12 @@
 #include "smartpqi.h"
 #include "smartpqi_sis.h"
 
-/* legacy SIS interface commands */
+ 
 #define SIS_CMD_GET_ADAPTER_PROPERTIES		0x19
 #define SIS_CMD_INIT_BASE_STRUCT_ADDRESS	0x1b
 #define SIS_CMD_GET_PQI_CAPABILITIES		0x3000
 
-/* for submission of legacy SIS commands */
+ 
 #define SIS_REENABLE_SIS_MODE			0x1
 #define SIS_ENABLE_MSIX				0x40
 #define SIS_ENABLE_INTX				0x80
@@ -39,7 +31,7 @@
 #define SIS_CMD_COMPLETE_TIMEOUT_SECS		30
 #define SIS_CMD_COMPLETE_POLL_INTERVAL_MSECS	10
 
-/* used with SIS_CMD_GET_ADAPTER_PROPERTIES command */
+ 
 #define SIS_EXTENDED_PROPERTIES_SUPPORTED	0x800000
 #define SIS_SMARTARRAY_FEATURES_SUPPORTED	0x2
 #define SIS_PQI_MODE_SUPPORTED			0x4
@@ -47,7 +39,7 @@
 #define SIS_REQUIRED_EXTENDED_PROPERTIES	\
 	(SIS_SMARTARRAY_FEATURES_SUPPORTED | SIS_PQI_MODE_SUPPORTED)
 
-/* used with SIS_CMD_INIT_BASE_STRUCT_ADDRESS command */
+ 
 #define SIS_BASE_STRUCT_REVISION		9
 #define SIS_BASE_STRUCT_ALIGNMENT		16
 
@@ -67,21 +59,21 @@ enum sis_fw_triage_status {
 
 #pragma pack(1)
 
-/* for use with SIS_CMD_INIT_BASE_STRUCT_ADDRESS command */
+ 
 struct sis_base_struct {
-	__le32	revision;		/* revision of this structure */
-	__le32	flags;			/* reserved */
-	__le32	error_buffer_paddr_low;	/* lower 32 bits of physical memory */
-					/* buffer for PQI error response */
-					/* data */
-	__le32	error_buffer_paddr_high;	/* upper 32 bits of physical */
-						/* memory buffer for PQI */
-						/* error response data */
-	__le32	error_buffer_element_length;	/* length of each PQI error */
-						/* response buffer element */
-						/* in bytes */
-	__le32	error_buffer_num_elements;	/* total number of PQI error */
-						/* response buffers available */
+	__le32	revision;		 
+	__le32	flags;			 
+	__le32	error_buffer_paddr_low;	 
+					 
+					 
+	__le32	error_buffer_paddr_high;	 
+						 
+						 
+	__le32	error_buffer_element_length;	 
+						 
+						 
+	__le32	error_buffer_num_elements;	 
+						 
 };
 
 #pragma pack()
@@ -164,9 +156,9 @@ u32 sis_get_product_id(struct pqi_ctrl_info *ctrl_info)
 	return readl(&ctrl_info->registers->sis_product_identifier);
 }
 
-/* used for passing command parameters/results when issuing SIS commands */
+ 
 struct sis_sync_cmd_params {
-	u32	mailbox[6];	/* mailboxes 0-5 */
+	u32	mailbox[6];	 
 };
 
 static int sis_send_sync_cmd(struct pqi_ctrl_info *ctrl_info,
@@ -180,38 +172,28 @@ static int sis_send_sync_cmd(struct pqi_ctrl_info *ctrl_info,
 
 	registers = ctrl_info->registers;
 
-	/* Write the command to mailbox 0. */
+	 
 	writel(cmd, &registers->sis_mailbox[0]);
 
-	/*
-	 * Write the command parameters to mailboxes 1-4 (mailbox 5 is not used
-	 * when sending a command to the controller).
-	 */
+	 
 	for (i = 1; i <= 4; i++)
 		writel(params->mailbox[i], &registers->sis_mailbox[i]);
 
-	/* Clear the command doorbell. */
+	 
 	writel(SIS_CLEAR_CTRL_TO_HOST_DOORBELL,
 		&registers->sis_ctrl_to_host_doorbell_clear);
 
-	/* Disable doorbell interrupts by masking all interrupts. */
+	 
 	writel(~0, &registers->sis_interrupt_mask);
 	usleep_range(1000, 2000);
 
-	/*
-	 * Force the completion of the interrupt mask register write before
-	 * submitting the command.
-	 */
+	 
 	readl(&registers->sis_interrupt_mask);
 
-	/* Submit the command to the controller. */
+	 
 	writel(SIS_CMD_READY, &registers->sis_host_to_ctrl_doorbell);
 
-	/*
-	 * Poll for command completion.  Note that the call to msleep() is at
-	 * the top of the loop in order to give the controller time to start
-	 * processing the command before we start polling.
-	 */
+	 
 	timeout = (SIS_CMD_COMPLETE_TIMEOUT_SECS * HZ) + jiffies;
 	while (1) {
 		msleep(SIS_CMD_COMPLETE_POLL_INTERVAL_MSECS);
@@ -222,7 +204,7 @@ static int sis_send_sync_cmd(struct pqi_ctrl_info *ctrl_info,
 			return -ETIMEDOUT;
 	}
 
-	/* Read the command status from mailbox 0. */
+	 
 	cmd_status = readl(&registers->sis_mailbox[0]);
 	if (cmd_status != SIS_CMD_STATUS_SUCCESS) {
 		dev_err(&ctrl_info->pci_dev->dev,
@@ -231,10 +213,7 @@ static int sis_send_sync_cmd(struct pqi_ctrl_info *ctrl_info,
 		return -EINVAL;
 	}
 
-	/*
-	 * The command completed successfully, so save the command status and
-	 * read the values returned in mailboxes 1-5.
-	 */
+	 
 	params->mailbox[0] = cmd_status;
 	for (i = 1; i < ARRAY_SIZE(params->mailbox); i++)
 		params->mailbox[i] = readl(&registers->sis_mailbox[i]);
@@ -242,9 +221,7 @@ static int sis_send_sync_cmd(struct pqi_ctrl_info *ctrl_info,
 	return 0;
 }
 
-/*
- * This function verifies that we are talking to a controller that speaks PQI.
- */
+ 
 
 int sis_get_ctrl_properties(struct pqi_ctrl_info *ctrl_info)
 {

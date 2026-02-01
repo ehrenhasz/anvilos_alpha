@@ -1,20 +1,4 @@
-/* Align/Truncate a string in a given screen width
-   Copyright (C) 2009-2023 Free Software Foundation, Inc.
-
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* Written by Pádraig Brady.  */
+ 
 
 #include <config.h>
 #include "mbsalign.h"
@@ -29,9 +13,7 @@
 #include <wchar.h>
 #include <wctype.h>
 
-/* Replace non printable chars.
-   Note \t and \n etc. are non printable.
-   Return 1 if replacement made, 0 otherwise.  */
+ 
 
 static bool
 wc_ensure_printable (wchar_t *wchars)
@@ -42,7 +24,7 @@ wc_ensure_printable (wchar_t *wchars)
     {
       if (!iswprint ((wint_t) *wc))
         {
-          *wc = 0xFFFD; /* L'\uFFFD' (replacement char) */
+          *wc = 0xFFFD;  
           replaced = true;
         }
       wc++;
@@ -50,8 +32,7 @@ wc_ensure_printable (wchar_t *wchars)
   return replaced;
 }
 
-/* Truncate wchar string to width cells.
- * Returns number of cells used.  */
+ 
 
 static size_t
 wc_truncate (wchar_t *wc, size_t width)
@@ -62,9 +43,9 @@ wc_truncate (wchar_t *wc, size_t width)
   while (*wc)
     {
       next_cells = wcwidth (*wc);
-      if (next_cells == -1) /* non printable */
+      if (next_cells == -1)  
         {
-          *wc = 0xFFFD; /* L'\uFFFD' (replacement char) */
+          *wc = 0xFFFD;  
           next_cells = 1;
         }
       if (cells + next_cells > width)
@@ -76,34 +57,19 @@ wc_truncate (wchar_t *wc, size_t width)
   return cells;
 }
 
-/* Write N_SPACES space characters to DEST while ensuring
-   nothing is written beyond DEST_END. A terminating NUL
-   is always added to DEST.
-   A pointer to the terminating NUL is returned.  */
+ 
 
 static char *
 mbs_align_pad (char *dest, char const *dest_end, size_t n_spaces)
 {
-  /* FIXME: Should we pad with "figure space" (\u2007)
-     if non ascii data present?  */
+   
   while (n_spaces-- && (dest < dest_end))
     *dest++ = ' ';
   *dest = '\0';
   return dest;
 }
 
-/* Align a string, SRC, in a field of *WIDTH columns, handling multi-byte
-   characters; write the result into the DEST_SIZE-byte buffer, DEST.
-   ALIGNMENT specifies whether to left- or right-justify or to center.
-   If SRC requires more than *WIDTH columns, truncate it to fit.
-   When centering, the number of trailing spaces may be one less than the
-   number of leading spaces.
-   Return the length in bytes required for the final result, not counting
-   the trailing NUL.  A return value of DEST_SIZE or larger means there
-   wasn't enough space.  DEST will be NUL terminated in any case.
-   Return SIZE_MAX upon error (invalid multi-byte sequence in SRC,
-   or malloc failure), unless MBA_UNIBYTE_FALLBACK is specified.
-   Update *WIDTH to indicate how many columns were used before padding.  */
+ 
 
 size_t
 mbsalign (char const *src, char *dest, size_t dest_size,
@@ -115,14 +81,12 @@ mbsalign (char const *src, char *dest, size_t dest_size,
   wchar_t *str_wc = nullptr;
   char const *str_to_print = src;
   size_t n_cols = src_size - 1;
-  size_t n_used_bytes = n_cols; /* Not including NUL */
+  size_t n_used_bytes = n_cols;  
   size_t n_spaces = 0;
   bool conversion = false;
   bool wc_enabled = false;
 
-  /* In multi-byte locales convert to wide characters
-     to allow easy truncation. Also determine number
-     of screen columns used.  */
+   
   if (!(flags & MBA_UNIBYTE_ONLY) && MB_CUR_MAX > 1)
     {
       size_t src_chars = mbstowcs (nullptr, src, 0);
@@ -133,7 +97,7 @@ mbsalign (char const *src, char *dest, size_t dest_size,
           else
             goto mbsalign_cleanup;
         }
-      src_chars += 1; /* make space for NUL */
+      src_chars += 1;  
       str_wc = malloc (src_chars * sizeof (wchar_t));
       if (str_wc == nullptr)
         {
@@ -151,14 +115,12 @@ mbsalign (char const *src, char *dest, size_t dest_size,
         }
     }
 
-  /* If we transformed or need to truncate the source string
-     then create a modified copy of it.  */
+   
   if (wc_enabled && (conversion || (n_cols > *width)))
     {
         if (conversion)
           {
-             /* May have increased the size by converting
-                \t to \uFFFD for example.  */
+              
             src_size = wcstombs (nullptr, str_wc, 0) + 1;
           }
         newstr = malloc (src_size);
@@ -176,16 +138,16 @@ mbsalign (char const *src, char *dest, size_t dest_size,
 
 mbsalign_unibyte:
 
-  if (n_cols > *width) /* Unibyte truncation required.  */
+  if (n_cols > *width)  
     {
       n_cols = *width;
       n_used_bytes = n_cols;
     }
 
-  if (*width > n_cols) /* Padding required.  */
+  if (*width > n_cols)  
     n_spaces = *width - n_cols;
 
-  /* indicate to caller how many cells needed (not including padding).  */
+   
   *width = n_cols;
 
   {
@@ -213,7 +175,7 @@ mbsalign_unibyte:
       if (flags & MBA_NO_RIGHT_PAD)
         end_spaces = 0;
 
-      /* Write as much NUL terminated output to DEST as possible.  */
+       
       if (dest_size != 0)
         {
           size_t space_left;
@@ -225,7 +187,7 @@ mbsalign_unibyte:
           mbs_align_pad (dest, dest_end, end_spaces);
         }
 
-    /* indicate to caller how many bytes needed (not including NUL).  */
+     
     ret = n_used_bytes + ((start_spaces + end_spaces) * 1);
   }
 
@@ -237,22 +199,20 @@ mbsalign_cleanup:
   return ret;
 }
 
-/* A wrapper around mbsalign() to dynamically allocate the
-   minimum amount of memory to store the result.
-   Return nullptr on failure.  */
+ 
 
 char *
 ambsalign (char const *src, size_t *width, mbs_align_t align, int flags)
 {
   size_t orig_width = *width;
-  size_t size = *width;         /* Start with enough for unibyte mode.  */
+  size_t size = *width;          
   size_t req = size;
   char *buf = nullptr;
 
   while (req >= size)
     {
       char *nbuf;
-      size = req + 1;           /* Space for NUL.  */
+      size = req + 1;            
       nbuf = realloc (buf, size);
       if (nbuf == nullptr)
         {

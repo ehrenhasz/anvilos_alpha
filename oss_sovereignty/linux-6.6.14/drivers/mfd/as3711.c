@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * AS3711 PMIC MFC driver
- *
- * Copyright (C) 2012 Renesas Electronics Corporation
- * Author: Guennadi Liakhovetski, <g.liakhovetski@gmx.de>
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/err.h>
@@ -22,10 +17,7 @@ enum {
 	AS3711_BACKLIGHT,
 };
 
-/*
- * Ok to have it static: it is only used during probing and multiple I2C devices
- * cannot be probed simultaneously. Just make sure to avoid stale data.
- */
+ 
 static struct mfd_cell as3711_subdevs[] = {
 	[AS3711_REGULATOR] = {.name = "as3711-regulator",},
 	[AS3711_BACKLIGHT] = {.name = "as3711-backlight",},
@@ -163,10 +155,7 @@ static int as3711_i2c_probe(struct i2c_client *client)
 		return -ENODEV;
 	dev_info(as3711->dev, "AS3711 detected: %x:%x\n", id1, id2);
 
-	/*
-	 * We can reuse as3711_subdevs[],
-	 * it will be copied in mfd_add_devices()
-	 */
+	 
 	if (pdata) {
 		as3711_subdevs[AS3711_REGULATOR].platform_data =
 			&pdata->regulator;
@@ -209,5 +198,5 @@ static int __init as3711_i2c_init(void)
 {
 	return i2c_add_driver(&as3711_i2c_driver);
 }
-/* Initialise early */
+ 
 subsys_initcall(as3711_i2c_init);

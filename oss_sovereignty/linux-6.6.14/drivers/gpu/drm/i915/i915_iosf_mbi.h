@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2021 Intel Corporation
- */
+ 
+ 
 
 #ifndef __I915_IOSF_MBI_H__
 #define __I915_IOSF_MBI_H__
@@ -10,7 +8,7 @@
 #include <asm/iosf_mbi.h>
 #else
 
-/* Stubs to compile for all non-x86 archs */
+ 
 #define MBI_PMIC_BUS_ACCESS_BEGIN       1
 #define MBI_PMIC_BUS_ACCESS_END         2
 
@@ -39,4 +37,4 @@ int iosf_mbi_unregister_pmic_bus_access_notifier(struct notifier_block *nb)
 }
 #endif
 
-#endif /* __I915_IOSF_MBI_H__ */
+#endif  

@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Device driver for MFD hi655x PMIC
- *
- * Copyright (c) 2016 HiSilicon Ltd.
- *
- * Authors:
- * Chen Feng <puck.chen@hisilicon.com>
- * Fei  Wang <w.f@huawei.com>
- */
+
+ 
 
 #include <linux/io.h>
 #include <linux/interrupt.h>

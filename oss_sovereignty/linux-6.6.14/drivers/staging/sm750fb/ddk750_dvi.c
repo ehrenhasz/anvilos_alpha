@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #define USE_DVICHIP
 #ifdef USE_DVICHIP
 #include "ddk750_chip.h"
@@ -6,11 +6,7 @@
 #include "ddk750_dvi.h"
 #include "ddk750_sii164.h"
 
-/*
- * This global variable contains all the supported driver and its corresponding
- * function API. Please set the function pointer to NULL whenever the function
- * is not supported.
- */
+ 
 static struct dvi_ctrl_device dcft_supported_dvi_controller[] = {
 #ifdef DVI_CTRL_SII164
 	{
@@ -56,7 +52,7 @@ int dvi_init(unsigned char edge_select,
 					      pll_filter_enable,
 					      pll_filter_value);
 	}
-	return -1; /* error */
+	return -1;  
 }
 
 #endif

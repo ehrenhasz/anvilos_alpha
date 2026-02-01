@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
-/* Copyright (C) 2019 Netronome Systems, Inc. */
+ 
+ 
 
 #ifndef _NFP_DP_NFDK_H_
 #define _NFP_DP_NFDK_H_
@@ -19,7 +19,7 @@
 #define NFDK_TX_MAX_DATA_PER_BLOCK	SZ_64K
 #define NFDK_TX_DESC_GATHER_MAX		17
 
-/* TX descriptor format */
+ 
 
 #define NFDK_DESC_TX_MSS_MASK		GENMASK(13, 0)
 
@@ -46,23 +46,23 @@
 struct nfp_nfdk_tx_desc {
 	union {
 		struct {
-			__le16 dma_addr_hi;  /* High bits of host buf address */
-			__le16 dma_len_type; /* Length to DMA for this desc */
-			__le32 dma_addr_lo;  /* Low 32bit of host buf addr */
+			__le16 dma_addr_hi;   
+			__le16 dma_len_type;  
+			__le32 dma_addr_lo;   
 		};
 
 		struct {
-			__le16 mss;	/* MSS to be used for LSO */
-			u8 lso_hdrlen;  /* LSO, TCP payload offset */
-			u8 lso_totsegs; /* LSO, total segments */
-			u8 l3_offset;   /* L3 header offset */
-			u8 l4_offset;   /* L4 header offset */
-			__le16 lso_meta_res; /* Rsvd bits in TSO metadata */
+			__le16 mss;	 
+			u8 lso_hdrlen;   
+			u8 lso_totsegs;  
+			u8 l3_offset;    
+			u8 l4_offset;    
+			__le16 lso_meta_res;  
 		};
 
 		struct {
-			u8 flags;	/* TX Flags, see @NFDK_DESC_TX_* */
-			u8 reserved[7];	/* meta byte placeholder */
+			u8 flags;	 
+			u8 reserved[7];	 
 		};
 
 		__le32 vals[2];
@@ -70,35 +70,24 @@ struct nfp_nfdk_tx_desc {
 	};
 };
 
-/* The device don't make use of the 2 or 3 least significant bits of the address
- * due to alignment constraints. The driver can make use of those bits to carry
- * information about the buffer before giving it to the device.
- *
- * NOTE: The driver must clear the lower bits before handing the buffer to the
- * device.
- *
- * - NFDK_TX_BUF_INFO_SOP - Start of a packet
- *   Mark the buffer as a start of a packet. This is used in the XDP TX process
- *   to stash virtual and DMA address so that they can be recycled when the TX
- *   operation is completed.
- */
+ 
 #define NFDK_TX_BUF_PTR(val) ((val) & ~(sizeof(void *) - 1))
 #define NFDK_TX_BUF_INFO(val) ((val) & (sizeof(void *) - 1))
 #define NFDK_TX_BUF_INFO_SOP BIT(0)
 
 struct nfp_nfdk_tx_buf {
 	union {
-		/* First slot */
+		 
 		union {
 			struct sk_buff *skb;
 			void *frag;
 			unsigned long val;
 		};
 
-		/* 1 + nr_frags next slots */
+		 
 		dma_addr_t dma_addr;
 
-		/* TSO (optional) */
+		 
 		struct {
 			u32 pkt_cnt;
 			u32 real_len;
@@ -110,7 +99,7 @@ struct nfp_nfdk_tx_buf {
 
 static inline int nfp_nfdk_headlen_to_segs(unsigned int headlen)
 {
-	/* First descriptor fits less data, so adjust for that */
+	 
 	return DIV_ROUND_UP(headlen +
 			    NFDK_TX_MAX_DATA_PER_DESC -
 			    NFDK_TX_MAX_DATA_PER_HEAD,

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  HID driver for Logitech receivers
- *
- *  Copyright (c) 2011 Logitech
- */
+
+ 
 
 
 
@@ -12,7 +8,7 @@
 #include <linux/module.h>
 #include <linux/kfifo.h>
 #include <linux/delay.h>
-#include <linux/usb.h> /* For to_usb_interface for kvm extra intf check */
+#include <linux/usb.h>  
 #include <asm/unaligned.h>
 #include "hid-ids.h"
 
@@ -40,16 +36,16 @@
 #define REPORT_TYPE_RFREPORT_FIRST		0x01
 #define REPORT_TYPE_RFREPORT_LAST		0x1F
 
-/* Command Switch to DJ mode */
+ 
 #define REPORT_TYPE_CMD_SWITCH			0x80
 #define CMD_SWITCH_PARAM_DEVBITFIELD		0x00
 #define CMD_SWITCH_PARAM_TIMEOUT_SECONDS	0x01
 #define TIMEOUT_NO_KEEPALIVE			0x00
 
-/* Command to Get the list of Paired devices */
+ 
 #define REPORT_TYPE_CMD_GET_PAIRED_DEVICES	0x81
 
-/* Device Paired Notification */
+ 
 #define REPORT_TYPE_NOTIF_DEVICE_PAIRED		0x41
 #define SPFUNCTION_MORE_NOTIF_EXPECTED		0x01
 #define SPFUNCTION_DEVICE_LIST_EMPTY		0x02
@@ -58,20 +54,20 @@
 #define DEVICE_PAIRED_PARAM_EQUAD_ID_MSB	0x02
 #define DEVICE_PAIRED_RF_REPORT_TYPE		0x03
 
-/* Device Un-Paired Notification */
+ 
 #define REPORT_TYPE_NOTIF_DEVICE_UNPAIRED	0x40
 
-/* Connection Status Notification */
+ 
 #define REPORT_TYPE_NOTIF_CONNECTION_STATUS	0x42
 #define CONNECTION_STATUS_PARAM_STATUS		0x00
 #define STATUS_LINKLOSS				0x01
 
-/* Error Notification */
+ 
 #define REPORT_TYPE_NOTIF_ERROR			0x7F
 #define NOTIF_ERROR_PARAM_ETYPE			0x00
 #define ETYPE_KEEPALIVE_TIMEOUT			0x01
 
-/* supported DJ HID && RF report types */
+ 
 #define REPORT_TYPE_KEYBOARD			0x01
 #define REPORT_TYPE_MOUSE			0x02
 #define REPORT_TYPE_CONSUMER_CONTROL		0x03
@@ -79,7 +75,7 @@
 #define REPORT_TYPE_MEDIA_CENTER		0x08
 #define REPORT_TYPE_LEDS			0x0E
 
-/* RF Report types bitfield */
+ 
 #define STD_KEYBOARD				BIT(1)
 #define STD_MOUSE				BIT(2)
 #define MULTIMEDIA				BIT(3)
@@ -87,10 +83,10 @@
 #define KBD_MOUSE				BIT(5)
 #define MEDIA_CENTER				BIT(8)
 #define KBD_LEDS				BIT(14)
-/* Fake (bitnr > NUMBER_OF_HID_REPORTS) bit to track HID++ capability */
+ 
 #define HIDPP					BIT_ULL(63)
 
-/* HID++ Device Connected Notification */
+ 
 #define REPORT_TYPE_NOTIF_DEVICE_CONNECTED	0x41
 #define HIDPP_PARAM_PROTO_TYPE			0x00
 #define HIDPP_PARAM_DEVICE_INFO			0x01
@@ -146,7 +142,7 @@ struct dj_receiver_dev {
 	struct kref kref;
 	struct work_struct work;
 	struct kfifo notif_fifo;
-	unsigned long last_query; /* in jiffies */
+	unsigned long last_query;  
 	bool ready;
 	enum recvr_type type;
 	unsigned int unnumbered_application;
@@ -166,7 +162,7 @@ struct dj_device {
 #define WORKITEM_TYPE_UNKNOWN	255
 
 struct dj_workitem {
-	u8 type;		/* WORKITEM_TYPE_* */
+	u8 type;		 
 	u8 device_index;
 	u8 device_type;
 	u8 quad_id_msb;
@@ -174,353 +170,353 @@ struct dj_workitem {
 	u64 reports_supported;
 };
 
-/* Keyboard descriptor (1) */
+ 
 static const char kbd_descriptor[] = {
-	0x05, 0x01,		/* USAGE_PAGE (generic Desktop)     */
-	0x09, 0x06,		/* USAGE (Keyboard)         */
-	0xA1, 0x01,		/* COLLECTION (Application)     */
-	0x85, 0x01,		/* REPORT_ID (1)            */
-	0x95, 0x08,		/*   REPORT_COUNT (8)           */
-	0x75, 0x01,		/*   REPORT_SIZE (1)            */
-	0x15, 0x00,		/*   LOGICAL_MINIMUM (0)        */
-	0x25, 0x01,		/*   LOGICAL_MAXIMUM (1)        */
-	0x05, 0x07,		/*   USAGE_PAGE (Keyboard)      */
-	0x19, 0xE0,		/*   USAGE_MINIMUM (Left Control)   */
-	0x29, 0xE7,		/*   USAGE_MAXIMUM (Right GUI)      */
-	0x81, 0x02,		/*   INPUT (Data,Var,Abs)       */
-	0x95, 0x06,		/*   REPORT_COUNT (6)           */
-	0x75, 0x08,		/*   REPORT_SIZE (8)            */
-	0x15, 0x00,		/*   LOGICAL_MINIMUM (0)        */
-	0x26, 0xFF, 0x00,	/*   LOGICAL_MAXIMUM (255)      */
-	0x05, 0x07,		/*   USAGE_PAGE (Keyboard)      */
-	0x19, 0x00,		/*   USAGE_MINIMUM (no event)       */
-	0x2A, 0xFF, 0x00,	/*   USAGE_MAXIMUM (reserved)       */
-	0x81, 0x00,		/*   INPUT (Data,Ary,Abs)       */
-	0x85, 0x0e,		/* REPORT_ID (14)               */
-	0x05, 0x08,		/*   USAGE PAGE (LED page)      */
-	0x95, 0x05,		/*   REPORT COUNT (5)           */
-	0x75, 0x01,		/*   REPORT SIZE (1)            */
-	0x15, 0x00,		/*   LOGICAL_MINIMUM (0)        */
-	0x25, 0x01,		/*   LOGICAL_MAXIMUM (1)        */
-	0x19, 0x01,		/*   USAGE MINIMUM (1)          */
-	0x29, 0x05,		/*   USAGE MAXIMUM (5)          */
-	0x91, 0x02,		/*   OUTPUT (Data, Variable, Absolute)  */
-	0x95, 0x01,		/*   REPORT COUNT (1)           */
-	0x75, 0x03,		/*   REPORT SIZE (3)            */
-	0x91, 0x01,		/*   OUTPUT (Constant)          */
+	0x05, 0x01,		 
+	0x09, 0x06,		 
+	0xA1, 0x01,		 
+	0x85, 0x01,		 
+	0x95, 0x08,		 
+	0x75, 0x01,		 
+	0x15, 0x00,		 
+	0x25, 0x01,		 
+	0x05, 0x07,		 
+	0x19, 0xE0,		 
+	0x29, 0xE7,		 
+	0x81, 0x02,		 
+	0x95, 0x06,		 
+	0x75, 0x08,		 
+	0x15, 0x00,		 
+	0x26, 0xFF, 0x00,	 
+	0x05, 0x07,		 
+	0x19, 0x00,		 
+	0x2A, 0xFF, 0x00,	 
+	0x81, 0x00,		 
+	0x85, 0x0e,		 
+	0x05, 0x08,		 
+	0x95, 0x05,		 
+	0x75, 0x01,		 
+	0x15, 0x00,		 
+	0x25, 0x01,		 
+	0x19, 0x01,		 
+	0x29, 0x05,		 
+	0x91, 0x02,		 
+	0x95, 0x01,		 
+	0x75, 0x03,		 
+	0x91, 0x01,		 
 	0xC0
 };
 
-/* Mouse descriptor (2)     */
+ 
 static const char mse_descriptor[] = {
-	0x05, 0x01,		/*  USAGE_PAGE (Generic Desktop)        */
-	0x09, 0x02,		/*  USAGE (Mouse)                       */
-	0xA1, 0x01,		/*  COLLECTION (Application)            */
-	0x85, 0x02,		/*    REPORT_ID = 2                     */
-	0x09, 0x01,		/*    USAGE (pointer)                   */
-	0xA1, 0x00,		/*    COLLECTION (physical)             */
-	0x05, 0x09,		/*      USAGE_PAGE (buttons)            */
-	0x19, 0x01,		/*      USAGE_MIN (1)                   */
-	0x29, 0x10,		/*      USAGE_MAX (16)                  */
-	0x15, 0x00,		/*      LOGICAL_MIN (0)                 */
-	0x25, 0x01,		/*      LOGICAL_MAX (1)                 */
-	0x95, 0x10,		/*      REPORT_COUNT (16)               */
-	0x75, 0x01,		/*      REPORT_SIZE (1)                 */
-	0x81, 0x02,		/*      INPUT (data var abs)            */
-	0x05, 0x01,		/*      USAGE_PAGE (generic desktop)    */
-	0x16, 0x01, 0xF8,	/*      LOGICAL_MIN (-2047)             */
-	0x26, 0xFF, 0x07,	/*      LOGICAL_MAX (2047)              */
-	0x75, 0x0C,		/*      REPORT_SIZE (12)                */
-	0x95, 0x02,		/*      REPORT_COUNT (2)                */
-	0x09, 0x30,		/*      USAGE (X)                       */
-	0x09, 0x31,		/*      USAGE (Y)                       */
-	0x81, 0x06,		/*      INPUT                           */
-	0x15, 0x81,		/*      LOGICAL_MIN (-127)              */
-	0x25, 0x7F,		/*      LOGICAL_MAX (127)               */
-	0x75, 0x08,		/*      REPORT_SIZE (8)                 */
-	0x95, 0x01,		/*      REPORT_COUNT (1)                */
-	0x09, 0x38,		/*      USAGE (wheel)                   */
-	0x81, 0x06,		/*      INPUT                           */
-	0x05, 0x0C,		/*      USAGE_PAGE(consumer)            */
-	0x0A, 0x38, 0x02,	/*      USAGE(AC Pan)                   */
-	0x95, 0x01,		/*      REPORT_COUNT (1)                */
-	0x81, 0x06,		/*      INPUT                           */
-	0xC0,			/*    END_COLLECTION                    */
-	0xC0,			/*  END_COLLECTION                      */
+	0x05, 0x01,		 
+	0x09, 0x02,		 
+	0xA1, 0x01,		 
+	0x85, 0x02,		 
+	0x09, 0x01,		 
+	0xA1, 0x00,		 
+	0x05, 0x09,		 
+	0x19, 0x01,		 
+	0x29, 0x10,		 
+	0x15, 0x00,		 
+	0x25, 0x01,		 
+	0x95, 0x10,		 
+	0x75, 0x01,		 
+	0x81, 0x02,		 
+	0x05, 0x01,		 
+	0x16, 0x01, 0xF8,	 
+	0x26, 0xFF, 0x07,	 
+	0x75, 0x0C,		 
+	0x95, 0x02,		 
+	0x09, 0x30,		 
+	0x09, 0x31,		 
+	0x81, 0x06,		 
+	0x15, 0x81,		 
+	0x25, 0x7F,		 
+	0x75, 0x08,		 
+	0x95, 0x01,		 
+	0x09, 0x38,		 
+	0x81, 0x06,		 
+	0x05, 0x0C,		 
+	0x0A, 0x38, 0x02,	 
+	0x95, 0x01,		 
+	0x81, 0x06,		 
+	0xC0,			 
+	0xC0,			 
 };
 
-/* Mouse descriptor (2) for 27 MHz receiver, only 8 buttons */
+ 
 static const char mse_27mhz_descriptor[] = {
-	0x05, 0x01,		/*  USAGE_PAGE (Generic Desktop)        */
-	0x09, 0x02,		/*  USAGE (Mouse)                       */
-	0xA1, 0x01,		/*  COLLECTION (Application)            */
-	0x85, 0x02,		/*    REPORT_ID = 2                     */
-	0x09, 0x01,		/*    USAGE (pointer)                   */
-	0xA1, 0x00,		/*    COLLECTION (physical)             */
-	0x05, 0x09,		/*      USAGE_PAGE (buttons)            */
-	0x19, 0x01,		/*      USAGE_MIN (1)                   */
-	0x29, 0x08,		/*      USAGE_MAX (8)                   */
-	0x15, 0x00,		/*      LOGICAL_MIN (0)                 */
-	0x25, 0x01,		/*      LOGICAL_MAX (1)                 */
-	0x95, 0x08,		/*      REPORT_COUNT (8)                */
-	0x75, 0x01,		/*      REPORT_SIZE (1)                 */
-	0x81, 0x02,		/*      INPUT (data var abs)            */
-	0x05, 0x01,		/*      USAGE_PAGE (generic desktop)    */
-	0x16, 0x01, 0xF8,	/*      LOGICAL_MIN (-2047)             */
-	0x26, 0xFF, 0x07,	/*      LOGICAL_MAX (2047)              */
-	0x75, 0x0C,		/*      REPORT_SIZE (12)                */
-	0x95, 0x02,		/*      REPORT_COUNT (2)                */
-	0x09, 0x30,		/*      USAGE (X)                       */
-	0x09, 0x31,		/*      USAGE (Y)                       */
-	0x81, 0x06,		/*      INPUT                           */
-	0x15, 0x81,		/*      LOGICAL_MIN (-127)              */
-	0x25, 0x7F,		/*      LOGICAL_MAX (127)               */
-	0x75, 0x08,		/*      REPORT_SIZE (8)                 */
-	0x95, 0x01,		/*      REPORT_COUNT (1)                */
-	0x09, 0x38,		/*      USAGE (wheel)                   */
-	0x81, 0x06,		/*      INPUT                           */
-	0x05, 0x0C,		/*      USAGE_PAGE(consumer)            */
-	0x0A, 0x38, 0x02,	/*      USAGE(AC Pan)                   */
-	0x95, 0x01,		/*      REPORT_COUNT (1)                */
-	0x81, 0x06,		/*      INPUT                           */
-	0xC0,			/*    END_COLLECTION                    */
-	0xC0,			/*  END_COLLECTION                      */
+	0x05, 0x01,		 
+	0x09, 0x02,		 
+	0xA1, 0x01,		 
+	0x85, 0x02,		 
+	0x09, 0x01,		 
+	0xA1, 0x00,		 
+	0x05, 0x09,		 
+	0x19, 0x01,		 
+	0x29, 0x08,		 
+	0x15, 0x00,		 
+	0x25, 0x01,		 
+	0x95, 0x08,		 
+	0x75, 0x01,		 
+	0x81, 0x02,		 
+	0x05, 0x01,		 
+	0x16, 0x01, 0xF8,	 
+	0x26, 0xFF, 0x07,	 
+	0x75, 0x0C,		 
+	0x95, 0x02,		 
+	0x09, 0x30,		 
+	0x09, 0x31,		 
+	0x81, 0x06,		 
+	0x15, 0x81,		 
+	0x25, 0x7F,		 
+	0x75, 0x08,		 
+	0x95, 0x01,		 
+	0x09, 0x38,		 
+	0x81, 0x06,		 
+	0x05, 0x0C,		 
+	0x0A, 0x38, 0x02,	 
+	0x95, 0x01,		 
+	0x81, 0x06,		 
+	0xC0,			 
+	0xC0,			 
 };
 
-/* Mouse descriptor (2) for Bluetooth receiver, low-res hwheel, 12 buttons */
+ 
 static const char mse_bluetooth_descriptor[] = {
-	0x05, 0x01,		/*  USAGE_PAGE (Generic Desktop)        */
-	0x09, 0x02,		/*  USAGE (Mouse)                       */
-	0xA1, 0x01,		/*  COLLECTION (Application)            */
-	0x85, 0x02,		/*    REPORT_ID = 2                     */
-	0x09, 0x01,		/*    USAGE (pointer)                   */
-	0xA1, 0x00,		/*    COLLECTION (physical)             */
-	0x05, 0x09,		/*      USAGE_PAGE (buttons)            */
-	0x19, 0x01,		/*      USAGE_MIN (1)                   */
-	0x29, 0x08,		/*      USAGE_MAX (8)                   */
-	0x15, 0x00,		/*      LOGICAL_MIN (0)                 */
-	0x25, 0x01,		/*      LOGICAL_MAX (1)                 */
-	0x95, 0x08,		/*      REPORT_COUNT (8)                */
-	0x75, 0x01,		/*      REPORT_SIZE (1)                 */
-	0x81, 0x02,		/*      INPUT (data var abs)            */
-	0x05, 0x01,		/*      USAGE_PAGE (generic desktop)    */
-	0x16, 0x01, 0xF8,	/*      LOGICAL_MIN (-2047)             */
-	0x26, 0xFF, 0x07,	/*      LOGICAL_MAX (2047)              */
-	0x75, 0x0C,		/*      REPORT_SIZE (12)                */
-	0x95, 0x02,		/*      REPORT_COUNT (2)                */
-	0x09, 0x30,		/*      USAGE (X)                       */
-	0x09, 0x31,		/*      USAGE (Y)                       */
-	0x81, 0x06,		/*      INPUT                           */
-	0x15, 0x81,		/*      LOGICAL_MIN (-127)              */
-	0x25, 0x7F,		/*      LOGICAL_MAX (127)               */
-	0x75, 0x08,		/*      REPORT_SIZE (8)                 */
-	0x95, 0x01,		/*      REPORT_COUNT (1)                */
-	0x09, 0x38,		/*      USAGE (wheel)                   */
-	0x81, 0x06,		/*      INPUT                           */
-	0x05, 0x0C,		/*      USAGE_PAGE(consumer)            */
-	0x0A, 0x38, 0x02,	/*      USAGE(AC Pan)                   */
-	0x15, 0xF9,		/*      LOGICAL_MIN (-7)                */
-	0x25, 0x07,		/*      LOGICAL_MAX (7)                 */
-	0x75, 0x04,		/*      REPORT_SIZE (4)                 */
-	0x95, 0x01,		/*      REPORT_COUNT (1)                */
-	0x81, 0x06,		/*      INPUT                           */
-	0x05, 0x09,		/*      USAGE_PAGE (buttons)            */
-	0x19, 0x09,		/*      USAGE_MIN (9)                   */
-	0x29, 0x0C,		/*      USAGE_MAX (12)                  */
-	0x15, 0x00,		/*      LOGICAL_MIN (0)                 */
-	0x25, 0x01,		/*      LOGICAL_MAX (1)                 */
-	0x75, 0x01,		/*      REPORT_SIZE (1)                 */
-	0x95, 0x04,		/*      REPORT_COUNT (4)                */
-	0x81, 0x02,		/*      INPUT (Data,Var,Abs)            */
-	0xC0,			/*    END_COLLECTION                    */
-	0xC0,			/*  END_COLLECTION                      */
+	0x05, 0x01,		 
+	0x09, 0x02,		 
+	0xA1, 0x01,		 
+	0x85, 0x02,		 
+	0x09, 0x01,		 
+	0xA1, 0x00,		 
+	0x05, 0x09,		 
+	0x19, 0x01,		 
+	0x29, 0x08,		 
+	0x15, 0x00,		 
+	0x25, 0x01,		 
+	0x95, 0x08,		 
+	0x75, 0x01,		 
+	0x81, 0x02,		 
+	0x05, 0x01,		 
+	0x16, 0x01, 0xF8,	 
+	0x26, 0xFF, 0x07,	 
+	0x75, 0x0C,		 
+	0x95, 0x02,		 
+	0x09, 0x30,		 
+	0x09, 0x31,		 
+	0x81, 0x06,		 
+	0x15, 0x81,		 
+	0x25, 0x7F,		 
+	0x75, 0x08,		 
+	0x95, 0x01,		 
+	0x09, 0x38,		 
+	0x81, 0x06,		 
+	0x05, 0x0C,		 
+	0x0A, 0x38, 0x02,	 
+	0x15, 0xF9,		 
+	0x25, 0x07,		 
+	0x75, 0x04,		 
+	0x95, 0x01,		 
+	0x81, 0x06,		 
+	0x05, 0x09,		 
+	0x19, 0x09,		 
+	0x29, 0x0C,		 
+	0x15, 0x00,		 
+	0x25, 0x01,		 
+	0x75, 0x01,		 
+	0x95, 0x04,		 
+	0x81, 0x02,		 
+	0xC0,			 
+	0xC0,			 
 };
 
-/* Mouse descriptor (5) for Bluetooth receiver, normal-res hwheel, 8 buttons */
+ 
 static const char mse5_bluetooth_descriptor[] = {
-	0x05, 0x01,		/*  USAGE_PAGE (Generic Desktop)        */
-	0x09, 0x02,		/*  Usage (Mouse)                       */
-	0xa1, 0x01,		/*  Collection (Application)            */
-	0x85, 0x05,		/*   Report ID (5)                      */
-	0x09, 0x01,		/*   Usage (Pointer)                    */
-	0xa1, 0x00,		/*   Collection (Physical)              */
-	0x05, 0x09,		/*    Usage Page (Button)               */
-	0x19, 0x01,		/*    Usage Minimum (1)                 */
-	0x29, 0x08,		/*    Usage Maximum (8)                 */
-	0x15, 0x00,		/*    Logical Minimum (0)               */
-	0x25, 0x01,		/*    Logical Maximum (1)               */
-	0x95, 0x08,		/*    Report Count (8)                  */
-	0x75, 0x01,		/*    Report Size (1)                   */
-	0x81, 0x02,		/*    Input (Data,Var,Abs)              */
-	0x05, 0x01,		/*    Usage Page (Generic Desktop)      */
-	0x16, 0x01, 0xf8,	/*    Logical Minimum (-2047)           */
-	0x26, 0xff, 0x07,	/*    Logical Maximum (2047)            */
-	0x75, 0x0c,		/*    Report Size (12)                  */
-	0x95, 0x02,		/*    Report Count (2)                  */
-	0x09, 0x30,		/*    Usage (X)                         */
-	0x09, 0x31,		/*    Usage (Y)                         */
-	0x81, 0x06,		/*    Input (Data,Var,Rel)              */
-	0x15, 0x81,		/*    Logical Minimum (-127)            */
-	0x25, 0x7f,		/*    Logical Maximum (127)             */
-	0x75, 0x08,		/*    Report Size (8)                   */
-	0x95, 0x01,		/*    Report Count (1)                  */
-	0x09, 0x38,		/*    Usage (Wheel)                     */
-	0x81, 0x06,		/*    Input (Data,Var,Rel)              */
-	0x05, 0x0c,		/*    Usage Page (Consumer Devices)     */
-	0x0a, 0x38, 0x02,	/*    Usage (AC Pan)                    */
-	0x15, 0x81,		/*    Logical Minimum (-127)            */
-	0x25, 0x7f,		/*    Logical Maximum (127)             */
-	0x75, 0x08,		/*    Report Size (8)                   */
-	0x95, 0x01,		/*    Report Count (1)                  */
-	0x81, 0x06,		/*    Input (Data,Var,Rel)              */
-	0xc0,			/*   End Collection                     */
-	0xc0,			/*  End Collection                      */
+	0x05, 0x01,		 
+	0x09, 0x02,		 
+	0xa1, 0x01,		 
+	0x85, 0x05,		 
+	0x09, 0x01,		 
+	0xa1, 0x00,		 
+	0x05, 0x09,		 
+	0x19, 0x01,		 
+	0x29, 0x08,		 
+	0x15, 0x00,		 
+	0x25, 0x01,		 
+	0x95, 0x08,		 
+	0x75, 0x01,		 
+	0x81, 0x02,		 
+	0x05, 0x01,		 
+	0x16, 0x01, 0xf8,	 
+	0x26, 0xff, 0x07,	 
+	0x75, 0x0c,		 
+	0x95, 0x02,		 
+	0x09, 0x30,		 
+	0x09, 0x31,		 
+	0x81, 0x06,		 
+	0x15, 0x81,		 
+	0x25, 0x7f,		 
+	0x75, 0x08,		 
+	0x95, 0x01,		 
+	0x09, 0x38,		 
+	0x81, 0x06,		 
+	0x05, 0x0c,		 
+	0x0a, 0x38, 0x02,	 
+	0x15, 0x81,		 
+	0x25, 0x7f,		 
+	0x75, 0x08,		 
+	0x95, 0x01,		 
+	0x81, 0x06,		 
+	0xc0,			 
+	0xc0,			 
 };
 
-/* Gaming Mouse descriptor (2) */
+ 
 static const char mse_high_res_descriptor[] = {
-	0x05, 0x01,		/*  USAGE_PAGE (Generic Desktop)        */
-	0x09, 0x02,		/*  USAGE (Mouse)                       */
-	0xA1, 0x01,		/*  COLLECTION (Application)            */
-	0x85, 0x02,		/*    REPORT_ID = 2                     */
-	0x09, 0x01,		/*    USAGE (pointer)                   */
-	0xA1, 0x00,		/*    COLLECTION (physical)             */
-	0x05, 0x09,		/*      USAGE_PAGE (buttons)            */
-	0x19, 0x01,		/*      USAGE_MIN (1)                   */
-	0x29, 0x10,		/*      USAGE_MAX (16)                  */
-	0x15, 0x00,		/*      LOGICAL_MIN (0)                 */
-	0x25, 0x01,		/*      LOGICAL_MAX (1)                 */
-	0x95, 0x10,		/*      REPORT_COUNT (16)               */
-	0x75, 0x01,		/*      REPORT_SIZE (1)                 */
-	0x81, 0x02,		/*      INPUT (data var abs)            */
-	0x05, 0x01,		/*      USAGE_PAGE (generic desktop)    */
-	0x16, 0x01, 0x80,	/*      LOGICAL_MIN (-32767)            */
-	0x26, 0xFF, 0x7F,	/*      LOGICAL_MAX (32767)             */
-	0x75, 0x10,		/*      REPORT_SIZE (16)                */
-	0x95, 0x02,		/*      REPORT_COUNT (2)                */
-	0x09, 0x30,		/*      USAGE (X)                       */
-	0x09, 0x31,		/*      USAGE (Y)                       */
-	0x81, 0x06,		/*      INPUT                           */
-	0x15, 0x81,		/*      LOGICAL_MIN (-127)              */
-	0x25, 0x7F,		/*      LOGICAL_MAX (127)               */
-	0x75, 0x08,		/*      REPORT_SIZE (8)                 */
-	0x95, 0x01,		/*      REPORT_COUNT (1)                */
-	0x09, 0x38,		/*      USAGE (wheel)                   */
-	0x81, 0x06,		/*      INPUT                           */
-	0x05, 0x0C,		/*      USAGE_PAGE(consumer)            */
-	0x0A, 0x38, 0x02,	/*      USAGE(AC Pan)                   */
-	0x95, 0x01,		/*      REPORT_COUNT (1)                */
-	0x81, 0x06,		/*      INPUT                           */
-	0xC0,			/*    END_COLLECTION                    */
-	0xC0,			/*  END_COLLECTION                      */
+	0x05, 0x01,		 
+	0x09, 0x02,		 
+	0xA1, 0x01,		 
+	0x85, 0x02,		 
+	0x09, 0x01,		 
+	0xA1, 0x00,		 
+	0x05, 0x09,		 
+	0x19, 0x01,		 
+	0x29, 0x10,		 
+	0x15, 0x00,		 
+	0x25, 0x01,		 
+	0x95, 0x10,		 
+	0x75, 0x01,		 
+	0x81, 0x02,		 
+	0x05, 0x01,		 
+	0x16, 0x01, 0x80,	 
+	0x26, 0xFF, 0x7F,	 
+	0x75, 0x10,		 
+	0x95, 0x02,		 
+	0x09, 0x30,		 
+	0x09, 0x31,		 
+	0x81, 0x06,		 
+	0x15, 0x81,		 
+	0x25, 0x7F,		 
+	0x75, 0x08,		 
+	0x95, 0x01,		 
+	0x09, 0x38,		 
+	0x81, 0x06,		 
+	0x05, 0x0C,		 
+	0x0A, 0x38, 0x02,	 
+	0x95, 0x01,		 
+	0x81, 0x06,		 
+	0xC0,			 
+	0xC0,			 
 };
 
-/* Consumer Control descriptor (3) */
+ 
 static const char consumer_descriptor[] = {
-	0x05, 0x0C,		/* USAGE_PAGE (Consumer Devices)       */
-	0x09, 0x01,		/* USAGE (Consumer Control)            */
-	0xA1, 0x01,		/* COLLECTION (Application)            */
-	0x85, 0x03,		/* REPORT_ID = 3                       */
-	0x75, 0x10,		/* REPORT_SIZE (16)                    */
-	0x95, 0x02,		/* REPORT_COUNT (2)                    */
-	0x15, 0x01,		/* LOGICAL_MIN (1)                     */
-	0x26, 0xFF, 0x02,	/* LOGICAL_MAX (767)                   */
-	0x19, 0x01,		/* USAGE_MIN (1)                       */
-	0x2A, 0xFF, 0x02,	/* USAGE_MAX (767)                     */
-	0x81, 0x00,		/* INPUT (Data Ary Abs)                */
-	0xC0,			/* END_COLLECTION                      */
-};				/*                                     */
+	0x05, 0x0C,		 
+	0x09, 0x01,		 
+	0xA1, 0x01,		 
+	0x85, 0x03,		 
+	0x75, 0x10,		 
+	0x95, 0x02,		 
+	0x15, 0x01,		 
+	0x26, 0xFF, 0x02,	 
+	0x19, 0x01,		 
+	0x2A, 0xFF, 0x02,	 
+	0x81, 0x00,		 
+	0xC0,			 
+};				 
 
-/* System control descriptor (4) */
+ 
 static const char syscontrol_descriptor[] = {
-	0x05, 0x01,		/*   USAGE_PAGE (Generic Desktop)      */
-	0x09, 0x80,		/*   USAGE (System Control)            */
-	0xA1, 0x01,		/*   COLLECTION (Application)          */
-	0x85, 0x04,		/*   REPORT_ID = 4                     */
-	0x75, 0x02,		/*   REPORT_SIZE (2)                   */
-	0x95, 0x01,		/*   REPORT_COUNT (1)                  */
-	0x15, 0x01,		/*   LOGICAL_MIN (1)                   */
-	0x25, 0x03,		/*   LOGICAL_MAX (3)                   */
-	0x09, 0x82,		/*   USAGE (System Sleep)              */
-	0x09, 0x81,		/*   USAGE (System Power Down)         */
-	0x09, 0x83,		/*   USAGE (System Wake Up)            */
-	0x81, 0x60,		/*   INPUT (Data Ary Abs NPrf Null)    */
-	0x75, 0x06,		/*   REPORT_SIZE (6)                   */
-	0x81, 0x03,		/*   INPUT (Cnst Var Abs)              */
-	0xC0,			/*   END_COLLECTION                    */
+	0x05, 0x01,		 
+	0x09, 0x80,		 
+	0xA1, 0x01,		 
+	0x85, 0x04,		 
+	0x75, 0x02,		 
+	0x95, 0x01,		 
+	0x15, 0x01,		 
+	0x25, 0x03,		 
+	0x09, 0x82,		 
+	0x09, 0x81,		 
+	0x09, 0x83,		 
+	0x81, 0x60,		 
+	0x75, 0x06,		 
+	0x81, 0x03,		 
+	0xC0,			 
 };
 
-/* Media descriptor (8) */
+ 
 static const char media_descriptor[] = {
-	0x06, 0xbc, 0xff,	/* Usage Page 0xffbc                   */
-	0x09, 0x88,		/* Usage 0x0088                        */
-	0xa1, 0x01,		/* BeginCollection                     */
-	0x85, 0x08,		/*   Report ID 8                       */
-	0x19, 0x01,		/*   Usage Min 0x0001                  */
-	0x29, 0xff,		/*   Usage Max 0x00ff                  */
-	0x15, 0x01,		/*   Logical Min 1                     */
-	0x26, 0xff, 0x00,	/*   Logical Max 255                   */
-	0x75, 0x08,		/*   Report Size 8                     */
-	0x95, 0x01,		/*   Report Count 1                    */
-	0x81, 0x00,		/*   Input                             */
-	0xc0,			/* EndCollection                       */
-};				/*                                     */
+	0x06, 0xbc, 0xff,	 
+	0x09, 0x88,		 
+	0xa1, 0x01,		 
+	0x85, 0x08,		 
+	0x19, 0x01,		 
+	0x29, 0xff,		 
+	0x15, 0x01,		 
+	0x26, 0xff, 0x00,	 
+	0x75, 0x08,		 
+	0x95, 0x01,		 
+	0x81, 0x00,		 
+	0xc0,			 
+};				 
 
-/* HIDPP descriptor */
+ 
 static const char hidpp_descriptor[] = {
-	0x06, 0x00, 0xff,	/* Usage Page (Vendor Defined Page 1)  */
-	0x09, 0x01,		/* Usage (Vendor Usage 1)              */
-	0xa1, 0x01,		/* Collection (Application)            */
-	0x85, 0x10,		/*   Report ID (16)                    */
-	0x75, 0x08,		/*   Report Size (8)                   */
-	0x95, 0x06,		/*   Report Count (6)                  */
-	0x15, 0x00,		/*   Logical Minimum (0)               */
-	0x26, 0xff, 0x00,	/*   Logical Maximum (255)             */
-	0x09, 0x01,		/*   Usage (Vendor Usage 1)            */
-	0x81, 0x00,		/*   Input (Data,Arr,Abs)              */
-	0x09, 0x01,		/*   Usage (Vendor Usage 1)            */
-	0x91, 0x00,		/*   Output (Data,Arr,Abs)             */
-	0xc0,			/* End Collection                      */
-	0x06, 0x00, 0xff,	/* Usage Page (Vendor Defined Page 1)  */
-	0x09, 0x02,		/* Usage (Vendor Usage 2)              */
-	0xa1, 0x01,		/* Collection (Application)            */
-	0x85, 0x11,		/*   Report ID (17)                    */
-	0x75, 0x08,		/*   Report Size (8)                   */
-	0x95, 0x13,		/*   Report Count (19)                 */
-	0x15, 0x00,		/*   Logical Minimum (0)               */
-	0x26, 0xff, 0x00,	/*   Logical Maximum (255)             */
-	0x09, 0x02,		/*   Usage (Vendor Usage 2)            */
-	0x81, 0x00,		/*   Input (Data,Arr,Abs)              */
-	0x09, 0x02,		/*   Usage (Vendor Usage 2)            */
-	0x91, 0x00,		/*   Output (Data,Arr,Abs)             */
-	0xc0,			/* End Collection                      */
-	0x06, 0x00, 0xff,	/* Usage Page (Vendor Defined Page 1)  */
-	0x09, 0x04,		/* Usage (Vendor Usage 0x04)           */
-	0xa1, 0x01,		/* Collection (Application)            */
-	0x85, 0x20,		/*   Report ID (32)                    */
-	0x75, 0x08,		/*   Report Size (8)                   */
-	0x95, 0x0e,		/*   Report Count (14)                 */
-	0x15, 0x00,		/*   Logical Minimum (0)               */
-	0x26, 0xff, 0x00,	/*   Logical Maximum (255)             */
-	0x09, 0x41,		/*   Usage (Vendor Usage 0x41)         */
-	0x81, 0x00,		/*   Input (Data,Arr,Abs)              */
-	0x09, 0x41,		/*   Usage (Vendor Usage 0x41)         */
-	0x91, 0x00,		/*   Output (Data,Arr,Abs)             */
-	0x85, 0x21,		/*   Report ID (33)                    */
-	0x95, 0x1f,		/*   Report Count (31)                 */
-	0x15, 0x00,		/*   Logical Minimum (0)               */
-	0x26, 0xff, 0x00,	/*   Logical Maximum (255)             */
-	0x09, 0x42,		/*   Usage (Vendor Usage 0x42)         */
-	0x81, 0x00,		/*   Input (Data,Arr,Abs)              */
-	0x09, 0x42,		/*   Usage (Vendor Usage 0x42)         */
-	0x91, 0x00,		/*   Output (Data,Arr,Abs)             */
-	0xc0,			/* End Collection                      */
+	0x06, 0x00, 0xff,	 
+	0x09, 0x01,		 
+	0xa1, 0x01,		 
+	0x85, 0x10,		 
+	0x75, 0x08,		 
+	0x95, 0x06,		 
+	0x15, 0x00,		 
+	0x26, 0xff, 0x00,	 
+	0x09, 0x01,		 
+	0x81, 0x00,		 
+	0x09, 0x01,		 
+	0x91, 0x00,		 
+	0xc0,			 
+	0x06, 0x00, 0xff,	 
+	0x09, 0x02,		 
+	0xa1, 0x01,		 
+	0x85, 0x11,		 
+	0x75, 0x08,		 
+	0x95, 0x13,		 
+	0x15, 0x00,		 
+	0x26, 0xff, 0x00,	 
+	0x09, 0x02,		 
+	0x81, 0x00,		 
+	0x09, 0x02,		 
+	0x91, 0x00,		 
+	0xc0,			 
+	0x06, 0x00, 0xff,	 
+	0x09, 0x04,		 
+	0xa1, 0x01,		 
+	0x85, 0x20,		 
+	0x75, 0x08,		 
+	0x95, 0x0e,		 
+	0x15, 0x00,		 
+	0x26, 0xff, 0x00,	 
+	0x09, 0x41,		 
+	0x81, 0x00,		 
+	0x09, 0x41,		 
+	0x91, 0x00,		 
+	0x85, 0x21,		 
+	0x95, 0x1f,		 
+	0x15, 0x00,		 
+	0x26, 0xff, 0x00,	 
+	0x09, 0x42,		 
+	0x81, 0x00,		 
+	0x09, 0x42,		 
+	0x91, 0x00,		 
+	0xc0,			 
 };
 
-/* Maximum size of all defined hid reports in bytes (including report id) */
+ 
 #define MAX_REPORT_SIZE 8
 
-/* Make sure all descriptors are present here */
+ 
 #define MAX_RDESC_SIZE				\
 	(sizeof(kbd_descriptor) +		\
 	 sizeof(mse_bluetooth_descriptor) +	\
@@ -530,25 +526,14 @@ static const char hidpp_descriptor[] = {
 	 sizeof(media_descriptor) +	\
 	 sizeof(hidpp_descriptor))
 
-/* Number of possible hid report types that can be created by this driver.
- *
- * Right now, RF report types have the same report types (or report id's)
- * than the hid report created from those RF reports. In the future
- * this doesnt have to be true.
- *
- * For instance, RF report type 0x01 which has a size of 8 bytes, corresponds
- * to hid report id 0x01, this is standard keyboard. Same thing applies to mice
- * reports and consumer control, etc. If a new RF report is created, it doesn't
- * has to have the same report id as its corresponding hid report, so an
- * translation may have to take place for future report types.
- */
+ 
 #define NUMBER_OF_HID_REPORTS 32
 static const u8 hid_reportid_size_map[NUMBER_OF_HID_REPORTS] = {
-	[1] = 8,		/* Standard keyboard */
-	[2] = 8,		/* Standard mouse */
-	[3] = 5,		/* Consumer control */
-	[4] = 2,		/* System control */
-	[8] = 2,		/* Media Center */
+	[1] = 8,		 
+	[2] = 8,		 
+	[3] = 5,		 
+	[4] = 2,		 
+	[8] = 2,		 
 };
 
 
@@ -567,26 +552,17 @@ static bool recvr_type_is_bluetooth(enum recvr_type type)
 	return type == recvr_type_bluetooth || type == recvr_type_dinovo;
 }
 
-/*
- * dj/HID++ receivers are really a single logical entity, but for BIOS/Windows
- * compatibility they have multiple USB interfaces. On HID++ receivers we need
- * to listen for input reports on both interfaces. The functions below are used
- * to create a single struct dj_receiver_dev for all interfaces belonging to
- * a single USB-device / receiver.
- */
+ 
 static struct dj_receiver_dev *dj_find_receiver_dev(struct hid_device *hdev,
 						    enum recvr_type type)
 {
 	struct dj_receiver_dev *djrcv_dev;
 	char sep;
 
-	/*
-	 * The bluetooth receiver contains a built-in hub and has separate
-	 * USB-devices for the keyboard and mouse interfaces.
-	 */
+	 
 	sep = recvr_type_is_bluetooth(type) ? '.' : '/';
 
-	/* Try to find an already-probed interface from the same device */
+	 
 	list_for_each_entry(djrcv_dev, &dj_hdev_list, list) {
 		if (djrcv_dev->mouse &&
 		    hid_compare_device_paths(hdev, djrcv_dev->mouse, sep)) {
@@ -681,7 +657,7 @@ out:
 static void logi_dj_recv_destroy_djhid_device(struct dj_receiver_dev *djrcv_dev,
 					      struct dj_workitem *workitem)
 {
-	/* Called in delayed work context */
+	 
 	struct dj_device *dj_dev;
 	unsigned long flags;
 
@@ -702,21 +678,19 @@ static void logi_dj_recv_destroy_djhid_device(struct dj_receiver_dev *djrcv_dev,
 static void logi_dj_recv_add_djhid_device(struct dj_receiver_dev *djrcv_dev,
 					  struct dj_workitem *workitem)
 {
-	/* Called in delayed work context */
+	 
 	struct hid_device *djrcv_hdev = djrcv_dev->hidpp;
 	struct hid_device *dj_hiddev;
 	struct dj_device *dj_dev;
 	u8 device_index = workitem->device_index;
 	unsigned long flags;
 
-	/* Device index goes from 1 to 6, we need 3 bytes to store the
-	 * semicolon, the index, and a null terminator
-	 */
+	 
 	unsigned char tmpstr[3];
 
-	/* We are the only one ever adding a device, no need to lock */
+	 
 	if (djrcv_dev->paired_dj_devices[device_index]) {
-		/* The device is already known. No need to reallocate it. */
+		 
 		dbg_hid("%s: device is already known\n", __func__);
 		return;
 	}
@@ -811,10 +785,7 @@ static void delayedwork_callback(struct work_struct *work)
 
 	spin_lock_irqsave(&djrcv_dev->lock, flags);
 
-	/*
-	 * Since we attach to multiple interfaces, we may get scheduled before
-	 * we are bound to the HID++ interface, catch this.
-	 */
+	 
 	if (!djrcv_dev->ready) {
 		pr_warn("%s: delayedwork queued before hidpp interface was enumerated\n",
 			__func__);
@@ -854,23 +825,12 @@ static void delayedwork_callback(struct work_struct *work)
 	}
 }
 
-/*
- * Sometimes we receive reports for which we do not have a paired dj_device
- * associated with the device_index or report-type to forward the report to.
- * This means that the original "device paired" notification corresponding
- * to the dj_device never arrived to this driver. Possible reasons for this are:
- * 1) hid-core discards all packets coming from a device during probe().
- * 2) if the receiver is plugged into a KVM switch then the pairing reports
- * are only forwarded to it if the focus is on this PC.
- * This function deals with this by re-asking the receiver for the list of
- * connected devices in the delayed work callback.
- * This function MUST be called with djrcv->lock held.
- */
+ 
 static void logi_dj_recv_queue_unknown_work(struct dj_receiver_dev *djrcv_dev)
 {
 	struct dj_workitem workitem = { .type = WORKITEM_TYPE_UNKNOWN };
 
-	/* Rate limit queries done because of unhandled reports to 2/sec */
+	 
 	if (time_before(jiffies, djrcv_dev->last_query + HZ / 2))
 		return;
 
@@ -881,7 +841,7 @@ static void logi_dj_recv_queue_unknown_work(struct dj_receiver_dev *djrcv_dev)
 static void logi_dj_recv_queue_notification(struct dj_receiver_dev *djrcv_dev,
 					   struct dj_report *dj_report)
 {
-	/* We are called from atomic context (tasklet && djrcv->lock held) */
+	 
 	struct dj_workitem workitem = {
 		.device_index = dj_report->device_index,
 	};
@@ -916,24 +876,10 @@ static void logi_dj_recv_queue_notification(struct dj_receiver_dev *djrcv_dev,
 	schedule_work(&djrcv_dev->work);
 }
 
-/*
- * Some quad/bluetooth keyboards have a builtin touchpad in this case we see
- * only 1 paired device with a device_type of REPORT_TYPE_KEYBOARD. For the
- * touchpad to work we must also forward mouse input reports to the dj_hiddev
- * created for the keyboard (instead of forwarding them to a second paired
- * device with a device_type of REPORT_TYPE_MOUSE as we normally would).
- *
- * On Dinovo receivers the keyboard's touchpad and an optional paired actual
- * mouse send separate input reports, INPUT(2) aka STD_MOUSE for the mouse
- * and INPUT(5) aka KBD_MOUSE for the keyboard's touchpad.
- *
- * On MX5x00 receivers (which can also be paired with a Dinovo keyboard)
- * INPUT(2) is used for both an optional paired actual mouse and for the
- * keyboard's touchpad.
- */
+ 
 static const u16 kbd_builtin_touchpad_ids[] = {
-	0xb309, /* Dinovo Edge */
-	0xb30c, /* Dinovo Mini */
+	0xb309,  
+	0xb30c,  
 };
 
 static void logi_hidpp_dev_conn_notif_equad(struct hid_device *hdev,
@@ -979,12 +925,12 @@ static void logi_hidpp_dev_conn_notif_27mhz(struct hid_device *hdev,
 	workitem->type = WORKITEM_TYPE_PAIRED;
 	workitem->quad_id_lsb = hidpp_report->params[HIDPP_PARAM_27MHZ_DEVID];
 	switch (hidpp_report->device_index) {
-	case 1: /* Index 1 is always a mouse */
-	case 2: /* Index 2 is always a mouse */
+	case 1:  
+	case 2:  
 		workitem->device_type = HIDPP_DEVICE_TYPE_MOUSE;
 		workitem->reports_supported |= STD_MOUSE | HIDPP;
 		break;
-	case 3: /* Index 3 is always the keyboard */
+	case 3:  
 		if (hidpp_report->params[HIDPP_PARAM_DEVICE_INFO] & HIDPP_27MHZ_SECURE_MASK) {
 			hid_info(hdev, "Keyboard connection is encrypted\n");
 		} else {
@@ -992,7 +938,7 @@ static void logi_hidpp_dev_conn_notif_27mhz(struct hid_device *hdev,
 			hid_warn(hdev, "See: https://gitlab.freedesktop.org/jwrdegoede/logitech-27mhz-keyboard-encryption-setup/\n");
 		}
 		fallthrough;
-	case 4: /* Index 4 is used for an optional separate numpad */
+	case 4:  
 		workitem->device_type = HIDPP_DEVICE_TYPE_KEYBOARD;
 		workitem->reports_supported |= STD_KEYBOARD | MULTIMEDIA |
 					       POWER_KEYS | HIDPP;
@@ -1006,7 +952,7 @@ static void logi_hidpp_dev_conn_notif_27mhz(struct hid_device *hdev,
 static void logi_hidpp_recv_queue_notif(struct hid_device *hdev,
 					struct hidpp_event *hidpp_report)
 {
-	/* We are called from atomic context (tasklet && djrcv->lock held) */
+	 
 	struct dj_receiver_dev *djrcv_dev = hid_get_drvdata(hdev);
 	const char *device_type = "UNKNOWN";
 	struct dj_workitem workitem = {
@@ -1017,7 +963,7 @@ static void logi_hidpp_recv_queue_notif(struct hid_device *hdev,
 	switch (hidpp_report->params[HIDPP_PARAM_PROTO_TYPE]) {
 	case 0x01:
 		device_type = "Bluetooth";
-		/* Bluetooth connect packet contents is the same as (e)QUAD */
+		 
 		logi_hidpp_dev_conn_notif_equad(hdev, hidpp_report, &workitem);
 		if (!(hidpp_report->params[HIDPP_PARAM_DEVICE_INFO] &
 						HIDPP_MANUFACTURER_MASK)) {
@@ -1075,7 +1021,7 @@ static void logi_hidpp_recv_queue_notif(struct hid_device *hdev,
 		break;
 	}
 
-	/* custom receiver device (eg. powerplay) */
+	 
 	if (hidpp_report->device_index == 7) {
 		workitem.reports_supported |= HIDPP;
 	}
@@ -1100,7 +1046,7 @@ static void logi_hidpp_recv_queue_notif(struct hid_device *hdev,
 static void logi_dj_recv_forward_null_report(struct dj_receiver_dev *djrcv_dev,
 					     struct dj_report *dj_report)
 {
-	/* We are called from atomic context (tasklet && djrcv->lock held) */
+	 
 	unsigned int i;
 	u8 reportbuffer[MAX_REPORT_SIZE];
 	struct dj_device *djdev;
@@ -1126,7 +1072,7 @@ static void logi_dj_recv_forward_null_report(struct dj_receiver_dev *djrcv_dev,
 static void logi_dj_recv_forward_dj(struct dj_receiver_dev *djrcv_dev,
 				    struct dj_report *dj_report)
 {
-	/* We are called from atomic context (tasklet && djrcv->lock held) */
+	 
 	struct dj_device *dj_device;
 
 	dj_device = djrcv_dev->paired_dj_devices[dj_report->device_index];
@@ -1147,7 +1093,7 @@ static void logi_dj_recv_forward_dj(struct dj_receiver_dev *djrcv_dev,
 static void logi_dj_recv_forward_report(struct dj_device *dj_dev, u8 *data,
 					int size)
 {
-	/* We are called from atomic context (tasklet && djrcv->lock held) */
+	 
 	if (hid_input_report(dj_dev->hdev, HID_INPUT_REPORT, data, size, 1))
 		dbg_hid("hid_input_report error\n");
 }
@@ -1278,25 +1224,14 @@ static int logi_dj_recv_switch_to_dj_mode(struct dj_receiver_dev *djrcv_dev,
 
 		retval = logi_dj_recv_send_report(djrcv_dev, dj_report);
 
-		/*
-		 * Ugly sleep to work around a USB 3.0 bug when the receiver is
-		 * still processing the "switch-to-dj" command while we send an
-		 * other command.
-		 * 50 msec should gives enough time to the receiver to be ready.
-		 */
+		 
 		msleep(50);
 
 		if (retval)
 			return retval;
 	}
 
-	/*
-	 * Magical bits to set up hidpp notifications when the dj devices
-	 * are connected/disconnected.
-	 *
-	 * We can reuse dj_report because HIDPP_REPORT_SHORT_LENGTH is smaller
-	 * than DJREPORT_SHORT_LENGTH.
-	 */
+	 
 	buf = (u8 *)dj_report;
 
 	memset(buf, 0, HIDPP_REPORT_SHORT_LENGTH);
@@ -1330,10 +1265,7 @@ static void logi_dj_ll_close(struct hid_device *hid)
 	dbg_hid("%s: %s\n", __func__, hid->phys);
 }
 
-/*
- * Register 0xB5 is "pairing information". It is solely intended for the
- * receiver, so do not overwrite the device index.
- */
+ 
 static u8 unifying_pairing_query[]  = { REPORT_ID_HIDPP_SHORT,
 					HIDPP_RECEIVER_INDEX,
 					HIDPP_GET_LONG_REGISTER,
@@ -1359,8 +1291,7 @@ static int logi_dj_ll_raw_request(struct hid_device *hid,
 		if (count < 2)
 			return -EINVAL;
 
-		/* special case where we should not overwrite
-		 * the device_index */
+		 
 		if (count == 7 && !memcmp(buf, unifying_pairing_query,
 					  sizeof(unifying_pairing_query)))
 			buf[4] = (buf[4] & 0xf0) | (djdev->device_index - 1);
@@ -1378,7 +1309,7 @@ static int logi_dj_ll_raw_request(struct hid_device *hid,
 			hid_warn(hid, "Received REPORT_TYPE_LEDS request before the keyboard interface was enumerated\n");
 			return 0;
 		}
-		/* usbhid overrides the report ID and ignores the first byte */
+		 
 		return hid_hw_raw_request(djrcv_dev->keyboard, 0, buf, count,
 					  report_type, reqtype);
 	}
@@ -1527,31 +1458,11 @@ static int logi_dj_dj_event(struct hid_device *hdev,
 	struct dj_report *dj_report = (struct dj_report *) data;
 	unsigned long flags;
 
-	/*
-	 * Here we receive all data coming from iface 2, there are 3 cases:
-	 *
-	 * 1) Data is intended for this driver i. e. data contains arrival,
-	 * departure, etc notifications, in which case we queue them for delayed
-	 * processing by the work queue. We return 1 to hid-core as no further
-	 * processing is required from it.
-	 *
-	 * 2) Data informs a connection change, if the change means rf link
-	 * loss, then we must send a null report to the upper layer to discard
-	 * potentially pressed keys that may be repeated forever by the input
-	 * layer. Return 1 to hid-core as no further processing is required.
-	 *
-	 * 3) Data is an actual input event from a paired DJ device in which
-	 * case we forward it to the correct hid device (via hid_input_report()
-	 * ) and return 1 so hid-core does not anything else with it.
-	 */
+	 
 
 	if ((dj_report->device_index < DJ_DEVICE_INDEX_MIN) ||
 	    (dj_report->device_index > DJ_DEVICE_INDEX_MAX)) {
-		/*
-		 * Device index is wrong, bail out.
-		 * This driver can ignore safely the receiver notifications,
-		 * so ignore those reports too.
-		 */
+		 
 		if (dj_report->device_index != DJ_RECEIVER_INDEX)
 			hid_err(hdev, "%s: invalid device index:%d\n",
 				__func__, dj_report->device_index);
@@ -1561,14 +1472,14 @@ static int logi_dj_dj_event(struct hid_device *hdev,
 	spin_lock_irqsave(&djrcv_dev->lock, flags);
 
 	if (!djrcv_dev->paired_dj_devices[dj_report->device_index]) {
-		/* received an event for an unknown device, bail out */
+		 
 		logi_dj_recv_queue_notification(djrcv_dev, dj_report);
 		goto out;
 	}
 
 	switch (dj_report->report_type) {
 	case REPORT_TYPE_NOTIF_DEVICE_PAIRED:
-		/* pairing notifications are handled above the switch */
+		 
 		break;
 	case REPORT_TYPE_NOTIF_DEVICE_UNPAIRED:
 		logi_dj_recv_queue_notification(djrcv_dev, dj_report);
@@ -1600,8 +1511,7 @@ static int logi_dj_hidpp_event(struct hid_device *hdev,
 	u8 device_index = hidpp_report->device_index;
 
 	if (device_index == HIDPP_RECEIVER_INDEX) {
-		/* special case were the device wants to know its unifying
-		 * name */
+		 
 		if (size == HIDPP_REPORT_LONG_LENGTH &&
 		    !memcmp(data, unifying_pairing_answer,
 			    sizeof(unifying_pairing_answer)))
@@ -1610,21 +1520,11 @@ static int logi_dj_hidpp_event(struct hid_device *hdev,
 			return false;
 	}
 
-	/*
-	 * Data is from the HID++ collection, in this case, we forward the
-	 * data to the corresponding child dj device and return 0 to hid-core
-	 * so he data also goes to the hidraw device of the receiver. This
-	 * allows a user space application to implement the full HID++ routing
-	 * via the receiver.
-	 */
+	 
 
 	if ((device_index < DJ_DEVICE_INDEX_MIN) ||
 	    (device_index > DJ_DEVICE_INDEX_MAX)) {
-		/*
-		 * Device index is wrong, bail out.
-		 * This driver can ignore safely the receiver notifications,
-		 * so ignore those reports too.
-		 */
+		 
 		hid_err(hdev, "%s: invalid device index:%d\n", __func__,
 			hidpp_report->device_index);
 		return false;
@@ -1634,10 +1534,7 @@ static int logi_dj_hidpp_event(struct hid_device *hdev,
 
 	dj_dev = djrcv_dev->paired_dj_devices[device_index];
 
-	/*
-	 * With 27 MHz receivers, we do not get an explicit unpair event,
-	 * remove the old device if the user has paired a *different* device.
-	 */
+	 
 	if (djrcv_dev->type == recvr_type_27mhz && dj_dev &&
 	    hidpp_report->sub_id == REPORT_TYPE_NOTIF_DEVICE_CONNECTED &&
 	    hidpp_report->params[HIDPP_PARAM_PROTO_TYPE] == 0x02 &&
@@ -1648,7 +1545,7 @@ static int logi_dj_hidpp_event(struct hid_device *hdev,
 			.type = WORKITEM_TYPE_UNPAIRED,
 		};
 		kfifo_in(&djrcv_dev->notif_fifo, &workitem, sizeof(workitem));
-		/* logi_hidpp_recv_queue_notif will queue the work */
+		 
 		dj_dev = NULL;
 	}
 
@@ -1679,29 +1576,22 @@ static int logi_dj_raw_event(struct hid_device *hdev,
 	if (!hdev->report_enum[HID_INPUT_REPORT].numbered) {
 
 		if (djrcv_dev->unnumbered_application == HID_GD_KEYBOARD) {
-			/*
-			 * For the keyboard, we can reuse the same report by
-			 * using the second byte which is constant in the USB
-			 * HID report descriptor.
-			 */
+			 
 			data[1] = data[0];
 			data[0] = REPORT_TYPE_KEYBOARD;
 
 			logi_dj_recv_forward_input_report(hdev, data, size);
 
-			/* restore previous state */
+			 
 			data[0] = data[1];
 			data[1] = 0;
 		}
-		/*
-		 * Mouse-only receivers send unnumbered mouse data. The 27 MHz
-		 * receiver uses 6 byte packets, the nano receiver 8 bytes.
-		 */
+		 
 		if (djrcv_dev->unnumbered_application == HID_GD_MOUSE &&
 		    size <= 8) {
 			u8 mouse_report[9];
 
-			/* Prepend report id */
+			 
 			mouse_report[0] = REPORT_TYPE_MOUSE;
 			memcpy(mouse_report + 1, data, size);
 			logi_dj_recv_forward_input_report(hdev, mouse_report,
@@ -1755,23 +1645,14 @@ static int logi_dj_probe(struct hid_device *hdev,
 	unsigned long flags;
 	int retval;
 
-	/*
-	 * Call to usbhid to fetch the HID descriptors of the current
-	 * interface subsequently call to the hid/hid-core to parse the
-	 * fetched descriptors.
-	 */
+	 
 	retval = hid_parse(hdev);
 	if (retval) {
 		hid_err(hdev, "%s: parse failed\n", __func__);
 		return retval;
 	}
 
-	/*
-	 * Some KVMs add an extra interface for e.g. mouse emulation. If we
-	 * treat these as logitech-dj interfaces then this causes input events
-	 * reported through this extra interface to not be reported correctly.
-	 * To avoid this, we treat these as generic-hid devices.
-	 */
+	 
 	switch (id->driver_data) {
 	case recvr_type_dj:		no_dj_interfaces = 3; break;
 	case recvr_type_hidpp:		no_dj_interfaces = 2; break;
@@ -1792,28 +1673,21 @@ static int logi_dj_probe(struct hid_device *hdev,
 
 	rep_enum = &hdev->report_enum[HID_INPUT_REPORT];
 
-	/* no input reports, bail out */
+	 
 	if (list_empty(&rep_enum->report_list))
 		return -ENODEV;
 
-	/*
-	 * Check for the HID++ application.
-	 * Note: we should theoretically check for HID++ and DJ
-	 * collections, but this will do.
-	 */
+	 
 	list_for_each_entry(rep, &rep_enum->report_list, list) {
 		if (rep->application == 0xff000001)
 			has_hidpp = true;
 	}
 
-	/*
-	 * Ignore interfaces without DJ/HID++ collection, they will not carry
-	 * any data, dont create any hid_device for them.
-	 */
+	 
 	if (!has_hidpp && id->driver_data == recvr_type_dj)
 		return -ENODEV;
 
-	/* get the current application attached to the node */
+	 
 	rep = list_first_entry(&rep_enum->report_list, struct hid_report, list);
 	djrcv_dev = dj_get_receiver_dev(hdev, id->driver_data,
 					rep->application, has_hidpp);
@@ -1825,8 +1699,7 @@ static int logi_dj_probe(struct hid_device *hdev,
 	if (!rep_enum->numbered)
 		djrcv_dev->unnumbered_application = rep->application;
 
-	/* Starts the usb device and connects to upper interfaces hiddev and
-	 * hidraw */
+	 
 	retval = hid_hw_start(hdev, HID_CONNECT_HIDRAW|HID_CONNECT_HIDDEV);
 	if (retval) {
 		hid_err(hdev, "%s: hid_hw_start returned error\n", __func__);
@@ -1842,7 +1715,7 @@ static int logi_dj_probe(struct hid_device *hdev,
 		}
 	}
 
-	/* This is enabling the polling urb on the IN endpoint */
+	 
 	retval = hid_hw_open(hdev);
 	if (retval < 0) {
 		hid_err(hdev, "%s: hid_hw_open returned error:%d\n",
@@ -1850,7 +1723,7 @@ static int logi_dj_probe(struct hid_device *hdev,
 		goto llopen_failed;
 	}
 
-	/* Allow incoming packets to arrive: */
+	 
 	hid_device_io_start(hdev);
 
 	if (has_hidpp) {
@@ -1861,10 +1734,7 @@ static int logi_dj_probe(struct hid_device *hdev,
 		if (retval < 0) {
 			hid_err(hdev, "%s: logi_dj_recv_query_paired_devices error:%d\n",
 				__func__, retval);
-			/*
-			 * This can happen with a KVM, let the probe succeed,
-			 * logi_dj_recv_queue_unknown_work will retry later.
-			 */
+			 
 		}
 	}
 
@@ -1910,10 +1780,7 @@ static void logi_dj_remove(struct hid_device *hdev)
 	if (!djrcv_dev)
 		return hid_hw_stop(hdev);
 
-	/*
-	 * This ensures that if the work gets requeued from another
-	 * interface of the same receiver it will be a no-op.
-	 */
+	 
 	spin_lock_irqsave(&djrcv_dev->lock, flags);
 	djrcv_dev->ready = false;
 	spin_unlock_irqrestore(&djrcv_dev->lock, flags);
@@ -1923,13 +1790,7 @@ static void logi_dj_remove(struct hid_device *hdev)
 	hid_hw_close(hdev);
 	hid_hw_stop(hdev);
 
-	/*
-	 * For proper operation we need access to all interfaces, so we destroy
-	 * the paired devices when we're unbound from any interface.
-	 *
-	 * Note we may still be bound to other interfaces, sharing the same
-	 * djrcv_dev, so we need locking here.
-	 */
+	 
 	for (i = 0; i < (DJ_MAX_PAIRED_DEVICES + DJ_DEVICE_INDEX_MIN); i++) {
 		spin_lock_irqsave(&djrcv_dev->lock, flags);
 		dj_dev = djrcv_dev->paired_dj_devices[i];
@@ -1945,87 +1806,87 @@ static void logi_dj_remove(struct hid_device *hdev)
 }
 
 static const struct hid_device_id logi_dj_receivers[] = {
-	{ /* Logitech unifying receiver (0xc52b) */
+	{  
 	  HID_USB_DEVICE(USB_VENDOR_ID_LOGITECH,
 		USB_DEVICE_ID_LOGITECH_UNIFYING_RECEIVER),
 	 .driver_data = recvr_type_dj},
-	{ /* Logitech unifying receiver (0xc532) */
+	{  
 	  HID_USB_DEVICE(USB_VENDOR_ID_LOGITECH,
 		USB_DEVICE_ID_LOGITECH_UNIFYING_RECEIVER_2),
 	 .driver_data = recvr_type_dj},
 
-	{ /* Logitech Nano mouse only receiver (0xc52f) */
+	{  
 	  HID_USB_DEVICE(USB_VENDOR_ID_LOGITECH,
 			 USB_DEVICE_ID_LOGITECH_NANO_RECEIVER),
 	 .driver_data = recvr_type_mouse_only},
-	{ /* Logitech Nano (non DJ) receiver (0xc534) */
+	{  
 	  HID_USB_DEVICE(USB_VENDOR_ID_LOGITECH,
 			 USB_DEVICE_ID_LOGITECH_NANO_RECEIVER_2),
 	 .driver_data = recvr_type_hidpp},
 
-	{ /* Logitech G700(s) receiver (0xc531) */
+	{  
 	  HID_USB_DEVICE(USB_VENDOR_ID_LOGITECH,
 			 USB_DEVICE_ID_LOGITECH_G700_RECEIVER),
 	 .driver_data = recvr_type_gaming_hidpp},
-	{ /* Logitech G602 receiver (0xc537) */
+	{  
 	  HID_USB_DEVICE(USB_VENDOR_ID_LOGITECH,
 		0xc537),
 	 .driver_data = recvr_type_gaming_hidpp},
-	{ /* Logitech lightspeed receiver (0xc539) */
+	{  
 	  HID_USB_DEVICE(USB_VENDOR_ID_LOGITECH,
 		USB_DEVICE_ID_LOGITECH_NANO_RECEIVER_LIGHTSPEED_1),
 	 .driver_data = recvr_type_gaming_hidpp},
-	{ /* Logitech powerplay receiver (0xc53a) */
+	{  
 	  HID_USB_DEVICE(USB_VENDOR_ID_LOGITECH,
 		USB_DEVICE_ID_LOGITECH_NANO_RECEIVER_POWERPLAY),
 	 .driver_data = recvr_type_gaming_hidpp},
-	{ /* Logitech lightspeed receiver (0xc53f) */
+	{  
 	  HID_USB_DEVICE(USB_VENDOR_ID_LOGITECH,
 		USB_DEVICE_ID_LOGITECH_NANO_RECEIVER_LIGHTSPEED_1_1),
 	 .driver_data = recvr_type_gaming_hidpp},
 
-	{ /* Logitech 27 MHz HID++ 1.0 receiver (0xc513) */
+	{  
 	  HID_USB_DEVICE(USB_VENDOR_ID_LOGITECH, USB_DEVICE_ID_MX3000_RECEIVER),
 	 .driver_data = recvr_type_27mhz},
-	{ /* Logitech 27 MHz HID++ 1.0 receiver (0xc517) */
+	{  
 	  HID_USB_DEVICE(USB_VENDOR_ID_LOGITECH,
 		USB_DEVICE_ID_S510_RECEIVER_2),
 	 .driver_data = recvr_type_27mhz},
-	{ /* Logitech 27 MHz HID++ 1.0 mouse-only receiver (0xc51b) */
+	{  
 	  HID_USB_DEVICE(USB_VENDOR_ID_LOGITECH,
 		USB_DEVICE_ID_LOGITECH_27MHZ_MOUSE_RECEIVER),
 	 .driver_data = recvr_type_27mhz},
 
-	{ /* Logitech MX5000 HID++ / bluetooth receiver keyboard intf. (0xc70e) */
+	{  
 	  HID_USB_DEVICE(USB_VENDOR_ID_LOGITECH,
 		USB_DEVICE_ID_MX5000_RECEIVER_KBD_DEV),
 	 .driver_data = recvr_type_bluetooth},
-	{ /* Logitech MX5000 HID++ / bluetooth receiver mouse intf. (0xc70a) */
+	{  
 	  HID_USB_DEVICE(USB_VENDOR_ID_LOGITECH,
 		USB_DEVICE_ID_MX5000_RECEIVER_MOUSE_DEV),
 	 .driver_data = recvr_type_bluetooth},
-	{ /* Logitech MX5500 HID++ / bluetooth receiver keyboard intf. (0xc71b) */
+	{  
 	  HID_USB_DEVICE(USB_VENDOR_ID_LOGITECH,
 		USB_DEVICE_ID_MX5500_RECEIVER_KBD_DEV),
 	 .driver_data = recvr_type_bluetooth},
-	{ /* Logitech MX5500 HID++ / bluetooth receiver mouse intf. (0xc71c) */
+	{  
 	  HID_USB_DEVICE(USB_VENDOR_ID_LOGITECH,
 		USB_DEVICE_ID_MX5500_RECEIVER_MOUSE_DEV),
 	 .driver_data = recvr_type_bluetooth},
 
-	{ /* Logitech Dinovo Edge HID++ / bluetooth receiver keyboard intf. (0xc713) */
+	{  
 	  HID_USB_DEVICE(USB_VENDOR_ID_LOGITECH,
 		USB_DEVICE_ID_DINOVO_EDGE_RECEIVER_KBD_DEV),
 	 .driver_data = recvr_type_dinovo},
-	{ /* Logitech Dinovo Edge HID++ / bluetooth receiver mouse intf. (0xc714) */
+	{  
 	  HID_USB_DEVICE(USB_VENDOR_ID_LOGITECH,
 		USB_DEVICE_ID_DINOVO_EDGE_RECEIVER_MOUSE_DEV),
 	 .driver_data = recvr_type_dinovo},
-	{ /* Logitech DiNovo Mini HID++ / bluetooth receiver mouse intf. (0xc71e) */
+	{  
 	  HID_USB_DEVICE(USB_VENDOR_ID_LOGITECH,
 		USB_DEVICE_ID_DINOVO_MINI_RECEIVER_KBD_DEV),
 	 .driver_data = recvr_type_dinovo},
-	{ /* Logitech DiNovo Mini HID++ / bluetooth receiver keyboard intf. (0xc71f) */
+	{  
 	  HID_USB_DEVICE(USB_VENDOR_ID_LOGITECH,
 		USB_DEVICE_ID_DINOVO_MINI_RECEIVER_MOUSE_DEV),
 	 .driver_data = recvr_type_dinovo},

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Broadcom BCM7038 style Level 1 interrupt controller driver
- *
- * Copyright (C) 2014 Broadcom Corporation
- * Author: Kevin Cernekee
- */
+
+ 
 
 #define pr_fmt(fmt)	KBUILD_MODNAME	": " fmt
 
@@ -52,29 +47,7 @@ struct bcm7038_l1_cpu {
 	u32			mask_cache[];
 };
 
-/*
- * STATUS/MASK_STATUS/MASK_SET/MASK_CLEAR are packed one right after another:
- *
- * 7038:
- *   0x1000_1400: W0_STATUS
- *   0x1000_1404: W1_STATUS
- *   0x1000_1408: W0_MASK_STATUS
- *   0x1000_140c: W1_MASK_STATUS
- *   0x1000_1410: W0_MASK_SET
- *   0x1000_1414: W1_MASK_SET
- *   0x1000_1418: W0_MASK_CLEAR
- *   0x1000_141c: W1_MASK_CLEAR
- *
- * 7445:
- *   0xf03e_1500: W0_STATUS
- *   0xf03e_1504: W1_STATUS
- *   0xf03e_1508: W2_STATUS
- *   0xf03e_150c: W3_STATUS
- *   0xf03e_1510: W4_STATUS
- *   0xf03e_1514: W0_MASK_STATUS
- *   0xf03e_1518: W1_MASK_STATUS
- *   [...]
- */
+ 
 
 static inline unsigned int reg_status(struct bcm7038_l1_chip *intc,
 				      unsigned int word)
@@ -244,7 +217,7 @@ static int __init bcm7038_l1_init_one(struct device_node *dn,
 	ret = of_property_read_u32_array(dn , "brcm,int-fwd-mask",
 					 intc->irq_fwd_mask, n_words);
 	if (ret != 0 && ret != -EINVAL) {
-		/* property exists but has the wrong number of words */
+		 
 		pr_err("invalid brcm,int-fwd-mask property\n");
 		return -EINVAL;
 	}
@@ -282,13 +255,7 @@ static int __init bcm7038_l1_init_one(struct device_node *dn,
 }
 
 #ifdef CONFIG_PM_SLEEP
-/*
- * We keep a list of bcm7038_l1_chip used for suspend/resume. This hack is
- * used because the struct chip_type suspend/resume hooks are not called
- * unless chip_type is hooked onto a generic_chip. Since this driver does
- * not use generic_chip, we need to manually hook our resume/suspend to
- * syscore_ops.
- */
+ 
 static LIST_HEAD(bcm7038_l1_intcs_list);
 static DEFINE_RAW_SPINLOCK(bcm7038_l1_intcs_lock);
 
@@ -298,7 +265,7 @@ static int bcm7038_l1_suspend(void)
 	int boot_cpu, word;
 	u32 val;
 
-	/* Wakeup interrupt should only come from the boot cpu */
+	 
 #if defined(CONFIG_SMP) && defined(CONFIG_MIPS)
 	boot_cpu = cpu_logical_map(0);
 #else
@@ -425,7 +392,7 @@ static int __init bcm7038_l1_of_init(struct device_node *dn,
 	}
 
 #ifdef CONFIG_PM_SLEEP
-	/* Add bcm7038_l1_chip into a list */
+	 
 	raw_spin_lock(&bcm7038_l1_intcs_lock);
 	list_add_tail(&intc->list, &bcm7038_l1_intcs_list);
 	raw_spin_unlock(&bcm7038_l1_intcs_lock);

@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * v4l2-event.c
- *
- * V4L2 events.
- *
- * Copyright (C) 2009--2010 Nokia Corporation.
- *
- * Contact: Sakari Ailus <sakari.ailus@iki.fi>
- */
+
+ 
 
 #include <media/v4l2-dev.h>
 #include <media/v4l2-fh.h>
@@ -64,7 +56,7 @@ int v4l2_event_dequeue(struct v4l2_fh *fh, struct v4l2_event *event,
 	if (nonblocking)
 		return __v4l2_event_dequeue(fh, event);
 
-	/* Release the vdev lock while waiting */
+	 
 	if (fh->vdev->lock)
 		mutex_unlock(fh->vdev->lock);
 
@@ -84,7 +76,7 @@ int v4l2_event_dequeue(struct v4l2_fh *fh, struct v4l2_event *event,
 }
 EXPORT_SYMBOL_GPL(v4l2_event_dequeue);
 
-/* Caller must hold fh->vdev->fh_lock! */
+ 
 static struct v4l2_subscribed_event *v4l2_event_subscribed(
 		struct v4l2_fh *fh, u32 type, u32 id)
 {
@@ -106,17 +98,17 @@ static void __v4l2_event_queue_fh(struct v4l2_fh *fh,
 	struct v4l2_kevent *kev;
 	bool copy_payload = true;
 
-	/* Are we subscribed? */
+	 
 	sev = v4l2_event_subscribed(fh, ev->type, ev->id);
 	if (sev == NULL)
 		return;
 
-	/* Increase event sequence number on fh. */
+	 
 	fh->sequence++;
 
-	/* Do we have any free events? */
+	 
 	if (sev->in_use == sev->elems) {
-		/* no, remove the oldest one */
+		 
 		kev = sev->events + sev_pos(sev, 0);
 		list_del(&kev->list);
 		sev->in_use--;
@@ -134,7 +126,7 @@ static void __v4l2_event_queue_fh(struct v4l2_fh *fh,
 		}
 	}
 
-	/* Take one and fill it. */
+	 
 	kev = sev->events + sev_pos(sev, sev->in_use);
 	kev->event.type = ev->type;
 	if (copy_payload)
@@ -212,7 +204,7 @@ static void __v4l2_event_unsubscribe(struct v4l2_subscribed_event *sev)
 	lockdep_assert_held(&fh->subscribe_lock);
 	assert_spin_locked(&fh->vdev->fh_lock);
 
-	/* Remove any pending events for this subscription */
+	 
 	for (i = 0; i < sev->in_use; i++) {
 		list_del(&sev->events[sev_pos(sev, i)].list);
 		fh->navailable--;
@@ -256,7 +248,7 @@ int v4l2_event_subscribe(struct v4l2_fh *fh,
 	spin_unlock_irqrestore(&fh->vdev->fh_lock, flags);
 
 	if (found_ev) {
-		/* Already listening */
+		 
 		kvfree(sev);
 	} else if (sev->ops && sev->ops->add) {
 		ret = sev->ops->add(sev, elems);

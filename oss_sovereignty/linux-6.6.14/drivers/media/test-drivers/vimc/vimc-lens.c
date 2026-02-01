@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * vimc-lens.c Virtual Media Controller Driver
- * Copyright (C) 2022 Google, Inc
- * Author: yunkec@google.com (Yunke Cao)
- */
+
+ 
 
 #include <media/v4l2-ctrls.h>
 #include <media/v4l2-event.h>
@@ -53,7 +49,7 @@ static struct vimc_ent_device *vimc_lens_add(struct vimc_device *vimc,
 	struct vimc_lens_device *vlens;
 	int ret;
 
-	/* Allocate the vlens struct */
+	 
 	vlens = kzalloc(sizeof(*vlens), GFP_KERNEL);
 	if (!vlens)
 		return ERR_PTR(-ENOMEM);

@@ -1,17 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Support for Intel Camera Imaging ISP subsystem.
- * Copyright (c) 2015, Intel Corporation.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms and conditions of the GNU General Public License,
- * version 2, as published by the Free Software Foundation.
- *
- * This program is distributed in the hope it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- * more details.
- */
+ 
+ 
 
 #ifdef IA_CSS_INCLUDE_CONFIGURATIONS
 #include "isp/kernels/crop/crop_1.0/ia_css_crop.host.h"
@@ -47,7 +35,7 @@ enum ia_css_configuration_ids {
 	IA_CSS_REF_CONFIG_ID,
 	IA_CSS_VF_CONFIG_ID,
 
-	/* ISP 2401 */
+	 
 	IA_CSS_SC_CONFIG_ID,
 
 	IA_CSS_NUM_CONFIGURATION_IDS
@@ -73,8 +61,8 @@ struct ia_css_config_memory_offsets {
 
 #if defined(IA_CSS_INCLUDE_CONFIGURATIONS)
 
-#include "ia_css_stream.h"   /* struct ia_css_stream */
-#include "ia_css_binary.h"   /* struct ia_css_binary */
+#include "ia_css_stream.h"    
+#include "ia_css_binary.h"    
 
 int ia_css_configure_iterator(const struct ia_css_binary *binary,
 			      const struct ia_css_iterator_configuration *config_dmem);
@@ -114,6 +102,6 @@ int ia_css_configure_ref(const struct ia_css_binary *binary,
 int ia_css_configure_vf(const struct ia_css_binary *binary,
 			const struct ia_css_vf_configuration *config_dmem);
 
-#endif /* IA_CSS_INCLUDE_CONFIGURATION */
+#endif  
 
-#endif /* _IA_CSS_ISP_CONFIG_H */
+#endif  

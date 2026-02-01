@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Loongson GPIO Support
- *
- * Copyright (C) 2022-2023 Loongson Technology Corporation Limited
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/init.h>

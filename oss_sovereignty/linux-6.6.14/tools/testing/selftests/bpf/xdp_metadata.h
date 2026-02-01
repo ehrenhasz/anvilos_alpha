@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #pragma once
 
 #ifndef ETH_P_IP

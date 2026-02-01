@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0 */
-/******************************************************************************
- *
- * Name: aclinuxex.h - Extra OS specific defines, etc. for Linux
- *
- * Copyright (C) 2000 - 2023, Intel Corp.
- *
- *****************************************************************************/
+ 
+ 
 
 #ifndef __ACLINUXEX_H__
 #define __ACLINUXEX_H__
@@ -34,19 +28,12 @@
 
 #endif
 
-/*
- * Overrides for in-kernel ACPICA
- */
+ 
 acpi_status ACPI_INIT_FUNCTION acpi_os_initialize(void);
 
 acpi_status acpi_os_terminate(void);
 
-/*
- * The irqs_disabled() check is for resume from RAM.
- * Interrupts are off during resume, just like they are for boot.
- * However, boot has  (system_state != SYSTEM_RUNNING)
- * to quiet __might_sleep() in kmalloc() and resume does not.
- */
+ 
 static inline void *acpi_os_allocate(acpi_size size)
 {
 	return kmalloc(size, irqs_disabled()? GFP_ATOMIC : GFP_KERNEL);
@@ -73,13 +60,7 @@ static inline acpi_thread_id acpi_os_get_thread_id(void)
 	return (acpi_thread_id) (unsigned long)current;
 }
 
-/*
- * When lockdep is enabled, the spin_lock_init() macro stringifies it's
- * argument and uses that as a name for the lock in debugging.
- * By executing spin_lock_init() in a macro the key changes from "lock" for
- * all locks to the name of the argument of acpi_os_create_lock(), which
- * prevents lockdep from reporting false positives for ACPICA locks.
- */
+ 
 #define acpi_os_create_lock(__handle) \
 	({ \
 		spinlock_t *lock = ACPI_ALLOCATE(sizeof(*lock)); \
@@ -135,10 +116,8 @@ static inline void acpi_os_terminate_debugger(void)
 	return;
 }
 
-/*
- * OSL interfaces added by Linux
- */
+ 
 
-#endif				/* __KERNEL__ */
+#endif				 
 
-#endif				/* __ACLINUXEX_H__ */
+#endif				 

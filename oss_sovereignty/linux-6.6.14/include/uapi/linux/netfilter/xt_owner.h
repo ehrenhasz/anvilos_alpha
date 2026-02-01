@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
+ 
 #ifndef _XT_OWNER_MATCH_H
 #define _XT_OWNER_MATCH_H
 
@@ -22,4 +22,4 @@ struct xt_owner_match_info {
 	__u8 match, invert;
 };
 
-#endif /* _XT_OWNER_MATCH_H */
+#endif  

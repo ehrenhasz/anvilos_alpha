@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0 OR MIT)
-/*
- * Driver for Microsemi VSC85xx PHYs
- *
- * Author: Bjarni Jonasson <bjarni.jonassoni@microchip.com>
- * License: Dual MIT/GPL
- * Copyright (c) 2021 Microsemi Corporation
- */
+
+ 
 
 #include <linux/phy.h>
 #include "mscc_serdes.h"
@@ -65,12 +59,12 @@ static int vsc85xx_sd6g_common_cfg_wr(struct phy_device *phydev,
 				      const u32 if_mode,
 				      const u32 pwd_tx)
 {
-	/* ena_loop = 8 for eloop */
-	/*          = 4 for floop */
-	/*          = 2 for iloop */
-	/*          = 1 for ploop */
-	/* qrate    = 1 for SGMII, 0 for QSGMII */
-	/* if_mode  = 1 for SGMII, 3 for QSGMII */
+	 
+	 
+	 
+	 
+	 
+	 
 
 	int ret;
 
@@ -96,7 +90,7 @@ static int vsc85xx_sd6g_des_cfg_wr(struct phy_device *phydev,
 	u32 reg_val;
 	int ret;
 
-	/* configurable terms */
+	 
 	reg_val = (des_phy_ctrl << PHY_S6G_DES_PHY_CTRL_POS) |
 		  (des_mbtr_ctrl << PHY_S6G_DES_MBTR_CTRL_POS) |
 		  (des_cpmd_sel << PHY_S6G_DES_CPMD_SEL_POS) |
@@ -120,9 +114,9 @@ static int vsc85xx_sd6g_ib_cfg0_wr(struct phy_device *phydev,
 	u32 reg_val;
 	int ret;
 
-	/* constant terms */
+	 
 	base_val = 0x60a85837;
-	/* configurable terms */
+	 
 	reg_val = base_val | (ib_rtrm_adj << 25) |
 		  (ib_sig_det_clk_sel << 16) |
 		  (ib_reg_pat_sel_offset << 8) |
@@ -146,9 +140,9 @@ static int vsc85xx_sd6g_ib_cfg1_wr(struct phy_device *phydev,
 	u32 reg_val = 0;
 	int ret;
 
-	/* constant terms */
+	 
 	ib_filt_val = 0xe0;
-	/* configurable terms */
+	 
 	reg_val  = (ib_tjtag << 17) + (ib_tsdet << 12) + (ib_scaly << 8) +
 		   ib_filt_val + (ib_filt_offset << 4) + (ib_frc_offset << 0);
 	ret = vsc85xx_csr_write(phydev, MACRO_CTRL,
@@ -168,9 +162,9 @@ static int vsc85xx_sd6g_ib_cfg2_wr(struct phy_device *phydev,
 	u32 base_val;
 	int ret;
 
-	/* constant terms */
+	 
 	base_val = 0x0f878010;
-	/* configurable terms */
+	 
 	ib_cfg2_val = base_val | ((ib_tinfv) << 28) | ((ib_tcalv) << 5) |
 		      (ib_ureg << 0);
 	ret = vsc85xx_csr_write(phydev, MACRO_CTRL,
@@ -255,7 +249,7 @@ static int vsc85xx_sd6g_dft_cfg2_wr(struct phy_device *phydev,
 	u32 reg_val;
 	int ret;
 
-	/* configurable terms */
+	 
 	reg_val = (rx_ji_ampl << 8) | (rx_step_freq << 4) |
 		  (rx_ji_ena << 3) | (rx_waveform_sel << 2) |
 		  (rx_freqoff_dir << 1) | rx_freqoff_ena;
@@ -275,7 +269,7 @@ static int vsc85xx_sd6g_dft_cfg0_wr(struct phy_device *phydev,
 	u32 reg_val;
 	int ret;
 
-	/* configurable terms */
+	 
 	reg_val = (prbs_sel << 20) | (test_mode << 16) | (rx_dft_ena << 2);
 	ret = vsc85xx_csr_write(phydev, MACRO_CTRL,
 				PHY_S6G_DFT_CFG0,
@@ -285,7 +279,7 @@ static int vsc85xx_sd6g_dft_cfg0_wr(struct phy_device *phydev,
 	return ret;
 }
 
-/* Access LCPLL Cfg_0 */
+ 
 static int vsc85xx_pll5g_cfg0_wr(struct phy_device *phydev,
 				 const u32 selbgv820)
 {
@@ -293,9 +287,9 @@ static int vsc85xx_pll5g_cfg0_wr(struct phy_device *phydev,
 	u32 reg_val;
 	int ret;
 
-	/* constant terms */
+	 
 	base_val = 0x7036f145;
-	/* configurable terms */
+	 
 	reg_val = base_val | (selbgv820 << 23);
 	ret = vsc85xx_csr_write(phydev, MACRO_CTRL,
 				PHY_S6G_PLL5G_CFG0, reg_val);
@@ -324,12 +318,12 @@ int vsc85xx_sd6g_config_v2(struct phy_device *phydev)
 
 	phy_base_write(phydev, MSCC_EXT_PAGE_ACCESS, MSCC_PHY_PAGE_STANDARD);
 
-	/* Detune/Unlock LCPLL */
+	 
 	ret = pll5g_detune(phydev);
 	if (ret)
 		return ret;
 
-	/* 0. Reset RCPLL */
+	 
 	ret = vsc85xx_sd6g_pll_cfg_wr(phydev, 3, pll_fsm_ctrl_data, 0);
 	if (ret)
 		return ret;
@@ -343,7 +337,7 @@ int vsc85xx_sd6g_config_v2(struct phy_device *phydev)
 	if (ret)
 		return ret;
 
-	/* 1. Configure sd6g for SGMII prior to sd6g_IB_CAL */
+	 
 	ib_rtrm_adj = 13;
 	ret = vsc85xx_sd6g_ib_cfg0_wr(phydev, ib_rtrm_adj, ib_sig_det_clk_sel_mm, 0, 0);
 	if (ret)
@@ -370,7 +364,7 @@ int vsc85xx_sd6g_config_v2(struct phy_device *phydev)
 	if (ret)
 		return ret;
 
-	/* 2. Start rcpll_fsm */
+	 
 	ret = vsc85xx_sd6g_pll_cfg_wr(phydev, 3, pll_fsm_ctrl_data, 1);
 	if (ret)
 		return ret;
@@ -386,13 +380,13 @@ int vsc85xx_sd6g_config_v2(struct phy_device *phydev)
 			return ret;
 		val32 = vsc85xx_csr_read(phydev, MACRO_CTRL,
 					 PHY_S6G_PLL_STATUS);
-		/* wait for bit 12 to clear */
+		 
 	} while (time_before(jiffies, deadline) && (val32 & BIT(12)));
 
 	if (val32 & BIT(12))
 		return -ETIMEDOUT;
 
-	/* 4. Release digital reset and disable transmitter */
+	 
 	ret = vsc85xx_sd6g_misc_cfg_wr(phydev, 0);
 	if (ret)
 		return ret;
@@ -403,7 +397,7 @@ int vsc85xx_sd6g_config_v2(struct phy_device *phydev)
 	if (ret)
 		return ret;
 
-	/* 5. Apply a frequency offset on RX-side (using internal FoJi logic) */
+	 
 	ret = vsc85xx_sd6g_gp_cfg_wr(phydev, 768);
 	if (ret)
 		return ret;
@@ -420,7 +414,7 @@ int vsc85xx_sd6g_config_v2(struct phy_device *phydev)
 	if (ret)
 		return ret;
 
-	/* 6. Prepare required settings for IBCAL */
+	 
 	ret = vsc85xx_sd6g_ib_cfg1_wr(phydev, 8, ib_tsdet_cal, 15, 1, 0);
 	if (ret)
 		return ret;
@@ -431,7 +425,7 @@ int vsc85xx_sd6g_config_v2(struct phy_device *phydev)
 	if (ret)
 		return ret;
 
-	/* 7. Start IB_CAL */
+	 
 	ret = vsc85xx_sd6g_ib_cfg0_wr(phydev, ib_rtrm_adj,
 				      ib_sig_det_clk_sel_cal, 0, 1);
 	if (ret)
@@ -439,16 +433,16 @@ int vsc85xx_sd6g_config_v2(struct phy_device *phydev)
 	ret = phy_commit_mcb_s6g(phydev, PHY_MCB_S6G_CFG, 0);
 	if (ret)
 		return ret;
-	/* 11 cycles (for ViperA) or 5 cycles (for ViperB & Elise) w/ SW clock */
+	 
 	for (iter = 0; iter < gp_iter; iter++) {
-		/* set gp(0) */
+		 
 		ret = vsc85xx_sd6g_gp_cfg_wr(phydev, 769);
 		if (ret)
 			return ret;
 		ret = phy_commit_mcb_s6g(phydev, PHY_MCB_S6G_CFG, 0);
 		if (ret)
 			return ret;
-		/* clear gp(0) */
+		 
 		ret = vsc85xx_sd6g_gp_cfg_wr(phydev, 768);
 		if (ret)
 			return ret;
@@ -470,7 +464,7 @@ int vsc85xx_sd6g_config_v2(struct phy_device *phydev)
 	if (ret)
 		return ret;
 
-	/* 8. Wait for IB cal to complete */
+	 
 	deadline = jiffies + msecs_to_jiffies(PROC_CMD_NCOMPLETED_TIMEOUT_MS);
 	do {
 		usleep_range(500, 1000);
@@ -479,13 +473,13 @@ int vsc85xx_sd6g_config_v2(struct phy_device *phydev)
 			return ret;
 		val32 = vsc85xx_csr_read(phydev, MACRO_CTRL,
 					 PHY_S6G_IB_STATUS0);
-		/* wait for bit 8 to set */
+		 
 	} while (time_before(jiffies, deadline) && (~val32 & BIT(8)));
 
 	if (~val32 & BIT(8))
 		return -ETIMEDOUT;
 
-	/* 9. Restore cfg values for mission mode */
+	 
 	ret = vsc85xx_sd6g_ib_cfg0_wr(phydev, ib_rtrm_adj, ib_sig_det_clk_sel_mm, 0, 1);
 	if (ret)
 		return ret;
@@ -496,7 +490,7 @@ int vsc85xx_sd6g_config_v2(struct phy_device *phydev)
 	if (ret)
 		return ret;
 
-	/* 10. Re-enable transmitter */
+	 
 	ret = vsc85xx_sd6g_common_cfg_wr(phydev, 1, 1, 0, qrate, if_mode, 0);
 	if (ret)
 		return ret;
@@ -504,7 +498,7 @@ int vsc85xx_sd6g_config_v2(struct phy_device *phydev)
 	if (ret)
 		return ret;
 
-	/* 11. Disable frequency offset generation (using internal FoJi logic) */
+	 
 	ret = vsc85xx_sd6g_dft_cfg2_wr(phydev, 0, 0, 0, 0, 0, 0);
 	if (ret)
 		return ret;
@@ -518,13 +512,13 @@ int vsc85xx_sd6g_config_v2(struct phy_device *phydev)
 	if (ret)
 		return ret;
 
-	/* Tune/Re-lock LCPLL */
+	 
 	ret = pll5g_tune(phydev);
 	if (ret)
 		return ret;
 
-	/* 12. Configure for Final Configuration and Settings */
-	/* a. Reset RCPLL */
+	 
+	 
 	ret = vsc85xx_sd6g_pll_cfg_wr(phydev, 3, pll_fsm_ctrl_data, 0);
 	if (ret)
 		return ret;
@@ -535,11 +529,11 @@ int vsc85xx_sd6g_config_v2(struct phy_device *phydev)
 	if (ret)
 		return ret;
 
-	/* b. Configure sd6g for desired operating mode */
+	 
 	phy_base_write(phydev, MSCC_EXT_PAGE_ACCESS, MSCC_PHY_PAGE_EXTENDED_GPIO);
 	ret = phy_base_read(phydev, MSCC_PHY_MAC_CFG_FASTLINK);
 	if ((ret & MAC_CFG_MASK) == MAC_CFG_QSGMII) {
-		/* QSGMII */
+		 
 		pll_fsm_ctrl_data = 120;
 		qrate   = 0;
 		if_mode = 3;
@@ -556,7 +550,7 @@ int vsc85xx_sd6g_config_v2(struct phy_device *phydev)
 
 		phy_base_write(phydev, MSCC_EXT_PAGE_ACCESS, MSCC_PHY_PAGE_STANDARD);
 	} else if ((ret & MAC_CFG_MASK) == MAC_CFG_SGMII) {
-		/* SGMII */
+		 
 		pll_fsm_ctrl_data = 60;
 		qrate   = 1;
 		if_mode = 1;
@@ -618,7 +612,7 @@ int vsc85xx_sd6g_config_v2(struct phy_device *phydev)
 	if (ret)
 		return ret;
 
-	/* 13. Start rcpll_fsm */
+	 
 	ret = vsc85xx_sd6g_pll_cfg_wr(phydev, 3, pll_fsm_ctrl_data, 1);
 	if (ret)
 		return ret;
@@ -626,7 +620,7 @@ int vsc85xx_sd6g_config_v2(struct phy_device *phydev)
 	if (ret)
 		return ret;
 
-	/* 14. Wait for PLL cal to complete */
+	 
 	deadline = jiffies + msecs_to_jiffies(PROC_CMD_NCOMPLETED_TIMEOUT_MS);
 	do {
 		usleep_range(500, 1000);
@@ -635,13 +629,13 @@ int vsc85xx_sd6g_config_v2(struct phy_device *phydev)
 			return ret;
 		val32 = vsc85xx_csr_read(phydev, MACRO_CTRL,
 					 PHY_S6G_PLL_STATUS);
-		/* wait for bit 12 to clear */
+		 
 	} while (time_before(jiffies, deadline) && (val32 & BIT(12)));
 
 	if (val32 & BIT(12))
 		return -ETIMEDOUT;
 
-	/* release lane reset */
+	 
 	ret = vsc85xx_sd6g_misc_cfg_wr(phydev, 0);
 	if (ret)
 		return ret;

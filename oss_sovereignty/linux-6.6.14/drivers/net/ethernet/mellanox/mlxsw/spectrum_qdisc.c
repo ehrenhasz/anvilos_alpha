@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
-/* Copyright (c) 2017-2018 Mellanox Technologies. All rights reserved */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/errno.h>
@@ -42,9 +42,7 @@ struct mlxsw_sp_qdisc_ops {
 			  void *xstats_ptr);
 	void (*clean_stats)(struct mlxsw_sp_port *mlxsw_sp_port,
 			    struct mlxsw_sp_qdisc *mlxsw_sp_qdisc);
-	/* unoffload - to be used for a qdisc that stops being offloaded without
-	 * being destroyed.
-	 */
+	 
 	void (*unoffload)(struct mlxsw_sp_port *mlxsw_sp_port,
 			  struct mlxsw_sp_qdisc *mlxsw_sp_qdisc, void *params);
 	struct mlxsw_sp_qdisc *(*find_class)(struct mlxsw_sp_qdisc *mlxsw_sp_qdisc,
@@ -92,20 +90,10 @@ struct mlxsw_sp_qdisc {
 struct mlxsw_sp_qdisc_state {
 	struct mlxsw_sp_qdisc root_qdisc;
 
-	/* When a PRIO or ETS are added, the invisible FIFOs in their bands are
-	 * created first. When notifications for these FIFOs arrive, it is not
-	 * known what qdisc their parent handle refers to. It could be a
-	 * newly-created PRIO that will replace the currently-offloaded one, or
-	 * it could be e.g. a RED that will be attached below it.
-	 *
-	 * As the notifications start to arrive, use them to note what the
-	 * future parent handle is, and keep track of which child FIFOs were
-	 * seen. Then when the parent is known, retroactively offload those
-	 * FIFOs.
-	 */
+	 
 	u32 future_handle;
 	bool future_fifos[IEEE_8021QAZ_MAX_TCS];
-	struct mutex lock; /* Protects qdisc state. */
+	struct mutex lock;  
 };
 
 static bool
@@ -318,11 +306,11 @@ __mlxsw_sp_qdisc_tree_validate(struct mlxsw_sp_qdisc *mlxsw_sp_qdisc,
 		if (validate.forbid_root_tbf) {
 			if (validate.forbid_tbf)
 				return -EINVAL;
-			/* This is a TC TBF. */
+			 
 			validate.forbid_tbf = true;
 			validate.forbid_ets = true;
 		} else {
-			/* This is root TBF. */
+			 
 			validate.forbid_root_tbf = true;
 		}
 		break;
@@ -428,10 +416,7 @@ mlxsw_sp_qdisc_change(struct mlxsw_sp_port *mlxsw_sp_port, u32 handle,
 	if (err)
 		goto unoffload;
 
-	/* Check if the Qdisc changed. That includes a situation where an
-	 * invisible Qdisc replaces another one, or is being added for the
-	 * first time.
-	 */
+	 
 	if (mlxsw_sp_qdisc->handle != handle) {
 		if (ops->clean_stats)
 			ops->clean_stats(mlxsw_sp_port, mlxsw_sp_qdisc);
@@ -454,11 +439,7 @@ mlxsw_sp_qdisc_replace(struct mlxsw_sp_port *mlxsw_sp_port, u32 handle,
 		       struct mlxsw_sp_qdisc_ops *ops, void *params)
 {
 	if (mlxsw_sp_qdisc->ops && mlxsw_sp_qdisc->ops->type != ops->type)
-		/* In case this location contained a different qdisc of the
-		 * same type we can override the old qdisc configuration.
-		 * Otherwise, we need to remove the old qdisc before setting the
-		 * new one.
-		 */
+		 
 		mlxsw_sp_qdisc_destroy(mlxsw_sp_port, mlxsw_sp_qdisc);
 
 	if (!mlxsw_sp_qdisc->ops)
@@ -731,7 +712,7 @@ mlxsw_sp_qdisc_red_replace(struct mlxsw_sp_port *mlxsw_sp_port, u32 handle,
 	tclass_num = mlxsw_sp_qdisc_get_tclass_num(mlxsw_sp_port,
 						   mlxsw_sp_qdisc);
 
-	/* calculate probability in percentage */
+	 
 	prob = p->probability;
 	prob *= 100;
 	prob = DIV_ROUND_UP(prob, 1 << 16);
@@ -825,9 +806,7 @@ static struct mlxsw_sp_qdisc *
 mlxsw_sp_qdisc_leaf_find_class(struct mlxsw_sp_qdisc *mlxsw_sp_qdisc,
 			       u32 parent)
 {
-	/* RED and TBF are formally classful qdiscs, but all class references,
-	 * including X:0, just refer to the same one class.
-	 */
+	 
 	return &mlxsw_sp_qdisc->qdiscs[0];
 }
 
@@ -921,14 +900,7 @@ mlxsw_sp_qdisc_tbf_hr(struct mlxsw_sp_port *mlxsw_sp_port,
 	if (mlxsw_sp_qdisc == &mlxsw_sp_port->qdisc->root_qdisc)
 		return MLXSW_REG_QEEC_HR_PORT;
 
-	/* Configure subgroup shaper, so that both UC and MC traffic is subject
-	 * to shaping. That is unlike RED, however UC queue lengths are going to
-	 * be different than MC ones due to different pool and quota
-	 * configurations, so the configuration is not applicable. For shaper on
-	 * the other hand, subjecting the overall stream to the configured
-	 * shaper makes sense. Also note that that is what we do for
-	 * ieee_setmaxrate().
-	 */
+	 
 	return MLXSW_REG_QEEC_HR_SUBGROUP;
 }
 
@@ -949,9 +921,7 @@ static int
 mlxsw_sp_qdisc_tbf_bs(struct mlxsw_sp_port *mlxsw_sp_port,
 		      u32 max_size, u8 *p_burst_size)
 {
-	/* TBF burst size is configured in bytes. The ASIC burst size value is
-	 * ((2 ^ bs) * 512 bits. Convert the TBF bytes to 512-bit units.
-	 */
+	 
 	u32 bs512 = max_size / 64;
 	u8 bs = fls(bs512);
 
@@ -959,7 +929,7 @@ mlxsw_sp_qdisc_tbf_bs(struct mlxsw_sp_port *mlxsw_sp_port,
 		return -EINVAL;
 	--bs;
 
-	/* Demand a power of two. */
+	 
 	if ((1 << bs) != bs512)
 		return -EINVAL;
 
@@ -980,9 +950,7 @@ mlxsw_sp_qdisc_tbf_max_size(u8 bs)
 static u64
 mlxsw_sp_qdisc_tbf_rate_kbps(struct tc_tbf_qopt_offload_replace_params *p)
 {
-	/* TBF interface is in bytes/s, whereas Spectrum ASIC is configured in
-	 * Kbits/s.
-	 */
+	 
 	return div_u64(p->rate.rate_bytes_ps, 1000) * 8;
 }
 
@@ -1042,7 +1010,7 @@ mlxsw_sp_qdisc_tbf_replace(struct mlxsw_sp_port *mlxsw_sp_port, u32 handle,
 
 	err = mlxsw_sp_qdisc_tbf_bs(mlxsw_sp_port, p->max_size, &burst_size);
 	if (WARN_ON_ONCE(err))
-		/* check_params above was supposed to reject this value. */
+		 
 		return -EINVAL;
 
 	return mlxsw_sp_port_ets_maxrate_set(mlxsw_sp_port, hr, tclass_num, 0,
@@ -1196,9 +1164,7 @@ static int __mlxsw_sp_setup_tc_fifo(struct mlxsw_sp_port *mlxsw_sp_port,
 	if (!mlxsw_sp_qdisc && p->handle == TC_H_UNSPEC) {
 		parent_handle = TC_H_MAJ(p->parent);
 		if (parent_handle != qdisc_state->future_handle) {
-			/* This notifications is for a different Qdisc than
-			 * previously. Wipe the future cache.
-			 */
+			 
 			mlxsw_sp_qdisc_future_fifos_init(mlxsw_sp_port,
 							 parent_handle);
 		}
@@ -1229,7 +1195,7 @@ static int __mlxsw_sp_setup_tc_fifo(struct mlxsw_sp_port *mlxsw_sp_port,
 	case TC_FIFO_STATS:
 		return mlxsw_sp_qdisc_get_stats(mlxsw_sp_port, mlxsw_sp_qdisc,
 						&p->stats);
-	case TC_FIFO_REPLACE: /* Handled above. */
+	case TC_FIFO_REPLACE:  
 		break;
 	}
 
@@ -1591,31 +1557,7 @@ static struct mlxsw_sp_qdisc_ops mlxsw_sp_qdisc_ops_ets = {
 	.get_tclass_num = mlxsw_sp_qdisc_ets_get_tclass_num,
 };
 
-/* Linux allows linking of Qdiscs to arbitrary classes (so long as the resulting
- * graph is free of cycles). These operations do not change the parent handle
- * though, which means it can be incomplete (if there is more than one class
- * where the Qdisc in question is grafted) or outright wrong (if the Qdisc was
- * linked to a different class and then removed from the original class).
- *
- * E.g. consider this sequence of operations:
- *
- *  # tc qdisc add dev swp1 root handle 1: prio
- *  # tc qdisc add dev swp1 parent 1:3 handle 13: red limit 1000000 avpkt 10000
- *  RED: set bandwidth to 10Mbit
- *  # tc qdisc link dev swp1 handle 13: parent 1:2
- *
- * At this point, both 1:2 and 1:3 have the same RED Qdisc instance as their
- * child. But RED will still only claim that 1:3 is its parent. If it's removed
- * from that band, its only parent will be 1:2, but it will continue to claim
- * that it is in fact 1:3.
- *
- * The notification for child Qdisc replace (e.g. TC_RED_REPLACE) comes before
- * the notification for parent graft (e.g. TC_PRIO_GRAFT). We take the replace
- * notification to offload the child Qdisc, based on its parent handle, and use
- * the graft operation to validate that the class where the child is actually
- * grafted corresponds to the parent handle. If the two don't match, we
- * unoffload the child.
- */
+ 
 static int mlxsw_sp_qdisc_graft(struct mlxsw_sp_port *mlxsw_sp_port,
 				struct mlxsw_sp_qdisc *mlxsw_sp_qdisc,
 				u8 band, u32 child_handle)
@@ -1628,15 +1570,11 @@ static int mlxsw_sp_qdisc_graft(struct mlxsw_sp_port *mlxsw_sp_port,
 		return 0;
 
 	if (!child_handle) {
-		/* This is an invisible FIFO replacing the original Qdisc.
-		 * Ignore it--the original Qdisc's destroy will follow.
-		 */
+		 
 		return 0;
 	}
 
-	/* See if the grafted qdisc is already offloaded on any tclass. If so,
-	 * unoffload it.
-	 */
+	 
 	old_qdisc = mlxsw_sp_qdisc_find_by_handle(mlxsw_sp_port,
 						  child_handle);
 	if (old_qdisc)
@@ -1889,7 +1827,7 @@ mlxsw_sp_qevent_entry_configure(struct mlxsw_sp *mlxsw_sp,
 	case MLXSW_SP_MALL_ACTION_TYPE_TRAP:
 		return mlxsw_sp_qevent_trap_configure(mlxsw_sp, mall_entry, qevent_binding);
 	default:
-		/* This should have been validated away. */
+		 
 		WARN_ON(1);
 		return -EOPNOTSUPP;
 	}
@@ -1995,9 +1933,7 @@ static int mlxsw_sp_qevent_mall_replace(struct mlxsw_sp *mlxsw_sp,
 	struct flow_action_entry *act;
 	int err;
 
-	/* It should not currently be possible to replace a matchall rule. So
-	 * this must be a new rule.
-	 */
+	 
 	if (!list_empty(&qevent_block->mall_entry_list)) {
 		NL_SET_ERR_MSG(f->common.extack, "At most one filter supported");
 		return -EOPNOTSUPP;

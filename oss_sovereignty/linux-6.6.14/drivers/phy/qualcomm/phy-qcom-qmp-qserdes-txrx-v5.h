@@ -1,13 +1,11 @@
 
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2017, The Linux Foundation. All rights reserved.
- */
+ 
+ 
 
 #ifndef QCOM_PHY_QMP_QSERDES_TXRX_V5_H_
 #define QCOM_PHY_QMP_QSERDES_TXRX_V5_H_
 
-/* Only for QMP V5 PHY - TX registers */
+ 
 #define QSERDES_V5_TX_BIST_MODE_LANENO			0x000
 #define QSERDES_V5_TX_BIST_INVERT			0x004
 #define QSERDES_V5_TX_CLKBUF_ENABLE			0x008
@@ -97,7 +95,7 @@
 #define QSERDES_V5_TX_DCC_CAL_STATUS			0x158
 #define QSERDES_V5_TX_DCC_READ_CODE_STATUS		0x15c
 
-/* Only for QMP V5 PHY - RX registers */
+ 
 #define QSERDES_V5_RX_UCDR_FO_GAIN_HALF			0x000
 #define QSERDES_V5_RX_UCDR_FO_GAIN_QUARTER		0x004
 #define QSERDES_V5_RX_UCDR_FO_GAIN			0x008
@@ -222,7 +220,7 @@
 #define QSERDES_V5_RX_RX_SIGDET				0x1e4
 #define QSERDES_V5_RX_ALOG_OBSV_BUS_STATUS_1		0x1e8
 
-/* Only for QMP V5 UFS ? */
+ 
 #define QSERDES_V5_TX_PWM_GEAR_1_DIVIDER_BAND0_1	0x178
 #define QSERDES_V5_TX_PWM_GEAR_2_DIVIDER_BAND0_1	0x17c
 #define QSERDES_V5_TX_PWM_GEAR_3_DIVIDER_BAND0_1	0x180

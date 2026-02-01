@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/* Copyright (C) 2020 Chelsio Communications.  All rights reserved. */
+ 
+ 
 
 #ifndef __CHCR_COMMON_H__
 #define __CHCR_COMMON_H__
@@ -26,7 +26,7 @@ struct ktls_key_ctx {
 			  TLS_CIPHER_AES_GCM_256_TAG_SIZE];
 };
 
-/* Crypto key context */
+ 
 #define KEY_CONTEXT_CTX_LEN_S           24
 #define KEY_CONTEXT_CTX_LEN_V(x)        ((x) << KEY_CONTEXT_CTX_LEN_S)
 
@@ -69,7 +69,7 @@ static inline void *chcr_copy_to_txd(const void *src, const struct sge_txq *q,
 		memcpy(q->desc, src + left, length - left);
 		pos = (void *)q->desc + (length - left);
 	}
-	/* 0-pad to multiple of 16 */
+	 
 	p = PTR_ALIGN(pos, 8);
 	if ((uintptr_t)p & 8) {
 		*p = 0;
@@ -108,4 +108,4 @@ static inline unsigned int chcr_flits_to_desc(unsigned int n)
 	WARN_ON(n > SGE_MAX_WR_LEN / 8);
 	return DIV_ROUND_UP(n, 8);
 }
-#endif /* __CHCR_COMMON_H__ */
+#endif  

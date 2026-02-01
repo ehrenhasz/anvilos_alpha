@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2016 Chelsio Communications, Inc.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/list.h>
@@ -487,10 +485,7 @@ accept_wait:
 	spin_lock_bh(&np->np_thread_lock);
 	if (np->np_thread_state >= ISCSI_NP_THREAD_RESET) {
 		spin_unlock_bh(&np->np_thread_lock);
-		/**
-		 * No point in stalling here when np_thread
-		 * is in state RESET/SHUTDOWN/EXIT - bail
-		 **/
+		 
 		return -ENODEV;
 	}
 	spin_unlock_bh(&np->np_thread_lock);
@@ -1052,11 +1047,7 @@ static void cxgbit_send_rx_credits(struct cxgbit_sock *csk, struct sk_buff *skb)
 	cxgbit_ofld_send(csk->com.cdev, skb);
 }
 
-/*
- * CPL connection rx data ack: host ->
- * Send RX credits through an RX_DATA_ACK CPL message.
- * Returns the number of credits sent.
- */
+ 
 int cxgbit_rx_data_ack(struct cxgbit_sock *csk)
 {
 	struct sk_buff *skb;
@@ -1157,10 +1148,7 @@ cxgbit_pass_accept_rpl(struct cxgbit_sock *csk, struct cpl_pass_accept_req *req)
 		      req->tcpopt.tstamp,
 		      (csk->com.remote_addr.ss_family == AF_INET) ? 0 : 1);
 	wscale = cxgb_compute_wscale(csk->rcv_win);
-	/*
-	 * Specify the largest window that will fit in opt0. The
-	 * remainder will be specified in the rx_data_ack.
-	 */
+	 
 	win = csk->rcv_win >> 10;
 	if (win > RCV_BUFSIZ_M)
 		win = RCV_BUFSIZ_M;
@@ -1257,7 +1245,7 @@ cxgbit_pass_accept_req(struct cxgbit_device *cdev, struct sk_buff *skb)
 	cxgb_get_4tuple(req, cdev->lldi.adapter_type, &iptype, local_ip,
 			peer_ip, &local_port, &peer_port);
 
-	/* Find output route */
+	 
 	if (iptype == 4)  {
 		pr_debug("%s parent sock %p tid %u laddr %pI4 raddr %pI4 "
 			 "lport %d rport %d peer_mss %d\n"
@@ -1402,10 +1390,7 @@ cxgbit_tx_flowc_wr_credits(struct cxgbit_sock *csk, u32 *nparamsp,
 	flowclen = offsetof(struct fw_flowc_wr, mnemval[nparams]);
 	flowclen16 = DIV_ROUND_UP(flowclen, 16);
 	flowclen = flowclen16 * 16;
-	/*
-	 * Return the number of 16-byte credits used by the flowc request.
-	 * Pass back the nparams and actual flowc length if requested.
-	 */
+	 
 	if (nparamsp)
 		*nparamsp = nparams;
 	if (flowclenp)
@@ -1518,7 +1503,7 @@ int cxgbit_setup_conn_digest(struct cxgbit_sock *csk)
 	if (!skb)
 		return -ENOMEM;
 
-	/*  set up ulp submode */
+	 
 	req = __skb_put_zero(skb, len);
 
 	INIT_TP_WR(req, csk->tid);
@@ -1679,7 +1664,7 @@ static void cxgbit_peer_close(struct cxgbit_sock *csk, struct sk_buff *skb)
 		cxgbit_queue_rx_skb(csk, skb);
 		return;
 	case CSK_STATE_CLOSING:
-		/* simultaneous close */
+		 
 		csk->com.state = CSK_STATE_MORIBUND;
 		break;
 	case CSK_STATE_MORIBUND:

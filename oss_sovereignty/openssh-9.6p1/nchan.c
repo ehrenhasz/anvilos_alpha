@@ -1,27 +1,5 @@
-/* $OpenBSD: nchan.c,v 1.74 2022/02/01 23:32:51 djm Exp $ */
-/*
- * Copyright (c) 1999, 2000, 2001, 2002 Markus Friedl.  All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- *
- * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
- * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
- * IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
- * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
- * NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
- * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+ 
+ 
 
 #include "includes.h"
 
@@ -41,43 +19,15 @@
 #include "compat.h"
 #include "log.h"
 
-/*
- * SSH Protocol 1.5 aka New Channel Protocol
- * Thanks to Martina, Axel and everyone who left Erlangen, leaving me bored.
- * Written by Markus Friedl in October 1999
- *
- * Protocol versions 1.3 and 1.5 differ in the handshake protocol used for the
- * tear down of channels:
- *
- * 1.3:	strict request-ack-protocol:
- *	CLOSE	->
- *		<-  CLOSE_CONFIRM
- *
- * 1.5:	uses variations of:
- *	IEOF	->
- *		<-  OCLOSE
- *		<-  IEOF
- *	OCLOSE	->
- *	i.e. both sides have to close the channel
- *
- * 2.0: the EOF messages are optional
- *
- * See the debugging output from 'ssh -v' and 'sshd -d' of
- * ssh-1.2.27 as an example.
- *
- */
+ 
 
-/* functions manipulating channel states */
-/*
- * EVENTS update channel input/output states execute ACTIONS
- */
-/*
- * ACTIONS: should never update the channel states
- */
+ 
+ 
+ 
 static void	chan_send_eof2(struct ssh *, Channel *);
 static void	chan_send_eow2(struct ssh *, Channel *);
 
-/* helper */
+ 
 static void	chan_shutdown_write(struct ssh *, Channel *);
 static void	chan_shutdown_read(struct ssh *, Channel *);
 static void	chan_shutdown_extended_read(struct ssh *, Channel *);
@@ -249,7 +199,7 @@ chan_send_eow2(struct ssh *ssh, Channel *c)
 		fatal_fr(r, "send CHANNEL_EOF");
 }
 
-/* shared */
+ 
 
 void
 chan_rcvd_ieof(struct ssh *ssh, Channel *c)
@@ -275,17 +225,14 @@ chan_rcvd_oclose(struct ssh *ssh, Channel *c)
 		c->flags |= CHAN_CLOSE_RCVD;
 	}
 	if (c->type == SSH_CHANNEL_LARVAL) {
-		/* tear down larval channels immediately */
+		 
 		chan_set_ostate(c, CHAN_OUTPUT_CLOSED);
 		chan_set_istate(c, CHAN_INPUT_CLOSED);
 		return;
 	}
 	switch (c->ostate) {
 	case CHAN_OUTPUT_OPEN:
-		/*
-		 * wait until a data from the channel is consumed if a CLOSE
-		 * is received
-		 */
+		 
 		chan_set_ostate(c, CHAN_OUTPUT_WAIT_DRAIN);
 		break;
 	}
@@ -354,7 +301,7 @@ chan_is_dead(struct ssh *ssh, Channel *c, int do_send)
 		if (do_send) {
 			chan_send_close2(ssh, c);
 		} else {
-			/* channel would be dead if we sent a close */
+			 
 			if (c->flags & CHAN_CLOSE_RCVD) {
 				debug2("channel %d: almost dead",
 				    c->self);
@@ -370,14 +317,14 @@ chan_is_dead(struct ssh *ssh, Channel *c, int do_send)
 	return 0;
 }
 
-/* helper */
+ 
 static void
 chan_shutdown_write(struct ssh *ssh, Channel *c)
 {
 	sshbuf_reset(c->output);
 	if (c->type == SSH_CHANNEL_LARVAL)
 		return;
-	/* shutdown failure is allowed if write failed already */
+	 
 	debug2_f("channel %d: (i%d o%d sock %d wfd %d efd %d [%s])",
 	    c->self, c->istate, c->ostate, c->sock, c->wfd, c->efd,
 	    channel_format_extended_usage(c));
@@ -405,11 +352,7 @@ chan_shutdown_read(struct ssh *ssh, Channel *c)
 	    c->self, c->istate, c->ostate, c->sock, c->rfd, c->efd,
 	    channel_format_extended_usage(c));
 	if (c->sock != -1) {
-		/*
-		 * shutdown(sock, SHUT_READ) may return ENOTCONN if the
-		 * write side has been closed already. (bug on Linux)
-		 * HP-UX may return ENOTCONN also.
-		 */
+		 
 		if (shutdown(c->sock, SHUT_RD) == -1 && errno != ENOTCONN) {
 			error_f("channel %d: shutdown() failed for "
 			    "fd %d [i%d o%d]: %.100s", c->self, c->sock,

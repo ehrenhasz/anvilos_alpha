@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright(c) 2022 Intel Corporation. All rights reserved.
- *
- * Author: Noah Klayman <noah.klayman@intel.com>
- */
+ 
+ 
 
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM sof_intel
@@ -142,7 +138,7 @@ TRACE_EVENT(sof_intel_hda_dsp_check_stream_irq,
 		  __get_str(device_name), __entry->status)
 );
 
-#endif /* _TRACE_SOF_INTEL_H */
+#endif  
 
-/* This part must be outside protection */
+ 
 #include <trace/define_trace.h>

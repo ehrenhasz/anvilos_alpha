@@ -1,13 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0+
 
-/**
- * DOC: vkms (Virtual Kernel Modesetting)
- *
- * VKMS is a software-only model of a KMS driver that is useful for testing
- * and for running X (or similar) on headless machines. VKMS aims to enable
- * a virtual display with no need of a hardware display capability, releasing
- * the GPU in DRM API tests.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/platform_device.h>
@@ -164,9 +157,7 @@ static int vkms_modeset_init(struct vkms_device *vkmsdev)
 	dev->mode_config.max_height = YRES_MAX;
 	dev->mode_config.cursor_width = 512;
 	dev->mode_config.cursor_height = 512;
-	/* FIXME: There's a confusion between bpp and depth between this and
-	 * fbdev helpers. We have to go with 0, meaning "pick the default",
-	 * which ix XRGB8888 in all cases. */
+	 
 	dev->mode_config.preferred_depth = 0;
 	dev->mode_config.helper_private = &vkms_mode_config_helpers;
 

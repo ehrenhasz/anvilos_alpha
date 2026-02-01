@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Thunderbolt driver - bus logic (NHI independent)
- *
- * Copyright (c) 2014 Andreas Noever <andreas.noever@gmail.com>
- * Copyright (C) 2018, Intel Corporation
- */
+ 
+ 
 
 #ifndef TB_H_
 #define TB_H_
@@ -19,33 +14,12 @@
 #include "ctl.h"
 #include "dma_port.h"
 
-/* Keep link controller awake during update */
+ 
 #define QUIRK_FORCE_POWER_LINK_CONTROLLER		BIT(0)
-/* Disable CLx if not supported */
+ 
 #define QUIRK_NO_CLX					BIT(1)
 
-/**
- * struct tb_nvm - Structure holding NVM information
- * @dev: Owner of the NVM
- * @major: Major version number of the active NVM portion
- * @minor: Minor version number of the active NVM portion
- * @id: Identifier used with both NVM portions
- * @active: Active portion NVMem device
- * @active_size: Size in bytes of the active NVM
- * @non_active: Non-active portion NVMem device
- * @buf: Buffer where the NVM image is stored before it is written to
- *	 the actual NVM flash device
- * @buf_data_start: Where the actual image starts after skipping
- *		    possible headers
- * @buf_data_size: Number of bytes actually consumed by the new NVM
- *		   image
- * @authenticating: The device is authenticating the new NVM
- * @flushed: The image has been flushed to the storage area
- * @vops: Router vendor specific NVM operations (optional)
- *
- * The user of this structure needs to handle serialization of possible
- * concurrent access.
- */
+ 
 struct tb_nvm {
 	struct device *dev;
 	u32 major;
@@ -72,16 +46,7 @@ enum tb_nvm_write_ops {
 #define TB_SWITCH_MAX_DEPTH		6
 #define USB4_SWITCH_MAX_DEPTH		5
 
-/**
- * enum tb_switch_tmu_mode - TMU mode
- * @TB_SWITCH_TMU_MODE_OFF: TMU is off
- * @TB_SWITCH_TMU_MODE_LOWRES: Uni-directional, normal mode
- * @TB_SWITCH_TMU_MODE_HIFI_UNI: Uni-directional, HiFi mode
- * @TB_SWITCH_TMU_MODE_HIFI_BI: Bi-directional, HiFi mode
- * @TB_SWITCH_TMU_MODE_MEDRES_ENHANCED_UNI: Enhanced Uni-directional, MedRes mode
- *
- * Ordering is based on TMU accuracy level (highest last).
- */
+ 
 enum tb_switch_tmu_mode {
 	TB_SWITCH_TMU_MODE_OFF,
 	TB_SWITCH_TMU_MODE_LOWRES,
@@ -90,15 +55,7 @@ enum tb_switch_tmu_mode {
 	TB_SWITCH_TMU_MODE_MEDRES_ENHANCED_UNI,
 };
 
-/**
- * struct tb_switch_tmu - Structure holding router TMU configuration
- * @cap: Offset to the TMU capability (%0 if not found)
- * @has_ucap: Does the switch support uni-directional mode
- * @mode: TMU mode related to the upstream router. Reflects the HW
- *	  setting. Don't care for host router.
- * @mode_request: TMU mode requested to set. Related to upstream router.
- *		   Don't care for host router.
- */
+ 
 struct tb_switch_tmu {
 	int cap;
 	bool has_ucap;
@@ -106,68 +63,7 @@ struct tb_switch_tmu {
 	enum tb_switch_tmu_mode mode_request;
 };
 
-/**
- * struct tb_switch - a thunderbolt switch
- * @dev: Device for the switch
- * @config: Switch configuration
- * @ports: Ports in this switch
- * @dma_port: If the switch has port supporting DMA configuration based
- *	      mailbox this will hold the pointer to that (%NULL
- *	      otherwise). If set it also means the switch has
- *	      upgradeable NVM.
- * @tmu: The switch TMU configuration
- * @tb: Pointer to the domain the switch belongs to
- * @uid: Unique ID of the switch
- * @uuid: UUID of the switch (or %NULL if not supported)
- * @vendor: Vendor ID of the switch
- * @device: Device ID of the switch
- * @vendor_name: Name of the vendor (or %NULL if not known)
- * @device_name: Name of the device (or %NULL if not known)
- * @link_speed: Speed of the link in Gb/s
- * @link_width: Width of the upstream facing link
- * @link_usb4: Upstream link is USB4
- * @generation: Switch Thunderbolt generation
- * @cap_plug_events: Offset to the plug events capability (%0 if not found)
- * @cap_vsec_tmu: Offset to the TMU vendor specific capability (%0 if not found)
- * @cap_lc: Offset to the link controller capability (%0 if not found)
- * @cap_lp: Offset to the low power (CLx for TBT) capability (%0 if not found)
- * @is_unplugged: The switch is going away
- * @drom: DROM of the switch (%NULL if not found)
- * @nvm: Pointer to the NVM if the switch has one (%NULL otherwise)
- * @no_nvm_upgrade: Prevent NVM upgrade of this switch
- * @safe_mode: The switch is in safe-mode
- * @boot: Whether the switch was already authorized on boot or not
- * @rpm: The switch supports runtime PM
- * @authorized: Whether the switch is authorized by user or policy
- * @security_level: Switch supported security level
- * @debugfs_dir: Pointer to the debugfs structure
- * @key: Contains the key used to challenge the device or %NULL if not
- *	 supported. Size of the key is %TB_SWITCH_KEY_SIZE.
- * @connection_id: Connection ID used with ICM messaging
- * @connection_key: Connection key used with ICM messaging
- * @link: Root switch link this switch is connected (ICM only)
- * @depth: Depth in the chain this switch is connected (ICM only)
- * @rpm_complete: Completion used to wait for runtime resume to
- *		  complete (ICM only)
- * @quirks: Quirks used for this Thunderbolt switch
- * @credit_allocation: Are the below buffer allocation parameters valid
- * @max_usb3_credits: Router preferred number of buffers for USB 3.x
- * @min_dp_aux_credits: Router preferred minimum number of buffers for DP AUX
- * @min_dp_main_credits: Router preferred minimum number of buffers for DP MAIN
- * @max_pcie_credits: Router preferred number of buffers for PCIe
- * @max_dma_credits: Router preferred number of buffers for DMA/P2P
- * @clx: CLx states on the upstream link of the router
- *
- * When the switch is being added or removed to the domain (other
- * switches) you need to have domain lock held.
- *
- * In USB4 terminology this structure represents a router.
- *
- * Note @link_width is not the same as whether link is bonded or not.
- * For Gen 4 links the link is also bonded when it is asymmetric. The
- * correct way to find out whether the link is bonded or not is to look
- * @bonded field of the upstream port.
- */
+ 
 struct tb_switch {
 	struct device dev;
 	struct tb_regs_switch_header config;
@@ -215,56 +111,14 @@ struct tb_switch {
 	unsigned int clx;
 };
 
-/**
- * struct tb_bandwidth_group - Bandwidth management group
- * @tb: Pointer to the domain the group belongs to
- * @index: Index of the group (aka Group_ID). Valid values %1-%7
- * @ports: DP IN adapters belonging to this group are linked here
- *
- * Any tunnel that requires isochronous bandwidth (that's DP for now) is
- * attached to a bandwidth group. All tunnels going through the same
- * USB4 links share the same group and can dynamically distribute the
- * bandwidth within the group.
- */
+ 
 struct tb_bandwidth_group {
 	struct tb *tb;
 	int index;
 	struct list_head ports;
 };
 
-/**
- * struct tb_port - a thunderbolt port, part of a tb_switch
- * @config: Cached port configuration read from registers
- * @sw: Switch the port belongs to
- * @remote: Remote port (%NULL if not connected)
- * @xdomain: Remote host (%NULL if not connected)
- * @cap_phy: Offset, zero if not found
- * @cap_tmu: Offset of the adapter specific TMU capability (%0 if not present)
- * @cap_adap: Offset of the adapter specific capability (%0 if not present)
- * @cap_usb4: Offset to the USB4 port capability (%0 if not present)
- * @usb4: Pointer to the USB4 port structure (only if @cap_usb4 is != %0)
- * @port: Port number on switch
- * @disabled: Disabled by eeprom or enabled but not implemented
- * @bonded: true if the port is bonded (two lanes combined as one)
- * @dual_link_port: If the switch is connected using two ports, points
- *		    to the other port.
- * @link_nr: Is this primary or secondary port on the dual_link.
- * @in_hopids: Currently allocated input HopIDs
- * @out_hopids: Currently allocated output HopIDs
- * @list: Used to link ports to DP resources list
- * @total_credits: Total number of buffers available for this port
- * @ctl_credits: Buffers reserved for control path
- * @dma_credits: Number of credits allocated for DMA tunneling for all
- *		 DMA paths through this port.
- * @group: Bandwidth allocation group the adapter is assigned to. Only
- *	   used for DP IN adapters for now.
- * @group_list: The adapter is linked to the group's list of ports through this
- * @max_bw: Maximum possible bandwidth through this adapter if set to
- *	    non-zero.
- *
- * In USB4 terminology this structure represents an adapter (protocol or
- * lane adapter).
- */
+ 
 struct tb_port {
 	struct tb_regs_port_header config;
 	struct tb_switch *sw;
@@ -291,15 +145,7 @@ struct tb_port {
 	unsigned int max_bw;
 };
 
-/**
- * struct usb4_port - USB4 port device
- * @dev: Device for the port
- * @port: Pointer to the lane 0 adapter
- * @can_offline: Does the port have necessary platform support to moved
- *		 it into offline mode and back
- * @offline: The port is currently in offline mode
- * @margining: Pointer to margining structure if enabled
- */
+ 
 struct usb4_port {
 	struct device dev;
 	struct tb_port *port;
@@ -310,18 +156,7 @@ struct usb4_port {
 #endif
 };
 
-/**
- * tb_retimer: Thunderbolt retimer
- * @dev: Device for the retimer
- * @tb: Pointer to the domain the retimer belongs to
- * @index: Retimer index facing the router USB4 port
- * @vendor: Vendor ID of the retimer
- * @device: Device ID of the retimer
- * @port: Pointer to the lane 0 adapter
- * @nvm: Pointer to the NVM if the retimer has one (%NULL otherwise)
- * @no_nvm_upgrade: Prevent NVM upgrade of this retimer
- * @auth_status: Status of last NVM authentication
- */
+ 
 struct tb_retimer {
 	struct device dev;
 	struct tb *tb;
@@ -334,32 +169,7 @@ struct tb_retimer {
 	u32 auth_status;
 };
 
-/**
- * struct tb_path_hop - routing information for a tb_path
- * @in_port: Ingress port of a switch
- * @out_port: Egress port of a switch where the packet is routed out
- *	      (must be on the same switch than @in_port)
- * @in_hop_index: HopID where the path configuration entry is placed in
- *		  the path config space of @in_port.
- * @in_counter_index: Used counter index (not used in the driver
- *		      currently, %-1 to disable)
- * @next_hop_index: HopID of the packet when it is routed out from @out_port
- * @initial_credits: Number of initial flow control credits allocated for
- *		     the path
- * @nfc_credits: Number of non-flow controlled buffers allocated for the
- *		 @in_port.
- *
- * Hop configuration is always done on the IN port of a switch.
- * in_port and out_port have to be on the same switch. Packets arriving on
- * in_port with "hop" = in_hop_index will get routed to through out_port. The
- * next hop to take (on out_port->remote) is determined by
- * next_hop_index. When routing packet to another switch (out->remote is
- * set) the @next_hop_index must match the @in_hop_index of that next
- * hop to make routing possible.
- *
- * in_counter_index is the index of a counter (in TB_CFG_COUNTERS) on the in
- * port.
- */
+ 
 struct tb_path_hop {
 	struct tb_port *in_port;
 	struct tb_port *out_port;
@@ -370,14 +180,7 @@ struct tb_path_hop {
 	unsigned int nfc_credits;
 };
 
-/**
- * enum tb_path_port - path options mask
- * @TB_PATH_NONE: Do not activate on any hop on path
- * @TB_PATH_SOURCE: Activate on the first hop (out of src)
- * @TB_PATH_INTERNAL: Activate on the intermediate hops (not the first/last)
- * @TB_PATH_DESTINATION: Activate on the last hop (into dst)
- * @TB_PATH_ALL: Activate on all hops on the path
- */
+ 
 enum tb_path_port {
 	TB_PATH_NONE = 0,
 	TB_PATH_SOURCE = 1,
@@ -386,28 +189,7 @@ enum tb_path_port {
 	TB_PATH_ALL = 7,
 };
 
-/**
- * struct tb_path - a unidirectional path between two ports
- * @tb: Pointer to the domain structure
- * @name: Name of the path (used for debugging)
- * @ingress_shared_buffer: Shared buffering used for ingress ports on the path
- * @egress_shared_buffer: Shared buffering used for egress ports on the path
- * @ingress_fc_enable: Flow control for ingress ports on the path
- * @egress_fc_enable: Flow control for egress ports on the path
- * @priority: Priority group if the path
- * @weight: Weight of the path inside the priority group
- * @drop_packages: Drop packages from queue tail or head
- * @activated: Is the path active
- * @clear_fc: Clear all flow control from the path config space entries
- *	      when deactivating this path
- * @hops: Path hops
- * @path_length: How many hops the path uses
- * @alloc_hopid: Does this path consume port HopID
- *
- * A path consists of a number of hops (see &struct tb_path_hop). To
- * establish a PCIe tunnel two paths have to be created between the two
- * PCIe ports.
- */
+ 
 struct tb_path {
 	struct tb *tb;
 	const char *name;
@@ -426,15 +208,12 @@ struct tb_path {
 	bool alloc_hopid;
 };
 
-/* HopIDs 0-7 are reserved by the Thunderbolt protocol */
+ 
 #define TB_PATH_MIN_HOPID	8
-/*
- * Support paths from the farthest (depth 6) router to the host and back
- * to the same level (not necessarily to the same router).
- */
+ 
 #define TB_PATH_MAX_HOPS	(7 * 2)
 
-/* Possible wake types */
+ 
 #define TB_WAKE_ON_CONNECT	BIT(0)
 #define TB_WAKE_ON_DISCONNECT	BIT(1)
 #define TB_WAKE_ON_USB4		BIT(2)
@@ -442,46 +221,12 @@ struct tb_path {
 #define TB_WAKE_ON_PCIE		BIT(4)
 #define TB_WAKE_ON_DP		BIT(5)
 
-/* CL states */
+ 
 #define TB_CL0S			BIT(0)
 #define TB_CL1			BIT(1)
 #define TB_CL2			BIT(2)
 
-/**
- * struct tb_cm_ops - Connection manager specific operations vector
- * @driver_ready: Called right after control channel is started. Used by
- *		  ICM to send driver ready message to the firmware.
- * @start: Starts the domain
- * @stop: Stops the domain
- * @suspend_noirq: Connection manager specific suspend_noirq
- * @resume_noirq: Connection manager specific resume_noirq
- * @suspend: Connection manager specific suspend
- * @freeze_noirq: Connection manager specific freeze_noirq
- * @thaw_noirq: Connection manager specific thaw_noirq
- * @complete: Connection manager specific complete
- * @runtime_suspend: Connection manager specific runtime_suspend
- * @runtime_resume: Connection manager specific runtime_resume
- * @runtime_suspend_switch: Runtime suspend a switch
- * @runtime_resume_switch: Runtime resume a switch
- * @handle_event: Handle thunderbolt event
- * @get_boot_acl: Get boot ACL list
- * @set_boot_acl: Set boot ACL list
- * @disapprove_switch: Disapprove switch (disconnect PCIe tunnel)
- * @approve_switch: Approve switch
- * @add_switch_key: Add key to switch
- * @challenge_switch_key: Challenge switch using key
- * @disconnect_pcie_paths: Disconnects PCIe paths before NVM update
- * @approve_xdomain_paths: Approve (establish) XDomain DMA paths
- * @disconnect_xdomain_paths: Disconnect XDomain DMA paths
- * @usb4_switch_op: Optional proxy for USB4 router operations. If set
- *		    this will be called whenever USB4 router operation is
- *		    performed. If this returns %-EOPNOTSUPP then the
- *		    native USB4 router operation is called.
- * @usb4_switch_nvm_authenticate_status: Optional callback that the CM
- *					 implementation can be used to
- *					 return status of USB4 NVM_AUTH
- *					 router operation.
- */
+ 
 struct tb_cm_ops {
 	int (*driver_ready)(struct tb *tb);
 	int (*start)(struct tb *tb);
@@ -524,32 +269,17 @@ static inline void *tb_priv(struct tb *tb)
 	return (void *)tb->privdata;
 }
 
-#define TB_AUTOSUSPEND_DELAY		15000 /* ms */
+#define TB_AUTOSUSPEND_DELAY		15000  
 
-/* helper functions & macros */
+ 
 
-/**
- * tb_upstream_port() - return the upstream port of a switch
- *
- * Every switch has an upstream port (for the root switch it is the NHI).
- *
- * During switch alloc/init tb_upstream_port()->remote may be NULL, even for
- * non root switches (on the NHI port remote is always NULL).
- *
- * Return: Returns the upstream port of the switch.
- */
+ 
 static inline struct tb_port *tb_upstream_port(struct tb_switch *sw)
 {
 	return &sw->ports[sw->config.upstream_port_number];
 }
 
-/**
- * tb_is_upstream_port() - Is the port upstream facing
- * @port: Port to check
- *
- * Returns true if @port is upstream facing port. In case of dual link
- * ports both return true.
- */
+ 
 static inline bool tb_is_upstream_port(const struct tb_port *port)
 {
 	const struct tb_port *upstream_port = tb_upstream_port(port->sw);
@@ -571,12 +301,7 @@ static inline struct tb_port *tb_port_at(u64 route, struct tb_switch *sw)
 	return &sw->ports[port];
 }
 
-/**
- * tb_port_has_remote() - Does the port have switch connected downstream
- * @port: Port to check
- *
- * Returns true only when the port is primary port and has remote set.
- */
+ 
 static inline bool tb_port_has_remote(const struct tb_port *port)
 {
 	if (tb_is_upstream_port(port))
@@ -810,13 +535,7 @@ struct tb_switch *tb_switch_find_by_link_depth(struct tb *tb, u8 link,
 struct tb_switch *tb_switch_find_by_uuid(struct tb *tb, const uuid_t *uuid);
 struct tb_switch *tb_switch_find_by_route(struct tb *tb, u64 route);
 
-/**
- * tb_switch_for_each_port() - Iterate over each switch port
- * @sw: Switch whose ports to iterate
- * @p: Port used as iterator
- *
- * Iterates over each switch port skipping the control port (port %0).
- */
+ 
 #define tb_switch_for_each_port(sw, p)					\
 	for ((p) = &(sw)->ports[1];					\
 	     (p) <= &(sw)->ports[(sw)->config.max_port_number]; (p)++)
@@ -850,13 +569,7 @@ static inline struct tb_switch *tb_switch_parent(struct tb_switch *sw)
 	return tb_to_switch(sw->dev.parent);
 }
 
-/**
- * tb_switch_downstream_port() - Return downstream facing port of parent router
- * @sw: Device router pointer
- *
- * Only call for device routers. Returns the downstream facing port of
- * the parent router.
- */
+ 
 static inline struct tb_port *tb_switch_downstream_port(struct tb_switch *sw)
 {
 	if (WARN_ON(!tb_route(sw)))
@@ -942,15 +655,7 @@ static inline bool tb_switch_is_tiger_lake(const struct tb_switch *sw)
 	return false;
 }
 
-/**
- * tb_switch_is_icm() - Is the switch handled by ICM firmware
- * @sw: Switch to check
- *
- * In case there is a need to differentiate whether ICM firmware or SW CM
- * is handling @sw this function can be called. It is valid to call this
- * after tb_switch_alloc() and tb_switch_configure() has been called
- * (latter only for SW CM case).
- */
+ 
 static inline bool tb_switch_is_icm(const struct tb_switch *sw)
 {
 	return !sw->config.enabled;
@@ -971,27 +676,14 @@ int tb_switch_tmu_disable(struct tb_switch *sw);
 int tb_switch_tmu_enable(struct tb_switch *sw);
 int tb_switch_tmu_configure(struct tb_switch *sw, enum tb_switch_tmu_mode mode);
 
-/**
- * tb_switch_tmu_is_configured() - Is given TMU mode configured
- * @sw: Router whose mode to check
- * @mode: Mode to check
- *
- * Checks if given router TMU mode is configured to @mode. Note the
- * router TMU might not be enabled to this mode.
- */
+ 
 static inline bool tb_switch_tmu_is_configured(const struct tb_switch *sw,
 					       enum tb_switch_tmu_mode mode)
 {
 	return sw->tmu.mode_request == mode;
 }
 
-/**
- * tb_switch_tmu_is_enabled() - Checks if the specified TMU mode is enabled
- * @sw: Router whose TMU mode to check
- *
- * Return true if hardware TMU configuration matches the requested
- * configuration (and is not %TB_SWITCH_TMU_MODE_OFF).
- */
+ 
 static inline bool tb_switch_tmu_is_enabled(const struct tb_switch *sw)
 {
 	return sw->tmu.mode != TB_SWITCH_TMU_MODE_OFF &&
@@ -1005,16 +697,7 @@ bool tb_switch_clx_is_supported(const struct tb_switch *sw);
 int tb_switch_clx_enable(struct tb_switch *sw, unsigned int clx);
 int tb_switch_clx_disable(struct tb_switch *sw);
 
-/**
- * tb_switch_clx_is_enabled() - Checks if the CLx is enabled
- * @sw: Router to check for the CLx
- * @clx: The CLx states to check for
- *
- * Checks if the specified CLx is enabled on the router upstream link.
- * Returns true if any of the given states is enabled.
- *
- * Not applicable for a host router.
- */
+ 
 static inline bool tb_switch_clx_is_enabled(const struct tb_switch *sw,
 					    unsigned int clx)
 {
@@ -1045,14 +728,7 @@ static inline bool tb_port_use_credit_allocation(const struct tb_port *port)
 	return tb_port_is_null(port) && port->sw->credit_allocation;
 }
 
-/**
- * tb_for_each_port_on_path() - Iterate over each port on path
- * @src: Source port
- * @dst: Destination port
- * @p: Port used as iterator
- *
- * Walks over each port on path from @src to @dst.
- */
+ 
 #define tb_for_each_port_on_path(src, dst, p)				\
 	for ((p) = tb_next_port_on_path((src), (dst), NULL); (p);	\
 	     (p) = tb_next_port_on_path((src), (dst), (p)))
@@ -1100,13 +776,7 @@ bool tb_path_is_invalid(struct tb_path *path);
 bool tb_path_port_on_path(const struct tb_path *path,
 			  const struct tb_port *port);
 
-/**
- * tb_path_for_each_hop() - Iterate over each hop on path
- * @path: Path whose hops to iterate
- * @hop: Hop used as iterator
- *
- * Iterates over each hop on path.
- */
+ 
 #define tb_path_for_each_hop(path, hop)					\
 	for ((hop) = &(path)->hops[0];					\
 	     (hop) <= &(path)->hops[(path)->path_length - 1]; (hop)++)
@@ -1138,13 +808,7 @@ static inline int tb_route_length(u64 route)
 	return (fls64(route) + TB_ROUTE_SHIFT - 1) / TB_ROUTE_SHIFT;
 }
 
-/**
- * tb_downstream_route() - get route to downstream switch
- *
- * Port must not be the upstream port (otherwise a loop is created).
- *
- * Return: Returns a route to the switch behind @port.
- */
+ 
 static inline u64 tb_downstream_route(struct tb_port *port)
 {
 	return tb_route(port->sw)
@@ -1167,12 +831,7 @@ static inline struct tb_switch *tb_xdomain_parent(struct tb_xdomain *xd)
 	return tb_to_switch(xd->dev.parent);
 }
 
-/**
- * tb_xdomain_downstream_port() - Return downstream facing port of parent router
- * @xd: Xdomain pointer
- *
- * Returns the downstream port the XDomain is connected to.
- */
+ 
 static inline struct tb_port *tb_xdomain_downstream_port(struct tb_xdomain *xd)
 {
 	return tb_port_at(xd->route, tb_xdomain_parent(xd));
@@ -1195,24 +854,13 @@ static inline struct tb_retimer *tb_to_retimer(struct device *dev)
 	return NULL;
 }
 
-/**
- * usb4_switch_version() - Returns USB4 version of the router
- * @sw: Router to check
- *
- * Returns major version of USB4 router (%1 for v1, %2 for v2 and so
- * on). Can be called to pre-USB4 router too and in that case returns %0.
- */
+ 
 static inline unsigned int usb4_switch_version(const struct tb_switch *sw)
 {
 	return FIELD_GET(USB4_VERSION_MAJOR_MASK, sw->config.thunderbolt_version);
 }
 
-/**
- * tb_switch_is_usb4() - Is the switch USB4 compliant
- * @sw: Switch to check
- *
- * Returns true if the @sw is USB4 compliant router, false otherwise.
- */
+ 
 static inline bool tb_switch_is_usb4(const struct tb_switch *sw)
 {
 	return usb4_switch_version(sw) > 0;

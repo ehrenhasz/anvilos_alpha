@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * OSS compatible sequencer driver
- * write priority queue
- *
- * Copyright (C) 1998,99 Takashi Iwai <tiwai@suse.de>
- */
+ 
+ 
 
 #ifndef __SEQ_OSS_WRITEQ_H
 #define __SEQ_OSS_WRITEQ_H
@@ -22,9 +17,7 @@ struct seq_oss_writeq {
 };
 
 
-/*
- * seq_oss_writeq.c
- */
+ 
 struct seq_oss_writeq *snd_seq_oss_writeq_new(struct seq_oss_devinfo *dp, int maxlen);
 void snd_seq_oss_writeq_delete(struct seq_oss_writeq *q);
 void snd_seq_oss_writeq_clear(struct seq_oss_writeq *q);

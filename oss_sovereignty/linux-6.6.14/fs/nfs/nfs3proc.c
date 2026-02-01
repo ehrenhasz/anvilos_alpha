@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *  linux/fs/nfs/nfs3proc.c
- *
- *  Client-side NFSv3 procedures stubs.
- *
- *  Copyright (C) 1997, Olaf Kirch
- */
+
+ 
 
 #include <linux/mm.h>
 #include <linux/errno.h>
@@ -27,7 +21,7 @@
 
 #define NFSDBG_FACILITY		NFSDBG_PROC
 
-/* A wrapper to handle the EJUKEBOX error messages */
+ 
 static int
 nfs3_rpc_wrapper(struct rpc_clnt *clnt, struct rpc_message *msg, int flags)
 {
@@ -81,9 +75,7 @@ do_proc_get_root(struct rpc_clnt *client, struct nfs_fh *fhandle,
 	return status;
 }
 
-/*
- * Bare-bones access to getattr: this is for nfs_get_root/nfs_get_sb
- */
+ 
 static int
 nfs3_proc_get_root(struct nfs_server *server, struct nfs_fh *fhandle,
 		   struct nfs_fsinfo *info)
@@ -96,9 +88,7 @@ nfs3_proc_get_root(struct nfs_server *server, struct nfs_fh *fhandle,
 	return status;
 }
 
-/*
- * One function for each procedure in the NFS protocol.
- */
+ 
 static int
 nfs3_proc_getattr(struct nfs_server *server, struct nfs_fh *fhandle,
 		struct nfs_fattr *fattr, struct inode *inode)
@@ -111,7 +101,7 @@ nfs3_proc_getattr(struct nfs_server *server, struct nfs_fh *fhandle,
 	int	status;
 	unsigned short task_flags = 0;
 
-	/* Is this is an attribute revalidation, subject to softreval? */
+	 
 	if (inode && (server->flags & NFS_MOUNT_SOFTREVAL))
 		task_flags |= RPC_TASK_TIMEOUT;
 
@@ -197,7 +187,7 @@ nfs3_proc_lookup(struct inode *dir, struct dentry *dentry,
 {
 	unsigned short task_flags = 0;
 
-	/* Is this is an attribute revalidation, subject to softreval? */
+	 
 	if (nfs_lookup_is_soft_revalidate(dentry))
 		task_flags |= RPC_TASK_TIMEOUT;
 
@@ -331,9 +321,7 @@ static void nfs3_free_createdata(struct nfs3_createdata *data)
 	kfree(data);
 }
 
-/*
- * Create a regular file.
- */
+ 
 static int
 nfs3_proc_create(struct inode *dir, struct dentry *dentry, struct iattr *sattr,
 		 int flags)
@@ -372,8 +360,7 @@ nfs3_proc_create(struct inode *dir, struct dentry *dentry, struct iattr *sattr,
 
 		if (status != -ENOTSUPP)
 			break;
-		/* If the server doesn't support the exclusive creation
-		 * semantics, try again with simple 'guarded' mode. */
+		 
 		switch (data->arg.create.createmode) {
 			case NFS3_CREATE_EXCLUSIVE:
 				data->arg.create.createmode = NFS3_CREATE_GUARDED;
@@ -396,8 +383,7 @@ nfs3_proc_create(struct inode *dir, struct dentry *dentry, struct iattr *sattr,
 	if (d_alias)
 		dentry = d_alias;
 
-	/* When we created the file with exclusive semantics, make
-	 * sure we set the attributes afterwards. */
+	 
 	if (data->arg.create.createmode == NFS3_CREATE_EXCLUSIVE) {
 		dprintk("NFS call  setattr (post-create)\n");
 
@@ -406,9 +392,7 @@ nfs3_proc_create(struct inode *dir, struct dentry *dentry, struct iattr *sattr,
 		if (!(sattr->ia_valid & ATTR_MTIME_SET))
 			sattr->ia_valid |= ATTR_MTIME;
 
-		/* Note: we could use a guarded setattr here, but I'm
-		 * not sure this buys us anything (and I'd have
-		 * to revamp the NFSv3 XDR code) */
+		 
 		status = nfs3_proc_setattr(dentry, data->res.fattr, sattr);
 		nfs_post_op_update_inode(d_inode(dentry), data->res.fattr);
 		dprintk("NFS reply setattr (post-create): %d\n", status);
@@ -652,15 +636,7 @@ out:
 	return status;
 }
 
-/*
- * The READDIR implementation is somewhat hackish - we pass the user buffer
- * to the encode function, which installs it in the receive iovec.
- * The decode function itself doesn't perform any decoding, it just makes
- * sure the reply is syntactically correct.
- *
- * Also note that this implementation handles both plain readdir and
- * readdirplus.
- */
+ 
 static int nfs3_proc_readdir(struct nfs_readdir_arg *nr_arg,
 			     struct nfs_readdir_res *nr_res)
 {
@@ -809,10 +785,7 @@ do_proc_fsinfo(struct rpc_clnt *client, struct nfs_fh *fhandle,
 	return status;
 }
 
-/*
- * Bare-bones access to fsinfo: this is for nfs_get_root/nfs_get_sb via
- * nfs_create_server
- */
+ 
 static int
 nfs3_proc_fsinfo(struct nfs_server *server, struct nfs_fh *fhandle,
 		   struct nfs_fsinfo *info)
@@ -1015,7 +988,7 @@ static const struct inode_operations nfs3_file_inode_operations = {
 };
 
 const struct nfs_rpc_ops nfs_v3_clientops = {
-	.version	= 3,			/* protocol version */
+	.version	= 3,			 
 	.dentry_ops	= &nfs_dentry_operations,
 	.dir_inode_ops	= &nfs3_dir_inode_operations,
 	.file_inode_ops	= &nfs3_file_inode_operations,

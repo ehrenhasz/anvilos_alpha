@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Tracepoints definitions.
- *
- * Copyright (c) 2018-2020, Silicon Laboratories, Inc.
- */
+ 
+ 
 
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM wfx
@@ -18,34 +14,7 @@
 #include "hif_api_cmd.h"
 #include "hif_api_mib.h"
 
-/* The hell below need some explanations. For each symbolic number, we need to define it with
- * TRACE_DEFINE_ENUM() and in a list for __print_symbolic.
- *
- *   1. Define a new macro that call TRACE_DEFINE_ENUM():
- *
- *          #define xxx_name(sym) TRACE_DEFINE_ENUM(sym);
- *
- *   2. Define list of all symbols:
- *
- *          #define list_names     \
- *             ...                 \
- *             xxx_name(XXX)       \
- *             ...
- *
- *   3. Instantiate that list_names:
- *
- *          list_names
- *
- *   4. Redefine xxx_name() as an entry of array for __print_symbolic()
- *
- *          #undef xxx_name
- *          #define xxx_name(msg) { msg, #msg },
- *
- *   5. list_name can now nearly be used with __print_symbolic() but, __print_symbolic() dislike
- *      last comma of list. So we define a new list with a dummy element:
- *
- *          #define list_for_print_symbolic list_names { -1, NULL }
- */
+ 
 
 #define _hif_msg_list                       \
 	hif_cnf_name(ADD_KEY)               \
@@ -375,7 +344,7 @@ TRACE_EVENT(tx_stats,
 		__array(int, tx_count, 4)
 	),
 	TP_fast_assign(
-		/* Keep sync with wfx_rates definition in main.c */
+		 
 		static const int hw_rate[] = { 0, 1, 2, 3, 6, 7, 8, 9, 10, 11, 12, 13 };
 		const struct ieee80211_tx_info *tx_info =
 			(const struct ieee80211_tx_info *)skb->cb;
@@ -487,7 +456,7 @@ TRACE_EVENT(queues_stats,
 
 #endif
 
-/* This part must be outside protection */
+ 
 #undef TRACE_INCLUDE_PATH
 #define TRACE_INCLUDE_PATH .
 #undef TRACE_INCLUDE_FILE

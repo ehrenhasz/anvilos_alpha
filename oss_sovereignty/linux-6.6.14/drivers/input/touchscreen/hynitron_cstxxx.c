@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  Driver for Hynitron cstxxx Touchscreen
- *
- *  Copyright (c) 2022 Chris Morgan <macromorgan@hotmail.com>
- *
- *  This code is based on hynitron_core.c authored by Hynitron.
- *  Note that no datasheet was available, so much of these registers
- *  are undocumented. This is essentially a cleaned-up version of the
- *  vendor driver with support removed for hardware I cannot test and
- *  device-specific functions replated with generic functions wherever
- *  possible.
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/err.h>
@@ -24,7 +13,7 @@
 #include <linux/property.h>
 #include <asm/unaligned.h>
 
-/* Per chip data */
+ 
 struct hynitron_ts_chip_data {
 	unsigned int max_touch_num;
 	u32 ic_chkcode;
@@ -34,7 +23,7 @@ struct hynitron_ts_chip_data {
 	void (*report_touch)(struct i2c_client *client);
 };
 
-/* Data generic to all (supported and non-supported) controllers. */
+ 
 struct hynitron_ts_data {
 	const struct hynitron_ts_chip_data *chip;
 	struct i2c_client *client;
@@ -43,10 +32,7 @@ struct hynitron_ts_data {
 	struct gpio_desc *reset_gpio;
 };
 
-/*
- * Since I have no datasheet, these values are guessed and/or assumed
- * based on observation and testing.
- */
+ 
 #define CST3XX_FIRMWARE_INFO_START_CMD		0x01d1
 #define CST3XX_FIRMWARE_INFO_END_CMD		0x09d1
 #define CST3XX_FIRMWARE_CHK_CODE_REG		0xfcd1
@@ -65,10 +51,7 @@ struct hynitron_ts_data {
 #define CST3XX_TOUCH_COUNT_MASK			GENMASK(6, 0)
 
 
-/*
- * Hard coded reset delay value of 20ms not IC dependent in
- * vendor driver.
- */
+ 
 static void hyn_reset_proc(struct i2c_client *client, int delay)
 {
 	struct hynitron_ts_data *ts_data = i2c_get_clientdata(client);
@@ -90,10 +73,7 @@ static irqreturn_t hyn_interrupt_handler(int irq, void *dev_id)
 	return IRQ_HANDLED;
 }
 
-/*
- * The vendor driver would retry twice before failing to read or write
- * to the i2c device.
- */
+ 
 
 static int cst3xx_i2c_write(struct i2c_client *client,
 			    unsigned char *buf, int len)
@@ -153,9 +133,7 @@ static int cst3xx_firmware_info(struct i2c_client *client)
 	u32 tmp;
 	unsigned char buf[4];
 
-	/*
-	 * Tests suggest this command needed to read firmware regs.
-	 */
+	 
 	put_unaligned_le16(CST3XX_FIRMWARE_INFO_START_CMD, buf);
 	err = cst3xx_i2c_write(client, buf, 2);
 	if (err)
@@ -163,10 +141,7 @@ static int cst3xx_firmware_info(struct i2c_client *client)
 
 	usleep_range(10000, 11000);
 
-	/*
-	 * Read register for check-code to determine if device detected
-	 * correctly.
-	 */
+	 
 	err = cst3xx_i2c_read_register(client, CST3XX_FIRMWARE_CHK_CODE_REG,
 				       buf, 4);
 	if (err)
@@ -181,7 +156,7 @@ static int cst3xx_firmware_info(struct i2c_client *client)
 
 	usleep_range(10000, 11000);
 
-	/* Read firmware version and test if firmware missing. */
+	 
 	err = cst3xx_i2c_read_register(client, CST3XX_FIRMWARE_VERSION_REG,
 				       buf, 4);
 	if (err)
@@ -193,9 +168,7 @@ static int cst3xx_firmware_info(struct i2c_client *client)
 		return -ENODEV;
 	}
 
-	/*
-	 * Tests suggest cmd required to exit reading firmware regs.
-	 */
+	 
 	put_unaligned_le16(CST3XX_FIRMWARE_INFO_END_CMD, buf);
 	err = cst3xx_i2c_write(client, buf, 2);
 	if (err)
@@ -215,7 +188,7 @@ static int cst3xx_bootloader_enter(struct i2c_client *client)
 
 	for (retry = 0; retry < 5; retry++) {
 		hyn_reset_proc(client, (7 + retry));
-		/* set cmd to enter program mode */
+		 
 		put_unaligned_le24(CST3XX_BOOTLDR_PROG_CMD, buf);
 		err = cst3xx_i2c_write(client, buf, 3);
 		if (err)
@@ -223,7 +196,7 @@ static int cst3xx_bootloader_enter(struct i2c_client *client)
 
 		usleep_range(2000, 2500);
 
-		/* check whether in program mode */
+		 
 		err = cst3xx_i2c_read_register(client,
 					       CST3XX_BOOTLDR_PROG_CHK_REG,
 					       buf, 1);
@@ -271,21 +244,7 @@ static int cst3xx_finish_touch_read(struct i2c_client *client)
 	return 0;
 }
 
-/*
- * Handle events from IRQ. Note that for cst3xx it appears that IRQ
- * fires continuously while touched, otherwise once every 1500ms
- * when not touched (assume touchscreen waking up periodically).
- * Note buffer is sized for 5 fingers, if more needed buffer must
- * be increased. The buffer contains 5 bytes for each touch point,
- * a touch count byte, a check byte, and then a second check byte after
- * all other touch points.
- *
- * For example 1 touch would look like this:
- * touch1[5]:touch_count[1]:chk_byte[1]
- *
- * 3 touches would look like this:
- * touch1[5]:touch_count[1]:chk_byte[1]:touch2[5]:touch3[5]:chk_byte[1]
- */
+ 
 static void cst3xx_touch_report(struct i2c_client *client)
 {
 	struct hynitron_ts_data *ts_data = i2c_get_clientdata(client);
@@ -297,7 +256,7 @@ static void cst3xx_touch_report(struct i2c_client *client)
 	unsigned int i;
 	int err;
 
-	/* Read and validate the first bits of input data. */
+	 
 	err = cst3xx_i2c_read_register(client, CST3XX_TOUCH_DATA_PART_REG,
 				       buf, 28);
 	if (err ||
@@ -307,17 +266,13 @@ static void cst3xx_touch_report(struct i2c_client *client)
 		return;
 	}
 
-	/* Report to the device we're done reading the touch data. */
+	 
 	err = cst3xx_finish_touch_read(client);
 	if (err)
 		return;
 
 	touch_cnt = buf[5] & CST3XX_TOUCH_COUNT_MASK;
-	/*
-	 * Check the check bit of the last touch slot. The check bit is
-	 * always present after touch point 1 for valid data, and then
-	 * appears as the last byte after all other touch data.
-	 */
+	 
 	if (touch_cnt > 1) {
 		end_byte = touch_cnt * 5 + 2;
 		if (buf[end_byte] != CST3XX_TOUCH_DATA_CHK_VAL) {
@@ -326,7 +281,7 @@ static void cst3xx_touch_report(struct i2c_client *client)
 		}
 	}
 
-	/* Parse through the buffer to capture touch data. */
+	 
 	for (i = 0; i < touch_cnt; i++) {
 		x = ((buf[idx + 1] << 4) | ((buf[idx + 3] >> 4) & 0x0f));
 		y = ((buf[idx + 2] << 4) | (buf[idx + 3] & 0x0f));
@@ -334,19 +289,19 @@ static void cst3xx_touch_report(struct i2c_client *client)
 		sw = (buf[idx] & 0x0f) >> 1;
 		finger_id = (buf[idx] >> 4) & 0x0f;
 
-		/* Sanity check we don't have more fingers than we expect */
+		 
 		if (ts_data->chip->max_touch_num < finger_id) {
 			dev_err(&client->dev, "cst3xx touch read failure\n");
 			break;
 		}
 
-		/* sw value of 0 means no touch, 0x03 means touch */
+		 
 		if (sw == CST3XX_TOUCH_DATA_TOUCH_VAL)
 			cst3xx_report_contact(ts_data, finger_id, x, y, w);
 
 		idx += 5;
 
-		/* Skip the 2 bytes between point 1 and point 2 */
+		 
 		if (i == 0)
 			idx += 2;
 	}
@@ -471,13 +426,13 @@ static const struct hynitron_ts_chip_data cst3xx_data = {
 
 static const struct i2c_device_id hyn_tpd_id[] = {
 	{ .name = "hynitron_ts", 0 },
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(i2c, hyn_tpd_id);
 
 static const struct of_device_id hyn_dt_match[] = {
 	{ .compatible = "hynitron,cst340", .data = &cst3xx_data },
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, hyn_dt_match);
 

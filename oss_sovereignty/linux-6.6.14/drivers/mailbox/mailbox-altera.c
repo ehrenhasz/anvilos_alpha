@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright Altera Corporation (C) 2013-2014. All rights reserved
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/interrupt.h>
@@ -34,17 +32,17 @@ enum altera_mbox_msg {
 	MBOX_PTR,
 };
 
-#define MBOX_POLLING_MS		5	/* polling interval 5ms */
+#define MBOX_POLLING_MS		5	 
 
 struct altera_mbox {
-	bool is_sender;		/* 1-sender, 0-receiver */
+	bool is_sender;		 
 	bool intr_mode;
 	int irq;
 	void __iomem *mbox_base;
 	struct device *dev;
 	struct mbox_controller controller;
 
-	/* If the controller supports only RX polling mode */
+	 
 	struct timer_list rxpoll_timer;
 	struct mbox_chan *chan;
 };
@@ -100,14 +98,12 @@ static void altera_mbox_tx_intmask(struct altera_mbox *mbox, bool enable)
 static bool altera_mbox_is_sender(struct altera_mbox *mbox)
 {
 	u32 reg;
-	/* Write a magic number to PTR register and read back this register.
-	 * This register is read-write if it is a sender.
-	 */
+	 
 	#define MBOX_MAGIC	0xA5A5AA55
 	writel_relaxed(MBOX_MAGIC, mbox->mbox_base + MAILBOX_PTR_REG);
 	reg = readl_relaxed(mbox->mbox_base + MAILBOX_PTR_REG);
 	if (reg == MBOX_MAGIC) {
-		/* Clear to 0 */
+		 
 		writel_relaxed(0, mbox->mbox_base + MAILBOX_PTR_REG);
 		return true;
 	}
@@ -186,7 +182,7 @@ static int altera_mbox_startup_receiver(struct mbox_chan *chan)
 				  DRIVER_NAME, chan);
 		if (unlikely(ret)) {
 			mbox->intr_mode = false;
-			goto polling; /* use polling if failed */
+			goto polling;  
 		}
 
 		altera_mbox_rx_intmask(mbox, true);
@@ -194,7 +190,7 @@ static int altera_mbox_startup_receiver(struct mbox_chan *chan)
 	}
 
 polling:
-	/* Setup polling timer */
+	 
 	mbox->chan = chan;
 	timer_setup(&mbox->rxpoll_timer, altera_mbox_poll_rx, 0);
 	mod_timer(&mbox->rxpoll_timer,
@@ -219,11 +215,11 @@ static int altera_mbox_send_data(struct mbox_chan *chan, void *data)
 	if (altera_mbox_full(mbox))
 		return -EBUSY;
 
-	/* Enable interrupt before send */
+	 
 	if (mbox->intr_mode)
 		altera_mbox_tx_intmask(mbox, true);
 
-	/* Pointer register must write before command register */
+	 
 	writel_relaxed(udata[MBOX_PTR], mbox->mbox_base + MAILBOX_PTR_REG);
 	writel_relaxed(udata[MBOX_CMD], mbox->mbox_base + MAILBOX_CMD_REG);
 
@@ -234,7 +230,7 @@ static bool altera_mbox_last_tx_done(struct mbox_chan *chan)
 {
 	struct altera_mbox *mbox = mbox_chan_to_altera_mbox(chan);
 
-	/* Return false if mailbox is full */
+	 
 	return altera_mbox_full(mbox) ? false : true;
 }
 
@@ -266,7 +262,7 @@ static void altera_mbox_shutdown(struct mbox_chan *chan)
 	struct altera_mbox *mbox = mbox_chan_to_altera_mbox(chan);
 
 	if (mbox->intr_mode) {
-		/* Unmask all interrupt masks */
+		 
 		writel_relaxed(~0, mbox->mbox_base + MAILBOX_INTMASK_REG);
 		free_irq(mbox->irq, chan);
 	} else if (!mbox->is_sender) {
@@ -293,7 +289,7 @@ static int altera_mbox_probe(struct platform_device *pdev)
 	if (!mbox)
 		return -ENOMEM;
 
-	/* Allocated one channel */
+	 
 	chans = devm_kzalloc(&pdev->dev, sizeof(*chans), GFP_KERNEL);
 	if (!chans)
 		return -ENOMEM;
@@ -302,7 +298,7 @@ static int altera_mbox_probe(struct platform_device *pdev)
 	if (IS_ERR(mbox->mbox_base))
 		return PTR_ERR(mbox->mbox_base);
 
-	/* Check is it a sender or receiver? */
+	 
 	mbox->is_sender = altera_mbox_is_sender(mbox);
 
 	mbox->irq = platform_get_irq(pdev, 0);
@@ -311,7 +307,7 @@ static int altera_mbox_probe(struct platform_device *pdev)
 
 	mbox->dev = &pdev->dev;
 
-	/* Hardware supports only one channel. */
+	 
 	chans[0].con_priv = mbox;
 	mbox->controller.dev = mbox->dev;
 	mbox->controller.num_chans = 1;
@@ -340,7 +336,7 @@ err:
 
 static const struct of_device_id altera_mbox_match[] = {
 	{ .compatible = "altr,mailbox-1.0" },
-	{ /* Sentinel */ }
+	{   }
 };
 
 MODULE_DEVICE_TABLE(of, altera_mbox_match);

@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Allwinner EMAC MDIO interface driver
- *
- * Copyright 2012-2013 Stefan Roese <sr@denx.de>
- * Copyright 2013 Maxime Ripard <maxime.ripard@free-electrons.com>
- *
- * Based on the Linux driver provided by Allwinner:
- * Copyright (C) 1997  Sten Wang
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/kernel.h>
@@ -39,12 +31,12 @@ static int sun4i_mdio_read(struct mii_bus *bus, int mii_id, int regnum)
 	unsigned long timeout_jiffies;
 	int value;
 
-	/* issue the phy address and reg */
+	 
 	writel((mii_id << 8) | regnum, data->membase + EMAC_MAC_MADR_REG);
-	/* pull up the phy io line */
+	 
 	writel(0x1, data->membase + EMAC_MAC_MCMD_REG);
 
-	/* Wait read complete */
+	 
 	timeout_jiffies = jiffies + MDIO_TIMEOUT;
 	while (readl(data->membase + EMAC_MAC_MIND_REG) & 0x1) {
 		if (time_is_before_jiffies(timeout_jiffies))
@@ -52,9 +44,9 @@ static int sun4i_mdio_read(struct mii_bus *bus, int mii_id, int regnum)
 		msleep(1);
 	}
 
-	/* push down the phy io line */
+	 
 	writel(0x0, data->membase + EMAC_MAC_MCMD_REG);
-	/* and read data */
+	 
 	value = readl(data->membase + EMAC_MAC_MRDD_REG);
 
 	return value;
@@ -66,12 +58,12 @@ static int sun4i_mdio_write(struct mii_bus *bus, int mii_id, int regnum,
 	struct sun4i_mdio_data *data = bus->priv;
 	unsigned long timeout_jiffies;
 
-	/* issue the phy address and reg */
+	 
 	writel((mii_id << 8) | regnum, data->membase + EMAC_MAC_MADR_REG);
-	/* pull up the phy io line */
+	 
 	writel(0x1, data->membase + EMAC_MAC_MCMD_REG);
 
-	/* Wait read complete */
+	 
 	timeout_jiffies = jiffies + MDIO_TIMEOUT;
 	while (readl(data->membase + EMAC_MAC_MIND_REG) & 0x1) {
 		if (time_is_before_jiffies(timeout_jiffies))
@@ -79,9 +71,9 @@ static int sun4i_mdio_write(struct mii_bus *bus, int mii_id, int regnum,
 		msleep(1);
 	}
 
-	/* push down the phy io line */
+	 
 	writel(0x0, data->membase + EMAC_MAC_MCMD_REG);
-	/* and write data */
+	 
 	writel(value, data->membase + EMAC_MAC_MWTD_REG);
 
 	return 0;
@@ -158,7 +150,7 @@ static int sun4i_mdio_remove(struct platform_device *pdev)
 static const struct of_device_id sun4i_mdio_dt_ids[] = {
 	{ .compatible = "allwinner,sun4i-a10-mdio" },
 
-	/* Deprecated */
+	 
 	{ .compatible = "allwinner,sun4i-mdio" },
 	{ }
 };

@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only OR BSD-3-Clause
-/* Copyright (C) 2022 NVIDIA CORPORATION & AFFILIATES */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/bitops.h>
@@ -104,13 +104,7 @@ static const struct pinctrl_pin_desc mlxbf3_pins[] = {
 	PINCTRL_PIN(55, "gpio55"),
 };
 
-/*
- * All single-pin functions can be mapped to any GPIO, however pinmux applies
- * functions to pin groups and only those groups declared as supporting that
- * function. To make this work we must put each pin in its own dummy group so
- * that the functions can be described as applying to all pins.
- * We use the same name as in the datasheet.
- */
+ 
 static const char * const mlxbf3_pinctrl_single_group_names[] = {
 	"gpio0", "gpio1",  "gpio2",  "gpio3",  "gpio4",  "gpio5",  "gpio6", "gpio7",
 	"gpio8",  "gpio9",  "gpio10", "gpio11", "gpio12", "gpio13", "gpio14", "gpio15",
@@ -123,7 +117,7 @@ static const char * const mlxbf3_pinctrl_single_group_names[] = {
 
 static int mlxbf3_get_groups_count(struct pinctrl_dev *pctldev)
 {
-	/* Number single-pin groups */
+	 
 	return MLXBF3_MAX_GPIO_PINS;
 }
 
@@ -138,7 +132,7 @@ static int mlxbf3_get_group_pins(struct pinctrl_dev *pctldev,
 				 const unsigned int **pins,
 				 unsigned int *num_pins)
 {
-	/* return the dummy group for a single pin */
+	 
 	*pins = &selector;
 	*num_pins = 1;
 
@@ -151,11 +145,7 @@ static const struct pinctrl_ops mlxbf3_pinctrl_group_ops = {
 	.get_group_pins = mlxbf3_get_group_pins,
 };
 
-/*
- * Only 2 functions are supported and they apply to all pins:
- * 1) Default hardware functionality
- * 2) Software controlled GPIO
- */
+ 
 static const char * const mlxbf3_gpiofunc_group_names[] = { "swctrl" };
 static const char * const mlxbf3_hwfunc_group_names[]   = { "hwctrl" };
 

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <inttypes.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -138,7 +138,7 @@ static int bench__do_evlist_open_close(struct evlist *evlist)
 
 static int bench_evlist_open_close__run(char *evstr)
 {
-	// used to print statistics only
+	
 	struct evlist *evlist = bench__create_evlist(evstr);
 	double time_average, time_stddev;
 	struct timeval start, end, diff;
@@ -248,7 +248,7 @@ int bench_evlist_open_close(int argc, const char **argv)
 		goto out;
 	}
 
-	/* Enable ignoring missing threads when -u/-p option is defined. */
+	 
 	opts.ignore_missing_thread = opts.target.uid != UINT_MAX || opts.target.pid;
 
 	evstr = bench__repeat_event_string(event_string, nr_events);

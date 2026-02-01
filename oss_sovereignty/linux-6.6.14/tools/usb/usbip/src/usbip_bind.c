@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2011 matt mooney <mfm@muteddisk.com>
- *               2005-2007 Takahiro Hirofuchi
- */
+
+ 
 
 #include <libudev.h>
 
@@ -34,7 +31,7 @@ void usbip_bind_usage(void)
 	printf("usage: %s", usbip_bind_usage_string);
 }
 
-/* call at unbound state */
+ 
 static int bind_usbip(char *busid)
 {
 	char attr_name[] = "bind";
@@ -55,7 +52,7 @@ static int bind_usbip(char *busid)
 	return 0;
 }
 
-/* buggy driver may cause dead lock */
+ 
 static int unbind_other(char *busid)
 {
 	enum unbind_status status = UNBIND_ST_OK;
@@ -69,17 +66,17 @@ static int unbind_other(char *busid)
 	const char *driver;
 	const char *bDevClass;
 
-	/* Create libudev context. */
+	 
 	udev = udev_new();
 
-	/* Get the device. */
+	 
 	dev = udev_device_new_from_subsystem_sysname(udev, "usb", busid);
 	if (!dev) {
 		dbg("unable to find device with bus ID %s", busid);
 		goto err_close_busid_dev;
 	}
 
-	/* Check what kind of device it is. */
+	 
 	bDevClass  = udev_device_get_sysattr_value(dev, "bDeviceClass");
 	if (!bDevClass) {
 		dbg("unable to get bDevClass device attribute");
@@ -91,21 +88,21 @@ static int unbind_other(char *busid)
 		goto err_close_busid_dev;
 	}
 
-	/* Get the device driver. */
+	 
 	driver = udev_device_get_driver(dev);
 	if (!driver) {
-		/* No driver bound to this device. */
+		 
 		goto out;
 	}
 
 	if (!strncmp(USBIP_HOST_DRV_NAME, driver,
 				strlen(USBIP_HOST_DRV_NAME))) {
-		/* Already bound to usbip-host. */
+		 
 		status = UNBIND_ST_USBIP_HOST;
 		goto out;
 	}
 
-	/* Unbind device from driver. */
+	 
 	snprintf(unbind_attr_path, sizeof(unbind_attr_path), "%s/%s/%s/%s/%s/%s",
 		 SYSFS_MNT_PATH, SYSFS_BUS_NAME, SYSFS_BUS_TYPE,
 		 SYSFS_DRIVERS_NAME, driver, attr_name);
@@ -134,7 +131,7 @@ static int bind_device(char *busid)
 	struct udev_device *dev;
 	const char *devpath;
 
-	/* Check whether the device with this bus ID exists. */
+	 
 	udev = udev_new();
 	dev = udev_device_new_from_subsystem_sysname(udev, "usb", busid);
 	if (!dev) {
@@ -144,7 +141,7 @@ static int bind_device(char *busid)
 	devpath = udev_device_get_devpath(dev);
 	udev_unref(udev);
 
-	/* If the device is already attached to vhci_hcd - bail out */
+	 
 	if (strstr(devpath, USBIP_VHCI_DRV_NAME)) {
 		err("bind loop detected: device: %s is attached to %s\n",
 		    devpath, USBIP_VHCI_DRV_NAME);

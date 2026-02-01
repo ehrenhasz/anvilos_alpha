@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * VFIO PCI mmap/mmap_fault tracepoints
- *
- * Copyright (C) 2018 IBM Corp.  All rights reserved.
- *     Author: Alexey Kardashevskiy <aik@ozlabs.ru>
- */
+ 
+ 
 
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM vfio_pci
@@ -87,12 +82,12 @@ TRACE_EVENT(vfio_pci_npu2_mmap,
 			__entry->ua, __entry->size, __entry->ret)
 );
 
-#endif /* _TRACE_VFIO_PCI_H */
+#endif  
 
 #undef TRACE_INCLUDE_PATH
 #define TRACE_INCLUDE_PATH ../../drivers/vfio/pci
 #undef TRACE_INCLUDE_FILE
 #define TRACE_INCLUDE_FILE trace
 
-/* This part must be outside protection */
+ 
 #include <trace/define_trace.h>

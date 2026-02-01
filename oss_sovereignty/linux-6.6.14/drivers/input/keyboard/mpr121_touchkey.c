@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Touchkey driver for Freescale MPR121 Controllor
- *
- * Copyright (C) 2011 Freescale Semiconductor, Inc.
- * Author: Zhang Jiejing <jiejing.zhang@freescale.com>
- *
- * Based on mcs_touchkey.c
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/delay.h>
@@ -19,7 +12,7 @@
 #include <linux/regulator/consumer.h>
 #include <linux/slab.h>
 
-/* Register definitions */
+ 
 #define ELE_TOUCH_STATUS_0_ADDR	0x0
 #define ELE_TOUCH_STATUS_1_ADDR	0X1
 #define MHD_RISING_ADDR		0x2b
@@ -35,10 +28,7 @@
 #define AFE_CONF_ADDR			0x5c
 #define FILTER_CONF_ADDR		0x5d
 
-/*
- * ELECTRODE_CONF_ADDR: This register configures the number of
- * enabled capacitance sensing inputs and its run/suspend mode.
- */
+ 
 #define ELECTRODE_CONF_ADDR		0x5e
 #define ELECTRODE_CONF_QUICK_CHARGE	0x80
 #define AUTO_CONFIG_CTRL_ADDR		0x7b
@@ -46,12 +36,12 @@
 #define AUTO_CONFIG_LSL_ADDR		0x7e
 #define AUTO_CONFIG_TL_ADDR		0x7f
 
-/* Threshold of touch/release trigger */
+ 
 #define TOUCH_THRESHOLD			0x08
 #define RELEASE_THRESHOLD		0x05
-/* Masks for touch and release triggers */
+ 
 #define TOUCH_STATUS_MASK		0xfff
-/* MPR121 has 12 keys */
+ 
 #define MPR121_MAX_KEY_COUNT		12
 
 #define MPR121_MIN_POLL_INTERVAL	10
@@ -141,7 +131,7 @@ static void mpr_touchkey_report(struct input_dev *dev)
 	}
 
 	reg &= TOUCH_STATUS_MASK;
-	/* use old press bit to figure out which bit changed */
+	 
 	bit_changed = reg ^ mpr121->statusbits;
 	mpr121->statusbits = reg;
 	for_each_set_bit(key_num, &bit_changed, mpr121->keycount) {
@@ -176,7 +166,7 @@ static int mpr121_phys_init(struct mpr121_touchkey *mpr121,
 	unsigned char usl, lsl, tl, eleconf;
 	int i, t, vdd, ret;
 
-	/* Set up touch/release threshold for ele0-ele11 */
+	 
 	for (i = 0; i <= MPR121_MAX_KEY_COUNT; i++) {
 		t = ELE0_TOUCH_THRESHOLD_ADDR + (i * 2);
 		ret = i2c_smbus_write_byte_data(client, t, TOUCH_THRESHOLD);
@@ -188,7 +178,7 @@ static int mpr121_phys_init(struct mpr121_touchkey *mpr121,
 			goto err_i2c_write;
 	}
 
-	/* Set up init register */
+	 
 	for (i = 0; i < ARRAY_SIZE(init_reg_table); i++) {
 		reg = &init_reg_table[i];
 		ret = i2c_smbus_write_byte_data(client, reg->addr, reg->val);
@@ -197,11 +187,7 @@ static int mpr121_phys_init(struct mpr121_touchkey *mpr121,
 	}
 
 
-	/*
-	 * Capacitance on sensing input varies and needs to be compensated.
-	 * The internal MPR121-auto-configuration can do this if it's
-	 * registers are set properly (based on vdd_uv).
-	 */
+	 
 	vdd = vdd_uv / 1000;
 	usl = ((vdd - 700) * 256) / vdd;
 	lsl = (usl * 65) / 100;
@@ -210,11 +196,7 @@ static int mpr121_phys_init(struct mpr121_touchkey *mpr121,
 	ret |= i2c_smbus_write_byte_data(client, AUTO_CONFIG_LSL_ADDR, lsl);
 	ret |= i2c_smbus_write_byte_data(client, AUTO_CONFIG_TL_ADDR, tl);
 
-	/*
-	 * Quick charge bit will let the capacitive charge to ready
-	 * state quickly, or the buttons may not function after system
-	 * boot.
-	 */
+	 
 	eleconf = mpr121->keycount | ELECTRODE_CONF_QUICK_CHARGE;
 	ret |= i2c_smbus_write_byte_data(client, ELECTRODE_CONF_ADDR,
 					 eleconf);

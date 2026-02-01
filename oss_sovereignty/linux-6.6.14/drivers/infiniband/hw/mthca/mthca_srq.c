@@ -1,34 +1,4 @@
-/*
- * Copyright (c) 2005 Cisco Systems. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 
 #include <linux/slab.h>
 #include <linux/string.h>
@@ -48,7 +18,7 @@ enum {
 };
 
 struct mthca_tavor_srq_context {
-	__be64 wqe_base_ds;	/* low 6 bits is descriptor size */
+	__be64 wqe_base_ds;	 
 	__be32 state_pd;
 	__be32 lkey;
 	__be32 uar;
@@ -80,15 +50,7 @@ static void *get_wqe(struct mthca_srq *srq, int n)
 			((n << srq->wqe_shift) & (PAGE_SIZE - 1));
 }
 
-/*
- * Return a pointer to the location within a WQE that we're using as a
- * link when the WQE is in the free list.  We use the imm field
- * because in the Tavor case, posting a WQE may overwrite the next
- * segment of the previous WQE, but a receive WQE will never touch the
- * imm field.  This avoids corrupting our free list if the previous
- * WQE has already completed and been put on the free list when we
- * post the next WQE.
- */
+ 
 static inline int *wqe_to_link(void *wqe)
 {
 	return (int *) (wqe + offsetof(struct mthca_next_seg, imm));
@@ -127,10 +89,7 @@ static void mthca_arbel_init_srq_context(struct mthca_dev *dev,
 
 	memset(context, 0, sizeof *context);
 
-	/*
-	 * Put max in a temporary variable to work around gcc bug
-	 * triggered by ilog2() on sparc64.
-	 */
+	 
 	max = srq->max;
 	logsize = ilog2(max);
 	context->state_logsize_srqn = cpu_to_be32(logsize << 24 | srq->srqn);
@@ -174,11 +133,7 @@ static int mthca_alloc_srq_buf(struct mthca_dev *dev, struct mthca_pd *pd,
 		return err;
 	}
 
-	/*
-	 * Now initialize the SRQ buffer so that all of the WQEs are
-	 * linked into the list of free WQEs.  In addition, set the
-	 * scatter list L_Keys to the sentry value of 0x100.
-	 */
+	 
 	for (i = 0; i < srq->max; ++i) {
 		struct mthca_next_seg *next;
 
@@ -211,7 +166,7 @@ int mthca_alloc_srq(struct mthca_dev *dev, struct mthca_pd *pd,
 	int ds;
 	int err;
 
-	/* Sanity check SRQ size before proceeding */
+	 
 	if (attr->max_wr  > dev->limits.max_srq_wqes ||
 	    attr->max_sge > dev->limits.max_srq_sge)
 		return -EINVAL;
@@ -376,7 +331,7 @@ int mthca_modify_srq(struct ib_srq *ibsrq, struct ib_srq_attr *attr,
 	struct mthca_srq *srq = to_msrq(ibsrq);
 	int ret = 0;
 
-	/* We don't support resizing SRQs (yet?) */
+	 
 	if (attr_mask & IB_SRQ_MAX_WR)
 		return -EINVAL;
 
@@ -459,9 +414,7 @@ out:
 	spin_unlock(&dev->srq_table.lock);
 }
 
-/*
- * This function must be called with IRQs disabled.
- */
+ 
 void mthca_free_srq_wqe(struct mthca_srq *srq, u32 wqe_addr)
 {
 	int ind;
@@ -515,7 +468,7 @@ int mthca_tavor_post_srq_recv(struct ib_srq *ibsrq, const struct ib_recv_wr *wr,
 		srq->last = wqe;
 
 		((struct mthca_next_seg *) wqe)->ee_nds = 0;
-		/* flags field will always remain 0 */
+		 
 
 		wqe += sizeof (struct mthca_next_seg);
 
@@ -544,10 +497,7 @@ int mthca_tavor_post_srq_recv(struct ib_srq *ibsrq, const struct ib_recv_wr *wr,
 		if (unlikely(nreq == MTHCA_TAVOR_MAX_WQES_PER_RECV_DB)) {
 			nreq = 0;
 
-			/*
-			 * Make sure that descriptors are written
-			 * before doorbell is rung.
-			 */
+			 
 			wmb();
 
 			mthca_write64(first_ind << srq->wqe_shift, srq->srqn << 8,
@@ -559,10 +509,7 @@ int mthca_tavor_post_srq_recv(struct ib_srq *ibsrq, const struct ib_recv_wr *wr,
 	}
 
 	if (likely(nreq)) {
-		/*
-		 * Make sure that descriptors are written before
-		 * doorbell is rung.
-		 */
+		 
 		wmb();
 
 		mthca_write64(first_ind << srq->wqe_shift, (srq->srqn << 8) | nreq,
@@ -602,7 +549,7 @@ int mthca_arbel_post_srq_recv(struct ib_srq *ibsrq, const struct ib_recv_wr *wr,
 		}
 
 		((struct mthca_next_seg *) wqe)->ee_nds = 0;
-		/* flags field will always remain 0 */
+		 
 
 		wqe += sizeof (struct mthca_next_seg);
 
@@ -627,10 +574,7 @@ int mthca_arbel_post_srq_recv(struct ib_srq *ibsrq, const struct ib_recv_wr *wr,
 	if (likely(nreq)) {
 		srq->counter += nreq;
 
-		/*
-		 * Make sure that descriptors are written before
-		 * we write doorbell record.
-		 */
+		 
 		wmb();
 		*srq->db = cpu_to_be32(srq->counter);
 	}
@@ -644,20 +588,7 @@ int mthca_max_srq_sge(struct mthca_dev *dev)
 	if (mthca_is_memfree(dev))
 		return dev->limits.max_sg;
 
-	/*
-	 * SRQ allocations are based on powers of 2 for Tavor,
-	 * (although they only need to be multiples of 16 bytes).
-	 *
-	 * Therefore, we need to base the max number of sg entries on
-	 * the largest power of 2 descriptor size that is <= to the
-	 * actual max WQE descriptor size, rather than return the
-	 * max_sg value given by the firmware (which is based on WQE
-	 * sizes as multiples of 16, not powers of 2).
-	 *
-	 * If SRQ implementation is changed for Tavor to be based on
-	 * multiples of 16, the calculation below can be deleted and
-	 * the FW max_sg value returned.
-	 */
+	 
 	return min_t(int, dev->limits.max_sg,
 		     ((1 << (fls(dev->limits.max_desc_sz) - 1)) -
 		      sizeof (struct mthca_next_seg)) /

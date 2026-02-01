@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copyright (C) 2016 IBM Corp.
- */
+ 
+ 
 
 #ifndef PINCTRL_ASPEED
 #define PINCTRL_ASPEED
@@ -14,12 +12,7 @@
 
 #include "pinmux-aspeed.h"
 
-/**
- * @param The pinconf parameter type
- * @pins The pin range this config struct covers, [low, high]
- * @reg The register housing the configuration bits
- * @mask The mask to select the bits of interest in @reg
- */
+ 
 struct aspeed_pin_config {
 	enum pin_config_param param;
 	unsigned int pins[2];
@@ -48,17 +41,7 @@ struct aspeed_pin_config {
 #define ASPEED_PULL_UP_PINCONF(pin_, reg_, bit_) \
 	ASPEED_SB_PINCONF(PIN_CONFIG_BIAS_PULL_UP, pin_, pin_, reg_, bit_), \
 	ASPEED_SB_PINCONF(PIN_CONFIG_BIAS_DISABLE, pin_, pin_, reg_, bit_)
-/*
- * Aspeed pin configuration description.
- *
- * @param: pinconf configuration parameter
- * @arg: The supported argument for @param, or -1 if any value is supported
- * @val: The register value to write to configure @arg for @param
- * @mask: The bitfield mask for @val
- *
- * The map is to be used in conjunction with the configuration array supplied
- * by the driver implementation.
- */
+ 
 struct aspeed_pin_config_map {
 	enum pin_config_param param;
 	s32 arg;
@@ -81,7 +64,7 @@ struct aspeed_pinctrl_data {
 	const unsigned int nconfmaps;
 };
 
-/* Aspeed pinctrl helpers */
+ 
 int aspeed_pinctrl_get_groups_count(struct pinctrl_dev *pctldev);
 const char *aspeed_pinctrl_get_group_name(struct pinctrl_dev *pctldev,
 		unsigned int group);
@@ -116,4 +99,4 @@ int aspeed_pin_config_group_set(struct pinctrl_dev *pctldev,
 		unsigned long *configs,
 		unsigned int num_configs);
 
-#endif /* PINCTRL_ASPEED */
+#endif  

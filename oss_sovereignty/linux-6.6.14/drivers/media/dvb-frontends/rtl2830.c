@@ -1,13 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Realtek RTL2830 DVB-T demodulator driver
- *
- * Copyright (C) 2011 Antti Palosaari <crope@iki.fi>
- */
+
+ 
 
 #include "rtl2830_priv.h"
 
-/* Our regmap is bypassing I2C adapter lock, thus we do it! */
+ 
 static int rtl2830_bulk_write(struct i2c_client *client, unsigned int reg,
 			      const void *val, size_t val_count)
 {
@@ -105,9 +101,9 @@ static int rtl2830_init(struct dvb_frontend *fe)
 	if (ret)
 		goto err;
 
-	/* TODO: spec init */
+	 
 
-	/* soft reset */
+	 
 	ret = rtl2830_update_bits(client, 0x101, 0x04, 0x04);
 	if (ret)
 		goto err;
@@ -116,7 +112,7 @@ static int rtl2830_init(struct dvb_frontend *fe)
 	if (ret)
 		goto err;
 
-	/* init stats here in order signal app which stats are supported */
+	 
 	c->strength.len = 1;
 	c->strength.stat[0].scale = FE_SCALE_NOT_AVAILABLE;
 	c->cnr.len = 1;
@@ -169,29 +165,29 @@ static int rtl2830_set_frontend(struct dvb_frontend *fe)
 		0x1f, 0xf0, 0x1f, 0xf0, 0x1f, 0xfa, 0x00, 0x17, 0x00, 0x41,
 		0x00, 0x64, 0x00, 0x67, 0x00, 0x38, 0x1f, 0xde, 0x1f, 0x7a,
 		0x1f, 0x47, 0x1f, 0x7c, 0x00, 0x30, 0x01, 0x4b, 0x02, 0x82,
-		0x03, 0x73, 0x03, 0xcf, /* 6 MHz */
+		0x03, 0x73, 0x03, 0xcf,  
 		}, {
 		0x1f, 0xfa, 0x1f, 0xda, 0x1f, 0xc1, 0x1f, 0xb3, 0x1f, 0xca,
 		0x00, 0x07, 0x00, 0x4d, 0x00, 0x6d, 0x00, 0x40, 0x1f, 0xca,
 		0x1f, 0x4d, 0x1f, 0x2a, 0x1f, 0xb2, 0x00, 0xec, 0x02, 0x7e,
-		0x03, 0xd0, 0x04, 0x53, /* 7 MHz */
+		0x03, 0xd0, 0x04, 0x53,  
 		}, {
 		0x00, 0x10, 0x00, 0x0e, 0x1f, 0xf7, 0x1f, 0xc9, 0x1f, 0xa0,
 		0x1f, 0xa6, 0x1f, 0xec, 0x00, 0x4e, 0x00, 0x7d, 0x00, 0x3a,
 		0x1f, 0x98, 0x1f, 0x10, 0x1f, 0x40, 0x00, 0x75, 0x02, 0x5f,
-		0x04, 0x24, 0x04, 0xdb, /* 8 MHz */
+		0x04, 0x24, 0x04, 0xdb,  
 		},
 	};
 	static const u8 bw_params2[3][6] = {
-		{0xc3, 0x0c, 0x44, 0x33, 0x33, 0x30}, /* 6 MHz */
-		{0xb8, 0xe3, 0x93, 0x99, 0x99, 0x98}, /* 7 MHz */
-		{0xae, 0xba, 0xf3, 0x26, 0x66, 0x64}, /* 8 MHz */
+		{0xc3, 0x0c, 0x44, 0x33, 0x33, 0x30},  
+		{0xb8, 0xe3, 0x93, 0x99, 0x99, 0x98},  
+		{0xae, 0xba, 0xf3, 0x26, 0x66, 0x64},  
 	};
 
 	dev_dbg(&client->dev, "frequency=%u bandwidth_hz=%u inversion=%u\n",
 		c->frequency, c->bandwidth_hz, c->inversion);
 
-	/* program tuner */
+	 
 	if (fe->ops.tuner_ops.set_params)
 		fe->ops.tuner_ops.set_params(fe);
 
@@ -215,7 +211,7 @@ static int rtl2830_set_frontend(struct dvb_frontend *fe)
 	if (ret)
 		goto err;
 
-	/* program if frequency */
+	 
 	if (fe->ops.tuner_ops.get_if_frequency)
 		ret = fe->ops.tuner_ops.get_if_frequency(fe, &if_frequency);
 	else
@@ -239,18 +235,18 @@ static int rtl2830_set_frontend(struct dvb_frontend *fe)
 	if (ret)
 		goto err;
 
-	buf[0] |= u8tmp & 0xc0;  /* [7:6] */
+	buf[0] |= u8tmp & 0xc0;   
 
 	ret = rtl2830_bulk_write(client, 0x119, buf, 3);
 	if (ret)
 		goto err;
 
-	/* 1/2 split I2C write */
+	 
 	ret = rtl2830_bulk_write(client, 0x11c, &bw_params1[i][0], 17);
 	if (ret)
 		goto err;
 
-	/* 2/2 split I2C write */
+	 
 	ret = rtl2830_bulk_write(client, 0x12d, &bw_params1[i][17], 17);
 	if (ret)
 		goto err;
@@ -396,7 +392,7 @@ static int rtl2830_read_status(struct dvb_frontend *fe, enum fe_status *status)
 	if (ret)
 		goto err;
 
-	u8tmp = (u8tmp >> 3) & 0x0f; /* [6:3] */
+	u8tmp = (u8tmp >> 3) & 0x0f;  
 	if (u8tmp == 11) {
 		*status |= FE_HAS_SIGNAL | FE_HAS_CARRIER |
 			FE_HAS_VITERBI | FE_HAS_SYNC | FE_HAS_LOCK;
@@ -407,9 +403,9 @@ static int rtl2830_read_status(struct dvb_frontend *fe, enum fe_status *status)
 
 	dev->fe_status = *status;
 
-	/* Signal strength */
+	 
 	if (dev->fe_status & FE_HAS_SIGNAL) {
-		/* Read IF AGC */
+		 
 		ret = rtl2830_bulk_read(client, 0x359, buf, 2);
 		if (ret)
 			goto err;
@@ -426,7 +422,7 @@ static int rtl2830_read_status(struct dvb_frontend *fe, enum fe_status *status)
 		c->strength.stat[0].scale = FE_SCALE_NOT_AVAILABLE;
 	}
 
-	/* CNR */
+	 
 	if (dev->fe_status & FE_HAS_VITERBI) {
 		unsigned int hierarchy, constellation;
 		#define CONSTELLATION_NUM 3
@@ -441,11 +437,11 @@ static int rtl2830_read_status(struct dvb_frontend *fe, enum fe_status *status)
 		if (ret)
 			goto err;
 
-		constellation = (u8tmp >> 2) & 0x03; /* [3:2] */
+		constellation = (u8tmp >> 2) & 0x03;  
 		if (constellation > CONSTELLATION_NUM - 1)
 			goto err;
 
-		hierarchy = (u8tmp >> 4) & 0x07; /* [6:4] */
+		hierarchy = (u8tmp >> 4) & 0x07;  
 		if (hierarchy > HIERARCHY_NUM - 1)
 			goto err;
 
@@ -468,7 +464,7 @@ static int rtl2830_read_status(struct dvb_frontend *fe, enum fe_status *status)
 		c->cnr.stat[0].scale = FE_SCALE_NOT_AVAILABLE;
 	}
 
-	/* BER */
+	 
 	if (dev->fe_status & FE_HAS_LOCK) {
 		ret = rtl2830_bulk_read(client, 0x34e, buf, 2);
 		if (ret)
@@ -582,7 +578,7 @@ static int rtl2830_pid_filter_ctrl(struct dvb_frontend *fe, int onoff)
 
 	dev_dbg(&client->dev, "onoff=%d\n", onoff);
 
-	/* enable / disable PID filter */
+	 
 	if (onoff)
 		u8tmp = 0x80;
 	else
@@ -608,7 +604,7 @@ static int rtl2830_pid_filter(struct dvb_frontend *fe, u8 index, u16 pid, int on
 	dev_dbg(&client->dev, "index=%d pid=%04x onoff=%d\n",
 		index, pid, onoff);
 
-	/* skip invalid PIDs (0x2000) */
+	 
 	if (pid > 0x1fff || index > 32)
 		return 0;
 
@@ -617,7 +613,7 @@ static int rtl2830_pid_filter(struct dvb_frontend *fe, u8 index, u16 pid, int on
 	else
 		clear_bit(index, &dev->filters);
 
-	/* enable / disable PIDs */
+	 
 	buf[0] = (dev->filters >>  0) & 0xff;
 	buf[1] = (dev->filters >>  8) & 0xff;
 	buf[2] = (dev->filters >> 16) & 0xff;
@@ -626,7 +622,7 @@ static int rtl2830_pid_filter(struct dvb_frontend *fe, u8 index, u16 pid, int on
 	if (ret)
 		goto err;
 
-	/* add PID */
+	 
 	buf[0] = (pid >> 8) & 0xff;
 	buf[1] = (pid >> 0) & 0xff;
 	ret = rtl2830_bulk_write(client, 0x066 + 2 * index, buf, 2);
@@ -639,12 +635,7 @@ err:
 	return ret;
 }
 
-/*
- * I2C gate/mux/repeater logic
- * We must use unlocked __i2c_transfer() here (through regmap) because of I2C
- * adapter lock is already taken by tuner driver.
- * Gate is closed automatically after single I2C transfer.
- */
+ 
 static int rtl2830_select(struct i2c_mux_core *muxc, u32 chan_id)
 {
 	struct i2c_client *client = i2c_mux_priv(muxc);
@@ -653,8 +644,8 @@ static int rtl2830_select(struct i2c_mux_core *muxc, u32 chan_id)
 
 	dev_dbg(&client->dev, "\n");
 
-	/* open I2C repeater for 1 transfer, closes automatically */
-	/* XXX: regmap_update_bits() does not lock I2C adapter */
+	 
+	 
 	ret = regmap_update_bits(dev->regmap, 0x101, 0x08, 0x08);
 	if (ret)
 		goto err;
@@ -683,10 +674,7 @@ static struct i2c_adapter *rtl2830_get_i2c_adapter(struct i2c_client *client)
 	return dev->muxc->adapter[0];
 }
 
-/*
- * We implement own I2C access routines for regmap in order to get manual access
- * to I2C adapter lock, which is needed for I2C mux adapter.
- */
+ 
 static int rtl2830_regmap_read(void *context, const void *reg_buf,
 			       size_t reg_size, void *val_buf, size_t val_size)
 {
@@ -806,14 +794,14 @@ static int rtl2830_probe(struct i2c_client *client)
 		goto err;
 	}
 
-	/* allocate memory for the internal state */
+	 
 	dev = kzalloc(sizeof(*dev), GFP_KERNEL);
 	if (dev == NULL) {
 		ret = -ENOMEM;
 		goto err;
 	}
 
-	/* setup the state */
+	 
 	i2c_set_clientdata(client, dev);
 	dev->client = client;
 	dev->pdata = client->dev.platform_data;
@@ -825,12 +813,12 @@ static int rtl2830_probe(struct i2c_client *client)
 		goto err_kfree;
 	}
 
-	/* check if the demod is there */
+	 
 	ret = rtl2830_bulk_read(client, 0x000, &u8tmp, 1);
 	if (ret)
 		goto err_regmap_exit;
 
-	/* create muxed i2c adapter for tuner */
+	 
 	dev->muxc = i2c_mux_alloc(client->adapter, &client->dev, 1, 0, 0,
 				  rtl2830_select, NULL);
 	if (!dev->muxc) {
@@ -842,11 +830,11 @@ static int rtl2830_probe(struct i2c_client *client)
 	if (ret)
 		goto err_regmap_exit;
 
-	/* create dvb frontend */
+	 
 	memcpy(&dev->fe.ops, &rtl2830_ops, sizeof(dev->fe.ops));
 	dev->fe.demodulator_priv = client;
 
-	/* setup callbacks */
+	 
 	pdata->get_dvb_frontend = rtl2830_get_dvb_frontend;
 	pdata->get_i2c_adapter = rtl2830_get_i2c_adapter;
 	pdata->pid_filter = rtl2830_pid_filter;

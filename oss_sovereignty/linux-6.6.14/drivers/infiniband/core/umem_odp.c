@@ -1,34 +1,4 @@
-/*
- * Copyright (c) 2014 Mellanox Technologies. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 
 #include <linux/types.h>
 #include <linux/sched.h>
@@ -103,16 +73,7 @@ out_pfn_list:
 	return ret;
 }
 
-/**
- * ib_umem_odp_alloc_implicit - Allocate a parent implicit ODP umem
- *
- * Implicit ODP umems do not have a VA range and do not have any page lists.
- * They exist only to hold the per_mm reference to help the driver create
- * children umems.
- *
- * @device: IB device to create UMEM
- * @access: ib_reg_mr access flags
- */
+ 
 struct ib_umem_odp *ib_umem_odp_alloc_implicit(struct ib_device *device,
 					       int access)
 {
@@ -144,25 +105,13 @@ struct ib_umem_odp *ib_umem_odp_alloc_implicit(struct ib_device *device,
 }
 EXPORT_SYMBOL(ib_umem_odp_alloc_implicit);
 
-/**
- * ib_umem_odp_alloc_child - Allocate a child ODP umem under an implicit
- *                           parent ODP umem
- *
- * @root: The parent umem enclosing the child. This must be allocated using
- *        ib_alloc_implicit_odp_umem()
- * @addr: The starting userspace VA
- * @size: The length of the userspace VA
- * @ops: MMU interval ops, currently only @invalidate
- */
+ 
 struct ib_umem_odp *
 ib_umem_odp_alloc_child(struct ib_umem_odp *root, unsigned long addr,
 			size_t size,
 			const struct mmu_interval_notifier_ops *ops)
 {
-	/*
-	 * Caller must ensure that root cannot be freed during the call to
-	 * ib_alloc_odp_umem.
-	 */
+	 
 	struct ib_umem_odp *odp_data;
 	struct ib_umem *umem;
 	int ret;
@@ -182,10 +131,7 @@ ib_umem_odp_alloc_child(struct ib_umem_odp *root, unsigned long addr,
 	odp_data->page_shift = PAGE_SHIFT;
 	odp_data->notifier.ops = ops;
 
-	/*
-	 * A mmget must be held when registering a notifier, the owming_mm only
-	 * has a mm_grab at this point.
-	 */
+	 
 	if (!mmget_not_zero(umem->owning_mm)) {
 		ret = -EFAULT;
 		goto out_free;
@@ -207,19 +153,7 @@ out_free:
 }
 EXPORT_SYMBOL(ib_umem_odp_alloc_child);
 
-/**
- * ib_umem_odp_get - Create a umem_odp for a userspace va
- *
- * @device: IB device struct to get UMEM
- * @addr: userspace virtual address to start at
- * @size: length of region to pin
- * @access: IB_ACCESS_xxx flags for memory being pinned
- * @ops: MMU interval ops, currently only @invalidate
- *
- * The driver should use when the access flags indicate ODP memory. It avoids
- * pinning, instead, stores the mm for future page fault handling in
- * conjunction with MMU notifiers.
- */
+ 
 struct ib_umem_odp *ib_umem_odp_get(struct ib_device *device,
 				    unsigned long addr, size_t size, int access,
 				    const struct mmu_interval_notifier_ops *ops)
@@ -262,12 +196,7 @@ EXPORT_SYMBOL(ib_umem_odp_get);
 
 void ib_umem_odp_release(struct ib_umem_odp *umem_odp)
 {
-	/*
-	 * Ensure that no more pages are mapped in the umem.
-	 *
-	 * It is the driver's responsibility to ensure, before calling us,
-	 * that the hardware will not attempt to access the MR any more.
-	 */
+	 
 	if (!umem_odp->is_implicit_odp) {
 		mutex_lock(&umem_odp->umem_mutex);
 		ib_umem_odp_unmap_dma_pages(umem_odp, ib_umem_start(umem_odp),
@@ -282,17 +211,7 @@ void ib_umem_odp_release(struct ib_umem_odp *umem_odp)
 }
 EXPORT_SYMBOL(ib_umem_odp_release);
 
-/*
- * Map for DMA and insert a single page into the on-demand paging page tables.
- *
- * @umem: the umem to insert the page to.
- * @dma_index: index in the umem to add the dma to.
- * @page: the page struct to map and add.
- * @access_mask: access permissions needed for this page.
- *
- * The function returns -EFAULT if the DMA mapping operation fails.
- *
- */
+ 
 static int ib_umem_odp_map_dma_single_page(
 		struct ib_umem_odp *umem_odp,
 		unsigned int dma_index,
@@ -303,11 +222,7 @@ static int ib_umem_odp_map_dma_single_page(
 	dma_addr_t *dma_addr = &umem_odp->dma_list[dma_index];
 
 	if (*dma_addr) {
-		/*
-		 * If the page is already dma mapped it means it went through
-		 * a non-invalidating trasition, like read-only to writable.
-		 * Resync the flags.
-		 */
+		 
 		*dma_addr = (*dma_addr & ODP_DMA_ADDR_MASK) | access_mask;
 		return 0;
 	}
@@ -323,26 +238,7 @@ static int ib_umem_odp_map_dma_single_page(
 	return 0;
 }
 
-/**
- * ib_umem_odp_map_dma_and_lock - DMA map userspace memory in an ODP MR and lock it.
- *
- * Maps the range passed in the argument to DMA addresses.
- * The DMA addresses of the mapped pages is updated in umem_odp->dma_list.
- * Upon success the ODP MR will be locked to let caller complete its device
- * page table update.
- *
- * Returns the number of pages mapped in success, negative error code
- * for failure.
- * @umem_odp: the umem to map and pin
- * @user_virt: the address from which we need to map.
- * @bcnt: the minimal number of bytes to pin and map. The mapping might be
- *        bigger due to alignment, and may also be smaller in case of an error
- *        pinning or mapping a page. The actual pages mapped is returned in
- *        the return value.
- * @access_mask: bit mask of the requested access permissions for the given
- *               range.
- * @fault: is faulting required for the given range
- */
+ 
 int ib_umem_odp_map_dma_and_lock(struct ib_umem_odp *umem_odp, u64 user_virt,
 				 u64 bcnt, u64 access_mask, bool fault)
 			__acquires(&umem_odp->umem_mutex)
@@ -364,11 +260,7 @@ int ib_umem_odp_map_dma_and_lock(struct ib_umem_odp *umem_odp, u64 user_virt,
 
 	page_shift = umem_odp->page_shift;
 
-	/*
-	 * owning_process is allowed to be NULL, this means somehow the mm is
-	 * existing beyond the lifetime of the originating process.. Presumably
-	 * mmget_not_zero will fail in this case.
-	 */
+	 
 	owning_process = get_pid_task(umem_odp->tgid, PIDTYPE_PID);
 	if (!owning_process || !mmget_not_zero(owning_mm)) {
 		ret = -EINVAL;
@@ -416,10 +308,7 @@ retry:
 		pfn_index += 1 << (page_shift - PAGE_SHIFT), dma_index++) {
 
 		if (fault) {
-			/*
-			 * Since we asked for hmm_range_fault() to populate
-			 * pages it shouldn't return an error entry on success.
-			 */
+			 
 			WARN_ON(range.hmm_pfns[pfn_index] & HMM_PFN_ERROR);
 			WARN_ON(!(range.hmm_pfns[pfn_index] & HMM_PFN_VALID));
 		} else {
@@ -433,9 +322,7 @@ retry:
 		}
 
 		hmm_order = hmm_pfn_to_map_order(range.hmm_pfns[pfn_index]);
-		/* If a hugepage was detected and ODP wasn't set for, the umem
-		 * page_shift will be used, the opposite case is an error.
-		 */
+		 
 		if (hmm_order + PAGE_SHIFT < page_shift) {
 			ret = -EINVAL;
 			ibdev_dbg(umem_odp->umem.ibdev,
@@ -453,7 +340,7 @@ retry:
 			break;
 		}
 	}
-	/* upon success lock should stay on hold for the callee */
+	 
 	if (!ret)
 		ret = dma_index - start_idx;
 	else
@@ -485,7 +372,7 @@ void ib_umem_odp_unmap_dma_pages(struct ib_umem_odp *umem_odp, u64 virt,
 		idx = (addr - ib_umem_start(umem_odp)) >> umem_odp->page_shift;
 		dma = umem_odp->dma_list[idx];
 
-		/* The access flags guaranteed a valid DMA address in case was NULL */
+		 
 		if (dma) {
 			unsigned long pfn_idx = (addr - ib_umem_start(umem_odp)) >> PAGE_SHIFT;
 			struct page *page = hmm_pfn_to_page(umem_odp->pfn_list[pfn_idx]);
@@ -496,15 +383,7 @@ void ib_umem_odp_unmap_dma_pages(struct ib_umem_odp *umem_odp, u64 virt,
 					  DMA_BIDIRECTIONAL);
 			if (dma & ODP_WRITE_ALLOWED_BIT) {
 				struct page *head_page = compound_head(page);
-				/*
-				 * set_page_dirty prefers being called with
-				 * the page lock. However, MMU notifiers are
-				 * called sometimes with and sometimes without
-				 * the lock. We rely on the umem_mutex instead
-				 * to prevent other mmu notifiers from
-				 * continuing and allowing the page mapping to
-				 * be removed.
-				 */
+				 
 				set_page_dirty(head_page);
 			}
 			umem_odp->dma_list[idx] = 0;

@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * This file contains generic KASAN specific error reporting code.
- *
- * Copyright (c) 2014 Samsung Electronics Co., Ltd.
- * Author: Andrey Ryabinin <ryabinin.a.a@gmail.com>
- *
- * Some code borrowed from https://github.com/xairy/kasan-prototype by
- *        Andrey Konovalov <andreyknvl@gmail.com>
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/ftrace.h>
@@ -48,15 +40,9 @@ size_t kasan_get_alloc_size(void *object, struct kmem_cache *cache)
 	size_t size = 0;
 	u8 *shadow;
 
-	/*
-	 * Skip the addr_has_metadata check, as this function only operates on
-	 * slab memory, which must have metadata.
-	 */
+	 
 
-	/*
-	 * The loop below returns 0 for freed objects, for which KASAN cannot
-	 * calculate the allocation size based on the metadata.
-	 */
+	 
 	shadow = (u8 *)kasan_mem_to_shadow(object);
 	while (size < cache->object_size) {
 		if (*shadow == 0)
@@ -78,19 +64,13 @@ static const char *get_shadow_bug_type(struct kasan_report_info *info)
 
 	shadow_addr = (u8 *)kasan_mem_to_shadow(info->first_bad_addr);
 
-	/*
-	 * If shadow byte value is in [0, KASAN_GRANULE_SIZE) we can look
-	 * at the next shadow byte to determine the type of the bad access.
-	 */
+	 
 	if (*shadow_addr > 0 && *shadow_addr <= KASAN_GRANULE_SIZE - 1)
 		shadow_addr++;
 
 	switch (*shadow_addr) {
 	case 0 ... KASAN_GRANULE_SIZE - 1:
-		/*
-		 * In theory it's still possible to see these shadow values
-		 * due to a data race in the kernel code.
-		 */
+		 
 		bug_type = "out-of-bounds";
 		break;
 	case KASAN_PAGE_REDZONE:
@@ -141,14 +121,7 @@ static const char *get_wild_bug_type(struct kasan_report_info *info)
 
 static const char *get_bug_type(struct kasan_report_info *info)
 {
-	/*
-	 * If access_size is a negative number, then it has reason to be
-	 * defined as out-of-bounds bug type.
-	 *
-	 * Casting negative numbers to size_t would indeed turn up as
-	 * a large size_t and its value will be larger than ULONG_MAX/2,
-	 * so that this can qualify as out-of-bounds.
-	 */
+	 
 	if (info->access_addr + info->access_size < info->access_addr)
 		return "out-of-bounds";
 
@@ -174,7 +147,7 @@ void kasan_complete_mode_report_info(struct kasan_report_info *info)
 		       sizeof(info->alloc_track));
 
 	if (*(u8 *)kasan_mem_to_shadow(info->object) == KASAN_SLAB_FREETRACK) {
-		/* Free meta must be present with KASAN_SLAB_FREETRACK. */
+		 
 		free_meta = kasan_get_free_meta(info->cache, info->object);
 		memcpy(&info->free_track, &free_meta->free_track,
 		       sizeof(info->free_track));
@@ -225,11 +198,11 @@ static bool __must_check tokenize_frame_descr(const char **frame_descr,
 			return false;
 		}
 
-		/* Copy token (+ 1 byte for '\0'). */
+		 
 		strscpy(token, *frame_descr, tok_len + 1);
 	}
 
-	/* Advance frame_descr past separator. */
+	 
 	*frame_descr = sep + 1;
 
 	if (value != NULL && kstrtoul(token, 10, value)) {
@@ -242,13 +215,7 @@ static bool __must_check tokenize_frame_descr(const char **frame_descr,
 
 static void print_decoded_frame_descr(const char *frame_descr)
 {
-	/*
-	 * We need to parse the following string:
-	 *    "n alloc_1 alloc_2 ... alloc_n"
-	 * where alloc_i looks like
-	 *    "offset size len name"
-	 * or "offset size len name:line".
-	 */
+	 
 
 	char token[64];
 	unsigned long num_objects;
@@ -265,31 +232,31 @@ static void print_decoded_frame_descr(const char *frame_descr)
 		unsigned long offset;
 		unsigned long size;
 
-		/* access offset */
+		 
 		if (!tokenize_frame_descr(&frame_descr, token, sizeof(token),
 					  &offset))
 			return;
-		/* access size */
+		 
 		if (!tokenize_frame_descr(&frame_descr, token, sizeof(token),
 					  &size))
 			return;
-		/* name length (unused) */
+		 
 		if (!tokenize_frame_descr(&frame_descr, NULL, 0, NULL))
 			return;
-		/* object name */
+		 
 		if (!tokenize_frame_descr(&frame_descr, token, sizeof(token),
 					  NULL))
 			return;
 
-		/* Strip line number; without filename it's not very helpful. */
+		 
 		strreplace(token, ':', '\0');
 
-		/* Finally, print object information. */
+		 
 		pr_err(" [%lu, %lu) '%s'", offset, offset + size, token);
 	}
 }
 
-/* Returns true only if the address is on the current task's stack. */
+ 
 static bool __must_check get_address_stack_frame_info(const void *addr,
 						      unsigned long *offset,
 						      const char **frame_descr,
@@ -359,7 +326,7 @@ void kasan_print_address_stack_frame(const void *addr)
 
 	print_decoded_frame_descr(frame_descr);
 }
-#endif /* CONFIG_KASAN_STACK */
+#endif  
 
 #define DEFINE_ASAN_REPORT_LOAD(size)                     \
 void __asan_report_load##size##_noabort(void *addr) \

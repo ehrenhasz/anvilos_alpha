@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Arm Statistical Profiling Extensions (SPE) support
- * Copyright (c) 2017-2018, Arm Ltd.
- */
+ 
+ 
 
 #ifndef INCLUDE__ARM_SPE_PKT_DECODER_H__
 #define INCLUDE__ARM_SPE_PKT_DECODER_H__
@@ -36,21 +33,21 @@ struct arm_spe_pkt {
 	uint64_t		payload;
 };
 
-/* Short header (HEADER0) and extended header (HEADER1) */
+ 
 #define SPE_HEADER0_PAD				0x0
 #define SPE_HEADER0_END				0x1
 #define SPE_HEADER0_TIMESTAMP			0x71
-/* Mask for event & data source */
+ 
 #define SPE_HEADER0_MASK1			(GENMASK_ULL(7, 6) | GENMASK_ULL(3, 0))
 #define SPE_HEADER0_EVENTS			0x42
 #define SPE_HEADER0_SOURCE			0x43
-/* Mask for context & operation */
+ 
 #define SPE_HEADER0_MASK2			GENMASK_ULL(7, 2)
 #define SPE_HEADER0_CONTEXT			0x64
 #define SPE_HEADER0_OP_TYPE			0x48
-/* Mask for extended format */
+ 
 #define SPE_HEADER0_EXTENDED			0x20
-/* Mask for address & counter */
+ 
 #define SPE_HEADER0_MASK3			GENMASK_ULL(7, 3)
 #define SPE_HEADER0_ADDRESS			0xb0
 #define SPE_HEADER0_COUNTER			0x98
@@ -60,14 +57,14 @@ struct arm_spe_pkt {
 #define SPE_HDR_EXTENDED_INDEX(h0, h1)		(((h0) & GENMASK_ULL(1, 0)) << 3 | \
 						 SPE_HDR_SHORT_INDEX(h1))
 
-/* Address packet header */
+ 
 #define SPE_ADDR_PKT_HDR_INDEX_INS		0x0
 #define SPE_ADDR_PKT_HDR_INDEX_BRANCH		0x1
 #define SPE_ADDR_PKT_HDR_INDEX_DATA_VIRT	0x2
 #define SPE_ADDR_PKT_HDR_INDEX_DATA_PHYS	0x3
 #define SPE_ADDR_PKT_HDR_INDEX_PREV_BRANCH	0x4
 
-/* Address packet payload */
+ 
 #define SPE_ADDR_PKT_ADDR_BYTE7_SHIFT		56
 #define SPE_ADDR_PKT_ADDR_GET_BYTES_0_6(v)	((v) & GENMASK_ULL(55, 0))
 #define SPE_ADDR_PKT_ADDR_GET_BYTE_6(v)		(((v) & GENMASK_ULL(55, 48)) >> 48)
@@ -82,15 +79,15 @@ struct arm_spe_pkt {
 #define SPE_ADDR_PKT_EL2			2
 #define SPE_ADDR_PKT_EL3			3
 
-/* Context packet header */
+ 
 #define SPE_CTX_PKT_HDR_INDEX(h)		((h) & GENMASK_ULL(1, 0))
 
-/* Counter packet header */
+ 
 #define SPE_CNT_PKT_HDR_INDEX_TOTAL_LAT		0x0
 #define SPE_CNT_PKT_HDR_INDEX_ISSUE_LAT		0x1
 #define SPE_CNT_PKT_HDR_INDEX_TRANS_LAT		0x2
 
-/* Event packet payload */
+ 
 enum arm_spe_events {
 	EV_EXCEPTION_GEN	= 0,
 	EV_RETIRED		= 1,
@@ -108,7 +105,7 @@ enum arm_spe_events {
 	EV_EMPTY_PREDICATE	= 18,
 };
 
-/* Operation packet header */
+ 
 #define SPE_OP_PKT_HDR_CLASS(h)			((h) & GENMASK_ULL(1, 0))
 #define SPE_OP_PKT_HDR_CLASS_OTHER		0x0
 #define SPE_OP_PKT_HDR_CLASS_LD_ST_ATOMIC	0x1
@@ -137,13 +134,7 @@ enum arm_spe_events {
 #define SPE_OP_PKT_IS_LDST_SVE(v)		(((v) & (BIT(3) | BIT(1))) == 0x8)
 
 #define SPE_OP_PKT_SVE_SG			BIT(7)
-/*
- * SVE effective vector length (EVL) is stored in byte 0 bits [6:4];
- * the length is rounded up to a power of two and use 32 as one step,
- * so EVL calculation is:
- *
- *   32 * (2 ^ bits [6:4]) = 32 << (bits [6:4])
- */
+ 
 #define SPE_OP_PKG_SVE_EVL(v)			(32 << (((v) & GENMASK_ULL(6, 4)) >> 4))
 #define SPE_OP_PKT_SVE_PRED			BIT(2)
 #define SPE_OP_PKT_SVE_FP			BIT(1)

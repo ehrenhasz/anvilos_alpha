@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  Copyright (c) by Jaroslav Kysela <perex@perex.cz>
- *  GUS's memory access via proc filesystem
- */
+
+ 
 
 #include <linux/slab.h>
 #include <sound/core.h>
@@ -10,7 +7,7 @@
 #include <sound/info.h>
 
 struct gus_proc_private {
-	int rom;		/* data are in ROM */
+	int rom;		 
 	unsigned int address;
 	unsigned int size;
 	struct snd_gus_card * gus;

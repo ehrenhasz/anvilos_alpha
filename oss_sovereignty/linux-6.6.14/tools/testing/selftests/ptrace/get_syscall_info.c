@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (c) 2018 Dmitry V. Levin <ldv@altlinux.org>
- * All rights reserved.
- *
- * Check whether PTRACE_GET_SYSCALL_INFO semantics implemented in the kernel
- * matches userspace expectations.
- */
+
+ 
 
 #include "../kselftest_harness.h"
 #include <err.h>
@@ -43,7 +37,7 @@ sys_ptrace(int request, pid_t pid, unsigned long addr, unsigned long data)
 TEST(get_syscall_info)
 {
 	static const unsigned long args[][7] = {
-		/* a sequence of architecture-agnostic syscalls */
+		 
 		{
 			__NR_chdir,
 			(unsigned long) "",
@@ -81,13 +75,13 @@ TEST(get_syscall_info)
 	}
 
 	if (pid == 0) {
-		/* get the pid before PTRACE_TRACEME */
+		 
 		pid = getpid();
 		ASSERT_EQ(0, sys_ptrace(PTRACE_TRACEME, 0, 0, 0)) {
 			TH_LOG("PTRACE_TRACEME: %m");
 		}
 		ASSERT_EQ(0, kill(pid, SIGSTOP)) {
-			/* cannot happen */
+			 
 			TH_LOG("kill SIGSTOP: %m");
 		}
 		for (unsigned int i = 0; i < ARRAY_SIZE(args); ++i) {
@@ -95,7 +89,7 @@ TEST(get_syscall_info)
 				args[i][1], args[i][2], args[i][3],
 				args[i][4], args[i][5], args[i][6]);
 		}
-		/* unreachable */
+		 
 		_exit(1);
 	}
 
@@ -103,15 +97,15 @@ TEST(get_syscall_info)
 		unsigned int is_error;
 		int rval;
 	} *exp_param, exit_param[] = {
-		{ 1, -ENOENT },	/* chdir */
-		{ 0, pid }	/* gettid */
+		{ 1, -ENOENT },	 
+		{ 0, pid }	 
 	};
 
 	unsigned int ptrace_stop;
 
 	for (ptrace_stop = 0; ; ++ptrace_stop) {
 		struct ptrace_syscall_info info = {
-			.op = 0xff	/* invalid PTRACE_SYSCALL_INFO_* op */
+			.op = 0xff	 
 		};
 		const size_t size = sizeof(info);
 		const int expected_none_size =
@@ -125,21 +119,21 @@ TEST(get_syscall_info)
 		long rc;
 
 		ASSERT_EQ(pid, wait(&status)) {
-			/* cannot happen */
+			 
 			LOG_KILL_TRACEE("wait: %m");
 		}
 		if (WIFEXITED(status)) {
-			pid = 0;	/* the tracee is no more */
+			pid = 0;	 
 			ASSERT_EQ(0, WEXITSTATUS(status));
 			break;
 		}
 		ASSERT_FALSE(WIFSIGNALED(status)) {
-			pid = 0;	/* the tracee is no more */
+			pid = 0;	 
 			LOG_KILL_TRACEE("unexpected signal %u",
 					WTERMSIG(status));
 		}
 		ASSERT_TRUE(WIFSTOPPED(status)) {
-			/* cannot happen */
+			 
 			LOG_KILL_TRACEE("unexpected wait status %#x", status);
 		}
 
@@ -181,9 +175,9 @@ TEST(get_syscall_info)
 				LOG_KILL_TRACEE("PTRACE_GET_SYSCALL_INFO: %m");
 			}
 			switch (ptrace_stop) {
-			case 1: /* entering chdir */
-			case 3: /* entering gettid */
-			case 5: /* entering exit_group */
+			case 1:  
+			case 3:  
+			case 5:  
 				exp_args = args[ptrace_stop / 2];
 				ASSERT_EQ(expected_entry_size, rc) {
 					LOG_KILL_TRACEE("entry stop mismatch");
@@ -222,8 +216,8 @@ TEST(get_syscall_info)
 					LOG_KILL_TRACEE("entry stop mismatch");
 				}
 				break;
-			case 2: /* exiting chdir */
-			case 4: /* exiting gettid */
+			case 2:  
+			case 4:  
 				exp_param = &exit_param[ptrace_stop / 2 - 1];
 				ASSERT_EQ(expected_exit_size, rc) {
 					LOG_KILL_TRACEE("exit stop mismatch");

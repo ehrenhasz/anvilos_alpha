@@ -1,36 +1,4 @@
-/*
- * Copyright (c) 2012 - 2019 Intel Corporation.  All rights reserved.
- * Copyright (c) 2006 - 2012 QLogic Corporation.  * All rights reserved.
- * Copyright (c) 2005, 2006 PathScale, Inc. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 
 #include <linux/err.h>
 #include <linux/vmalloc.h>
@@ -108,9 +76,7 @@ static void get_map_page(struct rvt_qpn_table *qpt, struct rvt_qpn_map *map)
 {
 	unsigned long page = get_zeroed_page(GFP_KERNEL);
 
-	/*
-	 * Free the page if someone raced with us installing it.
-	 */
+	 
 
 	spin_lock(&qpt->lock);
 	if (map->page)
@@ -120,10 +86,7 @@ static void get_map_page(struct rvt_qpn_table *qpt, struct rvt_qpn_map *map)
 	spin_unlock(&qpt->lock);
 }
 
-/*
- * Allocate the next available QPN or
- * zero/one for QP type IB_QPT_SMI/IB_QPT_GSI.
- */
+ 
 int qib_alloc_qpn(struct rvt_dev_info *rdi, struct rvt_qpn_table *qpt,
 		  enum ib_qp_type type, u32 port)
 {
@@ -172,20 +135,9 @@ int qib_alloc_qpn(struct rvt_dev_info *rdi, struct rvt_qpn_table *qpt,
 			offset = find_next_offset(qpt, map, offset,
 				dd->n_krcv_queues, qpt_mask);
 			qpn = mk_qpn(qpt, map, offset);
-			/*
-			 * This test differs from alloc_pidmap().
-			 * If find_next_offset() does find a zero
-			 * bit, we don't need to check for QPN
-			 * wrapping around past our starting QPN.
-			 * We just need to be sure we don't loop
-			 * forever.
-			 */
+			 
 		} while (offset < RVT_BITS_PER_PAGE && qpn < RVT_QPN_MAX);
-		/*
-		 * In order to keep the number of pages allocated to a
-		 * minimum, we scan the all existing pages before increasing
-		 * the size of the bitmap table.
-		 */
+		 
 		if (++i > max_scan) {
 			if (qpt->nmaps == RVT_QPNMAP_ENTRIES)
 				break;
@@ -207,9 +159,7 @@ bail:
 	return ret;
 }
 
-/*
- * qib_free_all_qps - check for QPs still in use
- */
+ 
 unsigned qib_free_all_qps(struct rvt_dev_info *rdi)
 {
 	struct qib_ibdev *verbs_dev = container_of(rdi, struct qib_ibdev, rdi);
@@ -374,14 +324,7 @@ void qib_flush_qp_waiters(struct rvt_qp *qp)
 	spin_unlock(&dev->rdi.pending_lock);
 }
 
-/**
- * qib_check_send_wqe - validate wr/wqe
- * @qp: The qp
- * @wqe: The built wqe
- * @call_send: Determine if the send should be posted or scheduled
- *
- * Returns 0 on success, -EINVAL on failure
- */
+ 
 int qib_check_send_wqe(struct rvt_qp *qp,
 		       struct rvt_swqe *wqe, bool *call_send)
 {
@@ -401,7 +344,7 @@ int qib_check_send_wqe(struct rvt_qp *qp,
 		ah = rvt_get_swqe_ah(wqe);
 		if (wqe->length > (1 << ah->log_pmtu))
 			return -EINVAL;
-		/* progress hint */
+		 
 		*call_send = true;
 		break;
 	default:
@@ -416,11 +359,7 @@ static const char * const qp_type_str[] = {
 	"SMI", "GSI", "RC", "UC", "UD",
 };
 
-/**
- * qib_qp_iter_print - print information to seq_file
- * @s: the seq_file
- * @iter: the iterator
- */
+ 
 void qib_qp_iter_print(struct seq_file *s, struct rvt_qp_iter *iter)
 {
 	struct rvt_swqe *wqe;

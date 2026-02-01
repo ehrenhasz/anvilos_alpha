@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2022 Intel Corporation
- */
+ 
+ 
 
 #ifndef __INTEL_SNPS_PHY_REGS__
 #define __INTEL_SNPS_PHY_REGS__
@@ -72,4 +70,4 @@
 #define   SNPS_PHY_TX_EQ_POST			REG_GENMASK(15, 10)
 #define   SNPS_PHY_TX_EQ_PRE			REG_GENMASK(7, 2)
 
-#endif /* __INTEL_SNPS_PHY_REGS__ */
+#endif  

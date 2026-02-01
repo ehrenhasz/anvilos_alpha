@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Driver for audio on multifunction CS5535/6 companion device
- * Copyright (C) Jaya Kumar
- *
- * Based on Jaroslav Kysela and Takashi Iwai's examples.
- * This work was sponsored by CIS(M) Sdn Bhd.
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/interrupt.h>
@@ -30,7 +24,7 @@ module_param(ac97_quirk, charp, 0444);
 MODULE_PARM_DESC(ac97_quirk, "AC'97 board specific workarounds.");
 
 static const struct ac97_quirk ac97_quirks[] = {
-#if 0 /* Not yet confirmed if all 5536 boards are HP only */
+#if 0  
 	{
 		.subvendor = PCI_VENDOR_ID_AMD, 
 		.subdevice = PCI_DEVICE_ID_AMD_CS5536_AUDIO, 
@@ -153,7 +147,7 @@ static int snd_cs5535audio_mixer(struct cs5535audio *cs5535au)
 	ac97.private_data = cs5535au;
 	ac97.pci = cs5535au->pci;
 
-	/* set any OLPC-specific scaps */
+	 
 	olpc_prequirks(card, &ac97);
 
 	err = snd_ac97_mixer(pbus, &ac97, &cs5535au->ac97);

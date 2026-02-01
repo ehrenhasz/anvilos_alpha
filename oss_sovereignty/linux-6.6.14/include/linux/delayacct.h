@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/* delayacct.h - per-task delay accounting
- *
- * Copyright (C) Shailabh Nagar, IBM Corp. 2006
- */
+ 
+ 
 
 #ifndef _LINUX_DELAYACCT_H
 #define _LINUX_DELAYACCT_H
@@ -13,48 +10,36 @@
 struct task_delay_info {
 	raw_spinlock_t	lock;
 
-	/* For each stat XXX, add following, aligned appropriately
-	 *
-	 * struct timespec XXX_start, XXX_end;
-	 * u64 XXX_delay;
-	 * u32 XXX_count;
-	 *
-	 * Atomicity of updates to XXX_delay, XXX_count protected by
-	 * single lock above (split into XXX_lock if contention is an issue).
-	 */
+	 
 
-	/*
-	 * XXX_count is incremented on every XXX operation, the delay
-	 * associated with the operation is added to XXX_delay.
-	 * XXX_delay contains the accumulated delay time in nanoseconds.
-	 */
+	 
 	u64 blkio_start;
-	u64 blkio_delay;	/* wait for sync block io completion */
+	u64 blkio_delay;	 
 	u64 swapin_start;
-	u64 swapin_delay;	/* wait for swapin */
-	u32 blkio_count;	/* total count of the number of sync block */
-				/* io operations performed */
-	u32 swapin_count;	/* total count of swapin */
+	u64 swapin_delay;	 
+	u32 blkio_count;	 
+				 
+	u32 swapin_count;	 
 
 	u64 freepages_start;
-	u64 freepages_delay;	/* wait for memory reclaim */
+	u64 freepages_delay;	 
 
 	u64 thrashing_start;
-	u64 thrashing_delay;	/* wait for thrashing page */
+	u64 thrashing_delay;	 
 
 	u64 compact_start;
-	u64 compact_delay;	/* wait for memory compact */
+	u64 compact_delay;	 
 
 	u64 wpcopy_start;
-	u64 wpcopy_delay;	/* wait for write-protect copy */
+	u64 wpcopy_delay;	 
 
-	u64 irq_delay;	/* wait for IRQ/SOFTIRQ */
+	u64 irq_delay;	 
 
-	u32 freepages_count;	/* total count of memory reclaim */
-	u32 thrashing_count;	/* total count of thrash waits */
-	u32 compact_count;	/* total count of memory compact */
-	u32 wpcopy_count;	/* total count of write-protect copy */
-	u32 irq_count;	/* total count of IRQ/SOFTIRQ */
+	u32 freepages_count;	 
+	u32 thrashing_count;	 
+	u32 compact_count;	 
+	u32 wpcopy_count;	 
+	u32 irq_count;	 
 };
 #endif
 
@@ -64,7 +49,7 @@ struct task_delay_info {
 
 #ifdef CONFIG_TASK_DELAY_ACCT
 DECLARE_STATIC_KEY_FALSE(delayacct_key);
-extern int delayacct_on;	/* Delay accounting turned on/off */
+extern int delayacct_on;	 
 extern struct kmem_cache *delayacct_cache;
 extern void delayacct_init(void);
 
@@ -88,15 +73,13 @@ extern void __delayacct_irq(struct task_struct *task, u32 delta);
 
 static inline void delayacct_tsk_init(struct task_struct *tsk)
 {
-	/* reinitialize in case parent's non-null pointer was dup'ed*/
+	 
 	tsk->delays = NULL;
 	if (delayacct_on)
 		__delayacct_tsk_init(tsk);
 }
 
-/* Free tsk->delays. Called from bad fork and __put_task_struct
- * where there's no risk of tsk->delays being accessed elsewhere
- */
+ 
 static inline void delayacct_tsk_free(struct task_struct *tsk)
 {
 	if (tsk->delays)
@@ -269,6 +252,6 @@ static inline void delayacct_wpcopy_end(void)
 static inline void delayacct_irq(struct task_struct *task, u32 delta)
 {}
 
-#endif /* CONFIG_TASK_DELAY_ACCT */
+#endif  
 
 #endif

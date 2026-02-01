@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/elf.h>
 #include <linux/coredump.h>
 #include <linux/fs.h>
@@ -31,7 +31,7 @@ int elf_core_write_extra_phdrs(struct coredump_params *cprm, loff_t offset)
 			} else {
 				phdr.p_offset += ofs;
 			}
-			phdr.p_paddr = 0; /* match other core phdrs */
+			phdr.p_paddr = 0;  
 			if (!dump_emit(cprm, &phdr, sizeof(phdr)))
 				return 0;
 		}

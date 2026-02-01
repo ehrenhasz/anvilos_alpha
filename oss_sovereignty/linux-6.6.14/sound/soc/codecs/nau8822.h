@@ -1,13 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * nau8822.h  --  NAU8822 ALSA SoC Audio driver
- *
- * Copyright 2017 Nuvoton Technology Crop.
- *
- * Author: David Lin <ctlin0@nuvoton.com>
- * Co-author: John Hsu <kchsu0@nuvoton.com>
- * Co-author: Seven Li <wtli@nuvoton.com>
- */
+ 
+ 
 
 #ifndef __NAU8822_H__
 #define __NAU8822_H__
@@ -83,7 +75,7 @@
 #define NAU8822_REG_OUTPUT_TIEOFF		0x4F
 #define NAU8822_REG_MAX_REGISTER		NAU8822_REG_OUTPUT_TIEOFF
 
-/* NAU8822_REG_POWER_MANAGEMENT_1 (0x1) */
+ 
 #define NAU8822_REFIMP_MASK			0x3
 #define NAU8822_REFIMP_80K			0x1
 #define NAU8822_REFIMP_300K			0x2
@@ -94,7 +86,7 @@
 #define NAU8822_PLL_ON				(0x1 << 5)
 #define NAU8822_PLL_OFF				(0x0 << 5)
 
-/* NAU8822_REG_AUDIO_INTERFACE (0x4) */
+ 
 #define NAU8822_AIFMT_MASK			(0x3 << 3)
 #define NAU8822_WLEN_MASK			(0x3 << 5)
 #define NAU8822_WLEN_20				(0x1 << 5)
@@ -103,12 +95,12 @@
 #define NAU8822_LRP_MASK			(0x1 << 7)
 #define NAU8822_BCLKP_MASK			(0x1 << 8)
 
-/* NAU8822_REG_COMPANDING_CONTROL (0x5) */
+ 
 #define NAU8822_ADDAP_SFT			0
 #define NAU8822_ADCCM_SFT			1
 #define NAU8822_DACCM_SFT			3
 
-/* NAU8822_REG_CLOCKING (0x6) */
+ 
 #define NAU8822_CLKIOEN_MASK			0x1
 #define NAU8822_CLK_MASTER			0x1
 #define NAU8822_CLK_SLAVE			0x0
@@ -125,7 +117,7 @@
 #define NAU8822_CLKM_MCLK			(0x0 << 8)
 #define NAU8822_CLKM_PLL			(0x1 << 8)
 
-/* NAU8822_REG_ADDITIONAL_CONTROL (0x08) */
+ 
 #define NAU8822_SMPLR_SFT			1
 #define NAU8822_SMPLR_MASK			(0x7 << 1)
 #define NAU8822_SMPLR_48K			(0x0 << 1)
@@ -135,59 +127,59 @@
 #define NAU8822_SMPLR_12K			(0x4 << 1)
 #define NAU8822_SMPLR_8K			(0x5 << 1)
 
-/* NAU8822_REG_EQ1 (0x12) */
+ 
 #define NAU8822_EQ1GC_SFT			0
 #define NAU8822_EQ1CF_SFT			5
 #define NAU8822_EQM_SFT				8
 
-/* NAU8822_REG_EQ2 (0x13) */
+ 
 #define NAU8822_EQ2GC_SFT			0
 #define NAU8822_EQ2CF_SFT			5
 #define NAU8822_EQ2BW_SFT			8
 
-/* NAU8822_REG_EQ3 (0x14) */
+ 
 #define NAU8822_EQ3GC_SFT			0
 #define NAU8822_EQ3CF_SFT			5
 #define NAU8822_EQ3BW_SFT			8
 
-/* NAU8822_REG_EQ4 (0x15) */
+ 
 #define NAU8822_EQ4GC_SFT			0
 #define NAU8822_EQ4CF_SFT			5
 #define NAU8822_EQ4BW_SFT			8
 
-/* NAU8822_REG_EQ5 (0x16) */
+ 
 #define NAU8822_EQ5GC_SFT			0
 #define NAU8822_EQ5CF_SFT			5
 
-/* NAU8822_REG_ALC_CONTROL_1 (0x20) */
+ 
 #define NAU8822_ALCMINGAIN_SFT			0
 #define NAU8822_ALCMXGAIN_SFT			3
 #define NAU8822_ALCEN_SFT			7
 
-/* NAU8822_REG_ALC_CONTROL_2 (0x21) */
+ 
 #define NAU8822_ALCSL_SFT			0
 #define NAU8822_ALCHT_SFT			4
 
-/* NAU8822_REG_ALC_CONTROL_3 (0x22) */
+ 
 #define NAU8822_ALCATK_SFT			0
 #define NAU8822_ALCDCY_SFT			4
 #define NAU8822_ALCM_SFT			8
 
-/* NAU8822_REG_PLL_N (0x24) */
+ 
 #define NAU8822_PLLMCLK_DIV2			(0x1 << 4)
 #define NAU8822_PLLN_MASK			0xF
 
 #define NAU8822_PLLK1_SFT			18
 #define NAU8822_PLLK1_MASK			0x3F
 
-/* NAU8822_REG_PLL_K2 (0x26) */
+ 
 #define NAU8822_PLLK2_SFT			9
 #define NAU8822_PLLK2_MASK			0x1FF
 
-/* NAU8822_REG_PLL_K3 (0x27) */
+ 
 #define NAU8822_PLLK3_MASK			0x1FF
 
-/* NAU8822_REG_RIGHT_SPEAKER_CONTROL (0x2B) */
+ 
 #define NAU8822_RMIXMUT				0x20
 #define NAU8822_RSUBBYP				0x10
 
@@ -196,7 +188,7 @@
 
 #define NAU8822_RAUXSMUT			0x01
 
-/* System Clock Source */
+ 
 enum {
 	NAU8822_CLK_MCLK,
 	NAU8822_CLK_PLL,
@@ -211,7 +203,7 @@ struct nau8822_pll {
 	int freq_out;
 };
 
-/* Codec Private Data */
+ 
 struct nau8822 {
 	struct device *dev;
 	struct regmap *regmap;
@@ -221,4 +213,4 @@ struct nau8822 {
 	int div_id;
 };
 
-#endif	/* __NAU8822_H__ */
+#endif	 

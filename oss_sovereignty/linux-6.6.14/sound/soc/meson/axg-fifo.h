@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: (GPL-2.0 OR MIT) */
-/*
- * Copyright (c) 2018 BayLibre, SAS.
- * Author: Jerome Brunet <jbrunet@baylibre.com>
- */
+ 
+ 
 
 #ifndef _MESON_AXG_FIFO_H
 #define _MESON_AXG_FIFO_H
@@ -96,4 +93,4 @@ int axg_fifo_pcm_trigger(struct snd_soc_component *component,
 int axg_fifo_pcm_new(struct snd_soc_pcm_runtime *rtd, unsigned int type);
 int axg_fifo_probe(struct platform_device *pdev);
 
-#endif /* _MESON_AXG_FIFO_H */
+#endif  

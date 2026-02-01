@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *    Filename: cfag12864bfb.c
- *     Version: 0.1.0
- * Description: cfag12864b LCD framebuffer driver
- *     Depends: cfag12864b
- *
- *      Author: Copyright (C) Miguel Ojeda <ojeda@kernel.org>
- *        Date: 2006-10-31
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/module.h>
@@ -122,7 +114,7 @@ static int __init cfag12864bfb_init(void)
 {
 	int ret = -EINVAL;
 
-	/* cfag12864b_init() must be called first */
+	 
 	if (!cfag12864b_isinited()) {
 		printk(KERN_ERR CFAG12864BFB_NAME ": ERROR: "
 			"cfag12864b is not initialized\n");

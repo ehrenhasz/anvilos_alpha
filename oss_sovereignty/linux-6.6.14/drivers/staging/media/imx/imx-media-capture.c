@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Video Capture Subdev for Freescale i.MX5/6 SOC
- *
- * Copyright (c) 2012-2016 Mentor Graphics Inc.
- */
+
+ 
 #include <linux/delay.h>
 #include <linux/fs.h>
 #include <linux/module.h>
@@ -28,34 +24,32 @@
 #define IMX_CAPTURE_NAME "imx-capture"
 
 struct capture_priv {
-	struct imx_media_dev *md;		/* Media device */
-	struct device *dev;			/* Physical device */
+	struct imx_media_dev *md;		 
+	struct device *dev;			 
 
-	struct imx_media_video_dev vdev;	/* Video device */
-	struct media_pad vdev_pad;		/* Video device pad */
+	struct imx_media_video_dev vdev;	 
+	struct media_pad vdev_pad;		 
 
-	struct v4l2_subdev *src_sd;		/* Source subdev */
-	int src_sd_pad;				/* Source subdev pad */
+	struct v4l2_subdev *src_sd;		 
+	int src_sd_pad;				 
 
-	struct mutex mutex;			/* Protect vdev operations */
+	struct mutex mutex;			 
 
-	struct vb2_queue q;			/* The videobuf2 queue */
-	struct list_head ready_q;		/* List of queued buffers */
-	spinlock_t q_lock;			/* Protect ready_q */
+	struct vb2_queue q;			 
+	struct list_head ready_q;		 
+	spinlock_t q_lock;			 
 
-	struct v4l2_ctrl_handler ctrl_hdlr;	/* Controls inherited from subdevs */
+	struct v4l2_ctrl_handler ctrl_hdlr;	 
 
-	bool legacy_api;			/* Use the legacy (pre-MC) API */
+	bool legacy_api;			 
 };
 
 #define to_capture_priv(v) container_of(v, struct capture_priv, vdev)
 
-/* In bytes, per queue */
+ 
 #define VID_MEM_LIMIT	SZ_64M
 
-/* -----------------------------------------------------------------------------
- * MC-Centric Video IOCTLs
- */
+ 
 
 static const struct imx_media_pixfmt *capture_find_format(u32 code, u32 fourcc)
 {
@@ -110,11 +104,7 @@ static int capture_enum_framesizes(struct file *file, void *fh,
 	if (!cc)
 		return -EINVAL;
 
-	/*
-	 * TODO: The constraints are hardware-specific and may depend on the
-	 * pixel format. This should come from the driver using
-	 * imx_media_capture.
-	 */
+	 
 	fsize->type = V4L2_FRMSIZE_TYPE_CONTINUOUS;
 	fsize->stepwise.min_width = 1;
 	fsize->stepwise.max_width = 65535;
@@ -142,10 +132,7 @@ __capture_try_fmt(struct v4l2_pix_format *pixfmt, struct v4l2_rect *compose)
 	struct v4l2_mbus_framefmt fmt_src;
 	const struct imx_media_pixfmt *cc;
 
-	/*
-	 * Find the pixel format, default to the first supported format if not
-	 * found.
-	 */
+	 
 	cc = imx_media_find_pixel_format(pixfmt->pixelformat, PIXFMT_SEL_ANY);
 	if (!cc) {
 		imx_media_enum_pixel_formats(&pixfmt->pixelformat, 0,
@@ -154,7 +141,7 @@ __capture_try_fmt(struct v4l2_pix_format *pixfmt, struct v4l2_rect *compose)
 						 PIXFMT_SEL_ANY);
 	}
 
-	/* Allow IDMAC interweave but enforce field order from source. */
+	 
 	if (V4L2_FIELD_IS_INTERLACED(pixfmt->field)) {
 		switch (pixfmt->field) {
 		case V4L2_FIELD_SEQ_TB:
@@ -214,15 +201,11 @@ static int capture_g_selection(struct file *file, void *fh,
 	case V4L2_SEL_TGT_COMPOSE:
 	case V4L2_SEL_TGT_COMPOSE_DEFAULT:
 	case V4L2_SEL_TGT_COMPOSE_BOUNDS:
-		/* The compose rectangle is fixed to the source format. */
+		 
 		s->r = priv->vdev.compose;
 		break;
 	case V4L2_SEL_TGT_COMPOSE_PADDED:
-		/*
-		 * The hardware writes with a configurable but fixed DMA burst
-		 * size. If the source format width is not burst size aligned,
-		 * the written frame contains padding to the right.
-		 */
+		 
 		s->r.left = 0;
 		s->r.top = 0;
 		s->r.width = priv->vdev.fmt.width;
@@ -272,9 +255,7 @@ static const struct v4l2_ioctl_ops capture_ioctl_ops = {
 	.vidioc_unsubscribe_event	= v4l2_event_unsubscribe,
 };
 
-/* -----------------------------------------------------------------------------
- * Legacy Video IOCTLs
- */
+ 
 
 static int capture_legacy_enum_framesizes(struct file *file, void *fh,
 					  struct v4l2_frmsizeenum *fsize)
@@ -403,7 +384,7 @@ __capture_legacy_try_fmt(struct capture_priv *priv,
 	if (WARN_ON(!cc))
 		return NULL;
 
-	/* allow IDMAC interweave but enforce field order from source */
+	 
 	if (V4L2_FIELD_IS_INTERLACED(pixfmt->field)) {
 		switch (fmt_src->format.field) {
 		case V4L2_FIELD_SEQ_TB:
@@ -593,9 +574,7 @@ static const struct v4l2_ioctl_ops capture_legacy_ioctl_ops = {
 	.vidioc_unsubscribe_event	= v4l2_event_unsubscribe,
 };
 
-/* -----------------------------------------------------------------------------
- * Queue Operations
- */
+ 
 
 static int capture_queue_setup(struct vb2_queue *vq,
 			       unsigned int *nbuffers,
@@ -679,26 +658,17 @@ static int capture_validate_fmt(struct capture_priv *priv)
 	const struct imx_media_pixfmt *cc;
 	int ret;
 
-	/* Retrieve the media bus format on the source subdev. */
+	 
 	ret = v4l2_subdev_call(priv->src_sd, pad, get_fmt, NULL, &fmt_src);
 	if (ret)
 		return ret;
 
-	/*
-	 * Verify that the media bus size matches the size set on the video
-	 * node. It is sufficient to check the compose rectangle size without
-	 * checking the rounded size from vdev.fmt, as the rounded size is
-	 * derived directly from the compose rectangle size, and will thus
-	 * always match if the compose rectangle matches.
-	 */
+	 
 	if (priv->vdev.compose.width != fmt_src.format.width ||
 	    priv->vdev.compose.height != fmt_src.format.height)
 		return -EPIPE;
 
-	/*
-	 * Verify that the media bus code is compatible with the pixel format
-	 * set on the video node.
-	 */
+	 
 	cc = capture_find_format(fmt_src.format.code, 0);
 	if (!cc || priv->vdev.cc->cs != cc->cs)
 		return -EPIPE;
@@ -751,7 +721,7 @@ static void capture_stop_streaming(struct vb2_queue *vq)
 	if (ret)
 		dev_warn(priv->dev, "pipeline stop failed with %d\n", ret);
 
-	/* release all active buffers */
+	 
 	spin_lock_irqsave(&priv->q_lock, flags);
 	list_for_each_entry_safe(frame, tmp, &priv->ready_q, list) {
 		list_del(&frame->list);
@@ -771,9 +741,7 @@ static const struct vb2_ops capture_qops = {
 	.stop_streaming  = capture_stop_streaming,
 };
 
-/* -----------------------------------------------------------------------------
- * File Operations
- */
+ 
 
 static int capture_open(struct file *file)
 {
@@ -828,9 +796,7 @@ static const struct v4l2_file_operations capture_fops = {
 	.mmap		= vb2_fop_mmap,
 };
 
-/* -----------------------------------------------------------------------------
- * Public API
- */
+ 
 
 struct imx_media_buffer *
 imx_media_capture_device_next_buf(struct imx_media_video_dev *vdev)
@@ -841,7 +807,7 @@ imx_media_capture_device_next_buf(struct imx_media_video_dev *vdev)
 
 	spin_lock_irqsave(&priv->q_lock, flags);
 
-	/* get next queued buffer */
+	 
 	if (!list_empty(&priv->ready_q)) {
 		buf = list_entry(priv->ready_q.next, struct imx_media_buffer,
 				 list);
@@ -910,17 +876,17 @@ int imx_media_capture_device_register(struct imx_media_video_dev *vdev,
 	struct video_device *vfd = vdev->vfd;
 	int ret;
 
-	/* get media device */
+	 
 	priv->md = container_of(v4l2_dev->mdev, struct imx_media_dev, md);
 
 	vfd->v4l2_dev = v4l2_dev;
 
-	/* Initialize the default format and compose rectangle. */
+	 
 	ret = capture_init_format(priv);
 	if (ret < 0)
 		return ret;
 
-	/* Register the video device. */
+	 
 	ret = video_register_device(vfd, VFL_TYPE_VIDEO, -1);
 	if (ret) {
 		dev_err(priv->dev, "Failed to register video device\n");
@@ -930,7 +896,7 @@ int imx_media_capture_device_register(struct imx_media_video_dev *vdev,
 	dev_info(priv->dev, "Registered %s as /dev/%s\n", vfd->name,
 		 video_device_node_name(vfd));
 
-	/* Create the link from the src_sd devnode pad to device node. */
+	 
 	if (link_flags & MEDIA_LNK_FL_IMMUTABLE)
 		link_flags |= MEDIA_LNK_FL_ENABLED;
 	ret = media_create_pad_link(&sd->entity, priv->src_sd_pad,
@@ -941,7 +907,7 @@ int imx_media_capture_device_register(struct imx_media_video_dev *vdev,
 		return ret;
 	}
 
-	/* Add vdev to the video devices list. */
+	 
 	imx_media_add_video_device(priv->md, vdev);
 
 	return 0;
@@ -980,7 +946,7 @@ imx_media_capture_device_init(struct device *dev, struct v4l2_subdev *src_sd,
 	INIT_LIST_HEAD(&priv->ready_q);
 	spin_lock_init(&priv->q_lock);
 
-	/* Allocate and initialize the video device. */
+	 
 	vfd = video_device_alloc();
 	if (!vfd)
 		return ERR_PTR(-ENOMEM);
@@ -1003,7 +969,7 @@ imx_media_capture_device_init(struct device *dev, struct v4l2_subdev *src_sd,
 	priv->vdev.vfd = vfd;
 	INIT_LIST_HEAD(&priv->vdev.list);
 
-	/* Initialize the video device pad. */
+	 
 	priv->vdev_pad.flags = MEDIA_PAD_FL_SINK;
 	ret = media_entity_pads_init(&vfd->entity, 1, &priv->vdev_pad);
 	if (ret) {
@@ -1011,7 +977,7 @@ imx_media_capture_device_init(struct device *dev, struct v4l2_subdev *src_sd,
 		return ERR_PTR(ret);
 	}
 
-	/* Initialize the vb2 queue. */
+	 
 	vq = &priv->q;
 	vq->type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
 	vq->io_modes = VB2_MMAP | VB2_DMABUF;
@@ -1032,7 +998,7 @@ imx_media_capture_device_init(struct device *dev, struct v4l2_subdev *src_sd,
 	}
 
 	if (legacy_api) {
-		/* Initialize the control handler. */
+		 
 		v4l2_ctrl_handler_init(&priv->ctrl_hdlr, 0);
 		vfd->ctrl_handler = &priv->ctrl_hdlr;
 	}

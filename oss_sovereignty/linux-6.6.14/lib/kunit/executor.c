@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #include <linux/reboot.h>
 #include <kunit/test.h>
@@ -6,10 +6,7 @@
 #include <linux/glob.h>
 #include <linux/moduleparam.h>
 
-/*
- * These symbols point to the .kunit_test_suites section and are defined in
- * include/asm-generic/vmlinux.lds.h, and consequently must be extern.
- */
+ 
 extern struct kunit_suite * const __kunit_suites_start[];
 extern struct kunit_suite * const __kunit_suites_end[];
 
@@ -58,13 +55,13 @@ char *kunit_filter_action(void)
 	return filter_action_param;
 }
 
-/* glob_match() needs NULL terminated strings, so we need a copy of filter_glob_param. */
+ 
 struct kunit_glob_filter {
 	char *suite_glob;
 	char *test_glob;
 };
 
-/* Split "suite_glob.test_glob" into two. Assumes filter_glob is not empty. */
+ 
 static int kunit_parse_glob_filter(struct kunit_glob_filter *parsed,
 				    const char *filter_glob)
 {
@@ -97,7 +94,7 @@ static int kunit_parse_glob_filter(struct kunit_glob_filter *parsed,
 	return 0;
 }
 
-/* Create a copy of suite with only tests that match test_glob. */
+ 
 static struct kunit_suite *
 kunit_filter_glob_tests(const struct kunit_suite *const suite, const char *test_glob)
 {
@@ -162,7 +159,7 @@ kunit_filter_suites(const struct kunit_suite_set *suite_set,
 	const size_t max = suite_set->end - suite_set->start;
 
 	copy = kcalloc(max, sizeof(*filtered.start), GFP_KERNEL);
-	if (!copy) { /* won't be able to run anything, return an empty set */
+	if (!copy) {  
 		return filtered;
 	}
 	copy_start = copy;
@@ -173,7 +170,7 @@ kunit_filter_suites(const struct kunit_suite_set *suite_set,
 			goto free_copy;
 	}
 
-	/* Parse attribute filters */
+	 
 	if (filters) {
 		filter_count = kunit_get_filter_count(filters);
 		parsed_filters = kcalloc(filter_count, sizeof(*parsed_filters), GFP_KERNEL);
@@ -204,7 +201,7 @@ kunit_filter_suites(const struct kunit_suite_set *suite_set,
 				new_filtered_suite = kunit_filter_attr_tests(filtered_suite,
 						parsed_filters[k], filter_action, err);
 
-				/* Free previous copy of suite */
+				 
 				if (k > 0 || filter_glob) {
 					kfree(filtered_suite->test_cases);
 					kfree(filtered_suite);
@@ -274,16 +271,16 @@ void kunit_exec_list_tests(struct kunit_suite_set *suite_set, bool include_attr)
 	struct kunit_suite * const *suites;
 	struct kunit_case *test_case;
 
-	/* Hack: print a ktap header so kunit.py can find the start of KUnit output. */
+	 
 	pr_info("KTAP version 1\n");
 
 	for (suites = suite_set->start; suites < suite_set->end; suites++) {
-		/* Print suite name and suite attributes */
+		 
 		pr_info("%s\n", (*suites)->name);
 		if (include_attr)
 			kunit_print_attr((void *)(*suites), false, 0);
 
-		/* Print test case name and attributes in suite */
+		 
 		kunit_suite_for_each_test_case((*suites), test_case) {
 			pr_info("%s.%s\n", (*suites)->name, test_case->name);
 			if (include_attr)
@@ -340,7 +337,7 @@ int kunit_run_all_tests(void)
 	else
 		pr_err("kunit executor: unknown action '%s'\n", action_param);
 
-	if (filter_glob_param || filter_param) { /* a copy was made of each suite */
+	if (filter_glob_param || filter_param) {  
 		kunit_free_suite_set(suite_set);
 	}
 
@@ -353,4 +350,4 @@ out:
 #include "executor_test.c"
 #endif
 
-#endif /* IS_BUILTIN(CONFIG_KUNIT) */
+#endif  

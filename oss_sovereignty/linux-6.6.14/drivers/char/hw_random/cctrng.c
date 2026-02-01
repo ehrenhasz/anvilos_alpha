@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (C) 2019-2020 ARM Limited or its affiliates. */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -29,18 +29,10 @@
 #define CC_HW_RESET_LOOP_COUNT 10
 #define CC_TRNG_SUSPEND_TIMEOUT 3000
 
-/* data circular buffer in words must be:
- *  - of a power-of-2 size (limitation of circ_buf.h macros)
- *  - at least 6, the size generated in the EHR according to HW implementation
- */
+ 
 #define CCTRNG_DATA_BUF_WORDS 32
 
-/* The timeout for the TRNG operation should be calculated with the formula:
- * Timeout = EHR_NUM * VN_COEFF * EHR_LENGTH * SAMPLE_CNT * SCALE_VALUE
- * while:
- *  - SAMPLE_CNT is input value from the characterisation process
- *  - all the rest are constants
- */
+ 
 #define EHR_NUM 1
 #define VN_COEFF 4
 #define EHR_LENGTH CC_TRNG_EHR_IN_BITS
@@ -54,10 +46,7 @@ struct cctrng_drvdata {
 	struct clk *clk;
 	struct hwrng rng;
 	u32 active_rosc;
-	/* Sampling interval for each ring oscillator:
-	 * count of ring oscillator cycles between consecutive bits sampling.
-	 * Value of 0 indicates non-valid rosc
-	 */
+	 
 	u32 smpl_ratio[CC_TRNG_NUM_OF_ROSCS];
 
 	u32 data_buf[CCTRNG_DATA_BUF_WORDS];
@@ -65,15 +54,15 @@ struct cctrng_drvdata {
 	struct work_struct compwork;
 	struct work_struct startwork;
 
-	/* pending_hw - 1 when HW is pending, 0 when it is idle */
+	 
 	atomic_t pending_hw;
 
-	/* protects against multiple concurrent consumers of data_buf */
+	 
 	spinlock_t read_lock;
 };
 
 
-/* functions for write/read CC registers */
+ 
 static inline void cc_iowrite(struct cctrng_drvdata *drvdata, u32 reg, u32 val)
 {
 	iowrite32(val, (drvdata->cc_base + reg));
@@ -90,7 +79,7 @@ static int cc_trng_pm_get(struct device *dev)
 
 	rc = pm_runtime_get_sync(dev);
 
-	/* pm_runtime_get_sync() can return 1 as a valid return code */
+	 
 	return (rc == 1 ? 0 : rc);
 }
 
@@ -108,10 +97,10 @@ static int cc_trng_pm_init(struct cctrng_drvdata *drvdata)
 {
 	struct device *dev = &(drvdata->pdev->dev);
 
-	/* must be before the enabling to avoid redundant suspending */
+	 
 	pm_runtime_set_autosuspend_delay(dev, CC_TRNG_SUSPEND_TIMEOUT);
 	pm_runtime_use_autosuspend(dev);
-	/* set us as active - note we won't do PM ops until cc_trng_pm_go()! */
+	 
 	return pm_runtime_set_active(dev);
 }
 
@@ -119,7 +108,7 @@ static void cc_trng_pm_go(struct cctrng_drvdata *drvdata)
 {
 	struct device *dev = &(drvdata->pdev->dev);
 
-	/* enable the PM module*/
+	 
 	pm_runtime_enable(dev);
 }
 
@@ -137,18 +126,18 @@ static inline int cc_trng_parse_sampling_ratio(struct cctrng_drvdata *drvdata)
 	struct device_node *np = drvdata->pdev->dev.of_node;
 	int rc;
 	int i;
-	/* ret will be set to 0 if at least one rosc has (sampling ratio > 0) */
+	 
 	int ret = -EINVAL;
 
 	rc = of_property_read_u32_array(np, "arm,rosc-ratio",
 					drvdata->smpl_ratio,
 					CC_TRNG_NUM_OF_ROSCS);
 	if (rc) {
-		/* arm,rosc-ratio was not found in device tree */
+		 
 		return rc;
 	}
 
-	/* verify that at least one rosc has (sampling ratio > 0) */
+	 
 	for (i = 0; i < CC_TRNG_NUM_OF_ROSCS; ++i) {
 		dev_dbg(dev, "rosc %d sampling ratio %u",
 			i, drvdata->smpl_ratio[i]);
@@ -181,19 +170,19 @@ static void cc_trng_enable_rnd_source(struct cctrng_drvdata *drvdata)
 {
 	u32 max_cycles;
 
-	/* Set watchdog threshold to maximal allowed time (in CPU cycles) */
+	 
 	max_cycles = CCTRNG_TIMEOUT(drvdata->smpl_ratio[drvdata->active_rosc]);
 	cc_iowrite(drvdata, CC_RNG_WATCHDOG_VAL_REG_OFFSET, max_cycles);
 
-	/* enable the RND source */
+	 
 	cc_iowrite(drvdata, CC_RND_SOURCE_ENABLE_REG_OFFSET, 0x1);
 
-	/* unmask RNG interrupts */
+	 
 	cc_iowrite(drvdata, CC_RNG_IMR_REG_OFFSET, (u32)~CC_RNG_INT_MASK);
 }
 
 
-/* increase circular data buffer index (head/tail) */
+ 
 static inline void circ_idx_inc(int *idx, int bytes)
 {
 	*idx += (bytes + 3) >> 2;
@@ -209,7 +198,7 @@ static inline size_t circ_buf_space(struct cctrng_drvdata *drvdata)
 
 static int cctrng_read(struct hwrng *rng, void *data, size_t max, bool wait)
 {
-	/* current implementation ignores "wait" */
+	 
 
 	struct cctrng_drvdata *drvdata = (struct cctrng_drvdata *)rng->priv;
 	struct device *dev = &(drvdata->pdev->dev);
@@ -220,19 +209,19 @@ static int cctrng_read(struct hwrng *rng, void *data, size_t max, bool wait)
 	size_t left;
 
 	if (!spin_trylock(&drvdata->read_lock)) {
-		/* concurrent consumers from data_buf cannot be served */
+		 
 		dev_dbg_ratelimited(dev, "unable to hold lock\n");
 		return 0;
 	}
 
-	/* copy till end of data buffer (without wrap back) */
+	 
 	cnt_w = CIRC_CNT_TO_END(drvdata->circ.head,
 				drvdata->circ.tail, CCTRNG_DATA_BUF_WORDS);
 	size = min((cnt_w<<2), max);
 	memcpy(data, &(buf[drvdata->circ.tail]), size);
 	copied = size;
 	circ_idx_inc(&drvdata->circ.tail, size);
-	/* copy rest of data in data buffer */
+	 
 	left = max - copied;
 	if (left > 0) {
 		cnt_w = CIRC_CNT(drvdata->circ.head,
@@ -247,9 +236,9 @@ static int cctrng_read(struct hwrng *rng, void *data, size_t max, bool wait)
 
 	if (circ_buf_space(drvdata) >= CC_TRNG_EHR_IN_WORDS) {
 		if (atomic_cmpxchg(&drvdata->pending_hw, 0, 1) == 0) {
-			/* re-check space in buffer to avoid potential race */
+			 
 			if (circ_buf_space(drvdata) >= CC_TRNG_EHR_IN_WORDS) {
-				/* increment device's usage counter */
+				 
 				int rc = cc_trng_pm_get(dev);
 
 				if (rc) {
@@ -259,9 +248,7 @@ static int cctrng_read(struct hwrng *rng, void *data, size_t max, bool wait)
 					return rc;
 				}
 
-				/* schedule execution of deferred work handler
-				 * for filling of data buffer
-				 */
+				 
 				schedule_work(&drvdata->startwork);
 			} else {
 				atomic_set(&drvdata->pending_hw, 0);
@@ -279,35 +266,33 @@ static void cc_trng_hw_trigger(struct cctrng_drvdata *drvdata)
 
 	dev_dbg(dev, "cctrng hw trigger.\n");
 
-	/* enable the HW RND clock */
+	 
 	cc_iowrite(drvdata, CC_RNG_CLK_ENABLE_REG_OFFSET, 0x1);
 
-	/* do software reset */
+	 
 	cc_iowrite(drvdata, CC_RNG_SW_RESET_REG_OFFSET, 0x1);
-	/* in order to verify that the reset has completed,
-	 * the sample count need to be verified
-	 */
+	 
 	do {
-		/* enable the HW RND clock   */
+		 
 		cc_iowrite(drvdata, CC_RNG_CLK_ENABLE_REG_OFFSET, 0x1);
 
-		/* set sampling ratio (rng_clocks) between consecutive bits */
+		 
 		cc_iowrite(drvdata, CC_SAMPLE_CNT1_REG_OFFSET,
 			   drvdata->smpl_ratio[drvdata->active_rosc]);
 
-		/* read the sampling ratio  */
+		 
 		tmp_smpl_cnt = cc_ioread(drvdata, CC_SAMPLE_CNT1_REG_OFFSET);
 
 	} while (tmp_smpl_cnt != drvdata->smpl_ratio[drvdata->active_rosc]);
 
-	/* disable the RND source for setting new parameters in HW */
+	 
 	cc_iowrite(drvdata, CC_RND_SOURCE_ENABLE_REG_OFFSET, 0);
 
 	cc_iowrite(drvdata, CC_RNG_ICR_REG_OFFSET, 0xFFFFFFFF);
 
 	cc_iowrite(drvdata, CC_TRNG_CONFIG_REG_OFFSET, drvdata->active_rosc);
 
-	/* Debug Control register: set to 0 - no bypasses */
+	 
 	cc_iowrite(drvdata, CC_TRNG_DEBUG_CONTROL_REG_OFFSET, 0);
 
 	cc_trng_enable_rnd_source(drvdata);
@@ -322,47 +307,45 @@ static void cc_trng_compwork_handler(struct work_struct *w)
 	struct device *dev = &(drvdata->pdev->dev);
 	int i;
 
-	/* stop DMA and the RNG source */
+	 
 	cc_iowrite(drvdata, CC_RNG_DMA_ENABLE_REG_OFFSET, 0);
 	cc_iowrite(drvdata, CC_RND_SOURCE_ENABLE_REG_OFFSET, 0);
 
-	/* read RNG_ISR and check for errors */
+	 
 	isr = cc_ioread(drvdata, CC_RNG_ISR_REG_OFFSET);
 	ehr_valid = CC_REG_FLD_GET(RNG_ISR, EHR_VALID, isr);
 	dev_dbg(dev, "Got RNG_ISR=0x%08X (EHR_VALID=%u)\n", isr, ehr_valid);
 
 	if (fips_enabled && CC_REG_FLD_GET(RNG_ISR, CRNGT_ERR, isr)) {
 		fips_fail_notify();
-		/* FIPS error is fatal */
+		 
 		panic("Got HW CRNGT error while fips is enabled!\n");
 	}
 
-	/* Clear all pending RNG interrupts */
+	 
 	cc_iowrite(drvdata, CC_RNG_ICR_REG_OFFSET, isr);
 
 
 	if (!ehr_valid) {
-		/* in case of AUTOCORR/TIMEOUT error, try the next ROSC */
+		 
 		if (CC_REG_FLD_GET(RNG_ISR, AUTOCORR_ERR, isr) ||
 				CC_REG_FLD_GET(RNG_ISR, WATCHDOG, isr)) {
 			dev_dbg(dev, "cctrng autocorr/timeout error.\n");
 			goto next_rosc;
 		}
 
-		/* in case of VN error, ignore it */
+		 
 	}
 
-	/* read EHR data from registers */
+	 
 	for (i = 0; i < CC_TRNG_EHR_IN_WORDS; i++) {
-		/* calc word ptr in data_buf */
+		 
 		u32 *buf = (u32 *)drvdata->circ.buf;
 
 		buf[drvdata->circ.head] = cc_ioread(drvdata,
 				CC_EHR_DATA_0_REG_OFFSET + (i*sizeof(u32)));
 
-		/* EHR_DATA registers are cleared on read. In case 0 value was
-		 * returned, restart the entropy collection.
-		 */
+		 
 		if (buf[drvdata->circ.head] == 0) {
 			dev_dbg(dev, "Got 0 value in EHR. active_rosc %u\n",
 				drvdata->active_rosc);
@@ -374,10 +357,10 @@ static void cc_trng_compwork_handler(struct work_struct *w)
 
 	atomic_set(&drvdata->pending_hw, 0);
 
-	/* continue to fill data buffer if needed */
+	 
 	if (circ_buf_space(drvdata) >= CC_TRNG_EHR_IN_WORDS) {
 		if (atomic_cmpxchg(&drvdata->pending_hw, 0, 1) == 0) {
-			/* Re-enable rnd source */
+			 
 			cc_trng_enable_rnd_source(drvdata);
 			return;
 		}
@@ -391,7 +374,7 @@ static void cc_trng_compwork_handler(struct work_struct *w)
 next_rosc:
 	if ((circ_buf_space(drvdata) >= CC_TRNG_EHR_IN_WORDS) &&
 			(cc_trng_change_rosc(drvdata) == 0)) {
-		/* trigger trng hw with next rosc */
+		 
 		cc_trng_hw_trigger(drvdata);
 	} else {
 		atomic_set(&drvdata->pending_hw, 0);
@@ -405,34 +388,32 @@ static irqreturn_t cc_isr(int irq, void *dev_id)
 	struct device *dev = &(drvdata->pdev->dev);
 	u32 irr;
 
-	/* if driver suspended return, probably shared interrupt */
+	 
 	if (pm_runtime_suspended(dev))
 		return IRQ_NONE;
 
-	/* read the interrupt status */
+	 
 	irr = cc_ioread(drvdata, CC_HOST_RGF_IRR_REG_OFFSET);
 	dev_dbg(dev, "Got IRR=0x%08X\n", irr);
 
-	if (irr == 0) /* Probably shared interrupt line */
+	if (irr == 0)  
 		return IRQ_NONE;
 
-	/* clear interrupt - must be before processing events */
+	 
 	cc_iowrite(drvdata, CC_HOST_RGF_ICR_REG_OFFSET, irr);
 
-	/* RNG interrupt - most probable */
+	 
 	if (irr & CC_HOST_RNG_IRQ_MASK) {
-		/* Mask RNG interrupts - will be unmasked in deferred work */
+		 
 		cc_iowrite(drvdata, CC_RNG_IMR_REG_OFFSET, 0xFFFFFFFF);
 
-		/* We clear RNG interrupt here,
-		 * to avoid it from firing as we'll unmask RNG interrupts.
-		 */
+		 
 		cc_iowrite(drvdata, CC_HOST_RGF_ICR_REG_OFFSET,
 			   CC_HOST_RNG_IRQ_MASK);
 
 		irr &= ~CC_HOST_RNG_IRQ_MASK;
 
-		/* schedule execution of deferred work handler */
+		 
 		schedule_work(&drvdata->compwork);
 	}
 
@@ -440,7 +421,7 @@ static irqreturn_t cc_isr(int irq, void *dev_id)
 		dev_dbg_ratelimited(dev,
 				"IRR includes unknown cause bits (0x%08X)\n",
 				irr);
-		/* Just warning */
+		 
 	}
 
 	return IRQ_HANDLED;
@@ -463,7 +444,7 @@ static int cctrng_probe(struct platform_device *pdev)
 	u32 val;
 	int irq;
 
-	/* Compile time assertion checks */
+	 
 	BUILD_BUG_ON(CCTRNG_DATA_BUF_WORDS < 6);
 	BUILD_BUG_ON((CCTRNG_DATA_BUF_WORDS & (CCTRNG_DATA_BUF_WORDS-1)) != 0);
 
@@ -488,12 +469,12 @@ static int cctrng_probe(struct platform_device *pdev)
 	if (IS_ERR(drvdata->cc_base))
 		return dev_err_probe(dev, PTR_ERR(drvdata->cc_base), "Failed to ioremap registers");
 
-	/* Then IRQ */
+	 
 	irq = platform_get_irq(pdev, 0);
 	if (irq < 0)
 		return irq;
 
-	/* parse sampling rate from device tree */
+	 
 	rc = cc_trng_parse_sampling_ratio(drvdata);
 	if (rc)
 		return dev_err_probe(dev, rc, "Failed to get legal sampling ratio for rosc\n");
@@ -507,47 +488,47 @@ static int cctrng_probe(struct platform_device *pdev)
 	INIT_WORK(&drvdata->startwork, cc_trng_startwork_handler);
 	spin_lock_init(&drvdata->read_lock);
 
-	/* register the driver isr function */
+	 
 	rc = devm_request_irq(dev, irq, cc_isr, IRQF_SHARED, "cctrng", drvdata);
 	if (rc)
 		return dev_err_probe(dev, rc, "Could not register to interrupt %d\n", irq);
 	dev_dbg(dev, "Registered to IRQ: %d\n", irq);
 
-	/* Clear all pending interrupts */
+	 
 	val = cc_ioread(drvdata, CC_HOST_RGF_IRR_REG_OFFSET);
 	dev_dbg(dev, "IRR=0x%08X\n", val);
 	cc_iowrite(drvdata, CC_HOST_RGF_ICR_REG_OFFSET, val);
 
-	/* unmask HOST RNG interrupt */
+	 
 	cc_iowrite(drvdata, CC_HOST_RGF_IMR_REG_OFFSET,
 		   cc_ioread(drvdata, CC_HOST_RGF_IMR_REG_OFFSET) &
 		   ~CC_HOST_RNG_IRQ_MASK);
 
-	/* init PM */
+	 
 	rc = cc_trng_pm_init(drvdata);
 	if (rc)
 		return dev_err_probe(dev, rc, "cc_trng_pm_init failed\n");
 
-	/* increment device's usage counter */
+	 
 	rc = cc_trng_pm_get(dev);
 	if (rc)
 		return dev_err_probe(dev, rc, "cc_trng_pm_get returned %x\n", rc);
 
-	/* set pending_hw to verify that HW won't be triggered from read */
+	 
 	atomic_set(&drvdata->pending_hw, 1);
 
-	/* registration of the hwrng device */
+	 
 	rc = devm_hwrng_register(dev, &drvdata->rng);
 	if (rc) {
 		dev_err(dev, "Could not register hwrng device.\n");
 		goto post_pm_err;
 	}
 
-	/* trigger HW to start generate data */
+	 
 	drvdata->active_rosc = 0;
 	cc_trng_hw_trigger(drvdata);
 
-	/* All set, we can allow auto-suspend */
+	 
 	cc_trng_pm_go(drvdata);
 
 	dev_info(dev, "ARM cctrng device initialized\n");
@@ -593,18 +574,16 @@ static bool cctrng_wait_for_reset_completion(struct cctrng_drvdata *drvdata)
 	unsigned int i;
 
 	for (i = 0; i < CC_HW_RESET_LOOP_COUNT; i++) {
-		/* in cc7x3 NVM_IS_IDLE indicates that CC reset is
-		 *  completed and device is fully functional
-		 */
+		 
 		val = cc_ioread(drvdata, CC_NVM_IS_IDLE_REG_OFFSET);
 		if (val & BIT(CC_NVM_IS_IDLE_VALUE_BIT_SHIFT)) {
-			/* hw indicate reset completed */
+			 
 			return true;
 		}
-		/* allow scheduling other process on the processor */
+		 
 		schedule();
 	}
-	/* reset not completed */
+	 
 	return false;
 }
 
@@ -614,20 +593,20 @@ static int __maybe_unused cctrng_resume(struct device *dev)
 	int rc;
 
 	dev_dbg(dev, "unset HOST_POWER_DOWN_EN\n");
-	/* Enables the device source clk */
+	 
 	rc = clk_prepare_enable(drvdata->clk);
 	if (rc) {
 		dev_err(dev, "failed getting clock back on. We're toast.\n");
 		return rc;
 	}
 
-	/* wait for Cryptocell reset completion */
+	 
 	if (!cctrng_wait_for_reset_completion(drvdata)) {
 		dev_err(dev, "Cryptocell reset not completed");
 		return -EBUSY;
 	}
 
-	/* unmask HOST RNG interrupt */
+	 
 	cc_iowrite(drvdata, CC_HOST_RGF_IMR_REG_OFFSET,
 		   cc_ioread(drvdata, CC_HOST_RGF_IMR_REG_OFFSET) &
 		   ~CC_HOST_RNG_IRQ_MASK);
@@ -659,7 +638,7 @@ static struct platform_driver cctrng_driver = {
 
 module_platform_driver(cctrng_driver);
 
-/* Module description */
+ 
 MODULE_DESCRIPTION("ARM CryptoCell TRNG Driver");
 MODULE_AUTHOR("ARM");
 MODULE_LICENSE("GPL v2");

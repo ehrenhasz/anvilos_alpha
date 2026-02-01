@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2022 MediaTek Inc.
- * Author: Jianjun Wang <jianjun.wang@mediatek.com>
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/module.h>
@@ -15,30 +12,24 @@
 #include "phy-mtk-io.h"
 
 #define PEXTP_ANA_GLB_00_REG		0x9000
-/* Internal Resistor Selection of TX Bias Current */
+ 
 #define EFUSE_GLB_INTR_SEL		GENMASK(28, 24)
 
 #define PEXTP_ANA_LN0_TRX_REG		0xa000
 
 #define PEXTP_ANA_TX_REG		0x04
-/* TX PMOS impedance selection */
+ 
 #define EFUSE_LN_TX_PMOS_SEL		GENMASK(5, 2)
-/* TX NMOS impedance selection */
+ 
 #define EFUSE_LN_TX_NMOS_SEL		GENMASK(11, 8)
 
 #define PEXTP_ANA_RX_REG		0x3c
-/* RX impedance selection */
+ 
 #define EFUSE_LN_RX_SEL			GENMASK(3, 0)
 
 #define PEXTP_ANA_LANE_OFFSET		0x100
 
-/**
- * struct mtk_pcie_lane_efuse - eFuse data for each lane
- * @tx_pmos: TX PMOS impedance selection data
- * @tx_nmos: TX NMOS impedance selection data
- * @rx_data: RX impedance selection data
- * @lane_efuse_supported: software eFuse data is supported for this lane
- */
+ 
 struct mtk_pcie_lane_efuse {
 	u32 tx_pmos;
 	u32 tx_nmos;
@@ -46,26 +37,13 @@ struct mtk_pcie_lane_efuse {
 	bool lane_efuse_supported;
 };
 
-/**
- * struct mtk_pcie_phy_data - phy data for each SoC
- * @num_lanes: supported lane numbers
- * @sw_efuse_supported: support software to load eFuse data
- */
+ 
 struct mtk_pcie_phy_data {
 	int num_lanes;
 	bool sw_efuse_supported;
 };
 
-/**
- * struct mtk_pcie_phy - PCIe phy driver main structure
- * @dev: pointer to device
- * @phy: pointer to generic phy
- * @sif_base: IO mapped register base address of system interface
- * @data: pointer to SoC dependent data
- * @sw_efuse_en: software eFuse enable status
- * @efuse_glb_intr: internal resistor selection of TX bias current data
- * @efuse: pointer to eFuse data for each lane
- */
+ 
 struct mtk_pcie_phy {
 	struct device *dev;
 	struct phy *phy;
@@ -99,14 +77,7 @@ static void mtk_pcie_efuse_set_lane(struct mtk_pcie_phy *pcie_phy,
 			     data->rx_data);
 }
 
-/**
- * mtk_pcie_phy_init() - Initialize the phy
- * @phy: the phy to be initialized
- *
- * Initialize the phy by setting the efuse data.
- * The hardware settings will be reset during suspend, it should be
- * reinitialized when the consumer calls phy_init() again on resume.
- */
+ 
 static int mtk_pcie_phy_init(struct phy *phy)
 {
 	struct mtk_pcie_phy *pcie_phy = phy_get_drvdata(phy);
@@ -115,7 +86,7 @@ static int mtk_pcie_phy_init(struct phy *phy)
 	if (!pcie_phy->sw_efuse_en)
 		return 0;
 
-	/* Set global data */
+	 
 	mtk_phy_update_field(pcie_phy->sif_base + PEXTP_ANA_GLB_00_REG,
 			     EFUSE_GLB_INTR_SEL, pcie_phy->efuse_glb_intr);
 
@@ -169,7 +140,7 @@ static int mtk_pcie_read_efuse(struct mtk_pcie_phy *pcie_phy)
 	bool nvmem_enabled;
 	int ret, i;
 
-	/* nvmem data is optional */
+	 
 	nvmem_enabled = device_property_present(dev, "nvmem-cells");
 	if (!nvmem_enabled)
 		return 0;
@@ -222,10 +193,7 @@ static int mtk_pcie_phy_probe(struct platform_device *pdev)
 		return dev_err_probe(dev, -EINVAL, "Failed to get phy data\n");
 
 	if (pcie_phy->data->sw_efuse_supported) {
-		/*
-		 * Failed to read the efuse data is not a fatal problem,
-		 * ignore the failure and keep going.
-		 */
+		 
 		ret = mtk_pcie_read_efuse(pcie_phy);
 		if (ret == -EPROBE_DEFER || ret == -ENOMEM)
 			return ret;

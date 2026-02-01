@@ -1,6 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 
-/* Stage 2 definitions for creating trace events */
+ 
 
 #undef TRACE_DEFINE_ENUM
 #define TRACE_DEFINE_ENUM(a)

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * drivers/pwm/pwm-vt8500.c
- *
- * Copyright (C) 2012 Tony Prisk <linux@prisktech.co.nz>
- * Copyright (C) 2010 Alexey Charkov <alchark@gmail.com>
- */
+
+ 
 
 #include <linux/mod_devicetable.h>
 #include <linux/module.h>
@@ -19,10 +14,7 @@
 
 #include <asm/div64.h>
 
-/*
- * SoC architecture allocates register space for 4 PWMs but only
- * 2 are currently implemented.
- */
+ 
 #define VT8500_NR_PWMS	2
 
 #define REG_CTRL(pwm)		(((pwm) << 4) + 0x00)
@@ -180,10 +172,7 @@ static int vt8500_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
 	bool enabled = pwm->state.enabled;
 
 	if (state->polarity != pwm->state.polarity) {
-		/*
-		 * Changing the polarity of a running PWM is only allowed when
-		 * the PWM driver implements ->apply().
-		 */
+		 
 		if (enabled) {
 			vt8500_pwm_disable(chip, pwm);
 
@@ -202,13 +191,7 @@ static int vt8500_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
 		return 0;
 	}
 
-	/*
-	 * We cannot skip calling ->config even if state->period ==
-	 * pwm->state.period && state->duty_cycle == pwm->state.duty_cycle
-	 * because we might have exited early in the last call to
-	 * pwm_apply_state because of !state->enabled and so the two values in
-	 * pwm->state might not be configured in hardware.
-	 */
+	 
 	err = vt8500_pwm_config(pwm->chip, pwm, state->duty_cycle, state->period);
 	if (err)
 		return err;
@@ -226,7 +209,7 @@ static const struct pwm_ops vt8500_pwm_ops = {
 
 static const struct of_device_id vt8500_pwm_dt_ids[] = {
 	{ .compatible = "via,vt8500-pwm", },
-	{ /* Sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, vt8500_pwm_dt_ids);
 

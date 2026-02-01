@@ -1,12 +1,4 @@
-/* Broadcom NetXtreme-C/E network driver.
- *
- * Copyright (c) 2014-2016 Broadcom Corporation
- * Copyright (c) 2016-2018 Broadcom Limited
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation.
- */
+ 
 
 #include <linux/ethtool.h>
 #include <linux/module.h>
@@ -38,7 +30,7 @@ static int bnxt_hwrm_fwd_async_event_cmpl(struct bnxt *bp,
 	if (vf)
 		req->encap_async_event_target_id = cpu_to_le16(vf->fw_fid);
 	else
-		/* broadcast this async event to all VFs */
+		 
 		req->encap_async_event_target_id = cpu_to_le16(0xffff);
 	async_cmpl =
 		(struct hwrm_async_event_cmpl *)req->encap_async_event_cmpl;
@@ -92,9 +84,7 @@ int bnxt_set_vf_spoofchk(struct net_device *dev, int vf_id, bool setting)
 		func_flags = FUNC_CFG_REQ_FLAGS_SRC_MAC_ADDR_CHECK_ENABLE;
 	else
 		func_flags = FUNC_CFG_REQ_FLAGS_SRC_MAC_ADDR_CHECK_DISABLE;
-	/*TODO: if the driver supports VLAN filter on guest VLAN,
-	 * the spoof check should also include vlan anti-spoofing
-	 */
+	 
 	rc = hwrm_req_init(bp, req, HWRM_FUNC_CFG);
 	if (!rc) {
 		req->fid = cpu_to_le16(vf->fw_fid);
@@ -223,9 +213,7 @@ int bnxt_set_vf_mac(struct net_device *dev, int vf_id, u8 *mac)
 	rc = bnxt_vf_ndo_prep(bp, vf_id);
 	if (rc)
 		return rc;
-	/* reject bc or mc mac addr, zero mac addr means allow
-	 * VF to use its own mac addr
-	 */
+	 
 	if (is_multicast_ether_addr(mac)) {
 		netdev_err(dev, "Invalid VF ethernet address\n");
 		return -EINVAL;
@@ -263,9 +251,7 @@ int bnxt_set_vf_vlan(struct net_device *dev, int vf_id, u16 vlan_id, u8 qos,
 	if (rc)
 		return rc;
 
-	/* TODO: needed to implement proper handling of user priority,
-	 * currently fail the command if there is valid priority
-	 */
+	 
 	if (vlan_id > 4095 || qos)
 		return -EINVAL;
 
@@ -456,7 +442,7 @@ static int bnxt_alloc_vf_resources(struct bnxt *bp, int num_vfs)
 		}
 	}
 
-	/* Max 128 VF's */
+	 
 	bp->pf.vf_event_bmap = kzalloc(16, GFP_KERNEL);
 	if (!bp->pf.vf_event_bmap)
 		return -ENOMEM;
@@ -518,9 +504,7 @@ static int __bnxt_set_vf_params(struct bnxt *bp, int vf_id)
 	return hwrm_req_send(bp, req);
 }
 
-/* Only called by PF to reserve resources for VFs, returns actual number of
- * VFs configured, or < 0 on error.
- */
+ 
 static int bnxt_hwrm_func_vf_resc_cfg(struct bnxt *bp, int num_vfs, bool reset)
 {
 	struct hwrm_func_vf_resource_cfg_input *req;
@@ -631,9 +615,7 @@ static int bnxt_hwrm_func_vf_resc_cfg(struct bnxt *bp, int num_vfs, bool reset)
 	return rc;
 }
 
-/* Only called by PF to reserve resources for VFs, returns actual number of
- * VFs configured, or < 0 on error.
- */
+ 
 static int bnxt_hwrm_func_cfg(struct bnxt *bp, int num_vfs)
 {
 	u16 vf_tx_rings, vf_rx_rings, vf_cp_rings, vf_stat_ctx, vf_vnics;
@@ -649,7 +631,7 @@ static int bnxt_hwrm_func_cfg(struct bnxt *bp, int num_vfs)
 	if (rc)
 		return rc;
 
-	/* Remaining rings are distributed equally amongs VF's for now */
+	 
 	vf_cp_rings = bnxt_get_avail_cp_rings_for_en(bp) / num_vfs;
 	vf_stat_ctx = bnxt_get_avail_stat_ctxs_for_en(bp) / num_vfs;
 	if (bp->flags & BNXT_FLAG_AGG_RINGS)
@@ -686,7 +668,7 @@ static int bnxt_hwrm_func_cfg(struct bnxt *bp, int num_vfs)
 	req->num_l2_ctxs = cpu_to_le16(4);
 
 	req->num_vnics = cpu_to_le16(vf_vnics);
-	/* FIXME spec currently uses 1 bit for stats ctx */
+	 
 	req->num_stat_ctxs = cpu_to_le16(vf_stat_ctx);
 
 	hwrm_req_hold(bp, req);
@@ -731,12 +713,12 @@ int bnxt_cfg_hw_sriov(struct bnxt *bp, int *num_vfs, bool reset)
 {
 	int rc;
 
-	/* Register buffers for VFs */
+	 
 	rc = bnxt_hwrm_func_buf_rgtr(bp);
 	if (rc)
 		return rc;
 
-	/* Reserve resources for VFs */
+	 
 	rc = bnxt_func_cfg(bp, *num_vfs, reset);
 	if (rc != *num_vfs) {
 		if (rc <= 0) {
@@ -760,10 +742,7 @@ static int bnxt_sriov_enable(struct bnxt *bp, int *num_vfs)
 	int tx_ok = 0, rx_ok = 0, rss_ok = 0;
 	int avail_cp, avail_stat;
 
-	/* Check if we can enable requested num of vf's. At a mininum
-	 * we require 1 RX 1 TX rings for each VF. In this minimum conf
-	 * features like TPA will not be available.
-	 */
+	 
 	vfs_supported = *num_vfs;
 
 	avail_cp = bnxt_get_avail_cp_rings_for_en(bp);
@@ -828,7 +807,7 @@ static int bnxt_sriov_enable(struct bnxt *bp, int *num_vfs)
 	if (bp->eswitch_mode != DEVLINK_ESWITCH_MODE_SWITCHDEV)
 		return 0;
 
-	/* Create representors for VFs in switchdev mode */
+	 
 	devl_lock(bp->dl);
 	rc = bnxt_vf_reps_create(bp);
 	devl_unlock(bp->dl);
@@ -840,14 +819,14 @@ static int bnxt_sriov_enable(struct bnxt *bp, int *num_vfs)
 	return 0;
 
 err_out3:
-	/* Disable SR-IOV */
+	 
 	pci_disable_sriov(bp->pdev);
 
 err_out2:
-	/* Free the resources reserved for various VF's */
+	 
 	bnxt_hwrm_func_vf_resource_free(bp, *num_vfs);
 
-	/* Restore the max resources */
+	 
 	bnxt_hwrm_func_qcaps(bp);
 
 err_out1:
@@ -863,7 +842,7 @@ void bnxt_sriov_disable(struct bnxt *bp)
 	if (!num_vfs)
 		return;
 
-	/* synchronize VF and VF-rep create and destroy */
+	 
 	devl_lock(bp->dl);
 	bnxt_vf_reps_destroy(bp);
 
@@ -874,14 +853,14 @@ void bnxt_sriov_disable(struct bnxt *bp)
 			    num_vfs);
 	} else {
 		pci_disable_sriov(bp->pdev);
-		/* Free the HW resources reserved for various VF's */
+		 
 		bnxt_hwrm_func_vf_resource_free(bp, num_vfs);
 	}
 	devl_unlock(bp->dl);
 
 	bnxt_free_vf_resources(bp);
 
-	/* Reclaim all resources for the PF. */
+	 
 	rtnl_lock();
 	bnxt_restore_pf_fw_resources(bp);
 	rtnl_unlock();
@@ -917,11 +896,11 @@ int bnxt_sriov_configure(struct pci_dev *pdev, int num_vfs)
 		goto sriov_cfg_exit;
 	}
 
-	/* Check if enabled VFs is same as requested */
+	 
 	if (num_vfs && num_vfs == bp->pf.active_vfs)
 		goto sriov_cfg_exit;
 
-	/* if there are previous existing VFs, clean them up */
+	 
 	bnxt_sriov_disable(bp);
 	if (!num_vfs)
 		goto sriov_cfg_exit;
@@ -947,7 +926,7 @@ static int bnxt_hwrm_fwd_resp(struct bnxt *bp, struct bnxt_vf_info *vf,
 
 	rc = hwrm_req_init(bp, req, HWRM_FWD_RESP);
 	if (!rc) {
-		/* Set the new target id */
+		 
 		req->target_id = cpu_to_le16(vf->fw_fid);
 		req->encap_resp_target_id = cpu_to_le16(vf->fw_fid);
 		req->encap_resp_len = cpu_to_le16(msg_size);
@@ -973,7 +952,7 @@ static int bnxt_hwrm_fwd_err_resp(struct bnxt *bp, struct bnxt_vf_info *vf,
 
 	rc = hwrm_req_init(bp, req, HWRM_REJECT_FWD_RESP);
 	if (!rc) {
-		/* Set the new target id */
+		 
 		req->target_id = cpu_to_le16(vf->fw_fid);
 		req->encap_resp_target_id = cpu_to_le16(vf->fw_fid);
 		memcpy(req->encap_request, vf->hwrm_cmd_req_addr, msg_size);
@@ -996,7 +975,7 @@ static int bnxt_hwrm_exec_fwd_resp(struct bnxt *bp, struct bnxt_vf_info *vf,
 
 	rc = hwrm_req_init(bp, req, HWRM_EXEC_FWD_RESP);
 	if (!rc) {
-		/* Set the new target id */
+		 
 		req->target_id = cpu_to_le16(vf->fw_fid);
 		req->encap_resp_target_id = cpu_to_le16(vf->fw_fid);
 		memcpy(req->encap_request, vf->hwrm_cmd_req_addr, msg_size);
@@ -1014,9 +993,7 @@ static int bnxt_vf_configure_mac(struct bnxt *bp, struct bnxt_vf_info *vf)
 	struct hwrm_func_vf_cfg_input *req =
 		(struct hwrm_func_vf_cfg_input *)vf->hwrm_cmd_req_addr;
 
-	/* Allow VF to set a valid MAC address, if trust is set to on or
-	 * if the PF assigned MAC address is zero
-	 */
+	 
 	if (req->enables & cpu_to_le32(FUNC_VF_CFG_REQ_ENABLES_DFLT_MAC_ADDR)) {
 		bool trust = bnxt_is_trusted_vf(bp, vf);
 
@@ -1041,11 +1018,7 @@ static int bnxt_vf_validate_set_mac(struct bnxt *bp, struct bnxt_vf_info *vf)
 	if (!is_valid_ether_addr((const u8 *)req->l2_addr))
 		return bnxt_hwrm_fwd_err_resp(bp, vf, msg_size);
 
-	/* Allow VF to set a valid MAC address, if trust is set to on.
-	 * Or VF MAC address must first match MAC address in PF's context.
-	 * Otherwise, it must match the VF MAC address if firmware spec >=
-	 * 1.2.2
-	 */
+	 
 	if (bnxt_is_trusted_vf(bp, vf)) {
 		mac_ok = true;
 	} else if (is_valid_ether_addr(vf->mac_addr)) {
@@ -1055,12 +1028,7 @@ static int bnxt_vf_validate_set_mac(struct bnxt *bp, struct bnxt_vf_info *vf)
 		if (ether_addr_equal((const u8 *)req->l2_addr, vf->vf_mac_addr))
 			mac_ok = true;
 	} else {
-		/* There are two cases:
-		 * 1.If firmware spec < 0x10202,VF MAC address is not forwarded
-		 *   to the PF and so it doesn't have to match
-		 * 2.Allow VF to modify it's own MAC when PF has not assigned a
-		 *   valid MAC address and firmware spec >= 0x10202
-		 */
+		 
 		mac_ok = true;
 	}
 	if (mac_ok)
@@ -1073,7 +1041,7 @@ static int bnxt_vf_set_link(struct bnxt *bp, struct bnxt_vf_info *vf)
 	int rc = 0;
 
 	if (!(vf->flags & BNXT_VF_LINK_FORCED)) {
-		/* real link */
+		 
 		rc = bnxt_hwrm_exec_fwd_resp(
 			bp, vf, sizeof(struct hwrm_port_phy_qcfg_input));
 	} else {
@@ -1091,7 +1059,7 @@ static int bnxt_vf_set_link(struct bnxt *bp, struct bnxt_vf_info *vf)
 		phy_qcfg_resp.valid = 1;
 
 		if (vf->flags & BNXT_VF_LINK_UP) {
-			/* if physical link is down, force link up on VF */
+			 
 			if (phy_qcfg_resp.link !=
 			    PORT_PHY_QCFG_RESP_LINK_LINK) {
 				phy_qcfg_resp.link =
@@ -1107,7 +1075,7 @@ static int bnxt_vf_set_link(struct bnxt *bp, struct bnxt_vf_info *vf)
 					 PORT_PHY_QCFG_RESP_PAUSE_RX);
 			}
 		} else {
-			/* force link down */
+			 
 			phy_qcfg_resp.link = PORT_PHY_QCFG_RESP_LINK_NO_LINK;
 			phy_qcfg_resp.link_speed = 0;
 			phy_qcfg_resp.duplex_state =
@@ -1136,9 +1104,7 @@ static int bnxt_vf_req_validate_snd(struct bnxt *bp, struct bnxt_vf_info *vf)
 		rc = bnxt_vf_validate_set_mac(bp, vf);
 		break;
 	case HWRM_FUNC_CFG:
-		/* TODO Validate if VF is allowed to change mac address,
-		 * mtu, num of rings etc
-		 */
+		 
 		rc = bnxt_hwrm_exec_fwd_resp(
 			bp, vf, sizeof(struct hwrm_func_cfg_input));
 		break;
@@ -1155,7 +1121,7 @@ void bnxt_hwrm_exec_fwd_req(struct bnxt *bp)
 {
 	u32 i = 0, active_vfs = bp->pf.active_vfs, vf_id;
 
-	/* Scan through VF's and process commands */
+	 
 	while (1) {
 		vf_id = find_next_bit(bp->pf.vf_event_bmap, active_vfs, i);
 		if (vf_id >= active_vfs)
@@ -1215,23 +1181,15 @@ void bnxt_update_vf_mac(struct bnxt *bp)
 	if (hwrm_req_send(bp, req))
 		goto update_vf_mac_exit;
 
-	/* Store MAC address from the firmware.  There are 2 cases:
-	 * 1. MAC address is valid.  It is assigned from the PF and we
-	 *    need to override the current VF MAC address with it.
-	 * 2. MAC address is zero.  The VF will use a random MAC address by
-	 *    default but the stored zero MAC will allow the VF user to change
-	 *    the random MAC address using ndo_set_mac_address() if he wants.
-	 */
+	 
 	if (!ether_addr_equal(resp->mac_address, bp->vf.mac_addr)) {
 		memcpy(bp->vf.mac_addr, resp->mac_address, ETH_ALEN);
-		/* This means we are now using our own MAC address, let
-		 * the PF know about this MAC address.
-		 */
+		 
 		if (!is_valid_ether_addr(bp->vf.mac_addr))
 			inform_pf = true;
 	}
 
-	/* overwrite netdev dev_addr with admin VF MAC */
+	 
 	if (is_valid_ether_addr(bp->vf.mac_addr))
 		eth_hw_addr_set(bp->dev, bp->vf.mac_addr);
 update_vf_mac_exit:

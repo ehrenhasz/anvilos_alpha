@@ -1,6 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
-/* Copyright(c) 2019-2020  Realtek Corporation
- */
+
+ 
 
 #include "cam.h"
 #include "debug.h"
@@ -121,7 +120,7 @@ again:
 	idx = find_next_zero_bit(cam_info->sec_cam_map, sec_cam_num, idx);
 	if (idx >= sec_cam_num - 1)
 		return -EBUSY;
-	/* ext keys need two cam entries for 256-bit key */
+	 
 	if (test_bit(idx + 1, cam_info->sec_cam_map)) {
 		idx++;
 		goto again;
@@ -141,11 +140,7 @@ static int rtw89_cam_get_addr_cam_key_idx(struct rtw89_addr_cam_entry *addr_cam,
 {
 	u8 idx;
 
-	/* RTW89_ADDR_CAM_SEC_NONE	: not enabled
-	 * RTW89_ADDR_CAM_SEC_ALL_UNI	: 0 - 6 unicast
-	 * RTW89_ADDR_CAM_SEC_NORMAL	: 0 - 1 unicast, 2 - 4 group, 5 - 6 BIP
-	 * RTW89_ADDR_CAM_SEC_4GROUP	: 0 - 1 unicast, 2 - 5 group, 6 BIP
-	 */
+	 
 	switch (addr_cam->sec_ent_mode) {
 	case RTW89_ADDR_CAM_SEC_NONE:
 		return -EINVAL;
@@ -177,7 +172,7 @@ static int rtw89_cam_get_addr_cam_key_idx(struct rtw89_addr_cam_entry *addr_cam,
 			break;
 		}
 
-		/* Group keys */
+		 
 		idx = find_next_zero_bit(addr_cam->sec_cam_map,
 					 RTW89_SEC_CAM_IN_ADDR_CAM, 2);
 		if (idx > 4)
@@ -201,7 +196,7 @@ static int rtw89_cam_get_addr_cam_key_idx(struct rtw89_addr_cam_entry *addr_cam,
 			break;
 		}
 
-		/* Group keys */
+		 
 		idx = find_next_zero_bit(addr_cam->sec_cam_map,
 					 RTW89_SEC_CAM_IN_ADDR_CAM, 2);
 		if (idx > 5)
@@ -273,7 +268,7 @@ static int rtw89_cam_sec_key_install(struct rtw89_dev *rtwdev,
 	u8 sec_cam_idx;
 	int ret;
 
-	/* maximum key length 256-bit */
+	 
 	if (key->keylen > 32) {
 		rtw89_err(rtwdev, "invalid sec key length %d\n", key->keylen);
 		return -EINVAL;
@@ -303,7 +298,7 @@ static int rtw89_cam_sec_key_install(struct rtw89_dev *rtwdev,
 		goto err_release_cam;
 	}
 
-	/* associate with addr cam */
+	 
 	ret = rtw89_cam_attach_sec_cam(rtwdev, vif, sta, key, sec_cam);
 	if (ret) {
 		rtw89_err(rtwdev, "failed to attach sec cam: %d\n", ret);
@@ -400,7 +395,7 @@ int rtw89_cam_sec_key_del(struct rtw89_dev *rtwdev,
 	if (!sec_cam)
 		return -EINVAL;
 
-	/* detach sec cam from addr cam */
+	 
 	clear_bit(key_idx, addr_cam->sec_cam_map);
 	addr_cam->sec_entries[key_idx] = NULL;
 	if (inform_fw) {
@@ -412,9 +407,7 @@ int rtw89_cam_sec_key_del(struct rtw89_dev *rtwdev,
 			rtw89_err(rtwdev, "failed to update cam del key: %d\n", ret);
 	}
 
-	/* clear valid bit in addr cam will disable sec cam,
-	 * so we don't need to send H2C command again
-	 */
+	 
 	sec_cam_idx = sec_cam->sec_cam_idx;
 	clear_bit(sec_cam_idx, cam_info->sec_cam_map);
 	if (sec_cam->ext_key)
@@ -522,7 +515,7 @@ int rtw89_cam_init_addr_cam(struct rtw89_dev *rtwdev,
 		addr_cam->sec_ent[i] = 0;
 	}
 
-	/* associate addr cam with bssid cam */
+	 
 	addr_cam->bssid_cam_idx = bssid_cam->bssid_cam_idx;
 
 	return 0;

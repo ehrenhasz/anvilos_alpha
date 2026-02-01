@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *  pci-rcar-gen2: internal PCI bus support
- *
- * Copyright (C) 2013 Renesas Solutions Corp.
- * Copyright (C) 2013 Cogent Embedded, Inc.
- *
- * Author: Valentine Barshak <valentine.barshak@cogentembedded.com>
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/init.h>
@@ -23,7 +16,7 @@
 
 #include "../pci.h"
 
-/* AHB-PCI Bridge PCI communication registers */
+ 
 #define RCAR_AHBPCI_PCICOM_OFFSET	0x800
 
 #define RCAR_PCIAHB_WIN1_CTR_REG	(RCAR_AHBPCI_PCICOM_OFFSET + 0x00)
@@ -101,7 +94,7 @@ struct rcar_pci {
 	int irq;
 };
 
-/* PCI configuration space operations */
+ 
 static void __iomem *rcar_pci_cfg_base(struct pci_bus *bus, unsigned int devfn,
 				       int where)
 {
@@ -111,12 +104,12 @@ static void __iomem *rcar_pci_cfg_base(struct pci_bus *bus, unsigned int devfn,
 	if (!pci_is_root_bus(bus) || PCI_FUNC(devfn))
 		return NULL;
 
-	/* Only one EHCI/OHCI device built-in */
+	 
 	slot = PCI_SLOT(devfn);
 	if (slot > 2)
 		return NULL;
 
-	/* bridge logic only has registers to 0x40 */
+	 
 	if (slot == 0x0 && where >= 0x40)
 		return NULL;
 
@@ -128,7 +121,7 @@ static void __iomem *rcar_pci_cfg_base(struct pci_bus *bus, unsigned int devfn,
 }
 
 #ifdef CONFIG_PCI_DEBUG
-/* if debug enabled, then attach an error handler irq to the bridge */
+ 
 
 static irqreturn_t rcar_pci_err_irq(int irq, void *pw)
 {
@@ -139,7 +132,7 @@ static irqreturn_t rcar_pci_err_irq(int irq, void *pw)
 	if (status & RCAR_PCI_INT_ALLERRORS) {
 		dev_err(dev, "error irq: status %08x\n", status);
 
-		/* clear the error(s) */
+		 
 		iowrite32(status & RCAR_PCI_INT_ALLERRORS,
 			  priv->reg + RCAR_PCI_INT_STATUS_REG);
 		return IRQ_HANDLED;
@@ -169,7 +162,7 @@ static void rcar_pci_setup_errirq(struct rcar_pci *priv)
 static inline void rcar_pci_setup_errirq(struct rcar_pci *priv) { }
 #endif
 
-/* PCI host controller setup */
+ 
 static void rcar_pci_setup(struct rcar_pci *priv)
 {
 	struct pci_host_bridge *bridge = pci_host_bridge_from_priv(priv);
@@ -198,17 +191,17 @@ static void rcar_pci_setup(struct rcar_pci *priv)
 	val = ioread32(reg + RCAR_PCI_UNIT_REV_REG);
 	dev_info(dev, "PCI: revision %x\n", val);
 
-	/* Disable Direct Power Down State and assert reset */
+	 
 	val = ioread32(reg + RCAR_USBCTR_REG) & ~RCAR_USBCTR_DIRPD;
 	val |= RCAR_USBCTR_USBH_RST | RCAR_USBCTR_PLL_RST;
 	iowrite32(val, reg + RCAR_USBCTR_REG);
 	udelay(4);
 
-	/* De-assert reset and reset PCIAHB window1 size */
+	 
 	val &= ~(RCAR_USBCTR_PCIAHB_WIN1_MASK | RCAR_USBCTR_PCICLK_MASK |
 		 RCAR_USBCTR_USBH_RST | RCAR_USBCTR_PLL_RST);
 
-	/* Setup PCIAHB window1 size */
+	 
 	switch (window_size) {
 	case SZ_2G:
 		val |= RCAR_USBCTR_PCIAHB_WIN1_2G;
@@ -230,30 +223,30 @@ static void rcar_pci_setup(struct rcar_pci *priv)
 	}
 	iowrite32(val, reg + RCAR_USBCTR_REG);
 
-	/* Configure AHB master and slave modes */
+	 
 	iowrite32(RCAR_AHB_BUS_MODE, reg + RCAR_AHB_BUS_CTR_REG);
 
-	/* Configure PCI arbiter */
+	 
 	val = ioread32(reg + RCAR_PCI_ARBITER_CTR_REG);
 	val |= RCAR_PCI_ARBITER_PCIREQ0 | RCAR_PCI_ARBITER_PCIREQ1 |
 	       RCAR_PCI_ARBITER_PCIBP_MODE;
 	iowrite32(val, reg + RCAR_PCI_ARBITER_CTR_REG);
 
-	/* PCI-AHB mapping */
+	 
 	iowrite32(window_addr | RCAR_PCIAHB_PREFETCH16,
 		  reg + RCAR_PCIAHB_WIN1_CTR_REG);
 
-	/* AHB-PCI mapping: OHCI/EHCI registers */
+	 
 	val = priv->mem_res.start | RCAR_AHBPCI_WIN_CTR_MEM;
 	iowrite32(val, reg + RCAR_AHBPCI_WIN2_CTR_REG);
 
-	/* Enable AHB-PCI bridge PCI configuration access */
+	 
 	iowrite32(RCAR_AHBPCI_WIN1_HOST | RCAR_AHBPCI_WIN_CTR_CFG,
 		  reg + RCAR_AHBPCI_WIN1_CTR_REG);
-	/* Set PCI-AHB Window1 address */
+	 
 	iowrite32(window_pci | PCI_BASE_ADDRESS_MEM_PREFETCH,
 		  reg + PCI_BASE_ADDRESS_1);
-	/* Set AHB-PCI bridge PCI communication area address */
+	 
 	val = priv->cfg_res->start + RCAR_AHBPCI_PCICOM_OFFSET;
 	iowrite32(val, reg + PCI_BASE_ADDRESS_0);
 
@@ -262,7 +255,7 @@ static void rcar_pci_setup(struct rcar_pci *priv)
 	       PCI_COMMAND_MEMORY | PCI_COMMAND_MASTER;
 	iowrite32(val, reg + PCI_COMMAND);
 
-	/* Enable PCI interrupts */
+	 
 	iowrite32(RCAR_PCI_INT_A | RCAR_PCI_INT_B | RCAR_PCI_INT_PME,
 		  reg + RCAR_PCI_INT_ENABLE_REG);
 

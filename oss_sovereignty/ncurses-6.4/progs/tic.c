@@ -1,44 +1,8 @@
-/****************************************************************************
- * Copyright 2018-2021,2022 Thomas E. Dickey                                *
- * Copyright 1998-2017,2018 Free Software Foundation, Inc.                  *
- *                                                                          *
- * Permission is hereby granted, free of charge, to any person obtaining a  *
- * copy of this software and associated documentation files (the            *
- * "Software"), to deal in the Software without restriction, including      *
- * without limitation the rights to use, copy, modify, merge, publish,      *
- * distribute, distribute with modifications, sublicense, and/or sell       *
- * copies of the Software, and to permit persons to whom the Software is    *
- * furnished to do so, subject to the following conditions:                 *
- *                                                                          *
- * The above copyright notice and this permission notice shall be included  *
- * in all copies or substantial portions of the Software.                   *
- *                                                                          *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS  *
- * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF               *
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.   *
- * IN NO EVENT SHALL THE ABOVE COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,   *
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR    *
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR    *
- * THE USE OR OTHER DEALINGS IN THE SOFTWARE.                               *
- *                                                                          *
- * Except as contained in this notice, the name(s) of the above copyright   *
- * holders shall not be used in advertising or otherwise to promote the     *
- * sale, use or other dealings in this Software without prior written       *
- * authorization.                                                           *
- ****************************************************************************/
+ 
 
-/****************************************************************************
- *  Author: Zeyd M. Ben-Halim <zmbenhal@netcom.com> 1992,1995               *
- *     and: Eric S. Raymond <esr@snark.thyrsus.com>                         *
- *     and: Thomas E. Dickey                        1996 on                 *
- ****************************************************************************/
+ 
 
-/*
- *	tic.c --- Main program for terminfo compiler
- *			by Eric S. Raymond
- *			and Thomas E Dickey
- *
- */
+ 
 
 #include <progs.priv.h>
 #include <sys/stat.h>
@@ -57,8 +21,8 @@ const char *_nc_progname = "tic";
 
 static FILE *log_fp;
 static FILE *tmp_fp;
-static bool capdump = FALSE;	/* running as infotocap? */
-static bool infodump = FALSE;	/* running as captoinfo? */
+static bool capdump = FALSE;	 
+static bool infodump = FALSE;	 
 static bool showsummary = FALSE;
 static unsigned debug_level;
 static char **namelst = 0;
@@ -206,10 +170,7 @@ write_it(ENTRY * ep)
     char *s, *d, *t;
     char result[MAX_ENTRY_SIZE];
 
-    /*
-     * Look for strings that contain %{number}, convert them to %'char',
-     * which is shorter and runs a little faster.
-     */
+     
     for (n = 0; n < STRCOUNT; n++) {
 	s = ep->tterm.Strings[n];
 	if (VALID_STRING(s)
@@ -228,7 +189,7 @@ write_it(ENTRY * ep)
 		    if (v != 0
 			&& *v == R_BRACE
 			&& value > 0
-			&& value != '\\'	/* FIXME */
+			&& value != '\\'	 
 			&& value < 127
 			&& isprint((int) value)) {
 			*d++ = S_QUOTE;
@@ -251,42 +212,10 @@ write_it(ENTRY * ep)
 
 static bool
 immedhook(ENTRY * ep GCC_UNUSED)
-/* write out entries with no use capabilities immediately to save storage */
+ 
 {
 #if !HAVE_BIG_CORE
-    /*
-     * This is strictly a core-economy kluge.  The really clean way to handle
-     * compilation is to slurp the whole file into core and then do all the
-     * name-collision checks and entry writes in one swell foop.  But the
-     * terminfo master file is large enough that some core-poor systems swap
-     * like crazy when you compile it this way...there have been reports of
-     * this process taking *three hours*, rather than the twenty seconds or
-     * less typical on my development box.
-     *
-     * So.  This hook *immediately* writes out the referenced entry if it
-     * has no use capabilities.  The compiler main loop refrains from
-     * adding the entry to the in-core list when this hook fires.  If some
-     * other entry later needs to reference an entry that got written
-     * immediately, that's OK; the resolution code will fetch it off disk
-     * when it can't find it in core.
-     *
-     * Name collisions will still be detected, just not as cleanly.  The
-     * write_entry() code complains before overwriting an entry that
-     * postdates the time of tic's first call to write_entry().  Thus
-     * it will complain about overwriting entries newly made during the
-     * tic run, but not about overwriting ones that predate it.
-     *
-     * The reason this is a hook, and not in line with the rest of the
-     * compiler code, is that the support for termcap fallback cannot assume
-     * it has anywhere to spool out these entries!
-     *
-     * The _nc_set_type() call here requires a compensating one in
-     * _nc_parse_entry().
-     *
-     * If you define HAVE_BIG_CORE, you'll disable this kluge.  This will
-     * make tic a bit faster (because the resolution code won't have to do
-     * disk I/O nearly as often).
-     */
+     
     if (ep->nuses == 0) {
 	int oldline = _nc_curr_line;
 
@@ -295,13 +224,13 @@ immedhook(ENTRY * ep GCC_UNUSED)
 	free(ep->tterm.str_table);
 	return (TRUE);
     }
-#endif /* HAVE_BIG_CORE */
+#endif  
     return (FALSE);
 }
 
 static void
 put_translate(int c)
-/* emit a comment char, translating terminfo names to termcap names */
+ 
 {
     static bool in_name = FALSE;
     static size_t used;
@@ -325,7 +254,7 @@ put_translate(int c)
 	    in_name = FALSE;
 	} else if (c != '>') {
 	    namebuf[used++] = (char) c;
-	} else {		/* ah! candidate name! */
+	} else {		 
 	    char *up;
 	    NCURSES_CONST char *tp;
 
@@ -346,7 +275,7 @@ put_translate(int c)
 		(void) fputs(suffix, stdout);
 		(void) putchar(':');
 	    } else {
-		/* couldn't find a translation, just dump the name */
+		 
 		(void) putchar('<');
 		(void) fputs(namebuf, stdout);
 		(void) fputs(suffix, stdout);
@@ -363,7 +292,7 @@ put_translate(int c)
     }
 }
 
-/* Returns a string, stripped of leading/trailing whitespace */
+ 
 static char *
 stripped(char *src)
 {
@@ -429,19 +358,14 @@ copy_input(FILE *source, const char *filename, char *alt_file)
 	    } else if (ferror(source)) {
 		failed(filename);
 	    } else if (ch == 0) {
-		/* don't loop in case someone wants to convert /dev/zero */
+		 
 		fprintf(stderr, "%s: %s is not a text-file\n", _nc_progname, filename);
 		ExitProgram(EXIT_FAILURE);
 	    }
 	    fputc(ch, target);
 	}
 	fclose(source);
-	/*
-	 * rewind() does not force the target file's data to disk (not does
-	 * fflush()...).  So open a second stream on the data and then close
-	 * the one that we were writing on before starting to read from the
-	 * second stream.
-	 */
+	 
 	result = safe_fopen(alt_file, "r+");
 	fclose(target);
 	to_remove = strdup(alt_file);
@@ -485,7 +409,7 @@ open_input(const char *filename, char *alt_file)
     return fp;
 }
 
-/* Parse the "-e" option-value into a list of names */
+ 
 static char **
 make_namelist(char *src)
 {
@@ -496,8 +420,8 @@ make_namelist(char *src)
     char buffer[BUFSIZ];
 
     if (src == NULL) {
-	/* EMPTY */ ;
-    } else if (strchr(src, '/') != 0) {		/* a filename */
+	  ;
+    } else if (strchr(src, '/') != 0) {		 
 	FILE *fp = open_input(src, (char *) 0);
 
 	for (pass = 1; pass <= 2; pass++) {
@@ -518,7 +442,7 @@ make_namelist(char *src)
 	    }
 	}
 	fclose(fp);
-    } else {			/* literal list of names */
+    } else {			 
 	for (pass = 1; pass <= 2; pass++) {
 	    for (n = nn = 0, base = src;; n++) {
 		int mark = src[n];
@@ -551,7 +475,7 @@ make_namelist(char *src)
 
 static bool
 matches(char **needle, const char *haystack)
-/* does entry in needle list match |-separated field in haystack? */
+ 
 {
     bool code = FALSE;
 
@@ -606,7 +530,7 @@ valid_db_path(const char *nominal)
 	}
 #endif
     } else {
-	/* check if parent is directory and is writable */
+	 
 	unsigned leaf = _nc_pathlast(result);
 
 	DEBUG(1, ("...not found"));
@@ -631,11 +555,7 @@ valid_db_path(const char *nominal)
     return result;
 }
 
-/*
- * Show the databases to which tic could write.  The location to which it
- * writes is always the first one.  If none are writable, print an error
- * message.
- */
+ 
 static void
 show_databases(const char *outdir)
 {
@@ -662,9 +582,7 @@ show_databases(const char *outdir)
 	}
     }
 
-    /*
-     * If we can write in neither location, give an error message.
-     */
+     
     if (tried) {
 	fflush(stdout);
 	fprintf(stderr, "%s: %s (no permission)\n", _nc_progname, tried);
@@ -689,15 +607,15 @@ main(int argc, char *argv[])
 
     int this_opt, last_opt = '?';
 
-    int outform = F_TERMINFO;	/* output format */
-    int sortmode = S_TERMINFO;	/* sort_mode */
+    int outform = F_TERMINFO;	 
+    int sortmode = S_TERMINFO;	 
 
     int width = 60;
     int height = 65535;
-    bool formatted = FALSE;	/* reformat complex strings? */
-    bool literal = FALSE;	/* suppress post-processing? */
-    int numbers = 0;		/* format "%'char'" to/from "%{number}" */
-    bool forceresolve = FALSE;	/* force resolution */
+    bool formatted = FALSE;	 
+    bool literal = FALSE;	 
+    int numbers = 0;		 
+    bool forceresolve = FALSE;	 
     bool limited = TRUE;
     char *tversion = (char *) NULL;
     const char *source_file = "terminfo";
@@ -722,16 +640,12 @@ main(int argc, char *argv[])
 	sortmode = S_TERMCAP;
     }
 #if NCURSES_XNAMES
-    /* set this directly to avoid interaction with -v and -D options */
+     
     _nc_user_definable = FALSE;
 #endif
     _nc_strict_bsd = 0;
 
-    /*
-     * Processing arguments is a little complicated, since someone made a
-     * design decision to allow the numeric values for -w, -v options to
-     * be optional.
-     */
+     
     while ((this_opt = getopt(argc, argv,
 			      "0123456789CDIKLNQR:TUVWace:fGgo:qrstvwx")) != -1) {
 	if (isdigit(this_opt)) {
@@ -765,9 +679,7 @@ main(int argc, char *argv[])
 	switch (this_opt) {
 	case 'K':
 	    _nc_strict_bsd = 1;
-	    /* the initial version of -K in 20110730 fell-thru here, but the
-	     * same flag is useful when reading sources -TD
-	     */
+	     
 	    break;
 	case 'C':
 	    capdump = TRUE;
@@ -852,7 +764,7 @@ main(int argc, char *argv[])
 	    break;
 	case 'a':
 	    _nc_disable_period = TRUE;
-	    /* FALLTHRU */
+	     
 	case 'x':
 	    using_extensions = TRUE;
 	    break;
@@ -863,18 +775,11 @@ main(int argc, char *argv[])
 	last_opt = this_opt;
     }
 
-    /*
-     * If the -v option is set, it may override the $NCURSES_TRACE environment
-     * variable, e.g., for -v3 and up.
-     */
+     
     debug_level = VtoTrace(v_opt);
     use_verbosity(debug_level);
 
-    /*
-     * Do this after setting debug_level, since the function calls START_TRACE,
-     * which uses the $NCURSES_TRACE environment variable if _nc_tracing bits
-     * for tracing are zero.
-     */
+     
 #if NCURSES_XNAMES
     if (using_extensions) {
 	use_extended_names(TRUE);
@@ -886,23 +791,14 @@ main(int argc, char *argv[])
 	_nc_check_termtype2 = check_termtype;
     }
 #if !HAVE_BIG_CORE
-    /*
-     * Aaargh! immedhook seriously hoses us!
-     *
-     * One problem with immedhook is it means we can't do -e.  Problem
-     * is that we can't guarantee that for each terminal listed, all the
-     * terminals it depends on will have been kept in core for reference
-     * resolution -- in fact it is certain the primitive types at the end
-     * of reference chains *won't* be in core unless they were explicitly
-     * in the select list themselves.
-     */
+     
     if (namelst && (!infodump && !capdump)) {
 	(void) fprintf(stderr,
 		       "%s: Sorry, -e can't be used without -I or -C\n",
 		       _nc_progname);
 	ExitProgram(EXIT_FAILURE);
     }
-#endif /* HAVE_BIG_CORE */
+#endif  
 
     if (optind < argc) {
 	source_file = argv[optind++];
@@ -916,12 +812,12 @@ main(int argc, char *argv[])
 	}
     } else {
 	if (infodump == TRUE) {
-	    /* captoinfo's no-argument case */
+	     
 	    source_file = "/etc/termcap";
 	    if ((termcap = getenv("TERMCAP")) != 0
 		&& (namelst = make_namelist(getenv("TERM"))) != 0) {
 		if (access(termcap, F_OK) == 0) {
-		    /* file exists */
+		     
 		    source_file = termcap;
 		} else {
 		    if ((tmp_fp = open_tempfile(my_tmpname)) != 0) {
@@ -936,7 +832,7 @@ main(int argc, char *argv[])
 		}
 	    }
 	} else {
-	    /* tic */
+	     
 	    fprintf(stderr,
 		    "%s: File name needed.  Usage:\n\t%s %s",
 		    _nc_progname,
@@ -970,26 +866,26 @@ main(int argc, char *argv[])
 		  debug_level, FALSE, FALSE, FALSE);
     }
 
-    /* parse entries out of the source file */
+     
     _nc_set_source(source_file);
 #if !HAVE_BIG_CORE
     if (!(check_only || infodump || capdump))
 	_nc_set_writedir(outdir);
-#endif /* HAVE_BIG_CORE */
+#endif  
     _nc_read_entry_source(tmp_fp, (char *) NULL,
 			  !smart_defaults || literal, FALSE,
 			  ((check_only || infodump || capdump)
 			   ? NULLHOOK
 			   : immedhook));
 
-    /* do use resolution */
+     
     if (check_only || (!infodump && !capdump) || forceresolve) {
 	if (!_nc_resolve_uses2(TRUE, literal) && !check_only) {
 	    ExitProgram(EXIT_FAILURE);
 	}
     }
 
-    /* length check */
+     
     if (check_only && limited && (capdump || infodump)) {
 	for_entry_list(qp) {
 	    if (matches(namelst, qp->tterm.term_names)) {
@@ -1005,14 +901,14 @@ main(int argc, char *argv[])
 	}
     }
 
-    /* write or dump all entries */
+     
     if (check_only) {
-	/* this is in case infotocap() generates warnings */
+	 
 	_nc_curr_col = _nc_curr_line = -1;
 
 	for_entry_list(qp) {
 	    if (matches(namelst, qp->tterm.term_names)) {
-		/* this is in case infotocap() generates warnings */
+		 
 		_nc_set_type(_nc_first_name(qp->tterm.term_names));
 		_nc_curr_line = (int) qp->startline;
 		repair_acsc(&qp->tterm);
@@ -1028,7 +924,7 @@ main(int argc, char *argv[])
 		    write_it(qp);
 	    }
 	} else {
-	    /* this is in case infotocap() generates warnings */
+	     
 	    _nc_curr_col = _nc_curr_line = -1;
 
 	    for_entry_list(qp) {
@@ -1036,7 +932,7 @@ main(int argc, char *argv[])
 		    long j = qp->cend - qp->cstart;
 		    int len = 0;
 
-		    /* this is in case infotocap() generates warnings */
+		     
 		    _nc_set_type(_nc_first_name(qp->tterm.term_names));
 
 		    if (!quiet) {
@@ -1087,9 +983,7 @@ main(int argc, char *argv[])
 	}
     }
 
-    /* Show the directory into which entries were written, and the total
-     * number of entries
-     */
+     
     if (showsummary
 	&& (!(check_only || infodump || capdump))) {
 	int total = _nc_tic_written();
@@ -1103,17 +997,11 @@ main(int argc, char *argv[])
     ExitProgram(EXIT_SUCCESS);
 }
 
-/*
- * This bit of legerdemain turns all the terminfo variable names into
- * references to locations in the arrays Booleans, Numbers, and Strings ---
- * precisely what's needed (see comp_parse.c).
- */
+ 
 #undef CUR
 #define CUR tp->
 
-/*
- * Check if the alternate character-set capabilities are consistent.
- */
+ 
 static void
 check_acs(TERMTYPE2 *tp)
 {
@@ -1121,17 +1009,12 @@ check_acs(TERMTYPE2 *tp)
     int vt100_rmacs = 0;
     int vt100_enacs = 0;
 
-    /*
-     * ena_acs is not always necessary, but if it is present, the enter/exit
-     * capabilities should be.
-     */
+     
     ANDMISSING(ena_acs, enter_alt_charset_mode);
     ANDMISSING(ena_acs, exit_alt_charset_mode);
     PAIRED(exit_alt_charset_mode, exit_alt_charset_mode);
 
-    /*
-     * vt100-like is frequently used, but perhaps ena_acs is missing, etc.
-     */
+     
     if (VALID_STRING(enter_alt_charset_mode)) {
 	vt100_smacs = (!strcmp("\033(0", enter_alt_charset_mode)
 		       ? 2
@@ -1224,9 +1107,7 @@ same_color(NCURSES_CONST char *oldcap, NCURSES_CONST char *newcap, int limit)
     return result;
 }
 
-/*
- * Check if the color capabilities are consistent
- */
+ 
 static void
 check_colors(TERMTYPE2 *tp)
 {
@@ -1259,7 +1140,7 @@ check_colors(TERMTYPE2 *tp)
 	}
     }
 
-    /* see: has_colors() */
+     
     if (VALID_NUMERIC(max_colors) && VALID_NUMERIC(max_pairs)
 	&& ((VALID_STRING(set_foreground)
 	     && VALID_STRING(set_background))
@@ -1326,7 +1207,7 @@ keypad_index(const char *string)
     long result = -1;
 
     if ((ch = keypad_final(string)) != '\0') {
-	const char *list = "PQRSwxymtuvlqrsPpn";	/* app-keypad except "Enter" */
+	const char *list = "PQRSwxymtuvlqrsPpn";	 
 	char *test = (strchr) (list, ch);
 	if (test != 0)
 	    result = (long) (test - list);
@@ -1334,12 +1215,7 @@ keypad_index(const char *string)
     return result;
 }
 
-/*
- * list[] is down, up, left, right
- * "left" may be ^H rather than \E[D
- * "down" may be ^J rather than \E[B
- * But up/right are generally consistently escape sequences for ANSI terminals.
- */
+ 
 static void
 check_ansi_cursor(char *list[4])
 {
@@ -1460,21 +1336,18 @@ check_cursor(TERMTYPE2 *tp)
 	}
     }
 
-    /* it is rare to have an insert-line feature without a matching delete */
+     
     ANDMISSING(parm_insert_line, insert_line);
     ANDMISSING(parm_delete_line, delete_line);
     ANDMISSING(parm_insert_line, parm_delete_line);
 
-    /* if we have a parameterized form, then the non-parameterized is easy */
+     
     ANDMISSING(parm_down_cursor, cursor_down);
     ANDMISSING(parm_up_cursor, cursor_up);
     ANDMISSING(parm_left_cursor, cursor_left);
     ANDMISSING(parm_right_cursor, cursor_right);
 
-    /* Given any of a set of cursor movement, the whole set should be present.
-     * Technically this is not true (we could use cursor_address to fill in
-     * unsupported controls), but it is likely.
-     */
+     
     count = 0;
     if (PRESENT(parm_down_cursor)) {
 	list[count++] = parm_down_cursor;
@@ -1532,10 +1405,7 @@ check_cursor(TERMTYPE2 *tp)
 }
 
 #define MAX_KP 5
-/*
- * Do a quick sanity-check for vt100-style keypads to see if the 5-key keypad
- * is mapped inconsistently.
- */
+ 
 static void
 check_keypad(TERMTYPE2 *tp)
 {
@@ -1558,7 +1428,7 @@ check_keypad(TERMTYPE2 *tp)
 	final[4] = keypad_final(key_c3);
 	final[5] = '\0';
 
-	/* special case: legacy coding using 1,2,3,0,. on the bottom */
+	 
 	assert(strlen(final) <= MAX_KP);
 	if (!strcmp(final, "qsrpn"))
 	    return;
@@ -1569,14 +1439,14 @@ check_keypad(TERMTYPE2 *tp)
 	list[3] = keypad_index(key_c1);
 	list[4] = keypad_index(key_c3);
 
-	/* check that they're all vt100 keys */
+	 
 	for (j = 0; j < MAX_KP; ++j) {
 	    if (list[j] < 0) {
 		return;
 	    }
 	}
 
-	/* check if they're all in increasing order */
+	 
 	for (j = 1; j < MAX_KP; ++j) {
 	    if (list[j] > list[j - 1]) {
 		++increase;
@@ -1644,10 +1514,7 @@ check_keypad(TERMTYPE2 *tp)
 	    _nc_warning("vt100 keypad map incomplete:%s", show);
     }
 
-    /*
-     * These warnings are useful for consistency checks - it is possible that
-     * there are real terminals with mismatches in these
-     */
+     
     ANDMISSING(key_ic, key_dc);
 }
 
@@ -1684,10 +1551,7 @@ check_printer(TERMTYPE2 *tp)
     ANDMISSING(start_char_set_def, stop_char_set_def);
 #endif
 
-    /*
-     * If we have a parameterized form, then the non-parameterized is easy.
-     * note: parameterized/non-parameterized margin settings are unrelated.
-     */
+     
 #if defined(parm_down_micro) && defined(micro_down)
     ANDMISSING(parm_down_micro, micro_down);
 #endif
@@ -1710,9 +1574,7 @@ uses_SGR_39_49(const char *value)
 	    || strstr(value, "49;39") != 0);
 }
 
-/*
- * Check consistency of termcap extensions related to "screen".
- */
+ 
 static void
 check_screen(TERMTYPE2 *tp)
 {
@@ -1787,22 +1649,20 @@ check_screen(TERMTYPE2 *tp)
     }
 }
 #else
-#define check_screen(tp)	/* nothing */
+#define check_screen(tp)	 
 #endif
 
-/*
- * Returns the expected number of parameters for the given capability.
- */
+ 
 static int
 expected_params(const char *name)
 {
 #define DATA(name,count) { { name }, count }
-    /* *INDENT-OFF* */
+     
     static const struct {
 	const char name[9];
 	int count;
     } table[] = {
-	DATA( "S0",		1 ),	/* 'screen' extension */
+	DATA( "S0",		1 ),	 
 	DATA( "birep",		2 ),
 	DATA( "chr",		1 ),
 	DATA( "colornm",	1 ),
@@ -1855,7 +1715,7 @@ expected_params(const char *name)
 	DATA( "sgr1",		6 ),
 	DATA( "slength",	1 ),
 	DATA( "slines",		1 ),
-	DATA( "smgbp",		1 ),	/* 2 if smgtp is not given */
+	DATA( "smgbp",		1 ),	 
 	DATA( "smglp",		1 ),
 	DATA( "smglr",		2 ),
 	DATA( "smgrp",		1 ),
@@ -1867,11 +1727,11 @@ expected_params(const char *name)
 	DATA( "wind",		4 ),
 	DATA( "wingo",		1 ),
     };
-    /* *INDENT-ON* */
+     
 #undef DATA
 
     unsigned n;
-    int result = 0;		/* function-keys, etc., use none */
+    int result = 0;		 
 
     for (n = 0; n < SIZEOF(table); n++) {
 	if (!strcmp(name, table[n].name)) {
@@ -1883,10 +1743,7 @@ expected_params(const char *name)
     return result;
 }
 
-/*
- * Check for user-capabilities that happen to be used in ncurses' terminal
- * database.
- */
+ 
 #if NCURSES_XNAMES
 static struct user_table_entry const *
 lookup_user_capability(const char *name)
@@ -1899,18 +1756,7 @@ lookup_user_capability(const char *name)
 }
 #endif
 
-/*
- * If a given name is likely to be a user-capability, return the number of
- * parameters it would be used with.  If not, return -1.
- *
- * ncurses assumes that u6 could be used for getting the cursor-position, but
- * that is not implemented.  Make a special case for that, to quiet needless
- * warnings.
- *
- * The other string-capability extensions (see terminfo.src) which could have
- * parameters such as "Ss", "%u", are not used by ncurses.  But we check those
- * anyway, to validate the terminfo database.
- */
+ 
 static int
 is_user_capability(const char *name)
 {
@@ -1937,33 +1783,33 @@ line_capability(const char *name)
     bool result = FALSE;
     static const char *table[] =
     {
-	"csr",			/* change_scroll_region          */
-	"clear",		/* clear_screen                  */
-	"ed",			/* clr_eos                       */
-	"cwin",			/* create_window                 */
-	"cup",			/* cursor_address                */
-	"cud1",			/* cursor_down                   */
-	"home",			/* cursor_home                   */
-	"mrcup",		/* cursor_mem_address            */
-	"ll",			/* cursor_to_ll                  */
-	"cuu1",			/* cursor_up                     */
-	"dl1",			/* delete_line                   */
-	"hd",			/* down_half_line                */
-	"flash",		/* flash_screen                  */
-	"ff",			/* form_feed                     */
-	"il1",			/* insert_line                   */
-	"nel",			/* newline                       */
-	"dl",			/* parm_delete_line              */
-	"cud",			/* parm_down_cursor              */
-	"indn",			/* parm_index                    */
-	"il",			/* parm_insert_line              */
-	"rin",			/* parm_rindex                   */
-	"cuu",			/* parm_up_cursor                */
-	"mc0",			/* print_screen                  */
-	"vpa",			/* row_address                   */
-	"ind",			/* scroll_forward                */
-	"ri",			/* scroll_reverse                */
-	"hu",			/* up_half_line                  */
+	"csr",			 
+	"clear",		 
+	"ed",			 
+	"cwin",			 
+	"cup",			 
+	"cud1",			 
+	"home",			 
+	"mrcup",		 
+	"ll",			 
+	"cuu1",			 
+	"dl1",			 
+	"hd",			 
+	"flash",		 
+	"ff",			 
+	"il1",			 
+	"nel",			 
+	"dl",			 
+	"cud",			 
+	"indn",			 
+	"il",			 
+	"rin",			 
+	"cuu",			 
+	"mc0",			 
+	"vpa",			 
+	"ind",			 
+	"ri",			 
+	"hu",			 
     };
     size_t n;
     for (n = 0; n < SIZEOF(table); ++n) {
@@ -1975,11 +1821,7 @@ line_capability(const char *name)
     return result;
 }
 
-/*
- * Make a quick sanity check for the parameters which are used in the given
- * strings.  If there are no "%p" tokens, then there should be no other "%"
- * markers.
- */
+ 
 static void
 check_params(TERMTYPE2 *tp, const char *name, const char *value, int extended)
 {
@@ -2063,11 +1905,7 @@ check_params(TERMTYPE2 *tp, const char *name, const char *value, int extended)
 	}
     }
 
-    /*
-     * Counting "%p" markers does not account for termcap expressions which
-     * may not have been fully translated.  Also, tparm does its own analysis.
-     * Report differences here.
-     */
+     
     _nc_reset_tparm(NULL);
     if (actual >= 0) {
 	char *p_is_s[NUM_PARM];
@@ -2080,7 +1918,7 @@ check_params(TERMTYPE2 *tp, const char *name, const char *value, int extended)
 #if NCURSES_XNAMES
 	    int user_cap = is_user_capability(name);
 	    if ((user_cap == analyzed) && using_extensions) {
-		;		/* ignore */
+		;		 
 	    } else if (user_cap >= 0) {
 		_nc_warning("tparm will use %d parameters for %s, expected %d",
 			    analyzed, name, user_cap);
@@ -2121,9 +1959,7 @@ check_params(TERMTYPE2 *tp, const char *name, const char *value, int extended)
     }
 }
 
-/*
- * Check for DEC VT100 private mode for reverse video.
- */
+ 
 static const char *
 skip_DECSCNM(const char *value, int *flag)
 {
@@ -2201,7 +2037,7 @@ check_delays(TERMTYPE2 *tp, const char *name, const char *value)
 				name);
 		}
 	    } else {
-		p = q - 1;	/* restart scan */
+		p = q - 1;	 
 	    }
 	}
     }
@@ -2211,18 +2047,13 @@ check_delays(TERMTYPE2 *tp, const char *name, const char *value)
 
 	if (first != 0) {
 	    if (first == value || *last == 0) {
-		/*
-		 * Delay is on one end or the other.
-		 */
+		 
 		_nc_warning("expected delay embedded within %s", name);
 	    }
 	} else {
 	    int flag;
 
-	    /*
-	     * Check for missing delay when using VT100 reverse-video.
-	     * A real VT100 might not need this, but terminal emulators do.
-	     */
+	     
 	    if ((p = skip_DECSCNM(value, &flag)) != 0 &&
 		flag > 0 &&
 		skip_DECSCNM(p, &flag) != 0 &&
@@ -2375,9 +2206,7 @@ parse_tc_delay(const char *tc, double *delays)
     return parse_delay_value(tc, delays, (int *) 0);
 }
 
-/*
- * Compare terminfo- and termcap-strings, factoring out delays.
- */
+ 
 static bool
 same_ti_tc(const char *ti, const char *tc, bool * embedded)
 {
@@ -2420,16 +2249,14 @@ same_ti_tc(const char *ti, const char *tc, bool * embedded)
 	if (same) {
 	    same = FALSE;
 	} else {
-	    *embedded = FALSE;	/* report only one problem */
+	    *embedded = FALSE;	 
 	}
     }
 
     return same;
 }
 
-/*
- * Check terminfo to termcap translation.
- */
+ 
 static void
 check_infotocap(TERMTYPE2 *tp, int i, const char *value)
 {
@@ -2498,10 +2325,7 @@ skip_delay(char *s)
     return s;
 }
 
-/*
- * Skip a delay altogether, e.g., when comparing a simple string to sgr,
- * the latter may have a worst-case delay on the end.
- */
+ 
 static char *
 ignore_delays(char *s)
 {
@@ -2552,12 +2376,7 @@ static const char sgr_names[][11] =
 };
 #undef DATA
 
-/*
- * An sgr string may contain several settings other than the one we're
- * interested in, essentially sgr0 + rmacs + whatever.  As long as the
- * "whatever" is contained in the sgr string, that is close enough for our
- * sanity check.
- */
+ 
 static bool
 similar_sgr(int num, char *a, char *b)
 {
@@ -2605,7 +2424,7 @@ similar_sgr(int num, char *a, char *b)
 	a++;
 	b++;
     }
-    /* ignore delays on the end of the string */
+     
     a = ignore_delays(a);
     return ((num != 0) || (*a == 0));
 }
@@ -2654,12 +2473,7 @@ check_sgr(TERMTYPE2 *tp, char *zero, int num, char *cap, const char *name)
 #define CHECK_SGR(num,name) check_sgr(tp, zero, num, name, #name)
 
 #ifdef TRACE
-/*
- * If tic is compiled with TRACE, we'll be able to see the output from the
- * DEBUG() macro.  But since it doesn't use traceon(), it always goes to
- * the standard error.  Use this function to make it simpler to follow the
- * resulting debug traces.
- */
+ 
 static void
 show_where(unsigned level)
 {
@@ -2673,7 +2487,7 @@ show_where(unsigned level)
 }
 
 #else
-#define show_where(level)	/* nothing */
+#define show_where(level)	 
 #endif
 
 typedef struct {
@@ -2728,11 +2542,7 @@ show_fkey_name(NAME_VALUE * data)
     }
 }
 
-/*
- * A terminal entry may contain more than one keycode assigned to a given
- * string (e.g., KEY_END and KEY_LL).  But curses will only return one (the
- * last one assigned).
- */
+ 
 static void
 check_conflict(TERMTYPE2 *tp)
 {
@@ -2784,7 +2594,7 @@ check_conflict(TERMTYPE2 *tp)
 	}
 #if NCURSES_XNAMES
 	if (using_extensions) {
-	    /* *INDENT-OFF* */
+	     
 	    static struct {
 		const char *xcurses;
 		const char *shifted;
@@ -2800,14 +2610,8 @@ check_conflict(TERMTYPE2 *tp)
 		{ "kUP",  "kri" },
 		{ NULL,   NULL },
 	    };
-	    /* *INDENT-ON* */
-	    /*
-	     * SVr4 curses defines the "xcurses" names listed above except for
-	     * the special cases in the "shifted" column.  When using these
-	     * names for xterm's extensions, that was confusing, and resulted
-	     * in adding extended capabilities with "2" (shift) suffix.  This
-	     * check warns about unnecessary use of extensions for this quirk.
-	     */
+	     
+	     
 	    for (j = 0; given[j].keycode; ++j) {
 		const char *find = given[j].name;
 		int value;
@@ -2847,9 +2651,7 @@ check_conflict(TERMTYPE2 *tp)
     }
 }
 
-/*
- * Exiting a video mode should not duplicate sgr0
- */
+ 
 static void
 check_exit_attribute(const char *name, char *test, char *trimmed, char *untrimmed)
 {
@@ -2861,9 +2663,7 @@ check_exit_attribute(const char *name, char *test, char *trimmed, char *untrimme
     }
 }
 
-/*
- * Returns true if the string looks like a standard SGR string.
- */
+ 
 static bool
 is_sgr_string(char *value)
 {
@@ -2892,9 +2692,7 @@ is_sgr_string(char *value)
     return result;
 }
 
-/*
- * Check if the given capability contains a given SGR attribute.
- */
+ 
 static void
 check_sgr_param(TERMTYPE2 *tp, int code, const char *name, char *value)
 {
@@ -2915,9 +2713,7 @@ check_sgr_param(TERMTYPE2 *tp, int code, const char *name, char *value)
 		    ++count;
 		} else {
 		    if (count) {
-			/*
-			 * Avoid unnecessary warning for xterm 256color codes.
-			 */
+			 
 			if (color && (param == 38 || param == 48))
 			    skips = 3;
 			if ((skips-- <= 0) && (param == code))
@@ -3103,7 +2899,7 @@ guess_ANSI_VTxx(TERMTYPE2 *tp)
     int result = -1;
     int checks = 0;
 
-    /* VT100s have scrolling region, but ANSI (ECMA-48) does not specify */
+     
     if (check_ANSI_cap(change_scroll_region, 2, 'r') &&
 	(isValidEscape(scroll_forward, "D") ||
 	 isValidString(scroll_forward, "\n") ||
@@ -3131,17 +2927,11 @@ guess_ANSI_VTxx(TERMTYPE2 *tp)
     return result;
 }
 
-/*
- * u6/u7 and u8/u9 are query/response extensions which most terminals support.
- * In particular, any ECMA-48 terminal should support these, though the details
- * for u9 are implementation dependent.
- */
+ 
 static void
 check_user_6789(TERMTYPE2 *tp)
 {
-    /*
-     * Check if the terminal is known to not 
-     */
+     
 #define NO_QUERY(longname,shortname) \
 	if (PRESENT(longname)) _nc_warning(#shortname " is not supported")
     if (tigetflag("NQ") > 0) {
@@ -3163,7 +2953,7 @@ check_user_6789(TERMTYPE2 *tp)
 	if (!PRESENT(user8)) {
 	    _nc_warning("expected u8/u9 for device-attributes");
 	}
-	/* FALLTHRU */
+	 
     case 0:
 	if (!PRESENT(user6)) {
 	    _nc_warning("expected u6/u7 for cursor-position");
@@ -3172,9 +2962,7 @@ check_user_6789(TERMTYPE2 *tp)
     }
 }
 
-/* other sanity-checks (things that we don't want in the normal
- * logic that reads a terminfo entry)
- */
+ 
 static void
 check_termtype(TERMTYPE2 *tp, bool literal)
 {
@@ -3186,10 +2974,7 @@ check_termtype(TERMTYPE2 *tp, bool literal)
 	char *a = tp->Strings[j];
 	if (VALID_STRING(a)) {
 	    const char *name = ExtStrname(tp, (int) j, strnames);
-	    /*
-	     * If we expect parameters, or if there might be parameters,
-	     * check for consistent number of parameters.
-	     */
+	     
 	    if (j >= SIZEOF(parametrized) ||
 		is_user_capability(name) >= 0 ||
 		parametrized[j] > 0) {
@@ -3202,7 +2987,7 @@ check_termtype(TERMTYPE2 *tp, bool literal)
 	}
     }
 #if NCURSES_XNAMES
-    /* in extended mode, verify that each extension is expected type */
+     
     for_each_ext_boolean(j, tp) {
 	check_user_capability_type(ExtBoolname(tp, (int) j, strnames), BOOLEAN);
     }
@@ -3212,7 +2997,7 @@ check_termtype(TERMTYPE2 *tp, bool literal)
     for_each_ext_string(j, tp) {
 	check_user_capability_type(ExtStrname(tp, (int) j, strnames), STRING);
     }
-#endif /* NCURSES_XNAMES */
+#endif  
 
     check_acs(tp);
     check_colors(tp);
@@ -3222,16 +3007,11 @@ check_termtype(TERMTYPE2 *tp, bool literal)
     check_screen(tp);
     check_user_6789(tp);
 
-    /*
-     * These are probably both or none.
-     */
+     
     PAIRED(parm_index, parm_rindex);
     PAIRED(parm_ich, parm_dch);
 
-    /*
-     * These may be mismatched because the terminal description relies on
-     * restoring the cursor visibility by resetting it.
-     */
+     
     ANDMISSING(cursor_invisible, cursor_normal);
     ANDMISSING(cursor_visible, cursor_normal);
 
@@ -3239,17 +3019,11 @@ check_termtype(TERMTYPE2 *tp, bool literal)
 	&& !_nc_capcmp(cursor_visible, cursor_normal))
 	_nc_warning("cursor_visible is same as cursor_normal");
 
-    /*
-     * From XSI & O'Reilly, we gather that sc/rc are required if csr is
-     * given, because the cursor position after the scrolling operation is
-     * performed is undefined.
-     */
+     
     ANDMISSING(change_scroll_region, save_cursor);
     ANDMISSING(change_scroll_region, restore_cursor);
 
-    /*
-     * If we can clear tabs, we should be able to initialize them.
-     */
+     
     ANDMISSING(clear_all_tabs, set_tab);
 
     if (PRESENT(set_attributes)) {
@@ -3335,20 +3109,13 @@ check_termtype(TERMTYPE2 *tp, bool literal)
     }
 #endif
 
-    /*
-     * Some standard applications (e.g., vi) and some non-curses
-     * applications (e.g., jove) get confused if we have both ich1 and
-     * smir/rmir.  Let's be nice and warn about that, too, even though
-     * ncurses handles it.
-     */
+     
     if ((PRESENT(enter_insert_mode) || PRESENT(exit_insert_mode))
 	&& PRESENT(insert_character)) {
 	_nc_warning("non-curses applications may be confused by ich1 with smir/rmir");
     }
 
-    /*
-     * Finally, do the non-verbose checks
-     */
+     
     if (save_check_termtype != 0)
 	save_check_termtype(tp, literal);
 }

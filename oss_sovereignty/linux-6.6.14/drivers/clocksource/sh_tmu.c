@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * SuperH Timer Support - TMU
- *
- *  Copyright (C) 2009 Magnus Damm
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/clockchips.h>
@@ -58,7 +54,7 @@ struct sh_tmu_device {
 
 	enum sh_tmu_model model;
 
-	raw_spinlock_t lock; /* Protect the shared start/stop register */
+	raw_spinlock_t lock;  
 
 	struct sh_tmu_channel *channels;
 	unsigned int num_channels;
@@ -67,10 +63,10 @@ struct sh_tmu_device {
 	bool has_clocksource;
 };
 
-#define TSTR -1 /* shared register */
-#define TCOR  0 /* channel register */
-#define TCNT 1 /* channel register */
-#define TCR 2 /* channel register */
+#define TSTR -1  
+#define TCOR  0  
+#define TCNT 1  
+#define TCR 2  
 
 #define TCR_UNF			(1 << 8)
 #define TCR_UNIE		(1 << 5)
@@ -128,7 +124,7 @@ static void sh_tmu_start_stop_ch(struct sh_tmu_channel *ch, int start)
 {
 	unsigned long flags, value;
 
-	/* start stop register shared by multiple timer channels */
+	 
 	raw_spin_lock_irqsave(&ch->tmu->lock, flags);
 	value = sh_tmu_read(ch, TSTR);
 
@@ -145,7 +141,7 @@ static int __sh_tmu_enable(struct sh_tmu_channel *ch)
 {
 	int ret;
 
-	/* enable clock */
+	 
 	ret = clk_enable(ch->tmu->clk);
 	if (ret) {
 		dev_err(&ch->tmu->pdev->dev, "ch%u: cannot enable clock\n",
@@ -153,17 +149,17 @@ static int __sh_tmu_enable(struct sh_tmu_channel *ch)
 		return ret;
 	}
 
-	/* make sure channel is disabled */
+	 
 	sh_tmu_start_stop_ch(ch, 0);
 
-	/* maximum timeout */
+	 
 	sh_tmu_write(ch, TCOR, 0xffffffff);
 	sh_tmu_write(ch, TCNT, 0xffffffff);
 
-	/* configure channel to parent clock / 4, irq off */
+	 
 	sh_tmu_write(ch, TCR, TCR_TPSC_CLK4);
 
-	/* enable channel */
+	 
 	sh_tmu_start_stop_ch(ch, 1);
 
 	return 0;
@@ -182,13 +178,13 @@ static int sh_tmu_enable(struct sh_tmu_channel *ch)
 
 static void __sh_tmu_disable(struct sh_tmu_channel *ch)
 {
-	/* disable channel */
+	 
 	sh_tmu_start_stop_ch(ch, 0);
 
-	/* disable interrupts in TMU block */
+	 
 	sh_tmu_write(ch, TCR, TCR_TPSC_CLK4);
 
-	/* stop clock */
+	 
 	clk_disable(ch->tmu->clk);
 }
 
@@ -209,16 +205,16 @@ static void sh_tmu_disable(struct sh_tmu_channel *ch)
 static void sh_tmu_set_next(struct sh_tmu_channel *ch, unsigned long delta,
 			    int periodic)
 {
-	/* stop timer */
+	 
 	sh_tmu_start_stop_ch(ch, 0);
 
-	/* acknowledge interrupt */
+	 
 	sh_tmu_read(ch, TCR);
 
-	/* enable interrupt */
+	 
 	sh_tmu_write(ch, TCR, TCR_UNIE | TCR_TPSC_CLK4);
 
-	/* reload delta value in case of periodic timer */
+	 
 	if (periodic)
 		sh_tmu_write(ch, TCOR, delta);
 	else
@@ -226,7 +222,7 @@ static void sh_tmu_set_next(struct sh_tmu_channel *ch, unsigned long delta,
 
 	sh_tmu_write(ch, TCNT, delta);
 
-	/* start timer */
+	 
 	sh_tmu_start_stop_ch(ch, 1);
 }
 
@@ -234,13 +230,13 @@ static irqreturn_t sh_tmu_interrupt(int irq, void *dev_id)
 {
 	struct sh_tmu_channel *ch = dev_id;
 
-	/* disable or acknowledge interrupt */
+	 
 	if (clockevent_state_oneshot(&ch->ced))
 		sh_tmu_write(ch, TCR, TCR_TPSC_CLK4);
 	else
 		sh_tmu_write(ch, TCR, TCR_UNIE | TCR_TPSC_CLK4);
 
-	/* notify clockevent layer */
+	 
 	ch->ced.event_handler(&ch->ced);
 	return IRQ_HANDLED;
 }
@@ -360,7 +356,7 @@ static int sh_tmu_clock_event_set_state(struct clock_event_device *ced,
 {
 	struct sh_tmu_channel *ch = ced_to_sh_tmu(ced);
 
-	/* deal with old setting first */
+	 
 	if (clockevent_state_oneshot(ced) || clockevent_state_periodic(ced))
 		sh_tmu_disable(ch);
 
@@ -387,7 +383,7 @@ static int sh_tmu_clock_event_next(unsigned long delta,
 
 	BUG_ON(!clockevent_state_oneshot(ced));
 
-	/* program new delta value */
+	 
 	sh_tmu_set_next(ch, delta, 0);
 	return 0;
 }
@@ -453,7 +449,7 @@ static int sh_tmu_channel_setup(struct sh_tmu_channel *ch, unsigned int index,
 				bool clockevent, bool clocksource,
 				struct sh_tmu_device *tmu)
 {
-	/* Skip unused channels. */
+	 
 	if (!clockevent && !clocksource)
 		return 0;
 
@@ -535,7 +531,7 @@ static int sh_tmu_setup(struct sh_tmu_device *tmu, struct platform_device *pdev)
 		return -ENXIO;
 	}
 
-	/* Get hold of clock. */
+	 
 	tmu->clk = clk_get(&tmu->pdev->dev, "fck");
 	if (IS_ERR(tmu->clk)) {
 		dev_err(&tmu->pdev->dev, "cannot get clock\n");
@@ -546,7 +542,7 @@ static int sh_tmu_setup(struct sh_tmu_device *tmu, struct platform_device *pdev)
 	if (ret < 0)
 		goto err_clk_put;
 
-	/* Determine clock rate. */
+	 
 	ret = clk_enable(tmu->clk);
 	if (ret < 0)
 		goto err_clk_unprepare;
@@ -554,14 +550,14 @@ static int sh_tmu_setup(struct sh_tmu_device *tmu, struct platform_device *pdev)
 	tmu->rate = clk_get_rate(tmu->clk) / 4;
 	clk_disable(tmu->clk);
 
-	/* Map the memory resource. */
+	 
 	ret = sh_tmu_map_memory(tmu);
 	if (ret < 0) {
 		dev_err(&tmu->pdev->dev, "failed to remap I/O memory\n");
 		goto err_clk_unprepare;
 	}
 
-	/* Allocate and setup the channels. */
+	 
 	tmu->channels = kcalloc(tmu->num_channels, sizeof(*tmu->channels),
 				GFP_KERNEL);
 	if (tmu->channels == NULL) {
@@ -569,10 +565,7 @@ static int sh_tmu_setup(struct sh_tmu_device *tmu, struct platform_device *pdev)
 		goto err_unmap;
 	}
 
-	/*
-	 * Use the first channel as a clock event device and the second channel
-	 * as a clock source.
-	 */
+	 
 	for (i = 0; i < tmu->num_channels; ++i) {
 		ret = sh_tmu_channel_setup(&tmu->channels[i], i,
 					   i == 0, i == 1, tmu);

@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Broadcom BCM2835 V4L2 driver
- *
- * Copyright © 2013 Raspberry Pi (Trading) Ltd.
- *
- * Authors: Vincent Sanders @ Collabora
- *          Dave Stevenson @ Broadcom
- *		(now dave.stevenson@raspberrypi.org)
- *          Simon Mellor @ Broadcom
- *          Luke Diamand @ Broadcom
- */
+
+ 
 
 #include <linux/errno.h>
 #include <linux/kernel.h>
@@ -28,13 +18,7 @@
 #include "../vchiq-mmal/mmal-parameters.h"
 #include "bcm2835-camera.h"
 
-/* The supported V4L2_CID_AUTO_EXPOSURE_BIAS values are from -4.0 to +4.0.
- * MMAL values are in 1/6th increments so the MMAL range is -24 to +24.
- * V4L2 docs say value "is expressed in terms of EV, drivers should interpret
- * the values as 0.001 EV units, where the value 1000 stands for +1 EV."
- * V4L2 is limited to a max of 32 values in a menu, so count in 1/3rds from
- * -4 to +4
- */
+ 
 static const s64 ev_bias_qmenu[] = {
 	-4000, -3667, -3333,
 	-3000, -2667, -2333,
@@ -47,9 +31,7 @@ static const s64 ev_bias_qmenu[] = {
 	 4000
 };
 
-/* Supported ISO values (*1000)
- * ISOO = auto ISO
- */
+ 
 static const s64 iso_qmenu[] = {
 	0, 100000, 200000, 400000, 800000,
 };
@@ -62,21 +44,19 @@ enum bcm2835_mmal_ctrl_type {
 	MMAL_CONTROL_TYPE_STD,
 	MMAL_CONTROL_TYPE_STD_MENU,
 	MMAL_CONTROL_TYPE_INT_MENU,
-	MMAL_CONTROL_TYPE_CLUSTER, /* special cluster entry */
+	MMAL_CONTROL_TYPE_CLUSTER,  
 };
 
 struct bcm2835_mmal_v4l2_ctrl {
-	u32 id; /* v4l2 control identifier */
+	u32 id;  
 	enum bcm2835_mmal_ctrl_type type;
-	/* control minimum value or
-	 * mask for MMAL_CONTROL_TYPE_STD_MENU
-	 */
+	 
 	s64 min;
-	s64 max; /* maximum value of control */
-	s64 def;  /* default value of control */
-	u64 step; /* step size of the control */
-	const s64 *imenu; /* integer menu array */
-	u32 mmal_id; /* mmal parameter id */
+	s64 max;  
+	s64 def;   
+	u64 step;  
+	const s64 *imenu;  
+	u32 mmal_id;  
 	int (*setter)(struct bcm2835_mmal_dev *dev, struct v4l2_ctrl *ctrl,
 		      const struct bcm2835_mmal_v4l2_ctrl *mmal_ctrl);
 };
@@ -135,7 +115,7 @@ struct v4l2_mmal_scene_config {
 };
 
 static const struct v4l2_mmal_scene_config scene_configs[] = {
-	/* V4L2_SCENE_MODE_NONE automatically added */
+	 
 	{
 		V4L2_SCENE_MODE_NIGHT,
 		MMAL_PARAM_EXPOSUREMODE_NIGHT,
@@ -148,7 +128,7 @@ static const struct v4l2_mmal_scene_config scene_configs[] = {
 	},
 };
 
-/* control handlers*/
+ 
 
 static int ctrl_set_rational(struct bcm2835_mmal_dev *dev,
 			     struct v4l2_ctrl *ctrl,
@@ -221,7 +201,7 @@ static int ctrl_set_value_ev(struct bcm2835_mmal_dev *dev,
 
 	control = &dev->component[COMP_CAMERA]->control;
 
-	s32_value = (ctrl->val - 12) * 2;	/* Convert from index to 1/6ths */
+	s32_value = (ctrl->val - 12) * 2;	 
 
 	return vchiq_mmal_port_parameter_set(dev->instance, control,
 					     mmal_ctrl->mmal_id,
@@ -310,9 +290,7 @@ static int ctrl_set_exposure(struct bcm2835_mmal_dev *dev,
 	control = &dev->component[COMP_CAMERA]->control;
 
 	if (mmal_ctrl->mmal_id == MMAL_PARAMETER_SHUTTER_SPEED)	{
-		/* V4L2 is in 100usec increments.
-		 * MMAL is 1usec.
-		 */
+		 
 		dev->manual_shutter_speed = ctrl->val * 100;
 	} else if (mmal_ctrl->mmal_id == MMAL_PARAMETER_EXPOSURE_MODE) {
 		switch (ctrl->val) {
@@ -346,9 +324,7 @@ static int ctrl_set_exposure(struct bcm2835_mmal_dev *dev,
 						     sizeof(u32));
 		dev->exposure_mode_active = exp_mode;
 	}
-	/* exposure_dynamic_framerate (V4L2_CID_EXPOSURE_AUTO_PRIORITY) should
-	 * always apply irrespective of scene mode.
-	 */
+	 
 	ret += set_framerate_params(dev);
 
 	return ret;
@@ -600,11 +576,7 @@ static int ctrl_set_bitrate(struct bcm2835_mmal_dev *dev,
 		 __func__, mmal_ctrl, ctrl->id, ctrl->val, ret,
 		 (ret == 0 ? 0 : -EINVAL));
 
-	/*
-	 * Older firmware versions (pre July 2019) have a bug in handling
-	 * MMAL_PARAMETER_VIDEO_BIT_RATE that result in the call
-	 * returning -MMAL_MSG_STATUS_EINVAL. So ignore errors from this call.
-	 */
+	 
 	return 0;
 }
 
@@ -724,7 +696,7 @@ static int ctrl_set_video_encode_profile_level(struct bcm2835_mmal_dev *dev,
 			param.profile = MMAL_VIDEO_PROFILE_H264_HIGH;
 			break;
 		default:
-			/* Should never get here */
+			 
 			break;
 		}
 
@@ -766,7 +738,7 @@ static int ctrl_set_video_encode_profile_level(struct bcm2835_mmal_dev *dev,
 			param.level = MMAL_VIDEO_LEVEL_H264_4;
 			break;
 		default:
-			/* Should never get here */
+			 
 			break;
 		}
 
@@ -795,7 +767,7 @@ static int ctrl_set_scene_mode(struct bcm2835_mmal_dev *dev,
 		return 0;
 
 	if (ctrl->val == V4L2_SCENE_MODE_NONE) {
-		/* Restore all user selections */
+		 
 		dev->scene_mode = V4L2_SCENE_MODE_NONE;
 
 		if (dev->exposure_mode_user == MMAL_PARAM_EXPOSUREMODE_OFF)
@@ -825,7 +797,7 @@ static int ctrl_set_scene_mode(struct bcm2835_mmal_dev *dev,
 						     sizeof(u32));
 		ret += set_framerate_params(dev);
 	} else {
-		/* Set up scene mode */
+		 
 		int i;
 		const struct v4l2_mmal_scene_config *scene = NULL;
 		int shutter_speed;
@@ -843,7 +815,7 @@ static int ctrl_set_scene_mode(struct bcm2835_mmal_dev *dev,
 		if (i >= ARRAY_SIZE(scene_configs))
 			return -EINVAL;
 
-		/* Set all the values */
+		 
 		dev->scene_mode = ctrl->val;
 
 		if (scene->exposure_mode == MMAL_PARAM_EXPOSUREMODE_OFF)
@@ -1000,7 +972,7 @@ static const struct bcm2835_mmal_v4l2_ctrl v4l2_ctrls[V4L2_CTRL_COUNT] = {
 	{
 		.id = V4L2_CID_EXPOSURE_ABSOLUTE,
 		.type = MMAL_CONTROL_TYPE_STD,
-		/* Units of 100usecs */
+		 
 		.min = 1,
 		.max = 1 * 1000 * 10,
 		.def = 100 * 10,
@@ -1028,7 +1000,7 @@ static const struct bcm2835_mmal_v4l2_ctrl v4l2_ctrls[V4L2_CTRL_COUNT] = {
 		.def = 0,
 		.step = 1,
 		.imenu = NULL,
-		/* Dummy MMAL ID as it gets mapped into FPS range */
+		 
 		.mmal_id = 0,
 		.setter = ctrl_set_exposure,
 	},
@@ -1225,7 +1197,7 @@ static const struct bcm2835_mmal_v4l2_ctrl v4l2_ctrls[V4L2_CTRL_COUNT] = {
 	{
 		.id = V4L2_CID_SCENE_MODE,
 		.type = MMAL_CONTROL_TYPE_STD_MENU,
-		/* mask is computed at runtime */
+		 
 		.min = -1,
 		.max = V4L2_SCENE_MODE_TEXT,
 		.def = V4L2_SCENE_MODE_NONE,
@@ -1277,11 +1249,11 @@ int set_framerate_params(struct bcm2835_mmal_dev *dev)
 
 	if ((dev->exposure_mode_active != MMAL_PARAM_EXPOSUREMODE_OFF) &&
 	    (dev->exp_auto_priority)) {
-		/* Variable FPS. Define min FPS as 1fps. */
+		 
 		fps_range.fps_low.numerator = 1;
 		fps_range.fps_low.denominator = 1;
 	} else {
-		/* Fixed FPS - set min and max to be the same */
+		 
 		fps_range.fps_low.numerator = fps_range.fps_high.numerator;
 		fps_range.fps_low.denominator = fps_range.fps_high.denominator;
 	}
@@ -1334,11 +1306,7 @@ int bcm2835_mmal_init_controls(struct bcm2835_mmal_dev *dev, struct v4l2_ctrl_ha
 			u64 mask = ctrl->min;
 
 			if (ctrl->id == V4L2_CID_SCENE_MODE) {
-				/* Special handling to work out the mask
-				 * value based on the scene_configs array
-				 * at runtime. Reduces the chance of
-				 * mismatches.
-				 */
+				 
 				int i;
 
 				mask = BIT(V4L2_SCENE_MODE_NONE);
@@ -1363,7 +1331,7 @@ int bcm2835_mmal_init_controls(struct bcm2835_mmal_dev *dev, struct v4l2_ctrl_ha
 			break;
 
 		case MMAL_CONTROL_TYPE_CLUSTER:
-			/* skip this entry when constructing controls */
+			 
 			continue;
 		}
 

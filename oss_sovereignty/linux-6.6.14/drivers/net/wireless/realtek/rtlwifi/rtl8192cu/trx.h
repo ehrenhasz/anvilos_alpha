@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright(c) 2009-2012  Realtek Corporation.*/
+ 
+ 
 
 #ifndef __RTL92CU_TRX_H__
 #define __RTL92CU_TRX_H__
@@ -8,7 +8,7 @@
 #define RTL92C_NUM_RX_URBS			8
 #define RTL92C_NUM_TX_URBS			32
 
-#define RTL92C_SIZE_MAX_RX_BUFFER		15360   /* 8192 */
+#define RTL92C_SIZE_MAX_RX_BUFFER		15360    
 #define RX_DRV_INFO_SIZE_UNIT			8
 
 #define RTL_AGG_ON				1
@@ -20,9 +20,9 @@ enum usb_rx_agg_mode {
 	USB_RX_AGG_DMA_USB
 };
 
-#define TX_SELE_HQ				BIT(0)	/* High Queue */
-#define TX_SELE_LQ				BIT(1)	/* Low Queue */
-#define TX_SELE_NQ				BIT(2)	/* Normal Queue */
+#define TX_SELE_HQ				BIT(0)	 
+#define TX_SELE_LQ				BIT(1)	 
+#define TX_SELE_NQ				BIT(2)	 
 
 #define RTL_USB_TX_AGG_NUM_DESC			5
 
@@ -32,36 +32,33 @@ enum usb_rx_agg_mode {
 #define RTL_USB_RX_AGG_BLOCK_NUM		5
 #define RTL_USB_RX_AGG_BLOCK_TIMEOUT		3
 
-/*======================== rx status =========================================*/
+ 
 
 struct rx_drv_info_92c {
-	/*
-	 * Driver info contain PHY status and other variabel size info
-	 * PHY Status content as below
-	 */
+	 
 
-	/* DWORD 0 */
+	 
 	u8 gain_trsw[4];
 
-	/* DWORD 1 */
+	 
 	u8 pwdb_all;
 	u8 cfosho[4];
 
-	/* DWORD 2 */
+	 
 	u8 cfotail[4];
 
-	/* DWORD 3 */
+	 
 	s8 rxevm[2];
 	s8 rxsnr[4];
 
-	/* DWORD 4 */
+	 
 	u8 pdsnr[2];
 
-	/* DWORD 5 */
+	 
 	u8 csi_current[2];
 	u8 csi_target[2];
 
-	/* DWORD 6 */
+	 
 	u8 sigevm;
 	u8 max_ex_pwr;
 	u8 ex_intf_flag:1;
@@ -70,9 +67,9 @@ struct rx_drv_info_92c {
 	u8 reserve:4;
 } __packed;
 
-/* macros to read various fields in RX descriptor */
+ 
 
-/* DWORD 0 */
+ 
 static inline u32 get_rx_desc_pkt_len(__le32 *__rxdesc)
 {
 	return le32_get_bits(*__rxdesc, GENMASK(13, 0));
@@ -109,7 +106,7 @@ static inline u32 get_rx_desc_swdec(__le32 *__rxdesc)
 }
 
 
-/* DWORD 1 */
+ 
 static inline u32 get_rx_desc_paggr(__le32 *__rxdesc)
 {
 	return le32_get_bits(*(__rxdesc + 1), BIT(14));
@@ -121,7 +118,7 @@ static inline u32 get_rx_desc_faggr(__le32 *__rxdesc)
 }
 
 
-/* DWORD 3 */
+ 
 static inline u32 get_rx_desc_rx_mcs(__le32 *__rxdesc)
 {
 	return le32_get_bits(*(__rxdesc + 3), GENMASK(5, 0));
@@ -143,18 +140,18 @@ static inline u32 get_rx_desc_bw(__le32 *__rxdesc)
 }
 
 
-/* DWORD 5 */
+ 
 static inline u32 get_rx_desc_tsfl(__le32 *__rxdesc)
 {
 	return le32_to_cpu(*((__rxdesc + 5)));
 }
 
 
-/*======================= tx desc ============================================*/
+ 
 
-/* macros to set various fields in TX descriptor */
+ 
 
-/* Dword 0 */
+ 
 static inline void set_tx_desc_pkt_size(__le32 *__txdesc, u32 __value)
 {
 	le32p_replace_bits(__txdesc, __value, GENMASK(15, 0));
@@ -196,7 +193,7 @@ static inline void set_tx_desc_own(__le32 *__txdesc, u32 __value)
 }
 
 
-/* Dword 1 */
+ 
 static inline void set_tx_desc_macid(__le32 *__txdesc, u32 __value)
 {
 	le32p_replace_bits((__txdesc + 1), __value, GENMASK(4, 0));
@@ -243,7 +240,7 @@ static inline void set_tx_desc_pkt_offset(__le32 *__txdesc, u32 __value)
 }
 
 
-/* Dword 2 */
+ 
 static inline void set_tx_desc_more_frag(__le32 *__txdesc, u32 __value)
 {
 	le32p_replace_bits((__txdesc + 2), __value, BIT(17));
@@ -255,7 +252,7 @@ static inline void set_tx_desc_ampdu_density(__le32 *__txdesc, u32 __value)
 }
 
 
-/* Dword 3 */
+ 
 static inline void set_tx_desc_seq(__le32 *__txdesc, u32 __value)
 {
 	le32p_replace_bits((__txdesc + 3), __value, GENMASK(27, 16));
@@ -267,7 +264,7 @@ static inline void set_tx_desc_pkt_id(__le32 *__txdesc, u32 __value)
 }
 
 
-/* Dword 4 */
+ 
 static inline void set_tx_desc_rts_rate(__le32 *__txdesc, u32 __value)
 {
 	le32p_replace_bits((__txdesc + 4), __value, GENMASK(4, 0));
@@ -339,7 +336,7 @@ static inline void set_tx_desc_rts_stbc(__le32 *__txdesc, u32 __value)
 }
 
 
-/* Dword 5 */
+ 
 static inline void set_tx_desc_tx_rate(__le32 *__pdesc, u32 __val)
 {
 	le32p_replace_bits((__pdesc + 5), __val, GENMASK(5, 0));
@@ -361,14 +358,14 @@ static inline void set_tx_desc_rts_rate_fb_limit(__le32 *__txdesc, u32 __value)
 }
 
 
-/* Dword 6 */
+ 
 static inline void set_tx_desc_max_agg_num(__le32 *__txdesc, u32 __value)
 {
 	le32p_replace_bits((__txdesc + 6), __value, GENMASK(15, 11));
 }
 
 
-/* Dword 7 */
+ 
 static inline void set_tx_desc_tx_desc_checksum(__le32 *__txdesc, u32 __value)
 {
 	le32p_replace_bits((__txdesc + 7), __value, GENMASK(15, 0));

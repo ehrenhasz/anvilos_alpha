@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2014, Sony Mobile Communications AB.
- * Copyright (c) 2016 BayLibre, SAS.
- * Author : Neil Armstrong <narmstrong@baylibre.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/of.h>

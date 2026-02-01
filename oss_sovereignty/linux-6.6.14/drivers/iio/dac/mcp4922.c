@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * mcp4922.c
- *
- * Driver for Microchip Digital to Analog Converters.
- * Supports MCP4902, MCP4912, and MCP4922.
- *
- * Copyright (c) 2014 EMAC Inc.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/init.h>

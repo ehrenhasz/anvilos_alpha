@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * QUICC Engine GPIOs
- *
- * Copyright (c) MontaVista Software, Inc. 2008.
- *
- * Author: Anton Vorontsov <avorontsov@ru.mvista.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/init.h>
@@ -26,10 +20,10 @@ struct qe_gpio_chip {
 	struct of_mm_gpio_chip mm_gc;
 	spinlock_t lock;
 
-	/* shadowed data register to clear/set bits safely */
+	 
 	u32 cpdata;
 
-	/* saved_regs used to restore dedicated functions */
+	 
 	struct qe_pio_regs saved_regs;
 };
 
@@ -137,23 +131,12 @@ static int qe_gpio_dir_out(struct gpio_chip *gc, unsigned int gpio, int val)
 }
 
 struct qe_pin {
-	/*
-	 * The qe_gpio_chip name is unfortunate, we should change that to
-	 * something like qe_pio_controller. Someday.
-	 */
+	 
 	struct qe_gpio_chip *controller;
 	int num;
 };
 
-/**
- * qe_pin_request - Request a QE pin
- * @dev:	device to get the pin from
- * @index:	index of the pin in the device tree
- * Context:	non-atomic
- *
- * This function return qe_pin so that you could use it with the rest of
- * the QE Pin Multiplexing API.
- */
+ 
 struct qe_pin *qe_pin_request(struct device *dev, int index)
 {
 	struct qe_pin *qe_pin;
@@ -168,11 +151,7 @@ struct qe_pin *qe_pin_request(struct device *dev, int index)
 		return ERR_PTR(-ENOMEM);
 	}
 
-	/*
-	 * Request gpio as nonexclusive as it was likely reserved by the
-	 * caller, and we are not planning on controlling it, we only need
-	 * the descriptor to the to the gpio chip structure.
-	 */
+	 
 	gpiod = gpiod_get_index(dev, NULL, index,
 			        GPIOD_ASIS | GPIOD_FLAGS_BIT_NONEXCLUSIVE);
 	err = PTR_ERR_OR_ZERO(gpiod);
@@ -181,7 +160,7 @@ struct qe_pin *qe_pin_request(struct device *dev, int index)
 
 	gc = gpiod_to_chip(gpiod);
 	gpio_num = desc_to_gpio(gpiod);
-	/* We no longer need this descriptor */
+	 
 	gpiod_put(gpiod);
 
 	if (WARN_ON(!gc)) {
@@ -190,11 +169,7 @@ struct qe_pin *qe_pin_request(struct device *dev, int index)
 	}
 
 	qe_pin->controller = gpiochip_get_data(gc);
-	/*
-	 * FIXME: this gets the local offset on the gpio_chip so that the driver
-	 * can manipulate pin control settings through its custom API. The real
-	 * solution is to create a real pin control driver for this.
-	 */
+	 
 	qe_pin->num = gpio_num - gc->base;
 
 	if (!fwnode_device_is_compatible(gc->fwnode, "fsl,mpc8323-qe-pario-bank")) {
@@ -210,28 +185,14 @@ err0:
 }
 EXPORT_SYMBOL(qe_pin_request);
 
-/**
- * qe_pin_free - Free a pin
- * @qe_pin:	pointer to the qe_pin structure
- * Context:	any
- *
- * This function frees the qe_pin structure and makes a pin available
- * for further qe_pin_request() calls.
- */
+ 
 void qe_pin_free(struct qe_pin *qe_pin)
 {
 	kfree(qe_pin);
 }
 EXPORT_SYMBOL(qe_pin_free);
 
-/**
- * qe_pin_set_dedicated - Revert a pin to a dedicated peripheral function mode
- * @qe_pin:	pointer to the qe_pin structure
- * Context:	any
- *
- * This function resets a pin to a dedicated peripheral function that
- * has been set up by the firmware.
- */
+ 
 void qe_pin_set_dedicated(struct qe_pin *qe_pin)
 {
 	struct qe_gpio_chip *qe_gc = qe_pin->controller;
@@ -269,13 +230,7 @@ void qe_pin_set_dedicated(struct qe_pin *qe_pin)
 }
 EXPORT_SYMBOL(qe_pin_set_dedicated);
 
-/**
- * qe_pin_set_gpio - Set a pin to the GPIO mode
- * @qe_pin:	pointer to the qe_pin structure
- * Context:	any
- *
- * This function sets a pin to the GPIO mode.
- */
+ 
 void qe_pin_set_gpio(struct qe_pin *qe_pin)
 {
 	struct qe_gpio_chip *qe_gc = qe_pin->controller;
@@ -284,7 +239,7 @@ void qe_pin_set_gpio(struct qe_pin *qe_pin)
 
 	spin_lock_irqsave(&qe_gc->lock, flags);
 
-	/* Let's make it input by default, GPIO API is able to change that. */
+	 
 	__par_io_config_pin(regs, qe_pin->num, QE_PIO_DIR_IN, 0, 0, 0);
 
 	spin_unlock_irqrestore(&qe_gc->lock, flags);
@@ -328,7 +283,7 @@ err:
 		pr_err("%pOF: registration failed with status %d\n",
 		       np, ret);
 		kfree(qe_gc);
-		/* try others anyway */
+		 
 	}
 	return 0;
 }

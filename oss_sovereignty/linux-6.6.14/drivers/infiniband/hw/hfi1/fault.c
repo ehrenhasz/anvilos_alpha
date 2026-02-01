@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 or BSD-3-Clause
-/*
- * Copyright(c) 2018 Intel Corporation.
- */
+
+ 
 
 #include <linux/debugfs.h>
 #include <linux/seq_file.h>
@@ -90,7 +88,7 @@ static ssize_t fault_opcodes_write(struct file *file, const char __user *buf,
 				   size_t len, loff_t *pos)
 {
 	ssize_t ret = 0;
-	/* 1280 = 256 opcodes * 4 chars/opcode + 255 commas + NULL */
+	 
 	size_t copy, datalen = 1280;
 	char *data, *token, *ptr, *end;
 	struct fault *fault = file->private_data;
@@ -139,7 +137,7 @@ static ssize_t fault_opcodes_write(struct file *file, const char __user *buf,
 				    BITS_PER_BYTE);
 			break;
 		}
-		/* Check the inputs */
+		 
 		if (range_start >= bound || range_end >= bound)
 			break;
 
@@ -165,7 +163,7 @@ static ssize_t fault_opcodes_read(struct file *file, char __user *buf,
 {
 	ssize_t ret = 0;
 	char *data;
-	size_t datalen = 1280, size = 0; /* see fault_opcodes_write() */
+	size_t datalen = 1280, size = 0;  
 	unsigned long bit = 0, zero = 0;
 	struct fault *fault = file->private_data;
 	size_t bitsize = sizeof(fault->opcodes) * BITS_PER_BYTE;

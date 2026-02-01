@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * MMC35240 - MEMSIC 3-axis Magnetic Sensor
- *
- * Copyright (c) 2015, Intel Corporation.
- *
- * IIO driver for MMC35240 (7-bit I2C slave address 0x30).
- *
- * TODO: offset, ACPI, continuous measurement mode, PM
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -44,7 +36,7 @@
 #define MMC35240_CTRL0_CMM_BIT		BIT(1)
 #define MMC35240_CTRL0_TM_BIT		BIT(0)
 
-/* output resolution bits */
+ 
 #define MMC35240_CTRL1_BW0_BIT		BIT(0)
 #define MMC35240_CTRL1_BW1_BIT		BIT(1)
 
@@ -52,26 +44,15 @@
 		 MMC35240_CTRL1_BW1_BIT)
 #define MMC35240_CTRL1_BW_SHIFT		0
 
-#define MMC35240_WAIT_CHARGE_PUMP	50000	/* us */
-#define MMC35240_WAIT_SET_RESET		1000	/* us */
+#define MMC35240_WAIT_CHARGE_PUMP	50000	 
+#define MMC35240_WAIT_SET_RESET		1000	 
 
-/*
- * Memsic OTP process code piece is put here for reference:
- *
- * #define OTP_CONVERT(REG)  ((float)((REG) >=32 ? (32 - (REG)) : (REG)) * 0.006
- * 1) For X axis, the COEFFICIENT is always 1.
- * 2) For Y axis, the COEFFICIENT is as below:
- *    f_OTP_matrix[4] = OTP_CONVERT(((reg_data[1] & 0x03) << 4) |
- *                                   (reg_data[2] >> 4)) + 1.0;
- * 3) For Z axis, the COEFFICIENT is as below:
- *    f_OTP_matrix[8] = (OTP_CONVERT(reg_data[3] & 0x3f) + 1) * 1.35;
- * We implemented the OTP logic into driver.
- */
+ 
 
-/* scale = 1000 here for Y otp */
+ 
 #define MMC35240_OTP_CONVERT_Y(REG) (((REG) >= 32 ? (32 - (REG)) : (REG)) * 6)
 
-/* 0.6 * 1.35 = 0.81, scale 10000 for Z otp */
+ 
 #define MMC35240_OTP_CONVERT_Z(REG) (((REG) >= 32 ? (32 - (REG)) : (REG)) * 81)
 
 #define MMC35240_X_COEFF(x)	(x)
@@ -81,10 +62,10 @@
 #define MMC35240_OTP_START_ADDR		0x1B
 
 enum mmc35240_resolution {
-	MMC35240_16_BITS_SLOW = 0, /* 7.92 ms */
-	MMC35240_16_BITS_FAST,     /* 4.08 ms */
-	MMC35240_14_BITS,          /* 2.16 ms */
-	MMC35240_12_BITS,          /* 1.20 ms */
+	MMC35240_16_BITS_SLOW = 0,  
+	MMC35240_16_BITS_FAST,      
+	MMC35240_14_BITS,           
+	MMC35240_12_BITS,           
 };
 
 enum mmc35240_axis {
@@ -94,25 +75,25 @@ enum mmc35240_axis {
 };
 
 static const struct {
-	int sens[3]; /* sensitivity per X, Y, Z axis */
-	int nfo; /* null field output */
+	int sens[3];  
+	int nfo;  
 } mmc35240_props_table[] = {
-	/* 16 bits, 125Hz ODR */
+	 
 	{
 		{1024, 1024, 1024},
 		32768,
 	},
-	/* 16 bits, 250Hz ODR */
+	 
 	{
 		{1024, 1024, 770},
 		32768,
 	},
-	/* 14 bits, 450Hz ODR */
+	 
 	{
 		{256, 256, 193},
 		8192,
 	},
-	/* 12 bits, 800Hz ODR */
+	 
 	{
 		{64, 64, 48},
 		2048,
@@ -125,7 +106,7 @@ struct mmc35240_data {
 	struct regmap *regmap;
 	enum mmc35240_resolution res;
 
-	/* OTP compensation */
+	 
 	int axis_coef[3];
 	int axis_scale[3];
 };
@@ -182,10 +163,7 @@ static int mmc35240_hw_set(struct mmc35240_data *data, bool set)
 	int ret;
 	u8 coil_bit;
 
-	/*
-	 * Recharge the capacitor at VCAP pin, requested to be issued
-	 * before a SET/RESET command.
-	 */
+	 
 	ret = regmap_update_bits(data->regmap, MMC35240_REG_CTRL0,
 				 MMC35240_CTRL0_REFILL_BIT,
 				 MMC35240_CTRL0_REFILL_BIT);
@@ -217,11 +195,7 @@ static int mmc35240_init(struct mmc35240_data *data)
 
 	dev_dbg(&data->client->dev, "MMC35240 chip id %x\n", reg_id);
 
-	/*
-	 * make sure we restore sensor characteristics, by doing
-	 * a SET/RESET sequence, the axis polarity being naturally
-	 * aligned after RESET
-	 */
+	 
 	ret = mmc35240_hw_set(data, true);
 	if (ret < 0)
 		return ret;
@@ -231,7 +205,7 @@ static int mmc35240_init(struct mmc35240_data *data)
 	if (ret < 0)
 		return ret;
 
-	/* set default sampling frequency */
+	 
 	ret = regmap_update_bits(data->regmap, MMC35240_REG_CTRL1,
 				 MMC35240_CTRL1_BW_MASK,
 				 data->res << MMC35240_CTRL1_BW_SHIFT);
@@ -275,7 +249,7 @@ static int mmc35240_take_measurement(struct mmc35240_data *data)
 			return ret;
 		if (reg_status & MMC35240_STATUS_MEAS_DONE_BIT)
 			break;
-		/* minimum wait time to complete measurement is 10 ms */
+		 
 		usleep_range(10000, 11000);
 	}
 
@@ -299,17 +273,7 @@ static int mmc35240_read_measurement(struct mmc35240_data *data, __le16 buf[3])
 				3 * sizeof(__le16));
 }
 
-/**
- * mmc35240_raw_to_mgauss - convert raw readings to milli gauss. Also apply
- *			    compensation for output value.
- *
- * @data: device private data
- * @index: axis index for which we want the conversion
- * @buf: raw data to be converted, 2 bytes in little endian format
- * @val: compensated output reading (unit is milli gauss)
- *
- * Returns: 0 in case of success, -EINVAL when @index is not valid
- */
+ 
 static int mmc35240_raw_to_mgauss(struct mmc35240_data *data, int index,
 				  __le16 buf[], int *val)
 {
@@ -342,7 +306,7 @@ static int mmc35240_raw_to_mgauss(struct mmc35240_data *data, int index,
 	default:
 		return -EINVAL;
 	}
-	/* apply OTP compensation */
+	 
 	*val = (*val) * data->axis_coef[index] / data->axis_scale[index];
 
 	return 0;

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2016, Linaro Ltd
- */
+
+ 
 
 #include <linux/io.h>
 #include <linux/module.h>
@@ -29,7 +27,7 @@
 
 #define FIFO_FULL_RESERVE 8
 #define FIFO_ALIGNMENT 8
-#define TX_BLOCKED_CMD_RESERVE 8 /* size of struct read_notif_request */
+#define TX_BLOCKED_CMD_RESERVE 8  
 
 #define SMEM_GLINK_NATIVE_XPRT_DESCRIPTOR	478
 #define SMEM_GLINK_NATIVE_XPRT_FIFO_0		479
@@ -181,12 +179,12 @@ static void glink_smem_tx_write(struct qcom_glink_pipe *glink_pipe,
 	head = glink_smem_tx_write_one(pipe, head, hdr, hlen);
 	head = glink_smem_tx_write_one(pipe, head, data, dlen);
 
-	/* Ensure head is always aligned to 8 bytes */
+	 
 	head = ALIGN(head, 8);
 	if (head >= pipe->native.length)
 		head -= pipe->native.length;
 
-	/* Ensure ordering of fifo and head update */
+	 
 	wmb();
 
 	*pipe->head = cpu_to_le32(head);

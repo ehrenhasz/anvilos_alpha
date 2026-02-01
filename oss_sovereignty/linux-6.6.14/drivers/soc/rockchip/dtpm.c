@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright 2021 Linaro Limited
- *
- * Author: Daniel Lezcano <daniel.lezcano@linaro.org>
- *
- * DTPM hierarchy description
- */
+
+ 
 #include <linux/dtpm.h>
 #include <linux/module.h>
 #include <linux/of.h>
@@ -38,7 +32,7 @@ static struct dtpm_node __initdata rk3399_hierarchy[] = {
 	[8] = { .name = "/gpu@ff9a0000",
 		.type = DTPM_NODE_DT,
 		.parent = &rk3399_hierarchy[1] },
-	[9] = { /* sentinel */ }
+	[9] = {   }
 };
 
 static struct of_device_id __initdata rockchip_dtpm_match_table[] = {

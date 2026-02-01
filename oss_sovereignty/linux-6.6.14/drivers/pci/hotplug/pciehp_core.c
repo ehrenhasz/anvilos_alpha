@@ -1,21 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * PCI Express Hot Plug Controller Driver
- *
- * Copyright (C) 1995,2001 Compaq Computer Corporation
- * Copyright (C) 2001 Greg Kroah-Hartman (greg@kroah.com)
- * Copyright (C) 2001 IBM Corp.
- * Copyright (C) 2003-2004 Intel Corporation
- *
- * All rights reserved.
- *
- * Send feedback to <greg@kroah.com>, <kristen.c.accardi@intel.com>
- *
- * Authors:
- *   Dan Zink <dan.zink@compaq.com>
- *   Greg Kroah-Hartman <greg@kroah.com>
- *   Dely Sy <dely.l.sy@intel.com>"
- */
+
+ 
 
 #define pr_fmt(fmt) "pciehp: " fmt
 #define dev_fmt pr_fmt
@@ -29,14 +13,11 @@
 
 #include "../pci.h"
 
-/* Global variables */
+ 
 bool pciehp_poll_mode;
 int pciehp_poll_time;
 
-/*
- * not really modular, but the easiest way to keep compat with existing
- * bootargs behaviour is to continue using module_param here.
- */
+ 
 module_param(pciehp_poll_mode, bool, 0644);
 module_param(pciehp_poll_time, int, 0644);
 MODULE_PARM_DESC(pciehp_poll_mode, "Using polling mechanism for hot-plug events or not");
@@ -53,7 +34,7 @@ static int init_slot(struct controller *ctrl)
 	char name[SLOT_NAME_SIZE];
 	int retval;
 
-	/* Setup hotplug slot ops */
+	 
 	ops = kzalloc(sizeof(*ops), GFP_KERNEL);
 	if (!ops)
 		return -ENOMEM;
@@ -73,7 +54,7 @@ static int init_slot(struct controller *ctrl)
 		ops->set_attention_status = pciehp_set_raw_indicator_status;
 	}
 
-	/* register this slot with the hotplug pci core */
+	 
 	ctrl->hotplug_slot.ops = ops;
 	snprintf(name, SLOT_NAME_SIZE, "%u", PSN(ctrl));
 
@@ -94,9 +75,7 @@ static void cleanup_slot(struct controller *ctrl)
 	kfree(hotplug_slot->ops);
 }
 
-/*
- * set_attention_status - Turns the Attention Indicator on, off or blinking
- */
+ 
 static int set_attention_status(struct hotplug_slot *hotplug_slot, u8 status)
 {
 	struct controller *ctrl = to_ctrl(hotplug_slot);
@@ -151,17 +130,7 @@ static int get_adapter_status(struct hotplug_slot *hotplug_slot, u8 *value)
 	return 0;
 }
 
-/**
- * pciehp_check_presence() - synthesize event if presence has changed
- * @ctrl: controller to check
- *
- * On probe and resume, an explicit presence check is necessary to bring up an
- * occupied slot or bring down an unoccupied slot.  This can't be triggered by
- * events in the Slot Status register, they may be stale and are therefore
- * cleared.  Secondly, sending an interrupt for "events that occur while
- * interrupt generation is disabled [when] interrupt generation is subsequently
- * enabled" is optional per PCIe r4.0, sec 6.7.3.4.
- */
+ 
 static void pciehp_check_presence(struct controller *ctrl)
 {
 	int occupied;
@@ -185,12 +154,12 @@ static int pciehp_probe(struct pcie_device *dev)
 	int rc;
 	struct controller *ctrl;
 
-	/* If this is not a "hotplug" service, we have no business here. */
+	 
 	if (dev->service != PCIE_PORT_SERVICE_HP)
 		return -ENODEV;
 
 	if (!dev->port->subordinate) {
-		/* Can happen if we run out of bus numbers during probe */
+		 
 		pci_err(dev->port,
 			"Hotplug bridge without secondary bus, ignoring\n");
 		return -ENODEV;
@@ -203,7 +172,7 @@ static int pciehp_probe(struct pcie_device *dev)
 	}
 	set_service_data(dev, ctrl);
 
-	/* Setup the slot information structures */
+	 
 	rc = init_slot(ctrl);
 	if (rc) {
 		if (rc == -EBUSY)
@@ -213,14 +182,14 @@ static int pciehp_probe(struct pcie_device *dev)
 		goto err_out_release_ctlr;
 	}
 
-	/* Enable events after we have setup the data structures */
+	 
 	rc = pcie_init_notification(ctrl);
 	if (rc) {
 		ctrl_err(ctrl, "Notification initialization failed (%d)\n", rc);
 		goto err_out_free_ctrl_slot;
 	}
 
-	/* Publish to user space */
+	 
 	rc = pci_hp_add(&ctrl->hotplug_slot);
 	if (rc) {
 		ctrl_err(ctrl, "Publication to user space failed (%d)\n", rc);
@@ -261,10 +230,7 @@ static bool pme_is_native(struct pcie_device *dev)
 
 static void pciehp_disable_interrupt(struct pcie_device *dev)
 {
-	/*
-	 * Disable hotplug interrupt so that it does not trigger
-	 * immediately when the downstream link goes down.
-	 */
+	 
 	if (pme_is_native(dev))
 		pcie_disable_interrupt(get_service_data(dev));
 }
@@ -272,10 +238,7 @@ static void pciehp_disable_interrupt(struct pcie_device *dev)
 #ifdef CONFIG_PM_SLEEP
 static int pciehp_suspend(struct pcie_device *dev)
 {
-	/*
-	 * If the port is already runtime suspended we can keep it that
-	 * way.
-	 */
+	 
 	if (dev_pm_skip_suspend(&dev->port->dev))
 		return 0;
 
@@ -287,11 +250,11 @@ static int pciehp_resume_noirq(struct pcie_device *dev)
 {
 	struct controller *ctrl = get_service_data(dev);
 
-	/* pci_restore_state() just wrote to the Slot Control register */
+	 
 	ctrl->cmd_started = jiffies;
 	ctrl->cmd_busy = true;
 
-	/* clear spurious events from rediscovery of inserted card */
+	 
 	if (ctrl->state == ON_STATE || ctrl->state == BLINKINGOFF_STATE)
 		pcie_clear_hotplug_events(ctrl);
 
@@ -321,18 +284,18 @@ static int pciehp_runtime_resume(struct pcie_device *dev)
 {
 	struct controller *ctrl = get_service_data(dev);
 
-	/* pci_restore_state() just wrote to the Slot Control register */
+	 
 	ctrl->cmd_started = jiffies;
 	ctrl->cmd_busy = true;
 
-	/* clear spurious events from rediscovery of inserted card */
+	 
 	if ((ctrl->state == ON_STATE || ctrl->state == BLINKINGOFF_STATE) &&
 	     pme_is_native(dev))
 		pcie_clear_hotplug_events(ctrl);
 
 	return pciehp_resume(dev);
 }
-#endif /* PM */
+#endif  
 
 static struct pcie_port_service_driver hpdriver_portdrv = {
 	.name		= "pciehp",
@@ -350,7 +313,7 @@ static struct pcie_port_service_driver hpdriver_portdrv = {
 #endif
 	.runtime_suspend = pciehp_runtime_suspend,
 	.runtime_resume	= pciehp_runtime_resume,
-#endif	/* PM */
+#endif	 
 
 	.slot_reset	= pciehp_slot_reset,
 };

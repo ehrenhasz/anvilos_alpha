@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-// Copyright (c) 2018 MediaTek Inc.
+
+
 
 #include <linux/clk.h>
 #include <linux/device.h>
@@ -25,25 +25,25 @@
 #define SPIS_DMA_CFG_REG	0x30
 #define SPIS_SOFT_RST_REG	0x40
 
-/* SPIS_IRQ_EN_REG */
+ 
 #define DMA_DONE_EN		BIT(7)
 #define DATA_DONE_EN		BIT(2)
 #define RSTA_DONE_EN		BIT(1)
 #define CMD_INVALID_EN		BIT(0)
 
-/* SPIS_IRQ_ST_REG */
+ 
 #define DMA_DONE_ST		BIT(7)
 #define DATA_DONE_ST		BIT(2)
 #define RSTA_DONE_ST		BIT(1)
 #define CMD_INVALID_ST		BIT(0)
 
-/* SPIS_IRQ_MASK_REG */
+ 
 #define DMA_DONE_MASK		BIT(7)
 #define DATA_DONE_MASK		BIT(2)
 #define RSTA_DONE_MASK		BIT(1)
 #define CMD_INVALID_MASK	BIT(0)
 
-/* SPIS_CFG_REG */
+ 
 #define SPIS_TX_ENDIAN		BIT(7)
 #define SPIS_RX_ENDIAN		BIT(6)
 #define SPIS_TXMSBF		BIT(5)
@@ -53,13 +53,13 @@
 #define SPIS_TX_EN		BIT(1)
 #define SPIS_RX_EN		BIT(0)
 
-/* SPIS_DMA_CFG_REG */
+ 
 #define TX_DMA_TRIG_EN		BIT(31)
 #define TX_DMA_EN		BIT(30)
 #define RX_DMA_EN		BIT(29)
 #define TX_DMA_LEN		0xfffff
 
-/* SPIS_SOFT_RST_REG */
+ 
 #define SPIS_DMA_ADDR_EN	BIT(1)
 #define SPIS_SOFT_RST		BIT(0)
 
@@ -207,9 +207,7 @@ static int mtk_spi_slave_dma_transfer(struct spi_controller *ctlr,
 	writel(SPIS_SOFT_RST, mdata->base + SPIS_SOFT_RST_REG);
 
 	if (xfer->tx_buf) {
-		/* tx_buf is a const void* where we need a void * for
-		 * the dma mapping
-		 */
+		 
 		void *nonconst_tx = (void *)xfer->tx_buf;
 
 		xfer->tx_dma = dma_map_single(dev, nonconst_tx,
@@ -234,7 +232,7 @@ static int mtk_spi_slave_dma_transfer(struct spi_controller *ctlr,
 
 	writel(SPIS_DMA_ADDR_EN, mdata->base + SPIS_SOFT_RST_REG);
 
-	/* enable config reg tx rx_enable */
+	 
 	reg_val = readl(mdata->base + SPIS_CFG_REG);
 	if (xfer->tx_buf)
 		reg_val |= SPIS_TX_EN;
@@ -242,7 +240,7 @@ static int mtk_spi_slave_dma_transfer(struct spi_controller *ctlr,
 		reg_val |= SPIS_RX_EN;
 	writel(reg_val, mdata->base + SPIS_CFG_REG);
 
-	/* config dma */
+	 
 	reg_val = 0;
 	reg_val |= (xfer->len - 1) & TX_DMA_LEN;
 	writel(reg_val, mdata->base + SPIS_DMA_CFG_REG);
@@ -516,7 +514,7 @@ static int mtk_spi_slave_resume(struct device *dev)
 
 	return ret;
 }
-#endif /* CONFIG_PM_SLEEP */
+#endif  
 
 #ifdef CONFIG_PM
 static int mtk_spi_slave_runtime_suspend(struct device *dev)
@@ -543,7 +541,7 @@ static int mtk_spi_slave_runtime_resume(struct device *dev)
 
 	return 0;
 }
-#endif /* CONFIG_PM */
+#endif  
 
 static const struct dev_pm_ops mtk_spi_slave_pm = {
 	SET_SYSTEM_SLEEP_PM_OPS(mtk_spi_slave_suspend, mtk_spi_slave_resume)

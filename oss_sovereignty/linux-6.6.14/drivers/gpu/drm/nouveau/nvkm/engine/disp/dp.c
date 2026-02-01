@@ -1,26 +1,4 @@
-/*
- * Copyright 2014 Red Hat Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: Ben Skeggs
- */
+ 
 #include "dp.h"
 #include "conn.h"
 #include "head.h"
@@ -35,10 +13,7 @@
 
 #include <nvif/event.h>
 
-/* IED scripts are no longer used by UEFI/RM from Ampere, but have been updated for
- * the x86 option ROM.  However, the relevant VBIOS table versions weren't modified,
- * so we're unable to detect this in a nice way.
- */
+ 
 #define AMPERE_IED_HACK(disp) ((disp)->engine.subdev.device->card_type >= GA100)
 
 struct lt_state {
@@ -119,7 +94,7 @@ nvkm_dp_train_drive(struct lt_state *lt, bool pc)
 		if (lpc2 >= hipc)
 			lpc2 = hipc | DPCD_LC0F_LANE0_MAX_POST_CURSOR2_REACHED;
 		if (lpre >= hipe) {
-			lpre = hipe | DPCD_LC03_MAX_SWING_REACHED; /* yes. */
+			lpre = hipe | DPCD_LC03_MAX_SWING_REACHED;  
 			lvsw = hivs = 3 - (lpre & 3);
 		} else
 		if (lvsw >= hivs) {
@@ -288,9 +263,7 @@ nvkm_dp_train_link(struct nvkm_outp *outp, int rate)
 
 	OUTP_DBG(outp, "training %dx%02x", ior->dp.nr, ior->dp.bw);
 
-	/* Select LTTPR non-transparent mode if we have a valid configuration,
-	 * use transparent mode otherwise.
-	 */
+	 
 	if (outp->dp.lttpr[0] >= 0x14) {
 		data = DPCD_LTTPR_MODE_TRANSPARENT;
 		nvkm_wraux(outp->dp.aux, DPCD_LTTPR_MODE, &data, sizeof(data));
@@ -302,7 +275,7 @@ nvkm_dp_train_link(struct nvkm_outp *outp, int rate)
 		}
 	}
 
-	/* Set desired link configuration on the sink. */
+	 
 	sink[0] = (outp->dp.rate[rate].dpcd < 0) ? ior->dp.bw : 0;
 	sink[1] = ior->dp.nr;
 	if (ior->dp.ef)
@@ -325,7 +298,7 @@ nvkm_dp_train_link(struct nvkm_outp *outp, int rate)
 			return ret;
 	}
 
-	/* Attempt to train the link in this configuration. */
+	 
 	for (lt.repeater = lt.repeaters; lt.repeater >= 0; lt.repeater--) {
 		if (lt.repeater)
 			OUTP_DBG(outp, "training LTTPR%d", lt.repeater);
@@ -354,14 +327,14 @@ nvkm_dp_train_links(struct nvkm_outp *outp, int rate)
 
 	OUTP_DBG(outp, "programming link for %dx%02x", ior->dp.nr, ior->dp.bw);
 
-	/* Intersect misc. capabilities of the OR and sink. */
+	 
 	if (disp->engine.subdev.device->chipset < 0x110)
 		outp->dp.dpcd[DPCD_RC03] &= ~DPCD_RC03_TPS4_SUPPORTED;
 	if (disp->engine.subdev.device->chipset < 0xd0)
 		outp->dp.dpcd[DPCD_RC02] &= ~DPCD_RC02_TPS3_SUPPORTED;
 
 	if (AMPERE_IED_HACK(disp) && (lnkcmp = outp->dp.info.script[0])) {
-		/* Execute BeforeLinkTraining script from DP Info table. */
+		 
 		while (ior->dp.bw < nvbios_rd08(bios, lnkcmp))
 			lnkcmp += 3;
 		lnkcmp = nvbios_rd16(bios, lnkcmp + 1);
@@ -373,7 +346,7 @@ nvkm_dp_train_links(struct nvkm_outp *outp, int rate)
 		);
 	}
 
-	/* Set desired link configuration on the source. */
+	 
 	if ((lnkcmp = outp->dp.info.lnkcmp)) {
 		if (outp->dp.version < 0x30) {
 			while ((ior->dp.bw * 2700) < nvbios_rd16(bios, lnkcmp))
@@ -403,14 +376,14 @@ nvkm_dp_train_links(struct nvkm_outp *outp, int rate)
 
 	ior->func->dp->power(ior, ior->dp.nr);
 
-	/* Attempt to train the link in this configuration. */
+	 
 	return nvkm_dp_train_link(outp, rate);
 }
 
 static void
 nvkm_dp_train_fini(struct nvkm_outp *outp)
 {
-	/* Execute AfterLinkTraining script from DP Info table. */
+	 
 	nvbios_init(&outp->disp->engine.subdev, outp->dp.info.script[1],
 		init.outp = &outp->info;
 		init.or   = outp->ior->id;
@@ -421,7 +394,7 @@ nvkm_dp_train_fini(struct nvkm_outp *outp)
 static void
 nvkm_dp_train_init(struct nvkm_outp *outp)
 {
-	/* Execute EnableSpread/DisableSpread script from DP Info table. */
+	 
 	if (outp->dp.dpcd[DPCD_RC03] & DPCD_RC03_MAX_DOWNSPREAD) {
 		nvbios_init(&outp->disp->engine.subdev, outp->dp.info.script[2],
 			init.outp = &outp->info;
@@ -437,7 +410,7 @@ nvkm_dp_train_init(struct nvkm_outp *outp)
 	}
 
 	if (!AMPERE_IED_HACK(outp->disp)) {
-		/* Execute BeforeLinkTraining script from DP Info table. */
+		 
 		nvbios_init(&outp->disp->engine.subdev, outp->dp.info.script[0],
 			init.outp = &outp->info;
 			init.or   = outp->ior->id;
@@ -453,7 +426,7 @@ nvkm_dp_train(struct nvkm_outp *outp, u32 dataKBps)
 	int ret = -EINVAL, nr, rate;
 	u8  pwr;
 
-	/* Retraining link?  Skip source configuration, it can mess up the active modeset. */
+	 
 	if (atomic_read(&outp->dp.lt.done)) {
 		for (rate = 0; rate < outp->dp.rates; rate++) {
 			if (outp->dp.rate[rate].rate == ior->dp.bw * 27000)
@@ -463,7 +436,7 @@ nvkm_dp_train(struct nvkm_outp *outp, u32 dataKBps)
 		return -EINVAL;
 	}
 
-	/* Ensure sink is not in a low-power state. */
+	 
 	if (!nvkm_rdaux(outp->dp.aux, DPCD_SC00, &pwr, 1)) {
 		if ((pwr & DPCD_SC00_SET_POWER) != DPCD_SC00_SET_POWER_D0) {
 			pwr &= ~DPCD_SC00_SET_POWER;
@@ -476,11 +449,11 @@ nvkm_dp_train(struct nvkm_outp *outp, u32 dataKBps)
 	ior->dp.ef = outp->dp.dpcd[DPCD_RC02] & DPCD_RC02_ENHANCED_FRAME_CAP;
 	ior->dp.nr = 0;
 
-	/* Link training. */
+	 
 	OUTP_DBG(outp, "training");
 	nvkm_dp_train_init(outp);
 
-	/* Validate and train at configuration requested (if any) on ACQUIRE. */
+	 
 	if (outp->dp.lt.nr) {
 		for (nr = outp->dp.links; ret < 0 && nr; nr >>= 1) {
 			for (rate = 0; nr == outp->dp.lt.nr && rate < outp->dp.rates; rate++) {
@@ -493,11 +466,11 @@ nvkm_dp_train(struct nvkm_outp *outp, u32 dataKBps)
 		}
 	}
 
-	/* Otherwise, loop through all valid link configurations that support the data rate. */
+	 
 	for (nr = outp->dp.links; ret < 0 && nr; nr >>= 1) {
 		for (rate = 0; ret < 0 && rate < outp->dp.rates; rate++) {
 			if (outp->dp.rate[rate].rate * nr >= dataKBps || WARN_ON(!ior->dp.nr)) {
-				/* Program selected link configuration. */
+				 
 				ior->dp.bw = outp->dp.rate[rate].rate / 27000;
 				ior->dp.nr = nr;
 				ret = nvkm_dp_train_links(outp, rate);
@@ -505,7 +478,7 @@ nvkm_dp_train(struct nvkm_outp *outp, u32 dataKBps)
 		}
 	}
 
-	/* Finish up. */
+	 
 	nvkm_dp_train_fini(outp);
 	if (ret < 0)
 		OUTP_ERR(outp, "training failed");
@@ -518,7 +491,7 @@ nvkm_dp_train(struct nvkm_outp *outp, u32 dataKBps)
 void
 nvkm_dp_disable(struct nvkm_outp *outp, struct nvkm_ior *ior)
 {
-	/* Execute DisableLT script from DP Info Table. */
+	 
 	nvbios_init(&ior->disp->engine.subdev, outp->dp.info.script[4],
 		init.outp = &outp->info;
 		init.or   = ior->id;
@@ -529,7 +502,7 @@ nvkm_dp_disable(struct nvkm_outp *outp, struct nvkm_ior *ior)
 static void
 nvkm_dp_release(struct nvkm_outp *outp)
 {
-	/* Prevent link from being retrained if sink sends an IRQ. */
+	 
 	atomic_set(&outp->dp.lt.done, 0);
 	outp->ior->dp.nr = 0;
 }
@@ -548,7 +521,7 @@ nvkm_dp_acquire(struct nvkm_outp *outp)
 
 	mutex_lock(&outp->dp.mutex);
 
-	/* Check that link configuration meets current requirements. */
+	 
 	list_for_each_entry(head, &outp->disp->heads, head) {
 		if (ior->asy.head & (1 << head->id)) {
 			u32 khz = (head->asy.hz >> ior->asy.rgdiv) / 1000;
@@ -565,7 +538,7 @@ nvkm_dp_acquire(struct nvkm_outp *outp)
 		goto done;
 	}
 
-	/* Check that link is still trained. */
+	 
 	ret = nvkm_rdaux(outp->dp.aux, DPCD_LS02, stat, 3);
 	if (ret) {
 		OUTP_DBG(outp, "failed to read link status, assuming no sink");
@@ -636,10 +609,7 @@ nvkm_dp_enable_supported_link_rates(struct nvkm_outp *outp)
 	return outp->dp.rates != 0;
 }
 
-/* XXX: This is a big fat hack, and this is just drm_dp_read_dpcd_caps()
- * converted to work inside nvkm. This is a temporary holdover until we start
- * passing the drm_dp_aux device through NVKM
- */
+ 
 static int
 nvkm_dp_read_dpcd_caps(struct nvkm_outp *outp)
 {
@@ -651,13 +621,7 @@ nvkm_dp_read_dpcd_caps(struct nvkm_outp *outp)
 	if (ret < 0)
 		return ret;
 
-	/*
-	 * Prior to DP1.3 the bit represented by
-	 * DP_EXTENDED_RECEIVER_CAP_FIELD_PRESENT was reserved.
-	 * If it is set DP_DPCD_REV at 0000h could be at a value less than
-	 * the true capability of the panel. The only way to check is to
-	 * then compare 0000h and 2200h.
-	 */
+	 
 	if (!(outp->dp.dpcd[DP_TRAINING_AUX_RD_INTERVAL] &
 	      DP_EXTENDED_RECEIVER_CAP_FIELD_PRESENT))
 		return 0;
@@ -687,10 +651,7 @@ nvkm_dp_enable(struct nvkm_outp *outp, bool auxpwr)
 	struct nvkm_i2c_aux *aux = outp->dp.aux;
 
 	if (auxpwr && !outp->dp.aux_pwr) {
-		/* eDP panels need powering on by us (if the VBIOS doesn't default it
-		 * to on) before doing any AUX channel transactions.  LVDS panel power
-		 * is handled by the SOR itself, and not required for LVDS DDC.
-		 */
+		 
 		if (outp->conn->info.type == DCB_CONNECTOR_eDP) {
 			int power = nvkm_gpio_get(gpio, 0, DCB_GPIO_PANEL_POWER, 0xff);
 			if (power == 0) {
@@ -698,13 +659,7 @@ nvkm_dp_enable(struct nvkm_outp *outp, bool auxpwr)
 				outp->dp.aux_pwr_pu = true;
 			}
 
-			/* We delay here unconditionally, even if already powered,
-			 * because some laptop panels having a significant resume
-			 * delay before the panel begins responding.
-			 *
-			 * This is likely a bit of a hack, but no better idea for
-			 * handling this at the moment.
-			 */
+			 
 			msleep(300);
 		}
 
@@ -712,7 +667,7 @@ nvkm_dp_enable(struct nvkm_outp *outp, bool auxpwr)
 		nvkm_i2c_aux_monitor(aux, true);
 		outp->dp.aux_pwr = true;
 
-		/* Detect any LTTPRs before reading DPCD receiver caps. */
+		 
 		if (!nvkm_rdaux(aux, DPCD_LTTPR_REV, outp->dp.lttpr, sizeof(outp->dp.lttpr)) &&
 		    outp->dp.lttpr[0] >= 0x14 && outp->dp.lttpr[2]) {
 			switch (outp->dp.lttpr[2]) {
@@ -725,13 +680,13 @@ nvkm_dp_enable(struct nvkm_outp *outp, bool auxpwr)
 			case 0x02: outp->dp.lttprs = 7; break;
 			case 0x01: outp->dp.lttprs = 8; break;
 			default:
-				/* Unknown LTTPR count, we'll switch to transparent mode. */
+				 
 				WARN_ON(1);
 				outp->dp.lttprs = 0;
 				break;
 			}
 		} else {
-			/* No LTTPR support, or zero LTTPR count - don't touch it at all. */
+			 
 			memset(outp->dp.lttpr, 0x00, sizeof(outp->dp.lttpr));
 		}
 
@@ -772,9 +727,7 @@ nvkm_dp_enable(struct nvkm_outp *outp, bool auxpwr)
 		outp->dp.aux_pwr = false;
 		atomic_set(&outp->dp.lt.done, 0);
 
-		/* Restore eDP panel GPIO to its prior state if we changed it, as
-		 * it could potentially interfere with other outputs.
-		 */
+		 
 		if (outp->conn->info.type == DCB_CONNECTOR_eDP) {
 			if (outp->dp.aux_pwr_pu) {
 				nvkm_gpio_set(gpio, 0, DCB_GPIO_PANEL_POWER, 0xff, 0);
@@ -837,7 +790,7 @@ nvkm_dp_new(struct nvkm_disp *disp, int index, struct dcb_output *dcbE, struct n
 		return -EINVAL;
 	}
 
-	/* bios data is not optional */
+	 
 	data = nvbios_dpout_match(bios, outp->info.hasht, outp->info.hashm,
 				  &outp->dp.version, &hdr, &cnt, &len, &outp->dp.info);
 	if (!data) {

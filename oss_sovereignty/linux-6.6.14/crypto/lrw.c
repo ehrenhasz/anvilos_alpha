@@ -1,17 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* LRW: as defined by Cyril Guyot in
- *	http://grouper.ieee.org/groups/1619/email/pdf00017.pdf
- *
- * Copyright (c) 2006 Rik Snel <rsnel@cube.dyndns.org>
- *
- * Based on ecb.c
- * Copyright (c) 2006 Herbert Xu <herbert@gondor.apana.org.au>
- */
-/* This implementation is checked against the test vectors in the above
- * document and by a test vector provided by Ken Buchanan at
- * https://www.mail-archive.com/stds-p1619@listserv.ieee.org/msg00173.html
- *
- * The test vectors are included in the testing module tcrypt.[ch] */
+
+ 
+ 
 
 #include <crypto/internal/skcipher.h>
 #include <crypto/scatterwalk.h>
@@ -30,22 +19,10 @@
 struct lrw_tfm_ctx {
 	struct crypto_skcipher *child;
 
-	/*
-	 * optimizes multiplying a random (non incrementing, as at the
-	 * start of a new sector) value with key2, we could also have
-	 * used 4k optimization tables or no optimization at all. In the
-	 * latter case we would have to store key2 here
-	 */
+	 
 	struct gf128mul_64k *table;
 
-	/*
-	 * stores:
-	 *  key2*{ 0,0,...0,0,0,0,1 }, key2*{ 0,0,...0,0,0,1,1 },
-	 *  key2*{ 0,0,...0,0,1,1,1 }, key2*{ 0,0,...0,1,1,1,1 }
-	 *  key2*{ 0,0,...1,1,1,1,1 }, etc
-	 * needed for optimized multiplication of incrementing values
-	 * with key2
-	 */
+	 
 	be128 mulinc[128];
 };
 
@@ -85,12 +62,12 @@ static int lrw_setkey(struct crypto_skcipher *parent, const u8 *key,
 	if (ctx->table)
 		gf128mul_free_64k(ctx->table);
 
-	/* initialize multiplication table for Key2 */
+	 
 	ctx->table = gf128mul_init_64k_bbe((be128 *)tweak);
 	if (!ctx->table)
 		return -ENOMEM;
 
-	/* initialize optimization table */
+	 
 	for (i = 0; i < 128; i++) {
 		lrw_setbit128_bbe(&tmp, i);
 		ctx->mulinc[i] = tmp;
@@ -100,17 +77,7 @@ static int lrw_setkey(struct crypto_skcipher *parent, const u8 *key,
 	return 0;
 }
 
-/*
- * Returns the number of trailing '1' bits in the words of the counter, which is
- * represented by 4 32-bit words, arranged from least to most significant.
- * At the same time, increments the counter by one.
- *
- * For example:
- *
- * u32 counter[4] = { 0xFFFFFFFF, 0x1, 0x0, 0x0 };
- * int i = lrw_next_index(&counter);
- * // i == 33, counter == { 0x0, 0x2, 0x0, 0x0 }
- */
+ 
 static int lrw_next_index(u32 *counter)
 {
 	int i, res = 0;
@@ -123,20 +90,11 @@ static int lrw_next_index(u32 *counter)
 		res += 32;
 	}
 
-	/*
-	 * If we get here, then x == 128 and we are incrementing the counter
-	 * from all ones to all zeros. This means we must return index 127, i.e.
-	 * the one corresponding to key2*{ 1,...,1 }.
-	 */
+	 
 	return 127;
 }
 
-/*
- * We compute the tweak masks twice (both before and after the ECB encryption or
- * decryption) to avoid having to allocate a temporary buffer and/or make
- * mutliple calls to the 'ecb(..)' instance, which usually would be slower than
- * just doing the lrw_next_index() calls again.
- */
+ 
 static int lrw_xor_tweak(struct skcipher_request *req, bool second_pass)
 {
 	const int bs = LRW_BLOCK_SIZE;
@@ -151,7 +109,7 @@ static int lrw_xor_tweak(struct skcipher_request *req, bool second_pass)
 
 	if (second_pass) {
 		req = &rctx->subreq;
-		/* set to our TFM to enforce correct alignment: */
+		 
 		skcipher_request_set_tfm(req, tfm);
 	}
 
@@ -176,8 +134,7 @@ static int lrw_xor_tweak(struct skcipher_request *req, bool second_pass)
 		do {
 			be128_xor(wdst++, &t, wsrc++);
 
-			/* T <- I*Key2, using the optimization
-			 * discussed in the specification */
+			 
 			be128_xor(&t, &t,
 				  &ctx->mulinc[lrw_next_index(counter)]);
 		} while ((avail -= bs) >= bs);
@@ -229,14 +186,14 @@ static void lrw_init_crypt(struct skcipher_request *req)
 	skcipher_request_set_tfm(subreq, ctx->child);
 	skcipher_request_set_callback(subreq, req->base.flags, lrw_crypt_done,
 				      req);
-	/* pass req->iv as IV (will be used by xor_tweak, ECB will ignore it) */
+	 
 	skcipher_request_set_crypt(subreq, req->dst, req->dst,
 				   req->cryptlen, req->iv);
 
-	/* calculate first value of T */
+	 
 	memcpy(&rctx->t, req->iv, sizeof(rctx->t));
 
-	/* T <- I*Key2 */
+	 
 	gf128mul_64k_bbe(&rctx->t, ctx->table);
 }
 
@@ -353,9 +310,7 @@ static int lrw_create(struct crypto_template *tmpl, struct rtattr **tb)
 	err = -EINVAL;
 	cipher_name = alg->base.cra_name;
 
-	/* Alas we screwed up the naming so we have to mangle the
-	 * cipher name.
-	 */
+	 
 	if (!strncmp(cipher_name, "ecb(", 4)) {
 		int len;
 

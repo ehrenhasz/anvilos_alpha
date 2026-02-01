@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0+
+
 #include <linux/module.h>
 #include <linux/i2c.h>
 #include <linux/of.h>
@@ -156,7 +156,7 @@ static int max8893_probe(struct i2c_client *i2c)
 #ifdef CONFIG_OF
 static const struct of_device_id max8893_dt_match[] = {
 	{ .compatible = "maxim,max8893" },
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, max8893_dt_match);
 #endif

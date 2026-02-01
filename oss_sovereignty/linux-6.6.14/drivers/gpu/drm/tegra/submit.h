@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/* Copyright (c) 2020 NVIDIA Corporation */
+ 
+ 
 
 #ifndef _TEGRA_DRM_UAPI_SUBMIT_H
 #define _TEGRA_DRM_UAPI_SUBMIT_H

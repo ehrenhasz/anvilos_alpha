@@ -1,28 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- *  comedi/drivers/ni_routing/ni_device_routes/pci-6220.c
- *  List of valid routes for specific NI boards.
- *
- *  COMEDI - Linux Control and Measurement Device Interface
- *  Copyright (C) 2016 Spencer E. Olson <olsonse@umich.edu>
- *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- */
 
-/*
- * The contents of this file are generated using the tools in
- * comedi/drivers/ni_routing/tools
- *
- * Please use those tools to help maintain the contents of this file.
- */
+ 
+
+ 
 
 #include "../ni_device_routes.h"
 #include "all.h"
@@ -55,7 +34,7 @@ struct ni_device_routes ni_pci_6220_device_routes = {
 				NI_DO_SampleClock,
 				NI_FrequencyOutput,
 				NI_ChangeDetectionEvent,
-				0, /* Termination */
+				0,  
 			}
 		},
 		{
@@ -83,7 +62,7 @@ struct ni_device_routes ni_pci_6220_device_routes = {
 				NI_DO_SampleClock,
 				NI_FrequencyOutput,
 				NI_ChangeDetectionEvent,
-				0, /* Termination */
+				0,  
 			}
 		},
 		{
@@ -111,7 +90,7 @@ struct ni_device_routes ni_pci_6220_device_routes = {
 				NI_DO_SampleClock,
 				NI_FrequencyOutput,
 				NI_ChangeDetectionEvent,
-				0, /* Termination */
+				0,  
 			}
 		},
 		{
@@ -139,7 +118,7 @@ struct ni_device_routes ni_pci_6220_device_routes = {
 				NI_DO_SampleClock,
 				NI_FrequencyOutput,
 				NI_ChangeDetectionEvent,
-				0, /* Termination */
+				0,  
 			}
 		},
 		{
@@ -167,7 +146,7 @@ struct ni_device_routes ni_pci_6220_device_routes = {
 				NI_DO_SampleClock,
 				NI_FrequencyOutput,
 				NI_ChangeDetectionEvent,
-				0, /* Termination */
+				0,  
 			}
 		},
 		{
@@ -195,7 +174,7 @@ struct ni_device_routes ni_pci_6220_device_routes = {
 				NI_DO_SampleClock,
 				NI_FrequencyOutput,
 				NI_ChangeDetectionEvent,
-				0, /* Termination */
+				0,  
 			}
 		},
 		{
@@ -223,7 +202,7 @@ struct ni_device_routes ni_pci_6220_device_routes = {
 				NI_DO_SampleClock,
 				NI_FrequencyOutput,
 				NI_ChangeDetectionEvent,
-				0, /* Termination */
+				0,  
 			}
 		},
 		{
@@ -251,7 +230,7 @@ struct ni_device_routes ni_pci_6220_device_routes = {
 				NI_DO_SampleClock,
 				NI_FrequencyOutput,
 				NI_ChangeDetectionEvent,
-				0, /* Termination */
+				0,  
 			}
 		},
 		{
@@ -279,7 +258,7 @@ struct ni_device_routes ni_pci_6220_device_routes = {
 				NI_DO_SampleClock,
 				NI_FrequencyOutput,
 				NI_ChangeDetectionEvent,
-				0, /* Termination */
+				0,  
 			}
 		},
 		{
@@ -307,7 +286,7 @@ struct ni_device_routes ni_pci_6220_device_routes = {
 				NI_DO_SampleClock,
 				NI_FrequencyOutput,
 				NI_ChangeDetectionEvent,
-				0, /* Termination */
+				0,  
 			}
 		},
 		{
@@ -335,7 +314,7 @@ struct ni_device_routes ni_pci_6220_device_routes = {
 				NI_DO_SampleClock,
 				NI_FrequencyOutput,
 				NI_ChangeDetectionEvent,
-				0, /* Termination */
+				0,  
 			}
 		},
 		{
@@ -363,7 +342,7 @@ struct ni_device_routes ni_pci_6220_device_routes = {
 				NI_DO_SampleClock,
 				NI_FrequencyOutput,
 				NI_ChangeDetectionEvent,
-				0, /* Termination */
+				0,  
 			}
 		},
 		{
@@ -391,7 +370,7 @@ struct ni_device_routes ni_pci_6220_device_routes = {
 				NI_DO_SampleClock,
 				NI_FrequencyOutput,
 				NI_ChangeDetectionEvent,
-				0, /* Termination */
+				0,  
 			}
 		},
 		{
@@ -419,7 +398,7 @@ struct ni_device_routes ni_pci_6220_device_routes = {
 				NI_DO_SampleClock,
 				NI_FrequencyOutput,
 				NI_ChangeDetectionEvent,
-				0, /* Termination */
+				0,  
 			}
 		},
 		{
@@ -447,7 +426,7 @@ struct ni_device_routes ni_pci_6220_device_routes = {
 				NI_DO_SampleClock,
 				NI_FrequencyOutput,
 				NI_ChangeDetectionEvent,
-				0, /* Termination */
+				0,  
 			}
 		},
 		{
@@ -475,7 +454,7 @@ struct ni_device_routes ni_pci_6220_device_routes = {
 				NI_DO_SampleClock,
 				NI_FrequencyOutput,
 				NI_ChangeDetectionEvent,
-				0, /* Termination */
+				0,  
 			}
 		},
 		{
@@ -501,7 +480,7 @@ struct ni_device_routes ni_pci_6220_device_routes = {
 				NI_10MHzRefClock,
 				NI_FrequencyOutput,
 				NI_ChangeDetectionEvent,
-				0, /* Termination */
+				0,  
 			}
 		},
 		{
@@ -527,7 +506,7 @@ struct ni_device_routes ni_pci_6220_device_routes = {
 				NI_10MHzRefClock,
 				NI_FrequencyOutput,
 				NI_ChangeDetectionEvent,
-				0, /* Termination */
+				0,  
 			}
 		},
 		{
@@ -553,7 +532,7 @@ struct ni_device_routes ni_pci_6220_device_routes = {
 				NI_10MHzRefClock,
 				NI_FrequencyOutput,
 				NI_ChangeDetectionEvent,
-				0, /* Termination */
+				0,  
 			}
 		},
 		{
@@ -579,7 +558,7 @@ struct ni_device_routes ni_pci_6220_device_routes = {
 				NI_10MHzRefClock,
 				NI_FrequencyOutput,
 				NI_ChangeDetectionEvent,
-				0, /* Termination */
+				0,  
 			}
 		},
 		{
@@ -605,7 +584,7 @@ struct ni_device_routes ni_pci_6220_device_routes = {
 				NI_10MHzRefClock,
 				NI_FrequencyOutput,
 				NI_ChangeDetectionEvent,
-				0, /* Termination */
+				0,  
 			}
 		},
 		{
@@ -631,7 +610,7 @@ struct ni_device_routes ni_pci_6220_device_routes = {
 				NI_10MHzRefClock,
 				NI_FrequencyOutput,
 				NI_ChangeDetectionEvent,
-				0, /* Termination */
+				0,  
 			}
 		},
 		{
@@ -657,7 +636,7 @@ struct ni_device_routes ni_pci_6220_device_routes = {
 				NI_10MHzRefClock,
 				NI_FrequencyOutput,
 				NI_ChangeDetectionEvent,
-				0, /* Termination */
+				0,  
 			}
 		},
 		{
@@ -683,7 +662,7 @@ struct ni_device_routes ni_pci_6220_device_routes = {
 				NI_10MHzRefClock,
 				NI_FrequencyOutput,
 				NI_ChangeDetectionEvent,
-				0, /* Termination */
+				0,  
 			}
 		},
 		{
@@ -717,7 +696,7 @@ struct ni_device_routes ni_pci_6220_device_routes = {
 				NI_20MHzTimebase,
 				NI_80MHzTimebase,
 				NI_100kHzTimebase,
-				0, /* Termination */
+				0,  
 			}
 		},
 		{
@@ -751,7 +730,7 @@ struct ni_device_routes ni_pci_6220_device_routes = {
 				NI_20MHzTimebase,
 				NI_80MHzTimebase,
 				NI_100kHzTimebase,
-				0, /* Termination */
+				0,  
 			}
 		},
 		{
@@ -785,7 +764,7 @@ struct ni_device_routes ni_pci_6220_device_routes = {
 				NI_CtrInternalOutput(1),
 				NI_AI_StartTrigger,
 				NI_AI_ReferenceTrigger,
-				0, /* Termination */
+				0,  
 			}
 		},
 		{
@@ -819,7 +798,7 @@ struct ni_device_routes ni_pci_6220_device_routes = {
 				NI_CtrInternalOutput(0),
 				NI_AI_StartTrigger,
 				NI_AI_ReferenceTrigger,
-				0, /* Termination */
+				0,  
 			}
 		},
 		{
@@ -855,7 +834,7 @@ struct ni_device_routes ni_pci_6220_device_routes = {
 				NI_CtrInternalOutput(1),
 				NI_AI_StartTrigger,
 				NI_AI_ReferenceTrigger,
-				0, /* Termination */
+				0,  
 			}
 		},
 		{
@@ -891,7 +870,7 @@ struct ni_device_routes ni_pci_6220_device_routes = {
 				NI_CtrInternalOutput(0),
 				NI_AI_StartTrigger,
 				NI_AI_ReferenceTrigger,
-				0, /* Termination */
+				0,  
 			}
 		},
 		{
@@ -921,7 +900,7 @@ struct ni_device_routes ni_pci_6220_device_routes = {
 				TRIGGER_LINE(5),
 				TRIGGER_LINE(6),
 				TRIGGER_LINE(7),
-				0, /* Termination */
+				0,  
 			}
 		},
 		{
@@ -951,7 +930,7 @@ struct ni_device_routes ni_pci_6220_device_routes = {
 				TRIGGER_LINE(5),
 				TRIGGER_LINE(6),
 				TRIGGER_LINE(7),
-				0, /* Termination */
+				0,  
 			}
 		},
 		{
@@ -981,7 +960,7 @@ struct ni_device_routes ni_pci_6220_device_routes = {
 				TRIGGER_LINE(5),
 				TRIGGER_LINE(6),
 				TRIGGER_LINE(7),
-				0, /* Termination */
+				0,  
 			}
 		},
 		{
@@ -1011,7 +990,7 @@ struct ni_device_routes ni_pci_6220_device_routes = {
 				TRIGGER_LINE(5),
 				TRIGGER_LINE(6),
 				TRIGGER_LINE(7),
-				0, /* Termination */
+				0,  
 			}
 		},
 		{
@@ -1041,7 +1020,7 @@ struct ni_device_routes ni_pci_6220_device_routes = {
 				TRIGGER_LINE(5),
 				TRIGGER_LINE(6),
 				TRIGGER_LINE(7),
-				0, /* Termination */
+				0,  
 			}
 		},
 		{
@@ -1071,7 +1050,7 @@ struct ni_device_routes ni_pci_6220_device_routes = {
 				TRIGGER_LINE(5),
 				TRIGGER_LINE(6),
 				TRIGGER_LINE(7),
-				0, /* Termination */
+				0,  
 			}
 		},
 		{
@@ -1104,7 +1083,7 @@ struct ni_device_routes ni_pci_6220_device_routes = {
 				NI_CtrInternalOutput(1),
 				NI_AI_StartTrigger,
 				NI_AI_ReferenceTrigger,
-				0, /* Termination */
+				0,  
 			}
 		},
 		{
@@ -1137,7 +1116,7 @@ struct ni_device_routes ni_pci_6220_device_routes = {
 				NI_CtrInternalOutput(0),
 				NI_AI_StartTrigger,
 				NI_AI_ReferenceTrigger,
-				0, /* Termination */
+				0,  
 			}
 		},
 		{
@@ -1170,7 +1149,7 @@ struct ni_device_routes ni_pci_6220_device_routes = {
 				NI_CtrInternalOutput(0),
 				NI_CtrInternalOutput(1),
 				NI_AI_SampleClockTimebase,
-				0, /* Termination */
+				0,  
 			}
 		},
 		{
@@ -1202,7 +1181,7 @@ struct ni_device_routes ni_pci_6220_device_routes = {
 				TRIGGER_LINE(7),
 				NI_20MHzTimebase,
 				NI_100kHzTimebase,
-				0, /* Termination */
+				0,  
 			}
 		},
 		{
@@ -1234,7 +1213,7 @@ struct ni_device_routes ni_pci_6220_device_routes = {
 				TRIGGER_LINE(7),
 				NI_CtrInternalOutput(0),
 				NI_CtrInternalOutput(1),
-				0, /* Termination */
+				0,  
 			}
 		},
 		{
@@ -1264,7 +1243,7 @@ struct ni_device_routes ni_pci_6220_device_routes = {
 				TRIGGER_LINE(5),
 				TRIGGER_LINE(6),
 				TRIGGER_LINE(7),
-				0, /* Termination */
+				0,  
 			}
 		},
 		{
@@ -1297,7 +1276,7 @@ struct ni_device_routes ni_pci_6220_device_routes = {
 				NI_CtrInternalOutput(0),
 				NI_CtrInternalOutput(1),
 				NI_AI_ConvertClockTimebase,
-				0, /* Termination */
+				0,  
 			}
 		},
 		{
@@ -1305,7 +1284,7 @@ struct ni_device_routes ni_pci_6220_device_routes = {
 			.src = (int[]){
 				NI_AI_SampleClockTimebase,
 				NI_20MHzTimebase,
-				0, /* Termination */
+				0,  
 			}
 		},
 		{
@@ -1335,7 +1314,7 @@ struct ni_device_routes ni_pci_6220_device_routes = {
 				TRIGGER_LINE(5),
 				TRIGGER_LINE(6),
 				TRIGGER_LINE(7),
-				0, /* Termination */
+				0,  
 			}
 		},
 		{
@@ -1371,7 +1350,7 @@ struct ni_device_routes ni_pci_6220_device_routes = {
 				NI_AI_ConvertClock,
 				NI_FrequencyOutput,
 				NI_ChangeDetectionEvent,
-				0, /* Termination */
+				0,  
 			}
 		},
 		{
@@ -1407,10 +1386,10 @@ struct ni_device_routes ni_pci_6220_device_routes = {
 				NI_AI_ConvertClock,
 				NI_FrequencyOutput,
 				NI_ChangeDetectionEvent,
-				0, /* Termination */
+				0,  
 			}
 		},
-		{ /* Termination of list */
+		{  
 			.dest = 0,
 		},
 	},

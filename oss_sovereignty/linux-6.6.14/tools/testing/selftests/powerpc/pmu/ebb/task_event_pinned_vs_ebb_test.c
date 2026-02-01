@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright 2014, Michael Ellerman, IBM Corp.
- */
+
+ 
 
 #include <signal.h>
 #include <stdio.h>
@@ -14,10 +12,7 @@
 #include "ebb.h"
 
 
-/*
- * Tests a pinned per-task event vs an EBB - in that order. The pinned per-task
- * event should prevent the EBB event from being enabled.
- */
+ 
 
 static int setup_child_event(struct event *event, pid_t child_pid)
 {
@@ -49,27 +44,27 @@ int task_event_pinned_vs_ebb(void)
 
 	pid = fork();
 	if (pid == 0) {
-		/* NB order of pipes looks reversed */
+		 
 		exit(ebb_child(write_pipe, read_pipe));
 	}
 
-	/* We setup the task event first */
+	 
 	rc = setup_child_event(&event, pid);
 	if (rc) {
 		kill_child_and_wait(pid);
 		return rc;
 	}
 
-	/* Signal the child to install its EBB event and wait */
+	 
 	if (sync_with_child(read_pipe, write_pipe))
-		/* If it fails, wait for it to exit */
+		 
 		goto wait;
 
-	/* Signal the child to run */
+	 
 	FAIL_IF(sync_with_child(read_pipe, write_pipe));
 
 wait:
-	/* We expect it to fail to read the event */
+	 
 	FAIL_IF(wait_for_child(pid) != 2);
 	FAIL_IF(event_disable(&event));
 	FAIL_IF(event_read(&event));
@@ -77,10 +72,7 @@ wait:
 	event_report(&event);
 
 	FAIL_IF(event.result.value == 0);
-	/*
-	 * For reasons I don't understand enabled is usually just slightly
-	 * lower than running. Would be good to confirm why.
-	 */
+	 
 	FAIL_IF(event.result.enabled == 0);
 	FAIL_IF(event.result.running == 0);
 

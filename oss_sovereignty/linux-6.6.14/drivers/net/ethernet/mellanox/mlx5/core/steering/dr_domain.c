@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-/* Copyright (c) 2019 Mellanox Technologies. */
+
+ 
 
 #include <linux/mlx5/eswitch.h>
 #include <linux/err.h>
@@ -27,7 +27,7 @@ static int dr_domain_init_modify_header_resources(struct mlx5dr_domain *dmn)
 		return -ENOMEM;
 	}
 
-	/* create argument pool */
+	 
 	dmn->arg_mgr = mlx5dr_arg_mgr_create(dmn);
 	if (!dmn->arg_mgr) {
 		mlx5dr_err(dmn, "Couldn't create arg_mgr\n");
@@ -52,9 +52,7 @@ static void dr_domain_destroy_modify_header_resources(struct mlx5dr_domain *dmn)
 
 static void dr_domain_init_csum_recalc_fts(struct mlx5dr_domain *dmn)
 {
-	/* Per vport cached FW FT for checksum recalculation, this
-	 * recalculation is needed due to a HW bug in STEv0.
-	 */
+	 
 	xa_init(&dmn->csum_fts_xa);
 }
 
@@ -80,7 +78,7 @@ int mlx5dr_domain_get_recalc_cs_ft_addr(struct mlx5dr_domain *dmn,
 
 	recalc_cs_ft = xa_load(&dmn->csum_fts_xa, vport_num);
 	if (!recalc_cs_ft) {
-		/* Table hasn't been created yet */
+		 
 		recalc_cs_ft = mlx5dr_fw_create_recalc_cs_ft(dmn, vport_num);
 		if (!recalc_cs_ft)
 			return -EINVAL;
@@ -330,7 +328,7 @@ vport_load:
 
 	vport_caps = dr_domain_add_vport_cap(dmn, vport);
 	if (PTR_ERR(vport_caps) == -EBUSY)
-		/* caps were already stored by another thread */
+		 
 		goto vport_load;
 
 	return vport_caps;
@@ -366,9 +364,7 @@ static int dr_domain_query_fdb_caps(struct mlx5_core_dev *mdev,
 
 	xa_init(&dmn->info.caps.vports.vports_caps_xa);
 
-	/* Query eswitch manager and uplink vports only. Rest of the
-	 * vports (vport 0, VFs and SFs) will be queried dynamically.
-	 */
+	 
 
 	ret = dr_domain_query_esw_mgr(dmn);
 	if (ret) {
@@ -494,7 +490,7 @@ mlx5dr_domain_create(struct mlx5_core_dev *mdev, enum mlx5dr_domain_type type)
 		goto uninit_caps;
 	}
 
-	/* Allocate resources */
+	 
 	ret = dr_domain_init_resources(dmn);
 	if (ret) {
 		mlx5dr_err(dmn, "Failed init domain resources\n");
@@ -514,9 +510,7 @@ def_xa_destroy:
 	return NULL;
 }
 
-/* Assure synchronization of the device steering tables with updates made by SW
- * insertion.
- */
+ 
 int mlx5dr_domain_sync(struct mlx5dr_domain *dmn, u32 flags)
 {
 	int ret = 0;
@@ -543,7 +537,7 @@ int mlx5dr_domain_destroy(struct mlx5dr_domain *dmn)
 	if (WARN_ON_ONCE(refcount_read(&dmn->refcount) > 1))
 		return -EBUSY;
 
-	/* make sure resources are not used by the hardware */
+	 
 	mlx5dr_cmd_sync_steering(dmn->mdev);
 	mlx5dr_dbg_uninit_dump(dmn);
 	dr_domain_uninit_csum_recalc_fts(dmn);

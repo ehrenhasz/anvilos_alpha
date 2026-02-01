@@ -1,17 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * NXP Wireless LAN device driver: AP specific command handling
- *
- * Copyright 2011-2020 NXP
- */
+
+ 
 
 #include "main.h"
 #include "11ac.h"
 #include "11n.h"
 
-/* This function parses security related parameters from cfg80211_ap_settings
- * and sets into FW understandable bss_config structure.
- */
+ 
 int mwifiex_set_secure_params(struct mwifiex_private *priv,
 			      struct mwifiex_uap_bss_param *bss_config,
 			      struct cfg80211_ap_settings *params) {
@@ -140,9 +134,7 @@ int mwifiex_set_secure_params(struct mwifiex_private *priv,
 	return 0;
 }
 
-/* This function updates 11n related parameters from IE and sets them into
- * bss_config structure.
- */
+ 
 void
 mwifiex_set_ht_params(struct mwifiex_private *priv,
 		      struct mwifiex_uap_bss_param *bss_cfg,
@@ -168,9 +160,7 @@ mwifiex_set_ht_params(struct mwifiex_private *priv,
 	return;
 }
 
-/* This function updates 11ac related parameters from IE
- * and sets them into bss_config structure.
- */
+ 
 void mwifiex_set_vht_params(struct mwifiex_private *priv,
 			    struct mwifiex_uap_bss_param *bss_cfg,
 			    struct cfg80211_ap_settings *params)
@@ -190,9 +180,7 @@ void mwifiex_set_vht_params(struct mwifiex_private *priv,
 	return;
 }
 
-/* This function updates 11ac related parameters from IE
- * and sets them into bss_config structure.
- */
+ 
 void mwifiex_set_tpc_params(struct mwifiex_private *priv,
 			    struct mwifiex_uap_bss_param *bss_cfg,
 			    struct cfg80211_ap_settings *params)
@@ -207,9 +195,7 @@ void mwifiex_set_tpc_params(struct mwifiex_private *priv,
 		bss_cfg->power_constraint = 0;
 }
 
-/* Enable VHT only when cfg80211_ap_settings has VHT IE.
- * Otherwise disable VHT.
- */
+ 
 void mwifiex_set_vht_width(struct mwifiex_private *priv,
 			   enum nl80211_chan_width width,
 			   bool ap_11ac_enable)
@@ -239,9 +225,7 @@ void mwifiex_set_vht_width(struct mwifiex_private *priv,
 	return;
 }
 
-/* This function finds supported rates IE from beacon parameter and sets
- * these rates into bss_config structure.
- */
+ 
 void
 mwifiex_set_uap_rates(struct mwifiex_uap_bss_param *bss_cfg,
 		      struct cfg80211_ap_settings *params)
@@ -272,10 +256,7 @@ mwifiex_set_uap_rates(struct mwifiex_uap_bss_param *bss_cfg,
 	return;
 }
 
-/* This function initializes some of mwifiex_uap_bss_param variables.
- * This helps FW in ignoring invalid values. These values may or may not
- * be get updated to valid ones at later stage.
- */
+ 
 void mwifiex_set_sys_config_invalid_data(struct mwifiex_uap_bss_param *config)
 {
 	config->bcast_ssid_ctl = 0x7F;
@@ -289,10 +270,7 @@ void mwifiex_set_sys_config_invalid_data(struct mwifiex_uap_bss_param *config)
 	config->qos_info = 0xFF;
 }
 
-/* This function parses BSS related parameters from structure
- * and prepares TLVs specific to WPA/WPA2 security.
- * These TLVs are appended to command buffer.
- */
+ 
 static void
 mwifiex_uap_bss_wpa(u8 **tlv_buf, void *cmd_buf, u16 *param_size)
 {
@@ -367,9 +345,7 @@ mwifiex_uap_bss_wpa(u8 **tlv_buf, void *cmd_buf, u16 *param_size)
 	return;
 }
 
-/* This function parses WMM related parameters from cfg80211_ap_settings
- * structure and updates bss_config structure.
- */
+ 
 void
 mwifiex_set_wmm_params(struct mwifiex_private *priv,
 		       struct mwifiex_uap_bss_param *bss_cfg,
@@ -401,10 +377,7 @@ mwifiex_set_wmm_params(struct mwifiex_private *priv,
 	bss_cfg->qos_info = 0x00;
 	return;
 }
-/* This function parses BSS related parameters from structure
- * and prepares TLVs specific to WEP encryption.
- * These TLVs are appended to command buffer.
- */
+ 
 static void
 mwifiex_uap_bss_wep(u8 **tlv_buf, void *cmd_buf, u16 *param_size)
 {
@@ -440,8 +413,7 @@ mwifiex_uap_bss_wep(u8 **tlv_buf, void *cmd_buf, u16 *param_size)
 	return;
 }
 
-/* This function enable 11D if userspace set the country IE.
- */
+ 
 void mwifiex_config_uap_11d(struct mwifiex_private *priv,
 			    struct cfg80211_beacon_data *beacon_data)
 {
@@ -451,7 +423,7 @@ void mwifiex_config_uap_11d(struct mwifiex_private *priv,
 	country_ie = cfg80211_find_ie(WLAN_EID_COUNTRY, beacon_data->tail,
 				      beacon_data->tail_len);
 	if (country_ie) {
-		/* Send cmd to FW to enable 11D function */
+		 
 		state_11d = ENABLE_11D;
 		if (mwifiex_send_cmd(priv, HostCmd_CMD_802_11_SNMP_MIB,
 				     HostCmd_ACT_GEN_SET, DOT11D_I,
@@ -462,9 +434,7 @@ void mwifiex_config_uap_11d(struct mwifiex_private *priv,
 	}
 }
 
-/* This function parses BSS related parameters from structure
- * and prepares TLVs. These TLVs are appended to command buffer.
-*/
+ 
 static int
 mwifiex_uap_bss_param_prepare(u8 *tlv, void *cmd_buf, u16 *param_size)
 {
@@ -693,7 +663,7 @@ mwifiex_uap_bss_param_prepare(u8 *tlv, void *cmd_buf, u16 *param_size)
 	return 0;
 }
 
-/* This function parses custom IEs from IE list and prepares command buffer */
+ 
 static int mwifiex_uap_custom_ie_prepare(u8 *tlv, void *cmd_buf, u16 *ie_size)
 {
 	struct mwifiex_ie_list *ap_ie = cmd_buf;
@@ -714,9 +684,7 @@ static int mwifiex_uap_custom_ie_prepare(u8 *tlv, void *cmd_buf, u16 *ie_size)
 	return 0;
 }
 
-/* Parse AP config structure and prepare TLV based command structure
- * to be sent to FW for uAP configuration
- */
+ 
 static int
 mwifiex_cmd_uap_sys_config(struct host_cmd_ds_command *cmd, u16 cmd_action,
 			   u32 type, void *cmd_buf)
@@ -751,9 +719,7 @@ mwifiex_cmd_uap_sys_config(struct host_cmd_ds_command *cmd, u16 cmd_action,
 	return 0;
 }
 
-/* This function prepares AP specific deauth command with mac supplied in
- * function parameter.
- */
+ 
 static int mwifiex_cmd_uap_sta_deauth(struct mwifiex_private *priv,
 				      struct host_cmd_ds_command *cmd, u8 *mac)
 {
@@ -768,11 +734,7 @@ static int mwifiex_cmd_uap_sta_deauth(struct mwifiex_private *priv,
 	return 0;
 }
 
-/* This function prepares the AP specific commands before sending them
- * to the firmware.
- * This is a generic function which calls specific command preparation
- * routines based upon the command number.
- */
+ 
 int mwifiex_uap_prepare_cmd(struct mwifiex_private *priv, u16 cmd_no,
 			    u16 cmd_action, u32 type,
 			    void *data_buf, void *cmd_buf)
@@ -820,7 +782,7 @@ void mwifiex_uap_set_channel(struct mwifiex_private *priv,
 	bss_cfg->channel = ieee80211_frequency_to_channel(
 						     chandef.chan->center_freq);
 
-	/* Set appropriate bands */
+	 
 	if (chandef.chan->band == NL80211_BAND_2GHZ) {
 		bss_cfg->band_cfg = BAND_CONFIG_BG;
 		config_bands = BAND_B | BAND_G;

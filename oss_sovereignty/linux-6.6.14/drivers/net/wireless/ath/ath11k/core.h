@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: BSD-3-Clause-Clear */
-/*
- * Copyright (c) 2018-2019 The Linux Foundation. All rights reserved.
- * Copyright (c) 2021-2023 Qualcomm Innovation Center, Inc. All rights reserved.
- */
+ 
+ 
 
 #ifndef ATH11K_CORE_H
 #define ATH11K_CORE_H
@@ -36,19 +33,19 @@
 
 #define ATH11K_TX_MGMT_TARGET_MAX_SUPPORT_WMI 64
 
-/* Pending management packets threshold for dropping probe responses */
+ 
 #define ATH11K_PRB_RSP_DROP_THRESHOLD ((ATH11K_TX_MGMT_TARGET_MAX_SUPPORT_WMI * 3) / 4)
 
 #define ATH11K_INVALID_HW_MAC_ID	0xFF
 #define ATH11K_CONNECTION_LOSS_HZ	(3 * HZ)
 
-/* SMBIOS type containing Board Data File Name Extension */
+ 
 #define ATH11K_SMBIOS_BDF_EXT_TYPE 0xF8
 
-/* SMBIOS type structure length (excluding strings-set) */
+ 
 #define ATH11K_SMBIOS_BDF_EXT_LENGTH 0x9
 
-/* The magic used by QCA spec */
+ 
 #define ATH11K_SMBIOS_BDF_EXT_MAGIC "BDF_"
 
 extern unsigned int ath11k_frame_mode;
@@ -89,9 +86,9 @@ enum wme_ac {
 #define ATH11K_HE_MCS_MAX	11
 
 enum ath11k_crypt_mode {
-	/* Only use hardware crypto engine */
+	 
 	ATH11K_CRYPT_MODE_HW,
-	/* Only use software crypto */
+	 
 	ATH11K_CRYPT_MODE_SW,
 };
 
@@ -147,13 +144,13 @@ enum ath11k_hw_rev {
 };
 
 enum ath11k_firmware_mode {
-	/* the default mode, standard 802.11 functionality */
+	 
 	ATH11K_FIRMWARE_MODE_NORMAL,
 
-	/* factory tests etc */
+	 
 	ATH11K_FIRMWARE_MODE_FTM,
 
-	/* Cold boot calibration */
+	 
 	ATH11K_FIRMWARE_MODE_COLD_BOOT = 7,
 };
 
@@ -174,13 +171,13 @@ struct ath11k_ext_irq_grp {
 };
 
 enum ath11k_smbios_cc_type {
-	/* disable country code setting from SMBIOS */
+	 
 	ATH11K_SMBIOS_CC_DISABLE = 0,
 
-	/* set country code by ANSI country name, based on ISO3166-1 alpha2 */
+	 
 	ATH11K_SMBIOS_CC_ISO = 1,
 
-	/* worldwide regdomain */
+	 
 	ATH11K_SMBIOS_CC_WW = 2,
 };
 
@@ -189,17 +186,10 @@ struct ath11k_smbios_bdf {
 
 	u8 features_disabled;
 
-	/* enum ath11k_smbios_cc_type */
+	 
 	u8 country_code_flag;
 
-	/* To set specific country, you need to set country code
-	 * flag=ATH11K_SMBIOS_CC_ISO first, then if country is United
-	 * States, then country code value = 0x5553 ("US",'U' = 0x55, 'S'=
-	 * 0x53). To set country to INDONESIA, then country code value =
-	 * 0x4944 ("IN", 'I'=0x49, 'D'=0x44). If country code flag =
-	 * ATH11K_SMBIOS_CC_WW, then you can use worldwide regulatory
-	 * setting.
-	 */
+	 
 	u16 cc_code;
 
 	u8 bdf_enabled;
@@ -214,7 +204,7 @@ struct ath11k_smbios_bdf {
 
 #define HE_PPET16_PPET8_SIZE            8
 
-/* 802.11ax PPE (PPDU packet Extension) threshold */
+ 
 struct he_ppe_threshold {
 	u32 numss_m1;
 	u32 ru_mask;
@@ -232,7 +222,7 @@ struct ath11k_he {
 
 #define MAX_RADIOS 3
 
-/* ipq5018 hw param macros */
+ 
 #define MAX_RADIOS_5018	1
 #define CE_CNT_5018	6
 #define TARGET_CE_CNT_5018	9
@@ -334,13 +324,13 @@ struct ath11k_vif {
 			u32 uapsd;
 		} sta;
 		struct {
-			/* 127 stations; wmi limit */
+			 
 			u8 tim_bitmap[16];
 			u8 tim_len;
 			u32 ssid_len;
 			u8 ssid[IEEE80211_MAX_SSID_LEN];
 			bool hidden_ssid;
-			/* P2P_IE with NoA attribute for P2P_GO case */
+			 
 			u32 noa_len;
 			u8 *noa_data;
 		} ap;
@@ -368,7 +358,7 @@ struct ath11k_vif {
 
 #ifdef CONFIG_ATH11K_DEBUGFS
 	struct dentry *debugfs_twt;
-#endif /* CONFIG_ATH11K_DEBUGFS */
+#endif  
 };
 
 struct ath11k_vif_iter {
@@ -481,8 +471,8 @@ DECLARE_EWMA(avg_rssi, 10, 8)
 struct ath11k_sta {
 	struct ath11k_vif *arvif;
 
-	/* the following are protected by ar->data_lock */
-	u32 changed; /* IEEE80211_RC_* */
+	 
+	u32 changed;  
 	u32 bw;
 	u32 nss;
 	u32 smps;
@@ -503,14 +493,14 @@ struct ath11k_sta {
 	struct ath11k_rx_peer_stats *rx_stats;
 
 #ifdef CONFIG_MAC80211_DEBUGFS
-	/* protected by conf_mutex */
+	 
 	bool aggr_mode;
 #endif
 
 	bool use_4addr_set;
 	u16 tcl_metadata;
 
-	/* Protected with ar->data_lock */
+	 
 	enum ath11k_wmi_peer_ps_state peer_ps_state;
 	u64 ps_start_time;
 	u64 ps_start_jiffies;
@@ -533,10 +523,10 @@ enum ath11k_state {
 	ATH11K_STATE_RESTARTED,
 	ATH11K_STATE_WEDGED,
 	ATH11K_STATE_FTM,
-	/* Add other states as required */
+	 
 };
 
-/* Antenna noise floor */
+ 
 #define ATH11K_DEFAULT_NOISE_FLOOR -95
 
 #define ATH11K_INVALID_RSSI_FULL -1
@@ -556,7 +546,7 @@ struct ath11k_dbg_htt_stats {
 	u8 type;
 	u8 reset;
 	struct debug_htt_stats_req *stats_req;
-	/* protects shared stats req buffer */
+	 
 	spinlock_t lock;
 };
 
@@ -633,28 +623,23 @@ struct ath11k {
 	u32 chan_tx_pwr;
 	u32 num_stations;
 	u32 max_num_stations;
-	/* To synchronize concurrent synchronous mac80211 callback operations,
-	 * concurrent debugfs configuration and concurrent FW statistics events.
-	 */
+	 
 	struct mutex conf_mutex;
-	/* protects the radio specific data like debug stats, ppdu_stats_info stats,
-	 * vdev_stop_status info, scan data, ath11k_sta info, ath11k_vif info,
-	 * channel context data, survey info, test mode data.
-	 */
+	 
 	spinlock_t data_lock;
 
 	struct list_head arvifs;
-	/* should never be NULL; needed for regular htt rx */
+	 
 	struct ieee80211_channel *rx_channel;
 
-	/* valid during scan; needed for mgmt rx during scan */
+	 
 	struct ieee80211_channel *scan_channel;
 
 	u8 cfg_tx_chainmask;
 	u8 cfg_rx_chainmask;
 	u8 num_rx_chains;
 	u8 num_tx_chains;
-	/* pdev_idx starts from 0 whereas pdev->pdev_id starts with 1 */
+	 
 	u8 pdev_idx;
 	u8 lmac_id;
 
@@ -675,23 +660,16 @@ struct ath11k {
 	unsigned long long allocated_vdev_map;
 
 	struct idr txmgmt_idr;
-	/* protects txmgmt_idr data */
+	 
 	spinlock_t txmgmt_idr_lock;
 	atomic_t num_pending_mgmt_tx;
 	wait_queue_head_t txmgmt_empty_waitq;
 
-	/* cycle count is reported twice for each visited channel during scan.
-	 * access protected by data_lock
-	 */
+	 
 	u32 survey_last_rx_clear_count;
 	u32 survey_last_cycle_count;
 
-	/* Channel info events are expected to come in pairs without and with
-	 * COMPLETE flag set respectively for each channel visit during scan.
-	 *
-	 * However there are deviations from this rule. This flag is used to
-	 * avoid reporting garbage data.
-	 */
+	 
 	bool ch_info_can_report_survey;
 	struct survey_info survey[ATH11K_NUM_CHANS];
 	struct completion bss_survey_done;
@@ -734,7 +712,7 @@ struct ath11k {
 	struct completion fw_stats_complete;
 	bool fw_stats_done;
 
-	/* protected by conf_mutex */
+	 
 	bool ps_state_enable;
 	bool ps_timekeeper_enable;
 };
@@ -786,20 +764,20 @@ struct ath11k_pci_ops {
 	u32 (*window_read32)(struct ath11k_base *ab, u32 offset);
 };
 
-/* IPQ8074 HW channel counters frequency value in hertz */
+ 
 #define IPQ8074_CC_FREQ_HERTZ 320000
 
 struct ath11k_bp_stats {
-	/* Head Pointer reported by the last HTT Backpressure event for the ring */
+	 
 	u16 hp;
 
-	/* Tail Pointer reported by the last HTT Backpressure event for the ring */
+	 
 	u16 tp;
 
-	/* Number of Backpressure events received for the ring */
+	 
 	u32 count;
 
-	/* Last recorded event timestamp */
+	 
 	unsigned long jiffies;
 };
 
@@ -809,11 +787,9 @@ struct ath11k_dp_ring_bp_stats {
 };
 
 struct ath11k_soc_dp_tx_err_stats {
-	/* TCL Ring Descriptor unavailable */
+	 
 	u32 desc_na[DP_TCL_NUM_RING_MAX];
-	/* Other failures during dp_tx due to mem allocation failure
-	 * idr unavailable etc.
-	 */
+	 
 	atomic_t misc_fail;
 };
 
@@ -840,7 +816,7 @@ struct ath11k_msi_config {
 	u16 hw_rev;
 };
 
-/* Master structure to hold the hw data which may be used in core module */
+ 
 struct ath11k_base {
 	enum ath11k_hw_rev hw_rev;
 	enum ath11k_firmware_mode fw_mode;
@@ -850,7 +826,7 @@ struct ath11k_base {
 	struct ath11k_wmi_base wmi_ab;
 	struct completion fw_ready;
 	int num_radios;
-	/* HW channel counters frequency value in hertz common to all MACs */
+	 
 	u32 cc_freq_hz;
 
 	struct ath11k_htc htc;
@@ -873,9 +849,9 @@ struct ath11k_base {
 	struct ath11k_ce ce;
 	struct timer_list rx_replenish_retry;
 	struct ath11k_hal hal;
-	/* To synchronize core_start/core_stop */
+	 
 	struct mutex core_lock;
-	/* Protects data like peers */
+	 
 	spinlock_t base_lock;
 	struct ath11k_pdev pdevs[MAX_RADIOS];
 	struct {
@@ -887,14 +863,14 @@ struct ath11k_base {
 	struct ath11k_hal_reg_capabilities_ext hal_reg_cap[MAX_RADIOS];
 	unsigned long long free_vdev_map;
 
-	/* To synchronize rhash tbl write operation */
+	 
 	struct mutex tbl_mtx_lock;
 
-	/* The rhashtable containing struct ath11k_peer keyed by mac addr */
+	 
 	struct rhashtable *rhead_peer_addr;
 	struct rhashtable_params rhash_peer_addr_param;
 
-	/* The rhashtable containing struct ath11k_peer keyed by id  */
+	 
 	struct rhashtable *rhead_peer_id;
 	struct rhashtable_params rhash_peer_id_param;
 
@@ -914,17 +890,13 @@ struct ath11k_base {
 
 	const struct firmware *cal_file;
 
-	/* Below regd's are protected by ab->data_lock */
-	/* This is the regd set for every radio
-	 * by the firmware during initialization
-	 */
+	 
+	 
 	struct ieee80211_regdomain *default_regd[MAX_RADIOS];
-	/* This regd is set during dynamic country setting
-	 * This may or may not be used during the runtime
-	 */
+	 
 	struct ieee80211_regdomain *new_regd[MAX_RADIOS];
 
-	/* Current DFS Regulatory */
+	 
 	enum ath11k_dfs_region dfs_region;
 #ifdef CONFIG_ATH11K_DEBUGFS
 	struct dentry *debugfs_soc;
@@ -946,11 +918,11 @@ struct ath11k_base {
 	struct completion reset_complete;
 	struct completion reconfigure_complete;
 	struct completion recovery_start;
-	/* continuous recovery fail count */
+	 
 	atomic_t fail_cont_count;
 	unsigned long reset_fail_timeout;
 	struct {
-		/* protected by data_lock */
+		 
 		u32 fw_crash_counter;
 	} stats;
 	u32 pktlog_defs_checksum;
@@ -958,7 +930,7 @@ struct ath11k_base {
 	struct ath11k_dbring_cap *db_caps;
 	u32 num_db_cap;
 
-	/* To synchronize 11d scan vdev id */
+	 
 	struct mutex vdev_id_11d_lock;
 	struct timer_list mon_reap_timer;
 
@@ -992,22 +964,22 @@ struct ath11k_base {
 	} testmode;
 #endif
 
-	/* must be last */
+	 
 	u8 drv_priv[] __aligned(sizeof(void *));
 };
 
 struct ath11k_fw_stats_pdev {
 	struct list_head list;
 
-	/* PDEV stats */
+	 
 	s32 ch_noise_floor;
-	/* Cycles spent transmitting frames */
+	 
 	u32 tx_frame_count;
-	/* Cycles spent receiving frames */
+	 
 	u32 rx_frame_count;
-	/* Total channel busy time, evidently */
+	 
 	u32 rx_clear_count;
-	/* Total on-channel time */
+	 
 	u32 cycle_count;
 	u32 phy_err_count;
 	u32 chan_tx_power;
@@ -1018,106 +990,102 @@ struct ath11k_fw_stats_pdev {
 	u32 no_beacons;
 	u32 mib_int_count;
 
-	/* PDEV TX stats */
-	/* Num HTT cookies queued to dispatch list */
+	 
+	 
 	s32 comp_queued;
-	/* Num HTT cookies dispatched */
+	 
 	s32 comp_delivered;
-	/* Num MSDU queued to WAL */
+	 
 	s32 msdu_enqued;
-	/* Num MPDU queue to WAL */
+	 
 	s32 mpdu_enqued;
-	/* Num MSDUs dropped by WMM limit */
+	 
 	s32 wmm_drop;
-	/* Num Local frames queued */
+	 
 	s32 local_enqued;
-	/* Num Local frames done */
+	 
 	s32 local_freed;
-	/* Num queued to HW */
+	 
 	s32 hw_queued;
-	/* Num PPDU reaped from HW */
+	 
 	s32 hw_reaped;
-	/* Num underruns */
+	 
 	s32 underrun;
-	/* Num hw paused */
+	 
 	u32 hw_paused;
-	/* Num PPDUs cleaned up in TX abort */
+	 
 	s32 tx_abort;
-	/* Num MPDUs requeued by SW */
+	 
 	s32 mpdus_requeued;
-	/* excessive retries */
+	 
 	u32 tx_ko;
 	u32 tx_xretry;
-	/* data hw rate code */
+	 
 	u32 data_rc;
-	/* Scheduler self triggers */
+	 
 	u32 self_triggers;
-	/* frames dropped due to excessive sw retries */
+	 
 	u32 sw_retry_failure;
-	/* illegal rate phy errors	*/
+	 
 	u32 illgl_rate_phy_err;
-	/* wal pdev continuous xretry */
+	 
 	u32 pdev_cont_xretry;
-	/* wal pdev tx timeouts */
+	 
 	u32 pdev_tx_timeout;
-	/* wal pdev resets */
+	 
 	u32 pdev_resets;
-	/* frames dropped due to non-availability of stateless TIDs */
+	 
 	u32 stateless_tid_alloc_failure;
-	/* PhY/BB underrun */
+	 
 	u32 phy_underrun;
-	/* MPDU is more than txop limit */
+	 
 	u32 txop_ovf;
-	/* Num sequences posted */
+	 
 	u32 seq_posted;
-	/* Num sequences failed in queueing */
+	 
 	u32 seq_failed_queueing;
-	/* Num sequences completed */
+	 
 	u32 seq_completed;
-	/* Num sequences restarted */
+	 
 	u32 seq_restarted;
-	/* Num of MU sequences posted */
+	 
 	u32 mu_seq_posted;
-	/* Num MPDUs flushed by SW, HWPAUSED, SW TXABORT
-	 * (Reset,channel change)
-	 */
+	 
 	s32 mpdus_sw_flush;
-	/* Num MPDUs filtered by HW, all filter condition (TTL expired) */
+	 
 	s32 mpdus_hw_filter;
-	/* Num MPDUs truncated by PDG (TXOP, TBTT,
-	 * PPDU_duration based on rate, dyn_bw)
-	 */
+	 
 	s32 mpdus_truncated;
-	/* Num MPDUs that was tried but didn't receive ACK or BA */
+	 
 	s32 mpdus_ack_failed;
-	/* Num MPDUs that was dropped du to expiry. */
+	 
 	s32 mpdus_expired;
 
-	/* PDEV RX stats */
-	/* Cnts any change in ring routing mid-ppdu */
+	 
+	 
 	s32 mid_ppdu_route_change;
-	/* Total number of statuses processed */
+	 
 	s32 status_rcvd;
-	/* Extra frags on rings 0-3 */
+	 
 	s32 r0_frags;
 	s32 r1_frags;
 	s32 r2_frags;
 	s32 r3_frags;
-	/* MSDUs / MPDUs delivered to HTT */
+	 
 	s32 htt_msdus;
 	s32 htt_mpdus;
-	/* MSDUs / MPDUs delivered to local stack */
+	 
 	s32 loc_msdus;
 	s32 loc_mpdus;
-	/* AMSDUs that have more MSDUs than the status ring size */
+	 
 	s32 oversize_amsdu;
-	/* Number of PHY errors */
+	 
 	s32 phy_errs;
-	/* Number of PHY errors drops */
+	 
 	s32 phy_err_drop;
-	/* Number of mpdu errors - FCS, MIC, ENC etc. */
+	 
 	s32 mpdu_errs;
-	/* Num overflow errors */
+	 
 	s32 rx_ovfl_errs;
 };
 
@@ -1251,4 +1219,4 @@ static inline const char *ath11k_bus_str(enum ath11k_bus bus)
 	return "unknown";
 }
 
-#endif /* _CORE_H_ */
+#endif  

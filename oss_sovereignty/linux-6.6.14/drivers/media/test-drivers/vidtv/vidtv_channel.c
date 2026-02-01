@@ -1,23 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Vidtv serves as a reference DVB driver and helps validate the existing APIs
- * in the media subsystem. It can also aid developers working on userspace
- * applications.
- *
- * This file contains the code for a 'channel' abstraction.
- *
- * When vidtv boots, it will create some hardcoded channels.
- * Their services will be concatenated to populate the SDT.
- * Their programs will be concatenated to populate the PAT
- * Their events will be concatenated to populate the EIT
- * For each program in the PAT, a PMT section will be created
- * The PMT section for a channel will be assigned its streams.
- * Every stream will have its corresponding encoder polled to produce TS packets
- * These packets may be interleaved by the mux and then delivered to the bridge
- *
- *
- * Copyright (C) 2020 Daniel W. S. Almeida
- */
+
+ 
 
 #include <linux/dev_printk.h>
 #include <linux/ratelimit.h>
@@ -37,7 +19,7 @@ static void vidtv_channel_encoder_destroy(struct vidtv_encoder *e)
 	struct vidtv_encoder *curr = e;
 
 	while (curr) {
-		/* forward the call to the derived type */
+		 
 		tmp = curr;
 		curr = curr->next;
 		tmp->destroy(tmp);
@@ -47,9 +29,7 @@ static void vidtv_channel_encoder_destroy(struct vidtv_encoder *e)
 #define ENCODING_ISO8859_15 "\x0b"
 #define TS_NIT_PID	0x10
 
-/*
- * init an audio only channel with a s302m encoder
- */
+ 
 struct vidtv_channel
 *vidtv_channel_s302m_init(struct vidtv_channel *head, u16 transport_stream_id)
 {
@@ -60,8 +40,8 @@ struct vidtv_channel
 	char *iso_language_code = ENCODING_ISO8859_15 "eng";
 	char *provider = ENCODING_ISO8859_15 "LinuxTV.org";
 	char *name = ENCODING_ISO8859_15 "Beethoven";
-	const u16 s302m_es_pid              = 0x111; /* packet id for the ES */
-	const u16 s302m_program_pid         = 0x101; /* packet id for PMT*/
+	const u16 s302m_es_pid              = 0x111;  
+	const u16 s302m_program_pid         = 0x101;  
 	const u16 s302m_service_id          = 0x880;
 	const u16 s302m_program_num         = 0x880;
 	const u16 s302m_beethoven_event_id  = 1;
@@ -158,7 +138,7 @@ free_s302m:
 static struct vidtv_psi_table_eit_event
 *vidtv_channel_eit_event_cat_into_new(struct vidtv_mux *m)
 {
-	/* Concatenate the events */
+	 
 	const struct vidtv_channel *cur_chnl = m->channels;
 	struct vidtv_psi_table_eit_event *curr = NULL;
 	struct vidtv_psi_table_eit_event *head = NULL;
@@ -203,7 +183,7 @@ static struct vidtv_psi_table_eit_event
 static struct vidtv_psi_table_sdt_service
 *vidtv_channel_sdt_serv_cat_into_new(struct vidtv_mux *m)
 {
-	/* Concatenate the services */
+	 
 	const struct vidtv_channel *cur_chnl = m->channels;
 
 	struct vidtv_psi_table_sdt_service *curr = NULL;
@@ -259,7 +239,7 @@ free:
 static struct vidtv_psi_table_pat_program*
 vidtv_channel_pat_prog_cat_into_new(struct vidtv_mux *m)
 {
-	/* Concatenate the programs */
+	 
 	const struct vidtv_channel *cur_chnl = m->channels;
 	struct vidtv_psi_table_pat_program *curr = NULL;
 	struct vidtv_psi_table_pat_program *head = NULL;
@@ -297,16 +277,13 @@ vidtv_channel_pat_prog_cat_into_new(struct vidtv_mux *m)
 
 		cur_chnl = cur_chnl->next;
 	}
-	/* Add the NIT table */
+	 
 	vidtv_psi_pat_program_init(tail, 0, TS_NIT_PID);
 
 	return head;
 }
 
-/*
- * Match channels to their respective PMT sections, then assign the
- * streams
- */
+ 
 static void
 vidtv_channel_pmt_match_sections(struct vidtv_channel *channels,
 				 struct vidtv_psi_table_pmt **sections,
@@ -318,7 +295,7 @@ vidtv_channel_pmt_match_sections(struct vidtv_channel *channels,
 	struct vidtv_psi_table_pmt_stream *s = NULL;
 	struct vidtv_channel *cur_chnl = channels;
 	struct vidtv_psi_desc *desc = NULL;
-	u16 e_pid; /* elementary stream pid */
+	u16 e_pid;  
 	u16 curr_id;
 	u32 j;
 
@@ -331,11 +308,11 @@ vidtv_channel_pmt_match_sections(struct vidtv_channel *channels,
 
 			curr_id = be16_to_cpu(curr_section->header.id);
 
-			/* we got a match */
+			 
 			if (curr_id == cur_chnl->program_num) {
 				s = cur_chnl->streams;
 
-				/* clone the streams for the PMT */
+				 
 				while (s) {
 					e_pid = vidtv_psi_pmt_stream_get_elem_pid(s);
 					tail = vidtv_psi_pmt_stream_init(tail,
@@ -440,12 +417,12 @@ int vidtv_channel_si_init(struct vidtv_mux *m)
 	if (!events)
 		goto free_services;
 
-	/* look for a service descriptor for every service */
+	 
 	service_list = vidtv_channel_build_service_list(services);
 	if (!service_list)
 		goto free_events;
 
-	/* use these descriptors to build the NIT */
+	 
 	m->si.nit = vidtv_psi_nit_table_init(m->network_id,
 					     m->transport_stream_id,
 					     m->network_name,
@@ -459,13 +436,13 @@ int vidtv_channel_si_init(struct vidtv_mux *m)
 	if (!m->si.eit)
 		goto free_nit;
 
-	/* assemble all programs and assign to PAT */
+	 
 	vidtv_psi_pat_program_assign(m->si.pat, programs);
 
-	/* assemble all services and assign to SDT */
+	 
 	vidtv_psi_sdt_service_assign(m->si.sdt, services);
 
-	/* assemble all events and assign to EIT */
+	 
 	vidtv_psi_eit_event_assign(m->si.eit, events);
 
 	m->si.pmt_secs = vidtv_psi_pmt_create_sec_for_each_pat_entry(m->si.pat,
@@ -517,7 +494,7 @@ void vidtv_channel_si_destroy(struct vidtv_mux *m)
 
 int vidtv_channels_init(struct vidtv_mux *m)
 {
-	/* this is the place to add new 'channels' for vidtv */
+	 
 	m->channels = vidtv_channel_s302m_init(NULL, m->transport_stream_id);
 
 	if (!m->channels)

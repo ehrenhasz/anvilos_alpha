@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #define _GNU_SOURCE
 
@@ -165,7 +165,7 @@ static void flush_cmsg(struct cmsghdr *cmsg)
 			err = (struct sock_extended_err *)CMSG_DATA(cmsg);
 			switch (err->ee_origin) {
 			case SO_EE_ORIGIN_TIMESTAMPING:
-				/* Got a TX timestamp from error queue */
+				 
 				stat_tx_ts++;
 				break;
 			case SO_EE_ORIGIN_ICMP:
@@ -179,7 +179,7 @@ static void flush_cmsg(struct cmsghdr *cmsg)
 			{
 				lo = err->ee_info;
 				hi = err->ee_data;
-				/* range of IDs acknowledged */
+				 
 				stat_zcopies += hi - lo + 1;
 				break;
 			}
@@ -711,7 +711,7 @@ int main(int argc, char **argv)
 			treport = tnow + 1000;
 		}
 
-		/* cold cache when writing buffer */
+		 
 		if (cfg_cache_trash)
 			i = ++i < NUM_PKT ? i : 0;
 

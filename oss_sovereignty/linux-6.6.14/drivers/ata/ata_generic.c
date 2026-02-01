@@ -1,20 +1,4 @@
-/*
- *  ata_generic.c - Generic PATA/SATA controller driver.
- *  Copyright 2005 Red Hat Inc, all rights reserved.
- *
- *  Elements from ide/pci/generic.c
- *	    Copyright (C) 2001-2002	Andre Hedrick <andre@linux-ide.org>
- *	    Portions (C) Copyright 2002  Red Hat Inc <alan@redhat.com>
- *
- *  May be copied or modified under the terms of the GNU General Public License
- *
- *  Driver for PCI IDE interfaces implementing the standard bus mastering
- *  interface functionality. This assumes the BIOS did the drive set up and
- *  tuning for us. By default we do not grab all IDE class devices as they
- *  may have other drivers or need fixups to avoid problems. Instead we keep
- *  a default list of stuff without documentation/driver that appears to
- *  work.
- */
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -27,9 +11,7 @@
 #define DRV_NAME "ata_generic"
 #define DRV_VERSION "0.2.15"
 
-/*
- *	A generic parallel ATA driver using libata
- */
+ 
 
 enum {
 	ATA_GEN_CLASS_MATCH		= (1 << 0),
@@ -37,16 +19,7 @@ enum {
 	ATA_GEN_INTEL_IDER		= (1 << 2),
 };
 
-/**
- *	generic_set_mode	-	mode setting
- *	@link: link to set up
- *	@unused: returned device on error
- *
- *	Use a non standard set_mode function. We don't want to be tuned.
- *	The BIOS configured everything. Our job is not to fiddle. We
- *	read the dma enabled bits from the PCI configuration of the device
- *	and respect them.
- */
+ 
 
 static int generic_set_mode(struct ata_link *link, struct ata_device **unused)
 {
@@ -58,16 +31,15 @@ static int generic_set_mode(struct ata_link *link, struct ata_device **unused)
 	if (id->driver_data & ATA_GEN_FORCE_DMA) {
 		dma_enabled = 0xff;
 	} else if (ap->ioaddr.bmdma_addr) {
-		/* Bits 5 and 6 indicate if DMA is active on master/slave */
+		 
 		dma_enabled = ioread8(ap->ioaddr.bmdma_addr + ATA_DMA_STATUS);
 	}
 
 	ata_for_each_dev(dev, link, ENABLED) {
-		/* We don't really care */
+		 
 		dev->pio_mode = XFER_PIO_0;
 		dev->dma_mode = XFER_MW_DMA_0;
-		/* We do need the right mode information for DMA or PIO
-		   and this comes from the current configuration flags */
+		 
 		if (dma_enabled & (1 << (5 + dev->devno))) {
 			unsigned int xfer_mask = ata_id_xfermask(dev->id);
 			const char *name;
@@ -75,7 +47,7 @@ static int generic_set_mode(struct ata_link *link, struct ata_device **unused)
 			if (xfer_mask & (ATA_MASK_MWDMA | ATA_MASK_UDMA))
 				name = ata_mode_string(xfer_mask);
 			else {
-				/* SWDMA perhaps? */
+				 
 				name = "DMA";
 				xfer_mask |= ata_xfer_mode2mask(XFER_MW_DMA_0);
 			}
@@ -105,42 +77,26 @@ static struct ata_port_operations generic_port_ops = {
 	.set_mode	= generic_set_mode,
 };
 
-static int all_generic_ide;		/* Set to claim all devices */
+static int all_generic_ide;		 
 
-/**
- *	is_intel_ider		-	identify intel IDE-R devices
- *	@dev: PCI device
- *
- *	Distinguish Intel IDE-R controller devices from other Intel IDE
- *	devices. IDE-R devices have no timing registers and are in
- *	most respects virtual. They should be driven by the ata_generic
- *	driver.
- *
- *	IDE-R devices have PCI offset 0xF8.L as zero, later Intel ATA has
- *	it non zero. All Intel ATA has 0x40 writable (timing), but it is
- *	not writable on IDE-R devices (this is guaranteed).
- */
+ 
 
 static int is_intel_ider(struct pci_dev *dev)
 {
-	/* For Intel IDE the value at 0xF8 is only zero on IDE-R
-	   interfaces */
+	 
 	u32 r;
 	u16 t;
 
-	/* Check the manufacturing ID, it will be zero for IDE-R */
+	 
 	pci_read_config_dword(dev, 0xF8, &r);
-	/* Not IDE-R: punt so that ata_(old)piix gets it */
+	 
 	if (r != 0)
 		return 0;
-	/* 0xF8 will also be zero on some early Intel IDE devices
-	   but they will have a sane timing register */
+	 
 	pci_read_config_word(dev, 0x40, &t);
 	if (t != 0)
 		return 0;
-	/* Finally check if the timing register is writable so that
-	   we eliminate any early devices hot-docked in a docking
-	   station */
+	 
 	pci_write_config_word(dev, 0x40, 1);
 	pci_read_config_word(dev, 0x40, &t);
 	if (t) {
@@ -150,15 +106,7 @@ static int is_intel_ider(struct pci_dev *dev)
 	return 1;
 }
 
-/**
- *	ata_generic_init_one		-	attach generic IDE
- *	@dev: PCI device found
- *	@id: match entry
- *
- *	Called each time a matching IDE interface is found. We check if the
- *	interface is one we wish to claim and if so we perform any chip
- *	specific hacks then let the ATA layer do the heavy lifting.
- */
+ 
 
 static int ata_generic_init_one(struct pci_dev *dev, const struct pci_device_id *id)
 {
@@ -172,7 +120,7 @@ static int ata_generic_init_one(struct pci_dev *dev, const struct pci_device_id 
 	};
 	const struct ata_port_info *ppi[] = { &info, NULL };
 
-	/* Don't use the generic entry unless instructed to do so */
+	 
 	if ((id->driver_data & ATA_GEN_CLASS_MATCH) && all_generic_ide == 0)
 		return -ENODEV;
 
@@ -180,7 +128,7 @@ static int ata_generic_init_one(struct pci_dev *dev, const struct pci_device_id 
 		if (!is_intel_ider(dev))
 			return -ENODEV;
 
-	/* Devices that need care */
+	 
 	if (dev->vendor == PCI_VENDOR_ID_UMC &&
 	    dev->device == PCI_DEVICE_ID_UMC_UM8886A &&
 	    (!(PCI_FUNC(dev->devfn) & 1)))
@@ -191,8 +139,7 @@ static int ata_generic_init_one(struct pci_dev *dev, const struct pci_device_id 
 	    (!(PCI_FUNC(dev->devfn) & 1)))
 		return -ENODEV;
 
-	/* Don't re-enable devices in generic mode or we will break some
-	   motherboards with disabled and unused IDE controllers */
+	 
 	pci_read_config_word(dev, PCI_COMMAND, &command);
 	if (!(command & PCI_COMMAND_IO))
 		return -ENODEV;
@@ -226,11 +173,11 @@ static struct pci_device_id ata_generic[] = {
 	{ PCI_DEVICE(PCI_VENDOR_ID_TOSHIBA,PCI_DEVICE_ID_TOSHIBA_PICCOLO_3),  },
 	{ PCI_DEVICE(PCI_VENDOR_ID_TOSHIBA,PCI_DEVICE_ID_TOSHIBA_PICCOLO_5),  },
 #endif
-	/* Intel, IDE class device */
+	 
 	{ PCI_VENDOR_ID_INTEL, PCI_ANY_ID, PCI_ANY_ID, PCI_ANY_ID,
 	  PCI_CLASS_STORAGE_IDE << 8, 0xFFFFFF00UL,
 	  .driver_data = ATA_GEN_INTEL_IDER },
-	/* Must come last. If you add entries adjust this table appropriately */
+	 
 	{ PCI_DEVICE_CLASS(PCI_CLASS_STORAGE_IDE << 8, 0xFFFFFF00UL),
 	  .driver_data = ATA_GEN_CLASS_MATCH },
 	{ 0, },

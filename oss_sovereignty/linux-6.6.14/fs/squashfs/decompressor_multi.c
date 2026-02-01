@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  Copyright (c) 2013
- *  Minchan Kim <minchan@kernel.org>
- */
+
+ 
 #include <linux/types.h>
 #include <linux/mutex.h>
 #include <linux/slab.h>
@@ -16,16 +13,10 @@
 #include "decompressor.h"
 #include "squashfs.h"
 
-/*
- * This file implements multi-threaded decompression in the
- * decompressor framework
- */
+ 
 
 
-/*
- * The reason that multiply two is that a CPU can request new I/O
- * while it is waiting previous request.
- */
+ 
 #define MAX_DECOMPRESSOR	(num_online_cpus() * 2)
 
 
@@ -74,12 +65,7 @@ static void *squashfs_decompressor_create(struct squashfs_sb_info *msblk,
 	INIT_LIST_HEAD(&stream->strm_list);
 	init_waitqueue_head(&stream->wait);
 
-	/*
-	 * We should have a decompressor at least as default
-	 * so if we fail to allocate new decompressor dynamically,
-	 * we could always fall back to default decompressor and
-	 * file system works.
-	 */
+	 
 	decomp_strm = kmalloc(sizeof(*decomp_strm), GFP_KERNEL);
 	if (!decomp_strm)
 		goto out;
@@ -131,7 +117,7 @@ static struct decomp_stream *get_decomp_stream(struct squashfs_sb_info *msblk,
 	while (1) {
 		mutex_lock(&stream->mutex);
 
-		/* There is available decomp_stream */
+		 
 		if (!list_empty(&stream->strm_list)) {
 			decomp_strm = list_entry(stream->strm_list.prev,
 				struct decomp_stream, list);
@@ -140,14 +126,11 @@ static struct decomp_stream *get_decomp_stream(struct squashfs_sb_info *msblk,
 			break;
 		}
 
-		/*
-		 * If there is no available decomp and already full,
-		 * let's wait for releasing decomp from other users.
-		 */
+		 
 		if (stream->avail_decomp >= msblk->max_thread_num)
 			goto wait;
 
-		/* Let's allocate new decomp */
+		 
 		decomp_strm = kmalloc(sizeof(*decomp_strm), GFP_KERNEL);
 		if (!decomp_strm)
 			goto wait;
@@ -165,11 +148,7 @@ static struct decomp_stream *get_decomp_stream(struct squashfs_sb_info *msblk,
 		mutex_unlock(&stream->mutex);
 		break;
 wait:
-		/*
-		 * If system memory is tough, let's for other's
-		 * releasing instead of hurting VM because it could
-		 * make page cache thrashing.
-		 */
+		 
 		mutex_unlock(&stream->mutex);
 		wait_event(stream->wait,
 			!list_empty(&stream->strm_list));

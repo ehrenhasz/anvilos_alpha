@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * AD5504, AD5501 High Voltage Digital to Analog Converter
- *
- * Copyright 2011 Analog Devices Inc.
- */
+
+ 
 
 #include <linux/interrupt.h>
 #include <linux/fs.h>
@@ -26,27 +22,19 @@
 #define AD5504_CMD_WRITE		0
 #define AD5504_ADDR(addr)		((addr) << 12)
 
-/* Registers */
+ 
 #define AD5504_ADDR_NOOP		0
 #define AD5504_ADDR_DAC(x)		((x) + 1)
 #define AD5504_ADDR_ALL_DAC		5
 #define AD5504_ADDR_CTRL		7
 
-/* Control Register */
+ 
 #define AD5504_DAC_PWR(ch)		((ch) << 2)
 #define AD5504_DAC_PWRDWN_MODE(mode)	((mode) << 6)
 #define AD5504_DAC_PWRDN_20K		0
 #define AD5504_DAC_PWRDN_3STATE		1
 
-/**
- * struct ad5504_state - driver instance specific data
- * @spi:			spi_device
- * @reg:		supply regulator
- * @vref_mv:		actual reference voltage used
- * @pwr_down_mask:	power down mask
- * @pwr_down_mode:	current power down mode
- * @data:		transfer buffer
- */
+ 
 struct ad5504_state {
 	struct spi_device		*spi;
 	struct regulator		*reg;
@@ -57,9 +45,7 @@ struct ad5504_state {
 	__be16				data[2] __aligned(IIO_DMA_MINALIGN);
 };
 
-/*
- * ad5504_supported_device_ids:
- */
+ 
 enum ad5504_supported_device_ids {
 	ID_AD5504,
 	ID_AD5501,
@@ -195,7 +181,7 @@ static ssize_t ad5504_write_dac_powerdown(struct iio_dev *indio_dev,
 				AD5504_DAC_PWRDWN_MODE(st->pwr_down_mode) |
 				AD5504_DAC_PWR(st->pwr_down_mask));
 
-	/* writes to the CTRL register must be followed by a NOOP */
+	 
 	ad5504_spi_write(st, AD5504_ADDR_NOOP, 0);
 
 	return ret ? ret : len;

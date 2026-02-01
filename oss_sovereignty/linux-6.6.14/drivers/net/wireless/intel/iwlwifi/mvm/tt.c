@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
-/*
- * Copyright (C) 2012-2014, 2019-2022 Intel Corporation
- * Copyright (C) 2013-2014 Intel Mobile Communications GmbH
- * Copyright (C) 2015-2016 Intel Deutschland GmbH
- */
+
+ 
 #include <linux/sort.h>
 
 #include "mvm.h"
@@ -26,10 +22,7 @@ void iwl_mvm_enter_ctkill(struct iwl_mvm *mvm)
 		tt->dynamic_smps = false;
 	}
 
-	/* Don't schedule an exit work if we're in test mode, since
-	 * the temperature will not change unless we manually set it
-	 * again (or disable testing).
-	 */
+	 
 	if (!mvm->temperature_test)
 		schedule_delayed_work(&tt->ct_kill_exit,
 				      round_jiffies_relative(duration * HZ));
@@ -46,7 +39,7 @@ static void iwl_mvm_exit_ctkill(struct iwl_mvm *mvm)
 
 static void iwl_mvm_tt_temp_changed(struct iwl_mvm *mvm, u32 temp)
 {
-	/* ignore the notification if we are in test mode */
+	 
 	if (mvm->temperature_test)
 		return;
 
@@ -64,9 +57,7 @@ static int iwl_mvm_temp_notif_parse(struct iwl_mvm *mvm,
 	int len = iwl_rx_packet_payload_len(pkt);
 	int temp;
 
-	/* we can use notif_v1 only, because v2 only adds an additional
-	 * parameter, which is not used in this function.
-	*/
+	 
 	if (WARN_ON_ONCE(len < sizeof(*notif_v1))) {
 		IWL_ERR(mvm, "Invalid DTS_MEASUREMENT_NOTIFICATION\n");
 		return -EINVAL;
@@ -76,7 +67,7 @@ static int iwl_mvm_temp_notif_parse(struct iwl_mvm *mvm,
 
 	temp = le32_to_cpu(notif_v1->temp);
 
-	/* shouldn't be negative, but since it's s32, make sure it isn't */
+	 
 	if (WARN_ON_ONCE(temp < 0))
 		temp = 0;
 
@@ -110,7 +101,7 @@ void iwl_mvm_temp_notif(struct iwl_mvm *mvm, struct iwl_rx_cmd_buffer *rxb)
 	int temp;
 	u32 ths_crossed;
 
-	/* the notification is handled synchronously in ctkill, so skip here */
+	 
 	if (test_bit(IWL_MVM_STATUS_HW_CTKILL, &mvm->status))
 		return;
 
@@ -130,9 +121,7 @@ void iwl_mvm_temp_notif(struct iwl_mvm *mvm, struct iwl_rx_cmd_buffer *rxb)
 	notif_v2 = (void *)pkt->data;
 	ths_crossed = le32_to_cpu(notif_v2->threshold_idx);
 
-	/* 0xFF in ths_crossed means the notification is not related
-	 * to a trip, so we can ignore it here.
-	 */
+	 
 	if (ths_crossed == 0xFF)
 		return;
 
@@ -149,7 +138,7 @@ void iwl_mvm_temp_notif(struct iwl_mvm *mvm, struct iwl_rx_cmd_buffer *rxb)
 		thermal_zone_device_update(tz_dev->tzone,
 					   THERMAL_TRIP_VIOLATED);
 	}
-#endif /* CONFIG_THERMAL */
+#endif  
 }
 
 void iwl_mvm_ct_kill_notif(struct iwl_mvm *mvm, struct iwl_rx_cmd_buffer *rxb)
@@ -169,10 +158,7 @@ void iwl_mvm_ct_kill_notif(struct iwl_mvm *mvm, struct iwl_rx_cmd_buffer *rxb)
 	iwl_mvm_enter_ctkill(mvm);
 }
 
-/*
- * send the DTS_MEASUREMENT_TRIGGER command with or without waiting for a
- * response. If we get a response then the measurement is stored in 'temp'
- */
+ 
 static int iwl_mvm_send_temp_cmd(struct iwl_mvm *mvm, bool response, s32 *temp)
 {
 	struct iwl_host_cmd cmd = {};
@@ -188,7 +174,7 @@ static int iwl_mvm_send_temp_cmd(struct iwl_mvm *mvm, bool response, s32 *temp)
 	u32 cmd_flags = 0;
 	u16 len;
 
-	/* Check which command format is used (regular/extended) */
+	 
 	if (fw_has_capa(&mvm->fw->ucode_capa,
 			IWL_UCODE_TLV_CAPA_EXTENDED_DTS_MEASURE)) {
 		len = sizeof(ext_cmd);
@@ -197,7 +183,7 @@ static int iwl_mvm_send_temp_cmd(struct iwl_mvm *mvm, bool response, s32 *temp)
 		len = sizeof(dts_cmd);
 		cmd_ptr = &dts_cmd;
 	}
-	/* The command version where we get a response is zero length */
+	 
 	if (response) {
 		cmd_flags = CMD_WANT_SKB;
 		len = 0;
@@ -240,11 +226,7 @@ int iwl_mvm_get_temp(struct iwl_mvm *mvm, s32 *temp)
 	int ret;
 	u8 cmd_ver;
 
-	/*
-	 * If command version is 1 we send the command and immediately get
-	 * a response. For older versions we send the command and wait for a
-	 * notification (no command TLV for previous versions).
-	 */
+	 
 	cmd_ver = iwl_fw_lookup_cmd_ver(mvm->fw,
 					WIDE_ID(PHY_OPS_GROUP, CMD_DTS_MEASUREMENT_TRIGGER_WIDE),
 					IWL_FW_CMD_VER_UNKNOWN);
@@ -479,29 +461,29 @@ static const struct iwl_tt_params iwl_mvm_default_tt_params = {
 	.support_tx_backoff = true,
 };
 
-/* budget in mWatt */
+ 
 static const u32 iwl_mvm_cdev_budgets[] = {
-	2400,	/* cooling state 0 */
-	2000,	/* cooling state 1 */
-	1800,	/* cooling state 2 */
-	1600,	/* cooling state 3 */
-	1400,	/* cooling state 4 */
-	1200,	/* cooling state 5 */
-	1000,	/* cooling state 6 */
-	900,	/* cooling state 7 */
-	800,	/* cooling state 8 */
-	700,	/* cooling state 9 */
-	650,	/* cooling state 10 */
-	600,	/* cooling state 11 */
-	550,	/* cooling state 12 */
-	500,	/* cooling state 13 */
-	450,	/* cooling state 14 */
-	400,	/* cooling state 15 */
-	350,	/* cooling state 16 */
-	300,	/* cooling state 17 */
-	250,	/* cooling state 18 */
-	200,	/* cooling state 19 */
-	150,	/* cooling state 20 */
+	2400,	 
+	2000,	 
+	1800,	 
+	1600,	 
+	1400,	 
+	1200,	 
+	1000,	 
+	900,	 
+	800,	 
+	700,	 
+	650,	 
+	600,	 
+	550,	 
+	500,	 
+	450,	 
+	400,	 
+	350,	 
+	300,	 
+	250,	 
+	200,	 
+	150,	 
 };
 
 int iwl_mvm_ctdp_command(struct iwl_mvm *mvm, u32 op, u32 state)
@@ -530,16 +512,11 @@ int iwl_mvm_ctdp_command(struct iwl_mvm *mvm, u32 op, u32 state)
 	case CTDP_CMD_OPERATION_START:
 #ifdef CONFIG_THERMAL
 		mvm->cooling_dev.cur_state = state;
-#endif /* CONFIG_THERMAL */
+#endif  
 		break;
 	case CTDP_CMD_OPERATION_REPORT:
 		IWL_DEBUG_TEMP(mvm, "cTDP avg energy in mWatt = %d\n", status);
-		/* when the function is called with CTDP_CMD_OPERATION_REPORT
-		 * option the function should return the average budget value
-		 * that is received from the FW.
-		 * The budget can't be less or equal to 0, so it's possible
-		 * to distinguish between error values and budgets.
-		 */
+		 
 		return status;
 	case CTDP_CMD_OPERATION_STOP:
 		IWL_DEBUG_TEMP(mvm, "cTDP stopped successfully\n");
@@ -569,11 +546,9 @@ int iwl_mvm_send_temp_report_ths_cmd(struct iwl_mvm *mvm)
 	if (!mvm->tz_device.tzone)
 		goto send;
 
-	/* The driver holds array of temperature trips that are unsorted
-	 * and uncompressed, the FW should get it compressed and sorted
-	 */
+	 
 
-	/* compress trips to cmd array, remove uninitialized values*/
+	 
 	for (i = 0; i < IWL_MAX_DTS_TRIPS; i++) {
 		if (mvm->tz_device.trips[i].temperature != INT_MIN) {
 			cmd.thresholds[idx++] =
@@ -585,12 +560,10 @@ int iwl_mvm_send_temp_report_ths_cmd(struct iwl_mvm *mvm)
 	if (!idx)
 		goto send;
 
-	/*sort cmd array*/
+	 
 	sort(cmd.thresholds, idx, sizeof(s16), compare_temps, NULL);
 
-	/* we should save the indexes of trips because we sort
-	 * and compress the orginal array
-	 */
+	 
 	for (i = 0; i < idx; i++) {
 		for (j = 0; j < IWL_MAX_DTS_TRIPS; j++) {
 			if ((int)(le16_to_cpu(cmd.thresholds[i]) * 1000) ==
@@ -675,7 +648,7 @@ static  struct thermal_zone_device_ops tzone_ops = {
 	.set_trip_temp = iwl_mvm_tzone_set_trip_temp,
 };
 
-/* make all trips writable */
+ 
 #define IWL_WRITABLE_TRIPS_MSK (BIT(IWL_MAX_DTS_TRIPS) - 1)
 
 static void iwl_mvm_thermal_zone_register(struct iwl_mvm *mvm)
@@ -714,9 +687,7 @@ static void iwl_mvm_thermal_zone_register(struct iwl_mvm *mvm)
 		return;
 	}
 
-	/* 0 is a valid temperature,
-	 * so initialize the array with S16_MIN which invalid temperature
-	 */
+	 
 	for (i = 0 ; i < IWL_MAX_DTS_TRIPS; i++) {
 		mvm->tz_device.trips[i].temperature = INT_MIN;
 		mvm->tz_device.trips[i].type = THERMAL_TRIP_PASSIVE;
@@ -820,7 +791,7 @@ static void iwl_mvm_cooling_device_unregister(struct iwl_mvm *mvm)
 		mvm->cooling_dev.cdev = NULL;
 	}
 }
-#endif /* CONFIG_THERMAL */
+#endif  
 
 void iwl_mvm_thermal_initialize(struct iwl_mvm *mvm, u32 min_backoff)
 {

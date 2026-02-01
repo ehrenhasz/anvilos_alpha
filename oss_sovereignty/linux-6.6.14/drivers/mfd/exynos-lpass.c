@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2015 - 2016 Samsung Electronics Co., Ltd.
- *
- * Authors: Inha Song <ideal.song@samsung.com>
- *          Sylwester Nawrocki <s.nawrocki@samsung.com>
- *
- * Samsung Exynos SoC series Low Power Audio Subsystem driver.
- *
- * This module provides regmap for the Top SFR region and instantiates
- * devices for IP blocks like DMAC, I2S, UART.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -23,7 +13,7 @@
 #include <linux/soc/samsung/exynos-regs-pmu.h>
 #include <linux/types.h>
 
-/* LPASS Top register definitions */
+ 
 #define SFR_LPASS_CORE_SW_RESET		0x08
 #define  LPASS_SB_SW_RESET		BIT(11)
 #define  LPASS_UART_SW_RESET		BIT(10)
@@ -49,7 +39,7 @@
 #define  LPASS_INTR_SFR			BIT(0)
 
 struct exynos_lpass {
-	/* pointer to the LPASS TOP regmap */
+	 
 	struct regmap *top;
 	struct clk *sfr0_clk;
 };
@@ -73,7 +63,7 @@ static void exynos_lpass_enable(struct exynos_lpass *lpass)
 {
 	clk_prepare_enable(lpass->sfr0_clk);
 
-	/* Unmask SFR, DMA and I2S interrupt */
+	 
 	regmap_write(lpass->top, SFR_LPASS_INTR_CA5_MASK,
 		     LPASS_INTR_SFR | LPASS_INTR_DMA | LPASS_INTR_I2S);
 
@@ -89,7 +79,7 @@ static void exynos_lpass_enable(struct exynos_lpass *lpass)
 
 static void exynos_lpass_disable(struct exynos_lpass *lpass)
 {
-	/* Mask any unmasked IP interrupt sources */
+	 
 	regmap_write(lpass->top, SFR_LPASS_INTR_CPU_MASK, 0);
 	regmap_write(lpass->top, SFR_LPASS_INTR_CA5_MASK, 0);
 

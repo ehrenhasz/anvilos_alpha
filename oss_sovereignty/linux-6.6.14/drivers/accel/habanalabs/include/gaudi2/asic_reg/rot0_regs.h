@@ -1,24 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0
- *
- * Copyright 2016-2020 HabanaLabs, Ltd.
- * All Rights Reserved.
- *
- */
+ 
 
-/************************************
- ** This is an auto-generated file **
- **       DO NOT EDIT BELOW        **
- ************************************/
+ 
 
 #ifndef ASIC_REG_ROT0_REGS_H_
 #define ASIC_REG_ROT0_REGS_H_
 
-/*
- *****************************************
- *   ROT0
- *   (Prototype: ROTATOR)
- *****************************************
- */
+ 
 
 #define mmROT0_KMD_MODE 0x4E0B000
 
@@ -108,4 +95,4 @@
 
 #define mmROT0_MSS_STS 0x4E0B0B4
 
-#endif /* ASIC_REG_ROT0_REGS_H_ */
+#endif  

@@ -1,21 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2015-2018 Oracle.  All rights reserved.
- *
- * Support for reverse-direction RPCs on RPC/RDMA (server-side).
- */
+
+ 
 
 #include <linux/sunrpc/svc_rdma.h>
 
 #include "xprt_rdma.h"
 #include <trace/events/rpcrdma.h>
 
-/**
- * svc_rdma_handle_bc_reply - Process incoming backchannel Reply
- * @rqstp: resources for handling the Reply
- * @rctxt: Received message
- *
- */
+ 
 void svc_rdma_handle_bc_reply(struct svc_rqst *rqstp,
 			      struct svc_rdma_recv_ctxt *rctxt)
 {
@@ -43,7 +34,7 @@ void svc_rdma_handle_bc_reply(struct svc_rqst *rqstp,
 
 	credits = be32_to_cpup(rdma_resp + 2);
 	if (credits == 0)
-		credits = 1;	/* don't deadlock */
+		credits = 1;	 
 	else if (credits > r_xprt->rx_buf.rb_bc_max_requests)
 		credits = r_xprt->rx_buf.rb_bc_max_requests;
 	spin_lock(&xprt->transport_lock);
@@ -59,19 +50,7 @@ out_unlock:
 	spin_unlock(&xprt->queue_lock);
 }
 
-/* Send a reverse-direction RPC Call.
- *
- * Caller holds the connection's mutex and has already marshaled
- * the RPC/RDMA request.
- *
- * This is similar to svc_rdma_send_reply_msg, but takes a struct
- * rpc_rqst instead, does not support chunks, and avoids blocking
- * memory allocation.
- *
- * XXX: There is still an opportunity to block in svc_rdma_send()
- * if there are no SQ entries to post the Send. This may occur if
- * the adapter has a small maximum SQ depth.
- */
+ 
 static int svc_rdma_bc_sendto(struct svcxprt_rdma *rdma,
 			      struct rpc_rqst *rqst,
 			      struct svc_rdma_send_ctxt *sctxt)
@@ -88,18 +67,13 @@ static int svc_rdma_bc_sendto(struct svcxprt_rdma *rdma,
 	if (ret < 0)
 		return -EIO;
 
-	/* Bump page refcnt so Send completion doesn't release
-	 * the rq_buffer before all retransmits are complete.
-	 */
+	 
 	get_page(virt_to_page(rqst->rq_buffer));
 	sctxt->sc_send_wr.opcode = IB_WR_SEND;
 	return svc_rdma_send(rdma, sctxt);
 }
 
-/* Server-side transport endpoint wants a whole page for its send
- * buffer. The client RPC code constructs the RPC header in this
- * buffer before it invokes ->send_request.
- */
+ 
 static int
 xprt_rdma_bc_allocate(struct rpc_task *task)
 {
@@ -172,14 +146,7 @@ drop_connection:
 	return -ENOTCONN;
 }
 
-/**
- * xprt_rdma_bc_send_request - Send a reverse-direction Call
- * @rqst: rpc_rqst containing Call message to be sent
- *
- * Return values:
- *   %0 if the message was sent successfully
- *   %ENOTCONN if the message was not sent
- */
+ 
 static int xprt_rdma_bc_send_request(struct rpc_rqst *rqst)
 {
 	struct svc_xprt *sxprt = rqst->rq_xprt->bc_xprt;
@@ -230,10 +197,7 @@ static const struct rpc_timeout xprt_rdma_bc_timeout = {
 	.to_maxval = 60 * HZ,
 };
 
-/* It shouldn't matter if the number of backchannel session slots
- * doesn't match the number of RPC/RDMA credits. That just means
- * one or the other will have extra slots that aren't used.
- */
+ 
 static struct rpc_xprt *
 xprt_setup_rdma_bc(struct xprt_create *args)
 {
@@ -273,7 +237,7 @@ xprt_setup_rdma_bc(struct xprt_create *args)
 	args->bc_xprt->xpt_bc_xprt = xprt;
 	xprt->bc_xprt = args->bc_xprt;
 
-	/* Final put for backchannel xprt is in __svc_rdma_free */
+	 
 	xprt_get(xprt);
 	return xprt;
 }

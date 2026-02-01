@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
-/* Copyright (c) 2020 Marvell International Ltd. All rights reserved */
+
+ 
 
 #include "prestera.h"
 #include "prestera_acl.h"
@@ -25,7 +25,7 @@ void prestera_flower_template_cleanup(struct prestera_flow_block *block)
 {
 	struct prestera_flower_template *template, *tmp;
 
-	/* put the reference to all rulesets kept in tmpl create */
+	 
 	list_for_each_entry_safe(template, tmp, &block->template_list, list)
 		prestera_flower_template_free(template);
 }
@@ -39,7 +39,7 @@ prestera_flower_parse_goto_action(struct prestera_flow_block *block,
 	struct prestera_acl_ruleset *ruleset;
 
 	if (act->chain_index <= chain_index)
-		/* we can jump only forward */
+		 
 		return -EINVAL;
 
 	if (rule->re_arg.jump.valid)
@@ -67,7 +67,7 @@ static int prestera_flower_parse_actions(struct prestera_flow_block *block,
 	const struct flow_action_entry *act;
 	int err, i;
 
-	/* whole struct (rule->re_arg) must be initialized with 0 */
+	 
 	if (!flow_action_has_entries(flow_action))
 		return 0;
 
@@ -76,9 +76,9 @@ static int prestera_flower_parse_actions(struct prestera_flow_block *block,
 
 	act = flow_action_first_entry_get(flow_action);
 	if (act->hw_stats & FLOW_ACTION_HW_STATS_DISABLED) {
-		/* Nothing to do */
+		 
 	} else if (act->hw_stats & FLOW_ACTION_HW_STATS_DELAYED) {
-		/* setup counter first */
+		 
 		rule->re_arg.count.valid = true;
 		err = prestera_acl_chain_to_client(chain_index, block->ingress,
 						   &rule->re_arg.count.client);
@@ -256,7 +256,7 @@ static int prestera_flower_parse(struct prestera_flow_block *block,
 
 		flow_rule_match_eth_addrs(f_rule, &match);
 
-		/* DA key, mask */
+		 
 		rule_match_set_n(r_match->key,
 				 ETH_DMAC_0, &match.key->dst[0], 4);
 		rule_match_set_n(r_match->key,
@@ -267,7 +267,7 @@ static int prestera_flower_parse(struct prestera_flow_block *block,
 		rule_match_set_n(r_match->mask,
 				 ETH_DMAC_1, &match.mask->dst[4], 2);
 
-		/* SA key, mask */
+		 
 		rule_match_set_n(r_match->key,
 				 ETH_SMAC_0, &match.key->src[0], 4);
 		rule_match_set_n(r_match->key,
@@ -316,7 +316,7 @@ static int prestera_flower_parse(struct prestera_flow_block *block,
 
 		flow_rule_match_ports_range(f_rule, &match);
 
-		/* src port range (min, max) */
+		 
 		tp_key = htonl(ntohs(match.key->tp_min.src) |
 			       (ntohs(match.key->tp_max.src) << 16));
 		tp_mask = htonl(ntohs(match.mask->tp_min.src) |
@@ -324,7 +324,7 @@ static int prestera_flower_parse(struct prestera_flow_block *block,
 		rule_match_set(r_match->key, L4_PORT_RANGE_SRC, tp_key);
 		rule_match_set(r_match->mask, L4_PORT_RANGE_SRC, tp_mask);
 
-		/* dst port range (min, max) */
+		 
 		tp_key = htonl(ntohs(match.key->tp_min.dst) |
 			       (ntohs(match.key->tp_max.dst) << 16));
 		tp_mask = htonl(ntohs(match.mask->tp_min.dst) |
@@ -376,7 +376,7 @@ static int prestera_flower_prio_check(struct prestera_flow_block *block,
 
 	err = prestera_mall_prio_get(block, &mall_prio_min, &mall_prio_max);
 	if (err == -ENOENT)
-		/* No matchall filters installed on this chain. */
+		 
 		return 0;
 
 	if (err) {
@@ -426,7 +426,7 @@ int prestera_flower_replace(struct prestera_flow_block *block,
 	if (IS_ERR(ruleset))
 		return PTR_ERR(ruleset);
 
-	/* increments the ruleset reference */
+	 
 	rule = prestera_acl_rule_create(ruleset, f->cookie,
 					f->common.chain_index);
 	if (IS_ERR(rule)) {
@@ -505,20 +505,15 @@ int prestera_flower_tmplt_create(struct prestera_flow_block *block,
 		goto err_ruleset_get;
 	}
 
-	/* preserve keymask/template to this ruleset */
+	 
 	err = prestera_acl_ruleset_keymask_set(ruleset, rule.re_key.match.mask);
 	if (err)
 		goto err_ruleset_keymask_set;
 
-	/* skip error, as it is not possible to reject template operation,
-	 * so, keep the reference to the ruleset for rules to be added
-	 * to that ruleset later. In case of offload fail, the ruleset
-	 * will be offloaded again during adding a new rule. Also,
-	 * unlikly possble that ruleset is already offloaded at this staage.
-	 */
+	 
 	prestera_acl_ruleset_offload(ruleset);
 
-	/* keep the reference to the ruleset */
+	 
 	template->ruleset = ruleset;
 	template->chain_index = f->common.chain_index;
 	list_add_rcu(&template->list, &block->template_list);
@@ -540,7 +535,7 @@ void prestera_flower_tmplt_destroy(struct prestera_flow_block *block,
 
 	list_for_each_entry_safe(template, tmp, &block->template_list, list)
 		if (template->chain_index == f->common.chain_index) {
-			/* put the reference to the ruleset kept in create */
+			 
 			prestera_flower_template_free(template);
 			return;
 		}

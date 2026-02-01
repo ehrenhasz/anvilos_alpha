@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * (C) COPYRIGHT 2016 ARM Limited. All rights reserved.
- * Author: Liviu Dudau <Liviu.Dudau@arm.com>
- *
- * ARM Mali DP500/DP550/DP650 KMS/DRM driver
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/clk.h>
@@ -44,13 +39,9 @@ static void malidp_write_gamma_table(struct malidp_hw_device *hwdev,
 				     u32 data[MALIDP_COEFFTAB_NUM_COEFFS])
 {
 	int i;
-	/* Update all channels with a single gamma curve. */
+	 
 	const u32 gamma_write_mask = GENMASK(18, 16);
-	/*
-	 * Always write an entire table, so the address field in
-	 * DE_COEFFTAB_ADDR is 0 and we can use the gamma_write_mask bitmask
-	 * directly.
-	 */
+	 
 	malidp_hw_write(hwdev, gamma_write_mask,
 			hwdev->hw->map.coeffs_base + MALIDP_COEF_TABLE_ADDR);
 	for (i = 0; i < MALIDP_COEFFTAB_NUM_COEFFS; ++i)
@@ -132,7 +123,7 @@ static void malidp_atomic_commit_se_config(struct drm_crtc *crtc,
 	u32 scr = se_control + MALIDP_SE_SCALING_CONTROL;
 	u32 val;
 
-	/* Set SE_CONTROL */
+	 
 	if (!s->scale_enable) {
 		val = malidp_hw_read(hwdev, se_control);
 		val &= ~MALIDP_SE_SCALING_EN;
@@ -150,7 +141,7 @@ static void malidp_atomic_commit_se_config(struct drm_crtc *crtc,
 	val |= MALIDP_SE_RGBO_IF_EN;
 	malidp_hw_write(hwdev, val, se_control);
 
-	/* Set IN_SIZE & OUT_SIZE. */
+	 
 	val = MALIDP_SE_SET_V_SIZE(s->input_h) |
 	      MALIDP_SE_SET_H_SIZE(s->input_w);
 	malidp_hw_write(hwdev, val, layer_control + MALIDP_SE_L0_IN_SIZE);
@@ -158,16 +149,14 @@ static void malidp_atomic_commit_se_config(struct drm_crtc *crtc,
 	      MALIDP_SE_SET_H_SIZE(s->output_w);
 	malidp_hw_write(hwdev, val, layer_control + MALIDP_SE_L0_OUT_SIZE);
 
-	/* Set phase regs. */
+	 
 	malidp_hw_write(hwdev, s->h_init_phase, scr + MALIDP_SE_H_INIT_PH);
 	malidp_hw_write(hwdev, s->h_delta_phase, scr + MALIDP_SE_H_DELTA_PH);
 	malidp_hw_write(hwdev, s->v_init_phase, scr + MALIDP_SE_V_INIT_PH);
 	malidp_hw_write(hwdev, s->v_delta_phase, scr + MALIDP_SE_V_DELTA_PH);
 }
 
-/*
- * set the "config valid" bit and wait until the hardware acts on it
- */
+ 
 static int malidp_set_and_wait_config_valid(struct drm_device *drm)
 {
 	struct malidp_drm *malidp = drm_to_malidp(drm);
@@ -175,7 +164,7 @@ static int malidp_set_and_wait_config_valid(struct drm_device *drm)
 	int ret;
 
 	hwdev->hw->set_config_valid(hwdev, 1);
-	/* don't wait for config_valid flag if we are in config mode */
+	 
 	if (hwdev->hw->in_config_mode(hwdev)) {
 		atomic_set(&malidp->config_valid, MALIDP_CONFIG_VALID_DONE);
 		return 0;
@@ -198,20 +187,13 @@ static void malidp_atomic_commit_hw_done(struct drm_atomic_state *state)
 	malidp->crtc.state->event = NULL;
 
 	if (malidp->crtc.state->active) {
-		/*
-		 * if we have an event to deliver to userspace, make sure
-		 * the vblank is enabled as we are sending it from the IRQ
-		 * handler.
-		 */
+		 
 		if (malidp->event)
 			drm_crtc_vblank_get(&malidp->crtc);
 
-		/* only set config_valid if the CRTC is enabled */
+		 
 		if (malidp_set_and_wait_config_valid(drm) < 0) {
-			/*
-			 * make a loop around the second CVAL setting and
-			 * try 5 times before giving up.
-			 */
+			 
 			while (loop--) {
 				if (!malidp_set_and_wait_config_valid(drm))
 					break;
@@ -220,7 +202,7 @@ static void malidp_atomic_commit_hw_done(struct drm_atomic_state *state)
 		}
 
 	} else if (malidp->event) {
-		/* CRTC inactive means vblank IRQ is disabled, send event directly */
+		 
 		spin_lock_irq(&drm->event_lock);
 		drm_crtc_send_vblank_event(&malidp->crtc, malidp->event);
 		malidp->event = NULL;
@@ -240,10 +222,7 @@ static void malidp_atomic_commit_tail(struct drm_atomic_state *state)
 
 	pm_runtime_get_sync(drm->dev);
 
-	/*
-	 * set config_valid to a special value to let IRQ handlers
-	 * know that we are updating registers
-	 */
+	 
 	atomic_set(&malidp->config_valid, MALIDP_CONFIG_START);
 	malidp->dev->hw->set_config_valid(malidp->dev, 0);
 
@@ -427,7 +406,7 @@ static int malidp_irq_init(struct platform_device *pdev)
 	struct malidp_drm *malidp = drm_to_malidp(drm);
 	struct malidp_hw_device *hwdev = malidp->dev;
 
-	/* fetch the interrupts from DT */
+	 
 	irq_de = platform_get_irq_byname(pdev, "DE");
 	if (irq_de < 0) {
 		DRM_ERROR("no 'DE' IRQ specified!\n");
@@ -459,7 +438,7 @@ static int malidp_dumb_create(struct drm_file *file_priv,
 			      struct drm_mode_create_dumb *args)
 {
 	struct malidp_drm *malidp = drm_to_malidp(drm);
-	/* allocate for the worst case scenario, i.e. rotated buffers */
+	 
 	u8 alignment = malidp_hw_get_pitch_align(malidp->dev, 1);
 
 	args->pitch = ALIGN(DIV_ROUND_UP(args->width * args->bpp, 8), alignment);
@@ -557,7 +536,7 @@ static void malidp_debugfs_init(struct drm_minor *minor)
 			    minor->dev, &malidp_debugfs_fops);
 }
 
-#endif //CONFIG_DEBUG_FS
+#endif  
 
 static const struct drm_driver malidp_driver = {
 	.driver_features = DRIVER_GEM | DRIVER_MODESET | DRIVER_ATOMIC,
@@ -598,13 +577,9 @@ static bool malidp_is_compatible_hw_id(struct malidp_hw_device *hwdev,
 	bool is_dp500;
 	bool dt_is_dp500;
 
-	/*
-	 * The DP500 CORE_ID register is in a different location, so check it
-	 * first. If the product id field matches, then this is DP500, otherwise
-	 * check the DP550/650 CORE_ID register.
-	 */
+	 
 	core_id = malidp_hw_read(hwdev, MALIDP500_DC_BASE + MALIDP_DE_CORE_ID);
-	/* Offset 0x18 will never read 0x500 on products other than DP500. */
+	 
 	is_dp500 = (MALIDP_PRODUCT_ID(core_id) == 0x500);
 	dt_is_dp500 = strnstr(dev_id->compatible, compatstr_dp500,
 			      sizeof(dev_id->compatible)) != NULL;
@@ -669,7 +644,7 @@ static int malidp_runtime_pm_suspend(struct device *dev)
 	struct malidp_drm *malidp = drm_to_malidp(drm);
 	struct malidp_hw_device *hwdev = malidp->dev;
 
-	/* we can only suspend if the hardware is in config mode */
+	 
 	WARN_ON(!hwdev->hw->in_config_mode(hwdev));
 
 	malidp_se_irq_fini(hwdev);
@@ -707,7 +682,7 @@ static int malidp_bind(struct device *dev)
 	struct platform_device *pdev = to_platform_device(dev);
 	struct of_device_id const *dev_id;
 	struct drm_encoder *encoder;
-	/* number of lines for the R, G and B output */
+	 
 	u8 output_width[MAX_OUTPUT_CHANNELS];
 	int ret = 0, i;
 	u32 version, out_depth = 0;
@@ -745,17 +720,17 @@ static int malidp_bind(struct device *dev)
 	if (IS_ERR(hwdev->pxlclk))
 		return PTR_ERR(hwdev->pxlclk);
 
-	/* Get the optional framebuffer memory resource */
+	 
 	ret = of_reserved_mem_device_init(dev);
 	if (ret && ret != -ENODEV)
 		return ret;
 
 	dev_set_drvdata(dev, drm);
 
-	/* Enable power management */
+	 
 	pm_runtime_enable(dev);
 
-	/* Resume device to enable the clocks */
+	 
 	if (pm_runtime_enabled(dev))
 		pm_runtime_get_sync(dev);
 	else
@@ -796,7 +771,7 @@ static int malidp_bind(struct device *dev)
 	if (ret)
 		hwdev->arqos_value = 0x0;
 
-	/* set the number of lines used for output of RGB data */
+	 
 	ret = of_property_read_u8_array(dev->of_node,
 					"arm,malidp-output-port-lines",
 					output_width, MAX_OUTPUT_CHANNELS);
@@ -815,7 +790,7 @@ static int malidp_bind(struct device *dev)
 	if (ret < 0)
 		goto query_hw_fail;
 
-	/* Set the CRTC's port so that the encoder component can find it */
+	 
 	malidp->crtc.port = of_graph_get_port_by_id(dev->of_node, 0);
 
 	ret = component_bind_all(dev, drm);
@@ -824,9 +799,7 @@ static int malidp_bind(struct device *dev)
 		goto bind_fail;
 	}
 
-	/* We expect to have a maximum of two encoders one for the actual
-	 * display and a virtual one for the writeback connector
-	 */
+	 
 	WARN_ON(drm->mode_config.num_encoder > 2);
 	list_for_each_entry(encoder, &drm->mode_config.encoder_list, head) {
 		encoder->possible_clones =
@@ -924,7 +897,7 @@ static int malidp_platform_probe(struct platform_device *pdev)
 	if (!pdev->dev.of_node)
 		return -ENODEV;
 
-	/* there is only one output port inside each device, find it */
+	 
 	port = of_graph_get_remote_node(pdev->dev.of_node, 0, 0);
 	if (!port)
 		return -ENODEV;

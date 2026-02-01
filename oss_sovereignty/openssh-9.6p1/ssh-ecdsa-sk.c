@@ -1,31 +1,7 @@
-/* $OpenBSD: ssh-ecdsa-sk.c,v 1.18 2023/03/08 04:43:12 guenther Exp $ */
-/*
- * Copyright (c) 2000 Markus Friedl.  All rights reserved.
- * Copyright (c) 2010 Damien Miller.  All rights reserved.
- * Copyright (c) 2019 Google Inc.  All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- *
- * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
- * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
- * IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
- * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
- * NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
- * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+ 
+ 
 
-/* #define DEBUG_SK 1 */
+ 
 
 #include "includes.h"
 
@@ -39,7 +15,7 @@
 #endif
 
 #include <string.h>
-#include <stdio.h> /* needed for DEBUG_SK only */
+#include <stdio.h>  
 
 #include "openbsd-compat/openssl-compat.h"
 
@@ -50,7 +26,7 @@
 #include "sshkey.h"
 
 #ifndef OPENSSL_HAS_ECC
-/* ARGSUSED */
+ 
 int
 ssh_ecdsa_sk_verify(const struct sshkey *key,
     const u_char *signature, size_t signaturelen,
@@ -59,9 +35,9 @@ ssh_ecdsa_sk_verify(const struct sshkey *key,
 {
 	return SSH_ERR_FEATURE_UNSUPPORTED;
 }
-#else /* OPENSSL_HAS_ECC */
+#else  
 
-/* Reuse some ECDSA internals */
+ 
 extern struct sshkey_impl_funcs sshkey_ecdsa_funcs;
 
 static void
@@ -154,18 +130,7 @@ ssh_ecdsa_sk_deserialize_private(const char *ktype, struct sshbuf *b,
 	return 0;
 }
 
-/*
- * Check FIDO/W3C webauthn signatures clientData field against the expected
- * format and prepare a hash of it for use in signature verification.
- *
- * webauthn signatures do not sign the hash of the message directly, but
- * instead sign a JSON-like "clientData" wrapper structure that contains the
- * message hash along with a other information.
- *
- * Fortunately this structure has a fixed format so it is possible to verify
- * that the hash of the signed message is present within the clientData
- * structure without needing to implement any JSON parsing.
- */
+ 
 static int
 webauthn_check_prepare_hash(const u_char *data, size_t datalen,
     const char *origin, const struct sshbuf *wrapper,
@@ -180,23 +145,15 @@ webauthn_check_prepare_hash(const u_char *data, size_t datalen,
 		r = SSH_ERR_ALLOC_FAIL;
 		goto out;
 	}
-	/*
-	 * Ensure origin contains no quote character and that the flags are
-	 * consistent with what we received
-	 */
+	 
 	if (strchr(origin, '\"') != NULL ||
-	    (flags & 0x40) != 0 /* AD */ ||
-	    ((flags & 0x80) == 0 /* ED */) != (sshbuf_len(extensions) == 0)) {
+	    (flags & 0x40) != 0   ||
+	    ((flags & 0x80) == 0  ) != (sshbuf_len(extensions) == 0)) {
 		r = SSH_ERR_INVALID_FORMAT;
 		goto out;
 	}
 
-	/*
-	 * Prepare the preamble to clientData that we expect, poking the
-	 * challenge and origin into their canonical positions in the
-	 * structure. The crossOrigin flag and any additional extension
-	 * fields present are ignored.
-	 */
+	 
 #define WEBAUTHN_0	"{\"type\":\"webauthn.get\",\"challenge\":\""
 #define WEBAUTHN_1	"\",\"origin\":\""
 #define WEBAUTHN_2	"\""
@@ -213,16 +170,16 @@ webauthn_check_prepare_hash(const u_char *data, size_t datalen,
 	fprintf(stderr, "%s: expected clientData premable:\n", __func__);
 	sshbuf_dump(m, stderr);
 #endif
-	/* Check that the supplied clientData has the preamble we expect */
+	 
 	if ((r = sshbuf_cmp(wrapper, 0, sshbuf_ptr(m), sshbuf_len(m))) != 0)
 		goto out;
 
-	/* Prepare hash of clientData */
+	 
 	if ((r = ssh_digest_buffer(SSH_DIGEST_SHA256, wrapper,
 	    msghash, msghashlen)) != 0)
 		goto out;
 
-	/* success */
+	 
 	r = 0;
  out:
 	sshbuf_free(chall);
@@ -260,7 +217,7 @@ ssh_ecdsa_sk_verify(const struct sshkey *key,
 	if (key->ecdsa_nid != NID_X9_62_prime256v1)
 		return SSH_ERR_INTERNAL_ERROR;
 
-	/* fetch signature */
+	 
 	if ((b = sshbuf_from(sig, siglen)) == NULL)
 		return SSH_ERR_ALLOC_FAIL;
 	if ((details = calloc(1, sizeof(*details))) == NULL) {
@@ -296,7 +253,7 @@ ssh_ecdsa_sk_verify(const struct sshkey *key,
 		goto out;
 	}
 
-	/* parse signature */
+	 
 	if (sshbuf_get_bignum2(sigbuf, &sig_r) != 0 ||
 	    sshbuf_get_bignum2(sigbuf, &sig_s) != 0) {
 		ret = SSH_ERR_INVALID_FORMAT;
@@ -309,7 +266,7 @@ ssh_ecdsa_sk_verify(const struct sshkey *key,
 
 #ifdef DEBUG_SK
 	fprintf(stderr, "%s: data: (len %zu)\n", __func__, datalen);
-	/* sshbuf_dump_data(data, datalen, stderr); */
+	 
 	fprintf(stderr, "%s: sig_r: %s\n", __func__, (tmp = BN_bn2hex(sig_r)));
 	free(tmp);
 	fprintf(stderr, "%s: sig_s: %s\n", __func__, (tmp = BN_bn2hex(sig_s)));
@@ -331,9 +288,9 @@ ssh_ecdsa_sk_verify(const struct sshkey *key,
 		ret = SSH_ERR_LIBCRYPTO_ERROR;
 		goto out;
 	}
-	sig_r = sig_s = NULL; /* transferred */
+	sig_r = sig_s = NULL;  
 
-	/* Reconstruct data that was supposedly signed */
+	 
 	if ((original_signed = sshbuf_new()) == NULL) {
 		ret = SSH_ERR_ALLOC_FAIL;
 		goto out;
@@ -346,7 +303,7 @@ ssh_ecdsa_sk_verify(const struct sshkey *key,
 	} else if ((ret = ssh_digest_memory(SSH_DIGEST_SHA256, data, dlen,
 	    msghash, sizeof(msghash))) != 0)
 		goto out;
-	/* Application value is hashed before signature */
+	 
 	if ((ret = ssh_digest_memory(SSH_DIGEST_SHA256, key->sk_application,
 	    strlen(key->sk_application), apphash, sizeof(apphash))) != 0)
 		goto out;
@@ -363,7 +320,7 @@ ssh_ecdsa_sk_verify(const struct sshkey *key,
 	    (ret = sshbuf_putb(original_signed, webauthn_exts)) != 0 ||
 	    (ret = sshbuf_put(original_signed, msghash, sizeof(msghash))) != 0)
 		goto out;
-	/* Signature is over H(original_signed) */
+	 
 	if ((ret = ssh_digest_buffer(SSH_DIGEST_SHA256, original_signed,
 	    sighash, sizeof(sighash))) != 0)
 		goto out;
@@ -376,7 +333,7 @@ ssh_ecdsa_sk_verify(const struct sshkey *key,
 	sshbuf_dump_data(sighash, sizeof(sighash), stderr);
 #endif
 
-	/* Verify it */
+	 
 	switch (ECDSA_do_verify(sighash, sizeof(sighash), esig, key->ecdsa)) {
 	case 1:
 		ret = 0;
@@ -388,7 +345,7 @@ ssh_ecdsa_sk_verify(const struct sshkey *key,
 		ret = SSH_ERR_LIBCRYPTO_ERROR;
 		goto out;
 	}
-	/* success */
+	 
 	if (detailsp != NULL) {
 		*detailsp = details;
 		details = NULL;
@@ -414,54 +371,54 @@ ssh_ecdsa_sk_verify(const struct sshkey *key,
 }
 
 static const struct sshkey_impl_funcs sshkey_ecdsa_sk_funcs = {
-	/* .size = */		NULL,
-	/* .alloc = */		NULL,
-	/* .cleanup = */	ssh_ecdsa_sk_cleanup,
-	/* .equal = */		ssh_ecdsa_sk_equal,
-	/* .ssh_serialize_public = */ ssh_ecdsa_sk_serialize_public,
-	/* .ssh_deserialize_public = */ ssh_ecdsa_sk_deserialize_public,
-	/* .ssh_serialize_private = */ ssh_ecdsa_sk_serialize_private,
-	/* .ssh_deserialize_private = */ ssh_ecdsa_sk_deserialize_private,
-	/* .generate = */	NULL,
-	/* .copy_public = */	ssh_ecdsa_sk_copy_public,
-	/* .sign = */		NULL,
-	/* .verify = */		ssh_ecdsa_sk_verify,
+	 		NULL,
+	 		NULL,
+	 	ssh_ecdsa_sk_cleanup,
+	 		ssh_ecdsa_sk_equal,
+	  ssh_ecdsa_sk_serialize_public,
+	  ssh_ecdsa_sk_deserialize_public,
+	  ssh_ecdsa_sk_serialize_private,
+	  ssh_ecdsa_sk_deserialize_private,
+	 	NULL,
+	 	ssh_ecdsa_sk_copy_public,
+	 		NULL,
+	 		ssh_ecdsa_sk_verify,
 };
 
 const struct sshkey_impl sshkey_ecdsa_sk_impl = {
-	/* .name = */		"sk-ecdsa-sha2-nistp256@openssh.com",
-	/* .shortname = */	"ECDSA-SK",
-	/* .sigalg = */		NULL,
-	/* .type = */		KEY_ECDSA_SK,
-	/* .nid = */		NID_X9_62_prime256v1,
-	/* .cert = */		0,
-	/* .sigonly = */	0,
-	/* .keybits = */	256,
-	/* .funcs = */		&sshkey_ecdsa_sk_funcs,
+	 		"sk-ecdsa-sha2-nistp256@openssh.com",
+	 	"ECDSA-SK",
+	 		NULL,
+	 		KEY_ECDSA_SK,
+	 		NID_X9_62_prime256v1,
+	 		0,
+	 	0,
+	 	256,
+	 		&sshkey_ecdsa_sk_funcs,
 };
 
 const struct sshkey_impl sshkey_ecdsa_sk_cert_impl = {
-	/* .name = */		"sk-ecdsa-sha2-nistp256-cert-v01@openssh.com",
-	/* .shortname = */	"ECDSA-SK-CERT",
-	/* .sigalg = */		NULL,
-	/* .type = */		KEY_ECDSA_SK_CERT,
-	/* .nid = */		NID_X9_62_prime256v1,
-	/* .cert = */		1,
-	/* .sigonly = */	0,
-	/* .keybits = */	256,
-	/* .funcs = */		&sshkey_ecdsa_sk_funcs,
+	 		"sk-ecdsa-sha2-nistp256-cert-v01@openssh.com",
+	 	"ECDSA-SK-CERT",
+	 		NULL,
+	 		KEY_ECDSA_SK_CERT,
+	 		NID_X9_62_prime256v1,
+	 		1,
+	 	0,
+	 	256,
+	 		&sshkey_ecdsa_sk_funcs,
 };
 
 const struct sshkey_impl sshkey_ecdsa_sk_webauthn_impl = {
-	/* .name = */		"webauthn-sk-ecdsa-sha2-nistp256@openssh.com",
-	/* .shortname = */	"ECDSA-SK",
-	/* .sigalg = */		NULL,
-	/* .type = */		KEY_ECDSA_SK,
-	/* .nid = */		NID_X9_62_prime256v1,
-	/* .cert = */		0,
-	/* .sigonly = */	1,
-	/* .keybits = */	256,
-	/* .funcs = */		&sshkey_ecdsa_sk_funcs,
+	 		"webauthn-sk-ecdsa-sha2-nistp256@openssh.com",
+	 	"ECDSA-SK",
+	 		NULL,
+	 		KEY_ECDSA_SK,
+	 		NID_X9_62_prime256v1,
+	 		0,
+	 	1,
+	 	256,
+	 		&sshkey_ecdsa_sk_funcs,
 };
 
-#endif /* OPENSSL_HAS_ECC */
+#endif  

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 
 #define __printf(a, b)  __attribute__((format(printf, a, b)))
 

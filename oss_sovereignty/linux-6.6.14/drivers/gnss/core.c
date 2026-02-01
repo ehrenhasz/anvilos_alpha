@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * GNSS receiver core
- *
- * Copyright (C) 2018 Johan Hovold <johan@kernel.org>
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -27,7 +23,7 @@
 static DEFINE_IDA(gnss_minors);
 static dev_t gnss_first;
 
-/* FIFO size must be a power of two */
+ 
 #define GNSS_READ_FIFO_SIZE	4096
 #define GNSS_WRITE_BUF_SIZE	1024
 
@@ -136,7 +132,7 @@ static ssize_t gnss_write(struct file *file, const char __user *buf,
 	if (!(gdev->flags & GNSS_FLAG_HAS_WRITE_RAW))
 		return -EIO;
 
-	/* Ignoring O_NONBLOCK, write_raw() is synchronous. */
+	 
 
 	ret = mutex_lock_interruptible(&gdev->write_mutex);
 	if (ret)
@@ -153,12 +149,7 @@ static ssize_t gnss_write(struct file *file, const char __user *buf,
 			goto out_unlock;
 		}
 
-		/*
-		 * Assumes write_raw can always accept GNSS_WRITE_BUF_SIZE
-		 * bytes.
-		 *
-		 * FIXME: revisit
-		 */
+		 
 		down_read(&gdev->rwsem);
 		if (!gdev->disconnected)
 			ret = gdev->ops->write_raw(gdev, gdev->write_buf, n);
@@ -284,7 +275,7 @@ int gnss_register_device(struct gnss_device *gdev)
 {
 	int ret;
 
-	/* Set a flag which can be accessed without holding the rwsem. */
+	 
 	if (gdev->ops->write_raw != NULL)
 		gdev->flags |= GNSS_FLAG_HAS_WRITE_RAW;
 
@@ -312,11 +303,7 @@ void gnss_deregister_device(struct gnss_device *gdev)
 }
 EXPORT_SYMBOL_GPL(gnss_deregister_device);
 
-/*
- * Caller guarantees serialisation.
- *
- * Must not be called for a closed device.
- */
+ 
 int gnss_insert_raw(struct gnss_device *gdev, const unsigned char *buf,
 				size_t count)
 {

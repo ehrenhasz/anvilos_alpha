@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * This is for all the tests related to copy_to_user() and copy_from_user()
- * hardening.
- */
+
+ 
 #include "lkdtm.h"
 #include <linux/slab.h>
 #include <linux/highmem.h>
@@ -12,23 +9,14 @@
 #include <linux/uaccess.h>
 #include <asm/cacheflush.h>
 
-/*
- * Many of the tests here end up using const sizes, but those would
- * normally be ignored by hardened usercopy, so force the compiler
- * into choosing the non-const path to make sure we trigger the
- * hardened usercopy checks by added "unconst" to all the const copies,
- * and making sure "cache_size" isn't optimized into a const.
- */
+ 
 static volatile size_t unconst;
 static volatile size_t cache_size = 1024;
 static struct kmem_cache *whitelist_cache;
 
 static const unsigned char test_text[] = "This is a test.\n";
 
-/*
- * Instead of adding -Wno-return-local-addr, just pass the stack address
- * through a function to obfuscate it from the compiler.
- */
+ 
 static noinline unsigned char *trick_compiler(unsigned char *stack)
 {
 	return stack + unconst;
@@ -39,16 +27,12 @@ static noinline unsigned char *do_usercopy_stack_callee(int value)
 	unsigned char buf[128];
 	int i;
 
-	/* Exercise stack to avoid everything living in registers. */
+	 
 	for (i = 0; i < sizeof(buf); i++) {
 		buf[i] = value & 0xff;
 	}
 
-	/*
-	 * Put the target buffer in the middle of stack allocation
-	 * so that we don't step on future stack users regardless
-	 * of stack growth direction.
-	 */
+	 
 	return trick_compiler(&buf[(128/2)-32]);
 }
 
@@ -59,15 +43,15 @@ static noinline void do_usercopy_stack(bool to_user, bool bad_frame)
 	unsigned char *bad_stack;
 	int i;
 
-	/* Exercise stack to avoid everything living in registers. */
+	 
 	for (i = 0; i < sizeof(good_stack); i++)
 		good_stack[i] = test_text[i % sizeof(test_text)];
 
-	/* This is a pointer to outside our current stack frame. */
+	 
 	if (bad_frame) {
 		bad_stack = do_usercopy_stack_callee((uintptr_t)&bad_stack);
 	} else {
-		/* Put start address just inside stack. */
+		 
 		bad_stack = task_stack_page(current) + THREAD_SIZE;
 		bad_stack -= sizeof(unsigned long);
 	}
@@ -101,10 +85,7 @@ static noinline void do_usercopy_stack(bool to_user, bool bad_frame)
 			goto free_user;
 		}
 	} else {
-		/*
-		 * There isn't a safe way to not be protected by usercopy
-		 * if we're going to write to another thread's stack.
-		 */
+		 
 		if (!bad_frame)
 			goto free_user;
 
@@ -127,10 +108,7 @@ free_user:
 	vm_munmap(user_addr, PAGE_SIZE);
 }
 
-/*
- * This checks for whole-object size validation with hardened usercopy,
- * with or without usercopy whitelisting.
- */
+ 
 static void do_usercopy_slab_size(bool to_user)
 {
 	unsigned long user_addr;
@@ -195,10 +173,7 @@ free_kernel:
 	kfree(two);
 }
 
-/*
- * This checks for the specific whitelist window within an object. If this
- * test passes, then do_usercopy_slab_size() tests will pass too.
- */
+ 
 static void do_usercopy_slab_whitelist(bool to_user)
 {
 	unsigned long user_alloc;
@@ -206,22 +181,20 @@ static void do_usercopy_slab_whitelist(bool to_user)
 	unsigned char __user *user_addr;
 	size_t offset, size;
 
-	/* Make sure cache was prepared. */
+	 
 	if (!whitelist_cache) {
 		pr_warn("Failed to allocate kernel cache\n");
 		return;
 	}
 
-	/*
-	 * Allocate a buffer with a whitelisted window in the buffer.
-	 */
+	 
 	buf = kmem_cache_alloc(whitelist_cache, GFP_KERNEL);
 	if (!buf) {
 		pr_warn("Failed to allocate buffer from whitelist cache\n");
 		goto free_alloc;
 	}
 
-	/* Allocate user memory we'll poke at. */
+	 
 	user_alloc = vm_mmap(NULL, 0, PAGE_SIZE,
 			    PROT_READ | PROT_WRITE | PROT_EXEC,
 			    MAP_ANONYMOUS | MAP_PRIVATE, 0);
@@ -233,7 +206,7 @@ static void do_usercopy_slab_whitelist(bool to_user)
 
 	memset(buf, 'B', cache_size);
 
-	/* Whitelisted window in buffer, from kmem_cache_create_usercopy. */
+	 
 	offset = (cache_size / 4) + unconst;
 	size = (cache_size / 16) + unconst;
 
@@ -272,7 +245,7 @@ free_alloc:
 		kmem_cache_free(whitelist_cache, buf);
 }
 
-/* Callable tests. */
+ 
 static void lkdtm_USERCOPY_SLAB_SIZE_TO(void)
 {
 	do_usercopy_slab_size(true);
@@ -342,12 +315,7 @@ free_user:
 	vm_munmap(user_addr, PAGE_SIZE);
 }
 
-/*
- * This expects "kaddr" to point to a PAGE_SIZE allocation, which means
- * a more complete test that would include copy_from_user() would risk
- * memory corruption. Just test copy_to_user() here, as that exercises
- * almost exactly the same code paths.
- */
+ 
 static void do_usercopy_page_span(const char *name, void *kaddr)
 {
 	unsigned long uaddr;
@@ -359,10 +327,10 @@ static void do_usercopy_page_span(const char *name, void *kaddr)
 		return;
 	}
 
-	/* Initialize contents. */
+	 
 	memset(kaddr, 0xAA, PAGE_SIZE);
 
-	/* Bump the kaddr forward to detect a page-spanning overflow. */
+	 
 	kaddr += PAGE_SIZE / 2;
 
 	pr_info("attempting good copy_to_user() from kernel %s: %px\n",
@@ -405,10 +373,7 @@ static void lkdtm_USERCOPY_FOLIO(void)
 	struct folio *folio;
 	void *addr;
 
-	/*
-	 * FIXME: Folio checking currently misses 0-order allocations, so
-	 * allocate and bump forward to the last page.
-	 */
+	 
 	folio = folio_alloc(GFP_KERNEL | __GFP_ZERO, 1);
 	if (!folio) {
 		pr_err("folio_alloc() failed!?\n");
@@ -424,7 +389,7 @@ static void lkdtm_USERCOPY_FOLIO(void)
 
 void __init lkdtm_usercopy_init(void)
 {
-	/* Prepare cache that lacks SLAB_USERCOPY flag. */
+	 
 	whitelist_cache =
 		kmem_cache_create_usercopy("lkdtm-usercopy", cache_size,
 					   0, 0,

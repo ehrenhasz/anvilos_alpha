@@ -1,30 +1,4 @@
-/*
- * Copyright 2008 Advanced Micro Devices, Inc.
- * Copyright 2008 Red Hat Inc.
- * Copyright 2009 Jerome Glisse.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: Dave Airlie
- *          Alex Deucher
- *          Jerome Glisse
- */
+ 
 
 #include "amdgpu.h"
 #include <drm/amdgpu_drm.h>
@@ -69,14 +43,7 @@ void amdgpu_unregister_gpu_instance(struct amdgpu_device *adev)
 	mutex_unlock(&mgpu_info.mutex);
 }
 
-/**
- * amdgpu_driver_unload_kms - Main unload function for KMS.
- *
- * @dev: drm dev pointer
- *
- * This is the main unload function for KMS (all asics).
- * Returns 0 on success.
- */
+ 
 void amdgpu_driver_unload_kms(struct drm_device *dev)
 {
 	struct amdgpu_device *adev = drm_to_adev(dev);
@@ -121,15 +88,7 @@ void amdgpu_register_gpu_instance(struct amdgpu_device *adev)
 	mutex_unlock(&mgpu_info.mutex);
 }
 
-/**
- * amdgpu_driver_load_kms - Main load function for KMS.
- *
- * @adev: pointer to struct amdgpu_device
- * @flags: device flags
- *
- * This is the main load function for KMS (all asics).
- * Returns 0 on success, error on failure.
- */
+ 
 int amdgpu_driver_load_kms(struct amdgpu_device *adev, unsigned long flags)
 {
 	struct drm_device *dev;
@@ -137,12 +96,7 @@ int amdgpu_driver_load_kms(struct amdgpu_device *adev, unsigned long flags)
 
 	dev = adev_to_drm(adev);
 
-	/* amdgpu_device_init should report only fatal error
-	 * like memory allocation failure or iomapping failure,
-	 * or memory manager initialization failure, it must
-	 * properly initialize the GPU MC controller and permit
-	 * VRAM allocation
-	 */
+	 
 	r = amdgpu_device_init(adev, flags);
 	if (r) {
 		dev_err(dev->dev, "Fatal error during GPU init\n");
@@ -151,11 +105,11 @@ int amdgpu_driver_load_kms(struct amdgpu_device *adev, unsigned long flags)
 
 	adev->pm.rpm_mode = AMDGPU_RUNPM_NONE;
 	if (amdgpu_device_supports_px(dev) &&
-	    (amdgpu_runtime_pm != 0)) { /* enable PX as runtime mode */
+	    (amdgpu_runtime_pm != 0)) {  
 		adev->pm.rpm_mode = AMDGPU_RUNPM_PX;
 		dev_info(adev->dev, "Using ATPX for runtime pm\n");
 	} else if (amdgpu_device_supports_boco(dev) &&
-		   (amdgpu_runtime_pm != 0)) { /* enable boco as runtime mode */
+		   (amdgpu_runtime_pm != 0)) {  
 		adev->pm.rpm_mode = AMDGPU_RUNPM_BOCO;
 		dev_info(adev->dev, "Using BOCO for runtime pm\n");
 	} else if (amdgpu_device_supports_baco(dev) &&
@@ -163,17 +117,17 @@ int amdgpu_driver_load_kms(struct amdgpu_device *adev, unsigned long flags)
 		switch (adev->asic_type) {
 		case CHIP_VEGA20:
 		case CHIP_ARCTURUS:
-			/* enable BACO as runpm mode if runpm=1 */
+			 
 			if (amdgpu_runtime_pm > 0)
 				adev->pm.rpm_mode = AMDGPU_RUNPM_BACO;
 			break;
 		case CHIP_VEGA10:
-			/* enable BACO as runpm mode if noretry=0 */
+			 
 			if (!adev->gmc.noretry)
 				adev->pm.rpm_mode = AMDGPU_RUNPM_BACO;
 			break;
 		default:
-			/* enable BACO as runpm mode on CI+ */
+			 
 			adev->pm.rpm_mode = AMDGPU_RUNPM_BACO;
 			break;
 		}
@@ -182,9 +136,7 @@ int amdgpu_driver_load_kms(struct amdgpu_device *adev, unsigned long flags)
 			dev_info(adev->dev, "Using BACO for runtime pm\n");
 	}
 
-	/* Call ACPI methods: require modeset init
-	 * but failure is not fatal
-	 */
+	 
 
 	acpi_status = amdgpu_acpi_init(adev);
 	if (acpi_status)
@@ -517,21 +469,8 @@ static int amdgpu_hw_ip_info(struct amdgpu_device *adev,
 	return 0;
 }
 
-/*
- * Userspace get information ioctl
- */
-/**
- * amdgpu_info_ioctl - answer a device specific request.
- *
- * @dev: drm device pointer
- * @data: request object
- * @filp: drm filp
- *
- * This function is used to pass device specific parameters to the userspace
- * drivers.  Examples include: pci device id, pipeline parms, tiling params,
- * etc. (all asics).
- * Returns 0 on success, -EINVAL on failure.
- */
+ 
+ 
 int amdgpu_info_ioctl(struct drm_device *dev, void *data, struct drm_file *filp)
 {
 	struct amdgpu_device *adev = drm_to_adev(dev);
@@ -629,7 +568,7 @@ int amdgpu_info_ioctl(struct drm_device *dev, void *data, struct drm_file *filp)
 		struct drm_amdgpu_info_firmware fw_info;
 		int ret;
 
-		/* We only support one instance of each IP block right now. */
+		 
 		if (info->query_fw.ip_instance != 0)
 			return -EINVAL;
 
@@ -731,9 +670,7 @@ int amdgpu_info_ioctl(struct drm_device *dev, void *data, struct drm_file *filp)
 				   AMDGPU_INFO_MMR_SH_INDEX_SHIFT) &
 				  AMDGPU_INFO_MMR_SH_INDEX_MASK;
 
-		/* set full masks if the userspace set all bits
-		 * in the bitfields
-		 */
+		 
 		if (se_num == AMDGPU_INFO_MMR_SE_INDEX_MASK)
 			se_num = 0xffffffff;
 		else if (se_num >= AMDGPU_GFX_MAX_SE)
@@ -785,7 +722,7 @@ int amdgpu_info_ioctl(struct drm_device *dev, void *data, struct drm_file *filp)
 		dev_info->family = adev->family;
 		dev_info->num_shader_engines = adev->gfx.config.max_shader_engines;
 		dev_info->num_shader_arrays_per_engine = adev->gfx.config.max_sh_per_se;
-		/* return all clocks in KHz */
+		 
 		dev_info->gpu_counter_freq = amdgpu_asic_get_xclk(adev) * 10;
 		if (adev->pm.dpm_enabled) {
 			dev_info->max_engine_clock = amdgpu_dpm_get_sclk(adev, false) * 10;
@@ -817,7 +754,7 @@ int amdgpu_info_ioctl(struct drm_device *dev, void *data, struct drm_file *filp)
 		vm_size = adev->vm_manager.max_pfn * AMDGPU_GPU_PAGE_SIZE;
 		vm_size -= AMDGPU_VA_RESERVED_SIZE;
 
-		/* Older VCE FW versions are buggy and can handle only 40bits */
+		 
 		if (adev->vce.fw_version &&
 		    adev->vce.fw_version < AMDGPU_VCE_FW_53_45)
 			vm_size = min(vm_size, 1ULL << 40);
@@ -859,7 +796,7 @@ int amdgpu_info_ioctl(struct drm_device *dev, void *data, struct drm_file *filp)
 
 		dev_info->tcc_disabled_mask = adev->gfx.config.tcc_disabled_mask;
 
-		/* Combine the chip gen mask with the platform (CPU/mobo) mask. */
+		 
 		pcie_gen_mask = adev->pm.pcie_gen_mask & (adev->pm.pcie_gen_mask >> 16);
 		dev_info->pcie_gen = fls(pcie_gen_mask);
 		dev_info->pcie_num_lanes =
@@ -966,7 +903,7 @@ int amdgpu_info_ioctl(struct drm_device *dev, void *data, struct drm_file *filp)
 
 		switch (info->query_hw_ip.type) {
 		case AMDGPU_HW_IP_UVD:
-			/* Starting Polaris, we support unlimited UVD handles */
+			 
 			if (adev->asic_type < CHIP_POLARIS10) {
 				handle.uvd_max_handles = adev->uvd.max_handles;
 				handle.uvd_used_handles = amdgpu_uvd_used_handles(adev);
@@ -988,7 +925,7 @@ int amdgpu_info_ioctl(struct drm_device *dev, void *data, struct drm_file *filp)
 
 		switch (info->sensor_info.type) {
 		case AMDGPU_INFO_SENSOR_GFX_SCLK:
-			/* get sclk in Mhz */
+			 
 			if (amdgpu_dpm_read_sensor(adev,
 						   AMDGPU_PP_SENSOR_GFX_SCLK,
 						   (void *)&ui32, &ui32_size)) {
@@ -997,7 +934,7 @@ int amdgpu_info_ioctl(struct drm_device *dev, void *data, struct drm_file *filp)
 			ui32 /= 100;
 			break;
 		case AMDGPU_INFO_SENSOR_GFX_MCLK:
-			/* get mclk in Mhz */
+			 
 			if (amdgpu_dpm_read_sensor(adev,
 						   AMDGPU_PP_SENSOR_GFX_MCLK,
 						   (void *)&ui32, &ui32_size)) {
@@ -1006,7 +943,7 @@ int amdgpu_info_ioctl(struct drm_device *dev, void *data, struct drm_file *filp)
 			ui32 /= 100;
 			break;
 		case AMDGPU_INFO_SENSOR_GPU_TEMP:
-			/* get temperature in millidegrees C */
+			 
 			if (amdgpu_dpm_read_sensor(adev,
 						   AMDGPU_PP_SENSOR_GPU_TEMP,
 						   (void *)&ui32, &ui32_size)) {
@@ -1014,7 +951,7 @@ int amdgpu_info_ioctl(struct drm_device *dev, void *data, struct drm_file *filp)
 			}
 			break;
 		case AMDGPU_INFO_SENSOR_GPU_LOAD:
-			/* get GPU load */
+			 
 			if (amdgpu_dpm_read_sensor(adev,
 						   AMDGPU_PP_SENSOR_GPU_LOAD,
 						   (void *)&ui32, &ui32_size)) {
@@ -1022,11 +959,11 @@ int amdgpu_info_ioctl(struct drm_device *dev, void *data, struct drm_file *filp)
 			}
 			break;
 		case AMDGPU_INFO_SENSOR_GPU_AVG_POWER:
-			/* get average GPU power */
+			 
 			if (amdgpu_dpm_read_sensor(adev,
 						   AMDGPU_PP_SENSOR_GPU_AVG_POWER,
 						   (void *)&ui32, &ui32_size)) {
-				/* fall back to input power for backwards compat */
+				 
 				if (amdgpu_dpm_read_sensor(adev,
 							   AMDGPU_PP_SENSOR_GPU_INPUT_POWER,
 							   (void *)&ui32, &ui32_size)) {
@@ -1036,7 +973,7 @@ int amdgpu_info_ioctl(struct drm_device *dev, void *data, struct drm_file *filp)
 			ui32 >>= 8;
 			break;
 		case AMDGPU_INFO_SENSOR_VDDNB:
-			/* get VDDNB in millivolts */
+			 
 			if (amdgpu_dpm_read_sensor(adev,
 						   AMDGPU_PP_SENSOR_VDDNB,
 						   (void *)&ui32, &ui32_size)) {
@@ -1044,7 +981,7 @@ int amdgpu_info_ioctl(struct drm_device *dev, void *data, struct drm_file *filp)
 			}
 			break;
 		case AMDGPU_INFO_SENSOR_VDDGFX:
-			/* get VDDGFX in millivolts */
+			 
 			if (amdgpu_dpm_read_sensor(adev,
 						   AMDGPU_PP_SENSOR_VDDGFX,
 						   (void *)&ui32, &ui32_size)) {
@@ -1052,7 +989,7 @@ int amdgpu_info_ioctl(struct drm_device *dev, void *data, struct drm_file *filp)
 			}
 			break;
 		case AMDGPU_INFO_SENSOR_STABLE_PSTATE_GFX_SCLK:
-			/* get stable pstate sclk in Mhz */
+			 
 			if (amdgpu_dpm_read_sensor(adev,
 						   AMDGPU_PP_SENSOR_STABLE_PSTATE_SCLK,
 						   (void *)&ui32, &ui32_size)) {
@@ -1061,7 +998,7 @@ int amdgpu_info_ioctl(struct drm_device *dev, void *data, struct drm_file *filp)
 			ui32 /= 100;
 			break;
 		case AMDGPU_INFO_SENSOR_STABLE_PSTATE_GFX_MCLK:
-			/* get stable pstate mclk in Mhz */
+			 
 			if (amdgpu_dpm_read_sensor(adev,
 						   AMDGPU_PP_SENSOR_STABLE_PSTATE_MCLK,
 						   (void *)&ui32, &ui32_size)) {
@@ -1070,7 +1007,7 @@ int amdgpu_info_ioctl(struct drm_device *dev, void *data, struct drm_file *filp)
 			ui32 /= 100;
 			break;
 		case AMDGPU_INFO_SENSOR_PEAK_PSTATE_GFX_SCLK:
-			/* get peak pstate sclk in Mhz */
+			 
 			if (amdgpu_dpm_read_sensor(adev,
 						   AMDGPU_PP_SENSOR_PEAK_PSTATE_SCLK,
 						   (void *)&ui32, &ui32_size)) {
@@ -1079,7 +1016,7 @@ int amdgpu_info_ioctl(struct drm_device *dev, void *data, struct drm_file *filp)
 			ui32 /= 100;
 			break;
 		case AMDGPU_INFO_SENSOR_PEAK_PSTATE_GFX_MCLK:
-			/* get peak pstate mclk in Mhz */
+			 
 			if (amdgpu_dpm_read_sensor(adev,
 						   AMDGPU_PP_SENSOR_PEAK_PSTATE_MCLK,
 						   (void *)&ui32, &ui32_size)) {
@@ -1186,38 +1123,22 @@ int amdgpu_info_ioctl(struct drm_device *dev, void *data, struct drm_file *filp)
 }
 
 
-/*
- * Outdated mess for old drm with Xorg being in charge (void function now).
- */
-/**
- * amdgpu_driver_lastclose_kms - drm callback for last close
- *
- * @dev: drm dev pointer
- *
- * Switch vga_switcheroo state after last close (all asics).
- */
+ 
+ 
 void amdgpu_driver_lastclose_kms(struct drm_device *dev)
 {
 	drm_fb_helper_lastclose(dev);
 	vga_switcheroo_process_delayed_switch();
 }
 
-/**
- * amdgpu_driver_open_kms - drm callback for open
- *
- * @dev: drm dev pointer
- * @file_priv: drm file
- *
- * On device open, init vm on cayman+ (all asics).
- * Returns 0 on success, error on failure.
- */
+ 
 int amdgpu_driver_open_kms(struct drm_device *dev, struct drm_file *file_priv)
 {
 	struct amdgpu_device *adev = drm_to_adev(dev);
 	struct amdgpu_fpriv *fpriv;
 	int r, pasid;
 
-	/* Ensure IB tests are run on ring */
+	 
 	flush_delayed_work(&adev->delayed_init_work);
 
 
@@ -1298,14 +1219,7 @@ pm_put:
 	return r;
 }
 
-/**
- * amdgpu_driver_postclose_kms - drm callback for post close
- *
- * @dev: drm dev pointer
- * @file_priv: drm file
- *
- * On device post close, tear down vm on cayman+ (all asics).
- */
+ 
 void amdgpu_driver_postclose_kms(struct drm_device *dev,
 				 struct drm_file *file_priv)
 {
@@ -1370,17 +1284,8 @@ void amdgpu_driver_release_kms(struct drm_device *dev)
 	pci_set_drvdata(adev->pdev, NULL);
 }
 
-/*
- * VBlank related functions.
- */
-/**
- * amdgpu_get_vblank_counter_kms - get frame count
- *
- * @crtc: crtc to get the frame count from
- *
- * Gets the frame count on the requested crtc (all asics).
- * Returns frame count on success, -EINVAL on failure.
- */
+ 
+ 
 u32 amdgpu_get_vblank_counter_kms(struct drm_crtc *crtc)
 {
 	struct drm_device *dev = crtc->dev;
@@ -1394,24 +1299,12 @@ u32 amdgpu_get_vblank_counter_kms(struct drm_crtc *crtc)
 		return -EINVAL;
 	}
 
-	/* The hw increments its frame counter at start of vsync, not at start
-	 * of vblank, as is required by DRM core vblank counter handling.
-	 * Cook the hw count here to make it appear to the caller as if it
-	 * incremented at start of vblank. We measure distance to start of
-	 * vblank in vpos. vpos therefore will be >= 0 between start of vblank
-	 * and start of vsync, so vpos >= 0 means to bump the hw frame counter
-	 * result by 1 to give the proper appearance to caller.
-	 */
+	 
 	if (adev->mode_info.crtcs[pipe]) {
-		/* Repeat readout if needed to provide stable result if
-		 * we cross start of vsync during the queries.
-		 */
+		 
 		do {
 			count = amdgpu_display_vblank_get_counter(adev, pipe);
-			/* Ask amdgpu_display_get_crtc_scanoutpos to return
-			 * vpos as distance to start of vblank, instead of
-			 * regular vertical scanout pos.
-			 */
+			 
 			stat = amdgpu_display_get_crtc_scanoutpos(
 				dev, pipe, GET_DISTANCE_TO_VBLANKSTART,
 				&vpos, &hpos, NULL, NULL,
@@ -1425,15 +1318,12 @@ u32 amdgpu_get_vblank_counter_kms(struct drm_crtc *crtc)
 			DRM_DEBUG_VBL("crtc %d: dist from vblank start %d\n",
 				      pipe, vpos);
 
-			/* Bump counter if we are at >= leading edge of vblank,
-			 * but before vsync where vpos would turn negative and
-			 * the hw counter really increments.
-			 */
+			 
 			if (vpos >= 0)
 				count++;
 		}
 	} else {
-		/* Fallback to use value as is. */
+		 
 		count = amdgpu_display_vblank_get_counter(adev, pipe);
 		DRM_DEBUG_VBL("NULL mode info! Returned count may be wrong.\n");
 	}
@@ -1441,14 +1331,7 @@ u32 amdgpu_get_vblank_counter_kms(struct drm_crtc *crtc)
 	return count;
 }
 
-/**
- * amdgpu_enable_vblank_kms - enable vblank interrupt
- *
- * @crtc: crtc to enable vblank interrupt for
- *
- * Enable the interrupt on the requested crtc (all asics).
- * Returns 0 on success, -EINVAL on failure.
- */
+ 
 int amdgpu_enable_vblank_kms(struct drm_crtc *crtc)
 {
 	struct drm_device *dev = crtc->dev;
@@ -1459,13 +1342,7 @@ int amdgpu_enable_vblank_kms(struct drm_crtc *crtc)
 	return amdgpu_irq_get(adev, &adev->crtc_irq, idx);
 }
 
-/**
- * amdgpu_disable_vblank_kms - disable vblank interrupt
- *
- * @crtc: crtc to disable vblank interrupt for
- *
- * Disable the interrupt on the requested crtc (all asics).
- */
+ 
 void amdgpu_disable_vblank_kms(struct drm_crtc *crtc)
 {
 	struct drm_device *dev = crtc->dev;
@@ -1476,9 +1353,7 @@ void amdgpu_disable_vblank_kms(struct drm_crtc *crtc)
 	amdgpu_irq_put(adev, &adev->crtc_irq, idx);
 }
 
-/*
- * Debugfs info
- */
+ 
 #if defined(CONFIG_DEBUG_FS)
 
 static int amdgpu_debugfs_firmware_info_show(struct seq_file *m, void *unused)
@@ -1501,7 +1376,7 @@ static int amdgpu_debugfs_firmware_info_show(struct seq_file *m, void *unused)
 #undef TA_FW_NAME
 	};
 
-	/* VCE */
+	 
 	query_fw.fw_type = AMDGPU_INFO_FW_VCE;
 	ret = amdgpu_firmware_info(&fw_info, &query_fw, adev);
 	if (ret)
@@ -1509,7 +1384,7 @@ static int amdgpu_debugfs_firmware_info_show(struct seq_file *m, void *unused)
 	seq_printf(m, "VCE feature version: %u, firmware version: 0x%08x\n",
 		   fw_info.feature, fw_info.ver);
 
-	/* UVD */
+	 
 	query_fw.fw_type = AMDGPU_INFO_FW_UVD;
 	ret = amdgpu_firmware_info(&fw_info, &query_fw, adev);
 	if (ret)
@@ -1517,7 +1392,7 @@ static int amdgpu_debugfs_firmware_info_show(struct seq_file *m, void *unused)
 	seq_printf(m, "UVD feature version: %u, firmware version: 0x%08x\n",
 		   fw_info.feature, fw_info.ver);
 
-	/* GMC */
+	 
 	query_fw.fw_type = AMDGPU_INFO_FW_GMC;
 	ret = amdgpu_firmware_info(&fw_info, &query_fw, adev);
 	if (ret)
@@ -1525,7 +1400,7 @@ static int amdgpu_debugfs_firmware_info_show(struct seq_file *m, void *unused)
 	seq_printf(m, "MC feature version: %u, firmware version: 0x%08x\n",
 		   fw_info.feature, fw_info.ver);
 
-	/* ME */
+	 
 	query_fw.fw_type = AMDGPU_INFO_FW_GFX_ME;
 	ret = amdgpu_firmware_info(&fw_info, &query_fw, adev);
 	if (ret)
@@ -1533,7 +1408,7 @@ static int amdgpu_debugfs_firmware_info_show(struct seq_file *m, void *unused)
 	seq_printf(m, "ME feature version: %u, firmware version: 0x%08x\n",
 		   fw_info.feature, fw_info.ver);
 
-	/* PFP */
+	 
 	query_fw.fw_type = AMDGPU_INFO_FW_GFX_PFP;
 	ret = amdgpu_firmware_info(&fw_info, &query_fw, adev);
 	if (ret)
@@ -1541,7 +1416,7 @@ static int amdgpu_debugfs_firmware_info_show(struct seq_file *m, void *unused)
 	seq_printf(m, "PFP feature version: %u, firmware version: 0x%08x\n",
 		   fw_info.feature, fw_info.ver);
 
-	/* CE */
+	 
 	query_fw.fw_type = AMDGPU_INFO_FW_GFX_CE;
 	ret = amdgpu_firmware_info(&fw_info, &query_fw, adev);
 	if (ret)
@@ -1549,7 +1424,7 @@ static int amdgpu_debugfs_firmware_info_show(struct seq_file *m, void *unused)
 	seq_printf(m, "CE feature version: %u, firmware version: 0x%08x\n",
 		   fw_info.feature, fw_info.ver);
 
-	/* RLC */
+	 
 	query_fw.fw_type = AMDGPU_INFO_FW_GFX_RLC;
 	ret = amdgpu_firmware_info(&fw_info, &query_fw, adev);
 	if (ret)
@@ -1557,7 +1432,7 @@ static int amdgpu_debugfs_firmware_info_show(struct seq_file *m, void *unused)
 	seq_printf(m, "RLC feature version: %u, firmware version: 0x%08x\n",
 		   fw_info.feature, fw_info.ver);
 
-	/* RLC SAVE RESTORE LIST CNTL */
+	 
 	query_fw.fw_type = AMDGPU_INFO_FW_GFX_RLC_RESTORE_LIST_CNTL;
 	ret = amdgpu_firmware_info(&fw_info, &query_fw, adev);
 	if (ret)
@@ -1565,7 +1440,7 @@ static int amdgpu_debugfs_firmware_info_show(struct seq_file *m, void *unused)
 	seq_printf(m, "RLC SRLC feature version: %u, firmware version: 0x%08x\n",
 		   fw_info.feature, fw_info.ver);
 
-	/* RLC SAVE RESTORE LIST GPM MEM */
+	 
 	query_fw.fw_type = AMDGPU_INFO_FW_GFX_RLC_RESTORE_LIST_GPM_MEM;
 	ret = amdgpu_firmware_info(&fw_info, &query_fw, adev);
 	if (ret)
@@ -1573,7 +1448,7 @@ static int amdgpu_debugfs_firmware_info_show(struct seq_file *m, void *unused)
 	seq_printf(m, "RLC SRLG feature version: %u, firmware version: 0x%08x\n",
 		   fw_info.feature, fw_info.ver);
 
-	/* RLC SAVE RESTORE LIST SRM MEM */
+	 
 	query_fw.fw_type = AMDGPU_INFO_FW_GFX_RLC_RESTORE_LIST_SRM_MEM;
 	ret = amdgpu_firmware_info(&fw_info, &query_fw, adev);
 	if (ret)
@@ -1581,7 +1456,7 @@ static int amdgpu_debugfs_firmware_info_show(struct seq_file *m, void *unused)
 	seq_printf(m, "RLC SRLS feature version: %u, firmware version: 0x%08x\n",
 		   fw_info.feature, fw_info.ver);
 
-	/* RLCP */
+	 
 	query_fw.fw_type = AMDGPU_INFO_FW_GFX_RLCP;
 	ret = amdgpu_firmware_info(&fw_info, &query_fw, adev);
 	if (ret)
@@ -1589,7 +1464,7 @@ static int amdgpu_debugfs_firmware_info_show(struct seq_file *m, void *unused)
 	seq_printf(m, "RLCP feature version: %u, firmware version: 0x%08x\n",
 		   fw_info.feature, fw_info.ver);
 
-	/* RLCV */
+	 
 	query_fw.fw_type = AMDGPU_INFO_FW_GFX_RLCV;
 	ret = amdgpu_firmware_info(&fw_info, &query_fw, adev);
 	if (ret)
@@ -1597,7 +1472,7 @@ static int amdgpu_debugfs_firmware_info_show(struct seq_file *m, void *unused)
 	seq_printf(m, "RLCV feature version: %u, firmware version: 0x%08x\n",
 		   fw_info.feature, fw_info.ver);
 
-	/* MEC */
+	 
 	query_fw.fw_type = AMDGPU_INFO_FW_GFX_MEC;
 	query_fw.index = 0;
 	ret = amdgpu_firmware_info(&fw_info, &query_fw, adev);
@@ -1606,7 +1481,7 @@ static int amdgpu_debugfs_firmware_info_show(struct seq_file *m, void *unused)
 	seq_printf(m, "MEC feature version: %u, firmware version: 0x%08x\n",
 		   fw_info.feature, fw_info.ver);
 
-	/* MEC2 */
+	 
 	if (adev->gfx.mec2_fw) {
 		query_fw.index = 1;
 		ret = amdgpu_firmware_info(&fw_info, &query_fw, adev);
@@ -1616,7 +1491,7 @@ static int amdgpu_debugfs_firmware_info_show(struct seq_file *m, void *unused)
 			   fw_info.feature, fw_info.ver);
 	}
 
-	/* IMU */
+	 
 	query_fw.fw_type = AMDGPU_INFO_FW_IMU;
 	query_fw.index = 0;
 	ret = amdgpu_firmware_info(&fw_info, &query_fw, adev);
@@ -1625,7 +1500,7 @@ static int amdgpu_debugfs_firmware_info_show(struct seq_file *m, void *unused)
 	seq_printf(m, "IMU feature version: %u, firmware version: 0x%08x\n",
 		   fw_info.feature, fw_info.ver);
 
-	/* PSP SOS */
+	 
 	query_fw.fw_type = AMDGPU_INFO_FW_SOS;
 	ret = amdgpu_firmware_info(&fw_info, &query_fw, adev);
 	if (ret)
@@ -1634,7 +1509,7 @@ static int amdgpu_debugfs_firmware_info_show(struct seq_file *m, void *unused)
 		   fw_info.feature, fw_info.ver);
 
 
-	/* PSP ASD */
+	 
 	query_fw.fw_type = AMDGPU_INFO_FW_ASD;
 	ret = amdgpu_firmware_info(&fw_info, &query_fw, adev);
 	if (ret)
@@ -1653,7 +1528,7 @@ static int amdgpu_debugfs_firmware_info_show(struct seq_file *m, void *unused)
 			   ta_fw_name[i], fw_info.feature, fw_info.ver);
 	}
 
-	/* SMC */
+	 
 	query_fw.fw_type = AMDGPU_INFO_FW_SMC;
 	ret = amdgpu_firmware_info(&fw_info, &query_fw, adev);
 	if (ret)
@@ -1665,7 +1540,7 @@ static int amdgpu_debugfs_firmware_info_show(struct seq_file *m, void *unused)
 	seq_printf(m, "SMC feature version: %u, program: %d, firmware version: 0x%08x (%d.%d.%d)\n",
 		   fw_info.feature, smu_program, fw_info.ver, smu_major, smu_minor, smu_debug);
 
-	/* SDMA */
+	 
 	query_fw.fw_type = AMDGPU_INFO_FW_SDMA;
 	for (i = 0; i < adev->sdma.num_instances; i++) {
 		query_fw.index = i;
@@ -1676,7 +1551,7 @@ static int amdgpu_debugfs_firmware_info_show(struct seq_file *m, void *unused)
 			   i, fw_info.feature, fw_info.ver);
 	}
 
-	/* VCN */
+	 
 	query_fw.fw_type = AMDGPU_INFO_FW_VCN;
 	ret = amdgpu_firmware_info(&fw_info, &query_fw, adev);
 	if (ret)
@@ -1684,7 +1559,7 @@ static int amdgpu_debugfs_firmware_info_show(struct seq_file *m, void *unused)
 	seq_printf(m, "VCN feature version: %u, firmware version: 0x%08x\n",
 		   fw_info.feature, fw_info.ver);
 
-	/* DMCU */
+	 
 	query_fw.fw_type = AMDGPU_INFO_FW_DMCU;
 	ret = amdgpu_firmware_info(&fw_info, &query_fw, adev);
 	if (ret)
@@ -1692,7 +1567,7 @@ static int amdgpu_debugfs_firmware_info_show(struct seq_file *m, void *unused)
 	seq_printf(m, "DMCU feature version: %u, firmware version: 0x%08x\n",
 		   fw_info.feature, fw_info.ver);
 
-	/* DMCUB */
+	 
 	query_fw.fw_type = AMDGPU_INFO_FW_DMCUB;
 	ret = amdgpu_firmware_info(&fw_info, &query_fw, adev);
 	if (ret)
@@ -1700,7 +1575,7 @@ static int amdgpu_debugfs_firmware_info_show(struct seq_file *m, void *unused)
 	seq_printf(m, "DMCUB feature version: %u, firmware version: 0x%08x\n",
 		   fw_info.feature, fw_info.ver);
 
-	/* TOC */
+	 
 	query_fw.fw_type = AMDGPU_INFO_FW_TOC;
 	ret = amdgpu_firmware_info(&fw_info, &query_fw, adev);
 	if (ret)
@@ -1708,7 +1583,7 @@ static int amdgpu_debugfs_firmware_info_show(struct seq_file *m, void *unused)
 	seq_printf(m, "TOC feature version: %u, firmware version: 0x%08x\n",
 		   fw_info.feature, fw_info.ver);
 
-	/* CAP */
+	 
 	if (adev->psp.cap_fw) {
 		query_fw.fw_type = AMDGPU_INFO_FW_CAP;
 		ret = amdgpu_firmware_info(&fw_info, &query_fw, adev);
@@ -1718,7 +1593,7 @@ static int amdgpu_debugfs_firmware_info_show(struct seq_file *m, void *unused)
 				fw_info.feature, fw_info.ver);
 	}
 
-	/* MES_KIQ */
+	 
 	query_fw.fw_type = AMDGPU_INFO_FW_MES_KIQ;
 	ret = amdgpu_firmware_info(&fw_info, &query_fw, adev);
 	if (ret)
@@ -1726,7 +1601,7 @@ static int amdgpu_debugfs_firmware_info_show(struct seq_file *m, void *unused)
 	seq_printf(m, "MES_KIQ feature version: %u, firmware version: 0x%08x\n",
 		   fw_info.feature, fw_info.ver);
 
-	/* MES */
+	 
 	query_fw.fw_type = AMDGPU_INFO_FW_MES;
 	ret = amdgpu_firmware_info(&fw_info, &query_fw, adev);
 	if (ret)

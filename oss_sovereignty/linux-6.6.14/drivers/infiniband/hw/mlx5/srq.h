@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB */
-/*
- * Copyright (c) 2013-2018, Mellanox Technologies. All rights reserved.
- */
+ 
+ 
 
 #ifndef MLX5_IB_SRQ_H
 #define MLX5_IB_SRQ_H
@@ -39,7 +37,7 @@ struct mlx5_srq_attr {
 struct mlx5_ib_dev;
 
 struct mlx5_core_srq {
-	struct mlx5_core_rsc_common common; /* must be first */
+	struct mlx5_core_rsc_common common;  
 	u32 srqn;
 	int max;
 	size_t max_gs;
@@ -66,4 +64,4 @@ struct mlx5_core_srq *mlx5_cmd_get_srq(struct mlx5_ib_dev *dev, u32 srqn);
 
 int mlx5_init_srq_table(struct mlx5_ib_dev *dev);
 void mlx5_cleanup_srq_table(struct mlx5_ib_dev *dev);
-#endif /* MLX5_IB_SRQ_H */
+#endif  

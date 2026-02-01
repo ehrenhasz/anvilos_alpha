@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef RTL8180_H
 #define RTL8180_H
 
@@ -25,17 +25,13 @@
 #define ANAPARAM_PWR1_SHIFT	20
 #define ANAPARAM_PWR1_MASK	(0x7F << ANAPARAM_PWR1_SHIFT)
 
-/* rtl8180/rtl8185 have 3 queue + beacon queue.
- * mac80211 can use just one, + beacon = 2 tot.
- */
+ 
 #define RTL8180_NR_TX_QUEUES 2
 
-/* rtl8187SE have 6 queues + beacon queues
- * mac80211 can use 4 QoS data queue, + beacon = 5 tot
- */
+ 
 #define RTL8187SE_NR_TX_QUEUES 5
 
-/* for array static allocation, it is the max of above */
+ 
 #define RTL818X_NR_TX_QUEUES 5
 
 struct rtl8180_tx_desc {
@@ -55,11 +51,9 @@ struct rtl8180_tx_desc {
 	u8 retry_limit;
 	u8 agc;
 	u8 flags2;
-	/* rsvd for 8180/8185.
-	 * valid for 8187se but we dont use it
-	 */
+	 
 	u32 reserved;
-	/* all rsvd for 8180/8185 */
+	 
 	__le16 flags3;
 	__le16 frag_qsize;
 } __packed;
@@ -96,18 +90,18 @@ struct rtl8180_tx_ring {
 struct rtl8180_vif {
 	struct ieee80211_hw *dev;
 
-	/* beaconing */
+	 
 	struct delayed_work beacon_work;
 	bool enable_beacon;
 };
 
 struct rtl8180_priv {
-	/* common between rtl818x drivers */
+	 
 	struct rtl818x_csr __iomem *map;
 	const struct rtl818x_rf_ops *rf;
 	struct ieee80211_vif *vif;
 
-	/* rtl8180 driver specific */
+	 
 	bool map_pio;
 	spinlock_t lock;
 	void *rx_ring;
@@ -142,7 +136,7 @@ struct rtl8180_priv {
 	u8 thermal_meter_en;
 	u8 antenna_diversity_en;
 	u8 antenna_diversity_default;
-	/* sequence # */
+	 
 	u16 seqno;
 };
 
@@ -183,4 +177,4 @@ static inline void rtl818x_iowrite32(struct rtl8180_priv *priv,
 	iowrite32(val, addr);
 }
 
-#endif /* RTL8180_H */
+#endif  

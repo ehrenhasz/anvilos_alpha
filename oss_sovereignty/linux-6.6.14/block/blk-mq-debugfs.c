@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2017 Facebook
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/blkdev.h>
@@ -125,10 +123,7 @@ static ssize_t queue_state_write(void *data, const char __user *buf,
 	struct request_queue *q = data;
 	char opbuf[16] = { }, *op;
 
-	/*
-	 * The "state" attribute is removed when the queue is removed.  Don't
-	 * allow setting the state on a dying queue to avoid a use-after-free.
-	 */
+	 
 	if (blk_queue_dying(q))
 		return -ENOENT;
 
@@ -346,11 +341,7 @@ struct show_busy_params {
 	struct blk_mq_hw_ctx	*hctx;
 };
 
-/*
- * Note: the state of a request may change while this function is in progress,
- * e.g. due to a concurrent blk_mq_finish_request() call. Returns true to
- * keep iterating requests.
- */
+ 
 static bool hctx_show_busy_rq(struct request *rq, void *data)
 {
 	const struct show_busy_params *params = data;
@@ -565,10 +556,7 @@ static ssize_t blk_mq_debugfs_write(struct file *file, const char __user *buf,
 	const struct blk_mq_debugfs_attr *attr = m->private;
 	void *data = d_inode(file->f_path.dentry->d_parent)->i_private;
 
-	/*
-	 * Attributes that only implement .seq_ops are read-only and 'attr' is
-	 * the same with 'data' in this case.
-	 */
+	 
 	if (attr == data || !attr->write)
 		return -EPERM;
 
@@ -659,15 +647,11 @@ void blk_mq_debugfs_register(struct request_queue *q)
 
 	debugfs_create_files(q->debugfs_dir, q, blk_mq_debugfs_queue_attrs);
 
-	/*
-	 * blk_mq_init_sched() attempted to do this already, but q->debugfs_dir
-	 * didn't exist yet (because we don't know what to name the directory
-	 * until the queue is registered to a gendisk).
-	 */
+	 
 	if (q->elevator && !q->sched_debugfs_dir)
 		blk_mq_debugfs_register_sched(q);
 
-	/* Similarly, blk_mq_init_hctx() couldn't do this previously. */
+	 
 	queue_for_each_hw_ctx(q, hctx, i) {
 		if (!hctx->debugfs_dir)
 			blk_mq_debugfs_register_hctx(q, hctx);
@@ -749,10 +733,7 @@ void blk_mq_debugfs_register_sched(struct request_queue *q)
 
 	lockdep_assert_held(&q->debugfs_mutex);
 
-	/*
-	 * If the parent directory has not been created yet, return, we will be
-	 * called again later on and the directory/files will be created then.
-	 */
+	 
 	if (!q->debugfs_dir)
 		return;
 
@@ -820,11 +801,7 @@ void blk_mq_debugfs_register_sched_hctx(struct request_queue *q,
 
 	lockdep_assert_held(&q->debugfs_mutex);
 
-	/*
-	 * If the parent debugfs directory has not been created yet, return;
-	 * We will be called again later on with appropriate parent debugfs
-	 * directory from blk_register_queue()
-	 */
+	 
 	if (!hctx->debugfs_dir)
 		return;
 

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Driver for Cadence MIPI-CSI2 RX Controller v1.3
- *
- * Copyright (C) 2017 Cadence Design Systems Inc.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -65,10 +61,7 @@ struct csi2rx_priv {
 	struct device			*dev;
 	unsigned int			count;
 
-	/*
-	 * Used to prevent race conditions between multiple,
-	 * concurrent calls to start and stop.
-	 */
+	 
 	struct mutex			lock;
 
 	void __iomem			*base;
@@ -90,7 +83,7 @@ struct csi2rx_priv {
 	struct v4l2_async_notifier	notifier;
 	struct media_pad		pads[CSI2RX_PAD_MAX];
 
-	/* Remote source */
+	 
 	struct v4l2_subdev		*source_subdev;
 	int				source_pad;
 };
@@ -149,12 +142,7 @@ static int csi2rx_start(struct csi2rx_priv *csi2rx)
 		set_bit(csi2rx->lanes[i], &lanes_used);
 	}
 
-	/*
-	 * Even the unused lanes need to be mapped. In order to avoid
-	 * to map twice to the same physical lane, keep the lanes used
-	 * in the previous loop, and only map unused physical lanes to
-	 * the rest of our logical lanes.
-	 */
+	 
 	for (i = csi2rx->num_lanes; i < csi2rx->max_lanes; i++) {
 		unsigned int idx = find_first_zero_bit(&lanes_used,
 						       csi2rx->max_lanes);
@@ -168,7 +156,7 @@ static int csi2rx_start(struct csi2rx_priv *csi2rx)
 	if (ret)
 		goto err_disable_pclk;
 
-	/* Enable DPHY clk and data lanes. */
+	 
 	if (csi2rx->dphy) {
 		reg = CSI2RX_DPHY_CL_EN | CSI2RX_DPHY_CL_RST;
 		for (i = 0; i < csi2rx->num_lanes; i++) {
@@ -179,16 +167,7 @@ static int csi2rx_start(struct csi2rx_priv *csi2rx)
 		writel(reg, csi2rx->base + CSI2RX_DPHY_LANE_CTRL_REG);
 	}
 
-	/*
-	 * Create a static mapping between the CSI virtual channels
-	 * and the output stream.
-	 *
-	 * This should be enhanced, but v4l2 lacks the support for
-	 * changing that mapping dynamically.
-	 *
-	 * We also cannot enable and disable independent streams here,
-	 * hence the reference counting.
-	 */
+	 
 	for (i = 0; i < csi2rx->max_streams; i++) {
 		ret = clk_prepare_enable(csi2rx->pixel_clk[i]);
 		if (ret)
@@ -277,10 +256,7 @@ static int csi2rx_s_stream(struct v4l2_subdev *subdev, int enable)
 	mutex_lock(&csi2rx->lock);
 
 	if (enable) {
-		/*
-		 * If we're not the first users, there's no need to
-		 * enable the whole controller.
-		 */
+		 
 		if (!csi2rx->count) {
 			ret = csi2rx_start(csi2rx);
 			if (ret)
@@ -291,9 +267,7 @@ static int csi2rx_s_stream(struct v4l2_subdev *subdev, int enable)
 	} else {
 		csi2rx->count--;
 
-		/*
-		 * Let the last user turn off the lights.
-		 */
+		 
 		if (!csi2rx->count)
 			csi2rx_stop(csi2rx);
 	}
@@ -407,10 +381,7 @@ static int csi2rx_get_resources(struct csi2rx_priv *csi2rx,
 
 	csi2rx->has_internal_dphy = dev_cfg & BIT(3) ? true : false;
 
-	/*
-	 * FIXME: Once we'll have internal D-PHY support, the check
-	 * will need to be removed.
-	 */
+	 
 	if (!csi2rx->dphy && csi2rx->has_internal_dphy) {
 		dev_err(&pdev->dev, "Internal D-PHY not supported yet\n");
 		return -EINVAL;
@@ -521,7 +492,7 @@ static int csi2rx_probe(struct platform_device *pdev)
 	snprintf(csi2rx->subdev.name, V4L2_SUBDEV_NAME_SIZE, "%s.%s",
 		 KBUILD_MODNAME, dev_name(&pdev->dev));
 
-	/* Create our media pads */
+	 
 	csi2rx->subdev.entity.function = MEDIA_ENT_F_VID_IF_BRIDGE;
 	csi2rx->pads[CSI2RX_PAD_SINK].flags = MEDIA_PAD_FL_SINK;
 	for (i = CSI2RX_PAD_SOURCE_STREAM0; i < CSI2RX_PAD_MAX; i++)

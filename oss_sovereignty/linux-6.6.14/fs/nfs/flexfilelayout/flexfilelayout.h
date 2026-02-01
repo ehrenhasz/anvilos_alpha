@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * NFSv4 flexfile layout driver data structures.
- *
- * Copyright (c) 2014, Primary Data, Inc. All rights reserved.
- *
- * Tao Peng <bergwolf@primarydata.com>
- */
+ 
+ 
 
 #ifndef FS_NFS_NFS4FLEXFILELAYOUT_H
 #define FS_NFS_NFS4FLEXFILELAYOUT_H
@@ -17,11 +11,10 @@
 #include <linux/refcount.h>
 #include "../pnfs.h"
 
-/* XXX: Let's filter out insanely large mirror count for now to avoid oom
- * due to network error etc. */
+ 
 #define NFS4_FLEXFILE_LAYOUT_MAX_MIRROR_CNT 4096
 
-/* LAYOUTSTATS report interval in ms */
+ 
 #define FF_LAYOUTSTATS_REPORT_INTERVAL (60000L)
 #define FF_LAYOUTSTATS_MAXDEV 4
 
@@ -33,7 +26,7 @@ struct nfs4_ff_ds_version {
 	bool				tightly_coupled;
 };
 
-/* chained in global deviceid hlist */
+ 
 struct nfs4_ff_layout_ds {
 	struct nfs4_deviceid_node	id_node;
 	u32				ds_versions_cnt;
@@ -42,7 +35,7 @@ struct nfs4_ff_layout_ds {
 };
 
 struct nfs4_ff_layout_ds_err {
-	struct list_head		list; /* linked in mirror error_list */
+	struct list_head		list;  
 	u64				offset;
 	u64				length;
 	int				status;
@@ -106,8 +99,8 @@ struct nfs4_flexfile_layout {
 	struct pnfs_layout_hdr generic_hdr;
 	struct pnfs_ds_commit_info commit_info;
 	struct list_head	mirrors;
-	struct list_head	error_list; /* nfs4_ff_layout_ds_err */
-	ktime_t			last_report_time; /* Layoutstat report times */
+	struct list_head	error_list;  
+	ktime_t			last_report_time;  
 };
 
 struct nfs4_flexfile_layoutreturn_args {
@@ -223,4 +216,4 @@ const struct cred *ff_layout_get_ds_cred(struct nfs4_ff_layout_mirror *mirror,
 bool ff_layout_avoid_mds_available_ds(struct pnfs_layout_segment *lseg);
 bool ff_layout_avoid_read_on_rw(struct pnfs_layout_segment *lseg);
 
-#endif /* FS_NFS_NFS4FLEXFILELAYOUT_H */
+#endif  

@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
+ 
 #ifndef _UAPI_XT_PHYSDEV_H
 #define _UAPI_XT_PHYSDEV_H
 
@@ -21,4 +21,4 @@ struct xt_physdev_info {
 	__u8 bitmask;
 };
 
-#endif /* _UAPI_XT_PHYSDEV_H */
+#endif  

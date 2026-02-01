@@ -1,6 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright 2018 Marty E. Plummer <hanetzer@startmail.com> */
-/* Copyright 2019 Linaro, Ltd, Rob Herring <robh@kernel.org> */
+
+ 
+ 
 
 #include <linux/clk.h>
 #include <linux/reset.h>
@@ -148,10 +148,7 @@ static int panfrost_pm_domain_init(struct panfrost_device *pfdev)
 						 "power-domains",
 						 "#power-domain-cells");
 
-	/*
-	 * Single domain is handled by the core, and, if only a single power
-	 * the power domain is requested, the property is optional.
-	 */
+	 
 	if (num_domains < 2 && pfdev->comp->num_pm_domains < 2)
 		return 0;
 
@@ -220,7 +217,7 @@ int panfrost_device_init(struct panfrost_device *pfdev)
 		goto out_clk;
 	}
 
-	/* OPP will handle regulators */
+	 
 	if (!pfdev->pfdevfreq.opp_of_table_added) {
 		err = panfrost_regulator_init(pfdev);
 		if (err)
@@ -382,13 +379,11 @@ const char *panfrost_exception_name(u32 exception_code)
 bool panfrost_exception_needs_reset(const struct panfrost_device *pfdev,
 				    u32 exception_code)
 {
-	/* If an occlusion query write causes a bus fault on affected GPUs,
-	 * future fragment jobs may hang. Reset to workaround.
-	 */
+	 
 	if (exception_code == DRM_PANFROST_EXCEPTION_JOB_BUS_FAULT)
 		return panfrost_has_hw_issue(pfdev, HW_ISSUE_TTRX_3076);
 
-	/* No other GPUs we support need a reset */
+	 
 	return false;
 }
 

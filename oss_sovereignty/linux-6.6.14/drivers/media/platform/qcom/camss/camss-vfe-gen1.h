@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * camss-vfe.h
- *
- * Qualcomm MSM Camera Subsystem - VFE (Video Front End) Module
- *
- * Copyright (c) 2013-2015, The Linux Foundation. All rights reserved.
- * Copyright (C) 2015-2018 Linaro Ltd.
- */
+ 
+ 
 #ifndef QC_MSM_CAMSS_VFE_GEN1_H
 #define QC_MSM_CAMSS_VFE_GEN1_H
 
@@ -57,13 +50,7 @@ struct vfe_hw_ops_gen1 {
 	void (*wm_enable)(struct vfe_device *vfe, u8 wm, u8 enable);
 };
 
-/*
- * vfe_calc_interp_reso - Calculate interpolation mode
- * @input: Input resolution
- * @output: Output resolution
- *
- * Return interpolation mode
- */
+ 
 static inline u8 vfe_calc_interp_reso(u16 input, u16 output)
 {
 	if (input / output >= 16)
@@ -78,40 +65,19 @@ static inline u8 vfe_calc_interp_reso(u16 input, u16 output)
 	return 3;
 }
 
-/*
- * vfe_gen1_disable - Disable streaming on VFE line
- * @line: VFE line
- *
- * Return 0 on success or a negative error code otherwise
- */
+ 
 int vfe_gen1_disable(struct vfe_line *line);
 
-/*
- * vfe_gen1_enable - Enable VFE module
- * @line: VFE line
- *
- * Return 0 on success
- */
+ 
 int vfe_gen1_enable(struct vfe_line *line);
 
-/*
- * vfe_gen1_enable - Halt VFE module
- * @vfe: VFE device
- *
- * Return 0 on success
- */
+ 
 int vfe_gen1_halt(struct vfe_device *vfe);
 
-/*
- * vfe_word_per_line - Calculate number of words per frame width
- * @format: V4L2 format
- * @width: Frame width
- *
- * Return number of words per frame width
- */
+ 
 int vfe_word_per_line(u32 format, u32 width);
 
 extern const struct vfe_isr_ops vfe_isr_ops_gen1;
 extern const struct camss_video_ops vfe_video_ops_gen1;
 
-#endif /* QC_MSM_CAMSS_VFE_GEN1_H */
+#endif  

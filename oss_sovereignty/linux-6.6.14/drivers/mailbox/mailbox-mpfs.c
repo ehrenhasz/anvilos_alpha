@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Microchip PolarFire SoC (MPFS) system controller/mailbox controller driver
- *
- * Copyright (c) 2020-2022 Microchip Corporation. All rights reserved.
- *
- * Author: Conor Dooley <conor.dooley@microchip.com>
- *
- */
+
+ 
 
 #include <linux/io.h>
 #include <linux/err.h>
@@ -25,7 +18,7 @@
 #define MSS_SYS_MAILBOX_DATA_OFFSET	0u
 #define SCB_MASK_WIDTH			16u
 
-/* SCBCTRL service control register */
+ 
 
 #define SCB_CTRL_REQ (0)
 #define SCB_CTRL_REQ_MASK BIT(SCB_CTRL_REQ)
@@ -42,7 +35,7 @@
 #define SCB_CTRL_POS (16)
 #define SCB_CTRL_MASK GENMASK(SCB_CTRL_POS + SCB_MASK_WIDTH - 1, SCB_CTRL_POS)
 
-/* SCBCTRL service status register */
+ 
 
 #define SCB_STATUS_REQ (0)
 #define SCB_STATUS_REQ_MASK BIT(SCB_STATUS_REQ)
@@ -89,12 +82,7 @@ static bool mpfs_mbox_last_tx_done(struct mbox_chan *chan)
 	if (mpfs_mbox_busy(mbox))
 		return false;
 
-	/*
-	 * The service status is stored in bits 31:16 of the SERVICES_SR
-	 * register & is only valid when the system controller is not busy.
-	 * Failed services are intended to generated interrupts, but in reality
-	 * this does not happen, so the status must be checked here.
-	 */
+	 
 	val = readl_relaxed(mbox->ctrl_base + SERVICES_SR_OFFSET);
 	response->resp_status = (val & SCB_STATUS_MASK) >> SCB_STATUS_POS;
 
@@ -160,11 +148,7 @@ static void mpfs_mbox_rx_data(struct mbox_chan *chan)
 		return;
 	}
 
-	/*
-	 * We should *never* get an interrupt while the controller is
-	 * still in the busy state. If we do, something has gone badly
-	 * wrong & the content of the mailbox would not be valid.
-	 */
+	 
 	if (mpfs_mbox_busy(mbox)) {
 		dev_err(mbox->dev, "got an interrupt but system controller is busy\n");
 		response->resp_status = 0xDEAD;
@@ -240,7 +224,7 @@ static int mpfs_mbox_probe(struct platform_device *pdev)
 		return PTR_ERR(mbox->int_reg);
 
 	mbox->mbox_base = devm_platform_get_and_ioremap_resource(pdev, 2, &regs);
-	if (IS_ERR(mbox->mbox_base)) // account for the old dt-binding w/ 2 regs
+	if (IS_ERR(mbox->mbox_base)) 
 		mbox->mbox_base = mbox->ctrl_base + MAILBOX_REG_OFFSET;
 
 	mbox->irq = platform_get_irq(pdev, 0);

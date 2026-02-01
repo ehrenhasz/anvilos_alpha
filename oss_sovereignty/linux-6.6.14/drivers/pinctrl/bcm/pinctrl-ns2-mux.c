@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright (C) 2016 Broadcom Corporation
- *
- * This file contains the Northstar2 IOMUX driver that supports group
- * based PINMUX configuration. The PWM is functional only when the
- * corresponding mfio pin group is selected as gpio.
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/io.h>
@@ -38,15 +33,7 @@
 
 #define NS2_PIN_INPUT_EN_MASK		0x01
 
-/*
- * Northstar2 IOMUX register description
- *
- * @base: base address number
- * @offset: register offset for mux configuration of a group
- * @shift: bit shift for mux configuration of a group
- * @mask: mask bits
- * @alt: alternate function to set to
- */
+ 
 struct ns2_mux {
 	unsigned int base;
 	unsigned int offset;
@@ -55,27 +42,13 @@ struct ns2_mux {
 	unsigned int alt;
 };
 
-/*
- * Keep track of Northstar2 IOMUX configuration and prevent double
- * configuration
- *
- * @ns2_mux: Northstar2 IOMUX register description
- * @is_configured: flag to indicate whether a mux setting has already
- * been configured
- */
+ 
 struct ns2_mux_log {
 	struct ns2_mux mux;
 	bool is_configured;
 };
 
-/*
- * Group based IOMUX configuration
- *
- * @name: name of the group
- * @pins: array of pins used by this group
- * @num_pins: total number of pins used by this group
- * @mux: Northstar2 group based IOMUX configuration
- */
+ 
 struct ns2_pin_group {
 	const char *name;
 	const unsigned int *pins;
@@ -83,34 +56,14 @@ struct ns2_pin_group {
 	const struct ns2_mux mux;
 };
 
-/*
- * Northstar2 mux function and supported pin groups
- *
- * @name: name of the function
- * @groups: array of groups that can be supported by this function
- * @num_groups: total number of groups that can be supported by function
- */
+ 
 struct ns2_pin_function {
 	const char *name;
 	const char * const *groups;
 	const unsigned int num_groups;
 };
 
-/*
- * Northstar2 IOMUX pinctrl core
- *
- * @pctl: pointer to pinctrl_dev
- * @dev: pointer to device
- * @base0: first IOMUX register base
- * @base1: second IOMUX register base
- * @pinconf_base: configuration register base
- * @groups: pointer to array of groups
- * @num_groups: total number of groups
- * @functions: pointer to array of functions
- * @num_functions: total number of functions
- * @mux_log: pointer to the array of mux logs
- * @lock: lock to protect register access
- */
+ 
 struct ns2_pinctrl {
 	struct pinctrl_dev *pctl;
 	struct device *dev;
@@ -129,16 +82,7 @@ struct ns2_pinctrl {
 	spinlock_t lock;
 };
 
-/*
- * Pin configuration info
- *
- * @base: base address number
- * @offset: register offset from base
- * @src_shift: slew rate control bit shift in the register
- * @input_en: input enable control bit shift
- * @pull_shift: pull-up/pull-down control bit shift in the register
- * @drive_shift: drive strength control bit shift in the register
- */
+ 
 struct ns2_pinconf {
 	unsigned int base;
 	unsigned int offset;
@@ -148,13 +92,7 @@ struct ns2_pinconf {
 	unsigned int drive_shift;
 };
 
-/*
- * Description of a pin in Northstar2
- *
- * @pin: pin number
- * @name: pin name
- * @pin_conf: pin configuration structure
- */
+ 
 struct ns2_pin {
 	unsigned int pin;
 	char *name;
@@ -175,9 +113,7 @@ struct ns2_pin {
 	}					\
 }
 
-/*
- * List of pins in Northstar2
- */
+ 
 static struct ns2_pin ns2_pins[] = {
 	NS2_PIN_DESC(0, "mfio_0", -1, 0, 0, 0, 0, 0),
 	NS2_PIN_DESC(1, "mfio_1", -1, 0, 0, 0, 0, 0),
@@ -300,9 +236,7 @@ static struct ns2_pin ns2_pins[] = {
 	NS2_PIN_DESC(118, "sata_led0", 2, 0x3c, 7, 6, 3, 0),
 };
 
-/*
- * List of groups of pins
- */
+ 
 
 static const unsigned int nand_pins[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
 	11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23};
@@ -377,9 +311,7 @@ static const unsigned int uart2_rts_cts_pins[] = {55, 56};
 	}						\
 }
 
-/*
- * List of Northstar2 pin groups
- */
+ 
 static const struct ns2_pin_group ns2_pin_groups[] = {
 	NS2_PIN_GROUP(nand, 0, 0, 31, 1, 0),
 	NS2_PIN_GROUP(nor_data, 0, 0, 31, 1, 1),
@@ -439,9 +371,7 @@ static const struct ns2_pin_group ns2_pin_groups[] = {
 	NS2_PIN_GROUP(pwm_3, 1, 0, 3, 1, 1),
 };
 
-/*
- * List of groups supported by functions
- */
+ 
 
 static const char * const nand_grps[] = {"nand_grp"};
 
@@ -478,9 +408,7 @@ static const char * const pwm_grps[] = {"pwm_0_grp", "pwm_1_grp",
 	.num_groups = ARRAY_SIZE(func ## _grps),	\
 }
 
-/*
- * List of supported functions
- */
+ 
 static const struct ns2_pin_function ns2_pin_functions[] = {
 	NS2_PIN_FUNCTION(nand),
 	NS2_PIN_FUNCTION(nor),
@@ -579,14 +507,11 @@ static int ns2_pinmux_set(struct ns2_pinctrl *pinctrl,
 			(mux->offset != mux_log[i].mux.offset))
 			continue;
 
-		/* if this is a new configuration, just do it! */
+		 
 		if (!mux_log[i].is_configured)
 			break;
 
-		/*
-		 * IOMUX has been configured previously and one is trying to
-		 * configure it to a different function
-		 */
+		 
 		if (mux_log[i].mux.alt != mux->alt) {
 			dev_err(pinctrl->dev,
 				"double configuration error detected!\n");
@@ -795,7 +720,7 @@ static int ns2_pin_set_strength(struct pinctrl_dev *pctrldev, unsigned int pin,
 	unsigned long flags;
 	void __iomem *base_address;
 
-	/* make sure drive strength is supported */
+	 
 	if (strength < 2 || strength > 16 || (strength % 2))
 		return -ENOTSUPP;
 
@@ -986,18 +911,14 @@ static int ns2_mux_log_init(struct ns2_pinctrl *pinctrl)
 
 	for (i = 0; i < NS2_NUM_IOMUX; i++)
 		pinctrl->mux_log[i].is_configured = false;
-	/* Group 0 uses bit 31 in the IOMUX_PAD_FUNCTION_0 register */
+	 
 	log = &pinctrl->mux_log[0];
 	log->mux.base = NS2_PIN_MUX_BASE0;
 	log->mux.offset = 0;
 	log->mux.shift = 31;
 	log->mux.alt = 0;
 
-	/*
-	 * Groups 1 through 14 use two bits each in the
-	 * IOMUX_PAD_FUNCTION_1 register starting with
-	 * bit position 30.
-	 */
+	 
 	for (i = 1; i < (NS2_NUM_IOMUX - NS2_NUM_PWM_MUX); i++) {
 		log = &pinctrl->mux_log[i];
 		log->mux.base = NS2_PIN_MUX_BASE0;
@@ -1006,10 +927,7 @@ static int ns2_mux_log_init(struct ns2_pinctrl *pinctrl)
 		log->mux.alt = 0;
 	}
 
-	/*
-	 * Groups 15 through 18 use one bit each in the
-	 * AUX_SEL register.
-	 */
+	 
 	for (i = 0; i < NS2_NUM_PWM_MUX; i++) {
 		log = &pinctrl->mux_log[(NS2_NUM_IOMUX - NS2_NUM_PWM_MUX) + i];
 		log->mux.base = NS2_PIN_MUX_BASE1;

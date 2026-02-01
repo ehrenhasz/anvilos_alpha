@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef __IEEE802154_6LOWPAN_I_H__
 #define __IEEE802154_6LOWPAN_I_H__
 
@@ -24,8 +24,7 @@ struct frag_lowpan_compare_key {
 	struct ieee802154_addr dst;
 };
 
-/* Equivalent of ipv4 struct ipq
- */
+ 
 struct lowpan_frag_queue {
 	struct inet_frag_queue	q;
 };
@@ -45,4 +44,4 @@ netdev_tx_t lowpan_xmit(struct sk_buff *skb, struct net_device *dev);
 int lowpan_iphc_decompress(struct sk_buff *skb);
 lowpan_rx_result lowpan_rx_h_ipv6(struct sk_buff *skb);
 
-#endif /* __IEEE802154_6LOWPAN_I_H__ */
+#endif  

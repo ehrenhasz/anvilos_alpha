@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 #include <linux/fault-inject.h>
 #include <linux/fault-inject-usercopy.h>
 
@@ -30,7 +30,7 @@ static int __init fail_usercopy_debugfs(void)
 
 late_initcall(fail_usercopy_debugfs);
 
-#endif /* CONFIG_FAULT_INJECTION_DEBUG_FS */
+#endif  
 
 bool should_fail_usercopy(void)
 {

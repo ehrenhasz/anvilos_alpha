@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2020 Theobroma Systems Design und Consulting GmbH
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/gpio/consumer.h>
@@ -39,17 +37,14 @@ struct ltk050h3146w {
 };
 
 static const struct ltk050h3146w_cmd page1_cmds[] = {
-	{ 0x22, 0x0A }, /* BGR SS GS */
-	{ 0x31, 0x00 }, /* column inversion */
-	{ 0x53, 0xA2 }, /* VCOM1 */
-	{ 0x55, 0xA2 }, /* VCOM2 */
-	{ 0x50, 0x81 }, /* VREG1OUT=5V */
-	{ 0x51, 0x85 }, /* VREG2OUT=-5V */
-	{ 0x62, 0x0D }, /* EQT Time setting */
-/*
- * The vendor init selected page 1 here _again_
- * Is this supposed to be page 2?
- */
+	{ 0x22, 0x0A },  
+	{ 0x31, 0x00 },  
+	{ 0x53, 0xA2 },  
+	{ 0x55, 0xA2 },  
+	{ 0x50, 0x81 },  
+	{ 0x51, 0x85 },  
+	{ 0x62, 0x0D },  
+ 
 	{ 0xA0, 0x00 },
 	{ 0xA1, 0x1A },
 	{ 0xA2, 0x28 },
@@ -225,16 +220,16 @@ static const struct ltk050h3146w_cmd page3_cmds[] = {
 static const struct ltk050h3146w_cmd page4_cmds[] = {
 	{ 0x70, 0x00 },
 	{ 0x71, 0x00 },
-	{ 0x82, 0x0F }, /* VGH_MOD clamp level=15v */
-	{ 0x84, 0x0F }, /* VGH clamp level 15V */
-	{ 0x85, 0x0D }, /* VGL clamp level (-10V) */
+	{ 0x82, 0x0F },  
+	{ 0x84, 0x0F },  
+	{ 0x85, 0x0D },  
 	{ 0x32, 0xAC },
 	{ 0x8C, 0x80 },
 	{ 0x3C, 0xF5 },
-	{ 0xB5, 0x07 }, /* GAMMA OP */
-	{ 0x31, 0x45 }, /* SOURCE OP */
-	{ 0x3A, 0x24 }, /* PS_EN OFF */
-	{ 0x88, 0x33 }, /* LVD */
+	{ 0xB5, 0x07 },  
+	{ 0x31, 0x45 },  
+	{ 0x3A, 0x24 },  
+	{ 0x88, 0x33 },  
 };
 
 static inline
@@ -248,10 +243,7 @@ static int ltk050h3146w_init_sequence(struct ltk050h3146w *ctx)
 	struct mipi_dsi_device *dsi = to_mipi_dsi_device(ctx->dev);
 	int ret;
 
-	/*
-	 * Init sequence was supplied by the panel vendor without much
-	 * documentation.
-	 */
+	 
 	mipi_dsi_dcs_write_seq(dsi, 0xdf, 0x93, 0x65, 0xf8);
 	mipi_dsi_dcs_write_seq(dsi, 0xb0, 0x01, 0x03, 0x02, 0x00, 0x64, 0x06,
 			       0x01);
@@ -370,10 +362,7 @@ static int ltk050h3146w_a2_init_sequence(struct ltk050h3146w *ctx)
 	struct mipi_dsi_device *dsi = to_mipi_dsi_device(ctx->dev);
 	int ret;
 
-	/*
-	 * Init sequence was supplied by the panel vendor without much
-	 * documentation.
-	 */
+	 
 	ret = ltk050h3146w_a2_write_page(ctx, 3, page3_cmds,
 					 ARRAY_SIZE(page3_cmds));
 	if (ret < 0)
@@ -395,7 +384,7 @@ static int ltk050h3146w_a2_init_sequence(struct ltk050h3146w *ctx)
 		return ret;
 	}
 
-	/* vendor code called this without param, where there should be one */
+	 
 	ret = mipi_dsi_dcs_set_tear_on(dsi, 0);
 	if (ret < 0) {
 		dev_err(ctx->dev, "failed to set tear on: %d\n", ret);
@@ -493,7 +482,7 @@ static int ltk050h3146w_prepare(struct drm_panel *panel)
 		goto disable_iovcc;
 	}
 
-	/* T9: 120ms */
+	 
 	msleep(120);
 
 	ret = mipi_dsi_dcs_set_display_on(dsi);
@@ -642,7 +631,7 @@ static const struct of_device_id ltk050h3146w_of_match[] = {
 		.compatible = "leadtek,ltk050h3146w-a2",
 		.data = &ltk050h3146w_a2_data,
 	},
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, ltk050h3146w_of_match);
 

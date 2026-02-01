@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* /proc interface for AFS
- *
- * Copyright (C) 2002 Red Hat, Inc. All Rights Reserved.
- * Written by David Howells (dhowells@redhat.com)
- */
+
+ 
 
 #include <linux/slab.h>
 #include <linux/module.h>
@@ -14,7 +10,7 @@
 #include "internal.h"
 
 struct afs_vl_seq_net_private {
-	struct seq_net_private		seq;	/* Must be first */
+	struct seq_net_private		seq;	 
 	struct afs_vlserver_list	*vllist;
 };
 
@@ -28,16 +24,14 @@ static inline struct afs_net *afs_seq2net_single(struct seq_file *m)
 	return afs_net(seq_file_single_net(m));
 }
 
-/*
- * Display the list of cells known to the namespace.
- */
+ 
 static int afs_proc_cells_show(struct seq_file *m, void *v)
 {
 	struct afs_vlserver_list *vllist;
 	struct afs_cell *cell;
 
 	if (v == SEQ_START_TOKEN) {
-		/* display header on line 1 */
+		 
 		seq_puts(m, "USE ACT    TTL SV ST NAME\n");
 		return 0;
 	}
@@ -45,7 +39,7 @@ static int afs_proc_cells_show(struct seq_file *m, void *v)
 	cell = list_entry(v, struct afs_cell, proc_link);
 	vllist = rcu_dereference(cell->vl_servers);
 
-	/* display one cell per line on subsequent lines */
+	 
 	seq_printf(m, "%3u %3u %6lld %2u %2u %s\n",
 		   refcount_read(&cell->ref),
 		   atomic_read(&cell->active),
@@ -81,10 +75,7 @@ static const struct seq_operations afs_proc_cells_ops = {
 	.show	= afs_proc_cells_show,
 };
 
-/*
- * handle writes to /proc/fs/afs/cells
- * - to add cells: echo "add <cellname> <IP>[:<IP>][:<IP>]"
- */
+ 
 static int afs_proc_cells_write(struct file *file, char *buf, size_t size)
 {
 	struct seq_file *m = file->private_data;
@@ -92,12 +83,12 @@ static int afs_proc_cells_write(struct file *file, char *buf, size_t size)
 	char *name, *args;
 	int ret;
 
-	/* trim to first NL */
+	 
 	name = memchr(buf, '\n', size);
 	if (name)
 		*name = 0;
 
-	/* split into command, name and argslist */
+	 
 	name = strchr(buf, ' ');
 	if (!name)
 		goto inval;
@@ -116,7 +107,7 @@ static int afs_proc_cells_write(struct file *file, char *buf, size_t size)
 			goto inval;
 	}
 
-	/* determine command to perform */
+	 
 	_debug("cmd=%s name=%s args=%s", buf, name, args);
 
 	if (strcmp(buf, "add") == 0) {
@@ -146,9 +137,7 @@ inval:
 	goto done;
 }
 
-/*
- * Display the name of the current workstation cell.
- */
+ 
 static int afs_proc_rootcell_show(struct seq_file *m, void *v)
 {
 	struct afs_cell *cell;
@@ -163,12 +152,7 @@ static int afs_proc_rootcell_show(struct seq_file *m, void *v)
 	return 0;
 }
 
-/*
- * Set the current workstation cell and optionally supply its list of volume
- * location servers.
- *
- *	echo "cell.name:192.168.231.14" >/proc/fs/afs/rootcell
- */
+ 
 static int afs_proc_rootcell_write(struct file *file, char *buf, size_t size)
 {
 	struct seq_file *m = file->private_data;
@@ -182,12 +166,12 @@ static int afs_proc_rootcell_write(struct file *file, char *buf, size_t size)
 	if (memchr(buf, '/', size))
 		goto out;
 
-	/* trim to first NL */
+	 
 	s = memchr(buf, '\n', size);
 	if (s)
 		*s = 0;
 
-	/* determine command to perform */
+	 
 	_debug("rootcell=%s", buf);
 
 	ret = afs_cell_init(net, buf);
@@ -203,14 +187,12 @@ static const char afs_vol_types[3][3] = {
 	[AFSVL_BACKVOL]	= "BK",
 };
 
-/*
- * Display the list of volumes known to a cell.
- */
+ 
 static int afs_proc_cell_volumes_show(struct seq_file *m, void *v)
 {
 	struct afs_volume *vol = hlist_entry(v, struct afs_volume, proc_link);
 
-	/* Display header on line 1 */
+	 
 	if (v == SEQ_START_TOKEN) {
 		seq_puts(m, "USE VID      TY NAME\n");
 		return 0;
@@ -276,9 +258,7 @@ static const char *const dns_lookup_statuses[NR__dns_lookup_status + 1] = {
 	[NR__dns_lookup_status]		= "[weird]"
 };
 
-/*
- * Display the list of Volume Location servers we're using for a cell.
- */
+ 
 static int afs_proc_cell_vlservers_show(struct seq_file *m, void *v)
 {
 	const struct afs_vl_seq_net_private *priv = m->private;
@@ -370,9 +350,7 @@ static const struct seq_operations afs_proc_cell_vlservers_ops = {
 	.show	= afs_proc_cell_vlservers_show,
 };
 
-/*
- * Display the list of fileservers we're using within a namespace.
- */
+ 
 static int afs_proc_servers_show(struct seq_file *m, void *v)
 {
 	struct afs_server *server;
@@ -429,10 +407,7 @@ static const struct seq_operations afs_proc_servers_ops = {
 	.show	= afs_proc_servers_show,
 };
 
-/*
- * Display the list of strings that may be substituted for the @sys pathname
- * macro.
- */
+ 
 static int afs_proc_sysname_show(struct seq_file *m, void *v)
 {
 	struct afs_net *net = afs_seq2net(m);
@@ -484,9 +459,7 @@ static const struct seq_operations afs_proc_sysname_ops = {
 	.show	= afs_proc_sysname_show,
 };
 
-/*
- * Allow the @sys substitution to be configured.
- */
+ 
 static int afs_proc_sysname_write(struct file *file, char *buf, size_t size)
 {
 	struct afs_sysnames *sysnames, *kill;
@@ -515,7 +488,7 @@ static int afs_proc_sysname_write(struct file *file, char *buf, size_t size)
 		    s[len - 3] == 's' &&
 		    s[len - 2] == 'y' &&
 		    s[len - 1] == 's')
-			/* Protect against recursion */
+			 
 			goto invalid;
 
 		if (s[0] == '.' &&
@@ -575,9 +548,7 @@ void afs_put_sysnames(struct afs_sysnames *sysnames)
 	}
 }
 
-/*
- * Display general per-net namespace statistics
- */
+ 
 static int afs_proc_stats_show(struct seq_file *m, void *v)
 {
 	struct afs_net *net = afs_seq2net_single(m);
@@ -606,9 +577,7 @@ static int afs_proc_stats_show(struct seq_file *m, void *v)
 	return 0;
 }
 
-/*
- * initialise /proc/fs/afs/<cell>/
- */
+ 
 int afs_proc_cell_setup(struct afs_cell *cell)
 {
 	struct proc_dir_entry *dir;
@@ -640,9 +609,7 @@ error_dir:
 	return -ENOMEM;
 }
 
-/*
- * remove /proc/fs/afs/<cell>/
- */
+ 
 void afs_proc_cell_remove(struct afs_cell *cell)
 {
 	struct afs_net *net = cell->net;
@@ -652,9 +619,7 @@ void afs_proc_cell_remove(struct afs_cell *cell)
 	_leave("");
 }
 
-/*
- * initialise the /proc/fs/afs/ directory
- */
+ 
 int afs_proc_init(struct afs_net *net)
 {
 	struct proc_dir_entry *p;
@@ -695,9 +660,7 @@ error_dir:
 	return -ENOMEM;
 }
 
-/*
- * clean up the /proc/fs/afs/ directory
- */
+ 
 void afs_proc_cleanup(struct afs_net *net)
 {
 	proc_remove(net->proc_afs);

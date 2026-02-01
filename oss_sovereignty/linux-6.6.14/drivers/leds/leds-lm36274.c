@@ -1,6 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
-// TI LM36274 LED chip family driver
-// Copyright (C) 2019 Texas Instruments Incorporated - https://www.ti.com/
+
+
+
 
 #include <linux/bitops.h>
 #include <linux/device.h>
@@ -20,16 +20,7 @@
 #define LM36274_MAX_STRINGS	4
 #define LM36274_BL_EN		BIT(4)
 
-/**
- * struct lm36274
- * @pdev: platform device
- * @led_dev: led class device
- * @lmu_data: Register and setting values for common code
- * @regmap: Devices register map
- * @dev: Pointer to the devices device struct
- * @led_sources: The LED strings supported in this array
- * @num_leds: Number of LED strings are supported in this array
- */
+ 
 struct lm36274 {
 	struct platform_device *pdev;
 	struct led_classdev led_dev;
@@ -74,7 +65,7 @@ static int lm36274_parse_dt(struct lm36274 *chip,
 	struct fwnode_handle *child;
 	int ret;
 
-	/* There should only be 1 node */
+	 
 	if (device_get_child_node_count(dev) != 1)
 		return -EINVAL;
 
@@ -82,7 +73,7 @@ static int lm36274_parse_dt(struct lm36274 *chip,
 
 	init_data->fwnode = child;
 	init_data->devicename = chip->pdev->name;
-	/* for backwards compatibility when `label` property is not present */
+	 
 	init_data->default_label = ":";
 
 	chip->num_leds = fwnode_property_count_u32(child, "led-sources");

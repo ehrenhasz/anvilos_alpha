@@ -1,12 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2010 - 2012 Samsung Electronics Co., Ltd.
- */
+ 
+ 
 
 #ifndef FIMC_CORE_H_
 #define FIMC_CORE_H_
 
-/*#define DEBUG*/
+ 
 
 #include <linux/platform_device.h>
 #include <linux/regmap.h>
@@ -29,7 +27,7 @@
 #define dbg(fmt, args...) \
 	pr_debug("%s:%d: " fmt "\n", __func__, __LINE__, ##args)
 
-/* Time to wait for next frame VSYNC interrupt while stopping operation. */
+ 
 #define FIMC_SHUTDOWN_TIMEOUT	((100*HZ)/1000)
 #define MAX_FIMC_CLOCKS		2
 #define FIMC_DRIVER_NAME	"exynos4-fimc"
@@ -48,7 +46,7 @@
 #define FIMC_DEFAULT_WIDTH	640
 #define FIMC_DEFAULT_HEIGHT	480
 
-/* indices to the clocks array */
+ 
 enum {
 	CLK_BUS,
 	CLK_GATE,
@@ -56,12 +54,12 @@ enum {
 
 enum fimc_dev_flags {
 	ST_LPM,
-	/* m2m node */
+	 
 	ST_M2M_RUN,
 	ST_M2M_PEND,
 	ST_M2M_SUSPENDING,
 	ST_M2M_SUSPENDED,
-	/* capture node */
+	 
 	ST_CAPT_PEND,
 	ST_CAPT_RUN,
 	ST_CAPT_STREAM,
@@ -115,36 +113,26 @@ enum fimc_color_fmt {
 #define IS_M2M(__strt) ((__strt) == V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE || \
 			__strt == V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE)
 
-/* The hardware context state. */
+ 
 #define	FIMC_PARAMS		(1 << 0)
 #define	FIMC_COMPOSE		(1 << 1)
 #define	FIMC_CTX_M2M		(1 << 16)
 #define	FIMC_CTX_CAP		(1 << 17)
 #define	FIMC_CTX_SHUT		(1 << 18)
 
-/* Image conversion flags */
+ 
 #define	FIMC_IN_DMA_ACCESS_TILED	(1 << 0)
 #define	FIMC_IN_DMA_ACCESS_LINEAR	(0 << 0)
 #define	FIMC_OUT_DMA_ACCESS_TILED	(1 << 1)
 #define	FIMC_OUT_DMA_ACCESS_LINEAR	(0 << 1)
 #define	FIMC_SCAN_MODE_PROGRESSIVE	(0 << 2)
 #define	FIMC_SCAN_MODE_INTERLACED	(1 << 2)
-/*
- * YCbCr data dynamic range for RGB-YUV color conversion.
- * Y/Cb/Cr: (0 ~ 255) */
+ 
 #define	FIMC_COLOR_RANGE_WIDE		(0 << 3)
-/* Y (16 ~ 235), Cb/Cr (16 ~ 240) */
+ 
 #define	FIMC_COLOR_RANGE_NARROW		(1 << 3)
 
-/**
- * struct fimc_dma_offset - pixel offset information for DMA
- * @y_h:	y value horizontal offset
- * @y_v:	y value vertical offset
- * @cb_h:	cb value horizontal offset
- * @cb_v:	cb value vertical offset
- * @cr_h:	cr value horizontal offset
- * @cr_v:	cr value vertical offset
- */
+ 
 struct fimc_dma_offset {
 	int	y_h;
 	int	y_v;
@@ -154,36 +142,14 @@ struct fimc_dma_offset {
 	int	cr_v;
 };
 
-/**
- * struct fimc_effect - color effect information
- * @type:	effect type
- * @pat_cb:	cr value when type is "arbitrary"
- * @pat_cr:	cr value when type is "arbitrary"
- */
+ 
 struct fimc_effect {
 	u32	type;
 	u8	pat_cb;
 	u8	pat_cr;
 };
 
-/**
- * struct fimc_scaler - the configuration data for FIMC inetrnal scaler
- * @scaleup_h:		flag indicating scaling up horizontally
- * @scaleup_v:		flag indicating scaling up vertically
- * @copy_mode:		flag indicating transparent DMA transfer (no scaling
- *			and color format conversion)
- * @enabled:		flag indicating if the scaler is used
- * @hfactor:		horizontal shift factor
- * @vfactor:		vertical shift factor
- * @pre_hratio:		horizontal ratio of the prescaler
- * @pre_vratio:		vertical ratio of the prescaler
- * @pre_dst_width:	the prescaler's destination width
- * @pre_dst_height:	the prescaler's destination height
- * @main_hratio:	the main scaler's horizontal ratio
- * @main_vratio:	the main scaler's vertical ratio
- * @real_width:		source pixel (width - offset)
- * @real_height:	source pixel (height - offset)
- */
+ 
 struct fimc_scaler {
 	unsigned int scaleup_h:1;
 	unsigned int scaleup_v:1;
@@ -201,25 +167,14 @@ struct fimc_scaler {
 	u32	real_height;
 };
 
-/**
- * struct fimc_addr - the FIMC address set for DMA
- * @y:	 luminance plane address
- * @cb:	 Cb plane address
- * @cr:	 Cr plane address
- */
+ 
 struct fimc_addr {
 	u32	y;
 	u32	cb;
 	u32	cr;
 };
 
-/**
- * struct fimc_vid_buffer - the driver's video buffer
- * @vb:    v4l vb2 buffer
- * @list:  linked list structure for buffer queue
- * @addr: precalculated DMA address set
- * @index: buffer index for the output DMA engine
- */
+ 
 struct fimc_vid_buffer {
 	struct vb2_v4l2_buffer vb;
 	struct list_head	list;
@@ -227,23 +182,7 @@ struct fimc_vid_buffer {
 	int			index;
 };
 
-/**
- * struct fimc_frame - source/target frame properties
- * @f_width:	image full width (virtual screen size)
- * @f_height:	image full height (virtual screen size)
- * @o_width:	original image width as set by S_FMT
- * @o_height:	original image height as set by S_FMT
- * @offs_h:	image horizontal pixel offset
- * @offs_v:	image vertical pixel offset
- * @width:	image pixel width
- * @height:	image pixel weight
- * @payload:	image size in bytes (w x h x bpp)
- * @bytesperline: bytesperline value for each plane
- * @addr:	image frame buffer DMA addresses
- * @dma_offset:	DMA offset in bytes
- * @fmt:	fimc color format pointer
- * @alpha:	alpha value
- */
+ 
 struct fimc_frame {
 	u32	f_width;
 	u32	f_height;
@@ -261,13 +200,7 @@ struct fimc_frame {
 	u8			alpha;
 };
 
-/**
- * struct fimc_m2m_device - v4l2 memory-to-memory device data
- * @vfd: the video device node for v4l2 m2m mode
- * @m2m_dev: v4l2 memory-to-memory device data
- * @ctx: hardware context data
- * @refcnt: the reference counter
- */
+ 
 struct fimc_m2m_device {
 	struct video_device	vfd;
 	struct v4l2_m2m_dev	*m2m_dev;
@@ -280,27 +213,7 @@ struct fimc_m2m_device {
 #define FIMC_SD_PAD_SOURCE	2
 #define FIMC_SD_PADS_NUM	3
 
-/**
- * struct fimc_vid_cap - camera capture device information
- * @ctx: hardware context data
- * @subdev: subdev exposing the FIMC processing block
- * @ve: exynos video device entity structure
- * @vd_pad: fimc video capture node pad
- * @sd_pads: fimc video processing block pads
- * @ci_fmt: image format at the FIMC camera input (and the scaler output)
- * @wb_fmt: image format at the FIMC ISP Writeback input
- * @source_config: external image source related configuration structure
- * @pending_buf_q: the pending buffer queue head
- * @active_buf_q: the queue head of buffers scheduled in hardware
- * @vbq: the capture am video buffer queue
- * @active_buf_cnt: number of video buffers scheduled in hardware
- * @buf_index: index for managing the output DMA buffers
- * @frame_count: the frame counter for statistics
- * @reqbufs_count: the number of buffers requested in REQBUFS ioctl
- * @streaming: is streaming in progress?
- * @input: capture input type, grp_id of the attached subdev
- * @user_subdev_api: true if subdevs are not configured by the host driver
- */
+ 
 struct fimc_vid_cap {
 	struct fimc_ctx			*ctx;
 	struct v4l2_subdev		subdev;
@@ -322,16 +235,7 @@ struct fimc_vid_cap {
 	bool				user_subdev_api;
 };
 
-/**
- *  struct fimc_pix_limit - image pixel size limits in various IP configurations
- *
- *  @scaler_en_w: max input pixel width when the scaler is enabled
- *  @scaler_dis_w: max input pixel width when the scaler is disabled
- *  @in_rot_en_h: max input width with the input rotator is on
- *  @in_rot_dis_w: max input width with the input rotator is off
- *  @out_rot_en_w: max output width with the output rotator on
- *  @out_rot_dis_w: max output width with the output rotator off
- */
+ 
 struct fimc_pix_limit {
 	u16 scaler_en_w;
 	u16 scaler_dis_w;
@@ -341,20 +245,7 @@ struct fimc_pix_limit {
 	u16 out_rot_dis_w;
 };
 
-/**
- * struct fimc_variant - FIMC device variant information
- * @has_inp_rot: set if has input rotator
- * @has_out_rot: set if has output rotator
- * @has_mainscaler_ext: 1 if extended mainscaler ratios in CIEXTEN register
- *			 are present in this IP revision
- * @has_cam_if: set if this instance has a camera input interface
- * @has_isp_wb: set if this instance has ISP writeback input
- * @pix_limit: pixel size constraints for the scaler
- * @min_inp_pixsize: minimum input pixel size
- * @min_out_pixsize: minimum output pixel size
- * @hor_offs_align: horizontal pixel offset alignment
- * @min_vsize_align: minimum vertical pixel size alignment
- */
+ 
 struct fimc_variant {
 	unsigned int	has_inp_rot:1;
 	unsigned int	has_out_rot:1;
@@ -368,21 +259,12 @@ struct fimc_variant {
 	u16		min_vsize_align;
 };
 
-/**
- * struct fimc_drvdata - per device type driver data
- * @variant: variant information for this device
- * @num_entities: number of fimc instances available in a SoC
- * @lclk_frequency: local bus clock frequency
- * @cistatus2: 1 if the FIMC IPs have CISTATUS2 register
- * @dma_pix_hoff: the horizontal DMA offset unit: 1 - pixels, 0 - bytes
- * @alpha_color: 1 if alpha color component is supported
- * @out_buf_count: maximum number of output DMA buffers supported
- */
+ 
 struct fimc_drvdata {
 	const struct fimc_variant *variant[FIMC_MAX_DEVS];
 	int num_entities;
 	unsigned long lclk_frequency;
-	/* Fields common to all FIMC IP instances */
+	 
 	u8 cistatus2;
 	u8 dma_pix_hoff;
 	u8 alpha_color;
@@ -394,24 +276,7 @@ struct fimc_drvdata {
 
 struct fimc_ctx;
 
-/**
- * struct fimc_dev - abstraction for FIMC entity
- * @slock:	the spinlock protecting this data structure
- * @lock:	the mutex protecting this data structure
- * @pdev:	pointer to the FIMC platform device
- * @pdata:	pointer to the device platform data
- * @sysreg:	pointer to the SYSREG regmap
- * @variant:	the IP variant information
- * @drv_data:	driver data
- * @id:		FIMC device index (0..FIMC_MAX_DEVS)
- * @clock:	clocks required for FIMC operation
- * @regs:	the mapped hardware registers
- * @irq_queue:	interrupt handler waitqueue
- * @v4l2_dev:	root v4l2_device
- * @m2m:	memory-to-memory V4L2 device information
- * @vid_cap:	camera capture device information
- * @state:	flags used to synchronize m2m and capture mode operation
- */
+ 
 struct fimc_dev {
 	spinlock_t			slock;
 	struct mutex			lock;
@@ -430,17 +295,7 @@ struct fimc_dev {
 	unsigned long			state;
 };
 
-/**
- * struct fimc_ctrls - v4l2 controls structure
- * @handler: the control handler
- * @colorfx: image effect control
- * @colorfx_cbcr: Cb/Cr coefficients control
- * @rotate: image rotation control
- * @hflip: horizontal flip control
- * @vflip: vertical flip control
- * @alpha: RGB alpha control
- * @ready: true if @handler is initialized
- */
+ 
 struct fimc_ctrls {
 	struct v4l2_ctrl_handler handler;
 	struct {
@@ -454,27 +309,7 @@ struct fimc_ctrls {
 	bool ready;
 };
 
-/**
- * struct fimc_ctx - the device context data
- * @s_frame:		source frame properties
- * @d_frame:		destination frame properties
- * @out_order_1p:	output 1-plane YCBCR order
- * @out_order_2p:	output 2-plane YCBCR order
- * @in_order_1p:	input 1-plane YCBCR order
- * @in_order_2p:	input 2-plane YCBCR order
- * @in_path:		input mode (DMA or camera)
- * @out_path:		output mode (DMA or FIFO)
- * @scaler:		image scaler properties
- * @effect:		image effect
- * @rotation:		image clockwise rotation in degrees
- * @hflip:		indicates image horizontal flip if set
- * @vflip:		indicates image vertical flip if set
- * @flags:		additional flags for image conversion
- * @state:		flags to keep track of user configuration
- * @fimc_dev:		the FIMC device this context applies to
- * @fh:			v4l2 file handle
- * @ctrls:		v4l2 controls structure
- */
+ 
 struct fimc_ctx {
 	struct fimc_frame	s_frame;
 	struct fimc_frame	d_frame;
@@ -574,7 +409,7 @@ static inline bool fimc_user_defined_mbus_fmt(u32 code)
 		code == MEDIA_BUS_FMT_S5C_UYVY_JPEG_1X8);
 }
 
-/* Return the alpha component bit mask */
+ 
 static inline int fimc_get_alpha_mask(struct fimc_fmt *fmt)
 {
 	switch (fmt->color) {
@@ -608,8 +443,8 @@ static inline struct fimc_frame *ctx_get_frame(struct fimc_ctx *ctx,
 	return frame;
 }
 
-/* -----------------------------------------------------*/
-/* fimc-core.c */
+ 
+ 
 int fimc_vidioc_enum_fmt_mplane(struct file *file, void *priv,
 				struct v4l2_fmtdesc *f);
 int fimc_ctrls_create(struct fimc_ctx *ctx);
@@ -648,12 +483,12 @@ static inline struct regmap * fimc_get_sysreg_regmap(struct device_node *node)
 #define fimc_get_sysreg_regmap(node) (NULL)
 #endif
 
-/* -----------------------------------------------------*/
-/* fimc-m2m.c */
+ 
+ 
 void fimc_m2m_job_finish(struct fimc_ctx *ctx, int vb_state);
 
-/* -----------------------------------------------------*/
-/* fimc-capture.c					*/
+ 
+ 
 int fimc_initialize_capture_subdev(struct fimc_dev *fimc);
 void fimc_unregister_capture_subdev(struct fimc_dev *fimc);
 int fimc_capture_ctrls_create(struct fimc_dev *fimc);
@@ -662,15 +497,9 @@ void fimc_sensor_notify(struct v4l2_subdev *sd, unsigned int notification,
 int fimc_capture_suspend(struct fimc_dev *fimc);
 int fimc_capture_resume(struct fimc_dev *fimc);
 
-/*
- * Buffer list manipulation functions. Must be called with fimc.slock held.
- */
+ 
 
-/**
- * fimc_active_queue_add - add buffer to the capture active buffers queue
- * @vid_cap:	camera capture device information
- * @buf: buffer to add to the active buffers list
- */
+ 
 static inline void fimc_active_queue_add(struct fimc_vid_cap *vid_cap,
 					 struct fimc_vid_buffer *buf)
 {
@@ -678,12 +507,7 @@ static inline void fimc_active_queue_add(struct fimc_vid_cap *vid_cap,
 	vid_cap->active_buf_cnt++;
 }
 
-/**
- * fimc_active_queue_pop - pop buffer from the capture active buffers queue
- * @vid_cap:	camera capture device information
- *
- * The caller must assure the active_buf_q list is not empty.
- */
+ 
 static inline struct fimc_vid_buffer *fimc_active_queue_pop(
 				    struct fimc_vid_cap *vid_cap)
 {
@@ -695,23 +519,14 @@ static inline struct fimc_vid_buffer *fimc_active_queue_pop(
 	return buf;
 }
 
-/**
- * fimc_pending_queue_add - add buffer to the capture pending buffers queue
- * @vid_cap:	camera capture device information
- * @buf: buffer to add to the pending buffers list
- */
+ 
 static inline void fimc_pending_queue_add(struct fimc_vid_cap *vid_cap,
 					  struct fimc_vid_buffer *buf)
 {
 	list_add_tail(&buf->list, &vid_cap->pending_buf_q);
 }
 
-/**
- * fimc_pending_queue_pop - pop buffer from the capture pending buffers queue
- * @vid_cap:	camera capture device information
- *
- * The caller must assure the pending_buf_q list is not empty.
- */
+ 
 static inline struct fimc_vid_buffer *fimc_pending_queue_pop(
 				     struct fimc_vid_cap *vid_cap)
 {
@@ -722,4 +537,4 @@ static inline struct fimc_vid_buffer *fimc_pending_queue_pop(
 	return buf;
 }
 
-#endif /* FIMC_CORE_H_ */
+#endif  

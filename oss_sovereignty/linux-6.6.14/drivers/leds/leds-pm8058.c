@@ -1,6 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright (c) 2010, 2011, 2016 The Linux Foundation. All rights reserved.
- */
+
+ 
 #include <linux/leds.h>
 #include <linux/module.h>
 #include <linux/of.h>
@@ -119,9 +118,9 @@ static int pm8058_led_probe(struct platform_device *pdev)
 	led->cdev.brightness_set = pm8058_led_set;
 	led->cdev.brightness_get = pm8058_led_get;
 	if (led->ledtype == PM8058_LED_TYPE_COMMON)
-		maxbright = 31; /* 5 bits */
+		maxbright = 31;  
 	else
-		maxbright = 15; /* 4 bits */
+		maxbright = 15;  
 	led->cdev.max_brightness = maxbright;
 
 	init_data.fwnode = of_fwnode_handle(np);

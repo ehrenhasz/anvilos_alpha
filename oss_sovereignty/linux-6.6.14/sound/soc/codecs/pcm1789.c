@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-// Audio driver for PCM1789
-// Copyright (C) 2018 Bootlin
-// Mylène Josserand <mylene.josserand@bootlin.com>
+
+
+
+
 
 #include <linux/gpio/consumer.h>
 #include <linux/module.h>
@@ -134,7 +134,7 @@ static void pcm1789_work_queue(struct work_struct *work)
 						    struct pcm1789_private,
 						    work);
 
-	/* Perform a software reset to remove codec from desynchronized state */
+	 
 	if (regmap_update_bits(priv->regmap, PCM1789_MUTE_CONTROL,
 			       0x3 << PCM1789_MUTE_SRET, 0) < 0)
 		dev_err(priv->dev, "Error while setting SRET");

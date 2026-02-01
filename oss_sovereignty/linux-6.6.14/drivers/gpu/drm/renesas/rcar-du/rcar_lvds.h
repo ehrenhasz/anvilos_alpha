@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * R-Car LVDS Encoder
- *
- * Copyright (C) 2013-2018 Renesas Electronics Corporation
- *
- * Contact: Laurent Pinchart (laurent.pinchart@ideasonboard.com)
- */
+ 
+ 
 
 #ifndef __RCAR_LVDS_H__
 #define __RCAR_LVDS_H__
@@ -36,6 +30,6 @@ static inline bool rcar_lvds_is_connected(struct drm_bridge *bridge)
 {
 	return false;
 }
-#endif /* CONFIG_DRM_RCAR_LVDS */
+#endif  
 
-#endif /* __RCAR_LVDS_H__ */
+#endif  

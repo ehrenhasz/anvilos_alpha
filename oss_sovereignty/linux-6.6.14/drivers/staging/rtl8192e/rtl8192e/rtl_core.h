@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright(c) 2008 - 2010 Realtek Corporation. All rights reserved.
- *
- * Based on the r8180 driver, which is:
- * Copyright 2004-2005 Andrea Merello <andrea.merello@gmail.com>, et al.
- *
- * Contact Information: wlanfae <wlanfae@realtek.com>
- */
+ 
+ 
 #ifndef _RTL_CORE_H
 #define _RTL_CORE_H
 
@@ -29,7 +22,7 @@
 #include <linux/random.h>
 #include <linux/io.h>
 
-/* Need this defined before including local include files */
+ 
 #define DRV_NAME "rtl819xE"
 
 #include "../rtllib.h"
@@ -60,7 +53,7 @@
 
 #define RTLLIB_WATCH_DOG_TIME		2000
 
-#define MAX_DEV_ADDR_SIZE		8  /*support till 64 bit bus width OS*/
+#define MAX_DEV_ADDR_SIZE		8   
 #define MAX_FIRMWARE_INFORMATION_SIZE   32
 #define MAX_802_11_HEADER_LENGTH	(40 + MAX_FIRMWARE_INFORMATION_SIZE)
 #define ENCRYPTION_MAX_OVERHEAD		128
@@ -258,7 +251,7 @@ struct r8192_priv {
 	bool		blinked_ingpio;
 	u8		polling_timer_on;
 
-	/**********************************************************/
+	 
 	struct work_struct qos_activate;
 
 	short	promisc;

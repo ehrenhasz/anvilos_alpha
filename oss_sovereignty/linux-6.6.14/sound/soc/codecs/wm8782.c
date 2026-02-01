@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * sound/soc/codecs/wm8782.c
- * simple, strap-pin configured 24bit 2ch ADC
- *
- * Copyright: 2011 Raumfeld GmbH
- * Author: Johannes Stezenbach <js@sig21.net>
- *
- * based on ad73311.c
- * Copyright:	Analog Devices Inc.
- * Author:	Cliff Cai <cliff.cai@analog.com>
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/slab.h>
@@ -39,7 +29,7 @@ static struct snd_soc_dai_driver wm8782_dai = {
 		.stream_name = "Capture",
 		.channels_min = 2,
 		.channels_max = 2,
-		/* For configurations with FSAMPEN=0 */
+		 
 		.rates = SNDRV_PCM_RATE_8000_48000,
 		.formats = SNDRV_PCM_FMTBIT_S16_LE |
 			   SNDRV_PCM_FMTBIT_S20_3LE |
@@ -47,10 +37,10 @@ static struct snd_soc_dai_driver wm8782_dai = {
 	},
 };
 
-/* regulator power supply names */
+ 
 static const char *supply_names[] = {
-	"Vdda", /* analog supply, 2.7V - 3.6V */
-	"Vdd",  /* digital supply, 2.7V - 5.5V */
+	"Vdda",  
+	"Vdd",   
 };
 
 struct wm8782_priv {
@@ -85,7 +75,7 @@ static int wm8782_soc_resume(struct snd_soc_component *component)
 #else
 #define wm8782_soc_suspend      NULL
 #define wm8782_soc_resume       NULL
-#endif /* CONFIG_PM */
+#endif  
 
 static const struct snd_soc_component_driver soc_component_dev_wm8782 = {
 	.probe			= wm8782_soc_probe,

@@ -1,33 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright (c) 2017-2018 Covalent IO, Inc. http://covalent.io */
-#include <stddef.h>
-#include <string.h>
-#include <linux/bpf.h>
-#include <linux/if_ether.h>
-#include <linux/if_packet.h>
-#include <linux/ip.h>
-#include <linux/ipv6.h>
-#include <linux/in.h>
-#include <linux/udp.h>
-#include <linux/tcp.h>
-#include <linux/pkt_cls.h>
-#include <sys/socket.h>
-#include <bpf/bpf_helpers.h>
-#include <bpf/bpf_endian.h>
-#include "bpf_misc.h"
-
-/* Sockmap sample program connects a client and a backend together
- * using cgroups.
- *
- *    client:X <---> frontend:80 client:X <---> backend:80
- *
- * For simplicity we hard code values here and bind 1:1. The hard
- * coded values are part of the setup in sockmap.sh script that
- * is associated with this BPF program.
- *
- * The bpf_printk is verbose and prints information as connections
- * are established and verdicts are decided.
- */
+ 
+ 
 
 struct {
 	__uint(type, TEST_MAP_TYPE);

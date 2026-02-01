@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Symbol USB barcode to serial driver
- *
- * Copyright (C) 2013 Johan Hovold <jhovold@gmail.com>
- * Copyright (C) 2009 Greg Kroah-Hartman <gregkh@suse.de>
- * Copyright (C) 2009 Novell Inc.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/tty.h>
@@ -24,7 +18,7 @@ static const struct usb_device_id id_table[] = {
 MODULE_DEVICE_TABLE(usb, id_table);
 
 struct symbol_private {
-	spinlock_t lock;	/* protects the following flags */
+	spinlock_t lock;	 
 	bool throttled;
 	bool actually_throttled;
 };
@@ -41,12 +35,12 @@ static void symbol_int_callback(struct urb *urb)
 
 	switch (status) {
 	case 0:
-		/* success */
+		 
 		break;
 	case -ECONNRESET:
 	case -ENOENT:
 	case -ESHUTDOWN:
-		/* this urb is terminated, clean up */
+		 
 		dev_dbg(&port->dev, "%s - urb shutting down with status: %d\n",
 			__func__, status);
 		return;
@@ -58,11 +52,7 @@ static void symbol_int_callback(struct urb *urb)
 
 	usb_serial_debug_data(&port->dev, __func__, urb->actual_length, data);
 
-	/*
-	 * Data from the device comes with a 1 byte header:
-	 *
-	 * <size of data> <data>...
-	 */
+	 
 	if (urb->actual_length > 1) {
 		data_length = data[0];
 		if (data_length > (urb->actual_length - 1))
@@ -76,7 +66,7 @@ static void symbol_int_callback(struct urb *urb)
 exit:
 	spin_lock_irqsave(&priv->lock, flags);
 
-	/* Continue trying to always read if we should */
+	 
 	if (!priv->throttled) {
 		result = usb_submit_urb(port->interrupt_in_urb, GFP_ATOMIC);
 		if (result)
@@ -99,7 +89,7 @@ static int symbol_open(struct tty_struct *tty, struct usb_serial_port *port)
 	priv->actually_throttled = false;
 	spin_unlock_irqrestore(&priv->lock, flags);
 
-	/* Start reading from the device */
+	 
 	result = usb_submit_urb(port->interrupt_in_urb, GFP_KERNEL);
 	if (result)
 		dev_err(&port->dev,

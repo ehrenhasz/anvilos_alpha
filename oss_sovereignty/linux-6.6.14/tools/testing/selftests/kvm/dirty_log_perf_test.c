@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * KVM dirty page logging performance test
- *
- * Based on dirty_log_test.c
- *
- * Copyright (C) 2018, Red Hat, Inc.
- * Copyright (C) 2020, Google, Inc.
- */
+
+ 
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -29,10 +22,7 @@ static int gic_fd;
 
 static void arch_setup_vm(struct kvm_vm *vm, unsigned int nr_vcpus)
 {
-	/*
-	 * The test can still run even if hardware does not support GICv3, as it
-	 * is only an optimization to reduce guest exits.
-	 */
+	 
 	gic_fd = vgic_v3_setup(vm, nr_vcpus, 64, GICD_BASE_GPA, GICR_BASE_GPA);
 }
 
@@ -42,7 +32,7 @@ static void arch_cleanup_vm(struct kvm_vm *vm)
 		close(gic_fd);
 }
 
-#else /* __aarch64__ */
+#else  
 
 static void arch_setup_vm(struct kvm_vm *vm, unsigned int nr_vcpus)
 {
@@ -54,14 +44,14 @@ static void arch_cleanup_vm(struct kvm_vm *vm)
 
 #endif
 
-/* How many host loops to run by default (one KVM_GET_DIRTY_LOG for each loop)*/
+ 
 #define TEST_HOST_LOOP_N		2UL
 
 static int nr_vcpus = 1;
 static uint64_t guest_percpu_mem_size = DEFAULT_PER_VCPU_MEM_SIZE;
 static bool run_vcpus_while_disabling_dirty_logging;
 
-/* Host variables */
+ 
 static u64 dirty_log_manual_caps;
 static bool host_quit;
 static int iteration;
@@ -110,11 +100,7 @@ static void vcpu_worker(struct memstress_vcpu_args *vcpu_args)
 				ts_diff.tv_nsec);
 		}
 
-		/*
-		 * Keep running the guest while dirty logging is being disabled
-		 * (iteration is negative) so that vCPUs are accessing memory
-		 * for the entire duration of zapping collapsible SPTEs.
-		 */
+		 
 		while (current_iteration == READ_ONCE(iteration) &&
 		       READ_ONCE(iteration) >= 0 && !READ_ONCE(host_quit)) {}
 	}
@@ -173,7 +159,7 @@ static void run_test(enum vm_guest_mode mode, void *arg)
 
 	arch_setup_vm(vm, nr_vcpus);
 
-	/* Start the iterations */
+	 
 	iteration = 0;
 	host_quit = false;
 
@@ -181,18 +167,12 @@ static void run_test(enum vm_guest_mode mode, void *arg)
 	for (i = 0; i < nr_vcpus; i++)
 		vcpu_last_completed_iteration[i] = -1;
 
-	/*
-	 * Use 100% writes during the population phase to ensure all
-	 * memory is actually populated and not just mapped to the zero
-	 * page. The prevents expensive copy-on-write faults from
-	 * occurring during the dirty memory iterations below, which
-	 * would pollute the performance results.
-	 */
+	 
 	memstress_set_write_percent(vm, 100);
 	memstress_set_random_access(vm, false);
 	memstress_start_vcpu_threads(nr_vcpus, vcpu_worker);
 
-	/* Allow the vCPUs to populate memory */
+	 
 	pr_debug("Starting iteration %d - Populating\n", iteration);
 	for (i = 0; i < nr_vcpus; i++) {
 		while (READ_ONCE(vcpu_last_completed_iteration[i]) !=
@@ -204,7 +184,7 @@ static void run_test(enum vm_guest_mode mode, void *arg)
 	pr_info("Populate memory time: %ld.%.9lds\n",
 		ts_diff.tv_sec, ts_diff.tv_nsec);
 
-	/* Enable dirty logging */
+	 
 	clock_gettime(CLOCK_MONOTONIC, &start);
 	memstress_enable_dirty_logging(vm, p->slots);
 	ts_diff = timespec_elapsed(start);
@@ -215,10 +195,7 @@ static void run_test(enum vm_guest_mode mode, void *arg)
 	memstress_set_random_access(vm, p->random_access);
 
 	while (iteration < p->iterations) {
-		/*
-		 * Incrementing the iteration number will start the vCPUs
-		 * dirtying memory again.
-		 */
+		 
 		clock_gettime(CLOCK_MONOTONIC, &start);
 		iteration++;
 
@@ -254,26 +231,18 @@ static void run_test(enum vm_guest_mode mode, void *arg)
 		}
 	}
 
-	/*
-	 * Run vCPUs while dirty logging is being disabled to stress disabling
-	 * in terms of both performance and correctness.  Opt-in via command
-	 * line as this significantly increases time to disable dirty logging.
-	 */
+	 
 	if (run_vcpus_while_disabling_dirty_logging)
 		WRITE_ONCE(iteration, -1);
 
-	/* Disable dirty logging */
+	 
 	clock_gettime(CLOCK_MONOTONIC, &start);
 	memstress_disable_dirty_logging(vm, p->slots);
 	ts_diff = timespec_elapsed(start);
 	pr_info("Disabling dirty logging time: %ld.%.9lds\n",
 		ts_diff.tv_sec, ts_diff.tv_nsec);
 
-	/*
-	 * Tell the vCPU threads to quit.  No need to manually check that vCPUs
-	 * have stopped running after disabling dirty logging, the join will
-	 * wait for them to exit.
-	 */
+	 
 	host_quit = true;
 	memstress_join_vcpu_threads(nr_vcpus);
 
@@ -370,7 +339,7 @@ int main(int argc, char *argv[])
 			pcpu_list = optarg;
 			break;
 		case 'e':
-			/* 'e' is for evil. */
+			 
 			run_vcpus_while_disabling_dirty_logging = true;
 			break;
 		case 'g':

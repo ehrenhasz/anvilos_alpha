@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #include <linux/acpi.h>
 #include <linux/bitops.h>
@@ -12,10 +12,10 @@
 #include <linux/resource.h>
 #include <linux/types.h>
 
-/* Number of pins on BlueField */
+ 
 #define MLXBF_GPIO_NR 54
 
-/* Pad Electrical Controls. */
+ 
 #define MLXBF_GPIO_PAD_CONTROL_FIRST_WORD 0x0700
 #define MLXBF_GPIO_PAD_CONTROL_1_FIRST_WORD 0x0708
 #define MLXBF_GPIO_PAD_CONTROL_2_FIRST_WORD 0x0710
@@ -35,11 +35,11 @@ struct mlxbf_gpio_context_save_regs {
 };
 #endif
 
-/* Device state structure. */
+ 
 struct mlxbf_gpio_state {
 	struct gpio_chip gc;
 
-	/* Memory Address */
+	 
 	void __iomem *base;
 
 #ifdef CONFIG_PM

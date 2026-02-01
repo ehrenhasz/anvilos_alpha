@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Block stat tracking code
- *
- * Copyright (C) 2016 Jens Axboe
- */
+
+ 
 #include <linux/kernel.h>
 #include <linux/rculist.h>
 
@@ -24,7 +20,7 @@ void blk_rq_stat_init(struct blk_rq_stat *stat)
 	stat->batch = 0;
 }
 
-/* src is a per-cpu stat, mean isn't initialized */
+ 
 void blk_rq_stat_sum(struct blk_rq_stat *dst, struct blk_rq_stat *src)
 {
 	if (!src->nr_samples)

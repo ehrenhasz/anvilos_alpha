@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Device access for Dialog DA9055 PMICs.
- *
- * Copyright(c) 2012 Dialog Semiconductor Ltd.
- *
- * Author: David Dajun Chen <dchen@diasemi.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/device.h>

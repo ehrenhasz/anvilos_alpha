@@ -1,15 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0-only
 
-/*
- * Copyright(c) 2023 Huawei
- *
- * The CXL 3.0 specification includes a standard Performance Monitoring Unit,
- * called the CXL PMU, or CPMU. In order to allow a high degree of
- * implementation flexibility the specification provides a wide range of
- * options all of which are self describing.
- *
- * Details in CXL rev 3.0 section 8.2.7 CPMU Register Interface
- */
+
+ 
 
 #include <linux/io-64-nonatomic-lo-hi.h>
 #include <linux/perf_event.h>
@@ -63,7 +54,7 @@
 
 #define CXL_PMU_COUNTER_REG(n)		(0xc00 + 8 * (n))
 
-/* CXL rev 3.0 Table 13-5 Events under CXL Vendor ID */
+ 
 #define CXL_PMU_GID_CLOCK_TICKS		0x00
 #define CXL_PMU_GID_D2H_REQ		0x0010
 #define CXL_PMU_GID_D2H_RSP		0x0011
@@ -85,8 +76,8 @@ struct cxl_pmu_ev_cap {
 	u16 gid;
 	u32 msk;
 	union {
-		int counter_idx; /* fixed counters */
-		int event_idx; /* configurable counters */
+		int counter_idx;  
+		int event_idx;  
 	};
 	struct list_head node;
 };
@@ -111,16 +102,7 @@ struct cxl_pmu_info {
 
 #define pmu_to_cxl_pmu_info(_pmu) container_of(_pmu, struct cxl_pmu_info, pmu)
 
-/*
- * All CPMU counters are discoverable via the Event Capabilities Registers.
- * Each Event Capability register contains a a VID / GroupID.
- * A counter may then count any combination (by summing) of events in
- * that group which are in the Supported Events Bitmask.
- * However, there are some complexities to the scheme.
- *  - Fixed function counters refer to an Event Capabilities register.
- *    That event capability register is not then used for Configurable
- *    counters.
- */
+ 
 static int cxl_pmu_parse_caps(struct device *dev, struct cxl_pmu_info *info)
 {
 	unsigned long fixed_counter_event_cap_bm = 0;
@@ -147,7 +129,7 @@ static int cxl_pmu_parse_caps(struct device *dev, struct cxl_pmu_info *info)
 	else
 		info->irq = -1;
 
-	/* First handle fixed function counters; note if configurable counters found */
+	 
 	for (i = 0; i < info->num_counters; i++) {
 		struct cxl_pmu_ev_cap *pmu_ev;
 		u32 events_msk;
@@ -164,7 +146,7 @@ static int cxl_pmu_parse_caps(struct device *dev, struct cxl_pmu_info *info)
 		    CXL_PMU_COUNTER_CFG_TYPE_FIXED_FUN)
 			continue;
 
-		/* In this case we know which fields are const */
+		 
 		group_idx = FIELD_GET(CXL_PMU_COUNTER_CFG_EVENT_GRP_ID_IDX_MSK, val);
 		events_msk = FIELD_GET(CXL_PMU_COUNTER_CFG_EVENTS_MSK, val);
 		eval = readq(base + CXL_PMU_EVENT_CAP_REG(group_idx));
@@ -174,22 +156,19 @@ static int cxl_pmu_parse_caps(struct device *dev, struct cxl_pmu_info *info)
 
 		pmu_ev->vid = FIELD_GET(CXL_PMU_EVENT_CAP_VENDOR_ID_MSK, eval);
 		pmu_ev->gid = FIELD_GET(CXL_PMU_EVENT_CAP_GROUP_ID_MSK, eval);
-		/* For a fixed purpose counter use the events mask from the counter CFG */
+		 
 		pmu_ev->msk = events_msk;
 		pmu_ev->counter_idx = i;
-		/* This list add is never unwound as all entries deleted on remove */
+		 
 		list_add(&pmu_ev->node, &info->event_caps_fixed);
-		/*
-		 * Configurable counters must not use an Event Capability registers that
-		 * is in use for a Fixed counter
-		 */
+		 
 		set_bit(group_idx, &fixed_counter_event_cap_bm);
 	}
 
 	if (!bitmap_empty(info->conf_counter_bm, CXL_PMU_MAX_COUNTERS)) {
 		struct cxl_pmu_ev_cap *pmu_ev;
 		int j;
-		/* Walk event capabilities unused by fixed counters */
+		 
 		for_each_clear_bit(j, &fixed_counter_event_cap_bm,
 				   info->num_event_capabilities) {
 			pmu_ev = devm_kzalloc(dev, sizeof(*pmu_ev), GFP_KERNEL);
@@ -265,10 +244,7 @@ static umode_t cxl_pmu_format_is_visible(struct kobject *kobj,
 	struct device *dev = kobj_to_dev(kobj);
 	struct cxl_pmu_info *info = dev_get_drvdata(dev);
 
-	/*
-	 * Filter capability at the CPMU level, so hide the attributes if the particular
-	 * filter is not supported.
-	 */
+	 
 	if (!info->filter_hdm &&
 	    (attr == cxl_pmu_format_attr[cxl_pmu_hdm_filter_en_attr] ||
 	     attr == cxl_pmu_format_attr[cxl_pmu_hdm_attr]))
@@ -313,12 +289,7 @@ static bool cxl_pmu_config1_get_edge(struct perf_event *event)
 	return FIELD_GET(CXL_PMU_ATTR_CONFIG1_EDGE_MSK, event->attr.config1);
 }
 
-/*
- * CPMU specification allows for 8 filters, each with a 16 bit value...
- * So we need to find 8x16bits to store it in.
- * As the value used for disable is 0xffff, a separate enable switch
- * is needed.
- */
+ 
 
 static bool cxl_pmu_config1_hdm_filter_en(struct perf_event *event)
 {
@@ -343,13 +314,13 @@ static ssize_t cxl_pmu_event_sysfs_show(struct device *dev,
 	PMU_EVENT_ATTR_ID(_name, cxl_pmu_event_sysfs_show,		\
 			  ((u64)(_vid) << 48) | ((u64)(_gid) << 32) | (u64)(_msk))
 
-/* For CXL spec defined events */
+ 
 #define CXL_PMU_EVENT_CXL_ATTR(_name, _gid, _msk)			\
 	CXL_PMU_EVENT_ATTR(_name, PCI_DVSEC_VENDOR_ID_CXL, _gid, _msk)
 
 static struct attribute *cxl_pmu_event_attrs[] = {
 	CXL_PMU_EVENT_CXL_ATTR(clock_ticks,			CXL_PMU_GID_CLOCK_TICKS, BIT(0)),
-	/* CXL rev 3.0 Table 3-17 - Device to Host Requests */
+	 
 	CXL_PMU_EVENT_CXL_ATTR(d2h_req_rdcurr,			CXL_PMU_GID_D2H_REQ, BIT(1)),
 	CXL_PMU_EVENT_CXL_ATTR(d2h_req_rdown,			CXL_PMU_GID_D2H_REQ, BIT(2)),
 	CXL_PMU_EVENT_CXL_ATTR(d2h_req_rdshared,		CXL_PMU_GID_D2H_REQ, BIT(3)),
@@ -365,7 +336,7 @@ static struct attribute *cxl_pmu_event_attrs[] = {
 	CXL_PMU_EVENT_CXL_ATTR(d2h_req_wowrinvf,		CXL_PMU_GID_D2H_REQ, BIT(13)),
 	CXL_PMU_EVENT_CXL_ATTR(d2h_req_wrinv,			CXL_PMU_GID_D2H_REQ, BIT(14)),
 	CXL_PMU_EVENT_CXL_ATTR(d2h_req_cacheflushed,		CXL_PMU_GID_D2H_REQ, BIT(16)),
-	/* CXL rev 3.0 Table 3-20 - D2H Repsonse Encodings */
+	 
 	CXL_PMU_EVENT_CXL_ATTR(d2h_rsp_rspihiti,		CXL_PMU_GID_D2H_RSP, BIT(4)),
 	CXL_PMU_EVENT_CXL_ATTR(d2h_rsp_rspvhitv,		CXL_PMU_GID_D2H_RSP, BIT(6)),
 	CXL_PMU_EVENT_CXL_ATTR(d2h_rsp_rspihitse,		CXL_PMU_GID_D2H_RSP, BIT(5)),
@@ -373,11 +344,11 @@ static struct attribute *cxl_pmu_event_attrs[] = {
 	CXL_PMU_EVENT_CXL_ATTR(d2h_rsp_rspsfwdm,		CXL_PMU_GID_D2H_RSP, BIT(7)),
 	CXL_PMU_EVENT_CXL_ATTR(d2h_rsp_rspifwdm,		CXL_PMU_GID_D2H_RSP, BIT(15)),
 	CXL_PMU_EVENT_CXL_ATTR(d2h_rsp_rspvfwdv,		CXL_PMU_GID_D2H_RSP, BIT(22)),
-	/* CXL rev 3.0 Table 3-21 - CXL.cache - Mapping of H2D Requests to D2H Responses */
+	 
 	CXL_PMU_EVENT_CXL_ATTR(h2d_req_snpdata,			CXL_PMU_GID_H2D_REQ, BIT(1)),
 	CXL_PMU_EVENT_CXL_ATTR(h2d_req_snpinv,			CXL_PMU_GID_H2D_REQ, BIT(2)),
 	CXL_PMU_EVENT_CXL_ATTR(h2d_req_snpcur,			CXL_PMU_GID_H2D_REQ, BIT(3)),
-	/* CXL rev 3.0 Table 3-22 - H2D Response Opcode Encodings */
+	 
 	CXL_PMU_EVENT_CXL_ATTR(h2d_rsp_writepull,		CXL_PMU_GID_H2D_RSP, BIT(1)),
 	CXL_PMU_EVENT_CXL_ATTR(h2d_rsp_go,			CXL_PMU_GID_H2D_RSP, BIT(4)),
 	CXL_PMU_EVENT_CXL_ATTR(h2d_rsp_gowritepull,		CXL_PMU_GID_H2D_RSP, BIT(5)),
@@ -385,10 +356,10 @@ static struct attribute *cxl_pmu_event_attrs[] = {
 	CXL_PMU_EVENT_CXL_ATTR(h2d_rsp_gowritepulldrop,		CXL_PMU_GID_H2D_RSP, BIT(8)),
 	CXL_PMU_EVENT_CXL_ATTR(h2d_rsp_fastgowritepull,		CXL_PMU_GID_H2D_RSP, BIT(13)),
 	CXL_PMU_EVENT_CXL_ATTR(h2d_rsp_goerrwritepull,		CXL_PMU_GID_H2D_RSP, BIT(15)),
-	/* CXL rev 3.0 Table 13-5 directly lists these */
+	 
 	CXL_PMU_EVENT_CXL_ATTR(cachedata_d2h_data,		CXL_PMU_GID_CACHE_DATA, BIT(0)),
 	CXL_PMU_EVENT_CXL_ATTR(cachedata_h2d_data,		CXL_PMU_GID_CACHE_DATA, BIT(1)),
-	/* CXL rev 3.0 Table 3-29 M2S Req Memory Opcodes */
+	 
 	CXL_PMU_EVENT_CXL_ATTR(m2s_req_meminv,			CXL_PMU_GID_M2S_REQ, BIT(0)),
 	CXL_PMU_EVENT_CXL_ATTR(m2s_req_memrd,			CXL_PMU_GID_M2S_REQ, BIT(1)),
 	CXL_PMU_EVENT_CXL_ATTR(m2s_req_memrddata,		CXL_PMU_GID_M2S_REQ, BIT(2)),
@@ -397,33 +368,33 @@ static struct attribute *cxl_pmu_event_attrs[] = {
 	CXL_PMU_EVENT_CXL_ATTR(m2s_req_memspecrd,		CXL_PMU_GID_M2S_REQ, BIT(8)),
 	CXL_PMU_EVENT_CXL_ATTR(m2s_req_meminvnt,		CXL_PMU_GID_M2S_REQ, BIT(9)),
 	CXL_PMU_EVENT_CXL_ATTR(m2s_req_memcleanevict,		CXL_PMU_GID_M2S_REQ, BIT(10)),
-	/* CXL rev 3.0 Table 3-35 M2S RwD Memory Opcodes */
+	 
 	CXL_PMU_EVENT_CXL_ATTR(m2s_rwd_memwr,			CXL_PMU_GID_M2S_RWD, BIT(1)),
 	CXL_PMU_EVENT_CXL_ATTR(m2s_rwd_memwrptl,		CXL_PMU_GID_M2S_RWD, BIT(2)),
 	CXL_PMU_EVENT_CXL_ATTR(m2s_rwd_biconflict,		CXL_PMU_GID_M2S_RWD, BIT(4)),
-	/* CXL rev 3.0 Table 3-38 M2S BIRsp Memory Opcodes */
+	 
 	CXL_PMU_EVENT_CXL_ATTR(m2s_birsp_i,			CXL_PMU_GID_M2S_BIRSP, BIT(0)),
 	CXL_PMU_EVENT_CXL_ATTR(m2s_birsp_s,			CXL_PMU_GID_M2S_BIRSP, BIT(1)),
 	CXL_PMU_EVENT_CXL_ATTR(m2s_birsp_e,			CXL_PMU_GID_M2S_BIRSP, BIT(2)),
 	CXL_PMU_EVENT_CXL_ATTR(m2s_birsp_iblk,			CXL_PMU_GID_M2S_BIRSP, BIT(4)),
 	CXL_PMU_EVENT_CXL_ATTR(m2s_birsp_sblk,			CXL_PMU_GID_M2S_BIRSP, BIT(5)),
 	CXL_PMU_EVENT_CXL_ATTR(m2s_birsp_eblk,			CXL_PMU_GID_M2S_BIRSP, BIT(6)),
-	/* CXL rev 3.0 Table 3-40 S2M BISnp Opcodes */
+	 
 	CXL_PMU_EVENT_CXL_ATTR(s2m_bisnp_cur,			CXL_PMU_GID_S2M_BISNP, BIT(0)),
 	CXL_PMU_EVENT_CXL_ATTR(s2m_bisnp_data,			CXL_PMU_GID_S2M_BISNP, BIT(1)),
 	CXL_PMU_EVENT_CXL_ATTR(s2m_bisnp_inv,			CXL_PMU_GID_S2M_BISNP, BIT(2)),
 	CXL_PMU_EVENT_CXL_ATTR(s2m_bisnp_curblk,		CXL_PMU_GID_S2M_BISNP, BIT(4)),
 	CXL_PMU_EVENT_CXL_ATTR(s2m_bisnp_datblk,		CXL_PMU_GID_S2M_BISNP, BIT(5)),
 	CXL_PMU_EVENT_CXL_ATTR(s2m_bisnp_invblk,		CXL_PMU_GID_S2M_BISNP, BIT(6)),
-	/* CXL rev 3.0 Table 3-43 S2M NDR Opcopdes */
+	 
 	CXL_PMU_EVENT_CXL_ATTR(s2m_ndr_cmp,			CXL_PMU_GID_S2M_NDR, BIT(0)),
 	CXL_PMU_EVENT_CXL_ATTR(s2m_ndr_cmps,			CXL_PMU_GID_S2M_NDR, BIT(1)),
 	CXL_PMU_EVENT_CXL_ATTR(s2m_ndr_cmpe,			CXL_PMU_GID_S2M_NDR, BIT(2)),
 	CXL_PMU_EVENT_CXL_ATTR(s2m_ndr_biconflictack,		CXL_PMU_GID_S2M_NDR, BIT(3)),
-	/* CXL rev 3.0 Table 3-46 S2M DRS opcodes */
+	 
 	CXL_PMU_EVENT_CXL_ATTR(s2m_drs_memdata,			CXL_PMU_GID_S2M_DRS, BIT(0)),
 	CXL_PMU_EVENT_CXL_ATTR(s2m_drs_memdatanxm,		CXL_PMU_GID_S2M_DRS, BIT(1)),
-	/* CXL rev 3.0 Table 13-5 directly lists these */
+	 
 	CXL_PMU_EVENT_CXL_ATTR(ddr_act,				CXL_PMU_GID_DDR, BIT(0)),
 	CXL_PMU_EVENT_CXL_ATTR(ddr_pre,				CXL_PMU_GID_DDR, BIT(1)),
 	CXL_PMU_EVENT_CXL_ATTR(ddr_casrd,			CXL_PMU_GID_DDR, BIT(2)),
@@ -443,7 +414,7 @@ static struct cxl_pmu_ev_cap *cxl_pmu_find_fixed_counter_ev_cap(struct cxl_pmu_i
 		if (vid != pmu_ev->vid || gid != pmu_ev->gid)
 			continue;
 
-		/* Precise match for fixed counter */
+		 
 		if (msk == pmu_ev->msk)
 			return pmu_ev;
 	}
@@ -460,7 +431,7 @@ static struct cxl_pmu_ev_cap *cxl_pmu_find_config_counter_ev_cap(struct cxl_pmu_
 		if (vid != pmu_ev->vid || gid != pmu_ev->gid)
 			continue;
 
-		/* Request mask must be subset of supported */
+		 
 		if (msk & ~pmu_ev->msk)
 			continue;
 
@@ -521,7 +492,7 @@ static const struct attribute_group *cxl_pmu_attr_groups[] = {
 	NULL
 };
 
-/* If counter_idx == NULL, don't try to allocate a counter. */
+ 
 static int cxl_pmu_get_event_idx(struct perf_event *event, int *counter_idx,
 				 int *event_idx)
 {
@@ -544,7 +515,7 @@ static int cxl_pmu_get_event_idx(struct perf_event *event, int *counter_idx,
 			*counter_idx = pmu_ev->counter_idx;
 			return 0;
 		}
-		/* Fixed counter is in use, but maybe a configurable one? */
+		 
 	}
 
 	pmu_ev = cxl_pmu_find_config_counter_ev_cap(info, vid, gid, mask);
@@ -571,19 +542,15 @@ static int cxl_pmu_event_init(struct perf_event *event)
 	struct cxl_pmu_info *info = pmu_to_cxl_pmu_info(event->pmu);
 	int rc;
 
-	/* Top level type sanity check - is this a Hardware Event being requested */
+	 
 	if (event->attr.type != event->pmu->type)
 		return -ENOENT;
 
 	if (is_sampling_event(event) || event->attach_state & PERF_ATTACH_TASK)
 		return -EOPNOTSUPP;
-	/* TODO: Validation of any filter */
+	 
 
-	/*
-	 * Verify that it is possible to count what was requested. Either must
-	 * be a fixed counter that is a precise match or a configurable counter
-	 * where this is a subset.
-	 */
+	 
 	rc = cxl_pmu_get_event_idx(event, NULL, NULL);
 	if (rc < 0)
 		return rc;
@@ -598,7 +565,7 @@ static void cxl_pmu_enable(struct pmu *pmu)
 	struct cxl_pmu_info *info = pmu_to_cxl_pmu_info(pmu);
 	void __iomem *base = info->base;
 
-	/* Can assume frozen at this stage */
+	 
 	writeq(0, base + CXL_PMU_FREEZE_REG);
 }
 
@@ -607,13 +574,7 @@ static void cxl_pmu_disable(struct pmu *pmu)
 	struct cxl_pmu_info *info = pmu_to_cxl_pmu_info(pmu);
 	void __iomem *base = info->base;
 
-	/*
-	 * Whilst bits above number of counters are RsvdZ
-	 * they are unlikely to be repurposed given
-	 * number of counters is allowed to be 64 leaving
-	 * no reserved bits.  Hence this is only slightly
-	 * naughty.
-	 */
+	 
 	writeq(GENMASK_ULL(63, 0), base + CXL_PMU_FREEZE_REG);
 }
 
@@ -624,25 +585,19 @@ static void cxl_pmu_event_start(struct perf_event *event, int flags)
 	void __iomem *base = info->base;
 	u64 cfg;
 
-	/*
-	 * All paths to here should either set these flags directly or
-	 * call cxl_pmu_event_stop() which will ensure the correct state.
-	 */
+	 
 	if (WARN_ON_ONCE(!(hwc->state & PERF_HES_STOPPED)))
 		return;
 
 	WARN_ON_ONCE(!(hwc->state & PERF_HES_UPTODATE));
 	hwc->state = 0;
 
-	/*
-	 * Currently only hdm filter control is implemnted, this code will
-	 * want generalizing when more filters are added.
-	 */
+	 
 	if (info->filter_hdm) {
 		if (cxl_pmu_config1_hdm_filter_en(event))
 			cfg = cxl_pmu_config2_get_hdm_decoder(event);
 		else
-			cfg = GENMASK(15, 0); /* No filtering if 0xFFFF_FFFF */
+			cfg = GENMASK(15, 0);  
 		writeq(cfg, base + CXL_PMU_FILTER_CFG_REG(hwc->idx, 0));
 	}
 
@@ -655,7 +610,7 @@ static void cxl_pmu_event_start(struct perf_event *event, int flags)
 	cfg |= FIELD_PREP(CXL_PMU_COUNTER_CFG_INVERT,
 			  cxl_pmu_config1_get_invert(event) ? 1 : 0);
 
-	/* Fixed purpose counters have next two fields RO */
+	 
 	if (test_bit(hwc->idx, info->conf_counter_bm)) {
 		cfg |= FIELD_PREP(CXL_PMU_COUNTER_CFG_EVENT_GRP_ID_IDX_MSK,
 				  hwc->event_base);
@@ -663,14 +618,7 @@ static void cxl_pmu_event_start(struct perf_event *event, int flags)
 				  cxl_pmu_config_get_mask(event));
 	}
 	cfg &= ~CXL_PMU_COUNTER_CFG_THRESHOLD_MSK;
-	/*
-	 * For events that generate only 1 count per clock the CXL 3.0 spec
-	 * states the threshold shall be set to 1 but if set to 0 it will
-	 * count the raw value anwyay?
-	 * There is no definition of what events will count multiple per cycle
-	 * and hence to which non 1 values of threshold can apply.
-	 * (CXL 3.0 8.2.7.2.1 Counter Configuration - threshold field definition)
-	 */
+	 
 	cfg |= FIELD_PREP(CXL_PMU_COUNTER_CFG_THRESHOLD_MSK,
 			  cxl_pmu_config1_get_threshold(event));
 	writeq(cfg, base + CXL_PMU_COUNTER_CFG_REG(hwc->idx));
@@ -700,10 +648,7 @@ static void __cxl_pmu_read(struct perf_event *event, bool overflow)
 		new_cnt = cxl_pmu_read_counter(event);
 	} while (local64_cmpxchg(&hwc->prev_count, prev_cnt, new_cnt) != prev_cnt);
 
-	/*
-	 * If we know an overflow occur then take that into account.
-	 * Note counter is not reset as that would lose events
-	 */
+	 
 	delta = (new_cnt - prev_cnt) & GENMASK_ULL(info->counter_width - 1, 0);
 	if (overflow && delta < GENMASK_ULL(info->counter_width - 1, 0))
 		delta += (1UL << info->counter_width);
@@ -750,7 +695,7 @@ static int cxl_pmu_event_add(struct perf_event *event, int flags)
 
 	hwc->idx = idx;
 
-	/* Only set for configurable counters */
+	 
 	hwc->event_base = event_idx;
 	info->hw_events[idx] = event;
 	set_bit(idx, info->used_counter_bm);
@@ -782,7 +727,7 @@ static irqreturn_t cxl_pmu_irq(int irq, void *data)
 
 	overflowed = readq(base + CXL_PMU_OVERFLOW_REG);
 
-	/* Interrupt may be shared, so maybe it isn't ours */
+	 
 	if (!overflowed)
 		return IRQ_NONE;
 
@@ -924,10 +869,7 @@ static int cxl_pmu_online_cpu(unsigned int cpu, struct hlist_node *node)
 		return 0;
 
 	info->on_cpu = cpu;
-	/*
-	 * CPU HP lock is held so we should be guaranteed that the CPU hasn't yet
-	 * gone away again.
-	 */
+	 
 	WARN_ON(irq_set_affinity(info->irq, cpumask_of(cpu)));
 
 	return 0;
@@ -950,10 +892,7 @@ static int cxl_pmu_offline_cpu(unsigned int cpu, struct hlist_node *node)
 
 	perf_pmu_migrate_context(&info->pmu, cpu, target);
 	info->on_cpu = target;
-	/*
-	 * CPU HP lock is held so we should be guaranteed that this CPU hasn't yet
-	 * gone away.
-	 */
+	 
 	WARN_ON(irq_set_affinity(info->irq, cpumask_of(target)));
 
 	return 0;

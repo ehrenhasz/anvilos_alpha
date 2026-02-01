@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Microchip PolarFire SoC (MPFS) hardware random driver
- *
- * Copyright (c) 2020-2022 Microchip Corporation. All rights reserved.
- *
- * Author: Conor Dooley <conor.dooley@microchip.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/hw_random.h>

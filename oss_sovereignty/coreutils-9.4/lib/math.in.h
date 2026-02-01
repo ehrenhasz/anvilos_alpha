@@ -1,23 +1,4 @@
-/* A GNU-like <math.h>.
-
-   Copyright (C) 2002-2003, 2007-2023 Free Software Foundation, Inc.
-
-   This file is free software: you can redistribute it and/or modify
-   it under the terms of the GNU Lesser General Public License as
-   published by the Free Software Foundation; either version 2.1 of the
-   License, or (at your option) any later version.
-
-   This file is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU Lesser General Public License for more details.
-
-   You should have received a copy of the GNU Lesser General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* On Android, in C++ mode, when /usr/include/c++/v1/math.h is being included
-   and /usr/include/math.h has not yet been included, skip this file, since it
-   would lead to many syntax errors.  */
+ 
 #if !(defined __ANDROID__ && defined _LIBCPP_MATH_H && !defined INFINITY)
 
 #ifndef _@GUARD_PREFIX@_MATH_H
@@ -28,19 +9,14 @@
 @PRAGMA_COLUMNS@
 
 #if defined _GL_INCLUDING_MATH_H
-/* Special invocation convention:
-   - On FreeBSD 12.2 we have a sequence of nested includes
-     <math.h> -> <stdlib.h> -> <sys/wait.h> -> <sys/types.h> -> <sys/select.h>
-       -> <signal.h> -> <pthread.h> -> <stdlib.h> -> <math.h>
-     In this situation, the functions are not yet declared, therefore we cannot
-     provide the C++ aliases.  */
+ 
 
 #@INCLUDE_NEXT_AS_FIRST_DIRECTIVE@ @NEXT_AS_FIRST_DIRECTIVE_MATH_H@
 
 #else
-/* Normal invocation convention.  */
+ 
 
-/* The include_next requires a split double-inclusion guard.  */
+ 
 #define _GL_INCLUDING_MATH_H
 #@INCLUDE_NEXT_AS_FIRST_DIRECTIVE@ @NEXT_AS_FIRST_DIRECTIVE_MATH_H@
 #undef _GL_INCLUDING_MATH_H
@@ -48,13 +24,12 @@
 #ifndef _@GUARD_PREFIX@_MATH_H
 #define _@GUARD_PREFIX@_MATH_H
 
-/* This file uses _GL_INLINE_HEADER_BEGIN, _GL_INLINE, _GL_ATTRIBUTE_CONST,
-   GNULIB_POSIXCHECK, HAVE_RAW_DECL_*.  */
+ 
 #if !_GL_CONFIG_H_INCLUDED
  #error "Please include config.h first."
 #endif
 
-/* On OpenVMS, NAN, INFINITY, and HUGEVAL macros are defined in <fp.h>.  */
+ 
 #if defined __VMS && ! defined NAN
 # include <fp.h>
 #endif
@@ -64,26 +39,23 @@ _GL_INLINE_HEADER_BEGIN
 # define _GL_MATH_INLINE _GL_INLINE
 #endif
 
-/* The __attribute__ feature is available in gcc versions 2.5 and later.
-   The attribute __const__ was added in gcc 2.95.  */
+ 
 #ifndef _GL_ATTRIBUTE_CONST
 # if __GNUC__ > 2 || (__GNUC__ == 2 && __GNUC_MINOR__ >= 95) || defined __clang__
 #  define _GL_ATTRIBUTE_CONST __attribute__ ((__const__))
 # else
-#  define _GL_ATTRIBUTE_CONST /* empty */
+#  define _GL_ATTRIBUTE_CONST  
 # endif
 #endif
 
-/* The definitions of _GL_FUNCDECL_RPL etc. are copied here.  */
+ 
 
-/* The definition of _GL_ARG_NONNULL is copied here.  */
+ 
 
-/* The definition of _GL_WARN_ON_USE is copied here.  */
+ 
 
 #ifdef __cplusplus
-/* Helper macros to define type-generic function FUNC as overloaded functions,
-   rather than as macros like in C.  POSIX declares these with an argument of
-   real-floating (that is, one of float, double, or long double).  */
+ 
 # define _GL_MATH_CXX_REAL_FLOATING_DECL_1(func) \
 static inline int                                                   \
 _gl_cxx_ ## func ## f (float f)                                     \
@@ -120,10 +92,7 @@ rpl_func (long double l)                                            \
 _GL_END_NAMESPACE
 #endif
 
-/* Helper macros to define a portability warning for the
-   classification macro FUNC called with VALUE.  POSIX declares the
-   classification macros with an argument of real-floating (that is,
-   one of float, double, or long double).  */
+ 
 #define _GL_WARN_REAL_FLOATING_DECL(func) \
 _GL_MATH_INLINE int                                                       \
 _GL_WARN_ON_USE_ATTRIBUTE (#func " is unportable - "                      \
@@ -153,23 +122,17 @@ rpl_ ## func ## l (long double l)                                         \
 
 
 #if @REPLACE_ITOLD@
-/* Pull in a function that fixes the 'int' to 'long double' conversion
-   of glibc 2.7.  */
+ 
 _GL_EXTERN_C void _Qp_itoq (long double *, int);
 static void (*_gl_math_fix_itold) (long double *, int) = _Qp_itoq;
 #endif
 
 
-/* POSIX allows platforms that don't support NAN.  But all major
-   machines in the past 15 years have supported something close to
-   IEEE NaN, so we define this unconditionally.  We also must define
-   it on platforms like Solaris 10, where NAN is present but defined
-   as a function pointer rather than a floating point constant.  */
+ 
 #if !defined NAN || @REPLACE_NAN@
 # if !GNULIB_defined_NAN
 #  undef NAN
-  /* The Compaq (ex-DEC) C 6.4 compiler and the Microsoft MSVC 9 compiler
-     choke on the expression 0.0 / 0.0.  */
+   
 #  if defined __DECC || defined _MSC_VER
 _GL_MATH_INLINE float
 _NaN ()
@@ -185,8 +148,7 @@ _NaN ()
 # endif
 #endif
 
-/* Solaris 10 defines HUGE_VAL, but as a function pointer rather
-   than a floating point constant.  */
+ 
 #if @REPLACE_HUGE_VAL@
 # undef HUGE_VALF
 # define HUGE_VALF (1.0f / 0.0f)
@@ -196,30 +158,30 @@ _NaN ()
 # define HUGE_VALL (1.0L / 0.0L)
 #endif
 
-/* HUGE_VALF is a 'float' Infinity.  */
+ 
 #ifndef HUGE_VALF
 # if defined _MSC_VER
-/* The Microsoft MSVC 9 compiler chokes on the expression 1.0f / 0.0f.  */
+ 
 #  define HUGE_VALF (1e25f * 1e25f)
 # else
 #  define HUGE_VALF (1.0f / 0.0f)
 # endif
 #endif
 
-/* HUGE_VAL is a 'double' Infinity.  */
+ 
 #ifndef HUGE_VAL
 # if defined _MSC_VER
-/* The Microsoft MSVC 9 compiler chokes on the expression 1.0 / 0.0.  */
+ 
 #  define HUGE_VAL (1e250 * 1e250)
 # else
 #  define HUGE_VAL (1.0 / 0.0)
 # endif
 #endif
 
-/* HUGE_VALL is a 'long double' Infinity.  */
+ 
 #ifndef HUGE_VALL
 # if defined _MSC_VER
-/* The Microsoft MSVC 9 compiler chokes on the expression 1.0L / 0.0L.  */
+ 
 #  define HUGE_VALL (1e250L * 1e250L)
 # else
 #  define HUGE_VALL (1.0L / 0.0L)
@@ -228,32 +190,32 @@ _NaN ()
 
 
 #if defined FP_ILOGB0 && defined FP_ILOGBNAN
- /* Ensure FP_ILOGB0 and FP_ILOGBNAN are correct.  */
+  
 # if defined __HAIKU__
-  /* Haiku: match what ilogb() does */
+   
 #  undef FP_ILOGB0
 #  undef FP_ILOGBNAN
-#  define FP_ILOGB0   (- 2147483647 - 1) /* INT_MIN */
-#  define FP_ILOGBNAN (- 2147483647 - 1) /* INT_MIN */
+#  define FP_ILOGB0   (- 2147483647 - 1)  
+#  define FP_ILOGBNAN (- 2147483647 - 1)  
 # endif
 #else
- /* Ensure FP_ILOGB0 and FP_ILOGBNAN are defined.  */
+  
 # if defined __NetBSD__ || defined __sgi
-  /* NetBSD, IRIX 6.5: match what ilogb() does */
-#  define FP_ILOGB0   (- 2147483647 - 1) /* INT_MIN */
-#  define FP_ILOGBNAN (- 2147483647 - 1) /* INT_MIN */
+   
+#  define FP_ILOGB0   (- 2147483647 - 1)  
+#  define FP_ILOGBNAN (- 2147483647 - 1)  
 # elif defined _AIX
-  /* AIX 5.1: match what ilogb() does in AIX >= 5.2 */
-#  define FP_ILOGB0   (- 2147483647 - 1) /* INT_MIN */
-#  define FP_ILOGBNAN 2147483647 /* INT_MAX */
+   
+#  define FP_ILOGB0   (- 2147483647 - 1)  
+#  define FP_ILOGBNAN 2147483647  
 # elif defined __sun
-  /* Solaris 9: match what ilogb() does */
-#  define FP_ILOGB0   (- 2147483647) /* - INT_MAX */
-#  define FP_ILOGBNAN 2147483647 /* INT_MAX */
+   
+#  define FP_ILOGB0   (- 2147483647)  
+#  define FP_ILOGBNAN 2147483647  
 # else
-  /* Gnulib defined values.  */
-#  define FP_ILOGB0   (- 2147483647) /* - INT_MAX */
-#  define FP_ILOGBNAN (- 2147483647 - 1) /* INT_MIN */
+   
+#  define FP_ILOGB0   (- 2147483647)  
+#  define FP_ILOGBNAN (- 2147483647 - 1)  
 # endif
 #endif
 
@@ -1117,13 +1079,7 @@ _GL_WARN_ON_USE (fmodl, "fmodl is unportable - "
 #endif
 
 
-/* Write x as
-     x = mantissa * 2^exp
-   where
-     If x finite and nonzero: 0.5 <= |mantissa| < 1.0.
-     If x is zero: mantissa = x, exp = 0.
-     If x is infinite or NaN: mantissa = x, exp unspecified.
-   Store exp in *EXPPTR and return mantissa.  */
+ 
 #if @GNULIB_FREXPF@
 # if @REPLACE_FREXPF@
 #  if !(defined __cplusplus && defined GNULIB_NAMESPACE)
@@ -1150,13 +1106,7 @@ _GL_WARN_ON_USE (frexpf, "frexpf is unportable - "
 # endif
 #endif
 
-/* Write x as
-     x = mantissa * 2^exp
-   where
-     If x finite and nonzero: 0.5 <= |mantissa| < 1.0.
-     If x is zero: mantissa = x, exp = 0.
-     If x is infinite or NaN: mantissa = x, exp unspecified.
-   Store exp in *EXPPTR and return mantissa.  */
+ 
 #if @GNULIB_FREXP@
 # if @REPLACE_FREXP@
 #  if !(defined __cplusplus && defined GNULIB_NAMESPACE)
@@ -1173,18 +1123,12 @@ _GL_CXXALIASWARN1 (frexp, double, (double x, int *expptr));
 # endif
 #elif defined GNULIB_POSIXCHECK
 # undef frexp
-/* Assume frexp is always declared.  */
+ 
 _GL_WARN_ON_USE (frexp, "frexp is unportable - "
                  "use gnulib module frexp for portability");
 #endif
 
-/* Write x as
-     x = mantissa * 2^exp
-   where
-     If x finite and nonzero: 0.5 <= |mantissa| < 1.0.
-     If x is zero: mantissa = x, exp = 0.
-     If x is infinite or NaN: mantissa = x, exp unspecified.
-   Store exp in *EXPPTR and return mantissa.  */
+ 
 #if @GNULIB_FREXPL@ && @REPLACE_FREXPL@
 # if !(defined __cplusplus && defined GNULIB_NAMESPACE)
 #  undef frexpl
@@ -1216,7 +1160,7 @@ _GL_WARN_ON_USE (frexpl, "frexpl is unportable - "
 #endif
 
 
-/* Return sqrt(x^2+y^2).  */
+ 
 #if @GNULIB_HYPOTF@
 # if @REPLACE_HYPOTF@
 #  if !(defined __cplusplus && defined GNULIB_NAMESPACE)
@@ -1242,7 +1186,7 @@ _GL_WARN_ON_USE (hypotf, "hypotf is unportable - "
 # endif
 #endif
 
-/* Return sqrt(x^2+y^2).  */
+ 
 #if @GNULIB_HYPOT@
 # if @REPLACE_HYPOT@
 #  if !(defined __cplusplus && defined GNULIB_NAMESPACE)
@@ -1265,7 +1209,7 @@ _GL_WARN_ON_USE (hypotf, "hypot has portability problems - "
 # endif
 #endif
 
-/* Return sqrt(x^2+y^2).  */
+ 
 #if @GNULIB_HYPOTL@
 # if @REPLACE_HYPOTL@
 #  if !(defined __cplusplus && defined GNULIB_NAMESPACE)
@@ -1368,9 +1312,7 @@ _GL_WARN_ON_USE (ilogbl, "ilogbl is unportable - "
 
 
 #if @GNULIB_MDA_J0@
-/* On native Windows, map 'j0' to '_j0', so that -loldnames is not
-   required.  In C++ with GNULIB_NAMESPACE, avoid differences between
-   platforms by defining GNULIB_NAMESPACE::j0 always.  */
+ 
 # if defined _WIN32 && !defined __CYGWIN__
 #  if !(defined __cplusplus && defined GNULIB_NAMESPACE)
 #   undef j0
@@ -1384,9 +1326,7 @@ _GL_CXXALIASWARN (j0);
 #endif
 
 #if @GNULIB_MDA_J1@
-/* On native Windows, map 'j1' to '_j1', so that -loldnames is not
-   required.  In C++ with GNULIB_NAMESPACE, avoid differences between
-   platforms by defining GNULIB_NAMESPACE::j1 always.  */
+ 
 # if defined _WIN32 && !defined __CYGWIN__
 #  if !(defined __cplusplus && defined GNULIB_NAMESPACE)
 #   undef j1
@@ -1400,9 +1340,7 @@ _GL_CXXALIASWARN (j1);
 #endif
 
 #if @GNULIB_MDA_JN@
-/* On native Windows, map 'jn' to '_jn', so that -loldnames is not
-   required.  In C++ with GNULIB_NAMESPACE, avoid differences between
-   platforms by defining GNULIB_NAMESPACE::jn always.  */
+ 
 # if defined _WIN32 && !defined __CYGWIN__
 #  if !(defined __cplusplus && defined GNULIB_NAMESPACE)
 #   undef jn
@@ -1416,7 +1354,7 @@ _GL_CXXALIASWARN (jn);
 #endif
 
 
-/* Return x * 2^exp.  */
+ 
 #if @GNULIB_LDEXPF@
 # if !@HAVE_LDEXPF@
 #  undef ldexpf
@@ -1434,7 +1372,7 @@ _GL_WARN_ON_USE (ldexpf, "ldexpf is unportable - "
 # endif
 #endif
 
-/* Return x * 2^exp.  */
+ 
 #if @GNULIB_LDEXP@
 # if @REPLACE_LDEXP@
 #  if !(defined __cplusplus && defined GNULIB_NAMESPACE)
@@ -1444,7 +1382,7 @@ _GL_WARN_ON_USE (ldexpf, "ldexpf is unportable - "
 _GL_FUNCDECL_RPL (ldexp, double, (double x, int exp));
 _GL_CXXALIAS_RPL (ldexp, double, (double x, int exp));
 # else
-/* Assume ldexp is always declared.  */
+ 
 _GL_CXXALIAS_SYS (ldexp, double, (double x, int exp));
 # endif
 # if __GLIBC__ >= 2
@@ -1452,12 +1390,12 @@ _GL_CXXALIASWARN1 (ldexp, double, (double x, int exp));
 # endif
 #elif defined GNULIB_POSIXCHECK
 # undef ldexp
-/* Assume ldexp is always declared.  */
+ 
 _GL_WARN_ON_USE (ldexp, "ldexp is unportable - "
                  "use gnulib module ldexp for portability");
 #endif
 
-/* Return x * 2^exp.  */
+ 
 #if @GNULIB_LDEXPL@ && @REPLACE_LDEXPL@
 # if !(defined __cplusplus && defined GNULIB_NAMESPACE)
 #  undef ldexpl
@@ -2420,9 +2358,7 @@ _GL_WARN_ON_USE (truncl, "truncl is unportable - "
 
 
 #if @GNULIB_MDA_Y0@
-/* On native Windows, map 'y0' to '_y0', so that -loldnames is not
-   required.  In C++ with GNULIB_NAMESPACE, avoid differences between
-   platforms by defining GNULIB_NAMESPACE::y0 always.  */
+ 
 # if defined _WIN32 && !defined __CYGWIN__
 #  if !(defined __cplusplus && defined GNULIB_NAMESPACE)
 #   undef y0
@@ -2436,9 +2372,7 @@ _GL_CXXALIASWARN (y0);
 #endif
 
 #if @GNULIB_MDA_Y1@
-/* On native Windows, map 'y1' to '_y1', so that -loldnames is not
-   required.  In C++ with GNULIB_NAMESPACE, avoid differences between
-   platforms by defining GNULIB_NAMESPACE::y1 always.  */
+ 
 # if defined _WIN32 && !defined __CYGWIN__
 #  if !(defined __cplusplus && defined GNULIB_NAMESPACE)
 #   undef y1
@@ -2452,9 +2386,7 @@ _GL_CXXALIASWARN (y1);
 #endif
 
 #if @GNULIB_MDA_YN@
-/* On native Windows, map 'yn' to '_yn', so that -loldnames is not
-   required.  In C++ with GNULIB_NAMESPACE, avoid differences between
-   platforms by defining GNULIB_NAMESPACE::yn always.  */
+ 
 # if defined _WIN32 && !defined __CYGWIN__
 #  if !(defined __cplusplus && defined GNULIB_NAMESPACE)
 #   undef yn
@@ -2468,8 +2400,7 @@ _GL_CXXALIASWARN (yn);
 #endif
 
 
-/* Definitions of function-like macros come here, after the function
-   declarations.  */
+ 
 
 
 #if @GNULIB_ISFINITE@
@@ -2488,8 +2419,7 @@ _GL_EXTERN_C int gl_isfinitel (long double x);
 _GL_MATH_CXX_REAL_FLOATING_DECL_1 (isfinite)
 #   undef isfinite
 #   if __GNUC__ >= 6 || (defined __clang__ && !((defined __APPLE__ && defined __MACH__) || defined __FreeBSD__ || defined __OpenBSD__ || defined _AIX || (defined _WIN32 && !defined __CYGWIN__)))
-  /* This platform's <cmath> possibly defines isfinite through a set of inline
-     functions.  */
+   
 _GL_MATH_CXX_REAL_FLOATING_DECL_2 (isfinite, rpl_isfinite, bool)
 #    define isfinite rpl_isfinite
 #    define GNULIB_NAMESPACE_LACKS_ISFINITE 1
@@ -2523,8 +2453,7 @@ _GL_EXTERN_C int gl_isinfl (long double x);
 _GL_MATH_CXX_REAL_FLOATING_DECL_1 (isinf)
 #   undef isinf
 #   if __GNUC__ >= 6 || (defined __clang__ && !((defined __APPLE__ && defined __MACH__) || defined __FreeBSD__ || defined __OpenBSD__ || (defined _WIN32 && !defined __CYGWIN__)))
-  /* This platform's <cmath> possibly defines isinf through a set of inline
-     functions.  */
+   
 _GL_MATH_CXX_REAL_FLOATING_DECL_2 (isinf, rpl_isinf, bool)
 #    define isinf rpl_isinf
 #    define GNULIB_NAMESPACE_LACKS_ISINF 1
@@ -2543,13 +2472,11 @@ _GL_WARN_REAL_FLOATING_DECL (isinf);
 
 
 #if @GNULIB_ISNANF@
-/* Test for NaN for 'float' numbers.  */
+ 
 # if @HAVE_ISNANF@
-/* The original <math.h> included above provides a declaration of isnan macro
-   or (older) isnanf function.  */
+ 
 #  if (__GNUC__ >= 4) || (__clang_major__ >= 4)
-    /* GCC >= 4.0 and clang provide a type-generic built-in for isnan.
-       GCC >= 4.0 also provides __builtin_isnanf, but clang doesn't.  */
+     
 #   undef isnanf
 #   define isnanf(x) __builtin_isnan ((float)(x))
 #  elif defined isnan
@@ -2557,7 +2484,7 @@ _GL_WARN_REAL_FLOATING_DECL (isinf);
 #   define isnanf(x) isnan ((float)(x))
 #  endif
 # else
-/* Test whether X is a NaN.  */
+ 
 #  undef isnanf
 #  define isnanf rpl_isnanf
 _GL_EXTERN_C int isnanf (float x);
@@ -2565,14 +2492,11 @@ _GL_EXTERN_C int isnanf (float x);
 #endif
 
 #if @GNULIB_ISNAND@
-/* Test for NaN for 'double' numbers.
-   This function is a gnulib extension, unlike isnan() which applied only
-   to 'double' numbers earlier but now is a type-generic macro.  */
+ 
 # if @HAVE_ISNAND@
-/* The original <math.h> included above provides a declaration of isnan
-   macro.  */
+ 
 #  if (__GNUC__ >= 4) || (__clang_major__ >= 4)
-    /* GCC >= 4.0 and clang provide a type-generic built-in for isnan.  */
+     
 #   undef isnand
 #   define isnand(x) __builtin_isnan ((double)(x))
 #  else
@@ -2580,7 +2504,7 @@ _GL_EXTERN_C int isnanf (float x);
 #   define isnand(x) isnan ((double)(x))
 #  endif
 # else
-/* Test whether X is a NaN.  */
+ 
 #  undef isnand
 #  define isnand rpl_isnand
 _GL_EXTERN_C int isnand (double x);
@@ -2588,13 +2512,11 @@ _GL_EXTERN_C int isnand (double x);
 #endif
 
 #if @GNULIB_ISNANL@
-/* Test for NaN for 'long double' numbers.  */
+ 
 # if @HAVE_ISNANL@
-/* The original <math.h> included above provides a declaration of isnan
-   macro or (older) isnanl function.  */
+ 
 #  if (__GNUC__ >= 4) || (__clang_major__ >= 4)
-    /* GCC >= 4.0 and clang provide a type-generic built-in for isnan.
-       GCC >= 4.0 also provides __builtin_isnanl, but clang doesn't.  */
+     
 #   undef isnanl
 #   define isnanl(x) __builtin_isnan ((long double)(x))
 #  elif defined isnan
@@ -2602,20 +2524,17 @@ _GL_EXTERN_C int isnand (double x);
 #   define isnanl(x) isnan ((long double)(x))
 #  endif
 # else
-/* Test whether X is a NaN.  */
+ 
 #  undef isnanl
 #  define isnanl rpl_isnanl
 _GL_EXTERN_C int isnanl (long double x) _GL_ATTRIBUTE_CONST;
 # endif
 #endif
 
-/* This must come *after* the snippets for GNULIB_ISNANF and GNULIB_ISNANL!  */
+ 
 #if @GNULIB_ISNAN@
 # if @REPLACE_ISNAN@
-/* We can't just use the isnanf macro (e.g.) as exposed by
-   isnanf.h (e.g.) here, because those may end up being macros
-   that recursively expand back to isnan.  So use the gnulib
-   replacements for them directly. */
+ 
 #  if @HAVE_ISNANF@ && (__GNUC__ >= 4) || (__clang_major__ >= 4)
 #   define gl_isnan_f(x) __builtin_isnan ((float)(x))
 #  else
@@ -2651,22 +2570,19 @@ _GL_EXTERN_C int rpl_isnanl (long double x) _GL_ATTRIBUTE_CONST;
 _GL_MATH_CXX_REAL_FLOATING_DECL_1 (isnan)
 #   undef isnan
 #   if __GNUC__ >= 6 || (defined __clang__ && !((defined __APPLE__ && defined __MACH__ && __clang_major__ != 12) || (defined __FreeBSD__ && (__clang_major__ < 7 || __clang_major__ >= 11)) || defined __OpenBSD__ || (defined _WIN32 && !defined __CYGWIN__)))
-  /* This platform's <cmath> possibly defines isnan through a set of inline
-     functions.  */
+   
 _GL_MATH_CXX_REAL_FLOATING_DECL_2 (isnan, rpl_isnan, bool)
 #    define isnan rpl_isnan
 #    define GNULIB_NAMESPACE_LACKS_ISNAN 1
 #   elif (defined __FreeBSD__ && __clang_major__ >= 14)
-  /* Neither of the two possible _GL_MATH_CXX_REAL_FLOATING_DECL_2 invocations
-     works.  Inline functions are already present in /usr/include/c++/v1/math.h,
-     which comes from LLVM.  */
+   
 #    define GNULIB_NAMESPACE_LACKS_ISNAN 1
 #   else
 _GL_MATH_CXX_REAL_FLOATING_DECL_2 (isnan, isnan, bool)
 #   endif
 #  endif
 # else
-/* Ensure isnan is a macro.  */
+ 
 #  ifndef isnan
 #   define isnan isnan
 #  endif
@@ -2684,7 +2600,7 @@ _GL_WARN_REAL_FLOATING_DECL (isnan);
 # if (@REPLACE_SIGNBIT_USING_BUILTINS@ \
       && (!defined __cplusplus || __cplusplus < 201103))
 #  undef signbit
-   /* GCC >= 4.0 and clang provide three built-ins for signbit.  */
+    
 #  define signbit(x) \
    (sizeof (x) == sizeof (long double) ? __builtin_signbitl (x) : \
     sizeof (x) == sizeof (double) ? __builtin_signbit (x) : \
@@ -2740,8 +2656,7 @@ _GL_EXTERN_C int gl_signbitl (long double arg);
 _GL_MATH_CXX_REAL_FLOATING_DECL_1 (signbit)
 #   undef signbit
 #   if __GNUC__ >= 6 || (defined __clang__ && !((defined __APPLE__ && defined __MACH__) || defined __FreeBSD__ || defined __OpenBSD__ || defined _AIX || (defined _WIN32 && !defined __CYGWIN__)))
-  /* This platform's <cmath> possibly defines signbit through a set of inline
-     functions.  */
+   
 _GL_MATH_CXX_REAL_FLOATING_DECL_2 (signbit, rpl_signbit, bool)
 #    define signbit rpl_signbit
 #    define GNULIB_NAMESPACE_LACKS_SIGNBIT 1
@@ -2760,7 +2675,7 @@ _GL_WARN_REAL_FLOATING_DECL (signbit);
 
 _GL_INLINE_HEADER_END
 
-#endif /* _@GUARD_PREFIX@_MATH_H */
-#endif /* _GL_INCLUDING_MATH_H */
-#endif /* _@GUARD_PREFIX@_MATH_H */
+#endif  
+#endif  
+#endif  
 #endif

@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM wbt
 
@@ -8,10 +8,7 @@
 #include <linux/tracepoint.h>
 #include "../../../block/blk-wbt.h"
 
-/**
- * wbt_stat - trace stats for blk_wb
- * @stat: array of read/write stats
- */
+ 
 TRACE_EVENT(wbt_stat,
 
 	TP_PROTO(struct backing_dev_info *bdi, struct blk_rq_stat *stat),
@@ -52,10 +49,7 @@ TRACE_EVENT(wbt_stat,
 		  __entry->wmax, __entry->wnr_samples)
 );
 
-/**
- * wbt_lat - trace latency event
- * @lat: latency trigger
- */
+ 
 TRACE_EVENT(wbt_lat,
 
 	TP_PROTO(struct backing_dev_info *bdi, unsigned long lat),
@@ -77,15 +71,7 @@ TRACE_EVENT(wbt_lat,
 			(unsigned long long) __entry->lat)
 );
 
-/**
- * wbt_step - trace wb event step
- * @msg: context message
- * @step: the current scale step count
- * @window: the current monitoring window
- * @bg: the current background queue limit
- * @normal: the current normal writeback limit
- * @max: the current max throughput writeback limit
- */
+ 
 TRACE_EVENT(wbt_step,
 
 	TP_PROTO(struct backing_dev_info *bdi, const char *msg,
@@ -120,12 +106,7 @@ TRACE_EVENT(wbt_step,
 		  __entry->bg, __entry->normal, __entry->max)
 );
 
-/**
- * wbt_timer - trace wb timer event
- * @status: timer state status
- * @step: the current scale step count
- * @inflight: tracked writes inflight
- */
+ 
 TRACE_EVENT(wbt_timer,
 
 	TP_PROTO(struct backing_dev_info *bdi, unsigned int status,
@@ -152,7 +133,7 @@ TRACE_EVENT(wbt_timer,
 		  __entry->status, __entry->step, __entry->inflight)
 );
 
-#endif /* _TRACE_WBT_H */
+#endif  
 
-/* This part must be outside protection */
+ 
 #include <trace/define_trace.h>

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * mt2701-cs42448.c  --  MT2701 CS42448 ALSA SoC machine driver
- *
- * Copyright (c) 2016 MediaTek Inc.
- * Author: Ir Lian <ir.lian@mediatek.com>
- *	   Garlic Tseng <garlic.tseng@mediatek.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <sound/soc.h>
@@ -137,10 +131,10 @@ static int mt2701_cs42448_be_ops_hw_params(struct snd_pcm_substream *substream,
 
 	mclk_rate = rate * div_bck_over_lrck * div_mclk_over_bck;
 
-	/* mt2701 mclk */
+	 
 	snd_soc_dai_set_sysclk(cpu_dai, 0, mclk_rate, SND_SOC_CLOCK_OUT);
 
-	/* codec mclk */
+	 
 	snd_soc_dai_set_sysclk(codec_dai, 0, mclk_rate, SND_SOC_CLOCK_IN);
 
 	return 0;
@@ -214,7 +208,7 @@ SND_SOC_DAILINK_DEFS(be_mrg_bt,
 	DAILINK_COMP_ARRAY(COMP_EMPTY()));
 
 static struct snd_soc_dai_link mt2701_cs42448_dai_links[] = {
-	/* FE */
+	 
 	[DAI_LINK_FE_MULTI_CH_OUT] = {
 		.name = "mt2701-cs42448-multi-ch-out",
 		.stream_name = "mt2701-cs42448-multi-ch-out",
@@ -263,7 +257,7 @@ static struct snd_soc_dai_link mt2701_cs42448_dai_links[] = {
 		.dpcm_capture = 1,
 		SND_SOC_DAILINK_REG(fe_bt_in),
 	},
-	/* BE */
+	 
 	[DAI_LINK_BE_I2S0] = {
 		.name = "mt2701-cs42448-I2S0",
 		.no_pcm = 1,
@@ -433,7 +427,7 @@ static struct platform_driver mt2701_cs42448_machine = {
 
 module_platform_driver(mt2701_cs42448_machine);
 
-/* Module information */
+ 
 MODULE_DESCRIPTION("MT2701 CS42448 ALSA SoC machine driver");
 MODULE_AUTHOR("Ir Lian <ir.lian@mediatek.com>");
 MODULE_LICENSE("GPL v2");

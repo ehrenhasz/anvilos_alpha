@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * Driver for TI TPS6598x USB Power Delivery controller family
- *
- * Copyright (C) 2020 Purism SPC
- * Author: Guido Günther <agx@sigxcpu.org>
- */
+ 
+ 
 
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM tps6598x
@@ -296,9 +291,9 @@ TRACE_EVENT(tps6598x_data_status,
 		    )
 );
 
-#endif /* _TPS6598X_TRACE_H_ */
+#endif  
 
-/* This part must be outside protection */
+ 
 #undef TRACE_INCLUDE_FILE
 #define TRACE_INCLUDE_FILE trace
 #undef TRACE_INCLUDE_PATH

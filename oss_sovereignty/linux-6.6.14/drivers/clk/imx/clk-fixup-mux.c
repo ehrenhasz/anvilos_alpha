@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2013 Freescale Semiconductor, Inc.
- */
+
+ 
 
 #include <linux/bits.h>
 #include <linux/clk-provider.h>
@@ -10,15 +8,7 @@
 #include <linux/slab.h>
 #include "clk.h"
 
-/**
- * struct clk_fixup_mux - imx integer fixup multiplexer clock
- * @mux: the parent class
- * @ops: pointer to clk_ops of parent class
- * @fixup: a hook to fixup the write value
- *
- * The imx fixup multiplexer clock is a subclass of basic clk_mux
- * with an addtional fixup hook.
- */
+ 
 struct clk_fixup_mux {
 	struct clk_mux mux;
 	const struct clk_ops *ops;

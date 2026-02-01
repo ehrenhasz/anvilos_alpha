@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2012 GCT Semiconductor, Inc. All rights reserved. */
+
+ 
 
 #include <linux/kernel.h>
 #include "gdm_endian.h"

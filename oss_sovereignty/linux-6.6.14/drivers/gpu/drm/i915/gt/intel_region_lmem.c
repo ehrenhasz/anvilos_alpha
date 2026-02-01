@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright © 2019 Intel Corporation
- */
+
+ 
 
 #include "i915_drv.h"
 #include "i915_pci.h"
@@ -87,7 +85,7 @@ static void i915_resize_lmem_bar(struct drm_i915_private *i915, resource_size_t 
 			return;
 	}
 
-	/* Find out if root bus contains 64bit memory addressing */
+	 
 	while (root->parent)
 		root = root->parent;
 
@@ -97,21 +95,17 @@ static void i915_resize_lmem_bar(struct drm_i915_private *i915, resource_size_t 
 			break;
 	}
 
-	/* pci_resize_resource will fail anyways */
+	 
 	if (!root_res) {
 		drm_info(&i915->drm, "Can't resize LMEM BAR - platform support is missing\n");
 		return;
 	}
 
-	/*
-	 * Releasing forcewake during BAR resizing results in later forcewake
-	 * ack timeouts and former can happen any time - it is asynchronous.
-	 * Grabbing all forcewakes prevents it.
-	 */
+	 
 	with_intel_runtime_pm(i915->uncore.rpm, wakeref) {
 		intel_uncore_forcewake_get(&i915->uncore, FORCEWAKE_ALL);
 
-		/* First disable PCI memory decoding references */
+		 
 		pci_read_config_dword(pdev, PCI_COMMAND, &pci_cmd);
 		pci_write_config_dword(pdev, PCI_COMMAND,
 				       pci_cmd & ~PCI_COMMAND_MEMORY);
@@ -232,14 +226,14 @@ static struct intel_memory_region *setup_lmem(struct intel_gt *gt)
 
 		tile_stolen = lmem_size - flat_ccs_base;
 
-		/* If the FLAT_CCS_BASE_ADDR register is not populated, flag an error */
+		 
 		if (tile_stolen == lmem_size)
 			drm_err(&i915->drm,
 				"CCS_BASE_ADDR register did not have expected value\n");
 
 		lmem_size -= tile_stolen;
 	} else {
-		/* Stolen starts from GSMBASE without CCS */
+		 
 		lmem_size = intel_uncore_read64(&i915->uncore, GEN12_GSMBASE);
 	}
 

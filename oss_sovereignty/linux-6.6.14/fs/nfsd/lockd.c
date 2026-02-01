@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * This file contains all the stubs needed when communicating with lockd.
- * This level of indirection is necessary so we can run nfsd+lockd without
- * requiring the nfs client to be compiled in/loaded, and vice versa.
- *
- * Copyright (C) 1996, Olaf Kirch <okir@monad.swb.de>
- */
+
+ 
 
 #include <linux/file.h>
 #include <linux/lockd/bind.h>
@@ -21,9 +15,7 @@
 #define nlm_stale_fh	nlm_lck_denied_nolocks
 #define nlm_failed	nlm_lck_denied_nolocks
 #endif
-/*
- * Note: we hold the dentry use count while the file is open.
- */
+ 
 static __be32
 nlm_fopen(struct svc_rqst *rqstp, struct nfs_fh *f, struct file **filp,
 		int mode)
@@ -32,7 +24,7 @@ nlm_fopen(struct svc_rqst *rqstp, struct nfs_fh *f, struct file **filp,
 	int		access;
 	struct svc_fh	fh;
 
-	/* must initialize before using! but maxsize doesn't matter */
+	 
 	fh_init(&fh,0);
 	fh.fh_handle.fh_size = f->size;
 	memcpy(&fh.fh_handle.fh_raw, f->data, f->size);
@@ -42,9 +34,7 @@ nlm_fopen(struct svc_rqst *rqstp, struct nfs_fh *f, struct file **filp,
 	access |= NFSD_MAY_LOCK;
 	nfserr = nfsd_open(rqstp, &fh, S_IFREG, access, filp);
 	fh_put(&fh);
- 	/* We return nlm error codes as nlm doesn't know
-	 * about nfsd, but nfsd does know about nlm..
-	 */
+ 	 
 	switch (nfserr) {
 	case nfs_ok:
 		return 0;
@@ -64,8 +54,8 @@ nlm_fclose(struct file *filp)
 }
 
 static const struct nlmsvc_binding nfsd_nlm_ops = {
-	.fopen		= nlm_fopen,		/* open file for locking */
-	.fclose		= nlm_fclose,		/* close file */
+	.fopen		= nlm_fopen,		 
+	.fclose		= nlm_fclose,		 
 };
 
 void

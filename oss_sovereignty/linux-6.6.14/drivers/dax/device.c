@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright(c) 2016-2018 Intel Corporation. All rights reserved. */
+
+ 
 #include <linux/memremap.h>
 #include <linux/pagemap.h>
 #include <linux/module.h>
@@ -23,7 +23,7 @@ static int check_vma(struct dev_dax *dev_dax, struct vm_area_struct *vma,
 	if (!dax_alive(dev_dax->dax_dev))
 		return -ENXIO;
 
-	/* prevent private mappings from being established */
+	 
 	if ((vma->vm_flags & VM_MAYSHARE) != VM_MAYSHARE) {
 		dev_info_ratelimited(dev,
 				"%s: %s: fail, attempted private mapping\n",
@@ -50,7 +50,7 @@ static int check_vma(struct dev_dax *dev_dax, struct vm_area_struct *vma,
 	return 0;
 }
 
-/* see "strong" declaration in tools/testing/nvdimm/dax-dev.c */
+ 
 __weak phys_addr_t dax_pgoff_to_phys(struct dev_dax *dev_dax, pgoff_t pgoff,
 		unsigned long size)
 {
@@ -81,7 +81,7 @@ static void dax_set_mapping(struct vm_fault *vmf, pfn_t pfn,
 	struct dev_dax *dev_dax = filp->private_data;
 	pgoff_t pgoff;
 
-	/* mapping is only set on the head */
+	 
 	if (dev_dax->pgmap->vmemmap_shift)
 		nr_pages = 1;
 
@@ -157,7 +157,7 @@ static vm_fault_t __dev_dax_pmd_fault(struct dev_dax *dev_dax,
 	else if (fault_size > dev_dax->align)
 		return VM_FAULT_FALLBACK;
 
-	/* if we are outside of the VMA */
+	 
 	if (pmd_addr < vmf->vma->vm_start ||
 			(pmd_addr + PMD_SIZE) > vmf->vma->vm_end)
 		return VM_FAULT_SIGBUS;
@@ -202,7 +202,7 @@ static vm_fault_t __dev_dax_pud_fault(struct dev_dax *dev_dax,
 	else if (fault_size > dev_dax->align)
 		return VM_FAULT_FALLBACK;
 
-	/* if we are outside of the VMA */
+	 
 	if (pud_addr < vmf->vma->vm_start ||
 			(pud_addr + PUD_SIZE) > vmf->vma->vm_end)
 		return VM_FAULT_SIGBUS;
@@ -226,7 +226,7 @@ static vm_fault_t __dev_dax_pud_fault(struct dev_dax *dev_dax,
 {
 	return VM_FAULT_FALLBACK;
 }
-#endif /* !CONFIG_HAVE_ARCH_TRANSPARENT_HUGEPAGE_PUD */
+#endif  
 
 static vm_fault_t dev_dax_huge_fault(struct vm_fault *vmf, unsigned int order)
 {
@@ -291,10 +291,7 @@ static int dax_mmap(struct file *filp, struct vm_area_struct *vma)
 
 	dev_dbg(&dev_dax->dev, "trace\n");
 
-	/*
-	 * We lock to check dax_dev liveness and will re-check at
-	 * fault time.
-	 */
+	 
 	id = dax_read_lock();
 	rc = check_vma(dev_dax, vma, __func__);
 	dax_read_unlock(id);
@@ -306,7 +303,7 @@ static int dax_mmap(struct file *filp, struct vm_area_struct *vma)
 	return 0;
 }
 
-/* return an unmapped area aligned to the dax region specified alignment */
+ 
 static unsigned long dax_get_unmapped_area(struct file *filp,
 		unsigned long addr, unsigned long len, unsigned long pgoff,
 		unsigned long flags)

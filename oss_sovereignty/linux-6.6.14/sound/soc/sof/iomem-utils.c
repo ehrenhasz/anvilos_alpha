@@ -1,12 +1,12 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
-//
-// This file is provided under a dual BSD/GPLv2 license.  When using or
-// redistributing this file, you may do so under either license.
-//
-// Copyright(c) 2018-2022 Intel Corporation. All rights reserved.
-//
-// Author: Keyon Jie <yang.jie@linux.intel.com>
-//
+
+
+
+
+
+
+
+
+
 
 #include <linux/io-64-nonatomic-lo-hi.h>
 #include <linux/platform_device.h>
@@ -16,12 +16,7 @@
 #include "sof-priv.h"
 #include "ops.h"
 
-/*
- * Register IO
- *
- * The sof_io_xyz() wrappers are typically referenced in snd_sof_dsp_ops
- * structures and cannot be inlined.
- */
+ 
 
 void sof_io_write(struct snd_sof_dev *sdev, void __iomem *addr, u32 value)
 {
@@ -47,9 +42,7 @@ u64 sof_io_read64(struct snd_sof_dev *sdev, void __iomem *addr)
 }
 EXPORT_SYMBOL(sof_io_read64);
 
-/*
- * IPC Mailbox IO
- */
+ 
 
 void sof_mailbox_write(struct snd_sof_dev *sdev, u32 offset,
 		       void *message, size_t bytes)
@@ -69,9 +62,7 @@ void sof_mailbox_read(struct snd_sof_dev *sdev, u32 offset,
 }
 EXPORT_SYMBOL(sof_mailbox_read);
 
-/*
- * Memory copy.
- */
+ 
 
 int sof_block_write(struct snd_sof_dev *sdev, enum snd_sof_fw_blk_type blk_type,
 		    u32 offset, void *src, size_t size)
@@ -91,16 +82,13 @@ int sof_block_write(struct snd_sof_dev *sdev, enum snd_sof_fw_blk_type blk_type,
 	m = size / 4;
 	n = size % 4;
 
-	/* __iowrite32_copy use 32bit size values so divide by 4 */
+	 
 	__iowrite32_copy(dest, src, m);
 
 	if (n) {
 		affected_mask = (1 << (8 * n)) - 1;
 
-		/* first read the 32bit data of dest, then change affected
-		 * bytes, and write back to dest. For unaffected bytes, it
-		 * should not be changed
-		 */
+		 
 		tmp = ioread32(dest + m * 4);
 		tmp &= ~affected_mask;
 

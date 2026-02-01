@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * All Sensors DLH series low voltage digital pressure sensors
- *
- * Copyright (c) 2019 AVL DiTEST GmbH
- *   Tomislav Denis <tomislav.denis@avl.com>
- *
- * Datasheet: https://www.allsensors.com/cad/DS-0355_Rev_B.PDF
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/delay.h>
@@ -17,19 +10,19 @@
 #include <linux/iio/triggered_buffer.h>
 #include <asm/unaligned.h>
 
-/* Commands */
+ 
 #define DLH_START_SINGLE    0xAA
 
-/* Status bits */
+ 
 #define DLH_STATUS_OK       0x40
 
-/* DLH  data format */
+ 
 #define DLH_NUM_READ_BYTES  7
 #define DLH_NUM_DATA_BYTES  3
 #define DLH_NUM_PR_BITS     24
 #define DLH_NUM_TEMP_BITS   24
 
-/* DLH  timings */
+ 
 #define DLH_SINGLE_DUT_MS   5
 
 enum dhl_ids {
@@ -38,8 +31,8 @@ enum dhl_ids {
 };
 
 struct dlh_info {
-	u8 osdig;           /* digital offset factor */
-	unsigned int fss;   /* full scale span (inch H2O) */
+	u8 osdig;            
+	unsigned int fss;    
 };
 
 struct dlh_state {

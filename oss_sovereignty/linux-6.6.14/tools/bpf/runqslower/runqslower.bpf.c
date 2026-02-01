@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2019 Facebook
+
+
 #include "vmlinux.h"
 #include <bpf/bpf_helpers.h>
 #include "runqslower.h"
@@ -23,7 +23,7 @@ struct {
 	__uint(value_size, sizeof(u32));
 } events SEC(".maps");
 
-/* record enqueue timestamp */
+ 
 __always_inline
 static int trace_enqueue(struct task_struct *t)
 {
@@ -45,7 +45,7 @@ static int trace_enqueue(struct task_struct *t)
 SEC("tp_btf/sched_wakeup")
 int handle__sched_wakeup(u64 *ctx)
 {
-	/* TP_PROTO(struct task_struct *p) */
+	 
 	struct task_struct *p = (void *)ctx[0];
 
 	return trace_enqueue(p);
@@ -54,7 +54,7 @@ int handle__sched_wakeup(u64 *ctx)
 SEC("tp_btf/sched_wakeup_new")
 int handle__sched_wakeup_new(u64 *ctx)
 {
-	/* TP_PROTO(struct task_struct *p) */
+	 
 	struct task_struct *p = (void *)ctx[0];
 
 	return trace_enqueue(p);
@@ -63,9 +63,7 @@ int handle__sched_wakeup_new(u64 *ctx)
 SEC("tp_btf/sched_switch")
 int handle__sched_switch(u64 *ctx)
 {
-	/* TP_PROTO(bool preempt, struct task_struct *prev,
-	 *	    struct task_struct *next)
-	 */
+	 
 	struct task_struct *prev = (struct task_struct *)ctx[1];
 	struct task_struct *next = (struct task_struct *)ctx[2];
 	struct runq_event event = {};
@@ -73,20 +71,20 @@ int handle__sched_switch(u64 *ctx)
 	long state;
 	u32 pid;
 
-	/* ivcsw: treat like an enqueue event and store timestamp */
+	 
 	if (prev->__state == TASK_RUNNING)
 		trace_enqueue(prev);
 
 	pid = next->pid;
 
-	/* For pid mismatch, save a bpf_task_storage_get */
+	 
 	if (!pid || (targ_pid && targ_pid != pid))
 		return 0;
 
-	/* fetch timestamp and calculate delta */
+	 
 	tsp = bpf_task_storage_get(&start, next, 0, 0);
 	if (!tsp)
-		return 0;   /* missed enqueue */
+		return 0;    
 
 	delta_us = (bpf_ktime_get_ns() - *tsp) / 1000;
 	if (min_us && delta_us <= min_us)
@@ -96,7 +94,7 @@ int handle__sched_switch(u64 *ctx)
 	event.delta_us = delta_us;
 	bpf_get_current_comm(&event.task, sizeof(event.task));
 
-	/* output */
+	 
 	bpf_perf_event_output(ctx, &events, BPF_F_CURRENT_CPU,
 			      &event, sizeof(event));
 

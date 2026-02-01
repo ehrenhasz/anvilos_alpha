@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2000-2001,2005 Silicon Graphics, Inc.
- * All Rights Reserved.
- */
+
+ 
 #include "xfs.h"
 #include "xfs_fs.h"
 #include "xfs_format.h"
@@ -47,13 +44,7 @@ xfs_efi_item_free(
 		kmem_cache_free(xfs_efi_cache, efip);
 }
 
-/*
- * Freeing the efi requires that we remove it from the AIL if it has already
- * been placed there. However, the EFI may not yet have been placed in the AIL
- * when called by xfs_efi_release() from EFD processing due to the ordering of
- * committed vs unpin operations in bulk insert operations. Hence the reference
- * count to ensure only the last caller frees the EFI.
- */
+ 
 STATIC void
 xfs_efi_release(
 	struct xfs_efi_log_item	*efip)
@@ -78,13 +69,7 @@ xfs_efi_item_size(
 	*nbytes += xfs_efi_log_format_sizeof(efip->efi_format.efi_nextents);
 }
 
-/*
- * This is called to fill in the vector of log iovecs for the
- * given efi log item. We use only 1 iovec, and we point that
- * at the efi_log_format structure embedded in the efi item.
- * It is at this point that we assert that all of the extent
- * slots in the efi item have been filled.
- */
+ 
 STATIC void
 xfs_efi_item_format(
 	struct xfs_log_item	*lip,
@@ -105,14 +90,7 @@ xfs_efi_item_format(
 }
 
 
-/*
- * The unpin operation is the last place an EFI is manipulated in the log. It is
- * either inserted in the AIL or aborted in the event of a log I/O error. In
- * either case, the EFI transaction has been successfully committed to make it
- * this far. Therefore, we expect whoever committed the EFI to either construct
- * and commit the EFD or drop the EFD's reference in the event of error. Simply
- * drop the log's EFI reference now that the log is done with it.
- */
+ 
 STATIC void
 xfs_efi_item_unpin(
 	struct xfs_log_item	*lip,
@@ -122,11 +100,7 @@ xfs_efi_item_unpin(
 	xfs_efi_release(efip);
 }
 
-/*
- * The EFI has been either committed or aborted if the transaction has been
- * cancelled. If the transaction was cancelled, an EFD isn't going to be
- * constructed and thus we free the EFI here directly.
- */
+ 
 STATIC void
 xfs_efi_item_release(
 	struct xfs_log_item	*lip)
@@ -134,9 +108,7 @@ xfs_efi_item_release(
 	xfs_efi_release(EFI_ITEM(lip));
 }
 
-/*
- * Allocate and initialize an efi item with the given number of extents.
- */
+ 
 STATIC struct xfs_efi_log_item *
 xfs_efi_init(
 	struct xfs_mount	*mp,
@@ -163,13 +135,7 @@ xfs_efi_init(
 	return efip;
 }
 
-/*
- * Copy an EFI format buffer from the given buf, and into the destination
- * EFI format structure.
- * The given buffer can be in 32 bit or 64 bit form (which has different padding),
- * one of which will be the native format for this kernel.
- * It will handle the conversion of formats if necessary.
- */
+ 
 STATIC int
 xfs_efi_copy_format(xfs_log_iovec_t *buf, xfs_efi_log_format_t *dst_efi_fmt)
 {
@@ -248,13 +214,7 @@ xfs_efd_item_size(
 	*nbytes += xfs_efd_log_format_sizeof(efdp->efd_format.efd_nextents);
 }
 
-/*
- * This is called to fill in the vector of log iovecs for the
- * given efd log item. We use only 1 iovec, and we point that
- * at the efd_log_format structure embedded in the efd item.
- * It is at this point that we assert that all of the extent
- * slots in the efd item have been filled.
- */
+ 
 STATIC void
 xfs_efd_item_format(
 	struct xfs_log_item	*lip,
@@ -273,10 +233,7 @@ xfs_efd_item_format(
 			xfs_efd_log_format_sizeof(efdp->efd_format.efd_nextents));
 }
 
-/*
- * The EFD is either committed or aborted if the transaction is cancelled. If
- * the transaction is cancelled, drop our reference to the EFI and free the EFD.
- */
+ 
 STATIC void
 xfs_efd_item_release(
 	struct xfs_log_item	*lip)
@@ -303,11 +260,7 @@ static const struct xfs_item_ops xfs_efd_item_ops = {
 	.iop_intent	= xfs_efd_item_intent,
 };
 
-/*
- * Allocate an "extent free done" log item that will hold nextents worth of
- * extents.  The caller must use all nextents extents, because we are not
- * flexible about this at all.
- */
+ 
 static struct xfs_efd_log_item *
 xfs_trans_get_efd(
 	struct xfs_trans		*tp,
@@ -336,17 +289,7 @@ xfs_trans_get_efd(
 	return efdp;
 }
 
-/*
- * Fill the EFD with all extents from the EFI when we need to roll the
- * transaction and continue with a new EFI.
- *
- * This simply copies all the extents in the EFI to the EFD rather than make
- * assumptions about which extents in the EFI have already been processed. We
- * currently keep the xefi list in the same order as the EFI extent list, but
- * that may not always be the case. Copying everything avoids leaving a landmine
- * were we fail to cancel all the extents in an EFI if the xefi list is
- * processed in a different order to the extents in the EFI.
- */
+ 
 static void
 xfs_efd_from_efi(
 	struct xfs_efd_log_item	*efdp)
@@ -364,11 +307,7 @@ xfs_efd_from_efi(
 	efdp->efd_next_extent = efip->efi_format.efi_nextents;
 }
 
-/*
- * Free an extent and log it to the EFD. Note that the transaction is marked
- * dirty regardless of whether the extent free succeeds or fails to support the
- * EFI/EFD lifecycle rules.
- */
+ 
 static int
 xfs_trans_free_extent(
 	struct xfs_trans		*tp,
@@ -396,22 +335,11 @@ xfs_trans_free_extent(
 			xefi->xefi_blockcount, &oinfo, xefi->xefi_agresv,
 			xefi->xefi_flags & XFS_EFI_SKIP_DISCARD);
 
-	/*
-	 * Mark the transaction dirty, even on error. This ensures the
-	 * transaction is aborted, which:
-	 *
-	 * 1.) releases the EFI and frees the EFD
-	 * 2.) shuts down the filesystem
-	 */
+	 
 	tp->t_flags |= XFS_TRANS_DIRTY | XFS_TRANS_HAS_INTENT_DONE;
 	set_bit(XFS_LI_DIRTY, &efdp->efd_item.li_flags);
 
-	/*
-	 * If we need a new transaction to make progress, the caller will log a
-	 * new EFI with the current contents. It will also log an EFD to cancel
-	 * the existing EFI, and so we need to copy all the unprocessed extents
-	 * in this EFI to the EFD so this works correctly.
-	 */
+	 
 	if (error == -EAGAIN) {
 		xfs_efd_from_efi(efdp);
 		return error;
@@ -427,7 +355,7 @@ xfs_trans_free_extent(
 	return error;
 }
 
-/* Sort bmap items by AG. */
+ 
 static int
 xfs_extent_free_diff_items(
 	void				*priv,
@@ -443,7 +371,7 @@ xfs_extent_free_diff_items(
 	return ra->xefi_pag->pag_agno - rb->xefi_pag->pag_agno;
 }
 
-/* Log a free extent to the intent item. */
+ 
 STATIC void
 xfs_extent_free_log_item(
 	struct xfs_trans		*tp,
@@ -456,11 +384,7 @@ xfs_extent_free_log_item(
 	tp->t_flags |= XFS_TRANS_DIRTY;
 	set_bit(XFS_LI_DIRTY, &efip->efi_item.li_flags);
 
-	/*
-	 * atomic_inc_return gives us the value after the increment;
-	 * we want to use it as an array index so we need to subtract 1 from
-	 * it.
-	 */
+	 
 	next_extent = atomic_inc_return(&efip->efi_next_extent) - 1;
 	ASSERT(next_extent < efip->efi_format.efi_nextents);
 	extp = &efip->efi_format.efi_extents[next_extent];
@@ -489,7 +413,7 @@ xfs_extent_free_create_intent(
 	return &efip->efi_item;
 }
 
-/* Get an EFD so we can process all the free extents. */
+ 
 static struct xfs_log_item *
 xfs_extent_free_create_done(
 	struct xfs_trans		*tp,
@@ -499,7 +423,7 @@ xfs_extent_free_create_done(
 	return &xfs_trans_get_efd(tp, EFI_ITEM(intent), count)->efd_item;
 }
 
-/* Take a passive ref to the AG containing the space we're freeing. */
+ 
 void
 xfs_extent_free_get_group(
 	struct xfs_mount		*mp,
@@ -511,7 +435,7 @@ xfs_extent_free_get_group(
 	xefi->xefi_pag = xfs_perag_intent_get(mp, agno);
 }
 
-/* Release a passive AG ref after some freeing work. */
+ 
 static inline void
 xfs_extent_free_put_group(
 	struct xfs_extent_free_item	*xefi)
@@ -519,7 +443,7 @@ xfs_extent_free_put_group(
 	xfs_perag_intent_put(xefi->xefi_pag);
 }
 
-/* Process a free extent. */
+ 
 STATIC int
 xfs_extent_free_finish_item(
 	struct xfs_trans		*tp,
@@ -534,10 +458,7 @@ xfs_extent_free_finish_item(
 
 	error = xfs_trans_free_extent(tp, EFD_ITEM(done), xefi);
 
-	/*
-	 * Don't free the XEFI if we need a new transaction to complete
-	 * processing of it.
-	 */
+	 
 	if (error == -EAGAIN)
 		return error;
 
@@ -546,7 +467,7 @@ xfs_extent_free_finish_item(
 	return error;
 }
 
-/* Abort all pending EFIs. */
+ 
 STATIC void
 xfs_extent_free_abort_intent(
 	struct xfs_log_item		*intent)
@@ -554,7 +475,7 @@ xfs_extent_free_abort_intent(
 	xfs_efi_release(EFI_ITEM(intent));
 }
 
-/* Cancel a free extent. */
+ 
 STATIC void
 xfs_extent_free_cancel_item(
 	struct list_head		*item)
@@ -576,10 +497,7 @@ const struct xfs_defer_op_type xfs_extent_free_defer_type = {
 	.cancel_item	= xfs_extent_free_cancel_item,
 };
 
-/*
- * AGFL blocks are accounted differently in the reserve pools and are not
- * inserted into the busy extent list.
- */
+ 
 STATIC int
 xfs_agfl_free_finish_item(
 	struct xfs_trans		*tp,
@@ -610,13 +528,7 @@ xfs_agfl_free_finish_item(
 		error = xfs_free_agfl_block(tp, xefi->xefi_pag->pag_agno,
 				agbno, agbp, &oinfo);
 
-	/*
-	 * Mark the transaction dirty, even on error. This ensures the
-	 * transaction is aborted, which:
-	 *
-	 * 1.) releases the EFI and frees the EFD
-	 * 2.) shuts down the filesystem
-	 */
+	 
 	tp->t_flags |= XFS_TRANS_DIRTY;
 	set_bit(XFS_LI_DIRTY, &efdp->efd_item.li_flags);
 
@@ -632,7 +544,7 @@ xfs_agfl_free_finish_item(
 	return error;
 }
 
-/* sub-type with special handling for AGFL deferred frees */
+ 
 const struct xfs_defer_op_type xfs_agfl_free_defer_type = {
 	.max_items	= XFS_EFI_MAX_FAST_EXTENTS,
 	.create_intent	= xfs_extent_free_create_intent,
@@ -642,7 +554,7 @@ const struct xfs_defer_op_type xfs_agfl_free_defer_type = {
 	.cancel_item	= xfs_extent_free_cancel_item,
 };
 
-/* Is this recovered EFI ok? */
+ 
 static inline bool
 xfs_efi_validate_ext(
 	struct xfs_mount		*mp,
@@ -651,10 +563,7 @@ xfs_efi_validate_ext(
 	return xfs_verify_fsbext(mp, extp->ext_start, extp->ext_len);
 }
 
-/*
- * Process an extent free intent item that was recovered from
- * the log.  We need to free the extents that it describes.
- */
+ 
 STATIC int
 xfs_efi_item_recover(
 	struct xfs_log_item		*lip,
@@ -669,11 +578,7 @@ xfs_efi_item_recover(
 	int				error = 0;
 	bool				requeue_only = false;
 
-	/*
-	 * First check the validity of the extents described by the
-	 * EFI.  If any are bad, then assume that all are bad and
-	 * just toss the EFI.
-	 */
+	 
 	for (i = 0; i < efip->efi_format.efi_nextents; i++) {
 		if (!xfs_efi_validate_ext(mp,
 					&efip->efi_format.efi_extents[i])) {
@@ -708,11 +613,7 @@ xfs_efi_item_recover(
 			xfs_extent_free_put_group(&fake);
 		}
 
-		/*
-		 * If we can't free the extent without potentially deadlocking,
-		 * requeue the rest of the extents to a new so that they get
-		 * run again later with a new transaction context.
-		 */
+		 
 		if (error == -EAGAIN || requeue_only) {
 			error = xfs_free_extent_later(tp, fake.xefi_startblock,
 					fake.xefi_blockcount,
@@ -747,7 +648,7 @@ xfs_efi_item_match(
 	return EFI_ITEM(lip)->efi_format.efi_id == intent_id;
 }
 
-/* Relog an intent item to push the log tail forward. */
+ 
 static struct xfs_log_item *
 xfs_efi_item_relog(
 	struct xfs_log_item		*intent,
@@ -786,13 +687,7 @@ static const struct xfs_item_ops xfs_efi_item_ops = {
 	.iop_relog	= xfs_efi_item_relog,
 };
 
-/*
- * This routine is called to create an in-core extent free intent
- * item from the efi format structure which was logged on disk.
- * It allocates an in-core efi, copies the extents from the format
- * structure into it, and adds the efi to the AIL with the given
- * LSN.
- */
+ 
 STATIC int
 xlog_recover_efi_commit_pass2(
 	struct xlog			*log,
@@ -820,10 +715,7 @@ xlog_recover_efi_commit_pass2(
 		return error;
 	}
 	atomic_set(&efip->efi_next_extent, efi_formatp->efi_nextents);
-	/*
-	 * Insert the intent into the AIL directly and drop one reference so
-	 * that finishing or canceling the work will drop the other.
-	 */
+	 
 	xfs_trans_ail_insert(log->l_ailp, &efip->efi_item, lsn);
 	xfs_efi_release(efip);
 	return 0;
@@ -834,13 +726,7 @@ const struct xlog_recover_item_ops xlog_efi_item_ops = {
 	.commit_pass2		= xlog_recover_efi_commit_pass2,
 };
 
-/*
- * This routine is called when an EFD format structure is found in a committed
- * transaction in the log. Its purpose is to cancel the corresponding EFI if it
- * was still in the log. To do this it searches the AIL for the EFI with an id
- * equal to that in the EFD format structure. If we find it we drop the EFD
- * reference, which removes the EFI from the AIL and frees it.
- */
+ 
 STATIC int
 xlog_recover_efd_commit_pass2(
 	struct xlog			*log,

@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM writeback
 
@@ -23,7 +23,7 @@
 		{I_REFERENCED,		"I_REFERENCED"}		\
 	)
 
-/* enums need to be exported to user space */
+ 
 #undef EM
 #undef EMe
 #define EM(a,b) 	TRACE_DEFINE_ENUM(a);
@@ -41,10 +41,7 @@
 
 WB_WORK_REASON
 
-/*
- * Now redefine the EM() and EMe() macros to map the enums to the strings
- * that will be printed in the output.
- */
+ 
 #undef EM
 #undef EMe
 #define EM(a,b)		{ a, b },
@@ -109,7 +106,7 @@ DECLARE_EVENT_CLASS(writeback_dirty_inode_template,
 	TP_fast_assign(
 		struct backing_dev_info *bdi = inode_to_bdi(inode);
 
-		/* may be called for files on pseudo FSes w/ unregistered bdi */
+		 
 		strscpy_pad(__entry->name, bdi_dev_name(bdi), 32);
 		__entry->ino		= inode->i_ino;
 		__entry->state		= inode->i_state;
@@ -160,7 +157,7 @@ static inline ino_t __trace_wbc_assign_cgroup(struct writeback_control *wbc)
 	else
 		return 1;
 }
-#else	/* CONFIG_CGROUP_WRITEBACK */
+#else	 
 
 static inline ino_t __trace_wb_assign_cgroup(struct bdi_writeback *wb)
 {
@@ -172,8 +169,8 @@ static inline ino_t __trace_wbc_assign_cgroup(struct writeback_control *wbc)
 	return 1;
 }
 
-#endif	/* CONFIG_CGROUP_WRITEBACK */
-#endif	/* CREATE_TRACE_POINTS */
+#endif	 
+#endif	 
 
 #ifdef CONFIG_CGROUP_WRITEBACK
 TRACE_EVENT(inode_foreign_history,
@@ -519,8 +516,8 @@ TRACE_EVENT(writeback_queue_io,
 	),
 	TP_printk("bdi %s: older=%lu age=%ld enqueue=%d reason=%s cgroup_ino=%lu",
 		__entry->name,
-		__entry->older,	/* dirtied_before in jiffies */
-		__entry->age,	/* dirtied_before in relative milliseconds */
+		__entry->older,	 
+		__entry->age,	 
 		__entry->moved,
 		__print_symbolic(__entry->reason, WB_WORK_REASON),
 		(unsigned long)__entry->cgroup_ino
@@ -608,12 +605,12 @@ TRACE_EVENT(bdi_dirty_ratelimit,
 		  "dirty_ratelimit=%lu task_ratelimit=%lu "
 		  "balanced_dirty_ratelimit=%lu cgroup_ino=%lu",
 		  __entry->bdi,
-		  __entry->write_bw,		/* write bandwidth */
-		  __entry->avg_write_bw,	/* avg write bandwidth */
-		  __entry->dirty_rate,		/* bdi dirty rate */
-		  __entry->dirty_ratelimit,	/* base ratelimit */
-		  __entry->task_ratelimit, /* ratelimit with position control */
-		  __entry->balanced_dirty_ratelimit, /* the balanced ratelimit */
+		  __entry->write_bw,		 
+		  __entry->avg_write_bw,	 
+		  __entry->dirty_rate,		 
+		  __entry->dirty_ratelimit,	 
+		  __entry->task_ratelimit,  
+		  __entry->balanced_dirty_ratelimit,  
 		  (unsigned long)__entry->cgroup_ino
 	)
 );
@@ -695,10 +692,10 @@ TRACE_EVENT(balance_dirty_pages,
 		  __entry->task_ratelimit,
 		  __entry->dirtied,
 		  __entry->dirtied_pause,
-		  __entry->paused,	/* ms */
-		  __entry->pause,	/* ms */
-		  __entry->period,	/* ms */
-		  __entry->think,	/* ms */
+		  __entry->paused,	 
+		  __entry->pause,	 
+		  __entry->period,	 
+		  __entry->think,	 
 		  (unsigned long)__entry->cgroup_ino
 	  )
 );
@@ -841,9 +838,7 @@ DEFINE_EVENT(writeback_inode_template, writeback_dirty_inode_enqueue,
 	TP_ARGS(inode)
 );
 
-/*
- * Inode writeback list tracking.
- */
+ 
 
 DEFINE_EVENT(writeback_inode_template, sb_mark_inode_writeback,
 	TP_PROTO(struct inode *inode),
@@ -855,7 +850,7 @@ DEFINE_EVENT(writeback_inode_template, sb_clear_inode_writeback,
 	TP_ARGS(inode)
 );
 
-#endif /* _TRACE_WRITEBACK_H */
+#endif  
 
-/* This part must be outside protection */
+ 
 #include <trace/define_trace.h>

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Portions copyright (C) 2003 Russell King, PXA MMCI Driver
- * Portions copyright (C) 2004-2005 Pierre Ossman, W83L51xD SD/MMC driver
- *
- * Copyright 2008 Embedded Alley Solutions, Inc.
- * Copyright 2009-2011 Freescale Semiconductor, Inc.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/init.h>
@@ -41,7 +35,7 @@
 				 BM_SSP_CTRL1_RECV_TIMEOUT_IRQ  | \
 				 BM_SSP_CTRL1_FIFO_OVERRUN_IRQ)
 
-/* card detect polling timeout */
+ 
 #define MXS_MMC_DETECT_TIMEOUT			(HZ/2)
 
 struct mxs_mmc_host {
@@ -139,16 +133,13 @@ static void mxs_mmc_request_done(struct mxs_mmc_host *host)
 	}
 
 	if (cmd == mrq->sbc) {
-		/* Finished CMD23, now send actual command. */
+		 
 		mxs_mmc_start_cmd(host, mrq->cmd);
 		return;
 	} else if (data) {
 		dma_unmap_sg(mmc_dev(host->mmc), data->sg,
 			     data->sg_len, ssp->dma_dir);
-		/*
-		 * If there was an error on any block, we mark all
-		 * data blocks as being in error.
-		 */
+		 
 		if (!data->error)
 			data->bytes_xfered = data->blocks * data->blksz;
 		else
@@ -220,13 +211,13 @@ static struct dma_async_tx_descriptor *mxs_mmc_prep_dma(
 	unsigned int sg_len;
 
 	if (data) {
-		/* data */
+		 
 		dma_map_sg(mmc_dev(host->mmc), data->sg,
 			   data->sg_len, ssp->dma_dir);
 		sgl = data->sg;
 		sg_len = data->sg_len;
 	} else {
-		/* pio */
+		 
 		sgl = (struct scatterlist *) ssp->ssp_pio_words;
 		sg_len = SSP_PIO_NUM;
 	}
@@ -327,10 +318,7 @@ out:
 static unsigned short mxs_ns_to_ssp_ticks(unsigned clock_rate, unsigned ns)
 {
 	const unsigned int ssp_timeout_mul = 4096;
-	/*
-	 * Calculate ticks in ms since ns are large numbers
-	 * and might overflow
-	 */
+	 
 	const unsigned int clock_per_ms = clock_rate / 1000;
 	const unsigned int ms = ns / 1000;
 	const unsigned int ticks = ms * clock_per_ms;
@@ -384,20 +372,17 @@ static void mxs_mmc_adtc(struct mxs_mmc_host *host)
 
 	cmd0 = BF_SSP(cmd->opcode, CMD0_CMD);
 
-	/* get logarithm to base 2 of block size for setting register */
+	 
 	log2_blksz = ilog2(data->blksz);
 
-	/*
-	 * take special care of the case that data size from data->sg
-	 * is not equal to blocks x blksz
-	 */
+	 
 	for_each_sg(sgl, sg, sg_len, i)
 		data_size += sg->length;
 
 	if (data_size != data->blocks * data->blksz)
 		blocks = 1;
 
-	/* xfer count, block size and count need to be set differently */
+	 
 	if (ssp_is_old(ssp)) {
 		ctrl0 |= BF_SSP(data_size, CTRL0_XFER_COUNT);
 		cmd0 |= BF_SSP(log2_blksz, CMD0_BLOCK_SIZE) |
@@ -419,14 +404,14 @@ static void mxs_mmc_adtc(struct mxs_mmc_host *host)
 		cmd0 |= BM_SSP_CMD0_CONT_CLKING_EN | BM_SSP_CMD0_SLOW_CLKING_EN;
 	}
 
-	/* set the timeout count */
+	 
 	timeout = mxs_ns_to_ssp_ticks(ssp->clk_rate, data->timeout_ns);
 	val = readl(ssp->base + HW_SSP_TIMING(ssp));
 	val &= ~(BM_SSP_TIMING_TIMEOUT);
 	val |= BF_SSP(timeout, TIMING_TIMEOUT);
 	writel(val, ssp->base + HW_SSP_TIMING(ssp));
 
-	/* pio */
+	 
 	ssp->ssp_pio_words[0] = ctrl0;
 	ssp->ssp_pio_words[1] = cmd0;
 	ssp->ssp_pio_words[2] = cmd1;
@@ -436,7 +421,7 @@ static void mxs_mmc_adtc(struct mxs_mmc_host *host)
 	if (!desc)
 		goto out;
 
-	/* append data sg */
+	 
 	WARN_ON(host->data != NULL);
 	host->data = data;
 	ssp->dma_dir = dma_data_dir;
@@ -547,7 +532,7 @@ static const struct mmc_host_ops mxs_mmc_ops = {
 static const struct of_device_id mxs_mmc_dt_ids[] = {
 	{ .compatible = "fsl,imx23-mmc", .data = (void *) IMX23_SSP, },
 	{ .compatible = "fsl,imx28-mmc", .data = (void *) IMX28_SSP, },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, mxs_mmc_dt_ids);
 
@@ -625,7 +610,7 @@ static int mxs_mmc_probe(struct platform_device *pdev)
 		goto out_clk_disable;
 	}
 
-	/* set mmc core parameters */
+	 
 	mmc->ops = &mxs_mmc_ops;
 	mmc->caps = MMC_CAP_SD_HIGHSPEED | MMC_CAP_MMC_HIGHSPEED |
 		    MMC_CAP_SDIO_IRQ | MMC_CAP_NEEDS_POLL | MMC_CAP_CMD23;

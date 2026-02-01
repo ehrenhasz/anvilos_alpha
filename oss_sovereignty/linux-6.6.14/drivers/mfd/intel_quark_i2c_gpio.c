@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Intel Quark MFD PCI driver for I2C & GPIO
- *
- * Copyright(c) 2014 Intel Corporation.
- *
- * Intel Quark PCI device for I2C and GPIO controller sharing the same
- * PCI function. This PCI driver will split the 2 devices into their
- * respective drivers.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -19,11 +11,11 @@
 #include <linux/i2c.h>
 #include <linux/property.h>
 
-/* PCI BAR for register base address */
+ 
 #define MFD_I2C_BAR		0
 #define MFD_GPIO_BAR		1
 
-/* ACPI _ADR value to match the child node */
+ 
 #define MFD_ACPI_MATCH_GPIO	0ULL
 #define MFD_ACPI_MATCH_I2C	1ULL
 
@@ -32,7 +24,7 @@
 
 #define INTEL_QUARK_I2C_CONTROLLER_CLK "i2c_designware.0"
 
-/* The Quark I2C controller source clock */
+ 
 #define INTEL_QUARK_I2C_CLK_HZ	33000000
 
 struct intel_quark_mfd {
@@ -82,7 +74,7 @@ static const struct dmi_system_id dmi_platform_info[] = {
 	{}
 };
 
-/* This is used as a place holder and will be modified at run-time */
+ 
 static struct resource intel_quark_i2c_res[] = {
 	[INTEL_QUARK_IORES_MEM] = {
 		.flags = IORESOURCE_MEM,
@@ -96,7 +88,7 @@ static struct mfd_cell_acpi_match intel_quark_acpi_match_i2c = {
 	.adr = MFD_ACPI_MATCH_I2C,
 };
 
-/* This is used as a place holder and will be modified at run-time */
+ 
 static struct resource intel_quark_gpio_res[] = {
 	[INTEL_QUARK_IORES_MEM] = {
 		.flags = IORESOURCE_MEM,
@@ -205,7 +197,7 @@ static int intel_quark_i2c_setup(struct pci_dev *pdev)
 	res[INTEL_QUARK_IORES_IRQ].start = pci_irq_vector(pdev, 0);
 	res[INTEL_QUARK_IORES_IRQ].end = pci_irq_vector(pdev, 0);
 
-	/* Normal mode by default */
+	 
 	cell->swnode = &intel_quark_i2c_controller_standard_node;
 
 	dmi_id = dmi_first_match(dmi_platform_info);
@@ -257,7 +249,7 @@ static int intel_quark_mfd_probe(struct pci_dev *pdev,
 
 	pci_set_master(pdev);
 
-	/* This driver only requires 1 IRQ vector */
+	 
 	ret = pci_alloc_irq_vectors(pdev, 1, 1, PCI_IRQ_ALL_TYPES);
 	if (ret < 0)
 		goto err_unregister_i2c_clk;

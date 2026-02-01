@@ -1,25 +1,11 @@
-/*
- * Copyright (c) 2008-2011 Atheros Communications Inc.
- *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
+ 
 
 #include "hw.h"
 #include "hw-ops.h"
 #include "../regd.h"
 #include "ar9002_phy.h"
 
-/* All code below is for AR5008, AR9001, AR9002 */
+ 
 
 #define AR5008_OFDM_RATES		8
 #define AR5008_HT_SS_RATES		8
@@ -36,9 +22,7 @@
 #define AR5008_11NG_HT_SS_SHIFT		12
 #define AR5008_11NG_HT_DS_SHIFT		20
 
-/*
- * register values to turn OFDM weak signal detection OFF
- */
+ 
 static const int m1ThreshLow_off = 127;
 static const int m2ThreshLow_off = 127;
 static const int m1Thresh_off = 127;
@@ -51,30 +35,30 @@ static const int m1ThreshExt_off = 127;
 static const int m2ThreshExt_off = 127;
 
 static const u32 ar5416Bank0[][2] = {
-	/* Addr      allmodes  */
+	 
 	{0x000098b0, 0x1e5795e5},
 	{0x000098e0, 0x02008020},
 };
 
 static const u32 ar5416Bank1[][2] = {
-	/* Addr      allmodes  */
+	 
 	{0x000098b0, 0x02108421},
 	{0x000098ec, 0x00000008},
 };
 
 static const u32 ar5416Bank2[][2] = {
-	/* Addr      allmodes  */
+	 
 	{0x000098b0, 0x0e73ff17},
 	{0x000098e0, 0x00000420},
 };
 
 static const u32 ar5416Bank3[][3] = {
-	/* Addr      5G          2G        */
+	 
 	{0x000098f0, 0x01400018, 0x01c00018},
 };
 
 static const u32 ar5416Bank7[][2] = {
-	/* Addr      allmodes  */
+	 
 	{0x0000989c, 0x00000500},
 	{0x0000989c, 0x00000800},
 	{0x000098cc, 0x0000000e},
@@ -102,12 +86,7 @@ static void ar5008_write_bank6(struct ath_hw *ah, unsigned int *writecnt)
 	REGWRITE_BUFFER_FLUSH(ah);
 }
 
-/*
- * ar5008_hw_phy_modify_rx_buffer() - perform analog swizzling of parameters
- *
- * Performs analog "swizzling" of parameters into their location.
- * Used on external AR2133/AR5133 radios.
- */
+ 
 static void ar5008_hw_phy_modify_rx_buffer(u32 *rfBuf, u32 reg32,
 					   u32 numBits, u32 firstBit,
 					   u32 column)
@@ -134,33 +113,7 @@ static void ar5008_hw_phy_modify_rx_buffer(u32 *rfBuf, u32 reg32,
 	}
 }
 
-/*
- * Fix on 2.4 GHz band for orientation sensitivity issue by increasing
- * rf_pwd_icsyndiv.
- *
- * Theoretical Rules:
- *   if 2 GHz band
- *      if forceBiasAuto
- *         if synth_freq < 2412
- *            bias = 0
- *         else if 2412 <= synth_freq <= 2422
- *            bias = 1
- *         else // synth_freq > 2422
- *            bias = 2
- *      else if forceBias > 0
- *         bias = forceBias & 7
- *      else
- *         no change, use value from ini file
- *   else
- *      no change, invalid band
- *
- *  1st Mod:
- *    2422 also uses value of 2
- *    <approved>
- *
- *  2nd Mod:
- *    Less than 2412 uses value of 0, 2412 and above uses value of 2
- */
+ 
 static void ar5008_hw_force_bias(struct ath_hw *ah, u16 synth_freq)
 {
 	struct ath_common *common = ath9k_hw_common(ah);
@@ -180,26 +133,20 @@ static void ar5008_hw_force_bias(struct ath_hw *ah, u16 synth_freq)
 	else
 		new_bias = 2;
 
-	/* pre-reverse this field */
+	 
 	tmp_reg = ath9k_hw_reverse_bits(new_bias, 3);
 
 	ath_dbg(common, CONFIG, "Force rf_pwd_icsyndiv to %1d on %4d\n",
 		new_bias, synth_freq);
 
-	/* swizzle rf_pwd_icsyndiv */
+	 
 	ar5008_hw_phy_modify_rx_buffer(ah->analogBank6Data, tmp_reg, 3, 181, 3);
 
-	/* write Bank 6 with new params */
+	 
 	ar5008_write_bank6(ah, &reg_writes);
 }
 
-/*
- * ar5008_hw_set_channel - tune to a channel on the external AR2133/AR5133 radios
- *
- * For the external AR2133/AR5133 radios, takes the MHz channel value and set
- * the channel value. Assumes writes enabled to analog bus and bank6 register
- * cache in ah->analogBank6Data.
- */
+ 
 static int ar5008_hw_set_channel(struct ath_hw *ah, struct ath9k_channel *chan)
 {
 	struct ath_common *common = ath9k_hw_common(ah);
@@ -319,7 +266,7 @@ void ar5008_hw_cmn_spur_mitigate(struct ath_hw *ah,
 
 	for (i = 0; i < ARRAY_SIZE(mask_m); i++) {
 		if ((cur_vit_mask > lower) && (cur_vit_mask < upper)) {
-			/* workaround for gcc bug #37014 */
+			 
 			volatile int tmp_v = abs(cur_vit_mask - bin);
 
 			if (tmp_v < 75)
@@ -423,12 +370,7 @@ void ar5008_hw_cmn_spur_mitigate(struct ath_hw *ah,
 	REG_WRITE(ah, AR_PHY_MASK2_P_61_45, tmp_mask);
 }
 
-/*
- * ar5008_hw_spur_mitigate - convert baseband spur frequency for external radios
- *
- * For non single-chip solutions. Converts to baseband spur frequency given the
- * input channel frequency and compute register settings below.
- */
+ 
 static void ar5008_hw_spur_mitigate(struct ath_hw *ah,
 				    struct ath9k_channel *chan)
 {
@@ -488,12 +430,7 @@ static void ar5008_hw_spur_mitigate(struct ath_hw *ah,
 	ar5008_hw_cmn_spur_mitigate(ah, chan, bin);
 }
 
-/**
- * ar5008_hw_rf_alloc_ext_banks - allocates banks for external radio programming
- * @ah: atheros hardware structure
- *
- * Only required for older devices with external AR2133/AR5133 radios.
- */
+ 
 static int ar5008_hw_rf_alloc_ext_banks(struct ath_hw *ah)
 {
 	int size = ah->iniBank6.ia_rows * sizeof(u32);
@@ -509,18 +446,7 @@ static int ar5008_hw_rf_alloc_ext_banks(struct ath_hw *ah)
 }
 
 
-/* *
- * ar5008_hw_set_rf_regs - programs rf registers based on EEPROM
- * @ah: atheros hardware structure
- * @chan:
- * @modesIndex:
- *
- * Used for the external AR2133/AR5133 radios.
- *
- * Reads the EEPROM header info from the device structure and programs
- * all rf registers. This routine requires access to the analog
- * rf device. This is not required for single-chip devices.
- */
+ 
 static bool ar5008_hw_set_rf_regs(struct ath_hw *ah,
 				  struct ath9k_channel *chan,
 				  u16 modesIndex)
@@ -531,21 +457,17 @@ static bool ar5008_hw_set_rf_regs(struct ath_hw *ah,
 	int regWrites = 0;
 	int i;
 
-	/*
-	 * Software does not need to program bank data
-	 * for single chip devices, that is AR9280 or anything
-	 * after that.
-	 */
+	 
 	if (AR_SREV_9280_20_OR_LATER(ah))
 		return true;
 
-	/* Setup rf parameters */
+	 
 	eepMinorRev = ah->eep_ops->get_eeprom_rev(ah);
 
 	for (i = 0; i < ah->iniBank6.ia_rows; i++)
 		ah->analogBank6Data[i] = INI_RA(&ah->iniBank6, i, modesIndex);
 
-	/* Only the 5 or 2 GHz OB/DB need to be set for a mode */
+	 
 	if (eepMinorRev >= 2) {
 		if (IS_CHAN_2GHZ(chan)) {
 			ob2GHz = ah->eep_ops->get_eeprom(ah, EEP_OB_2);
@@ -564,7 +486,7 @@ static bool ar5008_hw_set_rf_regs(struct ath_hw *ah,
 		}
 	}
 
-	/* Write Analog registers */
+	 
 	REG_WRITE_ARRAY(&bank0, 1, regWrites);
 	REG_WRITE_ARRAY(&bank1, 1, regWrites);
 	REG_WRITE_ARRAY(&bank2, 1, regWrites);
@@ -637,21 +559,11 @@ static void ar5008_hw_override_ini(struct ath_hw *ah,
 {
 	u32 val;
 
-	/*
-	 * Set the RX_ABORT and RX_DIS and clear if off only after
-	 * RXE is set for MAC. This prevents frames with corrupted
-	 * descriptor status.
-	 */
+	 
 	REG_SET_BIT(ah, AR_DIAG_SW, (AR_DIAG_RX_DIS | AR_DIAG_RX_ABORT));
 
 	if (AR_SREV_9280_20_OR_LATER(ah)) {
-		/*
-		 * For AR9280 and above, there is a new feature that allows
-		 * Multicast search based on both MAC Address and Key ID.
-		 * By default, this feature is enabled. But since the driver
-		 * is not using this feature, we switch it off; otherwise
-		 * multicast search based on MAC addr only will fail.
-		 */
+		 
 		val = REG_READ(ah, AR_PCU_MISC_MODE2) &
 			(~AR_ADHOC_MCAST_KEYID_ENABLE);
 
@@ -668,16 +580,10 @@ static void ar5008_hw_override_ini(struct ath_hw *ah,
 
 	if (AR_SREV_9280_20_OR_LATER(ah))
 		return;
-	/*
-	 * Disable BB clock gating
-	 * Necessary to avoid issues on AR5416 2.0
-	 */
+	 
 	REG_WRITE(ah, 0x9800 + (651 << 2), 0x11);
 
-	/*
-	 * Disable RIFS search on some chips to avoid baseband
-	 * hang issues.
-	 */
+	 
 	if (AR_SREV_9100(ah) || AR_SREV_9160(ah)) {
 		val = REG_READ(ah, AR_PHY_HEAVY_CLIP_FACTOR_RIFS);
 		val &= ~AR_PHY_RIFS_INIT_DELAY;
@@ -708,8 +614,7 @@ static void ar5008_hw_set_channel_regs(struct ath_hw *ah,
 	ENABLE_REGWRITE_BUFFER(ah);
 	REG_WRITE(ah, AR_PHY_TURBO, phymode);
 
-	/* This function do only REG_WRITE, so
-	 * we can include it to REGWRITE_BUFFER. */
+	 
 	ath9k_hw_set11nmac2040(ah, chan);
 
 	REG_WRITE(ah, AR_GTXTO, 25 << AR_GTXTO_TIMEOUT_LIMIT_S);
@@ -734,13 +639,10 @@ static int ar5008_hw_process_ini(struct ath_hw *ah,
 		modesIndex = IS_CHAN_HT40(chan) ? 3 : 4;
 	}
 
-	/*
-	 * Set correct baseband to analog shift setting to
-	 * access analog chips.
-	 */
+	 
 	REG_WRITE(ah, AR_PHY(0), 0x00000007);
 
-	/* Write ADDAC shifts */
+	 
 	REG_WRITE(ah, AR_PHY_ADC_SERIAL_CTL, AR_PHY_SEL_EXTERNAL_RADIO);
 	if (ah->eep_ops->set_addac)
 		ah->eep_ops->set_addac(ah, chan);
@@ -784,7 +686,7 @@ static int ar5008_hw_process_ini(struct ath_hw *ah,
 
 	ENABLE_REGWRITE_BUFFER(ah);
 
-	/* Write common array parameters */
+	 
 	for (i = 0; i < ah->iniCommon.ia_rows; i++) {
 		u32 reg = INI_RA(&ah->iniCommon, i, 0);
 		u32 val = INI_RA(&ah->iniCommon, i, 1);
@@ -814,7 +716,7 @@ static int ar5008_hw_process_ini(struct ath_hw *ah,
 	ath9k_olc_init(ah);
 	ath9k_hw_apply_txpower(ah, chan, false);
 
-	/* Write analog registers */
+	 
 	if (!ath9k_hw_set_rf_regs(ah, chan, freqIndex)) {
 		ath_err(ath9k_hw_common(ah), "ar5416SetRfRegs failed\n");
 		return -EIO;
@@ -961,18 +863,9 @@ static bool ar5008_hw_ani_control_new(struct ath_hw *ah,
 
 	switch (cmd & ah->ani_function) {
 	case ATH9K_ANI_OFDM_WEAK_SIGNAL_DETECTION:{
-		/*
-		 * on == 1 means ofdm weak signal detection is ON
-		 * on == 1 is the default, for less noise immunity
-		 *
-		 * on == 0 means ofdm weak signal detection is OFF
-		 * on == 0 means more noise imm
-		 */
+		 
 		u32 on = param ? 1 : 0;
-		/*
-		 * make register setting for default
-		 * (weak sig detect ON) come from INI file
-		 */
+		 
 		int m1ThreshLow = on ?
 			aniState->iniDef.m1ThreshLow : m1ThreshLow_off;
 		int m2ThreshLow = on ?
@@ -1111,10 +1004,7 @@ static bool ar5008_hw_ani_control_new(struct ath_hw *ah,
 		break;
 	}
 	case ATH9K_ANI_MRC_CCK:
-		/*
-		 * You should not see this as AR5008, AR9001, AR9002
-		 * does not have hardware support for MRC CCK.
-		 */
+		 
 		WARN_ON(1);
 		break;
 	default:
@@ -1161,11 +1051,7 @@ static void ar5008_hw_do_getnf(struct ath_hw *ah,
 	nfarray[5] = sign_extend32(nf, 8);
 }
 
-/*
- * Initialize the ANI register values with default (ini) values.
- * This routine is called during a (full) hardware reset after
- * all the registers are initialised from the INI.
- */
+ 
 static void ar5008_hw_ani_cache_ini_regs(struct ath_hw *ah)
 {
 	struct ath_common *common = ath9k_hw_common(ah);
@@ -1210,11 +1096,11 @@ static void ar5008_hw_ani_cache_ini_regs(struct ath_hw *ah)
 					       AR_PHY_EXT_CCA,
 					       AR_PHY_EXT_TIMING5_CYCPWR_THR1);
 
-	/* these levels just got reset to defaults by the INI */
+	 
 	aniState->spurImmunityLevel = ATH9K_ANI_SPUR_IMMUNE_LVL;
 	aniState->firstepLevel = ATH9K_ANI_FIRSTEP_LVL;
 	aniState->ofdmWeakSigDetect = true;
-	aniState->mrcCCK = false; /* not available on pre AR9003 */
+	aniState->mrcCCK = false;  
 }
 
 static void ar5008_hw_set_nf_limits(struct ath_hw *ah)

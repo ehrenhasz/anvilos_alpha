@@ -1,25 +1,4 @@
-/*
- * Copyright 2020 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 
 #define SWSMU_CODE_LAYER_L2
 
@@ -36,23 +15,19 @@
 #include "asic_reg/gc/gc_10_3_0_sh_mask.h"
 #include <asm/processor.h>
 
-/*
- * DO NOT use these for err/warn/info/debug messages.
- * Use dev_err, dev_warn, dev_info and dev_dbg instead.
- * They are more MGPU friendly.
- */
+ 
 #undef pr_err
 #undef pr_warn
 #undef pr_info
 #undef pr_debug
 
-// Registers related to GFXOFF
-// addressBlock: smuio_smuio_SmuSmuioDec
-// base address: 0x5a000
+
+
+
 #define mmSMUIO_GFX_MISC_CNTL			0x00c5
 #define mmSMUIO_GFX_MISC_CNTL_BASE_IDX		0
 
-//SMUIO_GFX_MISC_CNTL
+
 #define SMUIO_GFX_MISC_CNTL__SMU_GFX_cold_vs_gfxoff__SHIFT	0x0
 #define SMUIO_GFX_MISC_CNTL__PWR_GFXOFF_STATUS__SHIFT		0x1
 #define SMUIO_GFX_MISC_CNTL__SMU_GFX_cold_vs_gfxoff_MASK	0x00000001L
@@ -475,7 +450,7 @@ static int vangogh_init_smc_tables(struct smu_context *smu)
 		return ret;
 
 #ifdef CONFIG_X86
-	/* AMD x86 APU only */
+	 
 	smu->cpu_core_num = boot_cpu_data.x86_max_cores;
 #else
 	smu->cpu_core_num = 4;
@@ -489,7 +464,7 @@ static int vangogh_dpm_set_vcn_enable(struct smu_context *smu, bool enable)
 	int ret = 0;
 
 	if (enable) {
-		/* vcn dpm on is a prerequisite for vcn power gate messages */
+		 
 		ret = smu_cmn_send_smc_msg_with_param(smu, SMU_MSG_PowerUpVcn, 0, NULL);
 		if (ret)
 			return ret;
@@ -525,7 +500,7 @@ static bool vangogh_is_dpm_running(struct smu_context *smu)
 	int ret = 0;
 	uint64_t feature_enabled;
 
-	/* we need to re-init after suspend so return false */
+	 
 	if (adev->in_suspend)
 		return false;
 
@@ -627,7 +602,7 @@ static int vangogh_print_legacy_clk_levels(struct smu_context *smu,
 		}
 		break;
 	case SMU_SOCCLK:
-		/* the level 3 ~ 6 of socclk use the same frequency for vangogh */
+		 
 		count = clk_table->NumSocClkLevelsEnabled;
 		cur_value = metrics.SocclkFrequency;
 		break;
@@ -730,7 +705,7 @@ static int vangogh_print_clk_levels(struct smu_context *smu,
 		}
 		break;
 	case SMU_SOCCLK:
-		/* the level 3 ~ 6 of socclk use the same frequency for vangogh */
+		 
 		count = clk_table->NumSocClkLevelsEnabled;
 		cur_value = metrics.Current.SocclkFrequency;
 		break;
@@ -957,7 +932,7 @@ static int vangogh_get_dpm_ultimate_freq(struct smu_context *smu,
 			break;
 		}
 
-		/* clock in Mhz unit */
+		 
 		if (min)
 			*min = clock_limit / 100;
 		if (max)
@@ -1055,10 +1030,7 @@ static int vangogh_get_power_profile_mode(struct smu_context *smu,
 		return -EINVAL;
 
 	for (i = 0; i < PP_SMC_POWER_PROFILE_COUNT; i++) {
-		/*
-		 * Conv PP_SMC_POWER_PROFILE* to WORKLOAD_PPLIB_*_BIT
-		 * Not all profile modes are supported on vangogh.
-		 */
+		 
 		workload_type = smu_cmn_to_asic_specific_index(smu,
 							       CMN2ASIC_MAPPING_WORKLOAD,
 							       i);
@@ -1087,7 +1059,7 @@ static int vangogh_set_power_profile_mode(struct smu_context *smu, long *input, 
 			profile_mode == PP_SMC_POWER_PROFILE_POWERSAVING)
 		return 0;
 
-	/* conv PP_SMC_POWER_PROFILE* to WORKLOAD_PPLIB_*_BIT */
+	 
 	workload_type = smu_cmn_to_asic_specific_index(smu,
 						       CMN2ASIC_MAPPING_WORKLOAD,
 						       profile_mode);
@@ -1665,7 +1637,7 @@ static int vangogh_set_watermarks_table(struct smu_context *smu,
 		smu->watermarks_bitmap |= WATERMARKS_EXIST;
 	}
 
-	/* pass data to smu controller */
+	 
 	if ((smu->watermarks_bitmap & WATERMARKS_EXIST) &&
 	     !(smu->watermarks_bitmap & WATERMARKS_LOADED)) {
 		ret = smu_cmn_write_watermarks_table(smu);
@@ -2251,12 +2223,12 @@ static int vangogh_post_smu_init(struct smu_context *smu)
 	uint32_t tmp;
 	int ret = 0;
 	uint8_t aon_bits = 0;
-	/* Two CUs in one WGP */
+	 
 	uint32_t req_active_wgps = adev->gfx.cu_info.number/2;
 	uint32_t total_cu = adev->gfx.config.max_cu_per_sh *
 		adev->gfx.config.max_sh_per_se * adev->gfx.config.max_shader_engines;
 
-	/* allow message will be sent after enable message on Vangogh*/
+	 
 	if (smu_cmn_feature_is_enabled(smu, SMU_FEATURE_DPM_GFXCLK_BIT) &&
 			(adev->pg_flags & AMD_PG_SUPPORT_GFX_PG)) {
 		ret = smu_cmn_send_smc_msg(smu, SMU_MSG_EnableGfxOff, NULL);
@@ -2269,20 +2241,17 @@ static int vangogh_post_smu_init(struct smu_context *smu)
 		dev_info(adev->dev, "If GFX DPM or power gate disabled, disable GFXOFF\n");
 	}
 
-	/* if all CUs are active, no need to power off any WGPs */
+	 
 	if (total_cu == adev->gfx.cu_info.number)
 		return 0;
 
-	/*
-	 * Calculate the total bits number of always on WGPs for all SA/SEs in
-	 * RLC_PG_ALWAYS_ON_WGP_MASK.
-	 */
+	 
 	tmp = RREG32_KIQ(SOC15_REG_OFFSET(GC, 0, mmRLC_PG_ALWAYS_ON_WGP_MASK));
 	tmp &= RLC_PG_ALWAYS_ON_WGP_MASK__AON_WGP_MASK_MASK;
 
 	aon_bits = hweight32(tmp) * adev->gfx.config.max_sh_per_se * adev->gfx.config.max_shader_engines;
 
-	/* Do not request any WGPs less than set in the AON_WGP_MASK */
+	 
 	if (aon_bits > req_active_wgps) {
 		dev_info(adev->dev, "Number of always on WGPs greater than active WGPs: WGP power save not requested.\n");
 		return 0;
@@ -2316,19 +2285,7 @@ static int vangogh_mode2_reset(struct smu_context *smu)
 	return vangogh_mode_reset(smu, SMU_RESET_MODE_2);
 }
 
-/**
- * vangogh_get_gfxoff_status - Get gfxoff status
- *
- * @smu: amdgpu_device pointer
- *
- * Get current gfxoff status
- *
- * Return:
- * * 0	- GFXOFF (default if enabled).
- * * 1	- Transition out of GFX State.
- * * 2	- Not in GFXOFF.
- * * 3	- Transition into GFXOFF.
- */
+ 
 static u32 vangogh_get_gfxoff_status(struct smu_context *smu)
 {
 	struct amdgpu_device *adev = smu->adev;
@@ -2359,7 +2316,7 @@ static int vangogh_get_power_limit(struct smu_context *smu,
 		dev_err(smu->adev->dev, "Get slow PPT limit failed!\n");
 		return ret;
 	}
-	/* convert from milliwatt to watt */
+	 
 	if (current_power_limit)
 		*current_power_limit = ppt_limit / 1000;
 	if (default_power_limit)
@@ -2372,7 +2329,7 @@ static int vangogh_get_power_limit(struct smu_context *smu,
 		dev_err(smu->adev->dev, "Get fast PPT limit failed!\n");
 		return ret;
 	}
-	/* convert from milliwatt to watt */
+	 
 	power_context->current_fast_ppt_limit =
 			power_context->default_fast_ppt_limit = ppt_limit / 1000;
 	power_context->max_fast_ppt_limit = 30;
@@ -2427,7 +2384,7 @@ static int vangogh_set_power_limit(struct smu_context *smu,
 	case SMU_DEFAULT_PPT_LIMIT:
 		ret = smu_cmn_send_smc_msg_with_param(smu,
 				SMU_MSG_SetSlowPPTLimit,
-				ppt_limit * 1000, /* convert from watt to milliwatt */
+				ppt_limit * 1000,  
 				NULL);
 		if (ret)
 			return ret;
@@ -2445,7 +2402,7 @@ static int vangogh_set_power_limit(struct smu_context *smu,
 
 		ret = smu_cmn_send_smc_msg_with_param(smu,
 				SMU_MSG_SetFastPPTLimit,
-				ppt_limit * 1000, /* convert from watt to milliwatt */
+				ppt_limit * 1000,  
 				NULL);
 		if (ret)
 			return ret;
@@ -2459,17 +2416,7 @@ static int vangogh_set_power_limit(struct smu_context *smu,
 	return ret;
 }
 
-/**
- * vangogh_set_gfxoff_residency
- *
- * @smu: amdgpu_device pointer
- * @start: start/stop residency log
- *
- * This function will be used to log gfxoff residency
- *
- *
- * Returns standard response codes.
- */
+ 
 static u32 vangogh_set_gfxoff_residency(struct smu_context *smu, bool start)
 {
 	int ret = 0;
@@ -2488,16 +2435,7 @@ static u32 vangogh_set_gfxoff_residency(struct smu_context *smu, bool start)
 	return ret;
 }
 
-/**
- * vangogh_get_gfxoff_residency
- *
- * @smu: amdgpu_device pointer
- * @residency: placeholder for return value
- *
- * This function will be used to get gfxoff residency.
- *
- * Returns standard response codes.
- */
+ 
 static u32 vangogh_get_gfxoff_residency(struct smu_context *smu, uint32_t *residency)
 {
 	struct amdgpu_device *adev = smu->adev;
@@ -2507,16 +2445,7 @@ static u32 vangogh_get_gfxoff_residency(struct smu_context *smu, uint32_t *resid
 	return 0;
 }
 
-/**
- * vangogh_get_gfxoff_entrycount - get gfxoff entry count
- *
- * @smu: amdgpu_device pointer
- * @entrycount: placeholder for return value
- *
- * This function will be used to get gfxoff entry count
- *
- * Returns standard response codes.
- */
+ 
 static u32 vangogh_get_gfxoff_entrycount(struct smu_context *smu, uint64_t *entrycount)
 {
 	int ret = 0, value = 0;

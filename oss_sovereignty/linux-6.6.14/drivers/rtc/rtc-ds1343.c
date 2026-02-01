@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* rtc-ds1343.c
- *
- * Driver for Dallas Semiconductor DS1343 Low Current, SPI Compatible
- * Real Time Clock
- *
- * Author : Raghavendra Chandra Ganiga <ravi23ganiga@gmail.com>
- *	    Ankur Srivastava <sankurece@gmail.com> : DS1343 Nvram Support
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/module.h>
@@ -23,7 +16,7 @@
 #define DALLAS_MAXIM_DS1343	0
 #define DALLAS_MAXIM_DS1344	1
 
-/* RTC DS1343 Registers */
+ 
 #define DS1343_SECONDS_REG	0x00
 #define DS1343_MINUTES_REG	0x01
 #define DS1343_HOURS_REG	0x02
@@ -46,7 +39,7 @@
 
 #define DS1343_NVRAM_LEN	96
 
-/* DS1343 Control Registers bits */
+ 
 #define DS1343_EOSC		0x80
 #define DS1343_DOSF		0x20
 #define DS1343_EGFIL		0x10
@@ -55,12 +48,12 @@
 #define DS1343_A1IE		0x02
 #define DS1343_A0IE		0x01
 
-/* DS1343 Status Registers bits */
+ 
 #define DS1343_OSF		0x80
 #define DS1343_IRQF1		0x02
 #define DS1343_IRQF0		0x01
 
-/* DS1343 Trickle Charger Registers bits */
+ 
 #define DS1343_TRICKLE_MAGIC	0xa0
 #define DS1343_TRICKLE_DS1	0x08
 #define DS1343_TRICKLE_1K	0x01
@@ -211,7 +204,7 @@ static int ds1343_read_time(struct device *dev, struct rtc_time *dt)
 	dt->tm_wday	= bcd2bin(buf[3]) - 1;
 	dt->tm_mday	= bcd2bin(buf[4]);
 	dt->tm_mon	= bcd2bin(buf[5] & 0x1F) - 1;
-	dt->tm_year	= bcd2bin(buf[6]) + 100; /* year offset from 1900 */
+	dt->tm_year	= bcd2bin(buf[6]) + 100;  
 
 	return 0;
 }
@@ -361,11 +354,7 @@ static int ds1343_probe(struct spi_device *spi)
 	if (!priv)
 		return -ENOMEM;
 
-	/* RTC DS1347 works in spi mode 3 and
-	 * its chip select is active high. Active high should be defined as
-	 * "inverse polarity" as GPIO-based chip selects can be logically
-	 * active high but inverted by the GPIO library.
-	 */
+	 
 	spi->mode |= SPI_MODE_3;
 	spi->mode ^= SPI_CS_HIGH;
 	spi->bits_per_word = 8;

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * PRCC clock implementation for ux500 platform.
- *
- * Copyright (C) 2012 ST-Ericsson SA
- * Author: Ulf Hansson <ulf.hansson@linaro.org>
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/slab.h>
@@ -30,7 +25,7 @@ struct clk_prcc {
 	int is_enabled;
 };
 
-/* PRCC clock operations. */
+ 
 
 static int clk_prcc_pclk_enable(struct clk_hw *hw)
 {

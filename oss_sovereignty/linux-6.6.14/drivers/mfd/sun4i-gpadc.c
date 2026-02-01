@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* ADC MFD core driver for sunxi platforms
- *
- * Copyright (c) 2016 Quentin Schulz <quentin.schulz@free-electrons.com>
- */
+
+ 
 
 #include <linux/interrupt.h>
 #include <linux/kernel.h>
@@ -85,7 +82,7 @@ static const struct of_device_id sun4i_gpadc_of_match[] = {
 	}, {
 		.compatible = "allwinner,sun6i-a31-ts",
 		.data = (void *)ARCH_SUN6I_A31,
-	}, { /* sentinel */ }
+	}, {   }
 };
 
 MODULE_DEVICE_TABLE(of, sun4i_gpadc_of_match);
@@ -138,7 +135,7 @@ static int sun4i_gpadc_probe(struct platform_device *pdev)
 		return ret;
 	}
 
-	/* Disable all interrupts */
+	 
 	regmap_write(dev->regmap, SUN4I_GPADC_INT_FIFOC, 0);
 
 	irq = platform_get_irq(pdev, 0);

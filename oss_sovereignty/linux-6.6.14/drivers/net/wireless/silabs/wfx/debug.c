@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Debugfs interface.
- *
- * Copyright (c) 2017-2020, Silicon Laboratories, Inc.
- * Copyright (c) 2010, ST-Ericsson
- */
+
+ 
 #include <linux/debugfs.h>
 #include <linux/seq_file.h>
 #include <linux/crc32.h>
@@ -129,7 +124,7 @@ static const char * const channel_names[] = {
 	[1] = "2M",
 	[2] = "5.5M",
 	[3] = "11M",
-	/* Entries 4 and 5 does not exist */
+	 
 	[6] = "6M",
 	[7] = "9M",
 	[8] = "12M",
@@ -250,10 +245,7 @@ static ssize_t wfx_send_hif_msg_write(struct file *file, const char __user *user
 	if (count < sizeof(struct wfx_hif_msg))
 		return -EINVAL;
 
-	/* wfx_cmd_send() checks that reply buffer is wide enough, but does not return precise
-	 * length read. User have to know how many bytes should be read. Filling reply buffer with a
-	 * memory pattern may help user.
-	 */
+	 
 	memset(context->reply, 0xFF, sizeof(context->reply));
 	request = memdup_user(user_buf, count);
 	if (IS_ERR(request))
@@ -282,7 +274,7 @@ static ssize_t wfx_send_hif_msg_read(struct file *file, char __user *user_buf,
 		return ret;
 	if (context->ret < 0)
 		return context->ret;
-	/* Be careful, write() is waiting for a full message while read() only returns a payload */
+	 
 	if (copy_to_user(user_buf, context->reply, count))
 		return -EFAULT;
 

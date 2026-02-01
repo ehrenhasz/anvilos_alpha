@@ -1,13 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * x86_64/AVX2 assembler optimized version of Serpent
- *
- * Copyright © 2012-2013 Jussi Kivilinna <jussi.kivilinna@mbnet.fi>
- *
- * Based on AVX assembler implementation of Serpent by:
- *  Copyright © 2012 Johannes Goetzfried
- *      <Johannes.Goetzfried@informatik.stud.uni-erlangen.de>
- */
+ 
+ 
 
 #include <linux/linkage.h>
 #include <asm/frame.h>
@@ -551,12 +543,7 @@
 	transpose_4x4(x0, x1, x2, x3, t0, t1, t2)
 
 SYM_FUNC_START_LOCAL(__serpent_enc_blk16)
-	/* input:
-	 *	%rdi: ctx, CTX
-	 *	RA1, RB1, RC1, RD1, RA2, RB2, RC2, RD2: plaintext
-	 * output:
-	 *	RA1, RB1, RC1, RD1, RA2, RB2, RC2, RD2: ciphertext
-	 */
+	 
 
 	vpcmpeqd RNOT, RNOT, RNOT;
 
@@ -604,12 +591,7 @@ SYM_FUNC_START_LOCAL(__serpent_enc_blk16)
 SYM_FUNC_END(__serpent_enc_blk16)
 
 SYM_FUNC_START_LOCAL(__serpent_dec_blk16)
-	/* input:
-	 *	%rdi: ctx, CTX
-	 *	RA1, RB1, RC1, RD1, RA2, RB2, RC2, RD2: ciphertext
-	 * output:
-	 *	RC1, RD1, RB1, RE1, RC2, RD2, RB2, RE2: plaintext
-	 */
+	 
 
 	vpcmpeqd RNOT, RNOT, RNOT;
 
@@ -657,11 +639,7 @@ SYM_FUNC_START_LOCAL(__serpent_dec_blk16)
 SYM_FUNC_END(__serpent_dec_blk16)
 
 SYM_FUNC_START(serpent_ecb_enc_16way)
-	/* input:
-	 *	%rdi: ctx, CTX
-	 *	%rsi: dst
-	 *	%rdx: src
-	 */
+	 
 	FRAME_BEGIN
 
 	vzeroupper;
@@ -679,11 +657,7 @@ SYM_FUNC_START(serpent_ecb_enc_16way)
 SYM_FUNC_END(serpent_ecb_enc_16way)
 
 SYM_FUNC_START(serpent_ecb_dec_16way)
-	/* input:
-	 *	%rdi: ctx, CTX
-	 *	%rsi: dst
-	 *	%rdx: src
-	 */
+	 
 	FRAME_BEGIN
 
 	vzeroupper;
@@ -701,11 +675,7 @@ SYM_FUNC_START(serpent_ecb_dec_16way)
 SYM_FUNC_END(serpent_ecb_dec_16way)
 
 SYM_FUNC_START(serpent_cbc_dec_16way)
-	/* input:
-	 *	%rdi: ctx, CTX
-	 *	%rsi: dst
-	 *	%rdx: src
-	 */
+	 
 	FRAME_BEGIN
 
 	vzeroupper;

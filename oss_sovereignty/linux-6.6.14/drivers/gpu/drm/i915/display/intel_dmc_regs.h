@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2022 Intel Corporation
- */
+ 
+ 
 
 #ifndef __INTEL_DMC_REGS_H__
 #define __INTEL_DMC_REGS_H__
@@ -60,7 +58,7 @@
 
 #define DMC_EVT_CTL_EVENT_ID_MASK	REG_GENMASK(15, 8)
 #define DMC_EVT_CTL_EVENT_ID_FALSE	0x01
-/* An event handler scheduled to run at a 1 kHz frequency. */
+ 
 #define DMC_EVT_CTL_EVENT_ID_CLK_MSEC	0xbf
 
 #define DMC_HTP_ADDR_SKL	0x00500034
@@ -96,4 +94,4 @@
 #define TGL_DMC_DEBUG3		_MMIO(0x101090)
 #define DG1_DMC_DEBUG3		_MMIO(0x13415c)
 
-#endif /* __INTEL_DMC_REGS_H__ */
+#endif  

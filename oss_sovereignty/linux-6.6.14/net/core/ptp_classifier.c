@@ -1,99 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* PTP classifier
- */
 
-/* The below program is the bpf_asm (tools/net/) representation of
- * the opcode array in the ptp_filter structure.
- *
- * For convenience, this can easily be altered and reviewed with
- * bpf_asm and bpf_dbg, e.g. `./bpf_asm -c prog` where prog is a
- * simple file containing the below program:
- *
- * ldh [12]                        ; load ethertype
- *
- * ; PTP over UDP over IPv4 over Ethernet
- * test_ipv4:
- *   jneq #0x800, test_ipv6        ; ETH_P_IP ?
- *   ldb [23]                      ; load proto
- *   jneq #17, drop_ipv4           ; IPPROTO_UDP ?
- *   ldh [20]                      ; load frag offset field
- *   jset #0x1fff, drop_ipv4       ; don't allow fragments
- *   ldxb 4*([14]&0xf)             ; load IP header len
- *   ldh [x + 16]                  ; load UDP dst port
- *   jneq #319, drop_ipv4          ; is port PTP_EV_PORT ?
- *   ldh [x + 22]                  ; load payload
- *   and #0xf                      ; mask PTP_CLASS_VMASK
- *   or #0x10                      ; PTP_CLASS_IPV4
- *   ret a                         ; return PTP class
- *   drop_ipv4: ret #0x0           ; PTP_CLASS_NONE
- *
- * ; PTP over UDP over IPv6 over Ethernet
- * test_ipv6:
- *   jneq #0x86dd, test_8021q      ; ETH_P_IPV6 ?
- *   ldb [20]                      ; load proto
- *   jneq #17, drop_ipv6           ; IPPROTO_UDP ?
- *   ldh [56]                      ; load UDP dst port
- *   jneq #319, drop_ipv6          ; is port PTP_EV_PORT ?
- *   ldh [62]                      ; load payload
- *   and #0xf                      ; mask PTP_CLASS_VMASK
- *   or #0x20                      ; PTP_CLASS_IPV6
- *   ret a                         ; return PTP class
- *   drop_ipv6: ret #0x0           ; PTP_CLASS_NONE
- *
- * ; PTP over 802.1Q over Ethernet
- * test_8021q:
- *   jneq #0x8100, test_ieee1588   ; ETH_P_8021Q ?
- *   ldh [16]                      ; load inner type
- *   jneq #0x88f7, test_8021q_ipv4 ; ETH_P_1588 ?
- *   ldb [18]                      ; load payload
- *   and #0x8                      ; as we don't have ports here, test
- *   jneq #0x0, drop_ieee1588      ; for PTP_GEN_BIT and drop these
- *   ldh [18]                      ; reload payload
- *   and #0xf                      ; mask PTP_CLASS_VMASK
- *   or #0xc0                      ; PTP_CLASS_VLAN|PTP_CLASS_L2
- *   ret a                         ; return PTP class
- *
- * ; PTP over UDP over IPv4 over 802.1Q over Ethernet
- * test_8021q_ipv4:
- *   jneq #0x800, test_8021q_ipv6  ; ETH_P_IP ?
- *   ldb [27]                      ; load proto
- *   jneq #17, drop_8021q_ipv4     ; IPPROTO_UDP ?
- *   ldh [24]                      ; load frag offset field
- *   jset #0x1fff, drop_8021q_ipv4; don't allow fragments
- *   ldxb 4*([18]&0xf)             ; load IP header len
- *   ldh [x + 20]                  ; load UDP dst port
- *   jneq #319, drop_8021q_ipv4    ; is port PTP_EV_PORT ?
- *   ldh [x + 26]                  ; load payload
- *   and #0xf                      ; mask PTP_CLASS_VMASK
- *   or #0x90                      ; PTP_CLASS_VLAN|PTP_CLASS_IPV4
- *   ret a                         ; return PTP class
- *   drop_8021q_ipv4: ret #0x0     ; PTP_CLASS_NONE
- *
- * ; PTP over UDP over IPv6 over 802.1Q over Ethernet
- * test_8021q_ipv6:
- *   jneq #0x86dd, drop_8021q_ipv6 ; ETH_P_IPV6 ?
- *   ldb [24]                      ; load proto
- *   jneq #17, drop_8021q_ipv6           ; IPPROTO_UDP ?
- *   ldh [60]                      ; load UDP dst port
- *   jneq #319, drop_8021q_ipv6          ; is port PTP_EV_PORT ?
- *   ldh [66]                      ; load payload
- *   and #0xf                      ; mask PTP_CLASS_VMASK
- *   or #0xa0                      ; PTP_CLASS_VLAN|PTP_CLASS_IPV6
- *   ret a                         ; return PTP class
- *   drop_8021q_ipv6: ret #0x0     ; PTP_CLASS_NONE
- *
- * ; PTP over Ethernet
- * test_ieee1588:
- *   jneq #0x88f7, drop_ieee1588   ; ETH_P_1588 ?
- *   ldb [14]                      ; load payload
- *   and #0x8                      ; as we don't have ports here, test
- *   jneq #0x0, drop_ieee1588      ; for PTP_GEN_BIT and drop these
- *   ldh [14]                      ; reload payload
- *   and #0xf                      ; mask PTP_CLASS_VMASK
- *   or #0x40                      ; PTP_CLASS_L2
- *   ret a                         ; return PTP class
- *   drop_ieee1588: ret #0x0       ; PTP_CLASS_NONE
- */
+ 
+
+ 
 
 #include <linux/skbuff.h>
 #include <linux/filter.h>
@@ -129,7 +37,7 @@ struct ptp_header *ptp_parse_header(struct sk_buff *skb, unsigned int type)
 
 	ptr += ETH_HLEN;
 
-	/* Ensure that the entire header is present in this packet. */
+	 
 	if (ptr + sizeof(struct ptp_header) > skb->data + skb->len)
 		return NULL;
 

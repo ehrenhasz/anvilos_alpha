@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Allwinner sun8i DE2 rotation driver
- *
- * Copyright (C) 2020 Jernej Skrabec <jernej.skrabec@siol.net>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/interrupt.h>
@@ -154,7 +150,7 @@ static irqreturn_t rotate_irq(int irq, void *data)
 	if (!(val & ROTATE_INT_FINISH_IRQ))
 		return IRQ_NONE;
 
-	/* clear flag and disable irq */
+	 
 	rotate_write(dev, ROTATE_INT, ROTATE_INT_FINISH_IRQ);
 
 	buffer = v4l2_m2m_dst_buf_remove(ctx->fh.m2m_ctx);
@@ -186,7 +182,7 @@ static void rotate_prepare_format(struct v4l2_pix_format *pix_fmt)
 	width = ALIGN(pix_fmt->width, fmt->hsub);
 	height = ALIGN(pix_fmt->height, fmt->vsub);
 
-	/* all pitches have to be 16 byte aligned */
+	 
 	alignment = 16;
 	if (fmt->planes > 1)
 		alignment *= fmt->hsub / fmt->bpp[1];
@@ -371,17 +367,14 @@ static int rotate_s_fmt_vid_out(struct file *file, void *priv,
 	if (vb2_is_busy(vq))
 		return -EBUSY;
 
-	/*
-	 * Capture queue has to be also checked, because format and size
-	 * depends on output format and size.
-	 */
+	 
 	vq = v4l2_m2m_get_vq(ctx->fh.m2m_ctx, V4L2_BUF_TYPE_VIDEO_CAPTURE);
 	if (vb2_is_busy(vq))
 		return -EBUSY;
 
 	ctx->src_fmt = f->fmt.pix;
 
-	/* Propagate colorspace information to capture. */
+	 
 	ctx->dst_fmt.colorspace = f->fmt.pix.colorspace;
 	ctx->dst_fmt.xfer_func = f->fmt.pix.xfer_func;
 	ctx->dst_fmt.ycbcr_enc = f->fmt.pix.ycbcr_enc;
@@ -582,7 +575,7 @@ static int rotate_s_ctrl(struct v4l2_ctrl *ctrl)
 	case V4L2_CID_ROTATE:
 		rotate_set_cap_format(ctx, &fmt, ctrl->val);
 
-		/* Check if capture format needs to be changed */
+		 
 		if (fmt.width != ctx->dst_fmt.width ||
 		    fmt.height != ctx->dst_fmt.height ||
 		    fmt.bytesperline != ctx->dst_fmt.bytesperline ||
@@ -650,14 +643,14 @@ static int rotate_open(struct file *file)
 		return -ENOMEM;
 	}
 
-	/* default output format */
+	 
 	ctx->src_fmt.pixelformat = V4L2_PIX_FMT_ARGB32;
 	ctx->src_fmt.field = V4L2_FIELD_NONE;
 	ctx->src_fmt.width = 640;
 	ctx->src_fmt.height = 480;
 	rotate_prepare_format(&ctx->src_fmt);
 
-	/* default capture format */
+	 
 	rotate_set_cap_format(ctx, &ctx->dst_fmt, ctx->rotate);
 
 	v4l2_fh_init(&ctx->fh, video_devdata(file));
@@ -894,7 +887,7 @@ static int rotate_runtime_suspend(struct device *device)
 
 static const struct of_device_id rotate_dt_match[] = {
 	{ .compatible = "allwinner,sun8i-a83t-de2-rotate" },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, rotate_dt_match);
 

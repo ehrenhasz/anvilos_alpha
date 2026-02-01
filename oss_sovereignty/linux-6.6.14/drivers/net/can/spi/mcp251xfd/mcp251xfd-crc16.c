@@ -1,25 +1,20 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// mcp251xfd - Microchip MCP251xFD Family CAN controller driver
-//
-// Copyright (c) 2020 Pengutronix,
-//                    Marc Kleine-Budde <kernel@pengutronix.de>
-//
-// Based on:
-//
-// CAN bus driver for Microchip 25XXFD CAN Controller with SPI Interface
-//
-// Copyright (c) 2019 Martin Sperl <kernel@martin.sperl.org>
-//
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 #include "mcp251xfd.h"
 
-/* The standard crc16 in linux/crc16.h is unfortunately not computing
- * the correct results (left shift vs. right shift). So here an
- * implementation with a table generated with the help of:
- *
- * http://lkml.iu.edu/hypermail/linux/kernel/0508.1/1085.html
- */
+ 
 static const u16 mcp251xfd_crc16_table[] = {
 	0x0000, 0x8005, 0x800f, 0x000a, 0x801b, 0x001e, 0x0014, 0x8011,
 	0x8033, 0x0036, 0x003c, 0x8039, 0x0028, 0x802d, 0x8027, 0x0022,

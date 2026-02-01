@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2005-2006 Micronas USA Inc.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/delay.h>
@@ -24,12 +22,7 @@
 
 #include "go7007-priv.h"
 
-/*
- * Wait for an interrupt to be delivered from the GO7007SB and return
- * the associated value and data.
- *
- * Must be called with the hw_lock held.
- */
+ 
 int go7007_read_interrupt(struct go7007 *go, u16 *value, u16 *data)
 {
 	go->interrupt_available = 0;
@@ -48,11 +41,7 @@ int go7007_read_interrupt(struct go7007 *go, u16 *value, u16 *data)
 }
 EXPORT_SYMBOL(go7007_read_interrupt);
 
-/*
- * Read a register/address on the GO7007SB.
- *
- * Must be called with the hw_lock held.
- */
+ 
 int go7007_read_addr(struct go7007 *go, u16 addr, u16 *data)
 {
 	int count = 100;
@@ -69,12 +58,7 @@ int go7007_read_addr(struct go7007 *go, u16 addr, u16 *data)
 }
 EXPORT_SYMBOL(go7007_read_addr);
 
-/*
- * Send the boot firmware to the encoder, which just wakes it up and lets
- * us talk to the GPIO pins and on-board I2C adapter.
- *
- * Must be called with the hw_lock held.
- */
+ 
 static int go7007_load_encoder(struct go7007 *go)
 {
 	const struct firmware *fw_entry;
@@ -116,13 +100,7 @@ static int go7007_load_encoder(struct go7007 *go)
 
 MODULE_FIRMWARE("go7007/go7007fw.bin");
 
-/*
- * Boot the encoder and register the I2C adapter if requested.  Do the
- * minimum initialization necessary, since the board-specific code may
- * still need to probe the board ID.
- *
- * Must NOT be called with the hw_lock held.
- */
+ 
 int go7007_boot_encoder(struct go7007 *go, int init_i2c)
 {
 	int ret;
@@ -141,13 +119,7 @@ int go7007_boot_encoder(struct go7007 *go, int init_i2c)
 }
 EXPORT_SYMBOL(go7007_boot_encoder);
 
-/*
- * Configure any hardware-related registers in the GO7007, such as GPIO
- * pins and bus parameters, which are board-specific.  This assumes
- * the boot firmware has already been downloaded.
- *
- * Must be called with the hw_lock held.
- */
+ 
 static int go7007_init_encoder(struct go7007 *go)
 {
 	if (go->board_info->audio_flags & GO7007_AUDIO_I2S_MASTER) {
@@ -156,19 +128,19 @@ static int go7007_init_encoder(struct go7007 *go)
 	}
 	switch (go->board_id) {
 	case GO7007_BOARDID_MATRIX_REV:
-		/* Set GPIO pin 0 to be an output (audio clock control) */
+		 
 		go7007_write_addr(go, 0x3c82, 0x0001);
 		go7007_write_addr(go, 0x3c80, 0x00fe);
 		break;
 	case GO7007_BOARDID_ADLINK_MPG24:
-		/* set GPIO5 to be an output, currently low */
+		 
 		go7007_write_addr(go, 0x3c82, 0x0000);
 		go7007_write_addr(go, 0x3c80, 0x00df);
 		break;
 	case GO7007_BOARDID_ADS_USBAV_709:
-		/* GPIO pin 0: audio clock control */
-		/*      pin 2: TW9906 reset */
-		/*      pin 3: capture LED */
+		 
+		 
+		 
 		go7007_write_addr(go, 0x3c82, 0x000d);
 		go7007_write_addr(go, 0x3c80, 0x00f2);
 		break;
@@ -176,12 +148,7 @@ static int go7007_init_encoder(struct go7007 *go)
 	return 0;
 }
 
-/*
- * Send the boot firmware to the GO7007 and configure the registers.  This
- * is the only way to stop the encoder once it has started streaming video.
- *
- * Must be called with the hw_lock held.
- */
+ 
 int go7007_reset_encoder(struct go7007 *go)
 {
 	if (go7007_load_encoder(go) < 0)
@@ -189,9 +156,7 @@ int go7007_reset_encoder(struct go7007 *go)
 	return go7007_init_encoder(go);
 }
 
-/*
- * Attempt to instantiate an I2C client by ID, probably loading a module.
- */
+ 
 static int init_i2c_module(struct i2c_adapter *adapter, const struct go_i2c *const i2c)
 {
 	struct go7007 *go = i2c_get_adapdata(adapter);
@@ -217,11 +182,7 @@ static int init_i2c_module(struct i2c_adapter *adapter, const struct go_i2c *con
 	return -EINVAL;
 }
 
-/*
- * Detach and unregister the encoder.  The go7007 struct won't be freed
- * until v4l2 finishes releasing its resources and all associated fds are
- * closed by applications.
- */
+ 
 static void go7007_remove(struct v4l2_device *v4l2_dev)
 {
 	struct go7007 *go = container_of(v4l2_dev, struct go7007, v4l2_dev);
@@ -239,14 +200,7 @@ static void go7007_remove(struct v4l2_device *v4l2_dev)
 	kfree(go);
 }
 
-/*
- * Finalize the GO7007 hardware setup, register the on-board I2C adapter
- * (if used on this board), load the I2C client driver for the sensor
- * (SAA7115 or whatever) and other devices, and register the ALSA and V4L2
- * interfaces.
- *
- * Must NOT be called with the hw_lock held.
- */
+ 
 int go7007_register_encoder(struct go7007 *go, unsigned num_i2c_devs)
 {
 	int i, ret;
@@ -277,7 +231,7 @@ int go7007_register_encoder(struct go7007 *go, unsigned num_i2c_devs)
 	}
 	if (go->i2c_adapter_online) {
 		if (go->board_id == GO7007_BOARDID_ADS_USBAV_709) {
-			/* Reset the TW9906 */
+			 
 			go7007_write_addr(go, 0x3c82, 0x0009);
 			msleep(50);
 			go7007_write_addr(go, 0x3c82, 0x000d);
@@ -312,12 +266,7 @@ int go7007_register_encoder(struct go7007 *go, unsigned num_i2c_devs)
 }
 EXPORT_SYMBOL(go7007_register_encoder);
 
-/*
- * Send the encode firmware to the encoder, which will cause it
- * to immediately start delivering the video and audio streams.
- *
- * Must be called with the hw_lock held.
- */
+ 
 int go7007_start_encoder(struct go7007 *go)
 {
 	u8 *fw;
@@ -373,9 +322,7 @@ start_error:
 	return rv;
 }
 
-/*
- * Store a byte in the current video buffer, if there is one.
- */
+ 
 static inline void store_byte(struct go7007_buffer *vb, u8 byte)
 {
 	if (vb && vb->vb.vb2_buf.planes[0].bytesused < GO7007_BUF_SIZE) {
@@ -403,10 +350,7 @@ static void go7007_set_motion_regions(struct go7007 *go, struct go7007_buffer *v
 	}
 }
 
-/*
- * Determine regions with motion and send a motion detection event
- * in case of changes.
- */
+ 
 static void go7007_motion_regions(struct go7007 *go, struct go7007_buffer *vb)
 {
 	u32 *bytesused = &vb->vb.vb2_buf.planes[0].bytesused;
@@ -433,9 +377,7 @@ static void go7007_motion_regions(struct go7007 *go, struct go7007_buffer *vb)
 	go7007_set_motion_regions(go, vb, motion_regions);
 }
 
-/*
- * Deliver the last video buffer and get a new one to start writing to.
- */
+ 
 static struct go7007_buffer *frame_boundary(struct go7007 *go, struct go7007_buffer *vb)
 {
 	u32 *bytesused;
@@ -488,11 +430,7 @@ static void write_bitmap_word(struct go7007 *go)
 	}
 }
 
-/*
- * Parse a chunk of the video stream into frames.  The frames are not
- * delimited by the hardware, so we have to parse the frame boundaries
- * based on the type of video stream we're receiving.
- */
+ 
 void go7007_parse_video_stream(struct go7007 *go, u8 *buf, int length)
 {
 	struct go7007_buffer *vb = go->active_buf;
@@ -556,7 +494,7 @@ void go7007_parse_video_stream(struct go7007 *go, u8 *buf, int length)
 			switch (buf[i]) {
 			case 0x00:
 				store_byte(vb, 0x00);
-				/* go->state remains STATE_00_00 */
+				 
 				break;
 			case 0x01:
 				go->state = STATE_00_00_01;
@@ -576,7 +514,7 @@ void go7007_parse_video_stream(struct go7007 *go, u8 *buf, int length)
 			break;
 		case STATE_00_00_01:
 			if (buf[i] == 0xF8 && go->modet_enable == 0) {
-				/* MODET start code, but MODET not enabled */
+				 
 				store_byte(vb, 0x00);
 				store_byte(vb, 0x00);
 				store_byte(vb, 0x01);
@@ -584,8 +522,7 @@ void go7007_parse_video_stream(struct go7007 *go, u8 *buf, int length)
 				go->state = STATE_DATA;
 				break;
 			}
-			/* If this is the start of a new MPEG frame,
-			 * get a new buffer */
+			 
 			if ((go->format == V4L2_PIX_FMT_MPEG1 ||
 			     go->format == V4L2_PIX_FMT_MPEG2 ||
 			     go->format == V4L2_PIX_FMT_MPEG4) &&
@@ -599,23 +536,22 @@ void go7007_parse_video_stream(struct go7007 *go, u8 *buf, int length)
 					vb->frame_offset =
 					vb->vb.vb2_buf.planes[0].bytesused;
 			}
-			/* Handle any special chunk types, or just write the
-			 * start code to the (potentially new) buffer */
+			 
 			switch (buf[i]) {
-			case 0xF5: /* timestamp */
+			case 0xF5:  
 				go->parse_length = 12;
 				go->state = STATE_UNPARSED;
 				break;
-			case 0xF6: /* vbi */
+			case 0xF6:  
 				go->state = STATE_VBI_LEN_A;
 				break;
-			case 0xF8: /* MD map */
+			case 0xF8:  
 				go->parse_length = 0;
 				memset(go->active_map, 0,
 						sizeof(go->active_map));
 				go->state = STATE_MODET_MAP;
 				break;
-			case 0xFF: /* Potential JPEG start code */
+			case 0xFF:  
 				store_byte(vb, 0x00);
 				store_byte(vb, 0x00);
 				store_byte(vb, 0x01);
@@ -638,7 +574,7 @@ void go7007_parse_video_stream(struct go7007 *go, u8 *buf, int length)
 				break;
 			case 0xFF:
 				store_byte(vb, 0xFF);
-				/* go->state remains STATE_FF */
+				 
 				break;
 			case 0xD8:
 				if (go->format == V4L2_PIX_FMT_MJPEG)
@@ -684,9 +620,7 @@ void go7007_parse_video_stream(struct go7007 *go, u8 *buf, int length)
 }
 EXPORT_SYMBOL(go7007_parse_video_stream);
 
-/*
- * Allocate a new go7007 struct.  Used by the hardware-specific probe.
- */
+ 
 struct go7007 *go7007_alloc(const struct go7007_board_info *board,
 						struct device *dev)
 {

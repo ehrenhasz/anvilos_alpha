@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * AMD specific. Provide textual annotation for IBS raw sample data.
- */
+
+ 
 
 #include <unistd.h>
 #include <stdio.h>
@@ -43,10 +41,7 @@ static void pr_ibs_fetch_ctl(union ibs_fetch_ctl reg)
 	char l3_miss_str[sizeof(" L3MissOnly _ FetchOcMiss _ FetchL3Miss _")] = "";
 
 	if (cpu_family == 0x19 && cpu_model < 0x10) {
-		/*
-		 * Erratum #1238 workaround is to ignore MSRC001_1030[IbsIcMiss]
-		 * Erratum #1347 workaround is to use table provided in erratum
-		 */
+		 
 		if (reg.phy_addr_valid)
 			l1tlb_pgsz_str = l1tlb_pgsz_strs_erratum1347[reg.l1tlb_pgsz];
 	} else {
@@ -115,7 +110,7 @@ static void pr_ibs_op_data2_extended(union ibs_op_data2 reg)
 		" DataSrc 10=(reserved)",
 		" DataSrc 11=(reserved)",
 		" DataSrc 12=Coherent Memory of a different processor type",
-		/* 13 to 31 are reserved. Avoid printing them. */
+		 
 	};
 	int data_src = (reg.data_src_hi << 3) | reg.data_src_lo;
 
@@ -158,10 +153,7 @@ static void pr_ibs_op_data3(union ibs_op_data3 reg)
 	char op_mem_width_str[sizeof(" OpMemWidth _____ bytes")] = "";
 	char op_dc_miss_open_mem_reqs_str[sizeof(" OpDcMissOpenMemReqs __")] = "";
 
-	/*
-	 * Erratum #1293
-	 * Ignore L2Miss and OpDcMissOpenMemReqs (and opdata2) if DcMissNoMabAlloc or SwPf set
-	 */
+	 
 	if (!(cpu_family == 0x19 && cpu_model < 0x10 && (reg.dc_miss_no_mab_alloc || reg.sw_pf))) {
 		snprintf(l2_miss_str, sizeof(l2_miss_str), " L2Miss %d", reg.l2_miss);
 		snprintf(op_dc_miss_open_mem_reqs_str, sizeof(op_dc_miss_open_mem_reqs_str),
@@ -184,11 +176,7 @@ static void pr_ibs_op_data3(union ibs_op_data3 reg)
 		op_dc_miss_open_mem_reqs_str, reg.dc_miss_lat, reg.tlb_refill_lat);
 }
 
-/*
- * IBS Op/Execution MSRs always saved, in order, are:
- * IBS_OP_CTL, IBS_OP_RIP, IBS_OP_DATA, IBS_OP_DATA2,
- * IBS_OP_DATA3, IBS_DC_LINADDR, IBS_DC_PHYSADDR, BP_IBSTGT_RIP
- */
+ 
 static void amd_dump_ibs_op(struct perf_sample *sample)
 {
 	struct perf_ibs_data *data = sample->raw_data;
@@ -201,9 +189,7 @@ static void amd_dump_ibs_op(struct perf_sample *sample)
 	if (!op_data->op_rip_invalid)
 		printf("IbsOpRip:\t%016llx\n", *rip);
 	pr_ibs_op_data(*op_data);
-	/*
-	 * Erratum #1293: ignore op_data2 if DcMissNoMabAlloc or SwPf are set
-	 */
+	 
 	if (!(cpu_family == 0x19 && cpu_model < 0x10 &&
 	      (op_data3->dc_miss_no_mab_alloc || op_data3->sw_pf)))
 		pr_ibs_op_data2(*(union ibs_op_data2 *)(rip + 2));
@@ -216,10 +202,7 @@ static void amd_dump_ibs_op(struct perf_sample *sample)
 		printf("IbsBrTarget:\t%016llx\n", *(rip + 6));
 }
 
-/*
- * IBS Fetch MSRs always saved, in order, are:
- * IBS_FETCH_CTL, IBS_FETCH_LINADDR, IBS_FETCH_PHYSADDR, IC_IBS_EXTD_CTL
- */
+ 
 static void amd_dump_ibs_fetch(struct perf_sample *sample)
 {
 	struct perf_ibs_data *data = sample->raw_data;
@@ -234,9 +217,7 @@ static void amd_dump_ibs_fetch(struct perf_sample *sample)
 	pr_ic_ibs_extd_ctl(*extd_ctl);
 }
 
-/*
- * Test for enable and valid bits in captured control MSRs.
- */
+ 
 static bool is_valid_ibs_fetch_sample(struct perf_sample *sample)
 {
 	struct perf_ibs_data *data = sample->raw_data;
@@ -259,10 +240,7 @@ static bool is_valid_ibs_op_sample(struct perf_sample *sample)
 	return false;
 }
 
-/* AMD vendor specific raw sample function. Check for PERF_RECORD_SAMPLE events
- * and if the event was triggered by IBS, display its raw data with decoded text.
- * The function is only invoked when the dump flag -D is set.
- */
+ 
 void evlist__amd_sample_raw(struct evlist *evlist, union perf_event *event,
 			    struct perf_sample *sample)
 {
@@ -296,19 +274,13 @@ static void parse_cpuid(struct perf_env *env)
 	int ret;
 
 	cpuid = perf_env__cpuid(env);
-	/*
-	 * cpuid = "AuthenticAMD,family,model,stepping"
-	 */
+	 
 	ret = sscanf(cpuid, "%*[^,],%u,%u", &cpu_family, &cpu_model);
 	if (ret != 2)
 		pr_debug("problem parsing cpuid\n");
 }
 
-/*
- * Find and assign the type number used for ibs_op or ibs_fetch samples.
- * Device names can be large - we are only interested in the first 9 characters,
- * to match "ibs_fetch".
- */
+ 
 bool evlist__has_amd_ibs(struct evlist *evlist)
 {
 	struct perf_env *env = evlist->env;
@@ -325,7 +297,7 @@ bool evlist__has_amd_ibs(struct evlist *evlist)
 			else if (strstarts(name, "ibs_fetch"))
 				ibs_fetch_type = type;
 		}
-		pmu_mapping += strlen(pmu_mapping) + 1 /* '\0' */;
+		pmu_mapping += strlen(pmu_mapping) + 1  ;
 	}
 
 	if (perf_env__find_pmu_cap(env, "ibs_op", "zen4_ibs_extensions"))

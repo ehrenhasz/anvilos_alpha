@@ -1,19 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0
 
-/*
- * Copyright 2019, Nick Piggin, Gautham R. Shenoy, Aneesh Kumar K.V, IBM Corp.
- */
 
-/*
- *
- * Test tlbie/mtpidr race. We have 4 threads doing flush/load/compare/store
- * sequence in a loop. The same threads also rung a context switch task
- * that does sched_yield() in loop.
- *
- * The snapshot thread mark the mmap area PROT_READ in between, make a copy
- * and copy it back to the original area. This helps us to detect if any
- * store continued to happen after we marked the memory PROT_READ.
- */
+ 
+
+ 
 
 #define _GNU_SOURCE
 #include <stdio.h>
@@ -58,37 +47,12 @@ static char *map1;
 static char *map2;
 static pid_t rim_process_pid;
 
-/*
- * A "rim-sequence" is defined to be the sequence of the following
- * operations performed on a memory word:
- *	1) FLUSH the contents of that word.
- *	2) LOAD the contents of that word.
- *	3) COMPARE the contents of that word with the content that was
- *	           previously stored at that word
- *	4) STORE new content into that word.
- *
- * The threads in this test that perform the rim-sequence are termed
- * as rim_threads.
- */
+ 
 
-/*
- * A "corruption" is defined to be the failed COMPARE operation in a
- * rim-sequence.
- *
- * A rim_thread that detects a corruption informs about it to all the
- * other rim_threads, and the mem_snapshot thread.
- */
+ 
 static volatile unsigned int corruption_found;
 
-/*
- * This defines the maximum number of rim_threads in this test.
- *
- * The THREAD_ID_BITS denote the number of bits required
- * to represent the thread_ids [0..MAX_THREADS - 1].
- * We are being a bit paranoid here and set it to 8 bits,
- * though 6 bits suffice.
- *
- */
+ 
 #define MAX_THREADS 		64
 #define THREAD_ID_BITS		8
 #define THREAD_ID_MASK		((1 << THREAD_ID_BITS) - 1)
@@ -96,15 +60,7 @@ static unsigned int rim_thread_ids[MAX_THREADS];
 static pthread_t rim_threads[MAX_THREADS];
 
 
-/*
- * Each rim_thread works on an exclusive "chunk" of size
- * RIM_CHUNK_SIZE.
- *
- * The ith rim_thread works on the ith chunk.
- *
- * The ith chunk begins at
- * map1 + (i * RIM_CHUNK_SIZE)
- */
+ 
 #define RIM_CHUNK_SIZE  	1024
 #define BITS_PER_BYTE 		8
 #define WORD_SIZE     		(sizeof(unsigned int))
@@ -121,14 +77,7 @@ static inline char *compute_chunk_start_addr(unsigned int thread_id)
 	return chunk_start;
 }
 
-/*
- * The "word-offset" of a word-aligned address inside a chunk, is
- * defined to be the number of words that precede the address in that
- * chunk.
- *
- * WORD_OFFSET_BITS denote the number of bits required to represent
- * the word-offsets of all the word-aligned addresses of a chunk.
- */
+ 
 #define WORD_OFFSET_BITS	(__builtin_ctz(WORDS_PER_CHUNK))
 #define WORD_OFFSET_MASK	((1 << WORD_OFFSET_BITS) - 1)
 
@@ -142,62 +91,16 @@ static inline unsigned int compute_word_offset(char *start, unsigned int *addr)
 	return ret;
 }
 
-/*
- * A "sweep" is defined to be the sequential execution of the
- * rim-sequence by a rim_thread on its chunk one word at a time,
- * starting from the first word of its chunk and ending with the last
- * word of its chunk.
- *
- * Each sweep of a rim_thread is uniquely identified by a sweep_id.
- * SWEEP_ID_BITS denote the number of bits required to represent
- * the sweep_ids of rim_threads.
- *
- * As to why SWEEP_ID_BITS are computed as a function of THREAD_ID_BITS,
- * WORD_OFFSET_BITS, and WORD_BITS, see the "store-pattern" below.
- */
+ 
 #define SWEEP_ID_BITS		(WORD_BITS - (THREAD_ID_BITS + WORD_OFFSET_BITS))
 #define SWEEP_ID_MASK		((1 << SWEEP_ID_BITS) - 1)
 
-/*
- * A "store-pattern" is the word-pattern that is stored into a word
- * location in the 4)STORE step of the rim-sequence.
- *
- * In the store-pattern, we shall encode:
- *
- *      - The thread-id of the rim_thread performing the store
- *        (The most significant THREAD_ID_BITS)
- *
- *      - The word-offset of the address into which the store is being
- *        performed (The next WORD_OFFSET_BITS)
- *
- *      - The sweep_id of the current sweep in which the store is
- *        being performed. (The lower SWEEP_ID_BITS)
- *
- * Store Pattern: 32 bits
- * |------------------|--------------------|---------------------------------|
- * |    Thread id     |  Word offset       |         sweep_id                |
- * |------------------|--------------------|---------------------------------|
- *    THREAD_ID_BITS     WORD_OFFSET_BITS          SWEEP_ID_BITS
- *
- * In the store pattern, the (Thread-id + Word-offset) uniquely identify the
- * address to which the store is being performed i.e,
- *    address == map1 +
- *              (Thread-id * RIM_CHUNK_SIZE) + (Word-offset * WORD_SIZE)
- *
- * And the sweep_id in the store pattern identifies the time when the
- * store was performed by the rim_thread.
- *
- * We shall use this property in the 3)COMPARE step of the
- * rim-sequence.
- */
+ 
 #define SWEEP_ID_SHIFT	0
 #define WORD_OFFSET_SHIFT	(SWEEP_ID_BITS)
 #define THREAD_ID_SHIFT		(WORD_OFFSET_BITS + SWEEP_ID_BITS)
 
-/*
- * Compute the store pattern for a given thread with id @tid, at
- * location @addr in the sweep identified by @sweep_id
- */
+ 
 static inline unsigned int compute_store_pattern(unsigned int tid,
 						 unsigned int *addr,
 						 unsigned int sweep_id)
@@ -212,7 +115,7 @@ static inline unsigned int compute_store_pattern(unsigned int tid,
 	return ret;
 }
 
-/* Extract the thread-id from the given store-pattern */
+ 
 static inline unsigned int extract_tid(unsigned int pattern)
 {
 	unsigned int ret;
@@ -221,7 +124,7 @@ static inline unsigned int extract_tid(unsigned int pattern)
 	return ret;
 }
 
-/* Extract the word-offset from the given store-pattern */
+ 
 static inline unsigned int extract_word_offset(unsigned int pattern)
 {
 	unsigned int ret;
@@ -231,7 +134,7 @@ static inline unsigned int extract_word_offset(unsigned int pattern)
 	return ret;
 }
 
-/* Extract the sweep-id from the given store-pattern */
+ 
 static inline unsigned int extract_sweep_id(unsigned int pattern)
 
 {
@@ -242,11 +145,7 @@ static inline unsigned int extract_sweep_id(unsigned int pattern)
 	return ret;
 }
 
-/************************************************************
- *                                                          *
- *          Logging the output of the verification          *
- *                                                          *
- ************************************************************/
+ 
 #define LOGDIR_NAME_SIZE 100
 static char logdir[LOGDIR_NAME_SIZE];
 
@@ -327,33 +226,7 @@ static inline void end_verification_log(unsigned int tid, unsigned nr_anamolies)
 		tid, nr_anamolies, path);
 }
 
-/*
- * When a COMPARE step of a rim-sequence fails, the rim_thread informs
- * everyone else via the shared_memory pointed to by
- * corruption_found variable. On seeing this, every thread verifies the
- * content of its chunk as follows.
- *
- * Suppose a thread identified with @tid was about to store (but not
- * yet stored) to @next_store_addr in its current sweep identified
- * @cur_sweep_id. Let @prev_sweep_id indicate the previous sweep_id.
- *
- * This implies that for all the addresses @addr < @next_store_addr,
- * Thread @tid has already performed a store as part of its current
- * sweep. Hence we expect the content of such @addr to be:
- *    |-------------------------------------------------|
- *    | tid   | word_offset(addr) |    cur_sweep_id     |
- *    |-------------------------------------------------|
- *
- * Since Thread @tid is yet to perform stores on address
- * @next_store_addr and above, we expect the content of such an
- * address @addr to be:
- *    |-------------------------------------------------|
- *    | tid   | word_offset(addr) |    prev_sweep_id    |
- *    |-------------------------------------------------|
- *
- * The verifier function @verify_chunk does this verification and logs
- * any anamolies that it finds.
- */
+ 
 static void verify_chunk(unsigned int tid, unsigned int *next_store_addr,
 		  unsigned int cur_sweep_id,
 		  unsigned int prev_sweep_id)
@@ -382,7 +255,7 @@ static void verify_chunk(unsigned int tid, unsigned int *next_store_addr,
 
 		expected = compute_store_pattern(tid, iter_ptr, expected_sweep_id);
 
-		dcbf((volatile unsigned int*)iter_ptr); //Flush before reading
+		dcbf((volatile unsigned int*)iter_ptr); 
 		observed = *iter_ptr;
 
 	        if (observed != expected) {
@@ -405,7 +278,7 @@ static void set_pthread_cpu(pthread_t th, int cpu)
 
 	param.sched_priority = 1;
 	if (0 && sched_setscheduler(0, SCHED_FIFO, &param) == -1) {
-		/* haven't reproduced with this setting, it kills random preemption which may be a factor */
+		 
 		fprintf(stderr, "could not set SCHED_FIFO, run as root?\n");
 	}
 }
@@ -449,12 +322,7 @@ static void set_segv_handler(void)
 }
 
 int timeout = 0;
-/*
- * This function is executed by every rim_thread.
- *
- * This function performs sweeps over the exclusive chunks of the
- * rim_threads executing the rim-sequence one word at a time.
- */
+ 
 static void *rim_fn(void *arg)
 {
 	unsigned int tid = *((unsigned int *)arg);
@@ -465,22 +333,14 @@ static void *rim_fn(void *arg)
 	unsigned int prev_sweep_id;
 	unsigned int cur_sweep_id = 0;
 
-	/* word access */
+	 
 	unsigned int pattern = cur_sweep_id;
 	unsigned int *pattern_ptr = &pattern;
 	unsigned int *w_ptr, read_data;
 
 	set_segv_handler();
 
-	/*
-	 * Let us initialize the chunk:
-	 *
-	 * Each word-aligned address addr in the chunk,
-	 * is initialized to :
-	 *    |-------------------------------------------------|
-	 *    | tid   | word_offset(addr) |         0           |
-	 *    |-------------------------------------------------|
-	 */
+	 
 	for (w_ptr = (unsigned int *)chunk_start;
 	     (unsigned long)w_ptr < (unsigned long)(chunk_start) + size;
 	     w_ptr++) {
@@ -498,59 +358,34 @@ static void *rim_fn(void *arg)
 		     w_ptr++)  {
 			unsigned int old_pattern;
 
-			/*
-			 * Compute the pattern that we would have
-			 * stored at this location in the previous
-			 * sweep.
-			 */
+			 
 			old_pattern = compute_store_pattern(tid, w_ptr, prev_sweep_id);
 
-			/*
-			 * FLUSH:Ensure that we flush the contents of
-			 *       the cache before loading
-			 */
-			dcbf((volatile unsigned int*)w_ptr); //Flush
+			 
+			dcbf((volatile unsigned int*)w_ptr);  
 
-			/* LOAD: Read the value */
-			read_data = *w_ptr; //Load
+			 
+			read_data = *w_ptr;  
 
-			/*
-			 * COMPARE: Is it the same as what we had stored
-			 *          in the previous sweep ? It better be!
-			 */
+			 
 			if (read_data != old_pattern) {
-				/* No it isn't! Tell everyone */
+				 
 				corruption_found = 1;
 			}
 
-			/*
-			 * Before performing a store, let us check if
-			 * any rim_thread has found a corruption.
-			 */
+			 
 			if (corruption_found || timeout) {
-				/*
-				 * Yes. Someone (including us!) has found
-				 * a corruption :(
-				 *
-				 * Let us verify that our chunk is
-				 * correct.
-				 */
-				/* But first, let us allow the dust to settle down! */
+				 
+				 
 				verify_chunk(tid, w_ptr, cur_sweep_id, prev_sweep_id);
 
 				return 0;
 			}
 
-			/*
-			 * Compute the new pattern that we are going
-			 * to write to this location
-			 */
+			 
 			*pattern_ptr = compute_store_pattern(tid, w_ptr, cur_sweep_id);
 
-			/*
-			 * STORE: Now let us write this pattern into
-			 *        the location
-			 */
+			 
 			*w_ptr = *pattern_ptr;
 		}
 	}
@@ -571,34 +406,23 @@ static void *mem_snapshot_fn(void *arg)
 	void *tmp = malloc(size);
 
 	while (!corruption_found && !timeout) {
-		/* Stop memory migration once corruption is found */
+		 
 		segv_wait = 1;
 
 		mprotect(map1, size, PROT_READ);
 
-		/*
-		 * Load from the working alias (map1). Loading from map2
-		 * also fails.
-		 */
+		 
 		memcpy(tmp, map1, size);
 
-		/*
-		 * Stores must go via map2 which has write permissions, but
-		 * the corrupted data tends to be seen in the snapshot buffer,
-		 * so corruption does not appear to be introduced at the
-		 * copy-back via map2 alias here.
-		 */
+		 
 		memcpy(map2, tmp, size);
-		/*
-		 * Before releasing other threads, must ensure the copy
-		 * back to
-		 */
+		 
 		asm volatile("sync" ::: "memory");
 		mprotect(map1, size, PROT_READ|PROT_WRITE);
 		asm volatile("sync" ::: "memory");
 		segv_wait = 0;
 
-		usleep(1); /* This value makes a big difference */
+		usleep(1);  
 	}
 
 	return 0;

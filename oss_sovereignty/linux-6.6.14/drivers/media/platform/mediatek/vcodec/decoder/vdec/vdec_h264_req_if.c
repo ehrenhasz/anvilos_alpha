@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #include <linux/module.h>
 #include <linux/slab.h>
@@ -13,9 +13,7 @@
 #include "../vdec_vpu_if.h"
 #include "vdec_h264_req_common.h"
 
-/*
- * struct mtk_h264_dec_slice_param  - parameters for decode current frame
- */
+ 
 struct mtk_h264_dec_slice_param {
 	struct mtk_h264_sps_param			sps;
 	struct mtk_h264_pps_param			pps;
@@ -24,17 +22,7 @@ struct mtk_h264_dec_slice_param {
 	struct mtk_h264_dpb_info h264_dpb_info[16];
 };
 
-/**
- * struct vdec_h264_dec_info - decode information
- * @dpb_sz		: decoding picture buffer size
- * @resolution_changed  : resoltion change happen
- * @realloc_mv_buf	: flag to notify driver to re-allocate mv buffer
- * @cap_num_planes	: number planes of capture buffer
- * @bs_dma		: Input bit-stream buffer dma address
- * @y_fb_dma		: Y frame buffer dma address
- * @c_fb_dma		: C frame buffer dma address
- * @vdec_fb_va		: VDEC frame buffer struct virtual address
- */
+ 
 struct vdec_h264_dec_info {
 	u32 dpb_sz;
 	u32 resolution_changed;
@@ -46,21 +34,7 @@ struct vdec_h264_dec_info {
 	u64 vdec_fb_va;
 };
 
-/**
- * struct vdec_h264_vsi - shared memory for decode information exchange
- *                        between VPU and Host.
- *                        The memory is allocated by VPU then mapping to Host
- *                        in vpu_dec_init() and freed in vpu_dec_deinit()
- *                        by VPU.
- *                        AP-W/R : AP is writer/reader on this item
- *                        VPU-W/R: VPU is write/reader on this item
- * @pred_buf_dma : HW working predication buffer dma address (AP-W, VPU-R)
- * @mv_buf_dma   : HW working motion vector buffer dma address (AP-W, VPU-R)
- * @dec          : decode information (AP-R, VPU-W)
- * @pic          : picture information (AP-R, VPU-W)
- * @crop         : crop information (AP-R, VPU-W)
- * @h264_slice_params : the parameters that hardware use to decode
- */
+ 
 struct vdec_h264_vsi {
 	u64 pred_buf_dma;
 	u64 mv_buf_dma[H264_MAX_MV_NUM];
@@ -70,17 +44,7 @@ struct vdec_h264_vsi {
 	struct mtk_h264_dec_slice_param h264_slice_params;
 };
 
-/**
- * struct vdec_h264_slice_inst - h264 decoder instance
- * @num_nalu : how many nalus be decoded
- * @ctx      : point to mtk_vcodec_dec_ctx
- * @pred_buf : HW working predication buffer
- * @mv_buf   : HW working motion vector buffer
- * @vpu      : VPU instance
- * @vsi_ctx  : Local VSI data for this decoding context
- * @h264_slice_param : the parameters that hardware use to decode
- * @dpb : decoded picture buffer used to store reference buffer information
- */
+ 
 struct vdec_h264_slice_inst {
 	unsigned int num_nalu;
 	struct mtk_vcodec_dec_ctx *ctx;
@@ -136,14 +100,14 @@ static int get_vdec_decode_parameters(struct vdec_h264_slice_inst *inst)
 	mtk_vdec_h264_fill_dpb_info(inst->ctx, &slice_param->decode_params,
 				    slice_param->h264_dpb_info);
 
-	/* Build the reference lists */
+	 
 	v4l2_h264_init_reflist_builder(&reflist_builder, dec_params, sps,
 				       inst->dpb);
 	v4l2_h264_build_p_ref_list(&reflist_builder, v4l2_p0_reflist);
 	v4l2_h264_build_b_ref_lists(&reflist_builder, v4l2_b0_reflist,
 				    v4l2_b1_reflist);
 
-	/* Adapt the built lists to the firmware's expectations */
+	 
 	mtk_vdec_h264_get_ref_list(p0_reflist, v4l2_p0_reflist, reflist_builder.num_valid);
 	mtk_vdec_h264_get_ref_list(b0_reflist, v4l2_b0_reflist, reflist_builder.num_valid);
 	mtk_vdec_h264_get_ref_list(b1_reflist, v4l2_b1_reflist, reflist_builder.num_valid);
@@ -342,7 +306,7 @@ static int vdec_h264_slice_decode(void *h_vdec, struct mtk_vcodec_mem *bs,
 	int err;
 
 	inst->num_nalu++;
-	/* bs NULL means flush decoder */
+	 
 	if (!bs)
 		return vpu_dec_reset(vpu);
 
@@ -368,11 +332,7 @@ static int vdec_h264_slice_decode(void *h_vdec, struct mtk_vcodec_mem *bs,
 		goto err_free_fb_out;
 
 	data[0] = bs->size;
-	/*
-	 * Reconstruct the first byte of the NAL unit, as the firmware requests
-	 * that information to be passed even though it is present in the stream
-	 * itself...
-	 */
+	 
 	data[1] = (dec_params->nal_ref_idc << 5) |
 		  ((dec_params->flags & V4L2_H264_DECODE_PARAM_FLAG_IDR_PIC)
 			? 0x5 : 0x1);
@@ -394,7 +354,7 @@ static int vdec_h264_slice_decode(void *h_vdec, struct mtk_vcodec_mem *bs,
 	if (err)
 		goto err_free_fb_out;
 
-	/* wait decoder done interrupt */
+	 
 	err = mtk_vcodec_wait_for_done_ctx(inst->ctx,
 					   MTK_INST_IRQ_RECEIVED,
 					   WAIT_INTR_TIMEOUT_MS, 0);

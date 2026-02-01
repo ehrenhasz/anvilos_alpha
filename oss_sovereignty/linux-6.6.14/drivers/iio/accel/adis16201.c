@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * ADIS16201 Dual-Axis Digital Inclinometer and Accelerometer
- *
- * Copyright 2010 Analog Devices Inc.
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/kernel.h>
@@ -16,7 +12,7 @@
 #define ADIS16201_STARTUP_DELAY_MS			220
 #define ADIS16201_FLASH_CNT				0x00
 
-/* Data Output Register Information */
+ 
 #define ADIS16201_SUPPLY_OUT_REG			0x02
 #define ADIS16201_XACCL_OUT_REG				0x04
 #define ADIS16201_YACCL_OUT_REG				0x06
@@ -25,7 +21,7 @@
 #define ADIS16201_XINCL_OUT_REG				0x0C
 #define ADIS16201_YINCL_OUT_REG				0x0E
 
-/* Calibration Register Definition */
+ 
 #define ADIS16201_XACCL_OFFS_REG			0x10
 #define ADIS16201_YACCL_OFFS_REG			0x12
 #define ADIS16201_XACCL_SCALE_REG			0x14
@@ -35,7 +31,7 @@
 #define ADIS16201_XINCL_SCALE_REG			0x1C
 #define ADIS16201_YINCL_SCALE_REG			0x1E
 
-/* Alarm Register Definition */
+ 
 #define ADIS16201_ALM_MAG1_REG				0x20
 #define ADIS16201_ALM_MAG2_REG				0x22
 #define ADIS16201_ALM_SMPL1_REG				0x24
@@ -45,32 +41,32 @@
 #define ADIS16201_AUX_DAC_REG				0x30
 #define ADIS16201_GPIO_CTRL_REG				0x32
 #define ADIS16201_SMPL_PRD_REG				0x36
-/* Operation, filter configuration */
+ 
 #define ADIS16201_AVG_CNT_REG				0x38
 #define ADIS16201_SLP_CNT_REG				0x3A
 
-/* Miscellaneous Control Register Definition */
+ 
 #define ADIS16201_MSC_CTRL_REG				0x34
 #define  ADIS16201_MSC_CTRL_SELF_TEST_EN		BIT(8)
-/* Data-ready enable: 1 = enabled, 0 = disabled */
+ 
 #define  ADIS16201_MSC_CTRL_DATA_RDY_EN			BIT(2)
-/* Data-ready polarity: 1 = active high, 0 = active low */
+ 
 #define  ADIS16201_MSC_CTRL_ACTIVE_DATA_RDY_HIGH	BIT(1)
-/* Data-ready line selection: 1 = DIO1, 0 = DIO0 */
+ 
 #define  ADIS16201_MSC_CTRL_DATA_RDY_DIO1		BIT(0)
 
-/* Diagnostics System Status Register Definition */
+ 
 #define ADIS16201_DIAG_STAT_REG				0x3C
 #define  ADIS16201_DIAG_STAT_ALARM2			BIT(9)
 #define  ADIS16201_DIAG_STAT_ALARM1			BIT(8)
 #define  ADIS16201_DIAG_STAT_SPI_FAIL_BIT		3
 #define  ADIS16201_DIAG_STAT_FLASH_UPT_FAIL_BIT		2
-/* Power supply above 3.625 V */
+ 
 #define  ADIS16201_DIAG_STAT_POWER_HIGH_BIT		1
-/* Power supply below 2.975 V */
+ 
 #define  ADIS16201_DIAG_STAT_POWER_LOW_BIT		0
 
-/* System Command Register Definition */
+ 
 #define ADIS16201_GLOB_CMD_REG				0x3E
 #define  ADIS16201_GLOB_CMD_SW_RESET			BIT(7)
 #define  ADIS16201_GLOB_CMD_FACTORY_RESET		BIT(1)
@@ -113,11 +109,11 @@ static int adis16201_read_raw(struct iio_dev *indio_dev,
 		switch (chan->type) {
 		case IIO_VOLTAGE:
 			if (chan->channel == 0) {
-			/* Voltage base units are mV hence 1.22 mV */
+			 
 				*val = 1;
 				*val2 = 220000;
 			} else {
-			/* Voltage base units are mV hence 0.61 mV */
+			 
 				*val = 0;
 				*val2 = 610000;
 			}
@@ -127,11 +123,7 @@ static int adis16201_read_raw(struct iio_dev *indio_dev,
 			*val2 = 0;
 			return IIO_VAL_INT_PLUS_MICRO;
 		case IIO_ACCEL:
-			/*
-			 * IIO base unit for sensitivity of accelerometer
-			 * is milli g.
-			 * 1 LSB represents 0.244 mg.
-			 */
+			 
 			*val = 0;
 			*val2 = IIO_G_TO_M_S_2(462400);
 			return IIO_VAL_INT_PLUS_NANO;
@@ -144,11 +136,7 @@ static int adis16201_read_raw(struct iio_dev *indio_dev,
 		}
 		break;
 	case IIO_CHAN_INFO_OFFSET:
-		/*
-		 * The raw ADC value is 1278 when the temperature
-		 * is 25 degrees and the scale factor per milli
-		 * degree celcius is -470.
-		 */
+		 
 		*val = 25000 / -470 - 1278;
 		return IIO_VAL_INT;
 	case IIO_CHAN_INFO_CALIBBIAS:

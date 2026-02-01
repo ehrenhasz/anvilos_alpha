@@ -1,14 +1,14 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright 2017 Ben Whitten <ben.whitten@gmail.com>
-// Copyright 2007 Oliver Jowett <oliver@opencloud.com>
-//
-// LED Kernel Netdev Trigger
-//
-// Toggles the LED to reflect the link and traffic state of a named net device
-//
-// Derived from ledtrig-timer.c which is:
-//  Copyright 2005-2006 Openedhand Ltd.
-//  Author: Richard Purdie <rpurdie@openedhand.com>
+
+
+
+
+
+
+
+
+
+
+
 
 #include <linux/atomic.h>
 #include <linux/ctype.h>
@@ -28,17 +28,7 @@
 
 #define NETDEV_LED_DEFAULT_INTERVAL	50
 
-/*
- * Configurable sysfs attributes:
- *
- * device_name - network device name to monitor
- * interval - duration of LED blink, in milliseconds
- * link -  LED's normal state reflects whether the link is up
- *         (has carrier) or not
- * tx -  LED blinks on transmitted data
- * rx -  LED blinks on receive data
- *
- */
+ 
 
 struct led_netdev_data {
 	struct mutex lock;
@@ -66,7 +56,7 @@ static void set_baseline_state(struct led_netdev_data *trigger_data)
 	int current_brightness;
 	struct led_classdev *led_cdev = trigger_data->led_cdev;
 
-	/* Already validated, hw control is possible with the requested mode */
+	 
 	if (trigger_data->hw_control) {
 		led_cdev->hw_control_set(led_cdev, trigger_data->mode);
 
@@ -113,9 +103,7 @@ static void set_baseline_state(struct led_netdev_data *trigger_data)
 		else
 			led_set_brightness(led_cdev, LED_OFF);
 
-		/* If we are looking for RX/TX start periodically
-		 * checking stats
-		 */
+		 
 		if (test_bit(TRIGGER_NETDEV_TX, &trigger_data->mode) ||
 		    test_bit(TRIGGER_NETDEV_RX, &trigger_data->mode))
 			schedule_delayed_work(&trigger_data->work, 0);
@@ -131,10 +119,7 @@ static bool supports_hw_control(struct led_classdev *led_cdev)
 	return !strcmp(led_cdev->hw_control_trigger, led_cdev->trigger->name);
 }
 
-/*
- * Validate the configured netdev is the same as the one associated with
- * the LED driver in hw control.
- */
+ 
 static bool validate_net_dev(struct led_classdev *led_cdev,
 			     struct net_device *net_dev)
 {
@@ -159,27 +144,17 @@ static bool can_hw_control(struct led_netdev_data *trigger_data)
 	if (!supports_hw_control(led_cdev))
 		return false;
 
-	/*
-	 * Interval must be set to the default
-	 * value. Any different value is rejected if in hw
-	 * control.
-	 */
+	 
 	if (interval != default_interval)
 		return false;
 
-	/*
-	 * net_dev must be set with hw control, otherwise no
-	 * blinking can be happening and there is nothing to
-	 * offloaded. Additionally, for hw control to be
-	 * valid, the configured netdev must be the same as
-	 * netdev associated to the LED.
-	 */
+	 
 	if (!validate_net_dev(led_cdev, trigger_data->net_dev))
 		return false;
 
-	/* Check if the requested mode is supported */
+	 
 	ret = led_cdev->hw_control_is_supported(led_cdev, trigger_data->mode);
-	/* Fall back to software blinking if not supported */
+	 
 	if (ret == -EOPNOTSUPP)
 		return false;
 	if (ret) {
@@ -226,10 +201,7 @@ static int set_device_name(struct led_netdev_data *trigger_data,
 
 	cancel_delayed_work_sync(&trigger_data->work);
 
-	/*
-	 * Take RTNL lock before trigger_data lock to prevent potential
-	 * deadlock with netdev notifier registration.
-	 */
+	 
 	rtnl_lock();
 	mutex_lock(&trigger_data->lock);
 
@@ -396,12 +368,12 @@ static ssize_t interval_store(struct device *dev,
 	if (ret)
 		return ret;
 
-	/* impose some basic bounds on the timer interval */
+	 
 	if (value >= 5 && value <= 10000) {
 		cancel_delayed_work_sync(&trigger_data->work);
 
 		atomic_set(&trigger_data->interval, msecs_to_jiffies(value));
-		set_baseline_state(trigger_data);	/* resets timer */
+		set_baseline_state(trigger_data);	 
 	}
 
 	return size;
@@ -486,7 +458,7 @@ static int netdev_trig_notify(struct notifier_block *nb,
 	return NOTIFY_DONE;
 }
 
-/* here's the real work! */
+ 
 static void netdev_trig_work(struct work_struct *work)
 {
 	struct led_netdev_data *trigger_data =
@@ -497,13 +469,13 @@ static void netdev_trig_work(struct work_struct *work)
 	unsigned long interval;
 	int invert;
 
-	/* If we dont have a device, insure we are off */
+	 
 	if (!trigger_data->net_dev) {
 		led_set_brightness(trigger_data->led_cdev, LED_OFF);
 		return;
 	}
 
-	/* If we are not looking for RX/TX then return  */
+	 
 	if (!test_bit(TRIGGER_NETDEV_TX, &trigger_data->mode) &&
 	    !test_bit(TRIGGER_NETDEV_RX, &trigger_data->mode))
 		return;
@@ -526,7 +498,7 @@ static void netdev_trig_work(struct work_struct *work)
 			 test_bit(TRIGGER_NETDEV_FULL_DUPLEX, &trigger_data->mode);
 		interval = jiffies_to_msecs(
 				atomic_read(&trigger_data->interval));
-		/* base state is ON (link present) */
+		 
 		led_blink_set_oneshot(trigger_data->led_cdev,
 				      &interval,
 				      &interval,
@@ -564,9 +536,7 @@ static int netdev_trig_activate(struct led_classdev *led_cdev)
 	atomic_set(&trigger_data->interval, msecs_to_jiffies(NETDEV_LED_DEFAULT_INTERVAL));
 	trigger_data->last_activity = 0;
 
-	/* Check if hw control is active by default on the LED.
-	 * Init already enabled mode in hw control.
-	 */
+	 
 	if (supports_hw_control(led_cdev)) {
 		dev = led_cdev->hw_control_get_device(led_cdev);
 		if (dev) {

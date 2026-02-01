@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  linux/drivers/pinctrl/pinmux-xway.c
- *  based on linux/drivers/pinctrl/pinmux-pxa910.c
- *
- *  Copyright (C) 2012 John Crispin <john@phrozen.org>
- *  Copyright (C) 2015 Martin Schiller <mschiller@tdt.de>
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/gpio/driver.h>
@@ -22,23 +16,20 @@
 
 #include <lantiq_soc.h>
 
-/* we have up to 4 banks of 16 bit each */
+ 
 #define PINS			16
 #define PORT3			3
 #define PORT(x)			(x / PINS)
 #define PORT_PIN(x)		(x % PINS)
 
-/* we have 2 mux bits that can be set for each pin */
+ 
 #define MUX_ALT0	0x1
 #define MUX_ALT1	0x2
 
-/*
- * each bank has this offset apart from the 4th bank that is mixed into the
- * other 3 ranges
- */
+ 
 #define REG_OFF			0x30
 
-/* these are the offsets to our registers */
+ 
 #define GPIO_BASE(p)		(REG_OFF * PORT(p))
 #define GPIO_OUT(p)		GPIO_BASE(p)
 #define GPIO_IN(p)		(GPIO_BASE(p) + 0x04)
@@ -49,13 +40,13 @@
 #define GPIO_PUDSEL(p)		(GPIO_BASE(p) + 0x1c)
 #define GPIO_PUDEN(p)		(GPIO_BASE(p) + 0x20)
 
-/* the 4th port needs special offsets for some registers */
+ 
 #define GPIO3_OD		(GPIO_BASE(0) + 0x24)
 #define GPIO3_PUDSEL		(GPIO_BASE(0) + 0x28)
 #define GPIO3_PUDEN		(GPIO_BASE(0) + 0x2C)
 #define GPIO3_ALT1		(GPIO_BASE(PINS) + 0x24)
 
-/* macros to help us access the registers */
+ 
 #define gpio_getbit(m, r, p)	(!!(ltq_r32(m + r) & BIT(p)))
 #define gpio_setbit(m, r, p)	ltq_w32_mask(0, BIT(p), m + r)
 #define gpio_clearbit(m, r, p)	ltq_w32_mask(BIT(p), 0, m + r)
@@ -107,11 +98,11 @@ enum xway_mux {
 	XWAY_MUX_NONE = 0xffff,
 };
 
-/* ---------  ase related code --------- */
+ 
 #define ASE_MAX_PIN		32
 
 static const struct ltq_mfp_pin ase_mfp[] = {
-	/*       pin    f0	f1	f2	f3   */
+	 
 	MFP_XWAY(GPIO0, GPIO,	EXIN,	MII,	TDM),
 	MFP_XWAY(GPIO1, GPIO,	STP,	DFE,	EBU),
 	MFP_XWAY(GPIO2, GPIO,	STP,	DFE,	EPHY),
@@ -162,7 +153,7 @@ static const unsigned ase_pins_ephy_led2[] = {GPIO4};
 static const unsigned ase_pins_dfe_led0[] = {GPIO1};
 static const unsigned ase_pins_dfe_led1[] = {GPIO2};
 
-static const unsigned ase_pins_spi[] = {GPIO8, GPIO9, GPIO10}; /* DEPRECATED */
+static const unsigned ase_pins_spi[] = {GPIO8, GPIO9, GPIO10};  
 static const unsigned ase_pins_spi_di[] = {GPIO8};
 static const unsigned ase_pins_spi_do[] = {GPIO9};
 static const unsigned ase_pins_spi_clk[] = {GPIO10};
@@ -183,7 +174,7 @@ static const struct ltq_pin_group ase_grps[] = {
 	GRP_MUX("exin1", EXIN, ase_pins_exin1),
 	GRP_MUX("exin2", EXIN, ase_pins_exin2),
 	GRP_MUX("jtag", JTAG, ase_pins_jtag),
-	GRP_MUX("spi", SPI, ase_pins_spi), /* DEPRECATED */
+	GRP_MUX("spi", SPI, ase_pins_spi),  
 	GRP_MUX("spi_di", SPI, ase_pins_spi_di),
 	GRP_MUX("spi_do", SPI, ase_pins_spi_do),
 	GRP_MUX("spi_clk", SPI, ase_pins_spi_clk),
@@ -217,7 +208,7 @@ static const char * const ase_ephy_grps[] = {"ephy led0", "ephy led1",
 static const char * const ase_asc_grps[] = {"asc"};
 static const char * const ase_jtag_grps[] = {"jtag"};
 static const char * const ase_stp_grps[] = {"stp"};
-static const char * const ase_spi_grps[] = {"spi",  /* DEPRECATED */
+static const char * const ase_spi_grps[] = {"spi",   
 						"spi_di", "spi_do",
 						"spi_clk", "spi_cs1",
 						"spi_cs2", "spi_cs3"};
@@ -235,11 +226,11 @@ static const struct ltq_pmx_func ase_funcs[] = {
 	{"dfe",		ARRAY_AND_SIZE(ase_dfe_grps)},
 };
 
-/* ---------  danube related code --------- */
+ 
 #define DANUBE_MAX_PIN		32
 
 static const struct ltq_mfp_pin danube_mfp[] = {
-	/*       pin    f0	f1	f2	f3   */
+	 
 	MFP_XWAY(GPIO0, GPIO,	EXIN,	SDIO,	TDM),
 	MFP_XWAY(GPIO1, GPIO,	EXIN,	CBUS,	MII),
 	MFP_XWAY(GPIO2, GPIO,	CGU,	EXIN,	MII),
@@ -300,7 +291,7 @@ static const unsigned danube_pins_nand_ale[] = {GPIO13};
 static const unsigned danube_pins_nand_cs1[] = {GPIO23};
 static const unsigned danube_pins_nand_cle[] = {GPIO24};
 
-static const unsigned danube_pins_spi[] = {GPIO16, GPIO17, GPIO18}; /* DEPRECATED */
+static const unsigned danube_pins_spi[] = {GPIO16, GPIO17, GPIO18};  
 static const unsigned danube_pins_spi_di[] = {GPIO16};
 static const unsigned danube_pins_spi_do[] = {GPIO17};
 static const unsigned danube_pins_spi_clk[] = {GPIO18};
@@ -341,7 +332,7 @@ static const struct ltq_pin_group danube_grps[] = {
 	GRP_MUX("nand ale", EBU, danube_pins_nand_ale),
 	GRP_MUX("nand cs1", EBU, danube_pins_nand_cs1),
 	GRP_MUX("nand cle", EBU, danube_pins_nand_cle),
-	GRP_MUX("spi", SPI, danube_pins_spi), /* DEPRECATED */
+	GRP_MUX("spi", SPI, danube_pins_spi),  
 	GRP_MUX("spi_di", SPI, danube_pins_spi_di),
 	GRP_MUX("spi_do", SPI, danube_pins_spi_do),
 	GRP_MUX("spi_clk", SPI, danube_pins_spi_clk),
@@ -375,7 +366,7 @@ static const struct ltq_pin_group danube_grps[] = {
 static const char * const danube_pci_grps[] = {"gnt1", "gnt2",
 						"gnt3", "req1",
 						"req2", "req3"};
-static const char * const danube_spi_grps[] = {"spi", /* DEPRECATED */
+static const char * const danube_spi_grps[] = {"spi",  
 						"spi_di", "spi_do",
 						"spi_clk", "spi_cs1",
 						"spi_cs2", "spi_cs3",
@@ -410,11 +401,11 @@ static const struct ltq_pmx_func danube_funcs[] = {
 	{"dfe",		ARRAY_AND_SIZE(danube_dfe_grps)},
 };
 
-/* ---------  xrx100 related code --------- */
+ 
 #define XRX100_MAX_PIN		56
 
 static const struct ltq_mfp_pin xrx100_mfp[] = {
-	/*       pin    f0	f1	f2	f3   */
+	 
 	MFP_XWAY(GPIO0, GPIO,	EXIN,	SDIO,	TDM),
 	MFP_XWAY(GPIO1, GPIO,	EXIN,	CBUS,	SIN),
 	MFP_XWAY(GPIO2, GPIO,	CGU,	EXIN,	NONE),
@@ -623,11 +614,11 @@ static const struct ltq_pmx_func xrx100_funcs[] = {
 	{"dfe",		ARRAY_AND_SIZE(xrx100_dfe_grps)},
 };
 
-/* ---------  xrx200 related code --------- */
+ 
 #define XRX200_MAX_PIN		50
 
 static const struct ltq_mfp_pin xrx200_mfp[] = {
-	/*       pin    f0	f1	f2	f3   */
+	 
 	MFP_XWAY(GPIO0, GPIO,	EXIN,	SDIO,	TDM),
 	MFP_XWAY(GPIO1, GPIO,	EXIN,	CBUS,	SIN),
 	MFP_XWAY(GPIO2, GPIO,	CGU,	EXIN,	GPHY),
@@ -879,11 +870,11 @@ static const struct ltq_pmx_func xrx200_funcs[] = {
 	{"gphy",	ARRAY_AND_SIZE(xrx200_gphy_grps)},
 };
 
-/* ---------  xrx300 related code --------- */
+ 
 #define XRX300_MAX_PIN		64
 
 static const struct ltq_mfp_pin xrx300_mfp[] = {
-	/*       pin    f0	f1	f2	f3   */
+	 
 	MFP_XWAY(GPIO0, GPIO,	EXIN,	EPHY,	NONE),
 	MFP_XWAY(GPIO1, GPIO,	NONE,	EXIN,	NONE),
 	MFP_XWAY(GPIO2, NONE,	NONE,	NONE,	NONE),
@@ -955,7 +946,7 @@ static const unsigned xrx300_exin_pin_map[] = {GPIO0, GPIO1, GPIO16, GPIO10, GPI
 static const unsigned xrx300_pins_exin0[] = {GPIO0};
 static const unsigned xrx300_pins_exin1[] = {GPIO1};
 static const unsigned xrx300_pins_exin2[] = {GPIO16};
-/* EXIN3 is not available on xrX300 */
+ 
 static const unsigned xrx300_pins_exin4[] = {GPIO10};
 static const unsigned xrx300_pins_exin5[] = {GPIO9};
 
@@ -1000,14 +991,14 @@ static const unsigned xrx300_pins_spi_di[] = {GPIO16};
 static const unsigned xrx300_pins_spi_do[] = {GPIO17};
 static const unsigned xrx300_pins_spi_clk[] = {GPIO18};
 static const unsigned xrx300_pins_spi_cs1[] = {GPIO15};
-/* SPI_CS2 is not available on xrX300 */
-/* SPI_CS3 is not available on xrX300 */
+ 
+ 
 static const unsigned xrx300_pins_spi_cs4[] = {GPIO10};
-/* SPI_CS5 is not available on xrX300 */
+ 
 static const unsigned xrx300_pins_spi_cs6[] = {GPIO11};
 
-/* CLKOUT0 is not available on xrX300 */
-/* CLKOUT1 is not available on xrX300 */
+ 
+ 
 static const unsigned xrx300_pins_clkout2[] = {GPIO3};
 
 static const struct ltq_pin_group xrx300_grps[] = {
@@ -1092,7 +1083,7 @@ static const struct ltq_pmx_func xrx300_funcs[] = {
 	{"ephy",	ARRAY_AND_SIZE(xrx300_gphy_grps)},
 };
 
-/* ---------  pinconf related code --------- */
+ 
 static int xway_pinconf_get(struct pinctrl_dev *pctldev,
 				unsigned pin,
 				unsigned long *config)
@@ -1223,7 +1214,7 @@ static int xway_pinconf_set(struct pinctrl_dev *pctldev,
 				"Invalid config param %04x\n", param);
 			return -ENOTSUPP;
 		}
-	} /* for each config */
+	}  
 
 	return 0;
 }
@@ -1292,7 +1283,7 @@ static struct ltq_pinmux_info xway_info = {
 	.num_params	= ARRAY_SIZE(xway_cfg_params),
 };
 
-/* ---------  gpio_chip related code --------- */
+ 
 static void xway_gpio_set(struct gpio_chip *chip, unsigned int pin, int val)
 {
 	struct ltq_pinmux_info *info = dev_get_drvdata(chip->parent);
@@ -1333,10 +1324,7 @@ static int xway_gpio_dir_out(struct gpio_chip *chip, unsigned int pin, int val)
 	return 0;
 }
 
-/*
- * gpiolib gpiod_to_irq callback function.
- * Returns the mapped IRQ (external interrupt) number for a given GPIO pin.
- */
+ 
 static int xway_gpio_to_irq(struct gpio_chip *chip, unsigned offset)
 {
 	struct ltq_pinmux_info *info = dev_get_drvdata(chip->parent);
@@ -1362,7 +1350,7 @@ static struct gpio_chip xway_chip = {
 };
 
 
-/* --------- register the pinctrl layer --------- */
+ 
 struct pinctrl_xway_soc {
 	int pin_count;
 	const struct ltq_mfp_pin *mfp;
@@ -1374,7 +1362,7 @@ struct pinctrl_xway_soc {
 	unsigned int num_exin;
 };
 
-/* XWAY AMAZON Family */
+ 
 static struct pinctrl_xway_soc ase_pinctrl = {
 	.pin_count = ASE_MAX_PIN,
 	.mfp = ase_mfp,
@@ -1386,7 +1374,7 @@ static struct pinctrl_xway_soc ase_pinctrl = {
 	.num_exin = 3
 };
 
-/* XWAY DANUBE Family */
+ 
 static struct pinctrl_xway_soc danube_pinctrl = {
 	.pin_count = DANUBE_MAX_PIN,
 	.mfp = danube_mfp,
@@ -1398,7 +1386,7 @@ static struct pinctrl_xway_soc danube_pinctrl = {
 	.num_exin = 3
 };
 
-/* XWAY xRX100 Family */
+ 
 static struct pinctrl_xway_soc xrx100_pinctrl = {
 	.pin_count = XRX100_MAX_PIN,
 	.mfp = xrx100_mfp,
@@ -1410,7 +1398,7 @@ static struct pinctrl_xway_soc xrx100_pinctrl = {
 	.num_exin = 6
 };
 
-/* XWAY xRX200 Family */
+ 
 static struct pinctrl_xway_soc xrx200_pinctrl = {
 	.pin_count = XRX200_MAX_PIN,
 	.mfp = xrx200_mfp,
@@ -1422,7 +1410,7 @@ static struct pinctrl_xway_soc xrx200_pinctrl = {
 	.num_exin = 6
 };
 
-/* XWAY xRX300 Family */
+ 
 static struct pinctrl_xway_soc xrx300_pinctrl = {
 	.pin_count = XRX300_MAX_PIN,
 	.mfp = xrx300_mfp,
@@ -1455,7 +1443,7 @@ static int pinmux_xway_probe(struct platform_device *pdev)
 	const struct pinctrl_xway_soc *xway_soc;
 	int ret, i;
 
-	/* get and remap our register range */
+	 
 	xway_info.membase[0] = devm_platform_ioremap_resource(pdev, 0);
 	if (IS_ERR(xway_info.membase[0]))
 		return PTR_ERR(xway_info.membase[0]);
@@ -1466,10 +1454,10 @@ static int pinmux_xway_probe(struct platform_device *pdev)
 	else
 		xway_soc = &danube_pinctrl;
 
-	/* find out how many pads we have */
+	 
 	xway_chip.ngpio = xway_soc->pin_count;
 
-	/* load our pad descriptors */
+	 
 	xway_info.pads = devm_kcalloc(&pdev->dev,
 			xway_chip.ngpio, sizeof(struct pinctrl_pin_desc),
 			GFP_KERNEL);
@@ -1487,7 +1475,7 @@ static int pinmux_xway_probe(struct platform_device *pdev)
 	}
 	xway_pctrl_desc.pins = xway_info.pads;
 
-	/* setup the data needed by pinctrl */
+	 
 	xway_pctrl_desc.name	= dev_name(&pdev->dev);
 	xway_pctrl_desc.npins	= xway_chip.ngpio;
 
@@ -1501,14 +1489,14 @@ static int pinmux_xway_probe(struct platform_device *pdev)
 	xway_info.exin		= xway_soc->exin;
 	xway_info.num_exin	= xway_soc->num_exin;
 
-	/* register with the generic lantiq layer */
+	 
 	ret = ltq_pinctrl_register(pdev, &xway_info);
 	if (ret) {
 		dev_err(&pdev->dev, "Failed to register pinctrl driver\n");
 		return ret;
 	}
 
-	/* register the gpio chip */
+	 
 	xway_chip.parent = &pdev->dev;
 	xway_chip.owner = THIS_MODULE;
 	ret = devm_gpiochip_add_data(&pdev->dev, &xway_chip, NULL);
@@ -1517,18 +1505,9 @@ static int pinmux_xway_probe(struct platform_device *pdev)
 		return ret;
 	}
 
-	/*
-	 * For DeviceTree-supported systems, the gpio core checks the
-	 * pinctrl's device node for the "gpio-ranges" property.
-	 * If it is present, it takes care of adding the pin ranges
-	 * for the driver. In this case the driver can skip ahead.
-	 *
-	 * In order to remain compatible with older, existing DeviceTree
-	 * files which don't set the "gpio-ranges" property or systems that
-	 * utilize ACPI the driver has to call gpiochip_add_pin_range().
-	 */
+	 
 	if (!of_property_read_bool(pdev->dev.of_node, "gpio-ranges")) {
-		/* finish with registering the gpio range in pinctrl */
+		 
 		xway_gpio_range.npins = xway_chip.ngpio;
 		xway_gpio_range.base = xway_chip.base;
 		pinctrl_add_gpio_range(xway_info.pctrl, &xway_gpio_range);

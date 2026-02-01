@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2020 Intel Corporation
- */
+ 
+ 
 
 #ifndef __INTEL_DISPLAY_DEBUGFS_H__
 #define __INTEL_DISPLAY_DEBUGFS_H__
@@ -20,4 +18,4 @@ static inline void intel_connector_debugfs_add(struct intel_connector *connector
 static inline void intel_crtc_debugfs_add(struct intel_crtc *crtc) {}
 #endif
 
-#endif /* __INTEL_DISPLAY_DEBUGFS_H__ */
+#endif  

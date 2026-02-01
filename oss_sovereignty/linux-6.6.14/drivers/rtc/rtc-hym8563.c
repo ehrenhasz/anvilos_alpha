@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Haoyu HYM8563 RTC driver
- *
- * Copyright (C) 2013 MundoReader S.L.
- * Author: Heiko Stuebner <heiko@sntech.de>
- *
- * based on rtc-HYM8563
- * Copyright (C) 2010 ROCKCHIP, Inc.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/clk-provider.h>
@@ -54,7 +46,7 @@
 #define HYM8563_ALM_DAY		0x0b
 #define HYM8563_ALM_WEEK	0x0c
 
-/* Each alarm check can be disabled by setting this bit in the register */
+ 
 #define HYM8563_ALM_BIT_DISABLE	BIT(7)
 
 #define HYM8563_CLKOUT		0x0d
@@ -83,9 +75,7 @@ struct hym8563 {
 #endif
 };
 
-/*
- * RTC handling
- */
+ 
 
 static int hym8563_rtc_read_time(struct device *dev, struct rtc_time *tm)
 {
@@ -107,8 +97,8 @@ static int hym8563_rtc_read_time(struct device *dev, struct rtc_time *tm)
 	tm->tm_min = bcd2bin(buf[1] & HYM8563_MIN_MASK);
 	tm->tm_hour = bcd2bin(buf[2] & HYM8563_HOUR_MASK);
 	tm->tm_mday = bcd2bin(buf[3] & HYM8563_DAY_MASK);
-	tm->tm_wday = bcd2bin(buf[4] & HYM8563_WEEKDAY_MASK); /* 0 = Sun */
-	tm->tm_mon = bcd2bin(buf[5] & HYM8563_MONTH_MASK) - 1; /* 0 = Jan */
+	tm->tm_wday = bcd2bin(buf[4] & HYM8563_WEEKDAY_MASK);  
+	tm->tm_mon = bcd2bin(buf[5] & HYM8563_MONTH_MASK) - 1;  
 	tm->tm_year = bcd2bin(buf[6]) + 100;
 
 	return 0;
@@ -120,7 +110,7 @@ static int hym8563_rtc_set_time(struct device *dev, struct rtc_time *tm)
 	u8 buf[7];
 	int ret;
 
-	/* Years >= 2100 are to far in the future, 19XX is to early */
+	 
 	if (tm->tm_year < 100 || tm->tm_year >= 200)
 		return -EINVAL;
 
@@ -131,17 +121,10 @@ static int hym8563_rtc_set_time(struct device *dev, struct rtc_time *tm)
 	buf[4] = bin2bcd(tm->tm_wday);
 	buf[5] = bin2bcd(tm->tm_mon + 1);
 
-	/*
-	 * While the HYM8563 has a century flag in the month register,
-	 * it does not seem to carry it over a subsequent write/read.
-	 * So we'll limit ourself to 100 years, starting at 2000 for now.
-	 */
+	 
 	buf[6] = bin2bcd(tm->tm_year - 100);
 
-	/*
-	 * CTL1 only contains TEST-mode bits apart from stop,
-	 * so no need to read the value first
-	 */
+	 
 	ret = i2c_smbus_write_byte_data(client, HYM8563_CTL1,
 						HYM8563_CTL1_STOP);
 	if (ret < 0)
@@ -187,7 +170,7 @@ static int hym8563_rtc_read_alarm(struct device *dev, struct rtc_wkalrm *alm)
 	if (ret < 0)
 		return ret;
 
-	/* The alarm only has a minute accuracy */
+	 
 	alm_tm->tm_sec = 0;
 
 	alm_tm->tm_min = (buf[0] & HYM8563_ALM_BIT_DISABLE) ?
@@ -257,9 +240,7 @@ static const struct rtc_class_ops hym8563_rtc_ops = {
 	.set_alarm		= hym8563_rtc_set_alarm,
 };
 
-/*
- * Handling of the clkout
- */
+ 
 
 #ifdef CONFIG_COMMON_CLK
 #define clkout_hw_to_hym8563(_hw) container_of(_hw, struct hym8563, clkout_hw)
@@ -387,10 +368,10 @@ static struct clk *hym8563_clkout_register_clk(struct hym8563 *hym8563)
 	init.num_parents = 0;
 	hym8563->clkout_hw.init = &init;
 
-	/* optional override of the clockname */
+	 
 	of_property_read_string(node, "clock-output-names", &init.name);
 
-	/* register the clock */
+	 
 	clk = clk_register(&client->dev, &hym8563->clkout_hw);
 
 	if (!IS_ERR(clk))
@@ -400,12 +381,7 @@ static struct clk *hym8563_clkout_register_clk(struct hym8563 *hym8563)
 }
 #endif
 
-/*
- * The alarm interrupt is implemented as a level-low interrupt in the
- * hym8563, while the timer interrupt uses a falling edge.
- * We don't use the timer at all, so the interrupt is requested to
- * use the level-low trigger.
- */
+ 
 static irqreturn_t hym8563_irq(int irq, void *dev_id)
 {
 	struct hym8563 *hym8563 = (struct hym8563 *)dev_id;
@@ -414,7 +390,7 @@ static irqreturn_t hym8563_irq(int irq, void *dev_id)
 
 	rtc_lock(hym8563->rtc);
 
-	/* Clear the alarm flag */
+	 
 
 	data = i2c_smbus_read_byte_data(client, HYM8563_CTL2);
 	if (data < 0) {
@@ -440,7 +416,7 @@ static int hym8563_init_device(struct i2c_client *client)
 {
 	int ret;
 
-	/* Clear stop flag if present */
+	 
 	ret = i2c_smbus_write_byte_data(client, HYM8563_CTL1, 0);
 	if (ret < 0)
 		return ret;
@@ -449,11 +425,11 @@ static int hym8563_init_device(struct i2c_client *client)
 	if (ret < 0)
 		return ret;
 
-	/* Disable alarm and timer interrupts */
+	 
 	ret &= ~HYM8563_CTL2_AIE;
 	ret &= ~HYM8563_CTL2_TIE;
 
-	/* Clear any pending alarm and timer flags */
+	 
 	if (ret & HYM8563_CTL2_AF)
 		ret &= ~HYM8563_CTL2_AF;
 
@@ -539,7 +515,7 @@ static int hym8563_probe(struct i2c_client *client)
 		device_init_wakeup(&client->dev, true);
 	}
 
-	/* check state of calendar information */
+	 
 	ret = i2c_smbus_read_byte_data(client, HYM8563_SEC);
 	if (ret < 0)
 		return ret;

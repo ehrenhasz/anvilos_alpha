@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * kobj_map.h
- */
+ 
+ 
 
 #ifndef _KOBJ_MAP_H_
 #define _KOBJ_MAP_H_
@@ -17,4 +15,4 @@ void kobj_unmap(struct kobj_map *, dev_t, unsigned long);
 struct kobject *kobj_lookup(struct kobj_map *, dev_t, int *);
 struct kobj_map *kobj_map_init(kobj_probe_t *, struct mutex *);
 
-#endif /* _KOBJ_MAP_H_ */
+#endif  

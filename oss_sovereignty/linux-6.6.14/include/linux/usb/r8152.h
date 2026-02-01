@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- *  Copyright (c) 2020 Realtek Semiconductor Corp. All rights reserved.
- */
+ 
+ 
 
 #ifndef	__LINUX_R8152_H
 #define __LINUX_R8152_H
@@ -21,7 +19,7 @@
 #define MCU_TYPE_PLA			0x0100
 #define MCU_TYPE_USB			0x0000
 
-/* Define these values to match your device */
+ 
 #define VENDOR_ID_REALTEK		0x0bda
 #define VENDOR_ID_MICROSOFT		0x045e
 #define VENDOR_ID_SAMSUNG		0x04e8
@@ -36,4 +34,4 @@
 extern u8 rtl8152_get_version(struct usb_interface *intf);
 #endif
 
-#endif /* __LINUX_R8152_H */
+#endif  

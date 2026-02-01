@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * External DMA controller driver for UniPhier SoCs
- * Copyright 2019 Socionext Inc.
- * Author: Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/bitfield.h>
@@ -58,7 +54,7 @@
 #define XDMAC_INTERVAL_CLKS	20
 #define XDMAC_MAX_WORDS		XDMAC_TNUM_MASK
 
-/* cut lower bit for maintain alignment of maximum transfer size */
+ 
 #define XDMAC_MAX_WORD_SIZE	(XDMAC_ITS_MASK & ~GENMASK(3, 0))
 
 #define UNIPHIER_XDMAC_BUSWIDTHS \
@@ -112,7 +108,7 @@ to_uniphier_xdmac_desc(struct virt_dma_desc *vd)
 	return container_of(vd, struct uniphier_xdmac_desc, vd);
 }
 
-/* xc->vc.lock must be held by caller */
+ 
 static struct uniphier_xdmac_desc *
 uniphier_xdmac_next_desc(struct uniphier_xdmac_chan *xc)
 {
@@ -127,7 +123,7 @@ uniphier_xdmac_next_desc(struct uniphier_xdmac_chan *xc)
 	return to_uniphier_xdmac_desc(vd);
 }
 
-/* xc->vc.lock must be held by caller */
+ 
 static void uniphier_xdmac_chan_start(struct uniphier_xdmac_chan *xc,
 				      struct uniphier_xdmac_desc *xd)
 {
@@ -142,10 +138,7 @@ static void uniphier_xdmac_chan_start(struct uniphier_xdmac_chan *xc,
 	its      = xd->nodes[xd->cur_node].burst_size;
 	tnum     = xd->nodes[xd->cur_node].nr_burst;
 
-	/*
-	 * The width of MEM side must be 4 or 8 bytes, that does not
-	 * affect that of DEV side and transfer size.
-	 */
+	 
 	if (xd->dir == DMA_DEV_TO_MEM) {
 		src_mode = XDMAC_SADM_SAM_FIXED;
 		buswidth = xc->sconfig.src_addr_width;
@@ -164,12 +157,12 @@ static void uniphier_xdmac_chan_start(struct uniphier_xdmac_chan *xc,
 	}
 	dst_width = FIELD_PREP(XDMAC_DADM_DTW_MASK, __ffs(buswidth));
 
-	/* setup transfer factor */
+	 
 	val = FIELD_PREP(XDMAC_TFA_MCNT_MASK, XDMAC_INTERVAL_CLKS);
 	val |= FIELD_PREP(XDMAC_TFA_MASK, xc->req_factor);
 	writel(val, xc->reg_ch_base + XDMAC_TFA);
 
-	/* setup the channel */
+	 
 	writel(lower_32_bits(src_addr), xc->reg_ch_base + XDMAC_SAD);
 	writel(upper_32_bits(src_addr), xc->reg_ch_base + XDMAC_EXSAD);
 
@@ -184,37 +177,37 @@ static void uniphier_xdmac_chan_start(struct uniphier_xdmac_chan *xc,
 	writel(its, xc->reg_ch_base + XDMAC_ITS);
 	writel(tnum, xc->reg_ch_base + XDMAC_TNUM);
 
-	/* enable interrupt */
+	 
 	writel(XDMAC_IEN_ENDIEN | XDMAC_IEN_ERRIEN,
 	       xc->reg_ch_base + XDMAC_IEN);
 
-	/* start XDMAC */
+	 
 	val = readl(xc->reg_ch_base + XDMAC_TSS);
 	val |= XDMAC_TSS_REQ;
 	writel(val, xc->reg_ch_base + XDMAC_TSS);
 }
 
-/* xc->vc.lock must be held by caller */
+ 
 static int uniphier_xdmac_chan_stop(struct uniphier_xdmac_chan *xc)
 {
 	u32 val;
 
-	/* disable interrupt */
+	 
 	val = readl(xc->reg_ch_base + XDMAC_IEN);
 	val &= ~(XDMAC_IEN_ENDIEN | XDMAC_IEN_ERRIEN);
 	writel(val, xc->reg_ch_base + XDMAC_IEN);
 
-	/* stop XDMAC */
+	 
 	val = readl(xc->reg_ch_base + XDMAC_TSS);
 	val &= ~XDMAC_TSS_REQ;
 	writel(0, xc->reg_ch_base + XDMAC_TSS);
 
-	/* wait until transfer is stopped */
+	 
 	return readl_poll_timeout_atomic(xc->reg_ch_base + XDMAC_STAT, val,
 					 !(val & XDMAC_STAT_TENF), 100, 1000);
 }
 
-/* xc->vc.lock must be held by caller */
+ 
 static void uniphier_xdmac_start(struct uniphier_xdmac_chan *xc)
 {
 	struct uniphier_xdmac_desc *xd;
@@ -223,7 +216,7 @@ static void uniphier_xdmac_start(struct uniphier_xdmac_chan *xc)
 	if (xd)
 		uniphier_xdmac_chan_start(xc, xd);
 
-	/* set desc to chan regardless of xd is null */
+	 
 	xc->xd = xd;
 }
 
@@ -255,7 +248,7 @@ static void uniphier_xdmac_chan_irq(struct uniphier_xdmac_chan *xc)
 		}
 	}
 
-	/* write bits to clear */
+	 
 	writel(stat, xc->reg_ch_base + XDMAC_IR);
 
 	spin_unlock(&xc->vc.lock);
@@ -361,14 +354,7 @@ uniphier_xdmac_prep_slave_sg(struct dma_chan *chan, struct scatterlist *sgl,
 		xd->nodes[i].nr_burst =
 			sg_dma_len(sg) / xd->nodes[i].burst_size;
 
-		/*
-		 * Currently transfer that size doesn't align the unit size
-		 * (the number of burst words * bus-width) is not allowed,
-		 * because the driver does not support the way to transfer
-		 * residue size. As a matter of fact, in order to transfer
-		 * arbitrary size, 'src_maxburst' or 'dst_maxburst' of
-		 * dma_slave_config must be 1.
-		 */
+		 
 		if (sg_dma_len(sg) % xd->nodes[i].burst_size) {
 			dev_err(xc->xdev->ddev.dev,
 				"Unaligned transfer size: %d", sg_dma_len(sg));
@@ -570,13 +556,7 @@ static int uniphier_xdmac_remove(struct platform_device *pdev)
 	struct dma_chan *chan;
 	int ret;
 
-	/*
-	 * Before reaching here, almost all descriptors have been freed by the
-	 * ->device_free_chan_resources() hook. However, each channel might
-	 * be still holding one descriptor that was on-flight at that moment.
-	 * Terminate it to make sure this hardware is no longer running. Then,
-	 * free the channel resources once again to avoid memory leak.
-	 */
+	 
 	list_for_each_entry(chan, &ddev->channels, device_node) {
 		ret = dmaengine_terminate_sync(chan);
 		if (ret)
@@ -592,7 +572,7 @@ static int uniphier_xdmac_remove(struct platform_device *pdev)
 
 static const struct of_device_id uniphier_xdmac_match[] = {
 	{ .compatible = "socionext,uniphier-xdmac" },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, uniphier_xdmac_match);
 

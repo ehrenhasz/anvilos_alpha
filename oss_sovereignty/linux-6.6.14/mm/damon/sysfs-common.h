@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Common Primitives for DAMON Sysfs Interface
- *
- * Author: SeongJae Park <sj@kernel.org>
- */
+ 
+ 
 
 #include <linux/damon.h>
 #include <linux/kobject.h>
@@ -23,9 +19,7 @@ void damon_sysfs_ul_range_release(struct kobject *kobj);
 
 extern const struct kobj_type damon_sysfs_ul_range_ktype;
 
-/*
- * schemes directory
- */
+ 
 
 struct damon_sysfs_schemes {
 	struct kobject kobj;

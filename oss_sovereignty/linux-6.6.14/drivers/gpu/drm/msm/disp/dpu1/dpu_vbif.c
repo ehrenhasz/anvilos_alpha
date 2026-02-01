@@ -1,6 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright (c) 2015-2018, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #define pr_fmt(fmt)	"[drm:%s:%d] " fmt, __func__, __LINE__
 
@@ -31,12 +30,7 @@ static const char *dpu_vbif_name(enum dpu_vbif idx)
 	}
 }
 
-/**
- * _dpu_vbif_wait_for_xin_halt - wait for the xin to halt
- * @vbif:	Pointer to hardware vbif driver
- * @xin_id:	Client interface identifier
- * @return:	0 if success; error code otherwise
- */
+ 
 static int _dpu_vbif_wait_for_xin_halt(struct dpu_hw_vbif *vbif, u32 xin_id)
 {
 	ktime_t timeout;
@@ -73,12 +67,7 @@ static int _dpu_vbif_wait_for_xin_halt(struct dpu_hw_vbif *vbif, u32 xin_id)
 	return rc;
 }
 
-/**
- * _dpu_vbif_apply_dynamic_ot_limit - determine OT based on usecase parameters
- * @vbif:	Pointer to hardware vbif driver
- * @ot_lim:	Pointer to OT limit to be modified
- * @params:	Pointer to usecase parameters
- */
+ 
 static void _dpu_vbif_apply_dynamic_ot_limit(struct dpu_hw_vbif *vbif,
 		u32 *ot_lim, struct dpu_vbif_set_ot_params *params)
 {
@@ -89,7 +78,7 @@ static void _dpu_vbif_apply_dynamic_ot_limit(struct dpu_hw_vbif *vbif,
 	if (!vbif || !(vbif->cap->features & BIT(DPU_VBIF_QOS_OTLIM)))
 		return;
 
-	/* Dynamic OT setting done only for WFD */
+	 
 	if (!params->is_wfd)
 		return;
 
@@ -113,12 +102,7 @@ static void _dpu_vbif_apply_dynamic_ot_limit(struct dpu_hw_vbif *vbif,
 			pps, *ot_lim);
 }
 
-/**
- * _dpu_vbif_get_ot_limit - get OT based on usecase & configuration parameters
- * @vbif:	Pointer to hardware vbif driver
- * @params:	Pointer to usecase parameters
- * @return:	OT limit
- */
+ 
 static u32 _dpu_vbif_get_ot_limit(struct dpu_hw_vbif *vbif,
 	struct dpu_vbif_set_ot_params *params)
 {
@@ -135,14 +119,11 @@ static u32 _dpu_vbif_get_ot_limit(struct dpu_hw_vbif *vbif,
 	else if (vbif->cap->default_ot_rd_limit && params->rd)
 		ot_lim = vbif->cap->default_ot_rd_limit;
 
-	/*
-	 * If default ot is not set from dt/catalog,
-	 * then do not configure it.
-	 */
+	 
 	if (ot_lim == 0)
 		goto exit;
 
-	/* Modify the limits if the target and the use case requires it */
+	 
 	_dpu_vbif_apply_dynamic_ot_limit(vbif, &ot_lim, params);
 
 	if (vbif && vbif->ops.get_limit_conf) {
@@ -158,13 +139,7 @@ exit:
 	return ot_lim;
 }
 
-/**
- * dpu_vbif_set_ot_limit - set OT based on usecase & configuration parameters
- * @dpu_kms:	DPU handler
- * @params:	Pointer to usecase parameters
- *
- * Note this function would block waiting for bus halt.
- */
+ 
 void dpu_vbif_set_ot_limit(struct dpu_kms *dpu_kms,
 		struct dpu_vbif_set_ot_params *params)
 {
@@ -188,7 +163,7 @@ void dpu_vbif_set_ot_limit(struct dpu_kms *dpu_kms,
 			!vbif->ops.set_halt_ctrl)
 		return;
 
-	/* set write_gather_en for all write clients */
+	 
 	if (vbif->ops.set_write_gather_en && !params->rd)
 		vbif->ops.set_write_gather_en(vbif, params->xin_id);
 

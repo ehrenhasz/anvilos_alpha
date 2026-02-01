@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright(c) 2011 - 2012 Intel Corporation. All rights reserved.
- *
- * Maintained at www.Open-FCoE.org
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/types.h>
@@ -14,21 +10,14 @@
 #include <scsi/fcoe_sysfs.h>
 #include <scsi/libfcoe.h>
 
-/*
- * OK to include local libfcoe.h for debug_logging, but cannot include
- * <scsi/libfcoe.h> otherwise non-netdev based fcoe solutions would have
- * have to include more than fcoe_sysfs.h.
- */
+ 
 #include "libfcoe.h"
 
 static atomic_t ctlr_num;
 static atomic_t fcf_num;
 
-/*
- * fcoe_fcf_dev_loss_tmo: the default number of seconds that fcoe sysfs
- * should insulate the loss of a fcf.
- */
-static unsigned int fcoe_fcf_dev_loss_tmo = 1800;  /* seconds */
+ 
+static unsigned int fcoe_fcf_dev_loss_tmo = 1800;   
 
 module_param_named(fcf_dev_loss_tmo, fcoe_fcf_dev_loss_tmo,
 		   uint, S_IRUGO|S_IWUSR);
@@ -37,11 +26,7 @@ MODULE_PARM_DESC(fcf_dev_loss_tmo,
 		 " insulate the loss of a fcf. Once this value is"
 		 " exceeded, the fcf is removed.");
 
-/*
- * These are used by the fcoe_*_show_function routines, they
- * are intentionally placed in the .c file as they're not intended
- * for use throughout the code.
- */
+ 
 #define fcoe_ctlr_id(x)				\
 	((x)->id)
 #define fcoe_ctlr_work_q_name(x)		\
@@ -93,9 +78,7 @@ MODULE_PARM_DESC(fcf_dev_loss_tmo,
 #define fcoe_fcf_vlan_id(x)			\
 	((x)->vlan_id)
 
-/*
- * dev_loss_tmo attribute
- */
+ 
 static int fcoe_str_to_dev_loss(const char *buf, unsigned long *val)
 {
 	int ret;
@@ -103,9 +86,7 @@ static int fcoe_str_to_dev_loss(const char *buf, unsigned long *val)
 	ret = kstrtoul(buf, 0, val);
 	if (ret)
 		return -EINVAL;
-	/*
-	 * Check for overflow; dev_loss_tmo is u32
-	 */
+	 
 	if (*val > UINT_MAX)
 		return -EINVAL;
 
@@ -119,9 +100,7 @@ static int fcoe_fcf_set_dev_loss_tmo(struct fcoe_fcf_device *fcf,
 	    (fcf->state == FCOE_FCF_STATE_DISCONNECTED) ||
 	    (fcf->state == FCOE_FCF_STATE_DELETED))
 		return -EBUSY;
-	/*
-	 * Check for overflow; dev_loss_tmo is u32
-	 */
+	 
 	if (val > UINT_MAX)
 		return -EINVAL;
 
@@ -514,7 +493,7 @@ static FCOE_DEVICE_ATTR(ctlr, fcf_dev_loss_tmo, S_IRUGO | S_IWUSR,
 			show_fcoe_ctlr_device_fcf_dev_loss_tmo,
 			store_private_fcoe_ctlr_fcf_dev_loss_tmo);
 
-/* Link Error Status Block (LESB) */
+ 
 fcoe_ctlr_rd_attr(link_fail, "%u\n", 20);
 fcoe_ctlr_rd_attr(vlink_fail, "%u\n", 20);
 fcoe_ctlr_rd_attr(miss_fka, "%u\n", 20);
@@ -623,24 +602,14 @@ static int fcoe_bus_match(struct device *dev,
 	return 0;
 }
 
-/**
- * fcoe_ctlr_device_release() - Release the FIP ctlr memory
- * @dev: Pointer to the FIP ctlr's embedded device
- *
- * Called when the last FIP ctlr reference is released.
- */
+ 
 static void fcoe_ctlr_device_release(struct device *dev)
 {
 	struct fcoe_ctlr_device *ctlr = dev_to_ctlr(dev);
 	kfree(ctlr);
 }
 
-/**
- * fcoe_fcf_device_release() - Release the FIP fcf memory
- * @dev: Pointer to the fcf's embedded device
- *
- * Called when the last FIP fcf reference is released.
- */
+ 
 static void fcoe_fcf_device_release(struct device *dev)
 {
 	struct fcoe_fcf_device *fcf = dev_to_fcf(dev);
@@ -686,10 +655,7 @@ static struct bus_type fcoe_bus_type = {
 	.bus_groups = fcoe_bus_groups,
 };
 
-/**
- * fcoe_ctlr_device_flush_work() - Flush a FIP ctlr's workqueue
- * @ctlr: Pointer to the FIP ctlr whose workqueue is to be flushed
- */
+ 
 static void fcoe_ctlr_device_flush_work(struct fcoe_ctlr_device *ctlr)
 {
 	if (!fcoe_ctlr_work_q(ctlr)) {
@@ -703,14 +669,7 @@ static void fcoe_ctlr_device_flush_work(struct fcoe_ctlr_device *ctlr)
 	flush_workqueue(fcoe_ctlr_work_q(ctlr));
 }
 
-/**
- * fcoe_ctlr_device_queue_work() - Schedule work for a FIP ctlr's workqueue
- * @ctlr: Pointer to the FIP ctlr who owns the devloss workqueue
- * @work:   Work to queue for execution
- *
- * Return value:
- *	1 on success / 0 already queued / < 0 for error
- */
+ 
 static int fcoe_ctlr_device_queue_work(struct fcoe_ctlr_device *ctlr,
 				       struct work_struct *work)
 {
@@ -726,10 +685,7 @@ static int fcoe_ctlr_device_queue_work(struct fcoe_ctlr_device *ctlr,
 	return queue_work(fcoe_ctlr_work_q(ctlr), work);
 }
 
-/**
- * fcoe_ctlr_device_flush_devloss() - Flush a FIP ctlr's devloss workqueue
- * @ctlr: Pointer to FIP ctlr whose workqueue is to be flushed
- */
+ 
 static void fcoe_ctlr_device_flush_devloss(struct fcoe_ctlr_device *ctlr)
 {
 	if (!fcoe_ctlr_devloss_work_q(ctlr)) {
@@ -743,15 +699,7 @@ static void fcoe_ctlr_device_flush_devloss(struct fcoe_ctlr_device *ctlr)
 	flush_workqueue(fcoe_ctlr_devloss_work_q(ctlr));
 }
 
-/**
- * fcoe_ctlr_device_queue_devloss_work() - Schedule work for a FIP ctlr's devloss workqueue
- * @ctlr: Pointer to the FIP ctlr who owns the devloss workqueue
- * @work:   Work to queue for execution
- * @delay:  jiffies to delay the work queuing
- *
- * Return value:
- *	1 on success / 0 already queued / < 0 for error
- */
+ 
 static int fcoe_ctlr_device_queue_devloss_work(struct fcoe_ctlr_device *ctlr,
 					       struct delayed_work *work,
 					       unsigned long delay)
@@ -779,17 +727,7 @@ static int fcoe_fcf_device_match(struct fcoe_fcf_device *new,
 	return 0;
 }
 
-/**
- * fcoe_ctlr_device_add() - Add a FIP ctlr to sysfs
- * @parent:    The parent device to which the fcoe_ctlr instance
- *             should be attached
- * @f:         The LLD's FCoE sysfs function template pointer
- * @priv_size: Size to be allocated with the fcoe_ctlr_device for the LLD
- *
- * This routine allocates a FIP ctlr object with some additional memory
- * for the LLD. The FIP ctlr is initialized, added to sysfs and then
- * attributes are added to it.
- */
+ 
 struct fcoe_ctlr_device *fcoe_ctlr_device_add(struct device *parent,
 				    struct fcoe_sysfs_function_template *f,
 				    int priv_size)
@@ -849,30 +787,11 @@ out:
 }
 EXPORT_SYMBOL_GPL(fcoe_ctlr_device_add);
 
-/**
- * fcoe_ctlr_device_delete() - Delete a FIP ctlr and its subtree from sysfs
- * @ctlr: A pointer to the ctlr to be deleted
- *
- * Deletes a FIP ctlr and any fcfs attached
- * to it. Deleting fcfs will cause their childen
- * to be deleted as well.
- *
- * The ctlr is detached from sysfs and it's resources
- * are freed (work q), but the memory is not freed
- * until its last reference is released.
- *
- * This routine expects no locks to be held before
- * calling.
- *
- * TODO: Currently there are no callbacks to clean up LLD data
- * for a fcoe_fcf_device. LLDs must keep this in mind as they need
- * to clean up each of their LLD data for all fcoe_fcf_device before
- * calling fcoe_ctlr_device_delete.
- */
+ 
 void fcoe_ctlr_device_delete(struct fcoe_ctlr_device *ctlr)
 {
 	struct fcoe_fcf_device *fcf, *next;
-	/* Remove any attached fcfs */
+	 
 	mutex_lock(&ctlr->lock);
 	list_for_each_entry_safe(fcf, next,
 				 &ctlr->fcfs, peers) {
@@ -893,37 +812,21 @@ void fcoe_ctlr_device_delete(struct fcoe_ctlr_device *ctlr)
 }
 EXPORT_SYMBOL_GPL(fcoe_ctlr_device_delete);
 
-/**
- * fcoe_fcf_device_final_delete() - Final delete routine
- * @work: The FIP fcf's embedded work struct
- *
- * It is expected that the fcf has been removed from
- * the FIP ctlr's list before calling this routine.
- */
+ 
 static void fcoe_fcf_device_final_delete(struct work_struct *work)
 {
 	struct fcoe_fcf_device *fcf =
 		container_of(work, struct fcoe_fcf_device, delete_work);
 	struct fcoe_ctlr_device *ctlr = fcoe_fcf_dev_to_ctlr_dev(fcf);
 
-	/*
-	 * Cancel any outstanding timers. These should really exist
-	 * only when rmmod'ing the LLDD and we're asking for
-	 * immediate termination of the rports
-	 */
+	 
 	if (!cancel_delayed_work(&fcf->dev_loss_work))
 		fcoe_ctlr_device_flush_devloss(ctlr);
 
 	device_unregister(&fcf->dev);
 }
 
-/**
- * fip_timeout_deleted_fcf() - Delete a fcf when the devloss timer fires
- * @work: The FIP fcf's embedded work struct
- *
- * Removes the fcf from the FIP ctlr's list of fcfs and
- * queues the final deletion.
- */
+ 
 static void fip_timeout_deleted_fcf(struct work_struct *work)
 {
 	struct fcoe_fcf_device *fcf =
@@ -932,12 +835,7 @@ static void fip_timeout_deleted_fcf(struct work_struct *work)
 
 	mutex_lock(&ctlr->lock);
 
-	/*
-	 * If the fcf is deleted or reconnected before the timer
-	 * fires the devloss queue will be flushed, but the state will
-	 * either be CONNECTED or DELETED. If that is the case we
-	 * cancel deleting the fcf.
-	 */
+	 
 	if (fcf->state != FCOE_FCF_STATE_DISCONNECTED)
 		goto out;
 
@@ -952,15 +850,7 @@ out:
 	mutex_unlock(&ctlr->lock);
 }
 
-/**
- * fcoe_fcf_device_delete() - Delete a FIP fcf
- * @fcf: Pointer to the fcf which is to be deleted
- *
- * Queues the FIP fcf on the devloss workqueue
- *
- * Expects the ctlr_attrs mutex to be held for fcf
- * state change.
- */
+ 
 void fcoe_fcf_device_delete(struct fcoe_fcf_device *fcf)
 {
 	struct fcoe_ctlr_device *ctlr = fcoe_fcf_dev_to_ctlr_dev(fcf);
@@ -971,11 +861,7 @@ void fcoe_fcf_device_delete(struct fcoe_fcf_device *fcf)
 
 	fcf->state = FCOE_FCF_STATE_DISCONNECTED;
 
-	/*
-	 * FCF will only be re-connected by the LLD calling
-	 * fcoe_fcf_device_add, and it should be setting up
-	 * priv then.
-	 */
+	 
 	fcf->priv = NULL;
 
 	fcoe_ctlr_device_queue_devloss_work(ctlr, &fcf->dev_loss_work,
@@ -983,13 +869,7 @@ void fcoe_fcf_device_delete(struct fcoe_fcf_device *fcf)
 }
 EXPORT_SYMBOL_GPL(fcoe_fcf_device_delete);
 
-/**
- * fcoe_fcf_device_add() - Add a FCoE sysfs fcoe_fcf_device to the system
- * @ctlr:    The fcoe_ctlr_device that will be the fcoe_fcf_device parent
- * @new_fcf: A temporary FCF used for lookups on the current list of fcfs
- *
- * Expects to be called with the ctlr->lock held
- */
+ 
 struct fcoe_fcf_device *fcoe_fcf_device_add(struct fcoe_ctlr_device *ctlr,
 					    struct fcoe_fcf_device *new_fcf)
 {

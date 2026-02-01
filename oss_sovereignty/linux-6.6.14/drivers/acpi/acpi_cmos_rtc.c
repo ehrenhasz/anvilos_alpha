@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * ACPI support for CMOS RTC Address Space access
- *
- * Copyright (C) 2013, Intel Corporation
- * Authors: Lan Tianyu <tianyu.lan@intel.com>
- */
+
+ 
 
 #define pr_fmt(fmt) "ACPI: " fmt
 

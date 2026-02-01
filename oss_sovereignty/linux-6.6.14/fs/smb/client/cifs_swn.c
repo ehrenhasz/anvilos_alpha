@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Witness Service client for CIFS
- *
- * Copyright (c) 2020 Samuel Cabrero <scabrero@suse.de>
- */
+
+ 
 
 #include <linux/kref.h>
 #include <net/genetlink.h>
@@ -68,11 +64,7 @@ static int cifs_swn_auth_info_ntlm(struct cifs_tcon *tcon, struct sk_buff *skb)
 	return 0;
 }
 
-/*
- * Sends a register message to the userspace daemon based on the registration.
- * The authentication information to connect to the witness service is bundled
- * into the message.
- */
+ 
 static int cifs_swn_send_register_message(struct cifs_swn_reg *swnreg)
 {
 	struct sk_buff *skb;
@@ -105,12 +97,7 @@ static int cifs_swn_send_register_message(struct cifs_swn_reg *swnreg)
 	if (ret < 0)
 		goto nlmsg_fail;
 
-	/*
-	 * If there is an address stored use it instead of the server address, because we are
-	 * in the process of reconnecting to it after a share has been moved or we have been
-	 * told to switch to it (client move message). In these cases we unregister from the
-	 * server address and register to the new address when we receive the notification.
-	 */
+	 
 	if (swnreg->tcon->ses->server->use_swn_dstaddr)
 		addr = &swnreg->tcon->ses->server->swn_dstaddr;
 	else
@@ -176,9 +163,7 @@ fail:
 	return ret;
 }
 
-/*
- * Sends an uregister message to the userspace daemon based on the registration
- */
+ 
 static int cifs_swn_send_unregister_message(struct cifs_swn_reg *swnreg)
 {
 	struct sk_buff *skb;
@@ -244,11 +229,7 @@ nlmsg_fail:
 	return ret;
 }
 
-/*
- * Try to find a matching registration for the tcon's server name and share name.
- * Calls to this function must be protected by cifs_swnreg_idr_mutex.
- * TODO Try to avoid memory allocations
- */
+ 
 static struct cifs_swn_reg *cifs_find_swn_reg(struct cifs_tcon *tcon)
 {
 	struct cifs_swn_reg *swnreg;
@@ -298,10 +279,7 @@ static struct cifs_swn_reg *cifs_find_swn_reg(struct cifs_tcon *tcon)
 	return ERR_PTR(-EEXIST);
 }
 
-/*
- * Get a registration for the tcon's server and share name, allocating a new one if it does not
- * exists
- */
+ 
 static struct cifs_swn_reg *cifs_get_swn_reg(struct cifs_tcon *tcon)
 {
 	struct cifs_swn_reg *reg = NULL;
@@ -309,7 +287,7 @@ static struct cifs_swn_reg *cifs_get_swn_reg(struct cifs_tcon *tcon)
 
 	mutex_lock(&cifs_swnreg_idr_mutex);
 
-	/* Check if we are already registered for this network and share names */
+	 
 	reg = cifs_find_swn_reg(tcon);
 	if (!IS_ERR(reg)) {
 		kref_get(&reg->ref_count);
@@ -464,7 +442,7 @@ static int cifs_swn_reconnect(struct cifs_tcon *tcon, struct sockaddr_storage *a
 {
 	int ret = 0;
 
-	/* Store the reconnect address */
+	 
 	cifs_server_lock(tcon->ses->server);
 	if (cifs_sockaddr_equal(&tcon->ses->server->dstaddr, addr))
 		goto unlock;
@@ -477,9 +455,7 @@ static int cifs_swn_reconnect(struct cifs_tcon *tcon, struct sockaddr_storage *a
 	}
 	tcon->ses->server->use_swn_dstaddr = true;
 
-	/*
-	 * Unregister to stop receiving notifications for the old IP address.
-	 */
+	 
 	ret = cifs_swn_unregister(tcon);
 	if (ret < 0) {
 		cifs_dbg(VFS, "%s: Failed to unregister for witness notifications: %d\n",
@@ -487,10 +463,7 @@ static int cifs_swn_reconnect(struct cifs_tcon *tcon, struct sockaddr_storage *a
 		goto unlock;
 	}
 
-	/*
-	 * And register to receive notifications for the new IP address now that we have
-	 * stored the new address.
-	 */
+	 
 	ret = cifs_swn_register(tcon);
 	if (ret < 0) {
 		cifs_dbg(VFS, "%s: Failed to register for witness notifications: %d\n",
@@ -598,7 +571,7 @@ int cifs_swn_register(struct cifs_tcon *tcon)
 	ret = cifs_swn_send_register_message(swnreg);
 	if (ret < 0) {
 		cifs_dbg(VFS, "%s: Failed to send swn register message: %d\n", __func__, ret);
-		/* Do not put the swnreg or return error, the echo task will retry */
+		 
 	}
 
 	return 0;

@@ -1,47 +1,4 @@
-/*
- * Copyright (c) 2012-2016 VMware, Inc.  All rights reserved.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of EITHER the GNU General Public License
- * version 2 as published by the Free Software Foundation or the BSD
- * 2-Clause License. This program is distributed in the hope that it
- * will be useful, but WITHOUT ANY WARRANTY; WITHOUT EVEN THE IMPLIED
- * WARRANTY OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.
- * See the GNU General Public License version 2 for more details at
- * http://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program available in the file COPYING in the main
- * directory of this source tree.
- *
- * The BSD 2-Clause License
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
- * COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
- * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
- * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
- * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
- * OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+ 
 
 #include <linux/errno.h>
 #include <linux/inetdevice.h>
@@ -109,7 +66,7 @@ static void pvrdma_get_fw_ver_str(struct ib_device *device, char *str)
 
 static int pvrdma_init_device(struct pvrdma_dev *dev)
 {
-	/*  Initialize some device related stuff */
+	 
 	spin_lock_init(&dev->cmd_lock);
 	sema_init(&dev->cmd_sema, 1);
 	atomic_set(&dev->num_qps, 0);
@@ -228,7 +185,7 @@ static int pvrdma_register_device(struct pvrdma_dev *dev)
 		goto err_cq_free;
 	spin_lock_init(&dev->qp_tbl_lock);
 
-	/* Check if SRQ is supported by backend */
+	 
 	if (dev->dsr->caps.max_srq) {
 		ib_set_device_ops(&dev->ib_dev, &pvrdma_dev_srq_ops);
 
@@ -269,7 +226,7 @@ static irqreturn_t pvrdma_intr0_handler(int irq, void *dev_id)
 	dev_dbg(&dev->pdev->dev, "interrupt 0 (response) handler\n");
 
 	if (!dev->pdev->msix_enabled) {
-		/* Legacy intr */
+		 
 		icr = pvrdma_read_reg(dev, PVRDMA_REG_ICR);
 		if (icr == 0)
 			return IRQ_NONE;
@@ -298,7 +255,7 @@ static void pvrdma_qp_event(struct pvrdma_dev *dev, u32 qpn, int type)
 
 		e.device = ibqp->device;
 		e.element.qp = ibqp;
-		e.event = type; /* 1:1 mapping for now. */
+		e.event = type;  
 		ibqp->event_handler(&e, ibqp->qp_context);
 	}
 	if (qp) {
@@ -324,7 +281,7 @@ static void pvrdma_cq_event(struct pvrdma_dev *dev, u32 cqn, int type)
 
 		e.device = ibcq->device;
 		e.element.cq = ibcq;
-		e.event = type; /* 1:1 mapping for now. */
+		e.event = type;  
 		ibcq->event_handler(&e, ibcq->cq_context);
 	}
 	if (cq) {
@@ -353,7 +310,7 @@ static void pvrdma_srq_event(struct pvrdma_dev *dev, u32 srqn, int type)
 
 		e.device = ibsrq->device;
 		e.element.srq = ibsrq;
-		e.event = type; /* 1:1 mapping for now. */
+		e.event = type;  
 		ibsrq->event_handler(&e, ibsrq->srq_context);
 	}
 	if (srq) {
@@ -402,10 +359,7 @@ static irqreturn_t pvrdma_intr1_handler(int irq, void *dev_id)
 
 	dev_dbg(&dev->pdev->dev, "interrupt 1 (async event) handler\n");
 
-	/*
-	 * Don't process events until the IB device is registered. Otherwise
-	 * we'll try to ib_dispatch_event() on an invalid device.
-	 */
+	 
 	if (!dev->ib_active)
 		return IRQ_HANDLED;
 
@@ -626,7 +580,7 @@ static int pvrdma_del_gid_at_index(struct pvrdma_dev *dev, int index)
 	union pvrdma_cmd_req req;
 	struct pvrdma_cmd_destroy_bind *cmd_dest = &req.destroy_bind;
 
-	/* Update sgid table. */
+	 
 	if (!dev->sgid_tbl) {
 		dev_warn(&dev->pdev->dev, "sgid table not initialized\n");
 		return -EINVAL;
@@ -687,13 +641,13 @@ static void pvrdma_netdevice_event_handle(struct pvrdma_dev *dev,
 		dev->netdev = NULL;
 		break;
 	case NETDEV_REGISTER:
-		/* vmxnet3 will have same bus, slot. But func will be 0 */
+		 
 		slot = PCI_SLOT(dev->pdev->devfn);
 		pdev_net = pci_get_slot(dev->pdev->bus,
 					PCI_DEVFN(slot, 0));
 		if ((dev->netdev == NULL) &&
 		    (pci_get_drvdata(pdev_net) == ndev)) {
-			/* this is our netdev */
+			 
 			ib_device_set_netdev(&dev->ib_dev, ndev, 1);
 			dev->netdev = ndev;
 			dev_hold(ndev);
@@ -760,7 +714,7 @@ static int pvrdma_pci_probe(struct pci_dev *pdev,
 
 	dev_dbg(&pdev->dev, "initializing driver %s\n", pci_name(pdev));
 
-	/* Allocate zero-out device */
+	 
 	dev = ib_alloc_device(pvrdma_dev, ib_dev);
 	if (!dev) {
 		dev_err(&pdev->dev, "failed to allocate IB device\n");
@@ -810,7 +764,7 @@ static int pvrdma_pci_probe(struct pci_dev *pdev,
 		goto err_disable_pdev;
 	}
 
-	/* Enable 64-Bit DMA */
+	 
 	ret = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(64));
 	if (ret) {
 		dev_err(&pdev->dev, "dma_set_mask failed\n");
@@ -819,7 +773,7 @@ static int pvrdma_pci_probe(struct pci_dev *pdev,
 	dma_set_max_seg_size(&pdev->dev, UINT_MAX);
 	pci_set_master(pdev);
 
-	/* Map register space */
+	 
 	start = pci_resource_start(dev->pdev, PVRDMA_PCI_RESOURCE_REG);
 	len = pci_resource_len(dev->pdev, PVRDMA_PCI_RESOURCE_REG);
 	dev->regs = ioremap(start, len);
@@ -829,7 +783,7 @@ static int pvrdma_pci_probe(struct pci_dev *pdev,
 		goto err_free_resource;
 	}
 
-	/* Setup per-device UAR. */
+	 
 	dev->driver_uar.index = 0;
 	dev->driver_uar.pfn =
 		pci_resource_start(dev->pdev, PVRDMA_PCI_RESOURCE_UAR) >>
@@ -854,7 +808,7 @@ static int pvrdma_pci_probe(struct pci_dev *pdev,
 		goto err_uar_unmap;
 	}
 
-	/* Setup the shared region */
+	 
 	dev->dsr->driver_version = PVRDMA_VERSION;
 	dev->dsr->gos_info.gos_bits = sizeof(void *) == 4 ?
 		PVRDMA_GOS_BITS_32 :
@@ -867,7 +821,7 @@ static int pvrdma_pci_probe(struct pci_dev *pdev,
 	else
 		dev->dsr->uar_pfn64 = dev->driver_uar.pfn;
 
-	/* Command slot. */
+	 
 	dev->cmd_slot = dma_alloc_coherent(&pdev->dev, PAGE_SIZE,
 					   &slot_dma, GFP_KERNEL);
 	if (!dev->cmd_slot) {
@@ -877,7 +831,7 @@ static int pvrdma_pci_probe(struct pci_dev *pdev,
 
 	dev->dsr->cmd_slot_dma = (u64)slot_dma;
 
-	/* Response slot. */
+	 
 	dev->resp_slot = dma_alloc_coherent(&pdev->dev, PAGE_SIZE,
 					    &slot_dma, GFP_KERNEL);
 	if (!dev->resp_slot) {
@@ -887,7 +841,7 @@ static int pvrdma_pci_probe(struct pci_dev *pdev,
 
 	dev->dsr->resp_slot_dma = (u64)slot_dma;
 
-	/* Async event ring */
+	 
 	dev->dsr->async_ring_pages.num_pages = PVRDMA_NUM_RING_PAGES;
 	ret = pvrdma_page_dir_init(dev, &dev->async_pdir,
 				   dev->dsr->async_ring_pages.num_pages, true);
@@ -896,7 +850,7 @@ static int pvrdma_pci_probe(struct pci_dev *pdev,
 	dev->async_ring_state = dev->async_pdir.pages[0];
 	dev->dsr->async_ring_pages.pdir_dma = dev->async_pdir.dir_dma;
 
-	/* CQ notification ring */
+	 
 	dev->dsr->cq_ring_pages.num_pages = PVRDMA_NUM_RING_PAGES;
 	ret = pvrdma_page_dir_init(dev, &dev->cq_pdir,
 				   dev->dsr->cq_ring_pages.num_pages, true);
@@ -905,27 +859,23 @@ static int pvrdma_pci_probe(struct pci_dev *pdev,
 	dev->cq_ring_state = dev->cq_pdir.pages[0];
 	dev->dsr->cq_ring_pages.pdir_dma = dev->cq_pdir.dir_dma;
 
-	/*
-	 * Write the PA of the shared region to the device. The writes must be
-	 * ordered such that the high bits are written last. When the writes
-	 * complete, the device will have filled out the capabilities.
-	 */
+	 
 
 	pvrdma_write_reg(dev, PVRDMA_REG_DSRLOW, (u32)dev->dsrbase);
 	pvrdma_write_reg(dev, PVRDMA_REG_DSRHIGH,
 			 (u32)((u64)(dev->dsrbase) >> 32));
 
-	/* Make sure the write is complete before reading status. */
+	 
 	mb();
 
-	/* The driver supports RoCE V1 and V2. */
+	 
 	if (!PVRDMA_SUPPORTED(dev)) {
 		dev_err(&pdev->dev, "driver needs RoCE v1 or v2 support\n");
 		ret = -EFAULT;
 		goto err_free_cq_ring;
 	}
 
-	/* Paired vmxnet3 will have same bus, slot. But func will be 0 */
+	 
 	pdev_net = pci_get_slot(pdev->bus, PCI_DEVFN(PCI_SLOT(pdev->devfn), 0));
 	if (!pdev_net) {
 		dev_err(&pdev->dev, "failed to find paired net device\n");
@@ -952,7 +902,7 @@ static int pvrdma_pci_probe(struct pci_dev *pdev,
 
 	dev_info(&pdev->dev, "paired device to %s\n", dev->netdev->name);
 
-	/* Interrupt setup */
+	 
 	ret = pvrdma_alloc_intrs(dev);
 	if (ret) {
 		dev_err(&pdev->dev, "failed to allocate interrupts\n");
@@ -960,7 +910,7 @@ static int pvrdma_pci_probe(struct pci_dev *pdev,
 		goto err_free_cq_ring;
 	}
 
-	/* Allocate UAR table. */
+	 
 	ret = pvrdma_uar_table_init(dev);
 	if (ret) {
 		dev_err(&pdev->dev, "failed to allocate UAR table\n");
@@ -968,7 +918,7 @@ static int pvrdma_pci_probe(struct pci_dev *pdev,
 		goto err_free_intrs;
 	}
 
-	/* Allocate GID table */
+	 
 	dev->sgid_tbl = kcalloc(dev->dsr->caps.gid_tbl_len,
 				sizeof(union ib_gid), GFP_KERNEL);
 	if (!dev->sgid_tbl) {
@@ -979,13 +929,13 @@ static int pvrdma_pci_probe(struct pci_dev *pdev,
 
 	pvrdma_enable_intrs(dev);
 
-	/* Activate pvrdma device */
+	 
 	pvrdma_write_reg(dev, PVRDMA_REG_CTL, PVRDMA_DEVICE_CTL_ACTIVATE);
 
-	/* Make sure the write is complete before reading status. */
+	 
 	mb();
 
-	/* Check if device was successfully activated */
+	 
 	ret = pvrdma_read_reg(dev, PVRDMA_REG_ERR);
 	if (ret != 0) {
 		dev_err(&pdev->dev, "failed to activate device\n");
@@ -993,7 +943,7 @@ static int pvrdma_pci_probe(struct pci_dev *pdev,
 		goto err_disable_intr;
 	}
 
-	/* Register IB device */
+	 
 	ret = pvrdma_register_device(dev);
 	if (ret) {
 		dev_err(&pdev->dev, "failed to register IB device\n");
@@ -1069,7 +1019,7 @@ static void pvrdma_pci_remove(struct pci_dev *pdev)
 		dev->netdev = NULL;
 	}
 
-	/* Unregister ib device */
+	 
 	ib_unregister_device(&dev->ib_dev);
 
 	mutex_lock(&pvrdma_device_list_lock);
@@ -1080,7 +1030,7 @@ static void pvrdma_pci_remove(struct pci_dev *pdev)
 	pvrdma_free_irq(dev);
 	pci_free_irq_vectors(pdev);
 
-	/* Deactivate pvrdma device */
+	 
 	pvrdma_write_reg(dev, PVRDMA_REG_CTL, PVRDMA_DEVICE_CTL_RESET);
 	pvrdma_page_dir_cleanup(dev, &dev->cq_pdir);
 	pvrdma_page_dir_cleanup(dev, &dev->async_pdir);
@@ -1098,7 +1048,7 @@ static void pvrdma_pci_remove(struct pci_dev *pdev)
 
 	ib_dealloc_device(&dev->ib_dev);
 
-	/* Free pci resources */
+	 
 	pci_release_regions(pdev);
 	pci_disable_device(pdev);
 	pci_set_drvdata(pdev, NULL);

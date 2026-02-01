@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2018 MediaTek Inc.
- */
+
+ 
 #include <linux/bitfield.h>
 #include <linux/io.h>
 #include <linux/mfd/syscon.h>
@@ -15,7 +13,7 @@
 #include "stmmac.h"
 #include "stmmac_platform.h"
 
-/* Peri Configuration register for mt2712 */
+ 
 #define PERI_ETH_PHY_INTF_SEL	0x418
 #define PHY_INTF_MII		0
 #define PHY_INTF_RGMII		1
@@ -39,7 +37,7 @@
 #define ETH_FINE_DLY_GTXC	BIT(1)
 #define ETH_FINE_DLY_RXC	BIT(0)
 
-/* Peri Configuration register for mt8195 */
+ 
 #define MT8195_PERI_ETH_CTRL0		0xFD0
 #define MT8195_RMII_CLK_SRC_INTERNAL	BIT(28)
 #define MT8195_RMII_CLK_SRC_RXC		BIT(27)
@@ -91,7 +89,7 @@ struct mediatek_dwmac_variant {
 	int (*dwmac_set_phy_interface)(struct mediatek_dwmac_plat_data *plat);
 	int (*dwmac_set_delay)(struct mediatek_dwmac_plat_data *plat);
 
-	/* clock ids to be requested */
+	 
 	const char * const *clk_list;
 	int num_clks;
 
@@ -100,7 +98,7 @@ struct mediatek_dwmac_variant {
 	u32 tx_delay_max;
 };
 
-/* list of clocks required for mac */
+ 
 static const char * const mt2712_dwmac_clk_l[] = {
 	"axi", "apb", "mac_main", "ptp_ref"
 };
@@ -115,7 +113,7 @@ static int mt2712_set_interface(struct mediatek_dwmac_plat_data *plat)
 	int rmii_rxc = plat->rmii_rxc ? RMII_CLK_SRC_RXC : 0;
 	u32 intf_val = 0;
 
-	/* select phy interface in top control domain */
+	 
 	switch (plat->phy_mode) {
 	case PHY_INTERFACE_MODE_MII:
 		intf_val |= PHY_INTF_MII;
@@ -146,7 +144,7 @@ static void mt2712_delay_ps2stage(struct mediatek_dwmac_plat_data *plat)
 	switch (plat->phy_mode) {
 	case PHY_INTERFACE_MODE_MII:
 	case PHY_INTERFACE_MODE_RMII:
-		/* 550ps per stage for MII/RMII */
+		 
 		mac_delay->tx_delay /= 550;
 		mac_delay->rx_delay /= 550;
 		break;
@@ -154,7 +152,7 @@ static void mt2712_delay_ps2stage(struct mediatek_dwmac_plat_data *plat)
 	case PHY_INTERFACE_MODE_RGMII_TXID:
 	case PHY_INTERFACE_MODE_RGMII_RXID:
 	case PHY_INTERFACE_MODE_RGMII_ID:
-		/* 170ps per stage for RGMII */
+		 
 		mac_delay->tx_delay /= 170;
 		mac_delay->rx_delay /= 170;
 		break;
@@ -171,7 +169,7 @@ static void mt2712_delay_stage2ps(struct mediatek_dwmac_plat_data *plat)
 	switch (plat->phy_mode) {
 	case PHY_INTERFACE_MODE_MII:
 	case PHY_INTERFACE_MODE_RMII:
-		/* 550ps per stage for MII/RMII */
+		 
 		mac_delay->tx_delay *= 550;
 		mac_delay->rx_delay *= 550;
 		break;
@@ -179,7 +177,7 @@ static void mt2712_delay_stage2ps(struct mediatek_dwmac_plat_data *plat)
 	case PHY_INTERFACE_MODE_RGMII_TXID:
 	case PHY_INTERFACE_MODE_RGMII_RXID:
 	case PHY_INTERFACE_MODE_RGMII_ID:
-		/* 170ps per stage for RGMII */
+		 
 		mac_delay->tx_delay *= 170;
 		mac_delay->rx_delay *= 170;
 		break;
@@ -208,11 +206,7 @@ static int mt2712_set_delay(struct mediatek_dwmac_plat_data *plat)
 		break;
 	case PHY_INTERFACE_MODE_RMII:
 		if (plat->rmii_clk_from_mac) {
-			/* case 1: mac provides the rmii reference clock,
-			 * and the clock output to TXC pin.
-			 * The egress timing can be adjusted by GTXC delay macro circuit.
-			 * The ingress timing can be adjusted by TXC delay macro circuit.
-			 */
+			 
 			delay_val |= FIELD_PREP(ETH_DLY_TXC_ENABLE, !!mac_delay->rx_delay);
 			delay_val |= FIELD_PREP(ETH_DLY_TXC_STAGES, mac_delay->rx_delay);
 			delay_val |= FIELD_PREP(ETH_DLY_TXC_INV, mac_delay->rx_inv);
@@ -221,33 +215,19 @@ static int mt2712_set_delay(struct mediatek_dwmac_plat_data *plat)
 			delay_val |= FIELD_PREP(ETH_DLY_GTXC_STAGES, mac_delay->tx_delay);
 			delay_val |= FIELD_PREP(ETH_DLY_GTXC_INV, mac_delay->tx_inv);
 		} else {
-			/* case 2: the rmii reference clock is from external phy,
-			 * and the property "rmii_rxc" indicates which pin(TXC/RXC)
-			 * the reference clk is connected to. The reference clock is a
-			 * received signal, so rx_delay/rx_inv are used to indicate
-			 * the reference clock timing adjustment
-			 */
+			 
 			if (plat->rmii_rxc) {
-				/* the rmii reference clock from outside is connected
-				 * to RXC pin, the reference clock will be adjusted
-				 * by RXC delay macro circuit.
-				 */
+				 
 				delay_val |= FIELD_PREP(ETH_DLY_RXC_ENABLE, !!mac_delay->rx_delay);
 				delay_val |= FIELD_PREP(ETH_DLY_RXC_STAGES, mac_delay->rx_delay);
 				delay_val |= FIELD_PREP(ETH_DLY_RXC_INV, mac_delay->rx_inv);
 			} else {
-				/* the rmii reference clock from outside is connected
-				 * to TXC pin, the reference clock will be adjusted
-				 * by TXC delay macro circuit.
-				 */
+				 
 				delay_val |= FIELD_PREP(ETH_DLY_TXC_ENABLE, !!mac_delay->rx_delay);
 				delay_val |= FIELD_PREP(ETH_DLY_TXC_STAGES, mac_delay->rx_delay);
 				delay_val |= FIELD_PREP(ETH_DLY_TXC_INV, mac_delay->rx_inv);
 			}
-			/* tx_inv will inverse the tx clock inside mac relateive to
-			 * reference clock from external phy,
-			 * and this bit is located in the same register with fine-tune
-			 */
+			 
 			if (mac_delay->tx_inv)
 				fine_val = ETH_RMII_DLY_TX_INV;
 		}
@@ -294,7 +274,7 @@ static int mt8195_set_interface(struct mediatek_dwmac_plat_data *plat)
 	int rmii_rxc = plat->rmii_rxc ? MT8195_RMII_CLK_SRC_RXC : 0;
 	u32 intf_val = 0;
 
-	/* select phy interface in top control domain */
+	 
 	switch (plat->phy_mode) {
 	case PHY_INTERFACE_MODE_MII:
 		intf_val |= FIELD_PREP(MT8195_ETH_INTF_SEL, PHY_INTF_MII);
@@ -314,7 +294,7 @@ static int mt8195_set_interface(struct mediatek_dwmac_plat_data *plat)
 		return -EINVAL;
 	}
 
-	/* MT8195 only support external PHY */
+	 
 	intf_val |= MT8195_EXT_PHY_MODE;
 
 	regmap_write(plat->peri_regmap, MT8195_PERI_ETH_CTRL0, intf_val);
@@ -326,7 +306,7 @@ static void mt8195_delay_ps2stage(struct mediatek_dwmac_plat_data *plat)
 {
 	struct mac_delay_struct *mac_delay = &plat->mac_delay;
 
-	/* 290ps per stage */
+	 
 	mac_delay->tx_delay /= 290;
 	mac_delay->rx_delay /= 290;
 }
@@ -335,7 +315,7 @@ static void mt8195_delay_stage2ps(struct mediatek_dwmac_plat_data *plat)
 {
 	struct mac_delay_struct *mac_delay = &plat->mac_delay;
 
-	/* 290ps per stage */
+	 
 	mac_delay->tx_delay *= 290;
 	mac_delay->rx_delay *= 290;
 }
@@ -359,11 +339,7 @@ static int mt8195_set_delay(struct mediatek_dwmac_plat_data *plat)
 		break;
 	case PHY_INTERFACE_MODE_RMII:
 		if (plat->rmii_clk_from_mac) {
-			/* case 1: mac provides the rmii reference clock,
-			 * and the clock output to TXC pin.
-			 * The egress timing can be adjusted by RMII_TXC delay macro circuit.
-			 * The ingress timing can be adjusted by RMII_RXC delay macro circuit.
-			 */
+			 
 			rmii_delay_val |= FIELD_PREP(MT8195_DLY_RMII_TXC_ENABLE,
 						     !!mac_delay->tx_delay);
 			rmii_delay_val |= FIELD_PREP(MT8195_DLY_RMII_TXC_STAGES,
@@ -378,17 +354,9 @@ static int mt8195_set_delay(struct mediatek_dwmac_plat_data *plat)
 			rmii_delay_val |= FIELD_PREP(MT8195_DLY_RMII_RXC_INV,
 						     mac_delay->rx_inv);
 		} else {
-			/* case 2: the rmii reference clock is from external phy,
-			 * and the property "rmii_rxc" indicates which pin(TXC/RXC)
-			 * the reference clk is connected to. The reference clock is a
-			 * received signal, so rx_delay/rx_inv are used to indicate
-			 * the reference clock timing adjustment
-			 */
+			 
 			if (plat->rmii_rxc) {
-				/* the rmii reference clock from outside is connected
-				 * to RXC pin, the reference clock will be adjusted
-				 * by RXC delay macro circuit.
-				 */
+				 
 				delay_val |= FIELD_PREP(MT8195_DLY_RXC_ENABLE,
 							!!mac_delay->rx_delay);
 				delay_val |= FIELD_PREP(MT8195_DLY_RXC_STAGES,
@@ -396,10 +364,7 @@ static int mt8195_set_delay(struct mediatek_dwmac_plat_data *plat)
 				delay_val |= FIELD_PREP(MT8195_DLY_RXC_INV,
 							mac_delay->rx_inv);
 			} else {
-				/* the rmii reference clock from outside is connected
-				 * to TXC pin, the reference clock will be adjusted
-				 * by TXC delay macro circuit.
-				 */
+				 
 				delay_val |= FIELD_PREP(MT8195_DLY_TXC_ENABLE,
 							!!mac_delay->rx_delay);
 				delay_val |= FIELD_PREP(MT8195_DLY_TXC_STAGES,
@@ -513,12 +478,7 @@ static int mediatek_dwmac_clk_init(struct mediatek_dwmac_plat_data *plat)
 	if (ret)
 		return ret;
 
-	/* The clock labeled as "rmii_internal" is needed only in RMII(when
-	 * MAC provides the reference clock), and useless for RGMII/MII or
-	 * RMII(when PHY provides the reference clock).
-	 * So, "rmii_internal" clock is got and configured only when
-	 * reference clock of RMII is from MAC.
-	 */
+	 
 	if (plat->rmii_clk_from_mac) {
 		plat->rmii_internal_clk = devm_clk_get(plat->dev, "rmii_internal");
 		if (IS_ERR(plat->rmii_internal_clk))
@@ -616,7 +576,7 @@ static int mediatek_dwmac_common_data(struct platform_device *pdev,
 	plat->safety_feat_cfg->tmouten = 1;
 
 	for (i = 0; i < plat->tx_queues_to_use; i++) {
-		/* Default TX Q0 to use TSO and rest TXQ for TBS */
+		 
 		if (i > 0)
 			plat->tx_queues_cfg[i].tbs_en = 1;
 	}

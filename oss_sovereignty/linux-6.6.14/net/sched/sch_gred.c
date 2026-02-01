@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * net/sched/sch_gred.c	Generic Random Early Detection queue.
- *
- * Authors:    J Hadi Salim (hadi@cyberus.ca) 1998-2002
- *
- *             991129: -  Bug fix with grio mode
- *		       - a better sing. AvgQ mode with Grio(WRED)
- *		       - A finer grained VQ dequeue based on suggestion
- *		         from Ren Liu
- *		       - More error checks
- *
- *  For all the glorious comments look at include/net/red.h
- */
+
+ 
 
 #include <linux/slab.h>
 #include <linux/module.h>
@@ -31,13 +19,13 @@ struct gred_sched_data;
 struct gred_sched;
 
 struct gred_sched_data {
-	u32		limit;		/* HARD maximal queue length	*/
-	u32		DP;		/* the drop parameters */
-	u32		red_flags;	/* virtualQ version of red_flags */
-	u64		bytesin;	/* bytes seen on virtualQ so far*/
-	u32		packetsin;	/* packets seen on virtualQ so far*/
-	u32		backlog;	/* bytes on the virtualQ */
-	u8		prio;		/* the prio of this vq */
+	u32		limit;		 
+	u32		DP;		 
+	u32		red_flags;	 
+	u64		bytesin;	 
+	u32		packetsin;	 
+	u32		backlog;	 
+	u8		prio;		 
 
 	struct red_parms parms;
 	struct red_vars  vars;
@@ -94,7 +82,7 @@ static inline int gred_wred_mode_check(struct Qdisc *sch)
 	struct gred_sched *table = qdisc_priv(sch);
 	int i;
 
-	/* Really ugly O(n^2) but shouldn't be necessary too frequent. */
+	 
 	for (i = 0; i < table->DPs; i++) {
 		struct gred_sched_data *q = table->tab[i];
 		int n;
@@ -153,7 +141,7 @@ static bool gred_per_vq_red_flags_used(struct gred_sched *table)
 {
 	unsigned int i;
 
-	/* Local per-vq flags couldn't have been set unless global are 0 */
+	 
 	if (table->red_flags)
 		return false;
 	for (i = 0; i < MAX_DPs; i++)
@@ -175,10 +163,7 @@ static int gred_enqueue(struct sk_buff *skb, struct Qdisc *sch,
 
 		q = t->tab[dp];
 		if (!q) {
-			/* Pass through packets not assigned to a DP
-			 * if no default DP has been configured. This
-			 * allows for DP flows to be left untouched.
-			 */
+			 
 			if (likely(sch->qstats.backlog + qdisc_pkt_len(skb) <=
 					sch->limit))
 				return qdisc_enqueue_tail(skb, sch);
@@ -186,12 +171,11 @@ static int gred_enqueue(struct sk_buff *skb, struct Qdisc *sch,
 				goto drop;
 		}
 
-		/* fix tc_index? --could be controversial but needed for
-		   requeueing */
+		 
 		skb->tc_index = (skb->tc_index & ~GRED_VQ_MASK) | dp;
 	}
 
-	/* sum up all the qaves of prios < ours to get the new qave */
+	 
 	if (!gred_wred_mode(t) && gred_rio_mode(t)) {
 		int i;
 
@@ -374,9 +358,7 @@ static int gred_offload_dump_stats(struct Qdisc *sch)
 	}
 
 	ret = qdisc_offload_dump_helper(sch, TC_SETUP_QDISC_GRED, hw_stats);
-	/* Even if driver returns failure adjust the stats - in case offload
-	 * ended but driver still wants to adjust the values.
-	 */
+	 
 	sch_tree_lock(sch);
 	for (i = 0; i < MAX_DPs; i++) {
 		if (!table->tab[i])
@@ -442,11 +424,7 @@ static int gred_change_table_def(struct Qdisc *sch, struct nlattr *dps,
 	red_flags_changed = table->red_flags != sopt->flags;
 	table->red_flags = sopt->flags;
 
-	/*
-	 * Every entry point to GRED is synchronized with the above code
-	 * and the DP is checked against DPs, i.e. shadowed VQs can no
-	 * longer be found so we can unlock right here.
-	 */
+	 
 	sch_tree_unlock(sch);
 
 	if (sopt->grio) {
@@ -798,7 +776,7 @@ static int gred_dump(struct Qdisc *sch, struct sk_buff *skb)
 	if (nla_put_u32(skb, TCA_GRED_LIMIT, sch->limit))
 		goto nla_put_failure;
 
-	/* Old style all-in-one dump of VQs */
+	 
 	parms = nla_nest_start_noflag(skb, TCA_GRED_PARMS);
 	if (parms == NULL)
 		goto nla_put_failure;
@@ -811,9 +789,7 @@ static int gred_dump(struct Qdisc *sch, struct sk_buff *skb)
 		memset(&opt, 0, sizeof(opt));
 
 		if (!q) {
-			/* hack -- fix at some point with proper message
-			   This is how we indicate to tc that there is no VQ
-			   at this DP */
+			 
 
 			opt.DP = MAX_DPs + i;
 			goto append_opt;
@@ -848,7 +824,7 @@ append_opt:
 
 	nla_nest_end(skb, parms);
 
-	/* Dump the VQs again, in more structured way */
+	 
 	vqs = nla_nest_start_noflag(skb, TCA_GRED_VQ_LIST);
 	if (!vqs)
 		goto nla_put_failure;
@@ -870,7 +846,7 @@ append_opt:
 		if (nla_put_u32(skb, TCA_GRED_VQ_FLAGS, q->red_flags))
 			goto nla_put_failure;
 
-		/* Stats */
+		 
 		if (nla_put_u64_64bit(skb, TCA_GRED_VQ_STAT_BYTES, q->bytesin,
 				      TCA_GRED_VQ_PAD))
 			goto nla_put_failure;

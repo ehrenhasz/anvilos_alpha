@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-// Copyright (c) 2023 Google
+
+
 #include "vmlinux.h"
 #include <bpf/bpf_helpers.h>
 #include <bpf/bpf_tracing.h>
@@ -7,7 +7,7 @@
 
 #include "sample-filter.h"
 
-/* BPF map that will be filled by user space */
+ 
 struct filters {
 	__uint(type, BPF_MAP_TYPE_ARRAY);
 	__type(key, int);
@@ -19,30 +19,30 @@ int dropped;
 
 void *bpf_cast_to_kern_ctx(void *) __ksym;
 
-/* new kernel perf_sample_data definition */
+ 
 struct perf_sample_data___new {
 	__u64 sample_flags;
 } __attribute__((preserve_access_index));
 
-/* new kernel perf_mem_data_src definition */
+ 
 union perf_mem_data_src___new {
 	__u64 val;
 	struct {
-		__u64   mem_op:5,	/* type of opcode */
-			mem_lvl:14,	/* memory hierarchy level */
-			mem_snoop:5,	/* snoop mode */
-			mem_lock:2,	/* lock instr */
-			mem_dtlb:7,	/* tlb access */
-			mem_lvl_num:4,	/* memory hierarchy level number */
-			mem_remote:1,   /* remote */
-			mem_snoopx:2,	/* snoop mode, ext */
-			mem_blk:3,	/* access blocked */
-			mem_hops:3,	/* hop level */
+		__u64   mem_op:5,	 
+			mem_lvl:14,	 
+			mem_snoop:5,	 
+			mem_lock:2,	 
+			mem_dtlb:7,	 
+			mem_lvl_num:4,	 
+			mem_remote:1,    
+			mem_snoopx:2,	 
+			mem_blk:3,	 
+			mem_hops:3,	 
 			mem_rsvd:18;
 	};
 };
 
-/* helper function to return the given perf sample data */
+ 
 static inline __u64 perf_get_sample(struct bpf_perf_event_data_kern *kctx,
 				    struct perf_bpf_filter_entry *entry)
 {
@@ -79,7 +79,7 @@ static inline __u64 perf_get_sample(struct bpf_perf_event_data_kern *kctx,
 			return kctx->data->weight.var2_w;
 		if (entry->part == 3)
 			return kctx->data->weight.var3_w;
-		/* fall through */
+		 
 	case PERF_SAMPLE_WEIGHT:
 		return kctx->data->weight.full;
 	case PERF_SAMPLE_PHYS_ADDR:
@@ -115,7 +115,7 @@ static inline __u64 perf_get_sample(struct bpf_perf_event_data_kern *kctx,
 
 			return 0;
 		}
-		/* return the whole word */
+		 
 		return kctx->data->data_src.val;
 	default:
 		break;
@@ -131,7 +131,7 @@ static inline __u64 perf_get_sample(struct bpf_perf_event_data_kern *kctx,
 		group_result = 1;			\
 	}
 
-/* BPF program to be called from perf event overflow handler */
+ 
 SEC("perf_event")
 int perf_sample_filter(void *ctx)
 {
@@ -145,7 +145,7 @@ int perf_sample_filter(void *ctx)
 	kctx = bpf_cast_to_kern_ctx(ctx);
 
 	for (i = 0; i < MAX_FILTERS; i++) {
-		int key = i; /* needed for verifier :( */
+		int key = i;  
 
 		entry = bpf_map_lookup_elem(&filters, &key);
 		if (entry == NULL)
@@ -185,7 +185,7 @@ int perf_sample_filter(void *ctx)
 			break;
 		}
 	}
-	/* generate sample data */
+	 
 	return 1;
 
 drop:

@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Simple Power-Managed Bus Driver
- *
- * Copyright (C) 2014-2015 Glider bvba
- *
- * This file is subject to the terms and conditions of the GNU General Public
- * License.  See the file "COPYING" in the main directory of this archive
- * for more details.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/module.h>
@@ -30,23 +22,12 @@ static int simple_pm_bus_probe(struct platform_device *pdev)
 	const struct of_device_id *match;
 	struct simple_pm_bus *bus;
 
-	/*
-	 * Allow user to use driver_override to bind this driver to a
-	 * transparent bus device which has a different compatible string
-	 * that's not listed in simple_pm_bus_of_match. We don't want to do any
-	 * of the simple-pm-bus tasks for these devices, so return early.
-	 */
+	 
 	if (pdev->driver_override)
 		return 0;
 
 	match = of_match_device(dev->driver->of_match_table, dev);
-	/*
-	 * These are transparent bus devices (not simple-pm-bus matches) that
-	 * have their child nodes populated automatically.  So, don't need to
-	 * do anything more. We only match with the device if this driver is
-	 * the most specific match because we don't want to incorrectly bind to
-	 * a device that has a more specific driver.
-	 */
+	 
 	if (match && match->data) {
 		if (of_property_match_string(np, "compatible", match->compatible) == 0)
 			return 0;
@@ -115,7 +96,7 @@ static const struct dev_pm_ops simple_pm_bus_pm_ops = {
 	NOIRQ_SYSTEM_SLEEP_PM_OPS(pm_runtime_force_suspend, pm_runtime_force_resume)
 };
 
-#define ONLY_BUS	((void *) 1) /* Match if the device is only a bus. */
+#define ONLY_BUS	((void *) 1)  
 
 static const struct of_device_id simple_pm_bus_of_match[] = {
 	{ .compatible = "simple-pm-bus", },
@@ -123,7 +104,7 @@ static const struct of_device_id simple_pm_bus_of_match[] = {
 	{ .compatible = "simple-mfd",	.data = ONLY_BUS },
 	{ .compatible = "isa",		.data = ONLY_BUS },
 	{ .compatible = "arm,amba-bus",	.data = ONLY_BUS },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, simple_pm_bus_of_match);
 

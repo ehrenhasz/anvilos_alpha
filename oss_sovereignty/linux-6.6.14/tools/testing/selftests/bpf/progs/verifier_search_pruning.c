@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Converted from tools/testing/selftests/bpf/verifier/search_pruning.c */
+
+ 
 
 #include <linux/bpf.h>
 #include <bpf/bpf_helpers.h>
@@ -81,9 +81,9 @@ __failure __msg("R0 !read_ok")
 __naked void liveness_pruning_and_write_screening(void)
 {
 	asm volatile ("					\
-	/* Get an unknown value */			\
+	 			\
 	r2 = *(u32*)(r1 + 0);				\
-	/* branch conditions teach us nothing about R2 */\
+	 \
 	if r2 >= 0 goto l0_%=;				\
 	r0 = 0;						\
 l0_%=:	if r2 >= 0 goto l1_%=;				\
@@ -201,16 +201,16 @@ __naked void tracking_for_u32_spill_fill(void)
 	w6 = 32;					\
 	if r0 == 0 goto l0_%=;				\
 	w6 = 4;						\
-l0_%=:	/* Additional insns to introduce a pruning point. */\
+l0_%=:	 \
 	call %[bpf_get_prandom_u32];			\
 	r3 = 0;						\
 	r3 = 0;						\
 	if r0 == 0 goto l1_%=;				\
 	r3 = 0;						\
-l1_%=:	/* u32 spill/fill */				\
+l1_%=:	 				\
 	*(u32*)(r10 - 8) = r6;				\
 	r8 = *(u32*)(r10 - 8);				\
-	/* out-of-bound map value access for r6=32 */	\
+	 	\
 	r1 = 0;						\
 	*(u64*)(r10 - 16) = r1;				\
 	r2 = r10;					\
@@ -238,7 +238,7 @@ __naked void for_u32_spills_u64_fill(void)
 	call %[bpf_get_prandom_u32];			\
 	r6 = r0;					\
 	w7 = 0xffffffff;				\
-	/* Additional insns to introduce a pruning point. */\
+	 \
 	r3 = 1;						\
 	r3 = 1;						\
 	r3 = 1;						\
@@ -247,20 +247,16 @@ __naked void for_u32_spills_u64_fill(void)
 	if r0 == 0 goto l0_%=;				\
 	r3 = 1;						\
 l0_%=:	w3 /= 0;					\
-	/* u32 spills, u64 fill */			\
+	 			\
 	*(u32*)(r10 - 4) = r6;				\
 	*(u32*)(r10 - 8) = r7;				\
 	r8 = *(u64*)(r10 - 8);				\
-	/* if r8 != X goto pc+1  r8 known in fallthrough branch */\
+	 \
 	if r8 != 0xffffffff goto l1_%=;			\
 	r3 = 1;						\
-l1_%=:	/* if r8 == X goto pc+1  condition always true on first\
-	 * traversal, so starts backtracking to mark r8 as requiring\
-	 * precision. r7 marked as needing precision. r6 not marked\
-	 * since it's not tracked.			\
-	 */						\
+l1_%=:	 						\
 	if r8 == 0xffffffff goto l2_%=;			\
-	/* fails if r8 correctly marked unknown after fill. */\
+	 \
 	w3 /= 0;					\
 l2_%=:	r0 = 0;						\
 	exit;						\
@@ -315,20 +311,20 @@ __retval(0) __flag(BPF_F_TEST_STATE_FREQ)
 __naked void and_register_parent_chain_bug(void)
 {
 	asm volatile ("					\
-	/* r6 = ktime_get_ns() */			\
+	 			\
 	call %[bpf_ktime_get_ns];			\
 	r6 = r0;					\
-	/* r0 = ktime_get_ns() */			\
+	 			\
 	call %[bpf_ktime_get_ns];			\
-	/* if r0 > r6 goto +1 */			\
+	 			\
 	if r0 > r6 goto l0_%=;				\
-	/* *(u64 *)(r10 - 8) = 0xdeadbeef */		\
+	 		\
 	r0 = 0xdeadbeef;				\
 	*(u64*)(r10 - 8) = r0;				\
 l0_%=:	r1 = 42;					\
 	*(u8*)(r10 - 8) = r1;				\
 	r2 = *(u64*)(r10 - 8);				\
-	/* exit(0) */					\
+	 					\
 	r0 = 0;						\
 	exit;						\
 "	:

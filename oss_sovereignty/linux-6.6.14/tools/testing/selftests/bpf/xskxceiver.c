@@ -1,75 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright(c) 2020 Intel Corporation. */
 
-/*
- * Some functions in this program are taken from
- * Linux kernel samples/bpf/xdpsock* and modified
- * for use.
- *
- * See test_xsk.sh for detailed information on test topology
- * and prerequisite network setup.
- *
- * This test program contains two threads, each thread is single socket with
- * a unique UMEM. It validates in-order packet delivery and packet content
- * by sending packets to each other.
- *
- * Tests Information:
- * ------------------
- * These selftests test AF_XDP SKB and Native/DRV modes using veth
- * Virtual Ethernet interfaces.
- *
- * For each mode, the following tests are run:
- *    a. nopoll - soft-irq processing in run-to-completion mode
- *    b. poll - using poll() syscall
- *    c. Socket Teardown
- *       Create a Tx and a Rx socket, Tx from one socket, Rx on another. Destroy
- *       both sockets, then repeat multiple times. Only nopoll mode is used
- *    d. Bi-directional sockets
- *       Configure sockets as bi-directional tx/rx sockets, sets up fill and
- *       completion rings on each socket, tx/rx in both directions. Only nopoll
- *       mode is used
- *    e. Statistics
- *       Trigger some error conditions and ensure that the appropriate statistics
- *       are incremented. Within this test, the following statistics are tested:
- *       i.   rx dropped
- *            Increase the UMEM frame headroom to a value which results in
- *            insufficient space in the rx buffer for both the packet and the headroom.
- *       ii.  tx invalid
- *            Set the 'len' field of tx descriptors to an invalid value (umem frame
- *            size + 1).
- *       iii. rx ring full
- *            Reduce the size of the RX ring to a fraction of the fill ring size.
- *       iv.  fill queue empty
- *            Do not populate the fill queue and then try to receive pkts.
- *    f. bpf_link resource persistence
- *       Configure sockets at indexes 0 and 1, run a traffic on queue ids 0,
- *       then remove xsk sockets from queue 0 on both veth interfaces and
- *       finally run a traffic on queues ids 1
- *    g. unaligned mode
- *    h. tests for invalid and corner case Tx descriptors so that the correct ones
- *       are discarded and let through, respectively.
- *    i. 2K frame size tests
- *    j. If multi-buffer is supported, send 9k packets divided into 3 frames
- *    k. If multi-buffer and huge pages are supported, send 9k packets in a single frame
- *       using unaligned mode
- *    l. If multi-buffer is supported, try various nasty combinations of descriptors to
- *       check if they pass the validation or not
- *
- * Flow:
- * -----
- * - Single process spawns two threads: Tx and Rx
- * - Each of these two threads attach to a veth interface
- * - Each thread creates one AF_XDP socket connected to a unique umem for each
- *   veth interface
- * - Tx thread Transmits a number of packets from veth<xxxx> to veth<yyyy>
- * - Rx thread verifies if all packets were received and delivered in-order,
- *   and have the right content
- *
- * Enable/disable packet dump mode:
- * --------------------------
- * To enable L2 - L4 headers and payload dump of each packet on STDOUT, add
- * parameter -D to params array in test_xsk.sh, i.e. params=("-S" "-D")
- */
+ 
+
+ 
 
 #define _GNU_SOURCE
 #include <assert.h>
@@ -140,10 +72,7 @@ static void report_failure(struct test_spec *test)
 	test->fail = true;
 }
 
-/* The payload is a word consisting of a packet sequence number in the upper
- * 16-bits and a intra packet data sequence number in the lower 16 bits. So the 3rd packet's
- * 5th word of data will contain the number (2<<16) | 4 as they are numbered from 0.
- */
+ 
 static void write_payload(void *dest, u32 pkt_nb, u32 start, u32 size)
 {
 	u32 *ptr = (u32 *)dest, i;
@@ -581,7 +510,7 @@ static u32 pkt_nb_frags(u32 frame_size, struct pkt_stream *pkt_stream, struct pk
 		return ceil_u32(pkt->len, frame_size);
 	}
 
-	/* Search for the end of the packet in verbatim mode */
+	 
 	if (!pkt_continues(pkt->options))
 		return nb_frags;
 
@@ -788,7 +717,7 @@ static void pkt_dump(void *pkt, u32 len, bool eth_header)
 	u32 i, *data;
 
 	if (eth_header) {
-		/*extract L2 frame */
+		 
 		fprintf(stdout, "DEBUG>> L2: dst mac: ");
 		for (i = 0; i < ETH_ALEN; i++)
 			fprintf(stdout, "%02X", ethhdr->h_dest[i]);
@@ -802,7 +731,7 @@ static void pkt_dump(void *pkt, u32 len, bool eth_header)
 		data = pkt;
 	}
 
-	/*extract L5 frame */
+	 
 	fprintf(stdout, "\nDEBUG>> L5: seqnum: ");
 	pkt_print_data(data, PKT_DUMP_NB_TO_PRINT);
 	fprintf(stdout, "....");
@@ -1057,7 +986,7 @@ static int receive_pkts(struct test_spec *test, struct pollfd *fds)
 			if (pkt_continues(desc->options))
 				continue;
 
-			/* The complete packet has been received */
+			 
 			if (!is_pkt_valid(pkt, umem->buffer, first_addr, pkt_len) ||
 			    !is_offset_correct(umem, pkt, addr))
 				return TEST_FAILURE;
@@ -1068,7 +997,7 @@ static int receive_pkts(struct test_spec *test, struct pollfd *fds)
 		}
 
 		if (nb_frags) {
-			/* In the middle of a packet. Start over from beginning of packet. */
+			 
 			idx_rx -= nb_frags;
 			xsk_ring_cons__cancel(&xsk->rx, nb_frags);
 			if (ifobj->use_fill_ring) {
@@ -1102,7 +1031,7 @@ static int __send_pkts(struct ifobject *ifobject, struct pollfd *fds, bool timeo
 	int ret;
 
 	buffer_len = pkt_get_buffer_len(umem, pkt_stream->max_pkt_len);
-	/* pkts_in_flight might be negative if many invalid packets are sent */
+	 
 	if (pkts_in_flight >= (int)((umem_size(umem) - BATCH_SIZE * buffer_len) / buffer_len)) {
 		kick_tx(xsk);
 		return TEST_CONTINUE;
@@ -1272,12 +1201,7 @@ static int validate_rx_dropped(struct ifobject *ifobject)
 	if (err)
 		return TEST_FAILURE;
 
-	/* The receiver calls getsockopt after receiving the last (valid)
-	 * packet which is not the final packet sent in this test (valid and
-	 * invalid packets are sent in alternating fashion with the final
-	 * packet being invalid). Since the last packet may or may not have
-	 * been dropped already, both outcomes must be allowed.
-	 */
+	 
 	if (stats.rx_dropped == ifobject->pkt_stream->nb_pkts / 2 ||
 	    stats.rx_dropped == ifobject->pkt_stream->nb_pkts / 2 - 1)
 		return TEST_PASS;
@@ -1363,7 +1287,7 @@ static void xsk_configure_socket(struct test_spec *test, struct ifobject *ifobje
 			if (!ret)
 				break;
 
-			/* Retry if it fails as xsk_socket__create() is asynchronous */
+			 
 			if (ctr >= SOCK_RECONF_CTR)
 				exit_with_error(-ret);
 			usleep(USLEEP_MAX);
@@ -1627,7 +1551,7 @@ static int __testapp_validate_traffic(struct test_spec *test, struct ifobject *i
 	pkts_in_flight = 0;
 
 	signal(SIGUSR1, handler);
-	/*Spawn RX thread */
+	 
 	pthread_create(&t0, NULL, ifobj1->func_ptr, test);
 
 	if (ifobj2) {
@@ -1635,7 +1559,7 @@ static int __testapp_validate_traffic(struct test_spec *test, struct ifobject *i
 		if (pthread_barrier_destroy(&barr))
 			exit_with_error(errno);
 
-		/*Spawn TX thread */
+		 
 		pthread_create(&t1, NULL, ifobj2->func_ptr, test);
 
 		pthread_join(t1, NULL);
@@ -1810,7 +1734,7 @@ static int testapp_unaligned(struct test_spec *test)
 	test_spec_set_name(test, "UNALIGNED_MODE");
 	test->ifobj_tx->umem->unaligned_mode = true;
 	test->ifobj_rx->umem->unaligned_mode = true;
-	/* Let half of the packets straddle a 4K buffer boundary */
+	 
 	pkt_stream_replace_half(test, MIN_PKT_SIZE, -MIN_PKT_SIZE / 2);
 
 	return testapp_validate_traffic(test);
@@ -1848,32 +1772,32 @@ static int testapp_invalid_desc_mb(struct test_spec *test)
 	struct xsk_umem_info *umem = test->ifobj_tx->umem;
 	u64 umem_size = umem->num_frames * umem->frame_size;
 	struct pkt pkts[] = {
-		/* Valid packet for synch to start with */
+		 
 		{0, MIN_PKT_SIZE, 0, true, 0},
-		/* Zero frame len is not legal */
+		 
 		{0, XSK_UMEM__LARGE_FRAME_SIZE, 0, false, XDP_PKT_CONTD},
 		{0, XSK_UMEM__LARGE_FRAME_SIZE, 0, false, XDP_PKT_CONTD},
 		{0, 0, 0, false, 0},
-		/* Invalid address in the second frame */
+		 
 		{0, XSK_UMEM__LARGE_FRAME_SIZE, 0, false, XDP_PKT_CONTD},
 		{umem_size, XSK_UMEM__LARGE_FRAME_SIZE, 0, false, XDP_PKT_CONTD},
-		/* Invalid len in the middle */
+		 
 		{0, XSK_UMEM__LARGE_FRAME_SIZE, 0, false, XDP_PKT_CONTD},
 		{0, XSK_UMEM__INVALID_FRAME_SIZE, 0, false, XDP_PKT_CONTD},
-		/* Invalid options in the middle */
+		 
 		{0, XSK_UMEM__LARGE_FRAME_SIZE, 0, false, XDP_PKT_CONTD},
 		{0, XSK_UMEM__LARGE_FRAME_SIZE, 0, false, XSK_DESC__INVALID_OPTION},
-		/* Transmit 2 frags, receive 3 */
+		 
 		{0, XSK_UMEM__MAX_FRAME_SIZE, 0, true, XDP_PKT_CONTD},
 		{0, XSK_UMEM__MAX_FRAME_SIZE, 0, true, 0},
-		/* Middle frame crosses chunk boundary with small length */
+		 
 		{0, XSK_UMEM__LARGE_FRAME_SIZE, 0, false, XDP_PKT_CONTD},
 		{-MIN_PKT_SIZE / 2, MIN_PKT_SIZE, 0, false, 0},
-		/* Valid packet for synch so that something is received */
+		 
 		{0, MIN_PKT_SIZE, 0, true, 0}};
 
 	if (umem->unaligned_mode) {
-		/* Crossing a chunk boundary allowed */
+		 
 		pkts[12].valid = true;
 		pkts[13].valid = true;
 	}
@@ -1888,33 +1812,33 @@ static int testapp_invalid_desc(struct test_spec *test)
 	struct xsk_umem_info *umem = test->ifobj_tx->umem;
 	u64 umem_size = umem->num_frames * umem->frame_size;
 	struct pkt pkts[] = {
-		/* Zero packet address allowed */
+		 
 		{0, MIN_PKT_SIZE, 0, true},
-		/* Allowed packet */
+		 
 		{0, MIN_PKT_SIZE, 0, true},
-		/* Straddling the start of umem */
+		 
 		{-2, MIN_PKT_SIZE, 0, false},
-		/* Packet too large */
+		 
 		{0, XSK_UMEM__INVALID_FRAME_SIZE, 0, false},
-		/* Up to end of umem allowed */
+		 
 		{umem_size - MIN_PKT_SIZE - 2 * umem->frame_size, MIN_PKT_SIZE, 0, true},
-		/* After umem ends */
+		 
 		{umem_size, MIN_PKT_SIZE, 0, false},
-		/* Straddle the end of umem */
+		 
 		{umem_size - MIN_PKT_SIZE / 2, MIN_PKT_SIZE, 0, false},
-		/* Straddle a 4K boundary */
+		 
 		{0x1000 - MIN_PKT_SIZE / 2, MIN_PKT_SIZE, 0, false},
-		/* Straddle a 2K boundary */
+		 
 		{0x800 - MIN_PKT_SIZE / 2, MIN_PKT_SIZE, 0, true},
-		/* Valid packet for synch so that something is received */
+		 
 		{0, MIN_PKT_SIZE, 0, true}};
 
 	if (umem->unaligned_mode) {
-		/* Crossing a page boundary allowed */
+		 
 		pkts[7].valid = true;
 	}
 	if (umem->frame_size == XSK_UMEM__DEFAULT_FRAME_SIZE / 2) {
-		/* Crossing a 2K frame size boundary not allowed */
+		 
 		pkts[8].valid = false;
 	}
 
@@ -1969,7 +1893,7 @@ static int testapp_poll_txq_tmout(struct test_spec *test)
 	test_spec_set_name(test, "POLL_TXQ_FULL");
 
 	test->ifobj_tx->use_poll = true;
-	/* create invalid frame by set umem frame_size and pkt length equal to 2048 */
+	 
 	test->ifobj_tx->umem->frame_size = 2048;
 	pkt_stream_replace(test, 2 * DEFAULT_PKT_CNT, 2048);
 	return testapp_validate_traffic_single_thread(test, test->ifobj_tx);
@@ -1995,11 +1919,11 @@ static int testapp_too_many_frags(struct test_spec *test)
 
 	test->mtu = MAX_ETH_JUMBO_SIZE;
 
-	/* Valid packet for synch */
+	 
 	pkts[0].len = MIN_PKT_SIZE;
 	pkts[0].valid = true;
 
-	/* One valid packet with the max amount of frags */
+	 
 	for (i = 1; i < max_frags + 1; i++) {
 		pkts[i].len = MIN_PKT_SIZE;
 		pkts[i].options = XDP_PKT_CONTD;
@@ -2007,16 +1931,14 @@ static int testapp_too_many_frags(struct test_spec *test)
 	}
 	pkts[max_frags].options = 0;
 
-	/* An invalid packet with the max amount of frags but signals packet
-	 * continues on the last frag
-	 */
+	 
 	for (i = max_frags + 1; i < 2 * max_frags + 1; i++) {
 		pkts[i].len = MIN_PKT_SIZE;
 		pkts[i].options = XDP_PKT_CONTD;
 		pkts[i].valid = false;
 	}
 
-	/* Valid packet for synch */
+	 
 	pkts[2 * max_frags + 1].len = MIN_PKT_SIZE;
 	pkts[2 * max_frags + 1].valid = true;
 
@@ -2038,7 +1960,7 @@ static void xsk_unload_xdp_programs(struct ifobject *ifobj)
 	xsk_xdp_progs__destroy(ifobj->xdp_progs);
 }
 
-/* Simple test */
+ 
 static bool hugepages_present(void)
 {
 	size_t mmap_sz = 2 * DEFAULT_UMEM_BUFFERS * XSK_UMEM__DEFAULT_FRAME_SIZE;
@@ -2171,14 +2093,12 @@ static void run_pkt_test(struct test_spec *test, enum test_mode mode, enum test_
 		u64 page_size, umem_size;
 
 		test_spec_set_name(test, "UNALIGNED_INV_DESC_4K1_FRAME_SIZE");
-		/* Odd frame size so the UMEM doesn't end near a page boundary. */
+		 
 		test->ifobj_tx->umem->frame_size = 4001;
 		test->ifobj_rx->umem->frame_size = 4001;
 		test->ifobj_tx->umem->unaligned_mode = true;
 		test->ifobj_rx->umem->unaligned_mode = true;
-		/* This test exists to test descriptors that staddle the end of
-		 * the UMEM but not a page.
-		 */
+		 
 		page_size = sysconf(_SC_PAGESIZE);
 		umem_size = test->ifobj_tx->umem->num_frames * test->ifobj_tx->umem->frame_size;
 		assert(umem_size % page_size > MIN_PKT_SIZE);
@@ -2300,7 +2220,7 @@ int main(int argc, char **argv)
 	struct test_spec test;
 	bool shared_netdev;
 
-	/* Use libbpf 1.0 API mode */
+	 
 	libbpf_set_strict_mode(LIBBPF_STRICT_ALL);
 
 	ifobj_tx = ifobject_create();

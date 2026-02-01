@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Software nodes for the firmware node framework.
- *
- * Copyright (C) 2018, Intel Corporation
- * Author: Heikki Krogerus <heikki.krogerus@linux.intel.com>
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/kernel.h>
@@ -19,7 +14,7 @@ struct swnode {
 	const struct software_node *node;
 	int id;
 
-	/* hierarchy */
+	 
 	struct ida child_ids;
 	struct list_head entry;
 	struct list_head children;
@@ -103,8 +98,8 @@ struct fwnode_handle *software_node_fwnode(const struct software_node *node)
 }
 EXPORT_SYMBOL_GPL(software_node_fwnode);
 
-/* -------------------------------------------------------------------------- */
-/* property_entry processing */
+ 
+ 
 
 static const struct property_entry *
 property_entry_get(const struct property_entry *prop, const char *name)
@@ -190,13 +185,13 @@ static int property_entry_read_string_array(const struct property_entry *props,
 	size_t length;
 	int array_len;
 
-	/* Find out the array length. */
+	 
 	array_len = property_entry_count_elems_of_size(props, propname,
 						       sizeof(const char *));
 	if (array_len < 0)
 		return array_len;
 
-	/* Return how many there are if strings is NULL. */
+	 
 	if (!strings)
 		return array_len;
 
@@ -255,17 +250,11 @@ static int property_entry_copy_data(struct property_entry *dst,
 	void *dst_ptr;
 	size_t nval;
 
-	/*
-	 * Properties with no data should not be marked as stored
-	 * out of line.
-	 */
+	 
 	if (!src->is_inline && !src->length)
 		return -ENODATA;
 
-	/*
-	 * Reference properties are never stored inline as
-	 * they are too big.
-	 */
+	 
 	if (src->type == DEV_PROP_REF && src->is_inline)
 		return -EINVAL;
 
@@ -301,13 +290,7 @@ static int property_entry_copy_data(struct property_entry *dst,
 	return 0;
 }
 
-/**
- * property_entries_dup - duplicate array of properties
- * @properties: array of properties to copy
- *
- * This function creates a deep copy of the given NULL-terminated array
- * of property entries.
- */
+ 
 struct property_entry *
 property_entries_dup(const struct property_entry *properties)
 {
@@ -339,13 +322,7 @@ property_entries_dup(const struct property_entry *properties)
 }
 EXPORT_SYMBOL_GPL(property_entries_dup);
 
-/**
- * property_entries_free - free previously allocated array of properties
- * @properties: array of properties to destroy
- *
- * This function frees given NULL-terminated array of property entries,
- * along with their data.
- */
+ 
 void property_entries_free(const struct property_entry *properties)
 {
 	const struct property_entry *p;
@@ -360,8 +337,8 @@ void property_entries_free(const struct property_entry *properties)
 }
 EXPORT_SYMBOL_GPL(property_entries_free);
 
-/* -------------------------------------------------------------------------- */
-/* fwnode operations */
+ 
+ 
 
 static struct fwnode_handle *software_node_get(struct fwnode_handle *fwnode)
 {
@@ -426,14 +403,14 @@ software_node_get_name_prefix(const struct fwnode_handle *fwnode)
 	if (!parent)
 		return "";
 
-	/* Figure out the prefix from the parents. */
+	 
 	while (is_software_node(parent))
 		parent = fwnode_get_next_parent(parent);
 
 	prefix = fwnode_get_name_prefix(parent);
 	fwnode_handle_put(parent);
 
-	/* Guess something if prefix was NULL. */
+	 
 	return prefix ?: "/";
 }
 
@@ -511,10 +488,7 @@ software_node_get_reference_args(const struct fwnode_handle *fwnode,
 	if (prop->type != DEV_PROP_REF)
 		return -EINVAL;
 
-	/*
-	 * We expect that references are never stored inline, even
-	 * single ones, as they are too big.
-	 */
+	 
 	if (prop->is_inline)
 		return -EINVAL;
 
@@ -560,10 +534,7 @@ swnode_graph_find_next_port(const struct fwnode_handle *parent,
 	struct fwnode_handle *old = port;
 
 	while ((port = software_node_get_next_child(parent, old))) {
-		/*
-		 * fwnode ports have naming style "port@", so we search for any
-		 * children that follow that convention.
-		 */
+		 
 		if (!strncmp(to_swnode(port)->node->name, "port@",
 			     strlen("port@")))
 			return port;
@@ -651,7 +622,7 @@ software_node_graph_parse_endpoint(const struct fwnode_handle *fwnode,
 	    strncmp(parent_name, "port@", strlen("port@")))
 		return -EINVAL;
 
-	/* Ports have naming style "port@n", we need to select the n */
+	 
 	ret = kstrtou32(parent_name + strlen("port@"), 10, &endpoint->port);
 	if (ret)
 		return ret;
@@ -680,18 +651,9 @@ static const struct fwnode_operations software_node_ops = {
 	.graph_parse_endpoint = software_node_graph_parse_endpoint,
 };
 
-/* -------------------------------------------------------------------------- */
+ 
 
-/**
- * software_node_find_by_name - Find software node by name
- * @parent: Parent of the software node
- * @name: Name of the software node
- *
- * The function will find a node that is child of @parent and that is named
- * @name. If no node is found, the function returns NULL.
- *
- * NOTE: you will need to drop the reference with fwnode_handle_put() after use.
- */
+ 
 const struct software_node *
 software_node_find_by_name(const struct software_node *parent, const char *name)
 {
@@ -809,10 +771,7 @@ swnode_register(const struct software_node *node, struct swnode *parent,
 		return ERR_PTR(ret);
 	}
 
-	/*
-	 * Assign the flag only in the successful case, so
-	 * the above kobject_put() won't mess up with properties.
-	 */
+	 
 	swnode->allocated = allocated;
 
 	if (parent)
@@ -822,16 +781,7 @@ swnode_register(const struct software_node *node, struct swnode *parent,
 	return &swnode->fwnode;
 }
 
-/**
- * software_node_register_node_group - Register a group of software nodes
- * @node_group: NULL terminated array of software node pointers to be registered
- *
- * Register multiple software nodes at once. If any node in the array
- * has its .parent pointer set (which can only be to another software_node),
- * then its parent **must** have been registered before it is; either outside
- * of this function or by ordering the array such that parent comes before
- * child.
- */
+ 
 int software_node_register_node_group(const struct software_node **node_group)
 {
 	unsigned int i;
@@ -852,19 +802,7 @@ int software_node_register_node_group(const struct software_node **node_group)
 }
 EXPORT_SYMBOL_GPL(software_node_register_node_group);
 
-/**
- * software_node_unregister_node_group - Unregister a group of software nodes
- * @node_group: NULL terminated array of software node pointers to be unregistered
- *
- * Unregister multiple software nodes at once. If parent pointers are set up
- * in any of the software nodes then the array **must** be ordered such that
- * parents come before their children.
- *
- * NOTE: If you are uncertain whether the array is ordered such that
- * parents will be unregistered before their children, it is wiser to
- * remove the nodes individually, in the correct order (child before
- * parent).
- */
+ 
 void software_node_unregister_node_group(
 		const struct software_node **node_group)
 {
@@ -881,10 +819,7 @@ void software_node_unregister_node_group(
 }
 EXPORT_SYMBOL_GPL(software_node_unregister_node_group);
 
-/**
- * software_node_register - Register static software node
- * @node: The software node to be registered
- */
+ 
 int software_node_register(const struct software_node *node)
 {
 	struct swnode *parent = software_node_to_swnode(node->parent);
@@ -899,10 +834,7 @@ int software_node_register(const struct software_node *node)
 }
 EXPORT_SYMBOL_GPL(software_node_register);
 
-/**
- * software_node_unregister - Unregister static software node
- * @node: The software node to be unregistered
- */
+ 
 void software_node_unregister(const struct software_node *node)
 {
 	struct swnode *swnode;
@@ -953,21 +885,13 @@ void fwnode_remove_software_node(struct fwnode_handle *fwnode)
 }
 EXPORT_SYMBOL_GPL(fwnode_remove_software_node);
 
-/**
- * device_add_software_node - Assign software node to a device
- * @dev: The device the software node is meant for.
- * @node: The software node.
- *
- * This function will make @node the secondary firmware node pointer of @dev. If
- * @dev has no primary node, then @node will become the primary node. The
- * function will register @node automatically if it wasn't already registered.
- */
+ 
 int device_add_software_node(struct device *dev, const struct software_node *node)
 {
 	struct swnode *swnode;
 	int ret;
 
-	/* Only one software node per device. */
+	 
 	if (dev_to_swnode(dev))
 		return -EBUSY;
 
@@ -984,12 +908,7 @@ int device_add_software_node(struct device *dev, const struct software_node *nod
 
 	set_secondary_fwnode(dev, &swnode->fwnode);
 
-	/*
-	 * If the device has been fully registered by the time this function is
-	 * called, software_node_notify() must be called separately so that the
-	 * symlinks get created and the reference count of the node is kept in
-	 * balance.
-	 */
+	 
 	if (device_is_registered(dev))
 		software_node_notify(dev);
 
@@ -997,12 +916,7 @@ int device_add_software_node(struct device *dev, const struct software_node *nod
 }
 EXPORT_SYMBOL_GPL(device_add_software_node);
 
-/**
- * device_remove_software_node - Remove device's software node
- * @dev: The device with the software node.
- *
- * This function will unregister the software node of @dev.
- */
+ 
 void device_remove_software_node(struct device *dev)
 {
 	struct swnode *swnode;
@@ -1019,22 +933,7 @@ void device_remove_software_node(struct device *dev)
 }
 EXPORT_SYMBOL_GPL(device_remove_software_node);
 
-/**
- * device_create_managed_software_node - Create a software node for a device
- * @dev: The device the software node is assigned to.
- * @properties: Device properties for the software node.
- * @parent: Parent of the software node.
- *
- * Creates a software node as a managed resource for @dev, which means the
- * lifetime of the newly created software node is tied to the lifetime of @dev.
- * Software nodes created with this function should not be reused or shared
- * because of that. The function takes a deep copy of @properties for the
- * software node.
- *
- * Since the new software node is assigned directly to @dev, and since it should
- * not be shared, it is not returned to the caller. The function returns 0 on
- * success, and errno in case of an error.
- */
+ 
 int device_create_managed_software_node(struct device *dev,
 					const struct property_entry *properties,
 					const struct software_node *parent)

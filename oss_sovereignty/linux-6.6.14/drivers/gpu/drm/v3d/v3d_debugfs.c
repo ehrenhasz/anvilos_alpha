@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/* Copyright (C) 2014-2018 Broadcom */
+
+ 
 
 #include <linux/circ_buf.h>
 #include <linux/ctype.h>

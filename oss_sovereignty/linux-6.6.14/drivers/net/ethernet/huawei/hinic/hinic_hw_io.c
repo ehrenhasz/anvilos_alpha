@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Huawei HiNIC PCI Express Linux driver
- * Copyright(c) 2017 Huawei Technologies Co., Ltd
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/types.h>
@@ -190,14 +187,7 @@ static int write_rq_ctxts(struct hinic_func_to_io *func_to_io, u16 base_qpn,
 	return err;
 }
 
-/**
- * write_qp_ctxts - write the qp ctxt to HW
- * @func_to_io: func to io channel that holds the IO components
- * @base_qpn: first qp number
- * @num_qps: number of qps to write
- *
- * Return 0 - Success, negative - Failure
- **/
+ 
 static int write_qp_ctxts(struct hinic_func_to_io *func_to_io, u16 base_qpn,
 			  u16 num_qps)
 {
@@ -226,7 +216,7 @@ static int hinic_clean_queue_offload_ctxt(struct hinic_func_to_io *func_to_io,
 	ctxt_block->cmdq_hdr.queue_type = ctxt_type;
 	ctxt_block->cmdq_hdr.addr_offset = 0;
 
-	/* TSO/LRO ctxt size: 0x0:0B; 0x1:160B; 0x2:200B; 0x3:240B */
+	 
 	ctxt_block->ctxt_size = 0x3;
 
 	hinic_cpu_to_be32(ctxt_block, sizeof(*ctxt_block));
@@ -251,23 +241,14 @@ static int hinic_clean_queue_offload_ctxt(struct hinic_func_to_io *func_to_io,
 
 static int hinic_clean_qp_offload_ctxt(struct hinic_func_to_io *func_to_io)
 {
-	/* clean LRO/TSO context space */
+	 
 	return (hinic_clean_queue_offload_ctxt(func_to_io,
 					       HINIC_QP_CTXT_TYPE_SQ) ||
 		hinic_clean_queue_offload_ctxt(func_to_io,
 					       HINIC_QP_CTXT_TYPE_RQ));
 }
 
-/**
- * init_qp - Initialize a Queue Pair
- * @func_to_io: func to io channel that holds the IO components
- * @qp: pointer to the qp to initialize
- * @q_id: the id of the qp
- * @sq_msix_entry: msix entry for sq
- * @rq_msix_entry: msix entry for rq
- *
- * Return 0 - Success, negative - Failure
- **/
+ 
 static int init_qp(struct hinic_func_to_io *func_to_io,
 		   struct hinic_qp *qp, int q_id,
 		   struct msix_entry *sq_msix_entry,
@@ -339,11 +320,7 @@ err_rq_alloc:
 	return err;
 }
 
-/**
- * destroy_qp - Clean the resources of a Queue Pair
- * @func_to_io: func to io channel that holds the IO components
- * @qp: pointer to the qp to clean
- **/
+ 
 static void destroy_qp(struct hinic_func_to_io *func_to_io,
 		       struct hinic_qp *qp)
 {
@@ -358,16 +335,7 @@ static void destroy_qp(struct hinic_func_to_io *func_to_io,
 	hinic_wq_free(&func_to_io->wqs, &func_to_io->sq_wq[q_id]);
 }
 
-/**
- * hinic_io_create_qps - Create Queue Pairs
- * @func_to_io: func to io channel that holds the IO components
- * @base_qpn: base qp number
- * @num_qps: number queue pairs to create
- * @sq_msix_entries: msix entries for sq
- * @rq_msix_entries: msix entries for rq
- *
- * Return 0 - Success, negative - Failure
- **/
+ 
 int hinic_io_create_qps(struct hinic_func_to_io *func_to_io,
 			u16 base_qpn, int num_qps,
 			struct msix_entry *sq_msix_entries,
@@ -460,11 +428,7 @@ err_sq_wq:
 	return err;
 }
 
-/**
- * hinic_io_destroy_qps - Destroy the IO Queue Pairs
- * @func_to_io: func to io channel that holds the IO components
- * @num_qps: number queue pairs to destroy
- **/
+ 
 void hinic_io_destroy_qps(struct hinic_func_to_io *func_to_io, int num_qps)
 {
 	struct hinic_hwif *hwif = func_to_io->hwif;
@@ -515,16 +479,7 @@ int hinic_set_wq_page_size(struct hinic_hwdev *hwdev, u16 func_idx,
 	return 0;
 }
 
-/**
- * hinic_io_init - Initialize the IO components
- * @func_to_io: func to io channel that holds the IO components
- * @hwif: HW interface for accessing IO
- * @max_qps: maximum QPs in HW
- * @num_ceqs: number completion event queues
- * @ceq_msix_entries: msix entries for ceqs
- *
- * Return 0 - Success, negative - Failure
- **/
+ 
 int hinic_io_init(struct hinic_func_to_io *func_to_io,
 		  struct hinic_hwif *hwif, u16 max_qps, int num_ceqs,
 		  struct msix_entry *ceq_msix_entries)
@@ -610,10 +565,7 @@ err_wqs_alloc:
 	return err;
 }
 
-/**
- * hinic_io_free - Free the IO components
- * @func_to_io: func to io channel that holds the IO components
- **/
+ 
 void hinic_io_free(struct hinic_func_to_io *func_to_io)
 {
 	enum hinic_cmdq_type cmdq;

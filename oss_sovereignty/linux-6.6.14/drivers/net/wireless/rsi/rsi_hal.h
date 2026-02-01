@@ -1,23 +1,9 @@
-/*
- * Copyright (c) 2017 Redpine Signals Inc.
- *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
+ 
 
 #ifndef __RSI_HAL_H__
 #define __RSI_HAL_H__
 
-/* Device Operating modes */
+ 
 #define DEV_OPMODE_WIFI_ALONE		1
 #define DEV_OPMODE_BT_ALONE		4
 #define DEV_OPMODE_BT_LE_ALONE		8
@@ -81,7 +67,7 @@
 #define RSI_WATCH_DOG_DELAY_TIMER_2		0x16f
 #define RSI_WATCH_DOG_TIMER_ENABLE		0x170
 
-/* Watchdog timer addresses for 9116 */
+ 
 #define NWP_AHB_BASE_ADDR		0x41300000
 #define NWP_WWD_INTERRUPT_TIMER		(NWP_AHB_BASE_ADDR + 0x300)
 #define NWP_WWD_SYSTEM_RESET_TIMER	(NWP_AHB_BASE_ADDR + 0x304)
@@ -91,7 +77,7 @@
 #define NWP_WWD_RESET_BYPASS		(NWP_AHB_BASE_ADDR + 0x314)
 #define NWP_FSM_INTR_MASK_REG		(NWP_AHB_BASE_ADDR + 0x104)
 
-/* Watchdog timer values */
+ 
 #define NWP_WWD_INT_TIMER_CLKS		5
 #define NWP_WWD_SYS_RESET_TIMER_CLKS	4
 #define NWP_WWD_TIMER_DISABLE		0xAA0001
@@ -122,11 +108,11 @@
 #define RSI_GSPI_READ			BIT(6)
 #define RSI_GSPI_RF_SPI_ACTIVE		BIT(8)
 
-/* Boot loader commands */
+ 
 #define SEND_RPS_FILE			'2'
 
 #define FW_IMAGE_MIN_ADDRESS		(68 * 1024)
-#define MAX_FLASH_FILE_SIZE		(400 * 1024) //400K
+#define MAX_FLASH_FILE_SIZE		(400 * 1024) 
 #define FLASH_START_ADDRESS		16
 
 #define COMMON_HAL_CARD_READY_IND	0x0

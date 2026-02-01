@@ -1,13 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0
- *
- * Copyright (c) 2019 Facebook
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of version 2 of the GNU General Public
- * License as published by the Free Software Foundation.
- *
- * Include file for sample Host Bandwidth Manager (HBM) BPF programs
- */
+ 
 #define KBUILD_MODNAME "foo"
 #include <uapi/linux/bpf.h>
 #include <uapi/linux/if_ether.h>
@@ -29,7 +20,7 @@
 #define TCP_ECN_OK	1
 #define CWR		2
 
-#ifndef HBM_DEBUG  // Define HBM_DEBUG to enable debugging
+#ifndef HBM_DEBUG  
 #undef bpf_printk
 #define bpf_printk(fmt, ...)
 #endif
@@ -44,15 +35,15 @@
 #define MAX_CREDIT		(100 * MAX_BYTES_PER_PACKET)
 #define INIT_CREDIT		(INITIAL_CREDIT_PACKETS * MAX_BYTES_PER_PACKET)
 
-// Time base accounting for fq's EDT
-#define BURST_SIZE_NS		100000 // 100us
-#define MARK_THRESH_NS		50000 // 50us
-#define DROP_THRESH_NS		500000 // 500us
-// Reserve 20us of queuing for small packets (less than 120 bytes)
+
+#define BURST_SIZE_NS		100000 
+#define MARK_THRESH_NS		50000 
+#define DROP_THRESH_NS		500000 
+
 #define LARGE_PKT_DROP_THRESH_NS (DROP_THRESH_NS - 20000)
 #define MARK_REGION_SIZE_NS	(LARGE_PKT_DROP_THRESH_NS - MARK_THRESH_NS)
 
-// rate in bytes per ns << 20
+
 #define CREDIT_PER_NS(delta, rate) ((((u64)(delta)) * (rate)) >> 20)
 #define BYTES_PER_NS(delta, rate) ((((u64)(delta)) * (rate)) >> 20)
 #define BYTES_TO_NS(bytes, rate) div64_u64(((u64)(bytes)) << 20, (u64)(rate))
@@ -147,8 +138,8 @@ static __always_inline void hbm_init_edt_vqueue(struct hbm_vqueue *qdp,
 
 	curtime = bpf_ktime_get_ns();
 	bpf_printk("Initializing queue_state, rate:%d\n", rate * 128);
-	qdp->lasttime = curtime - BURST_SIZE_NS;	// support initial burst
-	qdp->credit = 0;				// not used
+	qdp->lasttime = curtime - BURST_SIZE_NS;	
+	qdp->credit = 0;				
 	qdp->rate = rate * 128;
 }
 
@@ -165,10 +156,10 @@ static __always_inline void hbm_update_stats(struct hbm_queue_stats *qsp,
 	int rv = ALLOW_PKT;
 
 	if (qsp != NULL) {
-		// Following is needed for work conserving
+		
 		__sync_add_and_fetch(&(qsp->bytes_total), len);
 		if (qsp->stats) {
-			// Optionally update statistics
+			
 			if (qsp->firstPacketTime == 0)
 				qsp->firstPacketTime = curtime;
 			qsp->lastPacketTime = curtime;

@@ -1,16 +1,14 @@
-// SPDX-License-Identifier: GPL-2.0+
-// terratec-cinergy-xs.h - Keytable for terratec_cinergy_xs Remote Controller
-//
-// keymap imported from ir-keymaps.c
-//
-// Copyright (c) 2010 by Mauro Carvalho Chehab
+
+
+
+
+
+
 
 #include <media/rc-map.h>
 #include <linux/module.h>
 
-/* Terratec Cinergy Hybrid T USB XS
-   Devin Heitmueller <dheitmueller@linuxtv.org>
- */
+ 
 
 static struct rc_map_table terratec_cinergy_xs[] = {
 	{ 0x41, KEY_HOME},
@@ -66,7 +64,7 @@ static struct rc_map_list terratec_cinergy_xs_map = {
 	.map = {
 		.scan     = terratec_cinergy_xs,
 		.size     = ARRAY_SIZE(terratec_cinergy_xs),
-		.rc_proto = RC_PROTO_UNKNOWN,	/* Legacy IR type */
+		.rc_proto = RC_PROTO_UNKNOWN,	 
 		.name     = RC_MAP_TERRATEC_CINERGY_XS,
 	}
 };

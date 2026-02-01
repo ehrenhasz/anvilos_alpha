@@ -448,7 +448,7 @@ static void get_finfo(const char *dir)
 	if (finfo.type == VMA_SHMEM)
 		return;
 
-	/* Find owning device's queue/read_ahead_kb control */
+	 
 	if (snprintf(path, sizeof(path), "/sys/dev/block/%d:%d/uevent",
 		     major(path_stat.st_dev), minor(path_stat.st_dev))
 	    >= sizeof(path)) {
@@ -460,7 +460,7 @@ static void get_finfo(const char *dir)
 		exit(EXIT_FAILURE);
 	}
 	if (strstr(buf, "DEVTYPE=disk")) {
-		/* Found it */
+		 
 		if (snprintf(finfo.dev_queue_read_ahead_path,
 			     sizeof(finfo.dev_queue_read_ahead_path),
 			     "/sys/dev/block/%d:%d/queue/read_ahead_kb",
@@ -475,11 +475,7 @@ static void get_finfo(const char *dir)
 		printf("%s: Unknown device type: %s\n", __func__, path);
 		exit(EXIT_FAILURE);
 	}
-	/*
-	 * Partition of block device - need to find actual device.
-	 * Using naming convention that devnameN is partition of
-	 * device devname.
-	 */
+	 
 	str = strstr(buf, "DEVNAME=");
 	if (!str) {
 		printf("%s: Could not read: %s", __func__, path);
@@ -535,10 +531,7 @@ static bool check_swap(void *addr, unsigned long size)
 		printf("%s: Pattern is too long\n", __func__);
 		exit(EXIT_FAILURE);
 	}
-	/*
-	 * Fetch the Swap: in the same block and check whether it got
-	 * the expected number of hugeepages next.
-	 */
+	 
 	if (!check_for_pattern(fp, "Swap:", buffer, sizeof(buffer)))
 		goto err_out;
 
@@ -573,12 +566,7 @@ static void fill_memory(int *p, unsigned long start, unsigned long end)
 		p[i * page_size / sizeof(*p)] = i + 0xdead0000;
 }
 
-/*
- * MADV_COLLAPSE is a best-effort request and may fail if an internal
- * resource is temporarily unavailable, in which case it will set errno to
- * EAGAIN.  In such a case, immediately reattempt the operation one more
- * time.
- */
+ 
 static int madvise_collapse_retry(void *p, unsigned long size)
 {
 	bool retry = true;
@@ -593,23 +581,14 @@ retry:
 	return ret;
 }
 
-/*
- * Returns pmd-mapped hugepage in VMA marked VM_HUGEPAGE, filled with
- * validate_memory()'able contents.
- */
+ 
 static void *alloc_hpage(struct mem_ops *ops)
 {
 	void *p = ops->setup_area(1);
 
 	ops->fault(p, 0, hpage_pmd_size);
 
-	/*
-	 * VMA should be neither VM_HUGEPAGE nor VM_NOHUGEPAGE.
-	 * The latter is ineligible for collapse by MADV_COLLAPSE
-	 * while the former might cause MADV_COLLAPSE to race with
-	 * khugepaged on low-load system (like a test machine), which
-	 * would cause MADV_COLLAPSE to fail with EAGAIN.
-	 */
+	 
 	printf("Allocate huge page...");
 	if (madvise_collapse_retry(p, hpage_pmd_size)) {
 		perror("madvise(MADV_COLLAPSE)");
@@ -666,7 +645,7 @@ static void *file_setup_area(int nr_hpages)
 	void *p;
 	unsigned long size;
 
-	unlink(finfo.path);  /* Cleanup from previous failed tests */
+	unlink(finfo.path);   
 	printf("Creating %s for collapse%s...", finfo.path,
 	       finfo.type == VMA_SHMEM ? " (tmpfs)" : "");
 	fd = open(finfo.path, O_DSYNC | O_CREAT | O_RDWR | O_TRUNC | O_EXCL,
@@ -697,7 +676,7 @@ static void *file_setup_area(int nr_hpages)
 		exit(EXIT_FAILURE);
 	}
 
-	/* Drop page cache */
+	 
 	write_file("/proc/sys/vm/drop_caches", "3", 2);
 	success("OK");
 	return p;
@@ -797,15 +776,12 @@ static void __madvise_collapse(const char *msg, char *p, int nr_hpages,
 
 	printf("%s...", msg);
 
-	/*
-	 * Prevent khugepaged interference and tests that MADV_COLLAPSE
-	 * ignores /sys/kernel/mm/transparent_hugepage/enabled
-	 */
+	 
 	settings.thp_enabled = THP_NEVER;
 	settings.shmem_enabled = SHMEM_NEVER;
 	push_settings(&settings);
 
-	/* Clear VM_NOHUGEPAGE */
+	 
 	madvise(p, nr_hpages * hpage_pmd_size, MADV_HUGEPAGE);
 	ret = madvise_collapse_retry(p, nr_hpages * hpage_pmd_size);
 	if (((bool)ret) == expect)
@@ -821,7 +797,7 @@ static void __madvise_collapse(const char *msg, char *p, int nr_hpages,
 static void madvise_collapse(const char *msg, char *p, int nr_hpages,
 			     struct mem_ops *ops, bool expect)
 {
-	/* Sanity check */
+	 
 	if (!ops->check_huge(p, 0)) {
 		printf("Unexpected huge page\n");
 		exit(EXIT_FAILURE);
@@ -834,9 +810,9 @@ static bool wait_for_scan(const char *msg, char *p, int nr_hpages,
 			  struct mem_ops *ops)
 {
 	int full_scans;
-	int timeout = 6; /* 3 seconds */
+	int timeout = 6;  
 
-	/* Sanity check */
+	 
 	if (!ops->check_huge(p, 0)) {
 		printf("Unexpected huge page\n");
 		exit(EXIT_FAILURE);
@@ -844,7 +820,7 @@ static bool wait_for_scan(const char *msg, char *p, int nr_hpages,
 
 	madvise(p, nr_hpages * hpage_pmd_size, MADV_HUGEPAGE);
 
-	/* Wait until the second full_scan completed */
+	 
 	full_scans = read_num("khugepaged/full_scans") + 2;
 
 	printf("%s...", msg);
@@ -873,11 +849,7 @@ static void khugepaged_collapse(const char *msg, char *p, int nr_hpages,
 		return;
 	}
 
-	/*
-	 * For file and shmem memory, khugepaged only retracts pte entries after
-	 * putting the new hugepage in the page cache. The hugepage must be
-	 * subsequently refaulted to install the pmd mapping for the mm.
-	 */
+	 
 	if (ops != &__anon_ops)
 		ops->fault(p, 0, nr_hpages * hpage_pmd_size);
 
@@ -977,7 +949,7 @@ static void collapse_max_ptes_none(struct collapse_context *c, struct mem_ops *o
 	p = ops->setup_area(1);
 
 	if (is_tmpfs(ops)) {
-		/* shmem pages always in the page cache */
+		 
 		printf("tmpfs...");
 		skip("Skip");
 		goto skip;
@@ -1080,7 +1052,7 @@ static void collapse_single_pte_entry_compound(struct collapse_context *c, struc
 	p = alloc_hpage(ops);
 
 	if (is_tmpfs(ops)) {
-		/* MADV_DONTNEED won't evict tmpfs pages */
+		 
 		printf("tmpfs...");
 		skip("Skip");
 		goto skip;
@@ -1189,7 +1161,7 @@ static void collapse_fork(struct collapse_context *c, struct mem_ops *ops)
 
 	printf("Share small page over fork()...");
 	if (!fork()) {
-		/* Do not touch settings on child exit */
+		 
 		skip_settings_restore = true;
 		exit_status = 0;
 
@@ -1227,7 +1199,7 @@ static void collapse_fork_compound(struct collapse_context *c, struct mem_ops *o
 	p = alloc_hpage(ops);
 	printf("Share huge page over fork()...");
 	if (!fork()) {
-		/* Do not touch settings on child exit */
+		 
 		skip_settings_restore = true;
 		exit_status = 0;
 
@@ -1277,7 +1249,7 @@ static void collapse_max_ptes_shared(struct collapse_context *c, struct mem_ops 
 	p = alloc_hpage(ops);
 	printf("Share huge page over fork()...");
 	if (!fork()) {
-		/* Do not touch settings on child exit */
+		 
 		skip_settings_restore = true;
 		exit_status = 0;
 
@@ -1338,16 +1310,13 @@ static void madvise_collapse_existing_thps(struct collapse_context *c,
 	c->collapse("Collapse fully populated PTE table...", p, 1, ops, true);
 	validate_memory(p, 0, hpage_pmd_size);
 
-	/* c->collapse() will find a hugepage and complain - call directly. */
+	 
 	__madvise_collapse("Re-collapse PMD-mapped hugepage", p, 1, ops, true);
 	validate_memory(p, 0, hpage_pmd_size);
 	ops->cleanup_area(p, hpage_pmd_size);
 }
 
-/*
- * Test race with khugepaged where page tables have been retracted and
- * pmd cleared.
- */
+ 
 static void madvise_retracted_page_tables(struct collapse_context *c,
 					  struct mem_ops *ops)
 {
@@ -1358,7 +1327,7 @@ static void madvise_retracted_page_tables(struct collapse_context *c,
 	p = ops->setup_area(nr_hpages);
 	ops->fault(p, 0, size);
 
-	/* Let khugepaged collapse and leave pmd cleared */
+	 
 	if (wait_for_scan("Collapse and leave PMD cleared", p, nr_hpages,
 			  ops)) {
 		fail("Timeout");
@@ -1391,7 +1360,7 @@ static void parse_test_type(int argc, const char **argv)
 	const char *token;
 
 	if (argc == 1) {
-		/* Backwards compatibility */
+		 
 		khugepaged_context =  &__khugepaged_context;
 		madvise_context =  &__madvise_context;
 		anon_ops = &__anon_ops;
@@ -1448,13 +1417,7 @@ int main(int argc, const char **argv)
 			.alloc_sleep_millisecs = 10,
 			.scan_sleep_millisecs = 10,
 		},
-		/*
-		 * When testing file-backed memory, the collapse path
-		 * looks at how many pages are found in the page cache, not
-		 * what pages are mapped. Disable read ahead optimization so
-		 * pages don't find their way into the page cache unless
-		 * we mem_ops->fault() them in.
-		 */
+		 
 		.read_ahead_kb = 0,
 	};
 

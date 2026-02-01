@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * Copyright (C) 2016 Freescale Semiconductor, Inc.
- * Copyright 2017~2018 NXP
- *
- * Header file containing the public System Controller Interface (SCI)
- * definitions.
- */
+ 
+ 
 
 #ifndef _SC_SCI_H
 #define _SC_SCI_H
@@ -54,4 +48,4 @@ static inline int imx_scu_irq_get_status(u8 group, u32 *irq_status)
 	return -EOPNOTSUPP;
 }
 #endif
-#endif /* _SC_SCI_H */
+#endif  

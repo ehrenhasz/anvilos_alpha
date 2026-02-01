@@ -1,15 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * virtio_pmem.c: Virtio pmem Driver
- *
- * Discovers persistent memory range information
- * from host and provides a virtio based flushing
- * interface.
- */
+
+ 
 #include "virtio_pmem.h"
 #include "nd.h"
 
- /* The interrupt handler */
+  
 void virtio_pmem_host_ack(struct virtqueue *vq)
 {
 	struct virtio_pmem *vpmem = vq->vdev->priv;
@@ -34,7 +28,7 @@ void virtio_pmem_host_ack(struct virtqueue *vq)
 }
 EXPORT_SYMBOL_GPL(virtio_pmem_host_ack);
 
- /* The request submission function */
+  
 static int virtio_pmem_flush(struct nd_region *nd_region)
 {
 	struct virtio_device *vdev = nd_region->provider_data;
@@ -60,12 +54,7 @@ static int virtio_pmem_flush(struct nd_region *nd_region)
 	sgs[1] = &ret;
 
 	spin_lock_irqsave(&vpmem->pmem_lock, flags);
-	 /*
-	  * If virtqueue_add_sgs returns -ENOSPC then req_vq virtual
-	  * queue does not have free descriptor. We add the request
-	  * to req_list and wait for host_ack to wake us up when free
-	  * slots are available.
-	  */
+	  
 	while ((err = virtqueue_add_sgs(vpmem->req_vq, sgs, 1, 1, req_data,
 					GFP_ATOMIC)) == -ENOSPC) {
 
@@ -74,21 +63,18 @@ static int virtio_pmem_flush(struct nd_region *nd_region)
 		list_add_tail(&req_data->list, &vpmem->req_list);
 		spin_unlock_irqrestore(&vpmem->pmem_lock, flags);
 
-		/* A host response results in "host_ack" getting called */
+		 
 		wait_event(req_data->wq_buf, req_data->wq_buf_avail);
 		spin_lock_irqsave(&vpmem->pmem_lock, flags);
 	}
 	err1 = virtqueue_kick(vpmem->req_vq);
 	spin_unlock_irqrestore(&vpmem->pmem_lock, flags);
-	/*
-	 * virtqueue_add_sgs failed with error different than -ENOSPC, we can't
-	 * do anything about that.
-	 */
+	 
 	if (err || !err1) {
 		dev_info(&vdev->dev, "failed to send command to virtio pmem device\n");
 		err = -EIO;
 	} else {
-		/* A host repsonse results in "host_ack" getting called */
+		 
 		wait_event(req_data->host_acked, req_data->done);
 		err = le32_to_cpu(req_data->resp.ret);
 	}
@@ -97,13 +83,10 @@ static int virtio_pmem_flush(struct nd_region *nd_region)
 	return err;
 };
 
-/* The asynchronous flush callback function */
+ 
 int async_pmem_flush(struct nd_region *nd_region, struct bio *bio)
 {
-	/*
-	 * Create child bio for asynchronous flush and chain with
-	 * parent bio. Otherwise directly call nd_region flush.
-	 */
+	 
 	if (bio && bio->bi_iter.bi_sector != -1) {
 		struct bio *child = bio_alloc(bio->bi_bdev, 0,
 					      REQ_OP_WRITE | REQ_PREFLUSH,

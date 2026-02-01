@@ -1,32 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Pulse Eight HDMI CEC driver
- *
- * Copyright 2016 Hans Verkuil <hverkuil@xs4all.nl
- */
 
-/*
- * Notes:
- *
- * - Devices with firmware version < 2 do not store their configuration in
- *   EEPROM.
- *
- * - In autonomous mode, only messages from a TV will be acknowledged, even
- *   polling messages. Upon receiving a message from a TV, the dongle will
- *   respond to messages from any logical address.
- *
- * - In autonomous mode, the dongle will by default reply Feature Abort
- *   [Unrecognized Opcode] when it receives Give Device Vendor ID. It will
- *   however observe vendor ID's reported by other devices and possibly
- *   alter this behavior. When TV's (and TV's only) report that their vendor ID
- *   is LG (0x00e091), the dongle will itself reply that it has the same vendor
- *   ID, and it will respond to at least one vendor specific command.
- *
- * - In autonomous mode, the dongle is known to attempt wakeup if it receives
- *   <User Control Pressed> ["Power On"], ["Power] or ["Power Toggle"], or if it
- *   receives <Set Stream Path> with its own physical address. It also does this
- *   if it receives <Vendor Specific Command> [0x03 0x00] from an LG TV.
- */
+ 
+
+ 
 
 #include <linux/completion.h>
 #include <linux/init.h>
@@ -61,7 +36,7 @@ enum pulse8_msgcodes {
 	MSGCODE_FRAME_START,
 	MSGCODE_FRAME_DATA,
 	MSGCODE_RECEIVE_FAILED,
-	MSGCODE_COMMAND_ACCEPTED,	/* 0x08 */
+	MSGCODE_COMMAND_ACCEPTED,	 
 	MSGCODE_COMMAND_REJECTED,
 	MSGCODE_SET_ACK_MASK,
 	MSGCODE_TRANSMIT,
@@ -69,7 +44,7 @@ enum pulse8_msgcodes {
 	MSGCODE_TRANSMIT_IDLETIME,
 	MSGCODE_TRANSMIT_ACK_POLARITY,
 	MSGCODE_TRANSMIT_LINE_TIMEOUT,
-	MSGCODE_TRANSMIT_SUCCEEDED,	/* 0x10 */
+	MSGCODE_TRANSMIT_SUCCEEDED,	 
 	MSGCODE_TRANSMIT_FAILED_LINE,
 	MSGCODE_TRANSMIT_FAILED_ACK,
 	MSGCODE_TRANSMIT_FAILED_TIMEOUT_DATA,
@@ -77,7 +52,7 @@ enum pulse8_msgcodes {
 	MSGCODE_FIRMWARE_VERSION,
 	MSGCODE_START_BOOTLOADER,
 	MSGCODE_GET_BUILDDATE,
-	MSGCODE_SET_CONTROLLED,		/* 0x18 */
+	MSGCODE_SET_CONTROLLED,		 
 	MSGCODE_GET_AUTO_ENABLED,
 	MSGCODE_SET_AUTO_ENABLED,
 	MSGCODE_GET_DEFAULT_LOGICAL_ADDRESS,
@@ -85,17 +60,17 @@ enum pulse8_msgcodes {
 	MSGCODE_GET_LOGICAL_ADDRESS_MASK,
 	MSGCODE_SET_LOGICAL_ADDRESS_MASK,
 	MSGCODE_GET_PHYSICAL_ADDRESS,
-	MSGCODE_SET_PHYSICAL_ADDRESS,	/* 0x20 */
+	MSGCODE_SET_PHYSICAL_ADDRESS,	 
 	MSGCODE_GET_DEVICE_TYPE,
 	MSGCODE_SET_DEVICE_TYPE,
-	MSGCODE_GET_HDMI_VERSION,	/* Removed in FW >= 10 */
+	MSGCODE_GET_HDMI_VERSION,	 
 	MSGCODE_SET_HDMI_VERSION,
 	MSGCODE_GET_OSD_NAME,
 	MSGCODE_SET_OSD_NAME,
 	MSGCODE_WRITE_EEPROM,
-	MSGCODE_GET_ADAPTER_TYPE,	/* 0x28 */
+	MSGCODE_GET_ADAPTER_TYPE,	 
 	MSGCODE_SET_ACTIVE_SOURCE,
-	MSGCODE_GET_AUTO_POWER_ON,	/* New for FW >= 10 */
+	MSGCODE_GET_AUTO_POWER_ON,	 
 	MSGCODE_SET_AUTO_POWER_ON,
 
 	MSGCODE_FRAME_EOM = 0x80,
@@ -181,7 +156,7 @@ struct pulse8 {
 	struct work_struct irq_work;
 	struct cec_msg rx_msg[NUM_MSGS];
 	unsigned int rx_msg_cur_idx, rx_msg_num;
-	/* protect rx_msg_cur_idx and rx_msg_num */
+	 
 	spinlock_t msg_lock;
 	u8 new_rx_msg[CEC_MAX_MSG_SIZE];
 	u8 new_rx_msg_len;
@@ -200,7 +175,7 @@ struct pulse8 {
 	bool escape;
 	bool started;
 
-	/* locks access to the adapter */
+	 
 	struct mutex lock;
 	bool config_pending;
 	bool restoring_config;
@@ -384,10 +359,7 @@ static irqreturn_t pulse8_interrupt(struct serio *serio, unsigned char data,
 				 pulse8->idx, pulse8->buf);
 		switch (msgcode & 0x3f) {
 		case MSGCODE_FRAME_START:
-			/*
-			 * Test if we are receiving a new msg when a previous
-			 * message is still pending.
-			 */
+			 
 			if (!(msgcode & MSGCODE_FRAME_EOM)) {
 				pulse8->new_rx_msg_len = 1;
 				pulse8->new_rx_msg[0] = pulse8->buf[1];
@@ -428,10 +400,7 @@ static irqreturn_t pulse8_interrupt(struct serio *serio, unsigned char data,
 			schedule_work(&pulse8->irq_work);
 			break;
 		case MSGCODE_TRANSMIT_FAILED_ACK:
-			/*
-			 * A NACK for a broadcast message makes no sense, these
-			 * seem to be spurious messages and are skipped.
-			 */
+			 
 			if (pulse8->tx_msg_is_bcast)
 				break;
 			WARN_ON(pulse8->tx_done_status);

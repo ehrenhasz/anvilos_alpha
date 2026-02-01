@@ -1,6 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright (c) 2015-2018, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/iopoll.h>
 
@@ -83,7 +82,7 @@ static int dpu_hw_pp_enable_te(struct dpu_hw_pingpong *pp,
 		return -EINVAL;
 	c = &pp->hw;
 
-	cfg = BIT(19); /*VSYNC_COUNTER_EN */
+	cfg = BIT(19);  
 	if (te->hw_vsync_mode)
 		cfg |= BIT(20);
 
@@ -112,13 +111,7 @@ static void dpu_hw_pp_setup_autorefresh_config(struct dpu_hw_pingpong *pp,
 		      enable ? (BIT(31) | frame_count) : 0);
 }
 
-/*
- * dpu_hw_pp_get_autorefresh_config - Get autorefresh config from HW
- * @pp:          DPU pingpong structure
- * @frame_count: Used to return the current frame count from hw
- *
- * Returns: True if autorefresh enabled, false if disabled.
- */
+ 
 static bool dpu_hw_pp_get_autorefresh_config(struct dpu_hw_pingpong *pp,
 					     u32 *frame_count)
 {
@@ -218,18 +211,11 @@ static void dpu_hw_pp_disable_autorefresh(struct dpu_hw_pingpong *pp,
 	struct dpu_hw_pp_vsync_info info;
 	int trial = 0;
 
-	/* If autorefresh is already disabled, we have nothing to do */
+	 
 	if (!dpu_hw_pp_get_autorefresh_config(pp, NULL))
 		return;
 
-	/*
-	 * If autorefresh is enabled, disable it and make sure it is safe to
-	 * proceed with current frame commit/push. Sequence followed is,
-	 * 1. Disable TE
-	 * 2. Disable autorefresh config
-	 * 4. Poll for frame transfer ongoing to be false
-	 * 5. Enable TE back
-	 */
+	 
 
 	dpu_hw_pp_connect_external_te(pp, false);
 	dpu_hw_pp_setup_autorefresh_config(pp, 0, false);
@@ -276,7 +262,7 @@ static int dpu_hw_pp_setup_dsc(struct dpu_hw_pingpong *pp)
 	int data;
 
 	data = DPU_REG_READ(pp_c, PP_DCE_DATA_OUT_SWAP);
-	data |= BIT(18); /* endian flip */
+	data |= BIT(18);  
 	DPU_REG_WRITE(pp_c, PP_DCE_DATA_OUT_SWAP, data);
 	return 0;
 }

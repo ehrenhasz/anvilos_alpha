@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include "gtk.h"
 #include "../evlist.h"
 #include "../callchain.h"
@@ -125,10 +125,7 @@ static void perf_gtk__add_callchain_flat(struct rb_root *root, GtkTreeStore *sto
 			gtk_tree_store_set(store, &iter, col, buf, -1);
 
 			if (need_new_parent) {
-				/*
-				 * Only show the top-most symbol in a callchain
-				 * if it's not the only callchain.
-				 */
+				 
 				new_parent = iter;
 				need_new_parent = false;
 			}
@@ -146,10 +143,7 @@ static void perf_gtk__add_callchain_flat(struct rb_root *root, GtkTreeStore *sto
 			gtk_tree_store_set(store, &iter, col, buf, -1);
 
 			if (need_new_parent) {
-				/*
-				 * Only show the top-most symbol in a callchain
-				 * if it's not the only callchain.
-				 */
+				 
 				new_parent = iter;
 				need_new_parent = false;
 			}
@@ -247,10 +241,7 @@ static void perf_gtk__add_callchain_graph(struct rb_root *root, GtkTreeStore *st
 			gtk_tree_store_set(store, &iter, col, buf, -1);
 
 			if (need_new_parent) {
-				/*
-				 * Only show the top-most symbol in a callchain
-				 * if it's not the only callchain.
-				 */
+				 
 				new_parent = iter;
 				need_new_parent = false;
 			}
@@ -261,7 +252,7 @@ static void perf_gtk__add_callchain_graph(struct rb_root *root, GtkTreeStore *st
 		else
 			child_total = total;
 
-		/* Now 'iter' contains info of the last callchain_list */
+		 
 		perf_gtk__add_callchain_graph(&node->rb_root, store, &iter, col,
 					      child_total);
 	}
@@ -326,10 +317,7 @@ static void perf_gtk__show_hists(GtkWidget *window, struct hists *hists,
 		if (perf_hpp__should_skip(fmt, hists))
 			continue;
 
-		/*
-		 * XXX no way to determine where symcol column is..
-		 *     Just use last column for now.
-		 */
+		 
 		if (perf_hpp__is_sort_entry(fmt))
 			sym_col = col_idx;
 
@@ -434,7 +422,7 @@ static void perf_gtk__add_hierarchy_entries(struct hists *hists,
 
 		col_idx = 0;
 
-		/* the first hpp_list_node is for overhead columns */
+		 
 		fmt_node = list_first_entry(&hists->hpp_formats,
 					    struct perf_hpp_list_node, list);
 		perf_hpp_list__for_each_format(&fmt_node->hpp, fmt) {
@@ -528,7 +516,7 @@ static void perf_gtk__show_hierarchy(GtkWidget *window, struct hists *hists,
 
 	col_idx = 0;
 
-	/* the first hpp_list_node is for overhead columns */
+	 
 	fmt_node = list_first_entry(&hists->hpp_formats,
 				    struct perf_hpp_list_node, list);
 	perf_hpp_list__for_each_format(&fmt_node->hpp, fmt) {
@@ -538,7 +526,7 @@ static void perf_gtk__show_hierarchy(GtkWidget *window, struct hists *hists,
 							    col_idx++, NULL);
 	}
 
-	/* construct merged column header since sort keys share single column */
+	 
 	buf[0] = '\0';
 	first_node = true;
 	list_for_each_entry_continue(fmt_node, &hists->hpp_formats, list) {

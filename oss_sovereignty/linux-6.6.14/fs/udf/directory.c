@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * directory.c
- *
- * PURPOSE
- *	Directory related functions
- *
- */
+
+ 
 
 #include "udfdecl.h"
 #include "udf_i.h"
@@ -34,11 +28,7 @@ static int udf_verify_fi(struct udf_fileident_iter *iter)
 			iter->dir->i_ino, (unsigned long long)iter->pos);
 		return -EFSCORRUPTED;
 	}
-	/*
-	 * This is in fact allowed by the spec due to long impUse field but
-	 * we don't support it. If there is real media with this large impUse
-	 * field, support can be added.
-	 */
+	 
 	if (len > 1 << iter->dir->i_blkbits) {
 		udf_err(iter->dir->i_sb,
 			"directory (ino %lu) has too big (%u) entry at pos %llu\n",
@@ -71,7 +61,7 @@ static int udf_copy_fi(struct udf_fileident_iter *iter)
 	u32 off, len, nameoff;
 	int err;
 
-	/* Skip copying when we are at EOF */
+	 
 	if (iter->pos >= iter->dir->i_size) {
 		iter->name = NULL;
 		return 0;
@@ -104,7 +94,7 @@ static int udf_copy_fi(struct udf_fileident_iter *iter)
 	if (err < 0)
 		return err;
 
-	/* Handle directory entry name */
+	 
 	nameoff = off + sizeof(struct fileIdentDesc) +
 				le16_to_cpu(iter->fi.lengthOfImpUse);
 	if (off + udf_dir_entry_len(&iter->fi) <= blksize) {
@@ -121,7 +111,7 @@ static int udf_copy_fi(struct udf_fileident_iter *iter)
 	return 0;
 }
 
-/* Readahead 8k once we are at 8k boundary */
+ 
 static void udf_readahead_dir(struct udf_fileident_iter *iter)
 {
 	unsigned int ralen = 16 >> (iter->dir->i_blkbits - 9);
@@ -160,10 +150,7 @@ static struct buffer_head *udf_fiiter_bread_blk(struct udf_fileident_iter *iter)
 	return sb_bread(iter->dir->i_sb, blk);
 }
 
-/*
- * Updates loffset to point to next directory block; eloc, elen & epos are
- * updated if we need to traverse to the next extent as well.
- */
+ 
 static int udf_fiiter_advance_blk(struct udf_fileident_iter *iter)
 {
 	iter->loffset++;
@@ -192,7 +179,7 @@ static int udf_fiiter_load_bhs(struct udf_fileident_iter *iter)
 	int err;
 	struct fileIdentDesc *fi;
 
-	/* Is there any further extent we can map from? */
+	 
 	if (!iter->bh[0] && iter->elen) {
 		iter->bh[0] = udf_fiiter_bread_blk(iter);
 		if (!iter->bh[0]) {
@@ -204,14 +191,14 @@ static int udf_fiiter_load_bhs(struct udf_fileident_iter *iter)
 			goto out_brelse;
 		}
 	}
-	/* There's no next block so we are done */
+	 
 	if (iter->pos >= iter->dir->i_size)
 		return 0;
-	/* Need to fetch next block as well? */
+	 
 	if (off + sizeof(struct fileIdentDesc) > blksize)
 		goto fetch_next;
 	fi = (struct fileIdentDesc *)(iter->bh[0]->b_data + off);
-	/* Need to fetch next block to get name? */
+	 
 	if (off + udf_dir_entry_len(fi) > blksize) {
 fetch_next:
 		err = udf_fiiter_advance_blk(iter);
@@ -247,11 +234,7 @@ int udf_fiiter_init(struct udf_fileident_iter *iter, struct inode *dir,
 	iter->elen = 0;
 	iter->epos.bh = NULL;
 	iter->name = NULL;
-	/*
-	 * When directory is verified, we don't expect directory iteration to
-	 * fail and it can be difficult to undo without corrupting filesystem.
-	 * So just do not allow memory allocation failures here.
-	 */
+	 
 	iter->namebuf = kmalloc(UDF_NAME_LEN_CS0, GFP_KERNEL | __GFP_NOFAIL);
 
 	if (iinfo->i_alloc_type == ICBTAG_FLAG_AD_IN_ICB) {
@@ -293,7 +276,7 @@ int udf_fiiter_advance(struct udf_fileident_iter *iter)
 		if (oldoff + len >= blksize) {
 			brelse(iter->bh[0]);
 			iter->bh[0] = NULL;
-			/* Next block already loaded? */
+			 
 			if (iter->bh[1]) {
 				iter->bh[0] = iter->bh[1];
 				iter->bh[1] = NULL;
@@ -435,7 +418,7 @@ void udf_fiiter_update_elen(struct udf_fileident_iter *iter, uint32_t new_elen)
 	struct udf_inode_info *iinfo = UDF_I(iter->dir);
 	int diff = new_elen - iter->elen;
 
-	/* Skip update when we already went past the last extent */
+	 
 	if (!iter->elen)
 		return;
 	iter->elen = new_elen;
@@ -448,7 +431,7 @@ void udf_fiiter_update_elen(struct udf_fileident_iter *iter, uint32_t new_elen)
 	mark_inode_dirty(iter->dir);
 }
 
-/* Append new block to directory. @iter is expected to point at EOF */
+ 
 int udf_fiiter_append_blk(struct udf_fileident_iter *iter)
 {
 	struct udf_inode_info *iinfo = UDF_I(iter->dir);
@@ -461,10 +444,10 @@ int udf_fiiter_append_blk(struct udf_fileident_iter *iter)
 	if (WARN_ON_ONCE(iinfo->i_alloc_type == ICBTAG_FLAG_AD_IN_ICB))
 		return -EINVAL;
 
-	/* Round up last extent in the file */
+	 
 	udf_fiiter_update_elen(iter, ALIGN(iter->elen, blksize));
 
-	/* Allocate new block and refresh mapping information */
+	 
 	block = iinfo->i_lenExtents >> iter->dir->i_blkbits;
 	bh = udf_bread(iter->dir, block, 1, &err);
 	if (!bh) {

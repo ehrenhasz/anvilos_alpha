@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright 2017, Anshuman Khandual, IBM Corp.
- *
- * Works on architectures which support 128TB virtual
- * address range and beyond.
- */
+
+ 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -13,41 +8,22 @@
 #include <sys/mman.h>
 #include <sys/time.h>
 
-/*
- * Maximum address range mapped with a single mmap()
- * call is little bit more than 1GB. Hence 1GB is
- * chosen as the single chunk size for address space
- * mapping.
- */
+ 
 
 #define SZ_1GB	(1024 * 1024 * 1024UL)
 #define SZ_1TB	(1024 * 1024 * 1024 * 1024UL)
 
 #define MAP_CHUNK_SIZE	SZ_1GB
 
-/*
- * Address space till 128TB is mapped without any hint
- * and is enabled by default. Address space beyond 128TB
- * till 512TB is obtained by passing hint address as the
- * first argument into mmap() system call.
- *
- * The process heap address space is divided into two
- * different areas one below 128TB and one above 128TB
- * till it reaches 512TB. One with size 128TB and the
- * other being 384TB.
- *
- * On Arm64 the address space is 256TB and support for
- * high mappings up to 4PB virtual address space has
- * been added.
- */
+ 
 
-#define NR_CHUNKS_128TB   ((128 * SZ_1TB) / MAP_CHUNK_SIZE) /* Number of chunks for 128TB */
+#define NR_CHUNKS_128TB   ((128 * SZ_1TB) / MAP_CHUNK_SIZE)  
 #define NR_CHUNKS_256TB   (NR_CHUNKS_128TB * 2UL)
 #define NR_CHUNKS_384TB   (NR_CHUNKS_128TB * 3UL)
 #define NR_CHUNKS_3840TB  (NR_CHUNKS_128TB * 30UL)
 
-#define ADDR_MARK_128TB  (1UL << 47) /* First address beyond 128TB */
-#define ADDR_MARK_256TB  (1UL << 48) /* First address beyond 256TB */
+#define ADDR_MARK_128TB  (1UL << 47)  
+#define ADDR_MARK_256TB  (1UL << 48)  
 
 #ifdef __aarch64__
 #define HIGH_ADDR_MARK  ADDR_MARK_256TB

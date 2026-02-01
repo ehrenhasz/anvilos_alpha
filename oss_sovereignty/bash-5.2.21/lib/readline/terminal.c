@@ -1,23 +1,6 @@
-/* terminal.c -- controlling the terminal with termcap. */
+ 
 
-/* Copyright (C) 1996-2022 Free Software Foundation, Inc.
-
-   This file is part of the GNU Readline Library (Readline), a library
-   for reading lines of text with interactive input and history editing.      
-
-   Readline is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   Readline is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with Readline.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ 
 
 #define READLINE_LIBRARY
 
@@ -30,17 +13,17 @@
 #include <fcntl.h>
 #if defined (HAVE_SYS_FILE_H)
 #  include <sys/file.h>
-#endif /* HAVE_SYS_FILE_H */
+#endif  
 
 #if defined (HAVE_UNISTD_H)
 #  include <unistd.h>
-#endif /* HAVE_UNISTD_H */
+#endif  
 
 #if defined (HAVE_STDLIB_H)
 #  include <stdlib.h>
 #else
 #  include "ansi_stdlib.h"
-#endif /* HAVE_STDLIB_H */
+#endif  
 
 #if defined (HAVE_LOCALE_H)
 #  include <locale.h>
@@ -48,7 +31,7 @@
 
 #include <stdio.h>
 
-/* System-specific feature definitions and include files. */
+ 
 #include "rldefs.h"
 
 #ifdef __MSDOS__
@@ -57,11 +40,11 @@
 
 #include "rltty.h"
 #if defined (HAVE_SYS_IOCTL_H)
-#  include <sys/ioctl.h>		/* include for declaration of ioctl */
+#  include <sys/ioctl.h>		 
 #endif
 #include "tcap.h"
 
-/* Some standard library routines. */
+ 
 #include "readline.h"
 #include "history.h"
 
@@ -80,20 +63,17 @@ static void _win_get_screensize (int *, int *);
 static void _emx_get_screensize (int *, int *);
 #endif
 
-/* If the calling application sets this to a non-zero value, readline will
-   use the $LINES and $COLUMNS environment variables to set its idea of the
-   window size before interrogating the kernel. */
+ 
 int rl_prefer_env_winsize = 0;
 
-/* If this is non-zero, readline will set LINES and COLUMNS in the
-   environment when it handles SIGWINCH. */
+ 
 int rl_change_environment = 1;
 
-/* **************************************************************** */
-/*								    */
-/*			Terminal and Termcap			    */
-/*								    */
-/* **************************************************************** */
+ 
+ 
+ 
+ 
+ 
 
 #ifndef __MSDOS__
 static char *term_buffer = (char *)NULL;
@@ -105,11 +85,11 @@ static int tcap_initialized;
 #if !defined (__linux__) && !defined (NCURSES_VERSION)
 #  if defined (__EMX__) || defined (NEED_EXTERN_PC)
 extern 
-#  endif /* __EMX__ || NEED_EXTERN_PC */
+#  endif  
 char PC, *BC, *UP;
-#endif /* !__linux__ && !NCURSES_VERSION */
+#endif  
 
-/* Some strings to control terminal actions.  These are output by tputs (). */
+ 
 char *_rl_term_clreol;
 char *_rl_term_clrpag;
 char *_rl_term_clrscroll;
@@ -118,79 +98,77 @@ char *_rl_term_backspace;
 char *_rl_term_goto;
 char *_rl_term_pc;
 
-/* Non-zero if we determine that the terminal can do character insertion. */
+ 
 int _rl_terminal_can_insert = 0;
 
-/* How to insert characters. */
+ 
 char *_rl_term_im;
 char *_rl_term_ei;
 char *_rl_term_ic;
 char *_rl_term_ip;
 char *_rl_term_IC;
 
-/* How to delete characters. */
+ 
 char *_rl_term_dc;
 char *_rl_term_DC;
 
-/* How to move forward a char, non-destructively */
+ 
 char *_rl_term_forward_char;
 
-/* How to go up a line. */
+ 
 char *_rl_term_up;
 
-/* A visible bell; char if the terminal can be made to flash the screen. */
+ 
 static char *_rl_visible_bell;
 
-/* Non-zero means the terminal can auto-wrap lines. */
+ 
 int _rl_term_autowrap = -1;
 
-/* Non-zero means that this terminal has a meta key. */
+ 
 static int term_has_meta;
 
-/* The sequences to write to turn on and off the meta key, if this
-   terminal has one. */
+ 
 static char *_rl_term_mm;
 static char *_rl_term_mo;
 
-/* The sequences to enter and exit standout mode. */
+ 
 static char *_rl_term_so;
 static char *_rl_term_se;
 
-/* The key sequences output by the arrow keys, if this terminal has any. */
+ 
 static char *_rl_term_ku;
 static char *_rl_term_kd;
 static char *_rl_term_kr;
 static char *_rl_term_kl;
 
-/* How to initialize and reset the arrow keys, if this terminal has any. */
+ 
 static char *_rl_term_ks;
 static char *_rl_term_ke;
 
-/* The key sequences sent by the Home and End keys, if any. */
+ 
 static char *_rl_term_kh;
 static char *_rl_term_kH;
-static char *_rl_term_at7;	/* @7 */
+static char *_rl_term_at7;	 
 
-/* Delete key */
+ 
 static char *_rl_term_kD;
 
-/* Insert key */
+ 
 static char *_rl_term_kI;
 
-/* Page up and page down keys */
+ 
 static char *_rl_term_kP;
 static char *_rl_term_kN;
 
-/* Cursor control */
-static char *_rl_term_vs;	/* very visible */
-static char *_rl_term_ve;	/* normal */
+ 
+static char *_rl_term_vs;	 
+static char *_rl_term_ve;	 
 
-/* User-settable color sequences to begin and end the active region. Defaults
-   are rl_term_so and rl_term_se on non-dumb terminals. */
+ 
 char *_rl_active_region_start_color = NULL;
 char *_rl_active_region_end_color = NULL;
 
-/* It's not clear how HPUX is so broken here. */
+ 
 #ifdef TGETENT_BROKEN
 #  define TGETENT_SUCCESS 0
 #else
@@ -205,13 +183,13 @@ char *_rl_active_region_end_color = NULL;
 
 static void bind_termcap_arrow_keys (Keymap);
 
-/* Variables that hold the screen dimensions, used by the display code. */
+ 
 int _rl_screenwidth, _rl_screenheight, _rl_screenchars;
 
-/* Non-zero means the user wants to enable the keypad. */
+ 
 int _rl_enable_keypad;
 
-/* Non-zero means the user wants to enable a meta key. */
+ 
 int _rl_enable_meta = 1;
 
 #if defined (__EMX__)
@@ -248,17 +226,14 @@ _win_get_screensize (int *swp, int *shp)
 }
 #endif
 
-/* Get readline's idea of the screen size.  TTY is a file descriptor open
-   to the terminal.  If IGNORE_ENV is true, we do not pay attention to the
-   values of $LINES and $COLUMNS.  The tests for TERM_STRING_BUFFER being
-   non-null serve to check whether or not we have initialized termcap. */
+ 
 void
 _rl_get_screen_size (int tty, int ignore_env)
 {
   char *ss;
 #if defined (TIOCGWINSZ)
   struct winsize window_size;
-#endif /* TIOCGWINSZ */
+#endif  
   int wr, wc;
 
   wr = wc = -1;
@@ -268,7 +243,7 @@ _rl_get_screen_size (int tty, int ignore_env)
       wc = (int) window_size.ws_col;
       wr = (int) window_size.ws_row;
     }
-#endif /* TIOCGWINSZ */
+#endif  
 
 #if defined (__EMX__)
   _emx_get_screensize (&wc, &wr);
@@ -284,9 +259,7 @@ _rl_get_screen_size (int tty, int ignore_env)
   else
     _rl_screenwidth = _rl_screenheight = -1;
 
-  /* Environment variable COLUMNS overrides setting of "co" if IGNORE_ENV
-     is unset.  If we prefer the environment, check it first before
-     assigning the value returned by the kernel. */
+   
   if (_rl_screenwidth <= 0)
     {
       if (ignore_env == 0 && (ss = sh_get_env_value ("COLUMNS")))
@@ -304,8 +277,7 @@ _rl_get_screen_size (int tty, int ignore_env)
 #endif
     }
 
-  /* Environment variable LINES overrides setting of "li" if IGNORE_ENV
-     is unset. */
+   
   if (_rl_screenheight <= 0)
     {
       if (ignore_env == 0 && (ss = sh_get_env_value ("LINES")))
@@ -323,16 +295,14 @@ _rl_get_screen_size (int tty, int ignore_env)
 #endif
     }
 
-  /* If all else fails, default to 80x24 terminal. */
+   
   if (_rl_screenwidth <= 1)
     _rl_screenwidth = 80;
 
   if (_rl_screenheight <= 0)
     _rl_screenheight = 24;
 
-  /* If we're being compiled as part of bash, set the environment
-     variables $LINES and $COLUMNS to new values.  Otherwise, just
-     do a pair of putenv () or setenv () calls. */
+   
   if (rl_change_environment)
     sh_set_lines_and_columns (_rl_screenheight, _rl_screenwidth);
 
@@ -410,8 +380,7 @@ struct _tc_string {
      char **tc_value;
 };
 
-/* This should be kept sorted, just in case we decide to change the
-   search algorithm to something smarter. */
+ 
 static const struct _tc_string tc_strings[] =
 {
   { "@7", &_rl_term_at7 },
@@ -425,17 +394,17 @@ static const struct _tc_string tc_strings[] =
   { "ei", &_rl_term_ei },
   { "ic", &_rl_term_ic },
   { "im", &_rl_term_im },
-  { "kD", &_rl_term_kD },	/* delete */
-  { "kH", &_rl_term_kH },	/* home down ?? */
-  { "kI", &_rl_term_kI },	/* insert */
-  { "kN", &_rl_term_kN },	/* page down */
-  { "kP", &_rl_term_kP },	/* page up */
+  { "kD", &_rl_term_kD },	 
+  { "kH", &_rl_term_kH },	 
+  { "kI", &_rl_term_kI },	 
+  { "kN", &_rl_term_kN },	 
+  { "kP", &_rl_term_kP },	 
   { "kd", &_rl_term_kd },
-  { "ke", &_rl_term_ke },	/* end keypad mode */
-  { "kh", &_rl_term_kh },	/* home */
+  { "ke", &_rl_term_ke },	 
+  { "kh", &_rl_term_kh },	 
   { "kl", &_rl_term_kl },
   { "kr", &_rl_term_kr },
-  { "ks", &_rl_term_ks },	/* start keypad mode */
+  { "ks", &_rl_term_ks },	 
   { "ku", &_rl_term_ku },
   { "le", &_rl_term_backspace },
   { "mm", &_rl_term_mm },
@@ -452,12 +421,11 @@ static const struct _tc_string tc_strings[] =
 
 #define NUM_TC_STRINGS (sizeof (tc_strings) / sizeof (struct _tc_string))
 
-/* Read the desired terminal capability strings into BP.  The capabilities
-   are described in the TC_STRINGS table. */
+ 
 static void
 get_term_capabilities (char **bp)
 {
-#if !defined (__DJGPP__)	/* XXX - doesn't DJGPP have a termcap library? */
+#if !defined (__DJGPP__)	 
   register int i;
 
   for (i = 0; i < NUM_TC_STRINGS; i++)
@@ -502,10 +470,8 @@ _rl_init_terminal_io (const char *terminal_name)
 #endif
 
   _rl_get_screen_size (tty, 0);
-#else  /* !__MSDOS__ */
-  /* I've separated this out for later work on not calling tgetent at all
-     if the calling application has supplied a custom redisplay function,
-     (and possibly if the application has supplied a custom input function). */
+#else   
+   
   if (CUSTOM_REDISPLAY_FUNC())
     {
       tgetent_ret = -1;
@@ -529,28 +495,27 @@ _rl_init_terminal_io (const char *terminal_name)
       FREE (term_buffer);
       buffer = term_buffer = term_string_buffer = (char *)NULL;
 
-      _rl_term_autowrap = 0;	/* used by _rl_get_screen_size */
+      _rl_term_autowrap = 0;	 
 
-      /* Allow calling application to set default height and width, using
-	 rl_set_screen_size */
+       
       if (_rl_screenwidth <= 0 || _rl_screenheight <= 0)
 	{
 #if defined (__EMX__)
 	  _emx_get_screensize (&_rl_screenwidth, &_rl_screenheight);
 	  _rl_screenwidth--;
-#else /* !__EMX__ */
+#else  
 	  _rl_get_screen_size (tty, 0);
-#endif /* !__EMX__ */
+#endif  
 	}
 
-      /* Defaults. */
+       
       if (_rl_screenwidth <= 0 || _rl_screenheight <= 0)
         {
 	  _rl_screenwidth = 79;
 	  _rl_screenheight = 24;
         }
 
-      /* Everything below here is used by the redisplay code (tputs). */
+       
       _rl_screenchars = _rl_screenwidth * _rl_screenheight;
       _rl_term_cr = "\r";
       _rl_term_im = _rl_term_ei = _rl_term_ic = _rl_term_IC = (char *)NULL;
@@ -565,18 +530,15 @@ _rl_init_terminal_io (const char *terminal_name)
       _rl_term_so = _rl_term_se = (char *)NULL;
       _rl_terminal_can_insert = term_has_meta = 0;
 
-      /* Assume generic unknown terminal can't handle the enable/disable
-	 escape sequences */
+       
       _rl_enable_bracketed_paste = 0;
 
-      /* No terminal so/se capabilities. */
+       
       _rl_enable_active_region = 0;
       _rl_reset_region_color (0, NULL);
       _rl_reset_region_color (1, NULL);
     
-      /* Reasonable defaults for tgoto().  Readline currently only uses
-         tgoto if _rl_term_IC or _rl_term_DC is defined, but just in case we
-         change that later... */
+       
       PC = '\0';
       BC = _rl_term_backspace = "\b";
       UP = _rl_term_up;
@@ -586,8 +548,7 @@ _rl_init_terminal_io (const char *terminal_name)
 
   get_term_capabilities (&buffer);
 
-  /* Set up the variables that the termcap library expects the application
-     to provide. */
+   
   PC = _rl_term_pc ? *_rl_term_pc : 0;
   BC = _rl_term_backspace;
   UP = _rl_term_up;
@@ -597,36 +558,29 @@ _rl_init_terminal_io (const char *terminal_name)
 
   _rl_term_autowrap = TGETFLAG ("am") && TGETFLAG ("xn");
 
-  /* Allow calling application to set default height and width, using
-     rl_set_screen_size */
+   
   if (_rl_screenwidth <= 0 || _rl_screenheight <= 0)
     _rl_get_screen_size (tty, 0);
 
-  /* "An application program can assume that the terminal can do
-      character insertion if *any one of* the capabilities `IC',
-      `im', `ic' or `ip' is provided."  But we can't do anything if
-      only `ip' is provided, so... */
+   
   _rl_terminal_can_insert = (_rl_term_IC || _rl_term_im || _rl_term_ic);
 
-  /* Check to see if this terminal has a meta key and clear the capability
-     variables if there is none. */
+   
   term_has_meta = TGETFLAG ("km");
   if (term_has_meta == 0)
     _rl_term_mm = _rl_term_mo = (char *)NULL;
-#endif /* !__MSDOS__ */
+#endif  
 
-  /* Attempt to find and bind the arrow keys.  Do not override already
-     bound keys in an overzealous attempt, however. */
+   
 
   bind_termcap_arrow_keys (emacs_standard_keymap);
 
 #if defined (VI_MODE)
   bind_termcap_arrow_keys (vi_movement_keymap);
   bind_termcap_arrow_keys (vi_insertion_keymap);
-#endif /* VI_MODE */
+#endif  
 
-  /* There's no way to determine whether or not a given terminal supports
-     bracketed paste mode, so we assume a terminal named "dumb" does not. */
+   
   if (dumbterm)
     _rl_enable_bracketed_paste = _rl_enable_active_region = 0;
 
@@ -639,7 +593,7 @@ _rl_init_terminal_io (const char *terminal_name)
   return 0;
 }
 
-/* Bind the arrow key sequences from the termcap description in MAP. */
+ 
 static void
 bind_termcap_arrow_keys (Keymap map)
 {
@@ -653,14 +607,14 @@ bind_termcap_arrow_keys (Keymap map)
   rl_bind_keyseq_if_unbound (_rl_term_kr, rl_forward_char);
   rl_bind_keyseq_if_unbound (_rl_term_kl, rl_backward_char);
 
-  rl_bind_keyseq_if_unbound (_rl_term_kh, rl_beg_of_line);	/* Home */
-  rl_bind_keyseq_if_unbound (_rl_term_at7, rl_end_of_line);	/* End */
+  rl_bind_keyseq_if_unbound (_rl_term_kh, rl_beg_of_line);	 
+  rl_bind_keyseq_if_unbound (_rl_term_at7, rl_end_of_line);	 
 
   rl_bind_keyseq_if_unbound (_rl_term_kD, rl_delete);
-  rl_bind_keyseq_if_unbound (_rl_term_kI, rl_overwrite_mode);	/* Insert */
+  rl_bind_keyseq_if_unbound (_rl_term_kI, rl_overwrite_mode);	 
 
-  rl_bind_keyseq_if_unbound (_rl_term_kN, rl_history_search_forward);	/* Page Down */
-  rl_bind_keyseq_if_unbound (_rl_term_kP, rl_history_search_backward);	/* Page Up */
+  rl_bind_keyseq_if_unbound (_rl_term_kN, rl_history_search_forward);	 
+  rl_bind_keyseq_if_unbound (_rl_term_kP, rl_history_search_backward);	 
 
   _rl_keymap = xkeymap;
 }
@@ -680,8 +634,7 @@ rl_get_termcap (const char *cap)
   return ((char *)NULL);
 }
 
-/* Re-initialize the terminal considering that the TERM/TERMCAP variable
-   has changed. */
+ 
 int
 rl_reset_terminal (const char *terminal_name)
 {
@@ -690,29 +643,29 @@ rl_reset_terminal (const char *terminal_name)
   return 0;
 }
 
-/* A function for the use of tputs () */
+ 
 #ifdef _MINIX
 void
 _rl_output_character_function (int c)
 {
   putc (c, _rl_out_stream);
 }
-#else /* !_MINIX */
+#else  
 int
 _rl_output_character_function (int c)
 {
   return putc (c, _rl_out_stream);
 }
-#endif /* !_MINIX */
+#endif  
 
-/* Write COUNT characters from STRING to the output stream. */
+ 
 void
 _rl_output_some_chars (const char *string, int count)
 {
   fwrite (string, 1, count, _rl_out_stream);
 }
 
-/* Move the cursor back. */
+ 
 int
 _rl_backspace (int count)
 {
@@ -729,14 +682,14 @@ _rl_backspace (int count)
   return 0;
 }
 
-/* Move to the start of the next line. */
+ 
 int
 rl_crlf (void)
 {
 #if defined (NEW_TTY_DRIVER) || defined (__MINT__)
   if (_rl_term_cr)
     tputs (_rl_term_cr, 1, _rl_output_character_function);
-#endif /* NEW_TTY_DRIVER || __MINT__ */
+#endif  
   putc ('\n', _rl_out_stream);
   return 0;
 }
@@ -751,7 +704,7 @@ _rl_cr (void)
 #endif
 }
 
-/* Ring the terminal bell. */
+ 
 int
 rl_ding (void)
 {
@@ -772,7 +725,7 @@ rl_ding (void)
 #endif
 	      break;
 	    }
-	  /* FALLTHROUGH */
+	   
 	case AUDIBLE_BELL:
 	  fprintf (stderr, "\007");
 	  fflush (stderr);
@@ -783,11 +736,11 @@ rl_ding (void)
   return (-1);
 }
 
-/* **************************************************************** */
-/*								    */
-/*		Entering and leaving terminal standout mode	    */
-/*								    */
-/* **************************************************************** */
+ 
+ 
+ 
+ 
+ 
 
 void
 _rl_standout_on (void)
@@ -807,16 +760,13 @@ _rl_standout_off (void)
 #endif
 }
 
-/* **************************************************************** */
-/*								    */
-/*	     Controlling color for a portion of the line	    */
-/*								    */
-/* **************************************************************** */
+ 
+ 
+ 
+ 
+ 
 
-/* Reset the region color variables to VALUE depending on WHICH (0 == start,
-   1 == end). This is where all the memory allocation for the color variable
-   strings is performed. We might want to pass a flag saying whether or not
-   to translate VALUE like a key sequence, but it doesn't really matter. */
+ 
 int
 _rl_reset_region_color (int which, const char *value)
 {
@@ -868,13 +818,13 @@ _rl_region_color_off (void)
 #endif
 }
 
-/* **************************************************************** */
-/*								    */
-/*	 	Controlling the Meta Key and Keypad		    */
-/*								    */
-/* **************************************************************** */
+ 
+ 
+ 
+ 
+ 
 
-static int enabled_meta = 0;	/* flag indicating we enabled meta mode */
+static int enabled_meta = 0;	 
 
 void
 _rl_enable_meta_key (void)
@@ -911,16 +861,13 @@ _rl_control_keypad (int on)
 #endif
 }
 
-/* **************************************************************** */
-/*								    */
-/*	 		Controlling the Cursor			    */
-/*								    */
-/* **************************************************************** */
+ 
+ 
+ 
+ 
+ 
 
-/* Set the cursor appropriately depending on IM, which is one of the
-   insert modes (insert or overwrite).  Insert mode gets the normal
-   cursor.  Overwrite mode gets a very visible cursor.  Only does
-   anything if we have both capabilities. */
+ 
 void
 _rl_set_cursor (int im, int force)
 {

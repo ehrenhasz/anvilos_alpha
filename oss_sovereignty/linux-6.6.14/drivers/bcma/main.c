@@ -1,9 +1,4 @@
-/*
- * Broadcom specific AMBA
- * Bus subsystem
- *
- * Licensed under the GNU/GPL. See COPYING for details.
- */
+ 
 
 #include "bcma_private.h"
 #include <linux/module.h>
@@ -20,10 +15,10 @@
 MODULE_DESCRIPTION("Broadcom's specific AMBA driver");
 MODULE_LICENSE("GPL");
 
-/* contains the number the next bus should get. */
+ 
 static unsigned int bcma_bus_next_num;
 
-/* bcma_buses_mutex locks the bcma_bus_next_num */
+ 
 static DEFINE_MUTEX(bcma_buses_mutex);
 
 static int bcma_bus_match(struct device *dev, struct device_driver *drv);
@@ -294,7 +289,7 @@ static int bcma_register_devices(struct bcma_bus *bus)
 	int err;
 
 	list_for_each_entry(core, &bus->cores, list) {
-		/* We support that core ourselves */
+		 
 		switch (core->id.id) {
 		case BCMA_CORE_4706_CHIPCOMMON:
 		case BCMA_CORE_CHIPCOMMON:
@@ -307,11 +302,11 @@ static int bcma_register_devices(struct bcma_bus *bus)
 			continue;
 		}
 
-		/* Early cores were already registered */
+		 
 		if (bcma_is_core_needed_early(core->id.id))
 			continue;
 
-		/* Only first GMAC core on BCM4706 is connected and working */
+		 
 		if (core->id.id == BCMA_CORE_4706_MAC_GBIT &&
 		    core->core_unit > 0)
 			continue;
@@ -372,7 +367,7 @@ void bcma_unregister_cores(struct bcma_bus *bus)
 	if (bus->hosttype == BCMA_HOSTTYPE_SOC)
 		platform_device_unregister(bus->drv_cc.watchdog);
 
-	/* Now no one uses internally-handled cores, we can free them */
+	 
 	list_for_each_entry_safe(core, tmp, &bus->cores, list) {
 		list_del(&core->list);
 		put_device(&core->dev);
@@ -384,21 +379,21 @@ int bcma_bus_register(struct bcma_bus *bus)
 	int err;
 	struct bcma_device *core;
 
-	/* Scan for devices (cores) */
+	 
 	err = bcma_bus_scan(bus);
 	if (err) {
 		bcma_err(bus, "Failed to scan: %d\n", err);
 		return err;
 	}
 
-	/* Early init CC core */
+	 
 	core = bcma_find_core(bus, bcma_cc_core_id(bus));
 	if (core) {
 		bus->drv_cc.core = core;
 		bcma_core_chipcommon_early_init(&bus->drv_cc);
 	}
 
-	/* Early init PCIE core */
+	 
 	core = bcma_find_core(bus, BCMA_CORE_PCIE);
 	if (core) {
 		bus->drv_pci[0].core = core;
@@ -408,69 +403,69 @@ int bcma_bus_register(struct bcma_bus *bus)
 	if (bus->dev)
 		of_platform_default_populate(bus->dev->of_node, NULL, bus->dev);
 
-	/* Cores providing flash access go before SPROM init */
+	 
 	list_for_each_entry(core, &bus->cores, list) {
 		if (bcma_is_core_needed_early(core->id.id))
 			bcma_register_core(bus, core);
 	}
 
-	/* Try to get SPROM */
+	 
 	err = bcma_sprom_get(bus);
 	if (err == -ENOENT) {
 		bcma_err(bus, "No SPROM available\n");
 	} else if (err)
 		bcma_err(bus, "Failed to get SPROM: %d\n", err);
 
-	/* Init CC core */
+	 
 	core = bcma_find_core(bus, bcma_cc_core_id(bus));
 	if (core) {
 		bus->drv_cc.core = core;
 		bcma_core_chipcommon_init(&bus->drv_cc);
 	}
 
-	/* Init CC core */
+	 
 	core = bcma_find_core(bus, BCMA_CORE_NS_CHIPCOMMON_B);
 	if (core) {
 		bus->drv_cc_b.core = core;
 		bcma_core_chipcommon_b_init(&bus->drv_cc_b);
 	}
 
-	/* Init MIPS core */
+	 
 	core = bcma_find_core(bus, BCMA_CORE_MIPS_74K);
 	if (core) {
 		bus->drv_mips.core = core;
 		bcma_core_mips_init(&bus->drv_mips);
 	}
 
-	/* Init PCIE core */
+	 
 	core = bcma_find_core_unit(bus, BCMA_CORE_PCIE, 0);
 	if (core) {
 		bus->drv_pci[0].core = core;
 		bcma_core_pci_init(&bus->drv_pci[0]);
 	}
 
-	/* Init PCIE core */
+	 
 	core = bcma_find_core_unit(bus, BCMA_CORE_PCIE, 1);
 	if (core) {
 		bus->drv_pci[1].core = core;
 		bcma_core_pci_init(&bus->drv_pci[1]);
 	}
 
-	/* Init PCIe Gen 2 core */
+	 
 	core = bcma_find_core_unit(bus, BCMA_CORE_PCIE2, 0);
 	if (core) {
 		bus->drv_pcie2.core = core;
 		bcma_core_pcie2_init(&bus->drv_pcie2);
 	}
 
-	/* Init GBIT MAC COMMON core */
+	 
 	core = bcma_find_core(bus, BCMA_CORE_4706_MAC_GBIT_COMMON);
 	if (core) {
 		bus->drv_gmac_cmn.core = core;
 		bcma_core_gmac_cmn_init(&bus->drv_gmac_cmn);
 	}
 
-	/* Register found cores */
+	 
 	bcma_register_devices(bus);
 
 	bcma_info(bus, "Bus registered\n");
@@ -493,31 +488,27 @@ void bcma_bus_unregister(struct bcma_bus *bus)
 	bcma_unregister_cores(bus);
 }
 
-/*
- * This is a special version of bus registration function designed for SoCs.
- * It scans bus and performs basic initialization of main cores only.
- * Please note it requires memory allocation, however it won't try to sleep.
- */
+ 
 int __init bcma_bus_early_register(struct bcma_bus *bus)
 {
 	int err;
 	struct bcma_device *core;
 
-	/* Scan for devices (cores) */
+	 
 	err = bcma_bus_scan(bus);
 	if (err) {
 		bcma_err(bus, "Failed to scan bus: %d\n", err);
 		return -1;
 	}
 
-	/* Early init CC core */
+	 
 	core = bcma_find_core(bus, bcma_cc_core_id(bus));
 	if (core) {
 		bus->drv_cc.core = core;
 		bcma_core_chipcommon_early_init(&bus->drv_cc);
 	}
 
-	/* Early init MIPS core */
+	 
 	core = bcma_find_core(bus, BCMA_CORE_MIPS_74K);
 	if (core) {
 		bus->drv_mips.core = core;
@@ -549,7 +540,7 @@ int bcma_bus_resume(struct bcma_bus *bus)
 {
 	struct bcma_device *core;
 
-	/* Init CC core */
+	 
 	if (bus->drv_cc.core) {
 		bus->drv_cc.setup_done = false;
 		bcma_core_chipcommon_init(&bus->drv_cc);
@@ -640,11 +631,7 @@ static int bcma_device_uevent(const struct device *dev, struct kobj_uevent_env *
 
 static unsigned int bcma_bus_registered;
 
-/*
- * If built-in, bus has to be registered early, before any driver calls
- * bcma_driver_register.
- * Otherwise registering driver would trigger BUG in driver_register.
- */
+ 
 static int __init bcma_init_bus_register(void)
 {
 	int err;
@@ -662,7 +649,7 @@ static int __init bcma_init_bus_register(void)
 fs_initcall(bcma_init_bus_register);
 #endif
 
-/* Main initialization has to be done with SPI/mtd/NAND/SPROM available */
+ 
 static int __init bcma_modinit(void)
 {
 	int err;

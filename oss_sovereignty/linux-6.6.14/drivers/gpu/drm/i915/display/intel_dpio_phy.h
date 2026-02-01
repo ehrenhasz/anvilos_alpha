@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2019 Intel Corporation
- */
+ 
+ 
 
 #ifndef __INTEL_DPIO_PHY_H__
 #define __INTEL_DPIO_PHY_H__
@@ -71,4 +69,4 @@ void vlv_phy_pre_encoder_enable(struct intel_encoder *encoder,
 void vlv_phy_reset_lanes(struct intel_encoder *encoder,
 			 const struct intel_crtc_state *old_crtc_state);
 
-#endif /* __INTEL_DPIO_PHY_H__ */
+#endif  

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *   Copyright (C) International Business Machines Corp., 2000-2004
- */
+
+ 
 
 #include <linux/fs.h>
 #include <linux/quotaops.h>
@@ -32,12 +30,7 @@ void jfs_set_inode_flags(struct inode *inode)
 			S_DIRSYNC | S_SYNC);
 }
 
-/*
- * NAME:	ialloc()
- *
- * FUNCTION:	Allocate a new inode
- *
- */
+ 
 struct inode *ialloc(struct inode *parent, umode_t mode)
 {
 	struct super_block *sb = parent->i_sb;
@@ -65,16 +58,11 @@ struct inode *ialloc(struct inode *parent, umode_t mode)
 	}
 
 	inode_init_owner(&nop_mnt_idmap, inode, parent, mode);
-	/*
-	 * New inodes need to save sane values on disk when
-	 * uid & gid mount options are used
-	 */
+	 
 	jfs_inode->saved_uid = inode->i_uid;
 	jfs_inode->saved_gid = inode->i_gid;
 
-	/*
-	 * Allocate inode to quota.
-	 */
+	 
 	rc = dquot_initialize(inode);
 	if (rc)
 		goto fail_drop;
@@ -82,7 +70,7 @@ struct inode *ialloc(struct inode *parent, umode_t mode)
 	if (rc)
 		goto fail_drop;
 
-	/* inherit flags from parent */
+	 
 	jfs_inode->mode2 = JFS_IP(parent)->mode2 & JFS_FL_INHERIT;
 
 	if (S_ISDIR(mode)) {
@@ -103,7 +91,7 @@ struct inode *ialloc(struct inode *parent, umode_t mode)
 
 	jfs_inode->cflag = 0;
 
-	/* Zero remaining fields */
+	 
 	memset(&jfs_inode->acl, 0, sizeof(dxd_t));
 	memset(&jfs_inode->ea, 0, sizeof(dxd_t));
 	jfs_inode->next_index = 0;

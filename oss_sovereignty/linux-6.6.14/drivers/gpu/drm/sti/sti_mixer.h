@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) STMicroelectronics SA 2014
- * Authors: Benjamin Gaignard <benjamin.gaignard@st.com>
- *          Fabien Dessenne <fabien.dessenne@st.com>
- *          for STMicroelectronics.
- */
+ 
+ 
 
 #ifndef _STI_MIXER_H_
 #define _STI_MIXER_H_
@@ -26,15 +21,7 @@ enum sti_mixer_status {
 	STI_MIXER_DISABLED,
 };
 
-/**
- * STI Mixer subdevice structure
- *
- * @dev: driver device
- * @regs: mixer registers
- * @id: id of the mixer
- * @drm_crtc: crtc object link to the mixer
- * @status: to know the status of the mixer
- */
+ 
 struct sti_mixer {
 	struct device *dev;
 	void __iomem *regs;
@@ -60,7 +47,7 @@ void sti_mixer_set_background_status(struct sti_mixer *mixer, bool enable);
 
 void sti_mixer_debugfs_init(struct sti_mixer *mixer, struct drm_minor *minor);
 
-/* depth in Cross-bar control = z order */
+ 
 #define GAM_MIXER_NB_DEPTH_LEVEL 6
 
 #define STI_MIXER_MAIN 0

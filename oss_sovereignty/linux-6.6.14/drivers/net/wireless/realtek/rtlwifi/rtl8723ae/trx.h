@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright(c) 2009-2012  Realtek Corporation.*/
+ 
+ 
 
 #ifndef __RTL8723E_TRX_H__
 #define __RTL8723E_TRX_H__
@@ -109,7 +109,7 @@ static inline void set_tx_desc_pkt_id(__le32 *__pdesc, u32 __val)
 	le32p_replace_bits((__pdesc + 3), __val, GENMASK(31, 28));
 }
 
-/* For RTL8723 */
+ 
 static inline void set_tx_desc_hwseq_en_8723(__le32 *__pdesc, u32 __val)
 {
 	le32p_replace_bits((__pdesc + 3), __val, BIT(31));

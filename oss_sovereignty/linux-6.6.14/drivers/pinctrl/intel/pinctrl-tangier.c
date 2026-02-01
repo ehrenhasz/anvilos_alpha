@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Intel Tangier pinctrl driver
- *
- * Copyright (C) 2016, 2023 Intel Corporation
- *
- * Authors: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
- *          Raag Jadav <raag.jadav@intel.com>
- */
+
+ 
 
 #include <linux/bits.h>
 #include <linux/device.h>
@@ -223,16 +216,13 @@ static int tng_pinmux_set_mux(struct pinctrl_dev *pctldev,
 	unsigned long flags;
 	unsigned int i;
 
-	/*
-	 * All pins in the groups needs to be accessible and writable
-	 * before we can enable the mux for this group.
-	 */
+	 
 	for (i = 0; i < grp->grp.npins; i++) {
 		if (!tng_buf_available(tp, grp->grp.pins[i]))
 			return -EBUSY;
 	}
 
-	/* Now enable the mux setting for each pin in the group */
+	 
 	raw_spin_lock_irqsave(&tp->lock, flags);
 	for (i = 0; i < grp->grp.npins; i++)
 		tng_update_bufcfg(tp, grp->grp.pins[i], bits, mask);
@@ -368,7 +358,7 @@ static int tng_config_set_pin(struct tng_pinctrl *tp, unsigned int pin,
 		break;
 
 	case PIN_CONFIG_BIAS_PULL_UP:
-		/* Set default strength value in case none is given */
+		 
 		if (arg == 1)
 			arg = 20000;
 
@@ -391,7 +381,7 @@ static int tng_config_set_pin(struct tng_pinctrl *tp, unsigned int pin,
 		break;
 
 	case PIN_CONFIG_BIAS_PULL_DOWN:
-		/* Set default strength value in case none is given */
+		 
 		if (arg == 1)
 			arg = 20000;
 
@@ -541,16 +531,13 @@ static int tng_pinctrl_probe(struct platform_device *pdev,
 	if (IS_ERR(regs))
 		return PTR_ERR(regs);
 
-	/*
-	 * Make a copy of the families which we can use to hold pointers
-	 * to the registers.
-	 */
+	 
 	families_len = size_mul(sizeof(*families), tp->nfamilies);
 	families = devm_kmemdup(dev, tp->families, families_len, GFP_KERNEL);
 	if (!families)
 		return -ENOMEM;
 
-	/* Splice memory resource by chunk per family */
+	 
 	for (i = 0; i < tp->nfamilies; i++) {
 		struct tng_family *family = &families[i];
 

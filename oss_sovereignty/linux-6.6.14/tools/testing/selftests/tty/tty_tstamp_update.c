@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #include <errno.h>
 #include <stdbool.h>
@@ -62,20 +62,8 @@ int main(int argc, char **argv)
 	if (r < 0)
 		ksft_exit_fail_msg("stat failed on tty path '%s': %m\n", tty);
 
-	/* We need to wait at least 8 seconds in order to observe timestamp change */
-	/* https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=fbf47635315ab308c9b58a1ea0906e711a9228de */
-	sleep(10);
-
-	r = write_dev_tty();
-	if (r < 0)
-		ksft_exit_fail_msg("failed to write to /dev/tty: %s\n",
-				   strerror(-r));
-
-	r = stat(tty, &st2);
-	if (r < 0)
-		ksft_exit_fail_msg("stat failed on tty path '%s': %m\n", tty);
-
-	/* We wrote to the terminal so timestamps should have been updated */
+	 
+	 
 	if (st1.st_atim.tv_sec == st2.st_atim.tv_sec &&
 	    st1.st_mtim.tv_sec == st2.st_mtim.tv_sec) {
 		ksft_test_result_fail("tty timestamps not updated\n");

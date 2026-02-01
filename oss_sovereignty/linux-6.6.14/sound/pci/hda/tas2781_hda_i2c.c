@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// TAS2781 HDA I2C driver
-//
-// Copyright 2023 Texas Instruments, Inc.
-//
-// Author: Shenghao Ding <shenghao-ding@ti.com>
+
+
+
+
+
+
+
 
 #include <linux/acpi.h>
 #include <linux/crc8.h>
@@ -30,12 +30,9 @@
 
 #define TASDEVICE_SPEAKER_CALIBRATION_SIZE	20
 
-/* No standard control callbacks for SNDRV_CTL_ELEM_IFACE_CARD
- * Define two controls, one is Volume control callbacks, the other is
- * flag setting control callbacks.
- */
+ 
 
-/* Volume control callbacks for tas2781 */
+ 
 #define ACARD_SINGLE_RANGE_EXT_TLV(xname, xreg, xshift, xmin, xmax, xinvert, \
 	xhandler_get, xhandler_put, tlv_array) \
 {	.iface = SNDRV_CTL_ELEM_IFACE_CARD, .name = (xname),\
@@ -49,7 +46,7 @@
 		 .rshift = xshift, .min = xmin, .max = xmax, \
 		 .invert = xinvert} }
 
-/* Flag control callbacks for tas2781 */
+ 
 #define ACARD_SINGLE_BOOL_EXT(xname, xdata, xhandler_get, xhandler_put) \
 {	.iface = SNDRV_CTL_ELEM_IFACE_CARD, .name = xname, \
 	.info = snd_ctl_boolean_mono_info, \
@@ -114,7 +111,7 @@ static int tas2781_read_acpi(struct tasdevice_priv *p, const char *hid)
 	physdev = get_device(acpi_get_first_physical_node(adev));
 	acpi_dev_put(adev);
 
-	/* No side-effect to the playback even if subsystem_id is NULL*/
+	 
 	sub = acpi_get_subsystem_id(ACPI_HANDLE(physdev));
 	if (IS_ERR(sub))
 		sub = NULL;
@@ -286,17 +283,7 @@ static int tasdevice_config_put(struct snd_kcontrol *kcontrol,
 	return ret;
 }
 
-/*
- * tas2781_digital_getvol - get the volum control
- * @kcontrol: control pointer
- * @ucontrol: User data
- * Customer Kcontrol for tas2781 is primarily for regmap booking, paging
- * depends on internal regmap mechanism.
- * tas2781 contains book and page two-level register map, especially
- * book switching will set the register BXXP00R7F, after switching to the
- * correct book, then leverage the mechanism for paging to access the
- * register.
- */
+ 
 static int tas2781_digital_getvol(struct snd_kcontrol *kcontrol,
 	struct snd_ctl_elem_value *ucontrol)
 {
@@ -324,7 +311,7 @@ static int tas2781_digital_putvol(struct snd_kcontrol *kcontrol,
 	struct soc_mixer_control *mc =
 		(struct soc_mixer_control *)kcontrol->private_value;
 
-	/* The check of the given value is in tasdevice_digital_putvol. */
+	 
 	return tasdevice_digital_putvol(tas_priv, ucontrol, mc);
 }
 
@@ -335,7 +322,7 @@ static int tas2781_amp_putvol(struct snd_kcontrol *kcontrol,
 	struct soc_mixer_control *mc =
 		(struct soc_mixer_control *)kcontrol->private_value;
 
-	/* The check of the given value is in tasdevice_amp_putvol. */
+	 
 	return tasdevice_amp_putvol(tas_priv, ucontrol, mc);
 }
 
@@ -430,11 +417,7 @@ static void tas2781_apply_calib(struct tasdevice_priv *tas_priv)
 	}
 }
 
-/* Update the calibrate data, including speaker impedance, f0, etc, into algo.
- * Calibrate data is done by manufacturer in the factory. These data are used
- * by Algo for calucating the speaker temperature, speaker membrance excursion
- * and f0 in real time during playback.
- */
+ 
 static int tas2781_save_calibration(struct tasdevice_priv *tas_priv)
 {
 	efi_guid_t efi_guid = EFI_GUID(0x02f9af02, 0x7734, 0x4233, 0xb4, 0x3d,
@@ -445,22 +428,22 @@ static int tas2781_save_calibration(struct tasdevice_priv *tas_priv)
 	unsigned int *tmp_val;
 	efi_status_t status;
 
-	/* Lenovo devices */
+	 
 	if (tas_priv->catlog_id == LENOVO)
 		efi_guid = EFI_GUID(0x1f52d2a1, 0xbb3a, 0x457d, 0xbc, 0x09,
 			0x43, 0xa3, 0xf4, 0x31, 0x0a, 0x92);
 
 	tas_priv->cali_data.total_sz = 0;
-	/* Get real size of UEFI variable */
+	 
 	status = efi.get_variable(efi_name, &efi_guid, &attr,
 		&tas_priv->cali_data.total_sz, tas_priv->cali_data.data);
 	if (status == EFI_BUFFER_TOO_SMALL) {
-		/* Allocate data buffer of data_size bytes */
+		 
 		tas_priv->cali_data.data = devm_kzalloc(tas_priv->dev,
 			tas_priv->cali_data.total_sz, GFP_KERNEL);
 		if (!tas_priv->cali_data.data)
 			return -ENOMEM;
-		/* Get variable contents into buffer */
+		 
 		status = efi.get_variable(efi_name, &efi_guid, &attr,
 			&tas_priv->cali_data.total_sz,
 			tas_priv->cali_data.data);
@@ -579,9 +562,7 @@ static void tasdev_fw_ready(const struct firmware *fmw, void *context)
 	if (tas_priv->fmw->nr_configurations > 0)
 		tas_priv->cur_conf = 0;
 
-	/* If calibrated data occurs error, dsp will still works with default
-	 * calibrated data inside algo.
-	 */
+	 
 	tas2781_save_calibration(tas_priv);
 
 out:
@@ -774,9 +755,7 @@ static int tas2781_runtime_resume(struct device *dev)
 
 	tasdevice_prmg_load(tas_hda->priv, tas_hda->priv->cur_prog);
 
-	/* If calibrated data occurs error, dsp will still works with default
-	 * calibrated data inside algo.
-	 */
+	 
 	if (tas_hda->priv->cali_data.total_sz > calib_data_sz)
 		tas2781_apply_calib(tas_hda->priv);
 
@@ -796,13 +775,10 @@ static int tas2781_system_suspend(struct device *dev)
 	if (ret)
 		return ret;
 
-	/* Shutdown chip before system suspend */
+	 
 	tasdevice_tuning_switch(tas_hda->priv, 1);
 
-	/*
-	 * Reset GPIO may be shared, so cannot reset here.
-	 * However beyond this point, amps may be powered down.
-	 */
+	 
 	return 0;
 }
 
@@ -829,9 +805,7 @@ static int tas2781_system_resume(struct device *dev)
 	tas2781_reset(tas_hda->priv);
 	tasdevice_prmg_load(tas_hda->priv, tas_hda->priv->cur_prog);
 
-	/* If calibrated data occurs error, dsp will still work with default
-	 * calibrated data inside algo.
-	 */
+	 
 	if (tas_hda->priv->cali_data.total_sz > calib_data_sz)
 		tas2781_apply_calib(tas_hda->priv);
 	mutex_unlock(&tas_hda->priv->codec_lock);

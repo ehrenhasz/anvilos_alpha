@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  linux/drivers/mmc/core/sdio_bus.c
- *
- *  Copyright 2007 Pierre Ossman
- *
- * SDIO function driver model
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/err.h>
@@ -28,7 +22,7 @@
 
 #define to_sdio_driver(d)	container_of(d, struct sdio_driver, drv)
 
-/* show configuration fields */
+ 
 #define sdio_config_attr(field, format_string, args...)			\
 static ssize_t								\
 field##_show(struct device *dev, struct device_attribute *attr, char *buf)				\
@@ -167,20 +161,14 @@ static int sdio_bus_probe(struct device *dev)
 
 	atomic_inc(&func->card->sdio_funcs_probed);
 
-	/* Unbound SDIO functions are always suspended.
-	 * During probe, the function is set active and the usage count
-	 * is incremented.  If the driver supports runtime PM,
-	 * it should call pm_runtime_put_noidle() in its probe routine and
-	 * pm_runtime_get_noresume() in its remove routine.
-	 */
+	 
 	if (func->card->host->caps & MMC_CAP_POWER_OFF_CARD) {
 		ret = pm_runtime_get_sync(dev);
 		if (ret < 0)
 			goto disable_runtimepm;
 	}
 
-	/* Set the default block size so the driver is sure it's something
-	 * sensible. */
+	 
 	sdio_claim_host(func);
 	if (mmc_card_removed(func->card))
 		ret = -ENOMEDIUM;
@@ -209,7 +197,7 @@ static void sdio_bus_remove(struct device *dev)
 	struct sdio_driver *drv = to_sdio_driver(dev->driver);
 	struct sdio_func *func = dev_to_sdio_func(dev);
 
-	/* Make sure card is powered before invoking ->remove() */
+	 
 	if (func->card->host->caps & MMC_CAP_POWER_OFF_CARD)
 		pm_runtime_get_sync(dev);
 
@@ -224,11 +212,11 @@ static void sdio_bus_remove(struct device *dev)
 		sdio_release_host(func);
 	}
 
-	/* First, undo the increment made directly above */
+	 
 	if (func->card->host->caps & MMC_CAP_POWER_OFF_CARD)
 		pm_runtime_put_noidle(dev);
 
-	/* Then undo the runtime PM settings in sdio_bus_probe() */
+	 
 	if (func->card->host->caps & MMC_CAP_POWER_OFF_CARD)
 		pm_runtime_put_sync(dev);
 
@@ -264,10 +252,7 @@ void sdio_unregister_bus(void)
 	bus_unregister(&sdio_bus_type);
 }
 
-/**
- *	sdio_register_driver - register a function driver
- *	@drv: SDIO function driver
- */
+ 
 int sdio_register_driver(struct sdio_driver *drv)
 {
 	drv->drv.name = drv->name;
@@ -276,10 +261,7 @@ int sdio_register_driver(struct sdio_driver *drv)
 }
 EXPORT_SYMBOL_GPL(sdio_register_driver);
 
-/**
- *	sdio_unregister_driver - unregister a function driver
- *	@drv: SDIO function driver
- */
+ 
 void sdio_unregister_driver(struct sdio_driver *drv)
 {
 	drv->drv.bus = &sdio_bus_type;
@@ -294,10 +276,7 @@ static void sdio_release_func(struct device *dev)
 	if (!(func->card->quirks & MMC_QUIRK_NONSTD_SDIO))
 		sdio_free_func_cis(func);
 
-	/*
-	 * We have now removed the link to the tuples in the
-	 * card structure, so remove the reference.
-	 */
+	 
 	put_device(&func->card->dev);
 
 	kfree(func->info);
@@ -305,9 +284,7 @@ static void sdio_release_func(struct device *dev)
 	kfree(func);
 }
 
-/*
- * Allocate and initialise a new SDIO function structure.
- */
+ 
 struct sdio_func *sdio_alloc_func(struct mmc_card *card)
 {
 	struct sdio_func *func;
@@ -316,10 +293,7 @@ struct sdio_func *sdio_alloc_func(struct mmc_card *card)
 	if (!func)
 		return ERR_PTR(-ENOMEM);
 
-	/*
-	 * allocate buffer separately to make sure it's properly aligned for
-	 * DMA usage (incl. 64 bit DMA)
-	 */
+	 
 	func->tmpbuf = kmalloc(4, GFP_KERNEL);
 	if (!func->tmpbuf) {
 		kfree(func);
@@ -330,10 +304,7 @@ struct sdio_func *sdio_alloc_func(struct mmc_card *card)
 
 	device_initialize(&func->dev);
 
-	/*
-	 * We may link to tuples in the card structure,
-	 * we need make sure we have a reference to it.
-	 */
+	 
 	get_device(&func->card->dev);
 
 	func->dev.parent = &card->dev;
@@ -362,9 +333,7 @@ static void sdio_set_of_node(struct sdio_func *func)
 	func->dev.of_node = mmc_of_find_child_device(host, func->num);
 }
 
-/*
- * Register a new SDIO function with the driver model.
- */
+ 
 int sdio_add_func(struct sdio_func *func)
 {
 	int ret;
@@ -381,12 +350,7 @@ int sdio_add_func(struct sdio_func *func)
 	return ret;
 }
 
-/*
- * Unregister a SDIO function with the driver model, and
- * (eventually) free it.
- * This function can be called through error paths where sdio_add_func() was
- * never executed (because a failure occurred at an earlier point).
- */
+ 
 void sdio_remove_func(struct sdio_func *func)
 {
 	if (sdio_func_present(func))

@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright © 2006-2009 Intel Corporation
- *
- * Authors:
- *	Eric Anholt <eric@anholt.net>
- *	Dave Airlie <airlied@linux.ie>
- *	Jesse Barnes <jesse.barnes@intel.com>
- */
+
+ 
 
 #include <linux/i2c.h>
 #include <linux/pm_runtime.h>
@@ -23,17 +16,13 @@
 #include "psb_intel_drv.h"
 #include "psb_intel_reg.h"
 
-/* The max/min PWM frequency in BPCR[31:17] - */
-/* The smallest number is 1 (not 0) that can fit in the
- * 15-bit field of the and then*/
-/* shifts to the left by one bit to get the actual 16-bit
- * value that the 15-bits correspond to.*/
+ 
+ 
+ 
 #define MRST_BLC_MAX_PWM_REG_FREQ	    0xFFFF
 #define BRIGHTNESS_MAX_LEVEL 100
 
-/*
- * Sets the power state for the panel.
- */
+ 
 static void oaktrail_lvds_set_power(struct drm_device *dev,
 				struct gma_encoder *gma_encoder,
 				bool on)
@@ -76,7 +65,7 @@ static void oaktrail_lvds_dpms(struct drm_encoder *encoder, int mode)
 	else
 		oaktrail_lvds_set_power(dev, gma_encoder, false);
 
-	/* XXX: We never power down the LVDS pairs. */
+	 
 }
 
 static void oaktrail_lvds_mode_set(struct drm_encoder *encoder,
@@ -95,24 +84,19 @@ static void oaktrail_lvds_mode_set(struct drm_encoder *encoder,
 	if (!gma_power_begin(dev, true))
 		return;
 
-	/*
-	 * The LVDS pin pair will already have been turned on in the
-	 * psb_intel_crtc_mode_set since it has a large impact on the DPLL
-	 * settings.
-	 */
+	 
 	lvds_port = (REG_READ(LVDS) &
 		    (~LVDS_PIPEB_SELECT)) |
 		    LVDS_PORT_EN |
 		    LVDS_BORDER_EN;
 
-	/* If the firmware says dither on Moorestown, or the BIOS does
-	   on Oaktrail then enable dithering */
+	 
 	if (mode_dev->panel_wants_dither || dev_priv->lvds_dither)
 		lvds_port |= MRST_PANEL_8TO6_DITHER_ENABLE;
 
 	REG_WRITE(LVDS, lvds_port);
 
-	/* Find the connector we're trying to set up */
+	 
 	drm_connector_list_iter_begin(dev, &conn_iter);
 	drm_for_each_connector_iter(connector, &conn_iter) {
 		if (connector->encoder && connector->encoder->crtc == crtc)
@@ -148,7 +132,7 @@ static void oaktrail_lvds_mode_set(struct drm_encoder *encoder,
 					  PFIT_SCALING_MODE_LETTERBOX);
 		} else
 			REG_WRITE(PFIT_CONTROL, PFIT_ENABLE);
-	} else /*(v == DRM_MODE_SCALE_FULLSCREEN)*/
+	} else  
 		REG_WRITE(PFIT_CONTROL, PFIT_ENABLE);
 
 	gma_power_end(dev);
@@ -211,7 +195,7 @@ static const struct drm_encoder_helper_funcs oaktrail_lvds_helper_funcs = {
 	.commit = oaktrail_lvds_commit,
 };
 
-/* Returns the panel fixed mode from configuration. */
+ 
 
 static void oaktrail_lvds_get_configuration_mode(struct drm_device *dev,
 					struct psb_intel_mode_device *mode_dev)
@@ -222,7 +206,7 @@ static void oaktrail_lvds_get_configuration_mode(struct drm_device *dev,
 
 	mode_dev->panel_fixed_mode = NULL;
 
-	/* Use the firmware provided data on Moorestown */
+	 
 	if (dev_priv->has_gct) {
 		mode = kzalloc(sizeof(*mode), GFP_KERNEL);
 		if (!mode)
@@ -261,19 +245,19 @@ static void oaktrail_lvds_get_configuration_mode(struct drm_device *dev,
 		mode_dev->panel_fixed_mode = mode;
 	}
 
-	/* Use the BIOS VBT mode if available */
+	 
 	if (mode_dev->panel_fixed_mode == NULL && mode_dev->vbt_mode)
 		mode_dev->panel_fixed_mode = drm_mode_duplicate(dev,
 						mode_dev->vbt_mode);
 
-	/* Then try the LVDS VBT mode */
+	 
 	if (mode_dev->panel_fixed_mode == NULL)
 		if (dev_priv->lfp_lvds_vbt_mode)
 			mode_dev->panel_fixed_mode =
 				drm_mode_duplicate(dev,
 					dev_priv->lfp_lvds_vbt_mode);
 
-	/* If we still got no mode then bail */
+	 
 	if (mode_dev->panel_fixed_mode == NULL)
 		return;
 
@@ -281,14 +265,7 @@ static void oaktrail_lvds_get_configuration_mode(struct drm_device *dev,
 	drm_mode_set_crtcinfo(mode_dev->panel_fixed_mode, 0);
 }
 
-/**
- * oaktrail_lvds_init - setup LVDS connectors on this device
- * @dev: drm device
- * @mode_dev: PSB mode device
- *
- * Create the connector, register the LVDS DDC bus, and try to figure out what
- * modes we can display on the LVDS panel (if present).
- */
+ 
 void oaktrail_lvds_init(struct drm_device *dev,
 		    struct psb_intel_mode_device *mode_dev)
 {
@@ -300,7 +277,7 @@ void oaktrail_lvds_init(struct drm_device *dev,
 	struct drm_psb_private *dev_priv = to_drm_psb_private(dev);
 	struct edid *edid;
 	struct i2c_adapter *i2c_adap;
-	struct drm_display_mode *scan;	/* *modes, *bios_mode; */
+	struct drm_display_mode *scan;	 
 	int ret;
 
 	gma_encoder = kzalloc(sizeof(struct gma_encoder), GFP_KERNEL);
@@ -348,15 +325,7 @@ void oaktrail_lvds_init(struct drm_device *dev,
         if (dev_priv->lvds_dither)
                 mode_dev->panel_wants_dither = 1;
 
-	/*
-	 * LVDS discovery:
-	 * 1) check for EDID on DDC
-	 * 2) check for VBT data
-	 * 3) check to see if LVDS is already on
-	 *    if none of the above, no panel
-	 * 4) make sure lid is open
-	 *    if closed, act like it's not there for now
-	 */
+	 
 
 	edid = NULL;
 	mutex_lock(&dev->mode_config.mutex);
@@ -373,17 +342,10 @@ void oaktrail_lvds_init(struct drm_device *dev,
 		}
 	}
 
-	/*
-	 * Due to the logic in probing for i2c buses above we do not know the
-	 * i2c_adap until now. Hence we cannot use drm_connector_init_with_ddc()
-	 * but must instead set connector->ddc manually here.
-	 */
+	 
 	connector->ddc = i2c_adap;
 
-	/*
-	 * Attempt to get the fixed panel mode from DDC.  Assume that the
-	 * preferred mode is the right one.
-	 */
+	 
 	if (edid) {
 		drm_connector_update_edid_property(connector, edid);
 		drm_add_edid_modes(connector, edid);
@@ -393,23 +355,20 @@ void oaktrail_lvds_init(struct drm_device *dev,
 			if (scan->type & DRM_MODE_TYPE_PREFERRED) {
 				mode_dev->panel_fixed_mode =
 				    drm_mode_duplicate(dev, scan);
-				goto out;	/* FIXME: check for quirks */
+				goto out;	 
 			}
 		}
 	} else
 		dev_err(dev->dev, "No ddc adapter available!\n");
-	/*
-	 * If we didn't get EDID, try geting panel timing
-	 * from configuration data
-	 */
+	 
 	oaktrail_lvds_get_configuration_mode(dev, mode_dev);
 
 	if (mode_dev->panel_fixed_mode) {
 		mode_dev->panel_fixed_mode->type |= DRM_MODE_TYPE_PREFERRED;
-		goto out;	/* FIXME: check for quirks */
+		goto out;	 
 	}
 
-	/* If we still don't have a mode after all that, give up. */
+	 
 	if (!mode_dev->panel_fixed_mode) {
 		dev_err(dev->dev, "Found no modes on the lvds, ignoring the LVDS\n");
 		goto err_unlock;

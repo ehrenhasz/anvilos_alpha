@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Sensortek STK8312 3-Axis Accelerometer
- *
- * Copyright (c) 2015, Intel Corporation.
- *
- * IIO driver for STK8312; 7-bit I2C address: 0x3D.
- */
+
+ 
 
 #include <linux/i2c.h>
 #include <linux/interrupt.h>
@@ -34,7 +28,7 @@
 
 #define STK8312_MODE_ACTIVE		BIT(0)
 #define STK8312_MODE_STANDBY		0x00
-#define STK8312_MODE_INT_AH_PP		0xC0	/* active-high, push-pull */
+#define STK8312_MODE_INT_AH_PP		0xC0	 
 #define STK8312_DREADY_BIT		BIT(4)
 #define STK8312_RNG_6G			1
 #define STK8312_RNG_SHIFT		6
@@ -47,15 +41,7 @@
 #define STK8312_DRIVER_NAME		"stk8312"
 #define STK8312_IRQ_NAME		"stk8312_event"
 
-/*
- * The accelerometer has two measurement ranges:
- *
- * -6g - +6g (8-bit, signed)
- * -16g - +16g (8-bit, signed)
- *
- * scale1 = (6 + 6) * 9.81 / (2^8 - 1)     = 0.4616
- * scale2 = (16 + 16) * 9.81 / (2^8 - 1)   = 1.2311
- */
+ 
 #define STK8312_SCALE_AVAIL		"0.4616 1.2311"
 
 static const int stk8312_scale_table[][2] = {
@@ -102,7 +88,7 @@ struct stk8312_data {
 	u8 mode;
 	struct iio_trigger *dready_trig;
 	bool dready_trigger_on;
-	/* Ensure timestamp is naturally aligned */
+	 
 	struct {
 		s8 chans[3];
 		s64 timestamp __aligned(8);
@@ -183,7 +169,7 @@ static int stk8312_set_mode(struct stk8312_data *data, u8 mode)
 
 	data->mode = mode;
 	if (mode & STK8312_MODE_ACTIVE) {
-		/* Need to run OTP sequence before entering active mode */
+		 
 		usleep_range(1000, 5000);
 		ret = stk8312_otp_init(data);
 	}
@@ -198,7 +184,7 @@ static int stk8312_set_interrupts(struct stk8312_data *data, u8 int_mask)
 	struct i2c_client *client = data->client;
 
 	mode = data->mode;
-	/* We need to go in standby mode to modify registers */
+	 
 	ret = stk8312_set_mode(data, STK8312_MODE_STANDBY);
 	if (ret < 0)
 		return ret;
@@ -250,7 +236,7 @@ static int stk8312_set_sample_rate(struct stk8312_data *data, u8 rate)
 		return 0;
 
 	mode = data->mode;
-	/* We need to go in standby mode to modify registers */
+	 
 	ret = stk8312_set_mode(data, STK8312_MODE_STANDBY);
 	if (ret < 0)
 		return ret;
@@ -289,7 +275,7 @@ static int stk8312_set_range(struct stk8312_data *data, u8 range)
 		return 0;
 
 	mode = data->mode;
-	/* We need to go in standby mode to modify registers */
+	 
 	ret = stk8312_set_mode(data, STK8312_MODE_STANDBY);
 	if (ret < 0)
 		return ret;
@@ -433,10 +419,7 @@ static irqreturn_t stk8312_trigger_handler(int irq, void *p)
 	int bit, ret, i = 0;
 
 	mutex_lock(&data->lock);
-	/*
-	 * Do a bulk read if all channels are requested,
-	 * from 0x00 (XOUT) to 0x02 (ZOUT)
-	 */
+	 
 	if (*(indio_dev->active_scan_mask) == STK8312_ALL_CHANNEL_MASK) {
 		ret = i2c_smbus_read_i2c_block_data(data->client,
 						    STK8312_REG_XOUT,
@@ -521,7 +504,7 @@ static int stk8312_probe(struct i2c_client *client)
 	indio_dev->channels = stk8312_channels;
 	indio_dev->num_channels = ARRAY_SIZE(stk8312_channels);
 
-	/* A software reset is recommended at power-on */
+	 
 	ret = i2c_smbus_write_byte_data(data->client, STK8312_REG_RESET, 0x00);
 	if (ret < 0) {
 		dev_err(&client->dev, "failed to reset sensor\n");
@@ -632,7 +615,7 @@ static DEFINE_SIMPLE_DEV_PM_OPS(stk8312_pm_ops, stk8312_suspend,
 				stk8312_resume);
 
 static const struct i2c_device_id stk8312_i2c_id[] = {
-	/* Deprecated in favour of lowercase form */
+	 
 	{ "STK8312", 0 },
 	{ "stk8312", 0 },
 	{}

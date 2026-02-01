@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  pci_root.c - ACPI PCI Root Bridge Driver ($Revision: 40 $)
- *
- *  Copyright (C) 2001, 2002 Andy Grover <andrew.grover@intel.com>
- *  Copyright (C) 2001, 2002 Paul Diefenbaugh <paul.s.diefenbaugh@intel.com>
- */
+
+ 
 
 #define pr_fmt(fmt) "ACPI: " fmt
 
@@ -56,13 +51,7 @@ static struct acpi_scan_handler pci_root_handler = {
 	},
 };
 
-/**
- * acpi_is_root_bridge - determine whether an ACPI CA node is a PCI root bridge
- * @handle:  the ACPI CA node in question.
- *
- * Note: we could make this API take a struct acpi_device * instead, but
- * for now, it's more convenient to operate on an acpi_handle.
- */
+ 
 int acpi_is_root_bridge(acpi_handle handle)
 {
 	struct acpi_device *device = acpi_fetch_acpi_dev(handle);
@@ -269,10 +258,7 @@ retry:
 			*cxl_control = cxl_result;
 		}
 	} else if (is_cxl(root)) {
-		/*
-		 * CXL _OSC is optional on CXL 1.1 hosts. Fall back to PCIe _OSC
-		 * upon any failure using CXL _OSC.
-		 */
+		 
 		root->bridge_type = ACPI_BRIDGE_TYPE_PCIE;
 		goto retry;
 	}
@@ -298,18 +284,7 @@ struct acpi_handle_node {
 	acpi_handle handle;
 };
 
-/**
- * acpi_get_pci_dev - convert ACPI CA handle to struct pci_dev
- * @handle: the handle in question
- *
- * Given an ACPI CA handle, the desired PCI device is located in the
- * list of PCI devices.
- *
- * If the device is found, its reference count is increased and this
- * function returns a pointer to its data structure.  The caller must
- * decrement the reference count by calling pci_dev_put().
- * If no device is found, %NULL is returned.
- */
+ 
 struct pci_dev *acpi_get_pci_dev(acpi_handle handle)
 {
 	struct acpi_device *adev = acpi_fetch_acpi_dev(handle);
@@ -335,23 +310,7 @@ struct pci_dev *acpi_get_pci_dev(acpi_handle handle)
 }
 EXPORT_SYMBOL_GPL(acpi_get_pci_dev);
 
-/**
- * acpi_pci_osc_control_set - Request control of PCI root _OSC features.
- * @handle: ACPI handle of a PCI root bridge (or PCIe Root Complex).
- * @mask: Mask of _OSC bits to request control of, place to store control mask.
- * @support: _OSC supported capability.
- * @cxl_mask: Mask of CXL _OSC control bits, place to store control mask.
- * @cxl_support: CXL _OSC supported capability.
- *
- * Run _OSC query for @mask and if that is successful, compare the returned
- * mask of control bits with @req.  If all of the @req bits are set in the
- * returned mask, run _OSC request for it.
- *
- * The variable at the @mask address may be modified regardless of whether or
- * not the function returns success.  On success it will contain the mask of
- * _OSC bits the BIOS has granted control of, but its contents are meaningless
- * on failure.
- **/
+ 
 static acpi_status acpi_pci_osc_control_set(acpi_handle handle, u32 *mask,
 					    u32 support, u32 *cxl_mask,
 					    u32 cxl_support)
@@ -376,7 +335,7 @@ static acpi_status acpi_pci_osc_control_set(acpi_handle handle, u32 *mask,
 		*cxl_mask |= root->osc_ext_control_set;
 	}
 
-	/* Need to check the available controls bits before requesting them. */
+	 
 	do {
 		u32 pci_missing = 0, cxl_missing = 0;
 
@@ -404,7 +363,7 @@ static acpi_status acpi_pci_osc_control_set(acpi_handle handle, u32 *mask,
 		cxl_ctrl = *cxl_mask;
 	} while (*mask || *cxl_mask);
 
-	/* No need to request _OSC if the control was already granted. */
+	 
 	if ((root->osc_control_set & ctrl) == ctrl &&
 	    (root->osc_ext_control_set & cxl_ctrl) == cxl_ctrl)
 		return AE_OK;
@@ -436,10 +395,7 @@ static u32 calculate_support(void)
 {
 	u32 support;
 
-	/*
-	 * All supported architectures that use ACPI have support for
-	 * PCI domains, so we indicate this in _OSC support capabilities.
-	 */
+	 
 	support = OSC_PCI_SEGMENT_GROUPS_SUPPORT;
 	support |= OSC_PCI_HPX_TYPE_3_SUPPORT;
 	if (pci_ext_cfg_avail())
@@ -454,40 +410,7 @@ static u32 calculate_support(void)
 	return support;
 }
 
-/*
- * Background on hotplug support, and making it depend on only
- * CONFIG_HOTPLUG_PCI_PCIE vs. also considering CONFIG_MEMORY_HOTPLUG:
- *
- * CONFIG_ACPI_HOTPLUG_MEMORY does depend on CONFIG_MEMORY_HOTPLUG, but
- * there is no existing _OSC for memory hotplug support. The reason is that
- * ACPI memory hotplug requires the OS to acknowledge / coordinate with
- * memory plug events via a scan handler. On the CXL side the equivalent
- * would be if Linux supported the Mechanical Retention Lock [1], or
- * otherwise had some coordination for the driver of a PCI device
- * undergoing hotplug to be consulted on whether the hotplug should
- * proceed or not.
- *
- * The concern is that if Linux says no to supporting CXL hotplug then
- * the BIOS may say no to giving the OS hotplug control of any other PCIe
- * device. So the question here is not whether hotplug is enabled, it's
- * whether it is handled natively by the at all OS, and if
- * CONFIG_HOTPLUG_PCI_PCIE is enabled then the answer is "yes".
- *
- * Otherwise, the plan for CXL coordinated remove, since the kernel does
- * not support blocking hotplug, is to require the memory device to be
- * disabled before hotplug is attempted. When CONFIG_MEMORY_HOTPLUG is
- * disabled that step will fail and the remove attempt cancelled by the
- * user. If that is not honored and the card is removed anyway then it
- * does not matter if CONFIG_MEMORY_HOTPLUG is enabled or not, it will
- * cause a crash and other badness.
- *
- * Therefore, just say yes to CXL hotplug and require removal to
- * be coordinated by userspace unless and until the kernel grows better
- * mechanisms for doing "managed" removal of devices in consultation with
- * the driver.
- *
- * [1]: https://lore.kernel.org/all/20201122014203.4706-1-ashok.raj@intel.com/
- */
+ 
 static u32 calculate_cxl_support(void)
 {
 	u32 support;
@@ -521,12 +444,7 @@ static u32 calculate_control(void)
 	if (pci_aer_available())
 		control |= OSC_PCI_EXPRESS_AER_CONTROL;
 
-	/*
-	 * Per the Downstream Port Containment Related Enhancements ECN to
-	 * the PCI Firmware Spec, r3.2, sec 4.5.1, table 4-5,
-	 * OSC_PCI_EXPRESS_DPC_CONTROL indicates the OS supports both DPC
-	 * and EDR.
-	 */
+	 
 	if (IS_ENABLED(CONFIG_PCIE_DPC) && IS_ENABLED(CONFIG_PCIE_EDR))
 		control |= OSC_PCI_EXPRESS_DPC_CONTROL;
 
@@ -569,11 +487,7 @@ static void negotiate_os_control(struct acpi_pci_root *root, int *no_aspm)
 	struct acpi_device *device = root->device;
 	acpi_handle handle = device->handle;
 
-	/*
-	 * Apple always return failure on _OSC calls when _OSI("Darwin") has
-	 * been called successfully. We know the feature set supported by the
-	 * platform, so avoid calling _OSC at all
-	 */
+	 
 	if (x86_apple_machine) {
 		root->osc_control_set = ~OSC_PCI_EXPRESS_PME_CONTROL;
 		decode_osc_control(root, "OS assumes control of",
@@ -604,25 +518,15 @@ static void negotiate_os_control(struct acpi_pci_root *root, int *no_aspm)
 					   cxl_control);
 
 		if (acpi_gbl_FADT.boot_flags & ACPI_FADT_NO_ASPM) {
-			/*
-			 * We have ASPM control, but the FADT indicates that
-			 * it's unsupported. Leave existing configuration
-			 * intact and prevent the OS from touching it.
-			 */
+			 
 			dev_info(&device->dev, "FADT indicates ASPM is unsupported, using BIOS configuration\n");
 			*no_aspm = 1;
 		}
 	} else {
-		/*
-		 * We want to disable ASPM here, but aspm_disabled
-		 * needs to remain in its state from boot so that we
-		 * properly handle PCIe 1.1 devices.  So we set this
-		 * flag here, to defer the action until after the ACPI
-		 * root scan.
-		 */
+		 
 		*no_aspm = 1;
 
-		/* _OSC is optional for PCI host bridges */
+		 
 		if (status == AE_NOT_FOUND && !is_pcie(root))
 			return;
 
@@ -666,16 +570,11 @@ static int acpi_pci_root_add(struct acpi_device *device,
 		goto end;
 	}
 
-	/* Check _CRS first, then _BBN.  If no _BBN, default to zero. */
+	 
 	root->secondary.flags = IORESOURCE_BUS;
 	status = try_get_root_bridge_busnr(handle, &root->secondary);
 	if (ACPI_FAILURE(status)) {
-		/*
-		 * We need both the start and end of the downstream bus range
-		 * to interpret _CBA (MMCONFIG base address), so it really is
-		 * supposed to be in _CRS.  If we don't find it there, all we
-		 * can do is assume [_BBN-0xFF] or [0-0xFF].
-		 */
+		 
 		root->secondary.end = 0xFF;
 		dev_warn(&device->dev,
 			 FW_BUG "no secondary bus range in _CRS\n");
@@ -719,17 +618,9 @@ static int acpi_pci_root_add(struct acpi_device *device,
 
 	negotiate_os_control(root, &no_aspm);
 
-	/*
-	 * TBD: Need PCI interface for enumeration/configuration of roots.
-	 */
+	 
 
-	/*
-	 * Scan the Root Bridge
-	 * --------------------
-	 * Must do this prior to any attempt to bind the root device, as the
-	 * PCI namespace does not get created until this call is made (and
-	 * thus the root bridge's pci_dev does not exist).
-	 */
+	 
 	root->bus = pci_acpi_scan_root(root);
 	if (!root->bus) {
 		dev_err(&device->dev,
@@ -749,16 +640,7 @@ static int acpi_pci_root_add(struct acpi_device *device,
 	if (hotadd) {
 		pcibios_resource_survey_bus(root->bus);
 		pci_assign_unassigned_root_bus_resources(root->bus);
-		/*
-		 * This is only called for the hotadd case. For the boot-time
-		 * case, we need to wait until after PCI initialization in
-		 * order to deal with IOAPICs mapped in on a PCI BAR.
-		 *
-		 * This is currently x86-specific, because acpi_ioapic_add()
-		 * is an empty function without CONFIG_ACPI_HOTPLUG_IOAPIC.
-		 * And CONFIG_ACPI_HOTPLUG_IOAPIC depends on CONFIG_X86_IO_APIC
-		 * (see drivers/acpi/Kconfig).
-		 */
+		 
 		acpi_ioapic_add(root->device->handle);
 	}
 
@@ -797,11 +679,7 @@ static void acpi_pci_root_remove(struct acpi_device *device)
 	kfree(root);
 }
 
-/*
- * Following code to support acpi_pci_root_create() is copied from
- * arch/x86/pci/acpi.c and modified so it could be reused by x86, IA64
- * and ARM64.
- */
+ 
 static void acpi_pci_root_validate_resources(struct device *dev,
 					     struct list_head *resources,
 					     unsigned long type)
@@ -822,7 +700,7 @@ static void acpi_pci_root_validate_resources(struct device *dev,
 		if (!(res1->flags & type))
 			goto next;
 
-		/* Exclude non-addressable range or non-addressable portion */
+		 
 		end = min(res1->end, root->end);
 		if (end <= res1->start) {
 			dev_info(dev, "host bridge window %pR (ignored, not CPU addressable)\n",
@@ -841,11 +719,7 @@ static void acpi_pci_root_validate_resources(struct device *dev,
 			if (!(res2->flags & type))
 				continue;
 
-			/*
-			 * I don't like throwing away windows because then
-			 * our resources no longer match the ACPI _CRS, but
-			 * the kernel resource tree doesn't allow overlaps.
-			 */
+			 
 			if (resource_union(res1, res2, res2)) {
 				dev_info(dev, "host bridge window expanded to %pR; %pR ignored\n",
 					 res2, res1);
@@ -946,10 +820,7 @@ static void pci_acpi_root_add_resources(struct acpi_pci_root_info *info)
 		else
 			continue;
 
-		/*
-		 * Some legacy x86 host bridge drivers use iomem_resource and
-		 * ioport_resource as default resource pool, skip it.
-		 */
+		 
 		if (res == root)
 			continue;
 
@@ -1050,11 +921,7 @@ struct pci_bus *acpi_pci_root_create(struct acpi_pci_root *root,
 	if (!(root->osc_ext_control_set & OSC_CXL_ERROR_REPORTING_CONTROL))
 		host_bridge->native_cxl_error = 0;
 
-	/*
-	 * Evaluate the "PCI Boot Configuration" _DSM Function.  If it
-	 * exists and returns 0, we must preserve any PCI resource
-	 * assignments made by firmware for this host bridge.
-	 */
+	 
 	obj = acpi_evaluate_dsm(ACPI_HANDLE(bus->bridge), &pci_acpi_dsm_guid, 1,
 				DSM_PCI_PRESERVE_BOOT_CONFIG, NULL);
 	if (obj && obj->type == ACPI_TYPE_INTEGER && obj->integer.value == 0)

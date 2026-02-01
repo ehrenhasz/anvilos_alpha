@@ -1,10 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
 
-/*
- * Copyright (C) 2022 Huawei Technologies Duesseldorf GmbH
- *
- * Author: Roberto Sassu <roberto.sassu@huawei.com>
- */
+
+ 
 
 #include <stdio.h>
 #include <errno.h>
@@ -26,27 +22,18 @@
 #define VERIFY_USE_SECONDARY_KEYRING (1UL)
 #define VERIFY_USE_PLATFORM_KEYRING  (2UL)
 
-/* In stripped ARM and x86-64 modules, ~ is surprisingly rare. */
+ 
 #define MODULE_SIG_STRING "~Module signature appended~\n"
 
-/*
- * Module signature information block.
- *
- * The constituents of the signature section are, in order:
- *
- *	- Signer's name
- *	- Key identifier
- *	- Signature data
- *	- Information block
- */
+ 
 struct module_signature {
-	__u8	algo;		/* Public-key crypto algorithm [0] */
-	__u8	hash;		/* Digest algorithm [0] */
-	__u8	id_type;	/* Key identifier type [PKEY_ID_PKCS7] */
-	__u8	signer_len;	/* Length of signer's name [0] */
-	__u8	key_id_len;	/* Length of key identifier [0] */
+	__u8	algo;		 
+	__u8	hash;		 
+	__u8	id_type;	 
+	__u8	signer_len;	 
+	__u8	key_id_len;	 
 	__u8	__pad[3];
-	__be32	sig_len;	/* Length of signature data */
+	__be32	sig_len;	 
 };
 
 struct data {
@@ -187,7 +174,7 @@ static int populate_data_item_mod(struct data *data_item)
 	if (stat("/lib/modules", &st) == -1)
 		return 0;
 
-	/* Requires CONFIG_TCP_CONG_BIC=m. */
+	 
 	fp = popen("find /lib/modules/$(uname -r) -name tcp_bic.ko", "r");
 	if (!fp)
 		return 0;
@@ -264,7 +251,7 @@ void test_verify_pkcs7_sig(void)
 	struct data data;
 	int ret, zero = 0;
 
-	/* Trigger creation of session keyring. */
+	 
 	syscall(__NR_request_key, "keyring", "_uid.0", NULL,
 		KEY_SPEC_SESSION_KEYRING);
 
@@ -305,14 +292,14 @@ void test_verify_pkcs7_sig(void)
 
 	skel->bss->monitored_pid = getpid();
 
-	/* Test without data and signature. */
+	 
 	skel->bss->user_keyring_serial = KEY_SPEC_SESSION_KEYRING;
 
 	ret = bpf_map_update_elem(bpf_map__fd(map), &zero, &data, BPF_ANY);
 	if (!ASSERT_LT(ret, 0, "bpf_map_update_elem data_input"))
 		goto close_prog;
 
-	/* Test successful signature verification with session keyring. */
+	 
 	ret = populate_data_item_str(tmp_dir, &data);
 	if (!ASSERT_OK(ret, "populate_data_item_str"))
 		goto close_prog;
@@ -321,7 +308,7 @@ void test_verify_pkcs7_sig(void)
 	if (!ASSERT_OK(ret, "bpf_map_update_elem data_input"))
 		goto close_prog;
 
-	/* Test successful signature verification with testing keyring. */
+	 
 	skel->bss->user_keyring_serial = syscall(__NR_request_key, "keyring",
 						 "ebpf_testing_keyring", NULL,
 						 KEY_SPEC_SESSION_KEYRING);
@@ -330,10 +317,7 @@ void test_verify_pkcs7_sig(void)
 	if (!ASSERT_OK(ret, "bpf_map_update_elem data_input"))
 		goto close_prog;
 
-	/*
-	 * Ensure key_task_permission() is called and rejects the keyring
-	 * (no Search permission).
-	 */
+	 
 	syscall(__NR_keyctl, KEYCTL_SETPERM, skel->bss->user_keyring_serial,
 		0x37373737);
 
@@ -344,9 +328,7 @@ void test_verify_pkcs7_sig(void)
 	syscall(__NR_keyctl, KEYCTL_SETPERM, skel->bss->user_keyring_serial,
 		0x3f3f3f3f);
 
-	/*
-	 * Ensure key_validate() is called and rejects the keyring (key expired)
-	 */
+	 
 	syscall(__NR_keyctl, KEYCTL_SET_TIMEOUT,
 		skel->bss->user_keyring_serial, 1);
 	sleep(1);
@@ -357,7 +339,7 @@ void test_verify_pkcs7_sig(void)
 
 	skel->bss->user_keyring_serial = KEY_SPEC_SESSION_KEYRING;
 
-	/* Test with corrupted data (signature verification should fail). */
+	 
 	data.data[0] = 'a';
 	ret = bpf_map_update_elem(bpf_map__fd(map), &zero, &data, BPF_ANY);
 	if (!ASSERT_LT(ret, 0, "bpf_map_update_elem data_input"))
@@ -367,7 +349,7 @@ void test_verify_pkcs7_sig(void)
 	if (!ASSERT_OK(ret, "populate_data_item_mod"))
 		goto close_prog;
 
-	/* Test signature verification with system keyrings. */
+	 
 	if (data.data_len) {
 		skel->bss->user_keyring_serial = 0;
 		skel->bss->system_keyring_id = 0;

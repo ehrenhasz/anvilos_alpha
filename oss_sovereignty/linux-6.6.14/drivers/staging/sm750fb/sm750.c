@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/aperture.h>
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -20,16 +20,9 @@
 #include "sm750_accel.h"
 #include "sm750_cursor.h"
 
-/*
- * #ifdef __BIG_ENDIAN
- * ssize_t lynxfb_ops_write(struct fb_info *info, const char __user *buf,
- * size_t count, loff_t *ppos);
- * ssize_t lynxfb_ops_read(struct fb_info *info, char __user *buf,
- * size_t count, loff_t *ppos);
- * #endif
- */
+ 
 
-/* common var for all device */
+ 
 static int g_hwcursor = 1;
 static int g_noaccel;
 static int g_nomtrr;
@@ -40,68 +33,68 @@ static int g_dualview;
 static char *g_option;
 
 static const struct fb_videomode lynx750_ext[] = {
-	/*	1024x600-60 VESA	[1.71:1] */
+	 
 	{NULL,  60, 1024, 600, 20423, 144,  40, 18, 1, 104, 3,
 	 FB_SYNC_HOR_HIGH_ACT | FB_SYNC_VERT_HIGH_ACT,
 	 FB_VMODE_NONINTERLACED},
 
-	/*	1024x600-70 VESA */
+	 
 	{NULL,  70, 1024, 600, 17211, 152,  48, 21, 1, 104, 3,
 	 FB_SYNC_HOR_HIGH_ACT | FB_SYNC_VERT_HIGH_ACT,
 	 FB_VMODE_NONINTERLACED},
 
-	/*	1024x600-75 VESA */
+	 
 	{NULL,  75, 1024, 600, 15822, 160,  56, 23, 1, 104, 3,
 	 FB_SYNC_HOR_HIGH_ACT | FB_SYNC_VERT_HIGH_ACT,
 	 FB_VMODE_NONINTERLACED},
 
-	/*	1024x600-85 VESA */
+	 
 	{NULL,  85, 1024, 600, 13730, 168,  56, 26, 1, 112, 3,
 	 FB_SYNC_HOR_HIGH_ACT | FB_SYNC_VERT_HIGH_ACT,
 	 FB_VMODE_NONINTERLACED},
 
-	/*	720x480	*/
+	 
 	{NULL, 60,  720,  480,  37427, 88,   16, 13, 1,   72,  3,
 	 FB_SYNC_HOR_HIGH_ACT | FB_SYNC_VERT_HIGH_ACT,
 	 FB_VMODE_NONINTERLACED},
 
-	/*	1280x720		[1.78:1]	*/
+	 
 	{NULL, 60,  1280,  720,  13426, 162, 86, 22, 1,  136, 3,
 	 FB_SYNC_HOR_HIGH_ACT | FB_SYNC_VERT_HIGH_ACT,
 	 FB_VMODE_NONINTERLACED},
 
-	/*	1280x768@60 */
+	 
 	{NULL, 60, 1280, 768, 12579, 192, 64, 20, 3, 128, 7,
 	 FB_SYNC_HOR_HIGH_ACT | FB_SYNC_VERT_HIGH_ACT,
 	 FB_VMODE_NONINTERLACED},
 
-	/*	1360 x 768	[1.77083:1]	*/
+	 
 	{NULL,  60, 1360, 768, 11804, 208,  64, 23, 1, 144, 3,
 	 FB_SYNC_HOR_HIGH_ACT | FB_SYNC_VERT_HIGH_ACT,
 	 FB_VMODE_NONINTERLACED},
 
-	/*	1368 x 768      [1.78:1]	*/
+	 
 	{NULL, 60,  1368,  768,  11647, 216, 72, 23, 1,  144, 3,
 	 FB_SYNC_HOR_HIGH_ACT | FB_SYNC_VERT_HIGH_ACT,
 	 FB_VMODE_NONINTERLACED},
 
-	/*	1440 x 900		[16:10]	*/
+	 
 	{NULL, 60, 1440, 900, 9392, 232, 80, 28, 1, 152, 3,
 	 FB_SYNC_VERT_HIGH_ACT,
 	 FB_VMODE_NONINTERLACED},
 
-	/*	1440x960		[15:10]	*/
+	 
 	{NULL, 60, 1440, 960, 8733, 240, 88, 30, 1, 152, 3,
 	 FB_SYNC_HOR_HIGH_ACT | FB_SYNC_VERT_HIGH_ACT,
 	 FB_VMODE_NONINTERLACED},
 
-	/*	1920x1080	[16:9]	*/
+	 
 	{NULL, 60, 1920, 1080, 6734, 148, 88, 41, 1, 44, 3,
 	 FB_SYNC_VERT_HIGH_ACT,
 	 FB_VMODE_NONINTERLACED},
 };
 
-/* no hardware cursor supported under version 2.6.10, kernel bug */
+ 
 static int lynxfb_ops_cursor(struct fb_info *info, struct fb_cursor *fbcursor)
 {
 	struct lynxfb_par *par;
@@ -130,7 +123,7 @@ static int lynxfb_ops_cursor(struct fb_info *info, struct fb_cursor *fbcursor)
 				       fbcursor->image.dy - info->var.yoffset);
 
 	if (fbcursor->set & FB_CUR_SETCMAP) {
-		/* get the 16bit color of kernel means */
+		 
 		u16 fg, bg;
 
 		fg = ((info->cmap.red[fbcursor->image.fg_color] & 0xf800)) |
@@ -171,10 +164,7 @@ static void lynxfb_ops_fillrect(struct fb_info *info,
 	par = info->par;
 	sm750_dev = par->dev;
 
-	/*
-	 * each time 2d function begin to work,below three variable always need
-	 * be set, seems we can put them together in some place
-	 */
+	 
 	base = par->crtc.o_screen;
 	pitch = info->fix.line_length;
 	Bpp = info->var.bits_per_pixel >> 3;
@@ -183,12 +173,7 @@ static void lynxfb_ops_fillrect(struct fb_info *info,
 		((u32 *)info->pseudo_palette)[region->color];
 	rop = (region->rop != ROP_COPY) ? HW_ROP2_XOR : HW_ROP2_COPY;
 
-	/*
-	 * If not use spin_lock, system will die if user load driver
-	 * and immediately unload driver frequently (dual)
-	 * since they fb_count could change during the lifetime of
-	 * this lock, we are holding it for all cases.
-	 */
+	 
 	spin_lock(&sm750_dev->slock);
 
 	sm750_dev->accel.de_fillrect(&sm750_dev->accel,
@@ -209,20 +194,12 @@ static void lynxfb_ops_copyarea(struct fb_info *info,
 	par = info->par;
 	sm750_dev = par->dev;
 
-	/*
-	 * each time 2d function begin to work,below three variable always need
-	 * be set, seems we can put them together in some place
-	 */
+	 
 	base = par->crtc.o_screen;
 	pitch = info->fix.line_length;
 	Bpp = info->var.bits_per_pixel >> 3;
 
-	/*
-	 * If not use spin_lock, system will die if user load driver
-	 * and immediately unload driver frequently (dual)
-	 * since they fb_count could change during the lifetime of
-	 * this lock, we are holding it for all cases.
-	 */
+	 
 	spin_lock(&sm750_dev->slock);
 
 	sm750_dev->accel.de_copyarea(&sm750_dev->accel,
@@ -243,15 +220,12 @@ static void lynxfb_ops_imageblit(struct fb_info *info,
 
 	par = info->par;
 	sm750_dev = par->dev;
-	/*
-	 * each time 2d function begin to work,below three variable always need
-	 * be set, seems we can put them together in some place
-	 */
+	 
 	base = par->crtc.o_screen;
 	pitch = info->fix.line_length;
 	Bpp = info->var.bits_per_pixel >> 3;
 
-	/* TODO: Implement hardware acceleration for image->depth > 1 */
+	 
 	if (image->depth != 1) {
 		cfb_imageblit(info, image);
 		return;
@@ -266,12 +240,7 @@ static void lynxfb_ops_imageblit(struct fb_info *info,
 		bgcol = image->bg_color;
 	}
 
-	/*
-	 * If not use spin_lock, system will die if user load driver
-	 * and immediately unload driver frequently (dual)
-	 * since they fb_count could change during the lifetime of
-	 * this lock, we are holding it for all cases.
-	 */
+	 
 	spin_lock(&sm750_dev->slock);
 
 	sm750_dev->accel.de_imageblit(&sm750_dev->accel,
@@ -373,22 +342,19 @@ static int lynxfb_ops_set_par(struct fb_info *info)
 	var = &info->var;
 	fix = &info->fix;
 
-	/* fix structure is not so FIX ... */
+	 
 	line_length = var->xres_virtual * var->bits_per_pixel / 8;
 	line_length = ALIGN(line_length, crtc->line_pad);
 	fix->line_length = line_length;
 	pr_info("fix->line_length = %d\n", fix->line_length);
 
-	/*
-	 * var->red,green,blue,transp are need to be set by driver
-	 * and these data should be set before setcolreg routine
-	 */
+	 
 
 	ret = lynxfb_set_color_offsets(info);
 
 	var->height = -1;
 	var->width = -1;
-	var->accel_flags = 0;/*FB_ACCELF_TEXT;*/
+	var->accel_flags = 0; 
 
 	if (ret) {
 		pr_err("bpp %d not supported\n", var->bits_per_pixel);
@@ -418,11 +384,11 @@ static int __maybe_unused lynxfb_suspend(struct device *dev)
 	console_lock();
 	info = sm750_dev->fbinfo[0];
 	if (info)
-		/* 1 means do suspend */
+		 
 		fb_set_suspend(info, 1);
 	info = sm750_dev->fbinfo[1];
 	if (info)
-		/* 1 means do suspend */
+		 
 		fb_set_suspend(info, 1);
 
 	console_unlock();
@@ -501,11 +467,11 @@ static int lynxfb_ops_check_var(struct fb_var_screeninfo *var,
 
 	var->height = -1;
 	var->width = -1;
-	var->accel_flags = 0;/* FB_ACCELF_TEXT; */
+	var->accel_flags = 0; 
 
-	/* check if current fb's video memory big enough to hold the onscreen*/
+	 
 	request = var->xres_virtual * (var->bits_per_pixel >> 3);
-	/* defaulty crtc->channel go with par->index */
+	 
 
 	request = ALIGN(request, crtc->line_pad);
 	request = request * var->yres_virtual;
@@ -599,7 +565,7 @@ static int sm750fb_set_drv(struct lynxfb_par *par)
 	if (sm750_dev->fb_count > 1)
 		crtc->vidmem_size >>= 1;
 
-	/* setup crtc and output member */
+	 
 	sm750_dev->hwCursor = g_hwcursor;
 
 	crtc->line_pad = 16;
@@ -609,7 +575,7 @@ static int sm750fb_set_drv(struct lynxfb_par *par)
 
 	output->proc_setBLANK = (sm750_dev->revid == SM750LE_REVISION_ID) ?
 				 hw_sm750le_setBLANK : hw_sm750_setBLANK;
-	/* chip specific phase */
+	 
 	sm750_dev->accel.de_wait = (sm750_dev->revid == SM750LE_REVISION_ID) ?
 				    hw_sm750le_deWait : hw_sm750_deWait;
 	switch (sm750_dev->dataflow) {
@@ -635,7 +601,7 @@ static int sm750fb_set_drv(struct lynxfb_par *par)
 		} else {
 			output->paths = sm750_crt;
 			crtc->channel = sm750_secondary;
-			/* not consider of padding stuffs for o_screen,need fix */
+			 
 			crtc->o_screen = sm750_dev->vidmem_size >> 1;
 			crtc->v_screen = sm750_dev->pvMem + crtc->o_screen;
 		}
@@ -649,9 +615,7 @@ static int sm750fb_set_drv(struct lynxfb_par *par)
 		} else {
 			output->paths = sm750_crt;
 			crtc->channel = sm750_primary;
-			/* not consider of padding stuffs for o_screen,
-			 * need fix
-			 */
+			 
 			crtc->o_screen = sm750_dev->vidmem_size >> 1;
 			crtc->v_screen = sm750_dev->pvMem + crtc->o_screen;
 		}
@@ -672,7 +636,7 @@ static struct fb_ops lynxfb_ops = {
 	.fb_fillrect = cfb_fillrect,
 	.fb_imageblit = cfb_imageblit,
 	.fb_copyarea = cfb_copyarea,
-	/* cursor */
+	 
 	.fb_cursor = lynxfb_ops_cursor,
 };
 
@@ -710,16 +674,13 @@ static int lynxfb_set_fbinfo(struct fb_info *info, int index)
 	var = &info->var;
 	fix = &info->fix;
 
-	/* set index */
+	 
 	par->index = index;
 	output->channel = &crtc->channel;
 	sm750fb_set_drv(par);
 	lynxfb_ops.fb_pan_display = lynxfb_ops_pan_display;
 
-	/*
-	 * set current cursor variable and proc pointer,
-	 * must be set after crtc member initialized
-	 */
+	 
 	crtc->cursor.offset = crtc->o_screen + crtc->vidmem_size - 1024;
 	crtc->cursor.mmio = sm750_dev->pvReg +
 		0x800f0 + (int)crtc->channel * 0x140;
@@ -736,9 +697,9 @@ static int lynxfb_set_fbinfo(struct fb_info *info, int index)
 		sm750_hw_cursor_disable(&crtc->cursor);
 	}
 
-	/* set info->fbops, must be set before fb_find_mode */
+	 
 	if (!sm750_dev->accel_off) {
-		/* use 2d acceleration */
+		 
 		lynxfb_ops.fb_fillrect = lynxfb_ops_fillrect;
 		lynxfb_ops.fb_copyarea = lynxfb_ops_copyarea;
 		lynxfb_ops.fb_imageblit = lynxfb_ops_imageblit;
@@ -767,7 +728,7 @@ static int lynxfb_set_fbinfo(struct fb_info *info, int index)
 			break;
 		} else if (ret == 3) {
 			pr_warn("wanna use default mode\n");
-			/*break;*/
+			 
 		} else if (ret == 4) {
 			pr_warn("fall back to any valid mode\n");
 		} else {
@@ -777,7 +738,7 @@ static int lynxfb_set_fbinfo(struct fb_info *info, int index)
 		}
 	}
 
-	/* some member of info->var had been set by fb_find_mode */
+	 
 
 	pr_info("Member of info->var is :\n"
 		"xres=%d\n"
@@ -796,10 +757,10 @@ static int lynxfb_set_fbinfo(struct fb_info *info, int index)
 		var->yoffset,
 		var->bits_per_pixel);
 
-	/* set par */
+	 
 	par->info = info;
 
-	/* set info */
+	 
 	line_length = ALIGN((var->xres_virtual * var->bits_per_pixel / 8),
 			    crtc->line_pad);
 
@@ -808,7 +769,7 @@ static int lynxfb_set_fbinfo(struct fb_info *info, int index)
 	pr_debug("screen_base vaddr = %p\n", info->screen_base);
 	info->screen_size = line_length * var->yres_virtual;
 
-	/* set info->fix */
+	 
 	fix->type = FB_TYPE_PACKED_PIXELS;
 	fix->type_aux = 0;
 	fix->xpanstep = crtc->xpanstep;
@@ -820,13 +781,7 @@ static int lynxfb_set_fbinfo(struct fb_info *info, int index)
 
 	fix->smem_start = crtc->o_screen + sm750_dev->vidmem_start;
 	pr_info("fix->smem_start = %lx\n", fix->smem_start);
-	/*
-	 * according to mmap experiment from user space application,
-	 * fix->mmio_len should not larger than virtual size
-	 * (xres_virtual x yres_virtual x ByPP)
-	 * Below line maybe buggy when user mmap fb dev node and write
-	 * data into the bound over virtual size
-	 */
+	 
 	fix->smem_len = crtc->vidmem_size;
 	pr_info("fix->smem_len = %x\n", fix->smem_len);
 	info->screen_size = fix->smem_len;
@@ -838,7 +793,7 @@ static int lynxfb_set_fbinfo(struct fb_info *info, int index)
 
 	lynxfb_set_visual_mode(info);
 
-	/* set var */
+	 
 	var->activate = FB_ACTIVATE_NOW;
 	var->accel_flags = 0;
 	var->vmode = FB_VMODE_NONINTERLACED;
@@ -864,7 +819,7 @@ exit:
 	return ret;
 }
 
-/*	chip specific g_option configuration routine */
+ 
 static void sm750fb_setup(struct sm750_dev *sm750_dev, char *src)
 {
 	char *opt;
@@ -879,7 +834,7 @@ static void sm750fb_setup(struct sm750_dev *sm750_dev, char *src)
 	sm750_dev->initParm.setAllEngOff = 0;
 	sm750_dev->initParm.resetMemory = 1;
 
-	/* defaultly turn g_hwcursor on for both view */
+	 
 	g_hwcursor = 3;
 
 	if (!src || !*src) {
@@ -936,9 +891,9 @@ NO_PARAM:
 				sm750_dev->dataflow = sm750_simul_pri;
 		}
 	} else {
-		/* SM750LE only have one crt channel */
+		 
 		sm750_dev->dataflow = sm750_simul_sec;
-		/* sm750le do not have complex attributes */
+		 
 		sm750_dev->nocrt = 0;
 	}
 }
@@ -999,7 +954,7 @@ static int lynxfb_pci_probe(struct pci_dev *pdev,
 	if (err)
 		return err;
 
-	/* enable device */
+	 
 	err = pcim_enable_device(pdev);
 	if (err)
 		return err;
@@ -1020,22 +975,17 @@ static int lynxfb_pci_probe(struct pci_dev *pdev,
 	spin_lock_init(&sm750_dev->slock);
 
 	if (!sm750_dev->accel_off) {
-		/*
-		 * hook deInit and 2d routines, notes that below hw_xxx
-		 * routine can work on most of lynx chips
-		 * if some chip need specific function,
-		 * please hook it in smXXX_set_drv routine
-		 */
+		 
 		sm750_dev->accel.de_init = sm750_hw_de_init;
 		sm750_dev->accel.de_fillrect = sm750_hw_fillrect;
 		sm750_dev->accel.de_copyarea = sm750_hw_copyarea;
 		sm750_dev->accel.de_imageblit = sm750_hw_imageblit;
 	}
 
-	/* call chip specific setup routine  */
+	 
 	sm750fb_setup(sm750_dev, g_settings);
 
-	/* call chip specific mmap routine */
+	 
 	err = hw_sm750_map(sm750_dev, pdev);
 	if (err)
 		return err;
@@ -1048,10 +998,10 @@ static int lynxfb_pci_probe(struct pci_dev *pdev,
 
 	pci_set_drvdata(pdev, sm750_dev);
 
-	/* call chipInit routine */
+	 
 	hw_sm750_inithw(sm750_dev, pdev);
 
-	/* allocate frame buffer info structures according to g_dualview */
+	 
 	max_fb = g_dualview ? 2 : 1;
 	for (fbidx = 0; fbidx < max_fb; fbidx++) {
 		err = sm750fb_framebuffer_alloc(sm750_dev, fbidx);
@@ -1099,17 +1049,9 @@ static int __init lynxfb_setup(char *options)
 
 	tmp = g_settings;
 
-	/*
-	 * Notes:
-	 * char * strsep(char **s,const char * ct);
-	 * @s: the string to be searched
-	 * @ct :the characters to search for
-	 *
-	 * strsep() updates @options to pointer after the first found token
-	 * it also returns the pointer ahead the token.
-	 */
+	 
 	while ((opt = strsep(&options, ":")) != NULL) {
-		/* options that mean for any lynx chips are configured here */
+		 
 		if (!strncmp(opt, "noaccel", strlen("noaccel"))) {
 			g_noaccel = 1;
 		} else if (!strncmp(opt, "nomtrr", strlen("nomtrr"))) {
@@ -1126,7 +1068,7 @@ static int __init lynxfb_setup(char *options)
 		}
 	}
 
-	/* misc g_settings are transport to chip specific routines */
+	 
 	pr_info("parameter left for chip specific analysis:%s\n", g_settings);
 	return 0;
 }

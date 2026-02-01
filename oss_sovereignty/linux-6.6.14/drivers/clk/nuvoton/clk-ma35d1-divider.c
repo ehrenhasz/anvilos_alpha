@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2023 Nuvoton Technology Corp.
- * Author: Chi-Fang Li <cfli0@nuvoton.com>
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/device.h>
@@ -18,7 +15,7 @@ struct ma35d1_adc_clk_div {
 	u8 width;
 	u32 mask;
 	const struct clk_div_table *table;
-	/* protects concurrent access to clock divider registers */
+	 
 	spinlock_t *lock;
 };
 

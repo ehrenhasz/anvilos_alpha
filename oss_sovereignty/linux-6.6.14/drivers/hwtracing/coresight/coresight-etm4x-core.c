@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2014, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/bitops.h>
@@ -50,9 +48,9 @@ static int boot_enable;
 module_param(boot_enable, int, 0444);
 MODULE_PARM_DESC(boot_enable, "Enable tracing on boot");
 
-#define PARAM_PM_SAVE_FIRMWARE	  0 /* save self-hosted state as per firmware */
-#define PARAM_PM_SAVE_NEVER	  1 /* never save any state */
-#define PARAM_PM_SAVE_SELF_HOSTED 2 /* save self-hosted state only */
+#define PARAM_PM_SAVE_FIRMWARE	  0  
+#define PARAM_PM_SAVE_NEVER	  1  
+#define PARAM_PM_SAVE_SELF_HOSTED 2  
 
 static int pm_save_enable = PARAM_PM_SAVE_FIRMWARE;
 module_param(pm_save_enable, int, 0444);
@@ -75,15 +73,7 @@ struct etm4_init_arg {
 static DEFINE_PER_CPU(struct etm4_init_arg *, delayed_probe);
 static int etm4_probe_cpu(unsigned int cpu);
 
-/*
- * Check if TRCSSPCICRn(i) is implemented for a given instance.
- *
- * TRCSSPCICRn is implemented only if :
- *	TRCSSPCICR<n> is present only if all of the following are true:
- *		TRCIDR4.NUMSSCC > n.
- *		TRCIDR4.NUMPC > 0b0000 .
- *		TRCSSCSR<n>.PC == 0b1
- */
+ 
 static inline bool etm4x_sspcicrn_present(struct etmv4_drvdata *drvdata, int n)
 {
 	return (n < drvdata->nr_ss_cmp) &&
@@ -103,7 +93,7 @@ u64 etm4x_sysreg_read(u32 offset, bool _relaxed, bool _64bit)
 	}
 
 	if (!_relaxed)
-		__io_ar(res);	/* Imitate the !relaxed I/O helpers */
+		__io_ar(res);	 
 
 	return res;
 }
@@ -111,7 +101,7 @@ u64 etm4x_sysreg_read(u32 offset, bool _relaxed, bool _64bit)
 void etm4x_sysreg_write(u64 val, u32 offset, bool _relaxed, bool _64bit)
 {
 	if (!_relaxed)
-		__io_bw();	/* Imitate the !relaxed I/O helpers */
+		__io_bw();	 
 	if (!_64bit)
 		val &= GENMASK(31, 0);
 
@@ -135,7 +125,7 @@ static u64 ete_sysreg_read(u32 offset, bool _relaxed, bool _64bit)
 	}
 
 	if (!_relaxed)
-		__io_ar(res);	/* Imitate the !relaxed I/O helpers */
+		__io_ar(res);	 
 
 	return res;
 }
@@ -143,7 +133,7 @@ static u64 ete_sysreg_read(u32 offset, bool _relaxed, bool _64bit)
 static void ete_sysreg_write(u64 val, u32 offset, bool _relaxed, bool _64bit)
 {
 	if (!_relaxed)
-		__io_bw();	/* Imitate the !relaxed I/O helpers */
+		__io_bw();	 
 	if (!_64bit)
 		val &= GENMASK(31, 0);
 
@@ -190,7 +180,7 @@ static inline void etm4_os_unlock_csa(struct etmv4_drvdata *drvdata,
 {
 	WARN_ON(drvdata->cpu != smp_processor_id());
 
-	/* Writing 0 to OS Lock unlocks the trace unit registers */
+	 
 	etm_write_os_lock(drvdata, csa, 0x0);
 	drvdata->os_unlock = true;
 }
@@ -205,7 +195,7 @@ static void etm4_os_lock(struct etmv4_drvdata *drvdata)
 {
 	if (WARN_ON(!drvdata->csdev))
 		return;
-	/* Writing 0x1 to OS Lock locks the trace registers */
+	 
 	etm_write_os_lock(drvdata, &drvdata->csdev->access, 0x1);
 	drvdata->os_unlock = false;
 }
@@ -213,7 +203,7 @@ static void etm4_os_lock(struct etmv4_drvdata *drvdata)
 static void etm4_cs_lock(struct etmv4_drvdata *drvdata,
 			 struct csdev_access *csa)
 {
-	/* Software Lock is only accessible via memory mapped interface */
+	 
 	if (csa->io_mem)
 		CS_LOCK(csa->base);
 }
@@ -236,11 +226,7 @@ int etm4_read_alloc_trace_id(struct etmv4_drvdata *drvdata)
 {
 	int trace_id;
 
-	/*
-	 * This will allocate a trace ID to the cpu,
-	 * or return the one currently allocated.
-	 * The trace id function has its own lock
-	 */
+	 
 	trace_id = coresight_trace_id_get_cpu_id(drvdata->cpu);
 	if (IS_VALID_CS_TRACE_ID(trace_id))
 		drvdata->trcid = (u8)trace_id;
@@ -261,34 +247,21 @@ struct etm4_enable_arg {
 	int rc;
 };
 
-/*
- * etm4x_prohibit_trace - Prohibit the CPU from tracing at all ELs.
- * When the CPU supports FEAT_TRF, we could move the ETM to a trace
- * prohibited state by filtering the Exception levels via TRFCR_EL1.
- */
+ 
 static void etm4x_prohibit_trace(struct etmv4_drvdata *drvdata)
 {
-	/* If the CPU doesn't support FEAT_TRF, nothing to do */
+	 
 	if (!drvdata->trfcr)
 		return;
 	cpu_prohibit_trace();
 }
 
-/*
- * etm4x_allow_trace - Allow CPU tracing in the respective ELs,
- * as configured by the drvdata->config.mode for the current
- * session. Even though we have TRCVICTLR bits to filter the
- * trace in the ELs, it doesn't prevent the ETM from generating
- * a packet (e.g, TraceInfo) that might contain the addresses from
- * the excluded levels. Thus we use the additional controls provided
- * via the Trace Filtering controls (FEAT_TRF) to make sure no trace
- * is generated for the excluded ELs.
- */
+ 
 static void etm4x_allow_trace(struct etmv4_drvdata *drvdata)
 {
 	u64 trfcr = drvdata->trfcr;
 
-	/* If the CPU doesn't support FEAT_TRF, nothing to do */
+	 
 	if (!trfcr)
 		return;
 
@@ -325,12 +298,7 @@ static void etm4_hisi_config_core_commit(bool enable)
 		    HISI_HIP08_CORE_COMMIT_FULL;
 	u64 val;
 
-	/*
-	 * bit 12 and 13 of HISI_HIP08_CORE_COMMIT_REG are used together
-	 * to set core-commit, 2'b00 means cpu is at full speed, 2'b01,
-	 * 2'b10, 2'b11 mean reduce pipeline speed, and 2'b01 means level-1
-	 * speed(minimun value). So bit 12 and 13 should be cleared together.
-	 */
+	 
 	val = read_sysreg_s(HISI_HIP08_CORE_COMMIT_REG);
 	val &= ~HISI_HIP08_CORE_COMMIT_MASK;
 	val |= commit << HISI_HIP08_CORE_COMMIT_SHIFT;
@@ -373,11 +341,7 @@ static void etm4_disable_arch_specific(struct etmv4_drvdata *drvdata)
 static void etm4_check_arch_features(struct etmv4_drvdata *drvdata,
 				     struct csdev_access *csa)
 {
-	/*
-	 * TRCPIDR* registers are not required for ETMs with system
-	 * instructions. They must be identified by the MIDR+REVIDRs.
-	 * Skip the TRCPID checks for now.
-	 */
+	 
 	if (!csa->io_mem)
 		return;
 
@@ -397,7 +361,7 @@ static void etm4_check_arch_features(struct etmv4_drvdata *drvdata,
 				     struct csdev_access *csa)
 {
 }
-#endif /* CONFIG_ETM4X_IMPDEF_FEATURE */
+#endif  
 
 static int etm4_enable_hw(struct etmv4_drvdata *drvdata)
 {
@@ -417,26 +381,21 @@ static int etm4_enable_hw(struct etmv4_drvdata *drvdata)
 	if (rc)
 		goto done;
 
-	/* Disable the trace unit before programming trace registers */
+	 
 	etm4x_relaxed_write32(csa, 0, TRCPRGCTLR);
 
-	/*
-	 * If we use system instructions, we need to synchronize the
-	 * write to the TRCPRGCTLR, before accessing the TRCSTATR.
-	 * See ARM IHI0064F, section
-	 * "4.3.7 Synchronization of register updates"
-	 */
+	 
 	if (!csa->io_mem)
 		isb();
 
-	/* wait for TRCSTATR.IDLE to go up */
+	 
 	if (coresight_timeout(csa, TRCSTATR, TRCSTATR_IDLE_BIT, 1))
 		dev_err(etm_dev,
 			"timeout while waiting for Idle Trace Status\n");
 	if (drvdata->nr_pe)
 		etm4x_relaxed_write32(csa, config->pe_sel, TRCPROCSELR);
 	etm4x_relaxed_write32(csa, config->cfg, TRCCONFIGR);
-	/* nothing specific implemented */
+	 
 	etm4x_relaxed_write32(csa, 0x0, TRCAUXCTLR);
 	etm4x_relaxed_write32(csa, config->eventctrl0, TRCEVENTCTL0R);
 	etm4x_relaxed_write32(csa, config->eventctrl1, TRCEVENTCTL1R);
@@ -465,15 +424,12 @@ static int etm4_enable_hw(struct etmv4_drvdata *drvdata)
 		etm4x_relaxed_write32(csa, config->cntr_val[i], TRCCNTVRn(i));
 	}
 
-	/*
-	 * Resource selector pair 0 is always implemented and reserved.  As
-	 * such start at 2.
-	 */
+	 
 	for (i = 2; i < drvdata->nr_resource * 2; i++)
 		etm4x_relaxed_write32(csa, config->res_ctrl[i], TRCRSCTLRn(i));
 
 	for (i = 0; i < drvdata->nr_ss_cmp; i++) {
-		/* always clear status bit on restart if using single-shot */
+		 
 		if (config->ss_ctrl[i] || config->ss_pe_cmp[i])
 			config->ss_status[i] &= ~TRCSSCSRn_STATUS;
 		etm4x_relaxed_write32(csa, config->ss_ctrl[i], TRCSSCCRn(i));
@@ -500,37 +456,28 @@ static int etm4_enable_hw(struct etmv4_drvdata *drvdata)
 	if (!drvdata->skip_power_up) {
 		u32 trcpdcr = etm4x_relaxed_read32(csa, TRCPDCR);
 
-		/*
-		 * Request to keep the trace unit powered and also
-		 * emulation of powerdown
-		 */
+		 
 		etm4x_relaxed_write32(csa, trcpdcr | TRCPDCR_PU, TRCPDCR);
 	}
 
-	/*
-	 * ETE mandates that the TRCRSR is written to before
-	 * enabling it.
-	 */
+	 
 	if (etm4x_is_ete(drvdata))
 		etm4x_relaxed_write32(csa, TRCRSR_TA, TRCRSR);
 
 	etm4x_allow_trace(drvdata);
-	/* Enable the trace unit */
+	 
 	etm4x_relaxed_write32(csa, 1, TRCPRGCTLR);
 
-	/* Synchronize the register updates for sysreg access */
+	 
 	if (!csa->io_mem)
 		isb();
 
-	/* wait for TRCSTATR.IDLE to go back down to '0' */
+	 
 	if (coresight_timeout(csa, TRCSTATR, TRCSTATR_IDLE_BIT, 0))
 		dev_err(etm_dev,
 			"timeout while waiting for Idle Trace Status\n");
 
-	/*
-	 * As recommended by section 4.3.7 ("Synchronization when using the
-	 * memory-mapped interface") of ARM IHI 0064D
-	 */
+	 
 	dsb(sy);
 	isb();
 
@@ -551,19 +498,7 @@ static void etm4_enable_hw_smp_call(void *info)
 	arg->rc = etm4_enable_hw(arg->drvdata);
 }
 
-/*
- * The goal of function etm4_config_timestamp_event() is to configure a
- * counter that will tell the tracer to emit a timestamp packet when it
- * reaches zero.  This is done in order to get a more fine grained idea
- * of when instructions are executed so that they can be correlated
- * with execution on other CPUs.
- *
- * To do this the counter itself is configured to self reload and
- * TRCRSCTLR1 (always true) used to get the counter to decrement.  From
- * there a resource selector is configured with the counter and the
- * timestamp control register to use the resource selector to trigger the
- * event that will insert a timestamp packet in the stream.
- */
+ 
 static int etm4_config_timestamp_event(struct etmv4_drvdata *drvdata)
 {
 	int ctridx, ret = -EINVAL;
@@ -571,28 +506,23 @@ static int etm4_config_timestamp_event(struct etmv4_drvdata *drvdata)
 	u32 val = 0;
 	struct etmv4_config *config = &drvdata->config;
 
-	/* No point in trying if we don't have at least one counter */
+	 
 	if (!drvdata->nr_cntr)
 		goto out;
 
-	/* Find a counter that hasn't been initialised */
+	 
 	for (ctridx = 0; ctridx < drvdata->nr_cntr; ctridx++)
 		if (config->cntr_val[ctridx] == 0)
 			break;
 
-	/* All the counters have been configured already, bail out */
+	 
 	if (ctridx == drvdata->nr_cntr) {
 		pr_debug("%s: no available counter found\n", __func__);
 		ret = -ENOSPC;
 		goto out;
 	}
 
-	/*
-	 * Searching for an available resource selector to use, starting at
-	 * '2' since every implementation has at least 2 resource selector.
-	 * ETMIDR4 gives the number of resource selector _pairs_,
-	 * hence multiply by 2.
-	 */
+	 
 	for (rselector = 2; rselector < drvdata->nr_resource * 2; rselector++)
 		if (!config->res_ctrl[rselector])
 			break;
@@ -604,30 +534,27 @@ static int etm4_config_timestamp_event(struct etmv4_drvdata *drvdata)
 		goto out;
 	}
 
-	/* Remember what counter we used */
+	 
 	counter = 1 << ctridx;
 
-	/*
-	 * Initialise original and reload counter value to the smallest
-	 * possible value in order to get as much precision as we can.
-	 */
+	 
 	config->cntr_val[ctridx] = 1;
 	config->cntrldvr[ctridx] = 1;
 
-	/* Set the trace counter control register */
-	val =  0x1 << 16	|  /* Bit 16, reload counter automatically */
-	       0x0 << 7		|  /* Select single resource selector */
-	       0x1;		   /* Resource selector 1, i.e always true */
+	 
+	val =  0x1 << 16	|   
+	       0x0 << 7		|   
+	       0x1;		    
 
 	config->cntr_ctrl[ctridx] = val;
 
-	val = 0x2 << 16		| /* Group 0b0010 - Counter and sequencers */
-	      counter << 0;	  /* Counter to use */
+	val = 0x2 << 16		|  
+	      counter << 0;	   
 
 	config->res_ctrl[rselector] = val;
 
-	val = 0x0 << 7		| /* Select single resource selector */
-	      rselector;	  /* Resource selector */
+	val = 0x0 << 7		|  
+	      rselector;	   
 
 	config->ts_ctrl = val;
 
@@ -646,7 +573,7 @@ static int etm4_parse_event_config(struct coresight_device *csdev,
 	unsigned long cfg_hash;
 	int preset;
 
-	/* Clear configuration from previous run */
+	 
 	memset(config, 0, sizeof(struct etmv4_config));
 
 	if (attr->exclude_kernel)
@@ -655,86 +582,65 @@ static int etm4_parse_event_config(struct coresight_device *csdev,
 	if (attr->exclude_user)
 		config->mode = ETM_MODE_EXCL_USER;
 
-	/* Always start from the default config */
+	 
 	etm4_set_default_config(config);
 
-	/* Configure filters specified on the perf cmd line, if any. */
+	 
 	ret = etm4_set_event_filters(drvdata, event);
 	if (ret)
 		goto out;
 
-	/* Go from generic option to ETMv4 specifics */
+	 
 	if (attr->config & BIT(ETM_OPT_CYCACC)) {
 		config->cfg |= TRCCONFIGR_CCI;
-		/* TRM: Must program this for cycacc to work */
+		 
 		config->ccctlr = ETM_CYC_THRESHOLD_DEFAULT;
 	}
 	if (attr->config & BIT(ETM_OPT_TS)) {
-		/*
-		 * Configure timestamps to be emitted at regular intervals in
-		 * order to correlate instructions executed on different CPUs
-		 * (CPU-wide trace scenarios).
-		 */
+		 
 		ret = etm4_config_timestamp_event(drvdata);
 
-		/*
-		 * No need to go further if timestamp intervals can't
-		 * be configured.
-		 */
+		 
 		if (ret)
 			goto out;
 
-		/* bit[11], Global timestamp tracing bit */
+		 
 		config->cfg |= TRCCONFIGR_TS;
 	}
 
-	/* Only trace contextID when runs in root PID namespace */
+	 
 	if ((attr->config & BIT(ETM_OPT_CTXTID)) &&
 	    task_is_in_init_pid_ns(current))
-		/* bit[6], Context ID tracing bit */
+		 
 		config->cfg |= TRCCONFIGR_CID;
 
-	/*
-	 * If set bit ETM_OPT_CTXTID2 in perf config, this asks to trace VMID
-	 * for recording CONTEXTIDR_EL2.  Do not enable VMID tracing if the
-	 * kernel is not running in EL2.
-	 */
+	 
 	if (attr->config & BIT(ETM_OPT_CTXTID2)) {
 		if (!is_kernel_in_hyp_mode()) {
 			ret = -EINVAL;
 			goto out;
 		}
-		/* Only trace virtual contextID when runs in root PID namespace */
+		 
 		if (task_is_in_init_pid_ns(current))
 			config->cfg |= TRCCONFIGR_VMID | TRCCONFIGR_VMIDOPT;
 	}
 
-	/* return stack - enable if selected and supported */
+	 
 	if ((attr->config & BIT(ETM_OPT_RETSTK)) && drvdata->retstack)
-		/* bit[12], Return stack enable bit */
+		 
 		config->cfg |= TRCCONFIGR_RS;
 
-	/*
-	 * Set any selected configuration and preset.
-	 *
-	 * This extracts the values of PMU_FORMAT_ATTR(configid) and PMU_FORMAT_ATTR(preset)
-	 * in the perf attributes defined in coresight-etm-perf.c.
-	 * configid uses bits 63:32 of attr->config2, preset uses bits 3:0 of attr->config.
-	 * A zero configid means no configuration active, preset = 0 means no preset selected.
-	 */
+	 
 	if (attr->config2 & GENMASK_ULL(63, 32)) {
 		cfg_hash = (u32)(attr->config2 >> 32);
 		preset = attr->config & 0xF;
 		ret = cscfg_csdev_enable_active_config(csdev, cfg_hash, preset);
 	}
 
-	/* branch broadcast - enable if selected and supported */
+	 
 	if (attr->config & BIT(ETM_OPT_BRANCH_BROADCAST)) {
 		if (!drvdata->trcbb) {
-			/*
-			 * Missing BB support could cause silent decode errors
-			 * so fail to open if it's not supported.
-			 */
+			 
 			ret = -EINVAL;
 			goto out;
 		} else {
@@ -757,19 +663,12 @@ static int etm4_enable_perf(struct coresight_device *csdev,
 		goto out;
 	}
 
-	/* Configure the tracer based on the session's specifics */
+	 
 	ret = etm4_parse_event_config(csdev, event);
 	if (ret)
 		goto out;
 
-	/*
-	 * perf allocates cpu ids as part of _setup_aux() - device needs to use
-	 * the allocated ID. This reads the current version without allocation.
-	 *
-	 * This does not use the trace id lock to prevent lock_dep issues
-	 * with perf locks - we know the ID cannot change until perf shuts down
-	 * the session
-	 */
+	 
 	trace_id = coresight_trace_id_read_cpu_id(drvdata->cpu);
 	if (!IS_VALID_CS_TRACE_ID(trace_id)) {
 		dev_err(&drvdata->csdev->dev, "Failed to set trace ID for %s on CPU%d\n",
@@ -779,7 +678,7 @@ static int etm4_enable_perf(struct coresight_device *csdev,
 	}
 	drvdata->trcid = (u8)trace_id;
 
-	/* And enable it */
+	 
 	ret = etm4_enable_hw(drvdata);
 
 out:
@@ -793,7 +692,7 @@ static int etm4_enable_sysfs(struct coresight_device *csdev)
 	unsigned long cfg_hash;
 	int ret, preset;
 
-	/* enable any config activated by configfs */
+	 
 	cscfg_config_sysfs_get_active_cfg(&cfg_hash, &preset);
 	if (cfg_hash) {
 		ret = cscfg_csdev_enable_active_config(csdev, cfg_hash, preset);
@@ -803,15 +702,12 @@ static int etm4_enable_sysfs(struct coresight_device *csdev)
 
 	spin_lock(&drvdata->spinlock);
 
-	/* sysfs needs to read and allocate a trace ID */
+	 
 	ret = etm4_read_alloc_trace_id(drvdata);
 	if (ret < 0)
 		goto unlock_sysfs_enable;
 
-	/*
-	 * Executing etm4_enable_hw on the cpu whose ETM is being enabled
-	 * ensures that register writes occur when cpu is powered.
-	 */
+	 
 	arg.drvdata = drvdata;
 	ret = smp_call_function_single(drvdata->cpu,
 				       etm4_enable_hw_smp_call, &arg, 1);
@@ -840,7 +736,7 @@ static int etm4_enable(struct coresight_device *csdev, struct perf_event *event,
 
 	val = local_cmpxchg(&drvdata->mode, CS_MODE_DISABLED, mode);
 
-	/* Someone is already using the tracer */
+	 
 	if (val)
 		return -EBUSY;
 
@@ -855,7 +751,7 @@ static int etm4_enable(struct coresight_device *csdev, struct perf_event *event,
 		ret = -EINVAL;
 	}
 
-	/* The tracer didn't start */
+	 
 	if (ret)
 		local_set(&drvdata->mode, CS_MODE_DISABLED);
 
@@ -876,7 +772,7 @@ static void etm4_disable_hw(void *info)
 	etm4_disable_arch_specific(drvdata);
 
 	if (!drvdata->skip_power_up) {
-		/* power can be removed from the trace unit now */
+		 
 		control = etm4x_relaxed_read32(csa, TRCPDCR);
 		control &= ~TRCPDCR_PU;
 		etm4x_relaxed_write32(csa, control, TRCPDCR);
@@ -884,36 +780,29 @@ static void etm4_disable_hw(void *info)
 
 	control = etm4x_relaxed_read32(csa, TRCPRGCTLR);
 
-	/* EN, bit[0] Trace unit enable bit */
+	 
 	control &= ~0x1;
 
-	/*
-	 * If the CPU supports v8.4 Trace filter Control,
-	 * set the ETM to trace prohibited region.
-	 */
+	 
 	etm4x_prohibit_trace(drvdata);
-	/*
-	 * Make sure everything completes before disabling, as recommended
-	 * by section 7.3.77 ("TRCVICTLR, ViewInst Main Control Register,
-	 * SSTATUS") of ARM IHI 0064D
-	 */
+	 
 	dsb(sy);
 	isb();
-	/* Trace synchronization barrier, is a nop if not supported */
+	 
 	tsb_csync();
 	etm4x_relaxed_write32(csa, control, TRCPRGCTLR);
 
-	/* wait for TRCSTATR.PMSTABLE to go to '1' */
+	 
 	if (coresight_timeout(csa, TRCSTATR, TRCSTATR_PMSTABLE_BIT, 1))
 		dev_err(etm_dev,
 			"timeout while waiting for PM stable Trace Status\n");
-	/* read the status of the single shot comparators */
+	 
 	for (i = 0; i < drvdata->nr_ss_cmp; i++) {
 		config->ss_status[i] =
 			etm4x_relaxed_read32(csa, TRCSSCSRn(i));
 	}
 
-	/* read back the current counter values */
+	 
 	for (i = 0; i < drvdata->nr_cntr; i++) {
 		config->cntr_val[i] =
 			etm4x_relaxed_read32(csa, TRCCNTVRn(i));
@@ -938,27 +827,16 @@ static int etm4_disable_perf(struct coresight_device *csdev,
 		return -EINVAL;
 
 	etm4_disable_hw(drvdata);
-	/*
-	 * The config_id occupies bits 63:32 of the config2 perf event attr
-	 * field. If this is non-zero then we will have enabled a config.
-	 */
+	 
 	if (attr->config2 & GENMASK_ULL(63, 32))
 		cscfg_csdev_disable_active_config(csdev);
 
-	/*
-	 * Check if the start/stop logic was active when the unit was stopped.
-	 * That way we can re-enable the start/stop logic when the process is
-	 * scheduled again.  Configuration of the start/stop logic happens in
-	 * function etm4_set_event_filters().
-	 */
+	 
 	control = etm4x_relaxed_read32(&csdev->access, TRCVICTLR);
-	/* TRCVICTLR::SSSTATUS, bit[9] */
+	 
 	filters->ssstatus = (control & BIT(9));
 
-	/*
-	 * perf will release trace ids when _free_aux() is
-	 * called at the end of the session.
-	 */
+	 
 
 	return 0;
 }
@@ -967,30 +845,17 @@ static void etm4_disable_sysfs(struct coresight_device *csdev)
 {
 	struct etmv4_drvdata *drvdata = dev_get_drvdata(csdev->dev.parent);
 
-	/*
-	 * Taking hotplug lock here protects from clocks getting disabled
-	 * with tracing being left on (crash scenario) if user disable occurs
-	 * after cpu online mask indicates the cpu is offline but before the
-	 * DYING hotplug callback is serviced by the ETM driver.
-	 */
+	 
 	cpus_read_lock();
 	spin_lock(&drvdata->spinlock);
 
-	/*
-	 * Executing etm4_disable_hw on the cpu whose ETM is being disabled
-	 * ensures that register writes occur when cpu is powered.
-	 */
+	 
 	smp_call_function_single(drvdata->cpu, etm4_disable_hw, drvdata, 1);
 
 	spin_unlock(&drvdata->spinlock);
 	cpus_read_unlock();
 
-	/*
-	 * we only release trace IDs when resetting sysfs.
-	 * This permits sysfs users to read the trace ID after the trace
-	 * session has completed. This maintains operational behaviour with
-	 * prior trace id allocation method
-	 */
+	 
 
 	dev_dbg(&csdev->dev, "ETM tracing disabled\n");
 }
@@ -1001,11 +866,7 @@ static void etm4_disable(struct coresight_device *csdev,
 	enum cs_mode mode;
 	struct etmv4_drvdata *drvdata = dev_get_drvdata(csdev->dev.parent);
 
-	/*
-	 * For as long as the tracer isn't disabled another entity can't
-	 * change its status.  As such we can read the status here without
-	 * fearing it will change under us.
-	 */
+	 
 	mode = local_read(&drvdata->mode);
 
 	switch (mode) {
@@ -1048,9 +909,7 @@ static bool etm4_init_sysreg_access(struct etmv4_drvdata *drvdata,
 	if (!cpu_supports_sysreg_trace())
 		return false;
 
-	/*
-	 * ETMs implementing sysreg access must implement TRCDEVARCH.
-	 */
+	 
 	devarch = read_etm4x_sysreg_const_offset(TRCDEVARCH);
 	switch (devarch & ETM_DEVARCH_ID_MASK) {
 	case ETM_DEVARCH_ETMv4x_ARCH:
@@ -1090,14 +949,7 @@ static bool etm4_init_iomem_access(struct etmv4_drvdata *drvdata,
 	if (!is_coresight_device(drvdata->base) || !is_devtype_cpu_trace(drvdata->base))
 		return false;
 
-	/*
-	 * All ETMs must implement TRCDEVARCH to indicate that
-	 * the component is an ETMv4. Even though TRCIDR1 also
-	 * contains the information, it is part of the "Trace"
-	 * register and must be accessed with the OSLK cleared,
-	 * with MMIO. But we cannot touch the OSLK until we are
-	 * sure this is an ETM. So rely only on the TRCDEVARCH.
-	 */
+	 
 	if ((devarch & ETM_DEVARCH_ID_MASK) != ETM_DEVARCH_ETMv4x_ARCH) {
 		pr_warn_once("TRCDEVARCH doesn't match ETMv4 architecture\n");
 		return false;
@@ -1111,11 +963,7 @@ static bool etm4_init_iomem_access(struct etmv4_drvdata *drvdata,
 static bool etm4_init_csdev_access(struct etmv4_drvdata *drvdata,
 				   struct csdev_access *csa)
 {
-	/*
-	 * Always choose the memory mapped io, if there is
-	 * a memory map to prevent sysreg access on broken
-	 * systems.
-	 */
+	 
 	if (drvdata->base)
 		return etm4_init_iomem_access(drvdata, csa);
 
@@ -1134,16 +982,12 @@ static void cpu_detect_trace_filtering(struct etmv4_drvdata *drvdata)
 	if (!cpuid_feature_extract_unsigned_field(dfr0, ID_AA64DFR0_EL1_TraceFilt_SHIFT))
 		return;
 
-	/*
-	 * If the CPU supports v8.4 SelfHosted Tracing, enable
-	 * tracing at the kernel EL and EL0, forcing to use the
-	 * virtual time as the timestamp.
-	 */
+	 
 	trfcr = (TRFCR_ELx_TS_VIRTUAL |
 		 TRFCR_ELx_ExTRE |
 		 TRFCR_ELx_E0TRE);
 
-	/* If we are running at EL2, allow tracing the CONTEXTIDR_EL2. */
+	 
 	if (is_kernel_in_hyp_mode())
 		trfcr |= TRFCR_EL2_CX;
 
@@ -1165,131 +1009,103 @@ static void etm4_init_arch_data(void *info)
 	drvdata = dev_get_drvdata(init_arg->dev);
 	csa = init_arg->csa;
 
-	/*
-	 * If we are unable to detect the access mechanism,
-	 * or unable to detect the trace unit type, fail
-	 * early.
-	 */
+	 
 	if (!etm4_init_csdev_access(drvdata, csa))
 		return;
 
-	/* Detect the support for OS Lock before we actually use it */
+	 
 	etm_detect_os_lock(drvdata, csa);
 
-	/* Make sure all registers are accessible */
+	 
 	etm4_os_unlock_csa(drvdata, csa);
 	etm4_cs_unlock(drvdata, csa);
 
 	etm4_check_arch_features(drvdata, csa);
 
-	/* find all capabilities of the tracing unit */
+	 
 	etmidr0 = etm4x_relaxed_read32(csa, TRCIDR0);
 
-	/* INSTP0, bits[2:1] P0 tracing support field */
+	 
 	drvdata->instrp0 = !!(FIELD_GET(TRCIDR0_INSTP0_MASK, etmidr0) == 0b11);
-	/* TRCBB, bit[5] Branch broadcast tracing support bit */
+	 
 	drvdata->trcbb = !!(etmidr0 & TRCIDR0_TRCBB);
-	/* TRCCOND, bit[6] Conditional instruction tracing support bit */
+	 
 	drvdata->trccond = !!(etmidr0 & TRCIDR0_TRCCOND);
-	/* TRCCCI, bit[7] Cycle counting instruction bit */
+	 
 	drvdata->trccci = !!(etmidr0 & TRCIDR0_TRCCCI);
-	/* RETSTACK, bit[9] Return stack bit */
+	 
 	drvdata->retstack = !!(etmidr0 & TRCIDR0_RETSTACK);
-	/* NUMEVENT, bits[11:10] Number of events field */
+	 
 	drvdata->nr_event = FIELD_GET(TRCIDR0_NUMEVENT_MASK, etmidr0);
-	/* QSUPP, bits[16:15] Q element support field */
+	 
 	drvdata->q_support = FIELD_GET(TRCIDR0_QSUPP_MASK, etmidr0);
-	/* TSSIZE, bits[28:24] Global timestamp size field */
+	 
 	drvdata->ts_size = FIELD_GET(TRCIDR0_TSSIZE_MASK, etmidr0);
 
-	/* maximum size of resources */
+	 
 	etmidr2 = etm4x_relaxed_read32(csa, TRCIDR2);
-	/* CIDSIZE, bits[9:5] Indicates the Context ID size */
+	 
 	drvdata->ctxid_size = FIELD_GET(TRCIDR2_CIDSIZE_MASK, etmidr2);
-	/* VMIDSIZE, bits[14:10] Indicates the VMID size */
+	 
 	drvdata->vmid_size = FIELD_GET(TRCIDR2_VMIDSIZE_MASK, etmidr2);
-	/* CCSIZE, bits[28:25] size of the cycle counter in bits minus 12 */
+	 
 	drvdata->ccsize = FIELD_GET(TRCIDR2_CCSIZE_MASK, etmidr2);
 
 	etmidr3 = etm4x_relaxed_read32(csa, TRCIDR3);
-	/* CCITMIN, bits[11:0] minimum threshold value that can be programmed */
+	 
 	drvdata->ccitmin = FIELD_GET(TRCIDR3_CCITMIN_MASK, etmidr3);
-	/* EXLEVEL_S, bits[19:16] Secure state instruction tracing */
+	 
 	drvdata->s_ex_level = FIELD_GET(TRCIDR3_EXLEVEL_S_MASK, etmidr3);
 	drvdata->config.s_ex_level = drvdata->s_ex_level;
-	/* EXLEVEL_NS, bits[23:20] Non-secure state instruction tracing */
+	 
 	drvdata->ns_ex_level = FIELD_GET(TRCIDR3_EXLEVEL_NS_MASK, etmidr3);
-	/*
-	 * TRCERR, bit[24] whether a trace unit can trace a
-	 * system error exception.
-	 */
+	 
 	drvdata->trc_error = !!(etmidr3 & TRCIDR3_TRCERR);
-	/* SYNCPR, bit[25] implementation has a fixed synchronization period? */
+	 
 	drvdata->syncpr = !!(etmidr3 & TRCIDR3_SYNCPR);
-	/* STALLCTL, bit[26] is stall control implemented? */
+	 
 	drvdata->stallctl = !!(etmidr3 & TRCIDR3_STALLCTL);
-	/* SYSSTALL, bit[27] implementation can support stall control? */
+	 
 	drvdata->sysstall = !!(etmidr3 & TRCIDR3_SYSSTALL);
-	/*
-	 * NUMPROC - the number of PEs available for tracing, 5bits
-	 *         = TRCIDR3.bits[13:12]bits[30:28]
-	 *  bits[4:3] = TRCIDR3.bits[13:12] (since etm-v4.2, otherwise RES0)
-	 *  bits[3:0] = TRCIDR3.bits[30:28]
-	 */
+	 
 	drvdata->nr_pe =  (FIELD_GET(TRCIDR3_NUMPROC_HI_MASK, etmidr3) << 3) |
 			   FIELD_GET(TRCIDR3_NUMPROC_LO_MASK, etmidr3);
-	/* NOOVERFLOW, bit[31] is trace overflow prevention supported */
+	 
 	drvdata->nooverflow = !!(etmidr3 & TRCIDR3_NOOVERFLOW);
 
-	/* number of resources trace unit supports */
+	 
 	etmidr4 = etm4x_relaxed_read32(csa, TRCIDR4);
-	/* NUMACPAIRS, bits[0:3] number of addr comparator pairs for tracing */
+	 
 	drvdata->nr_addr_cmp = FIELD_GET(TRCIDR4_NUMACPAIRS_MASK, etmidr4);
-	/* NUMPC, bits[15:12] number of PE comparator inputs for tracing */
+	 
 	drvdata->nr_pe_cmp = FIELD_GET(TRCIDR4_NUMPC_MASK, etmidr4);
-	/*
-	 * NUMRSPAIR, bits[19:16]
-	 * The number of resource pairs conveyed by the HW starts at 0, i.e a
-	 * value of 0x0 indicate 1 resource pair, 0x1 indicate two and so on.
-	 * As such add 1 to the value of NUMRSPAIR for a better representation.
-	 *
-	 * For ETM v4.3 and later, 0x0 means 0, and no pairs are available -
-	 * the default TRUE and FALSE resource selectors are omitted.
-	 * Otherwise for values 0x1 and above the number is N + 1 as per v4.2.
-	 */
+	 
 	drvdata->nr_resource = FIELD_GET(TRCIDR4_NUMRSPAIR_MASK, etmidr4);
 	if ((drvdata->arch < ETM_ARCH_V4_3) || (drvdata->nr_resource > 0))
 		drvdata->nr_resource += 1;
-	/*
-	 * NUMSSCC, bits[23:20] the number of single-shot
-	 * comparator control for tracing. Read any status regs as these
-	 * also contain RO capability data.
-	 */
+	 
 	drvdata->nr_ss_cmp = FIELD_GET(TRCIDR4_NUMSSCC_MASK, etmidr4);
 	for (i = 0; i < drvdata->nr_ss_cmp; i++) {
 		drvdata->config.ss_status[i] =
 			etm4x_relaxed_read32(csa, TRCSSCSRn(i));
 	}
-	/* NUMCIDC, bits[27:24] number of Context ID comparators for tracing */
+	 
 	drvdata->numcidc = FIELD_GET(TRCIDR4_NUMCIDC_MASK, etmidr4);
-	/* NUMVMIDC, bits[31:28] number of VMID comparators for tracing */
+	 
 	drvdata->numvmidc = FIELD_GET(TRCIDR4_NUMVMIDC_MASK, etmidr4);
 
 	etmidr5 = etm4x_relaxed_read32(csa, TRCIDR5);
-	/* NUMEXTIN, bits[8:0] number of external inputs implemented */
+	 
 	drvdata->nr_ext_inp = FIELD_GET(TRCIDR5_NUMEXTIN_MASK, etmidr5);
-	/* TRACEIDSIZE, bits[21:16] indicates the trace ID width */
+	 
 	drvdata->trcid_size = FIELD_GET(TRCIDR5_TRACEIDSIZE_MASK, etmidr5);
-	/* ATBTRIG, bit[22] implementation can support ATB triggers? */
+	 
 	drvdata->atbtrig = !!(etmidr5 & TRCIDR5_ATBTRIG);
-	/*
-	 * LPOVERRIDE, bit[23] implementation supports
-	 * low-power state override
-	 */
+	 
 	drvdata->lpoverride = (etmidr5 & TRCIDR5_LPOVERRIDE) && (!drvdata->skip_power_up);
-	/* NUMSEQSTATE, bits[27:25] number of sequencer states implemented */
+	 
 	drvdata->nrseqstate = FIELD_GET(TRCIDR5_NUMSEQSTATE_MASK, etmidr5);
-	/* NUMCNTR, bits[30:28] number of counters available for tracing */
+	 
 	drvdata->nr_cntr = FIELD_GET(TRCIDR5_NUMCNTR_MASK, etmidr5);
 	etm4_cs_lock(drvdata, csa);
 	cpu_detect_trace_filtering(drvdata);
@@ -1300,7 +1116,7 @@ static inline u32 etm4_get_victlr_access_type(struct etmv4_config *config)
 	return etm4_get_access_type(config) << __bf_shf(TRCVICTLR_EXLEVEL_MASK);
 }
 
-/* Set ELx trace filter access in the TRCVICTLR register */
+ 
 static void etm4_set_victlr_access(struct etmv4_config *config)
 {
 	config->vinst_ctrl &= ~TRCVICTLR_EXLEVEL_MASK;
@@ -1309,23 +1125,23 @@ static void etm4_set_victlr_access(struct etmv4_config *config)
 
 static void etm4_set_default_config(struct etmv4_config *config)
 {
-	/* disable all events tracing */
+	 
 	config->eventctrl0 = 0x0;
 	config->eventctrl1 = 0x0;
 
-	/* disable stalling */
+	 
 	config->stall_ctrl = 0x0;
 
-	/* enable trace synchronization every 4096 bytes, if available */
+	 
 	config->syncfreq = 0xC;
 
-	/* disable timestamp event */
+	 
 	config->ts_ctrl = 0x0;
 
-	/* TRCVICTLR::EVENT = 0x01, select the always on logic */
+	 
 	config->vinst_ctrl = FIELD_PREP(TRCVICTLR_EVENT_MASK, 0x01);
 
-	/* TRCVICTLR::EXLEVEL_NS:EXLEVELS: Set kernel / user filtering */
+	 
 	etm4_set_victlr_access(config);
 }
 
@@ -1333,13 +1149,9 @@ static u64 etm4_get_ns_access_type(struct etmv4_config *config)
 {
 	u64 access_type = 0;
 
-	/*
-	 * EXLEVEL_NS, for NonSecure Exception levels.
-	 * The mask here is a generic value and must be
-	 * shifted to the corresponding field for the registers
-	 */
+	 
 	if (!is_kernel_in_hyp_mode()) {
-		/* Stay away from hypervisor mode for non-VHE */
+		 
 		access_type =  ETM_EXLEVEL_NS_HYP;
 		if (config->mode & ETM_MODE_EXCL_KERN)
 			access_type |= ETM_EXLEVEL_NS_OS;
@@ -1353,14 +1165,10 @@ static u64 etm4_get_ns_access_type(struct etmv4_config *config)
 	return access_type;
 }
 
-/*
- * Construct the exception level masks for a given config.
- * This must be shifted to the corresponding register field
- * for usage.
- */
+ 
 static u64 etm4_get_access_type(struct etmv4_config *config)
 {
-	/* All Secure exception levels are excluded from the trace */
+	 
 	return etm4_get_ns_access_type(config) | (u64)config->s_ex_level;
 }
 
@@ -1374,31 +1182,17 @@ static void etm4_set_comparator_filter(struct etmv4_config *config,
 {
 	u64 access_type = etm4_get_comparator_access_type(config);
 
-	/* First half of default address comparator */
+	 
 	config->addr_val[comparator] = start;
 	config->addr_acc[comparator] = access_type;
 	config->addr_type[comparator] = ETM_ADDR_TYPE_RANGE;
 
-	/* Second half of default address comparator */
+	 
 	config->addr_val[comparator + 1] = stop;
 	config->addr_acc[comparator + 1] = access_type;
 	config->addr_type[comparator + 1] = ETM_ADDR_TYPE_RANGE;
 
-	/*
-	 * Configure the ViewInst function to include this address range
-	 * comparator.
-	 *
-	 * @comparator is divided by two since it is the index in the
-	 * etmv4_config::addr_val array but register TRCVIIECTLR deals with
-	 * address range comparator _pairs_.
-	 *
-	 * Therefore:
-	 *	index 0 -> compatator pair 0
-	 *	index 2 -> comparator pair 1
-	 *	index 4 -> comparator pair 2
-	 *	...
-	 *	index 14 -> comparator pair 7
-	 */
+	 
 	config->viiectlr |= BIT(comparator / 2);
 }
 
@@ -1409,33 +1203,26 @@ static void etm4_set_start_stop_filter(struct etmv4_config *config,
 	int shift;
 	u64 access_type = etm4_get_comparator_access_type(config);
 
-	/* Configure the comparator */
+	 
 	config->addr_val[comparator] = address;
 	config->addr_acc[comparator] = access_type;
 	config->addr_type[comparator] = type;
 
-	/*
-	 * Configure ViewInst Start-Stop control register.
-	 * Addresses configured to start tracing go from bit 0 to n-1,
-	 * while those configured to stop tracing from 16 to 16 + n-1.
-	 */
+	 
 	shift = (type == ETM_ADDR_TYPE_START ? 0 : 16);
 	config->vissctlr |= BIT(shift + comparator);
 }
 
 static void etm4_set_default_filter(struct etmv4_config *config)
 {
-	/* Trace everything 'default' filter achieved by no filtering */
+	 
 	config->viiectlr = 0x0;
 
-	/*
-	 * TRCVICTLR::SSSTATUS == 1, the start-stop logic is
-	 * in the started state
-	 */
+	 
 	config->vinst_ctrl |= TRCVICTLR_SSSTATUS;
 	config->mode |= ETM_MODE_VIEWINST_STARTSTOP;
 
-	/* No start-stop filtering for ViewInst */
+	 
 	config->vissctlr = 0x0;
 }
 
@@ -1444,13 +1231,7 @@ static void etm4_set_default(struct etmv4_config *config)
 	if (WARN_ON_ONCE(!config))
 		return;
 
-	/*
-	 * Make default initialisation trace everything
-	 *
-	 * This is done by a minimum default config sufficient to enable
-	 * full instruction trace - with a default filter for trace all
-	 * achieved by having no filtering.
-	 */
+	 
 	etm4_set_default_config(config);
 	etm4_set_default_filter(config);
 }
@@ -1460,13 +1241,10 @@ static int etm4_get_next_comparator(struct etmv4_drvdata *drvdata, u32 type)
 	int nr_comparator, index = 0;
 	struct etmv4_config *config = &drvdata->config;
 
-	/*
-	 * nr_addr_cmp holds the number of comparator _pair_, so time 2
-	 * for the total number of comparators.
-	 */
+	 
 	nr_comparator = drvdata->nr_addr_cmp * 2;
 
-	/* Go through the tally of comparators looking for a free one. */
+	 
 	while (index < nr_comparator) {
 		switch (type) {
 		case ETM_ADDR_TYPE_RANGE:
@@ -1474,7 +1252,7 @@ static int etm4_get_next_comparator(struct etmv4_drvdata *drvdata, u32 type)
 			    config->addr_type[index + 1] == ETM_ADDR_TYPE_NONE)
 				return index;
 
-			/* Address range comparators go in pairs */
+			 
 			index += 2;
 			break;
 		case ETM_ADDR_TYPE_START:
@@ -1482,7 +1260,7 @@ static int etm4_get_next_comparator(struct etmv4_drvdata *drvdata, u32 type)
 			if (config->addr_type[index] == ETM_ADDR_TYPE_NONE)
 				return index;
 
-			/* Start/stop address can have odd indexes */
+			 
 			index += 1;
 			break;
 		default:
@@ -1490,7 +1268,7 @@ static int etm4_get_next_comparator(struct etmv4_drvdata *drvdata, u32 type)
 		}
 	}
 
-	/* If we are here all the comparators have been used. */
+	 
 	return -ENOSPC;
 }
 
@@ -1505,13 +1283,10 @@ static int etm4_set_event_filters(struct etmv4_drvdata *drvdata,
 	if (!filters)
 		goto default_filter;
 
-	/* Sync events with what Perf got */
+	 
 	perf_event_addr_filters_sync(event);
 
-	/*
-	 * If there are no filters to deal with simply go ahead with
-	 * the default filter, i.e the entire address range.
-	 */
+	 
 	if (!filters->nr_filters)
 		goto default_filter;
 
@@ -1519,7 +1294,7 @@ static int etm4_set_event_filters(struct etmv4_drvdata *drvdata,
 		struct etm_filter *filter = &filters->etm_filter[i];
 		enum etm_addr_type type = filter->type;
 
-		/* See if a comparator is free. */
+		 
 		comparator = etm4_get_next_comparator(drvdata, type);
 		if (comparator < 0) {
 			ret = comparator;
@@ -1532,41 +1307,28 @@ static int etm4_set_event_filters(struct etmv4_drvdata *drvdata,
 						   filter->start_addr,
 						   filter->stop_addr,
 						   comparator);
-			/*
-			 * TRCVICTLR::SSSTATUS == 1, the start-stop logic is
-			 * in the started state
-			 */
+			 
 			config->vinst_ctrl |= TRCVICTLR_SSSTATUS;
 
-			/* No start-stop filtering for ViewInst */
+			 
 			config->vissctlr = 0x0;
 			break;
 		case ETM_ADDR_TYPE_START:
 		case ETM_ADDR_TYPE_STOP:
-			/* Get the right start or stop address */
+			 
 			address = (type == ETM_ADDR_TYPE_START ?
 				   filter->start_addr :
 				   filter->stop_addr);
 
-			/* Configure comparator */
+			 
 			etm4_set_start_stop_filter(config, address,
 						   comparator, type);
 
-			/*
-			 * If filters::ssstatus == 1, trace acquisition was
-			 * started but the process was yanked away before the
-			 * stop address was hit.  As such the start/stop
-			 * logic needs to be re-started so that tracing can
-			 * resume where it left.
-			 *
-			 * The start/stop logic status when a process is
-			 * scheduled out is checked in function
-			 * etm4_disable_perf().
-			 */
+			 
 			if (filters->ssstatus)
 				config->vinst_ctrl |= TRCVICTLR_SSSTATUS;
 
-			/* No include/exclude filtering for ViewInst */
+			 
 			config->viiectlr = 0x0;
 			break;
 		default:
@@ -1592,10 +1354,10 @@ void etm4_config_trace_mode(struct etmv4_config *config)
 	mode = config->mode;
 	mode &= (ETM_MODE_EXCL_KERN | ETM_MODE_EXCL_USER);
 
-	/* excluding kernel AND user space doesn't make sense */
+	 
 	WARN_ON_ONCE(mode == (ETM_MODE_EXCL_KERN | ETM_MODE_EXCL_USER));
 
-	/* nothing to do if neither flags are set */
+	 
 	if (!(mode & ETM_MODE_EXCL_KERN) && !(mode & ETM_MODE_EXCL_USER))
 		return;
 
@@ -1653,18 +1415,15 @@ static int __etm4_cpu_save(struct etmv4_drvdata *drvdata)
 	etm_dev = &csdev->dev;
 	csa = &csdev->access;
 
-	/*
-	 * As recommended by 3.4.1 ("The procedure when powering down the PE")
-	 * of ARM IHI 0064D
-	 */
+	 
 	dsb(sy);
 	isb();
 
 	etm4_cs_unlock(drvdata, csa);
-	/* Lock the OS lock to disable trace and external debugger access */
+	 
 	etm4_os_lock(drvdata);
 
-	/* wait for TRCSTATR.PMSTABLE to go up */
+	 
 	if (coresight_timeout(csa, TRCSTATR, TRCSTATR_PMSTABLE_BIT, 1)) {
 		dev_err(etm_dev,
 			"timeout while waiting for PM Stable Status\n");
@@ -1730,12 +1489,7 @@ static int __etm4_cpu_save(struct etmv4_drvdata *drvdata)
 		state->trcacatr[i] = etm4x_read64(csa, TRCACATRn(i));
 	}
 
-	/*
-	 * Data trace stream is architecturally prohibited for A profile cores
-	 * so we don't save (or later restore) trcdvcvr and trcdvcmr - As per
-	 * section 1.3.4 ("Possible functional configurations of an ETMv4 trace
-	 * unit") of ARM IHI 0064D.
-	 */
+	 
 
 	for (i = 0; i < drvdata->numcidc; i++)
 		state->trccidcvr[i] = etm4x_read64(csa, TRCCIDCVRn(i));
@@ -1756,7 +1510,7 @@ static int __etm4_cpu_save(struct etmv4_drvdata *drvdata)
 	if (!drvdata->skip_power_up)
 		state->trcpdcr = etm4x_read32(csa, TRCPDCR);
 
-	/* wait for TRCSTATR.IDLE to go up */
+	 
 	if (coresight_timeout(csa, TRCSTATR, TRCSTATR_IDLE_BIT, 1)) {
 		dev_err(etm_dev,
 			"timeout while waiting for Idle Trace Status\n");
@@ -1767,11 +1521,7 @@ static int __etm4_cpu_save(struct etmv4_drvdata *drvdata)
 
 	drvdata->state_needs_restore = true;
 
-	/*
-	 * Power can be removed from the trace unit now. We do this to
-	 * potentially save power on systems that respect the TRCPDCR_PU
-	 * despite requesting software to save/restore state.
-	 */
+	 
 	if (!drvdata->skip_power_up)
 		etm4x_relaxed_write32(csa, (state->trcpdcr & ~TRCPDCR_PU),
 				      TRCPDCR);
@@ -1784,13 +1534,10 @@ static int etm4_cpu_save(struct etmv4_drvdata *drvdata)
 {
 	int ret = 0;
 
-	/* Save the TRFCR irrespective of whether the ETM is ON */
+	 
 	if (drvdata->trfcr)
 		drvdata->save_trfcr = read_trfcr();
-	/*
-	 * Save and restore the ETM Trace registers only if
-	 * the ETM is active.
-	 */
+	 
 	if (local_read(&drvdata->mode) && drvdata->save_state)
 		ret = __etm4_cpu_save(drvdata);
 	return ret;
@@ -1882,14 +1629,11 @@ static void __etm4_cpu_restore(struct etmv4_drvdata *drvdata)
 
 	drvdata->state_needs_restore = false;
 
-	/*
-	 * As recommended by section 4.3.7 ("Synchronization when using the
-	 * memory-mapped interface") of ARM IHI 0064D
-	 */
+	 
 	dsb(sy);
 	isb();
 
-	/* Unlock the OS lock to re-enable trace and external debug access */
+	 
 	etm4_os_unlock(drvdata);
 	etm4_cs_lock(drvdata, csa);
 }
@@ -1936,7 +1680,7 @@ static struct notifier_block etm4_cpu_pm_nb = {
 	.notifier_call = etm4_cpu_pm_notify,
 };
 
-/* Setup PM. Deals with error conditions and counts */
+ 
 static int __init etm4_pm_setup(void)
 {
 	int ret;
@@ -1956,13 +1700,13 @@ static int __init etm4_pm_setup(void)
 					"arm/coresight4:online",
 					etm4_online_cpu, NULL);
 
-	/* HP dyn state ID returned in ret on success */
+	 
 	if (ret > 0) {
 		hp_online = ret;
 		return 0;
 	}
 
-	/* failed dyn state - remove others */
+	 
 	cpuhp_remove_state_nocalls(CPUHP_AP_ARM_CORESIGHT_STARTING);
 
 unregister_notifier:
@@ -1998,7 +1742,7 @@ static int etm4_add_coresight_dev(struct etm4_init_arg *init_arg)
 	if (!drvdata->arch)
 		return -EINVAL;
 
-	/* TRCPDCR is not accessible with system instructions. */
+	 
 	if (!desc.access.io_mem ||
 	    fwnode_property_present(dev_fwnode(dev), "qcom,skip-power-up"))
 		drvdata->skip_power_up = true;
@@ -2008,7 +1752,7 @@ static int etm4_add_coresight_dev(struct etm4_init_arg *init_arg)
 
 	if (etm4x_is_ete(drvdata)) {
 		type_name = "ete";
-		/* ETE v1 has major version == 0b101. Adjust this for logging.*/
+		 
 		major -= 4;
 	} else {
 		type_name = "etm";
@@ -2043,7 +1787,7 @@ static int etm4_add_coresight_dev(struct etm4_init_arg *init_arg)
 		return ret;
 	}
 
-	/* register with config infrastructure & load any current features */
+	 
 	ret = etm4_cscfg_register(drvdata->csdev);
 	if (ret) {
 		coresight_unregister(drvdata->csdev);
@@ -2093,14 +1837,11 @@ static int etm4_probe(struct device *dev)
 	init_arg.dev = dev;
 	init_arg.csa = &access;
 
-	/*
-	 * Serialize against CPUHP callbacks to avoid race condition
-	 * between the smp call and saving the delayed probe.
-	 */
+	 
 	cpus_read_lock();
 	if (smp_call_function_single(drvdata->cpu,
 				etm4_init_arch_data,  &init_arg, 1)) {
-		/* The CPU was offline, try again once it comes online. */
+		 
 		delayed = devm_kmalloc(dev, sizeof(*delayed), GFP_KERNEL);
 		if (!delayed) {
 			cpus_read_unlock();
@@ -2127,7 +1868,7 @@ static int etm4_probe_amba(struct amba_device *adev, const struct amba_id *id)
 	struct resource *res = &adev->res;
 	int ret;
 
-	/* Validity for the resource is already checked by the AMBA core */
+	 
 	base = devm_ioremap_resource(dev, res);
 	if (IS_ERR(base))
 		return PTR_ERR(base);
@@ -2209,7 +1950,7 @@ static int etm4_probe_cpu(unsigned int cpu)
 
 static struct amba_cs_uci_id uci_id_etm4[] = {
 	{
-		/*  ETMv4 UCI data */
+		 
 		.devarch	= ETM_DEVARCH_ETMv4x_ARCH,
 		.devarch_mask	= ETM_DEVARCH_ID_MASK,
 		.devtype	= CS_DEVTYPE_PE_TRACE,
@@ -2227,20 +1968,12 @@ static void clear_etmdrvdata(void *info)
 static void etm4_remove_dev(struct etmv4_drvdata *drvdata)
 {
 	bool had_delayed_probe;
-	/*
-	 * Taking hotplug lock here to avoid racing between etm4_remove_dev()
-	 * and CPU hotplug call backs.
-	 */
+	 
 	cpus_read_lock();
 
 	had_delayed_probe = per_cpu(delayed_probe, drvdata->cpu);
 
-	/*
-	 * The readers for etmdrvdata[] are CPU hotplug call backs
-	 * and PM notification call backs. Change etmdrvdata[i] on
-	 * CPU i ensures these call backs has consistent view
-	 * inside one call back function.
-	 */
+	 
 	if (smp_call_function_single(drvdata->cpu, clear_etmdrvdata, &drvdata->cpu, 1))
 		clear_etmdrvdata(&drvdata->cpu);
 
@@ -2276,29 +2009,26 @@ static int etm4_remove_platform_dev(struct platform_device *pdev)
 }
 
 static const struct amba_id etm4_ids[] = {
-	CS_AMBA_ID(0x000bb95d),			/* Cortex-A53 */
-	CS_AMBA_ID(0x000bb95e),			/* Cortex-A57 */
-	CS_AMBA_ID(0x000bb95a),			/* Cortex-A72 */
-	CS_AMBA_ID(0x000bb959),			/* Cortex-A73 */
-	CS_AMBA_UCI_ID(0x000bb9da, uci_id_etm4),/* Cortex-A35 */
-	CS_AMBA_UCI_ID(0x000bbd05, uci_id_etm4),/* Cortex-A55 */
-	CS_AMBA_UCI_ID(0x000bbd0a, uci_id_etm4),/* Cortex-A75 */
-	CS_AMBA_UCI_ID(0x000bbd0c, uci_id_etm4),/* Neoverse N1 */
-	CS_AMBA_UCI_ID(0x000bbd41, uci_id_etm4),/* Cortex-A78 */
-	CS_AMBA_UCI_ID(0x000f0205, uci_id_etm4),/* Qualcomm Kryo */
-	CS_AMBA_UCI_ID(0x000f0211, uci_id_etm4),/* Qualcomm Kryo */
-	CS_AMBA_UCI_ID(0x000bb802, uci_id_etm4),/* Qualcomm Kryo 385 Cortex-A55 */
-	CS_AMBA_UCI_ID(0x000bb803, uci_id_etm4),/* Qualcomm Kryo 385 Cortex-A75 */
-	CS_AMBA_UCI_ID(0x000bb805, uci_id_etm4),/* Qualcomm Kryo 4XX Cortex-A55 */
-	CS_AMBA_UCI_ID(0x000bb804, uci_id_etm4),/* Qualcomm Kryo 4XX Cortex-A76 */
-	CS_AMBA_UCI_ID(0x000bbd0d, uci_id_etm4),/* Qualcomm Kryo 5XX Cortex-A77 */
-	CS_AMBA_UCI_ID(0x000cc0af, uci_id_etm4),/* Marvell ThunderX2 */
-	CS_AMBA_UCI_ID(0x000b6d01, uci_id_etm4),/* HiSilicon-Hip08 */
-	CS_AMBA_UCI_ID(0x000b6d02, uci_id_etm4),/* HiSilicon-Hip09 */
-	/*
-	 * Match all PIDs with ETM4 DEVARCH. No need for adding any of the new
-	 * CPUs to the list here.
-	 */
+	CS_AMBA_ID(0x000bb95d),			 
+	CS_AMBA_ID(0x000bb95e),			 
+	CS_AMBA_ID(0x000bb95a),			 
+	CS_AMBA_ID(0x000bb959),			 
+	CS_AMBA_UCI_ID(0x000bb9da, uci_id_etm4), 
+	CS_AMBA_UCI_ID(0x000bbd05, uci_id_etm4), 
+	CS_AMBA_UCI_ID(0x000bbd0a, uci_id_etm4), 
+	CS_AMBA_UCI_ID(0x000bbd0c, uci_id_etm4), 
+	CS_AMBA_UCI_ID(0x000bbd41, uci_id_etm4), 
+	CS_AMBA_UCI_ID(0x000f0205, uci_id_etm4), 
+	CS_AMBA_UCI_ID(0x000f0211, uci_id_etm4), 
+	CS_AMBA_UCI_ID(0x000bb802, uci_id_etm4), 
+	CS_AMBA_UCI_ID(0x000bb803, uci_id_etm4), 
+	CS_AMBA_UCI_ID(0x000bb805, uci_id_etm4), 
+	CS_AMBA_UCI_ID(0x000bb804, uci_id_etm4), 
+	CS_AMBA_UCI_ID(0x000bbd0d, uci_id_etm4), 
+	CS_AMBA_UCI_ID(0x000cc0af, uci_id_etm4), 
+	CS_AMBA_UCI_ID(0x000b6d01, uci_id_etm4), 
+	CS_AMBA_UCI_ID(0x000b6d02, uci_id_etm4), 
+	 
 	CS_AMBA_MATCH_ALL_UCI(uci_id_etm4),
 	{},
 };
@@ -2350,7 +2080,7 @@ static const struct of_device_id etm4_sysreg_match[] = {
 
 #ifdef CONFIG_ACPI
 static const struct acpi_device_id etm4x_acpi_ids[] = {
-	{"ARMHC500", 0}, /* ARM CoreSight ETM4x */
+	{"ARMHC500", 0},  
 	{}
 };
 MODULE_DEVICE_TABLE(acpi, etm4x_acpi_ids);
@@ -2374,7 +2104,7 @@ static int __init etm4x_init(void)
 
 	ret = etm4_pm_setup();
 
-	/* etm4_pm_setup() does its own cleanup - exit on error */
+	 
 	if (ret)
 		return ret;
 

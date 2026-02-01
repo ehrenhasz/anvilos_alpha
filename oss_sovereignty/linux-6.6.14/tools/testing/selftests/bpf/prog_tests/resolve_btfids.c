@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #include <linux/err.h>
 #include <string.h>
@@ -28,7 +28,7 @@ struct symbol test_symbols[] = {
 	{ "func",    BTF_KIND_FUNC,    -1 },
 };
 
-/* Align the .BTF_ids section to 4 bytes */
+ 
 asm (
 ".pushsection " BTF_IDS_SECTION " ,\"a\"; \n"
 ".balign 4, 0;                            \n"
@@ -126,9 +126,7 @@ void test_resolve_btfids(void)
 	if (resolve_symbols())
 		return;
 
-	/* Check BTF_ID_LIST(test_list_local) and
-	 * BTF_ID_LIST_GLOBAL(test_list_global) IDs
-	 */
+	 
 	for (j = 0; j < ARRAY_SIZE(test_lists); j++) {
 		test_list = test_lists[j];
 		for (i = 0; i < ARRAY_SIZE(test_symbols); i++) {
@@ -142,7 +140,7 @@ void test_resolve_btfids(void)
 		}
 	}
 
-	/* Check BTF_SET_START(test_set) IDs */
+	 
 	for (i = 0; i < test_set.cnt; i++) {
 		bool found = false;
 

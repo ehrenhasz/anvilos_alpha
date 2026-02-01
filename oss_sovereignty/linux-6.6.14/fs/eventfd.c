@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  fs/eventfd.c
- *
- *  Copyright (C) 2007  Davide Libenzi <davidel@xmailserver.org>
- *
- */
+
+ 
 
 #include <linux/file.h>
 #include <linux/poll.h>
@@ -30,14 +25,7 @@ static DEFINE_IDA(eventfd_ida);
 struct eventfd_ctx {
 	struct kref kref;
 	wait_queue_head_t wqh;
-	/*
-	 * Every time that a write(2) is performed on an eventfd, the
-	 * value of the __u64 being written is added to "count" and a
-	 * wakeup is performed on "wqh". If EFD_SEMAPHORE flag was not
-	 * specified, a read(2) will return the "count" value to userspace,
-	 * and will reset "count" to zero. The kernel side eventfd_signal()
-	 * also, adds to the "count" counter and issue a wakeup.
-	 */
+	 
 	__u64 count;
 	unsigned int flags;
 	int id;
@@ -47,14 +35,7 @@ __u64 eventfd_signal_mask(struct eventfd_ctx *ctx, __u64 n, __poll_t mask)
 {
 	unsigned long flags;
 
-	/*
-	 * Deadlock or stack overflow issues can happen if we recurse here
-	 * through waitqueue wakeup handlers. If the caller users potentially
-	 * nested waitqueues with custom wakeup handlers, then it should
-	 * check eventfd_signal_allowed() before calling this function. If
-	 * it returns false, the eventfd_signal() call should be deferred to a
-	 * safe context.
-	 */
+	 
 	if (WARN_ON_ONCE(current->in_eventfd))
 		return 0;
 
@@ -71,20 +52,7 @@ __u64 eventfd_signal_mask(struct eventfd_ctx *ctx, __u64 n, __poll_t mask)
 	return n;
 }
 
-/**
- * eventfd_signal - Adds @n to the eventfd counter.
- * @ctx: [in] Pointer to the eventfd context.
- * @n: [in] Value of the counter to be added to the eventfd internal counter.
- *          The value cannot be negative.
- *
- * This function is supposed to be called by the kernel in paths that do not
- * allow sleeping. In this function we allow the counter to reach the ULLONG_MAX
- * value, and we signal this as overflow condition by returning a EPOLLERR
- * to poll(2).
- *
- * Returns the amount by which the counter was incremented.  This will be less
- * than @n if the counter has overflowed.
- */
+ 
 __u64 eventfd_signal(struct eventfd_ctx *ctx, __u64 n)
 {
 	return eventfd_signal_mask(ctx, n, 0);
@@ -105,13 +73,7 @@ static void eventfd_free(struct kref *kref)
 	eventfd_free_ctx(ctx);
 }
 
-/**
- * eventfd_ctx_put - Releases a reference to the internal eventfd context.
- * @ctx: [in] Pointer to eventfd context.
- *
- * The eventfd context reference must have been previously acquired either
- * with eventfd_ctx_fdget() or eventfd_ctx_fileget().
- */
+ 
 void eventfd_ctx_put(struct eventfd_ctx *ctx)
 {
 	kref_put(&ctx->kref, eventfd_free);
@@ -135,44 +97,7 @@ static __poll_t eventfd_poll(struct file *file, poll_table *wait)
 
 	poll_wait(file, &ctx->wqh, wait);
 
-	/*
-	 * All writes to ctx->count occur within ctx->wqh.lock.  This read
-	 * can be done outside ctx->wqh.lock because we know that poll_wait
-	 * takes that lock (through add_wait_queue) if our caller will sleep.
-	 *
-	 * The read _can_ therefore seep into add_wait_queue's critical
-	 * section, but cannot move above it!  add_wait_queue's spin_lock acts
-	 * as an acquire barrier and ensures that the read be ordered properly
-	 * against the writes.  The following CAN happen and is safe:
-	 *
-	 *     poll                               write
-	 *     -----------------                  ------------
-	 *     lock ctx->wqh.lock (in poll_wait)
-	 *     count = ctx->count
-	 *     __add_wait_queue
-	 *     unlock ctx->wqh.lock
-	 *                                        lock ctx->qwh.lock
-	 *                                        ctx->count += n
-	 *                                        if (waitqueue_active)
-	 *                                          wake_up_locked_poll
-	 *                                        unlock ctx->qwh.lock
-	 *     eventfd_poll returns 0
-	 *
-	 * but the following, which would miss a wakeup, cannot happen:
-	 *
-	 *     poll                               write
-	 *     -----------------                  ------------
-	 *     count = ctx->count (INVALID!)
-	 *                                        lock ctx->qwh.lock
-	 *                                        ctx->count += n
-	 *                                        **waitqueue_active is false**
-	 *                                        **no wake_up_locked_poll!**
-	 *                                        unlock ctx->qwh.lock
-	 *     lock ctx->wqh.lock (in poll_wait)
-	 *     __add_wait_queue
-	 *     unlock ctx->wqh.lock
-	 *     eventfd_poll returns 0
-	 */
+	 
 	count = READ_ONCE(ctx->count);
 
 	if (count > 0)
@@ -194,19 +119,7 @@ void eventfd_ctx_do_read(struct eventfd_ctx *ctx, __u64 *cnt)
 }
 EXPORT_SYMBOL_GPL(eventfd_ctx_do_read);
 
-/**
- * eventfd_ctx_remove_wait_queue - Read the current counter and removes wait queue.
- * @ctx: [in] Pointer to eventfd context.
- * @wait: [in] Wait queue to be removed.
- * @cnt: [out] Pointer to the 64-bit counter value.
- *
- * Returns %0 if successful, or the following error codes:
- *
- * -EAGAIN      : The operation would have blocked.
- *
- * This is used to atomically remove a wait queue entry from the eventfd wait
- * queue head, and read/reset the counter value.
- */
+ 
 int eventfd_ctx_remove_wait_queue(struct eventfd_ctx *ctx, wait_queue_entry_t *wait,
 				  __u64 *cnt)
 {
@@ -317,16 +230,7 @@ static const struct file_operations eventfd_fops = {
 	.llseek		= noop_llseek,
 };
 
-/**
- * eventfd_fget - Acquire a reference of an eventfd file descriptor.
- * @fd: [in] Eventfd file descriptor.
- *
- * Returns a pointer to the eventfd file structure in case of success, or the
- * following error pointer:
- *
- * -EBADF    : Invalid @fd file descriptor.
- * -EINVAL   : The @fd file descriptor is not an eventfd file.
- */
+ 
 struct file *eventfd_fget(int fd)
 {
 	struct file *file;
@@ -343,15 +247,7 @@ struct file *eventfd_fget(int fd)
 }
 EXPORT_SYMBOL_GPL(eventfd_fget);
 
-/**
- * eventfd_ctx_fdget - Acquires a reference to the internal eventfd context.
- * @fd: [in] Eventfd file descriptor.
- *
- * Returns a pointer to the internal eventfd context, otherwise the error
- * pointers returned by the following functions:
- *
- * eventfd_fget
- */
+ 
 struct eventfd_ctx *eventfd_ctx_fdget(int fd)
 {
 	struct eventfd_ctx *ctx;
@@ -364,15 +260,7 @@ struct eventfd_ctx *eventfd_ctx_fdget(int fd)
 }
 EXPORT_SYMBOL_GPL(eventfd_ctx_fdget);
 
-/**
- * eventfd_ctx_fileget - Acquires a reference to the internal eventfd context.
- * @file: [in] Eventfd file pointer.
- *
- * Returns a pointer to the internal eventfd context, otherwise the error
- * pointer:
- *
- * -EINVAL   : The @fd file descriptor is not an eventfd file.
- */
+ 
 struct eventfd_ctx *eventfd_ctx_fileget(struct file *file)
 {
 	struct eventfd_ctx *ctx;
@@ -392,7 +280,7 @@ static int do_eventfd(unsigned int count, int flags)
 	struct file *file;
 	int fd;
 
-	/* Check the EFD_* constants for consistency.  */
+	 
 	BUILD_BUG_ON(EFD_CLOEXEC != O_CLOEXEC);
 	BUILD_BUG_ON(EFD_NONBLOCK != O_NONBLOCK);
 

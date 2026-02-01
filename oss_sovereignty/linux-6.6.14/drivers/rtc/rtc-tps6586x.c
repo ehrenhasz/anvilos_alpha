@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * rtc-tps6586x.c: RTC driver for TI PMIC TPS6586X
- *
- * Copyright (c) 2012, NVIDIA Corporation.
- *
- * Author: Laxman Dewangan <ldewangan@nvidia.com>
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/err.h>
@@ -22,18 +16,18 @@
 #define RTC_CTRL			0xc0
 #define POR_RESET_N			BIT(7)
 #define OSC_SRC_SEL			BIT(6)
-#define RTC_ENABLE			BIT(5)	/* enables alarm */
-#define RTC_BUF_ENABLE			BIT(4)	/* 32 KHz buffer enable */
-#define PRE_BYPASS			BIT(3)	/* 0=1KHz or 1=32KHz updates */
+#define RTC_ENABLE			BIT(5)	 
+#define RTC_BUF_ENABLE			BIT(4)	 
+#define PRE_BYPASS			BIT(3)	 
 #define CL_SEL_MASK			(BIT(2)|BIT(1))
 #define CL_SEL_POS			1
 #define RTC_ALARM1_HI			0xc1
 #define RTC_COUNT4			0xc6
 
-/* start a PMU RTC access by reading the register prior to the RTC_COUNT4 */
+ 
 #define RTC_COUNT4_DUMMYREAD		0xc5
 
-/*only 14-bits width in second*/
+ 
 #define ALM1_VALID_RANGE_IN_SEC		0x3FFF
 
 #define TPS6586X_RTC_CL_SEL_1_5PF	0x0
@@ -96,7 +90,7 @@ static int tps6586x_rtc_set_time(struct device *dev, struct rtc_time *tm)
 	buff[3] = (ticks >> 8) & 0xff;
 	buff[4] = ticks & 0xff;
 
-	/* Disable RTC before changing time */
+	 
 	ret = tps6586x_clr_bits(tps_dev, RTC_CTRL, RTC_ENABLE);
 	if (ret < 0) {
 		dev_err(dev, "failed to clear RTC_ENABLE\n");
@@ -109,7 +103,7 @@ static int tps6586x_rtc_set_time(struct device *dev, struct rtc_time *tm)
 		return ret;
 	}
 
-	/* Enable RTC */
+	 
 	ret = tps6586x_set_bits(tps_dev, RTC_CTRL, RTC_ENABLE);
 	if (ret < 0) {
 		dev_err(dev, "failed to set RTC_ENABLE\n");
@@ -231,7 +225,7 @@ static int tps6586x_rtc_probe(struct platform_device *pdev)
 	rtc->dev = &pdev->dev;
 	rtc->irq = platform_get_irq(pdev, 0);
 
-	/* 1 kHz tick mode, enable tick counting */
+	 
 	ret = tps6586x_update(tps_dev, RTC_CTRL,
 		RTC_ENABLE | OSC_SRC_SEL |
 		((TPS6586X_RTC_CL_SEL_1_5PF << CL_SEL_POS) & CL_SEL_MASK),
@@ -251,7 +245,7 @@ static int tps6586x_rtc_probe(struct platform_device *pdev)
 	}
 
 	rtc->rtc->ops = &tps6586x_rtc_ops;
-	rtc->rtc->range_max = (1ULL << 30) - 1; /* 30-bit seconds */
+	rtc->rtc->range_max = (1ULL << 30) - 1;  
 	rtc->rtc->alarm_offset_max = ALM1_VALID_RANGE_IN_SEC;
 	rtc->rtc->start_secs = mktime64(2009, 1, 1, 0, 0, 0);
 	rtc->rtc->set_start_time = true;

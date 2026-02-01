@@ -1,22 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * pata_cs5536.c	- CS5536 PATA for new ATA layer
- *			  (C) 2007 Martin K. Petersen <mkp@mkp.net>
- *			  (C) 2011 Bartlomiej Zolnierkiewicz
- *
- * Documentation:
- *	Available from AMD web site.
- *
- * The IDE timing registers for the CS5536 live in the Geode Machine
- * Specific Register file and not PCI config space.  Most BIOSes
- * virtualize the PCI registers so the chip looks like a standard IDE
- * controller.	Unfortunately not all implementations get this right.
- * In particular some have problems with unaligned accesses to the
- * virtualized PCI registers.  This driver always does full dword
- * writes to work around the issue.  Also, in case of a bad BIOS this
- * driver can be loaded with the "msr=1" parameter which forces using
- * the Machine Specific Registers to configure the device.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -33,7 +16,7 @@ static int use_msr;
 module_param_named(msr, use_msr, int, 0644);
 MODULE_PARM_DESC(msr, "Force using MSR to configure IDE function (Default: 0)");
 #else
-#undef rdmsr	/* avoid accidental MSR usage on, e.g. x86-64 */
+#undef rdmsr	 
 #undef wrmsr
 #define rdmsr(x, y, z) do { } while (0)
 #define wrmsr(x, y, z) do { } while (0)
@@ -68,9 +51,7 @@ enum {
 	IDE_ETC_UDMA_MASK	= 0xc0,
 };
 
-/* Some Bachmann OT200 devices have a non working UDMA support due a
- * missing resistor.
- */
+ 
 static const struct dmi_system_id udma_quirk_dmi_table[] = {
 	{
 		.ident = "Bachmann electronic OT200",
@@ -117,14 +98,7 @@ static void cs5536_program_dtc(struct ata_device *adev, u8 tim)
 	cs5536_write(pdev, DTC, dtc);
 }
 
-/**
- *	cs5536_cable_detect	-	detect cable type
- *	@ap: Port to detect on
- *
- *	Perform cable detection for ATA66 capable cable.
- *
- *	Returns a cable type.
- */
+ 
 
 static int cs5536_cable_detect(struct ata_port *ap)
 {
@@ -139,11 +113,7 @@ static int cs5536_cable_detect(struct ata_port *ap)
 		return ATA_CBL_PATA40;
 }
 
-/**
- *	cs5536_set_piomode		-	PIO setup
- *	@ap: ATA interface
- *	@adev: device on the interface
- */
+ 
 
 static void cs5536_set_piomode(struct ata_port *ap, struct ata_device *adev)
 {
@@ -182,12 +152,7 @@ static void cs5536_set_piomode(struct ata_port *ap, struct ata_device *adev)
 	cs5536_write(pdev, CAST, cast);
 }
 
-/**
- *	cs5536_set_dmamode		-	DMA timing setup
- *	@ap: ATA interface
- *	@adev: Device being configured
- *
- */
+ 
 
 static void cs5536_set_dmamode(struct ata_port *ap, struct ata_device *adev)
 {
@@ -209,7 +174,7 @@ static void cs5536_set_dmamode(struct ata_port *ap, struct ata_device *adev)
 	if (mode >= XFER_UDMA_0) {
 		etc &= ~(IDE_DRV_MASK << dshift);
 		etc |= udma_timings[mode - XFER_UDMA_0] << dshift;
-	} else { /* MWDMA */
+	} else {  
 		etc &= ~(IDE_ETC_UDMA_MASK << dshift);
 		cs5536_program_dtc(adev, mwdma_timings[mode - XFER_MW_DMA_0]);
 	}
@@ -228,12 +193,7 @@ static struct ata_port_operations cs5536_port_ops = {
 	.set_dmamode		= cs5536_set_dmamode,
 };
 
-/**
- *	cs5536_init_one
- *	@dev: PCI device
- *	@id: Entry in match table
- *
- */
+ 
 
 static int cs5536_init_one(struct pci_dev *dev, const struct pci_device_id *id)
 {

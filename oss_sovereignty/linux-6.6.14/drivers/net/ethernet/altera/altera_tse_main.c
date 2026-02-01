@@ -1,21 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Altera Triple-Speed Ethernet MAC driver
- * Copyright (C) 2008-2014 Altera Corporation. All rights reserved
- *
- * Contributors:
- *   Dalon Westergreen
- *   Thomas Chou
- *   Ian Abbott
- *   Yuriy Kozlov
- *   Tobias Klauser
- *   Andriy Smolskyy
- *   Roman Bulgakov
- *   Dmytro Mytarchuk
- *   Matthew Gerlach
- *
- * Original driver contributed by SLS.
- * Major updates contributed by GlobalLogic
- */
+
+ 
 
 #include <linux/atomic.h>
 #include <linux/delay.h>
@@ -46,7 +30,7 @@
 #include "altera_msgdma.h"
 
 static atomic_t instance_count = ATOMIC_INIT(~0);
-/* Module parameters */
+ 
 static int debug = -1;
 module_param(debug, int, 0644);
 MODULE_PARM_DESC(debug, "Message Level (-1: default, 0: no output, 16: all)");
@@ -68,16 +52,10 @@ MODULE_PARM_DESC(dma_tx_num, "Number of descriptors in the TX list");
 
 #define POLL_PHY (-1)
 
-/* Make sure DMA buffer size is larger than the max frame size
- * plus some alignment offset and a VLAN header. If the max frame size is
- * 1518, a VLAN header would be additional 4 bytes and additional
- * headroom for alignment is 2 bytes, 2048 is just fine.
- */
+ 
 #define ALTERA_RXDMABUFFER_SIZE	2048
 
-/* Allow network stack to resume queuing packets after we've
- * finished transmitting at least 1/4 of the packets in the queue.
- */
+ 
 #define TSE_TX_THRESH(x)	(x->tx_ring_size / 4)
 
 #define TXQUEUESTOP_THRESHHOLD	2
@@ -89,18 +67,17 @@ static inline u32 tse_tx_avail(struct altera_tse_private *priv)
 	return priv->tx_cons + priv->tx_ring_size - priv->tx_prod - 1;
 }
 
-/* MDIO specific functions
- */
+ 
 static int altera_tse_mdio_read(struct mii_bus *bus, int mii_id, int regnum)
 {
 	struct net_device *ndev = bus->priv;
 	struct altera_tse_private *priv = netdev_priv(ndev);
 
-	/* set MDIO address */
+	 
 	csrwr32((mii_id & 0x1f), priv->mac_dev,
 		tse_csroffs(mdio_phy1_addr));
 
-	/* get the data */
+	 
 	return csrrd32(priv->mac_dev,
 		       tse_csroffs(mdio_phy1) + regnum * 4) & 0xffff;
 }
@@ -111,11 +88,11 @@ static int altera_tse_mdio_write(struct mii_bus *bus, int mii_id, int regnum,
 	struct net_device *ndev = bus->priv;
 	struct altera_tse_private *priv = netdev_priv(ndev);
 
-	/* set MDIO address */
+	 
 	csrwr32((mii_id & 0x1f), priv->mac_dev,
 		tse_csroffs(mdio_phy1_addr));
 
-	/* write the data */
+	 
 	csrwr32(value, priv->mac_dev, tse_csroffs(mdio_phy1) + regnum * 4);
 	return 0;
 }
@@ -232,8 +209,7 @@ static void tse_free_rx_buffer(struct altera_tse_private *priv,
 	}
 }
 
-/* Unmap and free Tx buffer resources
- */
+ 
 static void tse_free_tx_buffer(struct altera_tse_private *priv,
 			       struct tse_buffer *buffer)
 {
@@ -259,13 +235,13 @@ static int alloc_init_skbufs(struct altera_tse_private *priv)
 	int ret = -ENOMEM;
 	int i;
 
-	/* Create Rx ring buffer */
+	 
 	priv->rx_ring = kcalloc(rx_descs, sizeof(struct tse_buffer),
 				GFP_KERNEL);
 	if (!priv->rx_ring)
 		goto err_rx_ring;
 
-	/* Create Tx ring buffer */
+	 
 	priv->tx_ring = kcalloc(tx_descs, sizeof(struct tse_buffer),
 				GFP_KERNEL);
 	if (!priv->tx_ring)
@@ -274,7 +250,7 @@ static int alloc_init_skbufs(struct altera_tse_private *priv)
 	priv->tx_cons = 0;
 	priv->tx_prod = 0;
 
-	/* Init Rx ring */
+	 
 	for (i = 0; i < rx_descs; i++) {
 		ret = tse_init_rx_buffer(priv, &priv->rx_ring[i],
 					 priv->rx_dma_buf_sz);
@@ -303,7 +279,7 @@ static void free_skbufs(struct net_device *dev)
 	unsigned int tx_descs = priv->tx_ring_size;
 	int i;
 
-	/* Release the DMA TX/RX socket buffers */
+	 
 	for (i = 0; i < rx_descs; i++)
 		tse_free_rx_buffer(priv, &priv->rx_ring[i]);
 	for (i = 0; i < tx_descs; i++)
@@ -313,8 +289,7 @@ static void free_skbufs(struct net_device *dev)
 	kfree(priv->tx_ring);
 }
 
-/* Reallocate the skb for the reception process
- */
+ 
 static inline void tse_rx_refill(struct altera_tse_private *priv)
 {
 	unsigned int rxsize = priv->rx_ring_size;
@@ -334,8 +309,7 @@ static inline void tse_rx_refill(struct altera_tse_private *priv)
 	}
 }
 
-/* Pull out the VLAN tag and fix up the packet
- */
+ 
 static inline void tse_rx_vlan(struct net_device *dev, struct sk_buff *skb)
 {
 	struct ethhdr *eth_hdr;
@@ -350,8 +324,7 @@ static inline void tse_rx_vlan(struct net_device *dev, struct sk_buff *skb)
 	}
 }
 
-/* Receive a packet: retrieve and pass over to upper levels
- */
+ 
 static int tse_rx(struct altera_tse_private *priv, int limit)
 {
 	unsigned int entry = priv->rx_cons % priv->rx_ring_size;
@@ -362,11 +335,7 @@ static int tse_rx(struct altera_tse_private *priv, int limit)
 	u16 pktlength;
 	u16 pktstatus;
 
-	/* Check for count < limit first as get_rx_status is changing
-	* the response-fifo so we must process the next packet
-	* after calling get_rx_status if a response is pending.
-	* (reading the last byte of the response pops the value from the fifo.)
-	*/
+	 
 	while ((count < limit) &&
 	       ((rxstatus = priv->dmaops->get_rx_status(priv)) != 0)) {
 		pktstatus = rxstatus >> 16;
@@ -377,10 +346,7 @@ static int tse_rx(struct altera_tse_private *priv, int limit)
 				   "RCV pktstatus %08X pktlength %08X\n",
 				   pktstatus, pktlength);
 
-		/* DMA transfer from TSE starts with 2 additional bytes for
-		 * IP payload alignment. Status returned by get_rx_status()
-		 * contains DMA transfer length. Packet is 2 bytes shorter.
-		 */
+		 
 		pktlength -= 2;
 
 		count++;
@@ -426,8 +392,7 @@ static int tse_rx(struct altera_tse_private *priv, int limit)
 	return count;
 }
 
-/* Reclaim resources after transmission completes
- */
+ 
 static int tse_tx_complete(struct altera_tse_private *priv)
 {
 	unsigned int txsize = priv->tx_ring_size;
@@ -440,7 +405,7 @@ static int tse_tx_complete(struct altera_tse_private *priv)
 
 	ready = priv->dmaops->tx_completions(priv);
 
-	/* Free sent buffers */
+	 
 	while (ready && (priv->tx_cons != priv->tx_prod)) {
 		entry = priv->tx_cons % txsize;
 		tx_buff = &priv->tx_ring[entry];
@@ -474,8 +439,7 @@ static int tse_tx_complete(struct altera_tse_private *priv)
 	return txcomplete;
 }
 
-/* NAPI polling function
- */
+ 
 static int tse_poll(struct napi_struct *napi, int budget)
 {
 	struct altera_tse_private *priv =
@@ -503,8 +467,7 @@ static int tse_poll(struct napi_struct *napi, int budget)
 	return rxcomplete;
 }
 
-/* DMA TX & RX FIFO interrupt routing
- */
+ 
 static irqreturn_t altera_isr(int irq, void *dev_id)
 {
 	struct net_device *dev = dev_id;
@@ -517,7 +480,7 @@ static irqreturn_t altera_isr(int irq, void *dev_id)
 	priv = netdev_priv(dev);
 
 	spin_lock(&priv->rxdma_irq_lock);
-	/* reset IRQs */
+	 
 	priv->dmaops->clear_rxirq(priv);
 	priv->dmaops->clear_txirq(priv);
 	spin_unlock(&priv->rxdma_irq_lock);
@@ -534,13 +497,7 @@ static irqreturn_t altera_isr(int irq, void *dev_id)
 	return IRQ_HANDLED;
 }
 
-/* Transmit a packet (called by the kernel). Dispatches
- * either the SGDMA method for transmitting or the
- * MSGDMA method, assumes no scatter/gather support,
- * implying an assumption that there's only one
- * physically contiguous fragment starting at
- * skb->data, for length of skb_headlen(skb).
- */
+ 
 static netdev_tx_t tse_start_xmit(struct sk_buff *skb, struct net_device *dev)
 {
 	struct altera_tse_private *priv = netdev_priv(dev);
@@ -557,7 +514,7 @@ static netdev_tx_t tse_start_xmit(struct sk_buff *skb, struct net_device *dev)
 	if (unlikely(tse_tx_avail(priv) < nfrags + 1)) {
 		if (!netif_queue_stopped(dev)) {
 			netif_stop_queue(dev);
-			/* This is a hard error, log it. */
+			 
 			netdev_err(priv->dev,
 				   "%s: Tx list full when queue awake\n",
 				   __func__);
@@ -566,7 +523,7 @@ static netdev_tx_t tse_start_xmit(struct sk_buff *skb, struct net_device *dev)
 		goto out;
 	}
 
-	/* Map the first skb fragment */
+	 
 	entry = priv->tx_prod % txsize;
 	buffer = &priv->tx_ring[entry];
 
@@ -610,13 +567,11 @@ static int altera_tse_phy_get_addr_mdio_create(struct net_device *dev)
 
 	ret = of_get_phy_mode(np, &priv->phy_iface);
 
-	/* Avoid get phy addr and create mdio if no phy is present */
+	 
 	if (ret)
 		return 0;
 
-	/* try to get PHY address from device tree, use PHY autodetection if
-	 * no valid address is given
-	 */
+	 
 
 	if (of_property_read_u32(priv->device->of_node, "phy-addr",
 			 &priv->phy_addr)) {
@@ -630,7 +585,7 @@ static int altera_tse_phy_get_addr_mdio_create(struct net_device *dev)
 		return -ENODEV;
 	}
 
-	/* Create/attach to MDIO bus */
+	 
 	ret = altera_tse_mdio_create(dev,
 					 atomic_add_return(1, &instance_count));
 
@@ -648,17 +603,12 @@ static void tse_update_mac_addr(struct altera_tse_private *priv, const u8 *addr)
 	msb = (addr[3] << 24) | (addr[2] << 16) | (addr[1] << 8) | addr[0];
 	lsb = ((addr[5] << 8) | addr[4]) & 0xffff;
 
-	/* Set primary MAC address */
+	 
 	csrwr32(msb, priv->mac_dev, tse_csroffs(mac_addr_0));
 	csrwr32(lsb, priv->mac_dev, tse_csroffs(mac_addr_1));
 }
 
-/* MAC software reset.
- * When reset is triggered, the MAC function completes the current
- * transmission or reception, and subsequently disables the transmit and
- * receive logic, flushes the receive FIFO buffer, and resets the statistics
- * counters.
- */
+ 
 static int reset_mac(struct altera_tse_private *priv)
 {
 	int counter;
@@ -686,14 +636,13 @@ static int reset_mac(struct altera_tse_private *priv)
 	return 0;
 }
 
-/* Initialize MAC core registers
-*/
+ 
 static int init_mac(struct altera_tse_private *priv)
 {
 	unsigned int cmd = 0;
 	u32 frm_length;
 
-	/* Setup Rx FIFO */
+	 
 	csrwr32(priv->rx_fifo_depth - ALTERA_TSE_RX_SECTION_EMPTY,
 		priv->mac_dev, tse_csroffs(rx_section_empty));
 
@@ -706,7 +655,7 @@ static int init_mac(struct altera_tse_private *priv)
 	csrwr32(ALTERA_TSE_RX_ALMOST_FULL, priv->mac_dev,
 		tse_csroffs(rx_almost_full));
 
-	/* Setup Tx FIFO */
+	 
 	csrwr32(priv->tx_fifo_depth - ALTERA_TSE_TX_SECTION_EMPTY,
 		priv->mac_dev, tse_csroffs(tx_section_empty));
 
@@ -719,19 +668,17 @@ static int init_mac(struct altera_tse_private *priv)
 	csrwr32(ALTERA_TSE_TX_ALMOST_FULL, priv->mac_dev,
 		tse_csroffs(tx_almost_full));
 
-	/* MAC Address Configuration */
+	 
 	tse_update_mac_addr(priv, priv->dev->dev_addr);
 
-	/* MAC Function Configuration */
+	 
 	frm_length = ETH_HLEN + priv->dev->mtu + ETH_FCS_LEN;
 	csrwr32(frm_length, priv->mac_dev, tse_csroffs(frm_length));
 
 	csrwr32(ALTERA_TSE_TX_IPG_LENGTH, priv->mac_dev,
 		tse_csroffs(tx_ipg_length));
 
-	/* Disable RX/TX shift 16 for alignment of all received frames on 16-bit
-	 * start address
-	 */
+	 
 	tse_set_bit(priv->mac_dev, tse_csroffs(rx_cmd_stat),
 		    ALTERA_TSE_RX_CMD_STAT_RX_SHIFT16);
 
@@ -739,18 +686,16 @@ static int init_mac(struct altera_tse_private *priv)
 		      ALTERA_TSE_TX_CMD_STAT_TX_SHIFT16 |
 		      ALTERA_TSE_TX_CMD_STAT_OMIT_CRC);
 
-	/* Set the MAC options */
+	 
 	cmd = csrrd32(priv->mac_dev, tse_csroffs(command_config));
-	cmd &= ~MAC_CMDCFG_PAD_EN;	/* No padding Removal on Receive */
-	cmd &= ~MAC_CMDCFG_CRC_FWD;	/* CRC Removal */
-	cmd |= MAC_CMDCFG_RX_ERR_DISC;	/* Automatically discard frames
-					 * with CRC errors
-					 */
+	cmd &= ~MAC_CMDCFG_PAD_EN;	 
+	cmd &= ~MAC_CMDCFG_CRC_FWD;	 
+	cmd |= MAC_CMDCFG_RX_ERR_DISC;	 
 	cmd |= MAC_CMDCFG_CNTL_FRM_ENA;
 	cmd &= ~MAC_CMDCFG_TX_ENA;
 	cmd &= ~MAC_CMDCFG_RX_ENA;
 
-	/* Default speed and duplex setting, full/100 */
+	 
 	cmd &= ~MAC_CMDCFG_HD_ENA;
 	cmd &= ~MAC_CMDCFG_ETH_SPEED;
 	cmd &= ~MAC_CMDCFG_ENA_10;
@@ -767,8 +712,7 @@ static int init_mac(struct altera_tse_private *priv)
 	return 0;
 }
 
-/* Start/stop MAC transmission logic
- */
+ 
 static void tse_set_mac(struct altera_tse_private *priv, bool enable)
 {
 	u32 value = csrrd32(priv->mac_dev, tse_csroffs(command_config));
@@ -781,8 +725,7 @@ static void tse_set_mac(struct altera_tse_private *priv, bool enable)
 	csrwr32(value, priv->mac_dev, tse_csroffs(command_config));
 }
 
-/* Change the MTU
- */
+ 
 static int tse_change_mtu(struct net_device *dev, int new_mtu)
 {
 	if (netif_running(dev)) {
@@ -802,7 +745,7 @@ static void altera_tse_set_mcfilter(struct net_device *dev)
 	struct netdev_hw_addr *ha;
 	int i;
 
-	/* clear the hash filter */
+	 
 	for (i = 0; i < 64; i++)
 		csrwr32(0, priv->mac_dev, tse_csroffs(hash_table) + i * 4);
 
@@ -830,13 +773,12 @@ static void altera_tse_set_mcfilterall(struct net_device *dev)
 	struct altera_tse_private *priv = netdev_priv(dev);
 	int i;
 
-	/* set the hash filter */
+	 
 	for (i = 0; i < 64; i++)
 		csrwr32(1, priv->mac_dev, tse_csroffs(hash_table) + i * 4);
 }
 
-/* Set or clear the multicast filter for this adapter
- */
+ 
 static void tse_set_rx_mode_hashfilter(struct net_device *dev)
 {
 	struct altera_tse_private *priv = netdev_priv(dev);
@@ -855,8 +797,7 @@ static void tse_set_rx_mode_hashfilter(struct net_device *dev)
 	spin_unlock(&priv->mac_cfg_lock);
 }
 
-/* Set or clear the multicast filter for this adapter
- */
+ 
 static void tse_set_rx_mode(struct net_device *dev)
 {
 	struct altera_tse_private *priv = netdev_priv(dev);
@@ -874,8 +815,7 @@ static void tse_set_rx_mode(struct net_device *dev)
 	spin_unlock(&priv->mac_cfg_lock);
 }
 
-/* Open and initialize the interface
- */
+ 
 static int tse_open(struct net_device *dev)
 {
 	struct altera_tse_private *priv = netdev_priv(dev);
@@ -883,7 +823,7 @@ static int tse_open(struct net_device *dev)
 	int ret = 0;
 	int i;
 
-	/* Reset and configure TSE MAC and probe associated PHY */
+	 
 	ret = priv->dmaops->init_dma(priv);
 	if (ret != 0) {
 		netdev_err(dev, "Cannot initialize DMA\n");
@@ -900,10 +840,7 @@ static int tse_open(struct net_device *dev)
 	spin_lock(&priv->mac_cfg_lock);
 
 	ret = reset_mac(priv);
-	/* Note that reset_mac will fail if the clocks are gated by the PHY
-	 * due to the PHY being put into isolation or power down mode.
-	 * This is not an error if reset fails due to no clock.
-	 */
+	 
 	if (ret)
 		netdev_dbg(dev, "Cannot reset MAC core (error: %d)\n", ret);
 
@@ -916,7 +853,7 @@ static int tse_open(struct net_device *dev)
 
 	priv->dmaops->reset_dma(priv);
 
-	/* Create and initialize the TX/RX descriptors chains. */
+	 
 	priv->rx_ring_size = dma_rx_num;
 	priv->tx_ring_size = dma_tx_num;
 	ret = alloc_init_skbufs(priv);
@@ -926,7 +863,7 @@ static int tse_open(struct net_device *dev)
 	}
 
 
-	/* Register RX interrupt */
+	 
 	ret = request_irq(priv->rx_irq, altera_isr, IRQF_SHARED,
 			  dev->name, dev);
 	if (ret) {
@@ -935,7 +872,7 @@ static int tse_open(struct net_device *dev)
 		goto init_error;
 	}
 
-	/* Register TX interrupt */
+	 
 	ret = request_irq(priv->tx_irq, altera_isr, IRQF_SHARED,
 			  dev->name, dev);
 	if (ret) {
@@ -944,12 +881,12 @@ static int tse_open(struct net_device *dev)
 		goto tx_request_irq_error;
 	}
 
-	/* Enable DMA interrupts */
+	 
 	spin_lock_irqsave(&priv->rxdma_irq_lock, flags);
 	priv->dmaops->enable_rxirq(priv);
 	priv->dmaops->enable_txirq(priv);
 
-	/* Setup RX descriptor chain */
+	 
 	for (i = 0; i < priv->rx_ring_size; i++)
 		priv->dmaops->add_rx_desc(priv, &priv->rx_ring[i]);
 
@@ -967,7 +904,7 @@ static int tse_open(struct net_device *dev)
 
 	priv->dmaops->start_rxdma(priv);
 
-	/* Start MAC Rx/Tx */
+	 
 	spin_lock(&priv->mac_cfg_lock);
 	tse_set_mac(priv, true);
 	spin_unlock(&priv->mac_cfg_lock);
@@ -983,8 +920,7 @@ phy_error:
 	return ret;
 }
 
-/* Stop TSE MAC interface and put the device in an inactive state
- */
+ 
 static int tse_shutdown(struct net_device *dev)
 {
 	struct altera_tse_private *priv = netdev_priv(dev);
@@ -996,25 +932,22 @@ static int tse_shutdown(struct net_device *dev)
 	netif_stop_queue(dev);
 	napi_disable(&priv->napi);
 
-	/* Disable DMA interrupts */
+	 
 	spin_lock_irqsave(&priv->rxdma_irq_lock, flags);
 	priv->dmaops->disable_rxirq(priv);
 	priv->dmaops->disable_txirq(priv);
 	spin_unlock_irqrestore(&priv->rxdma_irq_lock, flags);
 
-	/* Free the IRQ lines */
+	 
 	free_irq(priv->rx_irq, dev);
 	free_irq(priv->tx_irq, dev);
 
-	/* disable and reset the MAC, empties fifo */
+	 
 	spin_lock(&priv->mac_cfg_lock);
 	spin_lock(&priv->tx_lock);
 
 	ret = reset_mac(priv);
-	/* Note that reset_mac will fail if the clocks are gated by the PHY
-	 * due to the PHY being put into isolation or power down mode.
-	 * This is not an error if reset fails due to no clock.
-	 */
+	 
 	if (ret)
 		netdev_dbg(dev, "Cannot reset MAC core (error: %d)\n", ret);
 	priv->dmaops->reset_dma(priv);
@@ -1129,8 +1062,7 @@ static int request_and_map(struct platform_device *pdev, const char *name,
 	return 0;
 }
 
-/* Probe Altera TSE MAC device
- */
+ 
 static int altera_tse_probe(struct platform_device *pdev)
 {
 	const struct of_device_id *of_id = NULL;
@@ -1167,15 +1099,15 @@ static int altera_tse_probe(struct platform_device *pdev)
 
 	if (priv->dmaops &&
 	    priv->dmaops->altera_dtype == ALTERA_DTYPE_SGDMA) {
-		/* Get the mapped address to the SGDMA descriptor memory */
+		 
 		ret = request_and_map(pdev, "s1", &dma_res, &descmap);
 		if (ret)
 			goto err_free_netdev;
 
-		/* Start of that memory is for transmit descriptors */
+		 
 		priv->tx_dma_desc = descmap;
 
-		/* First half is for tx descriptors, other half for tx */
+		 
 		priv->txdescmem = resource_size(dma_res)/2;
 
 		priv->txdescmem_busaddr = (dma_addr_t)dma_res->start;
@@ -1236,20 +1168,20 @@ static int altera_tse_probe(struct platform_device *pdev)
 		goto err_free_netdev;
 	}
 
-	/* MAC address space */
+	 
 	ret = request_and_map(pdev, "control_port", &control_port,
 			      (void __iomem **)&priv->mac_dev);
 	if (ret)
 		goto err_free_netdev;
 
-	/* xSGDMA Rx Dispatcher address space */
+	 
 	ret = request_and_map(pdev, "rx_csr", &dma_res,
 			      &priv->rx_dma_csr);
 	if (ret)
 		goto err_free_netdev;
 
 
-	/* xSGDMA Tx Dispatcher address space */
+	 
 	ret = request_and_map(pdev, "tx_csr", &dma_res,
 			      &priv->tx_dma_csr);
 	if (ret)
@@ -1257,19 +1189,13 @@ static int altera_tse_probe(struct platform_device *pdev)
 
 	memset(&pcs_regmap_cfg, 0, sizeof(pcs_regmap_cfg));
 	memset(&mrc, 0, sizeof(mrc));
-	/* SGMII PCS address space. The location can vary depending on how the
-	 * IP is integrated. We can have a resource dedicated to it at a specific
-	 * address space, but if it's not the case, we fallback to the mdiophy0
-	 * from the MAC's address space
-	 */
+	 
 	ret = request_and_map(pdev, "pcs", &pcs_res, &priv->pcs_base);
 	if (ret) {
-		/* If we can't find a dedicated resource for the PCS, fallback
-		 * to the internal PCS, that has a different address stride
-		 */
+		 
 		priv->pcs_base = priv->mac_dev + tse_csroffs(mdio_phy0);
 		pcs_regmap_cfg.reg_bits = 32;
-		/* Values are MDIO-like values, on 16 bits */
+		 
 		pcs_regmap_cfg.val_bits = 16;
 		pcs_regmap_cfg.reg_shift = REGMAP_UPSHIFT(2);
 	} else {
@@ -1278,7 +1204,7 @@ static int altera_tse_probe(struct platform_device *pdev)
 		pcs_regmap_cfg.reg_shift = REGMAP_UPSHIFT(1);
 	}
 
-	/* Create a regmap for the PCS so that it can be used by the PCS driver */
+	 
 	pcs_regmap = devm_regmap_init_mmio(&pdev->dev, priv->pcs_base,
 					   &pcs_regmap_cfg);
 	if (IS_ERR(pcs_regmap)) {
@@ -1290,7 +1216,7 @@ static int altera_tse_probe(struct platform_device *pdev)
 	mrc.valid_addr = 0x0;
 	mrc.autoscan = false;
 
-	/* Rx IRQ */
+	 
 	priv->rx_irq = platform_get_irq_byname(pdev, "rx_irq");
 	if (priv->rx_irq == -ENXIO) {
 		dev_err(&pdev->dev, "cannot obtain Rx IRQ\n");
@@ -1298,7 +1224,7 @@ static int altera_tse_probe(struct platform_device *pdev)
 		goto err_free_netdev;
 	}
 
-	/* Tx IRQ */
+	 
 	priv->tx_irq = platform_get_irq_byname(pdev, "tx_irq");
 	if (priv->tx_irq == -ENXIO) {
 		dev_err(&pdev->dev, "cannot obtain Tx IRQ\n");
@@ -1306,7 +1232,7 @@ static int altera_tse_probe(struct platform_device *pdev)
 		goto err_free_netdev;
 	}
 
-	/* get FIFO depths from device tree */
+	 
 	if (of_property_read_u32(pdev->dev.of_node, "rx-fifo-depth",
 				 &priv->rx_fifo_depth)) {
 		dev_err(&pdev->dev, "cannot obtain rx-fifo-depth\n");
@@ -1321,49 +1247,42 @@ static int altera_tse_probe(struct platform_device *pdev)
 		goto err_free_netdev;
 	}
 
-	/* get hash filter settings for this instance */
+	 
 	priv->hash_filter =
 		of_property_read_bool(pdev->dev.of_node,
 				      "altr,has-hash-multicast-filter");
 
-	/* Set hash filter to not set for now until the
-	 * multicast filter receive issue is debugged
-	 */
+	 
 	priv->hash_filter = 0;
 
-	/* get supplemental address settings for this instance */
+	 
 	priv->added_unicast =
 		of_property_read_bool(pdev->dev.of_node,
 				      "altr,has-supplementary-unicast");
 
 	priv->dev->min_mtu = ETH_ZLEN + ETH_FCS_LEN;
-	/* Max MTU is 1500, ETH_DATA_LEN */
+	 
 	priv->dev->max_mtu = ETH_DATA_LEN;
 
-	/* Get the max mtu from the device tree. Note that the
-	 * "max-frame-size" parameter is actually max mtu. Definition
-	 * in the ePAPR v1.1 spec and usage differ, so go with usage.
-	 */
+	 
 	of_property_read_u32(pdev->dev.of_node, "max-frame-size",
 			     &priv->dev->max_mtu);
 
-	/* The DMA buffer size already accounts for an alignment bias
-	 * to avoid unaligned access exceptions for the NIOS processor,
-	 */
+	 
 	priv->rx_dma_buf_sz = ALTERA_RXDMABUFFER_SIZE;
 
-	/* get default MAC address from device tree */
+	 
 	ret = of_get_ethdev_address(pdev->dev.of_node, ndev);
 	if (ret)
 		eth_hw_addr_random(ndev);
 
-	/* get phy addr and create mdio */
+	 
 	ret = altera_tse_phy_get_addr_mdio_create(ndev);
 
 	if (ret)
 		goto err_free_netdev;
 
-	/* initialize netdev */
+	 
 	ndev->mem_start = control_port->start;
 	ndev->mem_end = control_port->end;
 	ndev->netdev_ops = &altera_tse_netdev_ops;
@@ -1375,19 +1294,14 @@ static int altera_tse_probe(struct platform_device *pdev)
 		altera_tse_netdev_ops.ndo_set_rx_mode =
 			tse_set_rx_mode_hashfilter;
 
-	/* Scatter/gather IO is not supported,
-	 * so it is turned off
-	 */
+	 
 	ndev->hw_features &= ~NETIF_F_SG;
 	ndev->features |= ndev->hw_features | NETIF_F_HIGHDMA;
 
-	/* VLAN offloading of tagging, stripping and filtering is not
-	 * supported by hardware, but driver will accommodate the
-	 * extra 4-byte VLAN tag for processing by upper layers
-	 */
+	 
 	ndev->features |= NETIF_F_HW_VLAN_CTAG_RX;
 
-	/* setup NAPI interface */
+	 
 	netif_napi_add(ndev, &priv->napi, tse_poll);
 
 	spin_lock_init(&priv->mac_cfg_lock);
@@ -1462,8 +1376,7 @@ err_free_netdev:
 	return ret;
 }
 
-/* Remove Altera TSE MAC device
- */
+ 
 static int altera_tse_remove(struct platform_device *pdev)
 {
 	struct net_device *ndev = platform_get_drvdata(pdev);

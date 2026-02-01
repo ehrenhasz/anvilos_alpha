@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Samsung S5P/EXYNOS4 SoC series FIMC (CAMIF) driver
- *
- * Copyright (C) 2010-2012 Samsung Electronics Co., Ltd.
- * Sylwester Nawrocki <s.nawrocki@samsung.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -174,7 +169,7 @@ static struct fimc_fmt fimc_formats[] = {
 		.depth		= { 8 },
 		.memplanes	= 2,
 		.colplanes	= 1,
-		.mdataplanes	= 0x2, /* plane 1 holds frame meta data */
+		.mdataplanes	= 0x2,  
 		.mbus_code	= MEDIA_BUS_FMT_S5C_UYVY_JPEG_1X8,
 		.flags		= FMT_FLAGS_CAM | FMT_FLAGS_COMPRESSED,
 	},
@@ -277,7 +272,7 @@ int fimc_set_scaler_info(struct fimc_ctx *ctx)
 	sc->scaleup_h = (tx >= sx) ? 1 : 0;
 	sc->scaleup_v = (ty >= sy) ? 1 : 0;
 
-	/* check to see if input and output size/format differ */
+	 
 	if (s_frame->fmt->color == d_frame->fmt->color
 		&& s_frame->width == d_frame->width
 		&& s_frame->height == d_frame->height)
@@ -324,7 +319,7 @@ out:
 	return IRQ_HANDLED;
 }
 
-/* The color format (colplanes, memplanes) must be already configured. */
+ 
 int fimc_prepare_addr(struct fimc_ctx *ctx, struct vb2_buffer *vb,
 		      struct fimc_frame *frame, struct fimc_addr *addr)
 {
@@ -348,16 +343,16 @@ int fimc_prepare_addr(struct fimc_ctx *ctx, struct vb2_buffer *vb,
 			addr->cr = 0;
 			break;
 		case 2:
-			/* decompose Y into Y/Cb */
+			 
 			addr->cb = (u32)(addr->y + pix_size);
 			addr->cr = 0;
 			break;
 		case 3:
 			addr->cb = (u32)(addr->y + pix_size);
-			/* decompose Y into Y/Cb/Cr */
+			 
 			if (FIMC_FMT_YCBCR420 == frame->fmt->color)
 				addr->cr = (u32)(addr->cb + (pix_size >> 2));
-			else /* 422 */
+			else  
 				addr->cr = (u32)(addr->cb + (pix_size >> 1));
 			break;
 		default:
@@ -377,14 +372,14 @@ int fimc_prepare_addr(struct fimc_ctx *ctx, struct vb2_buffer *vb,
 	return ret;
 }
 
-/* Set order for 1 and 2 plane YCBCR 4:2:2 formats. */
+ 
 void fimc_set_yuv_order(struct fimc_ctx *ctx)
 {
-	/* The one only mode supported in SoC. */
+	 
 	ctx->in_order_2p = FIMC_REG_CIOCTRL_ORDER422_2P_LSB_CRCB;
 	ctx->out_order_2p = FIMC_REG_CIOCTRL_ORDER422_2P_LSB_CRCB;
 
-	/* Set order for 1 plane input formats. */
+	 
 	switch (ctx->s_frame.fmt->color) {
 	case FIMC_FMT_YCRYCB422:
 		ctx->in_order_1p = FIMC_REG_MSCTRL_ORDER422_YCRYCB;
@@ -497,9 +492,7 @@ static int fimc_set_color_effect(struct fimc_ctx *ctx, enum v4l2_colorfx colorfx
 	return 0;
 }
 
-/*
- * V4L2 controls handling
- */
+ 
 #define ctrl_to_ctx(__ctrl) \
 	container_of((__ctrl)->handler, struct fimc_ctx, ctrls.handler)
 
@@ -652,7 +645,7 @@ void fimc_ctrls_activate(struct fimc_ctx *ctx, bool active)
 	mutex_unlock(ctrls->handler.lock);
 }
 
-/* Update maximum value of the alpha color control */
+ 
 void fimc_alpha_ctrl_update(struct fimc_ctx *ctx)
 {
 	struct fimc_dev *fimc = ctx->fimc_dev;
@@ -688,13 +681,7 @@ void __fimc_get_format(struct fimc_frame *frame, struct v4l2_format *f)
 	}
 }
 
-/**
- * fimc_adjust_mplane_format - adjust bytesperline/sizeimage for each plane
- * @fmt: fimc pixel format description (input)
- * @width: requested pixel width
- * @height: requested pixel height
- * @pix: multi-plane format to adjust
- */
+ 
 void fimc_adjust_mplane_format(struct fimc_fmt *fmt, u32 width, u32 height,
 			       struct v4l2_pix_format_mplane *pix)
 {
@@ -714,17 +701,12 @@ void fimc_adjust_mplane_format(struct fimc_fmt *fmt, u32 width, u32 height,
 		u32 sizeimage;
 
 		if (fmt->colplanes > 1 && (bpl == 0 || bpl < pix->width))
-			bpl = pix->width; /* Planar */
+			bpl = pix->width;  
 
-		if (fmt->colplanes == 1 && /* Packed */
+		if (fmt->colplanes == 1 &&  
 		    (bpl == 0 || ((bpl * 8) / fmt->depth[i]) < pix->width))
 			bpl = (pix->width * fmt->depth[0]) / 8;
-		/*
-		 * Currently bytesperline for each plane is same, except
-		 * V4L2_PIX_FMT_YUV420M format. This calculation may need
-		 * to be changed when other multi-planar formats are added
-		 * to the fimc_formats[] array.
-		 */
+		 
 		if (i == 0)
 			bytesperline = bpl;
 		else if (i == 1 && fmt->memplanes == 3)
@@ -733,9 +715,9 @@ void fimc_adjust_mplane_format(struct fimc_fmt *fmt, u32 width, u32 height,
 		plane_fmt->bytesperline = bytesperline;
 		sizeimage = pix->width * pix->height * fmt->depth[i] / 8;
 
-		/* Ensure full last row for tiled formats */
+		 
 		if (tiled_fmt(fmt)) {
-			/* 64 * 32 * plane_fmt->bytesperline / 64 */
+			 
 			u32 row_size = plane_fmt->bytesperline * 32;
 
 			sizeimage = roundup(sizeimage, row_size);
@@ -745,13 +727,7 @@ void fimc_adjust_mplane_format(struct fimc_fmt *fmt, u32 width, u32 height,
 	}
 }
 
-/**
- * fimc_find_format - lookup fimc color format by fourcc or media bus format
- * @pixelformat: fourcc to match, ignored if null
- * @mbus_code: media bus code to match, ignored if null
- * @mask: the color flags to match
- * @index: offset in the fimc_formats array, ignored if negative
- */
+ 
 struct fimc_fmt *fimc_find_format(const u32 *pixelformat, const u32 *mbus_code,
 				  unsigned int mask, int index)
 {
@@ -846,7 +822,7 @@ static int fimc_m2m_resume(struct fimc_dev *fimc)
 	unsigned long flags;
 
 	spin_lock_irqsave(&fimc->slock, flags);
-	/* Clear for full H/W setup in first run after resume */
+	 
 	ctx = fimc->m2m.ctx;
 	fimc->m2m.ctx = NULL;
 	spin_unlock_irqrestore(&fimc->slock, flags);
@@ -856,7 +832,7 @@ static int fimc_m2m_resume(struct fimc_dev *fimc)
 
 	return 0;
 }
-#endif /* CONFIG_PM */
+#endif  
 
 static const struct of_device_id fimc_of_match[];
 
@@ -1022,11 +998,11 @@ static int fimc_runtime_resume(struct device *dev)
 
 	dbg("fimc%d: state: 0x%lx", fimc->id, fimc->state);
 
-	/* Enable clocks and perform basic initialization */
+	 
 	clk_enable(fimc->clock[CLK_GATE]);
 	fimc_hw_reset(fimc);
 
-	/* Resume the capture or mem-to-mem device */
+	 
 	if (fimc_capture_busy(fimc))
 		return fimc_capture_resume(fimc);
 
@@ -1058,7 +1034,7 @@ static int fimc_resume(struct device *dev)
 
 	dbg("fimc%d: state: 0x%lx", fimc->id, fimc->state);
 
-	/* Do not resume if the device was idle before system suspend */
+	 
 	spin_lock_irqsave(&fimc->slock, flags);
 	if (!test_and_clear_bit(ST_LPM, &fimc->state) ||
 	    (!fimc_m2m_active(fimc) && !fimc_capture_busy(fimc))) {
@@ -1087,7 +1063,7 @@ static int fimc_suspend(struct device *dev)
 
 	return fimc_m2m_suspend(fimc);
 }
-#endif /* CONFIG_PM_SLEEP */
+#endif  
 
 static void fimc_remove(struct platform_device *pdev)
 {
@@ -1107,7 +1083,7 @@ static void fimc_remove(struct platform_device *pdev)
 	dev_info(&pdev->dev, "driver unloaded\n");
 }
 
-/* S5PV210, S5PC110 */
+ 
 static const struct fimc_drvdata fimc_drvdata_s5pv210 = {
 	.num_entities	= 3,
 	.lclk_frequency	= 166000000UL,
@@ -1115,7 +1091,7 @@ static const struct fimc_drvdata fimc_drvdata_s5pv210 = {
 	.dma_pix_hoff	= 1,
 };
 
-/* EXYNOS4210, S5PV310, S5PC210 */
+ 
 static const struct fimc_drvdata fimc_drvdata_exynos4210 = {
 	.num_entities	= 4,
 	.lclk_frequency = 166000000UL,
@@ -1125,7 +1101,7 @@ static const struct fimc_drvdata fimc_drvdata_exynos4210 = {
 	.out_buf_count	= 32,
 };
 
-/* EXYNOS4212, EXYNOS4412 */
+ 
 static const struct fimc_drvdata fimc_drvdata_exynos4x12 = {
 	.num_entities	= 4,
 	.lclk_frequency	= 166000000UL,
@@ -1146,7 +1122,7 @@ static const struct of_device_id fimc_of_match[] = {
 		.compatible = "samsung,exynos4212-fimc",
 		.data = &fimc_drvdata_exynos4x12,
 	},
-	{ /* sentinel */ },
+	{   },
 };
 
 static const struct dev_pm_ops fimc_pm_ops = {

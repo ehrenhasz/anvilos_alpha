@@ -1,9 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
 
-/*
- * Copyright 2020-2022 HabanaLabs, Ltd.
- * All Rights Reserved.
- */
+
+ 
 
 #include "gaudi2P.h"
 #include "../include/gaudi2/asic_reg/gaudi2_regs.h"
@@ -22,13 +19,13 @@
 #define SPECIAL_GLBL_ERR_CAUSE_EXT_UNMAPPED_WR \
 		PDMA0_CORE_SPECIAL_GLBL_ERR_CAUSE_EXT_UNMAPPED_WR_MASK
 
-/* LBW RR */
+ 
 #define SFT_NUM_OF_LBW_RTR		1
 #define SFT_LBW_RTR_OFFSET		0
 #define RR_LBW_LONG_MASK		0x7FFFFFFull
 #define RR_LBW_SHORT_MASK		0x7FFF000ull
 
-/* HBW RR */
+ 
 #define SFT_NUM_OF_HBW_RTR		2
 #define RR_HBW_SHORT_LO_MASK		0xFFFFFFFF000ull
 #define RR_HBW_SHORT_HI_MASK		0xF00000000000ull
@@ -1785,63 +1782,56 @@ static const struct range gaudi2_pb_nic0_qm_arc_aux0_unsecured_regs[] = {
 
 static const u32 gaudi2_pb_nic0_umr[] = {
 	mmNIC0_UMR0_0_UNSECURE_DOORBELL0_BASE,
-	mmNIC0_UMR0_0_UNSECURE_DOORBELL0_BASE + HL_BLOCK_SIZE * 1, /* UMR0_1 */
-	mmNIC0_UMR0_0_UNSECURE_DOORBELL0_BASE + HL_BLOCK_SIZE * 2, /* UMR0_2 */
-	mmNIC0_UMR0_0_UNSECURE_DOORBELL0_BASE + HL_BLOCK_SIZE * 3, /* UMR0_3 */
-	mmNIC0_UMR0_0_UNSECURE_DOORBELL0_BASE + HL_BLOCK_SIZE * 4, /* UMR0_4 */
-	mmNIC0_UMR0_0_UNSECURE_DOORBELL0_BASE + HL_BLOCK_SIZE * 5, /* UMR0_5 */
-	mmNIC0_UMR0_0_UNSECURE_DOORBELL0_BASE + HL_BLOCK_SIZE * 6, /* UMR0_6 */
-	mmNIC0_UMR0_0_UNSECURE_DOORBELL0_BASE + HL_BLOCK_SIZE * 7, /* UMR0_7 */
-	mmNIC0_UMR0_0_UNSECURE_DOORBELL0_BASE + HL_BLOCK_SIZE * 8, /* UMR0_8 */
-	mmNIC0_UMR0_0_UNSECURE_DOORBELL0_BASE + HL_BLOCK_SIZE * 9, /* UMR0_9 */
-	mmNIC0_UMR0_0_UNSECURE_DOORBELL0_BASE + HL_BLOCK_SIZE * 10, /* UMR0_10 */
-	mmNIC0_UMR0_0_UNSECURE_DOORBELL0_BASE + HL_BLOCK_SIZE * 11, /* UMR0_11 */
-	mmNIC0_UMR0_0_UNSECURE_DOORBELL0_BASE + HL_BLOCK_SIZE * 12, /* UMR0_12 */
-	mmNIC0_UMR0_0_UNSECURE_DOORBELL0_BASE + HL_BLOCK_SIZE * 13, /* UMR0_13 */
-	mmNIC0_UMR0_0_UNSECURE_DOORBELL0_BASE + HL_BLOCK_SIZE * 14, /* UMR0_14 */
+	mmNIC0_UMR0_0_UNSECURE_DOORBELL0_BASE + HL_BLOCK_SIZE * 1,  
+	mmNIC0_UMR0_0_UNSECURE_DOORBELL0_BASE + HL_BLOCK_SIZE * 2,  
+	mmNIC0_UMR0_0_UNSECURE_DOORBELL0_BASE + HL_BLOCK_SIZE * 3,  
+	mmNIC0_UMR0_0_UNSECURE_DOORBELL0_BASE + HL_BLOCK_SIZE * 4,  
+	mmNIC0_UMR0_0_UNSECURE_DOORBELL0_BASE + HL_BLOCK_SIZE * 5,  
+	mmNIC0_UMR0_0_UNSECURE_DOORBELL0_BASE + HL_BLOCK_SIZE * 6,  
+	mmNIC0_UMR0_0_UNSECURE_DOORBELL0_BASE + HL_BLOCK_SIZE * 7,  
+	mmNIC0_UMR0_0_UNSECURE_DOORBELL0_BASE + HL_BLOCK_SIZE * 8,  
+	mmNIC0_UMR0_0_UNSECURE_DOORBELL0_BASE + HL_BLOCK_SIZE * 9,  
+	mmNIC0_UMR0_0_UNSECURE_DOORBELL0_BASE + HL_BLOCK_SIZE * 10,  
+	mmNIC0_UMR0_0_UNSECURE_DOORBELL0_BASE + HL_BLOCK_SIZE * 11,  
+	mmNIC0_UMR0_0_UNSECURE_DOORBELL0_BASE + HL_BLOCK_SIZE * 12,  
+	mmNIC0_UMR0_0_UNSECURE_DOORBELL0_BASE + HL_BLOCK_SIZE * 13,  
+	mmNIC0_UMR0_0_UNSECURE_DOORBELL0_BASE + HL_BLOCK_SIZE * 14,  
 };
 
 static const struct range gaudi2_pb_nic0_umr_unsecured_regs[] = {
 	{mmNIC0_UMR0_0_UNSECURE_DOORBELL0_UNSECURE_DB_FIRST32,
 		mmNIC0_UMR0_0_COMPLETION_QUEUE_CI_1_CQ_CONSUMER_INDEX},
-	{mmNIC0_UMR0_0_UNSECURE_DOORBELL0_UNSECURE_DB_FIRST32 + HL_BLOCK_SIZE * 1, /* UMR0_1 */
+	{mmNIC0_UMR0_0_UNSECURE_DOORBELL0_UNSECURE_DB_FIRST32 + HL_BLOCK_SIZE * 1,  
 		mmNIC0_UMR0_0_COMPLETION_QUEUE_CI_1_CQ_CONSUMER_INDEX + HL_BLOCK_SIZE * 1},
-	{mmNIC0_UMR0_0_UNSECURE_DOORBELL0_UNSECURE_DB_FIRST32 + HL_BLOCK_SIZE * 2, /* UMR0_2 */
+	{mmNIC0_UMR0_0_UNSECURE_DOORBELL0_UNSECURE_DB_FIRST32 + HL_BLOCK_SIZE * 2,  
 		mmNIC0_UMR0_0_COMPLETION_QUEUE_CI_1_CQ_CONSUMER_INDEX + HL_BLOCK_SIZE * 2},
-	{mmNIC0_UMR0_0_UNSECURE_DOORBELL0_UNSECURE_DB_FIRST32 + HL_BLOCK_SIZE * 3, /* UMR0_3 */
+	{mmNIC0_UMR0_0_UNSECURE_DOORBELL0_UNSECURE_DB_FIRST32 + HL_BLOCK_SIZE * 3,  
 		mmNIC0_UMR0_0_COMPLETION_QUEUE_CI_1_CQ_CONSUMER_INDEX + HL_BLOCK_SIZE * 3},
-	{mmNIC0_UMR0_0_UNSECURE_DOORBELL0_UNSECURE_DB_FIRST32 + HL_BLOCK_SIZE * 4, /* UMR0_4 */
+	{mmNIC0_UMR0_0_UNSECURE_DOORBELL0_UNSECURE_DB_FIRST32 + HL_BLOCK_SIZE * 4,  
 		mmNIC0_UMR0_0_COMPLETION_QUEUE_CI_1_CQ_CONSUMER_INDEX + HL_BLOCK_SIZE * 4},
-	{mmNIC0_UMR0_0_UNSECURE_DOORBELL0_UNSECURE_DB_FIRST32 + HL_BLOCK_SIZE * 5, /* UMR0_5 */
+	{mmNIC0_UMR0_0_UNSECURE_DOORBELL0_UNSECURE_DB_FIRST32 + HL_BLOCK_SIZE * 5,  
 		mmNIC0_UMR0_0_COMPLETION_QUEUE_CI_1_CQ_CONSUMER_INDEX + HL_BLOCK_SIZE * 5},
-	{mmNIC0_UMR0_0_UNSECURE_DOORBELL0_UNSECURE_DB_FIRST32 + HL_BLOCK_SIZE * 6, /* UMR0_6 */
+	{mmNIC0_UMR0_0_UNSECURE_DOORBELL0_UNSECURE_DB_FIRST32 + HL_BLOCK_SIZE * 6,  
 		mmNIC0_UMR0_0_COMPLETION_QUEUE_CI_1_CQ_CONSUMER_INDEX + HL_BLOCK_SIZE * 6},
-	{mmNIC0_UMR0_0_UNSECURE_DOORBELL0_UNSECURE_DB_FIRST32 + HL_BLOCK_SIZE * 7, /* UMR0_7 */
+	{mmNIC0_UMR0_0_UNSECURE_DOORBELL0_UNSECURE_DB_FIRST32 + HL_BLOCK_SIZE * 7,  
 		mmNIC0_UMR0_0_COMPLETION_QUEUE_CI_1_CQ_CONSUMER_INDEX + HL_BLOCK_SIZE * 7},
-	{mmNIC0_UMR0_0_UNSECURE_DOORBELL0_UNSECURE_DB_FIRST32 + HL_BLOCK_SIZE * 8, /* UMR0_8 */
+	{mmNIC0_UMR0_0_UNSECURE_DOORBELL0_UNSECURE_DB_FIRST32 + HL_BLOCK_SIZE * 8,  
 		mmNIC0_UMR0_0_COMPLETION_QUEUE_CI_1_CQ_CONSUMER_INDEX + HL_BLOCK_SIZE * 8},
-	{mmNIC0_UMR0_0_UNSECURE_DOORBELL0_UNSECURE_DB_FIRST32 + HL_BLOCK_SIZE * 9, /* UMR0_9 */
+	{mmNIC0_UMR0_0_UNSECURE_DOORBELL0_UNSECURE_DB_FIRST32 + HL_BLOCK_SIZE * 9,  
 		mmNIC0_UMR0_0_COMPLETION_QUEUE_CI_1_CQ_CONSUMER_INDEX + HL_BLOCK_SIZE * 9},
-	{mmNIC0_UMR0_0_UNSECURE_DOORBELL0_UNSECURE_DB_FIRST32 + HL_BLOCK_SIZE * 10, /* UMR0_10 */
+	{mmNIC0_UMR0_0_UNSECURE_DOORBELL0_UNSECURE_DB_FIRST32 + HL_BLOCK_SIZE * 10,  
 		mmNIC0_UMR0_0_COMPLETION_QUEUE_CI_1_CQ_CONSUMER_INDEX + HL_BLOCK_SIZE * 10},
-	{mmNIC0_UMR0_0_UNSECURE_DOORBELL0_UNSECURE_DB_FIRST32 + HL_BLOCK_SIZE * 11, /* UMR0_11 */
+	{mmNIC0_UMR0_0_UNSECURE_DOORBELL0_UNSECURE_DB_FIRST32 + HL_BLOCK_SIZE * 11,  
 		mmNIC0_UMR0_0_COMPLETION_QUEUE_CI_1_CQ_CONSUMER_INDEX + HL_BLOCK_SIZE * 11},
-	{mmNIC0_UMR0_0_UNSECURE_DOORBELL0_UNSECURE_DB_FIRST32 + HL_BLOCK_SIZE * 12, /* UMR0_12 */
+	{mmNIC0_UMR0_0_UNSECURE_DOORBELL0_UNSECURE_DB_FIRST32 + HL_BLOCK_SIZE * 12,  
 		mmNIC0_UMR0_0_COMPLETION_QUEUE_CI_1_CQ_CONSUMER_INDEX + HL_BLOCK_SIZE * 12},
-	{mmNIC0_UMR0_0_UNSECURE_DOORBELL0_UNSECURE_DB_FIRST32 + HL_BLOCK_SIZE * 13, /* UMR0_13 */
+	{mmNIC0_UMR0_0_UNSECURE_DOORBELL0_UNSECURE_DB_FIRST32 + HL_BLOCK_SIZE * 13,  
 		mmNIC0_UMR0_0_COMPLETION_QUEUE_CI_1_CQ_CONSUMER_INDEX + HL_BLOCK_SIZE * 13},
-	{mmNIC0_UMR0_0_UNSECURE_DOORBELL0_UNSECURE_DB_FIRST32 + HL_BLOCK_SIZE * 14, /* UMR0_14 */
+	{mmNIC0_UMR0_0_UNSECURE_DOORBELL0_UNSECURE_DB_FIRST32 + HL_BLOCK_SIZE * 14,  
 		mmNIC0_UMR0_0_COMPLETION_QUEUE_CI_1_CQ_CONSUMER_INDEX + HL_BLOCK_SIZE * 14},
 };
 
-/*
- * mmNIC0_QPC0_LINEAR_WQE_QPN and mmNIC0_QPC0_MULTI_STRIDE_WQE_QPN are 32-bit
- * registers and since the user writes in bulks of 64 bits we need to un-secure
- * also the following 32 bits (that's why we added also the next 4 bytes to the
- * table). In the RTL, as part of ECO (2874), writing to the next 4 bytes
- * triggers a write to the SPECIAL_GLBL_SPARE register, hence it's must be
- * unsecured as well.
- */
+ 
 #define mmNIC0_QPC0_LINEAR_WQE_RSV (mmNIC0_QPC0_LINEAR_WQE_QPN + 4)
 #define mmNIC0_QPC0_MULTI_STRIDE_WQE_RSV (mmNIC0_QPC0_MULTI_STRIDE_WQE_QPN + 4)
 #define mmNIC0_QPC0_SPECIAL_GLBL_SPARE 0x541FF60
@@ -2632,7 +2622,7 @@ static int gaudi2_init_pb_tpc(struct hl_device *hdev)
 			0, gaudi2_pb_dcr0_tpc0, glbl_sec,
 			block_array_size);
 
-	/* Unsecure all TPC kernel tensors */
+	 
 	for (i = 0 ; i < TPC_NUM_OF_KERNEL_TENSORS ; i++)
 		hl_unsecure_registers(hdev,
 			gaudi2_pb_dcr0_tpc0_ktensor_unsecured_regs,
@@ -2640,7 +2630,7 @@ static int gaudi2_init_pb_tpc(struct hl_device *hdev)
 			i * kernel_tensor_stride, gaudi2_pb_dcr0_tpc0,
 			glbl_sec, block_array_size);
 
-	/* Unsecure all TPC QM tensors */
+	 
 	for (i = 0 ; i < TPC_NUM_OF_QM_TENSORS ; i++)
 		hl_unsecure_registers(hdev,
 			gaudi2_pb_dcr0_tpc0_qtensor_unsecured_regs,
@@ -2648,21 +2638,21 @@ static int gaudi2_init_pb_tpc(struct hl_device *hdev)
 			i * qm_tensor_stride,
 			gaudi2_pb_dcr0_tpc0, glbl_sec, block_array_size);
 
-	/* unsecure all 32 TPC QM SRF regs */
+	 
 	stride = mmDCORE0_TPC0_CFG_QM_SRF_1 - mmDCORE0_TPC0_CFG_QM_SRF_0;
 	for (i = 0 ; i < 32 ; i++)
 		hl_unsecure_register(hdev, mmDCORE0_TPC0_CFG_QM_SRF_0,
 				i * stride, gaudi2_pb_dcr0_tpc0, glbl_sec,
 				block_array_size);
 
-	/* unsecure the 4 TPC LOCK VALUE regs */
+	 
 	stride = mmDCORE0_TPC0_CFG_TPC_LOCK_VALUE_1 - mmDCORE0_TPC0_CFG_TPC_LOCK_VALUE_0;
 	for (i = 0 ; i < 4 ; i++)
 		hl_unsecure_register(hdev, mmDCORE0_TPC0_CFG_TPC_LOCK_VALUE_0,
 				i * stride, gaudi2_pb_dcr0_tpc0, glbl_sec,
 				block_array_size);
 
-	/* prepare data for TPC iterator */
+	 
 	tpc_pb_data.glbl_sec = glbl_sec;
 	tpc_pb_data.block_array_size = block_array_size;
 	tpc_iter.fn = &gaudi2_config_tpcs_glbl_sec;
@@ -2722,41 +2712,41 @@ static int gaudi2_init_pb_sm_objs(struct hl_device *hdev)
 	first_sob = GAUDI2_RESERVED_SOB_NUMBER;
 	first_mon = GAUDI2_RESERVED_MON_NUMBER;
 
-	/* 8192 SOB_OBJs skipping first GAUDI2_MAX_PENDING_CS of them */
+	 
 	for (j = i = first_sob ; i < DCORE_NUM_OF_SOB ; i++, j++)
 		UNSET_GLBL_SEC_BIT(sec_array, j);
 
-	/* 2048 MON_PAY ADDR_L skipping first GAUDI2_MAX_PENDING_CS of them */
+	 
 	for (i = first_mon, j += i ; i < DCORE_NUM_OF_MONITORS ; i++, j++)
 		UNSET_GLBL_SEC_BIT(sec_array, j);
 
-	/* 2048 MON_PAY ADDR_H skipping first GAUDI2_MAX_PENDING_CS of them */
+	 
 	for (i = first_mon, j += i ; i < DCORE_NUM_OF_MONITORS ; i++, j++)
 		UNSET_GLBL_SEC_BIT(sec_array, j);
 
-	/* 2048 MON_PAY DATA skipping first GAUDI2_MAX_PENDING_CS of them */
+	 
 	for (i = first_mon, j += i ; i < DCORE_NUM_OF_MONITORS ; i++, j++)
 		UNSET_GLBL_SEC_BIT(sec_array, j);
 
-	/* 2048 MON_ARM skipping first GAUDI2_MAX_PENDING_CS of them */
+	 
 	for (i = first_mon, j += i ; i < DCORE_NUM_OF_MONITORS ; i++, j++)
 		UNSET_GLBL_SEC_BIT(sec_array, j);
 
-	/* 2048 MON_CONFIG skipping first GAUDI2_MAX_PENDING_CS of them */
+	 
 	for (i = first_mon, j += i ; i < DCORE_NUM_OF_MONITORS ; i++, j++)
 		UNSET_GLBL_SEC_BIT(sec_array, j);
 
-	/* 2048 MON_STATUS skipping first GAUDI2_MAX_PENDING_CS of them */
+	 
 	for (i = first_mon, j += i ; i < DCORE_NUM_OF_MONITORS ; i++, j++)
 		UNSET_GLBL_SEC_BIT(sec_array, j);
 
-	/* Unsecure selected Dcore0 registers */
+	 
 	for (i = 0 ; i < glbl_sec_array_len ; i++) {
 		sec_entry = array_base + i * sizeof(u32);
 		WREG32(sec_entry, sec_array[i]);
 	}
 
-	/* Unsecure Dcore1 - Dcore3 registers */
+	 
 	memset(sec_array, -1, glbl_sec_array_len * sizeof(u32));
 
 	for (i = 1 ; i < NUM_OF_DCORES ; i++) {
@@ -2814,11 +2804,7 @@ static void gaudi2_write_lbw_range_register(struct hl_device *hdev, u64 base, vo
 		write_max = FIELD_GET(RR_LBW_LONG_MASK, lower_32_bits(rr_cfg->max));
 	}
 
-	/* Configure LBW RR:
-	 * Both RR types start blocking from base address 0x1000007FF8000000
-	 * SHORT RRs address bits [26:12]
-	 * LONG RRs address bits [26:0]
-	 */
+	 
 	WREG32(base + reg_min_offset, write_min);
 	WREG32(base + reg_max_offset, write_max);
 }
@@ -2853,7 +2839,7 @@ void gaudi2_write_rr_to_all_lbw_rtrs(struct hl_device *hdev, u8 rr_type, u32 rr_
 	block_ctx.instance_cfg_fn = &gaudi2_write_lbw_range_register;
 	block_ctx.data = &rr_cfg;
 
-	/* SFT */
+	 
 	block_ctx.base = mmSFT0_LBW_RTR_IF_MSTR_IF_RR_SHRD_LBW_BASE;
 	block_ctx.blocks = NUM_OF_SFT;
 	block_ctx.block_off = SFT_OFFSET;
@@ -2861,7 +2847,7 @@ void gaudi2_write_rr_to_all_lbw_rtrs(struct hl_device *hdev, u8 rr_type, u32 rr_
 	block_ctx.instance_off = SFT_LBW_RTR_OFFSET;
 	gaudi2_init_blocks(hdev, &block_ctx);
 
-	/* SIF */
+	 
 	block_ctx.base = mmDCORE0_RTR0_MSTR_IF_RR_SHRD_LBW_BASE;
 	block_ctx.blocks = NUM_OF_DCORES;
 	block_ctx.block_off = DCORE_OFFSET;
@@ -2874,15 +2860,15 @@ void gaudi2_write_rr_to_all_lbw_rtrs(struct hl_device *hdev, u8 rr_type, u32 rr_
 	block_ctx.instances = 1;
 	block_ctx.instance_off = 0;
 
-	/* PCIE ELBI */
+	 
 	block_ctx.base = mmPCIE_ELBI_RR_MSTR_IF_RR_SHRD_LBW_BASE;
 	gaudi2_init_blocks(hdev, &block_ctx);
 
-	/* PCIE MSTR */
+	 
 	block_ctx.base = mmPCIE_MSTR_RR_MSTR_IF_RR_SHRD_LBW_BASE;
 	gaudi2_init_blocks(hdev, &block_ctx);
 
-	/* PCIE LBW */
+	 
 	block_ctx.base = mmPCIE_LBW_RR_MSTR_IF_RR_SHRD_LBW_BASE;
 	gaudi2_init_blocks(hdev, &block_ctx);
 }
@@ -2891,24 +2877,7 @@ static void gaudi2_init_lbw_range_registers_secure(struct hl_device *hdev)
 {
 	int i;
 
-	/* Up to 14 14bit-address regs.
-	 *
-	 * - range 0: NIC0_CFG
-	 * - range 1: NIC1_CFG
-	 * - range 2: NIC2_CFG
-	 * - range 3: NIC3_CFG
-	 * - range 4: NIC4_CFG
-	 * - range 5: NIC5_CFG
-	 * - range 6: NIC6_CFG
-	 * - range 7: NIC7_CFG
-	 * - range 8: NIC8_CFG
-	 * - range 9: NIC9_CFG
-	 * - range 10: NIC10_CFG
-	 * - range 11: NIC11_CFG + *_DBG (not including TPC_DBG)
-	 *
-	 * If F/W security is not enabled:
-	 * - ranges 12,13: PSOC_CFG (excluding PSOC_TIMESTAMP)
-	 */
+	 
 	u64 lbw_range_min_short[] = {
 		mmNIC0_TX_AXUSER_BASE,
 		mmNIC1_TX_AXUSER_BASE,
@@ -2942,12 +2911,7 @@ static void gaudi2_init_lbw_range_registers_secure(struct hl_device *hdev)
 		mmSVID2_AC_BASE + HL_BLOCK_SIZE
 	};
 
-	/* Up to 4 26bit-address regs.
-	 *
-	 * - range 0: TPC_DBG
-	 * - range 1: PCIE_DBI.MSIX_DOORBELL_OFF
-	 * - range 2/3: used in soft reset to block access to several blocks and are cleared here
-	 */
+	 
 	u64 lbw_range_min_long[] = {
 		mmDCORE0_TPC0_ROM_TABLE_BASE,
 		mmPCIE_DBI_MSIX_DOORBELL_OFF,
@@ -2961,7 +2925,7 @@ static void gaudi2_init_lbw_range_registers_secure(struct hl_device *hdev)
 		0x0
 	};
 
-	/* write short range registers to all lbw rtrs */
+	 
 	for (i = 0 ; i < ARRAY_SIZE(lbw_range_min_short) ; i++) {
 		if ((lbw_range_min_short[i] == mmPSOC_I2C_M0_BASE ||
 				lbw_range_min_short[i] == mmPSOC_EFUSE_BASE) &&
@@ -2972,7 +2936,7 @@ static void gaudi2_init_lbw_range_registers_secure(struct hl_device *hdev)
 				lbw_range_min_short[i], lbw_range_max_short[i]);
 	}
 
-	/* write long range registers to all lbw rtrs */
+	 
 	for (i = 0 ; i < ARRAY_SIZE(lbw_range_min_long) ; i++) {
 		gaudi2_write_rr_to_all_lbw_rtrs(hdev, RR_TYPE_LONG, i,
 				lbw_range_min_long[i], lbw_range_max_long[i]);
@@ -3041,10 +3005,7 @@ static void gaudi2_write_hbw_range_register(struct hl_device *hdev, u64 base, vo
 				FIELD_GET(RR_HBW_LONG_LO_MASK, rr_cfg->max);
 	}
 
-	/* Configure HBW RR:
-	 * SHORT RRs (0x1000_<36bits>000) - HI: address bits [47:44], LO: address bits [43:12]
-	 * LONG  RRs (0x<52bits>000)      - HI: address bits [63:44], LO: address bits [43:12]
-	 */
+	 
 	WREG32(base + min_lo_reg_offset, lower_32_bits(val_min));
 	WREG32(base + min_hi_reg_offset, upper_32_bits(val_min));
 	WREG32(base + max_lo_reg_offset, lower_32_bits(val_max));
@@ -3081,7 +3042,7 @@ static void gaudi2_write_hbw_rr_to_all_mstr_if(struct hl_device *hdev, u8 rr_typ
 	block_ctx.instance_cfg_fn = &gaudi2_write_hbw_range_register;
 	block_ctx.data = &rr_cfg;
 
-	/* SFT */
+	 
 	block_ctx.base = mmSFT0_HBW_RTR_IF0_MSTR_IF_RR_SHRD_HBW_BASE;
 	block_ctx.blocks = NUM_OF_SFT;
 	block_ctx.block_off = SFT_OFFSET;
@@ -3089,7 +3050,7 @@ static void gaudi2_write_hbw_rr_to_all_mstr_if(struct hl_device *hdev, u8 rr_typ
 	block_ctx.instance_off = SFT_IF_RTR_OFFSET;
 	gaudi2_init_blocks(hdev, &block_ctx);
 
-	/* SIF */
+	 
 	block_ctx.base = mmDCORE0_RTR0_MSTR_IF_RR_SHRD_HBW_BASE;
 	block_ctx.blocks = NUM_OF_DCORES;
 	block_ctx.block_off = DCORE_OFFSET;
@@ -3097,7 +3058,7 @@ static void gaudi2_write_hbw_rr_to_all_mstr_if(struct hl_device *hdev, u8 rr_typ
 	block_ctx.instance_off = DCORE_RTR_OFFSET;
 	gaudi2_init_blocks(hdev, &block_ctx);
 
-	/* PCIE MSTR */
+	 
 	block_ctx.base = mmPCIE_MSTR_RR_MSTR_IF_RR_SHRD_HBW_BASE;
 	block_ctx.blocks = 1;
 	block_ctx.block_off = 0;
@@ -3110,11 +3071,7 @@ static void gaudi2_init_hbw_range_registers(struct hl_device *hdev)
 {
 	int i;
 
-	/* Up to 6 short RR (0x1000_<36bits>000) and 4 long RR (0x<52bits>000).
-	 *
-	 * - short range 0:
-	 *	SPI Flash, ARC0/1 ICCM/DCCM, Secure Boot ROM, PSOC_FW/Scratchpad/PCIE_FW SRAM
-	 */
+	 
 	u64 hbw_range_min_short[] = {
 		SPI_FLASH_BASE_ADDR
 	};
@@ -3158,7 +3115,7 @@ static void gaudi2_write_mmu_range_register(struct hl_device *hdev, u64 base,
 	max_lo_reg_offset += rr_cfg->index * sizeof(u32);
 	max_hi_reg_offset += rr_cfg->index * sizeof(u32);
 
-	/* Configure MMU RR (address bits [63:0]) */
+	 
 	WREG32(base + min_lo_reg_offset, lower_32_bits(rr_cfg->min));
 	WREG32(base + min_hi_reg_offset, upper_32_bits(rr_cfg->min));
 	WREG32(base + max_lo_reg_offset, lower_32_bits(rr_cfg->max));
@@ -3170,12 +3127,9 @@ static void gaudi2_init_mmu_range_registers(struct hl_device *hdev)
 	u32 dcore_id, hmmu_id, hmmu_base;
 	struct rr_config rr_cfg;
 
-	/* Up to 8 ranges [63:0].
-	 *
-	 * - range 0: Reserved HBM area for F/W and driver
-	 */
+	 
 
-	/* The RRs are located after the HMMU so need to use the scrambled addresses */
+	 
 	rr_cfg.min = hdev->asic_funcs->scramble_addr(hdev, DRAM_PHYS_BASE);
 	rr_cfg.max = hdev->asic_funcs->scramble_addr(hdev, hdev->asic_prop.dram_user_base_address);
 	rr_cfg.index = 0;
@@ -3194,12 +3148,7 @@ static void gaudi2_init_mmu_range_registers(struct hl_device *hdev)
 	}
 }
 
-/**
- * gaudi2_init_range_registers -
- * Initialize range registers of all initiators
- *
- * @hdev: pointer to hl_device structure
- */
+ 
 static void gaudi2_init_range_registers(struct hl_device *hdev)
 {
 	gaudi2_init_lbw_range_registers(hdev);
@@ -3207,16 +3156,7 @@ static void gaudi2_init_range_registers(struct hl_device *hdev)
 	gaudi2_init_mmu_range_registers(hdev);
 }
 
-/**
- * gaudi2_init_protection_bits -
- * Initialize protection bits of specific registers
- *
- * @hdev: pointer to hl_device structure
- *
- * All protection bits are 1 by default, means not protected. Need to set to 0
- * each bit that belongs to a protected register.
- *
- */
+ 
 static int gaudi2_init_protection_bits(struct hl_device *hdev)
 {
 	struct asic_fixed_properties *prop = &hdev->asic_prop;
@@ -3224,35 +3164,32 @@ static int gaudi2_init_protection_bits(struct hl_device *hdev)
 	int rc = 0;
 	u8 i;
 
-	/* SFT */
+	 
 	instance_offset = mmSFT1_HBW_RTR_IF0_RTR_CTRL_BASE - mmSFT0_HBW_RTR_IF0_RTR_CTRL_BASE;
 	rc |= hl_init_pb(hdev, HL_PB_SHARED, HL_PB_NA, 4, instance_offset,
 			gaudi2_pb_sft0, ARRAY_SIZE(gaudi2_pb_sft0),
 			NULL, HL_PB_NA);
 
-	/* HIF */
+	 
 	instance_offset = mmDCORE0_HIF1_BASE - mmDCORE0_HIF0_BASE;
 	rc |= hl_init_pb_with_mask(hdev, NUM_OF_DCORES, DCORE_OFFSET,
 			NUM_OF_HIF_PER_DCORE, instance_offset,
 			gaudi2_pb_dcr0_hif, ARRAY_SIZE(gaudi2_pb_dcr0_hif),
 			NULL, HL_PB_NA, prop->hmmu_hif_enabled_mask);
 
-	/* RTR */
+	 
 	instance_offset = mmDCORE0_RTR1_CTRL_BASE - mmDCORE0_RTR0_CTRL_BASE;
 	rc |= hl_init_pb(hdev, NUM_OF_DCORES, DCORE_OFFSET, 8, instance_offset,
 			gaudi2_pb_dcr0_rtr0, ARRAY_SIZE(gaudi2_pb_dcr0_rtr0),
 			NULL, HL_PB_NA);
 
-	/* HMMU */
+	 
 	rc |= hl_init_pb_with_mask(hdev, NUM_OF_DCORES, DCORE_OFFSET,
 			NUM_OF_HMMU_PER_DCORE, DCORE_HMMU_OFFSET,
 			gaudi2_pb_dcr0_hmmu0, ARRAY_SIZE(gaudi2_pb_dcr0_hmmu0),
 			NULL, HL_PB_NA, prop->hmmu_hif_enabled_mask);
 
-	/* CPU.
-	 * Except for CPU_IF, skip when security is enabled in F/W, because the blocks are protected
-	 * by privileged RR.
-	 */
+	 
 	rc |= hl_init_pb(hdev, HL_PB_SHARED, HL_PB_NA,
 			HL_PB_SINGLE_INSTANCE, HL_PB_NA,
 			gaudi2_pb_cpu_if, ARRAY_SIZE(gaudi2_pb_cpu_if),
@@ -3264,27 +3201,27 @@ static int gaudi2_init_protection_bits(struct hl_device *hdev)
 				gaudi2_pb_cpu, ARRAY_SIZE(gaudi2_pb_cpu),
 				NULL, HL_PB_NA);
 
-	/* KDMA */
+	 
 	rc |= hl_init_pb(hdev, HL_PB_SHARED, HL_PB_NA,
 			HL_PB_SINGLE_INSTANCE, HL_PB_NA,
 			gaudi2_pb_kdma, ARRAY_SIZE(gaudi2_pb_kdma),
 			NULL, HL_PB_NA);
 
-	/* PDMA */
+	 
 	instance_offset = mmPDMA1_CORE_BASE - mmPDMA0_CORE_BASE;
 	rc |= hl_init_pb(hdev, HL_PB_SHARED, HL_PB_NA, 2, instance_offset,
 			gaudi2_pb_pdma0, ARRAY_SIZE(gaudi2_pb_pdma0),
 			gaudi2_pb_pdma0_unsecured_regs,
 			ARRAY_SIZE(gaudi2_pb_pdma0_unsecured_regs));
 
-	/* ARC PDMA */
+	 
 	rc |= hl_init_pb_ranges(hdev, HL_PB_SHARED, HL_PB_NA, 2,
 			instance_offset, gaudi2_pb_pdma0_arc,
 			ARRAY_SIZE(gaudi2_pb_pdma0_arc),
 			gaudi2_pb_pdma0_arc_unsecured_regs,
 			ARRAY_SIZE(gaudi2_pb_pdma0_arc_unsecured_regs));
 
-	/* EDMA */
+	 
 	instance_offset = mmDCORE0_EDMA1_CORE_BASE - mmDCORE0_EDMA0_CORE_BASE;
 	rc |= hl_init_pb_with_mask(hdev, NUM_OF_DCORES, DCORE_OFFSET, 2,
 			instance_offset, gaudi2_pb_dcr0_edma0,
@@ -3293,7 +3230,7 @@ static int gaudi2_init_protection_bits(struct hl_device *hdev)
 			ARRAY_SIZE(gaudi2_pb_dcr0_edma0_unsecured_regs),
 			prop->edma_enabled_mask);
 
-	/* ARC EDMA */
+	 
 	rc |= hl_init_pb_ranges_with_mask(hdev, NUM_OF_DCORES, DCORE_OFFSET, 2,
 			instance_offset, gaudi2_pb_dcr0_edma0_arc,
 			ARRAY_SIZE(gaudi2_pb_dcr0_edma0_arc),
@@ -3301,17 +3238,17 @@ static int gaudi2_init_protection_bits(struct hl_device *hdev)
 			ARRAY_SIZE(gaudi2_pb_dcr0_edma0_arc_unsecured_regs),
 			prop->edma_enabled_mask);
 
-	/* MME */
+	 
 	instance_offset = mmDCORE0_MME_SBTE1_BASE - mmDCORE0_MME_SBTE0_BASE;
 
 	for (i = 0 ; i < NUM_OF_DCORES * NUM_OF_MME_PER_DCORE ; i++) {
-		/* MME SBTE */
+		 
 		rc |= hl_init_pb_single_dcore(hdev, (DCORE_OFFSET * i), 5,
 				instance_offset, gaudi2_pb_dcr0_mme_sbte,
 				ARRAY_SIZE(gaudi2_pb_dcr0_mme_sbte), NULL,
 				HL_PB_NA);
 
-		/* MME */
+		 
 		rc |= hl_init_pb_single_dcore(hdev, (DCORE_OFFSET * i),
 				HL_PB_SINGLE_INSTANCE, HL_PB_NA,
 				gaudi2_pb_dcr0_mme_eng,
@@ -3320,12 +3257,9 @@ static int gaudi2_init_protection_bits(struct hl_device *hdev)
 				ARRAY_SIZE(gaudi2_pb_dcr0_mme_eng_unsecured_regs));
 	}
 
-	/*
-	 * we have special iteration for case in which we would like to
-	 * configure stubbed MME's ARC/QMAN
-	 */
+	 
 	for (i = 0 ; i < NUM_OF_DCORES * NUM_OF_MME_PER_DCORE ; i++) {
-		/* MME QM */
+		 
 		rc |= hl_init_pb_single_dcore(hdev, (DCORE_OFFSET * i),
 				HL_PB_SINGLE_INSTANCE, HL_PB_NA,
 				gaudi2_pb_dcr0_mme_qm,
@@ -3333,7 +3267,7 @@ static int gaudi2_init_protection_bits(struct hl_device *hdev)
 				gaudi2_pb_dcr0_mme_qm_unsecured_regs,
 				ARRAY_SIZE(gaudi2_pb_dcr0_mme_qm_unsecured_regs));
 
-		/* ARC MME */
+		 
 		rc |= hl_init_pb_ranges_single_dcore(hdev, (DCORE_OFFSET * i),
 			HL_PB_SINGLE_INSTANCE, HL_PB_NA,
 			gaudi2_pb_dcr0_mme_arc,
@@ -3342,7 +3276,7 @@ static int gaudi2_init_protection_bits(struct hl_device *hdev)
 			ARRAY_SIZE(gaudi2_pb_dcr0_mme_arc_unsecured_regs));
 	}
 
-	/* MME QM ARC ACP ENG */
+	 
 	rc |= hl_init_pb_ranges_with_mask(hdev, NUM_OF_DCORES, DCORE_OFFSET,
 			HL_PB_SINGLE_INSTANCE, HL_PB_NA,
 			gaudi2_pb_mme_qm_arc_acp_eng,
@@ -3351,26 +3285,26 @@ static int gaudi2_init_protection_bits(struct hl_device *hdev)
 			ARRAY_SIZE(gaudi2_pb_mme_qm_arc_acp_eng_unsecured_regs),
 			(BIT(NUM_OF_DCORES * NUM_OF_MME_PER_DCORE) - 1));
 
-	/* TPC */
+	 
 	rc |= gaudi2_init_pb_tpc(hdev);
 	rc |= gaudi2_init_pb_tpc_arc(hdev);
 
-	/* SRAM */
+	 
 	instance_offset = mmDCORE0_SRAM1_BANK_BASE - mmDCORE0_SRAM0_BANK_BASE;
 	rc |= hl_init_pb(hdev, NUM_OF_DCORES, DCORE_OFFSET, 8, instance_offset,
 			gaudi2_pb_dcr0_sram0, ARRAY_SIZE(gaudi2_pb_dcr0_sram0),
 			NULL, HL_PB_NA);
 
-	/* Sync Manager MSTR IF */
+	 
 	rc |= hl_init_pb(hdev, NUM_OF_DCORES, DCORE_OFFSET,
 			HL_PB_SINGLE_INSTANCE, HL_PB_NA,
 			gaudi2_pb_dcr0_sm_mstr_if,
 			ARRAY_SIZE(gaudi2_pb_dcr0_sm_mstr_if),
 			NULL, HL_PB_NA);
 
-	/* Sync Manager GLBL */
+	 
 
-	/* Secure Dcore0 CQ0 registers */
+	 
 	rc |= hl_init_pb_ranges(hdev, HL_PB_SHARED, HL_PB_NA,
 			HL_PB_SINGLE_INSTANCE, HL_PB_NA,
 			gaudi2_pb_dcr0_sm_glbl,
@@ -3378,7 +3312,7 @@ static int gaudi2_init_protection_bits(struct hl_device *hdev)
 			gaudi2_pb_dcr0_sm_glbl_unsecured_regs,
 			ARRAY_SIZE(gaudi2_pb_dcr0_sm_glbl_unsecured_regs));
 
-	/* Unsecure all other CQ registers */
+	 
 	rc |= hl_init_pb_ranges(hdev, NUM_OF_DCORES - 1, DCORE_OFFSET,
 			HL_PB_SINGLE_INSTANCE, HL_PB_NA,
 			gaudi2_pb_dcr1_sm_glbl,
@@ -3386,10 +3320,7 @@ static int gaudi2_init_protection_bits(struct hl_device *hdev)
 			gaudi2_pb_dcr_x_sm_glbl_unsecured_regs,
 			ARRAY_SIZE(gaudi2_pb_dcr_x_sm_glbl_unsecured_regs));
 
-	/* PSOC.
-	 * Except for PSOC_GLOBAL_CONF, skip when security is enabled in F/W, because the blocks are
-	 * protected by privileged RR.
-	 */
+	 
 	rc |= hl_init_pb(hdev, HL_PB_SHARED, HL_PB_NA,
 			HL_PB_SINGLE_INSTANCE, HL_PB_NA,
 			gaudi2_pb_psoc_global_conf, ARRAY_SIZE(gaudi2_pb_psoc_global_conf),
@@ -3401,16 +3332,13 @@ static int gaudi2_init_protection_bits(struct hl_device *hdev)
 				gaudi2_pb_psoc, ARRAY_SIZE(gaudi2_pb_psoc),
 				NULL, HL_PB_NA);
 
-	/* PMMU */
+	 
 	rc |= hl_init_pb(hdev, HL_PB_SHARED, HL_PB_NA,
 			HL_PB_SINGLE_INSTANCE, HL_PB_NA,
 			gaudi2_pb_pmmu, ARRAY_SIZE(gaudi2_pb_pmmu),
 			NULL, HL_PB_NA);
 
-	/* PLL.
-	 * Skip PSOC/XFT PLL when security is enabled in F/W, because these blocks are protected by
-	 * privileged RR.
-	 */
+	 
 	rc |= hl_init_pb(hdev, HL_PB_SHARED, HL_PB_NA,
 			HL_PB_SINGLE_INSTANCE, HL_PB_NA,
 			gaudi2_pb_pmmu_pll, ARRAY_SIZE(gaudi2_pb_pmmu_pll),
@@ -3431,16 +3359,14 @@ static int gaudi2_init_protection_bits(struct hl_device *hdev)
 				NULL, HL_PB_NA);
 	}
 
-	/* PCIE */
+	 
 	rc |= hl_init_pb(hdev, HL_PB_SHARED, HL_PB_NA,
 			HL_PB_SINGLE_INSTANCE, HL_PB_NA,
 			gaudi2_pb_pcie, ARRAY_SIZE(gaudi2_pb_pcie),
 			gaudi2_pb_pcie_unsecured_regs,
 			ARRAY_SIZE(gaudi2_pb_pcie_unsecured_regs));
 
-	/* Thermal Sensor.
-	 * Skip when security is enabled in F/W, because the blocks are protected by privileged RR.
-	 */
+	 
 	if (!hdev->asic_prop.fw_security_enabled) {
 		instance_offset = mmDCORE1_XFT_BASE - mmDCORE0_XFT_BASE;
 		rc |= hl_init_pb(hdev, HL_PB_SHARED, HL_PB_NA, 4, instance_offset,
@@ -3448,7 +3374,7 @@ static int gaudi2_init_protection_bits(struct hl_device *hdev)
 				ARRAY_SIZE(gaudi2_pb_thermal_sensor0), NULL, HL_PB_NA);
 	}
 
-	/* Scheduler ARCs */
+	 
 	instance_offset = mmARC_FARM_ARC1_AUX_BASE - mmARC_FARM_ARC0_AUX_BASE;
 	rc |= hl_init_pb_ranges(hdev, HL_PB_SHARED, HL_PB_NA,
 			NUM_OF_ARC_FARMS_ARC,
@@ -3457,7 +3383,7 @@ static int gaudi2_init_protection_bits(struct hl_device *hdev)
 			gaudi2_pb_arc_sched_unsecured_regs,
 			ARRAY_SIZE(gaudi2_pb_arc_sched_unsecured_regs));
 
-	/* XBAR MIDs */
+	 
 	instance_offset = mmXBAR_MID_1_BASE - mmXBAR_MID_0_BASE;
 	rc |= hl_init_pb(hdev, HL_PB_SHARED, HL_PB_NA, NUM_OF_XBAR,
 			instance_offset, gaudi2_pb_xbar_mid,
@@ -3465,7 +3391,7 @@ static int gaudi2_init_protection_bits(struct hl_device *hdev)
 			gaudi2_pb_xbar_mid_unsecured_regs,
 			ARRAY_SIZE(gaudi2_pb_xbar_mid_unsecured_regs));
 
-	/* XBAR EDGEs */
+	 
 	instance_offset = mmXBAR_EDGE_1_BASE - mmXBAR_EDGE_0_BASE;
 	rc |= hl_init_pb_with_mask(hdev, HL_PB_SHARED, HL_PB_NA, NUM_OF_XBAR,
 			instance_offset, gaudi2_pb_xbar_edge,
@@ -3474,13 +3400,13 @@ static int gaudi2_init_protection_bits(struct hl_device *hdev)
 			ARRAY_SIZE(gaudi2_pb_xbar_edge_unsecured_regs),
 			prop->xbar_edge_enabled_mask);
 
-	/* NIC */
+	 
 	rc |= hl_init_pb_with_mask(hdev, NIC_NUMBER_OF_MACROS, NIC_OFFSET,
 			HL_PB_SINGLE_INSTANCE, HL_PB_NA,
 			gaudi2_pb_nic0, ARRAY_SIZE(gaudi2_pb_nic0),
 			NULL, HL_PB_NA, hdev->nic_ports_mask);
 
-	/* NIC QM and QPC */
+	 
 	rc |= hl_init_pb_with_mask(hdev, NIC_NUMBER_OF_MACROS, NIC_OFFSET,
 			NIC_NUMBER_OF_QM_PER_MACRO, NIC_QM_OFFSET,
 			gaudi2_pb_nic0_qm_qpc, ARRAY_SIZE(gaudi2_pb_nic0_qm_qpc),
@@ -3488,7 +3414,7 @@ static int gaudi2_init_protection_bits(struct hl_device *hdev)
 			ARRAY_SIZE(gaudi2_pb_nic0_qm_qpc_unsecured_regs),
 			hdev->nic_ports_mask);
 
-	/* NIC QM ARC */
+	 
 	rc |= hl_init_pb_ranges_with_mask(hdev, NIC_NUMBER_OF_MACROS,
 			NIC_OFFSET, NIC_NUMBER_OF_QM_PER_MACRO, NIC_QM_OFFSET,
 			gaudi2_pb_nic0_qm_arc_aux0,
@@ -3497,7 +3423,7 @@ static int gaudi2_init_protection_bits(struct hl_device *hdev)
 			ARRAY_SIZE(gaudi2_pb_nic0_qm_arc_aux0_unsecured_regs),
 			hdev->nic_ports_mask);
 
-	/* NIC UMR */
+	 
 	rc |= hl_init_pb_ranges_with_mask(hdev, NIC_NUMBER_OF_MACROS,
 			NIC_OFFSET, NIC_NUMBER_OF_QM_PER_MACRO, NIC_QM_OFFSET,
 			gaudi2_pb_nic0_umr,
@@ -3506,7 +3432,7 @@ static int gaudi2_init_protection_bits(struct hl_device *hdev)
 			ARRAY_SIZE(gaudi2_pb_nic0_umr_unsecured_regs),
 			hdev->nic_ports_mask);
 
-	/* Rotators */
+	 
 	instance_offset = mmROT1_BASE - mmROT0_BASE;
 	rc |= hl_init_pb_with_mask(hdev, HL_PB_SHARED, HL_PB_NA, NUM_OF_ROT,
 			instance_offset, gaudi2_pb_rot0,
@@ -3515,7 +3441,7 @@ static int gaudi2_init_protection_bits(struct hl_device *hdev)
 			ARRAY_SIZE(gaudi2_pb_rot0_unsecured_regs),
 			(BIT(NUM_OF_ROT) - 1));
 
-	/* Rotators ARCS */
+	 
 	rc |= hl_init_pb_ranges_with_mask(hdev, HL_PB_SHARED,
 			HL_PB_NA, NUM_OF_ROT, instance_offset,
 			gaudi2_pb_rot0_arc, ARRAY_SIZE(gaudi2_pb_rot0_arc),
@@ -3528,14 +3454,7 @@ static int gaudi2_init_protection_bits(struct hl_device *hdev)
 	return rc;
 }
 
-/**
- * gaudi2_init_security - Initialize security model
- *
- * @hdev: pointer to hl_device structure
- *
- * Initialize the security model of the device
- * That includes range registers and protection bit per register.
- */
+ 
 int gaudi2_init_security(struct hl_device *hdev)
 {
 	int rc;
@@ -3580,160 +3499,138 @@ static void gaudi2_ack_pb_tpc(struct hl_device *hdev)
 	gaudi2_iterate_tpcs(hdev, &tpc_iter);
 }
 
-/**
- * gaudi2_ack_protection_bits_errors - scan all blocks having protection bits
- * and for every protection error found, display the appropriate error message
- * and clear the error.
- *
- * @hdev: pointer to hl_device structure
- *
- * All protection bits are 1 by default, means not protected. Need to set to 0
- * each bit that belongs to a protected register.
- *
- */
+ 
 void gaudi2_ack_protection_bits_errors(struct hl_device *hdev)
 {
 	struct asic_fixed_properties *prop = &hdev->asic_prop;
 	u32 instance_offset;
 	u8 i;
 
-	/* SFT */
+	 
 	instance_offset = mmSFT1_HBW_RTR_IF0_RTR_CTRL_BASE - mmSFT0_HBW_RTR_IF0_RTR_CTRL_BASE;
 	hl_ack_pb(hdev, HL_PB_SHARED, HL_PB_NA, 4, instance_offset,
 			gaudi2_pb_sft0, ARRAY_SIZE(gaudi2_pb_sft0));
 
-	/* HIF */
+	 
 	instance_offset = mmDCORE0_HIF1_BASE - mmDCORE0_HIF0_BASE;
 	hl_ack_pb_with_mask(hdev, NUM_OF_DCORES, DCORE_OFFSET,
 			NUM_OF_HIF_PER_DCORE, instance_offset,
 			gaudi2_pb_dcr0_hif, ARRAY_SIZE(gaudi2_pb_dcr0_hif),
 			prop->hmmu_hif_enabled_mask);
 
-	/* RTR */
+	 
 	instance_offset = mmDCORE0_RTR1_CTRL_BASE - mmDCORE0_RTR0_CTRL_BASE;
 	hl_ack_pb(hdev, NUM_OF_DCORES, DCORE_OFFSET, 8, instance_offset,
 			gaudi2_pb_dcr0_rtr0, ARRAY_SIZE(gaudi2_pb_dcr0_rtr0));
 
-	/* HMMU */
+	 
 	hl_ack_pb_with_mask(hdev, NUM_OF_DCORES, DCORE_OFFSET,
 			NUM_OF_HMMU_PER_DCORE, DCORE_HMMU_OFFSET,
 			gaudi2_pb_dcr0_hmmu0, ARRAY_SIZE(gaudi2_pb_dcr0_hmmu0),
 			prop->hmmu_hif_enabled_mask);
 
-	/* CPU.
-	 * Except for CPU_IF, skip when security is enabled in F/W, because the blocks are protected
-	 * by privileged RR.
-	 */
+	 
 	hl_ack_pb(hdev, HL_PB_SHARED, HL_PB_NA, HL_PB_SINGLE_INSTANCE, HL_PB_NA,
 			gaudi2_pb_cpu_if, ARRAY_SIZE(gaudi2_pb_cpu_if));
 	if (!hdev->asic_prop.fw_security_enabled)
 		hl_ack_pb(hdev, HL_PB_SHARED, HL_PB_NA, HL_PB_SINGLE_INSTANCE, HL_PB_NA,
 				gaudi2_pb_cpu, ARRAY_SIZE(gaudi2_pb_cpu));
 
-	/* KDMA */
+	 
 	hl_ack_pb(hdev, HL_PB_SHARED, HL_PB_NA, HL_PB_SINGLE_INSTANCE, HL_PB_NA,
 			gaudi2_pb_kdma, ARRAY_SIZE(gaudi2_pb_kdma));
 
-	/* PDMA */
+	 
 	instance_offset = mmPDMA1_CORE_BASE - mmPDMA0_CORE_BASE;
 	hl_ack_pb(hdev, HL_PB_SHARED, HL_PB_NA, 2, instance_offset,
 			gaudi2_pb_pdma0, ARRAY_SIZE(gaudi2_pb_pdma0));
 
-	/* ARC PDMA */
+	 
 	hl_ack_pb(hdev, HL_PB_SHARED, HL_PB_NA, 2, instance_offset,
 			gaudi2_pb_pdma0_arc, ARRAY_SIZE(gaudi2_pb_pdma0_arc));
 
-	/* EDMA */
+	 
 	instance_offset = mmDCORE0_EDMA1_CORE_BASE - mmDCORE0_EDMA0_CORE_BASE;
 	hl_ack_pb_with_mask(hdev, NUM_OF_DCORES, DCORE_OFFSET, 2,
 			instance_offset, gaudi2_pb_dcr0_edma0,
 			ARRAY_SIZE(gaudi2_pb_dcr0_edma0),
 			prop->edma_enabled_mask);
 
-	/* ARC EDMA */
+	 
 	hl_ack_pb_with_mask(hdev, NUM_OF_DCORES, DCORE_OFFSET, 2,
 			instance_offset, gaudi2_pb_dcr0_edma0_arc,
 			ARRAY_SIZE(gaudi2_pb_dcr0_edma0_arc),
 			prop->edma_enabled_mask);
 
-	/* MME */
+	 
 	instance_offset = mmDCORE0_MME_SBTE1_BASE - mmDCORE0_MME_SBTE0_BASE;
 
 	for (i = 0 ; i < NUM_OF_DCORES * NUM_OF_MME_PER_DCORE ; i++) {
-		/* MME SBTE */
+		 
 		hl_ack_pb_single_dcore(hdev, (DCORE_OFFSET * i), 5,
 				instance_offset, gaudi2_pb_dcr0_mme_sbte,
 				ARRAY_SIZE(gaudi2_pb_dcr0_mme_sbte));
 
-		/* MME */
+		 
 		hl_ack_pb_single_dcore(hdev, (DCORE_OFFSET * i),
 				HL_PB_SINGLE_INSTANCE, HL_PB_NA,
 				gaudi2_pb_dcr0_mme_eng,
 				ARRAY_SIZE(gaudi2_pb_dcr0_mme_eng));
 	}
 
-	/*
-	 * we have special iteration for case in which we would like to
-	 * configure stubbed MME's ARC/QMAN
-	 */
+	 
 	for (i = 0 ; i < NUM_OF_DCORES * NUM_OF_MME_PER_DCORE ; i++) {
-		/* MME QM */
+		 
 		hl_ack_pb_single_dcore(hdev, (DCORE_OFFSET * i),
 				HL_PB_SINGLE_INSTANCE, HL_PB_NA,
 				gaudi2_pb_dcr0_mme_qm,
 				ARRAY_SIZE(gaudi2_pb_dcr0_mme_qm));
 
-		/* ARC MME */
+		 
 		hl_ack_pb_single_dcore(hdev, (DCORE_OFFSET * i),
 				HL_PB_SINGLE_INSTANCE, HL_PB_NA,
 				gaudi2_pb_dcr0_mme_arc,
 				ARRAY_SIZE(gaudi2_pb_dcr0_mme_arc));
 	}
 
-	/* MME QM ARC ACP ENG */
+	 
 	hl_ack_pb_with_mask(hdev, NUM_OF_DCORES, DCORE_OFFSET,
 			HL_PB_SINGLE_INSTANCE, HL_PB_NA,
 			gaudi2_pb_mme_qm_arc_acp_eng,
 			ARRAY_SIZE(gaudi2_pb_mme_qm_arc_acp_eng),
 			(BIT(NUM_OF_DCORES * NUM_OF_MME_PER_DCORE) - 1));
 
-	/* TPC */
+	 
 	gaudi2_ack_pb_tpc(hdev);
 
-	/* SRAM */
+	 
 	instance_offset = mmDCORE0_SRAM1_BANK_BASE - mmDCORE0_SRAM0_BANK_BASE;
 	hl_ack_pb(hdev, NUM_OF_DCORES, DCORE_OFFSET, 8, instance_offset,
 			gaudi2_pb_dcr0_sram0, ARRAY_SIZE(gaudi2_pb_dcr0_sram0));
 
-	/* Sync Manager MSTR IF */
+	 
 	hl_ack_pb(hdev, NUM_OF_DCORES, DCORE_OFFSET, HL_PB_SINGLE_INSTANCE, HL_PB_NA,
 			gaudi2_pb_dcr0_sm_mstr_if, ARRAY_SIZE(gaudi2_pb_dcr0_sm_mstr_if));
 
-	/* Sync Manager */
+	 
 	hl_ack_pb(hdev, NUM_OF_DCORES, DCORE_OFFSET, HL_PB_SINGLE_INSTANCE, HL_PB_NA,
 			gaudi2_pb_dcr0_sm_glbl, ARRAY_SIZE(gaudi2_pb_dcr0_sm_glbl));
 
 	hl_ack_pb(hdev, NUM_OF_DCORES, DCORE_OFFSET, HL_PB_SINGLE_INSTANCE, HL_PB_NA,
 			gaudi2_pb_dcr0_sm_mstr_if, ARRAY_SIZE(gaudi2_pb_dcr0_sm_mstr_if));
 
-	/* PSOC.
-	 * Except for PSOC_GLOBAL_CONF, skip when security is enabled in F/W, because the blocks are
-	 * protected by privileged RR.
-	 */
+	 
 	hl_ack_pb(hdev, HL_PB_SHARED, HL_PB_NA, HL_PB_SINGLE_INSTANCE, HL_PB_NA,
 			gaudi2_pb_psoc_global_conf, ARRAY_SIZE(gaudi2_pb_psoc_global_conf));
 	if (!hdev->asic_prop.fw_security_enabled)
 		hl_ack_pb(hdev, HL_PB_SHARED, HL_PB_NA, HL_PB_SINGLE_INSTANCE, HL_PB_NA,
 				gaudi2_pb_psoc, ARRAY_SIZE(gaudi2_pb_psoc));
 
-	/* PMMU */
+	 
 	hl_ack_pb(hdev, HL_PB_SHARED, HL_PB_NA, HL_PB_SINGLE_INSTANCE, HL_PB_NA,
 			gaudi2_pb_pmmu, ARRAY_SIZE(gaudi2_pb_pmmu));
 
-	/* PLL.
-	 * Skip PSOC/XFT PLL when security is enabled in F/W, because these blocks are protected by
-	 * privileged RR.
-	 */
+	 
 	hl_ack_pb(hdev, HL_PB_SHARED, HL_PB_NA, HL_PB_SINGLE_INSTANCE, HL_PB_NA,
 			gaudi2_pb_pmmu_pll, ARRAY_SIZE(gaudi2_pb_pmmu_pll));
 	hl_ack_pb(hdev, HL_PB_SHARED, HL_PB_NA, HL_PB_SINGLE_INSTANCE, HL_PB_NA,
@@ -3745,75 +3642,71 @@ void gaudi2_ack_protection_bits_errors(struct hl_device *hdev)
 				gaudi2_pb_xft_pll, ARRAY_SIZE(gaudi2_pb_xft_pll));
 	}
 
-	/* PCIE */
+	 
 	hl_ack_pb(hdev, HL_PB_SHARED, HL_PB_NA, HL_PB_SINGLE_INSTANCE, HL_PB_NA,
 			gaudi2_pb_pcie, ARRAY_SIZE(gaudi2_pb_pcie));
 
-	/* Thermal Sensor.
-	 * Skip when security is enabled in F/W, because the blocks are protected by privileged RR.
-	 */
+	 
 	if (!hdev->asic_prop.fw_security_enabled) {
 		instance_offset = mmDCORE1_XFT_BASE - mmDCORE0_XFT_BASE;
 		hl_ack_pb(hdev, HL_PB_SHARED, HL_PB_NA, 4, instance_offset,
 				gaudi2_pb_thermal_sensor0, ARRAY_SIZE(gaudi2_pb_thermal_sensor0));
 	}
 
-	/* HBM */
+	 
 	instance_offset = mmHBM1_MC0_BASE - mmHBM0_MC0_BASE;
 	hl_ack_pb_with_mask(hdev, HL_PB_SHARED, HL_PB_NA, GAUDI2_HBM_NUM,
 			instance_offset, gaudi2_pb_hbm,
 			ARRAY_SIZE(gaudi2_pb_hbm), prop->dram_enabled_mask);
 
-	/* Scheduler ARCs */
+	 
 	instance_offset = mmARC_FARM_ARC1_AUX_BASE - mmARC_FARM_ARC0_AUX_BASE;
 	hl_ack_pb(hdev, HL_PB_SHARED, HL_PB_NA, NUM_OF_ARC_FARMS_ARC,
 			instance_offset, gaudi2_pb_arc_sched,
 			ARRAY_SIZE(gaudi2_pb_arc_sched));
 
-	/* XBAR MIDs */
+	 
 	instance_offset = mmXBAR_MID_1_BASE - mmXBAR_MID_0_BASE;
 	hl_ack_pb(hdev, HL_PB_SHARED, HL_PB_NA, NUM_OF_XBAR,
 			instance_offset, gaudi2_pb_xbar_mid,
 			ARRAY_SIZE(gaudi2_pb_xbar_mid));
 
-	/* XBAR EDGEs */
+	 
 	instance_offset = mmXBAR_EDGE_1_BASE - mmXBAR_EDGE_0_BASE;
 	hl_ack_pb_with_mask(hdev, HL_PB_SHARED, HL_PB_NA, NUM_OF_XBAR,
 			instance_offset, gaudi2_pb_xbar_edge,
 			ARRAY_SIZE(gaudi2_pb_xbar_edge), prop->xbar_edge_enabled_mask);
 
-	/* NIC */
+	 
 	hl_ack_pb_with_mask(hdev, NIC_NUMBER_OF_MACROS, NIC_OFFSET, HL_PB_SINGLE_INSTANCE, HL_PB_NA,
 			gaudi2_pb_nic0, ARRAY_SIZE(gaudi2_pb_nic0), hdev->nic_ports_mask);
 
-	/* NIC QM and QPC */
+	 
 	hl_ack_pb_with_mask(hdev, NIC_NUMBER_OF_MACROS, NIC_OFFSET, NIC_NUMBER_OF_QM_PER_MACRO,
 			NIC_QM_OFFSET, gaudi2_pb_nic0_qm_qpc, ARRAY_SIZE(gaudi2_pb_nic0_qm_qpc),
 			hdev->nic_ports_mask);
 
-	/* NIC QM ARC */
+	 
 	hl_ack_pb_with_mask(hdev, NIC_NUMBER_OF_MACROS, NIC_OFFSET, NIC_NUMBER_OF_QM_PER_MACRO,
 			NIC_QM_OFFSET, gaudi2_pb_nic0_qm_arc_aux0,
 			ARRAY_SIZE(gaudi2_pb_nic0_qm_arc_aux0), hdev->nic_ports_mask);
 
-	/* NIC UMR */
+	 
 	hl_ack_pb_with_mask(hdev, NIC_NUMBER_OF_MACROS, NIC_OFFSET, NIC_NUMBER_OF_QM_PER_MACRO,
 			NIC_QM_OFFSET, gaudi2_pb_nic0_umr, ARRAY_SIZE(gaudi2_pb_nic0_umr),
 			hdev->nic_ports_mask);
 
-	/* Rotators */
+	 
 	instance_offset = mmROT1_BASE - mmROT0_BASE;
 	hl_ack_pb_with_mask(hdev, HL_PB_SHARED, HL_PB_NA, NUM_OF_ROT, instance_offset,
 			gaudi2_pb_rot0, ARRAY_SIZE(gaudi2_pb_rot0), (BIT(NUM_OF_ROT) - 1));
 
-	/* Rotators ARCS */
+	 
 	hl_ack_pb_with_mask(hdev, HL_PB_SHARED, HL_PB_NA, NUM_OF_ROT, instance_offset,
 			gaudi2_pb_rot0_arc, ARRAY_SIZE(gaudi2_pb_rot0_arc), (BIT(NUM_OF_ROT) - 1));
 }
 
-/*
- * Print PB security errors
- */
+ 
 
 void gaudi2_pb_print_security_errors(struct hl_device *hdev, u32 block_addr, u32 cause,
 					u32 offended_addr)

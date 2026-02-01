@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Driver for Aeroflex Gaisler GRLIB GRUSBHC EHCI host controller
- *
- * GRUSBHC is typically found on LEON/GRLIB SoCs
- *
- * (c) Jan Andersson <jan@gaisler.com>
- *
- * Based on ehci-ppc-of.c which is:
- * (c) Valentine Barshak <vbarshak@ru.mvista.com>
- * and in turn based on "ehci-ppc-soc.c" by Stefan Roese <sr@denx.de>
- * and "ohci-ppc-of.c" by Sylvain Munaut <tnt@246tNt.com>
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/signal.h>
@@ -19,43 +8,33 @@
 #include <linux/of_address.h>
 #include <linux/of_platform.h>
 
-#define GRUSBHC_HCIVERSION 0x0100 /* Known value of cap. reg. HCIVERSION */
+#define GRUSBHC_HCIVERSION 0x0100  
 
 static const struct hc_driver ehci_grlib_hc_driver = {
 	.description		= hcd_name,
 	.product_desc		= "GRLIB GRUSBHC EHCI",
 	.hcd_priv_size		= sizeof(struct ehci_hcd),
 
-	/*
-	 * generic hardware linkage
-	 */
+	 
 	.irq			= ehci_irq,
 	.flags			= HCD_MEMORY | HCD_DMA | HCD_USB2 | HCD_BH,
 
-	/*
-	 * basic lifecycle operations
-	 */
+	 
 	.reset			= ehci_setup,
 	.start			= ehci_run,
 	.stop			= ehci_stop,
 	.shutdown		= ehci_shutdown,
 
-	/*
-	 * managing i/o requests and associated device resources
-	 */
+	 
 	.urb_enqueue		= ehci_urb_enqueue,
 	.urb_dequeue		= ehci_urb_dequeue,
 	.endpoint_disable	= ehci_endpoint_disable,
 	.endpoint_reset		= ehci_endpoint_reset,
 
-	/*
-	 * scheduling support
-	 */
+	 
 	.get_frame_number	= ehci_get_frame,
 
-	/*
-	 * root hub support
-	 */
+	 
 	.hub_status_data	= ehci_hub_status_data,
 	.hub_control		= ehci_hub_control,
 #ifdef	CONFIG_PM
@@ -88,7 +67,7 @@ static int ehci_hcd_grlib_probe(struct platform_device *op)
 	if (rv)
 		return rv;
 
-	/* usb_create_hcd requires dma_mask != NULL */
+	 
 	op->dev.dma_mask = &op->dev.coherent_dma_mask;
 	hcd = usb_create_hcd(&ehci_grlib_hc_driver, &op->dev,
 			"GRUSBHC EHCI USB");
@@ -116,7 +95,7 @@ static int ehci_hcd_grlib_probe(struct platform_device *op)
 
 	ehci->caps = hcd->regs;
 
-	/* determine endianness of this implementation */
+	 
 	hc_capbase = ehci_readl(ehci, &ehci->caps->hc_capbase);
 	if (HC_VERSION(ehci, hc_capbase) != GRUSBHC_HCIVERSION) {
 		ehci->big_endian_mmio = 1;

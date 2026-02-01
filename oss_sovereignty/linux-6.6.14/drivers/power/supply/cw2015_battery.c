@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Fuel gauge driver for CellWise 2013 / 2015
- *
- * Copyright (C) 2012, RockChip
- * Copyright (C) 2020, Tobias Schramm
- *
- * Authors: xuhuicong <xhc@rock-chips.com>
- * Authors: Tobias Schramm <t.schramm@manjaro.org>
- */
+
+ 
 
 #include <linux/bits.h>
 #include <linux/delay.h>
@@ -46,12 +38,12 @@
 #define CW2015_MASK_ATHD		GENMASK(7, 3)
 #define CW2015_MASK_SOC			GENMASK(12, 0)
 
-/* reset gauge of no valid state of charge could be polled for 40s */
+ 
 #define CW2015_BAT_SOC_ERROR_MS		(40 * MSEC_PER_SEC)
-/* reset gauge if state of charge stuck for half an hour during charging */
+ 
 #define CW2015_BAT_CHARGING_STUCK_MS	(1800 * MSEC_PER_SEC)
 
-/* poll interval from CellWise GPL Android driver example */
+ 
 #define CW2015_DEFAULT_POLL_INTERVAL_MS		8000
 
 #define CW2015_AVERAGING_SAMPLES		3
@@ -100,7 +92,7 @@ static int cw_update_profile(struct cw_battery *cw_bat)
 	unsigned int reg_val;
 	u8 reset_val;
 
-	/* make sure gauge is not in sleep mode */
+	 
 	ret = regmap_read(cw_bat->regmap, CW2015_REG_MODE, &reg_val);
 	if (ret)
 		return ret;
@@ -112,14 +104,14 @@ static int cw_update_profile(struct cw_battery *cw_bat)
 		return -EINVAL;
 	}
 
-	/* write new battery info */
+	 
 	ret = regmap_raw_write(cw_bat->regmap, CW2015_REG_BATINFO,
 			       cw_bat->bat_profile,
 			       CW2015_SIZE_BATINFO);
 	if (ret)
 		return ret;
 
-	/* set config update flag  */
+	 
 	reg_val |= CW2015_CONFIG_UPDATE_FLG;
 	reg_val &= ~CW2015_MASK_ATHD;
 	reg_val |= CW2015_ATHD(cw_bat->alert_level);
@@ -127,22 +119,22 @@ static int cw_update_profile(struct cw_battery *cw_bat)
 	if (ret)
 		return ret;
 
-	/* reset gauge to apply new battery profile */
+	 
 	reset_val &= ~CW2015_MODE_RESTART;
 	reg_val = reset_val | CW2015_MODE_RESTART;
 	ret = regmap_write(cw_bat->regmap, CW2015_REG_MODE, reg_val);
 	if (ret)
 		return ret;
 
-	/* wait for gauge to reset */
+	 
 	msleep(20);
 
-	/* clear reset flag */
+	 
 	ret = regmap_write(cw_bat->regmap, CW2015_REG_MODE, reset_val);
 	if (ret)
 		return ret;
 
-	/* wait for gauge to become ready */
+	 
 	ret = regmap_read_poll_timeout(cw_bat->regmap, CW2015_REG_SOC,
 				       reg_val, reg_val <= 100,
 				       10 * USEC_PER_MSEC, 10 * USEC_PER_SEC);
@@ -234,7 +226,7 @@ static int cw_power_on_reset(struct cw_battery *cw_bat)
 	if (ret)
 		return ret;
 
-	/* wait for gauge to enter sleep */
+	 
 	msleep(20);
 
 	reset_val = CW2015_MODE_NORMAL;
@@ -276,7 +268,7 @@ static int cw_get_soc(struct cw_battery *cw_bat)
 	}
 	cw_bat->read_errors = 0;
 
-	/* Reset gauge if stuck while charging */
+	 
 	if (cw_bat->status == POWER_SUPPLY_STATUS_CHARGING && soc == cw_bat->soc) {
 		int max_stuck_cycles =
 			CW2015_BAT_CHARGING_STUCK_MS / cw_bat->poll_interval_ms;
@@ -292,11 +284,11 @@ static int cw_get_soc(struct cw_battery *cw_bat)
 		cw_bat->charge_stuck_cnt = 0;
 	}
 
-	/* Ignore voltage dips during charge */
+	 
 	if (cw_bat->charger_attached && HYSTERESIS(soc, cw_bat->soc, 0, 3))
 		soc = cw_bat->soc;
 
-	/* Ignore voltage spikes during discharge */
+	 
 	if (!cw_bat->charger_attached && HYSTERESIS(soc, cw_bat->soc, 3, 0))
 		soc = cw_bat->soc;
 
@@ -318,11 +310,7 @@ static int cw_get_voltage(struct cw_battery *cw_bat)
 	}
 	avg /= CW2015_AVERAGING_SAMPLES;
 
-	/*
-	 * 305 uV per ADC step
-	 * Use 312 / 1024  as efficient approximation of 305 / 1000
-	 * Negligible error of 0.1%
-	 */
+	 
 	voltage_mv = avg * 312 / 1024;
 
 	dev_dbg(cw_bat->dev, "Read voltage: %d mV, raw=0x%04x\n",
@@ -520,11 +508,11 @@ static int cw_battery_get_property(struct power_supply *psy,
 	case POWER_SUPPLY_PROP_CURRENT_NOW:
 		if (cw_battery_valid_time_to_empty(cw_bat) &&
 		    cw_bat->battery->charge_full_design_uah > 0) {
-			/* calculate remaining capacity */
+			 
 			val->intval = cw_bat->battery->charge_full_design_uah;
 			val->intval = val->intval * cw_bat->soc / 100;
 
-			/* estimate current based on time to empty */
+			 
 			val->intval = 60 * val->intval / cw_bat->time_to_empty;
 		} else {
 			val->intval = 0;
@@ -680,7 +668,7 @@ static int cw_bat_probe(struct i2c_client *client)
 						    &cw2015_bat_desc,
 						    &psy_cfg);
 	if (IS_ERR(cw_bat->rk_bat)) {
-		/* try again if this happens */
+		 
 		dev_err_probe(&client->dev, PTR_ERR(cw_bat->rk_bat),
 			"Failed to register power supply\n");
 		return PTR_ERR(cw_bat->rk_bat);
@@ -688,7 +676,7 @@ static int cw_bat_probe(struct i2c_client *client)
 
 	ret = power_supply_get_battery_info(cw_bat->rk_bat, &cw_bat->battery);
 	if (ret) {
-		/* Allocate an empty battery */
+		 
 		cw_bat->battery = devm_kzalloc(&client->dev,
 					       sizeof(*cw_bat->battery),
 					       GFP_KERNEL);

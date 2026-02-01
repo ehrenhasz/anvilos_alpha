@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2008-2009 Patrick McHardy <kaber@trash.net>
- *
- * Development of this code funded by Astaro AG (http://www.astaro.com/)
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/init.h>
@@ -52,7 +48,7 @@ static inline bool nft_limit_eval(struct nft_limit_priv *priv, u64 cost)
 	return !priv->invert;
 }
 
-/* Use same default as in iptables. */
+ 
 #define NFT_LIMIT_PKT_BURST_DEFAULT	5
 
 static int nft_limit_init(struct nft_limit_priv *priv,
@@ -83,10 +79,7 @@ static int nft_limit_init(struct nft_limit_priv *priv,
 	if (pkts) {
 		tokens = div64_u64(priv->nsecs, priv->rate) * priv->burst;
 	} else {
-		/* The token bucket size limits the number of tokens can be
-		 * accumulated. tokens_max specifies the bucket size.
-		 * tokens_max = unit * (rate + burst) / rate.
-		 */
+		 
 		tokens = div64_u64(priv->nsecs * (priv->rate + priv->burst),
 				 priv->rate);
 	}

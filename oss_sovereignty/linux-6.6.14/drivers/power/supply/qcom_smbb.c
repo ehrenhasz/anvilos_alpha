@@ -1,20 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright (c) 2014, Sony Mobile Communications Inc.
- *
- * This driver is for the multi-block Switch-Mode Battery Charger and Boost
- * (SMBB) hardware, found in Qualcomm PM8941 PMICs.  The charger is an
- * integrated, single-cell lithium-ion battery charger.
- *
- * Sub-components:
- *  - Charger core
- *  - Buck
- *  - DC charge-path
- *  - USB charge-path
- *  - Battery interface
- *  - Boost (not implemented)
- *  - Misc
- *  - HF-Buck
- */
+
+ 
 
 #include <linux/errno.h>
 #include <linux/interrupt.h>
@@ -80,15 +65,15 @@
 #define SMBB_MISC_BOOT_DONE	0x642
 #define BOOT_DONE		BIT(7)
 
-#define STATUS_USBIN_VALID	BIT(0) /* USB connection is valid */
-#define STATUS_DCIN_VALID	BIT(1) /* DC connection is valid */
-#define STATUS_BAT_HOT		BIT(2) /* Battery temp 1=Hot, 0=Cold */
-#define STATUS_BAT_OK		BIT(3) /* Battery temp OK */
-#define STATUS_BAT_PRESENT	BIT(4) /* Battery is present */
-#define STATUS_CHG_DONE		BIT(5) /* Charge cycle is complete */
-#define STATUS_CHG_TRKL		BIT(6) /* Trickle charging */
-#define STATUS_CHG_FAST		BIT(7) /* Fast charging */
-#define STATUS_CHG_GONE		BIT(8) /* No charger is connected */
+#define STATUS_USBIN_VALID	BIT(0)  
+#define STATUS_DCIN_VALID	BIT(1)  
+#define STATUS_BAT_HOT		BIT(2)  
+#define STATUS_BAT_OK		BIT(3)  
+#define STATUS_BAT_PRESENT	BIT(4)  
+#define STATUS_CHG_DONE		BIT(5)  
+#define STATUS_CHG_TRKL		BIT(6)  
+#define STATUS_CHG_FAST		BIT(7)  
+#define STATUS_CHG_GONE		BIT(8)  
 
 enum smbb_attr {
 	ATTR_BAT_ISAFE,
@@ -611,7 +596,7 @@ static int smbb_battery_get_property(struct power_supply *psy,
 			val->intval = POWER_SUPPLY_STATUS_DISCHARGING;
 		else if (status & (STATUS_CHG_FAST | STATUS_CHG_TRKL))
 			val->intval = POWER_SUPPLY_STATUS_CHARGING;
-		else /* everything is ok for charging, but we are not... */
+		else  
 			val->intval = POWER_SUPPLY_STATUS_DISCHARGING;
 		break;
 	case POWER_SUPPLY_PROP_HEALTH:
@@ -640,14 +625,11 @@ static int smbb_battery_get_property(struct power_supply *psy,
 		val->intval = chg->attr[ATTR_BAT_VMAX];
 		break;
 	case POWER_SUPPLY_PROP_TECHNOLOGY:
-		/* this charger is a single-cell lithium-ion battery charger
-		* only.  If you hook up some other technology, there will be
-		* fireworks.
-		*/
+		 
 		val->intval = POWER_SUPPLY_TECHNOLOGY_LION;
 		break;
 	case POWER_SUPPLY_PROP_VOLTAGE_MIN_DESIGN:
-		val->intval = 3000000; /* single-cell li-ion low end */
+		val->intval = 3000000;  
 		break;
 	default:
 		rc = -EINVAL;
@@ -714,42 +696,40 @@ static const struct reg_off_mask_default {
 	unsigned int value;
 	unsigned int rev_mask;
 } smbb_charger_setup[] = {
-	/* The bootloader is supposed to set this... make sure anyway. */
+	 
 	{ SMBB_MISC_BOOT_DONE, BOOT_DONE, BOOT_DONE },
 
-	/* Disable software timer */
+	 
 	{ SMBB_CHG_TCHG_MAX_EN, TCHG_MAX_EN, 0 },
 
-	/* Clear and disable watchdog */
+	 
 	{ SMBB_CHG_WDOG_TIME, 0xff, 160 },
 	{ SMBB_CHG_WDOG_EN, WDOG_EN, 0 },
 
-	/* Use charger based EoC detection */
+	 
 	{ SMBB_CHG_IBAT_TERM_CHG, IBAT_TERM_CHG_IEOC, IBAT_TERM_CHG_IEOC_CHG },
 
-	/* Disable GSM PA load adjustment.
-	* The PA signal is incorrectly connected on v2.
-	*/
+	 
 	{ SMBB_CHG_CFG, 0xff, 0x00, BIT(3) },
 
-	/* Use VBAT (not VSYS) to compensate for IR drop during fast charging */
+	 
 	{ SMBB_BUCK_REG_MODE, BUCK_REG_MODE, BUCK_REG_MODE_VBAT },
 
-	/* Enable battery temperature comparators */
+	 
 	{ SMBB_BAT_BTC_CTRL, BTC_CTRL_COMP_EN, BTC_CTRL_COMP_EN },
 
-	/* Stop USB enumeration timer */
+	 
 	{ SMBB_USB_ENUM_TIMER_STOP, ENUM_TIMER_STOP, ENUM_TIMER_STOP },
 
-#if 0 /* FIXME supposedly only to disable hardware ARB termination */
+#if 0  
 	{ SMBB_USB_SEC_ACCESS, SEC_ACCESS_MAGIC },
 	{ SMBB_USB_REV_BST, 0xff, REV_BST_CHG_GONE },
 #endif
 
-	/* Stop USB enumeration timer, again */
+	 
 	{ SMBB_USB_ENUM_TIMER_STOP, ENUM_TIMER_STOP, ENUM_TIMER_STOP },
 
-	/* Enable charging */
+	 
 	{ SMBB_CHG_CTRL, CTRL_EN, CTRL_EN },
 };
 
@@ -944,10 +924,7 @@ static int smbb_charger_probe(struct platform_device *pdev)
 		}
 	}
 
-	/*
-	 * otg regulator is used to control VBUS voltage direction
-	 * when USB switches between host and gadget mode
-	 */
+	 
 	chg->otg_rdesc.id = -1;
 	chg->otg_rdesc.name = "otg-vbus";
 	chg->otg_rdesc.ops = &smbb_chg_otg_ops;
@@ -967,7 +944,7 @@ static int smbb_charger_probe(struct platform_device *pdev)
 	chg->jeita_ext_temp = of_property_read_bool(pdev->dev.of_node,
 			"qcom,jeita-extended-temp-range");
 
-	/* Set temperature range to [35%:70%] or [25%:80%] accordingly */
+	 
 	rc = regmap_update_bits(chg->regmap, chg->addr + SMBB_BAT_BTC_CTRL,
 			BTC_CTRL_COLD_EXT | BTC_CTRL_HOT_EXT_N,
 			chg->jeita_ext_temp ?

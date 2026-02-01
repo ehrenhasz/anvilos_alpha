@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef __WCD938X_H__
 #define __WCD938X_H__
 #include <linux/soundwire/sdw.h>
@@ -606,7 +606,7 @@ struct wcd938x_sdw_ch_info {
 enum wcd938x_tx_sdw_ports {
 	WCD938X_ADC_1_2_PORT = 1,
 	WCD938X_ADC_3_4_PORT,
-	/* DMIC0_0, DMIC0_1, DMIC1_0, DMIC1_1 */
+	 
 	WCD938X_DMIC_0_3_MBHC_PORT,
 	WCD938X_DMIC_4_7_PORT,
 };
@@ -714,5 +714,5 @@ static inline int wcd938x_swr_get_current_bank(struct sdw_slave *sdev)
 {
 	return 0;
 }
-#endif /* CONFIG_SND_SOC_WCD938X_SDW */
-#endif /* __WCD938X_H__ */
+#endif  
+#endif  

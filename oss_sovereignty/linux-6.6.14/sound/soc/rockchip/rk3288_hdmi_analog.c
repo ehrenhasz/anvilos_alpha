@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Rockchip machine ASoC driver for RK3288 boards that have an HDMI and analog
- * audio output
- *
- * Copyright (c) 2016, Collabora Ltd.
- *
- * Authors: Sjoerd Simons <sjoerd.simons@collabora.com>,
- *	    Romain Perier <romain.perier@collabora.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/platform_device.h>
@@ -122,7 +114,7 @@ static int rk_init(struct snd_soc_pcm_runtime *runtime)
 {
 	struct rk_drvdata *machine = snd_soc_card_get_drvdata(runtime->card);
 
-	/* Enable Headset Jack detection */
+	 
 	if (gpio_is_valid(machine->gpio_hp_det)) {
 		snd_soc_card_jack_new_pins(runtime->card, "Headphone Jack",
 					   SND_JACK_HEADPHONE, &headphone_jack,
@@ -150,7 +142,7 @@ static struct snd_soc_dai_link rk_dailink = {
 	.stream_name = "Audio",
 	.init = rk_init,
 	.ops = &rk_ops,
-	/* Set codecs as slave */
+	 
 	.dai_fmt = SND_SOC_DAIFMT_I2S | SND_SOC_DAIFMT_NB_NF |
 		SND_SOC_DAIFMT_CBS_CFS,
 	SND_SOC_DAILINK_REG(audio),

@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* ATM driver model support. */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/slab.h>
@@ -73,7 +73,7 @@ static ssize_t link_rate_show(struct device *cdev,
 	struct atm_dev *adev = to_atm_dev(cdev);
 	int link_rate;
 
-	/* show the link rate, not the data rate */
+	 
 	switch (adev->link_rate) {
 	case ATM_OC3_PCR:
 		link_rate = 155520000;

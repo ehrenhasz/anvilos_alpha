@@ -1,43 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * AppliedMicro X-Gene Multi-purpose PHY driver
- *
- * Copyright (c) 2014, Applied Micro Circuits Corporation
- * Author: Loc Ho <lho@apm.com>
- *         Tuan Phan <tphan@apm.com>
- *         Suman Tripathi <stripathi@apm.com>
- *
- * The APM X-Gene PHY consists of two PLL clock macro's (CMU) and lanes.
- * The first PLL clock macro is used for internal reference clock. The second
- * PLL clock macro is used to generate the clock for the PHY. This driver
- * configures the first PLL CMU, the second PLL CMU, and programs the PHY to
- * operate according to the mode of operation. The first PLL CMU is only
- * required if internal clock is enabled.
- *
- * Logical Layer Out Of HW module units:
- *
- * -----------------
- * | Internal      |    |------|
- * | Ref PLL CMU   |----|      |     -------------    ---------
- * ------------ ----    | MUX  |-----|PHY PLL CMU|----| Serdes|
- *                      |      |     |           |    ---------
- * External Clock ------|      |     -------------
- *                      |------|
- *
- * The Ref PLL CMU CSR (Configuration System Registers) is accessed
- * indirectly from the SDS offset at 0x2000. It is only required for
- * internal reference clock.
- * The PHY PLL CMU CSR is accessed indirectly from the SDS offset at 0x0000.
- * The Serdes CSR is accessed indirectly from the SDS offset at 0x0400.
- *
- * The Ref PLL CMU can be located within the same PHY IP or outside the PHY IP
- * due to shared Ref PLL CMU. For PHY with Ref PLL CMU shared with another IP,
- * it is located outside the PHY IP. This is the case for the PHY located
- * at 0x1f23a000 (SATA Port 4/5). For such PHY, another resource is required
- * to located the SDS/Ref PLL CMU module and its clock for that IP enabled.
- *
- * Currently, this driver only supports Gen3 SATA mode with external clock.
- */
+
+ 
 #include <linux/module.h>
 #include <linux/of.h>
 #include <linux/platform_device.h>
@@ -46,16 +8,16 @@
 #include <linux/phy/phy.h>
 #include <linux/clk.h>
 
-/* Max 2 lanes per a PHY unit */
+ 
 #define MAX_LANE			2
 
-/* Register offset inside the PHY */
+ 
 #define SERDES_PLL_INDIRECT_OFFSET	0x0000
 #define SERDES_PLL_REF_INDIRECT_OFFSET	0x2000
 #define SERDES_INDIRECT_OFFSET		0x0400
 #define SERDES_LANE_STRIDE		0x0200
 
-/* Some default Serdes parameters */
+ 
 #define DEFAULT_SATA_TXBOOST_GAIN	{ 0x1e, 0x1e, 0x1e }
 #define DEFAULT_SATA_TXEYEDIRECTION	{ 0x0, 0x0, 0x0 }
 #define DEFAULT_SATA_TXEYETUNING	{ 0xa, 0xa, 0xa }
@@ -77,7 +39,7 @@
 #define FBDIV_VAL_100M			0x3B
 #define REFDIV_VAL_100M			0x0
 
-/* SATA Clock/Reset CSR */
+ 
 #define SATACLKENREG			0x00000000
 #define  SATA0_CORE_CLKEN		0x00000002
 #define  SATA1_CORE_CLKEN		0x00000004
@@ -90,7 +52,7 @@
 #define  SATA_PMCLK_RESET_MASK		0x00000010
 #define  SATA_PCLK_RESET_MASK		0x00000008
 
-/* SDS CSR used for PHY Indirect access */
+ 
 #define SATA_ENET_SDS_PCS_CTL0		0x00000000
 #define  REGSPEC_CFG_I_TX_WORDMODE0_SET(dst, src) \
 		(((dst) & ~0x00070000) | (((u32) (src) << 16) & 0x00070000))
@@ -121,7 +83,7 @@
 #define  O_PLL_LOCK_RD(src)		(((src) & 0x40000000) >> 30)
 #define  O_PLL_READY_RD(src)		(((src) & 0x80000000) >> 31)
 
-/* PLL Clock Macro Unit (CMU) CSR accessing from SDS indirectly */
+ 
 #define CMU_REG0			0x00000
 #define  CMU_REG0_PLL_REF_SEL_MASK	0x00002000
 #define  CMU_REG0_PLL_REF_SEL_SET(dst, src)	\
@@ -265,7 +227,7 @@
 #define CMU_REG38			0x0004c
 #define CMU_REG39			0x0004e
 
-/* PHY lane CSR accessing from SDS indirectly */
+ 
 #define RXTX_REG0			0x000
 #define  RXTX_REG0_CTLE_EQ_HR_SET(dst, src) \
 		(((dst) & ~0x0000f800) | (((u32) (src) << 11) & 0x0000f800))
@@ -490,25 +452,25 @@
 #define RXTX_REG147			0x126
 #define RXTX_REG148			0x128
 
-/* Clock macro type */
+ 
 enum cmu_type_t {
-	REF_CMU = 0,	/* Clock macro is the internal reference clock */
-	PHY_CMU = 1,	/* Clock macro is the PLL for the Serdes */
+	REF_CMU = 0,	 
+	PHY_CMU = 1,	 
 };
 
 enum mux_type_t {
-	MUX_SELECT_ATA = 0,	/* Switch the MUX to ATA */
-	MUX_SELECT_SGMMII = 0,	/* Switch the MUX to SGMII */
+	MUX_SELECT_ATA = 0,	 
+	MUX_SELECT_SGMMII = 0,	 
 };
 
 enum clk_type_t {
-	CLK_EXT_DIFF = 0,	/* External differential */
-	CLK_INT_DIFF = 1,	/* Internal differential */
-	CLK_INT_SING = 2,	/* Internal single ended */
+	CLK_EXT_DIFF = 0,	 
+	CLK_INT_DIFF = 1,	 
+	CLK_INT_SING = 2,	 
 };
 
 enum xgene_phy_mode {
-	MODE_SATA	= 0,	/* List them for simple reference */
+	MODE_SATA	= 0,	 
 	MODE_SGMII	= 1,
 	MODE_PCIE	= 2,
 	MODE_USB	= 3,
@@ -517,33 +479,30 @@ enum xgene_phy_mode {
 };
 
 struct xgene_sata_override_param {
-	u32 speed[MAX_LANE]; /* Index for override parameter per lane */
-	u32 txspeed[3];			/* Tx speed */
-	u32 txboostgain[MAX_LANE*3];	/* Tx freq boost and gain control */
-	u32 txeyetuning[MAX_LANE*3];	/* Tx eye tuning */
-	u32 txeyedirection[MAX_LANE*3]; /* Tx eye tuning direction */
-	u32 txamplitude[MAX_LANE*3];	/* Tx amplitude control */
-	u32 txprecursor_cn1[MAX_LANE*3]; /* Tx emphasis taps 1st pre-cursor */
-	u32 txprecursor_cn2[MAX_LANE*3]; /* Tx emphasis taps 2nd pre-cursor */
-	u32 txpostcursor_cp1[MAX_LANE*3]; /* Tx emphasis taps post-cursor */
+	u32 speed[MAX_LANE];  
+	u32 txspeed[3];			 
+	u32 txboostgain[MAX_LANE*3];	 
+	u32 txeyetuning[MAX_LANE*3];	 
+	u32 txeyedirection[MAX_LANE*3];  
+	u32 txamplitude[MAX_LANE*3];	 
+	u32 txprecursor_cn1[MAX_LANE*3];  
+	u32 txprecursor_cn2[MAX_LANE*3];  
+	u32 txpostcursor_cp1[MAX_LANE*3];  
 };
 
 struct xgene_phy_ctx {
 	struct device *dev;
 	struct phy *phy;
-	enum xgene_phy_mode mode;		/* Mode of operation */
-	enum clk_type_t clk_type;	/* Input clock selection */
-	void __iomem *sds_base;		/* PHY CSR base addr */
-	struct clk *clk;		/* Optional clock */
+	enum xgene_phy_mode mode;		 
+	enum clk_type_t clk_type;	 
+	void __iomem *sds_base;		 
+	struct clk *clk;		 
 
-	/* Override Serdes parameters */
+	 
 	struct xgene_sata_override_param sata_param;
 };
 
-/*
- * For chip earlier than A3 version, enable this flag.
- * To enable, pass boot argument phy_xgene.preA3Chip=1
- */
+ 
 static int preA3Chip;
 MODULE_PARM_DESC(preA3Chip, "Enable pre-A3 chip support (1=enable 0=disable)");
 module_param_named(preA3Chip, preA3Chip, int, 0444);
@@ -558,9 +517,9 @@ static void sds_wr(void __iomem *csr_base, u32 indirect_cmd_reg,
 	cmd = CFG_IND_WR_CMD_MASK | CFG_IND_CMD_DONE_MASK;
 	cmd = CFG_IND_ADDR_SET(cmd, addr);
 	writel(data, csr_base + indirect_data_reg);
-	readl(csr_base + indirect_data_reg); /* Force a barrier */
+	readl(csr_base + indirect_data_reg);  
 	writel(cmd, csr_base + indirect_cmd_reg);
-	readl(csr_base + indirect_cmd_reg); /* Force a barrier */
+	readl(csr_base + indirect_cmd_reg);  
 	do {
 		val = readl(csr_base + indirect_cmd_reg);
 	} while (!(val & CFG_IND_CMD_DONE_MASK) &&
@@ -580,7 +539,7 @@ static void sds_rd(void __iomem *csr_base, u32 indirect_cmd_reg,
 	cmd = CFG_IND_RD_CMD_MASK | CFG_IND_CMD_DONE_MASK;
 	cmd = CFG_IND_ADDR_SET(cmd, addr);
 	writel(cmd, csr_base + indirect_cmd_reg);
-	readl(csr_base + indirect_cmd_reg); /* Force a barrier */
+	readl(csr_base + indirect_cmd_reg);  
 	do {
 		val = readl(csr_base + indirect_cmd_reg);
 	} while (!(val & CFG_IND_CMD_DONE_MASK) &&
@@ -707,46 +666,41 @@ static void xgene_phy_cfg_cmu_clk_type(struct xgene_phy_ctx *ctx,
 {
 	u32 val;
 
-	/* Set the reset sequence delay for TX ready assertion */
+	 
 	cmu_rd(ctx, cmu_type, CMU_REG12, &val);
 	val = CMU_REG12_STATE_DELAY9_SET(val, 0x1);
 	cmu_wr(ctx, cmu_type, CMU_REG12, val);
-	/* Set the programmable stage delays between various enable stages */
+	 
 	cmu_wr(ctx, cmu_type, CMU_REG13, 0x0222);
 	cmu_wr(ctx, cmu_type, CMU_REG14, 0x2225);
 
-	/* Configure clock type */
+	 
 	if (clk_type == CLK_EXT_DIFF) {
-		/* Select external clock mux */
+		 
 		cmu_rd(ctx, cmu_type, CMU_REG0, &val);
 		val = CMU_REG0_PLL_REF_SEL_SET(val, 0x0);
 		cmu_wr(ctx, cmu_type, CMU_REG0, val);
-		/* Select CMOS as reference clock  */
+		 
 		cmu_rd(ctx, cmu_type, CMU_REG1, &val);
 		val = CMU_REG1_REFCLK_CMOS_SEL_SET(val, 0x0);
 		cmu_wr(ctx, cmu_type, CMU_REG1, val);
 		dev_dbg(ctx->dev, "Set external reference clock\n");
 	} else if (clk_type == CLK_INT_DIFF) {
-		/* Select internal clock mux */
+		 
 		cmu_rd(ctx, cmu_type, CMU_REG0, &val);
 		val = CMU_REG0_PLL_REF_SEL_SET(val, 0x1);
 		cmu_wr(ctx, cmu_type, CMU_REG0, val);
-		/* Select CMOS as reference clock  */
+		 
 		cmu_rd(ctx, cmu_type, CMU_REG1, &val);
 		val = CMU_REG1_REFCLK_CMOS_SEL_SET(val, 0x1);
 		cmu_wr(ctx, cmu_type, CMU_REG1, val);
 		dev_dbg(ctx->dev, "Set internal reference clock\n");
 	} else if (clk_type == CLK_INT_SING) {
-		/*
-		 * NOTE: This clock type is NOT support for controller
-		 *	 whose internal clock shared in the PCIe controller
-		 *
-		 * Select internal clock mux
-		 */
+		 
 		cmu_rd(ctx, cmu_type, CMU_REG1, &val);
 		val = CMU_REG1_REFCLK_CMOS_SEL_SET(val, 0x1);
 		cmu_wr(ctx, cmu_type, CMU_REG1, val);
-		/* Select CML as reference clock */
+		 
 		cmu_rd(ctx, cmu_type, CMU_REG1, &val);
 		val = CMU_REG1_REFCLK_CMOS_SEL_SET(val, 0x0);
 		cmu_wr(ctx, cmu_type, CMU_REG1, val);
@@ -763,7 +717,7 @@ static void xgene_phy_sata_cfg_cmu_core(struct xgene_phy_ctx *ctx,
 	int ref_100MHz;
 
 	if (cmu_type == REF_CMU) {
-		/* Set VCO calibration voltage threshold */
+		 
 		cmu_rd(ctx, cmu_type, CMU_REG34, &val);
 		val = CMU_REG34_VCO_CAL_VTH_LO_MAX_SET(val, 0x7);
 		val = CMU_REG34_VCO_CAL_VTH_HI_MAX_SET(val, 0xc);
@@ -772,7 +726,7 @@ static void xgene_phy_sata_cfg_cmu_core(struct xgene_phy_ctx *ctx,
 		cmu_wr(ctx, cmu_type, CMU_REG34, val);
 	}
 
-	/* Set the VCO calibration counter */
+	 
 	cmu_rd(ctx, cmu_type, CMU_REG0, &val);
 	if (cmu_type == REF_CMU || preA3Chip)
 		val = CMU_REG0_CAL_COUNT_RESOL_SET(val, 0x4);
@@ -780,7 +734,7 @@ static void xgene_phy_sata_cfg_cmu_core(struct xgene_phy_ctx *ctx,
 		val = CMU_REG0_CAL_COUNT_RESOL_SET(val, 0x7);
 	cmu_wr(ctx, cmu_type, CMU_REG0, val);
 
-	/* Configure PLL for calibration */
+	 
 	cmu_rd(ctx, cmu_type, CMU_REG1, &val);
 	val = CMU_REG1_PLL_CP_SET(val, 0x1);
 	if (cmu_type == REF_CMU || preA3Chip)
@@ -796,7 +750,7 @@ static void xgene_phy_sata_cfg_cmu_core(struct xgene_phy_ctx *ctx,
 	if (cmu_type != REF_CMU)
 		cmu_clrbits(ctx, cmu_type, CMU_REG5, CMU_REG5_PLL_RESETB_MASK);
 
-	/* Configure the PLL for either 100MHz or 50MHz */
+	 
 	cmu_rd(ctx, cmu_type, CMU_REG2, &val);
 	if (cmu_type == REF_CMU) {
 		val = CMU_REG2_PLL_LFRES_SET(val, 0xa);
@@ -817,7 +771,7 @@ static void xgene_phy_sata_cfg_cmu_core(struct xgene_phy_ctx *ctx,
 	}
 	cmu_wr(ctx, cmu_type, CMU_REG2, val);
 
-	/* Configure the VCO */
+	 
 	cmu_rd(ctx, cmu_type, CMU_REG3, &val);
 	if (cmu_type == REF_CMU) {
 		val = CMU_REG3_VCOVARSEL_SET(val, 0x3);
@@ -832,12 +786,12 @@ static void xgene_phy_sata_cfg_cmu_core(struct xgene_phy_ctx *ctx,
 	}
 	cmu_wr(ctx, cmu_type, CMU_REG3, val);
 
-	/* Disable force PLL lock */
+	 
 	cmu_rd(ctx, cmu_type, CMU_REG26, &val);
 	val = CMU_REG26_FORCE_PLL_LOCK_SET(val, 0x0);
 	cmu_wr(ctx, cmu_type, CMU_REG26, val);
 
-	/* Setup PLL loop filter */
+	 
 	cmu_rd(ctx, cmu_type, CMU_REG5, &val);
 	val = CMU_REG5_PLL_LFSMCAP_SET(val, 0x3);
 	val = CMU_REG5_PLL_LFCAP_SET(val, 0x3);
@@ -847,13 +801,13 @@ static void xgene_phy_sata_cfg_cmu_core(struct xgene_phy_ctx *ctx,
 		val = CMU_REG5_PLL_LOCK_RESOLUTION_SET(val, 0x4);
 	cmu_wr(ctx, cmu_type, CMU_REG5, val);
 
-	/* Enable or disable manual calibration */
+	 
 	cmu_rd(ctx, cmu_type, CMU_REG6, &val);
 	val = CMU_REG6_PLL_VREGTRIM_SET(val, preA3Chip ? 0x0 : 0x2);
 	val = CMU_REG6_MAN_PVT_CAL_SET(val, preA3Chip ? 0x1 : 0x0);
 	cmu_wr(ctx, cmu_type, CMU_REG6, val);
 
-	/* Configure lane for 20-bits */
+	 
 	if (cmu_type == PHY_CMU) {
 		cmu_rd(ctx, cmu_type, CMU_REG9, &val);
 		val = CMU_REG9_TX_WORD_MODE_CH1_SET(val,
@@ -883,13 +837,13 @@ static void xgene_phy_sata_cfg_cmu_core(struct xgene_phy_ctx *ctx,
 		val = CMU_REG16_VCOCAL_WAIT_BTW_CODE_SET(val, 0x7);
 	cmu_wr(ctx, cmu_type, CMU_REG16, val);
 
-	/* Configure for SATA */
+	 
 	cmu_rd(ctx, cmu_type, CMU_REG30, &val);
 	val = CMU_REG30_PCIE_MODE_SET(val, 0x0);
 	val = CMU_REG30_LOCK_COUNT_SET(val, 0x3);
 	cmu_wr(ctx, cmu_type, CMU_REG30, val);
 
-	/* Disable state machine bypass */
+	 
 	cmu_wr(ctx, cmu_type, CMU_REG31, 0xF);
 
 	cmu_rd(ctx, cmu_type, CMU_REG32, &val);
@@ -900,13 +854,13 @@ static void xgene_phy_sata_cfg_cmu_core(struct xgene_phy_ctx *ctx,
 		val = CMU_REG32_IREF_ADJ_SET(val, 0x1);
 	cmu_wr(ctx, cmu_type, CMU_REG32, val);
 
-	/* Set VCO calibration threshold */
+	 
 	if (cmu_type != REF_CMU && preA3Chip)
 		cmu_wr(ctx, cmu_type, CMU_REG34, 0x8d27);
 	else
 		cmu_wr(ctx, cmu_type, CMU_REG34, 0x873c);
 
-	/* Set CTLE Override and override waiting from state machine */
+	 
 	cmu_wr(ctx, cmu_type, CMU_REG37, 0xF00F);
 }
 
@@ -915,23 +869,23 @@ static void xgene_phy_ssc_enable(struct xgene_phy_ctx *ctx,
 {
 	u32 val;
 
-	/* Set SSC modulation value */
+	 
 	cmu_rd(ctx, cmu_type, CMU_REG35, &val);
 	val = CMU_REG35_PLL_SSC_MOD_SET(val, 98);
 	cmu_wr(ctx, cmu_type, CMU_REG35, val);
 
-	/* Enable SSC, set vertical step and DSM value */
+	 
 	cmu_rd(ctx, cmu_type, CMU_REG36, &val);
 	val = CMU_REG36_PLL_SSC_VSTEP_SET(val, 30);
 	val = CMU_REG36_PLL_SSC_EN_SET(val, 1);
 	val = CMU_REG36_PLL_SSC_DSMSEL_SET(val, 1);
 	cmu_wr(ctx, cmu_type, CMU_REG36, val);
 
-	/* Reset the PLL */
+	 
 	cmu_clrbits(ctx, cmu_type, CMU_REG5, CMU_REG5_PLL_RESETB_MASK);
 	cmu_setbits(ctx, cmu_type, CMU_REG5, CMU_REG5_PLL_RESETB_MASK);
 
-	/* Force VCO calibration to restart */
+	 
 	cmu_toggle1to0(ctx, cmu_type, CMU_REG32,
 		       CMU_REG32_FORCE_VCOCAL_START_MASK);
 }
@@ -946,14 +900,14 @@ static void xgene_phy_sata_cfg_lanes(struct xgene_phy_ctx *ctx)
 	for (lane = 0; lane < MAX_LANE; lane++) {
 		serdes_wr(ctx, lane, RXTX_REG147, 0x6);
 
-		/* Set boost control for quarter, half, and full rate */
+		 
 		serdes_rd(ctx, lane, RXTX_REG0, &val);
 		val = RXTX_REG0_CTLE_EQ_HR_SET(val, 0x10);
 		val = RXTX_REG0_CTLE_EQ_QR_SET(val, 0x10);
 		val = RXTX_REG0_CTLE_EQ_FR_SET(val, 0x10);
 		serdes_wr(ctx, lane, RXTX_REG0, val);
 
-		/* Set boost control value */
+		 
 		serdes_rd(ctx, lane, RXTX_REG1, &val);
 		val = RXTX_REG1_RXACVCM_SET(val, 0x7);
 		val = RXTX_REG1_CTLE_EQ_SET(val,
@@ -961,16 +915,14 @@ static void xgene_phy_sata_cfg_lanes(struct xgene_phy_ctx *ctx)
 			ctx->sata_param.speed[lane]]);
 		serdes_wr(ctx, lane, RXTX_REG1, val);
 
-		/* Latch VTT value based on the termination to ground and
-		 * enable TX FIFO
-		 */
+		 
 		serdes_rd(ctx, lane, RXTX_REG2, &val);
 		val = RXTX_REG2_VTT_ENA_SET(val, 0x1);
 		val = RXTX_REG2_VTT_SEL_SET(val, 0x1);
 		val = RXTX_REG2_TX_FIFO_ENA_SET(val, 0x1);
 		serdes_wr(ctx, lane, RXTX_REG2, val);
 
-		/* Configure Tx for 20-bits */
+		 
 		serdes_rd(ctx, lane, RXTX_REG4, &val);
 		val = RXTX_REG4_TX_WORD_MODE_SET(val, CMU_REG9_WORD_LEN_20BIT);
 		serdes_wr(ctx, lane, RXTX_REG4, val);
@@ -982,7 +934,7 @@ static void xgene_phy_sata_cfg_lanes(struct xgene_phy_ctx *ctx)
 			serdes_wr(ctx, lane, RXTX_REG1, val);
 		}
 
-		/* Set pre-emphasis first 1 and 2, and post-emphasis values */
+		 
 		serdes_rd(ctx, lane, RXTX_REG5, &val);
 		val = RXTX_REG5_TX_CN1_SET(val,
 			ctx->sata_param.txprecursor_cn1[lane * 3 +
@@ -995,7 +947,7 @@ static void xgene_phy_sata_cfg_lanes(struct xgene_phy_ctx *ctx)
 			ctx->sata_param.speed[lane]]);
 		serdes_wr(ctx, lane, RXTX_REG5, val);
 
-		/* Set TX amplitude value */
+		 
 		serdes_rd(ctx, lane, RXTX_REG6, &val);
 		val = RXTX_REG6_TXAMP_CNTL_SET(val,
 			ctx->sata_param.txamplitude[lane * 3 +
@@ -1006,13 +958,13 @@ static void xgene_phy_sata_cfg_lanes(struct xgene_phy_ctx *ctx)
 		val = RXTX_REG6_RX_BIST_ERRCNT_RD_SET(val, 0x0);
 		serdes_wr(ctx, lane, RXTX_REG6, val);
 
-		/* Configure Rx for 20-bits */
+		 
 		serdes_rd(ctx, lane, RXTX_REG7, &val);
 		val = RXTX_REG7_BIST_ENA_RX_SET(val, 0x0);
 		val = RXTX_REG7_RX_WORD_MODE_SET(val, CMU_REG9_WORD_LEN_20BIT);
 		serdes_wr(ctx, lane, RXTX_REG7, val);
 
-		/* Set CDR and LOS values and enable Rx SSC */
+		 
 		serdes_rd(ctx, lane, RXTX_REG8, &val);
 		val = RXTX_REG8_CDR_LOOP_ENA_SET(val, 0x1);
 		val = RXTX_REG8_CDR_BYPASS_RXLOS_SET(val, 0x0);
@@ -1021,19 +973,19 @@ static void xgene_phy_sata_cfg_lanes(struct xgene_phy_ctx *ctx)
 		val = RXTX_REG8_SD_VREF_SET(val, 0x4);
 		serdes_wr(ctx, lane, RXTX_REG8, val);
 
-		/* Set phase adjust upper/lower limits */
+		 
 		serdes_rd(ctx, lane, RXTX_REG11, &val);
 		val = RXTX_REG11_PHASE_ADJUST_LIMIT_SET(val, 0x0);
 		serdes_wr(ctx, lane, RXTX_REG11, val);
 
-		/* Enable Latch Off; disable SUMOS and Tx termination */
+		 
 		serdes_rd(ctx, lane, RXTX_REG12, &val);
 		val = RXTX_REG12_LATCH_OFF_ENA_SET(val, 0x1);
 		val = RXTX_REG12_SUMOS_ENABLE_SET(val, 0x0);
 		val = RXTX_REG12_RX_DET_TERM_ENABLE_SET(val, 0x0);
 		serdes_wr(ctx, lane, RXTX_REG12, val);
 
-		/* Set period error latch to 512T and enable BWL */
+		 
 		serdes_rd(ctx, lane, RXTX_REG26, &val);
 		val = RXTX_REG26_PERIOD_ERROR_LATCH_SET(val, 0x0);
 		val = RXTX_REG26_BLWC_ENA_SET(val, 0x1);
@@ -1041,10 +993,10 @@ static void xgene_phy_sata_cfg_lanes(struct xgene_phy_ctx *ctx)
 
 		serdes_wr(ctx, lane, RXTX_REG28, 0x0);
 
-		/* Set DFE loop preset value */
+		 
 		serdes_wr(ctx, lane, RXTX_REG31, 0x0);
 
-		/* Set Eye Monitor counter width to 12-bit */
+		 
 		serdes_rd(ctx, lane, RXTX_REG61, &val);
 		val = RXTX_REG61_ISCAN_INBERT_SET(val, 0x1);
 		val = RXTX_REG61_LOADFREQ_SHIFT_SET(val, 0x0);
@@ -1055,7 +1007,7 @@ static void xgene_phy_sata_cfg_lanes(struct xgene_phy_ctx *ctx)
 		val = RXTX_REG62_PERIOD_H1_QLATCH_SET(val, 0x0);
 		serdes_wr(ctx, lane, RXTX_REG62, val);
 
-		/* Set BW select tap X for DFE loop */
+		 
 		for (i = 0; i < 9; i++) {
 			reg = RXTX_REG81 + i * 2;
 			serdes_rd(ctx, lane, reg, &val);
@@ -1065,7 +1017,7 @@ static void xgene_phy_sata_cfg_lanes(struct xgene_phy_ctx *ctx)
 			serdes_wr(ctx, lane, reg, val);
 		}
 
-		/* Set BW select tap X for frequency adjust loop */
+		 
 		for (i = 0; i < 3; i++) {
 			reg = RXTX_REG96 + i * 2;
 			serdes_rd(ctx, lane, reg, &val);
@@ -1075,7 +1027,7 @@ static void xgene_phy_sata_cfg_lanes(struct xgene_phy_ctx *ctx)
 			serdes_wr(ctx, lane, reg, val);
 		}
 
-		/* Set BW select tap X for phase adjust loop */
+		 
 		for (i = 0; i < 3; i++) {
 			reg = RXTX_REG99 + i * 2;
 			serdes_rd(ctx, lane, reg, &val);
@@ -1121,10 +1073,7 @@ static void xgene_phy_sata_cfg_lanes(struct xgene_phy_ctx *ctx)
 		}
 		serdes_wr(ctx, lane, RXTX_REG145, val);
 
-		/*
-		 * Set Rx LOS filter clock rate, sample rate, and threshold
-		 * windows
-		 */
+		 
 		for (i = 0; i < 4; i++) {
 			reg = RXTX_REG148 + i * 2;
 			serdes_wr(ctx, lane, reg, 0xFFFF);
@@ -1140,62 +1089,45 @@ static int xgene_phy_cal_rdy_chk(struct xgene_phy_ctx *ctx,
 	int loop;
 	u32 val;
 
-	/* Release PHY main reset */
+	 
 	writel(0xdf, csr_serdes + SATA_ENET_SDS_RST_CTL);
-	readl(csr_serdes + SATA_ENET_SDS_RST_CTL); /* Force a barrier */
+	readl(csr_serdes + SATA_ENET_SDS_RST_CTL);  
 
 	if (cmu_type != REF_CMU) {
 		cmu_setbits(ctx, cmu_type, CMU_REG5, CMU_REG5_PLL_RESETB_MASK);
-		/*
-		 * As per PHY design spec, the PLL reset requires a minimum
-		 * of 800us.
-		 */
+		 
 		usleep_range(800, 1000);
 
 		cmu_rd(ctx, cmu_type, CMU_REG1, &val);
 		val = CMU_REG1_PLL_MANUALCAL_SET(val, 0x0);
 		cmu_wr(ctx, cmu_type, CMU_REG1, val);
-		/*
-		 * As per PHY design spec, the PLL auto calibration requires
-		 * a minimum of 800us.
-		 */
+		 
 		usleep_range(800, 1000);
 
 		cmu_toggle1to0(ctx, cmu_type, CMU_REG32,
 			       CMU_REG32_FORCE_VCOCAL_START_MASK);
-		/*
-		 * As per PHY design spec, the PLL requires a minimum of
-		 * 800us to settle.
-		 */
+		 
 		usleep_range(800, 1000);
 	}
 
 	if (!preA3Chip)
 		goto skip_manual_cal;
 
-	/*
-	 * Configure the termination resister calibration
-	 * The serial receive pins, RXP/RXN, have TERMination resistor
-	 * that is required to be calibrated.
-	 */
+	 
 	cmu_rd(ctx, cmu_type, CMU_REG17, &val);
 	val = CMU_REG17_PVT_CODE_R2A_SET(val, 0x12);
 	val = CMU_REG17_RESERVED_7_SET(val, 0x0);
 	cmu_wr(ctx, cmu_type, CMU_REG17, val);
 	cmu_toggle1to0(ctx, cmu_type, CMU_REG17,
 		       CMU_REG17_PVT_TERM_MAN_ENA_MASK);
-	/*
-	 * The serial transmit pins, TXP/TXN, have Pull-UP and Pull-DOWN
-	 * resistors that are required to the calibrated.
-	 * Configure the pull DOWN calibration
-	 */
+	 
 	cmu_rd(ctx, cmu_type, CMU_REG17, &val);
 	val = CMU_REG17_PVT_CODE_R2A_SET(val, 0x29);
 	val = CMU_REG17_RESERVED_7_SET(val, 0x0);
 	cmu_wr(ctx, cmu_type, CMU_REG17, val);
 	cmu_toggle1to0(ctx, cmu_type, CMU_REG16,
 		       CMU_REG16_PVT_DN_MAN_ENA_MASK);
-	/* Configure the pull UP calibration */
+	 
 	cmu_rd(ctx, cmu_type, CMU_REG17, &val);
 	val = CMU_REG17_PVT_CODE_R2A_SET(val, 0x28);
 	val = CMU_REG17_RESERVED_7_SET(val, 0x0);
@@ -1204,16 +1136,13 @@ static int xgene_phy_cal_rdy_chk(struct xgene_phy_ctx *ctx,
 		       CMU_REG16_PVT_UP_MAN_ENA_MASK);
 
 skip_manual_cal:
-	/* Poll the PLL calibration completion status for at least 1 ms */
+	 
 	loop = 100;
 	do {
 		cmu_rd(ctx, cmu_type, CMU_REG7, &val);
 		if (CMU_REG7_PLL_CALIB_DONE_RD(val))
 			break;
-		/*
-		 * As per PHY design spec, PLL calibration status requires
-		 * a minimum of 10us to be updated.
-		 */
+		 
 		usleep_range(10, 100);
 	} while (--loop > 0);
 
@@ -1257,19 +1186,19 @@ static int xgene_phy_hw_init_sata(struct xgene_phy_ctx *ctx,
 	u32 val;
 	int i;
 
-	/* Configure the PHY for operation */
+	 
 	dev_dbg(ctx->dev, "Reset PHY\n");
-	/* Place PHY into reset */
+	 
 	writel(0x0, sds_base + SATA_ENET_SDS_RST_CTL);
-	val = readl(sds_base + SATA_ENET_SDS_RST_CTL);	/* Force a barrier */
-	/* Release PHY lane from reset (active high) */
+	val = readl(sds_base + SATA_ENET_SDS_RST_CTL);	 
+	 
 	writel(0x20, sds_base + SATA_ENET_SDS_RST_CTL);
-	readl(sds_base + SATA_ENET_SDS_RST_CTL);	/* Force a barrier */
-	/* Release all PHY module out of reset except PHY main reset */
+	readl(sds_base + SATA_ENET_SDS_RST_CTL);	 
+	 
 	writel(0xde, sds_base + SATA_ENET_SDS_RST_CTL);
-	readl(sds_base + SATA_ENET_SDS_RST_CTL);	/* Force a barrier */
+	readl(sds_base + SATA_ENET_SDS_RST_CTL);	 
 
-	/* Set the operation speed */
+	 
 	val = readl(sds_base + SATA_ENET_SDS_CTL1);
 	val = CFG_I_SPD_SEL_CDR_OVR1_SET(val,
 		ctx->sata_param.txspeed[ctx->sata_param.speed[0]]);
@@ -1280,34 +1209,34 @@ static int xgene_phy_hw_init_sata(struct xgene_phy_ctx *ctx,
 	val = REGSPEC_CFG_I_CUSTOMER_PIN_MODE0_SET(val, 0x4421);
 	writel(val, sds_base + SATA_ENET_SDS_CTL0);
 
-	/* Configure the clock macro unit (CMU) clock type */
+	 
 	xgene_phy_cfg_cmu_clk_type(ctx, PHY_CMU, clk_type);
 
-	/* Configure the clock macro */
+	 
 	xgene_phy_sata_cfg_cmu_core(ctx, PHY_CMU, clk_type);
 
-	/* Enable SSC if enabled */
+	 
 	if (ssc_enable)
 		xgene_phy_ssc_enable(ctx, PHY_CMU);
 
-	/* Configure PHY lanes */
+	 
 	xgene_phy_sata_cfg_lanes(ctx);
 
-	/* Set Rx/Tx 20-bit */
+	 
 	val = readl(sds_base + SATA_ENET_SDS_PCS_CTL0);
 	val = REGSPEC_CFG_I_RX_WORDMODE0_SET(val, 0x3);
 	val = REGSPEC_CFG_I_TX_WORDMODE0_SET(val, 0x3);
 	writel(val, sds_base + SATA_ENET_SDS_PCS_CTL0);
 
-	/* Start PLL calibration and try for three times */
+	 
 	i = 10;
 	do {
 		if (!xgene_phy_cal_rdy_chk(ctx, PHY_CMU, clk_type))
 			break;
-		/* If failed, toggle the VCO power signal and start again */
+		 
 		xgene_phy_pdwn_force_vco(ctx, PHY_CMU, clk_type);
 	} while (--i > 0);
-	/* Even on failure, allow to continue any way */
+	 
 	if (i <= 0)
 		dev_err(ctx->dev, "PLL calibration failed\n");
 
@@ -1335,12 +1264,7 @@ static int xgene_phy_hw_initialize(struct xgene_phy_ctx *ctx,
 	return 0;
 }
 
-/*
- * Receiver Offset Calibration:
- *
- * Calibrate the receiver signal path offset in two steps - summar and
- * latch calibrations
- */
+ 
 static void xgene_phy_force_lat_summer_cal(struct xgene_phy_ctx *ctx, int lane)
 {
 	int i;
@@ -1368,34 +1292,25 @@ static void xgene_phy_force_lat_summer_cal(struct xgene_phy_ctx *ctx, int lane)
 		{RXTX_REG55, 0x0},
 	};
 
-	/* Start SUMMER calibration */
+	 
 	serdes_setbits(ctx, lane, RXTX_REG127,
 		       RXTX_REG127_FORCE_SUM_CAL_START_MASK);
-	/*
-	 * As per PHY design spec, the Summer calibration requires a minimum
-	 * of 100us to complete.
-	 */
+	 
 	usleep_range(100, 500);
 	serdes_clrbits(ctx, lane, RXTX_REG127,
 			RXTX_REG127_FORCE_SUM_CAL_START_MASK);
-	/*
-	 * As per PHY design spec, the auto calibration requires a minimum
-	 * of 100us to complete.
-	 */
+	 
 	usleep_range(100, 500);
 
-	/* Start latch calibration */
+	 
 	serdes_setbits(ctx, lane, RXTX_REG127,
 		       RXTX_REG127_FORCE_LAT_CAL_START_MASK);
-	/*
-	 * As per PHY design spec, the latch calibration requires a minimum
-	 * of 100us to complete.
-	 */
+	 
 	usleep_range(100, 500);
 	serdes_clrbits(ctx, lane, RXTX_REG127,
 		       RXTX_REG127_FORCE_LAT_CAL_START_MASK);
 
-	/* Configure the PHY lane for calibration */
+	 
 	serdes_wr(ctx, lane, RXTX_REG28, 0x7);
 	serdes_wr(ctx, lane, RXTX_REG31, 0x7e00);
 	serdes_clrbits(ctx, lane, RXTX_REG4,
@@ -1409,9 +1324,9 @@ static void xgene_phy_force_lat_summer_cal(struct xgene_phy_ctx *ctx, int lane)
 
 static void xgene_phy_reset_rxd(struct xgene_phy_ctx *ctx, int lane)
 {
-	/* Reset digital Rx */
+	 
 	serdes_clrbits(ctx, lane, RXTX_REG7, RXTX_REG7_RESETB_RXD_MASK);
-	/* As per PHY design spec, the reset requires a minimum of 100us. */
+	 
 	usleep_range(100, 150);
 	serdes_setbits(ctx, lane, RXTX_REG7, RXTX_REG7_RESETB_RXD_MASK);
 }
@@ -1438,23 +1353,17 @@ static void xgene_phy_gen_avg_val(struct xgene_phy_ctx *ctx, int lane)
 	dev_dbg(ctx->dev, "Generating avg calibration value for lane %d\n",
 		lane);
 
-	/* Enable RX Hi-Z termination */
+	 
 	serdes_setbits(ctx, lane, RXTX_REG12,
 			RXTX_REG12_RX_DET_TERM_ENABLE_MASK);
-	/* Turn off DFE */
+	 
 	serdes_wr(ctx, lane, RXTX_REG28, 0x0000);
-	/* DFE Presets to zero */
+	 
 	serdes_wr(ctx, lane, RXTX_REG31, 0x0000);
 
-	/*
-	 * Receiver Offset Calibration:
-	 * Calibrate the receiver signal path offset in two steps - summar
-	 * and latch calibration.
-	 * Runs the "Receiver Offset Calibration multiple times to determine
-	 * the average value to use.
-	 */
+	 
 	while (avg_loop < max_loop) {
-		/* Start the calibration */
+		 
 		xgene_phy_force_lat_summer_cal(ctx, lane);
 
 		serdes_rd(ctx, lane, RXTX_REG21, &val);
@@ -1478,7 +1387,7 @@ static void xgene_phy_gen_avg_val(struct xgene_phy_ctx *ctx, int lane)
 		serdes_rd(ctx, lane, RXTX_REG121, &val);
 		sum_cal_itr = RXTX_REG121_SUMOS_CAL_CODE_RD(val);
 
-		/* Check for failure. If passed, sum them for averaging */
+		 
 		if ((fail_even == 0 || fail_even == 1) &&
 		    (fail_odd == 0 || fail_odd == 1)) {
 			lat_do += lat_do_itr;
@@ -1508,7 +1417,7 @@ static void xgene_phy_gen_avg_val(struct xgene_phy_ctx *ctx, int lane)
 		xgene_phy_reset_rxd(ctx, lane);
 	}
 
-	/* Update latch manual calibration with average value */
+	 
 	serdes_rd(ctx, lane, RXTX_REG127, &val);
 	val = RXTX_REG127_DO_LATCH_MANCAL_SET(val,
 		xgene_phy_get_avg(lat_do, max_loop));
@@ -1537,7 +1446,7 @@ static void xgene_phy_gen_avg_val(struct xgene_phy_ctx *ctx, int lane)
 		xgene_phy_get_avg(lat_se, max_loop));
 	serdes_wr(ctx, lane, RXTX_REG130, val);
 
-	/* Update SUMMER calibration with average value */
+	 
 	serdes_rd(ctx, lane, RXTX_REG14, &val);
 	val = RXTX_REG14_CLTE_LATCAL_MAN_PROG_SET(val,
 		xgene_phy_get_avg(sum_cal, max_loop));
@@ -1567,13 +1476,13 @@ static void xgene_phy_gen_avg_val(struct xgene_phy_ctx *ctx, int lane)
 	dev_dbg(ctx->dev, "Enable Manual Latch calibration\n");
 	serdes_wr(ctx, lane, RXTX_REG127, val);
 
-	/* Disable RX Hi-Z termination */
+	 
 	serdes_rd(ctx, lane, RXTX_REG12, &val);
 	val = RXTX_REG12_RX_DET_TERM_ENABLE_SET(val, 0);
 	serdes_wr(ctx, lane, RXTX_REG12, val);
-	/* Turn on DFE */
+	 
 	serdes_wr(ctx, lane, RXTX_REG28, 0x0007);
-	/* Set DFE preset */
+	 
 	serdes_wr(ctx, lane, RXTX_REG31, 0x7e00);
 }
 
@@ -1589,15 +1498,15 @@ static int xgene_phy_hw_init(struct phy *phy)
 		return rc;
 	}
 
-	/* Setup clock properly after PHY configuration */
+	 
 	if (!IS_ERR(ctx->clk)) {
-		/* HW requires an toggle of the clock */
+		 
 		clk_prepare_enable(ctx->clk);
 		clk_disable_unprepare(ctx->clk);
 		clk_prepare_enable(ctx->clk);
 	}
 
-	/* Compute average value */
+	 
 	for (i = 0; i < MAX_LANE; i++)
 		xgene_phy_gen_avg_val(ctx, i);
 
@@ -1637,7 +1546,7 @@ static void xgene_phy_get_param(struct platform_device *pdev,
 			buffer[i] /= conv_factor;
 		return;
 	}
-	/* Does not exist, load default */
+	 
 	for (i = 0; i < count; i++)
 		buffer[i] = default_val[i % 3];
 }
@@ -1666,10 +1575,10 @@ static int xgene_phy_probe(struct platform_device *pdev)
 	if (IS_ERR(ctx->sds_base))
 		return PTR_ERR(ctx->sds_base);
 
-	/* Retrieve optional clock */
+	 
 	ctx->clk = clk_get(&pdev->dev, NULL);
 
-	/* Load override paramaters */
+	 
 	xgene_phy_get_param(pdev, "apm,tx-eye-tuning",
 		ctx->sata_param.txeyetuning, 6, default_txeye_tuning, 1);
 	xgene_phy_get_param(pdev, "apm,tx-eye-direction",
@@ -1687,7 +1596,7 @@ static int xgene_phy_probe(struct platform_device *pdev)
 	xgene_phy_get_param(pdev, "apm,tx-speed",
 		ctx->sata_param.txspeed, 3, default_spd, 1);
 	for (i = 0; i < MAX_LANE; i++)
-		ctx->sata_param.speed[i] = 2; /* Default to Gen3 */
+		ctx->sata_param.speed[i] = 2;  
 
 	platform_set_drvdata(pdev, ctx);
 

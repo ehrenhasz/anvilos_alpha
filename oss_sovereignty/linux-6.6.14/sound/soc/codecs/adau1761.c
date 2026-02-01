@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Driver for ADAU1361/ADAU1461/ADAU1761/ADAU1961 codec
- *
- * Copyright 2011-2013 Analog Devices Inc.
- * Author: Lars-Peter Clausen <lars@metafoo.de>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -382,8 +377,7 @@ static int adau1761_dejitter_fixup(struct snd_soc_dapm_widget *w,
 	struct snd_soc_component *component = snd_soc_dapm_to_component(w->dapm);
 	struct adau *adau = snd_soc_component_get_drvdata(component);
 
-	/* After any power changes have been made the dejitter circuit
-	 * has to be reinitialized. */
+	 
 	regmap_write(adau->regmap, ADAU1761_DEJITTER, 0);
 	if (!adau->master)
 		regmap_write(adau->regmap, ADAU1761_DEJITTER, 3);
@@ -577,25 +571,17 @@ static int adau1761_compatibility_probe(struct device *dev)
 	struct regmap *regmap = adau->regmap;
 	int val, ret = 0;
 
-	/* Only consider compatibility mode when ADAU1361 was specified. */
+	 
 	if (adau->type != ADAU1361)
 		return 0;
 
 	regcache_cache_bypass(regmap, true);
 
-	/*
-	 * This will enable the core clock and bypass the PLL,
-	 * so that we can access the registers for probing purposes
-	 * (without having to set up the PLL).
-	 */
+	 
 	regmap_write(regmap, ADAU17X1_CLOCK_CONTROL,
 		ADAU17X1_CLOCK_CONTROL_SYSCLK_EN);
 
-	/*
-	 * ADAU17X1_SERIAL_SAMPLING_RATE doesn't exist in non-DSP chips;
-	 * reading it results in zero at all times, and write is a no-op.
-	 * Use this register to probe for ADAU1761.
-	 */
+	 
 	regmap_write(regmap, ADAU17X1_SERIAL_SAMPLING_RATE, 1);
 	ret = regmap_read(regmap, ADAU17X1_SERIAL_SAMPLING_RATE, &val);
 	if (ret)
@@ -611,7 +597,7 @@ static int adau1761_compatibility_probe(struct device *dev)
 
 	adau->type = ADAU1761_AS_1361;
 exit:
-	/* Disable core clock after probing. */
+	 
 	regmap_write(regmap, ADAU17X1_CLOCK_CONTROL, 0);
 	regcache_cache_bypass(regmap, false);
 	return ret;
@@ -871,10 +857,7 @@ static int adau1761_component_probe(struct snd_soc_component *component)
 	if (ret)
 		return ret;
 
-	/*
-	 * If we've got an ADAU1761, or an ADAU1761 operating as an
-	 * ADAU1361, we need these non-DSP related DAPM widgets and routes.
-	 */
+	 
 	if (adau->type == ADAU1761 || adau->type == ADAU1761_AS_1361) {
 		ret = snd_soc_dapm_new_controls(dapm, adau1761_dapm_widgets,
 			ARRAY_SIZE(adau1761_dapm_widgets));
@@ -886,25 +869,14 @@ static int adau1761_component_probe(struct snd_soc_component *component)
 		if (ret)
 			return ret;
 	}
-	/*
-	 * These routes are DSP related and only used when we have a
-	 * bona fide ADAU1761.
-	 */
+	 
 	if (adau->type == ADAU1761) {
 		ret = snd_soc_dapm_add_routes(dapm, adau1761_dapm_dsp_routes,
 			ARRAY_SIZE(adau1761_dapm_dsp_routes));
 		if (ret)
 			return ret;
 	}
-	/*
-	 * In the ADAU1761, by default, the AIF is routed to the DSP, whereas
-	 * for the ADAU1361, the AIF is permanently routed to the ADC and DAC.
-	 * Thus, if we have an ADAU1761 masquerading as an ADAU1361,
-	 * we need to explicitly route the AIF to the ADC and DAC.
-	 * For the ADAU1761, this is normally done by set_tdm_slot, but this
-	 * function is not necessarily called during stream setup, so set up
-	 * the compatible AIF routings here from the start.
-	 */
+	 
 	if  (adau->type == ADAU1761_AS_1361) {
 		regmap_write(adau->regmap, ADAU17X1_SERIAL_INPUT_ROUTE, 0x01);
 		regmap_write(adau->regmap, ADAU17X1_SERIAL_OUTPUT_ROUTE, 0x01);
@@ -996,8 +968,7 @@ int adau1761_probe(struct device *dev, struct regmap *regmap,
 	if (ret)
 		return ret;
 
-	/* Enable cache only mode as we could miss writes before bias level
-	 * reaches standby and the core clock is enabled */
+	 
 	regcache_cache_only(regmap, true);
 
 	return devm_snd_soc_register_component(dev, &adau1761_component_driver,

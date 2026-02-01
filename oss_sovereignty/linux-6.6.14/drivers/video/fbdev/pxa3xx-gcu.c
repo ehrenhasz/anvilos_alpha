@@ -1,21 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  pxa3xx-gcu.c - Linux kernel module for PXA3xx graphics controllers
- *
- *  This driver needs a DirectFB counterpart in user space, communication
- *  is handled via mmap()ed memory areas and an ioctl.
- *
- *  Copyright (c) 2009 Daniel Mack <daniel@caiaq.de>
- *  Copyright (c) 2009 Janine Kropp <nin@directfb.org>
- *  Copyright (c) 2009 Denis Oliver Kropp <dok@directfb.org>
- */
 
-/*
- * WARNING: This controller is attached to System Bus 2 of the PXA which
- * needs its arbiter to be enabled explicitly (CKENB & 1<<9).
- * There is currently no way to do this from Linux, so you need to teach
- * your bootloader for now.
- */
+ 
+
+ 
 
 #include <linux/module.h>
 #include <linux/platform_device.h>
@@ -57,8 +43,8 @@
 
 #define SHARED_SIZE	PAGE_ALIGN(sizeof(struct pxa3xx_gcu_shared))
 
-/* #define PXA3XX_GCU_DEBUG */
-/* #define PXA3XX_GCU_DEBUG_TIMER */
+ 
+ 
 
 #ifdef PXA3XX_GCU_DEBUG
 #define QDUMP(msg)					\
@@ -143,10 +129,10 @@ pxa3xx_gcu_reset(struct pxa3xx_gcu_priv *priv)
 {
 	QDUMP("RESET");
 
-	/* disable interrupts */
+	 
 	gc_writel(priv, REG_GCIECR, 0);
 
-	/* reset hardware */
+	 
 	gc_writel(priv, REG_GCCR, GCCR_ABORT);
 	gc_writel(priv, REG_GCCR, 0);
 
@@ -156,12 +142,12 @@ pxa3xx_gcu_reset(struct pxa3xx_gcu_priv *priv)
 
 	ktime_get_ts64(&priv->base_time);
 
-	/* set up the ring buffer pointers */
+	 
 	gc_writel(priv, REG_GCRBLR, 0);
 	gc_writel(priv, REG_GCRBBR, priv->shared_phys);
 	gc_writel(priv, REG_GCRBTR, priv->shared_phys);
 
-	/* enable all IRQs except EOB */
+	 
 	gc_writel(priv, REG_GCIECR, IE_ALL & ~IE_EOB);
 }
 
@@ -225,13 +211,13 @@ run_ready(struct pxa3xx_gcu_priv *priv)
 	gc_writel(priv, REG_GCRBLR, 0);
 	shared->hw_running = 1;
 
-	/* ring base address */
+	 
 	gc_writel(priv, REG_GCRBBR, shared->buffer_phys);
 
-	/* ring tail address */
+	 
 	gc_writel(priv, REG_GCRBTR, shared->buffer_phys + num * 4);
 
-	/* ring length */
+	 
 	gc_writel(priv, REG_GCRBLR, ((num + 63) & ~63) * 4);
 }
 
@@ -259,15 +245,13 @@ pxa3xx_gcu_handle_irq(int irq, void *ctx)
 		if (priv->ready) {
 			run_ready(priv);
 		} else {
-			/* There is no more data prepared by the userspace.
-			 * Set hw_running = 0 and wait for the next userspace
-			 * kick-off */
+			 
 			shared->num_idle++;
 			shared->hw_running = 0;
 
 			QDUMP(" '-> Idle.");
 
-			/* set ring buffer length to zero */
+			 
 			gc_writel(priv, REG_GCRBLR, 0);
 
 			wake_up_all(&priv->wait_idle);
@@ -279,7 +263,7 @@ pxa3xx_gcu_handle_irq(int irq, void *ctx)
 		dump_whole_state(priv);
 	}
 
-	/* Clear the interrupt */
+	 
 	gc_writel(priv, REG_GCISCR, status);
 	spin_unlock(&priv->spinlock);
 
@@ -293,8 +277,7 @@ pxa3xx_gcu_wait_idle(struct pxa3xx_gcu_priv *priv)
 
 	QDUMP("Waiting for idle...");
 
-	/* Does not need to be atomic. There's a lock in user space,
-	 * but anyhow, this is just for statistics. */
+	 
 	priv->shared->num_wait_idle++;
 
 	while (priv->shared->hw_running) {
@@ -327,8 +310,7 @@ pxa3xx_gcu_wait_free(struct pxa3xx_gcu_priv *priv)
 
 	QDUMP("Waiting for free...");
 
-	/* Does not need to be atomic. There's a lock in user space,
-	 * but anyhow, this is just for statistics. */
+	 
 	priv->shared->num_wait_free++;
 
 	while (!priv->free) {
@@ -355,7 +337,7 @@ pxa3xx_gcu_wait_free(struct pxa3xx_gcu_priv *priv)
 	return ret;
 }
 
-/* Misc device layer */
+ 
 
 static inline struct pxa3xx_gcu_priv *to_pxa3xx_gcu_priv(struct file *file)
 {
@@ -363,10 +345,7 @@ static inline struct pxa3xx_gcu_priv *to_pxa3xx_gcu_priv(struct file *file)
 	return container_of(dev, struct pxa3xx_gcu_priv, misc_dev);
 }
 
-/*
- * provide an empty .open callback, so the core sets file->private_data
- * for us.
- */
+ 
 static int pxa3xx_gcu_open(struct inode *inode, struct file *file)
 {
 	return 0;
@@ -383,32 +362,29 @@ pxa3xx_gcu_write(struct file *file, const char *buff,
 
 	size_t words = count / 4;
 
-	/* Does not need to be atomic. There's a lock in user space,
-	 * but anyhow, this is just for statistics. */
+	 
 	priv->shared->num_writes++;
 	priv->shared->num_words += words;
 
-	/* Last word reserved for batch buffer end command */
+	 
 	if (words >= PXA3XX_GCU_BATCH_WORDS)
 		return -E2BIG;
 
-	/* Wait for a free buffer */
+	 
 	if (!priv->free) {
 		ret = pxa3xx_gcu_wait_free(priv);
 		if (ret < 0)
 			return ret;
 	}
 
-	/*
-	 * Get buffer from free list
-	 */
+	 
 	spin_lock_irqsave(&priv->spinlock, flags);
 	buffer = priv->free;
 	priv->free = buffer->next;
 	spin_unlock_irqrestore(&priv->spinlock, flags);
 
 
-	/* Copy data from user into buffer */
+	 
 	ret = copy_from_user(buffer->ptr, buff, words * 4);
 	if (ret) {
 		spin_lock_irqsave(&priv->spinlock, flags);
@@ -420,12 +396,10 @@ pxa3xx_gcu_write(struct file *file, const char *buff,
 
 	buffer->length = words;
 
-	/* Append batch buffer end command */
+	 
 	buffer->ptr[words] = 0x01000000;
 
-	/*
-	 * Add buffer to ready list
-	 */
+	 
 	spin_lock_irqsave(&priv->spinlock, flags);
 
 	buffer->next = NULL;
@@ -476,7 +450,7 @@ pxa3xx_gcu_mmap(struct file *file, struct vm_area_struct *vma)
 
 	switch (vma->vm_pgoff) {
 	case 0:
-		/* hand out the shared data area */
+		 
 		if (size != SHARED_SIZE)
 			return -EINVAL;
 
@@ -484,8 +458,7 @@ pxa3xx_gcu_mmap(struct file *file, struct vm_area_struct *vma)
 			priv->shared, priv->shared_phys, size);
 
 	case SHARED_SIZE >> PAGE_SHIFT:
-		/* hand out the MMIO base for direct register access
-		 * from userspace */
+		 
 		if (size != resource_size(priv->resource_mem))
 			return -EINVAL;
 
@@ -515,7 +488,7 @@ static void pxa3xx_gcu_debug_timedout(struct timer_list *unused)
 
 static void pxa3xx_gcu_init_debug_timer(struct pxa3xx_gcu_priv *priv)
 {
-	/* init the timer structure */
+	 
 	debug_timer_priv = priv;
 	timer_setup(&pxa3xx_gcu_debug_timer, pxa3xx_gcu_debug_timedout, 0);
 	pxa3xx_gcu_debug_timedout(NULL);
@@ -589,26 +562,23 @@ static int pxa3xx_gcu_probe(struct platform_device *pdev)
 	init_waitqueue_head(&priv->wait_free);
 	spin_lock_init(&priv->spinlock);
 
-	/* we allocate the misc device structure as part of our own allocation,
-	 * so we can get a pointer to our priv structure later on with
-	 * container_of(). This isn't really necessary as we have a fixed minor
-	 * number anyway, but this is to avoid statics. */
+	 
 
 	priv->misc_dev.minor	= PXA3XX_GCU_MINOR,
 	priv->misc_dev.name	= DRV_NAME,
 	priv->misc_dev.fops	= &pxa3xx_gcu_miscdev_fops;
 
-	/* handle IO resources */
+	 
 	priv->mmio_base = devm_platform_get_and_ioremap_resource(pdev, 0, &r);
 	if (IS_ERR(priv->mmio_base))
 		return PTR_ERR(priv->mmio_base);
 
-	/* enable the clock */
+	 
 	priv->clk = devm_clk_get(dev, NULL);
 	if (IS_ERR(priv->clk))
 		return dev_err_probe(dev, PTR_ERR(priv->clk), "failed to get clock\n");
 
-	/* request the IRQ */
+	 
 	irq = platform_get_irq(pdev, 0);
 	if (irq < 0)
 		return irq;
@@ -620,7 +590,7 @@ static int pxa3xx_gcu_probe(struct platform_device *pdev)
 		return ret;
 	}
 
-	/* allocate dma memory */
+	 
 	priv->shared = dma_alloc_coherent(dev, SHARED_SIZE,
 					  &priv->shared_phys, GFP_KERNEL);
 	if (!priv->shared) {
@@ -628,7 +598,7 @@ static int pxa3xx_gcu_probe(struct platform_device *pdev)
 		return -ENOMEM;
 	}
 
-	/* register misc device */
+	 
 	ret = misc_register(&priv->misc_dev);
 	if (ret < 0) {
 		dev_err(dev, "misc_register() for minor %d failed\n",

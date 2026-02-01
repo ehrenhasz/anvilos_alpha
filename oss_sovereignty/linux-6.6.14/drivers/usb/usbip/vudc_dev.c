@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (C) 2015 Karol Kosik <karo9@interia.eu>
- * Copyright (C) 2015-2016 Samsung Electronics
- *               Igor Kotrasinski <i.kotrasinsk@samsung.com>
- *               Krzysztof Opasiak <k.opasiak@samsung.com>
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/kernel.h>
@@ -20,9 +15,9 @@
 #include "usbip_common.h"
 #include "vudc.h"
 
-#define VIRTUAL_ENDPOINTS (1 /* ep0 */ + 15 /* in eps */ + 15 /* out eps */)
+#define VIRTUAL_ENDPOINTS (1   + 15   + 15  )
 
-/* urb-related structures alloc / free */
+ 
 
 
 static void free_urb(struct urb *urb)
@@ -67,9 +62,9 @@ void free_urbp_and_urb(struct urbp *urb_p)
 }
 
 
-/* utilities ; almost verbatim from dummy_hcd.c */
+ 
 
-/* called with spinlock held */
+ 
 static void nuke(struct vudc *udc, struct vep *ep)
 {
 	struct vrequest	*req;
@@ -86,7 +81,7 @@ static void nuke(struct vudc *udc, struct vep *ep)
 	}
 }
 
-/* caller must hold lock */
+ 
 static void stop_activity(struct vudc *udc)
 {
 	int i;
@@ -121,7 +116,7 @@ struct vep *vudc_find_endpoint(struct vudc *udc, u8 address)
 	return NULL;
 }
 
-/* gadget ops */
+ 
 
 static int vgadget_get_frame(struct usb_gadget *_gadget)
 {
@@ -162,10 +157,7 @@ static int vgadget_pullup(struct usb_gadget *_gadget, int value)
 		udc->gadget.speed = min_t(u8, USB_SPEED_HIGH,
 					   udc->driver->max_speed);
 		udc->ep[0].ep.maxpacket = 64;
-		/*
-		 * This is the first place where we can ask our
-		 * gadget driver for descriptors.
-		 */
+		 
 		ret = get_gadget_descs(udc);
 		if (ret) {
 			dev_err(&udc->gadget.dev, "Unable go get desc: %d", ret);
@@ -175,12 +167,12 @@ static int vgadget_pullup(struct usb_gadget *_gadget, int value)
 		spin_unlock_irqrestore(&udc->lock, flags);
 		usbip_start_eh(&udc->ud);
 	} else {
-		/* Invalidate descriptors */
+		 
 		udc->desc_cached = 0;
 
 		spin_unlock_irqrestore(&udc->lock, flags);
 		usbip_event_add(&udc->ud, VUDC_EVENT_REMOVED);
-		usbip_stop_eh(&udc->ud); /* Wait for eh completion */
+		usbip_stop_eh(&udc->ud);  
 	}
 
 	return 0;
@@ -224,7 +216,7 @@ static const struct usb_gadget_ops vgadget_ops = {
 };
 
 
-/* endpoint ops */
+ 
 
 static int vep_enable(struct usb_ep *_ep,
 		const struct usb_endpoint_descriptor *desc)
@@ -297,7 +289,7 @@ static void vep_free_request(struct usb_ep *_ep, struct usb_request *_req)
 {
 	struct vrequest *req;
 
-	/* ep is always valid here - see usb_ep_free_request() */
+	 
 	if (!_req)
 		return;
 
@@ -424,7 +416,7 @@ static const struct usb_ep_ops vep_ops = {
 };
 
 
-/* shutdown / reset / error handlers */
+ 
 
 static void vudc_shutdown(struct usbip_device *ud)
 {
@@ -485,7 +477,7 @@ static void vudc_device_unusable(struct usbip_device *ud)
 	spin_unlock_irqrestore(&ud->lock, flags);
 }
 
-/* device setup / cleanup */
+ 
 
 struct vudc_device *alloc_vudc_device(int devid)
 {
@@ -524,7 +516,7 @@ static int init_vudc_hw(struct vudc *udc)
 
 	INIT_LIST_HEAD(&udc->gadget.ep_list);
 
-	/* create ep0 and 15 in, 15 out general purpose eps */
+	 
 	for (i = 0; i < VIRTUAL_ENDPOINTS; ++i) {
 		int is_out = i % 2;
 		int num = (i + 1) / 2;
@@ -543,14 +535,14 @@ static int init_vudc_hw(struct vudc *udc)
 		INIT_LIST_HEAD(&ep->req_queue);
 
 		if (i == 0) {
-			/* ep0 */
+			 
 			ep->ep.caps.type_control = true;
 			ep->ep.caps.dir_out = true;
 			ep->ep.caps.dir_in = true;
 
 			udc->gadget.ep0 = &ep->ep;
 		} else {
-			/* All other eps */
+			 
 			ep->ep.caps.type_iso = true;
 			ep->ep.caps.type_int = true;
 			ep->ep.caps.type_bulk = true;
@@ -591,7 +583,7 @@ static void cleanup_vudc_hw(struct vudc *udc)
 	kfree(udc->ep);
 }
 
-/* platform driver ops */
+ 
 
 int vudc_probe(struct platform_device *pdev)
 {

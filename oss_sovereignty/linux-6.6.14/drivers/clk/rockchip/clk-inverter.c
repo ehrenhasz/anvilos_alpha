@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright 2015 Heiko Stuebner <heiko@sntech.de>
- */
+
+ 
 
 #include <linux/slab.h>
 #include <linux/clk-provider.h>

@@ -1,19 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * truncate.c
- *
- * PURPOSE
- *	Truncate handling routines for the OSTA-UDF(tm) filesystem.
- *
- * COPYRIGHT
- *  (C) 1999-2004 Ben Fennema
- *  (C) 1999 Stelias Computing Inc
- *
- * HISTORY
- *
- *  02/24/99 blf  Created.
- *
- */
+
+ 
 
 #include "udfdecl.h"
 #include <linux/fs.h>
@@ -56,10 +42,7 @@ static void extent_trunc(struct inode *inode, struct extent_position *epos,
 	}
 }
 
-/*
- * Truncate the last extent to match i_size. This function assumes
- * that preallocation extent is already truncated.
- */
+ 
 void udf_truncate_tail_extent(struct inode *inode)
 {
 	struct extent_position epos = {};
@@ -73,7 +56,7 @@ void udf_truncate_tail_extent(struct inode *inode)
 	if (iinfo->i_alloc_type == ICBTAG_FLAG_AD_IN_ICB ||
 	    inode->i_size == iinfo->i_lenExtents)
 		return;
-	/* Are we going to delete the file anyway? */
+	 
 	if (inode->i_nlink == 0)
 		return;
 
@@ -84,7 +67,7 @@ void udf_truncate_tail_extent(struct inode *inode)
 	else
 		BUG();
 
-	/* Find the last extent in the file */
+	 
 	while ((netype = udf_next_aext(inode, &epos, &eloc, &elen, 1)) != -1) {
 		etype = netype;
 		lbcount += elen;
@@ -108,8 +91,7 @@ void udf_truncate_tail_extent(struct inode *inode)
 			break;
 		}
 	}
-	/* This inode entry is in-memory only and thus we don't have to mark
-	 * the inode dirty */
+	 
 	iinfo->i_lenExtents = inode->i_size;
 	brelse(epos.bh);
 }
@@ -131,7 +113,7 @@ void udf_discard_prealloc(struct inode *inode)
 
 	epos.block = iinfo->i_location;
 
-	/* Find the last extent in the file */
+	 
 	while (udf_next_aext(inode, &epos, &eloc, &elen, 0) != -1) {
 		brelse(prev_epos.bh);
 		prev_epos = epos;
@@ -147,8 +129,7 @@ void udf_discard_prealloc(struct inode *inode)
 		udf_free_blocks(inode->i_sb, inode, &eloc, 0,
 				DIV_ROUND_UP(elen, bsize));
 	}
-	/* This inode entry is in-memory only and thus we don't have to mark
-	 * the inode dirty */
+	 
 	iinfo->i_lenExtents = lbcount;
 	brelse(epos.bh);
 	brelse(prev_epos.bh);
@@ -172,11 +153,7 @@ static void udf_update_alloc_ext_desc(struct inode *inode,
 	mark_buffer_dirty_inode(epos->bh, inode);
 }
 
-/*
- * Truncate extents of inode to inode->i_size. This function can be used only
- * for making file shorter. For making file longer, udf_extend_file() has to
- * be used.
- */
+ 
 int udf_truncate_extents(struct inode *inode)
 {
 	struct extent_position epos;
@@ -200,7 +177,7 @@ int udf_truncate_extents(struct inode *inode)
 	byte_offset = (offset << sb->s_blocksize_bits) +
 		(inode->i_size & (sb->s_blocksize - 1));
 	if (etype == -1) {
-		/* We should extend the file? */
+		 
 		WARN_ON(byte_offset);
 		return 0;
 	}
@@ -222,8 +199,7 @@ int udf_truncate_extents(struct inode *inode)
 		if (etype == (EXT_NEXT_EXTENT_ALLOCDESCS >> 30)) {
 			udf_write_aext(inode, &epos, &neloc, nelen, 0);
 			if (indirect_ext_len) {
-				/* We managed to free all extents in the
-				 * indirect extent - free it too */
+				 
 				BUG_ON(!epos.bh);
 				udf_free_blocks(sb, NULL, &epos.block,
 						0, indirect_ext_len);
@@ -238,7 +214,7 @@ int udf_truncate_extents(struct inode *inode)
 			epos.block = eloc;
 			epos.bh = sb_bread(sb,
 					udf_get_lb_pblock(sb, &eloc, 0));
-			/* Error reading indirect block? */
+			 
 			if (!epos.bh)
 				return -EIO;
 			if (elen)

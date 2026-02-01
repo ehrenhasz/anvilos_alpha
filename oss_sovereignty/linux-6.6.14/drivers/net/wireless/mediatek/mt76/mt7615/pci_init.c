@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: ISC
-/* Copyright (C) 2019 MediaTek Inc.
- *
- * Author: Roy Luo <royluo@google.com>
- *         Ryder Lee <ryder.lee@mediatek.com>
- *         Felix Fietkau <nbd@nbd.name>
- *         Lorenzo Bianconi <lorenzo@kernel.org>
- */
+
+ 
 
 #include <linux/etherdevice.h>
 #include "mt7615.h"
@@ -43,7 +37,7 @@ static int mt7615_init_hardware(struct mt7615_dev *dev)
 		return ret;
 
 	if (is_mt7663(&dev->mt76)) {
-		/* Reset RGU */
+		 
 		mt76_clear(dev, MT_MCU_CIRQ_IRQ_SEL(4), BIT(1));
 		mt76_set(dev, MT_MCU_CIRQ_IRQ_SEL(4), BIT(1));
 	}
@@ -54,7 +48,7 @@ static int mt7615_init_hardware(struct mt7615_dev *dev)
 
 	set_bit(MT76_STATE_INITIALIZED, &dev->mphy.state);
 
-	/* Beacon and mgmt frames should occupy wcid 0 */
+	 
 	idx = mt76_wcid_alloc(dev->mt76.wcid_mask, MT7615_WTBL_STA - 1);
 	if (idx)
 		return -ENOSPC;
@@ -73,7 +67,7 @@ int mt7615_register_device(struct mt7615_dev *dev)
 	mt7615_init_device(dev);
 	INIT_WORK(&dev->reset_work, mt7615_mac_reset_work);
 
-	/* init led callbacks */
+	 
 	if (IS_ENABLED(CONFIG_MT76_LEDS)) {
 		dev->mphy.leds.cdev.brightness_set = mt7615_led_set_brightness;
 		dev->mphy.leds.cdev.blink_set = mt7615_led_set_blink;

@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Squashfs - a compressed read only filesystem for Linux
- *
- * Copyright (c) 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009
- * Phillip Lougher <phillip@squashfs.org.uk>
- *
- * decompressor.c
- */
+
+ 
 
 #include <linux/types.h>
 #include <linux/mutex.h>
@@ -18,10 +11,7 @@
 #include "squashfs.h"
 #include "page_actor.h"
 
-/*
- * This file (and decompressor.h) implements a decompressor framework for
- * Squashfs, allowing multiple decompressors to be easily supported
- */
+ 
 
 static const struct squashfs_decompressor squashfs_lzma_unsupported_comp_ops = {
 	NULL, NULL, NULL, NULL, LZMA_COMPRESSION, "lzma", 0
@@ -91,9 +81,7 @@ static void *get_comp_opts(struct super_block *sb, unsigned short flags)
 	struct squashfs_page_actor *actor = NULL;
 	int length = 0;
 
-	/*
-	 * Read decompressor specific options from file system if present
-	 */
+	 
 	if (SQUASHFS_COMP_OPTS(flags)) {
 		buffer = kmalloc(PAGE_SIZE, GFP_KERNEL);
 		if (buffer == NULL) {

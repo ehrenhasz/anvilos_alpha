@@ -1,32 +1,19 @@
-/* SPDX-License-Identifier: GPL-2.0+ WITH Linux-syscall-note */
-/*
- *  SR-IPv6 implementation
- *
- *  Author:
- *  David Lebrun <david.lebrun@uclouvain.be>
- *
- *
- *  This program is free software; you can redistribute it and/or
- *      modify it under the terms of the GNU General Public License
- *      as published by the Free Software Foundation; either version
- *      2 of the License, or (at your option) any later version.
- */
+ 
+ 
 
 #ifndef _UAPI_LINUX_SEG6_H
 #define _UAPI_LINUX_SEG6_H
 
 #include <linux/types.h>
-#include <linux/in6.h>		/* For struct in6_addr. */
+#include <linux/in6.h>		 
 
-/*
- * SRH
- */
+ 
 struct ipv6_sr_hdr {
 	__u8	nexthdr;
 	__u8	hdrlen;
 	__u8	type;
 	__u8	segments_left;
-	__u8	first_segment; /* Represents the last_entry field of SRH */
+	__u8	first_segment;  
 	__u8	flags;
 	__u16	tag;
 

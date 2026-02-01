@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Clk driver for NXP LPC18xx/LPC43xx Clock Generation Unit (CGU)
- *
- * Copyright (C) 2015 Joachim Eastwood <manabian@gmail.com>
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/delay.h>
@@ -14,7 +10,7 @@
 
 #include <dt-bindings/clock/lpc18xx-cgu.h>
 
-/* Clock Generation Unit (CGU) registers */
+ 
 #define LPC18XX_CGU_XTAL_OSC_CTRL	0x018
 #define LPC18XX_CGU_PLL0USB_STAT	0x01c
 #define LPC18XX_CGU_PLL0USB_CTRL	0x020
@@ -33,7 +29,7 @@
 #define LPC18XX_CGU_BASE_CLK(id)	(0x05c + (id) * sizeof(u32))
 #define LPC18XX_CGU_PLL_CTRL_OFFSET	0x4
 
-/* PLL0 bits common to both audio and USB PLL */
+ 
 #define LPC18XX_PLL0_STAT_LOCK		BIT(0)
 #define LPC18XX_PLL0_CTRL_PD		BIT(0)
 #define LPC18XX_PLL0_CTRL_BYPASS	BIT(1)
@@ -45,7 +41,7 @@
 #define LPC18XX_PLL0_MDIV_SELI_SHIFT	22
 #define LPC18XX_PLL0_MSEL_MAX		BIT(15)
 
-/* Register value that gives PLL0 post/pre dividers equal to 1 */
+ 
 #define LPC18XX_PLL0_NP_DIVS_1		0x00302062
 
 enum {
@@ -238,10 +234,10 @@ static struct lpc18xx_cgu_base_clk lpc18xx_cgu_base_clks[] = {
 	LPC1XX_CGU_BASE_CLK(UART2,	base_common_src_ids, 0),
 	LPC1XX_CGU_BASE_CLK(UART3,	base_common_src_ids, 0),
 	LPC1XX_CGU_BASE_CLK(OUT,	base_all_src_ids,    0),
-	{ /* 21 reserved */ },
-	{ /* 22 reserved */ },
-	{ /* 23 reserved */ },
-	{ /* 24 reserved */ },
+	{   },
+	{   },
+	{   },
+	{   },
 	LPC1XX_CGU_BASE_CLK(AUDIO,	base_common_src_ids, 0),
 	LPC1XX_CGU_BASE_CLK(CGU_OUT0,	base_all_src_ids,    0),
 	LPC1XX_CGU_BASE_CLK(CGU_OUT1,	base_all_src_ids,    0),
@@ -283,12 +279,9 @@ struct lpc18xx_cgu_pll_clk {
 	.pll_ops = &lpc18xx_ ##_pll_ops,		\
 }
 
-/*
- * PLL0 uses a special register value encoding. The compute functions below
- * are taken or derived from the LPC1850 user manual (section 12.6.3.3).
- */
+ 
 
-/* Compute PLL0 multiplier from decoded version */
+ 
 static u32 lpc18xx_pll0_mdec2msel(u32 x)
 {
 	int i;
@@ -302,7 +295,7 @@ static u32 lpc18xx_pll0_mdec2msel(u32 x)
 		return i;
 	}
 }
-/* Compute PLL0 decoded multiplier from binary version */
+ 
 static u32 lpc18xx_pll0_msel2mdec(u32 msel)
 {
 	u32 i, x = 0x4000;
@@ -318,7 +311,7 @@ static u32 lpc18xx_pll0_msel2mdec(u32 msel)
 	}
 }
 
-/* Compute PLL0 bandwidth SELI reg from multiplier */
+ 
 static u32 lpc18xx_pll0_msel2seli(u32 msel)
 {
 	u32 tmp;
@@ -335,7 +328,7 @@ static u32 lpc18xx_pll0_msel2seli(u32 msel)
 	return (msel & 0x3c) + 4;
 }
 
-/* Compute PLL0 bandwidth SELP reg from multiplier */
+ 
 static u32 lpc18xx_pll0_msel2selp(u32 msel)
 {
 	if (msel < 60)
@@ -412,18 +405,18 @@ static int lpc18xx_pll0_set_rate(struct clk_hw *hw, unsigned long rate,
 	m |= lpc18xx_pll0_msel2selp(m) << LPC18XX_PLL0_MDIV_SELP_SHIFT;
 	m |= lpc18xx_pll0_msel2seli(m) << LPC18XX_PLL0_MDIV_SELI_SHIFT;
 
-	/* Power down PLL, disable clk output and dividers */
+	 
 	ctrl = readl(pll->reg + LPC18XX_CGU_PLL0USB_CTRL);
 	ctrl |= LPC18XX_PLL0_CTRL_PD;
 	ctrl &= ~(LPC18XX_PLL0_CTRL_BYPASS | LPC18XX_PLL0_CTRL_DIRECTI |
 		  LPC18XX_PLL0_CTRL_DIRECTO | LPC18XX_PLL0_CTRL_CLKEN);
 	writel(ctrl, pll->reg + LPC18XX_CGU_PLL0USB_CTRL);
 
-	/* Configure new PLL settings */
+	 
 	writel(m, pll->reg + LPC18XX_CGU_PLL0USB_MDIV);
 	writel(LPC18XX_PLL0_NP_DIVS_1, pll->reg + LPC18XX_CGU_PLL0USB_NP_DIV);
 
-	/* Power up PLL and wait for lock */
+	 
 	ctrl &= ~LPC18XX_PLL0_CTRL_PD;
 	writel(ctrl, pll->reg + LPC18XX_CGU_PLL0USB_CTRL);
 	do {
@@ -491,12 +484,7 @@ static int lpc18xx_cgu_gate_is_enabled(struct clk_hw *hw)
 {
 	const struct clk_hw *parent;
 
-	/*
-	 * The consumer of base clocks needs know if the
-	 * base clock is really enabled before it can be
-	 * accessed. It is therefore necessary to verify
-	 * this all the way up.
-	 */
+	 
 	parent = clk_hw_get_parent(hw);
 	if (!parent)
 		return 0;
@@ -562,7 +550,7 @@ static struct clk *lpc18xx_register_base_clk(struct lpc18xx_cgu_base_clk *clk,
 
 	lpc18xx_fill_parent_names(parents, clk->mux.table, clk->n_parents);
 
-	/* SAFE_CLK can not be turned off */
+	 
 	if (n == BASE_SAFE_CLK)
 		return clk_register_composite(NULL, name, parents, clk->n_parents,
 					      &clk->mux.hw, &clk_mux_ops,
@@ -600,13 +588,13 @@ static void __init lpc18xx_cgu_register_source_clks(struct device_node *np,
 	struct clk *clk;
 	int i;
 
-	/* Register the internal 12 MHz RC oscillator (IRC) */
+	 
 	clk = clk_register_fixed_rate(NULL, clk_src_names[CLK_SRC_IRC],
 				      NULL, 0, 12000000);
 	if (IS_ERR(clk))
 		pr_warn("%s: failed to register irc clk\n", __func__);
 
-	/* Register crystal oscillator controller */
+	 
 	parents[0] = of_clk_get_parent_name(np, 0);
 	clk = clk_register_gate(NULL, clk_src_names[CLK_SRC_OSC], parents[0],
 				0, base + LPC18XX_CGU_XTAL_OSC_CTRL,
@@ -614,7 +602,7 @@ static void __init lpc18xx_cgu_register_source_clks(struct device_node *np,
 	if (IS_ERR(clk))
 		pr_warn("%s: failed to register osc clk\n", __func__);
 
-	/* Register all PLLs */
+	 
 	for (i = 0; i < ARRAY_SIZE(lpc18xx_cgu_src_clk_plls); i++) {
 		clk = lpc18xx_cgu_register_pll(&lpc18xx_cgu_src_clk_plls[i],
 						   base);
@@ -622,7 +610,7 @@ static void __init lpc18xx_cgu_register_source_clks(struct device_node *np,
 			pr_warn("%s: failed to register pll (%d)\n", __func__, i);
 	}
 
-	/* Register all clock dividers A-E */
+	 
 	for (i = 0; i < ARRAY_SIZE(lpc18xx_cgu_src_clk_divs); i++) {
 		clk = lpc18xx_cgu_register_div(&lpc18xx_cgu_src_clk_divs[i],
 					       base, i);

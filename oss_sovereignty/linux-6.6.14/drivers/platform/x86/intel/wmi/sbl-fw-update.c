@@ -1,18 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Slim Bootloader(SBL) firmware update signaling driver
- *
- * Slim Bootloader is a small, open-source, non UEFI compliant, boot firmware
- * optimized for running on certain Intel platforms.
- *
- * SBL exposes an ACPI-WMI device via /sys/bus/wmi/devices/<INTEL_WMI_SBL_GUID>.
- * This driver further adds "firmware_update_request" device attribute.
- * This attribute normally has a value of 0 and userspace can signal SBL
- * to update firmware, on next reboot, by writing a value of 1.
- *
- * More details of SBL firmware update process is available at:
- * https://slimbootloader.github.io/security/firmware-update.html
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/device.h>
@@ -92,7 +79,7 @@ static ssize_t firmware_update_request_store(struct device *dev,
 	if (ret)
 		return ret;
 
-	/* May later be extended to support values other than 0 and 1 */
+	 
 	if (val > 1)
 		return -ERANGE;
 

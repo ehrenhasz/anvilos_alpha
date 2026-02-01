@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * H/W layer of ISHTP provider device (ISH)
- *
- * Copyright (c) 2014-2016, Intel Corporation.
- */
+ 
+ 
 
 #ifndef _ISHTP_HW_ISH_H_
 #define _ISHTP_HW_ISH_H_
@@ -69,9 +65,7 @@ struct ish_hw {
 	void __iomem *mem_addr;
 };
 
-/*
- * ISH FW status type
- */
+ 
 enum {
 	FWSTS_AFTER_RESET		= 0,
 	FWSTS_WAIT_FOR_HOST		= 4,
@@ -90,4 +84,4 @@ void ish_device_disable(struct ishtp_device *dev);
 int ish_disable_dma(struct ishtp_device *dev);
 void ish_set_host_ready(struct ishtp_device *dev);
 
-#endif /* _ISHTP_HW_ISH_H_ */
+#endif  

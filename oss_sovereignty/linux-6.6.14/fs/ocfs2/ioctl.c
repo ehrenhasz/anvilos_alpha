@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * linux/fs/ocfs2/ioctl.c
- *
- * Copyright (C) 2006 Herbert Poetzl
- * adapted from Remy Card's ext2/ioctl.c
- */
+
+ 
 
 #include <linux/fs.h>
 #include <linux/mount.h>
@@ -36,10 +31,7 @@
 #define o2info_to_user(a, b)	\
 		copy_to_user((typeof(a) __user *)b, &(a), sizeof(a))
 
-/*
- * This is just a best-effort to tell userspace that this request
- * caused the error.
- */
+ 
 static inline void o2info_set_request_error(struct ocfs2_info_request *kreq,
 					struct ocfs2_info_request __user *req)
 {
@@ -110,7 +102,7 @@ int ocfs2_fileattr_set(struct mnt_idmap *idmap,
 	flags = flags & OCFS2_FL_MODIFIABLE;
 	flags |= oldflags & ~OCFS2_FL_MODIFIABLE;
 
-	/* Check already done by VFS, but repeat with ocfs lock */
+	 
 	status = -EPERM;
 	if ((flags ^ oldflags) & (FS_APPEND_FL | FS_IMMUTABLE_FL) &&
 	    !capable(CAP_LINUX_IMMUTABLE))
@@ -483,9 +475,7 @@ static int ocfs2_info_freefrag_scan_chain(struct ocfs2_super *osb,
 		offset = 0;
 
 		for (chunk = 0; chunk < chunks_in_group; chunk++) {
-			/*
-			 * last chunk may be not an entire one.
-			 */
+			 
 			if ((offset + ffg->iff_chunksize) > max_bits)
 				num_clusters = max_bits - offset;
 			else
@@ -495,11 +485,7 @@ static int ocfs2_info_freefrag_scan_chain(struct ocfs2_super *osb,
 			for (cluster = 0; cluster < num_clusters; cluster++) {
 				used = ocfs2_test_bit(offset,
 						(unsigned long *)bg->bg_bitmap);
-				/*
-				 * - chunk_free counts free clusters in #N chunk.
-				 * - last_chunksize records the size(in) clusters
-				 *   for the last real free chunk being counted.
-				 */
+				 
 				if (!used) {
 					last_chunksize++;
 					chunk_free++;
@@ -518,9 +504,7 @@ static int ocfs2_info_freefrag_scan_chain(struct ocfs2_super *osb,
 				ffg->iff_ffs.ffs_free_chunks++;
 		}
 
-		/*
-		 * need to update the info for last free chunk.
-		 */
+		 
 		if (last_chunksize)
 			ocfs2_info_update_ffg(ffg, last_chunksize);
 
@@ -565,10 +549,7 @@ static int ocfs2_info_freefrag_scan_bitmap(struct ocfs2_super *osb,
 	gb_dinode = (struct ocfs2_dinode *)bh->b_data;
 	cl = &(gb_dinode->id2.i_chain);
 
-	/*
-	 * Chunksize(in) clusters from userspace should be
-	 * less than clusters in a group.
-	 */
+	 
 	if (ffg->iff_chunksize > le16_to_cpu(cl->cl_cpg)) {
 		status = -EINVAL;
 		goto bail;
@@ -632,9 +613,7 @@ static int ocfs2_info_handle_freefrag(struct inode *inode,
 		status = -EFAULT;
 		goto out_free;
 	}
-	/*
-	 * chunksize from userspace should be power of 2.
-	 */
+	 
 	if ((oiff->iff_chunksize & (oiff->iff_chunksize - 1)) ||
 	    (!oiff->iff_chunksize)) {
 		status = -EINVAL;
@@ -699,13 +678,7 @@ static int ocfs2_info_handle_unknown(struct inode *inode,
 	return 0;
 }
 
-/*
- * Validate and distinguish OCFS2_IOC_INFO requests.
- *
- * - validate the magic number.
- * - distinguish different requests.
- * - validate size of different requests.
- */
+ 
 static int ocfs2_info_handle_request(struct inode *inode,
 				     struct ocfs2_info_request __user *req)
 {
@@ -773,10 +746,7 @@ static int ocfs2_get_request_ptr(struct ocfs2_info *info, int idx,
 
 	if (compat_flag) {
 #ifdef CONFIG_COMPAT
-		/*
-		 * pointer bp stores the base address of a pointers array,
-		 * which collects all addresses of separate request.
-		 */
+		 
 		bp = (u64 __user *)(unsigned long)compat_ptr(info->oi_requests);
 #else
 		BUG();
@@ -792,17 +762,7 @@ bail:
 	return status;
 }
 
-/*
- * OCFS2_IOC_INFO handles an array of requests passed from userspace.
- *
- * ocfs2_info_handle() recevies a large info aggregation, grab and
- * validate the request count from header, then break it into small
- * pieces, later specific handlers can handle them one by one.
- *
- * Idea here is to make each separate request small enough to ensure
- * a better backward&forward compatibility, since a small piece of
- * request will be less likely to be broken if disk layout get changed.
- */
+ 
 static noinline_for_stack int
 ocfs2_info_handle(struct inode *inode, struct ocfs2_info *info, int compat_flag)
 {

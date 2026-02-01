@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Driver for handling the PCIe controller errors on
- * HiSilicon HIP SoCs.
- *
- * Copyright (c) 2020 HiSilicon Limited.
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <acpi/ghes.h>
@@ -15,7 +10,7 @@
 #include <linux/kfifo.h>
 #include <linux/spinlock.h>
 
-/* HISI PCIe controller error definitions */
+ 
 #define HISI_PCIE_ERR_MISC_REGS	33
 
 #define HISI_PCIE_LOCAL_VALID_VERSION		BIT(0)
@@ -33,11 +28,7 @@ static guid_t hisi_pcie_sec_guid =
 	GUID_INIT(0xB2889FC9, 0xE7D7, 0x4F9D,
 		  0xA8, 0x67, 0xAF, 0x42, 0xE9, 0x8B, 0xE7, 0x72);
 
-/*
- * Firmware reports the socket port ID where the error occurred.  These
- * macros convert that to the core ID and core port ID required by the
- * ACPI reset method.
- */
+ 
 #define HISI_PCIE_PORT_ID(core, v)       (((v) >> 1) + ((core) << 3))
 #define HISI_PCIE_CORE_ID(v)             ((v) >> 3)
 #define HISI_PCIE_CORE_PORT_ID(v)        (((v) & 7) << 1)
@@ -174,16 +165,10 @@ static int hisi_pcie_port_do_recovery(struct platform_device *dev,
 	if (hisi_pcie_port_reset(dev, chip_id, port_id))
 		return -EIO;
 
-	/*
-	 * The initialization time of subordinate devices after
-	 * hot reset is no more than 1s, which is required by
-	 * the PCI spec v5.0 sec 6.6.1. The time will shorten
-	 * if Readiness Notifications mechanisms are used. But
-	 * wait 1s here to adapt any conditions.
-	 */
+	 
 	ssleep(1UL);
 
-	/* add root port and downstream devices */
+	 
 	pci_lock_rescan_remove();
 	pci_rescan_bus(root_bus);
 	pci_unlock_rescan_remove();
@@ -237,9 +222,7 @@ static void hisi_pcie_handle_error(struct platform_device *pdev,
 	if (edata->err_severity != HISI_PCIE_ERR_SEV_RECOVERABLE)
 		return;
 
-	/* Recovery for the PCIe controller errors, try reset
-	 * PCI port for the error recovery
-	 */
+	 
 	rc = hisi_pcie_port_do_recovery(pdev, edata->socket_id,
 			HISI_PCIE_PORT_ID(edata->core_id, edata->port_id));
 	if (rc)

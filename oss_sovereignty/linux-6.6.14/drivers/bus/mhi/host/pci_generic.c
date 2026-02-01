@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * MHI PCI driver - MHI over PCI controller driver
- *
- * This module is a generic driver for registering MHI-over-PCI devices,
- * such as PCIe QCOM modems.
- *
- * Copyright (C) 2020 Linaro Ltd <loic.poulain@linaro.org>
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/device.h>
@@ -23,22 +16,11 @@
 
 #define HEALTH_CHECK_PERIOD (HZ * 2)
 
-/* PCI VID definitions */
+ 
 #define PCI_VENDOR_ID_THALES	0x1269
 #define PCI_VENDOR_ID_QUECTEL	0x1eac
 
-/**
- * struct mhi_pci_dev_info - MHI PCI device specific information
- * @config: MHI controller configuration
- * @name: name of the PCI module
- * @fw: firmware path (if any)
- * @edl: emergency download mode firmware path (if any)
- * @bar_num: PCI base address register to use for MHI MMIO register space
- * @dma_data_width: DMA transfer word size (32 or 64 bits)
- * @mru_default: default MRU size for MBIM network packets
- * @sideband_wake: Devices using dedicated sideband GPIO for wakeup instead
- *		   of inband wake support (such as sdx24)
- */
+ 
 struct mhi_pci_dev_info {
 	const struct mhi_controller_config *config;
 	const char *name;
@@ -257,14 +239,14 @@ static const struct mhi_channel_config modem_qcom_v1_mhi_channels[] = {
 };
 
 static struct mhi_event_config modem_qcom_v1_mhi_events[] = {
-	/* first ring is control+data ring */
+	 
 	MHI_EVENT_CONFIG_CTRL(0, 64),
-	/* DIAG dedicated event ring */
+	 
 	MHI_EVENT_CONFIG_DATA(1, 128),
-	/* Software channels dedicated event ring */
+	 
 	MHI_EVENT_CONFIG_SW_DATA(2, 64),
 	MHI_EVENT_CONFIG_SW_DATA(3, 64),
-	/* Hardware channels request dedicated hardware event rings */
+	 
 	MHI_EVENT_CONFIG_HW_DATA(4, 1024, 100),
 	MHI_EVENT_CONFIG_HW_DATA(5, 2048, 101)
 };
@@ -319,7 +301,7 @@ static const struct mhi_channel_config mhi_quectel_em1xx_channels[] = {
 	MHI_CHANNEL_CONFIG_DL(13, "MBIM", 32, 0),
 	MHI_CHANNEL_CONFIG_UL(32, "DUN", 32, 0),
 	MHI_CHANNEL_CONFIG_DL(33, "DUN", 32, 0),
-	/* The EDL firmware is a flash-programmer exposing firehose protocol */
+	 
 	MHI_CHANNEL_CONFIG_UL_FP(34, "FIREHOSE", 32, 0),
 	MHI_CHANNEL_CONFIG_DL_FP(35, "FIREHOSE", 32, 0),
 	MHI_CHANNEL_CONFIG_HW_UL(100, "IP_HW0_MBIM", 128, 2),
@@ -423,10 +405,10 @@ static const struct mhi_pci_dev_info mhi_foxconn_sdx65_info = {
 static const struct mhi_channel_config mhi_mv3x_channels[] = {
 	MHI_CHANNEL_CONFIG_UL(0, "LOOPBACK", 64, 0),
 	MHI_CHANNEL_CONFIG_DL(1, "LOOPBACK", 64, 0),
-	/* MBIM Control Channel */
+	 
 	MHI_CHANNEL_CONFIG_UL(12, "MBIM", 64, 0),
 	MHI_CHANNEL_CONFIG_DL(13, "MBIM", 64, 0),
-	/* MBIM Data Channel */
+	 
 	MHI_CHANNEL_CONFIG_HW_UL(100, "IP_HW0_MBIM", 512, 2),
 	MHI_CHANNEL_CONFIG_HW_DL(101, "IP_HW0_MBIM", 512, 3),
 };
@@ -479,9 +461,9 @@ static const struct mhi_channel_config mhi_sierra_em919x_channels[] = {
 };
 
 static struct mhi_event_config modem_sierra_em919x_mhi_events[] = {
-	/* first ring is control+data and DIAG ring */
+	 
 	MHI_EVENT_CONFIG_CTRL(0, 2048),
-	/* Hardware channels request dedicated hardware event rings */
+	 
 	MHI_EVENT_CONFIG_HW_DATA(1, 2048, 100),
 	MHI_EVENT_CONFIG_HW_DATA(2, 2048, 101)
 };
@@ -578,91 +560,91 @@ static const struct mhi_pci_dev_info mhi_telit_fn990_info = {
 	.mru_default = 32768,
 };
 
-/* Keep the list sorted based on the PID. New VID should be added as the last entry */
+ 
 static const struct pci_device_id mhi_pci_id_table[] = {
 	{ PCI_DEVICE(PCI_VENDOR_ID_QCOM, 0x0304),
 		.driver_data = (kernel_ulong_t) &mhi_qcom_sdx24_info },
 	{ PCI_DEVICE_SUB(PCI_VENDOR_ID_QCOM, 0x0306, PCI_VENDOR_ID_QCOM, 0x010c),
 		.driver_data = (kernel_ulong_t) &mhi_foxconn_sdx55_info },
-	/* EM919x (sdx55), use the same vid:pid as qcom-sdx55m */
+	 
 	{ PCI_DEVICE_SUB(PCI_VENDOR_ID_QCOM, 0x0306, 0x18d7, 0x0200),
 		.driver_data = (kernel_ulong_t) &mhi_sierra_em919x_info },
-	/* Telit FN980 hardware revision v1 */
+	 
 	{ PCI_DEVICE_SUB(PCI_VENDOR_ID_QCOM, 0x0306, 0x1C5D, 0x2000),
 		.driver_data = (kernel_ulong_t) &mhi_telit_fn980_hw_v1_info },
 	{ PCI_DEVICE(PCI_VENDOR_ID_QCOM, 0x0306),
 		.driver_data = (kernel_ulong_t) &mhi_qcom_sdx55_info },
-	/* Telit FN990 */
+	 
 	{ PCI_DEVICE_SUB(PCI_VENDOR_ID_QCOM, 0x0308, 0x1c5d, 0x2010),
 		.driver_data = (kernel_ulong_t) &mhi_telit_fn990_info },
-	/* Telit FE990 */
+	 
 	{ PCI_DEVICE_SUB(PCI_VENDOR_ID_QCOM, 0x0308, 0x1c5d, 0x2015),
 		.driver_data = (kernel_ulong_t) &mhi_telit_fn990_info },
 	{ PCI_DEVICE(PCI_VENDOR_ID_QCOM, 0x0308),
 		.driver_data = (kernel_ulong_t) &mhi_qcom_sdx65_info },
-	{ PCI_DEVICE(PCI_VENDOR_ID_QUECTEL, 0x1001), /* EM120R-GL (sdx24) */
+	{ PCI_DEVICE(PCI_VENDOR_ID_QUECTEL, 0x1001),  
 		.driver_data = (kernel_ulong_t) &mhi_quectel_em1xx_info },
-	{ PCI_DEVICE(PCI_VENDOR_ID_QUECTEL, 0x1002), /* EM160R-GL (sdx24) */
+	{ PCI_DEVICE(PCI_VENDOR_ID_QUECTEL, 0x1002),  
 		.driver_data = (kernel_ulong_t) &mhi_quectel_em1xx_info },
-	/* RM520N-GL (sdx6x), eSIM */
+	 
 	{ PCI_DEVICE(PCI_VENDOR_ID_QUECTEL, 0x1004),
 		.driver_data = (kernel_ulong_t) &mhi_quectel_rm5xx_info },
-	/* RM520N-GL (sdx6x), Lenovo variant */
+	 
 	{ PCI_DEVICE(PCI_VENDOR_ID_QUECTEL, 0x1007),
 		.driver_data = (kernel_ulong_t) &mhi_quectel_rm5xx_info },
-	{ PCI_DEVICE(PCI_VENDOR_ID_QUECTEL, 0x100d), /* EM160R-GL (sdx24) */
+	{ PCI_DEVICE(PCI_VENDOR_ID_QUECTEL, 0x100d),  
 		.driver_data = (kernel_ulong_t) &mhi_quectel_em1xx_info },
-	{ PCI_DEVICE(PCI_VENDOR_ID_QUECTEL, 0x2001), /* EM120R-GL for FCCL (sdx24) */
+	{ PCI_DEVICE(PCI_VENDOR_ID_QUECTEL, 0x2001),  
 		.driver_data = (kernel_ulong_t) &mhi_quectel_em1xx_info },
-	/* T99W175 (sdx55), Both for eSIM and Non-eSIM */
+	 
 	{ PCI_DEVICE(PCI_VENDOR_ID_FOXCONN, 0xe0ab),
 		.driver_data = (kernel_ulong_t) &mhi_foxconn_sdx55_info },
-	/* DW5930e (sdx55), With eSIM, It's also T99W175 */
+	 
 	{ PCI_DEVICE(PCI_VENDOR_ID_FOXCONN, 0xe0b0),
 		.driver_data = (kernel_ulong_t) &mhi_foxconn_sdx55_info },
-	/* DW5930e (sdx55), Non-eSIM, It's also T99W175 */
+	 
 	{ PCI_DEVICE(PCI_VENDOR_ID_FOXCONN, 0xe0b1),
 		.driver_data = (kernel_ulong_t) &mhi_foxconn_sdx55_info },
-	/* T99W175 (sdx55), Based on Qualcomm new baseline */
+	 
 	{ PCI_DEVICE(PCI_VENDOR_ID_FOXCONN, 0xe0bf),
 		.driver_data = (kernel_ulong_t) &mhi_foxconn_sdx55_info },
-	/* T99W175 (sdx55) */
+	 
 	{ PCI_DEVICE(PCI_VENDOR_ID_FOXCONN, 0xe0c3),
 		.driver_data = (kernel_ulong_t) &mhi_foxconn_sdx55_info },
-	/* T99W368 (sdx65) */
+	 
 	{ PCI_DEVICE(PCI_VENDOR_ID_FOXCONN, 0xe0d8),
 		.driver_data = (kernel_ulong_t) &mhi_foxconn_sdx65_info },
-	/* T99W373 (sdx62) */
+	 
 	{ PCI_DEVICE(PCI_VENDOR_ID_FOXCONN, 0xe0d9),
 		.driver_data = (kernel_ulong_t) &mhi_foxconn_sdx65_info },
-	/* T99W510 (sdx24), variant 1 */
+	 
 	{ PCI_DEVICE(PCI_VENDOR_ID_FOXCONN, 0xe0f0),
 		.driver_data = (kernel_ulong_t) &mhi_foxconn_sdx24_info },
-	/* T99W510 (sdx24), variant 2 */
+	 
 	{ PCI_DEVICE(PCI_VENDOR_ID_FOXCONN, 0xe0f1),
 		.driver_data = (kernel_ulong_t) &mhi_foxconn_sdx24_info },
-	/* T99W510 (sdx24), variant 3 */
+	 
 	{ PCI_DEVICE(PCI_VENDOR_ID_FOXCONN, 0xe0f2),
 		.driver_data = (kernel_ulong_t) &mhi_foxconn_sdx24_info },
-	/* DW5932e-eSIM (sdx62), With eSIM */
+	 
 	{ PCI_DEVICE(PCI_VENDOR_ID_FOXCONN, 0xe0f5),
 		.driver_data = (kernel_ulong_t) &mhi_foxconn_sdx65_info },
-	/* DW5932e (sdx62), Non-eSIM */
+	 
 	{ PCI_DEVICE(PCI_VENDOR_ID_FOXCONN, 0xe0f9),
 		.driver_data = (kernel_ulong_t) &mhi_foxconn_sdx65_info },
-	/* MV31-W (Cinterion) */
+	 
 	{ PCI_DEVICE(PCI_VENDOR_ID_THALES, 0x00b3),
 		.driver_data = (kernel_ulong_t) &mhi_mv31_info },
-	/* MV31-W (Cinterion), based on new baseline */
+	 
 	{ PCI_DEVICE(PCI_VENDOR_ID_THALES, 0x00b4),
 		.driver_data = (kernel_ulong_t) &mhi_mv31_info },
-	/* MV32-WA (Cinterion) */
+	 
 	{ PCI_DEVICE(PCI_VENDOR_ID_THALES, 0x00ba),
 		.driver_data = (kernel_ulong_t) &mhi_mv32_info },
-	/* MV32-WB (Cinterion) */
+	 
 	{ PCI_DEVICE(PCI_VENDOR_ID_THALES, 0x00bb),
 		.driver_data = (kernel_ulong_t) &mhi_mv32_info },
-	/* T99W175 (sdx55), HP variant */
+	 
 	{ PCI_DEVICE(0x03f0, 0x0a6c),
 		.driver_data = (kernel_ulong_t) &mhi_foxconn_sdx55_info },
 	{  }
@@ -700,7 +682,7 @@ static void mhi_pci_status_cb(struct mhi_controller *mhi_cntrl,
 {
 	struct pci_dev *pdev = to_pci_dev(mhi_cntrl->cntrl_dev);
 
-	/* Nothing to do for now */
+	 
 	switch (cb) {
 	case MHI_CB_FATAL_ERROR:
 	case MHI_CB_SYS_ERROR:
@@ -717,17 +699,17 @@ static void mhi_pci_status_cb(struct mhi_controller *mhi_cntrl,
 
 static void mhi_pci_wake_get_nop(struct mhi_controller *mhi_cntrl, bool force)
 {
-	/* no-op */
+	 
 }
 
 static void mhi_pci_wake_put_nop(struct mhi_controller *mhi_cntrl, bool override)
 {
-	/* no-op */
+	 
 }
 
 static void mhi_pci_wake_toggle_nop(struct mhi_controller *mhi_cntrl)
 {
-	/* no-op */
+	 
 }
 
 static bool mhi_pci_is_alive(struct mhi_controller *mhi_cntrl)
@@ -786,10 +768,7 @@ static int mhi_pci_get_irqs(struct mhi_controller *mhi_cntrl,
 	int nr_vectors, i;
 	int *irq;
 
-	/*
-	 * Alloc one MSI vector for BHI + one vector per event ring, ideally...
-	 * No explicit pci_free_irq_vectors required, done by pcim_release.
-	 */
+	 
 	mhi_cntrl->nr_irqs = 1 + mhi_cntrl_config->num_events;
 
 	nr_vectors = pci_alloc_irq_vectors(pdev, 1, mhi_cntrl->nr_irqs, PCI_IRQ_MSI);
@@ -802,7 +781,7 @@ static int mhi_pci_get_irqs(struct mhi_controller *mhi_cntrl,
 	if (nr_vectors < mhi_cntrl->nr_irqs) {
 		dev_warn(&pdev->dev, "using shared MSI\n");
 
-		/* Patch msi vectors, use only one (shared) */
+		 
 		for (i = 0; i < mhi_cntrl_config->num_events; i++)
 			mhi_cntrl_config->event_cfg[i].irq = 0;
 		mhi_cntrl->nr_irqs = 1;
@@ -825,17 +804,13 @@ static int mhi_pci_get_irqs(struct mhi_controller *mhi_cntrl,
 
 static int mhi_pci_runtime_get(struct mhi_controller *mhi_cntrl)
 {
-	/* The runtime_get() MHI callback means:
-	 *    Do whatever is requested to leave M3.
-	 */
+	 
 	return pm_runtime_get(mhi_cntrl->cntrl_dev);
 }
 
 static void mhi_pci_runtime_put(struct mhi_controller *mhi_cntrl)
 {
-	/* The runtime_put() MHI callback means:
-	 *    Device can be moved in M3 state.
-	 */
+	 
 	pm_runtime_mark_last_busy(mhi_cntrl->cntrl_dev);
 	pm_runtime_put(mhi_cntrl->cntrl_dev);
 }
@@ -853,7 +828,7 @@ static void mhi_pci_recovery_work(struct work_struct *work)
 	del_timer(&mhi_pdev->health_check_timer);
 	pm_runtime_forbid(&pdev->dev);
 
-	/* Clean up MHI state */
+	 
 	if (test_and_clear_bit(MHI_PCI_DEV_STARTED, &mhi_pdev->status)) {
 		mhi_power_down(mhi_cntrl, false);
 		mhi_unprepare_after_power_down(mhi_cntrl);
@@ -902,7 +877,7 @@ static void health_check(struct timer_list *t)
 		return;
 	}
 
-	/* reschedule in two seconds */
+	 
 	mod_timer(&mhi_pdev->health_check_timer, jiffies + HEALTH_CHECK_PERIOD);
 }
 
@@ -916,7 +891,7 @@ static int mhi_pci_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 
 	dev_info(&pdev->dev, "MHI PCI device found: %s\n", info->name);
 
-	/* mhi_pdev.mhi_cntrl must be zero-initialized */
+	 
 	mhi_pdev = devm_kzalloc(&pdev->dev, sizeof(*mhi_pdev), GFP_KERNEL);
 	if (!mhi_pdev)
 		return -ENOMEM;
@@ -956,9 +931,7 @@ static int mhi_pci_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 
 	pci_set_drvdata(pdev, mhi_pdev);
 
-	/* Have stored pci confspace at hand for restore in sudden PCI error.
-	 * cache the state locally and discard the PCI core one.
-	 */
+	 
 	pci_save_state(pdev);
 	mhi_pdev->pci_state = pci_store_saved_state(pdev);
 	pci_load_saved_state(pdev, NULL);
@@ -967,7 +940,7 @@ static int mhi_pci_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 	if (err)
 		return err;
 
-	/* MHI bus does not power up the controller by default */
+	 
 	err = mhi_prepare_for_power_up(mhi_cntrl);
 	if (err) {
 		dev_err(&pdev->dev, "failed to prepare MHI controller\n");
@@ -982,10 +955,10 @@ static int mhi_pci_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 
 	set_bit(MHI_PCI_DEV_STARTED, &mhi_pdev->status);
 
-	/* start health check */
+	 
 	mod_timer(&mhi_pdev->health_check_timer, jiffies + HEALTH_CHECK_PERIOD);
 
-	/* Only allow runtime-suspend if PME capable (for wakeup) */
+	 
 	if (pci_pme_capable(pdev, PCI_D3hot)) {
 		pm_runtime_set_autosuspend_delay(&pdev->dev, 2000);
 		pm_runtime_use_autosuspend(&pdev->dev);
@@ -1016,7 +989,7 @@ static void mhi_pci_remove(struct pci_dev *pdev)
 		mhi_unprepare_after_power_down(mhi_cntrl);
 	}
 
-	/* balancing probe put_noidle */
+	 
 	if (pci_pme_capable(pdev, PCI_D3hot))
 		pm_runtime_get_noresume(&pdev->dev);
 
@@ -1038,16 +1011,16 @@ static void mhi_pci_reset_prepare(struct pci_dev *pdev)
 
 	del_timer(&mhi_pdev->health_check_timer);
 
-	/* Clean up MHI state */
+	 
 	if (test_and_clear_bit(MHI_PCI_DEV_STARTED, &mhi_pdev->status)) {
 		mhi_power_down(mhi_cntrl, false);
 		mhi_unprepare_after_power_down(mhi_cntrl);
 	}
 
-	/* cause internal device reset */
+	 
 	mhi_soc_reset(mhi_cntrl);
 
-	/* Be sure device reset has been executed */
+	 
 	msleep(MHI_POST_RESET_DELAY_MS);
 }
 
@@ -1057,11 +1030,11 @@ static void mhi_pci_reset_done(struct pci_dev *pdev)
 	struct mhi_controller *mhi_cntrl = &mhi_pdev->mhi_cntrl;
 	int err;
 
-	/* Restore initial known working PCI state */
+	 
 	pci_load_saved_state(pdev, mhi_pdev->pci_state);
 	pci_restore_state(pdev);
 
-	/* Is device status available ? */
+	 
 	if (!mhi_pci_is_alive(mhi_cntrl)) {
 		dev_err(&pdev->dev, "reset failed\n");
 		return;
@@ -1095,12 +1068,12 @@ static pci_ers_result_t mhi_pci_error_detected(struct pci_dev *pdev,
 	if (state == pci_channel_io_perm_failure)
 		return PCI_ERS_RESULT_DISCONNECT;
 
-	/* Clean up MHI state */
+	 
 	if (test_and_clear_bit(MHI_PCI_DEV_STARTED, &mhi_pdev->status)) {
 		mhi_power_down(mhi_cntrl, false);
 		mhi_unprepare_after_power_down(mhi_cntrl);
 	} else {
-		/* Nothing to do */
+		 
 		return PCI_ERS_RESULT_RECOVERED;
 	}
 
@@ -1151,9 +1124,9 @@ static int  __maybe_unused mhi_pci_runtime_suspend(struct device *dev)
 
 	if (!test_bit(MHI_PCI_DEV_STARTED, &mhi_pdev->status) ||
 			mhi_cntrl->ee != MHI_EE_AMSS)
-		goto pci_suspend; /* Nothing to do at MHI level */
+		goto pci_suspend;  
 
-	/* Transition to M3 state */
+	 
 	err = mhi_pm_suspend(mhi_cntrl);
 	if (err) {
 		dev_err(&pdev->dev, "failed to suspend device: %d\n", err);
@@ -1187,29 +1160,25 @@ static int __maybe_unused mhi_pci_runtime_resume(struct device *dev)
 
 	if (!test_bit(MHI_PCI_DEV_STARTED, &mhi_pdev->status) ||
 			mhi_cntrl->ee != MHI_EE_AMSS)
-		return 0; /* Nothing to do at MHI level */
+		return 0;  
 
-	/* Exit M3, transition to M0 state */
+	 
 	err = mhi_pm_resume(mhi_cntrl);
 	if (err) {
 		dev_err(&pdev->dev, "failed to resume device: %d\n", err);
 		goto err_recovery;
 	}
 
-	/* Resume health check */
+	 
 	mod_timer(&mhi_pdev->health_check_timer, jiffies + HEALTH_CHECK_PERIOD);
 
-	/* It can be a remote wakeup (no mhi runtime_get), update access time */
+	 
 	pm_runtime_mark_last_busy(dev);
 
 	return 0;
 
 err_recovery:
-	/* Do not fail to not mess up our PCI device state, the device likely
-	 * lost power (d3cold) and we simply need to reset it from the recovery
-	 * procedure, trigger the recovery asynchronously to prevent system
-	 * suspend exit delaying.
-	 */
+	 
 	queue_work(system_long_wq, &mhi_pdev->recovery_work);
 	pm_runtime_mark_last_busy(dev);
 
@@ -1226,9 +1195,7 @@ static int __maybe_unused mhi_pci_resume(struct device *dev)
 {
 	int ret;
 
-	/* Depending the platform, device may have lost power (d3cold), we need
-	 * to resume it now to check its state and recover when necessary.
-	 */
+	 
 	ret = mhi_pci_runtime_resume(dev);
 	pm_runtime_enable(dev);
 
@@ -1240,11 +1207,7 @@ static int __maybe_unused mhi_pci_freeze(struct device *dev)
 	struct mhi_pci_device *mhi_pdev = dev_get_drvdata(dev);
 	struct mhi_controller *mhi_cntrl = &mhi_pdev->mhi_cntrl;
 
-	/* We want to stop all operations, hibernation does not guarantee that
-	 * device will be in the same state as before freezing, especially if
-	 * the intermediate restore kernel reinitializes MHI device with new
-	 * context.
-	 */
+	 
 	flush_work(&mhi_pdev->recovery_work);
 	if (test_and_clear_bit(MHI_PCI_DEV_STARTED, &mhi_pdev->status)) {
 		mhi_power_down(mhi_cntrl, true);
@@ -1258,7 +1221,7 @@ static int __maybe_unused mhi_pci_restore(struct device *dev)
 {
 	struct mhi_pci_device *mhi_pdev = dev_get_drvdata(dev);
 
-	/* Reinitialize the device */
+	 
 	queue_work(system_long_wq, &mhi_pdev->recovery_work);
 
 	return 0;

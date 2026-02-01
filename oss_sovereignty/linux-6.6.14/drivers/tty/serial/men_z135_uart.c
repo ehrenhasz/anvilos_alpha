@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * MEN 16z135 High Speed UART
- *
- * Copyright (C) 2014 MEN Mikroelektronik GmbH (www.men.de)
- * Author: Johannes Thumshirn <johannes.thumshirn@men.de>
- */
+
+ 
 #define pr_fmt(fmt) KBUILD_MODNAME ":" fmt
 
 #include <linux/kernel.h>
@@ -34,10 +29,10 @@
 
 #define IRQ_ID(x) ((x) & 0x1f)
 
-#define MEN_Z135_IER_RXCIEN BIT(0)		/* RX Space IRQ */
-#define MEN_Z135_IER_TXCIEN BIT(1)		/* TX Space IRQ */
-#define MEN_Z135_IER_RLSIEN BIT(2)		/* Receiver Line Status IRQ */
-#define MEN_Z135_IER_MSIEN  BIT(3)		/* Modem Status IRQ */
+#define MEN_Z135_IER_RXCIEN BIT(0)		 
+#define MEN_Z135_IER_TXCIEN BIT(1)		 
+#define MEN_Z135_IER_RLSIEN BIT(2)		 
+#define MEN_Z135_IER_MSIEN  BIT(3)		 
 #define MEN_Z135_ALL_IRQS (MEN_Z135_IER_RXCIEN		\
 				| MEN_Z135_IER_RLSIEN	\
 				| MEN_Z135_IER_MSIEN	\
@@ -59,22 +54,22 @@
 #define MEN_Z135_MSR_RI		BIT(6)
 #define MEN_Z135_MSR_DCD	BIT(7)
 
-#define MEN_Z135_LCR_SHIFT 8	/* LCR shift mask */
+#define MEN_Z135_LCR_SHIFT 8	 
 
-#define MEN_Z135_WL5 0		/* CS5 */
-#define MEN_Z135_WL6 1		/* CS6 */
-#define MEN_Z135_WL7 2		/* CS7 */
-#define MEN_Z135_WL8 3		/* CS8 */
+#define MEN_Z135_WL5 0		 
+#define MEN_Z135_WL6 1		 
+#define MEN_Z135_WL7 2		 
+#define MEN_Z135_WL8 3		 
 
-#define MEN_Z135_STB_SHIFT 2	/* Stopbits */
+#define MEN_Z135_STB_SHIFT 2	 
 #define MEN_Z135_NSTB1 0
 #define MEN_Z135_NSTB2 1
 
-#define MEN_Z135_PEN_SHIFT 3	/* Parity enable */
+#define MEN_Z135_PEN_SHIFT 3	 
 #define MEN_Z135_PAR_DIS 0
 #define MEN_Z135_PAR_ENA 1
 
-#define MEN_Z135_PTY_SHIFT 4	/* Parity type */
+#define MEN_Z135_PTY_SHIFT 4	 
 #define MEN_Z135_PTY_ODD 0
 #define MEN_Z135_PTY_EVN 1
 
@@ -127,12 +122,7 @@ struct men_z135_port {
 };
 #define to_men_z135(port) container_of((port), struct men_z135_port, port)
 
-/**
- * men_z135_reg_set() - Set value in register
- * @uart: The UART port
- * @addr: Register address
- * @val: value to set
- */
+ 
 static inline void men_z135_reg_set(struct men_z135_port *uart,
 				u32 addr, u32 val)
 {
@@ -149,12 +139,7 @@ static inline void men_z135_reg_set(struct men_z135_port *uart,
 	spin_unlock_irqrestore(&uart->lock, flags);
 }
 
-/**
- * men_z135_reg_clr() - Unset value in register
- * @uart: The UART port
- * @addr: Register address
- * @val: value to clear
- */
+ 
 static void men_z135_reg_clr(struct men_z135_port *uart,
 				u32 addr, u32 val)
 {
@@ -171,13 +156,7 @@ static void men_z135_reg_clr(struct men_z135_port *uart,
 	spin_unlock_irqrestore(&uart->lock, flags);
 }
 
-/**
- * men_z135_handle_modem_status() - Handle change of modem status
- * @uart: The UART port
- *
- * Handle change of modem status register. This is done by reading the "delta"
- * versions of DCD (Data Carrier Detect) and CTS (Clear To Send).
- */
+ 
 static void men_z135_handle_modem_status(struct men_z135_port *uart)
 {
 	u8 msr;
@@ -211,12 +190,7 @@ static void men_z135_handle_lsr(struct men_z135_port *uart)
 	}
 }
 
-/**
- * get_rx_fifo_content() - Get the number of bytes in RX FIFO
- * @uart: The UART port
- *
- * Read RXC register from hardware and return current FIFO fill size.
- */
+ 
 static u16 get_rx_fifo_content(struct men_z135_port *uart)
 {
 	struct uart_port *port = &uart->port;
@@ -234,12 +208,7 @@ static u16 get_rx_fifo_content(struct men_z135_port *uart)
 	return rxc;
 }
 
-/**
- * men_z135_handle_rx() - RX tasklet routine
- * @uart: Pointer to struct men_z135_port
- *
- * Copy from RX FIFO and acknowledge number of bytes copied.
- */
+ 
 static void men_z135_handle_rx(struct men_z135_port *uart)
 {
 	struct uart_port *port = &uart->port;
@@ -253,9 +222,7 @@ static void men_z135_handle_rx(struct men_z135_port *uart)
 	if (size == 0)
 		return;
 
-	/* Avoid accidently accessing TX FIFO instead of RX FIFO. Last
-	 * longword in RX FIFO cannot be read.(0x004-0x3FF)
-	 */
+	 
 	if (size > MEN_Z135_FIFO_WATERMARK)
 		size = MEN_Z135_FIFO_WATERMARK;
 
@@ -269,7 +236,7 @@ static void men_z135_handle_rx(struct men_z135_port *uart)
 		return;
 
 	memcpy_fromio(uart->rxbuf, port->membase + MEN_Z135_RX_RAM, room);
-	/* Be sure to first copy all data and then acknowledge it */
+	 
 	mb();
 	iowrite32(room, port->membase +  MEN_Z135_RX_CTRL);
 
@@ -285,11 +252,7 @@ static void men_z135_handle_rx(struct men_z135_port *uart)
 
 }
 
-/**
- * men_z135_handle_tx() - TX tasklet routine
- * @uart: Pointer to struct men_z135_port
- *
- */
+ 
 static void men_z135_handle_tx(struct men_z135_port *uart)
 {
 	struct uart_port *port = &uart->port;
@@ -312,7 +275,7 @@ static void men_z135_handle_tx(struct men_z135_port *uart)
 	if (port->x_char)
 		goto out;
 
-	/* calculate bytes to copy */
+	 
 	qlen = uart_circ_chars_pending(xmit);
 	if (qlen <= 0)
 		goto out;
@@ -332,9 +295,7 @@ static void men_z135_handle_tx(struct men_z135_port *uart)
 		goto irq_en;
 	}
 
-	/* if we're not aligned, it's better to copy only 1 or 2 bytes and
-	 * then the rest.
-	 */
+	 
 	if (align && qlen >= 3 && BYTES_TO_ALIGN(wptr))
 		n = 4 - BYTES_TO_ALIGN(wptr);
 	else if (qlen > txfree)
@@ -369,16 +330,7 @@ out:
 
 }
 
-/**
- * men_z135_intr() - Handle legacy IRQs
- * @irq: The IRQ number
- * @data: Pointer to UART port
- *
- * Check IIR register to find the cause of the interrupt and handle it.
- * It is possible that multiple interrupts reason bits are set and reading
- * the IIR is a destructive read, so we always need to check for all possible
- * interrupts and handle them.
- */
+ 
 static irqreturn_t men_z135_intr(int irq, void *data)
 {
 	struct men_z135_port *uart = (struct men_z135_port *)data;
@@ -393,7 +345,7 @@ static irqreturn_t men_z135_intr(int irq, void *data)
 		goto out;
 
 	spin_lock(&port->lock);
-	/* It's save to write to IIR[7:6] RXC[9:8] */
+	 
 	iowrite8(irq_id, port->membase + MEN_Z135_STAT_REG);
 
 	if (irq_id & MEN_Z135_IRQ_ID_RLS) {
@@ -423,13 +375,7 @@ out:
 	return IRQ_RETVAL(handled);
 }
 
-/**
- * men_z135_request_irq() - Request IRQ for 16z135 core
- * @uart: z135 private uart port structure
- *
- * Request an IRQ for 16z135 to use. First try using MSI, if it fails
- * fall back to using legacy interrupts.
- */
+ 
 static int men_z135_request_irq(struct men_z135_port *uart)
 {
 	struct device *dev = &uart->mdev->dev;
@@ -444,13 +390,7 @@ static int men_z135_request_irq(struct men_z135_port *uart)
 	return err;
 }
 
-/**
- * men_z135_tx_empty() - Handle tx_empty call
- * @port: The UART port
- *
- * This function tests whether the TX FIFO and shifter for the port
- * described by @port is empty.
- */
+ 
 static unsigned int men_z135_tx_empty(struct uart_port *port)
 {
 	u32 wptr;
@@ -465,14 +405,7 @@ static unsigned int men_z135_tx_empty(struct uart_port *port)
 		return 0;
 }
 
-/**
- * men_z135_set_mctrl() - Set modem control lines
- * @port: The UART port
- * @mctrl: The modem control lines
- *
- * This function sets the modem control lines for a port described by @port
- * to the state described by @mctrl
- */
+ 
 static void men_z135_set_mctrl(struct uart_port *port, unsigned int mctrl)
 {
 	u32 old;
@@ -508,12 +441,7 @@ static void men_z135_set_mctrl(struct uart_port *port, unsigned int mctrl)
 		iowrite32(conf_reg, port->membase + MEN_Z135_CONF_REG);
 }
 
-/**
- * men_z135_get_mctrl() - Get modem control lines
- * @port: The UART port
- *
- * Retruns the current state of modem control inputs.
- */
+ 
 static unsigned int men_z135_get_mctrl(struct uart_port *port)
 {
 	unsigned int mctrl = 0;
@@ -533,14 +461,7 @@ static unsigned int men_z135_get_mctrl(struct uart_port *port)
 	return mctrl;
 }
 
-/**
- * men_z135_stop_tx() - Stop transmitting characters
- * @port: The UART port
- *
- * Stop transmitting characters. This might be due to CTS line becomming
- * inactive or the tty layer indicating we want to stop transmission due to
- * an XOFF character.
- */
+ 
 static void men_z135_stop_tx(struct uart_port *port)
 {
 	struct men_z135_port *uart = to_men_z135(port);
@@ -548,12 +469,7 @@ static void men_z135_stop_tx(struct uart_port *port)
 	men_z135_reg_clr(uart, MEN_Z135_CONF_REG, MEN_Z135_IER_TXCIEN);
 }
 
-/*
- * men_z135_disable_ms() - Disable Modem Status
- * port: The UART port
- *
- * Enable Modem Status IRQ.
- */
+ 
 static void men_z135_disable_ms(struct uart_port *port)
 {
 	struct men_z135_port *uart = to_men_z135(port);
@@ -561,13 +477,7 @@ static void men_z135_disable_ms(struct uart_port *port)
 	men_z135_reg_clr(uart, MEN_Z135_CONF_REG, MEN_Z135_IER_MSIEN);
 }
 
-/**
- * men_z135_start_tx() - Start transmitting characters
- * @port: The UART port
- *
- * Start transmitting character. This actually doesn't transmit anything, but
- * fires off the TX tasklet.
- */
+ 
 static void men_z135_start_tx(struct uart_port *port)
 {
 	struct men_z135_port *uart = to_men_z135(port);
@@ -578,12 +488,7 @@ static void men_z135_start_tx(struct uart_port *port)
 	men_z135_handle_tx(uart);
 }
 
-/**
- * men_z135_stop_rx() - Stop receiving characters
- * @port: The UART port
- *
- * Stop receiving characters; the port is in the process of being closed.
- */
+ 
 static void men_z135_stop_rx(struct uart_port *port)
 {
 	struct men_z135_port *uart = to_men_z135(port);
@@ -591,12 +496,7 @@ static void men_z135_stop_rx(struct uart_port *port)
 	men_z135_reg_clr(uart, MEN_Z135_CONF_REG, MEN_Z135_IER_RXCIEN);
 }
 
-/**
- * men_z135_enable_ms() - Enable Modem Status
- * @port: the port
- *
- * Enable Modem Status IRQ.
- */
+ 
 static void men_z135_enable_ms(struct uart_port *port)
 {
 	struct men_z135_port *uart = to_men_z135(port);
@@ -616,7 +516,7 @@ static int men_z135_startup(struct uart_port *port)
 
 	conf_reg = ioread32(port->membase + MEN_Z135_CONF_REG);
 
-	/* Activate all but TX space available IRQ */
+	 
 	conf_reg |= MEN_Z135_ALL_IRQS & ~MEN_Z135_IER_TXCIEN;
 	conf_reg &= ~(0xff << 16);
 	conf_reg |= (txlvl << 16);
@@ -656,7 +556,7 @@ static void men_z135_set_termios(struct uart_port *port,
 	conf_reg = ioread32(port->membase + MEN_Z135_CONF_REG);
 	lcr = LCR(conf_reg);
 
-	/* byte size */
+	 
 	switch (termios->c_cflag & CSIZE) {
 	case CS5:
 		lcr |= MEN_Z135_WL5;
@@ -672,11 +572,11 @@ static void men_z135_set_termios(struct uart_port *port,
 		break;
 	}
 
-	/* stop bits */
+	 
 	if (termios->c_cflag & CSTOPB)
 		lcr |= MEN_Z135_NSTB2 << MEN_Z135_STB_SHIFT;
 
-	/* parity */
+	 
 	if (termios->c_cflag & PARENB) {
 		lcr |= MEN_Z135_PAR_ENA << MEN_Z135_PEN_SHIFT;
 
@@ -697,7 +597,7 @@ static void men_z135_set_termios(struct uart_port *port,
 		uart->automode = false;
 	}
 
-	termios->c_cflag &= ~CMSPAR; /* Mark/Space parity is not supported */
+	termios->c_cflag &= ~CMSPAR;  
 
 	conf_reg |= lcr << MEN_Z135_LCR_SHIFT;
 	iowrite32(conf_reg, port->membase + MEN_Z135_CONF_REG);
@@ -795,14 +695,7 @@ static struct uart_driver men_z135_driver = {
 	.nr = MEN_Z135_MAX_PORTS,
 };
 
-/**
- * men_z135_probe() - Probe a z135 instance
- * @mdev: The MCB device
- * @id: The MCB device ID
- *
- * men_z135_probe does the basic setup of hardware resources and registers the
- * new uart port to the tty layer.
- */
+ 
 static int men_z135_probe(struct mcb_device *mdev,
 			const struct mcb_device_id *id)
 {
@@ -853,11 +746,7 @@ err:
 	return err;
 }
 
-/**
- * men_z135_remove() - Remove a z135 instance from the system
- *
- * @mdev: The MCB device
- */
+ 
 static void men_z135_remove(struct mcb_device *mdev)
 {
 	struct men_z135_port *uart = mcb_get_drvdata(mdev);
@@ -883,12 +772,7 @@ static struct mcb_driver mcb_driver = {
 	.id_table = men_z135_ids,
 };
 
-/**
- * men_z135_init() - Driver Registration Routine
- *
- * men_z135_init is the first routine called when the driver is loaded. All it
- * does is register with the legacy MEN Chameleon subsystem.
- */
+ 
 static int __init men_z135_init(void)
 {
 	int err;
@@ -910,11 +794,7 @@ static int __init men_z135_init(void)
 }
 module_init(men_z135_init);
 
-/**
- * men_z135_exit() - Driver Exit Routine
- *
- * men_z135_exit is called just before the driver is removed from memory.
- */
+ 
 static void __exit men_z135_exit(void)
 {
 	mcb_unregister_driver(&mcb_driver);

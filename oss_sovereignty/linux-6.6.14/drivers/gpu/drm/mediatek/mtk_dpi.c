@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2014 MediaTek Inc.
- * Author: Jie Qiu <jie.qiu@mediatek.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/component.h>
@@ -116,28 +113,7 @@ struct mtk_dpi_yc_limit {
 	u16 c_bottom;
 };
 
-/**
- * struct mtk_dpi_conf - Configuration of mediatek dpi.
- * @cal_factor: Callback function to calculate factor value.
- * @reg_h_fre_con: Register address of frequency control.
- * @max_clock_khz: Max clock frequency supported for this SoCs in khz units.
- * @edge_sel_en: Enable of edge selection.
- * @output_fmts: Array of supported output formats.
- * @num_output_fmts: Quantity of supported output formats.
- * @is_ck_de_pol: Support CK/DE polarity.
- * @swap_input_support: Support input swap function.
- * @support_direct_pin: IP supports direct connection to dpi panels.
- * @input_2pixel: Input pixel of dp_intf is 2 pixel per round, so enable this
- *		  config to enable this feature.
- * @dimension_mask: Mask used for HWIDTH, HPORCH, VSYNC_WIDTH and VSYNC_PORCH
- *		    (no shift).
- * @hvsize_mask: Mask of HSIZE and VSIZE mask (no shift).
- * @channel_swap_shift: Shift value of channel swap.
- * @yuv422_en_bit: Enable bit of yuv422.
- * @csc_enable_bit: Enable bit of CSC.
- * @pixels_per_iter: Quantity of transferred pixels per iteration.
- * @edge_cfg_in_mmsys: If the edge configuration for DPI's output needs to be set in MMSYS.
- */
+ 
 struct mtk_dpi_conf {
 	unsigned int (*cal_factor)(int clock);
 	u32 reg_h_fre_con;
@@ -428,10 +404,7 @@ static void mtk_dpi_config_color_format(struct mtk_dpi *dpi,
 		mtk_dpi_config_yuv422_enable(dpi, true);
 		mtk_dpi_config_csc_enable(dpi, true);
 
-		/*
-		 * If height is smaller than 720, we need to use RGB_TO_BT601
-		 * to transfer to yuv422. Otherwise, we use RGB_TO_JPEG.
-		 */
+		 
 		mtk_dpi_mask(dpi, DPI_MATRIX_SET, dpi->mode.hdisplay <= 720 ?
 			     MATRIX_SEL_RGB_TO_BT601 : MATRIX_SEL_RGB_TO_JPEG,
 			     INT_MATRIX_SEL_MASK);
@@ -515,7 +488,7 @@ static int mtk_dpi_set_display_mode(struct mtk_dpi *dpi,
 	unsigned long pll_rate;
 	unsigned int factor;
 
-	/* let pll_rate can fix the valid range of tvdpll (1G~2GHz) */
+	 
 	factor = dpi->conf->cal_factor(mode->clock);
 	drm_display_mode_to_videomode(mode, &vm);
 	pll_rate = vm.pixelclock * factor;
@@ -526,11 +499,7 @@ static int mtk_dpi_set_display_mode(struct mtk_dpi *dpi,
 	clk_set_rate(dpi->tvd_clk, pll_rate);
 	pll_rate = clk_get_rate(dpi->tvd_clk);
 
-	/*
-	 * Depending on the IP version, we may output a different amount of
-	 * pixels for each iteration: divide the clock by this number and
-	 * adjust the display porches accordingly.
-	 */
+	 
 	vm.pixelclock = pll_rate / factor;
 	vm.pixelclock /= dpi->conf->pixels_per_iter;
 
@@ -553,11 +522,7 @@ static int mtk_dpi_set_display_mode(struct mtk_dpi *dpi,
 	dpi_pol.vsync_pol = vm.flags & DISPLAY_FLAGS_VSYNC_HIGH ?
 			    MTK_DPI_POLARITY_FALLING : MTK_DPI_POLARITY_RISING;
 
-	/*
-	 * Depending on the IP version, we may output a different amount of
-	 * pixels for each iteration: divide the clock by this number and
-	 * adjust the display porches accordingly.
-	 */
+	 
 	hsync.sync_width = vm.hsync_len / dpi->conf->pixels_per_iter;
 	hsync.back_porch = vm.hback_porch / dpi->conf->pixels_per_iter;
 	hsync.front_porch = vm.hfront_porch / dpi->conf->pixels_per_iter;
@@ -1083,7 +1048,7 @@ static const struct of_device_id mtk_dpi_of_ids[] = {
 	{ .compatible = "mediatek,mt8188-dp-intf", .data = &mt8195_dpintf_conf },
 	{ .compatible = "mediatek,mt8192-dpi", .data = &mt8192_conf },
 	{ .compatible = "mediatek,mt8195-dp-intf", .data = &mt8195_dpintf_conf },
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, mtk_dpi_of_ids);
 

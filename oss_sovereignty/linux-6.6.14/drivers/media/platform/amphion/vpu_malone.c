@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright 2020-2021 NXP
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/interconnect.h>
@@ -46,7 +44,7 @@
 
 #define CONFIG_SET(val, cfg, pos, mask)		\
 		(*(cfg) |= (((val) << (pos)) & (mask)))
-//x means source data , y means destination data
+
 #define STREAM_CONFIG_FORMAT_SET(x, y)		CONFIG_SET(x, y, 0, 0x0000000F)
 #define STREAM_CONFIG_STRBUFIDX_SET(x, y)	CONFIG_SET(x, y, 8, 0x00000300)
 #define STREAM_CONFIG_NOSEQ_SET(x, y)		CONFIG_SET(x, y, 10, 0x00000400)
@@ -267,9 +265,9 @@ struct malone_jpg_params {
 	u32 vert_scale_factor;
 	u32 rotation_mode;
 	u32 rgb_mode;
-	u32 chunk_mode; /* 0 ~ 1 */
-	u32 last_chunk; /* 0 ~ 1 */
-	u32 chunk_rows; /* 0 ~ 255 */
+	u32 chunk_mode;  
+	u32 last_chunk;  
+	u32 chunk_rows;  
 	u32 num_bytes;
 	u32 jpg_crop_x;
 	u32 jpg_crop_y;
@@ -527,14 +525,14 @@ int vpu_malone_get_stream_buffer_desc(struct vpu_shared_addr *shared,
 
 static void vpu_malone_update_wptr(struct vpu_malone_str_buffer __iomem *str_buf, u32 wptr)
 {
-	/*update wptr after data is written*/
+	 
 	mb();
 	writel(wptr, &str_buf->wptr);
 }
 
 static void vpu_malone_update_rptr(struct vpu_malone_str_buffer __iomem *str_buf, u32 rptr)
 {
-	/*update rptr after data is read*/
+	 
 	mb();
 	writel(rptr, &str_buf->rptr);
 }
@@ -653,9 +651,9 @@ static int vpu_malone_set_params(struct vpu_shared_addr *shared,
 	vpu_malone_set_stream_cfg(shared, instance, malone_format);
 
 	if (malone_format == MALONE_FMT_JPG) {
-		//1:JPGD_MJPEG_MODE_A; 2:JPGD_MJPEG_MODE_B
+		
 		hc->jpg[instance].jpg_mjpeg_mode = 1;
-		//0: JPGD_MJPEG_PROGRESSIVE
+		
 		hc->jpg[instance].jpg_mjpeg_interlaced = 0;
 	}
 
@@ -761,12 +759,7 @@ static void vpu_malone_pack_fs_alloc(struct vpu_rpc_event *pkt,
 	pkt->data[0] = fs->id | (fs->tag << 24);
 	pkt->data[1] = fs->luma_addr;
 	if (fs->type == MEM_RES_FRAME) {
-		/*
-		 * if luma_addr equal to chroma_addr,
-		 * means luma(plane[0]) and chromau(plane[1]) used the
-		 * same fd -- usage of NXP codec2. Need to manually
-		 * offset chroma addr.
-		 */
+		 
 		if (fs->luma_addr == fs->chroma_addr)
 			fs->chroma_addr = fs->luma_addr + fs->luma_size;
 		pkt->data[2] = fs->luma_addr + fs->luma_size / 2;
@@ -1139,7 +1132,7 @@ static void set_payload_hdr(u8 *dst, u32 scd_type, u32 codec_id,
 			    u32 buffer_size, u32 width, u32 height)
 {
 	unsigned int payload_size;
-	/* payload_size = buffer_size + itself_size(16) - start_code(4) */
+	 
 	payload_size = buffer_size + 12;
 
 	dst[0] = 0x00;
@@ -1147,22 +1140,22 @@ static void set_payload_hdr(u8 *dst, u32 scd_type, u32 codec_id,
 	dst[2] = 0x01;
 	dst[3] = scd_type;
 
-	/* length */
+	 
 	dst[4] = ((payload_size >> 16) & 0xff);
 	dst[5] = ((payload_size >> 8) & 0xff);
 	dst[6] = 0x4e;
 	dst[7] = ((payload_size >> 0) & 0xff);
 
-	/* Codec ID and Version */
+	 
 	dst[8] = codec_id;
 	dst[9] = MALONE_CODEC_VERSION_ID;
 
-	/* width */
+	 
 	dst[10] = ((width >> 8) & 0xff);
 	dst[11] = ((width >> 0) & 0xff);
 	dst[12] = 0x58;
 
-	/* height */
+	 
 	dst[13] = ((height >> 8) & 0xff);
 	dst[14] = ((height >> 0) & 0xff);
 	dst[15] = 0x50;
@@ -1170,53 +1163,49 @@ static void set_payload_hdr(u8 *dst, u32 scd_type, u32 codec_id,
 
 static void set_vp8_ivf_seqhdr(u8 *dst, u32 width, u32 height)
 {
-	/* 0-3byte signature "DKIF" */
+	 
 	dst[0] = 0x44;
 	dst[1] = 0x4b;
 	dst[2] = 0x49;
 	dst[3] = 0x46;
-	/* 4-5byte version: should be 0*/
+	 
 	dst[4] = 0x00;
 	dst[5] = 0x00;
-	/* 6-7 length of Header */
+	 
 	dst[6] = MALONE_VP8_IVF_SEQ_HEADER_LEN;
 	dst[7] = MALONE_VP8_IVF_SEQ_HEADER_LEN >> 8;
-	/* 8-11 VP8 fourcc */
+	 
 	dst[8] = 0x56;
 	dst[9] = 0x50;
 	dst[10] = 0x38;
 	dst[11] = 0x30;
-	/* 12-13 width in pixels */
+	 
 	dst[12] = width;
 	dst[13] = width >> 8;
-	/* 14-15 height in pixels */
+	 
 	dst[14] = height;
 	dst[15] = height >> 8;
-	/* 16-19 frame rate */
+	 
 	dst[16] = 0xe8;
 	dst[17] = 0x03;
 	dst[18] = 0x00;
 	dst[19] = 0x00;
-	/* 20-23 time scale */
+	 
 	dst[20] = 0x01;
 	dst[21] = 0x00;
 	dst[22] = 0x00;
 	dst[23] = 0x00;
-	/* 24-27 number frames */
+	 
 	dst[24] = 0xdf;
 	dst[25] = 0xf9;
 	dst[26] = 0x09;
 	dst[27] = 0x00;
-	/* 28-31 reserved */
+	 
 }
 
 static void set_vp8_ivf_pichdr(u8 *dst, u32 frame_size)
 {
-	/*
-	 * firmware just parse 64-bit timestamp(8 bytes).
-	 * As not transfer timestamp to firmware, use default value(ZERO).
-	 * No need to do anything here
-	 */
+	 
 }
 
 static void set_vc1_rcv_seqhdr(u8 *dst, u8 *src, u32 width, u32 height)
@@ -1224,31 +1213,31 @@ static void set_vc1_rcv_seqhdr(u8 *dst, u8 *src, u32 width, u32 height)
 	u32 frames = MALONE_VC1_RCV_NUM_FRAMES;
 	u32 ext_data_size = MALONE_VC1_RCV_SEQ_EXT_DATA_SIZE;
 
-	/* 0-2 Number of frames, used default value 0xFF */
+	 
 	dst[0] = frames;
 	dst[1] = frames >> 8;
 	dst[2] = frames >> 16;
 
-	/* 3 RCV version, used V1 */
+	 
 	dst[3] = MALONE_VC1_RCV_CODEC_V1_VERSION;
 
-	/* 4-7 extension data size */
+	 
 	dst[4] = ext_data_size;
 	dst[5] = ext_data_size >> 8;
 	dst[6] = ext_data_size >> 16;
 	dst[7] = ext_data_size >> 24;
-	/* 8-11 extension data */
+	 
 	dst[8] = src[0];
 	dst[9] = src[1];
 	dst[10] = src[2];
 	dst[11] = src[3];
 
-	/* height */
+	 
 	dst[12] = height;
 	dst[13] = (height >> 8) & 0xff;
 	dst[14] = (height >> 16) & 0xff;
 	dst[15] = (height >> 24) & 0xff;
-	/* width */
+	 
 	dst[16] = width;
 	dst[17] = (width >> 8) & 0xff;
 	dst[18] = (width >> 16) & 0xff;
@@ -1265,7 +1254,7 @@ static void set_vc1_rcv_pichdr(u8 *dst, u32 buffer_size)
 
 static void create_vc1_nal_pichdr(u8 *dst)
 {
-	/* need insert nal header: special ID */
+	 
 	dst[0] = 0x0;
 	dst[1] = 0x0;
 	dst[2] = 0x01;
@@ -1461,7 +1450,7 @@ static int vpu_malone_insert_scode_spk_pic(struct malone_scode_t *scode)
 
 static const struct malone_scode_handler scode_handlers[] = {
 	{
-		/* fix me, need to swap return operation after gstreamer swap */
+		 
 		.pixelformat = V4L2_PIX_FMT_VC1_ANNEX_L,
 		.insert_scode_seq = vpu_malone_insert_scode_vc1_l_seq,
 		.insert_scode_pic = vpu_malone_insert_scode_vc1_l_pic,
@@ -1534,7 +1523,7 @@ static int vpu_malone_input_frame_data(struct vpu_malone_str_buffer __iomem *str
 	int size = 0;
 	int ret = 0;
 
-	/*add scode: SCODE_SEQUENCE, SCODE_PICTURE, SCODE_SLICE*/
+	 
 	scode.inst = inst;
 	scode.vb = vb;
 	scode.wptr = wptr;
@@ -1628,11 +1617,7 @@ int vpu_malone_input_frame(struct vpu_shared_addr *shared,
 		return ret;
 	size = ret;
 
-	/*
-	 * if buffer only contain codec data, and the timestamp is invalid,
-	 * don't put the invalid timestamp to resync
-	 * merge the data to next frame
-	 */
+	 
 	vbuf = to_vb2_v4l2_buffer(vb);
 	if (vpu_vb_is_codecconfig(vbuf)) {
 		inst->extra_size += size;

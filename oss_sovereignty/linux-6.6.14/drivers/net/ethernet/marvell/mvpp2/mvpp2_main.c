@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Driver for Marvell PPv2 network controller for Armada 375 SoC.
- *
- * Copyright (C) 2014 Marvell
- *
- * Marcin Wojtas <mw@semihalf.com>
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/kernel.h>
@@ -55,12 +49,10 @@ static struct {
 	int buf_num;
 } mvpp2_pools[MVPP2_BM_POOLS_NUM];
 
-/* The prototype is added here to be used in start_dev when using ACPI. This
- * will be removed once phylink is used for all modes (dt+ACPI).
- */
+ 
 static void mvpp2_acpi_start(struct mvpp2_port *port);
 
-/* Queue modes */
+ 
 #define MVPP2_QDIST_SINGLE_MODE	0
 #define MVPP2_QDIST_MULTI_MODE	1
 
@@ -69,7 +61,7 @@ static int queue_mode = MVPP2_QDIST_MULTI_MODE;
 module_param(queue_mode, int, 0444);
 MODULE_PARM_DESC(queue_mode, "Set queue_mode (single=0, multi=1)");
 
-/* Utility/helper methods */
+ 
 
 void mvpp2_write(struct mvpp2 *priv, u32 offset, u32 data)
 {
@@ -106,7 +98,7 @@ mvpp2_create_page_pool(struct device *dev, int num, int len,
 		       enum dma_data_direction dma_dir)
 {
 	struct page_pool_params pp_params = {
-		/* internal DMA mapping in page_pool */
+		 
 		.flags = PP_FLAG_DMA_MAP | PP_FLAG_DMA_SYNC_DEV,
 		.pool_size = num,
 		.nid = NUMA_NO_NODE,
@@ -119,42 +111,7 @@ mvpp2_create_page_pool(struct device *dev, int num, int len,
 	return page_pool_create(&pp_params);
 }
 
-/* These accessors should be used to access:
- *
- * - per-thread registers, where each thread has its own copy of the
- *   register.
- *
- *   MVPP2_BM_VIRT_ALLOC_REG
- *   MVPP2_BM_ADDR_HIGH_ALLOC
- *   MVPP22_BM_ADDR_HIGH_RLS_REG
- *   MVPP2_BM_VIRT_RLS_REG
- *   MVPP2_ISR_RX_TX_CAUSE_REG
- *   MVPP2_ISR_RX_TX_MASK_REG
- *   MVPP2_TXQ_NUM_REG
- *   MVPP2_AGGR_TXQ_UPDATE_REG
- *   MVPP2_TXQ_RSVD_REQ_REG
- *   MVPP2_TXQ_RSVD_RSLT_REG
- *   MVPP2_TXQ_SENT_REG
- *   MVPP2_RXQ_NUM_REG
- *
- * - global registers that must be accessed through a specific thread
- *   window, because they are related to an access to a per-thread
- *   register
- *
- *   MVPP2_BM_PHY_ALLOC_REG    (related to MVPP2_BM_VIRT_ALLOC_REG)
- *   MVPP2_BM_PHY_RLS_REG      (related to MVPP2_BM_VIRT_RLS_REG)
- *   MVPP2_RXQ_THRESH_REG      (related to MVPP2_RXQ_NUM_REG)
- *   MVPP2_RXQ_DESC_ADDR_REG   (related to MVPP2_RXQ_NUM_REG)
- *   MVPP2_RXQ_DESC_SIZE_REG   (related to MVPP2_RXQ_NUM_REG)
- *   MVPP2_RXQ_INDEX_REG       (related to MVPP2_RXQ_NUM_REG)
- *   MVPP2_TXQ_PENDING_REG     (related to MVPP2_TXQ_NUM_REG)
- *   MVPP2_TXQ_DESC_ADDR_REG   (related to MVPP2_TXQ_NUM_REG)
- *   MVPP2_TXQ_DESC_SIZE_REG   (related to MVPP2_TXQ_NUM_REG)
- *   MVPP2_TXQ_INDEX_REG       (related to MVPP2_TXQ_NUM_REG)
- *   MVPP2_TXQ_PENDING_REG     (related to MVPP2_TXQ_NUM_REG)
- *   MVPP2_TXQ_PREF_BUF_REG    (related to MVPP2_TXQ_NUM_REG)
- *   MVPP2_TXQ_PREF_BUF_REG    (related to MVPP2_TXQ_NUM_REG)
- */
+ 
 static void mvpp2_thread_write(struct mvpp2 *priv, unsigned int thread,
 			       u32 offset, u32 data)
 {
@@ -324,7 +281,7 @@ static void mvpp2_txq_inc_put(struct mvpp2_port *port,
 		txq_pcpu->txq_put_index = 0;
 }
 
-/* Get number of maximum RXQ */
+ 
 static int mvpp2_get_nrxqs(struct mvpp2 *priv)
 {
 	unsigned int nrxqs;
@@ -332,11 +289,7 @@ static int mvpp2_get_nrxqs(struct mvpp2 *priv)
 	if (priv->hw_version >= MVPP22 && queue_mode == MVPP2_QDIST_SINGLE_MODE)
 		return 1;
 
-	/* According to the PPv2.2 datasheet and our experiments on
-	 * PPv2.1, RX queues have an allocation granularity of 4 (when
-	 * more than a single one on PPv2.2).
-	 * Round up to nearest multiple of 4.
-	 */
+	 
 	nrxqs = (num_possible_cpus() + 3) & ~0x3;
 	if (nrxqs > MVPP2_PORT_MAX_RXQ)
 		nrxqs = MVPP2_PORT_MAX_RXQ;
@@ -344,19 +297,19 @@ static int mvpp2_get_nrxqs(struct mvpp2 *priv)
 	return nrxqs;
 }
 
-/* Get number of physical egress port */
+ 
 static inline int mvpp2_egress_port(struct mvpp2_port *port)
 {
 	return MVPP2_MAX_TCONT + port->id;
 }
 
-/* Get number of physical TXQ */
+ 
 static inline int mvpp2_txq_phys(int port, int txq)
 {
 	return (MVPP2_MAX_TCONT + port) * MVPP2_MAX_TXQ + txq;
 }
 
-/* Returns a struct page if page_pool is set, otherwise a buffer */
+ 
 static void *mvpp2_frag_alloc(const struct mvpp2_bm_pool *pool,
 			      struct page_pool *page_pool)
 {
@@ -380,23 +333,19 @@ static void mvpp2_frag_free(const struct mvpp2_bm_pool *pool,
 		kfree(data);
 }
 
-/* Buffer Manager configuration routines */
+ 
 
-/* Create pool */
+ 
 static int mvpp2_bm_pool_create(struct device *dev, struct mvpp2 *priv,
 				struct mvpp2_bm_pool *bm_pool, int size)
 {
 	u32 val;
 
-	/* Number of buffer pointers must be a multiple of 16, as per
-	 * hardware constraints
-	 */
+	 
 	if (!IS_ALIGNED(size, 16))
 		return -EINVAL;
 
-	/* PPv2.1 needs 8 bytes per buffer pointer, PPv2.2 and PPv2.3 needs 16
-	 * bytes per buffer pointer
-	 */
+	 
 	if (priv->hw_version == MVPP21)
 		bm_pool->size_bytes = 2 * sizeof(u32) * size;
 	else
@@ -427,7 +376,7 @@ static int mvpp2_bm_pool_create(struct device *dev, struct mvpp2 *priv,
 	val &= ~MVPP2_BM_LOW_THRESH_MASK;
 	val &= ~MVPP2_BM_HIGH_THRESH_MASK;
 
-	/* Set 8 Pools BPPI threshold for MVPP23 */
+	 
 	if (priv->hw_version == MVPP23) {
 		val |= MVPP2_BM_LOW_THRESH_VALUE(MVPP23_BM_BPPI_LOW_THRESH);
 		val |= MVPP2_BM_HIGH_THRESH_VALUE(MVPP23_BM_BPPI_HIGH_THRESH);
@@ -445,7 +394,7 @@ static int mvpp2_bm_pool_create(struct device *dev, struct mvpp2 *priv,
 	return 0;
 }
 
-/* Set pool buffer size */
+ 
 static void mvpp2_bm_pool_bufsize_set(struct mvpp2 *priv,
 				      struct mvpp2_bm_pool *bm_pool,
 				      int buf_size)
@@ -488,7 +437,7 @@ static void mvpp2_bm_bufs_get_addrs(struct device *dev, struct mvpp2 *priv,
 	put_cpu();
 }
 
-/* Free all buffers from the pool */
+ 
 static void mvpp2_bm_bufs_free(struct device *dev, struct mvpp2 *priv,
 			       struct mvpp2_bm_pool *bm_pool, int buf_num)
 {
@@ -523,11 +472,11 @@ static void mvpp2_bm_bufs_free(struct device *dev, struct mvpp2 *priv,
 		mvpp2_frag_free(bm_pool, pp, data);
 	}
 
-	/* Update BM driver with number of buffers removed from pool */
+	 
 	bm_pool->buf_num -= i;
 }
 
-/* Check number of buffers in BM pool */
+ 
 static int mvpp2_check_hw_buf_num(struct mvpp2 *priv, struct mvpp2_bm_pool *bm_pool)
 {
 	int buf_num = 0;
@@ -537,14 +486,14 @@ static int mvpp2_check_hw_buf_num(struct mvpp2 *priv, struct mvpp2_bm_pool *bm_p
 	buf_num += mvpp2_read(priv, MVPP2_BM_BPPI_PTRS_NUM_REG(bm_pool->id)) &
 				    MVPP2_BM_BPPI_PTR_NUM_MASK;
 
-	/* HW has one buffer ready which is not reflected in the counters */
+	 
 	if (buf_num)
 		buf_num += 1;
 
 	return buf_num;
 }
 
-/* Cleanup pool */
+ 
 static int mvpp2_bm_pool_destroy(struct device *dev, struct mvpp2 *priv,
 				 struct mvpp2_bm_pool *bm_pool)
 {
@@ -554,7 +503,7 @@ static int mvpp2_bm_pool_destroy(struct device *dev, struct mvpp2 *priv,
 	buf_num = mvpp2_check_hw_buf_num(priv, bm_pool);
 	mvpp2_bm_bufs_free(dev, priv, bm_pool, buf_num);
 
-	/* Check buffer counters after free */
+	 
 	buf_num = mvpp2_check_hw_buf_num(priv, bm_pool);
 	if (buf_num) {
 		WARN(1, "cannot free all buffers in pool %d, buf_num left %d\n",
@@ -585,7 +534,7 @@ static int mvpp2_bm_pools_init(struct device *dev, struct mvpp2 *priv)
 	if (priv->percpu_pools)
 		poolnum = mvpp2_get_nrxqs(priv) * 2;
 
-	/* Create all pools with maximum size */
+	 
 	size = MVPP2_BM_POOL_SIZE_MAX;
 	for (i = 0; i < poolnum; i++) {
 		bm_pool = &priv->bm_pools[i];
@@ -604,7 +553,7 @@ err_unroll_pools:
 	return err;
 }
 
-/* Routine enable PPv23 8 pool mode */
+ 
 static void mvpp23_bm_set_8pool_mode(struct mvpp2 *priv)
 {
 	int val;
@@ -631,7 +580,7 @@ static int mvpp2_bm_init(struct device *dev, struct mvpp2 *priv)
 
 		poolnum = mvpp2_get_nrxqs(priv) * 2;
 		for (i = 0; i < poolnum; i++) {
-			/* the pool in use */
+			 
 			int pn = i / (poolnum / 2);
 
 			priv->page_pool[i] =
@@ -655,13 +604,13 @@ static int mvpp2_bm_init(struct device *dev, struct mvpp2 *priv)
 		 priv->percpu_pools ? "per-cpu" : "shared");
 
 	for (i = 0; i < poolnum; i++) {
-		/* Mask BM all interrupts */
+		 
 		mvpp2_write(priv, MVPP2_BM_INTR_MASK_REG(i), 0);
-		/* Clear BM cause register */
+		 
 		mvpp2_write(priv, MVPP2_BM_INTR_CAUSE_REG(i), 0);
 	}
 
-	/* Allocate and initialize BM pools */
+	 
 	priv->bm_pools = devm_kcalloc(dev, poolnum,
 				      sizeof(*priv->bm_pools), GFP_KERNEL);
 	if (!priv->bm_pools)
@@ -678,27 +627,27 @@ static int mvpp2_bm_init(struct device *dev, struct mvpp2 *priv)
 
 static void mvpp2_setup_bm_pool(void)
 {
-	/* Short pool */
+	 
 	mvpp2_pools[MVPP2_BM_SHORT].buf_num  = MVPP2_BM_SHORT_BUF_NUM;
 	mvpp2_pools[MVPP2_BM_SHORT].pkt_size = MVPP2_BM_SHORT_PKT_SIZE;
 
-	/* Long pool */
+	 
 	mvpp2_pools[MVPP2_BM_LONG].buf_num  = MVPP2_BM_LONG_BUF_NUM;
 	mvpp2_pools[MVPP2_BM_LONG].pkt_size = MVPP2_BM_LONG_PKT_SIZE;
 
-	/* Jumbo pool */
+	 
 	mvpp2_pools[MVPP2_BM_JUMBO].buf_num  = MVPP2_BM_JUMBO_BUF_NUM;
 	mvpp2_pools[MVPP2_BM_JUMBO].pkt_size = MVPP2_BM_JUMBO_PKT_SIZE;
 }
 
-/* Attach long pool to rxq */
+ 
 static void mvpp2_rxq_long_pool_set(struct mvpp2_port *port,
 				    int lrxq, int long_pool)
 {
 	u32 val, mask;
 	int prxq;
 
-	/* Get queue physical ID */
+	 
 	prxq = port->rxqs[lrxq]->id;
 
 	if (port->priv->hw_version == MVPP21)
@@ -712,14 +661,14 @@ static void mvpp2_rxq_long_pool_set(struct mvpp2_port *port,
 	mvpp2_write(port->priv, MVPP2_RXQ_CONFIG_REG(prxq), val);
 }
 
-/* Attach short pool to rxq */
+ 
 static void mvpp2_rxq_short_pool_set(struct mvpp2_port *port,
 				     int lrxq, int short_pool)
 {
 	u32 val, mask;
 	int prxq;
 
-	/* Get queue physical ID */
+	 
 	prxq = port->rxqs[lrxq]->id;
 
 	if (port->priv->hw_version == MVPP21)
@@ -767,7 +716,7 @@ static void *mvpp2_buf_alloc(struct mvpp2_port *port,
 	return data;
 }
 
-/* Routine enable flow control for RXQs condition */
+ 
 static void mvpp2_rxq_enable_fc(struct mvpp2_port *port)
 {
 	int val, cm3_state, host_id, q;
@@ -776,35 +725,27 @@ static void mvpp2_rxq_enable_fc(struct mvpp2_port *port)
 
 	spin_lock_irqsave(&port->priv->mss_spinlock, flags);
 
-	/* Remove Flow control enable bit to prevent race between FW and Kernel
-	 * If Flow control was enabled, it would be re-enabled.
-	 */
+	 
 	val = mvpp2_cm3_read(port->priv, MSS_FC_COM_REG);
 	cm3_state = (val & FLOW_CONTROL_ENABLE_BIT);
 	val &= ~FLOW_CONTROL_ENABLE_BIT;
 	mvpp2_cm3_write(port->priv, MSS_FC_COM_REG, val);
 
-	/* Set same Flow control for all RXQs */
+	 
 	for (q = 0; q < port->nrxqs; q++) {
-		/* Set stop and start Flow control RXQ thresholds */
+		 
 		val = MSS_THRESHOLD_START;
 		val |= (MSS_THRESHOLD_STOP << MSS_RXQ_TRESH_STOP_OFFS);
 		mvpp2_cm3_write(port->priv, MSS_RXQ_TRESH_REG(q, fq), val);
 
 		val = mvpp2_cm3_read(port->priv, MSS_RXQ_ASS_REG(q, fq));
-		/* Set RXQ port ID */
+		 
 		val &= ~(MSS_RXQ_ASS_PORTID_MASK << MSS_RXQ_ASS_Q_BASE(q, fq));
 		val |= (port->id << MSS_RXQ_ASS_Q_BASE(q, fq));
 		val &= ~(MSS_RXQ_ASS_HOSTID_MASK << (MSS_RXQ_ASS_Q_BASE(q, fq)
 			+ MSS_RXQ_ASS_HOSTID_OFFS));
 
-		/* Calculate RXQ host ID:
-		 * In Single queue mode: Host ID equal to Host ID used for
-		 *			 shared RX interrupt
-		 * In Multi queue mode: Host ID equal to number of
-		 *			RXQ ID / number of CoS queues
-		 * In Single resource mode: Host ID always equal to 0
-		 */
+		 
 		if (queue_mode == MVPP2_QDIST_SINGLE_MODE)
 			host_id = port->nqvecs;
 		else if (queue_mode == MVPP2_QDIST_MULTI_MODE)
@@ -812,14 +753,14 @@ static void mvpp2_rxq_enable_fc(struct mvpp2_port *port)
 		else
 			host_id = 0;
 
-		/* Set RXQ host ID */
+		 
 		val |= (host_id << (MSS_RXQ_ASS_Q_BASE(q, fq)
 			+ MSS_RXQ_ASS_HOSTID_OFFS));
 
 		mvpp2_cm3_write(port->priv, MSS_RXQ_ASS_REG(q, fq), val);
 	}
 
-	/* Notify Firmware that Flow control config space ready for update */
+	 
 	val = mvpp2_cm3_read(port->priv, MSS_FC_COM_REG);
 	val |= FLOW_CONTROL_UPDATE_COMMAND_BIT;
 	val |= cm3_state;
@@ -828,7 +769,7 @@ static void mvpp2_rxq_enable_fc(struct mvpp2_port *port)
 	spin_unlock_irqrestore(&port->priv->mss_spinlock, flags);
 }
 
-/* Routine disable flow control for RXQs condition */
+ 
 static void mvpp2_rxq_disable_fc(struct mvpp2_port *port)
 {
 	int val, cm3_state, q;
@@ -837,17 +778,15 @@ static void mvpp2_rxq_disable_fc(struct mvpp2_port *port)
 
 	spin_lock_irqsave(&port->priv->mss_spinlock, flags);
 
-	/* Remove Flow control enable bit to prevent race between FW and Kernel
-	 * If Flow control was enabled, it would be re-enabled.
-	 */
+	 
 	val = mvpp2_cm3_read(port->priv, MSS_FC_COM_REG);
 	cm3_state = (val & FLOW_CONTROL_ENABLE_BIT);
 	val &= ~FLOW_CONTROL_ENABLE_BIT;
 	mvpp2_cm3_write(port->priv, MSS_FC_COM_REG, val);
 
-	/* Disable Flow control for all RXQs */
+	 
 	for (q = 0; q < port->nrxqs; q++) {
-		/* Set threshold 0 to disable Flow control */
+		 
 		val = 0;
 		val |= (0 << MSS_RXQ_TRESH_STOP_OFFS);
 		mvpp2_cm3_write(port->priv, MSS_RXQ_TRESH_REG(q, fq), val);
@@ -862,7 +801,7 @@ static void mvpp2_rxq_disable_fc(struct mvpp2_port *port)
 		mvpp2_cm3_write(port->priv, MSS_RXQ_ASS_REG(q, fq), val);
 	}
 
-	/* Notify Firmware that Flow control config space ready for update */
+	 
 	val = mvpp2_cm3_read(port->priv, MSS_FC_COM_REG);
 	val |= FLOW_CONTROL_UPDATE_COMMAND_BIT;
 	val |= cm3_state;
@@ -871,7 +810,7 @@ static void mvpp2_rxq_disable_fc(struct mvpp2_port *port)
 	spin_unlock_irqrestore(&port->priv->mss_spinlock, flags);
 }
 
-/* Routine disable/enable flow control for BM pool condition */
+ 
 static void mvpp2_bm_pool_update_fc(struct mvpp2_port *port,
 				    struct mvpp2_bm_pool *pool,
 				    bool en)
@@ -881,17 +820,15 @@ static void mvpp2_bm_pool_update_fc(struct mvpp2_port *port,
 
 	spin_lock_irqsave(&port->priv->mss_spinlock, flags);
 
-	/* Remove Flow control enable bit to prevent race between FW and Kernel
-	 * If Flow control were enabled, it would be re-enabled.
-	 */
+	 
 	val = mvpp2_cm3_read(port->priv, MSS_FC_COM_REG);
 	cm3_state = (val & FLOW_CONTROL_ENABLE_BIT);
 	val &= ~FLOW_CONTROL_ENABLE_BIT;
 	mvpp2_cm3_write(port->priv, MSS_FC_COM_REG, val);
 
-	/* Check if BM pool should be enabled/disable */
+	 
 	if (en) {
-		/* Set BM pool start and stop thresholds per port */
+		 
 		val = mvpp2_cm3_read(port->priv, MSS_BUF_POOL_REG(pool->id));
 		val |= MSS_BUF_POOL_PORT_OFFS(port->id);
 		val &= ~MSS_BUF_POOL_START_MASK;
@@ -900,13 +837,11 @@ static void mvpp2_bm_pool_update_fc(struct mvpp2_port *port,
 		val |= MSS_THRESHOLD_STOP;
 		mvpp2_cm3_write(port->priv, MSS_BUF_POOL_REG(pool->id), val);
 	} else {
-		/* Remove BM pool from the port */
+		 
 		val = mvpp2_cm3_read(port->priv, MSS_BUF_POOL_REG(pool->id));
 		val &= ~MSS_BUF_POOL_PORT_OFFS(port->id);
 
-		/* Zero BM pool start and stop thresholds to disable pool
-		 * flow control if pool empty (not used by any port)
-		 */
+		 
 		if (!pool->buf_num) {
 			val &= ~MSS_BUF_POOL_START_MASK;
 			val &= ~MSS_BUF_POOL_STOP_MASK;
@@ -915,7 +850,7 @@ static void mvpp2_bm_pool_update_fc(struct mvpp2_port *port,
 		mvpp2_cm3_write(port->priv, MSS_BUF_POOL_REG(pool->id), val);
 	}
 
-	/* Notify Firmware that Flow control config space ready for update */
+	 
 	val = mvpp2_cm3_read(port->priv, MSS_FC_COM_REG);
 	val |= FLOW_CONTROL_UPDATE_COMMAND_BIT;
 	val |= cm3_state;
@@ -924,7 +859,7 @@ static void mvpp2_bm_pool_update_fc(struct mvpp2_port *port,
 	spin_unlock_irqrestore(&port->priv->mss_spinlock, flags);
 }
 
-/* disable/enable flow control for BM pool on all ports */
+ 
 static void mvpp2_bm_pool_update_priv_fc(struct mvpp2 *priv, bool en)
 {
 	struct mvpp2_port *port;
@@ -947,14 +882,12 @@ static int mvpp2_enable_global_fc(struct mvpp2 *priv)
 {
 	int val, timeout = 0;
 
-	/* Enable global flow control. In this stage global
-	 * flow control enabled, but still disabled per port.
-	 */
+	 
 	val = mvpp2_cm3_read(priv, MSS_FC_COM_REG);
 	val |= FLOW_CONTROL_ENABLE_BIT;
 	mvpp2_cm3_write(priv, MSS_FC_COM_REG, val);
 
-	/* Check if Firmware running and disable FC if not*/
+	 
 	val |= FLOW_CONTROL_UPDATE_COMMAND_BIT;
 	mvpp2_cm3_write(priv, MSS_FC_COM_REG, val);
 
@@ -971,7 +904,7 @@ static int mvpp2_enable_global_fc(struct mvpp2 *priv)
 	return -EOPNOTSUPP;
 }
 
-/* Release buffer to BM */
+ 
 static inline void mvpp2_bm_pool_put(struct mvpp2_port *port, int pool,
 				     dma_addr_t buf_dma_addr,
 				     phys_addr_t buf_phys_addr)
@@ -998,11 +931,7 @@ static inline void mvpp2_bm_pool_put(struct mvpp2_port *port, int pool,
 					   MVPP22_BM_ADDR_HIGH_RLS_REG, val);
 	}
 
-	/* MVPP2_BM_VIRT_RLS_REG is not interpreted by HW, and simply
-	 * returned in the "cookie" field of the RX
-	 * descriptor. Instead of storing the virtual address, we
-	 * store the physical address
-	 */
+	 
 	mvpp2_thread_write_relaxed(port->priv, thread,
 				   MVPP2_BM_VIRT_RLS_REG, buf_phys_addr);
 	mvpp2_thread_write_relaxed(port->priv, thread,
@@ -1014,7 +943,7 @@ static inline void mvpp2_bm_pool_put(struct mvpp2_port *port, int pool,
 	put_cpu();
 }
 
-/* Allocate buffers for the pool */
+ 
 static int mvpp2_bm_bufs_add(struct mvpp2_port *port,
 			     struct mvpp2_bm_pool *bm_pool, int buf_num)
 {
@@ -1054,7 +983,7 @@ static int mvpp2_bm_bufs_add(struct mvpp2_port *port,
 				  phys_addr);
 	}
 
-	/* Update BM driver with number of buffers added to pool */
+	 
 	bm_pool->buf_num += i;
 
 	netdev_dbg(port->dev,
@@ -1067,9 +996,7 @@ static int mvpp2_bm_bufs_add(struct mvpp2_port *port,
 	return i;
 }
 
-/* Notify the driver that BM pool is being used as specific type and return the
- * pool pointer on success
- */
+ 
 static struct mvpp2_bm_pool *
 mvpp2_bm_pool_use(struct mvpp2_port *port, unsigned pool, int pkt_size)
 {
@@ -1082,15 +1009,11 @@ mvpp2_bm_pool_use(struct mvpp2_port *port, unsigned pool, int pkt_size)
 		return NULL;
 	}
 
-	/* Allocate buffers in case BM pool is used as long pool, but packet
-	 * size doesn't match MTU or BM pool hasn't being used yet
-	 */
+	 
 	if (new_pool->pkt_size == 0) {
 		int pkts_num;
 
-		/* Set default buffer number or free all the buffers in case
-		 * the pool is not empty
-		 */
+		 
 		pkts_num = new_pool->buf_num;
 		if (pkts_num == 0) {
 			if (port->priv->percpu_pools) {
@@ -1111,7 +1034,7 @@ mvpp2_bm_pool_use(struct mvpp2_port *port, unsigned pool, int pkt_size)
 			SKB_DATA_ALIGN(MVPP2_RX_BUF_SIZE(pkt_size)) +
 			MVPP2_SKB_SHINFO_SIZE;
 
-		/* Allocate buffers for this pool */
+		 
 		num = mvpp2_bm_bufs_add(port, new_pool, pkts_num);
 		if (num != pkts_num) {
 			WARN(1, "pool %d: %d of %d allocated\n",
@@ -1138,15 +1061,11 @@ mvpp2_bm_pool_use_percpu(struct mvpp2_port *port, int type,
 		return NULL;
 	}
 
-	/* Allocate buffers in case BM pool is used as long pool, but packet
-	 * size doesn't match MTU or BM pool hasn't being used yet
-	 */
+	 
 	if (new_pool->pkt_size == 0) {
 		int pkts_num;
 
-		/* Set default buffer number or free all the buffers in case
-		 * the pool is not empty
-		 */
+		 
 		pkts_num = new_pool->buf_num;
 		if (pkts_num == 0)
 			pkts_num = mvpp2_pools[type].buf_num;
@@ -1159,7 +1078,7 @@ mvpp2_bm_pool_use_percpu(struct mvpp2_port *port, int type,
 			SKB_DATA_ALIGN(MVPP2_RX_BUF_SIZE(pkt_size)) +
 			MVPP2_SKB_SHINFO_SIZE;
 
-		/* Allocate buffers for this pool */
+		 
 		num = mvpp2_bm_bufs_add(port, new_pool, pkts_num);
 		if (num != pkts_num) {
 			WARN(1, "pool %d: %d of %d allocated\n",
@@ -1174,16 +1093,13 @@ mvpp2_bm_pool_use_percpu(struct mvpp2_port *port, int type,
 	return new_pool;
 }
 
-/* Initialize pools for swf, shared buffers variant */
+ 
 static int mvpp2_swf_bm_pool_init_shared(struct mvpp2_port *port)
 {
 	enum mvpp2_bm_pool_log_num long_log_pool, short_log_pool;
 	int rxq;
 
-	/* If port pkt_size is higher than 1518B:
-	 * HW Long pool - SW Jumbo pool, HW Short pool - SW Long pool
-	 * else: HW Long pool - SW Long pool, HW Short pool - SW Short pool
-	 */
+	 
 	if (port->pkt_size > MVPP2_BM_LONG_PKT_SIZE) {
 		long_log_pool = MVPP2_BM_JUMBO;
 		short_log_pool = MVPP2_BM_LONG;
@@ -1222,7 +1138,7 @@ static int mvpp2_swf_bm_pool_init_shared(struct mvpp2_port *port)
 	return 0;
 }
 
-/* Initialize pools for swf, percpu buffers variant */
+ 
 static int mvpp2_swf_bm_pool_init_percpu(struct mvpp2_port *port)
 {
 	struct mvpp2_bm_pool *bm_pool;
@@ -1267,12 +1183,7 @@ static void mvpp2_set_hw_csum(struct mvpp2_port *port,
 {
 	const netdev_features_t csums = NETIF_F_IP_CSUM | NETIF_F_IPV6_CSUM;
 
-	/* Update L4 checksum when jumbo enable/disable on port.
-	 * Only port 0 supports hardware checksum offload due to
-	 * the Tx FIFO size limitation.
-	 * Also, don't set NETIF_F_HW_CSUM because L3_offset in TX descriptor
-	 * has 7 bits, so the maximum L3 offset is 128.
-	 */
+	 
 	if (new_long_pool == MVPP2_BM_JUMBO && port->id != 0) {
 		port->dev->features &= ~csums;
 		port->dev->hw_features &= ~csums;
@@ -1291,10 +1202,7 @@ static int mvpp2_bm_update_mtu(struct net_device *dev, int mtu)
 	if (port->priv->percpu_pools)
 		goto out_set;
 
-	/* If port MTU is higher than 1518B:
-	 * HW Long pool - SW Jumbo pool, HW Short pool - SW Long pool
-	 * else: HW Long pool - SW Long pool, HW Short pool - SW Short pool
-	 */
+	 
 	if (pkt_size > MVPP2_BM_LONG_PKT_SIZE)
 		new_long_pool = MVPP2_BM_JUMBO;
 	else
@@ -1311,7 +1219,7 @@ static int mvpp2_bm_update_mtu(struct net_device *dev, int mtu)
 							false);
 		}
 
-		/* Remove port from old short & long pool */
+		 
 		port->pool_long = mvpp2_bm_pool_use(port, port->pool_long->id,
 						    port->pool_long->pkt_size);
 		port->pool_long->port_map &= ~BIT(port->id);
@@ -1324,7 +1232,7 @@ static int mvpp2_bm_update_mtu(struct net_device *dev, int mtu)
 
 		port->pkt_size =  pkt_size;
 
-		/* Add port to new short & long pool */
+		 
 		mvpp2_swf_bm_pool_init(port);
 
 		mvpp2_set_hw_csum(port, new_long_pool);
@@ -1338,7 +1246,7 @@ static int mvpp2_bm_update_mtu(struct net_device *dev, int mtu)
 							true);
 		}
 
-		/* Update L4 checksum when jumbo enable/disable on port */
+		 
 		if (new_long_pool == MVPP2_BM_JUMBO && port->id != 0) {
 			dev->features &= ~(NETIF_F_IP_CSUM | NETIF_F_IPV6_CSUM);
 			dev->hw_features &= ~(NETIF_F_IP_CSUM |
@@ -1395,17 +1303,14 @@ static inline void mvpp2_qvec_interrupt_disable(struct mvpp2_queue_vector *qvec)
 		    MVPP2_ISR_DISABLE_INTERRUPT(qvec->sw_thread_mask));
 }
 
-/* Mask the current thread's Rx/Tx interrupts
- * Called by on_each_cpu(), guaranteed to run with migration disabled,
- * using smp_processor_id() is OK.
- */
+ 
 static void mvpp2_interrupts_mask(void *arg)
 {
 	struct mvpp2_port *port = arg;
 	int cpu = smp_processor_id();
 	u32 thread;
 
-	/* If the thread isn't used, don't do anything */
+	 
 	if (cpu > port->priv->nthreads)
 		return;
 
@@ -1417,17 +1322,14 @@ static void mvpp2_interrupts_mask(void *arg)
 			   MVPP2_ISR_RX_ERR_CAUSE_REG(port->id), 0);
 }
 
-/* Unmask the current thread's Rx/Tx interrupts.
- * Called by on_each_cpu(), guaranteed to run with migration disabled,
- * using smp_processor_id() is OK.
- */
+ 
 static void mvpp2_interrupts_unmask(void *arg)
 {
 	struct mvpp2_port *port = arg;
 	int cpu = smp_processor_id();
 	u32 val, thread;
 
-	/* If the thread isn't used, don't do anything */
+	 
 	if (cpu >= port->priv->nthreads)
 		return;
 
@@ -1473,7 +1375,7 @@ mvpp2_shared_interrupt_mask_unmask(struct mvpp2_port *port, bool mask)
 	}
 }
 
-/* Only GOP port 0 has an XLG MAC */
+ 
 static bool mvpp2_port_supports_xlg(struct mvpp2_port *port)
 {
 	return port->gop_id == 0;
@@ -1484,7 +1386,7 @@ static bool mvpp2_port_supports_rgmii(struct mvpp2_port *port)
 	return !(port->priv->hw_version >= MVPP22 && port->gop_id == 0);
 }
 
-/* Port configuration routines */
+ 
 static bool mvpp2_is_xlg(phy_interface_t interface)
 {
 	return interface == PHY_INTERFACE_MODE_10GBASER ||
@@ -1589,9 +1491,7 @@ static void mvpp22_gop_fca_set_timer(struct mvpp2_port *port, u32 timer)
 	writel(msb, fca + MVPP22_PERIODIC_COUNTER_MSB_REG);
 }
 
-/* Set Flow Control timer x100 faster than pause quanta to ensure that link
- * partner won't send traffic if port is in XOFF mode.
- */
+ 
 static void mvpp22_gop_fca_set_periodic_timer(struct mvpp2_port *port)
 {
 	u32 timer;
@@ -1668,14 +1568,14 @@ static void mvpp22_gop_unmask_irq(struct mvpp2_port *port)
 	if (phy_interface_mode_is_rgmii(port->phy_interface) ||
 	    phy_interface_mode_is_8023z(port->phy_interface) ||
 	    port->phy_interface == PHY_INTERFACE_MODE_SGMII) {
-		/* Enable the GMAC link status irq for this port */
+		 
 		val = readl(port->base + MVPP22_GMAC_INT_SUM_MASK);
 		val |= MVPP22_GMAC_INT_SUM_MASK_LINK_STAT;
 		writel(val, port->base + MVPP22_GMAC_INT_SUM_MASK);
 	}
 
 	if (mvpp2_port_supports_xlg(port)) {
-		/* Enable the XLG/GIG irqs for this port */
+		 
 		val = readl(port->base + MVPP22_XLG_EXT_INT_MASK);
 		if (mvpp2_is_xlg(port->phy_interface))
 			val |= MVPP22_XLG_EXT_INT_MASK_XLG;
@@ -1735,16 +1635,7 @@ static void mvpp22_gop_setup_irq(struct mvpp2_port *port)
 	mvpp22_gop_unmask_irq(port);
 }
 
-/* Sets the PHY mode of the COMPHY (which configures the serdes lanes).
- *
- * The PHY mode used by the PPv2 driver comes from the network subsystem, while
- * the one given to the COMPHY comes from the generic PHY subsystem. Hence they
- * differ.
- *
- * The COMPHY configures the serdes lanes regardless of the actual use of the
- * lanes by the physical layer. This is why configurations like
- * "PPv2 (2500BaseX) - COMPHY (2500SGMII)" are valid.
- */
+ 
 static int mvpp22_comphy_init(struct mvpp2_port *port,
 			      phy_interface_t interface)
 {
@@ -1794,7 +1685,7 @@ static void mvpp2_port_disable(struct mvpp2_port *port)
 	writel(val, port->base + MVPP2_GMAC_CTRL_0_REG);
 }
 
-/* Set IEEE 802.3x Flow Control Xon Packet Transmission Mode */
+ 
 static void mvpp2_port_periodic_xon_disable(struct mvpp2_port *port)
 {
 	u32 val;
@@ -1804,7 +1695,7 @@ static void mvpp2_port_periodic_xon_disable(struct mvpp2_port *port)
 	writel(val, port->base + MVPP2_GMAC_CTRL_1_REG);
 }
 
-/* Configure loopback port */
+ 
 static void mvpp2_port_loopback_set(struct mvpp2_port *port,
 				    const struct phylink_link_state *state)
 {
@@ -1854,26 +1745,14 @@ static u64 mvpp2_read_count(struct mvpp2_port *port,
 	return val;
 }
 
-/* Some counters are accessed indirectly by first writing an index to
- * MVPP2_CTRS_IDX. The index can represent various resources depending on the
- * register we access, it can be a hit counter for some classification tables,
- * a counter specific to a rxq, a txq or a buffer pool.
- */
+ 
 static u32 mvpp2_read_index(struct mvpp2 *priv, u32 index, u32 reg)
 {
 	mvpp2_write(priv, MVPP2_CTRS_IDX, index);
 	return mvpp2_read(priv, reg);
 }
 
-/* Due to the fact that software statistics and hardware statistics are, by
- * design, incremented at different moments in the chain of packet processing,
- * it is very likely that incoming packets could have been dropped after being
- * counted by hardware but before reaching software statistics (most probably
- * multicast packets), and in the opposite way, during transmission, FCS bytes
- * are added in between as well as TSO skb will be split and header bytes added.
- * Hence, statistics gathered from userspace with ifconfig (software) and
- * ethtool (hardware) cannot be compared.
- */
+ 
 static const struct mvpp2_ethtool_counter mvpp2_ethtool_mib_regs[] = {
 	{ MVPP2_MIB_GOOD_OCTETS_RCVD, "good_octets_received", true },
 	{ MVPP2_MIB_BAD_OCTETS_RCVD, "bad_octets_received" },
@@ -1995,7 +1874,7 @@ mvpp2_get_xdp_stats(struct mvpp2_port *port, struct mvpp2_pcpu_stats *xdp_stats)
 	unsigned int start;
 	unsigned int cpu;
 
-	/* Gather XDP Statistics */
+	 
 	for_each_possible_cpu(cpu) {
 		struct mvpp2_pcpu_stats *cpu_stats;
 		u64	xdp_redirect;
@@ -2051,16 +1930,14 @@ static void mvpp2_read_stats(struct mvpp2_port *port)
 						      MVPP22_CTRS_TX_CTR(port->id, q),
 						      mvpp2_ethtool_txq_regs[i].offset);
 
-	/* Rxqs are numbered from 0 from the user standpoint, but not from the
-	 * driver's. We need to add the  port->first_rxq offset.
-	 */
+	 
 	for (q = 0; q < port->nrxqs; q++)
 		for (i = 0; i < ARRAY_SIZE(mvpp2_ethtool_rxq_regs); i++)
 			*pstats++ += mvpp2_read_index(port->priv,
 						      port->first_rxq + q,
 						      mvpp2_ethtool_rxq_regs[i].offset);
 
-	/* Gather XDP Statistics */
+	 
 	mvpp2_get_xdp_stats(port, &xdp_stats);
 
 	for (i = 0, s = mvpp2_ethtool_xdp;
@@ -2102,9 +1979,7 @@ static void mvpp2_gather_hw_statistics(struct work_struct *work)
 
 	mvpp2_read_stats(port);
 
-	/* No need to read again the counters right after this function if it
-	 * was called asynchronously by the user (ie. use of ethtool).
-	 */
+	 
 	cancel_delayed_work(&port->stats_work);
 	queue_delayed_work(port->priv->stats_queue, &port->stats_work,
 			   MVPP2_MIB_COUNTERS_STATS_DELAY);
@@ -2117,9 +1992,7 @@ static void mvpp2_ethtool_get_stats(struct net_device *dev,
 {
 	struct mvpp2_port *port = netdev_priv(dev);
 
-	/* Update statistics for the given port, then take the lock to avoid
-	 * concurrent accesses on the ethtool_stats structure during its copy.
-	 */
+	 
 	mvpp2_gather_hw_statistics(&port->stats_work.work);
 
 	mutex_lock(&port->gather_stats_lock);
@@ -2206,7 +2079,7 @@ static void mvpp22_pcs_reset_deassert(struct mvpp2_port *port,
 	}
 }
 
-/* Change maximum receive size of the port */
+ 
 static inline void mvpp2_gmac_max_rx_size_set(struct mvpp2_port *port)
 {
 	u32 val;
@@ -2218,7 +2091,7 @@ static inline void mvpp2_gmac_max_rx_size_set(struct mvpp2_port *port)
 	writel(val, port->base + MVPP2_GMAC_CTRL_0_REG);
 }
 
-/* Change maximum receive size of the port */
+ 
 static inline void mvpp2_xlg_max_rx_size_set(struct mvpp2_port *port)
 {
 	u32 val;
@@ -2230,37 +2103,35 @@ static inline void mvpp2_xlg_max_rx_size_set(struct mvpp2_port *port)
 	writel(val, port->base + MVPP22_XLG_CTRL1_REG);
 }
 
-/* Set defaults to the MVPP2 port */
+ 
 static void mvpp2_defaults_set(struct mvpp2_port *port)
 {
 	int tx_port_num, val, queue, lrxq;
 
 	if (port->priv->hw_version == MVPP21) {
-		/* Update TX FIFO MIN Threshold */
+		 
 		val = readl(port->base + MVPP2_GMAC_PORT_FIFO_CFG_1_REG);
 		val &= ~MVPP2_GMAC_TX_FIFO_MIN_TH_ALL_MASK;
-		/* Min. TX threshold must be less than minimal packet length */
+		 
 		val |= MVPP2_GMAC_TX_FIFO_MIN_TH_MASK(64 - 4 - 2);
 		writel(val, port->base + MVPP2_GMAC_PORT_FIFO_CFG_1_REG);
 	}
 
-	/* Disable Legacy WRR, Disable EJP, Release from reset */
+	 
 	tx_port_num = mvpp2_egress_port(port);
 	mvpp2_write(port->priv, MVPP2_TXP_SCHED_PORT_INDEX_REG,
 		    tx_port_num);
 	mvpp2_write(port->priv, MVPP2_TXP_SCHED_CMD_1_REG, 0);
 
-	/* Set TXQ scheduling to Round-Robin */
+	 
 	mvpp2_write(port->priv, MVPP2_TXP_SCHED_FIXED_PRIO_REG, 0);
 
-	/* Close bandwidth for all queues */
+	 
 	for (queue = 0; queue < MVPP2_MAX_TXQ; queue++)
 		mvpp2_write(port->priv,
 			    MVPP2_TXQ_SCHED_TOKEN_CNTR_REG(queue), 0);
 
-	/* Set refill period to 1 usec, refill tokens
-	 * and bucket size to maximum
-	 */
+	 
 	mvpp2_write(port->priv, MVPP2_TXP_SCHED_PERIOD_REG,
 		    port->priv->tclk / USEC_PER_SEC);
 	val = mvpp2_read(port->priv, MVPP2_TXP_SCHED_REFILL_REG);
@@ -2271,12 +2142,12 @@ static void mvpp2_defaults_set(struct mvpp2_port *port)
 	val = MVPP2_TXP_TOKEN_SIZE_MAX;
 	mvpp2_write(port->priv, MVPP2_TXP_SCHED_TOKEN_SIZE_REG, val);
 
-	/* Set MaximumLowLatencyPacketSize value to 256 */
+	 
 	mvpp2_write(port->priv, MVPP2_RX_CTRL_REG(port->id),
 		    MVPP2_RX_USE_PSEUDO_FOR_CSUM_MASK |
 		    MVPP2_RX_LOW_LATENCY_PKT_SIZE(256));
 
-	/* Enable Rx cache snoop */
+	 
 	for (lrxq = 0; lrxq < port->nrxqs; lrxq++) {
 		queue = port->rxqs[lrxq]->id;
 		val = mvpp2_read(port->priv, MVPP2_RXQ_CONFIG_REG(queue));
@@ -2285,11 +2156,11 @@ static void mvpp2_defaults_set(struct mvpp2_port *port)
 		mvpp2_write(port->priv, MVPP2_RXQ_CONFIG_REG(queue), val);
 	}
 
-	/* At default, mask all interrupts to all present cpus */
+	 
 	mvpp2_interrupts_disable(port);
 }
 
-/* Enable/disable receiving packets */
+ 
 static void mvpp2_ingress_enable(struct mvpp2_port *port)
 {
 	u32 val;
@@ -2316,16 +2187,14 @@ static void mvpp2_ingress_disable(struct mvpp2_port *port)
 	}
 }
 
-/* Enable transmit via physical egress queue
- * - HW starts take descriptors from DRAM
- */
+ 
 static void mvpp2_egress_enable(struct mvpp2_port *port)
 {
 	u32 qmap;
 	int queue;
 	int tx_port_num = mvpp2_egress_port(port);
 
-	/* Enable all initialized TXs. */
+	 
 	qmap = 0;
 	for (queue = 0; queue < port->ntxqs; queue++) {
 		struct mvpp2_tx_queue *txq = port->txqs[queue];
@@ -2338,16 +2207,14 @@ static void mvpp2_egress_enable(struct mvpp2_port *port)
 	mvpp2_write(port->priv, MVPP2_TXP_SCHED_Q_CMD_REG, qmap);
 }
 
-/* Disable transmit via physical egress queue
- * - HW doesn't take descriptors from DRAM
- */
+ 
 static void mvpp2_egress_disable(struct mvpp2_port *port)
 {
 	u32 reg_data;
 	int delay;
 	int tx_port_num = mvpp2_egress_port(port);
 
-	/* Issue stop command for active channels only */
+	 
 	mvpp2_write(port->priv, MVPP2_TXP_SCHED_PORT_INDEX_REG, tx_port_num);
 	reg_data = (mvpp2_read(port->priv, MVPP2_TXP_SCHED_Q_CMD_REG)) &
 		    MVPP2_TXP_SCHED_ENQ_MASK;
@@ -2355,7 +2222,7 @@ static void mvpp2_egress_disable(struct mvpp2_port *port)
 		mvpp2_write(port->priv, MVPP2_TXP_SCHED_Q_CMD_REG,
 			    (reg_data << MVPP2_TXP_SCHED_DISQ_OFFSET));
 
-	/* Wait for all Tx activity to terminate. */
+	 
 	delay = 0;
 	do {
 		if (delay >= MVPP2_TX_DISABLE_TIMEOUT_MSEC) {
@@ -2367,16 +2234,14 @@ static void mvpp2_egress_disable(struct mvpp2_port *port)
 		mdelay(1);
 		delay++;
 
-		/* Check port TX Command register that all
-		 * Tx queues are stopped
-		 */
+		 
 		reg_data = mvpp2_read(port->priv, MVPP2_TXP_SCHED_Q_CMD_REG);
 	} while (reg_data & MVPP2_TXP_SCHED_ENQ_MASK);
 }
 
-/* Rx descriptors helper methods */
+ 
 
-/* Get number of Rx descriptors occupied by received packets */
+ 
 static inline int
 mvpp2_rxq_received(struct mvpp2_port *port, int rxq_id)
 {
@@ -2385,22 +2250,18 @@ mvpp2_rxq_received(struct mvpp2_port *port, int rxq_id)
 	return val & MVPP2_RXQ_OCCUPIED_MASK;
 }
 
-/* Update Rx queue status with the number of occupied and available
- * Rx descriptor slots.
- */
+ 
 static inline void
 mvpp2_rxq_status_update(struct mvpp2_port *port, int rxq_id,
 			int used_count, int free_count)
 {
-	/* Decrement the number of used descriptors and increment count
-	 * increment the number of free descriptors.
-	 */
+	 
 	u32 val = used_count | (free_count << MVPP2_RXQ_NUM_NEW_OFFSET);
 
 	mvpp2_write(port->priv, MVPP2_RXQ_STATUS_UPDATE_REG(rxq_id), val);
 }
 
-/* Get pointer to next RX descriptor to be processed by SW */
+ 
 static inline struct mvpp2_rx_desc *
 mvpp2_rxq_next_desc_get(struct mvpp2_rx_queue *rxq)
 {
@@ -2411,28 +2272,28 @@ mvpp2_rxq_next_desc_get(struct mvpp2_rx_queue *rxq)
 	return rxq->descs + rx_desc;
 }
 
-/* Set rx queue offset */
+ 
 static void mvpp2_rxq_offset_set(struct mvpp2_port *port,
 				 int prxq, int offset)
 {
 	u32 val;
 
-	/* Convert offset from bytes to units of 32 bytes */
+	 
 	offset = offset >> 5;
 
 	val = mvpp2_read(port->priv, MVPP2_RXQ_CONFIG_REG(prxq));
 	val &= ~MVPP2_RXQ_PACKET_OFFSET_MASK;
 
-	/* Offset is in */
+	 
 	val |= ((offset << MVPP2_RXQ_PACKET_OFFSET_OFFS) &
 		    MVPP2_RXQ_PACKET_OFFSET_MASK);
 
 	mvpp2_write(port->priv, MVPP2_RXQ_CONFIG_REG(prxq), val);
 }
 
-/* Tx descriptors helper methods */
+ 
 
-/* Get pointer to next Tx descriptor to be processed (send) by HW */
+ 
 static struct mvpp2_tx_desc *
 mvpp2_txq_next_desc_get(struct mvpp2_tx_queue *txq)
 {
@@ -2442,30 +2303,21 @@ mvpp2_txq_next_desc_get(struct mvpp2_tx_queue *txq)
 	return txq->descs + tx_desc;
 }
 
-/* Update HW with number of aggregated Tx descriptors to be sent
- *
- * Called only from mvpp2_tx(), so migration is disabled, using
- * smp_processor_id() is OK.
- */
+ 
 static void mvpp2_aggr_txq_pend_desc_add(struct mvpp2_port *port, int pending)
 {
-	/* aggregated access - relevant TXQ number is written in TX desc */
+	 
 	mvpp2_thread_write(port->priv,
 			   mvpp2_cpu_to_thread(port->priv, smp_processor_id()),
 			   MVPP2_AGGR_TXQ_UPDATE_REG, pending);
 }
 
-/* Check if there are enough free descriptors in aggregated txq.
- * If not, update the number of occupied descriptors and repeat the check.
- *
- * Called only from mvpp2_tx(), so migration is disabled, using
- * smp_processor_id() is OK.
- */
+ 
 static int mvpp2_aggr_desc_num_check(struct mvpp2_port *port,
 				     struct mvpp2_tx_queue *aggr_txq, int num)
 {
 	if ((aggr_txq->count + num) > MVPP2_AGGR_TXQ_SIZE) {
-		/* Update number of occupied aggregated Tx descriptors */
+		 
 		unsigned int thread =
 			mvpp2_cpu_to_thread(port->priv, smp_processor_id());
 		u32 val = mvpp2_read_relaxed(port->priv,
@@ -2479,12 +2331,7 @@ static int mvpp2_aggr_desc_num_check(struct mvpp2_port *port,
 	return 0;
 }
 
-/* Reserved Tx descriptors allocation request
- *
- * Called only from mvpp2_txq_reserved_desc_num_proc(), itself called
- * only by mvpp2_tx(), so migration is disabled, using
- * smp_processor_id() is OK.
- */
+ 
 static int mvpp2_txq_alloc_reserved_desc(struct mvpp2_port *port,
 					 struct mvpp2_tx_queue *txq, int num)
 {
@@ -2500,9 +2347,7 @@ static int mvpp2_txq_alloc_reserved_desc(struct mvpp2_port *port,
 	return val & MVPP2_TXQ_RSVD_RSLT_MASK;
 }
 
-/* Check if there are enough reserved descriptors for transmission.
- * If not, request chunk of reserved descriptors and check again.
- */
+ 
 static int mvpp2_txq_reserved_desc_num_proc(struct mvpp2_port *port,
 					    struct mvpp2_tx_queue *txq,
 					    struct mvpp2_txq_pcpu *txq_pcpu,
@@ -2514,12 +2359,10 @@ static int mvpp2_txq_reserved_desc_num_proc(struct mvpp2_port *port,
 	if (txq_pcpu->reserved_num >= num)
 		return 0;
 
-	/* Not enough descriptors reserved! Update the reserved descriptor
-	 * count and check again.
-	 */
+	 
 
 	desc_count = 0;
-	/* Compute total of used descriptors */
+	 
 	for (thread = 0; thread < port->priv->nthreads; thread++) {
 		struct mvpp2_txq_pcpu *txq_pcpu_aux;
 
@@ -2537,15 +2380,13 @@ static int mvpp2_txq_reserved_desc_num_proc(struct mvpp2_port *port,
 
 	txq_pcpu->reserved_num += mvpp2_txq_alloc_reserved_desc(port, txq, req);
 
-	/* OK, the descriptor could have been updated: check again. */
+	 
 	if (txq_pcpu->reserved_num < num)
 		return -ENOMEM;
 	return 0;
 }
 
-/* Release the last allocated Tx descriptor. Useful to handle DMA
- * mapping failures in the Tx path.
- */
+ 
 static void mvpp2_txq_desc_put(struct mvpp2_tx_queue *txq)
 {
 	if (txq->next_desc_to_proc == 0)
@@ -2554,32 +2395,30 @@ static void mvpp2_txq_desc_put(struct mvpp2_tx_queue *txq)
 		txq->next_desc_to_proc--;
 }
 
-/* Set Tx descriptors fields relevant for CSUM calculation */
+ 
 static u32 mvpp2_txq_desc_csum(int l3_offs, __be16 l3_proto,
 			       int ip_hdr_len, int l4_proto)
 {
 	u32 command;
 
-	/* fields: L3_offset, IP_hdrlen, L3_type, G_IPv4_chk,
-	 * G_L4_chk, L4_type required only for checksum calculation
-	 */
+	 
 	command = (l3_offs << MVPP2_TXD_L3_OFF_SHIFT);
 	command |= (ip_hdr_len << MVPP2_TXD_IP_HLEN_SHIFT);
 	command |= MVPP2_TXD_IP_CSUM_DISABLE;
 
 	if (l3_proto == htons(ETH_P_IP)) {
-		command &= ~MVPP2_TXD_IP_CSUM_DISABLE;	/* enable IPv4 csum */
-		command &= ~MVPP2_TXD_L3_IP6;		/* enable IPv4 */
+		command &= ~MVPP2_TXD_IP_CSUM_DISABLE;	 
+		command &= ~MVPP2_TXD_L3_IP6;		 
 	} else {
-		command |= MVPP2_TXD_L3_IP6;		/* enable IPv6 */
+		command |= MVPP2_TXD_L3_IP6;		 
 	}
 
 	if (l4_proto == IPPROTO_TCP) {
-		command &= ~MVPP2_TXD_L4_UDP;		/* enable TCP */
-		command &= ~MVPP2_TXD_L4_CSUM_FRAG;	/* generate L4 csum */
+		command &= ~MVPP2_TXD_L4_UDP;		 
+		command &= ~MVPP2_TXD_L4_CSUM_FRAG;	 
 	} else if (l4_proto == IPPROTO_UDP) {
-		command |= MVPP2_TXD_L4_UDP;		/* enable UDP */
-		command &= ~MVPP2_TXD_L4_CSUM_FRAG;	/* generate L4 csum */
+		command |= MVPP2_TXD_L4_UDP;		 
+		command &= ~MVPP2_TXD_L4_CSUM_FRAG;	 
 	} else {
 		command |= MVPP2_TXD_L4_CSUM_NOT;
 	}
@@ -2587,20 +2426,13 @@ static u32 mvpp2_txq_desc_csum(int l3_offs, __be16 l3_proto,
 	return command;
 }
 
-/* Get number of sent descriptors and decrement counter.
- * The number of sent descriptors is returned.
- * Per-thread access
- *
- * Called only from mvpp2_txq_done(), called from mvpp2_tx()
- * (migration disabled) and from the TX completion tasklet (migration
- * disabled) so using smp_processor_id() is OK.
- */
+ 
 static inline int mvpp2_txq_sent_desc_proc(struct mvpp2_port *port,
 					   struct mvpp2_tx_queue *txq)
 {
 	u32 val;
 
-	/* Reading status reg resets transmitted descriptor counter */
+	 
 	val = mvpp2_thread_read_relaxed(port->priv,
 					mvpp2_cpu_to_thread(port->priv, smp_processor_id()),
 					MVPP2_TXQ_SENT_REG(txq->id));
@@ -2609,15 +2441,13 @@ static inline int mvpp2_txq_sent_desc_proc(struct mvpp2_port *port,
 		MVPP2_TRANSMITTED_COUNT_OFFSET;
 }
 
-/* Called through on_each_cpu(), so runs on all CPUs, with migration
- * disabled, therefore using smp_processor_id() is OK.
- */
+ 
 static void mvpp2_txq_sent_counter_clear(void *arg)
 {
 	struct mvpp2_port *port = arg;
 	int queue;
 
-	/* If the thread isn't used, don't do anything */
+	 
 	if (smp_processor_id() >= port->priv->nthreads)
 		return;
 
@@ -2630,7 +2460,7 @@ static void mvpp2_txq_sent_counter_clear(void *arg)
 	}
 }
 
-/* Set max sizes for Tx queues */
+ 
 static void mvpp2_txp_max_tx_size_set(struct mvpp2_port *port)
 {
 	u32	val, size, mtu;
@@ -2640,20 +2470,20 @@ static void mvpp2_txp_max_tx_size_set(struct mvpp2_port *port)
 	if (mtu > MVPP2_TXP_MTU_MAX)
 		mtu = MVPP2_TXP_MTU_MAX;
 
-	/* WA for wrong Token bucket update: Set MTU value = 3*real MTU value */
+	 
 	mtu = 3 * mtu;
 
-	/* Indirect access to registers */
+	 
 	tx_port_num = mvpp2_egress_port(port);
 	mvpp2_write(port->priv, MVPP2_TXP_SCHED_PORT_INDEX_REG, tx_port_num);
 
-	/* Set MTU */
+	 
 	val = mvpp2_read(port->priv, MVPP2_TXP_SCHED_MTU_REG);
 	val &= ~MVPP2_TXP_MTU_MAX;
 	val |= mtu;
 	mvpp2_write(port->priv, MVPP2_TXP_SCHED_MTU_REG, val);
 
-	/* TXP token size and all TXQs token size must be larger that MTU */
+	 
 	val = mvpp2_read(port->priv, MVPP2_TXP_SCHED_TOKEN_SIZE_REG);
 	size = val & MVPP2_TXP_TOKEN_SIZE_MAX;
 	if (size < mtu) {
@@ -2679,7 +2509,7 @@ static void mvpp2_txp_max_tx_size_set(struct mvpp2_port *port)
 	}
 }
 
-/* Set the number of non-occupied descriptors threshold */
+ 
 static void mvpp2_set_rxq_free_tresh(struct mvpp2_port *port,
 				     struct mvpp2_rx_queue *rxq)
 {
@@ -2693,9 +2523,7 @@ static void mvpp2_set_rxq_free_tresh(struct mvpp2_port *port,
 	mvpp2_write(port->priv, MVPP2_RXQ_THRESH_REG, val);
 }
 
-/* Set the number of packets that will be received before Rx interrupt
- * will be generated by HW.
- */
+ 
 static void mvpp2_rx_pkts_coal_set(struct mvpp2_port *port,
 				   struct mvpp2_rx_queue *rxq)
 {
@@ -2711,7 +2539,7 @@ static void mvpp2_rx_pkts_coal_set(struct mvpp2_port *port,
 	put_cpu();
 }
 
-/* For some reason in the LSP this is done on each CPU. Why ? */
+ 
 static void mvpp2_tx_pkts_coal_set(struct mvpp2_port *port,
 				   struct mvpp2_tx_queue *txq)
 {
@@ -2722,7 +2550,7 @@ static void mvpp2_tx_pkts_coal_set(struct mvpp2_port *port,
 		txq->done_pkts_coal = MVPP2_TXQ_THRESH_MASK;
 
 	val = (txq->done_pkts_coal << MVPP2_TXQ_THRESH_OFFSET);
-	/* PKT-coalescing registers are per-queue + per-thread */
+	 
 	for (thread = 0; thread < MVPP2_MAX_THREADS; thread++) {
 		mvpp2_thread_write(port->priv, thread, MVPP2_TXQ_NUM_REG, txq->id);
 		mvpp2_thread_write(port->priv, thread, MVPP2_TXQ_THRESH_REG, val);
@@ -2747,7 +2575,7 @@ static u32 mvpp2_cycles_to_usec(u32 cycles, unsigned long clk_hz)
 	return tmp > U32_MAX ? U32_MAX : tmp;
 }
 
-/* Set the time delay in usec before Rx interrupt */
+ 
 static void mvpp2_rx_time_coal_set(struct mvpp2_port *port,
 				   struct mvpp2_rx_queue *rxq)
 {
@@ -2758,7 +2586,7 @@ static void mvpp2_rx_time_coal_set(struct mvpp2_port *port,
 		rxq->time_coal =
 			mvpp2_cycles_to_usec(MVPP2_MAX_ISR_RX_THRESHOLD, freq);
 
-		/* re-evaluate to get actual register value */
+		 
 		val = mvpp2_usec_to_cycles(rxq->time_coal, freq);
 	}
 
@@ -2774,14 +2602,14 @@ static void mvpp2_tx_time_coal_set(struct mvpp2_port *port)
 		port->tx_time_coal =
 			mvpp2_cycles_to_usec(MVPP2_MAX_ISR_TX_THRESHOLD, freq);
 
-		/* re-evaluate to get actual register value */
+		 
 		val = mvpp2_usec_to_cycles(port->tx_time_coal, freq);
 	}
 
 	mvpp2_write(port->priv, MVPP2_ISR_TX_THRESHOLD_REG(port->id), val);
 }
 
-/* Free Tx queue skbuffs */
+ 
 static void mvpp2_txq_bufs_free(struct mvpp2_port *port,
 				struct mvpp2_tx_queue *txq,
 				struct mvpp2_txq_pcpu *txq_pcpu, int num)
@@ -2791,7 +2619,7 @@ static void mvpp2_txq_bufs_free(struct mvpp2_port *port,
 
 	xdp_frame_bulk_init(&bq);
 
-	rcu_read_lock(); /* need for xdp_return_frame_bulk */
+	rcu_read_lock();  
 
 	for (i = 0; i < num; i++) {
 		struct mvpp2_txq_pcpu_buf *tx_buf =
@@ -2830,7 +2658,7 @@ static inline struct mvpp2_tx_queue *mvpp2_get_tx_queue(struct mvpp2_port *port,
 	return port->txqs[queue];
 }
 
-/* Handle end of transmission */
+ 
 static void mvpp2_txq_done(struct mvpp2_port *port, struct mvpp2_tx_queue *txq,
 			   struct mvpp2_txq_pcpu *txq_pcpu)
 {
@@ -2876,16 +2704,16 @@ static unsigned int mvpp2_tx_done(struct mvpp2_port *port, u32 cause,
 	return tx_todo;
 }
 
-/* Rx/Tx queue initialization/cleanup methods */
+ 
 
-/* Allocate and initialize descriptors for aggr TXQ */
+ 
 static int mvpp2_aggr_txq_init(struct platform_device *pdev,
 			       struct mvpp2_tx_queue *aggr_txq,
 			       unsigned int thread, struct mvpp2 *priv)
 {
 	u32 txq_dma;
 
-	/* Allocate memory for TX descriptors */
+	 
 	aggr_txq->descs = dma_alloc_coherent(&pdev->dev,
 					     MVPP2_AGGR_TXQ_SIZE * MVPP2_DESC_ALIGNED_SIZE,
 					     &aggr_txq->descs_dma, GFP_KERNEL);
@@ -2894,13 +2722,11 @@ static int mvpp2_aggr_txq_init(struct platform_device *pdev,
 
 	aggr_txq->last_desc = MVPP2_AGGR_TXQ_SIZE - 1;
 
-	/* Aggr TXQ no reset WA */
+	 
 	aggr_txq->next_desc_to_proc = mvpp2_read(priv,
 						 MVPP2_AGGR_TXQ_INDEX_REG(thread));
 
-	/* Set Tx descriptors queue starting address indirect
-	 * access
-	 */
+	 
 	if (priv->hw_version == MVPP21)
 		txq_dma = aggr_txq->descs_dma;
 	else
@@ -2914,7 +2740,7 @@ static int mvpp2_aggr_txq_init(struct platform_device *pdev,
 	return 0;
 }
 
-/* Create a specified Rx queue */
+ 
 static int mvpp2_rxq_init(struct mvpp2_port *port,
 			  struct mvpp2_rx_queue *rxq)
 {
@@ -2925,7 +2751,7 @@ static int mvpp2_rxq_init(struct mvpp2_port *port,
 
 	rxq->size = port->rx_ring_size;
 
-	/* Allocate memory for RX descriptors */
+	 
 	rxq->descs = dma_alloc_coherent(port->dev->dev.parent,
 					rxq->size * MVPP2_DESC_ALIGNED_SIZE,
 					&rxq->descs_dma, GFP_KERNEL);
@@ -2934,10 +2760,10 @@ static int mvpp2_rxq_init(struct mvpp2_port *port,
 
 	rxq->last_desc = rxq->size - 1;
 
-	/* Zero occupied and non-occupied counters - direct access */
+	 
 	mvpp2_write(port->priv, MVPP2_RXQ_STATUS_REG(rxq->id), 0);
 
-	/* Set Rx descriptors queue starting address - indirect access */
+	 
 	thread = mvpp2_cpu_to_thread(port->priv, get_cpu());
 	mvpp2_thread_write(port->priv, thread, MVPP2_RXQ_NUM_REG, rxq->id);
 	if (port->priv->hw_version == MVPP21)
@@ -2949,17 +2775,17 @@ static int mvpp2_rxq_init(struct mvpp2_port *port,
 	mvpp2_thread_write(port->priv, thread, MVPP2_RXQ_INDEX_REG, 0);
 	put_cpu();
 
-	/* Set Offset */
+	 
 	mvpp2_rxq_offset_set(port, rxq->id, MVPP2_SKB_HEADROOM);
 
-	/* Set coalescing pkts and time */
+	 
 	mvpp2_rx_pkts_coal_set(port, rxq);
 	mvpp2_rx_time_coal_set(port, rxq);
 
-	/* Set the number of non occupied descriptors threshold */
+	 
 	mvpp2_set_rxq_free_tresh(port, rxq);
 
-	/* Add number of descriptors ready for receiving packets */
+	 
 	mvpp2_rxq_status_update(port, rxq->id, 0, rxq->size);
 
 	if (priv->percpu_pools) {
@@ -2971,7 +2797,7 @@ static int mvpp2_rxq_init(struct mvpp2_port *port,
 		if (err < 0)
 			goto err_unregister_rxq_short;
 
-		/* Every RXQ has a pool for short and another for long packets */
+		 
 		err = xdp_rxq_info_reg_mem_model(&rxq->xdp_rxq_short,
 						 MEM_TYPE_PAGE_POOL,
 						 priv->page_pool[rxq->logic_rxq]);
@@ -3001,7 +2827,7 @@ err_free_dma:
 	return err;
 }
 
-/* Push packets received by the RXQ to BM pool */
+ 
 static void mvpp2_rxq_drop_pkts(struct mvpp2_port *port,
 				struct mvpp2_rx_queue *rxq)
 {
@@ -3026,7 +2852,7 @@ static void mvpp2_rxq_drop_pkts(struct mvpp2_port *port,
 	mvpp2_rxq_status_update(port, rxq->id, rx_received, rx_received);
 }
 
-/* Cleanup Rx queue */
+ 
 static void mvpp2_rxq_deinit(struct mvpp2_port *port,
 			     struct mvpp2_rx_queue *rxq)
 {
@@ -3051,9 +2877,7 @@ static void mvpp2_rxq_deinit(struct mvpp2_port *port,
 	rxq->next_desc_to_proc = 0;
 	rxq->descs_dma         = 0;
 
-	/* Clear Rx descriptors queue starting address and size;
-	 * free descriptor number
-	 */
+	 
 	mvpp2_write(port->priv, MVPP2_RXQ_STATUS_REG(rxq->id), 0);
 	thread = mvpp2_cpu_to_thread(port->priv, get_cpu());
 	mvpp2_thread_write(port->priv, thread, MVPP2_RXQ_NUM_REG, rxq->id);
@@ -3062,7 +2886,7 @@ static void mvpp2_rxq_deinit(struct mvpp2_port *port,
 	put_cpu();
 }
 
-/* Create and initialize a Tx queue */
+ 
 static int mvpp2_txq_init(struct mvpp2_port *port,
 			  struct mvpp2_tx_queue *txq)
 {
@@ -3073,7 +2897,7 @@ static int mvpp2_txq_init(struct mvpp2_port *port,
 
 	txq->size = port->tx_ring_size;
 
-	/* Allocate memory for Tx descriptors */
+	 
 	txq->descs = dma_alloc_coherent(port->dev->dev.parent,
 				txq->size * MVPP2_DESC_ALIGNED_SIZE,
 				&txq->descs_dma, GFP_KERNEL);
@@ -3082,7 +2906,7 @@ static int mvpp2_txq_init(struct mvpp2_port *port,
 
 	txq->last_desc = txq->size - 1;
 
-	/* Set Tx descriptors queue starting address - indirect access */
+	 
 	thread = mvpp2_cpu_to_thread(port->priv, get_cpu());
 	mvpp2_thread_write(port->priv, thread, MVPP2_TXQ_NUM_REG, txq->id);
 	mvpp2_thread_write(port->priv, thread, MVPP2_TXQ_DESC_ADDR_REG,
@@ -3096,11 +2920,7 @@ static int mvpp2_txq_init(struct mvpp2_port *port,
 	val &= ~MVPP2_TXQ_PENDING_MASK;
 	mvpp2_thread_write(port->priv, thread, MVPP2_TXQ_PENDING_REG, val);
 
-	/* Calculate base address in prefetch buffer. We reserve 16 descriptors
-	 * for each existing TXQ.
-	 * TCONTS for PON port must be continuous from 0 to MVPP2_MAX_TCONT
-	 * GBE ports assumed to be continuous from 0 to MVPP2_MAX_PORTS
-	 */
+	 
 	desc_per_txq = 16;
 	desc = (port->id * MVPP2_MAX_TXQ * desc_per_txq) +
 	       (txq->log_id * desc_per_txq);
@@ -3110,7 +2930,7 @@ static int mvpp2_txq_init(struct mvpp2_port *port,
 			   MVPP2_PREF_BUF_THRESH(desc_per_txq / 2));
 	put_cpu();
 
-	/* WRR / EJP configuration - indirect access */
+	 
 	tx_port_num = mvpp2_egress_port(port);
 	mvpp2_write(port->priv, MVPP2_TXP_SCHED_PORT_INDEX_REG, tx_port_num);
 
@@ -3154,7 +2974,7 @@ static int mvpp2_txq_init(struct mvpp2_port *port,
 	return 0;
 }
 
-/* Free allocated TXQ resources */
+ 
 static void mvpp2_txq_deinit(struct mvpp2_port *port,
 			     struct mvpp2_tx_queue *txq)
 {
@@ -3184,10 +3004,10 @@ static void mvpp2_txq_deinit(struct mvpp2_port *port,
 	txq->next_desc_to_proc = 0;
 	txq->descs_dma         = 0;
 
-	/* Set minimum bandwidth for disabled TXQs */
+	 
 	mvpp2_write(port->priv, MVPP2_TXQ_SCHED_TOKEN_CNTR_REG(txq->log_id), 0);
 
-	/* Set Tx descriptors queue starting address and size */
+	 
 	thread = mvpp2_cpu_to_thread(port->priv, get_cpu());
 	mvpp2_thread_write(port->priv, thread, MVPP2_TXQ_NUM_REG, txq->id);
 	mvpp2_thread_write(port->priv, thread, MVPP2_TXQ_DESC_ADDR_REG, 0);
@@ -3195,7 +3015,7 @@ static void mvpp2_txq_deinit(struct mvpp2_port *port,
 	put_cpu();
 }
 
-/* Cleanup Tx ports */
+ 
 static void mvpp2_txq_clean(struct mvpp2_port *port, struct mvpp2_tx_queue *txq)
 {
 	struct mvpp2_txq_pcpu *txq_pcpu;
@@ -3208,9 +3028,7 @@ static void mvpp2_txq_clean(struct mvpp2_port *port, struct mvpp2_tx_queue *txq)
 	val |= MVPP2_TXQ_DRAIN_EN_MASK;
 	mvpp2_thread_write(port->priv, thread, MVPP2_TXQ_PREF_BUF_REG, val);
 
-	/* The napi queue has been stopped so wait for all packets
-	 * to be transmitted.
-	 */
+	 
 	delay = 0;
 	do {
 		if (delay >= MVPP2_TX_PENDING_TIMEOUT_MSEC) {
@@ -3234,17 +3052,17 @@ static void mvpp2_txq_clean(struct mvpp2_port *port, struct mvpp2_tx_queue *txq)
 	for (thread = 0; thread < port->priv->nthreads; thread++) {
 		txq_pcpu = per_cpu_ptr(txq->pcpu, thread);
 
-		/* Release all packets */
+		 
 		mvpp2_txq_bufs_free(port, txq, txq_pcpu, txq_pcpu->count);
 
-		/* Reset queue */
+		 
 		txq_pcpu->count = 0;
 		txq_pcpu->txq_put_index = 0;
 		txq_pcpu->txq_get_index = 0;
 	}
 }
 
-/* Cleanup all Tx queues */
+ 
 static void mvpp2_cleanup_txqs(struct mvpp2_port *port)
 {
 	struct mvpp2_tx_queue *txq;
@@ -3253,7 +3071,7 @@ static void mvpp2_cleanup_txqs(struct mvpp2_port *port)
 
 	val = mvpp2_read(port->priv, MVPP2_TX_PORT_FLUSH_REG);
 
-	/* Reset Tx ports and delete Tx queues */
+	 
 	val |= MVPP2_TX_PORT_FLUSH_MASK(port->id);
 	mvpp2_write(port->priv, MVPP2_TX_PORT_FLUSH_REG, val);
 
@@ -3269,7 +3087,7 @@ static void mvpp2_cleanup_txqs(struct mvpp2_port *port)
 	mvpp2_write(port->priv, MVPP2_TX_PORT_FLUSH_REG, val);
 }
 
-/* Cleanup all Rx queues */
+ 
 static void mvpp2_cleanup_rxqs(struct mvpp2_port *port)
 {
 	int queue;
@@ -3281,7 +3099,7 @@ static void mvpp2_cleanup_rxqs(struct mvpp2_port *port)
 		mvpp2_rxq_disable_fc(port);
 }
 
-/* Init all Rx queues for port */
+ 
 static int mvpp2_setup_rxqs(struct mvpp2_port *port)
 {
 	int queue, err;
@@ -3302,7 +3120,7 @@ err_cleanup:
 	return err;
 }
 
-/* Init all tx queues for port */
+ 
 static int mvpp2_setup_txqs(struct mvpp2_port *port)
 {
 	struct mvpp2_tx_queue *txq;
@@ -3314,7 +3132,7 @@ static int mvpp2_setup_txqs(struct mvpp2_port *port)
 		if (err)
 			goto err_cleanup;
 
-		/* Assign this queue to a CPU */
+		 
 		if (queue < num_possible_cpus())
 			netif_set_xps_queue(port->dev, cpumask_of(queue), queue);
 	}
@@ -3335,7 +3153,7 @@ err_cleanup:
 	return err;
 }
 
-/* The callback for per-port interrupt */
+ 
 static irqreturn_t mvpp2_isr(int irq, void *dev_id)
 {
 	struct mvpp2_queue_vector *qv = dev_id;
@@ -3456,7 +3274,7 @@ static void mvpp2_isr_handle_gmac_internal(struct mvpp2_port *port)
 	}
 }
 
-/* Per-port interrupt for link status changes */
+ 
 static irqreturn_t mvpp2_port_isr(int irq, void *dev_id)
 {
 	struct mvpp2_port *port = (struct mvpp2_port *)dev_id;
@@ -3466,16 +3284,14 @@ static irqreturn_t mvpp2_port_isr(int irq, void *dev_id)
 
 	if (mvpp2_port_supports_xlg(port) &&
 	    mvpp2_is_xlg(port->phy_interface)) {
-		/* Check the external status register */
+		 
 		val = readl(port->base + MVPP22_XLG_EXT_INT_STAT);
 		if (val & MVPP22_XLG_EXT_INT_STAT_XLG)
 			mvpp2_isr_handle_xlg(port);
 		if (val & MVPP22_XLG_EXT_INT_STAT_PTP)
 			mvpp2_isr_handle_ptp(port);
 	} else {
-		/* If it's not the XLG, we must be using the GMAC.
-		 * Check the summary status.
-		 */
+		 
 		val = readl(port->base + MVPP22_GMAC_INT_SUM_STAT);
 		if (val & MVPP22_GMAC_INT_SUM_STAT_INTERNAL)
 			mvpp2_isr_handle_gmac_internal(port);
@@ -3503,12 +3319,12 @@ static enum hrtimer_restart mvpp2_hr_timer_cb(struct hrtimer *timer)
 	port_pcpu->timer_scheduled = false;
 	port = netdev_priv(dev);
 
-	/* Process all the Tx queues */
+	 
 	cause = (1 << port->ntxqs) - 1;
 	tx_todo = mvpp2_tx_done(port, cause,
 				mvpp2_cpu_to_thread(port->priv, smp_processor_id()));
 
-	/* Set the timer in case not all the packets were processed */
+	 
 	if (tx_todo && !port_pcpu->timer_scheduled) {
 		port_pcpu->timer_scheduled = true;
 		hrtimer_forward_now(&port_pcpu->tx_done_timer,
@@ -3519,9 +3335,9 @@ static enum hrtimer_restart mvpp2_hr_timer_cb(struct hrtimer *timer)
 	return HRTIMER_NORESTART;
 }
 
-/* Main RX/TX processing routines */
+ 
 
-/* Display more error info */
+ 
 static void mvpp2_rx_error(struct mvpp2_port *port,
 			   struct mvpp2_rx_desc *rx_desc)
 {
@@ -3546,7 +3362,7 @@ static void mvpp2_rx_error(struct mvpp2_port *port,
 			   status, err_str, sz);
 }
 
-/* Handle RX checksum offload */
+ 
 static int mvpp2_rx_csum(struct mvpp2_port *port, u32 status)
 {
 	if (((status & MVPP2_RXD_L3_IP4) &&
@@ -3560,7 +3376,7 @@ static int mvpp2_rx_csum(struct mvpp2_port *port, u32 status)
 	return CHECKSUM_NONE;
 }
 
-/* Allocate a new skb and add it to BM pool */
+ 
 static int mvpp2_rx_refill(struct mvpp2_port *port,
 			   struct mvpp2_bm_pool *bm_pool,
 			   struct page_pool *page_pool, int pool)
@@ -3579,7 +3395,7 @@ static int mvpp2_rx_refill(struct mvpp2_port *port,
 	return 0;
 }
 
-/* Handle tx checksum */
+ 
 static u32 mvpp2_skb_tx_csum(struct mvpp2_port *port, struct sk_buff *skb)
 {
 	if (skb->ip_summed == CHECKSUM_PARTIAL) {
@@ -3590,13 +3406,13 @@ static u32 mvpp2_skb_tx_csum(struct mvpp2_port *port, struct sk_buff *skb)
 		if (l3_proto == htons(ETH_P_IP)) {
 			struct iphdr *ip4h = ip_hdr(skb);
 
-			/* Calculate IPv4 checksum and L4 checksum */
+			 
 			ip_hdr_len = ip4h->ihl;
 			l4_proto = ip4h->protocol;
 		} else if (l3_proto == htons(ETH_P_IPV6)) {
 			struct ipv6hdr *ip6h = ipv6_hdr(skb);
 
-			/* Read l4_protocol from one of IPv6 extra headers */
+			 
 			if (skb_network_header_len(skb) > 0)
 				ip_hdr_len = (skb_network_header_len(skb) >> 2);
 			l4_proto = ip6h->nexthdr;
@@ -3628,14 +3444,14 @@ static void mvpp2_xdp_finish_tx(struct mvpp2_port *port, u16 txq_id, int nxmit, 
 	txq_pcpu->count += nxmit;
 	aggr_txq->count += nxmit;
 
-	/* Enable transmit */
+	 
 	wmb();
 	mvpp2_aggr_txq_pend_desc_add(port, nxmit);
 
 	if (txq_pcpu->count >= txq_pcpu->stop_threshold)
 		netif_tx_stop_queue(nq);
 
-	/* Finalize TX processing */
+	 
 	if (!port->has_tx_irqs && txq_pcpu->count >= txq->done_pkts_coal)
 		mvpp2_txq_done(port, txq, txq_pcpu);
 }
@@ -3659,20 +3475,20 @@ mvpp2_xdp_submit_frame(struct mvpp2_port *port, u16 txq_id,
 	txq_pcpu = per_cpu_ptr(txq->pcpu, thread);
 	aggr_txq = &port->priv->aggr_txqs[thread];
 
-	/* Check number of available descriptors */
+	 
 	if (mvpp2_aggr_desc_num_check(port, aggr_txq, 1) ||
 	    mvpp2_txq_reserved_desc_num_proc(port, txq, txq_pcpu, 1)) {
 		ret = MVPP2_XDP_DROPPED;
 		goto out;
 	}
 
-	/* Get a descriptor for the first part of the packet */
+	 
 	tx_desc = mvpp2_txq_next_desc_get(aggr_txq);
 	mvpp2_txdesc_txq_set(port, tx_desc, txq->id);
 	mvpp2_txdesc_size_set(port, tx_desc, xdpf->len);
 
 	if (dma_map) {
-		/* XDP_REDIRECT or AF_XDP */
+		 
 		dma_addr = dma_map_single(port->dev->dev.parent, xdpf->data,
 					  xdpf->len, DMA_TO_DEVICE);
 
@@ -3684,7 +3500,7 @@ mvpp2_xdp_submit_frame(struct mvpp2_port *port, u16 txq_id,
 
 		buf_type = MVPP2_TYPE_XDP_NDO;
 	} else {
-		/* XDP_TX */
+		 
 		struct page *page = virt_to_page(xdpf->data);
 
 		dma_addr = page_pool_get_dma_addr(page) +
@@ -3716,9 +3532,7 @@ mvpp2_xdp_xmit_back(struct mvpp2_port *port, struct xdp_buff *xdp)
 	if (unlikely(!xdpf))
 		return MVPP2_XDP_DROPPED;
 
-	/* The first of the TX queues are used for XPS,
-	 * the second half for XDP_TX
-	 */
+	 
 	txq_id = mvpp2_cpu_to_thread(port->priv, smp_processor_id()) + (port->ntxqs / 2);
 
 	ret = mvpp2_xdp_submit_frame(port, txq_id, xdpf, false);
@@ -3755,9 +3569,7 @@ mvpp2_xdp_xmit(struct net_device *dev, int num_frame,
 	if (unlikely(flags & ~XDP_XMIT_FLAGS_MASK))
 		return -EINVAL;
 
-	/* The first of the TX queues are used for XPS,
-	 * the second half for XDP_TX
-	 */
+	 
 	txq_id = mvpp2_cpu_to_thread(port->priv, smp_processor_id()) + (port->ntxqs / 2);
 
 	for (i = 0; i < num_frame; i++) {
@@ -3795,7 +3607,7 @@ mvpp2_run_xdp(struct mvpp2_port *port, struct bpf_prog *prog,
 	len = xdp->data_end - xdp->data_hard_start - MVPP2_SKB_HEADROOM;
 	act = bpf_prog_run_xdp(prog, xdp);
 
-	/* Due xdp_adjust_tail: DMA sync for_device cover max len CPU touch */
+	 
 	sync = xdp->data_end - xdp->data_hard_start - MVPP2_SKB_HEADROOM;
 	sync = max(sync, len);
 
@@ -3868,7 +3680,7 @@ static void mvpp2_buff_hdr_pool_put(struct mvpp2_port *port, struct mvpp2_rx_des
 	} while (!MVPP2_B_HDR_INFO_IS_LAST(le16_to_cpu(buff_hdr->info)));
 }
 
-/* Main rx processing */
+ 
 static int mvpp2_rx(struct mvpp2_port *port, struct napi_struct *napi,
 		    int rx_todo, struct mvpp2_rx_queue *rxq)
 {
@@ -3883,7 +3695,7 @@ static int mvpp2_rx(struct mvpp2_port *port, struct napi_struct *napi,
 
 	xdp_prog = READ_ONCE(port->xdp_prog);
 
-	/* Get number of received packets and clamp the to-do */
+	 
 	rx_received = mvpp2_rxq_received(port, rxq->id);
 	if (rx_todo > rx_received)
 		rx_todo = rx_received;
@@ -3927,19 +3739,15 @@ static int mvpp2_rx(struct mvpp2_port *port, struct napi_struct *napi,
 					rx_bytes + MVPP2_MH_SIZE,
 					dma_dir);
 
-		/* Buffer header not supported */
+		 
 		if (rx_status & MVPP2_RXD_BUF_HDR)
 			goto err_drop_frame;
 
-		/* In case of an error, release the requested buffer pointer
-		 * to the Buffer Manager. This request process is controlled
-		 * by the hardware, and the information about the buffer is
-		 * comprised by the RX descriptor.
-		 */
+		 
 		if (rx_status & MVPP2_RXD_ERR_SUMMARY)
 			goto err_drop_frame;
 
-		/* Prefetch header */
+		 
 		prefetch(data + MVPP2_MH_SIZE + MVPP2_SKB_HEADROOM);
 
 		if (bm_pool->frag_size > PAGE_SIZE)
@@ -3982,9 +3790,7 @@ static int mvpp2_rx(struct mvpp2_port *port, struct napi_struct *napi,
 			goto err_drop_frame;
 		}
 
-		/* If we have RX hardware timestamping enabled, grab the
-		 * timestamp from the queue and convert.
-		 */
+		 
 		if (mvpp22_rx_hwtstamping(port)) {
 			timestamp = le32_to_cpu(rx_desc->pp22.timestamp);
 			mvpp22_tai_tstamp(port->priv->tai, timestamp,
@@ -4019,7 +3825,7 @@ static int mvpp2_rx(struct mvpp2_port *port, struct napi_struct *napi,
 err_drop_frame:
 		dev->stats.rx_errors++;
 		mvpp2_rx_error(port, rx_desc);
-		/* Return the buffer to the pool */
+		 
 		if (rx_status & MVPP2_RXD_BUF_HDR)
 			mvpp2_buff_hdr_pool_put(port, rx_desc, pool, rx_status);
 		else
@@ -4035,14 +3841,14 @@ err_drop_frame:
 		u64_stats_update_begin(&stats->syncp);
 		stats->rx_packets += ps.rx_packets;
 		stats->rx_bytes   += ps.rx_bytes;
-		/* xdp */
+		 
 		stats->xdp_redirect += ps.xdp_redirect;
 		stats->xdp_pass += ps.xdp_pass;
 		stats->xdp_drop += ps.xdp_drop;
 		u64_stats_update_end(&stats->syncp);
 	}
 
-	/* Update Rx queue management counters */
+	 
 	wmb();
 	mvpp2_rxq_status_update(port, rxq->id, rx_done, rx_done);
 
@@ -4069,7 +3875,7 @@ tx_desc_unmap_put(struct mvpp2_port *port, struct mvpp2_tx_queue *txq,
 static void mvpp2_txdesc_clear_ptp(struct mvpp2_port *port,
 				   struct mvpp2_tx_desc *desc)
 {
-	/* We only need to clear the low bits */
+	 
 	if (port->priv->hw_version >= MVPP22)
 		desc->pp22.ptp_descriptor &=
 			cpu_to_le32(~MVPP22_PTP_DESC_MASK_LOW);
@@ -4110,7 +3916,7 @@ static bool mvpp2_tx_hw_tstamp(struct mvpp2_port *port,
 	case PTP_CLASS_V2:
 		ptpdesc |= MVPP22_PTP_PACKETFORMAT(MVPP22_PTP_PKT_FMT_PTPV2);
 		mtype = hdr->tsmt & 15;
-		/* Direct PTP Sync messages to queue 1 */
+		 
 		if (mtype == 0) {
 			ptpdesc |= MVPP22_PTP_TIMESTAMPQUEUESELECT;
 			queue = &port->tx_hwtstamp_queue[1];
@@ -4118,7 +3924,7 @@ static bool mvpp2_tx_hw_tstamp(struct mvpp2_port *port,
 		break;
 	}
 
-	/* Take a reference on the skb and insert into our queue */
+	 
 	i = queue->next;
 	queue->next = (i + 1) & 31;
 	if (queue->skb[i])
@@ -4127,23 +3933,7 @@ static bool mvpp2_tx_hw_tstamp(struct mvpp2_port *port,
 
 	ptpdesc |= MVPP22_PTP_TIMESTAMPENTRYID(i);
 
-	/*
-	 * 3:0		- PTPAction
-	 * 6:4		- PTPPacketFormat
-	 * 7		- PTP_CF_WraparoundCheckEn
-	 * 9:8		- IngressTimestampSeconds[1:0]
-	 * 10		- Reserved
-	 * 11		- MACTimestampingEn
-	 * 17:12	- PTP_TimestampQueueEntryID[5:0]
-	 * 18		- PTPTimestampQueueSelect
-	 * 19		- UDPChecksumUpdateEn
-	 * 27:20	- TimestampOffset
-	 *			PTP, NTPTransmit, OWAMP/TWAMP - L3 to PTP header
-	 *			NTPTs, Y.1731 - L3 to timestamp entry
-	 * 35:28	- UDP Checksum Offset
-	 *
-	 * stored in tx descriptor bits 75:64 (11:0) and 191:168 (35:12)
-	 */
+	 
 	tx_desc->pp22.ptp_descriptor &=
 		cpu_to_le32(~MVPP22_PTP_DESC_MASK_LOW);
 	tx_desc->pp22.ptp_descriptor |=
@@ -4154,7 +3944,7 @@ static bool mvpp2_tx_hw_tstamp(struct mvpp2_port *port,
 	return true;
 }
 
-/* Handle tx fragmentation processing */
+ 
 static int mvpp2_tx_frag_process(struct mvpp2_port *port, struct sk_buff *skb,
 				 struct mvpp2_tx_queue *aggr_txq,
 				 struct mvpp2_tx_queue *txq)
@@ -4185,12 +3975,12 @@ static int mvpp2_tx_frag_process(struct mvpp2_port *port, struct sk_buff *skb,
 		mvpp2_txdesc_dma_addr_set(port, tx_desc, buf_dma_addr);
 
 		if (i == (skb_shinfo(skb)->nr_frags - 1)) {
-			/* Last descriptor */
+			 
 			mvpp2_txdesc_cmd_set(port, tx_desc,
 					     MVPP2_TXD_L_DESC);
 			mvpp2_txq_inc_put(port, txq_pcpu, skb, tx_desc, MVPP2_TYPE_SKB);
 		} else {
-			/* Descriptor in the middle: Not First, Not Last */
+			 
 			mvpp2_txdesc_cmd_set(port, tx_desc, 0);
 			mvpp2_txq_inc_put(port, txq_pcpu, NULL, tx_desc, MVPP2_TYPE_SKB);
 		}
@@ -4198,9 +3988,7 @@ static int mvpp2_tx_frag_process(struct mvpp2_port *port, struct sk_buff *skb,
 
 	return 0;
 cleanup:
-	/* Release all descriptors that were used to map fragments of
-	 * this packet, as well as the corresponding DMA mappings
-	 */
+	 
 	for (i = i - 1; i >= 0; i--) {
 		tx_desc = txq->descs + i;
 		tx_desc_unmap_put(port, txq, tx_desc);
@@ -4281,7 +4069,7 @@ static int mvpp2_tx_tso(struct sk_buff *skb, struct net_device *dev,
 	int hdr_sz, i, len, descs = 0;
 	struct tso_t tso;
 
-	/* Check number of available descriptors */
+	 
 	if (mvpp2_aggr_desc_num_check(port, aggr_txq, tso_count_descs(skb)) ||
 	    mvpp2_txq_reserved_desc_num_proc(port, txq, txq_pcpu,
 					     tso_count_descs(skb)))
@@ -4323,7 +4111,7 @@ release:
 	return 0;
 }
 
-/* Main tx processing */
+ 
 static netdev_tx_t mvpp2_tx(struct sk_buff *skb, struct net_device *dev)
 {
 	struct mvpp2_port *port = netdev_priv(dev);
@@ -4353,14 +4141,14 @@ static netdev_tx_t mvpp2_tx(struct sk_buff *skb, struct net_device *dev)
 	}
 	frags = skb_shinfo(skb)->nr_frags + 1;
 
-	/* Check number of available descriptors */
+	 
 	if (mvpp2_aggr_desc_num_check(port, aggr_txq, frags) ||
 	    mvpp2_txq_reserved_desc_num_proc(port, txq, txq_pcpu, frags)) {
 		frags = 0;
 		goto out;
 	}
 
-	/* Get a descriptor for the first part of the packet */
+	 
 	tx_desc = mvpp2_txq_next_desc_get(aggr_txq);
 	if (!(skb_shinfo(skb)->tx_flags & SKBTX_HW_TSTAMP) ||
 	    !mvpp2_tx_hw_tstamp(port, tx_desc, skb))
@@ -4381,17 +4169,17 @@ static netdev_tx_t mvpp2_tx(struct sk_buff *skb, struct net_device *dev)
 	tx_cmd = mvpp2_skb_tx_csum(port, skb);
 
 	if (frags == 1) {
-		/* First and Last descriptor */
+		 
 		tx_cmd |= MVPP2_TXD_F_DESC | MVPP2_TXD_L_DESC;
 		mvpp2_txdesc_cmd_set(port, tx_desc, tx_cmd);
 		mvpp2_txq_inc_put(port, txq_pcpu, skb, tx_desc, MVPP2_TYPE_SKB);
 	} else {
-		/* First but not Last */
+		 
 		tx_cmd |= MVPP2_TXD_F_DESC | MVPP2_TXD_PADDING_DISABLE;
 		mvpp2_txdesc_cmd_set(port, tx_desc, tx_cmd);
 		mvpp2_txq_inc_put(port, txq_pcpu, NULL, tx_desc, MVPP2_TYPE_SKB);
 
-		/* Continue with other skb fragments */
+		 
 		if (mvpp2_tx_frag_process(port, skb, aggr_txq, txq)) {
 			tx_desc_unmap_put(port, txq, tx_desc);
 			frags = 0;
@@ -4407,7 +4195,7 @@ out:
 		txq_pcpu->count += frags;
 		aggr_txq->count += frags;
 
-		/* Enable transmit */
+		 
 		wmb();
 		mvpp2_aggr_txq_pend_desc_add(port, frags);
 
@@ -4423,11 +4211,11 @@ out:
 		dev_kfree_skb_any(skb);
 	}
 
-	/* Finalize TX processing */
+	 
 	if (!port->has_tx_irqs && txq_pcpu->count >= txq->done_pkts_coal)
 		mvpp2_txq_done(port, txq, txq_pcpu);
 
-	/* Set the timer in case not all frags were processed */
+	 
 	if (!port->has_tx_irqs && txq_pcpu->count <= frags &&
 	    txq_pcpu->count > 0) {
 		struct mvpp2_port_pcpu *port_pcpu = per_cpu_ptr(port->pcpu, thread);
@@ -4466,16 +4254,7 @@ static int mvpp2_poll(struct napi_struct *napi, int budget)
 
 	qv = container_of(napi, struct mvpp2_queue_vector, napi);
 
-	/* Rx/Tx cause register
-	 *
-	 * Bits 0-15: each bit indicates received packets on the Rx queue
-	 * (bit 0 is for Rx queue 0).
-	 *
-	 * Bits 16-23: each bit indicates transmitted packets on the Tx queue
-	 * (bit 16 is for Tx queue 0).
-	 *
-	 * Each CPU has its own Rx/Tx cause register
-	 */
+	 
 	cause_rx_tx = mvpp2_thread_read_relaxed(port->priv, qv->sw_thread_id,
 						MVPP2_ISR_RX_TX_CAUSE_REG(port->id));
 
@@ -4483,7 +4262,7 @@ static int mvpp2_poll(struct napi_struct *napi, int budget)
 	if (cause_misc) {
 		mvpp2_cause_error(port->dev, cause_misc);
 
-		/* Clear the cause register */
+		 
 		mvpp2_write(port->priv, MVPP2_ISR_MISC_CAUSE_REG, 0);
 		mvpp2_thread_write(port->priv, thread,
 				   MVPP2_ISR_RX_TX_CAUSE_REG(port->id),
@@ -4498,7 +4277,7 @@ static int mvpp2_poll(struct napi_struct *napi, int budget)
 		}
 	}
 
-	/* Process RX packets */
+	 
 	cause_rx = cause_rx_tx &
 		   MVPP2_CAUSE_RXQ_OCCUP_DESC_ALL_MASK(port->priv->hw_version);
 	cause_rx <<= qv->first_rxq;
@@ -4515,10 +4294,7 @@ static int mvpp2_poll(struct napi_struct *napi, int budget)
 		rx_done += count;
 		budget -= count;
 		if (budget > 0) {
-			/* Clear the bit associated to this Rx queue
-			 * so that next iteration will continue from
-			 * the next Rx queue.
-			 */
+			 
 			cause_rx &= ~(1 << rxq->logic_rxq);
 		}
 	}
@@ -4538,16 +4314,16 @@ static void mvpp22_mode_reconfigure(struct mvpp2_port *port,
 {
 	u32 ctrl3;
 
-	/* Set the GMAC & XLG MAC in reset */
+	 
 	mvpp2_mac_reset_assert(port);
 
-	/* Set the MPCS and XPCS in reset */
+	 
 	mvpp22_pcs_reset_assert(port);
 
-	/* comphy reconfiguration */
+	 
 	mvpp22_comphy_init(port, interface);
 
-	/* gop reconfiguration */
+	 
 	mvpp22_gop_init(port, interface);
 
 	mvpp22_pcs_reset_deassert(port, interface);
@@ -4570,7 +4346,7 @@ static void mvpp22_mode_reconfigure(struct mvpp2_port *port,
 		mvpp2_gmac_max_rx_size_set(port);
 }
 
-/* Set hw internals when starting port */
+ 
 static void mvpp2_start_dev(struct mvpp2_port *port)
 {
 	int i;
@@ -4580,7 +4356,7 @@ static void mvpp2_start_dev(struct mvpp2_port *port)
 	for (i = 0; i < port->nqvecs; i++)
 		napi_enable(&port->qvecs[i].napi);
 
-	/* Enable interrupts on all threads */
+	 
 	mvpp2_interrupts_enable(port);
 
 	if (port->priv->hw_version >= MVPP22)
@@ -4597,14 +4373,14 @@ static void mvpp2_start_dev(struct mvpp2_port *port)
 	clear_bit(0, &port->state);
 }
 
-/* Set hw internals when stopping port */
+ 
 static void mvpp2_stop_dev(struct mvpp2_port *port)
 {
 	int i;
 
 	set_bit(0, &port->state);
 
-	/* Disable interrupts on all threads */
+	 
 	mvpp2_interrupts_disable(port);
 
 	for (i = 0; i < port->nqvecs; i++)
@@ -4636,9 +4412,7 @@ static int mvpp2_check_ringparam_valid(struct net_device *dev,
 	else if (!IS_ALIGNED(ring->tx_pending, 32))
 		new_tx_pending = ALIGN(ring->tx_pending, 32);
 
-	/* The Tx ring size cannot be smaller than the minimum number of
-	 * descriptors needed for TSO.
-	 */
+	 
 	if (new_tx_pending < MVPP2_MAX_SKB_DESCS)
 		new_tx_pending = ALIGN(MVPP2_MAX_SKB_DESCS, 32);
 
@@ -4771,7 +4545,7 @@ static int mvpp2_open(struct net_device *dev)
 		return err;
 	}
 
-	/* Allocate the Rx/Tx queues */
+	 
 	err = mvpp2_setup_rxqs(port);
 	if (err) {
 		netdev_err(port->dev, "cannot allocate Rx queues\n");
@@ -4813,7 +4587,7 @@ static int mvpp2_open(struct net_device *dev)
 
 		mvpp22_gop_setup_irq(port);
 
-		/* In default link is down */
+		 
 		netif_carrier_off(port->dev);
 
 		valid = true;
@@ -4828,13 +4602,13 @@ static int mvpp2_open(struct net_device *dev)
 		goto err_free_irq;
 	}
 
-	/* Unmask interrupts on all CPUs */
+	 
 	on_each_cpu(mvpp2_interrupts_unmask, port, 1);
 	mvpp2_shared_interrupt_mask_unmask(port, false);
 
 	mvpp2_start_dev(port);
 
-	/* Start hardware statistics gathering */
+	 
 	queue_delayed_work(priv->stats_queue, &port->stats_work,
 			   MVPP2_MIB_COUNTERS_STATS_DELAY);
 
@@ -4857,7 +4631,7 @@ static int mvpp2_stop(struct net_device *dev)
 
 	mvpp2_stop_dev(port);
 
-	/* Mask interrupts on all threads */
+	 
 	on_each_cpu(mvpp2_interrupts_mask, port, 1);
 	mvpp2_shared_interrupt_mask_unmask(port, true);
 
@@ -4919,7 +4693,7 @@ static void mvpp2_set_rx_mode(struct net_device *dev)
 {
 	struct mvpp2_port *port = netdev_priv(dev);
 
-	/* Clear the whole UC and MC list */
+	 
 	mvpp2_prs_mac_del_all(port);
 
 	if (dev->flags & IFF_PROMISC) {
@@ -4956,16 +4730,14 @@ static int mvpp2_set_mac_address(struct net_device *dev, void *p)
 
 	err = mvpp2_prs_update_mac_da(dev, addr->sa_data);
 	if (err) {
-		/* Reconfigure parser accept the original MAC address */
+		 
 		mvpp2_prs_update_mac_da(dev, dev->dev_addr);
 		netdev_err(dev, "failed to change MAC address\n");
 	}
 	return err;
 }
 
-/* Shut down all the ports, reconfigure the pools as percpu or shared,
- * then bring up again all ports.
- */
+ 
 static int mvpp2_bm_switch_buffers(struct mvpp2 *priv, bool percpu)
 {
 	bool change_percpu = (percpu != priv->percpu_pools);
@@ -4980,7 +4752,7 @@ static int mvpp2_bm_switch_buffers(struct mvpp2 *priv, bool percpu)
 			mvpp2_stop(port->dev);
 	}
 
-	/* nrxqs is the same for all ports */
+	 
 	if (priv->percpu_pools)
 		numbufs = port->nrxqs * 2;
 
@@ -5051,7 +4823,7 @@ static int mvpp2_change_mtu(struct net_device *dev, int mtu)
 				break;
 			}
 
-		/* No port is using jumbo frames */
+		 
 		if (!jumbo) {
 			dev_info(port->dev->dev.parent,
 				 "all ports have a low MTU, switching to per-cpu buffers");
@@ -5065,7 +4837,7 @@ static int mvpp2_change_mtu(struct net_device *dev, int mtu)
 	err = mvpp2_bm_update_mtu(dev, mtu);
 	if (err) {
 		netdev_err(dev, "failed to change MTU\n");
-		/* Reconfigure BM to the original MTU */
+		 
 		mvpp2_bm_update_mtu(dev, dev->mtu);
 	} else {
 		port->pkt_size =  MVPP2_RX_PKT_SIZE(mtu);
@@ -5100,7 +4872,7 @@ static int mvpp2_check_pagepool_dma(struct mvpp2_port *port)
 		}
 	}
 
-	/* All pools are equal in terms of DMA direction */
+	 
 	if (priv->page_pool[0]->p.dma_dir != dma_dir)
 		err = mvpp2_bm_switch_buffers(priv, true);
 
@@ -5163,7 +4935,7 @@ static int mvpp2_set_ts_config(struct mvpp2_port *port, struct ifreq *ifr)
 			    MVPP22_PTP_INT_MASK_QUEUE0;
 	}
 
-	/* It seems we must also release the TX reset when enabling the TSU */
+	 
 	if (config.rx_filter != HWTSTAMP_FILTER_NONE)
 		gcr |= MVPP22_PTP_GCR_TSU_ENABLE | MVPP22_PTP_GCR_RX_RESET |
 		       MVPP22_PTP_GCR_TX_RESET;
@@ -5292,9 +5064,7 @@ static int mvpp2_set_features(struct net_device *dev,
 		if (features & NETIF_F_HW_VLAN_CTAG_FILTER) {
 			mvpp2_prs_vid_enable_filtering(port);
 		} else {
-			/* Invalidate all registered VID filters for this
-			 * port
-			 */
+			 
 			mvpp2_prs_vid_remove_all(port);
 
 			mvpp2_prs_vid_disable_filtering(port);
@@ -5332,7 +5102,7 @@ static int mvpp2_xdp_setup(struct mvpp2_port *port, struct netdev_bpf *bpf)
 		return -EOPNOTSUPP;
 	}
 
-	/* device is up and bpf is added/removed, must setup the RX queues */
+	 
 	if (running && reset)
 		mvpp2_stop(port->dev);
 
@@ -5340,15 +5110,15 @@ static int mvpp2_xdp_setup(struct mvpp2_port *port, struct netdev_bpf *bpf)
 	if (old_prog)
 		bpf_prog_put(old_prog);
 
-	/* bpf is just replaced, RXQ and MTU are already setup */
+	 
 	if (!reset)
 		return 0;
 
-	/* device was up, restore the link */
+	 
 	if (running)
 		mvpp2_open(port->dev);
 
-	/* Check Page Pool DMA Direction */
+	 
 	mvpp2_check_pagepool_dma(port);
 
 	return 0;
@@ -5366,7 +5136,7 @@ static int mvpp2_xdp(struct net_device *dev, struct netdev_bpf *xdp)
 	}
 }
 
-/* Ethtool methods */
+ 
 
 static int mvpp2_ethtool_nway_reset(struct net_device *dev)
 {
@@ -5378,7 +5148,7 @@ static int mvpp2_ethtool_nway_reset(struct net_device *dev)
 	return phylink_ethtool_nway_reset(port->phylink);
 }
 
-/* Set interrupt coalescing for ethtools */
+ 
 static int
 mvpp2_ethtool_set_coalesce(struct net_device *dev,
 			   struct ethtool_coalesce *c,
@@ -5414,7 +5184,7 @@ mvpp2_ethtool_set_coalesce(struct net_device *dev,
 	return 0;
 }
 
-/* get coalescing for ethtools */
+ 
 static int
 mvpp2_ethtool_get_coalesce(struct net_device *dev,
 			   struct ethtool_coalesce *c,
@@ -5476,9 +5246,7 @@ mvpp2_ethtool_set_ringparam(struct net_device *dev,
 		return 0;
 	}
 
-	/* The interface is running, so we have to force a
-	 * reallocation of the queues
-	 */
+	 
 	mvpp2_stop_dev(port);
 	mvpp2_cleanup_rxqs(port);
 	mvpp2_cleanup_txqs(port);
@@ -5488,7 +5256,7 @@ mvpp2_ethtool_set_ringparam(struct net_device *dev,
 
 	err = mvpp2_setup_rxqs(port);
 	if (err) {
-		/* Reallocate Rx queues with the original ring size */
+		 
 		port->rx_ring_size = prev_rx_ring_size;
 		ring->rx_pending = prev_rx_ring_size;
 		err = mvpp2_setup_rxqs(port);
@@ -5497,7 +5265,7 @@ mvpp2_ethtool_set_ringparam(struct net_device *dev,
 	}
 	err = mvpp2_setup_txqs(port);
 	if (err) {
-		/* Reallocate Tx queues with the original ring size */
+		 
 		port->tx_ring_size = prev_tx_ring_size;
 		ring->tx_pending = prev_tx_ring_size;
 		err = mvpp2_setup_txqs(port);
@@ -5721,7 +5489,7 @@ static int mvpp2_ethtool_set_rxfh_context(struct net_device *dev,
 
 	return mvpp22_port_rss_ctx_indir_set(port, *rss_context, indir);
 }
-/* Device ops */
+ 
 
 static const struct net_device_ops mvpp2_netdev_ops = {
 	.ndo_open		= mvpp2_open,
@@ -5766,9 +5534,7 @@ static const struct ethtool_ops mvpp2_eth_tool_ops = {
 	.set_rxfh_context	= mvpp2_ethtool_set_rxfh_context,
 };
 
-/* Used for PPv2.1, or PPv2.2 with the old Device Tree binding that
- * had a single IRQ defined per-port.
- */
+ 
 static int mvpp2_simple_queue_vectors_init(struct mvpp2_port *port,
 					   struct device_node *port_node)
 {
@@ -5871,7 +5637,7 @@ static void mvpp2_queue_vectors_deinit(struct mvpp2_port *port)
 		irq_dispose_mapping(port->qvecs[i].irq);
 }
 
-/* Configure Rx queue group interrupt for this port */
+ 
 static void mvpp2_rx_irqs_setup(struct mvpp2_port *port)
 {
 	struct mvpp2 *priv = port->priv;
@@ -5884,7 +5650,7 @@ static void mvpp2_rx_irqs_setup(struct mvpp2_port *port)
 		return;
 	}
 
-	/* Handle the more complicated PPv2.2 and PPv2.3 case */
+	 
 	for (i = 0; i < port->nqvecs; i++) {
 		struct mvpp2_queue_vector *qv = port->qvecs + i;
 
@@ -5901,7 +5667,7 @@ static void mvpp2_rx_irqs_setup(struct mvpp2_port *port)
 	}
 }
 
-/* Initialize port HW */
+ 
 static int mvpp2_port_init(struct mvpp2_port *port)
 {
 	struct device *dev = port->dev->dev.parent;
@@ -5910,7 +5676,7 @@ static int mvpp2_port_init(struct mvpp2_port *port)
 	unsigned int thread;
 	int queue, err, val;
 
-	/* Checks for hardware constraints */
+	 
 	if (port->first_rxq + port->nrxqs >
 	    MVPP2_MAX_PORTS * priv->max_port_rxqs)
 		return -EINVAL;
@@ -5918,7 +5684,7 @@ static int mvpp2_port_init(struct mvpp2_port *port)
 	if (port->nrxqs > priv->max_port_rxqs || port->ntxqs > MVPP2_MAX_TXQ)
 		return -EINVAL;
 
-	/* Disable port */
+	 
 	mvpp2_egress_disable(port);
 	mvpp2_port_disable(port);
 
@@ -5941,9 +5707,7 @@ static int mvpp2_port_init(struct mvpp2_port *port)
 	if (!port->txqs)
 		return -ENOMEM;
 
-	/* Associate physical Tx queues to this port and initialize.
-	 * The mapping is predefined.
-	 */
+	 
 	for (queue = 0; queue < port->ntxqs; queue++) {
 		int queue_phy_id = mvpp2_txq_phys(port->id, queue);
 		struct mvpp2_tx_queue *txq;
@@ -5978,17 +5742,17 @@ static int mvpp2_port_init(struct mvpp2_port *port)
 		goto err_free_percpu;
 	}
 
-	/* Allocate and initialize Rx queue for this port */
+	 
 	for (queue = 0; queue < port->nrxqs; queue++) {
 		struct mvpp2_rx_queue *rxq;
 
-		/* Map physical Rx queue to port's logical Rx queue */
+		 
 		rxq = devm_kzalloc(dev, sizeof(*rxq), GFP_KERNEL);
 		if (!rxq) {
 			err = -ENOMEM;
 			goto err_free_percpu;
 		}
-		/* Map this Rx queue to a physical queue */
+		 
 		rxq->id = port->first_rxq + queue;
 		rxq->port = port->id;
 		rxq->logic_rxq = queue;
@@ -5998,7 +5762,7 @@ static int mvpp2_port_init(struct mvpp2_port *port)
 
 	mvpp2_rx_irqs_setup(port);
 
-	/* Create Rx descriptor rings */
+	 
 	for (queue = 0; queue < port->nrxqs; queue++) {
 		struct mvpp2_rx_queue *rxq = port->rxqs[queue];
 
@@ -6009,25 +5773,25 @@ static int mvpp2_port_init(struct mvpp2_port *port)
 
 	mvpp2_ingress_disable(port);
 
-	/* Port default configuration */
+	 
 	mvpp2_defaults_set(port);
 
-	/* Port's classifier configuration */
+	 
 	mvpp2_cls_oversize_rxq_set(port);
 	mvpp2_cls_port_config(port);
 
 	if (mvpp22_rss_is_supported(port))
 		mvpp22_port_rss_init(port);
 
-	/* Provide an initial Rx packet size */
+	 
 	port->pkt_size = MVPP2_RX_PKT_SIZE(port->dev->mtu);
 
-	/* Initialize pools for swf */
+	 
 	err = mvpp2_swf_bm_pool_init(port);
 	if (err)
 		goto err_free_percpu;
 
-	/* Clear all port stats */
+	 
 	mvpp2_read_stats(port);
 	memset(port->ethtool_stats, 0,
 	       MVPP2_N_ETHTOOL_STATS(port->ntxqs, port->nrxqs) * sizeof(u64));
@@ -6059,14 +5823,7 @@ static bool mvpp22_port_has_legacy_tx_irqs(struct device_node *port_node,
 	return true;
 }
 
-/* Checks if the port dt description has the required Tx interrupts:
- * - PPv2.1: there are no such interrupts.
- * - PPv2.2 and PPv2.3:
- *   - The old DTs have: "rx-shared", "tx-cpuX" with X in [0...3]
- *   - The new ones have: "hifX" with X in [0..8]
- *
- * All those variants are supported to keep the backward compatibility.
- */
+ 
 static bool mvpp2_port_has_irqs(struct mvpp2 *priv,
 				struct device_node *port_node,
 				unsigned long *flags)
@@ -6074,7 +5831,7 @@ static bool mvpp2_port_has_irqs(struct mvpp2 *priv,
 	char name[5];
 	int i;
 
-	/* ACPI */
+	 
 	if (!port_node)
 		return true;
 
@@ -6118,7 +5875,7 @@ static int mvpp2_port_copy_mac_addr(struct net_device *dev, struct mvpp2 *priv,
 		}
 	}
 
-	/* Only valid on OF enabled platforms */
+	 
 	ret = of_get_mac_address_nvmem(to_of_node(fwnode), fw_mac_addr);
 	if (ret == -EPROBE_DEFER)
 		return ret;
@@ -6190,10 +5947,7 @@ static int mvpp2_gmac_pcs_validate(struct phylink_pcs *pcs,
 				   unsigned long *supported,
 				   const struct phylink_link_state *state)
 {
-	/* When in 802.3z mode, we must have AN enabled:
-	 * Bit 2 Field InBandAnEn In-band Auto-Negotiation enable. ...
-	 * When <PortType> = 1 (1000BASE-X) this field must be set to 1.
-	 */
+	 
 	if (phy_interface_mode_is_8023z(state->interface) &&
 	    !phylink_test(state->advertising, Autoneg))
 		return -EINVAL;
@@ -6257,22 +6011,19 @@ static int mvpp2_gmac_pcs_config(struct phylink_pcs *pcs, unsigned int neg_mode,
 		val = MVPP2_GMAC_IN_BAND_AUTONEG;
 
 		if (interface == PHY_INTERFACE_MODE_SGMII) {
-			/* SGMII mode receives the speed and duplex from PHY */
+			 
 			val |= MVPP2_GMAC_AN_SPEED_EN |
 			       MVPP2_GMAC_AN_DUPLEX_EN;
 		} else {
-			/* 802.3z mode has fixed speed and duplex */
+			 
 			val |= MVPP2_GMAC_CONFIG_GMII_SPEED |
 			       MVPP2_GMAC_CONFIG_FULL_DUPLEX;
 
-			/* The FLOW_CTRL_AUTONEG bit selects either the hardware
-			 * automatically or the bits in MVPP22_GMAC_CTRL_4_REG
-			 * manually controls the GMAC pause modes.
-			 */
+			 
 			if (permit_pause_to_mac)
 				val |= MVPP2_GMAC_FLOW_CTRL_AUTONEG;
 
-			/* Configure advertisement bits */
+			 
 			mask |= MVPP2_GMAC_FC_ADV_EN | MVPP2_GMAC_FC_ADV_ASM_EN;
 			if (phylink_test(advertising, Pause))
 				val |= MVPP2_GMAC_FC_ADV_EN;
@@ -6289,7 +6040,7 @@ static int mvpp2_gmac_pcs_config(struct phylink_pcs *pcs, unsigned int neg_mode,
 	if (changed)
 		writel(an, port->base + MVPP2_GMAC_AUTONEG_CONFIG);
 
-	/* We are only interested in the advertisement bits changing */
+	 
 	return changed & (MVPP2_GMAC_FC_ADV_EN | MVPP2_GMAC_FC_ADV_ASM_EN);
 }
 
@@ -6325,7 +6076,7 @@ static void mvpp2_xlg_config(struct mvpp2_port *port, unsigned int mode,
 		     MVPP22_XLG_CTRL4_FWD_FC | MVPP22_XLG_CTRL4_FWD_PFC,
 		     MVPP22_XLG_CTRL4_FWD_FC | MVPP22_XLG_CTRL4_FWD_PFC);
 
-	/* Wait for reset to deassert */
+	 
 	do {
 		val = readl(port->base + MVPP22_XLG_CTRL0_REG);
 	} while (!(val & MVPP22_XLG_CTRL0_MAC_RESET_DIS));
@@ -6345,7 +6096,7 @@ static void mvpp2_gmac_config(struct mvpp2_port *port, unsigned int mode,
 	ctrl0 &= ~MVPP2_GMAC_PORT_TYPE_MASK;
 	ctrl2 &= ~(MVPP2_GMAC_INBAND_AN_MASK | MVPP2_GMAC_PCS_ENABLE_MASK | MVPP2_GMAC_FLOW_CTRL_MASK);
 
-	/* Configure port type */
+	 
 	if (phy_interface_mode_is_8023z(state->interface)) {
 		ctrl2 |= MVPP2_GMAC_PCS_ENABLE_MASK;
 		ctrl4 &= ~MVPP22_CTRL4_EXT_PIN_GMII_SEL;
@@ -6365,20 +6116,13 @@ static void mvpp2_gmac_config(struct mvpp2_port *port, unsigned int mode,
 			 MVPP22_CTRL4_QSGMII_BYPASS_ACTIVE;
 	}
 
-	/* Configure negotiation style */
+	 
 	if (!phylink_autoneg_inband(mode)) {
-		/* Phy or fixed speed - no in-band AN, nothing to do, leave the
-		 * configured speed, duplex and flow control as-is.
-		 */
+		 
 	} else if (state->interface == PHY_INTERFACE_MODE_SGMII) {
-		/* SGMII in-band mode receives the speed and duplex from
-		 * the PHY. Flow control information is not received. */
+		 
 	} else if (phy_interface_mode_is_8023z(state->interface)) {
-		/* 1000BaseX and 2500BaseX ports cannot negotiate speed nor can
-		 * they negotiate duplex: they are always operating with a fixed
-		 * speed of 1000/2500Mbps in full duplex, so force 1000/2500
-		 * speed and full duplex here.
-		 */
+		 
 		ctrl0 |= MVPP2_GMAC_PORT_TYPE_MASK;
 	}
 
@@ -6395,10 +6139,7 @@ static struct phylink_pcs *mvpp2_select_pcs(struct phylink_config *config,
 {
 	struct mvpp2_port *port = mvpp2_phylink_to_port(config);
 
-	/* Select the appropriate PCS operations depending on the
-	 * configured interface mode. We will only switch to a mode
-	 * that the validate() checks have already passed.
-	 */
+	 
 	if (mvpp2_is_xlg(interface))
 		return &port->pcs_xlg;
 	else
@@ -6410,7 +6151,7 @@ static int mvpp2_mac_prepare(struct phylink_config *config, unsigned int mode,
 {
 	struct mvpp2_port *port = mvpp2_phylink_to_port(config);
 
-	/* Check for invalid configuration */
+	 
 	if (mvpp2_is_xlg(interface) && port->gop_id != 0) {
 		netdev_err(port->dev, "Invalid mode on %s\n", port->dev->name);
 		return -EINVAL;
@@ -6418,12 +6159,7 @@ static int mvpp2_mac_prepare(struct phylink_config *config, unsigned int mode,
 
 	if (port->phy_interface != interface ||
 	    phylink_autoneg_inband(mode)) {
-		/* Force the link down when changing the interface or if in
-		 * in-band mode to ensure we do not change the configuration
-		 * while the hardware is indicating link is up. We force both
-		 * XLG and GMAC down to ensure that they're both in a known
-		 * state.
-		 */
+		 
 		mvpp2_modify(port->base + MVPP2_GMAC_AUTONEG_CONFIG,
 			     MVPP2_GMAC_FORCE_LINK_PASS |
 			     MVPP2_GMAC_FORCE_LINK_DOWN,
@@ -6436,11 +6172,11 @@ static int mvpp2_mac_prepare(struct phylink_config *config, unsigned int mode,
 				     MVPP22_XLG_CTRL0_FORCE_LINK_DOWN);
 	}
 
-	/* Make sure the port is disabled when reconfiguring the mode */
+	 
 	mvpp2_port_disable(port);
 
 	if (port->phy_interface != interface) {
-		/* Place GMAC into reset */
+		 
 		mvpp2_modify(port->base + MVPP2_GMAC_CTRL_2_REG,
 			     MVPP2_GMAC_PORT_RESET_MASK,
 			     MVPP2_GMAC_PORT_RESET_MASK);
@@ -6450,7 +6186,7 @@ static int mvpp2_mac_prepare(struct phylink_config *config, unsigned int mode,
 
 			phy_power_off(port->comphy);
 
-			/* Reconfigure the serdes lanes */
+			 
 			mvpp22_mode_reconfigure(port, interface);
 		}
 	}
@@ -6463,7 +6199,7 @@ static void mvpp2_mac_config(struct phylink_config *config, unsigned int mode,
 {
 	struct mvpp2_port *port = mvpp2_phylink_to_port(config);
 
-	/* mac (re)configuration */
+	 
 	if (mvpp2_is_xlg(state->interface))
 		mvpp2_xlg_config(port, mode, state);
 	else if (phy_interface_mode_is_rgmii(state->interface) ||
@@ -6484,12 +6220,12 @@ static int mvpp2_mac_finish(struct phylink_config *config, unsigned int mode,
 	    port->phy_interface != interface) {
 		port->phy_interface = interface;
 
-		/* Unmask interrupts */
+		 
 		mvpp22_gop_unmask_irq(port);
 	}
 
 	if (!mvpp2_is_xlg(interface)) {
-		/* Release GMAC reset and wait */
+		 
 		mvpp2_modify(port->base + MVPP2_GMAC_CTRL_2_REG,
 			     MVPP2_GMAC_PORT_RESET_MASK, 0);
 
@@ -6500,9 +6236,7 @@ static int mvpp2_mac_finish(struct phylink_config *config, unsigned int mode,
 
 	mvpp2_port_enable(port);
 
-	/* Allow the link to come up if in in-band mode, otherwise the
-	 * link is forced via mac_link_down()/mac_link_up()
-	 */
+	 
 	if (phylink_autoneg_inband(mode)) {
 		if (mvpp2_is_xlg(interface))
 			mvpp2_modify(port->base + MVPP22_XLG_CTRL0_REG,
@@ -6561,10 +6295,7 @@ static void mvpp2_mac_link_up(struct phylink_config *config,
 				     MVPP2_GMAC_CONFIG_FULL_DUPLEX, val);
 		}
 
-		/* We can always update the flow control enable bits;
-		 * these will only be effective if flow control AN
-		 * (MVPP2_GMAC_FLOW_CTRL_AUTONEG) is disabled.
-		 */
+		 
 		val = 0;
 		if (tx_pause)
 			val |= MVPP22_CTRL4_TX_FC_EN;
@@ -6636,13 +6367,10 @@ static const struct phylink_mac_ops mvpp2_phylink_ops = {
 	.mac_link_down = mvpp2_mac_link_down,
 };
 
-/* Work-around for ACPI */
+ 
 static void mvpp2_acpi_start(struct mvpp2_port *port)
 {
-	/* Phylink isn't used as of now for ACPI, so the MAC has to be
-	 * configured manually when the interface is started. This will
-	 * be removed as soon as the phylink ACPI support lands in.
-	 */
+	 
 	struct phylink_link_state state = {
 		.interface = port->phy_interface,
 	};
@@ -6663,9 +6391,7 @@ static void mvpp2_acpi_start(struct mvpp2_port *port)
 			  SPEED_UNKNOWN, DUPLEX_UNKNOWN, false, false);
 }
 
-/* In order to ensure backward compatibility for ACPI, check if the port
- * firmware node comprises the necessary description allowing to use phylink.
- */
+ 
 static bool mvpp2_use_acpi_compat_mode(struct fwnode_handle *port_fwnode)
 {
 	if (!is_acpi_node(port_fwnode))
@@ -6676,7 +6402,7 @@ static bool mvpp2_use_acpi_compat_mode(struct fwnode_handle *port_fwnode)
 		!fwnode_get_named_child_node(port_fwnode, "fixed-link"));
 }
 
-/* Ports initialization */
+ 
 static int mvpp2_port_probe(struct platform_device *pdev,
 			    struct fwnode_handle *port_fwnode,
 			    struct mvpp2 *priv)
@@ -6717,12 +6443,7 @@ static int mvpp2_port_probe(struct platform_device *pdev,
 		goto err_free_netdev;
 	}
 
-	/*
-	 * Rewrite 10GBASE-KR to 10GBASE-R for compatibility with existing DT.
-	 * Existing usage of 10GBASE-KR is not correct; no backplane
-	 * negotiation is done, and this driver does not actually support
-	 * 10GBASE-KR.
-	 */
+	 
 	if (phy_mode == PHY_INTERFACE_MODE_10GKR)
 		phy_mode = PHY_INTERFACE_MODE_10GBASER;
 
@@ -6770,7 +6491,7 @@ static int mvpp2_port_probe(struct platform_device *pdev,
 		goto err_deinit_qvecs;
 	}
 	if (port->port_irq <= 0)
-		/* the link irq is optional */
+		 
 		port->port_irq = 0;
 
 	if (fwnode_property_read_bool(port_fwnode, "marvell,loopback"))
@@ -6809,14 +6530,12 @@ static int mvpp2_port_probe(struct platform_device *pdev,
 				   MVPP22_MIB_COUNTERS_OFFSET +
 				   port->gop_id * MVPP22_MIB_COUNTERS_PORT_SZ;
 
-		/* We may want a property to describe whether we should use
-		 * MAC hardware timestamping.
-		 */
+		 
 		if (priv->tai)
 			port->hwtstamp = true;
 	}
 
-	/* Alloc per-cpu and ethtool stats */
+	 
 	port->stats = netdev_alloc_pcpu_stats(struct mvpp2_pcpu_stats);
 	if (!port->stats) {
 		err = -ENOMEM;
@@ -6894,9 +6613,9 @@ static int mvpp2_port_probe(struct platform_device *pdev,
 
 	dev->priv_flags |= IFF_UNICAST_FLT;
 
-	/* MTU range: 68 - 9704 */
+	 
 	dev->min_mtu = ETH_MIN_MTU;
-	/* 9704 == 9728 - 20 and rounding to 8 */
+	 
 	dev->max_mtu = MVPP2_BM_JUMBO_PKT_SIZE;
 	dev->dev.of_node = port_node;
 
@@ -6916,9 +6635,7 @@ static int mvpp2_port_probe(struct platform_device *pdev,
 				MAC_SYM_PAUSE | MAC_ASYM_PAUSE;
 
 		if (mvpp2_port_supports_xlg(port)) {
-			/* If a COMPHY is present, we can support any of
-			 * the serdes modes and switch between them.
-			 */
+			 
 			if (comphy) {
 				__set_bit(PHY_INTERFACE_MODE_5GBASER,
 					  port->phylink_config.supported_interfaces);
@@ -6952,9 +6669,7 @@ static int mvpp2_port_probe(struct platform_device *pdev,
 			phy_interface_set_rgmii(port->phylink_config.supported_interfaces);
 
 		if (comphy) {
-			/* If a COMPHY is present, we can support any of the
-			 * serdes modes and switch between them.
-			 */
+			 
 			__set_bit(PHY_INTERFACE_MODE_SGMII,
 				  port->phylink_config.supported_interfaces);
 			__set_bit(PHY_INTERFACE_MODE_1000BASEX,
@@ -6962,13 +6677,12 @@ static int mvpp2_port_probe(struct platform_device *pdev,
 			__set_bit(PHY_INTERFACE_MODE_2500BASEX,
 				  port->phylink_config.supported_interfaces);
 		} else if (phy_mode == PHY_INTERFACE_MODE_2500BASEX) {
-			/* No COMPHY, with only 2500BASE-X mode supported */
+			 
 			__set_bit(PHY_INTERFACE_MODE_2500BASEX,
 				  port->phylink_config.supported_interfaces);
 		} else if (phy_mode == PHY_INTERFACE_MODE_1000BASEX ||
 			   phy_mode == PHY_INTERFACE_MODE_SGMII) {
-			/* No COMPHY, we can switch between 1000BASE-X and SGMII
-			 */
+			 
 			__set_bit(PHY_INTERFACE_MODE_1000BASEX,
 				  port->phylink_config.supported_interfaces);
 			__set_bit(PHY_INTERFACE_MODE_SGMII,
@@ -6987,10 +6701,7 @@ static int mvpp2_port_probe(struct platform_device *pdev,
 		port->phylink = NULL;
 	}
 
-	/* Cycle the comphy to power it down, saving 270mW per port -
-	 * don't worry about an error powering it up. When the comphy
-	 * driver does this, we can remove this code.
-	 */
+	 
 	if (port->comphy) {
 		err = mvpp22_comphy_init(port, port->phy_interface);
 		if (err == 0)
@@ -7028,7 +6739,7 @@ err_free_netdev:
 	return err;
 }
 
-/* Ports removal routine */
+ 
 static void mvpp2_port_remove(struct mvpp2_port *port)
 {
 	int i;
@@ -7046,7 +6757,7 @@ static void mvpp2_port_remove(struct mvpp2_port *port)
 	free_netdev(port->dev);
 }
 
-/* Initialize decoding windows */
+ 
 static void mvpp2_conf_mbus_windows(const struct mbus_dram_target_info *dram,
 				    struct mvpp2 *priv)
 {
@@ -7079,7 +6790,7 @@ static void mvpp2_conf_mbus_windows(const struct mbus_dram_target_info *dram,
 	mvpp2_write(priv, MVPP2_BASE_ADDR_ENABLE, win_enable);
 }
 
-/* Initialize Rx FIFO's */
+ 
 static void mvpp2_rx_fifo_init(struct mvpp2 *priv)
 {
 	int port;
@@ -7104,12 +6815,7 @@ static void mvpp22_rx_fifo_set_hw(struct mvpp2 *priv, int port, int data_size)
 	mvpp2_write(priv, MVPP2_RX_ATTR_FIFO_SIZE_REG(port), attr_size);
 }
 
-/* Initialize TX FIFO's: the total FIFO size is 48kB on PPv2.2 and PPv2.3.
- * 4kB fixed space must be assigned for the loopback port.
- * Redistribute remaining avialable 44kB space among all active ports.
- * Guarantee minimum 32kB for 10G port and 8kB for port 1, capable of 2.5G
- * SGMII link.
- */
+ 
 static void mvpp22_rx_fifo_init(struct mvpp2 *priv)
 {
 	int remaining_ports_count;
@@ -7117,16 +6823,16 @@ static void mvpp22_rx_fifo_init(struct mvpp2 *priv)
 	int size_remainder;
 	int port, size;
 
-	/* The loopback requires fixed 4kB of the FIFO space assignment. */
+	 
 	mvpp22_rx_fifo_set_hw(priv, MVPP2_LOOPBACK_PORT_INDEX,
 			      MVPP2_RX_FIFO_PORT_DATA_SIZE_4KB);
 	port_map = priv->port_map & ~BIT(MVPP2_LOOPBACK_PORT_INDEX);
 
-	/* Set RX FIFO size to 0 for inactive ports. */
+	 
 	for_each_clear_bit(port, &port_map, MVPP2_LOOPBACK_PORT_INDEX)
 		mvpp22_rx_fifo_set_hw(priv, port, 0);
 
-	/* Assign remaining RX FIFO space among all active ports. */
+	 
 	size_remainder = MVPP2_RX_FIFO_PORT_DATA_SIZE_44KB;
 	remaining_ports_count = hweight_long(port_map);
 
@@ -7153,20 +6859,14 @@ static void mvpp22_rx_fifo_init(struct mvpp2 *priv)
 	mvpp2_write(priv, MVPP2_RX_FIFO_INIT_REG, 0x1);
 }
 
-/* Configure Rx FIFO Flow control thresholds */
+ 
 static void mvpp23_rx_fifo_fc_set_tresh(struct mvpp2 *priv)
 {
 	int port, val;
 
-	/* Port 0: maximum speed -10Gb/s port
-	 *	   required by spec RX FIFO threshold 9KB
-	 * Port 1: maximum speed -5Gb/s port
-	 *	   required by spec RX FIFO threshold 4KB
-	 * Port 2: maximum speed -1Gb/s port
-	 *	   required by spec RX FIFO threshold 2KB
-	 */
+	 
 
-	/* Without loopback port */
+	 
 	for (port = 0; port < (MVPP2_MAX_PORTS - 1); port++) {
 		if (port == 0) {
 			val = (MVPP23_PORT0_FIFO_TRSH / MVPP2_RX_FC_TRSH_UNIT)
@@ -7187,7 +6887,7 @@ static void mvpp23_rx_fifo_fc_set_tresh(struct mvpp2 *priv)
 	}
 }
 
-/* Configure Rx FIFO Flow control thresholds */
+ 
 void mvpp23_rx_fifo_fc_en(struct mvpp2 *priv, int port, bool en)
 {
 	int val;
@@ -7210,12 +6910,7 @@ static void mvpp22_tx_fifo_set_hw(struct mvpp2 *priv, int port, int size)
 	mvpp2_write(priv, MVPP22_TX_FIFO_THRESH_REG(port), threshold);
 }
 
-/* Initialize TX FIFO's: the total FIFO size is 19kB on PPv2.2 and PPv2.3.
- * 1kB fixed space must be assigned for the loopback port.
- * Redistribute remaining avialable 18kB space among all active ports.
- * The 10G interface should use 10kB (which is maximum possible size
- * per single port).
- */
+ 
 static void mvpp22_tx_fifo_init(struct mvpp2 *priv)
 {
 	int remaining_ports_count;
@@ -7223,16 +6918,16 @@ static void mvpp22_tx_fifo_init(struct mvpp2 *priv)
 	int size_remainder;
 	int port, size;
 
-	/* The loopback requires fixed 1kB of the FIFO space assignment. */
+	 
 	mvpp22_tx_fifo_set_hw(priv, MVPP2_LOOPBACK_PORT_INDEX,
 			      MVPP22_TX_FIFO_DATA_SIZE_1KB);
 	port_map = priv->port_map & ~BIT(MVPP2_LOOPBACK_PORT_INDEX);
 
-	/* Set TX FIFO size to 0 for inactive ports. */
+	 
 	for_each_clear_bit(port, &port_map, MVPP2_LOOPBACK_PORT_INDEX)
 		mvpp22_tx_fifo_set_hw(priv, port, 0);
 
-	/* Assign remaining TX FIFO space among all active ports. */
+	 
 	size_remainder = MVPP22_TX_FIFO_DATA_SIZE_18KB;
 	remaining_ports_count = hweight_long(port_map);
 
@@ -7258,7 +6953,7 @@ static void mvpp2_axi_init(struct mvpp2 *priv)
 
 	mvpp2_write(priv, MVPP22_BM_ADDR_HIGH_RLS_REG, 0x0);
 
-	/* AXI Bridge Configuration */
+	 
 
 	rdval = MVPP22_AXI_CODE_CACHE_RD_CACHE
 		<< MVPP22_AXI_ATTR_CACHE_OFFS;
@@ -7270,17 +6965,17 @@ static void mvpp2_axi_init(struct mvpp2 *priv)
 	wrval |= MVPP22_AXI_CODE_DOMAIN_OUTER_DOM
 		<< MVPP22_AXI_ATTR_DOMAIN_OFFS;
 
-	/* BM */
+	 
 	mvpp2_write(priv, MVPP22_AXI_BM_WR_ATTR_REG, wrval);
 	mvpp2_write(priv, MVPP22_AXI_BM_RD_ATTR_REG, rdval);
 
-	/* Descriptors */
+	 
 	mvpp2_write(priv, MVPP22_AXI_AGGRQ_DESCR_RD_ATTR_REG, rdval);
 	mvpp2_write(priv, MVPP22_AXI_TXQ_DESCR_WR_ATTR_REG, wrval);
 	mvpp2_write(priv, MVPP22_AXI_TXQ_DESCR_RD_ATTR_REG, rdval);
 	mvpp2_write(priv, MVPP22_AXI_RXQ_DESCR_WR_ATTR_REG, wrval);
 
-	/* Buffer Data */
+	 
 	mvpp2_write(priv, MVPP22_AXI_TX_DATA_RD_ATTR_REG, rdval);
 	mvpp2_write(priv, MVPP22_AXI_RX_DATA_WR_ATTR_REG, wrval);
 
@@ -7306,14 +7001,14 @@ static void mvpp2_axi_init(struct mvpp2 *priv)
 	mvpp2_write(priv, MVPP22_AXI_WR_SNOOP_CODE_REG, val);
 }
 
-/* Initialize network controller common part HW */
+ 
 static int mvpp2_init(struct platform_device *pdev, struct mvpp2 *priv)
 {
 	const struct mbus_dram_target_info *dram_target_info;
 	int err, i;
 	u32 val;
 
-	/* MBUS windows configuration */
+	 
 	dram_target_info = mv_mbus_dram_info();
 	if (dram_target_info)
 		mvpp2_conf_mbus_windows(dram_target_info, priv);
@@ -7321,7 +7016,7 @@ static int mvpp2_init(struct platform_device *pdev, struct mvpp2 *priv)
 	if (priv->hw_version >= MVPP22)
 		mvpp2_axi_init(priv);
 
-	/* Disable HW PHY polling */
+	 
 	if (priv->hw_version == MVPP21) {
 		val = readl(priv->lms_base + MVPP2_PHY_AN_CFG0_REG);
 		val |= MVPP2_PHY_AN_STOP_SMI0_MASK;
@@ -7332,7 +7027,7 @@ static int mvpp2_init(struct platform_device *pdev, struct mvpp2 *priv)
 		writel(val, priv->iface_base + MVPP22_SMI_MISC_CFG_REG);
 	}
 
-	/* Allocate and initialize aggregated TXQs */
+	 
 	priv->aggr_txqs = devm_kcalloc(&pdev->dev, MVPP2_MAX_THREADS,
 				       sizeof(*priv->aggr_txqs),
 				       GFP_KERNEL);
@@ -7347,7 +7042,7 @@ static int mvpp2_init(struct platform_device *pdev, struct mvpp2 *priv)
 			return err;
 	}
 
-	/* Fifo Init */
+	 
 	if (priv->hw_version == MVPP21) {
 		mvpp2_rx_fifo_init(priv);
 	} else {
@@ -7361,20 +7056,20 @@ static int mvpp2_init(struct platform_device *pdev, struct mvpp2 *priv)
 		writel(MVPP2_EXT_GLOBAL_CTRL_DEFAULT,
 		       priv->lms_base + MVPP2_MNG_EXTENDED_GLOBAL_CTRL_REG);
 
-	/* Allow cache snoop when transmiting packets */
+	 
 	mvpp2_write(priv, MVPP2_TX_SNOOP_REG, 0x1);
 
-	/* Buffer Manager initialization */
+	 
 	err = mvpp2_bm_init(&pdev->dev, priv);
 	if (err < 0)
 		return err;
 
-	/* Parser default initialization */
+	 
 	err = mvpp2_prs_default_init(pdev, priv);
 	if (err < 0)
 		return err;
 
-	/* Classifier default initialization */
+	 
 	mvpp2_cls_init(priv);
 
 	return 0;
@@ -7419,9 +7114,7 @@ static int mvpp2_probe(struct platform_device *pdev)
 
 	priv->hw_version = (unsigned long)device_get_match_data(&pdev->dev);
 
-	/* multi queue mode isn't supported on PPV2.1, fallback to single
-	 * mode
-	 */
+	 
 	if (priv->hw_version == MVPP21)
 		queue_mode = MVPP2_QDIST_SINGLE_MODE;
 
@@ -7440,26 +7133,19 @@ static int mvpp2_probe(struct platform_device *pdev)
 			return -EINVAL;
 		}
 		if (has_acpi_companion(&pdev->dev)) {
-			/* In case the MDIO memory region is declared in
-			 * the ACPI, it can already appear as 'in-use'
-			 * in the OS. Because it is overlapped by second
-			 * region of the network controller, make
-			 * sure it is released, before requesting it again.
-			 * The care is taken by mvpp2 driver to avoid
-			 * concurrent access to this memory region.
-			 */
+			 
 			release_resource(res);
 		}
 		priv->iface_base = devm_ioremap_resource(&pdev->dev, res);
 		if (IS_ERR(priv->iface_base))
 			return PTR_ERR(priv->iface_base);
 
-		/* Map CM3 SRAM */
+		 
 		err = mvpp2_get_sram(pdev, priv);
 		if (err)
 			dev_warn(&pdev->dev, "Fail to alloc CM3 SRAM\n");
 
-		/* Enable global Flow Control only if handler to SRAM not NULL */
+		 
 		if (priv->cm3_base)
 			priv->global_tx_fc = true;
 	}
@@ -7469,11 +7155,7 @@ static int mvpp2_probe(struct platform_device *pdev)
 			syscon_regmap_lookup_by_phandle(pdev->dev.of_node,
 							"marvell,system-controller");
 		if (IS_ERR(priv->sysctrl_base))
-			/* The system controller regmap is optional for dt
-			 * compatibility reasons. When not provided, the
-			 * configuration of the GoP relies on the
-			 * firmware/bootloader.
-			 */
+			 
 			priv->sysctrl_base = NULL;
 	}
 
@@ -7554,7 +7236,7 @@ static int mvpp2_probe(struct platform_device *pdev)
 		if (err < 0)
 			goto err_mg_core_clk;
 
-		/* Get system's tclk rate */
+		 
 		priv->tclk = clk_get_rate(priv->pp_clk);
 	} else {
 		err = device_property_read_u32(&pdev->dev, "clock-frequency", &priv->tclk);
@@ -7568,17 +7250,13 @@ static int mvpp2_probe(struct platform_device *pdev)
 		err = dma_set_mask(&pdev->dev, MVPP2_DESC_DMA_MASK);
 		if (err)
 			goto err_axi_clk;
-		/* Sadly, the BM pools all share the same register to
-		 * store the high 32 bits of their address. So they
-		 * must all have the same high 32 bits, which forces
-		 * us to restrict coherent memory to DMA_BIT_MASK(32).
-		 */
+		 
 		err = dma_set_coherent_mask(&pdev->dev, DMA_BIT_MASK(32));
 		if (err)
 			goto err_axi_clk;
 	}
 
-	/* Map DTS-active ports. Should be done before FIFO mvpp2_init */
+	 
 	fwnode_for_each_available_child_node(fwnode, port_fwnode) {
 		if (!fwnode_property_read_u32(port_fwnode, "port-id", &i))
 			priv->port_map |= BIT(i);
@@ -7587,10 +7265,10 @@ static int mvpp2_probe(struct platform_device *pdev)
 	if (mvpp2_read(priv, MVPP2_VER_ID_REG) == MVPP2_VER_PP23)
 		priv->hw_version = MVPP23;
 
-	/* Init mss lock */
+	 
 	spin_lock_init(&priv->mss_spinlock);
 
-	/* Initialize network controller */
+	 
 	err = mvpp2_init(pdev, priv);
 	if (err < 0) {
 		dev_err(&pdev->dev, "failed to initialize controller\n");
@@ -7601,7 +7279,7 @@ static int mvpp2_probe(struct platform_device *pdev)
 	if (err < 0)
 		goto err_axi_clk;
 
-	/* Initialize ports */
+	 
 	fwnode_for_each_available_child_node(fwnode, port_fwnode) {
 		err = mvpp2_port_probe(pdev, port_fwnode, priv);
 		if (err < 0)
@@ -7614,12 +7292,7 @@ static int mvpp2_probe(struct platform_device *pdev)
 		goto err_axi_clk;
 	}
 
-	/* Statistics must be gathered regularly because some of them (like
-	 * packets counters) are 32-bit registers and could overflow quite
-	 * quickly. For instance, a 10Gb link used at full bandwidth with the
-	 * smallest packets (64B) will overflow a 32-bit counter in less than
-	 * 30 seconds. Then, use a workqueue to fill 64-bit counters.
-	 */
+	 
 	snprintf(priv->queue_name, sizeof(priv->queue_name),
 		 "stats-wq-%s%s", netdev_name(priv->port_list[0]->dev),
 		 priv->port_count > 1 ? "+" : "");

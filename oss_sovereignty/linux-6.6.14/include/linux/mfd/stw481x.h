@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2011 ST-Ericsson SA
- * Written on behalf of Linaro for ST-Ericsson
- *
- * Author: Linus Walleij <linus.walleij@linaro.org>
- */
+ 
+ 
 #ifndef MFD_STW481X_H
 #define MFD_STW481X_H
 
@@ -13,7 +8,7 @@
 #include <linux/regmap.h>
 #include <linux/bitops.h>
 
-/* These registers are accessed from more than one driver */
+ 
 #define STW_CONF1			0x11U
 #define STW_CONF1_PDN_VMMC		0x01U
 #define STW_CONF1_VMMC_MASK		0x0eU
@@ -38,11 +33,7 @@
 #define STW_CONF2_GPO2			0x10U
 #define STW_VCORE_SLEEP			0x21U
 
-/**
- * struct stw481x - state holder for the Stw481x drivers
- * @i2c_client: corresponding I2C client
- * @map: regmap handle to access device registers
- */
+ 
 struct stw481x {
 	struct i2c_client	*client;
 	struct regmap		*map;

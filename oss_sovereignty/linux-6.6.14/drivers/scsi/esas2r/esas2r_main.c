@@ -1,45 +1,4 @@
-/*
- *  linux/drivers/scsi/esas2r/esas2r_main.c
- *      For use with ATTO ExpressSAS R6xx SAS/SATA RAID controllers
- *
- *  Copyright (c) 2001-2013 ATTO Technology, Inc.
- *  (mailto:linuxdrivers@attotech.com)
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * NO WARRANTY
- * THE PROGRAM IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OR
- * CONDITIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED INCLUDING, WITHOUT
- * LIMITATION, ANY WARRANTIES OR CONDITIONS OF TITLE, NON-INFRINGEMENT,
- * MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE. Each Recipient is
- * solely responsible for determining the appropriateness of using and
- * distributing the Program and assumes all risks associated with its
- * exercise of rights under this Agreement, including but not limited to
- * the risks and costs of program errors, damage to or loss of data,
- * programs or equipment, and unavailability or interruption of operations.
- *
- * DISCLAIMER OF LIABILITY
- * NEITHER RECIPIENT NOR ANY CONTRIBUTORS SHALL HAVE ANY LIABILITY FOR ANY
- * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING WITHOUT LIMITATION LOST PROFITS), HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR
- * TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE
- * USE OR DISTRIBUTION OF THE PROGRAM OR THE EXERCISE OF ANY RIGHTS GRANTED
- * HEREUNDER, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGES
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301,
- * USA.
- */
+ 
 
 #include "esas2r.h"
 
@@ -48,7 +7,7 @@ MODULE_AUTHOR("ATTO Technology, Inc.");
 MODULE_LICENSE("GPL");
 MODULE_VERSION(ESAS2R_VERSION_STR);
 
-/* global definitions */
+ 
 
 static int found_adapters;
 struct esas2r_adapter *esas2r_adapters[MAX_ADAPTERS];
@@ -395,12 +354,12 @@ static int esas2r_probe(struct pci_dev *pcid,
 
 	esas2r_log(ESAS2R_LOG_INFO, "scsi_host_alloc() OK host: %p", host);
 
-	/* override max LUN and max target id */
+	 
 
 	host->max_id = ESAS2R_MAX_ID + 1;
 	host->max_lun = 255;
 
-	/* we can handle 16-byte CDbs */
+	 
 
 	host->max_cmd_len = 16;
 
@@ -412,7 +371,7 @@ static int esas2r_probe(struct pci_dev *pcid,
 	host->sg_tablesize = sg_tablesize;
 	host->max_sectors = esas2r_max_sectors;
 
-	/* set to bus master for BIOses that don't do it for us */
+	 
 
 	esas2r_log(ESAS2R_LOG_INFO, "pci_set_master() called");
 
@@ -469,7 +428,7 @@ static int esas2r_probe(struct pci_dev *pcid,
 
 	scsi_scan_host(host);
 
-	/* Add sysfs binary files */
+	 
 	if (sysfs_create_bin_file(&host->shost_dev.kobj, &bin_attr_fw))
 		esas2r_log_dev(ESAS2R_LOG_WARN, &(host->shost_gendev),
 			       "Failed to create sysfs binary file: fw");
@@ -532,7 +491,7 @@ static int __init esas2r_init(void)
 
 	esas2r_log(ESAS2R_LOG_INFO, "%s called", __func__);
 
-	/* verify valid parameters */
+	 
 
 	if (can_queue < 1) {
 		esas2r_log(ESAS2R_LOG_WARN,
@@ -599,7 +558,7 @@ static int __init esas2r_init(void)
 	else if (num_ae_requests > NUM_AE_MAX)
 		num_ae_requests = NUM_AE_MAX;
 
-	/* set up other globals */
+	 
 
 	for (i = 0; i < MAX_ADAPTERS; i++)
 		esas2r_adapters[i] = NULL;
@@ -607,7 +566,7 @@ static int __init esas2r_init(void)
 	return pci_register_driver(&esas2r_pci_driver);
 }
 
-/* Handle ioctl calls to "/proc/scsi/esas2r/ATTOnode" */
+ 
 static const struct file_operations esas2r_proc_fops = {
 	.compat_ioctl	= compat_ptr_ioctl,
 	.unlocked_ioctl = esas2r_proc_ioctl,
@@ -715,10 +674,7 @@ const char *esas2r_info(struct Scsi_Host *sh)
 	esas2r_log_dev(ESAS2R_LOG_INFO, &(sh->shost_gendev),
 		       "esas2r_info() called");
 
-	/*
-	 * if we haven't done so already, register as a char driver
-	 * and stick a node under "/proc/scsi/esas2r/ATTOnode"
-	 */
+	 
 
 	if (esas2r_proc_major <= 0) {
 		esas2r_proc_host = sh;
@@ -758,21 +714,18 @@ const char *esas2r_info(struct Scsi_Host *sh)
 	return esas2r_info_str;
 }
 
-/* Callback for building a request scatter/gather list */
+ 
 static u32 get_physaddr_from_sgc(struct esas2r_sg_context *sgc, u64 *addr)
 {
 	u32 len;
 
 	if (likely(sgc->cur_offset == sgc->exp_offset)) {
-		/*
-		 * the normal case: caller used all bytes from previous call, so
-		 * expected offset is the same as the current offset.
-		 */
+		 
 
 		if (sgc->sgel_count < sgc->num_sgel) {
-			/* retrieve next segment, except for first time */
+			 
 			if (sgc->exp_offset > (u8 *)0) {
-				/* advance current segment */
+				 
 				sgc->cur_sgel = sg_next(sgc->cur_sgel);
 				++(sgc->sgel_count);
 			}
@@ -781,37 +734,31 @@ static u32 get_physaddr_from_sgc(struct esas2r_sg_context *sgc, u64 *addr)
 			len = sg_dma_len(sgc->cur_sgel);
 			(*addr) = sg_dma_address(sgc->cur_sgel);
 
-			/* save the total # bytes returned to caller so far */
+			 
 			sgc->exp_offset += len;
 
 		} else {
 			len = 0;
 		}
 	} else if (sgc->cur_offset < sgc->exp_offset) {
-		/*
-		 * caller did not use all bytes from previous call. need to
-		 * compute the address based on current segment.
-		 */
+		 
 
 		len = sg_dma_len(sgc->cur_sgel);
 		(*addr) = sg_dma_address(sgc->cur_sgel);
 
 		sgc->exp_offset -= len;
 
-		/* calculate PA based on prev segment address and offsets */
+		 
 		*addr = *addr +
 			(sgc->cur_offset - sgc->exp_offset);
 
 		sgc->exp_offset += len;
 
-		/* re-calculate length based on offset */
+		 
 		len = lower_32_bits(
 			sgc->exp_offset - sgc->cur_offset);
-	} else {   /* if ( sgc->cur_offset > sgc->exp_offset ) */
-		   /*
-		    * we don't expect the caller to skip ahead.
-		    * cur_offset will never exceed the len we return
-		    */
+	} else {    
+		    
 		len = 0;
 	}
 
@@ -826,7 +773,7 @@ int esas2r_queuecommand(struct Scsi_Host *host, struct scsi_cmnd *cmd)
 	struct esas2r_sg_context sgc;
 	unsigned bufflen;
 
-	/* Assume success, if it fails we will fix the result later. */
+	 
 	cmd->result = DID_OK << 16;
 
 	if (unlikely(test_bit(AF_DEGRADED_MODE, &a->flags))) {
@@ -896,12 +843,7 @@ static void complete_task_management_request(struct esas2r_adapter *a,
 	esas2r_free_request(a, rq);
 }
 
-/*
- * Searches the specified queue for the specified queue for the command
- * to abort.
- *
- * Return 0 on failure, 1 if command was not found, 2 if command was found
- */
+ 
 static int esas2r_check_active_queue(struct esas2r_adapter *a,
 				     struct esas2r_request **abort_request,
 				     struct scsi_cmnd *cmd,
@@ -918,26 +860,19 @@ static int esas2r_check_active_queue(struct esas2r_adapter *a,
 
 		if (rq->cmd == cmd) {
 
-			/* Found the request.  See what to do with it. */
+			 
 			if (queue == &a->active_list) {
-				/*
-				 * We are searching the active queue, which
-				 * means that we need to send an abort request
-				 * to the firmware.
-				 */
+				 
 				ar = esas2r_alloc_request(a);
 				if (ar == NULL) {
 					esas2r_log_dev(ESAS2R_LOG_WARN,
 						       &(a->host->shost_gendev),
 						       "unable to allocate an abort request for cmd %p",
 						       cmd);
-					return 0; /* Failure */
+					return 0;  
 				}
 
-				/*
-				 * Task management request must be formatted
-				 * with a lock held.
-				 */
+				 
 				ar->sense_len = 0;
 				ar->vrq->scsi.length = 0;
 				ar->target_id = rq->target_id;
@@ -952,11 +887,7 @@ static int esas2r_check_active_queue(struct esas2r_adapter *a,
 				ar->vrq->scsi.u.abort_handle =
 					rq->vrq->scsi.handle;
 			} else {
-				/*
-				 * The request is pending but not active on
-				 * the firmware.  Just free it now and we'll
-				 * report the successful abort below.
-				 */
+				 
 				list_del_init(&rq->req_list);
 				esas2r_free_request(a, rq);
 			}
@@ -968,9 +899,9 @@ static int esas2r_check_active_queue(struct esas2r_adapter *a,
 	}
 
 	if (!found)
-		return 1;       /* Not found */
+		return 1;        
 
-	return 2;               /* found */
+	return 2;                
 
 
 }
@@ -998,10 +929,7 @@ int esas2r_eh_abort(struct scsi_cmnd *cmd)
 
 	spin_lock_irqsave(&a->queue_lock, flags);
 
-	/*
-	 * Run through the defer and active queues looking for the request
-	 * to abort.
-	 */
+	 
 
 	queue = &a->defer_list;
 
@@ -1022,10 +950,7 @@ check_active_queue:
 	if (abort_request) {
 		u8 task_management_status = RS_PENDING;
 
-		/*
-		 * the request is already active, so we need to tell
-		 * the firmware to abort it and wait for the response.
-		 */
+		 
 
 		abort_request->comp_cb = complete_task_management_request;
 		abort_request->task_management_status_ptr =
@@ -1039,19 +964,12 @@ check_active_queue:
 		while (task_management_status == RS_PENDING)
 			msleep(10);
 
-		/*
-		 * Once we get here, the original request will have been
-		 * completed by the firmware and the abort request will have
-		 * been cleaned up.  we're done!
-		 */
+		 
 
 		return SUCCESS;
 	}
 
-	/*
-	 * If we get here, either we found the inactive request and
-	 * freed it, or we didn't find it at all.  Either way, success!
-	 */
+	 
 
 	cmd->result = DID_ABORT << 16;
 
@@ -1075,7 +993,7 @@ static int esas2r_host_bus_reset(struct scsi_cmnd *cmd, bool host_reset)
 	else
 		esas2r_reset_bus(a);
 
-	/* above call sets the AF_OS_RESET flag.  wait for it to clear. */
+	 
 
 	while (test_bit(AF_OS_RESET, &a->flags)) {
 		msleep(10);
@@ -1153,14 +1071,11 @@ retry:
 	}
 
 	if (completed) {
-		/* Task management cmd completed right away, need to free it. */
+		 
 
 		esas2r_free_request(a, rq);
 	} else {
-		/*
-		 * Wait for firmware to complete the request.  Completion
-		 * callback will free it.
-		 */
+		 
 		while (task_management_status == RS_PENDING)
 			msleep(10);
 	}
@@ -1169,10 +1084,7 @@ retry:
 		return FAILED;
 
 	if (task_management_status == RS_BUSY) {
-		/*
-		 * Busy, probably because we are flashing.  Wait a bit and
-		 * try again.
-		 */
+		 
 		msleep(100);
 		goto retry;
 	}
@@ -1222,7 +1134,7 @@ void esas2r_log_request_failure(struct esas2r_adapter *a,
 			       && reqstatus != RS_SEL2)) {
 			if ((reqstatus == RS_UNDERRUN) &&
 			    (rq->vrq->scsi.cdb[0] == INQUIRY)) {
-				/* Don't log inquiry underruns */
+				 
 			} else {
 				esas2r_log(ESAS2R_LOG_WARN,
 					   "request failure - cdb:%x reqstatus:%d target:%d",
@@ -1276,7 +1188,7 @@ u32 esas2r_map_data_window(struct esas2r_adapter *a, u32 addr_lo)
 	return offset;
 }
 
-/* Read a block of data from chip memory */
+ 
 bool esas2r_read_mem_block(struct esas2r_adapter *a,
 			   void *to,
 			   u32 from,
@@ -1543,7 +1455,7 @@ void esas2r_complete_request_cb(struct esas2r_adapter *a,
 	esas2r_free_request(a, rq);
 }
 
-/* Run tasklet to handle stuff outside of interrupt context. */
+ 
 void esas2r_adapter_tasklet(unsigned long context)
 {
 	struct esas2r_adapter *a = (struct esas2r_adapter *)context;
@@ -1594,10 +1506,7 @@ static void esas2r_timer_callback(struct timer_list *t)
 	esas2r_kickoff_timer(a);
 }
 
-/*
- * Firmware events need to be handled outside of interrupt context
- * so we schedule a delayed_work to handle them.
- */
+ 
 
 static void
 esas2r_free_fw_event(struct esas2r_fw_event_work *fw_event)
@@ -1700,10 +1609,7 @@ static void esas2r_remove_device(struct esas2r_adapter *a, u16 target_id)
 	}
 }
 
-/*
- * Sends a firmware asynchronous event to anyone who happens to be
- * listening on the defined ATTO VDA event ports.
- */
+ 
 static void esas2r_send_ae_event(struct esas2r_fw_event_work *fw_event)
 {
 	struct esas2r_vda_ae *ae = (struct esas2r_vda_ae *)fw_event->data;
@@ -1798,7 +1704,7 @@ esas2r_firmware_event_work(struct work_struct *work)
 
 	switch (fw_event->type) {
 	case fw_event_null:
-		break; /* do nothing */
+		break;  
 
 	case fw_event_lun_change:
 		esas2r_remove_device(a, target_id);
@@ -1875,17 +1781,14 @@ void esas2r_target_state_changed(struct esas2r_adapter *a, u16 targ_id,
 				      sizeof(targ_id));
 }
 
-/* Translate status to a Linux SCSI mid-layer error code */
+ 
 int esas2r_req_status_to_error(u8 req_stat)
 {
 	switch (req_stat) {
 	case RS_OVERRUN:
 	case RS_UNDERRUN:
 	case RS_SUCCESS:
-	/*
-	 * NOTE: SCSI mid-layer wants a good status for a SCSI error, because
-	 *       it will check the scsi_stat value in the completion anyway.
-	 */
+	 
 	case RS_SCSI_ERROR:
 		return DID_OK;
 
@@ -1903,7 +1806,7 @@ int esas2r_req_status_to_error(u8 req_stat)
 		return DID_BUS_BUSY;
 	}
 
-	/* everything else is just an error. */
+	 
 
 	return DID_ERROR;
 }

@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright(c) 2021-2022 Intel Corporation. All rights reserved.
- *
- * Authors: Cezary Rojewski <cezary.rojewski@intel.com>
- *          Amadeusz Slawinski <amadeuszx.slawinski@linux.intel.com>
- */
+ 
+ 
 
 #ifndef __SOUND_SOC_INTEL_AVS_MSGS_H
 #define __SOUND_SOC_INTEL_AVS_MSGS_H
@@ -46,17 +41,17 @@ union avs_global_msg {
 				u32 msg_direction:1;
 				u32 msg_target:1;
 			};
-			/* set boot config */
+			 
 			struct {
 				u32 rom_ctrl_msg_type:9;
 				u32 dma_id:5;
 				u32 purge_request:1;
 			} boot_cfg;
-			/* module loading */
+			 
 			struct {
 				u32 mod_cnt:8;
 			} load_multi_mods;
-			/* pipeline management */
+			 
 			struct {
 				u32 ppl_mem_size:11;
 				u32 ppl_priority:5;
@@ -65,7 +60,7 @@ union avs_global_msg {
 			struct {
 				u32 rsvd:16;
 				u32 instance_id:8;
-			} ppl; /* generic ppl request */
+			} ppl;  
 			struct {
 				u32 state:16;
 				u32 ppl_id:8;
@@ -73,7 +68,7 @@ union avs_global_msg {
 			struct {
 				u32 ppl_id:8;
 			} get_ppl_state;
-			/* library loading */
+			 
 			struct {
 				u32 dma_id:5;
 				u32 rsvd:11;
@@ -82,11 +77,11 @@ union avs_global_msg {
 		};
 		union {
 			u32 val;
-			/* pipeline management */
+			 
 			struct {
-				u32 lp:1; /* low power flag */
+				u32 lp:1;  
 				u32 rsvd:3;
-				u32 attributes:16; /* additional scheduling flags */
+				u32 attributes:16;  
 			} create_ppl;
 		} ext;
 	};
@@ -166,15 +161,15 @@ union avs_reply_msg {
 		};
 		union {
 			u32 val;
-			/* module loading */
+			 
 			struct {
 				u32 err_mod_id:16;
 			} load_multi_mods;
-			/* pipeline management */
+			 
 			struct {
 				u32 state:5;
 			} get_ppl_state;
-			/* module management */
+			 
 			struct {
 				u32 data_off_size:20;
 				u32 large_param_id:8;
@@ -252,7 +247,7 @@ union avs_notify_msg {
 	__msg.global_msg_type != AVS_GLB_NOTIFICATION; \
 })
 
-/* Notification types */
+ 
 
 struct avs_notify_voice_data {
 	u16 kpd_score;
@@ -274,19 +269,19 @@ struct avs_notify_mod_data {
 	u32 data[];
 } __packed;
 
-/* ROM messages */
+ 
 enum avs_rom_control_msg_type {
 	AVS_ROM_SET_BOOT_CONFIG = 0,
 };
 
 int avs_ipc_set_boot_config(struct avs_dev *adev, u32 dma_id, u32 purge);
 
-/* Code loading messages */
+ 
 int avs_ipc_load_modules(struct avs_dev *adev, u16 *mod_ids, u32 num_mod_ids);
 int avs_ipc_unload_modules(struct avs_dev *adev, u16 *mod_ids, u32 num_mod_ids);
 int avs_ipc_load_library(struct avs_dev *adev, u32 dma_id, u32 lib_id);
 
-/* Pipeline management messages */
+ 
 enum avs_pipeline_state {
 	AVS_PPL_STATE_INVALID,
 	AVS_PPL_STATE_UNINITIALIZED,
@@ -303,7 +298,7 @@ int avs_ipc_set_pipeline_state(struct avs_dev *adev, u8 instance_id,
 int avs_ipc_get_pipeline_state(struct avs_dev *adev, u8 instance_id,
 			       enum avs_pipeline_state *state);
 
-/* Module management messages */
+ 
 int avs_ipc_init_instance(struct avs_dev *adev, u16 module_id, u8 instance_id,
 			  u8 ppl_id, u8 core_id, u8 domain,
 			  void *param, u32 param_size);
@@ -321,16 +316,16 @@ int avs_ipc_get_large_config(struct avs_dev *adev, u16 module_id, u8 instance_id
 			     u8 param_id, u8 *request_data, size_t request_size,
 			     u8 **reply_data, size_t *reply_size);
 
-/* DSP cores and domains power management messages */
+ 
 struct avs_dxstate_info {
-	u32 core_mask;	/* which cores are subject for power transition */
-	u32 dx_mask;	/* bit[n]=1 core n goes to D0, bit[n]=0 it goes to D3 */
+	u32 core_mask;	 
+	u32 dx_mask;	 
 } __packed;
 
 int avs_ipc_set_dx(struct avs_dev *adev, u32 core_mask, bool powerup);
 int avs_ipc_set_d0ix(struct avs_dev *adev, bool enable_pg, bool streaming);
 
-/* Base-firmware runtime parameters */
+ 
 
 #define AVS_BASEFW_MOD_ID	0
 #define AVS_BASEFW_INST_ID	0
@@ -550,7 +545,7 @@ struct avs_sys_time {
 
 int avs_ipc_set_system_time(struct avs_dev *adev);
 
-/* Module configuration */
+ 
 
 #define AVS_MIXIN_MOD_UUID \
 	GUID_INIT(0x39656EB2, 0x3B71, 0x4049, 0x8D, 0x3F, 0xF9, 0x2C, 0xD5, 0xC4, 0x3C, 0x09)
@@ -594,7 +589,7 @@ int avs_ipc_set_system_time(struct avs_dev *adev);
 #define AVS_INTELWOV_MOD_UUID \
 	GUID_INIT(0xEC774FA9, 0x28D3, 0x424A, 0x90, 0xE4, 0x69, 0xF9, 0x84, 0xF1, 0xEE, 0xB7)
 
-/* channel map */
+ 
 enum avs_channel_index {
 	AVS_CHANNEL_LEFT = 0,
 	AVS_CHANNEL_RIGHT = 1,
@@ -670,7 +665,7 @@ struct avs_modcfg_ext {
 	u16 num_input_pins;
 	u16 num_output_pins;
 	u8 reserved[12];
-	/* input pin formats followed by output ones */
+	 
 	struct avs_pin_format pin_fmts[];
 } __packed;
 
@@ -739,7 +734,7 @@ struct avs_volume_cfg {
 	u32 channel_id;
 	u32 target_volume;
 	u32 curve_type;
-	u32 reserved; /* alignment */
+	u32 reserved;  
 	u64 curve_duration;
 } __packed;
 
@@ -804,7 +799,7 @@ struct avs_wov_cfg {
 	u32 cpc_lp_mode;
 } __packed;
 
-/* Module runtime parameters */
+ 
 
 enum avs_copier_runtime_param {
 	AVS_COPIER_SET_SINK_FORMAT = 2,
@@ -888,4 +883,4 @@ int avs_ipc_probe_connect_points(struct avs_dev *adev, struct avs_probe_point_de
 int avs_ipc_probe_disconnect_points(struct avs_dev *adev, union avs_probe_point_id *ids,
 				    size_t num_ids);
 
-#endif /* __SOUND_SOC_INTEL_AVS_MSGS_H */
+#endif  

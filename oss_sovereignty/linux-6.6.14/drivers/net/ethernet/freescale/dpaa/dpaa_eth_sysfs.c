@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0-or-later
-/*
- * Copyright 2008 - 2016 Freescale Semiconductor Inc.
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/module.h>

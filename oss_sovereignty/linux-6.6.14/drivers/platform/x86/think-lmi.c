@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Think LMI BIOS configuration driver
- *
- * Copyright(C) 2019-2021 Lenovo
- *
- * Original code from Thinkpad-wmi project https://github.com/iksaif/thinkpad-wmi
- * Copyright(C) 2017 Corentin Chary <corentin.chary@gmail.com>
- * Distributed under the GPL-2.0 license
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -26,154 +18,55 @@ static bool debug_support;
 module_param(debug_support, bool, 0444);
 MODULE_PARM_DESC(debug_support, "Enable debug command support");
 
-/*
- * Name: BiosSetting
- * Description: Get item name and settings for current LMI instance.
- * Type: Query
- * Returns: "Item,Value"
- * Example: "WakeOnLAN,Enable"
- */
+ 
 #define LENOVO_BIOS_SETTING_GUID "51F5230E-9677-46CD-A1CF-C0B23EE34DB7"
 
-/*
- * Name: SetBiosSetting
- * Description: Change the BIOS setting to the desired value using the SetBiosSetting
- *  class. To save the settings, use the SaveBiosSetting class.
- *  BIOS settings and values are case sensitive.
- *  After making changes to the BIOS settings, you must reboot the computer
- *  before the changes will take effect.
- * Type: Method
- * Arguments: "Item,Value,Password,Encoding,KbdLang;"
- * Example: "WakeOnLAN,Disable,pa55w0rd,ascii,us;"
- */
+ 
 #define LENOVO_SET_BIOS_SETTINGS_GUID "98479A64-33F5-4E33-A707-8E251EBBC3A1"
 
-/*
- * Name: SaveBiosSettings
- * Description: Save any pending changes in settings.
- * Type: Method
- * Arguments: "Password,Encoding,KbdLang;"
- * Example: "pa55w0rd,ascii,us;"
- */
+ 
 #define LENOVO_SAVE_BIOS_SETTINGS_GUID "6A4B54EF-A5ED-4D33-9455-B0D9B48DF4B3"
 
-/*
- * Name: BiosPasswordSettings
- * Description: Return BIOS Password settings
- * Type: Query
- * Returns: PasswordMode, PasswordState, MinLength, MaxLength,
- *  SupportedEncoding, SupportedKeyboard
- */
+ 
 #define LENOVO_BIOS_PASSWORD_SETTINGS_GUID "8ADB159E-1E32-455C-BC93-308A7ED98246"
 
-/*
- * Name: SetBiosPassword
- * Description: Change a specific password.
- *  - BIOS settings cannot be changed at the same boot as power-on
- *    passwords (POP) and hard disk passwords (HDP). If you want to change
- *    BIOS settings and POP or HDP, you must reboot the system after changing
- *    one of them.
- *  - A password cannot be set using this method when one does not already
- *    exist. Passwords can only be updated or cleared.
- * Type: Method
- * Arguments: "PasswordType,CurrentPassword,NewPassword,Encoding,KbdLang;"
- * Example: "pop,pa55w0rd,newpa55w0rd,ascii,us;”
- */
+ 
 #define LENOVO_SET_BIOS_PASSWORD_GUID "2651D9FD-911C-4B69-B94E-D0DED5963BD7"
 
-/*
- * Name: GetBiosSelections
- * Description: Return a list of valid settings for a given item.
- * Type: Method
- * Arguments: "Item"
- * Returns: "Value1,Value2,Value3,..."
- * Example:
- *  -> "FlashOverLAN"
- *  <- "Enabled,Disabled"
- */
+ 
 #define LENOVO_GET_BIOS_SELECTIONS_GUID	"7364651A-132F-4FE7-ADAA-40C6C7EE2E3B"
 
-/*
- * Name: DebugCmd
- * Description: Debug entry method for entering debug commands to the BIOS
- */
+ 
 #define LENOVO_DEBUG_CMD_GUID "7FF47003-3B6C-4E5E-A227-E979824A85D1"
 
-/*
- * Name: OpcodeIF
- * Description: Opcode interface which provides the ability to set multiple
- *  parameters and then trigger an action with a final command.
- *  This is particularly useful for simplifying setting passwords.
- *  With this support comes the ability to set System, HDD and NVMe
- *  passwords.
- *  This is currently available on ThinkCenter and ThinkStations platforms
- */
+ 
 #define LENOVO_OPCODE_IF_GUID "DFDDEF2C-57D4-48ce-B196-0FB787D90836"
 
-/*
- * Name: SetBiosCert
- * Description: Install BIOS certificate.
- * Type: Method
- * Arguments: "Certificate,Password"
- * You must reboot the computer before the changes will take effect.
- */
+ 
 #define LENOVO_SET_BIOS_CERT_GUID    "26861C9F-47E9-44C4-BD8B-DFE7FA2610FE"
 
-/*
- * Name: UpdateBiosCert
- * Description: Update BIOS certificate.
- * Type: Method
- * Format: "Certificate,Signature"
- * You must reboot the computer before the changes will take effect.
- */
+ 
 #define LENOVO_UPDATE_BIOS_CERT_GUID "9AA3180A-9750-41F7-B9F7-D5D3B1BAC3CE"
 
-/*
- * Name: ClearBiosCert
- * Description: Uninstall BIOS certificate.
- * Type: Method
- * Format: "Serial,Signature"
- * You must reboot the computer before the changes will take effect.
- */
+ 
 #define LENOVO_CLEAR_BIOS_CERT_GUID  "B2BC39A7-78DD-4D71-B059-A510DEC44890"
-/*
- * Name: CertToPassword
- * Description: Switch from certificate to password authentication.
- * Type: Method
- * Format: "Password,Signature"
- * You must reboot the computer before the changes will take effect.
- */
+ 
 #define LENOVO_CERT_TO_PASSWORD_GUID "0DE8590D-5510-4044-9621-77C227F5A70D"
 
-/*
- * Name: SetBiosSettingCert
- * Description: Set attribute using certificate authentication.
- * Type: Method
- * Format: "Item,Value,Signature"
- */
+ 
 #define LENOVO_SET_BIOS_SETTING_CERT_GUID  "34A008CC-D205-4B62-9E67-31DFA8B90003"
 
-/*
- * Name: SaveBiosSettingCert
- * Description: Save any pending changes in settings.
- * Type: Method
- * Format: "Signature"
- */
+ 
 #define LENOVO_SAVE_BIOS_SETTING_CERT_GUID "C050FB9D-DF5F-4606-B066-9EFC401B2551"
 
-/*
- * Name: CertThumbprint
- * Description: Display Certificate thumbprints
- * Type: Query
- * Returns: MD5, SHA1 & SHA256 thumbprints
- */
+ 
 #define LENOVO_CERT_THUMBPRINT_GUID "C59119ED-1C0D-4806-A8E9-59AA318176C4"
 
-#define TLMI_POP_PWD BIT(0) /* Supervisor */
-#define TLMI_PAP_PWD BIT(1) /* Power-on */
-#define TLMI_HDD_PWD BIT(2) /* HDD/NVME */
-#define TLMI_SMP_PWD BIT(6) /* System Management */
-#define TLMI_CERT    BIT(7) /* Certificate Based */
+#define TLMI_POP_PWD BIT(0)  
+#define TLMI_PAP_PWD BIT(1)  
+#define TLMI_HDD_PWD BIT(2)  
+#define TLMI_SMP_PWD BIT(6)  
+#define TLMI_CERT    BIT(7)  
 
 #define to_tlmi_pwd_setting(kobj)  container_of(kobj, struct tlmi_pwd_setting, kobj)
 #define to_tlmi_attr_setting(kobj)  container_of(kobj, struct tlmi_attr_setting, kobj)
@@ -198,15 +91,15 @@ static struct think_lmi tlmi_priv;
 static struct class *fw_attr_class;
 static DEFINE_MUTEX(tlmi_mutex);
 
-/* ------ Utility functions ------------*/
-/* Strip out CR if one is present */
+ 
+ 
 static void strip_cr(char *str)
 {
 	char *p = strchrnul(str, '\n');
 	*p = '\0';
 }
 
-/* Convert BIOS WMI error string to suitable error code */
+ 
 static int tlmi_errstr_to_err(const char *errstr)
 {
 	int i;
@@ -218,7 +111,7 @@ static int tlmi_errstr_to_err(const char *errstr)
 	return -EPERM;
 }
 
-/* Extract error string from WMI return buffer */
+ 
 static int tlmi_extract_error(const struct acpi_buffer *output)
 {
 	const union acpi_object *obj;
@@ -232,7 +125,7 @@ static int tlmi_extract_error(const struct acpi_buffer *output)
 	return tlmi_errstr_to_err(obj->string.pointer);
 }
 
-/* Utility function to execute WMI call to BIOS */
+ 
 static int tlmi_simple_call(const char *guid, const char *arg)
 {
 	const struct acpi_buffer input = { strlen(arg), (char *)arg };
@@ -240,12 +133,9 @@ static int tlmi_simple_call(const char *guid, const char *arg)
 	acpi_status status;
 	int i, err;
 
-	/*
-	 * Duplicated call required to match BIOS workaround for behavior
-	 * seen when WMI accessed via scripting on other OS.
-	 */
+	 
 	for (i = 0; i < 2; i++) {
-		/* (re)initialize output buffer to default state */
+		 
 		output.length = ACPI_ALLOCATE_BUFFER;
 		output.pointer = NULL;
 
@@ -262,7 +152,7 @@ static int tlmi_simple_call(const char *guid, const char *arg)
 	return 0;
 }
 
-/* Extract output string from WMI return buffer */
+ 
 static int tlmi_extract_output_string(const struct acpi_buffer *output,
 				      char **string)
 {
@@ -282,9 +172,9 @@ static int tlmi_extract_output_string(const struct acpi_buffer *output,
 	return 0;
 }
 
-/* ------ Core interface functions ------------*/
+ 
 
-/* Get password settings from BIOS */
+ 
 static int tlmi_get_pwd_settings(struct tlmi_pwdcfg *pwdcfg)
 {
 	struct acpi_buffer output = { ACPI_ALLOCATE_BUFFER, NULL };
@@ -307,12 +197,7 @@ static int tlmi_get_pwd_settings(struct tlmi_pwdcfg *pwdcfg)
 		kfree(obj);
 		return -EIO;
 	}
-	/*
-	 * The size of thinkpad_wmi_pcfg on ThinkStation is larger than ThinkPad.
-	 * To make the driver compatible on different brands, we permit it to get
-	 * the data in below case.
-	 * Settings must have at minimum the core fields available
-	 */
+	 
 	if (obj->buffer.length < sizeof(struct tlmi_pwdcfg_core)) {
 		pr_warn("Unknown pwdcfg buffer length %d\n", obj->buffer.length);
 		kfree(obj);
@@ -386,7 +271,7 @@ static int tlmi_get_bios_selections(const char *item, char **value)
 	return ret;
 }
 
-/* ---- Authentication sysfs --------------------------------------------------------- */
+ 
 static ssize_t is_enabled_show(struct kobject *kobj, struct kobj_attribute *attr,
 					  char *buf)
 {
@@ -405,12 +290,12 @@ static ssize_t current_password_store(struct kobject *kobj,
 	size_t pwdlen;
 
 	pwdlen = strlen(buf);
-	/* pwdlen == 0 is allowed to clear the password */
+	 
 	if (pwdlen && ((pwdlen < setting->minlen) || (pwdlen > setting->maxlen)))
 		return -EINVAL;
 
 	strscpy(setting->password, buf, setting->maxlen);
-	/* Strip out CR if one is present, setting password won't work if it is present */
+	 
 	strip_cr(setting->password);
 	return count;
 }
@@ -436,24 +321,24 @@ static ssize_t new_password_store(struct kobject *kobj,
 	if (!new_pwd)
 		return -ENOMEM;
 
-	/* Strip out CR if one is present, setting password won't work if it is present */
+	 
 	strip_cr(new_pwd);
 
-	/* Use lock in case multiple WMI operations needed */
+	 
 	mutex_lock(&tlmi_mutex);
 
 	pwdlen = strlen(new_pwd);
-	/* pwdlen == 0 is allowed to clear the password */
+	 
 	if (pwdlen && ((pwdlen < setting->minlen) || (pwdlen > setting->maxlen))) {
 		ret = -EINVAL;
 		goto out;
 	}
 
-	/* If opcode support is present use that interface */
+	 
 	if (tlmi_priv.opcode_support) {
 		char pwd_type[8];
 
-		/* Special handling required for HDD and NVMe passwords */
+		 
 		if (setting == tlmi_priv.pwd_hdd) {
 			if (setting->level == TLMI_LEVEL_USER)
 				sprintf(pwd_type, "uhdp%d", setting->index);
@@ -486,7 +371,7 @@ static ssize_t new_password_store(struct kobject *kobj,
 			goto out;
 		ret = tlmi_simple_call(LENOVO_OPCODE_IF_GUID, "WmiOpcodePasswordSetUpdate;");
 	} else {
-		/* Format: 'PasswordType,CurrentPw,NewPw,Encoding,KbdLang;' */
+		 
 		auth_str = kasprintf(GFP_KERNEL, "%s,%s,%s,%s,%s;",
 				setting->pwd_type, setting->password, new_pwd,
 				encoding_options[setting->encoding], setting->kbdlang);
@@ -546,7 +431,7 @@ static ssize_t encoding_store(struct kobject *kobj,
 	struct tlmi_pwd_setting *setting = to_tlmi_pwd_setting(kobj);
 	int i;
 
-	/* Scan for a matching profile */
+	 
 	i = sysfs_match_string(encoding_options, buf);
 	if (i < 0)
 		return -EINVAL;
@@ -572,7 +457,7 @@ static ssize_t kbdlang_store(struct kobject *kobj,
 	struct tlmi_pwd_setting *setting = to_tlmi_pwd_setting(kobj);
 	int length;
 
-	/* Calculate length till '\n' or terminating 0 */
+	 
 	length = strchrnul(buf, '\n') - buf;
 	if (!length || length >= TLMI_LANG_MAXLEN)
 		return -EINVAL;
@@ -636,7 +521,7 @@ static ssize_t level_store(struct kobject *kobj,
 	struct tlmi_pwd_setting *setting = to_tlmi_pwd_setting(kobj);
 	int i;
 
-	/* Scan for a matching profile */
+	 
 	i = sysfs_match_string(level_options, buf);
 	if (i < 0)
 		return -EINVAL;
@@ -713,10 +598,10 @@ static ssize_t cert_to_password_store(struct kobject *kobj,
 	if (!passwd)
 		return -ENOMEM;
 
-	/* Strip out CR if one is present */
+	 
 	strip_cr(passwd);
 
-	/* Format: 'Password,Signature' */
+	 
 	auth_str = kasprintf(GFP_KERNEL, "%s,%s", passwd, setting->signature);
 	if (!auth_str) {
 		kfree_sensitive(passwd);
@@ -746,13 +631,13 @@ static ssize_t certificate_store(struct kobject *kobj,
 	if (!tlmi_priv.certificate_support)
 		return -EOPNOTSUPP;
 
-	/* If empty then clear installed certificate */
-	if ((buf[0] == '\0') || (buf[0] == '\n')) { /* Clear installed certificate */
-		/* Check that signature is set */
+	 
+	if ((buf[0] == '\0') || (buf[0] == '\n')) {  
+		 
 		if (!setting->signature || !setting->signature[0])
 			return -EACCES;
 
-		/* Format: 'serial#, signature' */
+		 
 		auth_str = kasprintf(GFP_KERNEL, "%s,%s",
 				dmi_get_system_info(DMI_PRODUCT_SERIAL),
 				setting->signature);
@@ -768,27 +653,27 @@ static ssize_t certificate_store(struct kobject *kobj,
 	new_cert = kstrdup(buf, GFP_KERNEL);
 	if (!new_cert)
 		return -ENOMEM;
-	/* Strip out CR if one is present */
+	 
 	strip_cr(new_cert);
 
 	if (setting->cert_installed) {
-		/* Certificate is installed so this is an update */
+		 
 		if (!setting->signature || !setting->signature[0]) {
 			kfree(new_cert);
 			return -EACCES;
 		}
 		guid = LENOVO_UPDATE_BIOS_CERT_GUID;
-		/* Format: 'Certificate,Signature' */
+		 
 		auth_str = kasprintf(GFP_KERNEL, "%s,%s",
 				new_cert, setting->signature);
 	} else {
-		/* This is a fresh install */
+		 
 		if (!setting->valid || !setting->password[0]) {
 			kfree(new_cert);
 			return -EACCES;
 		}
 		guid = LENOVO_SET_BIOS_CERT_GUID;
-		/* Format: 'Certificate,Admin-password' */
+		 
 		auth_str = kasprintf(GFP_KERNEL, "%s,%s",
 				new_cert, setting->password);
 	}
@@ -821,10 +706,10 @@ static ssize_t signature_store(struct kobject *kobj,
 	if (!new_signature)
 		return -ENOMEM;
 
-	/* Strip out CR if one is present */
+	 
 	strip_cr(new_signature);
 
-	/* Free any previous signature */
+	 
 	kfree(setting->signature);
 	setting->signature = new_signature;
 
@@ -850,10 +735,10 @@ static ssize_t save_signature_store(struct kobject *kobj,
 	if (!new_signature)
 		return -ENOMEM;
 
-	/* Strip out CR if one is present */
+	 
 	strip_cr(new_signature);
 
-	/* Free any previous signature */
+	 
 	kfree(setting->save_signature);
 	setting->save_signature = new_signature;
 
@@ -867,14 +752,14 @@ static umode_t auth_attr_is_visible(struct kobject *kobj,
 {
 	struct tlmi_pwd_setting *setting = to_tlmi_pwd_setting(kobj);
 
-	/* We only want to display level and index settings on HDD/NVMe */
+	 
 	if (attr == &auth_index.attr || attr == &auth_level.attr) {
 		if ((setting == tlmi_priv.pwd_hdd) || (setting == tlmi_priv.pwd_nvme))
 			return attr->mode;
 		return 0;
 	}
 
-	/* We only display certificates on Admin account, if supported */
+	 
 	if (attr == &auth_certificate.attr ||
 	    attr == &auth_signature.attr ||
 	    attr == &auth_save_signature.attr ||
@@ -885,7 +770,7 @@ static umode_t auth_attr_is_visible(struct kobject *kobj,
 		return 0;
 	}
 
-	/* Don't display un-needed settings if opcode available */
+	 
 	if ((attr == &auth_encoding.attr || attr == &auth_kbdlang.attr) &&
 	    tlmi_priv.opcode_support)
 		return 0;
@@ -918,7 +803,7 @@ static const struct attribute_group auth_attr_group = {
 	.attrs = auth_attrs,
 };
 
-/* ---- Attributes sysfs --------------------------------------------------------- */
+ 
 static ssize_t display_name_show(struct kobject *kobj, struct kobj_attribute *attr,
 		char *buf)
 {
@@ -937,12 +822,12 @@ static ssize_t current_value_show(struct kobject *kobj, struct kobj_attribute *a
 	if (ret)
 		return ret;
 
-	/* validate and split from `item,value` -> `value` */
+	 
 	value = strpbrk(item, ",");
 	if (!value || value == item || !strlen(value + 1))
 		ret = -EINVAL;
 	else {
-		/* On Workstations remove the Options part after the value */
+		 
 		p = strchrnul(value, ';');
 		*p = '\0';
 		ret = sysfs_emit(buf, "%s\n", value + 1);
@@ -965,11 +850,11 @@ static ssize_t type_show(struct kobject *kobj, struct kobj_attribute *attr,
 	struct tlmi_attr_setting *setting = to_tlmi_attr_setting(kobj);
 
 	if (setting->possible_values) {
-		/* Figure out what setting type is as BIOS does not return this */
+		 
 		if (strchr(setting->possible_values, ';'))
 			return sysfs_emit(buf, "enumeration\n");
 	}
-	/* Anything else is going to be a string */
+	 
 	return sysfs_emit(buf, "string\n");
 }
 
@@ -989,13 +874,13 @@ static ssize_t current_value_store(struct kobject *kobj,
 	if (!new_setting)
 		return -ENOMEM;
 
-	/* Strip out CR if one is present */
+	 
 	strip_cr(new_setting);
 
-	/* Use lock in case multiple WMI operations needed */
+	 
 	mutex_lock(&tlmi_mutex);
 
-	/* Check if certificate authentication is enabled and active */
+	 
 	if (tlmi_priv.certificate_support && tlmi_priv.pwd_admin->cert_installed) {
 		if (!tlmi_priv.pwd_admin->signature || !tlmi_priv.pwd_admin->save_signature) {
 			ret = -EINVAL;
@@ -1016,12 +901,7 @@ static ssize_t current_value_store(struct kobject *kobj,
 		if (ret)
 			goto out;
 	} else if (tlmi_priv.opcode_support) {
-		/*
-		 * If opcode support is present use that interface.
-		 * Note - this sets the variable and then the password as separate
-		 * WMI calls. Function tlmi_save_bios_settings will error if the
-		 * password is incorrect.
-		 */
+		 
 		set_str = kasprintf(GFP_KERNEL, "%s,%s;", setting->display_name,
 				    new_setting);
 		if (!set_str) {
@@ -1041,7 +921,7 @@ static ssize_t current_value_store(struct kobject *kobj,
 		}
 
 		ret = tlmi_save_bios_settings("");
-	} else { /* old non-opcode based authentication method (deprecated) */
+	} else {  
 		if (tlmi_priv.pwd_admin->valid && tlmi_priv.pwd_admin->password[0]) {
 			auth_str = kasprintf(GFP_KERNEL, "%s,%s,%s;",
 					tlmi_priv.pwd_admin->password,
@@ -1075,7 +955,7 @@ static ssize_t current_value_store(struct kobject *kobj,
 	}
 	if (!ret && !tlmi_priv.pending_changes) {
 		tlmi_priv.pending_changes = true;
-		/* let userland know it may need to check reboot pending again */
+		 
 		kobject_uevent(&tlmi_priv.class_dev->kobj, KOBJ_CHANGE);
 	}
 out:
@@ -1099,7 +979,7 @@ static umode_t attr_is_visible(struct kobject *kobj,
 {
 	struct tlmi_attr_setting *setting = to_tlmi_attr_setting(kobj);
 
-	/* We don't want to display possible_values attributes if not available */
+	 
 	if ((attr == &attr_possible_values.attr) && (!setting->possible_values))
 		return 0;
 
@@ -1152,7 +1032,7 @@ static ssize_t pending_reboot_show(struct kobject *kobj, struct kobj_attribute *
 
 static struct kobj_attribute pending_reboot = __ATTR_RO(pending_reboot);
 
-/* ---- Debug interface--------------------------------------------------------- */
+ 
 static ssize_t debug_cmd_store(struct kobject *kobj, struct kobj_attribute *attr,
 				const char *buf, size_t count)
 {
@@ -1167,7 +1047,7 @@ static ssize_t debug_cmd_store(struct kobject *kobj, struct kobj_attribute *attr
 	if (!new_setting)
 		return -ENOMEM;
 
-	/* Strip out CR if one is present */
+	 
 	strip_cr(new_setting);
 
 	if (tlmi_priv.pwd_admin->valid && tlmi_priv.pwd_admin->password[0]) {
@@ -1196,7 +1076,7 @@ static ssize_t debug_cmd_store(struct kobject *kobj, struct kobj_attribute *attr
 
 	if (!ret && !tlmi_priv.pending_changes) {
 		tlmi_priv.pending_changes = true;
-		/* let userland know it may need to check reboot pending again */
+		 
 		kobject_uevent(&tlmi_priv.class_dev->kobj, KOBJ_CHANGE);
 	}
 out:
@@ -1208,12 +1088,12 @@ out:
 
 static struct kobj_attribute debug_cmd = __ATTR_WO(debug_cmd);
 
-/* ---- Initialisation --------------------------------------------------------- */
+ 
 static void tlmi_release_attr(void)
 {
 	int i;
 
-	/* Attribute structures */
+	 
 	for (i = 0; i < TLMI_SETTINGS_COUNT; i++) {
 		if (tlmi_priv.setting[i]) {
 			sysfs_remove_group(&tlmi_priv.setting[i]->kobj, &tlmi_attr_group);
@@ -1226,11 +1106,11 @@ static void tlmi_release_attr(void)
 
 	kset_unregister(tlmi_priv.attribute_kset);
 
-	/* Free up any saved signatures */
+	 
 	kfree(tlmi_priv.pwd_admin->signature);
 	kfree(tlmi_priv.pwd_admin->save_signature);
 
-	/* Authentication structures */
+	 
 	sysfs_remove_group(&tlmi_priv.pwd_admin->kobj, &auth_attr_group);
 	kobject_put(&tlmi_priv.pwd_admin->kobj);
 	sysfs_remove_group(&tlmi_priv.pwd_power->kobj, &auth_attr_group);
@@ -1258,7 +1138,7 @@ static int tlmi_validate_setting_name(struct kset *attribute_kset, char *name)
 	duplicate = kset_find_obj(attribute_kset, name);
 	if (duplicate) {
 		pr_debug("Duplicate attribute name found - %s\n", name);
-		/* kset_find_obj() returns a reference */
+		 
 		kobject_put(duplicate);
 		return -EBUSY;
 	}
@@ -1289,11 +1169,11 @@ static int tlmi_sysfs_init(void)
 	}
 
 	for (i = 0; i < TLMI_SETTINGS_COUNT; i++) {
-		/* Check if index is a valid setting - skip if it isn't */
+		 
 		if (!tlmi_priv.setting[i])
 			continue;
 
-		/* check for duplicate or reserved values */
+		 
 		if (tlmi_validate_setting_name(tlmi_priv.attribute_kset,
 					       tlmi_priv.setting[i]->display_name) < 0) {
 			kfree(tlmi_priv.setting[i]->possible_values);
@@ -1302,7 +1182,7 @@ static int tlmi_sysfs_init(void)
 			continue;
 		}
 
-		/* Build attribute */
+		 
 		tlmi_priv.setting[i]->kobj.kset = tlmi_priv.attribute_kset;
 		ret = kobject_add(&tlmi_priv.setting[i]->kobj, NULL,
 				  "%s", tlmi_priv.setting[i]->display_name);
@@ -1324,7 +1204,7 @@ static int tlmi_sysfs_init(void)
 			goto fail_create_attr;
 	}
 
-	/* Create authentication entries */
+	 
 	tlmi_priv.authentication_kset = kset_create_and_add("authentication", NULL,
 								&tlmi_priv.class_dev->kobj);
 	if (!tlmi_priv.authentication_kset) {
@@ -1389,7 +1269,7 @@ fail_class_created:
 	return ret;
 }
 
-/* ---- Base Driver -------------------------------------------------------- */
+ 
 static struct tlmi_pwd_setting *tlmi_create_auth(const char *pwd_type,
 			    const char *pwd_role)
 {
@@ -1440,10 +1320,7 @@ static int tlmi_analyze(void)
 		wmi_has_guid(LENOVO_SAVE_BIOS_SETTING_CERT_GUID))
 		tlmi_priv.certificate_support = true;
 
-	/*
-	 * Try to find the number of valid settings of this machine
-	 * and use it to create sysfs attributes.
-	 */
+	 
 	for (i = 0; i < TLMI_SETTINGS_COUNT; ++i) {
 		struct tlmi_attr_setting *setting;
 		char *item = NULL;
@@ -1460,14 +1337,14 @@ static int tlmi_analyze(void)
 			continue;
 		}
 
-		/* It is not allowed to have '/' for file name. Convert it into '\'. */
+		 
 		strreplace(item, '/', '\\');
 
-		/* Remove the value part */
+		 
 		p = strchrnul(item, ',');
 		*p = '\0';
 
-		/* Create a setting entry */
+		 
 		setting = kzalloc(sizeof(*setting), GFP_KERNEL);
 		if (!setting) {
 			ret = -ENOMEM;
@@ -1476,7 +1353,7 @@ static int tlmi_analyze(void)
 		}
 		setting->index = i;
 		strscpy(setting->display_name, item, TLMI_SETTINGS_MAXLEN);
-		/* If BIOS selections supported, load those */
+		 
 		if (tlmi_priv.can_get_bios_selections) {
 			ret = tlmi_get_bios_selections(setting->display_name,
 					&setting->possible_values);
@@ -1484,12 +1361,7 @@ static int tlmi_analyze(void)
 				pr_info("Error retrieving possible values for %d : %s\n",
 						i, setting->display_name);
 		} else {
-			/*
-			 * Older Thinkstations don't support the bios_selections API.
-			 * Instead they store this as a [Optional:Option1,Option2] section of the
-			 * name string.
-			 * Try and pull that out if it's available.
-			 */
+			 
 			char *optitem, *optstart, *optend;
 
 			if (!tlmi_setting(setting->index, &optitem, LENOVO_BIOS_SETTING_GUID)) {
@@ -1505,10 +1377,7 @@ static int tlmi_analyze(void)
 				kfree(optitem);
 			}
 		}
-		/*
-		 * firmware-attributes requires that possible_values are separated by ';' but
-		 * Lenovo FW uses ','. Replace appropriately.
-		 */
+		 
 		if (setting->possible_values)
 			strreplace(setting->possible_values, ',', ';');
 
@@ -1517,12 +1386,12 @@ static int tlmi_analyze(void)
 		kfree(item);
 	}
 
-	/* Create password setting structure */
+	 
 	ret = tlmi_get_pwd_settings(&tlmi_priv.pwdcfg);
 	if (ret)
 		goto fail_clear_attr;
 
-	/* All failures below boil down to kmalloc failures */
+	 
 	ret = -ENOMEM;
 
 	tlmi_priv.pwd_admin = tlmi_create_auth("pap", "bios-admin");
@@ -1555,12 +1424,12 @@ static int tlmi_analyze(void)
 		if (!tlmi_priv.pwd_nvme)
 			goto fail_clear_attr;
 
-		/* Set default hdd/nvme index to 1 as there is no device 0 */
+		 
 		tlmi_priv.pwd_hdd->index = 1;
 		tlmi_priv.pwd_nvme->index = 1;
 
 		if (tlmi_priv.pwdcfg.core.password_state & TLMI_HDD_PWD) {
-			/* Check if PWD is configured and set index to first drive found */
+			 
 			if (tlmi_priv.pwdcfg.ext.hdd_user_password ||
 					tlmi_priv.pwdcfg.ext.hdd_master_password) {
 				tlmi_priv.pwd_hdd->valid = true;

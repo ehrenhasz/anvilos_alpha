@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * amd8111_edac.c, AMD8111 Hyper Transport chip EDAC kernel module
- *
- * Copyright (c) 2008 Wind River Systems, Inc.
- *
- * Authors:	Cao Qingtao <qingtao.cao@windriver.com>
- * 		Benjamin Walsh <benjamin.walsh@windriver.com>
- * 		Hu Yongqi <yongqi.hu@windriver.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -33,7 +25,7 @@ enum amd8111_edac_pcis {
 	PCI_BRIDGE = 0,
 };
 
-/* Wrapper functions for accessing PCI configuration space */
+ 
 static int edac_pci_read_dword(struct pci_dev *dev, int reg, u32 *val32)
 {
 	int ret;
@@ -76,54 +68,49 @@ static void edac_pci_write_byte(struct pci_dev *dev, int reg, u8 val8)
 			" PCI Access Write Error at 0x%x\n", reg);
 }
 
-/*
- * device-specific methods for amd8111 PCI Bridge Controller
- *
- * Error Reporting and Handling for amd8111 chipset could be found
- * in its datasheet 3.1.2 section, P37
- */
+ 
 static void amd8111_pci_bridge_init(struct amd8111_pci_info *pci_info)
 {
 	u32 val32;
 	struct pci_dev *dev = pci_info->dev;
 
-	/* First clear error detection flags on the host interface */
+	 
 
-	/* Clear SSE/SMA/STA flags in the global status register*/
+	 
 	edac_pci_read_dword(dev, REG_PCI_STSCMD, &val32);
 	if (val32 & PCI_STSCMD_CLEAR_MASK)
 		edac_pci_write_dword(dev, REG_PCI_STSCMD, val32);
 
-	/* Clear CRC and Link Fail flags in HT Link Control reg */
+	 
 	edac_pci_read_dword(dev, REG_HT_LINK, &val32);
 	if (val32 & HT_LINK_CLEAR_MASK)
 		edac_pci_write_dword(dev, REG_HT_LINK, val32);
 
-	/* Second clear all fault on the secondary interface */
+	 
 
-	/* Clear error flags in the memory-base limit reg. */
+	 
 	edac_pci_read_dword(dev, REG_MEM_LIM, &val32);
 	if (val32 & MEM_LIMIT_CLEAR_MASK)
 		edac_pci_write_dword(dev, REG_MEM_LIM, val32);
 
-	/* Clear Discard Timer Expired flag in Interrupt/Bridge Control reg */
+	 
 	edac_pci_read_dword(dev, REG_PCI_INTBRG_CTRL, &val32);
 	if (val32 & PCI_INTBRG_CTRL_CLEAR_MASK)
 		edac_pci_write_dword(dev, REG_PCI_INTBRG_CTRL, val32);
 
-	/* Last enable error detections */
+	 
 	if (edac_op_state == EDAC_OPSTATE_POLL) {
-		/* Enable System Error reporting in global status register */
+		 
 		edac_pci_read_dword(dev, REG_PCI_STSCMD, &val32);
 		val32 |= PCI_STSCMD_SERREN;
 		edac_pci_write_dword(dev, REG_PCI_STSCMD, val32);
 
-		/* Enable CRC Sync flood packets to HyperTransport Link */
+		 
 		edac_pci_read_dword(dev, REG_HT_LINK, &val32);
 		val32 |= HT_LINK_CRCFEN;
 		edac_pci_write_dword(dev, REG_HT_LINK, val32);
 
-		/* Enable SSE reporting etc in Interrupt control reg */
+		 
 		edac_pci_read_dword(dev, REG_PCI_INTBRG_CTRL, &val32);
 		val32 |= PCI_INTBRG_CTRL_POLL_MASK;
 		edac_pci_write_dword(dev, REG_PCI_INTBRG_CTRL, val32);
@@ -136,17 +123,17 @@ static void amd8111_pci_bridge_exit(struct amd8111_pci_info *pci_info)
 	struct pci_dev *dev = pci_info->dev;
 
 	if (edac_op_state == EDAC_OPSTATE_POLL) {
-		/* Disable System Error reporting */
+		 
 		edac_pci_read_dword(dev, REG_PCI_STSCMD, &val32);
 		val32 &= ~PCI_STSCMD_SERREN;
 		edac_pci_write_dword(dev, REG_PCI_STSCMD, val32);
 
-		/* Disable CRC flood packets */
+		 
 		edac_pci_read_dword(dev, REG_HT_LINK, &val32);
 		val32 &= ~HT_LINK_CRCFEN;
 		edac_pci_write_dword(dev, REG_HT_LINK, val32);
 
-		/* Disable DTSERREN/MARSP/SERREN in Interrupt Control reg */
+		 
 		edac_pci_read_dword(dev, REG_PCI_INTBRG_CTRL, &val32);
 		val32 &= ~PCI_INTBRG_CTRL_POLL_MASK;
 		edac_pci_write_dword(dev, REG_PCI_INTBRG_CTRL, val32);
@@ -159,7 +146,7 @@ static void amd8111_pci_bridge_check(struct edac_pci_ctl_info *edac_dev)
 	struct pci_dev *dev = pci_info->dev;
 	u32 val32;
 
-	/* Check out PCI Bridge Status and Command Register */
+	 
 	edac_pci_read_dword(dev, REG_PCI_STSCMD, &val32);
 	if (val32 & PCI_STSCMD_CLEAR_MASK) {
 		printk(KERN_INFO "Error(s) in PCI bridge status and command"
@@ -175,7 +162,7 @@ static void amd8111_pci_bridge_check(struct edac_pci_ctl_info *edac_dev)
 		edac_pci_handle_npe(edac_dev, edac_dev->ctl_name);
 	}
 
-	/* Check out HyperTransport Link Control Register */
+	 
 	edac_pci_read_dword(dev, REG_HT_LINK, &val32);
 	if (val32 & HT_LINK_LKFAIL) {
 		printk(KERN_INFO "Error(s) in hypertransport link control"
@@ -189,7 +176,7 @@ static void amd8111_pci_bridge_check(struct edac_pci_ctl_info *edac_dev)
 		edac_pci_handle_npe(edac_dev, edac_dev->ctl_name);
 	}
 
-	/* Check out PCI Interrupt and Bridge Control Register */
+	 
 	edac_pci_read_dword(dev, REG_PCI_INTBRG_CTRL, &val32);
 	if (val32 & PCI_INTBRG_CTRL_DTSTAT) {
 		printk(KERN_INFO "Error(s) in PCI interrupt and bridge control"
@@ -203,7 +190,7 @@ static void amd8111_pci_bridge_check(struct edac_pci_ctl_info *edac_dev)
 		edac_pci_handle_npe(edac_dev, edac_dev->ctl_name);
 	}
 
-	/* Check out PCI Bridge Memory Base-Limit Register */
+	 
 	edac_pci_read_dword(dev, REG_MEM_LIM, &val32);
 	if (val32 & MEM_LIMIT_CLEAR_MASK) {
 		printk(KERN_INFO
@@ -229,13 +216,13 @@ static struct resource *legacy_io_res;
 static int at_compat_reg_broken;
 #define LEGACY_NR_PORTS	1
 
-/* device-specific methods for amd8111 LPC Bridge device */
+ 
 static void amd8111_lpc_bridge_init(struct amd8111_dev_info *dev_info)
 {
 	u8 val8;
 	struct pci_dev *dev = dev_info->dev;
 
-	/* First clear REG_AT_COMPAT[SERR, IOCHK] if necessary */
+	 
 	legacy_io_res = request_region(REG_AT_COMPAT, LEGACY_NR_PORTS,
 					AMD8111_EDAC_MOD_STR);
 	if (!legacy_io_res)
@@ -244,7 +231,7 @@ static void amd8111_lpc_bridge_init(struct amd8111_dev_info *dev_info)
 			REG_AT_COMPAT, LEGACY_NR_PORTS);
 	else {
 		val8 = __do_inb(REG_AT_COMPAT);
-		if (val8 == 0xff) { /* buggy port */
+		if (val8 == 0xff) {  
 			printk(KERN_INFO "%s: port %d is buggy, not supported"
 				" by hardware?\n", __func__, REG_AT_COMPAT);
 			at_compat_reg_broken = 1;
@@ -261,7 +248,7 @@ static void amd8111_lpc_bridge_init(struct amd8111_dev_info *dev_info)
 		}
 	}
 
-	/* Second clear error flags on LPC bridge */
+	 
 	edac_pci_read_byte(dev, REG_IO_CTRL_1, &val8);
 	if (val8 & IO_CTRL_1_CLEAR_MASK)
 		edac_pci_write_byte(dev, REG_IO_CTRL_1, val8);
@@ -309,7 +296,7 @@ static void amd8111_lpc_bridge_check(struct edac_device_ctl_info *edac_dev)
 	}
 }
 
-/* General devices represented by edac_device_ctl_info */
+ 
 static struct amd8111_dev_info amd8111_devices[] = {
 	[LPC_BRIDGE] = {
 		.err_dev = PCI_DEVICE_ID_AMD_8111_LPC,
@@ -321,7 +308,7 @@ static struct amd8111_dev_info amd8111_devices[] = {
 	{0},
 };
 
-/* PCI controllers represented by edac_pci_ctl_info */
+ 
 static struct amd8111_pci_info amd8111_pcis[] = {
 	[PCI_BRIDGE] = {
 		.err_dev = PCI_DEVICE_ID_AMD_8111_PCI,
@@ -358,11 +345,7 @@ static int amd8111_dev_probe(struct pci_dev *dev,
 		goto err_dev_put;
 	}
 
-	/*
-	 * we do not allocate extra private structure for
-	 * edac_device_ctl_info, but make use of existing
-	 * one instead.
-	*/
+	 
 	dev_info->edac_idx = edac_device_alloc_index();
 	dev_info->edac_dev =
 		edac_device_alloc_ctl_info(0, dev_info->ctl_name, 1,
@@ -414,7 +397,7 @@ static void amd8111_dev_remove(struct pci_dev *dev)
 		if (dev_info->dev->device == dev->device)
 			break;
 
-	if (!dev_info->err_dev)	/* should never happen */
+	if (!dev_info->err_dev)	 
 		return;
 
 	if (dev_info->edac_dev) {
@@ -453,11 +436,7 @@ static int amd8111_pci_probe(struct pci_dev *dev,
 		goto err_dev_put;
 	}
 
-	/*
-	 * we do not allocate extra private structure for
-	 * edac_pci_ctl_info, but make use of existing
-	 * one instead.
-	*/
+	 
 	pci_info->edac_idx = edac_pci_alloc_index();
 	pci_info->edac_dev = edac_pci_alloc_ctl_info(0, pci_info->ctl_name);
 	if (!pci_info->edac_dev) {
@@ -506,7 +485,7 @@ static void amd8111_pci_remove(struct pci_dev *dev)
 		if (pci_info->dev->device == dev->device)
 			break;
 
-	if (!pci_info->err_dev)	/* should never happen */
+	if (!pci_info->err_dev)	 
 		return;
 
 	if (pci_info->edac_dev) {
@@ -520,7 +499,7 @@ static void amd8111_pci_remove(struct pci_dev *dev)
 	pci_dev_put(pci_info->dev);
 }
 
-/* PCI Device ID talbe for general EDAC device */
+ 
 static const struct pci_device_id amd8111_edac_dev_tbl[] = {
 	{
 	PCI_VEND_DEV(AMD, 8111_LPC),
@@ -532,7 +511,7 @@ static const struct pci_device_id amd8111_edac_dev_tbl[] = {
 	},
 	{
 	0,
-	}			/* table is NULL-terminated */
+	}			 
 };
 MODULE_DEVICE_TABLE(pci, amd8111_edac_dev_tbl);
 
@@ -543,7 +522,7 @@ static struct pci_driver amd8111_edac_dev_driver = {
 	.id_table = amd8111_edac_dev_tbl,
 };
 
-/* PCI Device ID table for EDAC PCI controller */
+ 
 static const struct pci_device_id amd8111_edac_pci_tbl[] = {
 	{
 	PCI_VEND_DEV(AMD, 8111_PCI),
@@ -555,7 +534,7 @@ static const struct pci_device_id amd8111_edac_pci_tbl[] = {
 	},
 	{
 	0,
-	}			/* table is NULL-terminated */
+	}			 
 };
 MODULE_DEVICE_TABLE(pci, amd8111_edac_pci_tbl);
 
@@ -573,7 +552,7 @@ static int __init amd8111_edac_init(void)
 	printk(KERN_INFO "AMD8111 EDAC driver "	AMD8111_EDAC_REVISION "\n");
 	printk(KERN_INFO "\t(c) 2008 Wind River Systems, Inc.\n");
 
-	/* Only POLL mode supported so far */
+	 
 	edac_op_state = EDAC_OPSTATE_POLL;
 
 	val = pci_register_driver(&amd8111_edac_dev_driver);

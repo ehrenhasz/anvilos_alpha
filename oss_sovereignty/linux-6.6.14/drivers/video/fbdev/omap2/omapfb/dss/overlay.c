@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * linux/drivers/video/omap2/dss/overlay.c
- *
- * Copyright (C) 2009 Nokia Corporation
- * Author: Tomi Valkeinen <tomi.valkeinen@nokia.com>
- *
- * Some code and ideas taken from drivers/video/omap/ driver
- * by Imre Deak.
- */
+
+ 
 
 #define DSS_SUBSYS_NAME "OVERLAY"
 
@@ -177,10 +169,7 @@ int dss_ovl_check(struct omap_overlay *ovl, struct omap_overlay_info *info,
 	return 0;
 }
 
-/*
- * Checks if replication logic should be used. Only use when overlay is in
- * RGB12U or RGB16 mode, and video port width interface is 18bpp or 24bpp
- */
+ 
 bool dss_ovl_use_replication(struct dss_lcd_mgr_config config,
 		enum omap_color_mode mode)
 {

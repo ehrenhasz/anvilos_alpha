@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * This file contains platform specific structure definitions
- * and init function used by Ice Lake PCH.
- *
- * Copyright (c) 2022, Intel Corporation.
- * All Rights Reserved.
- *
- */
+
+ 
 
 #include "core.h"
 
@@ -23,10 +16,7 @@ const struct pmc_bit_map icl_pfear_map[] = {
 };
 
 const struct pmc_bit_map *ext_icl_pfear_map[] = {
-	/*
-	 * Check intel_pmc_core_ids[] users of icl_reg_map for
-	 * a list of core SoCs using this.
-	 */
+	 
 	cnp_pfear_map,
 	icl_pfear_map,
 	NULL

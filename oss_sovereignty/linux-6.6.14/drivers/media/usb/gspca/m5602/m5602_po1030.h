@@ -1,25 +1,12 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Driver for the po1030 sensor.
- *
- * Copyright (c) 2008 Erik Andrén
- * Copyright (c) 2007 Ilyes Gouta. Based on the m5603x Linux Driver Project.
- * Copyright (c) 2005 m5603x Linux Driver Project <m5602@x3ng.com.br>
- *
- * Portions of code to USB interface and ALi driver software,
- * Copyright (c) 2006 Willem Duinker
- * v4l2 interface modeled after the V4L2 driver
- * for SN9C10x PC Camera Controllers
- *
- * Register defines taken from Pascal Stangs Procyon Armlib
- */
+ 
+ 
 
 #ifndef M5602_PO1030_H_
 #define M5602_PO1030_H_
 
 #include "m5602_sensor.h"
 
-/*****************************************************************************/
+ 
 
 #define PO1030_DEVID_H		0x00
 #define PO1030_DEVID_L		0x01
@@ -64,7 +51,7 @@
 
 #define PO1030_ADCOFFSET	0x2c
 
-/* Gamma Correction Coeffs */
+ 
 #define PO1030_GC0		0x2d
 #define PO1030_GC1		0x2e
 #define PO1030_GC2		0x2f
@@ -74,7 +61,7 @@
 #define PO1030_GC6		0x33
 #define PO1030_GC7		0x34
 
-/* Color Transform Matrix */
+ 
 #define PO1030_CT0		0x35
 #define PO1030_CT1		0x36
 #define PO1030_CT2		0x37
@@ -95,7 +82,7 @@
 #define PO1030_AWB_RED_TUNING	0x47
 #define PO1030_AWB_BLUE_TUNING	0x48
 
-/* Output format control */
+ 
 #define PO1030_OUTFORMCTRL1	0x5a
 #define PO1030_OUTFORMCTRL2	0x5b
 #define PO1030_OUTFORMCTRL3	0x5c
@@ -131,7 +118,7 @@
 
 #define PO1030_SUBSAMPLING	(1 << 6)
 
-/*****************************************************************************/
+ 
 
 #define PO1030_GLOBAL_GAIN_DEFAULT	0x12
 #define PO1030_EXPOSURE_DEFAULT		0x0085
@@ -139,9 +126,9 @@
 #define PO1030_RED_GAIN_DEFAULT		0x36
 #define PO1030_GREEN_GAIN_DEFAULT	0x40
 
-/*****************************************************************************/
+ 
 
-/* Kernel module parameters */
+ 
 extern int force_sensor;
 extern bool dump_sensor;
 

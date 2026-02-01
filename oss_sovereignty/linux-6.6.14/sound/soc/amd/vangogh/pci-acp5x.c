@@ -1,8 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0+
-//
-// AMD Vangogh ACP PCI Driver
-//
-// Copyright (C) 2021 Advanced Micro Devices, Inc. All rights reserved.
+
+
+
+
+
 
 #include <linux/pci.h>
 #include <linux/module.h>
@@ -86,14 +86,14 @@ static int acp5x_init(void __iomem *acp5x_base)
 {
 	int ret;
 
-	/* power on */
+	 
 	ret = acp5x_power_on(acp5x_base);
 	if (ret) {
 		pr_err("ACP5x power on failed\n");
 		return ret;
 	}
 	acp_writel(0x01, acp5x_base + ACP_CONTROL);
-	/* Reset */
+	 
 	ret = acp5x_reset(acp5x_base);
 	if (ret) {
 		pr_err("ACP5x reset failed\n");
@@ -109,7 +109,7 @@ static int acp5x_deinit(void __iomem *acp5x_base)
 	int ret;
 
 	acp5x_disable_interrupts(acp5x_base);
-	/* Reset */
+	 
 	ret = acp5x_reset(acp5x_base);
 	if (ret) {
 		pr_err("ACP5x reset failed\n");
@@ -129,7 +129,7 @@ static int snd_acp5x_probe(struct pci_dev *pci,
 	int ret, i;
 	u32 addr, val;
 
-	/* Return if acp config flag is defined */
+	 
 	flag = snd_amd_acp_find_config(pci);
 	if (flag)
 		return -ENODEV;

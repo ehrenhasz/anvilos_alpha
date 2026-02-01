@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0 OR MIT)
-/*
- * Microsemi Ocelot Switch driver
- *
- * Copyright (c) 2017 Microsemi Corporation
- * Copyright (c) 2021 Innovative Advantage
- */
+
+ 
 #include <soc/mscc/ocelot_vcap.h>
 #include <soc/mscc/vsc7514_regs.h>
 #include "ocelot.h"
@@ -51,7 +46,7 @@ const struct reg_field vsc7514_regfields[REGFIELD_MAX] = {
 	[SYS_RESET_CFG_CORE_ENA] = REG_FIELD(SYS_RESET_CFG, 2, 2),
 	[SYS_RESET_CFG_MEM_ENA] = REG_FIELD(SYS_RESET_CFG, 1, 1),
 	[SYS_RESET_CFG_MEM_INIT] = REG_FIELD(SYS_RESET_CFG, 0, 0),
-	/* Replicated per number of ports (12), register size 4 per port */
+	 
 	[QSYS_SWITCH_PORT_MODE_PORT_ENA] = REG_FIELD_ID(QSYS_SWITCH_PORT_MODE, 14, 14, 12, 4),
 	[QSYS_SWITCH_PORT_MODE_SCH_NEXT_CFG] = REG_FIELD_ID(QSYS_SWITCH_PORT_MODE, 11, 13, 12, 4),
 	[QSYS_SWITCH_PORT_MODE_YEL_RSRVD] = REG_FIELD_ID(QSYS_SWITCH_PORT_MODE, 10, 10, 12, 4),
@@ -345,16 +340,16 @@ static const u32 vsc7514_sys_regmap[] = {
 };
 
 static const u32 vsc7514_vcap_regmap[] = {
-	/* VCAP_CORE_CFG */
+	 
 	REG(VCAP_CORE_UPDATE_CTRL,			0x000000),
 	REG(VCAP_CORE_MV_CFG,				0x000004),
-	/* VCAP_CORE_CACHE */
+	 
 	REG(VCAP_CACHE_ENTRY_DAT,			0x000008),
 	REG(VCAP_CACHE_MASK_DAT,			0x000108),
 	REG(VCAP_CACHE_ACTION_DAT,			0x000208),
 	REG(VCAP_CACHE_CNT_DAT,				0x000308),
 	REG(VCAP_CACHE_TG_DAT,				0x000388),
-	/* VCAP_CONST */
+	 
 	REG(VCAP_CONST_VCAP_VER,			0x000398),
 	REG(VCAP_CONST_ENTRY_WIDTH,			0x00039c),
 	REG(VCAP_CONST_ENTRY_CNT,			0x0003a0),
@@ -482,24 +477,24 @@ static const struct vcap_field vsc7514_vcap_is1_keys[] = {
 	[VCAP_IS1_HK_VID]			= { 31,  12 },
 	[VCAP_IS1_HK_DEI]			= { 43,   1 },
 	[VCAP_IS1_HK_PCP]			= { 44,   3 },
-	/* Specific Fields for IS1 Half Key S1_NORMAL */
+	 
 	[VCAP_IS1_HK_L2_SMAC]			= { 47,  48 },
 	[VCAP_IS1_HK_ETYPE_LEN]			= { 95,   1 },
 	[VCAP_IS1_HK_ETYPE]			= { 96,  16 },
 	[VCAP_IS1_HK_IP_SNAP]			= { 112,  1 },
 	[VCAP_IS1_HK_IP4]			= { 113,  1 },
-	/* Layer-3 Information */
+	 
 	[VCAP_IS1_HK_L3_FRAGMENT]		= { 114,  1 },
 	[VCAP_IS1_HK_L3_FRAG_OFS_GT0]		= { 115,  1 },
 	[VCAP_IS1_HK_L3_OPTIONS]		= { 116,  1 },
 	[VCAP_IS1_HK_L3_DSCP]			= { 117,  6 },
 	[VCAP_IS1_HK_L3_IP4_SIP]		= { 123, 32 },
-	/* Layer-4 Information */
+	 
 	[VCAP_IS1_HK_TCP_UDP]			= { 155,  1 },
 	[VCAP_IS1_HK_TCP]			= { 156,  1 },
 	[VCAP_IS1_HK_L4_SPORT]			= { 157, 16 },
 	[VCAP_IS1_HK_L4_RNG]			= { 173,  8 },
-	/* Specific Fields for IS1 Half Key S1_5TUPLE_IP4 */
+	 
 	[VCAP_IS1_HK_IP4_INNER_TPID]		= { 47,   1 },
 	[VCAP_IS1_HK_IP4_INNER_VID]		= { 48,  12 },
 	[VCAP_IS1_HK_IP4_INNER_DEI]		= { 60,   1 },
@@ -528,7 +523,7 @@ static const struct vcap_field vsc7514_vcap_is1_actions[] = {
 	[VCAP_IS1_ACT_PAG_OVERRIDE_MASK]	= { 13,  8 },
 	[VCAP_IS1_ACT_PAG_VAL]			= { 21,  8 },
 	[VCAP_IS1_ACT_RSV]			= { 29,  9 },
-	/* The fields below are incorrectly shifted by 2 in the manual */
+	 
 	[VCAP_IS1_ACT_VID_REPLACE_ENA]		= { 38,  1 },
 	[VCAP_IS1_ACT_VID_ADD_VAL]		= { 39, 12 },
 	[VCAP_IS1_ACT_FID_SEL]			= { 51,  2 },
@@ -543,7 +538,7 @@ static const struct vcap_field vsc7514_vcap_is1_actions[] = {
 };
 
 static const struct vcap_field vsc7514_vcap_is2_keys[] = {
-	/* Common: 46 bits */
+	 
 	[VCAP_IS2_TYPE]				= { 0,    4 },
 	[VCAP_IS2_HK_FIRST]			= { 4,    1 },
 	[VCAP_IS2_HK_PAG]			= { 5,    8 },
@@ -556,19 +551,19 @@ static const struct vcap_field vsc7514_vcap_is2_keys[] = {
 	[VCAP_IS2_HK_VID]			= { 30,  12 },
 	[VCAP_IS2_HK_DEI]			= { 42,   1 },
 	[VCAP_IS2_HK_PCP]			= { 43,   3 },
-	/* MAC_ETYPE / MAC_LLC / MAC_SNAP / OAM common */
+	 
 	[VCAP_IS2_HK_L2_DMAC]			= { 46,  48 },
 	[VCAP_IS2_HK_L2_SMAC]			= { 94,  48 },
-	/* MAC_ETYPE (TYPE=000) */
+	 
 	[VCAP_IS2_HK_MAC_ETYPE_ETYPE]		= { 142, 16 },
 	[VCAP_IS2_HK_MAC_ETYPE_L2_PAYLOAD0]	= { 158, 16 },
 	[VCAP_IS2_HK_MAC_ETYPE_L2_PAYLOAD1]	= { 174,  8 },
 	[VCAP_IS2_HK_MAC_ETYPE_L2_PAYLOAD2]	= { 182,  3 },
-	/* MAC_LLC (TYPE=001) */
+	 
 	[VCAP_IS2_HK_MAC_LLC_L2_LLC]		= { 142, 40 },
-	/* MAC_SNAP (TYPE=010) */
+	 
 	[VCAP_IS2_HK_MAC_SNAP_L2_SNAP]		= { 142, 40 },
-	/* MAC_ARP (TYPE=011) */
+	 
 	[VCAP_IS2_HK_MAC_ARP_SMAC]		= { 46,  48 },
 	[VCAP_IS2_HK_MAC_ARP_ADDR_SPACE_OK]	= { 94,   1 },
 	[VCAP_IS2_HK_MAC_ARP_PROTO_SPACE_OK]	= { 95,   1 },
@@ -580,7 +575,7 @@ static const struct vcap_field vsc7514_vcap_is2_keys[] = {
 	[VCAP_IS2_HK_MAC_ARP_L3_IP4_DIP]	= { 102, 32 },
 	[VCAP_IS2_HK_MAC_ARP_L3_IP4_SIP]	= { 134, 32 },
 	[VCAP_IS2_HK_MAC_ARP_DIP_EQ_SIP]	= { 166,  1 },
-	/* IP4_TCP_UDP / IP4_OTHER common */
+	 
 	[VCAP_IS2_HK_IP4]			= { 46,   1 },
 	[VCAP_IS2_HK_L3_FRAGMENT]		= { 47,   1 },
 	[VCAP_IS2_HK_L3_FRAG_OFS_GT0]		= { 48,   1 },
@@ -590,7 +585,7 @@ static const struct vcap_field vsc7514_vcap_is2_keys[] = {
 	[VCAP_IS2_HK_L3_IP4_DIP]		= { 59,  32 },
 	[VCAP_IS2_HK_L3_IP4_SIP]		= { 91,  32 },
 	[VCAP_IS2_HK_DIP_EQ_SIP]		= { 123,  1 },
-	/* IP4_TCP_UDP (TYPE=100) */
+	 
 	[VCAP_IS2_HK_TCP]			= { 124,  1 },
 	[VCAP_IS2_HK_L4_DPORT]			= { 125, 16 },
 	[VCAP_IS2_HK_L4_SPORT]			= { 141, 16 },
@@ -605,14 +600,14 @@ static const struct vcap_field vsc7514_vcap_is2_keys[] = {
 	[VCAP_IS2_HK_L4_URG]			= { 172,  1 },
 	[VCAP_IS2_HK_L4_1588_DOM]		= { 173,  8 },
 	[VCAP_IS2_HK_L4_1588_VER]		= { 181,  4 },
-	/* IP4_OTHER (TYPE=101) */
+	 
 	[VCAP_IS2_HK_IP4_L3_PROTO]		= { 124,  8 },
 	[VCAP_IS2_HK_L3_PAYLOAD]		= { 132, 56 },
-	/* IP6_STD (TYPE=110) */
+	 
 	[VCAP_IS2_HK_IP6_L3_TTL_GT0]		= { 46,   1 },
 	[VCAP_IS2_HK_L3_IP6_SIP]		= { 47, 128 },
 	[VCAP_IS2_HK_IP6_L3_PROTO]		= { 175,  8 },
-	/* OAM (TYPE=111) */
+	 
 	[VCAP_IS2_HK_OAM_MEL_FLAGS]		= { 142,  7 },
 	[VCAP_IS2_HK_OAM_VER]			= { 149,  5 },
 	[VCAP_IS2_HK_OAM_OPCODE]		= { 154,  8 },
@@ -645,7 +640,7 @@ struct vcap_props vsc7514_vcap_props[] = {
 		.action_type_width = 0,
 		.action_table = {
 			[ES0_ACTION_TYPE_NORMAL] = {
-				.width = 73, /* HIT_STICKY not included */
+				.width = 73,  
 				.count = 1,
 			},
 		},
@@ -657,7 +652,7 @@ struct vcap_props vsc7514_vcap_props[] = {
 		.action_type_width = 0,
 		.action_table = {
 			[IS1_ACTION_TYPE_NORMAL] = {
-				.width = 78, /* HIT_STICKY not included */
+				.width = 78,  
 				.count = 4,
 			},
 		},

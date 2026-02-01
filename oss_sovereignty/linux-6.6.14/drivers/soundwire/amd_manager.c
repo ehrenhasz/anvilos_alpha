@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * SoundWire AMD Manager driver
- *
- * Copyright 2023 Advanced Micro Devices, Inc.
- */
+
+ 
 
 #include <linux/completion.h>
 #include <linux/device.h>
@@ -53,7 +49,7 @@ static int amd_init_sdw_manager(struct amd_sdw_manager *amd_manager)
 	if (ret)
 		return ret;
 
-	/* SoundWire manager bus reset */
+	 
 	writel(AMD_SDW_BUS_RESET_REQ, amd_manager->mmio + ACP_SW_BUS_RESET_CTRL);
 	ret = readl_poll_timeout(amd_manager->mmio + ACP_SW_BUS_RESET_CTRL, val,
 				 (val & AMD_SDW_BUS_RESET_DONE), ACP_DELAY_US, AMD_SDW_TIMEOUT);
@@ -88,11 +84,7 @@ static int amd_disable_sdw_manager(struct amd_sdw_manager *amd_manager)
 	u32 val;
 
 	writel(AMD_SDW_DISABLE, amd_manager->mmio + ACP_SW_EN);
-	/*
-	 * After invoking manager disable sequence, check whether
-	 * manager has executed clock stop sequence. In this case,
-	 * manager should ignore checking enable status register.
-	 */
+	 
 	val = readl(amd_manager->mmio + ACP_SW_CLK_RESUME_CTRL);
 	if (val)
 		return 0;
@@ -354,7 +346,7 @@ static void amd_sdw_process_ping_status(u64 response, struct amd_sdw_manager *am
 	u32 val;
 	u16 dev_index;
 
-	/* slave status response */
+	 
 	slave_stat = FIELD_GET(AMD_SDW_MCP_SLAVE_STAT_0_3, response);
 	slave_stat |= FIELD_GET(AMD_SDW_MCP_SLAVE_STAT_4_11, response) << 8;
 	dev_dbg(amd_manager->dev, "slave_stat:0x%llx\n", slave_stat);
@@ -382,7 +374,7 @@ static u32 amd_sdw_read_ping_status(struct sdw_bus *bus)
 	u32 slave_stat;
 
 	response = amd_sdw_send_cmd_get_resp(amd_manager, 0, 0);
-	/* slave status from ping response */
+	 
 	slave_stat = FIELD_GET(AMD_SDW_MCP_SLAVE_STAT_0_3, response);
 	slave_stat |= FIELD_GET(AMD_SDW_MCP_SLAVE_STAT_4_11, response) << 8;
 	dev_dbg(amd_manager->dev, "slave_stat:0x%x\n", slave_stat);
@@ -507,10 +499,7 @@ static int amd_sdw_transport_params(struct sdw_bus *bus,
 	dpn_offsetctrl |= FIELD_PREP(AMD_DPN_OFFSET_CTRL_2, params->offset2);
 	writel(dpn_offsetctrl, amd_manager->mmio + offset_reg);
 
-	/*
-	 * lane_ctrl_ch_en_reg will be used to program lane_ctrl and ch_mask
-	 * parameters.
-	 */
+	 
 	dpn_lanectrl = readl(amd_manager->mmio + lane_ctrl_ch_en_reg);
 	u32p_replace_bits(&dpn_lanectrl, params->lane_ctrl, AMD_DPN_CH_EN_LCTRL);
 	writel(dpn_lanectrl, amd_manager->mmio + lane_ctrl_ch_en_reg);
@@ -536,10 +525,7 @@ static int amd_sdw_port_enable(struct sdw_bus *bus,
 		return -EINVAL;
 	}
 
-	/*
-	 * lane_ctrl_ch_en_reg will be used to program lane_ctrl and ch_mask
-	 * parameters.
-	 */
+	 
 	dpn_ch_enable = readl(amd_manager->mmio + lane_ctrl_ch_en_reg);
 	u32p_replace_bits(&dpn_ch_enable, enable_ch->ch_mask, AMD_DPN_CH_EN_CHMASK);
 	if (enable_ch->enable)
@@ -560,7 +546,7 @@ static int sdw_master_read_amd_prop(struct sdw_bus *bus)
 	char name[32];
 
 	prop = &bus->prop;
-	/* Find manager handle */
+	 
 	snprintf(name, sizeof(name), "mipi-sdw-link-%d-subproperties", bus->link_id);
 	link = device_get_named_child_node(bus->dev, name);
 	if (!link) {
@@ -628,7 +614,7 @@ static int amd_sdw_hw_params(struct snd_pcm_substream *substream,
 
 	sconfig.bps = snd_pcm_format_width(params_format(params));
 
-	/* Port configuration */
+	 
 	pconfig = kzalloc(sizeof(*pconfig), GFP_KERNEL);
 	if (!pconfig) {
 		ret =  -ENOMEM;
@@ -671,13 +657,13 @@ static int amd_set_sdw_stream(struct snd_soc_dai *dai, void *stream, int directi
 
 	dai_runtime = amd_manager->dai_runtime_array[dai->id];
 	if (stream) {
-		/* first paranoia check */
+		 
 		if (dai_runtime) {
 			dev_err(dai->dev, "dai_runtime already allocated for dai %s\n",	dai->name);
 			return -EINVAL;
 		}
 
-		/* allocate and set dai_runtime info */
+		 
 		dai_runtime = kzalloc(sizeof(*dai_runtime), GFP_KERNEL);
 		if (!dai_runtime)
 			return -ENOMEM;
@@ -687,13 +673,13 @@ static int amd_set_sdw_stream(struct snd_soc_dai *dai, void *stream, int directi
 		dai_runtime->stream = stream;
 		amd_manager->dai_runtime_array[dai->id] = dai_runtime;
 	} else {
-		/* second paranoia check */
+		 
 		if (!dai_runtime) {
 			dev_err(dai->dev, "dai_runtime not allocated for dai %s\n", dai->name);
 			return -EINVAL;
 		}
 
-		/* for NULL stream we release allocated dai_runtime */
+		 
 		kfree(dai_runtime);
 		amd_manager->dai_runtime_array[dai->id] = NULL;
 	}
@@ -784,13 +770,7 @@ static void amd_sdw_update_slave_status_work(struct work_struct *work)
 
 update_status:
 	sdw_handle_slave_status(&amd_manager->bus, amd_manager->status);
-	/*
-	 * During the peripheral enumeration sequence, the SoundWire manager interrupts
-	 * are masked. Once the device number programming is done for all peripherals,
-	 * interrupts will be unmasked. Read the peripheral device status from ping command
-	 * and process the response. This sequence will ensure all peripheral devices enumerated
-	 * and initialized properly.
-	 */
+	 
 	if (amd_manager->status[0] == SDW_SLAVE_ATTACHED) {
 		if (retry_count++ < SDW_MAX_DEVICES) {
 			writel(AMD_SDW_IRQ_MASK_0TO7, amd_manager->mmio +
@@ -855,7 +835,7 @@ static void amd_sdw_irq_thread(struct work_struct *work)
 	if (status_change_8to11 & AMD_SDW_PREQ_INTR_STAT) {
 		amd_sdw_read_and_process_ping_status(amd_manager);
 	} else {
-		/* Check for the updated status on peripheral device */
+		 
 		amd_sdw_update_slave_status(status_change_0to7, status_change_8to11, amd_manager);
 	}
 	if (status_change_8to11 || status_change_0to7)
@@ -883,7 +863,7 @@ static void amd_sdw_probe_work(struct work_struct *work)
 			return;
 		amd_sdw_set_frameshape(amd_manager);
 	}
-	/* Enable runtime PM */
+	 
 	pm_runtime_set_autosuspend_delay(amd_manager->dev, AMD_SDW_MASTER_SUSPEND_DELAY_MS);
 	pm_runtime_use_autosuspend(amd_manager->dev);
 	pm_runtime_mark_last_busy(amd_manager->dev);
@@ -965,9 +945,7 @@ static int amd_sdw_manager_probe(struct platform_device *pdev)
 	INIT_WORK(&amd_manager->amd_sdw_irq_thread, amd_sdw_irq_thread);
 	INIT_WORK(&amd_manager->amd_sdw_work, amd_sdw_update_slave_status_work);
 	INIT_WORK(&amd_manager->probe_work, amd_sdw_probe_work);
-	/*
-	 * Instead of having lengthy probe sequence, use deferred probe.
-	 */
+	 
 	schedule_work(&amd_manager->probe_work);
 	return 0;
 }
@@ -1078,11 +1056,7 @@ static int __maybe_unused amd_pm_prepare(struct device *dev)
 			bus->link_id);
 		return 0;
 	}
-	/*
-	 * When multiple peripheral devices connected over the same link, if SoundWire manager
-	 * device is not in runtime suspend state, observed that device alerts are missing
-	 * without pm_prepare on AMD platforms in clockstop mode0.
-	 */
+	 
 	if (amd_manager->power_mode_mask & AMD_SDW_CLK_STOP_MODE) {
 		ret = pm_request_resume(dev);
 		if (ret < 0) {
@@ -1090,11 +1064,7 @@ static int __maybe_unused amd_pm_prepare(struct device *dev)
 			return 0;
 		}
 	}
-	/* To force peripheral devices to system level suspend state, resume the devices
-	 * from runtime suspend state first. Without that unable to dispatch the alert
-	 * status to peripheral driver during system level resume as they are in runtime
-	 * suspend state.
-	 */
+	 
 	ret = device_for_each_child(bus->dev, NULL, amd_resume_child_device);
 	if (ret < 0)
 		dev_err(dev, "amd_resume_child_device failed: %d\n", ret);
@@ -1116,10 +1086,7 @@ static int __maybe_unused amd_suspend(struct device *dev)
 	if (amd_manager->power_mode_mask & AMD_SDW_CLK_STOP_MODE) {
 		return amd_sdw_clock_stop(amd_manager);
 	} else if (amd_manager->power_mode_mask & AMD_SDW_POWER_OFF_MODE) {
-		/*
-		 * As per hardware programming sequence on AMD platforms,
-		 * clock stop should be invoked first before powering-off
-		 */
+		 
 		ret = amd_sdw_clock_stop(amd_manager);
 		if (ret)
 			return ret;

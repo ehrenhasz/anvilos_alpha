@@ -1,24 +1,8 @@
-/* Test of explicit_bzero() function.
-   Copyright (C) 2020-2023 Free Software Foundation, Inc.
-
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* Written by Bruno Haible <bruno@clisp.org>, 2020.  */
+ 
 
 #include <config.h>
 
-/* Specification.  */
+ 
 #include <string.h>
 
 #include "signature.h"
@@ -36,12 +20,12 @@ SIGNATURE_CHECK (explicit_bzero, void, (void *, size_t));
 
 static char zero[SECRET_SIZE] = { 0 };
 
-/* Enable this to verify that the test is effective.  */
+ 
 #if 0
 # define explicit_bzero(a, n)  memset (a, '\0', n)
 #endif
 
-/* =================== Verify operation on static memory =================== */
+ 
 
 static char stbuf[SECRET_SIZE];
 
@@ -53,9 +37,9 @@ test_static (void)
   ASSERT (memcmp (zero, stbuf, SECRET_SIZE) == 0);
 }
 
-/* =============== Verify operation on heap-allocated memory =============== */
+ 
 
-/* Test whether an address range is mapped in memory.  */
+ 
 #if VMA_ITERATE_SUPPORTED
 
 struct locals
@@ -70,8 +54,7 @@ vma_iterate_callback (void *data, uintptr_t start, uintptr_t end,
 {
   struct locals *lp = (struct locals *) data;
 
-  /* Remove from [range_start, range_end) the part at the beginning or at the
-     end that is covered by [start, end).  */
+   
   if (start <= lp->range_start && end > lp->range_start)
     lp->range_start = (end < lp->range_end ? end : lp->range_end);
   if (start < lp->range_end && end >= lp->range_end)
@@ -113,8 +96,7 @@ test_heap (void)
   heapbuf = (char *) addr;
   if (is_range_mapped (addr, addr + SECRET_SIZE))
     {
-      /* some implementation could override freed memory by canaries so
-         compare against secret */
+       
       ASSERT (memcmp (heapbuf, SECRET, SECRET_SIZE) != 0);
       printf ("test_heap: address range is still mapped after free().\n");
     }
@@ -122,16 +104,9 @@ test_heap (void)
     printf ("test_heap: address range is unmapped after free().\n");
 }
 
-/* =============== Verify operation on stack-allocated memory =============== */
+ 
 
-/* There are two passes:
-     1. Put a secret in memory and invoke explicit_bzero on it.
-     2. Verify that the memory has been erased.
-   Implement them in the same function, so that they access the same memory
-   range on the stack.  Declare the local scalars to be volatile so they
-   are not optimized away.  That way, the test verifies that the compiler
-   does not eliminate a call to explicit_bzero, even if data flow analysis
-   reveals that the stack area is dead at the end of the function.  */
+ 
 static bool _GL_ATTRIBUTE_NOINLINE
 do_secret_stuff (int volatile pass, char *volatile *volatile last_stackbuf)
 {
@@ -143,12 +118,9 @@ do_secret_stuff (int volatile pass, char *volatile *volatile last_stackbuf)
       *last_stackbuf = stackbuf;
       return false;
     }
-  else /* pass == 2 */
+  else  
     {
-      /* Use *last_stackbuf here, because stackbuf may be allocated at a
-         different address than *last_stackbuf.  This can happen
-         when the compiler splits this function into different functions,
-         one for pass == 1 and one for pass != 1.  */
+       
       return memcmp (zero, *last_stackbuf, SECRET_SIZE) != 0;
     }
 }
@@ -162,26 +134,18 @@ test_stack (void)
 
   for (repeat = 2 * 1000; repeat > 0; repeat--)
     {
-      /* This odd way of writing two consecutive statements
-           do_secret_stuff (1, &last_stackbuf);
-           count += do_secret_stuff (2, &last_stackbuf);
-         ensures that the two do_secret_stuff calls are performed with the same
-         stack pointer value, on m68k.  */
+       
       if ((repeat % 2) == 0)
         do_secret_stuff (1, &last_stackbuf);
       else
         count += do_secret_stuff (2, &last_stackbuf);
     }
-  /* If explicit_bzero works, count is near 0.  (It may be > 0 if there were
-     some asynchronous signal invocations between the two calls of
-     do_secret_stuff.)
-     If explicit_bzero is optimized away by the compiler, count comes out as
-     approximately 1000.  */
+   
   printf ("test_stack: count = %d\n", count);
   ASSERT (count < 50);
 }
 
-/* ========================================================================== */
+ 
 
 int
 main ()

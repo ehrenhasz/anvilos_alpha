@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * (C) COPYRIGHT 2018 ARM Limited. All rights reserved.
- * Author: James.Qian.Wang <james.qian.wang@arm.com>
- *
- */
+
+ 
 #include <drm/drm_atomic.h>
 #include <drm/drm_atomic_helper.h>
 #include <drm/drm_blend.h>
@@ -59,14 +55,7 @@ komeda_plane_init_data_flow(struct drm_plane_state *st,
 	return 0;
 }
 
-/**
- * komeda_plane_atomic_check - build input data flow
- * @plane: DRM plane
- * @state: the plane state object
- *
- * RETURNS:
- * Zero for success or -errno
- */
+ 
 static int
 komeda_plane_atomic_check(struct drm_plane *plane,
 			  struct drm_atomic_state *state)
@@ -91,7 +80,7 @@ komeda_plane_atomic_check(struct drm_plane *plane,
 		return -EINVAL;
 	}
 
-	/* crtc is inactive, skip the resource assignment */
+	 
 	if (!crtc_st->active)
 		return 0;
 
@@ -111,9 +100,7 @@ komeda_plane_atomic_check(struct drm_plane *plane,
 	return err;
 }
 
-/* plane doesn't represent a real HW, so there is no HW update for plane.
- * komeda handles all the HW update in crtc->atomic_flush
- */
+ 
 static void
 komeda_plane_atomic_update(struct drm_plane *plane,
 			   struct drm_atomic_state *state)
@@ -194,7 +181,7 @@ static const struct drm_plane_funcs komeda_plane_funcs = {
 	.format_mod_supported	= komeda_plane_format_mod_supported,
 };
 
-/* for komeda, which is pipeline can be share between crtcs */
+ 
 static u32 get_possible_crtcs(struct komeda_kms_dev *kms,
 			      struct komeda_pipeline *pipe)
 {
@@ -228,7 +215,7 @@ komeda_set_crtc_plane_mask(struct komeda_kms_dev *kms,
 	}
 }
 
-/* use Layer0 as primary */
+ 
 static u32 get_plane_type(struct komeda_kms_dev *kms,
 			  struct komeda_component *c)
 {

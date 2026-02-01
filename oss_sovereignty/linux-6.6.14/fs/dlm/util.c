@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/******************************************************************************
-*******************************************************************************
-**
-**  Copyright (C) 2005-2008 Red Hat, Inc.  All rights reserved.
-**
-**
-*******************************************************************************
-******************************************************************************/
+
+ 
 
 #include "dlm_internal.h"
 #include "rcom.h"
@@ -20,8 +13,7 @@
 #define DLM_ERRNO_ETIMEDOUT	       110
 #define DLM_ERRNO_EINPROGRESS	       115
 
-/* higher errno values are inconsistent across architectures, so select
-   one set of values for on the wire */
+ 
 
 int to_dlm_errno(int err)
 {

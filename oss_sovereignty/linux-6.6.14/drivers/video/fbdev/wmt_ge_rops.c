@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  linux/drivers/video/wmt_ge_rops.c
- *
- *  Accelerators for raster operations using WonderMedia Graphics Engine
- *
- *  Copyright (C) 2010 Alexey Charkov <alchark@gmail.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/fb.h>
@@ -34,7 +28,7 @@
 #define GE_DESTAREAY_OFF	0x4c
 #define GE_DESTAREAW_OFF	0x50
 #define GE_DESTAREAH_OFF	0x54
-#define GE_PAT0C_OFF		0x88	/* Pattern 0 color */
+#define GE_PAT0C_OFF		0x88	 
 #define GE_ENABLE_OFF		0xec
 #define GE_INTEN_OFF		0xf0
 #define GE_STATUS_OFF		0xf8
@@ -129,7 +123,7 @@ static int wmt_ge_rops_probe(struct platform_device *pdev)
 		return -ENODEV;
 	}
 
-	/* Only one ROP engine is presently supported. */
+	 
 	if (unlikely(regbase)) {
 		WARN_ON(1);
 		return -EBUSY;
@@ -154,7 +148,7 @@ static void wmt_ge_rops_remove(struct platform_device *pdev)
 
 static const struct of_device_id wmt_dt_ids[] = {
 	{ .compatible = "wm,prizm-ge-rops", },
-	{ /* sentinel */ }
+	{   }
 };
 
 static struct platform_driver wmt_ge_rops_driver = {

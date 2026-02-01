@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #if defined(__i386__) || defined(__x86_64__)
 
 #include <fcntl.h>
@@ -8,20 +8,12 @@
 
 #include "helpers/helpers.h"
 
-/* Intel specific MSRs */
+ 
 #define MSR_IA32_PERF_STATUS		0x198
 #define MSR_IA32_MISC_ENABLES		0x1a0
 #define MSR_NEHALEM_TURBO_RATIO_LIMIT	0x1ad
 
-/*
- * read_msr
- *
- * Will return 0 on success and -1 on failure.
- * Possible errno values could be:
- * EFAULT -If the read/write did not fully complete
- * EIO    -If the CPU does not support MSRs
- * ENXIO  -If the CPU does not exist
- */
+ 
 
 int read_msr(int cpu, unsigned int idx, unsigned long long *val)
 {
@@ -43,15 +35,7 @@ int read_msr(int cpu, unsigned int idx, unsigned long long *val)
 	return -1;
 }
 
-/*
- * write_msr
- *
- * Will return 0 on success and -1 on failure.
- * Possible errno values could be:
- * EFAULT -If the read/write did not fully complete
- * EIO    -If the CPU does not support MSRs
- * ENXIO  -If the CPU does not exist
- */
+ 
 int write_msr(int cpu, unsigned int idx, unsigned long long val)
 {
 	int fd;

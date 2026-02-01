@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2019 Facebook
+
+
 #include <linux/bpf.h>
 #include <linux/version.h>
 #include <bpf/bpf_helpers.h>
@@ -31,7 +31,7 @@ struct {
 
 struct bpf_vqueue {
 	struct bpf_spin_lock lock;
-	/* 4 byte hole */
+	 
 	unsigned long long lasttime;
 	int credit;
 	unsigned int rate;
@@ -66,7 +66,7 @@ int bpf_spin_lock_test(struct __sk_buff *skb)
 			goto err;
 		}
 	}
-	/* spin_lock in hash map run time test */
+	 
 	bpf_spin_lock(&val->lock);
 	if (val->cnt)
 		val->cnt--;
@@ -76,7 +76,7 @@ int bpf_spin_lock_test(struct __sk_buff *skb)
 		err = 1;
 	bpf_spin_unlock(&val->lock);
 
-	/* spin_lock in array. virtual queue demo */
+	 
 	q = bpf_map_lookup_elem(&vqueue, &key);
 	if (!q)
 		goto err;
@@ -92,7 +92,7 @@ int bpf_spin_lock_test(struct __sk_buff *skb)
 
 	__sink(credit);
 
-	/* spin_lock in cgroup local storage */
+	 
 	cls = bpf_get_local_storage(&cls_map, 0);
 	bpf_spin_lock(&cls->lock);
 	cls->cnt++;

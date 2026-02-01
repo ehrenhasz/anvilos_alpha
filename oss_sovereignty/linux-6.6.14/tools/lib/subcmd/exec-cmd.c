@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/compiler.h>
 #include <linux/string.h>
 #include <sys/types.h>
@@ -25,7 +25,7 @@ void exec_cmd_init(const char *exec_name, const char *prefix,
 	subcmd_config.exec_path		= exec_path;
 	subcmd_config.exec_path_env	= exec_path_env;
 
-	/* Setup environment variable for invoked shell script. */
+	 
 	setenv("PREFIX", prefix, 1);
 }
 
@@ -108,14 +108,12 @@ const char *extract_argv0_path(const char *argv0)
 void set_argv_exec_path(const char *exec_path)
 {
 	argv_exec_path = exec_path;
-	/*
-	 * Propagate this setting to external programs.
-	 */
+	 
 	setenv(subcmd_config.exec_path_env, exec_path, 1);
 }
 
 
-/* Returns the highest-priority location to look for subprograms. */
+ 
 char *get_argv_exec_path(void)
 {
 	char *env;
@@ -171,7 +169,7 @@ static const char **prepare_exec_cmd(const char **argv)
 	const char **nargv;
 
 	for (argc = 0; argv[argc]; argc++)
-		; /* just counting */
+		;  
 	nargv = malloc(sizeof(*nargv) * (argc + 2));
 
 	nargv[0] = subcmd_config.exec_name;
@@ -184,7 +182,7 @@ static const char **prepare_exec_cmd(const char **argv)
 int execv_cmd(const char **argv) {
 	const char **nargv = prepare_exec_cmd(argv);
 
-	/* execvp() can only ever return if it fails */
+	 
 	execvp(subcmd_config.exec_name, (char **)nargv);
 
 	free(nargv);

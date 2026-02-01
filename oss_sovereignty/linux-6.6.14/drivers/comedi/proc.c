@@ -1,17 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * /proc interface for comedi
- *
- * COMEDI - Linux Control and Measurement Device Interface
- * Copyright (C) 1998 David A. Schleef <ds@schleef.org>
- */
 
-/*
- * This is some serious bloatware.
- *
- * Taken from Dave A.'s PCL-711 driver, 'cuz I thought it
- * was cool.
- */
+ 
+
+ 
 
 #include <linux/comedi/comedidev.h>
 #include "comedi_internal.h"

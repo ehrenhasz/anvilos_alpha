@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * wm8350.h - WM8903 audio codec interface
- *
- * Copyright 2008 Wolfson Microelectronics PLC.
- */
+ 
+ 
 
 #ifndef _WM8350_H
 #define _WM8350_H

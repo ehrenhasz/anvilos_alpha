@@ -1,18 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/******************************************************************************
- * xmit_linux.c
- *
- * Copyright(c) 2007 - 2010 Realtek Corporation. All rights reserved.
- * Linux device driver for RTL8192SU
- *
- * Modifications for inclusion into the Linux staging tree are
- * Copyright(c) 2010 Larry Finger. All rights reserved.
- *
- * Contact information:
- * WLAN FAE <wlanfae@realtek.com>
- * Larry Finger <Larry.Finger@lwfinger.net>
- *
- ******************************************************************************/
+
+ 
 
 #define _XMIT_OSDEP_C_
 
@@ -71,16 +58,13 @@ void r8712_set_qos(struct pkt_file *ppktfile, struct pkt_attrib *pattrib)
 	_r8712_open_pktfile(ppktfile->pkt, ppktfile);
 	_r8712_pktfile_read(ppktfile, (unsigned char *)&etherhdr, ETH_HLEN);
 
-	/* get user_priority from IP hdr*/
+	 
 	if (pattrib->ether_type == 0x0800) {
 		_r8712_pktfile_read(ppktfile, (u8 *)&ip_hdr, sizeof(ip_hdr));
-		/*user_priority = (ntohs(ip_hdr.tos) >> 5) & 0x3 ;*/
+		 
 		user_priority = ip_hdr.tos >> 5;
 	} else {
-		/* "When priority processing of data frames is supported,
-		 * a STA's SME should send EAPOL-Key frames at the highest
-		 * priority."
-		 */
+		 
 
 		if (pattrib->ether_type == 0x888e)
 			user_priority = 7;
@@ -115,7 +99,7 @@ int r8712_xmit_resource_alloc(struct _adapter *padapter,
 			int k;
 
 			for (k = i - 1; k >= 0; k--) {
-				/* handle allocation errors part way through loop */
+				 
 				usb_free_urb(pxmitbuf->pxmit_urb[k]);
 			}
 			netdev_err(padapter->pnetdev, "pxmitbuf->pxmit_urb[i] == NULL\n");
@@ -165,7 +149,7 @@ netdev_tx_t r8712_xmit_entry(_pkt *pkt, struct  net_device *netdev)
 	adapter->ledpriv.LedControlHandler(adapter, LED_CTL_TX);
 	xmitframe->pkt = pkt;
 	if (r8712_pre_xmit(adapter, xmitframe)) {
-		/*dump xmitframe directly or drop xframe*/
+		 
 		dev_kfree_skb_any(pkt);
 		xmitframe->pkt = NULL;
 	}

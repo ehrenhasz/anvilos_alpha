@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* sunvnet.c: Sun LDOM Virtual Network Driver.
- *
- * Copyright (C) 2007, 2008 David S. Miller <davem@davemloft.net>
- * Copyright (C) 2016-2017 Oracle. All rights reserved.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -34,9 +30,7 @@
 
 #include "sunvnet_common.h"
 
-/* Heuristic for the number of times to exponentially backoff and
- * retry sending an LDC trigger when EAGAIN is encountered
- */
+ 
 #define	VNET_MAX_RETRIES	10
 
 MODULE_AUTHOR("David S. Miller (davem@davemloft.net)");
@@ -103,7 +97,7 @@ int sunvnet_send_attr_common(struct vio_driver_state *vio)
 			pkt.options = VIO_TX_DRING;
 	} else if (vio_version_before(vio, 1, 3)) {
 		pkt.mtu = framelen;
-	} else { /* v1.3 */
+	} else {  
 		pkt.mtu = framelen + VLAN_HLEN;
 	}
 
@@ -148,28 +142,23 @@ static int handle_attr_info(struct vio_driver_state *vio,
 	pkt->tag.sid = vio_send_sid(vio);
 
 	xfer_mode = pkt->xfer_mode;
-	/* for version < 1.2, VIO_DRING_MODE = 0x3 and no bitmask */
+	 
 	if (vio_version_before(vio, 1, 2) && xfer_mode == VIO_DRING_MODE)
 		xfer_mode = VIO_NEW_DRING_MODE;
 
-	/* MTU negotiation:
-	 *	< v1.3 - ETH_FRAME_LEN exactly
-	 *	> v1.3 - MIN(pkt.mtu, VNET_MAXPACKET, port->rmtu) and change
-	 *			pkt->mtu for ACK
-	 *	= v1.3 - ETH_FRAME_LEN + VLAN_HLEN exactly
-	 */
+	 
 	if (vio_version_before(vio, 1, 3)) {
 		localmtu = ETH_FRAME_LEN;
 	} else if (vio_version_after(vio, 1, 3)) {
 		localmtu = port->rmtu ? port->rmtu : VNET_MAXPACKET;
 		localmtu = min(pkt->mtu, localmtu);
 		pkt->mtu = localmtu;
-	} else { /* v1.3 */
+	} else {  
 		localmtu = ETH_FRAME_LEN + VLAN_HLEN;
 	}
 	port->rmtu = localmtu;
 
-	/* LSO negotiation */
+	 
 	if (vio_version_after_eq(vio, 1, 7))
 		port->tso &= !!(pkt->cflags & VNET_LSO_IPV4_CAPAB);
 	else
@@ -190,7 +179,7 @@ static int handle_attr_info(struct vio_driver_state *vio,
 		port->tsolen = 0;
 	}
 
-	/* for version >= 1.6, ACK packet mode we support */
+	 
 	if (vio_version_after_eq(vio, 1, 6)) {
 		pkt->xfer_mode = VIO_NEW_DRING_MODE;
 		pkt->options = VIO_TX_DRING;
@@ -272,21 +261,7 @@ void sunvnet_handshake_complete_common(struct vio_driver_state *vio)
 }
 EXPORT_SYMBOL_GPL(sunvnet_handshake_complete_common);
 
-/* The hypervisor interface that implements copying to/from imported
- * memory from another domain requires that copies are done to 8-byte
- * aligned buffers, and that the lengths of such copies are also 8-byte
- * multiples.
- *
- * So we align skb->data to an 8-byte multiple and pad-out the data
- * area so we can round the copy length up to the next multiple of
- * 8 for the copy.
- *
- * The transmitter puts the actual start of the packet 6 bytes into
- * the buffer it sends over, so that the IP headers after the ethernet
- * header are aligned properly.  These 6 bytes are not in the descriptor
- * length, they are simply implied.  This offset is represented using
- * the VNET_PACKET_SKIP macro.
- */
+ 
 static struct sk_buff *alloc_and_align_skb(struct net_device *dev,
 					   unsigned int len)
 {
@@ -662,7 +637,7 @@ static int vnet_rx(struct vnet_port *port, void *msgbuf, int *npkts,
 	if (!port->napi_resume)
 		dr->rcv_nxt++;
 
-	/* XXX Validate pkt->start_idx and pkt->end_idx XXX */
+	 
 
 	return vnet_walk_rx(port, dr, pkt->start_idx, pkt->end_idx,
 			    npkts, budget);
@@ -703,18 +678,13 @@ static int vnet_ack(struct vnet_port *port, void *msgbuf)
 		return 0;
 	}
 
-	/* sync for race conditions with vnet_start_xmit() and tell xmit it
-	 * is time to send a trigger.
-	 */
+	 
 	trace_vnet_rx_stopped_ack(port->vio._local_sid,
 				  port->vio._peer_sid, end);
 	dr->cons = vio_dring_next(dr, end);
 	desc = vio_dring_entry(dr, dr->cons);
 	if (desc->hdr.state == VIO_DESC_READY && !port->start_cons) {
-		/* vnet_start_xmit() just populated this dring but missed
-		 * sending the "start" LDC message to the consumer.
-		 * Send a "start" trigger on its behalf.
-		 */
+		 
 		if (__vnet_tx_trigger(port, dr->cons) > 0)
 			port->start_cons = false;
 		else
@@ -734,7 +704,7 @@ static int vnet_ack(struct vnet_port *port, void *msgbuf)
 
 static int vnet_nack(struct vnet_port *port, void *msgbuf)
 {
-	/* XXX just reset or similar XXX */
+	 
 	return 0;
 }
 
@@ -754,9 +724,7 @@ static int handle_mcast(struct vnet_port *port, void *msgbuf)
 	return 0;
 }
 
-/* If the queue is stopped, wake it up so that we'll
- * send out another START message at the next TX.
- */
+ 
 static void maybe_tx_wakeup(struct vnet_port *port)
 {
 	struct netdev_queue *txq;
@@ -784,14 +752,14 @@ static int vnet_event_napi(struct vnet_port *port, int budget)
 	int tx_wakeup, err;
 	int npkts = 0;
 
-	/* we don't expect any other bits */
+	 
 	BUG_ON(port->rx_event & ~(LDC_EVENT_DATA_READY |
 				  LDC_EVENT_RESET |
 				  LDC_EVENT_UP));
 
-	/* RESET takes precedent over any other event */
+	 
 	if (port->rx_event & LDC_EVENT_RESET) {
-		/* a link went down */
+		 
 
 		if (port->vsw == 1) {
 			netif_tx_stop_all_queues(dev);
@@ -802,13 +770,7 @@ static int vnet_event_napi(struct vnet_port *port, int budget)
 		vnet_port_reset(port);
 		vio_port_up(vio);
 
-		/* If the device is running but its tx queue was
-		 * stopped (due to flow control), restart it.
-		 * This is necessary since vnet_port_reset()
-		 * clears the tx drings and thus we may never get
-		 * back a VIO_TYPE_DATA ACK packet - which is
-		 * the normal mechanism to restart the tx queue.
-		 */
+		 
 		if (netif_running(dev))
 			maybe_tx_wakeup(port);
 
@@ -818,7 +780,7 @@ static int vnet_event_napi(struct vnet_port *port, int budget)
 	}
 
 	if (port->rx_event & LDC_EVENT_UP) {
-		/* a link came up */
+		 
 
 		if (port->vsw == 1) {
 			netif_carrier_on(port->dev);
@@ -874,10 +836,7 @@ static int vnet_event_napi(struct vnet_port *port, int budget)
 		if (likely(msgbuf.tag.type == VIO_TYPE_DATA)) {
 			if (msgbuf.tag.stype == VIO_SUBTYPE_INFO) {
 				if (!sunvnet_port_is_up_common(port)) {
-					/* failures like handshake_failure()
-					 * may have cleaned up dring, but
-					 * NAPI polling may bring us here.
-					 */
+					 
 					err = -ECONNRESET;
 					break;
 				}
@@ -1068,7 +1027,7 @@ static inline int vnet_skb_map(struct ldc_channel *lp, struct sk_buff *skb,
 {
 	int i, nc, err, blen;
 
-	/* header */
+	 
 	blen = skb_headlen(skb);
 	if (blen < ETH_ZLEN)
 		blen = ETH_ZLEN;
@@ -1120,7 +1079,7 @@ static inline struct sk_buff *vnet_skb_shape(struct sk_buff *skb, int ncookies)
 	len += VNET_PACKET_SKIP;
 	pad += 8 - (len & 7);
 
-	/* make sure we have enough cookies and alignment in every frag */
+	 
 	docopy = skb_shinfo(skb)->nr_frags >= ncookies;
 	for (i = 0; i < skb_shinfo(skb)->nr_frags; i++) {
 		skb_frag_t *f = &skb_shinfo(skb)->frags[i];
@@ -1158,20 +1117,20 @@ static inline struct sk_buff *vnet_skb_shape(struct sk_buff *skb, int ncookies)
 		if (start) {
 			int offset = start + nskb->csum_offset;
 
-			/* copy the headers, no csum here */
+			 
 			if (skb_copy_bits(skb, 0, nskb->data, start)) {
 				dev_kfree_skb(nskb);
 				dev_kfree_skb(skb);
 				return NULL;
 			}
 
-			/* copy the rest, with csum calculation */
+			 
 			*(__sum16 *)(skb->data + offset) = 0;
 			csum = skb_copy_and_csum_bits(skb, start,
 						      nskb->data + start,
 						      skb->len - start);
 
-			/* add in the header checksums */
+			 
 			if (skb->protocol == htons(ETH_P_IP)) {
 				struct iphdr *iph = ip_hdr(nskb);
 
@@ -1196,7 +1155,7 @@ static inline struct sk_buff *vnet_skb_shape(struct sk_buff *skb, int ncookies)
 				}
 			}
 
-			/* save the final result */
+			 
 			*(__sum16 *)(nskb->data + offset) = csum;
 
 			nskb->ip_summed = CHECKSUM_NONE;
@@ -1243,7 +1202,7 @@ vnet_handle_offloads(struct vnet_port *port, struct sk_buff *skb,
 	} else {
 		pr_err("vnet_handle_offloads GSO with unknown transport "
 		       "protocol %d tproto %d\n", skb->protocol, proto);
-		hlen = 128; /* XXX */
+		hlen = 128;  
 	}
 	datalen = port->tsolen - hlen;
 
@@ -1271,7 +1230,7 @@ vnet_handle_offloads(struct vnet_port *port, struct sk_buff *skb,
 		if (skb_unclone(skb, GFP_ATOMIC))
 			goto out_dropped;
 
-		/* segment to TSO size */
+		 
 		skb_shinfo(skb)->gso_size = datalen;
 		skb_shinfo(skb)->gso_segs = gso_segs;
 	}
@@ -1382,7 +1341,7 @@ sunvnet_start_xmit_common(struct sk_buff *skb, struct net_device *dev,
 		if (!netif_tx_queue_stopped(txq)) {
 			netif_tx_stop_queue(txq);
 
-			/* This is a hard error, log it. */
+			 
 			netdev_err(dev, "BUG! Tx Ring full when queue awake!\n");
 			dev->stats.tx_errors++;
 		}
@@ -1413,14 +1372,7 @@ sunvnet_start_xmit_common(struct sk_buff *skb, struct net_device *dev,
 	skb = NULL;
 	port->tx_bufs[txi].ncookies = err;
 
-	/* We don't rely on the ACKs to free the skb in vnet_start_xmit(),
-	 * thus it is safe to not set VIO_ACK_ENABLE for each transmission:
-	 * the protocol itself does not require it as long as the peer
-	 * sends a VIO_SUBTYPE_ACK for VIO_DRING_STOPPED.
-	 *
-	 * An ACK for every packet in the ring is expensive as the
-	 * sending of LDC messages is slow and affects performance.
-	 */
+	 
 	d->hdr.ack = VIO_ACK_DISABLE;
 	d->size = len;
 	d->ncookies = port->tx_bufs[txi].ncookies;
@@ -1442,34 +1394,13 @@ sunvnet_start_xmit_common(struct sk_buff *skb, struct net_device *dev,
 		}
 	}
 
-	/* This has to be a non-SMP write barrier because we are writing
-	 * to memory which is shared with the peer LDOM.
-	 */
+	 
 	dma_wmb();
 
 	d->hdr.state = VIO_DESC_READY;
 
-	/* Exactly one ldc "start" trigger (for dr->cons) needs to be sent
-	 * to notify the consumer that some descriptors are READY.
-	 * After that "start" trigger, no additional triggers are needed until
-	 * a DRING_STOPPED is received from the consumer. The dr->cons field
-	 * (set up by vnet_ack()) has the value of the next dring index
-	 * that has not yet been ack-ed. We send a "start" trigger here
-	 * if, and only if, start_cons is true (reset it afterward). Conversely,
-	 * vnet_ack() should check if the dring corresponding to cons
-	 * is marked READY, but start_cons was false.
-	 * If so, vnet_ack() should send out the missed "start" trigger.
-	 *
-	 * Note that the dma_wmb() above makes sure the cookies et al. are
-	 * not globally visible before the VIO_DESC_READY, and that the
-	 * stores are ordered correctly by the compiler. The consumer will
-	 * not proceed until the VIO_DESC_READY is visible assuring that
-	 * the consumer does not observe anything related to descriptors
-	 * out of order. The HV trap from the LDC start trigger is the
-	 * producer to consumer announcement that work is available to the
-	 * consumer
-	 */
-	if (!port->start_cons) { /* previous trigger suffices */
+	 
+	if (!port->start_cons) {  
 		trace_vnet_skip_tx_trigger(port->vio._local_sid,
 					   port->vio._peer_sid, dr->cons);
 		goto ldc_start_done;
@@ -1524,7 +1455,7 @@ EXPORT_SYMBOL_GPL(sunvnet_start_xmit_common);
 
 void sunvnet_tx_timeout_common(struct net_device *dev, unsigned int txqueue)
 {
-	/* XXX Implement me XXX */
+	 
 }
 EXPORT_SYMBOL_GPL(sunvnet_tx_timeout_common);
 
@@ -1710,7 +1641,7 @@ void vnet_port_reset(struct vnet_port *port)
 	del_timer(&port->clean_timer);
 	sunvnet_port_free_tx_bufs_common(port);
 	port->rmtu = 0;
-	port->tso = (port->vsw == 0);  /* no tso in vsw, misbehaves in bridge */
+	port->tso = (port->vsw == 0);   
 	port->tsolen = 0;
 }
 EXPORT_SYMBOL_GPL(vnet_port_reset);
@@ -1746,7 +1677,7 @@ static int vnet_port_alloc_tx_ring(struct vnet_port *port)
 	dr->num_entries = VNET_TX_RING_SIZE;
 	dr->prod = 0;
 	dr->cons = 0;
-	port->start_cons  = true; /* need an initial trigger */
+	port->start_cons  = true;  
 	dr->pending = VNET_TX_RING_SIZE;
 	dr->ncookies = ncookies;
 
@@ -1786,10 +1717,7 @@ void sunvnet_port_add_txq_common(struct vnet_port *port)
 	int smallest = 0;
 	int i;
 
-	/* find the first least-used q
-	 * When there are more ldoms than q's, we start to
-	 * double up on ports per queue.
-	 */
+	 
 	for (i = 0; i < VNET_MAX_TXQS; i++) {
 		if (vp->q_used[i] == 0) {
 			smallest = i;

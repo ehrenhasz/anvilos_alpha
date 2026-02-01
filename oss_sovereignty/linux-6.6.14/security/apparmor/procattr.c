@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * AppArmor security module
- *
- * This file contains AppArmor /proc/<pid>/attr/ interface functions
- *
- * Copyright (C) 1998-2008 Novell/SUSE
- * Copyright 2009-2010 Canonical Ltd.
- */
+
+ 
 
 #include "include/apparmor.h"
 #include "include/cred.h"
@@ -16,17 +9,7 @@
 #include "include/procattr.h"
 
 
-/**
- * aa_getprocattr - Return the label information for @label
- * @label: the label to print label info about  (NOT NULL)
- * @string: Returns - string containing the label info (NOT NULL)
- *
- * Requires: label != NULL && string != NULL
- *
- * Creates a string containing the label information for @label.
- *
- * Returns: size of string placed in @string else error code on failure
- */
+ 
 int aa_getprocattr(struct aa_label *label, char **string)
 {
 	struct aa_ns *ns = labels_ns(label);
@@ -64,14 +47,7 @@ int aa_getprocattr(struct aa_label *label, char **string)
 	return len + 1;
 }
 
-/**
- * split_token_from_name - separate a string of form  <token>^<name>
- * @op: operation being checked
- * @args: string to parse  (NOT NULL)
- * @token: stores returned parsed token value  (NOT NULL)
- *
- * Returns: start position of name after token else NULL on failure
- */
+ 
 static char *split_token_from_name(const char *op, char *args, u64 *token)
 {
 	char *name;
@@ -82,25 +58,18 @@ static char *split_token_from_name(const char *op, char *args, u64 *token)
 		return ERR_PTR(-EINVAL);
 	}
 
-	name++;			/* skip ^ */
+	name++;			 
 	if (!*name)
 		name = NULL;
 	return name;
 }
 
-/**
- * aa_setprocattr_changehat - handle procattr interface to change_hat
- * @args: args received from writing to /proc/<pid>/attr/current (NOT NULL)
- * @size: size of the args
- * @flags: set of flags governing behavior
- *
- * Returns: %0 or error code if change_hat fails
- */
+ 
 int aa_setprocattr_changehat(char *args, size_t size, int flags)
 {
 	char *hat;
 	u64 token;
-	const char *hats[16];		/* current hard limit on # of names */
+	const char *hats[16];		 
 	int count = 0;
 
 	hat = split_token_from_name(OP_CHANGE_HAT, args, &token);
@@ -113,12 +82,7 @@ int aa_setprocattr_changehat(char *args, size_t size, int flags)
 	}
 
 	if (hat) {
-		/* set up hat name vector, args guaranteed null terminated
-		 * at args[size] by setprocattr.
-		 *
-		 * If there are multiple hat names in the buffer each is
-		 * separated by a \0.  Ie. userspace writes them pre tokenized
-		 */
+		 
 		char *end = args + size;
 		for (count = 0; (hat < end) && count < 16; ++count) {
 			char *next = hat + strlen(hat) + 1;

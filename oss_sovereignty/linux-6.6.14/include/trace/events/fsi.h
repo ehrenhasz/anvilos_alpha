@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM fsi
@@ -240,6 +240,6 @@ TRACE_EVENT(fsi_dev_init,
 	)
 );
 
-#endif /* _TRACE_FSI_H */
+#endif  
 
 #include <trace/define_trace.h>

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * QLogic qlcnic NIC Driver
- * Copyright (c) 2009-2013 QLogic Corporation
- */
+
+ 
 
 #include "qlcnic.h"
 #include "qlcnic_hw.h"
@@ -82,15 +79,7 @@ qlcnic_83xx_config_vnic_buff_descriptors(struct qlcnic_adapter *adapter)
 }
 
 
-/**
- * qlcnic_83xx_init_mgmt_vnic
- *
- * @adapter: adapter structure
- * Management virtual NIC sets the operational mode of other vNIC's and
- * configures embedded switch (ESWITCH).
- * Returns: Success(0) or error code.
- *
- **/
+ 
 static int qlcnic_83xx_init_mgmt_vnic(struct qlcnic_adapter *adapter)
 {
 	struct qlcnic_hardware_context *ahw = adapter->ahw;
@@ -179,15 +168,7 @@ static int qlcnic_83xx_init_non_privileged_vnic(struct qlcnic_adapter *adapter)
 	return 0;
 }
 
-/**
- * qlcnic_83xx_config_vnic_opmode
- *
- * @adapter: adapter structure
- * Identify virtual NIC operational modes.
- *
- * Returns: Success(0) or error code.
- *
- **/
+ 
 int qlcnic_83xx_config_vnic_opmode(struct qlcnic_adapter *adapter)
 {
 	u32 op_mode, priv_level;

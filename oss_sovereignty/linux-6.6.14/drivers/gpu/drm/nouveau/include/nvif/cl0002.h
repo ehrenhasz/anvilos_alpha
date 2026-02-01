@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: MIT */
+ 
 #ifndef __NVIF_CL0002_H__
 #define __NVIF_CL0002_H__
 
@@ -18,7 +18,7 @@ struct nv_dma_v0 {
 	__u8  pad03[5];
 	__u64 start;
 	__u64 limit;
-	/* ... chipset-specific class data */
+	 
 };
 
 struct nv50_dma_v0 {

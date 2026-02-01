@@ -1,9 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// CS42L43 CODEC driver
-//
-// Copyright (C) 2022-2023 Cirrus Logic, Inc. and
-//                         Cirrus Logic International Semiconductor Ltd.
+
+
+
+
+
+
 
 #include <linux/bitops.h>
 #include <linux/err.h>
@@ -208,7 +208,7 @@ static const unsigned int cs42l43_sample_rates[] = {
 };
 
 #define CS42L43_CONSUMER_RATE_MASK 0xFF
-#define CS42L43_PROVIDER_RATE_MASK 0xEF // 44.1k only supported as consumer
+#define CS42L43_PROVIDER_RATE_MASK 0xEF 
 
 static const struct snd_pcm_hw_constraint_list cs42l43_constraint = {
 	.count		= ARRAY_SIZE(cs42l43_sample_rates),
@@ -271,7 +271,7 @@ static int cs42l43_set_sample_rate(struct snd_pcm_substream *substream,
 		return ret;
 	}
 
-	//FIXME: For now lets just set sample rate 1, this needs expanded in the future
+	
 	regmap_update_bits(cs42l43->regmap, CS42L43_SAMPLE_RATE1,
 			   CS42L43_SAMPLE_RATE_MASK, ret);
 
@@ -421,7 +421,7 @@ static int cs42l43_asp_set_fmt(struct snd_soc_dai *dai, unsigned int fmt)
 
 	switch (fmt & SND_SOC_DAIFMT_INV_MASK) {
 	case SND_SOC_DAIFMT_NB_NF:
-		clk_config |= CS42L43_ASP_BCLK_INV_MASK; /* Yes BCLK_INV = NB */
+		clk_config |= CS42L43_ASP_BCLK_INV_MASK;  
 		break;
 	case SND_SOC_DAIFMT_IB_NF:
 		break;
@@ -761,18 +761,18 @@ static const char * const cs42l43_mixer_texts[] = {
 };
 
 static const unsigned int cs42l43_mixer_values[] = {
-	0x00, // None
-	0x04, 0x05, // Tone Generator 1, 2
-	0x10, 0x11, 0x12, 0x13, // Decimator 1, 2, 3, 4
-	0x20, 0x21, 0x22, 0x23, 0x24, 0x25, // ASPRX1,2,3,4,5,6
-	0x28, 0x29, 0x2A, 0x2B, 0x2C, 0x2D, // DP5, 6, 7RX1, 2
-	0x40, 0x41, 0x42, 0x43, // ASRC INT1, 2, 3, 4
-	0x44, 0x45, 0x46, 0x47, // ASRC DEC1, 2, 3, 4
-	0x50, 0x51, // ISRC1 INT1, 2
-	0x52, 0x53, // ISRC1 DEC1, 2
-	0x54, 0x55, // ISRC2 INT1, 2
-	0x56, 0x57, // ISRC2 DEC1, 2
-	0x58, 0x59, // EQ1, 2
+	0x00, 
+	0x04, 0x05, 
+	0x10, 0x11, 0x12, 0x13, 
+	0x20, 0x21, 0x22, 0x23, 0x24, 0x25, 
+	0x28, 0x29, 0x2A, 0x2B, 0x2C, 0x2D, 
+	0x40, 0x41, 0x42, 0x43, 
+	0x44, 0x45, 0x46, 0x47, 
+	0x50, 0x51, 
+	0x52, 0x53, 
+	0x54, 0x55, 
+	0x56, 0x57, 
+	0x58, 0x59, 
 };
 
 CS42L43_DECL_MUX(asptx1, CS42L43_ASPTX1_INPUT);
@@ -932,11 +932,7 @@ static int cs42l43_shutter_get(struct cs42l43_codec *priv, unsigned int shift)
 		return ret;
 	}
 
-	/*
-	 * SHUTTER_CONTROL is a mix of volatile and non-volatile bits, so must
-	 * be cached for the non-volatiles, so drop it from the cache here so
-	 * we force a read.
-	 */
+	 
 	ret = regcache_drop_region(cs42l43->regmap, CS42L43_SHUTTER_CONTROL,
 				   CS42L43_SHUTTER_CONTROL);
 	if (ret) {
@@ -1308,11 +1304,7 @@ static int cs42l43_enable_pll(struct cs42l43_codec *priv)
 
 	dev_dbg(priv->dev, "PLL locked in %ums\n", 200 - jiffies_to_msecs(time_left));
 
-	/*
-	 * Reads are not allowed over Soundwire without OSC_DIV2_EN or the PLL,
-	 * but you can not change to PLL with OSC_DIV2_EN set. So ensure the whole
-	 * change over happens under the regmap lock to prevent any reads.
-	 */
+	 
 	regmap_multi_reg_write(cs42l43->regmap, enable_seq, ARRAY_SIZE(enable_seq));
 
 	return 0;
@@ -2204,7 +2196,7 @@ static int cs42l43_codec_probe(struct platform_device *pdev)
 	if (ret)
 		goto err_pm;
 
-	// Don't use devm as we need to get against the MFD device
+	
 	priv->mclk = clk_get_optional(cs42l43->dev, "mclk");
 	if (IS_ERR(priv->mclk)) {
 		ret = PTR_ERR(priv->mclk);
@@ -2247,7 +2239,7 @@ static int cs42l43_codec_runtime_resume(struct device *dev)
 
 	dev_dbg(priv->dev, "Runtime resume\n");
 
-	// Toggle the speaker volume update incase the speaker volume was synced
+	
 	cs42l43_spk_vu_sync(priv);
 
 	return 0;

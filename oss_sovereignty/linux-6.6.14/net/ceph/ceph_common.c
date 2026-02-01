@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 
 #include <linux/ceph/ceph_debug.h>
 #include <linux/backing-dev.h>
@@ -30,17 +30,7 @@
 #include "crypto.h"
 
 
-/*
- * Module compatibility interface.  For now it doesn't do anything,
- * but its existence signals a certain level of functionality.
- *
- * The data buffer is used to pass information both to and from
- * libceph.  The return value indicates whether libceph determines
- * it is compatible with the caller (from another kernel module),
- * given the provided data.
- *
- * The data pointer can be null.
- */
+ 
 bool libceph_compatible(void *data)
 {
 	return true;
@@ -99,9 +89,7 @@ const char *ceph_msg_type_name(int type)
 }
 EXPORT_SYMBOL(ceph_msg_type_name);
 
-/*
- * Initially learn our fsid, or verify an fsid matches.
- */
+ 
 int ceph_check_fsid(struct ceph_client *client, struct ceph_fsid *fsid)
 {
 	if (client->have_fsid) {
@@ -137,10 +125,7 @@ int ceph_compare_options(struct ceph_options *new_opt,
 	int i;
 	int ret;
 
-	/*
-	 * Don't bother comparing options if network namespaces don't
-	 * match.
-	 */
+	 
 	if (!net_eq(current->nsproxy->net_ns, read_pnet(&client->msgr.net)))
 		return -1;
 
@@ -180,7 +165,7 @@ int ceph_compare_options(struct ceph_options *new_opt,
 	if (ret)
 		return ret;
 
-	/* any matching mon ip implies a match */
+	 
 	for (i = 0; i < opt1->num_mon; i++) {
 		if (ceph_monmap_contains(client->monc.monmap,
 				 &opt1->mon_addr[i]))
@@ -222,15 +207,13 @@ int ceph_parse_fsid(const char *str, struct ceph_fsid *fsid)
 }
 EXPORT_SYMBOL(ceph_parse_fsid);
 
-/*
- * ceph options
- */
+ 
 enum {
 	Opt_osdkeepalivetimeout,
 	Opt_mount_timeout,
 	Opt_osd_idle_ttl,
 	Opt_osd_request_timeout,
-	/* int args above */
+	 
 	Opt_fsid,
 	Opt_name,
 	Opt_secret,
@@ -239,7 +222,7 @@ enum {
 	Opt_crush_location,
 	Opt_read_from_replica,
 	Opt_ms_mode,
-	/* string args above */
+	 
 	Opt_share,
 	Opt_crc,
 	Opt_cephx_require_signatures,
@@ -350,7 +333,7 @@ void ceph_destroy_options(struct ceph_options *opt)
 }
 EXPORT_SYMBOL(ceph_destroy_options);
 
-/* get secret from key store */
+ 
 static int get_secret(struct ceph_crypto_key *dst, const char *name,
 		      struct p_log *log)
 {
@@ -361,8 +344,7 @@ static int get_secret(struct ceph_crypto_key *dst, const char *name,
 
 	ukey = request_key(&key_type_ceph, name, NULL);
 	if (IS_ERR(ukey)) {
-		/* request_key errors don't map nicely to mount(2)
-		   errors; don't even try, but still printk */
+		 
 		key_err = PTR_ERR(ukey);
 		switch (key_err) {
 		case -ENOKEY:
@@ -389,7 +371,7 @@ static int get_secret(struct ceph_crypto_key *dst, const char *name,
 	err = ceph_crypto_key_clone(dst, ckey);
 	if (err)
 		goto out_key;
-	/* pass through, err is 0 */
+	 
 
 out_key:
 	key_put(ukey);
@@ -403,7 +385,7 @@ int ceph_parse_mon_ips(const char *buf, size_t len, struct ceph_options *opt,
 	struct p_log log = {.prefix = "libceph", .log = l};
 	int ret;
 
-	/* ip1[:port1][<delim>ip2[:port2]...] */
+	 
 	ret = ceph_parse_ips(buf, buf + len, opt->mon_addr, CEPH_MAX_MON,
 			     &opt->num_mon, delim);
 	if (ret) {
@@ -526,26 +508,26 @@ int ceph_parse_param(struct fs_parameter *param, struct ceph_options *opt,
 		break;
 
 	case Opt_osdkeepalivetimeout:
-		/* 0 isn't well defined right now, reject it */
+		 
 		if (result.uint_32 < 1 || result.uint_32 > INT_MAX / 1000)
 			goto out_of_range;
 		opt->osd_keepalive_timeout =
 		    msecs_to_jiffies(result.uint_32 * 1000);
 		break;
 	case Opt_osd_idle_ttl:
-		/* 0 isn't well defined right now, reject it */
+		 
 		if (result.uint_32 < 1 || result.uint_32 > INT_MAX / 1000)
 			goto out_of_range;
 		opt->osd_idle_ttl = msecs_to_jiffies(result.uint_32 * 1000);
 		break;
 	case Opt_mount_timeout:
-		/* 0 is "wait forever" (i.e. infinite timeout) */
+		 
 		if (result.uint_32 > INT_MAX / 1000)
 			goto out_of_range;
 		opt->mount_timeout = msecs_to_jiffies(result.uint_32 * 1000);
 		break;
 	case Opt_osd_request_timeout:
-		/* 0 is "wait forever" (i.e. infinite timeout) */
+		 
 		if (result.uint_32 > INT_MAX / 1000)
 			goto out_of_range;
 		opt->osd_request_timeout =
@@ -681,7 +663,7 @@ int ceph_print_client_options(struct seq_file *m, struct ceph_client *client,
 		seq_printf(m, "osd_request_timeout=%d,",
 			   jiffies_to_msecs(opt->osd_request_timeout) / 1000);
 
-	/* drop redundant comma */
+	 
 	if (m->count != pos)
 		m->count--;
 
@@ -701,9 +683,7 @@ u64 ceph_client_gid(struct ceph_client *client)
 }
 EXPORT_SYMBOL(ceph_client_gid);
 
-/*
- * create a fresh client instance
- */
+ 
 struct ceph_client *ceph_create_client(struct ceph_options *opt, void *private)
 {
 	struct ceph_client *client;
@@ -732,13 +712,13 @@ struct ceph_client *ceph_create_client(struct ceph_options *opt, void *private)
 	if (!ceph_test_opt(client, NOMSGSIGN))
 		client->required_features |= CEPH_FEATURE_MSG_AUTH;
 
-	/* msgr */
+	 
 	if (ceph_test_opt(client, MYIP))
 		myaddr = &client->options->my_addr;
 
 	ceph_messenger_init(&client->msgr, myaddr);
 
-	/* subsystems */
+	 
 	err = ceph_monc_init(&client->monc, client);
 	if (err < 0)
 		goto fail;
@@ -763,7 +743,7 @@ void ceph_destroy_client(struct ceph_client *client)
 
 	atomic_set(&client->msgr.stopping, 1);
 
-	/* unmount */
+	 
 	ceph_osdc_stop(&client->osdc);
 	ceph_monc_stop(&client->monc);
 	ceph_messenger_fini(&client->msgr);
@@ -785,24 +765,20 @@ void ceph_reset_client_addr(struct ceph_client *client)
 }
 EXPORT_SYMBOL(ceph_reset_client_addr);
 
-/*
- * true if we have the mon map (and have thus joined the cluster)
- */
+ 
 static bool have_mon_and_osd_map(struct ceph_client *client)
 {
 	return client->monc.monmap && client->monc.monmap->epoch &&
 	       client->osdc.osdmap && client->osdc.osdmap->epoch;
 }
 
-/*
- * mount: join the ceph cluster, and open root directory.
- */
+ 
 int __ceph_open_session(struct ceph_client *client, unsigned long started)
 {
 	unsigned long timeout = client->options->mount_timeout;
 	long err;
 
-	/* open session, and wait for mon and osd maps */
+	 
 	err = ceph_monc_open_session(&client->monc);
 	if (err < 0)
 		return err;
@@ -811,7 +787,7 @@ int __ceph_open_session(struct ceph_client *client, unsigned long started)
 		if (timeout && time_after_eq(jiffies, started + timeout))
 			return -ETIMEDOUT;
 
-		/* wait */
+		 
 		dout("mount waiting for mon_map\n");
 		err = wait_event_interruptible_timeout(client->auth_wq,
 			have_mon_and_osd_map(client) || (client->auth_err < 0),
@@ -833,7 +809,7 @@ EXPORT_SYMBOL(__ceph_open_session);
 int ceph_open_session(struct ceph_client *client)
 {
 	int ret;
-	unsigned long started = jiffies;  /* note the start time */
+	unsigned long started = jiffies;   
 
 	dout("open_session start\n");
 	mutex_lock(&client->mount_mutex);

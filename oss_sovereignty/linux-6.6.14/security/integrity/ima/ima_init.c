@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2005,2006,2007,2008 IBM Corporation
- *
- * Authors:
- * Reiner Sailer      <sailer@watson.ibm.com>
- * Leendert van Doorn <leendert@watson.ibm.com>
- * Mimi Zohar         <zohar@us.ibm.com>
- *
- * File: ima_init.c
- *             initialization and cleanup functions
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/scatterlist.h>
@@ -20,25 +10,11 @@
 
 #include "ima.h"
 
-/* name for boot aggregate entry */
+ 
 const char boot_aggregate_name[] = "boot_aggregate";
 struct tpm_chip *ima_tpm_chip;
 
-/* Add the boot aggregate to the IMA measurement list and extend
- * the PCR register.
- *
- * Calculate the boot aggregate, a hash over tpm registers 0-7,
- * assuming a TPM chip exists, and zeroes if the TPM chip does not
- * exist.  Add the boot aggregate measurement to the measurement
- * list and extend the PCR register.
- *
- * If a tpm chip does not exist, indicate the core root of trust is
- * not hardware based by invalidating the aggregate PCR value.
- * (The aggregate PCR value is invalidated by adding one value to
- * the measurement list and extending the aggregate PCR value with
- * a different value.) Violations add a zero entry to the measurement
- * list and extend the aggregate PCR value with ff...ff's.
- */
+ 
 static int __init ima_add_boot_aggregate(void)
 {
 	static const char op[] = "add_boot_aggregate";
@@ -57,18 +33,7 @@ static int __init ima_add_boot_aggregate(void)
 	iint->ima_hash->algo = ima_hash_algo;
 	iint->ima_hash->length = hash_digest_size[ima_hash_algo];
 
-	/*
-	 * With TPM 2.0 hash agility, TPM chips could support multiple TPM
-	 * PCR banks, allowing firmware to configure and enable different
-	 * banks.  The SHA1 bank is not necessarily enabled.
-	 *
-	 * Use the same hash algorithm for reading the TPM PCRs as for
-	 * calculating the boot aggregate digest.  Preference is given to
-	 * the configured IMA default hash algorithm.  Otherwise, use the
-	 * TCG required banks - SHA256 for TPM 2.0, SHA1 for TPM 1.2.
-	 * Ultimately select SHA1 also for TPM 2.0 if the SHA256 PCR bank
-	 * is not found.
-	 */
+	 
 	if (ima_tpm_chip) {
 		result = ima_calc_boot_aggregate(&hash.hdr);
 		if (result < 0) {
@@ -106,7 +71,7 @@ void __init ima_load_x509(void)
 	ima_policy_flag &= ~unset_flags;
 	integrity_load_x509(INTEGRITY_KEYRING_IMA, CONFIG_IMA_X509_PATH);
 
-	/* load also EVM key to avoid appraisal */
+	 
 	evm_load_x509();
 
 	ima_policy_flag |= unset_flags;
@@ -132,13 +97,13 @@ int __init ima_init(void)
 	if (rc != 0)
 		return rc;
 
-	/* It can be called before ima_init_digests(), it does not use TPM. */
+	 
 	ima_load_kexec_buffer();
 
 	rc = ima_init_digests();
 	if (rc != 0)
 		return rc;
-	rc = ima_add_boot_aggregate();	/* boot aggregate must be first entry */
+	rc = ima_add_boot_aggregate();	 
 	if (rc != 0)
 		return rc;
 

@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * rt1019.h  --  RT1019 ALSA SoC audio amplifier driver
- *
- * Copyright(c) 2021 Realtek Semiconductor Corp.
- */
+ 
+ 
 
 #ifndef __RT1019_H__
 #define __RT1019_H__
@@ -36,7 +32,7 @@
 #define RT1019_BEEP_1				0x0b00
 #define RT1019_BEEP_2				0x0b01
 
-/* 0x0019 Power On Strap Control-2 */
+ 
 #define RT1019_AUTO_BITS_SEL_MASK		(0x1 << 5)
 #define RT1019_AUTO_BITS_SEL_AUTO		(0x1 << 5)
 #define RT1019_AUTO_BITS_SEL_MANU		(0x0 << 5)
@@ -44,7 +40,7 @@
 #define RT1019_AUTO_CLK_SEL_AUTO		(0x1 << 4)
 #define RT1019_AUTO_CLK_SEL_MANU		(0x0 << 4)
 
-/* 0x0100 Clock Tree Control-1 */
+ 
 #define RT1019_CLK_SYS_PRE_SEL_MASK		(0x1 << 7)
 #define RT1019_CLK_SYS_PRE_SEL_SFT		7
 #define RT1019_CLK_SYS_PRE_SEL_BCLK		(0x0 << 7)
@@ -58,7 +54,7 @@
 #define RT1019_SEL_FIFO_DIV2			(0x1 << 2)
 #define RT1019_SEL_FIFO_DIV4			(0x2 << 2)
 
-/* 0x0101 clock tree control-2 */
+ 
 #define RT1019_SYS_DIV_DA_FIL_MASK		(0x7 << 5)
 #define RT1019_SYS_DIV_DA_FIL_DIV1		(0x2 << 5)
 #define RT1019_SYS_DIV_DA_FIL_DIV2		(0x3 << 5)
@@ -72,26 +68,26 @@
 #define RT1019_ASRC_256FS_DIV2			0x1
 #define RT1019_ASRC_256FS_DIV4			0x2
 
-/* 0x0102 clock tree control-3 */
+ 
 #define RT1019_SEL_CLK_CAL_MASK			(0x3 << 6)
 #define RT1019_SEL_CLK_CAL_DIV1			(0x0 << 6)
 #define RT1019_SEL_CLK_CAL_DIV2			(0x1 << 6)
 #define RT1019_SEL_CLK_CAL_DIV4			(0x2 << 6)
 
-/* 0x0311 PLL-1 */
+ 
 #define RT1019_PLL_M_MASK			(0xf << 4)
 #define RT1019_PLL_M_SFT			4
 #define RT1019_PLL_M_BP_MASK		(0x1 << 1)
 #define RT1019_PLL_M_BP_SFT			1
 #define RT1019_PLL_Q_8_8_MASK		(0x1)
 
-/* 0x0312 PLL-2 */
+ 
 #define RT1019_PLL_Q_7_0_MASK		0xff
 
-/* 0x0313 PLL-3 */
+ 
 #define RT1019_PLL_K_MASK		0x1f
 
-/* 0x0400 TDM Control-1 */
+ 
 #define RT1019_TDM_BCLK_MASK		(0x1 << 6)
 #define RT1019_TDM_BCLK_NORM		(0x0 << 6)
 #define RT1019_TDM_BCLK_INV			(0x1 << 6)
@@ -102,7 +98,7 @@
 #define RT1019_TDM_CL_20			(0x1)
 #define RT1019_TDM_CL_16			(0x0)
 
-/* 0x0401 TDM Control-2 */
+ 
 #define RT1019_I2S_CH_TX_MASK		(0x3 << 6)
 #define RT1019_I2S_CH_TX_SFT		6
 #define RT1019_I2S_TX_2CH			(0x0 << 6)
@@ -125,19 +121,19 @@
 #define RT1019_I2S_DL_32			0x3
 #define RT1019_I2S_DL_8				0x4
 
-/* TDM1 Control-3 (0x0402) */
+ 
 #define RT1019_TDM_I2S_TX_L_DAC1_1_MASK		(0x7 << 4)
 #define RT1019_TDM_I2S_TX_R_DAC1_1_MASK		0x7
 #define RT1019_TDM_I2S_TX_L_DAC1_1_SFT		4
 #define RT1019_TDM_I2S_TX_R_DAC1_1_SFT		0
 
-/* System Clock Source */
+ 
 enum {
 	RT1019_SCLK_S_BCLK,
 	RT1019_SCLK_S_PLL,
 };
 
-/* PLL1 Source */
+ 
 enum {
 	RT1019_PLL_S_BCLK,
 	RT1019_PLL_S_RC25M,
@@ -161,4 +157,4 @@ struct rt1019_priv {
 	unsigned int bclk_ratio;
 };
 
-#endif /* __RT1019_H__ */
+#endif  

@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Device Mapper Uevent Support
- *
- * Copyright IBM Corporation, 2007
- *	Author: Mike Anderson <andmike@linux.vnet.ibm.com>
- */
+ 
+ 
 #ifndef DM_UEVENT_H
 #define DM_UEVENT_H
 
@@ -41,6 +36,6 @@ static inline void dm_path_uevent(enum dm_uevent_type event_type,
 {
 }
 
-#endif	/* CONFIG_DM_UEVENT */
+#endif	 
 
-#endif	/* DM_UEVENT_H */
+#endif	 

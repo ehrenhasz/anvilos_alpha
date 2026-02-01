@@ -1,12 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Roccat Ryos driver for Linux
- *
- * Copyright (c) 2013 Stefan Achatz <erazor_de@users.sourceforge.net>
- */
 
-/*
- */
+ 
+
+ 
 
 #include <linux/types.h>
 #include <linux/device.h>
@@ -24,7 +19,7 @@ enum {
 };
 
 struct ryos_report_special {
-	uint8_t number; /* RYOS_REPORT_NUMBER_SPECIAL */
+	uint8_t number;  
 	uint8_t data[4];
 } __packed;
 

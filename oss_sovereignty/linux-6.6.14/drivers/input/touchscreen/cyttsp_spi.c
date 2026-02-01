@@ -1,18 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Source for:
- * Cypress TrueTouch(TM) Standard Product (TTSP) SPI touchscreen driver.
- * For use with Cypress Txx3xx parts.
- * Supported parts include:
- * CY8CTST341
- * CY8CTMA340
- *
- * Copyright (C) 2009, 2010, 2011 Cypress Semiconductor, Inc.
- * Copyright (C) 2012 Javier Martinez Canillas <javier@dowhile0.org>
- * Copyright (C) 2013 Cypress Semiconductor
- *
- * Contact Cypress Semiconductor at www.cypress.com <ttdrivers@cypress.com>
- */
+
+ 
 
 #include "cyttsp_core.h"
 
@@ -22,12 +9,12 @@
 
 #define CY_SPI_NAME		"cyttsp-spi"
 
-#define CY_SPI_WR_OP		0x00 /* r/~w */
+#define CY_SPI_WR_OP		0x00  
 #define CY_SPI_RD_OP		0x01
 #define CY_SPI_CMD_BYTES	4
 #define CY_SPI_SYNC_BYTE	2
-#define CY_SPI_SYNC_ACK1	0x62 /* from protocol v.2 */
-#define CY_SPI_SYNC_ACK2	0x9D /* from protocol v.2 */
+#define CY_SPI_SYNC_ACK1	0x62  
+#define CY_SPI_SYNC_ACK2	0x9D  
 #define CY_SPI_DATA_SIZE	128
 #define CY_SPI_DATA_BUF_SIZE	(CY_SPI_CMD_BYTES + CY_SPI_DATA_SIZE)
 #define CY_SPI_BITS_PER_WORD	8
@@ -52,20 +39,17 @@ static int cyttsp_spi_xfer(struct device *dev, u8 *xfer_buf,
 	memset(wr_buf, 0, CY_SPI_DATA_BUF_SIZE);
 	memset(rd_buf, 0, CY_SPI_DATA_BUF_SIZE);
 
-	wr_buf[0] = 0x00; /* header byte 0 */
-	wr_buf[1] = 0xFF; /* header byte 1 */
-	wr_buf[2] = reg;  /* reg index */
-	wr_buf[3] = op;   /* r/~w */
+	wr_buf[0] = 0x00;  
+	wr_buf[1] = 0xFF;  
+	wr_buf[2] = reg;   
+	wr_buf[3] = op;    
 	if (op == CY_SPI_WR_OP)
 		memcpy(wr_buf + CY_SPI_CMD_BYTES, buf, length);
 
 	memset(xfer, 0, sizeof(xfer));
 	spi_message_init(&msg);
 
-	/*
-	  We set both TX and RX buffers because Cypress TTSP
-	  requires full duplex operation.
-	*/
+	 
 	xfer[0].tx_buf = wr_buf;
 	xfer[0].rx_buf = rd_buf;
 	switch (op) {
@@ -93,11 +77,7 @@ static int cyttsp_spi_xfer(struct device *dev, u8 *xfer_buf,
 		dev_dbg(dev, "%s: spi_sync() error %d, len=%d, op=%d\n",
 			__func__, retval, xfer[1].len, op);
 
-		/*
-		 * do not return here since was a bad ACK sequence
-		 * let the following ACK check handle any errors and
-		 * allow silent retries
-		 */
+		 
 	}
 
 	if (rd_buf[CY_SPI_SYNC_BYTE] != CY_SPI_SYNC_ACK1 ||
@@ -142,7 +122,7 @@ static int cyttsp_spi_probe(struct spi_device *spi)
 	struct cyttsp *ts;
 	int error;
 
-	/* Set up SPI*/
+	 
 	spi->bits_per_word = CY_SPI_BITS_PER_WORD;
 	spi->mode = SPI_MODE_0;
 	error = spi_setup(spi);
@@ -165,7 +145,7 @@ static int cyttsp_spi_probe(struct spi_device *spi)
 static const struct of_device_id cyttsp_of_spi_match[] = {
 	{ .compatible = "cypress,cy8ctma340", },
 	{ .compatible = "cypress,cy8ctst341", },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, cyttsp_of_spi_match);
 

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* inode.c: /proc/openprom handling routines
- *
- * Copyright (C) 1996-1999 Jakub Jelinek  (jakub@redhat.com)
- * Copyright (C) 1998      Eddie C. Dost  (ecd@skynet.be)
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/types.h>
@@ -79,7 +75,7 @@ static int property_show(struct seq_file *f, void *v)
 
 			seq_printf(f, "%s", (char *) pval);
 
-			/* Skip over the NULL byte too.  */
+			 
 			pval += n + 1;
 			len -= n + 1;
 
@@ -132,7 +128,7 @@ static void *property_next(struct seq_file *f, void *v, loff_t *pos)
 
 static void property_stop(struct seq_file *f, void *v)
 {
-	/* Nothing to do */
+	 
 }
 
 static const struct seq_operations property_op = {
@@ -292,7 +288,7 @@ static int openpromfs_readdir(struct file *file, struct dir_context *ctx)
 	}
 	i = ctx->pos - 2;
 
-	/* First, the children nodes as directories.  */
+	 
 	child = dp->child;
 	while (i && child) {
 		child = child->sibling;
@@ -309,7 +305,7 @@ static int openpromfs_readdir(struct file *file, struct dir_context *ctx)
 		child = child->sibling;
 	}
 
-	/* Next, the properties as files.  */
+	 
 	prop = dp->properties;
 	while (i && prop) {
 		prop = prop->next;
@@ -461,10 +457,7 @@ static int __init init_openprom_fs(void)
 static void __exit exit_openprom_fs(void)
 {
 	unregister_filesystem(&openprom_fs_type);
-	/*
-	 * Make sure all delayed rcu free inodes are flushed before we
-	 * destroy cache.
-	 */
+	 
 	rcu_barrier();
 	kmem_cache_destroy(op_inode_cachep);
 }

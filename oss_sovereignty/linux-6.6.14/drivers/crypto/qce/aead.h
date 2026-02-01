@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2021, Linaro Limited. All rights reserved.
- */
+ 
+ 
 
 #ifndef _AEAD_H_
 #define _AEAD_H_
@@ -53,4 +51,4 @@ static inline struct qce_alg_template *to_aead_tmpl(struct crypto_aead *tfm)
 
 extern const struct qce_algo_ops aead_ops;
 
-#endif /* _AEAD_H_ */
+#endif  

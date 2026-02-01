@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2013, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/bitops.h>
@@ -64,10 +62,7 @@ static int clk_branch_wait(const struct clk_branch *br, bool enabling,
 	bool voted = br->halt_check & BRANCH_VOTED;
 	const char *name = clk_hw_get_name(&br->clkr.hw);
 
-	/*
-	 * Skip checking halt bit if we're explicitly ignoring the bit or the
-	 * clock is in hardware gated mode
-	 */
+	 
 	if (br->halt_check == BRANCH_HALT_SKIP || clk_branch_in_hwcg_mode(br))
 		return 0;
 

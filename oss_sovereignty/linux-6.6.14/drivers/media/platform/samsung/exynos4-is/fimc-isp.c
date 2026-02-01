@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Samsung EXYNOS4x12 FIMC-IS (Imaging Subsystem) driver
- *
- * Copyright (C) 2013 Samsung Electronics Co., Ltd.
- *
- * Authors: Sylwester Nawrocki <s.nawrocki@samsung.com>
- *          Younghwan Joo <yhwan.joo@samsung.com>
- */
+
+ 
 #define pr_fmt(fmt) "%s:%d " fmt, __func__, __LINE__
 
 #include <linux/device.h>
@@ -53,12 +46,7 @@ static const struct fimc_fmt fimc_isp_formats[FIMC_ISP_NUM_FORMATS] = {
 	},
 };
 
-/**
- * fimc_isp_find_format - lookup color format by fourcc or media bus code
- * @pixelformat: fourcc to match, ignored if null
- * @mbus_code: media bus code to match, ignored if null
- * @index: index to the fimc_isp_formats array, ignored if negative
- */
+ 
 const struct fimc_fmt *fimc_isp_find_format(const u32 *pixelformat,
 					const u32 *mbus_code, int index)
 {
@@ -93,7 +81,7 @@ void fimc_isp_irq_handler(struct fimc_is *is)
 	wake_up(&is->irq_queue);
 }
 
-/* Capture subdev media entity operations */
+ 
 static int fimc_is_link_setup(struct media_entity *entity,
 				const struct media_pad *local,
 				const struct media_pad *remote, u32 flags)
@@ -135,10 +123,10 @@ static int fimc_isp_subdev_get_fmt(struct v4l2_subdev *sd,
 	mutex_lock(&isp->subdev_lock);
 
 	if (fmt->pad == FIMC_ISP_SD_PAD_SINK) {
-		/* ISP OTF input image format */
+		 
 		*mf = isp->sink_fmt;
 	} else {
-		/* ISP OTF output image format */
+		 
 		*mf = isp->src_fmt;
 
 		if (fmt->pad == FIMC_ISP_SD_PAD_SRC_FIFO) {
@@ -178,7 +166,7 @@ static void __isp_subdev_try_format(struct fimc_isp *isp,
 		else
 			format = &isp->sink_fmt;
 
-		/* Allow changing format only on sink pad */
+		 
 		mf->width = format->width - FIMC_ISP_CAC_MARGIN_WIDTH;
 		mf->height = format->height - FIMC_ISP_CAC_MARGIN_HEIGHT;
 
@@ -210,7 +198,7 @@ static int fimc_isp_subdev_set_fmt(struct v4l2_subdev *sd,
 		mf = v4l2_subdev_get_try_format(sd, sd_state, fmt->pad);
 		*mf = fmt->format;
 
-		/* Propagate format to the source pads */
+		 
 		if (fmt->pad == FIMC_ISP_SD_PAD_SINK) {
 			struct v4l2_subdev_format format = *fmt;
 			unsigned int pad;
@@ -324,7 +312,7 @@ static int fimc_isp_subdev_s_power(struct v4l2_subdev *sd, int on)
 
 		ret = fimc_is_hw_initialize(is);
 	} else {
-		/* Close sensor */
+		 
 		if (!test_bit(IS_ST_PWR_ON, &is->state)) {
 			fimc_is_hw_close_sensor(is, 0);
 
@@ -336,7 +324,7 @@ static int fimc_isp_subdev_s_power(struct v4l2_subdev *sd, int on)
 			}
 		}
 
-		/* SUB IP power off */
+		 
 		if (test_bit(IS_ST_PWR_SUBIP_ON, &is->state)) {
 			fimc_is_hw_subip_power_off(is);
 			ret = fimc_is_wait_event(is, IS_ST_PWR_SUBIP_ON, 0,
@@ -396,7 +384,7 @@ static int fimc_isp_subdev_registered(struct v4l2_subdev *sd)
 	struct fimc_isp *isp = v4l2_get_subdevdata(sd);
 	int ret;
 
-	/* Use pipeline object allocated by the media device. */
+	 
 	isp->video_capture.ve.pipe = v4l2_get_subdev_hostdata(sd);
 
 	ret = fimc_isp_video_device_register(isp, sd->v4l2_dev,
@@ -499,7 +487,7 @@ static int __ctrl_set_aewb_lock(struct fimc_is *is,
 	return fimc_is_itf_s_param(is, false);
 }
 
-/* Supported manual ISO values */
+ 
 static const s64 iso_qmenu[] = {
 	50, 100, 200, 400, 800,
 };
@@ -575,7 +563,7 @@ static int __ctrl_set_image_effect(struct fimc_is *is, int value)
 		{ V4L2_COLORFX_BW,	 ISP_IMAGE_EFFECT_MONOCHROME },
 		{ V4L2_COLORFX_SEPIA,	 ISP_IMAGE_EFFECT_SEPIA },
 		{ V4L2_COLORFX_NEGATIVE, ISP_IMAGE_EFFECT_NEGATIVE_MONO },
-		{ 16 /* TODO */,	 ISP_IMAGE_EFFECT_NEGATIVE_COLOR },
+		{ 16  ,	 ISP_IMAGE_EFFECT_NEGATIVE_COLOR },
 	};
 	int i;
 
@@ -744,7 +732,7 @@ int fimc_isp_subdev_create(struct fimc_isp *isp)
 	v4l2_ctrl_new_std_menu(handler, ops, V4L2_CID_POWER_LINE_FREQUENCY,
 					V4L2_CID_POWER_LINE_FREQUENCY_AUTO, 0,
 					V4L2_CID_POWER_LINE_FREQUENCY_AUTO);
-	/* ISO sensitivity */
+	 
 	ctrls->auto_iso = v4l2_ctrl_new_std_menu(handler, ops,
 			V4L2_CID_ISO_SENSITIVITY_AUTO, 1, 0,
 			V4L2_ISO_SENSITIVITY_AUTO);
@@ -756,7 +744,7 @@ int fimc_isp_subdev_create(struct fimc_isp *isp)
 	ctrls->aewb_lock = v4l2_ctrl_new_std(handler, ops,
 					V4L2_CID_3A_LOCK, 0, 0x3, 0, 0);
 
-	/* TODO: Add support for NEGATIVE_COLOR option */
+	 
 	ctrls->colorfx = v4l2_ctrl_new_std_menu(handler, ops, V4L2_CID_COLORFX,
 			V4L2_COLORFX_SET_CBCR + 1, ~0x1000f, V4L2_COLORFX_NONE);
 

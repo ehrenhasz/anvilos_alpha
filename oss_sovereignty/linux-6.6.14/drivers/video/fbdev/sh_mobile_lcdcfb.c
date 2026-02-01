@@ -1,12 +1,4 @@
-/*
- * SuperH Mobile LCDC Framebuffer
- *
- * Copyright (c) 2008 Magnus Damm
- *
- * This file is subject to the terms and conditions of the GNU General Public
- * License.  See the file "COPYING" in the main directory of this archive
- * for more details.
- */
+ 
 
 #include <linux/atomic.h>
 #include <linux/backlight.h>
@@ -32,9 +24,7 @@
 
 #include "sh_mobile_lcdcfb.h"
 
-/* ----------------------------------------------------------------------------
- * Overlay register definitions
- */
+ 
 
 #define LDBCR			0xb00
 #define LDBCR_UPC(n)		(1 << ((n) + 16))
@@ -143,33 +133,7 @@ enum sh_mobile_lcdc_overlay_mode {
 	LCDC_OVERLAY_ROP3,
 };
 
-/*
- * struct sh_mobile_lcdc_overlay - LCDC display overlay
- *
- * @channel: LCDC channel this overlay belongs to
- * @cfg: Overlay configuration
- * @info: Frame buffer device
- * @index: Overlay index (0-3)
- * @base: Overlay registers base address
- * @enabled: True if the overlay is enabled
- * @mode: Overlay blending mode (alpha blend or ROP3)
- * @alpha: Global alpha blending value (0-255, for alpha blending mode)
- * @rop3: Raster operation (for ROP3 mode)
- * @fb_mem: Frame buffer virtual memory address
- * @fb_size: Frame buffer size in bytes
- * @dma_handle: Frame buffer DMA address
- * @base_addr_y: Overlay base address (RGB or luma component)
- * @base_addr_c: Overlay base address (chroma component)
- * @pan_y_offset: Panning linear offset in bytes (luma component)
- * @format: Current pixelf format
- * @xres: Horizontal visible resolution
- * @xres_virtual: Horizontal total resolution
- * @yres: Vertical visible resolution
- * @yres_virtual: Vertical total resolution
- * @pitch: Overlay line pitch
- * @pos_x: Horizontal overlay position
- * @pos_y: Vertical overlay position
- */
+ 
 struct sh_mobile_lcdc_overlay {
 	struct sh_mobile_lcdc_chan *channel;
 
@@ -214,12 +178,10 @@ struct sh_mobile_lcdc_priv {
 	struct sh_mobile_lcdc_overlay overlays[4];
 
 	int started;
-	int forced_fourcc; /* 2 channel LCDC must share fourcc setting */
+	int forced_fourcc;  
 };
 
-/* -----------------------------------------------------------------------------
- * Registers access
- */
+ 
 
 static unsigned long lcdc_offs_mainlcd[NR_CH_REGS] = {
 	[LDDCKPAT1R] = 0x400,
@@ -333,9 +295,7 @@ static void lcdc_wait_bit(struct sh_mobile_lcdc_priv *priv,
 		cpu_relax();
 }
 
-/* -----------------------------------------------------------------------------
- * Clock management
- */
+ 
 
 static void sh_mobile_lcdc_clk_on(struct sh_mobile_lcdc_priv *priv)
 {
@@ -389,9 +349,7 @@ static int sh_mobile_lcdc_setup_clocks(struct sh_mobile_lcdc_priv *priv,
 	return 0;
 }
 
-/* -----------------------------------------------------------------------------
- * Display, panel and deferred I/O
- */
+ 
 
 static void lcdc_sys_write_index(void *handle, unsigned long data)
 {
@@ -456,28 +414,14 @@ static void sh_mobile_lcdc_deferred_io(struct fb_info *info, struct list_head *p
 	struct sh_mobile_lcdc_chan *ch = info->par;
 	const struct sh_mobile_lcdc_panel_cfg *panel = &ch->cfg->panel_cfg;
 
-	/* enable clocks before accessing hardware */
+	 
 	sh_mobile_lcdc_clk_on(ch->lcdc);
 
-	/*
-	 * It's possible to get here without anything on the pagereflist via
-	 * sh_mobile_lcdc_deferred_io_touch() or via a userspace fsync()
-	 * invocation. In the former case, the acceleration routines are
-	 * stepped in to when using the framebuffer console causing the
-	 * workqueue to be scheduled without any dirty pages on the list.
-	 *
-	 * Despite this, a panel update is still needed given that the
-	 * acceleration routines have their own methods for writing in
-	 * that still need to be updated.
-	 *
-	 * The fsync() and empty pagereflist case could be optimized for,
-	 * but we don't bother, as any application exhibiting such
-	 * behaviour is fundamentally broken anyways.
-	 */
+	 
 	if (!list_empty(pagereflist)) {
 		unsigned int nr_pages = sh_mobile_lcdc_sginit(info, pagereflist);
 
-		/* trigger panel update */
+		 
 		dma_map_sg(ch->lcdc->dev, ch->sglist, nr_pages, DMA_TO_DEVICE);
 		if (panel->start_transfer)
 			panel->start_transfer(ch, &sh_mobile_lcdc_sys_bus_ops);
@@ -514,7 +458,7 @@ static void sh_mobile_lcdc_display_on(struct sh_mobile_lcdc_chan *ch)
 			ch->info->state = FBINFO_STATE_SUSPENDED;
 	}
 
-	/* HDMI must be enabled before LCDC configuration */
+	 
 	if (panel->display_on)
 		panel->display_on();
 }
@@ -530,9 +474,7 @@ static void sh_mobile_lcdc_display_off(struct sh_mobile_lcdc_chan *ch)
 		ch->tx_dev->ops->display_off(ch->tx_dev);
 }
 
-/* -----------------------------------------------------------------------------
- * Format helpers
- */
+ 
 
 struct sh_mobile_lcdc_format_info {
 	u32 fourcc;
@@ -625,9 +567,7 @@ static int sh_mobile_format_is_fourcc(const struct fb_var_screeninfo *var)
 	return var->grayscale > 1;
 }
 
-/* -----------------------------------------------------------------------------
- * Start, stop and IRQ
- */
+ 
 
 static irqreturn_t sh_mobile_lcdc_irq(int irq, void *data)
 {
@@ -637,21 +577,21 @@ static irqreturn_t sh_mobile_lcdc_irq(int irq, void *data)
 	int is_sub;
 	int k;
 
-	/* Acknowledge interrupts and disable further VSYNC End IRQs. */
+	 
 	ldintr = lcdc_read(priv, _LDINTR);
 	lcdc_write(priv, _LDINTR, (ldintr ^ LDINTR_STATUS_MASK) & ~LDINTR_VEE);
 
-	/* figure out if this interrupt is for main or sub lcd */
+	 
 	is_sub = (lcdc_read(priv, _LDSR) & LDSR_MSS) ? 1 : 0;
 
-	/* wake up channel and disable clocks */
+	 
 	for (k = 0; k < ARRAY_SIZE(priv->ch); k++) {
 		ch = &priv->ch[k];
 
 		if (!ch->enabled)
 			continue;
 
-		/* Frame End */
+		 
 		if (ldintr & LDINTR_FS) {
 			if (is_sub == lcdc_chan_is_sublcd(ch)) {
 				ch->frame_end = 1;
@@ -661,7 +601,7 @@ static irqreturn_t sh_mobile_lcdc_irq(int irq, void *data)
 			}
 		}
 
-		/* VSYNC End */
+		 
 		if (ldintr & LDINTR_VES)
 			complete(&ch->vsync_completion);
 	}
@@ -674,9 +614,7 @@ static int sh_mobile_lcdc_wait_for_vsync(struct sh_mobile_lcdc_chan *ch)
 	unsigned long ldintr;
 	int ret;
 
-	/* Enable VSync End interrupt and be careful not to acknowledge any
-	 * pending interrupt.
-	 */
+	 
 	ldintr = lcdc_read(ch->lcdc, _LDINTR);
 	ldintr |= LDINTR_VEE | LDINTR_STATUS_MASK;
 	lcdc_write(ch->lcdc, _LDINTR, ldintr);
@@ -695,13 +633,13 @@ static void sh_mobile_lcdc_start_stop(struct sh_mobile_lcdc_priv *priv,
 	unsigned long tmp = lcdc_read(priv, _LDCNT2R);
 	int k;
 
-	/* start or stop the lcdc */
+	 
 	if (start)
 		lcdc_write(priv, _LDCNT2R, tmp | LDCNT2R_DO);
 	else
 		lcdc_write(priv, _LDCNT2R, tmp & ~LDCNT2R_DO);
 
-	/* wait until power is applied/stopped on all channels */
+	 
 	for (k = 0; k < ARRAY_SIZE(priv->ch); k++)
 		if (lcdc_read(priv, _LDCNT2R) & priv->ch[k].enabled)
 			while (1) {
@@ -715,7 +653,7 @@ static void sh_mobile_lcdc_start_stop(struct sh_mobile_lcdc_priv *priv,
 			}
 
 	if (!start)
-		lcdc_write(priv, _LDDCKSTPR, 1); /* stop dotclock */
+		lcdc_write(priv, _LDDCKSTPR, 1);  
 }
 
 static void sh_mobile_lcdc_geometry(struct sh_mobile_lcdc_chan *ch)
@@ -735,33 +673,33 @@ static void sh_mobile_lcdc_geometry(struct sh_mobile_lcdc_chan *ch)
 	tmp |= (ch->cfg->flags & LCDC_FLAGS_DWCNT) ? LDMT1R_DWCNT : 0;
 	lcdc_write_chan(ch, LDMT1R, tmp);
 
-	/* setup SYS bus */
+	 
 	lcdc_write_chan(ch, LDMT2R, ch->cfg->sys_bus_cfg.ldmt2r);
 	lcdc_write_chan(ch, LDMT3R, ch->cfg->sys_bus_cfg.ldmt3r);
 
-	/* horizontal configuration */
+	 
 	h_total = mode->xres + mode->hsync_len + mode->left_margin
 		+ mode->right_margin;
-	tmp = h_total / 8; /* HTCN */
-	tmp |= (min(mode->xres, ch->xres) / 8) << 16; /* HDCN */
+	tmp = h_total / 8;  
+	tmp |= (min(mode->xres, ch->xres) / 8) << 16;  
 	lcdc_write_chan(ch, LDHCNR, tmp);
 
 	hsync_pos = mode->xres + mode->right_margin;
-	tmp = hsync_pos / 8; /* HSYNP */
-	tmp |= (mode->hsync_len / 8) << 16; /* HSYNW */
+	tmp = hsync_pos / 8;  
+	tmp |= (mode->hsync_len / 8) << 16;  
 	lcdc_write_chan(ch, LDHSYNR, tmp);
 
-	/* vertical configuration */
+	 
 	tmp = mode->yres + mode->vsync_len + mode->upper_margin
-	    + mode->lower_margin; /* VTLN */
-	tmp |= min(mode->yres, ch->yres) << 16; /* VDLN */
+	    + mode->lower_margin;  
+	tmp |= min(mode->yres, ch->yres) << 16;  
 	lcdc_write_chan(ch, LDVLNR, tmp);
 
-	tmp = mode->yres + mode->lower_margin; /* VSYNP */
-	tmp |= mode->vsync_len << 16; /* VSYNW */
+	tmp = mode->yres + mode->lower_margin;  
+	tmp |= mode->vsync_len << 16;  
 	lcdc_write_chan(ch, LDVSYNR, tmp);
 
-	/* Adjust horizontal synchronisation for HDMI */
+	 
 	display_h_total = mode->xres + mode->hsync_len + mode->left_margin
 			+ mode->right_margin;
 	tmp = ((mode->xres & 7) << 24) | ((display_h_total & 7) << 16)
@@ -860,45 +798,35 @@ static void sh_mobile_lcdc_overlay_setup(struct sh_mobile_lcdc_overlay *ovl)
 		   LDBCR_UPF(ovl->index) | LDBCR_UPD(ovl->index));
 }
 
-/*
- * __sh_mobile_lcdc_start - Configure and start the LCDC
- * @priv: LCDC device
- *
- * Configure all enabled channels and start the LCDC device. All external
- * devices (clocks, MERAM, panels, ...) are not touched by this function.
- */
+ 
 static void __sh_mobile_lcdc_start(struct sh_mobile_lcdc_priv *priv)
 {
 	struct sh_mobile_lcdc_chan *ch;
 	unsigned long tmp;
 	int k, m;
 
-	/* Enable LCDC channels. Read data from external memory, avoid using the
-	 * BEU for now.
-	 */
+	 
 	lcdc_write(priv, _LDCNT2R, priv->ch[0].enabled | priv->ch[1].enabled);
 
-	/* Stop the LCDC first and disable all interrupts. */
+	 
 	sh_mobile_lcdc_start_stop(priv, 0);
 	lcdc_write(priv, _LDINTR, 0);
 
-	/* Configure power supply, dot clocks and start them. */
+	 
 	tmp = priv->lddckr;
 	for (k = 0; k < ARRAY_SIZE(priv->ch); k++) {
 		ch = &priv->ch[k];
 		if (!ch->enabled)
 			continue;
 
-		/* Power supply */
+		 
 		lcdc_write_chan(ch, LDPMR, 0);
 
 		m = ch->cfg->clock_divider;
 		if (!m)
 			continue;
 
-		/* FIXME: sh7724 can only use 42, 48, 54 and 60 for the divider
-		 * denominator.
-		 */
+		 
 		lcdc_write_chan(ch, LDDCKPAT1R, 0);
 		lcdc_write_chan(ch, LDDCKPAT2R, (1 << (m/2)) - 1);
 
@@ -911,7 +839,7 @@ static void __sh_mobile_lcdc_start(struct sh_mobile_lcdc_priv *priv)
 	lcdc_write(priv, _LDDCKSTPR, 0);
 	lcdc_wait_bit(priv, _LDDCKSTPR, ~0, 0);
 
-	/* Setup geometry, format, frame buffer memory and operation mode. */
+	 
 	for (k = 0; k < ARRAY_SIZE(priv->ch); k++) {
 		ch = &priv->ch[k];
 		if (!ch->enabled)
@@ -938,10 +866,7 @@ static void __sh_mobile_lcdc_start(struct sh_mobile_lcdc_priv *priv)
 		if (ch->format->yuv)
 			lcdc_write_chan(ch, LDSA2R, ch->base_addr_c);
 
-		/* When using deferred I/O mode, configure the LCDC for one-shot
-		 * operation and enable the frame end interrupt. Otherwise use
-		 * continuous read mode.
-		 */
+		 
 		if (ch->ldmt1r_value & LDMT1R_IFM &&
 		    ch->cfg->sys_bus_cfg.deferred_io_msec) {
 			lcdc_write_chan(ch, LDSM1R, LDSM1R_OS);
@@ -951,7 +876,7 @@ static void __sh_mobile_lcdc_start(struct sh_mobile_lcdc_priv *priv)
 		}
 	}
 
-	/* Word and long word swap. */
+	 
 	switch (priv->ch[0].format->fourcc) {
 	case V4L2_PIX_FMT_RGB565:
 	case V4L2_PIX_FMT_NV21:
@@ -972,7 +897,7 @@ static void __sh_mobile_lcdc_start(struct sh_mobile_lcdc_priv *priv)
 	}
 	lcdc_write(priv, _LDDDSR, tmp);
 
-	/* Enable the display output. */
+	 
 	lcdc_write(priv, _LDCNT1R, LDCNT1R_DE);
 	sh_mobile_lcdc_start_stop(priv, 1);
 	priv->started = 1;
@@ -985,13 +910,13 @@ static int sh_mobile_lcdc_start(struct sh_mobile_lcdc_priv *priv)
 	int ret;
 	int k;
 
-	/* enable clocks before accessing the hardware */
+	 
 	for (k = 0; k < ARRAY_SIZE(priv->ch); k++) {
 		if (priv->ch[k].enabled)
 			sh_mobile_lcdc_clk_on(priv);
 	}
 
-	/* reset */
+	 
 	lcdc_write(priv, _LDCNT2R, lcdc_read(priv, _LDCNT2R) | LDCNT2R_BR);
 	lcdc_wait_bit(priv, _LDCNT2R, LDCNT2R_BR, 0);
 
@@ -1010,7 +935,7 @@ static int sh_mobile_lcdc_start(struct sh_mobile_lcdc_priv *priv)
 		}
 	}
 
-	/* Compute frame buffer base address and pitch for each channel. */
+	 
 	for (k = 0; k < ARRAY_SIZE(priv->ch); k++) {
 		ch = &priv->ch[k];
 		if (!ch->enabled)
@@ -1027,12 +952,10 @@ static int sh_mobile_lcdc_start(struct sh_mobile_lcdc_priv *priv)
 		sh_mobile_lcdc_overlay_setup(ovl);
 	}
 
-	/* Start the LCDC. */
+	 
 	__sh_mobile_lcdc_start(priv);
 
-	/* Setup deferred I/O, tell the board code to enable the panels, and
-	 * turn backlight on.
-	 */
+	 
 	for (k = 0; k < ARRAY_SIZE(priv->ch); k++) {
 		ch = &priv->ch[k];
 		if (!ch->enabled)
@@ -1062,16 +985,13 @@ static void sh_mobile_lcdc_stop(struct sh_mobile_lcdc_priv *priv)
 	struct sh_mobile_lcdc_chan *ch;
 	int k;
 
-	/* clean up deferred io and ask board code to disable panel */
+	 
 	for (k = 0; k < ARRAY_SIZE(priv->ch); k++) {
 		ch = &priv->ch[k];
 		if (!ch->enabled)
 			continue;
 
-		/* deferred io mode:
-		 * flush frame, and wait for frame end interrupt
-		 * clean up deferred io and enable clock
-		 */
+		 
 		if (ch->info && ch->info->fbdefio) {
 			ch->frame_end = 0;
 			schedule_delayed_work(&ch->info->deferred_work, 0);
@@ -1089,13 +1009,13 @@ static void sh_mobile_lcdc_stop(struct sh_mobile_lcdc_priv *priv)
 		sh_mobile_lcdc_display_off(ch);
 	}
 
-	/* stop the lcdc */
+	 
 	if (priv->started) {
 		sh_mobile_lcdc_start_stop(priv, 0);
 		priv->started = 0;
 	}
 
-	/* stop clocks */
+	 
 	for (k = 0; k < ARRAY_SIZE(priv->ch); k++)
 		if (priv->ch[k].enabled)
 			sh_mobile_lcdc_clk_off(priv);
@@ -1107,9 +1027,7 @@ static int __sh_mobile_lcdc_check_var(struct fb_var_screeninfo *var,
 	if (var->xres > MAX_XRES || var->yres > MAX_YRES)
 		return -EINVAL;
 
-	/* Make sure the virtual resolution is at least as big as the visible
-	 * resolution.
-	 */
+	 
 	if (var->xres_virtual < var->xres)
 		var->xres_virtual = var->xres;
 	if (var->yres_virtual < var->yres)
@@ -1123,15 +1041,13 @@ static int __sh_mobile_lcdc_check_var(struct fb_var_screeninfo *var,
 			return -EINVAL;
 		var->bits_per_pixel = format->bpp;
 
-		/* Default to RGB and JPEG color-spaces for RGB and YUV formats
-		 * respectively.
-		 */
+		 
 		if (!format->yuv)
 			var->colorspace = V4L2_COLORSPACE_SRGB;
 		else if (var->colorspace != V4L2_COLORSPACE_REC709)
 			var->colorspace = V4L2_COLORSPACE_JPEG;
 	} else {
-		if (var->bits_per_pixel <= 16) {		/* RGB 565 */
+		if (var->bits_per_pixel <= 16) {		 
 			var->bits_per_pixel = 16;
 			var->red.offset = 11;
 			var->red.length = 5;
@@ -1141,7 +1057,7 @@ static int __sh_mobile_lcdc_check_var(struct fb_var_screeninfo *var,
 			var->blue.length = 5;
 			var->transp.offset = 0;
 			var->transp.length = 0;
-		} else if (var->bits_per_pixel <= 24) {		/* RGB 888 */
+		} else if (var->bits_per_pixel <= 24) {		 
 			var->bits_per_pixel = 24;
 			var->red.offset = 16;
 			var->red.length = 8;
@@ -1151,7 +1067,7 @@ static int __sh_mobile_lcdc_check_var(struct fb_var_screeninfo *var,
 			var->blue.length = 8;
 			var->transp.offset = 0;
 			var->transp.length = 0;
-		} else if (var->bits_per_pixel <= 32) {		/* RGBA 888 */
+		} else if (var->bits_per_pixel <= 32) {		 
 			var->bits_per_pixel = 32;
 			var->red.offset = 16;
 			var->red.length = 8;
@@ -1170,7 +1086,7 @@ static int __sh_mobile_lcdc_check_var(struct fb_var_screeninfo *var,
 		var->transp.msb_right = 0;
 	}
 
-	/* Make sure we don't exceed our allocated memory. */
+	 
 	if (var->xres_virtual * var->yres_virtual * var->bits_per_pixel / 8 >
 	    info->fix.smem_len)
 		return -EINVAL;
@@ -1178,9 +1094,7 @@ static int __sh_mobile_lcdc_check_var(struct fb_var_screeninfo *var,
 	return 0;
 }
 
-/* -----------------------------------------------------------------------------
- * Frame buffer operations - Overlays
- */
+ 
 
 static ssize_t
 overlay_alpha_show(struct device *dev, struct device_attribute *attr, char *buf)
@@ -1382,13 +1296,11 @@ static int sh_mobile_lcdc_overlay_pan(struct fb_var_screeninfo *var,
 			 + var->xoffset * 2 / xsub;
 	}
 
-	/* If the Y offset hasn't changed, the C offset hasn't either. There's
-	 * nothing to do in that case.
-	 */
+	 
 	if (y_offset == ovl->pan_y_offset)
 		return 0;
 
-	/* Set the source address for the next refresh */
+	 
 	base_addr_y = ovl->dma_handle + y_offset;
 	base_addr_c = ovl->dma_handle + ovl->xres_virtual * ovl->yres_virtual
 		    + c_offset;
@@ -1460,7 +1372,7 @@ static int sh_mobile_lcdc_overlay_set_par(struct fb_info *info)
 	return 0;
 }
 
-/* Overlay blanking. Disable the overlay when blanked. */
+ 
 static int sh_mobile_lcdc_overlay_blank(int blank, struct fb_info *info)
 {
 	struct sh_mobile_lcdc_overlay *ovl = info->par;
@@ -1468,9 +1380,7 @@ static int sh_mobile_lcdc_overlay_blank(int blank, struct fb_info *info)
 	ovl->enabled = !blank;
 	sh_mobile_lcdc_overlay_setup(ovl);
 
-	/* Prevent the backlight from receiving a blanking event by returning
-	 * a non-zero value.
-	 */
+	 
 	return 1;
 }
 
@@ -1558,7 +1468,7 @@ sh_mobile_lcdc_overlay_fb_init(struct sh_mobile_lcdc_overlay *ovl)
 	struct fb_var_screeninfo *var;
 	struct fb_info *info;
 
-	/* Allocate and initialize the frame buffer device. */
+	 
 	info = framebuffer_alloc(0, priv->dev);
 	if (!info)
 		return -ENOMEM;
@@ -1570,9 +1480,7 @@ sh_mobile_lcdc_overlay_fb_init(struct sh_mobile_lcdc_overlay *ovl)
 	info->screen_buffer = ovl->fb_mem;
 	info->par = ovl;
 
-	/* Initialize fixed screen information. Restrict pan to 2 lines steps
-	 * for NV12 and NV21.
-	 */
+	 
 	info->fix = sh_mobile_lcdc_overlay_fix;
 	snprintf(info->fix.id, sizeof(info->fix.id),
 		 "SH Mobile LCDC Overlay %u", ovl->index);
@@ -1595,7 +1503,7 @@ sh_mobile_lcdc_overlay_fb_init(struct sh_mobile_lcdc_overlay *ovl)
 		info->fix.xpanstep = 2;
 	}
 
-	/* Initialize variable screen information. */
+	 
 	var = &info->var;
 	memset(var, 0, sizeof(*var));
 	var->xres = ovl->xres;
@@ -1604,9 +1512,7 @@ sh_mobile_lcdc_overlay_fb_init(struct sh_mobile_lcdc_overlay *ovl)
 	var->yres_virtual = ovl->yres_virtual;
 	var->activate = FB_ACTIVATE_NOW;
 
-	/* Use the legacy API by default for RGB formats, and the FOURCC API
-	 * for YUV formats.
-	 */
+	 
 	if (!ovl->format->yuv)
 		var->bits_per_pixel = ovl->format->bpp;
 	else
@@ -1615,9 +1521,7 @@ sh_mobile_lcdc_overlay_fb_init(struct sh_mobile_lcdc_overlay *ovl)
 	return sh_mobile_lcdc_overlay_check_var(var, info);
 }
 
-/* -----------------------------------------------------------------------------
- * Frame buffer operations - main frame buffer
- */
+ 
 
 static int sh_mobile_lcdc_setcolreg(u_int regno,
 				    u_int red, u_int green, u_int blue,
@@ -1628,7 +1532,7 @@ static int sh_mobile_lcdc_setcolreg(u_int regno,
 	if (regno >= PALETTE_NR)
 		return -EINVAL;
 
-	/* only FB_VISUAL_TRUECOLOR supported */
+	 
 
 	red >>= 16 - info->var.red.length;
 	green >>= 16 - info->var.green.length;
@@ -1698,13 +1602,11 @@ static int sh_mobile_lcdc_pan(struct fb_var_screeninfo *var,
 			 + var->xoffset * 2 / xsub;
 	}
 
-	/* If the Y offset hasn't changed, the C offset hasn't either. There's
-	 * nothing to do in that case.
-	 */
+	 
 	if (y_offset == ch->pan_y_offset)
 		return 0;
 
-	/* Set the source address for the next refresh */
+	 
 	base_addr_y = ch->dma_handle + y_offset;
 	base_addr_c = ch->dma_handle + ch->xres_virtual * ch->yres_virtual
 		    + c_offset;
@@ -1754,7 +1656,7 @@ static void sh_mobile_fb_reconfig(struct fb_info *info)
 	struct fb_videomode mode;
 
 	if (ch->use_count > 1 || (ch->use_count == 1 && !info->fbcon_par))
-		/* More framebuffer users are active */
+		 
 		return;
 
 	fb_var_to_videomode(&mode, &info->var);
@@ -1762,7 +1664,7 @@ static void sh_mobile_fb_reconfig(struct fb_info *info)
 	if (fb_mode_is_equal(&ch->display.mode, &mode))
 		return;
 
-	/* Display has been re-plugged, framebuffer is free now, reconfigure */
+	 
 	var = info->var;
 	fb_videomode_to_var(&var, &ch->display.mode);
 	var.width = ch->display.width;
@@ -1770,16 +1672,13 @@ static void sh_mobile_fb_reconfig(struct fb_info *info)
 	var.activate = FB_ACTIVATE_NOW;
 
 	if (fb_set_var(info, &var) < 0)
-		/* Couldn't reconfigure, hopefully, can continue as before */
+		 
 		return;
 
 	fbcon_update_vcs(info, true);
 }
 
-/*
- * Locking: both .fb_release() and .fb_open() are called with info->lock held if
- * user == 1, or with console sem held, if user == 0.
- */
+ 
 static int sh_mobile_lcdc_release(struct fb_info *info, int user)
 {
 	struct sh_mobile_lcdc_chan *ch = info->par;
@@ -1789,7 +1688,7 @@ static int sh_mobile_lcdc_release(struct fb_info *info, int user)
 
 	ch->use_count--;
 
-	/* Nothing to reconfigure, when called from fbcon */
+	 
 	if (user) {
 		console_lock();
 		sh_mobile_fb_reconfig(info);
@@ -1825,16 +1724,12 @@ static int sh_mobile_lcdc_check_var(struct fb_var_screeninfo *var,
 	unsigned int i;
 	int ret;
 
-	/* If board code provides us with a list of available modes, make sure
-	 * we use one of them. Find the mode closest to the requested one. The
-	 * distance between two modes is defined as the size of the
-	 * non-overlapping parts of the two rectangles.
-	 */
+	 
 	for (i = 0; i < ch->cfg->num_modes; ++i) {
 		const struct fb_videomode *mode = &ch->cfg->lcd_modes[i];
 		unsigned int dist;
 
-		/* We can only round up. */
+		 
 		if (var->xres > mode->xres || var->yres > mode->yres)
 			continue;
 
@@ -1849,7 +1744,7 @@ static int sh_mobile_lcdc_check_var(struct fb_var_screeninfo *var,
 		}
 	}
 
-	/* If no available mode can be used, return an error. */
+	 
 	if (ch->cfg->num_modes != 0) {
 		if (best_dist == (unsigned int)-1)
 			return -EINVAL;
@@ -1862,7 +1757,7 @@ static int sh_mobile_lcdc_check_var(struct fb_var_screeninfo *var,
 	if (ret < 0)
 		return ret;
 
-	/* only accept the forced_fourcc for dual channel configurations */
+	 
 	if (p->forced_fourcc &&
 	    p->forced_fourcc != sh_mobile_format_fourcc(var))
 		return -EINVAL;
@@ -1907,20 +1802,13 @@ static int sh_mobile_lcdc_set_par(struct fb_info *info)
 	return ret;
 }
 
-/*
- * Screen blanking. Behavior is as follows:
- * FB_BLANK_UNBLANK: screen unblanked, clocks enabled
- * FB_BLANK_NORMAL: screen blanked, clocks enabled
- * FB_BLANK_VSYNC,
- * FB_BLANK_HSYNC,
- * FB_BLANK_POWEROFF: screen blanked, clocks disabled
- */
+ 
 static int sh_mobile_lcdc_blank(int blank, struct fb_info *info)
 {
 	struct sh_mobile_lcdc_chan *ch = info->par;
 	struct sh_mobile_lcdc_priv *p = ch->lcdc;
 
-	/* blank the screen? */
+	 
 	if (blank > FB_BLANK_UNBLANK && ch->blank_status == FB_BLANK_UNBLANK) {
 		struct fb_fillrect rect = {
 			.width = ch->xres,
@@ -1928,17 +1816,13 @@ static int sh_mobile_lcdc_blank(int blank, struct fb_info *info)
 		};
 		sh_mobile_lcdc_fillrect(info, &rect);
 	}
-	/* turn clocks on? */
+	 
 	if (blank <= FB_BLANK_NORMAL && ch->blank_status > FB_BLANK_NORMAL) {
 		sh_mobile_lcdc_clk_on(p);
 	}
-	/* turn clocks off? */
+	 
 	if (blank > FB_BLANK_NORMAL && ch->blank_status <= FB_BLANK_NORMAL) {
-		/* make sure the screen is updated with the black fill before
-		 * switching the clocks off. one vsync is not enough since
-		 * blanking may occur in the middle of a refresh. deferred io
-		 * mode will reenable the clocks and update the screen in time,
-		 * so it does not need this. */
+		 
 		if (!info->fbdefio) {
 			sh_mobile_lcdc_wait_for_vsync(ch);
 			sh_mobile_lcdc_wait_for_vsync(ch);
@@ -2011,7 +1895,7 @@ sh_mobile_lcdc_channel_fb_register(struct sh_mobile_lcdc_chan *ch)
 		 "mainlcd" : "sublcd", info->var.xres, info->var.yres,
 		 info->var.bits_per_pixel);
 
-	/* deferred io mode: disable clock to save power */
+	 
 	if (info->fbdefio || info->state == FBINFO_STATE_SUSPENDED)
 		sh_mobile_lcdc_clk_off(ch->lcdc);
 
@@ -2042,9 +1926,7 @@ sh_mobile_lcdc_channel_fb_init(struct sh_mobile_lcdc_chan *ch,
 	struct fb_info *info;
 	int ret;
 
-	/* Allocate and initialize the frame buffer device. Create the modes
-	 * list and allocate the color map.
-	 */
+	 
 	info = framebuffer_alloc(0, priv->dev);
 	if (!info)
 		return -ENOMEM;
@@ -2065,9 +1947,7 @@ sh_mobile_lcdc_channel_fb_init(struct sh_mobile_lcdc_chan *ch,
 		return ret;
 	}
 
-	/* Initialize fixed screen information. Restrict pan to 2 lines steps
-	 * for NV12 and NV21.
-	 */
+	 
 	info->fix = sh_mobile_lcdc_fix;
 	info->fix.smem_start = ch->dma_handle;
 	info->fix.smem_len = ch->fb_size;
@@ -2088,9 +1968,7 @@ sh_mobile_lcdc_channel_fb_init(struct sh_mobile_lcdc_chan *ch,
 		info->fix.xpanstep = 2;
 	}
 
-	/* Initialize variable screen information using the first mode as
-	 * default.
-	 */
+	 
 	var = &info->var;
 	fb_videomode_to_var(var, modes);
 	var->width = ch->display.width;
@@ -2099,9 +1977,7 @@ sh_mobile_lcdc_channel_fb_init(struct sh_mobile_lcdc_chan *ch,
 	var->yres_virtual = ch->yres_virtual;
 	var->activate = FB_ACTIVATE_NOW;
 
-	/* Use the legacy API by default for RGB formats, and the FOURCC API
-	 * for YUV formats.
-	 */
+	 
 	if (!ch->format->yuv)
 		var->bits_per_pixel = ch->format->bpp;
 	else
@@ -2114,9 +1990,7 @@ sh_mobile_lcdc_channel_fb_init(struct sh_mobile_lcdc_chan *ch,
 	return 0;
 }
 
-/* -----------------------------------------------------------------------------
- * Backlight
- */
+ 
 
 static int sh_mobile_lcdc_update_bl(struct backlight_device *bdev)
 {
@@ -2176,9 +2050,7 @@ static void sh_mobile_lcdc_bl_remove(struct backlight_device *bdev)
 	backlight_device_unregister(bdev);
 }
 
-/* -----------------------------------------------------------------------------
- * Power management
- */
+ 
 
 static int sh_mobile_lcdc_suspend(struct device *dev)
 {
@@ -2199,7 +2071,7 @@ static int sh_mobile_lcdc_runtime_suspend(struct device *dev)
 {
 	struct sh_mobile_lcdc_priv *priv = dev_get_drvdata(dev);
 
-	/* turn off LCDC hardware */
+	 
 	lcdc_write(priv, _LDCNT1R, 0);
 
 	return 0;
@@ -2221,13 +2093,9 @@ static const struct dev_pm_ops sh_mobile_lcdc_dev_pm_ops = {
 	.runtime_resume = sh_mobile_lcdc_runtime_resume,
 };
 
-/* -----------------------------------------------------------------------------
- * Framebuffer notifier
- */
+ 
 
-/* -----------------------------------------------------------------------------
- * Probe/remove and driver init/exit
- */
+ 
 
 static const struct fb_videomode default_720p = {
 	.name = "HDMI 720p",
@@ -2333,7 +2201,7 @@ static int sh_mobile_lcdc_check_interface(struct sh_mobile_lcdc_chan *ch)
 		return -EINVAL;
 	}
 
-	/* SUBLCD only supports SYS interface */
+	 
 	if (lcdc_chan_is_sublcd(ch)) {
 		if (!(interface_type & LDMT1R_IFM))
 			return -EINVAL;
@@ -2355,7 +2223,7 @@ sh_mobile_lcdc_overlay_init(struct sh_mobile_lcdc_overlay *ovl)
 	if (ovl->cfg->fourcc == 0)
 		return 0;
 
-	/* Validate the format. */
+	 
 	format = sh_mobile_format_info(ovl->cfg->fourcc);
 	if (format == NULL) {
 		dev_err(dev, "Invalid FOURCC %08x\n", ovl->cfg->fourcc);
@@ -2369,9 +2237,7 @@ sh_mobile_lcdc_overlay_init(struct sh_mobile_lcdc_overlay *ovl)
 	ovl->pos_x = 0;
 	ovl->pos_y = 0;
 
-	/* The default Y virtual resolution is twice the panel size to allow for
-	 * double-buffering.
-	 */
+	 
 	ovl->format = format;
 	ovl->xres = ovl->cfg->max_xres;
 	ovl->xres_virtual = ovl->xres;
@@ -2383,7 +2249,7 @@ sh_mobile_lcdc_overlay_init(struct sh_mobile_lcdc_overlay *ovl)
 	else
 		ovl->pitch = ovl->xres_virtual;
 
-	/* Allocate frame buffer memory. */
+	 
 	ovl->fb_size = ovl->cfg->max_xres * ovl->cfg->max_yres
 		       * format->bpp / 8 * 2;
 	ovl->fb_mem = dma_alloc_coherent(dev, ovl->fb_size, &ovl->dma_handle,
@@ -2412,23 +2278,21 @@ sh_mobile_lcdc_channel_init(struct sh_mobile_lcdc_chan *ch)
 	unsigned int max_size;
 	unsigned int i;
 
-	/* Validate the format. */
+	 
 	format = sh_mobile_format_info(cfg->fourcc);
 	if (format == NULL) {
 		dev_err(dev, "Invalid FOURCC %08x.\n", cfg->fourcc);
 		return -EINVAL;
 	}
 
-	/* Iterate through the modes to validate them and find the highest
-	 * resolution.
-	 */
+	 
 	max_mode = NULL;
 	max_size = 0;
 
 	for (i = 0, mode = cfg->lcd_modes; i < cfg->num_modes; i++, mode++) {
 		unsigned int size = mode->yres * mode->xres;
 
-		/* NV12/NV21 buffers must have even number of lines */
+		 
 		if ((cfg->fourcc == V4L2_PIX_FMT_NV12 ||
 		     cfg->fourcc == V4L2_PIX_FMT_NV21) && (mode->yres & 0x1)) {
 			dev_err(dev, "yres must be multiple of 2 for "
@@ -2456,9 +2320,7 @@ sh_mobile_lcdc_channel_init(struct sh_mobile_lcdc_chan *ch)
 		num_modes = cfg->num_modes;
 	}
 
-	/* Use the first mode as default. The default Y virtual resolution is
-	 * twice the panel size to allow for double-buffering.
-	 */
+	 
 	ch->format = format;
 	ch->xres = mode->xres;
 	ch->xres_virtual = mode->xres;
@@ -2477,7 +2339,7 @@ sh_mobile_lcdc_channel_init(struct sh_mobile_lcdc_chan *ch)
 	ch->display.height = cfg->panel_cfg.height;
 	ch->display.mode = *mode;
 
-	/* Allocate frame buffer memory. */
+	 
 	ch->fb_size = max_size * format->bpp / 8 * 2;
 	ch->fb_mem = dma_alloc_coherent(dev, ch->fb_size, &ch->dma_handle,
 					GFP_KERNEL);
@@ -2486,7 +2348,7 @@ sh_mobile_lcdc_channel_init(struct sh_mobile_lcdc_chan *ch)
 		return -ENOMEM;
 	}
 
-	/* Initialize the transmitter device if present. */
+	 
 	if (cfg->tx_dev) {
 		if (!cfg->tx_dev->dev.driver ||
 		    !try_module_get(cfg->tx_dev->dev.driver->owner)) {
@@ -2556,7 +2418,7 @@ static int sh_mobile_lcdc_probe(struct platform_device *pdev)
 		init_waitqueue_head(&ch->frame_end_wait);
 		init_completion(&ch->vsync_completion);
 
-		/* probe the backlight is there is one defined */
+		 
 		if (ch->cfg->bl_info.max_brightness)
 			ch->bl = sh_mobile_lcdc_bl_probe(&pdev->dev, ch);
 
@@ -2580,7 +2442,7 @@ static int sh_mobile_lcdc_probe(struct platform_device *pdev)
 		goto err1;
 	}
 
-	/* for dual channel LCDC (MAIN + SUB) force shared format setting */
+	 
 	if (num_channels == 2)
 		priv->forced_fourcc = pdata->ch[0].fourcc;
 
@@ -2596,7 +2458,7 @@ static int sh_mobile_lcdc_probe(struct platform_device *pdev)
 		goto err1;
 	}
 
-	/* Enable runtime PM. */
+	 
 	pm_runtime_enable(&pdev->dev);
 
 	for (i = 0; i < num_channels; i++) {

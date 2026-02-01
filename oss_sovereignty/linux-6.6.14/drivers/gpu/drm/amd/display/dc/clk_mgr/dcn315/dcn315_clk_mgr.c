@@ -1,36 +1,13 @@
-/*
- * Copyright 2021 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 
 
 #include "dccg.h"
 #include "clk_mgr_internal.h"
 
-// For dce12_get_dp_ref_freq_khz
+
 #include "dce100/dce_clk_mgr.h"
-// For dcn20_update_clocks_update_dpp_dto
+
 #include "dcn20/dcn20_clk_mgr.h"
 #include "dcn31/dcn31_clk_mgr.h"
 #include "dcn315_clk_mgr.h"
@@ -74,13 +51,13 @@ static int dcn315_get_active_display_cnt_wa(
 	for (i = 0; i < dc->link_count; i++) {
 		const struct dc_link *link = dc->links[i];
 
-		/* abusing the fact that the dig and phy are coupled to see if the phy is enabled */
+		 
 		if (link->link_enc && link->link_enc->funcs->is_dig_enabled &&
 				link->link_enc->funcs->is_dig_enabled(link->link_enc))
 			display_count++;
 	}
 
-	/* WA for hang on HDMI after display off back back on*/
+	 
 	if (display_count == 0 && tmds_present)
 		display_count = 1;
 
@@ -110,7 +87,7 @@ static void dcn315_disable_otg_wa(struct clk_mgr *clk_mgr_base, struct dc_state 
 		if (pipe->stream && (pipe->stream->dpms_off || pipe->plane_state == NULL ||
 					dc_is_virtual_signal(pipe->stream->signal))) {
 
-			/* This w/a should not trigger when we have a dig active */
+			 
 			if (should_disable_otg(pipe)) {
 				if (disable) {
 					pipe->stream_res.tg->funcs->immediate_disable_crtc(pipe->stream_res.tg);
@@ -139,37 +116,34 @@ static void dcn315_update_clocks(struct clk_mgr *clk_mgr_base,
 		return;
 
 	clk_mgr_base->clks.zstate_support = new_clocks->zstate_support;
-	/*
-	 * if it is safe to lower, but we are already in the lower state, we don't have to do anything
-	 * also if safe to lower is false, we just go in the higher state
-	 */
+	 
 	clk_mgr_base->clks.zstate_support = new_clocks->zstate_support;
 	if (safe_to_lower) {
-		/* check that we're not already in lower */
+		 
 		if (clk_mgr_base->clks.pwr_state != DCN_PWR_STATE_LOW_POWER) {
 			display_count = dcn315_get_active_display_cnt_wa(dc, context);
-			/* if we can go lower, go lower */
+			 
 			if (display_count == 0) {
 				union display_idle_optimization_u idle_info = { 0 };
 				idle_info.idle_info.df_request_disabled = 1;
 				idle_info.idle_info.phy_ref_clk_off = 1;
 				idle_info.idle_info.s0i2_rdy = 1;
 				dcn315_smu_set_display_idle_optimization(clk_mgr, idle_info.data);
-				/* update power state */
+				 
 				clk_mgr_base->clks.pwr_state = DCN_PWR_STATE_LOW_POWER;
 			}
 		}
 	} else {
-		/* check that we're not already in D0 */
+		 
 		if (clk_mgr_base->clks.pwr_state != DCN_PWR_STATE_MISSION_MODE) {
 			union display_idle_optimization_u idle_info = { 0 };
 			dcn315_smu_set_display_idle_optimization(clk_mgr, idle_info.data);
-			/* update power state */
+			 
 			clk_mgr_base->clks.pwr_state = DCN_PWR_STATE_MISSION_MODE;
 		}
 	}
 
-	/* Lock pstate by requesting unsupported dcfclk if change is unsupported */
+	 
 	if (!new_clocks->p_state_change_support)
 		new_clocks->dcfclk_khz = UNSUPPORTED_DCFCLK;
 	if (should_set_clock(safe_to_lower, new_clocks->dcfclk_khz, clk_mgr_base->clks.dcfclk_khz)) {
@@ -183,7 +157,7 @@ static void dcn315_update_clocks(struct clk_mgr *clk_mgr_base,
 		dcn315_smu_set_min_deep_sleep_dcfclk(clk_mgr, clk_mgr_base->clks.dcfclk_deep_sleep_khz);
 	}
 
-	// workaround: Limit dppclk to 100Mhz to avoid lower eDP panel switch to plus 4K monitor underflow.
+	 
 	if (new_clocks->dppclk_khz < MIN_DPP_DISP_CLK)
 		new_clocks->dppclk_khz = MIN_DPP_DISP_CLK;
 	if (new_clocks->dispclk_khz < MIN_DPP_DISP_CLK)
@@ -197,7 +171,7 @@ static void dcn315_update_clocks(struct clk_mgr *clk_mgr_base,
 	}
 
 	if (should_set_clock(safe_to_lower, new_clocks->dispclk_khz, clk_mgr_base->clks.dispclk_khz)) {
-		/* No need to apply the w/a if we haven't taken over from bios yet */
+		 
 		if (clk_mgr_base->clks.dispclk_khz)
 			dcn315_disable_otg_wa(clk_mgr_base, context, true);
 
@@ -210,19 +184,19 @@ static void dcn315_update_clocks(struct clk_mgr *clk_mgr_base,
 	}
 
 	if (dpp_clock_lowered) {
-		// increase per DPP DTO before lowering global dppclk
+		
 		dcn20_update_clocks_update_dpp_dto(clk_mgr, context, safe_to_lower);
 		dcn315_smu_set_dppclk(clk_mgr, clk_mgr_base->clks.dppclk_khz);
 	} else {
-		// increase global DPPCLK before lowering per DPP DTO
+		
 		if (update_dppclk || update_dispclk)
 			dcn315_smu_set_dppclk(clk_mgr, clk_mgr_base->clks.dppclk_khz);
-		// always update dtos unless clock is lowered and not safe to lower
+		
 		if (new_clocks->dppclk_khz >= dc->current_state->bw_ctx.bw.dcn.clk.dppclk_khz)
 			dcn20_update_clocks_update_dpp_dto(clk_mgr, context, safe_to_lower);
 	}
 
-	// notify DMCUB of latest clocks
+	
 	memset(&cmd, 0, sizeof(cmd));
 	cmd.notify_clocks.header.type = DMUB_CMD__CLK_MGR;
 	cmd.notify_clocks.header.sub_type = DMUB_CMD__CLK_MGR_NOTIFY_CLOCKS;
@@ -366,7 +340,7 @@ static struct wm_table lpddr5_wm_table = {
 	}
 };
 
-/* Temporary Place holder until we can get them from fuse */
+ 
 static DpmClocks_315_t dummy_clocks = { 0 };
 static struct dcn315_watermarks dummy_wms = { 0 };
 
@@ -377,13 +351,13 @@ static void dcn315_build_watermark_ranges(struct clk_bw_params *bw_params, struc
 	num_valid_sets = 0;
 
 	for (i = 0; i < WM_SET_COUNT; i++) {
-		/* skip empty entries, the smu array has no holes*/
+		 
 		if (!bw_params->wm_table.entries[i].valid)
 			continue;
 
 		table->WatermarkRow[WM_DCFCLK][num_valid_sets].WmSetting = bw_params->wm_table.entries[i].wm_inst;
 		table->WatermarkRow[WM_DCFCLK][num_valid_sets].WmType = bw_params->wm_table.entries[i].wm_type;
-		/* We will not select WM based on fclk, so leave it as unconstrained */
+		 
 		table->WatermarkRow[WM_DCFCLK][num_valid_sets].MinClock = 0;
 		table->WatermarkRow[WM_DCFCLK][num_valid_sets].MaxClock = 0xFFFF;
 
@@ -391,7 +365,7 @@ static void dcn315_build_watermark_ranges(struct clk_bw_params *bw_params, struc
 			if (i == 0)
 				table->WatermarkRow[WM_DCFCLK][num_valid_sets].MinMclk = 0;
 			else {
-				/* add 1 to make it non-overlapping with next lvl */
+				 
 				table->WatermarkRow[WM_DCFCLK][num_valid_sets].MinMclk =
 						bw_params->clk_table.entries[i - 1].dcfclk_mhz + 1;
 			}
@@ -399,25 +373,25 @@ static void dcn315_build_watermark_ranges(struct clk_bw_params *bw_params, struc
 					bw_params->clk_table.entries[i].dcfclk_mhz;
 
 		} else {
-			/* unconstrained for memory retraining */
+			 
 			table->WatermarkRow[WM_DCFCLK][num_valid_sets].MinClock = 0;
 			table->WatermarkRow[WM_DCFCLK][num_valid_sets].MaxClock = 0xFFFF;
 
-			/* Modify previous watermark range to cover up to max */
+			 
 			table->WatermarkRow[WM_DCFCLK][num_valid_sets - 1].MaxClock = 0xFFFF;
 		}
 		num_valid_sets++;
 	}
 
-	ASSERT(num_valid_sets != 0); /* Must have at least one set of valid watermarks */
+	ASSERT(num_valid_sets != 0);  
 
-	/* modify the min and max to make sure we cover the whole range*/
+	 
 	table->WatermarkRow[WM_DCFCLK][0].MinMclk = 0;
 	table->WatermarkRow[WM_DCFCLK][0].MinClock = 0;
 	table->WatermarkRow[WM_DCFCLK][num_valid_sets - 1].MaxMclk = 0xFFFF;
 	table->WatermarkRow[WM_DCFCLK][num_valid_sets - 1].MaxClock = 0xFFFF;
 
-	/* This is for writeback only, does not matter currently as no writeback support*/
+	 
 	table->WatermarkRow[WM_SOCCLK][0].WmSetting = WM_A;
 	table->WatermarkRow[WM_SOCCLK][0].MinClock = 0;
 	table->WatermarkRow[WM_SOCCLK][0].MaxClock = 0xFFFF;
@@ -478,20 +452,20 @@ static void dcn315_clk_mgr_helper_populate_bw_params(
 	uint32_t max_pstate = clock_table->NumDfPstatesEnabled - 1;
 	struct clk_limit_table_entry def_max = bw_params->clk_table.entries[bw_params->clk_table.num_entries - 1];
 
-	/* For 315 we want to base clock table on dcfclk, need at least one entry regardless of pmfw table */
+	 
 	for (i = 0; i < clock_table->NumDcfClkLevelsEnabled; i++) {
 		int j;
 
-		/* DF table is sorted with clocks decreasing */
+		 
 		for (j = clock_table->NumDfPstatesEnabled - 2; j >= 0; j--) {
 			if (clock_table->DfPstateTable[j].Voltage <= clock_table->SocVoltage[i])
 				max_pstate = j;
 		}
-		/* Max DCFCLK should match up with max pstate */
+		 
 		if (i == clock_table->NumDcfClkLevelsEnabled - 1)
 			max_pstate = 0;
 
-		/* First search defaults for the clocks we don't read using closest lower or equal default dcfclk */
+		 
 		for (j = bw_params->clk_table.num_entries - 1; j > 0; j--)
 			if (bw_params->clk_table.entries[j].dcfclk_mhz <= clock_table->DcfClocks[i])
 				break;
@@ -499,7 +473,7 @@ static void dcn315_clk_mgr_helper_populate_bw_params(
 		bw_params->clk_table.entries[i].phyclk_d18_mhz = bw_params->clk_table.entries[j].phyclk_d18_mhz;
 		bw_params->clk_table.entries[i].dtbclk_mhz = bw_params->clk_table.entries[j].dtbclk_mhz;
 
-		/* Now update clocks we do read */
+		 
 		bw_params->clk_table.entries[i].fclk_mhz = clock_table->DfPstateTable[max_pstate].FClk;
 		bw_params->clk_table.entries[i].memclk_mhz = clock_table->DfPstateTable[max_pstate].MemClk;
 		bw_params->clk_table.entries[i].voltage = clock_table->SocVoltage[i];
@@ -510,7 +484,7 @@ static void dcn315_clk_mgr_helper_populate_bw_params(
 		bw_params->clk_table.entries[i].wck_ratio = 1;
 	}
 
-	/* Make sure to include at least one entry */
+	 
 	if (i == 0) {
 		bw_params->clk_table.entries[i].fclk_mhz = clock_table->DfPstateTable[0].FClk;
 		bw_params->clk_table.entries[i].memclk_mhz = clock_table->DfPstateTable[0].MemClk;
@@ -526,9 +500,7 @@ static void dcn315_clk_mgr_helper_populate_bw_params(
 	}
 	bw_params->clk_table.num_entries = i;
 
-	/* Set any 0 clocks to max default setting. Not an issue for
-	 * power since we aren't doing switching in such case anyway
-	 */
+	 
 	for (i = 0; i < bw_params->clk_table.num_entries; i++) {
 		if (!bw_params->clk_table.entries[i].fclk_mhz) {
 			bw_params->clk_table.entries[i].fclk_mhz = def_max.fclk_mhz;
@@ -551,7 +523,7 @@ static void dcn315_clk_mgr_helper_populate_bw_params(
 			bw_params->clk_table.entries[i].dtbclk_mhz = def_max.dtbclk_mhz;
 	}
 
-	/* Make sure all highest default clocks are included*/
+	 
 	ASSERT(bw_params->clk_table.entries[i-1].phyclk_mhz == def_max.phyclk_mhz);
 	ASSERT(bw_params->clk_table.entries[i-1].phyclk_d18_mhz == def_max.phyclk_d18_mhz);
 	ASSERT(bw_params->clk_table.entries[i-1].dtbclk_mhz == def_max.dtbclk_mhz);
@@ -648,7 +620,7 @@ void dcn315_clk_mgr_construct(
 	} else {
 		dcn315_bw_params.wm_table = ddr5_wm_table;
 	}
-	/* Saved clocks configured at boot for debug purposes */
+	 
 	dcn315_dump_clk_registers(&clk_mgr->base.base.boot_snapshot,
 				  &clk_mgr->base.base, &log_info);
 

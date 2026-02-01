@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *
- *  Copyright (C) 2005 Mike Isely <isely@pobox.com>
- *  Copyright (C) 2004 Aurelien Alleaume <slts@free.fr>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/errno.h>
@@ -36,10 +32,10 @@ MODULE_PARM_DESC(debug, "Debug trace mask");
 
 static void pvr_setup_attach(struct pvr2_context *pvr)
 {
-	/* Create association with v4l layer */
+	 
 	pvr2_v4l2_create(pvr);
 #ifdef CONFIG_VIDEO_PVRUSB2_DVB
-	/* Create association with dvb layer */
+	 
 	pvr2_dvb_create(pvr);
 #endif
 	pvr2_sysfs_create(pvr);
@@ -50,7 +46,7 @@ static int pvr_probe(struct usb_interface *intf,
 {
 	struct pvr2_context *pvr;
 
-	/* Create underlying hardware interface */
+	 
 	pvr = pvr2_context_create(intf,devid,pvr_setup_attach);
 	if (!pvr) {
 		pvr2_trace(PVR2_TRACE_ERROR_LEGS,
@@ -65,10 +61,7 @@ static int pvr_probe(struct usb_interface *intf,
 	return 0;
 }
 
-/*
- * pvr_disconnect()
- *
- */
+ 
 static void pvr_disconnect(struct usb_interface *intf)
 {
 	struct pvr2_context *pvr = usb_get_intfdata(intf);
@@ -89,12 +82,7 @@ static struct usb_driver pvr_driver = {
 	.disconnect =   pvr_disconnect
 };
 
-/*
- * pvr_init() / pvr_exit()
- *
- * This code is run to initialize/exit the driver.
- *
- */
+ 
 static int __init pvr_init(void)
 {
 	int ret;

@@ -1,9 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0+
 
-/*
- * Copyright 2018 IBM Corporation.
- * Copyright 2020 Canonical Ltd.
- */
+
+ 
 
 #define __SANE_USERSPACE_TYPES__
 
@@ -33,7 +30,7 @@ int uaccess_flush_test(void)
 
 	SKIP_IF(geteuid() != 0);
 
-	// The PMU event we use only works on Power7 or later
+	
 	SKIP_IF(!have_hwcap(PPC_FEATURE_ARCH_2_06));
 
 	if (read_debugfs_int("powerpc/rfi_flush", &rfi_flush_orig) < 0) {
@@ -74,15 +71,12 @@ int uaccess_flush_test(void)
 
 	FAIL_IF(perf_event_enable(fd));
 
-	// disable L1 prefetching
+	
 	set_dscr(1);
 
 	iter = repetitions;
 
-	/*
-	 * We expect to see l1d miss for each cacheline access when entry_flush
-	 * is set. Allow a small variation on this.
-	 */
+	 
 	l1d_misses_expected = iterations * (zero_size / CACHELINE_SIZE - 2);
 
 again:

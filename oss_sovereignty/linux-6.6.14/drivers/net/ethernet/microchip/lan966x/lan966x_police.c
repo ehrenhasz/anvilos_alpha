@@ -1,17 +1,17 @@
-// SPDX-License-Identifier: GPL-2.0+
+
 
 #include "lan966x_main.h"
 
-/* 0-8 : 9 port policers */
+ 
 #define POL_IDX_PORT	0
 
-/* Policer order: Serial (QoS -> Port -> VCAP) */
+ 
 #define POL_ORDER	0x1d3
 
 struct lan966x_tc_policer {
-	/* kilobit per second */
+	 
 	u32 rate;
-	/* bytes */
+	 
 	u32 burst;
 };
 
@@ -21,11 +21,11 @@ static int lan966x_police_add(struct lan966x_port *port,
 {
 	struct lan966x *lan966x = port->lan966x;
 
-	/* Rate unit is 33 1/3 kpps */
+	 
 	pol->rate = DIV_ROUND_UP(pol->rate * 3, 100);
-	/* Avoid zero burst size */
+	 
 	pol->burst = pol->burst ?: 1;
-	/* Unit is 4kB */
+	 
 	pol->burst = DIV_ROUND_UP(pol->burst, 4096);
 
 	if (pol->rate > GENMASK(15, 0) ||
@@ -167,7 +167,7 @@ int lan966x_police_port_add(struct lan966x_port *port,
 
 	port->tc.police_id = police_id;
 
-	/* Setup initial stats */
+	 
 	old_stats = &port->tc.police_stat;
 	lan966x_stats_get(port->dev, &new_stats);
 	old_stats->bytes = new_stats.rx_bytes;

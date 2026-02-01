@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * NVMe over Fabrics loopback device.
- * Copyright (c) 2015-2016 HGST, a Western Digital Company.
- */
+
+ 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 #include <linux/scatterlist.h>
 #include <linux/blk-mq.h>
@@ -94,12 +91,7 @@ static void nvme_loop_queue_response(struct nvmet_req *req)
 		container_of(req->sq, struct nvme_loop_queue, nvme_sq);
 	struct nvme_completion *cqe = req->cqe;
 
-	/*
-	 * AEN requests are special as they don't time out and can
-	 * survive any kind of queue freeze and often don't respond to
-	 * aborts.  We don't even bother to allocate a struct request
-	 * for them but rather special case them here.
-	 */
+	 
 	if (unlikely(nvme_is_aen_req(nvme_loop_queue_idx(queue),
 				     cqe->command_id))) {
 		nvme_complete_async_event(&queue->ctrl->ctrl, cqe->status,
@@ -223,12 +215,7 @@ static int nvme_loop_init_hctx(struct blk_mq_hw_ctx *hctx, void *data,
 
 	BUG_ON(hctx_idx >= ctrl->ctrl.queue_count);
 
-	/*
-	 * flush_end_io() can be called recursively for us, so use our own
-	 * lock class key for avoiding lockdep possible recursive locking,
-	 * then we can remove the dynamically allocated lock class for each
-	 * flush queue, that way may cause horrible boot delay.
-	 */
+	 
 	blk_mq_hctx_set_fq_lock_class(hctx, &loop_hctx_fq_lock_key);
 
 	hctx->driver_data = queue;
@@ -359,7 +346,7 @@ static int nvme_loop_configure_admin_queue(struct nvme_loop_ctrl *ctrl)
 	if (error)
 		goto out_free_sq;
 
-	/* reset stopped state for the fresh admin queue */
+	 
 	clear_bit(NVME_CTRL_ADMIN_Q_STOPPED, &ctrl->ctrl.flags);
 
 	error = nvmf_connect_admin_queue(&ctrl->ctrl);
@@ -436,7 +423,7 @@ static void nvme_loop_reset_ctrl_work(struct work_struct *work)
 	if (!nvme_change_ctrl_state(&ctrl->ctrl, NVME_CTRL_CONNECTING)) {
 		if (ctrl->ctrl.state != NVME_CTRL_DELETING &&
 		    ctrl->ctrl.state != NVME_CTRL_DELETING_NOIO)
-			/* state change failure for non-deleted ctrl? */
+			 
 			WARN_ON_ONCE(1);
 		return;
 	}
@@ -519,7 +506,7 @@ static struct nvmet_port *nvme_loop_find_port(struct nvme_ctrl *ctrl)
 
 	mutex_lock(&nvme_loop_ports_mutex);
 	list_for_each_entry(p, &nvme_loop_ports, entry) {
-		/* if no transport address is specified use the first port */
+		 
 		if ((ctrl->opts->mask & NVMF_OPT_TRADDR) &&
 		    strcmp(ctrl->opts->traddr, p->disc_addr.traddr))
 			continue;
@@ -545,7 +532,7 @@ static struct nvme_ctrl *nvme_loop_create_ctrl(struct device *dev,
 	INIT_WORK(&ctrl->ctrl.reset_work, nvme_loop_reset_ctrl_work);
 
 	ret = nvme_init_ctrl(&ctrl->ctrl, dev, &nvme_loop_ctrl_ops,
-				0 /* no quirks, we're perfect! */);
+				0  );
 	if (ret) {
 		kfree(ctrl);
 		goto out;
@@ -569,7 +556,7 @@ static struct nvme_ctrl *nvme_loop_create_ctrl(struct device *dev,
 		goto out_free_queues;
 
 	if (opts->queue_size > ctrl->ctrl.maxcmd) {
-		/* warn if maxcmd is lower than queue_size */
+		 
 		dev_warn(ctrl->ctrl.device,
 			"queue_size %zu > ctrl maxcmd %u, clamping down\n",
 			opts->queue_size, ctrl->ctrl.maxcmd);
@@ -626,12 +613,7 @@ static void nvme_loop_remove_port(struct nvmet_port *port)
 	list_del_init(&port->entry);
 	mutex_unlock(&nvme_loop_ports_mutex);
 
-	/*
-	 * Ensure any ctrls that are in the process of being
-	 * deleted are in fact deleted before we return
-	 * and free the port. This is to prevent active
-	 * ctrls from using a port after it's freed.
-	 */
+	 
 	flush_workqueue(nvme_delete_wq);
 }
 
@@ -685,4 +667,4 @@ module_init(nvme_loop_init_module);
 module_exit(nvme_loop_cleanup_module);
 
 MODULE_LICENSE("GPL v2");
-MODULE_ALIAS("nvmet-transport-254"); /* 254 == NVMF_TRTYPE_LOOP */
+MODULE_ALIAS("nvmet-transport-254");  

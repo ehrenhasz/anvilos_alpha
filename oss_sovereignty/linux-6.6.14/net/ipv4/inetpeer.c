@@ -1,10 +1,4 @@
-/*
- *		INETPEER - A storage for permanent information about peers
- *
- *  This source is covered by the GNU GPL, the same as all kernel sources.
- *
- *  Authors:	Andrey V. Savochkin <saw@msu.ru>
- */
+ 
 
 #include <linux/cache.h>
 #include <linux/module.h>
@@ -23,34 +17,7 @@
 #include <net/inetpeer.h>
 #include <net/secure_seq.h>
 
-/*
- *  Theory of operations.
- *  We keep one entry for each peer IP address.  The nodes contains long-living
- *  information about the peer which doesn't depend on routes.
- *
- *  Nodes are removed only when reference counter goes to 0.
- *  When it's happened the node may be removed when a sufficient amount of
- *  time has been passed since its last use.  The less-recently-used entry can
- *  also be removed if the pool is overloaded i.e. if the total amount of
- *  entries is greater-or-equal than the threshold.
- *
- *  Node pool is organised as an RB tree.
- *  Such an implementation has been chosen not just for fun.  It's a way to
- *  prevent easy and efficient DoS attacks by creating hash collisions.  A huge
- *  amount of long living nodes in a single hash slot would significantly delay
- *  lookups performed with disabled BHs.
- *
- *  Serialisation issues.
- *  1.  Nodes may appear in the tree only with the pool lock held.
- *  2.  Nodes may disappear from the tree only with the pool lock held
- *      AND reference count being 0.
- *  3.  Global variable peer_total is modified under the pool lock.
- *  4.  struct inet_peer fields modification:
- *		rb_node: pool lock
- *		refcnt: atomically against modifications on other CPU;
- *		   usually under some other lock to prevent node disappearing
- *		daddr: unchangeable
- */
+ 
 
 static struct kmem_cache *peer_cachep __ro_after_init;
 
@@ -64,18 +31,17 @@ EXPORT_SYMBOL_GPL(inet_peer_base_init);
 
 #define PEER_MAX_GC 32
 
-/* Exported for sysctl_net_ipv4.  */
-int inet_peer_threshold __read_mostly;	/* start to throw entries more
-					 * aggressively at this stage */
-int inet_peer_minttl __read_mostly = 120 * HZ;	/* TTL under high load: 120 sec */
-int inet_peer_maxttl __read_mostly = 10 * 60 * HZ;	/* usual time to live: 10 min */
+ 
+int inet_peer_threshold __read_mostly;	 
+int inet_peer_minttl __read_mostly = 120 * HZ;	 
+int inet_peer_maxttl __read_mostly = 10 * 60 * HZ;	 
 
-/* Called from ip_output.c:ip_init  */
+ 
 void __init inet_initpeers(void)
 {
 	u64 nr_entries;
 
-	 /* 1% of physical memory */
+	  
 	nr_entries = div64_ul((u64)totalram_pages() << PAGE_SHIFT,
 			      100 * L1_CACHE_ALIGN(sizeof(struct inet_peer)));
 
@@ -87,7 +53,7 @@ void __init inet_initpeers(void)
 			NULL);
 }
 
-/* Called with rcu_read_lock() or base->lock held */
+ 
 static struct inet_peer *lookup(const struct inetpeer_addr *daddr,
 				struct inet_peer_base *base,
 				unsigned int seq,
@@ -136,7 +102,7 @@ static void inetpeer_free_rcu(struct rcu_head *head)
 	kmem_cache_free(peer_cachep, container_of(head, struct inet_peer, rcu));
 }
 
-/* perform garbage collect on all items stacked during a lookup */
+ 
 static void inet_peer_gc(struct inet_peer_base *base,
 			 struct inet_peer *gc_stack[],
 			 unsigned int gc_cnt)
@@ -151,16 +117,14 @@ static void inet_peer_gc(struct inet_peer_base *base,
 	peer_minttl = READ_ONCE(inet_peer_minttl);
 
 	if (base->total >= peer_threshold)
-		ttl = 0; /* be aggressive */
+		ttl = 0;  
 	else
 		ttl = peer_maxttl - (peer_maxttl - peer_minttl) / HZ *
 			base->total / peer_threshold * HZ;
 	for (i = 0; i < gc_cnt; i++) {
 		p = gc_stack[i];
 
-		/* The READ_ONCE() pairs with the WRITE_ONCE()
-		 * in inet_putpeer()
-		 */
+		 
 		delta = (__u32)jiffies - READ_ONCE(p->dtime);
 
 		if (delta < ttl || !refcount_dec_if_one(&p->refcnt))
@@ -185,9 +149,7 @@ struct inet_peer *inet_getpeer(struct inet_peer_base *base,
 	unsigned int gc_cnt, seq;
 	int invalidated;
 
-	/* Attempt a lockless lookup first.
-	 * Because of a concurrent writer, we might not find an existing entry.
-	 */
+	 
 	rcu_read_lock();
 	seq = read_seqbegin(&base->lock);
 	p = lookup(daddr, base, seq, NULL, &gc_cnt, &parent, &pp);
@@ -197,13 +159,11 @@ struct inet_peer *inet_getpeer(struct inet_peer_base *base,
 	if (p)
 		return p;
 
-	/* If no writer did a change during our lookup, we can return early. */
+	 
 	if (!create && !invalidated)
 		return NULL;
 
-	/* retry an exact lookup, taking the lock before.
-	 * At least, nodes should be hot in our cache.
-	 */
+	 
 	parent = NULL;
 	write_seqlock_bh(&base->lock);
 
@@ -219,9 +179,7 @@ struct inet_peer *inet_getpeer(struct inet_peer_base *base,
 			p->metrics[RTAX_LOCK-1] = INETPEER_METRICS_NEW;
 			p->rate_tokens = 0;
 			p->n_redirects = 0;
-			/* 60*HZ is arbitrary, but chosen enough high so that the first
-			 * calculation of tokens is at its maximum.
-			 */
+			 
 			p->rate_last = jiffies - 60*HZ;
 
 			rb_link_node(&p->rb_node, parent, pp);
@@ -239,9 +197,7 @@ EXPORT_SYMBOL_GPL(inet_getpeer);
 
 void inet_putpeer(struct inet_peer *p)
 {
-	/* The WRITE_ONCE() pairs with itself (we run lockless)
-	 * and the READ_ONCE() in inet_peer_gc()
-	 */
+	 
 	WRITE_ONCE(p->dtime, (__u32)jiffies);
 
 	if (refcount_dec_and_test(&p->refcnt))
@@ -249,23 +205,7 @@ void inet_putpeer(struct inet_peer *p)
 }
 EXPORT_SYMBOL_GPL(inet_putpeer);
 
-/*
- *	Check transmit rate limitation for given message.
- *	The rate information is held in the inet_peer entries now.
- *	This function is generic and could be used for other purposes
- *	too. It uses a Token bucket filter as suggested by Alexey Kuznetsov.
- *
- *	Note that the same inet_peer fields are modified by functions in
- *	route.c too, but these work for packet destinations while xrlim_allow
- *	works for icmp destinations. This means the rate limiting information
- *	for one "ip object" is shared - and these ICMPs are twice limited:
- *	by source and by destination.
- *
- *	RFC 1812: 4.3.2.8 SHOULD be able to limit error message rate
- *			  SHOULD allow setting of rate limits
- *
- * 	Shared between ICMPv4 and ICMPv6.
- */
+ 
 #define XRLIM_BURST_FACTOR 6
 bool inet_peer_xrlim_allow(struct inet_peer *peer, int timeout)
 {

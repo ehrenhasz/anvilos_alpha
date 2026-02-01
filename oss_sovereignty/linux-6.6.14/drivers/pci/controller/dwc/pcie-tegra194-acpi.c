@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * ACPI quirks for Tegra194 PCIe host controller
- *
- * Copyright (C) 2021 NVIDIA Corporation.
- *
- * Author: Vidya Sagar <vidyas@nvidia.com>
- */
+
+ 
 
 #include <linux/pci.h>
 #include <linux/pci-acpi.h>

@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _NET_GARP_H
 #define _NET_GARP_H
 
@@ -129,4 +129,4 @@ void garp_request_leave(const struct net_device *dev,
 			const struct garp_application *app,
 			const void *data, u8 len, u8 type);
 
-#endif /* _NET_GARP_H */
+#endif  

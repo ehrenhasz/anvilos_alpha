@@ -1,6 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0-only
-//
-// Copyright(c) 2020 Intel Corporation. All rights reserved.
+
+
+
 
 #include <linux/device.h>
 #include <linux/kernel.h>
@@ -17,24 +17,14 @@
 #include "../../codecs/rt1308.h"
 #include "sof_realtek_common.h"
 
-/*
- * Current only 2-amp configuration is supported for rt1011
- */
+ 
 static const struct snd_soc_dapm_route speaker_map_lr[] = {
-	/* speaker */
+	 
 	{ "Left Spk", NULL, "Left SPO" },
 	{ "Right Spk", NULL, "Right SPO" },
 };
 
-/*
- * Make sure device's Unique ID follows this configuration:
- *
- * Two speakers:
- *         0: left, 1: right
- * Four speakers:
- *         0: Woofer left, 1: Woofer right
- *         2: Tweeter left, 3: Tweeter right
- */
+ 
 static struct snd_soc_codec_conf rt1011_codec_confs[] = {
 	{
 		.dlc = COMP_CODEC_CONF(RT1011_DEV0_NAME),
@@ -75,7 +65,7 @@ static int rt1011_hw_params(struct snd_pcm_substream *substream,
 	srate = params_rate(params);
 
 	for_each_rtd_codec_dais(rtd, i, codec_dai) {
-		/* 100 Fs to drive 24 bit data */
+		 
 		ret = snd_soc_dai_set_pll(codec_dai, 0, RT1011_PLL1_S_BCLK,
 					  100 * srate, 256 * srate);
 		if (ret < 0) {
@@ -143,24 +133,15 @@ void sof_rt1011_codec_conf(struct snd_soc_card *card)
 }
 EXPORT_SYMBOL_NS(sof_rt1011_codec_conf, SND_SOC_INTEL_SOF_REALTEK_COMMON);
 
-/*
- * rt1015:  i2c mode driver for ALC1015 and ALC1015Q
- * rt1015p: auto-mode driver for ALC1015, ALC1015Q, and ALC1015Q-VB
- *
- * For stereo output, there are always two amplifiers on the board.
- * However, the ACPI implements only one device instance (UID=0) if they
- * are sharing the same enable pin. The code will detect the number of
- * device instance and use corresponding DAPM structures for
- * initialization.
- */
+ 
 static const struct snd_soc_dapm_route rt1015p_1dev_dapm_routes[] = {
-	/* speaker */
+	 
 	{ "Left Spk", NULL, "Speaker" },
 	{ "Right Spk", NULL, "Speaker" },
 };
 
 static const struct snd_soc_dapm_route rt1015p_2dev_dapm_routes[] = {
-	/* speaker */
+	 
 	{ "Left Spk", NULL, "Left Speaker" },
 	{ "Right Spk", NULL, "Right Speaker" },
 };
@@ -205,7 +186,7 @@ static int rt1015p_get_num_codecs(void)
 static int rt1015p_hw_params(struct snd_pcm_substream *substream,
 			     struct snd_pcm_hw_params *params)
 {
-	/* reserved for debugging purpose */
+	 
 
 	return 0;
 }
@@ -249,9 +230,7 @@ void sof_rt1015p_codec_conf(struct snd_soc_card *card)
 }
 EXPORT_SYMBOL_NS(sof_rt1015p_codec_conf, SND_SOC_INTEL_SOF_REALTEK_COMMON);
 
-/*
- * RT1015 audio amplifier
- */
+ 
 
 static const struct {
 	unsigned int tx;
@@ -299,7 +278,7 @@ static int rt1015_hw_params(struct snd_pcm_substream *substream,
 		switch (dai_link->dai_fmt & SND_SOC_DAIFMT_FORMAT_MASK) {
 		case SND_SOC_DAIFMT_DSP_A:
 		case SND_SOC_DAIFMT_DSP_B:
-			/* 4-slot TDM */
+			 
 			ret = snd_soc_dai_set_tdm_slot(codec_dai,
 						       rt1015_tdm_mask[i].tx,
 						       rt1015_tdm_mask[i].rx,
@@ -368,9 +347,7 @@ void sof_rt1015_dai_link(struct snd_soc_dai_link *link)
 }
 EXPORT_SYMBOL_NS(sof_rt1015_dai_link, SND_SOC_INTEL_SOF_REALTEK_COMMON);
 
-/*
- * RT1308 audio amplifier
- */
+ 
 static const struct snd_kcontrol_new rt1308_kcontrols[] = {
 	SOC_DAPM_PIN_SWITCH("Speakers"),
 };
@@ -380,7 +357,7 @@ static const struct snd_soc_dapm_widget rt1308_dapm_widgets[] = {
 };
 
 static const struct snd_soc_dapm_route rt1308_dapm_routes[] = {
-	/* speaker */
+	 
 	{"Speakers", NULL, "SPOL"},
 	{"Speakers", NULL, "SPOR"},
 };
@@ -430,19 +407,19 @@ static int rt1308_hw_params(struct snd_pcm_substream *substream,
 	int ret;
 
 	clk_id = RT1308_PLL_S_MCLK;
-	/* get the tplg configured mclk. */
+	 
 	clk_freq = sof_dai_get_mclk(rtd);
 
 	pll_out = params_rate(params) * 512;
 
-	/* Set rt1308 pll */
+	 
 	ret = snd_soc_dai_set_pll(codec_dai, 0, clk_id, clk_freq, pll_out);
 	if (ret < 0) {
 		dev_err(card->dev, "Failed to set RT1308 PLL: %d\n", ret);
 		return ret;
 	}
 
-	/* Set rt1308 sysclk */
+	 
 	ret = snd_soc_dai_set_sysclk(codec_dai, RT1308_FS_SYS_S_PLL, pll_out,
 				     SND_SOC_CLOCK_IN);
 	if (ret < 0)
@@ -464,12 +441,10 @@ void sof_rt1308_dai_link(struct snd_soc_dai_link *link)
 }
 EXPORT_SYMBOL_NS(sof_rt1308_dai_link, SND_SOC_INTEL_SOF_REALTEK_COMMON);
 
-/*
- * 2-amp Configuration for RT1019
- */
+ 
 
 static const struct snd_soc_dapm_route rt1019p_dapm_routes[] = {
-	/* speaker */
+	 
 	{ "Left Spk", NULL, "Speaker" },
 	{ "Right Spk", NULL, "Speaker" },
 };

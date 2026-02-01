@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Test that signal delivery is able to expand the stack segment without
- * triggering a SEGV.
- *
- * Based on test code by Tom Lane.
- */
+
+ 
 
 #include <err.h>
 #include <stdio.h>
@@ -102,8 +97,8 @@ int test(void)
 {
 	unsigned int i, size;
 
-	// Test with used stack from 1MB - 64K to 1MB + 64K
-	// Increment by 64 to get more coverage of odd sizes
+	
+	
 	for (i = 0; i < (128 * _KB); i += 64) {
 		size = i + (1 * _MB) - (64 * _KB);
 		FAIL_IF(test_one_size(size));

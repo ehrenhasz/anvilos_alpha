@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Author: Sergio Paracuellos <sergio.paracuellos@gmail.com>
- */
+ 
+ 
 
 #ifndef _DT_BINDINGS_CLK_MT7621_H
 #define _DT_BINDINGS_CLK_MT7621_H
@@ -38,4 +36,4 @@
 
 #define MT7621_CLK_MAX		28
 
-#endif /* _DT_BINDINGS_CLK_MT7621_H */
+#endif  

@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * NAU85L40 ALSA SoC audio driver
- *
- * Copyright 2016 Nuvoton Technology Corp.
- * Author: John Hsu <KCHSU0@nuvoton.com>
- */
+ 
+ 
 
 #ifndef __NAU8540_H__
 #define __NAU8540_H__
@@ -77,17 +72,17 @@
 #define NAU8540_REG_MAX			NAU8540_REG_PWR
 
 
-/* POWER_MANAGEMENT (0x01) */
+ 
 #define NAU8540_ADC4_EN		(0x1 << 3)
 #define NAU8540_ADC3_EN		(0x1 << 2)
 #define NAU8540_ADC2_EN		(0x1 << 1)
 #define NAU8540_ADC1_EN		0x1
 
-/* CLOCK_CTRL (0x02) */
+ 
 #define NAU8540_CLK_ADC_EN		(0x1 << 15)
 #define NAU8540_CLK_I2S_EN		(0x1 << 1)
 
-/* CLOCK_SRC (0x03) */
+ 
 #define NAU8540_CLK_SRC_SFT		15
 #define NAU8540_CLK_SRC_MASK		(1 << NAU8540_CLK_SRC_SFT)
 #define NAU8540_CLK_SRC_VCO		(1 << NAU8540_CLK_SRC_SFT)
@@ -96,12 +91,12 @@
 #define NAU8540_CLK_ADC_SRC_MASK	(0x3 << NAU8540_CLK_ADC_SRC_SFT)
 #define NAU8540_CLK_MCLK_SRC_MASK	0xf
 
-/* FLL1 (0x04) */
+ 
 #define NAU8540_ICTRL_LATCH_SFT	10
 #define NAU8540_ICTRL_LATCH_MASK	(0x7 << NAU8540_ICTRL_LATCH_SFT)
 #define NAU8540_FLL_RATIO_MASK	0x7f
 
-/* FLL3 (0x06) */
+ 
 #define NAU8540_GAIN_ERR_SFT		12
 #define NAU8540_GAIN_ERR_MASK		(0xf << NAU8540_GAIN_ERR_SFT)
 #define NAU8540_FLL_CLK_SRC_SFT	10
@@ -111,11 +106,11 @@
 #define NAU8540_FLL_CLK_SRC_FS		(0x3 << NAU8540_FLL_CLK_SRC_SFT)
 #define NAU8540_FLL_INTEGER_MASK	0x3ff
 
-/* FLL4 (0x07) */
+ 
 #define NAU8540_FLL_REF_DIV_SFT	10
 #define NAU8540_FLL_REF_DIV_MASK	(0x3 << NAU8540_FLL_REF_DIV_SFT)
 
-/* FLL5 (0x08) */
+ 
 #define NAU8540_FLL_PDB_DAC_EN	(0x1 << 15)
 #define NAU8540_FLL_LOOP_FTR_EN	(0x1 << 14)
 #define NAU8540_FLL_CLK_SW_MASK	(0x1 << 13)
@@ -125,12 +120,12 @@
 #define NAU8540_FLL_FTR_SW_ACCU	(0x1 << 12)
 #define NAU8540_FLL_FTR_SW_FILTER	(0x0 << 12)
 
-/* FLL6 (0x9) */
+ 
 #define NAU8540_DCO_EN			(0x1 << 15)
 #define NAU8540_SDM_EN			(0x1 << 14)
 #define NAU8540_CUTOFF500		(0x1 << 13)
 
-/* PCM_CTRL0 (0x10) */
+ 
 #define NAU8540_I2S_BP_SFT		7
 #define NAU8540_I2S_BP_INV		(0x1 << NAU8540_I2S_BP_SFT)
 #define NAU8540_I2S_PCMB_SFT		6
@@ -147,7 +142,7 @@
 #define NAU8540_I2S_DF_I2S		0x2
 #define NAU8540_I2S_DF_PCM_AB		0x3
 
-/* PCM_CTRL1 (0x11) */
+ 
 #define NAU8540_I2S_DO12_TRI		(0x1 << 15)
 #define NAU8540_I2S_LRC_DIV_SFT	12
 #define NAU8540_I2S_LRC_DIV_MASK	(0x3 << NAU8540_I2S_LRC_DIV_SFT)
@@ -158,17 +153,17 @@
 #define NAU8540_I2S_MS_SLAVE		(0x0 << NAU8540_I2S_MS_SFT)
 #define NAU8540_I2S_BLK_DIV_MASK	0x7
 
-/* PCM_CTRL1 (0x12) */
+ 
 #define NAU8540_I2S_DO34_TRI		(0x1 << 15)
 #define NAU8540_I2S_DO34_OE		(0x1 << 11)
 #define NAU8540_I2S_TSLOT_L_MASK	0x3ff
 
-/* PCM_CTRL4 (0x14) */
+ 
 #define NAU8540_TDM_MODE		(0x1 << 15)
 #define NAU8540_TDM_OFFSET_EN		(0x1 << 14)
 #define NAU8540_TDM_TX_MASK		0xf
 
-/* ADC_SAMPLE_RATE (0x3A) */
+ 
 #define NAU8540_CH_SYNC		(0x1 << 14)
 #define NAU8540_ADC_OSR_MASK		0x3
 #define NAU8540_ADC_OSR_256		0x3
@@ -176,32 +171,32 @@
 #define NAU8540_ADC_OSR_64		0x1
 #define NAU8540_ADC_OSR_32		0x0
 
-/* VMID_CTRL (0x60) */
+ 
 #define NAU8540_VMID_EN		(1 << 6)
 #define NAU8540_VMID_SEL_SFT		4
 #define NAU8540_VMID_SEL_MASK		(0x3 << NAU8540_VMID_SEL_SFT)
 
-/* MIC_BIAS (0x67) */
+ 
 #define NAU8540_PU_PRE			(0x1 << 8)
 
-/* REFERENCE (0x68) */
+ 
 #define NAU8540_PRECHARGE_DIS		(0x1 << 13)
 #define NAU8540_GLOBAL_BIAS_EN	(0x1 << 12)
 
-/* FEPGA1 (0x69) */
+ 
 #define NAU8540_FEPGA1_MODCH2_SHT_SFT	7
 #define NAU8540_FEPGA1_MODCH2_SHT	(0x1 << NAU8540_FEPGA1_MODCH2_SHT_SFT)
 #define NAU8540_FEPGA1_MODCH1_SHT_SFT	3
 #define NAU8540_FEPGA1_MODCH1_SHT	(0x1 << NAU8540_FEPGA1_MODCH1_SHT_SFT)
 
-/* FEPGA2 (0x6A) */
+ 
 #define NAU8540_FEPGA2_MODCH4_SHT_SFT	7
 #define NAU8540_FEPGA2_MODCH4_SHT	(0x1 << NAU8540_FEPGA2_MODCH4_SHT_SFT)
 #define NAU8540_FEPGA2_MODCH3_SHT_SFT	3
 #define NAU8540_FEPGA2_MODCH3_SHT	(0x1 << NAU8540_FEPGA2_MODCH3_SHT_SFT)
 
 
-/* System Clock Source */
+ 
 enum {
 	NAU8540_CLK_DIS,
 	NAU8540_CLK_MCLK,
@@ -229,11 +224,11 @@ struct nau8540_fll_attr {
 	unsigned int val;
 };
 
-/* over sampling rate */
+ 
 struct nau8540_osr_attr {
 	unsigned int osr;
 	unsigned int clk_src;
 };
 
 
-#endif	/* __NAU8540_H__ */
+#endif	 

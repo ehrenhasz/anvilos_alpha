@@ -1,18 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * lib80211 -- common bits for IEEE802.11 drivers
- *
- * Copyright(c) 2008 John W. Linville <linville@tuxdriver.com>
- *
- * Portions copied from old ieee80211 component, w/ original copyright
- * notices below:
- *
- * Host AP crypto routines
- *
- * Copyright (c) 2002-2003, Jouni Malinen <j@w1.fi>
- * Portions Copyright (C) 2004, Intel Corporation <jketreno@linux.intel.com>
- *
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -105,7 +92,7 @@ static void lib80211_crypt_deinit_entries(struct lib80211_crypt_info *info,
 	spin_unlock_irqrestore(info->lock, flags);
 }
 
-/* After this, crypt_deinit_list won't accept new members */
+ 
 static void lib80211_crypt_quiescing(struct lib80211_crypt_info *info)
 {
 	unsigned long flags;
@@ -145,9 +132,7 @@ void lib80211_crypt_delayed_deinit(struct lib80211_crypt_info *info,
 	tmp = *crypt;
 	*crypt = NULL;
 
-	/* must not run ops->deinit() while there may be pending encrypt or
-	 * decrypt operations. Use a list of delayed deinits to avoid needing
-	 * locking. */
+	 
 
 	spin_lock_irqsave(info->lock, flags);
 	if (!info->crypt_quiesced) {

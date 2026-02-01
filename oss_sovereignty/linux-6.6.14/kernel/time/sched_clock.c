@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Generic sched_clock() support, to extend low level hardware time
- * counters to full 64-bit ns values.
- */
+
+ 
 #include <linux/clocksource.h>
 #include <linux/init.h>
 #include <linux/jiffies.h>
@@ -20,21 +17,7 @@
 
 #include "timekeeping.h"
 
-/**
- * struct clock_data - all data needed for sched_clock() (including
- *                     registration of a new clock source)
- *
- * @seq:		Sequence counter for protecting updates. The lowest
- *			bit is the index for @read_data.
- * @read_data:		Data required to read from sched_clock.
- * @wrap_kt:		Duration for which clock can run before wrapping.
- * @rate:		Tick rate of the registered clock.
- * @actual_read_sched_clock: Registered hardware level clock read function.
- *
- * The ordering of this structure has been chosen to optimize cache
- * performance. In particular 'seq' and 'read_data[0]' (combined) should fit
- * into a single 64-byte cache line.
- */
+ 
 struct clock_data {
 	seqcount_latch_t	seq;
 	struct clock_read_data	read_data[2];
@@ -51,10 +34,7 @@ core_param(irqtime, irqtime, int, 0400);
 
 static u64 notrace jiffy_sched_clock_read(void)
 {
-	/*
-	 * We don't need to use get_jiffies_64 on 32-bit arches here
-	 * because we register with BITS_PER_LONG
-	 */
+	 
 	return (u64)(jiffies - INITIAL_JIFFIES);
 }
 
@@ -107,34 +87,23 @@ unsigned long long notrace sched_clock(void)
 	return ns;
 }
 
-/*
- * Updating the data required to read the clock.
- *
- * sched_clock() will never observe mis-matched data even if called from
- * an NMI. We do this by maintaining an odd/even copy of the data and
- * steering sched_clock() to one or the other using a sequence counter.
- * In order to preserve the data cache profile of sched_clock() as much
- * as possible the system reverts back to the even copy when the update
- * completes; the odd copy is used *only* during an update.
- */
+ 
 static void update_clock_read_data(struct clock_read_data *rd)
 {
-	/* update the backup (odd) copy with the new data */
+	 
 	cd.read_data[1] = *rd;
 
-	/* steer readers towards the odd copy */
+	 
 	raw_write_seqcount_latch(&cd.seq);
 
-	/* now its safe for us to update the normal (even) copy */
+	 
 	cd.read_data[0] = *rd;
 
-	/* switch readers back to the even copy */
+	 
 	raw_write_seqcount_latch(&cd.seq);
 }
 
-/*
- * Atomically update the sched_clock() epoch.
- */
+ 
 static void update_sched_clock(void)
 {
 	u64 cyc;
@@ -172,22 +141,22 @@ sched_clock_register(u64 (*read)(void), int bits, unsigned long rate)
 	if (cd.rate > rate)
 		return;
 
-	/* Cannot register a sched_clock with interrupts on */
+	 
 	local_irq_save(flags);
 
-	/* Calculate the mult/shift to convert counter ticks to ns. */
+	 
 	clocks_calc_mult_shift(&new_mult, &new_shift, rate, NSEC_PER_SEC, 3600);
 
 	new_mask = CLOCKSOURCE_MASK(bits);
 	cd.rate = rate;
 
-	/* Calculate how many nanosecs until we risk wrapping */
+	 
 	wrap = clocks_calc_max_nsecs(new_mult, new_shift, 0, new_mask, NULL);
 	cd.wrap_kt = ns_to_ktime(wrap);
 
 	rd = cd.read_data[0];
 
-	/* Update epoch for new counter and update 'epoch_ns' from old counter*/
+	 
 	new_epoch = read();
 	cyc = cd.actual_read_sched_clock();
 	ns = rd.epoch_ns + cyc_to_ns((cyc - rd.epoch_cyc) & rd.sched_clock_mask, rd.mult, rd.shift);
@@ -203,7 +172,7 @@ sched_clock_register(u64 (*read)(void), int bits, unsigned long rate)
 	update_clock_read_data(&rd);
 
 	if (sched_clock_timer.function != NULL) {
-		/* update timeout for clock wrap */
+		 
 		hrtimer_start(&sched_clock_timer, cd.wrap_kt,
 			      HRTIMER_MODE_REL_HARD);
 	}
@@ -219,13 +188,13 @@ sched_clock_register(u64 (*read)(void), int bits, unsigned long rate)
 		r_unit = ' ';
 	}
 
-	/* Calculate the ns resolution of this counter */
+	 
 	res = cyc_to_ns(1ULL, new_mult, new_shift);
 
 	pr_info("sched_clock: %u bits at %lu%cHz, resolution %lluns, wraps every %lluns\n",
 		bits, r, r_unit, res, wrap);
 
-	/* Enable IRQ time accounting if we have a fast enough sched_clock() */
+	 
 	if (irqtime > 0 || (irqtime == -1 && rate >= 1000000))
 		enable_sched_clock_irqtime();
 
@@ -236,35 +205,19 @@ sched_clock_register(u64 (*read)(void), int bits, unsigned long rate)
 
 void __init generic_sched_clock_init(void)
 {
-	/*
-	 * If no sched_clock() function has been provided at that point,
-	 * make it the final one.
-	 */
+	 
 	if (cd.actual_read_sched_clock == jiffy_sched_clock_read)
 		sched_clock_register(jiffy_sched_clock_read, BITS_PER_LONG, HZ);
 
 	update_sched_clock();
 
-	/*
-	 * Start the timer to keep sched_clock() properly updated and
-	 * sets the initial epoch.
-	 */
+	 
 	hrtimer_init(&sched_clock_timer, CLOCK_MONOTONIC, HRTIMER_MODE_REL_HARD);
 	sched_clock_timer.function = sched_clock_poll;
 	hrtimer_start(&sched_clock_timer, cd.wrap_kt, HRTIMER_MODE_REL_HARD);
 }
 
-/*
- * Clock read function for use when the clock is suspended.
- *
- * This function makes it appear to sched_clock() as if the clock
- * stopped counting at its last update.
- *
- * This function must only be called from the critical
- * section in sched_clock(). It relies on the read_seqcount_retry()
- * at the end of the critical section to be sure we observe the
- * correct copy of 'epoch_cyc'.
- */
+ 
 static u64 notrace suspended_sched_clock_read(void)
 {
 	unsigned int seq = raw_read_seqcount_latch(&cd.seq);

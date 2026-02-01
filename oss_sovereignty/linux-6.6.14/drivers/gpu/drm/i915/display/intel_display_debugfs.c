@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright © 2020 Intel Corporation
- */
+
+ 
 
 #include <linux/string_helpers.h>
 
@@ -61,7 +59,7 @@ static int i915_sr_status(struct seq_file *m, void *unused)
 	wakeref = intel_display_power_get(dev_priv, POWER_DOMAIN_INIT);
 
 	if (DISPLAY_VER(dev_priv) >= 9)
-		/* no global SR status; inspect per-plane WM */;
+		 ;
 	else if (HAS_PCH_SPLIT(dev_priv))
 		sr_enabled = intel_de_read(dev_priv, WM1_LP_ILK) & WM_LP_ENABLE;
 	else if (IS_I965GM(dev_priv) || IS_G4X(dev_priv) ||
@@ -323,10 +321,7 @@ static const char *plane_type(enum drm_plane_type type)
 		return "PRI";
 	case DRM_PLANE_TYPE_CURSOR:
 		return "CUR";
-	/*
-	 * Deliberately omitting default: to generate compiler warnings
-	 * when a new drm_plane_type gets added.
-	 */
+	 
 	}
 
 	return "unknown";
@@ -334,10 +329,7 @@ static const char *plane_type(enum drm_plane_type type)
 
 static void plane_rotation(char *buf, size_t bufsize, unsigned int rotation)
 {
-	/*
-	 * According to doc only one DRM_MODE_ROTATE_ is allowed but this
-	 * will print them all to visualize if the values are misused
-	 */
+	 
 	snprintf(buf, bufsize,
 		 "%s%s%s%s%s%s(0x%08x)",
 		 (rotation & DRM_MODE_ROTATE_0) ? "0 " : "",
@@ -435,7 +427,7 @@ static void intel_scaler_info(struct seq_file *m, struct intel_crtc *crtc)
 	int num_scalers = crtc->num_scalers;
 	int i;
 
-	/* Not all platformas have a scaler */
+	 
 	if (num_scalers) {
 		seq_printf(m, "\tnum_scalers=%d, scaler_users=%x scaler_id=%d scaling_filter=%d",
 			   num_scalers,
@@ -527,7 +519,7 @@ static ssize_t crtc_updates_write(struct file *file,
 	struct seq_file *m = file->private_data;
 	struct intel_crtc *crtc = m->private;
 
-	/* May race with an update. Meh. */
+	 
 	memset(&crtc->debug.vbl, 0, sizeof(crtc->debug.vbl));
 
 	return len;
@@ -839,9 +831,7 @@ static ssize_t i915_displayport_test_active_write(struct file *file,
 			if (status < 0)
 				break;
 			drm_dbg(dev, "Got %d for test active\n", val);
-			/* To prevent erroneous activation of the compliance
-			 * testing code, only accept an actual value of 1 here
-			 */
+			 
 			if (val == 1)
 				intel_dp->compliance.test_active = true;
 			else
@@ -1164,11 +1154,7 @@ static int i915_lpsp_capability_show(struct seq_file *m, void *data)
 	if (DISPLAY_VER(i915) >= 13)
 		lpsp_capable = encoder->port <= PORT_B;
 	else if (DISPLAY_VER(i915) >= 12)
-		/*
-		 * Actually TGL can drive LPSP on port till DDI_C
-		 * but there is no physical connected DDI_C on TGL sku's,
-		 * even driver is not initilizing DDI_C port for gen12.
-		 */
+		 
 		lpsp_capable = encoder->port <= PORT_B;
 	else if (DISPLAY_VER(i915) == 11)
 		lpsp_capable = (connector->connector_type == DRM_MODE_CONNECTOR_DSI ||
@@ -1432,10 +1418,7 @@ static const struct file_operations i915_dsc_output_format_fops = {
 	.write = i915_dsc_output_format_write
 };
 
-/*
- * Returns the Current CRTC's bpc.
- * Example usage: cat /sys/kernel/debug/dri/0/crtc-0/i915_current_bpc
- */
+ 
 static int i915_current_bpc_show(struct seq_file *m, void *data)
 {
 	struct intel_crtc *crtc = m->private;
@@ -1455,7 +1438,7 @@ static int i915_current_bpc_show(struct seq_file *m, void *data)
 }
 DEFINE_SHOW_ATTRIBUTE(i915_current_bpc);
 
-/* Pipe may differ from crtc index if pipes are fused off */
+ 
 static int intel_crtc_pipe_show(struct seq_file *m, void *unused)
 {
 	struct intel_crtc *crtc = m->private;
@@ -1466,20 +1449,14 @@ static int intel_crtc_pipe_show(struct seq_file *m, void *unused)
 }
 DEFINE_SHOW_ATTRIBUTE(intel_crtc_pipe);
 
-/**
- * intel_connector_debugfs_add - add i915 specific connector debugfs files
- * @intel_connector: pointer to a registered drm_connector
- *
- * Cleanup will be done by drm_connector_unregister() through a call to
- * drm_debugfs_connector_remove().
- */
+ 
 void intel_connector_debugfs_add(struct intel_connector *intel_connector)
 {
 	struct drm_connector *connector = &intel_connector->base;
 	struct dentry *root = connector->debugfs_entry;
 	struct drm_i915_private *dev_priv = to_i915(connector->dev);
 
-	/* The connector must have been registered beforehands. */
+	 
 	if (!root)
 		return;
 
@@ -1520,12 +1497,7 @@ void intel_connector_debugfs_add(struct intel_connector *intel_connector)
 				    connector, &i915_lpsp_capability_fops);
 }
 
-/**
- * intel_crtc_debugfs_add - add i915 specific crtc debugfs files
- * @crtc: pointer to a drm_crtc
- *
- * Failure to add debugfs entries should generally be ignored.
- */
+ 
 void intel_crtc_debugfs_add(struct intel_crtc *crtc)
 {
 	struct dentry *root = crtc->base.debugfs_entry;

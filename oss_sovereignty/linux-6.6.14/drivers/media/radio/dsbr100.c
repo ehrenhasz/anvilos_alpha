@@ -1,25 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* A driver for the D-Link DSB-R100 USB radio and Gemtek USB Radio 21.
- * The device plugs into both the USB and an analog audio input, so this thing
- * only deals with initialisation and frequency setting, the
- * audio data has to be handled by a sound driver.
- *
- * Major issue: I can't find out where the device reports the signal
- * strength, and indeed the windows software appearantly just looks
- * at the stereo indicator as well.  So, scanning will only find
- * stereo stations.  Sad, but I can't help it.
- *
- * Also, the windows program sends oodles of messages over to the
- * device, and I couldn't figure out their meaning.  My suspicion
- * is that they don't have any:-)
- *
- * You might find some interesting stuff about this module at
- * http://unimut.fsk.uni-heidelberg.de/unimut/demi/dsbr
- *
- * Fully tested with the Keene USB FM Transmitter and the v4l2-compliance tool.
- *
- * Copyright (c) 2000 Markus Demleitner <msdemlei@cl.uni-heidelberg.de>
-*/
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -33,9 +13,7 @@
 #include <media/v4l2-ctrls.h>
 #include <media/v4l2-event.h>
 
-/*
- * Version Information
- */
+ 
 MODULE_AUTHOR("Markus Demleitner <msdemlei@tucana.harvard.edu>");
 MODULE_DESCRIPTION("D-Link DSB-R100 USB FM radio driver");
 MODULE_LICENSE("GPL");
@@ -44,14 +22,13 @@ MODULE_VERSION("1.1.0");
 #define DSB100_VENDOR 0x04b4
 #define DSB100_PRODUCT 0x1002
 
-/* Commands the device appears to understand */
+ 
 #define DSB100_TUNE 1
 #define DSB100_ONOFF 2
 
 #define TB_LEN 16
 
-/* Frequency limits in MHz -- these are European values.  For Japanese
-devices, that would be 76 and 91.  */
+ 
 #define FREQ_MIN  87.5
 #define FREQ_MAX 108.0
 #define FREQ_MUL 16000
@@ -61,7 +38,7 @@ devices, that would be 76 and 91.  */
 static int radio_nr = -1;
 module_param(radio_nr, int, 0);
 
-/* Data for one (physical) device */
+ 
 struct dsbr100_device {
 	struct usb_device *usbdev;
 	struct video_device videodev;
@@ -75,9 +52,9 @@ struct dsbr100_device {
 	bool muted;
 };
 
-/* Low-level device interface begins here */
+ 
 
-/* set a frequency, freq is defined by v4l's TUNER_LOW, i.e. 1/16th kHz */
+ 
 static int dsbr100_setfreq(struct dsbr100_device *radio, unsigned freq)
 {
 	unsigned f = (freq / 16 * 80) / 1000 + 856;
@@ -104,7 +81,7 @@ static int dsbr100_setfreq(struct dsbr100_device *radio, unsigned freq)
 	return retval;
 }
 
-/* switch on radio */
+ 
 static int dsbr100_start(struct dsbr100_device *radio)
 {
 	int retval = usb_control_msg(radio->usbdev,
@@ -122,7 +99,7 @@ static int dsbr100_start(struct dsbr100_device *radio)
 
 }
 
-/* switch off radio */
+ 
 static int dsbr100_stop(struct dsbr100_device *radio)
 {
 	int retval = usb_control_msg(radio->usbdev,
@@ -140,8 +117,7 @@ static int dsbr100_stop(struct dsbr100_device *radio)
 
 }
 
-/* return the device status.  This is, in effect, just whether it
-sees a stereo signal or not.  Pity. */
+ 
 static void dsbr100_getstat(struct dsbr100_device *radio)
 {
 	int retval = usb_control_msg(radio->usbdev,
@@ -188,7 +164,7 @@ static int vidioc_g_tuner(struct file *file, void *priv,
 		V4L2_TUNER_SUB_MONO;
 	v->capability = V4L2_TUNER_CAP_LOW | V4L2_TUNER_CAP_STEREO;
 	v->audmode = V4L2_TUNER_MODE_STEREO;
-	v->signal = radio->stereo ? 0xffff : 0;     /* We can't get the signal strength */
+	v->signal = radio->stereo ? 0xffff : 0;      
 	return 0;
 }
 
@@ -236,24 +212,15 @@ static int usb_dsbr100_s_ctrl(struct v4l2_ctrl *ctrl)
 }
 
 
-/* USB subsystem interface begins here */
+ 
 
-/*
- * Handle unplugging of the device.
- * We call video_unregister_device in any case.
- * The last function called in this procedure is
- * usb_dsbr100_video_device_release
- */
+ 
 static void usb_dsbr100_disconnect(struct usb_interface *intf)
 {
 	struct dsbr100_device *radio = usb_get_intfdata(intf);
 
 	mutex_lock(&radio->v4l2_lock);
-	/*
-	 * Disconnect is also called on unload, and in that case we need to
-	 * mute the device. This call will silently fail if it is called
-	 * after a physical disconnect.
-	 */
+	 
 	usb_control_msg(radio->usbdev,
 		usb_rcvctrlpipe(radio->usbdev, 0),
 		DSB100_ONOFF,
@@ -267,7 +234,7 @@ static void usb_dsbr100_disconnect(struct usb_interface *intf)
 }
 
 
-/* Suspend device - stop device. */
+ 
 static int usb_dsbr100_suspend(struct usb_interface *intf, pm_message_t message)
 {
 	struct dsbr100_device *radio = usb_get_intfdata(intf);
@@ -281,7 +248,7 @@ static int usb_dsbr100_suspend(struct usb_interface *intf, pm_message_t message)
 	return 0;
 }
 
-/* Resume device - start device. */
+ 
 static int usb_dsbr100_resume(struct usb_interface *intf)
 {
 	struct dsbr100_device *radio = usb_get_intfdata(intf);
@@ -295,7 +262,7 @@ static int usb_dsbr100_resume(struct usb_interface *intf)
 	return 0;
 }
 
-/* free data structures */
+ 
 static void usb_dsbr100_release(struct v4l2_device *v4l2_dev)
 {
 	struct dsbr100_device *radio = v4l2_dev_to_radio(v4l2_dev);
@@ -310,7 +277,7 @@ static const struct v4l2_ctrl_ops usb_dsbr100_ctrl_ops = {
 	.s_ctrl = usb_dsbr100_s_ctrl,
 };
 
-/* File system interface */
+ 
 static const struct v4l2_file_operations usb_dsbr100_fops = {
 	.owner		= THIS_MODULE,
 	.unlocked_ioctl	= video_ioctl2,
@@ -330,7 +297,7 @@ static const struct v4l2_ioctl_ops usb_dsbr100_ioctl_ops = {
 	.vidioc_unsubscribe_event = v4l2_event_unsubscribe,
 };
 
-/* check if the device is present and register with v4l and usb if it is */
+ 
 static int usb_dsbr100_probe(struct usb_interface *intf,
 				const struct usb_device_id *id)
 {
@@ -401,12 +368,12 @@ err_reg_dev:
 
 static const struct usb_device_id usb_dsbr100_device_table[] = {
 	{ USB_DEVICE(DSB100_VENDOR, DSB100_PRODUCT) },
-	{ }						/* Terminating entry */
+	{ }						 
 };
 
 MODULE_DEVICE_TABLE(usb, usb_dsbr100_device_table);
 
-/* USB subsystem interface */
+ 
 static struct usb_driver usb_dsbr100_driver = {
 	.name			= "dsbr100",
 	.probe			= usb_dsbr100_probe,

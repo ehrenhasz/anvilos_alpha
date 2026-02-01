@@ -1,18 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * cpufreq driver for Enhanced SpeedStep, as found in Intel's Pentium
- * M (part of the Centrino chipset).
- *
- * Since the original Pentium M, most new Intel CPUs support Enhanced
- * SpeedStep.
- *
- * Despite the "SpeedStep" in the name, this is almost entirely unlike
- * traditional SpeedStep.
- *
- * Modelled on speedstep.c
- *
- * Copyright (C) 2003 Jeremy Fitzhardinge <jeremy@goop.org>
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -20,7 +7,7 @@
 #include <linux/module.h>
 #include <linux/init.h>
 #include <linux/cpufreq.h>
-#include <linux/sched.h>	/* current */
+#include <linux/sched.h>	 
 #include <linux/delay.h>
 #include <linux/compiler.h>
 #include <linux/gfp.h>
@@ -36,9 +23,9 @@
 
 struct cpu_id
 {
-	__u8	x86;            /* CPU family */
-	__u8	x86_model;	/* model */
-	__u8	x86_stepping;	/* stepping */
+	__u8	x86;             
+	__u8	x86_model;	 
+	__u8	x86_stepping;	 
 };
 
 enum {
@@ -64,14 +51,14 @@ struct cpu_model
 {
 	const struct cpu_id *cpu_id;
 	const char	*model_name;
-	unsigned	max_freq; /* max clock in kHz */
+	unsigned	max_freq;  
 
-	struct cpufreq_frequency_table *op_points; /* clock/voltage pairs */
+	struct cpufreq_frequency_table *op_points;  
 };
 static int centrino_verify_cpu_id(const struct cpuinfo_x86 *c,
 				  const struct cpu_id *x);
 
-/* Operating points for current CPU */
+ 
 static DEFINE_PER_CPU(struct cpu_model *, centrino_model);
 static DEFINE_PER_CPU(const struct cpu_id *, centrino_cpu);
 
@@ -79,23 +66,16 @@ static struct cpufreq_driver centrino_driver;
 
 #ifdef CONFIG_X86_SPEEDSTEP_CENTRINO_TABLE
 
-/* Computes the correct form for IA32_PERF_CTL MSR for a particular
-   frequency/voltage operating point; frequency in MHz, volts in mV.
-   This is stored as "driver_data" in the structure. */
+ 
 #define OP(mhz, mv)							\
 	{								\
 		.frequency = (mhz) * 1000,				\
 		.driver_data = (((mhz)/100) << 8) | ((mv - 700) / 16)		\
 	}
 
-/*
- * These voltage tables were derived from the Intel Pentium M
- * datasheet, document 25261202.pdf, Table 5.  I have verified they
- * are consistent with my IBM ThinkPad X31, which has a 1.3GHz Pentium
- * M.
- */
+ 
 
-/* Ultra Low Voltage Intel Pentium M processor 900MHz (Banias) */
+ 
 static struct cpufreq_frequency_table banias_900[] =
 {
 	OP(600,  844),
@@ -104,7 +84,7 @@ static struct cpufreq_frequency_table banias_900[] =
 	{ .frequency = CPUFREQ_TABLE_END }
 };
 
-/* Ultra Low Voltage Intel Pentium M processor 1000MHz (Banias) */
+ 
 static struct cpufreq_frequency_table banias_1000[] =
 {
 	OP(600,   844),
@@ -114,7 +94,7 @@ static struct cpufreq_frequency_table banias_1000[] =
 	{ .frequency = CPUFREQ_TABLE_END }
 };
 
-/* Low Voltage Intel Pentium M processor 1.10GHz (Banias) */
+ 
 static struct cpufreq_frequency_table banias_1100[] =
 {
 	OP( 600,  956),
@@ -126,7 +106,7 @@ static struct cpufreq_frequency_table banias_1100[] =
 };
 
 
-/* Low Voltage Intel Pentium M processor 1.20GHz (Banias) */
+ 
 static struct cpufreq_frequency_table banias_1200[] =
 {
 	OP( 600,  956),
@@ -138,7 +118,7 @@ static struct cpufreq_frequency_table banias_1200[] =
 	{ .frequency = CPUFREQ_TABLE_END }
 };
 
-/* Intel Pentium M processor 1.30GHz (Banias) */
+ 
 static struct cpufreq_frequency_table banias_1300[] =
 {
 	OP( 600,  956),
@@ -149,7 +129,7 @@ static struct cpufreq_frequency_table banias_1300[] =
 	{ .frequency = CPUFREQ_TABLE_END }
 };
 
-/* Intel Pentium M processor 1.40GHz (Banias) */
+ 
 static struct cpufreq_frequency_table banias_1400[] =
 {
 	OP( 600,  956),
@@ -160,7 +140,7 @@ static struct cpufreq_frequency_table banias_1400[] =
 	{ .frequency = CPUFREQ_TABLE_END }
 };
 
-/* Intel Pentium M processor 1.50GHz (Banias) */
+ 
 static struct cpufreq_frequency_table banias_1500[] =
 {
 	OP( 600,  956),
@@ -172,7 +152,7 @@ static struct cpufreq_frequency_table banias_1500[] =
 	{ .frequency = CPUFREQ_TABLE_END }
 };
 
-/* Intel Pentium M processor 1.60GHz (Banias) */
+ 
 static struct cpufreq_frequency_table banias_1600[] =
 {
 	OP( 600,  956),
@@ -184,7 +164,7 @@ static struct cpufreq_frequency_table banias_1600[] =
 	{ .frequency = CPUFREQ_TABLE_END }
 };
 
-/* Intel Pentium M processor 1.70GHz (Banias) */
+ 
 static struct cpufreq_frequency_table banias_1700[] =
 {
 	OP( 600,  956),
@@ -205,8 +185,7 @@ static struct cpufreq_frequency_table banias_1700[] =
 }
 #define BANIAS(max)	_BANIAS(&cpu_ids[CPU_BANIAS], max, #max)
 
-/* CPU models, their operating frequency range, and freq/voltage
-   operating points */
+ 
 static struct cpu_model models[] =
 {
 	_BANIAS(&cpu_ids[CPU_BANIAS], 900, " 900"),
@@ -219,7 +198,7 @@ static struct cpu_model models[] =
 	BANIAS(1600),
 	BANIAS(1700),
 
-	/* NULL model_name is a wildcard */
+	 
 	{ &cpu_ids[CPU_DOTHAN_A1], NULL, 0, NULL },
 	{ &cpu_ids[CPU_DOTHAN_A2], NULL, 0, NULL },
 	{ &cpu_ids[CPU_DOTHAN_B0], NULL, 0, NULL },
@@ -243,7 +222,7 @@ static int centrino_cpu_init_table(struct cpufreq_policy *policy)
 			break;
 
 	if (model->cpu_id == NULL) {
-		/* No match at all */
+		 
 		pr_debug("no support for CPU model \"%s\": "
 		       "send /proc/cpuinfo to " MAINTAINER "\n",
 		       cpu->x86_model_id);
@@ -251,7 +230,7 @@ static int centrino_cpu_init_table(struct cpufreq_policy *policy)
 	}
 
 	if (model->op_points == NULL) {
-		/* Matched a non-match */
+		 
 		pr_debug("no table support for CPU model \"%s\"\n",
 		       cpu->x86_model_id);
 		pr_debug("try using the acpi-cpufreq driver\n");
@@ -271,7 +250,7 @@ static inline int centrino_cpu_init_table(struct cpufreq_policy *policy)
 {
 	return -ENODEV;
 }
-#endif /* CONFIG_X86_SPEEDSTEP_CENTRINO_TABLE */
+#endif  
 
 static int centrino_verify_cpu_id(const struct cpuinfo_x86 *c,
 				  const struct cpu_id *x)
@@ -283,16 +262,12 @@ static int centrino_verify_cpu_id(const struct cpuinfo_x86 *c,
 	return 0;
 }
 
-/* To be called only after centrino_model is initialized */
+ 
 static unsigned extract_clock(unsigned msr, unsigned int cpu, int failsafe)
 {
 	int i;
 
-	/*
-	 * Extract clock in kHz from PERF_CTL value
-	 * for centrino, as some DSDTs are buggy.
-	 * Ideally, this can be done using the acpi_data structure.
-	 */
+	 
 	if ((per_cpu(centrino_cpu, cpu) == &cpu_ids[CPU_BANIAS]) ||
 	    (per_cpu(centrino_cpu, cpu) == &cpu_ids[CPU_DOTHAN_A1]) ||
 	    (per_cpu(centrino_cpu, cpu) == &cpu_ids[CPU_DOTHAN_B0])) {
@@ -319,7 +294,7 @@ static unsigned extract_clock(unsigned msr, unsigned int cpu, int failsafe)
 		return 0;
 }
 
-/* Return the current CPU frequency in kHz */
+ 
 static unsigned int get_cur_freq(unsigned int cpu)
 {
 	unsigned l, h;
@@ -329,12 +304,7 @@ static unsigned int get_cur_freq(unsigned int cpu)
 	clock_freq = extract_clock(l, cpu, 0);
 
 	if (unlikely(clock_freq == 0)) {
-		/*
-		 * On some CPUs, we can see transient MSR values (which are
-		 * not present in _PSS), while CPU is doing some automatic
-		 * P-state transition (like TM2). Get the last freq set 
-		 * in PERF_CTL.
-		 */
+		 
 		rdmsr_on_cpu(cpu, MSR_IA32_PERF_CTL, &l, &h);
 		clock_freq = extract_clock(l, cpu, 1);
 	}
@@ -348,7 +318,7 @@ static int centrino_cpu_init(struct cpufreq_policy *policy)
 	unsigned l, h;
 	int i;
 
-	/* Only Intel makes Enhanced Speedstep-capable CPUs */
+	 
 	if (cpu->x86_vendor != X86_VENDOR_INTEL ||
 	    !cpu_has(cpu, X86_FEATURE_EST))
 		return -ENODEV;
@@ -376,8 +346,7 @@ static int centrino_cpu_init(struct cpufreq_policy *policy)
 	if (centrino_cpu_init_table(policy))
 		return -ENODEV;
 
-	/* Check to see if Enhanced SpeedStep is enabled, and try to
-	   enable it if not. */
+	 
 	rdmsr(MSR_IA32_MISC_ENABLE, l, h);
 
 	if (!(l & MSR_IA32_MISC_ENABLE_ENHANCED_SPEEDSTEP)) {
@@ -385,7 +354,7 @@ static int centrino_cpu_init(struct cpufreq_policy *policy)
 		pr_debug("trying to enable Enhanced SpeedStep (%x)\n", l);
 		wrmsr(MSR_IA32_MISC_ENABLE, l, h);
 
-		/* check to see if it stuck */
+		 
 		rdmsr(MSR_IA32_MISC_ENABLE, l, h);
 		if (!(l & MSR_IA32_MISC_ENABLE_ENHANCED_SPEEDSTEP)) {
 			pr_info("couldn't enable Enhanced SpeedStep\n");
@@ -394,7 +363,7 @@ static int centrino_cpu_init(struct cpufreq_policy *policy)
 	}
 
 	policy->cpuinfo.transition_latency = 10000;
-						/* 10uS transition latency */
+						 
 	policy->freq_table = per_cpu(centrino_model, policy->cpu)->op_points;
 
 	return 0;
@@ -412,13 +381,7 @@ static int centrino_cpu_exit(struct cpufreq_policy *policy)
 	return 0;
 }
 
-/**
- * centrino_target - set a new CPUFreq policy
- * @policy: new policy
- * @index: index of target frequency
- *
- * Sets a new CPUFreq policy.
- */
+ 
 static int centrino_target(struct cpufreq_policy *policy, unsigned int index)
 {
 	unsigned int	msr, oldmsr = 0, h = 0, cpu = policy->cpu;
@@ -440,10 +403,7 @@ static int centrino_target(struct cpufreq_policy *policy, unsigned int index)
 	for_each_cpu(j, policy->cpus) {
 		int good_cpu;
 
-		/*
-		 * Support for SMP systems.
-		 * Make sure we are running on CPU that wants to change freq
-		 */
+		 
 		if (policy->shared_type == CPUFREQ_SHARED_TYPE_ANY)
 			good_cpu = cpumask_any_and(policy->cpus,
 						   cpu_online_mask);
@@ -454,7 +414,7 @@ static int centrino_target(struct cpufreq_policy *policy, unsigned int index)
 			pr_debug("couldn't limit to CPUs in this domain\n");
 			retval = -EAGAIN;
 			if (first_cpu) {
-				/* We haven't started the transition yet. */
+				 
 				goto out;
 			}
 			break;
@@ -472,7 +432,7 @@ static int centrino_target(struct cpufreq_policy *policy, unsigned int index)
 			}
 
 			first_cpu = 0;
-			/* all but 16 LSB are reserved, treat them with care */
+			 
 			oldmsr &= ~0xffff;
 			msr &= 0xffff;
 			oldmsr |= msr;
@@ -486,12 +446,7 @@ static int centrino_target(struct cpufreq_policy *policy, unsigned int index)
 	}
 
 	if (unlikely(retval)) {
-		/*
-		 * We have failed halfway through the frequency change.
-		 * We have sent callbacks to policy->cpus and
-		 * MSRs have already been written on coverd_cpus.
-		 * Best effort undo..
-		 */
+		 
 
 		for_each_cpu(j, covered_cpus)
 			wrmsr_on_cpu(j, MSR_IA32_PERF_CTL, oldmsr, h);
@@ -504,8 +459,7 @@ out:
 }
 
 static struct cpufreq_driver centrino_driver = {
-	.name		= "centrino", /* should be speedstep-centrino,
-					 but there's a 16 char limit */
+	.name		= "centrino",  
 	.init		= centrino_cpu_init,
 	.exit		= centrino_cpu_exit,
 	.verify		= cpufreq_generic_frequency_table_verify,
@@ -514,11 +468,7 @@ static struct cpufreq_driver centrino_driver = {
 	.attr		= cpufreq_generic_attr,
 };
 
-/*
- * This doesn't replace the detailed checks above because
- * the generic CPU IDs don't have a way to match for steppings
- * or ASCII model IDs.
- */
+ 
 static const struct x86_cpu_id centrino_ids[] = {
 	X86_MATCH_VENDOR_FAM_MODEL_FEATURE(INTEL,  6,  9, X86_FEATURE_EST, NULL),
 	X86_MATCH_VENDOR_FAM_MODEL_FEATURE(INTEL,  6, 13, X86_FEATURE_EST, NULL),
@@ -527,20 +477,7 @@ static const struct x86_cpu_id centrino_ids[] = {
 	{}
 };
 
-/**
- * centrino_init - initializes the Enhanced SpeedStep CPUFreq driver
- *
- * Initializes the Enhanced SpeedStep support. Returns -ENODEV on
- * unsupported devices, -ENOENT if there's no voltage table for this
- * particular CPU model, -EINVAL on problems during initiatization,
- * and zero on success.
- *
- * This is quite picky.  Not only does the CPU have to advertise the
- * "est" flag in the cpuid capability flags, we look for a specific
- * CPU model and stepping, and we need to have the exact model name in
- * our voltage tables.  That is, be paranoid about not releasing
- * someone's valuable magic smoke.
- */
+ 
 static int __init centrino_init(void)
 {
 	if (!x86_match_cpu(centrino_ids))

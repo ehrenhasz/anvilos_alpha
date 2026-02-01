@@ -1,34 +1,4 @@
-/* Replacement <selinux/selinux.h> for platforms that lack it.
-   Copyright (C) 2008-2023 Free Software Foundation, Inc.
-
-   This file is free software: you can redistribute it and/or modify
-   it under the terms of the GNU Lesser General Public License as
-   published by the Free Software Foundation; either version 2.1 of the
-   License, or (at your option) any later version.
-
-   This file is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU Lesser General Public License for more details.
-
-   You should have received a copy of the GNU Lesser General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-#if __GNUC__ >= 3
-@PRAGMA_SYSTEM_HEADER@
-#endif
-@PRAGMA_COLUMNS@
-
-#if @HAVE_SELINUX_SELINUX_H@
-
-#@INCLUDE_NEXT@ @NEXT_SELINUX_SELINUX_H@
-
-#else
-# if !defined _@GUARD_PREFIX@_SELINUX_SELINUX_H
-#  define _@GUARD_PREFIX@_SELINUX_SELINUX_H
-
-/* This file uses _GL_INLINE_HEADER_BEGIN, _GL_INLINE,
-   _GL_ATTRIBUTE_MAYBE_UNUSED.  */
+ 
 #  if !_GL_CONFIG_H_INCLUDED
 #   error "Please include config.h first."
 #  endif
@@ -41,11 +11,9 @@ _GL_INLINE_HEADER_BEGIN
 #   define SE_SELINUX_INLINE _GL_INLINE
 #  endif
 
-/* _GL_ATTRIBUTE_MAYBE_UNUSED declares that it is not a programming mistake if
-   the entity is not used.  The compiler should not warn if the entity is not
-   used.  */
+ 
 #  ifndef _GL_ATTRIBUTE_MAYBE_UNUSED
-#   if 0 /* no GCC or clang version supports this yet */
+#   if 0  
 #    define _GL_ATTRIBUTE_MAYBE_UNUSED [[__maybe_unused__]]
 #   elif defined __GNUC__ || defined __clang__
 #    define _GL_ATTRIBUTE_MAYBE_UNUSED __attribute__ ((__unused__))
@@ -129,5 +97,5 @@ matchpathcon_init_prefix (_GL_ATTRIBUTE_MAYBE_UNUSED char const *path,
 
 _GL_INLINE_HEADER_END
 
-# endif /* _@GUARD_PREFIX@_SELINUX_SELINUX_H */
+# endif  
 #endif

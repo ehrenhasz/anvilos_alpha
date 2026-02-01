@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Microchip Image Sensor Controller (ISC) common clock driver setup
- *
- * Copyright (C) 2016 Microchip Technology, Inc.
- *
- * Author: Songjun Wu
- * Author: Eugen Hristev <eugen.hristev@microchip.com>
- *
- */
+
+ 
 #include <linux/clk.h>
 #include <linux/clkdev.h>
 #include <linux/clk-provider.h>

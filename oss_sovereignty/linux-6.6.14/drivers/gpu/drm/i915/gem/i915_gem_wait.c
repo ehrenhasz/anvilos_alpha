@@ -1,8 +1,4 @@
-/*
- * SPDX-License-Identifier: MIT
- *
- * Copyright © 2016 Intel Corporation
- */
+ 
 
 #include <linux/dma-fence-array.h>
 #include <linux/dma-fence-chain.h>
@@ -38,21 +34,7 @@ i915_gem_object_boost(struct dma_resv *resv, unsigned int flags)
 	struct dma_resv_iter cursor;
 	struct dma_fence *fence;
 
-	/*
-	 * Prescan all fences for potential boosting before we begin waiting.
-	 *
-	 * When we wait, we wait on outstanding fences serially. If the
-	 * dma-resv contains a sequence such as 1:1, 1:2 instead of a reduced
-	 * form 1:2, then as we look at each wait in turn we see that each
-	 * request is currently executing and not worthy of boosting. But if
-	 * we only happen to look at the final fence in the sequence (because
-	 * of request coalescing or splitting between read/write arrays by
-	 * the iterator), then we would boost. As such our decision to boost
-	 * or not is delicately balanced on the order we wait on fences.
-	 *
-	 * So instead of looking for boosts sequentially, look for all boosts
-	 * upfront and then wait on the outstanding fences.
-	 */
+	 
 
 	dma_resv_iter_begin(&cursor, resv,
 			    dma_resv_usage_rw(flags & I915_WAIT_ALL));
@@ -101,7 +83,7 @@ static void fence_set_priority(struct dma_fence *fence,
 	rq = to_request(fence);
 	engine = rq->engine;
 
-	rcu_read_lock(); /* RCU serialisation for set-wedged protection */
+	rcu_read_lock();  
 	if (engine->sched_engine->schedule)
 		engine->sched_engine->schedule(rq, attr);
 	rcu_read_unlock();
@@ -120,7 +102,7 @@ void i915_gem_fence_wait_priority(struct dma_fence *fence,
 
 	local_bh_disable();
 
-	/* Recurse once into a fence-array */
+	 
 	if (dma_fence_is_array(fence)) {
 		struct dma_fence_array *array = to_dma_fence_array(fence);
 		int i;
@@ -130,7 +112,7 @@ void i915_gem_fence_wait_priority(struct dma_fence *fence,
 	} else if (__dma_fence_is_chain(fence)) {
 		struct dma_fence *iter;
 
-		/* The chain is ordered; if we boost the last, we boost all */
+		 
 		dma_fence_chain_for_each(iter, fence) {
 			fence_set_priority(to_dma_fence_chain(iter)->fence,
 					   attr);
@@ -141,7 +123,7 @@ void i915_gem_fence_wait_priority(struct dma_fence *fence,
 		fence_set_priority(fence, attr);
 	}
 
-	local_bh_enable(); /* kick the tasklets if queues were reprioritised */
+	local_bh_enable();  
 }
 
 int
@@ -160,12 +142,7 @@ i915_gem_object_wait_priority(struct drm_i915_gem_object *obj,
 	return 0;
 }
 
-/**
- * i915_gem_object_wait - Waits for rendering to the object to be completed
- * @obj: i915 gem object
- * @flags: how to wait (under a lock, for all rendering or just for writes etc)
- * @timeout: how long to wait
- */
+ 
 int
 i915_gem_object_wait(struct drm_i915_gem_object *obj,
 		     unsigned int flags,
@@ -185,7 +162,7 @@ i915_gem_object_wait(struct drm_i915_gem_object *obj,
 
 static inline unsigned long nsecs_to_jiffies_timeout(const u64 n)
 {
-	/* nsecs_to_jiffies64() does not guard against overflow */
+	 
 	if ((NSEC_PER_SEC % HZ) != 0 &&
 	    div_u64(n, NSEC_PER_SEC) >= MAX_JIFFY_OFFSET / HZ)
 		return MAX_JIFFY_OFFSET;
@@ -204,30 +181,7 @@ static unsigned long to_wait_timeout(s64 timeout_ns)
 	return nsecs_to_jiffies_timeout(timeout_ns);
 }
 
-/**
- * i915_gem_wait_ioctl - implements DRM_IOCTL_I915_GEM_WAIT
- * @dev: drm device pointer
- * @data: ioctl data blob
- * @file: drm file pointer
- *
- * Returns 0 if successful, else an error is returned with the remaining time in
- * the timeout parameter.
- *  -ETIME: object is still busy after timeout
- *  -ERESTARTSYS: signal interrupted the wait
- *  -ENONENT: object doesn't exist
- * Also possible, but rare:
- *  -EAGAIN: incomplete, restart syscall
- *  -ENOMEM: damn
- *  -ENODEV: Internal IRQ fail
- *  -E?: The add request failed
- *
- * The wait ioctl with a timeout of 0 reimplements the busy ioctl. With any
- * non-zero timeout parameter the wait ioctl will wait for the given number of
- * nanoseconds on an object becoming unbusy. Since the wait itself does so
- * without holding struct_mutex the object may become re-busied before this
- * function completes. A similar but shorter * race condition exists in the busy
- * ioctl
- */
+ 
 int
 i915_gem_wait_ioctl(struct drm_device *dev, void *data, struct drm_file *file)
 {
@@ -256,17 +210,11 @@ i915_gem_wait_ioctl(struct drm_device *dev, void *data, struct drm_file *file)
 		if (args->timeout_ns < 0)
 			args->timeout_ns = 0;
 
-		/*
-		 * Apparently ktime isn't accurate enough and occasionally has a
-		 * bit of mismatch in the jiffies<->nsecs<->ktime loop. So patch
-		 * things up to make the test happy. We allow up to 1 jiffy.
-		 *
-		 * This is a regression from the timespec->ktime conversion.
-		 */
+		 
 		if (ret == -ETIME && !nsecs_to_jiffies(args->timeout_ns))
 			args->timeout_ns = 0;
 
-		/* Asked to wait beyond the jiffie/scheduler precision? */
+		 
 		if (ret == -ETIME && args->timeout_ns)
 			ret = -EAGAIN;
 	}
@@ -275,17 +223,7 @@ i915_gem_wait_ioctl(struct drm_device *dev, void *data, struct drm_file *file)
 	return ret;
 }
 
-/**
- * i915_gem_object_wait_migration - Sync an accelerated migration operation
- * @obj: The migrating object.
- * @flags: waiting flags. Currently supports only I915_WAIT_INTERRUPTIBLE.
- *
- * Wait for any pending async migration operation on the object,
- * whether it's explicitly (i915_gem_object_migrate()) or implicitly
- * (swapin, initial clearing) initiated.
- *
- * Return: 0 if successful, -ERESTARTSYS if a signal was hit during waiting.
- */
+ 
 int i915_gem_object_wait_migration(struct drm_i915_gem_object *obj,
 				   unsigned int flags)
 {

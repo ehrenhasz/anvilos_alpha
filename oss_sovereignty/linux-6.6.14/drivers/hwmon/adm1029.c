@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * adm1029.c - Part of lm_sensors, Linux kernel modules for hardware monitoring
- *
- * Copyright (C) 2006 Corentin LABBE <clabbe.montjoie@gmail.com>
- *
- * Based on LM83 Driver by Jean Delvare <jdelvare@suse.de>
- *
- * Give only processor, motherboard temperatures and fan tachs
- * Very rare chip please let me know if you use it
- *
- * http://www.analog.com/UploadedFiles/Data_Sheets/ADM1029.pdf
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -22,18 +11,13 @@
 #include <linux/err.h>
 #include <linux/mutex.h>
 
-/*
- * Addresses to scan
- */
+ 
 
 static const unsigned short normal_i2c[] = { 0x28, 0x29, 0x2a, 0x2b, 0x2c, 0x2d,
 						0x2e, 0x2f, I2C_CLIENT_END
 };
 
-/*
- * The ADM1029 registers
- * Manufacturer ID is 0x41 for Analog Devices
- */
+ 
 
 #define ADM1029_REG_MAN_ID			0x0D
 #define ADM1029_REG_CHIP_ID			0x0E
@@ -67,7 +51,7 @@ static const unsigned short normal_i2c[] = { 0x28, 0x29, 0x2a, 0x2b, 0x2c, 0x2d,
 
 #define DIV_FROM_REG(val)	(1 << (((val) >> 6) - 1))
 
-/* Registers to be checked by adm1029_update_device() */
+ 
 static const u8 ADM1029_REG_TEMP[] = {
 	ADM1029_REG_LOCAL_TEMP,
 	ADM1029_REG_REMOTE1_TEMP,
@@ -92,35 +76,28 @@ static const u8 ADM1029_REG_FAN_DIV[] = {
 	ADM1029_REG_FAN2_CONFIG,
 };
 
-/*
- * Client data (each client gets its own)
- */
+ 
 
 struct adm1029_data {
 	struct i2c_client *client;
-	struct mutex update_lock; /* protect register access */
-	bool valid;		/* false until following fields are valid */
-	unsigned long last_updated;	/* in jiffies */
+	struct mutex update_lock;  
+	bool valid;		 
+	unsigned long last_updated;	 
 
-	/* registers values, signed for temperature, unsigned for other stuff */
+	 
 	s8 temp[ARRAY_SIZE(ADM1029_REG_TEMP)];
 	u8 fan[ARRAY_SIZE(ADM1029_REG_FAN)];
 	u8 fan_div[ARRAY_SIZE(ADM1029_REG_FAN_DIV)];
 };
 
-/*
- * function that update the status of the chips (temperature for example)
- */
+ 
 static struct adm1029_data *adm1029_update_device(struct device *dev)
 {
 	struct adm1029_data *data = dev_get_drvdata(dev);
 	struct i2c_client *client = data->client;
 
 	mutex_lock(&data->update_lock);
-	/*
-	 * Use the "cache" Luke, don't recheck values
-	 * if there are already checked not a long time later
-	 */
+	 
 	if (time_after(jiffies, data->last_updated + HZ * 2) || !data->valid) {
 		int nr;
 
@@ -151,9 +128,7 @@ static struct adm1029_data *adm1029_update_device(struct device *dev)
 	return data;
 }
 
-/*
- * Sysfs stuff
- */
+ 
 
 static ssize_t
 temp_show(struct device *dev, struct device_attribute *devattr, char *buf)
@@ -209,7 +184,7 @@ static ssize_t fan_div_store(struct device *dev,
 
 	mutex_lock(&data->update_lock);
 
-	/*Read actual config */
+	 
 	reg = i2c_smbus_read_byte_data(client,
 				       ADM1029_REG_FAN_DIV[attr->index]);
 
@@ -230,13 +205,13 @@ static ssize_t fan_div_store(struct device *dev,
 			val);
 		return -EINVAL;
 	}
-	/* Update the value */
+	 
 	reg = (reg & 0x3F) | (val << 6);
 
-	/* Update the cache */
+	 
 	data->fan_div[attr->index] = reg;
 
-	/* Write value */
+	 
 	i2c_smbus_write_byte_data(client,
 				  ADM1029_REG_FAN_DIV[attr->index], reg);
 	mutex_unlock(&data->update_lock);
@@ -244,7 +219,7 @@ static ssize_t fan_div_store(struct device *dev,
 	return count;
 }
 
-/* Access rights on sysfs. */
+ 
 static SENSOR_DEVICE_ATTR_RO(temp1_input, temp, 0);
 static SENSOR_DEVICE_ATTR_RO(temp2_input, temp, 1);
 static SENSOR_DEVICE_ATTR_RO(temp3_input, temp, 2);
@@ -287,11 +262,9 @@ static struct attribute *adm1029_attrs[] = {
 
 ATTRIBUTE_GROUPS(adm1029);
 
-/*
- * Real code
- */
+ 
 
-/* Return 0 if detection is successful, -ENODEV otherwise */
+ 
 static int adm1029_detect(struct i2c_client *client,
 			  struct i2c_board_info *info)
 {
@@ -301,12 +274,7 @@ static int adm1029_detect(struct i2c_client *client,
 	if (!i2c_check_functionality(adapter, I2C_FUNC_SMBUS_BYTE_DATA))
 		return -ENODEV;
 
-	/*
-	 * ADM1029 doesn't have CHIP ID, check just MAN ID
-	 * For better detection we check also ADM1029_TEMP_DEVICES_INSTALLED,
-	 * ADM1029_REG_NB_FAN_SUPPORT and compare it with possible values
-	 * documented
-	 */
+	 
 
 	man_id = i2c_smbus_read_byte_data(client, ADM1029_REG_MAN_ID);
 	chip_id = i2c_smbus_read_byte_data(client, ADM1029_REG_CHIP_ID);
@@ -314,16 +282,13 @@ static int adm1029_detect(struct i2c_client *client,
 					ADM1029_REG_TEMP_DEVICES_INSTALLED);
 	nb_fan_support = i2c_smbus_read_byte_data(client,
 						  ADM1029_REG_NB_FAN_SUPPORT);
-	/* 0x41 is Analog Devices */
+	 
 	if (man_id != 0x41 || (temp_devices_installed & 0xf9) != 0x01 ||
 	    nb_fan_support != 0x03)
 		return -ENODEV;
 
 	if ((chip_id & 0xF0) != 0x00) {
-		/*
-		 * There are no "official" CHIP ID, so actually
-		 * we use Major/Minor revision for that
-		 */
+		 
 		pr_info("Unknown major revision %x, please let us know\n",
 			chip_id);
 		return -ENODEV;
@@ -343,7 +308,7 @@ static int adm1029_init_client(struct i2c_client *client)
 		i2c_smbus_write_byte_data(client, ADM1029_REG_CONFIG,
 					  config | 0x10);
 	}
-	/* recheck config */
+	 
 	config = i2c_smbus_read_byte_data(client, ADM1029_REG_CONFIG);
 	if ((config & 0x10) == 0) {
 		dev_err(&client->dev, "Initialization failed!\n");
@@ -365,10 +330,7 @@ static int adm1029_probe(struct i2c_client *client)
 	data->client = client;
 	mutex_init(&data->update_lock);
 
-	/*
-	 * Initialize the ADM1029 chip
-	 * Check config register
-	 */
+	 
 	if (adm1029_init_client(client) == 0)
 		return -ENODEV;
 

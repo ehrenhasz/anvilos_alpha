@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
-	Mantis VP-3030 driver
 
-	Copyright (C) Manu Abraham (abraham.manu@gmail.com)
-
-*/
+ 
 
 #include <linux/signal.h>
 #include <linux/sched.h>
@@ -33,8 +28,8 @@ static struct tda665x_config env57h12d5_config = {
 	.frequency_min		=  47 * MHz,
 	.frequency_max		= 862 * MHz,
 	.frequency_offst	=   3616667,
-	.ref_multiplier		= 6, /* 1/6 MHz */
-	.ref_divider		= 100000, /* 1/6 MHz */
+	.ref_multiplier		= 6,  
+	.ref_divider		= 100000,  
 };
 
 #define MANTIS_MODEL_NAME	"VP-3030"

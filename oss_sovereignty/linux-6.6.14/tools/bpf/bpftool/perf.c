@@ -1,6 +1,6 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-// Copyright (C) 2018 Facebook
-// Author: Yonghong Song <yhs@fb.com>
+
+
+
 
 #ifndef _GNU_SOURCE
 #define _GNU_SOURCE
@@ -19,7 +19,7 @@
 
 #include "main.h"
 
-/* 0: undecided, 1: supported, 2: not supported */
+ 
 static int perf_query_supported;
 static bool has_perf_query_support(void)
 {
@@ -38,15 +38,13 @@ static bool has_perf_query_support(void)
 		goto out;
 	}
 
-	/* the following query will fail as no bpf attachment,
-	 * the expected errno is ENOTSUPP
-	 */
+	 
 	errno = 0;
 	len = sizeof(buf);
 	bpf_task_fd_query(getpid(), fd, 0, buf, &len, &prog_id,
 			  &fd_type, &probe_offset, &probe_addr);
 
-	if (errno == 524 /* ENOTSUPP */) {
+	if (errno == 524  ) {
 		perf_query_supported = 1;
 		goto close_fd;
 	}
@@ -167,7 +165,7 @@ static int show_proc(void)
 		pid = 0;
 		pch = proc_de->d_name;
 
-		/* pid should be all numbers */
+		 
 		while (isdigit(*pch)) {
 			pid = pid * 10 + *pch - '0';
 			pch++;
@@ -187,7 +185,7 @@ static int show_proc(void)
 			fd = 0;
 			pch = pid_fd_de->d_name;
 
-			/* fd should be all numbers */
+			 
 			while (isdigit(*pch)) {
 				fd = fd * 10 + *pch - '0';
 				pch++;
@@ -195,7 +193,7 @@ static int show_proc(void)
 			if (*pch != '\0')
 				continue;
 
-			/* query (pid, fd) for potential perf events */
+			 
 			len = sizeof(buf);
 			err = bpf_task_fd_query(pid, fd, 0, buf, &len,
 						&prog_id, &fd_type,

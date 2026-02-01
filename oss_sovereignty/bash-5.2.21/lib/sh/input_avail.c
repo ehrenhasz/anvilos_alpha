@@ -1,23 +1,6 @@
-/* input_avail.c -- check whether or not data is available for reading on a
-		    specified file descriptor. */
+ 
 
-/* Copyright (C) 2008,2009-2019 Free Software Foundation, Inc.
-
-   This file is part of GNU Bash, the Bourne Again SHell.
-
-   Bash is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   Bash is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with Bash.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ 
 
 #if defined (__TANDEM)
 #  include <floss.h>
@@ -31,7 +14,7 @@
 #include <fcntl.h>
 #if defined (HAVE_SYS_FILE_H)
 #  include <sys/file.h>
-#endif /* HAVE_SYS_FILE_H */
+#endif  
 
 #if defined (HAVE_PSELECT)
 #  include <signal.h>
@@ -39,7 +22,7 @@
 
 #if defined (HAVE_UNISTD_H)
 #  include <unistd.h>
-#endif /* HAVE_UNISTD_H */
+#endif  
 
 #include "bashansi.h"
 
@@ -54,14 +37,13 @@
 
 #if !defined (errno)
 extern int errno;
-#endif /* !errno */
+#endif  
 
 #if !defined (O_NDELAY) && defined (O_NONBLOCK)
-#  define O_NDELAY O_NONBLOCK	/* Posix style */
+#  define O_NDELAY O_NONBLOCK	 
 #endif
 
-/* Return >= 1 if select/FIONREAD indicates data available for reading on
-   file descriptor FD; 0 if no data available.  Return -1 on error. */
+ 
 int
 input_avail (fd)
      int fd;
@@ -99,8 +81,7 @@ input_avail (fd)
   return 0;
 }
 
-/* Wait until NCHARS are available for reading on file descriptor FD.
-   This can wait indefinitely. Return -1 on error. */
+ 
 int
 nchars_avail (fd, nchars)
      int fd;
@@ -139,7 +120,7 @@ nchars_avail (fd, nchars)
     {
       result = 0;
 #if defined (HAVE_PSELECT)
-      /* XXX - use pselect(2) to block SIGCHLD atomically */
+       
       result = pselect (fd + 1, &readfds, (fd_set *)NULL, &exceptfds, (struct timespec *)NULL, &set);
 #elif defined (HAVE_SELECT)
       sigprocmask (SIG_BLOCK, &set, &oset);

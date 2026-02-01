@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0+
+
 
 #include <linux/io.h>
 #include "ipmi_si.h"
@@ -68,10 +68,7 @@ int ipmi_si_port_setup(struct si_sm_io *io)
 	if (!addr)
 		return -ENODEV;
 
-	/*
-	 * Figure out the actual inb/inw/inl/etc routine to use based
-	 * upon the register size.
-	 */
+	 
 	switch (io->regsize) {
 	case 1:
 		io->inputb = port_inb;
@@ -91,16 +88,11 @@ int ipmi_si_port_setup(struct si_sm_io *io)
 		return -EINVAL;
 	}
 
-	/*
-	 * Some BIOSes reserve disjoint I/O regions in their ACPI
-	 * tables.  This causes problems when trying to register the
-	 * entire I/O region.  Therefore we must register each I/O
-	 * port separately.
-	 */
+	 
 	for (idx = 0; idx < io->io_size; idx++) {
 		if (request_region(addr + idx * io->regspacing,
 				   io->regsize, SI_DEVICE_NAME) == NULL) {
-			/* Undo allocations */
+			 
 			while (idx--)
 				release_region(addr + idx * io->regspacing,
 					       io->regsize);

@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2019 Chelsio Communications, Inc. All rights reserved. */
+
+ 
 
 #include "cxgb4.h"
 
@@ -93,7 +93,7 @@ int cxgb4_free_mac_filt(struct adapter *adap, unsigned int viid,
 		}
 	}
 
-	/* return number of filters freed */
+	 
 	return naddr;
 }
 
@@ -122,7 +122,7 @@ error:
 	cxgb4_free_mac_filt(adap, viid, naddr, addr, sleep_ok);
 
 out:
-	/* Returns a negative error number or the number of filters allocated */
+	 
 	return ret;
 }
 

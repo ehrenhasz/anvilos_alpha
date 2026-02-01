@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  Copyright (c) 2013 Andrew Duggan <aduggan@synaptics.com>
- *  Copyright (c) 2013 Synaptics Incorporated
- *  Copyright (c) 2014 Benjamin Tissoires <benjamin.tissoires@gmail.com>
- *  Copyright (c) 2014 Red Hat, Inc
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/hid.h>
@@ -20,29 +15,24 @@
 #include <linux/rmi.h>
 #include "hid-ids.h"
 
-#define RMI_MOUSE_REPORT_ID		0x01 /* Mouse emulation Report */
-#define RMI_WRITE_REPORT_ID		0x09 /* Output Report */
-#define RMI_READ_ADDR_REPORT_ID		0x0a /* Output Report */
-#define RMI_READ_DATA_REPORT_ID		0x0b /* Input Report */
-#define RMI_ATTN_REPORT_ID		0x0c /* Input Report */
-#define RMI_SET_RMI_MODE_REPORT_ID	0x0f /* Feature Report */
+#define RMI_MOUSE_REPORT_ID		0x01  
+#define RMI_WRITE_REPORT_ID		0x09  
+#define RMI_READ_ADDR_REPORT_ID		0x0a  
+#define RMI_READ_DATA_REPORT_ID		0x0b  
+#define RMI_ATTN_REPORT_ID		0x0c  
+#define RMI_SET_RMI_MODE_REPORT_ID	0x0f  
 
-/* flags */
+ 
 #define RMI_READ_REQUEST_PENDING	0
 #define RMI_READ_DATA_PENDING		1
 #define RMI_STARTED			2
 
-/* device flags */
+ 
 #define RMI_DEVICE			BIT(0)
 #define RMI_DEVICE_HAS_PHYS_BUTTONS	BIT(1)
 #define RMI_DEVICE_OUTPUT_SET_REPORT	BIT(2)
 
-/*
- * retrieve the ctrl registers
- * the ctrl register has a size of 20 but a fw bug split it into 16 + 4,
- * and there is no way to know if the first 20 bytes are here or not.
- * We use only the first 12 bytes, so get only them.
- */
+ 
 #define RMI_F11_CTRL_REG_COUNT		12
 
 enum rmi_mode_type {
@@ -51,31 +41,7 @@ enum rmi_mode_type {
 	RMI_MODE_NO_PACKED_ATTN_REPORTS	= 2,
 };
 
-/**
- * struct rmi_data - stores information for hid communication
- *
- * @page_mutex: Locks current page to avoid changing pages in unexpected ways.
- * @page: Keeps track of the current virtual page
- * @xport: transport device to be registered with the RMI4 core.
- *
- * @wait: Used for waiting for read data
- *
- * @writeReport: output buffer when writing RMI registers
- * @readReport: input buffer when reading RMI registers
- *
- * @input_report_size: size of an input report (advertised by HID)
- * @output_report_size: size of an output report (advertised by HID)
- *
- * @flags: flags for the current device (started, reading, etc...)
- *
- * @reset_work: worker which will be called in case of a mouse report
- * @hdev: pointer to the struct hid_device
- *
- * @device_flags: flags which describe the device
- *
- * @domain: the IRQ domain allocated for this RMI4 device
- * @rmi_irq: the irq that will be used to generate events to rmi-core
- */
+ 
 struct rmi_data {
 	struct mutex page_mutex;
 	int page;
@@ -104,20 +70,7 @@ struct rmi_data {
 
 static int rmi_write_report(struct hid_device *hdev, u8 *report, int len);
 
-/**
- * rmi_set_page - Set RMI page
- * @hdev: The pointer to the hid_device struct
- * @page: The new page address.
- *
- * RMI devices have 16-bit addressing, but some of the physical
- * implementations (like SMBus) only have 8-bit addressing. So RMI implements
- * a page address at 0xff of every page so we can reliable page addresses
- * every 256 registers.
- *
- * The page_mutex lock must be held when this function is entered.
- *
- * Returns zero on success, non-zero on failure.
- */
+ 
 static int rmi_set_page(struct hid_device *hdev, u8 page)
 {
 	struct rmi_data *data = hid_get_drvdata(hdev);
@@ -168,9 +121,7 @@ static int rmi_write_report(struct hid_device *hdev, u8 *report, int len)
 	int ret;
 
 	if (data->device_flags & RMI_DEVICE_OUTPUT_SET_REPORT) {
-		/*
-		 * Talk to device by using SET_REPORT requests instead.
-		 */
+		 
 		ret = hid_hw_raw_request(hdev, report[0], report,
 				len, HID_OUTPUT_REPORT, HID_REQ_SET_REPORT);
 	} else {
@@ -206,7 +157,7 @@ static int rmi_hid_read_block(struct rmi_transport_dev *xport, u16 addr,
 
 	for (retries = 5; retries > 0; retries--) {
 		data->writeReport[0] = RMI_READ_ADDR_REPORT_ID;
-		data->writeReport[1] = 0; /* old 1 byte read count */
+		data->writeReport[1] = 0;  
 		data->writeReport[2] = addr & 0xFF;
 		data->writeReport[3] = (addr >> 8) & 0xFF;
 		data->writeReport[4] = len  & 0xFF;
@@ -313,7 +264,7 @@ static void rmi_reset_work(struct work_struct *work)
 	struct rmi_data *hdata = container_of(work, struct rmi_data,
 						reset_work);
 
-	/* switch the device to RMI if we receive a generic mouse report */
+	 
 	rmi_reset_attn_mode(hdata->hdev);
 }
 
@@ -358,12 +309,7 @@ static int rmi_read_data_event(struct hid_device *hdev, u8 *data, int size)
 static int rmi_check_sanity(struct hid_device *hdev, u8 *data, int size)
 {
 	int valid_size = size;
-	/*
-	 * On the Dell XPS 13 9333, the bus sometimes get confused and fills
-	 * the report with a sentinel value "ff". Synaptics told us that such
-	 * behavior does not comes from the touchpad itself, so we filter out
-	 * such reports here.
-	 */
+	 
 
 	while ((data[valid_size - 1] == 0xff) && valid_size > 0)
 		valid_size--;
@@ -464,7 +410,7 @@ static int rmi_post_resume(struct hid_device *hdev)
 	if (!(data->device_flags & RMI_DEVICE))
 		return 0;
 
-	/* Make sure the HID device is ready to receive events */
+	 
 	ret = hid_hw_open(hdev);
 	if (ret)
 		return ret;
@@ -483,7 +429,7 @@ out:
 	hid_hw_close(hdev);
 	return ret;
 }
-#endif /* CONFIG_PM */
+#endif  
 
 static int rmi_hid_reset(struct rmi_transport_dev *xport, u16 reset_addr)
 {
@@ -509,7 +455,7 @@ static int rmi_input_configured(struct hid_device *hdev, struct hid_input *hi)
 	if (ret)
 		return ret;
 
-	/* Allow incoming hid reports */
+	 
 	hid_device_io_start(hdev);
 
 	ret = rmi_set_mode(hdev, RMI_MODE_ATTN_REPORTS);
@@ -544,10 +490,7 @@ static int rmi_input_mapping(struct hid_device *hdev,
 {
 	struct rmi_data *data = hid_get_drvdata(hdev);
 
-	/*
-	 * we want to make HID ignore the advertised HID collection
-	 * for RMI deivces
-	 */
+	 
 	if (data->device_flags & RMI_DEVICE) {
 		if ((data->device_flags & RMI_DEVICE_HAS_PHYS_BUTTONS) &&
 		    ((usage->hid & HID_USAGE_PAGE) == HID_UP_BUTTON))
@@ -671,10 +614,7 @@ static int rmi_probe(struct hid_device *hdev, const struct hid_device_id *id)
 	if (id->driver_data)
 		data->device_flags = id->driver_data;
 
-	/*
-	 * Check for the RMI specific report ids. If they are misisng
-	 * simply return and let the events be processed by hid-input
-	 */
+	 
 	if (!rmi_check_valid_report_id(hdev, HID_FEATURE_REPORT,
 	    RMI_SET_RMI_MODE_REPORT_ID, &feature_report)) {
 		hid_dbg(hdev, "device does not have set mode feature report\n");

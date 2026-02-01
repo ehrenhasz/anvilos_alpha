@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* -*- linux-c -*-
- * Cypress USB Thermometer driver 
- * 
- * Copyright (c) 2004 Erik Rigtorp <erkki@linux.nu> <erik@rigtorp.com>
- * 
- * This driver works with Elektor magazine USB Interface as published in 
- * issue #291. It should also work with the original starter kit/demo board
- * from Cypress.
- */
+
+ 
 
 
 #include <linux/kernel.h>
@@ -28,25 +20,25 @@ static const struct usb_device_id id_table[] = {
 };
 MODULE_DEVICE_TABLE (usb, id_table);
 
-/* Structure to hold all of our device specific stuff */
+ 
 struct usb_cytherm {
-	struct usb_device    *udev;	 /* save off the usb device pointer */
-	struct usb_interface *interface; /* the interface for this device */
+	struct usb_device    *udev;	  
+	struct usb_interface *interface;  
 	int brightness;
 };
 
 
-/* Vendor requests */
-/* They all operate on one byte at a time */
+ 
+ 
 #define PING       0x00
-#define READ_ROM   0x01 /* Reads form ROM, value = address */
-#define READ_RAM   0x02 /* Reads form RAM, value = address */
-#define WRITE_RAM  0x03 /* Write to RAM, value = address, index = data */
-#define READ_PORT  0x04 /* Reads from port, value = address */
-#define WRITE_PORT 0x05 /* Write to port, value = address, index = data */ 
+#define READ_ROM   0x01  
+#define READ_RAM   0x02  
+#define WRITE_RAM  0x03  
+#define READ_PORT  0x04  
+#define WRITE_PORT 0x05   
 
 
-/* Send a vendor command to device */
+ 
 static int vendor_command(struct usb_device *dev, unsigned char request, 
 			  unsigned char value, unsigned char index,
 			  void *buf, int size)
@@ -61,8 +53,8 @@ static int vendor_command(struct usb_device *dev, unsigned char request,
 
 
 
-#define BRIGHTNESS 0x2c     /* RAM location for brightness value */
-#define BRIGHTNESS_SEM 0x2b /* RAM location for brightness semaphore */
+#define BRIGHTNESS 0x2c      
+#define BRIGHTNESS_SEM 0x2b  
 
 static ssize_t brightness_show(struct device *dev, struct device_attribute *attr, char *buf)
 {
@@ -92,12 +84,12 @@ static ssize_t brightness_store(struct device *dev, struct device_attribute *att
 	else if (cytherm->brightness < 0)
 		cytherm->brightness = 0;
    
-	/* Set brightness */
+	 
 	retval = vendor_command(cytherm->udev, WRITE_RAM, BRIGHTNESS, 
 				cytherm->brightness, buffer, 8);
 	if (retval)
 		dev_dbg(&cytherm->udev->dev, "retval = %d\n", retval);
-	/* Inform µC that we have changed the brightness setting */
+	 
 	retval = vendor_command(cytherm->udev, WRITE_RAM, BRIGHTNESS_SEM,
 				0x01, buffer, 8);
 	if (retval)
@@ -110,8 +102,8 @@ static ssize_t brightness_store(struct device *dev, struct device_attribute *att
 static DEVICE_ATTR_RW(brightness);
 
 
-#define TEMP 0x33 /* RAM location for temperature */
-#define SIGN 0x34 /* RAM location for temperature sign */
+#define TEMP 0x33  
+#define SIGN 0x34  
 
 static ssize_t temp_show(struct device *dev, struct device_attribute *attr, char *buf)
 {
@@ -128,13 +120,13 @@ static ssize_t temp_show(struct device *dev, struct device_attribute *attr, char
 	if (!buffer)
 		return 0;
 
-	/* read temperature */
+	 
 	retval = vendor_command(cytherm->udev, READ_RAM, TEMP, 0, buffer, 8);
 	if (retval)
 		dev_dbg(&cytherm->udev->dev, "retval = %d\n", retval);
 	temp = buffer[1];
    
-	/* read sign */
+	 
 	retval = vendor_command(cytherm->udev, READ_RAM, SIGN, 0, buffer, 8);
 	if (retval)
 		dev_dbg(&cytherm->udev->dev, "retval = %d\n", retval);
@@ -163,7 +155,7 @@ static ssize_t button_show(struct device *dev, struct device_attribute *attr, ch
 	if (!buffer)
 		return 0;
 
-	/* check button */
+	 
 	retval = vendor_command(cytherm->udev, READ_RAM, BUTTON, 0, buffer, 8);
 	if (retval)
 		dev_dbg(&cytherm->udev->dev, "retval = %d\n", retval);
@@ -331,7 +323,7 @@ static void cytherm_disconnect(struct usb_interface *interface)
 
 	dev = usb_get_intfdata(interface);
 
-	/* first remove the files, then NULL the pointer */
+	 
 	usb_set_intfdata(interface, NULL);
 
 	usb_put_dev(dev->udev);
@@ -341,7 +333,7 @@ static void cytherm_disconnect(struct usb_interface *interface)
 	dev_info(&interface->dev, "Cypress thermometer now disconnected\n");
 }
 
-/* usb specific object needed to register this driver with the usb subsystem */
+ 
 static struct usb_driver cytherm_driver = {
 	.name =		"cytherm",
 	.probe =	cytherm_probe,

@@ -1,15 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0
- * Copyright (c) 2018 Facebook
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of version 2 of the GNU General Public
- * License as published by the Free Software Foundation.
- *
- * This program shows how to use bpf_xdp_adjust_tail() by
- * generating ICMPv4 "packet to big" (unreachable/ df bit set frag needed
- * to be more preice in case of v4)" where receiving packets bigger then
- * 600 bytes.
- */
+ 
 #define KBUILD_MODNAME "foo"
 #include <uapi/linux/bpf.h>
 #include <linux/in.h>
@@ -25,7 +14,7 @@
 #define ICMP_TOOBIG_SIZE 98
 #define ICMP_TOOBIG_PAYLOAD_SIZE 92
 
-/* volatile to prevent compiler optimizations */
+ 
 static volatile __u32 max_pcktsz = MAX_PCKT_SIZE;
 
 struct {

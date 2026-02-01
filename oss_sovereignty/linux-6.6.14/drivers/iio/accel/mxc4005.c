@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * 3-axis accelerometer driver for MXC4005XC Memsic sensor
- *
- * Copyright (c) 2014, Intel Corporation.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/i2c.h>
@@ -56,7 +52,7 @@ struct mxc4005_data {
 	struct mutex mutex;
 	struct regmap *regmap;
 	struct iio_trigger *dready_trig;
-	/* Ensure timestamp is naturally aligned */
+	 
 	struct {
 		__be16 chans[3];
 		s64 timestamp __aligned(8);
@@ -64,14 +60,7 @@ struct mxc4005_data {
 	bool trigger_enabled;
 };
 
-/*
- * MXC4005 can operate in the following ranges:
- * +/- 2G, 4G, 8G (the default +/-2G)
- *
- * (2 + 2) * 9.81 / (2^12 - 1) = 0.009582
- * (4 + 4) * 9.81 / (2^12 - 1) = 0.019164
- * (8 + 8) * 9.81 / (2^12 - 1) = 0.038329
- */
+ 
 static const struct {
 	u8 range;
 	int scale;
@@ -318,7 +307,7 @@ static void mxc4005_clr_intr(struct mxc4005_data *data)
 {
 	int ret;
 
-	/* clear interrupt */
+	 
 	ret = regmap_write(data->regmap, MXC4005_REG_INT_CLR1,
 			   MXC4005_REG_INT_CLR1_BIT_DRDYC);
 	if (ret < 0)

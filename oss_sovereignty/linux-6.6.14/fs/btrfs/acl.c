@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2007 Red Hat.  All rights reserved.
- */
+
+ 
 
 #include <linux/fs.h>
 #include <linux/string.h>
@@ -79,10 +77,7 @@ int __btrfs_set_acl(struct btrfs_trans_handle *trans, struct inode *inode,
 		unsigned int nofs_flag;
 
 		size = posix_acl_xattr_size(acl->a_count);
-		/*
-		 * We're holding a transaction handle, so use a NOFS memory
-		 * allocation context to avoid deadlock if reclaim happens.
-		 */
+		 
 		nofs_flag = memalloc_nofs_save();
 		value = kmalloc(size, GFP_KERNEL);
 		memalloc_nofs_restore(nofs_flag);

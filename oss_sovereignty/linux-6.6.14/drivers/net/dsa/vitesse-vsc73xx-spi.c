@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* DSA driver for:
- * Vitesse VSC7385 SparX-G5 5+1-port Integrated Gigabit Ethernet Switch
- * Vitesse VSC7388 SparX-G8 8-port Integrated Gigabit Ethernet Switch
- * Vitesse VSC7395 SparX-G5e 5+1-port Integrated Gigabit Ethernet Switch
- * Vitesse VSC7398 SparX-G8e 8-port Integrated Gigabit Ethernet Switch
- *
- * This driver takes control of the switch chip over SPI and
- * configures it to route packages around when connected to a CPU port.
- *
- * Copyright (C) 2018 Linus Wallej <linus.walleij@linaro.org>
- * Includes portions of code from the firmware uploader by:
- * Copyright (C) 2009 Gabor Juhos <juhosg@openwrt.org>
- */
+
+ 
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/of.h>
@@ -26,12 +14,10 @@
 #define VSC73XX_CMD_SPI_BLOCK_MASK		0x7
 #define VSC73XX_CMD_SPI_SUBBLOCK_MASK		0xf
 
-/*
- * struct vsc73xx_spi - VSC73xx SPI state container
- */
+ 
 struct vsc73xx_spi {
 	struct spi_device	*spi;
-	struct mutex		lock; /* Protects SPI traffic */
+	struct mutex		lock;  
 	struct vsc73xx		vsc;
 };
 

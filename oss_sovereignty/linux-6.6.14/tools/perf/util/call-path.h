@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * call-path.h: Manipulate a tree data structure containing function call paths
- * Copyright (c) 2014, Intel Corporation.
- */
+ 
+ 
 
 #ifndef __PERF_CALL_PATH_H
 #define __PERF_CALL_PATH_H
@@ -12,19 +9,7 @@
 #include <linux/types.h>
 #include <linux/rbtree.h>
 
-/**
- * struct call_path - node in list of calls leading to a function call.
- * @parent: call path to the parent function call
- * @sym: symbol of function called
- * @ip: only if sym is null, the ip of the function
- * @db_id: id used for db-export
- * @in_kernel: whether function is a in the kernel
- * @rb_node: node in parent's tree of called functions
- * @children: tree of call paths of functions called
- *
- * In combination with the call_return structure, the call_path structure
- * defines a context-sensitive call-graph.
- */
+ 
 struct call_path {
 	struct call_path *parent;
 	struct symbol *sym;
@@ -44,13 +29,7 @@ struct call_path_block {
 	struct list_head node;
 };
 
-/**
- * struct call_path_root - root of all call paths.
- * @call_path: root call path
- * @blocks: list of blocks to store call paths
- * @next: next free space
- * @sz: number of spaces
- */
+ 
 struct call_path_root {
 	struct call_path call_path;
 	struct list_head blocks;

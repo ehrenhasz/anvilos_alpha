@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: (GPL-2.0 OR MIT) */
-/*
- * Copyright (c) 2021 MediaTek Inc.
- * Author: Chun-Jie Chen <chun-jie.chen@mediatek.com>
- */
+ 
+ 
 
 #ifndef _DT_BINDINGS_POWER_MT8195_POWER_H
 #define _DT_BINDINGS_POWER_MT8195_POWER_H
@@ -43,4 +40,4 @@
 #define MT8195_POWER_DOMAIN_CAM_RAWB		33
 #define MT8195_POWER_DOMAIN_CAM_MRAW		34
 
-#endif /* _DT_BINDINGS_POWER_MT8195_POWER_H */
+#endif  

@@ -1,15 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
 
-/*
- * EDAC driver for DMC-520 memory controller.
- *
- * The driver supports 10 interrupt lines,
- * though only dram_ecc_errc and dram_ecc_errd are currently handled.
- *
- * Authors:	Rui Zhao <ruizhao@microsoft.com>
- *		Lei Wang <lewan@microsoft.com>
- *		Shiping Ji <shji@microsoft.com>
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/edac.h>
@@ -22,7 +13,7 @@
 #include <linux/spinlock.h>
 #include "edac_mc.h"
 
-/* DMC-520 registers */
+ 
 #define REG_OFFSET_FEATURE_CONFIG			0x130
 #define REG_OFFSET_ECC_ERRC_COUNT_31_00		0x158
 #define REG_OFFSET_ECC_ERRC_COUNT_63_32		0x15C
@@ -40,7 +31,7 @@
 #define REG_OFFSET_SCRUB_CONTROL0_NOW			0x1170
 #define REG_OFFSET_FORMAT_CONTROL			0x18
 
-/* DMC-520 types, masks and bitfields */
+ 
 #define RAM_ECC_INT_CE_BIT			BIT(0)
 #define RAM_ECC_INT_UE_BIT			BIT(1)
 #define DRAM_ECC_INT_CE_BIT			BIT(2)
@@ -73,28 +64,25 @@
 #define DMC520_SCRUB_TRIGGER_ERR_DETECT	2
 #define DMC520_SCRUB_TRIGGER_IDLE		3
 
-/* Driver settings */
-/*
- * The max-length message would be: "rank:7 bank:15 row:262143 col:1023".
- * Max length is 34. Using a 40-size buffer is enough.
- */
+ 
+ 
 #define DMC520_MSG_BUF_SIZE			40
 #define EDAC_MOD_NAME				"dmc520-edac"
 #define EDAC_CTL_NAME				"dmc520"
 
-/* the data bus width for the attached memory chips. */
+ 
 enum dmc520_mem_width {
 	MEM_WIDTH_X32 = 2,
 	MEM_WIDTH_X64 = 3
 };
 
-/* memory type */
+ 
 enum dmc520_mem_type {
 	MEM_TYPE_DDR3 = 1,
 	MEM_TYPE_DDR4 = 2
 };
 
-/* memory device width */
+ 
 enum dmc520_dev_width {
 	DEV_WIDTH_X4 = 0,
 	DEV_WIDTH_X8 = 1,
@@ -108,13 +96,13 @@ struct ecc_error_info {
 	u32 rank;
 };
 
-/* The interrupt config */
+ 
 struct dmc520_irq_config {
 	char *name;
 	int mask;
 };
 
-/* The interrupt mappings */
+ 
 static struct dmc520_irq_config dmc520_irq_configs[] = {
 	{
 		.name = "ram_ecc_errc",
@@ -160,11 +148,7 @@ static struct dmc520_irq_config dmc520_irq_configs[] = {
 
 #define NUMBER_OF_IRQS				ARRAY_SIZE(dmc520_irq_configs)
 
-/*
- * The EDAC driver private data.
- * error_lock is to protect concurrent writes to the mci->error_desc through
- * edac_mc_handle_error().
- */
+ 
 struct dmc520_edac {
 	void __iomem *reg_base;
 	spinlock_t error_lock;
@@ -189,7 +173,7 @@ static u32 dmc520_calc_dram_ecc_error(u32 value)
 {
 	u32 total = 0;
 
-	/* Each rank's error counter takes one byte. */
+	 
 	while (value > 0) {
 		total += (value & 0xFF);
 		value >>= 8;
@@ -211,7 +195,7 @@ static u32 dmc520_get_dram_ecc_error_count(struct dmc520_edac *pvt,
 
 	err_low = dmc520_read_reg(pvt, reg_offset_low);
 	err_high = dmc520_read_reg(pvt, reg_offset_high);
-	/* Reset error counters */
+	 
 	dmc520_write_reg(pvt, 0, reg_offset_low);
 	dmc520_write_reg(pvt, 0, reg_offset_high);
 
@@ -272,7 +256,7 @@ static enum scrub_type dmc520_get_scrub_type(struct dmc520_edac *pvt)
 	return type;
 }
 
-/* Get the memory data bus width, in number of bytes. */
+ 
 static u32 dmc520_get_memory_width(struct dmc520_edac *pvt)
 {
 	enum dmc520_mem_width mem_width_field;
@@ -485,7 +469,7 @@ static int dmc520_edac_probe(struct platform_device *pdev)
 	int ret, idx, irq;
 	u32 reg_val;
 
-	/* Parse the device node */
+	 
 	dev = &pdev->dev;
 
 	for (idx = 0; idx < NUMBER_OF_IRQS; idx++) {
@@ -504,7 +488,7 @@ static int dmc520_edac_probe(struct platform_device *pdev)
 		return -EINVAL;
 	}
 
-	/* Initialize dmc520 edac */
+	 
 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 	reg_base = devm_ioremap_resource(dev, res);
 	if (IS_ERR(reg_base))
@@ -550,7 +534,7 @@ static int dmc520_edac_probe(struct platform_device *pdev)
 
 	dmc520_init_csrow(mci);
 
-	/* Clear interrupts, not affecting other unrelated interrupts */
+	 
 	reg_val = dmc520_read_reg(pvt, REG_OFFSET_INTERRUPT_CONTROL);
 	dmc520_write_reg(pvt, reg_val & (~irq_mask_all),
 			 REG_OFFSET_INTERRUPT_CONTROL);
@@ -571,7 +555,7 @@ static int dmc520_edac_probe(struct platform_device *pdev)
 		}
 	}
 
-	/* Reset DRAM CE/UE counters */
+	 
 	if (irq_mask_all & DRAM_ECC_INT_CE_BIT)
 		dmc520_get_dram_ecc_error_count(pvt, true);
 
@@ -585,7 +569,7 @@ static int dmc520_edac_probe(struct platform_device *pdev)
 		goto err;
 	}
 
-	/* Enable interrupts, not affecting other unrelated interrupts */
+	 
 	dmc520_write_reg(pvt, reg_val | irq_mask_all,
 			 REG_OFFSET_INTERRUPT_CONTROL);
 
@@ -611,12 +595,12 @@ static int dmc520_edac_remove(struct platform_device *pdev)
 	mci = platform_get_drvdata(pdev);
 	pvt = mci->pvt_info;
 
-	/* Disable interrupts */
+	 
 	reg_val = dmc520_read_reg(pvt, REG_OFFSET_INTERRUPT_CONTROL);
 	dmc520_write_reg(pvt, reg_val & (~irq_mask_all),
 			 REG_OFFSET_INTERRUPT_CONTROL);
 
-	/* free irq's */
+	 
 	for (idx = 0; idx < NUMBER_OF_IRQS; idx++) {
 		if (pvt->irqs[idx] >= 0) {
 			irq_mask_all |= pvt->masks[idx];
@@ -632,7 +616,7 @@ static int dmc520_edac_remove(struct platform_device *pdev)
 
 static const struct of_device_id dmc520_edac_driver_id[] = {
 	{ .compatible = "arm,dmc-520", },
-	{ /* end of table */ }
+	{   }
 };
 
 MODULE_DEVICE_TABLE(of, dmc520_edac_driver_id);

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Hauppauge HD PVR USB driver - video 4 linux 2 interface
- *
- * Copyright (C) 2008      Janne Grunau (j@jannau.net)
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/errno.h>
@@ -91,7 +87,7 @@ int get_input_lines_info(struct hdpvr_device *dev)
 			 "get input lines info returned: %d, %3ph\n", ret,
 			 dev->usbc_buf);
 #else
-	(void)ret;	/* suppress compiler warning */
+	(void)ret;	 
 #endif
 	lines = dev->usbc_buf[1] << 8 | dev->usbc_buf[0];
 	mutex_unlock(&dev->usbc_mutex);

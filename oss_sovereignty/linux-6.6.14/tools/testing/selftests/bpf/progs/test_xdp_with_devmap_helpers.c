@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/bpf.h>
 #include <bpf/bpf_helpers.h>
 
@@ -15,18 +15,14 @@ int xdp_redir_prog(struct xdp_md *ctx)
 	return bpf_redirect_map(&dm_ports, 1, 0);
 }
 
-/* invalid program on DEVMAP entry;
- * SEC name means expected attach type not set
- */
+ 
 SEC("xdp")
 int xdp_dummy_prog(struct xdp_md *ctx)
 {
 	return XDP_PASS;
 }
 
-/* valid program on DEVMAP entry via SEC name;
- * has access to egress and ingress ifindex
- */
+ 
 SEC("xdp/devmap")
 int xdp_dummy_dm(struct xdp_md *ctx)
 {

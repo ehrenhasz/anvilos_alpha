@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * PCIe RC driver for Synopsys DesignWare Core
- *
- * Copyright (C) 2015-2016 Synopsys, Inc. (www.synopsys.com)
- *
- * Authors: Joao Pinto <Joao.Pinto@synopsys.com>
- */
+
+ 
 #include <linux/clk.h>
 #include <linux/delay.h>
 #include <linux/gpio.h>

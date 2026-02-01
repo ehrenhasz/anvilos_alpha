@@ -1,23 +1,6 @@
-/* make_cmd.c -- Functions for making instances of the various
-   parser constructs. */
+ 
 
-/* Copyright (C) 1989-2022 Free Software Foundation, Inc.
-
-   This file is part of GNU Bash, the Bourne Again SHell.
-
-   Bash is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   Bash is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with Bash.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ 
 
 #include "config.h"
 
@@ -48,7 +31,7 @@
 
 int here_doc_first_line = 0;
 
-/* Object caching */
+ 
 sh_obj_cache_t wdcache = {0, 0, 0};
 sh_obj_cache_t wlcache = {0, 0, 0};
 
@@ -117,7 +100,7 @@ make_word_flags (w, string)
 	  w->flags |= W_HASDOLLAR;
 	  break;
 	case '\\':
-	  break;	/* continue the loop */
+	  break;	 
 	case '\'':
 	case '`':
 	case '"':
@@ -251,16 +234,13 @@ make_arith_for_expr (s)
   if (s == 0 || *s == '\0')
     return ((WORD_LIST *)NULL);
   wd = make_word (s);
-  wd->flags |= W_NOGLOB|W_NOSPLIT|W_QUOTED|W_NOTILDE|W_NOPROCSUB;	/* no word splitting or globbing */
+  wd->flags |= W_NOGLOB|W_NOSPLIT|W_QUOTED|W_NOTILDE|W_NOPROCSUB;	 
   result = make_word_list (wd, (WORD_LIST *)NULL);
   return result;
 }
 #endif
 
-/* Note that this function calls dispose_words on EXPRS, since it doesn't
-   use the word list directly.  We free it here rather than at the caller
-   because no other function in this file requires that the caller free
-   any arguments. */
+ 
 COMMAND *
 make_arith_for_command (exprs, action, lineno)
      WORD_LIST *exprs;
@@ -274,15 +254,15 @@ make_arith_for_command (exprs, action, lineno)
   int nsemi, i;
 
   init = test = step = (WORD_LIST *)NULL;
-  /* Parse the string into the three component sub-expressions. */
+   
   start = t = s = exprs->word->word;
   for (nsemi = 0; ;)
     {
-      /* skip whitespace at the start of each sub-expression. */
+       
       while (whitespace (*s))
 	s++;
       start = s;
-      /* skip to the semicolon or EOS */
+       
       i = skip_to_delim (start, 0, ";", SD_NOJMP|SD_NOPROCSUB);
       s = start + i;
 
@@ -305,7 +285,7 @@ make_arith_for_command (exprs, action, lineno)
       FREE (t);
       if (*s == '\0')
 	break;
-      s++;	/* skip over semicolon */
+      s++;	 
     }
 
   if (nsemi != 3)
@@ -336,7 +316,7 @@ make_arith_for_command (exprs, action, lineno)
   dispose_words (exprs);
   set_exit_status (2);
   return ((COMMAND *)NULL);
-#endif /* ARITH_FOR_COMMAND */
+#endif  
 }
 
 COMMAND *
@@ -513,16 +493,13 @@ make_bare_simple_command ()
   return (command);
 }
 
-/* Return a command which is the connection of the word or redirection
-   in ELEMENT, and the command * or NULL in COMMAND. */
+ 
 COMMAND *
 make_simple_command (element, command)
      ELEMENT element;
      COMMAND *command;
 {
-  /* If we are starting from scratch, then make the initial command
-     structure.  Also note that we have to fill in all the slots, since
-     malloc doesn't return zeroed space. */
+   
   if (command == 0)
     {
       command = make_bare_simple_command ();
@@ -537,9 +514,7 @@ make_simple_command (element, command)
   else if (element.redirect)
     {
       REDIRECT *r = element.redirect;
-      /* Due to the way <> is implemented, there may be more than a single
-	 redirection in element.redirect.  We just follow the chain as far
-	 as it goes, and hook onto the end. */
+       
       while (r->next)
 	r = r->next;
       r->next = command->value.Simple->redirects;
@@ -549,11 +524,7 @@ make_simple_command (element, command)
   return (command);
 }
 
-/* Because we are Bourne compatible, we read the input for this
-   << or <<- redirection now, from wherever input is coming from.
-   We store the input read into a WORD_DESC.  Replace the text of
-   the redirectee.word with the new input text.  If <<- is on,
-   then remove leading TABS from each line. */
+ 
 void
 make_here_document (temp, lineno)
      REDIRECT *temp;
@@ -577,18 +548,14 @@ make_here_document (temp, lineno)
 
   delim_unquoted = (temp->redirectee.filename->flags & W_QUOTED) == 0;
 
-  /* Quote removal is the only expansion performed on the delimiter
-     for here documents, making it an extremely special case. */
-  /* "If any part of word is quoted, the delimiter shall be formed by
-     performing quote removal on word." */
+   
+   
   if (delim_unquoted == 0)
     redir_word = string_quote_removal (temp->redirectee.filename->word, 0);
   else
     redir_word = savestring (temp->redirectee.filename->word);
 
-  /* redirection_expand will return NULL if the expansion results in
-     multiple words or no words.  Check for that here, and just abort
-     this here document if it does. */
+   
   if (redir_word)
     redir_len = strlen (redir_word);
   else
@@ -601,16 +568,9 @@ make_here_document (temp, lineno)
   free (temp->redirectee.filename->word);
   temp->here_doc_eof = redir_word;
 
-  /* Read lines from wherever lines are coming from.
-     For each line read, if kill_leading, then kill the
-     leading tab characters.
-     If the line matches redir_word exactly, then we have
-     manufactured the document.  Otherwise, add the line to the
-     list of lines in the document. */
+   
 
-  /* If the here-document delimiter was quoted, the lines should
-     be read verbatim from the input.  If it was not quoted, we
-     need to perform backslash-quoted newline removal. */
+   
   while (full_line = read_secondary_line (delim_unquoted))
     {
       register char *line;
@@ -620,16 +580,13 @@ make_here_document (temp, lineno)
       line = full_line;
       line_number++;
 
-      /* If set -v is in effect, echo the line read.  read_secondary_line/
-	 read_a_line leaves the newline at the end, so don't print another. */
+       
       if (echo_input_at_read)
 	fprintf (stderr, "%s", line);
 
       if (kill_leading && *line)
 	{
-	  /* Hack:  To be compatible with some Bourne shells, we
-	     check the word before stripping the whitespace.  This
-	     is a hack, though. */
+	   
 	  if (STREQN (line, redir_word, redir_len) && line[redir_len] == '\n')
 	    break;
 
@@ -643,7 +600,7 @@ make_here_document (temp, lineno)
       if (STREQN (line, redir_word, redir_len) && line[redir_len] == '\n')
 	break;
 
-      /* Backwards compatibility here */
+       
       if (STREQN (line, redir_word, redir_len) && (parser_state & PST_EOFTOKEN) && shell_eof_token && strchr (line+redir_len, shell_eof_token))
 	{
 	  shell_ungets (line + redir_len);
@@ -658,8 +615,7 @@ make_here_document (temp, lineno)
 	  document = (char *)xrealloc (document, document_size);
 	}
 
-      /* len is guaranteed to be > 0 because of the check for line
-	 being an empty string before the call to strlen. */
+       
       FASTCOPY (line, document + document_index, len);
       document_index += len;
     }
@@ -679,9 +635,7 @@ document_done:
   here_doc_first_line = 0;
 }
 
-/* Generate a REDIRECT from SOURCE, DEST, and INSTRUCTION.
-   INSTRUCTION is the instruction type, SOURCE is a file descriptor,
-   and DEST is a file descriptor or a WORD_DESC *. */
+ 
 REDIRECT *
 make_redirection (source, instruction, dest_and_filename, flags)
      REDIRECTEE source;
@@ -696,7 +650,7 @@ make_redirection (source, instruction, dest_and_filename, flags)
 
   temp = (REDIRECT *)xmalloc (sizeof (REDIRECT));
 
-  /* First do the common cases. */
+   
   temp->redirector = source;
   temp->redirectee = dest_and_filename;
   temp->here_doc_eof = 0;
@@ -708,47 +662,47 @@ make_redirection (source, instruction, dest_and_filename, flags)
   switch (instruction)
     {
 
-    case r_output_direction:		/* >foo */
-    case r_output_force:		/* >| foo */
-    case r_err_and_out:			/* &>filename */
+    case r_output_direction:		 
+    case r_output_force:		 
+    case r_err_and_out:			 
       temp->flags = O_TRUNC | O_WRONLY | O_CREAT;
       break;
 
-    case r_appending_to:		/* >>foo */
-    case r_append_err_and_out:		/* &>> filename */
+    case r_appending_to:		 
+    case r_append_err_and_out:		 
       temp->flags = O_APPEND | O_WRONLY | O_CREAT;
       break;
 
-    case r_input_direction:		/* <foo */
-    case r_inputa_direction:		/* foo & makes this. */
+    case r_input_direction:		 
+    case r_inputa_direction:		 
       temp->flags = O_RDONLY;
       break;
 
-    case r_input_output:		/* <>foo */
+    case r_input_output:		 
       temp->flags = O_RDWR | O_CREAT;
       break;
 
-    case r_deblank_reading_until: 	/* <<-foo */
-    case r_reading_until:		/* << foo */
-    case r_reading_string:		/* <<< foo */
-    case r_close_this:			/* <&- */
-    case r_duplicating_input:		/* 1<&2 */
-    case r_duplicating_output:		/* 1>&2 */
+    case r_deblank_reading_until: 	 
+    case r_reading_until:		 
+    case r_reading_string:		 
+    case r_close_this:			 
+    case r_duplicating_input:		 
+    case r_duplicating_output:		 
       break;
 
-    /* the parser doesn't pass these. */
-    case r_move_input:			/* 1<&2- */
-    case r_move_output:			/* 1>&2- */
-    case r_move_input_word:		/* 1<&$foo- */
-    case r_move_output_word:		/* 1>&$foo- */
+     
+    case r_move_input:			 
+    case r_move_output:			 
+    case r_move_input_word:		 
+    case r_move_output_word:		 
       break;
 
-    /* The way the lexer works we have to do this here. */
-    case r_duplicating_input_word:	/* 1<&$foo */
-    case r_duplicating_output_word:	/* 1>&$foo */
+     
+    case r_duplicating_input_word:	 
+    case r_duplicating_output_word:	 
       w = dest_and_filename.filename;
       wlen = strlen (w->word) - 1;
-      if (w->word[wlen] == '-')		/* Yuck */
+      if (w->word[wlen] == '-')		 
         {
           w->word[wlen] = '\0';
 	  if (all_digits (w->word) && legal_number (w->word, &lfd) && lfd == (int)lfd)
@@ -790,16 +744,14 @@ make_function_def (name, command, lineno, lstart)
   temp->flags = 0;
   command->line = lstart;
 
-  /* Information used primarily for debugging. */
+   
   temp->source_file = 0;
 #if defined (ARRAY_VARS)
   GET_ARRAY_FROM_VAR ("BASH_SOURCE", bash_source_v, bash_source_a);
   if (bash_source_a && array_num_elements (bash_source_a) > 0)
     temp->source_file = array_reference (bash_source_a, 0);
 #endif
-  /* Assume that shell functions without a source file before the shell is
-     initialized come from the environment.  Otherwise default to "main"
-     (usually functions being defined interactively) */
+   
   if (temp->source_file == 0)
     temp->source_file = shell_initialized ? "main" : "environment";
 
@@ -839,9 +791,7 @@ make_coproc_command (name, command)
   return (make_command (cm_coproc, (SIMPLE_COM *)temp));
 }
 
-/* Reverse the word list and redirection list in the simple command
-   has just been parsed.  It seems simpler to do this here the one
-   time then by any other method that I can think of. */
+ 
 COMMAND *
 clean_simple_command (command)
      COMMAND *command;
@@ -860,15 +810,7 @@ clean_simple_command (command)
   return (command);
 }
 
-/* The Yacc grammar productions have a problem, in that they take a
-   list followed by an ampersand (`&') and do a simple command connection,
-   making the entire list effectively asynchronous, instead of just
-   the last command.  This means that when the list is executed, all
-   the commands have stdin set to /dev/null when job control is not
-   active, instead of just the last.  This is wrong, and needs fixing
-   up.  This function takes the `&' and applies it to the last command
-   in the list.  This is done only for lists connected by `;'; it makes
-   `;' bind `tighter' than `&'. */
+ 
 COMMAND *
 connect_async_list (command, command2, connector)
      COMMAND *command, *command2;
@@ -886,21 +828,14 @@ connect_async_list (command, command2, connector)
       return t;
     }
 
-  /* This is just defensive programming.  The Yacc precedence rules
-     will generally hand this function a command where t points directly
-     to the command we want (e.g. given a ; b ; c ; d &, t1 will point
-     to the `a ; b ; c' list and t will be the `d').  We only want to do
-     this if the list is not being executed as a unit in the background
-     with `( ... )', so we have to check for CMD_WANT_SUBSHELL.  That's
-     the only way to tell. */
+   
   while (((t->flags & CMD_WANT_SUBSHELL) == 0) && t->type == cm_connection &&
 	 t->value.Connection->connector == ';')
     {
       t1 = t;
       t = t->value.Connection->second;
     }
-  /* Now we have t pointing to the last command in the list, and
-     t1->value.Connection->second == t. */
+   
   t2 = command_connect (t, command2, connector);
   t1->value.Connection->second = t2;
   return command;

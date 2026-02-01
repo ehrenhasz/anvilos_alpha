@@ -59,9 +59,9 @@ DEFINE_EVENT(register_access, sor_readl,
 	TP_PROTO(struct device *dev, unsigned int offset, u32 value),
 	TP_ARGS(dev, offset, value));
 
-#endif /* DRM_TEGRA_TRACE_H */
+#endif  
 
-/* This part must be outside protection */
+ 
 #undef TRACE_INCLUDE_PATH
 #define TRACE_INCLUDE_PATH ../../drivers/gpu/drm/tegra
 #define TRACE_INCLUDE_FILE trace

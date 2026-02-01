@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copyright (C) Jernej Skrabec <jernej.skrabec@siol.net>
- */
+ 
+ 
 
 #ifndef _SUN8I_VI_LAYER_H_
 #define _SUN8I_VI_LAYER_H_
@@ -36,7 +34,7 @@
 #define SUN8I_MIXER_FCC_GLOBAL_ALPHA_MASK		GENMASK(31, 24)
 
 #define SUN8I_MIXER_CHAN_VI_LAYER_ATTR_EN		BIT(0)
-/* RGB mode should be set for RGB formats and cleared for YCbCr */
+ 
 #define SUN8I_MIXER_CHAN_VI_LAYER_ATTR_RGB_MODE		BIT(15)
 #define SUN8I_MIXER_CHAN_VI_LAYER_ATTR_FBFMT_OFFSET	8
 #define SUN8I_MIXER_CHAN_VI_LAYER_ATTR_FBFMT_MASK	GENMASK(12, 8)
@@ -69,4 +67,4 @@ plane_to_sun8i_vi_layer(struct drm_plane *plane)
 struct sun8i_vi_layer *sun8i_vi_layer_init_one(struct drm_device *drm,
 					       struct sun8i_mixer *mixer,
 					       int index);
-#endif /* _SUN8I_VI_LAYER_H_ */
+#endif  

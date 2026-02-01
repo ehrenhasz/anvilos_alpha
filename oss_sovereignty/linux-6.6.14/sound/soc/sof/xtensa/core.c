@@ -1,12 +1,12 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
-//
-// This file is provided under a dual BSD/GPLv2 license.  When using or
-// redistributing this file, you may do so under either license.
-//
-// Copyright(c) 2018 Intel Corporation. All rights reserved.
-//
-// Author: Pan Xiuli <xiuli.pan@linux.intel.com>
-//
+
+
+
+
+
+
+
+
+
 
 #include <linux/module.h>
 #include <sound/sof.h>
@@ -19,10 +19,7 @@ struct xtensa_exception_cause {
 	const char *description;
 };
 
-/*
- * From 4.4.1.5 table 4-64 Exception Causes of Xtensa
- * Instruction Set Architecture (ISA) Reference Manual
- */
+ 
 static const struct xtensa_exception_cause xtensa_exception_causes[] = {
 	{0, "IllegalInstructionCause", "Illegal instruction"},
 	{1, "SyscallCause", "SYSCALL instruction"},
@@ -80,7 +77,7 @@ static const struct xtensa_exception_cause xtensa_exception_causes[] = {
 	"Coprocessor 7 instruction when cp7 disabled"},
 };
 
-/* only need xtensa atm */
+ 
 static void xtensa_dsp_oops(struct snd_sof_dev *sdev, const char *level, void *oops)
 {
 	struct sof_ipc_dsp_oops_xtensa *xoops = oops;
@@ -117,16 +114,13 @@ static void xtensa_stack(struct snd_sof_dev *sdev, const char *level, void *oops
 {
 	struct sof_ipc_dsp_oops_xtensa *xoops = oops;
 	u32 stack_ptr = xoops->plat_hdr.stackptr;
-	/* 4 * 8chars + 3 ws + 1 terminating NUL */
+	 
 	unsigned char buf[4 * 8 + 3 + 1];
 	int i;
 
 	dev_printk(level, sdev->dev, "stack dump from 0x%8.8x\n", stack_ptr);
 
-	/*
-	 * example output:
-	 * 0x0049fbb0: 8000f2d0 0049fc00 6f6c6c61 00632e63
-	 */
+	 
 	for (i = 0; i < stack_words; i += 4) {
 		hex_dump_to_buffer(stack + i, 16, 16, 4,
 				   buf, sizeof(buf), false);

@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * drm gem DMA helper functions
- *
- * Copyright (C) 2012 Sascha Hauer, Pengutronix
- *
- * Based on Samsung Exynos code
- *
- * Copyright (c) 2011 Samsung Electronics Co., Ltd.
- */
+
+ 
 
 #include <linux/dma-buf.h>
 #include <linux/dma-mapping.h>
@@ -23,27 +15,7 @@
 #include <drm/drm_gem_dma_helper.h>
 #include <drm/drm_vma_manager.h>
 
-/**
- * DOC: dma helpers
- *
- * The DRM GEM/DMA helpers are a means to provide buffer objects that are
- * presented to the device as a contiguous chunk of memory. This is useful
- * for devices that do not support scatter-gather DMA (either directly or
- * by using an intimately attached IOMMU).
- *
- * For devices that access the memory bus through an (external) IOMMU then
- * the buffer objects are allocated using a traditional page-based
- * allocator and may be scattered through physical memory. However they
- * are contiguous in the IOVA space so appear contiguous to devices using
- * them.
- *
- * For other devices then the helpers rely on CMA to provide buffer
- * objects that are physically contiguous in memory.
- *
- * For GEM callback helpers in struct &drm_gem_object functions, see likewise
- * named functions with an _object_ infix (e.g., drm_gem_dma_object_vmap() wraps
- * drm_gem_dma_vmap()). These helpers perform the necessary type conversion.
- */
+ 
 
 static const struct drm_gem_object_funcs drm_gem_dma_default_funcs = {
 	.free = drm_gem_dma_object_free,
@@ -54,19 +26,7 @@ static const struct drm_gem_object_funcs drm_gem_dma_default_funcs = {
 	.vm_ops = &drm_gem_dma_vm_ops,
 };
 
-/**
- * __drm_gem_dma_create - Create a GEM DMA object without allocating memory
- * @drm: DRM device
- * @size: size of the object to allocate
- * @private: true if used for internal purposes
- *
- * This function creates and initializes a GEM DMA object of the given size,
- * but doesn't allocate any memory to back the object.
- *
- * Returns:
- * A struct drm_gem_dma_object * on success or an ERR_PTR()-encoded negative
- * error code on failure.
- */
+ 
 static struct drm_gem_dma_object *
 __drm_gem_dma_create(struct drm_device *drm, size_t size, bool private)
 {
@@ -92,7 +52,7 @@ __drm_gem_dma_create(struct drm_device *drm, size_t size, bool private)
 	if (private) {
 		drm_gem_private_object_init(drm, gem_obj, size);
 
-		/* Always use writecombine for dma-buf mappings */
+		 
 		dma_obj->map_noncoherent = false;
 	} else {
 		ret = drm_gem_object_init(drm, gem_obj, size);
@@ -113,24 +73,7 @@ error:
 	return ERR_PTR(ret);
 }
 
-/**
- * drm_gem_dma_create - allocate an object with the given size
- * @drm: DRM device
- * @size: size of the object to allocate
- *
- * This function creates a DMA GEM object and allocates memory as backing store.
- * The allocated memory will occupy a contiguous chunk of bus address space.
- *
- * For devices that are directly connected to the memory bus then the allocated
- * memory will be physically contiguous. For devices that access through an
- * IOMMU, then the allocated memory is not expected to be physically contiguous
- * because having contiguous IOVAs is sufficient to meet a devices DMA
- * requirements.
- *
- * Returns:
- * A struct drm_gem_dma_object * on success or an ERR_PTR()-encoded negative
- * error code on failure.
- */
+ 
 struct drm_gem_dma_object *drm_gem_dma_create(struct drm_device *drm,
 					      size_t size)
 {
@@ -168,25 +111,7 @@ error:
 }
 EXPORT_SYMBOL_GPL(drm_gem_dma_create);
 
-/**
- * drm_gem_dma_create_with_handle - allocate an object with the given size and
- *     return a GEM handle to it
- * @file_priv: DRM file-private structure to register the handle for
- * @drm: DRM device
- * @size: size of the object to allocate
- * @handle: return location for the GEM handle
- *
- * This function creates a DMA GEM object, allocating a chunk of memory as
- * backing store. The GEM object is then added to the list of object associated
- * with the given file and a handle to it is returned.
- *
- * The allocated memory will occupy a contiguous chunk of bus address space.
- * See drm_gem_dma_create() for more details.
- *
- * Returns:
- * A struct drm_gem_dma_object * on success or an ERR_PTR()-encoded negative
- * error code on failure.
- */
+ 
 static struct drm_gem_dma_object *
 drm_gem_dma_create_with_handle(struct drm_file *file_priv,
 			       struct drm_device *drm, size_t size,
@@ -202,12 +127,9 @@ drm_gem_dma_create_with_handle(struct drm_file *file_priv,
 
 	gem_obj = &dma_obj->base;
 
-	/*
-	 * allocate a id of idr table where the obj is registered
-	 * and handle has the id what user can see.
-	 */
+	 
 	ret = drm_gem_handle_create(file_priv, gem_obj, handle);
-	/* drop reference from allocate - handle holds it now. */
+	 
 	drm_gem_object_put(gem_obj);
 	if (ret)
 		return ERR_PTR(ret);
@@ -215,14 +137,7 @@ drm_gem_dma_create_with_handle(struct drm_file *file_priv,
 	return dma_obj;
 }
 
-/**
- * drm_gem_dma_free - free resources associated with a DMA GEM object
- * @dma_obj: DMA GEM object to free
- *
- * This function frees the backing memory of the DMA GEM object, cleans up the
- * GEM object state and frees the memory used to store the object itself.
- * If the buffer is imported and the virtual address is set, it is released.
- */
+ 
 void drm_gem_dma_free(struct drm_gem_dma_object *dma_obj)
 {
 	struct drm_gem_object *gem_obj = &dma_obj->base;
@@ -248,20 +163,7 @@ void drm_gem_dma_free(struct drm_gem_dma_object *dma_obj)
 }
 EXPORT_SYMBOL_GPL(drm_gem_dma_free);
 
-/**
- * drm_gem_dma_dumb_create_internal - create a dumb buffer object
- * @file_priv: DRM file-private structure to create the dumb buffer for
- * @drm: DRM device
- * @args: IOCTL data
- *
- * This aligns the pitch and size arguments to the minimum required. This is
- * an internal helper that can be wrapped by a driver to account for hardware
- * with more specific alignment requirements. It should not be used directly
- * as their &drm_driver.dumb_create callback.
- *
- * Returns:
- * 0 on success or a negative error code on failure.
- */
+ 
 int drm_gem_dma_dumb_create_internal(struct drm_file *file_priv,
 				     struct drm_device *drm,
 				     struct drm_mode_create_dumb *args)
@@ -281,24 +183,7 @@ int drm_gem_dma_dumb_create_internal(struct drm_file *file_priv,
 }
 EXPORT_SYMBOL_GPL(drm_gem_dma_dumb_create_internal);
 
-/**
- * drm_gem_dma_dumb_create - create a dumb buffer object
- * @file_priv: DRM file-private structure to create the dumb buffer for
- * @drm: DRM device
- * @args: IOCTL data
- *
- * This function computes the pitch of the dumb buffer and rounds it up to an
- * integer number of bytes per pixel. Drivers for hardware that doesn't have
- * any additional restrictions on the pitch can directly use this function as
- * their &drm_driver.dumb_create callback.
- *
- * For hardware with additional restrictions, drivers can adjust the fields
- * set up by userspace and pass the IOCTL data along to the
- * drm_gem_dma_dumb_create_internal() function.
- *
- * Returns:
- * 0 on success or a negative error code on failure.
- */
+ 
 int drm_gem_dma_dumb_create(struct drm_file *file_priv,
 			    struct drm_device *drm,
 			    struct drm_mode_create_dumb *args)
@@ -321,22 +206,7 @@ const struct vm_operations_struct drm_gem_dma_vm_ops = {
 EXPORT_SYMBOL_GPL(drm_gem_dma_vm_ops);
 
 #ifndef CONFIG_MMU
-/**
- * drm_gem_dma_get_unmapped_area - propose address for mapping in noMMU cases
- * @filp: file object
- * @addr: memory address
- * @len: buffer size
- * @pgoff: page offset
- * @flags: memory flags
- *
- * This function is used in noMMU platforms to propose address mapping
- * for a given buffer.
- * It's intended to be used as a direct handler for the struct
- * &file_operations.get_unmapped_area operation.
- *
- * Returns:
- * mapping address on success or a negative error code on failure.
- */
+ 
 unsigned long drm_gem_dma_get_unmapped_area(struct file *filp,
 					    unsigned long addr,
 					    unsigned long len,
@@ -358,16 +228,7 @@ unsigned long drm_gem_dma_get_unmapped_area(struct file *filp,
 						  len >> PAGE_SHIFT);
 	if (likely(node)) {
 		obj = container_of(node, struct drm_gem_object, vma_node);
-		/*
-		 * When the object is being freed, after it hits 0-refcnt it
-		 * proceeds to tear down the object. In the process it will
-		 * attempt to remove the VMA offset and so acquire this
-		 * mgr->vm_lock.  Therefore if we find an object with a 0-refcnt
-		 * that matches our range, we know it is in the process of being
-		 * destroyed and will be freed as soon as we release the lock -
-		 * so we have to check for the 0-refcnted object and treat it as
-		 * invalid.
-		 */
+		 
 		if (!kref_get_unless_zero(&obj->refcount))
 			obj = NULL;
 	}
@@ -391,14 +252,7 @@ unsigned long drm_gem_dma_get_unmapped_area(struct file *filp,
 EXPORT_SYMBOL_GPL(drm_gem_dma_get_unmapped_area);
 #endif
 
-/**
- * drm_gem_dma_print_info() - Print &drm_gem_dma_object info for debugfs
- * @dma_obj: DMA GEM object
- * @p: DRM printer
- * @indent: Tab indentation level
- *
- * This function prints dma_addr and vaddr for use in e.g. debugfs output.
- */
+ 
 void drm_gem_dma_print_info(const struct drm_gem_dma_object *dma_obj,
 			    struct drm_printer *p, unsigned int indent)
 {
@@ -407,17 +261,7 @@ void drm_gem_dma_print_info(const struct drm_gem_dma_object *dma_obj,
 }
 EXPORT_SYMBOL(drm_gem_dma_print_info);
 
-/**
- * drm_gem_dma_get_sg_table - provide a scatter/gather table of pinned
- *     pages for a DMA GEM object
- * @dma_obj: DMA GEM object
- *
- * This function exports a scatter/gather table by calling the standard
- * DMA mapping API.
- *
- * Returns:
- * A pointer to the scatter/gather table of pinned pages or NULL on failure.
- */
+ 
 struct sg_table *drm_gem_dma_get_sg_table(struct drm_gem_dma_object *dma_obj)
 {
 	struct drm_gem_object *obj = &dma_obj->base;
@@ -441,23 +285,7 @@ out:
 }
 EXPORT_SYMBOL_GPL(drm_gem_dma_get_sg_table);
 
-/**
- * drm_gem_dma_prime_import_sg_table - produce a DMA GEM object from another
- *     driver's scatter/gather table of pinned pages
- * @dev: device to import into
- * @attach: DMA-BUF attachment
- * @sgt: scatter/gather table of pinned pages
- *
- * This function imports a scatter/gather table exported via DMA-BUF by
- * another driver. Imported buffers must be physically contiguous in memory
- * (i.e. the scatter/gather table must contain a single entry). Drivers that
- * use the DMA helpers should set this as their
- * &drm_driver.gem_prime_import_sg_table callback.
- *
- * Returns:
- * A pointer to a newly created GEM object or an ERR_PTR-encoded negative
- * error code on failure.
- */
+ 
 struct drm_gem_object *
 drm_gem_dma_prime_import_sg_table(struct drm_device *dev,
 				  struct dma_buf_attachment *attach,
@@ -465,11 +293,11 @@ drm_gem_dma_prime_import_sg_table(struct drm_device *dev,
 {
 	struct drm_gem_dma_object *dma_obj;
 
-	/* check if the entries in the sg_table are contiguous */
+	 
 	if (drm_prime_get_contiguous_size(sgt) < attach->dmabuf->size)
 		return ERR_PTR(-EINVAL);
 
-	/* Create a DMA GEM buffer. */
+	 
 	dma_obj = __drm_gem_dma_create(dev, attach->dmabuf->size, true);
 	if (IS_ERR(dma_obj))
 		return ERR_CAST(dma_obj);
@@ -484,20 +312,7 @@ drm_gem_dma_prime_import_sg_table(struct drm_device *dev,
 }
 EXPORT_SYMBOL_GPL(drm_gem_dma_prime_import_sg_table);
 
-/**
- * drm_gem_dma_vmap - map a DMA GEM object into the kernel's virtual
- *     address space
- * @dma_obj: DMA GEM object
- * @map: Returns the kernel virtual address of the DMA GEM object's backing
- *       store.
- *
- * This function maps a buffer into the kernel's virtual address space.
- * Since the DMA buffers are already mapped into the kernel virtual address
- * space this simply returns the cached virtual address.
- *
- * Returns:
- * 0 on success, or a negative error code otherwise.
- */
+ 
 int drm_gem_dma_vmap(struct drm_gem_dma_object *dma_obj,
 		     struct iosys_map *map)
 {
@@ -507,28 +322,13 @@ int drm_gem_dma_vmap(struct drm_gem_dma_object *dma_obj,
 }
 EXPORT_SYMBOL_GPL(drm_gem_dma_vmap);
 
-/**
- * drm_gem_dma_mmap - memory-map an exported DMA GEM object
- * @dma_obj: DMA GEM object
- * @vma: VMA for the area to be mapped
- *
- * This function maps a buffer into a userspace process's address space.
- * In addition to the usual GEM VMA setup it immediately faults in the entire
- * object instead of using on-demand faulting.
- *
- * Returns:
- * 0 on success or a negative error code on failure.
- */
+ 
 int drm_gem_dma_mmap(struct drm_gem_dma_object *dma_obj, struct vm_area_struct *vma)
 {
 	struct drm_gem_object *obj = &dma_obj->base;
 	int ret;
 
-	/*
-	 * Clear the VM_PFNMAP flag that was set by drm_gem_mmap(), and set the
-	 * vm_pgoff (used as a fake buffer offset by DRM) to 0 as we want to map
-	 * the whole buffer.
-	 */
+	 
 	vma->vm_pgoff -= drm_vma_node_start(&obj->vma_node);
 	vm_flags_mod(vma, VM_DONTEXPAND, VM_PFNMAP);
 
@@ -550,26 +350,7 @@ int drm_gem_dma_mmap(struct drm_gem_dma_object *dma_obj, struct vm_area_struct *
 }
 EXPORT_SYMBOL_GPL(drm_gem_dma_mmap);
 
-/**
- * drm_gem_dma_prime_import_sg_table_vmap - PRIME import another driver's
- *	scatter/gather table and get the virtual address of the buffer
- * @dev: DRM device
- * @attach: DMA-BUF attachment
- * @sgt: Scatter/gather table of pinned pages
- *
- * This function imports a scatter/gather table using
- * drm_gem_dma_prime_import_sg_table() and uses dma_buf_vmap() to get the kernel
- * virtual address. This ensures that a DMA GEM object always has its virtual
- * address set. This address is released when the object is freed.
- *
- * This function can be used as the &drm_driver.gem_prime_import_sg_table
- * callback. The &DRM_GEM_DMA_DRIVER_OPS_VMAP macro provides a shortcut to set
- * the necessary DRM driver operations.
- *
- * Returns:
- * A pointer to a newly created GEM object or an ERR_PTR-encoded negative
- * error code on failure.
- */
+ 
 struct drm_gem_object *
 drm_gem_dma_prime_import_sg_table_vmap(struct drm_device *dev,
 				       struct dma_buf_attachment *attach,

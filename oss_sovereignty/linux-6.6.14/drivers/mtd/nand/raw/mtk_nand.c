@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR MIT
-/*
- * MTK NAND Flash controller driver.
- * Copyright (C) 2016 MediaTek Inc.
- * Authors:	Xiaolei Li		<xiaolei.li@mediatek.com>
- *		Jorge Ramirez-Ortiz	<jorge.ramirez-ortiz@linaro.org>
- */
+
+ 
 
 #include <linux/platform_device.h>
 #include <linux/dma-mapping.h>
@@ -18,7 +13,7 @@
 #include <linux/of.h>
 #include <linux/mtd/nand-ecc-mtk.h>
 
-/* NAND controller register definition */
+ 
 #define NFI_CNFG		(0x00)
 #define		CNFG_AHB		BIT(0)
 #define		CNFG_READ_EN		BIT(1)
@@ -35,14 +30,14 @@
 #define		PAGEFMT_2K_4K		(1)
 #define		PAGEFMT_4K_8K		(2)
 #define		PAGEFMT_8K_16K		(3)
-/* NFI control */
+ 
 #define NFI_CON			(0x08)
 #define		CON_FIFO_FLUSH		BIT(0)
 #define		CON_NFI_RST		BIT(1)
-#define		CON_BRD			BIT(8)  /* burst  read */
-#define		CON_BWR			BIT(9)	/* burst  write */
+#define		CON_BRD			BIT(8)   
+#define		CON_BWR			BIT(9)	 
 #define		CON_SEC_SHIFT		(12)
-/* Timming control register */
+ 
 #define NFI_ACCCON		(0x0C)
 #define NFI_INTR_EN		(0x10)
 #define		INTR_AHB_DONE_EN	BIT(6)
@@ -113,9 +108,7 @@ struct mtk_nfc_bad_mark_ctl {
 	u32 pos;
 };
 
-/*
- * FDM: region used to store free OOB data
- */
+ 
 struct mtk_nfc_fdm {
 	u32 reg_size;
 	u32 ecc_size;
@@ -131,7 +124,7 @@ struct mtk_nfc_nand_chip {
 
 	int nsels;
 	u8 sels[];
-	/* nothing after this field */
+	 
 };
 
 struct mtk_nfc_clk {
@@ -157,11 +150,7 @@ struct mtk_nfc {
 	unsigned long assigned_cs;
 };
 
-/*
- * supported spare size of each IP.
- * order should be the same with the spare size bitfiled defination of
- * register NFI_PAGEFMT.
- */
+ 
 static const u8 spare_size_mt2701[] = {
 	16, 26, 27, 28, 32, 36, 40, 44,	48, 49, 50, 51, 52, 62, 63, 64
 };
@@ -190,9 +179,7 @@ static inline u8 *oob_ptr(struct nand_chip *chip, int i)
 	struct mtk_nfc_nand_chip *mtk_nand = to_mtk_nand(chip);
 	u8 *poi;
 
-	/* map the sector's FDM data to free oob:
-	 * the beginning of the oob area stores the FDM data of bad mark sectors
-	 */
+	 
 
 	if (i < mtk_nand->bad_mark.sec)
 		poi = chip->oob_poi + (i + 1) * mtk_nand->fdm.reg_size;
@@ -261,10 +248,10 @@ static void mtk_nfc_hw_reset(struct mtk_nfc *nfc)
 	u32 val;
 	int ret;
 
-	/* reset all registers and force the NFI master to terminate */
+	 
 	nfi_writel(nfc, CON_FIFO_FLUSH | CON_NFI_RST, NFI_CON);
 
-	/* wait for the master to finish the last transaction */
+	 
 	ret = readl_poll_timeout(nfc->regs + NFI_MASTER_STA, val,
 				 !(val & MASTER_STA_MASK), 50,
 				 MTK_RESET_TIMEOUT);
@@ -272,7 +259,7 @@ static void mtk_nfc_hw_reset(struct mtk_nfc *nfc)
 		dev_warn(dev, "master active in reset [0x%x] = 0x%x\n",
 			 NFI_MASTER_STA, val);
 
-	/* ensure any status register affected by the NFI master is reset */
+	 
 	nfi_writel(nfc, CON_FIFO_FLUSH | CON_NFI_RST, NFI_CON);
 	nfi_writew(nfc, STAR_DE, NFI_STRDATA);
 }
@@ -357,10 +344,7 @@ static int mtk_nfc_hw_runtime_config(struct mtd_info *mtd)
 		return -EINVAL;
 	}
 
-	/*
-	 * the hardware will double the value for this eccsize, so we need to
-	 * halve it
-	 */
+	 
 	if (chip->ecc.size == 1024)
 		spare >>= 1;
 
@@ -402,21 +386,18 @@ static inline u8 mtk_nfc_read_byte(struct nand_chip *chip)
 	struct mtk_nfc *nfc = nand_get_controller_data(chip);
 	u32 reg;
 
-	/* after each byte read, the NFI_STA reg is reset by the hardware */
+	 
 	reg = nfi_readl(nfc, NFI_STA) & NFI_FSM_MASK;
 	if (reg != NFI_FSM_CUSTDATA) {
 		reg = nfi_readw(nfc, NFI_CNFG);
 		reg |= CNFG_BYTE_RW | CNFG_READ_EN;
 		nfi_writew(nfc, reg, NFI_CNFG);
 
-		/*
-		 * set to max sector to allow the HW to continue reading over
-		 * unaligned accesses
-		 */
+		 
 		reg = (nfc->caps->max_sector << CON_SEC_SHIFT) | CON_BRD;
 		nfi_writel(nfc, reg, NFI_CON);
 
-		/* trigger to fetch data */
+		 
 		nfi_writew(nfc, STAR_EN, NFI_STRDATA);
 	}
 
@@ -546,10 +527,10 @@ static int mtk_nfc_setup_interface(struct nand_chip *chip, int csline,
 		return 0;
 
 	rate = clk_get_rate(nfc->clk.nfi_clk);
-	/* There is a frequency divider in some IPs */
+	 
 	rate /= nfc->caps->nfi_clk_div;
 
-	/* turn clock rate into KHZ */
+	 
 	rate /= 1000;
 
 	tpoecs = max(timings->tALH_min, timings->tCLH_min) / 1000;
@@ -560,7 +541,7 @@ static int mtk_nfc_setup_interface(struct nand_chip *chip, int csline,
 	tprecs = DIV_ROUND_UP(tprecs * rate, 1000000);
 	tprecs &= 0x3f;
 
-	/* sdr interface has no tCR which means CE# low to RE# low */
+	 
 	tc2r = 0;
 
 	tw2r = timings->tWHR_min / 1000;
@@ -572,39 +553,30 @@ static int mtk_nfc_setup_interface(struct nand_chip *chip, int csline,
 	twh = DIV_ROUND_UP(twh * rate, 1000000) - 1;
 	twh &= 0xf;
 
-	/* Calculate real WE#/RE# hold time in nanosecond */
+	 
 	temp = (twh + 1) * 1000000 / rate;
-	/* nanosecond to picosecond */
+	 
 	temp *= 1000;
 
-	/*
-	 * WE# low level time should be expaned to meet WE# pulse time
-	 * and WE# cycle time at the same time.
-	 */
+	 
 	if (temp < timings->tWC_min)
 		twst = timings->tWC_min - temp;
 	twst = max(timings->tWP_min, twst) / 1000;
 	twst = DIV_ROUND_UP(twst * rate, 1000000) - 1;
 	twst &= 0xf;
 
-	/*
-	 * RE# low level time should be expaned to meet RE# pulse time
-	 * and RE# cycle time at the same time.
-	 */
+	 
 	if (temp < timings->tRC_min)
 		trlt = timings->tRC_min - temp;
 	trlt = max(trlt, timings->tRP_min) / 1000;
 	trlt = DIV_ROUND_UP(trlt * rate, 1000000) - 1;
 	trlt &= 0xf;
 
-	/* Calculate RE# pulse time in nanosecond. */
+	 
 	temp = (trlt + 1) * 1000000 / rate;
-	/* nanosecond to picosecond */
+	 
 	temp *= 1000;
-	/*
-	 * If RE# access time is bigger than RE# pulse time,
-	 * delay sampling data timing.
-	 */
+	 
 	if (temp < timings->tREA_max) {
 		tsel = timings->tREA_max / 1000;
 		tsel = DIV_ROUND_UP(tsel * rate, 1000000);
@@ -619,19 +591,7 @@ static int mtk_nfc_setup_interface(struct nand_chip *chip, int csline,
 	temp |= tsel << STROBE_SHIFT;
 	nfi_writel(nfc, temp, NFI_DEBUG_CON1);
 
-	/*
-	 * ACCON: access timing control register
-	 * -------------------------------------
-	 * 31:28: tpoecs, minimum required time for CS post pulling down after
-	 *        accessing the device
-	 * 27:22: tprecs, minimum required time for CS pre pulling down before
-	 *        accessing the device
-	 * 21:16: tc2r, minimum required time from NCEB low to NREB low
-	 * 15:12: tw2r, minimum required time from NWEB high to NREB low.
-	 * 11:08: twh, write enable hold time
-	 * 07:04: twst, write wait states
-	 * 03:00: trlt, read wait states
-	 */
+	 
 	trlt = ACCTIMING(tpoecs, tprecs, tc2r, tw2r, twh, twst, trlt);
 	nfi_writel(nfc, trlt, NFI_ACCCON);
 
@@ -652,7 +612,7 @@ static int mtk_nfc_sector_encode(struct nand_chip *chip, u8 *data)
 
 static void mtk_nfc_no_bad_mark_swap(struct mtd_info *a, u8 *b, int c)
 {
-	/* nop */
+	 
 }
 
 static void mtk_nfc_bad_mark_swap(struct mtd_info *mtd, u8 *buf, int raw)
@@ -695,7 +655,7 @@ static int mtk_nfc_format_subpage(struct mtd_info *mtd, u32 offset,
 
 		memcpy(mtk_oob_ptr(chip, i), oob_ptr(chip, i), fdm->reg_size);
 
-		/* program the CRC back to the OOB */
+		 
 		ret = mtk_nfc_sector_encode(chip, mtk_data_ptr(chip, i));
 		if (ret < 0)
 			return ret;
@@ -836,7 +796,7 @@ static int mtk_nfc_write_page(struct mtd_info *mtd, struct nand_chip *chip,
 	nand_prog_page_begin_op(chip, page, 0, NULL, 0);
 
 	if (!raw) {
-		/* OOB => FDM: from register,  ECC: from HW */
+		 
 		reg = nfi_readw(nfc, NFI_CNFG) | CNFG_AUTO_FMT_EN;
 		nfi_writew(nfc, reg | CNFG_HW_ECC_EN, NFI_CNFG);
 
@@ -844,7 +804,7 @@ static int mtk_nfc_write_page(struct mtd_info *mtd, struct nand_chip *chip,
 		nfc->ecc_cfg.mode = ECC_NFI_MODE;
 		ret = mtk_ecc_enable(nfc->ecc, &nfc->ecc_cfg);
 		if (ret) {
-			/* clear NFI config */
+			 
 			reg = nfi_readw(nfc, NFI_CNFG);
 			reg &= ~(CNFG_AUTO_FMT_EN | CNFG_HW_ECC_EN);
 			nfi_writew(nfc, reg, NFI_CNFG);
@@ -856,7 +816,7 @@ static int mtk_nfc_write_page(struct mtd_info *mtd, struct nand_chip *chip,
 		mtk_nand->bad_mark.bm_swap(mtd, nfc->buffer, raw);
 		bufpoi = nfc->buffer;
 
-		/* write OOB into the FDM registers (OOB area in MTK NAND) */
+		 
 		mtk_nfc_write_fdm(chip);
 	} else {
 		bufpoi = buf;
@@ -902,7 +862,7 @@ static int mtk_nfc_write_subpage_hwecc(struct nand_chip *chip, u32 offset,
 	if (ret < 0)
 		return ret;
 
-	/* use the data in the private buffer (now with FDM and CRC) */
+	 
 	return mtk_nfc_write_page(mtd, chip, nfc->buffer, page, 1);
 }
 
@@ -982,7 +942,7 @@ static int mtk_nfc_read_subpage(struct mtd_info *mtd, struct nand_chip *chip,
 		rc = mtk_ecc_enable(nfc->ecc, &nfc->ecc_cfg);
 		if (rc) {
 			dev_err(nfc->dev, "ecc enable\n");
-			/* clear NFI_CNFG */
+			 
 			reg &= ~(CNFG_DMA_BURST_EN | CNFG_AHB | CNFG_READ_EN |
 				CNFG_AUTO_FMT_EN | CNFG_HW_ECC_EN);
 			nfi_writew(nfc, reg, NFI_CNFG);
@@ -1086,12 +1046,7 @@ static int mtk_nfc_read_oob_std(struct nand_chip *chip, int page)
 
 static inline void mtk_nfc_hw_init(struct mtk_nfc *nfc)
 {
-	/*
-	 * CNRNB: nand ready/busy register
-	 * -------------------------------
-	 * 7:4: timeout register for polling the NAND busy/ready signal
-	 * 0  : poll the status of the busy/ready signal after [7:4]*16 cycles.
-	 */
+	 
 	nfi_writew(nfc, 0xf1, NFI_CNRNB);
 	nfi_writel(nfc, PAGEFMT_8K_16K, NFI_PAGEFMT);
 
@@ -1173,7 +1128,7 @@ static void mtk_nfc_set_fdm(struct mtk_nfc_fdm *fdm, struct mtd_info *mtd)
 	if (fdm->reg_size > NFI_FDM_MAX_SIZE)
 		fdm->reg_size = NFI_FDM_MAX_SIZE;
 
-	/* bad block mark storage */
+	 
 	fdm->ecc_size = 1;
 }
 
@@ -1232,22 +1187,19 @@ static int mtk_nfc_ecc_init(struct device *dev, struct mtd_info *mtd)
 	u32 spare;
 	int free, ret;
 
-	/* support only ecc hw mode */
+	 
 	if (nand->ecc.engine_type != NAND_ECC_ENGINE_TYPE_ON_HOST) {
 		dev_err(dev, "ecc.engine_type not supported\n");
 		return -EINVAL;
 	}
 
-	/* if optional dt settings not present */
+	 
 	if (!nand->ecc.size || !nand->ecc.strength) {
-		/* use datasheet requirements */
+		 
 		nand->ecc.strength = requirements->strength;
 		nand->ecc.size = requirements->step_size;
 
-		/*
-		 * align eccstrength and eccsize
-		 * this controller only supports 512 and 1024 sizes
-		 */
+		 
 		if (nand->ecc.size < 1024) {
 			if (mtd->writesize > 512 &&
 			    nfc->caps->max_sector_size > 512) {
@@ -1264,16 +1216,12 @@ static int mtk_nfc_ecc_init(struct device *dev, struct mtd_info *mtd)
 		if (ret)
 			return ret;
 
-		/* calculate oob bytes except ecc parity data */
+		 
 		free = (nand->ecc.strength * mtk_ecc_get_parity_bits(nfc->ecc)
 			+ 7) >> 3;
 		free = spare - free;
 
-		/*
-		 * enhance ecc strength if oob left is bigger than max FDM size
-		 * or reduce ecc strength if oob size is not enough for ecc
-		 * parity data.
-		 */
+		 
 		if (free > NFI_FDM_MAX_SIZE) {
 			spare -= NFI_FDM_MAX_SIZE;
 			nand->ecc.strength = (spare << 3) /
@@ -1307,7 +1255,7 @@ static int mtk_nfc_attach_chip(struct nand_chip *chip)
 		return -EINVAL;
 	}
 
-	/* store bbt magic in page, cause OOB is not protected */
+	 
 	if (chip->bbt_options & NAND_BBT_USE_FLASH)
 		chip->bbt_options |= NAND_BBT_NO_OOB;
 
@@ -1390,7 +1338,7 @@ static int mtk_nfc_nand_chip_init(struct device *dev, struct mtk_nfc *nfc,
 
 	nand->options |= NAND_USES_DMA | NAND_SUBPAGE_READ;
 
-	/* set default mode in case dt entry is missing */
+	 
 	nand->ecc.engine_type = NAND_ECC_ENGINE_TYPE_ON_HOST;
 
 	nand->ecc.write_subpage = mtk_nfc_write_subpage_hwecc;
@@ -1503,7 +1451,7 @@ static int mtk_nfc_probe(struct platform_device *pdev)
 	INIT_LIST_HEAD(&nfc->chips);
 	nfc->controller.ops = &mtk_nfc_controller_ops;
 
-	/* probe defer if not ready */
+	 
 	nfc->ecc = of_mtk_ecc_get(np);
 	if (IS_ERR(nfc->ecc))
 		return PTR_ERR(nfc->ecc);
@@ -1621,7 +1569,7 @@ static int mtk_nfc_resume(struct device *dev)
 		return ret;
 	}
 
-	/* reset NAND chip if VCC was powered off */
+	 
 	list_for_each_entry(chip, &nfc->chips, node) {
 		nand = &chip->nand;
 		for (i = 0; i < chip->nsels; i++)

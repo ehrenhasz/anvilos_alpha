@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Watchdog driver for Technologic Systems TS-72xx based SBCs
- * (TS-7200, TS-7250 and TS-7260). These boards have external
- * glue logic CPLD chip, which includes programmable watchdog
- * timer.
- *
- * Copyright (c) 2009 Mika Westerberg <mika.westerberg@iki.fi>
- *
- * This driver is based on ep93xx_wdt and wm831x_wdt drivers.
- *
- */
+
+ 
 
 #include <linux/platform_device.h>
 #include <linux/module.h>
@@ -26,7 +16,7 @@ static bool nowayout = WATCHDOG_NOWAYOUT;
 module_param(nowayout, bool, 0);
 MODULE_PARM_DESC(nowayout, "Disable watchdog shutdown on close");
 
-/* priv->control_reg */
+ 
 #define TS72XX_WDT_CTRL_DISABLE		0x00
 #define TS72XX_WDT_CTRL_250MS		0x01
 #define TS72XX_WDT_CTRL_500MS		0x02
@@ -36,7 +26,7 @@ MODULE_PARM_DESC(nowayout, "Disable watchdog shutdown on close");
 #define TS72XX_WDT_CTRL_4SEC		0x06
 #define TS72XX_WDT_CTRL_8SEC		0x07
 
-/* priv->feed_reg */
+ 
 #define TS72XX_WDT_FEED_VAL		0x05
 
 struct ts72xx_wdt_priv {

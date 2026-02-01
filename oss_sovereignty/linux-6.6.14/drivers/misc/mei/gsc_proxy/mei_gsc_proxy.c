@@ -1,14 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2022-2023 Intel Corporation
- */
 
-/**
- * DOC: MEI_GSC_PROXY Client Driver
- *
- * The mei_gsc_proxy driver acts as a translation layer between
- * proxy user (I915) and ME FW by proxying messages to ME FW
- */
+ 
+
+ 
 
 #include <linux/component.h>
 #include <linux/mei_cl_bus.h>
@@ -20,13 +13,7 @@
 #include <drm/i915_component.h>
 #include <drm/i915_gsc_proxy_mei_interface.h>
 
-/**
- * mei_gsc_proxy_send - Sends a proxy message to ME FW.
- * @dev: device corresponding to the mei_cl_device
- * @buf: a message buffer to send
- * @size: size of the message
- * Return: bytes sent on Success, <0 on Failure
- */
+ 
 static int mei_gsc_proxy_send(struct device *dev, const void *buf, size_t size)
 {
 	ssize_t ret;
@@ -41,13 +28,7 @@ static int mei_gsc_proxy_send(struct device *dev, const void *buf, size_t size)
 	return ret;
 }
 
-/**
- * mei_gsc_proxy_recv - Receives a proxy message from ME FW.
- * @dev: device corresponding to the mei_cl_device
- * @buf: a message buffer to contain the received message
- * @size: size of the buffer
- * Return: bytes received on Success, <0 on Failure
- */
+ 
 static int mei_gsc_proxy_recv(struct device *dev, void *buf, size_t size)
 {
 	ssize_t ret;
@@ -91,21 +72,7 @@ static const struct component_master_ops mei_component_master_ops = {
 	.unbind = mei_component_master_unbind,
 };
 
-/**
- * mei_gsc_proxy_component_match - compare function for matching mei.
- *
- *    The function checks if the device is pci device and
- *    Intel VGA adapter, the subcomponent is SW Proxy
- *    and the parent of MEI PCI and the parent of VGA are the same PCH device.
- *
- * @dev: master device
- * @subcomponent: subcomponent to match (I915_COMPONENT_SWPROXY)
- * @data: compare data (mei pci parent)
- *
- * Return:
- * * 1 - if components match
- * * 0 - otherwise
- */
+ 
 static int mei_gsc_proxy_component_match(struct device *dev, int subcomponent,
 					 void *data)
 {

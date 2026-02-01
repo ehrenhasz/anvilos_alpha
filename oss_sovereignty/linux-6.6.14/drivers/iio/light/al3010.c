@@ -1,18 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * AL3010 - Dyna Image Ambient Light Sensor
- *
- * Copyright (c) 2014, Intel Corporation.
- * Copyright (c) 2016, Dyna-Image Corp.
- * Copyright (c) 2020, David Heidelberg, Michał Mirosław, Dmitry Osipenko
- *
- * IIO driver for AL3010 (7-bit I2C slave address 0x1C).
- *
- * TODO: interrupt support, thresholds
- * When the driver will get support for interrupt handling, then interrupt
- * will need to be disabled before turning sensor OFF in order to avoid
- * potential races with the interrupt handling.
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/i2c.h>
@@ -36,10 +23,10 @@
 #define AL3010_SCALE_AVAILABLE "1.1872 0.2968 0.0742 0.018"
 
 enum al3xxxx_range {
-	AL3XXX_RANGE_1, /* 77806 lx */
-	AL3XXX_RANGE_2, /* 19542 lx */
-	AL3XXX_RANGE_3, /*  4863 lx */
-	AL3XXX_RANGE_4  /*  1216 lx */
+	AL3XXX_RANGE_1,  
+	AL3XXX_RANGE_2,  
+	AL3XXX_RANGE_3,  
+	AL3XXX_RANGE_4   
 };
 
 static const int al3010_scales[][2] = {
@@ -109,11 +96,7 @@ static int al3010_read_raw(struct iio_dev *indio_dev,
 
 	switch (mask) {
 	case IIO_CHAN_INFO_RAW:
-		/*
-		 * ALS ADC value is stored in two adjacent registers:
-		 * - low byte of output is stored at AL3010_REG_DATA_LOW
-		 * - high byte of output is stored at AL3010_REG_DATA_LOW + 1
-		 */
+		 
 		ret = i2c_smbus_read_word_data(data->client,
 					       AL3010_REG_DATA_LOW);
 		if (ret < 0)

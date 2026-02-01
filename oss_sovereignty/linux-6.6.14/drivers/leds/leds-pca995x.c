@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * LED driver for PCA995x I2C LED drivers
- *
- * Copyright 2011 bct electronic GmbH
- * Copyright 2013 Qtechnology/AS
- * Copyright 2022 NXP
- * Copyright 2023 Marek Vasut
- */
+
+ 
 
 #include <linux/i2c.h>
 #include <linux/leds.h>
@@ -15,7 +8,7 @@
 #include <linux/property.h>
 #include <linux/regmap.h>
 
-/* Register definition */
+ 
 #define PCA995X_MODE1			0x00
 #define PCA995X_MODE2			0x01
 #define PCA995X_LEDOUT0			0x02
@@ -24,10 +17,10 @@
 #define PCA9952_IREFALL			0x43
 #define PCA9955B_IREFALL		0x45
 
-/* Auto-increment disabled. Normal mode */
+ 
 #define PCA995X_MODE1_CFG		0x00
 
-/* LED select registers determine the source that drives LED outputs */
+ 
 #define PCA995X_LED_OFF			0x0
 #define PCA995X_LED_ON			0x1
 #define PCA995X_LED_PWM_MODE		0x2
@@ -78,15 +71,12 @@ static int pca995x_brightness_set(struct led_classdev *led_cdev,
 		return regmap_update_bits(chip->regmap, ledout_addr,
 					  PCA995X_LDRX_MASK << shift, 0);
 	default:
-		/* Adjust brightness as per user input by changing individual PWM */
+		 
 		ret = regmap_write(chip->regmap, pwmout_addr, brightness);
 		if (ret)
 			return ret;
 
-		/*
-		 * Change LDRx configuration to individual brightness via PWM.
-		 * LED will stop blinking if it's doing so.
-		 */
+		 
 		return regmap_update_bits(chip->regmap, ledout_addr,
 					  PCA995X_LDRX_MASK << shift,
 					  PCA995X_LED_PWM_MODE << shift);
@@ -164,12 +154,12 @@ static int pca995x_probe(struct i2c_client *client)
 		}
 	}
 
-	/* Disable LED all-call address and set normal mode */
+	 
 	ret = regmap_write(chip->regmap, PCA995X_MODE1, PCA995X_MODE1_CFG);
 	if (ret)
 		return ret;
 
-	/* IREF Output current value for all LEDn outputs */
+	 
 	return regmap_write(chip->regmap,
 			    btype ? PCA9955B_IREFALL : PCA9952_IREFALL,
 			    PCA995X_IREFALL_HALF_CFG);

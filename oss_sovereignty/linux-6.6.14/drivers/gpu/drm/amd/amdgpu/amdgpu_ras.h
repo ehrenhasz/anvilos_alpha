@@ -1,26 +1,4 @@
-/*
- * Copyright 2018 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- *
- */
+ 
 #ifndef _AMDGPU_RAS_H
 #define _AMDGPU_RAS_H
 
@@ -32,9 +10,7 @@
 struct amdgpu_iv_entry;
 
 #define AMDGPU_RAS_FLAG_INIT_BY_VBIOS		(0x1 << 0)
-/* position of instance value in sub_block_index of
- * ta_ras_trigger_error_input, the sub block uses lower 12 bits
- */
+ 
 #define AMDGPU_RAS_INST_MASK 0xfffff000
 #define AMDGPU_RAS_INST_SHIFT 0xc
 
@@ -74,7 +50,7 @@ enum amdgpu_ras_mca_block {
 #define AMDGPU_RAS_BLOCK_MASK	((1ULL << AMDGPU_RAS_BLOCK_COUNT) - 1)
 
 enum amdgpu_ras_gfx_subblock {
-	/* CPC */
+	 
 	AMDGPU_RAS_BLOCK__GFX_CPC_INDEX_START = 0,
 	AMDGPU_RAS_BLOCK__GFX_CPC_SCRATCH =
 		AMDGPU_RAS_BLOCK__GFX_CPC_INDEX_START,
@@ -87,21 +63,21 @@ enum amdgpu_ras_gfx_subblock {
 	AMDGPU_RAS_BLOCK__GFX_DC_RESTORE_ME2,
 	AMDGPU_RAS_BLOCK__GFX_CPC_INDEX_END =
 		AMDGPU_RAS_BLOCK__GFX_DC_RESTORE_ME2,
-	/* CPF */
+	 
 	AMDGPU_RAS_BLOCK__GFX_CPF_INDEX_START,
 	AMDGPU_RAS_BLOCK__GFX_CPF_ROQ_ME2 =
 		AMDGPU_RAS_BLOCK__GFX_CPF_INDEX_START,
 	AMDGPU_RAS_BLOCK__GFX_CPF_ROQ_ME1,
 	AMDGPU_RAS_BLOCK__GFX_CPF_TAG,
 	AMDGPU_RAS_BLOCK__GFX_CPF_INDEX_END = AMDGPU_RAS_BLOCK__GFX_CPF_TAG,
-	/* CPG */
+	 
 	AMDGPU_RAS_BLOCK__GFX_CPG_INDEX_START,
 	AMDGPU_RAS_BLOCK__GFX_CPG_DMA_ROQ =
 		AMDGPU_RAS_BLOCK__GFX_CPG_INDEX_START,
 	AMDGPU_RAS_BLOCK__GFX_CPG_DMA_TAG,
 	AMDGPU_RAS_BLOCK__GFX_CPG_TAG,
 	AMDGPU_RAS_BLOCK__GFX_CPG_INDEX_END = AMDGPU_RAS_BLOCK__GFX_CPG_TAG,
-	/* GDS */
+	 
 	AMDGPU_RAS_BLOCK__GFX_GDS_INDEX_START,
 	AMDGPU_RAS_BLOCK__GFX_GDS_MEM = AMDGPU_RAS_BLOCK__GFX_GDS_INDEX_START,
 	AMDGPU_RAS_BLOCK__GFX_GDS_INPUT_QUEUE,
@@ -110,18 +86,18 @@ enum amdgpu_ras_gfx_subblock {
 	AMDGPU_RAS_BLOCK__GFX_GDS_OA_PIPE_MEM,
 	AMDGPU_RAS_BLOCK__GFX_GDS_INDEX_END =
 		AMDGPU_RAS_BLOCK__GFX_GDS_OA_PIPE_MEM,
-	/* SPI */
+	 
 	AMDGPU_RAS_BLOCK__GFX_SPI_SR_MEM,
-	/* SQ */
+	 
 	AMDGPU_RAS_BLOCK__GFX_SQ_INDEX_START,
 	AMDGPU_RAS_BLOCK__GFX_SQ_SGPR = AMDGPU_RAS_BLOCK__GFX_SQ_INDEX_START,
 	AMDGPU_RAS_BLOCK__GFX_SQ_LDS_D,
 	AMDGPU_RAS_BLOCK__GFX_SQ_LDS_I,
 	AMDGPU_RAS_BLOCK__GFX_SQ_VGPR,
 	AMDGPU_RAS_BLOCK__GFX_SQ_INDEX_END = AMDGPU_RAS_BLOCK__GFX_SQ_VGPR,
-	/* SQC (3 ranges) */
+	 
 	AMDGPU_RAS_BLOCK__GFX_SQC_INDEX_START,
-	/* SQC range 0 */
+	 
 	AMDGPU_RAS_BLOCK__GFX_SQC_INDEX0_START =
 		AMDGPU_RAS_BLOCK__GFX_SQC_INDEX_START,
 	AMDGPU_RAS_BLOCK__GFX_SQC_INST_UTCL1_LFIFO =
@@ -134,7 +110,7 @@ enum amdgpu_ras_gfx_subblock {
 	AMDGPU_RAS_BLOCK__GFX_SQC_DATA_CU2_UTCL1_LFIFO,
 	AMDGPU_RAS_BLOCK__GFX_SQC_INDEX0_END =
 		AMDGPU_RAS_BLOCK__GFX_SQC_DATA_CU2_UTCL1_LFIFO,
-	/* SQC range 1 */
+	 
 	AMDGPU_RAS_BLOCK__GFX_SQC_INDEX1_START,
 	AMDGPU_RAS_BLOCK__GFX_SQC_INST_BANKA_TAG_RAM =
 		AMDGPU_RAS_BLOCK__GFX_SQC_INDEX1_START,
@@ -148,7 +124,7 @@ enum amdgpu_ras_gfx_subblock {
 	AMDGPU_RAS_BLOCK__GFX_SQC_DATA_BANKA_BANK_RAM,
 	AMDGPU_RAS_BLOCK__GFX_SQC_INDEX1_END =
 		AMDGPU_RAS_BLOCK__GFX_SQC_DATA_BANKA_BANK_RAM,
-	/* SQC range 2 */
+	 
 	AMDGPU_RAS_BLOCK__GFX_SQC_INDEX2_START,
 	AMDGPU_RAS_BLOCK__GFX_SQC_INST_BANKB_TAG_RAM =
 		AMDGPU_RAS_BLOCK__GFX_SQC_INDEX2_START,
@@ -164,7 +140,7 @@ enum amdgpu_ras_gfx_subblock {
 		AMDGPU_RAS_BLOCK__GFX_SQC_DATA_BANKB_BANK_RAM,
 	AMDGPU_RAS_BLOCK__GFX_SQC_INDEX_END =
 		AMDGPU_RAS_BLOCK__GFX_SQC_INDEX2_END,
-	/* TA */
+	 
 	AMDGPU_RAS_BLOCK__GFX_TA_INDEX_START,
 	AMDGPU_RAS_BLOCK__GFX_TA_FS_DFIFO =
 		AMDGPU_RAS_BLOCK__GFX_TA_INDEX_START,
@@ -173,16 +149,16 @@ enum amdgpu_ras_gfx_subblock {
 	AMDGPU_RAS_BLOCK__GFX_TA_FX_LFIFO,
 	AMDGPU_RAS_BLOCK__GFX_TA_FS_CFIFO,
 	AMDGPU_RAS_BLOCK__GFX_TA_INDEX_END = AMDGPU_RAS_BLOCK__GFX_TA_FS_CFIFO,
-	/* TCA */
+	 
 	AMDGPU_RAS_BLOCK__GFX_TCA_INDEX_START,
 	AMDGPU_RAS_BLOCK__GFX_TCA_HOLE_FIFO =
 		AMDGPU_RAS_BLOCK__GFX_TCA_INDEX_START,
 	AMDGPU_RAS_BLOCK__GFX_TCA_REQ_FIFO,
 	AMDGPU_RAS_BLOCK__GFX_TCA_INDEX_END =
 		AMDGPU_RAS_BLOCK__GFX_TCA_REQ_FIFO,
-	/* TCC (5 sub-ranges) */
+	 
 	AMDGPU_RAS_BLOCK__GFX_TCC_INDEX_START,
-	/* TCC range 0 */
+	 
 	AMDGPU_RAS_BLOCK__GFX_TCC_INDEX0_START =
 		AMDGPU_RAS_BLOCK__GFX_TCC_INDEX_START,
 	AMDGPU_RAS_BLOCK__GFX_TCC_CACHE_DATA =
@@ -196,14 +172,14 @@ enum amdgpu_ras_gfx_subblock {
 	AMDGPU_RAS_BLOCK__GFX_TCC_LOW_RATE_TAG,
 	AMDGPU_RAS_BLOCK__GFX_TCC_INDEX0_END =
 		AMDGPU_RAS_BLOCK__GFX_TCC_LOW_RATE_TAG,
-	/* TCC range 1 */
+	 
 	AMDGPU_RAS_BLOCK__GFX_TCC_INDEX1_START,
 	AMDGPU_RAS_BLOCK__GFX_TCC_IN_USE_DEC =
 		AMDGPU_RAS_BLOCK__GFX_TCC_INDEX1_START,
 	AMDGPU_RAS_BLOCK__GFX_TCC_IN_USE_TRANSFER,
 	AMDGPU_RAS_BLOCK__GFX_TCC_INDEX1_END =
 		AMDGPU_RAS_BLOCK__GFX_TCC_IN_USE_TRANSFER,
-	/* TCC range 2 */
+	 
 	AMDGPU_RAS_BLOCK__GFX_TCC_INDEX2_START,
 	AMDGPU_RAS_BLOCK__GFX_TCC_RETURN_DATA =
 		AMDGPU_RAS_BLOCK__GFX_TCC_INDEX2_START,
@@ -216,14 +192,14 @@ enum amdgpu_ras_gfx_subblock {
 	AMDGPU_RAS_BLOCK__GFX_TCC_CACHE_TAG_PROBE_FIFO,
 	AMDGPU_RAS_BLOCK__GFX_TCC_INDEX2_END =
 		AMDGPU_RAS_BLOCK__GFX_TCC_CACHE_TAG_PROBE_FIFO,
-	/* TCC range 3 */
+	 
 	AMDGPU_RAS_BLOCK__GFX_TCC_INDEX3_START,
 	AMDGPU_RAS_BLOCK__GFX_TCC_LATENCY_FIFO =
 		AMDGPU_RAS_BLOCK__GFX_TCC_INDEX3_START,
 	AMDGPU_RAS_BLOCK__GFX_TCC_LATENCY_FIFO_NEXT_RAM,
 	AMDGPU_RAS_BLOCK__GFX_TCC_INDEX3_END =
 		AMDGPU_RAS_BLOCK__GFX_TCC_LATENCY_FIFO_NEXT_RAM,
-	/* TCC range 4 */
+	 
 	AMDGPU_RAS_BLOCK__GFX_TCC_INDEX4_START,
 	AMDGPU_RAS_BLOCK__GFX_TCC_WRRET_TAG_WRITE_RETURN =
 		AMDGPU_RAS_BLOCK__GFX_TCC_INDEX4_START,
@@ -232,9 +208,9 @@ enum amdgpu_ras_gfx_subblock {
 		AMDGPU_RAS_BLOCK__GFX_TCC_ATOMIC_RETURN_BUFFER,
 	AMDGPU_RAS_BLOCK__GFX_TCC_INDEX_END =
 		AMDGPU_RAS_BLOCK__GFX_TCC_INDEX4_END,
-	/* TCI */
+	 
 	AMDGPU_RAS_BLOCK__GFX_TCI_WRITE_RAM,
-	/* TCP */
+	 
 	AMDGPU_RAS_BLOCK__GFX_TCP_INDEX_START,
 	AMDGPU_RAS_BLOCK__GFX_TCP_CACHE_RAM =
 		AMDGPU_RAS_BLOCK__GFX_TCP_INDEX_START,
@@ -246,16 +222,16 @@ enum amdgpu_ras_gfx_subblock {
 	AMDGPU_RAS_BLOCK__GFX_TCP_UTCL1_LFIFO1,
 	AMDGPU_RAS_BLOCK__GFX_TCP_INDEX_END =
 		AMDGPU_RAS_BLOCK__GFX_TCP_UTCL1_LFIFO1,
-	/* TD */
+	 
 	AMDGPU_RAS_BLOCK__GFX_TD_INDEX_START,
 	AMDGPU_RAS_BLOCK__GFX_TD_SS_FIFO_LO =
 		AMDGPU_RAS_BLOCK__GFX_TD_INDEX_START,
 	AMDGPU_RAS_BLOCK__GFX_TD_SS_FIFO_HI,
 	AMDGPU_RAS_BLOCK__GFX_TD_CS_FIFO,
 	AMDGPU_RAS_BLOCK__GFX_TD_INDEX_END = AMDGPU_RAS_BLOCK__GFX_TD_CS_FIFO,
-	/* EA (3 sub-ranges) */
+	 
 	AMDGPU_RAS_BLOCK__GFX_EA_INDEX_START,
-	/* EA range 0 */
+	 
 	AMDGPU_RAS_BLOCK__GFX_EA_INDEX0_START =
 		AMDGPU_RAS_BLOCK__GFX_EA_INDEX_START,
 	AMDGPU_RAS_BLOCK__GFX_EA_DRAMRD_CMDMEM =
@@ -269,7 +245,7 @@ enum amdgpu_ras_gfx_subblock {
 	AMDGPU_RAS_BLOCK__GFX_EA_GMIWR_DATAMEM,
 	AMDGPU_RAS_BLOCK__GFX_EA_INDEX0_END =
 		AMDGPU_RAS_BLOCK__GFX_EA_GMIWR_DATAMEM,
-	/* EA range 1 */
+	 
 	AMDGPU_RAS_BLOCK__GFX_EA_INDEX1_START,
 	AMDGPU_RAS_BLOCK__GFX_EA_DRAMRD_PAGEMEM =
 		AMDGPU_RAS_BLOCK__GFX_EA_INDEX1_START,
@@ -281,7 +257,7 @@ enum amdgpu_ras_gfx_subblock {
 	AMDGPU_RAS_BLOCK__GFX_EA_GMIWR_PAGEMEM,
 	AMDGPU_RAS_BLOCK__GFX_EA_INDEX1_END =
 		AMDGPU_RAS_BLOCK__GFX_EA_GMIWR_PAGEMEM,
-	/* EA range 2 */
+	 
 	AMDGPU_RAS_BLOCK__GFX_EA_INDEX2_START,
 	AMDGPU_RAS_BLOCK__GFX_EA_MAM_D0MEM =
 		AMDGPU_RAS_BLOCK__GFX_EA_INDEX2_START,
@@ -292,13 +268,13 @@ enum amdgpu_ras_gfx_subblock {
 		AMDGPU_RAS_BLOCK__GFX_EA_MAM_D3MEM,
 	AMDGPU_RAS_BLOCK__GFX_EA_INDEX_END =
 		AMDGPU_RAS_BLOCK__GFX_EA_INDEX2_END,
-	/* UTC VM L2 bank */
+	 
 	AMDGPU_RAS_BLOCK__UTC_VML2_BANK_CACHE,
-	/* UTC VM walker */
+	 
 	AMDGPU_RAS_BLOCK__UTC_VML2_WALKER,
-	/* UTC ATC L2 2MB cache */
+	 
 	AMDGPU_RAS_BLOCK__UTC_ATCL2_CACHE_2M_BANK,
-	/* UTC ATC L2 4KB cache */
+	 
 	AMDGPU_RAS_BLOCK__UTC_ATCL2_CACHE_4K_BANK,
 	AMDGPU_RAS_BLOCK__GFX_MAX
 };
@@ -319,7 +295,7 @@ enum amdgpu_ras_ret {
 	AMDGPU_RAS_PT,
 };
 
-/* ras error status reisger fields */
+ 
 #define ERR_STATUS_LO__ERR_STATUS_VALID_FLAG__SHIFT	0x0
 #define ERR_STATUS_LO__ERR_STATUS_VALID_FLAG_MASK	0x00000001L
 #define ERR_STATUS_LO__MEMORY_ID__SHIFT			0x18
@@ -379,29 +355,27 @@ struct ecc_info_per_ch {
 struct umc_ecc_info {
 	struct ecc_info_per_ch ecc[MAX_UMC_CHANNEL_NUM];
 
-	/* Determine smu ecctable whether support
-	 * record correctable error address
-	 */
+	 
 	int record_ce_addr_supported;
 };
 
 struct amdgpu_ras {
-	/* ras infrastructure */
-	/* for ras itself. */
+	 
+	 
 	uint32_t features;
 	struct list_head head;
-	/* sysfs */
+	 
 	struct device_attribute features_attr;
 	struct bin_attribute badpages_attr;
 	struct dentry *de_ras_eeprom_table;
-	/* block array */
+	 
 	struct ras_manager *objs;
 
-	/* gpu recovery */
+	 
 	struct work_struct recovery_work;
 	atomic_t in_recovery;
 	struct amdgpu_device *adev;
-	/* error handler data */
+	 
 	struct ras_err_handler_data *eh_data;
 	struct mutex recovery_lock;
 
@@ -411,27 +385,27 @@ struct amdgpu_ras {
 
 	bool error_query_ready;
 
-	/* bad page count threshold */
+	 
 	uint32_t bad_page_cnt_threshold;
 
-	/* disable ras error count harvest in recovery */
+	 
 	bool disable_ras_err_cnt_harvest;
 
-	/* is poison mode supported */
+	 
 	bool poison_supported;
 
-	/* RAS count errors delayed work */
+	 
 	struct delayed_work ras_counte_delay_work;
 	atomic_t ras_ue_count;
 	atomic_t ras_ce_count;
 
-	/* record umc error info queried from smu */
+	 
 	struct umc_ecc_info umc_ecc;
 
-	/* Indicates smu whether need update bad channel info */
+	 
 	bool update_channel_flag;
 
-	/* Record special requirements of gpu reset caller */
+	 
 	uint32_t  gpu_reset_flags;
 };
 
@@ -448,11 +422,11 @@ struct ras_err_data {
 };
 
 struct ras_err_handler_data {
-	/* point to bad page records array */
+	 
 	struct eeprom_table_record *bps;
-	/* the count of entries */
+	 
 	int count;
-	/* the space can place new entries */
+	 
 	int space_left;
 };
 
@@ -461,12 +435,12 @@ typedef int (*ras_ih_cb)(struct amdgpu_device *adev,
 		struct amdgpu_iv_entry *entry);
 
 struct ras_ih_data {
-	/* interrupt bottom half */
+	 
 	struct work_struct ih_work;
 	int inuse;
-	/* IP callback */
+	 
 	ras_ih_cb cb;
-	/* full of entries */
+	 
 	unsigned char *ring;
 	unsigned int ring_size;
 	unsigned int element_size;
@@ -477,20 +451,20 @@ struct ras_ih_data {
 
 struct ras_manager {
 	struct ras_common_if head;
-	/* reference count */
+	 
 	int use;
-	/* ras block link */
+	 
 	struct list_head node;
-	/* the device */
+	 
 	struct amdgpu_device *adev;
-	/* sysfs */
+	 
 	struct device_attribute sysfs_attr;
 	int attr_inuse;
 
-	/* fs node name */
+	 
 	struct ras_fs_data fs_data;
 
-	/* IH data */
+	 
 	struct ras_ih_data ih_data;
 
 	struct ras_err_data err_data;
@@ -502,7 +476,7 @@ struct ras_badpage {
 	unsigned int flags;
 };
 
-/* interfaces for IP */
+ 
 struct ras_fs_if {
 	struct ras_common_if head;
 	const char* sysfs_name;
@@ -568,19 +542,7 @@ struct amdgpu_ras_block_hw_ops {
 	bool (*handle_poison_consumption)(struct amdgpu_device *adev);
 };
 
-/* work flow
- * vbios
- * 1: ras feature enable (enabled by default)
- * psp
- * 2: ras framework init (in ip_init)
- * IP
- * 3: IH add
- * 4: debugfs/sysfs create
- * 5: query/inject
- * 6: debugfs/sysfs remove
- * 7: IH remove
- * 8: feature disable
- */
+ 
 
 
 int amdgpu_ras_recovery_init(struct amdgpu_device *adev);
@@ -593,7 +555,7 @@ int amdgpu_ras_query_error_count(struct amdgpu_device *adev,
 				 unsigned long *ue_count,
 				 struct ras_query_if *query_info);
 
-/* error handling functions */
+ 
 int amdgpu_ras_add_bad_pages(struct amdgpu_device *adev,
 		struct eeprom_table_record *bps, int pages);
 
@@ -662,7 +624,7 @@ amdgpu_ras_error_to_ta(enum amdgpu_ras_error_type error) {
 	}
 }
 
-/* called in ip_init and ip_fini */
+ 
 int amdgpu_ras_init(struct amdgpu_device *adev);
 int amdgpu_ras_late_init(struct amdgpu_device *adev);
 int amdgpu_ras_fini(struct amdgpu_device *adev);

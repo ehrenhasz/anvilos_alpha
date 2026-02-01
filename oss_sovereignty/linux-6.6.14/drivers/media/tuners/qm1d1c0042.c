@@ -1,22 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Sharp QM1D1C0042 8PSK tuner driver
- *
- * Copyright (C) 2014 Akihiro Tsukada <tskd08@gmail.com>
- */
 
-/*
- * NOTICE:
- * As the disclosed information on the chip is very limited,
- * this driver lacks some features, including chip config like IF freq.
- * It assumes that users of this driver (such as a PCI bridge of
- * DTV receiver cards) know the relevant info and
- * configure the chip via I2C if necessary.
- *
- * Currently, PT3 driver is the only one that uses this driver,
- * and contains init/config code in its firmware.
- * Thus some part of the code might be dependent on PT3 specific config.
- */
+ 
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/math64.h>
@@ -100,7 +85,7 @@ static int reg_read(struct qm1d1c0042_state *state, u8 reg, u8 *val)
 static int qm1d1c0042_set_srch_mode(struct qm1d1c0042_state *state, bool fast)
 {
 	if (fast)
-		state->regs[0x03] |= 0x01; /* set fast search mode */
+		state->regs[0x03] |= 0x01;  
 	else
 		state->regs[0x03] &= ~0x01 & 0xff;
 
@@ -111,9 +96,9 @@ static int qm1d1c0042_wakeup(struct qm1d1c0042_state *state)
 {
 	int ret;
 
-	state->regs[0x01] |= 1 << 3;             /* BB_Reg_enable */
-	state->regs[0x01] &= (~(1 << 0)) & 0xff; /* NORMAL (wake-up) */
-	state->regs[0x05] &= (~(1 << 3)) & 0xff; /* pfd_rst NORMAL */
+	state->regs[0x01] |= 1 << 3;              
+	state->regs[0x01] &= (~(1 << 0)) & 0xff;  
+	state->regs[0x05] &= (~(1 << 3)) & 0xff;  
 	ret = reg_write(state, 0x01, state->regs[0x01]);
 	if (ret == 0)
 		ret = reg_write(state, 0x05, state->regs[0x05]);
@@ -124,7 +109,7 @@ static int qm1d1c0042_wakeup(struct qm1d1c0042_state *state)
 	return ret;
 }
 
-/* tuner_ops */
+ 
 
 static int qm1d1c0042_set_config(struct dvb_frontend *fe, void *priv_cfg)
 {
@@ -162,8 +147,8 @@ static int qm1d1c0042_set_config(struct dvb_frontend *fe, void *priv_cfg)
 	return 0;
 }
 
-/* divisor, vco_band parameters */
-/*  {maxfreq,  param1(band?), param2(div?) */
+ 
+ 
 static const u32 conv_table[9][3] = {
 	{ 2151000, 1, 7 },
 	{ 1950000, 1, 6 },
@@ -194,7 +179,7 @@ static int qm1d1c0042_set_params(struct dvb_frontend *fe)
 	state->regs[0x13] &= 0x9f;
 	state->regs[0x13] |= 0x20;
 
-	/* div2/vco_band */
+	 
 	val = state->regs[0x02] & 0x0f;
 	for (i = 0; i < 8; i++)
 		if (freq < conv_table[i][0] && freq >= conv_table[i + 1][0]) {
@@ -220,10 +205,10 @@ static int qm1d1c0042_set_params(struct dvb_frontend *fe)
 	if (ret < 0)
 		return ret;
 
-	/* LPF */
+	 
 	val = state->regs[0x08];
 	if (state->cfg.lpf) {
-		/* LPF_CLK, LPF_FC */
+		 
 		val &= 0xf0;
 		val |= 0x02;
 	}
@@ -231,11 +216,7 @@ static int qm1d1c0042_set_params(struct dvb_frontend *fe)
 	if (ret < 0)
 		return ret;
 
-	/*
-	 * b = (freq / state->cfg.xtal_freq - a) << 20;
-	 * sd = b          (b >= 0)
-	 *      1<<22 + b  (b < 0)
-	 */
+	 
 	b = (s32)div64_s64(((s64) freq) << 20, state->cfg.xtal_freq)
 			   - (((s64) a) << 20);
 
@@ -257,13 +238,13 @@ static int qm1d1c0042_set_params(struct dvb_frontend *fe)
 		return ret;
 
 	if (!state->cfg.lpf) {
-		/* CSEL_Offset */
+		 
 		ret = reg_write(state, 0x13, state->regs[0x13]);
 		if (ret < 0)
 			return ret;
 	}
 
-	/* VCO_TM, LPF_TM */
+	 
 	mask = state->cfg.lpf ? 0x3f : 0x7f;
 	val = state->regs[0x0c] & mask;
 	ret = reg_write(state, 0x0c, val);
@@ -283,12 +264,12 @@ static int qm1d1c0042_set_params(struct dvb_frontend *fe)
 		msleep(state->cfg.normal_srch_wait);
 
 	if (state->cfg.lpf) {
-		/* LPF_FC */
+		 
 		ret = reg_write(state, 0x08, 0x09);
 		if (ret < 0)
 			return ret;
 
-		/* CSEL_Offset */
+		 
 		ret = reg_write(state, 0x13, state->regs[0x13]);
 		if (ret < 0)
 			return ret;
@@ -302,9 +283,9 @@ static int qm1d1c0042_sleep(struct dvb_frontend *fe)
 	int ret;
 
 	state = fe->tuner_priv;
-	state->regs[0x01] &= (~(1 << 3)) & 0xff; /* BB_Reg_disable */
-	state->regs[0x01] |= 1 << 0;             /* STDBY */
-	state->regs[0x05] |= 1 << 3;             /* pfd_rst STANDBY */
+	state->regs[0x01] &= (~(1 << 3)) & 0xff;  
+	state->regs[0x01] |= 1 << 0;              
+	state->regs[0x05] |= 1 << 3;              
 	ret = reg_write(state, 0x05, state->regs[0x05]);
 	if (ret == 0)
 		ret = reg_write(state, 0x01, state->regs[0x01]);
@@ -325,16 +306,16 @@ static int qm1d1c0042_init(struct dvb_frontend *fe)
 	reg_write(state, 0x01, 0x0c);
 	reg_write(state, 0x01, 0x0c);
 
-	ret = reg_write(state, 0x01, 0x0c); /* soft reset on */
+	ret = reg_write(state, 0x01, 0x0c);  
 	if (ret < 0)
 		goto failed;
 	usleep_range(2000, 3000);
 
-	ret = reg_write(state, 0x01, 0x1c); /* soft reset off */
+	ret = reg_write(state, 0x01, 0x1c);  
 	if (ret < 0)
 		goto failed;
 
-	/* check ID and choose initial registers corresponding ID */
+	 
 	ret = reg_read(state, 0x00, &val);
 	if (ret < 0)
 		goto failed;
@@ -356,7 +337,7 @@ static int qm1d1c0042_init(struct dvb_frontend *fe)
 		goto failed;
 	msleep(state->cfg.lpf_wait);
 
-	/* set all writable registers */
+	 
 	for (i = 1; i <= 0x0c ; i++) {
 		ret = reg_write(state, i, state->regs[i]);
 		if (ret < 0)
@@ -384,7 +365,7 @@ failed:
 	return ret;
 }
 
-/* I2C driver functions */
+ 
 
 static const struct dvb_tuner_ops qm1d1c0042_ops = {
 	.info = {

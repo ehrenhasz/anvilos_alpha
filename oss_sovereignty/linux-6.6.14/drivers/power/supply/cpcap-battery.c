@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Battery driver for CPCAP PMIC
- *
- * Copyright (C) 2017 Tony Lindgren <tony@atomide.com>
- *
- * Some parts of the code based on earlier Motorola mapphone Linux kernel
- * drivers:
- *
- * Copyright (C) 2009-2010 Motorola, Inc.
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/err.h>
@@ -27,36 +18,24 @@
 #include <linux/iio/types.h>
 #include <linux/mfd/motorola-cpcap.h>
 
-/*
- * Register bit defines for CPCAP_REG_BPEOL. Some of these seem to
- * map to MC13783UG.pdf "Table 5-19. Register 13, Power Control 0"
- * to enable BATTDETEN, LOBAT and EOL features. We currently use
- * LOBAT interrupts instead of EOL.
- */
-#define CPCAP_REG_BPEOL_BIT_EOL9	BIT(9)	/* Set for EOL irq */
-#define CPCAP_REG_BPEOL_BIT_EOL8	BIT(8)	/* Set for EOL irq */
+ 
+#define CPCAP_REG_BPEOL_BIT_EOL9	BIT(9)	 
+#define CPCAP_REG_BPEOL_BIT_EOL8	BIT(8)	 
 #define CPCAP_REG_BPEOL_BIT_UNKNOWN7	BIT(7)
 #define CPCAP_REG_BPEOL_BIT_UNKNOWN6	BIT(6)
 #define CPCAP_REG_BPEOL_BIT_UNKNOWN5	BIT(5)
-#define CPCAP_REG_BPEOL_BIT_EOL_MULTI	BIT(4)	/* Set for multiple EOL irqs */
+#define CPCAP_REG_BPEOL_BIT_EOL_MULTI	BIT(4)	 
 #define CPCAP_REG_BPEOL_BIT_UNKNOWN3	BIT(3)
 #define CPCAP_REG_BPEOL_BIT_UNKNOWN2	BIT(2)
-#define CPCAP_REG_BPEOL_BIT_BATTDETEN	BIT(1)	/* Enable battery detect */
-#define CPCAP_REG_BPEOL_BIT_EOLSEL	BIT(0)	/* BPDET = 0, EOL = 1 */
+#define CPCAP_REG_BPEOL_BIT_BATTDETEN	BIT(1)	 
+#define CPCAP_REG_BPEOL_BIT_EOLSEL	BIT(0)	 
 
-/*
- * Register bit defines for CPCAP_REG_CCC1. These seem similar to the twl6030
- * coulomb counter registers rather than the mc13892 registers. Both twl6030
- * and mc13892 set bits 2 and 1 to reset and clear registers. But mc13892
- * sets bit 0 to start the coulomb counter while twl6030 sets bit 0 to stop
- * the coulomb counter like cpcap does. So for now, we use the twl6030 style
- * naming for the registers.
- */
-#define CPCAP_REG_CCC1_ACTIVE_MODE1	BIT(4)	/* Update rate */
-#define CPCAP_REG_CCC1_ACTIVE_MODE0	BIT(3)	/* Update rate */
-#define CPCAP_REG_CCC1_AUTOCLEAR	BIT(2)	/* Resets sample registers */
-#define CPCAP_REG_CCC1_CAL_EN		BIT(1)	/* Clears after write in 1s */
-#define CPCAP_REG_CCC1_PAUSE		BIT(0)	/* Stop counters, allow write */
+ 
+#define CPCAP_REG_CCC1_ACTIVE_MODE1	BIT(4)	 
+#define CPCAP_REG_CCC1_ACTIVE_MODE0	BIT(3)	 
+#define CPCAP_REG_CCC1_AUTOCLEAR	BIT(2)	 
+#define CPCAP_REG_CCC1_CAL_EN		BIT(1)	 
+#define CPCAP_REG_CCC1_PAUSE		BIT(0)	 
 #define CPCAP_REG_CCC1_RESET_MASK	(CPCAP_REG_CCC1_AUTOCLEAR | \
 					 CPCAP_REG_CCC1_CAL_EN)
 
@@ -98,10 +77,10 @@ struct cpcap_battery_config {
 };
 
 struct cpcap_coulomb_counter_data {
-	s32 sample;		/* 24 or 32 bits */
+	s32 sample;		 
 	s32 accumulator;
-	s16 offset;		/* 9 bits */
-	s16 integrator;		/* 13 or 16 bits */
+	s16 offset;		 
+	s16 integrator;		 
 };
 
 enum cpcap_battery_state {
@@ -129,7 +108,7 @@ struct cpcap_battery_ddata {
 	struct power_supply *psy;
 	struct cpcap_battery_config config;
 	struct cpcap_battery_state_data state[CPCAP_BATTERY_STATE_NR];
-	u32 cc_lsb;		/* μAms per LSB */
+	u32 cc_lsb;		 
 	atomic_t active;
 	int charge_full;
 	int status;
@@ -230,27 +209,7 @@ static int cpcap_battery_get_current(struct cpcap_battery_ddata *ddata)
 	return value * 1000;
 }
 
-/**
- * cpcap_battery_cc_raw_div - calculate and divide coulomb counter μAms values
- * @ddata: device driver data
- * @sample: coulomb counter sample value
- * @accumulator: coulomb counter integrator value
- * @offset: coulomb counter offset value
- * @divider: conversion divider
- *
- * Note that cc_lsb and cc_dur values are from Motorola Linux kernel
- * function data_get_avg_curr_ua() and seem to be based on measured test
- * results. It also has the following comment:
- *
- * Adjustment factors are applied here as a temp solution per the test
- * results. Need to work out a formal solution for this adjustment.
- *
- * A coulomb counter for similar hardware seems to be documented in
- * "TWL6030 Gas Gauging Basics (Rev. A)" swca095a.pdf in chapter
- * "10 Calculating Accumulated Current". We however follow what the
- * Motorola mapphone Linux kernel is doing as there may be either a
- * TI or ST coulomb counter in the PMIC.
- */
+ 
 static int cpcap_battery_cc_raw_div(struct cpcap_battery_ddata *ddata,
 				    s32 sample, s32 accumulator,
 				    s16 offset, u32 divider)
@@ -269,7 +228,7 @@ static int cpcap_battery_cc_raw_div(struct cpcap_battery_ddata *ddata,
 	return acc;
 }
 
-/* 3600000μAms = 1μAh */
+ 
 static int cpcap_battery_cc_to_uah(struct cpcap_battery_ddata *ddata,
 				   s32 sample, s32 accumulator,
 				   s16 offset)
@@ -289,26 +248,12 @@ static int cpcap_battery_cc_to_ua(struct cpcap_battery_ddata *ddata,
 					CPCAP_BATTERY_CC_SAMPLE_PERIOD_MS);
 }
 
-/**
- * cpcap_battery_read_accumulated - reads cpcap coulomb counter
- * @ddata: device driver data
- * @ccd: coulomb counter values
- *
- * Based on Motorola mapphone kernel function data_read_regs().
- * Looking at the registers, the coulomb counter seems similar to
- * the coulomb counter in TWL6030. See "TWL6030 Gas Gauging Basics
- * (Rev. A) swca095a.pdf for "10 Calculating Accumulated Current".
- *
- * Note that swca095a.pdf instructs to stop the coulomb counter
- * before reading to avoid values changing. Motorola mapphone
- * Linux kernel does not do it, so let's assume they've verified
- * the data produced is correct.
- */
+ 
 static int
 cpcap_battery_read_accumulated(struct cpcap_battery_ddata *ddata,
 			       struct cpcap_coulomb_counter_data *ccd)
 {
-	u16 buf[7];	/* CPCAP_REG_CCS1 to CCI */
+	u16 buf[7];	 
 	int error;
 
 	ccd->sample = 0;
@@ -316,30 +261,27 @@ cpcap_battery_read_accumulated(struct cpcap_battery_ddata *ddata,
 	ccd->offset = 0;
 	ccd->integrator = 0;
 
-	/* Read coulomb counter register range */
+	 
 	error = regmap_bulk_read(ddata->reg, CPCAP_REG_CCS1,
 				 buf, ARRAY_SIZE(buf));
 	if (error)
 		return 0;
 
-	/* Sample value CPCAP_REG_CCS1 & 2 */
+	 
 	ccd->sample = (buf[1] & 0x0fff) << 16;
 	ccd->sample |= buf[0];
 	if (ddata->vendor == CPCAP_VENDOR_TI)
 		ccd->sample = sign_extend32(24, ccd->sample);
 
-	/* Accumulator value CPCAP_REG_CCA1 & 2 */
+	 
 	ccd->accumulator = ((s16)buf[3]) << 16;
 	ccd->accumulator |= buf[2];
 
-	/*
-	 * Coulomb counter calibration offset is CPCAP_REG_CCM,
-	 * REG_CCO seems unused
-	 */
+	 
 	ccd->offset = buf[4];
 	ccd->offset = sign_extend32(ccd->offset, 9);
 
-	/* Integrator register CPCAP_REG_CCI */
+	 
 	if (ddata->vendor == CPCAP_VENDOR_TI)
 		ccd->integrator = sign_extend32(buf[6], 13);
 	else
@@ -352,18 +294,7 @@ cpcap_battery_read_accumulated(struct cpcap_battery_ddata *ddata,
 }
 
 
-/*
- * Based on the values from Motorola mapphone Linux kernel for the
- * stock Droid 4 battery eb41. In the Motorola mapphone Linux
- * kernel tree the value for pm_cd_factor is passed to the kernel
- * via device tree. If it turns out to be something device specific
- * we can consider that too later. These values are also fine for
- * Bionic's hw4x.
- *
- * And looking at the battery full and shutdown values for the stock
- * kernel on droid 4, full is 4351000 and software initiates shutdown
- * at 3078000. The device will die around 2743000.
- */
+ 
 static const struct cpcap_battery_config cpcap_battery_eb41_data = {
 	.cd_factor = 0x3cc,
 	.info.technology = POWER_SUPPLY_TECHNOLOGY_LION,
@@ -373,7 +304,7 @@ static const struct cpcap_battery_config cpcap_battery_eb41_data = {
 	.bat.constant_charge_voltage_max_uv = 4200000,
 };
 
-/* Values for the extended Droid Bionic battery bw8x. */
+ 
 static const struct cpcap_battery_config cpcap_battery_bw8x_data = {
 	.cd_factor = 0x3cc,
 	.info.technology = POWER_SUPPLY_TECHNOLOGY_LION,
@@ -383,10 +314,7 @@ static const struct cpcap_battery_config cpcap_battery_bw8x_data = {
 	.bat.constant_charge_voltage_max_uv = 4200000,
 };
 
-/*
- * Safe values for any lipo battery likely to fit into a mapphone
- * battery bay.
- */
+ 
 static const struct cpcap_battery_config cpcap_battery_unkown_data = {
 	.cd_factor = 0x3cc,
 	.info.technology = POWER_SUPPLY_TECHNOLOGY_LION,
@@ -433,17 +361,14 @@ static void cpcap_battery_detect_battery_type(struct cpcap_battery_ddata *ddata)
 	}
 }
 
-/**
- * cpcap_battery_cc_get_avg_current - read cpcap coulumb counter
- * @ddata: cpcap battery driver device data
- */
+ 
 static int cpcap_battery_cc_get_avg_current(struct cpcap_battery_ddata *ddata)
 {
 	int value, acc, error;
 	s32 sample;
 	s16 offset;
 
-	/* Coulomb counter integrator */
+	 
 	error = regmap_read(ddata->reg, CPCAP_REG_CCI, &value);
 	if (error)
 		return error;
@@ -456,7 +381,7 @@ static int cpcap_battery_cc_get_avg_current(struct cpcap_battery_ddata *ddata)
 		sample = 4;
 	}
 
-	/* Coulomb counter calibration offset  */
+	 
 	error = regmap_read(ddata->reg, CPCAP_REG_CCM, &value);
 	if (error)
 		return error;
@@ -511,11 +436,7 @@ static bool cpcap_battery_full(struct cpcap_battery_ddata *ddata)
 		}
 	}
 
-	/*
-	 * The full battery voltage here can be inaccurate, it's used just to
-	 * filter out any trickle charging events. We clear the is_full status
-	 * on charger disconnect above anyways.
-	 */
+	 
 	vfull = ddata->config.bat.constant_charge_voltage_max_uv - 120000;
 
 	if (ddata->is_full && state->voltage < vfull)
@@ -598,11 +519,7 @@ static int cpcap_battery_update_status(struct cpcap_battery_ddata *ddata)
 	return 0;
 }
 
-/*
- * Update battery status when cpcap-charger calls power_supply_changed().
- * This allows us to detect battery full condition before the charger
- * disconnects.
- */
+ 
 static void cpcap_battery_external_power_changed(struct power_supply *psy)
 {
 	union power_supply_propval prop;
@@ -724,7 +641,7 @@ static int cpcap_battery_get_property(struct power_supply *psy,
 		empty = cpcap_battery_get_empty(ddata);
 		if (!empty->voltage || !ddata->charge_full)
 			return -ENODATA;
-		/* (ddata->charge_full / 200) is needed for rounding */
+		 
 		val->intval = empty->counter_uah - latest->counter_uah +
 			ddata->charge_full / 200;
 		val->intval = clamp(val->intval, 0, ddata->charge_full);
@@ -750,7 +667,7 @@ static int cpcap_battery_get_property(struct power_supply *psy,
 			return -ENODATA;
 		val->intval = empty->counter_uah - latest->counter_uah;
 		if (val->intval < 0) {
-			/* Assume invalid config if CHARGE_NOW is -20% */
+			 
 			if (ddata->charge_full && abs(val->intval) > ddata->charge_full/5) {
 				empty->voltage = 0;
 				ddata->charge_full = 0;
@@ -758,7 +675,7 @@ static int cpcap_battery_get_property(struct power_supply *psy,
 			}
 			val->intval = 0;
 		} else if (ddata->charge_full && ddata->charge_full < val->intval) {
-			/* Assume invalid config if CHARGE_NOW exceeds CHARGE_FULL by 20% */
+			 
 			if (val->intval > (6*ddata->charge_full)/5) {
 				empty->voltage = 0;
 				ddata->charge_full = 0;
@@ -808,7 +725,7 @@ static int cpcap_battery_update_charger(struct cpcap_battery_ddata *ddata,
 	if (error)
 		goto out_put;
 
-	/* Allow charger const voltage lower than battery const voltage */
+	 
 	if (const_charge_voltage > prop.intval)
 		goto out_put;
 
@@ -969,10 +886,10 @@ static int cpcap_battery_init_interrupts(struct platform_device *pdev,
 			return error;
 	}
 
-	/* Enable calibration interrupt if already available in dts */
+	 
 	cpcap_battery_init_irq(pdev, ddata, "cccal");
 
-	/* Enable low battery interrupts for 3.3V high and 3.1V low */
+	 
 	error = regmap_update_bits(ddata->reg, CPCAP_REG_BPEOL,
 				   0xffff,
 				   CPCAP_REG_BPEOL_BIT_BATTDETEN);
@@ -1010,7 +927,7 @@ out_err:
 			     "could not initialize VBUS or ID IIO\n");
 }
 
-/* Calibrate coulomb counter */
+ 
 static int cpcap_battery_calibrate(struct cpcap_battery_ddata *ddata)
 {
 	int error, ccc1, value;
@@ -1022,7 +939,7 @@ static int cpcap_battery_calibrate(struct cpcap_battery_ddata *ddata)
 
 	timeout = jiffies + msecs_to_jiffies(6000);
 
-	/* Start calibration */
+	 
 	error = regmap_update_bits(ddata->reg, CPCAP_REG_CCC1,
 				   0xffff,
 				   CPCAP_REG_CCC1_CAL_EN);
@@ -1044,7 +961,7 @@ static int cpcap_battery_calibrate(struct cpcap_battery_ddata *ddata)
 		msleep(300);
 	}
 
-	/* Read calibration offset from CCM */
+	 
 	error = regmap_read(ddata->reg, CPCAP_REG_CCM, &value);
 	if (error)
 		goto restore;
@@ -1110,10 +1027,10 @@ static int cpcap_battery_probe(struct platform_device *pdev)
 
 	switch (ddata->vendor) {
 	case CPCAP_VENDOR_ST:
-		ddata->cc_lsb = 95374;	/* μAms per LSB */
+		ddata->cc_lsb = 95374;	 
 		break;
 	case CPCAP_VENDOR_TI:
-		ddata->cc_lsb = 91501;	/* μAms per LSB */
+		ddata->cc_lsb = 91501;	 
 		break;
 	default:
 		return -EINVAL;

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * USB Role Switch Support
- *
- * Copyright (C) 2018 Intel Corporation
- * Author: Heikki Krogerus <heikki.krogerus@linux.intel.com>
- *         Hans de Goede <hdegoede@redhat.com>
- */
+
+ 
 
 #include <linux/usb/role.h>
 #include <linux/property.h>
@@ -20,10 +14,10 @@ static const struct class role_class = {
 
 struct usb_role_switch {
 	struct device dev;
-	struct mutex lock; /* device lock*/
+	struct mutex lock;  
 	enum usb_role role;
 
-	/* From descriptor */
+	 
 	struct device *usb2_port;
 	struct device *usb3_port;
 	struct device *udc;
@@ -34,13 +28,7 @@ struct usb_role_switch {
 
 #define to_role_switch(d)	container_of(d, struct usb_role_switch, dev)
 
-/**
- * usb_role_switch_set_role - Set USB role for a switch
- * @sw: USB role switch
- * @role: USB role to be switched to
- *
- * Set USB role @role for @sw.
- */
+ 
 int usb_role_switch_set_role(struct usb_role_switch *sw, enum usb_role role)
 {
 	int ret;
@@ -62,13 +50,7 @@ int usb_role_switch_set_role(struct usb_role_switch *sw, enum usb_role role)
 }
 EXPORT_SYMBOL_GPL(usb_role_switch_set_role);
 
-/**
- * usb_role_switch_get_role - Get the USB role for a switch
- * @sw: USB role switch
- *
- * Depending on the role-switch-driver this function returns either a cached
- * value of the last set role, or reads back the actual value from the hardware.
- */
+ 
 enum usb_role usb_role_switch_get_role(struct usb_role_switch *sw)
 {
 	enum usb_role role;
@@ -118,13 +100,7 @@ usb_role_switch_is_parent(struct fwnode_handle *fwnode)
 	return dev ? to_role_switch(dev) : ERR_PTR(-EPROBE_DEFER);
 }
 
-/**
- * usb_role_switch_get - Find USB role switch linked with the caller
- * @dev: The caller device
- *
- * Finds and returns role switch linked with @dev. The reference count for the
- * found switch is incremented.
- */
+ 
 struct usb_role_switch *usb_role_switch_get(struct device *dev)
 {
 	struct usb_role_switch *sw;
@@ -141,13 +117,7 @@ struct usb_role_switch *usb_role_switch_get(struct device *dev)
 }
 EXPORT_SYMBOL_GPL(usb_role_switch_get);
 
-/**
- * fwnode_usb_role_switch_get - Find USB role switch linked with the caller
- * @fwnode: The caller device node
- *
- * This is similar to the usb_role_switch_get() function above, but it searches
- * the switch using fwnode instead of device entry.
- */
+ 
 struct usb_role_switch *fwnode_usb_role_switch_get(struct fwnode_handle *fwnode)
 {
 	struct usb_role_switch *sw;
@@ -163,12 +133,7 @@ struct usb_role_switch *fwnode_usb_role_switch_get(struct fwnode_handle *fwnode)
 }
 EXPORT_SYMBOL_GPL(fwnode_usb_role_switch_get);
 
-/**
- * usb_role_switch_put - Release handle to a switch
- * @sw: USB Role Switch
- *
- * Decrement reference count for @sw.
- */
+ 
 void usb_role_switch_put(struct usb_role_switch *sw)
 {
 	if (!IS_ERR_OR_NULL(sw)) {
@@ -178,13 +143,7 @@ void usb_role_switch_put(struct usb_role_switch *sw)
 }
 EXPORT_SYMBOL_GPL(usb_role_switch_put);
 
-/**
- * usb_role_switch_find_by_fwnode - Find USB role switch with its fwnode
- * @fwnode: fwnode of the USB Role Switch
- *
- * Finds and returns role switch with @fwnode. The reference count for the
- * found switch is incremented.
- */
+ 
 struct usb_role_switch *
 usb_role_switch_find_by_fwnode(const struct fwnode_handle *fwnode)
 {
@@ -247,7 +206,7 @@ static ssize_t role_store(struct device *dev, struct device_attribute *attr,
 	if (ret < 0) {
 		bool res;
 
-		/* Extra check if the user wants to disable the switch */
+		 
 		ret = kstrtobool(buf, &res);
 		if (ret || res)
 			return -EINVAL;
@@ -301,20 +260,7 @@ static const struct device_type usb_role_dev_type = {
 	.release = usb_role_switch_release,
 };
 
-/**
- * usb_role_switch_register - Register USB Role Switch
- * @parent: Parent device for the switch
- * @desc: Description of the switch
- *
- * USB Role Switch is a device capable or choosing the role for USB connector.
- * On platforms where the USB controller is dual-role capable, the controller
- * driver will need to register the switch. On platforms where the USB host and
- * USB device controllers behind the connector are separate, there will be a
- * mux, and the driver for that mux will need to register the switch.
- *
- * Returns handle to a new role switch or ERR_PTR. The content of @desc is
- * copied.
- */
+ 
 struct usb_role_switch *
 usb_role_switch_register(struct device *parent,
 			 const struct usb_role_switch_desc *desc)
@@ -352,18 +298,13 @@ usb_role_switch_register(struct device *parent,
 		return ERR_PTR(ret);
 	}
 
-	/* TODO: Symlinks for the host port and the device controller. */
+	 
 
 	return sw;
 }
 EXPORT_SYMBOL_GPL(usb_role_switch_register);
 
-/**
- * usb_role_switch_unregister - Unregsiter USB Role Switch
- * @sw: USB Role Switch
- *
- * Unregister switch that was registered with usb_role_switch_register().
- */
+ 
 void usb_role_switch_unregister(struct usb_role_switch *sw)
 {
 	if (!IS_ERR_OR_NULL(sw))
@@ -371,21 +312,14 @@ void usb_role_switch_unregister(struct usb_role_switch *sw)
 }
 EXPORT_SYMBOL_GPL(usb_role_switch_unregister);
 
-/**
- * usb_role_switch_set_drvdata - Assign private data pointer to a switch
- * @sw: USB Role Switch
- * @data: Private data pointer
- */
+ 
 void usb_role_switch_set_drvdata(struct usb_role_switch *sw, void *data)
 {
 	dev_set_drvdata(&sw->dev, data);
 }
 EXPORT_SYMBOL_GPL(usb_role_switch_set_drvdata);
 
-/**
- * usb_role_switch_get_drvdata - Get the private data pointer of a switch
- * @sw: USB Role Switch
- */
+ 
 void *usb_role_switch_get_drvdata(struct usb_role_switch *sw)
 {
 	return dev_get_drvdata(&sw->dev);

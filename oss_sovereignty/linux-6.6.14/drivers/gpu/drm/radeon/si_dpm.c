@@ -1,25 +1,4 @@
-/*
- * Copyright 2013 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 
 #include <linux/math64.h>
 #include <linux/pci.h>
@@ -2153,7 +2132,7 @@ static int si_populate_smc_tdp_limits(struct radeon_device *rdev,
 		memset(smc_table, 0, sizeof(SISLANDS_SMC_STATETABLE));
 
 		ret = si_calculate_adjusted_tdp_limits(rdev,
-						       false, /* ??? */
+						       false,  
 						       rdev->pm.dpm.tdp_adjustment,
 						       &tdp_limit,
 						       &near_tdp_limit);
@@ -2934,7 +2913,7 @@ static int si_get_vce_clock_voltage(struct radeon_device *rdev,
 		}
 	}
 
-	/* if no match return the highest voltage */
+	 
 	if (ret)
 		*voltage = table->entries[table->count - 1].v;
 
@@ -3025,7 +3004,7 @@ static void si_apply_state_adjust_rules(struct radeon_device *rdev,
 		}
 	}
 
-	/* limit clocks to max supported clocks based on voltage dependency tables */
+	 
 	btc_get_max_clock_from_voltage_dependency_table(&rdev->pm.dpm.dyn_state.vddc_dependency_on_sclk,
 							&max_sclk_vddc);
 	btc_get_max_clock_from_voltage_dependency_table(&rdev->pm.dpm.dyn_state.vddci_dependency_on_mclk,
@@ -3056,7 +3035,7 @@ static void si_apply_state_adjust_rules(struct radeon_device *rdev,
 		}
 	}
 
-	/* XXX validate the min clocks required for display */
+	 
 
 	if (disable_mclk_switching) {
 		mclk  = ps->performance_levels[ps->performance_level_count - 1].mclk;
@@ -3081,7 +3060,7 @@ static void si_apply_state_adjust_rules(struct radeon_device *rdev,
 			mclk = rdev->pm.dpm.vce_states[rdev->pm.dpm.vce_level].mclk;
 	}
 
-	/* adjusted low state */
+	 
 	ps->performance_levels[0].sclk = sclk;
 	ps->performance_levels[0].mclk = mclk;
 	ps->performance_levels[0].vddc = vddc;
@@ -3649,7 +3628,7 @@ static void si_program_response_times(struct radeon_device *rdev)
 static void si_program_ds_registers(struct radeon_device *rdev)
 {
 	struct evergreen_power_info *eg_pi = evergreen_get_pi(rdev);
-	u32 tmp = 1; /* XXX: 0x10 on tahiti A0 */
+	u32 tmp = 1;  
 
 	if (eg_pi->sclk_deep_sleep) {
 		WREG32_P(MISC_CLK_CNTL, DEEP_SLEEP_CLK_SEL(tmp), ~DEEP_SLEEP_CLK_SEL_MASK);
@@ -3681,7 +3660,7 @@ static void si_program_display_gap(struct radeon_device *rdev)
 
 	if ((rdev->pm.dpm.new_active_crtc_count > 0) &&
 	    (!(rdev->pm.dpm.new_active_crtcs & (1 << pipe)))) {
-		/* find the first active crtc */
+		 
 		for (i = 0; i < rdev->num_crtc; i++) {
 			if (rdev->pm.dpm.new_active_crtcs & (1 << i))
 				break;
@@ -3696,10 +3675,7 @@ static void si_program_display_gap(struct radeon_device *rdev)
 		WREG32(DCCG_DISP_SLOW_SELECT_REG, tmp);
 	}
 
-	/* Setting this to false forces the performance state to low if the crtcs are disabled.
-	 * This can be a problem on PowerXpress systems or if you want to use the card
-	 * for offscreen rendering or compute if there are no crtcs enabled.
-	 */
+	 
 	si_notify_smc_display_change(rdev, rdev->pm.dpm.new_active_crtc_count > 0);
 }
 
@@ -4612,7 +4588,7 @@ static int si_populate_ulv_state(struct radeon_device *rdev,
 	struct evergreen_power_info *eg_pi = evergreen_get_pi(rdev);
 	struct si_power_info *si_pi = si_get_pi(rdev);
 	struct si_ulv_param *ulv = &si_pi->ulv;
-	u32 sclk_in_sr = 1350; /* ??? */
+	u32 sclk_in_sr = 1350;  
 	int ret;
 
 	ret = si_convert_power_level_to_smc(rdev, &ulv->pl,
@@ -5136,7 +5112,7 @@ static bool si_is_state_ulv_compatible(struct radeon_device *rdev,
 	if (state->performance_levels[0].mclk != ulv->pl.mclk)
 		return false;
 
-	/* XXX validate against display requirements! */
+	 
 
 	for (i = 0; i < rdev->pm.dpm.dyn_state.vddc_dependency_on_dispclk.count; i++) {
 		if (rdev->clock.current_dispclk <=
@@ -5177,7 +5153,7 @@ static int si_convert_power_state_to_smc(struct radeon_device *rdev,
 	struct ni_ps *state = ni_get_ps(radeon_state);
 	int i, ret;
 	u32 threshold;
-	u32 sclk_in_sr = 1350; /* ??? */
+	u32 sclk_in_sr = 1350;  
 
 	if (state->performance_level_count > SISLANDS_MAX_HARDWARE_POWERLEVELS)
 		return -EINVAL;
@@ -5914,7 +5890,7 @@ static void si_set_vce_clock(struct radeon_device *rdev,
 {
 	if ((old_rps->evclk != new_rps->evclk) ||
 	    (old_rps->ecclk != new_rps->ecclk)) {
-		/* turn the clocks on when encoding, off otherwise */
+		 
 		if (new_rps->evclk || new_rps->ecclk)
 			vce_v1_0_enable_mgcg(rdev, false);
 		else
@@ -6174,12 +6150,12 @@ int si_fan_ctrl_set_fan_speed_percent(struct radeon_device *rdev,
 void si_fan_ctrl_set_mode(struct radeon_device *rdev, u32 mode)
 {
 	if (mode) {
-		/* stop auto-manage */
+		 
 		if (rdev->pm.dpm.fan.ucode_fan_control)
 			si_fan_ctrl_stop_smc_fan_control(rdev);
 		si_fan_ctrl_set_static_mode(rdev, mode);
 	} else {
-		/* restart auto-manage */
+		 
 		if (rdev->pm.dpm.fan.ucode_fan_control)
 			si_thermal_start_smc_fan_control(rdev);
 		else
@@ -6736,7 +6712,7 @@ static void si_parse_pplib_clock_info(struct radeon_device *rdev,
 						 si_pi->boot_pcie_gen,
 						 clock_info->si.ucPCIEGen);
 
-	/* patch up vddc if necessary */
+	 
 	ret = si_get_leakage_voltage_from_leakage_index(rdev, pl->vddc,
 							&leakage_voltage);
 	if (ret == 0)
@@ -6750,7 +6726,7 @@ static void si_parse_pplib_clock_info(struct radeon_device *rdev,
 
 	if ((rps->class2 & ATOM_PPLIB_CLASSIFICATION2_ULV) &&
 	    index == 0) {
-		/* XXX disable for A0 tahiti */
+		 
 		si_pi->ulv.supported = false;
 		si_pi->ulv.pl = *pl;
 		si_pi->ulv.one_pcie_lane_in_ulv = false;
@@ -6765,7 +6741,7 @@ static void si_parse_pplib_clock_info(struct radeon_device *rdev,
 	if (pi->max_vddc_in_table < pl->vddc)
 		pi->max_vddc_in_table = pl->vddc;
 
-	/* patch up boot state */
+	 
 	if (rps->class & ATOM_PPLIB_CLASSIFICATION_BOOT) {
 		u16 vddc, vddci, mvdd;
 		radeon_atombios_get_default_voltages(rdev, &vddc, &vddci, &mvdd);
@@ -6860,7 +6836,7 @@ static int si_parse_power_table(struct radeon_device *rdev)
 	}
 	rdev->pm.dpm.num_ps = state_array->ucNumEntries;
 
-	/* fill in the vce power states */
+	 
 	for (i = 0; i < RADEON_MAX_VCE_LEVELS; i++) {
 		u32 sclk, mclk;
 		clock_array_index = rdev->pm.dpm.vce_states[i].clk_idx;
@@ -7045,7 +7021,7 @@ int si_dpm_init(struct radeon_device *rdev)
 
 	si_initialize_powertune_defaults(rdev);
 
-	/* make sure dc limits are valid */
+	 
 	if ((rdev->pm.dpm.dyn_state.max_clock_voltage_on_dc.sclk == 0) ||
 	    (rdev->pm.dpm.dyn_state.max_clock_voltage_on_dc.mclk == 0))
 		rdev->pm.dpm.dyn_state.max_clock_voltage_on_dc =

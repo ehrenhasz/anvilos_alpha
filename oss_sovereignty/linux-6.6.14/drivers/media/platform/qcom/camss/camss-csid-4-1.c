@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * camss-csid-4-1.c
- *
- * Qualcomm MSM Camera Subsystem - CSID (CSI Decoder) Module
- *
- * Copyright (C) 2020 Linaro Ltd.
- */
+
+ 
 
 #include <linux/completion.h>
 #include <linux/interrupt.h>
@@ -175,12 +169,12 @@ static void csid_configure_stream(struct csid_device *csid, u8 enable)
 	if (enable) {
 		struct v4l2_mbus_framefmt *input_format;
 		const struct csid_format *format;
-		u8 vc = 0; /* Virtual Channel 0 */
-		u8 cid = vc * 4; /* id of Virtual Channel and Data Type set */
+		u8 vc = 0;  
+		u8 cid = vc * 4;  
 		u8 dt_shift;
 
 		if (tg->enabled) {
-			/* Config Test Generator */
+			 
 			u32 num_lines, num_bytes_per_line;
 
 			input_format = &csid->fmt[MSM_CSID_PAD_SRC];
@@ -189,22 +183,22 @@ static void csid_configure_stream(struct csid_device *csid, u8 enable)
 			num_bytes_per_line = input_format->width * format->bpp * format->spp / 8;
 			num_lines = input_format->height;
 
-			/* 31:24 V blank, 23:13 H blank, 3:2 num of active DT */
-			/* 1:0 VC */
+			 
+			 
 			val = ((CAMSS_CSID_TG_VC_CFG_V_BLANKING & 0xff) << 24) |
 				  ((CAMSS_CSID_TG_VC_CFG_H_BLANKING & 0x7ff) << 13);
 			writel_relaxed(val, csid->base + CAMSS_CSID_TG_VC_CFG);
 
-			/* 28:16 bytes per lines, 12:0 num of lines */
+			 
 			val = ((num_bytes_per_line & 0x1fff) << 16) |
 				  (num_lines & 0x1fff);
 			writel_relaxed(val, csid->base + CAMSS_CSID_TG_DT_n_CGG_0(0));
 
-			/* 5:0 data type */
+			 
 			val = format->data_type;
 			writel_relaxed(val, csid->base + CAMSS_CSID_TG_DT_n_CGG_1(0));
 
-			/* 2:0 output test pattern */
+			 
 			val = tg->mode - 1;
 			writel_relaxed(val, csid->base + CAMSS_CSID_TG_DT_n_CGG_2(0));
 		} else {
@@ -225,7 +219,7 @@ static void csid_configure_stream(struct csid_device *csid, u8 enable)
 			writel_relaxed(val, csid->base + CAMSS_CSID_CORE_CTRL_1);
 		}
 
-		/* Config LUT */
+		 
 
 		dt_shift = (cid % 4) * 8;
 		val = readl_relaxed(csid->base + CAMSS_CSID_CID_LUT_VC_n(vc));

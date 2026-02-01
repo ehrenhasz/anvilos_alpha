@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  skl-message.c - HDA DSP interface for FW registration, Pipe and Module
- *  configurations
- *
- *  Copyright (C) 2015 Intel Corp
- *  Author:Rafal Redzimski <rafal.f.redzimski@intel.com>
- *	   Jeeja KP <jeeja.kp@intel.com>
- *  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- */
+
+ 
 
 #include <linux/slab.h>
 #include <linux/pci.h>
@@ -57,10 +49,10 @@ static int skl_dsp_setup_spib(struct device *dev, unsigned int size,
 	if (!stream)
 		return -EINVAL;
 
-	/* enable/disable SPIB for this hdac stream */
+	 
 	snd_hdac_stream_spbcap_enable(bus, enable, stream->index);
 
-	/* set the spib value */
+	 
 	snd_hdac_stream_set_spib(bus, stream, size);
 
 	return 0;
@@ -88,7 +80,7 @@ static int skl_dsp_prepare(struct device *dev, unsigned int format,
 
 	stream = hdac_stream(estream);
 
-	/* assign decouple host dma channel */
+	 
 	ret = snd_hdac_dsp_prepare(stream, format, size, dmab);
 	if (ret < 0)
 		return ret;
@@ -256,11 +248,11 @@ int skl_init_dsp(struct skl_dev *skl)
 	struct skl_dsp_cores *cores;
 	int ret;
 
-	/* enable ppcap interrupt */
+	 
 	snd_hdac_ext_bus_ppcap_enable(bus, true);
 	snd_hdac_ext_bus_ppcap_int_enable(bus, true);
 
-	/* read the BAR of the ADSP MMIO */
+	 
 	mmio_base = pci_ioremap_bar(skl->pci, 4);
 	if (mmio_base == NULL) {
 		dev_err(bus->dev, "ioremap error\n");
@@ -315,7 +307,7 @@ int skl_free_dsp(struct skl_dev *skl)
 {
 	struct hdac_bus *bus = skl_to_bus(skl);
 
-	/* disable  ppcap interrupt */
+	 
 	snd_hdac_ext_bus_ppcap_int_enable(bus, false);
 
 	skl->dsp_ops->cleanup(bus->dev, skl);
@@ -329,13 +321,7 @@ int skl_free_dsp(struct skl_dev *skl)
 	return 0;
 }
 
-/*
- * In the case of "suspend_active" i.e, the Audio IP being active
- * during system suspend, immediately excecute any pending D0i3 work
- * before suspending. This is needed for the IP to work in low power
- * mode during system suspend. In the case of normal suspend, cancel
- * any pending D0i3 work.
- */
+ 
 int skl_suspend_late_dsp(struct skl_dev *skl)
 {
 	struct delayed_work *dwork;
@@ -360,7 +346,7 @@ int skl_suspend_dsp(struct skl_dev *skl)
 	struct hdac_bus *bus = skl_to_bus(skl);
 	int ret;
 
-	/* if ppcap is not supported return 0 */
+	 
 	if (!bus->ppcap)
 		return 0;
 
@@ -368,7 +354,7 @@ int skl_suspend_dsp(struct skl_dev *skl)
 	if (ret < 0)
 		return ret;
 
-	/* disable ppcap interrupt */
+	 
 	snd_hdac_ext_bus_ppcap_int_enable(bus, false);
 	snd_hdac_ext_bus_ppcap_enable(bus, false);
 
@@ -380,22 +366,19 @@ int skl_resume_dsp(struct skl_dev *skl)
 	struct hdac_bus *bus = skl_to_bus(skl);
 	int ret;
 
-	/* if ppcap is not supported return 0 */
+	 
 	if (!bus->ppcap)
 		return 0;
 
-	/* enable ppcap interrupt */
+	 
 	snd_hdac_ext_bus_ppcap_enable(bus, true);
 	snd_hdac_ext_bus_ppcap_int_enable(bus, true);
 
-	/* check if DSP 1st boot is done */
+	 
 	if (skl->is_first_boot)
 		return 0;
 
-	/*
-	 * Disable dynamic clock and power gating during firmware
-	 * and library download
-	 */
+	 
 	skl->enable_miscbdcge(skl->dev, false);
 	skl->clock_power_gating(skl->dev, false);
 
@@ -433,12 +416,7 @@ enum skl_bitdepth skl_get_bit_depth(int params)
 	}
 }
 
-/*
- * Each module in DSP expects a base module configuration, which consists of
- * PCM format information, which we calculate in driver and resource values
- * which are read from widget information passed through topology binary
- * This is send when we create a module with INIT_INSTANCE IPC msg
- */
+ 
 static void skl_set_base_module_format(struct skl_dev *skl,
 			struct skl_module_cfg *mconfig,
 			struct skl_base_cfg *base_cfg)
@@ -483,11 +461,7 @@ static void fill_pin_params(struct skl_audio_data_format *pin_fmt,
 	pin_fmt->interleaving = format->interleaving_style;
 }
 
-/*
- * Any module configuration begins with a base module configuration but
- * can be followed by a generic extension containing audio format for all
- * module's pins that are in use.
- */
+ 
 static void skl_set_base_ext_module_format(struct skl_dev *skl,
 					   struct skl_module_cfg *mconfig,
 					   struct skl_base_cfg_ext *base_cfg_ext)
@@ -539,10 +513,7 @@ static void skl_set_base_ext_module_format(struct skl_dev *skl,
 	       mconfig->formats_config[SKL_PARAM_INIT].caps_size);
 }
 
-/*
- * Copies copier capabilities into copier module and updates copier module
- * config size.
- */
+ 
 static void skl_copy_copier_caps(struct skl_module_cfg *mconfig,
 				struct skl_cpr_cfg *cpr_mconfig)
 {
@@ -558,10 +529,7 @@ static void skl_copy_copier_caps(struct skl_module_cfg *mconfig,
 }
 
 #define SKL_NON_GATEWAY_CPR_NODE_ID 0xFFFFFFFF
-/*
- * Calculate the gatewat settings required for copier module, type of
- * gateway and index of gateway to use
- */
+ 
 static u32 skl_get_node_id(struct skl_dev *skl,
 			struct skl_module_cfg *mconfig)
 {
@@ -666,7 +634,7 @@ static void skl_setup_cpr_gateway_cfg(struct skl_dev *skl,
 	cpr_mconfig->gtw_cfg.dma_buffer_size =
 				mconfig->dma_buffer_size * dma_io_buf;
 
-	/* fallback to 2ms default value */
+	 
 	if (!cpr_mconfig->gtw_cfg.dma_buffer_size) {
 		if (mconfig->hw_conn_type == SKL_CONN_SOURCE)
 			cpr_mconfig->gtw_cfg.dma_buffer_size = 2 * res->obs;
@@ -692,9 +660,7 @@ int skl_dsp_set_dma_control(struct skl_dev *skl, u32 *caps,
 	int err = 0;
 
 
-	/*
-	 * if blob size zero, then return
-	 */
+	 
 	if (caps_size == 0)
 		return 0;
 
@@ -707,12 +673,7 @@ int skl_dsp_set_dma_control(struct skl_dev *skl, u32 *caps,
 
 	dma_ctrl->node_id = node_id;
 
-	/*
-	 * NHLT blob may contain additional configs along with i2s blob.
-	 * firmware expects only the i2s blob size as the config_length.
-	 * So fix to i2s blob size.
-	 * size in dwords.
-	 */
+	 
 	dma_ctrl->config_length = DMA_I2S_BLOB_SIZE;
 
 	memcpy(dma_ctrl->config_data, caps, caps_size);
@@ -746,11 +707,7 @@ static void skl_setup_out_format(struct skl_dev *skl,
 		out_fmt->number_of_channels, format->s_freq, format->bit_depth);
 }
 
-/*
- * DSP needs SRC module for frequency conversion, SRC takes base module
- * configuration and the target frequency as extra parameter passed as src
- * config
- */
+ 
 static void skl_set_src_format(struct skl_dev *skl,
 			struct skl_module_cfg *mconfig,
 			struct skl_src_module_cfg *src_mconfig)
@@ -765,11 +722,7 @@ static void skl_set_src_format(struct skl_dev *skl,
 	src_mconfig->src_cfg = fmt->s_freq;
 }
 
-/*
- * DSP needs updown module to do channel conversion. updown module take base
- * module configuration and channel configuration
- * It also take coefficients and now we have defaults applied here
- */
+ 
 static void skl_set_updown_mixer_format(struct skl_dev *skl,
 			struct skl_module_cfg *mconfig,
 			struct skl_up_down_mixer_cfg *mixer_mconfig)
@@ -784,13 +737,7 @@ static void skl_set_updown_mixer_format(struct skl_dev *skl,
 	mixer_mconfig->ch_map = fmt->ch_map;
 }
 
-/*
- * 'copier' is DSP internal module which copies data from Host DMA (HDA host
- * dma) or link (hda link, SSP, PDM)
- * Here we calculate the copier module parameters, like PCM format, output
- * format, gateway settings
- * copier_module_config is sent as input buffer with INIT_INSTANCE IPC msg
- */
+ 
 static void skl_set_copier_format(struct skl_dev *skl,
 			struct skl_module_cfg *mconfig,
 			struct skl_cpr_cfg *cpr_mconfig)
@@ -804,13 +751,7 @@ static void skl_set_copier_format(struct skl_dev *skl,
 	skl_setup_cpr_gateway_cfg(skl, mconfig, cpr_mconfig);
 }
 
-/*
- * Mic select module allows selecting one or many input channels, thus
- * acting as a demux.
- *
- * Mic select module take base module configuration and out-format
- * configuration
- */
+ 
 static void skl_set_base_outfmt_format(struct skl_dev *skl,
 			struct skl_module_cfg *mconfig,
 			struct skl_base_outfmt_cfg *base_outfmt_mcfg)
@@ -865,12 +806,7 @@ static u16 skl_get_module_param_size(struct skl_dev *skl,
 	return 0;
 }
 
-/*
- * DSP firmware supports various modules like copier, SRC, updown etc.
- * These modules required various parameters to be calculated and sent for
- * the module initialization to DSP. By default a generic module needs only
- * base module format configuration
- */
+ 
 
 static int skl_set_module_format(struct skl_dev *skl,
 			struct skl_module_cfg *module_config,
@@ -941,22 +877,13 @@ static int skl_get_queue_index(struct skl_module_pin *mpin,
 	return -EINVAL;
 }
 
-/*
- * Allocates queue for each module.
- * if dynamic, the pin_index is allocated 0 to max_pin.
- * In static, the pin_index is fixed based on module_id and instance id
- */
+ 
 static int skl_alloc_queue(struct skl_module_pin *mpin,
 			struct skl_module_cfg *tgt_cfg, int max)
 {
 	int i;
 	struct skl_module_inst_id id = tgt_cfg->id;
-	/*
-	 * if pin in dynamic, find first free pin
-	 * otherwise find match module and instance id pin as topology will
-	 * ensure a unique pin is assigned to this so no need to
-	 * allocate/free
-	 */
+	 
 	for (i = 0; i < max; i++)  {
 		if (mpin[i].is_dynamic) {
 			if (!mpin[i].in_use &&
@@ -995,7 +922,7 @@ static void skl_free_queue(struct skl_module_pin *mpin, int q_index)
 	mpin[q_index].tgt_mcfg = NULL;
 }
 
-/* Module state will be set to unint, if all the out pin state is UNBIND */
+ 
 
 static void skl_clear_module_state(struct skl_module_pin *mpin, int max,
 						struct skl_module_cfg *mcfg)
@@ -1015,12 +942,7 @@ static void skl_clear_module_state(struct skl_module_pin *mpin, int max,
 	return;
 }
 
-/*
- * A module needs to be instanataited in DSP. A mdoule is present in a
- * collection of module referred as a PIPE.
- * We first calculate the module format, based on module type and then
- * invoke the DSP by sending IPC INIT_INSTANCE using ipc helper
- */
+ 
 int skl_init_module(struct skl_dev *skl,
 			struct skl_module_cfg *mconfig)
 {
@@ -1075,11 +997,7 @@ static void skl_dump_bind_info(struct skl_dev *skl, struct skl_module_cfg
 		src_module->m_state, dst_module->m_state);
 }
 
-/*
- * On module freeup, we need to unbind the module with modules
- * it is already bind.
- * Find the pin allocated and unbind then using bind_unbind IPC
- */
+ 
 int skl_unbind_modules(struct skl_dev *skl,
 			struct skl_module_cfg *src_mcfg,
 			struct skl_module_cfg *dst_mcfg)
@@ -1094,14 +1012,14 @@ int skl_unbind_modules(struct skl_dev *skl,
 
 	skl_dump_bind_info(skl, src_mcfg, dst_mcfg);
 
-	/* get src queue index */
+	 
 	src_index = skl_get_queue_index(src_mcfg->m_out_pin, dst_id, out_max);
 	if (src_index < 0)
 		return 0;
 
 	msg.src_queue = src_index;
 
-	/* get dst queue index */
+	 
 	dst_index  = skl_get_queue_index(dst_mcfg->m_in_pin, src_id, in_max);
 	if (dst_index < 0)
 		return 0;
@@ -1123,14 +1041,11 @@ int skl_unbind_modules(struct skl_dev *skl,
 
 	ret = skl_ipc_bind_unbind(&skl->ipc, &msg);
 	if (!ret) {
-		/* free queue only if unbind is success */
+		 
 		skl_free_queue(src_mcfg->m_out_pin, src_index);
 		skl_free_queue(dst_mcfg->m_in_pin, dst_index);
 
-		/*
-		 * check only if src module bind state, bind is
-		 * always from src -> sink
-		 */
+		 
 		skl_clear_module_state(src_mcfg->m_out_pin, out_max, src_mcfg);
 	}
 
@@ -1139,13 +1054,7 @@ int skl_unbind_modules(struct skl_dev *skl,
 
 #define CPR_SINK_FMT_PARAM_ID 2
 
-/*
- * Once a module is instantiated it need to be 'bind' with other modules in
- * the pipeline. For binding we need to find the module pins which are bind
- * together
- * This function finds the pins and then sends bund_unbind IPC message to
- * DSP using IPC helper
- */
+ 
 int skl_bind_modules(struct skl_dev *skl,
 			struct skl_module_cfg *src_mcfg,
 			struct skl_module_cfg *dst_mcfg)
@@ -1177,16 +1086,13 @@ int skl_bind_modules(struct skl_dev *skl,
 		return -EINVAL;
 	}
 
-	/*
-	 * Copier module requires the separate large_config_set_ipc to
-	 * configure the pins other than 0
-	 */
+	 
 	if (src_mcfg->m_type == SKL_MODULE_TYPE_COPIER && src_index > 0) {
 		pin_fmt.sink_id = src_index;
 		module = src_mcfg->module;
 		fmt = &module->formats[src_mcfg->fmt_idx];
 
-		/* Input fmt is same as that of src module input cfg */
+		 
 		format = &fmt->inputs[0].fmt;
 		fill_pin_params(&(pin_fmt.src_fmt), format);
 
@@ -1220,7 +1126,7 @@ int skl_bind_modules(struct skl_dev *skl,
 		return ret;
 	}
 out:
-	/* error case , if IPC fails, clear the queue index */
+	 
 	skl_free_queue(src_mcfg->m_out_pin, src_index);
 	skl_free_queue(dst_mcfg->m_in_pin, dst_index);
 
@@ -1235,12 +1141,7 @@ static int skl_set_pipe_state(struct skl_dev *skl, struct skl_pipe *pipe,
 	return skl_ipc_set_pipeline_state(&skl->ipc, pipe->ppl_id, state);
 }
 
-/*
- * A pipeline is a collection of modules. Before a module in instantiated a
- * pipeline needs to be created for it.
- * This function creates pipeline, by sending create pipeline IPC messages
- * to FW
- */
+ 
 int skl_create_pipeline(struct skl_dev *skl, struct skl_pipe *pipe)
 {
 	int ret;
@@ -1260,23 +1161,18 @@ int skl_create_pipeline(struct skl_dev *skl, struct skl_pipe *pipe)
 	return 0;
 }
 
-/*
- * A pipeline needs to be deleted on cleanup. If a pipeline is running,
- * then pause it first. Before actual deletion, pipeline should enter
- * reset state. Finish the procedure by sending delete pipeline IPC.
- * DSP will stop the DMA engines and release resources
- */
+ 
 int skl_delete_pipe(struct skl_dev *skl, struct skl_pipe *pipe)
 {
 	int ret;
 
 	dev_dbg(skl->dev, "%s: pipe = %d\n", __func__, pipe->ppl_id);
 
-	/* If pipe was not created in FW, do not try to delete it */
+	 
 	if (pipe->state < SKL_PIPE_CREATED)
 		return 0;
 
-	/* If pipe is started, do stop the pipe in FW. */
+	 
 	if (pipe->state >= SKL_PIPE_STARTED) {
 		ret = skl_set_pipe_state(skl, pipe, PPL_PAUSED);
 		if (ret < 0) {
@@ -1287,7 +1183,7 @@ int skl_delete_pipe(struct skl_dev *skl, struct skl_pipe *pipe)
 		pipe->state = SKL_PIPE_PAUSED;
 	}
 
-	/* reset pipe state before deletion */
+	 
 	ret = skl_set_pipe_state(skl, pipe, PPL_RESET);
 	if (ret < 0) {
 		dev_err(skl->dev, "Failed to reset pipe ret=%d\n", ret);
@@ -1307,22 +1203,18 @@ int skl_delete_pipe(struct skl_dev *skl, struct skl_pipe *pipe)
 	return ret;
 }
 
-/*
- * A pipeline is also a scheduling entity in DSP which can be run, stopped
- * For processing data the pipe need to be run by sending IPC set pipe state
- * to DSP
- */
+ 
 int skl_run_pipe(struct skl_dev *skl, struct skl_pipe *pipe)
 {
 	int ret;
 
 	dev_dbg(skl->dev, "%s: pipe = %d\n", __func__, pipe->ppl_id);
 
-	/* If pipe was not created in FW, do not try to pause or delete */
+	 
 	if (pipe->state < SKL_PIPE_CREATED)
 		return 0;
 
-	/* Pipe has to be paused before it is started */
+	 
 	ret = skl_set_pipe_state(skl, pipe, PPL_PAUSED);
 	if (ret < 0) {
 		dev_err(skl->dev, "Failed to pause pipe\n");
@@ -1342,17 +1234,14 @@ int skl_run_pipe(struct skl_dev *skl, struct skl_pipe *pipe)
 	return 0;
 }
 
-/*
- * Stop the pipeline by sending set pipe state IPC
- * DSP doesnt implement stop so we always send pause message
- */
+ 
 int skl_stop_pipe(struct skl_dev *skl, struct skl_pipe *pipe)
 {
 	int ret;
 
 	dev_dbg(skl->dev, "In %s pipe=%d\n", __func__, pipe->ppl_id);
 
-	/* If pipe was not created in FW, do not try to pause or delete */
+	 
 	if (pipe->state < SKL_PIPE_PAUSED)
 		return 0;
 
@@ -1367,15 +1256,12 @@ int skl_stop_pipe(struct skl_dev *skl, struct skl_pipe *pipe)
 	return 0;
 }
 
-/*
- * Reset the pipeline by sending set pipe state IPC this will reset the DMA
- * from the DSP side
- */
+ 
 int skl_reset_pipe(struct skl_dev *skl, struct skl_pipe *pipe)
 {
 	int ret;
 
-	/* If pipe was not created in FW, do not try to pause or delete */
+	 
 	if (pipe->state < SKL_PIPE_PAUSED)
 		return 0;
 
@@ -1390,7 +1276,7 @@ int skl_reset_pipe(struct skl_dev *skl, struct skl_pipe *pipe)
 	return 0;
 }
 
-/* Algo parameter set helper function */
+ 
 int skl_set_module_params(struct skl_dev *skl, u32 *params, int size,
 				u32 param_id, struct skl_module_cfg *mcfg)
 {

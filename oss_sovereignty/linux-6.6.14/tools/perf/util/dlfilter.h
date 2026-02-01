@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * dlfilter.h: Interface to perf script --dlfilter shared object
- * Copyright (c) 2021, Intel Corporation.
- */
+ 
+ 
 
 #ifndef PERF_UTIL_DLFILTER_H
 #define PERF_UTIL_DLFILTER_H

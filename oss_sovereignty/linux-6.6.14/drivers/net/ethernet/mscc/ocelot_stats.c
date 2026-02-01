@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0 OR MIT)
-/* Statistics for Ocelot switch family
- *
- * Copyright (c) 2017 Microsemi Corporation
- * Copyright 2022 NXP
- */
+
+ 
 #include <linux/ethtool_netlink.h>
 #include <linux/spinlock.h>
 #include <linux/mutex.h>
@@ -149,14 +145,10 @@ struct ocelot_stat_layout {
 	char name[ETH_GSTRING_LEN];
 };
 
-/* 32-bit counter checked for wraparound by ocelot_port_update_stats()
- * and copied to ocelot->stats.
- */
+ 
 #define OCELOT_STAT(kind) \
 	[OCELOT_STAT_ ## kind] = { .reg = SYS_COUNT_ ## kind }
-/* Same as above, except also exported to ethtool -S. Standard counters should
- * only be exposed to more specific interfaces rather than by their string name.
- */
+ 
 #define OCELOT_STAT_ETHTOOL(kind, ethtool_name) \
 	[OCELOT_STAT_ ## kind] = { .reg = SYS_COUNT_ ## kind, .name = ethtool_name }
 
@@ -317,15 +309,13 @@ ocelot_get_stats_layout(struct ocelot *ocelot)
 	return ocelot_stats_layout;
 }
 
-/* Read the counters from hardware and keep them in region->buf.
- * Caller must hold &ocelot->stat_view_lock.
- */
+ 
 static int ocelot_port_update_stats(struct ocelot *ocelot, int port)
 {
 	struct ocelot_stats_region *region;
 	int err;
 
-	/* Configure the port to read the stats from */
+	 
 	ocelot_write(ocelot, SYS_STAT_CFG_STAT_VIEW(port), SYS_STAT_CFG);
 
 	list_for_each_entry(region, &ocelot->stats_regions, node) {
@@ -338,9 +328,7 @@ static int ocelot_port_update_stats(struct ocelot *ocelot, int port)
 	return 0;
 }
 
-/* Transfer the counters from region->buf to ocelot->stats.
- * Caller must hold &ocelot->stat_view_lock and &ocelot->stats_lock.
- */
+ 
 static void ocelot_port_transfer_stats(struct ocelot *ocelot, int port)
 {
 	struct ocelot_stats_region *region;
@@ -412,7 +400,7 @@ void ocelot_get_strings(struct ocelot *ocelot, int port, u32 sset, u8 *data)
 }
 EXPORT_SYMBOL(ocelot_get_strings);
 
-/* Update ocelot->stats for the given port and run the given callback */
+ 
 static void ocelot_port_stats_run(struct ocelot *ocelot, int port, void *priv,
 				  void (*cb)(struct ocelot *ocelot, int port,
 					     void *priv))
@@ -467,7 +455,7 @@ static void ocelot_port_ethtool_stats_cb(struct ocelot *ocelot, int port,
 
 	layout = ocelot_get_stats_layout(ocelot);
 
-	/* Copy all supported counters */
+	 
 	for (i = 0; i < OCELOT_NUM_STATS; i++) {
 		int index = port * OCELOT_NUM_STATS + i;
 
@@ -717,9 +705,7 @@ static void ocelot_port_mac_stats_cb(struct ocelot *ocelot, int port, void *priv
 	mac_stats->MulticastFramesReceivedOK = s[OCELOT_STAT_RX_MULTICAST];
 	mac_stats->BroadcastFramesReceivedOK = s[OCELOT_STAT_RX_BROADCAST];
 	mac_stats->FrameTooLongErrors = s[OCELOT_STAT_RX_LONGS];
-	/* Sadly, C_RX_CRC is the sum of FCS and alignment errors, they are not
-	 * counted individually.
-	 */
+	 
 	mac_stats->FrameCheckSequenceErrors = s[OCELOT_STAT_RX_CRC_ALIGN_ERRS];
 	mac_stats->AlignmentErrors = s[OCELOT_STAT_RX_CRC_ALIGN_ERRS];
 }
@@ -751,9 +737,7 @@ static void ocelot_port_pmac_mac_stats_cb(struct ocelot *ocelot, int port,
 	mac_stats->MulticastFramesReceivedOK = s[OCELOT_STAT_RX_PMAC_MULTICAST];
 	mac_stats->BroadcastFramesReceivedOK = s[OCELOT_STAT_RX_PMAC_BROADCAST];
 	mac_stats->FrameTooLongErrors = s[OCELOT_STAT_RX_PMAC_LONGS];
-	/* Sadly, C_RX_CRC is the sum of FCS and alignment errors, they are not
-	 * counted individually.
-	 */
+	 
 	mac_stats->FrameCheckSequenceErrors = s[OCELOT_STAT_RX_PMAC_CRC_ALIGN_ERRS];
 	mac_stats->AlignmentErrors = s[OCELOT_STAT_RX_PMAC_CRC_ALIGN_ERRS];
 }
@@ -828,7 +812,7 @@ void ocelot_port_get_stats64(struct ocelot *ocelot, int port,
 
 	spin_lock(&ocelot->stats_lock);
 
-	/* Get Rx stats */
+	 
 	stats->rx_bytes = s[OCELOT_STAT_RX_OCTETS];
 	stats->rx_packets = s[OCELOT_STAT_RX_SHORTS] +
 			    s[OCELOT_STAT_RX_FRAGMENTS] +
@@ -869,7 +853,7 @@ void ocelot_port_get_stats64(struct ocelot *ocelot, int port,
 			    s[OCELOT_STAT_DROP_GREEN_PRIO_6] +
 			    s[OCELOT_STAT_DROP_GREEN_PRIO_7];
 
-	/* Get Tx stats */
+	 
 	stats->tx_bytes = s[OCELOT_STAT_TX_OCTETS];
 	stats->tx_packets = s[OCELOT_STAT_TX_64] +
 			    s[OCELOT_STAT_TX_65_127] +
@@ -901,10 +885,7 @@ static int ocelot_prepare_stats_regions(struct ocelot *ocelot)
 		if (!layout[i].reg)
 			continue;
 
-		/* enum ocelot_stat must be kept sorted in the same order
-		 * as the addresses behind layout[i].reg in order to have
-		 * efficient bulking
-		 */
+		 
 		if (last) {
 			WARN(ocelot->map[SYS][last & REG_MASK] >= ocelot->map[SYS][layout[i].reg & REG_MASK],
 			     "reg 0x%x had address 0x%x but reg 0x%x has address 0x%x, bulking broken!",

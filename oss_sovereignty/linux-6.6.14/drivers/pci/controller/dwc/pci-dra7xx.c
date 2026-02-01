@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * pcie-dra7xx - PCIe controller driver for TI DRA7xx SoCs
- *
- * Copyright (C) 2013-2014 Texas Instruments Incorporated - https://www.ti.com
- *
- * Authors: Kishon Vijay Abraham I <kishon@ti.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -32,7 +26,7 @@
 #include "../../pci.h"
 #include "pcie-designware.h"
 
-/* PCIe controller wrapper DRA7XX configuration registers */
+ 
 
 #define	PCIECTRL_DRA7XX_CONF_IRQSTATUS_MAIN		0x0024
 #define	PCIECTRL_DRA7XX_CONF_IRQENABLE_SET_MAIN		0x0028
@@ -87,8 +81,8 @@
 
 struct dra7xx_pcie {
 	struct dw_pcie		*pci;
-	void __iomem		*base;		/* DT ti_conf */
-	int			phy_count;	/* DT phy-names count */
+	void __iomem		*base;		 
+	int			phy_count;	 
 	struct phy		**phy;
 	struct irq_domain	*irq_domain;
 	struct clk              *clk;
@@ -231,12 +225,7 @@ static void dra7xx_pcie_handle_msi_irq(struct dw_pcie_rp *pp)
 
 	num_ctrls = pp->num_vectors / MAX_MSI_IRQS_PER_CTRL;
 
-	/**
-	 * Need to make sure all MSI status bits read 0 before exiting.
-	 * Else, new MSI IRQs are not registered by the wrapper. Have an
-	 * upperbound for the loop and exit the IRQ in case of IRQ flood
-	 * to avoid locking up system in interrupt context.
-	 */
+	 
 	count = 0;
 	do {
 		ret = 0;
@@ -482,7 +471,7 @@ static int dra7xx_add_pcie_port(struct dra7xx_pcie *dra7xx,
 	if (pp->irq < 0)
 		return pp->irq;
 
-	/* MSI IRQ is muxed */
+	 
 	pp->msi_irq[0] = -ENODEV;
 
 	ret = dra7xx_pcie_init_irq_domain(pp);
@@ -611,17 +600,7 @@ static const struct of_device_id of_dra7xx_pcie_match[] = {
 };
 MODULE_DEVICE_TABLE(of, of_dra7xx_pcie_match);
 
-/*
- * dra7xx_pcie_unaligned_memaccess: workaround for AM572x/AM571x Errata i870
- * @dra7xx: the dra7xx device where the workaround should be applied
- *
- * Access to the PCIe slave port that are not 32-bit aligned will result
- * in incorrect mapping to TLP Address and Byte enable fields. Therefore,
- * byte and half-word accesses are not possible to byte offset 0x1, 0x2, or
- * 0x3.
- *
- * To avoid this issue set PCIE_SS1_AXI2OCP_LEGACY_MODE_ENABLE to 1.
- */
+ 
 static int dra7xx_pcie_unaligned_memaccess(struct device *dev)
 {
 	int ret;
@@ -771,7 +750,7 @@ static int dra7xx_pcie_probe(struct platform_device *pdev)
 	if (phy_count == 2) {
 		ret = dra7xx_pcie_configure_two_lane(dev, b1co_mode_sel_mask);
 		if (ret < 0)
-			dra7xx->phy_count = 1; /* Fallback to x1 lane mode */
+			dra7xx->phy_count = 1;  
 	}
 
 	ret = dra7xx_pcie_enable_phy(dra7xx);
@@ -871,7 +850,7 @@ static int dra7xx_pcie_suspend(struct device *dev)
 	if (dra7xx->mode != DW_PCIE_RC_TYPE)
 		return 0;
 
-	/* clear MSE */
+	 
 	val = dw_pcie_readl_dbi(pci, PCI_COMMAND);
 	val &= ~PCI_COMMAND_MEMORY;
 	dw_pcie_writel_dbi(pci, PCI_COMMAND, val);
@@ -888,7 +867,7 @@ static int dra7xx_pcie_resume(struct device *dev)
 	if (dra7xx->mode != DW_PCIE_RC_TYPE)
 		return 0;
 
-	/* set MSE */
+	 
 	val = dw_pcie_readl_dbi(pci, PCI_COMMAND);
 	val |= PCI_COMMAND_MEMORY;
 	dw_pcie_writel_dbi(pci, PCI_COMMAND, val);

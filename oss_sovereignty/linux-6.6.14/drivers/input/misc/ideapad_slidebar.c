@@ -1,73 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Input driver for slidebars on some Lenovo IdeaPad laptops
- *
- * Copyright (C) 2013 Andrey Moiseev <o2g.org.ru@gmail.com>
- *
- * Reverse-engineered from Lenovo SlideNav software (SBarHook.dll).
- *
- * Trademarks are the property of their respective owners.
- */
 
-/*
- * Currently tested and works on:
- *	Lenovo IdeaPad Y550
- *	Lenovo IdeaPad Y550P
- *
- * Other models can be added easily. To test,
- * load with 'force' parameter set 'true'.
- *
- * LEDs blinking and input mode are managed via sysfs,
- * (hex, unsigned byte value):
- * /sys/devices/platform/ideapad_slidebar/slidebar_mode
- *
- * The value is in byte range, however, I only figured out
- * how bits 0b10011001 work. Some other bits, probably,
- * are meaningfull too.
- *
- * Possible states:
- *
- * STD_INT, ONMOV_INT, OFF_INT, LAST_POLL, OFF_POLL
- *
- * Meaning:
- *           released      touched
- * STD       'heartbeat'   lights follow the finger
- * ONMOV     no lights     lights follow the finger
- * LAST      at last pos   lights follow the finger
- * OFF       no lights     no lights
- *
- * INT       all input events are generated, interrupts are used
- * POLL      no input events by default, to get them,
- *	     send 0b10000000 (read below)
- *
- * Commands: write
- *
- * All      |  0b01001 -> STD_INT
- * possible |  0b10001 -> ONMOV_INT
- * states   |  0b01000 -> OFF_INT
- *
- *                      |  0b0 -> LAST_POLL
- * STD_INT or ONMOV_INT |
- *                      |  0b1 -> STD_INT
- *
- *                      |  0b0 -> OFF_POLL
- * OFF_INT or OFF_POLL  |
- *                      |  0b1 -> OFF_INT
- *
- * Any state |   0b10000000 ->  if the slidebar has updated data,
- *				produce one input event (last position),
- *				switch to respective POLL mode
- *				(like 0x0), if not in POLL mode yet.
- *
- * Get current state: read
- *
- * masked by 0x11 read value means:
- *
- * 0x00   LAST
- * 0x01   STD
- * 0x10   OFF
- * 0x11   ONMOV
- */
+ 
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -137,11 +71,11 @@ static bool slidebar_i8042_filter(unsigned char data, unsigned char str,
 {
 	static bool extended = false;
 
-	/* We are only interested in data coming form KBC port */
+	 
 	if (str & I8042_STR_AUXDATA)
 		return false;
 
-	/* Scancodes: e03b on move, e0bb on release. */
+	 
 	if (data == 0xe0) {
 		extended = true;
 		return true;

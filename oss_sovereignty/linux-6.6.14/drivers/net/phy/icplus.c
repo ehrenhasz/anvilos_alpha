@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Driver for ICPlus PHYs
- *
- * Copyright (c) 2007 Freescale Semiconductor, Inc.
- */
+
+ 
 #include <linux/kernel.h>
 #include <linux/string.h>
 #include <linux/errno.h>
@@ -30,17 +26,17 @@ MODULE_DESCRIPTION("ICPlus IP175C/IP101A/IP101G/IC1001 PHY drivers");
 MODULE_AUTHOR("Michael Barkowski");
 MODULE_LICENSE("GPL");
 
-/* IP101A/G - IP1001 */
-#define IP10XX_SPEC_CTRL_STATUS		16	/* Spec. Control Register */
-#define IP1001_RXPHASE_SEL		BIT(0)	/* Add delay on RX_CLK */
-#define IP1001_TXPHASE_SEL		BIT(1)	/* Add delay on TX_CLK */
-#define IP1001_SPEC_CTRL_STATUS_2	20	/* IP1001 Spec. Control Reg 2 */
-#define IP1001_APS_ON			11	/* IP1001 APS Mode  bit */
-#define IP101A_G_APS_ON			BIT(1)	/* IP101A/G APS Mode bit */
+ 
+#define IP10XX_SPEC_CTRL_STATUS		16	 
+#define IP1001_RXPHASE_SEL		BIT(0)	 
+#define IP1001_TXPHASE_SEL		BIT(1)	 
+#define IP1001_SPEC_CTRL_STATUS_2	20	 
+#define IP1001_APS_ON			11	 
+#define IP101A_G_APS_ON			BIT(1)	 
 #define IP101A_G_AUTO_MDIX_DIS		BIT(11)
-#define IP101A_G_IRQ_CONF_STATUS	0x11	/* Conf Info IRQ & Status Reg */
-#define	IP101A_G_IRQ_PIN_USED		BIT(15) /* INTR pin used */
-#define IP101A_G_IRQ_ALL_MASK		BIT(11) /* IRQ's inactive */
+#define IP101A_G_IRQ_CONF_STATUS	0x11	 
+#define	IP101A_G_IRQ_PIN_USED		BIT(15)  
+#define IP101A_G_IRQ_ALL_MASK		BIT(11)  
 #define IP101A_G_IRQ_SPEED_CHANGE	BIT(2)
 #define IP101A_G_IRQ_DUPLEX_CHANGE	BIT(1)
 #define IP101A_G_IRQ_LINK_CHANGE	BIT(0)
@@ -66,10 +62,7 @@ MODULE_LICENSE("GPL");
 #define IP1001_PHY_ID 0x02430d90
 #define IP101A_PHY_ID 0x02430c54
 
-/* The 32-pin IP101GR package can re-configure the mode of the RXER/INTR_32 pin
- * (pin number 21). The hardware default is RXER (receive error) mode. But it
- * can be configured to interrupt mode manually.
- */
+ 
 enum ip101gr_sel_intr32 {
 	IP101GR_SEL_INTR32_KEEP,
 	IP101GR_SEL_INTR32_INTR,
@@ -98,28 +91,28 @@ static int ip175c_config_init(struct phy_device *phydev)
 
 	if (full_reset_performed == 0) {
 
-		/* master reset */
+		 
 		err = mdiobus_write(phydev->mdio.bus, 30, 0, 0x175c);
 		if (err < 0)
 			return err;
 
-		/* ensure no bus delays overlap reset period */
+		 
 		err = mdiobus_read(phydev->mdio.bus, 30, 0);
 
-		/* data sheet specifies reset period is 2 msec */
+		 
 		mdelay(2);
 
-		/* enable IP175C mode */
+		 
 		err = mdiobus_write(phydev->mdio.bus, 29, 31, 0x175c);
 		if (err < 0)
 			return err;
 
-		/* Set MII0 speed and duplex (in PHY mode) */
+		 
 		err = mdiobus_write(phydev->mdio.bus, 29, 22, 0x420);
 		if (err < 0)
 			return err;
 
-		/* reset switch ports */
+		 
 		for (i = 0; i < 5; i++) {
 			err = mdiobus_write(phydev->mdio.bus, i,
 					    MII_BMCR, BMCR_RESET);
@@ -150,7 +143,7 @@ static int ip1001_config_init(struct phy_device *phydev)
 {
 	int c;
 
-	/* Enable Auto Power Saving mode */
+	 
 	c = phy_read(phydev, IP1001_SPEC_CTRL_STATUS_2);
 	if (c < 0)
 		return c;
@@ -184,10 +177,10 @@ static int ip1001_config_init(struct phy_device *phydev)
 
 static int ip175c_read_status(struct phy_device *phydev)
 {
-	if (phydev->mdio.addr == 4) /* WAN port */
+	if (phydev->mdio.addr == 4)  
 		genphy_read_status(phydev);
 	else
-		/* Don't need to read status for switch ports */
+		 
 		phydev->irq = PHY_MAC_INTERRUPT;
 
 	return 0;
@@ -195,7 +188,7 @@ static int ip175c_read_status(struct phy_device *phydev)
 
 static int ip175c_config_aneg(struct phy_device *phydev)
 {
-	if (phydev->mdio.addr == 4) /* WAN port */
+	if (phydev->mdio.addr == 4)  
 		genphy_config_aneg(phydev);
 
 	return 0;
@@ -210,9 +203,7 @@ static int ip101a_g_probe(struct phy_device *phydev)
 	if (!priv)
 		return -ENOMEM;
 
-	/* Both functions (RX error and interrupt status) are sharing the same
-	 * pin on the 32-pin IP101GR, so this is an exclusive choice.
-	 */
+	 
 	if (device_property_read_bool(dev, "icplus,select-rx-error") &&
 	    device_property_read_bool(dev, "icplus,select-interrupt")) {
 		dev_err(dev,
@@ -241,7 +232,7 @@ static int ip101a_g_config_intr_pin(struct phy_device *phydev)
 	if (oldpage < 0)
 		goto out;
 
-	/* configure the RXER/INTR_32 pin of the 32-pin IP101GR if needed: */
+	 
 	switch (priv->sel_intr32) {
 	case IP101GR_SEL_INTR32_RXER:
 		err = __phy_modify(phydev, IP101G_DIGITAL_IO_SPEC_CTRL,
@@ -259,13 +250,7 @@ static int ip101a_g_config_intr_pin(struct phy_device *phydev)
 		break;
 
 	default:
-		/* Don't touch IP101G_DIGITAL_IO_SPEC_CTRL because it's not
-		 * documented on IP101A and it's not clear whether this would
-		 * cause problems.
-		 * For the 32-pin IP101GR we simply keep the SEL_INTR32
-		 * configuration as set by the bootloader when not configured
-		 * to one of the special functions.
-		 */
+		 
 		break;
 	}
 
@@ -277,7 +262,7 @@ static int ip101a_config_init(struct phy_device *phydev)
 {
 	int ret;
 
-	/* Enable Auto Power Saving mode */
+	 
 	ret = phy_set_bits(phydev, IP10XX_SPEC_CTRL_STATUS, IP101A_G_APS_ON);
 	if (ret)
 		return ret;
@@ -289,13 +274,13 @@ static int ip101g_config_init(struct phy_device *phydev)
 {
 	int ret;
 
-	/* Enable the PHY counters */
+	 
 	ret = phy_modify_paged(phydev, 1, IP101G_P1_CNT_CTRL,
 			       CNT_CTRL_RX_EN, CNT_CTRL_RX_EN);
 	if (ret)
 		return ret;
 
-	/* Clear error counters on read */
+	 
 	ret = phy_modify_paged(phydev, 8, IP101G_P8_CNT_CTRL,
 			       CNT_CTRL_RDCLR_EN, CNT_CTRL_RDCLR_EN);
 	if (ret)
@@ -415,7 +400,7 @@ static int ip101a_g_config_intr(struct phy_device *phydev)
 		if (err)
 			return err;
 
-		/* INTR pin used: Speed/link/duplex will cause an interrupt */
+		 
 		val = IP101A_G_IRQ_PIN_USED;
 		err = phy_write_paged(phydev, IP101G_DEFAULT_PAGE,
 				      IP101A_G_IRQ_CONF_STATUS, val);
@@ -453,9 +438,7 @@ static irqreturn_t ip101a_g_handle_interrupt(struct phy_device *phydev)
 	return IRQ_HANDLED;
 }
 
-/* The IP101A doesn't really have a page register. We just pretend to have one
- * so we can use the paged versions of the callbacks of the IP101G.
- */
+ 
 static int ip101a_read_page(struct phy_device *phydev)
 {
 	return IP101G_DEFAULT_PAGE;
@@ -508,11 +491,7 @@ static int ip101a_g_match_phy_device(struct phy_device *phydev, bool ip101a)
 	if (phydev->phy_id != IP101A_PHY_ID)
 		return 0;
 
-	/* The IP101A and the IP101G share the same PHY identifier.The IP101G
-	 * seems to be a successor of the IP101A and implements more functions.
-	 * Amongst other things there is a page select register, which is not
-	 * available on the IP101A. Use this to distinguish these two.
-	 */
+	 
 	ret = ip101a_g_has_page_register(phydev);
 	if (ret < 0)
 		return ret;
@@ -575,7 +554,7 @@ static struct phy_driver icplus_driver[] = {
 {
 	PHY_ID_MATCH_MODEL(IP175C_PHY_ID),
 	.name		= "ICPlus IP175C",
-	/* PHY_BASIC_FEATURES */
+	 
 	.config_init	= ip175c_config_init,
 	.config_aneg	= ip175c_config_aneg,
 	.read_status	= ip175c_read_status,
@@ -584,7 +563,7 @@ static struct phy_driver icplus_driver[] = {
 }, {
 	PHY_ID_MATCH_MODEL(IP1001_PHY_ID),
 	.name		= "ICPlus IP1001",
-	/* PHY_GBIT_FEATURES */
+	 
 	.config_init	= ip1001_config_init,
 	.soft_reset	= genphy_soft_reset,
 	.suspend	= genphy_suspend,

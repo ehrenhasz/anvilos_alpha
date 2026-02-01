@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
-/*
- * Mellanox platform driver
- *
- * Copyright (C) 2016-2018 Mellanox Technologies
- * Copyright (C) 2016-2018 Vadim Pasternak <vadimp@mellanox.com>
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/dmi.h>
@@ -21,7 +16,7 @@
 
 #define MLX_PLAT_DEVICE_NAME		"mlxplat"
 
-/* LPC bus IO offsets */
+ 
 #define MLXPLAT_CPLD_LPC_I2C_BASE_ADRR		0x2000
 #define MLXPLAT_CPLD_LPC_REG_BASE_ADRR		0x2500
 #define MLXPLAT_CPLD_LPC_REG_CPLD1_VER_OFFSET	0x00
@@ -198,7 +193,7 @@
 				  MLXPLAT_CPLD_LPC_REG_I2C_CH4_OFFSET) | \
 				  MLXPLAT_CPLD_LPC_PIO_OFFSET)
 
-/* Masks for aggregation, psu, pwr and fan event in CPLD related registers. */
+ 
 #define MLXPLAT_CPLD_AGGR_ASIC_MASK_DEF	0x04
 #define MLXPLAT_CPLD_AGGR_PSU_MASK_DEF	0x08
 #define MLXPLAT_CPLD_AGGR_PWR_MASK_DEF	0x08
@@ -258,29 +253,29 @@
 #define MLXPLAT_CPLD_I2C_CAP_MASK	GENMASK(5, MLXPLAT_CPLD_I2C_CAP_BIT)
 #define MLXPLAT_CPLD_SYS_RESET_MASK	BIT(0)
 
-/* Masks for aggregation for comex carriers */
+ 
 #define MLXPLAT_CPLD_AGGR_MASK_CARRIER	BIT(1)
 #define MLXPLAT_CPLD_AGGR_MASK_CARR_DEF	(MLXPLAT_CPLD_AGGR_ASIC_MASK_DEF | \
 					 MLXPLAT_CPLD_AGGR_MASK_CARRIER)
 #define MLXPLAT_CPLD_LOW_AGGRCX_MASK	0xc1
 
-/* Masks for aggregation for modular systems */
+ 
 #define MLXPLAT_CPLD_LPC_LC_MASK	GENMASK(7, 0)
 
 #define MLXPLAT_CPLD_HALT_MASK		BIT(3)
 #define MLXPLAT_CPLD_RESET_MASK		GENMASK(7, 1)
 
-/* Default I2C parent bus number */
+ 
 #define MLXPLAT_CPLD_PHYS_ADAPTER_DEF_NR	1
 
-/* Maximum number of possible physical buses equipped on system */
+ 
 #define MLXPLAT_CPLD_MAX_PHYS_ADAPTER_NUM	16
 #define MLXPLAT_CPLD_MAX_PHYS_EXT_ADAPTER_NUM	24
 
-/* Number of channels in group */
+ 
 #define MLXPLAT_CPLD_GRP_CHNL_NUM		8
 
-/* Start channel numbers */
+ 
 #define MLXPLAT_CPLD_CH1			2
 #define MLXPLAT_CPLD_CH2			10
 #define MLXPLAT_CPLD_CH3			18
@@ -290,10 +285,10 @@
 #define MLXPLAT_CPLD_CH2_RACK_SWITCH		18
 #define MLXPLAT_CPLD_CH2_NG800			34
 
-/* Number of LPC attached MUX platform devices */
+ 
 #define MLXPLAT_CPLD_LPC_MUX_DEVS		4
 
-/* Hotplug devices adapter numbers */
+ 
 #define MLXPLAT_CPLD_NR_NONE			-1
 #define MLXPLAT_CPLD_PSU_DEFAULT_NR		10
 #define MLXPLAT_CPLD_PSU_MSNXXXX_NR		4
@@ -307,7 +302,7 @@
 #define MLXPLAT_CPLD_NR_LC_SET(nr)	(MLXPLAT_CPLD_NR_LC_BASE + (nr))
 #define MLXPLAT_CPLD_LC_ADDR		0x32
 
-/* Masks and default values for watchdogs */
+ 
 #define MLXPLAT_CPLD_WD1_CLEAR_MASK	GENMASK(7, 1)
 #define MLXPLAT_CPLD_WD2_CLEAR_MASK	(GENMASK(7, 0) & ~BIT(1))
 
@@ -323,35 +318,22 @@
 
 #define MLXPLAT_CPLD_LPC_SYSIRQ		17
 
-/* Minimum power required for turning on Ethernet modular system (WATT) */
+ 
 #define MLXPLAT_CPLD_ETH_MODULAR_PWR_MIN	50
 
-/* Default value for PWM control register for rack switch system */
+ 
 #define MLXPLAT_REGMAP_NVSWITCH_PWM_DEFAULT 0xf4
 
 #define MLXPLAT_I2C_MAIN_BUS_NOTIFIED		0x01
 #define MLXPLAT_I2C_MAIN_BUS_HANDLE_CREATED	0x02
 
-/* Lattice FPGA PCI configuration */
+ 
 #define PCI_VENDOR_ID_LATTICE			0x1204
 #define PCI_DEVICE_ID_LATTICE_I2C_BRIDGE	0x9c2f
 #define PCI_DEVICE_ID_LATTICE_JTAG_BRIDGE	0x9c30
 #define PCI_DEVICE_ID_LATTICE_LPC_BRIDGE	0x9c32
 
-/* mlxplat_priv - platform private data
- * @pdev_i2c - i2c controller platform device
- * @pdev_mux - array of mux platform devices
- * @pdev_hotplug - hotplug platform devices
- * @pdev_led - led platform devices
- * @pdev_io_regs - register access platform devices
- * @pdev_fan - FAN platform devices
- * @pdev_wd - array of watchdog platform devices
- * @regmap: device register map
- * @hotplug_resources: system hotplug resources
- * @hotplug_resources_size: size of system hotplug resources
- * @hi2c_main_init_status: init status of I2C main bus
- * @irq_fpga: FPGA IRQ number
- */
+ 
 struct mlxplat_priv {
 	struct platform_device *pdev_i2c;
 	struct platform_device *pdev_mux[MLXPLAT_CPLD_LPC_MUX_DEVS];
@@ -371,7 +353,7 @@ static struct platform_device *mlxplat_dev;
 static int mlxplat_i2c_main_complition_notify(void *handle, int id);
 static void __iomem *i2c_bridge_addr, *jtag_bridge_addr;
 
-/* Regions for LPC I2C controller and LPC base register space */
+ 
 static const struct resource mlxplat_lpc_resources[] = {
 	[0] = DEFINE_RES_NAMED(MLXPLAT_CPLD_LPC_I2C_BASE_ADRR,
 			       MLXPLAT_CPLD_LPC_IO_RANGE,
@@ -382,12 +364,12 @@ static const struct resource mlxplat_lpc_resources[] = {
 			       IORESOURCE_IO),
 };
 
-/* Platform systems default i2c data */
+ 
 static struct mlxreg_core_hotplug_platform_data mlxplat_mlxcpld_i2c_default_data = {
 	.completion_notify = mlxplat_i2c_main_complition_notify,
 };
 
-/* Platform i2c next generation systems data */
+ 
 static struct mlxreg_core_data mlxplat_mlxcpld_i2c_ng_items_data[] = {
 	{
 		.reg = MLXPLAT_CPLD_LPC_REG_PSU_I2C_CAP_OFFSET,
@@ -402,7 +384,7 @@ static struct mlxreg_core_item mlxplat_mlxcpld_i2c_ng_items[] = {
 	},
 };
 
-/* Platform next generation systems i2c data */
+ 
 static struct mlxreg_core_hotplug_platform_data mlxplat_mlxcpld_i2c_ng_data = {
 	.items = mlxplat_mlxcpld_i2c_ng_items,
 	.cell = MLXPLAT_CPLD_LPC_REG_AGGR_OFFSET,
@@ -412,7 +394,7 @@ static struct mlxreg_core_hotplug_platform_data mlxplat_mlxcpld_i2c_ng_data = {
 	.completion_notify = mlxplat_i2c_main_complition_notify,
 };
 
-/* Platform default channels */
+ 
 static const int mlxplat_default_channels[][MLXPLAT_CPLD_GRP_CHNL_NUM] = {
 	{
 		MLXPLAT_CPLD_CH1, MLXPLAT_CPLD_CH1 + 1, MLXPLAT_CPLD_CH1 + 2,
@@ -426,10 +408,10 @@ static const int mlxplat_default_channels[][MLXPLAT_CPLD_GRP_CHNL_NUM] = {
 	},
 };
 
-/* Platform channels for MSN21xx system family */
+ 
 static const int mlxplat_msn21xx_channels[] = { 1, 2, 3, 4, 5, 6, 7, 8 };
 
-/* Platform mux data */
+ 
 static struct i2c_mux_reg_platform_data mlxplat_default_mux_data[] = {
 	{
 		.parent = 1,
@@ -450,13 +432,13 @@ static struct i2c_mux_reg_platform_data mlxplat_default_mux_data[] = {
 
 };
 
-/* Platform mux configuration variables */
+ 
 static int mlxplat_max_adap_num;
 static int mlxplat_mux_num;
 static struct i2c_mux_reg_platform_data *mlxplat_mux_data;
 static struct notifier_block *mlxplat_reboot_nb;
 
-/* Platform extended mux data */
+ 
 static struct i2c_mux_reg_platform_data mlxplat_extended_mux_data[] = {
 	{
 		.parent = 1,
@@ -485,7 +467,7 @@ static struct i2c_mux_reg_platform_data mlxplat_extended_mux_data[] = {
 
 };
 
-/* Platform channels for modular system family */
+ 
 static const int mlxplat_modular_upper_channel[] = { 1 };
 static const int mlxplat_modular_channels[] = {
 	1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
@@ -493,7 +475,7 @@ static const int mlxplat_modular_channels[] = {
 	38, 39, 40
 };
 
-/* Platform modular mux data */
+ 
 static struct i2c_mux_reg_platform_data mlxplat_modular_mux_data[] = {
 	{
 		.parent = 1,
@@ -537,12 +519,12 @@ static struct i2c_mux_reg_platform_data mlxplat_modular_mux_data[] = {
 	},
 };
 
-/* Platform channels for rack switch system family */
+ 
 static const int mlxplat_rack_switch_channels[] = {
 	1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
 };
 
-/* Platform rack switch mux data */
+ 
 static struct i2c_mux_reg_platform_data mlxplat_rack_switch_mux_data[] = {
 	{
 		.parent = 1,
@@ -567,13 +549,13 @@ static struct i2c_mux_reg_platform_data mlxplat_rack_switch_mux_data[] = {
 
 };
 
-/* Platform channels for ng800 system family */
+ 
 static const int mlxplat_ng800_channels[] = {
 	1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17,
 	18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32
 };
 
-/* Platform ng800 mux data */
+ 
 static struct i2c_mux_reg_platform_data mlxplat_ng800_mux_data[] = {
 	{
 		.parent = 1,
@@ -598,7 +580,7 @@ static struct i2c_mux_reg_platform_data mlxplat_ng800_mux_data[] = {
 
 };
 
-/* Platform hotplug devices */
+ 
 static struct i2c_board_info mlxplat_mlxcpld_pwr[] = {
 	{
 		I2C_BOARD_INFO("dps460", 0x59),
@@ -641,7 +623,7 @@ static struct i2c_board_info mlxplat_mlxcpld_fan[] = {
 	},
 };
 
-/* Platform hotplug comex carrier system family data */
+ 
 static struct mlxreg_core_data mlxplat_mlxcpld_comex_psu_items_data[] = {
 	{
 		.label = "psu1",
@@ -657,7 +639,7 @@ static struct mlxreg_core_data mlxplat_mlxcpld_comex_psu_items_data[] = {
 	},
 };
 
-/* Platform hotplug default data */
+ 
 static struct mlxreg_core_data mlxplat_mlxcpld_default_psu_items_data[] = {
 	{
 		.label = "psu1",
@@ -924,7 +906,7 @@ static struct mlxreg_core_data mlxplat_mlxcpld_msn21xx_pwr_items_data[] = {
 	},
 };
 
-/* Platform hotplug MSN21xx system family data */
+ 
 static struct mlxreg_core_item mlxplat_mlxcpld_msn21xx_items[] = {
 	{
 		.data = mlxplat_mlxcpld_msn21xx_pwr_items_data,
@@ -956,7 +938,7 @@ struct mlxreg_core_hotplug_platform_data mlxplat_mlxcpld_msn21xx_data = {
 	.mask_low = MLXPLAT_CPLD_LOW_AGGR_MASK_LOW,
 };
 
-/* Platform hotplug msn274x system family data */
+ 
 static struct mlxreg_core_data mlxplat_mlxcpld_msn274x_psu_items_data[] = {
 	{
 		.label = "psu1",
@@ -1065,7 +1047,7 @@ struct mlxreg_core_hotplug_platform_data mlxplat_mlxcpld_msn274x_data = {
 	.mask_low = MLXPLAT_CPLD_LOW_AGGR_MASK_LOW,
 };
 
-/* Platform hotplug MSN201x system family data */
+ 
 static struct mlxreg_core_data mlxplat_mlxcpld_msn201x_pwr_items_data[] = {
 	{
 		.label = "pwr1",
@@ -1112,7 +1094,7 @@ struct mlxreg_core_hotplug_platform_data mlxplat_mlxcpld_msn201x_data = {
 	.mask_low = MLXPLAT_CPLD_LOW_AGGR_MASK_LOW,
 };
 
-/* Platform hotplug next generation system family data */
+ 
 static struct mlxreg_core_data mlxplat_mlxcpld_default_ng_psu_items_data[] = {
 	{
 		.label = "psu1",
@@ -1236,7 +1218,7 @@ struct mlxreg_core_hotplug_platform_data mlxplat_mlxcpld_default_ng_data = {
 	.mask_low = MLXPLAT_CPLD_LOW_AGGR_MASK_LOW,
 };
 
-/* Platform hotplug extended system family data */
+ 
 static struct mlxreg_core_data mlxplat_mlxcpld_ext_psu_items_data[] = {
 	{
 		.label = "psu1",
@@ -2247,7 +2229,7 @@ struct mlxreg_core_hotplug_platform_data mlxplat_mlxcpld_modular_data = {
 	.mask_low = MLXPLAT_CPLD_LOW_AGGR_MASK_LOW,
 };
 
-/* Platform hotplug for NVLink blade systems family data  */
+ 
 static struct mlxreg_core_data mlxplat_mlxcpld_global_wp_items_data[] = {
 	{
 		.label = "global_wp_grant",
@@ -2279,7 +2261,7 @@ struct mlxreg_core_hotplug_platform_data mlxplat_mlxcpld_chassis_blade_data = {
 	.mask_low = MLXPLAT_CPLD_LOW_AGGR_MASK_LOW,
 };
 
-/* Platform hotplug for  switch systems family data */
+ 
 static struct mlxreg_core_data mlxplat_mlxcpld_erot_ap_items_data[] = {
 	{
 		.label = "erot1_ap",
@@ -2370,7 +2352,7 @@ struct mlxreg_core_hotplug_platform_data mlxplat_mlxcpld_rack_switch_data = {
 	.mask_low = MLXPLAT_CPLD_LOW_AGGR_MASK_LOW,
 };
 
-/* Callback performs graceful shutdown after notification about power button event */
+ 
 static int
 mlxplat_mlxcpld_l1_switch_pwr_events_handler(void *handle, enum mlxreg_hotplug_kind kind,
 					     u8 action)
@@ -2387,7 +2369,7 @@ static struct mlxreg_core_hotplug_notifier mlxplat_mlxcpld_l1_switch_pwr_events_
 	.user_handler = mlxplat_mlxcpld_l1_switch_pwr_events_handler,
 };
 
-/* Platform hotplug for l1 switch systems family data  */
+ 
 static struct mlxreg_core_data mlxplat_mlxcpld_l1_switch_pwr_events_items_data[] = {
 	{
 		.label = "power_button",
@@ -2399,7 +2381,7 @@ static struct mlxreg_core_data mlxplat_mlxcpld_l1_switch_pwr_events_items_data[]
 	},
 };
 
-/* Callback activates latch reset flow after notification about intrusion event */
+ 
 static int
 mlxplat_mlxcpld_l1_switch_intrusion_events_handler(void *handle, enum mlxreg_hotplug_kind kind,
 						   u8 action)
@@ -2525,7 +2507,7 @@ struct mlxreg_core_hotplug_platform_data mlxplat_mlxcpld_l1_switch_data = {
 	.mask_low = MLXPLAT_CPLD_LOW_AGGR_MASK_LOW | MLXPLAT_CPLD_LOW_AGGR_MASK_PWR_BUT,
 };
 
-/* Platform led default data */
+ 
 static struct mlxreg_core_data mlxplat_mlxcpld_default_led_data[] = {
 	{
 		.label = "status:green",
@@ -2594,7 +2576,7 @@ static struct mlxreg_core_platform_data mlxplat_default_led_data = {
 		.counter = ARRAY_SIZE(mlxplat_mlxcpld_default_led_data),
 };
 
-/* Platform led default data for water cooling */
+ 
 static struct mlxreg_core_data mlxplat_mlxcpld_default_led_wc_data[] = {
 	{
 		.label = "status:green",
@@ -2623,7 +2605,7 @@ static struct mlxreg_core_platform_data mlxplat_default_led_wc_data = {
 		.counter = ARRAY_SIZE(mlxplat_mlxcpld_default_led_wc_data),
 };
 
-/* Platform led default data for water cooling Ethernet switch blade */
+ 
 static struct mlxreg_core_data mlxplat_mlxcpld_default_led_eth_wc_blade_data[] = {
 	{
 		.label = "status:green",
@@ -2642,7 +2624,7 @@ static struct mlxreg_core_platform_data mlxplat_default_led_eth_wc_blade_data = 
 	.counter = ARRAY_SIZE(mlxplat_mlxcpld_default_led_eth_wc_blade_data),
 };
 
-/* Platform led MSN21xx system family data */
+ 
 static struct mlxreg_core_data mlxplat_mlxcpld_msn21xx_led_data[] = {
 	{
 		.label = "status:green",
@@ -2696,7 +2678,7 @@ static struct mlxreg_core_platform_data mlxplat_msn21xx_led_data = {
 		.counter = ARRAY_SIZE(mlxplat_mlxcpld_msn21xx_led_data),
 };
 
-/* Platform led for default data for 200GbE systems */
+ 
 static struct mlxreg_core_data mlxplat_mlxcpld_default_ng_led_data[] = {
 	{
 		.label = "status:green",
@@ -2828,7 +2810,7 @@ static struct mlxreg_core_platform_data mlxplat_default_ng_led_data = {
 		.counter = ARRAY_SIZE(mlxplat_mlxcpld_default_ng_led_data),
 };
 
-/* Platform led for Comex based 100GbE systems */
+ 
 static struct mlxreg_core_data mlxplat_mlxcpld_comex_100G_led_data[] = {
 	{
 		.label = "status:green",
@@ -2902,7 +2884,7 @@ static struct mlxreg_core_platform_data mlxplat_comex_100G_led_data = {
 		.counter = ARRAY_SIZE(mlxplat_mlxcpld_comex_100G_led_data),
 };
 
-/* Platform led for data for modular systems */
+ 
 static struct mlxreg_core_data mlxplat_mlxcpld_modular_led_data[] = {
 	{
 		.label = "status:green",
@@ -3054,7 +3036,7 @@ static struct mlxreg_core_platform_data mlxplat_modular_led_data = {
 		.counter = ARRAY_SIZE(mlxplat_mlxcpld_modular_led_data),
 };
 
-/* Platform led data for chassis system */
+ 
 static struct mlxreg_core_data mlxplat_mlxcpld_l1_switch_led_data[] = {
 	{
 		.label = "status:green",
@@ -3162,7 +3144,7 @@ static struct mlxreg_core_platform_data mlxplat_l1_switch_led_data = {
 		.counter = ARRAY_SIZE(mlxplat_mlxcpld_l1_switch_led_data),
 };
 
-/* Platform register access default */
+ 
 static struct mlxreg_core_data mlxplat_mlxcpld_default_regs_io_data[] = {
 	{
 		.label = "cpld1_version",
@@ -3294,7 +3276,7 @@ static struct mlxreg_core_platform_data mlxplat_default_regs_io_data = {
 		.counter = ARRAY_SIZE(mlxplat_mlxcpld_default_regs_io_data),
 };
 
-/* Platform register access MSN21xx, MSN201x, MSN274x systems families data */
+ 
 static struct mlxreg_core_data mlxplat_mlxcpld_msn21xx_regs_io_data[] = {
 	{
 		.label = "cpld1_version",
@@ -3426,7 +3408,7 @@ static struct mlxreg_core_platform_data mlxplat_msn21xx_regs_io_data = {
 		.counter = ARRAY_SIZE(mlxplat_mlxcpld_msn21xx_regs_io_data),
 };
 
-/* Platform register access for next generation systems families data */
+ 
 static struct mlxreg_core_data mlxplat_mlxcpld_default_ng_regs_io_data[] = {
 	{
 		.label = "cpld1_version",
@@ -3917,7 +3899,7 @@ static struct mlxreg_core_platform_data mlxplat_default_ng_regs_io_data = {
 		.counter = ARRAY_SIZE(mlxplat_mlxcpld_default_ng_regs_io_data),
 };
 
-/* Platform register access for modular systems families data */
+ 
 static struct mlxreg_core_data mlxplat_mlxcpld_modular_regs_io_data[] = {
 	{
 		.label = "cpld1_version",
@@ -4401,7 +4383,7 @@ static struct mlxreg_core_platform_data mlxplat_modular_regs_io_data = {
 		.counter = ARRAY_SIZE(mlxplat_mlxcpld_modular_regs_io_data),
 };
 
-/* Platform register access for chassis blade systems family data  */
+ 
 static struct mlxreg_core_data mlxplat_mlxcpld_chassis_blade_regs_io_data[] = {
 	{
 		.label = "cpld1_version",
@@ -4610,7 +4592,7 @@ static struct mlxreg_core_platform_data mlxplat_chassis_blade_regs_io_data = {
 		.counter = ARRAY_SIZE(mlxplat_mlxcpld_chassis_blade_regs_io_data),
 };
 
-/* Platform FAN default */
+ 
 static struct mlxreg_core_data mlxplat_mlxcpld_default_fan_data[] = {
 	{
 		.label = "pwm1",
@@ -4751,9 +4733,7 @@ static struct mlxreg_core_platform_data mlxplat_default_fan_data = {
 		.capability = MLXPLAT_CPLD_LPC_REG_FAN_DRW_CAP_OFFSET,
 };
 
-/* Watchdog type1: hardware implementation version1
- * (MSN2700, MSN2410, MSN2740, MSN2100 and MSN2140 systems).
- */
+ 
 static struct mlxreg_core_data mlxplat_mlxcpld_wd_main_regs_type1[] = {
 	{
 		.label = "action",
@@ -4817,9 +4797,7 @@ static struct mlxreg_core_platform_data mlxplat_mlxcpld_wd_set_type1[] = {
 	},
 };
 
-/* Watchdog type2: hardware implementation version 2
- * (all systems except (MSN2700, MSN2410, MSN2740, MSN2100 and MSN2140).
- */
+ 
 static struct mlxreg_core_data mlxplat_mlxcpld_wd_main_regs_type2[] = {
 	{
 		.label = "action",
@@ -4893,11 +4871,7 @@ static struct mlxreg_core_platform_data mlxplat_mlxcpld_wd_set_type2[] = {
 	},
 };
 
-/* Watchdog type3: hardware implementation version 3
- * Can be on all systems. It's differentiated by WD capability bit.
- * Old systems (MSN2700, MSN2410, MSN2740, MSN2100 and MSN2140)
- * still have only one main watchdog.
- */
+ 
 static struct mlxreg_core_data mlxplat_mlxcpld_wd_main_regs_type3[] = {
 	{
 		.label = "action",
@@ -5556,7 +5530,7 @@ static struct pci_dev *lpc_bridge;
 static struct pci_dev *i2c_bridge;
 static struct pci_dev *jtag_bridge;
 
-/* Platform default reset function */
+ 
 static int mlxplat_reboot_notifier(struct notifier_block *nb, unsigned long action, void *unused)
 {
 	struct mlxplat_priv *priv = platform_get_drvdata(mlxplat_dev);
@@ -5576,7 +5550,7 @@ static struct notifier_block mlxplat_reboot_default_nb = {
 	.notifier_call = mlxplat_reboot_notifier,
 };
 
-/* Platform default poweroff function */
+ 
 static void mlxplat_poweroff(void)
 {
 	struct mlxplat_priv *priv = platform_get_drvdata(mlxplat_dev);
@@ -6103,7 +6077,7 @@ static int mlxplat_mlxcpld_verify_bus_topology(int *nr)
 	struct i2c_adapter *search_adap;
 	int i, shift = 0;
 
-	/* Scan adapters from expected id to verify it is free. */
+	 
 	*nr = MLXPLAT_CPLD_PHYS_ADAPTER_DEF_NR;
 	for (i = MLXPLAT_CPLD_PHYS_ADAPTER_DEF_NR; i <
 	     mlxplat_max_adap_num; i++) {
@@ -6113,17 +6087,17 @@ static int mlxplat_mlxcpld_verify_bus_topology(int *nr)
 			continue;
 		}
 
-		/* Return if expected parent adapter is free. */
+		 
 		if (i == MLXPLAT_CPLD_PHYS_ADAPTER_DEF_NR)
 			return 0;
 		break;
 	}
 
-	/* Return with error if free id for adapter is not found. */
+	 
 	if (i == mlxplat_max_adap_num)
 		return -ENODEV;
 
-	/* Shift adapter ids, since expected parent adapter is not free. */
+	 
 	*nr = i;
 	for (i = 0; i < mlxplat_mux_num; i++) {
 		shift = *nr - mlxplat_mux_data[i].parent;
@@ -6314,7 +6288,7 @@ static int mlxplat_post_init(struct mlxplat_priv *priv)
 {
 	int i = 0, err;
 
-	/* Add hotplug driver */
+	 
 	if (mlxplat_hotplug) {
 		mlxplat_hotplug->regmap = priv->regmap;
 		if (priv->irq_fpga)
@@ -6331,7 +6305,7 @@ static int mlxplat_post_init(struct mlxplat_priv *priv)
 		}
 	}
 
-	/* Add LED driver. */
+	 
 	if (mlxplat_led) {
 		mlxplat_led->regmap = priv->regmap;
 		priv->pdev_led =
@@ -6344,7 +6318,7 @@ static int mlxplat_post_init(struct mlxplat_priv *priv)
 		}
 	}
 
-	/* Add registers io access driver. */
+	 
 	if (mlxplat_regs_io) {
 		mlxplat_regs_io->regmap = priv->regmap;
 		priv->pdev_io_regs = platform_device_register_resndata(&mlxplat_dev->dev,
@@ -6358,7 +6332,7 @@ static int mlxplat_post_init(struct mlxplat_priv *priv)
 		}
 	}
 
-	/* Add FAN driver. */
+	 
 	if (mlxplat_fan) {
 		mlxplat_fan->regmap = priv->regmap;
 		priv->pdev_fan = platform_device_register_resndata(&mlxplat_dev->dev, "mlxreg-fan",
@@ -6371,7 +6345,7 @@ static int mlxplat_post_init(struct mlxplat_priv *priv)
 		}
 	}
 
-	/* Add WD drivers. */
+	 
 	err = mlxplat_mlxcpld_check_wd_capability(priv->regmap);
 	if (err)
 		goto fail_platform_wd_register;
@@ -6493,7 +6467,7 @@ static int mlxplat_i2c_main_init(struct mlxplat_priv *priv)
 	mlxplat_i2c->regmap = priv->regmap;
 	mlxplat_i2c->handle = priv;
 
-	/* Set mapped base address of I2C-LPC bridge over PCIe */
+	 
 	if (lpc_bridge)
 		mlxplat_i2c->addr = i2c_bridge_addr;
 	priv->pdev_i2c = platform_device_register_resndata(&mlxplat_dev->dev, "i2c_mlxcpld",
@@ -6570,7 +6544,7 @@ static int mlxplat_probe(struct platform_device *pdev)
 		goto fail_alloc;
 	}
 
-	/* Set default registers. */
+	 
 	for (i = 0; i <  mlxplat_regmap_config->num_reg_defaults; i++) {
 		err = regmap_write(priv->regmap,
 				   mlxplat_regmap_config->reg_defaults[i].reg,
@@ -6583,7 +6557,7 @@ static int mlxplat_probe(struct platform_device *pdev)
 	if (err)
 		goto fail_mlxplat_i2c_main_init;
 
-	/* Sync registers with hardware. */
+	 
 	regcache_mark_dirty(priv->regmap);
 	err = regcache_sync(priv->regmap);
 	if (err)

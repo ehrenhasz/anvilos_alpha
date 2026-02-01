@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * Copyright (C) 2023 Loongson Technology Corporation Limited
- */
+ 
+ 
 
 #ifndef __LSDC_I2C_H__
 #define __LSDC_I2C_H__
@@ -15,7 +13,7 @@ struct lsdc_i2c {
 	struct drm_device *ddev;
 	void __iomem *dir_reg;
 	void __iomem *dat_reg;
-	/* pin bit mask */
+	 
 	u8 sda;
 	u8 scl;
 };

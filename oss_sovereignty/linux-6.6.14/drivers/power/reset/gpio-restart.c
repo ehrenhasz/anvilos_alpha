@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Toggles a GPIO pin to restart a device
- *
- * Copyright (C) 2014 Google, Inc.
- *
- * Based on the gpio-poweroff driver.
- */
+
+ 
 #include <linux/reboot.h>
 #include <linux/kernel.h>
 #include <linux/init.h>
@@ -29,18 +23,18 @@ static int gpio_restart_notify(struct notifier_block *this,
 	struct gpio_restart *gpio_restart =
 		container_of(this, struct gpio_restart, restart_handler);
 
-	/* drive it active, also inactive->active edge */
+	 
 	gpiod_direction_output(gpio_restart->reset_gpio, 1);
 	mdelay(gpio_restart->active_delay_ms);
 
-	/* drive inactive, also active->inactive edge */
+	 
 	gpiod_set_value(gpio_restart->reset_gpio, 0);
 	mdelay(gpio_restart->inactive_delay_ms);
 
-	/* drive it active, also inactive->active edge */
+	 
 	gpiod_set_value(gpio_restart->reset_gpio, 1);
 
-	/* give it some time */
+	 
 	mdelay(gpio_restart->wait_delay_ms);
 
 	WARN_ON(1);

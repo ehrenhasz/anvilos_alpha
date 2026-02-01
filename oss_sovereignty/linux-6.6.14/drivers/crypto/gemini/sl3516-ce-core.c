@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * sl3516-ce-core.c - hardware cryptographic offloader for Storlink SL3516 SoC
- *
- * Copyright (C) 2021 Corentin Labbe <clabbe@baylibre.com>
- *
- * Core file which registers crypto algorithms supported by the CryptoEngine
- */
+
+ 
 
 #include <crypto/engine.h>
 #include <crypto/internal/rng.h>
@@ -332,10 +326,7 @@ static void sl3516_ce_start(struct sl3516_ce_dev *ce)
 	writel(0, ce->base + IPSEC_DMA_STATUS);
 }
 
-/*
- * Power management strategy: The device is suspended unless a TFM exists for
- * one of the algorithms proposed by this driver.
- */
+ 
 static int sl3516_ce_pm_suspend(struct device *dev)
 {
 	struct sl3516_ce_dev *ce = dev_get_drvdata(dev);
@@ -480,7 +471,7 @@ static int sl3516_ce_probe(struct platform_device *pdev)
 		struct dentry *dbgfs_dir __maybe_unused;
 		struct dentry *dbgfs_stats __maybe_unused;
 
-		/* Ignore error of debugfs */
+		 
 		dbgfs_dir = debugfs_create_dir("sl3516", NULL);
 		dbgfs_stats = debugfs_create_file("stats", 0444,
 						  dbgfs_dir, ce,

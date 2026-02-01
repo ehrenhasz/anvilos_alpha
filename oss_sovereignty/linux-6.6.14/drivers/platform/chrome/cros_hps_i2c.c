@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Driver for the ChromeOS human presence sensor (HPS), attached via I2C.
- *
- * The driver exposes HPS as a character device, although currently no read or
- * write operations are supported. Instead, the driver only controls the power
- * state of the sensor, keeping it on only while userspace holds an open file
- * descriptor to the HPS device.
- *
- * Copyright 2022 Google LLC.
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/fs.h>
@@ -72,11 +63,7 @@ static int hps_i2c_probe(struct i2c_client *client)
 	i2c_set_clientdata(client, hps);
 	hps->client = client;
 
-	/*
-	 * HPS is powered on from firmware before entering the kernel, so we
-	 * acquire the line with GPIOD_OUT_HIGH here to preserve the existing
-	 * state. The peripheral is powered off after successful probe below.
-	 */
+	 
 	hps->enable_gpio = devm_gpiod_get(&client->dev, "enable", GPIOD_OUT_HIGH);
 	if (IS_ERR(hps->enable_gpio)) {
 		ret = PTR_ERR(hps->enable_gpio);
@@ -102,10 +89,7 @@ static void hps_i2c_remove(struct i2c_client *client)
 	pm_runtime_disable(&client->dev);
 	misc_deregister(&hps->misc_device);
 
-	/*
-	 * Re-enable HPS, in order to return it to its default state
-	 * (i.e. powered on).
-	 */
+	 
 	hps_set_power(hps, true);
 }
 
@@ -140,7 +124,7 @@ static const struct acpi_device_id hps_acpi_id[] = {
 	{ }
 };
 MODULE_DEVICE_TABLE(acpi, hps_acpi_id);
-#endif /* CONFIG_ACPI */
+#endif  
 
 static struct i2c_driver hps_i2c_driver = {
 	.probe = hps_i2c_probe,

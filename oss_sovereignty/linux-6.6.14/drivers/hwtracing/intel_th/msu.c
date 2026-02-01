@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Intel(R) Trace Hub Memory Storage Unit
- *
- * Copyright (C) 2014-2015 Intel Corporation.
- */
+
+ 
 
 #define pr_fmt(fmt)	KBUILD_MODNAME ": " fmt
 
@@ -30,40 +26,14 @@
 
 #define msc_dev(x) (&(x)->thdev->dev)
 
-/*
- * Lockout state transitions:
- *   READY -> INUSE -+-> LOCKED -+-> READY -> etc.
- *                   \-----------/
- * WIN_READY:	window can be used by HW
- * WIN_INUSE:	window is in use
- * WIN_LOCKED:	window is filled up and is being processed by the buffer
- * handling code
- *
- * All state transitions happen automatically, except for the LOCKED->READY,
- * which needs to be signalled by the buffer code by calling
- * intel_th_msc_window_unlock().
- *
- * When the interrupt handler has to switch to the next window, it checks
- * whether it's READY, and if it is, it performs the switch and tracing
- * continues. If it's LOCKED, it stops the trace.
- */
+ 
 enum lockout_state {
 	WIN_READY = 0,
 	WIN_INUSE,
 	WIN_LOCKED
 };
 
-/**
- * struct msc_window - multiblock mode window descriptor
- * @entry:	window list linkage (msc::win_list)
- * @pgoff:	page offset into the buffer that this window starts at
- * @lockout:	lockout state, see comment below
- * @lo_lock:	lockout state serialization
- * @nr_blocks:	number of blocks (pages) in this window
- * @nr_segs:	number of segments in this window (<= @nr_blocks)
- * @_sgt:	array of block descriptors
- * @sgt:	array of block descriptors
- */
+ 
 struct msc_window {
 	struct list_head	entry;
 	unsigned long		pgoff;
@@ -76,19 +46,7 @@ struct msc_window {
 	struct sg_table		*sgt;
 };
 
-/**
- * struct msc_iter - iterator for msc buffer
- * @entry:		msc::iter_list linkage
- * @msc:		pointer to the MSC device
- * @start_win:		oldest window
- * @win:		current window
- * @offset:		current logical offset into the buffer
- * @start_block:	oldest block in the window
- * @block:		block number in the window
- * @block_off:		offset into current block
- * @wrap_count:		block wrapping handling
- * @eof:		end of buffer reached
- */
+ 
 struct msc_iter {
 	struct list_head	entry;
 	struct msc		*msc;
@@ -102,30 +60,7 @@ struct msc_iter {
 	unsigned int		eof;
 };
 
-/**
- * struct msc - MSC device representation
- * @reg_base:		register window base address
- * @thdev:		intel_th_device pointer
- * @mbuf:		MSU buffer, if assigned
- * @mbuf_priv		MSU buffer's private data, if @mbuf
- * @win_list:		list of windows in multiblock mode
- * @single_sgt:		single mode buffer
- * @cur_win:		current window
- * @nr_pages:		total number of pages allocated for this buffer
- * @single_sz:		amount of data in single mode
- * @single_wrap:	single mode wrap occurred
- * @base:		buffer's base pointer
- * @base_addr:		buffer's base address
- * @user_count:		number of users of the buffer
- * @mmap_count:		number of mappings
- * @buf_mutex:		mutex to serialize access to buffer-related bits
-
- * @enabled:		MSC is enabled
- * @wrap:		wrapping is enabled
- * @mode:		MSC operating mode
- * @burst_len:		write burst length
- * @index:		number of this MSC in the MSU
- */
+ 
 struct msc {
 	void __iomem		*reg_base;
 	void __iomem		*msu_base;
@@ -147,7 +82,7 @@ struct msc {
 	u32			orig_addr;
 	u32			orig_sz;
 
-	/* <0: no buffer, 0: no users, >0: active users */
+	 
 	atomic_t		user_count;
 
 	atomic_t		mmap_count;
@@ -157,7 +92,7 @@ struct msc {
 
 	bool			stop_on_full;
 
-	/* config */
+	 
 	unsigned int		enabled : 1,
 				wrap	: 1,
 				do_irq	: 1,
@@ -170,12 +105,7 @@ struct msc {
 static LIST_HEAD(msu_buffer_list);
 static DEFINE_MUTEX(msu_buffer_mutex);
 
-/**
- * struct msu_buffer_entry - internal MSU buffer bookkeeping
- * @entry:	link to msu_buffer_list
- * @mbuf:	MSU buffer object
- * @owner:	module that provides this MSU buffer
- */
+ 
 struct msu_buffer_entry {
 	struct list_head	entry;
 	const struct msu_buffer	*mbuf;
@@ -264,11 +194,11 @@ EXPORT_SYMBOL_GPL(intel_th_msu_buffer_unregister);
 
 static inline bool msc_block_is_empty(struct msc_block_desc *bdesc)
 {
-	/* header hasn't been written */
+	 
 	if (!bdesc->valid_dw)
 		return true;
 
-	/* valid_dw includes the header */
+	 
 	if (!msc_data_sz(bdesc))
 		return true;
 
@@ -296,22 +226,13 @@ msc_win_base_pfn(struct msc_window *win)
 	return PFN_DOWN(msc_win_base_dma(win));
 }
 
-/**
- * msc_is_last_win() - check if a window is the last one for a given MSC
- * @win:	window
- * Return:	true if @win is the last window in MSC's multiblock buffer
- */
+ 
 static inline bool msc_is_last_win(struct msc_window *win)
 {
 	return win->entry.next == &win->msc->win_list;
 }
 
-/**
- * msc_next_window() - return next window in the multiblock buffer
- * @win:	current window
- *
- * Return:	window following the current one
- */
+ 
 static struct msc_window *msc_next_window(struct msc_window *win)
 {
 	if (msc_is_last_win(win))
@@ -341,15 +262,7 @@ static size_t msc_win_total_sz(struct msc_window *win)
 	return size;
 }
 
-/**
- * msc_find_window() - find a window matching a given sg_table
- * @msc:	MSC device
- * @sgt:	SG table of the window
- * @nonempty:	skip over empty windows
- *
- * Return:	MSC window structure pointer or NULL if the window
- *		could not be found.
- */
+ 
 static struct msc_window *
 msc_find_window(struct msc *msc, struct sg_table *sgt, bool nonempty)
 {
@@ -359,16 +272,12 @@ msc_find_window(struct msc *msc, struct sg_table *sgt, bool nonempty)
 	if (list_empty(&msc->win_list))
 		return NULL;
 
-	/*
-	 * we might need a radix tree for this, depending on how
-	 * many windows a typical user would allocate; ideally it's
-	 * something like 2, in which case we're good
-	 */
+	 
 	list_for_each_entry(win, &msc->win_list, entry) {
 		if (win->sgt == sgt)
 			found++;
 
-		/* skip the empty ones */
+		 
 		if (nonempty && msc_block_is_empty(msc_win_base(win)))
 			continue;
 
@@ -379,15 +288,7 @@ msc_find_window(struct msc *msc, struct sg_table *sgt, bool nonempty)
 	return NULL;
 }
 
-/**
- * msc_oldest_window() - locate the window with oldest data
- * @msc:	MSC device
- *
- * This should only be used in multiblock mode. Caller should hold the
- * msc::user_count reference.
- *
- * Return:	the oldest window with valid data
- */
+ 
 static struct msc_window *msc_oldest_window(struct msc *msc)
 {
 	struct msc_window *win;
@@ -402,26 +303,18 @@ static struct msc_window *msc_oldest_window(struct msc *msc)
 	return list_first_entry(&msc->win_list, struct msc_window, entry);
 }
 
-/**
- * msc_win_oldest_sg() - locate the oldest block in a given window
- * @win:	window to look at
- *
- * Return:	index of the block with the oldest data
- */
+ 
 static struct scatterlist *msc_win_oldest_sg(struct msc_window *win)
 {
 	unsigned int blk;
 	struct scatterlist *sg;
 	struct msc_block_desc *bdesc = msc_win_base(win);
 
-	/* without wrapping, first block is the oldest */
+	 
 	if (!msc_block_wrapped(bdesc))
 		return msc_win_base_sg(win);
 
-	/*
-	 * with wrapping, last written block contains both the newest and the
-	 * oldest data for this window.
-	 */
+	 
 	for_each_sg(win->sgt->sgl, sg, win->nr_segs, blk) {
 		struct msc_block_desc *bdesc = sg_virt(sg);
 
@@ -447,12 +340,7 @@ static struct msc_iter *msc_iter_install(struct msc *msc)
 
 	mutex_lock(&msc->buf_mutex);
 
-	/*
-	 * Reading and tracing are mutually exclusive; if msc is
-	 * enabled, open() will fail; otherwise existing readers
-	 * will prevent enabling the msc and the rest of fops don't
-	 * need to worry about it.
-	 */
+	 
 	if (msc->enabled) {
 		kfree(iter);
 		iter = ERR_PTR(-EBUSY);
@@ -486,10 +374,7 @@ static void msc_iter_block_start(struct msc_iter *iter)
 	iter->block = iter->start_block;
 	iter->wrap_count = 0;
 
-	/*
-	 * start with the block with oldest data; if data has wrapped
-	 * in this window, it should be in this block
-	 */
+	 
 	if (msc_block_wrapped(msc_iter_bdesc(iter)))
 		iter->wrap_count = 2;
 
@@ -497,7 +382,7 @@ static void msc_iter_block_start(struct msc_iter *iter)
 
 static int msc_iter_win_start(struct msc_iter *iter, struct msc *msc)
 {
-	/* already started, nothing to do */
+	 
 	if (iter->start_win)
 		return 0;
 
@@ -532,48 +417,33 @@ static int msc_iter_block_advance(struct msc_iter *iter)
 {
 	iter->block_off = 0;
 
-	/* wrapping */
+	 
 	if (iter->wrap_count && iter->block == iter->start_block) {
 		iter->wrap_count--;
 		if (!iter->wrap_count)
-			/* copied newest data from the wrapped block */
+			 
 			return msc_iter_win_advance(iter);
 	}
 
-	/* no wrapping, check for last written block */
+	 
 	if (!iter->wrap_count && msc_block_last_written(msc_iter_bdesc(iter)))
-		/* copied newest data for the window */
+		 
 		return msc_iter_win_advance(iter);
 
-	/* block advance */
+	 
 	if (sg_is_last(iter->block))
 		iter->block = msc_win_base_sg(iter->win);
 	else
 		iter->block = sg_next(iter->block);
 
-	/* no wrapping, sanity check in case there is no last written block */
+	 
 	if (!iter->wrap_count && iter->block == iter->start_block)
 		return msc_iter_win_advance(iter);
 
 	return 0;
 }
 
-/**
- * msc_buffer_iterate() - go through multiblock buffer's data
- * @iter:	iterator structure
- * @size:	amount of data to scan
- * @data:	callback's private data
- * @fn:		iterator callback
- *
- * This will start at the window which will be written to next (containing
- * the oldest data) and work its way to the current window, calling @fn
- * for each chunk of data as it goes.
- *
- * Caller should have msc::user_count reference to make sure the buffer
- * doesn't disappear from under us.
- *
- * Return:	amount of data actually scanned.
- */
+ 
 static ssize_t
 msc_buffer_iterate(struct msc_iter *iter, size_t size, void *data,
 		   unsigned long (*fn)(void *, void *, size_t))
@@ -585,7 +455,7 @@ msc_buffer_iterate(struct msc_iter *iter, size_t size, void *data,
 	if (iter->eof)
 		return 0;
 
-	/* start with the oldest window */
+	 
 	if (msc_iter_win_start(iter, msc))
 		return 0;
 
@@ -597,18 +467,7 @@ msc_buffer_iterate(struct msc_iter *iter, size_t size, void *data,
 
 		advance = 1;
 
-		/*
-		 * If block wrapping happened, we need to visit the last block
-		 * twice, because it contains both the oldest and the newest
-		 * data in this window.
-		 *
-		 * First time (wrap_count==2), in the very beginning, to collect
-		 * the oldest data, which is in the range
-		 * (data_bytes..DATA_IN_PAGE).
-		 *
-		 * Second time (wrap_count==1), it's just like any other block,
-		 * containing data in the range of [MSC_BDESC..data_bytes].
-		 */
+		 
 		if (iter->block == iter->start_block && iter->wrap_count == 2) {
 			tocopy = DATA_IN_PAGE - data_bytes;
 			src += data_bytes;
@@ -647,10 +506,7 @@ next_block:
 	return size - len;
 }
 
-/**
- * msc_buffer_clear_hw_header() - clear hw header for multiblock
- * @msc:	MSC device
- */
+ 
 static void msc_buffer_clear_hw_header(struct msc *msc)
 {
 	struct msc_window *win;
@@ -737,7 +593,7 @@ unlock:
 		if (expect == WIN_READY && old == WIN_LOCKED)
 			return -EBUSY;
 
-		/* from intel_th_msc_window_unlock(), don't warn if not locked */
+		 
 		if (expect == WIN_LOCKED && old == new)
 			return 0;
 
@@ -748,14 +604,7 @@ unlock:
 
 	return ret;
 }
-/**
- * msc_configure() - set up MSC hardware
- * @msc:	the MSC device to configure
- *
- * Program storage mode, wrapping, burst length and trace buffer address
- * into a given MSC. Then, enable tracing and set msc::enabled.
- * The latter is serialized on msc::buf_mutex, so make sure to hold it.
- */
+ 
 static int msc_configure(struct msc *msc)
 {
 	u32 reg;
@@ -807,13 +656,7 @@ static int msc_configure(struct msc *msc)
 	return 0;
 }
 
-/**
- * msc_disable() - disable MSC hardware
- * @msc:	MSC device to disable
- *
- * If @msc is enabled, disable tracing on the switch and then disable MSC
- * storage. Caller must hold msc::buf_mutex.
- */
+ 
 static void msc_disable(struct msc *msc)
 {
 	struct msc_window *win = msc->cur_win;
@@ -873,7 +716,7 @@ static int intel_th_msc_activate(struct intel_th_device *thdev)
 
 	mutex_lock(&msc->buf_mutex);
 
-	/* if there are readers, refuse */
+	 
 	if (list_empty(&msc->iter_list))
 		ret = msc_configure(msc);
 
@@ -897,16 +740,7 @@ static void intel_th_msc_deactivate(struct intel_th_device *thdev)
 	mutex_unlock(&msc->buf_mutex);
 }
 
-/**
- * msc_buffer_contig_alloc() - allocate a contiguous buffer for SINGLE mode
- * @msc:	MSC device
- * @size:	allocation size in bytes
- *
- * This modifies msc::base, which requires msc::buf_mutex to serialize, so the
- * caller is expected to hold it.
- *
- * Return:	0 on success, -errno otherwise.
- */
+ 
 static int msc_buffer_contig_alloc(struct msc *msc, unsigned long size)
 {
 	unsigned long nr_pages = size >> PAGE_SHIFT;
@@ -950,10 +784,7 @@ err_out:
 	return ret;
 }
 
-/**
- * msc_buffer_contig_free() - free a contiguous buffer
- * @msc:	MSC configured in SINGLE mode
- */
+ 
 static void msc_buffer_contig_free(struct msc *msc)
 {
 	unsigned long off;
@@ -972,13 +803,7 @@ static void msc_buffer_contig_free(struct msc *msc)
 	msc->nr_pages = 0;
 }
 
-/**
- * msc_buffer_contig_get_page() - find a page at a given offset
- * @msc:	MSC configured in SINGLE mode
- * @pgoff:	page offset
- *
- * Return:	page, if @pgoff is within the range, NULL otherwise.
- */
+ 
 static struct page *msc_buffer_contig_get_page(struct msc *msc,
 					       unsigned long pgoff)
 {
@@ -1035,7 +860,7 @@ static void msc_buffer_set_uc(struct msc *msc)
 
 	list_for_each_entry(win, &msc->win_list, entry) {
 		for_each_sg(win->sgt->sgl, sg_ptr, win->nr_segs, i) {
-			/* Set the page as uncached */
+			 
 			set_memory_uc((unsigned long)sg_virt(sg_ptr),
 					PFN_DOWN(sg_ptr->length));
 		}
@@ -1055,17 +880,17 @@ static void msc_buffer_set_wb(struct msc *msc)
 
 	list_for_each_entry(win, &msc->win_list, entry) {
 		for_each_sg(win->sgt->sgl, sg_ptr, win->nr_segs, i) {
-			/* Reset the page to write-back */
+			 
 			set_memory_wb((unsigned long)sg_virt(sg_ptr),
 					PFN_DOWN(sg_ptr->length));
 		}
 	}
 }
-#else /* !X86 */
+#else  
 static inline void
 msc_buffer_set_uc(struct msc *msc) {}
 static inline void msc_buffer_set_wb(struct msc *msc) {}
-#endif /* CONFIG_X86 */
+#endif  
 
 static struct page *msc_sg_page(struct scatterlist *sg)
 {
@@ -1077,16 +902,7 @@ static struct page *msc_sg_page(struct scatterlist *sg)
 	return sg_page(sg);
 }
 
-/**
- * msc_buffer_win_alloc() - alloc a window for a multiblock mode
- * @msc:	MSC device
- * @nr_blocks:	number of pages in this window
- *
- * This modifies msc::win_list and msc::base, which requires msc::buf_mutex
- * to serialize, so the caller is expected to hold it.
- *
- * Return:	0 on success, -errno otherwise.
- */
+ 
 static int msc_buffer_win_alloc(struct msc *msc, unsigned int nr_blocks)
 {
 	struct msc_window *win;
@@ -1156,14 +972,7 @@ static void __msc_buffer_win_free(struct msc *msc, struct msc_window *win)
 	sg_free_table(win->sgt);
 }
 
-/**
- * msc_buffer_win_free() - free a window from MSC's window list
- * @msc:	MSC device
- * @win:	window to free
- *
- * This modifies msc::win_list and msc::base, which requires msc::buf_mutex
- * to serialize, so the caller is expected to hold it.
- */
+ 
 static void msc_buffer_win_free(struct msc *msc, struct msc_window *win)
 {
 	msc->nr_pages -= win->nr_blocks;
@@ -1182,27 +991,18 @@ static void msc_buffer_win_free(struct msc *msc, struct msc_window *win)
 	kfree(win);
 }
 
-/**
- * msc_buffer_relink() - set up block descriptors for multiblock mode
- * @msc:	MSC device
- *
- * This traverses msc::win_list, which requires msc::buf_mutex to serialize,
- * so the caller is expected to hold it.
- */
+ 
 static void msc_buffer_relink(struct msc *msc)
 {
 	struct msc_window *win, *next_win;
 
-	/* call with msc::mutex locked */
+	 
 	list_for_each_entry(win, &msc->win_list, entry) {
 		struct scatterlist *sg;
 		unsigned int blk;
 		u32 sw_tag = 0;
 
-		/*
-		 * Last window's next_win should point to the first window
-		 * and MSC_SW_TAG_LASTWIN should be set.
-		 */
+		 
 		if (msc_is_last_win(win)) {
 			sw_tag |= MSC_SW_TAG_LASTWIN;
 			next_win = list_first_entry(&msc->win_list,
@@ -1218,10 +1018,7 @@ static void msc_buffer_relink(struct msc *msc)
 
 			bdesc->next_win = msc_win_base_pfn(next_win);
 
-			/*
-			 * Similarly to last window, last block should point
-			 * to the first one.
-			 */
+			 
 			if (blk == win->nr_segs - 1) {
 				sw_tag |= MSC_SW_TAG_LASTBLK;
 				bdesc->next_blk = msc_win_base_pfn(win);
@@ -1236,10 +1033,7 @@ static void msc_buffer_relink(struct msc *msc)
 		}
 	}
 
-	/*
-	 * Make the above writes globally visible before tracing is
-	 * enabled to make sure hardware sees them coherently.
-	 */
+	 
 	wmb();
 }
 
@@ -1269,15 +1063,7 @@ static int msc_buffer_multi_alloc(struct msc *msc, unsigned long *nr_pages,
 	return 0;
 }
 
-/**
- * msc_buffer_free() - free buffers for MSC
- * @msc:	MSC device
- *
- * Free MSC's storage buffers.
- *
- * This modifies msc::win_list and msc::base, which requires msc::buf_mutex to
- * serialize, so the caller is expected to hold it.
- */
+ 
 static void msc_buffer_free(struct msc *msc)
 {
 	msc_buffer_set_wb(msc);
@@ -1288,28 +1074,13 @@ static void msc_buffer_free(struct msc *msc)
 		msc_buffer_multi_free(msc);
 }
 
-/**
- * msc_buffer_alloc() - allocate a buffer for MSC
- * @msc:	MSC device
- * @size:	allocation size in bytes
- *
- * Allocate a storage buffer for MSC, depending on the msc::mode, it will be
- * either done via msc_buffer_contig_alloc() for SINGLE operation mode or
- * msc_buffer_win_alloc() for multiblock operation. The latter allocates one
- * window per invocation, so in multiblock mode this can be called multiple
- * times for the same MSC to allocate multiple windows.
- *
- * This modifies msc::win_list and msc::base, which requires msc::buf_mutex
- * to serialize, so the caller is expected to hold it.
- *
- * Return:	0 on success, -errno otherwise.
- */
+ 
 static int msc_buffer_alloc(struct msc *msc, unsigned long *nr_pages,
 			    unsigned int nr_wins)
 {
 	int ret;
 
-	/* -1: buffer not allocated */
+	 
 	if (atomic_read(&msc->user_count) != -1)
 		return -EBUSY;
 
@@ -1327,7 +1098,7 @@ static int msc_buffer_alloc(struct msc *msc, unsigned long *nr_pages,
 	if (!ret) {
 		msc_buffer_set_uc(msc);
 
-		/* allocation should be visible before the counter goes to 0 */
+		 
 		smp_mb__before_atomic();
 
 		if (WARN_ON_ONCE(atomic_cmpxchg(&msc->user_count, -1, 0) != -1))
@@ -1337,40 +1108,25 @@ static int msc_buffer_alloc(struct msc *msc, unsigned long *nr_pages,
 	return ret;
 }
 
-/**
- * msc_buffer_unlocked_free_unless_used() - free a buffer unless it's in use
- * @msc:	MSC device
- *
- * This will free MSC buffer unless it is in use or there is no allocated
- * buffer.
- * Caller needs to hold msc::buf_mutex.
- *
- * Return:	0 on successful deallocation or if there was no buffer to
- *		deallocate, -EBUSY if there are active users.
- */
+ 
 static int msc_buffer_unlocked_free_unless_used(struct msc *msc)
 {
 	int count, ret = 0;
 
 	count = atomic_cmpxchg(&msc->user_count, 0, -1);
 
-	/* > 0: buffer is allocated and has users */
+	 
 	if (count > 0)
 		ret = -EBUSY;
-	/* 0: buffer is allocated, no users */
+	 
 	else if (!count)
 		msc_buffer_free(msc);
-	/* < 0: no buffer, nothing to do */
+	 
 
 	return ret;
 }
 
-/**
- * msc_buffer_free_unless_used() - free a buffer unless it's in use
- * @msc:	MSC device
- *
- * This is a locked version of msc_buffer_unlocked_free_unless_used().
- */
+ 
 static int msc_buffer_free_unless_used(struct msc *msc)
 {
 	int ret;
@@ -1382,16 +1138,7 @@ static int msc_buffer_free_unless_used(struct msc *msc)
 	return ret;
 }
 
-/**
- * msc_buffer_get_page() - get MSC buffer page at a given offset
- * @msc:	MSC device
- * @pgoff:	page offset into the storage buffer
- *
- * This traverses msc::win_list, so holding msc::buf_mutex is expected from
- * the caller.
- *
- * Return:	page if @pgoff corresponds to a valid buffer page or NULL.
- */
+ 
 static struct page *msc_buffer_get_page(struct msc *msc, unsigned long pgoff)
 {
 	struct msc_window *win;
@@ -1423,22 +1170,13 @@ found:
 	return NULL;
 }
 
-/**
- * struct msc_win_to_user_struct - data for copy_to_user() callback
- * @buf:	userspace buffer to copy data to
- * @offset:	running offset
- */
+ 
 struct msc_win_to_user_struct {
 	char __user	*buf;
 	unsigned long	offset;
 };
 
-/**
- * msc_win_to_user() - iterator for msc_buffer_iterate() to copy data to user
- * @data:	callback's private data
- * @src:	source buffer
- * @len:	amount of data to copy from the source buffer
- */
+ 
 static unsigned long msc_win_to_user(void *data, void *src, size_t len)
 {
 	struct msc_win_to_user_struct *u = data;
@@ -1451,9 +1189,7 @@ static unsigned long msc_win_to_user(void *data, void *src, size_t len)
 }
 
 
-/*
- * file operations' callbacks
- */
+ 
 
 static int intel_th_msc_open(struct inode *inode, struct file *file)
 {
@@ -1568,9 +1304,7 @@ put_count:
 	return ret;
 }
 
-/*
- * vm operations callbacks (vm_ops)
- */
+ 
 
 static void msc_mmap_open(struct vm_area_struct *vma)
 {
@@ -1589,7 +1323,7 @@ static void msc_mmap_close(struct vm_area_struct *vma)
 	if (!atomic_dec_and_mutex_lock(&msc->mmap_count, &msc->buf_mutex))
 		return;
 
-	/* drop page _refcounts */
+	 
 	for (pg = 0; pg < msc->nr_pages; pg++) {
 		struct page *page = msc_buffer_get_page(msc, pg);
 
@@ -1600,7 +1334,7 @@ static void msc_mmap_close(struct vm_area_struct *vma)
 			page->mapping = NULL;
 	}
 
-	/* last mapping -- drop user_count */
+	 
 	atomic_dec(&msc->user_count);
 	mutex_unlock(&msc->buf_mutex);
 }
@@ -1640,7 +1374,7 @@ static int intel_th_msc_mmap(struct file *file, struct vm_area_struct *vma)
 	if (vma->vm_pgoff)
 		return -EINVAL;
 
-	/* grab user_count once per mmap; drop in msc_mmap_close() */
+	 
 	if (!atomic_inc_unless_negative(&msc->user_count))
 		return -EINVAL;
 
@@ -1727,11 +1461,7 @@ static int msc_win_switch(struct msc *msc)
 	return 0;
 }
 
-/**
- * intel_th_msc_window_unlock - put the window back in rotation
- * @dev:	MSC device to which this relates
- * @sgt:	buffer's sg_table for the window, does nothing if NULL
- */
+ 
 void intel_th_msc_window_unlock(struct device *dev, struct sg_table *sgt)
 {
 	struct msc *msc = dev_get_drvdata(dev);
@@ -1779,7 +1509,7 @@ static irqreturn_t intel_th_msc_interrupt(struct intel_th_device *thdev)
 	if (!msc->enabled)
 		return IRQ_NONE;
 
-	/* grab the window before we do the switch */
+	 
 	win = msc->cur_win;
 	if (!win)
 		return IRQ_HANDLED;
@@ -1787,7 +1517,7 @@ static irqreturn_t intel_th_msc_interrupt(struct intel_th_device *thdev)
 	if (!next_win)
 		return IRQ_HANDLED;
 
-	/* next window: if READY, proceed, if LOCKED, stop the trace */
+	 
 	if (msc_win_set_lockout(next_win, WIN_READY, WIN_INUSE)) {
 		if (msc->stop_on_full)
 			schedule_work(&msc->work);
@@ -1797,7 +1527,7 @@ static irqreturn_t intel_th_msc_interrupt(struct intel_th_device *thdev)
 		return IRQ_HANDLED;
 	}
 
-	/* current window: INUSE -> LOCKED */
+	 
 	msc_win_set_lockout(win, WIN_INUSE, WIN_LOCKED);
 
 	msc_win_switch(msc);
@@ -1899,7 +1629,7 @@ mode_store(struct device *dev, struct device_attribute *attr, const char *buf,
 		goto found;
 	}
 
-	/* Buffer sinks only work with a usable IRQ */
+	 
 	if (!msc->do_irq) {
 		kfree(mode);
 		return -EINVAL;
@@ -1919,9 +1649,9 @@ found:
 	mutex_lock(&msc->buf_mutex);
 	ret = 0;
 
-	/* Same buffer: do nothing */
+	 
 	if (mbuf && mbuf == msc->mbuf) {
-		/* put the extra reference we just got */
+		 
 		msu_buffer_put(mbuf);
 		goto unlock;
 	}
@@ -2001,7 +1731,7 @@ nr_pages_store(struct device *dev, struct device_attribute *attr,
 	if (ret)
 		return ret;
 
-	/* scan the comma-separated list of allocation sizes */
+	 
 	end = memchr(buf, '\n', len);
 	if (end)
 		len = end - buf;
@@ -2038,7 +1768,7 @@ nr_pages_store(struct device *dev, struct device_attribute *attr,
 		if (!end)
 			break;
 
-		/* consume the number and the following comma, hence +1 */
+		 
 		len -= end - p + 1;
 		p = end + 1;
 	} while (len);
@@ -2072,11 +1802,7 @@ win_switch_store(struct device *dev, struct device_attribute *attr,
 
 	ret = -EINVAL;
 	mutex_lock(&msc->buf_mutex);
-	/*
-	 * Window switch can only happen in the "multi" mode.
-	 * If a external buffer is engaged, they have the full
-	 * control over window switching.
-	 */
+	 
 	if (msc->mode == MSC_MODE_MULTI && !msc->mbuf)
 		ret = msc_win_switch(msc);
 	mutex_unlock(&msc->buf_mutex);
@@ -2173,11 +1899,7 @@ static void intel_th_msc_remove(struct intel_th_device *thdev)
 
 	intel_th_msc_deactivate(thdev);
 
-	/*
-	 * Buffers should not be used at this point except if the
-	 * output character device is still open and the parent
-	 * device gets detached from its bus, which is a FIXME.
-	 */
+	 
 	ret = msc_buffer_free_unless_used(msc);
 	WARN_ON_ONCE(ret);
 }

@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef __KVM_X86_VMX_CAPS_H
 #define __KVM_X86_VMX_CAPS_H
 
@@ -25,11 +25,7 @@ extern int __read_mostly pt_mode;
 #define PMU_CAP_LBR_FMT		0x3f
 
 struct nested_vmx_msrs {
-	/*
-	 * We only store the "true" versions of the VMX capability MSRs. We
-	 * generate the "non-true" versions by setting the must-be-1 bits
-	 * according to the SDM.
-	 */
+	 
 	u32 procbased_ctls_low;
 	u32 procbased_ctls_high;
 	u32 secondary_ctls_low;
@@ -224,7 +220,7 @@ static inline bool cpu_has_vmx_vmfunc(void)
 
 static inline bool cpu_has_vmx_shadow_vmcs(void)
 {
-	/* check if the cpu supports writing r/o exit information fields */
+	 
 	if (!(vmcs_config.misc & MSR_IA32_VMX_MISC_VMWRITE_SHADOW_RO_FIELDS))
 		return false;
 
@@ -372,15 +368,7 @@ static inline bool cpu_has_vmx_intel_pt(void)
 		(vmcs_config.vmentry_ctrl & VM_ENTRY_LOAD_IA32_RTIT_CTL);
 }
 
-/*
- * Processor Trace can operate in one of three modes:
- *  a. system-wide: trace both host/guest and output to host buffer
- *  b. host-only:   only trace host and output to host buffer
- *  c. host-guest:  trace host and guest simultaneously and output to their
- *                  respective buffer
- *
- * KVM currently only supports (a) and (c).
- */
+ 
 static inline bool vmx_pt_mode_is_system(void)
 {
 	return pt_mode == PT_MODE_SYSTEM;
@@ -401,4 +389,4 @@ static inline bool cpu_has_notify_vmexit(void)
 		SECONDARY_EXEC_NOTIFY_VM_EXITING;
 }
 
-#endif /* __KVM_X86_VMX_CAPS_H */
+#endif  

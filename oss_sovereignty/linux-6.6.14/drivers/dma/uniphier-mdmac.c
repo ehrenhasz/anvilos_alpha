@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Copyright (C) 2018 Socionext Inc.
-//   Author: Masahiro Yamada <yamada.masahiro@socionext.com>
+
+
+
+
 
 #include <linux/bits.h>
 #include <linux/clk.h>
@@ -19,28 +19,28 @@
 
 #include "virt-dma.h"
 
-/* registers common for all channels */
-#define UNIPHIER_MDMAC_CMD		0x000	/* issue DMA start/abort */
-#define   UNIPHIER_MDMAC_CMD_ABORT		BIT(31) /* 1: abort, 0: start */
+ 
+#define UNIPHIER_MDMAC_CMD		0x000	 
+#define   UNIPHIER_MDMAC_CMD_ABORT		BIT(31)  
 
-/* per-channel registers */
+ 
 #define UNIPHIER_MDMAC_CH_OFFSET	0x100
 #define UNIPHIER_MDMAC_CH_STRIDE	0x040
 
-#define UNIPHIER_MDMAC_CH_IRQ_STAT	0x010	/* current hw status (RO) */
-#define UNIPHIER_MDMAC_CH_IRQ_REQ	0x014	/* latched STAT (WOC) */
-#define UNIPHIER_MDMAC_CH_IRQ_EN	0x018	/* IRQ enable mask */
-#define UNIPHIER_MDMAC_CH_IRQ_DET	0x01c	/* REQ & EN (RO) */
+#define UNIPHIER_MDMAC_CH_IRQ_STAT	0x010	 
+#define UNIPHIER_MDMAC_CH_IRQ_REQ	0x014	 
+#define UNIPHIER_MDMAC_CH_IRQ_EN	0x018	 
+#define UNIPHIER_MDMAC_CH_IRQ_DET	0x01c	 
 #define   UNIPHIER_MDMAC_CH_IRQ__ABORT		BIT(13)
 #define   UNIPHIER_MDMAC_CH_IRQ__DONE		BIT(1)
-#define UNIPHIER_MDMAC_CH_SRC_MODE	0x020	/* mode of source */
-#define UNIPHIER_MDMAC_CH_DEST_MODE	0x024	/* mode of destination */
+#define UNIPHIER_MDMAC_CH_SRC_MODE	0x020	 
+#define UNIPHIER_MDMAC_CH_DEST_MODE	0x024	 
 #define   UNIPHIER_MDMAC_CH_MODE__ADDR_INC	(0 << 4)
 #define   UNIPHIER_MDMAC_CH_MODE__ADDR_DEC	(1 << 4)
 #define   UNIPHIER_MDMAC_CH_MODE__ADDR_FIXED	(2 << 4)
-#define UNIPHIER_MDMAC_CH_SRC_ADDR	0x028	/* source address */
-#define UNIPHIER_MDMAC_CH_DEST_ADDR	0x02c	/* destination address */
-#define UNIPHIER_MDMAC_CH_SIZE		0x030	/* transfer bytes */
+#define UNIPHIER_MDMAC_CH_SRC_ADDR	0x028	 
+#define UNIPHIER_MDMAC_CH_DEST_ADDR	0x02c	 
+#define UNIPHIER_MDMAC_CH_SIZE		0x030	 
 
 #define UNIPHIER_MDMAC_SLAVE_BUSWIDTHS \
 	(BIT(DMA_SLAVE_BUSWIDTH_1_BYTE) | \
@@ -83,7 +83,7 @@ to_uniphier_mdmac_desc(struct virt_dma_desc *vd)
 	return container_of(vd, struct uniphier_mdmac_desc, vd);
 }
 
-/* mc->vc.lock must be held by caller */
+ 
 static struct uniphier_mdmac_desc *
 uniphier_mdmac_next_desc(struct uniphier_mdmac_chan *mc)
 {
@@ -102,7 +102,7 @@ uniphier_mdmac_next_desc(struct uniphier_mdmac_chan *mc)
 	return mc->md;
 }
 
-/* mc->vc.lock must be held by caller */
+ 
 static void uniphier_mdmac_handle(struct uniphier_mdmac_chan *mc,
 				  struct uniphier_mdmac_desc *md)
 {
@@ -133,7 +133,7 @@ static void uniphier_mdmac_handle(struct uniphier_mdmac_chan *mc,
 	writel(dest_addr, mc->reg_ch_base + UNIPHIER_MDMAC_CH_DEST_ADDR);
 	writel(chunk_size, mc->reg_ch_base + UNIPHIER_MDMAC_CH_SIZE);
 
-	/* write 1 to clear */
+	 
 	writel(irq_flag, mc->reg_ch_base + UNIPHIER_MDMAC_CH_IRQ_REQ);
 
 	writel(irq_flag, mc->reg_ch_base + UNIPHIER_MDMAC_CH_IRQ_EN);
@@ -141,7 +141,7 @@ static void uniphier_mdmac_handle(struct uniphier_mdmac_chan *mc,
 	writel(BIT(mc->chan_id), mdev->reg_base + UNIPHIER_MDMAC_CMD);
 }
 
-/* mc->vc.lock must be held by caller */
+ 
 static void uniphier_mdmac_start(struct uniphier_mdmac_chan *mc)
 {
 	struct uniphier_mdmac_desc *md;
@@ -151,23 +151,20 @@ static void uniphier_mdmac_start(struct uniphier_mdmac_chan *mc)
 		uniphier_mdmac_handle(mc, md);
 }
 
-/* mc->vc.lock must be held by caller */
+ 
 static int uniphier_mdmac_abort(struct uniphier_mdmac_chan *mc)
 {
 	struct uniphier_mdmac_device *mdev = mc->mdev;
 	u32 irq_flag = UNIPHIER_MDMAC_CH_IRQ__ABORT;
 	u32 val;
 
-	/* write 1 to clear */
+	 
 	writel(irq_flag, mc->reg_ch_base + UNIPHIER_MDMAC_CH_IRQ_REQ);
 
 	writel(UNIPHIER_MDMAC_CMD_ABORT | BIT(mc->chan_id),
 	       mdev->reg_base + UNIPHIER_MDMAC_CMD);
 
-	/*
-	 * Abort should be accepted soon. We poll the bit here instead of
-	 * waiting for the interrupt.
-	 */
+	 
 	return readl_poll_timeout(mc->reg_ch_base + UNIPHIER_MDMAC_CH_IRQ_REQ,
 				  val, val & irq_flag, 0, 20);
 }
@@ -183,23 +180,16 @@ static irqreturn_t uniphier_mdmac_interrupt(int irq, void *dev_id)
 
 	irq_stat = readl(mc->reg_ch_base + UNIPHIER_MDMAC_CH_IRQ_DET);
 
-	/*
-	 * Some channels share a single interrupt line. If the IRQ status is 0,
-	 * this is probably triggered by a different channel.
-	 */
+	 
 	if (!irq_stat) {
 		ret = IRQ_NONE;
 		goto out;
 	}
 
-	/* write 1 to clear */
+	 
 	writel(irq_stat, mc->reg_ch_base + UNIPHIER_MDMAC_CH_IRQ_REQ);
 
-	/*
-	 * UNIPHIER_MDMAC_CH_IRQ__DONE interrupt is asserted even when the DMA
-	 * is aborted. To distinguish the normal completion and the abort,
-	 * check mc->md. If it is NULL, we are aborting.
-	 */
+	 
 	md = mc->md;
 	if (!md)
 		goto out;
@@ -291,7 +281,7 @@ static enum dma_status uniphier_mdmac_tx_status(struct dma_chan *chan,
 	int i;
 
 	stat = dma_cookie_status(chan, cookie, txstate);
-	/* Return immediately if we do not need to compute the residue. */
+	 
 	if (stat == DMA_COMPLETE || !txstate)
 		return stat;
 
@@ -302,7 +292,7 @@ static enum dma_status uniphier_mdmac_tx_status(struct dma_chan *chan,
 	mc = to_uniphier_mdmac_chan(vc);
 
 	if (mc->md && mc->md->vd.tx.cookie == cookie) {
-		/* residue from the on-flight chunk */
+		 
 		txstate->residue = readl(mc->reg_ch_base +
 					 UNIPHIER_MDMAC_CH_SIZE);
 		md = mc->md;
@@ -315,7 +305,7 @@ static enum dma_status uniphier_mdmac_tx_status(struct dma_chan *chan,
 	}
 
 	if (md) {
-		/* residue from the queued chunks */
+		 
 		for (i = md->sg_cur; i < md->sg_len; i++)
 			txstate->residue += sg_dma_len(&md->sgl[i]);
 	}
@@ -459,13 +449,7 @@ static int uniphier_mdmac_remove(struct platform_device *pdev)
 	struct dma_chan *chan;
 	int ret;
 
-	/*
-	 * Before reaching here, almost all descriptors have been freed by the
-	 * ->device_free_chan_resources() hook. However, each channel might
-	 * be still holding one descriptor that was on-flight at that moment.
-	 * Terminate it to make sure this hardware is no longer running. Then,
-	 * free the channel resources once again to avoid memory leak.
-	 */
+	 
 	list_for_each_entry(chan, &mdev->ddev.channels, device_node) {
 		ret = dmaengine_terminate_sync(chan);
 		if (ret)
@@ -482,7 +466,7 @@ static int uniphier_mdmac_remove(struct platform_device *pdev)
 
 static const struct of_device_id uniphier_mdmac_match[] = {
 	{ .compatible = "socionext,uniphier-mio-dmac" },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, uniphier_mdmac_match);
 

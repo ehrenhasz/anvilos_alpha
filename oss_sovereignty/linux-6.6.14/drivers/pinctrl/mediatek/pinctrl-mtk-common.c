@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * mt65xx pinctrl driver based on Allwinner A1X pinctrl driver.
- * Copyright (c) 2014 MediaTek Inc.
- * Author: Hongzhou.Yang <hongzhou.yang@mediatek.com>
- */
+
+ 
 
 #include <linux/io.h>
 #include <linux/gpio/driver.h>
@@ -41,12 +37,7 @@ static const char * const mtk_gpio_functions[] = {
 	"func12", "func13", "func14", "func15",
 };
 
-/*
- * There are two base address for pull related configuration
- * in mt8135, and different GPIO pins use different base address.
- * When pin number greater than type1_start and less than type1_end,
- * should use the second base address.
- */
+ 
 static struct regmap *mtk_get_regmap(struct mtk_pinctrl *pctl,
 		unsigned long pin)
 {
@@ -57,7 +48,7 @@ static struct regmap *mtk_get_regmap(struct mtk_pinctrl *pctl,
 
 static unsigned int mtk_get_port(struct mtk_pinctrl *pctl, unsigned long pin)
 {
-	/* Different SoC has different mask and port shift. */
+	 
 	return ((pin >> pctl->devdata->mode_shf) & pctl->devdata->port_mask)
 			<< pctl->devdata->port_shf;
 }
@@ -77,7 +68,7 @@ static int mtk_pmx_gpio_set_direction(struct pinctrl_dev *pctldev,
 		pctl->devdata->spec_dir_set(&reg_addr, offset);
 
 	if (input)
-		/* Different SoC has different alignment offset. */
+		 
 		reg_addr = CLR_ADDR(reg_addr, pctl);
 	else
 		reg_addr = SET_ADDR(reg_addr, pctl);
@@ -109,10 +100,7 @@ static int mtk_pconf_set_ies_smt(struct mtk_pinctrl *pctl, unsigned pin,
 	unsigned int reg_addr, offset;
 	unsigned int bit;
 
-	/**
-	 * Due to some soc are not support ies/smt config, add this special
-	 * control to handle it.
-	 */
+	 
 	if (!pctl->devdata->spec_ies_smt_set &&
 		pctl->devdata->ies_offset == MTK_PINCTRL_NOT_SUPPORT &&
 			arg == PIN_CONFIG_INPUT_ENABLE)
@@ -123,10 +111,7 @@ static int mtk_pconf_set_ies_smt(struct mtk_pinctrl *pctl, unsigned pin,
 			arg == PIN_CONFIG_INPUT_SCHMITT_ENABLE)
 		return -EINVAL;
 
-	/*
-	 * Due to some pins are irregular, their input enable and smt
-	 * control register are discontinuous, so we need this special handle.
-	 */
+	 
 	if (pctl->devdata->spec_ies_smt_set) {
 		return pctl->devdata->spec_ies_smt_set(mtk_get_regmap(pctl, pin),
 			pctl->devdata, pin, value, arg);
@@ -305,14 +290,9 @@ static int mtk_pconf_set_pull_select(struct mtk_pinctrl *pctl,
 	unsigned int reg_pullen, reg_pullsel, r1r0;
 	int ret;
 
-	/* Some pins' pull setting are very different,
-	 * they have separate pull up/down bit, R0 and R1
-	 * resistor bit, so we need this special handle.
-	 */
+	 
 	if (pctl->devdata->spec_pull_set) {
-		/* For special pins, bias-disable is set by R1R0,
-		 * the parameter should be "MTK_PUPD_SET_R1R0_00".
-		 */
+		 
 		r1r0 = enable ? arg : MTK_PUPD_SET_R1R0_00;
 		ret = pctl->devdata->spec_pull_set(mtk_get_regmap(pctl, pin),
 						   pctl->devdata, pin, isup,
@@ -321,7 +301,7 @@ static int mtk_pconf_set_pull_select(struct mtk_pinctrl *pctl,
 			return 0;
 	}
 
-	/* For generic pull config, default arg value should be 0 or 1. */
+	 
 	if (arg != 0 && arg != 1) {
 		dev_err(pctl->dev, "invalid pull-up argument %d on pin %d .\n",
 			arg, pin);
@@ -932,13 +912,13 @@ static int mtk_pctrl_build_state(struct platform_device *pdev)
 
 	pctl->ngroups = pctl->devdata->npins;
 
-	/* Allocate groups */
+	 
 	pctl->groups = devm_kcalloc(&pdev->dev, pctl->ngroups,
 				    sizeof(*pctl->groups), GFP_KERNEL);
 	if (!pctl->groups)
 		return -ENOMEM;
 
-	/* We assume that one pin is one group, use pin name as group name. */
+	 
 	pctl->grp_names = devm_kcalloc(&pdev->dev, pctl->ngroups,
 				       sizeof(*pctl->grp_names), GFP_KERNEL);
 	if (!pctl->grp_names)
@@ -995,12 +975,12 @@ static int mtk_xt_set_gpio_as_eint(void *data, unsigned long eint_n)
 	if (!pin)
 		return -EINVAL;
 
-	/* set mux to INT mode */
+	 
 	mtk_pmx_set_mode(pctl->pctl_dev, pin->pin.number, pin->eint.eintmux);
-	/* set gpio direction to input */
+	 
 	mtk_pmx_gpio_set_direction(pctl->pctl_dev, NULL, pin->pin.number,
 				   true);
-	/* set input-enable */
+	 
 	mtk_pconf_set_ies_smt(pctl, pin->pin.number, 1,
 			      PIN_CONFIG_INPUT_ENABLE);
 
@@ -1033,10 +1013,7 @@ static int mtk_eint_init(struct mtk_pinctrl *pctl, struct platform_device *pdev)
 		return -EINVAL;
 
 	pctl->eint->dev = &pdev->dev;
-	/*
-	 * If pctl->eint->regs == NULL, it would fall back into using a generic
-	 * register map in mtk_eint_do_init calls.
-	 */
+	 
 	pctl->eint->regs = pctl->devdata->eint_regs;
 	pctl->eint->hw = &pctl->devdata->eint_hw;
 	pctl->eint->pctl = pctl;
@@ -1045,7 +1022,7 @@ static int mtk_eint_init(struct mtk_pinctrl *pctl, struct platform_device *pdev)
 	return mtk_eint_do_init(pctl->eint);
 }
 
-/* This is used as a common probe function */
+ 
 int mtk_pctrl_init(struct platform_device *pdev,
 		const struct mtk_pinctrl_devdata *data,
 		struct regmap *regmap)
@@ -1074,7 +1051,7 @@ int mtk_pctrl_init(struct platform_device *pdev,
 		return dev_err_probe(dev, -EINVAL, "Cannot find pinctrl regmap.\n");
 	}
 
-	/* Only 8135 has two base addr, other SoCs have only one. */
+	 
 	node = of_parse_phandle(np, "mediatek,pctl-regmap", 1);
 	if (node) {
 		pctl->regmap2 = syscon_node_to_regmap(node);
@@ -1125,7 +1102,7 @@ int mtk_pctrl_init(struct platform_device *pdev,
 	if (ret)
 		return -EINVAL;
 
-	/* Register the GPIO to pin mappings. */
+	 
 	ret = gpiochip_add_pin_range(pctl->chip, dev_name(&pdev->dev),
 			0, 0, pctl->devdata->npins);
 	if (ret) {

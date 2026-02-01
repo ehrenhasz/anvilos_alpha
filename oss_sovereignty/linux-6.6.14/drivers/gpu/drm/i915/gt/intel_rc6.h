@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2019 Intel Corporation
- */
+ 
+ 
 
 #ifndef INTEL_RC6_H
 #define INTEL_RC6_H
@@ -29,4 +27,4 @@ void intel_rc6_print_residency(struct seq_file *m, const char *title,
 
 bool intel_check_bios_c6_setup(struct intel_rc6 *rc6);
 
-#endif /* INTEL_RC6_H */
+#endif  

@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2013 Red Hat
- * Author: Rob Clark <robdclark@gmail.com>
- */
+ 
+ 
 
 #ifndef __HDMI_CONNECTOR_H__
 #define __HDMI_CONNECTOR_H__
@@ -37,10 +34,10 @@ struct hdmi {
 
 	const struct hdmi_platform_config *config;
 
-	/* audio state: */
+	 
 	struct hdmi_audio audio;
 
-	/* video state: */
+	 
 	bool power_on;
 	unsigned long int pixclock;
 
@@ -64,42 +61,36 @@ struct hdmi {
 
 	struct drm_bridge *next_bridge;
 
-	/* the encoder we are hooked to (outside of hdmi block) */
+	 
 	struct drm_encoder *encoder;
 
-	bool hdmi_mode;               /* are we in hdmi mode? */
+	bool hdmi_mode;                
 
 	int irq;
 	struct workqueue_struct *workq;
 
 	struct hdmi_hdcp_ctrl *hdcp_ctrl;
 
-	/*
-	* spinlock to protect registers shared by different execution
-	* REG_HDMI_CTRL
-	* REG_HDMI_DDC_ARBITRATION
-	* REG_HDMI_HDCP_INT_CTRL
-	* REG_HDMI_HPD_CTRL
-	*/
+	 
 	spinlock_t reg_lock;
 };
 
-/* platform config data (ie. from DT, or pdata) */
+ 
 struct hdmi_platform_config {
-	/* regulators that need to be on for hpd: */
+	 
 	const char **hpd_reg_names;
 	int hpd_reg_cnt;
 
-	/* regulators that need to be on for screen pwr: */
+	 
 	const char **pwr_reg_names;
 	int pwr_reg_cnt;
 
-	/* clks that need to be on for hpd: */
+	 
 	const char **hpd_clk_names;
 	const long unsigned *hpd_freq;
 	int hpd_clk_cnt;
 
-	/* clks that need to be on for screen pwr (ie pixel clk): */
+	 
 	const char **pwr_clk_names;
 	int pwr_clk_cnt;
 };
@@ -128,9 +119,7 @@ static inline u32 hdmi_qfprom_read(struct hdmi *hdmi, u32 reg)
 	return msm_readl(hdmi->qfprom_mmio + reg);
 }
 
-/*
- * hdmi phy:
- */
+ 
 
 enum hdmi_phy_type {
 	MSM_HDMI_PHY_8x60,
@@ -196,10 +185,8 @@ static inline int msm_hdmi_pll_8996_init(struct platform_device *pdev)
 }
 #endif
 
-/*
- * audio:
- */
-/* Supported HDMI Audio channels and rates */
+ 
+ 
 #define	MSM_HDMI_AUDIO_CHANNEL_2	0
 #define	MSM_HDMI_AUDIO_CHANNEL_4	1
 #define	MSM_HDMI_AUDIO_CHANNEL_6	2
@@ -220,9 +207,7 @@ int msm_hdmi_audio_info_setup(struct hdmi *hdmi, bool enabled,
 void msm_hdmi_audio_set_sample_rate(struct hdmi *hdmi, int rate);
 
 
-/*
- * hdmi bridge:
- */
+ 
 
 struct drm_bridge *msm_hdmi_bridge_init(struct hdmi *hdmi);
 void msm_hdmi_bridge_destroy(struct drm_bridge *bridge);
@@ -233,17 +218,13 @@ enum drm_connector_status msm_hdmi_bridge_detect(
 int msm_hdmi_hpd_enable(struct drm_bridge *bridge);
 void msm_hdmi_hpd_disable(struct hdmi_bridge *hdmi_bridge);
 
-/*
- * i2c adapter for ddc:
- */
+ 
 
 void msm_hdmi_i2c_irq(struct i2c_adapter *i2c);
 void msm_hdmi_i2c_destroy(struct i2c_adapter *i2c);
 struct i2c_adapter *msm_hdmi_i2c_init(struct hdmi *hdmi);
 
-/*
- * hdcp
- */
+ 
 #ifdef CONFIG_DRM_MSM_HDMI_HDCP
 struct hdmi_hdcp_ctrl *msm_hdmi_hdcp_init(struct hdmi *hdmi);
 void msm_hdmi_hdcp_destroy(struct hdmi *hdmi);
@@ -261,4 +242,4 @@ static inline void msm_hdmi_hdcp_off(struct hdmi_hdcp_ctrl *hdcp_ctrl) {}
 static inline void msm_hdmi_hdcp_irq(struct hdmi_hdcp_ctrl *hdcp_ctrl) {}
 #endif
 
-#endif /* __HDMI_CONNECTOR_H__ */
+#endif  

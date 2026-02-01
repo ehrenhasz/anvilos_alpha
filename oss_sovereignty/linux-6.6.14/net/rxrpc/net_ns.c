@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* rxrpc network namespace handling.
- *
- * Copyright (C) 2017 Red Hat, Inc. All Rights Reserved.
- * Written by David Howells (dhowells@redhat.com)
- */
+
+ 
 
 #include <linux/proc_fs.h>
 #include "ar-internal.h"
@@ -28,9 +24,7 @@ static void rxrpc_peer_keepalive_timeout(struct timer_list *timer)
 		rxrpc_queue_work(&rxnet->peer_keepalive_work);
 }
 
-/*
- * Initialise a per-network namespace record.
- */
+ 
 static __net_init int rxrpc_init_net(struct net *net)
 {
 	struct rxrpc_net *rxnet = rxrpc_net(net);
@@ -93,9 +87,7 @@ err_proc:
 	return ret;
 }
 
-/*
- * Clean up a per-network namespace record.
- */
+ 
 static __net_exit void rxrpc_exit_net(struct net *net)
 {
 	struct rxrpc_net *rxnet = rxrpc_net(net);
@@ -103,7 +95,7 @@ static __net_exit void rxrpc_exit_net(struct net *net)
 	rxnet->live = false;
 	del_timer_sync(&rxnet->peer_keepalive_timer);
 	cancel_work_sync(&rxnet->peer_keepalive_work);
-	/* Remove the timer again as the worker may have restarted it. */
+	 
 	del_timer_sync(&rxnet->peer_keepalive_timer);
 	rxrpc_destroy_all_calls(rxnet);
 	rxrpc_destroy_all_connections(rxnet);

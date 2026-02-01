@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * NVMe over Fabrics RDMA host code.
- * Copyright (c) 2015-2016 HGST, a Western Digital Company.
- */
+
+ 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 #include <linux/module.h>
 #include <linux/init.h>
@@ -28,7 +25,7 @@
 #include "fabrics.h"
 
 
-#define NVME_RDMA_CM_TIMEOUT_MS		3000		/* 3 second */
+#define NVME_RDMA_CM_TIMEOUT_MS		3000		 
 
 #define NVME_RDMA_MAX_SEGMENTS		256
 
@@ -101,10 +98,10 @@ struct nvme_rdma_queue {
 };
 
 struct nvme_rdma_ctrl {
-	/* read only in the hot path */
+	 
 	struct nvme_rdma_queue	*queues;
 
-	/* other member variables */
+	 
 	struct blk_mq_tag_set	tag_set;
 	struct work_struct	err_work;
 
@@ -138,11 +135,7 @@ static DEFINE_MUTEX(device_list_mutex);
 static LIST_HEAD(nvme_rdma_ctrl_list);
 static DEFINE_MUTEX(nvme_rdma_ctrl_mutex);
 
-/*
- * Disabling this option makes small I/O goes faster, but is fundamentally
- * unsafe.  With it turned off we will have to register a global rkey that
- * allows read and write access to all physical memory.
- */
+ 
 static bool register_always = true;
 module_param(register_always, bool, 0444);
 MODULE_PARM_DESC(register_always,
@@ -219,11 +212,7 @@ static struct nvme_rdma_qe *nvme_rdma_alloc_ring(struct ib_device *ibdev,
 	if (!ring)
 		return NULL;
 
-	/*
-	 * Bind the CQEs (post recv buffers) DMA mapping to the RDMA queue
-	 * lifetime. It's safe, since any chage in the underlying RDMA device
-	 * will issue error recovery and queue re-creation.
-	 */
+	 
 	for (i = 0; i < ib_queue_size; i++) {
 		if (nvme_rdma_alloc_qe(ibdev, &ring[i], capsule_size, dir))
 			goto out_free_ring;
@@ -262,9 +251,9 @@ static int nvme_rdma_create_qp(struct nvme_rdma_queue *queue, const int factor)
 
 	memset(&init_attr, 0, sizeof(init_attr));
 	init_attr.event_handler = nvme_rdma_qp_event;
-	/* +1 for drain */
+	 
 	init_attr.cap.max_send_wr = factor * queue->queue_size + 1;
-	/* +1 for drain */
+	 
 	init_attr.cap.max_recv_wr = queue->queue_size + 1;
 	init_attr.cap.max_recv_sge = 1;
 	init_attr.cap.max_send_sge = 1 + dev->num_inline_segments;
@@ -304,7 +293,7 @@ static int nvme_rdma_init_request(struct blk_mq_tag_set *set,
 	if (!req->sqe.data)
 		return -ENOMEM;
 
-	/* metadata nvme_rdma_sgl struct is located after command's data SGL */
+	 
 	if (queue->pi_support)
 		req->metadata_sgl = (void *)nvme_req(rq) +
 			sizeof(struct nvme_rdma_request) +
@@ -433,11 +422,7 @@ static void nvme_rdma_destroy_queue_ib(struct nvme_rdma_queue *queue)
 		ib_mr_pool_destroy(queue->qp, &queue->qp->sig_mrs);
 	ib_mr_pool_destroy(queue->qp, &queue->qp->rdma_mrs);
 
-	/*
-	 * The cm_id object might have been destroyed during RDMA connection
-	 * establishment error flow to avoid getting other cma events, thus
-	 * the destruction of the QP shouldn't use rdma_cm API.
-	 */
+	 
 	ib_destroy_qp(queue->qp);
 	nvme_rdma_free_cq(queue);
 
@@ -464,13 +449,10 @@ static int nvme_rdma_create_cq(struct ib_device *ibdev,
 {
 	int ret, comp_vector, idx = nvme_rdma_queue_idx(queue);
 
-	/*
-	 * Spread I/O queues completion vectors according their queue index.
-	 * Admin queues can always go on completion vector 0.
-	 */
+	 
 	comp_vector = (idx == 0 ? idx : idx - 1) % ibdev->num_comp_vectors;
 
-	/* Polling queues need direct cq polling context */
+	 
 	if (nvme_rdma_poll_queue(queue))
 		queue->ib_cq = ib_alloc_cq(ibdev, queue, queue->cq_size,
 					   comp_vector, IB_POLL_DIRECT);
@@ -489,8 +471,8 @@ static int nvme_rdma_create_cq(struct ib_device *ibdev,
 static int nvme_rdma_create_queue_ib(struct nvme_rdma_queue *queue)
 {
 	struct ib_device *ibdev;
-	const int send_wr_factor = 3;			/* MR, SEND, INV */
-	const int cq_factor = send_wr_factor + 1;	/* + RECV */
+	const int send_wr_factor = 3;			 
+	const int cq_factor = send_wr_factor + 1;	 
 	int ret, pages_per_mr;
 
 	queue->device = nvme_rdma_find_get_device(queue->cm_id);
@@ -501,7 +483,7 @@ static int nvme_rdma_create_queue_ib(struct nvme_rdma_queue *queue)
 	}
 	ibdev = queue->device->dev;
 
-	/* +1 for ib_drain_qp */
+	 
 	queue->cq_size = cq_factor * queue->queue_size + 1;
 
 	ret = nvme_rdma_create_cq(ibdev, queue);
@@ -519,11 +501,7 @@ static int nvme_rdma_create_queue_ib(struct nvme_rdma_queue *queue)
 		goto out_destroy_qp;
 	}
 
-	/*
-	 * Currently we don't use SG_GAPS MR's so if the first entry is
-	 * misaligned we'll end up using two entries for a single data page,
-	 * so one additional entry is required.
-	 */
+	 
 	pages_per_mr = nvme_rdma_get_max_fr_pages(ibdev, queue->pi_support) + 1;
 	ret = ib_mr_pool_init(queue->qp, &queue->qp->rdma_mrs,
 			      queue->queue_size,
@@ -790,7 +768,7 @@ static int nvme_rdma_configure_admin_queue(struct nvme_rdma_ctrl *ctrl,
 	ctrl->device = ctrl->queues[0].device;
 	ctrl->ctrl.numa_node = ibdev_to_node(ctrl->device->dev);
 
-	/* T10-PI support */
+	 
 	if (ctrl->device->dev->attrs.kernel_cap_flags &
 	    IBK_INTEGRITY_HANDOVER)
 		pi_capable = true;
@@ -798,11 +776,7 @@ static int nvme_rdma_configure_admin_queue(struct nvme_rdma_ctrl *ctrl,
 	ctrl->max_fr_pages = nvme_rdma_get_max_fr_pages(ctrl->device->dev,
 							pi_capable);
 
-	/*
-	 * Bind the async event SQE DMA mapping to the admin queue lifetime.
-	 * It's safe, since any chage in the underlying RDMA device will issue
-	 * error recovery and queue re-creation.
-	 */
+	 
 	error = nvme_rdma_alloc_qe(ctrl->device->dev, &ctrl->async_event_sqe,
 			sizeof(struct nvme_command), DMA_TO_DEVICE);
 	if (error)
@@ -875,11 +849,7 @@ static int nvme_rdma_configure_io_queues(struct nvme_rdma_ctrl *ctrl, bool new)
 			goto out_free_io_queues;
 	}
 
-	/*
-	 * Only start IO queues for which we have allocated the tagset
-	 * and limitted it to the available queues. On reconnects, the
-	 * queue number might have changed.
-	 */
+	 
 	nr_queues = min(ctrl->tag_set.nr_hw_queues + 1, ctrl->ctrl.queue_count);
 	ret = nvme_rdma_start_io_queues(ctrl, 1, nr_queues);
 	if (ret)
@@ -889,11 +859,7 @@ static int nvme_rdma_configure_io_queues(struct nvme_rdma_ctrl *ctrl, bool new)
 		nvme_start_freeze(&ctrl->ctrl);
 		nvme_unquiesce_io_queues(&ctrl->ctrl);
 		if (!nvme_wait_freeze_timeout(&ctrl->ctrl, NVME_IO_TIMEOUT)) {
-			/*
-			 * If we timed out waiting for freeze we are likely to
-			 * be stuck.  Fail the controller initialization just
-			 * to be safe.
-			 */
+			 
 			ret = -ENODEV;
 			nvme_unfreeze(&ctrl->ctrl);
 			goto out_wait_freeze_timed_out;
@@ -903,10 +869,7 @@ static int nvme_rdma_configure_io_queues(struct nvme_rdma_ctrl *ctrl, bool new)
 		nvme_unfreeze(&ctrl->ctrl);
 	}
 
-	/*
-	 * If the number of queues has increased (reconnect case)
-	 * start all new queues now.
-	 */
+	 
 	ret = nvme_rdma_start_io_queues(ctrl, nr_queues,
 					ctrl->tag_set.nr_hw_queues + 1);
 	if (ret)
@@ -986,7 +949,7 @@ static void nvme_rdma_reconnect_or_remove(struct nvme_rdma_ctrl *ctrl)
 {
 	enum nvme_ctrl_state state = nvme_ctrl_state(&ctrl->ctrl);
 
-	/* If we are resetting/deleting then do nothing */
+	 
 	if (state != NVME_CTRL_CONNECTING) {
 		WARN_ON_ONCE(state == NVME_CTRL_NEW || state == NVME_CTRL_LIVE);
 		return;
@@ -1055,11 +1018,7 @@ static int nvme_rdma_setup_ctrl(struct nvme_rdma_ctrl *ctrl, bool new)
 
 	changed = nvme_change_ctrl_state(&ctrl->ctrl, NVME_CTRL_LIVE);
 	if (!changed) {
-		/*
-		 * state change failure is ok if we started ctrl delete,
-		 * unless we're during creation of a new controller to
-		 * avoid races with teardown flow.
-		 */
+		 
 		enum nvme_ctrl_state state = nvme_ctrl_state(&ctrl->ctrl);
 
 		WARN_ON_ONCE(state != NVME_CTRL_DELETING &&
@@ -1130,7 +1089,7 @@ static void nvme_rdma_error_recovery_work(struct work_struct *work)
 	nvme_auth_stop(&ctrl->ctrl);
 
 	if (!nvme_change_ctrl_state(&ctrl->ctrl, NVME_CTRL_CONNECTING)) {
-		/* state change failure is ok if we started ctrl delete */
+		 
 		enum nvme_ctrl_state state = nvme_ctrl_state(&ctrl->ctrl);
 
 		WARN_ON_ONCE(state != NVME_CTRL_DELETING &&
@@ -1306,10 +1265,7 @@ static int nvme_rdma_map_sg_fr(struct nvme_rdma_queue *queue,
 	if (WARN_ON_ONCE(!req->mr))
 		return -EAGAIN;
 
-	/*
-	 * Align the MR to a 4K page size to match the ctrl page size and
-	 * the block virtual boundary.
-	 */
+	 
 	nr = ib_map_mr_sg(req->mr, req->data_sgl.sg_table.sgl, count, NULL,
 			  SZ_4K);
 	if (unlikely(nr < count)) {
@@ -1368,15 +1324,15 @@ static void nvme_rdma_set_sig_attrs(struct blk_integrity *bi,
 
 	memset(sig_attrs, 0, sizeof(*sig_attrs));
 	if (control & NVME_RW_PRINFO_PRACT) {
-		/* for WRITE_INSERT/READ_STRIP no memory domain */
+		 
 		sig_attrs->mem.sig_type = IB_SIG_TYPE_NONE;
 		nvme_rdma_set_sig_domain(bi, cmd, &sig_attrs->wire, control,
 					 pi_type);
-		/* Clear the PRACT bit since HCA will generate/verify the PI */
+		 
 		control &= ~NVME_RW_PRINFO_PRACT;
 		cmd->rw.control = cpu_to_le16(control);
 	} else {
-		/* for WRITE_PASS/READ_PASS both wire/memory domains exist */
+		 
 		nvme_rdma_set_sig_domain(bi, cmd, &sig_attrs->wire, control,
 					 pi_type);
 		nvme_rdma_set_sig_domain(bi, cmd, &sig_attrs->mem, control,
@@ -1524,7 +1480,7 @@ static int nvme_rdma_map_data(struct nvme_rdma_queue *queue,
 	int count, ret;
 
 	req->num_sge = 1;
-	refcount_set(&req->ref, 2); /* send and recv completions */
+	refcount_set(&req->ref, 2);  
 
 	c->common.flags |= NVME_CMD_SGL_METABUF;
 
@@ -1716,7 +1672,7 @@ static void nvme_rdma_process_nvme_rsp(struct nvme_rdma_queue *queue,
 				req->mr->rkey, ret);
 			nvme_rdma_error_recovery(queue->ctrl);
 		}
-		/* the local invalidation completion will end the request */
+		 
 		return;
 	}
 
@@ -1737,7 +1693,7 @@ static void nvme_rdma_recv_done(struct ib_cq *cq, struct ib_wc *wc)
 		return;
 	}
 
-	/* sanity checking for received data length */
+	 
 	if (unlikely(wc->byte_len < len)) {
 		dev_err(queue->ctrl->ctrl.device,
 			"Unexpected nvme completion length(%d)\n", wc->byte_len);
@@ -1746,12 +1702,7 @@ static void nvme_rdma_recv_done(struct ib_cq *cq, struct ib_wc *wc)
 	}
 
 	ib_dma_sync_single_for_cpu(ibdev, qe->dma, len, DMA_FROM_DEVICE);
-	/*
-	 * AEN requests are special as they don't time out and can
-	 * survive any kind of queue freeze and often don't respond to
-	 * aborts.  We don't even bother to allocate a struct request
-	 * for them but rather special case them here.
-	 */
+	 
 	if (unlikely(nvme_is_aen_req(nvme_rdma_queue_idx(queue),
 				     cqe->command_id)))
 		nvme_complete_async_event(&queue->ctrl->ctrl, cqe->status,
@@ -1838,7 +1789,7 @@ static int nvme_rdma_route_resolved(struct nvme_rdma_queue *queue)
 	param.flow_control = 1;
 
 	param.responder_resources = queue->device->dev->attrs.max_qp_rd_atom;
-	/* maximum retry count */
+	 
 	param.retry_count = 7;
 	param.rnr_retry_count = 7;
 	param.private_data = &priv;
@@ -1846,19 +1797,12 @@ static int nvme_rdma_route_resolved(struct nvme_rdma_queue *queue)
 
 	priv.recfmt = cpu_to_le16(NVME_RDMA_CM_FMT_1_0);
 	priv.qid = cpu_to_le16(nvme_rdma_queue_idx(queue));
-	/*
-	 * set the admin queue depth to the minimum size
-	 * specified by the Fabrics standard.
-	 */
+	 
 	if (priv.qid == 0) {
 		priv.hrqsize = cpu_to_le16(NVME_AQ_DEPTH);
 		priv.hsqsize = cpu_to_le16(NVME_AQ_DEPTH - 1);
 	} else {
-		/*
-		 * current interpretation of the fabrics spec
-		 * is at minimum you make hrqsize sqsize+1, or a
-		 * 1's based representation of sqsize.
-		 */
+		 
 		priv.hrqsize = cpu_to_le16(queue->queue_size);
 		priv.hsqsize = cpu_to_le16(queue->ctrl->ctrl.sqsize);
 	}
@@ -1892,7 +1836,7 @@ static int nvme_rdma_cm_handler(struct rdma_cm_id *cm_id,
 		break;
 	case RDMA_CM_EVENT_ESTABLISHED:
 		queue->cm_error = nvme_rdma_conn_established(queue);
-		/* complete cm_done regardless of success/failure */
+		 
 		complete(&queue->cm_done);
 		return 0;
 	case RDMA_CM_EVENT_REJECTED:
@@ -1914,7 +1858,7 @@ static int nvme_rdma_cm_handler(struct rdma_cm_id *cm_id,
 		nvme_rdma_error_recovery(queue->ctrl);
 		break;
 	case RDMA_CM_EVENT_DEVICE_REMOVAL:
-		/* device removal is handled via the ib_client API */
+		 
 		break;
 	default:
 		dev_err(queue->ctrl->ctrl.device,
@@ -1950,27 +1894,12 @@ static enum blk_eh_timer_return nvme_rdma_timeout(struct request *rq)
 		 rq->tag, nvme_rdma_queue_idx(queue));
 
 	if (nvme_ctrl_state(&ctrl->ctrl) != NVME_CTRL_LIVE) {
-		/*
-		 * If we are resetting, connecting or deleting we should
-		 * complete immediately because we may block controller
-		 * teardown or setup sequence
-		 * - ctrl disable/shutdown fabrics requests
-		 * - connect requests
-		 * - initialization admin requests
-		 * - I/O requests that entered after unquiescing and
-		 *   the controller stopped responding
-		 *
-		 * All other requests should be cancelled by the error
-		 * recovery work, so it's fine that we fail it here.
-		 */
+		 
 		nvme_rdma_complete_timed_out(rq);
 		return BLK_EH_DONE;
 	}
 
-	/*
-	 * LIVE state should trigger the normal error recovery which will
-	 * handle completing this request.
-	 */
+	 
 	nvme_rdma_error_recovery(ctrl);
 	return BLK_EH_RESET_TIMER;
 }
@@ -2158,7 +2087,7 @@ static void nvme_rdma_reset_ctrl_work(struct work_struct *work)
 	nvme_rdma_shutdown_ctrl(ctrl, false);
 
 	if (!nvme_change_ctrl_state(&ctrl->ctrl, NVME_CTRL_CONNECTING)) {
-		/* state change failure should never happen */
+		 
 		WARN_ON_ONCE(1);
 		return;
 	}
@@ -2187,18 +2116,7 @@ static const struct nvme_ctrl_ops nvme_rdma_ctrl_ops = {
 	.stop_ctrl		= nvme_rdma_stop_ctrl,
 };
 
-/*
- * Fails a connection request if it matches an existing controller
- * (association) with the same tuple:
- * <Host NQN, Host ID, local address, remote address, remote port, SUBSYS NQN>
- *
- * if local address is not specified in the request, it will match an
- * existing controller with all the other parameters the same and no
- * local port address specified as well.
- *
- * The ports don't need to be compared as they are intrinsically
- * already matched by the port pointers supplied.
- */
+ 
 static bool
 nvme_rdma_existing_controller(struct nvmf_ctrl_options *opts)
 {
@@ -2279,7 +2197,7 @@ static struct nvme_ctrl *nvme_rdma_create_ctrl(struct device *dev,
 		goto out_free_ctrl;
 
 	ret = nvme_init_ctrl(&ctrl->ctrl, dev, &nvme_rdma_ctrl_ops,
-				0 /* no quirks, we're perfect! */);
+				0  );
 	if (ret)
 		goto out_kfree_queues;
 
@@ -2341,7 +2259,7 @@ static void nvme_rdma_remove_one(struct ib_device *ib_device, void *client_data)
 	if (!found)
 		return;
 
-	/* Delete all controllers using this device */
+	 
 	mutex_lock(&nvme_rdma_ctrl_mutex);
 	list_for_each_entry(ctrl, &nvme_rdma_ctrl_list, list) {
 		if (ctrl->device->dev != ib_device)

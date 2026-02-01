@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
-* Simple driver for Texas Instruments LM3630 LED Flash driver chip
-* Copyright (C) 2012 Texas Instruments
-*/
+ 
+ 
 
 #ifndef __LINUX_LM3639_H
 #define __LINUX_LM3639_H
@@ -49,12 +46,12 @@ struct lm3639_platform_data {
 	unsigned int max_brt_led;
 	unsigned int init_brt_led;
 
-	/* input pins */
+	 
 	enum lm3639_pwm pin_pwm;
 	enum lm3639_strobe pin_strobe;
 	enum lm3639_txpin pin_tx;
 
-	/* output pins */
+	 
 	enum lm3639_fleds fled_pins;
 	enum lm3639_bleds bled_pins;
 	enum lm3639_bled_mode bled_mode;
@@ -62,4 +59,4 @@ struct lm3639_platform_data {
 	void (*pwm_set_intensity) (int brightness, int max_brightness);
 	int (*pwm_get_intensity) (void);
 };
-#endif /* __LINUX_LM3639_H */
+#endif  

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright © 2023 Intel Corporation
- */
+
+ 
 
 #include <linux/bitops.h>
 
@@ -93,7 +91,7 @@ int intel_pmdemand_init(struct drm_i915_private *i915)
 				     &intel_pmdemand_funcs);
 
 	if (IS_MTL_DISPLAY_STEP(i915, STEP_A0, STEP_C0))
-		/* Wa_14016740474 */
+		 
 		intel_de_rmw(i915, XELPD_CHICKEN_DCPR_3, 0, DMD_RSP_TIMEOUT_DISABLE);
 
 	return 0;
@@ -202,12 +200,12 @@ intel_pmdemand_update_active_non_tc_phys(struct drm_i915_private *i915,
 		if (!intel_connector_needs_modeset(state, connector))
 			continue;
 
-		/* First clear the active phys in the old connector state */
+		 
 		intel_pmdemand_update_connector_phys(i915, state,
 						     old_conn_state, false,
 						     pmdemand_state);
 
-		/* Then set the active phys in new connector state */
+		 
 		intel_pmdemand_update_connector_phys(i915, state,
 						     new_conn_state, true,
 						     pmdemand_state);
@@ -325,7 +323,7 @@ int intel_pmdemand_atomic_check(struct intel_atomic_state *state)
 	if (IS_ERR(new_bw_state))
 		return PTR_ERR(new_bw_state);
 
-	/* firmware will calculate the qclk_gv_index, requirement is set to 0 */
+	 
 	new_pmdemand_state->params.qclk_gv_index = 0;
 	new_pmdemand_state->params.qclk_gv_bw = new_bw_state->qgv_point_peakbw;
 
@@ -351,17 +349,11 @@ int intel_pmdemand_atomic_check(struct intel_atomic_state *state)
 
 	intel_pmdemand_update_active_non_tc_phys(i915, state, new_pmdemand_state);
 
-	/*
-	 * Active_PLLs starts with 1 because of CDCLK PLL.
-	 * TODO: Missing to account genlock filter when it gets used.
-	 */
+	 
 	new_pmdemand_state->params.plls =
 		min_t(u16, new_pmdemand_state->params.active_phys + 1, 7);
 
-	/*
-	 * Setting scalers to max as it can not be calculated during flips and
-	 * fastsets without taking global states locks.
-	 */
+	 
 	new_pmdemand_state->params.scalers = 7;
 
 	if (state->base.allow_modeset)
@@ -401,7 +393,7 @@ intel_pmdemand_init_pmdemand_params(struct drm_i915_private *i915,
 
 	reg2 = intel_de_read(i915, XELPDP_INITIATE_PMDEMAND_REQUEST(1));
 
-	/* Set 1*/
+	 
 	pmdemand_state->params.qclk_gv_bw =
 		REG_FIELD_GET(XELPDP_PMDEMAND_QCLK_GV_BW_MASK, reg1);
 	pmdemand_state->params.voltage_index =
@@ -415,7 +407,7 @@ intel_pmdemand_init_pmdemand_params(struct drm_i915_private *i915,
 	pmdemand_state->params.active_phys =
 		REG_FIELD_GET(XELPDP_PMDEMAND_PHYS_MASK, reg1);
 
-	/* Set 2*/
+	 
 	pmdemand_state->params.cdclk_freq_mhz =
 		REG_FIELD_GET(XELPDP_PMDEMAND_CDCLK_FREQ_MASK, reg2);
 	pmdemand_state->params.ddiclk_max =
@@ -442,7 +434,7 @@ static void intel_pmdemand_wait(struct drm_i915_private *i915)
 			"timed out waiting for Punit PM Demand Response\n");
 }
 
-/* Required to be programmed during Display Init Sequences. */
+ 
 void intel_pmdemand_program_dbuf(struct drm_i915_private *i915,
 				 u8 dbuf_slices)
 {
@@ -470,23 +462,7 @@ intel_pmdemand_update_params(const struct intel_pmdemand_state *new,
 			     const struct intel_pmdemand_state *old,
 			     u32 *reg1, u32 *reg2, bool serialized)
 {
-	/*
-	 * The pmdemand parameter updates happens in two steps. Pre plane and
-	 * post plane updates. During the pre plane, as DE might still be
-	 * handling with some old operations, to avoid unexpected performance
-	 * issues, program the pmdemand parameters with higher of old and new
-	 * values. And then after once settled, use the new parameter values
-	 * as part of the post plane update.
-	 *
-	 * If the pmdemand params update happens without modeset allowed, this
-	 * means we can't serialize the updates. So that implies possibility of
-	 * some parallel atomic commits affecting the pmdemand parameters. In
-	 * that case, we need to consider the current values from the register
-	 * as well. So in pre-plane case, we need to check the max of old, new
-	 * and current register value if not serialized. In post plane update
-	 * we need to consider max of new and current register value if not
-	 * serialized
-	 */
+	 
 
 #define update_reg(reg, field, mask) do { \
 	u32 current_val = serialized ? 0 : REG_FIELD_GET((mask), *(reg)); \
@@ -497,7 +473,7 @@ intel_pmdemand_update_params(const struct intel_pmdemand_state *new,
 	*(reg) |= REG_FIELD_PREP((mask), max3(old_val, new_val, current_val)); \
 } while (0)
 
-	/* Set 1*/
+	 
 	update_reg(reg1, qclk_gv_bw, XELPDP_PMDEMAND_QCLK_GV_BW_MASK);
 	update_reg(reg1, voltage_index, XELPDP_PMDEMAND_VOLTAGE_INDEX_MASK);
 	update_reg(reg1, qclk_gv_index, XELPDP_PMDEMAND_QCLK_GV_INDEX_MASK);
@@ -505,7 +481,7 @@ intel_pmdemand_update_params(const struct intel_pmdemand_state *new,
 	update_reg(reg1, active_dbufs, XELPDP_PMDEMAND_DBUFS_MASK);
 	update_reg(reg1, active_phys, XELPDP_PMDEMAND_PHYS_MASK);
 
-	/* Set 2*/
+	 
 	update_reg(reg2, cdclk_freq_mhz, XELPDP_PMDEMAND_CDCLK_FREQ_MASK);
 	update_reg(reg2, ddiclk_max, XELPDP_PMDEMAND_DDICLK_FREQ_MASK);
 	update_reg(reg2, scalers, XELPDP_PMDEMAND_SCALERS_MASK);
@@ -550,7 +526,7 @@ intel_pmdemand_program_params(struct drm_i915_private *i915,
 		changed = true;
 	}
 
-	/* Initiate pm demand request only if register values are changed */
+	 
 	if (!changed)
 		goto unlock;
 

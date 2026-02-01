@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * toshiba_wmi.c - Toshiba WMI Hotkey Driver
- *
- * Copyright (C) 2015 Azael Avalos <coproscefalo@gmail.com>
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -27,8 +23,8 @@ MODULE_ALIAS("wmi:"WMI_EVENT_GUID);
 static struct input_dev *toshiba_wmi_input_dev;
 
 static const struct key_entry toshiba_wmi_keymap[] __initconst = {
-	/* TODO: Add keymap values once found... */
-	/*{ KE_KEY, 0x00, { KEY_ } },*/
+	 
+	 
 	{ KE_END, 0 }
 };
 
@@ -48,7 +44,7 @@ static void toshiba_wmi_notify(u32 value, void *context)
 	if (!obj)
 		return;
 
-	/* TODO: Add proper checks once we have data */
+	 
 	pr_debug("Unknown event received, obj type %x\n", obj->type);
 
 	kfree(response.pointer);

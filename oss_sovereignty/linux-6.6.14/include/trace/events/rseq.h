@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
+ 
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM rseq
 
@@ -56,7 +56,7 @@ TRACE_EVENT(rseq_ip_fixup,
 		__entry->post_commit_offset, __entry->abort_ip)
 );
 
-#endif /* _TRACE_SOCK_H */
+#endif  
 
-/* This part must be outside protection */
+ 
 #include <trace/define_trace.h>

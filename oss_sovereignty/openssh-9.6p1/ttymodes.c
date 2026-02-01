@@ -1,47 +1,9 @@
-/* $OpenBSD: ttymodes.c,v 1.36 2021/01/27 09:26:54 djm Exp $ */
-/*
- * Author: Tatu Ylonen <ylo@cs.hut.fi>
- * Copyright (c) 1995 Tatu Ylonen <ylo@cs.hut.fi>, Espoo, Finland
- *                    All rights reserved
- *
- * As far as I am concerned, the code I have written for this software
- * can be used freely for any purpose.  Any derived versions of this
- * software must be clearly marked as such, and if the derived work is
- * incompatible with the protocol description in the RFC file, it must be
- * called by a name other than "ssh" or "Secure Shell".
- */
+ 
+ 
 
-/*
- * SSH2 tty modes support by Kevin Steves.
- * Copyright (c) 2001 Kevin Steves.  All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- *
- * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
- * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
- * IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
- * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
- * NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
- * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+ 
 
-/*
- * Encoding and decoding of terminal modes in a portable way.
- * Much of the format is defined in ttymodes.h; it is included multiple times
- * into this file with the appropriate macro definitions to generate the
- * suitable code.
- */
+ 
 
 #include "includes.h"
 
@@ -59,16 +21,11 @@
 #include "ssherr.h"
 
 #define TTY_OP_END		0
-/*
- * uint32 (u_int) follows speed.
- */
+ 
 #define TTY_OP_ISPEED	128
 #define TTY_OP_OSPEED	129
 
-/*
- * Converts POSIX speed_t to a baud rate.  The values of the
- * constants for speed_t are not themselves portable.
- */
+ 
 static int
 speed_to_baud(speed_t speed)
 {
@@ -105,59 +62,57 @@ speed_to_baud(speed_t speed)
 #ifdef B19200
 	case B19200:
 		return 19200;
-#else /* B19200 */
+#else  
 #ifdef EXTA
 	case EXTA:
 		return 19200;
-#endif /* EXTA */
-#endif /* B19200 */
+#endif  
+#endif  
 
 #ifdef B38400
 	case B38400:
 		return 38400;
-#else /* B38400 */
+#else  
 #ifdef EXTB
 	case EXTB:
 		return 38400;
-#endif /* EXTB */
-#endif /* B38400 */
+#endif  
+#endif  
 
 #ifdef B7200
 	case B7200:
 		return 7200;
-#endif /* B7200 */
+#endif  
 #ifdef B14400
 	case B14400:
 		return 14400;
-#endif /* B14400 */
+#endif  
 #ifdef B28800
 	case B28800:
 		return 28800;
-#endif /* B28800 */
+#endif  
 #ifdef B57600
 	case B57600:
 		return 57600;
-#endif /* B57600 */
+#endif  
 #ifdef B76800
 	case B76800:
 		return 76800;
-#endif /* B76800 */
+#endif  
 #ifdef B115200
 	case B115200:
 		return 115200;
-#endif /* B115200 */
+#endif  
 #ifdef B230400
 	case B230400:
 		return 230400;
-#endif /* B230400 */
+#endif  
 	default:
 		return 9600;
 	}
 }
 
-/*
- * Converts a numeric baud rate to a POSIX speed_t.
- */
+ 
 static speed_t
 baud_to_speed(int baud)
 {
@@ -194,87 +149,79 @@ baud_to_speed(int baud)
 #ifdef B19200
 	case 19200:
 		return B19200;
-#else /* B19200 */
+#else  
 #ifdef EXTA
 	case 19200:
 		return EXTA;
-#endif /* EXTA */
-#endif /* B19200 */
+#endif  
+#endif  
 
 #ifdef B38400
 	case 38400:
 		return B38400;
-#else /* B38400 */
+#else  
 #ifdef EXTB
 	case 38400:
 		return EXTB;
-#endif /* EXTB */
-#endif /* B38400 */
+#endif  
+#endif  
 
 #ifdef B7200
 	case 7200:
 		return B7200;
-#endif /* B7200 */
+#endif  
 #ifdef B14400
 	case 14400:
 		return B14400;
-#endif /* B14400 */
+#endif  
 #ifdef B28800
 	case 28800:
 		return B28800;
-#endif /* B28800 */
+#endif  
 #ifdef B57600
 	case 57600:
 		return B57600;
-#endif /* B57600 */
+#endif  
 #ifdef B76800
 	case 76800:
 		return B76800;
-#endif /* B76800 */
+#endif  
 #ifdef B115200
 	case 115200:
 		return B115200;
-#endif /* B115200 */
+#endif  
 #ifdef B230400
 	case 230400:
 		return B230400;
-#endif /* B230400 */
+#endif  
 	default:
 		return B9600;
 	}
 }
 
-/*
- * Encode a special character into SSH line format.
- */
+ 
 static u_int
 special_char_encode(cc_t c)
 {
 #ifdef _POSIX_VDISABLE
 	if (c == _POSIX_VDISABLE)
 		return 255;
-#endif /* _POSIX_VDISABLE */
+#endif  
 	return c;
 }
 
-/*
- * Decode a special character from SSH line format.
- */
+ 
 static cc_t
 special_char_decode(u_int c)
 {
 #ifdef _POSIX_VDISABLE
 	if (c == 255)
 		return _POSIX_VDISABLE;
-#endif /* _POSIX_VDISABLE */
+#endif  
 	return c;
 }
 
-/*
- * Encodes terminal modes for the terminal referenced by fd
- * or tiop in a portable manner, and appends the modes to a packet
- * being constructed.
- */
+ 
 void
 ssh_tty_make_modes(struct ssh *ssh, int fd, struct termios *tiop)
 {
@@ -297,7 +244,7 @@ ssh_tty_make_modes(struct ssh *ssh, int fd, struct termios *tiop)
 	} else
 		tio = *tiop;
 
-	/* Store input and output baud rates. */
+	 
 	obaud = speed_to_baud(cfgetospeed(&tio));
 	ibaud = speed_to_baud(cfgetispeed(&tio));
 	if ((r = sshbuf_put_u8(buf, TTY_OP_OSPEED)) != 0 ||
@@ -306,14 +253,14 @@ ssh_tty_make_modes(struct ssh *ssh, int fd, struct termios *tiop)
 	    (r = sshbuf_put_u32(buf, ibaud)) != 0)
 		fatal_fr(r, "compose");
 
-	/* Store values of mode flags. */
+	 
 #define TTYCHAR(NAME, OP) \
 	if ((r = sshbuf_put_u8(buf, OP)) != 0 || \
 	    (r = sshbuf_put_u32(buf, \
 	    special_char_encode(tio.c_cc[NAME]))) != 0) \
 		fatal_fr(r, "compose %s", #NAME);
 
-#define SSH_TTYMODE_IUTF8 42  /* for SSH_BUG_UTF8TTYMODE */
+#define SSH_TTYMODE_IUTF8 42   
 
 #define TTYMODE(NAME, FIELD, OP) \
 	if (OP == SSH_TTYMODE_IUTF8 && (ssh->compat & SSH_BUG_UTF8TTYMODE)) { \
@@ -328,17 +275,14 @@ ssh_tty_make_modes(struct ssh *ssh, int fd, struct termios *tiop)
 #undef TTYMODE
 
 end:
-	/* Mark end of mode data. */
+	 
 	if ((r = sshbuf_put_u8(buf, TTY_OP_END)) != 0 ||
 	    (r = sshpkt_put_stringb(ssh, buf)) != 0)
 		fatal_fr(r, "compose end");
 	sshbuf_free(buf);
 }
 
-/*
- * Decodes terminal modes for the terminal referenced by fd in a portable
- * manner from a packet being read.
- */
+ 
 void
 ssh_tty_parse_modes(struct ssh *ssh, int fd)
 {
@@ -359,11 +303,7 @@ ssh_tty_parse_modes(struct ssh *ssh, int fd)
 		return;
 	}
 
-	/*
-	 * Get old attributes for the terminal.  We will modify these
-	 * flags. I am hoping that if there are any machine-specific
-	 * modes, they will initially have reasonable values.
-	 */
+	 
 	if (tcgetattr(fd, &tio) == -1) {
 		logit("tcgetattr: %.100s", strerror(errno));
 		failure = -1;
@@ -416,13 +356,7 @@ ssh_tty_parse_modes(struct ssh *ssh, int fd)
 		default:
 			debug("Ignoring unsupported tty mode opcode %d (0x%x)",
 			    opcode, opcode);
-			/*
-			 * SSH2:
-			 * Opcodes 1 to 159 are defined to have a uint32
-			 * argument.
-			 * Opcodes 160 to 255 are undefined and cause parsing
-			 * to stop.
-			 */
+			 
 			if (opcode > 0 && opcode < 160) {
 				if ((r = sshbuf_get_u32(buf, NULL)) != 0)
 					fatal_fr(r, "parse arg");
@@ -439,12 +373,12 @@ set:
 	sshbuf_free(buf);
 	if (len > 0) {
 		logit_f("%zu bytes left", len);
-		return;		/* Don't process bytes passed */
+		return;		 
 	}
 	if (failure == -1)
-		return;		/* Packet parsed ok but tcgetattr() failed */
+		return;		 
 
-	/* Set the new modes for the terminal. */
+	 
 	if (tcsetattr(fd, TCSANOW, &tio) == -1)
 		logit("Setting tty modes failed: %.100s", strerror(errno));
 }

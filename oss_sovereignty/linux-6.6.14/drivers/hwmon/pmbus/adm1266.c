@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * ADM1266 - Cascadable Super Sequencer with Margin
- * Control and Fault Recording
- *
- * Copyright 2020 Analog Devices Inc.
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/crc8.h>
@@ -31,14 +26,14 @@
 #define ADM1266_PDIO_STATUS	0xE9
 #define ADM1266_GPIO_STATUS	0xEA
 
-/* ADM1266 GPIO defines */
+ 
 #define ADM1266_GPIO_NR			9
 #define ADM1266_GPIO_FUNCTIONS(x)	FIELD_GET(BIT(0), x)
 #define ADM1266_GPIO_INPUT_EN(x)	FIELD_GET(BIT(2), x)
 #define ADM1266_GPIO_OUTPUT_EN(x)	FIELD_GET(BIT(3), x)
 #define ADM1266_GPIO_OPEN_DRAIN(x)	FIELD_GET(BIT(4), x)
 
-/* ADM1266 PDIO defines */
+ 
 #define ADM1266_PDIO_NR			16
 #define ADM1266_PDIO_PIN_CFG(x)		FIELD_GET(GENMASK(15, 13), x)
 #define ADM1266_PDIO_GLITCH_FILT(x)	FIELD_GET(GENMASK(12, 9), x)
@@ -73,12 +68,7 @@ static const struct nvmem_cell_info adm1266_nvmem_cells[] = {
 
 DECLARE_CRC8_TABLE(pmbus_crc_table);
 
-/*
- * Different from Block Read as it sends data and waits for the slave to
- * return a value dependent on that data. The protocol is simply a Write Block
- * followed by a Read Block without the Read-Block command field and the
- * Write-Block STOP bit.
- */
+ 
 static int adm1266_pmbus_block_xfer(struct adm1266_data *data, u8 cmd, u8 w_len, u8 *data_w,
 				    u8 *data_r)
 {

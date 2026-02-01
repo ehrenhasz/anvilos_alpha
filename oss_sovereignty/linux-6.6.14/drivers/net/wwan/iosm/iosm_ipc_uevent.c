@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2020-21 Intel Corporation.
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/kobject.h>
@@ -9,7 +7,7 @@
 
 #include "iosm_ipc_uevent.h"
 
-/* Update the uevent in work queue context */
+ 
 static void ipc_uevent_work(struct work_struct *data)
 {
 	struct ipc_uevent_info *info;
@@ -32,13 +30,13 @@ void ipc_uevent_send(struct device *dev, char *uevent)
 	if (!info)
 		return;
 
-	/* Initialize the kernel work queue */
+	 
 	INIT_WORK(&info->work, ipc_uevent_work);
 
-	/* Store the device and event information */
+	 
 	info->dev = dev;
 	snprintf(info->uevent, MAX_UEVENT_LEN, "IOSM_EVENT=%s", uevent);
 
-	/* Schedule uevent in process context using work queue */
+	 
 	schedule_work(&info->work);
 }

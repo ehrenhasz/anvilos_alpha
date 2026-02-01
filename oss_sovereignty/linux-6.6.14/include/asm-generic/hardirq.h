@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef __ASM_GENERIC_HARDIRQ_H
 #define __ASM_GENERIC_HARDIRQ_H
 
@@ -23,4 +23,4 @@ static inline void ack_bad_irq(unsigned int irq)
 }
 #endif
 
-#endif /* __ASM_GENERIC_HARDIRQ_H */
+#endif  

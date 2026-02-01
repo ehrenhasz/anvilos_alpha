@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
-/*
- * Copyright (C) 2015-2017 Intel Deutschland GmbH
- * Copyright (C) 2018-2023 Intel Corporation
- */
+
+ 
 #include <net/cfg80211.h>
 #include <linux/etherdevice.h>
 #include "mvm.h"
@@ -87,7 +84,7 @@ static void
 iwl_mvm_ftm_responder_set_ndp(struct iwl_mvm *mvm,
 			      struct iwl_tof_responder_config_cmd_v9 *cmd)
 {
-	/* Up to 2 R2I STS are allowed on the responder */
+	 
 	u32 r2i_max_sts = IWL_MVM_FTM_R2I_MAX_STS < 2 ?
 		IWL_MVM_FTM_R2I_MAX_STS : 1;
 
@@ -109,11 +106,7 @@ iwl_mvm_ftm_responder_cmd(struct iwl_mvm *mvm,
 {
 	u32 cmd_id = WIDE_ID(LOCATION_GROUP, TOF_RESPONDER_CONFIG_CMD);
 	struct iwl_mvm_vif *mvmvif = iwl_mvm_vif_from_mac80211(vif);
-	/*
-	 * The command structure is the same for versions 6, 7 and 8 (only the
-	 * field interpretation is different), so the same struct can be use
-	 * for all cases.
-	 */
+	 
 	struct iwl_tof_responder_config_cmd_v9 cmd = {
 		.channel_num = chandef->chan->hw_value,
 		.cmd_valid_fields =
@@ -128,7 +121,7 @@ iwl_mvm_ftm_responder_cmd(struct iwl_mvm *mvm,
 
 	lockdep_assert_held(&mvm->mutex);
 
-	/* Use a default of bss_color=1 for now */
+	 
 	if (cmd_ver == 9) {
 		cmd.cmd_valid_fields |=
 			cpu_to_le32(IWL_TOF_RESPONDER_CMD_VALID_BSS_COLOR |
@@ -140,7 +133,7 @@ iwl_mvm_ftm_responder_cmd(struct iwl_mvm *mvm,
 			cpu_to_le16(IWL_MVM_FTM_NON_TB_MAX_TIME_BETWEEN_MSR);
 		cmd_size = sizeof(struct iwl_tof_responder_config_cmd_v9);
 	} else {
-		/* All versions up to version 8 have the same size */
+		 
 		cmd_size = sizeof(struct iwl_tof_responder_config_cmd_v8);
 	}
 
@@ -180,8 +173,8 @@ iwl_mvm_ftm_responder_dyn_cfg_v2(struct iwl_mvm *mvm,
 		.data[0] = &cmd,
 		.len[0] = sizeof(cmd),
 		.data[1] = &data,
-		/* .len[1] set later */
-		/* may not be able to DMA from stack */
+		 
+		 
 		.dataflags[1] = IWL_HCMD_DFL_DUP,
 	};
 	u32 aligned_lci_len = ALIGN(params->lci_len + 2, 4);
@@ -221,7 +214,7 @@ iwl_mvm_ftm_responder_dyn_cfg_v3(struct iwl_mvm *mvm,
 		.id = WIDE_ID(LOCATION_GROUP, TOF_RESPONDER_DYN_CONFIG_CMD),
 		.data[0] = &cmd,
 		.len[0] = sizeof(cmd),
-		/* may not be able to DMA from stack */
+		 
 		.dataflags[0] = IWL_HCMD_DFL_DUP,
 	};
 
@@ -417,9 +410,7 @@ int iwl_mvm_ftm_start_responder(struct iwl_mvm *mvm, struct ieee80211_vif *vif,
 
 	rcu_read_lock();
 	pctx = rcu_dereference(bss_conf->chanctx_conf);
-	/* Copy the ctx to unlock the rcu and send the phy ctxt. We don't care
-	 * about changes in the ctx after releasing the lock because the driver
-	 * is still protected by the mutex. */
+	 
 	ctx = *pctx;
 	phy_ctxt_id  = (u16 *)pctx->drv_priv;
 	rcu_read_unlock();

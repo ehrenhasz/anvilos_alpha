@@ -1,27 +1,6 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
+ 
 
-/*
- * Copyright (c) 2012, 2018 by Delphix. All rights reserved.
- */
+ 
 
 #include <sys/nvpair.h>
 #include <sys/kmem.h>
@@ -31,21 +10,7 @@
 #include <stdlib.h>
 #endif
 
-/*
- * "Force" nvlist wrapper.
- *
- * These functions wrap the nvlist_* functions with assertions that assume
- * the operation is successful.  This allows the caller's code to be much
- * more readable, especially for the fnvlist_lookup_* and fnvpair_value_*
- * functions, which can return the requested value (rather than filling in
- * a pointer).
- *
- * These functions use NV_UNIQUE_NAME, encoding NV_ENCODE_NATIVE, and allocate
- * with KM_SLEEP.
- *
- * More wrappers should be added as needed -- for example
- * nvlist_lookup_*_array and nvpair_value_*_array.
- */
+ 
 
 nvlist_t *
 fnvlist_alloc(void)
@@ -69,10 +34,7 @@ fnvlist_size(nvlist_t *nvl)
 	return (size);
 }
 
-/*
- * Returns allocated buffer of size *sizep.  Caller must free the buffer with
- * fnvlist_pack_free().
- */
+ 
 char *
 fnvlist_pack(nvlist_t *nvl, size_t *sizep)
 {
@@ -315,7 +277,7 @@ fnvlist_lookup_nvpair(nvlist_t *nvl, const char *name)
 	return (rv);
 }
 
-/* returns B_TRUE if the entry exists */
+ 
 boolean_t
 fnvlist_lookup_boolean(const nvlist_t *nvl, const char *name)
 {

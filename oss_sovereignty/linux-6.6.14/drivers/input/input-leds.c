@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * LED support for the input layer
- *
- * Copyright 2010-2015 Samuel Thibault <samuel.thibault@ens-lyon.org>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/slab.h>
@@ -38,7 +34,7 @@ static const struct {
 struct input_led {
 	struct led_classdev cdev;
 	struct input_handle *handle;
-	unsigned int code; /* One of LED_* constants */
+	unsigned int code;  
 };
 
 struct input_leds {

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * PCI Backend - Handles the virtual fields in the configuration space headers.
- *
- * Author: Ryan Wilson <hap9@epoch.ncsc.mil>
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 #define dev_fmt pr_fmt
@@ -26,7 +22,7 @@ struct pci_bar_info {
 #define is_enable_cmd(value) ((value)&(PCI_COMMAND_MEMORY|PCI_COMMAND_IO))
 #define is_master_cmd(value) ((value)&PCI_COMMAND_MASTER)
 
-/* Bits guests are allowed to control in permissive mode. */
+ 
 #define PCI_COMMAND_GUEST (PCI_COMMAND_MASTER|PCI_COMMAND_SPECIAL| \
 			   PCI_COMMAND_INVALIDATE|PCI_COMMAND_VGA_PALETTE| \
 			   PCI_COMMAND_WAIT|PCI_COMMAND_FAST_BACK)
@@ -113,7 +109,7 @@ static int command_write(struct pci_dev *dev, int offset, u16 value, void *data)
 	if (!xen_pcibk_permissive && (!dev_data || !dev_data->permissive))
 		return 0;
 
-	/* Only allow the guest to control certain bits. */
+	 
 	err = pci_read_config_word(dev, offset, &val);
 	if (err || val == value)
 		return err;
@@ -133,30 +129,25 @@ static int rom_write(struct pci_dev *dev, int offset, u32 value, void *data)
 		return XEN_PCI_ERR_op_failed;
 	}
 
-	/* A write to obtain the length must happen as a 32-bit write.
-	 * This does not (yet) support writing individual bytes
-	 */
+	 
 	if ((value | ~PCI_ROM_ADDRESS_MASK) == ~0U)
 		bar->which = 1;
 	else {
 		u32 tmpval;
 		pci_read_config_dword(dev, offset, &tmpval);
 		if (tmpval != bar->val && value == bar->val) {
-			/* Allow restoration of bar value. */
+			 
 			pci_write_config_dword(dev, offset, bar->val);
 		}
 		bar->which = 0;
 	}
 
-	/* Do we need to support enabling/disabling the rom address here? */
+	 
 
 	return 0;
 }
 
-/* For the BARs, only allow writes which write ~0 or
- * the correct resource information
- * (Needed for when the driver probes the resource usage)
- */
+ 
 static int bar_write(struct pci_dev *dev, int offset, u32 value, void *data)
 {
 	struct pci_bar_info *bar = data;
@@ -169,9 +160,7 @@ static int bar_write(struct pci_dev *dev, int offset, u32 value, void *data)
 		return XEN_PCI_ERR_op_failed;
 	}
 
-	/* A write to obtain the length must happen as a 32-bit write.
-	 * This does not (yet) support writing individual bytes
-	 */
+	 
 	if (res[pos].flags & IORESOURCE_IO)
 		mask = ~PCI_BASE_ADDRESS_IO_MASK;
 	else if (pos && (res[pos - 1].flags & IORESOURCE_MEM_64))
@@ -184,7 +173,7 @@ static int bar_write(struct pci_dev *dev, int offset, u32 value, void *data)
 		u32 tmpval;
 		pci_read_config_dword(dev, offset, &tmpval);
 		if (tmpval != bar->val && value == bar->val) {
-			/* Allow restoration of bar value. */
+			 
 			pci_write_config_dword(dev, offset, bar->val);
 		}
 		bar->which = 0;
@@ -221,10 +210,7 @@ static void *bar_init(struct pci_dev *dev, int offset)
 	else {
 		pos = (offset - PCI_BASE_ADDRESS_0) / 4;
 		if (pos && (res[pos - 1].flags & IORESOURCE_MEM_64)) {
-			/*
-			 * Use ">> 16 >> 16" instead of direct ">> 32" shift
-			 * to avoid warnings on 32-bit architectures.
-			 */
+			 
 			bar->val = res[pos - 1].start >> 16 >> 16;
 			bar->len_val = -resource_size(&res[pos - 1]) >> 16 >> 16;
 			return bar;
@@ -327,7 +313,7 @@ static const struct config_field header_common[] = {
 	 .u.b.read  = xen_pcibk_read_config_byte,
 	},
 	{
-	 /* Any side effects of letting driver domain control cache line? */
+	  
 	 .offset    = PCI_CACHE_LINE_SIZE,
 	 .size      = 1,
 	 .u.b.read  = xen_pcibk_read_config_byte,

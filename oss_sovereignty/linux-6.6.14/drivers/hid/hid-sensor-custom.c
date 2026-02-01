@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * hid-sensor-custom.c
- * Copyright (c) 2015, Intel Corporation.
- */
+
+ 
 
 #include <linux/ctype.h>
 #include <linux/dmi.h>
@@ -56,7 +53,7 @@ struct hid_sensor_custom {
 	struct platform_device *custom_pdev;
 };
 
-/* Header for each sample to user space via dev interface */
+ 
 struct hid_sensor_sample {
 	u32 usage_id;
 	u64 timestamp;
@@ -167,11 +164,7 @@ static int set_power_report_state(struct hid_sensor_custom *sensor_inst,
 	u32 report_state_usage_id;
 	int ret;
 
-	/*
-	 * It is possible that the power/report state ids are not present.
-	 * In this case this function will return success. But if the
-	 * ids are present, then it will return error if set fails.
-	 */
+	 
 	if (state) {
 		power_state_usage_id =
 			HID_USAGE_SENSOR_PROP_POWER_STATE_D0_FULL_POWER_ENUM;
@@ -421,7 +414,7 @@ static int hid_sensor_capture_sample(struct hid_sensor_hub_device *hsdev,
 	struct hid_sensor_custom *sensor_inst = platform_get_drvdata(priv);
 	struct hid_sensor_sample header;
 
-	/* If any error occurs in a sample, rest of the fields are ignored */
+	 
 	if (sensor_inst->input_skip_sample) {
 		hid_err(sensor_inst->hsdev->hdev, "Skipped remaining data\n");
 		return 0;
@@ -578,7 +571,7 @@ static int hid_sensor_custom_add_attributes(struct hid_sensor_custom
 
 	}
 
-	/* Create sysfs attributes */
+	 
 	for (i = 0; i < sensor_inst->sensor_field_count; ++i) {
 		j = 0;
 		while (j < HID_CUSTOM_TOTAL_ATTRS &&
@@ -612,7 +605,7 @@ static int hid_sensor_custom_add_attributes(struct hid_sensor_custom
 		if (ret)
 			break;
 
-		/* For power or report field store indexes */
+		 
 		if (sensor_inst->fields[i].attribute.attrib_id ==
 					HID_USAGE_SENSOR_PROY_POWER_STATE)
 			sensor_inst->power_state = &sensor_inst->fields[i];
@@ -688,7 +681,7 @@ static int hid_sensor_custom_open(struct inode *inode, struct file *file)
 
 	sensor_inst = container_of(file->private_data,
 				   struct hid_sensor_custom, custom_dev);
-	/* We essentially have single reader and writer */
+	 
 	if (test_and_set_bit(0, &sensor_inst->misc_opened))
 		return -EBUSY;
 
@@ -751,10 +744,7 @@ static void hid_sensor_custom_dev_if_remove(struct hid_sensor_custom
 
 }
 
-/*
- * Match a known custom sensor.
- * tag and luid is mandatory.
- */
+ 
 struct hid_sensor_custom_match {
 	const char *tag;
 	const char *luid;
@@ -764,9 +754,7 @@ struct hid_sensor_custom_match {
 	struct dmi_system_id dmi;
 };
 
-/*
- * Custom sensor properties used for matching.
- */
+ 
 struct hid_sensor_custom_properties {
 	u16 serial_num[HID_CUSTOM_MAX_FEATURE_BYTES];
 	u16 model[HID_CUSTOM_MAX_FEATURE_BYTES];
@@ -774,18 +762,14 @@ struct hid_sensor_custom_properties {
 };
 
 static const struct hid_sensor_custom_match hid_sensor_custom_known_table[] = {
-	/*
-	 * Intel Integrated Sensor Hub (ISH)
-	 */
-	{	/* Intel ISH hinge */
+	 
+	{	 
 		.tag = "INT",
 		.luid = "020B000000000000",
 		.manufacturer = "INTEL",
 	},
-	/*
-	 * Lenovo Intelligent Sensing Solution (LISS)
-	 */
-	{	/* ambient light */
+	 
+	{	 
 		.tag = "LISS",
 		.luid = "0041010200000082",
 		.model = "STK3X3X Sensor",
@@ -795,7 +779,7 @@ static const struct hid_sensor_custom_match hid_sensor_custom_known_table[] = {
 			DMI_MATCH(DMI_SYS_VENDOR, "LENOVO"),
 		}
 	},
-	{	/* human presence */
+	{	 
 		.tag = "LISS",
 		.luid = "0226000171AC0081",
 		.model = "VL53L1_HOD Sensor",
@@ -888,10 +872,7 @@ hid_sensor_custom_properties_get(struct hid_sensor_hub_device *hsdev,
 	if (ret < 0)
 		return ret;
 
-	/*
-	 * Ignore errors on the following model and manufacturer properties.
-	 * Because these are optional, it is not an error if they are missing.
-	 */
+	 
 
 	hid_sensor_custom_get_prop(hsdev, HID_USAGE_SENSOR_PROP_MODEL,
 				   HID_CUSTOM_MAX_FEATURE_BYTES,
@@ -947,11 +928,11 @@ hid_sensor_register_platform_device(struct platform_device *pdev,
 
 	memcpy(real_usage, match->luid, 4);
 
-	/* usage id are all lowcase */
+	 
 	for (c = real_usage; *c != '\0'; c++)
 		*c = tolower(*c);
 
-	/* HID-SENSOR-TAG-REAL_USAGE_ID */
+	 
 	dev_name = kasprintf(GFP_KERNEL, "HID-SENSOR-%s-%s",
 			     match->tag, real_usage);
 	if (!dev_name)
@@ -1058,7 +1039,7 @@ static const struct platform_device_id hid_sensor_custom_ids[] = {
 	{
 		.name = "HID-SENSOR-2000e2",
 	},
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(platform, hid_sensor_custom_ids);
 

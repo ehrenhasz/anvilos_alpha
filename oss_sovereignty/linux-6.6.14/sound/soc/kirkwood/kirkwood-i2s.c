@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * kirkwood-i2s.c
- *
- * (c) 2010 Arnaud Patard <apatard@mandriva.com>
- * (c) 2010 Arnaud Patard <arnaud.patard@rtp-net.org>
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/module.h>
@@ -31,9 +26,7 @@
 	(SNDRV_PCM_FMTBIT_S16_LE | \
 	 SNDRV_PCM_FMTBIT_S24_LE)
 
-/* These registers are relative to the second register region -
- * audio pll configuration.
- */
+ 
 #define A38X_PLL_CONF_REG0			0x0
 #define     A38X_PLL_FB_CLK_DIV_OFFSET		10
 #define     A38X_PLL_FB_CLK_DIV_MASK		0x7fc00
@@ -44,9 +37,7 @@
 #define A38X_PLL_CONF_REG2			0x8
 #define     A38X_PLL_AUDIO_POSTDIV_MASK		0x7f
 
-/* Bit below belongs to SoC control register corresponding to the third
- * register region.
- */
+ 
 #define A38X_SPDIF_MODE_ENABLE			BIT(27)
 
 static int armada_38x_i2s_init_quirk(struct platform_device *pdev,
@@ -65,7 +56,7 @@ static int armada_38x_i2s_init_quirk(struct platform_device *pdev,
 	if (IS_ERR(priv->soc_control))
 		return -ENOMEM;
 
-	/* Select one of exceptive modes: I2S or S/PDIF */
+	 
 	reg_val = readl(priv->soc_control);
 	if (of_property_read_bool(np, "spdif-mode")) {
 		reg_val |= A38X_SPDIF_MODE_ENABLE;
@@ -76,7 +67,7 @@ static int armada_38x_i2s_init_quirk(struct platform_device *pdev,
 	}
 	writel(reg_val, priv->soc_control);
 
-	/* Update available rates of mclk's fs */
+	 
 	for (i = 0; i < 2; i++) {
 		dai_drv[i].playback.rates |= SNDRV_PCM_RATE_192000;
 		dai_drv[i].capture.rates |= SNDRV_PCM_RATE_192000;
@@ -91,7 +82,7 @@ static inline void armada_38x_set_pll(void __iomem *base, unsigned long rate)
 	u16 freq_offset = 0x22b0;
 	u8 audio_postdiv, fb_clk_div = 0x1d;
 
-	/* Set frequency offset value to not valid and enable PLL reset */
+	 
 	reg_val = readl(base + A38X_PLL_CONF_REG1);
 	reg_val &= ~A38X_PLL_FREQ_OFFSET_VALID;
 	reg_val &= ~A38X_PLL_SW_RESET;
@@ -99,7 +90,7 @@ static inline void armada_38x_set_pll(void __iomem *base, unsigned long rate)
 
 	udelay(1);
 
-	/* Update PLL parameters */
+	 
 	switch (rate) {
 	default:
 	case 44100:
@@ -135,14 +126,14 @@ static inline void armada_38x_set_pll(void __iomem *base, unsigned long rate)
 
 	udelay(1);
 
-	/* Disable reset */
+	 
 	reg_val |= A38X_PLL_SW_RESET;
 	writel(reg_val, base + A38X_PLL_CONF_REG1);
 
-	/* Wait 50us for PLL to lock */
+	 
 	udelay(50);
 
-	/* Restore frequency offset value validity */
+	 
 	reg_val |= A38X_PLL_FREQ_OFFSET_VALID;
 	writel(reg_val, base + A38X_PLL_CONF_REG1);
 }
@@ -168,10 +159,7 @@ static int kirkwood_i2s_set_fmt(struct snd_soc_dai *cpu_dai,
 		return -EINVAL;
 	}
 
-	/*
-	 * Set same format for playback and record
-	 * This avoids some troubles.
-	 */
+	 
 	value = readl(priv->io+KIRKWOOD_I2S_PLAYCTL);
 	value &= ~KIRKWOOD_I2S_CTL_JUST_MASK;
 	value |= mask;
@@ -204,7 +192,7 @@ static inline void kirkwood_set_dco(void __iomem *io, unsigned long rate)
 	}
 	writel(value, io + KIRKWOOD_DCO_CTL);
 
-	/* wait for dco locked */
+	 
 	do {
 		cpu_relax();
 		value = readl(io + KIRKWOOD_DCO_SPCR_STATUS);
@@ -218,8 +206,7 @@ static void kirkwood_set_rate(struct snd_soc_dai *dai,
 	uint32_t clks_ctrl;
 
 	if (IS_ERR(priv->extclk)) {
-		/* use internal dco for the supported rates
-		 * defined in kirkwood_i2s_dai */
+		 
 		dev_dbg(dai->dev, "%s: dco set rate = %lu\n",
 			__func__, rate);
 		if (priv->pll_config)
@@ -229,8 +216,7 @@ static void kirkwood_set_rate(struct snd_soc_dai *dai,
 
 		clks_ctrl = KIRKWOOD_MCLK_SOURCE_DCO;
 	} else {
-		/* use the external clock for the other rates
-		 * defined in kirkwood_i2s_dai_extclk */
+		 
 		dev_dbg(dai->dev, "%s: extclk set rate = %lu -> %lu\n",
 			__func__, rate, 256 * rate);
 		clk_set_rate(priv->extclk, 256 * rate);
@@ -269,10 +255,7 @@ static int kirkwood_i2s_hw_params(struct snd_pcm_substream *substream,
 	i2s_value = readl(priv->io+i2s_reg);
 	i2s_value &= ~KIRKWOOD_I2S_CTL_SIZE_MASK;
 
-	/*
-	 * Size settings in play/rec i2s control regs and play/rec control
-	 * regs must be the same.
-	 */
+	 
 	switch (params_format(params)) {
 	case SNDRV_PCM_FORMAT_S16_LE:
 		i2s_value |= KIRKWOOD_I2S_CTL_SIZE_16;
@@ -283,17 +266,7 @@ static int kirkwood_i2s_hw_params(struct snd_pcm_substream *substream,
 			  KIRKWOOD_RECCTL_I2S_EN |
 			  KIRKWOOD_RECCTL_SPDIF_EN;
 		break;
-	/*
-	 * doesn't work... S20_3LE != kirkwood 20bit format ?
-	 *
-	case SNDRV_PCM_FORMAT_S20_3LE:
-		i2s_value |= KIRKWOOD_I2S_CTL_SIZE_20;
-		ctl_play = KIRKWOOD_PLAYCTL_SIZE_20 |
-			   KIRKWOOD_PLAYCTL_I2S_EN;
-		ctl_rec = KIRKWOOD_RECCTL_SIZE_20 |
-			  KIRKWOOD_RECCTL_I2S_EN;
-		break;
-	*/
+	 
 	case SNDRV_PCM_FORMAT_S24_LE:
 		i2s_value |= KIRKWOOD_I2S_CTL_SIZE_24;
 		ctl_play = KIRKWOOD_PLAYCTL_SIZE_24 |
@@ -354,11 +327,7 @@ static int kirkwood_i2s_play_trigger(struct snd_pcm_substream *substream,
 	ctl = readl(priv->io + KIRKWOOD_PLAYCTL);
 	if ((ctl & KIRKWOOD_PLAYCTL_ENABLE_MASK) == 0) {
 		unsigned timeout = 5000;
-		/*
-		 * The Armada510 spec says that if we enter pause mode, the
-		 * busy bit must be read back as clear _twice_.  Make sure
-		 * we respect that otherwise we get DMA underruns.
-		 */
+		 
 		do {
 			value = ctl;
 			ctl = readl(priv->io + KIRKWOOD_PLAYCTL);
@@ -374,29 +343,29 @@ static int kirkwood_i2s_play_trigger(struct snd_pcm_substream *substream,
 
 	switch (cmd) {
 	case SNDRV_PCM_TRIGGER_START:
-		/* configure */
+		 
 		ctl = priv->ctl_play;
 		if (dai->id == 0)
-			ctl &= ~KIRKWOOD_PLAYCTL_SPDIF_EN;	/* i2s */
+			ctl &= ~KIRKWOOD_PLAYCTL_SPDIF_EN;	 
 		else
-			ctl &= ~KIRKWOOD_PLAYCTL_I2S_EN;	/* spdif */
+			ctl &= ~KIRKWOOD_PLAYCTL_I2S_EN;	 
 		ctl = kirkwood_i2s_play_mute(ctl);
 		value = ctl & ~KIRKWOOD_PLAYCTL_ENABLE_MASK;
 		writel(value, priv->io + KIRKWOOD_PLAYCTL);
 
-		/* enable interrupts */
+		 
 		if (!runtime->no_period_wakeup) {
 			value = readl(priv->io + KIRKWOOD_INT_MASK);
 			value |= KIRKWOOD_INT_CAUSE_PLAY_BYTES;
 			writel(value, priv->io + KIRKWOOD_INT_MASK);
 		}
 
-		/* enable playback */
+		 
 		writel(ctl, priv->io + KIRKWOOD_PLAYCTL);
 		break;
 
 	case SNDRV_PCM_TRIGGER_STOP:
-		/* stop audio, disable interrupts */
+		 
 		ctl |= KIRKWOOD_PLAYCTL_PAUSE | KIRKWOOD_PLAYCTL_I2S_MUTE |
 				KIRKWOOD_PLAYCTL_SPDIF_MUTE;
 		writel(ctl, priv->io + KIRKWOOD_PLAYCTL);
@@ -405,7 +374,7 @@ static int kirkwood_i2s_play_trigger(struct snd_pcm_substream *substream,
 		value &= ~KIRKWOOD_INT_CAUSE_PLAY_BYTES;
 		writel(value, priv->io + KIRKWOOD_INT_MASK);
 
-		/* disable all playbacks */
+		 
 		ctl &= ~KIRKWOOD_PLAYCTL_ENABLE_MASK;
 		writel(ctl, priv->io + KIRKWOOD_PLAYCTL);
 		break;
@@ -442,27 +411,27 @@ static int kirkwood_i2s_rec_trigger(struct snd_pcm_substream *substream,
 
 	switch (cmd) {
 	case SNDRV_PCM_TRIGGER_START:
-		/* configure */
+		 
 		ctl = priv->ctl_rec;
 		if (dai->id == 0)
-			ctl &= ~KIRKWOOD_RECCTL_SPDIF_EN;	/* i2s */
+			ctl &= ~KIRKWOOD_RECCTL_SPDIF_EN;	 
 		else
-			ctl &= ~KIRKWOOD_RECCTL_I2S_EN;		/* spdif */
+			ctl &= ~KIRKWOOD_RECCTL_I2S_EN;		 
 
 		value = ctl & ~KIRKWOOD_RECCTL_ENABLE_MASK;
 		writel(value, priv->io + KIRKWOOD_RECCTL);
 
-		/* enable interrupts */
+		 
 		value = readl(priv->io + KIRKWOOD_INT_MASK);
 		value |= KIRKWOOD_INT_CAUSE_REC_BYTES;
 		writel(value, priv->io + KIRKWOOD_INT_MASK);
 
-		/* enable record */
+		 
 		writel(ctl, priv->io + KIRKWOOD_RECCTL);
 		break;
 
 	case SNDRV_PCM_TRIGGER_STOP:
-		/* stop audio, disable interrupts */
+		 
 		value = readl(priv->io + KIRKWOOD_RECCTL);
 		value |= KIRKWOOD_RECCTL_PAUSE | KIRKWOOD_RECCTL_MUTE;
 		writel(value, priv->io + KIRKWOOD_RECCTL);
@@ -471,7 +440,7 @@ static int kirkwood_i2s_rec_trigger(struct snd_pcm_substream *substream,
 		value &= ~KIRKWOOD_INT_CAUSE_REC_BYTES;
 		writel(value, priv->io + KIRKWOOD_INT_MASK);
 
-		/* disable all records */
+		 
 		value = readl(priv->io + KIRKWOOD_RECCTL);
 		value &= ~KIRKWOOD_RECCTL_ENABLE_MASK;
 		writel(value, priv->io + KIRKWOOD_RECCTL);
@@ -514,8 +483,8 @@ static int kirkwood_i2s_init(struct kirkwood_dma_data *priv)
 	unsigned long value;
 	unsigned int reg_data;
 
-	/* put system in a "safe" state : */
-	/* disable audio interrupts */
+	 
+	 
 	writel(0xffffffff, priv->io + KIRKWOOD_INT_CAUSE);
 	writel(0, priv->io + KIRKWOOD_INT_MASK);
 
@@ -531,7 +500,7 @@ static int kirkwood_i2s_init(struct kirkwood_dma_data *priv)
 	reg_data |= 0x111D18;
 	writel(reg_data, priv->io + 0x1200);
 
-	/* disable playback/record */
+	 
 	value = readl(priv->io + KIRKWOOD_PLAYCTL);
 	value &= ~KIRKWOOD_PLAYCTL_ENABLE_MASK;
 	writel(value, priv->io + KIRKWOOD_PLAYCTL);
@@ -666,12 +635,12 @@ static int kirkwood_i2s_dev_probe(struct platform_device *pdev)
 		err = armada_38x_i2s_init_quirk(pdev, priv, soc_dai);
 		if (err < 0)
 			return err;
-		/* Set initial pll frequency */
+		 
 		armada_38x_set_pll(priv->pll_config, 44100);
 	}
 
 	if (np) {
-		priv->burst = 128;		/* might be 32 or 128 */
+		priv->burst = 128;		 
 	} else if (data) {
 		priv->burst = data->burst;
 	} else {
@@ -704,11 +673,11 @@ static int kirkwood_i2s_dev_probe(struct platform_device *pdev)
 	if (err < 0)
 		return err;
 
-	/* Some sensible defaults - this reflects the powerup values */
+	 
 	priv->ctl_play = KIRKWOOD_PLAYCTL_SIZE_24;
 	priv->ctl_rec = KIRKWOOD_RECCTL_SIZE_24;
 
-	/* Select the burst size */
+	 
 	if (priv->burst == 32) {
 		priv->ctl_play |= KIRKWOOD_PLAYCTL_BURST_32;
 		priv->ctl_rec |= KIRKWOOD_RECCTL_BURST_32;
@@ -768,7 +737,7 @@ static struct platform_driver kirkwood_i2s_driver = {
 
 module_platform_driver(kirkwood_i2s_driver);
 
-/* Module information */
+ 
 MODULE_AUTHOR("Arnaud Patard, <arnaud.patard@rtp-net.org>");
 MODULE_DESCRIPTION("Kirkwood I2S SoC Interface");
 MODULE_LICENSE("GPL");

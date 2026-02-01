@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Central probing code for the FOTG210 dual role driver
- * We register one driver for the hardware and then we decide
- * whether to proceed with probing the host or the peripheral
- * driver.
- */
+
+ 
 #include <linux/bitops.h>
 #include <linux/clk.h>
 #include <linux/device.h>
@@ -18,19 +13,12 @@
 
 #include "fotg210.h"
 
-/* Role Register 0x80 */
+ 
 #define FOTG210_RR			0x80
-#define FOTG210_RR_ID			BIT(21) /* 1 = B-device, 0 = A-device */
-#define FOTG210_RR_CROLE		BIT(20) /* 1 = device, 0 = host */
+#define FOTG210_RR_ID			BIT(21)  
+#define FOTG210_RR_CROLE		BIT(20)  
 
-/*
- * Gemini-specific initialization function, only executed on the
- * Gemini SoC using the global misc control register.
- *
- * The gemini USB blocks are connected to either Mini-A (host mode) or
- * Mini-B (peripheral mode) plugs. There is no role switch support on the
- * Gemini SoC, just either-or.
- */
+ 
 #define GEMINI_GLOBAL_MISC_CTRL		0x30
 #define GEMINI_MISC_USB0_WAKEUP		BIT(14)
 #define GEMINI_MISC_USB1_WAKEUP		BIT(15)
@@ -55,10 +43,7 @@ static int fotg210_gemini_init(struct fotg210 *fotg, struct resource *res,
 	fotg->map = map;
 	wakeup = of_property_read_bool(np, "wakeup-source");
 
-	/*
-	 * Figure out if this is USB0 or USB1 by simply checking the
-	 * physical base address.
-	 */
+	 
 	mask = 0;
 	if (res->start == 0x69000000) {
 		fotg->port = GEMINI_PORT_1;
@@ -93,10 +78,7 @@ static int fotg210_gemini_init(struct fotg210 *fotg, struct resource *res,
 	return 0;
 }
 
-/**
- * fotg210_vbus() - Called by gadget driver to enable/disable VBUS
- * @enable: true to enable VBUS, false to disable VBUS
- */
+ 
 void fotg210_vbus(struct fotg210 *fotg, bool enable)
 {
 	u32 mask;
@@ -182,7 +164,7 @@ static void fotg210_remove(struct platform_device *pdev)
 static const struct of_device_id fotg210_of_match[] = {
 	{ .compatible = "faraday,fotg200" },
 	{ .compatible = "faraday,fotg210" },
-	/* TODO: can we also handle FUSB220? */
+	 
 	{},
 };
 MODULE_DEVICE_TABLE(of, fotg210_of_match);

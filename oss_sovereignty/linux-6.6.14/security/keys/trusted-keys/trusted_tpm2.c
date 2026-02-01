@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2004 IBM Corporation
- * Copyright (C) 2014 Intel Corporation
- */
+
+ 
 
 #include <linux/asn1_encoder.h>
 #include <linux/oid_registry.h>
@@ -55,19 +52,14 @@ static int tpm2_key_encode(struct trusted_key_payload *payload,
 
 	if (options->blobauth_len == 0) {
 		unsigned char bool[3], *w = bool;
-		/* tag 0 is emptyAuth */
+		 
 		w = asn1_encode_boolean(w, w + sizeof(bool), true);
 		if (WARN(IS_ERR(w), "BUG: Boolean failed to encode"))
 			return PTR_ERR(w);
 		work = asn1_encode_tag(work, end_work, 0, bool, w - bool);
 	}
 
-	/*
-	 * Assume both octet strings will encode to a 2 byte definite length
-	 *
-	 * Note: For a well behaved TPM, this warning should never
-	 * trigger, so if it does there's something nefarious going on
-	 */
+	 
 	if (WARN(work - scratch + pub_len + priv_len + 14 > SCRATCH_SIZE,
 		 "BUG: scratch buffer is too small"))
 		return -EINVAL;
@@ -185,17 +177,7 @@ int tpm2_key_priv(void *context, size_t hdrlen,
 	return 0;
 }
 
-/**
- * tpm2_buf_append_auth() - append TPMS_AUTH_COMMAND to the buffer.
- *
- * @buf: an allocated tpm_buf instance
- * @session_handle: session handle
- * @nonce: the session nonce, may be NULL if not used
- * @nonce_len: the session nonce length, may be 0 if not used
- * @attributes: the session attributes
- * @hmac: the session HMAC or password, may be NULL if not used
- * @hmac_len: the session HMAC or password length, maybe 0 if not used
- */
+ 
 static void tpm2_buf_append_auth(struct tpm_buf *buf, u32 session_handle,
 				 const u8 *nonce, u16 nonce_len,
 				 u8 attributes,
@@ -215,15 +197,7 @@ static void tpm2_buf_append_auth(struct tpm_buf *buf, u32 session_handle,
 		tpm_buf_append(buf, hmac, hmac_len);
 }
 
-/**
- * tpm2_seal_trusted() - seal the payload of a trusted key
- *
- * @chip: TPM chip to use
- * @payload: the key data in clear and encrypted form
- * @options: authentication values and other options
- *
- * Return: < 0 on error and 0 on success.
- */
+ 
 int tpm2_seal_trusted(struct tpm_chip *chip,
 		      struct trusted_key_payload *payload,
 		      struct trusted_key_options *options)
@@ -260,12 +234,12 @@ int tpm2_seal_trusted(struct tpm_chip *chip,
 
 	tpm_buf_append_u32(&buf, options->keyhandle);
 	tpm2_buf_append_auth(&buf, TPM2_RS_PW,
-			     NULL /* nonce */, 0,
-			     0 /* session_attributes */,
-			     options->keyauth /* hmac */,
+			     NULL  , 0,
+			     0  ,
+			     options->keyauth  ,
 			     TPM_DIGEST_SIZE);
 
-	/* sensitive */
+	 
 	tpm_buf_append_u16(&buf, 4 + options->blobauth_len + payload->key_len);
 
 	tpm_buf_append_u16(&buf, options->blobauth_len);
@@ -275,32 +249,32 @@ int tpm2_seal_trusted(struct tpm_chip *chip,
 	tpm_buf_append_u16(&buf, payload->key_len);
 	tpm_buf_append(&buf, payload->key, payload->key_len);
 
-	/* public */
+	 
 	tpm_buf_append_u16(&buf, 14 + options->policydigest_len);
 	tpm_buf_append_u16(&buf, TPM_ALG_KEYEDHASH);
 	tpm_buf_append_u16(&buf, hash);
 
-	/* key properties */
+	 
 	flags = 0;
 	flags |= options->policydigest_len ? 0 : TPM2_OA_USER_WITH_AUTH;
 	flags |= payload->migratable ? 0 : (TPM2_OA_FIXED_TPM |
 					    TPM2_OA_FIXED_PARENT);
 	tpm_buf_append_u32(&buf, flags);
 
-	/* policy */
+	 
 	tpm_buf_append_u16(&buf, options->policydigest_len);
 	if (options->policydigest_len)
 		tpm_buf_append(&buf, options->policydigest,
 			       options->policydigest_len);
 
-	/* public parameters */
+	 
 	tpm_buf_append_u16(&buf, TPM_ALG_NULL);
 	tpm_buf_append_u16(&buf, 0);
 
-	/* outside info */
+	 
 	tpm_buf_append_u16(&buf, 0);
 
-	/* creation PCR */
+	 
 	tpm_buf_append_u32(&buf, 0);
 
 	if (buf.flags & TPM_BUF_OVERFLOW) {
@@ -344,19 +318,7 @@ out:
 	return rc;
 }
 
-/**
- * tpm2_load_cmd() - execute a TPM2_Load command
- *
- * @chip: TPM chip to use
- * @payload: the key data in clear and encrypted form
- * @options: authentication values and other options
- * @blob_handle: returned blob handle
- *
- * Return: 0 on success.
- *        -E2BIG on wrong payload size.
- *        -EPERM on tpm error status.
- *        < 0 error from tpm_send.
- */
+ 
 static int tpm2_load_cmd(struct tpm_chip *chip,
 			 struct trusted_key_payload *payload,
 			 struct trusted_key_options *options,
@@ -372,22 +334,22 @@ static int tpm2_load_cmd(struct tpm_chip *chip,
 
 	rc = tpm2_key_decode(payload, options, &blob);
 	if (rc) {
-		/* old form */
+		 
 		blob = payload->blob;
 		payload->old_format = 1;
 	}
 
-	/* new format carries keyhandle but old format doesn't */
+	 
 	if (!options->keyhandle)
 		return -EINVAL;
 
-	/* must be big enough for at least the two be16 size counts */
+	 
 	if (payload->blob_len < 4)
 		return -EINVAL;
 
 	private_len = get_unaligned_be16(blob);
 
-	/* must be big enough for following public_len */
+	 
 	if (private_len + 2 + 2 > (payload->blob_len))
 		return -E2BIG;
 
@@ -396,7 +358,7 @@ static int tpm2_load_cmd(struct tpm_chip *chip,
 		return -E2BIG;
 
 	pub = blob + 2 + private_len + 2;
-	/* key attributes are always at offset 4 */
+	 
 	attrs = get_unaligned_be32(pub + 4);
 
 	if ((attrs & (TPM2_OA_FIXED_TPM | TPM2_OA_FIXED_PARENT)) ==
@@ -415,9 +377,9 @@ static int tpm2_load_cmd(struct tpm_chip *chip,
 
 	tpm_buf_append_u32(&buf, options->keyhandle);
 	tpm2_buf_append_auth(&buf, TPM2_RS_PW,
-			     NULL /* nonce */, 0,
-			     0 /* session_attributes */,
-			     options->keyauth /* hmac */,
+			     NULL  , 0,
+			     0  ,
+			     options->keyauth  ,
 			     TPM_DIGEST_SIZE);
 
 	tpm_buf_append(&buf, blob, blob_len);
@@ -443,18 +405,7 @@ out:
 	return rc;
 }
 
-/**
- * tpm2_unseal_cmd() - execute a TPM2_Unload command
- *
- * @chip: TPM chip to use
- * @payload: the key data in clear and encrypted form
- * @options: authentication values and other options
- * @blob_handle: blob handle
- *
- * Return: 0 on success
- *         -EPERM on tpm error status
- *         < 0 error from tpm_send
- */
+ 
 static int tpm2_unseal_cmd(struct tpm_chip *chip,
 			   struct trusted_key_payload *payload,
 			   struct trusted_key_options *options,
@@ -473,9 +424,9 @@ static int tpm2_unseal_cmd(struct tpm_chip *chip,
 	tpm2_buf_append_auth(&buf,
 			     options->policyhandle ?
 			     options->policyhandle : TPM2_RS_PW,
-			     NULL /* nonce */, 0,
+			     NULL  , 0,
 			     TPM2_SA_CONTINUE_SESSION,
-			     options->blobauth /* hmac */,
+			     options->blobauth  ,
 			     options->blobauth_len);
 
 	rc = tpm_transmit_cmd(chip, &buf, 6, "unsealing");
@@ -497,15 +448,12 @@ static int tpm2_unseal_cmd(struct tpm_chip *chip,
 		data = &buf.data[TPM_HEADER_SIZE + 6];
 
 		if (payload->old_format) {
-			/* migratable flag is at the end of the key */
+			 
 			memcpy(payload->key, data, data_len - 1);
 			payload->key_len = data_len - 1;
 			payload->migratable = data[data_len - 1];
 		} else {
-			/*
-			 * migratable flag already collected from key
-			 * attributes
-			 */
+			 
 			memcpy(payload->key, data, data_len);
 			payload->key_len = data_len;
 		}
@@ -516,15 +464,7 @@ out:
 	return rc;
 }
 
-/**
- * tpm2_unseal_trusted() - unseal the payload of a trusted key
- *
- * @chip: TPM chip to use
- * @payload: the key data in clear and encrypted form
- * @options: authentication values and other options
- *
- * Return: Same as with tpm_send.
- */
+ 
 int tpm2_unseal_trusted(struct tpm_chip *chip,
 			struct trusted_key_payload *payload,
 			struct trusted_key_options *options)

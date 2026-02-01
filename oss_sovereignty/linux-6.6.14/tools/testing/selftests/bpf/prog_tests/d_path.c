@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #define _GNU_SOURCE
 #include <test_progs.h>
 #include <sys/stat.h>
@@ -12,9 +12,7 @@
 #include "test_d_path_check_rdonly_mem.skel.h"
 #include "test_d_path_check_types.skel.h"
 
-/* sys_close_range is not around for long time, so let's
- * make sure we can call it on systems with older glibc
- */
+ 
 #ifndef __NR_close_range
 #ifdef __alpha__
 #define __NR_close_range 546
@@ -46,14 +44,14 @@ static int trigger_fstat_events(pid_t pid)
 	struct stat fileStat;
 	int ret = -1;
 
-	/* unmountable pseudo-filesystems */
+	 
 	if (CHECK(pipe(pipefd) < 0, "trigger", "pipe failed\n"))
 		return ret;
-	/* unmountable pseudo-filesystems */
+	 
 	sockfd = socket(AF_INET, SOCK_STREAM, 0);
 	if (CHECK(sockfd < 0, "trigger", "socket failed\n"))
 		goto out_close;
-	/* mountable pseudo-filesystems */
+	 
 	procfd = open("/proc/self/comm", O_RDONLY);
 	if (CHECK(procfd < 0, "trigger", "open /proc/self/comm failed\n"))
 		goto out_close;
@@ -63,7 +61,7 @@ static int trigger_fstat_events(pid_t pid)
 	localfd = open("/tmp/d_path_loadgen.txt", O_CREAT | O_RDONLY, 0644);
 	if (CHECK(localfd < 0, "trigger", "open /tmp/d_path_loadgen.txt failed\n"))
 		goto out_close;
-	/* bpf_d_path will return path with (deleted) */
+	 
 	remove("/tmp/d_path_loadgen.txt");
 	indicatorfd = open("/tmp/", O_PATH);
 	if (CHECK(indicatorfd < 0, "trigger", "open /tmp/ failed\n"))
@@ -91,7 +89,7 @@ static int trigger_fstat_events(pid_t pid)
 	if (CHECK(ret < 0, "trigger", "set_pathname failed for dir\n"))
 		goto out_close;
 
-	/* triggers vfs_getattr */
+	 
 	fstat(pipefd[0], &fileStat);
 	fstat(pipefd[1], &fileStat);
 	fstat(sockfd, &fileStat);
@@ -101,9 +99,7 @@ static int trigger_fstat_events(pid_t pid)
 	fstat(indicatorfd, &fileStat);
 
 out_close:
-	/* sys_close no longer triggers filp_close, but we can
-	 * call sys_close_range instead which still does
-	 */
+	 
 #define close(fd) syscall(__NR_close_range, fd, fd, 0)
 
 	close(pipefd[0]);
@@ -158,7 +154,7 @@ static void test_d_path_basic(void)
 		      "check",
 		      "failed to get close path[%d]: %s vs %s\n",
 		      i, src.paths[i], bss->paths_close[i]);
-		/* The d_path helper returns size plus NUL char, hence + 1 */
+		 
 		CHECK(bss->rets_stat[i] != strlen(bss->paths_stat[i]) + 1,
 		      "check",
 		      "failed to match stat return [%d]: %d vs %zd [%s]\n",

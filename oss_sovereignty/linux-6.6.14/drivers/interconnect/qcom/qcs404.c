@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2019 Linaro Ltd
- */
+
+ 
 
 #include <dt-bindings/interconnect/qcom,qcs404.h>
 #include <linux/device.h>

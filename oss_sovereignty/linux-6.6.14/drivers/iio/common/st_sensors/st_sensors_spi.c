@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * STMicroelectronics sensors spi library driver
- *
- * Copyright 2012-2013 STMicroelectronics Inc.
- *
- * Denis Ciocca <denis.ciocca@st.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -29,12 +23,7 @@ static const struct regmap_config st_sensors_spi_regmap_multiread_bit_config = {
 	.read_flag_mask = ST_SENSORS_SPI_MULTIREAD,
 };
 
-/*
- * st_sensors_is_spi_3_wire() - check if SPI 3-wire mode has been selected
- * @spi: spi device reference.
- *
- * Return: true if SPI 3-wire mode is selected, false otherwise.
- */
+ 
 static bool st_sensors_is_spi_3_wire(struct spi_device *spi)
 {
 	struct st_sensors_platform_data *pdata;
@@ -50,13 +39,7 @@ static bool st_sensors_is_spi_3_wire(struct spi_device *spi)
 	return false;
 }
 
-/*
- * st_sensors_configure_spi_3_wire() - configure SPI 3-wire if needed
- * @spi: spi device reference.
- * @settings: sensor specific settings reference.
- *
- * Return: 0 on success, else a negative error code.
- */
+ 
 static int st_sensors_configure_spi_3_wire(struct spi_device *spi,
 					   struct st_sensor_settings *settings)
 {
@@ -72,13 +55,7 @@ static int st_sensors_configure_spi_3_wire(struct spi_device *spi,
 	return 0;
 }
 
-/*
- * st_sensors_spi_configure() - configure SPI interface
- * @indio_dev: IIO device reference.
- * @spi: spi device reference.
- *
- * Return: 0 on success, else a negative error code.
- */
+ 
 int st_sensors_spi_configure(struct iio_dev *indio_dev,
 			     struct spi_device *spi)
 {

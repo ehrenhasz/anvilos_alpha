@@ -1,31 +1,6 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
-/*
- * Copyright 2009 Sun Microsystems, Inc.  All rights reserved.
- * Use is subject to license terms.
- */
-/*
- * Copyright (c) 2013, 2019 by Delphix. All rights reserved.
- * Copyright (c) 2015, Nexenta Systems, Inc. All rights reserved.
- */
+ 
+ 
+ 
 
 #include <sys/zfs_context.h>
 #include <sys/spa.h>
@@ -34,46 +9,7 @@
 #include <sys/zio.h>
 #include <sys/range_tree.h>
 
-/*
- * Range trees are tree-based data structures that can be used to
- * track free space or generally any space allocation information.
- * A range tree keeps track of individual segments and automatically
- * provides facilities such as adjacent extent merging and extent
- * splitting in response to range add/remove requests.
- *
- * A range tree starts out completely empty, with no segments in it.
- * Adding an allocation via range_tree_add to the range tree can either:
- * 1) create a new extent
- * 2) extend an adjacent extent
- * 3) merge two adjacent extents
- * Conversely, removing an allocation via range_tree_remove can:
- * 1) completely remove an extent
- * 2) shorten an extent (if the allocation was near one of its ends)
- * 3) split an extent into two extents, in effect punching a hole
- *
- * A range tree is also capable of 'bridging' gaps when adding
- * allocations. This is useful for cases when close proximity of
- * allocations is an important detail that needs to be represented
- * in the range tree. See range_tree_set_gap(). The default behavior
- * is not to bridge gaps (i.e. the maximum allowed gap size is 0).
- *
- * In order to traverse a range tree, use either the range_tree_walk()
- * or range_tree_vacate() functions.
- *
- * To obtain more accurate information on individual segment
- * operations that the range tree performs "under the hood", you can
- * specify a set of callbacks by passing a range_tree_ops_t structure
- * to the range_tree_create function. Any callbacks that are non-NULL
- * are then called at the appropriate times.
- *
- * The range tree code also supports a special variant of range trees
- * that can bridge small gaps between segments. This kind of tree is used
- * by the dsl scanning code to group I/Os into mostly sequential chunks to
- * optimize disk performance. The code here attempts to do this with as
- * little memory and computational overhead as possible. One limitation of
- * this implementation is that segments of range trees with gaps can only
- * support removing complete segments.
- */
+ 
 
 static inline void
 rs_copy(range_seg_t *src, range_seg_t *dest, range_tree_t *rt)
@@ -306,14 +242,7 @@ range_tree_add_impl(void *arg, uint64_t start, uint64_t size, uint64_t fill)
 	rs_set_end(&rsearch, rt, end);
 	rs = zfs_btree_find(&rt->rt_root, &rsearch, &where);
 
-	/*
-	 * If this is a gap-supporting range tree, it is possible that we
-	 * are inserting into an existing segment. In this case simply
-	 * bump the fill count and call the remove / add callbacks. If the
-	 * new range will extend an existing segment, we remove the
-	 * existing one, apply the new extent to it and re-insert it using
-	 * the normal code paths.
-	 */
+	 
 	if (rs != NULL) {
 		if (gap == 0) {
 			zfs_panic_recover("zfs: adding existent segment to "
@@ -346,11 +275,7 @@ range_tree_add_impl(void *arg, uint64_t start, uint64_t size, uint64_t fill)
 
 	ASSERT3P(rs, ==, NULL);
 
-	/*
-	 * Determine whether or not we will have to merge with our neighbors.
-	 * If gap != 0, we might need to merge with our neighbors even if we
-	 * aren't directly touching.
-	 */
+	 
 	zfs_btree_index_t where_before, where_after;
 	rs_before = zfs_btree_prev(&rt->rt_root, &where, &where_before);
 	rs_after = zfs_btree_next(&rt->rt_root, &where, &where_after);
@@ -380,10 +305,7 @@ range_tree_add_impl(void *arg, uint64_t start, uint64_t size, uint64_t fill)
 		uint64_t after_fill = rs_get_fill(rs_after, rt);
 		zfs_btree_remove_idx(&rt->rt_root, &where_before);
 
-		/*
-		 * We have to re-find the node because our old reference is
-		 * invalid as soon as we do any mutating btree operations.
-		 */
+		 
 		rs_after = zfs_btree_find(&rt->rt_root, &tmp, &where_after);
 		ASSERT3P(rs_after, !=, NULL);
 		rs_set_start_raw(rs_after, rt, before_start);
@@ -458,7 +380,7 @@ range_tree_remove_impl(range_tree_t *rt, uint64_t start, uint64_t size,
 	rs_set_end(&rsearch, rt, end);
 	rs = zfs_btree_find(&rt->rt_root, &rsearch, &where);
 
-	/* Make sure we completely overlap with someone */
+	 
 	if (rs == NULL) {
 		zfs_panic_recover("zfs: removing nonexistent segment from "
 		    "range tree (offset=%llx size=%llx)",
@@ -466,12 +388,7 @@ range_tree_remove_impl(range_tree_t *rt, uint64_t start, uint64_t size,
 		return;
 	}
 
-	/*
-	 * Range trees with gap support must only remove complete segments
-	 * from the tree. This allows us to maintain accurate fill accounting
-	 * and to ensure that bridged sections are not leaked. If we need to
-	 * remove less than the full segment, we can only adjust the fill count.
-	 */
+	 
 	if (rt->rt_gap != 0) {
 		if (do_fill) {
 			if (rs_get_fill(rs, rt) == size) {
@@ -513,7 +430,7 @@ range_tree_remove_impl(range_tree_t *rt, uint64_t start, uint64_t size,
 		rs_set_fill(&newseg, rt, rs_get_end(rs, rt) - end);
 		range_tree_stat_incr(rt, &newseg);
 
-		// This modifies the buffer already inside the range tree
+		 
 		rs_set_end(rs, rt, start);
 
 		rs_copy(rs, &rs_tmp, rt);
@@ -525,11 +442,11 @@ range_tree_remove_impl(range_tree_t *rt, uint64_t start, uint64_t size,
 		if (rt->rt_ops != NULL && rt->rt_ops->rtop_add != NULL)
 			rt->rt_ops->rtop_add(rt, &newseg, rt->rt_arg);
 	} else if (left_over) {
-		// This modifies the buffer already inside the range tree
+		 
 		rs_set_end(rs, rt, start);
 		rs_copy(rs, &rs_tmp, rt);
 	} else if (right_over) {
-		// This modifies the buffer already inside the range tree
+		 
 		rs_set_start(rs, rt, end);
 		rs_copy(rs, &rs_tmp, rt);
 	} else {
@@ -538,11 +455,7 @@ range_tree_remove_impl(range_tree_t *rt, uint64_t start, uint64_t size,
 	}
 
 	if (rs != NULL) {
-		/*
-		 * The fill of the leftover segment will always be equal to
-		 * the size, since we do not support removing partial segments
-		 * of range trees with gaps.
-		 */
+		 
 		rs_set_fill_raw(rs, rt, rs_get_end_raw(rs, rt) -
 		    rs_get_start_raw(rs, rt));
 		range_tree_stat_incr(rt, &rs_tmp);
@@ -627,11 +540,7 @@ range_tree_contains(range_tree_t *rt, uint64_t start, uint64_t size)
 	return (range_tree_find(rt, start, size) != NULL);
 }
 
-/*
- * Returns the first subset of the given range which overlaps with the range
- * tree. Returns true if there is a segment in the range, and false if there
- * isn't.
- */
+ 
 boolean_t
 range_tree_find_in(range_tree_t *rt, uint64_t start, uint64_t size,
     uint64_t *ostart, uint64_t *osize)
@@ -661,10 +570,7 @@ range_tree_find_in(range_tree_t *rt, uint64_t start, uint64_t size,
 	return (B_TRUE);
 }
 
-/*
- * Ensure that this range is not in the tree, regardless of whether
- * it is currently in the tree.
- */
+ 
 void
 range_tree_clear(range_tree_t *rt, uint64_t start, uint64_t size)
 {
@@ -755,10 +661,7 @@ range_tree_is_empty(range_tree_t *rt)
 	return (range_tree_space(rt) == 0);
 }
 
-/*
- * Remove any overlapping ranges between the given segment [start, end)
- * from removefrom. Add non-overlapping leftovers to addto.
- */
+ 
 void
 range_tree_remove_xor_add_segment(uint64_t start, uint64_t end,
     range_tree_t *removefrom, range_tree_t *addto)
@@ -781,7 +684,7 @@ range_tree_remove_xor_add_segment(uint64_t start, uint64_t end,
 			return;
 		VERIFY3U(start, <, end);
 
-		/* there is no overlap */
+		 
 		if (end <= rs_get_start(curr, removefrom)) {
 			range_tree_add(addto, start, end - start);
 			return;
@@ -803,16 +706,7 @@ range_tree_remove_xor_add_segment(uint64_t start, uint64_t end,
 
 		start = overlap_end;
 		next = zfs_btree_find(&removefrom->rt_root, &rs, &where);
-		/*
-		 * If we find something here, we only removed part of the
-		 * curr segment. Either there's some left at the end
-		 * because we've reached the end of the range we're removing,
-		 * or there's some left at the start because we started
-		 * partway through the range.  Either way, we continue with
-		 * the loop. If it's the former, we'll return at the start of
-		 * the loop, and if it's the latter we'll see if there is more
-		 * area to process.
-		 */
+		 
 		if (next != NULL) {
 			ASSERT(start == end || start == rs_get_end(&rs,
 			    removefrom));
@@ -830,10 +724,7 @@ range_tree_remove_xor_add_segment(uint64_t start, uint64_t end,
 	}
 }
 
-/*
- * For each entry in rt, if it exists in removefrom, remove it
- * from removefrom. Otherwise, add it to addto.
- */
+ 
 void
 range_tree_remove_xor_add(range_tree_t *rt, range_tree_t *removefrom,
     range_tree_t *addto)

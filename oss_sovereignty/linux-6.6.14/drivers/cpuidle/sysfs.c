@@ -1,10 +1,4 @@
-/*
- * sysfs.c - sysfs support
- *
- * (C) 2006-2007 Shaohua Li <shaohua.li@intel.com>
- *
- * This code is licenced under the GPL.
- */
+ 
 
 #include <linux/kernel.h>
 #include <linux/cpuidle.h>
@@ -117,9 +111,7 @@ static struct attribute_group cpuidle_attr_group = {
 	.name = "cpuidle",
 };
 
-/**
- * cpuidle_add_interface - add CPU global sysfs attributes
- */
+ 
 int cpuidle_add_interface(void)
 {
 	struct device *dev_root = bus_get_dev_root(&cpu_subsys);
@@ -133,10 +125,7 @@ int cpuidle_add_interface(void)
 	return retval;
 }
 
-/**
- * cpuidle_remove_interface - remove CPU global sysfs attributes
- * @dev: the target device
- */
+ 
 void cpuidle_remove_interface(struct device *dev)
 {
 	sysfs_remove_group(&dev->kobj, &cpuidle_attr_group);
@@ -402,7 +391,7 @@ static void cpuidle_remove_s2idle_attr_group(struct cpuidle_state_kobj *kobj)
 #else
 static inline void cpuidle_add_s2idle_attr_group(struct cpuidle_state_kobj *kobj) { }
 static inline void cpuidle_remove_s2idle_attr_group(struct cpuidle_state_kobj *kobj) { }
-#endif /* CONFIG_SUSPEND */
+#endif  
 
 #define kobj_to_state_obj(k) container_of(k, struct cpuidle_state_kobj, kobj)
 #define kobj_to_state(k) (kobj_to_state_obj(k)->state)
@@ -436,7 +425,7 @@ static ssize_t cpuidle_state_store(struct kobject *kobj, struct attribute *attr,
 	if (cattr->store)
 		ret = cattr->store(state, state_usage, buf, size);
 
-	/* reset poll time cache */
+	 
 	dev->poll_limit_ns = 0;
 
 	return ret;
@@ -469,10 +458,7 @@ static inline void cpuidle_free_state_kobj(struct cpuidle_device *device, int i)
 	device->kobjs[i] = NULL;
 }
 
-/**
- * cpuidle_add_state_sysfs - adds cpuidle states sysfs attributes
- * @device: the target device
- */
+ 
 static int cpuidle_add_state_sysfs(struct cpuidle_device *device)
 {
 	int i, ret = -ENOMEM;
@@ -480,7 +466,7 @@ static int cpuidle_add_state_sysfs(struct cpuidle_device *device)
 	struct cpuidle_device_kobj *kdev = device->kobj_dev;
 	struct cpuidle_driver *drv = cpuidle_get_cpu_driver(device);
 
-	/* state statistics */
+	 
 	for (i = 0; i < drv->state_count; i++) {
 		kobj = kzalloc(sizeof(struct cpuidle_state_kobj), GFP_KERNEL);
 		if (!kobj) {
@@ -512,10 +498,7 @@ error_state:
 	return ret;
 }
 
-/**
- * cpuidle_remove_state_sysfs - removes the cpuidle states sysfs attributes
- * @device: the target device
- */
+ 
 static void cpuidle_remove_state_sysfs(struct cpuidle_device *device)
 {
 	struct cpuidle_driver *drv = cpuidle_get_cpu_driver(device);
@@ -607,10 +590,7 @@ static const struct kobj_type ktype_driver_cpuidle = {
 	.release = cpuidle_driver_sysfs_release,
 };
 
-/**
- * cpuidle_add_driver_sysfs - adds the driver name sysfs attribute
- * @dev: the target device
- */
+ 
 static int cpuidle_add_driver_sysfs(struct cpuidle_device *dev)
 {
 	struct cpuidle_driver_kobj *kdrv;
@@ -639,10 +619,7 @@ static int cpuidle_add_driver_sysfs(struct cpuidle_device *dev)
 	return ret;
 }
 
-/**
- * cpuidle_remove_driver_sysfs - removes the driver name sysfs attribute
- * @dev: the target device
- */
+ 
 static void cpuidle_remove_driver_sysfs(struct cpuidle_device *dev)
 {
 	struct cpuidle_driver_kobj *kdrv = dev->kobj_driver;
@@ -662,10 +639,7 @@ static inline void cpuidle_remove_driver_sysfs(struct cpuidle_device *dev)
 }
 #endif
 
-/**
- * cpuidle_add_device_sysfs - adds device specific sysfs attributes
- * @device: the target device
- */
+ 
 int cpuidle_add_device_sysfs(struct cpuidle_device *device)
 {
 	int ret;
@@ -680,35 +654,21 @@ int cpuidle_add_device_sysfs(struct cpuidle_device *device)
 	return ret;
 }
 
-/**
- * cpuidle_remove_device_sysfs : removes device specific sysfs attributes
- * @device : the target device
- */
+ 
 void cpuidle_remove_device_sysfs(struct cpuidle_device *device)
 {
 	cpuidle_remove_driver_sysfs(device);
 	cpuidle_remove_state_sysfs(device);
 }
 
-/**
- * cpuidle_add_sysfs - creates a sysfs instance for the target device
- * @dev: the target device
- */
+ 
 int cpuidle_add_sysfs(struct cpuidle_device *dev)
 {
 	struct cpuidle_device_kobj *kdev;
 	struct device *cpu_dev = get_cpu_device((unsigned long)dev->cpu);
 	int error;
 
-	/*
-	 * Return if cpu_device is not setup for this CPU.
-	 *
-	 * This could happen if the arch did not set up cpu_device
-	 * since this CPU is not in cpu_present mask and the
-	 * driver did not send a correct CPU mask during registration.
-	 * Without this check we would end up passing bogus
-	 * value for &cpu_dev->kobj in kobject_init_and_add()
-	 */
+	 
 	if (!cpu_dev)
 		return -ENODEV;
 
@@ -733,10 +693,7 @@ int cpuidle_add_sysfs(struct cpuidle_device *dev)
 	return 0;
 }
 
-/**
- * cpuidle_remove_sysfs - deletes a sysfs instance on the target device
- * @dev: the target device
- */
+ 
 void cpuidle_remove_sysfs(struct cpuidle_device *dev)
 {
 	struct cpuidle_device_kobj *kdev = dev->kobj_dev;

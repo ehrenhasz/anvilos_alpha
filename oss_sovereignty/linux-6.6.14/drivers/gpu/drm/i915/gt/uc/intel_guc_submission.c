@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright © 2014 Intel Corporation
- */
+
+ 
 
 #include <linux/circ_buf.h>
 
@@ -34,105 +32,9 @@
 #include "i915_reg.h"
 #include "i915_trace.h"
 
-/**
- * DOC: GuC-based command submission
- *
- * The Scratch registers:
- * There are 16 MMIO-based registers start from 0xC180. The kernel driver writes
- * a value to the action register (SOFT_SCRATCH_0) along with any data. It then
- * triggers an interrupt on the GuC via another register write (0xC4C8).
- * Firmware writes a success/fail code back to the action register after
- * processes the request. The kernel driver polls waiting for this update and
- * then proceeds.
- *
- * Command Transport buffers (CTBs):
- * Covered in detail in other sections but CTBs (Host to GuC - H2G, GuC to Host
- * - G2H) are a message interface between the i915 and GuC.
- *
- * Context registration:
- * Before a context can be submitted it must be registered with the GuC via a
- * H2G. A unique guc_id is associated with each context. The context is either
- * registered at request creation time (normal operation) or at submission time
- * (abnormal operation, e.g. after a reset).
- *
- * Context submission:
- * The i915 updates the LRC tail value in memory. The i915 must enable the
- * scheduling of the context within the GuC for the GuC to actually consider it.
- * Therefore, the first time a disabled context is submitted we use a schedule
- * enable H2G, while follow up submissions are done via the context submit H2G,
- * which informs the GuC that a previously enabled context has new work
- * available.
- *
- * Context unpin:
- * To unpin a context a H2G is used to disable scheduling. When the
- * corresponding G2H returns indicating the scheduling disable operation has
- * completed it is safe to unpin the context. While a disable is in flight it
- * isn't safe to resubmit the context so a fence is used to stall all future
- * requests of that context until the G2H is returned. Because this interaction
- * with the GuC takes a non-zero amount of time we delay the disabling of
- * scheduling after the pin count goes to zero by a configurable period of time
- * (see SCHED_DISABLE_DELAY_MS). The thought is this gives the user a window of
- * time to resubmit something on the context before doing this costly operation.
- * This delay is only done if the context isn't closed and the guc_id usage is
- * less than a threshold (see NUM_SCHED_DISABLE_GUC_IDS_THRESHOLD).
- *
- * Context deregistration:
- * Before a context can be destroyed or if we steal its guc_id we must
- * deregister the context with the GuC via H2G. If stealing the guc_id it isn't
- * safe to submit anything to this guc_id until the deregister completes so a
- * fence is used to stall all requests associated with this guc_id until the
- * corresponding G2H returns indicating the guc_id has been deregistered.
- *
- * submission_state.guc_ids:
- * Unique number associated with private GuC context data passed in during
- * context registration / submission / deregistration. 64k available. Simple ida
- * is used for allocation.
- *
- * Stealing guc_ids:
- * If no guc_ids are available they can be stolen from another context at
- * request creation time if that context is unpinned. If a guc_id can't be found
- * we punt this problem to the user as we believe this is near impossible to hit
- * during normal use cases.
- *
- * Locking:
- * In the GuC submission code we have 3 basic spin locks which protect
- * everything. Details about each below.
- *
- * sched_engine->lock
- * This is the submission lock for all contexts that share an i915 schedule
- * engine (sched_engine), thus only one of the contexts which share a
- * sched_engine can be submitting at a time. Currently only one sched_engine is
- * used for all of GuC submission but that could change in the future.
- *
- * guc->submission_state.lock
- * Global lock for GuC submission state. Protects guc_ids and destroyed contexts
- * list.
- *
- * ce->guc_state.lock
- * Protects everything under ce->guc_state. Ensures that a context is in the
- * correct state before issuing a H2G. e.g. We don't issue a schedule disable
- * on a disabled context (bad idea), we don't issue a schedule enable when a
- * schedule disable is in flight, etc... Also protects list of inflight requests
- * on the context and the priority management state. Lock is individual to each
- * context.
- *
- * Lock ordering rules:
- * sched_engine->lock -> ce->guc_state.lock
- * guc->submission_state.lock -> ce->guc_state.lock
- *
- * Reset races:
- * When a full GT reset is triggered it is assumed that some G2H responses to
- * H2Gs can be lost as the GuC is also reset. Losing these G2H can prove to be
- * fatal as we do certain operations upon receiving a G2H (e.g. destroy
- * contexts, release guc_ids, etc...). When this occurs we can scrub the
- * context state and cleanup appropriately, however this is quite racey.
- * To avoid races, the reset code must disable submission before scrubbing for
- * the missing G2H, while the submission code must check for submission being
- * disabled and skip sending H2Gs and updating context states when it is. Both
- * sides must also make sure to hold the relevant locks.
- */
+ 
 
-/* GuC Virtual Engine */
+ 
 struct guc_virtual_engine {
 	struct intel_engine_cs base;
 	struct intel_context context;
@@ -147,23 +49,13 @@ guc_create_parallel(struct intel_engine_cs **engines,
 		    unsigned int num_siblings,
 		    unsigned int width);
 
-#define GUC_REQUEST_SIZE 64 /* bytes */
+#define GUC_REQUEST_SIZE 64  
 
-/*
- * We reserve 1/16 of the guc_ids for multi-lrc as these need to be contiguous
- * per the GuC submission interface. A different allocation algorithm is used
- * (bitmap vs. ida) between multi-lrc and single-lrc hence the reason to
- * partition the guc_id space. We believe the number of multi-lrc contexts in
- * use should be low and 1/16 should be sufficient. Minimum of 32 guc_ids for
- * multi-lrc.
- */
+ 
 #define NUMBER_MULTI_LRC_GUC_ID(guc)	\
 	((guc)->submission_state.num_guc_ids / 16)
 
-/*
- * Below is a set of functions which control the GuC scheduling state which
- * require a lock.
- */
+ 
 #define SCHED_STATE_WAIT_FOR_DEREGISTER_TO_REGISTER	BIT(0)
 #define SCHED_STATE_DESTROYED				BIT(1)
 #define SCHED_STATE_PENDING_DISABLE			BIT(2)
@@ -183,11 +75,7 @@ static inline void init_sched_state(struct intel_context *ce)
 	ce->guc_state.sched_state &= SCHED_STATE_BLOCKED_MASK;
 }
 
-/*
- * Kernel contexts can have SCHED_STATE_REGISTERED after suspend.
- * A context close can race with the submission path, so SCHED_STATE_CLOSED
- * can be set immediately before we try to register.
- */
+ 
 #define SCHED_STATE_VALID_INIT \
 	(SCHED_STATE_BLOCKED_MASK | \
 	 SCHED_STATE_CLOSED | \
@@ -360,14 +248,14 @@ static inline void incr_context_blocked(struct intel_context *ce)
 
 	ce->guc_state.sched_state += SCHED_STATE_BLOCKED;
 
-	GEM_BUG_ON(!context_blocked(ce));	/* Overflow check */
+	GEM_BUG_ON(!context_blocked(ce));	 
 }
 
 static inline void decr_context_blocked(struct intel_context *ce)
 {
 	lockdep_assert_held(&ce->guc_state.lock);
 
-	GEM_BUG_ON(!context_blocked(ce));	/* Underflow check */
+	GEM_BUG_ON(!context_blocked(ce));	 
 
 	ce->guc_state.sched_state -= SCHED_STATE_BLOCKED;
 }
@@ -398,23 +286,7 @@ static inline struct i915_priolist *to_priolist(struct rb_node *rb)
 	return rb_entry(rb, struct i915_priolist, node);
 }
 
-/*
- * When using multi-lrc submission a scratch memory area is reserved in the
- * parent's context state for the process descriptor, work queue, and handshake
- * between the parent + children contexts to insert safe preemption points
- * between each of the BBs. Currently the scratch area is sized to a page.
- *
- * The layout of this scratch area is below:
- * 0						guc_process_desc
- * + sizeof(struct guc_process_desc)		child go
- * + CACHELINE_BYTES				child join[0]
- * ...
- * + CACHELINE_BYTES				child join[n - 1]
- * ...						unused
- * PARENT_SCRATCH_SIZE / 2			work queue start
- * ...						work queue
- * PARENT_SCRATCH_SIZE - 1			work queue end
- */
+ 
 #define WQ_SIZE			(PARENT_SCRATCH_SIZE / 2)
 #define WQ_OFFSET		(PARENT_SCRATCH_SIZE - WQ_SIZE)
 
@@ -458,11 +330,7 @@ __get_parent_scratch(struct intel_context *ce)
 	BUILD_BUG_ON(sizeof(struct parent_scratch) != PARENT_SCRATCH_SIZE);
 	BUILD_BUG_ON(sizeof(struct sync_semaphore) != CACHELINE_BYTES);
 
-	/*
-	 * Need to subtract LRC_STATE_OFFSET here as the
-	 * parallel.guc.parent_page is the offset into ce->state while
-	 * ce->lrc_reg_reg is ce->state + LRC_STATE_OFFSET.
-	 */
+	 
 	return (struct parent_scratch *)
 		(ce->lrc_reg_state +
 		 ((__get_parent_scratch_offset(ce) -
@@ -487,11 +355,7 @@ __get_wq_desc_v70(struct intel_context *ce)
 
 static u32 *get_wq_pointer(struct intel_context *ce, u32 wqi_size)
 {
-	/*
-	 * Check for space in work queue. Caching a value of head pointer in
-	 * intel_context structure in order reduce the number accesses to shared
-	 * GPU memory which may be across a PCIe bus.
-	 */
+	 
 #define AVAILABLE_SPACE	\
 	CIRC_SPACE(ce->parallel.guc.wqi_tail, ce->parallel.guc.wqi_head, WQ_SIZE)
 	if (wqi_size > AVAILABLE_SPACE) {
@@ -573,10 +437,7 @@ static inline void set_ctx_id_mapping(struct intel_guc *guc, u32 id,
 {
 	unsigned long flags;
 
-	/*
-	 * xarray API doesn't have xa_save_irqsave wrapper, so calling the
-	 * lower level functions directly.
-	 */
+	 
 	xa_lock_irqsave(&guc->context_lookup, flags);
 	__xa_store(&guc->context_lookup, id, ce, GFP_ATOMIC);
 	xa_unlock_irqrestore(&guc->context_lookup, flags);
@@ -591,10 +452,7 @@ static inline void clr_ctx_id_mapping(struct intel_guc *guc, u32 id)
 
 	_reset_lrc_desc_v69(guc, id);
 
-	/*
-	 * xarray API doesn't have xa_erase_irqsave wrapper, so calling
-	 * the lower level functions directly.
-	 */
+	 
 	xa_lock_irqsave(&guc->context_lookup, flags);
 	__xa_erase(&guc->context_lookup, id);
 	xa_unlock_irqrestore(&guc->context_lookup, flags);
@@ -612,11 +470,7 @@ static int guc_submission_send_busy_loop(struct intel_guc *guc,
 					 u32 g2h_len_dw,
 					 bool loop)
 {
-	/*
-	 * We always loop when a send requires a reply (i.e. g2h_len_dw > 0),
-	 * so we don't handle the case where we don't get a reply because we
-	 * aborted the send due to the channel being busy.
-	 */
+	 
 	GEM_BUG_ON(g2h_len_dw && !loop);
 
 	if (g2h_len_dw)
@@ -690,10 +544,7 @@ static int __guc_add_request(struct intel_guc *guc, struct i915_request *rq)
 
 	lockdep_assert_held(&rq->engine->sched_engine->lock);
 
-	/*
-	 * Corner case where requests were sitting in the priority list or a
-	 * request resubmitted after the context was banned.
-	 */
+	 
 	if (unlikely(!intel_context_is_schedulable(ce))) {
 		i915_request_put(i915_request_mark_eio(rq));
 		intel_engine_signal_breadcrumbs(ce->engine);
@@ -711,11 +562,7 @@ static int __guc_add_request(struct intel_guc *guc, struct i915_request *rq)
 
 	spin_lock(&ce->guc_state.lock);
 
-	/*
-	 * The request / context will be run on the hardware when scheduling
-	 * gets enabled in the unblock. For multi-lrc we still submit the
-	 * context to move the LRC tails.
-	 */
+	 
 	if (unlikely(context_blocked(ce) && !intel_context_is_parent(ce)))
 		goto out;
 
@@ -739,13 +586,7 @@ static int __guc_add_request(struct intel_guc *guc, struct i915_request *rq)
 		atomic_inc(&guc->outstanding_submission_g2h);
 		set_context_enabled(ce);
 
-		/*
-		 * Without multi-lrc KMD does the submission step (moving the
-		 * lrc tail) so enabling scheduling is sufficient to submit the
-		 * context. This isn't the case in multi-lrc submission as the
-		 * GuC needs to move the tails, hence the need for another H2G
-		 * to submit a multi-lrc context after enabling scheduling.
-		 */
+		 
 		if (intel_context_is_parent(ce)) {
 			action[0] = INTEL_GUC_ACTION_SCHED_CONTEXT;
 			err = intel_guc_send_nb(guc, action, len - 1, 0);
@@ -806,9 +647,7 @@ static void write_wqi(struct intel_context *ce, u32 wqi_size)
 {
 	BUILD_BUG_ON(!is_power_of_2(WQ_SIZE));
 
-	/*
-	 * Ensure WQI are visible before updating tail
-	 */
+	 
 	intel_guc_write_barrier(ce_to_guc(ce));
 
 	ce->parallel.guc.wqi_tail = (ce->parallel.guc.wqi_tail + wqi_size) &
@@ -843,13 +682,13 @@ static int __guc_wq_item_append(struct i915_request *rq)
 	u32 len_dw = (wqi_size / sizeof(u32)) - 1;
 	int ret;
 
-	/* Ensure context is in correct state updating work queue */
+	 
 	GEM_BUG_ON(!atomic_read(&ce->guc_id.ref));
 	GEM_BUG_ON(context_guc_id_invalid(ce));
 	GEM_BUG_ON(context_wait_for_deregister_to_register(ce));
 	GEM_BUG_ON(!ctx_id_mapped(ce_to_guc(ce), ce->guc_id.id));
 
-	/* Insert NOOP if this work queue item will wrap the tail pointer. */
+	 
 	if (wqi_size > wq_space_until_wrap(ce)) {
 		ret = guc_wq_noop_append(ce);
 		if (ret)
@@ -867,7 +706,7 @@ static int __guc_wq_item_append(struct i915_request *rq)
 	*wqi++ = ce->lrc.lrca;
 	*wqi++ = FIELD_PREP(WQ_GUC_ID_MASK, ce->guc_id.id) |
 	       FIELD_PREP(WQ_RING_TAIL_MASK, ce->ring->tail / sizeof(u64));
-	*wqi++ = 0;	/* fence_id */
+	*wqi++ = 0;	 
 	for_each_child(ce, child)
 		*wqi++ = child->ring->tail / sizeof(u64);
 
@@ -900,12 +739,7 @@ static bool multi_lrc_submit(struct i915_request *rq)
 
 	intel_ring_set_tail(rq->ring, rq->tail);
 
-	/*
-	 * We expect the front end (execbuf IOCTL) to set this flag on the last
-	 * request generated from a multi-BB submission. This indicates to the
-	 * backend (GuC interface) that we should submit this context thus
-	 * submitting all the requests generated in parallel.
-	 */
+	 
 	return test_bit(I915_FENCE_FLAG_SUBMIT_PARALLEL, &rq->fence.flags) ||
 	       !intel_context_is_schedulable(ce);
 }
@@ -952,12 +786,7 @@ static int guc_dequeue_one_context(struct intel_guc *guc)
 			last = rq;
 
 			if (is_multi_lrc_rq(rq)) {
-				/*
-				 * We need to coalesce all multi-lrc requests in
-				 * a relationship into a single H2G. We are
-				 * guaranteed that all of these requests will be
-				 * submitted sequentially.
-				 */
+				 
 				if (multi_lrc_submit(rq)) {
 					submit = true;
 					goto register_context;
@@ -986,7 +815,7 @@ register_context:
 					STALL_REGISTER_CONTEXT;
 				goto schedule_tasklet;
 			} else if (ret != 0) {
-				GEM_WARN_ON(ret);	/* Unexpected */
+				GEM_WARN_ON(ret);	 
 				goto deadlk;
 			}
 		}
@@ -997,7 +826,7 @@ move_lrc_tail:
 			if (ret == -EBUSY) {
 				goto schedule_tasklet;
 			} else if (ret != 0) {
-				GEM_WARN_ON(ret);	/* Unexpected */
+				GEM_WARN_ON(ret);	 
 				goto deadlk;
 			}
 		} else {
@@ -1011,7 +840,7 @@ add_request:
 		} else if (ret == -EBUSY) {
 			goto schedule_tasklet;
 		} else if (ret != 0) {
-			GEM_WARN_ON(ret);	/* Unexpected */
+			GEM_WARN_ON(ret);	 
 			goto deadlk;
 		}
 	}
@@ -1068,29 +897,20 @@ static void scrub_guc_desc_for_outstanding_g2h(struct intel_guc *guc)
 
 	xa_lock_irqsave(&guc->context_lookup, flags);
 	xa_for_each(&guc->context_lookup, index, ce) {
-		/*
-		 * Corner case where the ref count on the object is zero but and
-		 * deregister G2H was lost. In this case we don't touch the ref
-		 * count and finish the destroy of the context.
-		 */
+		 
 		bool do_put = kref_get_unless_zero(&ce->ref);
 
 		xa_unlock(&guc->context_lookup);
 
 		if (test_bit(CONTEXT_GUC_INIT, &ce->flags) &&
 		    (cancel_delayed_work(&ce->guc_state.sched_disable_delay_work))) {
-			/* successful cancel so jump straight to close it */
+			 
 			intel_context_sched_disable_unpin(ce);
 		}
 
 		spin_lock(&ce->guc_state.lock);
 
-		/*
-		 * Once we are at this point submission_disabled() is guaranteed
-		 * to be visible to all callers who set the below flags (see above
-		 * flush and flushes in reset_prepare). If submission_disabled()
-		 * is set, the caller shouldn't set these flags.
-		 */
+		 
 
 		destroyed = context_destroyed(ce);
 		pending_enable = context_pending_enable(ce);
@@ -1114,7 +934,7 @@ static void scrub_guc_desc_for_outstanding_g2h(struct intel_guc *guc)
 				intel_context_put(ce);
 		}
 
-		/* Not mutualy exclusive with above if statement. */
+		 
 		if (pending_disable) {
 			guc_signal_context_fence(ce);
 			if (banned) {
@@ -1138,28 +958,7 @@ static void scrub_guc_desc_for_outstanding_g2h(struct intel_guc *guc)
 	xa_unlock_irqrestore(&guc->context_lookup, flags);
 }
 
-/*
- * GuC stores busyness stats for each engine at context in/out boundaries. A
- * context 'in' logs execution start time, 'out' adds in -> out delta to total.
- * i915/kmd accesses 'start', 'total' and 'context id' from memory shared with
- * GuC.
- *
- * __i915_pmu_event_read samples engine busyness. When sampling, if context id
- * is valid (!= ~0) and start is non-zero, the engine is considered to be
- * active. For an active engine total busyness = total + (now - start), where
- * 'now' is the time at which the busyness is sampled. For inactive engine,
- * total busyness = total.
- *
- * All times are captured from GUCPMTIMESTAMP reg and are in gt clock domain.
- *
- * The start and total values provided by GuC are 32 bits and wrap around in a
- * few minutes. Since perf pmu provides busyness as 64 bit monotonically
- * increasing ns values, there is a need for this implementation to account for
- * overflows and extend the GuC provided values to 64 bits before returning
- * busyness to the user. In order to do that, a worker runs periodically at
- * frequency = 1/8th the time it takes for the timestamp to wrap (i.e. once in
- * 27 seconds for a gt clock frequency of 19.2 MHz).
- */
+ 
 
 #define WRAP_TIME_CLKS U32_MAX
 #define POLL_TIME_CLKS (WRAP_TIME_CLKS >> 3)
@@ -1173,19 +972,7 @@ __extend_last_switch(struct intel_guc *guc, u64 *prev_start, u32 new_start)
 	if (new_start == lower_32_bits(*prev_start))
 		return;
 
-	/*
-	 * When gt is unparked, we update the gt timestamp and start the ping
-	 * worker that updates the gt_stamp every POLL_TIME_CLKS. As long as gt
-	 * is unparked, all switched in contexts will have a start time that is
-	 * within +/- POLL_TIME_CLKS of the most recent gt_stamp.
-	 *
-	 * If neither gt_stamp nor new_start has rolled over, then the
-	 * gt_stamp_hi does not need to be adjusted, however if one of them has
-	 * rolled over, we need to adjust gt_stamp_hi accordingly.
-	 *
-	 * The below conditions address the cases of new_start rollover and
-	 * gt_stamp_last rollover respectively.
-	 */
+	 
 	if (new_start < gt_stamp_last &&
 	    (new_start - gt_stamp_last) <= POLL_TIME_CLKS)
 		gt_stamp_hi++;
@@ -1200,17 +987,7 @@ __extend_last_switch(struct intel_guc *guc, u64 *prev_start, u32 new_start)
 #define record_read(map_, field_) \
 	iosys_map_rd_field(map_, 0, struct guc_engine_usage_record, field_)
 
-/*
- * GuC updates shared memory and KMD reads it. Since this is not synchronized,
- * we run into a race where the value read is inconsistent. Sometimes the
- * inconsistency is in reading the upper MSB bytes of the last_in value when
- * this race occurs. 2 types of cases are seen - upper 8 bits are zero and upper
- * 24 bits are zero. Since these are non-zero values, it is non-trivial to
- * determine validity of these values. Instead we read the values multiple times
- * until they are consistent. In test runs, 3 attempts results in consistent
- * values. The upper bound is set to 6 attempts and may need to be tuned as per
- * any new occurences.
- */
+ 
 static void __get_engine_usage_record(struct intel_engine_cs *engine,
 				      u32 *last_in, u32 *id, u32 *total)
 {
@@ -1243,10 +1020,7 @@ static void guc_update_engine_gt_clks(struct intel_engine_cs *engine)
 	if (stats->running)
 		__extend_last_switch(guc, &stats->start_gt_clk, last_switch);
 
-	/*
-	 * Instead of adjusting the total for overflow, just add the
-	 * difference from previous sample stats->total_gt_clks
-	 */
+	 
 	if (total && total != ~0U) {
 		stats->total_gt_clks += (u32)(total - stats->prev_total);
 		stats->prev_total = total;
@@ -1287,11 +1061,7 @@ static void guc_update_pm_timestamp(struct intel_guc *guc, ktime_t *now)
 	guc->timestamp.gt_stamp = ((u64)gt_stamp_hi << 32) | gt_stamp_lo;
 }
 
-/*
- * Unlike the execlist mode of submission total and active times are in terms of
- * gt clocks. The *now parameter is retained to return the cpu time at which the
- * busyness was sampled.
- */
+ 
 static ktime_t guc_engine_busyness(struct intel_engine_cs *engine, ktime_t *now)
 {
 	struct intel_engine_guc_stats stats_saved, *stats = &engine->stats.guc;
@@ -1305,32 +1075,17 @@ static ktime_t guc_engine_busyness(struct intel_engine_cs *engine, ktime_t *now)
 
 	spin_lock_irqsave(&guc->timestamp.lock, flags);
 
-	/*
-	 * If a reset happened, we risk reading partially updated engine
-	 * busyness from GuC, so we just use the driver stored copy of busyness.
-	 * Synchronize with gt reset using reset_count and the
-	 * I915_RESET_BACKOFF flag. Note that reset flow updates the reset_count
-	 * after I915_RESET_BACKOFF flag, so ensure that the reset_count is
-	 * usable by checking the flag afterwards.
-	 */
+	 
 	reset_count = i915_reset_count(gpu_error);
 	in_reset = test_bit(I915_RESET_BACKOFF, &gt->reset.flags);
 
 	*now = ktime_get();
 
-	/*
-	 * The active busyness depends on start_gt_clk and gt_stamp.
-	 * gt_stamp is updated by i915 only when gt is awake and the
-	 * start_gt_clk is derived from GuC state. To get a consistent
-	 * view of activity, we query the GuC state only if gt is awake.
-	 */
+	 
 	if (!in_reset && intel_gt_pm_get_if_awake(gt)) {
 		stats_saved = *stats;
 		gt_stamp_saved = guc->timestamp.gt_stamp;
-		/*
-		 * Update gt_clks, then gt timestamp to simplify the 'gt_stamp -
-		 * start_gt_clk' calculation below for active engines.
-		 */
+		 
 		guc_update_engine_gt_clks(engine);
 		guc_update_pm_timestamp(guc, now);
 		intel_gt_pm_put_async(gt);
@@ -1432,49 +1187,19 @@ static void guc_timestamp_ping(struct work_struct *wrk)
 	unsigned long index;
 	int srcu, ret;
 
-	/*
-	 * Ideally the busyness worker should take a gt pm wakeref because the
-	 * worker only needs to be active while gt is awake. However, the
-	 * gt_park path cancels the worker synchronously and this complicates
-	 * the flow if the worker is also running at the same time. The cancel
-	 * waits for the worker and when the worker releases the wakeref, that
-	 * would call gt_park and would lead to a deadlock.
-	 *
-	 * The resolution is to take the global pm wakeref if runtime pm is
-	 * already active. If not, we don't need to update the busyness stats as
-	 * the stats would already be updated when the gt was parked.
-	 *
-	 * Note:
-	 * - We do not requeue the worker if we cannot take a reference to runtime
-	 *   pm since intel_guc_busyness_unpark would requeue the worker in the
-	 *   resume path.
-	 *
-	 * - If the gt was parked longer than time taken for GT timestamp to roll
-	 *   over, we ignore those rollovers since we don't care about tracking
-	 *   the exact GT time. We only care about roll overs when the gt is
-	 *   active and running workloads.
-	 *
-	 * - There is a window of time between gt_park and runtime suspend,
-	 *   where the worker may run. This is acceptable since the worker will
-	 *   not find any new data to update busyness.
-	 */
+	 
 	wakeref = intel_runtime_pm_get_if_active(&gt->i915->runtime_pm);
 	if (!wakeref)
 		return;
 
-	/*
-	 * Synchronize with gt reset to make sure the worker does not
-	 * corrupt the engine/guc stats. NB: can't actually block waiting
-	 * for a reset to complete as the reset requires flushing out
-	 * this worker thread if started. So waiting would deadlock.
-	 */
+	 
 	ret = intel_gt_reset_trylock(gt, &srcu);
 	if (ret)
 		goto err_trylock;
 
 	__update_guc_busyness_stats(guc);
 
-	/* adjust context stats for overflow */
+	 
 	xa_for_each(&guc->context_lookup, index, ce)
 		guc_context_update_stats(ce);
 
@@ -1527,18 +1252,10 @@ void intel_guc_busyness_park(struct intel_gt *gt)
 	if (!guc_submission_initialized(guc))
 		return;
 
-	/*
-	 * There is a race with suspend flow where the worker runs after suspend
-	 * and causes an unclaimed register access warning. Cancel the worker
-	 * synchronously here.
-	 */
+	 
 	guc_cancel_busyness_worker(guc);
 
-	/*
-	 * Before parking, we should sample engine busyness stats if we need to.
-	 * We can skip it if we are less than half a ping from the last time we
-	 * sampled the busyness stats.
-	 */
+	 
 	if (guc->timestamp.last_stat_jiffies &&
 	    !time_after(jiffies, guc->timestamp.last_stat_jiffies +
 			(guc->timestamp.ping_delay / 2)))
@@ -1590,12 +1307,12 @@ static void enable_submission(struct intel_guc *guc)
 
 	spin_lock_irqsave(&guc->sched_engine->lock, flags);
 	sched_engine->tasklet.callback = guc_submission_tasklet;
-	wmb();	/* Make sure callback visible */
+	wmb();	 
 	if (!__tasklet_is_enabled(&sched_engine->tasklet) &&
 	    __tasklet_enable(&sched_engine->tasklet)) {
 		GEM_BUG_ON(!guc->ct.enabled);
 
-		/* And kick in case we missed a new request submission. */
+		 
 		tasklet_hi_schedule(&sched_engine->tasklet);
 	}
 	spin_unlock_irqrestore(&guc->sched_engine->lock, flags);
@@ -1615,7 +1332,7 @@ static void guc_flush_destroyed_contexts(struct intel_guc *guc);
 void intel_guc_submission_reset_prepare(struct intel_guc *guc)
 {
 	if (unlikely(!guc_submission_initialized(guc))) {
-		/* Reset called during driver load? GuC not yet initialised! */
+		 
 		return;
 	}
 
@@ -1624,7 +1341,7 @@ void intel_guc_submission_reset_prepare(struct intel_guc *guc)
 	guc->interrupts.disable(guc);
 	__reset_guc_busyness_stats(guc);
 
-	/* Flush IRQ handler */
+	 
 	spin_lock_irq(guc_to_gt(guc)->irq_lock);
 	spin_unlock_irq(guc_to_gt(guc)->irq_lock);
 
@@ -1669,27 +1386,17 @@ static void guc_reset_state(struct intel_context *ce, u32 head, bool scrub)
 
 	GEM_BUG_ON(!intel_context_is_pinned(ce));
 
-	/*
-	 * We want a simple context + ring to execute the breadcrumb update.
-	 * We cannot rely on the context being intact across the GPU hang,
-	 * so clear it and rebuild just what we need for the breadcrumb.
-	 * All pending requests for this context will be zapped, and any
-	 * future request will be after userspace has had the opportunity
-	 * to recreate its own state.
-	 */
+	 
 	if (scrub)
 		lrc_init_regs(ce, engine, true);
 
-	/* Rerun the request; its payload has been neutered (if guilty). */
+	 
 	lrc_update_regs(ce, engine, head);
 }
 
 static void guc_engine_reset_prepare(struct intel_engine_cs *engine)
 {
-	/*
-	 * Wa_22011802037: In addition to stopping the cs, we need
-	 * to wait for any pending mi force wakeups
-	 */
+	 
 	if (IS_MTL_GRAPHICS_STEP(engine->i915, M, STEP_A0, STEP_B0) ||
 	    (GRAPHICS_VER(engine->i915) >= 11 &&
 	     GRAPHICS_VER_FULL(engine->i915) < IP_VER(12, 70))) {
@@ -1727,7 +1434,7 @@ __unwind_incomplete_requests(struct intel_context *ce)
 		list_del_init(&rq->sched.link);
 		__i915_request_unsubmit(rq);
 
-		/* Push the request back into the queue for later resubmission. */
+		 
 		GEM_BUG_ON(rq_prio(rq) == I915_PRIORITY_INVALID);
 		if (rq_prio(rq) != prio) {
 			prio = rq_prio(rq);
@@ -1755,19 +1462,12 @@ static void __guc_reset_context(struct intel_context *ce, intel_engine_mask_t st
 
 	intel_context_get(ce);
 
-	/*
-	 * GuC will implicitly mark the context as non-schedulable when it sends
-	 * the reset notification. Make sure our state reflects this change. The
-	 * context will be marked enabled on resubmission.
-	 */
+	 
 	spin_lock_irqsave(&ce->guc_state.lock, flags);
 	clr_context_enabled(ce);
 	spin_unlock_irqrestore(&ce->guc_state.lock, flags);
 
-	/*
-	 * For each context in the relationship find the hanging request
-	 * resetting each context / request as needed
-	 */
+	 
 	for (i = 0; i < number_children + 1; ++i) {
 		if (!intel_context_is_pinned(ce))
 			goto next_context;
@@ -1805,7 +1505,7 @@ void intel_guc_submission_reset(struct intel_guc *guc, intel_engine_mask_t stall
 	unsigned long flags;
 
 	if (unlikely(!guc_submission_initialized(guc))) {
-		/* Reset called during driver load? GuC not yet initialised! */
+		 
 		return;
 	}
 
@@ -1826,7 +1526,7 @@ void intel_guc_submission_reset(struct intel_guc *guc, intel_engine_mask_t stall
 	}
 	xa_unlock_irqrestore(&guc->context_lookup, flags);
 
-	/* GuC is blown away, drop all references to contexts */
+	 
 	xa_destroy(&guc->context_lookup);
 }
 
@@ -1836,7 +1536,7 @@ static void guc_cancel_context_requests(struct intel_context *ce)
 	struct i915_request *rq;
 	unsigned long flags;
 
-	/* Mark all executing requests as skipped. */
+	 
 	spin_lock_irqsave(&sched_engine->lock, flags);
 	spin_lock(&ce->guc_state.lock);
 	list_for_each_entry(rq, &ce->guc_state.requests, sched.link)
@@ -1852,27 +1552,14 @@ guc_cancel_sched_engine_requests(struct i915_sched_engine *sched_engine)
 	struct rb_node *rb;
 	unsigned long flags;
 
-	/* Can be called during boot if GuC fails to load */
+	 
 	if (!sched_engine)
 		return;
 
-	/*
-	 * Before we call engine->cancel_requests(), we should have exclusive
-	 * access to the submission state. This is arranged for us by the
-	 * caller disabling the interrupt generation, the tasklet and other
-	 * threads that may then access the same state, giving us a free hand
-	 * to reset state. However, we still need to let lockdep be aware that
-	 * we know this state may be accessed in hardirq context, so we
-	 * disable the irq around this manipulation and we want to keep
-	 * the spinlock focused on its duties and not accidentally conflate
-	 * coverage to the submission's irq state. (Similarly, although we
-	 * shouldn't need to disable irq around the manipulation of the
-	 * submission's irq state, we also wish to remind ourselves that
-	 * it is irq state.)
-	 */
+	 
 	spin_lock_irqsave(&sched_engine->lock, flags);
 
-	/* Flush the queued requests to the timeline list (for retiring). */
+	 
 	while ((rb = rb_first_cached(&sched_engine->queue))) {
 		struct i915_priolist *p = to_priolist(rb);
 
@@ -1888,7 +1575,7 @@ guc_cancel_sched_engine_requests(struct i915_sched_engine *sched_engine)
 		i915_priolist_free(p);
 	}
 
-	/* Remaining _unready_ requests will be nop'ed when submitted */
+	 
 
 	sched_engine->queue_priority_hint = INT_MIN;
 	sched_engine->queue = RB_ROOT_CACHED;
@@ -1921,24 +1608,19 @@ void intel_guc_submission_cancel_requests(struct intel_guc *guc)
 
 	guc_cancel_sched_engine_requests(guc->sched_engine);
 
-	/* GuC is blown away, drop all references to contexts */
+	 
 	xa_destroy(&guc->context_lookup);
 }
 
 void intel_guc_submission_reset_finish(struct intel_guc *guc)
 {
-	/* Reset called during driver load or during wedge? */
+	 
 	if (unlikely(!guc_submission_initialized(guc) ||
 		     intel_gt_is_wedged(guc_to_gt(guc)))) {
 		return;
 	}
 
-	/*
-	 * Technically possible for either of these values to be non-zero here,
-	 * but very unlikely + harmless. Regardless let's add a warn so we can
-	 * see in CI if this happens frequently / a precursor to taking down the
-	 * machine.
-	 */
+	 
 	GEM_WARN_ON(atomic_read(&guc->outstanding_submission_g2h));
 	atomic_set(&guc->outstanding_submission_g2h, 0);
 
@@ -1950,10 +1632,7 @@ void intel_guc_submission_reset_finish(struct intel_guc *guc)
 static void destroyed_worker_func(struct work_struct *w);
 static void reset_fail_worker_func(struct work_struct *w);
 
-/*
- * Set up the memory resources to be shared with the GuC (via the GGTT)
- * at firmware loading time.
- */
+ 
 int intel_guc_submission_init(struct intel_guc *guc)
 {
 	struct intel_gt *gt = guc_to_gt(guc);
@@ -2052,7 +1731,7 @@ static void guc_submit_request(struct i915_request *rq)
 	struct intel_guc *guc = &rq->engine->gt->uc.guc;
 	unsigned long flags;
 
-	/* Will be called from irq-context when using foreign fences. */
+	 
 	spin_lock_irqsave(&sched_engine->lock, flags);
 
 	if (need_tasklet(guc, rq))
@@ -2203,7 +1882,7 @@ try_again:
 		ret = assign_guc_id(guc, ce);
 		if (ret)
 			goto out_unlock;
-		ret = 1;	/* Indidcates newly assigned guc_id */
+		ret = 1;	 
 	}
 	if (!list_empty(&ce->guc_id.link))
 		list_del_init(&ce->guc_id.link);
@@ -2212,14 +1891,7 @@ try_again:
 out_unlock:
 	spin_unlock_irqrestore(&guc->submission_state.lock, flags);
 
-	/*
-	 * -EAGAIN indicates no guc_id are available, let's retire any
-	 * outstanding requests to see if that frees up a guc_id. If the first
-	 * retire didn't help, insert a sleep with the timeslice duration before
-	 * attempting to retire more requests. Double the sleep period each
-	 * subsequent pass before finally giving up. The sleep period has max of
-	 * 100ms and minimum of 1ms.
-	 */
+	 
 	if (ret == -EAGAIN && --tries) {
 		if (PIN_GUC_ID_TRIES - tries > 1) {
 			unsigned int timeslice_shifted =
@@ -2310,10 +1982,7 @@ static int __guc_action_register_multi_lrc_v70(struct intel_guc *guc,
 	for_each_child(ce, child) {
 		GEM_BUG_ON(next_id++ != child->guc_id.id);
 
-		/*
-		 * NB: GuC interface supports 64 bit LRCA even though i915/HW
-		 * only supports 32 bit currently.
-		 */
+		 
 		action[len++] = lower_32_bits(child->lrc.lrca);
 		action[len++] = upper_32_bits(child->lrc.lrca);
 	}
@@ -2522,7 +2191,7 @@ static int guc_context_policy_init_v70(struct intel_context *ce, bool loop)
 	unsigned long flags;
 	int ret;
 
-	/* NB: For both of these, zero means disabled. */
+	 
 	GEM_BUG_ON(overflows_type(engine->props.timeslice_duration_ms * 1000,
 				  execution_quantum));
 	GEM_BUG_ON(overflows_type(engine->props.preempt_timeout_ms * 1000,
@@ -2559,7 +2228,7 @@ static void guc_context_policy_init_v69(struct intel_engine_cs *engine,
 	if (engine->flags & I915_ENGINE_WANT_FORCED_PREEMPTION)
 		desc->policy_flags |= CONTEXT_POLICY_FLAG_PREEMPT_TO_IDLE_V69;
 
-	/* NB: For both of these, zero means disabled. */
+	 
 	GEM_BUG_ON(overflows_type(engine->props.timeslice_duration_ms * 1000,
 				  desc->execution_quantum));
 	GEM_BUG_ON(overflows_type(engine->props.preempt_timeout_ms * 1000,
@@ -2570,10 +2239,7 @@ static void guc_context_policy_init_v69(struct intel_engine_cs *engine,
 
 static u32 map_guc_prio_to_lrc_desc_prio(u8 prio)
 {
-	/*
-	 * this matches the mapping we do in map_i915_prio_to_guc_prio()
-	 * (e.g. prio < I915_PRIORITY_NORMAL maps to GUC_CLIENT_PRIORITY_NORMAL)
-	 */
+	 
 	switch (prio) {
 	default:
 		MISSING_CASE(prio);
@@ -2598,10 +2264,7 @@ static void prepare_context_registration_info_v69(struct intel_context *ce)
 
 	GEM_BUG_ON(!engine->mask);
 
-	/*
-	 * Ensure LRC + CT vmas are is same region as write barrier is done
-	 * based on CT vma region.
-	 */
+	 
 	GEM_BUG_ON(i915_gem_object_is_lmem(guc->ct.vma->obj) !=
 		   i915_gem_object_is_lmem(ce->ring->vma->obj));
 
@@ -2614,10 +2277,7 @@ static void prepare_context_registration_info_v69(struct intel_context *ce)
 	desc->context_flags = CONTEXT_REGISTRATION_FLAG_KMD;
 	guc_context_policy_init_v69(engine, desc);
 
-	/*
-	 * If context is a parent, we need to register a process descriptor
-	 * describing a work queue and register all child contexts.
-	 */
+	 
 	if (intel_context_is_parent(ce)) {
 		struct guc_process_desc_v69 *pdesc;
 
@@ -2665,10 +2325,7 @@ static void prepare_context_registration_info_v70(struct intel_context *ce,
 
 	GEM_BUG_ON(!engine->mask);
 
-	/*
-	 * Ensure LRC + CT vmas are is same region as write barrier is done
-	 * based on CT vma region.
-	 */
+	 
 	GEM_BUG_ON(i915_gem_object_is_lmem(guc->ct.vma->obj) !=
 		   i915_gem_object_is_lmem(ce->ring->vma->obj));
 
@@ -2676,20 +2333,14 @@ static void prepare_context_registration_info_v70(struct intel_context *ce,
 	info->context_idx = ctx_id;
 	info->engine_class = engine_class_to_guc_class(engine->class);
 	info->engine_submit_mask = engine->logical_mask;
-	/*
-	 * NB: GuC interface supports 64 bit LRCA even though i915/HW
-	 * only supports 32 bit currently.
-	 */
+	 
 	info->hwlrca_lo = lower_32_bits(ce->lrc.lrca);
 	info->hwlrca_hi = upper_32_bits(ce->lrc.lrca);
 	if (engine->flags & I915_ENGINE_HAS_EU_PRIORITY)
 		info->hwlrca_lo |= map_guc_prio_to_lrc_desc_prio(ce->guc_state.prio);
 	info->flags = CONTEXT_REGISTRATION_FLAG_KMD;
 
-	/*
-	 * If context is a parent, we need to register a process descriptor
-	 * describing a work queue and register all child contexts.
-	 */
+	 
 	if (intel_context_is_parent(ce)) {
 		struct guc_sched_wq_desc *wq_desc;
 		u64 wq_desc_offset, wq_base_offset;
@@ -2736,14 +2387,7 @@ static int try_context_registration(struct intel_context *ce, bool loop)
 	clr_ctx_id_mapping(guc, ctx_id);
 	set_ctx_id_mapping(guc, ctx_id, ce);
 
-	/*
-	 * The context_lookup xarray is used to determine if the hardware
-	 * context is currently registered. There are two cases in which it
-	 * could be registered either the guc_id has been stolen from another
-	 * context or the lrc descriptor address of this context has changed. In
-	 * either case the context needs to be deregistered with the GuC before
-	 * registering this context.
-	 */
+	 
 	if (context_registered) {
 		bool disabled;
 		unsigned long flags;
@@ -2751,7 +2395,7 @@ static int try_context_registration(struct intel_context *ce, bool loop)
 		trace_intel_context_steal_guc_id(ce);
 		GEM_BUG_ON(!loop);
 
-		/* Seal race with Reset */
+		 
 		spin_lock_irqsave(&ce->guc_state.lock, flags);
 		disabled = submission_disabled(guc);
 		if (likely(!disabled)) {
@@ -2761,17 +2405,14 @@ static int try_context_registration(struct intel_context *ce, bool loop)
 		spin_unlock_irqrestore(&ce->guc_state.lock, flags);
 		if (unlikely(disabled)) {
 			clr_ctx_id_mapping(guc, ctx_id);
-			return 0;	/* Will get registered later */
+			return 0;	 
 		}
 
-		/*
-		 * If stealing the guc_id, this ce has the same guc_id as the
-		 * context whose guc_id was stolen.
-		 */
+		 
 		with_intel_runtime_pm(runtime_pm, wakeref)
 			ret = deregister_context(ce, ce->guc_id.id);
 		if (unlikely(ret == -ENODEV))
-			ret = 0;	/* Will get registered later */
+			ret = 0;	 
 	} else {
 		with_intel_runtime_pm(runtime_pm, wakeref)
 			ret = register_context(ce, loop);
@@ -2779,7 +2420,7 @@ static int try_context_registration(struct intel_context *ce, bool loop)
 			clr_ctx_id_mapping(guc, ctx_id);
 		} else if (unlikely(ret == -ENODEV)) {
 			clr_ctx_id_mapping(guc, ctx_id);
-			ret = 0;	/* Will get registered later */
+			ret = 0;	 
 		}
 	}
 
@@ -2802,10 +2443,7 @@ static int __guc_context_pin(struct intel_context *ce,
 	    (ce->lrc.lrca & CTX_GTT_ADDRESS_MASK))
 		set_bit(CONTEXT_LRCA_DIRTY, &ce->flags);
 
-	/*
-	 * GuC context gets pinned in guc_request_alloc. See that function for
-	 * explaination of why.
-	 */
+	 
 
 	return lrc_pin(ce, engine, vaddr);
 }
@@ -2865,7 +2503,7 @@ static void __guc_context_sched_disable(struct intel_guc *guc,
 {
 	u32 action[] = {
 		INTEL_GUC_ACTION_SCHED_CONTEXT_MODE_SET,
-		guc_id,	/* ce->guc_id.id not stable */
+		guc_id,	 
 		GUC_CONTEXT_DISABLE
 	};
 
@@ -2891,11 +2529,7 @@ static void guc_blocked_fence_reinit(struct intel_context *ce)
 	lockdep_assert_held(&ce->guc_state.lock);
 	GEM_BUG_ON(!i915_sw_fence_done(&ce->guc_state.blocked));
 
-	/*
-	 * This fence is always complete unless a pending schedule disable is
-	 * outstanding. We arm the fence here and complete it when we receive
-	 * the pending schedule disable complete message.
-	 */
+	 
 	i915_sw_fence_fini(&ce->guc_state.blocked);
 	i915_sw_fence_reinit(&ce->guc_state.blocked);
 	i915_sw_fence_await(&ce->guc_state.blocked);
@@ -2937,10 +2571,7 @@ static struct i915_sw_fence *guc_context_block(struct intel_context *ce)
 		return &ce->guc_state.blocked;
 	}
 
-	/*
-	 * We add +2 here as the schedule disable complete CTB handler calls
-	 * intel_context_sched_disable_unpin (-2 to pin_count).
-	 */
+	 
 	atomic_add(2, &ce->pin_count);
 
 	guc_id = prep_context_pending_disable(ce);
@@ -3073,20 +2704,13 @@ guc_context_revoke(struct intel_context *ce, struct i915_request *rq,
 	} else if (!context_pending_disable(ce)) {
 		u16 guc_id;
 
-		/*
-		 * We add +2 here as the schedule disable complete CTB handler
-		 * calls intel_context_sched_disable_unpin (-2 to pin_count).
-		 */
+		 
 		atomic_add(2, &ce->pin_count);
 
 		guc_id = prep_context_pending_disable(ce);
 		spin_unlock_irqrestore(&ce->guc_state.lock, flags);
 
-		/*
-		 * In addition to disabling scheduling, set the preemption
-		 * timeout to the minimum value (1 us) so the banned context
-		 * gets kicked off the HW ASAP.
-		 */
+		 
 		with_intel_runtime_pm(runtime_pm, wakeref) {
 			__guc_context_set_preemption_timeout(guc, guc_id,
 							     preempt_timeout_ms);
@@ -3153,16 +2777,11 @@ static void __delay_sched_disable(struct work_struct *wrk)
 
 static bool guc_id_pressure(struct intel_guc *guc, struct intel_context *ce)
 {
-	/*
-	 * parent contexts are perma-pinned, if we are unpinning do schedule
-	 * disable immediately.
-	 */
+	 
 	if (intel_context_is_parent(ce))
 		return true;
 
-	/*
-	 * If we are beyond the threshold for avail guc_ids, do schedule disable immediately.
-	 */
+	 
 	return guc->submission_state.guc_ids_in_use >
 		guc->submission_state.sched_disable_gucid_threshold;
 }
@@ -3214,7 +2833,7 @@ static inline void guc_lrc_desc_unpin(struct intel_context *ce)
 	GEM_BUG_ON(ce != __get_context(guc, ce->guc_id.id));
 	GEM_BUG_ON(context_enabled(ce));
 
-	/* Seal race with Reset */
+	 
 	spin_lock_irqsave(&ce->guc_state.lock, flags);
 	disabled = submission_disabled(guc);
 	if (likely(!disabled)) {
@@ -3319,11 +2938,7 @@ static void guc_context_destroy(struct kref *kref)
 	unsigned long flags;
 	bool destroy;
 
-	/*
-	 * If the guc_id is invalid this context has been stolen and we can free
-	 * it immediately. Also can be freed immediately if the context is not
-	 * registered with the GuC or the GuC is in the middle of a reset.
-	 */
+	 
 	spin_lock_irqsave(&guc->submission_state.lock, flags);
 	destroy = submission_disabled(guc) || context_guc_id_invalid(ce) ||
 		!ctx_id_mapped(guc, ce->guc_id.id);
@@ -3341,11 +2956,7 @@ static void guc_context_destroy(struct kref *kref)
 		return;
 	}
 
-	/*
-	 * We use a worker to issue the H2G to deregister the context as we can
-	 * take the GT PM for the first time which isn't allowed from an atomic
-	 * context.
-	 */
+	 
 	queue_work(system_unbound_wq, &guc->submission_state.destroyed_worker);
 }
 
@@ -3414,7 +3025,7 @@ static inline void add_context_inflight_prio(struct intel_context *ce,
 
 	++ce->guc_state.prio_count[guc_prio];
 
-	/* Overflow protection */
+	 
 	GEM_WARN_ON(!ce->guc_state.prio_count[guc_prio]);
 }
 
@@ -3424,7 +3035,7 @@ static inline void sub_context_inflight_prio(struct intel_context *ce,
 	lockdep_assert_held(&ce->guc_state.lock);
 	GEM_BUG_ON(guc_prio >= ARRAY_SIZE(ce->guc_state.prio_count));
 
-	/* Underflow protection */
+	 
 	GEM_WARN_ON(!ce->guc_state.prio_count[guc_prio]);
 
 	--ce->guc_state.prio_count[guc_prio];
@@ -3450,7 +3061,7 @@ static inline void update_context_prio(struct intel_context *ce)
 
 static inline bool new_guc_prio_higher(u8 old_guc_prio, u8 new_guc_prio)
 {
-	/* Lower value is higher priority */
+	 
 	return new_guc_prio < old_guc_prio;
 }
 
@@ -3501,7 +3112,7 @@ static void remove_from_context(struct i915_request *rq)
 	list_del_init(&rq->sched.link);
 	clear_bit(I915_FENCE_FLAG_PQUEUE, &rq->fence.flags);
 
-	/* Prevent further __await_execution() registering a cb, then flush */
+	 
 	set_bit(I915_FENCE_FLAG_ACTIVE, &rq->fence.flags);
 
 	guc_prio_fini(rq, ce);
@@ -3558,10 +3169,7 @@ static void __guc_signal_context_fence(struct intel_context *ce)
 	if (!list_empty(&ce->guc_state.fences))
 		trace_intel_context_fence_release(ce);
 
-	/*
-	 * Use an IRQ to ensure locking order of sched_engine->lock ->
-	 * ce->guc_state.lock is preserved.
-	 */
+	 
 	list_for_each_entry_safe(rq, rn, &ce->guc_state.fences,
 				 guc_fence_link) {
 		list_del(&rq->guc_fence_link);
@@ -3618,22 +3226,12 @@ static int guc_request_alloc(struct i915_request *rq)
 
 	GEM_BUG_ON(!intel_context_is_pinned(rq->context));
 
-	/*
-	 * Flush enough space to reduce the likelihood of waiting after
-	 * we start building the request - in which case we will just
-	 * have to repeat work.
-	 */
+	 
 	rq->reserved_space += GUC_REQUEST_SIZE;
 
-	/*
-	 * Note that after this point, we have committed to using
-	 * this request as it is being used to both track the
-	 * state of engine initialisation and liveness of the
-	 * golden renderstate above. Think twice before you try
-	 * to cancel/unwind this request now.
-	 */
+	 
 
-	/* Unconditionally invalidate GPU caches and TLBs. */
+	 
 	ret = rq->engine->emit_flush(rq, EMIT_INVALIDATE);
 	if (ret)
 		return ret;
@@ -3643,54 +3241,25 @@ static int guc_request_alloc(struct i915_request *rq)
 	if (unlikely(!test_bit(CONTEXT_GUC_INIT, &ce->flags)))
 		guc_context_init(ce);
 
-	/*
-	 * If the context gets closed while the execbuf is ongoing, the context
-	 * close code will race with the below code to cancel the delayed work.
-	 * If the context close wins the race and cancels the work, it will
-	 * immediately call the sched disable (see guc_context_close), so there
-	 * is a chance we can get past this check while the sched_disable code
-	 * is being executed. To make sure that code completes before we check
-	 * the status further down, we wait for the close process to complete.
-	 * Else, this code path could send a request down thinking that the
-	 * context is still in a schedule-enable mode while the GuC ends up
-	 * dropping the request completely because the disable did go from the
-	 * context_close path right to GuC just prior. In the event the CT is
-	 * full, we could potentially need to wait up to 1.5 seconds.
-	 */
+	 
 	if (cancel_delayed_work_sync(&ce->guc_state.sched_disable_delay_work))
 		intel_context_sched_disable_unpin(ce);
 	else if (intel_context_is_closed(ce))
 		if (wait_for(context_close_done(ce), 1500))
 			guc_warn(guc, "timed out waiting on context sched close before realloc\n");
-	/*
-	 * Call pin_guc_id here rather than in the pinning step as with
-	 * dma_resv, contexts can be repeatedly pinned / unpinned trashing the
-	 * guc_id and creating horrible race conditions. This is especially bad
-	 * when guc_id are being stolen due to over subscription. By the time
-	 * this function is reached, it is guaranteed that the guc_id will be
-	 * persistent until the generated request is retired. Thus, sealing these
-	 * race conditions. It is still safe to fail here if guc_id are
-	 * exhausted and return -EAGAIN to the user indicating that they can try
-	 * again in the future.
-	 *
-	 * There is no need for a lock here as the timeline mutex ensures at
-	 * most one context can be executing this code path at once. The
-	 * guc_id_ref is incremented once for every request in flight and
-	 * decremented on each retire. When it is zero, a lock around the
-	 * increment (in pin_guc_id) is needed to seal a race with unpin_guc_id.
-	 */
+	 
 	if (atomic_add_unless(&ce->guc_id.ref, 1, 0))
 		goto out;
 
-	ret = pin_guc_id(guc, ce);	/* returns 1 if new guc_id assigned */
+	ret = pin_guc_id(guc, ce);	 
 	if (unlikely(ret < 0))
 		return ret;
 	if (context_needs_register(ce, !!ret)) {
 		ret = try_context_registration(ce, true);
-		if (unlikely(ret)) {	/* unwind */
+		if (unlikely(ret)) {	 
 			if (ret == -EPIPE) {
 				disable_submission(guc);
-				goto out;	/* GPU will be reset */
+				goto out;	 
 			}
 			atomic_dec(&ce->guc_id.ref);
 			unpin_guc_id(guc, ce);
@@ -3701,13 +3270,7 @@ static int guc_request_alloc(struct i915_request *rq)
 	clear_bit(CONTEXT_LRCA_DIRTY, &ce->flags);
 
 out:
-	/*
-	 * We block all requests on this context if a G2H is pending for a
-	 * schedule disable or context deregistration as the GuC will fail a
-	 * schedule enable or context registration if either G2H is pending
-	 * respectfully. Once a G2H returns, the fence is released that is
-	 * blocking these requests (see guc_signal_context_fence).
-	 */
+	 
 	spin_lock_irqsave(&ce->guc_state.lock, flags);
 	if (context_wait_for_deregister_to_register(ce) ||
 	    context_pending_disable(ce)) {
@@ -3923,18 +3486,7 @@ static const struct intel_context_ops virtual_child_context_ops = {
 	.get_sibling = guc_virtual_get_sibling,
 };
 
-/*
- * The below override of the breadcrumbs is enabled when the user configures a
- * context for parallel submission (multi-lrc, parent-child).
- *
- * The overridden breadcrumbs implements an algorithm which allows the GuC to
- * safely preempt all the hw contexts configured for parallel submission
- * between each BB. The contract between the i915 and GuC is if the parent
- * context can be preempted, all the children can be preempted, and the GuC will
- * always try to preempt the parent before the children. A handshake between the
- * parent / children breadcrumbs ensures the i915 holds up its end of the deal
- * creating a window to preempt between each set of BBs.
- */
+ 
 static int emit_bb_start_parent_no_preempt_mid_batch(struct i915_request *rq,
 						     u64 offset, u32 len,
 						     const unsigned int flags);
@@ -4036,14 +3588,7 @@ static void guc_init_breadcrumbs(struct intel_engine_cs *engine)
 {
 	int i;
 
-	/*
-	 * In GuC submission mode we do not know which physical engine a request
-	 * will be scheduled on, this creates a problem because the breadcrumb
-	 * interrupt is per physical engine. To work around this we attach
-	 * requests and direct all breadcrumb interrupts to the first instance
-	 * of an engine per class. In addition all breadcrumb interrupts are
-	 * enabled / disabled across an engine class in unison.
-	 */
+	 
 	for (i = 0; i < MAX_ENGINE_INSTANCE; ++i) {
 		struct intel_engine_cs *sibling =
 			engine->gt->engine_class[engine->class][i];
@@ -4071,7 +3616,7 @@ static void guc_bump_inflight_request_prio(struct i915_request *rq,
 	struct intel_context *ce = request_to_scheduling_context(rq);
 	u8 new_guc_prio = map_i915_prio_to_guc_prio(prio);
 
-	/* Short circuit function */
+	 
 	if (prio < I915_PRIORITY_NORMAL ||
 	    rq->guc_prio == GUC_PRIO_FINI ||
 	    (rq->guc_prio != GUC_PRIO_INIT &&
@@ -4108,26 +3653,14 @@ static void sanitize_hwsp(struct intel_engine_cs *engine)
 
 static void guc_sanitize(struct intel_engine_cs *engine)
 {
-	/*
-	 * Poison residual state on resume, in case the suspend didn't!
-	 *
-	 * We have to assume that across suspend/resume (or other loss
-	 * of control) that the contents of our pinned buffers has been
-	 * lost, replaced by garbage. Since this doesn't always happen,
-	 * let's poison such state so that we more quickly spot when
-	 * we falsely assume it has been preserved.
-	 */
+	 
 	if (IS_ENABLED(CONFIG_DRM_I915_DEBUG_GEM))
 		memset(engine->status_page.addr, POISON_INUSE, PAGE_SIZE);
 
-	/*
-	 * The kernel_context HWSP is stored in the status_page. As above,
-	 * that may be lost on resume/initialisation, and so we need to
-	 * reset the value in the HWSP.
-	 */
+	 
 	sanitize_hwsp(engine);
 
-	/* And scrub the dirty cachelines for the HWSP */
+	 
 	drm_clflush_virt_range(engine->status_page.addr, PAGE_SIZE);
 
 	intel_engine_reset_pinned_contexts(engine);
@@ -4135,7 +3668,7 @@ static void guc_sanitize(struct intel_engine_cs *engine)
 
 static void setup_hwsp(struct intel_engine_cs *engine)
 {
-	intel_engine_set_hwsp_writemask(engine, ~0u); /* HWSTAM */
+	intel_engine_set_hwsp_writemask(engine, ~0u);  
 
 	ENGINE_WRITE_FW(engine,
 			RING_HWS_PGA,
@@ -4184,12 +3717,7 @@ static inline int guc_kernel_context_pin(struct intel_guc *guc,
 {
 	int ret;
 
-	/*
-	 * Note: we purposefully do not check the returns below because
-	 * the registration can only fail if a reset is just starting.
-	 * This is called at the end of reset so presumably another reset
-	 * isn't happening and even it did this code would be run again.
-	 */
+	 
 
 	if (context_guc_id_invalid(ce)) {
 		ret = pin_guc_id(guc, ce);
@@ -4214,23 +3742,14 @@ static inline int guc_init_submission(struct intel_guc *guc)
 	struct intel_engine_cs *engine;
 	enum intel_engine_id id;
 
-	/* make sure all descriptors are clean... */
+	 
 	xa_destroy(&guc->context_lookup);
 
-	/*
-	 * A reset might have occurred while we had a pending stalled request,
-	 * so make sure we clean that up.
-	 */
+	 
 	guc->stalled_request = NULL;
 	guc->submission_stall_reason = STALL_NONE;
 
-	/*
-	 * Some contexts might have been pinned before we enabled GuC
-	 * submission, so we need to add them to the GuC bookeeping.
-	 * Also, after a reset the of the GuC we want to make sure that the
-	 * information shared with GuC is properly reset. The kernel LRCs are
-	 * not attached to the gem_context, so they need to be added separately.
-	 */
+	 
 	for_each_engine(engine, gt, id) {
 		struct intel_context *ce;
 
@@ -4239,7 +3758,7 @@ static inline int guc_init_submission(struct intel_guc *guc)
 			int ret = guc_kernel_context_pin(guc, ce);
 
 			if (ret) {
-				/* No point in trying to clean up as i915 will wedge on failure */
+				 
 				return ret;
 			}
 		}
@@ -4250,7 +3769,7 @@ static inline int guc_init_submission(struct intel_guc *guc)
 
 static void guc_release(struct intel_engine_cs *engine)
 {
-	engine->sanitize = NULL; /* no longer in control, nothing to sanitize */
+	engine->sanitize = NULL;  
 
 	intel_engine_cleanup_common(engine);
 	lrc_fini_wa_ctx(engine);
@@ -4267,7 +3786,7 @@ static void virtual_guc_bump_serial(struct intel_engine_cs *engine)
 
 static void guc_default_vfuncs(struct intel_engine_cs *engine)
 {
-	/* Default vfuncs which can be overridden by each engine. */
+	 
 
 	engine->resume = guc_resume;
 
@@ -4297,19 +3816,13 @@ static void guc_default_vfuncs(struct intel_engine_cs *engine)
 	engine->flags |= I915_ENGINE_HAS_PREEMPTION;
 	engine->flags |= I915_ENGINE_HAS_TIMESLICES;
 
-	/* Wa_14014475959:dg2 */
+	 
 	if (engine->class == COMPUTE_CLASS)
 		if (IS_MTL_GRAPHICS_STEP(engine->i915, M, STEP_A0, STEP_B0) ||
 		    IS_DG2(engine->i915))
 			engine->flags |= I915_ENGINE_USES_WA_HOLD_CCS_SWITCHOUT;
 
-	/*
-	 * TODO: GuC supports timeslicing and semaphores as well, but they're
-	 * handled by the firmware so some minor tweaks are required before
-	 * enabling.
-	 *
-	 * engine->flags |= I915_ENGINE_HAS_SEMAPHORES;
-	 */
+	 
 
 	engine->emit_bb_start = gen8_emit_bb_start;
 	if (GRAPHICS_VER_FULL(engine->i915) >= IP_VER(12, 50))
@@ -4347,7 +3860,7 @@ static void guc_sched_engine_destroy(struct kref *kref)
 	struct intel_guc *guc = sched_engine->private_data;
 
 	guc->sched_engine = NULL;
-	tasklet_kill(&sched_engine->tasklet); /* flush the callback */
+	tasklet_kill(&sched_engine->tasklet);  
 	kfree(sched_engine);
 }
 
@@ -4356,10 +3869,7 @@ int intel_guc_submission_setup(struct intel_engine_cs *engine)
 	struct drm_i915_private *i915 = engine->i915;
 	struct intel_guc *guc = &engine->gt->uc.guc;
 
-	/*
-	 * The setup relies on several assumptions (e.g. irqs always enabled)
-	 * that are only valid on gen11+
-	 */
+	 
 	GEM_BUG_ON(GRAPHICS_VER(i915) < 11);
 
 	if (!guc->sched_engine) {
@@ -4390,7 +3900,7 @@ int intel_guc_submission_setup(struct intel_engine_cs *engine)
 
 	lrc_init_wa_ctx(engine);
 
-	/* Finally, take ownership and responsibility for cleanup! */
+	 
 	engine->sanitize = guc_sanitize;
 	engine->release = guc_release;
 
@@ -4398,10 +3908,10 @@ int intel_guc_submission_setup(struct intel_engine_cs *engine)
 }
 
 struct scheduling_policy {
-	/* internal data */
+	 
 	u32 max_words, num_words;
 	u32 count;
-	/* API data */
+	 
 	struct guc_update_scheduling_policy h2g;
 };
 
@@ -4508,7 +4018,7 @@ int intel_guc_submission_enable(struct intel_guc *guc)
 {
 	int ret;
 
-	/* Semaphore interrupt enable and route to GuC */
+	 
 	guc_route_semaphores(guc, true);
 
 	ret = guc_init_submission(guc);
@@ -4532,18 +4042,18 @@ fail_sem:
 	return ret;
 }
 
-/* Note: By the time we're here, GuC may have already been reset */
+ 
 void intel_guc_submission_disable(struct intel_guc *guc)
 {
 	guc_cancel_busyness_worker(guc);
 
-	/* Semaphore interrupt disable and route to host */
+	 
 	guc_route_semaphores(guc, false);
 }
 
 static bool __guc_submission_supported(struct intel_guc *guc)
 {
-	/* GuC submission is unavailable for pre-Gen11 */
+	 
 	return intel_guc_is_supported(guc) &&
 	       GRAPHICS_VER(guc_to_gt(guc)->i915) >= 11;
 }
@@ -4563,18 +4073,10 @@ int intel_guc_sched_disable_gucid_threshold_max(struct intel_guc *guc)
 	return guc->submission_state.num_guc_ids - NUMBER_MULTI_LRC_GUC_ID(guc);
 }
 
-/*
- * This default value of 33 milisecs (+1 milisec round up) ensures 30fps or higher
- * workloads are able to enjoy the latency reduction when delaying the schedule-disable
- * operation. This matches the 30fps game-render + encode (real world) workload this
- * knob was tested against.
- */
+ 
 #define SCHED_DISABLE_DELAY_MS	34
 
-/*
- * A threshold of 75% is a reasonable starting point considering that real world apps
- * generally don't get anywhere near this.
- */
+ 
 #define NUM_SCHED_DISABLE_GUCIDS_DEFAULT_THRESHOLD(__guc) \
 	(((intel_guc_sched_disable_gucid_threshold_max(guc)) * 3) / 4)
 
@@ -4657,16 +4159,13 @@ int intel_guc_deregister_done_process_msg(struct intel_guc *guc,
 			&ce->engine->gt->i915->runtime_pm;
 		intel_wakeref_t wakeref;
 
-		/*
-		 * Previous owner of this guc_id has been deregistered, now safe
-		 * register this context.
-		 */
+		 
 		with_intel_runtime_pm(runtime_pm, wakeref)
 			register_context(ce, true);
 		guc_signal_context_fence(ce);
 		intel_context_put(ce);
 	} else if (context_destroyed(ce)) {
-		/* Context has been destroyed */
+		 
 		intel_gt_pm_put_async(guc_to_gt(guc));
 		release_guc_id(guc, ce);
 		__guc_context_destroy(ce);
@@ -4726,13 +4225,7 @@ int intel_guc_sched_done_process_msg(struct intel_guc *guc,
 		}
 #endif
 
-		/*
-		 * Unpin must be done before __guc_signal_context_fence,
-		 * otherwise a race exists between the requests getting
-		 * submitted + retired before this unpin completes resulting in
-		 * the pin_count going to zero and the context still being
-		 * enabled.
-		 */
+		 
 		intel_context_sched_disable_unpin(ce);
 
 		spin_lock_irqsave(&ce->guc_state.lock, flags);
@@ -4835,12 +4328,7 @@ int intel_guc_context_reset_process_msg(struct intel_guc *guc,
 
 	ctx_id = msg[0];
 
-	/*
-	 * The context lookup uses the xarray but lookups only require an RCU lock
-	 * not the full spinlock. So take the lock explicitly and keep it until the
-	 * context has been reference count locked to ensure it can't be destroyed
-	 * asynchronously until the reset is done.
-	 */
+	 
 	xa_lock_irqsave(&guc->context_lookup, flags);
 	ce = g2h_context_lookup(guc, ctx_id);
 	if (ce)
@@ -4881,7 +4369,7 @@ intel_guc_lookup_engine(struct intel_guc *guc, u8 guc_class, u8 instance)
 	struct intel_gt *gt = guc_to_gt(guc);
 	u8 engine_class = guc_class_to_engine_class(guc_class);
 
-	/* Class index is checked in class converter */
+	 
 	GEM_BUG_ON(instance > MAX_ENGINE_INSTANCE);
 
 	return gt->engine_class[engine_class][instance];
@@ -4904,12 +4392,7 @@ static void reset_fail_worker_func(struct work_struct *w)
 		struct intel_engine_cs *engine;
 		enum intel_engine_id id;
 
-		/*
-		 * GuC is toast at this point - it dead loops after sending the failed
-		 * reset notification. So need to manually determine the guilty context.
-		 * Note that it should be reliable to do this here because the GuC is
-		 * toast and will not be scheduling behind the KMD's back.
-		 */
+		 
 		for_each_engine_masked(engine, gt, reset_fail_mask, id)
 			intel_guc_find_hung_context(engine);
 
@@ -4943,10 +4426,7 @@ int intel_guc_engine_failure_process_msg(struct intel_guc *guc,
 		return -EPROTO;
 	}
 
-	/*
-	 * This is an unexpected failure of a hardware feature. So, log a real
-	 * error message not just the informational that comes with the reset.
-	 */
+	 
 	guc_err(guc, "Engine reset failed on %d:%d (%s) because 0x%08X",
 		guc_class, instance, engine->name, reason);
 
@@ -4954,10 +4434,7 @@ int intel_guc_engine_failure_process_msg(struct intel_guc *guc,
 	guc->submission_state.reset_fail_mask |= engine->mask;
 	spin_unlock_irqrestore(&guc->submission_state.lock, flags);
 
-	/*
-	 * A GT reset flushes this worker queue (G2H handler) so we must use
-	 * another worker to trigger a GT reset.
-	 */
+	 
 	queue_work(system_unbound_wq, &guc->submission_state.reset_fail_worker);
 
 	return 0;
@@ -4971,7 +4448,7 @@ void intel_guc_find_hung_context(struct intel_engine_cs *engine)
 	unsigned long index;
 	unsigned long flags;
 
-	/* Reset called during driver load? GuC not yet initialised! */
+	 
 	if (unlikely(!guc_submission_initialized(guc)))
 		return;
 
@@ -5009,7 +4486,7 @@ void intel_guc_find_hung_context(struct intel_engine_cs *engine)
 		if (found) {
 			intel_engine_set_hung_context(engine, ce);
 
-			/* Can only cope with one hang at a time... */
+			 
 			intel_context_put(ce);
 			xa_lock(&guc->context_lookup);
 			goto done;
@@ -5032,7 +4509,7 @@ void intel_guc_dump_active_requests(struct intel_engine_cs *engine,
 	unsigned long index;
 	unsigned long flags;
 
-	/* Reset called during driver load? GuC not yet initialised! */
+	 
 	if (unlikely(!guc_submission_initialized(guc)))
 		return;
 
@@ -5217,7 +4694,7 @@ static int emit_bb_start_parent_no_preempt_mid_batch(struct i915_request *rq,
 	if (IS_ERR(cs))
 		return PTR_ERR(cs);
 
-	/* Wait on children */
+	 
 	for (i = 0; i < ce->parallel.number_children; ++i) {
 		*cs++ = (MI_SEMAPHORE_WAIT |
 			 MI_SEMAPHORE_GLOBAL_GTT |
@@ -5228,17 +4705,17 @@ static int emit_bb_start_parent_no_preempt_mid_batch(struct i915_request *rq,
 		*cs++ = 0;
 	}
 
-	/* Turn off preemption */
+	 
 	*cs++ = MI_ARB_ON_OFF | MI_ARB_DISABLE;
 	*cs++ = MI_NOOP;
 
-	/* Tell children go */
+	 
 	cs = gen8_emit_ggtt_write(cs,
 				  CHILD_GO_BB,
 				  get_children_go_addr(ce),
 				  0);
 
-	/* Jump to batch */
+	 
 	*cs++ = MI_BATCH_BUFFER_START_GEN8 |
 		(flags & I915_DISPATCH_SECURE ? 0 : BIT(8));
 	*cs++ = lower_32_bits(offset);
@@ -5264,14 +4741,14 @@ static int emit_bb_start_child_no_preempt_mid_batch(struct i915_request *rq,
 	if (IS_ERR(cs))
 		return PTR_ERR(cs);
 
-	/* Signal parent */
+	 
 	cs = gen8_emit_ggtt_write(cs,
 				  PARENT_GO_BB,
 				  get_children_join_addr(parent,
 							 ce->parallel.child_index),
 				  0);
 
-	/* Wait on parent for go */
+	 
 	*cs++ = (MI_SEMAPHORE_WAIT |
 		 MI_SEMAPHORE_GLOBAL_GTT |
 		 MI_SEMAPHORE_POLL |
@@ -5280,10 +4757,10 @@ static int emit_bb_start_child_no_preempt_mid_batch(struct i915_request *rq,
 	*cs++ = get_children_go_addr(parent);
 	*cs++ = 0;
 
-	/* Turn off preemption */
+	 
 	*cs++ = MI_ARB_ON_OFF | MI_ARB_DISABLE;
 
-	/* Jump to batch */
+	 
 	*cs++ = MI_BATCH_BUFFER_START_GEN8 |
 		(flags & I915_DISPATCH_SECURE ? 0 : BIT(8));
 	*cs++ = lower_32_bits(offset);
@@ -5303,7 +4780,7 @@ __emit_fini_breadcrumb_parent_no_preempt_mid_batch(struct i915_request *rq,
 
 	GEM_BUG_ON(!intel_context_is_parent(ce));
 
-	/* Wait on children */
+	 
 	for (i = 0; i < ce->parallel.number_children; ++i) {
 		*cs++ = (MI_SEMAPHORE_WAIT |
 			 MI_SEMAPHORE_GLOBAL_GTT |
@@ -5314,11 +4791,11 @@ __emit_fini_breadcrumb_parent_no_preempt_mid_batch(struct i915_request *rq,
 		*cs++ = 0;
 	}
 
-	/* Turn on preemption */
+	 
 	*cs++ = MI_ARB_ON_OFF | MI_ARB_ENABLE;
 	*cs++ = MI_NOOP;
 
-	/* Tell children go */
+	 
 	cs = gen8_emit_ggtt_write(cs,
 				  CHILD_GO_FINI_BREADCRUMB,
 				  get_children_go_addr(ce),
@@ -5327,17 +4804,7 @@ __emit_fini_breadcrumb_parent_no_preempt_mid_batch(struct i915_request *rq,
 	return cs;
 }
 
-/*
- * If this true, a submission of multi-lrc requests had an error and the
- * requests need to be skipped. The front end (execuf IOCTL) should've called
- * i915_request_skip which squashes the BB but we still need to emit the fini
- * breadrcrumbs seqno write. At this point we don't know how many of the
- * requests in the multi-lrc submission were generated so we can't do the
- * handshake between the parent and children (e.g. if 4 requests should be
- * generated but 2nd hit an error only 1 would be seen by the GuC backend).
- * Simply skip the handshake, but still emit the breadcrumbd seqno, if an error
- * has occurred on any of the requests in submission / relationship.
- */
+ 
 static inline bool skip_handshake(struct i915_request *rq)
 {
 	return test_bit(I915_FENCE_FLAG_SKIP_PARALLEL, &rq->fence.flags);
@@ -5355,10 +4822,7 @@ emit_fini_breadcrumb_parent_no_preempt_mid_batch(struct i915_request *rq,
 	GEM_BUG_ON(!intel_context_is_parent(ce));
 
 	if (unlikely(skip_handshake(rq))) {
-		/*
-		 * NOP everything in __emit_fini_breadcrumb_parent_no_preempt_mid_batch,
-		 * the NON_SKIP_LEN comes from the length of the emits below.
-		 */
+		 
 		memset(cs, 0, sizeof(u32) *
 		       (ce->engine->emit_fini_breadcrumb_dw - NON_SKIP_LEN));
 		cs += ce->engine->emit_fini_breadcrumb_dw - NON_SKIP_LEN;
@@ -5366,18 +4830,18 @@ emit_fini_breadcrumb_parent_no_preempt_mid_batch(struct i915_request *rq,
 		cs = __emit_fini_breadcrumb_parent_no_preempt_mid_batch(rq, cs);
 	}
 
-	/* Emit fini breadcrumb */
+	 
 	before_fini_breadcrumb_user_interrupt_cs = cs;
 	cs = gen8_emit_ggtt_write(cs,
 				  rq->fence.seqno,
 				  i915_request_active_timeline(rq)->hwsp_offset,
 				  0);
 
-	/* User interrupt */
+	 
 	*cs++ = MI_USER_INTERRUPT;
 	*cs++ = MI_NOOP;
 
-	/* Ensure our math for skip + emit is correct */
+	 
 	GEM_BUG_ON(before_fini_breadcrumb_user_interrupt_cs + NON_SKIP_LEN !=
 		   cs);
 	GEM_BUG_ON(start_fini_breadcrumb_cs +
@@ -5397,18 +4861,18 @@ __emit_fini_breadcrumb_child_no_preempt_mid_batch(struct i915_request *rq,
 
 	GEM_BUG_ON(!intel_context_is_child(ce));
 
-	/* Turn on preemption */
+	 
 	*cs++ = MI_ARB_ON_OFF | MI_ARB_ENABLE;
 	*cs++ = MI_NOOP;
 
-	/* Signal parent */
+	 
 	cs = gen8_emit_ggtt_write(cs,
 				  PARENT_GO_FINI_BREADCRUMB,
 				  get_children_join_addr(parent,
 							 ce->parallel.child_index),
 				  0);
 
-	/* Wait parent on for go */
+	 
 	*cs++ = (MI_SEMAPHORE_WAIT |
 		 MI_SEMAPHORE_GLOBAL_GTT |
 		 MI_SEMAPHORE_POLL |
@@ -5431,10 +4895,7 @@ emit_fini_breadcrumb_child_no_preempt_mid_batch(struct i915_request *rq,
 	GEM_BUG_ON(!intel_context_is_child(ce));
 
 	if (unlikely(skip_handshake(rq))) {
-		/*
-		 * NOP everything in __emit_fini_breadcrumb_child_no_preempt_mid_batch,
-		 * the NON_SKIP_LEN comes from the length of the emits below.
-		 */
+		 
 		memset(cs, 0, sizeof(u32) *
 		       (ce->engine->emit_fini_breadcrumb_dw - NON_SKIP_LEN));
 		cs += ce->engine->emit_fini_breadcrumb_dw - NON_SKIP_LEN;
@@ -5442,18 +4903,18 @@ emit_fini_breadcrumb_child_no_preempt_mid_batch(struct i915_request *rq,
 		cs = __emit_fini_breadcrumb_child_no_preempt_mid_batch(rq, cs);
 	}
 
-	/* Emit fini breadcrumb */
+	 
 	before_fini_breadcrumb_user_interrupt_cs = cs;
 	cs = gen8_emit_ggtt_write(cs,
 				  rq->fence.seqno,
 				  i915_request_active_timeline(rq)->hwsp_offset,
 				  0);
 
-	/* User interrupt */
+	 
 	*cs++ = MI_USER_INTERRUPT;
 	*cs++ = MI_NOOP;
 
-	/* Ensure our math for skip + emit is correct */
+	 
 	GEM_BUG_ON(before_fini_breadcrumb_user_interrupt_cs + NON_SKIP_LEN !=
 		   cs);
 	GEM_BUG_ON(start_fini_breadcrumb_cs +

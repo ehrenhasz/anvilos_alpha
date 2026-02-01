@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: MIT */
+ 
 #ifndef __NVKM_CGRP_H__
 #define __NVKM_CGRP_H__
 #include <core/os.h>
@@ -40,7 +40,7 @@ struct nvkm_cgrp {
 	struct list_head chans;
 	int chan_nr;
 
-	spinlock_t lock; /* protects irq handler channel (group) lookup */
+	spinlock_t lock;  
 
 	struct list_head ectxs;
 	struct list_head vctxs;

@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2020 BAIKAL ELECTRONICS, JSC
- *
- * Authors:
- *   Serge Semin <Sergey.Semin@baikalelectronics.ru>
- *   Dmitry Dunaev <dmitry.dunaev@baikalelectronics.ru>
- *
- * Baikal-T1 CCU PLL clocks driver
- */
+
+ 
 
 #define pr_fmt(fmt) "bt1-ccu-pll: " fmt
 
@@ -53,15 +45,7 @@ struct ccu_pll_info {
 	unsigned long features;
 };
 
-/*
- * Alas we have to mark all PLLs as critical. CPU and DDR PLLs are sources of
- * CPU cores and DDR controller reference clocks, due to which they obviously
- * shouldn't be ever gated. SATA and PCIe PLLs are the parents of APB-bus and
- * DDR controller AXI-bus clocks. If they are gated the system will be
- * unusable. Moreover disabling SATA and Ethernet PLLs causes automatic reset
- * of the corresponding subsystems. So until we aren't ready to re-initialize
- * all the devices consuming those PLLs, they will be marked as critical too.
- */
+ 
 static const struct ccu_pll_info pll_info[] = {
 	CCU_PLL_INFO(CCU_CPU_PLL, "cpu_pll", "ref_clk", CCU_CPU_PLL_BASE,
 		     CLK_IS_CRITICAL, CCU_PLL_BASIC),
@@ -153,7 +137,7 @@ static int ccu_pll_clk_register(struct ccu_pll_data *data, bool defer)
 		const struct ccu_pll_info *info = &pll_info[idx];
 		struct ccu_pll_init_data init = {0};
 
-		/* Defer non-basic PLLs allocation for the probe stage */
+		 
 		if (!!(info->features & CCU_PLL_BASIC) ^ defer) {
 			if (!data->plls[idx])
 				data->plls[idx] = ERR_PTR(-EPROBE_DEFER);
@@ -196,7 +180,7 @@ static void ccu_pll_clk_unregister(struct ccu_pll_data *data, bool defer)
 {
 	int idx;
 
-	/* Uninstall only the clocks registered on the specfied stage */
+	 
 	for (idx = 0; idx < CCU_PLL_NUM; ++idx) {
 		if (!!(pll_info[idx].features & CCU_PLL_BASIC) ^ defer)
 			continue;

@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM hyperv
@@ -355,7 +355,7 @@ DEFINE_EVENT(vmbus_channel, vmbus_on_event,
 #define TRACE_INCLUDE_PATH .
 #undef TRACE_INCLUDE_FILE
 #define TRACE_INCLUDE_FILE hv_trace
-#endif /* _HV_TRACE_H */
+#endif  
 
-/* This part must be outside protection */
+ 
 #include <trace/define_trace.h>

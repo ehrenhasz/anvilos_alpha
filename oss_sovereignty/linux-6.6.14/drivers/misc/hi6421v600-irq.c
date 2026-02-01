@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Device driver for irqs in HISI PMIC IC
- *
- * Copyright (c) 2013 Linaro Ltd.
- * Copyright (c) 2011 Hisilicon.
- * Copyright (c) 2020-2021 Huawei Technologies Co., Ltd.
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/interrupt.h>
@@ -24,7 +18,7 @@ struct hi6421v600_irq {
 	unsigned int		*irqs;
 	struct regmap		*regmap;
 
-	/* Protect IRQ mask changes */
+	 
 	spinlock_t		lock;
 };
 
@@ -49,48 +43,15 @@ enum hi6421v600_irq_list {
 
 #define HISI_IRQ_BANK_SIZE		2
 
-/*
- * IRQ number for the power key button and mask for both UP and DOWN IRQs
- */
+ 
 #define HISI_POWERKEY_IRQ_NUM		0
 #define HISI_IRQ_POWERKEY_UP_DOWN	(BIT(POWERKEY_DOWN) | BIT(POWERKEY_UP))
 
-/*
- * Registers for IRQ address and IRQ mask bits
- *
- * Please notice that we need to regmap a larger region, as other
- * registers are used by the irqs.
- * See drivers/irq/hi6421-irq.c.
- */
+ 
 #define SOC_PMIC_IRQ_MASK_0_ADDR	0x0202
 #define SOC_PMIC_IRQ0_ADDR		0x0212
 
-/*
- * The IRQs are mapped as:
- *
- *	======================  =============   ============	=====
- *	IRQ			MASK REGISTER	IRQ REGISTER	BIT
- *	======================  =============   ============	=====
- *	OTMP			0x0202		0x212		bit 0
- *	VBUS_CONNECT		0x0202		0x212		bit 1
- *	VBUS_DISCONNECT		0x0202		0x212		bit 2
- *	ALARMON_R		0x0202		0x212		bit 3
- *	HOLD_6S			0x0202		0x212		bit 4
- *	HOLD_1S			0x0202		0x212		bit 5
- *	POWERKEY_UP		0x0202		0x212		bit 6
- *	POWERKEY_DOWN		0x0202		0x212		bit 7
- *
- *	OCP_SCP_R		0x0203		0x213		bit 0
- *	COUL_R			0x0203		0x213		bit 1
- *	SIM0_HPD_R		0x0203		0x213		bit 2
- *	SIM0_HPD_F		0x0203		0x213		bit 3
- *	SIM1_HPD_R		0x0203		0x213		bit 4
- *	SIM1_HPD_F		0x0203		0x213		bit 5
- *	======================  =============   ============	=====
- *
- * Each mask register contains 8 bits. The ancillary macros below
- * convert a number from 0 to 14 into a register address and a bit mask
- */
+ 
 #define HISI_IRQ_MASK_REG(irq_data)	(SOC_PMIC_IRQ_MASK_0_ADDR + \
 					 (irqd_to_hwirq(irq_data) / BITS_PER_BYTE))
 #define HISI_IRQ_MASK_BIT(irq_data)	BIT(irqd_to_hwirq(irq_data) & (BITS_PER_BYTE - 1))
@@ -106,17 +67,14 @@ static irqreturn_t hi6421v600_irq_handler(int irq, void *__priv)
 	for (i = 0; i < HISI_IRQ_BANK_SIZE; i++) {
 		regmap_read(priv->regmap, SOC_PMIC_IRQ0_ADDR + i, &in);
 
-		/* Mark pending IRQs as handled */
+		 
 		regmap_write(priv->regmap, SOC_PMIC_IRQ0_ADDR + i, in);
 
 		pending = in & HISI_8BITS_MASK;
 
 		if (i == HISI_POWERKEY_IRQ_NUM &&
 		    (pending & HISI_IRQ_POWERKEY_UP_DOWN) == HISI_IRQ_POWERKEY_UP_DOWN) {
-			/*
-			 * If both powerkey down and up IRQs are received,
-			 * handle them at the right order
-			 */
+			 
 			generic_handle_irq_safe(priv->irqs[POWERKEY_DOWN]);
 			generic_handle_irq_safe(priv->irqs[POWERKEY_UP]);
 			pending &= ~HISI_IRQ_POWERKEY_UP_DOWN;
@@ -199,12 +157,12 @@ static void hi6421v600_irq_init(struct hi6421v600_irq *priv)
 	int i;
 	unsigned int pending;
 
-	/* Mask all IRQs */
+	 
 	for (i = 0; i < HISI_IRQ_BANK_SIZE; i++)
 		regmap_write(priv->regmap, SOC_PMIC_IRQ_MASK_0_ADDR + i,
 			     HISI_8BITS_MASK);
 
-	/* Mark all IRQs as handled */
+	 
 	for (i = 0; i < HISI_IRQ_BANK_SIZE; i++) {
 		regmap_read(priv->regmap, SOC_PMIC_IRQ0_ADDR + i, &pending);
 		regmap_write(priv->regmap, SOC_PMIC_IRQ0_ADDR + i,
@@ -223,11 +181,7 @@ static int hi6421v600_irq_probe(struct platform_device *pdev)
 	unsigned int virq;
 	int i, ret;
 
-	/*
-	 * This driver is meant to be called by hi6421-spmi-core,
-	 * which should first set drvdata. If this doesn't happen, hit
-	 * a warn on and return.
-	 */
+	 
 	regmap = dev_get_drvdata(pmic_dev);
 	if (WARN_ON(!regmap))
 		return -ENODEV;

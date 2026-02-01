@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Driver for BCM6362 GPIO unit (pinctrl + GPIO)
- *
- * Copyright (C) 2021 Álvaro Fernández Rojas <noltari@gmail.com>
- * Copyright (C) 2016 Jonas Gorski <jonas.gorski@gmail.com>
- */
+
+ 
 
 #include <linux/bits.h>
 #include <linux/gpio/driver.h>
@@ -490,14 +485,14 @@ static void bcm6362_set_gpio(struct bcm63xx_pinctrl *pc, unsigned pin)
 		regmap_update_bits(pc->regs, BCM6362_BASEMODE_REG, basemode, 0);
 
 	if (pin < BCM63XX_BANK_GPIOS) {
-		/* base mode 0 => gpio 1 => mux function */
+		 
 		regmap_update_bits(pc->regs, BCM6362_MODE_REG, mask, 0);
 
-		/* pins 0-23 might be muxed to led */
+		 
 		if (pin < BCM6362_NUM_LEDS)
 			regmap_update_bits(pc->regs, BCM6362_LED_REG, mask, 0);
 	} else {
-		/* ctrl reg 0 => wifi function 1 => gpio */
+		 
 		regmap_update_bits(pc->regs, BCM6362_CTRL_REG, mask, mask);
 	}
 }
@@ -552,7 +547,7 @@ static int bcm6362_gpio_request_enable(struct pinctrl_dev *pctldev,
 {
 	struct bcm63xx_pinctrl *pc = pinctrl_dev_get_drvdata(pctldev);
 
-	/* disable all functions using this pin */
+	 
 	bcm6362_set_gpio(pc, offset);
 
 	return 0;
@@ -590,7 +585,7 @@ static int bcm6362_pinctrl_probe(struct platform_device *pdev)
 
 static const struct of_device_id bcm6362_pinctrl_match[] = {
 	{ .compatible = "brcm,bcm6362-pinctrl", },
-	{ /* sentinel */ }
+	{   }
 };
 
 static struct platform_driver bcm6362_pinctrl_driver = {

@@ -1,11 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Atlantic Network Driver
- *
- * Copyright (C) 2014-2019 aQuantia Corporation
- * Copyright (C) 2019-2020 Marvell International Ltd.
- */
 
-/* File aq_ethtool.c: Definition of ethertool related functions. */
+ 
+
+ 
 
 #include "aq_ethtool.h"
 #include "aq_nic.h"
@@ -457,7 +453,7 @@ static int aq_ethtool_get_rss(struct net_device *ndev, u32 *indir, u8 *key,
 	cfg = aq_nic_get_cfg(aq_nic);
 
 	if (hfunc)
-		*hfunc = ETH_RSS_HASH_TOP; /* Toeplitz */
+		*hfunc = ETH_RSS_HASH_TOP;  
 	if (indir) {
 		for (i = 0; i < AQ_CFG_RSS_INDIRECTION_TABLE_MAX; i++)
 			indir[i] = cfg->aq_rss.indirection_table[i];
@@ -481,15 +477,15 @@ static int aq_ethtool_set_rss(struct net_device *netdev, const u32 *indir,
 	cfg = aq_nic_get_cfg(aq_nic);
 	rss_entries = cfg->aq_rss.indirection_table_size;
 
-	/* We do not allow change in unsupported parameters */
+	 
 	if (hfunc != ETH_RSS_HASH_NO_CHANGE && hfunc != ETH_RSS_HASH_TOP)
 		return -EOPNOTSUPP;
-	/* Fill out the redirection table */
+	 
 	if (indir)
 		for (i = 0; i < rss_entries; i++)
 			cfg->aq_rss.indirection_table[i] = indir[i];
 
-	/* Fill out the rss hash key */
+	 
 	if (key) {
 		memcpy(cfg->aq_rss.hash_secret_key, key,
 		       sizeof(cfg->aq_rss.hash_secret_key));
@@ -592,14 +588,12 @@ static int aq_ethtool_set_coalesce(struct net_device *ndev,
 
 	cfg = aq_nic_get_cfg(aq_nic);
 
-	/* Atlantic only supports timing based coalescing
-	 */
+	 
 	if (coal->rx_max_coalesced_frames > 1 ||
 	    coal->tx_max_coalesced_frames > 1)
 		return -EOPNOTSUPP;
 
-	/* We do not support frame counting. Check this
-	 */
+	 
 	if (!(coal->rx_max_coalesced_frames == !coal->rx_coalesce_usecs))
 		return -EOPNOTSUPP;
 	if (!(coal->tx_max_coalesced_frames == !coal->tx_coalesce_usecs))

@@ -1,24 +1,6 @@
-/* Generate buffers of random data.
+ 
 
-   Copyright (C) 2006-2023 Free Software Foundation, Inc.
-
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* Written by Paul Eggert.  */
-
-/* FIXME: Improve performance by adding support for the RDRAND machine
-   instruction if available (e.g., Ivy Bridge processors).  */
+ 
 
 #include <config.h>
 
@@ -51,44 +33,35 @@
 # define ALIGNED_POINTER(ptr, type) ((size_t) (ptr) % alignof (type) == 0)
 #endif
 
-/* The maximum buffer size used for reads of random data.  Using the
-   value 2 * ISAAC_BYTES makes this the largest power of two that
-   would not otherwise cause struct randread_source to grow.  */
+ 
 #define RANDREAD_BUFFER_SIZE (2 * ISAAC_BYTES)
 
-/* A source of random data for generating random buffers.  */
+ 
 struct randread_source
 {
-  /* Stream to read random bytes from.  If null, the current
-     implementation uses an internal PRNG (ISAAC).  */
+   
   FILE *source;
 
-  /* Function to call, and its argument, if there is an input error or
-     end of file when reading from the stream; errno is nonzero if
-     there was an error.  If this function returns, it should fix the
-     problem before returning.  The default handler assumes that
-     handler_arg is the file name of the source.  */
+   
   void (*handler) (void const *);
   void const *handler_arg;
 
-  /* The buffer for SOURCE.  It's kept here to simplify storage
-     allocation and to make it easier to clear out buffered random
-     data.  */
+   
   union
   {
-    /* The stream buffer, if SOURCE is not null.  */
+     
     char c[RANDREAD_BUFFER_SIZE];
 
-    /* The buffered ISAAC pseudorandom buffer, if SOURCE is null.  */
+     
     struct isaac
     {
-      /* The number of bytes that are buffered at the end of data.b.  */
+       
       size_t buffered;
 
-      /* State of the ISAAC generator.  */
+       
       struct isaac_state state;
 
-      /* Up to a buffer's worth of pseudorandom data.  */
+       
       union
       {
         isaac_word w[ISAAC_WORDS];
@@ -99,7 +72,7 @@ struct randread_source
 };
 
 
-/* The default error handler.  */
+ 
 
 static void
 randread_error (void const *file_name)
@@ -110,8 +83,7 @@ randread_error (void const *file_name)
          quote (file_name));
 }
 
-/* Simply return a new randread_source object with the default error
-   handler.  */
+ 
 
 static struct randread_source *
 simple_new (FILE *source, void const *handler_arg)
@@ -123,8 +95,7 @@ simple_new (FILE *source, void const *handler_arg)
   return s;
 }
 
-/* Put a nonce value into BUFFER, with size BUFSIZE.
-   Return true on success, false (setting errno) on failure.  */
+ 
 
 static bool
 get_nonce (void *buffer, size_t bufsize)
@@ -147,7 +118,7 @@ get_nonce (void *buffer, size_t bufsize)
   return true;
 }
 
-/* Body of randread_free, broken out to pacify gcc -Wmismatched-dealloc.  */
+ 
 
 static int
 randread_free_body (struct randread_source *s)
@@ -158,16 +129,7 @@ randread_free_body (struct randread_source *s)
   return source ? fclose (source) : 0;
 }
 
-/* Create and initialize a random data source from NAME, or use a
-   reasonable default source if NAME is null.  BYTES_BOUND is an upper
-   bound on the number of bytes that will be needed.  If zero, it is a
-   hard bound; otherwise it is just an estimate.
-
-   If NAME is not null, NAME is saved for use as the argument of the
-   default handler.  Unless a non-default handler is used, NAME's
-   lifetime should be at least that of the returned value.
-
-   Return nullptr (setting errno) on failure.  */
+ 
 
 struct randread_source *
 randread_new (char const *name, size_t bytes_bound)
@@ -206,12 +168,7 @@ randread_new (char const *name, size_t bytes_bound)
 }
 
 
-/* Set S's handler and its argument.  HANDLER (HANDLER_ARG) is called
-   when there is a read error or end of file from the random data
-   source; errno is nonzero if there was an error.  If HANDLER
-   returns, it should fix the problem before returning.  The default
-   handler assumes that handler_arg is the file name of the source; it
-   does not return.  */
+ 
 
 void
 randread_set_handler (struct randread_source *s, void (*handler) (void const *))
@@ -226,8 +183,7 @@ randread_set_handler_arg (struct randread_source *s, void const *handler_arg)
 }
 
 
-/* Place SIZE random bytes into the buffer beginning at P, using
-   the stream in S.  */
+ 
 
 static void
 readsource (struct randread_source *s, unsigned char *p, size_t size)
@@ -246,8 +202,7 @@ readsource (struct randread_source *s, unsigned char *p, size_t size)
 }
 
 
-/* Place SIZE pseudorandom bytes into the buffer beginning at P, using
-   the buffered ISAAC generator in ISAAC.  */
+ 
 
 static void
 readisaac (struct isaac *isaac, void *p, size_t size)
@@ -269,8 +224,7 @@ readisaac (struct isaac *isaac, void *p, size_t size)
       p = char_p + inbytes;
       size -= inbytes;
 
-      /* If P is aligned, write to *P directly to avoid the overhead
-         of copying from the buffer.  */
+       
       if (ALIGNED_POINTER (p, isaac_word))
         {
           isaac_word *wp = p;
@@ -294,8 +248,7 @@ readisaac (struct isaac *isaac, void *p, size_t size)
 }
 
 
-/* Consume random data from *S to generate a random buffer BUF of size
-   SIZE.  */
+ 
 
 void
 randread (struct randread_source *s, void *buf, size_t size)
@@ -307,10 +260,7 @@ randread (struct randread_source *s, void *buf, size_t size)
 }
 
 
-/* Clear *S so that it no longer contains undelivered random data, and
-   deallocate any system resources associated with *S.  Return 0 if
-   successful, a negative number (setting errno) if not (this is rare,
-   but can occur in theory if there is an input error).  */
+ 
 
 int
 randread_free (struct randread_source *s)

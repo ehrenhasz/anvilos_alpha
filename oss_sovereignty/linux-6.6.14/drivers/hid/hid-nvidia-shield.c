@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  Copyright (c) 2023, NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
- *
- *  HID driver for NVIDIA SHIELD peripherals.
- */
+
+ 
 
 #include <linux/hid.h>
 #include <linux/idr.h>
@@ -23,10 +19,10 @@
 #define android_map_key(c) hid_map_usage(hi, usage, bit, max, EV_KEY, (c))
 
 enum {
-	HID_USAGE_ANDROID_PLAYPAUSE_BTN = 0xcd, /* Double-tap volume slider */
+	HID_USAGE_ANDROID_PLAYPAUSE_BTN = 0xcd,  
 	HID_USAGE_ANDROID_VOLUMEUP_BTN = 0xe9,
 	HID_USAGE_ANDROID_VOLUMEDOWN_BTN = 0xea,
-	HID_USAGE_ANDROID_SEARCH_BTN = 0x221, /* NVIDIA btn on Thunderstrike */
+	HID_USAGE_ANDROID_SEARCH_BTN = 0x221,  
 	HID_USAGE_ANDROID_HOME_BTN = 0x223,
 	HID_USAGE_ANDROID_BACK_BTN = 0x224,
 };
@@ -146,7 +142,7 @@ struct thunderstrike_hostcmd_haptics {
 } __packed;
 
 struct thunderstrike_hostcmd_resp_report {
-	u8 report_id; /* THUNDERSTRIKE_HOSTCMD_RESP_REPORT_ID */
+	u8 report_id;  
 	u8 cmd_id;
 	u8 reserved_at_10;
 
@@ -164,7 +160,7 @@ static_assert(sizeof(struct thunderstrike_hostcmd_resp_report) ==
 	      THUNDERSTRIKE_HOSTCMD_REPORT_SIZE);
 
 struct thunderstrike_hostcmd_req_report {
-	u8 report_id; /* THUNDERSTRIKE_HOSTCMD_REQ_REPORT_ID */
+	u8 report_id;  
 	u8 cmd_id;
 	u8 reserved_at_10;
 
@@ -183,7 +179,7 @@ struct thunderstrike_hostcmd_req_report {
 static_assert(sizeof(struct thunderstrike_hostcmd_req_report) ==
 	      THUNDERSTRIKE_HOSTCMD_REPORT_SIZE);
 
-/* Common struct for shield accessories. */
+ 
 struct shield_device {
 	struct hid_device *hdev;
 	struct power_supply_dev battery_dev;
@@ -197,10 +193,7 @@ struct shield_device {
 	} board_info;
 };
 
-/*
- * Non-trivial to uniquely identify Thunderstrike controllers at initialization
- * time. Use an ID allocator to help with this.
- */
+ 
 static DEFINE_IDA(thunderstrike_ida);
 
 struct thunderstrike {
@@ -208,11 +201,11 @@ struct thunderstrike {
 
 	int id;
 
-	/* Sub-devices */
+	 
 	struct input_dev *haptics_dev;
 	struct led_classdev led_dev;
 
-	/* Resources */
+	 
 	void *req_report_dmabuf;
 	unsigned long update_flags;
 	struct thunderstrike_hostcmd_haptics haptics_val;
@@ -407,7 +400,7 @@ static int thunderstrike_play_effect(struct input_dev *idev, void *data,
 	shield_dev = hid_get_drvdata(hdev);
 	ts = container_of(shield_dev, struct thunderstrike, base);
 
-	/* Thunderstrike motor values range from 0 to 32 inclusively */
+	 
 	motors.motor_left = effect->u.rumble.strong_magnitude / 2047;
 	motors.motor_right = effect->u.rumble.weak_magnitude / 2047;
 
@@ -479,10 +472,10 @@ static int thunderstrike_battery_get_property(struct power_supply *psy,
 		val->intval = prop_values.voltage_min;
 		break;
 	case POWER_SUPPLY_PROP_VOLTAGE_MAX_DESIGN:
-		val->intval = 2900000; /* 2.9 V */
+		val->intval = 2900000;  
 		break;
 	case POWER_SUPPLY_PROP_VOLTAGE_MIN_DESIGN:
-		val->intval = 2200000; /* 2.2 V */
+		val->intval = 2200000;  
 		break;
 	case POWER_SUPPLY_PROP_VOLTAGE_NOW:
 		val->intval = prop_values.voltage_now;
@@ -503,16 +496,16 @@ static int thunderstrike_battery_get_property(struct power_supply *psy,
 		val->intval = prop_values.temp;
 		break;
 	case POWER_SUPPLY_PROP_TEMP_MIN:
-		val->intval = 0; /* 0 C */
+		val->intval = 0;  
 		break;
 	case POWER_SUPPLY_PROP_TEMP_MAX:
-		val->intval = 400; /* 40 C */
+		val->intval = 400;  
 		break;
 	case POWER_SUPPLY_PROP_TEMP_ALERT_MIN:
-		val->intval = 15; /* 1.5 C */
+		val->intval = 15;  
 		break;
 	case POWER_SUPPLY_PROP_TEMP_ALERT_MAX:
-		val->intval = 380; /* 38 C */
+		val->intval = 380;  
 		break;
 	default:
 		ret = -EINVAL;
@@ -534,7 +527,7 @@ static void thunderstrike_psy_stats_timer_handler(struct timer_list *timer)
 		container_of(timer, struct thunderstrike, psy_stats_timer);
 
 	thunderstrike_request_psy_stats(ts);
-	/* Query battery statistics from device every five minutes */
+	 
 	mod_timer(timer, jiffies + 300 * HZ);
 }
 
@@ -617,14 +610,14 @@ static void thunderstrike_parse_battery_payload(
 	u8 capacity = battery->capacity;
 	int temp;
 
-	/* Convert thunderstrike device values to µV and tenths of degree Celsius */
+	 
 	voltage_boot = hostcmd_voltage_boot * 1000;
 	voltage_avg = hostcmd_voltage_avg * 1000;
 	voltage_min = hostcmd_voltage_min * 1000;
 	voltage_now = hostcmd_voltage_now * 1000;
 	temp = (1378 - (int)hostcmd_thermistor) * 10 / 19;
 
-	/* Copy converted values */
+	 
 	spin_lock(&ts->psy_stats_lock);
 	ts->psy_stats.voltage_boot = voltage_boot;
 	ts->psy_stats.voltage_avg = voltage_avg;
@@ -680,7 +673,7 @@ static void thunderstrike_parse_charger_payload(
 		status = POWER_SUPPLY_STATUS_UNKNOWN;
 		break;
 	case THUNDERSTRIKE_CHARGER_STATE_DISABLED:
-		/* Indicates charger is disconnected */
+		 
 		break;
 	case THUNDERSTRIKE_CHARGER_STATE_CHARGING:
 		status = POWER_SUPPLY_STATUS_CHARGING;
@@ -769,11 +762,11 @@ static int thunderstrike_parse_report(struct shield_device *shield_dev,
 				shield_dev, &hostcmd_resp_report->motors);
 			break;
 		case THUNDERSTRIKE_HOSTCMD_ID_USB_INIT:
-			/* May block HOSTCMD requests till received initially */
+			 
 			thunderstrike_device_init_info(shield_dev);
 			break;
 		case THUNDERSTRIKE_HOSTCMD_ID_CHARGER:
-			/* May block HOSTCMD requests till received initially */
+			 
 			thunderstrike_device_init_info(shield_dev);
 
 			thunderstrike_parse_charger_payload(
@@ -815,11 +808,7 @@ static inline int thunderstrike_psy_create(struct shield_device *shield_dev)
 	struct hid_device *hdev = shield_dev->hdev;
 	int ret;
 
-	/*
-	 * Set an initial capacity and temperature value to avoid prematurely
-	 * triggering alerts. Will be replaced by values queried from initial
-	 * HOSTCMD requests.
-	 */
+	 
 	ts->psy_stats.capacity = 100;
 	ts->psy_stats.temp = 182;
 

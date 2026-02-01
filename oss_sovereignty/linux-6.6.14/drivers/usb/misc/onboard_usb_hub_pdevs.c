@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * API for creating and destroying USB onboard hub platform devices
- *
- * Copyright (c) 2022, Google LLC
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/export.h>
@@ -29,40 +25,7 @@ static bool of_is_onboard_usb_hub(const struct device_node *np)
 	return !!of_match_node(onboard_hub_match, np);
 }
 
-/**
- * onboard_hub_create_pdevs -- create platform devices for onboard USB hubs
- * @parent_hub	: parent hub to scan for connected onboard hubs
- * @pdev_list	: list of onboard hub platform devices owned by the parent hub
- *
- * Creates a platform device for each supported onboard hub that is connected to
- * the given parent hub. The platform device is in charge of initializing the
- * hub (enable regulators, take the hub out of reset, ...) and can optionally
- * control whether the hub remains powered during system suspend or not.
- *
- * To keep track of the platform devices they are added to a list that is owned
- * by the parent hub.
- *
- * Some background about the logic in this function, which can be a bit hard
- * to follow:
- *
- * Root hubs don't have dedicated device tree nodes, but use the node of their
- * HCD. The primary and secondary HCD are usually represented by a single DT
- * node. That means the root hubs of the primary and secondary HCD share the
- * same device tree node (the HCD node). As a result this function can be called
- * twice with the same DT node for root hubs. We only want to create a single
- * platform device for each physical onboard hub, hence for root hubs the loop
- * is only executed for the root hub of the primary HCD. Since the function
- * scans through all child nodes it still creates pdevs for onboard hubs
- * connected to the root hub of the secondary HCD if needed.
- *
- * Further there must be only one platform device for onboard hubs with a peer
- * hub (the hub is a single physical device). To achieve this two measures are
- * taken: pdevs for onboard hubs with a peer are only created when the function
- * is called on behalf of the parent hub that is connected to the primary HCD
- * (directly or through other hubs). For onboard hubs connected to root hubs
- * the function processes the nodes of both peers. A platform device is only
- * created if the peer hub doesn't have one already.
- */
+ 
 void onboard_hub_create_pdevs(struct usb_device *parent_hub, struct list_head *pdev_list)
 {
 	int i;
@@ -123,13 +86,7 @@ node_put:
 }
 EXPORT_SYMBOL_GPL(onboard_hub_create_pdevs);
 
-/**
- * onboard_hub_destroy_pdevs -- free resources of onboard hub platform devices
- * @pdev_list	: list of onboard hub platform devices
- *
- * Destroys the platform devices in the given list and frees the memory associated
- * with the list entry.
- */
+ 
 void onboard_hub_destroy_pdevs(struct list_head *pdev_list)
 {
 	struct pdev_list_entry *pdle, *tmp;

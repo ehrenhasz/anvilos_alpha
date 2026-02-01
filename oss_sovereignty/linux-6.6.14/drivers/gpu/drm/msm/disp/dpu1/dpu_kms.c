@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2013 Red Hat
- * Copyright (c) 2014-2018, The Linux Foundation. All rights reserved.
- * Copyright (c) 2022 Qualcomm Innovation Center, Inc. All rights reserved.
- *
- * Author: Rob Clark <robdclark@gmail.com>
- */
+
+ 
 
 #define pr_fmt(fmt)	"[drm:%s:%d] " fmt, __func__, __LINE__
 
@@ -39,15 +33,7 @@
 #define CREATE_TRACE_POINTS
 #include "dpu_trace.h"
 
-/*
- * To enable overall DRM driver logging
- * # echo 0x2 > /sys/module/drm/parameters/debug
- *
- * To enable DRM driver h/w logging
- * # echo <mask> > /sys/kernel/debug/dri/0/debug/hw_log_mask
- *
- * See dpu_hw_mdss.h for h/w logging mask definitions (search for DPU_DBG_MASK_)
- */
+ 
 #define DPU_DEBUGFS_DIR "msm_dpu"
 #define DPU_DEBUGFS_HWMASKNAME "hw_log_mask"
 
@@ -152,12 +138,12 @@ static ssize_t _dpu_plane_danger_write(struct file *file,
 		return ret;
 
 	if (disable_panic) {
-		/* Disable panic signal for all active pipes */
+		 
 		DPU_DEBUG("Disabling danger:\n");
 		_dpu_plane_set_danger_state(kms, false);
 		kms->has_danger_ctrl = false;
 	} else {
-		/* Enable panic signal for all active pipes */
+		 
 		DPU_DEBUG("Enabling danger:\n");
 		kms->has_danger_ctrl = true;
 		_dpu_plane_set_danger_state(kms, true);
@@ -186,9 +172,7 @@ static void dpu_debugfs_danger_init(struct dpu_kms *dpu_kms,
 
 }
 
-/*
- * Companion structure for dpu_debugfs_create_regset32.
- */
+ 
 struct dpu_debugfs_regset32 {
 	uint32_t offset;
 	uint32_t blk_len;
@@ -207,7 +191,7 @@ static int dpu_regset32_show(struct seq_file *s, void *data)
 
 	base = dpu_kms->mmio + regset->offset;
 
-	/* insert padding spaces, if needed */
+	 
 	if (regset->offset & 0xF) {
 		seq_printf(s, "[%x]", regset->offset & ~0xF);
 		for (i = 0; i < (regset->offset & 0xF); i += 4)
@@ -216,7 +200,7 @@ static int dpu_regset32_show(struct seq_file *s, void *data)
 
 	pm_runtime_get_sync(&dpu_kms->pdev->dev);
 
-	/* main register output */
+	 
 	for (i = 0; i < regset->blk_len; i += 4) {
 		addr = regset->offset + i;
 		if ((addr & 0xF) == 0x0)
@@ -243,7 +227,7 @@ void dpu_debugfs_create_regset32(const char *name, umode_t mode,
 	if (!regset)
 		return;
 
-	/* make sure offset is a multiple of 4 */
+	 
 	regset->offset = round_down(offset, 4);
 	regset->blk_len = length;
 	regset->dpu_kms = dpu_kms;
@@ -281,7 +265,7 @@ static int dpu_kms_debugfs_init(struct msm_kms *kms, struct drm_minor *minor)
 	if (!p)
 		return -EINVAL;
 
-	/* Only create a set of debugfs for the primary node, ignore render nodes */
+	 
 	if (minor->type != DRM_MINOR_PRIMARY)
 		return 0;
 
@@ -306,23 +290,16 @@ static int dpu_kms_debugfs_init(struct msm_kms *kms, struct drm_minor *minor)
 }
 #endif
 
-/* Global/shared object state funcs */
+ 
 
-/*
- * This is a helper that returns the private state currently in operation.
- * Note that this would return the "old_state" if called in the atomic check
- * path, and the "new_state" after the atomic swap has been done.
- */
+ 
 struct dpu_global_state *
 dpu_kms_get_existing_global_state(struct dpu_kms *dpu_kms)
 {
 	return to_dpu_global_state(dpu_kms->global_state.state);
 }
 
-/*
- * This acquires the modeset lock set aside for global state, creates
- * a new duplicated private object state.
- */
+ 
 struct dpu_global_state *dpu_kms_get_global_state(struct drm_atomic_state *s)
 {
 	struct msm_drm_private *priv = s->dev->dev_private;
@@ -484,11 +461,7 @@ static void dpu_kms_wait_for_commit_done(struct msm_kms *kms,
 	list_for_each_entry(encoder, &dev->mode_config.encoder_list, head) {
 		if (encoder->crtc != crtc)
 			continue;
-		/*
-		 * Wait for post-flush if necessary to delay before
-		 * plane_cleanup. For example, wait for vsync in case of video
-		 * mode panels. This may be a no-op for command mode panels.
-		 */
+		 
 		trace_dpu_kms_wait_for_commit_done(DRMID(crtc));
 		ret = dpu_encoder_wait_for_event(encoder, MSM_ENC_COMMIT_DONE);
 		if (ret && ret != -EWOULDBLOCK) {
@@ -518,14 +491,7 @@ static int _dpu_kms_initialize_dsi(struct drm_device *dev,
 	if (!(priv->dsi[0] || priv->dsi[1]))
 		return rc;
 
-	/*
-	 * We support following confiurations:
-	 * - Single DSI host (dsi0 or dsi1)
-	 * - Two independent DSI hosts
-	 * - Bonded DSI0 and DSI1 hosts
-	 *
-	 * TODO: Support swapping DSI0 and DSI1 in the bonded setup.
-	 */
+	 
 	for (i = 0; i < ARRAY_SIZE(priv->dsi); i++) {
 		int other = (i + 1) % 2;
 
@@ -649,7 +615,7 @@ static int _dpu_kms_initialize_writeback(struct drm_device *dev,
 	memset(&info, 0, sizeof(info));
 
 	info.num_of_h_tiles = 1;
-	/* use only WB idx 2 instance for DPU */
+	 
 	info.h_tile_instance[0] = WB_2;
 	info.intf_type = INTF_WB;
 
@@ -670,14 +636,7 @@ static int _dpu_kms_initialize_writeback(struct drm_device *dev,
 	return 0;
 }
 
-/**
- * _dpu_kms_setup_displays - create encoders, bridges and connectors
- *                           for underlying displays
- * @dev:        Pointer to drm device structure
- * @priv:       Pointer to private drm device data
- * @dpu_kms:    Pointer to dpu kms structure
- * Returns:     Zero on success
- */
+ 
 static int _dpu_kms_setup_displays(struct drm_device *dev,
 				    struct msm_drm_private *priv,
 				    struct dpu_kms *dpu_kms)
@@ -703,7 +662,7 @@ static int _dpu_kms_setup_displays(struct drm_device *dev,
 		return rc;
 	}
 
-	/* Since WB isn't a driver check the catalog before initializing */
+	 
 	if (dpu_kms->catalog->wb_count) {
 		for (i = 0; i < dpu_kms->catalog->wb_count; i++) {
 			if (dpu_kms->catalog->wb[i].id == WB_2) {
@@ -740,10 +699,7 @@ static int _dpu_kms_drm_obj_init(struct dpu_kms *dpu_kms)
 	priv = dev->dev_private;
 	catalog = dpu_kms->catalog;
 
-	/*
-	 * Create encoder and query display drivers to create
-	 * bridges and connectors
-	 */
+	 
 	ret = _dpu_kms_setup_displays(dev, priv, dpu_kms);
 	if (ret)
 		return ret;
@@ -754,7 +710,7 @@ static int _dpu_kms_drm_obj_init(struct dpu_kms *dpu_kms)
 
 	max_crtc_count = min(catalog->mixer_count, num_encoders);
 
-	/* Create the planes, keeping track of one primary/cursor per crtc */
+	 
 	for (i = 0; i < catalog->sspp_count; i++) {
 		enum drm_plane_type type;
 
@@ -786,7 +742,7 @@ static int _dpu_kms_drm_obj_init(struct dpu_kms *dpu_kms)
 
 	max_crtc_count = min(max_crtc_count, primary_planes_idx);
 
-	/* Create one CRTC per encoder */
+	 
 	for (i = 0; i < max_crtc_count; i++) {
 		crtc = dpu_crtc_init(dev, primary_planes[i], cursor_planes[i]);
 		if (IS_ERR(crtc)) {
@@ -796,7 +752,7 @@ static int _dpu_kms_drm_obj_init(struct dpu_kms *dpu_kms)
 		priv->num_crtcs++;
 	}
 
-	/* All CRTCs are compatible with all encoders */
+	 
 	drm_for_each_encoder(encoder, dev)
 		encoder->possible_crtcs = (1 << priv->num_crtcs) - 1;
 
@@ -811,7 +767,7 @@ static void _dpu_kms_hw_destroy(struct dpu_kms *dpu_kms)
 		dpu_hw_intr_destroy(dpu_kms->hw_intr);
 	dpu_kms->hw_intr = NULL;
 
-	/* safe to call these more than once during shutdown */
+	 
 	_dpu_kms_mmu_destroy(dpu_kms);
 
 	if (dpu_kms->catalog) {
@@ -897,12 +853,12 @@ static void dpu_kms_mdp_snapshot(struct msm_disp_state *disp_state, struct msm_k
 
 	pm_runtime_get_sync(&dpu_kms->pdev->dev);
 
-	/* dump CTL sub-blocks HW regs info */
+	 
 	for (i = 0; i < cat->ctl_count; i++)
 		msm_disp_snapshot_add_block(disp_state, cat->ctl[i].len,
 				dpu_kms->mmio + cat->ctl[i].base, cat->ctl[i].name);
 
-	/* dump DSPP sub-blocks HW regs info */
+	 
 	for (i = 0; i < cat->dspp_count; i++) {
 		base = dpu_kms->mmio + cat->dspp[i].base;
 		msm_disp_snapshot_add_block(disp_state, cat->dspp[i].len, base, cat->dspp[i].name);
@@ -914,18 +870,18 @@ static void dpu_kms_mdp_snapshot(struct msm_disp_state *disp_state, struct msm_k
 						    cat->dspp[i].sblk->pcc.name);
 	}
 
-	/* dump INTF sub-blocks HW regs info */
+	 
 	for (i = 0; i < cat->intf_count; i++)
 		msm_disp_snapshot_add_block(disp_state, cat->intf[i].len,
 				dpu_kms->mmio + cat->intf[i].base, cat->intf[i].name);
 
-	/* dump PP sub-blocks HW regs info */
+	 
 	for (i = 0; i < cat->pingpong_count; i++) {
 		base = dpu_kms->mmio + cat->pingpong[i].base;
 		msm_disp_snapshot_add_block(disp_state, cat->pingpong[i].len, base,
 					    cat->pingpong[i].name);
 
-		/* TE2 sub-block has length of 0, so will not print it */
+		 
 
 		if (cat->pingpong[i].sblk && cat->pingpong[i].sblk->dither.len > 0)
 			msm_disp_snapshot_add_block(disp_state, cat->pingpong[i].sblk->dither.len,
@@ -934,7 +890,7 @@ static void dpu_kms_mdp_snapshot(struct msm_disp_state *disp_state, struct msm_k
 						    cat->pingpong[i].sblk->dither.name);
 	}
 
-	/* dump SSPP sub-blocks HW regs info */
+	 
 	for (i = 0; i < cat->sspp_count; i++) {
 		base = dpu_kms->mmio + cat->sspp[i].base;
 		msm_disp_snapshot_add_block(disp_state, cat->sspp[i].len, base, cat->sspp[i].name);
@@ -952,12 +908,12 @@ static void dpu_kms_mdp_snapshot(struct msm_disp_state *disp_state, struct msm_k
 						    cat->sspp[i].sblk->csc_blk.name);
 	}
 
-	/* dump LM sub-blocks HW regs info */
+	 
 	for (i = 0; i < cat->mixer_count; i++)
 		msm_disp_snapshot_add_block(disp_state, cat->mixer[i].len,
 				dpu_kms->mmio + cat->mixer[i].base, cat->mixer[i].name);
 
-	/* dump WB sub-blocks HW regs info */
+	 
 	for (i = 0; i < cat->wb_count; i++)
 		msm_disp_snapshot_add_block(disp_state, cat->wb[i].len,
 				dpu_kms->mmio + cat->wb[i].base, cat->wb[i].name);
@@ -972,7 +928,7 @@ static void dpu_kms_mdp_snapshot(struct msm_disp_state *disp_state, struct msm_k
 				dpu_kms->mmio + cat->mdp[0].base, "top");
 	}
 
-	/* dump DSC sub-blocks HW regs info */
+	 
 	for (i = 0; i < cat->dsc_count; i++) {
 		base = dpu_kms->mmio + cat->dsc[i].base;
 		msm_disp_snapshot_add_block(disp_state, cat->dsc[i].len, base, cat->dsc[i].name);
@@ -1118,10 +1074,7 @@ static int dpu_kms_hw_init(struct msm_kms *kms)
 		goto power_error;
 	}
 
-	/*
-	 * Now we need to read the HW catalog and initialize resources such as
-	 * clocks, regulators, GDSC/MMAGIC, ioremap the register ranges etc
-	 */
+	 
 	rc = _dpu_kms_mmu_init(dpu_kms);
 	if (rc) {
 		DPU_ERROR("dpu_kms_mmu_init failed: %d\n", rc);
@@ -1173,7 +1126,7 @@ static int dpu_kms_hw_init(struct msm_kms *kms)
 		dpu_kms->hw_vbif[vbif->id] = hw;
 	}
 
-	/* TODO: use the same max_freq as in dpu_kms_hw_init */
+	 
 	max_core_clk_rate = dpu_kms_get_clk_rate(dpu_kms, "core");
 	if (!max_core_clk_rate) {
 		DPU_DEBUG("max core clk rate not determined, using default\n");
@@ -1197,22 +1150,16 @@ static int dpu_kms_hw_init(struct msm_kms *kms)
 	dev->mode_config.min_width = 0;
 	dev->mode_config.min_height = 0;
 
-	/*
-	 * max crtc width is equal to the max mixer width * 2 and max height is
-	 * is 4K
-	 */
+	 
 	dev->mode_config.max_width =
 			dpu_kms->catalog->caps->max_mixer_width * 2;
 	dev->mode_config.max_height = 4096;
 
 	dev->max_vblank_count = 0xffffffff;
-	/* Disable vblank irqs aggressively for power-saving */
+	 
 	dev->vblank_disable_immediate = true;
 
-	/*
-	 * _dpu_kms_drm_obj_init should create the DRM related objects
-	 * i.e. CRTCs, planes, encoders, connectors and so forth
-	 */
+	 
 	rc = _dpu_kms_drm_obj_init(dpu_kms);
 	if (rc) {
 		DPU_ERROR("modeset init failed: %d\n", rc);
@@ -1254,7 +1201,7 @@ static int dpu_kms_init(struct drm_device *ddev)
 	ret = devm_pm_opp_set_clkname(dev, "core");
 	if (ret)
 		return ret;
-	/* OPP table is optional */
+	 
 	ret = devm_pm_opp_of_add_table(dev);
 	if (ret && ret != -ENODEV) {
 		dev_err(dev, "invalid OPP table in device tree\n");
@@ -1316,7 +1263,7 @@ static int __maybe_unused dpu_runtime_suspend(struct device *dev)
 	struct msm_drm_private *priv = platform_get_drvdata(pdev);
 	struct dpu_kms *dpu_kms = to_dpu_kms(priv->kms);
 
-	/* Drop the performance state vote */
+	 
 	dev_pm_opp_set_rate(dev, 0);
 	clk_bulk_disable_unprepare(dpu_kms->num_clocks, dpu_kms->clocks);
 

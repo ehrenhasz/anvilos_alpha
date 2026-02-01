@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 
 #ifndef _BLK_IOPRIO_H_
 #define _BLK_IOPRIO_H_
@@ -25,4 +25,4 @@ static inline void blkcg_set_ioprio(struct bio *bio)
 }
 #endif
 
-#endif /* _BLK_IOPRIO_H_ */
+#endif  

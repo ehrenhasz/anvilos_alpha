@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2020, Broadcom */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/dma-mapping.h>
@@ -20,17 +20,14 @@ struct brcm_priv {
 	struct clk *clk;
 };
 
-/*
- * ehci_brcm_wait_for_sof
- * Wait for start of next microframe, then wait extra delay microseconds
- */
+ 
 static inline void ehci_brcm_wait_for_sof(struct ehci_hcd *ehci, u32 delay)
 {
 	u32 frame_idx = ehci_readl(ehci, &ehci->regs->frame_index);
 	u32 val;
 	int res;
 
-	/* Wait for next microframe (every 125 usecs) */
+	 
 	res = readl_relaxed_poll_timeout(&ehci->regs->frame_index, val,
 					 val != frame_idx, 1, 130);
 	if (res)
@@ -38,17 +35,7 @@ static inline void ehci_brcm_wait_for_sof(struct ehci_hcd *ehci, u32 delay)
 	udelay(delay);
 }
 
-/*
- * ehci_brcm_hub_control
- * The EHCI controller has a bug where it can violate the SOF
- * interval between the first two SOF's transmitted after resume
- * if the resume occurs near the end of the microframe. This causees
- * the controller to detect babble on the suspended port and
- * will eventually cause the controller to reset the port.
- * The fix is to Intercept the echi-hcd request to complete RESUME and
- * align it to the start of the next microframe.
- * See SWLINUX-1909 for more details
- */
+ 
 static int ehci_brcm_hub_control(
 	struct usb_hcd	*hcd,
 	u16		typeReq,
@@ -65,24 +52,18 @@ static int ehci_brcm_hub_control(
 	u32 temp;
 
 	temp = (wIndex & 0xff) - 1;
-	if (temp >= HCS_N_PORTS_MAX)	/* Avoid index-out-of-bounds warning */
+	if (temp >= HCS_N_PORTS_MAX)	 
 		temp = 0;
 	status_reg = &ehci->regs->port_status[temp];
 
-	/*
-	 * RESUME is cleared when GetPortStatus() is called 20ms after start
-	 * of RESUME
-	 */
+	 
 	if ((typeReq == GetPortStatus) &&
 	    (wIndex && wIndex <= ports) &&
 	    ehci->reset_done[wIndex-1] &&
 	    time_after_eq(jiffies, ehci->reset_done[wIndex-1]) &&
 	    (ehci_readl(ehci, status_reg) & PORT_RESUME)) {
 
-		/*
-		 * to make sure we are not interrupted until RESUME bit
-		 * is cleared, disable interrupts on current CPU
-		 */
+		 
 		ehci_dbg(ehci, "SOF alignment workaround\n");
 		irq_disabled = 1;
 		local_irq_save(flags);
@@ -105,14 +86,11 @@ static int ehci_brcm_reset(struct usb_hcd *hcd)
 	len = HC_LENGTH(ehci, ehci_readl(ehci, &ehci->caps->hc_capbase));
 	ehci->regs = (void __iomem *)(hcd->regs + len);
 
-	/* This fixes the lockup during reboot due to prior interrupts */
+	 
 	ehci_writel(ehci, CMD_RESET, &ehci->regs->command);
 	mdelay(10);
 
-	/*
-	 * SWLINUX-1705: Avoid OUT packet underflows during high memory
-	 *   bus usage
-	 */
+	 
 	ehci_writel(ehci, 0x00800040, &ehci->regs->brcm_insnreg[1]);
 	ehci_writel(ehci, 0x00000001, &ehci->regs->brcm_insnreg[3]);
 
@@ -143,10 +121,10 @@ static int ehci_brcm_probe(struct platform_device *pdev)
 	if (irq < 0)
 		return irq;
 
-	/* Hook the hub control routine to work around a bug */
+	 
 	ehci_brcm_hc_driver.hub_control = ehci_brcm_hub_control;
 
-	/* initialize hcd */
+	 
 	hcd = usb_create_hcd(&ehci_brcm_hc_driver, dev, dev_name(dev));
 	if (!hcd)
 		return -ENOMEM;
@@ -222,10 +200,7 @@ static int __maybe_unused ehci_brcm_resume(struct device *dev)
 	err = clk_prepare_enable(priv->clk);
 	if (err)
 		return err;
-	/*
-	 * SWLINUX-1705: Avoid OUT packet underflows during high memory
-	 *   bus usage
-	 */
+	 
 	ehci_writel(ehci, 0x00800040, &ehci->regs->brcm_insnreg[1]);
 	ehci_writel(ehci, 0x00000001, &ehci->regs->brcm_insnreg[3]);
 

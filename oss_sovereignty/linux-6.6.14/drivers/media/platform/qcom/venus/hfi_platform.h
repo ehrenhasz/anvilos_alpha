@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2020, The Linux Foundation. All rights reserved.
- */
+ 
+ 
 
 #ifndef __HFI_PLATFORM_H__
 #define __HFI_PLATFORM_H__
@@ -35,7 +33,7 @@ struct hfi_plat_caps {
 	struct hfi_profile_level pl[HFI_MAX_PROFILE_COUNT];
 	unsigned int num_fmts;
 	struct raw_formats fmts[MAX_FMT_ENTRIES];
-	bool valid;	/* used only for Venus v1xx */
+	bool valid;	 
 };
 
 struct hfi_platform_codec_freq_data {

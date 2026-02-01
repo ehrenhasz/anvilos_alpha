@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _LINUX_MATH64_H
 #define _LINUX_MATH64_H
 
@@ -58,7 +58,7 @@ static inline u64 mul_u64_u32_shr(u64 a, u32 b, unsigned int shift)
 	return ret;
 }
 
-#endif	/* __SIZEOF_INT128__ */
+#endif	 
 
 #ifndef mul_u64_u64_div64
 static inline u64 mul_u64_u64_div64(u64 a, u64 b, u64 c)
@@ -72,4 +72,4 @@ static inline u64 mul_u64_u64_div64(u64 a, u64 b, u64 c)
 }
 #endif
 
-#endif /* _LINUX_MATH64_H */
+#endif  

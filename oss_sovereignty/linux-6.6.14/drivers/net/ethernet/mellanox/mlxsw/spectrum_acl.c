@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
-/* Copyright (c) 2017-2018 Mellanox Technologies. All rights reserved */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/slab.h>
@@ -26,10 +26,10 @@ struct mlxsw_sp_acl {
 	struct mlxsw_sp_fid *dummy_fid;
 	struct rhashtable ruleset_ht;
 	struct list_head rules;
-	struct mutex rules_lock; /* Protects rules list */
+	struct mutex rules_lock;  
 	struct {
 		struct delayed_work dw;
-		unsigned long interval;	/* ms */
+		unsigned long interval;	 
 #define MLXSW_SP_ACL_RULE_ACTIVITY_UPDATE_PERIOD_MS 1000
 	} rule_activity_update;
 	struct mlxsw_sp_acl_tcam tcam;
@@ -52,20 +52,20 @@ struct mlxsw_sp_acl_ruleset_ht_key {
 };
 
 struct mlxsw_sp_acl_ruleset {
-	struct rhash_head ht_node; /* Member of acl HT */
+	struct rhash_head ht_node;  
 	struct mlxsw_sp_acl_ruleset_ht_key ht_key;
 	struct rhashtable rule_ht;
 	unsigned int ref_count;
 	unsigned int min_prio;
 	unsigned int max_prio;
 	unsigned long priv[];
-	/* priv has to be always the last item */
+	 
 };
 
 struct mlxsw_sp_acl_rule {
-	struct rhash_head ht_node; /* Member of rule HT */
+	struct rhash_head ht_node;  
 	struct list_head list;
-	unsigned long cookie; /* HT key */
+	unsigned long cookie;  
 	struct mlxsw_sp_acl_ruleset *ruleset;
 	struct mlxsw_sp_acl_rule_info *rulei;
 	u64 last_used;
@@ -73,7 +73,7 @@ struct mlxsw_sp_acl_rule {
 	u64 last_bytes;
 	u64 last_drops;
 	unsigned long priv[];
-	/* priv has to be always the last item */
+	 
 };
 
 static const struct rhashtable_params mlxsw_sp_acl_ruleset_ht_params = {
@@ -98,7 +98,7 @@ struct mlxsw_sp_fid *mlxsw_sp_acl_dummy_fid(struct mlxsw_sp *mlxsw_sp)
 static bool
 mlxsw_sp_acl_ruleset_is_singular(const struct mlxsw_sp_acl_ruleset *ruleset)
 {
-	/* We hold a reference on ruleset ourselves */
+	 
 	return ruleset->ref_count == 2;
 }
 
@@ -434,9 +434,7 @@ int mlxsw_sp_acl_rulei_act_fwd(struct mlxsw_sp *mlxsw_sp,
 		local_port = mlxsw_sp_port->local_port;
 		in_port = false;
 	} else {
-		/* If out_dev is NULL, the caller wants to
-		 * set forward to ingress port.
-		 */
+		 
 		local_port = 0;
 		in_port = true;
 	}
@@ -504,11 +502,7 @@ int mlxsw_sp_acl_rulei_act_priority(struct mlxsw_sp *mlxsw_sp,
 				    struct mlxsw_sp_acl_rule_info *rulei,
 				    u32 prio, struct netlink_ext_ack *extack)
 {
-	/* Even though both Linux and Spectrum switches support 16 priorities,
-	 * spectrum_qdisc only processes the first eight priomap elements, and
-	 * the DCB and PFC features are tied to 8 priorities as well. Therefore
-	 * bounce attempts to prioritize packets to higher priorities.
-	 */
+	 
 	if (prio >= IEEE_8021QAZ_MAX_TCS) {
 		NL_SET_ERR_MSG_MOD(extack, "Only priorities 0..7 are supported");
 		return -EINVAL;
@@ -519,11 +513,11 @@ int mlxsw_sp_acl_rulei_act_priority(struct mlxsw_sp *mlxsw_sp,
 
 struct mlxsw_sp_acl_mangle_action {
 	enum flow_action_mangle_base htype;
-	/* Offset is u32-aligned. */
+	 
 	u32 offset;
-	/* Mask bits are unset for the modified field. */
+	 
 	u32 mask;
-	/* Shift required to extract the set value. */
+	 
 	u32 shift;
 	enum mlxsw_sp_acl_mangle_field field;
 };
@@ -647,14 +641,14 @@ static int mlxsw_sp2_acl_rulei_act_mangle_field(struct mlxsw_sp *mlxsw_sp,
 		return mlxsw_afa_block_append_l4port(rulei->act_block, false, val, extack);
 	case MLXSW_SP_ACL_MANGLE_FIELD_IP_DPORT:
 		return mlxsw_afa_block_append_l4port(rulei->act_block, true, val, extack);
-	/* IPv4 fields */
+	 
 	case MLXSW_SP_ACL_MANGLE_FIELD_IP4_SIP:
 		return mlxsw_afa_block_append_ip(rulei->act_block, false,
 						 true, val, 0, extack);
 	case MLXSW_SP_ACL_MANGLE_FIELD_IP4_DIP:
 		return mlxsw_afa_block_append_ip(rulei->act_block, true,
 						 true, val, 0, extack);
-	/* IPv6 fields */
+	 
 	case MLXSW_SP_ACL_MANGLE_FIELD_IP6_SIP_1:
 	case MLXSW_SP_ACL_MANGLE_FIELD_IP6_SIP_3:
 	case MLXSW_SP_ACL_MANGLE_FIELD_IP6_DIP_1:
@@ -874,10 +868,7 @@ int mlxsw_sp_acl_rule_add(struct mlxsw_sp *mlxsw_sp,
 
 	if (!ruleset->ht_key.chain_index &&
 	    mlxsw_sp_acl_ruleset_is_singular(ruleset)) {
-		/* We only need ruleset with chain index 0, the implicit
-		 * one, to be directly bound to device. The rest of the
-		 * rulesets are bound by "Goto action set".
-		 */
+		 
 		err = mlxsw_sp_acl_ruleset_block_bind(mlxsw_sp, ruleset, block);
 		if (err)
 			goto err_ruleset_block_bind;
@@ -1087,7 +1078,7 @@ int mlxsw_sp_acl_init(struct mlxsw_sp *mlxsw_sp)
 	if (err)
 		goto err_acl_ops_init;
 
-	/* Create the delayed work for the rule activity_update */
+	 
 	INIT_DELAYED_WORK(&acl->rule_activity_update.dw,
 			  mlxsw_sp_acl_rule_activity_update_work);
 	acl->rule_activity_update.interval = MLXSW_SP_ACL_RULE_ACTIVITY_UPDATE_PERIOD_MS;

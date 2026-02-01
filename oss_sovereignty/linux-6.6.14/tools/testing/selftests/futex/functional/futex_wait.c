@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright Collabora Ltd., 2021
- *
- * futex cmp requeue test by André Almeida <andrealmeid@collabora.com>
- */
+
+ 
 
 #include <pthread.h>
 #include <sys/shm.h>
@@ -76,7 +72,7 @@ int main(int argc, char *argv[])
 	ksft_set_plan(3);
 	ksft_print_msg("%s: Test futex_wait\n", basename(argv[0]));
 
-	/* Testing a private futex */
+	 
 	info("Calling private futex_wait on futex: %p\n", futex);
 	if (pthread_create(&waiter, NULL, waiterfn, (void *) &flags))
 		error("pthread_create failed\n", errno);
@@ -93,7 +89,7 @@ int main(int argc, char *argv[])
 		ksft_test_result_pass("futex_wake private succeeds\n");
 	}
 
-	/* Testing an anon page shared memory */
+	 
 	shm_id = shmget(IPC_PRIVATE, 4096, IPC_CREAT | 0666);
 	if (shm_id < 0) {
 		perror("shmget");
@@ -122,7 +118,7 @@ int main(int argc, char *argv[])
 	}
 
 
-	/* Testing a file backed shared memory */
+	 
 	fd = open(SHM_PATH, O_RDWR | O_CREAT, S_IRUSR | S_IWUSR);
 	if (fd < 0) {
 		perror("open");
@@ -160,7 +156,7 @@ int main(int argc, char *argv[])
 		ksft_test_result_pass("futex_wake shared (file backed) succeeds\n");
 	}
 
-	/* Freeing resources */
+	 
 	shmdt(shared_data);
 	munmap(shm, sizeof(f_private));
 	remove(SHM_PATH);

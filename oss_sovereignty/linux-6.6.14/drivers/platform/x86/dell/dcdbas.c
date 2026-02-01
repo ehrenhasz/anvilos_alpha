@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  dcdbas.c: Dell Systems Management Base Driver
- *
- *  The Dell Systems Management Base Driver provides a sysfs interface for
- *  systems management software to perform System Management Interrupts (SMIs)
- *  and Host Control Actions (power cycle or power off after OS shutdown) on
- *  Dell systems.
- *
- *  See Documentation/driver-api/dcdbas.rst for more information.
- *
- *  Copyright (C) 1995-2006 Dell Inc.
- */
+
+ 
 
 #include <linux/platform_device.h>
 #include <linux/acpi.h>
@@ -85,9 +74,7 @@ void dcdbas_smi_free(struct smi_buffer *smi_buffer)
 }
 EXPORT_SYMBOL_GPL(dcdbas_smi_free);
 
-/**
- * smi_data_buf_free: free SMI data buffer
- */
+ 
 static void smi_data_buf_free(void)
 {
 	if (!smi_buf.virt || wsmt_enabled)
@@ -96,9 +83,7 @@ static void smi_data_buf_free(void)
 	dcdbas_smi_free(&smi_buf);
 }
 
-/**
- * smi_data_buf_realloc: grow SMI data buffer if needed
- */
+ 
 static int smi_data_buf_realloc(unsigned long size)
 {
 	struct smi_buffer tmp;
@@ -110,19 +95,19 @@ static int smi_data_buf_realloc(unsigned long size)
 	if (size > max_smi_data_buf_size)
 		return -EINVAL;
 
-	/* new buffer is needed */
+	 
 	ret = dcdbas_smi_alloc(&tmp, size);
 	if (ret)
 		return ret;
 
-	/* memory zeroed by dma_alloc_coherent */
+	 
 	if (smi_buf.virt)
 		memcpy(tmp.virt, smi_buf.virt, smi_buf.size);
 
-	/* free any existing buffer */
+	 
 	smi_data_buf_free();
 
-	/* set up new buffer for use */
+	 
 	smi_buf = tmp;
 
 	return 0;
@@ -151,7 +136,7 @@ static ssize_t smi_data_buf_size_store(struct device *dev,
 
 	buf_size = simple_strtoul(buf, NULL, 10);
 
-	/* make sure SMI data buffer is at least buf_size */
+	 
 	mutex_lock(&smi_data_lock);
 	ret = smi_data_buf_realloc(buf_size);
 	mutex_unlock(&smi_data_lock);
@@ -209,7 +194,7 @@ static ssize_t host_control_action_store(struct device *dev,
 {
 	ssize_t ret;
 
-	/* make sure buffer is available for host control command */
+	 
 	mutex_lock(&smi_data_lock);
 	ret = smi_data_buf_realloc(sizeof(struct apm_cmd));
 	mutex_unlock(&smi_data_lock);
@@ -260,12 +245,12 @@ static int raise_smi(void *par)
 		return -EBUSY;
 	}
 
-	/* generate SMI */
-	/* inb to force posted write through and make SMI happen now */
+	 
+	 
 	asm volatile (
 		"outb %b0,%w1\n"
 		"inb %w1"
-		: /* no output args */
+		:  
 		: "a" (smi_cmd->command_code),
 		  "d" (smi_cmd->command_address),
 		  "b" (smi_cmd->ebx),
@@ -275,11 +260,7 @@ static int raise_smi(void *par)
 
 	return 0;
 }
-/**
- * dcdbas_smi_request: generate SMI request
- *
- * Called with smi_data_lock.
- */
+ 
 int dcdbas_smi_request(struct smi_cmd *smi_cmd)
 {
 	int ret;
@@ -290,7 +271,7 @@ int dcdbas_smi_request(struct smi_cmd *smi_cmd)
 		return -EBADR;
 	}
 
-	/* SMI requires CPU 0 */
+	 
 	cpus_read_lock();
 	ret = smp_call_on_cpu(0, raise_smi, smi_cmd, true);
 	cpus_read_unlock();
@@ -299,17 +280,7 @@ int dcdbas_smi_request(struct smi_cmd *smi_cmd)
 }
 EXPORT_SYMBOL(dcdbas_smi_request);
 
-/**
- * smi_request_store:
- *
- * The valid values are:
- * 0: zero SMI data buffer
- * 1: generate calling interface SMI
- * 2: generate raw SMI
- *
- * User application writes smi_cmd to smi_data before telling driver
- * to generate SMI.
- */
+ 
 static ssize_t smi_request_store(struct device *dev,
 				 struct device_attribute *attr,
 				 const char *buf, size_t count)
@@ -328,24 +299,13 @@ static ssize_t smi_request_store(struct device *dev,
 
 	switch (val) {
 	case 2:
-		/* Raw SMI */
+		 
 		ret = dcdbas_smi_request(smi_cmd);
 		if (!ret)
 			ret = count;
 		break;
 	case 1:
-		/*
-		 * Calling Interface SMI
-		 *
-		 * Provide physical address of command buffer field within
-		 * the struct smi_cmd to BIOS.
-		 *
-		 * Because the address that smi_cmd (smi_buf.virt) points to
-		 * will be from memremap() of a non-memory address if WSMT
-		 * is present, we can't use virt_to_phys() on smi_cmd, so
-		 * we have to use the physical address that was saved when
-		 * the virtual address for smi_cmd was received.
-		 */
+		 
 		smi_cmd->ebx = (u32)smi_buf.dma +
 				offsetof(struct smi_cmd, command_buffer);
 		ret = dcdbas_smi_request(smi_cmd);
@@ -366,11 +326,7 @@ out:
 	return ret;
 }
 
-/**
- * host_control_smi: generate host control SMI
- *
- * Caller must set up the host control command in smi_buf.virt.
- */
+ 
 static int host_control_smi(void)
 {
 	struct apm_cmd *apm_cmd;
@@ -386,7 +342,7 @@ static int host_control_smi(void)
 	switch (host_control_smi_type) {
 	case HC_SMITYPE_TYPE1:
 		spin_lock_irqsave(&rtc_lock, flags);
-		/* write SMI data buffer physical address */
+		 
 		data = (u8 *)&smi_buf.dma;
 		for (index = PE1300_CMOS_CMD_STRUCT_PTR;
 		     index < (PE1300_CMOS_CMD_STRUCT_PTR + 4);
@@ -397,15 +353,15 @@ static int host_control_smi(void)
 			     (CMOS_BASE_PORT + CMOS_PAGE2_DATA_PORT_PIIX4));
 		}
 
-		/* first set status to -1 as called by spec */
+		 
 		cmd_status = ESM_STATUS_CMD_UNSUCCESSFUL;
 		outb((u8) cmd_status, PCAT_APM_STATUS_PORT);
 
-		/* generate SMM call */
+		 
 		outb(ESM_APM_CMD, PCAT_APM_CONTROL_PORT);
 		spin_unlock_irqrestore(&rtc_lock, flags);
 
-		/* wait a few to see if it executed */
+		 
 		num_ticks = TIMEOUT_USEC_SHORT_SEMA_BLOCKING;
 		while ((s8)inb(PCAT_APM_STATUS_PORT) == ESM_STATUS_CMD_UNSUCCESSFUL) {
 			num_ticks--;
@@ -417,7 +373,7 @@ static int host_control_smi(void)
 	case HC_SMITYPE_TYPE2:
 	case HC_SMITYPE_TYPE3:
 		spin_lock_irqsave(&rtc_lock, flags);
-		/* write SMI data buffer physical address */
+		 
 		data = (u8 *)&smi_buf.dma;
 		for (index = PE1400_CMOS_CMD_STRUCT_PTR;
 		     index < (PE1400_CMOS_CMD_STRUCT_PTR + 4);
@@ -426,20 +382,20 @@ static int host_control_smi(void)
 			outb(*data, (CMOS_BASE_PORT + CMOS_PAGE1_DATA_PORT));
 		}
 
-		/* generate SMM call */
+		 
 		if (host_control_smi_type == HC_SMITYPE_TYPE3)
 			outb(ESM_APM_CMD, PCAT_APM_CONTROL_PORT);
 		else
 			outb(ESM_APM_CMD, PE1400_APM_CONTROL_PORT);
 
-		/* restore RTC index pointer since it was written to above */
+		 
 		CMOS_READ(RTC_REG_C);
 		spin_unlock_irqrestore(&rtc_lock, flags);
 
-		/* read control port back to serialize write */
+		 
 		cmd_status = inb(PE1400_APM_CONTROL_PORT);
 
-		/* wait a few to see if it executed */
+		 
 		num_ticks = TIMEOUT_USEC_SHORT_SEMA_BLOCKING;
 		while (apm_cmd->status == ESM_STATUS_CMD_UNSUCCESSFUL) {
 			num_ticks--;
@@ -457,15 +413,7 @@ static int host_control_smi(void)
 	return 0;
 }
 
-/**
- * dcdbas_host_control: initiate host control
- *
- * This function is called by the driver after the system has
- * finished shutting down if the user application specified a
- * host control action to perform on shutdown.  It is safe to
- * use smi_buf.virt at this point because the system has finished
- * shutting down and no userspace apps are running.
- */
+ 
 static void dcdbas_host_control(void)
 {
 	struct apm_cmd *apm_cmd;
@@ -490,7 +438,7 @@ static void dcdbas_host_control(void)
 
 	apm_cmd = (struct apm_cmd *)smi_buf.virt;
 
-	/* power off takes precedence */
+	 
 	if (action & HC_ACTION_HOST_CONTROL_POWEROFF) {
 		apm_cmd->command = ESM_APM_POWER_CYCLE;
 		apm_cmd->reserved = 0;
@@ -504,7 +452,7 @@ static void dcdbas_host_control(void)
 	}
 }
 
-/* WSMT */
+ 
 
 static u8 checksum(u8 *buffer, u8 length)
 {
@@ -542,23 +490,20 @@ static int dcdbas_check_wsmt(void)
 	if (!wsmt)
 		return 0;
 
-	/* Check if WSMT ACPI table shows that protection is enabled */
+	 
 	if (!(wsmt->protection_flags & ACPI_WSMT_FIXED_COMM_BUFFERS) ||
 	    !(wsmt->protection_flags & ACPI_WSMT_COMM_BUFFER_NESTED_PTR_PROTECTION))
 		return 0;
 
-	/*
-	 * BIOS could provide the address/size of the protected buffer
-	 * in an SMBIOS string or in an EPS structure in 0xFxxxx.
-	 */
+	 
 
-	/* Check SMBIOS for buffer address */
+	 
 	while ((dev = dmi_find_device(DMI_DEV_TYPE_OEM_STRING, NULL, dev)))
 		if (sscanf(dev->name, "30[%16llx;%8llx]", &bios_buf_paddr,
 		    &remap_size) == 2)
 			goto remap;
 
-	/* Scan for EPS (entry point structure) */
+	 
 	for (addr = (u8 *)__va(0xf0000);
 	     addr < (u8 *)__va(0x100000 - sizeof(struct smm_eps_table));
 	     addr += 16) {
@@ -575,18 +520,12 @@ static int dcdbas_check_wsmt(void)
 	remap_size = eps->num_of_4k_pages * PAGE_SIZE;
 
 remap:
-	/*
-	 * Get physical address of buffer and map to virtual address.
-	 * Table gives size in 4K pages, regardless of actual system page size.
-	 */
+	 
 	if (upper_32_bits(bios_buf_paddr + 8)) {
 		dev_warn(&dcdbas_pdev->dev, "found WSMT, but buffer address is above 4GB\n");
 		return -EINVAL;
 	}
-	/*
-	 * Limit remap size to MAX_SMI_DATA_BUF_SIZE + 8 (since the first 8
-	 * bytes are used for a semaphore, not the data buffer itself).
-	 */
+	 
 	if (remap_size > MAX_SMI_DATA_BUF_SIZE + 8)
 		remap_size = MAX_SMI_DATA_BUF_SIZE + 8;
 
@@ -596,7 +535,7 @@ remap:
 		return -ENOMEM;
 	}
 
-	/* First 8 bytes is for a semaphore, not part of the smi_buf.virt */
+	 
 	smi_buf.dma = bios_buf_paddr + 8;
 	smi_buf.virt = bios_buffer + 8;
 	smi_buf.size = remap_size - 8;
@@ -607,9 +546,7 @@ remap:
 	return 1;
 }
 
-/**
- * dcdbas_reboot_notify: handle reboot notification for host control
- */
+ 
 static int dcdbas_reboot_notify(struct notifier_block *nb, unsigned long code,
 				void *unused)
 {
@@ -618,7 +555,7 @@ static int dcdbas_reboot_notify(struct notifier_block *nb, unsigned long code,
 	case SYS_HALT:
 	case SYS_POWER_OFF:
 		if (host_control_on_shutdown) {
-			/* firmware is going to perform host control action */
+			 
 			printk(KERN_WARNING "Please wait for shutdown "
 			       "action to complete...\n");
 			dcdbas_host_control();
@@ -673,15 +610,12 @@ static int dcdbas_probe(struct platform_device *dev)
 
 	dcdbas_pdev = dev;
 
-	/* Check if ACPI WSMT table specifies protected SMI buffer address */
+	 
 	error = dcdbas_check_wsmt();
 	if (error < 0)
 		return error;
 
-	/*
-	 * BIOS SMI calls require buffer addresses be in 32-bit address space.
-	 * This is done by setting the DMA mask below.
-	 */
+	 
 	error = dma_set_coherent_mask(&dcdbas_pdev->dev, DMA_BIT_MASK(32));
 	if (error)
 		return error;
@@ -720,9 +654,7 @@ static const struct platform_device_info dcdbas_dev_info __initconst = {
 
 static struct platform_device *dcdbas_pdev_reg;
 
-/**
- * dcdbas_init: initialize driver
- */
+ 
 static int __init dcdbas_init(void)
 {
 	int error;
@@ -744,23 +676,13 @@ static int __init dcdbas_init(void)
 	return error;
 }
 
-/**
- * dcdbas_exit: perform driver cleanup
- */
+ 
 static void __exit dcdbas_exit(void)
 {
-	/*
-	 * make sure functions that use dcdbas_pdev are called
-	 * before platform_device_unregister
-	 */
+	 
 	unregister_reboot_notifier(&dcdbas_reboot_nb);
 
-	/*
-	 * We have to free the buffer here instead of dcdbas_remove
-	 * because only in module exit function we can be sure that
-	 * all sysfs attributes belonging to this module have been
-	 * released.
-	 */
+	 
 	if (dcdbas_pdev)
 		smi_data_buf_free();
 	if (bios_buffer)
@@ -776,5 +698,5 @@ MODULE_DESCRIPTION(DRIVER_DESCRIPTION " (version " DRIVER_VERSION ")");
 MODULE_VERSION(DRIVER_VERSION);
 MODULE_AUTHOR("Dell Inc.");
 MODULE_LICENSE("GPL");
-/* Any System or BIOS claiming to be by Dell */
+ 
 MODULE_ALIAS("dmi:*:[bs]vnD[Ee][Ll][Ll]*:*");

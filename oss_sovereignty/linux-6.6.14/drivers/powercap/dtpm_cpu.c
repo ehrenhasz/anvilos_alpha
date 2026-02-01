@@ -1,19 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright 2020 Linaro Limited
- *
- * Author: Daniel Lezcano <daniel.lezcano@linaro.org>
- *
- * The DTPM CPU is based on the energy model. It hooks the CPU in the
- * DTPM tree which in turns update the power number by propagating the
- * power number from the CPU energy model information to the parents.
- *
- * The association between the power and the performance state, allows
- * to set the power of the CPU at the OPP granularity.
- *
- * The CPU hotplug is supported and the power numbers will be updated
- * if a CPU is hot plugged / unplugged.
- */
+
+ 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
 #include <linux/cpumask.h>
@@ -72,10 +58,7 @@ static u64 scale_pd_power_uw(struct cpumask *pd_mask, u64 power)
 	unsigned long max, sum_util = 0;
 	int cpu;
 
-	/*
-	 * The capacity is the same for all CPUs belonging to
-	 * the same perf domain.
-	 */
+	 
 	max = arch_scale_cpu_capacity(cpumask_first(pd_mask));
 
 	for_each_cpu_and(cpu, pd_mask, cpu_online_mask)
@@ -254,27 +237,7 @@ static int dtpm_cpu_init(void)
 {
 	int ret;
 
-	/*
-	 * The callbacks at CPU hotplug time are calling
-	 * dtpm_update_power() which in turns calls update_pd_power().
-	 *
-	 * The function update_pd_power() uses the online mask to
-	 * figure out the power consumption limits.
-	 *
-	 * At CPUHP_AP_ONLINE_DYN, the CPU is present in the CPU
-	 * online mask when the cpuhp_dtpm_cpu_online function is
-	 * called, but the CPU is still in the online mask for the
-	 * tear down callback. So the power can not be updated when
-	 * the CPU is unplugged.
-	 *
-	 * At CPUHP_AP_DTPM_CPU_DEAD, the situation is the opposite as
-	 * above. The CPU online mask is not up to date when the CPU
-	 * is plugged in.
-	 *
-	 * For this reason, we need to call the online and offline
-	 * callbacks at different moments when the CPU online mask is
-	 * consistent with the power numbers we want to update.
-	 */
+	 
 	ret = cpuhp_setup_state(CPUHP_AP_DTPM_CPU_DEAD, "dtpm_cpu:offline",
 				NULL, cpuhp_dtpm_cpu_offline);
 	if (ret < 0)

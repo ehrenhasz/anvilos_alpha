@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copyright (C) Jernej Skrabec <jernej.skrabec@siol.net>
- */
+ 
+ 
 
 #ifndef _SUN8I_CSC_H_
 #define _SUN8I_CSC_H_
@@ -10,7 +8,7 @@
 
 struct sun8i_mixer;
 
-/* VI channel CSC units offsets */
+ 
 #define CCSC00_OFFSET 0xAA050
 #define CCSC01_OFFSET 0xFA050
 #define CCSC01_D1_OFFSET 0xFA000

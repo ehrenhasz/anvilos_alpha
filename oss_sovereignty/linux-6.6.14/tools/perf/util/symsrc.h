@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef __PERF_SYMSRC_
 #define __PERF_SYMSRC_ 1
 
@@ -44,4 +44,4 @@ void symsrc__destroy(struct symsrc *ss);
 bool symsrc__has_symtab(struct symsrc *ss);
 bool symsrc__possibly_runtime(struct symsrc *ss);
 
-#endif /* __PERF_SYMSRC_ */
+#endif  

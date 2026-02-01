@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef __DT_QCOM_LPASS_H
 #define __DT_QCOM_LPASS_H
 
@@ -43,4 +43,4 @@
 
 #define LPASS_MCLK0	0
 
-#endif /* __DT_QCOM_LPASS_H */
+#endif  

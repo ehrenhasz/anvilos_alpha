@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _TEST_RADIX_TREE_H
 #define _TEST_RADIX_TREE_H
 
@@ -23,4 +23,4 @@ static inline void trace_call_rcu(struct rcu_head *head,
 #undef call_rcu
 #define call_rcu(x, y) trace_call_rcu(x, y)
 
-#endif /* _TEST_RADIX_TREE_H */
+#endif  

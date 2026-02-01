@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Sensor HUB driver that discovers sensors behind a ChromeOS Embedded
- * Controller.
- *
- * Copyright 2019 Google LLC
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/device.h>
@@ -151,7 +146,7 @@ static int cros_ec_sensorhub_probe(struct platform_device *pdev)
 
 	dev_set_drvdata(dev, data);
 
-	/* Check whether this EC is a sensor hub. */
+	 
 	if (cros_ec_check_features(ec, EC_FEATURE_MOTION_SENSE)) {
 		sensor_num = cros_ec_get_sensor_count(ec);
 		if (sensor_num < 0) {
@@ -166,43 +161,31 @@ static int cros_ec_sensorhub_probe(struct platform_device *pdev)
 		}
 		data->sensor_num = sensor_num;
 
-		/*
-		 * Prepare the ring handler before enumering the
-		 * sensors.
-		 */
+		 
 		if (cros_ec_check_features(ec, EC_FEATURE_MOTION_SENSE_FIFO)) {
 			ret = cros_ec_sensorhub_ring_allocate(data);
 			if (ret)
 				return ret;
 		}
 
-		/* Enumerate the sensors.*/
+		 
 		ret = cros_ec_sensorhub_register(dev, data);
 		if (ret)
 			return ret;
 
-		/*
-		 * When the EC does not have a FIFO, the sensors will query
-		 * their data themselves via sysfs or a software trigger.
-		 */
+		 
 		if (cros_ec_check_features(ec, EC_FEATURE_MOTION_SENSE_FIFO)) {
 			ret = cros_ec_sensorhub_ring_add(data);
 			if (ret)
 				return ret;
-			/*
-			 * The msg and its data is not under the control of the
-			 * ring handler.
-			 */
+			 
 			return devm_add_action_or_reset(dev,
 					cros_ec_sensorhub_ring_remove,
 					data);
 		}
 
 	} else {
-		/*
-		 * If the device has sensors but does not claim to
-		 * be a sensor hub, we are in legacy mode.
-		 */
+		 
 		data->sensor_num = 2;
 		for (i = 0; i < data->sensor_num; i++) {
 			ret = cros_ec_sensorhub_allocate_sensor(dev,
@@ -217,11 +200,7 @@ static int cros_ec_sensorhub_probe(struct platform_device *pdev)
 }
 
 #ifdef CONFIG_PM_SLEEP
-/*
- * When the EC is suspending, we must stop sending interrupt,
- * we may use the same interrupt line for waking up the device.
- * Tell the EC to stop sending non-interrupt event on the iio ring.
- */
+ 
 static int cros_ec_sensorhub_suspend(struct device *dev)
 {
 	struct cros_ec_sensorhub *sensorhub = dev_get_drvdata(dev);

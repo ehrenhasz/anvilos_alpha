@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * mpl3115.c - Support for Freescale MPL3115A2 pressure/temperature sensor
- *
- * Copyright (c) 2013 Peter Meerwald <pmeerw@pmeerw.net>
- *
- * (7-bit I2C slave address 0x60)
- *
- * TODO: FIFO buffer, altimeter mode, oversampling, continuous mode,
- * interrupts, user offset correction, raw mode
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/i2c.h>
@@ -20,8 +11,8 @@
 #include <linux/delay.h>
 
 #define MPL3115_STATUS 0x00
-#define MPL3115_OUT_PRESS 0x01 /* MSB first, 20 bit */
-#define MPL3115_OUT_TEMP 0x04 /* MSB first, 12 bit */
+#define MPL3115_OUT_PRESS 0x01  
+#define MPL3115_OUT_TEMP 0x04  
 #define MPL3115_WHO_AM_I 0x0c
 #define MPL3115_CTRL_REG1 0x26
 
@@ -30,10 +21,10 @@
 #define MPL3115_STATUS_PRESS_RDY BIT(2)
 #define MPL3115_STATUS_TEMP_RDY BIT(1)
 
-#define MPL3115_CTRL_RESET BIT(2) /* software reset */
-#define MPL3115_CTRL_OST BIT(1) /* initiate measurement */
-#define MPL3115_CTRL_ACTIVE BIT(0) /* continuous measurement */
-#define MPL3115_CTRL_OS_258MS (BIT(5) | BIT(4)) /* 64x oversampling */
+#define MPL3115_CTRL_RESET BIT(2)  
+#define MPL3115_CTRL_OST BIT(1)  
+#define MPL3115_CTRL_ACTIVE BIT(0)  
+#define MPL3115_CTRL_OS_258MS (BIT(5) | BIT(4))  
 
 struct mpl3115_data {
 	struct i2c_client *client;
@@ -45,7 +36,7 @@ static int mpl3115_request(struct mpl3115_data *data)
 {
 	int ret, tries = 15;
 
-	/* trigger measurement */
+	 
 	ret = i2c_smbus_write_byte_data(data->client, MPL3115_CTRL_REG1,
 		data->ctrl_reg1 | MPL3115_CTRL_OST);
 	if (ret < 0)
@@ -55,7 +46,7 @@ static int mpl3115_request(struct mpl3115_data *data)
 		ret = i2c_smbus_read_byte_data(data->client, MPL3115_CTRL_REG1);
 		if (ret < 0)
 			return ret;
-		/* wait for data ready, i.e. OST cleared */
+		 
 		if (!(ret & MPL3115_CTRL_OST))
 			break;
 		msleep(20);
@@ -83,7 +74,7 @@ static int mpl3115_read_raw(struct iio_dev *indio_dev,
 			return ret;
 
 		switch (chan->type) {
-		case IIO_PRESSURE: { /* in 0.25 pascal / LSB */
+		case IIO_PRESSURE: {  
 			__be32 tmp = 0;
 
 			mutex_lock(&data->lock);
@@ -101,7 +92,7 @@ static int mpl3115_read_raw(struct iio_dev *indio_dev,
 			ret = IIO_VAL_INT;
 			break;
 		}
-		case IIO_TEMP: { /* in 0.0625 celsius / LSB */
+		case IIO_TEMP: {  
 			__be16 tmp;
 
 			mutex_lock(&data->lock);
@@ -132,7 +123,7 @@ static int mpl3115_read_raw(struct iio_dev *indio_dev,
 		switch (chan->type) {
 		case IIO_PRESSURE:
 			*val = 0;
-			*val2 = 250; /* want kilopascal */
+			*val2 = 250;  
 			return IIO_VAL_INT_PLUS_MICRO;
 		case IIO_TEMP:
 			*val = 0;
@@ -150,13 +141,7 @@ static irqreturn_t mpl3115_trigger_handler(int irq, void *p)
 	struct iio_poll_func *pf = p;
 	struct iio_dev *indio_dev = pf->indio_dev;
 	struct mpl3115_data *data = iio_priv(indio_dev);
-	/*
-	 * 32-bit channel + 16-bit channel + padding + ts
-	 * Note that it is possible for only one of the first 2
-	 * channels to be enabled. If that happens, the first element
-	 * of the buffer may be either 16 or 32-bits.  As such we cannot
-	 * use a simple structure definition to express this data layout.
-	 */
+	 
 	u8 buffer[16] __aligned(8);
 	int ret, pos = 0;
 
@@ -258,7 +243,7 @@ static int mpl3115_probe(struct i2c_client *client)
 	indio_dev->channels = mpl3115_channels;
 	indio_dev->num_channels = ARRAY_SIZE(mpl3115_channels);
 
-	/* software reset, I2C transfer is aborted (fails) */
+	 
 	i2c_smbus_write_byte_data(client, MPL3115_CTRL_REG1,
 		MPL3115_CTRL_RESET);
 	msleep(50);

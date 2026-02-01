@@ -1,12 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Register map access API - SPMI support
-//
-// Copyright (c) 2012-2013, The Linux Foundation. All rights reserved.
-//
-// Based on regmap-i2c.c:
-// Copyright 2011 Wolfson Microelectronics plc
-// Author: Mark Brown <broonie@opensource.wolfsonmicro.com>
+
+
+
+
+
+
+
+
+
 
 #include <linux/regmap.h>
 #include <linux/spmi.h>
@@ -38,10 +38,7 @@ static int regmap_spmi_base_gather_write(void *context,
 
 	BUG_ON(reg_size != 1);
 
-	/*
-	 * SPMI defines a more bandwidth-efficient 'Register 0 Write' sequence,
-	 * use it when possible.
-	 */
+	 
 	if (addr == 0 && val_size) {
 		err = spmi_register_zero_write(context, *data);
 		if (err)
@@ -114,10 +111,7 @@ static int regmap_spmi_ext_read(void *context,
 
 	addr = *(u16 *)reg;
 
-	/*
-	 * Split accesses into two to take advantage of the more
-	 * bandwidth-efficient 'Extended Register Read' command when possible
-	 */
+	 
 	while (addr <= 0xFF && val_size) {
 		len = min_t(size_t, val_size, 16);
 

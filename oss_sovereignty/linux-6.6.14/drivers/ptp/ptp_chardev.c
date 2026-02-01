@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * PTP 1588 clock support - character device implementation.
- *
- * Copyright (C) 2010 OMICRON electronics GmbH
- */
+
+ 
 #include <linux/module.h>
 #include <linux/posix-clock.h>
 #include <linux/poll.h>
@@ -52,7 +48,7 @@ int ptp_set_pinfunc(struct ptp_clock *ptp, unsigned int pin,
 	struct ptp_pin_desc *pin1 = NULL, *pin2 = &info->pin_config[pin];
 	unsigned int i;
 
-	/* Check to see if any other pin previously had this function. */
+	 
 	for (i = 0; i < info->n_pins; i++) {
 		if (info->pin_config[i].func == func &&
 		    info->pin_config[i].chan == chan) {
@@ -63,7 +59,7 @@ int ptp_set_pinfunc(struct ptp_clock *ptp, unsigned int pin,
 	if (pin1 && i == pin)
 		return 0;
 
-	/* Check the desired function and channel. */
+	 
 	switch (func) {
 	case PTP_PF_NONE:
 		break;
@@ -88,7 +84,7 @@ int ptp_set_pinfunc(struct ptp_clock *ptp, unsigned int pin,
 		return -EOPNOTSUPP;
 	}
 
-	/* Disable whatever function was previously assigned. */
+	 
 	if (pin1) {
 		ptp_disable_pinfunc(info, func, chan);
 		pin1->func = PTP_PF_NONE;
@@ -154,15 +150,15 @@ long ptp_ioctl(struct posix_clock *pc, unsigned int cmd, unsigned long arg)
 			break;
 		}
 		if (cmd == PTP_EXTTS_REQUEST2) {
-			/* Tell the drivers to check the flags carefully. */
+			 
 			req.extts.flags |= PTP_STRICT_FLAGS;
-			/* Make sure no reserved bit is set. */
+			 
 			if ((req.extts.flags & ~PTP_EXTTS_VALID_FLAGS) ||
 			    req.extts.rsv[0] || req.extts.rsv[1]) {
 				err = -EINVAL;
 				break;
 			}
-			/* Ensure one of the rising/falling edge bits is set. */
+			 
 			if ((req.extts.flags & PTP_ENABLE_FEATURE) &&
 			    (req.extts.flags & PTP_EXTTS_EDGES) == 0) {
 				err = -EINVAL;
@@ -201,11 +197,7 @@ long ptp_ioctl(struct posix_clock *pc, unsigned int cmd, unsigned long arg)
 				err = -EINVAL;
 				break;
 			}
-			/*
-			 * The "on" field has undefined meaning if
-			 * PTP_PEROUT_DUTY_CYCLE isn't set, we must still treat
-			 * it as reserved, which must be set to zero.
-			 */
+			 
 			if (!(perout->flags & PTP_PEROUT_DUTY_CYCLE) &&
 			    (perout->rsv[0] || perout->rsv[1] ||
 			     perout->rsv[2] || perout->rsv[3])) {
@@ -213,7 +205,7 @@ long ptp_ioctl(struct posix_clock *pc, unsigned int cmd, unsigned long arg)
 				break;
 			}
 			if (perout->flags & PTP_PEROUT_DUTY_CYCLE) {
-				/* The duty cycle must be subunitary. */
+				 
 				if (perout->on.sec > perout->period.sec ||
 				    (perout->on.sec == perout->period.sec &&
 				     perout->on.nsec > perout->period.nsec)) {
@@ -222,11 +214,7 @@ long ptp_ioctl(struct posix_clock *pc, unsigned int cmd, unsigned long arg)
 				}
 			}
 			if (perout->flags & PTP_PEROUT_PHASE) {
-				/*
-				 * The phase should be specified modulo the
-				 * period, therefore anything equal or larger
-				 * than 1 period is invalid.
-				 */
+				 
 				if (perout->phase.sec > perout->period.sec ||
 				    (perout->phase.sec == perout->period.sec &&
 				     perout->phase.nsec >= perout->period.nsec)) {
@@ -490,7 +478,7 @@ ssize_t ptp_read(struct posix_clock *pc,
 
 	for (i = 0; i < cnt; i++) {
 		event[i] = queue->buf[queue->head];
-		/* Paired with READ_ONCE() in queue_cnt() */
+		 
 		WRITE_ONCE(queue->head, (queue->head + 1) % PTP_MAX_TIMESTAMPS);
 	}
 

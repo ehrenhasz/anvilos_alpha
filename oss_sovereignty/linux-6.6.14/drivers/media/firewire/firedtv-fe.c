@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * FireDTV driver (formerly known as FireSAT)
- *
- * Copyright (C) 2004 Andreas Monitzer <andy@monitzer.com>
- * Copyright (C) 2008 Henrik Kurelid <henrik@kurelid.se>
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/errno.h>
@@ -21,7 +16,7 @@ static int fdtv_dvb_init(struct dvb_frontend *fe)
 	struct firedtv *fdtv = fe->sec_priv;
 	int err;
 
-	/* FIXME - allocate free channel at IRM */
+	 
 	fdtv->isochannel = fdtv->adapter.num;
 
 	err = cmp_establish_pp_connection(fdtv, fdtv->subunit,
@@ -127,7 +122,7 @@ static int fdtv_read_snr(struct dvb_frontend *fe, u16 *snr)
 	if (avc_tuner_status(fdtv, &stat))
 		return -EINVAL;
 
-	/* C/N[dB] = -10 * log10(snr / 65535) */
+	 
 	*snr = stat.carrier_noise_ratio * 257;
 	return 0;
 }

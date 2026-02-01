@@ -1,28 +1,23 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2016 Cavium, Inc.
- */
+
+ 
 
 #include "cptvf.h"
 
 static void cptvf_send_msg_to_pf(struct cpt_vf *cptvf, struct cpt_mbox *mbx)
 {
-	/* Writing mbox(1) causes interrupt */
+	 
 	cpt_write_csr64(cptvf->reg_base, CPTX_VFX_PF_MBOXX(0, 0, 0),
 			mbx->msg);
 	cpt_write_csr64(cptvf->reg_base, CPTX_VFX_PF_MBOXX(0, 0, 1),
 			mbx->data);
 }
 
-/* Interrupt handler to handle mailbox messages from VFs */
+ 
 void cptvf_handle_mbox_intr(struct cpt_vf *cptvf)
 {
 	struct cpt_mbox mbx = {};
 
-	/*
-	 * MBOX[0] contains msg
-	 * MBOX[1] contains data
-	 */
+	 
 	mbx.msg  = cpt_read_csr64(cptvf->reg_base, CPTX_VFX_PF_MBOXX(0, 0, 0));
 	mbx.data = cpt_read_csr64(cptvf->reg_base, CPTX_VFX_PF_MBOXX(0, 0, 1));
 	dev_dbg(&cptvf->pdev->dev, "%s: Mailbox msg 0x%llx from PF\n",
@@ -64,7 +59,7 @@ static int cptvf_send_msg_to_pf_timeout(struct cpt_vf *cptvf,
 	cptvf->pf_acked = false;
 	cptvf->pf_nacked = false;
 	cptvf_send_msg_to_pf(cptvf, mbx);
-	/* Wait for previous message to be acked, timeout 2sec */
+	 
 	while (!cptvf->pf_acked) {
 		if (cptvf->pf_nacked)
 			return -EINVAL;
@@ -82,10 +77,7 @@ static int cptvf_send_msg_to_pf_timeout(struct cpt_vf *cptvf,
 	return 0;
 }
 
-/*
- * Checks if VF is able to comminicate with PF
- * and also gets the CPT number this VF is associated to.
- */
+ 
 int cptvf_check_pf_ready(struct cpt_vf *cptvf)
 {
 	struct pci_dev *pdev = cptvf->pdev;
@@ -100,10 +92,7 @@ int cptvf_check_pf_ready(struct cpt_vf *cptvf)
 	return 0;
 }
 
-/*
- * Communicate VQs size to PF to program CPT(0)_PF_Q(0-15)_CTL of the VF.
- * Must be ACKed.
- */
+ 
 int cptvf_send_vq_size_msg(struct cpt_vf *cptvf)
 {
 	struct pci_dev *pdev = cptvf->pdev;
@@ -119,16 +108,14 @@ int cptvf_send_vq_size_msg(struct cpt_vf *cptvf)
 	return 0;
 }
 
-/*
- * Communicate VF group required to PF and get the VQ binded to that group
- */
+ 
 int cptvf_send_vf_to_grp_msg(struct cpt_vf *cptvf)
 {
 	struct pci_dev *pdev = cptvf->pdev;
 	struct cpt_mbox mbx = {};
 
 	mbx.msg = CPT_MSG_QBIND_GRP;
-	/* Convey group of the VF */
+	 
 	mbx.data = cptvf->vfgrp;
 	if (cptvf_send_msg_to_pf_timeout(cptvf, &mbx)) {
 		dev_err(&pdev->dev, "PF didn't respond to vf_type msg\n");
@@ -138,16 +125,14 @@ int cptvf_send_vf_to_grp_msg(struct cpt_vf *cptvf)
 	return 0;
 }
 
-/*
- * Communicate VF group required to PF and get the VQ binded to that group
- */
+ 
 int cptvf_send_vf_priority_msg(struct cpt_vf *cptvf)
 {
 	struct pci_dev *pdev = cptvf->pdev;
 	struct cpt_mbox mbx = {};
 
 	mbx.msg = CPT_MSG_VQ_PRIORITY;
-	/* Convey group of the VF */
+	 
 	mbx.data = cptvf->priority;
 	if (cptvf_send_msg_to_pf_timeout(cptvf, &mbx)) {
 		dev_err(&pdev->dev, "PF didn't respond to vf_type msg\n");
@@ -156,9 +141,7 @@ int cptvf_send_vf_priority_msg(struct cpt_vf *cptvf)
 	return 0;
 }
 
-/*
- * Communicate to PF that VF is UP and running
- */
+ 
 int cptvf_send_vf_up(struct cpt_vf *cptvf)
 {
 	struct pci_dev *pdev = cptvf->pdev;
@@ -173,9 +156,7 @@ int cptvf_send_vf_up(struct cpt_vf *cptvf)
 	return 0;
 }
 
-/*
- * Communicate to PF that VF is DOWN and running
- */
+ 
 int cptvf_send_vf_down(struct cpt_vf *cptvf)
 {
 	struct pci_dev *pdev = cptvf->pdev;

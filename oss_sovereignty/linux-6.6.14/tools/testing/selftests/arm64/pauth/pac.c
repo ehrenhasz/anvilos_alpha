@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (C) 2020 ARM Limited
+
+
 
 #define _GNU_SOURCE
 
@@ -14,24 +14,20 @@
 #include "helper.h"
 
 #define PAC_COLLISION_ATTEMPTS 10
-/*
- * The kernel sets TBID by default. So bits 55 and above should remain
- * untouched no matter what.
- * The VA space size is 48 bits. Bigger is opt-in.
- */
+ 
 #define PAC_MASK (~0xff80ffffffffffff)
 #define ARBITRARY_VALUE (0x1234)
 #define ASSERT_PAUTH_ENABLED() \
 do { \
 	unsigned long hwcaps = getauxval(AT_HWCAP); \
-	/* data key instructions are not in NOP space. This prevents a SIGILL */ \
+	  \
 	if (!(hwcaps & HWCAP_PACA))					\
 		SKIP(return, "PAUTH not enabled"); \
 } while (0)
 #define ASSERT_GENERIC_PAUTH_ENABLED() \
 do { \
 	unsigned long hwcaps = getauxval(AT_HWCAP); \
-	/* generic key instructions are not in NOP space. This prevents a SIGILL */ \
+	  \
 	if (!(hwcaps & HWCAP_PACG)) \
 		SKIP(return, "Generic PAUTH not enabled");	\
 } while (0)
@@ -111,10 +107,7 @@ int exec_sign_all(struct signatures *signed_vals, size_t val)
 		return -1;
 	}
 
-	/*
-	 * pin this process and all its children to a single CPU, so it can also
-	 * guarantee a context switch with its child
-	 */
+	 
 	sched_getaffinity(0, sizeof(mask), &mask);
 
 	for (i = 0; i < sizeof(cpu_set_t); i++)
@@ -126,7 +119,7 @@ int exec_sign_all(struct signatures *signed_vals, size_t val)
 	sched_setaffinity(0, sizeof(mask), &mask);
 
 	pid = fork();
-	// child
+	
 	if (pid == 0) {
 		dup2(new_stdin[0], STDIN_FILENO);
 		if (ret == -1) {
@@ -161,11 +154,7 @@ int exec_sign_all(struct signatures *signed_vals, size_t val)
 		return -1;
 	}
 
-	/*
-	 * wait for the worker to finish, so that read() reads all data
-	 * will also context switch with worker so that this function can be used
-	 * for context switch tests
-	 */
+	 
 	waitpid(pid, &status, 0);
 	if (WIFEXITED(status) == 0) {
 		fprintf(stderr, "worker exited unexpectedly\n");
@@ -192,7 +181,7 @@ void pac_signal_handler(int signum, siginfo_t *si, void *uc)
 		siglongjmp(jmpbuf, 1);
 }
 
-/* check that a corrupted PAC results in SIGSEGV or SIGILL */
+ 
 TEST(corrupt_pac)
 {
 	struct sigaction sa;
@@ -211,10 +200,7 @@ TEST(corrupt_pac)
 	}
 }
 
-/*
- * There are no separate pac* and aut* controls so checking only the pac*
- * instructions is sufficient
- */
+ 
 TEST(pac_instructions_not_nop)
 {
 	size_t keyia = 0;
@@ -257,22 +243,14 @@ TEST(single_thread_different_keys)
 	struct signatures signed_vals;
 	unsigned long hwcaps = getauxval(AT_HWCAP);
 
-	/* generic and data key instructions are not in NOP space. This prevents a SIGILL */
+	 
 	ASSERT_PAUTH_ENABLED();
 	if (!(hwcaps & HWCAP_PACG)) {
 		TH_LOG("WARNING: Generic PAUTH not enabled. Skipping generic key checks");
 		nkeys = NKEYS - 1;
 	}
 
-	/*
-	 * In Linux the PAC field can be up to 7 bits wide. Even if keys are
-	 * different, there is about 5% chance for PACs to collide with
-	 * different addresses. This chance rapidly increases with fewer bits
-	 * allocated for the PAC (e.g. wider address). A comparison of the keys
-	 * directly will be more reliable.
-	 * All signed values need to be different at least once out of n
-	 * attempts to be certain that the keys are different
-	 */
+	 
 	for (int i = 0; i < PAC_COLLISION_ATTEMPTS; i++) {
 		if (nkeys == NKEYS)
 			sign_all(&signed_vals, i);
@@ -287,10 +265,7 @@ TEST(single_thread_different_keys)
 	ASSERT_EQ(0, same) TH_LOG("%d keys clashed every time", same);
 }
 
-/*
- * fork() does not change keys. Only exec() does so call a worker program.
- * Its only job is to sign a value and report back the resutls
- */
+ 
 TEST(exec_changed_keys)
 {
 	struct signatures new_keys;
@@ -300,7 +275,7 @@ TEST(exec_changed_keys)
 	int nkeys = NKEYS;
 	unsigned long hwcaps = getauxval(AT_HWCAP);
 
-	/* generic and data key instructions are not in NOP space. This prevents a SIGILL */
+	 
 	ASSERT_PAUTH_ENABLED();
 	if (!(hwcaps & HWCAP_PACG)) {
 		TH_LOG("WARNING: Generic PAUTH not enabled. Skipping generic key checks");
@@ -335,7 +310,7 @@ TEST(context_switch_keep_keys)
 
 	sign_specific(&before, ARBITRARY_VALUE);
 
-	/* will context switch with a process with different keys at least once */
+	 
 	ret = exec_sign_all(&trash, ARBITRARY_VALUE);
 	ASSERT_EQ(0, ret) TH_LOG("failed to run worker");
 
@@ -358,7 +333,7 @@ TEST(context_switch_keep_keys_generic)
 
 	before = keyg_sign(ARBITRARY_VALUE);
 
-	/* will context switch with a process with different keys at least once */
+	 
 	ret = exec_sign_all(&trash, ARBITRARY_VALUE);
 	ASSERT_EQ(0, ret) TH_LOG("failed to run worker");
 

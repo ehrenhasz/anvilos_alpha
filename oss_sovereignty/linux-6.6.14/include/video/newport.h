@@ -1,13 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* $Id: newport.h,v 1.5 1999/08/04 06:01:51 ulfc Exp $
- *
- * newport.h: Defines and register layout for NEWPORT graphics
- *            hardware.
- *
- * Copyright (C) 1996 David S. Miller (davem@davemloft.net)
- * 
- * Ulf Carlsson - Compatibility with the IRIX structures added
- */
+ 
+ 
 
 #ifndef _SGI_NEWPORT_H
 #define _SGI_NEWPORT_H
@@ -29,7 +21,7 @@ union np_dcb {
 };
 
 struct newport_rexregs {
-	npireg_t drawmode1;      /* GL extra mode bits */
+	npireg_t drawmode1;       
 	
 #define DM1_PLANES         0x00000007
 #define    DM1_NOPLANES    0x00000000
@@ -53,15 +45,15 @@ struct newport_rexregs {
 #define NPORT_DMODE1_HD12        0x00000200
 #define NPORT_DMODE1_HD32        0x00000300
 #define NPORT_DMODE1_RWDBL       0x00000400
-#define NPORT_DMODE1_ESWAP       0x00000800 /* Endian swap */
+#define NPORT_DMODE1_ESWAP       0x00000800  
 #define NPORT_DMODE1_CCMASK      0x00007000
 #define NPORT_DMODE1_CCLT        0x00001000
 #define NPORT_DMODE1_CCEQ        0x00002000
 #define NPORT_DMODE1_CCGT        0x00004000
 #define NPORT_DMODE1_RGBMD       0x00008000
-#define NPORT_DMODE1_DENAB       0x00010000 /* Dither enable */
-#define NPORT_DMODE1_FCLR        0x00020000 /* Fast clear */
-#define NPORT_DMODE1_BENAB       0x00040000 /* Blend enable */
+#define NPORT_DMODE1_DENAB       0x00010000  
+#define NPORT_DMODE1_FCLR        0x00020000  
+#define NPORT_DMODE1_BENAB       0x00040000  
 #define NPORT_DMODE1_SFMASK      0x00380000
 #define NPORT_DMODE1_SF0         0x00000000
 #define NPORT_DMODE1_SF1         0x00080000
@@ -76,9 +68,9 @@ struct newport_rexregs {
 #define NPORT_DMODE1_DFMSC       0x00c00000
 #define NPORT_DMODE1_DFSA        0x01000000
 #define NPORT_DMODE1_DFMSA       0x01400000
-#define NPORT_DMODE1_BBENAB      0x02000000 /* Back blend enable */
-#define NPORT_DMODE1_PFENAB      0x04000000 /* Pre-fetch enable */
-#define NPORT_DMODE1_ABLEND      0x08000000 /* Alpha blend */
+#define NPORT_DMODE1_BBENAB      0x02000000  
+#define NPORT_DMODE1_PFENAB      0x04000000  
+#define NPORT_DMODE1_ABLEND      0x08000000  
 #define NPORT_DMODE1_LOMASK      0xf0000000
 #define NPORT_DMODE1_LOZERO      0x00000000
 #define NPORT_DMODE1_LOAND       0x10000000
@@ -97,26 +89,26 @@ struct newport_rexregs {
 #define NPORT_DMODE1_LONAND      0xe0000000
 #define NPORT_DMODE1_LOONE       0xf0000000
 
-	npireg_t drawmode0;      /* REX command register */
+	npireg_t drawmode0;       
 
-	/* These bits define the graphics opcode being performed. */
-#define NPORT_DMODE0_OPMASK   0x00000003 /* Opcode mask */
-#define NPORT_DMODE0_NOP      0x00000000 /* No operation */
-#define NPORT_DMODE0_RD       0x00000001 /* Read operation */
-#define NPORT_DMODE0_DRAW     0x00000002 /* Draw operation */
-#define NPORT_DMODE0_S2S      0x00000003 /* Screen to screen operation */
+	 
+#define NPORT_DMODE0_OPMASK   0x00000003  
+#define NPORT_DMODE0_NOP      0x00000000  
+#define NPORT_DMODE0_RD       0x00000001  
+#define NPORT_DMODE0_DRAW     0x00000002  
+#define NPORT_DMODE0_S2S      0x00000003  
 
-	/* The following decide what addressing mode(s) are to be used */
-#define NPORT_DMODE0_AMMASK   0x0000001c /* Address mode mask */
-#define NPORT_DMODE0_SPAN     0x00000000 /* Spanning address mode */
-#define NPORT_DMODE0_BLOCK    0x00000004 /* Block address mode */
-#define NPORT_DMODE0_ILINE    0x00000008 /* Iline address mode */
-#define NPORT_DMODE0_FLINE    0x0000000c /* Fline address mode */
-#define NPORT_DMODE0_ALINE    0x00000010 /* Aline address mode */
-#define NPORT_DMODE0_TLINE    0x00000014 /* Tline address mode */
-#define NPORT_DMODE0_BLINE    0x00000018 /* Bline address mode */
+	 
+#define NPORT_DMODE0_AMMASK   0x0000001c  
+#define NPORT_DMODE0_SPAN     0x00000000  
+#define NPORT_DMODE0_BLOCK    0x00000004  
+#define NPORT_DMODE0_ILINE    0x00000008  
+#define NPORT_DMODE0_FLINE    0x0000000c  
+#define NPORT_DMODE0_ALINE    0x00000010  
+#define NPORT_DMODE0_TLINE    0x00000014  
+#define NPORT_DMODE0_BLINE    0x00000018  
 
-	/* And now some misc. operation control bits. */
+	 
 #define NPORT_DMODE0_DOSETUP  0x00000020
 #define NPORT_DMODE0_CHOST    0x00000040
 #define NPORT_DMODE0_AHOST    0x00000080
@@ -137,16 +129,16 @@ struct newport_rexregs {
 #define NPORT_DMODE0_ENDPF    0x00400000
 #define NPORT_DMODE0_YSTR     0x00800000
 
-	npireg_t lsmode;      /* Mode for line stipple ops */
-	npireg_t lspattern;   /* Pattern for line stipple ops */
-	npireg_t lspatsave;   /* Backup save pattern */
-	npireg_t zpattern;    /* Pixel zpattern */
-	npireg_t colorback;   /* Background color */
-	npireg_t colorvram;   /* Clear color for fast vram */
-	npireg_t alpharef;    /* Reference value for afunctions */
+	npireg_t lsmode;       
+	npireg_t lspattern;    
+	npireg_t lspatsave;    
+	npireg_t zpattern;     
+	npireg_t colorback;    
+	npireg_t colorvram;    
+	npireg_t alpharef;     
 	unsigned int pad0;
-	npireg_t smask0x;     /* Window GL relative screen mask 0 */
-	npireg_t smask0y;     /* Window GL relative screen mask 0 */
+	npireg_t smask0x;      
+	npireg_t smask0y;      
 	npireg_t _setup;
 	npireg_t _stepz;
 	npireg_t _lsrestore;
@@ -154,13 +146,13 @@ struct newport_rexregs {
 
 	unsigned int _pad1[0x30];
 
-	/* Iterators, full state for context switch */
-	npfreg_t _xstart;	/* X-start point (current) */
-	npfreg_t _ystart;	/* Y-start point (current) */
-	npfreg_t _xend;		/* x-end point */
-	npfreg_t _yend;		/* y-end point */
-	npireg_t xsave;		/* copy of xstart integer value for BLOCk addressing MODE */
-	npireg_t xymove;	/* x.y offset from xstart, ystart for relative operations */
+	 
+	npfreg_t _xstart;	 
+	npfreg_t _ystart;	 
+	npfreg_t _xend;		 
+	npfreg_t _yend;		 
+	npireg_t xsave;		 
+	npireg_t xymove;	 
 	npfreg_t bresd;
 	npfreg_t bress1;
 	npireg_t bresoctinc1;
@@ -332,7 +324,7 @@ typedef struct {
 	unsigned int hostrw0;     
 	unsigned int hostrw1;     
 	
-        /* configregs */
+         
 	
 	unsigned int smask1x;    
 	unsigned int smask1y;    
@@ -347,13 +339,13 @@ typedef struct {
 	unsigned int clipmode;   
 	unsigned int config;     
 	
-        /* dcb registers */
+         
 	unsigned int dcbmode;   
 	unsigned int dcbdata0;  
 	unsigned int dcbdata1;
 } newport_ctx;
 
-/* Reading/writing VC2 registers. */
+ 
 #define VC2_REGADDR_INDEX      0x00000000
 #define VC2_REGADDR_IREG       0x00000010
 #define VC2_REGADDR_RAM        0x00000030
@@ -363,7 +355,7 @@ typedef struct {
 #define VC2_VFRAMET_ADDR       0x400
 #define VC2_CGLYPH_ADDR        0x500
 
-/* Now the Indexed registers of the VC2. */
+ 
 #define VC2_IREG_VENTRY        0x00
 #define VC2_IREG_CENTRY        0x01
 #define VC2_IREG_CURSX         0x02
@@ -403,7 +395,7 @@ static inline unsigned short newport_vc2_get(struct newport_regs *regs,
 	return regs->set.dcbdata0.byshort.s1;
 }
 
-/* VC2 Control register bits */
+ 
 #define VC2_CTRL_EVIRQ     0x0001
 #define VC2_CTRL_EDISP     0x0002
 #define VC2_CTRL_EVIDEO    0x0004
@@ -416,7 +408,7 @@ static inline unsigned short newport_vc2_get(struct newport_regs *regs,
 #define VC2_CTRL_ECG64     0x0200
 #define VC2_CTRL_GLSEL     0x0400
 
-/* Controlling the color map on NEWPORT. */
+ 
 #define NCMAP_REGADDR_AREG   0x00000000
 #define NCMAP_REGADDR_ALO    0x00000000
 #define NCMAP_REGADDR_AHI    0x00000010
@@ -448,7 +440,7 @@ static __inline__ void newport_cmap_setrgb(struct newport_regs *regs,
 		(blue << 8);
 }
 
-/* Miscellaneous NEWPORT routines. */
+ 
 #define BUSY_TIMEOUT 100000
 static __inline__ int newport_wait(struct newport_regs *regs)
 {
@@ -470,26 +462,24 @@ static __inline__ int newport_bfwait(struct newport_regs *regs)
 	return !t;
 }
 
-/*
- * DCBMODE register defines:
- */
+ 
 
-/* Width of the data being transferred for each DCBDATA[01] word */
+ 
 #define DCB_DATAWIDTH_4 0x0
 #define DCB_DATAWIDTH_1 0x1
 #define DCB_DATAWIDTH_2 0x2
 #define DCB_DATAWIDTH_3 0x3
 
-/* If set, all of DCBDATA will be moved, otherwise only DATAWIDTH bytes */
+ 
 #define DCB_ENDATAPACK   (1 << 2)
 
-/* Enables DCBCRS auto increment after each DCB transfer */
+ 
 #define DCB_ENCRSINC     (1 << 3)
 
-/* shift for accessing the control register select address (DBCCRS, 3 bits) */
+ 
 #define DCB_CRS_SHIFT    4
 
-/* DCBADDR (4 bits): display bus slave address */
+ 
 #define DCB_ADDR_SHIFT   7
 #define DCB_VC2          (0 <<  DCB_ADDR_SHIFT)
 #define DCB_CMAP_ALL     (1 <<  DCB_ADDR_SHIFT)
@@ -505,7 +495,7 @@ static __inline__ int newport_bfwait(struct newport_regs *regs)
 #define DCB_LG3_ICS1562  (11 << DCB_ADDR_SHIFT)
 #define DCB_RESERVED     (15 << DCB_ADDR_SHIFT)
 
-/* DCB protocol ack types */
+ 
 #define DCB_ENSYNCACK    (1 << 11)
 #define DCB_ENASYNCACK   (1 << 12)
 
@@ -513,8 +503,8 @@ static __inline__ int newport_bfwait(struct newport_regs *regs)
 #define DCB_CSHOLD_SHIFT  18
 #define DCB_CSSETUP_SHIFT 23
 
-/* XMAP9 specific defines */
-/*   XMAP9 -- registers as seen on the DCBMODE register*/
+ 
+ 
 #   define XM9_CRS_CONFIG            (0 << DCB_CRS_SHIFT)
 #       define XM9_PUPMODE           (1 << 0)
 #       define XM9_ODD_PIXEL         (1 << 1)
@@ -580,5 +570,5 @@ xmap9SetModeReg (struct newport_regs *rex, unsigned int modereg, unsigned int da
 
 #define BT445_REVISION_REG	0x01
 
-#endif /* !(_SGI_NEWPORT_H) */
+#endif  
 

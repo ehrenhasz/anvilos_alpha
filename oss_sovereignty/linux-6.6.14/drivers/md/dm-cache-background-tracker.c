@@ -1,13 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2017 Red Hat. All rights reserved.
- *
- * This file is released under the GPL.
- */
+
+ 
 
 #include "dm-cache-background-tracker.h"
 
-/*----------------------------------------------------------------*/
+ 
 
 #define DM_MSG_PREFIX "dm-background-tracker"
 
@@ -104,7 +100,7 @@ static bool __insert_pending(struct background_tracker *b,
 			new = &((*new)->rb_right);
 
 		else
-			/* already present */
+			 
 			return false;
 	}
 
@@ -199,10 +195,7 @@ int btracker_queue(struct background_tracker *b,
 	memcpy(&w->work, work, sizeof(*work));
 
 	if (!__insert_pending(b, w)) {
-		/*
-		 * There was a race, we'll just ignore this second
-		 * bit of work for the same oblock.
-		 */
+		 
 		kmem_cache_free(b->work_cache, w);
 		return -EINVAL;
 	}
@@ -218,9 +211,7 @@ int btracker_queue(struct background_tracker *b,
 }
 EXPORT_SYMBOL_GPL(btracker_queue);
 
-/*
- * Returns -ENODATA if there's no work.
- */
+ 
 int btracker_issue(struct background_tracker *b, struct policy_work **work)
 {
 	struct bt_work *w;
@@ -255,4 +246,4 @@ bool btracker_promotion_already_present(struct background_tracker *b,
 }
 EXPORT_SYMBOL_GPL(btracker_promotion_already_present);
 
-/*----------------------------------------------------------------*/
+ 

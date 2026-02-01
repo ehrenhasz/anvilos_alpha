@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * USB Raw Gadget driver.
- * See Documentation/usb/raw-gadget.rst for more details.
- *
- * Copyright (c) 2020 Google, Inc.
- * Author: Andrey Konovalov <andreyknvl@gmail.com>
- */
+
+ 
 
 #include <linux/compiler.h>
 #include <linux/ctype.h>
@@ -35,7 +29,7 @@ MODULE_DESCRIPTION(DRIVER_DESC);
 MODULE_AUTHOR("Andrey Konovalov");
 MODULE_LICENSE("GPL");
 
-/*----------------------------------------------------------------------*/
+ 
 
 static DEFINE_IDA(driver_id_numbers);
 #define DRIVER_DRIVER_NAME_LENGTH_MAX	32
@@ -43,7 +37,7 @@ static DEFINE_IDA(driver_id_numbers);
 #define RAW_EVENT_QUEUE_SIZE	16
 
 struct raw_event_queue {
-	/* See the comment in raw_event_queue_fetch() for locking details. */
+	 
 	spinlock_t		lock;
 	struct semaphore	sema;
 	struct usb_raw_event	*events[RAW_EVENT_QUEUE_SIZE];
@@ -91,19 +85,12 @@ static struct usb_raw_event *raw_event_queue_fetch(
 	unsigned long flags;
 	struct usb_raw_event *event;
 
-	/*
-	 * This function can be called concurrently. We first check that
-	 * there's at least one event queued by decrementing the semaphore,
-	 * and then take the lock to protect queue struct fields.
-	 */
+	 
 	ret = down_interruptible(&queue->sema);
 	if (ret)
 		return ERR_PTR(ret);
 	spin_lock_irqsave(&queue->lock, flags);
-	/*
-	 * queue->size must have the same value as queue->sema counter (before
-	 * the down_interruptible() call above), so this check is a fail-safe.
-	 */
+	 
 	if (WARN_ON(!queue->size)) {
 		spin_unlock_irqrestore(&queue->lock, flags);
 		return ERR_PTR(-ENODEV);
@@ -125,7 +112,7 @@ static void raw_event_queue_destroy(struct raw_event_queue *queue)
 	queue->size = 0;
 }
 
-/*----------------------------------------------------------------------*/
+ 
 
 struct raw_dev;
 
@@ -162,13 +149,13 @@ struct raw_dev {
 	const char			*udc_name;
 	struct usb_gadget_driver	driver;
 
-	/* Reference to misc device: */
+	 
 	struct device			*dev;
 
-	/* Make driver names unique */
+	 
 	int				driver_id_number;
 
-	/* Protected by lock: */
+	 
 	enum dev_state			state;
 	bool				gadget_registered;
 	struct usb_gadget		*gadget;
@@ -191,7 +178,7 @@ static struct raw_dev *dev_new(void)
 	dev = kzalloc(sizeof(*dev), GFP_KERNEL);
 	if (!dev)
 		return NULL;
-	/* Matches kref_put() in raw_release(). */
+	 
 	kref_init(&dev->count);
 	spin_lock_init(&dev->lock);
 	init_completion(&dev->ep0_done);
@@ -227,7 +214,7 @@ static void dev_free(struct kref *kref)
 	kfree(dev);
 }
 
-/*----------------------------------------------------------------------*/
+ 
 
 static int raw_queue_event(struct raw_dev *dev,
 	enum usb_raw_event_type type, size_t length, const void *data)
@@ -265,14 +252,10 @@ static void gadget_ep0_complete(struct usb_ep *ep, struct usb_request *req)
 
 static u8 get_ep_addr(const char *name)
 {
-	/* If the endpoint has fixed function (named as e.g. "ep12out-bulk"),
-	 * parse the endpoint address from its name. We deliberately use
-	 * deprecated simple_strtoul() function here, as the number isn't
-	 * followed by '\0' nor '\n'.
-	 */
+	 
 	if (isdigit(name[2]))
 		return simple_strtoul(&name[2], NULL, 10);
-	/* Otherwise the endpoint is configurable (named as e.g. "ep-a"). */
+	 
 	return USB_RAW_EP_ADDR_ANY;
 }
 
@@ -317,7 +300,7 @@ static int gadget_bind(struct usb_gadget *gadget,
 		return ret;
 	}
 
-	/* Matches kref_put() in gadget_unbind(). */
+	 
 	kref_get(&dev->count);
 	return ret;
 }
@@ -327,7 +310,7 @@ static void gadget_unbind(struct usb_gadget *gadget)
 	struct raw_dev *dev = get_gadget_data(gadget);
 
 	set_gadget_data(gadget, NULL);
-	/* Matches kref_get() in gadget_bind(). */
+	 
 	kref_put(&dev->count, dev_free);
 }
 
@@ -366,13 +349,13 @@ out:
 	return ret;
 }
 
-/* These are currently unused but present in case UDC driver requires them. */
+ 
 static void gadget_disconnect(struct usb_gadget *gadget) { }
 static void gadget_suspend(struct usb_gadget *gadget) { }
 static void gadget_resume(struct usb_gadget *gadget) { }
 static void gadget_reset(struct usb_gadget *gadget) { }
 
-/*----------------------------------------------------------------------*/
+ 
 
 static struct miscdevice raw_misc_device;
 
@@ -380,7 +363,7 @@ static int raw_open(struct inode *inode, struct file *fd)
 {
 	struct raw_dev *dev;
 
-	/* Nonblocking I/O is not supported yet. */
+	 
 	if (fd->f_flags & O_NONBLOCK)
 		return -EINVAL;
 
@@ -417,17 +400,17 @@ static int raw_release(struct inode *inode, struct file *fd)
 			dev_err(dev->dev,
 				"usb_gadget_unregister_driver() failed with %d\n",
 				ret);
-		/* Matches kref_get() in raw_ioctl_run(). */
+		 
 		kref_put(&dev->count, dev_free);
 	}
 
 out_put:
-	/* Matches dev_new() in raw_open(). */
+	 
 	kref_put(&dev->count, dev_free);
 	return ret;
 }
 
-/*----------------------------------------------------------------------*/
+ 
 
 static int raw_ioctl_init(struct raw_dev *dev, unsigned long value)
 {
@@ -556,7 +539,7 @@ static int raw_ioctl_run(struct raw_dev *dev, unsigned long value)
 	}
 	dev->gadget_registered = true;
 	dev->state = STATE_DEV_RUNNING;
-	/* Matches kref_put() in raw_release(). */
+	 
 	kref_get(&dev->count);
 
 out_unlock:
@@ -802,10 +785,7 @@ static int raw_ioctl_ep_enable(struct raw_dev *dev, unsigned long value)
 	if (IS_ERR(desc))
 		return PTR_ERR(desc);
 
-	/*
-	 * Endpoints with a maxpacket length of 0 can cause crashes in UDC
-	 * drivers.
-	 */
+	 
 	if (usb_endpoint_maxp(desc) == 0) {
 		dev_dbg(dev->dev, "fail, bad endpoint maxpacket\n");
 		kfree(desc);
@@ -1312,7 +1292,7 @@ static long raw_ioctl(struct file *fd, unsigned int cmd, unsigned long value)
 	return ret;
 }
 
-/*----------------------------------------------------------------------*/
+ 
 
 static const struct file_operations raw_fops = {
 	.open =			raw_open,

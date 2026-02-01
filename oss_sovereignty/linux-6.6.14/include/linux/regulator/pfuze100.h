@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copyright (C) 2011-2013 Freescale Semiconductor, Inc. All Rights Reserved.
- */
+ 
+ 
 #ifndef __LINUX_REG_PFUZE100_H
 #define __LINUX_REG_PFUZE100_H
 
@@ -63,4 +61,4 @@
 #define PFUZE3001_VLDO3		8
 #define PFUZE3001_VLDO4		9
 
-#endif /* __LINUX_REG_PFUZE100_H */
+#endif  

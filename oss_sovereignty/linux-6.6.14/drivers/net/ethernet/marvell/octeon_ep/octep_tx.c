@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Marvell Octeon EP (EndPoint) Ethernet Driver
- *
- * Copyright (C) 2020 Marvell.
- *
- */
+
+ 
 
 #include <linux/pci.h>
 #include <linux/etherdevice.h>
@@ -12,7 +8,7 @@
 #include "octep_config.h"
 #include "octep_main.h"
 
-/* Reset various index of Tx queue data structure. */
+ 
 static void octep_iq_reset_indices(struct octep_iq *iq)
 {
 	iq->fill_cnt = 0;
@@ -24,12 +20,7 @@ static void octep_iq_reset_indices(struct octep_iq *iq)
 	atomic_set(&iq->instr_pending, 0);
 }
 
-/**
- * octep_iq_process_completions() - Process Tx queue completions.
- *
- * @iq: Octeon Tx queue data structure.
- * @budget: max number of completions to be processed in one invocation.
- */
+ 
 int octep_iq_process_completions(struct octep_iq *iq, u16 budget)
 {
 	u32 compl_pkts, compl_bytes, compl_sg;
@@ -63,7 +54,7 @@ int octep_iq_process_completions(struct octep_iq *iq, u16 budget)
 			continue;
 		}
 
-		/* Scatter/Gather */
+		 
 		shinfo = skb_shinfo(skb);
 		frags = shinfo->nr_frags;
 		compl_sg++;
@@ -71,7 +62,7 @@ int octep_iq_process_completions(struct octep_iq *iq, u16 budget)
 		dma_unmap_single(iq->dev, tx_buffer->sglist[0].dma_ptr[0],
 				 tx_buffer->sglist[0].len[3], DMA_TO_DEVICE);
 
-		i = 1; /* entry 0 is main skb, unmapped above */
+		i = 1;  
 		while (frags--) {
 			dma_unmap_page(iq->dev, tx_buffer->sglist[i >> 2].dma_ptr[i & 3],
 				       tx_buffer->sglist[i >> 2].len[3 - (i & 3)], DMA_TO_DEVICE);
@@ -97,11 +88,7 @@ int octep_iq_process_completions(struct octep_iq *iq, u16 budget)
 	return !budget;
 }
 
-/**
- * octep_iq_free_pending() - Free Tx buffers for pending completions.
- *
- * @iq: Octeon Tx queue data structure.
- */
+ 
 static void octep_iq_free_pending(struct octep_iq *iq)
 {
 	struct octep_tx_buffer *tx_buffer;
@@ -125,7 +112,7 @@ static void octep_iq_free_pending(struct octep_iq *iq)
 			continue;
 		}
 
-		/* Scatter/Gather */
+		 
 		shinfo = skb_shinfo(skb);
 		frags = shinfo->nr_frags;
 
@@ -134,7 +121,7 @@ static void octep_iq_free_pending(struct octep_iq *iq)
 				 tx_buffer->sglist[0].len[3],
 				 DMA_TO_DEVICE);
 
-		i = 1; /* entry 0 is main skb, unmapped above */
+		i = 1;  
 		while (frags--) {
 			dma_unmap_page(iq->dev, tx_buffer->sglist[i >> 2].dma_ptr[i & 3],
 				       tx_buffer->sglist[i >> 2].len[3 - (i & 3)], DMA_TO_DEVICE);
@@ -149,14 +136,7 @@ static void octep_iq_free_pending(struct octep_iq *iq)
 	netdev_tx_reset_queue(netdev_get_tx_queue(iq->netdev, iq->q_no));
 }
 
-/**
- * octep_clean_iqs()  - Clean Tx queues to shutdown the device.
- *
- * @oct: Octeon device private data structure.
- *
- * Free the buffers in Tx queue descriptors pending completion and
- * reset queue indices
- */
+ 
 void octep_clean_iqs(struct octep_device *oct)
 {
 	int i;
@@ -167,14 +147,7 @@ void octep_clean_iqs(struct octep_device *oct)
 	}
 }
 
-/**
- * octep_setup_iq() - Setup a Tx queue.
- *
- * @oct: Octeon device private data structure.
- * @q_no: Tx queue number to be setup.
- *
- * Allocate resources for a Tx queue.
- */
+ 
 static int octep_setup_iq(struct octep_device *oct, int q_no)
 {
 	u32 desc_ring_size, buff_info_size, sglist_size;
@@ -195,7 +168,7 @@ static int octep_setup_iq(struct octep_device *oct, int q_no)
 	iq->fill_threshold = CFG_GET_IQ_DB_MIN(oct->conf);
 	iq->netdev_q = netdev_get_tx_queue(iq->netdev, q_no);
 
-	/* Allocate memory for hardware queue descriptors */
+	 
 	desc_ring_size = OCTEP_IQ_DESC_SIZE * CFG_GET_IQ_NUM_DESC(oct->conf);
 	iq->desc_ring = dma_alloc_coherent(iq->dev, desc_ring_size,
 					   &iq->desc_ring_dma, GFP_KERNEL);
@@ -205,7 +178,7 @@ static int octep_setup_iq(struct octep_device *oct, int q_no)
 		goto desc_dma_alloc_err;
 	}
 
-	/* Allocate memory for hardware SGLIST descriptors */
+	 
 	sglist_size = OCTEP_SGLIST_SIZE_PER_PKT *
 		      CFG_GET_IQ_NUM_DESC(oct->conf);
 	iq->sglist = dma_alloc_coherent(iq->dev, sglist_size,
@@ -217,7 +190,7 @@ static int octep_setup_iq(struct octep_device *oct, int q_no)
 		goto sglist_alloc_err;
 	}
 
-	/* allocate memory to manage Tx packets pending completion */
+	 
 	buff_info_size = OCTEP_IQ_TXBUFF_INFO_SIZE * iq->max_count;
 	iq->buff_info = vzalloc(buff_info_size);
 	if (!iq->buff_info) {
@@ -226,7 +199,7 @@ static int octep_setup_iq(struct octep_device *oct, int q_no)
 		goto buff_info_err;
 	}
 
-	/* Setup sglist addresses in tx_buffer entries */
+	 
 	for (i = 0; i < CFG_GET_IQ_NUM_DESC(oct->conf); i++) {
 		struct octep_tx_buffer *tx_buffer;
 
@@ -255,13 +228,7 @@ iq_alloc_err:
 	return -1;
 }
 
-/**
- * octep_free_iq() - Free Tx queue resources.
- *
- * @iq: Octeon Tx queue data structure.
- *
- * Free all the resources allocated for a Tx queue.
- */
+ 
 static void octep_free_iq(struct octep_iq *iq)
 {
 	struct octep_device *oct = iq->octep_dev;
@@ -287,11 +254,7 @@ static void octep_free_iq(struct octep_iq *iq)
 	oct->num_iqs--;
 }
 
-/**
- * octep_setup_iqs() - setup resources for all Tx queues.
- *
- * @oct: Octeon device private data structure.
- */
+ 
 int octep_setup_iqs(struct octep_device *oct)
 {
 	int i;
@@ -316,11 +279,7 @@ iq_setup_err:
 	return -1;
 }
 
-/**
- * octep_free_iqs() - Free resources of all Tx queues.
- *
- * @oct: Octeon device private data structure.
- */
+ 
 void octep_free_iqs(struct octep_device *oct)
 {
 	int i;

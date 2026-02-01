@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (c) 2023 Neil Armstrong <neil.armstrong@linaro.org>
- */
+
+ 
 
 #include <linux/of_device.h>
 #include <linux/clk-provider.h>

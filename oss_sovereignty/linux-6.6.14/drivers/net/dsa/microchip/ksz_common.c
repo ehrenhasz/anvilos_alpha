@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Microchip switch driver main logic
- *
- * Copyright (C) 2017-2019 Microchip Technology Inc.
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/dsa/ksz_common.h>
@@ -499,7 +495,7 @@ static const struct regmap_range ksz8563_valid_regs[] = {
 	regmap_reg_range(0x0520, 0x054b),
 	regmap_reg_range(0x0550, 0x05b3),
 
-	/* port 1 */
+	 
 	regmap_reg_range(0x1000, 0x1001),
 	regmap_reg_range(0x1004, 0x100b),
 	regmap_reg_range(0x1013, 0x1013),
@@ -529,7 +525,7 @@ static const struct regmap_range ksz8563_valid_regs[] = {
 	regmap_reg_range(0x1c00, 0x1c05),
 	regmap_reg_range(0x1c08, 0x1c1b),
 
-	/* port 2 */
+	 
 	regmap_reg_range(0x2000, 0x2001),
 	regmap_reg_range(0x2004, 0x200b),
 	regmap_reg_range(0x2013, 0x2013),
@@ -559,7 +555,7 @@ static const struct regmap_range ksz8563_valid_regs[] = {
 	regmap_reg_range(0x2c00, 0x2c05),
 	regmap_reg_range(0x2c08, 0x2c1b),
 
-	/* port 3 */
+	 
 	regmap_reg_range(0x3000, 0x3001),
 	regmap_reg_range(0x3004, 0x300b),
 	regmap_reg_range(0x3013, 0x3013),
@@ -626,7 +622,7 @@ static const struct regmap_range ksz9477_valid_regs[] = {
 	regmap_reg_range(0x0640, 0x0645),
 	regmap_reg_range(0x0648, 0x064d),
 
-	/* port 1 */
+	 
 	regmap_reg_range(0x1000, 0x1001),
 	regmap_reg_range(0x1013, 0x1013),
 	regmap_reg_range(0x1017, 0x1017),
@@ -659,7 +655,7 @@ static const struct regmap_range ksz9477_valid_regs[] = {
 	regmap_reg_range(0x1c00, 0x1c05),
 	regmap_reg_range(0x1c08, 0x1c1b),
 
-	/* port 2 */
+	 
 	regmap_reg_range(0x2000, 0x2001),
 	regmap_reg_range(0x2013, 0x2013),
 	regmap_reg_range(0x2017, 0x2017),
@@ -692,7 +688,7 @@ static const struct regmap_range ksz9477_valid_regs[] = {
 	regmap_reg_range(0x2c00, 0x2c05),
 	regmap_reg_range(0x2c08, 0x2c1b),
 
-	/* port 3 */
+	 
 	regmap_reg_range(0x3000, 0x3001),
 	regmap_reg_range(0x3013, 0x3013),
 	regmap_reg_range(0x3017, 0x3017),
@@ -725,7 +721,7 @@ static const struct regmap_range ksz9477_valid_regs[] = {
 	regmap_reg_range(0x3c00, 0x3c05),
 	regmap_reg_range(0x3c08, 0x3c1b),
 
-	/* port 4 */
+	 
 	regmap_reg_range(0x4000, 0x4001),
 	regmap_reg_range(0x4013, 0x4013),
 	regmap_reg_range(0x4017, 0x4017),
@@ -758,7 +754,7 @@ static const struct regmap_range ksz9477_valid_regs[] = {
 	regmap_reg_range(0x4c00, 0x4c05),
 	regmap_reg_range(0x4c08, 0x4c1b),
 
-	/* port 5 */
+	 
 	regmap_reg_range(0x5000, 0x5001),
 	regmap_reg_range(0x5013, 0x5013),
 	regmap_reg_range(0x5017, 0x5017),
@@ -791,7 +787,7 @@ static const struct regmap_range ksz9477_valid_regs[] = {
 	regmap_reg_range(0x5c00, 0x5c05),
 	regmap_reg_range(0x5c08, 0x5c1b),
 
-	/* port 6 */
+	 
 	regmap_reg_range(0x6000, 0x6001),
 	regmap_reg_range(0x6013, 0x6013),
 	regmap_reg_range(0x6017, 0x6017),
@@ -820,7 +816,7 @@ static const struct regmap_range ksz9477_valid_regs[] = {
 	regmap_reg_range(0x6c00, 0x6c05),
 	regmap_reg_range(0x6c08, 0x6c1b),
 
-	/* port 7 */
+	 
 	regmap_reg_range(0x7000, 0x7001),
 	regmap_reg_range(0x7013, 0x7013),
 	regmap_reg_range(0x7017, 0x7017),
@@ -883,7 +879,7 @@ static const struct regmap_range ksz9896_valid_regs[] = {
 	regmap_reg_range(0x0400, 0x040e),
 	regmap_reg_range(0x0410, 0x042f),
 
-	/* port 1 */
+	 
 	regmap_reg_range(0x1000, 0x1001),
 	regmap_reg_range(0x1013, 0x1013),
 	regmap_reg_range(0x1017, 0x1017),
@@ -913,7 +909,7 @@ static const struct regmap_range ksz9896_valid_regs[] = {
 	regmap_reg_range(0x1b00, 0x1b01),
 	regmap_reg_range(0x1b04, 0x1b04),
 
-	/* port 2 */
+	 
 	regmap_reg_range(0x2000, 0x2001),
 	regmap_reg_range(0x2013, 0x2013),
 	regmap_reg_range(0x2017, 0x2017),
@@ -943,7 +939,7 @@ static const struct regmap_range ksz9896_valid_regs[] = {
 	regmap_reg_range(0x2b00, 0x2b01),
 	regmap_reg_range(0x2b04, 0x2b04),
 
-	/* port 3 */
+	 
 	regmap_reg_range(0x3000, 0x3001),
 	regmap_reg_range(0x3013, 0x3013),
 	regmap_reg_range(0x3017, 0x3017),
@@ -973,7 +969,7 @@ static const struct regmap_range ksz9896_valid_regs[] = {
 	regmap_reg_range(0x3b00, 0x3b01),
 	regmap_reg_range(0x3b04, 0x3b04),
 
-	/* port 4 */
+	 
 	regmap_reg_range(0x4000, 0x4001),
 	regmap_reg_range(0x4013, 0x4013),
 	regmap_reg_range(0x4017, 0x4017),
@@ -1003,7 +999,7 @@ static const struct regmap_range ksz9896_valid_regs[] = {
 	regmap_reg_range(0x4b00, 0x4b01),
 	regmap_reg_range(0x4b04, 0x4b04),
 
-	/* port 5 */
+	 
 	regmap_reg_range(0x5000, 0x5001),
 	regmap_reg_range(0x5013, 0x5013),
 	regmap_reg_range(0x5017, 0x5017),
@@ -1033,7 +1029,7 @@ static const struct regmap_range ksz9896_valid_regs[] = {
 	regmap_reg_range(0x5b00, 0x5b01),
 	regmap_reg_range(0x5b04, 0x5b04),
 
-	/* port 6 */
+	 
 	regmap_reg_range(0x6000, 0x6001),
 	regmap_reg_range(0x6013, 0x6013),
 	regmap_reg_range(0x6017, 0x6017),
@@ -1072,10 +1068,10 @@ static const struct regmap_access_table ksz9896_register_set = {
 
 static const struct regmap_range ksz8873_valid_regs[] = {
 	regmap_reg_range(0x00, 0x01),
-	/* global control register */
+	 
 	regmap_reg_range(0x02, 0x0f),
 
-	/* port registers */
+	 
 	regmap_reg_range(0x10, 0x1d),
 	regmap_reg_range(0x1e, 0x1f),
 	regmap_reg_range(0x20, 0x2d),
@@ -1083,7 +1079,7 @@ static const struct regmap_range ksz8873_valid_regs[] = {
 	regmap_reg_range(0x30, 0x39),
 	regmap_reg_range(0x3f, 0x3f),
 
-	/* advanced control registers */
+	 
 	regmap_reg_range(0x60, 0x6f),
 	regmap_reg_range(0x70, 0x75),
 	regmap_reg_range(0x76, 0x78),
@@ -1116,8 +1112,8 @@ const struct ksz_chip_data ksz_switch_chips[] = {
 		.num_vlans = 4096,
 		.num_alus = 4096,
 		.num_statics = 16,
-		.cpu_ports = 0x07,	/* can be configured as cpu port */
-		.port_cnt = 3,		/* total port count */
+		.cpu_ports = 0x07,	 
+		.port_cnt = 3,		 
 		.port_nirqs = 3,
 		.num_tx_queues = 4,
 		.tc_cbs_supported = true,
@@ -1130,7 +1126,7 @@ const struct ksz_chip_data ksz_switch_chips[] = {
 		.masks = ksz9477_masks,
 		.shifts = ksz9477_shifts,
 		.xmii_ctrl0 = ksz9477_xmii_ctrl0,
-		.xmii_ctrl1 = ksz8795_xmii_ctrl1, /* Same as ksz8795 */
+		.xmii_ctrl1 = ksz8795_xmii_ctrl1,  
 		.supports_mii = {false, false, true},
 		.supports_rmii = {false, false, true},
 		.supports_rgmii = {false, false, true},
@@ -1146,8 +1142,8 @@ const struct ksz_chip_data ksz_switch_chips[] = {
 		.num_vlans = 4096,
 		.num_alus = 0,
 		.num_statics = 8,
-		.cpu_ports = 0x10,	/* can be configured as cpu port */
-		.port_cnt = 5,		/* total cpu and user ports */
+		.cpu_ports = 0x10,	 
+		.port_cnt = 5,		 
 		.num_tx_queues = 4,
 		.ops = &ksz8_dev_ops,
 		.ksz87xx_eee_link_erratum = true,
@@ -1166,27 +1162,14 @@ const struct ksz_chip_data ksz_switch_chips[] = {
 	},
 
 	[KSZ8794] = {
-		/* WARNING
-		 * =======
-		 * KSZ8794 is similar to KSZ8795, except the port map
-		 * contains a gap between external and CPU ports, the
-		 * port map is NOT continuous. The per-port register
-		 * map is shifted accordingly too, i.e. registers at
-		 * offset 0x40 are NOT used on KSZ8794 and they ARE
-		 * used on KSZ8795 for external port 3.
-		 *           external  cpu
-		 * KSZ8794   0,1,2      4
-		 * KSZ8795   0,1,2,3    4
-		 * KSZ8765   0,1,2,3    4
-		 * port_cnt is configured as 5, even though it is 4
-		 */
+		 
 		.chip_id = KSZ8794_CHIP_ID,
 		.dev_name = "KSZ8794",
 		.num_vlans = 4096,
 		.num_alus = 0,
 		.num_statics = 8,
-		.cpu_ports = 0x10,	/* can be configured as cpu port */
-		.port_cnt = 5,		/* total cpu and user ports */
+		.cpu_ports = 0x10,	 
+		.port_cnt = 5,		 
 		.num_tx_queues = 4,
 		.ops = &ksz8_dev_ops,
 		.ksz87xx_eee_link_erratum = true,
@@ -1210,8 +1193,8 @@ const struct ksz_chip_data ksz_switch_chips[] = {
 		.num_vlans = 4096,
 		.num_alus = 0,
 		.num_statics = 8,
-		.cpu_ports = 0x10,	/* can be configured as cpu port */
-		.port_cnt = 5,		/* total cpu and user ports */
+		.cpu_ports = 0x10,	 
+		.port_cnt = 5,		 
 		.num_tx_queues = 4,
 		.ops = &ksz8_dev_ops,
 		.ksz87xx_eee_link_erratum = true,
@@ -1235,7 +1218,7 @@ const struct ksz_chip_data ksz_switch_chips[] = {
 		.num_vlans = 16,
 		.num_alus = 0,
 		.num_statics = 8,
-		.cpu_ports = 0x4,	/* can be configured as cpu port */
+		.cpu_ports = 0x4,	 
 		.port_cnt = 3,
 		.num_tx_queues = 4,
 		.ops = &ksz8_dev_ops,
@@ -1258,8 +1241,8 @@ const struct ksz_chip_data ksz_switch_chips[] = {
 		.num_vlans = 4096,
 		.num_alus = 4096,
 		.num_statics = 16,
-		.cpu_ports = 0x7F,	/* can be configured as cpu port */
-		.port_cnt = 7,		/* total physical port count */
+		.cpu_ports = 0x7F,	 
+		.port_cnt = 7,		 
 		.port_nirqs = 4,
 		.num_tx_queues = 4,
 		.tc_cbs_supported = true,
@@ -1292,8 +1275,8 @@ const struct ksz_chip_data ksz_switch_chips[] = {
 		.num_vlans = 4096,
 		.num_alus = 4096,
 		.num_statics = 16,
-		.cpu_ports = 0x3F,	/* can be configured as cpu port */
-		.port_cnt = 6,		/* total physical port count */
+		.cpu_ports = 0x3F,	 
+		.port_cnt = 6,		 
 		.port_nirqs = 2,
 		.num_tx_queues = 4,
 		.ops = &ksz9477_dev_ops,
@@ -1324,8 +1307,8 @@ const struct ksz_chip_data ksz_switch_chips[] = {
 		.num_vlans = 4096,
 		.num_alus = 4096,
 		.num_statics = 16,
-		.cpu_ports = 0x7F,	/* can be configured as cpu port */
-		.port_cnt = 7,		/* total physical port count */
+		.cpu_ports = 0x7F,	 
+		.port_cnt = 7,		 
 		.port_nirqs = 2,
 		.num_tx_queues = 4,
 		.ops = &ksz9477_dev_ops,
@@ -1354,8 +1337,8 @@ const struct ksz_chip_data ksz_switch_chips[] = {
 		.num_vlans = 4096,
 		.num_alus = 4096,
 		.num_statics = 16,
-		.cpu_ports = 0x07,	/* can be configured as cpu port */
-		.port_cnt = 3,		/* total port count */
+		.cpu_ports = 0x07,	 
+		.port_cnt = 3,		 
 		.port_nirqs = 2,
 		.num_tx_queues = 4,
 		.ops = &ksz9477_dev_ops,
@@ -1366,7 +1349,7 @@ const struct ksz_chip_data ksz_switch_chips[] = {
 		.masks = ksz9477_masks,
 		.shifts = ksz9477_shifts,
 		.xmii_ctrl0 = ksz9477_xmii_ctrl0,
-		.xmii_ctrl1 = ksz8795_xmii_ctrl1, /* Same as ksz8795 */
+		.xmii_ctrl1 = ksz8795_xmii_ctrl1,  
 		.supports_mii = {false, false, true},
 		.supports_rmii = {false, false, true},
 		.supports_rgmii = {false, false, true},
@@ -1380,8 +1363,8 @@ const struct ksz_chip_data ksz_switch_chips[] = {
 		.num_vlans = 4096,
 		.num_alus = 4096,
 		.num_statics = 16,
-		.cpu_ports = 0x07,	/* can be configured as cpu port */
-		.port_cnt = 3,		/* total port count */
+		.cpu_ports = 0x07,	 
+		.port_cnt = 3,		 
 		.port_nirqs = 3,
 		.num_tx_queues = 4,
 		.tc_cbs_supported = true,
@@ -1394,7 +1377,7 @@ const struct ksz_chip_data ksz_switch_chips[] = {
 		.masks = ksz9477_masks,
 		.shifts = ksz9477_shifts,
 		.xmii_ctrl0 = ksz9477_xmii_ctrl0,
-		.xmii_ctrl1 = ksz8795_xmii_ctrl1, /* Same as ksz8795 */
+		.xmii_ctrl1 = ksz8795_xmii_ctrl1,  
 		.supports_mii = {false, false, true},
 		.supports_rmii = {false, false, true},
 		.supports_rgmii = {false, false, true},
@@ -1408,8 +1391,8 @@ const struct ksz_chip_data ksz_switch_chips[] = {
 		.num_vlans = 4096,
 		.num_alus = 4096,
 		.num_statics = 16,
-		.cpu_ports = 0x7F,	/* can be configured as cpu port */
-		.port_cnt = 7,		/* total physical port count */
+		.cpu_ports = 0x7F,	 
+		.port_cnt = 7,		 
 		.port_nirqs = 3,
 		.num_tx_queues = 4,
 		.tc_cbs_supported = true,
@@ -1440,8 +1423,8 @@ const struct ksz_chip_data ksz_switch_chips[] = {
 		.num_vlans = 4096,
 		.num_alus = 1024,
 		.num_statics = 256,
-		.cpu_ports = 0x10,	/* can be configured as cpu port */
-		.port_cnt = 5,		/* total physical port count */
+		.cpu_ports = 0x10,	 
+		.port_cnt = 5,		 
 		.port_nirqs = 6,
 		.num_tx_queues = 8,
 		.tc_cbs_supported = true,
@@ -1467,8 +1450,8 @@ const struct ksz_chip_data ksz_switch_chips[] = {
 		.num_vlans = 4096,
 		.num_alus = 1024,
 		.num_statics = 256,
-		.cpu_ports = 0x30,	/* can be configured as cpu port */
-		.port_cnt = 6,		/* total physical port count */
+		.cpu_ports = 0x30,	 
+		.port_cnt = 6,		 
 		.port_nirqs = 6,
 		.num_tx_queues = 8,
 		.tc_cbs_supported = true,
@@ -1494,8 +1477,8 @@ const struct ksz_chip_data ksz_switch_chips[] = {
 		.num_vlans = 4096,
 		.num_alus = 1024,
 		.num_statics = 256,
-		.cpu_ports = 0x30,	/* can be configured as cpu port */
-		.port_cnt = 8,		/* total physical port count */
+		.cpu_ports = 0x30,	 
+		.port_cnt = 8,		 
 		.port_nirqs = 6,
 		.num_tx_queues = 8,
 		.tc_cbs_supported = true,
@@ -1525,8 +1508,8 @@ const struct ksz_chip_data ksz_switch_chips[] = {
 		.num_vlans = 4096,
 		.num_alus = 1024,
 		.num_statics = 256,
-		.cpu_ports = 0x38,	/* can be configured as cpu port */
-		.port_cnt = 5,		/* total physical port count */
+		.cpu_ports = 0x38,	 
+		.port_cnt = 5,		 
 		.port_nirqs = 6,
 		.num_tx_queues = 8,
 		.tc_cbs_supported = true,
@@ -1556,8 +1539,8 @@ const struct ksz_chip_data ksz_switch_chips[] = {
 		.num_vlans = 4096,
 		.num_alus = 1024,
 		.num_statics = 256,
-		.cpu_ports = 0x30,	/* can be configured as cpu port */
-		.port_cnt = 8,		/* total physical port count */
+		.cpu_ports = 0x30,	 
+		.port_cnt = 8,		 
 		.port_nirqs = 6,
 		.num_tx_queues = 8,
 		.tc_cbs_supported = true,
@@ -1603,7 +1586,7 @@ static int ksz_check_device_id(struct ksz_device *dev)
 
 	dt_chip_data = of_device_get_match_data(dev->dev);
 
-	/* Check for Device Tree and Chip ID */
+	 
 	if (dt_chip_data->chip_id != dev->chip_id) {
 		dev_err(dev->dev,
 			"Device tree specifies chip %s but found %s, please fix it!\n",
@@ -1632,9 +1615,7 @@ static void ksz_phylink_get_caps(struct dsa_switch *ds, int port,
 	if (dev->info->internal_phy[port]) {
 		__set_bit(PHY_INTERFACE_MODE_INTERNAL,
 			  config->supported_interfaces);
-		/* Compatibility for phylib's default interface type when the
-		 * phy-mode property is absent
-		 */
+		 
 		__set_bit(PHY_INTERFACE_MODE_GMII,
 			  config->supported_interfaces);
 	}
@@ -1662,9 +1643,7 @@ void ksz_r_mib_stats64(struct ksz_device *dev, int port)
 	stats->tx_packets = raw->tx_bcast + raw->tx_mcast + raw->tx_ucast +
 		raw->tx_pause;
 
-	/* HW counters are counting bytes + FCS which is not acceptable
-	 * for rtnl_link_stats64 interface
-	 */
+	 
 	stats->rx_bytes = raw->rx_total - stats->rx_packets * ETH_FCS_LEN;
 	stats->tx_bytes = raw->tx_total - stats->tx_packets * ETH_FCS_LEN;
 
@@ -1711,9 +1690,7 @@ void ksz88xx_r_mib_stats64(struct ksz_device *dev, int port)
 	stats->tx_packets = raw->tx_bcast + raw->tx_mcast + raw->tx_ucast +
 		raw->tx_pause;
 
-	/* HW counters are counting bytes + FCS which is not acceptable
-	 * for rtnl_link_stats64 interface
-	 */
+	 
 	stats->rx_bytes = raw->rx + raw->rx_hi - stats->rx_packets * ETH_FCS_LEN;
 	stats->tx_bytes = raw->tx + raw->tx_hi - stats->tx_packets * ETH_FCS_LEN;
 
@@ -1815,7 +1792,7 @@ static void ksz_update_port_member(struct ksz_device *dev, int port)
 			port_member |= BIT(i);
 		}
 
-		/* Retain port [i]'s relationship to other ports than [port] */
+		 
 		for (j = 0; j < ds->num_ports; j++) {
 			const struct dsa_port *third_dp;
 			struct ksz_port *third_p;
@@ -2029,7 +2006,7 @@ static irqreturn_t ksz_irq_thread_fn(int irq, void *dev_id)
 
 	dev = kirq->dev;
 
-	/* Read interrupt status register */
+	 
 	ret = ksz_read8(dev, kirq->reg_status, &data);
 	if (ret)
 		goto out;
@@ -2124,7 +2101,7 @@ static int ksz_setup(struct dsa_switch *ds)
 		return ret;
 	}
 
-	/* set broadcast storm protection 10% rate */
+	 
 	regmap_update_bits(ksz_regmap_16(dev), regs[S_BROADCAST_CTRL],
 			   BROADCAST_STORM_RATE,
 			   (BROADCAST_STORM_VALUE *
@@ -2149,11 +2126,7 @@ static int ksz_setup(struct dsa_switch *ds)
 			return ret;
 	}
 
-	/* Start with learning disabled on standalone user ports, and enabled
-	 * on the CPU port. In lack of other finer mechanisms, learning on the
-	 * CPU port will avoid flooding bridge local addresses on the network
-	 * in some cases.
-	 */
+	 
 	p = &dev->ports[dev->cpu_port];
 	p->learning = true;
 
@@ -2185,7 +2158,7 @@ static int ksz_setup(struct dsa_switch *ds)
 		goto out_ptp_clock_unregister;
 	}
 
-	/* start switch */
+	 
 	regmap_update_bits(ksz_regmap_8(dev), regs[S_START_CTRL],
 			   SW_START, SW_START);
 
@@ -2234,17 +2207,17 @@ static void port_r_cnt(struct ksz_device *dev, int port)
 	struct ksz_port_mib *mib = &dev->ports[port].mib;
 	u64 *dropped;
 
-	/* Some ports may not have MIB counters before SWITCH_COUNTER_NUM. */
+	 
 	while (mib->cnt_ptr < dev->info->reg_mib_cnt) {
 		dev->dev_ops->r_mib_cnt(dev, port, mib->cnt_ptr,
 					&mib->counters[mib->cnt_ptr]);
 		++mib->cnt_ptr;
 	}
 
-	/* last one in storage */
+	 
 	dropped = &mib->counters[dev->info->mib_cnt];
 
-	/* Some ports may not have MIB counters after SWITCH_COUNTER_NUM. */
+	 
 	while (mib->cnt_ptr < dev->info->mib_cnt) {
 		dev->dev_ops->r_mib_pkt(dev, port, mib->cnt_ptr,
 					dropped, &mib->counters[mib->cnt_ptr]);
@@ -2269,9 +2242,7 @@ static void ksz_mib_read_work(struct work_struct *work)
 		mib = &p->mib;
 		mutex_lock(&mib->cnt_mutex);
 
-		/* Only read MIB counters when the port is told to do.
-		 * If not, read only dropped counters when link is not up.
-		 */
+		 
 		if (!p->read) {
 			const struct dsa_port *dp = dsa_to_port(dev->ds, i);
 
@@ -2337,24 +2308,12 @@ static u32 ksz_get_phy_flags(struct dsa_switch *ds, int port)
 
 	switch (dev->chip_id) {
 	case KSZ8830_CHIP_ID:
-		/* Silicon Errata Sheet (DS80000830A):
-		 * Port 1 does not work with LinkMD Cable-Testing.
-		 * Port 1 does not respond to received PAUSE control frames.
-		 */
+		 
 		if (!port)
 			return MICREL_KSZ8_P1_ERRATA;
 		break;
 	case KSZ9477_CHIP_ID:
-		/* KSZ9477 Errata DS80000754C
-		 *
-		 * Module 4: Energy Efficient Ethernet (EEE) feature select must
-		 * be manually disabled
-		 *   The EEE feature is enabled by default, but it is not fully
-		 *   operational. It must be manually disabled through register
-		 *   controls. If not disabled, the PHY ports can auto-negotiate
-		 *   to enable EEE, and this feature can cause link drops when
-		 *   linked to another device supporting EEE.
-		 */
+		 
 		return MICREL_NO_EEE;
 	}
 
@@ -2367,9 +2326,9 @@ static void ksz_mac_link_down(struct dsa_switch *ds, int port,
 	struct ksz_device *dev = ds->priv;
 	struct ksz_port *p = &dev->ports[port];
 
-	/* Read all MIB counters when the link is going down. */
+	 
 	p->read = true;
-	/* timer started */
+	 
 	if (dev->mib_read_interval)
 		schedule_delayed_work(&dev->mib_read, 0);
 }
@@ -2394,7 +2353,7 @@ static void ksz_get_ethtool_stats(struct dsa_switch *ds, int port,
 	mib = &dev->ports[port].mib;
 	mutex_lock(&mib->cnt_mutex);
 
-	/* Only read dropped counters if no link. */
+	 
 	if (!netif_carrier_ok(dp->slave))
 		mib->cnt_ptr = dev->info->reg_mib_cnt;
 	port_r_cnt(dev, port);
@@ -2407,9 +2366,7 @@ static int ksz_port_bridge_join(struct dsa_switch *ds, int port,
 				bool *tx_fwd_offload,
 				struct netlink_ext_ack *extack)
 {
-	/* port_stp_state_set() will be called after to put the port in
-	 * appropriate state so there is no need to do anything.
-	 */
+	 
 
 	return 0;
 }
@@ -2417,9 +2374,7 @@ static int ksz_port_bridge_join(struct dsa_switch *ds, int port,
 static void ksz_port_bridge_leave(struct dsa_switch *ds, int port,
 				  struct dsa_bridge bridge)
 {
-	/* port_stp_state_set() will be called after to put the port in
-	 * forwarding state so there is no need to do anything.
-	 */
+	 
 }
 
 static void ksz_port_fast_age(struct dsa_switch *ds, int port)
@@ -2506,12 +2461,10 @@ static int ksz_enable_port(struct dsa_switch *ds, int port,
 	if (!dsa_is_user_port(ds, port))
 		return 0;
 
-	/* setup slave port */
+	 
 	dev->dev_ops->port_setup(dev, port, false);
 
-	/* port_stp_state_set() will be called after to enable the port so
-	 * there is no need to do anything.
-	 */
+	 
 
 	return 0;
 }
@@ -2582,7 +2535,7 @@ static int ksz_port_bridge_flags(struct dsa_switch *ds, int port,
 	if (flags.mask & BR_LEARNING) {
 		p->learning = !!(flags.val & BR_LEARNING);
 
-		/* Make the change take effect immediately */
+		 
 		ksz_port_stp_state_set(ds, port, p->stp_state);
 	}
 
@@ -2762,12 +2715,10 @@ static int ksz_get_mac_eee(struct dsa_switch *ds, int port,
 	if (ret)
 		return ret;
 
-	/* There is no documented control of Tx LPI configuration. */
+	 
 	e->tx_lpi_enabled = true;
 
-	/* There is no documented control of Tx LPI timer. According to tests
-	 * Tx LPI timer seems to be set by default to minimal value.
-	 */
+	 
 	e->tx_lpi_timer = 0;
 
 	return 0;
@@ -2824,7 +2775,7 @@ static void ksz_set_xmii(struct ksz_device *dev, int port,
 	case PHY_INTERFACE_MODE_RGMII_TXID:
 	case PHY_INTERFACE_MODE_RGMII_RXID:
 		data8 |= bitval[P_RGMII_SEL];
-		/* On KSZ9893, disable RGMII in-band status support */
+		 
 		if (dev->chip_id == KSZ9893_CHIP_ID ||
 		    dev->chip_id == KSZ8563_CHIP_ID ||
 		    dev->chip_id == KSZ9563_CHIP_ID)
@@ -2842,7 +2793,7 @@ static void ksz_set_xmii(struct ksz_device *dev, int port,
 	if (p->rgmii_rx_val)
 		data8 |= P_RGMII_ID_IG_ENABLE;
 
-	/* Write the updated value */
+	 
 	ksz_pwrite8(dev, port, regs[P_XMII_CTRL_1], data8);
 }
 
@@ -2888,7 +2839,7 @@ static void ksz_phylink_mac_config(struct dsa_switch *ds, int port,
 	if (ksz_is_ksz88x3(dev))
 		return;
 
-	/* Internal PHYs */
+	 
 	if (dev->info->internal_phy[port])
 		return;
 
@@ -2939,7 +2890,7 @@ static void ksz_set_gbit(struct ksz_device *dev, int port, bool gbit)
 	else
 		data8 |= FIELD_PREP(P_GMII_1GBIT_M, bitval[P_GMII_NOT_1GBIT]);
 
-	/* Write the updated value */
+	 
 	ksz_pwrite8(dev, port, regs[P_XMII_CTRL_1], data8);
 }
 
@@ -2958,7 +2909,7 @@ static void ksz_set_100_10mbit(struct ksz_device *dev, int port, int speed)
 	else
 		data8 |= FIELD_PREP(P_MII_100MBIT_M, bitval[P_MII_10MBIT]);
 
-	/* Write the updated value */
+	 
 	ksz_pwrite8(dev, port, regs[P_XMII_CTRL_0], data8);
 }
 
@@ -3010,7 +2961,7 @@ static void ksz9477_phylink_mac_link_up(struct ksz_device *dev, int port,
 
 	p = &dev->ports[port];
 
-	/* Internal PHYs */
+	 
 	if (dev->info->internal_phy[port])
 		return;
 
@@ -3042,7 +2993,7 @@ static int ksz_switch_detect(struct ksz_device *dev)
 	u32 id32;
 	int ret;
 
-	/* read chip id */
+	 
 	ret = ksz_read16(dev, REG_CHIP_ID0, &id16);
 	if (ret)
 		return ret;
@@ -3115,10 +3066,7 @@ static int ksz_switch_detect(struct ksz_device *dev)
 	return 0;
 }
 
-/* Bandwidth is calculated by idle slope/transmission speed. Then the Bandwidth
- * is converted to Hex-decimal using the successive multiplication method. On
- * every step, integer part is taken and decimal part is carry forwarded.
- */
+ 
 static int cinc_cal(s32 idle_slope, s32 send_slope, u32 *bw)
 {
 	u32 cinc = 0;
@@ -3134,7 +3082,7 @@ static int cinc_cal(s32 idle_slope, s32 send_slope, u32 *bw)
 
 	rate = idle_slope;
 
-	/* 24 bit register */
+	 
 	for (i = 0; i < 6; i++) {
 		rate = rate * 16;
 
@@ -3171,7 +3119,7 @@ static int ksz_setup_tc_cbs(struct dsa_switch *ds, int port,
 	if (qopt->queue > dev->info->num_tx_queues)
 		return -EINVAL;
 
-	/* Queue Selection */
+	 
 	ret = ksz_pwrite32(dev, port, REG_PORT_MTI_QUEUE_INDEX__4, qopt->queue);
 	if (ret)
 		return ret;
@@ -3180,19 +3128,19 @@ static int ksz_setup_tc_cbs(struct dsa_switch *ds, int port,
 		return ksz_setup_tc_mode(dev, port, MTI_SCHEDULE_WRR,
 					 MTI_SHAPING_OFF);
 
-	/* High Credit */
+	 
 	ret = ksz_pwrite16(dev, port, REG_PORT_MTI_HI_WATER_MARK,
 			   qopt->hicredit);
 	if (ret)
 		return ret;
 
-	/* Low Credit */
+	 
 	ret = ksz_pwrite16(dev, port, REG_PORT_MTI_LO_WATER_MARK,
 			   qopt->locredit);
 	if (ret)
 		return ret;
 
-	/* Credit Increment Register */
+	 
 	ret = cinc_cal(qopt->idleslope, qopt->sendslope, &bw);
 	if (ret)
 		return ret;
@@ -3211,9 +3159,7 @@ static int ksz_disable_egress_rate_limit(struct ksz_device *dev, int port)
 {
 	int queue, ret;
 
-	/* Configuration will not take effect until the last Port Queue X
-	 * Egress Limit Control Register is written.
-	 */
+	 
 	for (queue = 0; queue < dev->info->num_tx_queues; queue++) {
 		ret = ksz_pwrite8(dev, port, KSZ9477_REG_PORT_OUT_RATE_0 + queue,
 				  KSZ9477_OUT_RATE_NO_LIMIT);
@@ -3227,10 +3173,7 @@ static int ksz_disable_egress_rate_limit(struct ksz_device *dev, int port)
 static int ksz_ets_band_to_queue(struct tc_ets_qopt_offload_replace_params *p,
 				 int band)
 {
-	/* Compared to queues, bands prioritize packets differently. In strict
-	 * priority mode, the lowest priority is assigned to Queue 0 while the
-	 * highest priority is given to Band 0.
-	 */
+	 
 	return p->bands - 1 - band;
 }
 
@@ -3269,17 +3212,12 @@ static int ksz_tc_ets_add(struct ksz_device *dev, int port,
 	int ret, band, tc_prio;
 	u32 queue_map = 0;
 
-	/* In order to ensure proper prioritization, it is necessary to set the
-	 * rate limit for the related queue to zero. Otherwise strict priority
-	 * or WRR mode will not work. This is a hardware limitation.
-	 */
+	 
 	ret = ksz_disable_egress_rate_limit(dev, port);
 	if (ret)
 		return ret;
 
-	/* Configure queue scheduling mode for all bands. Currently only strict
-	 * prio mode is supported.
-	 */
+	 
 	for (band = 0; band < p->bands; band++) {
 		int queue = ksz_ets_band_to_queue(p, band);
 
@@ -3288,10 +3226,7 @@ static int ksz_tc_ets_add(struct ksz_device *dev, int port,
 			return ret;
 	}
 
-	/* Configure the mapping between traffic classes and queues. Note:
-	 * priomap variable support 16 traffic classes, but the chip can handle
-	 * only 8 classes.
-	 */
+	 
 	for (tc_prio = 0; tc_prio < ARRAY_SIZE(p->priomap); tc_prio++) {
 		int queue;
 
@@ -3310,9 +3245,7 @@ static int ksz_tc_ets_del(struct ksz_device *dev, int port)
 	int ret, queue, tc_prio, s;
 	u32 queue_map = 0;
 
-	/* To restore the default chip configuration, set all queues to use the
-	 * WRR scheduler with a weight of 1.
-	 */
+	 
 	for (queue = 0; queue < dev->info->num_tx_queues; queue++) {
 		ret = ksz_queue_set_wrr(dev, port, queue,
 					KSZ9477_DEFAULT_WRR_WEIGHT);
@@ -3334,9 +3267,7 @@ static int ksz_tc_ets_del(struct ksz_device *dev, int port)
 		return -EINVAL;
 	}
 
-	/* Revert the queue mapping for TC-priority to its default setting on
-	 * the chip.
-	 */
+	 
 	for (tc_prio = 0; tc_prio <= KSZ9477_MAX_TC_PRIO; tc_prio++) {
 		int queue;
 
@@ -3352,9 +3283,7 @@ static int ksz_tc_ets_validate(struct ksz_device *dev, int port,
 {
 	int band;
 
-	/* Since it is not feasible to share one port among multiple qdisc,
-	 * the user must configure all available queues appropriately.
-	 */
+	 
 	if (p->bands != dev->info->num_tx_queues) {
 		dev_err(dev->dev, "Not supported amount of bands. It should be %d\n",
 			dev->info->num_tx_queues);
@@ -3362,18 +3291,7 @@ static int ksz_tc_ets_validate(struct ksz_device *dev, int port,
 	}
 
 	for (band = 0; band < p->bands; ++band) {
-		/* The KSZ switches utilize a weighted round robin configuration
-		 * where a certain number of packets can be transmitted from a
-		 * queue before the next queue is serviced. For more information
-		 * on this, refer to section 5.2.8.4 of the KSZ8565R
-		 * documentation on the Port Transmit Queue Control 1 Register.
-		 * However, the current ETS Qdisc implementation (as of February
-		 * 2023) assigns a weight to each queue based on the number of
-		 * bytes or extrapolated bandwidth in percentages. Since this
-		 * differs from the KSZ switches' method and we don't want to
-		 * fake support by converting bytes to packets, it is better to
-		 * return an error instead.
-		 */
+		 
 		if (p->quanta[band]) {
 			dev_err(dev->dev, "Quanta/weights configuration is not supported.\n");
 			return -EOPNOTSUPP;
@@ -3575,7 +3493,7 @@ int ksz_switch_register(struct ksz_device *dev)
 	if (!info)
 		return -ENODEV;
 
-	/* Update the compatible info with the probed one */
+	 
 	dev->info = info;
 
 	dev_info(dev->dev, "found switch: %s, rev %i\n",
@@ -3611,12 +3529,10 @@ int ksz_switch_register(struct ksz_device *dev)
 		dev->ports[i].num = i;
 	}
 
-	/* set the real number of ports */
+	 
 	dev->ds->num_ports = dev->info->port_cnt;
 
-	/* Host port interface will be self detected, or specifically set in
-	 * device tree.
-	 */
+	 
 	for (port_num = 0; port_num < dev->info->port_cnt; ++port_num)
 		dev->ports[port_num].interface = PHY_INTERFACE_MODE_NA;
 	if (dev->dev->of_node) {
@@ -3659,10 +3575,10 @@ int ksz_switch_register(struct ksz_device *dev)
 		return ret;
 	}
 
-	/* Read MIB counters every 30 seconds to avoid overflow. */
+	 
 	dev->mib_read_interval = msecs_to_jiffies(5000);
 
-	/* Start the MIB timer. */
+	 
 	schedule_delayed_work(&dev->mib_read, 0);
 
 	return ret;
@@ -3671,7 +3587,7 @@ EXPORT_SYMBOL(ksz_switch_register);
 
 void ksz_switch_remove(struct ksz_device *dev)
 {
-	/* timer started */
+	 
 	if (dev->mib_read_interval) {
 		dev->mib_read_interval = 0;
 		cancel_delayed_work_sync(&dev->mib_read);

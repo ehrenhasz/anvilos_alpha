@@ -1,16 +1,12 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/******************************************************************************
- *
- * Copyright(c) 2007 - 2011 Realtek Corporation. All rights reserved.
- *
- ******************************************************************************/
+ 
+ 
 
 #ifndef	__ODMCFOTRACK_H__
 #define    __ODMCFOTRACK_H__
 
-#define		CFO_TH_XTAL_HIGH		20		/*  kHz */
-#define		CFO_TH_XTAL_LOW			10		/*  kHz */
-#define		CFO_TH_ATC			80		/*  kHz */
+#define		CFO_TH_XTAL_HIGH		20		 
+#define		CFO_TH_XTAL_LOW			10		 
+#define		CFO_TH_ATC			80		 
 
 struct cfo_tracking {
 	bool bATCStatus;

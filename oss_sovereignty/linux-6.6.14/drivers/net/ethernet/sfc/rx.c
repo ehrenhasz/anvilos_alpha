@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/****************************************************************************
- * Driver for Solarflare network controllers and boards
- * Copyright 2005-2006 Fen Systems Ltd.
- * Copyright 2005-2013 Solarflare Communications Inc.
- */
+
+ 
 
 #include <linux/socket.h>
 #include <linux/in.h>
@@ -27,16 +23,16 @@
 #include "selftest.h"
 #include "workarounds.h"
 
-/* Preferred number of descriptors to fill at once */
+ 
 #define EFX_RX_PREFERRED_BATCH 8U
 
-/* Maximum rx prefix used by any architecture. */
+ 
 #define EFX_MAX_RX_PREFIX_SIZE 16
 
-/* Size of buffer allocated for skb header area. */
+ 
 #define EFX_SKB_HEADERS  128u
 
-/* Each packet can consume up to ceil(max_frame_len / buffer_size) buffers */
+ 
 #define EFX_RX_MAX_FRAGS DIV_ROUND_UP(EFX_MAX_FRAME_LEN(EFX_MAX_MTU), \
 				      EFX_RX_USR_BUF_SIZE)
 
@@ -50,9 +46,7 @@ static void efx_rx_packet__check_len(struct efx_rx_queue *rx_queue,
 	if (likely(len <= max_len))
 		return;
 
-	/* The packet must be discarded, but this is only a fatal error
-	 * if the caller indicated it was
-	 */
+	 
 	rx_buf->flags |= EFX_RX_PKT_DISCARD;
 
 	if (net_ratelimit())
@@ -63,7 +57,7 @@ static void efx_rx_packet__check_len(struct efx_rx_queue *rx_queue,
 	efx_rx_queue_channel(rx_queue)->n_rx_overlength++;
 }
 
-/* Allocate and construct an SKB around page fragments */
+ 
 static struct sk_buff *efx_rx_mk_skb(struct efx_channel *channel,
 				     struct efx_rx_buffer *rx_buf,
 				     unsigned int n_frags,
@@ -72,7 +66,7 @@ static struct sk_buff *efx_rx_mk_skb(struct efx_channel *channel,
 	struct efx_nic *efx = channel->efx;
 	struct sk_buff *skb;
 
-	/* Allocate an SKB to store the headers */
+	 
 	skb = netdev_alloc_skb(efx->net_dev,
 			       efx->rx_ip_align + efx->rx_prefix_size +
 			       hdr_len);
@@ -88,7 +82,7 @@ static struct sk_buff *efx_rx_mk_skb(struct efx_channel *channel,
 	skb_reserve(skb, efx->rx_ip_align + efx->rx_prefix_size);
 	__skb_put(skb, hdr_len);
 
-	/* Append the remaining page(s) onto the frag list */
+	 
 	if (rx_buf->len > hdr_len) {
 		rx_buf->page_offset += hdr_len;
 		rx_buf->len -= hdr_len;
@@ -110,7 +104,7 @@ static struct sk_buff *efx_rx_mk_skb(struct efx_channel *channel,
 		n_frags = 0;
 	}
 
-	/* Move past the ethernet header */
+	 
 	skb->protocol = eth_type_trans(skb, efx->net_dev);
 
 	skb_mark_napi_id(skb, &channel->napi_str);
@@ -130,7 +124,7 @@ void efx_rx_packet(struct efx_rx_queue *rx_queue, unsigned int index,
 	rx_buf = efx_rx_buffer(rx_queue, index);
 	rx_buf->flags |= flags;
 
-	/* Validate the number of fragments and completed length */
+	 
 	if (n_frags == 1) {
 		if (!(flags & EFX_RX_PKT_PREFIX_LEN))
 			efx_rx_packet__check_len(rx_queue, rx_buf, len);
@@ -138,9 +132,7 @@ void efx_rx_packet(struct efx_rx_queue *rx_queue, unsigned int index,
 		   unlikely(len <= (n_frags - 1) * efx->rx_dma_len) ||
 		   unlikely(len > n_frags * efx->rx_dma_len) ||
 		   unlikely(!efx->rx_scatter)) {
-		/* If this isn't an explicit discard request, either
-		 * the hardware or the driver is broken.
-		 */
+		 
 		WARN_ON(!(len == 0 && rx_buf->flags & EFX_RX_PKT_DISCARD));
 		rx_buf->flags |= EFX_RX_PKT_DISCARD;
 	}
@@ -152,9 +144,7 @@ void efx_rx_packet(struct efx_rx_queue *rx_queue, unsigned int index,
 		   (rx_buf->flags & EFX_RX_PKT_CSUMMED) ? " [SUMMED]" : "",
 		   (rx_buf->flags & EFX_RX_PKT_DISCARD) ? " [DISCARD]" : "");
 
-	/* Discard packet, if instructed to do so.  Process the
-	 * previous receive first.
-	 */
+	 
 	if (unlikely(rx_buf->flags & EFX_RX_PKT_DISCARD)) {
 		efx_rx_flush_packet(channel);
 		efx_discard_rx_packet(channel, rx_buf, n_frags);
@@ -164,23 +154,17 @@ void efx_rx_packet(struct efx_rx_queue *rx_queue, unsigned int index,
 	if (n_frags == 1 && !(flags & EFX_RX_PKT_PREFIX_LEN))
 		rx_buf->len = len;
 
-	/* Release and/or sync the DMA mapping - assumes all RX buffers
-	 * consumed in-order per RX queue.
-	 */
+	 
 	efx_sync_rx_buffer(efx, rx_buf, rx_buf->len);
 
-	/* Prefetch nice and early so data will (hopefully) be in cache by
-	 * the time we look at it.
-	 */
+	 
 	prefetch(efx_rx_buf_va(rx_buf));
 
 	rx_buf->page_offset += efx->rx_prefix_size;
 	rx_buf->len -= efx->rx_prefix_size;
 
 	if (n_frags > 1) {
-		/* Release/sync DMA mapping for additional fragments.
-		 * Fix length for last fragment.
-		 */
+		 
 		unsigned int tail_frags = n_frags - 1;
 
 		for (;;) {
@@ -193,13 +177,11 @@ void efx_rx_packet(struct efx_rx_queue *rx_queue, unsigned int index,
 		efx_sync_rx_buffer(efx, rx_buf, rx_buf->len);
 	}
 
-	/* All fragments have been DMA-synced, so recycle pages. */
+	 
 	rx_buf = efx_rx_buffer(rx_queue, index);
 	efx_recycle_rx_pages(channel, rx_buf, n_frags);
 
-	/* Pipeline receives so that we give time for packet headers to be
-	 * prefetched into cache.
-	 */
+	 
 	efx_rx_flush_packet(channel);
 	channel->rx_pkt_n_frags = n_frags;
 	channel->rx_pkt_index = index;
@@ -222,7 +204,7 @@ static void efx_rx_deliver(struct efx_channel *channel, u8 *eh,
 	}
 	skb_record_rx_queue(skb, channel->rx_queue.core_index);
 
-	/* Set the SKB flags */
+	 
 	skb_checksum_none_assert(skb);
 	if (likely(rx_buf->flags & EFX_RX_PKT_CSUMMED)) {
 		skb->ip_summed = CHECKSUM_UNNECESSARY;
@@ -235,19 +217,16 @@ static void efx_rx_deliver(struct efx_channel *channel, u8 *eh,
 		if (channel->type->receive_skb(channel, skb))
 			return;
 
-	/* Pass the packet up */
+	 
 	if (channel->rx_list != NULL)
-		/* Add to list, will pass up later */
+		 
 		list_add_tail(&skb->list, channel->rx_list);
 	else
-		/* No list, so pass it up now */
+		 
 		netif_receive_skb(skb);
 }
 
-/** efx_do_xdp: perform XDP processing on a received packet
- *
- * Returns true if packet should still be delivered.
- */
+ 
 static bool efx_do_xdp(struct efx_nic *efx, struct efx_channel *channel,
 		       struct efx_rx_buffer *rx_buf, u8 **ehp)
 {
@@ -267,7 +246,7 @@ static bool efx_do_xdp(struct efx_nic *efx, struct efx_channel *channel,
 	rx_queue = efx_channel_get_rx_queue(channel);
 
 	if (unlikely(channel->rx_pkt_n_frags > 1)) {
-		/* We can't do XDP on fragmented packets - drop. */
+		 
 		efx_free_rx_buffers(rx_queue, rx_buf,
 				    channel->rx_pkt_n_frags);
 		if (net_ratelimit())
@@ -281,13 +260,13 @@ static bool efx_do_xdp(struct efx_nic *efx, struct efx_channel *channel,
 	dma_sync_single_for_cpu(&efx->pci_dev->dev, rx_buf->dma_addr,
 				rx_buf->len, DMA_FROM_DEVICE);
 
-	/* Save the rx prefix. */
+	 
 	EFX_WARN_ON_PARANOID(efx->rx_prefix_size > EFX_MAX_RX_PREFIX_SIZE);
 	memcpy(rx_prefix, *ehp - efx->rx_prefix_size,
 	       efx->rx_prefix_size);
 
 	xdp_init_buff(&xdp, efx->rx_page_buf_step, &rx_queue->xdp_rxq_info);
-	/* No support yet for XDP metadata */
+	 
 	xdp_prepare_buff(&xdp, *ehp - EFX_XDP_HEADROOM, EFX_XDP_HEADROOM,
 			 rx_buf->len, false);
 
@@ -297,7 +276,7 @@ static bool efx_do_xdp(struct efx_nic *efx, struct efx_channel *channel,
 
 	switch (xdp_act) {
 	case XDP_PASS:
-		/* Fix up rx prefix. */
+		 
 		if (offset) {
 			*ehp += offset;
 			rx_buf->page_offset += offset;
@@ -308,7 +287,7 @@ static bool efx_do_xdp(struct efx_nic *efx, struct efx_channel *channel,
 		break;
 
 	case XDP_TX:
-		/* Buffer ownership passes to tx on success. */
+		 
 		xdpf = xdp_convert_buff_to_frame(&xdp);
 		err = efx_xdp_tx_buffers(efx, 1, &xdpf, true);
 		if (unlikely(err != 1)) {
@@ -356,7 +335,7 @@ static bool efx_do_xdp(struct efx_nic *efx, struct efx_channel *channel,
 	return xdp_act == XDP_PASS;
 }
 
-/* Handle a received packet.  Second half: Touches packet payload. */
+ 
 void __efx_rx_packet(struct efx_channel *channel)
 {
 	struct efx_rx_queue *rx_queue = efx_channel_get_rx_queue(channel);
@@ -365,17 +344,11 @@ void __efx_rx_packet(struct efx_channel *channel)
 		efx_rx_buffer(rx_queue, channel->rx_pkt_index);
 	u8 *eh = efx_rx_buf_va(rx_buf);
 
-	/* Read length from the prefix if necessary.  This already
-	 * excludes the length of the prefix itself.
-	 */
+	 
 	if (rx_buf->flags & EFX_RX_PKT_PREFIX_LEN) {
 		rx_buf->len = le16_to_cpup((__le16 *)
 					   (eh + efx->rx_packet_len_offset));
-		/* A known issue may prevent this being filled in;
-		 * if that happens, just drop the packet.
-		 * Must do that in the driver since passing a zero-length
-		 * packet up to the stack may cause a crash.
-		 */
+		 
 		if (unlikely(!rx_buf->len)) {
 			efx_free_rx_buffers(rx_queue, rx_buf,
 					    channel->rx_pkt_n_frags);
@@ -384,9 +357,7 @@ void __efx_rx_packet(struct efx_channel *channel)
 		}
 	}
 
-	/* If we're in loopback test, then pass the packet directly to the
-	 * loopback layer, and free the rx_buf here
-	 */
+	 
 	if (unlikely(efx->loopback_selftest)) {
 		efx_loopback_rx_packet(efx, eh, rx_buf->len);
 		efx_free_rx_buffers(rx_queue, rx_buf,

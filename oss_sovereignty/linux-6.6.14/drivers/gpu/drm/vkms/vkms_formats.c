@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0+
+
 
 #include <linux/kernel.h>
 #include <linux/minmax.h>
@@ -15,19 +15,7 @@ static size_t pixel_offset(const struct vkms_frame_info *frame_info, int x, int 
 				  + (x * frame_info->cpp);
 }
 
-/*
- * packed_pixels_addr - Get the pointer to pixel of a given pair of coordinates
- *
- * @frame_info: Buffer metadata
- * @x: The x(width) coordinate of the 2D buffer
- * @y: The y(Heigth) coordinate of the 2D buffer
- *
- * Takes the information stored in the frame_info, a pair of coordinates, and
- * returns the address of the first color channel.
- * This function assumes the channels are packed together, i.e. a color channel
- * comes immediately after another in the memory. And therefore, this function
- * doesn't work for YUV with chroma subsampling (e.g. YUV420 and NV21).
- */
+ 
 static void *packed_pixels_addr(const struct vkms_frame_info *frame_info,
 				int x, int y)
 {
@@ -53,12 +41,7 @@ static int get_x_position(const struct vkms_frame_info *frame_info, int limit, i
 
 static void ARGB8888_to_argb_u16(u8 *src_pixels, struct pixel_argb_u16 *out_pixel)
 {
-	/*
-	 * The 257 is the "conversion ratio". This number is obtained by the
-	 * (2^16 - 1) / (2^8 - 1) division. Which, in this case, tries to get
-	 * the best color value in a pixel format with more possibilities.
-	 * A similar idea applies to others RGB color conversions.
-	 */
+	 
 	out_pixel->a = (u16)src_pixels[3] * 257;
 	out_pixel->r = (u16)src_pixels[2] * 257;
 	out_pixel->g = (u16)src_pixels[1] * 257;
@@ -111,19 +94,7 @@ static void RGB565_to_argb_u16(u8 *src_pixels, struct pixel_argb_u16 *out_pixel)
 	out_pixel->b = drm_fixp2int_round(drm_fixp_mul(fp_b, fp_rb_ratio));
 }
 
-/**
- * vkms_compose_row - compose a single row of a plane
- * @stage_buffer: output line with the composed pixels
- * @plane: state of the plane that is being composed
- * @y: y coordinate of the row
- *
- * This function composes a single row of a plane. It gets the source pixels
- * through the y coordinate (see get_packed_src_addr()) and goes linearly
- * through the source pixel, reading the pixels and converting it to
- * ARGB16161616 (see the pixel_read() callback). For rotate-90 and rotate-270,
- * the source pixels are not traversed linearly. The source pixels are queried
- * on each iteration in order to traverse the pixels vertically.
- */
+ 
 void vkms_compose_row(struct line_buffer *stage_buffer, struct vkms_plane_state *plane, int y)
 {
 	struct pixel_argb_u16 *out_pixels = stage_buffer->pixels;
@@ -142,26 +113,10 @@ void vkms_compose_row(struct line_buffer *stage_buffer, struct vkms_plane_state 
 	}
 }
 
-/*
- * The following  functions take an line of argb_u16 pixels from the
- * src_buffer, convert them to a specific format, and store them in the
- * destination.
- *
- * They are used in the `compose_active_planes` to convert and store a line
- * from the src_buffer to the writeback buffer.
- */
+ 
 static void argb_u16_to_ARGB8888(u8 *dst_pixels, struct pixel_argb_u16 *in_pixel)
 {
-	/*
-	 * This sequence below is important because the format's byte order is
-	 * in little-endian. In the case of the ARGB8888 the memory is
-	 * organized this way:
-	 *
-	 * | Addr     | = blue channel
-	 * | Addr + 1 | = green channel
-	 * | Addr + 2 | = Red channel
-	 * | Addr + 3 | = Alpha channel
-	 */
+	 
 	dst_pixels[3] = DIV_ROUND_CLOSEST(in_pixel->a, 257);
 	dst_pixels[2] = DIV_ROUND_CLOSEST(in_pixel->r, 257);
 	dst_pixels[1] = DIV_ROUND_CLOSEST(in_pixel->g, 257);

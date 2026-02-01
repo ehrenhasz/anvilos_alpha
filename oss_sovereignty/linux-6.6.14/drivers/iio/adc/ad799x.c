@@ -1,22 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * iio/adc/ad799x.c
- * Copyright (C) 2010-2011 Michael Hennerich, Analog Devices Inc.
- *
- * based on iio/adc/max1363
- * Copyright (C) 2008-2010 Jonathan Cameron
- *
- * based on linux/drivers/i2c/chips/max123x
- * Copyright (C) 2002-2004 Stefan Eletzhofer
- *
- * based on linux/drivers/acron/char/pcf8583.c
- * Copyright (C) 2000 Russell King
- *
- * ad799x.c
- *
- * Support for ad7991, ad7995, ad7999, ad7992, ad7993, ad7994, ad7997,
- * ad7998 and similar chips.
- */
+
+ 
 
 #include <linux/interrupt.h>
 #include <linux/device.h>
@@ -40,18 +23,14 @@
 
 #define AD799X_CHANNEL_SHIFT			4
 
-/*
- * AD7991, AD7995 and AD7999 defines
- */
+ 
 
 #define AD7991_REF_SEL				0x08
 #define AD7991_FLTR				0x04
 #define AD7991_BIT_TRIAL_DELAY			0x02
 #define AD7991_SAMPLE_DELAY			0x01
 
-/*
- * AD7992, AD7993, AD7994, AD7997 and AD7998 defines
- */
+ 
 
 #define AD7998_FLTR				BIT(3)
 #define AD7998_ALERT_EN				BIT(2)
@@ -79,9 +58,7 @@
 
 #define AD7998_ALERT_STAT_CLEAR			0xFF
 
-/*
- * AD7997 and AD7997 defines
- */
+ 
 
 #define AD7997_8_READ_SINGLE			BIT(7)
 #define AD7997_8_READ_SEQUENCE			(BIT(6) | BIT(5) | BIT(4))
@@ -97,24 +74,14 @@ enum {
 	ad7998
 };
 
-/**
- * struct ad799x_chip_config - chip specific information
- * @channel:		channel specification
- * @default_config:	device default configuration
- * @info:		pointer to iio_info struct
- */
+ 
 struct ad799x_chip_config {
 	const struct iio_chan_spec	channel[9];
 	u16				default_config;
 	const struct iio_info		*info;
 };
 
-/**
- * struct ad799x_chip_info - chip specific information
- * @num_channels:	number of channels
- * @noirq_config:	device configuration w/o IRQ
- * @irq_config:		device configuration w/IRQ
- */
+ 
 struct ad799x_chip_info {
 	int				num_channels;
 	const struct ad799x_chip_config	noirq_config;
@@ -126,7 +93,7 @@ struct ad799x_state {
 	const struct ad799x_chip_config	*chip_config;
 	struct regulator		*reg;
 	struct regulator		*vref;
-	/* lock to protect against multiple access to the device */
+	 
 	struct mutex			lock;
 	unsigned			id;
 	u16				config;
@@ -148,7 +115,7 @@ static int ad799x_write_config(struct ad799x_state *st, u16 val)
 		return i2c_smbus_write_byte_data(st->client, AD7998_CONF_REG,
 			val);
 	default:
-		/* Will be written when doing a conversion */
+		 
 		st->config = val;
 		return 0;
 	}
@@ -165,7 +132,7 @@ static int ad799x_read_config(struct ad799x_state *st)
 	case ad7994:
 		return i2c_smbus_read_byte_data(st->client, AD7998_CONF_REG);
 	default:
-		/* No readback support */
+		 
 		return st->config;
 	}
 }
@@ -361,7 +328,7 @@ static ssize_t ad799x_write_frequency(struct device *dev,
 	ret = i2c_smbus_read_byte_data(st->client, AD7998_CYCLE_TMR_REG);
 	if (ret < 0)
 		goto error_ret_mutex;
-	/* Wipe the bits clean */
+	 
 	ret &= ~AD7998_CYC_MASK;
 
 	for (i = 0; i < ARRAY_SIZE(ad7998_frequencies); i++)
@@ -790,7 +757,7 @@ static int ad799x_probe(struct i2c_client *client)
 		return -ENOMEM;
 
 	st = iio_priv(indio_dev);
-	/* this is only used for device removal purposes */
+	 
 	i2c_set_clientdata(client, indio_dev);
 
 	st->id = id->driver_data;
@@ -799,7 +766,7 @@ static int ad799x_probe(struct i2c_client *client)
 	else
 		st->chip_config = &chip_info->noirq_config;
 
-	/* TODO: Add pdata options for filtering and bit delay */
+	 
 
 	st->reg = devm_regulator_get(&client->dev, "vcc");
 	if (IS_ERR(st->reg))
@@ -808,7 +775,7 @@ static int ad799x_probe(struct i2c_client *client)
 	if (ret)
 		return ret;
 
-	/* check if an external reference is supplied */
+	 
 	st->vref = devm_regulator_get_optional(&client->dev, "vref");
 
 	if (IS_ERR(st->vref)) {
@@ -822,10 +789,7 @@ static int ad799x_probe(struct i2c_client *client)
 	}
 
 	if (st->vref) {
-		/*
-		 * Use external reference voltage if supported by hardware.
-		 * This is optional if voltage / regulator present, use VCC otherwise.
-		 */
+		 
 		if ((st->id == ad7991) || (st->id == ad7995) || (st->id == ad7999)) {
 			dev_info(&client->dev, "Using external reference voltage\n");
 			extra_config |= AD7991_REF_SEL;
@@ -935,7 +899,7 @@ static int ad799x_resume(struct device *dev)
 		}
 	}
 
-	/* resync config */
+	 
 	ret = ad799x_update_config(st, st->config);
 	if (ret) {
 		if (st->vref)

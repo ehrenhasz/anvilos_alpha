@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2018, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/module.h>
@@ -185,15 +183,7 @@ static const struct freq_tbl ftbl_cam_cc_bps_clk_src[] = {
 	{ }
 };
 
-/*
- * As per HW design, some of the CAMCC RCGs needs to
- * move to XO clock during their clock disable so using
- * clk_rcg2_shared_ops for such RCGs. This is required
- * to power down the camera memories gracefully.
- * Also, use CLK_SET_RATE_PARENT flag for the RCGs which
- * have CAM_CC_PLL2_OUT_EVEN PLL as parent in frequency
- * table and requires reconfiguration of the PLL frequency.
- */
+ 
 static struct clk_rcg2 cam_cc_bps_clk_src = {
 	.cmd_rcgr = 0x600c,
 	.mnd_width = 0,

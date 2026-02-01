@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * DA9150 Charger Driver
- *
- * Copyright (c) 2014 Dialog Semiconductor
- *
- * Author: Adam Thomson <Adam.Thomson.Opensource@diasemi.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/slab.h>
@@ -19,7 +13,7 @@
 #include <linux/mfd/da9150/core.h>
 #include <linux/mfd/da9150/registers.h>
 
-/* Private data */
+ 
 struct da9150_charger {
 	struct da9150 *da9150;
 	struct device *dev;
@@ -48,18 +42,18 @@ static inline int da9150_charger_supply_online(struct da9150_charger *charger,
 	return 0;
 }
 
-/* Charger Properties */
+ 
 static int da9150_charger_vbus_voltage_now(struct da9150_charger *charger,
 					   union power_supply_propval *val)
 {
 	int v_val, ret;
 
-	/* Read processed value - mV units */
+	 
 	ret = iio_read_channel_processed(charger->vbus_chan, &v_val);
 	if (ret < 0)
 		return ret;
 
-	/* Convert voltage to expected uV units */
+	 
 	val->intval = v_val * 1000;
 
 	return 0;
@@ -70,12 +64,12 @@ static int da9150_charger_ibus_current_avg(struct da9150_charger *charger,
 {
 	int i_val, ret;
 
-	/* Read processed value - mA units */
+	 
 	ret = iio_read_channel_processed(charger->ibus_chan, &i_val);
 	if (ret < 0)
 		return ret;
 
-	/* Convert current to expected uA units */
+	 
 	val->intval = i_val * 1000;
 
 	return 0;
@@ -86,12 +80,12 @@ static int da9150_charger_tjunc_temp(struct da9150_charger *charger,
 {
 	int t_val, ret;
 
-	/* Read processed value - 0.001 degrees C units */
+	 
 	ret = iio_read_channel_processed(charger->tjunc_chan, &t_val);
 	if (ret < 0)
 		return ret;
 
-	/* Convert temp to expect 0.1 degrees C units */
+	 
 	val->intval = t_val / 100;
 
 	return 0;
@@ -132,13 +126,13 @@ static int da9150_charger_get_prop(struct power_supply *psy,
 	return ret;
 }
 
-/* Battery Properties */
+ 
 static int da9150_charger_battery_status(struct da9150_charger *charger,
 					 union power_supply_propval *val)
 {
 	u8 reg;
 
-	/* Check to see if battery is discharging */
+	 
 	reg = da9150_reg_read(charger->da9150, DA9150_STATUS_H);
 
 	if (((reg & DA9150_VBUS_STAT_MASK) == DA9150_VBUS_STAT_OFF) ||
@@ -150,7 +144,7 @@ static int da9150_charger_battery_status(struct da9150_charger *charger,
 
 	reg = da9150_reg_read(charger->da9150, DA9150_STATUS_J);
 
-	/* Now check for other states */
+	 
 	switch (reg & DA9150_CHG_STAT_MASK) {
 	case DA9150_CHG_STAT_ACT:
 	case DA9150_CHG_STAT_PRE:
@@ -183,7 +177,7 @@ static int da9150_charger_battery_health(struct da9150_charger *charger,
 
 	reg = da9150_reg_read(charger->da9150, DA9150_STATUS_J);
 
-	/* Check if temperature limit reached */
+	 
 	switch (reg & DA9150_CHG_TEMP_MASK) {
 	case DA9150_CHG_TEMP_UNDER:
 		val->intval = POWER_SUPPLY_HEALTH_COLD;
@@ -195,7 +189,7 @@ static int da9150_charger_battery_health(struct da9150_charger *charger,
 		break;
 	}
 
-	/* Check for other health states */
+	 
 	switch (reg & DA9150_CHG_STAT_MASK) {
 	case DA9150_CHG_STAT_ACT:
 	case DA9150_CHG_STAT_PRE:
@@ -217,7 +211,7 @@ static int da9150_charger_battery_present(struct da9150_charger *charger,
 {
 	u8 reg;
 
-	/* Check if battery present or removed */
+	 
 	reg = da9150_reg_read(charger->da9150, DA9150_STATUS_J);
 	if ((reg & DA9150_CHG_STAT_MASK) == DA9150_CHG_STAT_BAT)
 		val->intval = 0;
@@ -258,7 +252,7 @@ static int da9150_charger_battery_voltage_min(struct da9150_charger *charger,
 
 	reg = da9150_reg_read(charger->da9150, DA9150_PPR_CHGCTRL_C);
 
-	/* Value starts at 2500 mV, 50 mV increments, presented in uV */
+	 
 	val->intval = ((reg & DA9150_CHG_VFAULT_MASK) * 50000) + 2500000;
 
 	return 0;
@@ -269,7 +263,7 @@ static int da9150_charger_battery_voltage_now(struct da9150_charger *charger,
 {
 	int v_val, ret;
 
-	/* Read processed value - mV units */
+	 
 	ret = iio_read_channel_processed(charger->vbat_chan, &v_val);
 	if (ret < 0)
 		return ret;
@@ -286,7 +280,7 @@ static int da9150_charger_battery_current_max(struct da9150_charger *charger,
 
 	reg = da9150_reg_read(charger->da9150, DA9150_PPR_CHGCTRL_D);
 
-	/* 25mA increments */
+	 
 	val->intval = reg * 25000;
 
 	return 0;
@@ -299,7 +293,7 @@ static int da9150_charger_battery_voltage_max(struct da9150_charger *charger,
 
 	reg = da9150_reg_read(charger->da9150, DA9150_PPR_CHGCTRL_B);
 
-	/* Value starts at 3650 mV, 25 mV increments, presented in uV */
+	 
 	val->intval = ((reg & DA9150_CHG_VBAT_MASK) * 25000) + 3650000;
 	return 0;
 }
@@ -372,7 +366,7 @@ static irqreturn_t da9150_charger_tjunc_irq(int irq, void *data)
 {
 	struct da9150_charger *charger = data;
 
-	/* Nothing we can really do except report this. */
+	 
 	dev_crit(charger->dev, "TJunc over temperature!!!\n");
 	power_supply_changed(charger->usb);
 
@@ -383,7 +377,7 @@ static irqreturn_t da9150_charger_vfault_irq(int irq, void *data)
 {
 	struct da9150_charger *charger = data;
 
-	/* Nothing we can really do except report this. */
+	 
 	dev_crit(charger->dev, "VSYS under voltage!!!\n");
 	power_supply_changed(charger->usb);
 	power_supply_changed(charger->battery);
@@ -398,7 +392,7 @@ static irqreturn_t da9150_charger_vbus_irq(int irq, void *data)
 
 	reg = da9150_reg_read(charger->da9150, DA9150_STATUS_H);
 
-	/* Charger plugged in or battery only */
+	 
 	switch (reg & DA9150_VBUS_STAT_MASK) {
 	case DA9150_VBUS_STAT_OFF:
 	case DA9150_VBUS_STAT_WAIT:
@@ -427,12 +421,12 @@ static void da9150_charger_otg_work(struct work_struct *data)
 
 	switch (charger->usb_event) {
 	case USB_EVENT_ID:
-		/* Enable OTG Boost */
+		 
 		da9150_set_bits(charger->da9150, DA9150_PPR_BKCTRL_A,
 				DA9150_VBUS_MODE_MASK, DA9150_VBUS_MODE_OTG);
 		break;
 	case USB_EVENT_NONE:
-		/* Revert to charge mode */
+		 
 		power_supply_changed(charger->usb);
 		power_supply_changed(charger->battery);
 		da9150_set_bits(charger->da9150, DA9150_PPR_BKCTRL_A,
@@ -520,7 +514,7 @@ static int da9150_charger_probe(struct platform_device *pdev)
 	charger->da9150 = da9150;
 	charger->dev = dev;
 
-	/* Acquire ADC channels */
+	 
 	charger->ibus_chan = iio_channel_get(dev, "CHAN_IBUS");
 	if (IS_ERR(charger->ibus_chan)) {
 		ret = PTR_ERR(charger->ibus_chan);
@@ -545,7 +539,7 @@ static int da9150_charger_probe(struct platform_device *pdev)
 		goto vbat_chan_fail;
 	}
 
-	/* Register power supplies */
+	 
 	charger->usb = power_supply_register(dev, &usb_desc, NULL);
 	if (IS_ERR(charger->usb)) {
 		ret = PTR_ERR(charger->usb);
@@ -558,7 +552,7 @@ static int da9150_charger_probe(struct platform_device *pdev)
 		goto battery_fail;
 	}
 
-	/* Get initial online supply */
+	 
 	reg = da9150_reg_read(da9150, DA9150_STATUS_H);
 
 	switch (reg & DA9150_VBUS_STAT_MASK) {
@@ -575,7 +569,7 @@ static int da9150_charger_probe(struct platform_device *pdev)
 		break;
 	}
 
-	/* Setup OTG reporting & configuration */
+	 
 	charger->usb_phy = devm_usb_get_phy(dev, USB_PHY_TYPE_USB2);
 	if (!IS_ERR_OR_NULL(charger->usb_phy)) {
 		INIT_WORK(&charger->otg_work, da9150_charger_otg_work);
@@ -583,7 +577,7 @@ static int da9150_charger_probe(struct platform_device *pdev)
 		usb_register_notifier(charger->usb_phy, &charger->otg_nb);
 	}
 
-	/* Register IRQs */
+	 
 	ret = da9150_charger_register_irq(pdev, da9150_charger_chg_irq,
 					  "CHG_STATUS");
 	if (ret < 0)
@@ -640,7 +634,7 @@ static int da9150_charger_remove(struct platform_device *pdev)
 	struct da9150_charger *charger = platform_get_drvdata(pdev);
 	int irq;
 
-	/* Make sure IRQs are released before unregistering power supplies */
+	 
 	irq = platform_get_irq_byname(pdev, "CHG_VBUS");
 	free_irq(irq, charger);
 
@@ -660,7 +654,7 @@ static int da9150_charger_remove(struct platform_device *pdev)
 	power_supply_unregister(charger->battery);
 	power_supply_unregister(charger->usb);
 
-	/* Release ADC channels */
+	 
 	iio_channel_release(charger->ibus_chan);
 	iio_channel_release(charger->vbus_chan);
 	iio_channel_release(charger->tjunc_chan);

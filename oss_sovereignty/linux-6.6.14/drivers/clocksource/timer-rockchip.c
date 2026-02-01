@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Rockchip timer support
- *
- * Copyright (C) Daniel Lezcano <daniel.lezcano@linaro.org>
- */
+
+ 
 #include <linux/clk.h>
 #include <linux/clockchips.h>
 #include <linux/init.h>
@@ -245,7 +241,7 @@ out_irq:
 out_probe:
 	kfree(rk_clkevt);
 out:
-	/* Leave rk_clkevt not NULL to prevent future init */
+	 
 	rk_clkevt = ERR_PTR(ret);
 	return ret;
 }
@@ -283,7 +279,7 @@ out_clocksource:
 out_probe:
 	kfree(rk_clksrc);
 out:
-	/* Leave rk_clksrc not NULL to prevent future init */
+	 
 	rk_clksrc = ERR_PTR(ret);
 	return ret;
 }

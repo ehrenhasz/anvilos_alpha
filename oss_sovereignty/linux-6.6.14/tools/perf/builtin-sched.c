@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include "builtin.h"
 #include "perf-sys.h"
 
@@ -46,7 +46,7 @@
 
 #include <linux/ctype.h>
 
-#define PR_SET_NAME		15               /* Set process name */
+#define PR_SET_NAME		15                
 #define MAX_CPUS		4096
 #define COMM_LEN		20
 #define SYM_LEN			129
@@ -94,17 +94,17 @@ struct sched_atom {
 
 #define TASK_STATE_TO_CHAR_STR "RSDTtZXxKWP"
 
-/* task state bitmask, copied from include/linux/sched.h */
+ 
 #define TASK_RUNNING		0
 #define TASK_INTERRUPTIBLE	1
 #define TASK_UNINTERRUPTIBLE	2
 #define __TASK_STOPPED		4
 #define __TASK_TRACED		8
-/* in tsk->exit_state */
+ 
 #define EXIT_DEAD		16
 #define EXIT_ZOMBIE		32
 #define EXIT_TRACE		(EXIT_ZOMBIE | EXIT_DEAD)
-/* in tsk->state again */
+ 
 #define TASK_DEAD		64
 #define TASK_WAKEKILL		128
 #define TASK_WAKING		256
@@ -153,7 +153,7 @@ struct trace_sched_handler {
 	int (*wakeup_event)(struct perf_sched *sched, struct evsel *evsel,
 			    struct perf_sample *sample, struct machine *machine);
 
-	/* PERF_RECORD_FORK event, not sched_process_fork tracepoint */
+	 
 	int (*fork_event)(struct perf_sched *sched, union perf_event *event,
 			  struct machine *machine);
 
@@ -188,10 +188,7 @@ struct perf_sched {
 	struct mutex	 start_work_mutex;
 	struct mutex	 work_done_wait_mutex;
 	int		 profile_cpu;
-/*
- * Track the current task - that way we can know whether there's any
- * weird events, such as a task being switched away that is not current.
- */
+ 
 	struct perf_cpu	 max_cpu;
 	u32		 *curr_pid;
 	struct thread	 **curr_thread;
@@ -231,7 +228,7 @@ struct perf_sched {
 	bool skip_merge;
 	struct perf_sched_map map;
 
-	/* options for timehist command */
+	 
 	bool		summary;
 	bool		summary_only;
 	bool		idle_hist;
@@ -249,15 +246,15 @@ struct perf_sched {
 	volatile bool   thread_funcs_exit;
 };
 
-/* per thread run time data */
+ 
 struct thread_runtime {
-	u64 last_time;      /* time of previous sched in/out event */
-	u64 dt_run;         /* run time */
-	u64 dt_sleep;       /* time between CPU access by sleep (off cpu) */
-	u64 dt_iowait;      /* time between CPU access by iowait (off cpu) */
-	u64 dt_preempt;     /* time between CPU access by preempt (off cpu) */
-	u64 dt_delay;       /* time between wakeup and sched-in */
-	u64 ready_to_run;   /* time of wakeup */
+	u64 last_time;       
+	u64 dt_run;          
+	u64 dt_sleep;        
+	u64 dt_iowait;       
+	u64 dt_preempt;      
+	u64 dt_delay;        
+	u64 ready_to_run;    
 
 	struct stats run_stats;
 	u64 total_run_time;
@@ -274,13 +271,13 @@ struct thread_runtime {
 	u64 migrations;
 };
 
-/* per event run time data */
+ 
 struct evsel_runtime {
-	u64 *last_time; /* time this event was last seen per cpu */
-	u32 ncpu;       /* highest cpu slot allocated */
+	u64 *last_time;  
+	u32 ncpu;        
 };
 
-/* per cpu idle time data */
+ 
 struct idle_thread_runtime {
 	struct thread_runtime	tr;
 	struct thread		*last_thread;
@@ -289,7 +286,7 @@ struct idle_thread_runtime {
 	struct callchain_cursor	cursor;
 };
 
-/* track idle times per cpu */
+ 
 static struct thread **idle_threads;
 static int idle_max_cpu;
 static char idle_comm[] = "<idle>";
@@ -390,10 +387,7 @@ static void add_sched_event_run(struct perf_sched *sched, struct task_desc *task
 {
 	struct sched_atom *event, *curr_event = last_event(task);
 
-	/*
-	 * optimize an existing RUN event by merging this one
-	 * to it:
-	 */
+	 
 	if (curr_event && curr_event->type == SCHED_EVENT_RUN) {
 		sched->nr_run_events_optimized++;
 		curr_event->duration += duration;
@@ -472,10 +466,7 @@ static struct task_desc *register_pid(struct perf_sched *sched,
 	task->pid = pid;
 	task->nr = sched->nr_tasks;
 	strcpy(task->comm, comm);
-	/*
-	 * every task starts in sleeping state - this gets ignored
-	 * if there's no wakeup pointing to this sleep state:
-	 */
+	 
 	add_sched_event_sleep(sched, task, 0, 0);
 
 	sched->pid_to_task[pid] = task;
@@ -700,7 +691,7 @@ static void destroy_tasks(struct perf_sched *sched)
 
 	mutex_unlock(&sched->start_work_mutex);
 	mutex_unlock(&sched->work_done_wait_mutex);
-	/* Get rid of threads so they won't be upset by mutex destrunction */
+	 
 	for (i = 0; i < sched->nr_tasks; i++) {
 		task = sched->tasks[i];
 		err = pthread_join(task->thread, NULL);
@@ -796,10 +787,7 @@ static void run_one_test(struct perf_sched *sched)
 		(double)sched->cpu_usage / NSEC_PER_MSEC, (double)sched->runavg_cpu_usage / NSEC_PER_MSEC);
 
 #if 0
-	/*
-	 * rusage statistics done by the parent, these are less
-	 * accurate than the sched->sum_exec_runtime based statistics:
-	 */
+	 
 	printf(" [%0.2f / %0.2f]",
 		(double)sched->parent_cpu_usage / NSEC_PER_MSEC,
 		(double)sched->runavg_parent_cpu_usage / NSEC_PER_MSEC);
@@ -934,9 +922,7 @@ struct sort_dimension {
 	struct list_head	list;
 };
 
-/*
- * handle runtime stats saved per thread
- */
+ 
 static struct thread_runtime *thread__init_runtime(struct thread *thread)
 {
 	struct thread_runtime *r;
@@ -1180,10 +1166,7 @@ static int latency_switch_event(struct perf_sched *sched,
 			pr_err("in-event: Internal tree error");
 			goto out_put;
 		}
-		/*
-		 * Take came in we have not heard about yet,
-		 * add in an initial atom in runnable state:
-		 */
+		 
 		if (add_sched_out_event(in_events, 'R', timestamp))
 			goto out_put;
 	}
@@ -1262,17 +1245,7 @@ static int latency_wakeup_event(struct perf_sched *sched,
 
 	atom = list_entry(atoms->work_list.prev, struct work_atom, list);
 
-	/*
-	 * As we do not guarantee the wakeup event happens when
-	 * task is out of run queue, also may happen when task is
-	 * on run queue and wakeup only change ->state to TASK_RUNNING,
-	 * then we should not set the ->wake_up_time when wake up a
-	 * task which is on run queue.
-	 *
-	 * You WILL be missing events if you've recorded only
-	 * one CPU, or are only looking at only one, so don't
-	 * skip in this case.
-	 */
+	 
 	if (sched->profile_cpu == -1 && atom->state != THREAD_SLEEPING)
 		goto out_ok;
 
@@ -1303,9 +1276,7 @@ static int latency_migrate_task_event(struct perf_sched *sched,
 	struct thread *migrant;
 	int err = -1;
 
-	/*
-	 * Only need to worry about migration when profiling one CPU.
-	 */
+	 
 	if (sched->profile_cpu == -1)
 		return 0;
 
@@ -1350,9 +1321,7 @@ static void output_lat_thread(struct perf_sched *sched, struct work_atoms *work_
 
 	if (!work_list->nb_atoms)
 		return;
-	/*
-	 * Ignore idle threads:
-	 */
+	 
 	if (!strcmp(thread__comm_str(work_list->thread), "swapper"))
 		return;
 
@@ -1624,10 +1593,7 @@ static int map_switch_event(struct perf_sched *sched, struct evsel *evsel,
 	new_shortname = 0;
 	if (!tr->shortname[0]) {
 		if (!strcmp(thread__comm_str(sched_in), "swapper")) {
-			/*
-			 * Don't allocate a letter-number for swapper:0
-			 * as a shortname. Instead, we use '.' for it.
-			 */
+			 
 			tr->shortname[0] = '.';
 			tr->shortname[1] = ' ';
 		} else {
@@ -1719,10 +1685,7 @@ static int process_sched_switch_event(struct perf_tool *tool,
 	    next_pid = evsel__intval(evsel, sample, "next_pid");
 
 	if (sched->curr_pid[this_cpu] != (u32)-1) {
-		/*
-		 * Are we trying to switch away a PID that is
-		 * not current?
-		 */
+		 
 		if (sched->curr_pid[this_cpu] != prev_pid)
 			sched->nr_context_switch_bugs++;
 	}
@@ -1754,10 +1717,10 @@ static int perf_sched__process_fork_event(struct perf_tool *tool,
 {
 	struct perf_sched *sched = container_of(tool, struct perf_sched, tool);
 
-	/* run the fork event through the perf machinery */
+	 
 	perf_event__process_fork(tool, event, sample, machine);
 
-	/* and then run additional processing needed for this command */
+	 
 	if (sched->tp_handler->fork_event)
 		return sched->tp_handler->fork_event(sched, event, machine);
 
@@ -1855,7 +1818,7 @@ static int perf_sched__read_events(struct perf_sched *sched)
 
 	symbol__init(&session->header.env);
 
-	/* prefer sched_waking if it is captured */
+	 
 	if (evlist__find_tracepoint_by_name(session->evlist, "sched:sched_waking"))
 		handlers[2].handler = process_sched_wakeup_ignore;
 
@@ -1880,9 +1843,7 @@ out_delete:
 	return rc;
 }
 
-/*
- * scheduling times are printed as msec.usec
- */
+ 
 static inline void print_sched_time(unsigned long long nsecs, int width)
 {
 	unsigned long msecs;
@@ -1894,10 +1855,7 @@ static inline void print_sched_time(unsigned long long nsecs, int width)
 	printf("%*lu.%03lu ", width, msecs, usecs);
 }
 
-/*
- * returns runtime data for event, allocating memory for it the
- * first time it is used.
- */
+ 
 static struct evsel_runtime *evsel__get_runtime(struct evsel *evsel)
 {
 	struct evsel_runtime *r = evsel->priv;
@@ -1910,9 +1868,7 @@ static struct evsel_runtime *evsel__get_runtime(struct evsel *evsel)
 	return r;
 }
 
-/*
- * save last time event was seen per cpu
- */
+ 
 static void evsel__save_time(struct evsel *evsel, u64 timestamp, u32 cpu)
 {
 	struct evsel_runtime *r = evsel__get_runtime(evsel);
@@ -1938,7 +1894,7 @@ static void evsel__save_time(struct evsel *evsel, u64 timestamp, u32 cpu)
 	r->last_time[cpu] = timestamp;
 }
 
-/* returns last time this event was seen on the given cpu */
+ 
 static u64 evsel__get_time(struct evsel *evsel, u32 cpu)
 {
 	struct evsel_runtime *r = evsel__get_runtime(evsel);
@@ -1999,9 +1955,7 @@ static void timehist_header(struct perf_sched *sched)
 
 	printf("\n");
 
-	/*
-	 * units row
-	 */
+	 
 	printf("%15s %-6s ", "", "");
 
 	if (sched->show_cpu_visual)
@@ -2015,9 +1969,7 @@ static void timehist_header(struct perf_sched *sched)
 
 	printf("\n");
 
-	/*
-	 * separator
-	 */
+	 
 	printf("%.15s %.6s ", graph_dotted_line, graph_dotted_line);
 
 	if (sched->show_cpu_visual)
@@ -2038,7 +1990,7 @@ static char task_state_char(struct thread *thread, int state)
 	static const char state_to_char[] = TASK_STATE_TO_CHAR_STR;
 	unsigned bit = state ? ffs(state) : 0;
 
-	/* 'I' for idle */
+	 
 	if (thread__tid(thread) == 0)
 		return 'I';
 
@@ -2072,7 +2024,7 @@ static void timehist_print_sample(struct perf_sched *sched,
 
 		printf(" ");
 		for (i = 0; i < max_cpus; ++i) {
-			/* flag idle times with 'i'; others are sched events */
+			 
 			if (i == sample->cpu)
 				c = (thread__tid(thread) == 0) ? 'i' : 's';
 			else
@@ -2117,28 +2069,7 @@ out:
 	printf("\n");
 }
 
-/*
- * Explanation of delta-time stats:
- *
- *            t = time of current schedule out event
- *        tprev = time of previous sched out event
- *                also time of schedule-in event for current task
- *    last_time = time of last sched change event for current task
- *                (i.e, time process was last scheduled out)
- * ready_to_run = time of wakeup for current task
- *
- * -----|------------|------------|------------|------
- *    last         ready        tprev          t
- *    time         to run
- *
- *      |-------- dt_wait --------|
- *                   |- dt_delay -|-- dt_run --|
- *
- *   dt_run = run time of current task
- *  dt_wait = time between last schedule out event for task and tprev
- *            represents time spent off the cpu
- * dt_delay = time between wakeup and schedule-in of task
- */
+ 
 
 static void timehist_update_runtime_stats(struct thread_runtime *r,
 					 u64 t, u64 tprev)
@@ -2184,7 +2115,7 @@ static void timehist_update_runtime_stats(struct thread_runtime *r,
 static bool is_idle_sample(struct perf_sample *sample,
 			   struct evsel *evsel)
 {
-	/* pid 0 == swapper == idle task */
+	 
 	if (strcmp(evsel__name(evsel), "sched:sched_switch") == 0)
 		return evsel__intval(evsel, sample, "prev_pid") == 0;
 
@@ -2199,7 +2130,7 @@ static void save_task_callchain(struct perf_sched *sched,
 	struct callchain_cursor *cursor;
 	struct thread *thread;
 
-	/* want main thread for process - has maps */
+	 
 	thread = machine__findnew_thread(machine, sample->pid, sample->pid);
 	if (thread == NULL) {
 		pr_debug("Failed to get thread for pid %d.\n", sample->pid);
@@ -2259,10 +2190,7 @@ static int init_idle_thread(struct thread *thread)
 	return 0;
 }
 
-/*
- * Track idle stats per cpu by maintaining a local thread
- * struct for the idle task on each cpu.
- */
+ 
 static int init_idle_threads(int ncpu)
 {
 	int i, ret;
@@ -2273,7 +2201,7 @@ static int init_idle_threads(int ncpu)
 
 	idle_max_cpu = ncpu;
 
-	/* allocate the actual thread struct if needed */
+	 
 	for (i = 0; i < ncpu; ++i) {
 		idle_threads[i] = thread__new(0, 0);
 		if (idle_threads[i] == NULL)
@@ -2304,10 +2232,7 @@ static void free_idle_threads(void)
 
 static struct thread *get_idle_thread(int cpu)
 {
-	/*
-	 * expand/allocate array of pointers to local thread
-	 * structs if needed
-	 */
+	 
 	if ((cpu >= idle_max_cpu) || (idle_threads == NULL)) {
 		int i, j = __roundup_pow_of_two(cpu+1);
 		void *p;
@@ -2323,7 +2248,7 @@ static struct thread *get_idle_thread(int cpu)
 		idle_max_cpu = j;
 	}
 
-	/* allocate a new thread struct if needed */
+	 
 	if (idle_threads[cpu] == NULL) {
 		idle_threads[cpu] = thread__new(0, 0);
 
@@ -2365,7 +2290,7 @@ static struct thread *timehist_get_thread(struct perf_sched *sched,
 			pr_err("Failed to get idle thread for cpu %d.\n", sample->cpu);
 
 	} else {
-		/* there were samples with tid 0 but non-zero pid */
+		 
 		thread = machine__findnew_thread(machine, sample->pid,
 						 sample->tid ?: sample->pid);
 		if (thread == NULL) {
@@ -2390,7 +2315,7 @@ static struct thread *timehist_get_thread(struct perf_sched *sched,
 
 			itr->last_thread = thread;
 
-			/* copy task callchain when entering to idle */
+			 
 			if (evsel__intval(evsel, sample, "next_pid") == 0)
 				save_idle_callchain(sched, itr, sample);
 		}
@@ -2435,7 +2360,7 @@ static void timehist_print_wakeup_event(struct perf_sched *sched,
 	if (thread == NULL)
 		return;
 
-	/* show wakeup unless both awakee and awaker are filtered */
+	 
 	if (timehist_skip_sample(sched, thread, evsel, sample) &&
 	    timehist_skip_sample(sched, awakened, evsel, sample)) {
 		return;
@@ -2448,7 +2373,7 @@ static void timehist_print_wakeup_event(struct perf_sched *sched,
 
 	printf(" %-*s ", comm_width, timehist_get_commstr(thread));
 
-	/* dt spacer */
+	 
 	printf("  %9s  %9s  %9s ", "", "", "");
 
 	printf("awakened: %s", timehist_get_commstr(awakened));
@@ -2474,7 +2399,7 @@ static int timehist_sched_wakeup_event(struct perf_tool *tool,
 	struct perf_sched *sched = container_of(tool, struct perf_sched, tool);
 	struct thread *thread;
 	struct thread_runtime *tr = NULL;
-	/* want pid of awakened task not pid in sample */
+	 
 	const u32 pid = evsel__intval(evsel, sample, "pid");
 
 	thread = machine__findnew_thread(machine, 0, pid);
@@ -2488,7 +2413,7 @@ static int timehist_sched_wakeup_event(struct perf_tool *tool,
 	if (tr->ready_to_run == 0)
 		tr->ready_to_run = sample->time;
 
-	/* show wakeups if requested */
+	 
 	if (sched->show_wakeups &&
 	    !perf_time__skip_sample(&sched->ptime, sample->time))
 		timehist_print_wakeup_event(sched, evsel, sample, machine, thread);
@@ -2540,7 +2465,7 @@ static void timehist_print_migration_event(struct perf_sched *sched,
 
 	printf(" %-*s ", comm_width, timehist_get_commstr(thread));
 
-	/* dt spacer */
+	 
 	printf("  %9s  %9s  %9s ", "", "", "");
 
 	printf("migrated: %s", timehist_get_commstr(migrated));
@@ -2558,7 +2483,7 @@ static int timehist_migrate_task_event(struct perf_tool *tool,
 	struct perf_sched *sched = container_of(tool, struct perf_sched, tool);
 	struct thread *thread;
 	struct thread_runtime *tr = NULL;
-	/* want pid of migrated task not pid in sample */
+	 
 	const u32 pid = evsel__intval(evsel, sample, "pid");
 
 	thread = machine__findnew_thread(machine, 0, pid);
@@ -2571,7 +2496,7 @@ static int timehist_migrate_task_event(struct perf_tool *tool,
 
 	tr->migrations++;
 
-	/* show migrations if requested */
+	 
 	timehist_print_migration_event(sched, evsel, sample, machine, thread);
 
 	return 0;
@@ -2617,23 +2542,14 @@ static int timehist_sched_change_event(struct perf_tool *tool,
 
 	tprev = evsel__get_time(evsel, sample->cpu);
 
-	/*
-	 * If start time given:
-	 * - sample time is under window user cares about - skip sample
-	 * - tprev is under window user cares about  - reset to start of window
-	 */
+	 
 	if (ptime->start && ptime->start > t)
 		goto out;
 
 	if (tprev && ptime->start > tprev)
 		tprev = ptime->start;
 
-	/*
-	 * If end time given:
-	 * - previous sched event is out of window - we are done
-	 * - sample time is beyond window user cares about - reset it
-	 *   to close out stats for time window interest
-	 */
+	 
 	if (ptime->end) {
 		if (tprev > ptime->end)
 			goto out;
@@ -2655,17 +2571,13 @@ static int timehist_sched_change_event(struct perf_tool *tool,
 			if (itr->last_thread == NULL)
 				goto out;
 
-			/* add current idle time as last thread's runtime */
+			 
 			last_tr = thread__get_runtime(itr->last_thread);
 			if (last_tr == NULL)
 				goto out;
 
 			timehist_update_runtime_stats(last_tr, t, tprev);
-			/*
-			 * remove delta time of last thread as it's not updated
-			 * and otherwise it will show an invalid value next
-			 * time.  we only care total run time and run stat.
-			 */
+			 
 			last_tr->dt_run = 0;
 			last_tr->dt_delay = 0;
 			last_tr->dt_sleep = 0;
@@ -2689,13 +2601,13 @@ out:
 		sched->hist_time.end = t;
 
 	if (tr) {
-		/* time of this sched_switch event becomes last time task seen */
+		 
 		tr->last_time = sample->time;
 
-		/* last state is used to determine where to account wait time */
+		 
 		tr->last_state = state;
 
-		/* sched out event for task so reset ready to run time */
+		 
 		tr->ready_to_run = 0;
 	}
 
@@ -2845,7 +2757,7 @@ static size_t timehist_print_idlehist_callchain(struct rb_root_cached *root)
 
 		ret += fprintf(fp, "  ");
 		print_sched_time(chain->hit, 12);
-		ret += 16;  /* print_sched_time returns 2nd arg + 4 */
+		ret += 16;   
 		ret += fprintf(fp, " %8d  ", chain->count);
 		ret += callchain__fprintf_folded(fp, chain);
 		ret += fprintf(fp, "\n");
@@ -2891,7 +2803,7 @@ static void timehist_print_summary(struct perf_sched *sched,
 	if (!task_count)
 		printf("<no still running tasks>\n");
 
-	/* CPU idle stats not tracked when samples were skipped */
+	 
 	if (sched->skipped_samples && !sched->idle_hist)
 		return;
 
@@ -3031,9 +2943,7 @@ static int perf_sched__timehist(struct perf_sched *sched)
 	struct evlist *evlist;
 	int err = -1;
 
-	/*
-	 * event handlers for timehist option
-	 */
+	 
 	sched->tool.sample	 = perf_timehist__process_sample;
 	sched->tool.mmap	 = perf_event__process_mmap;
 	sched->tool.comm	 = perf_event__process_comm;
@@ -3073,15 +2983,15 @@ static int perf_sched__timehist(struct perf_sched *sched)
 
 	setup_pager();
 
-	/* prefer sched_waking if it is captured */
+	 
 	if (evlist__find_tracepoint_by_name(session->evlist, "sched:sched_waking"))
 		handlers[1].handler = timehist_sched_wakeup_ignore;
 
-	/* setup per-evsel handlers */
+	 
 	if (perf_session__set_tracepoints_handlers(session, handlers))
 		goto out;
 
-	/* sched_switch event at a minimum needs to exist */
+	 
 	if (!evlist__find_tracepoint_by_name(session->evlist, "sched:sched_switch")) {
 		pr_err("No sched_switch events found. Have you run 'perf sched record'?\n");
 		goto out;
@@ -3091,14 +3001,14 @@ static int perf_sched__timehist(struct perf_sched *sched)
 	    perf_session__set_tracepoints_handlers(session, migrate_handlers))
 		goto out;
 
-	/* pre-allocate struct for per-CPU idle stats */
+	 
 	sched->max_cpu.cpu = session->header.env.nr_cpus_online;
 	if (sched->max_cpu.cpu == 0)
 		sched->max_cpu.cpu = 4;
 	if (init_idle_threads(sched->max_cpu.cpu))
 		goto out;
 
-	/* summary_only implies summary option, but don't overwrite summary if set */
+	 
 	if (sched->summary_only)
 		sched->summary = sched->summary_only;
 
@@ -3378,10 +3288,7 @@ static void setup_sorting(struct perf_sched *sched, const struct option *options
 
 static bool schedstat_events_exposed(void)
 {
-	/*
-	 * Select "sched:sched_stat_wait" event to check
-	 * whether schedstat tracepoints are exposed.
-	 */
+	 
 	return IS_ERR(trace_event__tp_format("sched", "sched_stat_wait")) ?
 		false : true;
 }
@@ -3404,12 +3311,7 @@ static int __cmd_record(int argc, const char **argv)
 		"-e", "sched:sched_migrate_task",
 	};
 
-	/*
-	 * The tracepoints trace_sched_stat_{wait, sleep, iowait}
-	 * are not exposed to user if CONFIG_SCHEDSTATS is not set,
-	 * to prevent "perf sched record" execution failure, determine
-	 * whether to record schedstat events according to actual situation.
-	 */
+	 
 	const char * const schedstat_args[] = {
 		"-e", "sched:sched_stat_wait",
 		"-e", "sched:sched_stat_sleep",
@@ -3421,10 +3323,7 @@ static int __cmd_record(int argc, const char **argv)
 	struct tep_event *waking_event;
 	int ret;
 
-	/*
-	 * +2 for either "-e", "sched:sched_wakeup" or
-	 * "-e", "sched:sched_waking"
-	 */
+	 
 	rec_argc = ARRAY_SIZE(record_args) + 2 + schedstat_argc + argc - 1;
 	rec_argv = calloc(rec_argc + 1, sizeof(char *));
 	if (rec_argv == NULL)
@@ -3618,9 +3517,7 @@ int cmd_sched(int argc, const char **argv)
 	if (!argc)
 		usage_with_options(sched_usage, sched_options);
 
-	/*
-	 * Aliased to 'perf script' for now:
-	 */
+	 
 	if (!strcmp(argv[0], "script")) {
 		ret = cmd_script(argc, argv);
 	} else if (strlen(argv[0]) > 2 && strstarts("record", argv[0])) {

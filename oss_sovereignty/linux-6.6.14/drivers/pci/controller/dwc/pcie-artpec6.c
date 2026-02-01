@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * PCIe host controller driver for Axis ARTPEC-6 SoC
- *
- * Author: Niklas Cassel <niklas.cassel@axis.com>
- *
- * Based on work done by Phil Edworthy <phil@edworthys.org>
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/kernel.h>
@@ -31,8 +25,8 @@ enum artpec_pcie_variants {
 
 struct artpec6_pcie {
 	struct dw_pcie		*pci;
-	struct regmap		*regmap;	/* DT axis,syscon-pcie */
-	void __iomem		*phy_base;	/* DT phy */
+	struct regmap		*regmap;	 
+	void __iomem		*phy_base;	 
 	enum artpec_pcie_variants variant;
 	enum dw_pcie_device_mode mode;
 };
@@ -44,7 +38,7 @@ struct artpec_pcie_of_data {
 
 static const struct of_device_id artpec6_pcie_of_match[];
 
-/* ARTPEC-6 specific registers */
+ 
 #define PCIECFG				0x18
 #define  PCIECFG_DBG_OEN		BIT(24)
 #define  PCIECFG_CORE_RESET_REQ		BIT(21)
@@ -58,12 +52,12 @@ static const struct of_device_id artpec6_pcie_of_match[];
 #define  PCIECFG_MODE_TX_DRV_EN		BIT(3)
 #define  PCIECFG_CISRREN		BIT(2)
 #define  PCIECFG_MACRO_ENABLE		BIT(0)
-/* ARTPEC-7 specific fields */
+ 
 #define  PCIECFG_REFCLKSEL		BIT(23)
 #define  PCIECFG_NOC_RESET		BIT(3)
 
 #define PCIESTAT			0x1c
-/* ARTPEC-7 specific fields */
+ 
 #define  PCIESTAT_EXTREFCLK		BIT(3)
 
 #define NOCCFG				0x40
@@ -213,9 +207,9 @@ static void artpec6_pcie_init_phy_a6(struct artpec6_pcie *artpec6_pcie)
 	u32 val;
 
 	val = artpec6_pcie_readl(artpec6_pcie, PCIECFG);
-	val |=  PCIECFG_RISRCREN |	/* Receiver term. 50 Ohm */
+	val |=  PCIECFG_RISRCREN |	 
 		PCIECFG_MODE_TX_DRV_EN |
-		PCIECFG_CISRREN |	/* Reference clock term. 100 Ohm */
+		PCIECFG_CISRREN |	 
 		PCIECFG_MACRO_ENABLE;
 	val |= PCIECFG_REFCLK_ENABLE;
 	val &= ~PCIECFG_DBG_OEN;
@@ -244,14 +238,14 @@ static void artpec6_pcie_init_phy_a7(struct artpec6_pcie *artpec6_pcie)
 	u32 val;
 	bool extrefclk;
 
-	/* Check if external reference clock is connected */
+	 
 	val = artpec6_pcie_readl(artpec6_pcie, PCIESTAT);
 	extrefclk = !!(val & PCIESTAT_EXTREFCLK);
 	dev_dbg(pci->dev, "Using reference clock: %s\n",
 		extrefclk ? "external" : "internal");
 
 	val = artpec6_pcie_readl(artpec6_pcie, PCIECFG);
-	val |=  PCIECFG_RISRCREN |	/* Receiver term. 50 Ohm */
+	val |=  PCIECFG_RISRCREN |	 
 		PCIECFG_PCLK_ENABLE;
 	if (extrefclk)
 		val |= PCIECFG_REFCLKSEL;

@@ -1,25 +1,4 @@
-/*
- * Copyright 2011 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 #ifndef __RV770_DPM_H__
 #define __RV770_DPM_H__
 
@@ -73,13 +52,13 @@ struct vddc_table_entry {
 #define MAX_NO_VREG_STEPS 32
 
 struct rv7xx_power_info {
-	/* flags */
+	 
 	bool mem_gddr5;
 	bool pcie_gen2;
 	bool dynamic_pcie_gen2;
 	bool acpi_pcie_gen2;
 	bool boot_in_gen2;
-	bool voltage_control; /* vddc */
+	bool voltage_control;  
 	bool mvdd_control;
 	bool sclk_ss;
 	bool mclk_ss;
@@ -92,10 +71,10 @@ struct rv7xx_power_info {
 	bool display_gap;
 	bool dcodt;
 	bool ulps;
-	/* registers */
+	 
 	union r7xx_clock_registers clk_regs;
 	u32 s0_vid_lower_smio_cntl;
-	/* voltage */
+	 
 	u32 vddc_mask_low;
 	u32 mvdd_mask_low;
 	u32 mvdd_split_frequency;
@@ -105,11 +84,11 @@ struct rv7xx_power_info {
 	u16 min_vddc_in_table;
 	struct vddc_table_entry vddc_table[MAX_NO_VREG_STEPS];
 	u8 valid_vddc_entries;
-	/* dc odt */
+	 
 	u32 mclk_odt_threshold;
 	u8 odt_value_0[2];
 	u8 odt_value_1[2];
-	/* stored values */
+	 
 	u32 boot_sclk;
 	u16 acpi_vddc;
 	u32 ref_div;
@@ -131,11 +110,11 @@ struct rv7xx_power_info {
 	u32 rmp;
 	u32 lhp;
 	u32 lmp;
-	/* smc offsets */
+	 
 	u16 state_table_start;
 	u16 soft_regs_start;
 	u16 sram_end;
-	/* scratch structs */
+	 
 	RV770_SMC_STATETABLE smc_statetable;
 };
 
@@ -143,9 +122,9 @@ struct rv7xx_pl {
 	u32 sclk;
 	u32 mclk;
 	u16 vddc;
-	u16 vddci; /* eg+ only */
+	u16 vddci;  
 	u32 flags;
-	enum radeon_pcie_gen pcie_gen; /* si+ only */
+	enum radeon_pcie_gen pcie_gen;  
 };
 
 struct rv7xx_ps {
@@ -173,10 +152,10 @@ struct rv7xx_ps {
 #define MVDD_LOW_VALUE  0
 #define MVDD_HIGH_VALUE 0xffff
 
-#define RV770_DEFAULT_VCLK_FREQ  53300 /* 10 khz */
-#define RV770_DEFAULT_DCLK_FREQ  40000 /* 10 khz */
+#define RV770_DEFAULT_VCLK_FREQ  53300  
+#define RV770_DEFAULT_DCLK_FREQ  40000  
 
-/* rv730/rv710 */
+ 
 int rv730_populate_sclk_value(struct radeon_device *rdev,
 			      u32 engine_clock,
 			      RV770_SMC_SCLK_VALUE *sclk);
@@ -198,7 +177,7 @@ void rv730_stop_dpm(struct radeon_device *rdev);
 void rv730_program_dcodt(struct radeon_device *rdev, bool use_dcodt);
 void rv730_get_odt_values(struct radeon_device *rdev);
 
-/* rv740 */
+ 
 int rv740_populate_sclk_value(struct radeon_device *rdev, u32 engine_clock,
 			      RV770_SMC_SCLK_VALUE *sclk);
 int rv740_populate_mclk_value(struct radeon_device *rdev,
@@ -213,7 +192,7 @@ u8 rv740_get_mclk_frequency_ratio(u32 memory_clock);
 u32 rv740_get_dll_speed(bool is_gddr5, u32 memory_clock);
 u32 rv740_get_decoded_reference_divider(u32 encoded_ref);
 
-/* rv770 */
+ 
 u32 rv770_map_clkf_to_ibias(struct radeon_device *rdev, u32 clkf);
 int rv770_populate_vddc_value(struct radeon_device *rdev, u16 vddc,
 			      RV770_SMC_VOLTAGE_VALUE *voltage);
@@ -278,7 +257,7 @@ void rv770_set_uvd_clock_after_set_eng_clock(struct radeon_device *rdev,
 					     struct radeon_ps *old_ps);
 void rv770_get_engine_memory_ss(struct radeon_device *rdev);
 
-/* smc */
+ 
 int rv770_write_smc_soft_register(struct radeon_device *rdev,
 				  u16 reg_offset, u32 value);
 

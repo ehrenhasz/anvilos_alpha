@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright 2022 Google LLC
- *
- * USB Type-C Retimer support.
- * Author: Prashant Malani <pmalani@chromium.org>
- *
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/list.h>
@@ -35,15 +29,7 @@ static void *typec_retimer_match(const struct fwnode_handle *fwnode, const char 
 	return dev ? to_typec_retimer(dev) : ERR_PTR(-EPROBE_DEFER);
 }
 
-/**
- * fwnode_typec_retimer_get - Find USB Type-C retimer.
- * @fwnode: The caller device node.
- *
- * Finds a retimer linked to the caller. This function is primarily meant for the
- * Type-C drivers. Returns a reference to the retimer on success, NULL if no
- * matching connection was found, or ERR_PTR(-EPROBE_DEFER) when a connection
- * was found but the retimer has not been enumerated yet.
- */
+ 
 struct typec_retimer *fwnode_typec_retimer_get(struct fwnode_handle *fwnode)
 {
 	struct typec_retimer *retimer;
@@ -56,12 +42,7 @@ struct typec_retimer *fwnode_typec_retimer_get(struct fwnode_handle *fwnode)
 }
 EXPORT_SYMBOL_GPL(fwnode_typec_retimer_get);
 
-/**
- * typec_retimer_put - Release handle to a retimer.
- * @retimer: USB Type-C Connector Retimer.
- *
- * Decrements reference count for @retimer.
- */
+ 
 void typec_retimer_put(struct typec_retimer *retimer)
 {
 	if (!IS_ERR_OR_NULL(retimer)) {
@@ -90,17 +71,7 @@ const struct device_type typec_retimer_dev_type = {
 	.release = typec_retimer_release,
 };
 
-/**
- * typec_retimer_register - Register a retimer device.
- * @parent: Parent device.
- * @desc: Retimer description.
- *
- * Some USB Type-C connectors have their physical lines routed through retimers before they
- * reach muxes or host controllers. In some cases (for example: using alternate modes)
- * these retimers need to be reconfigured appropriately. This function registers retimer
- * switches which route and potentially modify the signals on the Type C physical lines
- * enroute to the host controllers.
- */
+ 
 struct typec_retimer *
 typec_retimer_register(struct device *parent, const struct typec_retimer_desc *desc)
 {
@@ -136,12 +107,7 @@ typec_retimer_register(struct device *parent, const struct typec_retimer_desc *d
 }
 EXPORT_SYMBOL_GPL(typec_retimer_register);
 
-/**
- * typec_retimer_unregister - Unregister retimer device.
- * @retimer: USB Type-C Connector retimer.
- *
- * Unregister retimer that was registered with typec_retimer_register().
- */
+ 
 void typec_retimer_unregister(struct typec_retimer *retimer)
 {
 	if (!IS_ERR_OR_NULL(retimer))

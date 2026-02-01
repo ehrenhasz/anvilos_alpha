@@ -1,20 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Geode GX framebuffer driver.
- *
- *   Copyright (C) 2006 Arcom Control Systems Ltd.
- *
- * This driver assumes that the BIOS has created a virtual PCI device header
- * for the video device. The PCI header is assumed to contain the following
- * BARs:
- *
- *    BAR0 - framebuffer memory
- *    BAR1 - graphics processor registers
- *    BAR2 - display controller registers
- *    BAR3 - video processor and flat panel control registers.
- *
- * 16 MiB of framebuffer memory is assumed to be available.
- */
+
+ 
 #include <linux/aperture.h>
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -37,76 +22,76 @@ static char *mode_option;
 static int vram;
 static int vt_switch;
 
-/* Modes relevant to the GX (taken from modedb.c) */
+ 
 static struct fb_videomode gx_modedb[] = {
-	/* 640x480-60 VESA */
+	 
 	{ NULL, 60, 640, 480, 39682,  48, 16, 33, 10, 96, 2,
 	  0, FB_VMODE_NONINTERLACED, FB_MODE_IS_VESA },
-	/* 640x480-75 VESA */
+	 
 	{ NULL, 75, 640, 480, 31746, 120, 16, 16, 01, 64, 3,
 	  0, FB_VMODE_NONINTERLACED, FB_MODE_IS_VESA },
-	/* 640x480-85 VESA */
+	 
 	{ NULL, 85, 640, 480, 27777, 80, 56, 25, 01, 56, 3,
 	  0, FB_VMODE_NONINTERLACED, FB_MODE_IS_VESA },
-	/* 800x600-60 VESA */
+	 
 	{ NULL, 60, 800, 600, 25000, 88, 40, 23, 01, 128, 4,
 	  FB_SYNC_HOR_HIGH_ACT | FB_SYNC_VERT_HIGH_ACT,
 	  FB_VMODE_NONINTERLACED, FB_MODE_IS_VESA },
-	/* 800x600-75 VESA */
+	 
 	{ NULL, 75, 800, 600, 20202, 160, 16, 21, 01, 80, 3,
 	  FB_SYNC_HOR_HIGH_ACT | FB_SYNC_VERT_HIGH_ACT,
 	  FB_VMODE_NONINTERLACED, FB_MODE_IS_VESA },
-	/* 800x600-85 VESA */
+	 
 	{ NULL, 85, 800, 600, 17761, 152, 32, 27, 01, 64, 3,
 	  FB_SYNC_HOR_HIGH_ACT | FB_SYNC_VERT_HIGH_ACT,
 	  FB_VMODE_NONINTERLACED, FB_MODE_IS_VESA },
-	/* 1024x768-60 VESA */
+	 
 	{ NULL, 60, 1024, 768, 15384, 160, 24, 29, 3, 136, 6,
 	  0, FB_VMODE_NONINTERLACED, FB_MODE_IS_VESA },
-	/* 1024x768-75 VESA */
+	 
 	{ NULL, 75, 1024, 768, 12690, 176, 16, 28, 1, 96, 3,
 	  FB_SYNC_HOR_HIGH_ACT | FB_SYNC_VERT_HIGH_ACT,
 	  FB_VMODE_NONINTERLACED, FB_MODE_IS_VESA },
-	/* 1024x768-85 VESA */
+	 
 	{ NULL, 85, 1024, 768, 10582, 208, 48, 36, 1, 96, 3,
 	  FB_SYNC_HOR_HIGH_ACT | FB_SYNC_VERT_HIGH_ACT,
 	  FB_VMODE_NONINTERLACED, FB_MODE_IS_VESA },
-	/* 1280x960-60 VESA */
+	 
 	{ NULL, 60, 1280, 960, 9259, 312, 96, 36, 1, 112, 3,
 	  FB_SYNC_HOR_HIGH_ACT | FB_SYNC_VERT_HIGH_ACT,
 	  FB_VMODE_NONINTERLACED, FB_MODE_IS_VESA },
-	/* 1280x960-85 VESA */
+	 
 	{ NULL, 85, 1280, 960, 6734, 224, 64, 47, 1, 160, 3,
 	  FB_SYNC_HOR_HIGH_ACT | FB_SYNC_VERT_HIGH_ACT,
 	  FB_VMODE_NONINTERLACED, FB_MODE_IS_VESA },
-	/* 1280x1024-60 VESA */
+	 
 	{ NULL, 60, 1280, 1024, 9259, 248, 48, 38, 1, 112, 3,
 	  FB_SYNC_HOR_HIGH_ACT | FB_SYNC_VERT_HIGH_ACT,
 	  FB_VMODE_NONINTERLACED, FB_MODE_IS_VESA },
-	/* 1280x1024-75 VESA */
+	 
 	{ NULL, 75, 1280, 1024, 7407, 248, 16, 38, 1, 144, 3,
 	  FB_SYNC_HOR_HIGH_ACT | FB_SYNC_VERT_HIGH_ACT,
 	  FB_VMODE_NONINTERLACED, FB_MODE_IS_VESA },
-	/* 1280x1024-85 VESA */
+	 
 	{ NULL, 85, 1280, 1024, 6349, 224, 64, 44, 1, 160, 3,
 	  FB_SYNC_HOR_HIGH_ACT | FB_SYNC_VERT_HIGH_ACT,
 	  FB_VMODE_NONINTERLACED, FB_MODE_IS_VESA },
-	/* 1600x1200-60 VESA */
+	 
 	{ NULL, 60, 1600, 1200, 6172, 304, 64, 46, 1, 192, 3,
 	  FB_SYNC_HOR_HIGH_ACT | FB_SYNC_VERT_HIGH_ACT,
 	  FB_VMODE_NONINTERLACED, FB_MODE_IS_VESA },
-	/* 1600x1200-75 VESA */
+	 
 	{ NULL, 75, 1600, 1200, 4938, 304, 64, 46, 1, 192, 3,
 	  FB_SYNC_HOR_HIGH_ACT | FB_SYNC_VERT_HIGH_ACT,
 	  FB_VMODE_NONINTERLACED, FB_MODE_IS_VESA },
-	/* 1600x1200-85 VESA */
+	 
 	{ NULL, 85, 1600, 1200, 4357, 304, 64, 46, 1, 192, 3,
 	  FB_SYNC_HOR_HIGH_ACT | FB_SYNC_VERT_HIGH_ACT,
 	  FB_VMODE_NONINTERLACED, FB_MODE_IS_VESA },
 };
 
 static struct fb_videomode gx_dcon_modedb[] = {
-	/* The only mode the DCON has is 1200x900 */
+	 
 	{ NULL, 50, 1200, 900, 17460, 24, 8, 4, 5, 8, 3,
 	  FB_SYNC_HOR_HIGH_ACT | FB_SYNC_VERT_HIGH_ACT,
 	  FB_VMODE_NONINTERLACED, 0 }
@@ -146,11 +131,11 @@ static int gxfb_check_var(struct fb_var_screeninfo *var, struct fb_info *info)
 		return -EINVAL;
 	var->transp.offset = 0; var->transp.length = 0;
 
-	/* Enough video memory? */
+	 
 	if (gx_line_delta(var->xres, var->bits_per_pixel) * var->yres > info->fix.smem_len)
 		return -EINVAL;
 
-	/* FIXME: Check timing parameters here? */
+	 
 
 	return 0;
 }
@@ -181,11 +166,11 @@ static int gxfb_setcolreg(unsigned regno, unsigned red, unsigned green,
 			   struct fb_info *info)
 {
 	if (info->var.grayscale) {
-		/* grayscale = 0.30*R + 0.59*G + 0.11*B */
+		 
 		red = green = blue = (red * 77 + green * 151 + blue * 28) >> 8;
 	}
 
-	/* Truecolor has hardware independent palette */
+	 
 	if (info->fix.visual == FB_VISUAL_TRUECOLOR) {
 		u32 *pal = info->pseudo_palette;
 		u32 v;
@@ -255,8 +240,7 @@ static int gxfb_map_video_memory(struct fb_info *info, struct pci_dev *dev)
 	if (!info->screen_base)
 		return -ENOMEM;
 
-	/* Set the 16MiB aligned base address of the graphics memory region
-	 * in the display controller */
+	 
 
 	write_dc(par, DC_GLIU0_MEM_OFFSET, info->fix.smem_start & 0xFF000000);
 
@@ -280,7 +264,7 @@ static struct fb_info *gxfb_init_fbinfo(struct device *dev)
 	struct gxfb_par *par;
 	struct fb_info *info;
 
-	/* Alloc enough space for the pseudo palette. */
+	 
 	info = framebuffer_alloc(sizeof(struct gxfb_par) + sizeof(u32) * 16,
 			dev);
 	if (!info)
@@ -328,8 +312,7 @@ static int __maybe_unused gxfb_suspend(struct device *dev)
 	fb_set_suspend(info, 1);
 	console_unlock();
 
-	/* there's no point in setting PCI states; we emulate PCI, so
-	 * we don't end up getting power savings anyways */
+	 
 
 	return 0;
 }
@@ -375,7 +358,7 @@ static int gxfb_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 		goto err;
 	}
 
-	/* Figure out if this is a TFT or CRT part */
+	 
 
 	rdmsrl(MSR_GX_GLD_MSR_CONFIG, val);
 
@@ -394,7 +377,7 @@ static int gxfb_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 	}
 
 
-	/* Clear the frame buffer of garbage. */
+	 
         memset_io(info->screen_base, 0, info->fix.smem_len);
 
 	gxfb_check_var(&info->var, info);

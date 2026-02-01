@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-/* Copyright (C) 2017-2018 Netronome Systems, Inc. */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/mpls.h>
@@ -16,9 +16,7 @@
 #include "main.h"
 #include "../nfp_net_repr.h"
 
-/* The kernel versions of TUNNEL_* are not ABI and therefore vulnerable
- * to change. Such changes will break our FW ABI.
- */
+ 
 #define NFP_FL_TUNNEL_CSUM			cpu_to_be16(0x01)
 #define NFP_FL_TUNNEL_KEY			cpu_to_be16(0x04)
 #define NFP_FL_TUNNEL_GENEVE_OPT		cpu_to_be16(0x0800)
@@ -39,7 +37,7 @@ nfp_fl_push_mpls(struct nfp_fl_push_mpls *push_mpls,
 	push_mpls->head.jump_id = NFP_FL_ACTION_OPCODE_PUSH_MPLS;
 	push_mpls->head.len_lw = act_size >> NFP_FL_LW_SIZ;
 
-	/* BOS is optional in the TC action but required for offload. */
+	 
 	if (act->mpls_push.bos != ACT_MPLS_BOS_NOT_SET) {
 		mpls_lse |= act->mpls_push.bos << MPLS_LS_S_SHIFT;
 	} else {
@@ -47,11 +45,11 @@ nfp_fl_push_mpls(struct nfp_fl_push_mpls *push_mpls,
 		return -EOPNOTSUPP;
 	}
 
-	/* Leave MPLS TC as a default value of 0 if not explicitly set. */
+	 
 	if (act->mpls_push.tc != ACT_MPLS_TC_NOT_SET)
 		mpls_lse |= act->mpls_push.tc << MPLS_LS_TC_SHIFT;
 
-	/* Proto, label and TTL are enforced and verified for MPLS push. */
+	 
 	mpls_lse |= act->mpls_push.label << MPLS_LS_LABEL_SHIFT;
 	mpls_lse |= act->mpls_push.ttl << MPLS_LS_TTL_SHIFT;
 	push_mpls->ethtype = act->mpls_push.proto;
@@ -148,9 +146,7 @@ nfp_fl_pre_lag(struct nfp_app *app, const struct flow_action_entry *act,
 		return -EOPNOTSUPP;
 	}
 
-	/* Pre_lag action must be first on action list.
-	 * If other actions already exist they need to be pushed forward.
-	 */
+	 
 	if (act_len)
 		memmove(nfp_flow->action_data + act_size,
 			nfp_flow->action_data, act_len);
@@ -193,7 +189,7 @@ nfp_fl_output(struct nfp_app *app, struct nfp_fl_output *output,
 	tmp_flags = last ? NFP_FL_OUT_FLAGS_LAST : 0;
 
 	if (tun_type) {
-		/* Verify the egress netdev matches the tunnel type. */
+		 
 		if (!nfp_fl_netdev_is_tunnel_type(out_dev, tun_type)) {
 			NL_SET_ERR_MSG_MOD(extack, "unsupported offload: egress interface does not match the required tunnel type");
 			return -EOPNOTSUPP;
@@ -235,11 +231,11 @@ nfp_fl_output(struct nfp_app *app, struct nfp_fl_output *output,
 
 		return 0;
 	} else {
-		/* Set action output parameters. */
+		 
 		output->flags = cpu_to_be16(tmp_flags);
 
 		if (nfp_netdev_is_nfp_repr(in_dev)) {
-			/* Confirm ingress and egress are on same device. */
+			 
 			if (!netdev_port_same_parent_id(in_dev, out_dev)) {
 				NL_SET_ERR_MSG_MOD(extack, "unsupported offload: ingress and egress interfaces are on different devices");
 				return -EOPNOTSUPP;
@@ -269,7 +265,7 @@ nfp_flower_tun_is_gre(struct flow_rule *rule, int start_idx)
 	int num_act = rule->action.num_entries;
 	int act_idx;
 
-	/* Preparse action list for next mirred or redirect action */
+	 
 	for (act_idx = start_idx + 1; act_idx < num_act; act_idx++)
 		if (act[act_idx].id == FLOW_ACTION_REDIRECT ||
 		    act[act_idx].id == FLOW_ACTION_MIRRED)
@@ -287,9 +283,7 @@ nfp_fl_get_tun_from_act(struct nfp_app *app,
 	const struct ip_tunnel_info *tun = act->tunnel;
 	struct nfp_flower_priv *priv = app->priv;
 
-	/* Determine the tunnel type based on the egress netdev
-	 * in the mirred action for tunnels without l4.
-	 */
+	 
 	if (nfp_flower_tun_is_gre(rule, act_idx))
 		return NFP_FL_TUNNEL_GRE;
 
@@ -310,9 +304,7 @@ static struct nfp_fl_pre_tunnel *nfp_fl_pre_tunnel(char *act_data, int act_len)
 	size_t act_size = sizeof(struct nfp_fl_pre_tunnel);
 	struct nfp_fl_pre_tunnel *pre_tun_act;
 
-	/* Pre_tunnel action must be first on action list.
-	 * If other actions already exist they need to be pushed forward.
-	 */
+	 
 	if (act_len)
 		memmove(act_data + act_size, act_data, act_len);
 
@@ -335,11 +327,7 @@ nfp_fl_push_geneve_options(struct nfp_fl_payload *nfp_fl, int *list_len,
 	int opt_len, opt_cnt, act_start, tot_push_len;
 	u8 *src = ip_tunnel_info_opts(ip_tun);
 
-	/* We need to populate the options in reverse order for HW.
-	 * Therefore we go through the options, calculating the
-	 * number of options and the total size, then we populate
-	 * them in reverse order in the action list.
-	 */
+	 
 	opt_cnt = 0;
 	tot_push_len = 0;
 	opt_len = ip_tun->options_len;
@@ -408,7 +396,7 @@ nfp_fl_set_tun(struct nfp_app *app, struct nfp_fl_set_tun *set_tun,
 	size_t act_size = sizeof(struct nfp_fl_set_tun);
 	struct nfp_flower_priv *priv = app->priv;
 	u32 tmp_set_ip_tun_type_index = 0;
-	/* Currently support one pre-tunnel so index is always 0. */
+	 
 	int pretun_idx = 0;
 
 	if (!IS_ENABLED(CONFIG_IPV6) && ipv6)
@@ -436,7 +424,7 @@ nfp_fl_set_tun(struct nfp_app *app, struct nfp_fl_set_tun *set_tun,
 	set_tun->head.jump_id = NFP_FL_ACTION_OPCODE_SET_TUNNEL;
 	set_tun->head.len_lw = act_size >> NFP_FL_LW_SIZ;
 
-	/* Set tunnel type and pre-tunnel index. */
+	 
 	tmp_set_ip_tun_type_index |=
 		FIELD_PREP(NFP_FL_TUNNEL_TYPE, tun_type) |
 		FIELD_PREP(NFP_FL_PRE_TUN_INDEX, pretun_idx);
@@ -469,10 +457,7 @@ nfp_fl_set_tun(struct nfp_app *app, struct nfp_fl_set_tun *set_tun,
 		struct rtable *rt;
 		int err;
 
-		/* Do a route lookup to determine ttl - if fails then use
-		 * default. Note that CONFIG_INET is a requirement of
-		 * CONFIG_NET_SWITCHDEV so must be defined here.
-		 */
+		 
 		flow.daddr = ip_tun->key.u.ipv4.dst;
 		flow.flowi4_proto = IPPROTO_UDP;
 		rt = ip_route_output_key(net, &flow);
@@ -493,7 +478,7 @@ nfp_fl_set_tun(struct nfp_app *app, struct nfp_fl_set_tun *set_tun,
 		set_tun->tun_len = ip_tun->options_len / 4;
 	}
 
-	/* Complete pre_tunnel action. */
+	 
 	if (ipv6) {
 		pre_tun->flags |= cpu_to_be16(NFP_FL_PRE_TUN_IPV6);
 		pre_tun->ipv6_dst = ip_tun->key.u.ipv6.dst;
@@ -563,7 +548,7 @@ nfp_fl_set_ip4(const struct flow_action_entry *act, u32 off,
 	struct iphdr *tos_word;
 	__be32 exact, mask;
 
-	/* We are expecting tcf_pedit to return a big endian value */
+	 
 	mask = (__force __be32)~act->mangle.mask;
 	exact = (__force __be32)act->mangle.val;
 
@@ -704,7 +689,7 @@ nfp_fl_set_ip6(const struct flow_action_entry *act, u32 off,
 	int err = 0;
 	u8 word;
 
-	/* We are expecting tcf_pedit to return a big endian value */
+	 
 	mask = (__force __be32)~act->mangle.mask;
 	exact = (__force __be32)act->mangle.val;
 
@@ -767,16 +752,14 @@ static u32 nfp_fl_csum_l4_to_flag(u8 ip_proto)
 {
 	switch (ip_proto) {
 	case 0:
-		/* Filter doesn't force proto match,
-		 * both TCP and UDP will be updated if encountered
-		 */
+		 
 		return TCA_CSUM_UPDATE_FLAG_TCP | TCA_CSUM_UPDATE_FLAG_UDP;
 	case IPPROTO_TCP:
 		return TCA_CSUM_UPDATE_FLAG_TCP;
 	case IPPROTO_UDP:
 		return TCA_CSUM_UPDATE_FLAG_UDP;
 	default:
-		/* All other protocols will be ignored by FW */
+		 
 		return 0;
 	}
 }
@@ -817,7 +800,7 @@ nfp_fl_commit_mangle(struct flow_rule *rule, char *nfp_action,
 		memcpy(nfp_action, &set_act->set_ip_ttl_tos, act_size);
 		*a_len += act_size;
 
-		/* Hardware will automatically fix IPv4 and TCP/UDP checksum. */
+		 
 		*csum_updated |= TCA_CSUM_UPDATE_FLAG_IPV4HDR |
 				nfp_fl_csum_l4_to_flag(ip_proto);
 	}
@@ -828,7 +811,7 @@ nfp_fl_commit_mangle(struct flow_rule *rule, char *nfp_action,
 		memcpy(nfp_action, &set_act->set_ip_addr, act_size);
 		*a_len += act_size;
 
-		/* Hardware will automatically fix IPv4 and TCP/UDP checksum. */
+		 
 		*csum_updated |= TCA_CSUM_UPDATE_FLAG_IPV4HDR |
 				nfp_fl_csum_l4_to_flag(ip_proto);
 	}
@@ -839,15 +822,13 @@ nfp_fl_commit_mangle(struct flow_rule *rule, char *nfp_action,
 		memcpy(nfp_action, &set_act->set_ip6_tc_hl_fl, act_size);
 		*a_len += act_size;
 
-		/* Hardware will automatically fix TCP/UDP checksum. */
+		 
 		*csum_updated |= nfp_fl_csum_l4_to_flag(ip_proto);
 	}
 
 	if (set_act->set_ip6_dst.head.len_lw &&
 	    set_act->set_ip6_src.head.len_lw) {
-		/* TC compiles set src and dst IPv6 address as a single action,
-		 * the hardware requires this to be 2 separate actions.
-		 */
+		 
 		nfp_action += act_size;
 		act_size = sizeof(set_act->set_ip6_src);
 		memcpy(nfp_action, &set_act->set_ip6_src, act_size);
@@ -858,7 +839,7 @@ nfp_fl_commit_mangle(struct flow_rule *rule, char *nfp_action,
 		       &set_act->set_ip6_dst, act_size);
 		*a_len += act_size;
 
-		/* Hardware will automatically fix TCP/UDP checksum. */
+		 
 		*csum_updated |= nfp_fl_csum_l4_to_flag(ip_proto);
 	} else if (set_act->set_ip6_dst.head.len_lw) {
 		nfp_action += act_size;
@@ -866,7 +847,7 @@ nfp_fl_commit_mangle(struct flow_rule *rule, char *nfp_action,
 		memcpy(nfp_action, &set_act->set_ip6_dst, act_size);
 		*a_len += act_size;
 
-		/* Hardware will automatically fix TCP/UDP checksum. */
+		 
 		*csum_updated |= nfp_fl_csum_l4_to_flag(ip_proto);
 	} else if (set_act->set_ip6_src.head.len_lw) {
 		nfp_action += act_size;
@@ -874,7 +855,7 @@ nfp_fl_commit_mangle(struct flow_rule *rule, char *nfp_action,
 		memcpy(nfp_action, &set_act->set_ip6_src, act_size);
 		*a_len += act_size;
 
-		/* Hardware will automatically fix TCP/UDP checksum. */
+		 
 		*csum_updated |= nfp_fl_csum_l4_to_flag(ip_proto);
 	}
 	if (set_act->set_tport.head.len_lw) {
@@ -883,7 +864,7 @@ nfp_fl_commit_mangle(struct flow_rule *rule, char *nfp_action,
 		memcpy(nfp_action, &set_act->set_tport, act_size);
 		*a_len += act_size;
 
-		/* Hardware will automatically fix TCP/UDP checksum. */
+		 
 		*csum_updated |= nfp_fl_csum_l4_to_flag(ip_proto);
 	}
 
@@ -982,9 +963,7 @@ nfp_flower_output_action(struct nfp_app *app,
 	struct nfp_fl_output *output;
 	int err, prelag_size;
 
-	/* If csum_updated has not been reset by now, it means HW will
-	 * incorrectly update csums when they are not requested.
-	 */
+	 
 	if (*csum_updated) {
 		NL_SET_ERR_MSG_MOD(extack, "unsupported offload: set actions without updating checksums are not supported");
 		return -EOPNOTSUPP;
@@ -1004,9 +983,7 @@ nfp_flower_output_action(struct nfp_app *app,
 	*a_len += sizeof(struct nfp_fl_output);
 
 	if (priv->flower_en_feats & NFP_FL_ENABLE_LAG) {
-		/* nfp_fl_pre_lag returns -err or size of prelag action added.
-		 * This will be 0 if it is not egressing to a lag dev.
-		 */
+		 
 		prelag_size = nfp_fl_pre_lag(app, act, nfp_fl, *a_len, extack);
 		if (prelag_size < 0) {
 			return prelag_size;
@@ -1104,10 +1081,7 @@ nfp_flower_loop_action(struct nfp_app *app, const struct flow_action_entry *act,
 			return -EOPNOTSUPP;
 		}
 
-		/* Pre-tunnel action is required for tunnel encap.
-		 * This checks for next hop entries on NFP.
-		 * If none, the packet falls back before applying other actions.
-		 */
+		 
 		if (*a_len + sizeof(struct nfp_fl_pre_tunnel) +
 		    sizeof(struct nfp_fl_set_tun) > NFP_FL_MAX_A_SIZ) {
 			NL_SET_ERR_MSG_MOD(extack, "unsupported offload: maximum allowed action list size exceeded at tunnel encap");
@@ -1131,7 +1105,7 @@ nfp_flower_loop_action(struct nfp_app *app, const struct flow_action_entry *act,
 		}
 		break;
 	case FLOW_ACTION_TUNNEL_DECAP:
-		/* Tunnel decap is handled by default so accept action. */
+		 
 		return 0;
 	case FLOW_ACTION_MANGLE:
 		if (nfp_fl_pedit(act, &nfp_fl->action_data[*a_len],
@@ -1139,14 +1113,12 @@ nfp_flower_loop_action(struct nfp_app *app, const struct flow_action_entry *act,
 			return -EOPNOTSUPP;
 		break;
 	case FLOW_ACTION_CSUM:
-		/* csum action requests recalc of something we have not fixed */
+		 
 		if (act->csum_flags & ~*csum_updated) {
 			NL_SET_ERR_MSG_MOD(extack, "unsupported offload: unsupported csum update action in action list");
 			return -EOPNOTSUPP;
 		}
-		/* If we will correctly fix the csum we can remove it from the
-		 * csum update list. Which will later be used to check support.
-		 */
+		 
 		*csum_updated &= ~act->csum_flags;
 		break;
 	case FLOW_ACTION_MPLS_PUSH:
@@ -1191,7 +1163,7 @@ nfp_flower_loop_action(struct nfp_app *app, const struct flow_action_entry *act,
 		*a_len += sizeof(struct nfp_fl_set_mpls);
 		break;
 	case FLOW_ACTION_PTYPE:
-		/* TC ptype skbedit sets PACKET_HOST for ingress redirect. */
+		 
 		if (act->ptype != PACKET_HOST)
 			return -EOPNOTSUPP;
 
@@ -1210,7 +1182,7 @@ nfp_flower_loop_action(struct nfp_app *app, const struct flow_action_entry *act,
 			return err;
 		break;
 	default:
-		/* Currently we do not handle any other actions. */
+		 
 		NL_SET_ERR_MSG_MOD(extack, "unsupported offload: unsupported action in action list");
 		return -EOPNOTSUPP;
 	}
@@ -1295,9 +1267,7 @@ int nfp_flower_compile_action(struct nfp_app *app,
 					     &act_len, &set_act, &csum_updated);
 	}
 
-	/* We optimise when the action list is small, this can unfortunately
-	 * not happen once we have more than one action in the action list.
-	 */
+	 
 	if (act_cnt > 1)
 		nfp_flow->meta.shortcut = cpu_to_be32(NFP_FL_SC_ACT_NULL);
 

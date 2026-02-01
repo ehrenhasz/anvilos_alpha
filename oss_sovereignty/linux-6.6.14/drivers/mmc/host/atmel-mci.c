@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Atmel MultiMedia Card Interface driver
- *
- * Copyright (C) 2004-2008 Atmel Corporation
- */
+
+ 
 #include <linux/blkdev.h>
 #include <linux/clk.h>
 #include <linux/debugfs.h>
@@ -40,130 +36,127 @@
 
 #define ATMCI_MAX_NR_SLOTS	2
 
-/*
- * Superset of MCI IP registers integrated in Atmel AT91 Processor
- * Registers and bitfields marked with [2] are only available in MCI2
- */
+ 
 
-/* MCI Register Definitions */
-#define	ATMCI_CR			0x0000	/* Control */
-#define		ATMCI_CR_MCIEN			BIT(0)		/* MCI Enable */
-#define		ATMCI_CR_MCIDIS			BIT(1)		/* MCI Disable */
-#define		ATMCI_CR_PWSEN			BIT(2)		/* Power Save Enable */
-#define		ATMCI_CR_PWSDIS			BIT(3)		/* Power Save Disable */
-#define		ATMCI_CR_SWRST			BIT(7)		/* Software Reset */
-#define	ATMCI_MR			0x0004	/* Mode */
-#define		ATMCI_MR_CLKDIV(x)		((x) <<  0)	/* Clock Divider */
-#define		ATMCI_MR_PWSDIV(x)		((x) <<  8)	/* Power Saving Divider */
-#define		ATMCI_MR_RDPROOF		BIT(11)		/* Read Proof */
-#define		ATMCI_MR_WRPROOF		BIT(12)		/* Write Proof */
-#define		ATMCI_MR_PDCFBYTE		BIT(13)		/* Force Byte Transfer */
-#define		ATMCI_MR_PDCPADV		BIT(14)		/* Padding Value */
-#define		ATMCI_MR_PDCMODE		BIT(15)		/* PDC-oriented Mode */
-#define		ATMCI_MR_CLKODD(x)		((x) << 16)	/* LSB of Clock Divider */
-#define	ATMCI_DTOR			0x0008	/* Data Timeout */
-#define		ATMCI_DTOCYC(x)			((x) <<  0)	/* Data Timeout Cycles */
-#define		ATMCI_DTOMUL(x)			((x) <<  4)	/* Data Timeout Multiplier */
-#define	ATMCI_SDCR			0x000c	/* SD Card / SDIO */
-#define		ATMCI_SDCSEL_SLOT_A		(0 <<  0)	/* Select SD slot A */
-#define		ATMCI_SDCSEL_SLOT_B		(1 <<  0)	/* Select SD slot A */
+ 
+#define	ATMCI_CR			0x0000	 
+#define		ATMCI_CR_MCIEN			BIT(0)		 
+#define		ATMCI_CR_MCIDIS			BIT(1)		 
+#define		ATMCI_CR_PWSEN			BIT(2)		 
+#define		ATMCI_CR_PWSDIS			BIT(3)		 
+#define		ATMCI_CR_SWRST			BIT(7)		 
+#define	ATMCI_MR			0x0004	 
+#define		ATMCI_MR_CLKDIV(x)		((x) <<  0)	 
+#define		ATMCI_MR_PWSDIV(x)		((x) <<  8)	 
+#define		ATMCI_MR_RDPROOF		BIT(11)		 
+#define		ATMCI_MR_WRPROOF		BIT(12)		 
+#define		ATMCI_MR_PDCFBYTE		BIT(13)		 
+#define		ATMCI_MR_PDCPADV		BIT(14)		 
+#define		ATMCI_MR_PDCMODE		BIT(15)		 
+#define		ATMCI_MR_CLKODD(x)		((x) << 16)	 
+#define	ATMCI_DTOR			0x0008	 
+#define		ATMCI_DTOCYC(x)			((x) <<  0)	 
+#define		ATMCI_DTOMUL(x)			((x) <<  4)	 
+#define	ATMCI_SDCR			0x000c	 
+#define		ATMCI_SDCSEL_SLOT_A		(0 <<  0)	 
+#define		ATMCI_SDCSEL_SLOT_B		(1 <<  0)	 
 #define		ATMCI_SDCSEL_MASK		(3 <<  0)
-#define		ATMCI_SDCBUS_1BIT		(0 <<  6)	/* 1-bit data bus */
-#define		ATMCI_SDCBUS_4BIT		(2 <<  6)	/* 4-bit data bus */
-#define		ATMCI_SDCBUS_8BIT		(3 <<  6)	/* 8-bit data bus[2] */
+#define		ATMCI_SDCBUS_1BIT		(0 <<  6)	 
+#define		ATMCI_SDCBUS_4BIT		(2 <<  6)	 
+#define		ATMCI_SDCBUS_8BIT		(3 <<  6)	 
 #define		ATMCI_SDCBUS_MASK		(3 <<  6)
-#define	ATMCI_ARGR			0x0010	/* Command Argument */
-#define	ATMCI_CMDR			0x0014	/* Command */
-#define		ATMCI_CMDR_CMDNB(x)		((x) <<  0)	/* Command Opcode */
-#define		ATMCI_CMDR_RSPTYP_NONE		(0 <<  6)	/* No response */
-#define		ATMCI_CMDR_RSPTYP_48BIT		(1 <<  6)	/* 48-bit response */
-#define		ATMCI_CMDR_RSPTYP_136BIT	(2 <<  6)	/* 136-bit response */
-#define		ATMCI_CMDR_SPCMD_INIT		(1 <<  8)	/* Initialization command */
-#define		ATMCI_CMDR_SPCMD_SYNC		(2 <<  8)	/* Synchronized command */
-#define		ATMCI_CMDR_SPCMD_INT		(4 <<  8)	/* Interrupt command */
-#define		ATMCI_CMDR_SPCMD_INTRESP	(5 <<  8)	/* Interrupt response */
-#define		ATMCI_CMDR_OPDCMD		(1 << 11)	/* Open Drain */
-#define		ATMCI_CMDR_MAXLAT_5CYC		(0 << 12)	/* Max latency 5 cycles */
-#define		ATMCI_CMDR_MAXLAT_64CYC		(1 << 12)	/* Max latency 64 cycles */
-#define		ATMCI_CMDR_START_XFER		(1 << 16)	/* Start data transfer */
-#define		ATMCI_CMDR_STOP_XFER		(2 << 16)	/* Stop data transfer */
-#define		ATMCI_CMDR_TRDIR_WRITE		(0 << 18)	/* Write data */
-#define		ATMCI_CMDR_TRDIR_READ		(1 << 18)	/* Read data */
-#define		ATMCI_CMDR_BLOCK		(0 << 19)	/* Single-block transfer */
-#define		ATMCI_CMDR_MULTI_BLOCK		(1 << 19)	/* Multi-block transfer */
-#define		ATMCI_CMDR_STREAM		(2 << 19)	/* MMC Stream transfer */
-#define		ATMCI_CMDR_SDIO_BYTE		(4 << 19)	/* SDIO Byte transfer */
-#define		ATMCI_CMDR_SDIO_BLOCK		(5 << 19)	/* SDIO Block transfer */
-#define		ATMCI_CMDR_SDIO_SUSPEND		(1 << 24)	/* SDIO Suspend Command */
-#define		ATMCI_CMDR_SDIO_RESUME		(2 << 24)	/* SDIO Resume Command */
-#define	ATMCI_BLKR			0x0018	/* Block */
-#define		ATMCI_BCNT(x)			((x) <<  0)	/* Data Block Count */
-#define		ATMCI_BLKLEN(x)			((x) << 16)	/* Data Block Length */
-#define	ATMCI_CSTOR			0x001c	/* Completion Signal Timeout[2] */
-#define		ATMCI_CSTOCYC(x)		((x) <<  0)	/* CST cycles */
-#define		ATMCI_CSTOMUL(x)		((x) <<  4)	/* CST multiplier */
-#define	ATMCI_RSPR			0x0020	/* Response 0 */
-#define	ATMCI_RSPR1			0x0024	/* Response 1 */
-#define	ATMCI_RSPR2			0x0028	/* Response 2 */
-#define	ATMCI_RSPR3			0x002c	/* Response 3 */
-#define	ATMCI_RDR			0x0030	/* Receive Data */
-#define	ATMCI_TDR			0x0034	/* Transmit Data */
-#define	ATMCI_SR			0x0040	/* Status */
-#define	ATMCI_IER			0x0044	/* Interrupt Enable */
-#define	ATMCI_IDR			0x0048	/* Interrupt Disable */
-#define	ATMCI_IMR			0x004c	/* Interrupt Mask */
-#define		ATMCI_CMDRDY			BIT(0)		/* Command Ready */
-#define		ATMCI_RXRDY			BIT(1)		/* Receiver Ready */
-#define		ATMCI_TXRDY			BIT(2)		/* Transmitter Ready */
-#define		ATMCI_BLKE			BIT(3)		/* Data Block Ended */
-#define		ATMCI_DTIP			BIT(4)		/* Data Transfer In Progress */
-#define		ATMCI_NOTBUSY			BIT(5)		/* Data Not Busy */
-#define		ATMCI_ENDRX			BIT(6)		/* End of RX Buffer */
-#define		ATMCI_ENDTX			BIT(7)		/* End of TX Buffer */
-#define		ATMCI_SDIOIRQA			BIT(8)		/* SDIO IRQ in slot A */
-#define		ATMCI_SDIOIRQB			BIT(9)		/* SDIO IRQ in slot B */
-#define		ATMCI_SDIOWAIT			BIT(12)		/* SDIO Read Wait Operation Status */
-#define		ATMCI_CSRCV			BIT(13)		/* CE-ATA Completion Signal Received */
-#define		ATMCI_RXBUFF			BIT(14)		/* RX Buffer Full */
-#define		ATMCI_TXBUFE			BIT(15)		/* TX Buffer Empty */
-#define		ATMCI_RINDE			BIT(16)		/* Response Index Error */
-#define		ATMCI_RDIRE			BIT(17)		/* Response Direction Error */
-#define		ATMCI_RCRCE			BIT(18)		/* Response CRC Error */
-#define		ATMCI_RENDE			BIT(19)		/* Response End Bit Error */
-#define		ATMCI_RTOE			BIT(20)		/* Response Time-Out Error */
-#define		ATMCI_DCRCE			BIT(21)		/* Data CRC Error */
-#define		ATMCI_DTOE			BIT(22)		/* Data Time-Out Error */
-#define		ATMCI_CSTOE			BIT(23)		/* Completion Signal Time-out Error */
-#define		ATMCI_BLKOVRE			BIT(24)		/* DMA Block Overrun Error */
-#define		ATMCI_DMADONE			BIT(25)		/* DMA Transfer Done */
-#define		ATMCI_FIFOEMPTY			BIT(26)		/* FIFO Empty Flag */
-#define		ATMCI_XFRDONE			BIT(27)		/* Transfer Done Flag */
-#define		ATMCI_ACKRCV			BIT(28)		/* Boot Operation Acknowledge Received */
-#define		ATMCI_ACKRCVE			BIT(29)		/* Boot Operation Acknowledge Error */
-#define		ATMCI_OVRE			BIT(30)		/* RX Overrun Error */
-#define		ATMCI_UNRE			BIT(31)		/* TX Underrun Error */
-#define	ATMCI_DMA			0x0050	/* DMA Configuration[2] */
-#define		ATMCI_DMA_OFFSET(x)		((x) <<  0)	/* DMA Write Buffer Offset */
-#define		ATMCI_DMA_CHKSIZE(x)		((x) <<  4)	/* DMA Channel Read and Write Chunk Size */
-#define		ATMCI_DMAEN			BIT(8)	/* DMA Hardware Handshaking Enable */
-#define	ATMCI_CFG			0x0054	/* Configuration[2] */
-#define		ATMCI_CFG_FIFOMODE_1DATA	BIT(0)		/* MCI Internal FIFO control mode */
-#define		ATMCI_CFG_FERRCTRL_COR		BIT(4)		/* Flow Error flag reset control mode */
-#define		ATMCI_CFG_HSMODE		BIT(8)		/* High Speed Mode */
-#define		ATMCI_CFG_LSYNC			BIT(12)		/* Synchronize on the last block */
-#define	ATMCI_WPMR			0x00e4	/* Write Protection Mode[2] */
-#define		ATMCI_WP_EN			BIT(0)		/* WP Enable */
-#define		ATMCI_WP_KEY			(0x4d4349 << 8)	/* WP Key */
-#define	ATMCI_WPSR			0x00e8	/* Write Protection Status[2] */
+#define	ATMCI_ARGR			0x0010	 
+#define	ATMCI_CMDR			0x0014	 
+#define		ATMCI_CMDR_CMDNB(x)		((x) <<  0)	 
+#define		ATMCI_CMDR_RSPTYP_NONE		(0 <<  6)	 
+#define		ATMCI_CMDR_RSPTYP_48BIT		(1 <<  6)	 
+#define		ATMCI_CMDR_RSPTYP_136BIT	(2 <<  6)	 
+#define		ATMCI_CMDR_SPCMD_INIT		(1 <<  8)	 
+#define		ATMCI_CMDR_SPCMD_SYNC		(2 <<  8)	 
+#define		ATMCI_CMDR_SPCMD_INT		(4 <<  8)	 
+#define		ATMCI_CMDR_SPCMD_INTRESP	(5 <<  8)	 
+#define		ATMCI_CMDR_OPDCMD		(1 << 11)	 
+#define		ATMCI_CMDR_MAXLAT_5CYC		(0 << 12)	 
+#define		ATMCI_CMDR_MAXLAT_64CYC		(1 << 12)	 
+#define		ATMCI_CMDR_START_XFER		(1 << 16)	 
+#define		ATMCI_CMDR_STOP_XFER		(2 << 16)	 
+#define		ATMCI_CMDR_TRDIR_WRITE		(0 << 18)	 
+#define		ATMCI_CMDR_TRDIR_READ		(1 << 18)	 
+#define		ATMCI_CMDR_BLOCK		(0 << 19)	 
+#define		ATMCI_CMDR_MULTI_BLOCK		(1 << 19)	 
+#define		ATMCI_CMDR_STREAM		(2 << 19)	 
+#define		ATMCI_CMDR_SDIO_BYTE		(4 << 19)	 
+#define		ATMCI_CMDR_SDIO_BLOCK		(5 << 19)	 
+#define		ATMCI_CMDR_SDIO_SUSPEND		(1 << 24)	 
+#define		ATMCI_CMDR_SDIO_RESUME		(2 << 24)	 
+#define	ATMCI_BLKR			0x0018	 
+#define		ATMCI_BCNT(x)			((x) <<  0)	 
+#define		ATMCI_BLKLEN(x)			((x) << 16)	 
+#define	ATMCI_CSTOR			0x001c	 
+#define		ATMCI_CSTOCYC(x)		((x) <<  0)	 
+#define		ATMCI_CSTOMUL(x)		((x) <<  4)	 
+#define	ATMCI_RSPR			0x0020	 
+#define	ATMCI_RSPR1			0x0024	 
+#define	ATMCI_RSPR2			0x0028	 
+#define	ATMCI_RSPR3			0x002c	 
+#define	ATMCI_RDR			0x0030	 
+#define	ATMCI_TDR			0x0034	 
+#define	ATMCI_SR			0x0040	 
+#define	ATMCI_IER			0x0044	 
+#define	ATMCI_IDR			0x0048	 
+#define	ATMCI_IMR			0x004c	 
+#define		ATMCI_CMDRDY			BIT(0)		 
+#define		ATMCI_RXRDY			BIT(1)		 
+#define		ATMCI_TXRDY			BIT(2)		 
+#define		ATMCI_BLKE			BIT(3)		 
+#define		ATMCI_DTIP			BIT(4)		 
+#define		ATMCI_NOTBUSY			BIT(5)		 
+#define		ATMCI_ENDRX			BIT(6)		 
+#define		ATMCI_ENDTX			BIT(7)		 
+#define		ATMCI_SDIOIRQA			BIT(8)		 
+#define		ATMCI_SDIOIRQB			BIT(9)		 
+#define		ATMCI_SDIOWAIT			BIT(12)		 
+#define		ATMCI_CSRCV			BIT(13)		 
+#define		ATMCI_RXBUFF			BIT(14)		 
+#define		ATMCI_TXBUFE			BIT(15)		 
+#define		ATMCI_RINDE			BIT(16)		 
+#define		ATMCI_RDIRE			BIT(17)		 
+#define		ATMCI_RCRCE			BIT(18)		 
+#define		ATMCI_RENDE			BIT(19)		 
+#define		ATMCI_RTOE			BIT(20)		 
+#define		ATMCI_DCRCE			BIT(21)		 
+#define		ATMCI_DTOE			BIT(22)		 
+#define		ATMCI_CSTOE			BIT(23)		 
+#define		ATMCI_BLKOVRE			BIT(24)		 
+#define		ATMCI_DMADONE			BIT(25)		 
+#define		ATMCI_FIFOEMPTY			BIT(26)		 
+#define		ATMCI_XFRDONE			BIT(27)		 
+#define		ATMCI_ACKRCV			BIT(28)		 
+#define		ATMCI_ACKRCVE			BIT(29)		 
+#define		ATMCI_OVRE			BIT(30)		 
+#define		ATMCI_UNRE			BIT(31)		 
+#define	ATMCI_DMA			0x0050	 
+#define		ATMCI_DMA_OFFSET(x)		((x) <<  0)	 
+#define		ATMCI_DMA_CHKSIZE(x)		((x) <<  4)	 
+#define		ATMCI_DMAEN			BIT(8)	 
+#define	ATMCI_CFG			0x0054	 
+#define		ATMCI_CFG_FIFOMODE_1DATA	BIT(0)		 
+#define		ATMCI_CFG_FERRCTRL_COR		BIT(4)		 
+#define		ATMCI_CFG_HSMODE		BIT(8)		 
+#define		ATMCI_CFG_LSYNC			BIT(12)		 
+#define	ATMCI_WPMR			0x00e4	 
+#define		ATMCI_WP_EN			BIT(0)		 
+#define		ATMCI_WP_KEY			(0x4d4349 << 8)	 
+#define	ATMCI_WPSR			0x00e8	 
 #define		ATMCI_GET_WP_VS(x)		((x) & 0x0f)
 #define		ATMCI_GET_WP_VSRC(x)		(((x) >> 8) & 0xffff)
-#define	ATMCI_VERSION			0x00FC  /* Version */
-#define	ATMCI_FIFO_APERTURE		0x0200	/* FIFO Aperture[2] */
+#define	ATMCI_VERSION			0x00FC   
+#define	ATMCI_FIFO_APERTURE		0x0200	 
 
-/* This is not including the FIFO Aperture on MCI2 */
+ 
 #define	ATMCI_REGS_SIZE		0x100
 
-/* Register access macros */
+ 
 #define	atmci_readl(port, reg)				\
 	__raw_readl((port)->regs + reg)
 #define	atmci_writel(port, reg, value)			\
@@ -201,22 +194,7 @@ enum atmci_pdc_buf {
 	PDC_SECOND_BUF,
 };
 
-/**
- * struct mci_slot_pdata - board-specific per-slot configuration
- * @bus_width: Number of data lines wired up the slot
- * @detect_pin: GPIO pin wired to the card detect switch
- * @wp_pin: GPIO pin wired to the write protect sensor
- * @non_removable: The slot is not removable, only detect once
- *
- * If a given slot is not present on the board, @bus_width should be
- * set to 0. The other fields are ignored in this case.
- *
- * Any pins that aren't available should be set to a negative value.
- *
- * Note that support for multiple slots is experimental -- some cards
- * might get upset if we don't get the clock management exactly right.
- * But in most cases, it should work just fine.
- */
+ 
 struct mci_slot_pdata {
 	unsigned int		bus_width;
 	struct gpio_desc        *detect_pin;
@@ -224,11 +202,7 @@ struct mci_slot_pdata {
 	bool			non_removable;
 };
 
-/**
- * struct mci_platform_data - board-specific MMC/SDcard configuration
- * @dma_slave: DMA slave interface to use in data transfers.
- * @slot: Per-slot configuration data.
- */
+ 
 struct mci_platform_data {
 	void			*dma_slave;
 	dma_filter_fn		dma_filter;
@@ -254,89 +228,7 @@ struct atmel_mci_dma {
 	struct dma_async_tx_descriptor	*data_desc;
 };
 
-/**
- * struct atmel_mci - MMC controller state shared between all slots
- * @lock: Spinlock protecting the queue and associated data.
- * @regs: Pointer to MMIO registers.
- * @sg: Scatterlist entry currently being processed by PIO or PDC code.
- * @sg_len: Size of the scatterlist
- * @pio_offset: Offset into the current scatterlist entry.
- * @buffer: Buffer used if we don't have the r/w proof capability. We
- *      don't have the time to switch pdc buffers so we have to use only
- *      one buffer for the full transaction.
- * @buf_size: size of the buffer.
- * @buf_phys_addr: buffer address needed for pdc.
- * @cur_slot: The slot which is currently using the controller.
- * @mrq: The request currently being processed on @cur_slot,
- *	or NULL if the controller is idle.
- * @cmd: The command currently being sent to the card, or NULL.
- * @data: The data currently being transferred, or NULL if no data
- *	transfer is in progress.
- * @data_size: just data->blocks * data->blksz.
- * @dma: DMA client state.
- * @data_chan: DMA channel being used for the current data transfer.
- * @dma_conf: Configuration for the DMA slave
- * @cmd_status: Snapshot of SR taken upon completion of the current
- *	command. Only valid when EVENT_CMD_COMPLETE is pending.
- * @data_status: Snapshot of SR taken upon completion of the current
- *	data transfer. Only valid when EVENT_DATA_COMPLETE or
- *	EVENT_DATA_ERROR is pending.
- * @stop_cmdr: Value to be loaded into CMDR when the stop command is
- *	to be sent.
- * @tasklet: Tasklet running the request state machine.
- * @pending_events: Bitmask of events flagged by the interrupt handler
- *	to be processed by the tasklet.
- * @completed_events: Bitmask of events which the state machine has
- *	processed.
- * @state: Tasklet state.
- * @queue: List of slots waiting for access to the controller.
- * @need_clock_update: Update the clock rate before the next request.
- * @need_reset: Reset controller before next request.
- * @timer: Timer to balance the data timeout error flag which cannot rise.
- * @mode_reg: Value of the MR register.
- * @cfg_reg: Value of the CFG register.
- * @bus_hz: The rate of @mck in Hz. This forms the basis for MMC bus
- *	rate and timeout calculations.
- * @mapbase: Physical address of the MMIO registers.
- * @mck: The peripheral bus clock hooked up to the MMC controller.
- * @pdev: Platform device associated with the MMC controller.
- * @slot: Slots sharing this MMC controller.
- * @caps: MCI capabilities depending on MCI version.
- * @prepare_data: function to setup MCI before data transfer which
- * depends on MCI capabilities.
- * @submit_data: function to start data transfer which depends on MCI
- * capabilities.
- * @stop_transfer: function to stop data transfer which depends on MCI
- * capabilities.
- *
- * Locking
- * =======
- *
- * @lock is a softirq-safe spinlock protecting @queue as well as
- * @cur_slot, @mrq and @state. These must always be updated
- * at the same time while holding @lock.
- *
- * @lock also protects mode_reg and need_clock_update since these are
- * used to synchronize mode register updates with the queue
- * processing.
- *
- * The @mrq field of struct atmel_mci_slot is also protected by @lock,
- * and must always be written at the same time as the slot is added to
- * @queue.
- *
- * @pending_events and @completed_events are accessed using atomic bit
- * operations, so they don't need any locking.
- *
- * None of the fields touched by the interrupt handler need any
- * locking. However, ordering is important: Before EVENT_DATA_ERROR or
- * EVENT_DATA_COMPLETE is set in @pending_events, all data-related
- * interrupts must be disabled and @data_status updated with a
- * snapshot of SR. Similarly, before EVENT_CMD_COMPLETE is set, the
- * CMDRDY interrupt must be disabled and @cmd_status updated with a
- * snapshot of SR, and before EVENT_XFER_COMPLETE can be set, the
- * bytes_xfered field of @data must be written. This is ensured by
- * using barriers.
- */
+ 
 struct atmel_mci {
 	spinlock_t		lock;
 	void __iomem		*regs;
@@ -387,24 +279,7 @@ struct atmel_mci {
 	void (*stop_transfer)(struct atmel_mci *host);
 };
 
-/**
- * struct atmel_mci_slot - MMC slot state
- * @mmc: The mmc_host representing this slot.
- * @host: The MMC controller this slot is using.
- * @sdc_reg: Value of SDCR to be written before using this slot.
- * @sdio_irq: SDIO irq mask for this slot.
- * @mrq: mmc_request currently being processed or waiting to be
- *	processed, or NULL when the slot is idle.
- * @queue_node: List node for placing this node in the @queue list of
- *	&struct atmel_mci.
- * @clock: Clock rate configured by set_ios(). Protected by host->lock.
- * @flags: Random state bits associated with the slot.
- * @detect_pin: GPIO pin used for card detection, or negative if not
- *	available.
- * @wp_pin: GPIO pin used for card write protect sending, or negative
- *	if not available.
- * @detect_timer: Timer used for debouncing @detect_pin interrupts.
- */
+ 
 struct atmel_mci_slot {
 	struct mmc_host		*mmc;
 	struct atmel_mci	*host;
@@ -434,10 +309,7 @@ struct atmel_mci_slot {
 #define atmci_set_pending(host, event)				\
 	set_bit(event, &host->pending_events)
 
-/*
- * The debugfs stuff below is mostly optimized away when
- * CONFIG_DEBUG_FS is not set.
- */
+ 
 static int atmci_req_show(struct seq_file *s, void *v)
 {
 	struct atmel_mci_slot	*slot = s->private;
@@ -446,7 +318,7 @@ static int atmci_req_show(struct seq_file *s, void *v)
 	struct mmc_command	*stop;
 	struct mmc_data		*data;
 
-	/* Make sure we get a consistent snapshot */
+	 
 	spin_lock_bh(&slot->host->lock);
 	mrq = slot->mrq;
 
@@ -539,11 +411,7 @@ static int atmci_regs_show(struct seq_file *s, void *v)
 
 	pm_runtime_get_sync(&host->pdev->dev);
 
-	/*
-	 * Grab a more or less consistent snapshot. Note that we're
-	 * not disabling interrupts, so IMR and SR may not be
-	 * consistent.
-	 */
+	 
 	spin_lock_bh(&host->lock);
 	memcpy_fromio(buf, host->regs, ATMCI_REGS_SIZE);
 	spin_unlock_bh(&host->lock);
@@ -572,7 +440,7 @@ static int atmci_regs_show(struct seq_file *s, void *v)
 	if (host->caps.has_cstor_reg)
 		seq_printf(s, "CSTOR:\t0x%08x\n", buf[ATMCI_CSTOR / 4]);
 
-	/* Don't read RSPR and RDR; it will consume the data there */
+	 
 
 	atmci_show_status_reg(s, "SR", buf[ATMCI_SR / 4]);
 	atmci_show_status_reg(s, "IMR", buf[ATMCI_IMR / 4]);
@@ -628,7 +496,7 @@ static void atmci_init_debugfs(struct atmel_mci_slot *slot)
 #if defined(CONFIG_OF)
 static const struct of_device_id atmci_dt_ids[] = {
 	{ .compatible = "atmel,hsmci" },
-	{ /* sentinel */ }
+	{   }
 };
 
 MODULE_DEVICE_TABLE(of, atmci_dt_ids);
@@ -695,7 +563,7 @@ atmci_of_init(struct platform_device *pdev)
 
 	return pdata;
 }
-#else /* CONFIG_OF */
+#else  
 static inline struct mci_platform_data*
 atmci_of_init(struct platform_device *dev)
 {
@@ -708,14 +576,7 @@ static inline unsigned int atmci_get_version(struct atmel_mci *host)
 	return atmci_readl(host, ATMCI_VERSION) & 0x00000fff;
 }
 
-/*
- * Fix sconfig's burst size according to atmel MCI. We need to convert them as:
- * 1 -> 0, 4 -> 1, 8 -> 2, 16 -> 3.
- * With version 0x600, we need to convert them as: 1 -> 0, 2 -> 1, 4 -> 2,
- * 8 -> 3, 16 -> 4.
- *
- * This can be done by finding most significant bit set.
- */
+ 
 static inline unsigned int atmci_convert_chksize(struct atmel_mci *host,
 						 unsigned int maxburst)
 {
@@ -742,11 +603,7 @@ static void atmci_timeout_timer(struct timer_list *t)
 	if (host->mrq->cmd->data) {
 		host->mrq->cmd->data->error = -ETIMEDOUT;
 		host->data = NULL;
-		/*
-		 * With some SDIO modules, sometimes DMA transfer hangs. If
-		 * stop_transfer() is not called then the DMA request is not
-		 * removed, following ones are queued and never computed.
-		 */
+		 
 		if (host->state == STATE_DATA_XFER)
 			host->stop_transfer(host);
 	} else {
@@ -762,13 +619,10 @@ static void atmci_timeout_timer(struct timer_list *t)
 static inline unsigned int atmci_ns_to_clocks(struct atmel_mci *host,
 					unsigned int ns)
 {
-	/*
-	 * It is easier here to use us instead of ns for the timeout,
-	 * it prevents from overflows during calculation.
-	 */
+	 
 	unsigned int us = DIV_ROUND_UP(ns, 1000);
 
-	/* Maximum clock frequency is host->bus_hz/2 */
+	 
 	return us * (DIV_ROUND_UP(host->bus_hz, 2000000));
 }
 
@@ -802,9 +656,7 @@ static void atmci_set_timeout(struct atmel_mci *host,
 	atmci_writel(host, ATMCI_DTOR, (ATMCI_DTOMUL(dtomul) | ATMCI_DTOCYC(dtocyc)));
 }
 
-/*
- * Return mask with command flags to be enabled for this command.
- */
+ 
 static u32 atmci_prepare_command(struct mmc_host *mmc,
 				 struct mmc_command *cmd)
 {
@@ -822,11 +674,7 @@ static u32 atmci_prepare_command(struct mmc_host *mmc,
 			cmdr |= ATMCI_CMDR_RSPTYP_48BIT;
 	}
 
-	/*
-	 * This should really be MAXLAT_5 for CMD2 and ACMD41, but
-	 * it's too difficult to determine whether this is an ACMD or
-	 * not. Better make it 64.
-	 */
+	 
 	cmdr |= ATMCI_CMDR_MAXLAT_64CYC;
 
 	if (mmc->ios.bus_mode == MMC_BUSMODE_OPENDRAIN)
@@ -878,10 +726,7 @@ static void atmci_send_stop_cmd(struct atmel_mci *host, struct mmc_data *data)
 	atmci_writel(host, ATMCI_IER, ATMCI_CMDRDY);
 }
 
-/*
- * Configure given PDC buffer taking care of alignement issues.
- * Update host->data_size and host->sg.
- */
+ 
 static void atmci_pdc_set_single_buf(struct atmel_mci *host,
 	enum atmci_xfer_dir dir, enum atmci_pdc_buf buf_nb)
 {
@@ -911,16 +756,16 @@ static void atmci_pdc_set_single_buf(struct atmel_mci *host,
 
 	if (host->data_size <= buf_size) {
 		if (host->data_size & 0x3) {
-			/* If size is different from modulo 4, transfer bytes */
+			 
 			atmci_writel(host, counter_reg, host->data_size);
 			atmci_writel(host, ATMCI_MR, host->mode_reg | ATMCI_MR_PDCFBYTE);
 		} else {
-			/* Else transfer 32-bits words */
+			 
 			atmci_writel(host, counter_reg, host->data_size / 4);
 		}
 		host->data_size = 0;
 	} else {
-		/* We assume the size of a page is 32-bits aligned */
+		 
 		atmci_writel(host, counter_reg, sg_dma_len(host->sg) / 4);
 		host->data_size -= sg_dma_len(host->sg);
 		if (host->data_size)
@@ -928,11 +773,7 @@ static void atmci_pdc_set_single_buf(struct atmel_mci *host,
 	}
 }
 
-/*
- * Configure PDC buffer according to the data size ie configuring one or two
- * buffers. Don't use this function if you want to configure only the second
- * buffer. In this case, use atmci_pdc_set_single_buf.
- */
+ 
 static void atmci_pdc_set_both_buf(struct atmel_mci *host, int dir)
 {
 	atmci_pdc_set_single_buf(host, dir, PDC_FIRST_BUF);
@@ -940,9 +781,7 @@ static void atmci_pdc_set_both_buf(struct atmel_mci *host, int dir)
 		atmci_pdc_set_single_buf(host, dir, PDC_SECOND_BUF);
 }
 
-/*
- * Unmap sg lists, called when transfer is finished.
- */
+ 
 static void atmci_pdc_cleanup(struct atmel_mci *host)
 {
 	struct mmc_data         *data = host->data;
@@ -953,11 +792,7 @@ static void atmci_pdc_cleanup(struct atmel_mci *host)
 				mmc_get_dma_dir(data));
 }
 
-/*
- * Disable PDC transfers. Update pending flags to EVENT_XFER_COMPLETE after
- * having received ATMCI_TXBUFE or ATMCI_RXBUFF interrupt. Enable ATMCI_NOTBUSY
- * interrupt needed for both transfer directions.
- */
+ 
 static void atmci_pdc_complete(struct atmel_mci *host)
 {
 	int transfer_size = host->data->blocks * host->data->blksz;
@@ -991,9 +826,7 @@ static void atmci_dma_cleanup(struct atmel_mci *host)
 				mmc_get_dma_dir(data));
 }
 
-/*
- * This function is called by the DMA driver from tasklet context.
- */
+ 
 static void atmci_dma_complete(void *arg)
 {
 	struct atmel_mci	*host = arg;
@@ -1002,49 +835,24 @@ static void atmci_dma_complete(void *arg)
 	dev_vdbg(&host->pdev->dev, "DMA complete\n");
 
 	if (host->caps.has_dma_conf_reg)
-		/* Disable DMA hardware handshaking on MCI */
+		 
 		atmci_writel(host, ATMCI_DMA, atmci_readl(host, ATMCI_DMA) & ~ATMCI_DMAEN);
 
 	atmci_dma_cleanup(host);
 
-	/*
-	 * If the card was removed, data will be NULL. No point trying
-	 * to send the stop command or waiting for NBUSY in this case.
-	 */
+	 
 	if (data) {
 		dev_dbg(&host->pdev->dev,
 		        "(%s) set pending xfer complete\n", __func__);
 		atmci_set_pending(host, EVENT_XFER_COMPLETE);
 		tasklet_schedule(&host->tasklet);
 
-		/*
-		 * Regardless of what the documentation says, we have
-		 * to wait for NOTBUSY even after block read
-		 * operations.
-		 *
-		 * When the DMA transfer is complete, the controller
-		 * may still be reading the CRC from the card, i.e.
-		 * the data transfer is still in progress and we
-		 * haven't seen all the potential error bits yet.
-		 *
-		 * The interrupt handler will schedule a different
-		 * tasklet to finish things up when the data transfer
-		 * is completely done.
-		 *
-		 * We may not complete the mmc request here anyway
-		 * because the mmc layer may call back and cause us to
-		 * violate the "don't submit new operations from the
-		 * completion callback" rule of the dma engine
-		 * framework.
-		 */
+		 
 		atmci_writel(host, ATMCI_IER, ATMCI_NOTBUSY);
 	}
 }
 
-/*
- * Returns a mask of interrupt flags to be enabled after the whole
- * request has been prepared.
- */
+ 
 static u32 atmci_prepare_data(struct atmel_mci *host, struct mmc_data *data)
 {
 	u32 iflags;
@@ -1058,13 +866,7 @@ static u32 atmci_prepare_data(struct atmel_mci *host, struct mmc_data *data)
 
 	iflags = ATMCI_DATA_ERROR_FLAGS;
 
-	/*
-	 * Errata: MMC data write operation with less than 12
-	 * bytes is impossible.
-	 *
-	 * Errata: MCI Transmit Data Register (TDR) FIFO
-	 * corruption when length is not multiple of 4.
-	 */
+	 
 	if (data->blocks * data->blksz < 12
 			|| (data->blocks * data->blksz) & 3)
 		host->need_reset = true;
@@ -1078,12 +880,7 @@ static u32 atmci_prepare_data(struct atmel_mci *host, struct mmc_data *data)
 	return iflags;
 }
 
-/*
- * Set interrupt flags and set block length into the MCI mode register even
- * if this value is also accessible in the MCI block register. It seems to be
- * necessary before the High Speed MCI version. It also map sg and configure
- * PDC registers.
- */
+ 
 static u32
 atmci_prepare_data_pdc(struct atmel_mci *host, struct mmc_data *data)
 {
@@ -1096,7 +893,7 @@ atmci_prepare_data_pdc(struct atmel_mci *host, struct mmc_data *data)
 	host->sg = data->sg;
 	iflags = ATMCI_DATA_ERROR_FLAGS;
 
-	/* Enable pdc mode */
+	 
 	atmci_writel(host, ATMCI_MR, host->mode_reg | ATMCI_MR_PDCMODE);
 
 	if (data->flags & MMC_DATA_READ)
@@ -1104,13 +901,13 @@ atmci_prepare_data_pdc(struct atmel_mci *host, struct mmc_data *data)
 	else
 		iflags |= ATMCI_ENDTX | ATMCI_TXBUFE | ATMCI_BLKE;
 
-	/* Set BLKLEN */
+	 
 	tmp = atmci_readl(host, ATMCI_MR);
 	tmp &= 0x0000ffff;
 	tmp |= ATMCI_BLKLEN(data->blksz);
 	atmci_writel(host, ATMCI_MR, tmp);
 
-	/* Configure PDC */
+	 
 	host->data_size = data->blocks * data->blksz;
 	dma_map_sg(&host->pdev->dev, data->sg, data->sg_len,
 		   mmc_get_dma_dir(data));
@@ -1150,11 +947,7 @@ atmci_prepare_data_dma(struct atmel_mci *host, struct mmc_data *data)
 
 	iflags = ATMCI_DATA_ERROR_FLAGS;
 
-	/*
-	 * We don't do DMA on "complex" transfers, i.e. with
-	 * non-word-aligned buffers or lengths. Also, we don't bother
-	 * with all the DMA setup overhead for short transfers.
-	 */
+	 
 	if (data->blocks * data->blksz < ATMCI_DMA_THRESHOLD)
 		return atmci_prepare_data(host, data);
 	if (data->blksz & 3)
@@ -1165,7 +958,7 @@ atmci_prepare_data_dma(struct atmel_mci *host, struct mmc_data *data)
 			return atmci_prepare_data(host, data);
 	}
 
-	/* If we don't have a channel, we can't do DMA */
+	 
 	if (!host->dma.chan)
 		return -ENODEV;
 
@@ -1213,9 +1006,7 @@ atmci_submit_data(struct atmel_mci *host, struct mmc_data *data)
 	return;
 }
 
-/*
- * Start PDC according to transfer direction.
- */
+ 
 static void
 atmci_submit_data_pdc(struct atmel_mci *host, struct mmc_data *data)
 {
@@ -1245,9 +1036,7 @@ static void atmci_stop_transfer(struct atmel_mci *host)
 	atmci_writel(host, ATMCI_IER, ATMCI_NOTBUSY);
 }
 
-/*
- * Stop data transfer because error(s) occurred.
- */
+ 
 static void atmci_stop_transfer_pdc(struct atmel_mci *host)
 {
 	atmci_writel(host, ATMEL_PDC_PTCR, ATMEL_PDC_RXTDIS | ATMEL_PDC_TXTDIS);
@@ -1261,7 +1050,7 @@ static void atmci_stop_transfer_dma(struct atmel_mci *host)
 		dmaengine_terminate_all(chan);
 		atmci_dma_cleanup(host);
 	} else {
-		/* Data transfer was stopped by the interrupt handler */
+		 
 		dev_dbg(&host->pdev->dev,
 		        "(%s) set pending xfer complete\n", __func__);
 		atmci_set_pending(host, EVENT_XFER_COMPLETE);
@@ -1269,10 +1058,7 @@ static void atmci_stop_transfer_dma(struct atmel_mci *host)
 	}
 }
 
-/*
- * Start a request: prepare data if needed, prepare the command and activate
- * interrupts.
- */
+ 
 static void atmci_start_request(struct atmel_mci *host,
 		struct atmel_mci_slot *slot)
 {
@@ -1312,7 +1098,7 @@ static void atmci_start_request(struct atmel_mci *host,
 				iflags);
 
 	if (unlikely(test_and_clear_bit(ATMCI_CARD_NEED_INIT, &slot->flags))) {
-		/* Send init sequence (74 clock cycles) */
+		 
 		atmci_writel(host, ATMCI_CMDR, ATMCI_CMDR_SPCMD_INIT);
 		while (!(atmci_readl(host, ATMCI_SR) & ATMCI_CMDRDY))
 			cpu_relax();
@@ -1322,7 +1108,7 @@ static void atmci_start_request(struct atmel_mci *host,
 	if (data) {
 		atmci_set_timeout(host, slot, data);
 
-		/* Must set block count/size before sending command */
+		 
 		atmci_writel(host, ATMCI_BLKR, ATMCI_BCNT(data->blocks)
 				| ATMCI_BLKLEN(data->blksz));
 		dev_vdbg(&slot->mmc->class_dev, "BLKR=0x%08x\n",
@@ -1335,12 +1121,7 @@ static void atmci_start_request(struct atmel_mci *host,
 	cmd = mrq->cmd;
 	cmdflags = atmci_prepare_command(slot->mmc, cmd);
 
-	/*
-	 * DMA transfer should be started before sending the command to avoid
-	 * unexpected errors especially for read operations in SDIO mode.
-	 * Unfortunately, in PDC mode, command has to be sent before starting
-	 * the transfer.
-	 */
+	 
 	if (host->submit_data != &atmci_submit_data_dma)
 		atmci_send_command(host, cmd, cmdflags);
 
@@ -1358,12 +1139,7 @@ static void atmci_start_request(struct atmel_mci *host,
 		host->stop_cmdr |= ATMCI_CMDR_MULTI_BLOCK;
 	}
 
-	/*
-	 * We could have enabled interrupts earlier, but I suspect
-	 * that would open up a nice can of interesting race
-	 * conditions (e.g. command and data complete, but stop not
-	 * prepared yet.)
-	 */
+	 
 	atmci_writel(host, ATMCI_IER, iflags);
 }
 
@@ -1394,21 +1170,14 @@ static void atmci_request(struct mmc_host *mmc, struct mmc_request *mrq)
 	WARN_ON(slot->mrq);
 	dev_dbg(&host->pdev->dev, "MRQ: cmd %u\n", mrq->cmd->opcode);
 
-	/*
-	 * We may "know" the card is gone even though there's still an
-	 * electrical connection. If so, we really need to communicate
-	 * this to the MMC core since there won't be any more
-	 * interrupts as the card is completely removed. Otherwise,
-	 * the MMC core might believe the card is still there even
-	 * though the card was just removed very slowly.
-	 */
+	 
 	if (!test_bit(ATMCI_CARD_PRESENT, &slot->flags)) {
 		mrq->cmd->error = -ENOMEDIUM;
 		mmc_request_done(mmc, mrq);
 		return;
 	}
 
-	/* We don't support multiple blocks of weird lengths. */
+	 
 	data = mrq->data;
 	if (data && data->blocks > 1 && data->blksz & 3) {
 		mrq->cmd->error = -EINVAL;
@@ -1449,10 +1218,7 @@ static void atmci_set_ios(struct mmc_host *mmc, struct mmc_ios *ios)
 				atmci_writel(host, ATMCI_CFG, host->cfg_reg);
 		}
 
-		/*
-		 * Use mirror of ios->clock to prevent race with mmc
-		 * core ios update when finding the minimum.
-		 */
+		 
 		slot->clock = ios->clock;
 		for (i = 0; i < ATMCI_MAX_NR_SLOTS; i++) {
 			if (host->slot[i] && host->slot[i]->clock
@@ -1460,7 +1226,7 @@ static void atmci_set_ios(struct mmc_host *mmc, struct mmc_ios *ios)
 				clock_min = host->slot[i]->clock;
 		}
 
-		/* Calculate clock divider */
+		 
 		if (host->caps.has_odd_clk_div) {
 			clkdiv = DIV_ROUND_UP(host->bus_hz, clock_min) - 2;
 			if (clkdiv < 0) {
@@ -1487,16 +1253,12 @@ static void atmci_set_ios(struct mmc_host *mmc, struct mmc_ios *ios)
 			host->mode_reg = ATMCI_MR_CLKDIV(clkdiv);
 		}
 
-		/*
-		 * WRPROOF and RDPROOF prevent overruns/underruns by
-		 * stopping the clock when the FIFO is full/empty.
-		 * This state is not expected to last for long.
-		 */
+		 
 		if (host->caps.has_rwproof)
 			host->mode_reg |= (ATMCI_MR_WRPROOF | ATMCI_MR_RDPROOF);
 
 		if (host->caps.has_cfg_reg) {
-			/* setup High Speed mode in relation with card capacity */
+			 
 			if (ios->timing == MMC_TIMING_SD_HS)
 				host->cfg_reg |= ATMCI_CFG_HSMODE;
 			else
@@ -1595,7 +1357,7 @@ static const struct mmc_host_ops atmci_ops = {
 	.enable_sdio_irq = atmci_enable_sdio_irq,
 };
 
-/* Called with host->lock held */
+ 
 static void atmci_request_end(struct atmel_mci *host, struct mmc_request *mrq)
 	__releases(&host->lock)
 	__acquires(&host->lock)
@@ -1607,11 +1369,7 @@ static void atmci_request_end(struct atmel_mci *host, struct mmc_request *mrq)
 
 	del_timer(&host->timer);
 
-	/*
-	 * Update the MMC clock rate if necessary. This may be
-	 * necessary if set_ios() is called when a different slot is
-	 * busy transferring data.
-	 */
+	 
 	if (host->need_clock_update) {
 		atmci_writel(host, ATMCI_MR, host->mode_reg);
 		if (host->caps.has_cfg_reg)
@@ -1643,7 +1401,7 @@ static void atmci_command_complete(struct atmel_mci *host,
 {
 	u32		status = host->cmd_status;
 
-	/* Read the response from the card (up to 16 bytes) */
+	 
 	cmd->resp[0] = atmci_readl(host, ATMCI_RSPR);
 	cmd->resp[1] = atmci_readl(host, ATMCI_RSPR);
 	cmd->resp[2] = atmci_readl(host, ATMCI_RSPR);
@@ -1670,12 +1428,7 @@ static void atmci_detect_change(struct timer_list *t)
 	bool			present;
 	bool			present_old;
 
-	/*
-	 * atmci_cleanup_slot() sets the ATMCI_SHUTDOWN flag before
-	 * freeing the interrupt. We must not re-enable the interrupt
-	 * if it has been freed, and if we're shutting down, it
-	 * doesn't really matter whether the card is present or not.
-	 */
+	 
 	smp_rmb();
 	if (test_bit(ATMCI_SHUTDOWN, &slot->flags))
 		return;
@@ -1701,14 +1454,11 @@ static void atmci_detect_change(struct timer_list *t)
 		else
 			set_bit(ATMCI_CARD_PRESENT, &slot->flags);
 
-		/* Clean up queue if present */
+		 
 		mrq = slot->mrq;
 		if (mrq) {
 			if (mrq == host->mrq) {
-				/*
-				 * Reset controller to terminate any ongoing
-				 * commands or data transfers.
-				 */
+				 
 				atmci_writel(host, ATMCI_CR, ATMCI_CR_SWRST);
 				atmci_writel(host, ATMCI_CR, ATMCI_CR_MCIEN);
 				atmci_writel(host, ATMCI_MR, host->mode_reg);
@@ -1787,12 +1537,7 @@ static void atmci_tasklet_func(struct tasklet_struct *t)
 			break;
 
 		case STATE_SENDING_CMD:
-			/*
-			 * Command has been sent, we are waiting for command
-			 * ready. Then we have three next states possible:
-			 * END_REQUEST by default, WAITING_NOTBUSY if it's a
-			 * command needing it or DATA_XFER if there is data.
-			 */
+			 
 			dev_dbg(&host->pdev->dev, "FSM: cmd ready?\n");
 			if (!atmci_test_and_clear_pending(host,
 						EVENT_CMD_RDY))
@@ -1805,10 +1550,7 @@ static void atmci_tasklet_func(struct tasklet_struct *t)
 			if (mrq->data) {
 				dev_dbg(&host->pdev->dev,
 				        "command with data transfer");
-				/*
-				 * If there is a command error don't start
-				 * data transfer.
-				 */
+				 
 				if (mrq->cmd->error) {
 					host->stop_transfer(host);
 					host->data = NULL;
@@ -1837,13 +1579,7 @@ static void atmci_tasklet_func(struct tasklet_struct *t)
 				break;
 			}
 
-			/*
-			 * A data transfer is in progress. The event expected
-			 * to move to the next state depends of data transfer
-			 * type (PDC or DMA). Once transfer done we can move
-			 * to the next step which is WAITING_NOTBUSY in write
-			 * case and directly SENDING_STOP in read case.
-			 */
+			 
 			dev_dbg(&host->pdev->dev, "FSM: xfer complete?\n");
 			if (!atmci_test_and_clear_pending(host,
 						EVENT_XFER_COMPLETE))
@@ -1870,12 +1606,7 @@ static void atmci_tasklet_func(struct tasklet_struct *t)
 			break;
 
 		case STATE_WAITING_NOTBUSY:
-			/*
-			 * We can be in the state for two reasons: a command
-			 * requiring waiting not busy signal (stop command
-			 * included) or a write operation. In the latest case,
-			 * we need to send a stop command.
-			 */
+			 
 			dev_dbg(&host->pdev->dev, "FSM: not busy?\n");
 			if (!atmci_test_and_clear_pending(host,
 						EVENT_NOTBUSY))
@@ -1885,11 +1616,7 @@ static void atmci_tasklet_func(struct tasklet_struct *t)
 			atmci_set_completed(host, EVENT_NOTBUSY);
 
 			if (host->data) {
-				/*
-				 * For some commands such as CMD53, even if
-				 * there is data transfer, there is no stop
-				 * command to send.
-				 */
+				 
 				if (host->mrq->stop) {
 					atmci_send_stop_cmd(host, data);
 					state = STATE_SENDING_STOP;
@@ -1905,12 +1632,7 @@ static void atmci_tasklet_func(struct tasklet_struct *t)
 			break;
 
 		case STATE_SENDING_STOP:
-			/*
-			 * In this state, it is important to set host->data to
-			 * NULL (which is tested in the waiting notbusy state)
-			 * in order to go to the end request state instead of
-			 * sending stop again.
-			 */
+			 
 			dev_dbg(&host->pdev->dev, "FSM: cmd ready?\n");
 			if (!atmci_test_and_clear_pending(host,
 						EVENT_CMD_RDY))
@@ -1953,7 +1675,7 @@ static void atmci_tasklet_func(struct tasklet_struct *t)
 			}
 
 			atmci_request_end(host, host->mrq);
-			goto unlock; /* atmci_request_end() sets host->state */
+			goto unlock;  
 			break;
 		}
 	} while (state != prev_state);
@@ -2143,11 +1865,7 @@ static irqreturn_t atmci_interrupt(int irq, void *dev_id)
 			dev_dbg(&host->pdev->dev, "IRQ: tx buffer empty\n");
 			atmci_writel(host, ATMCI_IDR, ATMCI_TXBUFE);
 			atmci_writel(host, ATMCI_IDR, ATMCI_ENDTX);
-			/*
-			 * We can receive this interruption before having configured
-			 * the second pdc buffer, so we need to reconfigure first and
-			 * second buffers again
-			 */
+			 
 			if (host->data_size) {
 				atmci_pdc_set_both_buf(host, XFER_TRANSMIT);
 				atmci_writel(host, ATMCI_IER, ATMCI_ENDTX);
@@ -2170,11 +1888,7 @@ static irqreturn_t atmci_interrupt(int irq, void *dev_id)
 			dev_dbg(&host->pdev->dev, "IRQ: rx buffer full\n");
 			atmci_writel(host, ATMCI_IDR, ATMCI_RXBUFF);
 			atmci_writel(host, ATMCI_IDR, ATMCI_ENDRX);
-			/*
-			 * We can receive this interruption before having configured
-			 * the second pdc buffer, so we need to reconfigure first and
-			 * second buffers again
-			 */
+			 
 			if (host->data_size) {
 				atmci_pdc_set_both_buf(host, XFER_RECEIVE);
 				atmci_writel(host, ATMCI_IER, ATMCI_ENDRX);
@@ -2193,12 +1907,7 @@ static irqreturn_t atmci_interrupt(int irq, void *dev_id)
 			}
 		}
 
-		/*
-		 * First mci IPs, so mainly the ones having pdc, have some
-		 * issues with the notbusy signal. You can't get it after
-		 * data transmission if you have not sent a stop command.
-		 * The appropriate workaround is to use the BLKE signal.
-		 */
+		 
 		if (pending & ATMCI_BLKE) {
 			dev_dbg(&host->pdev->dev, "IRQ: blke\n");
 			atmci_writel(host, ATMCI_IDR, ATMCI_BLKE);
@@ -2244,11 +1953,7 @@ static irqreturn_t atmci_detect_interrupt(int irq, void *dev_id)
 {
 	struct atmel_mci_slot	*slot = dev_id;
 
-	/*
-	 * Disable interrupts until the pin has stabilized and check
-	 * the state then. Use mod_timer() since we may be in the
-	 * middle of the timer routine when this interrupt triggers.
-	 */
+	 
 	disable_irq_nosync(irq);
 	mod_timer(&slot->detect_timer, jiffies + msecs_to_jiffies(20));
 
@@ -2290,11 +1995,7 @@ static int atmci_init_slot(struct atmel_mci *host,
 		mmc->caps |= MMC_CAP_SDIO_IRQ;
 	if (host->caps.has_highspeed)
 		mmc->caps |= MMC_CAP_SD_HIGHSPEED;
-	/*
-	 * Without the read/write proof capability, it is strongly suggested to
-	 * use only one bit for data to prevent fifo underruns and overruns
-	 * which will corrupt data.
-	 */
+	 
 	if ((slot_data->bus_width >= 4) && host->caps.has_rwproof) {
 		mmc->caps |= MMC_CAP_4_BIT_DATA;
 		if (slot_data->bus_width >= 8)
@@ -2314,7 +2015,7 @@ static int atmci_init_slot(struct atmel_mci *host,
 		mmc->max_blk_count = 512;
 	}
 
-	/* Assume card is present initially */
+	 
 	set_bit(ATMCI_CARD_PRESENT, &slot->flags);
 	if (slot->detect_pin) {
 		if (!gpiod_get_value_cansleep(slot->detect_pin))
@@ -2364,7 +2065,7 @@ static int atmci_init_slot(struct atmel_mci *host,
 static void atmci_cleanup_slot(struct atmel_mci_slot *slot,
 		unsigned int id)
 {
-	/* Debugfs stuff is cleaned up by mmc core */
+	 
 
 	set_bit(ATMCI_SHUTDOWN, &slot->flags);
 	smp_wmb();
@@ -2417,11 +2118,7 @@ static int atmci_configure_dma(struct atmel_mci *host)
 	return 0;
 }
 
-/*
- * HSMCI (High Speed MCI) module is not fully compatible with MCI module.
- * HSMCI provides DMA support and a new config register but no more supports
- * PDC.
- */
+ 
 static void atmci_get_cap(struct atmel_mci *host)
 {
 	unsigned int version;
@@ -2442,7 +2139,7 @@ static void atmci_get_cap(struct atmel_mci *host)
 	host->caps.need_blksz_mul_4 = true;
 	host->caps.need_notbusy_for_read_ops = false;
 
-	/* keep only major version number */
+	 
 	switch (version & 0xf00) {
 	case 0x600:
 	case 0x500:
@@ -2533,7 +2230,7 @@ static int atmci_probe(struct platform_device *pdev)
 		return ret;
 	}
 
-	/* Get MCI capabilities and set operations according to it */
+	 
 	atmci_get_cap(host);
 	ret = atmci_configure_dma(host);
 	if (ret == -EPROBE_DEFER)
@@ -2564,7 +2261,7 @@ static int atmci_probe(struct platform_device *pdev)
 	pm_runtime_use_autosuspend(&pdev->dev);
 	pm_runtime_enable(&pdev->dev);
 
-	/* We need at least one slot to succeed */
+	 
 	nr_slots = 0;
 	ret = -ENODEV;
 	if (pdata->slot[0].bus_width) {

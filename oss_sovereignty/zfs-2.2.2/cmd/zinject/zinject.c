@@ -1,144 +1,7 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
-/*
- * Copyright (c) 2005, 2010, Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2012, 2015 by Delphix. All rights reserved.
- * Copyright (c) 2017, Intel Corporation.
- */
+ 
+ 
 
-/*
- * ZFS Fault Injector
- *
- * This userland component takes a set of options and uses libzpool to translate
- * from a user-visible object type and name to an internal representation.
- * There are two basic types of faults: device faults and data faults.
- *
- *
- * DEVICE FAULTS
- *
- * Errors can be injected into a particular vdev using the '-d' option.  This
- * option takes a path or vdev GUID to uniquely identify the device within a
- * pool.  There are four types of errors that can be injected, IO, ENXIO,
- * ECHILD, and EILSEQ.  These can be controlled through the '-e' option and the
- * default is ENXIO.  For EIO failures, any attempt to read data from the device
- * will return EIO, but a subsequent attempt to reopen the device will succeed.
- * For ENXIO failures, any attempt to read from the device will return EIO, but
- * any attempt to reopen the device will also return ENXIO.  The EILSEQ failures
- * only apply to read operations (-T read) and will flip a bit after the device
- * has read the original data.
- *
- * For label faults, the -L option must be specified. This allows faults
- * to be injected into either the nvlist, uberblock, pad1, or pad2 region
- * of all the labels for the specified device.
- *
- * This form of the command looks like:
- *
- * 	zinject -d device [-e errno] [-L <uber | nvlist | pad1 | pad2>] pool
- *
- *
- * DATA FAULTS
- *
- * We begin with a tuple of the form:
- *
- * 	<type,level,range,object>
- *
- * 	type	A string describing the type of data to target.  Each type
- * 		implicitly describes how to interpret 'object'. Currently,
- * 		the following values are supported:
- *
- * 		data		User data for a file
- * 		dnode		Dnode for a file or directory
- *
- *		The following MOS objects are special.  Instead of injecting
- *		errors on a particular object or blkid, we inject errors across
- *		all objects of the given type.
- *
- * 		mos		Any data in the MOS
- * 		mosdir		object directory
- * 		config		pool configuration
- * 		bpobj		blkptr list
- * 		spacemap	spacemap
- * 		metaslab	metaslab
- * 		errlog		persistent error log
- *
- * 	level	Object level.  Defaults to '0', not applicable to all types.  If
- * 		a range is given, this corresponds to the indirect block
- * 		corresponding to the specific range.
- *
- *	range	A numerical range [start,end) within the object.  Defaults to
- *		the full size of the file.
- *
- * 	object	A string describing the logical location of the object.  For
- * 		files and directories (currently the only supported types),
- * 		this is the path of the object on disk.
- *
- * This is translated, via libzpool, into the following internal representation:
- *
- * 	<type,objset,object,level,range>
- *
- * These types should be self-explanatory.  This tuple is then passed to the
- * kernel via a special ioctl() to initiate fault injection for the given
- * object.  Note that 'type' is not strictly necessary for fault injection, but
- * is used when translating existing faults into a human-readable string.
- *
- *
- * The command itself takes one of the forms:
- *
- * 	zinject
- * 	zinject <-a | -u pool>
- * 	zinject -c <id|all>
- * 	zinject [-q] <-t type> [-f freq] [-u] [-a] [-m] [-e errno] [-l level]
- *	    [-r range] <object>
- * 	zinject [-f freq] [-a] [-m] [-u] -b objset:object:level:start:end pool
- *
- * With no arguments, the command prints all currently registered injection
- * handlers, with their numeric identifiers.
- *
- * The '-c' option will clear the given handler, or all handlers if 'all' is
- * specified.
- *
- * The '-e' option takes a string describing the errno to simulate.  This must
- * be one of 'io', 'checksum', 'decompress', or 'decrypt'.  In most cases this
- * will result in the same behavior, but RAID-Z will produce a different set of
- * ereports for this situation.
- *
- * The '-a', '-u', and '-m' flags toggle internal flush behavior.  If '-a' is
- * specified, then the ARC cache is flushed appropriately.  If '-u' is
- * specified, then the underlying SPA is unloaded.  Either of these flags can be
- * specified independently of any other handlers.  The '-m' flag automatically
- * does an unmount and remount of the underlying dataset to aid in flushing the
- * cache.
- *
- * The '-f' flag controls the frequency of errors injected, expressed as a
- * real number percentage between 0.0001 and 100.  The default is 100.
- *
- * The this form is responsible for actually injecting the handler into the
- * framework.  It takes the arguments described above, translates them to the
- * internal tuple using libzpool, and then issues an ioctl() to register the
- * handler.
- *
- * The final form can target a specific bookmark, regardless of whether a
- * human-readable interface has been designed.  It allows developers to specify
- * a particular block by number.
- */
+ 
 
 #include <errno.h>
 #include <fcntl.h>
@@ -153,7 +16,7 @@
 
 #include <libzfs.h>
 
-#undef verify	/* both libzfs.h and zfs_context.h want to define this */
+#undef verify	 
 
 #include "zinject.h"
 
@@ -209,9 +72,7 @@ type_to_name(uint64_t type)
 }
 
 
-/*
- * Print usage message.
- */
+ 
 void
 usage(void)
 {
@@ -463,10 +324,7 @@ print_panic_handler(int id, const char *pool, zinject_record_t *record,
 	return (0);
 }
 
-/*
- * Print all registered error handlers.  Returns the number of handlers
- * registered.
- */
+ 
 static int
 print_all_handlers(void)
 {
@@ -516,9 +374,7 @@ cancel_one_handler(int id, const char *pool, zinject_record_t *record,
 	return (0);
 }
 
-/*
- * Remove all fault injection handlers.
- */
+ 
 static int
 cancel_all_handlers(void)
 {
@@ -530,9 +386,7 @@ cancel_all_handlers(void)
 	return (ret);
 }
 
-/*
- * Remove a specific fault injection handler.
- */
+ 
 static int
 cancel_handler(int id)
 {
@@ -551,9 +405,7 @@ cancel_handler(int id)
 	return (0);
 }
 
-/*
- * Register a new fault injection handler.
- */
+ 
 static int
 register_handler(const char *pool, int flags, zinject_record_t *record,
     int quiet)
@@ -639,20 +491,11 @@ parse_delay(char *str, uint64_t *delay, uint64_t *nlanes)
 	if (sscanf(str, "%lu:%lu", &scan_delay, &scan_nlanes) != 2)
 		return (1);
 
-	/*
-	 * We explicitly disallow a delay of zero here, because we key
-	 * off this value being non-zero in translate_device(), to
-	 * determine if the fault is a ZINJECT_DELAY_IO fault or not.
-	 */
+	 
 	if (scan_delay == 0)
 		return (1);
 
-	/*
-	 * The units for the CLI delay parameter is milliseconds, but
-	 * the data passed to the kernel is interpreted as nanoseconds.
-	 * Thus we scale the milliseconds to nanoseconds here, and this
-	 * nanosecond value is used to pass the delay to the kernel.
-	 */
+	 
 	*delay = MSEC2NSEC(scan_delay);
 	*nlanes = scan_nlanes;
 
@@ -669,25 +512,18 @@ parse_frequency(const char *str, uint32_t *percent)
 	if (post == NULL || *post != '\0')
 		return (EINVAL);
 
-	/* valid range is [0.0001, 100.0] */
+	 
 	val /= 100.0f;
 	if (val < 0.000001f || val > 1.0f)
 		return (ERANGE);
 
-	/* convert to an integer for use by kernel */
+	 
 	*percent = ((uint32_t)(val * ZI_PERCENTAGE_MAX));
 
 	return (0);
 }
 
-/*
- * This function converts a string specifier for DVAs into a bit mask.
- * The dva's provided by the user should be 0 indexed and separated by
- * a comma. For example:
- *	"1"	-> 0b0010  (0x2)
- *	"0,1"	-> 0b0011  (0x3)
- *	"0,1,2"	-> 0b0111  (0x7)
- */
+ 
 static int
 parse_dvas(const char *str, uint32_t *dvas_out)
 {
@@ -695,7 +531,7 @@ parse_dvas(const char *str, uint32_t *dvas_out)
 	uint32_t mask = 0;
 	boolean_t need_delim = B_FALSE;
 
-	/* max string length is 5 ("0,1,2") */
+	 
 	if (strlen(str) > 5 || strlen(str) == 0)
 		return (EINVAL);
 
@@ -704,11 +540,11 @@ parse_dvas(const char *str, uint32_t *dvas_out)
 		case '0':
 		case '1':
 		case '2':
-			/* check for pipe between DVAs */
+			 
 			if (need_delim)
 				return (EINVAL);
 
-			/* check if this DVA has been set already */
+			 
 			if (mask & (1 << ((*c) - '0')))
 				return (EINVAL);
 
@@ -719,13 +555,13 @@ parse_dvas(const char *str, uint32_t *dvas_out)
 			need_delim = B_FALSE;
 			break;
 		default:
-			/* check for invalid character */
+			 
 			return (EINVAL);
 		}
 		c++;
 	}
 
-	/* check for dangling delimiter */
+	 
 	if (!need_delim)
 		return (EINVAL);
 
@@ -775,11 +611,7 @@ main(int argc, char **argv)
 	}
 
 	if (argc == 1) {
-		/*
-		 * No arguments.  Print the available handlers.  If there are no
-		 * available handlers, direct the user to '-h' for help
-		 * information.
-		 */
+		 
 		if (print_all_handlers() == 0) {
 			(void) printf("No handlers registered.\n");
 			(void) printf("Run 'zinject -h' for usage "
@@ -889,7 +721,7 @@ main(int argc, char **argv)
 				libzfs_fini(g_zfs);
 				return (1);
 			}
-			/* store duration of txgs as its negative */
+			 
 			record.zi_duration *= -1;
 			break;
 		case 'h':
@@ -897,7 +729,7 @@ main(int argc, char **argv)
 			libzfs_fini(g_zfs);
 			return (0);
 		case 'I':
-			/* default duration, if one hasn't yet been defined */
+			 
 			nowrites = 1;
 			if (dur_secs == 0 && dur_txg == 0)
 				record.zi_duration = 30;
@@ -1003,9 +835,7 @@ main(int argc, char **argv)
 		record.zi_cmd = ZINJECT_IGNORED_WRITES;
 
 	if (cancel != NULL) {
-		/*
-		 * '-c' is invalid with any other options.
-		 */
+		 
 		if (raw != NULL || range != NULL || type != TYPE_INVAL ||
 		    level != 0 || record.zi_cmd != ZINJECT_UNINITIALIZED ||
 		    record.zi_freq > 0 || dvas != 0) {
@@ -1038,10 +868,7 @@ main(int argc, char **argv)
 	}
 
 	if (device != NULL) {
-		/*
-		 * Device (-d) injection uses a completely different mechanism
-		 * for doing injection, so handle it separately here.
-		 */
+		 
 		if (raw != NULL || range != NULL || type != TYPE_INVAL ||
 		    level != 0 || record.zi_cmd != ZINJECT_UNINITIALIZED ||
 		    dvas != 0) {
@@ -1239,11 +1066,7 @@ main(int argc, char **argv)
 			}
 
 			record.zi_cmd = ZINJECT_DECRYPT_FAULT;
-			/*
-			 * Internally, ZFS actually uses ECKSUM for decryption
-			 * errors since EACCES is used to indicate the key was
-			 * not found.
-			 */
+			 
 			error = ECKSUM;
 		} else {
 			record.zi_cmd = ZINJECT_DATA_FAULT;
@@ -1258,11 +1081,7 @@ main(int argc, char **argv)
 			error = EIO;
 	}
 
-	/*
-	 * If this is pool-wide metadata, unmount everything.  The ioctl() will
-	 * unload the pool, so that we trigger spa-wide reopen of metadata next
-	 * time we access the pool.
-	 */
+	 
 	if (dataset[0] != '\0' && domount) {
 		if ((zhp = zfs_open(g_zfs, dataset,
 		    ZFS_TYPE_DATASET)) == NULL) {

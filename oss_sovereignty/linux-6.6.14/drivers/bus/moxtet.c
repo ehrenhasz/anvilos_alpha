@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Turris Mox module configuration bus driver
- *
- * Copyright (C) 2019 Marek Behún <kabel@kernel.org>
- */
+
+ 
 
 #include <dt-bindings/bus/moxtet.h>
 #include <linux/bitops.h>
@@ -16,19 +12,14 @@
 #include <linux/of_irq.h>
 #include <linux/spi/spi.h>
 
-/*
- * @name:	module name for sysfs
- * @hwirq_base:	base index for IRQ for this module (-1 if no IRQs)
- * @nirqs:	how many interrupts does the shift register provide
- * @desc:	module description for kernel log
- */
+ 
 static const struct {
 	const char *name;
 	int hwirq_base;
 	int nirqs;
 	const char *desc;
 } mox_module_table[] = {
-	/* do not change order of this array! */
+	 
 	{ NULL,		 0,			0, NULL },
 	{ "sfp",	-1,			0, "MOX D (SFP cage)" },
 	{ "pci",	MOXTET_IRQ_PCI,		1, "MOX B (Mini-PCIe)" },
@@ -305,9 +296,7 @@ moxtet_register_devices_from_topology(struct moxtet *moxtet)
 	}
 }
 
-/*
- * @nsame:	how many modules with same id are already in moxtet->modules
- */
+ 
 static int moxtet_set_irq(struct moxtet *moxtet, int idx, int id, int nsame)
 {
 	int i, first;

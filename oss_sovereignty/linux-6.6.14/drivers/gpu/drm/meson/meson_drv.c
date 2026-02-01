@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2016 BayLibre, SAS
- * Author: Neil Armstrong <narmstrong@baylibre.com>
- * Copyright (C) 2014 Endless Mobile
- *
- * Written by:
- *     Jasper St. Pierre <jstpierre@mecheye.net>
- */
+
+ 
 
 #include <linux/component.h>
 #include <linux/module.h>
@@ -42,20 +35,7 @@
 #define DRIVER_NAME "meson"
 #define DRIVER_DESC "Amlogic Meson DRM driver"
 
-/**
- * DOC: Video Processing Unit
- *
- * VPU Handles the Global Video Processing, it includes management of the
- * clocks gates, blocks reset lines and power domains.
- *
- * What is missing :
- *
- * - Full reset of entire video processing HW blocks
- * - Scaling and setup of the VPU clock
- * - Bus clock gates
- * - Powering up video processing HW blocks
- * - Powering Up HDMI controller and PHY
- */
+ 
 
 static const struct drm_mode_config_funcs meson_mode_config_funcs = {
 	.atomic_check        = drm_atomic_helper_check,
@@ -82,9 +62,7 @@ static irqreturn_t meson_irq(int irq, void *arg)
 static int meson_dumb_create(struct drm_file *file, struct drm_device *dev,
 			     struct drm_mode_create_dumb *args)
 {
-	/*
-	 * We need 64bytes aligned stride, and PAGE aligned size
-	 */
+	 
 	args->pitch = ALIGN(DIV_ROUND_UP(args->width * args->bpp, 8), SZ_64);
 	args->size = PAGE_ALIGN(args->pitch * args->height);
 
@@ -96,10 +74,10 @@ DEFINE_DRM_GEM_DMA_FOPS(fops);
 static const struct drm_driver meson_driver = {
 	.driver_features	= DRIVER_GEM | DRIVER_MODESET | DRIVER_ATOMIC,
 
-	/* DMA Ops */
+	 
 	DRM_GEM_DMA_DRIVER_OPS_WITH_DUMB_CREATE(meson_dumb_create),
 
-	/* Misc */
+	 
 	.fops			= &fops,
 	.name			= DRIVER_NAME,
 	.desc			= DRIVER_DESC,
@@ -112,9 +90,9 @@ static bool meson_vpu_has_available_connectors(struct device *dev)
 {
 	struct device_node *ep, *remote;
 
-	/* Parses each endpoint and check if remote exists */
+	 
 	for_each_endpoint_of_node(dev->of_node, ep) {
-		/* If the endpoint node exists, consider it enabled */
+		 
 		remote = of_graph_get_remote_port(ep);
 		if (remote) {
 			of_node_put(remote);
@@ -137,24 +115,21 @@ static void meson_vpu_init(struct meson_drm *priv)
 {
 	u32 value;
 
-	/*
-	 * Slave dc0 and dc5 connected to master port 1.
-	 * By default other slaves are connected to master port 0.
-	 */
+	 
 	value = VPU_RDARB_SLAVE_TO_MASTER_PORT(0, 1) |
 		VPU_RDARB_SLAVE_TO_MASTER_PORT(5, 1);
 	writel_relaxed(value, priv->io_base + _REG(VPU_RDARB_MODE_L1C1));
 
-	/* Slave dc0 connected to master port 1 */
+	 
 	value = VPU_RDARB_SLAVE_TO_MASTER_PORT(0, 1);
 	writel_relaxed(value, priv->io_base + _REG(VPU_RDARB_MODE_L1C2));
 
-	/* Slave dc4 and dc7 connected to master port 1 */
+	 
 	value = VPU_RDARB_SLAVE_TO_MASTER_PORT(4, 1) |
 		VPU_RDARB_SLAVE_TO_MASTER_PORT(7, 1);
 	writel_relaxed(value, priv->io_base + _REG(VPU_RDARB_MODE_L2C1));
 
-	/* Slave dc1 connected to master port 1 */
+	 
 	value = VPU_RDARB_SLAVE_TO_MASTER_PORT(1, 1);
 	writel_relaxed(value, priv->io_base + _REG(VPU_WRARB_MODE_L2C1));
 }
@@ -165,14 +140,14 @@ struct meson_drm_soc_attr {
 };
 
 static const struct meson_drm_soc_attr meson_drm_soc_attrs[] = {
-	/* S805X/S805Y HDMI PLL won't lock for HDMI PHY freq > 1,65GHz */
+	 
 	{
 		.limits = {
 			.max_hdmi_phy_freq = 1650000,
 		},
 		.attrs = (const struct soc_device_attribute []) {
 			{ .soc_id = "GXL (S805*)", },
-			{ /* sentinel */ }
+			{   }
 		}
 	},
 };
@@ -187,7 +162,7 @@ static int meson_drv_bind_master(struct device *dev, bool has_components)
 	void __iomem *regs;
 	int ret, i;
 
-	/* Checks if an output connector is available */
+	 
 	if (!meson_vpu_has_available_connectors(dev)) {
 		dev_err(dev, "No output connector available\n");
 		return -ENODEV;
@@ -225,7 +200,7 @@ static int meson_drv_bind_master(struct device *dev, bool has_components)
 		ret = -EINVAL;
 		goto free_drm;
 	}
-	/* Simply ioremap since it may be a shared register zone */
+	 
 	regs = devm_ioremap(dev, res->start, resource_size(res));
 	if (!regs) {
 		ret = -EADDRNOTAVAIL;
@@ -274,7 +249,7 @@ static int meson_drv_bind_master(struct device *dev, bool has_components)
 	if (ret)
 		goto free_drm;
 
-	/* Assign limits per soc revision/package */
+	 
 	for (i = 0 ; i < ARRAY_SIZE(meson_drm_soc_attrs) ; ++i) {
 		if (soc_device_match(meson_drm_soc_attrs[i].attrs)) {
 			priv->limits = &meson_drm_soc_attrs[i].limits;
@@ -282,10 +257,7 @@ static int meson_drv_bind_master(struct device *dev, bool has_components)
 		}
 	}
 
-	/*
-	 * Remove early framebuffers (ie. simplefb). The framebuffer can be
-	 * located anywhere in RAM
-	 */
+	 
 	ret = drm_aperture_remove_framebuffers(&meson_driver);
 	if (ret)
 		goto free_drm;
@@ -298,7 +270,7 @@ static int meson_drv_bind_master(struct device *dev, bool has_components)
 	drm->mode_config.funcs = &meson_mode_config_funcs;
 	drm->mode_config.helper_private	= &meson_mode_config_helpers;
 
-	/* Hardware Initialization */
+	 
 
 	meson_vpu_init(priv);
 	meson_venc_init(priv);
@@ -310,7 +282,7 @@ static int meson_drv_bind_master(struct device *dev, bool has_components)
 			goto free_drm;
 	}
 
-	/* Encoder Initialization */
+	 
 
 	ret = meson_encoder_cvbs_init(priv);
 	if (ret)
@@ -320,7 +292,7 @@ static int meson_drv_bind_master(struct device *dev, bool has_components)
 		ret = component_bind_all(dev, drm);
 		if (ret) {
 			dev_err(drm->dev, "Couldn't bind all components\n");
-			/* Do not try to unbind */
+			 
 			has_components = false;
 			goto exit_afbcd;
 		}
@@ -460,12 +432,7 @@ static void meson_drv_shutdown(struct platform_device *pdev)
 	drm_atomic_helper_shutdown(priv->drm);
 }
 
-/*
- * Only devices to use as components
- * TOFIX: get rid of components when we can finally
- * get meson_dx_hdmi to stop using the meson_drm
- * private structure for HHI registers.
- */
+ 
 static const struct of_device_id components_dev_match[] = {
 	{ .compatible = "amlogic,meson-gxbb-dw-hdmi" },
 	{ .compatible = "amlogic,meson-gxl-dw-hdmi" },
@@ -503,7 +470,7 @@ static int meson_drv_probe(struct platform_device *pdev)
 	if (count && !match)
 		return meson_drv_bind_master(&pdev->dev, false);
 
-	/* If some endpoints were found, initialize the nodes */
+	 
 	if (count) {
 		dev_info(&pdev->dev, "Queued %d outputs on vpu\n", count);
 
@@ -512,7 +479,7 @@ static int meson_drv_probe(struct platform_device *pdev)
 						       match);
 	}
 
-	/* If no output endpoints were available, simply bail out */
+	 
 	return 0;
 };
 

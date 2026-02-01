@@ -1,13 +1,4 @@
-/*
- * Copyright (C) 2007-2013 Michal Simek <monstr@monstr.eu>
- * Copyright (C) 2012-2013 Xilinx, Inc.
- * Copyright (C) 2007-2009 PetaLogix
- * Copyright (C) 2006 Atmark Techno, Inc.
- *
- * This file is subject to the terms and conditions of the GNU General Public
- * License. See the file "COPYING" in the main directory of this archive
- * for more details.
- */
+ 
 
 #include <linux/irqdomain.h>
 #include <linux/irq.h>
@@ -19,15 +10,15 @@
 #include <linux/bug.h>
 #include <linux/of_irq.h>
 
-/* No one else should require these constants, so define them locally here. */
-#define ISR 0x00			/* Interrupt Status Register */
-#define IPR 0x04			/* Interrupt Pending Register */
-#define IER 0x08			/* Interrupt Enable Register */
-#define IAR 0x0c			/* Interrupt Acknowledge Register */
-#define SIE 0x10			/* Set Interrupt Enable bits */
-#define CIE 0x14			/* Clear Interrupt Enable bits */
-#define IVR 0x18			/* Interrupt Vector Register */
-#define MER 0x1c			/* Master Enable Register */
+ 
+#define ISR 0x00			 
+#define IPR 0x04			 
+#define IER 0x08			 
+#define IAR 0x0c			 
+#define SIE 0x10			 
+#define CIE 0x14			 
+#define IVR 0x18			 
+#define MER 0x1c			 
 
 #define MER_ME (1<<0)
 #define MER_HIE (1<<1)
@@ -68,10 +59,7 @@ static void intc_enable_or_unmask(struct irq_data *d)
 
 	pr_debug("irq-xilinx: enable_or_unmask: %ld\n", d->hwirq);
 
-	/* ack level irqs because they can't be acked during
-	 * ack function since the handle_level_irq function
-	 * acks the irq before calling the interrupt handler
-	 */
+	 
 	if (irqd_is_level_type(d))
 		xintc_write(irqc, IAR, mask);
 
@@ -196,16 +184,13 @@ static int __init xilinx_intc_of_init(struct device_node *intc,
 		intc, irqc->nr_irq, irqc->intr_mask);
 
 
-	/*
-	 * Disable all external interrupts until they are
-	 * explicitly requested.
-	 */
+	 
 	xintc_write(irqc, IER, 0);
 
-	/* Acknowledge any pending interrupts just in case. */
+	 
 	xintc_write(irqc, IAR, 0xffffffff);
 
-	/* Turn on the Master Enable. */
+	 
 	xintc_write(irqc, MER, MER_HIE | MER_ME);
 	if (xintc_read(irqc, MER) != (MER_HIE | MER_ME)) {
 		static_branch_enable(&xintc_is_be);

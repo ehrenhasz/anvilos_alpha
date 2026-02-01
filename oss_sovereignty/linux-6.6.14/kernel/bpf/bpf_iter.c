@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright (c) 2020 Facebook */
+
+ 
 
 #include <linux/fs.h>
 #include <linux/anon_inodes.h>
@@ -10,7 +10,7 @@
 struct bpf_iter_target_info {
 	struct list_head list;
 	const struct bpf_iter_reg *reg_info;
-	u32 btf_id;	/* cached value */
+	u32 btf_id;	 
 };
 
 struct bpf_iter_link {
@@ -32,10 +32,10 @@ struct bpf_iter_priv_data {
 static struct list_head targets = LIST_HEAD_INIT(targets);
 static DEFINE_MUTEX(targets_mutex);
 
-/* protect bpf_iter_link changes */
+ 
 static DEFINE_MUTEX(link_mutex);
 
-/* incremented on every opened seq_file */
+ 
 static atomic64_t session_id;
 
 static int prepare_seq_file(struct file *file, struct bpf_iter_link *link,
@@ -82,15 +82,10 @@ static bool bpf_iter_support_resched(struct seq_file *seq)
 	return bpf_iter_target_support_resched(iter_priv->tinfo);
 }
 
-/* maximum visited objects before bailing out */
+ 
 #define MAX_ITER_OBJECTS	1000000
 
-/* bpf_seq_read, a customized and simpler version for bpf iterator.
- * The following are differences from seq_read():
- *  . fixed buffer size (PAGE_SIZE)
- *  . assuming NULL ->llseek()
- *  . stop() may call bpf program, handling potential overflow there
- */
+ 
 static ssize_t bpf_seq_read(struct file *file, char __user *buf, size_t size,
 			    loff_t *ppos)
 {
@@ -137,9 +132,7 @@ static ssize_t bpf_seq_read(struct file *file, char __user *buf, size_t size,
 
 	err = seq->op->show(seq, p);
 	if (err > 0) {
-		/* object is skipped, decrease seq_num, so next
-		 * valid object can reuse the same seq_num.
-		 */
+		 
 		bpf_iter_dec_seq_num(seq);
 		seq->count = 0;
 	} else if (err < 0 || seq_has_overflowed(seq)) {
@@ -167,7 +160,7 @@ static ssize_t bpf_seq_read(struct file *file, char __user *buf, size_t size,
 		if (IS_ERR_OR_NULL(p))
 			break;
 
-		/* got a valid next object, increase seq_num */
+		 
 		bpf_iter_inc_seq_num(seq);
 
 		if (seq->count >= size)
@@ -207,7 +200,7 @@ stop:
 		err = PTR_ERR(p);
 		goto done;
 	}
-	/* bpf program called if !p */
+	 
 	seq->op->stop(seq, p);
 	if (!p) {
 		if (!seq_has_overflowed(seq)) {
@@ -288,11 +281,7 @@ const struct file_operations bpf_iter_fops = {
 	.release	= iter_release,
 };
 
-/* The argument reg_info will be cached in bpf_iter_target_info.
- * The common practice is to declare target reg_info as
- * a const static variable and passed as an argument to
- * bpf_iter_reg_target().
- */
+ 
 int bpf_iter_reg_target(const struct bpf_iter_reg *reg_info)
 {
 	struct bpf_iter_target_info *tinfo;
@@ -547,7 +536,7 @@ int bpf_iter_link_attach(const union bpf_attr *attr, bpfptr_t uattr,
 	if (!tinfo)
 		return -ENOENT;
 
-	/* Only allow sleepable program for resched-able iterator */
+	 
 	if (prog->aux->sleepable && !bpf_iter_target_support_resched(tinfo))
 		return -EINVAL;
 
@@ -716,12 +705,7 @@ int bpf_iter_run_prog(struct bpf_prog *prog, void *ctx)
 		rcu_read_unlock();
 	}
 
-	/* bpf program can only return 0 or 1:
-	 *  0 : okay
-	 *  1 : retry the same object
-	 * The bpf_iter_run_prog() return value
-	 * will be seq_ops->show() return value.
-	 */
+	 
 	return ret == 0 ? 0 : -EAGAIN;
 }
 
@@ -748,10 +732,7 @@ BPF_CALL_4(bpf_loop, u32, nr_loops, void *, callback_fn, void *, callback_ctx,
 	u64 ret;
 	u32 i;
 
-	/* Note: these safety checks are also verified when bpf_loop
-	 * is inlined, be careful to modify this code in sync. See
-	 * function verifier.c:inline_bpf_loop.
-	 */
+	 
 	if (flags)
 		return -EINVAL;
 	if (nr_loops > BPF_MAX_LOOPS)
@@ -759,7 +740,7 @@ BPF_CALL_4(bpf_loop, u32, nr_loops, void *, callback_fn, void *, callback_ctx,
 
 	for (i = 0; i < nr_loops; i++) {
 		ret = callback((u64)i, (u64)(long)callback_ctx, 0, 0, 0);
-		/* return value: 0 - continue, 1 - stop and return */
+		 
 		if (ret)
 			return i + 1;
 	}
@@ -778,8 +759,8 @@ const struct bpf_func_proto bpf_loop_proto = {
 };
 
 struct bpf_iter_num_kern {
-	int cur; /* current value, inclusive */
-	int end; /* final value, exclusive */
+	int cur;  
+	int end;  
 } __aligned(8);
 
 __diag_push();
@@ -795,24 +776,19 @@ __bpf_kfunc int bpf_iter_num_new(struct bpf_iter_num *it, int start, int end)
 
 	BTF_TYPE_EMIT(struct btf_iter_num);
 
-	/* start == end is legit, it's an empty range and we'll just get NULL
-	 * on first (and any subsequent) bpf_iter_num_next() call
-	 */
+	 
 	if (start > end) {
 		s->cur = s->end = 0;
 		return -EINVAL;
 	}
 
-	/* avoid overflows, e.g., if start == INT_MIN and end == INT_MAX */
+	 
 	if ((s64)end - (s64)start > BPF_MAX_LOOPS) {
 		s->cur = s->end = 0;
 		return -E2BIG;
 	}
 
-	/* user will call bpf_iter_num_next() first,
-	 * which will set s->cur to exactly start value;
-	 * underflow shouldn't matter
-	 */
+	 
 	s->cur = start - 1;
 	s->end = end;
 
@@ -823,11 +799,7 @@ __bpf_kfunc int *bpf_iter_num_next(struct bpf_iter_num* it)
 {
 	struct bpf_iter_num_kern *s = (void *)it;
 
-	/* check failed initialization or if we are done (same behavior);
-	 * need to be careful about overflow, so convert to s64 for checks,
-	 * e.g., if s->cur == s->end == INT_MAX, we can't just do
-	 * s->cur + 1 >= s->end
-	 */
+	 
 	if ((s64)(s->cur + 1) >= s->end) {
 		s->cur = s->end = 0;
 		return NULL;

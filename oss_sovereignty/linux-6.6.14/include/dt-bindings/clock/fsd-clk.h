@@ -1,18 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2017 - 2022: Samsung Electronics Co., Ltd.
- *             https://www.samsung.com
- * Copyright (c) 2017-2022 Tesla, Inc.
- *             https://www.tesla.com
- *
- * The constants defined in this header are being used in dts
- * and fsd platform driver.
- */
+ 
+ 
 
 #ifndef _DT_BINDINGS_CLOCK_FSD_H
 #define _DT_BINDINGS_CLOCK_FSD_H
 
-/* CMU */
+ 
 #define DOUT_CMU_PLL_SHARED0_DIV4		1
 #define DOUT_CMU_PERIC_SHARED1DIV36		2
 #define DOUT_CMU_PERIC_SHARED0DIV3_TBUCLK	3
@@ -30,7 +22,7 @@
 #define GAT_CMU_FSYS0_SHARED0DIV4		15
 #define CMU_NR_CLK				16
 
-/* PERIC */
+ 
 #define PERIC_SCLK_UART0			1
 #define PERIC_PCLK_UART0			2
 #define PERIC_SCLK_UART1			3
@@ -78,7 +70,7 @@
 #define PERIC_DOUT_RGMII_CLK			45
 #define PERIC_NR_CLK				46
 
-/* FSYS0 */
+ 
 #define UFS0_MPHY_REFCLK_IXTAL24		1
 #define UFS0_MPHY_REFCLK_IXTAL26		2
 #define UFS1_MPHY_REFCLK_IXTAL24		3
@@ -103,7 +95,7 @@
 #define FSYS0_DOUT_FSYS0_PERIBUS_GRP		22
 #define FSYS0_NR_CLK				23
 
-/* FSYS1 */
+ 
 #define PCIE_LINK0_IPCLKPORT_DBI_ACLK		1
 #define PCIE_LINK0_IPCLKPORT_AUX_ACLK		2
 #define PCIE_LINK0_IPCLKPORT_MSTR_ACLK		3
@@ -114,7 +106,7 @@
 #define PCIE_LINK1_IPCLKPORT_SLV_ACLK		8
 #define FSYS1_NR_CLK				9
 
-/* IMEM */
+ 
 #define IMEM_DMA0_IPCLKPORT_ACLK		1
 #define IMEM_DMA1_IPCLKPORT_ACLK		2
 #define IMEM_WDT0_IPCLKPORT_PCLK		3
@@ -128,11 +120,11 @@
 #define IMEM_TMU_GT_IPCLKPORT_I_CLK_TS		11
 #define IMEM_NR_CLK				12
 
-/* MFC */
+ 
 #define MFC_MFC_IPCLKPORT_ACLK			1
 #define MFC_NR_CLK				2
 
-/* CAM_CSI */
+ 
 #define CAM_CSI0_0_IPCLKPORT_I_ACLK		1
 #define CAM_CSI0_1_IPCLKPORT_I_ACLK		2
 #define CAM_CSI0_2_IPCLKPORT_I_ACLK		3
@@ -147,4 +139,4 @@
 #define CAM_CSI2_3_IPCLKPORT_I_ACLK		12
 #define CAM_CSI_NR_CLK				13
 
-#endif /*_DT_BINDINGS_CLOCK_FSD_H */
+#endif  

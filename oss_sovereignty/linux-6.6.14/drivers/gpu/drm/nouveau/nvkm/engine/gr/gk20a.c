@@ -1,24 +1,4 @@
-/*
- * Copyright (c) 2014-2015, NVIDIA CORPORATION. All rights reserved.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
- * DEALINGS IN THE SOFTWARE.
- */
+ 
 #include "gf100.h"
 #include "ctxgf100.h"
 
@@ -111,7 +91,7 @@ gk20a_gr_av_to_method(struct nvkm_blob *blob, struct gf100_gr_pack **ppack)
 {
 	struct gf100_gr_init *init;
 	struct gf100_gr_pack *pack;
-	/* We don't suppose we will initialize more than 16 classes here... */
+	 
 	static const unsigned int max_classes = 16;
 	u32 classidx = 0, prevclass = 0;
 	int nent;
@@ -131,7 +111,7 @@ gk20a_gr_av_to_method(struct nvkm_blob *blob, struct gf100_gr_pack **ppack)
 		u32 addr = (av->addr & 0xffff0000) >> 14;
 
 		if (prevclass != class) {
-			if (prevclass) /* Add terminator to the method list. */
+			if (prevclass)  
 				init++;
 			pack[classidx].init = init;
 			pack[classidx].type = class;
@@ -191,7 +171,7 @@ gk20a_gr_init(struct gf100_gr *gr)
 	struct nvkm_device *device = gr->base.engine.subdev.device;
 	int ret;
 
-	/* Clear SCC RAM */
+	 
 	nvkm_wr32(device, 0x40802c, 0x1);
 
 	gf100_gr_mmio(gr, gr->sw_nonctx);
@@ -204,40 +184,40 @@ gk20a_gr_init(struct gf100_gr *gr)
 	if (ret)
 		return ret;
 
-	/* MMU debug buffer */
+	 
 	if (gr->func->init_gpc_mmu)
 		gr->func->init_gpc_mmu(gr);
 
-	/* Set the PE as stream master */
+	 
 	nvkm_mask(device, 0x503018, 0x1, 0x1);
 
-	/* Zcull init */
+	 
 	gr->func->init_zcull(gr);
 
 	gr->func->init_rop_active_fbps(gr);
 
-	/* Enable FIFO access */
+	 
 	nvkm_wr32(device, 0x400500, 0x00010001);
 
-	/* Enable interrupts */
+	 
 	nvkm_wr32(device, 0x400100, 0xffffffff);
 	nvkm_wr32(device, 0x40013c, 0xffffffff);
 
-	/* Enable FECS error interrupts */
+	 
 	nvkm_wr32(device, 0x409c24, 0x000f0000);
 
-	/* Enable hardware warning exceptions */
+	 
 	nvkm_wr32(device, 0x404000, 0xc0000000);
 	nvkm_wr32(device, 0x404600, 0xc0000000);
 
 	if (gr->func->set_hww_esr_report_mask)
 		gr->func->set_hww_esr_report_mask(gr);
 
-	/* Enable TPC exceptions per GPC */
+	 
 	nvkm_wr32(device, 0x419d0c, 0x2);
 	nvkm_wr32(device, 0x41ac94, (((1 << gr->tpc_total) - 1) & 0xff) << 16);
 
-	/* Reset and enable all exceptions */
+	 
 	nvkm_wr32(device, 0x400108, 0xffffffff);
 	nvkm_wr32(device, 0x400138, 0xffffffff);
 	nvkm_wr32(device, 0x400118, 0xffffffff);

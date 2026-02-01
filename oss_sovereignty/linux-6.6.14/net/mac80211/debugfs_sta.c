@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright 2003-2005	Devicescape Software, Inc.
- * Copyright (c) 2006	Jiri Benc <jbenc@suse.cz>
- * Copyright 2007	Johannes Berg <johannes@sipsolutions.net>
- * Copyright 2013-2014  Intel Mobile Communications GmbH
- * Copyright(c) 2016 Intel Deutschland GmbH
- * Copyright (C) 2018 - 2022 Intel Corporation
- */
+
+ 
 
 #include <linux/debugfs.h>
 #include <linux/ieee80211.h>
@@ -16,7 +9,7 @@
 #include "sta_info.h"
 #include "driver-ops.h"
 
-/* sta attributtes */
+ 
 
 #define STA_READ(name, field, format_string)				\
 static ssize_t sta_ ##name## _read(struct file *file,			\
@@ -436,7 +429,7 @@ static ssize_t sta_agg_status_write(struct file *file, const char __user *userbu
 }
 STA_OPS_RW(agg_status);
 
-/* link sta attributes */
+ 
 #define LINK_STA_OPS(name)						\
 static const struct file_operations link_sta_ ##name## _ops = {		\
 	.read = link_sta_##name##_read,					\
@@ -507,16 +500,11 @@ static ssize_t link_sta_ht_capa_read(struct file *file, char __user *userbuf,
 		PRINT_HT_CAP((htc->cap & BIT(11)), "Max AMSDU length: "
 			     "7935 bytes");
 
-		/*
-		 * For beacons and probe response this would mean the BSS
-		 * does or does not allow the usage of DSSS/CCK HT40.
-		 * Otherwise it means the STA does or does not use
-		 * DSSS/CCK HT40.
-		 */
+		 
 		PRINT_HT_CAP((htc->cap & BIT(12)), "DSSS/CCK HT40");
 		PRINT_HT_CAP(!(htc->cap & BIT(12)), "No DSSS/CCK HT40");
 
-		/* BIT(13) is reserved */
+		 
 
 		PRINT_HT_CAP((htc->cap & BIT(14)), "40 MHz Intolerant");
 
@@ -531,7 +519,7 @@ static ssize_t link_sta_ht_capa_read(struct file *file, char __user *userbuf,
 					htc->mcs.rx_mask[i]);
 		p += scnprintf(p, bufsz + buf - p, "\n");
 
-		/* If not set this is meaningless */
+		 
 		if (le16_to_cpu(htc->mcs.rx_highest)) {
 			p += scnprintf(p, bufsz + buf - p,
 				       "MCS rx highest: %d Mbps\n",
@@ -1172,7 +1160,7 @@ static ssize_t link_sta_eht_capa_read(struct file *file, char __user *userbuf,
 
 #undef PFLAG
 
-	PRINT(""); /* newline */
+	PRINT("");  
 	if (!(link_sta->pub->he_cap.he_cap_elem.phy_cap_info[0] &
 	      IEEE80211_HE_PHY_CAP0_CHANNEL_WIDTH_SET_MASK_ALL)) {
 		u8 *mcs_vals = (u8 *)(&nss->only_20mhz);
@@ -1209,7 +1197,7 @@ static ssize_t link_sta_eht_capa_read(struct file *file, char __user *userbuf,
 		for (i = 0; i < ppe_size; i++)
 			p += scnprintf(p, buf_sz + buf - p, "0x%02x ",
 				       bec->eht_ppe_thres[i]);
-		PRINT(""); /* newline */
+		PRINT("");  
 	}
 
 out:
@@ -1238,15 +1226,7 @@ void ieee80211_sta_debugfs_add(struct sta_info *sta)
 
 	snprintf(mac, sizeof(mac), "%pM", sta->sta.addr);
 
-	/*
-	 * This might fail due to a race condition:
-	 * When mac80211 unlinks a station, the debugfs entries
-	 * remain, but it is already possible to link a new
-	 * station with the same address which triggers adding
-	 * it to debugfs; therefore, if the old station isn't
-	 * destroyed quickly enough the old station's debugfs
-	 * dir might still be around.
-	 */
+	 
 	sta->debugfs_dir = debugfs_create_dir(mac, stations_dir);
 
 	DEBUGFS_ADD(flags);
@@ -1254,7 +1234,7 @@ void ieee80211_sta_debugfs_add(struct sta_info *sta)
 	DEBUGFS_ADD(num_ps_buf_frames);
 	DEBUGFS_ADD(last_seq_ctrl);
 	DEBUGFS_ADD(agg_status);
-	/* FIXME: Kept here as the statistics are only done on the deflink */
+	 
 	DEBUGFS_ADD_COUNTER(tx_filtered, deflink.status_stats.filtered);
 
 	DEBUGFS_ADD(aqm);
@@ -1290,7 +1270,7 @@ void ieee80211_link_sta_debugfs_add(struct link_sta_info *link_sta)
 	if (WARN_ON(!link_sta->sta->debugfs_dir))
 		return;
 
-	/* For non-MLO, leave the files in the main directory. */
+	 
 	if (link_sta->sta->sta.valid_links) {
 		char link_dir_name[10];
 
@@ -1352,7 +1332,7 @@ void ieee80211_link_sta_debugfs_drv_remove(struct link_sta_info *link_sta)
 	if (WARN_ON(link_sta->debugfs_dir == link_sta->sta->debugfs_dir))
 		return;
 
-	/* Recreate the directory excluding the driver data */
+	 
 	debugfs_remove_recursive(link_sta->debugfs_dir);
 	link_sta->debugfs_dir = NULL;
 

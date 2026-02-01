@@ -1,27 +1,4 @@
-/*
- * Copyright 2012-15 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 #include "dm_services.h"
 
@@ -74,11 +51,7 @@
 #define VISUAL_CONFIRM_BASE_DEFAULT 3
 #define VISUAL_CONFIRM_BASE_MIN 1
 #define VISUAL_CONFIRM_BASE_MAX 10
-/* we choose 240 because it is a common denominator of common v addressable
- * such as 2160, 1440, 1200, 960. So we take 1/240 portion of v addressable as
- * the visual confirm dpp offset height. So visual confirm height can stay
- * relatively the same independent from timing used.
- */
+ 
 #define VISUAL_CONFIRM_DPP_OFFSET_DENO 240
 
 #define DC_LOGGER_INIT(logger)
@@ -290,7 +263,7 @@ struct resource_pool *dc_create_resource_pool(struct dc  *dc,
 	case DCN_VERSION_3_21:
 		res_pool = dcn321_create_resource_pool(init_data, dc);
 		break;
-#endif /* CONFIG_DRM_AMD_DC_FP */
+#endif  
 	default:
 		break;
 	}
@@ -299,12 +272,7 @@ struct resource_pool *dc_create_resource_pool(struct dc  *dc,
 		if (dc->ctx->dc_bios->fw_info_valid) {
 			res_pool->ref_clocks.xtalin_clock_inKhz =
 				dc->ctx->dc_bios->fw_info.pll_info.crystal_frequency;
-			/* initialize with firmware data first, no all
-			 * ASIC have DCCG SW component. FPGA or
-			 * simulation need initialization of
-			 * dccg_ref_clock_inKhz, dchub_ref_clock_inKhz
-			 * with xtalin_clock_inKhz
-			 */
+			 
 			res_pool->ref_clocks.dccg_ref_clock_inKhz =
 				res_pool->ref_clocks.xtalin_clock_inKhz;
 			res_pool->ref_clocks.dchub_ref_clock_inKhz =
@@ -343,9 +311,9 @@ static void update_num_audio(
 	}
 
 	switch (straps->audio_stream_number) {
-	case 0: /* multi streams supported */
+	case 0:  
 		break;
-	case 1: /* multi streams not supported */
+	case 1:  
 		*num_audio = 1;
 		break;
 	default:
@@ -370,13 +338,7 @@ bool resource_construct(
 
 	pool->audio_count = 0;
 	if (create_funcs->create_audio) {
-		/* find the total number of streams available via the
-		 * AZALIA_F0_CODEC_PIN_CONTROL_RESPONSE_CONFIGURATION_DEFAULT
-		 * registers (one for each pin) starting from pin 1
-		 * up to the max number of audio pins.
-		 * We stop on the first pin where
-		 * PORT_CONNECTIVITY == 1 (as instructed by HW team).
-		 */
+		 
 		update_num_audio(&straps, &num_audio, &pool->audio_support);
 		for (i = 0; i < caps->num_audio; i++) {
 			struct audio *aud = create_funcs->create_audio(ctx, i);
@@ -528,7 +490,7 @@ bool resource_are_vblanks_synchronizable(
 		false == stream2->has_non_synchronizable_pclk &&
 		stream1->timing.flags.VBLANK_SYNCHRONIZABLE &&
 		stream2->timing.flags.VBLANK_SYNCHRONIZABLE) {
-		/* disable refresh rates higher than 60Hz for now */
+		 
 		if (stream1->timing.pix_clk_100hz*100/stream1->timing.h_total/
 				stream1->timing.v_total > 60)
 			return false;
@@ -792,10 +754,7 @@ static int get_mpc_split_index(struct pipe_ctx *pipe_ctx)
 	return index;
 }
 
-/*
- * This is a preliminary vp size calculation to allow us to check taps support.
- * The result is completely overridden afterwards.
- */
+ 
 static void calculate_viewport_size(struct pipe_ctx *pipe_ctx)
 {
 	struct scaler_data *data = &pipe_ctx->plane_res.scl_data;
@@ -824,7 +783,7 @@ static struct rect intersect_rec(const struct rect *r0, const struct rect *r1)
 	rec.y = r0->y > r1->y ? r0->y : r1->y;
 	rec.height = r0_y_end > r1_y_end ? r1_y_end - rec.y : r0_y_end - rec.y;
 
-	/* in case that there is no intersection */
+	 
 	if (rec.width < 0 || rec.height < 0)
 		memset(&rec, 0, sizeof(rec));
 
@@ -855,9 +814,9 @@ static struct rect calculate_odm_slice_in_timing_active(struct pipe_ctx *pipe_ct
 
 	odm_rec.x = odm_slice_width * odm_slice_idx;
 	odm_rec.width = is_last_odm_slice ?
-			/* last slice width is the reminder of h_active */
+			 
 			h_active - odm_slice_width * (odm_slice_count - 1) :
-			/* odm slice width is the floor of h_active / count */
+			 
 			odm_slice_width;
 	odm_rec.y = 0;
 	odm_rec.height = stream->timing.v_addressable +
@@ -871,67 +830,7 @@ static struct rect calculate_plane_rec_in_timing_active(
 		struct pipe_ctx *pipe_ctx,
 		const struct rect *rec_in)
 {
-	/*
-	 * The following diagram shows an example where we map a 1920x1200
-	 * desktop to a 2560x1440 timing with a plane rect in the middle
-	 * of the screen. To map a plane rect from Stream Source to Timing
-	 * Active space, we first multiply stream scaling ratios (i.e 2304/1920
-	 * horizontal and 1440/1200 vertical) to the plane's x and y, then
-	 * we add stream destination offsets (i.e 128 horizontal, 0 vertical).
-	 * This will give us a plane rect's position in Timing Active. However
-	 * we have to remove the fractional. The rule is that we find left/right
-	 * and top/bottom positions and round the value to the adjacent integer.
-	 *
-	 * Stream Source Space
-	 * ------------
-	 *        __________________________________________________
-	 *       |Stream Source (1920 x 1200) ^                     |
-	 *       |                            y                     |
-	 *       |         <------- w --------|>                    |
-	 *       |          __________________V                     |
-	 *       |<-- x -->|Plane//////////////| ^                  |
-	 *       |         |(pre scale)////////| |                  |
-	 *       |         |///////////////////| |                  |
-	 *       |         |///////////////////| h                  |
-	 *       |         |///////////////////| |                  |
-	 *       |         |///////////////////| |                  |
-	 *       |         |///////////////////| V                  |
-	 *       |                                                  |
-	 *       |                                                  |
-	 *       |__________________________________________________|
-	 *
-	 *
-	 * Timing Active Space
-	 * ---------------------------------
-	 *
-	 *       Timing Active (2560 x 1440)
-	 *        __________________________________________________
-	 *       |*****|  Stteam Destination (2304 x 1440)    |*****|
-	 *       |*****|                                      |*****|
-	 *       |<128>|                                      |*****|
-	 *       |*****|     __________________               |*****|
-	 *       |*****|    |Plane/////////////|              |*****|
-	 *       |*****|    |(post scale)//////|              |*****|
-	 *       |*****|    |//////////////////|              |*****|
-	 *       |*****|    |//////////////////|              |*****|
-	 *       |*****|    |//////////////////|              |*****|
-	 *       |*****|    |//////////////////|              |*****|
-	 *       |*****|                                      |*****|
-	 *       |*****|                                      |*****|
-	 *       |*****|                                      |*****|
-	 *       |*****|______________________________________|*****|
-	 *
-	 * So the resulting formulas are shown below:
-	 *
-	 * recout_x = 128 + round(plane_x * 2304 / 1920)
-	 * recout_w = 128 + round((plane_x + plane_w) * 2304 / 1920) - recout_x
-	 * recout_y = 0 + round(plane_y * 1440 / 1280)
-	 * recout_h = 0 + round((plane_y + plane_h) * 1440 / 1200) - recout_y
-	 *
-	 * NOTE: fixed point division is not error free. To reduce errors
-	 * introduced by fixed point division, we divide only after
-	 * multiplication is complete.
-	 */
+	 
 	const struct dc_stream_state *stream = pipe_ctx->stream;
 	struct rect rec_out = {0};
 	struct fixed31_32 temp;
@@ -975,9 +874,7 @@ static struct rect calculate_mpc_slice_in_timing_active(
 			stream->view_format != VIEW_3D_FORMAT_SIDE_BY_SIDE ||
 			mpc_rec.width % 2 == 0);
 
-	/* extra pixels in the division remainder need to go to pipes after
-	 * the extra pixel index minus one(epimo) defined here as:
-	 */
+	 
 	if (mpc_slice_idx > epimo) {
 		mpc_rec.x += mpc_slice_idx - epimo - 1;
 		mpc_rec.width += 1;
@@ -1012,134 +909,10 @@ static void adjust_recout_for_visual_confirm(struct rect *recout,
 	recout->height -= dpp_offset;
 }
 
-/*
- * The function maps a plane clip from Stream Source Space to ODM Slice Space
- * and calculates the rec of the overlapping area of MPC slice of the plane
- * clip, ODM slice associated with the pipe context and stream destination rec.
- */
+ 
 static void calculate_recout(struct pipe_ctx *pipe_ctx)
 {
-	/*
-	 * A plane clip represents the desired plane size and position in Stream
-	 * Source Space. Stream Source is the destination where all planes are
-	 * blended (i.e. positioned, scaled and overlaid). It is a canvas where
-	 * all planes associated with the current stream are drawn together.
-	 * After Stream Source is completed, we will further scale and
-	 * reposition the entire canvas of the stream source to Stream
-	 * Destination in Timing Active Space. This could be due to display
-	 * overscan adjustment where we will need to rescale and reposition all
-	 * the planes so they can fit into a TV with overscan or downscale
-	 * upscale features such as GPU scaling or VSR.
-	 *
-	 * This two step blending is a virtual procedure in software. In
-	 * hardware there is no such thing as Stream Source. all planes are
-	 * blended once in Timing Active Space. Software virtualizes a Stream
-	 * Source space to decouple the math complicity so scaling param
-	 * calculation focuses on one step at a time.
-	 *
-	 * In the following two diagrams, user applied 10% overscan adjustment
-	 * so the Stream Source needs to be scaled down a little before mapping
-	 * to Timing Active Space. As a result the Plane Clip is also scaled
-	 * down by the same ratio, Plane Clip position (i.e. x and y) with
-	 * respect to Stream Source is also scaled down. To map it in Timing
-	 * Active Space additional x and y offsets from Stream Destination are
-	 * added to Plane Clip as well.
-	 *
-	 * Stream Source Space
-	 * ------------
-	 *        __________________________________________________
-	 *       |Stream Source (3840 x 2160) ^                     |
-	 *       |                            y                     |
-	 *       |                            |                     |
-	 *       |          __________________V                     |
-	 *       |<-- x -->|Plane Clip/////////|                    |
-	 *       |         |(pre scale)////////|                    |
-	 *       |         |///////////////////|                    |
-	 *       |         |///////////////////|                    |
-	 *       |         |///////////////////|                    |
-	 *       |         |///////////////////|                    |
-	 *       |         |///////////////////|                    |
-	 *       |                                                  |
-	 *       |                                                  |
-	 *       |__________________________________________________|
-	 *
-	 *
-	 * Timing Active Space (3840 x 2160)
-	 * ---------------------------------
-	 *
-	 *       Timing Active
-	 *        __________________________________________________
-	 *       | y_____________________________________________   |
-	 *       |x |Stream Destination (3456 x 1944)            |  |
-	 *       |  |                                            |  |
-	 *       |  |        __________________                  |  |
-	 *       |  |       |Plane Clip////////|                 |  |
-	 *       |  |       |(post scale)//////|                 |  |
-	 *       |  |       |//////////////////|                 |  |
-	 *       |  |       |//////////////////|                 |  |
-	 *       |  |       |//////////////////|                 |  |
-	 *       |  |       |//////////////////|                 |  |
-	 *       |  |                                            |  |
-	 *       |  |                                            |  |
-	 *       |  |____________________________________________|  |
-	 *       |__________________________________________________|
-	 *
-	 *
-	 * In Timing Active Space a plane clip could be further sliced into
-	 * pieces called MPC slices. Each Pipe Context is responsible for
-	 * processing only one MPC slice so the plane processing workload can be
-	 * distributed to multiple DPP Pipes. MPC slices could be blended
-	 * together to a single ODM slice. Each ODM slice is responsible for
-	 * processing a portion of Timing Active divided horizontally so the
-	 * output pixel processing workload can be distributed to multiple OPP
-	 * pipes. All ODM slices are mapped together in ODM block so all MPC
-	 * slices belong to different ODM slices could be pieced together to
-	 * form a single image in Timing Active. MPC slices must belong to
-	 * single ODM slice. If an MPC slice goes across ODM slice boundary, it
-	 * needs to be divided into two MPC slices one for each ODM slice.
-	 *
-	 * In the following diagram the output pixel processing workload is
-	 * divided horizontally into two ODM slices one for each OPP blend tree.
-	 * OPP0 blend tree is responsible for processing left half of Timing
-	 * Active, while OPP2 blend tree is responsible for processing right
-	 * half.
-	 *
-	 * The plane has two MPC slices. However since the right MPC slice goes
-	 * across ODM boundary, two DPP pipes are needed one for each OPP blend
-	 * tree. (i.e. DPP1 for OPP0 blend tree and DPP2 for OPP2 blend tree).
-	 *
-	 * Assuming that we have a Pipe Context associated with OPP0 and DPP1
-	 * working on processing the plane in the diagram. We want to know the
-	 * width and height of the shaded rectangle and its relative position
-	 * with respect to the ODM slice0. This is called the recout of the pipe
-	 * context.
-	 *
-	 * Planes can be at arbitrary size and position and there could be an
-	 * arbitrary number of MPC and ODM slices. The algorithm needs to take
-	 * all scenarios into account.
-	 *
-	 * Timing Active Space (3840 x 2160)
-	 * ---------------------------------
-	 *
-	 *       Timing Active
-	 *        __________________________________________________
-	 *       |OPP0(ODM slice0)^        |OPP2(ODM slice1)        |
-	 *       |                y        |                        |
-	 *       |                |  <- w ->                        |
-	 *       |           _____V________|____                    |
-	 *       |          |DPP0 ^  |DPP1 |DPP2|                   |
-	 *       |<------ x |-----|->|/////|    |                   |
-	 *       |          |     |  |/////|    |                   |
-	 *       |          |     h  |/////|    |                   |
-	 *       |          |     |  |/////|    |                   |
-	 *       |          |_____V__|/////|____|                   |
-	 *       |                         |                        |
-	 *       |                         |                        |
-	 *       |                         |                        |
-	 *       |_________________________|________________________|
-	 *
-	 *
-	 */
+	 
 	struct rect plane_clip;
 	struct rect mpc_slice_of_plane_clip;
 	struct rect odm_slice;
@@ -1147,7 +920,7 @@ static void calculate_recout(struct pipe_ctx *pipe_ctx)
 
 	plane_clip = calculate_plane_rec_in_timing_active(pipe_ctx,
 			&pipe_ctx->plane_state->clip_rect);
-	/* guard plane clip from drawing beyond stream dst here */
+	 
 	plane_clip = intersect_rec(&plane_clip,
 				&pipe_ctx->stream->dst);
 	mpc_slice_of_plane_clip = calculate_mpc_slice_in_timing_active(
@@ -1156,9 +929,7 @@ static void calculate_recout(struct pipe_ctx *pipe_ctx)
 	overlapping_area = intersect_rec(&mpc_slice_of_plane_clip, &odm_slice);
 	if (overlapping_area.height > 0 &&
 			overlapping_area.width > 0) {
-		/* shift the overlapping area so it is with respect to current
-		 * ODM slice's position
-		 */
+		 
 		pipe_ctx->plane_res.scl_data.recout = shift_rec(
 				&overlapping_area,
 				-odm_slice.x, -odm_slice.y);
@@ -1166,7 +937,7 @@ static void calculate_recout(struct pipe_ctx *pipe_ctx)
 				&pipe_ctx->plane_res.scl_data.recout,
 				pipe_ctx);
 	} else {
-		/* if there is no overlap, zero recout */
+		 
 		memset(&pipe_ctx->plane_res.scl_data.recout, 0,
 				sizeof(struct rect));
 	}
@@ -1183,7 +954,7 @@ static void calculate_scaling_ratios(struct pipe_ctx *pipe_ctx)
 	const int out_w = stream->dst.width;
 	const int out_h = stream->dst.height;
 
-	/*Swap surf_src height and width since scaling ratios are in recout rotation*/
+	 
 	if (pipe_ctx->plane_state->rotation == ROTATION_ANGLE_90 ||
 			pipe_ctx->plane_state->rotation == ROTATION_ANGLE_270)
 		swap(surf_src.height, surf_src.width);
@@ -1224,10 +995,7 @@ static void calculate_scaling_ratios(struct pipe_ctx *pipe_ctx)
 }
 
 
-/*
- * We completely calculate vp offset, size and inits here based entirely on scaling
- * ratios and recout for pixel perfect pipe combine.
- */
+ 
 static void calculate_init_and_vp(
 		bool flip_scan_dir,
 		int recout_offset_within_recout_full,
@@ -1242,26 +1010,13 @@ static void calculate_init_and_vp(
 	struct fixed31_32 temp;
 	int int_part;
 
-	/*
-	 * First of the taps starts sampling pixel number <init_int_part> corresponding to recout
-	 * pixel 1. Next recout pixel samples int part of <init + scaling ratio> and so on.
-	 * All following calculations are based on this logic.
-	 *
-	 * Init calculated according to formula:
-	 * 	init = (scaling_ratio + number_of_taps + 1) / 2
-	 * 	init_bot = init + scaling_ratio
-	 * 	to get pixel perfect combine add the fraction from calculating vp offset
-	 */
+	 
 	temp = dc_fixpt_mul_int(ratio, recout_offset_within_recout_full);
 	*vp_offset = dc_fixpt_floor(temp);
 	temp.value &= 0xffffffff;
 	*init = dc_fixpt_truncate(dc_fixpt_add(dc_fixpt_div_int(
 			dc_fixpt_add_int(ratio, taps + 1), 2), temp), 19);
-	/*
-	 * If viewport has non 0 offset and there are more taps than covered by init then
-	 * we should decrease the offset and increase init so we are never sampling
-	 * outside of viewport.
-	 */
+	 
 	int_part = dc_fixpt_floor(*init);
 	if (int_part < taps) {
 		int_part = taps - int_part;
@@ -1270,21 +1025,13 @@ static void calculate_init_and_vp(
 		*vp_offset -= int_part;
 		*init = dc_fixpt_add_int(*init, int_part);
 	}
-	/*
-	 * If taps are sampling outside of viewport at end of recout and there are more pixels
-	 * available in the surface we should increase the viewport size, regardless set vp to
-	 * only what is used.
-	 */
+	 
 	temp = dc_fixpt_add(*init, dc_fixpt_mul_int(ratio, recout_size - 1));
 	*vp_size = dc_fixpt_floor(temp);
 	if (*vp_size + *vp_offset > src_size)
 		*vp_size = src_size - *vp_offset;
 
-	/* We did all the math assuming we are scanning same direction as display does,
-	 * however mirror/rotation changes how vp scans vs how it is offset. If scan direction
-	 * is flipped we simply need to calculate offset from the other side of plane.
-	 * Note that outside of viewport all scaling hardware works in recout space.
-	 */
+	 
 	if (flip_scan_dir)
 		*vp_offset = src_size - *vp_offset - *vp_size;
 }
@@ -1317,9 +1064,7 @@ static void calculate_inits_and_viewports(struct pipe_ctx *pipe_ctx)
 	else
 		memset(&recout_clip_in_recout_dst, 0, sizeof(struct rect));
 
-	/*
-	 * Work in recout rotation since that requires less transformations
-	 */
+	 
 	get_vp_scan_direction(
 			plane_state->rotation,
 			plane_state->horizontal_mirror,
@@ -1393,7 +1138,7 @@ bool resource_build_scaling_params(struct pipe_ctx *pipe_ctx)
 	bool res = false;
 	DC_LOGGER_INIT(pipe_ctx->stream->ctx->logger);
 
-	/* Invalid input */
+	 
 	if (!plane_state->dst_rect.width ||
 			!plane_state->dst_rect.height ||
 			!plane_state->src_rect.width ||
@@ -1405,44 +1150,29 @@ bool resource_build_scaling_params(struct pipe_ctx *pipe_ctx)
 	pipe_ctx->plane_res.scl_data.format = convert_pixel_format_to_dalsurface(
 			pipe_ctx->plane_state->format);
 
-	/* Timing borders are part of vactive that we are also supposed to skip in addition
-	 * to any stream dst offset. Since dm logic assumes dst is in addressable
-	 * space we need to add the left and top borders to dst offsets temporarily.
-	 * TODO: fix in DM, stream dst is supposed to be in vactive
-	 */
+	 
 	pipe_ctx->stream->dst.x += timing->h_border_left;
 	pipe_ctx->stream->dst.y += timing->v_border_top;
 
-	/* Calculate H and V active size */
+	 
 	pipe_ctx->plane_res.scl_data.h_active = odm_slice_rec.width;
 	pipe_ctx->plane_res.scl_data.v_active = odm_slice_rec.height;
 
-	/* depends on h_active */
+	 
 	calculate_recout(pipe_ctx);
-	/* depends on pixel format */
+	 
 	calculate_scaling_ratios(pipe_ctx);
-	/* depends on scaling ratios and recout, does not calculate offset yet */
+	 
 	calculate_viewport_size(pipe_ctx);
 
 	if (!pipe_ctx->stream->ctx->dc->config.enable_windowed_mpo_odm) {
-		/* Stopgap for validation of ODM + MPO on one side of screen case */
+		 
 		if (pipe_ctx->plane_res.scl_data.viewport.height < 1 ||
 				pipe_ctx->plane_res.scl_data.viewport.width < 1)
 			return false;
 	}
 
-	/*
-	 * LB calculations depend on vp size, h/v_active and scaling ratios
-	 * Setting line buffer pixel depth to 24bpp yields banding
-	 * on certain displays, such as the Sharp 4k. 36bpp is needed
-	 * to support SURFACE_PIXEL_FORMAT_GRPH_ARGB16161616 and
-	 * SURFACE_PIXEL_FORMAT_GRPH_ABGR16161616 with actual > 10 bpc
-	 * precision on DCN display engines, but apparently not for DCE, as
-	 * far as testing on DCE-11.2 and DCE-8 showed. Various DCE parts have
-	 * problems: Carrizo with DCE_VERSION_11_0 does not like 36 bpp lb depth,
-	 * neither do DCE-8 at 4k resolution, or DCE-11.2 (broken identify pixel
-	 * passthrough). Therefore only use 36 bpp on DCN where it is actually needed.
-	 */
+	 
 	if (plane_state->ctx->dce_version > DCE_VERSION_MAX)
 		pipe_ctx->plane_res.scl_data.lb_params.depth = LB_PIXEL_DEPTH_36BPP;
 	else
@@ -1460,7 +1190,7 @@ bool resource_build_scaling_params(struct pipe_ctx *pipe_ctx)
 
 
 	if (!res) {
-		/* Try 24 bpp linebuffer */
+		 
 		pipe_ctx->plane_res.scl_data.lb_params.depth = LB_PIXEL_DEPTH_24BPP;
 
 		if (pipe_ctx->plane_res.xfm != NULL)
@@ -1476,18 +1206,11 @@ bool resource_build_scaling_params(struct pipe_ctx *pipe_ctx)
 					&plane_state->scaling_quality);
 	}
 
-	/*
-	 * Depends on recout, scaling ratios, h_active and taps
-	 * May need to re-check lb size after this in some obscure scenario
-	 */
+	 
 	if (res)
 		calculate_inits_and_viewports(pipe_ctx);
 
-	/*
-	 * Handle side by side and top bottom 3d recout offsets after vp calculation
-	 * since 3d is special and needs to calculate vp as if there is no recout offset
-	 * This may break with rotation, good thing we aren't mixing hw rotation and 3d
-	 */
+	 
 	if (pipe_ctx->top_pipe && pipe_ctx->top_pipe->plane_state == plane_state) {
 		ASSERT(plane_state->rotation == ROTATION_ANGLE_0 ||
 			(pipe_ctx->stream->view_format != VIEW_3D_FORMAT_TOP_AND_BOTTOM &&
@@ -1498,7 +1221,7 @@ bool resource_build_scaling_params(struct pipe_ctx *pipe_ctx)
 			pipe_ctx->plane_res.scl_data.recout.x += pipe_ctx->plane_res.scl_data.recout.width;
 	}
 
-	/* Clamp minimum viewport size */
+	 
 	if (pipe_ctx->plane_res.scl_data.viewport.height < MIN_VIEWPORT_SIZE)
 		pipe_ctx->plane_res.scl_data.viewport.height = MIN_VIEWPORT_SIZE;
 	if (pipe_ctx->plane_res.scl_data.viewport.width < MIN_VIEWPORT_SIZE)
@@ -1563,34 +1286,7 @@ struct pipe_ctx *resource_find_free_secondary_pipe_legacy(
 	int i;
 	struct pipe_ctx *secondary_pipe = NULL;
 
-	/*
-	 * We add a preferred pipe mapping to avoid the chance that
-	 * MPCCs already in use will need to be reassigned to other trees.
-	 * For example, if we went with the strict, assign backwards logic:
-	 *
-	 * (State 1)
-	 * Display A on, no surface, top pipe = 0
-	 * Display B on, no surface, top pipe = 1
-	 *
-	 * (State 2)
-	 * Display A on, no surface, top pipe = 0
-	 * Display B on, surface enable, top pipe = 1, bottom pipe = 5
-	 *
-	 * (State 3)
-	 * Display A on, surface enable, top pipe = 0, bottom pipe = 5
-	 * Display B on, surface enable, top pipe = 1, bottom pipe = 4
-	 *
-	 * The state 2->3 transition requires remapping MPCC 5 from display B
-	 * to display A.
-	 *
-	 * However, with the preferred pipe logic, state 2 would look like:
-	 *
-	 * (State 2)
-	 * Display A on, no surface, top pipe = 0
-	 * Display B on, surface enable, top pipe = 1, bottom pipe = 4
-	 *
-	 * This would then cause 2->3 to not require remapping any MPCCs.
-	 */
+	 
 	if (primary_pipe) {
 		int preferred_pipe_idx = (pool->pipe_count - 1) - primary_pipe->pipe_idx;
 		if (res_ctx->pipe_ctx[preferred_pipe_idx].stream == NULL) {
@@ -1599,10 +1295,7 @@ struct pipe_ctx *resource_find_free_secondary_pipe_legacy(
 		}
 	}
 
-	/*
-	 * search backwards for the second pipe to keep pipe
-	 * assignment more consistent
-	 */
+	 
 	if (!secondary_pipe)
 		for (i = pool->pipe_count - 1; i >= 0; i--) {
 			if (res_ctx->pipe_ctx[i].stream == NULL) {
@@ -1625,10 +1318,7 @@ int resource_find_free_pipe_used_in_cur_mpc_blending_tree(
 	int free_pipe_idx = FREE_PIPE_INDEX_NOT_FOUND;
 
 	while (cur_sec_dpp) {
-		/* find a free pipe used in current opp blend tree,
-		 * this is to avoid MPO pipe switching to different opp blending
-		 * tree
-		 */
+		 
 		new_pipe = &new_res_ctx->pipe_ctx[cur_sec_dpp->pipe_idx];
 		if (resource_is_pipe_type(new_pipe, FREE_PIPE)) {
 			free_pipe_idx = cur_sec_dpp->pipe_idx;
@@ -1711,20 +1401,17 @@ bool resource_is_pipe_type(const struct pipe_ctx *pipe_ctx, enum pipe_type type)
 {
 #ifdef DBG
 	if (pipe_ctx->stream == NULL) {
-		/* a free pipe with dangling states */
+		 
 		ASSERT(!pipe_ctx->plane_state);
 		ASSERT(!pipe_ctx->prev_odm_pipe);
 		ASSERT(!pipe_ctx->next_odm_pipe);
 		ASSERT(!pipe_ctx->top_pipe);
 		ASSERT(!pipe_ctx->bottom_pipe);
 	} else if (pipe_ctx->top_pipe) {
-		/* a secondary DPP pipe must be signed to a plane */
+		 
 		ASSERT(pipe_ctx->plane_state)
 	}
-	/* Add more checks here to prevent corrupted pipe ctx. It is very hard
-	 * to debug this issue afterwards because we can't pinpoint the code
-	 * location causing inconsistent pipe context states.
-	 */
+	 
 #endif
 	switch (type) {
 	case OTG_MASTER:
@@ -1861,10 +1548,7 @@ static void insert_secondary_dpp_pipe_with_plane(struct pipe_ctx *opp_head_pipe,
 	sec_pipe->plane_state = plane_state;
 }
 
-/* for each opp head pipe of an otg master pipe, acquire a secondary dpp pipe
- * and add the plane. So the plane is added to all MPC blend trees associated
- * with the otg master pipe.
- */
+ 
 static bool acquire_secondary_dpp_pipes_and_add_plane(
 		struct pipe_ctx *otg_master_pipe,
 		struct dc_plane_state *plane_state,
@@ -1885,7 +1569,7 @@ static bool acquire_secondary_dpp_pipes_and_add_plane(
 				pool,
 				opp_head_pipe);
 		if (!sec_pipe) {
-			/* try tearing down MPCC combine */
+			 
 			int pipe_idx = acquire_first_split_pipe(
 					&new_ctx->res_ctx, pool,
 					otg_master_pipe->stream);
@@ -1969,7 +1653,7 @@ bool dc_remove_plane_from_context(
 		return false;
 	}
 
-	/* release pipe for plane*/
+	 
 	for (i = pool->pipe_count - 1; i >= 0; i--) {
 		struct pipe_ctx *pipe_ctx = &context->res_ctx.pipe_ctx[i];
 
@@ -1977,17 +1661,11 @@ bool dc_remove_plane_from_context(
 			if (pipe_ctx->top_pipe)
 				pipe_ctx->top_pipe->bottom_pipe = pipe_ctx->bottom_pipe;
 
-			/* Second condition is to avoid setting NULL to top pipe
-			 * of tail pipe making it look like head pipe in subsequent
-			 * deletes
-			 */
+			 
 			if (pipe_ctx->bottom_pipe && pipe_ctx->top_pipe)
 				pipe_ctx->bottom_pipe->top_pipe = pipe_ctx->top_pipe;
 
-			/*
-			 * For head pipe detach surfaces from pipe for tail
-			 * pipe just zero it out
-			 */
+			 
 			if (!pipe_ctx->top_pipe)
 				pipe_ctx->plane_state = NULL;
 			else
@@ -2010,7 +1688,7 @@ bool dc_remove_plane_from_context(
 
 	stream_status->plane_count--;
 
-	/* Start at the plane we've just released, and move all the planes one index forward to "trim" the array */
+	 
 	for (; i < stream_status->plane_count; i++)
 		stream_status->plane_states[i] = stream_status->plane_states[i + 1];
 
@@ -2019,17 +1697,7 @@ bool dc_remove_plane_from_context(
 	return true;
 }
 
-/**
- * dc_rem_all_planes_for_stream - Remove planes attached to the target stream.
- *
- * @dc: Current dc state.
- * @stream: Target stream, which we want to remove the attached plans.
- * @context: New context.
- *
- * Return:
- * Return true if DC was able to remove all planes from the target
- * stream, otherwise, return false.
- */
+ 
 bool dc_rem_all_planes_for_stream(
 		const struct dc *dc,
 		struct dc_stream_state *stream,
@@ -2112,7 +1780,7 @@ bool dc_is_timing_changed(struct dc_stream_state *cur_stream,
 	if (cur_stream == NULL)
 		return true;
 
-	/* If output color space is changed, need to reprogram info frames */
+	 
 	if (cur_stream->output_color_space != new_stream->output_color_space)
 		return true;
 
@@ -2143,14 +1811,7 @@ static bool are_stream_backends_same(
 	return true;
 }
 
-/*
- * dc_is_stream_unchanged() - Compare two stream states for equivalence.
- *
- * Checks if there a difference between the two states
- * that would require a mode change.
- *
- * Does not compare cursor position or attributes.
- */
+ 
 bool dc_is_stream_unchanged(
 	struct dc_stream_state *old_stream, struct dc_stream_state *stream)
 {
@@ -2161,16 +1822,14 @@ bool dc_is_stream_unchanged(
 	if (old_stream->ignore_msa_timing_param != stream->ignore_msa_timing_param)
 		return false;
 
-	/*compare audio info*/
+	 
 	if (memcmp(&old_stream->audio_info, &stream->audio_info, sizeof(stream->audio_info)) != 0)
 		return false;
 
 	return true;
 }
 
-/*
- * dc_is_stream_scaling_unchanged() - Compare scaling rectangles of two streams.
- */
+ 
 bool dc_is_stream_scaling_unchanged(struct dc_stream_state *old_stream,
 				    struct dc_stream_state *stream)
 {
@@ -2309,7 +1968,7 @@ static void remove_hpo_dp_link_enc_from_ctx(struct resource_context *res_ctx,
 	}
 }
 
-/* TODO: release audio object */
+ 
 void update_audio_usage(
 		struct resource_context *res_ctx,
 		const struct resource_pool *pool,
@@ -2389,18 +2048,18 @@ static struct audio *find_first_free_audio(
 
 	for (i = 0; i < available_audio_count; i++) {
 		if ((res_ctx->is_audio_acquired[i] == false) && (res_ctx->is_stream_enc_acquired[i] == true)) {
-			/*we have enough audio endpoint, find the matching inst*/
+			 
 			if (id != i)
 				continue;
 			return pool->audios[i];
 		}
 	}
 
-	/* use engine id to find free audio */
+	 
 	if ((id < available_audio_count) && (res_ctx->is_audio_acquired[id] == false)) {
 		return pool->audios[id];
 	}
-	/*not found the matching one, first come first serve*/
+	 
 	for (i = 0; i < available_audio_count; i++) {
 		if (res_ctx->is_audio_acquired[i] == false) {
 			return pool->audios[i];
@@ -2409,9 +2068,7 @@ static struct audio *find_first_free_audio(
 	return NULL;
 }
 
-/*
- * dc_add_stream_to_ctx() - Add a new dc_stream_state to a dc_state.
- */
+ 
 enum dc_status dc_add_stream_to_ctx(
 		struct dc *dc,
 		struct dc_state *new_ctx,
@@ -2436,9 +2093,7 @@ enum dc_status dc_add_stream_to_ctx(
 	return res;
 }
 
-/*
- * dc_remove_stream_from_ctx() - Remove a stream from a dc_state.
- */
+ 
 enum dc_status dc_remove_stream_from_ctx(
 			struct dc *dc,
 			struct dc_state *new_ctx,
@@ -2456,7 +2111,7 @@ enum dc_status dc_remove_stream_from_ctx(
 
 	odm_pipe = del_pipe->next_odm_pipe;
 
-	/* Release primary pipe */
+	 
 	ASSERT(del_pipe->stream_res.stream_enc);
 	update_stream_engine_usage(
 			&new_ctx->res_ctx,
@@ -2506,7 +2161,7 @@ enum dc_status dc_remove_stream_from_ctx(
 	dc_stream_release(new_ctx->streams[i]);
 	new_ctx->stream_count--;
 
-	/* Trim back arrays */
+	 
 	for (; i < new_ctx->stream_count; i++) {
 		new_ctx->streams[i] = new_ctx->streams[i + 1];
 		new_ctx->stream_status[i] = new_ctx->stream_status[i + 1];
@@ -2530,7 +2185,7 @@ static struct dc_stream_state *find_pll_sharable_stream(
 	for (i = 0; i < context->stream_count; i++) {
 		struct dc_stream_state *stream_has_pll = context->streams[i];
 
-		/* We are looking for non dp, non virtual stream */
+		 
 		if (resource_are_streams_timing_synchronizable(
 			stream_needs_pll, stream_has_pll)
 			&& !dc_is_dp_signal(stream_has_pll->signal)
@@ -2575,7 +2230,7 @@ static int get_norm_pix_clk(const struct dc_crtc_timing *timing)
 
 static void calculate_phy_pix_clks(struct dc_stream_state *stream)
 {
-	/* update actual pixel clock on all streams */
+	 
 	if (dc_is_hdmi_signal(stream->signal))
 		stream->phy_pix_clk = get_norm_pix_clk(
 			&stream->timing) / 10;
@@ -2597,7 +2252,7 @@ static int acquire_resource_from_hw_enabled_state(
 	uint32_t numPipes = 1;
 	uint32_t id_src[4] = {0};
 
-	/* Check for enabled DIG to identify enabled display */
+	 
 	if (!link->link_enc->funcs->is_dig_enabled(link->link_enc))
 		return -1;
 
@@ -2614,7 +2269,7 @@ static int acquire_resource_from_hw_enabled_state(
 		}
 	}
 
-	// tg_inst not found
+	
 	if (i == pool->stream_enc_count)
 		return -1;
 
@@ -2637,7 +2292,7 @@ static int acquire_resource_from_hw_enabled_state(
 		}
 
 		for (i = 0; i < numPipes; i++) {
-			//Check if src id invalid
+			
 			if (id_src[i] == 0xf)
 				return -1;
 
@@ -2732,12 +2387,12 @@ enum dc_status resource_map_pool_resources(
 				pool,
 				stream);
 		if (pipe_idx < 0)
-			/* hw resource was assigned to other stream */
+			 
 			stream->apply_seamless_boot_optimization = false;
 	}
 
 	if (pipe_idx < 0)
-		/* acquire new resources */
+		 
 		pipe_idx = acquire_first_free_pipe(&context->res_ctx, pool, stream);
 
 	if (pipe_idx < 0)
@@ -2760,9 +2415,7 @@ enum dc_status resource_map_pool_resources(
 		pipe_ctx->stream_res.stream_enc,
 		true);
 
-	/* Allocate DP HPO Stream Encoder based on signal, hw capabilities
-	 * and link settings
-	 */
+	 
 	if (dc_is_dp_signal(stream->signal)) {
 		if (!dc->link_srv->dp_decide_link_settings(stream, &pipe_ctx->link_config.dp_link_settings))
 			return DC_FAIL_DP_LINK_BANDWIDTH;
@@ -2784,24 +2437,20 @@ enum dc_status resource_map_pool_resources(
 		}
 	}
 
-	/* TODO: Add check if ASIC support and EDID audio */
+	 
 	if (!stream->converter_disable_audio &&
 	    dc_is_audio_capable_signal(pipe_ctx->stream->signal) &&
 	    stream->audio_info.mode_count && stream->audio_info.flags.all) {
 		pipe_ctx->stream_res.audio = find_first_free_audio(
 		&context->res_ctx, pool, pipe_ctx->stream_res.stream_enc->id, dc_ctx->dce_version);
 
-		/*
-		 * Audio assigned in order first come first get.
-		 * There are asics which has number of audio
-		 * resources less then number of pipes
-		 */
+		 
 		if (pipe_ctx->stream_res.audio)
 			update_audio_usage(&context->res_ctx, pool,
 					   pipe_ctx->stream_res.audio, true);
 	}
 
-	/* Add ABM to the resource if on EDP */
+	 
 	if (pipe_ctx->stream && dc_is_embedded_signal(pipe_ctx->stream->signal)) {
 		if (pool->abm)
 			pipe_ctx->stream_res.abm = pool->abm;
@@ -2823,15 +2472,7 @@ enum dc_status resource_map_pool_resources(
 	return DC_ERROR_UNEXPECTED;
 }
 
-/**
- * dc_resource_state_copy_construct_current() - Creates a new dc_state from existing state
- *
- * @dc: copy out of dc->current_state
- * @dst_ctx: copy into this
- *
- * This function makes a shallow copy of the current DC state and increments
- * refcounts on existing streams and planes.
- */
+ 
 void dc_resource_state_copy_construct_current(
 		const struct dc *dc,
 		struct dc_state *dst_ctx)
@@ -2846,7 +2487,7 @@ void dc_resource_state_construct(
 {
 	dst_ctx->clk_mgr = dc->clk_mgr;
 
-	/* Initialise DIG link encoder resource tracking variables. */
+	 
 	link_enc_cfg_init(dc, dst_ctx);
 }
 
@@ -2894,24 +2535,7 @@ static bool planes_changed_for_existing_stream(struct dc_state *context,
 	return false;
 }
 
-/**
- * dc_validate_with_context - Validate and update the potential new stream in the context object
- *
- * @dc: Used to get the current state status
- * @set: An array of dc_validation_set with all the current streams reference
- * @set_count: Total of streams
- * @context: New context
- * @fast_validate: Enable or disable fast validation
- *
- * This function updates the potential new stream in the context object. It
- * creates multiple lists for the add, remove, and unchanged streams. In
- * particular, if the unchanged streams have a plane that changed, it is
- * necessary to remove all planes from the unchanged streams. In summary, this
- * function is responsible for validating the new context.
- *
- * Return:
- * In case of success, return DC_OK (1), otherwise, return a DC error.
- */
+ 
 enum dc_status dc_validate_with_context(struct dc *dc,
 					const struct dc_validation_set set[],
 					int set_count,
@@ -2931,7 +2555,7 @@ enum dc_status dc_validate_with_context(struct dc *dc,
 
 	DC_LOGGER_INIT(dc->ctx->logger);
 
-	/* First build a list of streams to be remove from current context */
+	 
 	for (i = 0; i < old_stream_count; i++) {
 		struct dc_stream_state *stream = context->streams[i];
 
@@ -2948,7 +2572,7 @@ enum dc_status dc_validate_with_context(struct dc *dc,
 		found = false;
 	}
 
-	/* Second, build a list of new streams */
+	 
 	for (i = 0; i < set_count; i++) {
 		struct dc_stream_state *stream = set[i].stream;
 
@@ -2965,11 +2589,9 @@ enum dc_status dc_validate_with_context(struct dc *dc,
 		found = false;
 	}
 
-	/* Build a list of unchanged streams which is necessary for handling
-	 * planes change such as added, removed, and updated.
-	 */
+	 
 	for (i = 0; i < set_count; i++) {
-		/* Check if stream is part of the delete list */
+		 
 		for (j = 0; j < del_streams_count; j++) {
 			if (set[i].stream == del_streams[j]) {
 				found = true;
@@ -2978,7 +2600,7 @@ enum dc_status dc_validate_with_context(struct dc *dc,
 		}
 
 		if (!found) {
-			/* Check if stream is part of the add list */
+			 
 			for (j = 0; j < add_streams_count; j++) {
 				if (set[i].stream == add_streams[j]) {
 					found = true;
@@ -2993,7 +2615,7 @@ enum dc_status dc_validate_with_context(struct dc *dc,
 		found = false;
 	}
 
-	/* Remove all planes for unchanged streams if planes changed */
+	 
 	for (i = 0; i < unchanged_streams_count; i++) {
 		if (planes_changed_for_existing_stream(context,
 						       unchanged_streams[i],
@@ -3008,9 +2630,9 @@ enum dc_status dc_validate_with_context(struct dc *dc,
 		}
 	}
 
-	/* Remove all planes for removed streams and then remove the streams */
+	 
 	for (i = 0; i < del_streams_count; i++) {
-		/* Need to cpy the dwb data from the old stream in order to efc to work */
+		 
 		if (del_streams[i]->num_wb_info > 0) {
 			for (j = 0; j < add_streams_count; j++) {
 				if (del_streams[i]->sink == add_streams[j]->sink) {
@@ -3031,10 +2653,7 @@ enum dc_status dc_validate_with_context(struct dc *dc,
 			goto fail;
 	}
 
-	/* Swap seamless boot stream to pipe 0 (if needed) to ensure pipe_ctx
-	 * matches. This may change in the future if seamless_boot_stream can be
-	 * multiple.
-	 */
+	 
 	for (i = 0; i < add_streams_count; i++) {
 		mark_seamless_boot_stream(dc, add_streams[i]);
 		if (add_streams[i]->apply_seamless_boot_optimization && i != 0) {
@@ -3046,7 +2665,7 @@ enum dc_status dc_validate_with_context(struct dc *dc,
 		}
 	}
 
-	/* Add new streams and then add all planes for the new stream */
+	 
 	for (i = 0; i < add_streams_count; i++) {
 		calculate_phy_pix_clks(add_streams[i]);
 		res = dc_add_stream_to_ctx(dc, context, add_streams[i]);
@@ -3059,7 +2678,7 @@ enum dc_status dc_validate_with_context(struct dc *dc,
 		}
 	}
 
-	/* Add all planes for unchanged streams if planes changed */
+	 
 	for (i = 0; i < unchanged_streams_count; i++) {
 		if (planes_changed_for_existing_stream(context,
 						       unchanged_streams[i],
@@ -3083,18 +2702,7 @@ fail:
 	return res;
 }
 
-/**
- * dc_validate_global_state() - Determine if hardware can support a given state
- *
- * @dc: dc struct for this driver
- * @new_ctx: state to be validated
- * @fast_validate: set to true if only yes/no to support matters
- *
- * Checks hardware resource availability and bandwidth requirement.
- *
- * Return:
- * DC_OK if the result can be programmed. Otherwise, an error code.
- */
+ 
 enum dc_status dc_validate_global_state(
 		struct dc *dc,
 		struct dc_state *new_ctx,
@@ -3129,10 +2737,7 @@ enum dc_status dc_validate_global_state(
 					return result;
 			}
 
-			/* Switch to dp clock source only if there is
-			 * no non dp stream that shares the same timing
-			 * with the dp stream.
-			 */
+			 
 			if (dc_is_dp_signal(pipe_ctx->stream->signal) &&
 				!find_pll_sharable_stream(stream, new_ctx)) {
 
@@ -3156,10 +2761,7 @@ enum dc_status dc_validate_global_state(
 		if (!dc->res_pool->funcs->validate_bandwidth(dc, new_ctx, fast_validate))
 			result = DC_FAIL_BANDWIDTH_VALIDATE;
 
-	/*
-	 * Only update link encoder to stream assignment after bandwidth validation passed.
-	 * TODO: Split out assignment and validation.
-	 */
+	 
 	if (result == DC_OK && dc->res_pool->funcs->link_encs_assign && fast_validate == false)
 		dc->res_pool->funcs->link_encs_assign(
 			dc, new_ctx, new_ctx->streams, new_ctx->stream_count);
@@ -3170,13 +2772,13 @@ enum dc_status dc_validate_global_state(
 static void patch_gamut_packet_checksum(
 		struct dc_info_packet *gamut_packet)
 {
-	/* For gamut we recalc checksum */
+	 
 	if (gamut_packet->valid) {
 		uint8_t chk_sum = 0;
 		uint8_t *ptr;
 		uint8_t i;
 
-		/*start of the Gamut data. */
+		 
 		ptr = &gamut_packet->sb[3];
 
 		for (i = 0; i <= gamut_packet->sb[1]; i++)
@@ -3215,17 +2817,13 @@ static void set_avi_info_frame(
 		color_space = (stream->timing.pixel_encoding == PIXEL_ENCODING_RGB) ?
 			COLOR_SPACE_SRGB:COLOR_SPACE_YCBCR709;
 
-	/* Initialize header */
+	 
 	hdmi_info.bits.header.info_frame_type = HDMI_INFOFRAME_TYPE_AVI;
-	/* InfoFrameVersion_3 is defined by CEA861F (Section 6.4), but shall
-	* not be used in HDMI 2.0 (Section 10.1) */
+	 
 	hdmi_info.bits.header.version = 2;
 	hdmi_info.bits.header.length = HDMI_AVI_INFOFRAME_SIZE;
 
-	/*
-	 * IDO-defined (Y2,Y1,Y0 = 1,1,1) shall not be used by devices built
-	 * according to HDMI 2.0 spec (Section 10.1)
-	 */
+	 
 
 	switch (stream->timing.pixel_encoding) {
 	case PIXEL_ENCODING_YCBCR422:
@@ -3244,24 +2842,24 @@ static void set_avi_info_frame(
 		pixel_encoding = 0;
 	}
 
-	/* Y0_Y1_Y2 : The pixel encoding */
-	/* H14b AVI InfoFrame has extension on Y-field from 2 bits to 3 bits */
+	 
+	 
 	hdmi_info.bits.Y0_Y1_Y2 = pixel_encoding;
 
-	/* A0 = 1 Active Format Information valid */
+	 
 	hdmi_info.bits.A0 = ACTIVE_FORMAT_VALID;
 
-	/* B0, B1 = 3; Bar info data is valid */
+	 
 	hdmi_info.bits.B0_B1 = BAR_INFO_BOTH_VALID;
 
 	hdmi_info.bits.SC0_SC1 = PICTURE_SCALING_UNIFORM;
 
-	/* S0, S1 : Underscan / Overscan */
-	/* TODO: un-hardcode scan type */
+	 
+	 
 	scan_type = SCANNING_TYPE_UNDERSCAN;
 	hdmi_info.bits.S0_S1 = scan_type;
 
-	/* C0, C1 : Colorimetry */
+	 
 	switch (color_space) {
 	case COLOR_SPACE_YCBCR709:
 	case COLOR_SPACE_YCBCR709_LIMITED:
@@ -3293,7 +2891,7 @@ static void set_avi_info_frame(
 		hdmi_info.bits.C0_C1 = COLORIMETRY_ITU709;
 	}
 
-	/* TODO: un-hardcode aspect ratio */
+	 
 	aspect = stream->timing.aspect_ratio;
 
 	switch (aspect) {
@@ -3309,10 +2907,10 @@ static void set_avi_info_frame(
 		hdmi_info.bits.M0_M1 = 0;
 	}
 
-	/* Active Format Aspect ratio - same as Picture Aspect Ratio. */
+	 
 	hdmi_info.bits.R0_R3 = ACTIVE_FORMAT_ASPECT_RATIO_SAME_AS_PICTURE;
 
-	/* TODO: un-hardcode cn0_cn1 and itc */
+	 
 
 	cn0_cn1 = 0;
 	cn0_cn1_value = 0;
@@ -3369,17 +2967,17 @@ static void set_avi_info_frame(
 	} else
 		hdmi_info.bits.Q0_Q1   = RGB_QUANTIZATION_DEFAULT_RANGE;
 
-	/* TODO : We should handle YCC quantization */
-	/* but we do not have matrix calculation */
+	 
+	 
 	hdmi_info.bits.YQ0_YQ1 = YYC_QUANTIZATION_LIMITED_RANGE;
 
-	///VIC
+	
 	if (pipe_ctx->stream->timing.hdmi_vic != 0)
 		vic = 0;
 	format = stream->timing.timing_3d_format;
-	/*todo, add 3DStereo support*/
+	 
 	if (format != TIMING_3D_FORMAT_NONE) {
-		// Based on HDMI specs hdmi vic needs to be converted to cea vic when 3D is enabled
+		
 		switch (pipe_ctx->stream->timing.hdmi_vic) {
 		case 1:
 			vic = 95;
@@ -3397,13 +2995,11 @@ static void set_avi_info_frame(
 			break;
 		}
 	}
-	/* If VIC >= 128, the Source shall use AVI InfoFrame Version 3*/
+	 
 	hdmi_info.bits.VIC0_VIC7 = vic;
 	if (vic >= 128)
 		hdmi_info.bits.header.version = 3;
-	/* If (C1, C0)=(1, 1) and (EC2, EC1, EC0)=(1, 1, 1),
-	 * the Source shall use 20 AVI InfoFrame Version 4
-	 */
+	 
 	if (hdmi_info.bits.C0_C1 == COLORIMETRY_EXTENDED &&
 			hdmi_info.bits.EC0_EC2 == COLORIMETRYEX_RESERVED) {
 		hdmi_info.bits.header.version = 4;
@@ -3419,16 +3015,10 @@ static void set_avi_info_frame(
 		hdmi_info.bits.RID0_RID5 = rid;
 	}
 
-	/* pixel repetition
-	 * PR0 - PR3 start from 0 whereas pHwPathMode->mode.timing.flags.pixel
-	 * repetition start from 1 */
+	 
 	hdmi_info.bits.PR0_PR3 = 0;
 
-	/* Bar Info
-	 * barTop:    Line Number of End of Top Bar.
-	 * barBottom: Line Number of Start of Bottom Bar.
-	 * barLeft:   Pixel Number of End of Left Bar.
-	 * barRight:  Pixel Number of Start of Right Bar. */
+	 
 	hdmi_info.bits.bar_top = stream->timing.v_border_top;
 	hdmi_info.bits.bar_bottom = (stream->timing.v_total
 			- stream->timing.v_border_bottom + 1);
@@ -3436,14 +3026,10 @@ static void set_avi_info_frame(
 	hdmi_info.bits.bar_right = (stream->timing.h_total
 			- stream->timing.h_border_right + 1);
 
-    /* Additional Colorimetry Extension
-     * Used in conduction with C0-C1 and EC0-EC2
-     * 0 = DCI-P3 RGB (D65)
-     * 1 = DCI-P3 RGB (theater)
-     */
+     
 	hdmi_info.bits.ACE0_ACE3 = 0;
 
-	/* check_sum - Calculate AFMT_AVI_INFO0 ~ AFMT_AVI_INFO3 */
+	 
 	check_sum = &hdmi_info.packet_raw_data.sb[0];
 
 	*check_sum = HDMI_INFOFRAME_TYPE_AVI + hdmi_info.bits.header.length + hdmi_info.bits.header.version;
@@ -3451,10 +3037,10 @@ static void set_avi_info_frame(
 	for (byte_index = 1; byte_index <= hdmi_info.bits.header.length; byte_index++)
 		*check_sum += hdmi_info.packet_raw_data.sb[byte_index];
 
-	/* one byte complement */
+	 
 	*check_sum = (uint8_t) (0x100 - *check_sum);
 
-	/* Store in hw_path_mode */
+	 
 	info_packet->hb0 = hdmi_info.packet_raw_data.hb0;
 	info_packet->hb1 = hdmi_info.packet_raw_data.hb1;
 	info_packet->hb2 = hdmi_info.packet_raw_data.hb2;
@@ -3469,11 +3055,9 @@ static void set_vendor_info_packet(
 		struct dc_info_packet *info_packet,
 		struct dc_stream_state *stream)
 {
-	/* SPD info packet for FreeSync */
+	 
 
-	/* Check if Freesync is supported. Return if false. If true,
-	 * set the corresponding bit in the info packet
-	 */
+	 
 	if (!stream->vsp_infopacket.valid)
 		return;
 
@@ -3484,11 +3068,9 @@ static void set_spd_info_packet(
 		struct dc_info_packet *info_packet,
 		struct dc_stream_state *stream)
 {
-	/* SPD info packet for FreeSync */
+	 
 
-	/* Check if Freesync is supported. Return if false. If true,
-	 * set the corresponding bit in the info packet
-	 */
+	 
 	if (!stream->vrr_infopacket.valid)
 		return;
 
@@ -3499,7 +3081,7 @@ static void set_hdr_static_info_packet(
 		struct dc_info_packet *info_packet,
 		struct dc_stream_state *stream)
 {
-	/* HDR Static Metadata info packet for HDR10 */
+	 
 
 	if (!stream->hdr_static_metadata.valid ||
 			stream->use_dynamic_meta)
@@ -3538,10 +3120,10 @@ static void adaptive_sync_override_dp_info_packets_sdp_line_num(
 
 	const struct dc_crtc_timing *tg = timing;
 
-	/* blank_start = frame end - front porch */
+	 
 	asic_blank_start = tg->v_total - tg->v_front_porch;
 
-	/* blank_end = blank_start - active */
+	 
 	asic_blank_end = (asic_blank_start - tg->v_border_bottom -
 						tg->v_addressable - tg->v_border_top);
 
@@ -3630,7 +3212,7 @@ void dc_resource_state_copy_construct(
 				dst_ctx->stream_status[i].plane_states[j]);
 	}
 
-	/* context refcount should not be overridden */
+	 
 	dst_ctx->refcount = refcount;
 
 }
@@ -3654,7 +3236,7 @@ void resource_build_info_frame(struct pipe_ctx *pipe_ctx)
 	enum signal_type signal = SIGNAL_TYPE_NONE;
 	struct encoder_info_frame *info = &pipe_ctx->stream_res.encoder_info_frame;
 
-	/* default all packets to invalid */
+	 
 	info->avi.valid = false;
 	info->gamut.valid = false;
 	info->vendor.valid = false;
@@ -3666,7 +3248,7 @@ void resource_build_info_frame(struct pipe_ctx *pipe_ctx)
 	info->adaptive_sync.valid = false;
 	signal = pipe_ctx->stream->signal;
 
-	/* HDMi and DP have different info packets*/
+	 
 	if (dc_is_hdmi_signal(signal)) {
 		set_avi_info_frame(&info->avi, pipe_ctx);
 
@@ -3698,7 +3280,7 @@ enum dc_status resource_map_clock_resources(
 		struct dc_state *context,
 		struct dc_stream_state *stream)
 {
-	/* acquire new resources */
+	 
 	const struct resource_pool *pool = dc->res_pool;
 	struct pipe_ctx *pipe_ctx = resource_get_otg_master_for_stream(
 				&context->res_ctx, stream);
@@ -3734,11 +3316,7 @@ enum dc_status resource_map_clock_resources(
 	return DC_OK;
 }
 
-/*
- * Note: We need to disable output if clock sources change,
- * since bios does optimization and doesn't apply if changing
- * PHY when not already disabled.
- */
+ 
 bool pipe_need_reprogram(
 		struct pipe_ctx *pipe_ctx_old,
 		struct pipe_ctx *pipe_ctx)
@@ -3780,7 +3358,7 @@ bool pipe_need_reprogram(
 	if (pipe_ctx_old->link_res.hpo_dp_link_enc != pipe_ctx->link_res.hpo_dp_link_enc)
 		return true;
 
-	/* DIG link encoder resource assignment for stream changed. */
+	 
 	if (pipe_ctx_old->stream->ctx->dc->res_pool->funcs->link_encs_assign) {
 		bool need_reprogram = false;
 		struct dc *dc = pipe_ctx_old->stream->ctx->dc;
@@ -3842,13 +3420,7 @@ void resource_build_bit_depth_reduction_params(struct dc_stream_state *stream,
 		fmt_bit_depth->flags.TRUNCATE_DEPTH = 2;
 	}
 
-	/* special case - Formatter can only reduce by 4 bits at most.
-	 * When reducing from 12 to 6 bits,
-	 * HW recommends we use trunc with round mode
-	 * (if we did nothing, trunc to 10 bits would be used)
-	 * note that any 12->10 bit reduction is ignored prior to DCE8,
-	 * as the input was 10 bits.
-	 */
+	 
 	if (option == DITHER_OPTION_SPATIAL6_FRAME_RANDOM ||
 			option == DITHER_OPTION_SPATIAL6 ||
 			option == DITHER_OPTION_FM6) {
@@ -3857,9 +3429,7 @@ void resource_build_bit_depth_reduction_params(struct dc_stream_state *stream,
 		fmt_bit_depth->flags.TRUNCATE_MODE = 1;
 	}
 
-	/* spatial dither
-	 * note that spatial modes 1-3 are never used
-	 */
+	 
 	if (option == DITHER_OPTION_SPATIAL6_FRAME_RANDOM            ||
 			option == DITHER_OPTION_SPATIAL6 ||
 			option == DITHER_OPTION_TRUN10_SPATIAL6      ||
@@ -3898,9 +3468,9 @@ void resource_build_bit_depth_reduction_params(struct dc_stream_state *stream,
 		fmt_bit_depth->flags.FRAME_RANDOM = 1;
 	}
 
-	//////////////////////
-	//// temporal dither
-	//////////////////////
+	 
+	 
+	 
 	if (option == DITHER_OPTION_FM6           ||
 			option == DITHER_OPTION_SPATIAL8_FM6     ||
 			option == DITHER_OPTION_SPATIAL10_FM6     ||
@@ -3940,7 +3510,7 @@ enum dc_status dc_validate_stream(struct dc *dc, struct dc_stream_state *stream)
 			res = DC_FAIL_ENC_VALIDATE;
 	}
 
-	/* TODO: validate audio ASIC caps, encoder */
+	 
 
 	if (res == DC_OK)
 		res = dc->link_srv->validate_mode_timing(stream,
@@ -3954,12 +3524,12 @@ enum dc_status dc_validate_plane(struct dc *dc, const struct dc_plane_state *pla
 {
 	enum dc_status res = DC_OK;
 
-	/* check if surface has invalid dimensions */
+	 
 	if (plane_state->src_rect.width == 0 || plane_state->src_rect.height == 0 ||
 		plane_state->dst_rect.width == 0 || plane_state->dst_rect.height == 0)
 		return DC_FAIL_SURFACE_VALIDATE;
 
-	/* TODO For now validates pixel format only */
+	 
 	if (dc->res_pool->funcs->validate_plane)
 		return dc->res_pool->funcs->validate_plane(plane_state, &dc->caps);
 
@@ -4015,7 +3585,7 @@ static unsigned int get_max_audio_sample_rate(struct audio_mode *modes)
 		if (modes->sample_rates.rate.RATE_32)
 			return 32000;
 	}
-	/*original logic when no audio info*/
+	 
 	return 441000;
 }
 
@@ -4026,19 +3596,19 @@ void get_audio_check(struct audio_info *aud_modes,
 	unsigned int max_sample_rate = 0;
 
 	if (aud_modes) {
-		audio_chk->audio_packet_type = 0x2;/*audio sample packet AP = .25 for layout0, 1 for layout1*/
+		audio_chk->audio_packet_type = 0x2; 
 
 		audio_chk->max_audiosample_rate = 0;
 		for (i = 0; i < aud_modes->mode_count; i++) {
 			max_sample_rate = get_max_audio_sample_rate(&aud_modes->modes[i]);
 			if (audio_chk->max_audiosample_rate < max_sample_rate)
 				audio_chk->max_audiosample_rate = max_sample_rate;
-			/*dts takes the same as type 2: AP = 0.25*/
+			 
 		}
-		/*check which one take more bandwidth*/
+		 
 		if (audio_chk->max_audiosample_rate > 192000)
-			audio_chk->audio_packet_type = 0x9;/*AP =1*/
-		audio_chk->acat = 0;/*not support*/
+			audio_chk->audio_packet_type = 0x9; 
+		audio_chk->acat = 0; 
 	}
 }
 
@@ -4085,7 +3655,7 @@ void reset_syncd_pipes_from_disabled_pipes(struct dc *dc,
 	int i, j;
 	struct pipe_ctx *pipe_ctx_old, *pipe_ctx, *pipe_ctx_syncd;
 
-	/* If pipe backend is reset, need to reset pipe syncd status */
+	 
 	for (i = 0; i < dc->res_pool->pipe_count; i++) {
 		pipe_ctx_old =	&dc->current_state->res_ctx.pipe_ctx[i];
 		pipe_ctx = &context->res_ctx.pipe_ctx[i];
@@ -4096,7 +3666,7 @@ void reset_syncd_pipes_from_disabled_pipes(struct dc *dc,
 		if (!pipe_ctx->stream ||
 				pipe_need_reprogram(pipe_ctx_old, pipe_ctx)) {
 
-			/* Reset all the syncd pipes from the disabled pipe */
+			 
 			for (j = 0; j < dc->res_pool->pipe_count; j++) {
 				pipe_ctx_syncd = &context->res_ctx.pipe_ctx[j];
 				if ((GET_PIPE_SYNCD_FROM_PIPE(pipe_ctx_syncd) == pipe_ctx_old->pipe_idx) ||
@@ -4119,7 +3689,7 @@ void check_syncd_pipes_for_disabled_master_pipe(struct dc *dc,
 		!IS_PIPE_SYNCD_VALID(pipe_ctx))
 		SET_PIPE_SYNCD_TO_PIPE(pipe_ctx, disabled_master_pipe_idx);
 
-	/* for the pipe disabled, check if any slave pipe exists and assert */
+	 
 	for (i = 0; i < dc->res_pool->pipe_count; i++) {
 		pipe_ctx_check = &context->res_ctx.pipe_ctx[i];
 
@@ -4129,9 +3699,7 @@ void check_syncd_pipes_for_disabled_master_pipe(struct dc *dc,
 
 			while (first_pipe->prev_odm_pipe)
 				first_pipe = first_pipe->prev_odm_pipe;
-			/* When ODM combine is enabled, this case is expected. If the disabled pipe
-			 * is part of the ODM tree, then we should not print an error.
-			 * */
+			 
 			if (first_pipe->pipe_idx == disabled_master_pipe_idx)
 				continue;
 
@@ -4148,7 +3716,7 @@ void reset_sync_context_for_pipe(const struct dc *dc,
 	int i;
 	struct pipe_ctx *pipe_ctx_reset;
 
-	/* reset the otg sync context for the pipe and its slave pipes if any */
+	 
 	for (i = 0; i < dc->res_pool->pipe_count; i++) {
 		pipe_ctx_reset = &context->res_ctx.pipe_ctx[i];
 
@@ -4160,7 +3728,7 @@ void reset_sync_context_for_pipe(const struct dc *dc,
 
 uint8_t resource_transmitter_to_phy_idx(const struct dc *dc, enum transmitter transmitter)
 {
-	/* TODO - get transmitter to phy idx mapping from DMUB */
+	 
 	uint8_t phy_idx = transmitter - TRANSMITTER_UNIPHY_A;
 
 	if (dc->ctx->dce_version == DCN_VERSION_3_1 &&
@@ -4193,27 +3761,9 @@ uint8_t resource_transmitter_to_phy_idx(const struct dc *dc, enum transmitter tr
 const struct link_hwss *get_link_hwss(const struct dc_link *link,
 		const struct link_resource *link_res)
 {
-	/* Link_hwss is only accessible by getter function instead of accessing
-	 * by pointers in dc with the intent to protect against breaking polymorphism.
-	 */
+	 
 	if (can_use_hpo_dp_link_hwss(link, link_res))
-		/* TODO: some assumes that if decided link settings is 128b/132b
-		 * channel coding format hpo_dp_link_enc should be used.
-		 * Others believe that if hpo_dp_link_enc is available in link
-		 * resource then hpo_dp_link_enc must be used. This bound between
-		 * hpo_dp_link_enc != NULL and decided link settings is loosely coupled
-		 * with a premise that both hpo_dp_link_enc pointer and decided link
-		 * settings are determined based on single policy function like
-		 * "decide_link_settings" from upper layer. This "convention"
-		 * cannot be maintained and enforced at current level.
-		 * Therefore a refactor is due so we can enforce a strong bound
-		 * between those two parameters at this level.
-		 *
-		 * To put it simple, we want to make enforcement at low level so that
-		 * we will not return link hwss if caller plans to do 8b/10b
-		 * with an hpo encoder. Or we can return a very dummy one that doesn't
-		 * do work for all functions
-		 */
+		 
 		return (requires_fixed_vs_pe_retimer_hpo_link_hwss(link) ?
 				get_hpo_fixed_vs_pe_retimer_dp_link_hwss() : get_hpo_dp_link_hwss());
 	else if (can_use_dpia_link_hwss(link, link_res))
@@ -4235,10 +3785,7 @@ bool is_h_timing_divisible_by_2(struct dc_stream_state *stream)
 		h_blank_start = stream->timing.h_total - stream->timing.h_front_porch;
 		h_blank_end = h_blank_start - stream->timing.h_addressable;
 
-		/* HTOTAL, Hblank start/end, and Hsync start/end all must be
-		 * divisible by 2 in order for the horizontal timing params
-		 * to be considered divisible by 2. Hsync start is always 0.
-		 */
+		 
 		divisible = (stream->timing.h_total % 2 == 0) &&
 				(h_blank_start % 2 == 0) &&
 				(h_blank_end % 2 == 0) &&

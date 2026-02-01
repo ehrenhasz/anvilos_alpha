@@ -1,36 +1,7 @@
-// * this is for making emacs happy: -*-Mode: C++;-*-
-/****************************************************************************
- * Copyright 2020 Thomas E. Dickey                                          *
- * Copyright 1999-2012,2013 Free Software Foundation, Inc.                  *
- *                                                                          *
- * Permission is hereby granted, free of charge, to any person obtaining a  *
- * copy of this software and associated documentation files (the            *
- * "Software"), to deal in the Software without restriction, including      *
- * without limitation the rights to use, copy, modify, merge, publish,      *
- * distribute, distribute with modifications, sublicense, and/or sell       *
- * copies of the Software, and to permit persons to whom the Software is    *
- * furnished to do so, subject to the following conditions:                 *
- *                                                                          *
- * The above copyright notice and this permission notice shall be included  *
- * in all copies or substantial portions of the Software.                   *
- *                                                                          *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS  *
- * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF               *
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.   *
- * IN NO EVENT SHALL THE ABOVE COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,   *
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR    *
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR    *
- * THE USE OR OTHER DEALINGS IN THE SOFTWARE.                               *
- *                                                                          *
- * Except as contained in this notice, the name(s) of the above copyright   *
- * holders shall not be used in advertising or otherwise to promote the     *
- * sale, use or other dealings in this Software without prior written       *
- * authorization.                                                           *
- ****************************************************************************/
 
-/****************************************************************************
- *   Author: Juergen Pfeifer, 1999                                          *
- ****************************************************************************/
+ 
+
+ 
 
 #include "internal.h"
 
@@ -56,24 +27,24 @@ NCursesPad::NCursesPad(int nlines, int ncols)
 
 int NCursesPad::driver (int key)
 {
-  // Default implementation
+  
   switch(key) {
   case KEY_UP:
-    // =======
+    
     return REQ_PAD_UP;
   case KEY_DOWN:
-    // =========
+    
     return REQ_PAD_DOWN;
   case KEY_LEFT:
-    // =========
+    
     return REQ_PAD_LEFT;
   case KEY_RIGHT:
-    // ==========
+    
     return REQ_PAD_RIGHT;
   case KEY_EXIT:
-    // =========
+    
   case CTRL('X'):
-    // ==========
+    
     return REQ_PAD_EXIT;
 
   default: return(key);
@@ -100,11 +71,11 @@ void NCursesPad::operator()(void)
 
       switch (req) {
       case REQ_PAD_REFRESH:
-	// ================
+	
 	changed = TRUE;
 	break;
       case REQ_PAD_LEFT:
-	// =============
+	
 	if (min_col > 0) {
 	  changed = TRUE;
 	  if (min_col < h_gridsize)
@@ -116,7 +87,7 @@ void NCursesPad::operator()(void)
 	  OnNavigationError(req);
 	break;
       case REQ_PAD_RIGHT:
-	// ==============
+	
 	if (min_col < (width() - Width - 1)) {
 	  changed = TRUE;
 	  if (min_col > (width() - Width - h_gridsize - 1))
@@ -128,7 +99,7 @@ void NCursesPad::operator()(void)
 	  OnNavigationError(req);
 	break;
       case REQ_PAD_UP:
-	// ===========
+	
 	if (min_row > 0) {
 	  changed = TRUE;
 	  if (min_row < v_gridsize)
@@ -140,7 +111,7 @@ void NCursesPad::operator()(void)
 	  OnNavigationError(req);
 	break;
       case REQ_PAD_DOWN:
-	// =============
+	
 	if (min_row < (height() - Height - 1)) {
 	  changed = TRUE;
 	  if (min_row > (height() - Height - v_gridsize - 1))

@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2021, Linaro Limited
+
+
 
 #include <linux/err.h>
 #include <linux/init.h>
@@ -68,7 +68,7 @@ static int q6dma_set_channel_map(struct snd_soc_dai *dai,
 	case RX_CODEC_DMA_RX_5:
 	case RX_CODEC_DMA_RX_6:
 	case RX_CODEC_DMA_RX_7:
-		/* rx */
+		 
 		if (!rx_ch_mask) {
 			dev_err(dai->dev, "rx slot not found\n");
 			return -EINVAL;
@@ -166,10 +166,7 @@ static int q6apm_lpass_dai_prepare(struct snd_pcm_substream *substream, struct s
 			q6apm_graph_close(dai_data->graph[dai->id]);
 	}
 
-	/**
-	 * It is recommend to load DSP with source graph first and then sink
-	 * graph, so sequence for playback and capture will be different
-	 */
+	 
 	if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK) {
 		graph = q6apm_graph_open(dai->dev, NULL, dai->dev, graph_id);
 		if (IS_ERR(graph)) {

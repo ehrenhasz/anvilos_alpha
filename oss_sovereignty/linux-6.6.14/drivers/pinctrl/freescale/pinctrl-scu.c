@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (C) 2016 Freescale Semiconductor, Inc.
- * Copyright 2017-2018 NXP
- *	Dong Aisheng <aisheng.dong@nxp.com>
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/firmware/imx/sci.h>
@@ -17,8 +13,8 @@
 
 #define IMX_SC_PAD_FUNC_GET_WAKEUP	9
 #define IMX_SC_PAD_FUNC_SET_WAKEUP	4
-#define IMX_SC_IRQ_GROUP_WAKE           3   /* Wakeup interrupts */
-#define IMX_SC_IRQ_PAD			2   /* Pad wakeup */
+#define IMX_SC_IRQ_GROUP_WAKE           3    
+#define IMX_SC_IRQ_PAD			2    
 
 enum pad_func_e {
 	IMX_SC_PAD_FUNC_SET = 15,
@@ -111,9 +107,7 @@ int imx_pinconf_set_scu(struct pinctrl_dev *pctldev, unsigned pin_id,
 		return ret;
 	}
 
-	/*
-	 * Set mux and conf together in one IPC call
-	 */
+	 
 	WARN_ON(num_configs != 2);
 	conf = configs[1];
 

@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 
 #ifndef __BUDGET_DVB__
 #define __BUDGET_DVB__
@@ -34,10 +34,10 @@ struct budget_info {
 	int type;
 };
 
-/* place to store all the necessary device information */
+ 
 struct budget {
 
-	/* devices */
+	 
 	struct dvb_device dvb_dev;
 	struct dvb_net dvb_net;
 

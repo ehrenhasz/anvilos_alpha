@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * A64FX diag driver.
- * Copyright (c) 2022 Fujitsu Ltd.
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/interrupt.h>

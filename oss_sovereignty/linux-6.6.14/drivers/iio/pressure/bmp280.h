@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #include <linux/bitops.h>
 #include <linux/device.h>
 #include <linux/iio/iio.h>
@@ -6,7 +6,7 @@
 #include <linux/regulator/consumer.h>
 
 
-/* BMP580 specific registers */
+ 
 #define BMP580_REG_CMD			0x7E
 #define BMP580_REG_EFF_OSR		0x38
 #define BMP580_REG_ODR_CONFIG		0x37
@@ -14,23 +14,23 @@
 #define BMP580_REG_IF_CONFIG		0x13
 #define BMP580_REG_REV_ID		0x02
 #define BMP580_REG_CHIP_ID		0x01
-/* OOR allows to configure a pressure alarm */
+ 
 #define BMP580_REG_OOR_CONFIG		0x35
 #define BMP580_REG_OOR_RANGE		0x34
 #define BMP580_REG_OOR_THR_MSB		0x33
 #define BMP580_REG_OOR_THR_LSB		0x32
-/* DSP registers (IIR filters) */
+ 
 #define BMP580_REG_DSP_IIR		0x31
 #define BMP580_REG_DSP_CONFIG		0x30
-/* NVM access registers */
+ 
 #define BMP580_REG_NVM_DATA_MSB		0x2D
 #define BMP580_REG_NVM_DATA_LSB		0x2C
 #define BMP580_REG_NVM_ADDR		0x2B
-/* Status registers */
+ 
 #define BMP580_REG_STATUS		0x28
 #define BMP580_REG_INT_STATUS		0x27
 #define BMP580_REG_CHIP_STATUS		0x11
-/* Data registers */
+ 
 #define BMP580_REG_FIFO_DATA		0x29
 #define BMP580_REG_PRESS_MSB		0x22
 #define BMP580_REG_PRESS_LSB		0x21
@@ -38,11 +38,11 @@
 #define BMP580_REG_TEMP_MSB		0x1F
 #define BMP580_REG_TEMP_LSB		0x1E
 #define BMP580_REG_TEMP_XLSB		0x1D
-/* FIFO config registers */
+ 
 #define BMP580_REG_FIFO_SEL		0x18
 #define BMP580_REG_FIFO_COUNT		0x17
 #define BMP580_REG_FIFO_CONFIG		0x16
-/* Interruptions config registers */
+ 
 #define BMP580_REG_INT_SOURCE		0x15
 #define BMP580_REG_INT_CONFIG		0x14
 
@@ -80,10 +80,7 @@
 #define BMP580_DSP_COMP_MASK		GENMASK(1, 0)
 #define BMP580_DSP_COMP_DIS		0
 #define BMP580_DSP_TEMP_COMP_EN		1
-/*
- * In section 7.27 of datasheet, modes 2 and 3 are technically the same.
- * Pressure compensation means also enabling temperature compensation
- */
+ 
 #define BMP580_DSP_PRESS_COMP_EN	2
 #define BMP580_DSP_PRESS_TEMP_COMP_EN	3
 #define BMP580_DSP_IIR_FORCED_FLUSH	BIT(2)
@@ -110,7 +107,7 @@
 #define BMP580_TEMP_SKIPPED		0x7f7f7f
 #define BMP580_PRESS_SKIPPED		0x7f7f7f
 
-/* BMP380 specific registers */
+ 
 #define BMP380_REG_CMD			0x7E
 #define BMP380_REG_CONFIG		0x1F
 #define BMP380_REG_ODR			0x1D
@@ -191,7 +188,7 @@
 #define BMP380_TEMP_SKIPPED		0x800000
 #define BMP380_PRESS_SKIPPED		0x800000
 
-/* BMP280 specific registers */
+ 
 #define BMP280_REG_HUMIDITY_LSB		0xFE
 #define BMP280_REG_HUMIDITY_MSB		0xFD
 #define BMP280_REG_TEMP_XLSB		0xFC
@@ -201,7 +198,7 @@
 #define BMP280_REG_PRESS_LSB		0xF8
 #define BMP280_REG_PRESS_MSB		0xF7
 
-/* Helper mask to truncate excess 4 bits on pressure and temp readings */
+ 
 #define BMP280_MEAS_TRIM_MASK		GENMASK(24, 4)
 
 #define BMP280_REG_CONFIG		0xF5
@@ -209,7 +206,7 @@
 #define BMP280_REG_STATUS		0xF3
 #define BMP280_REG_CTRL_HUMIDITY	0xF2
 
-/* Due to non linear mapping, and data sizes we can't do a bulk read */
+ 
 #define BMP280_REG_COMP_H1		0xA1
 #define BMP280_REG_COMP_H2		0xE1
 #define BMP280_REG_COMP_H3		0xE3
@@ -264,7 +261,7 @@
 #define BMP280_MODE_FORCED		1
 #define BMP280_MODE_NORMAL		3
 
-/* BMP180 specific registers */
+ 
 #define BMP180_REG_OUT_XLSB		0xF8
 #define BMP180_REG_OUT_LSB		0xF7
 #define BMP180_REG_OUT_MSB		0xF6
@@ -282,7 +279,7 @@
 #define BMP180_MEAS_PRESS_4X		2
 #define BMP180_MEAS_PRESS_8X		3
 
-/* BMP180 and BMP280 common registers */
+ 
 #define BMP280_REG_CTRL_MEAS		0xF4
 #define BMP280_REG_RESET		0xE0
 #define BMP280_REG_ID			0xD0
@@ -295,12 +292,12 @@
 #define BME280_CHIP_ID			0x60
 #define BMP280_SOFT_RESET_VAL		0xB6
 
-/* BMP280 register skipped special values */
+ 
 #define BMP280_TEMP_SKIPPED		0x80000
 #define BMP280_PRESS_SKIPPED		0x80000
 #define BMP280_HUMIDITY_SKIPPED		0x8000
 
-/* Core exported structs */
+ 
 
 static const char *const bmp280_supply_names[] = {
 	"vddd", "vdda"
@@ -322,7 +319,7 @@ struct bmp180_calib {
 	s16 MD;
 };
 
-/* See datasheet Section 4.2.2. */
+ 
 struct bmp280_calib {
 	u16 T1;
 	s16 T2;
@@ -344,7 +341,7 @@ struct bmp280_calib {
 	s8  H6;
 };
 
-/* See datasheet Section 3.11.1. */
+ 
 struct bmp380_calib {
 	u16 T1;
 	u16 T2;
@@ -375,42 +372,29 @@ struct bmp280_data {
 		struct bmp380_calib bmp380;
 	} calib;
 	struct regulator_bulk_data supplies[BMP280_NUM_SUPPLIES];
-	unsigned int start_up_time; /* in microseconds */
+	unsigned int start_up_time;  
 
-	/* log of base 2 of oversampling rate */
+	 
 	u8 oversampling_press;
 	u8 oversampling_temp;
 	u8 oversampling_humid;
 	u8 iir_filter_coeff;
 
-	/*
-	 * BMP380 devices introduce sampling frequency configuration. See
-	 * datasheet sections 3.3.3. and 4.3.19 for more details.
-	 *
-	 * BMx280 devices allowed indirect configuration of sampling frequency
-	 * changing the t_standby duration between measurements, as detailed on
-	 * section 3.6.3 of the datasheet.
-	 */
+	 
 	int sampling_freq;
 
-	/*
-	 * Carryover value from temperature conversion, used in pressure
-	 * calculation.
-	 */
+	 
 	s32 t_fine;
 
-	/*
-	 * DMA (thus cache coherency maintenance) may require the
-	 * transfer buffers to live in their own cache lines.
-	 */
+	 
 	union {
-		/* Sensor data buffer */
+		 
 		u8 buf[3];
-		/* Calibration data buffers */
+		 
 		__le16 bmp280_cal_buf[BMP280_CONTIGUOUS_CALIB_REGS / 2];
 		__be16 bmp180_cal_buf[BMP180_REG_CALIB_COUNT / 2];
 		u8 bmp380_cal_buf[BMP380_CALIB_REG_COUNT];
-		/* Miscellaneous, endianess-aware data buffers */
+		 
 		__le16 le16;
 		__be16 be16;
 	} __aligned(IIO_DMA_MINALIGN);
@@ -454,25 +438,25 @@ struct bmp280_chip_info {
 	int (*preinit)(struct bmp280_data *);
 };
 
-/* Chip infos for each variant */
+ 
 extern const struct bmp280_chip_info bmp180_chip_info;
 extern const struct bmp280_chip_info bmp280_chip_info;
 extern const struct bmp280_chip_info bme280_chip_info;
 extern const struct bmp280_chip_info bmp380_chip_info;
 extern const struct bmp280_chip_info bmp580_chip_info;
 
-/* Regmap configurations */
+ 
 extern const struct regmap_config bmp180_regmap_config;
 extern const struct regmap_config bmp280_regmap_config;
 extern const struct regmap_config bmp380_regmap_config;
 extern const struct regmap_config bmp580_regmap_config;
 
-/* Probe called from different transports */
+ 
 int bmp280_common_probe(struct device *dev,
 			struct regmap *regmap,
 			const struct bmp280_chip_info *,
 			const char *name,
 			int irq);
 
-/* PM ops */
+ 
 extern const struct dev_pm_ops bmp280_dev_pm_ops;

@@ -1,42 +1,14 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (c) 2001 Jean-Fredric Clere, Nikolas Zimmermann, Georg Acher
- *		      Mark Cave-Ayland, Carlo E Prelz, Dick Streefland
- * Copyright (c) 2002, 2003 Tuukka Toivonen
- * Copyright (c) 2008 Erik Andrén
- *
- * P/N 861037:      Sensor HDCS1000        ASIC STV0600
- * P/N 861050-0010: Sensor HDCS1000        ASIC STV0600
- * P/N 861050-0020: Sensor Photobit PB100  ASIC STV0600-1 - QuickCam Express
- * P/N 861055:      Sensor ST VV6410       ASIC STV0610   - LEGO cam
- * P/N 861075-0040: Sensor HDCS1000        ASIC
- * P/N 961179-0700: Sensor ST VV6410       ASIC STV0602   - Dexxa WebCam USB
- * P/N 861040-0000: Sensor ST VV6410       ASIC STV0610   - QuickCam Web
- */
 
-/*
- * The spec file for the PB-0100 suggests the following for best quality
- * images after the sensor has been reset :
- *
- * PB_ADCGAINL      = R60 = 0x03 (3 dec)      : sets low reference of ADC
-						to produce good black level
- * PB_PREADCTRL     = R32 = 0x1400 (5120 dec) : Enables global gain changes
-						through R53
- * PB_ADCMINGAIN    = R52 = 0x10 (16 dec)     : Sets the minimum gain for
-						auto-exposure
- * PB_ADCGLOBALGAIN = R53 = 0x10 (16 dec)     : Sets the global gain
- * PB_EXPGAIN       = R14 = 0x11 (17 dec)     : Sets the auto-exposure value
- * PB_UPDATEINT     = R23 = 0x02 (2 dec)      : Sets the speed on
-						auto-exposure routine
- * PB_CFILLIN       = R5  = 0x0E (14 dec)     : Sets the frame rate
- */
+ 
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
 #include "stv06xx_pb0100.h"
 
 struct pb0100_ctrls {
-	struct { /* one big happy control cluster... */
+	struct {  
 		struct v4l2_ctrl *autogain;
 		struct v4l2_ctrl *gain;
 		struct v4l2_ctrl *exposure;
@@ -48,8 +20,7 @@ struct pb0100_ctrls {
 };
 
 static struct v4l2_pix_format pb0100_mode[] = {
-/* low res / subsample modes disabled as they are only half res horizontal,
-   halving the vertical resolution does not seem to work */
+ 
 	{
 		320,
 		240,
@@ -191,14 +162,14 @@ static int pb0100_start(struct sd *sd)
 
 	packet_size = le16_to_cpu(alt->endpoint[0].desc.wMaxPacketSize);
 
-	/* If we don't have enough bandwidth use a lower framerate */
+	 
 	max_packet_size = sd->sensor->max_packet_size[sd->gspca_dev.curr_mode];
 	if (packet_size < max_packet_size)
 		stv06xx_write_sensor(sd, PB_ROWSPEED, BIT(4)|BIT(3)|BIT(1));
 	else
 		stv06xx_write_sensor(sd, PB_ROWSPEED, BIT(5)|BIT(3)|BIT(1));
 
-	/* Setup sensor window */
+	 
 	if (mode & PB0100_CROP_TO_VGA) {
 		stv06xx_write_sensor(sd, PB_RSTART, 30);
 		stv06xx_write_sensor(sd, PB_CSTART, 20);
@@ -212,14 +183,14 @@ static int pb0100_start(struct sd *sd)
 	}
 
 	if (mode & PB0100_SUBSAMPLE) {
-		stv06xx_write_bridge(sd, STV_Y_CTRL, 0x02); /* Wrong, FIXME */
+		stv06xx_write_bridge(sd, STV_Y_CTRL, 0x02);  
 		stv06xx_write_bridge(sd, STV_X_CTRL, 0x06);
 
 		stv06xx_write_bridge(sd, STV_SCAN_RATE, 0x10);
 	} else {
 		stv06xx_write_bridge(sd, STV_Y_CTRL, 0x01);
 		stv06xx_write_bridge(sd, STV_X_CTRL, 0x0a);
-		/* larger -> slower */
+		 
 		stv06xx_write_bridge(sd, STV_SCAN_RATE, 0x20);
 	}
 
@@ -239,7 +210,7 @@ static int pb0100_stop(struct sd *sd)
 	if (err < 0)
 		goto out;
 
-	/* Set bit 1 to zero */
+	 
 	err = stv06xx_write_sensor(sd, PB_CONTROL, BIT(5)|BIT(3));
 
 	gspca_dbg(gspca_dev, D_STREAM, "Halting stream\n");
@@ -247,61 +218,56 @@ out:
 	return (err < 0) ? err : 0;
 }
 
-/* FIXME: Sort the init commands out and put them into tables,
-	  this is only for getting the camera to work */
-/* FIXME: No error handling for now,
-	  add this once the init has been converted to proper tables */
+ 
+ 
 static int pb0100_init(struct sd *sd)
 {
 	stv06xx_write_bridge(sd, STV_REG00, 1);
 	stv06xx_write_bridge(sd, STV_SCAN_RATE, 0);
 
-	/* Reset sensor */
+	 
 	stv06xx_write_sensor(sd, PB_RESET, 1);
 	stv06xx_write_sensor(sd, PB_RESET, 0);
 
-	/* Disable chip */
+	 
 	stv06xx_write_sensor(sd, PB_CONTROL, BIT(5)|BIT(3));
 
-	/* Gain stuff...*/
+	 
 	stv06xx_write_sensor(sd, PB_PREADCTRL, BIT(12)|BIT(10)|BIT(6));
 	stv06xx_write_sensor(sd, PB_ADCGLOBALGAIN, 12);
 
-	/* Set up auto-exposure */
-	/* ADC VREF_HI new setting for a transition
-	  from the Expose1 to the Expose2 setting */
+	 
+	 
 	stv06xx_write_sensor(sd, PB_R28, 12);
-	/* gain max for autoexposure */
+	 
 	stv06xx_write_sensor(sd, PB_ADCMAXGAIN, 180);
-	/* gain min for autoexposure  */
+	 
 	stv06xx_write_sensor(sd, PB_ADCMINGAIN, 12);
-	/* Maximum frame integration time (programmed into R8)
-	   allowed for auto-exposure routine */
+	 
 	stv06xx_write_sensor(sd, PB_R54, 3);
-	/* Minimum frame integration time (programmed into R8)
-	   allowed for auto-exposure routine */
+	 
 	stv06xx_write_sensor(sd, PB_R55, 0);
 	stv06xx_write_sensor(sd, PB_UPDATEINT, 1);
-	/* R15  Expose0 (maximum that auto-exposure may use) */
+	 
 	stv06xx_write_sensor(sd, PB_R15, 800);
-	/* R17  Expose2 (minimum that auto-exposure may use) */
+	 
 	stv06xx_write_sensor(sd, PB_R17, 10);
 
 	stv06xx_write_sensor(sd, PB_EXPGAIN, 0);
 
-	/* 0x14 */
+	 
 	stv06xx_write_sensor(sd, PB_VOFFSET, 0);
-	/* 0x0D */
+	 
 	stv06xx_write_sensor(sd, PB_ADCGAINH, 11);
-	/* Set black level (important!) */
+	 
 	stv06xx_write_sensor(sd, PB_ADCGAINL, 0);
 
-	/* ??? */
+	 
 	stv06xx_write_bridge(sd, STV_REG00, 0x11);
 	stv06xx_write_bridge(sd, STV_REG03, 0x45);
 	stv06xx_write_bridge(sd, STV_REG04, 0x07);
 
-	/* Scan/timing for the sensor */
+	 
 	stv06xx_write_sensor(sd, PB_ROWSPEED, BIT(4)|BIT(3)|BIT(1));
 	stv06xx_write_sensor(sd, PB_CFILLIN, 14);
 	stv06xx_write_sensor(sd, PB_VBL, 0);
@@ -414,8 +380,7 @@ static int pb0100_set_autogain_target(struct gspca_dev *gspca_dev, __s32 val)
 	int err, totalpixels, brightpixels, darkpixels;
 	struct sd *sd = (struct sd *) gspca_dev;
 
-	/* Number of pixels counted by the sensor when subsampling the pixels.
-	 * Slightly larger than the real value to avoid oscillation */
+	 
 	totalpixels = gspca_dev->pixfmt.width * gspca_dev->pixfmt.height;
 	totalpixels = totalpixels/(8*8) + totalpixels/(64*64);
 

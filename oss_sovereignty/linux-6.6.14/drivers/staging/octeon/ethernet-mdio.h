@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * This file is based on code from OCTEON SDK by Cavium Networks.
- *
- * Copyright (c) 2003-2007 Cavium Networks
- */
+ 
+ 
 
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -18,7 +14,7 @@
 #ifdef CONFIG_XFRM
 #include <linux/xfrm.h>
 #include <net/xfrm.h>
-#endif /* CONFIG_XFRM */
+#endif  
 
 extern const struct ethtool_ops cvm_oct_ethtool_ops;
 

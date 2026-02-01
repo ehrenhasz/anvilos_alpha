@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* net/sched/sch_ingress.c - Ingress and clsact qdisc
- *
- * Authors:     Jamal Hadi Salim 1999
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/types.h>

@@ -1,30 +1,6 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
-/*
- * Copyright 2010 Sun Microsystems, Inc.  All rights reserved.
- * Use is subject to license terms.
- */
-/*
- * Copyright (c) 2012, 2017 by Delphix. All rights reserved.
- */
+ 
+ 
+ 
 
 #ifndef _SYS_TXG_H
 #define	_SYS_TXG_H
@@ -36,14 +12,14 @@
 extern "C" {
 #endif
 
-#define	TXG_CONCURRENT_STATES	3	/* open, quiescing, syncing	*/
-#define	TXG_SIZE		4		/* next power of 2	*/
-#define	TXG_MASK		(TXG_SIZE - 1)	/* mask for size	*/
-#define	TXG_INITIAL		TXG_SIZE	/* initial txg 		*/
+#define	TXG_CONCURRENT_STATES	3	 
+#define	TXG_SIZE		4		 
+#define	TXG_MASK		(TXG_SIZE - 1)	 
+#define	TXG_INITIAL		TXG_SIZE	 
 #define	TXG_IDX			(txg & TXG_MASK)
 #define	TXG_UNKNOWN		0
 
-/* Number of txgs worth of frees we defer adding to in-core spacemaps */
+ 
 #define	TXG_DEFER_SIZE		2
 
 typedef struct tx_cpu tx_cpu_t;
@@ -80,48 +56,28 @@ extern void txg_delay(struct dsl_pool *dp, uint64_t txg, hrtime_t delta,
     hrtime_t resolution);
 extern void txg_kick(struct dsl_pool *dp, uint64_t txg);
 
-/*
- * Wait until the given transaction group has finished syncing.
- * Try to make this happen as soon as possible (eg. kick off any
- * necessary syncs immediately).  If txg==0, wait for the currently open
- * txg to finish syncing.
- */
+ 
 extern void txg_wait_synced(struct dsl_pool *dp, uint64_t txg);
 
-/*
- * Wait as above. Returns true if the thread was signaled while waiting.
- */
+ 
 extern boolean_t txg_wait_synced_sig(struct dsl_pool *dp, uint64_t txg);
 
-/*
- * Wait until the given transaction group, or one after it, is
- * the open transaction group.  Try to make this happen as soon
- * as possible (eg. kick off any necessary syncs immediately) when
- * should_quiesce is set.  If txg == 0, wait for the next open txg.
- */
+ 
 extern void txg_wait_open(struct dsl_pool *dp, uint64_t txg,
     boolean_t should_quiesce);
 
-/*
- * Returns TRUE if we are "backed up" waiting for the syncing
- * transaction to complete; otherwise returns FALSE.
- */
+ 
 extern boolean_t txg_stalled(struct dsl_pool *dp);
 
-/* returns TRUE if someone is waiting for the next txg to sync */
+ 
 extern boolean_t txg_sync_waiting(struct dsl_pool *dp);
 
 extern void txg_verify(spa_t *spa, uint64_t txg);
 
-/*
- * Wait for pending commit callbacks of already-synced transactions to finish
- * processing.
- */
+ 
 extern void txg_wait_callbacks(struct dsl_pool *dp);
 
-/*
- * Per-txg object lists.
- */
+ 
 
 #define	TXG_CLEAN(txg)	((txg) - 1)
 
@@ -137,7 +93,7 @@ extern boolean_t txg_list_member(txg_list_t *tl, void *p, uint64_t txg);
 extern void *txg_list_head(txg_list_t *tl, uint64_t txg);
 extern void *txg_list_next(txg_list_t *tl, void *p, uint64_t txg);
 
-/* Global tuning */
+ 
 extern uint_t zfs_txg_timeout;
 
 
@@ -151,4 +107,4 @@ extern uint_t zfs_txg_timeout;
 }
 #endif
 
-#endif	/* _SYS_TXG_H */
+#endif	 

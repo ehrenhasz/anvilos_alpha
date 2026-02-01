@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *	LED Flash class driver for the AAT1290
- *	1.5A Step-Up Current Regulator for Flash LEDs
- *
- *	Copyright (C) 2015, Samsung Electronics Co., Ltd.
- *	Author: Jacek Anaszewski <j.anaszewski@samsung.com>
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/gpio/consumer.h>
@@ -46,38 +40,38 @@
 
 
 struct aat1290_led_config_data {
-	/* maximum LED current in movie mode */
+	 
 	u32 max_mm_current;
-	/* maximum LED current in flash mode */
+	 
 	u32 max_flash_current;
-	/* maximum flash timeout */
+	 
 	u32 max_flash_tm;
-	/* external strobe capability */
+	 
 	bool has_external_strobe;
-	/* max LED brightness level */
+	 
 	enum led_brightness max_brightness;
 };
 
 struct aat1290_led {
-	/* platform device data */
+	 
 	struct platform_device *pdev;
-	/* secures access to the device */
+	 
 	struct mutex lock;
 
-	/* corresponding LED Flash class device */
+	 
 	struct led_classdev_flash fled_cdev;
-	/* V4L2 Flash device */
+	 
 	struct v4l2_flash *v4l2_flash;
 
-	/* FLEN pin */
+	 
 	struct gpio_desc *gpio_fl_en;
-	/* EN|SET pin  */
+	 
 	struct gpio_desc *gpio_en_set;
-	/* movie mode current scale */
+	 
 	int *mm_current_scale;
-	/* device mode */
+	 
 	bool movie_mode;
-	/* brightness cache */
+	 
 	unsigned int torch_brightness;
 };
 
@@ -102,7 +96,7 @@ static void aat1290_as2cwire_write(struct aat1290_led *led, int addr, int value)
 
 	udelay(AAT1290_FLEN_OFF_DELAY_TIME_US);
 
-	/* write address */
+	 
 	for (i = 0; i < addr; ++i) {
 		udelay(AAT1290_EN_SET_TICK_TIME_US);
 		gpiod_direction_output(led->gpio_en_set, 0);
@@ -112,7 +106,7 @@ static void aat1290_as2cwire_write(struct aat1290_led *led, int addr, int value)
 
 	usleep_range(AAT1290_LATCH_TIME_MIN_US, AAT1290_LATCH_TIME_MAX_US);
 
-	/* write data */
+	 
 	for (i = 0; i < value; ++i) {
 		udelay(AAT1290_EN_SET_TICK_TIME_US);
 		gpiod_direction_output(led->gpio_en_set, 0);
@@ -135,7 +129,7 @@ static void aat1290_set_flash_safety_timer(struct aat1290_led *led,
 							flash_tm_reg);
 }
 
-/* LED subsystem callbacks */
+ 
 
 static int aat1290_led_brightness_set(struct led_classdev *led_cdev,
 					enum led_brightness brightness)
@@ -186,12 +180,7 @@ static int aat1290_led_flash_strobe_set(struct led_classdev_flash *fled_cdev,
 		gpiod_direction_output(led->gpio_en_set, 0);
 	}
 
-	/*
-	 * To reenter movie mode after a flash event the part must be cycled
-	 * off and back on to reset the movie mode and reprogrammed via the
-	 * AS2Cwire. Therefore the brightness and movie_mode properties needs
-	 * to be updated here to reflect the actual state.
-	 */
+	 
 	led_cdev->brightness = 0;
 	led->movie_mode = false;
 
@@ -203,11 +192,7 @@ static int aat1290_led_flash_strobe_set(struct led_classdev_flash *fled_cdev,
 static int aat1290_led_flash_timeout_set(struct led_classdev_flash *fled_cdev,
 						u32 timeout)
 {
-	/*
-	 * Don't do anything - flash timeout is cached in the led-class-flash
-	 * core and will be applied in the strobe_set op, as writing the
-	 * safety timer register spuriously turns the torch mode on.
-	 */
+	 
 
 	return 0;
 }
@@ -256,10 +241,7 @@ static int aat1290_led_parse_dt(struct aat1290_led *led,
 
 	ret = of_property_read_u32(child_node, "led-max-microamp",
 				&cfg->max_mm_current);
-	/*
-	 * led-max-microamp will default to 1/20 of flash-max-microamp
-	 * in case it is missing.
-	 */
+	 
 	if (ret < 0)
 		dev_warn(dev,
 			"led-max-microamp DT property missing\n");
@@ -337,10 +319,7 @@ static int aat1290_led_get_configuration(struct aat1290_led *led,
 	ret = aat1290_led_parse_dt(led, cfg, sub_node);
 	if (ret < 0)
 		return ret;
-	/*
-	 * Init non-linear movie mode current scale basing
-	 * on the max flash current from led configuration.
-	 */
+	 
 	ret = init_mm_current_scale(led, cfg);
 	if (ret < 0)
 		return ret;
@@ -361,7 +340,7 @@ static void aat1290_init_flash_timeout(struct aat1290_led *led,
 	struct led_classdev_flash *fled_cdev = &led->fled_cdev;
 	struct led_flash_setting *setting;
 
-	/* Init flash timeout setting */
+	 
 	setting = &fled_cdev->timeout;
 	setting->min = cfg->max_flash_tm / AAT1290_FLASH_TM_NUM_LEVELS;
 	setting->max = cfg->max_flash_tm;
@@ -485,7 +464,7 @@ static int aat1290_led_probe(struct platform_device *pdev)
 
 	mutex_init(&led->lock);
 
-	/* Initialize LED Flash class device */
+	 
 	led_cdev->brightness_set_blocking = aat1290_led_brightness_set;
 	led_cdev->max_brightness = led_cfg.max_brightness;
 	led_cdev->flags |= LED_DEV_CAP_FLASH;
@@ -495,7 +474,7 @@ static int aat1290_led_probe(struct platform_device *pdev)
 	init_data.fwnode = of_fwnode_handle(sub_node);
 	init_data.devicename = AAT1290_NAME;
 
-	/* Register LED Flash class device */
+	 
 	ret = led_classdev_flash_register_ext(&pdev->dev, fled_cdev,
 					      &init_data);
 	if (ret < 0)
@@ -503,7 +482,7 @@ static int aat1290_led_probe(struct platform_device *pdev)
 
 	aat1290_init_v4l2_flash_config(led, &led_cfg, &v4l2_sd_cfg);
 
-	/* Create V4L2 Flash subdev. */
+	 
 	led->v4l2_flash = v4l2_flash_init(dev, of_fwnode_handle(sub_node),
 					  fled_cdev, &v4l2_flash_ops,
 					  &v4l2_sd_cfg);

@@ -1,43 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0-only
-// Copyright (c) 2019 Pengutronix, Oleksij Rempel <kernel@pengutronix.de>
-/*
- *                   +----------------------+
- * GMAC1----RGMII----|--MAC0                |
- *      \---MDIO1----|--REGs                |----MDIO3----\
- *                   |                      |             |  +------+
- *                   |                      |             +--|      |
- *                   |                 MAC1-|----RMII--M-----| PHY0 |-o P0
- *                   |                      |          |  |  +------+
- *                   |                      |          |  +--|      |
- *                   |                 MAC2-|----RMII--------| PHY1 |-o P1
- *                   |                      |          |  |  +------+
- *                   |                      |          |  +--|      |
- *                   |                 MAC3-|----RMII--------| PHY2 |-o P2
- *                   |                      |          |  |  +------+
- *                   |                      |          |  +--|      |
- *                   |                 MAC4-|----RMII--------| PHY3 |-o P3
- *                   |                      |          |  |  +------+
- *                   |                      |          |  +--|      |
- *                   |                 MAC5-|--+-RMII--M-----|-PHY4-|-o P4
- *                   |                      |  |       |     +------+
- *                   +----------------------+  |       \--CFG_SW_PHY_SWAP
- * GMAC0---------------RMII--------------------/        \-CFG_SW_PHY_ADDR_SWAP
- *      \---MDIO0--NC
- *
- * GMAC0 and MAC5 are connected together and use same PHY. Depending on
- * configuration it can be PHY4 (default) or PHY0. Only GMAC0 or MAC5 can be
- * used at same time. If GMAC0 is used (default) then MAC5 should be disabled.
- *
- * CFG_SW_PHY_SWAP - swap connections of PHY0 and PHY4. If this bit is not set
- * PHY4 is connected to GMAC0/MAC5 bundle and PHY0 is connected to MAC1. If this
- * bit is set, PHY4 is connected to MAC1 and PHY0 is connected to GMAC0/MAC5
- * bundle.
- *
- * CFG_SW_PHY_ADDR_SWAP - swap addresses of PHY0 and PHY4
- *
- * CFG_SW_PHY_SWAP and CFG_SW_PHY_ADDR_SWAP are part of SoC specific register
- * set and not related to switch internal registers.
- */
+
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/module.h>
@@ -50,10 +13,10 @@
 #define AR9331_SW_NAME				"ar9331_switch"
 #define AR9331_SW_PORTS				6
 
-/* dummy reg to change page */
+ 
 #define AR9331_SW_REG_PAGE			0x40000
 
-/* Global Interrupt */
+ 
 #define AR9331_SW_REG_GINT			0x10
 #define AR9331_SW_REG_GINT_MASK			0x14
 #define AR9331_SW_GINT_PHY_INT			BIT(2)
@@ -74,14 +37,10 @@
 
 #define AR9331_SW_REG_PORT_STATUS(_port)	(0x100 + (_port) * 0x100)
 
-/* FLOW_LINK_EN - enable mac flow control config auto-neg with phy.
- * If not set, mac can be config by software.
- */
+ 
 #define AR9331_SW_PORT_STATUS_FLOW_LINK_EN	BIT(12)
 
-/* LINK_EN - If set, MAC is configured from PHY link status.
- * If not set, MAC should be configured by software.
- */
+ 
 #define AR9331_SW_PORT_STATUS_LINK_EN		BIT(9)
 #define AR9331_SW_PORT_STATUS_DUPLEX_MODE	BIT(6)
 #define AR9331_SW_PORT_STATUS_RX_FLOW_EN	BIT(5)
@@ -118,49 +77,14 @@
 #define AR9331_SW_8021Q_MODE_NONE			0
 #define AR9331_SW_PORT_VLAN_PORT_VID_MEMBER		GENMASK(25, 16)
 
-/* MIB registers */
+ 
 #define AR9331_MIB_COUNTER(x)			(0x20000 + ((x) * 0x100))
 
-/* Phy bypass mode
- * ------------------------------------------------------------------------
- * Bit:   | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 |10 |11 |12 |13 |14 |15 |
- *
- * real   | start |   OP  | PhyAddr           |  Reg Addr         |  TA   |
- * atheros| start |   OP  | 2'b00 |PhyAdd[2:0]|  Reg Addr[4:0]    |  TA   |
- *
- *
- * Bit:   |16 |17 |18 |19 |20 |21 |22 |23 |24 |25 |26 |27 |28 |29 |30 |31 |
- * real   |  Data                                                         |
- * atheros|  Data                                                         |
- *
- * ------------------------------------------------------------------------
- * Page address mode
- * ------------------------------------------------------------------------
- * Bit:   | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 |10 |11 |12 |13 |14 |15 |
- * real   | start |   OP  | PhyAddr           |  Reg Addr         |  TA   |
- * atheros| start |   OP  | 2'b11 |                          8'b0 |  TA   |
- *
- * Bit:   |16 |17 |18 |19 |20 |21 |22 |23 |24 |25 |26 |27 |28 |29 |30 |31 |
- * real   |  Data                                                         |
- * atheros|                       | Page [9:0]                            |
- */
-/* In case of Page Address mode, Bit[18:9] of 32 bit register address should be
- * written to bits[9:0] of mdio data register.
- */
+ 
+ 
 #define AR9331_SW_ADDR_PAGE			GENMASK(18, 9)
 
-/* ------------------------------------------------------------------------
- * Normal register access mode
- * ------------------------------------------------------------------------
- * Bit:   | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 |10 |11 |12 |13 |14 |15 |
- * real   | start |   OP  | PhyAddr           |  Reg Addr         |  TA   |
- * atheros| start |   OP  | 2'b10 |  low_addr[7:0]                |  TA   |
- *
- * Bit:   |16 |17 |18 |19 |20 |21 |22 |23 |24 |25 |26 |27 |28 |29 |30 |31 |
- * real   |  Data                                                         |
- * atheros|  Data                                                         |
- * ------------------------------------------------------------------------
- */
+ 
 #define AR9331_SW_LOW_ADDR_PHY			GENMASK(8, 6)
 #define AR9331_SW_LOW_ADDR_REG			GENMASK(5, 1)
 
@@ -170,61 +94,57 @@
 #define AR9331_SW_MDIO_PHY_MODE_BYPASS		0
 #define AR9331_SW_MDIO_PHY_ADDR_M		GENMASK(2, 0)
 
-/* Empirical determined values */
+ 
 #define AR9331_SW_MDIO_POLL_SLEEP_US		1
 #define AR9331_SW_MDIO_POLL_TIMEOUT_US		20
 
-/* The interval should be small enough to avoid overflow of 32bit MIBs */
-/*
- * FIXME: until we can read MIBs from stats64 call directly (i.e. sleep
- * there), we have to poll stats more frequently then it is actually needed.
- * For overflow protection, normally, 100 sec interval should have been OK.
- */
+ 
+ 
 #define STATS_INTERVAL_JIFFIES			(3 * HZ)
 
 struct ar9331_sw_stats_raw {
-	u32 rxbroad;			/* 0x00 */
-	u32 rxpause;			/* 0x04 */
-	u32 rxmulti;			/* 0x08 */
-	u32 rxfcserr;			/* 0x0c */
-	u32 rxalignerr;			/* 0x10 */
-	u32 rxrunt;			/* 0x14 */
-	u32 rxfragment;			/* 0x18 */
-	u32 rx64byte;			/* 0x1c */
-	u32 rx128byte;			/* 0x20 */
-	u32 rx256byte;			/* 0x24 */
-	u32 rx512byte;			/* 0x28 */
-	u32 rx1024byte;			/* 0x2c */
-	u32 rx1518byte;			/* 0x30 */
-	u32 rxmaxbyte;			/* 0x34 */
-	u32 rxtoolong;			/* 0x38 */
-	u32 rxgoodbyte;			/* 0x3c */
+	u32 rxbroad;			 
+	u32 rxpause;			 
+	u32 rxmulti;			 
+	u32 rxfcserr;			 
+	u32 rxalignerr;			 
+	u32 rxrunt;			 
+	u32 rxfragment;			 
+	u32 rx64byte;			 
+	u32 rx128byte;			 
+	u32 rx256byte;			 
+	u32 rx512byte;			 
+	u32 rx1024byte;			 
+	u32 rx1518byte;			 
+	u32 rxmaxbyte;			 
+	u32 rxtoolong;			 
+	u32 rxgoodbyte;			 
 	u32 rxgoodbyte_hi;
-	u32 rxbadbyte;			/* 0x44 */
+	u32 rxbadbyte;			 
 	u32 rxbadbyte_hi;
-	u32 rxoverflow;			/* 0x4c */
-	u32 filtered;			/* 0x50 */
-	u32 txbroad;			/* 0x54 */
-	u32 txpause;			/* 0x58 */
-	u32 txmulti;			/* 0x5c */
-	u32 txunderrun;			/* 0x60 */
-	u32 tx64byte;			/* 0x64 */
-	u32 tx128byte;			/* 0x68 */
-	u32 tx256byte;			/* 0x6c */
-	u32 tx512byte;			/* 0x70 */
-	u32 tx1024byte;			/* 0x74 */
-	u32 tx1518byte;			/* 0x78 */
-	u32 txmaxbyte;			/* 0x7c */
-	u32 txoversize;			/* 0x80 */
-	u32 txbyte;			/* 0x84 */
+	u32 rxoverflow;			 
+	u32 filtered;			 
+	u32 txbroad;			 
+	u32 txpause;			 
+	u32 txmulti;			 
+	u32 txunderrun;			 
+	u32 tx64byte;			 
+	u32 tx128byte;			 
+	u32 tx256byte;			 
+	u32 tx512byte;			 
+	u32 tx1024byte;			 
+	u32 tx1518byte;			 
+	u32 txmaxbyte;			 
+	u32 txoversize;			 
+	u32 txbyte;			 
 	u32 txbyte_hi;
-	u32 txcollision;		/* 0x8c */
-	u32 txabortcol;			/* 0x90 */
-	u32 txmulticol;			/* 0x94 */
-	u32 txsinglecol;		/* 0x98 */
-	u32 txexcdefer;			/* 0x9c */
-	u32 txdefer;			/* 0xa0 */
-	u32 txlatecol;			/* 0xa4 */
+	u32 txcollision;		 
+	u32 txabortcol;			 
+	u32 txmulticol;			 
+	u32 txsinglecol;		 
+	u32 txexcdefer;			 
+	u32 txdefer;			 
+	u32 txlatecol;			 
 };
 
 struct ar9331_sw_port {
@@ -242,8 +162,8 @@ struct ar9331_sw_priv {
 	struct irq_domain *irqdomain;
 	u32 irq_mask;
 	struct mutex lock_irq;
-	struct mii_bus *mbus; /* mdio master */
-	struct mii_bus *sbus; /* mdio slave */
+	struct mii_bus *mbus;  
+	struct mii_bus *sbus;  
 	struct regmap *regmap;
 	struct reset_control *sw_reset;
 	struct ar9331_sw_port port[AR9331_SW_PORTS];
@@ -257,9 +177,7 @@ static struct ar9331_sw_priv *ar9331_sw_port_to_priv(struct ar9331_sw_port *port
 					 offsetof(struct ar9331_sw_priv, port));
 }
 
-/* Warning: switch reset will reset last AR9331_SW_MDIO_PHY_MODE_PAGE request
- * If some kind of optimization is used, the request should be repeated.
- */
+ 
 static int ar9331_sw_reset(struct ar9331_sw_priv *priv)
 {
 	int ret;
@@ -268,21 +186,12 @@ static int ar9331_sw_reset(struct ar9331_sw_priv *priv)
 	if (ret)
 		goto error;
 
-	/* AR9331 doc do not provide any information about proper reset
-	 * sequence. The AR8136 (the closes switch to the AR9331) doc says:
-	 * reset duration should be greater than 10ms. So, let's use this value
-	 * for now.
-	 */
+	 
 	usleep_range(10000, 15000);
 	ret = reset_control_deassert(priv->sw_reset);
 	if (ret)
 		goto error;
-	/* There is no information on how long should we wait after reset.
-	 * AR8136 has an EEPROM and there is an Interrupt for EEPROM load
-	 * status. AR9331 has no EEPROM support.
-	 * For now, do not wait. In case AR8136 will be needed, the after
-	 * reset delay can be added as well.
-	 */
+	 
 
 	return 0;
 error:
@@ -396,25 +305,20 @@ static int ar9331_sw_setup_port(struct dsa_switch *ds, int port)
 	u32 port_mask, port_ctrl, val;
 	int ret;
 
-	/* Generate default port settings */
+	 
 	port_ctrl = FIELD_PREP(AR9331_SW_PORT_CTRL_PORT_STATE,
 			       AR9331_SW_PORT_CTRL_PORT_STATE_FORWARD);
 
 	if (dsa_is_cpu_port(ds, port)) {
-		/* CPU port should be allowed to communicate with all user
-		 * ports.
-		 */
+		 
 		port_mask = dsa_user_ports(ds);
-		/* Enable Atheros header on CPU port. This will allow us
-		 * communicate with each port separately
-		 */
+		 
 		port_ctrl |= AR9331_SW_PORT_CTRL_HEAD_EN;
 	} else if (dsa_is_user_port(ds, port)) {
-		/* User ports should communicate only with the CPU port.
-		 */
+		 
 		port_mask = BIT(dsa_upstream_port(ds, port));
 	} else {
-		/* Other ports do not need to communicate at all */
+		 
 		port_mask = 0;
 	}
 
@@ -447,21 +351,19 @@ static int ar9331_sw_setup(struct dsa_switch *ds)
 	if (ret)
 		return ret;
 
-	/* Reset will set proper defaults. CPU - Port0 will be enabled and
-	 * configured. All other ports (ports 1 - 5) are disabled
-	 */
+	 
 	ret = ar9331_sw_mbus_init(priv);
 	if (ret)
 		return ret;
 
-	/* Do not drop broadcast frames */
+	 
 	ret = regmap_write_bits(regmap, AR9331_SW_REG_FLOOD_MASK,
 				AR9331_SW_FLOOD_MASK_BROAD_TO_CPU,
 				AR9331_SW_FLOOD_MASK_BROAD_TO_CPU);
 	if (ret)
 		goto error;
 
-	/* Set max frame size to the maximum supported value */
+	 
 	ret = regmap_write_bits(regmap, AR9331_SW_REG_GLOBAL_CTRL,
 				AR9331_SW_GLOBAL_CTRL_MFS_M,
 				AR9331_SW_GLOBAL_CTRL_MFS_M);
@@ -610,14 +512,14 @@ static void ar9331_read_stats(struct ar9331_sw_port *port)
 	struct ar9331_sw_stats_raw raw;
 	int ret;
 
-	/* Do the slowest part first, to avoid needless locking for long time */
+	 
 	ret = regmap_bulk_read(priv->regmap, AR9331_MIB_COUNTER(port->idx),
 			       &raw, sizeof(raw) / sizeof(u32));
 	if (ret) {
 		dev_err_ratelimited(priv->dev, "%s: %i\n", __func__, ret);
 		return;
 	}
-	/* All MIB counters are cleared automatically on read */
+	 
 
 	spin_lock(&port->stats_lock);
 
@@ -858,10 +760,7 @@ static int ar9331_mdio_read(void *ctx, const void *reg_buf, size_t reg_len,
 	int ret;
 
 	if (reg == AR9331_SW_REG_PAGE) {
-		/* We cannot read the page selector register from hardware and
-		 * we cache its value in regmap. Return all bits set here,
-		 * that regmap will always write the page on first use.
-		 */
+		 
 		*(u32 *)val_buf = GENMASK(9, 0);
 		return 0;
 	}
@@ -907,13 +806,7 @@ static int ar9331_mdio_write(void *ctx, u32 reg, u32 val)
 		return 0;
 	}
 
-	/* In case of this switch we work with 32bit registers on top of 16bit
-	 * bus. Some registers (for example access to forwarding database) have
-	 * trigger bit on the first 16bit half of request, the result and
-	 * configuration of request in the second half.
-	 * To make it work properly, we should do the second part of transfer
-	 * before the first one is done.
-	 */
+	 
 	ret = __ar9331_mdio_write(sbus, AR9331_SW_MDIO_PHY_MODE_REG, reg + 2,
 				  val >> 16);
 	if (ret < 0)
@@ -965,7 +858,7 @@ static const struct regmap_range ar9331_valid_regs[] = {
 	regmap_reg_range(0x20400, 0x204a4),
 	regmap_reg_range(0x20500, 0x205a4),
 
-	/* dummy page selector reg */
+	 
 	regmap_reg_range(AR9331_SW_REG_PAGE, AR9331_SW_REG_PAGE),
 };
 

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Based on drivers/clk/tegra/clk-emc.c
- * Copyright (c) 2014, NVIDIA CORPORATION.  All rights reserved.
- *
- * Author: Dmitry Osipenko <digetx@gmail.com>
- * Copyright (C) 2019 GRATE-DRIVER project
- */
+
+ 
 
 #define pr_fmt(fmt)	"tegra-emc-clk: " fmt
 
@@ -253,13 +247,7 @@ struct clk *tegra20_clk_register_emc(void __iomem *ioaddr, bool low_jitter)
 	if (!emc)
 		return NULL;
 
-	/*
-	 * EMC stands for External Memory Controller.
-	 *
-	 * We don't want EMC clock to be disabled ever by gating its
-	 * parent and whatnot because system is busted immediately in that
-	 * case, hence the clock is marked as critical.
-	 */
+	 
 	init.name = "emc";
 	init.ops = &tegra_clk_emc_ops;
 	init.flags = CLK_IS_CRITICAL;

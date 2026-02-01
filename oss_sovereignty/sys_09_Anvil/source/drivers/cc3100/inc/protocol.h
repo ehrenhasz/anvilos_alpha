@@ -1,68 +1,16 @@
-/*
- * protocol.h - CC31xx/CC32xx Host Driver Implementation
- *
- * Copyright (C) 2014 Texas Instruments Incorporated - http://www.ti.com/ 
- * 
- * 
- *  Redistribution and use in source and binary forms, with or without 
- *  modification, are permitted provided that the following conditions 
- *  are met:
- *
- *    Redistributions of source code must retain the above copyright 
- *    notice, this list of conditions and the following disclaimer.
- *
- *    Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the 
- *    documentation and/or other materials provided with the   
- *    distribution.
- *
- *    Neither the name of Texas Instruments Incorporated nor the names of
- *    its contributors may be used to endorse or promote products derived
- *    from this software without specific prior written permission.
- *
- *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS 
- *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT 
- *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- *  A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT 
- *  OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, 
- *  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT 
- *  LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- *  DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- *  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT 
- *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE 
- *  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
-*/
+ 
 
-/*******************************************************************************\
-*
-*   FILE NAME:      protocol.h
-*
-*   DESCRIPTION:    Constant and data structure definitions and function
-*                   prototypes for the SL protocol module, which implements
-*                   processing of SimpleLink Commands.
-*
-*   AUTHOR:
-*
-\*******************************************************************************/
+ 
 
 #ifndef _SL_PROTOCOL_TYPES_H_
 #define _SL_PROTOCOL_TYPES_H_
 
-/****************************************************************************
-**
-**  User I/F pools definitions
-**
-****************************************************************************/
+ 
 
-/****************************************************************************
-**
-**  Definitions for SimpleLink Commands
-**
-****************************************************************************/
+ 
 
 
-/* pattern for LE 8/16/32 or BE*/
+ 
 #define H2N_SYNC_PATTERN     {0xBBDDEEFF,0x4321,0x34,0x12}
 #define H2N_CNYS_PATTERN     {0xBBDDEEFF,0x8765,0x78,0x56}
 
@@ -107,7 +55,7 @@ typedef struct
 
 #define _SL_RESP_ARGS_START(_pMsg) (((_SlResponseHeader_t *)(_pMsg)) + 1)
 
-/* Used only in NWP! */
+ 
 typedef struct
 {
     _SlCommandHeader_t  sl_hdr;
@@ -127,9 +75,7 @@ typedef struct
 #define INIT_P2P_OK   0x55555555
 #define INIT_P2P_ERR  0x66666666
 
-/****************************************************************************
-**  OPCODES
-****************************************************************************/
+ 
 #define SL_IPV4_IPV6_OFFSET                            ( 9 )
 #define SL_OPCODE_IPV4							       ( 0x0 << SL_IPV4_IPV6_OFFSET )
 #define SL_OPCODE_IPV6							       ( 0x1 << SL_IPV4_IPV6_OFFSET )
@@ -328,13 +274,13 @@ typedef struct
 #define SL_OPCODE_DEVICE_NETCFG_SET_RESPONSE                	        0x0432
 #define SL_OPCODE_DEVICE_NETCFG_GET_COMMAND                 	        0x8433
 #define SL_OPCODE_DEVICE_NETCFG_GET_RESPONSE                	        0x0433
-/*  */
+ 
 #define SL_OPCODE_DEVICE_SETUARTMODECOMMAND                         	0x846B
 #define SL_OPCODE_DEVICE_SETUARTMODERESPONSE                        	0x046B
 #define SL_OPCODE_DEVICE_SSISIZESETCOMMAND	                            0x846B
 #define SL_OPCODE_DEVICE_SSISIZESETRESPONSE	                            0x046B
 
-/*  */
+ 
 #define SL_OPCODE_DEVICE_EVENTMASKSET                               	0x8464
 #define SL_OPCODE_DEVICE_EVENTMASKSETRESPONSE                       	0x0464
 #define SL_OPCODE_DEVICE_EVENTMASKGET                               	0x8465
@@ -353,7 +299,7 @@ typedef struct
 #define SL_OPCODE_WLAN_SMARTCONFIGOPTGETRESPONSE                    	0x0C8E
 
 
-/* Rx Filters opcodes */
+ 
 #define SL_OPCODE_WLAN_WLANRXFILTERADDCOMMAND                           0x8C6C
 #define SL_OPCODE_WLAN_WLANRXFILTERADDRESPONSE                          0x0C6C
 #define SL_OPCODE_WLAN_WLANRXFILTERSETCOMMAND                           0x8C6D
@@ -366,9 +312,9 @@ typedef struct
 #define SL_OPCODE_WLAN_WLANRXFILTERGETINFORESPONSE                      0x0C70
 
 
-/******************************************************************************************/
-/*   Device structs  */
-/******************************************************************************************/
+ 
+ 
+ 
 typedef _u32 InitStatus_t;
 
 
@@ -448,7 +394,7 @@ typedef struct
 
 typedef _BasicResponse_t _DevUartSetModeResponse_t;
 
-/******************************************************/
+ 
 
 typedef struct
 {
@@ -456,9 +402,9 @@ typedef struct
     _u8 Padding[3];
 }_StellarisSsiSizeSet_t;
 
-/*****************************************************************************************/
-/*   WLAN structs */
-/*****************************************************************************************/
+ 
+ 
+ 
 #define MAXIMAL_PASSWORD_LENGTH					(64)
 
 typedef struct{
@@ -589,102 +535,94 @@ typedef struct
 }_WlanCfgSetGet_t;
 
 
-/* ******************************************************************************/
-/*     RX filters - Start  */
-/* ******************************************************************************/
-/*  -- 80 bytes */
+ 
+ 
+ 
+ 
 typedef struct _WlanRxFilterAddCommand_t
 {
-	/*  -- 1 byte */
+	 
 	SlrxFilterRuleType_t RuleType;
-	/*  -- 1 byte */
+	 
 	SlrxFilterFlags_t FilterFlags;
-	/*  --  1 byte */
+	 
 	SlrxFilterID_t FilterId;
-	/*  --  1 byte */
+	 
 	_u8 Padding;
-	/*  -- 56 byte */
+	 
 	SlrxFilterRule_t Rule;
-	/*  --  12 byte ( 3 padding ) */
+	 
 	SlrxFilterTrigger_t Trigger;
-	/*  --  8 byte */
+	 
 	SlrxFilterAction_t Action;
 }_WlanRxFilterAddCommand_t;
 
 
 
-/* -- 4 bytes */
+ 
 typedef struct l_WlanRxFilterAddCommandReponse_t
 {
-	/*  -- 1 byte */
+	 
 	SlrxFilterID_t FilterId;
-	/* -- 1 Byte */
+	 
 	_u8          Status;
-	/*  -- 2 byte */
+	 
 	_u8  Padding[2];
 
 }_WlanRxFilterAddCommandReponse_t;
 
 
 
-/*
- * \struct _WlanRxFilterSetCommand_t
- */
+ 
 typedef struct _WlanRxFilterSetCommand_t
 {
 	_u16 InputBufferLength;
-	/* 1 byte */
+	 
 	SLrxFilterOperation_t RxFilterOperation;
 	_u8 Padding[1];
 }_WlanRxFilterSetCommand_t;
 
-/**
- * \struct _WlanRxFilterSetCommandReponse_t
- */
+ 
 typedef struct _WlanRxFilterSetCommandReponse_t
 {
-	/* 1 byte */
+	 
 	_u8  Status;
-	/* 3 bytes  */
+	 
 	_u8 Padding[3];
 
 }_WlanRxFilterSetCommandReponse_t;
 
-/**
- * \struct _WlanRxFilterGetCommand_t
- */
+ 
 typedef struct _WlanRxFilterGetCommand_t
 {
 	_u16 OutputBufferLength;
-	/* 1 byte  */
+	 
 	SLrxFilterOperation_t RxFilterOperation;
 	_u8 Padding[1];
 }_WlanRxFilterGetCommand_t;
 
-/**
- * \struct _WlanRxFilterGetCommandReponse_t
- */
+ 
 typedef struct _WlanRxFilterGetCommandReponse_t
 {
-	/* 1 byte  */
+	 
 	_u8  Status;
-	/* 1 bytes  */
+	 
 	_u8 Padding;
-	/* 2 byte  */
+	 
 	_u16 OutputBufferLength;
 
 }_WlanRxFilterGetCommandReponse_t;
 
 
 
-/* ******************************************************************************/
-/*     RX filters -- End  */
-/* ******************************************************************************/
+ 
+ 
+ 
 
 typedef struct
 {
     _u16 status;
-    _u8  WlanRole;     /* 0 = station, 2 = AP */
+    _u8  WlanRole;      
     _u8  Ipv6Enabled;
     _u8  Ipv6DhcpEnabled;
 
@@ -734,9 +672,9 @@ typedef struct
 
 
 
-/******************************************************************************************/
-/*   Socket structs  */
-/******************************************************************************************/
+ 
+ 
+ 
 
 typedef struct
 {
@@ -906,9 +844,7 @@ typedef struct
   _u8 FamilyAndFlags;
 }_sendRecvCommand_t;
 
-/*****************************************************************************************
-*   NETAPP structs
-******************************************************************************************/
+ 
 
 
 typedef _BasicResponse_t _NetAppStartStopResponse_t;
@@ -1088,9 +1024,7 @@ typedef union
     _sendRecvCommand_t   DeviceInit;
 }_device_commands_t;
 
-/*****************************************************************************************
-*   FS structs
-******************************************************************************************/
+ 
 
 typedef struct
 {
@@ -1161,13 +1095,13 @@ typedef _BasicResponse_t _FsWriteResponse_t;
 
 
 
-/* TODO: Set MAx Async Payload length depending on flavor (Tiny, Small, etc.) */
+ 
 
 
 #ifdef SL_TINY_EXT
-#define SL_ASYNC_MAX_PAYLOAD_LEN        120  /* size must be aligned to 4 */
+#define SL_ASYNC_MAX_PAYLOAD_LEN        120   
 #else
-#define SL_ASYNC_MAX_PAYLOAD_LEN        160 /* size must be aligned to 4 */
+#define SL_ASYNC_MAX_PAYLOAD_LEN        160  
 #endif
 
 #define SL_ASYNC_MAX_MSG_LEN            (_SL_RESP_HDR_SIZE + SL_ASYNC_MAX_PAYLOAD_LEN)
@@ -1179,4 +1113,4 @@ typedef _BasicResponse_t _FsWriteResponse_t;
 #define SL_IPV4_ADDRESS_SIZE 			(sizeof(_u32))
 #define SL_IPV6_ADDRESS_SIZE 			(4 * sizeof(_u32))
 
-#endif /*  _SL_PROTOCOL_TYPES_H_  */
+#endif  

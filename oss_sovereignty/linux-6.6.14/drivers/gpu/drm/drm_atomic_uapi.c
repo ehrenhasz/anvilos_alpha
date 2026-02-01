@@ -1,31 +1,4 @@
-/*
- * Copyright (C) 2014 Red Hat
- * Copyright (C) 2014 Intel Corp.
- * Copyright (C) 2018 Intel Corp.
- * Copyright (c) 2020, The Linux Foundation. All rights reserved.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors:
- * Rob Clark <robdclark@gmail.com>
- * Daniel Vetter <daniel.vetter@ffwll.ch>
- */
+ 
 
 #include <drm/drm_atomic_uapi.h>
 #include <drm/drm_atomic.h>
@@ -42,34 +15,16 @@
 
 #include "drm_crtc_internal.h"
 
-/**
- * DOC: overview
- *
- * This file contains the marshalling and demarshalling glue for the atomic UAPI
- * in all its forms: The monster ATOMIC IOCTL itself, code for GET_PROPERTY and
- * SET_PROPERTY IOCTLs. Plus interface functions for compatibility helpers and
- * drivers which have special needs to construct their own atomic updates, e.g.
- * for load detect or similar.
- */
+ 
 
-/**
- * drm_atomic_set_mode_for_crtc - set mode for CRTC
- * @state: the CRTC whose incoming state to update
- * @mode: kernel-internal mode to use for the CRTC, or NULL to disable
- *
- * Set a mode (originating from the kernel) on the desired CRTC state and update
- * the enable property.
- *
- * RETURNS:
- * Zero on success, error code on failure. Cannot return -EDEADLK.
- */
+ 
 int drm_atomic_set_mode_for_crtc(struct drm_crtc_state *state,
 				 const struct drm_display_mode *mode)
 {
 	struct drm_crtc *crtc = state->crtc;
 	struct drm_mode_modeinfo umode;
 
-	/* Early return for no change. */
+	 
 	if (mode && memcmp(&state->mode, mode, sizeof(*mode)) == 0)
 		return 0;
 
@@ -104,19 +59,7 @@ int drm_atomic_set_mode_for_crtc(struct drm_crtc_state *state,
 }
 EXPORT_SYMBOL(drm_atomic_set_mode_for_crtc);
 
-/**
- * drm_atomic_set_mode_prop_for_crtc - set mode for CRTC
- * @state: the CRTC whose incoming state to update
- * @blob: pointer to blob property to use for mode
- *
- * Set a mode (originating from a blob property) on the desired CRTC state.
- * This function will take a reference on the blob property for the CRTC state,
- * and release the reference held on the state's existing mode property, if any
- * was set.
- *
- * RETURNS:
- * Zero on success, error code on failure. Cannot return -EDEADLK.
- */
+ 
 int drm_atomic_set_mode_prop_for_crtc(struct drm_crtc_state *state,
 				      struct drm_property_blob *blob)
 {
@@ -169,27 +112,14 @@ int drm_atomic_set_mode_prop_for_crtc(struct drm_crtc_state *state,
 }
 EXPORT_SYMBOL(drm_atomic_set_mode_prop_for_crtc);
 
-/**
- * drm_atomic_set_crtc_for_plane - set CRTC for plane
- * @plane_state: the plane whose incoming state to update
- * @crtc: CRTC to use for the plane
- *
- * Changing the assigned CRTC for a plane requires us to grab the lock and state
- * for the new CRTC, as needed. This function takes care of all these details
- * besides updating the pointer in the state object itself.
- *
- * Returns:
- * 0 on success or can fail with -EDEADLK or -ENOMEM. When the error is EDEADLK
- * then the w/w mutex code has detected a deadlock and the entire atomic
- * sequence must be restarted. All other errors are fatal.
- */
+ 
 int
 drm_atomic_set_crtc_for_plane(struct drm_plane_state *plane_state,
 			      struct drm_crtc *crtc)
 {
 	struct drm_plane *plane = plane_state->plane;
 	struct drm_crtc_state *crtc_state;
-	/* Nothing to do for same crtc*/
+	 
 	if (plane_state->crtc == crtc)
 		return 0;
 	if (plane_state->crtc) {
@@ -225,16 +155,7 @@ drm_atomic_set_crtc_for_plane(struct drm_plane_state *plane_state,
 }
 EXPORT_SYMBOL(drm_atomic_set_crtc_for_plane);
 
-/**
- * drm_atomic_set_fb_for_plane - set framebuffer for plane
- * @plane_state: atomic state object for the plane
- * @fb: fb to use for the plane
- *
- * Changing the assigned framebuffer for a plane requires us to grab a reference
- * to the new fb and drop the reference to the old fb, if there is one. This
- * function takes care of all these details besides updating the pointer in the
- * state object itself.
- */
+ 
 void
 drm_atomic_set_fb_for_plane(struct drm_plane_state *plane_state,
 			    struct drm_framebuffer *fb)
@@ -255,20 +176,7 @@ drm_atomic_set_fb_for_plane(struct drm_plane_state *plane_state,
 }
 EXPORT_SYMBOL(drm_atomic_set_fb_for_plane);
 
-/**
- * drm_atomic_set_crtc_for_connector - set CRTC for connector
- * @conn_state: atomic state object for the connector
- * @crtc: CRTC to use for the connector
- *
- * Changing the assigned CRTC for a connector requires us to grab the lock and
- * state for the new CRTC, as needed. This function takes care of all these
- * details besides updating the pointer in the state object itself.
- *
- * Returns:
- * 0 on success or can fail with -EDEADLK or -ENOMEM. When the error is EDEADLK
- * then the w/w mutex code has detected a deadlock and the entire atomic
- * sequence must be restarted. All other errors are fatal.
- */
+ 
 int
 drm_atomic_set_crtc_for_connector(struct drm_connector_state *conn_state,
 				  struct drm_crtc *crtc)
@@ -707,10 +615,7 @@ static int drm_atomic_connector_set_property(struct drm_connector *connector,
 		}
 		return drm_atomic_set_crtc_for_connector(state, crtc);
 	} else if (property == config->dpms_property) {
-		/* setting DPMS property requires special handling, which
-		 * is done in legacy setprop path for us.  Disallow (for
-		 * now?) atomic writes to DPMS property:
-		 */
+		 
 		drm_dbg_atomic(dev,
 			       "legacy [PROP:%d:%s] can only be set via legacy uAPI\n",
 			       property->base.id, property->name);
@@ -744,17 +649,7 @@ static int drm_atomic_connector_set_property(struct drm_connector *connector,
 	} else if (property == config->tv_hue_property) {
 		state->tv.hue = val;
 	} else if (property == config->link_status_property) {
-		/* Never downgrade from GOOD to BAD on userspace's request here,
-		 * only hw issues can do that.
-		 *
-		 * For an atomic property the userspace doesn't need to be able
-		 * to understand all the properties, but needs to be able to
-		 * restore the state it wants on VT switch. So if the userspace
-		 * tries to change the link_status from GOOD to BAD, driver
-		 * silently rejects it and returns a 0. This prevents userspace
-		 * from accidentally breaking  the display when it restores the
-		 * state.
-		 */
+		 
 		if (state->link_status != DRM_LINK_STATUS_GOOD)
 			state->link_status = val;
 	} else if (property == config->hdr_output_metadata_property) {
@@ -873,7 +768,7 @@ drm_atomic_connector_get_property(struct drm_connector *connector,
 	} else if (property == config->hdcp_content_type_property) {
 		*val = state->hdcp_content_type;
 	} else if (property == config->writeback_fb_id_property) {
-		/* Writeback framebuffer is one-shot, write and forget */
+		 
 		*val = 0;
 	} else if (property == config->writeback_out_fence_ptr_property) {
 		*val = 0;
@@ -935,9 +830,7 @@ int drm_atomic_get_property(struct drm_mode_object *obj,
 	return ret;
 }
 
-/*
- * The big monster ioctl
- */
+ 
 
 static struct drm_pending_vblank_event *create_vblank_event(
 		struct drm_crtc *crtc, uint64_t user_data)
@@ -1073,57 +966,7 @@ int drm_atomic_set_property(struct drm_atomic_state *state,
 	return ret;
 }
 
-/**
- * DOC: explicit fencing properties
- *
- * Explicit fencing allows userspace to control the buffer synchronization
- * between devices. A Fence or a group of fences are transferred to/from
- * userspace using Sync File fds and there are two DRM properties for that.
- * IN_FENCE_FD on each DRM Plane to send fences to the kernel and
- * OUT_FENCE_PTR on each DRM CRTC to receive fences from the kernel.
- *
- * As a contrast, with implicit fencing the kernel keeps track of any
- * ongoing rendering, and automatically ensures that the atomic update waits
- * for any pending rendering to complete. This is usually tracked in &struct
- * dma_resv which can also contain mandatory kernel fences. Implicit syncing
- * is how Linux traditionally worked (e.g. DRI2/3 on X.org), whereas explicit
- * fencing is what Android wants.
- *
- * "IN_FENCE_FD”:
- *	Use this property to pass a fence that DRM should wait on before
- *	proceeding with the Atomic Commit request and show the framebuffer for
- *	the plane on the screen. The fence can be either a normal fence or a
- *	merged one, the sync_file framework will handle both cases and use a
- *	fence_array if a merged fence is received. Passing -1 here means no
- *	fences to wait on.
- *
- *	If the Atomic Commit request has the DRM_MODE_ATOMIC_TEST_ONLY flag
- *	it will only check if the Sync File is a valid one.
- *
- *	On the driver side the fence is stored on the @fence parameter of
- *	&struct drm_plane_state. Drivers which also support implicit fencing
- *	should extract the implicit fence using drm_gem_plane_helper_prepare_fb(),
- *	to make sure there's consistent behaviour between drivers in precedence
- *	of implicit vs. explicit fencing.
- *
- * "OUT_FENCE_PTR”:
- *	Use this property to pass a file descriptor pointer to DRM. Once the
- *	Atomic Commit request call returns OUT_FENCE_PTR will be filled with
- *	the file descriptor number of a Sync File. This Sync File contains the
- *	CRTC fence that will be signaled when all framebuffers present on the
- *	Atomic Commit * request for that given CRTC are scanned out on the
- *	screen.
- *
- *	The Atomic Commit request fails if a invalid pointer is passed. If the
- *	Atomic Commit request fails for any other reason the out fence fd
- *	returned will be -1. On a Atomic Commit with the
- *	DRM_MODE_ATOMIC_TEST_ONLY flag the out fence will also be set to -1.
- *
- *	Note that out-fences don't have a special interface to drivers and are
- *	internally represented by a &struct drm_pending_vblank_event in struct
- *	&drm_crtc_state, which is also used by the nonblocking atomic commit
- *	helpers and for the DRM event handling for existing userspace.
- */
+ 
 
 struct drm_out_fence_state {
 	s32 __user *out_fence_ptr;
@@ -1261,10 +1104,7 @@ static int prepare_signaling(struct drm_device *dev,
 		conn_state->writeback_job->out_fence = fence;
 	}
 
-	/*
-	 * Having this flag means user mode pends on event which will never
-	 * reach due to lack of at least one CRTC for signaling
-	 */
+	 
 	if (c == 0 && (arg->flags & DRM_MODE_PAGE_FLIP_EVENT)) {
 		drm_dbg_atomic(dev, "need at least one CRTC for DRM_MODE_PAGE_FLIP_EVENT");
 		return -EINVAL;
@@ -1294,11 +1134,7 @@ static void complete_signaling(struct drm_device *dev,
 
 	for_each_new_crtc_in_state(state, crtc, crtc_state, i) {
 		struct drm_pending_vblank_event *event = crtc_state->event;
-		/*
-		 * Free the allocated event. drm_atomic_helper_setup_commit
-		 * can allocate an event too, so only free it if it's ours
-		 * to prevent a double free in drm_atomic_state_clear.
-		 */
+		 
 		if (event && (event->base.fence || event->base.file_priv)) {
 			drm_event_cancel_free(dev, &event->base);
 			crtc_state->event = NULL;
@@ -1314,7 +1150,7 @@ static void complete_signaling(struct drm_device *dev,
 		if (fence_state[i].fd >= 0)
 			put_unused_fd(fence_state[i].fd);
 
-		/* If this fails log error to the user */
+		 
 		if (fence_state[i].out_fence_ptr &&
 		    put_user(-1, fence_state[i].out_fence_ptr))
 			drm_dbg_atomic(dev, "Couldn't clear out_fence_ptr\n");
@@ -1338,14 +1174,11 @@ int drm_mode_atomic_ioctl(struct drm_device *dev,
 	int ret = 0;
 	unsigned int i, j, num_fences;
 
-	/* disallow for drivers not supporting atomic: */
+	 
 	if (!drm_core_check_feature(dev, DRIVER_ATOMIC))
 		return -EOPNOTSUPP;
 
-	/* disallow for userspace that has not enabled atomic cap (even
-	 * though this may be a bit overkill, since legacy userspace
-	 * wouldn't know how to call this ioctl)
-	 */
+	 
 	if (!file_priv->atomic) {
 		drm_dbg_atomic(dev,
 			       "commit failed: atomic cap not enabled\n");
@@ -1368,7 +1201,7 @@ int drm_mode_atomic_ioctl(struct drm_device *dev,
 		return -EINVAL;
 	}
 
-	/* can't test and expect an event at the same time. */
+	 
 	if ((arg->flags & DRM_MODE_ATOMIC_TEST_ONLY) &&
 			(arg->flags & DRM_MODE_PAGE_FLIP_EVENT)) {
 		drm_dbg_atomic(dev,

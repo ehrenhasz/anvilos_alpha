@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright(c) 2009-2012  Realtek Corporation.*/
+
+ 
 
 #include "../wifi.h"
 #include "../pci.h"
@@ -23,10 +23,7 @@ static u8 _rtl92se_map_hwqueue_to_fwqueue(struct sk_buff *skb,	u8 skb_queue)
 	if (ieee80211_is_nullfunc(fc))
 		return QSLT_HIGH;
 
-	/* Kernel commit 1bf4bbb4024dcdab changed EAPOL packets to use
-	 * queue V0 at priority 7; however, the RTL8192SE appears to have
-	 * that queue at priority 6
-	 */
+	 
 	if (skb->priority == 7)
 		return QSLT_VO;
 	return skb->priority;
@@ -105,12 +102,12 @@ static void _rtl92se_query_rxphystatus(struct ieee80211_hw *hw,
 
 		pwdb_all = rtl_query_rxpwrpercentage(rx_pwr_all);
 
-		/* CCK gain is smaller than OFDM/MCS gain,  */
-		/* so we add gain diff by experiences, the val is 6 */
+		 
+		 
 		pwdb_all += 6;
 		if (pwdb_all > 100)
 			pwdb_all = 100;
-		/* modify the offset to make the same gain index with OFDM. */
+		 
 		if (pwdb_all > 34 && pwdb_all <= 42)
 			pwdb_all -= 2;
 		else if (pwdb_all > 26 && pwdb_all <= 34)
@@ -274,13 +271,7 @@ bool rtl92se_rx_query_desc(struct ieee80211_hw *hw, struct rtl_stats *stats,
 
 	rx_status->flag |= RX_FLAG_MACTIME_START;
 
-	/* hw will set stats->decrypted true, if it finds the
-	 * frame is open data frame or mgmt frame,
-	 * hw will not decrypt robust managment frame
-	 * for IEEE80211w but still set stats->decrypted
-	 * true, so here we should set it back to undecrypted
-	 * for IEEE80211w frame, and mac80211 sw will help
-	 * to decrypt it */
+	 
 	if (stats->decrypted) {
 		hdr = (struct ieee80211_hdr *)(skb->data +
 		       stats->rx_drvinfo_size + stats->rx_bufshift);
@@ -303,7 +294,7 @@ bool rtl92se_rx_query_desc(struct ieee80211_hw *hw, struct rtl_stats *stats,
 						   p_drvinfo);
 	}
 
-	/*rx_status->qual = stats->signal; */
+	 
 	rx_status->signal = stats->recvsignalpower + 10;
 
 	return true;
@@ -358,7 +349,7 @@ void rtl92se_tx_fill_desc(struct ieee80211_hw *hw,
 
 	if (firstseg) {
 		if (rtlpriv->dm.useramask) {
-			/* set txdesc macId */
+			 
 			if (ptcb_desc->mac_id < 32) {
 				set_tx_desc_macid(pdesc, ptcb_desc->mac_id);
 				reserved_macid |= ptcb_desc->mac_id;
@@ -383,16 +374,16 @@ void rtl92se_tx_fill_desc(struct ieee80211_hw *hw,
 		if (ptcb_desc->use_shortgi || ptcb_desc->use_shortpreamble)
 			set_tx_desc_tx_short(pdesc, 0);
 
-		/* Aggregation related */
+		 
 		if (info->flags & IEEE80211_TX_CTL_AMPDU)
 			set_tx_desc_agg_enable(pdesc, 1);
 
-		/* For AMPDU, we must insert SSN into TX_DESC */
+		 
 		set_tx_desc_seq(pdesc, seq_number);
 
-		/* Protection mode related */
-		/* For 92S, if RTS/CTS are set, HW will execute RTS. */
-		/* We choose only one protection mode to execute */
+		 
+		 
+		 
 		set_tx_desc_rts_enable(pdesc, ((ptcb_desc->rts_enable &&
 						!ptcb_desc->cts_enable) ?
 					       1 : 0));
@@ -409,11 +400,11 @@ void rtl92se_tx_fill_desc(struct ieee80211_hw *hw,
 		       : (ptcb_desc->rts_use_shortgi ? 1 : 0)));
 
 
-		/* Set Bandwidth and sub-channel settings. */
+		 
 		if (bw_40) {
 			if (ptcb_desc->packet_bw) {
 				set_tx_desc_tx_bandwidth(pdesc, 1);
-				/* use duplicated mode */
+				 
 				set_tx_desc_tx_sub_carrier(pdesc, 0);
 			} else {
 				set_tx_desc_tx_bandwidth(pdesc, 0);
@@ -425,16 +416,16 @@ void rtl92se_tx_fill_desc(struct ieee80211_hw *hw,
 			set_tx_desc_tx_sub_carrier(pdesc, 0);
 		}
 
-		/* 3 Fill necessary field in First Descriptor */
-		/*DWORD 0*/
+		 
+		 
 		set_tx_desc_linip(pdesc, 0);
 		set_tx_desc_offset(pdesc, 32);
 		set_tx_desc_pkt_size(pdesc, (u16)skb->len);
 
-		/*DWORD 1*/
+		 
 		set_tx_desc_ra_brsr_id(pdesc, ptcb_desc->ratr_index);
 
-		/* Fill security related */
+		 
 		if (info->control.hw_key) {
 			struct ieee80211_key_conf *keyconf;
 
@@ -457,35 +448,34 @@ void rtl92se_tx_fill_desc(struct ieee80211_hw *hw,
 			}
 		}
 
-		/* Set Packet ID */
+		 
 		set_tx_desc_packet_id(pdesc, 0);
 
-		/* We will assign magement queue to BK. */
+		 
 		set_tx_desc_queue_sel(pdesc, fw_qsel);
 
-		/* Alwasy enable all rate fallback range */
+		 
 		set_tx_desc_data_rate_fb_limit(pdesc, 0x1F);
 
-		/* Fix: I don't kown why hw use 6.5M to tx when set it */
+		 
 		set_tx_desc_user_rate(pdesc,
 				      ptcb_desc->use_driver_rate ? 1 : 0);
 
-		/* Set NON_QOS bit. */
+		 
 		if (!ieee80211_is_data_qos(fc))
 			set_tx_desc_non_qos(pdesc, 1);
 
 	}
 
-	/* Fill fields that are required to be initialized
-	 * in all of the descriptors */
-	/*DWORD 0 */
+	 
+	 
 	set_tx_desc_first_seg(pdesc, (firstseg ? 1 : 0));
 	set_tx_desc_last_seg(pdesc, (lastseg ? 1 : 0));
 
-	/* DWORD 7 */
+	 
 	set_tx_desc_tx_buffer_size(pdesc, (u16)skb->len);
 
-	/* DOWRD 8 */
+	 
 	set_tx_desc_tx_buffer_address(pdesc, mapping);
 
 	rtl_dbg(rtlpriv, COMP_SEND, DBG_TRACE, "\n");
@@ -508,35 +498,35 @@ void rtl92se_tx_fill_cmddesc(struct ieee80211_hw *hw, u8 *pdesc8,
 			"DMA mapping error\n");
 		return;
 	}
-	/* Clear all status	*/
+	 
 	CLEAR_PCI_TX_DESC_CONTENT(pdesc, TX_CMDDESC_SIZE_RTL8192S);
 
-	/* This bit indicate this packet is used for FW download. */
+	 
 	if (tcb_desc->cmd_or_init == DESC_PACKET_TYPE_INIT) {
-		/* For firmware download we only need to set LINIP */
+		 
 		set_tx_desc_linip(pdesc, tcb_desc->last_inipkt);
 
-		/* 92SE must set as 1 for firmware download HW DMA error */
+		 
 		set_tx_desc_first_seg(pdesc, 1);
 		set_tx_desc_last_seg(pdesc, 1);
 
-		/* 92SE need not to set TX packet size when firmware download */
+		 
 		set_tx_desc_pkt_size(pdesc, (u16)(skb->len));
 		set_tx_desc_tx_buffer_size(pdesc, (u16)(skb->len));
 		set_tx_desc_tx_buffer_address(pdesc, mapping);
 
 		wmb();
 		set_tx_desc_own(pdesc, 1);
-	} else { /* H2C Command Desc format (Host TXCMD) */
-		/* 92SE must set as 1 for firmware download HW DMA error */
+	} else {  
+		 
 		set_tx_desc_first_seg(pdesc, 1);
 		set_tx_desc_last_seg(pdesc, 1);
 
 		set_tx_desc_offset(pdesc, 0x20);
 
-		/* Buffer size + command header */
+		 
 		set_tx_desc_pkt_size(pdesc, (u16)(skb->len));
-		/* Fixed queue of H2C command */
+		 
 		set_tx_desc_queue_sel(pdesc, 0x13);
 
 		le32p_replace_bits((__le32 *)skb->data, rtlhal->h2c_txcmd_seq,

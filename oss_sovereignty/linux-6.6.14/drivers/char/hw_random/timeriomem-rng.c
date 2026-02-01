@@ -1,21 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * drivers/char/hw_random/timeriomem-rng.c
- *
- * Copyright (C) 2009 Alexander Clouter <alex@digriz.org.uk>
- *
- * Derived from drivers/char/hw_random/omap-rng.c
- *   Copyright 2005 (c) MontaVista Software, Inc.
- *   Author: Deepak Saxena <dsaxena@plexity.net>
- *
- * Overview:
- *   This driver is useful for platforms that have an IO range that provides
- *   periodic random data from a single IO memory address.  All the platform
- *   has to do is provide the address and 'wait time' that new data becomes
- *   available.
- *
- * TODO: add support for reading sizes other than 32bits and masking
- */
+
+ 
 
 #include <linux/completion.h>
 #include <linux/delay.h>
@@ -49,24 +33,14 @@ static int timeriomem_rng_read(struct hwrng *hwrng, void *data,
 	int retval = 0;
 	int period_us = ktime_to_us(priv->period);
 
-	/*
-	 * There may not have been enough time for new data to be generated
-	 * since the last request.  If the caller doesn't want to wait, let them
-	 * bail out.  Otherwise, wait for the completion.  If the new data has
-	 * already been generated, the completion should already be available.
-	 */
+	 
 	if (!wait && !priv->present)
 		return 0;
 
 	wait_for_completion(&priv->completion);
 
 	do {
-		/*
-		 * After the first read, all additional reads will need to wait
-		 * for the RNG to generate new data.  Since the period can have
-		 * a wide range of values (1us to 1s have been observed), allow
-		 * for 1% tolerance in the sleep time rather than a fixed value.
-		 */
+		 
 		if (retval > 0)
 			usleep_range(period_us,
 					period_us + max(1, period_us / 100));
@@ -77,10 +51,7 @@ static int timeriomem_rng_read(struct hwrng *hwrng, void *data,
 		max -= sizeof(u32);
 	} while (wait && max > sizeof(u32));
 
-	/*
-	 * Block any new callers until the RNG has had time to generate new
-	 * data.
-	 */
+	 
 	priv->present = 0;
 	reinit_completion(&priv->completion);
 	hrtimer_forward_now(&priv->timer, priv->period);
@@ -113,7 +84,7 @@ static int timeriomem_rng_probe(struct platform_device *pdev)
 		return -EINVAL;
 	}
 
-	/* Allocate memory for the device structure (and zero it) */
+	 
 	priv = devm_kzalloc(&pdev->dev,
 			sizeof(struct timeriomem_rng_private), GFP_KERNEL);
 	if (!priv)
@@ -158,7 +129,7 @@ static int timeriomem_rng_probe(struct platform_device *pdev)
 	priv->rng_ops.name = dev_name(&pdev->dev);
 	priv->rng_ops.read = timeriomem_rng_read;
 
-	/* Assume random data is already available. */
+	 
 	priv->present = 1;
 	complete(&priv->completion);
 

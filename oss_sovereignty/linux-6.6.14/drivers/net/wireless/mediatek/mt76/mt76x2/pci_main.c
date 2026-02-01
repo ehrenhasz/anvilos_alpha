@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: ISC
-/*
- * Copyright (C) 2016 Felix Fietkau <nbd@nbd.name>
- */
+
+ 
 
 #include "mt76x2.h"
 #include "../mt76x02_mac.h"
@@ -84,7 +82,7 @@ mt76x2_config(struct ieee80211_hw *hw, u32 changed)
 		dev->txpower_conf = mt76_get_sar_power(mphy,
 						       mphy->chandef.chan,
 						       dev->txpower_conf);
-		/* convert to per-chain power for 2x2 devices */
+		 
 		dev->txpower_conf -= 6;
 
 		if (test_bit(MT76_STATE_RUNNING, &dev->mphy.state)) {

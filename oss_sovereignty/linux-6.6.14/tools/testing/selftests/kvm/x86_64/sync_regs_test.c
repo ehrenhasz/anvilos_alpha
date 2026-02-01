@@ -1,15 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Test for x86 KVM_CAP_SYNC_REGS
- *
- * Copyright (C) 2018, Google LLC.
- *
- * Verifies expected behavior of x86 KVM_CAP_SYNC_REGS functionality,
- * including requesting an invalid register set, updates to/from values
- * in kvm_run.s.regs when kvm_valid_regs and kvm_dirty_regs are toggled.
- */
 
-#define _GNU_SOURCE /* for program_invocation_short_name */
+ 
+
+#define _GNU_SOURCE  
 #include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -27,11 +19,7 @@ struct ucall uc_none = {
 	.cmd = UCALL_NONE,
 };
 
-/*
- * ucall is embedded here to protect against compiler reshuffling registers
- * before calling a function. In this test we only need to get KVM_EXIT_IO
- * vmexit and preserve RBX, no additional information is needed.
- */
+ 
 void guest_code(void)
 {
 	asm volatile("1: in %[port], %%al\n"
@@ -81,11 +69,7 @@ static void compare_vcpu_events(struct kvm_vcpu_events *left,
 #define TEST_SYNC_FIELDS   (KVM_SYNC_X86_REGS|KVM_SYNC_X86_SREGS|KVM_SYNC_X86_EVENTS)
 #define INVALID_SYNC_FIELD 0x80000000
 
-/*
- * Set an exception as pending *and* injected while KVM is processing events.
- * KVM is supposed to ignore/drop pending exceptions if userspace is also
- * requesting that an exception be injected.
- */
+ 
 static void *race_events_inj_pen(void *arg)
 {
 	struct kvm_run *run = (struct kvm_run *)arg;
@@ -105,10 +89,7 @@ static void *race_events_inj_pen(void *arg)
 	return NULL;
 }
 
-/*
- * Set an invalid exception vector while KVM is processing events.  KVM is
- * supposed to reject any vector >= 32, as well as NMIs (vector 2).
- */
+ 
 static void *race_events_exc(void *arg)
 {
 	struct kvm_run *run = (struct kvm_run *)arg;
@@ -127,10 +108,7 @@ static void *race_events_exc(void *arg)
 	return NULL;
 }
 
-/*
- * Toggle CR4.PAE while KVM is processing SREGS, EFER.LME=1 with CR4.PAE=0 is
- * illegal, and KVM's MMU heavily relies on vCPU state being valid.
- */
+ 
 static noinline void *race_sregs_cr4(void *arg)
 {
 	struct kvm_run *run = (struct kvm_run *)arg;
@@ -154,7 +132,7 @@ static noinline void *race_sregs_cr4(void *arg)
 
 static void race_sync_regs(void *racer)
 {
-	const time_t TIMEOUT = 2; /* seconds, roughly */
+	const time_t TIMEOUT = 2;  
 	struct kvm_x86_state *state;
 	struct kvm_translation tr;
 	struct kvm_vcpu *vcpu;
@@ -170,13 +148,10 @@ static void race_sync_regs(void *racer)
 	vcpu_run(vcpu);
 	run->kvm_valid_regs = 0;
 
-	/* Save state *before* spawning the thread that mucks with vCPU state. */
+	 
 	state = vcpu_save_state(vcpu);
 
-	/*
-	 * Selftests run 64-bit guests by default, both EFER.LME and CR4.PAE
-	 * should already be set in guest state.
-	 */
+	 
 	TEST_ASSERT((run->s.regs.sregs.cr4 & X86_CR4_PAE) &&
 		    (run->s.regs.sregs.efer & EFER_LME),
 		    "vCPU should be in long mode, CR4.PAE=%d, EFER.LME=%d",
@@ -186,12 +161,7 @@ static void race_sync_regs(void *racer)
 	TEST_ASSERT_EQ(pthread_create(&thread, NULL, racer, (void *)run), 0);
 
 	for (t = time(NULL) + TIMEOUT; time(NULL) < t;) {
-		/*
-		 * Reload known good state if the vCPU triple faults, e.g. due
-		 * to the unhandled #GPs being injected.  VMX preserves state
-		 * on shutdown, but SVM synthesizes an INIT as the VMCB state
-		 * is architecturally undefined on triple fault.
-		 */
+		 
 		if (!__vcpu_run(vcpu) && run->exit_reason == KVM_EXIT_SHUTDOWN)
 			vcpu_load_state(vcpu, state);
 
@@ -226,7 +196,7 @@ int main(int argc, char *argv[])
 
 	run = vcpu->run;
 
-	/* Request reading invalid register set from VCPU. */
+	 
 	run->kvm_valid_regs = INVALID_SYNC_FIELD;
 	rv = _vcpu_run(vcpu);
 	TEST_ASSERT(rv < 0 && errno == EINVAL,
@@ -241,7 +211,7 @@ int main(int argc, char *argv[])
 		    rv);
 	run->kvm_valid_regs = 0;
 
-	/* Request setting invalid register set into VCPU. */
+	 
 	run->kvm_dirty_regs = INVALID_SYNC_FIELD;
 	rv = _vcpu_run(vcpu);
 	TEST_ASSERT(rv < 0 && errno == EINVAL,
@@ -256,8 +226,8 @@ int main(int argc, char *argv[])
 		    rv);
 	run->kvm_dirty_regs = 0;
 
-	/* Request and verify all valid register sets. */
-	/* TODO: BUILD TIME CHECK: TEST_ASSERT(KVM_SYNC_X86_NUM_FIELDS != 3); */
+	 
+	 
 	run->kvm_valid_regs = TEST_SYNC_FIELDS;
 	rv = _vcpu_run(vcpu);
 	TEST_ASSERT_KVM_EXIT_REASON(vcpu, KVM_EXIT_IO);
@@ -271,10 +241,10 @@ int main(int argc, char *argv[])
 	vcpu_events_get(vcpu, &events);
 	compare_vcpu_events(&events, &run->s.regs.events);
 
-	/* Set and verify various register values. */
+	 
 	run->s.regs.regs.rbx = 0xBAD1DEA;
 	run->s.regs.sregs.apic_base = 1 << 11;
-	/* TODO run->s.regs.events.XYZ = ABC; */
+	 
 
 	run->kvm_valid_regs = TEST_SYNC_FIELDS;
 	run->kvm_dirty_regs = KVM_SYNC_X86_REGS | KVM_SYNC_X86_SREGS;
@@ -296,9 +266,7 @@ int main(int argc, char *argv[])
 	vcpu_events_get(vcpu, &events);
 	compare_vcpu_events(&events, &run->s.regs.events);
 
-	/* Clear kvm_dirty_regs bits, verify new s.regs values are
-	 * overwritten with existing guest values.
-	 */
+	 
 	run->kvm_valid_regs = TEST_SYNC_FIELDS;
 	run->kvm_dirty_regs = 0;
 	run->s.regs.regs.rbx = 0xDEADBEEF;
@@ -308,10 +276,7 @@ int main(int argc, char *argv[])
 		    "rbx sync regs value incorrect 0x%llx.",
 		    run->s.regs.regs.rbx);
 
-	/* Clear kvm_valid_regs bits and kvm_dirty_bits.
-	 * Verify s.regs values are not overwritten with existing guest values
-	 * and that guest values are not overwritten with kvm_sync_regs values.
-	 */
+	 
 	run->kvm_valid_regs = 0;
 	run->kvm_dirty_regs = 0;
 	run->s.regs.regs.rbx = 0xAAAA;
@@ -327,10 +292,7 @@ int main(int argc, char *argv[])
 		    "rbx guest value incorrect 0x%llx.",
 		    regs.rbx);
 
-	/* Clear kvm_valid_regs bits. Verify s.regs values are not overwritten
-	 * with existing guest values but that guest values are overwritten
-	 * with kvm_sync_regs values.
-	 */
+	 
 	run->kvm_valid_regs = 0;
 	run->kvm_dirty_regs = TEST_SYNC_FIELDS;
 	run->s.regs.regs.rbx = 0xBBBB;

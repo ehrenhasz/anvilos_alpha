@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- *  cobalt interrupt handling
- *
- *  Copyright 2012-2015 Cisco Systems, Inc. and/or its affiliates.
- *  All rights reserved.
- */
+ 
+ 
 
 #include <linux/interrupt.h>
 

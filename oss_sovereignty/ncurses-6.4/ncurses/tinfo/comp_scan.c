@@ -1,50 +1,8 @@
-/****************************************************************************
-,* Copyright 2020-2021,2022 Thomas E. Dickey                                *
- * Copyright 1998-2016,2017 Free Software Foundation, Inc.                  *
- *                                                                          *
- * Permission is hereby granted, free of charge, to any person obtaining a  *
- * copy of this software and associated documentation files (the            *
- * "Software"), to deal in the Software without restriction, including      *
- * without limitation the rights to use, copy, modify, merge, publish,      *
- * distribute, distribute with modifications, sublicense, and/or sell       *
- * copies of the Software, and to permit persons to whom the Software is    *
- * furnished to do so, subject to the following conditions:                 *
- *                                                                          *
- * The above copyright notice and this permission notice shall be included  *
- * in all copies or substantial portions of the Software.                   *
- *                                                                          *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS  *
- * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF               *
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.   *
- * IN NO EVENT SHALL THE ABOVE COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,   *
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR    *
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR    *
- * THE USE OR OTHER DEALINGS IN THE SOFTWARE.                               *
- *                                                                          *
- * Except as contained in this notice, the name(s) of the above copyright   *
- * holders shall not be used in advertising or otherwise to promote the     *
- * sale, use or other dealings in this Software without prior written       *
- * authorization.                                                           *
- ****************************************************************************/
+ 
 
-/****************************************************************************
- *  Author: Zeyd M. Ben-Halim <zmbenhal@netcom.com> 1992,1995               *
- *     and: Eric S. Raymond <esr@snark.thyrsus.com>                         *
- *     and: Thomas E. Dickey                        1996 on                 *
- ****************************************************************************/
+ 
 
-/*
- *	comp_scan.c --- Lexical scanner for terminfo compiler.
- *
- *	_nc_reset_input()
- *	_nc_get_token()
- *	_nc_panic_mode()
- *	int _nc_syntax;
- *	int _nc_curr_line;
- *	long _nc_curr_file_pos;
- *	long _nc_comment_start;
- *	long _nc_comment_end;
- */
+ 
 
 #include <curses.priv.h>
 
@@ -53,61 +11,44 @@
 
 MODULE_ID("$Id: comp_scan.c,v 1.119 2022/08/07 00:20:26 tom Exp $")
 
-/*
- * Maximum length of string capability we'll accept before raising an error.
- * Yes, there is a real capability in /etc/termcap this long, an "is".
- */
+ 
 #define MAXCAPLEN	600
 
 #define iswhite(ch)	(ch == ' '  ||  ch == '\t')
 
-NCURSES_EXPORT_VAR (int) _nc_syntax = 0;         /* termcap or terminfo? */
-NCURSES_EXPORT_VAR (int) _nc_strict_bsd = 1;  /* ncurses extended termcap? */
-NCURSES_EXPORT_VAR (long) _nc_curr_file_pos = 0; /* file offset of current line */
-NCURSES_EXPORT_VAR (long) _nc_comment_start = 0; /* start of comment range before name */
-NCURSES_EXPORT_VAR (long) _nc_comment_end = 0;   /* end of comment range before name */
-NCURSES_EXPORT_VAR (long) _nc_start_line = 0;    /* start line of current entry */
+NCURSES_EXPORT_VAR (int) _nc_syntax = 0;          
+NCURSES_EXPORT_VAR (int) _nc_strict_bsd = 1;   
+NCURSES_EXPORT_VAR (long) _nc_curr_file_pos = 0;  
+NCURSES_EXPORT_VAR (long) _nc_comment_start = 0;  
+NCURSES_EXPORT_VAR (long) _nc_comment_end = 0;    
+NCURSES_EXPORT_VAR (long) _nc_start_line = 0;     
 
 NCURSES_EXPORT_VAR (struct token) _nc_curr_token =
 {
     0, 0, 0
 };
 
-/*****************************************************************************
- *
- * Token-grabbing machinery
- *
- *****************************************************************************/
+ 
 
-static bool first_column;	/* See 'next_char()' below */
+static bool first_column;	 
 static bool had_newline;
-static char separator;		/* capability separator */
-static int pushtype;		/* type of pushback token */
+static char separator;		 
+static int pushtype;		 
 static char *pushname;
 
 #if NCURSES_EXT_FUNCS
-NCURSES_EXPORT_VAR (bool) _nc_disable_period = FALSE; /* used by tic -a option */
+NCURSES_EXPORT_VAR (bool) _nc_disable_period = FALSE;  
 #endif
 
-/*****************************************************************************
- *
- * Character-stream handling
- *
- *****************************************************************************/
+ 
 
 #define LEXBUFSIZ	1024
 
-static char *bufptr;		/* otherwise, the input buffer pointer */
-static char *bufstart;		/* start of buffer so we can compute offsets */
-static FILE *yyin;		/* scanner's input file descriptor */
+static char *bufptr;		 
+static char *bufstart;		 
+static FILE *yyin;		 
 
-/*
- *	_nc_reset_input()
- *
- *	Resets the input-reading routines.  Used on initialization,
- *	or after a seek has been done.  Exactly one argument must be
- *	non-null.
- */
+ 
 
 NCURSES_EXPORT(void)
 _nc_reset_input(FILE *fp, char *buf)
@@ -128,11 +69,7 @@ _nc_reset_input(FILE *fp, char *buf)
     returnVoidDB;
 }
 
-/*
- *	int last_char()
- *
- *	Returns the final nonblank character on the current input buffer
- */
+ 
 static int
 last_char(int from_end)
 {
@@ -149,9 +86,7 @@ last_char(int from_end)
     return result;
 }
 
-/*
- * Read, like fgets(), but error-out if the input contains nulls.
- */
+ 
 static int
 get_text(char *buffer, int length)
 {
@@ -175,19 +110,7 @@ get_text(char *buffer, int length)
     return count;
 }
 
-/*
- *	int next_char()
- *
- *	Returns the next character in the input stream.  Comments and leading
- *	white space are stripped.
- *
- *	The global state variable 'firstcolumn' is set TRUE if the character
- *	returned is from the first column of the input line.
- *
- *	The global variable _nc_curr_line is incremented for each new line.
- *	The global variable _nc_curr_file_pos is set to the file offset of the
- *	beginning of each line.
- */
+ 
 
 static int
 next_char(void)
@@ -204,10 +127,7 @@ next_char(void)
 	    bufstart = 0;
 	    allocated = 0;
 	}
-	/*
-	 * An string with an embedded null will truncate the input.  This is
-	 * intentional (we don't read binary files here).
-	 */
+	 
 	if (bufptr == 0 || *bufptr == '\0')
 	    return (EOF);
 	if (*bufptr == '\n') {
@@ -217,12 +137,7 @@ next_char(void)
 	    _nc_curr_col = (_nc_curr_col | 7);
 	}
     } else if (!bufptr || !*bufptr) {
-	/*
-	 * In theory this could be recoded to do its I/O one character at a
-	 * time, saving the buffer space.  In practice, this turns out to be
-	 * quite hard to get completely right.  Try it and see.  If you
-	 * succeed, don't forget to hack push_back() correspondingly.
-	 */
+	 
 	size_t len;
 
 	do {
@@ -267,10 +182,7 @@ next_char(void)
 			bufptr++;
 		    }
 
-		    /*
-		     * Treat a trailing <cr><lf> the same as a <newline> so we
-		     * can read files on OS/2, etc.
-		     */
+		     
 		    if ((len = strlen(bufptr)) > 1) {
 			if (bufptr[len - 1] == '\n'
 			    && bufptr[len - 2] == '\r') {
@@ -282,8 +194,8 @@ next_char(void)
 		} else {
 		    return (EOF);
 		}
-	    } while (bufptr[len - 1] != '\n');	/* complete a line */
-	} while (result[0] == '#');	/* ignore comments */
+	    } while (bufptr[len - 1] != '\n');	 
+	} while (result[0] == '#');	 
     } else if (*bufptr == '\t') {
 	_nc_curr_col = (_nc_curr_col | 7);
     }
@@ -299,7 +211,7 @@ next_char(void)
 
 static void
 push_back(int c)
-/* push a character back onto the input stream */
+ 
 {
     if (bufptr == bufstart)
 	_nc_syserr_abort("Can't backspace off beginning of line");
@@ -309,14 +221,14 @@ push_back(int c)
 
 static long
 stream_pos(void)
-/* return our current character position in the input stream */
+ 
 {
     return (yyin ? ftell(yyin) : (bufptr ? bufptr - bufstart : 0));
 }
 
 static bool
 end_of_stream(void)
-/* are we at end of input? */
+ 
 {
     return ((yyin
 	     ? (feof(yyin) && (bufptr == NULL || *bufptr == '\0'))
@@ -324,7 +236,7 @@ end_of_stream(void)
 	    ? TRUE : FALSE);
 }
 
-/* Assume we may be looking at a termcap-style continuation */
+ 
 static NCURSES_INLINE int
 eat_escaped_newline(int ch)
 {
@@ -345,46 +257,15 @@ eat_escaped_newline(int ch)
 
 static char *tok_buf;
 
-/*
- *	int
- *	get_token()
- *
- *	Scans the input for the next token, storing the specifics in the
- *	global structure 'curr_token' and returning one of the following:
- *
- *		NAMES		A line beginning in column 1.  'name'
- *				will be set to point to everything up to but
- *				not including the first separator on the line.
- *		BOOLEAN		An entry consisting of a name followed by
- *				a separator.  'name' will be set to point to
- *				the name of the capability.
- *		NUMBER		An entry of the form
- *					name#digits,
- *				'name' will be set to point to the capability
- *				name and 'valnumber' to the number given.
- *		STRING		An entry of the form
- *					name=characters,
- *				'name' is set to the capability name and
- *				'valstring' to the string of characters, with
- *				input translations done.
- *		CANCEL		An entry of the form
- *					name@,
- *				'name' is set to the capability name and
- *				'valnumber' to -1.
- *		EOF		The end of the file has been reached.
- *
- *	A `separator' is either a comma or a semicolon, depending on whether
- *	we are in termcap or terminfo mode.
- *
- */
+ 
 
 NCURSES_EXPORT(int)
 _nc_get_token(bool silent)
 {
     static const char terminfo_punct[] = "@%&*!#";
 
-    char *after_name;		/* after primary name */
-    char *after_list;		/* after primary and alias list */
+    char *after_name;		 
+    char *after_list;		 
     char *numchk;
     char *tok_ptr;
     char *s;
@@ -413,14 +294,14 @@ _nc_get_token(bool silent)
 	if (pushname != 0)
 	    pushname[0] = '\0';
 
-	/* currtok wasn't altered by _nc_push_token() */
+	 
 	DEBUG(3, (T_RETURN("%d"), retval));
 	return (retval);
     }
 
     if (end_of_stream()) {
 	yyin = 0;
-	(void) next_char();	/* frees its allocated memory */
+	(void) next_char();	 
 	if (tok_buf != 0) {
 	    if (_nc_curr_token.tk_name == tok_buf)
 		_nc_curr_token.tk_name = 0;
@@ -447,7 +328,7 @@ _nc_get_token(bool silent)
     if (ch == EOF)
 	type = EOF;
     else {
-	/* if this is a termcap entry, skip a leading separator */
+	 
 	if (separator == ':' && ch == ':')
 	    ch = next_char();
 
@@ -468,7 +349,7 @@ _nc_get_token(bool silent)
 	    goto end_of_token;
 	}
 
-	/* have to make some punctuation chars legal for terminfo */
+	 
 	if (!isalnum(UChar(ch))
 #if NCURSES_EXT_FUNCS
 	    && !(ch == '.' && _nc_disable_period)
@@ -513,38 +394,16 @@ _nc_get_token(bool silent)
 		} else if (ch == ',') {
 		    _nc_syntax = SYN_TERMINFO;
 		    separator = ',';
-		    /*
-		     * If we did not see a '|', then we found a name with no
-		     * aliases or description.
-		     */
+		     
 		    if (after_name == 0)
 			break;
-		    /*
-		     * We saw a comma, but are not entirely sure this is
-		     * terminfo format, since we can still be parsing the
-		     * description field (for either syntax).
-		     *
-		     * A properly formatted termcap line ends with either a
-		     * colon, or a backslash after a colon.  It is possible
-		     * to have a backslash in the middle of a capability, but
-		     * then there would be no leading whitespace on the next
-		     * line - something we want to discourage.
-		     */
+		     
 		    c0 = last_char(0);
 		    c1 = last_char(1);
 		    if (c1 != ':' && c0 != '\\' && c0 != ':') {
 			bool capability = FALSE;
 
-			/*
-			 * Since it is not termcap, assume the line is terminfo
-			 * format.  However, the comma can be embedded in a
-			 * description field.  It also can be a separator
-			 * between a description field and a capability.
-			 *
-			 * Improve the guess by checking if the next word after
-			 * the comma does not look like a capability.  In that
-			 * case, extend the description past the comma.
-			 */
+			 
 			for (s = bufptr; isspace(UChar(*s)); ++s) {
 			    ;
 			}
@@ -554,19 +413,12 @@ _nc_get_token(bool silent)
 				++s;
 			    }
 			    if (*s == '#' || *s == '=' || *s == '@') {
-				/*
-				 * Checking solely with syntax allows us to
-				 * support extended capabilities with string
-				 * values.
-				 */
+				 
 				capability = TRUE;
 			    } else if (*s == ',') {
 				c0 = *s;
 				*s = '\0';
-				/*
-				 * Otherwise, we can handle predefined boolean
-				 * capabilities, still aided by syntax.
-				 */
+				 
 				if (_nc_find_entry(name,
 						   _nc_get_hash_table(FALSE))) {
 				    capability = TRUE;
@@ -589,16 +441,11 @@ _nc_get_token(bool silent)
 	    }
 	    *tok_ptr = '\0';
 	    if (_nc_syntax == ERR) {
-		/*
-		 * Grrr...what we ought to do here is barf, complaining that
-		 * the entry is malformed.  But because a couple of name fields
-		 * in the 8.2 termcap file end with |\, we just have to assume
-		 * it is termcap syntax.
-		 */
+		 
 		_nc_syntax = SYN_TERMCAP;
 		separator = ':';
 	    } else if (_nc_syntax == SYN_TERMINFO) {
-		/* throw away trailing /, *$/ */
+		 
 		for (--tok_ptr;
 		     iswhite(*tok_ptr) || *tok_ptr == ',';
 		     tok_ptr--)
@@ -606,11 +453,7 @@ _nc_get_token(bool silent)
 		tok_ptr[1] = '\0';
 	    }
 
-	    /*
-	     * This is the soonest we have the terminal name fetched.  Set up
-	     * for following warning messages.  If there's no '|', then there
-	     * is no description.
-	     */
+	     
 	    if (after_name != 0) {
 		ch = *after_name;
 		*after_name = '\0';
@@ -618,10 +461,7 @@ _nc_get_token(bool silent)
 		*after_name = (char) ch;
 	    }
 
-	    /*
-	     * Compute the boundary between the aliases and the description
-	     * field for syntax-checking purposes.
-	     */
+	     
 	    if (after_list != 0) {
 		if (!silent) {
 		    if (*after_list == '\0' || strchr("|", after_list[1]) != NULL) {
@@ -635,11 +475,7 @@ _nc_get_token(bool silent)
 		DEBUG(2, ("missing description"));
 	    }
 
-	    /*
-	     * Whitespace in a name field other than the long name can confuse
-	     * rdist and some termcap tools.  Slashes are a no-no.  Other
-	     * special characters can be dangerous due to shell expansion.
-	     */
+	     
 	    for (s = tok_buf; s < after_list; ++s) {
 		if (isspace(UChar(*s))) {
 		    if (!silent)
@@ -668,7 +504,7 @@ _nc_get_token(bool silent)
 		    if (_nc_syntax == SYN_TERMINFO) {
 			if (ch != '_')
 			    break;
-		    } else {	/* allow ';' for "k;" */
+		    } else {	 
 			if (ch != ';')
 			    break;
 		    }
@@ -681,7 +517,7 @@ _nc_get_token(bool silent)
 		}
 	    }
 
-	    *tok_ptr++ = '\0';	/* separate name/value in buffer */
+	    *tok_ptr++ = '\0';	 
 	    switch (ch) {
 	    case ',':
 	    case ':':
@@ -739,13 +575,13 @@ _nc_get_token(bool silent)
 		type = EOF;
 		break;
 	    default:
-		/* just to get rid of the compiler warning */
+		 
 		type = UNDEF;
 		if (!silent)
 		    _nc_warning("Illegal character - '%s'", unctrl(UChar(ch)));
 	    }
-	}			/* end else (first_column == FALSE) */
-    }				/* end else (ch != EOF) */
+	}			 
+    }				 
 
   end_of_token:
 
@@ -798,7 +634,7 @@ _nc_get_token(bool silent)
     }
 #endif
 
-    if (dot_flag == TRUE)	/* if commented out, use the next one */
+    if (dot_flag == TRUE)	 
 	type = _nc_get_token(silent);
 
     DEBUG(3, ("token: `%s', class %d",
@@ -811,24 +647,7 @@ _nc_get_token(bool silent)
     return (type);
 }
 
-/*
- *	char
- *	trans_string(ptr)
- *
- *	Reads characters using next_char() until encountering a separator, nl,
- *	or end-of-file.  The returned value is the character which caused
- *	reading to stop.  The following translations are done on the input:
- *
- *		^X  goes to  ctrl-X (i.e. X & 037)
- *		{\E,\n,\r,\b,\t,\f}  go to
- *			{ESCAPE,newline,carriage-return,backspace,tab,formfeed}
- *		{\^,\\}  go to  {carat,backslash}
- *		\ddd (for ddd = up to three octal digits)  goes to the character ddd
- *
- *		\e == \E
- *		\0 == \200
- *
- */
+ 
 
 NCURSES_EXPORT(int)
 _nc_trans_string(char *ptr, char *last)
@@ -884,7 +703,7 @@ _nc_trans_string(char *ptr, char *last)
 			if (isdigit(c)) {
 			    if (!strict_bsd) {
 				_nc_warning("Non-octal digit `%c' in \\ sequence", c);
-				/* allow the digit; it'll do less harm */
+				 
 			    }
 			} else {
 			    push_back(c);
@@ -964,18 +783,15 @@ _nc_trans_string(char *ptr, char *last)
 			    break;
 			}
 		    }
-		    /* FALLTHRU */
+		     
 		case '|':
 		    *(ptr++) = (char) c;
-		}		/* endswitch (c) */
-	    }			/* endelse (c < '0' ||  c > '7') */
+		}		 
+	    }			 
 	}
-	/* end else if (c == '\\') */
+	 
 	else if (c == '\n' && (_nc_syntax == SYN_TERMINFO)) {
-	    /*
-	     * Newlines embedded in a terminfo string are ignored, provided
-	     * that the next line begins with whitespace.
-	     */
+	     
 	    ignored = TRUE;
 	} else {
 	    *(ptr++) = (char) c;
@@ -996,29 +812,19 @@ _nc_trans_string(char *ptr, char *last)
 	    _nc_warning("Very long string found.  Missing separator?");
 	    long_warning = TRUE;
 	}
-    }				/* end while */
+    }				 
 
     *ptr = '\0';
 
     return (c);
 }
 
-/*
- *	_nc_push_token()
- *
- *	Push a token of given type so that it will be reread by the next
- *	get_token() call.
- */
+ 
 
 NCURSES_EXPORT(void)
 _nc_push_token(int tokclass)
 {
-    /*
-     * This implementation is kind of bogus, it will fail if we ever do more
-     * than one pushback at a time between get_token() calls.  It relies on the
-     * fact that _nc_curr_token is static storage that nothing but
-     * _nc_get_token() touches.
-     */
+     
     pushtype = tokclass;
     if (pushname == 0)
 	pushname = typeMalloc(char, MAX_NAME_SIZE + 1);
@@ -1031,9 +837,7 @@ _nc_push_token(int tokclass)
 	      pushtype));
 }
 
-/*
- * Panic mode error recovery - skip everything until a "ch" is found.
- */
+ 
 NCURSES_EXPORT(void)
 _nc_panic_mode(char ch)
 {

@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * ip_vs_proto_udp.c:	UDP load balancing support for IPVS
- *
- * Authors:     Wensong Zhang <wensong@linuxvirtualserver.org>
- *              Julian Anastasov <ja@ssi.bg>
- *
- * Changes:     Hans Schillstrom <hans.schillstrom@ericsson.com>
- *              Network name space (netns) aware.
- */
+
+ 
 
 #define KMSG_COMPONENT "IPVS"
 #define pr_fmt(fmt) KMSG_COMPONENT ": " fmt
@@ -38,7 +30,7 @@ udp_conn_schedule(struct netns_ipvs *ipvs, int af, struct sk_buff *skb,
 	__be16 _ports[2], *ports = NULL;
 
 	if (likely(!ip_vs_iph_icmp(iph))) {
-		/* IPv6 fragments, only first fragment will hit this */
+		 
 		uh = skb_header_pointer(skb, iph->len, sizeof(_udph), &_udph);
 		if (uh)
 			ports = &uh->source;
@@ -63,18 +55,12 @@ udp_conn_schedule(struct netns_ipvs *ipvs, int af, struct sk_buff *skb,
 		int ignored;
 
 		if (ip_vs_todrop(ipvs)) {
-			/*
-			 * It seems that we are very loaded.
-			 * We have to drop this packet :(
-			 */
+			 
 			*verdict = NF_DROP;
 			return 0;
 		}
 
-		/*
-		 * Let the virtual server select a real server for the
-		 * incoming connection, and create a connection entry.
-		 */
+		 
 		*cpp = ip_vs_schedule(svc, skb, pd, &ignored, iph);
 		if (!*cpp && ignored <= 0) {
 			if (!ignored)
@@ -84,7 +70,7 @@ udp_conn_schedule(struct netns_ipvs *ipvs, int af, struct sk_buff *skb,
 			return 0;
 		}
 	}
-	/* NF_ACCEPT */
+	 
 	return 1;
 }
 
@@ -147,23 +133,21 @@ udp_snat_handler(struct sk_buff *skb, struct ip_vs_protocol *pp,
 #endif
 	oldlen = skb->len - udphoff;
 
-	/* csum_check requires unshared skb */
+	 
 	if (skb_ensure_writable(skb, udphoff + sizeof(*udph)))
 		return 0;
 
 	if (unlikely(cp->app != NULL)) {
 		int ret;
 
-		/* Some checks before mangling */
+		 
 		if (!udp_csum_check(cp->af, skb, pp))
 			return 0;
 
-		/*
-		 *	Call application helper if needed
-		 */
+		 
 		if (!(ret = ip_vs_app_pkt_out(cp, skb, iph)))
 			return 0;
-		/* ret=2: csum update is needed after payload mangling */
+		 
 		if (ret == 1)
 			oldlen = skb->len - udphoff;
 		else
@@ -173,22 +157,20 @@ udp_snat_handler(struct sk_buff *skb, struct ip_vs_protocol *pp,
 	udph = (void *)skb_network_header(skb) + udphoff;
 	udph->source = cp->vport;
 
-	/*
-	 *	Adjust UDP checksums
-	 */
+	 
 	if (skb->ip_summed == CHECKSUM_PARTIAL) {
 		udp_partial_csum_update(cp->af, udph, &cp->daddr, &cp->vaddr,
 					htons(oldlen),
 					htons(skb->len - udphoff));
 	} else if (!payload_csum && (udph->check != 0)) {
-		/* Only port and addr are changed, do fast csum update */
+		 
 		udp_fast_csum_update(cp->af, udph, &cp->daddr, &cp->vaddr,
 				     cp->dport, cp->vport);
 		if (skb->ip_summed == CHECKSUM_COMPLETE)
 			skb->ip_summed = cp->app ?
 					 CHECKSUM_UNNECESSARY : CHECKSUM_NONE;
 	} else {
-		/* full checksum calculation */
+		 
 		udph->check = 0;
 		skb->csum = skb_checksum(skb, udphoff, skb->len - udphoff, 0);
 #ifdef CONFIG_IP_VS_IPV6
@@ -230,24 +212,21 @@ udp_dnat_handler(struct sk_buff *skb, struct ip_vs_protocol *pp,
 #endif
 	oldlen = skb->len - udphoff;
 
-	/* csum_check requires unshared skb */
+	 
 	if (skb_ensure_writable(skb, udphoff + sizeof(*udph)))
 		return 0;
 
 	if (unlikely(cp->app != NULL)) {
 		int ret;
 
-		/* Some checks before mangling */
+		 
 		if (!udp_csum_check(cp->af, skb, pp))
 			return 0;
 
-		/*
-		 *	Attempt ip_vs_app call.
-		 *	It will fix ip_vs_conn
-		 */
+		 
 		if (!(ret = ip_vs_app_pkt_in(cp, skb, iph)))
 			return 0;
-		/* ret=2: csum update is needed after payload mangling */
+		 
 		if (ret == 1)
 			oldlen = skb->len - udphoff;
 		else
@@ -257,22 +236,20 @@ udp_dnat_handler(struct sk_buff *skb, struct ip_vs_protocol *pp,
 	udph = (void *)skb_network_header(skb) + udphoff;
 	udph->dest = cp->dport;
 
-	/*
-	 *	Adjust UDP checksums
-	 */
+	 
 	if (skb->ip_summed == CHECKSUM_PARTIAL) {
 		udp_partial_csum_update(cp->af, udph, &cp->vaddr, &cp->daddr,
 					htons(oldlen),
 					htons(skb->len - udphoff));
 	} else if (!payload_csum && (udph->check != 0)) {
-		/* Only port and addr are changed, do fast csum update */
+		 
 		udp_fast_csum_update(cp->af, udph, &cp->vaddr, &cp->daddr,
 				     cp->vport, cp->dport);
 		if (skb->ip_summed == CHECKSUM_COMPLETE)
 			skb->ip_summed = cp->app ?
 					 CHECKSUM_UNNECESSARY : CHECKSUM_NONE;
 	} else {
-		/* full checksum calculation */
+		 
 		udph->check = 0;
 		skb->csum = skb_checksum(skb, udphoff, skb->len - udphoff, 0);
 #ifdef CONFIG_IP_VS_IPV6
@@ -344,7 +321,7 @@ udp_csum_check(int af, struct sk_buff *skb, struct ip_vs_protocol *pp)
 				}
 			break;
 		default:
-			/* No need to checksum. */
+			 
 			break;
 		}
 	}
@@ -399,11 +376,11 @@ static int udp_app_conn_bind(struct ip_vs_conn *cp)
 	struct ip_vs_app *inc;
 	int result = 0;
 
-	/* Default binding: bind app only for NAT */
+	 
 	if (IP_VS_FWD_METHOD(cp) != IP_VS_CONN_F_MASQ)
 		return 0;
 
-	/* Lookup application incarnations and bind the right one */
+	 
 	hash = udp_app_hashkey(cp->vport);
 
 	list_for_each_entry_rcu(inc, &ipvs->udp_apps[hash], p_list) {

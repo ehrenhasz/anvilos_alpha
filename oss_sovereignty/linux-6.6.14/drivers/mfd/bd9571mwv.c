@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * ROHM BD9571MWV-M and BD9574MVF-M core driver
- *
- * Copyright (C) 2017 Marek Vasut <marek.vasut+renesas@gmail.com>
- * Copyright (C) 2020 Renesas Electronics Corporation
- *
- * Based on the TPS65086 driver
- */
+
+ 
 
 #include <linux/i2c.h>
 #include <linux/interrupt.h>
@@ -214,7 +207,7 @@ static int bd9571mwv_probe(struct i2c_client *client)
 	struct regmap_irq_chip_data *irq_data;
 	int ret, num_cells, irq = client->irq;
 
-	/* Read the PMIC product code */
+	 
 	ret = i2c_smbus_read_byte_data(client, BD9571MWV_PRODUCT_CODE);
 	if (ret < 0) {
 		dev_err(dev, "Failed to read product code\n");
@@ -263,13 +256,13 @@ static int bd9571mwv_probe(struct i2c_client *client)
 static const struct of_device_id bd9571mwv_of_match_table[] = {
 	{ .compatible = "rohm,bd9571mwv", },
 	{ .compatible = "rohm,bd9574mwf", },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, bd9571mwv_of_match_table);
 
 static const struct i2c_device_id bd9571mwv_id_table[] = {
 	{ "bd9571mwv", 0 },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(i2c, bd9571mwv_id_table);
 

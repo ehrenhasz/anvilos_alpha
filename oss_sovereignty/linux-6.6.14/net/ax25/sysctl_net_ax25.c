@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *
- * Copyright (C) 1996 Mike Shaver (shaver@zeroknowledge.com)
- */
+
+ 
 #include <linux/mm.h>
 #include <linux/slab.h>
 #include <linux/sysctl.h>
@@ -142,7 +139,7 @@ static const struct ctl_table ax25_param_table[] = {
 	},
 #endif
 
-	{ }	/* that's all, folks! */
+	{ }	 
 };
 
 int ax25_register_dev_sysctl(ax25_dev *ax25_dev)

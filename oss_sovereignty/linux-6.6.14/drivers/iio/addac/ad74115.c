@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2022 Analog Devices, Inc.
- * Author: Cosmin Tanislav <cosmin.tanislav@analog.com>
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/bitops.h>
@@ -201,10 +198,7 @@ struct ad74115_state {
 	struct iio_trigger		*trig;
 	struct regulator		*avdd;
 
-	/*
-	 * Synchronize consecutive operations when doing a one-shot
-	 * conversion and when updating the ADC samples SPI message.
-	 */
+	 
 	struct mutex			lock;
 	struct gpio_chip		gc;
 	struct gpio_chip		comp_gc;
@@ -222,10 +216,7 @@ struct ad74115_state {
 	struct spi_message		adc_samples_msg;
 	struct spi_transfer		adc_samples_xfer[AD74115_ADC_CH_NUM + 1];
 
-	/*
-	 * DMA (thus cache coherency maintenance) requires the
-	 * transfer buffers to live in their own cache lines.
-	 */
+	 
 	u8				reg_tx_buf[AD74115_FRAME_SIZE] __aligned(IIO_DMA_MINALIGN);
 	u8				reg_rx_buf[AD74115_FRAME_SIZE];
 	u8				adc_samples_tx_buf[AD74115_FRAME_SIZE * AD74115_ADC_CH_NUM];
@@ -678,18 +669,7 @@ static int ad74115_update_scan_mode(struct iio_dev *indio_dev,
 			goto out;
 	}
 
-	/*
-	 * The read select register is used to select which register's value
-	 * will be sent by the slave on the next SPI frame.
-	 *
-	 * Create an SPI message that, on each step, writes to the read select
-	 * register to select the ADC result of the next enabled channel, and
-	 * reads the ADC result of the previous enabled channel.
-	 *
-	 * Example:
-	 * W: [WCH1] [WCH2] [WCH2] [WCH3] [    ]
-	 * R: [    ] [RCH1] [RCH2] [RCH3] [RCH4]
-	 */
+	 
 	for_each_set_bit(i, active_scan_mask, AD74115_ADC_CH_NUM) {
 		ret = ad74115_set_adc_ch_en(st, i, true);
 		if (ret)
@@ -747,10 +727,7 @@ static int ad74115_buffer_predisable(struct iio_dev *indio_dev)
 	if (ret)
 		goto out;
 
-	/*
-	 * update_scan_mode() is not called in the disable path, disable all
-	 * channels here.
-	 */
+	 
 	for (i = 0; i < AD74115_ADC_CH_NUM; i++) {
 		ret = ad74115_set_adc_ch_en(st, i, false);
 		if (ret)
@@ -829,14 +806,7 @@ static int _ad74115_get_adc_code(struct ad74115_state *st,
 		if (ret)
 			return ret;
 
-		/*
-		 * The ADC_DATA_RDY bit is W1C.
-		 * See datasheet page 98, Table 62. Bit Descriptions for
-		 * LIVE_STATUS.
-		 * Although the datasheet mentions that the bit will auto-clear
-		 * when writing to the ADC_CONV_CTRL register, this does not
-		 * seem to happen.
-		 */
+		 
 		ret = regmap_write_bits(st->regmap, AD74115_LIVE_STATUS_REG,
 					AD74115_ADC_DATA_RDY_MASK,
 					FIELD_PREP(AD74115_ADC_DATA_RDY_MASK, 1));
@@ -1118,7 +1088,7 @@ static int ad74115_get_adc_resistance_offset(struct ad74115_state *st,
 	*val *= d;
 
 	if (!st->rtd_mode_4_wire) {
-		/* Add 0.2 Ohm to the final result for 3-wire RTD. */
+		 
 		unsigned int v = 2 * ad74115_adc_gain_tbl[range][0];
 
 		if (ad74115_adc_bipolar_tbl[range])

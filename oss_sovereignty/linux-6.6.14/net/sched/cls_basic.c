@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * net/sched/cls_basic.c	Basic Packet Classifier.
- *
- * Authors:	Thomas Graf <tgraf@suug.ch>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/slab.h>

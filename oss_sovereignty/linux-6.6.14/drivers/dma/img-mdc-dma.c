@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * IMG Multi-threaded DMA Controller (MDC)
- *
- * Copyright (C) 2009,2012,2013 Imagination Technologies Ltd.
- * Copyright (C) 2014 Google, Inc.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/dma-mapping.h>
@@ -93,10 +88,7 @@ struct mdc_hw_list_desc {
 	u32 node_addr;
 	u32 cmds_done;
 	u32 ctrl_status;
-	/*
-	 * Not part of the list descriptor, but instead used by the CPU to
-	 * traverse the list.
-	 */
+	 
 	struct mdc_hw_list_desc *next_desc;
 };
 
@@ -596,10 +588,7 @@ static enum dma_status mdc_tx_status(struct dma_chan *chan,
 
 		mdesc = mchan->desc;
 
-		/*
-		 * Determine the number of commands that haven't been
-		 * processed (handled by the IRQ handler) yet.
-		 */
+		 
 		do {
 			val1 = mdc_chan_readl(mchan, MDC_CMDS_PROCESSED) &
 				~MDC_CMDS_PROCESSED_INT_ACTIVE;
@@ -616,10 +605,7 @@ static enum dma_status mdc_tx_status(struct dma_chan *chan,
 		cmds = (done - processed) %
 			(MDC_CMDS_PROCESSED_CMDS_DONE_MASK + 1);
 
-		/*
-		 * If the command loaded event hasn't been processed yet, then
-		 * the difference above includes an extra command.
-		 */
+		 
 		if (!mdesc->cmd_loaded)
 			cmds--;
 		else
@@ -653,11 +639,7 @@ static unsigned int mdc_get_new_events(struct mdc_chan *mchan)
 	val = mdc_chan_readl(mchan, MDC_CMDS_PROCESSED);
 	processed = (val >> MDC_CMDS_PROCESSED_CMDS_PROCESSED_SHIFT) &
 				MDC_CMDS_PROCESSED_CMDS_PROCESSED_MASK;
-	/*
-	 * CMDS_DONE may have incremented between reading CMDS_PROCESSED
-	 * and clearing INT_ACTIVE.  Re-read CMDS_PROCESSED to ensure we
-	 * didn't miss a command completion.
-	 */
+	 
 	do {
 		val = mdc_chan_readl(mchan, MDC_CMDS_PROCESSED);
 
@@ -776,11 +758,7 @@ static irqreturn_t mdc_chan_irq(int irq, void *dev_id)
 	}
 
 	for (i = 0; i < new_events; i++) {
-		/*
-		 * The first interrupt in a transfer indicates that the
-		 * command list has been loaded, not that a command has
-		 * been completed.
-		 */
+		 
 		if (!mdesc->cmd_loaded) {
 			mdesc->cmd_loaded = true;
 			continue;
@@ -924,15 +902,7 @@ static int mdc_dma_probe(struct platform_device *pdev)
 	mdma->bus_width =
 		(1 << ((val >> MDC_GLOBAL_CONFIG_A_SYS_DAT_WIDTH_SHIFT) &
 		       MDC_GLOBAL_CONFIG_A_SYS_DAT_WIDTH_MASK)) / 8;
-	/*
-	 * Although transfer sizes of up to MDC_TRANSFER_SIZE_MASK + 1 bytes
-	 * are supported, this makes it possible for the value reported in
-	 * MDC_ACTIVE_TRANSFER_SIZE to be ambiguous - an active transfer size
-	 * of MDC_TRANSFER_SIZE_MASK may indicate either that 0 bytes or
-	 * MDC_TRANSFER_SIZE_MASK + 1 bytes are remaining.  To eliminate this
-	 * ambiguity, restrict transfer sizes to one bus-width less than the
-	 * actual maximum.
-	 */
+	 
 	mdma->max_xfer_size = MDC_TRANSFER_SIZE_MASK + 1 - mdma->bus_width;
 
 	of_property_read_u32(pdev->dev.of_node, "dma-channels",
@@ -1047,7 +1017,7 @@ static int img_mdc_suspend_late(struct device *dev)
 	struct mdc_dma *mdma = dev_get_drvdata(dev);
 	int i;
 
-	/* Check that all channels are idle */
+	 
 	for (i = 0; i < mdma->nr_channels; i++) {
 		struct mdc_chan *mchan = &mdma->channels[i];
 
@@ -1062,7 +1032,7 @@ static int img_mdc_resume_early(struct device *dev)
 {
 	return pm_runtime_force_resume(dev);
 }
-#endif /* CONFIG_PM_SLEEP */
+#endif  
 
 static const struct dev_pm_ops img_mdc_pm_ops = {
 	SET_RUNTIME_PM_OPS(img_mdc_runtime_suspend,

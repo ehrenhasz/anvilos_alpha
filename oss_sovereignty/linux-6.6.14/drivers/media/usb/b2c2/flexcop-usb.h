@@ -1,15 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Linux driver for digital TV devices equipped with B2C2 FlexcopII(b)/III
- * flexcop-usb.h - header file for the USB part
- * see flexcop.c for copyright information
- */
+ 
+ 
 #ifndef __FLEXCOP_USB_H_INCLUDED__
 #define __FLEXCOP_USB_H_INCLUDED__
 
 #include <linux/usb.h>
 
-/* transfer parameters */
+ 
 #define B2C2_USB_FRAMES_PER_ISO 4
 #define B2C2_USB_NUM_ISO_URB 4
 
@@ -31,19 +27,19 @@ struct flexcop_usb {
 	u8 tmp_buffer[1023+190];
 	int tmp_buffer_length;
 
-	/* for URB control messages */
+	 
 	u8 data[80];
 	struct mutex data_mutex;
 };
 
 #if 0
-/* request types TODO What is its use?*/
+ 
 typedef enum {
 
 } flexcop_usb_request_type_t;
 #endif
 
-/* request */
+ 
 typedef enum {
 	B2C2_USB_WRITE_V8_MEM = 0x04,
 	B2C2_USB_READ_V8_MEM  = 0x05,
@@ -55,7 +51,7 @@ typedef enum {
 	B2C2_USB_UTILITY      = 0x12,
 } flexcop_usb_request_t;
 
-/* function definition for I2C_REQUEST */
+ 
 typedef enum {
 	USB_FUNC_I2C_WRITE       = 0x01,
 	USB_FUNC_I2C_MULTIWRITE  = 0x02,
@@ -63,13 +59,12 @@ typedef enum {
 	USB_FUNC_I2C_REPEATWRITE = 0x04,
 	USB_FUNC_GET_DESCRIPTOR  = 0x05,
 	USB_FUNC_I2C_REPEATREAD  = 0x06,
-	/* DKT 020208 - add this to support special case of DiSEqC */
+	 
 	USB_FUNC_I2C_CHECKWRITE  = 0x07,
 	USB_FUNC_I2C_CHECKRESULT = 0x08,
 } flexcop_usb_i2c_function_t;
 
-/* function definition for UTILITY request 0x12
- * DKT 020304 - new utility function */
+ 
 typedef enum {
 	UTILITY_SET_FILTER          = 0x01,
 	UTILITY_DATA_ENABLE         = 0x02,
@@ -83,7 +78,7 @@ typedef enum {
 	UTILITY_DATA_RESET          = 0x0A,
 	UTILITY_GET_DATA_STATUS     = 0x10,
 	UTILITY_GET_V8_REG          = 0x11,
-	/* DKT 020326 - add function for v1.14 */
+	 
 	UTILITY_SRAM_WRITE          = 0x12,
 	UTILITY_SRAM_READ           = 0x13,
 	UTILITY_SRAM_TESTFILL       = 0x14,
@@ -110,7 +105,7 @@ typedef enum {
 #define USB_MEM_READ_MAX   32
 #define USB_MEM_WRITE_MAX   1
 #define USB_FLASH_MAX       8
-#define V8_MEMORY_PAGE_SIZE 0x8000 /* 32K */
+#define V8_MEMORY_PAGE_SIZE 0x8000  
 #define V8_MEMORY_PAGE_MASK 0x7FFF
 
 #endif

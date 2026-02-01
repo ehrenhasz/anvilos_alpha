@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2014 Traphandler
- * Copyright (C) 2014 Free Electrons
- * Copyright (C) 2014 Atmel
- *
- * Author: Jean-Jacques Hiblot <jjhiblot@traphandler.com>
- * Author: Boris BREZILLON <boris.brezillon@free-electrons.com>
- */
+
+ 
 
 #include <linux/media-bus-format.h>
 #include <linux/of.h>
@@ -129,10 +122,7 @@ int atmel_hlcdc_create_outputs(struct drm_device *dev)
 	int endpoint, ret = 0;
 	int attached = 0;
 
-	/*
-	 * Always scan the first few endpoints even if we get -ENODEV,
-	 * but keep going after that as long as we keep getting hits.
-	 */
+	 
 	for (endpoint = 0; !ret || endpoint < 4; endpoint++) {
 		ret = atmel_hlcdc_attach_endpoint(dev, endpoint);
 		if (ret == -ENODEV)
@@ -142,7 +132,7 @@ int atmel_hlcdc_create_outputs(struct drm_device *dev)
 		attached++;
 	}
 
-	/* At least one device was successfully attached.*/
+	 
 	if (ret == -ENODEV && attached)
 		return 0;
 

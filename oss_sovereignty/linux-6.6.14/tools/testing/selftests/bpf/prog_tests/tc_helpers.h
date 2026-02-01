@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright (c) 2023 Isovalent */
+ 
+ 
 #ifndef TC_HELPERS
 #define TC_HELPERS
 #include <test_progs.h>
@@ -71,4 +71,4 @@ static inline void tc_skel_reset_all_seen(struct test_tc_link *skel)
 	memset(skel->bss, 0, sizeof(*skel->bss));
 }
 
-#endif /* TC_HELPERS */
+#endif  

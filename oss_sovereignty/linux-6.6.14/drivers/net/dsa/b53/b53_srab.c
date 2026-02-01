@@ -1,20 +1,4 @@
-/*
- * B53 register access through Switch Register Access Bridge Registers
- *
- * Copyright (C) 2013 Hauke Mehrtens <hauke@hauke-m.de>
- *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -27,7 +11,7 @@
 #include "b53_priv.h"
 #include "b53_serdes.h"
 
-/* command and status register of the SRAB */
+ 
 #define B53_SRAB_CMDSTAT		0x2c
 #define  B53_SRAB_CMDSTAT_RST		BIT(2)
 #define  B53_SRAB_CMDSTAT_WRITE		BIT(1)
@@ -35,26 +19,26 @@
 #define  B53_SRAB_CMDSTAT_PAGE		24
 #define  B53_SRAB_CMDSTAT_REG		16
 
-/* high order word of write data to switch registe */
+ 
 #define B53_SRAB_WD_H			0x30
 
-/* low order word of write data to switch registe */
+ 
 #define B53_SRAB_WD_L			0x34
 
-/* high order word of read data from switch register */
+ 
 #define B53_SRAB_RD_H			0x38
 
-/* low order word of read data from switch register */
+ 
 #define B53_SRAB_RD_L			0x3c
 
-/* command and status register of the SRAB */
+ 
 #define B53_SRAB_CTRLS			0x40
 #define  B53_SRAB_CTRLS_HOST_INTR	BIT(1)
 #define  B53_SRAB_CTRLS_RCAREQ		BIT(3)
 #define  B53_SRAB_CTRLS_RCAGNT		BIT(4)
 #define  B53_SRAB_CTRLS_SW_INIT_DONE	BIT(6)
 
-/* the register captures interrupt pulses from the switch */
+ 
 #define B53_SRAB_INTR			0x44
 #define  B53_SRAB_INTR_P(x)		BIT(x)
 #define  B53_SRAB_SWITCH_PHY		BIT(8)
@@ -63,7 +47,7 @@
 #define  B53_SRAB_P7_SLEEP_TIMER	BIT(11)
 #define  B53_SRAB_IMP0_SLEEP_TIMER	BIT(12)
 
-/* Port mux configuration registers */
+ 
 #define B53_MUX_CONFIG_P5		0x00
 #define  MUX_CONFIG_SGMII		0
 #define  MUX_CONFIG_MII_LITE		1
@@ -129,14 +113,14 @@ static int b53_srab_op(struct b53_device *dev, u8 page, u8 reg, u32 op)
 	int i;
 	u32 cmdstat;
 
-	/* set register address */
+	 
 	cmdstat = (page << B53_SRAB_CMDSTAT_PAGE) |
 		  (reg << B53_SRAB_CMDSTAT_REG) |
 		  B53_SRAB_CMDSTAT_GORDYN |
 		  op;
 	writel(cmdstat, regs + B53_SRAB_CMDSTAT);
 
-	/* check if operation completed */
+	 
 	for (i = 0; i < 5; ++i) {
 		cmdstat = readl(regs + B53_SRAB_CMDSTAT);
 		if (!(cmdstat & B53_SRAB_CMDSTAT_GORDYN))
@@ -385,7 +369,7 @@ static irqreturn_t b53_srab_port_isr(int irq, void *dev_id)
 	struct b53_device *dev = port->dev;
 	struct b53_srab_priv *priv = dev->priv;
 
-	/* Acknowledge the interrupt */
+	 
 	writel(BIT(port->num), priv->regs + B53_SRAB_INTR);
 
 	return IRQ_WAKE_THREAD;
@@ -417,9 +401,7 @@ static int b53_srab_irq_enable(struct b53_device *dev, int port)
 	struct b53_srab_port_priv *p = &priv->port_intrs[port];
 	int ret = 0;
 
-	/* Interrupt is optional and was not specified, do not make
-	 * this fatal
-	 */
+	 
 	if (p->irq == -ENXIO)
 		return ret;
 
@@ -452,9 +434,7 @@ static void b53_srab_phylink_get_caps(struct b53_device *dev, int port,
 	switch (p->mode) {
 	case PHY_INTERFACE_MODE_SGMII:
 #if IS_ENABLED(CONFIG_B53_SERDES)
-		/* If p->mode indicates SGMII mode, that essentially means we
-		 * are using a serdes. As the serdes for the capabilities.
-		 */
+		 
 		b53_serdes_phylink_get_caps(dev, port, config);
 #endif
 		break;
@@ -463,14 +443,12 @@ static void b53_srab_phylink_get_caps(struct b53_device *dev, int port,
 		break;
 
 	case PHY_INTERFACE_MODE_RGMII:
-		/* If we support RGMII, support all RGMII modes, since
-		 * that dictates the PHY delay settings.
-		 */
+		 
 		phy_interface_set_rgmii(config->supported_interfaces);
 		break;
 
 	default:
-		/* Some other mode (e.g. MII, GMII etc) */
+		 
 		__set_bit(p->mode, config->supported_interfaces);
 		break;
 	}
@@ -515,7 +493,7 @@ static const struct of_device_id b53_srab_of_match[] = {
 	{ .compatible = "brcm,cygnus-srab", .data = (void *)BCM583XX_DEVICE_ID },
 	{ .compatible = "brcm,nsp-srab", .data = (void *)BCM58XX_DEVICE_ID },
 	{ .compatible = "brcm,omega-srab", .data = (void *)BCM583XX_DEVICE_ID },
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, b53_srab_of_match);
 
@@ -539,13 +517,13 @@ static void b53_srab_prepare_irq(struct platform_device *pdev)
 	unsigned int i;
 	char *name;
 
-	/* Clear all pending interrupts */
+	 
 	writel(0xffffffff, priv->regs + B53_SRAB_INTR);
 
 	for (i = 0; i < B53_N_PORTS; i++) {
 		port = &priv->port_intrs[i];
 
-		/* There is no port 6 */
+		 
 		if (i == 6)
 			continue;
 
@@ -578,9 +556,7 @@ static void b53_srab_mux_init(struct platform_device *pdev)
 	if (IS_ERR(priv->mux_config))
 		return;
 
-	/* Obtain the port mux configuration so we know which lanes
-	 * actually map to SerDes lanes
-	 */
+	 
 	for (port = 5; port > 3; port--, off += 4) {
 		p = &priv->port_intrs[port];
 

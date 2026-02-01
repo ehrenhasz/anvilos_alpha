@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* RxRPC recvmsg() implementation
- *
- * Copyright (C) 2007 Red Hat, Inc. All Rights Reserved.
- * Written by David Howells (dhowells@redhat.com)
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -16,10 +12,7 @@
 #include <net/af_rxrpc.h>
 #include "ar-internal.h"
 
-/*
- * Post a call for attention by the socket or kernel service.  Further
- * notifications are suppressed by putting recvmsg_link on a dummy queue.
- */
+ 
 void rxrpc_notify_socket(struct rxrpc_call *call)
 {
 	struct rxrpc_sock *rx;
@@ -58,9 +51,7 @@ void rxrpc_notify_socket(struct rxrpc_call *call)
 	_leave("");
 }
 
-/*
- * Pass a call terminating message to userspace.
- */
+ 
 static int rxrpc_recvmsg_term(struct rxrpc_call *call, struct msghdr *msg)
 {
 	u32 tmp = 0;
@@ -100,9 +91,7 @@ static int rxrpc_recvmsg_term(struct rxrpc_call *call, struct msghdr *msg)
 	return ret;
 }
 
-/*
- * Discard a packet we've used up and advance the Rx window by one.
- */
+ 
 static void rxrpc_rotate_rx_window(struct rxrpc_call *call)
 {
 	struct rxrpc_skb_priv *sp;
@@ -122,7 +111,7 @@ static void rxrpc_rotate_rx_window(struct rxrpc_call *call)
 	serial = sp->hdr.serial;
 	last   = sp->hdr.flags & RXRPC_LAST_PACKET;
 
-	/* Barrier against rxrpc_input_data(). */
+	 
 	if (after(tseq, call->rx_consumed))
 		smp_store_release(&call->rx_consumed, tseq);
 
@@ -134,7 +123,7 @@ static void rxrpc_rotate_rx_window(struct rxrpc_call *call)
 	if (last)
 		set_bit(RXRPC_CALL_RECVMSG_READ_ALL, &call->flags);
 
-	/* Check to see if there's an ACK that needs sending. */
+	 
 	acked = atomic_add_return(call->rx_consumed - old_consumed,
 				  &call->ackr_nr_consumed);
 	if (acked > 8 &&
@@ -142,9 +131,7 @@ static void rxrpc_rotate_rx_window(struct rxrpc_call *call)
 		rxrpc_poke_call(call, rxrpc_call_poke_idle);
 }
 
-/*
- * Decrypt and verify a DATA packet.
- */
+ 
 static int rxrpc_verify_data(struct rxrpc_call *call, struct sk_buff *skb)
 {
 	struct rxrpc_skb_priv *sp = rxrpc_skb(skb);
@@ -154,12 +141,7 @@ static int rxrpc_verify_data(struct rxrpc_call *call, struct sk_buff *skb)
 	return call->security->verify_packet(call, skb);
 }
 
-/*
- * Deliver messages to a call.  This keeps processing packets until the buffer
- * is filled and we find either more DATA (returns 0) or the end of the DATA
- * (returns 1).  If more packets are required, it returns -EAGAIN and if the
- * call has failed it returns -EIO.
- */
+ 
 static int rxrpc_recvmsg_data(struct socket *sock, struct rxrpc_call *call,
 			      struct msghdr *msg, struct iov_iter *iter,
 			      size_t len, int flags, size_t *_offset)
@@ -186,9 +168,7 @@ static int rxrpc_recvmsg_data(struct socket *sock, struct rxrpc_call *call,
 		goto done;
 	}
 
-	/* No one else can be removing stuff from the queue, so we shouldn't
-	 * need the Rx lock to walk it.
-	 */
+	 
 	skb = skb_peek(&call->recvmsg_queue);
 	while (skb) {
 		rxrpc_see_skb(skb, rxrpc_skb_see_recvmsg);
@@ -218,7 +198,7 @@ static int rxrpc_recvmsg_data(struct socket *sock, struct rxrpc_call *call,
 					     rx_pkt_offset, rx_pkt_len, 0);
 		}
 
-		/* We have to handle short, empty and used-up DATA packets. */
+		 
 		remain = len - *_offset;
 		copy = rx_pkt_len;
 		if (copy > remain)
@@ -231,7 +211,7 @@ static int rxrpc_recvmsg_data(struct socket *sock, struct rxrpc_call *call,
 				goto out;
 			}
 
-			/* handle piecemeal consumption of data packets */
+			 
 			rx_pkt_offset += copy;
 			rx_pkt_len -= copy;
 			*_offset += copy;
@@ -245,7 +225,7 @@ static int rxrpc_recvmsg_data(struct socket *sock, struct rxrpc_call *call,
 			break;
 		}
 
-		/* The whole packet has been transferred. */
+		 
 		if (sp->hdr.flags & RXRPC_LAST_PACKET)
 			ret = 1;
 		rx_pkt_offset = 0;
@@ -270,11 +250,7 @@ done:
 	return ret;
 }
 
-/*
- * Receive a message from an RxRPC socket
- * - we need to be careful about two or more threads calling recvmsg
- *   simultaneously
- */
+ 
 int rxrpc_recvmsg(struct socket *sock, struct msghdr *msg, size_t len,
 		  int flags)
 {
@@ -298,7 +274,7 @@ int rxrpc_recvmsg(struct socket *sock, struct msghdr *msg, size_t len,
 try_again:
 	lock_sock(&rx->sk);
 
-	/* Return immediately if a client socket has no outstanding calls */
+	 
 	if (RB_EMPTY_ROOT(&rx->calls) &&
 	    list_empty(&rx->recvmsg_q) &&
 	    rx->sk.sk_state != RXRPC_SERVER_LISTENING) {
@@ -315,7 +291,7 @@ try_again:
 
 		release_sock(&rx->sk);
 
-		/* Wait for something to happen */
+		 
 		prepare_to_wait_exclusive(sk_sleep(&rx->sk), &wait,
 					  TASK_INTERRUPTIBLE);
 		ret = sock_error(&rx->sk);
@@ -332,11 +308,7 @@ try_again:
 		goto try_again;
 	}
 
-	/* Find the next call and dequeue it if we're not just peeking.  If we
-	 * do dequeue it, that comes with a ref that we will need to release.
-	 * We also want to weed out calls that got requeued whilst we were
-	 * shovelling data out.
-	 */
+	 
 	spin_lock(&rx->recvmsg_lock);
 	l = rx->recvmsg_q.next;
 	call = list_entry(l, struct rxrpc_call, recvmsg_link);
@@ -360,9 +332,7 @@ try_again:
 	call_debug_id = call->debug_id;
 	trace_rxrpc_recvmsg(call_debug_id, rxrpc_recvmsg_dequeue, 0);
 
-	/* We're going to drop the socket lock, so we need to lock the call
-	 * against interference by sendmsg.
-	 */
+	 
 	if (!mutex_trylock(&call->user_mutex)) {
 		ret = -EWOULDBLOCK;
 		if (flags & MSG_DONTWAIT)
@@ -466,26 +436,7 @@ wait_error:
 	goto error_trace;
 }
 
-/**
- * rxrpc_kernel_recv_data - Allow a kernel service to receive data/info
- * @sock: The socket that the call exists on
- * @call: The call to send data through
- * @iter: The buffer to receive into
- * @_len: The amount of data we want to receive (decreased on return)
- * @want_more: True if more data is expected to be read
- * @_abort: Where the abort code is stored if -ECONNABORTED is returned
- * @_service: Where to store the actual service ID (may be upgraded)
- *
- * Allow a kernel service to receive data and pick up information about the
- * state of a call.  Returns 0 if got what was asked for and there's more
- * available, 1 if we got what was asked for and we're at the end of the data
- * and -EAGAIN if we need more data.
- *
- * Note that we may return -EAGAIN to drain empty packets at the end of the
- * data, even if we've already copied over the requested data.
- *
- * *_abort should also be initialised to 0.
- */
+ 
 int rxrpc_kernel_recv_data(struct socket *sock, struct rxrpc_call *call,
 			   struct iov_iter *iter, size_t *_len,
 			   bool want_more, u32 *_abort, u16 *_service)
@@ -504,10 +455,7 @@ int rxrpc_kernel_recv_data(struct socket *sock, struct rxrpc_call *call,
 	if (ret < 0)
 		goto out;
 
-	/* We can only reach here with a partially full buffer if we have
-	 * reached the end of the data.  We must otherwise have a full buffer
-	 * or have been given -EAGAIN.
-	 */
+	 
 	if (ret == 1) {
 		if (iov_iter_count(iter) > 0)
 			goto short_data;

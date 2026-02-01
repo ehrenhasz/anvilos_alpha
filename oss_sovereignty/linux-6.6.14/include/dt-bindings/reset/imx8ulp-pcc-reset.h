@@ -1,12 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright 2021 NXP
- */
+ 
+ 
 
 #ifndef DT_BINDING_PCC_RESET_IMX8ULP_H
 #define DT_BINDING_PCC_RESET_IMX8ULP_H
 
-/* PCC3 */
+ 
 #define PCC3_WDOG3_SWRST	0
 #define PCC3_WDOG4_SWRST	1
 #define PCC3_LPIT1_SWRST	2
@@ -21,7 +19,7 @@
 #define PCC3_LPSPI4_SWRST	11
 #define PCC3_LPSPI5_SWRST	12
 
-/* PCC4 */
+ 
 #define PCC4_FLEXSPI2_SWRST	0
 #define PCC4_TPM6_SWRST		1
 #define PCC4_TPM7_SWRST		2
@@ -40,7 +38,7 @@
 #define PCC4_USB1_PHY_SWRST	15
 #define PCC4_ENET_SWRST		16
 
-/* PCC5 */
+ 
 #define PCC5_TPM8_SWRST		0
 #define PCC5_SAI6_SWRST		1
 #define PCC5_SAI7_SWRST		2
@@ -56,4 +54,4 @@
 #define PCC5_GPU3D_SWRST	12
 #define PCC5_DC_NANO_SWRST	13
 
-#endif /*DT_BINDING_RESET_IMX8ULP_H */
+#endif  

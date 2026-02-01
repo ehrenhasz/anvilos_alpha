@@ -1,17 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Support for Intel Camera Imaging ISP subsystem.
- * Copyright (c) 2015, Intel Corporation.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms and conditions of the GNU General Public License,
- * version 2, as published by the Free Software Foundation.
- *
- * This program is distributed in the hope it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- * more details.
- */
+ 
+ 
 
 #ifndef _IA_CSS_STREAM_H_
 #define _IA_CSS_STREAM_H_
@@ -22,9 +10,7 @@
 #include "ia_css_types.h"
 #include "ia_css_stream_public.h"
 
-/**
- * structure to hold all internal stream related information
- */
+ 
 struct ia_css_stream {
 	struct ia_css_stream_config    config;
 	struct ia_css_stream_info      info;
@@ -40,17 +26,12 @@ struct ia_css_stream {
 	bool                           cont_capt;
 	bool                           disable_cont_vf;
 
-	/* ISP2401 */
+	 
 	bool                           stop_copy_preview;
 	bool                           started;
 };
 
-/* @brief Get a binary in the stream, which binary has the shading correction.
- *
- * @param[in] stream: The stream.
- * @return	The binary which has the shading correction.
- *
- */
+ 
 struct ia_css_binary *
 ia_css_stream_get_shading_correction_binary(const struct ia_css_stream *stream);
 
@@ -70,16 +51,11 @@ sh_css_params_set_binning_factor(struct ia_css_stream *stream,
 void
 sh_css_invalidate_params(struct ia_css_stream *stream);
 
-/* The following functions are used for testing purposes only */
+ 
 const struct ia_css_fpn_table *
 ia_css_get_fpn_table(struct ia_css_stream *stream);
 
-/* @brief Get a pointer to the shading table.
- *
- * @param[in] stream: The stream.
- * @return	The pointer to the shading table.
- *
- */
+ 
 struct ia_css_shading_table *
 ia_css_get_shading_table(struct ia_css_stream *stream);
 
@@ -105,4 +81,4 @@ ia_css_stream_isp_parameters_init(struct ia_css_stream *stream);
 void
 ia_css_stream_isp_parameters_uninit(struct ia_css_stream *stream);
 
-#endif /*_IA_CSS_STREAM_H_*/
+#endif  

@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * da9052 declarations for DA9052 PMICs.
- *
- * Copyright(c) 2011 Dialog Semiconductor Ltd.
- *
- * Author: David Dajun Chen <dchen@diasemi.com>
- */
+ 
+ 
 
 #ifndef __MFD_DA9052_DA9052_H
 #define __MFD_DA9052_DA9052_H
@@ -19,7 +13,7 @@
 
 #include <linux/mfd/da9052/reg.h>
 
-/* Common - HWMON Channel Definations */
+ 
 #define DA9052_ADC_VDDOUT	0
 #define DA9052_ADC_ICH		1
 #define DA9052_ADC_TBAT	2
@@ -31,7 +25,7 @@
 #define DA9052_ADC_TJUNC	8
 #define DA9052_ADC_VBBAT	9
 
-/* TSI channel has its own 4 channel mux */
+ 
 #define DA9052_ADC_TSI_XP	70
 #define DA9052_ADC_TSI_XN	71
 #define DA9052_ADC_TSI_YP	72
@@ -93,15 +87,15 @@ struct da9052 {
 
 	int chip_irq;
 
-	/* SOC I/O transfer related fixes for DA9052/53 */
+	 
 	int (*fix_io) (struct da9052 *da9052, unsigned char reg);
 };
 
-/* ADC API */
+ 
 int da9052_adc_manual_read(struct da9052 *da9052, unsigned char channel);
 int da9052_adc_read_temp(struct da9052 *da9052);
 
-/* Device I/O API */
+ 
 static inline int da9052_reg_read(struct da9052 *da9052, unsigned char reg)
 {
 	int val, ret;
@@ -215,4 +209,4 @@ int da9052_enable_irq(struct da9052 *da9052, int irq);
 int da9052_disable_irq(struct da9052 *da9052, int irq);
 int da9052_disable_irq_nosync(struct da9052 *da9052, int irq);
 
-#endif /* __MFD_DA9052_DA9052_H */
+#endif  

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2015-2020, NVIDIA CORPORATION.  All rights reserved.
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/clk.h>
@@ -21,7 +19,7 @@
 #include "tegra210-emc.h"
 #include "tegra210-mc.h"
 
-/* CLK_RST_CONTROLLER_CLK_SOURCE_EMC */
+ 
 #define EMC_CLK_EMC_2X_CLK_SRC_SHIFT			29
 #define EMC_CLK_EMC_2X_CLK_SRC_MASK			\
 	(0x7 << EMC_CLK_EMC_2X_CLK_SRC_SHIFT)
@@ -33,7 +31,7 @@
 #define EMC_CLK_EMC_2X_CLK_DIVISOR_MASK			\
 	(0xff << EMC_CLK_EMC_2X_CLK_DIVISOR_SHIFT)
 
-/* CLK_RST_CONTROLLER_CLK_SOURCE_EMC_DLL */
+ 
 #define DLL_CLK_EMC_DLL_CLK_SRC_SHIFT			29
 #define DLL_CLK_EMC_DLL_CLK_SRC_MASK			\
 	(0x7 << DLL_CLK_EMC_DLL_CLK_SRC_SHIFT)
@@ -47,10 +45,10 @@
 #define DLL_CLK_EMC_DLL_CLK_DIVISOR_MASK		\
 	(0xff << DLL_CLK_EMC_DLL_CLK_DIVISOR_SHIFT)
 
-/* MC_EMEM_ARB_MISC0 */
+ 
 #define MC_EMEM_ARB_MISC0_EMC_SAME_FREQ			BIT(27)
 
-/* EMC_DATA_BRLSHFT_X */
+ 
 #define EMC0_EMC_DATA_BRLSHFT_0_INDEX	2
 #define EMC1_EMC_DATA_BRLSHFT_0_INDEX	3
 #define EMC0_EMC_DATA_BRLSHFT_1_INDEX	4
@@ -627,7 +625,7 @@ static void tegra210_emc_poll_refresh(struct timer_list *timer)
 
 	switch (temperature) {
 	case 0 ... 3:
-		/* temperature is fine, using regular refresh */
+		 
 		dev_dbg(emc->dev, "switching to nominal refresh...\n");
 		tegra210_emc_set_refresh(emc, TEGRA210_EMC_REFRESH_NOMINAL);
 		break;
@@ -1554,7 +1552,7 @@ static int tegra210_emc_set_rate(struct device *dev,
 	emc->next = timing;
 	last_change_delay = ktime_us_delta(ktime_get(), emc->clkchange_time);
 
-	/* XXX use non-busy-looping sleep? */
+	 
 	if ((last_change_delay >= 0) &&
 	    (last_change_delay < emc->clkchange_delay))
 		udelay(emc->clkchange_delay - (int)last_change_delay);
@@ -1568,30 +1566,7 @@ static int tegra210_emc_set_rate(struct device *dev,
 	return 0;
 }
 
-/*
- * debugfs interface
- *
- * The memory controller driver exposes some files in debugfs that can be used
- * to control the EMC frequency. The top-level directory can be found here:
- *
- *   /sys/kernel/debug/emc
- *
- * It contains the following files:
- *
- *   - available_rates: This file contains a list of valid, space-separated
- *     EMC frequencies.
- *
- *   - min_rate: Writing a value to this file sets the given frequency as the
- *       floor of the permitted range. If this is higher than the currently
- *       configured EMC frequency, this will cause the frequency to be
- *       increased so that it stays within the valid range.
- *
- *   - max_rate: Similarily to the min_rate file, writing a value to this file
- *       sets the given frequency as the ceiling of the permitted range. If
- *       the value is lower than the currently configured EMC frequency, this
- *       will cause the frequency to be decreased so that it stays within the
- *       valid range.
- */
+ 
 
 static bool tegra210_emc_validate_rate(struct tegra210_emc *emc,
 				       unsigned long rate)
@@ -1761,7 +1736,7 @@ static void tegra210_emc_detect(struct tegra210_emc *emc)
 {
 	u32 value;
 
-	/* probe the number of connected DRAM devices */
+	 
 	value = mc_readl(emc->mc, MC_EMEM_ADR_CFG);
 
 	if (value & MC_EMEM_ADR_CFG_EMEM_NUMDEV)
@@ -1769,11 +1744,11 @@ static void tegra210_emc_detect(struct tegra210_emc *emc)
 	else
 		emc->num_devices = 1;
 
-	/* probe the type of DRAM */
+	 
 	value = emc_readl(emc, EMC_FBIO_CFG5);
 	emc->dram_type = value & 0x3;
 
-	/* probe the number of channels */
+	 
 	value = emc_readl(emc, EMC_FBIO_CFG7);
 
 	if ((value & EMC_FBIO_CFG7_CH1_ENABLE) &&
@@ -1846,7 +1821,7 @@ static int tegra210_emc_probe(struct platform_device *pdev)
 	tegra210_emc_detect(emc);
 	np = pdev->dev.of_node;
 
-	/* attach to the nominal and (optional) derated tables */
+	 
 	err = of_reserved_mem_device_init_by_name(emc->dev, np, "nominal");
 	if (err < 0) {
 		dev_err(emc->dev, "failed to get nominal EMC table: %d\n", err);
@@ -1859,7 +1834,7 @@ static int tegra210_emc_probe(struct platform_device *pdev)
 		goto release;
 	}
 
-	/* validate the tables */
+	 
 	if (emc->nominal) {
 		err = tegra210_emc_validate_timings(emc, emc->nominal,
 						    emc->num_timings);
@@ -1874,10 +1849,10 @@ static int tegra210_emc_probe(struct platform_device *pdev)
 			goto release;
 	}
 
-	/* default to the nominal table */
+	 
 	emc->timings = emc->nominal;
 
-	/* pick the current timing based on the current EMC clock rate */
+	 
 	current_rate = clk_get_rate(emc->clk) / 1000;
 
 	for (i = 0; i < emc->num_timings; i++) {
@@ -1894,7 +1869,7 @@ static int tegra210_emc_probe(struct platform_device *pdev)
 		goto release;
 	}
 
-	/* pick a compatible clock change sequence for the EMC table */
+	 
 	for (i = 0; i < ARRAY_SIZE(tegra210_emc_sequences); i++) {
 		const struct tegra210_emc_sequence *sequence =
 				tegra210_emc_sequences[i];

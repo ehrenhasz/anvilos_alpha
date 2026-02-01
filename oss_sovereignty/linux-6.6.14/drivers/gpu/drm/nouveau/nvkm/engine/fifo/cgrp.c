@@ -1,24 +1,4 @@
-/*
- * Copyright 2021 Red Hat Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- */
+ 
 #include "cgrp.h"
 #include "chan.h"
 #include "chid.h"
@@ -59,7 +39,7 @@ nvkm_cgrp_ectx_get(struct nvkm_cgrp *cgrp, struct nvkm_engn *engn, struct nvkm_e
 	struct nvkm_ectx *ectx;
 	int ret = 0;
 
-	/* Look for an existing context for this engine in the channel group. */
+	 
 	ectx = nvkm_list_find(ectx, &cgrp->ectxs, head, ectx->engn == engn);
 	if (ectx) {
 		refcount_inc(&ectx->refs);
@@ -67,7 +47,7 @@ nvkm_cgrp_ectx_get(struct nvkm_cgrp *cgrp, struct nvkm_engn *engn, struct nvkm_e
 		return 0;
 	}
 
-	/* Nope - create a fresh one. */
+	 
 	CGRP_TRACE(cgrp, "ctor ectx %d[%s]", engn->id, engn->engine->subdev.name);
 	if (!(ectx = *pectx = kzalloc(sizeof(*ectx), GFP_KERNEL)))
 		return -ENOMEM;
@@ -77,7 +57,7 @@ nvkm_cgrp_ectx_get(struct nvkm_cgrp *cgrp, struct nvkm_engn *engn, struct nvkm_e
 	refcount_set(&ectx->uses, 0);
 	list_add_tail(&ectx->head, &cgrp->ectxs);
 
-	/* Allocate the HW structures. */
+	 
 	if (engine->func->fifo.cclass)
 		ret = engine->func->fifo.cclass(chan, &cclass, &ectx->object);
 	else if (engine->func->cclass)
@@ -123,7 +103,7 @@ nvkm_cgrp_vctx_get(struct nvkm_cgrp *cgrp, struct nvkm_engn *engn, struct nvkm_c
 	struct nvkm_vctx *vctx;
 	int ret;
 
-	/* Look for an existing sub-context for this engine+VEID in the channel group. */
+	 
 	vctx = nvkm_list_find(vctx, &cgrp->vctxs, head,
 			      vctx->ectx->engn == engn && vctx->vmm == chan->vmm);
 	if (vctx) {
@@ -132,14 +112,14 @@ nvkm_cgrp_vctx_get(struct nvkm_cgrp *cgrp, struct nvkm_engn *engn, struct nvkm_c
 		return 0;
 	}
 
-	/* Nope - create a fresh one.  But, context first. */
+	 
 	ret = nvkm_cgrp_ectx_get(cgrp, engn, &ectx, chan, client);
 	if (ret) {
 		CGRP_ERROR(cgrp, "ectx %d[%s]: %d", engn->id, engn->engine->subdev.name, ret);
 		return ret;
 	}
 
-	/* Now, create the sub-context. */
+	 
 	CGRP_TRACE(cgrp, "ctor vctx %d[%s]", engn->id, engn->engine->subdev.name);
 	if (!(vctx = *pvctx = kzalloc(sizeof(*vctx), GFP_KERNEL))) {
 		nvkm_cgrp_ectx_put(cgrp, &ectx);
@@ -151,11 +131,11 @@ nvkm_cgrp_vctx_get(struct nvkm_cgrp *cgrp, struct nvkm_engn *engn, struct nvkm_c
 	refcount_set(&vctx->refs, 1);
 	list_add_tail(&vctx->head, &cgrp->vctxs);
 
-	/* MMU on some GPUs needs to know engine usage for TLB invalidation. */
+	 
 	if (vctx->vmm)
 		atomic_inc(&vctx->vmm->engref[engn->engine->subdev.type]);
 
-	/* Allocate the HW structures. */
+	 
 	if (engn->func->bind) {
 		ret = nvkm_object_bind(vctx->ectx->object, NULL, 0, &vctx->inst);
 		if (ret == 0 && engn->func->ctor)

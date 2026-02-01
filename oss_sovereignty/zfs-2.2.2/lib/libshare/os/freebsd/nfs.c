@@ -1,30 +1,4 @@
-/*
- * Copyright (c) 2007 Pawel Jakub Dawidek <pjd@FreeBSD.org>
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- *
- * THIS SOFTWARE IS PROVIDED BY THE AUTHORS AND CONTRIBUTORS ``AS IS'' AND
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHORS OR CONTRIBUTORS BE LIABLE
- * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
- * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
- * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
- * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
- * SUCH DAMAGE.
- *
- * Copyright (c) 2020, 2022 by Delphix. All rights reserved.
- */
+ 
 
 #include <sys/cdefs.h>
 __FBSDID("$FreeBSD$");
@@ -52,25 +26,7 @@ __FBSDID("$FreeBSD$");
 #define	ZFS_EXPORTS_FILE	"/etc/zfs/exports"
 #define	ZFS_EXPORTS_LOCK	ZFS_EXPORTS_FILE".lock"
 
-/*
- * This function translates options to a format acceptable by exports(5), eg.
- *
- *	-ro -network=192.168.0.0 -mask=255.255.255.0 -maproot=0 \
- *	zfs.freebsd.org 69.147.83.54
- *
- * Accepted input formats:
- *
- *	ro,network=192.168.0.0,mask=255.255.255.0,maproot=0,zfs.freebsd.org
- *	ro network=192.168.0.0 mask=255.255.255.0 maproot=0 zfs.freebsd.org
- *	-ro,-network=192.168.0.0,-mask=255.255.255.0,-maproot=0,zfs.freebsd.org
- *	-ro -network=192.168.0.0 -mask=255.255.255.0 -maproot=0 \
- *	zfs.freebsd.org
- *
- * Recognized keywords:
- *
- *	ro, maproot, mapall, mask, network, sec, alldirs, public, webnfs,
- *	index, quiet
- */
+ 
 static int
 translate_opts(const char *shareopts, FILE *out)
 {
@@ -166,9 +122,7 @@ nfs_validate_shareopts(const char *shareopts)
 	return (SA_OK);
 }
 
-/*
- * Commit the shares by restarting mountd.
- */
+ 
 static int
 nfs_commit_shares(void)
 {
@@ -178,20 +132,20 @@ nfs_commit_shares(void)
 start:
 	pfh = pidfile_open(_PATH_MOUNTDPID, 0600, &mountdpid);
 	if (pfh != NULL) {
-		/* mountd(8) is not running. */
+		 
 		pidfile_remove(pfh);
 		return (SA_OK);
 	}
 	if (errno != EEXIST) {
-		/* Cannot open pidfile for some reason. */
+		 
 		return (SA_SYSTEM_ERR);
 	}
 	if (mountdpid == -1) {
-		/* mountd(8) exists, but didn't write the PID yet */
+		 
 		usleep(500);
 		goto start;
 	}
-	/* We have mountd(8) PID in mountdpid variable. */
+	 
 	kill(mountdpid, SIGHUP);
 	return (SA_OK);
 }

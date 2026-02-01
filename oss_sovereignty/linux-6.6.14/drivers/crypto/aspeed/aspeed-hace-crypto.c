@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (c) 2021 Aspeed Technology Inc.
- */
+
+ 
 
 #include "aspeed-hace.h"
 #include <crypto/des.h>
@@ -160,7 +158,7 @@ static int aspeed_sk_transfer(struct aspeed_hace_dev *hace_dev)
 	rctx = skcipher_request_ctx(req);
 	out_sg = req->dst;
 
-	/* Copy output buffer to dst scatter-gather lists */
+	 
 	nbytes = sg_copy_from_buffer(out_sg, rctx->dst_nents,
 				     crypto_engine->cipher_addr, req->cryptlen);
 	if (!nbytes) {
@@ -205,7 +203,7 @@ static int aspeed_sk_start(struct aspeed_hace_dev *hace_dev)
 
 	crypto_engine->resume = aspeed_sk_transfer;
 
-	/* Trigger engines */
+	 
 	ast_hace_write(hace_dev, crypto_engine->cipher_dma_addr,
 		       ASPEED_HACE_SRC);
 	ast_hace_write(hace_dev, crypto_engine->cipher_dma_addr,
@@ -237,7 +235,7 @@ static int aspeed_sk_start_sg(struct aspeed_hace_dev *hace_dev)
 	rctx->enc_cmd |= HACE_CMD_DES_SG_CTRL | HACE_CMD_SRC_SG_CTRL |
 			 HACE_CMD_AES_KEY_HW_EXP | HACE_CMD_MBUS_REQ_SYNC_EN;
 
-	/* BIDIRECTIONAL */
+	 
 	if (req->dst == req->src) {
 		src_sg_len = dma_map_sg(hace_dev->dev, req->src,
 					rctx->src_nents, DMA_BIDIRECTIONAL);
@@ -275,7 +273,7 @@ static int aspeed_sk_start_sg(struct aspeed_hace_dev *hace_dev)
 		if (total > len)
 			total -= len;
 		else {
-			/* last sg list */
+			 
 			len = total;
 			len |= BIT(31);
 			total = 0;
@@ -306,7 +304,7 @@ static int aspeed_sk_start_sg(struct aspeed_hace_dev *hace_dev)
 			if (total > len)
 				total -= len;
 			else {
-				/* last sg list */
+				 
 				len = total;
 				len |= BIT(31);
 				total = 0;
@@ -328,10 +326,10 @@ static int aspeed_sk_start_sg(struct aspeed_hace_dev *hace_dev)
 
 	crypto_engine->resume = aspeed_sk_transfer_sg;
 
-	/* Memory barrier to ensure all data setup before engine starts */
+	 
 	mb();
 
-	/* Trigger engines */
+	 
 	ast_hace_write(hace_dev, src_dma_addr, ASPEED_HACE_SRC);
 	ast_hace_write(hace_dev, dst_dma_addr, ASPEED_HACE_DEST);
 	ast_hace_write(hace_dev, req->cryptlen, ASPEED_HACE_DATA_LEN);
@@ -374,7 +372,7 @@ static int aspeed_hace_skcipher_trigger(struct aspeed_hace_dev *hace_dev)
 	cipher = crypto_skcipher_reqtfm(req);
 	ctx = crypto_skcipher_ctx(cipher);
 
-	/* enable interrupt */
+	 
 	rctx->enc_cmd |= HACE_CMD_ISR_EN;
 
 	rctx->dst_nents = sg_nents(req->dst);

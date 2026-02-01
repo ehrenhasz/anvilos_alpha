@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * "Optimize" a list of dependencies as spit out by gcc -MD
- * for the build framework.
- *
- * Original author:
- *   Copyright    2002 by Kai Germaschewski  <kai.germaschewski@gmx.de>
- *
- * This code has been borrowed from kbuild's fixdep (scripts/basic/fixdep.c),
- * Please check it for detailed explanation. This fixdep borow only the
- * base transformation of dependecies without the CONFIG mangle.
- */
+
+ 
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -31,19 +21,13 @@ static void usage(void)
 	exit(1);
 }
 
-/*
- * Print out the commandline prefixed with cmd_<target filename> :=
- */
+ 
 static void print_cmdline(void)
 {
 	printf("cmd_%s := %s\n\n", target, cmdline);
 }
 
-/*
- * Important: The below generated source_foo.o and deps_foo.o variable
- * assignments are parsed not only by make, but also by the rather simple
- * parser in scripts/mod/sumversion.c.
- */
+ 
 static void parse_dep_file(void *map, size_t len)
 {
 	char *m = map;
@@ -55,42 +39,28 @@ static void parse_dep_file(void *map, size_t len)
 	int is_first_dep = 0;
 
 	while (m < end) {
-		/* Skip any "white space" */
+		 
 		while (m < end && (*m == ' ' || *m == '\\' || *m == '\n'))
 			m++;
-		/* Find next "white space" */
+		 
 		p = m;
 		while (p < end && *p != ' ' && *p != '\\' && *p != '\n')
 			p++;
-		/* Is the token we found a target name? */
+		 
 		is_target = (*(p-1) == ':');
-		/* Don't write any target names into the dependency file */
+		 
 		if (is_target) {
-			/* The /next/ file is the first dependency */
+			 
 			is_first_dep = 1;
 			has_target = 1;
 		} else if (has_target) {
-			/* Save this token/filename */
+			 
 			memcpy(s, m, p-m);
 			s[p - m] = 0;
 
-			/*
-			 * Do not list the source file as dependency,
-			 * so that kbuild is not confused if a .c file
-			 * is rewritten into .S or vice versa. Storing
-			 * it in source_* is needed for modpost to
-			 * compute srcversions.
-			 */
+			 
 			if (is_first_dep) {
-				/*
-				 * If processing the concatenation of
-				 * multiple dependency files, only
-				 * process the first target name, which
-				 * will be the original source name,
-				 * and ignore any other target names,
-				 * which will be intermediate temporary
-				 * files.
-				 */
+				 
 				if (!saw_any_target) {
 					saw_any_target = 1;
 					printf("source_%s := %s\n\n",
@@ -102,10 +72,7 @@ static void parse_dep_file(void *map, size_t len)
 			} else
 				printf("  %s \\\n", s);
 		}
-		/*
-		 * Start searching for next token immediately after the first
-		 * "whitespace" character that follows this token.
-		 */
+		 
 		m = p + 1;
 	}
 

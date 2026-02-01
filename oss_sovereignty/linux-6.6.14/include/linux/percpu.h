@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef __LINUX_PERCPU_H
 #define __LINUX_PERCPU_H
 
@@ -12,25 +12,21 @@
 
 #include <asm/percpu.h>
 
-/* enough to cover all DEFINE_PER_CPUs in modules */
+ 
 #ifdef CONFIG_MODULES
 #define PERCPU_MODULE_RESERVE		(8 << 10)
 #else
 #define PERCPU_MODULE_RESERVE		0
 #endif
 
-/* minimum unit size, also is the maximum supported allocation size */
+ 
 #define PCPU_MIN_UNIT_SIZE		PFN_ALIGN(32 << 10)
 
-/* minimum allocation size and shift in bytes */
+ 
 #define PCPU_MIN_ALLOC_SHIFT		2
 #define PCPU_MIN_ALLOC_SIZE		(1 << PCPU_MIN_ALLOC_SHIFT)
 
-/*
- * The PCPU_BITMAP_BLOCK_SIZE must be the same size as PAGE_SIZE as the
- * updating of hints is used to manage the nr_empty_pop_pages in both
- * the chunk and globally.
- */
+ 
 #define PCPU_BITMAP_BLOCK_SIZE		PAGE_SIZE
 #define PCPU_BITMAP_BLOCK_BITS		(PCPU_BITMAP_BLOCK_SIZE >>	\
 					 PCPU_MIN_ALLOC_SHIFT)
@@ -41,26 +37,10 @@
 #define PERCPU_DYNAMIC_SIZE_SHIFT      10
 #endif
 
-/*
- * Percpu allocator can serve percpu allocations before slab is
- * initialized which allows slab to depend on the percpu allocator.
- * The following parameter decide how much resource to preallocate
- * for this.  Keep PERCPU_DYNAMIC_RESERVE equal to or larger than
- * PERCPU_DYNAMIC_EARLY_SIZE.
- */
+ 
 #define PERCPU_DYNAMIC_EARLY_SIZE	(20 << PERCPU_DYNAMIC_SIZE_SHIFT)
 
-/*
- * PERCPU_DYNAMIC_RESERVE indicates the amount of free area to piggy
- * back on the first chunk for dynamic percpu allocation if arch is
- * manually allocating and mapping it for faster access (as a part of
- * large page mapping for example).
- *
- * The following values give between one and two pages of free space
- * after typical minimal boot (2-way SMP, single disk and NIC) with
- * both defconfig and a distro config on x86_64 and 32.  More
- * intelligent way to determine this would be nice.
- */
+ 
 #if BITS_PER_LONG > 32
 #define PERCPU_DYNAMIC_RESERVE		(28 << PERCPU_DYNAMIC_SIZE_SHIFT)
 #else
@@ -71,10 +51,9 @@ extern void *pcpu_base_addr;
 extern const unsigned long *pcpu_unit_offsets;
 
 struct pcpu_group_info {
-	int			nr_units;	/* aligned # of units */
-	unsigned long		base_offset;	/* base address offset */
-	unsigned int		*cpu_map;	/* unit->cpu map, empty
-						 * entries contain NR_CPUS */
+	int			nr_units;	 
+	unsigned long		base_offset;	 
+	unsigned int		*cpu_map;	 
 };
 
 struct pcpu_alloc_info {
@@ -84,8 +63,8 @@ struct pcpu_alloc_info {
 	size_t			unit_size;
 	size_t			atom_size;
 	size_t			alloc_size;
-	size_t			__ai_size;	/* internal, don't use */
-	int			nr_groups;	/* 0 if grouping unnecessary */
+	size_t			__ai_size;	 
+	int			nr_groups;	 
 	struct pcpu_group_info	groups[];
 };
 
@@ -146,4 +125,4 @@ extern phys_addr_t per_cpu_ptr_to_phys(void *addr);
 
 extern unsigned long pcpu_nr_pages(void);
 
-#endif /* __LINUX_PERCPU_H */
+#endif  

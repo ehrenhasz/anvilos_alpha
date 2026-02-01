@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2012-2020, NVIDIA CORPORATION.  All rights reserved.
- */
+ 
+ 
 
 #ifndef __LINUX_CLK_TEGRA_H_
 #define __LINUX_CLK_TEGRA_H_
@@ -9,26 +7,7 @@
 #include <linux/types.h>
 #include <linux/bug.h>
 
-/*
- * Tegra CPU clock and reset control ops
- *
- * wait_for_reset:
- *	keep waiting until the CPU in reset state
- * put_in_reset:
- *	put the CPU in reset state
- * out_of_reset:
- *	release the CPU from reset state
- * enable_clock:
- *	CPU clock un-gate
- * disable_clock:
- *	CPU clock gate
- * rail_off_ready:
- *	CPU is ready for rail off
- * suspend:
- *	save the clock settings when CPU go into low-power state
- * resume:
- *	restore the clock settings when CPU exit low-power state
- */
+ 
 struct tegra_cpu_car_ops {
 	void (*wait_for_reset)(u32 cpu);
 	void (*put_in_reset)(u32 cpu);
@@ -260,4 +239,4 @@ static inline void tegra210_clk_emc_update_setting(u32 emc_src_value) {}
 static inline void tegra210_clk_emc_detach(struct clk *clk) {}
 #endif
 
-#endif /* __LINUX_CLK_TEGRA_H_ */
+#endif  

@@ -1,27 +1,8 @@
-/* GNU's who.
-   Copyright (C) 1992-2023 Free Software Foundation, Inc.
+ 
 
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
+ 
 
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* Written by jla; revised by djm; revised again by mstone */
-
-/* Output format:
-   name [state] line time [activity] [pid] [comment] [exit]
-   state: -T
-   name, line, time: not -q
-   idle: -u
-*/
+ 
 
 #include <config.h>
 #include <getopt.h>
@@ -41,7 +22,7 @@
 # include <grp.h>
 #endif
 
-/* The official name of this program (e.g., no 'g' prefix).  */
+ 
 #define PROGRAM_NAME "who"
 
 #define AUTHORS \
@@ -96,62 +77,56 @@
 # define UT_ID(U) "??"
 #endif
 
-/* If true, attempt to canonicalize hostnames via a DNS lookup. */
+ 
 static bool do_lookup;
 
-/* If true, display only a list of usernames and count of
-   the users logged on.
-   Ignored for 'who am i'.  */
+ 
 static bool short_list;
 
-/* If true, display only name, line, and time fields.  */
+ 
 static bool short_output;
 
-/* If true, display the hours:minutes since each user has touched
-   the keyboard, or "." if within the last minute, or "old" if
-   not within the last day.  */
+ 
 static bool include_idle;
 
-/* If true, display a line at the top describing each field.  */
+ 
 static bool include_heading;
 
-/* If true, display a '+' for each user if mesg y, a '-' if mesg n,
-   or a '?' if their tty cannot be statted. */
+ 
 static bool include_mesg;
 
-/* If true, display process termination & exit status.  */
+ 
 static bool include_exit;
 
-/* If true, display the last boot time.  */
+ 
 static bool need_boottime;
 
-/* If true, display dead processes.  */
+ 
 static bool need_deadprocs;
 
-/* If true, display processes waiting for user login.  */
+ 
 static bool need_login;
 
-/* If true, display processes started by init.  */
+ 
 static bool need_initspawn;
 
-/* If true, display the last clock change.  */
+ 
 static bool need_clockchange;
 
-/* If true, display the current runlevel.  */
+ 
 static bool need_runlevel;
 
-/* If true, display user processes.  */
+ 
 static bool need_users;
 
-/* If true, display info only for the controlling tty.  */
+ 
 static bool my_line_only;
 
-/* The strftime format to use for login times, and its expected
-   output width.  */
+ 
 static char const *time_format;
 static int time_format_width;
 
-/* for long options with no corresponding short option, use enum */
+ 
 enum
 {
   LOOKUP_OPTION = CHAR_MAX + 1
@@ -179,9 +154,7 @@ static struct option const longopts[] =
   {nullptr, 0, nullptr, 0}
 };
 
-/* Return a string representing the time between WHEN and now.
-   BOOTTIME is the time of last reboot.
-   FIXME: locale? */
+ 
 static char const *
 idle_string (time_t when, time_t boottime)
 {
@@ -210,7 +183,7 @@ idle_string (time_t when, time_t boottime)
   return _(" old ");
 }
 
-/* Return a time string.  */
+ 
 static char const *
 time_string (struct gl_utmp const *utmp_ent)
 {
@@ -226,9 +199,7 @@ time_string (struct gl_utmp const *utmp_ent)
     return timetostr (utmp_ent->ut_ts.tv_sec, buf);
 }
 
-/* Print formatted output line. Uses mostly arbitrary field sizes, probably
-   will need tweaking if any of the localization stuff is done, or for 64 bit
-   pids, etc. */
+ 
 static void
 print_line (char const *user, const char state,
             char const *line,
@@ -277,10 +248,7 @@ print_line (char const *user, const char state,
                   time_str,
                   x_idle,
                   x_pid,
-                  /* FIXME: it's not really clear whether the following
-                     field should be in the short_output.  A strict reading
-                     of SUSv2 would suggest not, but I haven't seen any
-                     implementations that actually work that way... */
+                   
                   comment,
                   x_exitstr
                   );
@@ -288,10 +256,10 @@ print_line (char const *user, const char state,
     xalloc_die ();
 
   {
-    /* Remove any trailing spaces.  */
+     
     char *p = buf + strlen (buf);
     while (*--p == ' ')
-      /* empty */;
+       ;
     *(p + 1) = '\0';
   }
 
@@ -300,24 +268,12 @@ print_line (char const *user, const char state,
   free (x_exitstr);
 }
 
-/* Return true if a terminal device given as PSTAT allows other users
-   to send messages to; false otherwise */
+ 
 static bool
 is_tty_writable (struct stat const *pstat)
 {
 #ifdef TTY_GROUP_NAME
-  /* Ensure the group of the TTY device matches TTY_GROUP_NAME, more info at
-     https://bugzilla.redhat.com/454261 */
-  struct group *ttygr = getgrnam (TTY_GROUP_NAME);
-  if (!ttygr || (pstat->st_gid != ttygr->gr_gid))
-    return false;
-#endif
-
-  return pstat->st_mode & S_IWGRP;
-}
-
-/* Send properly parsed USER_PROCESS info to print_line.  The most
-   recent boot time is BOOTTIME. */
+   
 static void
 print_user (struct gl_utmp const *utmp_ent, time_t boottime)
 {
@@ -331,7 +287,7 @@ print_user (struct gl_utmp const *utmp_ent, time_t boottime)
   static idx_t hostlen;
 #endif
 
-  /* If ut_line contains a space, the device name starts after the space.  */
+   
   char *line = utmp_ent->ut_line;
   char *space = strchr (line, ' ');
   line = space ? space + 1 : line;
@@ -374,14 +330,14 @@ print_user (struct gl_utmp const *utmp_ent, time_t boottime)
       char *display = nullptr;
       char *ut_host = utmp_ent->ut_host;
 
-      /* Look for an X display.  */
+       
       display = strchr (ut_host, ':');
       if (display)
         *display++ = '\0';
 
       if (*ut_host && do_lookup)
         {
-          /* See if we can canonicalize it.  */
+           
           host = canon_host (ut_host);
         }
 
@@ -469,7 +425,7 @@ print_deadprocs (struct gl_utmp const *utmp_ent)
   sprintf (exitstr, "%s%d %s%d", _("term="), utmp_ent->ut_exit.e_termination,
            _("exit="), utmp_ent->ut_exit.e_exit);
 
-  /* FIXME: add idle time? */
+   
 
   print_line ("", ' ', utmp_ent->ut_line,
               time_string (utmp_ent), "", pidstr, comment, exitstr);
@@ -482,7 +438,7 @@ print_login (struct gl_utmp const *utmp_ent)
   char *comment = make_id_equals_comment (utmp_ent);
   PIDSTR_DECL_AND_INIT (pidstr, utmp_ent);
 
-  /* FIXME: add idle time? */
+   
 
   print_line (_("LOGIN"), ' ', utmp_ent->ut_line,
               time_string (utmp_ent), "", pidstr, comment, "");
@@ -503,7 +459,7 @@ print_initspawn (struct gl_utmp const *utmp_ent)
 static void
 print_clockchange (struct gl_utmp const *utmp_ent)
 {
-  /* FIXME: handle NEW_TIME & OLD_TIME both */
+   
   print_line ("", ' ', _("clock change"),
               time_string (utmp_ent), "", "", "", "");
 }
@@ -529,8 +485,7 @@ print_runlevel (struct gl_utmp const *utmp_ent)
   return;
 }
 
-/* Print the username of each valid entry and the number of valid entries
-   in UTMP_BUF, which should have N elements. */
+ 
 static void
 list_entries_who (idx_t n, struct gl_utmp const *utmp_buf)
 {
@@ -562,7 +517,7 @@ print_heading (void)
               _("PID"), _("COMMENT"), _("EXIT"));
 }
 
-/* Display UTMP_BUF, which should have N entries. */
+ 
 static void
 scan_entries (idx_t n, struct gl_utmp const *utmp_buf)
 {
@@ -578,7 +533,7 @@ scan_entries (idx_t n, struct gl_utmp const *utmp_buf)
       if (!ttyname_b)
         return;
       if (STRNCMP_LIT (ttyname_b, "/dev/") == 0)
-        ttyname_b += sizeof "/dev/" - 1;	/* Discard /dev/ prefix.  */
+        ttyname_b += sizeof "/dev/" - 1;	 
     }
 
   while (n--)
@@ -592,9 +547,7 @@ scan_entries (idx_t n, struct gl_utmp const *utmp_buf)
             print_runlevel (utmp_buf);
           else if (need_boottime && UT_TYPE_BOOT_TIME (utmp_buf))
             print_boottime (utmp_buf);
-          /* I've never seen one of these, so I don't know what it should
-             look like :^)
-             FIXME: handle OLD_TIME also, perhaps show the delta? */
+           
           else if (need_clockchange && UT_TYPE_NEW_TIME (utmp_buf))
             print_clockchange (utmp_buf);
           else if (need_initspawn && UT_TYPE_INIT_PROCESS (utmp_buf))
@@ -612,8 +565,7 @@ scan_entries (idx_t n, struct gl_utmp const *utmp_buf)
     }
 }
 
-/* Display a list of who is on the system, according to utmp file FILENAME.
-   Use read_utmp OPTIONS to read the file.  */
+ 
 static void
 who (char const *filename, int options)
 {

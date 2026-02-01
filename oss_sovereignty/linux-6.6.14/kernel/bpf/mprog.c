@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2023 Isovalent */
+
+ 
 
 #include <linux/bpf.h>
 #include <linux/bpf_mprog.h>
@@ -60,10 +60,7 @@ static int bpf_mprog_tuple_relative(struct bpf_tuple *tuple,
 	memset(tuple, 0, sizeof(*tuple));
 	if (link)
 		return bpf_mprog_link(tuple, id_or_fd, flags, type);
-	/* If no relevant flag is set and no id_or_fd was passed, then
-	 * tuple link/prog is just NULLed. This is the case when before/
-	 * after selects first/last position without passing fd.
-	 */
+	 
 	if (!id && !id_or_fd)
 		return 0;
 	return bpf_mprog_prog(tuple, id_or_fd, flags, type);
@@ -77,34 +74,7 @@ static void bpf_mprog_tuple_put(struct bpf_tuple *tuple)
 		bpf_prog_put(tuple->prog);
 }
 
-/* The bpf_mprog_{replace,delete}() operate on exact idx position with the
- * one exception that for deletion we support delete from front/back. In
- * case of front idx is -1, in case of back idx is bpf_mprog_total(entry).
- * Adjustment to first and last entry is trivial. The bpf_mprog_insert()
- * we have to deal with the following cases:
- *
- * idx + before:
- *
- * Insert P4 before P3: idx for old array is 1, idx for new array is 2,
- * hence we adjust target idx for the new array, so that memmove copies
- * P1 and P2 to the new entry, and we insert P4 into idx 2. Inserting
- * before P1 would have old idx -1 and new idx 0.
- *
- * +--+--+--+     +--+--+--+--+     +--+--+--+--+
- * |P1|P2|P3| ==> |P1|P2|  |P3| ==> |P1|P2|P4|P3|
- * +--+--+--+     +--+--+--+--+     +--+--+--+--+
- *
- * idx + after:
- *
- * Insert P4 after P2: idx for old array is 2, idx for new array is 2.
- * Again, memmove copies P1 and P2 to the new entry, and we insert P4
- * into idx 2. Inserting after P3 would have both old/new idx at 4 aka
- * bpf_mprog_total(entry).
- *
- * +--+--+--+     +--+--+--+--+     +--+--+--+--+
- * |P1|P2|P3| ==> |P1|P2|  |P3| ==> |P1|P2|P4|P3|
- * +--+--+--+     +--+--+--+--+     +--+--+--+--+
- */
+ 
 static int bpf_mprog_replace(struct bpf_mprog_entry *entry,
 			     struct bpf_mprog_entry **entry_new,
 			     struct bpf_tuple *ntuple, int idx)
@@ -168,13 +138,7 @@ static int bpf_mprog_delete(struct bpf_mprog_entry *entry,
 	return 0;
 }
 
-/* In bpf_mprog_pos_*() we evaluate the target position for the BPF
- * program/link that needs to be replaced, inserted or deleted for
- * each "rule" independently. If all rules agree on that position
- * or existing element, then enact replacement, addition or deletion.
- * If this is not the case, then the request cannot be satisfied and
- * we bail out with an error.
- */
+ 
 static int bpf_mprog_pos_exact(struct bpf_mprog_entry *entry,
 			       struct bpf_tuple *tuple)
 {
@@ -310,12 +274,7 @@ static int bpf_mprog_fetch(struct bpf_mprog_entry *entry,
 	bpf_mprog_read(entry, idx, &fp, &cp);
 	prog = READ_ONCE(fp->prog);
 	link = cp->link;
-	/* The deletion request can either be without filled tuple in which
-	 * case it gets populated here based on idx, or with filled tuple
-	 * where the only thing we end up doing is the WARN_ON_ONCE() assert.
-	 * If we hit a BPF link at the given index, it must not be removed
-	 * from opts path.
-	 */
+	 
 	if (link && !tuple->link)
 		return -EBUSY;
 	WARN_ON_ONCE(tuple->prog && tuple->prog != prog);

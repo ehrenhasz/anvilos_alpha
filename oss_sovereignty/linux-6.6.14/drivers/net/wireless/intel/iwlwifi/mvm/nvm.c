@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
-/*
- * Copyright (C) 2012-2014, 2018-2019, 2021 Intel Corporation
- * Copyright (C) 2013-2015 Intel Mobile Communications GmbH
- * Copyright (C) 2016-2017 Intel Deutschland GmbH
- */
+
+ 
 #include <linux/firmware.h>
 #include <linux/rtnetlink.h>
 #include "iwl-trans.h"
@@ -15,22 +11,19 @@
 #include "iwl-prph.h"
 #include "fw/acpi.h"
 
-/* Default NVM size to read */
+ 
 #define IWL_NVM_DEFAULT_CHUNK_SIZE (2 * 1024)
 
 #define NVM_WRITE_OPCODE 1
 #define NVM_READ_OPCODE 0
 
-/* load nvm chunk response */
+ 
 enum {
 	READ_NVM_CHUNK_SUCCEED = 0,
 	READ_NVM_CHUNK_NOT_VALID_ADDRESS = 1
 };
 
-/*
- * prepare the NVM host command w/ the pointers to the nvm buffer
- * and send it to fw
- */
+ 
 static int iwl_nvm_write_chunk(struct iwl_mvm *mvm, u16 section,
 			       u16 offset, u16 length, const u8 *data)
 {
@@ -45,7 +38,7 @@ static int iwl_nvm_write_chunk(struct iwl_mvm *mvm, u16 section,
 		.len = { sizeof(struct iwl_nvm_access_cmd), length },
 		.flags = CMD_WANT_SKB | CMD_SEND_IN_RFKILL,
 		.data = { &nvm_access_cmd, data },
-		/* data may come from vmalloc, so use _DUP */
+		 
 		.dataflags = { 0, IWL_HCMD_DFL_DUP },
 	};
 	struct iwl_rx_packet *pkt;
@@ -57,7 +50,7 @@ static int iwl_nvm_write_chunk(struct iwl_mvm *mvm, u16 section,
 		return ret;
 
 	pkt = cmd.resp_pkt;
-	/* Extract & check NVM write response */
+	 
 	nvm_resp = (void *)pkt->data;
 	if (le16_to_cpu(nvm_resp->status) != READ_NVM_CHUNK_SUCCEED) {
 		IWL_ERR(mvm,
@@ -97,7 +90,7 @@ static int iwl_nvm_read_chunk(struct iwl_mvm *mvm, u16 section,
 
 	pkt = cmd.resp_pkt;
 
-	/* Extract NVM response */
+	 
 	nvm_resp = (void *)pkt->data;
 	ret = le16_to_cpu(nvm_resp->status);
 	bytes_read = le16_to_cpu(nvm_resp->length);
@@ -106,14 +99,7 @@ static int iwl_nvm_read_chunk(struct iwl_mvm *mvm, u16 section,
 	if (ret) {
 		if ((offset != 0) &&
 		    (ret == READ_NVM_CHUNK_NOT_VALID_ADDRESS)) {
-			/*
-			 * meaning of NOT_VALID_ADDRESS:
-			 * driver try to read chunk from address that is
-			 * multiple of 2K and got an error since addr is empty.
-			 * meaning of (offset != 0): driver already
-			 * read valid data from another chunk so this case
-			 * is not an error.
-			 */
+			 
 			IWL_DEBUG_EEPROM(mvm->trans->dev,
 					 "NVM access command failed on offset 0x%x since that section size is multiple 2K\n",
 					 offset);
@@ -134,7 +120,7 @@ static int iwl_nvm_read_chunk(struct iwl_mvm *mvm, u16 section,
 		goto exit;
 	}
 
-	/* Write data to NVM */
+	 
 	memcpy(data + offset, resp_data, bytes_read);
 	ret = bytes_read;
 
@@ -148,7 +134,7 @@ static int iwl_nvm_write_section(struct iwl_mvm *mvm, u16 section,
 {
 	int offset = 0;
 
-	/* copy data in chunks of 2k (and remainder if any) */
+	 
 
 	while (offset < length) {
 		int chunk_size, ret;
@@ -167,30 +153,21 @@ static int iwl_nvm_write_section(struct iwl_mvm *mvm, u16 section,
 	return 0;
 }
 
-/*
- * Reads an NVM section completely.
- * NICs prior to 7000 family doesn't have a real NVM, but just read
- * section 0 which is the EEPROM. Because the EEPROM reading is unlimited
- * by uCode, we need to manually check in this case that we don't
- * overflow and try to read more than the EEPROM size.
- * For 7000 family NICs, we supply the maximal size we can read, and
- * the uCode fills the response with as much data as we can,
- * without overflowing, so no check is needed.
- */
+ 
 static int iwl_nvm_read_section(struct iwl_mvm *mvm, u16 section,
 				u8 *data, u32 size_read)
 {
 	u16 length, offset = 0;
 	int ret;
 
-	/* Set nvm section read length */
+	 
 	length = IWL_NVM_DEFAULT_CHUNK_SIZE;
 
 	ret = length;
 
-	/* Read the NVM until exhausted (reading less than requested) */
+	 
 	while (ret == length) {
-		/* Check no memory assumptions fail and cause an overflow */
+		 
 		if ((size_read + offset + length) >
 		    mvm->trans->trans_cfg->base_params->eeprom_size) {
 			IWL_ERR(mvm, "EEPROM size is too small for NVM\n");
@@ -222,7 +199,7 @@ iwl_parse_nvm_sections(struct iwl_mvm *mvm)
 	const __le16 *sw, *calib, *regulatory, *mac_override, *phy_sku;
 	int regulatory_type;
 
-	/* Checking for required sections */
+	 
 	if (mvm->trans->cfg->nvm_type == IWL_NVM) {
 		if (!mvm->nvm_sections[NVM_SECTION_TYPE_SW].data ||
 		    !mvm->nvm_sections[mvm->cfg->nvm_hw_section_num].data) {
@@ -235,14 +212,14 @@ iwl_parse_nvm_sections(struct iwl_mvm *mvm)
 		else
 			regulatory_type = NVM_SECTION_TYPE_REGULATORY;
 
-		/* SW and REGULATORY sections are mandatory */
+		 
 		if (!mvm->nvm_sections[NVM_SECTION_TYPE_SW].data ||
 		    !mvm->nvm_sections[regulatory_type].data) {
 			IWL_ERR(mvm,
 				"Can't parse empty family 8000 OTP/NVM sections\n");
 			return NULL;
 		}
-		/* MAC_OVERRIDE or at least HW section must exist */
+		 
 		if (!mvm->nvm_sections[mvm->cfg->nvm_hw_section_num].data &&
 		    !mvm->nvm_sections[NVM_SECTION_TYPE_MAC_OVERRIDE].data) {
 			IWL_ERR(mvm,
@@ -250,7 +227,7 @@ iwl_parse_nvm_sections(struct iwl_mvm *mvm)
 			return NULL;
 		}
 
-		/* PHY_SKU section is mandatory in B0 */
+		 
 		if (mvm->trans->cfg->nvm_type == IWL_NVM_EXT &&
 		    !mvm->nvm_sections[NVM_SECTION_TYPE_PHY_SKU].data) {
 			IWL_ERR(mvm,
@@ -275,7 +252,7 @@ iwl_parse_nvm_sections(struct iwl_mvm *mvm)
 				  mvm->fw->valid_tx_ant, mvm->fw->valid_rx_ant);
 }
 
-/* Loads the NVM data stored in mvm->nvm_sections into the NIC */
+ 
 int iwl_mvm_load_nvm_to_nic(struct iwl_mvm *mvm)
 {
 	int i, ret = 0;
@@ -306,8 +283,8 @@ int iwl_nvm_init(struct iwl_mvm *mvm)
 	if (WARN_ON_ONCE(mvm->cfg->nvm_hw_section_num >= NVM_MAX_NUM_SECTIONS))
 		return -EINVAL;
 
-	/* load NVM values from nic */
-	/* Read From FW NVM */
+	 
+	 
 	IWL_DEBUG_EEPROM(mvm->trans->dev, "Read from NVM\n");
 
 	nvm_buffer = kmalloc(mvm->trans->trans_cfg->base_params->eeprom_size,
@@ -315,7 +292,7 @@ int iwl_nvm_init(struct iwl_mvm *mvm)
 	if (!nvm_buffer)
 		return -ENOMEM;
 	for (section = 0; section < NVM_MAX_NUM_SECTIONS; section++) {
-		/* we override the constness for initial read */
+		 
 		ret = iwl_nvm_read_section(mvm, section, nvm_buffer,
 					   size_read);
 		if (ret == -ENODATA) {
@@ -372,9 +349,9 @@ int iwl_nvm_init(struct iwl_mvm *mvm)
 		IWL_ERR(mvm, "OTP is blank\n");
 	kfree(nvm_buffer);
 
-	/* Only if PNVM selected in the mod param - load external NVM  */
+	 
 	if (mvm->nvm_file_name) {
-		/* read External NVM file from the mod param */
+		 
 		ret = iwl_read_external_nvm(mvm->trans, mvm->nvm_file_name,
 					    mvm->nvm_sections);
 		if (ret) {
@@ -382,7 +359,7 @@ int iwl_nvm_init(struct iwl_mvm *mvm)
 
 			if ((ret == -EFAULT || ret == -ENOENT) &&
 			    mvm->nvm_file_name) {
-				/* in case nvm file was failed try again */
+				 
 				ret = iwl_read_external_nvm(mvm->trans,
 							    mvm->nvm_file_name,
 							    mvm->nvm_sections);
@@ -394,7 +371,7 @@ int iwl_nvm_init(struct iwl_mvm *mvm)
 		}
 	}
 
-	/* parse the relevant nvm sections */
+	 
 	mvm->nvm_data = iwl_parse_nvm_sections(mvm);
 	if (!mvm->nvm_data)
 		return -ENODATA;
@@ -442,7 +419,7 @@ iwl_mvm_update_mcc(struct iwl_mvm *mvm, const char *alpha2,
 	resp_ver = iwl_fw_lookup_notif_ver(mvm->fw, IWL_ALWAYS_LONG_GROUP,
 					   MCC_UPDATE_CMD, 0);
 
-	/* Extract MCC response */
+	 
 	if (resp_ver >= 8) {
 		struct iwl_mcc_update_resp_v8 *mcc_resp_v8 = (void *)pkt->data;
 
@@ -524,9 +501,9 @@ iwl_mvm_update_mcc(struct iwl_mvm *mvm, const char *alpha2,
 
 	mcc = le16_to_cpu(resp_cp->mcc);
 
-	/* W/A for a FW/NVM issue - returns 0x00 for the world domain */
+	 
 	if (mcc == 0) {
-		mcc = 0x3030;  /* "00" - world */
+		mcc = 0x3030;   
 		resp_cp->mcc = cpu_to_le16(mcc);
 	}
 
@@ -561,20 +538,12 @@ int iwl_mvm_init_mcc(struct iwl_mvm *mvm)
 	if (!iwl_mvm_is_lar_supported(mvm))
 		return 0;
 
-	/*
-	 * try to replay the last set MCC to FW. If it doesn't exist,
-	 * queue an update to cfg80211 to retrieve the default alpha2 from FW.
-	 */
+	 
 	retval = iwl_mvm_init_fw_regd(mvm);
 	if (retval != -ENOENT)
 		return retval;
 
-	/*
-	 * Driver regulatory hint for initial update, this also informs the
-	 * firmware we support wifi location updates.
-	 * Disallow scans that might crash the FW while the LAR regdomain
-	 * is not set.
-	 */
+	 
 	mvm->lar_regdom_set = false;
 
 	regd = iwl_mvm_get_current_regdomain(mvm, NULL);

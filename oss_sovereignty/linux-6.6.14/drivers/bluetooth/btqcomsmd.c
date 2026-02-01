@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2016, Linaro Ltd.
- * Copyright (c) 2015, Sony Mobile Communications Inc.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/slab.h>
@@ -29,7 +26,7 @@ static int btqcomsmd_recv(struct hci_dev *hdev, unsigned int type,
 {
 	struct sk_buff *skb;
 
-	/* Use GFP_ATOMIC as we're in IRQ context */
+	 
 	skb = bt_skb_alloc(count, GFP_ATOMIC);
 	if (!skb) {
 		hdev->stat.err_rx++;
@@ -114,9 +111,7 @@ static int btqcomsmd_setup(struct hci_dev *hdev)
 		return PTR_ERR(skb);
 	kfree_skb(skb);
 
-	/* Devices do not have persistent storage for BD address. Retrieve
-	 * it from the firmware node property.
-	 */
+	 
 	set_bit(HCI_QUIRK_USE_BDADDR_PROPERTY, &hdev->quirks);
 
 	return 0;
@@ -130,9 +125,7 @@ static int btqcomsmd_set_bdaddr(struct hci_dev *hdev, const bdaddr_t *bdaddr)
 	if (ret)
 		return ret;
 
-	/* The firmware stops responding for a while after setting the bdaddr,
-	 * causing timeouts for subsequent commands. Sleep a bit to avoid this.
-	 */
+	 
 	usleep_range(1000, 10000);
 	return 0;
 }

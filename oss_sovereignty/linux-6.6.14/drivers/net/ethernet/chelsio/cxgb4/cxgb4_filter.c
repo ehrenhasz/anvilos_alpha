@@ -1,36 +1,4 @@
-/*
- * This file is part of the Chelsio T4 Ethernet driver for Linux.
- *
- * Copyright (c) 2003-2016 Chelsio Communications, Inc. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 #include <net/ipv6.h>
 
 #include "cxgb4.h"
@@ -77,8 +45,7 @@ static int set_tcb_field(struct adapter *adap, struct filter_entry *f,
 	return 0;
 }
 
-/* Set one of the t_flags bits in the TCB.
- */
+ 
 static int set_tcb_tflag(struct adapter *adap, struct filter_entry *f,
 			 unsigned int ftid, unsigned int bit_pos,
 			 unsigned int val, int no_reply)
@@ -144,7 +111,7 @@ static int configure_filter_smac(struct adapter *adap, struct filter_entry *f)
 {
 	int err;
 
-	/* do a set-tcb for smac-sel and CWR bit.. */
+	 
 	err = set_tcb_field(adap, f, f->tid, TCB_SMAC_SEL_W,
 			    TCB_SMAC_SEL_V(TCB_SMAC_SEL_M),
 			    TCB_SMAC_SEL_V(f->smt->idx), 1);
@@ -244,14 +211,14 @@ static void set_nat_params(struct adapter *adap, struct filter_entry *f,
 		      1);
 }
 
-/* Validate filter spec against configuration done on the card. */
+ 
 static int validate_filter(struct net_device *dev,
 			   struct ch_filter_specification *fs)
 {
 	struct adapter *adapter = netdev2adap(dev);
 	u32 fconf, iconf;
 
-	/* Check for unconfigured fields being used. */
+	 
 	iconf = adapter->params.tp.ingress_config;
 	fconf = fs->hash ? adapter->params.tp.filter_mask :
 			   adapter->params.tp.vlan_pri_map;
@@ -275,13 +242,7 @@ static int validate_filter(struct net_device *dev,
 	    unsupported(fconf, VLAN_F, fs->val.ivlan_vld, fs->mask.ivlan_vld))
 		return -EOPNOTSUPP;
 
-	/* T4 inconveniently uses the same FT_VNIC_ID_W bits for both the Outer
-	 * VLAN Tag and PF/VF/VFvld fields based on VNIC_F being set
-	 * in TP_INGRESS_CONFIG.  Hense the somewhat crazy checks
-	 * below.  Additionally, since the T4 firmware interface also
-	 * carries that overlap, we need to translate any PF/VF
-	 * specification into that internal format below.
-	 */
+	 
 	if ((is_field_set(fs->val.pfvf_vld, fs->mask.pfvf_vld) &&
 	     is_field_set(fs->val.ovlan_vld, fs->mask.ovlan_vld)) ||
 	    (is_field_set(fs->val.pfvf_vld, fs->mask.pfvf_vld) &&
@@ -298,19 +259,16 @@ static int validate_filter(struct net_device *dev,
 	fs->mask.pf &= 0x7;
 	fs->mask.vf &= 0x7f;
 
-	/* If the user is requesting that the filter action loop
-	 * matching packets back out one of our ports, make sure that
-	 * the egress port is in range.
-	 */
+	 
 	if (fs->action == FILTER_SWITCH &&
 	    fs->eport >= adapter->params.nports)
 		return -ERANGE;
 
-	/* Don't allow various trivially obvious bogus out-of-range values... */
+	 
 	if (fs->val.iport >= adapter->params.nports)
 		return -ERANGE;
 
-	/* T4 doesn't support removing VLAN Tags for loop back filters. */
+	 
 	if (is_t4(adapter->params.chip) &&
 	    fs->action == FILTER_SWITCH &&
 	    (fs->newvlan == VLAN_REMOVE ||
@@ -329,11 +287,7 @@ static int get_filter_steerq(struct net_device *dev,
 	struct adapter *adapter = netdev2adap(dev);
 	int iq;
 
-	/* If the user has requested steering matching Ingress Packets
-	 * to a specific Queue Set, we need to make sure it's in range
-	 * for the port and map that into the Absolute Queue ID of the
-	 * Queue Set's Response Queue.
-	 */
+	 
 	if (!fs->dirsteer) {
 		if (fs->iq)
 			return -EINVAL;
@@ -341,9 +295,7 @@ static int get_filter_steerq(struct net_device *dev,
 	} else {
 		struct port_info *pi = netdev_priv(dev);
 
-		/* If the iq id is greater than the number of qsets,
-		 * then assume it is an absolute qid.
-		 */
+		 
 		if (fs->iq < pi->nqsets)
 			iq = adapter->sge.ethrxq[pi->first_qset +
 						 fs->iq].rspq.abs_id;
@@ -390,10 +342,10 @@ static int get_filter_count(struct adapter *adapter, unsigned int fidx,
 	if (is_t4(adapter->params.chip)) {
 		__be64 be64_count;
 
-		/* T4 doesn't maintain byte counts in hw */
+		 
 		*bytes = 0;
 
-		/* Get pkts */
+		 
 		word_offset = 4;
 		ret = t4_memory_rw(adapter, MEMWIN_NIC, MEM_EDC0,
 				   tcbaddr + (word_offset * sizeof(__be32)),
@@ -406,7 +358,7 @@ static int get_filter_count(struct adapter *adapter, unsigned int fidx,
 	} else {
 		__be32 be32_count;
 
-		/* Get bytes */
+		 
 		word_offset = 4;
 		ret = t4_memory_rw(adapter, MEMWIN_NIC, MEM_EDC0,
 				   tcbaddr + (word_offset * sizeof(__be32)),
@@ -417,7 +369,7 @@ static int get_filter_count(struct adapter *adapter, unsigned int fidx,
 			goto out;
 		*bytes = be64_to_cpu(be64_byte_count);
 
-		/* Get pkts */
+		 
 		word_offset = 6;
 		ret = t4_memory_rw(adapter, MEMWIN_NIC, MEM_EDC0,
 				   tcbaddr + (word_offset * sizeof(__be32)),
@@ -448,30 +400,18 @@ static bool cxgb4_filter_prio_in_range(struct tid_info *t, u32 idx, u8 nslots,
 	struct filter_entry *prev_tab, *next_tab, *prev_fe, *next_fe;
 	u32 prev_ftid, next_ftid;
 
-	/* Only insert the rule if both of the following conditions
-	 * are met:
-	 * 1. The immediate previous rule has priority <= @prio.
-	 * 2. The immediate next rule has priority >= @prio.
-	 */
+	 
 
-	/* High Priority (HPFILTER) region always has higher priority
-	 * than normal FILTER region. So, all rules in HPFILTER region
-	 * must have prio value <= rules in normal FILTER region.
-	 */
+	 
 	if (idx < t->nhpftids) {
-		/* Don't insert if there's a rule already present at @idx
-		 * in HPFILTER region.
-		 */
+		 
 		if (test_bit(idx, t->hpftid_bmap))
 			return false;
 
 		next_tab = t->hpftid_tab;
 		next_ftid = find_next_bit(t->hpftid_bmap, t->nhpftids, idx);
 		if (next_ftid >= t->nhpftids) {
-			/* No next entry found in HPFILTER region.
-			 * See if there's any next entry in normal
-			 * FILTER region.
-			 */
+			 
 			next_ftid = find_first_bit(t->ftid_bmap, t->nftids);
 			if (next_ftid >= t->nftids)
 				next_ftid = idx;
@@ -479,11 +419,7 @@ static bool cxgb4_filter_prio_in_range(struct tid_info *t, u32 idx, u8 nslots,
 				next_tab = t->ftid_tab;
 		}
 
-		/* Search for the closest previous filter entry in HPFILTER
-		 * region. No need to search in normal FILTER region because
-		 * there can never be any entry in normal FILTER region whose
-		 * prio value is < last entry in HPFILTER region.
-		 */
+		 
 		prev_ftid = find_last_bit(t->hpftid_bmap, idx);
 		if (prev_ftid >= idx)
 			prev_ftid = idx;
@@ -492,19 +428,14 @@ static bool cxgb4_filter_prio_in_range(struct tid_info *t, u32 idx, u8 nslots,
 	} else {
 		idx -= t->nhpftids;
 
-		/* Don't insert if there's a rule already present at @idx
-		 * in normal FILTER region.
-		 */
+		 
 		if (test_bit(idx, t->ftid_bmap))
 			return false;
 
 		prev_tab = t->ftid_tab;
 		prev_ftid = find_last_bit(t->ftid_bmap, idx);
 		if (prev_ftid >= idx) {
-			/* No previous entry found in normal FILTER
-			 * region. See if there's any previous entry
-			 * in HPFILTER region.
-			 */
+			 
 			prev_ftid = find_last_bit(t->hpftid_bmap, t->nhpftids);
 			if (prev_ftid >= t->nhpftids)
 				prev_ftid = idx;
@@ -512,12 +443,7 @@ static bool cxgb4_filter_prio_in_range(struct tid_info *t, u32 idx, u8 nslots,
 				prev_tab = t->hpftid_tab;
 		}
 
-		/* Search for the closest next filter entry in normal
-		 * FILTER region. No need to search in HPFILTER region
-		 * because there can never be any entry in HPFILTER
-		 * region whose prio value is > first entry in normal
-		 * FILTER region.
-		 */
+		 
 		next_ftid = find_next_bit(t->ftid_bmap, t->nftids, idx);
 		if (next_ftid >= t->nftids)
 			next_ftid = idx;
@@ -527,11 +453,7 @@ static bool cxgb4_filter_prio_in_range(struct tid_info *t, u32 idx, u8 nslots,
 
 	next_fe = &next_tab[next_ftid];
 
-	/* See if the filter entry belongs to an IPv6 rule, which
-	 * occupy 4 slots on T5 and 2 slots on T6. Adjust the
-	 * reference to the previously inserted filter entry
-	 * accordingly.
-	 */
+	 
 	prev_fe = &prev_tab[prev_ftid & ~(nslots - 1)];
 	if (!prev_fe->fs.type)
 		prev_fe = &prev_tab[prev_ftid];
@@ -555,9 +477,7 @@ int cxgb4_get_free_ftid(struct net_device *dev, u8 family, bool hash_en,
 	u8 i, cnt, n;
 	int ftid = 0;
 
-	/* IPv4 occupy 1 slot. IPv6 occupy 2 slots on T6 and 4 slots
-	 * on T5.
-	 */
+	 
 	n = 1;
 	if (family == PF_INET6) {
 		n++;
@@ -565,35 +485,7 @@ int cxgb4_get_free_ftid(struct net_device *dev, u8 family, bool hash_en,
 			n += 2;
 	}
 
-	/* There are 3 filter regions available in hardware in
-	 * following order of priority:
-	 *
-	 * 1. High Priority (HPFILTER) region (Highest Priority).
-	 * 2. HASH region.
-	 * 3. Normal FILTER region (Lowest Priority).
-	 *
-	 * Entries in HPFILTER and normal FILTER region have index
-	 * 0 as the highest priority and the rules will be scanned
-	 * in ascending order until either a rule hits or end of
-	 * the region is reached.
-	 *
-	 * All HASH region entries have same priority. The set of
-	 * fields to match in headers are pre-determined. The same
-	 * set of header match fields must be compulsorily specified
-	 * in all the rules wanting to get inserted in HASH region.
-	 * Hence, HASH region is an exact-match region. A HASH is
-	 * generated for a rule based on the values in the
-	 * pre-determined set of header match fields. The generated
-	 * HASH serves as an index into the HASH region. There can
-	 * never be 2 rules having the same HASH. Hardware will
-	 * compute a HASH for every incoming packet based on the
-	 * values in the pre-determined set of header match fields
-	 * and uses it as an index to check if there's a rule
-	 * inserted in the HASH region at the specified index. If
-	 * there's a rule inserted, then it's considered as a filter
-	 * hit. Otherwise, it's a filter miss and normal FILTER region
-	 * is scanned afterwards.
-	 */
+	 
 
 	spin_lock_bh(&t->ftid_lock);
 
@@ -601,14 +493,7 @@ int cxgb4_get_free_ftid(struct net_device *dev, u8 family, bool hash_en,
 	max_ftid = t->nftids + t->nhpftids;
 	while (ftid < max_ftid) {
 		if (ftid < t->nhpftids) {
-			/* If the new rule wants to get inserted into
-			 * HPFILTER region, but its prio is greater
-			 * than the rule with the highest prio in HASH
-			 * region, or if there's not enough slots
-			 * available in HPFILTER region, then skip
-			 * trying to insert this rule into HPFILTER
-			 * region and directly go to the next region.
-			 */
+			 
 			if ((t->tc_hash_tids_max_prio &&
 			     tc_prio > t->tc_hash_tids_max_prio) ||
 			     (ftid + n) > t->nhpftids) {
@@ -619,9 +504,7 @@ int cxgb4_get_free_ftid(struct net_device *dev, u8 family, bool hash_en,
 			bmap = t->hpftid_bmap;
 			bmap_ftid = ftid;
 		} else if (hash_en) {
-			/* Ensure priority is >= last rule in HPFILTER
-			 * region.
-			 */
+			 
 			ftid = find_last_bit(t->hpftid_bmap, t->nhpftids);
 			if (ftid < t->nhpftids) {
 				f = &t->hpftid_tab[ftid];
@@ -629,9 +512,7 @@ int cxgb4_get_free_ftid(struct net_device *dev, u8 family, bool hash_en,
 					break;
 			}
 
-			/* Ensure priority is <= first rule in normal
-			 * FILTER region.
-			 */
+			 
 			ftid = find_first_bit(t->ftid_bmap, t->nftids);
 			if (ftid < t->nftids) {
 				f = &t->ftid_tab[ftid];
@@ -643,11 +524,7 @@ int cxgb4_get_free_ftid(struct net_device *dev, u8 family, bool hash_en,
 			ftid = t->nhpftids;
 			goto out_unlock;
 		} else {
-			/* If the new rule wants to get inserted into
-			 * normal FILTER region, but its prio is less
-			 * than the rule with the highest prio in HASH
-			 * region, then reject the rule.
-			 */
+			 
 			if (t->tc_hash_tids_max_prio &&
 			    tc_prio < t->tc_hash_tids_max_prio)
 				break;
@@ -667,9 +544,7 @@ int cxgb4_get_free_ftid(struct net_device *dev, u8 family, bool hash_en,
 		}
 
 		if (cnt == n) {
-			/* Ensure the new rule's prio doesn't conflict
-			 * with existing rules.
-			 */
+			 
 			if (cxgb4_filter_prio_in_range(t, ftid, n,
 						       tc_prio)) {
 				ftid &= ~(n - 1);
@@ -754,7 +629,7 @@ static void cxgb4_clear_hpftid(struct tid_info *t, int fidx, int family)
 	spin_unlock_bh(&t->ftid_lock);
 }
 
-/* Delete the filter at a specified index. */
+ 
 static int del_filter_wr(struct adapter *adapter, int fidx)
 {
 	struct fw_filter_wr *fwr;
@@ -776,20 +651,13 @@ static int del_filter_wr(struct adapter *adapter, int fidx)
 	fwr = __skb_put(skb, len);
 	t4_mk_filtdelwr(f->tid, fwr, adapter->sge.fw_evtq.abs_id);
 
-	/* Mark the filter as "pending" and ship off the Filter Work Request.
-	 * When we get the Work Request Reply we'll clear the pending status.
-	 */
+	 
 	f->pending = 1;
 	t4_mgmt_tx(adapter, skb);
 	return 0;
 }
 
-/* Send a Work Request to write the filter at a specified index.  We construct
- * a Firmware Filter Work Request to have the work done and put the indicated
- * filter into "pending" mode which will prevent any further actions against
- * it till we get a reply from the firmware on the completion status of the
- * request.
- */
+ 
 int set_filter_wr(struct adapter *adapter, int fidx)
 {
 	struct fw_filter2_wr *fwr;
@@ -805,12 +673,9 @@ int set_filter_wr(struct adapter *adapter, int fidx)
 	if (!skb)
 		return -ENOMEM;
 
-	/* If the new filter requires loopback Destination MAC and/or VLAN
-	 * rewriting then we need to allocate a Layer 2 Table (L2T) entry for
-	 * the filter.
-	 */
+	 
 	if (f->fs.newdmac || f->fs.newvlan) {
-		/* allocate L2T entry for new filter */
+		 
 		f->l2t = t4_l2t_alloc_switching(adapter, f->fs.vlan,
 						f->fs.eport, f->fs.dmac);
 		if (!f->l2t) {
@@ -819,9 +684,7 @@ int set_filter_wr(struct adapter *adapter, int fidx)
 		}
 	}
 
-	/* If the new filter requires loopback Source MAC rewriting then
-	 * we need to allocate a SMT entry for the filter.
-	 */
+	 
 	if (f->fs.newsmac) {
 		f->smt = cxgb4_smt_alloc_switching(f->dev, f->fs.smac);
 		if (!f->smt) {
@@ -836,14 +699,7 @@ int set_filter_wr(struct adapter *adapter, int fidx)
 
 	fwr = __skb_put_zero(skb, sizeof(*fwr));
 
-	/* It would be nice to put most of the following in t4_hw.c but most
-	 * of the work is translating the cxgbtool ch_filter_specification
-	 * into the Work Request and the definition of that structure is
-	 * currently in cxgbtool.h which isn't appropriate to pull into the
-	 * common code.  We may eventually try to come up with a more neutral
-	 * filter specification structure but for now it's easiest to simply
-	 * put this fairly direct code in line ...
-	 */
+	 
 	if (adapter->params.filter2_wr_support)
 		fwr->op_pkd = htonl(FW_WR_OP_V(FW_FILTER2_WR));
 	else
@@ -926,16 +782,14 @@ int set_filter_wr(struct adapter *adapter, int fidx)
 		fwr->newfport = htons(nat_fp[1] | nat_fp[0] << 8);
 	}
 
-	/* Mark the filter as "pending" and ship off the Filter Work Request.
-	 * When we get the Work Request Reply we'll clear the pending status.
-	 */
+	 
 	f->pending = 1;
 	set_wr_txq(skb, CPL_PRIORITY_CONTROL, f->fs.val.iport & 0x3);
 	t4_ofld_send(adapter, skb);
 	return 0;
 }
 
-/* Return an error number if the indicated filter isn't writable ... */
+ 
 int writable_filter(struct filter_entry *f)
 {
 	if (f->locked)
@@ -946,10 +800,7 @@ int writable_filter(struct filter_entry *f)
 	return 0;
 }
 
-/* Delete the filter at the specified index (if valid).  The checks for all
- * the common problems with doing this like the filter being locked, currently
- * pending in another operation, etc.
- */
+ 
 int delete_filter(struct adapter *adapter, unsigned int fidx)
 {
 	struct filter_entry *f;
@@ -972,17 +823,12 @@ int delete_filter(struct adapter *adapter, unsigned int fidx)
 	return 0;
 }
 
-/* Clear a filter and release any of its resources that we own.  This also
- * clears the filter's "pending" status.
- */
+ 
 void clear_filter(struct adapter *adap, struct filter_entry *f)
 {
 	struct port_info *pi = netdev_priv(f->dev);
 
-	/* If the new or old filter have loopback rewriting rules then we'll
-	 * need to free any existing L2T, SMT, CLIP entries of filter
-	 * rule.
-	 */
+	 
 	if (f->l2t)
 		cxgb4_l2t_release(f->l2t);
 
@@ -996,10 +842,7 @@ void clear_filter(struct adapter *adap, struct filter_entry *f)
 	if ((f->fs.hash || is_t6(adap->params.chip)) && f->fs.type)
 		cxgb4_clip_release(f->dev, (const u32 *)&f->fs.val.lip, 1);
 
-	/* The zeroing of the filter rule below clears the filter valid,
-	 * pending, locked flags, l2t pointer, etc. so it's all we need for
-	 * this operation.
-	 */
+	 
 	memset(f, 0, sizeof(*f));
 }
 
@@ -1022,13 +865,13 @@ void clear_all_filters(struct adapter *adapter)
 					adapter->tids.nsftids +
 					adapter->tids.nhpftids;
 
-		/* Clear all TCAM filters */
+		 
 		for (i = adapter->tids.nhpftids; i < max_ftid; i++, f++)
 			if (f->valid || f->pending)
 				cxgb4_del_filter(dev, i, &f->fs);
 	}
 
-	/* Clear all hash filters */
+	 
 	if (is_hashfilter(adapter) && adapter->tids.tid_tab) {
 		struct filter_entry *f;
 		unsigned int sb;
@@ -1052,7 +895,7 @@ void clear_all_filters(struct adapter *adapter)
 	}
 }
 
-/* Fill up default masks for set match fields. */
+ 
 static void fill_default_mask(struct ch_filter_specification *fs)
 {
 	unsigned int lip = 0, lip_mask = 0;
@@ -1163,7 +1006,7 @@ bool is_filter_exact_match(struct adapter *adap,
 	    (adap->tids.nhash + (adap->tids.stid_base - adap->tids.tid_base)))
 		return false;
 
-	 /* Keep tunnel VNI match disabled for hash-filters for now */
+	  
 	if (fs->mask.encap_vld)
 		return false;
 
@@ -1191,7 +1034,7 @@ bool is_filter_exact_match(struct adapter *adap,
 	if (!fs->val.fport || fs->mask.fport != 0xffff)
 		return false;
 
-	/* calculate tuple mask and compare with mask configured in hw */
+	 
 	if (tp->fcoe_shift >= 0)
 		ntuple_mask |= (u64)fs->mask.fcoe << tp->fcoe_shift;
 
@@ -1240,9 +1083,7 @@ static u64 hash_filter_ntuple(struct ch_filter_specification *fs,
 	struct tp_params *tp = &adap->params.tp;
 	u64 ntuple = 0;
 
-	/* Initialize each of the fields which we care about which are present
-	 * in the Compressed Filter Tuple.
-	 */
+	 
 	if (tp->vlan_shift >= 0 && fs->mask.ivlan)
 		ntuple |= (FT_VLAN_VLD_F | fs->val.ivlan) << tp->vlan_shift;
 
@@ -1397,12 +1238,9 @@ static int cxgb4_set_hash_filter(struct net_device *dev,
 	f->dev = dev;
 	f->fs.iq = iq;
 
-	/* If the new filter requires loopback Destination MAC and/or VLAN
-	 * rewriting then we need to allocate a Layer 2 Table (L2T) entry for
-	 * the filter.
-	 */
+	 
 	if (f->fs.newdmac || f->fs.newvlan) {
-		/* allocate L2T entry for new filter */
+		 
 		f->l2t = t4_l2t_alloc_switching(adapter, f->fs.vlan,
 						f->fs.eport, f->fs.dmac);
 		if (!f->l2t) {
@@ -1411,9 +1249,7 @@ static int cxgb4_set_hash_filter(struct net_device *dev,
 		}
 	}
 
-	/* If the new filter requires loopback Source MAC rewriting then
-	 * we need to allocate a SMT entry for the filter.
-	 */
+	 
 	if (f->fs.newsmac) {
 		f->smt = cxgb4_smt_alloc_switching(f->dev, f->fs.smac);
 		if (!f->smt) {
@@ -1443,7 +1279,7 @@ static int cxgb4_set_hash_filter(struct net_device *dev,
 			struct port_info *pi = netdev_priv(f->dev);
 			static const u8 match_all_mac[] = { 0, 0, 0, 0, 0, 0 };
 
-			/* allocate MPS TCAM entry */
+			 
 			ret = t4_alloc_encap_mac_filt(adapter, pi->viid,
 						      match_all_mac,
 						      match_all_mac,
@@ -1519,12 +1355,7 @@ out_err:
 	return ret;
 }
 
-/* Check a Chelsio Filter Request for validity, convert it into our internal
- * format and send it to the hardware.  Return 0 on success, an error number
- * otherwise.  We attach any provided filter operation context to the internal
- * filter specification in order to facilitate signaling completion of the
- * operation.
- */
+ 
 int __cxgb4_set_filter(struct net_device *dev, int ftid,
 		       struct ch_filter_specification *fs,
 		       struct filter_ctx *ctx)
@@ -1566,21 +1397,9 @@ int __cxgb4_set_filter(struct net_device *dev, int ftid,
 		filter_id = ftid - adapter->tids.nhpftids;
 	}
 
-	/* IPv6 filters occupy four slots and must be aligned on
-	 * four-slot boundaries.  IPv4 filters only occupy a single
-	 * slot and have no alignment requirements but writing a new
-	 * IPv4 filter into the middle of an existing IPv6 filter
-	 * requires clearing the old IPv6 filter and hence we prevent
-	 * insertion.
-	 */
-	if (fs->type == 0) { /* IPv4 */
-		/* For T6, If our IPv4 filter isn't being written to a
-		 * multiple of two filter index and there's an IPv6
-		 * filter at the multiple of 2 base slot, then we need
-		 * to delete that IPv6 filter ...
-		 * For adapters below T6, IPv6 filter occupies 4 entries.
-		 * Hence we need to delete the filter in multiple of 4 slot.
-		 */
+	 
+	if (fs->type == 0) {  
+		 
 		if (chip_ver < CHELSIO_T6)
 			fidx = filter_id & ~0x3;
 		else
@@ -1595,20 +1414,16 @@ int __cxgb4_set_filter(struct net_device *dev, int ftid,
 				return -EINVAL;
 			}
 		}
-	} else { /* IPv6 */
+	} else {  
 		if (chip_ver < CHELSIO_T6) {
-			/* Ensure that the IPv6 filter is aligned on a
-			 * multiple of 4 boundary.
-			 */
+			 
 			if (filter_id & 0x3) {
 				dev_err(adapter->pdev_dev,
 					"Invalid location. IPv6 must be aligned on a 4-slot boundary\n");
 				return -EINVAL;
 			}
 
-			/* Check all except the base overlapping IPv4 filter
-			 * slots.
-			 */
+			 
 			for (fidx = filter_id + 1; fidx < filter_id + 4;
 			     fidx++) {
 				f = &tab[fidx];
@@ -1620,12 +1435,10 @@ int __cxgb4_set_filter(struct net_device *dev, int ftid,
 				}
 			}
 		} else {
-			/* For T6, CLIP being enabled, IPv6 filter would occupy
-			 * 2 entries.
-			 */
+			 
 			if (filter_id & 0x1)
 				return -EINVAL;
-			/* Check overlapping IPv4 filter slot */
+			 
 			fidx = filter_id + 1;
 			f = &tab[fidx];
 			if (f->valid) {
@@ -1636,9 +1449,7 @@ int __cxgb4_set_filter(struct net_device *dev, int ftid,
 		}
 	}
 
-	/* Check to make sure that provided filter index is not
-	 * already in use by someone else
-	 */
+	 
 	f = &tab[filter_id];
 	if (f->valid)
 		return -EBUSY;
@@ -1657,7 +1468,7 @@ int __cxgb4_set_filter(struct net_device *dev, int ftid,
 	if (ret)
 		return ret;
 
-	/* Check t  make sure the filter requested is writable ... */
+	 
 	ret = writable_filter(f);
 	if (ret)
 		goto free_tid;
@@ -1670,11 +1481,7 @@ int __cxgb4_set_filter(struct net_device *dev, int ftid,
 			goto free_tid;
 	}
 
-	/* Convert the filter specification into our internal format.
-	 * We copy the PF/VF specification into the Outer VLAN field
-	 * here so the rest of the code -- including the interface to
-	 * the firmware -- doesn't have to constantly do these checks.
-	 */
+	 
 	f->fs = *fs;
 	f->fs.iq = iq;
 	f->dev = dev;
@@ -1690,7 +1497,7 @@ int __cxgb4_set_filter(struct net_device *dev, int ftid,
 			struct port_info *pi = netdev_priv(f->dev);
 			static const u8 match_all_mac[] = { 0, 0, 0, 0, 0, 0 };
 
-			/* allocate MPS TCAM entry */
+			 
 			ret = t4_alloc_encap_mac_filt(adapter, pi->viid,
 						      match_all_mac,
 						      match_all_mac,
@@ -1707,11 +1514,9 @@ int __cxgb4_set_filter(struct net_device *dev, int ftid,
 		}
 	}
 
-	/* Attempt to set the filter.  If we don't succeed, we clear
-	 * it and return the failure.
-	 */
+	 
 	f->ctx = ctx;
-	f->tid = fidx; /* Save the actual tid */
+	f->tid = fidx;  
 	ret = set_filter_wr(adapter, ftid);
 	if (ret)
 		goto free_tid;
@@ -1792,11 +1597,7 @@ static int cxgb4_del_hash_filter(struct net_device *dev, int filter_id,
 	return 0;
 }
 
-/* Check a delete filter request for validity and send it to the hardware.
- * Return 0 on success, an error number otherwise.  We attach any provided
- * filter operation context to the internal filter specification in order to
- * facilitate signaling completion of the operation.
- */
+ 
 int __cxgb4_del_filter(struct net_device *dev, int filter_id,
 		       struct ch_filter_specification *fs,
 		       struct filter_ctx *ctx)
@@ -1843,10 +1644,7 @@ int __cxgb4_del_filter(struct net_device *dev, int filter_id,
 		return del_filter_wr(adapter, filter_id);
 	}
 
-	/* If the caller has passed in a Completion Context then we need to
-	 * mark it as a successful completion so they don't stall waiting
-	 * for it.
-	 */
+	 
 	if (ctx) {
 		ctx->result = 0;
 		complete(&ctx->completion);
@@ -1866,7 +1664,7 @@ int cxgb4_set_filter(struct net_device *dev, int filter_id,
 	if (ret)
 		goto out;
 
-	/* Wait for reply */
+	 
 	ret = wait_for_completion_timeout(&ctx.completion, 10 * HZ);
 	if (!ret)
 		return -ETIMEDOUT;
@@ -1891,7 +1689,7 @@ int cxgb4_del_filter(struct net_device *dev, int filter_id,
 	if (ret)
 		goto out;
 
-	/* Wait for reply */
+	 
 	ret = wait_for_completion_timeout(&ctx.completion, 10 * HZ);
 	if (!ret)
 		return -ETIMEDOUT;
@@ -2070,7 +1868,7 @@ void hash_filter_rpl(struct adapter *adap, const struct cpl_act_open_rpl *rpl)
 		complete(&ctx->completion);
 }
 
-/* Handle a filter write/deletion reply. */
+ 
 void filter_rpl(struct adapter *adap, const struct cpl_set_tcb_rpl *rpl)
 {
 	unsigned int tid = GET_TID(rpl);
@@ -2079,13 +1877,13 @@ void filter_rpl(struct adapter *adap, const struct cpl_set_tcb_rpl *rpl)
 	int idx;
 
 	max_fidx = adap->tids.nftids + adap->tids.nsftids;
-	/* Get the corresponding filter entry for this tid */
+	 
 	if (adap->tids.ftid_tab) {
 		idx = tid - adap->tids.hpftid_base;
 		if (idx < adap->tids.nhpftids) {
 			f = &adap->tids.hpftid_tab[idx];
 		} else {
-			/* Check this in normal filter region */
+			 
 			idx = tid - adap->tids.ftid_base;
 			if (idx >= max_fidx)
 				return;
@@ -2097,35 +1895,29 @@ void filter_rpl(struct adapter *adap, const struct cpl_set_tcb_rpl *rpl)
 			return;
 	}
 
-	/* We found the filter entry for this tid */
+	 
 	if (f) {
 		unsigned int ret = TCB_COOKIE_G(rpl->cookie);
 		struct filter_ctx *ctx;
 
-		/* Pull off any filter operation context attached to the
-		 * filter.
-		 */
+		 
 		ctx = f->ctx;
 		f->ctx = NULL;
 
 		if (ret == FW_FILTER_WR_FLT_DELETED) {
-			/* Clear the filter when we get confirmation from the
-			 * hardware that the filter has been deleted.
-			 */
+			 
 			clear_filter(adap, f);
 			if (ctx)
 				ctx->result = 0;
 		} else if (ret == FW_FILTER_WR_FLT_ADDED) {
-			f->pending = 0;  /* async setup completed */
+			f->pending = 0;   
 			f->valid = 1;
 			if (ctx) {
 				ctx->result = 0;
 				ctx->tid = idx;
 			}
 		} else {
-			/* Something went wrong.  Issue a warning about the
-			 * problem and clear everything out.
-			 */
+			 
 			dev_err(adap->pdev_dev, "filter %u setup failed with error %u\n",
 				idx, ret);
 			clear_filter(adap, f);
@@ -2141,9 +1933,7 @@ void init_hash_filter(struct adapter *adap)
 {
 	u32 reg;
 
-	/* On T6, verify the necessary register configs and warn the user in
-	 * case of improper config
-	 */
+	 
 	if (is_t6(adap->params.chip)) {
 		if (is_offload(adap)) {
 			if (!(t4_read_reg(adap, TP_GLOBAL_CONFIG_A)

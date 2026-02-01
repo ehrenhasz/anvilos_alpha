@@ -1,12 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright 2019 Google LLC
- */
+
+ 
 
 #include <ufs/ufshcd.h>
 #include "ufshcd-crypto.h"
 
-/* Blk-crypto modes supported by UFS crypto */
+ 
 static const struct ufs_crypto_alg_entry {
 	enum ufs_crypto_alg ufs_alg;
 	enum ufs_crypto_key_size ufs_key_size;
@@ -31,16 +29,16 @@ static int ufshcd_program_key(struct ufs_hba *hba,
 		goto out;
 	}
 
-	/* Ensure that CFGE is cleared before programming the key */
+	 
 	ufshcd_writel(hba, 0, slot_offset + 16 * sizeof(cfg->reg_val[0]));
 	for (i = 0; i < 16; i++) {
 		ufshcd_writel(hba, le32_to_cpu(cfg->reg_val[i]),
 			      slot_offset + i * sizeof(cfg->reg_val[0]));
 	}
-	/* Write dword 17 */
+	 
 	ufshcd_writel(hba, le32_to_cpu(cfg->reg_val[17]),
 		      slot_offset + 17 * sizeof(cfg->reg_val[0]));
-	/* Dword 16 must be written last */
+	 
 	ufshcd_writel(hba, le32_to_cpu(cfg->reg_val[16]),
 		      slot_offset + 16 * sizeof(cfg->reg_val[0]));
 out:
@@ -81,7 +79,7 @@ static int ufshcd_crypto_keyslot_program(struct blk_crypto_profile *profile,
 	cfg.config_enable = UFS_CRYPTO_CONFIGURATION_ENABLE;
 
 	if (ccap_array[cap_idx].algorithm_id == UFS_CRYPTO_ALG_AES_XTS) {
-		/* In XTS mode, the blk_crypto_key's size is already doubled */
+		 
 		memcpy(cfg.crypto_key, key->raw, key->size/2);
 		memcpy(cfg.crypto_key + UFS_CRYPTO_KEY_MAX_SIZE/2,
 		       key->raw + key->size/2, key->size/2);
@@ -97,10 +95,7 @@ static int ufshcd_crypto_keyslot_program(struct blk_crypto_profile *profile,
 
 static int ufshcd_clear_keyslot(struct ufs_hba *hba, int slot)
 {
-	/*
-	 * Clear the crypto cfg on the device. Clearing CFGE
-	 * might not be sufficient, so just clear the entire cfg.
-	 */
+	 
 	union ufs_crypto_cfg_entry cfg = {};
 
 	return ufshcd_program_key(hba, &cfg, slot);
@@ -121,7 +116,7 @@ bool ufshcd_crypto_enable(struct ufs_hba *hba)
 	if (!(hba->caps & UFSHCD_CAP_CRYPTO))
 		return false;
 
-	/* Reset might clear all keys, so reprogram all the keys. */
+	 
 	blk_crypto_reprogram_all_keys(&hba->crypto_profile);
 	return true;
 }
@@ -146,24 +141,14 @@ ufshcd_find_blk_crypto_mode(union ufs_crypto_cap_entry cap)
 	return BLK_ENCRYPTION_MODE_INVALID;
 }
 
-/**
- * ufshcd_hba_init_crypto_capabilities - Read crypto capabilities, init crypto
- *					 fields in hba
- * @hba: Per adapter instance
- *
- * Return: 0 if crypto was initialized or is not supported, else a -errno value.
- */
+ 
 int ufshcd_hba_init_crypto_capabilities(struct ufs_hba *hba)
 {
 	int cap_idx;
 	int err = 0;
 	enum blk_crypto_mode_num blk_mode_num;
 
-	/*
-	 * Don't use crypto if either the hardware doesn't advertise the
-	 * standard crypto capability bit *or* if the vendor specific driver
-	 * hasn't advertised that crypto is supported.
-	 */
+	 
 	if (!(hba->capabilities & MASK_CRYPTO_SUPPORT) ||
 	    !(hba->caps & UFSHCD_CAP_CRYPTO))
 		goto out;
@@ -180,7 +165,7 @@ int ufshcd_hba_init_crypto_capabilities(struct ufs_hba *hba)
 		goto out;
 	}
 
-	/* The actual number of configurations supported is (CFGC+1) */
+	 
 	err = devm_blk_crypto_profile_init(
 			hba->dev, &hba->crypto_profile,
 			hba->crypto_capabilities.config_count + 1);
@@ -188,14 +173,11 @@ int ufshcd_hba_init_crypto_capabilities(struct ufs_hba *hba)
 		goto out;
 
 	hba->crypto_profile.ll_ops = ufshcd_crypto_ops;
-	/* UFS only supports 8 bytes for any DUN */
+	 
 	hba->crypto_profile.max_dun_bytes_supported = 8;
 	hba->crypto_profile.dev = hba->dev;
 
-	/*
-	 * Cache all the UFS crypto capabilities and advertise the supported
-	 * crypto modes and data unit sizes to the block layer.
-	 */
+	 
 	for (cap_idx = 0; cap_idx < hba->crypto_capabilities.num_crypto_cap;
 	     cap_idx++) {
 		hba->crypto_cap_array[cap_idx].reg_val =
@@ -212,15 +194,12 @@ int ufshcd_hba_init_crypto_capabilities(struct ufs_hba *hba)
 	return 0;
 
 out:
-	/* Indicate that init failed by clearing UFSHCD_CAP_CRYPTO */
+	 
 	hba->caps &= ~UFSHCD_CAP_CRYPTO;
 	return err;
 }
 
-/**
- * ufshcd_init_crypto - Initialize crypto hardware
- * @hba: Per adapter instance
- */
+ 
 void ufshcd_init_crypto(struct ufs_hba *hba)
 {
 	int slot;
@@ -228,7 +207,7 @@ void ufshcd_init_crypto(struct ufs_hba *hba)
 	if (!(hba->caps & UFSHCD_CAP_CRYPTO))
 		return;
 
-	/* Clear all keyslots - the number of keyslots is (CFGC + 1) */
+	 
 	for (slot = 0; slot < hba->crypto_capabilities.config_count + 1; slot++)
 		ufshcd_clear_keyslot(hba, slot);
 }

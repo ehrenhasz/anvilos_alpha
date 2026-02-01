@@ -1,25 +1,4 @@
-/*
- * Copyright 2021 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 
 #include <linux/pci.h>
 
@@ -36,19 +15,12 @@
 
 static void ih_v6_0_set_interrupt_funcs(struct amdgpu_device *adev);
 
-/**
- * ih_v6_0_init_register_offset - Initialize register offset for ih rings
- *
- * @adev: amdgpu_device pointer
- *
- * Initialize register offset ih rings (IH_V6_0).
- */
+ 
 static void ih_v6_0_init_register_offset(struct amdgpu_device *adev)
 {
 	struct amdgpu_ih_regs *ih_regs;
 
-	/* ih ring 2 is removed
-	 * ih ring and ih ring 1 are available */
+	 
 	if (adev->irq.ih.ring_size) {
 		ih_regs = &adev->irq.ih.ih_regs;
 		ih_regs->ih_rb_base = SOC15_REG_OFFSET(OSSSYS, 0, regIH_RB_BASE);
@@ -74,21 +46,7 @@ static void ih_v6_0_init_register_offset(struct amdgpu_device *adev)
 	}
 }
 
-/**
- * force_update_wptr_for_self_int - Force update the wptr for self interrupt
- *
- * @adev: amdgpu_device pointer
- * @threshold: threshold to trigger the wptr reporting
- * @timeout: timeout to trigger the wptr reporting
- * @enabled: Enable/disable timeout flush mechanism
- *
- * threshold input range: 0 ~ 15, default 0,
- * real_threshold = 2^threshold
- * timeout input range: 0 ~ 20, default 8,
- * real_timeout = (2^timeout) * 1024 / (socclk_freq)
- *
- * Force update wptr for self interrupt ( >= SIENNA_CICHLID).
- */
+ 
 static void
 force_update_wptr_for_self_int(struct amdgpu_device *adev,
 			       u32 threshold, u32 timeout, bool enabled)
@@ -115,15 +73,7 @@ force_update_wptr_for_self_int(struct amdgpu_device *adev,
 	WREG32_SOC15(OSSSYS, 0, regIH_CNTL2, ih_cntl);
 }
 
-/**
- * ih_v6_0_toggle_ring_interrupts - toggle the interrupt ring buffer
- *
- * @adev: amdgpu_device pointer
- * @ih: amdgpu_ih_ring pointer
- * @enable: true - enable the interrupts, false - disable the interrupts
- *
- * Toggle the interrupt ring buffer (IH_V6_0)
- */
+ 
 static int ih_v6_0_toggle_ring_interrupts(struct amdgpu_device *adev,
 					  struct amdgpu_ih_ring *ih,
 					  bool enable)
@@ -135,7 +85,7 @@ static int ih_v6_0_toggle_ring_interrupts(struct amdgpu_device *adev,
 
 	tmp = RREG32(ih_regs->ih_rb_cntl);
 	tmp = REG_SET_FIELD(tmp, IH_RB_CNTL, RB_ENABLE, (enable ? 1 : 0));
-	/* enable_intr field is only valid in ring0 */
+	 
 	if (ih == &adev->irq.ih)
 		tmp = REG_SET_FIELD(tmp, IH_RB_CNTL, ENABLE_INTR, (enable ? 1 : 0));
 
@@ -149,7 +99,7 @@ static int ih_v6_0_toggle_ring_interrupts(struct amdgpu_device *adev,
 	if (enable) {
 		ih->enabled = true;
 	} else {
-		/* set rptr, wptr to 0 */
+		 
 		WREG32(ih_regs->ih_rb_rptr, 0);
 		WREG32(ih_regs->ih_rb_wptr, 0);
 		ih->enabled = false;
@@ -159,14 +109,7 @@ static int ih_v6_0_toggle_ring_interrupts(struct amdgpu_device *adev,
 	return 0;
 }
 
-/**
- * ih_v6_0_toggle_interrupts - Toggle all the available interrupt ring buffers
- *
- * @adev: amdgpu_device pointer
- * @enable: enable or disable interrupt ring buffers
- *
- * Toggle all the available interrupt ring buffers (IH_V6_0).
- */
+ 
 static int ih_v6_0_toggle_interrupts(struct amdgpu_device *adev, bool enable)
 {
 	struct amdgpu_ih_ring *ih[] = {&adev->irq.ih, &adev->irq.ih1};
@@ -195,9 +138,7 @@ static uint32_t ih_v6_0_rb_cntl(struct amdgpu_ih_ring *ih, uint32_t ih_rb_cntl)
 	ih_rb_cntl = REG_SET_FIELD(ih_rb_cntl, IH_RB_CNTL,
 				   WPTR_OVERFLOW_ENABLE, 1);
 	ih_rb_cntl = REG_SET_FIELD(ih_rb_cntl, IH_RB_CNTL, RB_SIZE, rb_bufsz);
-	/* Ring Buffer write pointer writeback. If enabled, IH_RB_WPTR register
-	 * value is written to memory
-	 */
+	 
 	ih_rb_cntl = REG_SET_FIELD(ih_rb_cntl, IH_RB_CNTL,
 				   WPTR_WRITEBACK_ENABLE, 1);
 	ih_rb_cntl = REG_SET_FIELD(ih_rb_cntl, IH_RB_CNTL, MC_SNOOP, 1);
@@ -226,14 +167,7 @@ static uint32_t ih_v6_0_doorbell_rptr(struct amdgpu_ih_ring *ih)
 	return ih_doorbell_rtpr;
 }
 
-/**
- * ih_v6_0_enable_ring - enable an ih ring buffer
- *
- * @adev: amdgpu_device pointer
- * @ih: amdgpu_ih_ring pointer
- *
- * Enable an ih ring buffer (IH_V6_0)
- */
+ 
 static int ih_v6_0_enable_ring(struct amdgpu_device *adev,
 				      struct amdgpu_ih_ring *ih)
 {
@@ -242,7 +176,7 @@ static int ih_v6_0_enable_ring(struct amdgpu_device *adev,
 
 	ih_regs = &ih->ih_regs;
 
-	/* Ring Buffer base. [39:8] of 40-bit address of the beginning of the ring buffer*/
+	 
 	WREG32(ih_regs->ih_rb_base, ih->gpu_addr >> 8);
 	WREG32(ih_regs->ih_rb_base_hi, (ih->gpu_addr >> 40) & 0xff);
 
@@ -265,12 +199,12 @@ static int ih_v6_0_enable_ring(struct amdgpu_device *adev,
 	}
 
 	if (ih == &adev->irq.ih) {
-		/* set the ih ring 0 writeback address whether it's enabled or not */
+		 
 		WREG32(ih_regs->ih_rb_wptr_addr_lo, lower_32_bits(ih->wptr_addr));
 		WREG32(ih_regs->ih_rb_wptr_addr_hi, upper_32_bits(ih->wptr_addr) & 0xFFFF);
 	}
 
-	/* set rptr, wptr to 0 */
+	 
 	WREG32(ih_regs->ih_rb_wptr, 0);
 	WREG32(ih_regs->ih_rb_rptr, 0);
 
@@ -279,17 +213,7 @@ static int ih_v6_0_enable_ring(struct amdgpu_device *adev,
 	return 0;
 }
 
-/**
- * ih_v6_0_irq_init - init and enable the interrupt ring
- *
- * @adev: amdgpu_device pointer
- *
- * Allocate a ring buffer for the interrupt controller,
- * enable the RLC, disable interrupts, enable the IH
- * ring buffer and enable it.
- * Called at device load and reume.
- * Returns 0 for success, errors for failure.
- */
+ 
 static int ih_v6_0_irq_init(struct amdgpu_device *adev)
 {
 	struct amdgpu_ih_ring *ih[] = {&adev->irq.ih, &adev->irq.ih1};
@@ -298,7 +222,7 @@ static int ih_v6_0_irq_init(struct amdgpu_device *adev)
 	int ret;
 	int i;
 
-	/* disable irqs */
+	 
 	ret = ih_v6_0_toggle_interrupts(adev, false);
 	if (ret)
 		return ret;
@@ -323,7 +247,7 @@ static int ih_v6_0_irq_init(struct amdgpu_device *adev)
 		}
 	}
 
-	/* update doorbell range for ih ring 0 */
+	 
 	adev->nbio.funcs->ih_doorbell_range(adev, ih[0]->use_doorbell,
 					    ih[0]->doorbell_index);
 
@@ -336,11 +260,7 @@ static int ih_v6_0_irq_init(struct amdgpu_device *adev)
 	tmp = REG_SET_FIELD(tmp, IH_INT_FLOOD_CNTL, FLOOD_CNTL_ENABLE, 1);
 	WREG32_SOC15(OSSSYS, 0, regIH_INT_FLOOD_CNTL, tmp);
 
-	/* GC/MMHUB UTCL2 page fault interrupts are configured as
-	 * MSI storm capable interrupts by deafult. The delay is
-	 * used to avoid ISR being called too frequently
-	 * when page fault happens on several continuous page
-	 * and thus avoid MSI storm */
+	 
 	tmp = RREG32_SOC15(OSSSYS, 0, regIH_MSI_STORM_CTRL);
 	tmp = REG_SET_FIELD(tmp, IH_MSI_STORM_CTRL,
 			    DELAY, 3);
@@ -348,11 +268,11 @@ static int ih_v6_0_irq_init(struct amdgpu_device *adev)
 
 	pci_set_master(adev->pdev);
 
-	/* enable interrupts */
+	 
 	ret = ih_v6_0_toggle_interrupts(adev, true);
 	if (ret)
 		return ret;
-	/* enable wptr force update for self int */
+	 
 	force_update_wptr_for_self_int(adev, 0, 8, true);
 
 	if (adev->irq.ih_soft.ring_size)
@@ -361,33 +281,17 @@ static int ih_v6_0_irq_init(struct amdgpu_device *adev)
 	return 0;
 }
 
-/**
- * ih_v6_0_irq_disable - disable interrupts
- *
- * @adev: amdgpu_device pointer
- *
- * Disable interrupts on the hw.
- */
+ 
 static void ih_v6_0_irq_disable(struct amdgpu_device *adev)
 {
 	force_update_wptr_for_self_int(adev, 0, 8, false);
 	ih_v6_0_toggle_interrupts(adev, false);
 
-	/* Wait and acknowledge irq */
+	 
 	mdelay(1);
 }
 
-/**
- * ih_v6_0_get_wptr - get the IH ring buffer wptr
- *
- * @adev: amdgpu_device pointer
- * @ih: amdgpu_ih_ring pointer
- *
- * Get the IH ring buffer wptr from either the register
- * or the writeback memory buffer.  Also check for
- * ring buffer overflow and deal with it.
- * Returns the value of the wptr.
- */
+ 
 static u32 ih_v6_0_get_wptr(struct amdgpu_device *adev,
 			      struct amdgpu_ih_ring *ih)
 {
@@ -405,10 +309,7 @@ static u32 ih_v6_0_get_wptr(struct amdgpu_device *adev,
 		goto out;
 	wptr = REG_SET_FIELD(wptr, IH_RB_WPTR, RB_OVERFLOW, 0);
 
-	/* When a ring buffer overflow happen start parsing interrupt
-	 * from the last not overwritten vector (wptr + 32). Hopefully
-	 * this should allow us to catch up.
-	 */
+	 
 	tmp = (wptr + 32) & ih->ptr_mask;
 	dev_warn(adev->dev, "IH ring buffer overflow "
 		 "(0x%08X, 0x%08X, 0x%08X)\n",
@@ -422,13 +323,7 @@ out:
 	return (wptr & ih->ptr_mask);
 }
 
-/**
- * ih_v6_0_irq_rearm - rearm IRQ if lost
- *
- * @adev: amdgpu_device pointer
- * @ih: amdgpu_ih_ring pointer
- *
- */
+ 
 static void ih_v6_0_irq_rearm(struct amdgpu_device *adev,
 			       struct amdgpu_ih_ring *ih)
 {
@@ -438,7 +333,7 @@ static void ih_v6_0_irq_rearm(struct amdgpu_device *adev,
 
 	ih_regs = &ih->ih_regs;
 
-	/* Rearm IRQ / re-write doorbell if doorbell write is lost */
+	 
 	for (i = 0; i < MAX_REARM_RETRY; i++) {
 		v = RREG32_NO_KIQ(ih_regs->ih_rb_rptr);
 		if ((v < ih->ring_size) && (v != ih->rptr))
@@ -448,21 +343,14 @@ static void ih_v6_0_irq_rearm(struct amdgpu_device *adev,
 	}
 }
 
-/**
- * ih_v6_0_set_rptr - set the IH ring buffer rptr
- *
- * @adev: amdgpu_device pointer
- * @ih: amdgpu_ih_ring pointer
- *
- * Set the IH ring buffer rptr.
- */
+ 
 static void ih_v6_0_set_rptr(struct amdgpu_device *adev,
 			       struct amdgpu_ih_ring *ih)
 {
 	struct amdgpu_ih_regs *ih_regs;
 
 	if (ih->use_doorbell) {
-		/* XXX check if swapping is necessary on BE */
+		 
 		*ih->rptr_cpu = ih->rptr;
 		WDOORBELL32(ih->doorbell_index, ih->rptr);
 
@@ -474,15 +362,7 @@ static void ih_v6_0_set_rptr(struct amdgpu_device *adev,
 	}
 }
 
-/**
- * ih_v6_0_self_irq - dispatch work for ring 1
- *
- * @adev: amdgpu_device pointer
- * @source: irq source
- * @entry: IV with WPTR update
- *
- * Update the WPTR from the IV and schedule work to handle the entries.
- */
+ 
 static int ih_v6_0_self_irq(struct amdgpu_device *adev,
 			      struct amdgpu_irq_src *source,
 			      struct amdgpu_iv_entry *entry)
@@ -531,9 +411,7 @@ static int ih_v6_0_sw_init(void *handle)
 	if (r)
 		return r;
 
-	/* use gpu virtual address for ih ring
-	 * until ih_checken is programmed to allow
-	 * use bus address for ih ring by psp bl */
+	 
 	use_bus_addr =
 		(adev->firmware.load_type == AMDGPU_FW_LOAD_PSP) ? false : true;
 	r = amdgpu_ih_ring_init(adev, &adev->irq.ih, IH_RING_SIZE, use_bus_addr);
@@ -546,7 +424,7 @@ static int ih_v6_0_sw_init(void *handle)
 	adev->irq.ih1.ring_size = 0;
 	adev->irq.ih2.ring_size = 0;
 
-	/* initialize ih control register offset */
+	 
 	ih_v6_0_init_register_offset(adev);
 
 	r = amdgpu_ih_ring_init(adev, &adev->irq.ih_soft, IH_SW_RING_SIZE, true);
@@ -604,19 +482,19 @@ static int ih_v6_0_resume(void *handle)
 
 static bool ih_v6_0_is_idle(void *handle)
 {
-	/* todo */
+	 
 	return true;
 }
 
 static int ih_v6_0_wait_for_idle(void *handle)
 {
-	/* todo */
+	 
 	return -ETIMEDOUT;
 }
 
 static int ih_v6_0_soft_reset(void *handle)
 {
-	/* todo */
+	 
 	return 0;
 }
 
@@ -660,47 +538,47 @@ static void ih_v6_0_update_ih_mem_power_gating(struct amdgpu_device *adev,
 {
 	uint32_t ih_mem_pwr_cntl;
 
-	/* Disable ih sram power cntl before switch powergating mode */
+	 
 	ih_mem_pwr_cntl = RREG32_SOC15(OSSSYS, 0, regIH_MEM_POWER_CTRL);
 	ih_mem_pwr_cntl = REG_SET_FIELD(ih_mem_pwr_cntl, IH_MEM_POWER_CTRL,
 					IH_BUFFER_MEM_POWER_CTRL_EN, 0);
 	WREG32_SOC15(OSSSYS, 0, regIH_MEM_POWER_CTRL, ih_mem_pwr_cntl);
 
-	/* It is recommended to set mem powergating mode to DS mode */
+	 
 	if (enable) {
-		/* mem power mode */
+		 
 		ih_mem_pwr_cntl = REG_SET_FIELD(ih_mem_pwr_cntl, IH_MEM_POWER_CTRL,
 						IH_BUFFER_MEM_POWER_LS_EN, 0);
 		ih_mem_pwr_cntl = REG_SET_FIELD(ih_mem_pwr_cntl, IH_MEM_POWER_CTRL,
 						IH_BUFFER_MEM_POWER_DS_EN, 1);
 		ih_mem_pwr_cntl = REG_SET_FIELD(ih_mem_pwr_cntl, IH_MEM_POWER_CTRL,
 						IH_BUFFER_MEM_POWER_SD_EN, 0);
-		/* cam mem power mode */
+		 
 		ih_mem_pwr_cntl = REG_SET_FIELD(ih_mem_pwr_cntl, IH_MEM_POWER_CTRL,
 						IH_RETRY_INT_CAM_MEM_POWER_LS_EN, 0);
 		ih_mem_pwr_cntl = REG_SET_FIELD(ih_mem_pwr_cntl, IH_MEM_POWER_CTRL,
 						IH_RETRY_INT_CAM_MEM_POWER_DS_EN, 1);
 		ih_mem_pwr_cntl = REG_SET_FIELD(ih_mem_pwr_cntl, IH_MEM_POWER_CTRL,
 						IH_RETRY_INT_CAM_MEM_POWER_SD_EN, 0);
-		/* re-enable power cntl */
+		 
 		ih_mem_pwr_cntl = REG_SET_FIELD(ih_mem_pwr_cntl, IH_MEM_POWER_CTRL,
 						IH_BUFFER_MEM_POWER_CTRL_EN, 1);
 	} else {
-		/* mem power mode */
+		 
 		ih_mem_pwr_cntl = REG_SET_FIELD(ih_mem_pwr_cntl, IH_MEM_POWER_CTRL,
 						IH_BUFFER_MEM_POWER_LS_EN, 0);
 		ih_mem_pwr_cntl = REG_SET_FIELD(ih_mem_pwr_cntl, IH_MEM_POWER_CTRL,
 						IH_BUFFER_MEM_POWER_DS_EN, 0);
 		ih_mem_pwr_cntl = REG_SET_FIELD(ih_mem_pwr_cntl, IH_MEM_POWER_CTRL,
 						IH_BUFFER_MEM_POWER_SD_EN, 0);
-		/* cam mem power mode */
+		 
 		ih_mem_pwr_cntl = REG_SET_FIELD(ih_mem_pwr_cntl, IH_MEM_POWER_CTRL,
 						IH_RETRY_INT_CAM_MEM_POWER_LS_EN, 0);
 		ih_mem_pwr_cntl = REG_SET_FIELD(ih_mem_pwr_cntl, IH_MEM_POWER_CTRL,
 						IH_RETRY_INT_CAM_MEM_POWER_DS_EN, 0);
 		ih_mem_pwr_cntl = REG_SET_FIELD(ih_mem_pwr_cntl, IH_MEM_POWER_CTRL,
 						IH_RETRY_INT_CAM_MEM_POWER_SD_EN, 0);
-		/* re-enable power cntl*/
+		 
 		ih_mem_pwr_cntl = REG_SET_FIELD(ih_mem_pwr_cntl, IH_MEM_POWER_CTRL,
 						IH_BUFFER_MEM_POWER_CTRL_EN, 1);
 	}

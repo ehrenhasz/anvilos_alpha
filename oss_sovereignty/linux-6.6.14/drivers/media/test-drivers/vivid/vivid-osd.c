@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * vivid-osd.c - osd support for testing overlays.
- *
- * Copyright 2014 Cisco Systems, Inc. and/or its affiliates. All rights reserved.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/errno.h>
@@ -31,10 +27,7 @@
 #define MAX_OSD_WIDTH  720
 #define MAX_OSD_HEIGHT 576
 
-/*
- * Order: white, yellow, cyan, green, magenta, red, blue, black,
- * and same again with the alpha bit set (if any)
- */
+ 
 static const u16 rgb555[16] = {
 	0x7fff, 0x7fe0, 0x03ff, 0x03e0, 0x7c1f, 0x7c00, 0x001f, 0x0000,
 	0xffff, 0xffe0, 0x83ff, 0x83e0, 0xfc1f, 0xfc00, 0x801f, 0x8000
@@ -63,7 +56,7 @@ void vivid_clear_fb(struct vivid_dev *dev)
 	}
 }
 
-/* --------------------------------------------------------------------- */
+ 
 
 static int vivid_fb_ioctl(struct fb_info *info, unsigned cmd, unsigned long arg)
 {
@@ -91,7 +84,7 @@ static int vivid_fb_ioctl(struct fb_info *info, unsigned cmd, unsigned long arg)
 	return 0;
 }
 
-/* Framebuffer device handling */
+ 
 
 static int vivid_fb_set_var(struct vivid_dev *dev, struct fb_var_screeninfo *var)
 {
@@ -123,8 +116,7 @@ static int vivid_fb_get_fix(struct vivid_dev *dev, struct fb_fix_screeninfo *fix
 	return 0;
 }
 
-/* Check the requested display mode, returning -EINVAL if we can't
-   handle it. */
+ 
 
 static int _vivid_fb_check_var(struct fb_var_screeninfo *var, struct vivid_dev *dev)
 {
@@ -157,7 +149,7 @@ static int _vivid_fb_check_var(struct fb_var_screeninfo *var, struct vivid_dev *
 	var->vmode &= ~FB_VMODE_MASK;
 	var->vmode |= FB_VMODE_NONINTERLACED;
 
-	/* Dummy values */
+	 
 	var->hsync_len = 24;
 	var->vsync_len = 2;
 	var->pixclock = 84316;
@@ -225,8 +217,7 @@ static int vivid_fb_setcolreg(unsigned regno, unsigned red, unsigned green,
 	return 0;
 }
 
-/* We don't really support blanking. All this does is enable or
-   disable the OSD. */
+ 
 static int vivid_fb_blank(int blank_mode, struct fb_info *info)
 {
 	struct vivid_dev *dev = (struct vivid_dev *)info->par;
@@ -256,15 +247,15 @@ static const struct fb_ops vivid_fb_ops = {
 	.fb_blank       = vivid_fb_blank,
 };
 
-/* Initialization */
+ 
 
 
-/* Setup our initial video mode */
+ 
 static int vivid_fb_init_vidmode(struct vivid_dev *dev)
 {
 	struct v4l2_rect start_window;
 
-	/* Color mode */
+	 
 
 	dev->bits_per_pixel = 16;
 	dev->bytes_per_pixel = dev->bits_per_pixel / 8;
@@ -274,7 +265,7 @@ static int vivid_fb_init_vidmode(struct vivid_dev *dev)
 
 	dev->display_byte_stride = start_window.width * dev->bytes_per_pixel;
 
-	/* Vertical size & position */
+	 
 
 	start_window.height = MAX_OSD_HEIGHT;
 	start_window.top = 0;
@@ -282,7 +273,7 @@ static int vivid_fb_init_vidmode(struct vivid_dev *dev)
 	dev->display_width = start_window.width;
 	dev->display_height = start_window.height;
 
-	/* Generate a valid fb_var_screeninfo */
+	 
 
 	dev->fb_defined.xres = dev->display_width;
 	dev->fb_defined.yres = dev->display_height;
@@ -294,18 +285,17 @@ static int vivid_fb_init_vidmode(struct vivid_dev *dev)
 	dev->fb_defined.upper_margin = start_window.top + 1;
 	dev->fb_defined.accel_flags = FB_ACCEL_NONE;
 	dev->fb_defined.nonstd = 0;
-	/* set default to 1:5:5:5 */
+	 
 	dev->fb_defined.green.length = 5;
 
-	/* We've filled in the most data, let the usual mode check
-	   routine fill in the rest. */
+	 
 	_vivid_fb_check_var(&dev->fb_defined, dev);
 
-	/* Generate valid fb_fix_screeninfo */
+	 
 
 	vivid_fb_get_fix(dev, &dev->fb_fix);
 
-	/* Generate valid fb_info */
+	 
 
 	dev->fb_info.node = -1;
 	dev->fb_info.par = dev;
@@ -314,40 +304,40 @@ static int vivid_fb_init_vidmode(struct vivid_dev *dev)
 	dev->fb_info.screen_base = (u8 __iomem *)dev->video_vbase;
 	dev->fb_info.fbops = &vivid_fb_ops;
 
-	/* Supply some monitor specs. Bogus values will do for now */
+	 
 	dev->fb_info.monspecs.hfmin = 8000;
 	dev->fb_info.monspecs.hfmax = 70000;
 	dev->fb_info.monspecs.vfmin = 10;
 	dev->fb_info.monspecs.vfmax = 100;
 
-	/* Allocate color map */
+	 
 	if (fb_alloc_cmap(&dev->fb_info.cmap, 256, 1)) {
 		pr_err("abort, unable to alloc cmap\n");
 		return -ENOMEM;
 	}
 
-	/* Allocate the pseudo palette */
+	 
 	dev->fb_info.pseudo_palette = kmalloc_array(16, sizeof(u32), GFP_KERNEL);
 
 	return dev->fb_info.pseudo_palette ? 0 : -ENOMEM;
 }
 
-/* Release any memory we've grabbed */
+ 
 void vivid_fb_release_buffers(struct vivid_dev *dev)
 {
 	if (dev->video_vbase == NULL)
 		return;
 
-	/* Release cmap */
+	 
 	if (dev->fb_info.cmap.len)
 		fb_dealloc_cmap(&dev->fb_info.cmap);
 
-	/* Release pseudo palette */
+	 
 	kfree(dev->fb_info.pseudo_palette);
 	kfree(dev->video_vbase);
 }
 
-/* Initialize the specified card */
+ 
 
 int vivid_fb_init(struct vivid_dev *dev)
 {
@@ -363,7 +353,7 @@ int vivid_fb_init(struct vivid_dev *dev)
 			dev->video_pbase, dev->video_vbase,
 			dev->video_buffer_size / 1024);
 
-	/* Set the startup video mode information */
+	 
 	ret = vivid_fb_init_vidmode(dev);
 	if (ret) {
 		vivid_fb_release_buffers(dev);
@@ -372,13 +362,13 @@ int vivid_fb_init(struct vivid_dev *dev)
 
 	vivid_clear_fb(dev);
 
-	/* Register the framebuffer */
+	 
 	if (register_framebuffer(&dev->fb_info) < 0) {
 		vivid_fb_release_buffers(dev);
 		return -EINVAL;
 	}
 
-	/* Set the card to the requested mode */
+	 
 	vivid_fb_set_par(&dev->fb_info);
 	return 0;
 

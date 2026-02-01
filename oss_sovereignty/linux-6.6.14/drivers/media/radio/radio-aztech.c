@@ -1,27 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * radio-aztech.c - Aztech radio card driver
- *
- * Converted to the radio-isa framework by Hans Verkuil <hans.verkuil@xs4all.nl>
- * Converted to V4L2 API by Mauro Carvalho Chehab <mchehab@kernel.org>
- * Adapted to support the Video for Linux API by
- * Russell Kroll <rkroll@exploits.org>.  Based on original tuner code by:
- *
- * Quay Ly
- * Donald Song
- * Jason Lewis      (jlewis@twilight.vtc.vsc.edu)
- * Scott McGrath    (smcgrath@twilight.vtc.vsc.edu)
- * William McGrath  (wmcgrath@twilight.vtc.vsc.edu)
- *
- * Fully tested with the Keene USB FM Transmitter and the v4l2-compliance tool.
-*/
 
-#include <linux/module.h>	/* Modules			*/
-#include <linux/init.h>		/* Initdata			*/
-#include <linux/ioport.h>	/* request_region		*/
-#include <linux/delay.h>	/* udelay			*/
-#include <linux/videodev2.h>	/* kernel radio structs		*/
-#include <linux/io.h>		/* outb, outb_p			*/
+ 
+
+#include <linux/module.h>	 
+#include <linux/init.h>		 
+#include <linux/ioport.h>	 
+#include <linux/delay.h>	 
+#include <linux/videodev2.h>	 
+#include <linux/io.h>		 
 #include <linux/slab.h>
 #include <media/v4l2-device.h>
 #include <media/v4l2-ioctl.h>
@@ -34,7 +19,7 @@ MODULE_DESCRIPTION("A driver for the Aztech radio card.");
 MODULE_LICENSE("GPL");
 MODULE_VERSION("1.0.0");
 
-/* acceptable ports: 0x350 (JP3 shorted), 0x358 (JP3 open) */
+ 
 #ifndef CONFIG_RADIO_AZTECH_PORT
 #define CONFIG_RADIO_AZTECH_PORT -1
 #endif
@@ -55,14 +40,14 @@ struct aztech {
 	int curvol;
 };
 
-/* bit definitions for register read */
+ 
 #define AZTECH_BIT_NOT_TUNED	(1 << 0)
 #define AZTECH_BIT_MONO		(1 << 1)
-/* bit definitions for register write */
+ 
 #define AZTECH_BIT_TUN_CE	(1 << 1)
 #define AZTECH_BIT_TUN_CLK	(1 << 6)
 #define AZTECH_BIT_TUN_DATA	(1 << 7)
-/* bits 0 and 2 are volume control, bits 3..5 are not connected */
+ 
 
 static void aztech_set_pins(void *handle, u8 pins)
 {

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * tools/testing/selftests/kvm/lib/x86_64/svm.c
- * Helpers used for nested SVM testing
- * Largely inspired from KVM unit test svm.c
- *
- * Copyright (C) 2020, Red Hat, Inc.
- */
+
+ 
 
 #include "test_util.h"
 #include "kvm_util.h"
@@ -17,17 +11,7 @@
 struct gpr64_regs guest_regs;
 u64 rflags;
 
-/* Allocate memory regions for nested SVM tests.
- *
- * Input Args:
- *   vm - The VM to allocate guest-virtual addresses in.
- *
- * Output Args:
- *   p_svm_gva - The guest virtual address for the struct svm_test_data.
- *
- * Return:
- *   Pointer to structure with the addresses of the SVM areas.
- */
+ 
 struct svm_test_data *
 vcpu_alloc_svm(struct kvm_vm *vm, vm_vaddr_t *p_svm_gva)
 {
@@ -105,10 +89,7 @@ void generic_svm_setup(struct svm_test_data *svm, void *guest_rip, void *guest_r
 	guest_regs.rdi = (u64)svm;
 }
 
-/*
- * save/restore 64-bit general registers except rax, rip, rsp
- * which are directly handed through the VMCB guest processor state
- */
+ 
 #define SAVE_GPR_C				\
 	"xchg %%rbx, guest_regs+0x20\n\t"	\
 	"xchg %%rcx, guest_regs+0x10\n\t"	\
@@ -127,37 +108,28 @@ void generic_svm_setup(struct svm_test_data *svm, void *guest_rip, void *guest_r
 
 #define LOAD_GPR_C      SAVE_GPR_C
 
-/*
- * selftests do not use interrupts so we dropped clgi/sti/cli/stgi
- * for now. registers involved in LOAD/SAVE_GPR_C are eventually
- * unmodified so they do not need to be in the clobber list.
- */
+ 
 void run_guest(struct vmcb *vmcb, uint64_t vmcb_gpa)
 {
 	asm volatile (
 		"vmload %[vmcb_gpa]\n\t"
-		"mov rflags, %%r15\n\t"	// rflags
+		"mov rflags, %%r15\n\t"	
 		"mov %%r15, 0x170(%[vmcb])\n\t"
-		"mov guest_regs, %%r15\n\t"	// rax
+		"mov guest_regs, %%r15\n\t"	
 		"mov %%r15, 0x1f8(%[vmcb])\n\t"
 		LOAD_GPR_C
 		"vmrun %[vmcb_gpa]\n\t"
 		SAVE_GPR_C
-		"mov 0x170(%[vmcb]), %%r15\n\t"	// rflags
+		"mov 0x170(%[vmcb]), %%r15\n\t"	
 		"mov %%r15, rflags\n\t"
-		"mov 0x1f8(%[vmcb]), %%r15\n\t"	// rax
+		"mov 0x1f8(%[vmcb]), %%r15\n\t"	
 		"mov %%r15, guest_regs\n\t"
 		"vmsave %[vmcb_gpa]\n\t"
 		: : [vmcb] "r" (vmcb), [vmcb_gpa] "a" (vmcb_gpa)
 		: "r15", "memory");
 }
 
-/*
- * Open SEV_DEV_PATH if available, otherwise exit the entire program.
- *
- * Return:
- *   The opened file descriptor of /dev/sev.
- */
+ 
 int open_sev_dev_path_or_exit(void)
 {
 	return open_path_or_exit(SEV_DEV_PATH, 0);

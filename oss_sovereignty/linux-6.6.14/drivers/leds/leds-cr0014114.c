@@ -1,6 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2018 Crane Merchandising Systems. All rights reserved.
-// Copyright (C) 2018 Oleh Kravchenko <oleg@kaa.org.ua>
+
+
+
 
 #include <linux/delay.h>
 #include <linux/leds.h>
@@ -9,32 +9,14 @@
 #include <linux/spi/spi.h>
 #include <linux/workqueue.h>
 
-/*
- *  CR0014114 SPI protocol descrtiption:
- *  +----+-----------------------------------+----+
- *  | CMD|             BRIGHTNESS            |CRC |
- *  +----+-----------------------------------+----+
- *  |    | LED0| LED1| LED2| LED3| LED4| LED5|    |
- *  |    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+    |
- *  |    |R|G|B|R|G|B|R|G|B|R|G|B|R|G|B|R|G|B|    |
- *  | 1  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ 1  |
- *  |    |1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|    |
- *  |    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+    |
- *  |    |               18                  |    |
- *  +----+-----------------------------------+----+
- *  |                    20                       |
- *  +---------------------------------------------+
- *
- *  PS: Boards can be connected to the chain:
- *      SPI -> board0 -> board1 -> board2 ..
- */
+ 
 
-/* CR0014114 SPI commands */
+ 
 #define CR_SET_BRIGHTNESS	0x80
 #define CR_INIT_REENUMERATE	0x81
 #define CR_NEXT_REENUMERATE	0x82
 
-/* CR0014114 default settings */
+ 
 #define CR_MAX_BRIGHTNESS	GENMASK(6, 0)
 #define CR_FW_DELAY_MSEC	10
 #define CR_RECOUNT_DELAY	(HZ * 3600)
@@ -68,7 +50,7 @@ static void cr0014114_calc_crc(u8 *buf, const size_t len)
 		crc += buf[i];
 	crc |= BIT(7);
 
-	/* special case when CRC matches the SPI commands */
+	 
 	if (crc == CR_SET_BRIGHTNESS ||
 	    crc == CR_INIT_REENUMERATE ||
 	    crc == CR_NEXT_REENUMERATE)
@@ -114,7 +96,7 @@ static int cr0014114_sync(struct cr0014114 *priv)
 	size_t		i;
 	unsigned long	udelay, now = jiffies;
 
-	/* to avoid SPI mistiming with firmware we should wait some time */
+	 
 	if (time_after(priv->delay, now)) {
 		udelay = jiffies_to_usecs(priv->delay - now);
 		usleep_range(udelay, udelay + 1);
@@ -258,7 +240,7 @@ static int cr0014114_probe(struct spi_device *spi)
 	if (ret)
 		return ret;
 
-	/* setup recount work to workaround buggy firmware */
+	 
 	schedule_delayed_work(&priv->work, CR_RECOUNT_DELAY);
 
 	spi_set_drvdata(spi, priv);

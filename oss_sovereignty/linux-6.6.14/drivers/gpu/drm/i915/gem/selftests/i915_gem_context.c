@@ -1,8 +1,4 @@
-/*
- * SPDX-License-Identifier: MIT
- *
- * Copyright © 2017 Intel Corporation
- */
+ 
 
 #include <linux/prime_numbers.h>
 #include <linux/string_helpers.h>
@@ -41,13 +37,7 @@ static int live_nop_switch(void *arg)
 	unsigned long n;
 	int err = -ENODEV;
 
-	/*
-	 * Create as many contexts as we can feasibly get away with
-	 * and check we can switch between them rapidly.
-	 *
-	 * Serves as very simple stress test for submission and HW switching
-	 * between contexts.
-	 */
+	 
 
 	if (!DRIVER_CAPS(i915)->has_logical_contexts)
 		return 0;
@@ -123,24 +113,12 @@ static int live_nop_switch(void *arg)
 					goto out_ctx;
 				}
 
-				if (rq) { /* Force submission order */
+				if (rq) {  
 					i915_request_await_dma_fence(this, &rq->fence);
 					i915_request_put(rq);
 				}
 
-				/*
-				 * This space is left intentionally blank.
-				 *
-				 * We do not actually want to perform any
-				 * action with this request, we just want
-				 * to measure the latency in allocation
-				 * and submission of our breadcrumbs -
-				 * ensuring that the bare request is sufficient
-				 * for the system to work (i.e. proper HEAD
-				 * tracking of the rings, interrupt handling,
-				 * etc). It also gives us the lowest bounds
-				 * for latency.
-				 */
+				 
 
 				rq = i915_request_get(this);
 				i915_request_add(this);
@@ -297,9 +275,7 @@ static int live_parallel_switch(void *arg)
 	int n, m, count;
 	int err = 0;
 
-	/*
-	 * Check we can process switches on all engines simultaneously.
-	 */
+	 
 
 	if (!DRIVER_CAPS(i915)->has_logical_contexts)
 		return 0;
@@ -324,7 +300,7 @@ static int live_parallel_switch(void *arg)
 		goto out_file;
 	}
 
-	m = 0; /* Use the first context as our template for the engines */
+	m = 0;  
 	for_each_gem_engine(ce, engines, it) {
 		err = intel_context_pin(ce);
 		if (err) {
@@ -335,7 +311,7 @@ static int live_parallel_switch(void *arg)
 	}
 	i915_gem_context_unlock_engines(ctx);
 
-	/* Clone the same set of engines into the other contexts */
+	 
 	for (n = 1; n < ARRAY_SIZE(data->ce); n++) {
 		ctx = live_context(i915, file);
 		if (IS_ERR(ctx)) {
@@ -456,14 +432,7 @@ static int gpu_fill(struct intel_context *ce,
 	if (err)
 		return err;
 
-	/*
-	 * Within the GTT the huge objects maps every page onto
-	 * its 1024 real pages (using phys_pfn = dma_pfn % 1024).
-	 * We set the nth dword within the page using the nth
-	 * mapping via the GTT - this should exercise the GTT mapping
-	 * whilst checking that each context provides a unique view
-	 * into the object.
-	 */
+	 
 	err = igt_gpu_fill_dw(ce, vma,
 			      (dw * real_page_count(obj)) << PAGE_SHIFT |
 			      (dw * sizeof(u32)),
@@ -563,7 +532,7 @@ static int file_add_object(struct file *file, struct drm_i915_gem_object *obj)
 
 	GEM_BUG_ON(obj->base.handle_count);
 
-	/* tie the object to the drm_file for easy reaping */
+	 
 	err = idr_alloc(&to_drm_file(file)->object_idr,
 			&obj->base, 1, 0, GFP_KERNEL);
 	if (err < 0)
@@ -583,7 +552,7 @@ create_test_object(struct i915_address_space *vm,
 	u64 size;
 	int err;
 
-	/* Keep in GEM's good graces */
+	 
 	intel_gt_retire_requests(vm->gt);
 
 	size = min(vm->total / 2, 1024ull * DW_PER_PAGE * PAGE_SIZE);
@@ -662,11 +631,7 @@ static int igt_ctx_exec(void *arg)
 	struct intel_engine_cs *engine;
 	int err = -ENODEV;
 
-	/*
-	 * Create a few different contexts (with different mm) and write
-	 * through each ctx/mm using the GPU making sure those writes end
-	 * up in the expected pages of our obj.
-	 */
+	 
 
 	if (!DRIVER_CAPS(i915)->has_logical_contexts)
 		return 0;
@@ -684,7 +649,7 @@ static int igt_ctx_exec(void *arg)
 			continue;
 
 		if (!engine->context_size)
-			continue; /* No logical context support in HW */
+			continue;  
 
 		file = mock_file(i915);
 		if (IS_ERR(file))
@@ -791,11 +756,7 @@ static int igt_shared_ctx_exec(void *arg)
 	struct file *file;
 	int err = 0;
 
-	/*
-	 * Create a few different contexts with the same mm and write
-	 * through each ctx using the GPU making sure those writes end
-	 * up in the expected pages of our obj.
-	 */
+	 
 	if (!DRIVER_CAPS(i915)->has_logical_contexts)
 		return 0;
 
@@ -809,7 +770,7 @@ static int igt_shared_ctx_exec(void *arg)
 		goto out_file;
 	}
 
-	if (!parent->vm) { /* not full-ppgtt; nothing to share */
+	if (!parent->vm) {  
 		err = 0;
 		goto out_file;
 	}
@@ -1274,10 +1235,7 @@ __igt_ctx_sseu(struct drm_i915_private *i915,
 		if (!engine->gt->info.sseu.has_slice_pg)
 			continue;
 
-		/*
-		 * Gen11 VME friendly power-gated configuration with
-		 * half enabled sub-slices.
-		 */
+		 
 		pg_sseu = engine->sseu;
 		pg_sseu.slice_mask = 1;
 		pg_sseu.subslice_mask =
@@ -1298,22 +1256,22 @@ __igt_ctx_sseu(struct drm_i915_private *i915,
 		if (ret)
 			goto out_ce;
 
-		/* First set the default mask. */
+		 
 		ret = __sseu_test(name, flags, ce, obj, engine->sseu);
 		if (ret)
 			goto out_unpin;
 
-		/* Then set a power-gated configuration. */
+		 
 		ret = __sseu_test(name, flags, ce, obj, pg_sseu);
 		if (ret)
 			goto out_unpin;
 
-		/* Back to defaults. */
+		 
 		ret = __sseu_test(name, flags, ce, obj, engine->sseu);
 		if (ret)
 			goto out_unpin;
 
-		/* One last power-gated configuration for the road. */
+		 
 		ret = __sseu_test(name, flags, ce, obj, pg_sseu);
 		if (ret)
 			goto out_unpin;
@@ -1380,11 +1338,7 @@ static int igt_ctx_readonly(void *arg)
 	struct file *file;
 	int err = -ENODEV;
 
-	/*
-	 * Create a few read-only objects (with the occasional writable object)
-	 * and try to write into these object checking that the GPU discards
-	 * any write to a read-only object.
-	 */
+	 
 
 	file = mock_file(i915);
 	if (IS_ERR(file))
@@ -1651,7 +1605,7 @@ static int read_from_scratch(struct i915_gem_context *ctx,
 	} else {
 		const u32 reg = engine->mmio_base + 0x420;
 
-		/* hsw: register access even to 3DPRIM! is protected */
+		 
 		vm = i915_vm_get(&engine->gt->ggtt->vm);
 		vma = i915_vma_instance(obj, vm, NULL);
 		if (IS_ERR(vma)) {
@@ -1784,10 +1738,7 @@ static int igt_vm_isolation(void *arg)
 	if (GRAPHICS_VER(i915) < 7)
 		return 0;
 
-	/*
-	 * The simple goal here is that a write into one context is not
-	 * observed in a second (separate page tables and scratch).
-	 */
+	 
 
 	file = mock_file(i915);
 	if (IS_ERR(file))
@@ -1809,11 +1760,11 @@ static int igt_vm_isolation(void *arg)
 		goto out_file;
 	}
 
-	/* We can only test vm isolation, if the vm are distinct */
+	 
 	if (ctx_a->vm == ctx_b->vm)
 		goto out_file;
 
-	/* Read the initial state of the scratch page */
+	 
 	err = check_scratch_page(ctx_a, &expected);
 	if (err)
 		goto out_file;
@@ -1846,7 +1797,7 @@ static int igt_vm_isolation(void *arg)
 		if (!intel_engine_can_store_dword(engine))
 			continue;
 
-		/* Not all engines have their own GPR! */
+		 
 		if (GRAPHICS_VER(i915) < 8 && engine->class != RENDER_CLASS)
 			continue;
 
@@ -1854,7 +1805,7 @@ static int igt_vm_isolation(void *arg)
 			u32 value = 0xc5c5c5c5;
 			u64 offset;
 
-			/* Leave enough space at offset 0 for the batch */
+			 
 			offset = igt_random_offset(&prng,
 						   I915_GTT_PAGE_SIZE, vm_total,
 						   sizeof(u32), alignof_dword);

@@ -1,33 +1,10 @@
-/* Convenience header for conditional use of GNU <libintl.h>.
-   Copyright (C) 1995-1998, 2000-2002, 2004-2006, 2009-2023 Free Software
-   Foundation, Inc.
-
-   This file is free software: you can redistribute it and/or modify
-   it under the terms of the GNU Lesser General Public License as
-   published by the Free Software Foundation; either version 2.1 of the
-   License, or (at your option) any later version.
-
-   This file is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU Lesser General Public License for more details.
-
-   You should have received a copy of the GNU Lesser General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-#ifndef _LIBGETTEXT_H
-#define _LIBGETTEXT_H 1
-
-/* NLS can be disabled through the configure --disable-nls option
-   or through "#define ENABLE NLS 0" before including this file.  */
+ 
 #if defined ENABLE_NLS && ENABLE_NLS
 
-/* Get declarations of GNU message catalog functions.  */
+ 
 # include <libintl.h>
 
-/* You can set the DEFAULT_TEXT_DOMAIN macro to specify the domain used by
-   the gettext() and ngettext() macros.  This is an alternative to calling
-   textdomain(), and is useful for libraries.  */
+ 
 # ifdef DEFAULT_TEXT_DOMAIN
 #  undef gettext
 #  define gettext(Msgid) \
@@ -39,19 +16,12 @@
 
 #else
 
-/* Solaris /usr/include/locale.h includes /usr/include/libintl.h, which
-   chokes if dcgettext is defined as a macro.  So include it now, to make
-   later inclusions of <locale.h> a NOP.  We don't include <libintl.h>
-   as well because people using "gettext.h" will not include <libintl.h>,
-   and also including <libintl.h> would fail on SunOS 4, whereas <locale.h>
-   is OK.  */
+ 
 #if defined(__sun)
 # include <locale.h>
 #endif
 
-/* Many header files from the libstdc++ coming with g++ 3.3 or newer include
-   <libintl.h>, which chokes if dcgettext is defined as a macro.  So include
-   it now, to make later inclusions of <libintl.h> a NOP.  */
+ 
 #if defined(__cplusplus) && defined(__GNUG__) && (__GNUC__ >= 3)
 # include <cstdlib>
 # if (__GLIBC__ >= 2 && !defined __UCLIBC__) || _GLIBCXX_HAVE_LIBINTL_H
@@ -59,11 +29,7 @@
 # endif
 #endif
 
-/* Disabled NLS.
-   The casts to 'const char *' serve the purpose of producing warnings
-   for invalid uses of the value returned from these functions.
-   On pre-ANSI systems without 'const', the config.h file is supposed to
-   contain "#define const".  */
+ 
 # undef gettext
 # define gettext(Msgid) ((const char *) (Msgid))
 # undef dgettext
@@ -93,28 +59,19 @@
 
 #endif
 
-/* Prefer gnulib's setlocale override over libintl's setlocale override.  */
+ 
 #ifdef GNULIB_defined_setlocale
 # undef setlocale
 # define setlocale rpl_setlocale
 #endif
 
-/* A pseudo function call that serves as a marker for the automated
-   extraction of messages, but does not call gettext().  The run-time
-   translation is done at a different place in the code.
-   The argument, String, should be a literal string.  Concatenated strings
-   and other string expressions won't work.
-   The macro's expansion is not parenthesized, so that it is suitable as
-   initializer for static 'char[]' or 'const char[]' variables.  */
+ 
 #define gettext_noop(String) String
 
-/* The separator between msgctxt and msgid in a .mo file.  */
+ 
 #define GETTEXT_CONTEXT_GLUE "\004"
 
-/* Pseudo function calls, taking a MSGCTXT and a MSGID instead of just a
-   MSGID.  MSGCTXT and MSGID must be string literals.  MSGCTXT should be
-   short and rarely need to change.
-   The letter 'p' stands for 'particular' or 'special'.  */
+ 
 #ifdef DEFAULT_TEXT_DOMAIN
 # define pgettext(Msgctxt, Msgid) \
    pgettext_aux (DEFAULT_TEXT_DOMAIN, Msgctxt GETTEXT_CONTEXT_GLUE Msgid, Msgid, LC_MESSAGES)
@@ -178,17 +135,11 @@ npgettext_aux (const char *domain,
     return translation;
 }
 
-/* The same thing extended for non-constant arguments.  Here MSGCTXT and MSGID
-   can be arbitrary expressions.  But for string literals these macros are
-   less efficient than those above.  */
+ 
 
 #include <string.h>
 
-/* GNULIB_NO_VLA can be defined to disable use of VLAs even if supported.
-   This relates to the -Wvla and -Wvla-larger-than warnings, enabled in
-   the default GCC many warnings set.  This allows programs to disable use
-   of VLAs, which may be unintended, or may be awkward to support portably,
-   or may have security implications due to non-deterministic stack usage.  */
+ 
 
 #if (!defined GNULIB_NO_VLA \
      && defined __STDC_VERSION__ && 199901L <= __STDC_VERSION__ \
@@ -297,4 +248,4 @@ dcnpgettext_expr (const char *domain,
   return (n == 1 ? msgid : msgid_plural);
 }
 
-#endif /* _LIBGETTEXT_H */
+#endif  

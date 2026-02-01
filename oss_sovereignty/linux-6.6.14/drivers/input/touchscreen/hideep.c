@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2012-2017 Hideep, Inc.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/of.h>
@@ -25,20 +23,20 @@
 #define HIDEEP_MT_MAX			10
 #define HIDEEP_KEY_MAX			3
 
-/* count(2) + touch data(100) + key data(6) */
+ 
 #define HIDEEP_MAX_EVENT		108UL
 
 #define HIDEEP_TOUCH_EVENT_INDEX	2
 #define HIDEEP_KEY_EVENT_INDEX		102
 
-/* Touch & key event */
+ 
 #define HIDEEP_EVENT_ADDR		0x240
 
-/* command list */
+ 
 #define HIDEEP_WORK_MODE		0x081e
 #define HIDEEP_RESET_CMD		0x9800
 
-/* event bit */
+ 
 #define HIDEEP_MT_RELEASED		BIT(4)
 #define HIDEEP_KEY_PRESSED		BIT(7)
 #define HIDEEP_KEY_FIRST_PRESSED	BIT(8)
@@ -47,7 +45,7 @@
 
 #define HIDEEP_KEY_IDX_MASK		0x0f
 
-/* For NVM */
+ 
 #define HIDEEP_YRAM_BASE		0x40000000
 #define HIDEEP_PERIPHERAL_BASE		0x50000000
 #define HIDEEP_ESI_BASE			(HIDEEP_PERIPHERAL_BASE + 0x00000000)
@@ -159,12 +157,7 @@ struct hideep_ts {
 	u32 tch_count;
 	u32 lpm_count;
 
-	/*
-	 * Data buffer to read packet from the device (contacts and key
-	 * states). We align it on double-word boundary to keep word-sized
-	 * fields in contact data and double-word-sized fields in program
-	 * packet aligned.
-	 */
+	 
 	u8 xfer_buf[HIDEEP_XFER_BUF_SIZE] __aligned(4);
 
 	int key_num;
@@ -275,10 +268,7 @@ static int hideep_pgm_w_reg(struct hideep_ts *ts, u32 addr, u32 val)
 	__be32 data = cpu_to_be32(0x01);			\
 	hideep_pgm_w_reg(ts, HIDEEP_SYSCON_WDT_CNT, (clk));	\
 	hideep_pgm_w_reg(ts, HIDEEP_SYSCON_WDT_CON, 0x03);	\
-	/*							\
-	 * The first write may already cause a reset, use a raw	\
-	 * write for the second write to avoid error logging.	\
-	 */							\
+	 							\
 	hideep_pgm_w_mem(ts, HIDEEP_SYSCON_WDT_CON, &data, 1);	\
 }
 
@@ -326,7 +316,7 @@ static int hideep_pgm_get_pattern(struct hideep_ts *ts, u32 *pattern)
 
 	usleep_range(1000, 1100);
 
-	/* flush invalid Tx load register */
+	 
 	error = hideep_pgm_w_reg(ts, HIDEEP_ESI_TX_INVALID, 0x01);
 	if (error)
 		return error;
@@ -378,10 +368,10 @@ static int hideep_nvm_unlock(struct hideep_ts *ts)
 	if (error)
 		return error;
 
-	/* make it unprotected code */
+	 
 	unmask_code &= ~HIDEEP_PROT_MODE;
 
-	/* compare unmask code */
+	 
 	if (unmask_code != ts->nvm_mask)
 		dev_warn(&ts->client->dev,
 			 "read mask code different %#08x vs %#08x",
@@ -429,7 +419,7 @@ static int hideep_program_page(struct hideep_ts *ts, u32 addr,
 	SET_FLASH_PIO(0);
 	SET_FLASH_PIO(1);
 
-	/* erase page */
+	 
 	SET_PIO_SIG(HIDEEP_PERASE | addr, 0xFFFFFFFF);
 
 	SET_FLASH_PIO(0);
@@ -438,7 +428,7 @@ static int hideep_program_page(struct hideep_ts *ts, u32 addr,
 	if (error)
 		return -EBUSY;
 
-	/* write page */
+	 
 	SET_FLASH_PIO(1);
 
 	val = be32_to_cpu(ucode[0]);
@@ -490,7 +480,7 @@ static int hideep_program_nvm(struct hideep_ts *ts,
 			return error;
 		}
 
-		/* See if the page needs updating */
+		 
 		if (memcmp(ucode, current_ucode, xfer_len)) {
 			error = hideep_program_page(ts, addr,
 						    ucode, xfer_count);
@@ -633,7 +623,7 @@ static int hideep_update_firmware(struct hideep_ts *ts,
 
 	dev_dbg(&ts->client->dev, "starting firmware update");
 
-	/* enter program mode */
+	 
 	error = hideep_enter_pgm(ts);
 	if (error)
 		return error;
@@ -730,7 +720,7 @@ static void hideep_parse_and_report(struct hideep_ts *ts)
 	int lpm_count = ts->xfer_buf[1] & 0xf0;
 	int i;
 
-	/* get touch event count */
+	 
 	dev_dbg(&ts->client->dev, "mt = %d, key = %d, lpm = %02x",
 		touch_count, key_count, lpm_count);
 
@@ -967,15 +957,7 @@ static const struct attribute_group hideep_ts_attr_group = {
 
 static void hideep_set_work_mode(struct hideep_ts *ts)
 {
-	/*
-	 * Reset touch report format to the native HiDeep 20 protocol if requested.
-	 * This is necessary to make touchscreens which come up in I2C-HID mode
-	 * work with this driver.
-	 *
-	 * Note this is a kernel internal device-property set by x86 platform code,
-	 * this MUST not be used in devicetree files without first adding it to
-	 * the DT bindings.
-	 */
+	 
 	if (device_property_read_bool(&ts->client->dev, "hideep,force-native-protocol"))
 		regmap_write(ts->reg, HIDEEP_WORK_MODE, 0x00);
 }
@@ -1025,7 +1007,7 @@ static int hideep_probe(struct i2c_client *client)
 	struct hideep_ts *ts;
 	int error;
 
-	/* check i2c bus */
+	 
 	if (!i2c_check_functionality(client->adapter, I2C_FUNC_I2C)) {
 		dev_err(&client->dev, "check i2c device error");
 		return -ENODEV;

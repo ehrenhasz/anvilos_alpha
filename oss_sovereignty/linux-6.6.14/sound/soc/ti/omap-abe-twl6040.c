@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * omap-abe-twl6040.c  --  SoC audio for TI OMAP based boards with ABE and
- *			   twl6040 codec
- *
- * Author: Misael Lopez Cruz <misael.lopez@ti.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/platform_device.h>
@@ -36,8 +31,8 @@ SND_SOC_DAILINK_DEFS(link1,
 struct abe_twl6040 {
 	struct snd_soc_card card;
 	struct snd_soc_dai_link dai_links[2];
-	int	jack_detection;	/* board can detect jack events */
-	int	mclk_freq;	/* MCLK frequency speed for twl6040 */
+	int	jack_detection;	 
+	int	mclk_freq;	 
 };
 
 static struct platform_device *dmic_codec_dev;
@@ -60,7 +55,7 @@ static int omap_abe_hw_params(struct snd_pcm_substream *substream,
 	else
 		return -EINVAL;
 
-	/* set the codec mclk */
+	 
 	ret = snd_soc_dai_set_sysclk(codec_dai, clk_id, freq,
 				SND_SOC_CLOCK_IN);
 	if (ret) {
@@ -100,10 +95,10 @@ static const struct snd_soc_ops omap_abe_dmic_ops = {
 	.hw_params = omap_abe_dmic_hw_params,
 };
 
-/* Headset jack */
+ 
 static struct snd_soc_jack hs_jack;
 
-/*Headset jack detection DAPM pins */
+ 
 static struct snd_soc_jack_pin hs_jack_pins[] = {
 	{
 		.pin = "Headset Mic",
@@ -115,27 +110,27 @@ static struct snd_soc_jack_pin hs_jack_pins[] = {
 	},
 };
 
-/* SDP4430 machine DAPM */
+ 
 static const struct snd_soc_dapm_widget twl6040_dapm_widgets[] = {
-	/* Outputs */
+	 
 	SND_SOC_DAPM_HP("Headset Stereophone", NULL),
 	SND_SOC_DAPM_SPK("Earphone Spk", NULL),
 	SND_SOC_DAPM_SPK("Ext Spk", NULL),
 	SND_SOC_DAPM_LINE("Line Out", NULL),
 	SND_SOC_DAPM_SPK("Vibrator", NULL),
 
-	/* Inputs */
+	 
 	SND_SOC_DAPM_MIC("Headset Mic", NULL),
 	SND_SOC_DAPM_MIC("Main Handset Mic", NULL),
 	SND_SOC_DAPM_MIC("Sub Handset Mic", NULL),
 	SND_SOC_DAPM_LINE("Line In", NULL),
 
-	/* Digital microphones */
+	 
 	SND_SOC_DAPM_MIC("Digital Mic", NULL),
 };
 
 static const struct snd_soc_dapm_route audio_map[] = {
-	/* Routings for outputs */
+	 
 	{"Headset Stereophone", NULL, "HSOL"},
 	{"Headset Stereophone", NULL, "HSOR"},
 
@@ -150,7 +145,7 @@ static const struct snd_soc_dapm_route audio_map[] = {
 	{"Vibrator", NULL, "VIBRAL"},
 	{"Vibrator", NULL, "VIBRAR"},
 
-	/* Routings for inputs */
+	 
 	{"HSMIC", NULL, "Headset Mic"},
 	{"Headset Mic", NULL, "Headset Mic Bias"},
 
@@ -172,15 +167,12 @@ static int omap_abe_twl6040_init(struct snd_soc_pcm_runtime *rtd)
 	int hs_trim;
 	int ret;
 
-	/*
-	 * Configure McPDM offset cancellation based on the HSOTRIM value from
-	 * twl6040.
-	 */
+	 
 	hs_trim = twl6040_get_trim_value(component, TWL6040_TRIM_HSOTRIM);
 	omap_mcpdm_configure_dn_offsets(rtd, TWL6040_HSF_TRIM_LEFT(hs_trim),
 					TWL6040_HSF_TRIM_RIGHT(hs_trim));
 
-	/* Headset jack detection only if it is supported */
+	 
 	if (priv->jack_detection) {
 		ret = snd_soc_card_jack_new_pins(rtd->card, "Headset Jack",
 						 SND_JACK_HEADSET, &hs_jack,

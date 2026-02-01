@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2014 Linaro Ltd.
- * Author: Rob Herring <robh@kernel.org>
- *
- * Based on 8250 earlycon:
- * (c) Copyright 2004 Hewlett-Packard Development Company, L.P.
- *	Bjorn Helgaas <bjorn.helgaas@hp.com>
- */
+
+ 
 
 #define pr_fmt(fmt)	KBUILD_MODNAME ": " fmt
 
@@ -27,7 +20,7 @@
 #include <asm/serial.h>
 
 static struct console early_con = {
-	.name =		"uart",		/* fixed up at earlycon registration */
+	.name =		"uart",		 
 	.flags =	CON_PRINTBUFFER | CON_BOOT,
 	.index =	0,
 };
@@ -59,7 +52,7 @@ static void __init earlycon_init(struct earlycon_device *device,
 	const char *s;
 	size_t len;
 
-	/* scan backwards from end of string for first non-numeral */
+	 
 	for (s = name + strlen(name);
 	     s > name && s[-1] >= '0' && s[-1] <= '9';
 	     s--)
@@ -140,7 +133,7 @@ static int __init register_earlycon(char *buf, const struct earlycon_id *match)
 	int err;
 	struct uart_port *port = &early_console_dev.port;
 
-	/* On parsing error, pass the options buf to the setup function */
+	 
 	if (buf && !parse_options(&early_console_dev, buf))
 		buf = NULL;
 
@@ -162,24 +155,7 @@ static int __init register_earlycon(char *buf, const struct earlycon_id *match)
 	return 0;
 }
 
-/**
- *	setup_earlycon - match and register earlycon console
- *	@buf:	earlycon param string
- *
- *	Registers the earlycon console matching the earlycon specified
- *	in the param string @buf. Acceptable param strings are of the form
- *	   <name>,io|mmio|mmio32|mmio32be,<addr>,<options>
- *	   <name>,0x<addr>,<options>
- *	   <name>,<options>
- *	   <name>
- *
- *	Only for the third form does the earlycon setup() method receive the
- *	<options> string in the 'options' parameter; all other forms set
- *	the parameter to NULL.
- *
- *	Returns 0 if an attempt to register the earlycon was made,
- *	otherwise negative error code
- */
+ 
 int __init setup_earlycon(char *buf)
 {
 	const struct earlycon_id *match;
@@ -198,7 +174,7 @@ again:
 		if (strncmp(buf, match->name, len))
 			continue;
 
-		/* prefer entries with empty compatible */
+		 
 		if (empty_compatible && *match->compatible)
 			continue;
 
@@ -220,18 +196,15 @@ again:
 	return -ENOENT;
 }
 
-/*
- * This defers the initialization of the early console until after ACPI has
- * been initialized.
- */
+ 
 bool earlycon_acpi_spcr_enable __initdata;
 
-/* early_param wrapper for setup_earlycon() */
+ 
 static int __init param_setup_earlycon(char *buf)
 {
 	int err;
 
-	/* Just 'earlycon' is a valid param for devicetree and ACPI SPCR. */
+	 
 	if (!buf || !buf[0]) {
 		if (IS_ENABLED(CONFIG_ACPI_SPCR_TABLE)) {
 			earlycon_acpi_spcr_enable = true;
@@ -327,4 +300,4 @@ int __init of_setup_earlycon(const struct earlycon_id *match,
 	return 0;
 }
 
-#endif /* CONFIG_OF_EARLY_FLATTREE */
+#endif  

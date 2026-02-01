@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  Driver for the Conexant CX23885 PCIe bridge
- *
- *  Copyright (c) 2006 Steven Toth <stoth@linuxtv.org>
- */
+
+ 
 
 #include "cx23885.h"
 
@@ -32,14 +28,7 @@ MODULE_AUTHOR("Steven Toth <stoth@linuxtv.org>");
 MODULE_LICENSE("GPL");
 MODULE_VERSION(CX23885_VERSION);
 
-/*
- * Some platforms have been found to require periodic resetting of the DMA
- * engine. Ryzen and XEON platforms are known to be affected. The symptom
- * encountered is "mpeg risc op code error". Only Ryzen platforms employ
- * this workaround if the option equals 1. The workaround can be explicitly
- * disabled for all platforms by setting to 0, the workaround can be forced
- * on for any platform by setting to 2.
- */
+ 
 static unsigned int dma_reset_workaround = 1;
 module_param(dma_reset_workaround, int, 0644);
 MODULE_PARM_DESC(dma_reset_workaround, "periodic RiSC dma engine reset; 0-force disable, 1-driver detect (default), 2-force enable");
@@ -62,25 +51,7 @@ static unsigned int cx23885_devcount;
 
 #define NO_SYNC_LINE (-1U)
 
-/* FIXME, these allocations will change when
- * analog arrives. The be reviewed.
- * CX23887 Assumptions
- * 1 line = 16 bytes of CDT
- * cmds size = 80
- * cdt size = 16 * linesize
- * iqsize = 64
- * maxlines = 6
- *
- * Address Space:
- * 0x00000000 0x00008fff FIFO clusters
- * 0x00010000 0x000104af Channel Management Data Structures
- * 0x000104b0 0x000104ff Free
- * 0x00010500 0x000108bf 15 channels * iqsize
- * 0x000108c0 0x000108ff Free
- * 0x00010900 0x00010e9f IQ's + Cluster Descriptor Tables
- *                       15 channels * (iqsize + (maxlines * linesize))
- * 0x00010ea0 0x00010xxx Free
- */
+ 
 
 static struct sram_channel cx23885_sram_channels[] = {
 	[SRAM_CH01] = {
@@ -426,7 +397,7 @@ static void cx23885_wakeup(struct cx23885_tsport *port,
 {
 	struct cx23885_buffer *buf;
 	int count_delta;
-	int max_buf_done = 5; /* service maximum five buffers */
+	int max_buf_done = 5;  
 
 	do {
 		if (list_empty(&q->active))
@@ -446,7 +417,7 @@ static void cx23885_wakeup(struct cx23885_tsport *port,
 		list_del(&buf->queue);
 		vb2_buffer_done(&buf->vb.vb2_buf, VB2_BUF_STATE_DONE);
 		max_buf_done--;
-		/* count register is 16 bits so apply modulo appropriately */
+		 
 		count_delta = ((int)count - (int)(q->count % 65536));
 	} while ((count_delta > 0) && (max_buf_done > 0));
 }
@@ -471,7 +442,7 @@ int cx23885_sram_channel_setup(struct cx23885_dev *dev,
 			ch->name);
 	}
 
-	bpl   = (bpl + 7) & ~7; /* alignment */
+	bpl   = (bpl + 7) & ~7;  
 	cdt   = ch->cdt;
 	lines = ch->fifo_size / bpl;
 	if (lines > 6)
@@ -482,7 +453,7 @@ int cx23885_sram_channel_setup(struct cx23885_dev *dev,
 	cx_write(8 + 4, 12);
 	cx_write(8 + 8, 0);
 
-	/* write CDT */
+	 
 	for (i = 0; i < lines; i++) {
 		dprintk(2, "%s() 0x%08x <- 0x%08x\n", __func__, cdt + 16*i,
 			ch->fifo_start + bpl*i);
@@ -492,12 +463,12 @@ int cx23885_sram_channel_setup(struct cx23885_dev *dev,
 		cx_write(cdt + 16*i + 12, 0);
 	}
 
-	/* write CMDS */
+	 
 	if (ch->jumponly)
 		cx_write(ch->cmds_start + 0, 8);
 	else
 		cx_write(ch->cmds_start + 0, risc);
-	cx_write(ch->cmds_start +  4, 0); /* 64 bits 63-32 */
+	cx_write(ch->cmds_start +  4, 0);  
 	cx_write(ch->cmds_start +  8, cdt);
 	cx_write(ch->cmds_start + 12, (lines*16) >> 3);
 	cx_write(ch->cmds_start + 16, ch->ctrl_start);
@@ -508,7 +479,7 @@ int cx23885_sram_channel_setup(struct cx23885_dev *dev,
 	for (i = 24; i < 80; i += 4)
 		cx_write(ch->cmds_start + i, 0);
 
-	/* fill registers */
+	 
 	cx_write(ch->ptr1_reg, ch->fifo_start);
 	cx_write(ch->ptr2_reg, cdt);
 	cx_write(ch->cnt2_reg, (lines*16) >> 3);
@@ -559,7 +530,7 @@ void cx23885_sram_channel_dump(struct cx23885_dev *dev,
 	}
 	for (i = 0; i < (64 >> 2); i += n) {
 		risc = cx_read(ch->ctrl_start + 4 * i);
-		/* No consideration for bits 63-32 */
+		 
 
 		pr_warn("%s:   (0x%08x) iq %x:", dev->name,
 			ch->ctrl_start + 4 * i, i);
@@ -611,7 +582,7 @@ static void cx23885_clear_bridge_error(struct cx23885_dev *dev)
 	if (!dev->need_dma_reset)
 		return;
 
-	reg1_val = cx_read(TC_REQ); /* read-only */
+	reg1_val = cx_read(TC_REQ);  
 	reg2_val = cx_read(TC_REQ_SET);
 
 	if (reg1_val && reg2_val) {
@@ -630,25 +601,25 @@ static void cx23885_clear_bridge_error(struct cx23885_dev *dev)
 
 static void cx23885_shutdown(struct cx23885_dev *dev)
 {
-	/* disable RISC controller */
+	 
 	cx_write(DEV_CNTRL2, 0);
 
-	/* Disable all IR activity */
+	 
 	cx_write(IR_CNTRL_REG, 0);
 
-	/* Disable Video A/B activity */
+	 
 	cx_write(VID_A_DMA_CTL, 0);
 	cx_write(VID_B_DMA_CTL, 0);
 	cx_write(VID_C_DMA_CTL, 0);
 
-	/* Disable Audio activity */
+	 
 	cx_write(AUD_INT_DMA_CTL, 0);
 	cx_write(AUD_EXT_DMA_CTL, 0);
 
-	/* Disable Serial port */
+	 
 	cx_write(UART_CTL, 0);
 
-	/* Disable Interrupts */
+	 
 	cx23885_irq_disable_all(dev);
 	cx_write(VID_A_INT_MSK, 0);
 	cx_write(VID_B_INT_MSK, 0);
@@ -673,7 +644,7 @@ static void cx23885_reset(struct cx23885_dev *dev)
 	cx_write(CLK_DELAY, cx_read(CLK_DELAY) & 0x80000000);
 	cx_write(PAD_CTRL, 0x00500300);
 
-	/* clear dma in progress */
+	 
 	cx23885_clear_bridge_error(dev);
 	msleep(100);
 
@@ -694,7 +665,7 @@ static void cx23885_reset(struct cx23885_dev *dev)
 
 	cx23885_irq_get_mask(dev);
 
-	/* clear dma in progress */
+	 
 	cx23885_clear_bridge_error(dev);
 }
 
@@ -703,14 +674,11 @@ static int cx23885_pci_quirks(struct cx23885_dev *dev)
 {
 	dprintk(1, "%s()\n", __func__);
 
-	/* The cx23885 bridge has a weird bug which causes NMI to be asserted
-	 * when DMA begins if RDR_TLCTL0 bit4 is not cleared. It does not
-	 * occur on the cx23887 bridge.
-	 */
+	 
 	if (dev->bridge == CX23885_BRIDGE_885)
 		cx_clear(RDR_TLCTL0, 1 << 4);
 
-	/* clear dma in progress */
+	 
 	cx23885_clear_bridge_error(dev);
 	return 0;
 }
@@ -733,9 +701,9 @@ static int cx23885_init_tsport(struct cx23885_dev *dev,
 {
 	dprintk(1, "%s(portno=%d)\n", __func__, portno);
 
-	/* Transport bus init dma queue  - Common settings */
-	port->dma_ctl_val        = 0x11; /* Enable RISC controller and Fifo */
-	port->ts_int_msk_val     = 0x1111; /* TS port bits for RISC */
+	 
+	port->dma_ctl_val        = 0x11;  
+	port->ts_int_msk_val     = 0x1111;  
 	port->vld_misc_val       = 0x0;
 	port->hw_sop_ctrl_val    = (0x47 << 16 | 188 << 4);
 
@@ -748,10 +716,7 @@ static int cx23885_init_tsport(struct cx23885_dev *dev,
 	INIT_LIST_HEAD(&port->frontends.felist);
 	port->frontends.active_fe_id = 0;
 
-	/* This should be hardcoded allow a single frontend
-	 * attachment to this tsport, keeping the -dvb.c
-	 * code clean and safe.
-	 */
+	 
 	if (!port->num_frontends)
 		port->num_frontends = 1;
 
@@ -771,8 +736,8 @@ static int cx23885_init_tsport(struct cx23885_dev *dev,
 		port->reg_src_sel        = VID_B_SRC_SEL;
 		port->reg_ts_int_msk     = VID_B_INT_MSK;
 		port->reg_ts_int_stat    = VID_B_INT_STAT;
-		port->sram_chno          = SRAM_CH03; /* VID_B */
-		port->pci_irqmask        = 0x02; /* VID_B bit1 */
+		port->sram_chno          = SRAM_CH03;  
+		port->pci_irqmask        = 0x02;  
 		break;
 	case 2:
 		port->reg_gpcnt          = VID_C_GPCNT;
@@ -789,8 +754,8 @@ static int cx23885_init_tsport(struct cx23885_dev *dev,
 		port->reg_src_sel        = 0;
 		port->reg_ts_int_msk     = VID_C_INT_MSK;
 		port->reg_ts_int_stat    = VID_C_INT_STAT;
-		port->sram_chno          = SRAM_CH06; /* VID_C */
-		port->pci_irqmask        = 0x04; /* VID_C bit2 */
+		port->sram_chno          = SRAM_CH06;  
+		port->pci_irqmask        = 0x04;  
 		break;
 	default:
 		BUG();
@@ -803,41 +768,41 @@ static void cx23885_dev_checkrevision(struct cx23885_dev *dev)
 {
 	switch (cx_read(RDR_CFG2) & 0xff) {
 	case 0x00:
-		/* cx23885 */
+		 
 		dev->hwrevision = 0xa0;
 		break;
 	case 0x01:
-		/* CX23885-12Z */
+		 
 		dev->hwrevision = 0xa1;
 		break;
 	case 0x02:
-		/* CX23885-13Z/14Z */
+		 
 		dev->hwrevision = 0xb0;
 		break;
 	case 0x03:
 		if (dev->pci->device == 0x8880) {
-			/* CX23888-21Z/22Z */
+			 
 			dev->hwrevision = 0xc0;
 		} else {
-			/* CX23885-14Z */
+			 
 			dev->hwrevision = 0xa4;
 		}
 		break;
 	case 0x04:
 		if (dev->pci->device == 0x8880) {
-			/* CX23888-31Z */
+			 
 			dev->hwrevision = 0xd0;
 		} else {
-			/* CX23885-15Z, CX23888-31Z */
+			 
 			dev->hwrevision = 0xa5;
 		}
 		break;
 	case 0x0e:
-		/* CX23887-15Z */
+		 
 		dev->hwrevision = 0xc0;
 		break;
 	case 0x0f:
-		/* CX23887-14Z */
+		 
 		dev->hwrevision = 0xb1;
 		break;
 	default:
@@ -852,7 +817,7 @@ static void cx23885_dev_checkrevision(struct cx23885_dev *dev)
 		       __func__, dev->hwrevision);
 }
 
-/* Find the first v4l2_subdev member of the group id in hw */
+ 
 struct v4l2_subdev *cx23885_find_hw(struct cx23885_dev *dev, u32 hw)
 {
 	struct v4l2_subdev *result = NULL;
@@ -884,17 +849,17 @@ static int cx23885_dev_setup(struct cx23885_dev *dev)
 	dev->nr = cx23885_devcount++;
 	sprintf(dev->name, "cx23885[%d]", dev->nr);
 
-	/* Configure the internal memory */
+	 
 	if (dev->pci->device == 0x8880) {
-		/* Could be 887 or 888, assume an 888 default */
+		 
 		dev->bridge = CX23885_BRIDGE_888;
-		/* Apply a sensible clock frequency for the PCIe bridge */
+		 
 		dev->clk_freq = 50000000;
 		dev->sram_channels = cx23887_sram_channels;
 	} else
 	if (dev->pci->device == 0x8852) {
 		dev->bridge = CX23885_BRIDGE_885;
-		/* Apply a sensible clock frequency for the PCIe bridge */
+		 
 		dev->clk_freq = 28000000;
 		dev->sram_channels = cx23885_sram_channels;
 	} else
@@ -903,7 +868,7 @@ static int cx23885_dev_setup(struct cx23885_dev *dev)
 	dprintk(1, "%s() Memory configured for PCIe bridge type %d\n",
 		__func__, dev->bridge);
 
-	/* board config */
+	 
 	dev->board = UNSET;
 	if (card[dev->nr] < cx23885_bcount)
 		dev->board = card[dev->nr];
@@ -917,24 +882,20 @@ static int cx23885_dev_setup(struct cx23885_dev *dev)
 	}
 
 	if (dev->pci->device == 0x8852) {
-		/* no DIF on cx23885, so no analog tuner support possible */
+		 
 		if (dev->board == CX23885_BOARD_HAUPPAUGE_QUADHD_ATSC)
 			dev->board = CX23885_BOARD_HAUPPAUGE_QUADHD_ATSC_885;
 		else if (dev->board == CX23885_BOARD_HAUPPAUGE_QUADHD_DVB)
 			dev->board = CX23885_BOARD_HAUPPAUGE_QUADHD_DVB_885;
 	}
 
-	/* If the user specific a clk freq override, apply it */
+	 
 	if (cx23885_boards[dev->board].clk_freq > 0)
 		dev->clk_freq = cx23885_boards[dev->board].clk_freq;
 
 	if (dev->board == CX23885_BOARD_HAUPPAUGE_IMPACTVCBE &&
 		dev->pci->subsystem_device == 0x7137) {
-		/* Hauppauge ImpactVCBe device ID 0x7137 is populated
-		 * with an 888, and a 25Mhz crystal, instead of the
-		 * usual third overtone 50Mhz. The default clock rate must
-		 * be overridden so the cx25840 is properly configured
-		 */
+		 
 		dev->clk_freq = 25000000;
 	}
 
@@ -942,7 +903,7 @@ static int cx23885_dev_setup(struct cx23885_dev *dev)
 	dev->pci_slot = PCI_SLOT(dev->pci->devfn);
 	cx23885_irq_add(dev, 0x001f00);
 
-	/* External Master 1 Bus */
+	 
 	dev->i2c_bus[0].nr = 0;
 	dev->i2c_bus[0].dev = dev;
 	dev->i2c_bus[0].reg_stat  = I2C1_STAT;
@@ -950,9 +911,9 @@ static int cx23885_dev_setup(struct cx23885_dev *dev)
 	dev->i2c_bus[0].reg_addr  = I2C1_ADDR;
 	dev->i2c_bus[0].reg_rdata = I2C1_RDATA;
 	dev->i2c_bus[0].reg_wdata = I2C1_WDATA;
-	dev->i2c_bus[0].i2c_period = (0x9d << 24); /* 100kHz */
+	dev->i2c_bus[0].i2c_period = (0x9d << 24);  
 
-	/* External Master 2 Bus */
+	 
 	dev->i2c_bus[1].nr = 1;
 	dev->i2c_bus[1].dev = dev;
 	dev->i2c_bus[1].reg_stat  = I2C2_STAT;
@@ -960,9 +921,9 @@ static int cx23885_dev_setup(struct cx23885_dev *dev)
 	dev->i2c_bus[1].reg_addr  = I2C2_ADDR;
 	dev->i2c_bus[1].reg_rdata = I2C2_RDATA;
 	dev->i2c_bus[1].reg_wdata = I2C2_WDATA;
-	dev->i2c_bus[1].i2c_period = (0x9d << 24); /* 100kHz */
+	dev->i2c_bus[1].i2c_period = (0x9d << 24);  
 
-	/* Internal Master 3 Bus */
+	 
 	dev->i2c_bus[2].nr = 2;
 	dev->i2c_bus[2].dev = dev;
 	dev->i2c_bus[2].reg_stat  = I2C3_STAT;
@@ -970,7 +931,7 @@ static int cx23885_dev_setup(struct cx23885_dev *dev)
 	dev->i2c_bus[2].reg_addr  = I2C3_ADDR;
 	dev->i2c_bus[2].reg_rdata = I2C3_RDATA;
 	dev->i2c_bus[2].reg_wdata = I2C3_WDATA;
-	dev->i2c_bus[2].i2c_period = (0x07 << 24); /* 1.95MHz */
+	dev->i2c_bus[2].i2c_period = (0x07 << 24);  
 
 	if ((cx23885_boards[dev->board].portb == CX23885_MPEG_DVB) ||
 		(cx23885_boards[dev->board].portb == CX23885_MPEG_ENCODER))
@@ -989,7 +950,7 @@ static int cx23885_dev_setup(struct cx23885_dev *dev)
 		return -ENODEV;
 	}
 
-	/* PCIe stuff */
+	 
 	dev->lmmio = ioremap(pci_resource_start(dev->pci, 0),
 			     pci_resource_len(dev->pci, 0));
 
@@ -1003,7 +964,7 @@ static int cx23885_dev_setup(struct cx23885_dev *dev)
 
 	cx23885_pci_quirks(dev);
 
-	/* Assume some sensible defaults */
+	 
 	dev->tuner_type = cx23885_boards[dev->board].tuner_type;
 	dev->tuner_addr = cx23885_boards[dev->board].tuner_addr;
 	dev->tuner_bus = cx23885_boards[dev->board].tuner_bus;
@@ -1015,15 +976,12 @@ static int cx23885_dev_setup(struct cx23885_dev *dev)
 	dprintk(1, "%s() radio_type = 0x%x radio_addr = 0x%x\n",
 		__func__, dev->radio_type, dev->radio_addr);
 
-	/* The cx23417 encoder has GPIO's that need to be initialised
-	 * before DVB, so that demodulators and tuners are out of
-	 * reset before DVB uses them.
-	 */
+	 
 	if ((cx23885_boards[dev->board].portb == CX23885_MPEG_ENCODER) ||
 		(cx23885_boards[dev->board].portc == CX23885_MPEG_ENCODER))
 			cx23885_mc417_init(dev);
 
-	/* init hardware */
+	 
 	cx23885_reset(dev);
 
 	cx23885_i2c_register(&dev->i2c_bus[0]);
@@ -1034,12 +992,7 @@ static int cx23885_dev_setup(struct cx23885_dev *dev)
 	cx23885_ir_init(dev);
 
 	if (dev->board == CX23885_BOARD_VIEWCAST_460E) {
-		/*
-		 * GPIOs 9/8 are input detection bits for the breakout video
-		 * (gpio 8) and audio (gpio 9) cables. When they're attached,
-		 * this gpios are pulled high. Make sure these GPIOs are marked
-		 * as inputs.
-		 */
+		 
 		cx23885_gpio_enable(dev, 0x300, 0);
 	}
 
@@ -1084,7 +1037,7 @@ static int cx23885_dev_setup(struct cx23885_dev *dev)
 
 	cx23885_dev_checkrevision(dev);
 
-	/* disable MSI for NetUP cards, otherwise CI is not working */
+	 
 	if (cx23885_boards[dev->board].ci_type > 0)
 		cx_clear(RDR_RDRCTL1, 1 << 8);
 
@@ -1140,14 +1093,14 @@ static __le32 *cx23885_risc_field(__le32 *rp, struct scatterlist *sglist,
 	if (jump) {
 		*(rp++) = cpu_to_le32(RISC_JUMP);
 		*(rp++) = cpu_to_le32(0);
-		*(rp++) = cpu_to_le32(0); /* bits 63-32 */
+		*(rp++) = cpu_to_le32(0);  
 	}
 
-	/* sync instruction */
+	 
 	if (sync_line != NO_SYNC_LINE)
 		*(rp++) = cpu_to_le32(RISC_RESYNC | sync_line);
 
-	/* scan lines */
+	 
 	sg = sglist;
 	for (line = 0; line < lines; line++) {
 		while (offset && offset >= sg_dma_len(sg)) {
@@ -1161,18 +1114,18 @@ static __le32 *cx23885_risc_field(__le32 *rp, struct scatterlist *sglist,
 			sol = RISC_SOL;
 
 		if (bpl <= sg_dma_len(sg)-offset) {
-			/* fits into current chunk */
+			 
 			*(rp++) = cpu_to_le32(RISC_WRITE|sol|RISC_EOL|bpl);
 			*(rp++) = cpu_to_le32(sg_dma_address(sg)+offset);
-			*(rp++) = cpu_to_le32(0); /* bits 63-32 */
+			*(rp++) = cpu_to_le32(0);  
 			offset += bpl;
 		} else {
-			/* scanline needs to be split */
+			 
 			todo = bpl;
 			*(rp++) = cpu_to_le32(RISC_WRITE|sol|
 					    (sg_dma_len(sg)-offset));
 			*(rp++) = cpu_to_le32(sg_dma_address(sg)+offset);
-			*(rp++) = cpu_to_le32(0); /* bits 63-32 */
+			*(rp++) = cpu_to_le32(0);  
 			todo -= (sg_dma_len(sg)-offset);
 			offset = 0;
 			sg = sg_next(sg);
@@ -1180,13 +1133,13 @@ static __le32 *cx23885_risc_field(__le32 *rp, struct scatterlist *sglist,
 				*(rp++) = cpu_to_le32(RISC_WRITE|
 						    sg_dma_len(sg));
 				*(rp++) = cpu_to_le32(sg_dma_address(sg));
-				*(rp++) = cpu_to_le32(0); /* bits 63-32 */
+				*(rp++) = cpu_to_le32(0);  
 				todo -= sg_dma_len(sg);
 				sg = sg_next(sg);
 			}
 			*(rp++) = cpu_to_le32(RISC_WRITE|RISC_EOL|todo);
 			*(rp++) = cpu_to_le32(sg_dma_address(sg));
-			*(rp++) = cpu_to_le32(0); /* bits 63-32 */
+			*(rp++) = cpu_to_le32(0);  
 			offset += todo;
 		}
 		offset += padding;
@@ -1209,11 +1162,8 @@ int cx23885_risc_buffer(struct pci_dev *pci, struct cx23885_riscmem *risc,
 	if (UNSET != bottom_offset)
 		fields++;
 
-	/* estimate risc mem: worst case is one write per page border +
-	   one write per scan line + syncs + jump (all 2 dwords).  Padding
-	   can cause next bpl to start close to a page border.  First DMA
-	   region may be smaller than PAGE_SIZE */
-	/* write and jump need and extra dword */
+	 
+	 
 	instructions  = fields * (1 + ((bpl + padding) * lines)
 		/ PAGE_SIZE + lines);
 	instructions += 5;
@@ -1223,7 +1173,7 @@ int cx23885_risc_buffer(struct pci_dev *pci, struct cx23885_riscmem *risc,
 	if (risc->cpu == NULL)
 		return -ENOMEM;
 
-	/* write risc instructions */
+	 
 	rp = risc->cpu;
 	if (UNSET != top_offset)
 		rp = cx23885_risc_field(rp, sglist, top_offset, 0,
@@ -1232,7 +1182,7 @@ int cx23885_risc_buffer(struct pci_dev *pci, struct cx23885_riscmem *risc,
 		rp = cx23885_risc_field(rp, sglist, bottom_offset, 0x200,
 					bpl, padding, lines, 0, UNSET == top_offset);
 
-	/* save pointer to jmp instruction address */
+	 
 	risc->jmp = rp;
 	BUG_ON((risc->jmp - risc->cpu + 2) * sizeof(*risc->cpu) > risc->size);
 	return 0;
@@ -1247,11 +1197,8 @@ int cx23885_risc_databuffer(struct pci_dev *pci,
 	u32 instructions;
 	__le32 *rp;
 
-	/* estimate risc mem: worst case is one write per page border +
-	   one write per scan line + syncs + jump (all 2 dwords).  Here
-	   there is no padding and no sync.  First DMA region may be smaller
-	   than PAGE_SIZE */
-	/* Jump and write need an extra dword */
+	 
+	 
 	instructions  = 1 + (bpl * lines) / PAGE_SIZE + lines;
 	instructions += 4;
 
@@ -1261,12 +1208,12 @@ int cx23885_risc_databuffer(struct pci_dev *pci,
 	if (risc->cpu == NULL)
 		return -ENOMEM;
 
-	/* write risc instructions */
+	 
 	rp = risc->cpu;
 	rp = cx23885_risc_field(rp, sglist, 0, NO_SYNC_LINE,
 				bpl, 0, lines, lpi, lpi == 0);
 
-	/* save pointer to jmp instruction address */
+	 
 	risc->jmp = rp;
 	BUG_ON((risc->jmp - risc->cpu + 2) * sizeof(*risc->cpu) > risc->size);
 	return 0;
@@ -1286,11 +1233,8 @@ int cx23885_risc_vbibuffer(struct pci_dev *pci, struct cx23885_riscmem *risc,
 	if (UNSET != bottom_offset)
 		fields++;
 
-	/* estimate risc mem: worst case is one write per page border +
-	   one write per scan line + syncs + jump (all 2 dwords).  Padding
-	   can cause next bpl to start close to a page border.  First DMA
-	   region may be smaller than PAGE_SIZE */
-	/* write and jump need and extra dword */
+	 
+	 
 	instructions  = fields * (1 + ((bpl + padding) * lines)
 		/ PAGE_SIZE + lines);
 	instructions += 5;
@@ -1299,11 +1243,10 @@ int cx23885_risc_vbibuffer(struct pci_dev *pci, struct cx23885_riscmem *risc,
 				       GFP_KERNEL);
 	if (risc->cpu == NULL)
 		return -ENOMEM;
-	/* write risc instructions */
+	 
 	rp = risc->cpu;
 
-	/* Sync to line 6, so US CC line 21 will appear in line '12'
-	 * in the userland vbi payload */
+	 
 	if (UNSET != top_offset)
 		rp = cx23885_risc_field(rp, sglist, top_offset, 0,
 					bpl, padding, lines, 0, true);
@@ -1314,7 +1257,7 @@ int cx23885_risc_vbibuffer(struct pci_dev *pci, struct cx23885_riscmem *risc,
 
 
 
-	/* save pointer to jmp instruction address */
+	 
 	risc->jmp = rp;
 	BUG_ON((risc->jmp - risc->cpu + 2) * sizeof(*risc->cpu) > risc->size);
 	return 0;
@@ -1404,13 +1347,13 @@ int cx23885_start_dma(struct cx23885_tsport *port,
 	dprintk(1, "%s() w: %d, h: %d, f: %d\n", __func__,
 		dev->width, dev->height, dev->field);
 
-	/* clear dma in progress */
+	 
 	cx23885_clear_bridge_error(dev);
 
-	/* Stop the fifo and risc engine for this port */
+	 
 	cx_clear(port->reg_dma_ctl, port->dma_ctl_val);
 
-	/* setup fifo + format */
+	 
 	cx23885_sram_channel_setup(dev,
 				   &dev->sram_channels[port->sram_chno],
 				   port->ts_packet_size, buf->risc.dma);
@@ -1420,7 +1363,7 @@ int cx23885_start_dma(struct cx23885_tsport *port,
 		cx23885_risc_disasm(port, &buf->risc);
 	}
 
-	/* write TS length to chip */
+	 
 	cx_write(port->reg_lngth, port->ts_packet_size);
 
 	if ((!(cx23885_boards[dev->board].portb & CX23885_MPEG_DVB)) &&
@@ -1437,7 +1380,7 @@ int cx23885_start_dma(struct cx23885_tsport *port,
 
 	udelay(100);
 
-	/* If the port supports SRC SELECT, configure it */
+	 
 	if (port->reg_src_sel)
 		cx_write(port->reg_src_sel, port->src_sel_val);
 
@@ -1447,44 +1390,40 @@ int cx23885_start_dma(struct cx23885_tsport *port,
 	cx_write(port->reg_gen_ctrl, port->gen_ctrl_val);
 	udelay(100);
 
-	/* NOTE: this is 2 (reserved) for portb, does it matter? */
-	/* reset counter to zero */
+	 
+	 
 	cx_write(port->reg_gpcnt_ctl, 3);
 	q->count = 0;
 
-	/* Set VIDB pins to input */
+	 
 	if (cx23885_boards[dev->board].portb == CX23885_MPEG_DVB) {
 		reg = cx_read(PAD_CTRL);
-		reg &= ~0x3; /* Clear TS1_OE & TS1_SOP_OE */
+		reg &= ~0x3;  
 		cx_write(PAD_CTRL, reg);
 	}
 
-	/* Set VIDC pins to input */
+	 
 	if (cx23885_boards[dev->board].portc == CX23885_MPEG_DVB) {
 		reg = cx_read(PAD_CTRL);
-		reg &= ~0x4; /* Clear TS2_SOP_OE */
+		reg &= ~0x4;  
 		cx_write(PAD_CTRL, reg);
 	}
 
 	if (cx23885_boards[dev->board].portb == CX23885_MPEG_ENCODER) {
 
 		reg = cx_read(PAD_CTRL);
-		reg = reg & ~0x1;    /* Clear TS1_OE */
+		reg = reg & ~0x1;     
 
-		/* FIXME, bit 2 writing here is questionable */
-		/* set TS1_SOP_OE and TS1_OE_HI */
+		 
+		 
 		reg = reg | 0xa;
 		cx_write(PAD_CTRL, reg);
 
-		/* Sets MOE_CLK_DIS to disable MoE clock */
-		/* sets MCLK_DLY_SEL/BCLK_DLY_SEL to 1 buffer delay each */
+		 
+		 
 		cx_write(CLK_DELAY, cx_read(CLK_DELAY) | 0x80000011);
 
-		/* ALT_GPIO_ALT_SET: GPIO[0]
-		 * IR_ALT_TX_SEL: GPIO[1]
-		 * GPIO1_ALT_SEL: VIP_656_DATA[0]
-		 * GPIO0_ALT_SEL: VIP_656_CLK
-		 */
+		 
 		cx_write(ALT_PIN_OUT_SEL, 0x10100045);
 	}
 
@@ -1492,27 +1431,27 @@ int cx23885_start_dma(struct cx23885_tsport *port,
 	case CX23885_BRIDGE_885:
 	case CX23885_BRIDGE_887:
 	case CX23885_BRIDGE_888:
-		/* enable irqs */
+		 
 		dprintk(1, "%s() enabling TS int's and DMA\n", __func__);
-		/* clear dma in progress */
+		 
 		cx23885_clear_bridge_error(dev);
 		cx_set(port->reg_ts_int_msk,  port->ts_int_msk_val);
 		cx_set(port->reg_dma_ctl, port->dma_ctl_val);
 
-		/* clear dma in progress */
+		 
 		cx23885_clear_bridge_error(dev);
 		cx23885_irq_add(dev, port->pci_irqmask);
 		cx23885_irq_enable_all(dev);
 
-		/* clear dma in progress */
+		 
 		cx23885_clear_bridge_error(dev);
 		break;
 	default:
 		BUG();
 	}
 
-	cx_set(DEV_CNTRL2, (1<<5)); /* Enable RISC controller */
-	/* clear dma in progress */
+	cx_set(DEV_CNTRL2, (1<<5));  
+	 
 	cx23885_clear_bridge_error(dev);
 
 	if (cx23885_boards[dev->board].portb == CX23885_MPEG_ENCODER)
@@ -1523,7 +1462,7 @@ int cx23885_start_dma(struct cx23885_tsport *port,
 
 	cx23885_irq_get_mask(dev);
 
-	/* clear dma in progress */
+	 
 	cx23885_clear_bridge_error(dev);
 
 	return 0;
@@ -1539,10 +1478,10 @@ static int cx23885_stop_dma(struct cx23885_tsport *port)
 
 	dprintk(1, "%s()\n", __func__);
 
-	/* Stop interrupts and DMA */
+	 
 	cx_clear(port->reg_ts_int_msk, port->ts_int_msk_val);
 	cx_clear(port->reg_dma_ctl, port->dma_ctl_val);
-	/* just in case wait for any dma to complete before allowing dealloc */
+	 
 	mdelay(20);
 	for (delay = 0; delay < 100; delay++) {
 		reg1_val = cx_read(TC_REQ);
@@ -1557,10 +1496,10 @@ static int cx23885_stop_dma(struct cx23885_tsport *port)
 	if (cx23885_boards[dev->board].portb == CX23885_MPEG_ENCODER) {
 		reg = cx_read(PAD_CTRL);
 
-		/* Set TS1_OE */
+		 
 		reg = reg | 0x1;
 
-		/* clear TS1_SOP_OE and TS1_OE_HI */
+		 
 		reg = reg & ~0xa;
 		cx_write(PAD_CTRL, reg);
 		cx_write(port->reg_src_sel, 0);
@@ -1573,7 +1512,7 @@ static int cx23885_stop_dma(struct cx23885_tsport *port)
 	return 0;
 }
 
-/* ------------------------------------------------------------------ */
+ 
 
 int cx23885_buf_prepare(struct cx23885_buffer *buf, struct cx23885_tsport *port)
 {
@@ -1592,27 +1531,7 @@ int cx23885_buf_prepare(struct cx23885_buffer *buf, struct cx23885_tsport *port)
 	return 0;
 }
 
-/*
- * The risc program for each buffer works as follows: it starts with a simple
- * 'JUMP to addr + 12', which is effectively a NOP. Then the code to DMA the
- * buffer follows and at the end we have a JUMP back to the start + 12 (skipping
- * the initial JUMP).
- *
- * This is the risc program of the first buffer to be queued if the active list
- * is empty and it just keeps DMAing this buffer without generating any
- * interrupts.
- *
- * If a new buffer is added then the initial JUMP in the code for that buffer
- * will generate an interrupt which signals that the previous buffer has been
- * DMAed successfully and that it can be returned to userspace.
- *
- * It also sets the final jump of the previous buffer to the start of the new
- * buffer, thus chaining the new buffer into the DMA chain. This is a single
- * atomic u32 write, so there is no race condition.
- *
- * The end-result of all this that you only get an interrupt when a buffer
- * is ready, so the control flow is very easy.
- */
+ 
 void cx23885_buf_queue(struct cx23885_tsport *port, struct cx23885_buffer *buf)
 {
 	struct cx23885_buffer    *prev;
@@ -1623,7 +1542,7 @@ void cx23885_buf_queue(struct cx23885_tsport *port, struct cx23885_buffer *buf)
 	buf->risc.cpu[1] = cpu_to_le32(buf->risc.dma + 12);
 	buf->risc.jmp[0] = cpu_to_le32(RISC_JUMP | RISC_CNT_INC);
 	buf->risc.jmp[1] = cpu_to_le32(buf->risc.dma + 12);
-	buf->risc.jmp[2] = cpu_to_le32(0); /* bits 63-32 */
+	buf->risc.jmp[2] = cpu_to_le32(0);  
 
 	spin_lock_irqsave(&dev->slock, flags);
 	if (list_empty(&cx88q->active)) {
@@ -1642,7 +1561,7 @@ void cx23885_buf_queue(struct cx23885_tsport *port, struct cx23885_buffer *buf)
 	spin_unlock_irqrestore(&dev->slock, flags);
 }
 
-/* ----------------------------------------------------------- */
+ 
 
 static void do_cancel_buffers(struct cx23885_tsport *port, char *reason)
 {
@@ -1672,7 +1591,7 @@ void cx23885_cancel_buffers(struct cx23885_tsport *port)
 
 int cx23885_irq_417(struct cx23885_dev *dev, u32 status)
 {
-	/* FIXME: port1 assumption here. */
+	 
 	struct cx23885_tsport *port = &dev->ts1;
 	int count = 0;
 	int handled = 0;
@@ -1953,11 +1872,11 @@ static void cx23885_v4l2_dev_notify(struct v4l2_subdev *sd,
 	dev = to_cx23885(sd->v4l2_dev);
 
 	switch (notification) {
-	case V4L2_SUBDEV_IR_RX_NOTIFY: /* Possibly called in an IRQ context */
+	case V4L2_SUBDEV_IR_RX_NOTIFY:  
 		if (sd == dev->sd_ir)
 			cx23885_ir_rx_v4l2_dev_notify(sd, *(u32 *)arg);
 		break;
-	case V4L2_SUBDEV_IR_TX_NOTIFY: /* Possibly called in an IRQ context */
+	case V4L2_SUBDEV_IR_TX_NOTIFY:  
 		if (sd == dev->sd_ir)
 			cx23885_ir_tx_v4l2_dev_notify(sd, *(u32 *)arg);
 		break;
@@ -1982,18 +1901,7 @@ static inline int encoder_on_portc(struct cx23885_dev *dev)
 	return cx23885_boards[dev->board].portc == CX23885_MPEG_ENCODER;
 }
 
-/* Mask represents 32 different GPIOs, GPIO's are split into multiple
- * registers depending on the board configuration (and whether the
- * 417 encoder (wi it's own GPIO's) are present. Each GPIO bit will
- * be pushed into the correct hardware register, regardless of the
- * physical location. Certain registers are shared so we sanity check
- * and report errors if we think we're tampering with a GPIo that might
- * be assigned to the encoder (and used for the host bus).
- *
- * GPIO  2 through  0 - On the cx23885 bridge
- * GPIO 18 through  3 - On the cx23417 host bus interface
- * GPIO 23 through 19 - On the cx25840 a/v core
- */
+ 
 void cx23885_gpio_set(struct cx23885_dev *dev, u32 mask)
 {
 	if (mask & 0x7)
@@ -2006,7 +1914,7 @@ void cx23885_gpio_set(struct cx23885_dev *dev, u32 mask)
 		cx_set(MC417_RWD, (mask & 0x0007fff8) >> 3);
 	}
 
-	/* TODO: 23-19 */
+	 
 	if (mask & 0x00f80000)
 		pr_info("%s: Unsupported\n", dev->name);
 }
@@ -2023,7 +1931,7 @@ void cx23885_gpio_clear(struct cx23885_dev *dev, u32 mask)
 		cx_clear(MC417_RWD, (mask & 0x7fff8) >> 3);
 	}
 
-	/* TODO: 23-19 */
+	 
 	if (mask & 0x00f80000)
 		pr_info("%s: Unsupported\n", dev->name);
 }
@@ -2040,7 +1948,7 @@ u32 cx23885_gpio_get(struct cx23885_dev *dev, u32 mask)
 		return (cx_read(MC417_RWD) & ((mask & 0x7fff8) >> 3)) << 3;
 	}
 
-	/* TODO: 23-19 */
+	 
 	if (mask & 0x00f80000)
 		pr_info("%s: Unsupported\n", dev->name);
 
@@ -2060,39 +1968,30 @@ void cx23885_gpio_enable(struct cx23885_dev *dev, u32 mask, int asoutput)
 				dev->name);
 	}
 
-	/* MC417_OEN is active low for output, write 1 for an input */
+	 
 	if ((mask & 0x0007fff8) && asoutput)
 		cx_clear(MC417_OEN, (mask & 0x7fff8) >> 3);
 
 	else if ((mask & 0x0007fff8) && !asoutput)
 		cx_set(MC417_OEN, (mask & 0x7fff8) >> 3);
 
-	/* TODO: 23-19 */
+	 
 }
 
 static struct {
 	int vendor, dev;
 } const broken_dev_id[] = {
-	/* According with
-	 * https://openbenchmarking.org/system/1703021-RI-AMDZEN08075/Ryzen%207%201800X/lspci,
-	 * 0x1451 is PCI ID for the IOMMU found on Ryzen
-	 */
+	 
 	{ PCI_VENDOR_ID_AMD, 0x1451 },
-	/* According to sudo lspci -nn,
-	 * 0x1423 is the PCI ID for the IOMMU found on Kaveri
-	 */
+	 
 	{ PCI_VENDOR_ID_AMD, 0x1423 },
-	/* 0x1481 is the PCI ID for the IOMMU found on Starship/Matisse
-	 */
+	 
 	{ PCI_VENDOR_ID_AMD, 0x1481 },
-	/* 0x1419 is the PCI ID for the IOMMU found on 15h (Models 10h-1fh) family
-	 */
+	 
 	{ PCI_VENDOR_ID_AMD, 0x1419 },
-	/* 0x1631 is the PCI ID for the IOMMU found on Renoir/Cezanne
-	 */
+	 
 	{ PCI_VENDOR_ID_AMD, 0x1631 },
-	/* 0x5a23 is the PCI ID for the IOMMU found on RD890S/RD990
-	 */
+	 
 	{ PCI_VENDOR_ID_ATI, 0x5a23 },
 };
 
@@ -2142,10 +2041,10 @@ static int cx23885_initdev(struct pci_dev *pci_dev,
 	}
 	dev->v4l2_dev.ctrl_handler = hdl;
 
-	/* Prepare to handle notifications from subdevices */
+	 
 	cx23885_v4l2_dev_notify_init(dev);
 
-	/* pci init */
+	 
 	dev->pci = pci_dev;
 	if (pci_enable_device(pci_dev)) {
 		err = -EIO;
@@ -2157,7 +2056,7 @@ static int cx23885_initdev(struct pci_dev *pci_dev,
 		goto fail_ctrl;
 	}
 
-	/* print pci info */
+	 
 	dev->pci_rev = pci_dev->revision;
 	pci_read_config_byte(pci_dev, PCI_LATENCY_TIMER,  &dev->pci_lat);
 	pr_info("%s/0: found at %s, rev: %d, irq: %d, latency: %d, mmio: 0x%llx\n",
@@ -2190,11 +2089,7 @@ static int cx23885_initdev(struct pci_dev *pci_dev,
 		break;
 	}
 
-	/*
-	 * The CX2388[58] IR controller can start firing interrupts when
-	 * enabled, so these have to take place after the cx23885_irq() handler
-	 * is hooked up by the call to request_irq() above.
-	 */
+	 
 	cx23885_ir_pci_int_enable(dev);
 	cx23885_input_init(dev);
 
@@ -2220,7 +2115,7 @@ static void cx23885_finidev(struct pci_dev *pci_dev)
 
 	cx23885_shutdown(dev);
 
-	/* unregister stuff */
+	 
 	free_irq(pci_dev->irq, dev);
 
 	pci_disable_device(pci_dev);
@@ -2233,19 +2128,19 @@ static void cx23885_finidev(struct pci_dev *pci_dev)
 
 static const struct pci_device_id cx23885_pci_tbl[] = {
 	{
-		/* CX23885 */
+		 
 		.vendor       = 0x14f1,
 		.device       = 0x8852,
 		.subvendor    = PCI_ANY_ID,
 		.subdevice    = PCI_ANY_ID,
 	}, {
-		/* CX23887 Rev 2 */
+		 
 		.vendor       = 0x14f1,
 		.device       = 0x8880,
 		.subvendor    = PCI_ANY_ID,
 		.subdevice    = PCI_ANY_ID,
 	}, {
-		/* --- end of list --- */
+		 
 	}
 };
 MODULE_DEVICE_TABLE(pci, cx23885_pci_tbl);

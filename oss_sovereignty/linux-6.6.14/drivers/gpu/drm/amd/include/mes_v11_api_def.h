@@ -1,25 +1,4 @@
-/*
- * Copyright 2022 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 
 #ifndef __MES_API_DEF_H__
 #define __MES_API_DEF_H__
@@ -28,14 +7,10 @@
 
 #define MES_API_VERSION 1
 
-/* Driver submits one API(cmd) as a single Frame and this command size is same
- * for all API to ease the debugging and parsing of ring buffer.
- */
+ 
 enum { API_FRAME_SIZE_IN_DWORDS = 64 };
 
-/* To avoid command in scheduler context to be overwritten whenenver mutilple
- * interrupts come in, this creates another queue.
- */
+ 
 enum { API_NUMBER_OF_COMMAND_MAX = 32 };
 
 enum MES_API_TYPE {
@@ -45,7 +20,7 @@ enum MES_API_TYPE {
 
 enum MES_SCH_API_OPCODE {
 	MES_SCH_API_SET_HW_RSRC			= 0,
-	MES_SCH_API_SET_SCHEDULING_CONFIG	= 1, /* agreegated db, quantums, etc */
+	MES_SCH_API_SET_SCHEDULING_CONFIG	= 1,  
 	MES_SCH_API_ADD_QUEUE			= 2,
 	MES_SCH_API_REMOVE_QUEUE		= 3,
 	MES_SCH_API_PERFORM_YIELD		= 4,
@@ -66,9 +41,9 @@ enum MES_SCH_API_OPCODE {
 
 union MES_API_HEADER {
 	struct {
-		uint32_t type		: 4; /* 0 - Invalid; 1 - Scheduling; 2 - TBD */
+		uint32_t type		: 4;  
 		uint32_t opcode		: 8;
-		uint32_t dwsize		: 8; /* including header */
+		uint32_t dwsize		: 8;  
 		uint32_t reserved	: 12;
 	};
 
@@ -175,7 +150,7 @@ struct MES_LOG_ENTRY_HEADER {
 
 struct MES_LOG_ENTRY_DATA {
 	uint64_t	gpu_time_stamp;
-	uint32_t	operation_type; /* operation_type is of MES_LOG_OPERATION type */
+	uint32_t	operation_type;  
 	uint32_t	reserved_operation_type_bits;
 	union {
 		struct MES_LOG_CONTEXT_STATE_CHANGE     context_state_change;
@@ -316,23 +291,13 @@ union MESAPI__REMOVE_QUEUE {
 union MESAPI__SET_SCHEDULING_CONFIG {
 	struct {
 		union MES_API_HEADER	header;
-		/* Grace period when preempting another priority band for this
-		 * priority band. The value for idle priority band is ignored,
-		 * as it never preempts other bands.
-		 */
+		 
 		uint64_t		grace_period_other_levels[AMD_PRIORITY_NUM_LEVELS];
-		/* Default quantum for scheduling across processes within
-		 * a priority band.
-		 */
+		 
 		uint64_t		process_quantum_for_level[AMD_PRIORITY_NUM_LEVELS];
-		/* Default grace period for processes that preempt each other
-		 * within a priority band.
-		 */
+		 
 		uint64_t		process_grace_period_same_level[AMD_PRIORITY_NUM_LEVELS];
-		/* For normal level this field specifies the target GPU
-		 * percentage in situations when it's starved by the high level.
-		 * Valid values are between 0 and 50, with the default being 10.
-		 */
+		 
 		uint32_t		normal_yield_percent;
 		struct MES_API_STATUS	api_status;
 	};
@@ -366,12 +331,12 @@ union MESAPI__CHANGE_GANG_PRIORITY_LEVEL {
 union MESAPI__SUSPEND {
 	struct {
 		union MES_API_HEADER	header;
-		/* false - suspend all gangs; true - specific gang */
+		 
 		struct {
 			uint32_t suspend_all_gangs	: 1;
 			uint32_t reserved		: 31;
 		};
-		/* gang_context_addr is valid only if suspend_all = false */
+		 
 		uint64_t		gang_context_addr;
 
 		uint64_t		suspend_fence_addr;
@@ -386,12 +351,12 @@ union MESAPI__SUSPEND {
 union MESAPI__RESUME {
 	struct {
 		union MES_API_HEADER	header;
-		/* false - resume all gangs; true - specified gang */
+		 
 		struct {
 			uint32_t resume_all_gangs	: 1;
 			uint32_t reserved		: 31;
 		};
-		/* valid only if resume_all_gangs = false */
+		 
 		uint64_t		gang_context_addr;
 
 		struct MES_API_STATUS	api_status;
@@ -405,27 +370,27 @@ union MESAPI__RESET {
 		union MES_API_HEADER		header;
 
 		struct {
-			/* Only reset the queue given by doorbell_offset (not entire gang) */
+			 
 			uint32_t                reset_queue_only : 1;
-			/* Hang detection first then reset any queues that are hung */
+			 
 			uint32_t                hang_detect_then_reset : 1;
-			/* Only do hang detection (no reset) */
+			 
 			uint32_t                hang_detect_only : 1;
-			/* Rest HP and LP kernel queues not managed by MES */
+			 
 			uint32_t                reset_legacy_gfx : 1;
 			uint32_t                reserved : 28;
 		};
 
 		uint64_t			gang_context_addr;
 
-		/* valid only if reset_queue_only = true */
+		 
 		uint32_t			doorbell_offset;
 
-		/* valid only if hang_detect_then_reset = true */
+		 
 		uint64_t			doorbell_offset_addr;
 		enum MES_QUEUE_TYPE		queue_type;
 
-		/* valid only if reset_legacy_gfx = true */
+		 
 		uint32_t			pipe_id_lp;
 		uint32_t			queue_id_lp;
 		uint32_t			vmid_id_lp;
@@ -449,13 +414,13 @@ union MESAPI__RESET {
 union MESAPI__SET_LOGGING_BUFFER {
 	struct {
 		union MES_API_HEADER	header;
-		/* There are separate log buffers for each queue type */
+		 
 		enum MES_QUEUE_TYPE	log_type;
-		/* Log buffer GPU Address */
+		 
 		uint64_t		logging_buffer_addr;
-		/* number of entries in the log buffer */
+		 
 		uint32_t		number_of_entries;
-		/* Entry index at which CPU interrupt needs to be signalled */
+		 
 		uint32_t		interrupt_entry;
 
 		struct MES_API_STATUS	api_status;
@@ -467,7 +432,7 @@ union MESAPI__SET_LOGGING_BUFFER {
 union MESAPI__QUERY_MES_STATUS {
 	struct {
 		union MES_API_HEADER	header;
-		bool			mes_healthy; /* 0 - not healthy, 1 - healthy */
+		bool			mes_healthy;  
 		struct MES_API_STATUS	api_status;
 	};
 
@@ -513,7 +478,7 @@ union MESAPI__SET_DEBUG_VMID {
 		uint32_t		gws_size;
 		uint32_t		oa_mask;
 
-		/* output addr of the acquired vmid value */
+		 
 		uint64_t                output_addr;
 	};
 
@@ -569,14 +534,14 @@ struct SET_SHADER_DEBUGGER {
 	uint64_t process_context_addr;
 	union {
 		struct {
-			uint32_t single_memop : 1;  /* SQ_DEBUG.single_memop */
-			uint32_t single_alu_op : 1; /* SQ_DEBUG.single_alu_op */
+			uint32_t single_memop : 1;   
+			uint32_t single_alu_op : 1;  
 			uint32_t reserved : 30;
 		};
 		uint32_t u32all;
 	} flags;
 	uint32_t spi_gdbg_per_vmid_cntl;
-	uint32_t tcp_watch_cntl[4]; /* TCP_WATCHx_CNTL */
+	uint32_t tcp_watch_cntl[4];  
 	uint32_t trap_en;
 };
 

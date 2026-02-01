@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2015 Facebook.  All rights reserved.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/sched/mm.h>
@@ -45,10 +43,7 @@ void set_free_space_tree_thresholds(struct btrfs_block_group *cache)
 		btrfs_warn(cache->fs_info, "block group %llu length is zero",
 			   cache->start);
 
-	/*
-	 * We convert to bitmaps when the disk space required for using extents
-	 * exceeds that required for using bitmaps.
-	 */
+	 
 	bitmap_range = cache->fs_info->sectorsize * BTRFS_FREE_SPACE_BITMAP_BITS;
 	num_bitmaps = div_u64(cache->length + bitmap_range - 1, bitmap_range);
 	bitmap_size = sizeof(struct btrfs_item) + BTRFS_FREE_SPACE_BITMAP_SIZE;
@@ -56,10 +51,7 @@ void set_free_space_tree_thresholds(struct btrfs_block_group *cache)
 	cache->bitmap_high_thresh = div_u64(total_bitmap_size,
 					    sizeof(struct btrfs_item));
 
-	/*
-	 * We allow for a small buffer between the high threshold and low
-	 * threshold to avoid thrashing back and forth between the two formats.
-	 */
+	 
 	if (cache->bitmap_high_thresh > 100)
 		cache->bitmap_low_thresh = cache->bitmap_high_thresh - 100;
 	else
@@ -126,10 +118,7 @@ struct btrfs_free_space_info *search_free_space_info(
 			      struct btrfs_free_space_info);
 }
 
-/*
- * btrfs_search_slot() but we're looking for the greatest key less than the
- * passed key.
- */
+ 
 static int btrfs_search_prev_slot(struct btrfs_trans_handle *trans,
 				  struct btrfs_root *root,
 				  struct btrfs_key *key, struct btrfs_path *p,
@@ -167,14 +156,7 @@ static unsigned long *alloc_bitmap(u32 bitmap_size)
 	unsigned int nofs_flag;
 	u32 bitmap_rounded_size = round_up(bitmap_size, sizeof(unsigned long));
 
-	/*
-	 * GFP_NOFS doesn't work with kvmalloc(), but we really can't recurse
-	 * into the filesystem as the free space bitmap can be modified in the
-	 * critical section of a transaction commit.
-	 *
-	 * TODO: push the memalloc_nofs_{save,restore}() to the caller where we
-	 * know that recursion is unsafe.
-	 */
+	 
 	nofs_flag = memalloc_nofs_save();
 	ret = kvzalloc(bitmap_rounded_size, GFP_KERNEL);
 	memalloc_nofs_restore(nofs_flag);
@@ -570,12 +552,7 @@ static void free_space_set_bits(struct btrfs_trans_handle *trans,
 	*start = end;
 }
 
-/*
- * We can't use btrfs_next_item() in modify_free_space_bitmap() because
- * btrfs_next_leaf() doesn't get the path for writing. We can forgo the fancy
- * tree walking in btrfs_next_leaf() anyways because we know exactly what we're
- * looking for.
- */
+ 
 static int free_space_next_bitmap(struct btrfs_trans_handle *trans,
 				  struct btrfs_root *root, struct btrfs_path *p)
 {
@@ -596,11 +573,7 @@ static int free_space_next_bitmap(struct btrfs_trans_handle *trans,
 	return btrfs_search_prev_slot(trans, root, &key, p, 0, 1);
 }
 
-/*
- * If remove is 1, then we are removing free space, thus clearing bits in the
- * bitmap. If remove is 0, then we are adding free space, thus setting bits in
- * the bitmap.
- */
+ 
 static int modify_free_space_bitmap(struct btrfs_trans_handle *trans,
 				    struct btrfs_block_group *block_group,
 				    struct btrfs_path *path,
@@ -614,10 +587,7 @@ static int modify_free_space_bitmap(struct btrfs_trans_handle *trans,
 	int new_extents;
 	int ret;
 
-	/*
-	 * Read the bit for the block immediately before the extent of space if
-	 * that block is within the block group.
-	 */
+	 
 	if (start > block_group->start) {
 		u64 prev_block = start - block_group->fs_info->sectorsize;
 
@@ -631,7 +601,7 @@ static int modify_free_space_bitmap(struct btrfs_trans_handle *trans,
 
 		prev_bit = free_space_test_bit(block_group, path, prev_block);
 
-		/* The previous block may have been in the previous bitmap. */
+		 
 		btrfs_item_key_to_cpu(path->nodes[0], &key, path->slots[0]);
 		if (start >= key.objectid + key.offset) {
 			ret = free_space_next_bitmap(trans, root, path);
@@ -650,10 +620,7 @@ static int modify_free_space_bitmap(struct btrfs_trans_handle *trans,
 		prev_bit = -1;
 	}
 
-	/*
-	 * Iterate over all of the bitmaps overlapped by the extent of space,
-	 * clearing/setting bits as required.
-	 */
+	 
 	cur_start = start;
 	cur_size = size;
 	while (1) {
@@ -666,12 +633,9 @@ static int modify_free_space_bitmap(struct btrfs_trans_handle *trans,
 			goto out;
 	}
 
-	/*
-	 * Read the bit for the block immediately after the extent of space if
-	 * that block is within the block group.
-	 */
+	 
 	if (end < block_group->start + block_group->length) {
-		/* The next block may be in the next bitmap. */
+		 
 		btrfs_item_key_to_cpu(path->nodes[0], &key, path->slots[0]);
 		if (end >= key.objectid + key.offset) {
 			ret = free_space_next_bitmap(trans, root, path);
@@ -687,21 +651,21 @@ static int modify_free_space_bitmap(struct btrfs_trans_handle *trans,
 	if (remove) {
 		new_extents = -1;
 		if (prev_bit == 1) {
-			/* Leftover on the left. */
+			 
 			new_extents++;
 		}
 		if (next_bit == 1) {
-			/* Leftover on the right. */
+			 
 			new_extents++;
 		}
 	} else {
 		new_extents = 1;
 		if (prev_bit == 1) {
-			/* Merging with neighbor on the left. */
+			 
 			new_extents--;
 		}
 		if (next_bit == 1) {
-			/* Merging with neighbor on the right. */
+			 
 			new_extents--;
 		}
 	}
@@ -742,31 +706,14 @@ static int remove_free_space_extent(struct btrfs_trans_handle *trans,
 	found_end = key.objectid + key.offset;
 	ASSERT(start >= found_start && end <= found_end);
 
-	/*
-	 * Okay, now that we've found the free space extent which contains the
-	 * free space that we are removing, there are four cases:
-	 *
-	 * 1. We're using the whole extent: delete the key we found and
-	 * decrement the free space extent count.
-	 * 2. We are using part of the extent starting at the beginning: delete
-	 * the key we found and insert a new key representing the leftover at
-	 * the end. There is no net change in the number of extents.
-	 * 3. We are using part of the extent ending at the end: delete the key
-	 * we found and insert a new key representing the leftover at the
-	 * beginning. There is no net change in the number of extents.
-	 * 4. We are using part of the extent in the middle: delete the key we
-	 * found and insert two new keys representing the leftovers on each
-	 * side. Where we used to have one extent, we now have two, so increment
-	 * the extent count. We may need to convert the block group to bitmaps
-	 * as a result.
-	 */
+	 
 
-	/* Delete the existing key (cases 1-4). */
+	 
 	ret = btrfs_del_item(trans, root, path);
 	if (ret)
 		goto out;
 
-	/* Add a key for leftovers at the beginning (cases 3 and 4). */
+	 
 	if (start > found_start) {
 		key.objectid = found_start;
 		key.type = BTRFS_FREE_SPACE_EXTENT_KEY;
@@ -779,7 +726,7 @@ static int remove_free_space_extent(struct btrfs_trans_handle *trans,
 		new_extents++;
 	}
 
-	/* Add a key for leftovers at the end (cases 2 and 4). */
+	 
 	if (end < found_end) {
 		key.objectid = end;
 		key.type = BTRFS_FREE_SPACE_EXTENT_KEY;
@@ -878,29 +825,13 @@ static int add_free_space_extent(struct btrfs_trans_handle *trans,
 	int new_extents = 1;
 	int ret;
 
-	/*
-	 * We are adding a new extent of free space, but we need to merge
-	 * extents. There are four cases here:
-	 *
-	 * 1. The new extent does not have any immediate neighbors to merge
-	 * with: add the new key and increment the free space extent count. We
-	 * may need to convert the block group to bitmaps as a result.
-	 * 2. The new extent has an immediate neighbor before it: remove the
-	 * previous key and insert a new key combining both of them. There is no
-	 * net change in the number of extents.
-	 * 3. The new extent has an immediate neighbor after it: remove the next
-	 * key and insert a new key combining both of them. There is no net
-	 * change in the number of extents.
-	 * 4. The new extent has immediate neighbors on both sides: remove both
-	 * of the keys and insert a new key combining all of them. Where we used
-	 * to have two extents, we now have one, so decrement the extent count.
-	 */
+	 
 
 	new_key.objectid = start;
 	new_key.type = BTRFS_FREE_SPACE_EXTENT_KEY;
 	new_key.offset = size;
 
-	/* Search for a neighbor on the left. */
+	 
 	if (start == block_group->start)
 		goto right;
 	key.objectid = start - 1;
@@ -925,10 +856,7 @@ static int add_free_space_extent(struct btrfs_trans_handle *trans,
 	       found_end > block_group->start);
 	ASSERT(found_start < start && found_end <= start);
 
-	/*
-	 * Delete the neighbor on the left and absorb it into the new key (cases
-	 * 2 and 4).
-	 */
+	 
 	if (found_end == start) {
 		ret = btrfs_del_item(trans, root, path);
 		if (ret)
@@ -940,7 +868,7 @@ static int add_free_space_extent(struct btrfs_trans_handle *trans,
 	btrfs_release_path(path);
 
 right:
-	/* Search for a neighbor on the right. */
+	 
 	if (end == block_group->start + block_group->length)
 		goto insert;
 	key.objectid = end;
@@ -966,10 +894,7 @@ right:
 	ASSERT((found_start < start && found_end <= start) ||
 	       (found_start >= end && found_end > end));
 
-	/*
-	 * Delete the neighbor on the right and absorb it into the new key
-	 * (cases 3 and 4).
-	 */
+	 
 	if (found_start == end) {
 		ret = btrfs_del_item(trans, root, path);
 		if (ret)
@@ -980,7 +905,7 @@ right:
 	btrfs_release_path(path);
 
 insert:
-	/* Insert the new key (cases 1-4). */
+	 
 	ret = btrfs_insert_empty_item(trans, root, path, &new_key, 0);
 	if (ret)
 		goto out;
@@ -1058,11 +983,7 @@ out:
 	return ret;
 }
 
-/*
- * Populate the free space tree by walking the extent tree. Operations on the
- * extent tree that happen as a result of writes to the free space tree will go
- * through the normal add/remove hooks.
- */
+ 
 static int populate_free_space_tree(struct btrfs_trans_handle *trans,
 				    struct btrfs_block_group *block_group)
 {
@@ -1089,13 +1010,7 @@ static int populate_free_space_tree(struct btrfs_trans_handle *trans,
 
 	mutex_lock(&block_group->free_space_lock);
 
-	/*
-	 * Iterate through all of the extent and metadata items in this block
-	 * group, adding the free space between them and the free space at the
-	 * end. Note that EXTENT_ITEM and METADATA_ITEM are less than
-	 * BLOCK_GROUP_ITEM, so an extent may precede the block group that it's
-	 * contained in.
-	 */
+	 
 	key.objectid = block_group->start;
 	key.type = BTRFS_EXTENT_ITEM_KEY;
 	key.offset = 0;
@@ -1199,10 +1114,7 @@ int btrfs_create_free_space_tree(struct btrfs_fs_info *fs_info)
 	clear_bit(BTRFS_FS_CREATING_FREE_SPACE_TREE, &fs_info->flags);
 	ret = btrfs_commit_transaction(trans);
 
-	/*
-	 * Now that we've committed the transaction any reading of our commit
-	 * root will be safe, so we can cache from the free space tree now.
-	 */
+	 
 	clear_bit(BTRFS_FS_FREE_SPACE_TREE_UNTRUSTED, &fs_info->flags);
 	return ret;
 
@@ -1412,7 +1324,7 @@ int remove_block_group_free_space(struct btrfs_trans_handle *trans,
 		return 0;
 
 	if (test_bit(BLOCK_GROUP_FLAG_NEEDS_FREE_SPACE, &block_group->runtime_flags)) {
-		/* We never added this block group to the free space tree. */
+		 
 		return 0;
 	}
 
@@ -1482,7 +1394,7 @@ static int load_free_space_bitmaps(struct btrfs_caching_control *caching_ctl,
 	struct btrfs_root *root;
 	struct btrfs_key key;
 	int prev_bit = 0, bit;
-	/* Initialize to silence GCC. */
+	 
 	u64 extent_start = 0;
 	u64 end, offset;
 	u64 total_found = 0;
@@ -1635,10 +1547,7 @@ int load_free_space_tree(struct btrfs_caching_control *caching_ctl)
 	if (!path)
 		return -ENOMEM;
 
-	/*
-	 * Just like caching_thread() doesn't want to deadlock on the extent
-	 * tree, we don't want to deadlock on the free space tree.
-	 */
+	 
 	path->skip_locking = 1;
 	path->search_commit_root = 1;
 	path->reada = READA_FORWARD;
@@ -1651,11 +1560,7 @@ int load_free_space_tree(struct btrfs_caching_control *caching_ctl)
 	extent_count = btrfs_free_space_extent_count(path->nodes[0], info);
 	flags = btrfs_free_space_flags(path->nodes[0], info);
 
-	/*
-	 * We left path pointing to the free space info item, so now
-	 * load_free_space_foo can just iterate through the free space tree from
-	 * there.
-	 */
+	 
 	if (flags & BTRFS_FREE_SPACE_USING_BITMAPS)
 		ret = load_free_space_bitmaps(caching_ctl, path, extent_count);
 	else

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2012 Altera Corporation
- * Copyright (c) 2011 Picochip Ltd., Jamie Iles
- *
- * Modified from mach-picoxcell/time.c
- */
+
+ 
 #include <linux/delay.h>
 #include <linux/dw_apb_timer.h>
 #include <linux/of.h>
@@ -27,20 +22,14 @@ static int __init timer_get_base_and_rate(struct device_node *np,
 	if (!*base)
 		panic("Unable to map regs for %pOFn", np);
 
-	/*
-	 * Reset the timer if the reset control is available, wiping
-	 * out the state the firmware may have left it
-	 */
+	 
 	rstc = of_reset_control_get(np, NULL);
 	if (!IS_ERR(rstc)) {
 		reset_control_assert(rstc);
 		reset_control_deassert(rstc);
 	}
 
-	/*
-	 * Not all implementations use a peripheral clock, so don't panic
-	 * if it's not present
-	 */
+	 
 	pclk = of_clk_get_by_name(np, "pclk");
 	if (!IS_ERR(pclk))
 		if (clk_prepare_enable(pclk))
@@ -128,11 +117,7 @@ static int __init add_clocksource(struct device_node *source_timer)
 	dw_apb_clocksource_start(cs);
 	dw_apb_clocksource_register(cs);
 
-	/*
-	 * Fallback to use the clocksource as sched_clock if no separate
-	 * timer is found. sched_io_base then points to the current_value
-	 * register of the clocksource timer.
-	 */
+	 
 	sched_io_base = iobase + 0x04;
 	sched_rate = rate;
 
@@ -146,7 +131,7 @@ static u64 notrace read_sched_clock(void)
 
 static const struct of_device_id sptimer_ids[] __initconst = {
 	{ .compatible = "picochip,pc3x2-rtc" },
-	{ /* Sentinel */ },
+	{   },
 };
 
 static void __init init_sched_clock(void)

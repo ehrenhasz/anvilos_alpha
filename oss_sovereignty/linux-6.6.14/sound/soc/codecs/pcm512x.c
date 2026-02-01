@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Driver for the PCM512x CODECs
- *
- * Author:	Mark Brown <broonie@kernel.org>
- *		Copyright 2014 Linaro Ltd
- */
+
+ 
 
 
 #include <linux/init.h>
@@ -50,11 +45,7 @@ struct pcm512x_priv {
 	unsigned int bclk_ratio;
 };
 
-/*
- * We can't use the same notifier block for more than one supply and
- * there's no way I can see to get from a callback to the caller
- * except container_of().
- */
+ 
 #define PCM512x_REGULATOR_EVENT(n) \
 static int pcm512x_regulator_event_##n(struct notifier_block *nb, \
 				      unsigned long event, void *data)    \
@@ -194,7 +185,7 @@ static bool pcm512x_readable(struct device *dev, unsigned int reg)
 	case PCM512x_FLEX_B:
 		return true;
 	default:
-		/* There are 256 raw register addresses */
+		 
 		return reg < 0xff;
 	}
 }
@@ -215,7 +206,7 @@ static bool pcm512x_volatile(struct device *dev, unsigned int reg)
 	case PCM512x_CRAM_CTRL:
 		return true;
 	default:
-		/* There are 256 raw register addresses */
+		 
 		return reg < 0xff;
 	}
 }
@@ -521,16 +512,10 @@ static unsigned long pcm512x_sck_max(struct pcm512x_priv *pcm512x)
 static unsigned long pcm512x_ncp_target(struct pcm512x_priv *pcm512x,
 					unsigned long dac_rate)
 {
-	/*
-	 * If the DAC is not actually overclocked, use the good old
-	 * NCP target rate...
-	 */
+	 
 	if (dac_rate <= 6144000)
 		return 1536000;
-	/*
-	 * ...but if the DAC is in fact overclocked, bump the NCP target
-	 * rate to get the recommended dividers even when overclocking.
-	 */
+	 
 	return pcm512x_dac_max(pcm512x, 1536000);
 }
 
@@ -557,13 +542,11 @@ static int pcm512x_hw_rule_rate(struct snd_pcm_hw_params *params,
 
 	switch (frame_size) {
 	case 32:
-		/* No hole when the frame size is 32. */
+		 
 		return 0;
 	case 48:
 	case 64:
-		/* There is only one hole in the range of supported
-		 * rates, but it moves with the frame size.
-		 */
+		 
 		memset(ranges, 0, sizeof(ranges));
 		ranges[0].min = 8000;
 		ranges[0].max = pcm512x_sck_max(pcm512x) / frame_size / 2;
@@ -632,11 +615,11 @@ static int pcm512x_dai_startup_slave(struct snd_pcm_substream *substream,
 		dev_info(dev, "No SCLK, using BCLK: %ld\n",
 			 PTR_ERR(pcm512x->sclk));
 
-		/* Disable reporting of missing SCLK as an error */
+		 
 		regmap_update_bits(regmap, PCM512x_ERROR_DETECT,
 				   PCM512x_IDCH, PCM512x_IDCH);
 
-		/* Switch PLL input to BCLK */
+		 
 		regmap_update_bits(regmap, PCM512x_PLL_REF,
 				   PCM512x_SREF, PCM512x_SREF_BCK);
 	}
@@ -709,13 +692,10 @@ static unsigned long pcm512x_find_sck(struct snd_soc_dai *dai,
 	unsigned long sck_rate;
 	int pow2;
 
-	/* 64 MHz <= pll_rate <= 100 MHz, VREF mode */
-	/* 16 MHz <= sck_rate <=  25 MHz, VREF mode */
+	 
+	 
 
-	/* select sck_rate as a multiple of bclk_rate but still with
-	 * as many factors of 2 as possible, as that makes it easier
-	 * to find a fast DAC rate
-	 */
+	 
 	pow2 = 1 << fls((pcm512x_pll_max(pcm512x) - 16000000) / bclk_rate);
 	for (; pow2; pow2 >>= 1) {
 		sck_rate = rounddown(pcm512x_pll_max(pcm512x),
@@ -732,19 +712,7 @@ static unsigned long pcm512x_find_sck(struct snd_soc_dai *dai,
 	return sck_rate;
 }
 
-/* pll_rate = pllin_rate * R * J.D / P
- * 1 <= R <= 16
- * 1 <= J <= 63
- * 0 <= D <= 9999
- * 1 <= P <= 15
- * 64 MHz <= pll_rate <= 100 MHz
- * if D == 0
- *     1 MHz <= pllin_rate / P <= 20 MHz
- * else if D > 0
- *     6.667 MHz <= pllin_rate / P <= 20 MHz
- *     4 <= J <= 11
- *     R = 1
- */
+ 
 static int pcm512x_find_pll_coeff(struct snd_soc_dai *dai,
 				  unsigned long pllin_rate,
 				  unsigned long pll_rate)
@@ -754,7 +722,7 @@ static int pcm512x_find_pll_coeff(struct snd_soc_dai *dai,
 	struct pcm512x_priv *pcm512x = snd_soc_component_get_drvdata(component);
 	unsigned long common;
 	int R, J, D, P;
-	unsigned long K; /* 10000 * J.D */
+	unsigned long K;  
 	unsigned long num;
 	unsigned long den;
 
@@ -764,7 +732,7 @@ static int pcm512x_find_pll_coeff(struct snd_soc_dai *dai,
 	num = pll_rate / common;
 	den = pllin_rate / common;
 
-	/* pllin_rate / P (or here, den) cannot be greater than 20 MHz */
+	 
 	if (pllin_rate / den > 20000000 && num < 8) {
 		num *= DIV_ROUND_UP(pllin_rate / den, 20000000);
 		den *= DIV_ROUND_UP(pllin_rate / den, 20000000);
@@ -774,9 +742,9 @@ static int pcm512x_find_pll_coeff(struct snd_soc_dai *dai,
 	P = den;
 	if (den <= 15 && num <= 16 * 63
 	    && 1000000 <= pllin_rate / P && pllin_rate / P <= 20000000) {
-		/* Try the case with D = 0 */
+		 
 		D = 0;
-		/* factor 'num' into J and R, such that R <= 16 and J <= 63 */
+		 
 		for (R = 16; R; R--) {
 			if (num % R)
 				continue;
@@ -788,7 +756,7 @@ static int pcm512x_find_pll_coeff(struct snd_soc_dai *dai,
 			pcm512x->real_pll = pll_rate;
 			goto done;
 		}
-		/* no luck */
+		 
 	}
 
 	R = 1;
@@ -796,7 +764,7 @@ static int pcm512x_find_pll_coeff(struct snd_soc_dai *dai,
 	if (num > 0xffffffffUL / 10000)
 		goto fallback;
 
-	/* Try to find an exact pll_rate using the D > 0 case */
+	 
 	common = gcd(10000 * num, den);
 	num = 10000 * num / common;
 	den /= common;
@@ -808,7 +776,7 @@ static int pcm512x_find_pll_coeff(struct snd_soc_dai *dai,
 		if (num * P % den)
 			continue;
 		K = num * P / den;
-		/* J == 12 is ok if D == 0 */
+		 
 		if (K < 40000 || K > 120000)
 			continue;
 
@@ -819,10 +787,10 @@ static int pcm512x_find_pll_coeff(struct snd_soc_dai *dai,
 		goto done;
 	}
 
-	/* Fall back to an approximate pll_rate */
+	 
 
 fallback:
-	/* find smallest possible P */
+	 
 	P = DIV_ROUND_UP(pllin_rate, 20000000);
 	if (!P)
 		P = 1;
@@ -837,7 +805,7 @@ fallback:
 	K = DIV_ROUND_CLOSEST_ULL(10000ULL * pll_rate * P, pllin_rate);
 	if (K < 40000)
 		K = 40000;
-	/* J == 12 is ok if D == 0 */
+	 
 	if (K > 120000)
 		K = 120000;
 	J = K / 10000;
@@ -862,18 +830,18 @@ static unsigned long pcm512x_pllin_dac_rate(struct snd_soc_dai *dai,
 	unsigned long dac_rate;
 
 	if (!pcm512x->pll_out)
-		return 0; /* no PLL to bypass, force SCK as DAC input */
+		return 0;  
 
 	if (pllin_rate % osr_rate)
-		return 0; /* futile, quit early */
+		return 0;  
 
-	/* run DAC no faster than 6144000 Hz */
+	 
 	for (dac_rate = rounddown(pcm512x_dac_max(pcm512x, 6144000), osr_rate);
 	     dac_rate;
 	     dac_rate -= osr_rate) {
 
 		if (pllin_rate / dac_rate > 128)
-			return 0; /* DAC divider would be too big */
+			return 0;  
 
 		if (!(pllin_rate % dac_rate))
 			return dac_rate;
@@ -995,20 +963,16 @@ static int pcm512x_set_dividers(struct snd_soc_dai *dai,
 		return -EINVAL;
 	}
 
-	/* the actual rate */
+	 
 	sample_rate = sck_rate / bclk_div / lrclk_div;
 	osr_rate = 16 * sample_rate;
 
-	/* run DSP no faster than 50 MHz */
+	 
 	dsp_div = mck_rate > pcm512x_dsp_max(pcm512x) ? 2 : 1;
 
 	dac_rate = pcm512x_pllin_dac_rate(dai, osr_rate, pllin_rate);
 	if (dac_rate) {
-		/* the desired clock rate is "compatible" with the pll input
-		 * clock, so use that clock as dac input instead of the pll
-		 * output clock since the pll will introduce jitter and thus
-		 * noise.
-		 */
+		 
 		dev_dbg(dev, "using pll input as dac input\n");
 		ret = regmap_update_bits(pcm512x->regmap, PCM512x_DAC_REF,
 					 PCM512x_SDAC, PCM512x_SDAC_GPIO);
@@ -1030,7 +994,7 @@ static int pcm512x_set_dividers(struct snd_soc_dai *dai,
 
 		dacsrc_rate = pllin_rate;
 	} else {
-		/* run DAC no faster than 6144000 Hz */
+		 
 		unsigned long dac_mul = pcm512x_dac_max(pcm512x, 6144000)
 			/ osr_rate;
 		unsigned long sck_mul = sck_rate / osr_rate;
@@ -1075,7 +1039,7 @@ static int pcm512x_set_dividers(struct snd_soc_dai *dai,
 	ncp_div = DIV_ROUND_CLOSEST(dac_rate,
 				    pcm512x_ncp_target(pcm512x, dac_rate));
 	if (ncp_div > 128 || dac_rate / ncp_div > 2048000) {
-		/* run NCP no faster than 2048000 Hz, but why? */
+		 
 		ncp_div = DIV_ROUND_UP(dac_rate, 2048000);
 		if (ncp_div > 128) {
 			dev_err(dev, "Failed to find NCP divider\n");
@@ -1585,7 +1549,7 @@ int pcm512x_probe(struct device *dev, struct regmap *regmap)
 		return ret;
 	}
 
-	/* Reset the device, verifying I/O in the process for I2C */
+	 
 	ret = regmap_write(regmap, PCM512x_RESET,
 			   PCM512x_RSTM | PCM512x_RSTR);
 	if (ret != 0) {
@@ -1612,7 +1576,7 @@ int pcm512x_probe(struct device *dev, struct regmap *regmap)
 		}
 	}
 
-	/* Default to standby mode */
+	 
 	ret = regmap_update_bits(pcm512x->regmap, PCM512x_POWER,
 				 PCM512x_RQST, PCM512x_RQST);
 	if (ret != 0) {

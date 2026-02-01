@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-/*
- * Copyright 2015-2020 Amazon.com, Inc. or its affiliates. All rights reserved.
- */
+
+ 
 
 #include <linux/ethtool.h>
 #include <linux/pci.h>
@@ -132,7 +130,7 @@ static void ena_queue_stats(struct ena_adapter *adapter, u64 **data)
 	int i, j;
 
 	for (i = 0; i < adapter->num_io_queues + adapter->xdp_num_queues; i++) {
-		/* Tx stats */
+		 
 		ring = &adapter->tx_ring[i];
 
 		for (j = 0; j < ENA_STATS_ARRAY_TX; j++) {
@@ -142,9 +140,9 @@ static void ena_queue_stats(struct ena_adapter *adapter, u64 **data)
 
 			ena_safe_update_stat(ptr, (*data)++, &ring->syncp);
 		}
-		/* XDP TX queues don't have a RX queue counterpart */
+		 
 		if (!ENA_IS_XDP_INDEX(adapter, i)) {
-			/* Rx stats */
+			 
 			ring = &adapter->rx_ring[i];
 
 			for (j = 0; j < ENA_STATS_ARRAY_RX; j++) {
@@ -252,7 +250,7 @@ static void ena_queue_strings(struct ena_adapter *adapter, u8 **data)
 
 	for (i = 0; i < adapter->num_io_queues + adapter->xdp_num_queues; i++) {
 		is_xdp = ENA_IS_XDP_INDEX(adapter, i);
-		/* Tx stats */
+		 
 		for (j = 0; j < ENA_STATS_ARRAY_TX; j++) {
 			ena_stats = &ena_stats_tx_strings[j];
 
@@ -263,9 +261,7 @@ static void ena_queue_strings(struct ena_adapter *adapter, u8 **data)
 		}
 
 		if (!is_xdp) {
-			/* RX stats, in XDP there isn't a RX queue
-			 * counterpart
-			 */
+			 
 			for (j = 0; j < ENA_STATS_ARRAY_RX; j++) {
 				ena_stats = &ena_stats_rx_strings[j];
 
@@ -515,7 +511,7 @@ static int ena_set_ringparam(struct net_device *netdev,
 	changed |= new_tx_size != adapter->requested_tx_ring_size ||
 		   new_rx_size != adapter->requested_rx_ring_size;
 
-	/* This value is ignored if LLQ is not supported */
+	 
 	new_tx_push_buf_len = adapter->ena_dev->tx_max_header_size;
 
 	if ((adapter->ena_dev->tx_mem_queue_type == ENA_ADMIN_PLACEMENT_POLICY_DEV) !=
@@ -524,7 +520,7 @@ static int ena_set_ringparam(struct net_device *netdev,
 		return -EINVAL;
 	}
 
-	/* Validate that the push buffer is supported on the underlying device */
+	 
 	if (kernel_ring->tx_push_buf_len) {
 		enum ena_admin_placement_policy_type placement;
 
@@ -792,10 +788,7 @@ static int ena_indirection_table_get(struct ena_adapter *adapter, u32 *indir)
 	if (rc)
 		return rc;
 
-	/* Our internal representation of the indices is: even indices
-	 * for Tx and uneven indices for Rx. We need to convert the Rx
-	 * indices to be consecutive
-	 */
+	 
 	for (i = 0; i < ENA_RX_RSS_TABLE_SIZE; i++)
 		indir[i] = ENA_IO_RXQ_IDX_TO_COMBINED_IDX(indir[i]);
 
@@ -814,9 +807,7 @@ static int ena_get_rxfh(struct net_device *netdev, u32 *indir, u8 *key,
 	if (rc)
 		return rc;
 
-	/* We call this function in order to check if the device
-	 * supports getting/setting the hash function.
-	 */
+	 
 	rc = ena_com_get_hash_function(adapter->ena_dev, &ena_func);
 	if (rc) {
 		if (rc == -EOPNOTSUPP)
@@ -905,7 +896,7 @@ static int ena_set_channels(struct net_device *netdev,
 {
 	struct ena_adapter *adapter = netdev_priv(netdev);
 	u32 count = channels->combined_count;
-	/* The check for max value is already done in ethtool */
+	 
 	if (count < ENA_MIN_NUM_IO_QUEUES)
 		return -EINVAL;
 
@@ -1033,7 +1024,7 @@ static void ena_dump_stats_ex(struct ena_adapter *adapter, u8 *buf)
 	ena_get_strings(adapter, strings_buf, false);
 	ena_get_stats(adapter, data_buf, false);
 
-	/* If there is a buffer, dump stats, otherwise print them to dmesg */
+	 
 	if (buf)
 		for (i = 0; i < strings_num; i++) {
 			rc = snprintf(buf, ETH_GSTRING_LEN + sizeof(u64),

@@ -1,19 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * namei.c
- *
- * PURPOSE
- *      Inode name handling routines for the OSTA-UDF(tm) filesystem.
- *
- * COPYRIGHT
- *  (C) 1998-2004 Ben Fennema
- *  (C) 1999-2000 Stelias Computing Inc
- *
- * HISTORY
- *
- *  12/12/98 blf  Created. Split out the lookup code from dir.c
- *  04/19/99 blf  link, mknod, symlink support
- */
+
+ 
 
 #include "udfdecl.h"
 
@@ -37,18 +23,7 @@ static inline int udf_match(int len1, const unsigned char *name1, int len2,
 	return !memcmp(name1, name2, len1);
 }
 
-/**
- * udf_fiiter_find_entry - find entry in given directory.
- *
- * @dir:	directory inode to search in
- * @child:	qstr of the name
- * @iter:	iter to use for searching
- *
- * This function searches in the directory @dir for a file name @child. When
- * found, @iter points to the position in the directory with given entry.
- *
- * Returns 0 on success, < 0 on error (including -ENOENT).
- */
+ 
 static int udf_fiiter_find_entry(struct inode *dir, const struct qstr *child,
 				 struct udf_fileident_iter *iter)
 {
@@ -155,7 +130,7 @@ static int udf_expand_dir_adinicb(struct inode *inode, udf_pblk_t *block)
 		return 0;
 	}
 
-	/* alloc block, and copy data to it */
+	 
 	*block = udf_new_block(inode->i_sb, inode,
 			       iinfo->i_location.partitionReferenceNum,
 			       iinfo->i_location.logicalBlockNum, &ret);
@@ -176,7 +151,7 @@ static int udf_expand_dir_adinicb(struct inode *inode, udf_pblk_t *block)
 	set_buffer_uptodate(dbh);
 	unlock_buffer(dbh);
 
-	/* Drop inline data, add block instead */
+	 
 	iinfo->i_alloc_type = alloctype;
 	memset(iinfo->i_data + iinfo->i_lenEAttr, 0, iinfo->i_lenAlloc);
 	iinfo->i_lenAlloc = 0;
@@ -196,7 +171,7 @@ static int udf_expand_dir_adinicb(struct inode *inode, udf_pblk_t *block)
 	}
 	mark_inode_dirty(inode);
 
-	/* Now fixup tags in moved directory entries */
+	 
 	for (ret = udf_fiiter_init(&iter, inode, 0);
 	     !ret && iter.pos < inode->i_size;
 	     ret = udf_fiiter_advance(&iter)) {
@@ -209,10 +184,7 @@ static int udf_expand_dir_adinicb(struct inode *inode, udf_pblk_t *block)
 		udf_fiiter_write_fi(&iter, impuse);
 	}
 	brelse(dbh);
-	/*
-	 * We don't expect the iteration to fail as the directory has been
-	 * already verified to be correct
-	 */
+	 
 	WARN_ON_ONCE(ret);
 	udf_fiiter_release(&iter);
 
@@ -271,7 +243,7 @@ static int udf_fiiter_add_entry(struct inode *dir, struct dentry *dentry,
 			return ret;
 	}
 
-	/* Get blocknumber to use for entry tag */
+	 
 	if (dinfo->i_alloc_type == ICBTAG_FLAG_AD_IN_ICB) {
 		block = dinfo->i_location.logicalBlockNum;
 	} else {
@@ -281,7 +253,7 @@ static int udf_fiiter_add_entry(struct inode *dir, struct dentry *dentry,
 	off = iter->pos & (blksize - 1);
 	if (!off)
 		off = blksize;
-	/* Entry fits into current block? */
+	 
 	if (blksize - udf_ext0_offset(dir) - off >= nfidlen)
 		goto store_fi;
 
@@ -291,7 +263,7 @@ static int udf_fiiter_add_entry(struct inode *dir, struct dentry *dentry,
 		return ret;
 	}
 
-	/* Entry will be completely in the new block? Update tag location... */
+	 
 	if (!(iter->pos & (blksize - 1)))
 		block = iter->eloc.logicalBlockNum +
 				((iter->elen - 1) >> dir->i_blkbits);
@@ -313,7 +285,7 @@ store_fi:
 	if (dinfo->i_alloc_type == ICBTAG_FLAG_AD_IN_ICB) {
 		dinfo->i_lenAlloc += nfidlen;
 	} else {
-		/* Truncate last extent to proper size */
+		 
 		udf_fiiter_update_elen(iter, iter->elen -
 					(dinfo->i_lenExtents - dir->i_size));
 	}
@@ -756,9 +728,7 @@ static int udf_link(struct dentry *old_dentry, struct inode *dir,
 	return 0;
 }
 
-/* Anybody can rename anything with this: the permission checks are left to the
- * higher-level routines.
- */
+ 
 static int udf_rename(struct mnt_idmap *idmap, struct inode *old_dir,
 		      struct dentry *old_dentry, struct inode *new_dir,
 		      struct dentry *new_dentry, unsigned int flags)
@@ -815,13 +785,13 @@ static int udf_rename(struct mnt_idmap *idmap, struct inode *old_dir,
 	retval = udf_fiiter_find_entry(new_dir, &new_dentry->d_name, &niter);
 	if (retval && retval != -ENOENT)
 		goto out_oiter;
-	/* Entry found but not passed by VFS? */
+	 
 	if (!retval && !new_inode) {
 		retval = -EFSCORRUPTED;
 		udf_fiiter_release(&niter);
 		goto out_oiter;
 	}
-	/* Entry not found? Need to add one... */
+	 
 	if (retval) {
 		udf_fiiter_release(&niter);
 		retval = udf_fiiter_add_entry(new_dir, new_dentry, &niter);
@@ -829,26 +799,18 @@ static int udf_rename(struct mnt_idmap *idmap, struct inode *old_dir,
 			goto out_oiter;
 	}
 
-	/*
-	 * Like most other Unix systems, set the ctime for inodes on a
-	 * rename.
-	 */
+	 
 	inode_set_ctime_current(old_inode);
 	mark_inode_dirty(old_inode);
 
-	/*
-	 * ok, that's it
-	 */
+	 
 	niter.fi.fileVersionNum = oiter.fi.fileVersionNum;
 	niter.fi.fileCharacteristics = oiter.fi.fileCharacteristics;
 	memcpy(&(niter.fi.icb), &(oiter.fi.icb), sizeof(oiter.fi.icb));
 	udf_fiiter_write_fi(&niter, NULL);
 	udf_fiiter_release(&niter);
 
-	/*
-	 * The old entry may have moved due to new entry allocation. Find it
-	 * again.
-	 */
+	 
 	udf_fiiter_release(&oiter);
 	retval = udf_fiiter_find_entry(old_dir, &old_dentry->d_name, &oiter);
 	if (retval) {

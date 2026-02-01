@@ -1,21 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Medion X10 OR22/OR24 RF remote keytable
- *
- * Copyright (C) 2012 Anssi Hannula <anssi.hannula@iki.fi>
- *
- * This keymap is for several Medion X10 remotes that have the Windows MCE
- * button. This has been tested with a "RF VISTA Remote Control", OR24V,
- * P/N 20035335, but should work with other variants that have the same
- * buttons, such as OR22V and OR24E.
- */
+
+ 
 
 #include <linux/module.h>
 #include <media/rc-map.h>
 
 static struct rc_map_table medion_x10_or2x[] = {
 	{ 0x02, KEY_POWER },
-	{ 0x16, KEY_TEXT },   /* "T" in a box, for teletext */
+	{ 0x16, KEY_TEXT },    
 
 	{ 0x09, KEY_VOLUMEUP },
 	{ 0x08, KEY_VOLUMEDOWN },
@@ -28,10 +19,10 @@ static struct rc_map_table medion_x10_or2x[] = {
 	{ 0x34, KEY_YELLOW },
 	{ 0x35, KEY_BLUE },
 
-	{ 0x18, KEY_PVR },    /* record symbol inside a tv symbol */
-	{ 0x04, KEY_DVD },    /* disc symbol */
-	{ 0x31, KEY_EPG },    /* a tv schedule symbol */
-	{ 0x1c, KEY_TV },     /* play symbol inside a tv symbol */
+	{ 0x18, KEY_PVR },     
+	{ 0x04, KEY_DVD },     
+	{ 0x31, KEY_EPG },     
+	{ 0x1c, KEY_TV },      
 	{ 0x20, KEY_BACK },
 	{ 0x2f, KEY_INFO },
 
@@ -41,7 +32,7 @@ static struct rc_map_table medion_x10_or2x[] = {
 	{ 0x1f, KEY_RIGHT },
 	{ 0x1e, KEY_OK },
 
-	{ 0x1b, KEY_MEDIA },  /* Windows MCE button */
+	{ 0x1b, KEY_MEDIA },   
 
 	{ 0x21, KEY_PREVIOUS },
 	{ 0x23, KEY_NEXT },

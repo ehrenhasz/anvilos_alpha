@@ -1,18 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Driver for FPGA Management Engine (FME)
- *
- * Copyright (C) 2017-2018 Intel Corporation, Inc.
- *
- * Authors:
- *   Kang Luwei <luwei.kang@intel.com>
- *   Xiao Guangrong <guangrong.xiao@linux.intel.com>
- *   Joseph Grecco <joe.grecco@intel.com>
- *   Enno Luebbers <enno.luebbers@intel.com>
- *   Tim Whisonant <tim.whisonant@intel.com>
- *   Ananda Ravuri <ananda.ravuri@intel.com>
- *   Henry Mitchel <henry.mitchel@intel.com>
- */
+
+ 
 
 #include <linux/hwmon.h>
 #include <linux/hwmon-sysfs.h>
@@ -40,10 +27,7 @@ static ssize_t ports_num_show(struct device *dev,
 }
 static DEVICE_ATTR_RO(ports_num);
 
-/*
- * Bitstream (static FPGA region) identifier number. It contains the
- * detailed version and other information of this static FPGA region.
- */
+ 
 static ssize_t bitstream_id_show(struct device *dev,
 				 struct device_attribute *attr, char *buf)
 {
@@ -58,10 +42,7 @@ static ssize_t bitstream_id_show(struct device *dev,
 }
 static DEVICE_ATTR_RO(bitstream_id);
 
-/*
- * Bitstream (static FPGA region) meta data. It contains the synthesis
- * date, seed and other information of this static FPGA region.
- */
+ 
 static ssize_t bitstream_metadata_show(struct device *dev,
 				       struct device_attribute *attr, char *buf)
 {
@@ -190,9 +171,9 @@ static const struct dfl_feature_ops fme_hdr_ops = {
 #define TEMP_THRESHOLD2		GENMASK_ULL(14, 8)
 #define TEMP_THRESHOLD2_EN	BIT_ULL(15)
 #define TRIP_THRESHOLD		GENMASK_ULL(30, 24)
-#define TEMP_THRESHOLD1_STATUS	BIT_ULL(32)		/* threshold1 reached */
-#define TEMP_THRESHOLD2_STATUS	BIT_ULL(33)		/* threshold2 reached */
-/* threshold1 policy: 0 - AP2 (90% throttle) / 1 - AP1 (50% throttle) */
+#define TEMP_THRESHOLD1_STATUS	BIT_ULL(32)		 
+#define TEMP_THRESHOLD2_STATUS	BIT_ULL(33)		 
+ 
 #define TEMP_THRESHOLD1_POLICY	BIT_ULL(44)
 
 #define FME_THERM_RDSENSOR_FMT1	0x10
@@ -216,7 +197,7 @@ static umode_t thermal_hwmon_attrs_visible(const void *drvdata,
 {
 	const struct dfl_feature *feature = drvdata;
 
-	/* temperature is always supported, and check hardware cap for others */
+	 
 	if (attr == hwmon_temp_input)
 		return 0444;
 
@@ -317,24 +298,7 @@ static int fme_thermal_mgmt_init(struct platform_device *pdev,
 {
 	struct device *hwmon;
 
-	/*
-	 * create hwmon to allow userspace monitoring temperature and other
-	 * threshold information.
-	 *
-	 * temp1_input      -> FPGA device temperature
-	 * temp1_max        -> hardware threshold 1 -> 50% or 90% throttling
-	 * temp1_crit       -> hardware threshold 2 -> 100% throttling
-	 * temp1_emergency  -> hardware trip_threshold to shutdown FPGA
-	 * temp1_max_alarm  -> hardware threshold 1 alarm
-	 * temp1_crit_alarm -> hardware threshold 2 alarm
-	 *
-	 * create device specific sysfs interfaces, e.g. read temp1_max_policy
-	 * to understand the actual hardware throttling action (50% vs 90%).
-	 *
-	 * If hardware doesn't support automatic throttling per thresholds,
-	 * then all above sysfs interfaces are not visible except temp1_input
-	 * for temperature.
-	 */
+	 
 	hwmon = devm_hwmon_device_register_with_info(&pdev->dev,
 						     "dfl_fme_thermal", feature,
 						     &thermal_hwmon_chip_info,
@@ -361,17 +325,17 @@ static const struct dfl_feature_ops fme_thermal_mgmt_ops = {
 #define PWR_CONSUMED		GENMASK_ULL(17, 0)
 
 #define FME_PWR_THRESHOLD	0x10
-#define PWR_THRESHOLD1		GENMASK_ULL(6, 0)	/* in Watts */
-#define PWR_THRESHOLD2		GENMASK_ULL(14, 8)	/* in Watts */
-#define PWR_THRESHOLD_MAX	0x7f			/* in Watts */
+#define PWR_THRESHOLD1		GENMASK_ULL(6, 0)	 
+#define PWR_THRESHOLD2		GENMASK_ULL(14, 8)	 
+#define PWR_THRESHOLD_MAX	0x7f			 
 #define PWR_THRESHOLD1_STATUS	BIT_ULL(16)
 #define PWR_THRESHOLD2_STATUS	BIT_ULL(17)
 
 #define FME_PWR_XEON_LIMIT	0x18
-#define XEON_PWR_LIMIT		GENMASK_ULL(14, 0)	/* in 0.1 Watts */
+#define XEON_PWR_LIMIT		GENMASK_ULL(14, 0)	 
 #define XEON_PWR_EN		BIT_ULL(15)
 #define FME_PWR_FPGA_LIMIT	0x20
-#define FPGA_PWR_LIMIT		GENMASK_ULL(14, 0)	/* in 0.1 Watts */
+#define FPGA_PWR_LIMIT		GENMASK_ULL(14, 0)	 
 #define FPGA_PWR_EN		BIT_ULL(15)
 
 static int power_hwmon_read(struct device *dev, enum hwmon_sensor_types type,
@@ -592,7 +556,7 @@ static struct dfl_feature_driver fme_feature_drvs[] = {
 static long fme_ioctl_check_extension(struct dfl_feature_platform_data *pdata,
 				      unsigned long arg)
 {
-	/* No extension support for now */
+	 
 	return 0;
 }
 
@@ -652,12 +616,7 @@ static long fme_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 	case DFL_FPGA_CHECK_EXTENSION:
 		return fme_ioctl_check_extension(pdata, arg);
 	default:
-		/*
-		 * Let sub-feature's ioctl function to handle the cmd.
-		 * Sub-feature's ioctl returns -ENODEV when cmd is not
-		 * handled in this sub feature, and returns 0 or other
-		 * error code if cmd is handled.
-		 */
+		 
 		dfl_fpga_dev_for_each_feature(pdata, f) {
 			if (f->ops && f->ops->ioctl) {
 				ret = f->ops->ioctl(pdev, f, cmd, arg);

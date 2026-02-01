@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <sys/types.h>
 #include <errno.h>
 #include <unistd.h>
@@ -21,7 +21,7 @@ get_cpuid(char *buffer, size_t sz)
 
 	nb = scnprintf(buffer, sz, "%lu,%lu$", PVR_VER(pvr), PVR_REV(pvr));
 
-	/* look for end marker to ensure the entire data fit */
+	 
 	if (strchr(buffer, '$')) {
 		buffer[nb-1] = '\0';
 		return 0;

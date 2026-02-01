@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- *  hwmon-sysfs.h - hardware monitoring chip driver sysfs defines
- *
- *  Copyright (C) 2005 Yani Ioannou <yani.ioannou@gmail.com>
- */
+ 
+ 
 #ifndef _LINUX_HWMON_SYSFS_H
 #define _LINUX_HWMON_SYSFS_H
 
@@ -81,4 +77,4 @@ struct sensor_device_attribute_2 sensor_dev_attr_##_name		\
 	SENSOR_DEVICE_ATTR_2(_name, 0200, NULL, _func##_store,		\
 			     _nr, _index)
 
-#endif /* _LINUX_HWMON_SYSFS_H */
+#endif  

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * R-Car Display Unit DRM driver
- *
- * Copyright (C) 2013-2015 Renesas Electronics Corporation
- *
- * Contact: Laurent Pinchart (laurent.pinchart@ideasonboard.com)
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/dma-mapping.h>
@@ -28,9 +22,7 @@
 #include "rcar_du_drv.h"
 #include "rcar_du_kms.h"
 
-/* -----------------------------------------------------------------------------
- * Device Information
- */
+ 
 
 static const struct rcar_du_device_info rzg1_du_r8a7743_info = {
 	.gen = 2,
@@ -40,9 +32,7 @@ static const struct rcar_du_device_info rzg1_du_r8a7743_info = {
 		  | RCAR_DU_FEATURE_TVM_SYNC,
 	.channels_mask = BIT(1) | BIT(0),
 	.routes = {
-		/*
-		 * R8A774[34] has one RGB output and one LVDS output
-		 */
+		 
 		[RCAR_DU_OUTPUT_DPAD0] = {
 			.possible_crtcs = BIT(1) | BIT(0),
 			.port = 0,
@@ -64,9 +54,7 @@ static const struct rcar_du_device_info rzg1_du_r8a7745_info = {
 		  | RCAR_DU_FEATURE_TVM_SYNC,
 	.channels_mask = BIT(1) | BIT(0),
 	.routes = {
-		/*
-		 * R8A7745 has two RGB outputs
-		 */
+		 
 		[RCAR_DU_OUTPUT_DPAD0] = {
 			.possible_crtcs = BIT(0),
 			.port = 0,
@@ -87,10 +75,7 @@ static const struct rcar_du_device_info rzg1_du_r8a77470_info = {
 		  | RCAR_DU_FEATURE_TVM_SYNC,
 	.channels_mask = BIT(1) | BIT(0),
 	.routes = {
-		/*
-		 * R8A77470 has two RGB outputs, one LVDS output, and
-		 * one (currently unsupported) analog video output
-		 */
+		 
 		[RCAR_DU_OUTPUT_DPAD0] = {
 			.possible_crtcs = BIT(0),
 			.port = 0,
@@ -116,10 +101,7 @@ static const struct rcar_du_device_info rcar_du_r8a774a1_info = {
 		  | RCAR_DU_FEATURE_TVM_SYNC,
 	.channels_mask = BIT(2) | BIT(1) | BIT(0),
 	.routes = {
-		/*
-		 * R8A774A1 has one RGB output, one LVDS output and one HDMI
-		 * output.
-		 */
+		 
 		[RCAR_DU_OUTPUT_DPAD0] = {
 			.possible_crtcs = BIT(2),
 			.port = 0,
@@ -147,10 +129,7 @@ static const struct rcar_du_device_info rcar_du_r8a774b1_info = {
 		  | RCAR_DU_FEATURE_TVM_SYNC,
 	.channels_mask = BIT(3) | BIT(1) | BIT(0),
 	.routes = {
-		/*
-		 * R8A774B1 has one RGB output, one LVDS output and one HDMI
-		 * output.
-		 */
+		 
 		[RCAR_DU_OUTPUT_DPAD0] = {
 			.possible_crtcs = BIT(2),
 			.port = 0,
@@ -176,9 +155,7 @@ static const struct rcar_du_device_info rcar_du_r8a774c0_info = {
 		  | RCAR_DU_FEATURE_VSP1_SOURCE,
 	.channels_mask = BIT(1) | BIT(0),
 	.routes = {
-		/*
-		 * R8A774C0 has one RGB output and two LVDS outputs
-		 */
+		 
 		[RCAR_DU_OUTPUT_DPAD0] = {
 			.possible_crtcs = BIT(0) | BIT(1),
 			.port = 0,
@@ -206,10 +183,7 @@ static const struct rcar_du_device_info rcar_du_r8a774e1_info = {
 		  | RCAR_DU_FEATURE_TVM_SYNC,
 	.channels_mask = BIT(3) | BIT(1) | BIT(0),
 	.routes = {
-		/*
-		 * R8A774E1 has one RGB output, one LVDS output and one HDMI
-		 * output.
-		 */
+		 
 		[RCAR_DU_OUTPUT_DPAD0] = {
 			.possible_crtcs = BIT(2),
 			.port = 0,
@@ -234,10 +208,7 @@ static const struct rcar_du_device_info rcar_du_r8a7779_info = {
 		  | RCAR_DU_FEATURE_TVM_SYNC,
 	.channels_mask = BIT(1) | BIT(0),
 	.routes = {
-		/*
-		 * R8A7779 has two RGB outputs and one (currently unsupported)
-		 * TCON output.
-		 */
+		 
 		[RCAR_DU_OUTPUT_DPAD0] = {
 			.possible_crtcs = BIT(0),
 			.port = 0,
@@ -258,11 +229,7 @@ static const struct rcar_du_device_info rcar_du_r8a7790_info = {
 	.quirks = RCAR_DU_QUIRK_ALIGN_128B,
 	.channels_mask = BIT(2) | BIT(1) | BIT(0),
 	.routes = {
-		/*
-		 * R8A7742 and R8A7790 each have one RGB output and two LVDS
-		 * outputs. Additionally R8A7790 supports one TCON output
-		 * (currently unsupported by the driver).
-		 */
+		 
 		[RCAR_DU_OUTPUT_DPAD0] = {
 			.possible_crtcs = BIT(2) | BIT(1) | BIT(0),
 			.port = 0,
@@ -280,7 +247,7 @@ static const struct rcar_du_device_info rcar_du_r8a7790_info = {
 	.num_rpf = 4,
 };
 
-/* M2-W (r8a7791) and M2-N (r8a7793) are identical */
+ 
 static const struct rcar_du_device_info rcar_du_r8a7791_info = {
 	.gen = 2,
 	.features = RCAR_DU_FEATURE_CRTC_IRQ
@@ -289,10 +256,7 @@ static const struct rcar_du_device_info rcar_du_r8a7791_info = {
 		  | RCAR_DU_FEATURE_TVM_SYNC,
 	.channels_mask = BIT(1) | BIT(0),
 	.routes = {
-		/*
-		 * R8A779[13] has one RGB output, one LVDS output and one
-		 * (currently unsupported) TCON output.
-		 */
+		 
 		[RCAR_DU_OUTPUT_DPAD0] = {
 			.possible_crtcs = BIT(1) | BIT(0),
 			.port = 0,
@@ -314,7 +278,7 @@ static const struct rcar_du_device_info rcar_du_r8a7792_info = {
 		  | RCAR_DU_FEATURE_TVM_SYNC,
 	.channels_mask = BIT(1) | BIT(0),
 	.routes = {
-		/* R8A7792 has two RGB outputs. */
+		 
 		[RCAR_DU_OUTPUT_DPAD0] = {
 			.possible_crtcs = BIT(0),
 			.port = 0,
@@ -335,10 +299,7 @@ static const struct rcar_du_device_info rcar_du_r8a7794_info = {
 		  | RCAR_DU_FEATURE_TVM_SYNC,
 	.channels_mask = BIT(1) | BIT(0),
 	.routes = {
-		/*
-		 * R8A7794 has two RGB outputs and one (currently unsupported)
-		 * TCON output.
-		 */
+		 
 		[RCAR_DU_OUTPUT_DPAD0] = {
 			.possible_crtcs = BIT(0),
 			.port = 0,
@@ -360,10 +321,7 @@ static const struct rcar_du_device_info rcar_du_r8a7795_info = {
 		  | RCAR_DU_FEATURE_TVM_SYNC,
 	.channels_mask = BIT(3) | BIT(2) | BIT(1) | BIT(0),
 	.routes = {
-		/*
-		 * R8A7795 has one RGB output, two HDMI outputs and one
-		 * LVDS output.
-		 */
+		 
 		[RCAR_DU_OUTPUT_DPAD0] = {
 			.possible_crtcs = BIT(3),
 			.port = 0,
@@ -395,10 +353,7 @@ static const struct rcar_du_device_info rcar_du_r8a7796_info = {
 		  | RCAR_DU_FEATURE_TVM_SYNC,
 	.channels_mask = BIT(2) | BIT(1) | BIT(0),
 	.routes = {
-		/*
-		 * R8A7796 has one RGB output, one LVDS output and one HDMI
-		 * output.
-		 */
+		 
 		[RCAR_DU_OUTPUT_DPAD0] = {
 			.possible_crtcs = BIT(2),
 			.port = 0,
@@ -426,10 +381,7 @@ static const struct rcar_du_device_info rcar_du_r8a77965_info = {
 		  | RCAR_DU_FEATURE_TVM_SYNC,
 	.channels_mask = BIT(3) | BIT(1) | BIT(0),
 	.routes = {
-		/*
-		 * R8A77965 has one RGB output, one LVDS output and one HDMI
-		 * output.
-		 */
+		 
 		[RCAR_DU_OUTPUT_DPAD0] = {
 			.possible_crtcs = BIT(2),
 			.port = 0,
@@ -457,10 +409,7 @@ static const struct rcar_du_device_info rcar_du_r8a77970_info = {
 		  | RCAR_DU_FEATURE_TVM_SYNC,
 	.channels_mask = BIT(0),
 	.routes = {
-		/*
-		 * R8A77970 and R8A77980 have one RGB output and one LVDS
-		 * output.
-		 */
+		 
 		[RCAR_DU_OUTPUT_DPAD0] = {
 			.possible_crtcs = BIT(0),
 			.port = 0,
@@ -481,10 +430,7 @@ static const struct rcar_du_device_info rcar_du_r8a7799x_info = {
 		  | RCAR_DU_FEATURE_VSP1_SOURCE,
 	.channels_mask = BIT(1) | BIT(0),
 	.routes = {
-		/*
-		 * R8A77990 and R8A77995 have one RGB output and two LVDS
-		 * outputs.
-		 */
+		 
 		[RCAR_DU_OUTPUT_DPAD0] = {
 			.possible_crtcs = BIT(0) | BIT(1),
 			.port = 0,
@@ -510,7 +456,7 @@ static const struct rcar_du_device_info rcar_du_r8a779a0_info = {
 		  | RCAR_DU_FEATURE_NO_BLENDING,
 	.channels_mask = BIT(1) | BIT(0),
 	.routes = {
-		/* R8A779A0 has two MIPI DSI outputs. */
+		 
 		[RCAR_DU_OUTPUT_DSI0] = {
 			.possible_crtcs = BIT(0),
 			.port = 0,
@@ -531,7 +477,7 @@ static const struct rcar_du_device_info rcar_du_r8a779g0_info = {
 		  | RCAR_DU_FEATURE_NO_BLENDING,
 	.channels_mask = BIT(1) | BIT(0),
 	.routes = {
-		/* R8A779G0 has two MIPI DSI outputs. */
+		 
 		[RCAR_DU_OUTPUT_DSI0] = {
 			.possible_crtcs = BIT(0),
 			.port = 0,
@@ -596,9 +542,7 @@ const char *rcar_du_output_name(enum rcar_du_output output)
 	return names[output];
 }
 
-/* -----------------------------------------------------------------------------
- * DRM operations
- */
+ 
 
 DEFINE_DRM_GEM_DMA_FOPS(rcar_du_fops);
 
@@ -614,9 +558,7 @@ static const struct drm_driver rcar_du_driver = {
 	.minor			= 0,
 };
 
-/* -----------------------------------------------------------------------------
- * Power management
- */
+ 
 
 static int rcar_du_pm_suspend(struct device *dev)
 {
@@ -635,9 +577,7 @@ static int rcar_du_pm_resume(struct device *dev)
 static DEFINE_SIMPLE_DEV_PM_OPS(rcar_du_pm_ops,
 				rcar_du_pm_suspend, rcar_du_pm_resume);
 
-/* -----------------------------------------------------------------------------
- * Platform driver
- */
+ 
 
 static void rcar_du_remove(struct platform_device *pdev)
 {
@@ -666,7 +606,7 @@ static int rcar_du_probe(struct platform_device *pdev)
 	if (drm_firmware_drivers_only())
 		return -ENODEV;
 
-	/* Allocate and initialize the R-Car device structure. */
+	 
 	rcdu = devm_drm_dev_alloc(&pdev->dev, &rcar_du_driver,
 				  struct rcar_du_device, ddev);
 	if (IS_ERR(rcdu))
@@ -678,38 +618,28 @@ static int rcar_du_probe(struct platform_device *pdev)
 
 	platform_set_drvdata(pdev, rcdu);
 
-	/* I/O resources */
+	 
 	rcdu->mmio = devm_platform_ioremap_resource(pdev, 0);
 	if (IS_ERR(rcdu->mmio))
 		return PTR_ERR(rcdu->mmio);
 
-	/*
-	 * Set the DMA coherent mask to reflect the DU 32-bit DMA address space
-	 * limitations. When sourcing frames from a VSP the DU doesn't perform
-	 * any memory access so set the mask to 40 bits to accept all buffers.
-	 */
+	 
 	mask = rcar_du_has(rcdu, RCAR_DU_FEATURE_VSP1_SOURCE) ? 40 : 32;
 	ret = dma_coerce_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(mask));
 	if (ret)
 		return ret;
 
-	/* DRM/KMS objects */
+	 
 	ret = rcar_du_modeset_init(rcdu);
 	if (ret < 0) {
-		/*
-		 * Don't use dev_err_probe(), as it would overwrite the probe
-		 * deferral reason recorded in rcar_du_modeset_init().
-		 */
+		 
 		if (ret != -EPROBE_DEFER)
 			dev_err(&pdev->dev,
 				"failed to initialize DRM/KMS (%d)\n", ret);
 		goto error;
 	}
 
-	/*
-	 * Register the DRM device with the core and the connectors with
-	 * sysfs.
-	 */
+	 
 	ret = drm_dev_register(&rcdu->ddev, 0);
 	if (ret)
 		goto error;

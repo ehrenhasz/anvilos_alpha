@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  tifm_core.c - TI FlashMedia driver
- *
- *  Copyright (C) 2006 Alex Dubov <oakad@yahoo.com>
- */
+
+ 
 
 #include <linux/tifm.h>
 #include <linux/slab.h>
@@ -132,7 +128,7 @@ static int tifm_device_resume(struct device *dev)
 #define tifm_device_suspend NULL
 #define tifm_device_resume NULL
 
-#endif /* CONFIG_PM */
+#endif  
 
 static ssize_t type_show(struct device *dev, struct device_attribute *attr,
 			 char *buf)

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * rt5651.c  --  RT5651 ALSA SoC audio codec driver
- *
- * Copyright 2014 Realtek Semiconductor Corp.
- * Author: Bard Liao <bardliao@realtek.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -290,7 +285,7 @@ static const DECLARE_TLV_DB_SCALE(in_vol_tlv, -3450, 150, 0);
 static const DECLARE_TLV_DB_MINMAX(adc_vol_tlv, -1762, 3000);
 static const DECLARE_TLV_DB_SCALE(adc_bst_tlv, 0, 1200, 0);
 
-/* {0, +20, +24, +30, +35, +40, +44, +50, +52} dB */
+ 
 static const DECLARE_TLV_DB_RANGE(bst_tlv,
 	0, 0, TLV_DB_SCALE_ITEM(0, 0, 0),
 	1, 1, TLV_DB_SCALE_ITEM(2000, 0, 0),
@@ -301,7 +296,7 @@ static const DECLARE_TLV_DB_RANGE(bst_tlv,
 	8, 8, TLV_DB_SCALE_ITEM(5200, 0, 0)
 );
 
-/* Interface data select */
+ 
 static const char * const rt5651_data_select[] = {
 	"Normal", "Swap", "left copy to right", "right copy to left"};
 
@@ -312,14 +307,14 @@ static SOC_ENUM_SINGLE_DECL(rt5651_if2_adc_enum, RT5651_DIG_INF_DATA,
 				RT5651_IF2_ADC_SEL_SFT, rt5651_data_select);
 
 static const struct snd_kcontrol_new rt5651_snd_controls[] = {
-	/* Headphone Output Volume */
+	 
 	SOC_DOUBLE_TLV("HP Playback Volume", RT5651_HP_VOL,
 		RT5651_L_VOL_SFT, RT5651_R_VOL_SFT, 39, 1, out_vol_tlv),
-	/* OUTPUT Control */
+	 
 	SOC_DOUBLE_TLV("OUT Playback Volume", RT5651_LOUT_CTRL1,
 		RT5651_L_VOL_SFT, RT5651_R_VOL_SFT, 39, 1, out_vol_tlv),
 
-	/* DAC Digital Volume */
+	 
 	SOC_DOUBLE("DAC2 Playback Switch", RT5651_DAC2_CTRL,
 		RT5651_M_DAC_L2_VOL_SFT, RT5651_M_DAC_R2_VOL_SFT, 1, 1),
 	SOC_DOUBLE_TLV("DAC1 Playback Volume", RT5651_DAC1_DIG_VOL,
@@ -328,18 +323,18 @@ static const struct snd_kcontrol_new rt5651_snd_controls[] = {
 	SOC_DOUBLE_TLV("Mono DAC Playback Volume", RT5651_DAC2_DIG_VOL,
 			RT5651_L_VOL_SFT, RT5651_R_VOL_SFT,
 			175, 0, dac_vol_tlv),
-	/* IN1/IN2/IN3 Control */
+	 
 	SOC_SINGLE_TLV("IN1 Boost", RT5651_IN1_IN2,
 		RT5651_BST_SFT1, 8, 0, bst_tlv),
 	SOC_SINGLE_TLV("IN2 Boost", RT5651_IN1_IN2,
 		RT5651_BST_SFT2, 8, 0, bst_tlv),
 	SOC_SINGLE_TLV("IN3 Boost", RT5651_IN3,
 		RT5651_BST_SFT1, 8, 0, bst_tlv),
-	/* INL/INR Volume Control */
+	 
 	SOC_DOUBLE_TLV("IN Capture Volume", RT5651_INL1_INR1_VOL,
 			RT5651_INL_VOL_SFT, RT5651_INR_VOL_SFT,
 			31, 1, in_vol_tlv),
-	/* ADC Digital Volume Control */
+	 
 	SOC_DOUBLE("ADC Capture Switch", RT5651_ADC_DIG_VOL,
 		RT5651_L_MUTE_SFT, RT5651_R_MUTE_SFT, 1, 1),
 	SOC_DOUBLE_TLV("ADC Capture Volume", RT5651_ADC_DIG_VOL,
@@ -348,12 +343,12 @@ static const struct snd_kcontrol_new rt5651_snd_controls[] = {
 	SOC_DOUBLE_TLV("Mono ADC Capture Volume", RT5651_ADC_DATA,
 			RT5651_L_VOL_SFT, RT5651_R_VOL_SFT,
 			127, 0, adc_vol_tlv),
-	/* ADC Boost Volume Control */
+	 
 	SOC_DOUBLE_TLV("ADC Boost Gain", RT5651_ADC_BST_VOL,
 			RT5651_ADC_L_BST_SFT, RT5651_ADC_R_BST_SFT,
 			3, 0, adc_bst_tlv),
 
-	/* ASRC */
+	 
 	SOC_SINGLE("IF1 ASRC Switch", RT5651_PLL_MODE_1,
 		RT5651_STO1_T_SFT, 1, 0),
 	SOC_SINGLE("IF2 ASRC Switch", RT5651_PLL_MODE_1,
@@ -365,14 +360,7 @@ static const struct snd_kcontrol_new rt5651_snd_controls[] = {
 	SOC_ENUM("DAC IF2 Data Switch", rt5651_if2_dac_enum),
 };
 
-/**
- * set_dmic_clk - Set parameter of dmic.
- *
- * @w: DAPM widget.
- * @kcontrol: The kcontrol of this widget.
- * @event: Event id.
- *
- */
+ 
 static int set_dmic_clk(struct snd_soc_dapm_widget *w,
 	struct snd_kcontrol *kcontrol, int event)
 {
@@ -392,7 +380,7 @@ static int set_dmic_clk(struct snd_soc_dapm_widget *w,
 	return idx;
 }
 
-/* Digital Mixer */
+ 
 static const struct snd_kcontrol_new rt5651_sto1_adc_l_mix[] = {
 	SOC_DAPM_SINGLE("ADC1 Switch", RT5651_STO1_ADC_MIXER,
 			RT5651_M_STO1_ADC_L1_SFT, 1, 1),
@@ -471,7 +459,7 @@ static const struct snd_kcontrol_new rt5651_dd_dac_r_mix[] = {
 			RT5651_M_STO_DD_L2_R_SFT, 1, 1),
 };
 
-/* Analog Input Mixer */
+ 
 static const struct snd_kcontrol_new rt5651_rec_l_mix[] = {
 	SOC_DAPM_SINGLE("INL1 Switch", RT5651_REC_L2_MIXER,
 			RT5651_M_IN1_L_RM_L_SFT, 1, 1),
@@ -494,7 +482,7 @@ static const struct snd_kcontrol_new rt5651_rec_r_mix[] = {
 			RT5651_M_BST1_RM_R_SFT, 1, 1),
 };
 
-/* Analog Output Mixer */
+ 
 
 static const struct snd_kcontrol_new rt5651_out_l_mix[] = {
 	SOC_DAPM_SINGLE("BST1 Switch", RT5651_OUT_L3_MIXER,
@@ -572,7 +560,7 @@ static const struct snd_kcontrol_new hpo_r_mute_control =
 	SOC_DAPM_SINGLE_AUTODISABLE("Switch", RT5651_HP_VOL,
 				    RT5651_R_MUTE_SFT, 1, 1);
 
-/* Stereo ADC source */
+ 
 static const char * const rt5651_stereo1_adc1_src[] = {"DD MIX", "ADC"};
 
 static SOC_ENUM_SINGLE_DECL(
@@ -597,7 +585,7 @@ static const struct snd_kcontrol_new rt5651_sto1_adc_l2_mux =
 static const struct snd_kcontrol_new rt5651_sto1_adc_r2_mux =
 	SOC_DAPM_ENUM("Stereo1 ADC R2 source", rt5651_stereo1_adc2_enum);
 
-/* Mono ADC source */
+ 
 static const char * const rt5651_sto2_adc_l1_src[] = {"DD MIXL", "ADCL"};
 
 static SOC_ENUM_SINGLE_DECL(
@@ -634,7 +622,7 @@ static SOC_ENUM_SINGLE_DECL(
 static const struct snd_kcontrol_new rt5651_sto2_adc_r2_mux =
 	SOC_DAPM_ENUM("Stereo2 ADC2 right source", rt5651_sto2_adc_r2_enum);
 
-/* DAC2 channel source */
+ 
 
 static const char * const rt5651_dac_src[] = {"IF1", "IF2"};
 
@@ -651,7 +639,7 @@ static SOC_ENUM_SINGLE_DECL(
 static const struct snd_kcontrol_new rt5651_dac_r2_mux =
 	SOC_DAPM_ENUM("DAC2 right channel source", rt5651_dac_r2_enum);
 
-/* IF2_ADC channel source */
+ 
 
 static const char * const rt5651_adc_src[] = {"IF1 ADC1", "IF1 ADC2"};
 
@@ -661,7 +649,7 @@ static SOC_ENUM_SINGLE_DECL(rt5651_if2_adc_src_enum, RT5651_DIG_INF_DATA,
 static const struct snd_kcontrol_new rt5651_if2_adc_src_mux =
 	SOC_DAPM_ENUM("IF2 ADC channel source", rt5651_if2_adc_src_enum);
 
-/* PDM select */
+ 
 static const char * const rt5651_pdm_sel[] = {"DD MIX", "Stereo DAC MIX"};
 
 static SOC_ENUM_SINGLE_DECL(
@@ -686,7 +674,7 @@ static int rt5651_amp_power_event(struct snd_soc_dapm_widget *w,
 
 	switch (event) {
 	case SND_SOC_DAPM_POST_PMU:
-		/* depop parameters */
+		 
 		regmap_update_bits(rt5651->regmap, RT5651_PR_BASE +
 			RT5651_CHPUMP_INT_REG1, 0x0700, 0x0200);
 		regmap_update_bits(rt5651->regmap, RT5651_DEPOP_M2,
@@ -697,7 +685,7 @@ static int rt5651_amp_power_event(struct snd_soc_dapm_widget *w,
 			RT5651_HP_SG_DIS | RT5651_HP_CB_PU);
 		regmap_write(rt5651->regmap, RT5651_PR_BASE +
 				RT5651_HP_DCC_INT1, 0x9f00);
-		/* headphone amp power on */
+		 
 		regmap_update_bits(rt5651->regmap, RT5651_PWR_ANLG1,
 			RT5651_PWR_FV1 | RT5651_PWR_FV2, 0);
 		regmap_update_bits(rt5651->regmap, RT5651_PWR_ANLG1,
@@ -724,7 +712,7 @@ static int rt5651_hp_event(struct snd_soc_dapm_widget *w,
 
 	switch (event) {
 	case SND_SOC_DAPM_POST_PMU:
-		/* headphone unmute sequence */
+		 
 		regmap_update_bits(rt5651->regmap, RT5651_DEPOP_M2,
 			RT5651_DEPOP_MASK | RT5651_DIG_DP_MASK,
 			RT5651_DEPOP_AUTO | RT5651_DIG_DP_EN);
@@ -851,7 +839,7 @@ static int rt5651_bst3_event(struct snd_soc_dapm_widget *w,
 }
 
 static const struct snd_soc_dapm_widget rt5651_dapm_widgets[] = {
-	/* ASRC */
+	 
 	SND_SOC_DAPM_SUPPLY_S("I2S1 ASRC", 1, RT5651_PLL_MODE_2,
 			      15, 0, NULL, 0),
 	SND_SOC_DAPM_SUPPLY_S("I2S2 ASRC", 1, RT5651_PLL_MODE_2,
@@ -863,12 +851,12 @@ static const struct snd_soc_dapm_widget rt5651_dapm_widgets[] = {
 	SND_SOC_DAPM_SUPPLY_S("ADC ASRC", 1, RT5651_PLL_MODE_2,
 			      11, 0, NULL, 0),
 
-	/* micbias */
+	 
 	SND_SOC_DAPM_SUPPLY("LDO", RT5651_PWR_ANLG1,
 			RT5651_PWR_LDO_BIT, 0, NULL, 0),
 	SND_SOC_DAPM_SUPPLY("micbias1", RT5651_PWR_ANLG2,
 			RT5651_PWR_MB1_BIT, 0, NULL, 0),
-	/* Input Lines */
+	 
 	SND_SOC_DAPM_INPUT("MIC1"),
 	SND_SOC_DAPM_INPUT("MIC2"),
 	SND_SOC_DAPM_INPUT("MIC3"),
@@ -881,7 +869,7 @@ static const struct snd_soc_dapm_widget rt5651_dapm_widgets[] = {
 	SND_SOC_DAPM_INPUT("DMIC R1"),
 	SND_SOC_DAPM_SUPPLY("DMIC CLK", RT5651_DMIC, RT5651_DMIC_1_EN_SFT,
 			    0, set_dmic_clk, SND_SOC_DAPM_PRE_PMU),
-	/* Boost */
+	 
 	SND_SOC_DAPM_PGA_E("BST1", RT5651_PWR_ANLG2,
 		RT5651_PWR_BST1_BIT, 0, NULL, 0, rt5651_bst1_event,
 		SND_SOC_DAPM_PRE_PMD | SND_SOC_DAPM_POST_PMU),
@@ -891,7 +879,7 @@ static const struct snd_soc_dapm_widget rt5651_dapm_widgets[] = {
 	SND_SOC_DAPM_PGA_E("BST3", RT5651_PWR_ANLG2,
 		RT5651_PWR_BST3_BIT, 0, NULL, 0, rt5651_bst3_event,
 		SND_SOC_DAPM_PRE_PMD | SND_SOC_DAPM_POST_PMU),
-	/* Input Volume */
+	 
 	SND_SOC_DAPM_PGA("INL1 VOL", RT5651_PWR_VOL,
 			 RT5651_PWR_IN1_L_BIT, 0, NULL, 0),
 	SND_SOC_DAPM_PGA("INR1 VOL", RT5651_PWR_VOL,
@@ -901,19 +889,19 @@ static const struct snd_soc_dapm_widget rt5651_dapm_widgets[] = {
 	SND_SOC_DAPM_PGA("INR2 VOL", RT5651_PWR_VOL,
 			 RT5651_PWR_IN2_R_BIT, 0, NULL, 0),
 
-	/* REC Mixer */
+	 
 	SND_SOC_DAPM_MIXER("RECMIXL", RT5651_PWR_MIXER, RT5651_PWR_RM_L_BIT, 0,
 			   rt5651_rec_l_mix, ARRAY_SIZE(rt5651_rec_l_mix)),
 	SND_SOC_DAPM_MIXER("RECMIXR", RT5651_PWR_MIXER, RT5651_PWR_RM_R_BIT, 0,
 			   rt5651_rec_r_mix, ARRAY_SIZE(rt5651_rec_r_mix)),
-	/* ADCs */
+	 
 	SND_SOC_DAPM_ADC("ADC L", NULL, SND_SOC_NOPM, 0, 0),
 	SND_SOC_DAPM_ADC("ADC R", NULL, SND_SOC_NOPM, 0, 0),
 	SND_SOC_DAPM_SUPPLY("ADC L Power", RT5651_PWR_DIG1,
 			    RT5651_PWR_ADC_L_BIT, 0, NULL, 0),
 	SND_SOC_DAPM_SUPPLY("ADC R Power", RT5651_PWR_DIG1,
 			    RT5651_PWR_ADC_R_BIT, 0, NULL, 0),
-	/* ADC Mux */
+	 
 	SND_SOC_DAPM_MUX("Stereo1 ADC L2 Mux", SND_SOC_NOPM, 0, 0,
 			 &rt5651_sto1_adc_l2_mux),
 	SND_SOC_DAPM_MUX("Stereo1 ADC R2 Mux", SND_SOC_NOPM, 0, 0,
@@ -930,7 +918,7 @@ static const struct snd_soc_dapm_widget rt5651_dapm_widgets[] = {
 			 &rt5651_sto2_adc_r1_mux),
 	SND_SOC_DAPM_MUX("Stereo2 ADC R2 Mux", SND_SOC_NOPM, 0, 0,
 			 &rt5651_sto2_adc_r2_mux),
-	/* ADC Mixer */
+	 
 	SND_SOC_DAPM_SUPPLY("Stereo1 Filter", RT5651_PWR_DIG2,
 			    RT5651_PWR_ADC_STO1_F_BIT, 0, NULL, 0),
 	SND_SOC_DAPM_SUPPLY("Stereo2 Filter", RT5651_PWR_DIG2,
@@ -948,7 +936,7 @@ static const struct snd_soc_dapm_widget rt5651_dapm_widgets[] = {
 			   rt5651_sto2_adc_r_mix,
 			   ARRAY_SIZE(rt5651_sto2_adc_r_mix)),
 
-	/* Digital Interface */
+	 
 	SND_SOC_DAPM_SUPPLY("I2S1", RT5651_PWR_DIG1,
 			    RT5651_PWR_I2S1_BIT, 0, NULL, 0),
 	SND_SOC_DAPM_PGA("IF1 DAC", SND_SOC_NOPM, 0, 0, NULL, 0),
@@ -966,29 +954,29 @@ static const struct snd_soc_dapm_widget rt5651_dapm_widgets[] = {
 	SND_SOC_DAPM_MUX("IF2 ADC", SND_SOC_NOPM, 0, 0,
 			 &rt5651_if2_adc_src_mux),
 
-	/* Digital Interface Select */
+	 
 
 	SND_SOC_DAPM_MUX("PDM L Mux", RT5651_PDM_CTL,
 			 RT5651_M_PDM_L_SFT, 1, &rt5651_pdm_l_mux),
 	SND_SOC_DAPM_MUX("PDM R Mux", RT5651_PDM_CTL,
 			 RT5651_M_PDM_R_SFT, 1, &rt5651_pdm_r_mux),
-	/* Audio Interface */
+	 
 	SND_SOC_DAPM_AIF_IN("AIF1RX", "AIF1 Playback", 0, SND_SOC_NOPM, 0, 0),
 	SND_SOC_DAPM_AIF_OUT("AIF1TX", "AIF1 Capture", 0, SND_SOC_NOPM, 0, 0),
 	SND_SOC_DAPM_AIF_IN("AIF2RX", "AIF2 Playback", 0, SND_SOC_NOPM, 0, 0),
 	SND_SOC_DAPM_AIF_OUT("AIF2TX", "AIF2 Capture", 0, SND_SOC_NOPM, 0, 0),
 
-	/* Audio DSP */
+	 
 	SND_SOC_DAPM_PGA("Audio DSP", SND_SOC_NOPM, 0, 0, NULL, 0),
 
-	/* Output Side */
-	/* DAC mixer before sound effect  */
+	 
+	 
 	SND_SOC_DAPM_MIXER("DAC MIXL", SND_SOC_NOPM, 0, 0,
 			   rt5651_dac_l_mix, ARRAY_SIZE(rt5651_dac_l_mix)),
 	SND_SOC_DAPM_MIXER("DAC MIXR", SND_SOC_NOPM, 0, 0,
 			   rt5651_dac_r_mix, ARRAY_SIZE(rt5651_dac_r_mix)),
 
-	/* DAC2 channel Mux */
+	 
 	SND_SOC_DAPM_MUX("DAC L2 Mux", SND_SOC_NOPM, 0, 0, &rt5651_dac_l2_mux),
 	SND_SOC_DAPM_MUX("DAC R2 Mux", SND_SOC_NOPM, 0, 0, &rt5651_dac_r2_mux),
 	SND_SOC_DAPM_PGA("DAC L2 Volume", SND_SOC_NOPM, 0, 0, NULL, 0),
@@ -998,7 +986,7 @@ static const struct snd_soc_dapm_widget rt5651_dapm_widgets[] = {
 			    RT5651_PWR_DAC_STO1_F_BIT, 0, NULL, 0),
 	SND_SOC_DAPM_SUPPLY("Stero2 DAC Power", RT5651_PWR_DIG2,
 			    RT5651_PWR_DAC_STO2_F_BIT, 0, NULL, 0),
-	/* DAC Mixer */
+	 
 	SND_SOC_DAPM_MIXER("Stereo DAC MIXL", SND_SOC_NOPM, 0, 0,
 			   rt5651_sto_dac_l_mix,
 			   ARRAY_SIZE(rt5651_sto_dac_l_mix)),
@@ -1012,19 +1000,19 @@ static const struct snd_soc_dapm_widget rt5651_dapm_widgets[] = {
 			   rt5651_dd_dac_r_mix,
 			   ARRAY_SIZE(rt5651_dd_dac_r_mix)),
 
-	/* DACs */
+	 
 	SND_SOC_DAPM_DAC("DAC L1", NULL, SND_SOC_NOPM, 0, 0),
 	SND_SOC_DAPM_DAC("DAC R1", NULL, SND_SOC_NOPM, 0, 0),
 	SND_SOC_DAPM_SUPPLY("DAC L1 Power", RT5651_PWR_DIG1,
 			    RT5651_PWR_DAC_L1_BIT, 0, NULL, 0),
 	SND_SOC_DAPM_SUPPLY("DAC R1 Power", RT5651_PWR_DIG1,
 			    RT5651_PWR_DAC_R1_BIT, 0, NULL, 0),
-	/* OUT Mixer */
+	 
 	SND_SOC_DAPM_MIXER("OUT MIXL", RT5651_PWR_MIXER, RT5651_PWR_OM_L_BIT,
 			   0, rt5651_out_l_mix, ARRAY_SIZE(rt5651_out_l_mix)),
 	SND_SOC_DAPM_MIXER("OUT MIXR", RT5651_PWR_MIXER, RT5651_PWR_OM_R_BIT,
 			   0, rt5651_out_r_mix, ARRAY_SIZE(rt5651_out_r_mix)),
-	/* Ouput Volume */
+	 
 	SND_SOC_DAPM_SWITCH("OUTVOL L", RT5651_PWR_VOL,
 			    RT5651_PWR_OV_L_BIT, 0, &outvol_l_control),
 	SND_SOC_DAPM_SWITCH("OUTVOL R", RT5651_PWR_VOL,
@@ -1041,7 +1029,7 @@ static const struct snd_soc_dapm_widget rt5651_dapm_widgets[] = {
 			 RT5651_PWR_IN2_L_BIT, 0, NULL, 0),
 	SND_SOC_DAPM_PGA("INR2", RT5651_PWR_VOL,
 			 RT5651_PWR_IN2_R_BIT, 0, NULL, 0),
-	/* HPO/LOUT/Mono Mixer */
+	 
 	SND_SOC_DAPM_MIXER("HPOL MIX", SND_SOC_NOPM, 0, 0,
 			   rt5651_hpo_mix, ARRAY_SIZE(rt5651_hpo_mix)),
 	SND_SOC_DAPM_MIXER("HPOR MIX", SND_SOC_NOPM, 0, 0,
@@ -1068,7 +1056,7 @@ static const struct snd_soc_dapm_widget rt5651_dapm_widgets[] = {
 			    &lout_r_mute_control),
 	SND_SOC_DAPM_POST("HP Post", rt5651_hp_post_event),
 
-	/* Output Lines */
+	 
 	SND_SOC_DAPM_OUTPUT("HPOL"),
 	SND_SOC_DAPM_OUTPUT("HPOR"),
 	SND_SOC_DAPM_OUTPUT("LOUTL"),
@@ -1540,10 +1528,10 @@ static int rt5651_set_bias_level(struct snd_soc_component *component,
 		snd_soc_component_write(component, RT5651_PWR_DIG2, 0x0000);
 		snd_soc_component_write(component, RT5651_PWR_VOL, 0x0000);
 		snd_soc_component_write(component, RT5651_PWR_MIXER, 0x0000);
-		/* Do not touch the LDO voltage select bits on bias-off */
+		 
 		snd_soc_component_update_bits(component, RT5651_PWR_ANLG1,
 			~RT5651_PWR_LDO_DVO_MASK, 0);
-		/* Leave PLL1 and jack-detect power as is, all others off */
+		 
 		snd_soc_component_update_bits(component, RT5651_PWR_ANLG2,
 				    ~(RT5651_PWR_PLL | RT5651_PWR_JD_M), 0);
 		break;
@@ -1562,7 +1550,7 @@ static void rt5651_enable_micbias1_for_ovcd(struct snd_soc_component *component)
 	snd_soc_dapm_mutex_lock(dapm);
 	snd_soc_dapm_force_enable_pin_unlocked(dapm, "LDO");
 	snd_soc_dapm_force_enable_pin_unlocked(dapm, "micbias1");
-	/* OVCD is unreliable when used with RCCLK as sysclk-source */
+	 
 	snd_soc_dapm_force_enable_pin_unlocked(dapm, "Platform Clock");
 	snd_soc_dapm_sync_unlocked(dapm);
 	snd_soc_dapm_mutex_unlock(dapm);
@@ -1648,13 +1636,13 @@ static bool rt5651_jack_inserted(struct snd_soc_component *component)
 		return val == 0;
 }
 
-/* Jack detect and button-press timings */
-#define JACK_SETTLE_TIME	100 /* milli seconds */
+ 
+#define JACK_SETTLE_TIME	100  
 #define JACK_DETECT_COUNT	5
-#define JACK_DETECT_MAXCOUNT	20  /* Aprox. 2 seconds worth of tries */
-#define JACK_UNPLUG_TIME	80  /* milli seconds */
-#define BP_POLL_TIME		10  /* milli seconds */
-#define BP_POLL_MAXCOUNT	200 /* assume something is wrong after this */
+#define JACK_DETECT_MAXCOUNT	20   
+#define JACK_UNPLUG_TIME	80   
+#define BP_POLL_TIME		10   
+#define BP_POLL_MAXCOUNT	200  
 #define BP_THRESHOLD		3
 
 static void rt5651_start_button_press_work(struct snd_soc_component *component)
@@ -1676,14 +1664,14 @@ static void rt5651_button_press_work(struct work_struct *work)
 		container_of(work, struct rt5651_priv, bp_work.work);
 	struct snd_soc_component *component = rt5651->component;
 
-	/* Check the jack was not removed underneath us */
+	 
 	if (!rt5651_jack_inserted(component))
 		return;
 
 	if (rt5651_micbias1_ovcd(component)) {
 		rt5651->release_count = 0;
 		rt5651->press_count++;
-		/* Remember till after JACK_UNPLUG_TIME wait */
+		 
 		if (rt5651->press_count >= BP_THRESHOLD)
 			rt5651->pressed = true;
 		rt5651_clear_micbias1_ovcd(component);
@@ -1692,10 +1680,7 @@ static void rt5651_button_press_work(struct work_struct *work)
 		rt5651->release_count++;
 	}
 
-	/*
-	 * The pins get temporarily shorted on jack unplug, so we poll for
-	 * at least JACK_UNPLUG_TIME milli-seconds before reporting a press.
-	 */
+	 
 	rt5651->poll_count++;
 	if (rt5651->poll_count < (JACK_UNPLUG_TIME / BP_POLL_TIME)) {
 		schedule_delayed_work(&rt5651->bp_work,
@@ -1715,9 +1700,9 @@ static void rt5651_button_press_work(struct work_struct *work)
 			dev_dbg(component->dev, "headset button release\n");
 			snd_soc_jack_report(rt5651->hp_jack, 0, SND_JACK_BTN_0);
 		}
-		/* Re-enable OVCD IRQ to detect next press */
+		 
 		rt5651_enable_micbias1_ovcd_irq(component);
-		return; /* Stop polling */
+		return;  
 	}
 
 	schedule_delayed_work(&rt5651->bp_work, msecs_to_jiffies(BP_POLL_TIME));
@@ -1727,29 +1712,19 @@ static int rt5651_detect_headset(struct snd_soc_component *component)
 {
 	int i, headset_count = 0, headphone_count = 0;
 
-	/*
-	 * We get the insertion event before the jack is fully inserted at which
-	 * point the second ring on a TRRS connector may short the 2nd ring and
-	 * sleeve contacts, also the overcurrent detection is not entirely
-	 * reliable. So we try several times with a wait in between until we
-	 * detect the same type JACK_DETECT_COUNT times in a row.
-	 */
+	 
 	for (i = 0; i < JACK_DETECT_MAXCOUNT; i++) {
-		/* Clear any previous over-current status flag */
+		 
 		rt5651_clear_micbias1_ovcd(component);
 
 		msleep(JACK_SETTLE_TIME);
 
-		/* Check the jack is still connected before checking ovcd */
+		 
 		if (!rt5651_jack_inserted(component))
 			return 0;
 
 		if (rt5651_micbias1_ovcd(component)) {
-			/*
-			 * Over current detected, there is a short between the
-			 * 2nd ring contact and the ground, so a TRS connector
-			 * without a mic contact and thus plain headphones.
-			 */
+			 
 			dev_dbg(component->dev, "mic-gnd shorted\n");
 			headset_count = 0;
 			headphone_count++;
@@ -1773,7 +1748,7 @@ static bool rt5651_support_button_press(struct rt5651_priv *rt5651)
 	if (!rt5651->hp_jack)
 		return false;
 
-	/* Button press support only works with internal jack-detection */
+	 
 	return (rt5651->hp_jack->status & SND_JACK_MICROPHONE) &&
 		rt5651->gpiod_hp_det == NULL;
 }
@@ -1786,7 +1761,7 @@ static void rt5651_jack_detect_work(struct work_struct *work)
 	int report;
 
 	if (!rt5651_jack_inserted(component)) {
-		/* Jack removed, or spurious IRQ? */
+		 
 		if (rt5651->hp_jack->status & SND_JACK_HEADPHONE) {
 			if (rt5651->hp_jack->status & SND_JACK_MICROPHONE) {
 				cancel_delayed_work_sync(&rt5651->bp_work);
@@ -1798,40 +1773,27 @@ static void rt5651_jack_detect_work(struct work_struct *work)
 			dev_dbg(component->dev, "jack unplugged\n");
 		}
 	} else if (!(rt5651->hp_jack->status & SND_JACK_HEADPHONE)) {
-		/* Jack inserted */
+		 
 		WARN_ON(rt5651->ovcd_irq_enabled);
 		rt5651_enable_micbias1_for_ovcd(component);
 		report = rt5651_detect_headset(component);
 		dev_dbg(component->dev, "detect report %#02x\n", report);
 		snd_soc_jack_report(rt5651->hp_jack, report, SND_JACK_HEADSET);
 		if (rt5651_support_button_press(rt5651)) {
-			/* Enable ovcd IRQ for button press detect. */
+			 
 			rt5651_enable_micbias1_ovcd_irq(component);
 		} else {
-			/* No more need for overcurrent detect. */
+			 
 			rt5651_disable_micbias1_for_ovcd(component);
 		}
 	} else if (rt5651->ovcd_irq_enabled && rt5651_micbias1_ovcd(component)) {
 		dev_dbg(component->dev, "OVCD IRQ\n");
 
-		/*
-		 * The ovcd IRQ keeps firing while the button is pressed, so
-		 * we disable it and start polling the button until released.
-		 *
-		 * The disable will make the IRQ pin 0 again and since we get
-		 * IRQs on both edges (so as to detect both jack plugin and
-		 * unplug) this means we will immediately get another IRQ.
-		 * The ovcd_irq_enabled check above makes the 2ND IRQ a NOP.
-		 */
+		 
 		rt5651_disable_micbias1_ovcd_irq(component);
 		rt5651_start_button_press_work(component);
 
-		/*
-		 * If the jack-detect IRQ flag goes high (unplug) after our
-		 * above rt5651_jack_inserted() check and before we have
-		 * disabled the OVCD IRQ, the IRQ pin will stay high and as
-		 * we react to edges, we miss the unplug event -> recheck.
-		 */
+		 
 		queue_work(system_long_wq, &rt5651->jack_detect_work);
 	}
 }
@@ -1860,18 +1822,18 @@ static void rt5651_enable_jack_detect(struct snd_soc_component *component,
 	struct rt5651_priv *rt5651 = snd_soc_component_get_drvdata(component);
 	bool using_internal_jack_detect = true;
 
-	/* Select jack detect source */
+	 
 	switch (rt5651->jd_src) {
 	case RT5651_JD_NULL:
 		rt5651->gpiod_hp_det = gpiod_hp_det;
 		if (!rt5651->gpiod_hp_det)
-			return; /* No jack detect */
+			return;  
 		using_internal_jack_detect = false;
 		break;
 	case RT5651_JD1_1:
 		snd_soc_component_update_bits(component, RT5651_JD_CTRL2,
 			RT5651_JD_TRG_SEL_MASK, RT5651_JD_TRG_SEL_JD1_1);
-		/* active-low is normal, set inv flag for active-high */
+		 
 		if (rt5651->jd_active_high)
 			snd_soc_component_update_bits(component,
 				RT5651_IRQ_CTRL1,
@@ -1886,7 +1848,7 @@ static void rt5651_enable_jack_detect(struct snd_soc_component *component,
 	case RT5651_JD1_2:
 		snd_soc_component_update_bits(component, RT5651_JD_CTRL2,
 			RT5651_JD_TRG_SEL_MASK, RT5651_JD_TRG_SEL_JD1_2);
-		/* active-low is normal, set inv flag for active-high */
+		 
 		if (rt5651->jd_active_high)
 			snd_soc_component_update_bits(component,
 				RT5651_IRQ_CTRL1,
@@ -1901,7 +1863,7 @@ static void rt5651_enable_jack_detect(struct snd_soc_component *component,
 	case RT5651_JD2:
 		snd_soc_component_update_bits(component, RT5651_JD_CTRL2,
 			RT5651_JD_TRG_SEL_MASK, RT5651_JD_TRG_SEL_JD2);
-		/* active-low is normal, set inv flag for active-high */
+		 
 		if (rt5651->jd_active_high)
 			snd_soc_component_update_bits(component,
 				RT5651_IRQ_CTRL1,
@@ -1919,16 +1881,16 @@ static void rt5651_enable_jack_detect(struct snd_soc_component *component,
 	}
 
 	if (using_internal_jack_detect) {
-		/* IRQ output on GPIO1 */
+		 
 		snd_soc_component_update_bits(component, RT5651_GPIO_CTRL1,
 			RT5651_GP1_PIN_MASK, RT5651_GP1_PIN_IRQ);
 
-		/* Enable jack detect power */
+		 
 		snd_soc_component_update_bits(component, RT5651_PWR_ANLG2,
 			RT5651_PWR_JD_M, RT5651_PWR_JD_M);
 	}
 
-	/* Set OVCD threshold current and scale-factor */
+	 
 	snd_soc_component_write(component, RT5651_PR_BASE + RT5651_BIAS_CUR4,
 				0xa800 | rt5651->ovcd_sf);
 
@@ -1942,15 +1904,7 @@ static void rt5651_enable_jack_detect(struct snd_soc_component *component,
 				      RT5651_PWR_MB_PU |
 				      RT5651_PWR_CLK12M_PU);
 
-	/*
-	 * The over-current-detect is only reliable in detecting the absence
-	 * of over-current, when the mic-contact in the jack is short-circuited,
-	 * the hardware periodically retries if it can apply the bias-current
-	 * leading to the ovcd status flip-flopping 1-0-1 with it being 0 about
-	 * 10% of the time, as we poll the ovcd status bit we might hit that
-	 * 10%, so we enable sticky mode and when checking OVCD we clear the
-	 * status, msleep() a bit and then check to get a reliable reading.
-	 */
+	 
 	snd_soc_component_update_bits(component, RT5651_IRQ_CTRL2,
 		RT5651_MB1_OC_STKY_MASK, RT5651_MB1_OC_STKY_EN);
 
@@ -1961,7 +1915,7 @@ static void rt5651_enable_jack_detect(struct snd_soc_component *component,
 	}
 
 	enable_irq(rt5651->irq);
-	/* sync initial jack state */
+	 
 	queue_work(system_power_efficient_wq, &rt5651->jack_detect_work);
 }
 
@@ -1992,13 +1946,7 @@ static int rt5651_set_jack(struct snd_soc_component *component,
 	return 0;
 }
 
-/*
- * Note on some platforms the platform code may need to add device-properties,
- * rather then relying only on properties set by the firmware. Therefor the
- * property parsing MUST be done from the component driver's probe function,
- * rather then from the i2c driver's probe function, so that the platform-code
- * can attach extra properties before calling snd_soc_register_card().
- */
+ 
 static void rt5651_apply_properties(struct snd_soc_component *component)
 {
 	struct rt5651_priv *rt5651 = snd_soc_component_get_drvdata(component);
@@ -2019,11 +1967,7 @@ static void rt5651_apply_properties(struct snd_soc_component *component)
 	if (device_property_read_bool(component->dev, "realtek,jack-detect-not-inverted"))
 		rt5651->jd_active_high = true;
 
-	/*
-	 * Testing on various boards has shown that good defaults for the OVCD
-	 * threshold and scale-factor are 2000µA and 0.75. For an effective
-	 * limit of 1500µA, this seems to be more reliable then 1500µA and 1.0.
-	 */
+	 
 	rt5651->ovcd_th = RT5651_MIC1_OVTH_2000UA;
 	rt5651->ovcd_sf = RT5651_MIC_OVCD_SF_0P75;
 
@@ -2204,10 +2148,7 @@ static const struct i2c_device_id rt5651_i2c_id[] = {
 };
 MODULE_DEVICE_TABLE(i2c, rt5651_i2c_id);
 
-/*
- * Note this function MUST not look at device-properties, see the comment
- * above rt5651_apply_properties().
- */
+ 
 static int rt5651_i2c_probe(struct i2c_client *i2c)
 {
 	struct rt5651_priv *rt5651;
@@ -2252,7 +2193,7 @@ static int rt5651_i2c_probe(struct i2c_client *i2c)
 	INIT_DELAYED_WORK(&rt5651->bp_work, rt5651_button_press_work);
 	INIT_WORK(&rt5651->jack_detect_work, rt5651_jack_detect_work);
 
-	/* Make sure work is stopped on probe-error / remove */
+	 
 	ret = devm_add_action_or_reset(&i2c->dev, rt5651_cancel_work, rt5651);
 	if (ret)
 		return ret;

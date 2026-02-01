@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-/*
- * Copyright (c) 2023 The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/of.h>
@@ -16,7 +14,7 @@
 			gpio##id##_pins, 		\
 			ARRAY_SIZE(gpio##id##_pins)),	\
 		.funcs = (int[]){			\
-			msm_mux_gpio, /* gpio mode */	\
+			msm_mux_gpio,  	\
 			msm_mux_##f1,			\
 			msm_mux_##f2,			\
 			msm_mux_##f3,			\
@@ -766,7 +764,7 @@ static const struct msm_pingroup ipq9574_groups[] = {
 	PINGROUP(64, blsp1_spi, audio_pdm1, tsens_max, _, _, _, _, _, _),
 };
 
-/* Reserving GPIO59 for controlling the QFPROM LDO regulator */
+ 
 static const int ipq9574_reserved_gpios[] = {
 	59, -1
 };

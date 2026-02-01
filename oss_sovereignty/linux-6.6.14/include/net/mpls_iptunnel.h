@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2015 Cumulus Networks, Inc.
- */
+ 
+ 
 
 #ifndef _NET_MPLS_IPTUNNEL_H
 #define _NET_MPLS_IPTUNNEL_H 1

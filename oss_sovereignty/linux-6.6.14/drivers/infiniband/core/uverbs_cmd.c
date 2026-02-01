@@ -1,37 +1,4 @@
-/*
- * Copyright (c) 2005 Topspin Communications.  All rights reserved.
- * Copyright (c) 2005, 2006, 2007 Cisco Systems.  All rights reserved.
- * Copyright (c) 2005 PathScale, Inc.  All rights reserved.
- * Copyright (c) 2006 Mellanox Technologies.  All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 
 #include <linux/file.h>
 #include <linux/fs.h>
@@ -47,14 +14,7 @@
 #include "uverbs.h"
 #include "core_priv.h"
 
-/*
- * Copy a response to userspace. If the provided 'resp' is larger than the
- * user buffer it is silently truncated. If the user provided a larger buffer
- * then the trailing portion is zero filled.
- *
- * These semantics are intended to support future extension of the output
- * structures.
- */
+ 
 static int uverbs_response(struct uverbs_attr_bundle *attrs, const void *resp,
 			   size_t resp_len)
 {
@@ -69,10 +29,7 @@ static int uverbs_response(struct uverbs_attr_bundle *attrs, const void *resp,
 		return -EFAULT;
 
 	if (resp_len < attrs->ucore.outlen) {
-		/*
-		 * Zero fill any extra memory that user
-		 * space might have provided.
-		 */
+		 
 		ret = clear_user(attrs->ucore.outbuf + resp_len,
 				 attrs->ucore.outlen - resp_len);
 		if (ret)
@@ -82,12 +39,7 @@ static int uverbs_response(struct uverbs_attr_bundle *attrs, const void *resp,
 	return 0;
 }
 
-/*
- * Copy a request from userspace. If the provided 'req' is larger than the
- * user buffer then the user buffer is zero extended into the 'req'. If 'req'
- * is smaller than the user buffer then the uncopied bytes in the user buffer
- * must be zero.
- */
+ 
 static int uverbs_request(struct uverbs_attr_bundle *attrs, void *req,
 			  size_t req_len)
 {
@@ -106,22 +58,14 @@ static int uverbs_request(struct uverbs_attr_bundle *attrs, void *req,
 	return 0;
 }
 
-/*
- * Generate the value for the 'response_length' protocol used by write_ex.
- * This is the number of bytes the kernel actually wrote. Userspace can use
- * this to detect what structure members in the response the kernel
- * understood.
- */
+ 
 static u32 uverbs_response_length(struct uverbs_attr_bundle *attrs,
 				  size_t resp_len)
 {
 	return min_t(size_t, attrs->ucore.outlen, resp_len);
 }
 
-/*
- * The iterator version of the request interface is for handlers that need to
- * step over a flex array at the end of a command header.
- */
+ 
 struct uverbs_req_iter {
 	const void __user *cur;
 	const void __user *end;
@@ -174,11 +118,7 @@ static int uverbs_request_finish(struct uverbs_req_iter *iter)
 	return 0;
 }
 
-/*
- * When calling a destroy function during an error unwind we need to pass in
- * the udata that is sanitized of all user arguments. Ie from the driver
- * perspective it looks like no udata was passed.
- */
+ 
 struct ib_udata *uverbs_get_cleared_udata(struct uverbs_attr_bundle *attrs)
 {
 	attrs->driver_udata = (struct ib_udata){};
@@ -254,10 +194,7 @@ int ib_init_ucontext(struct uverbs_attr_bundle *attrs)
 
 	rdma_restrack_add(&ucontext->res);
 
-	/*
-	 * Make sure that ib_uverbs_get_ucontext() sees the pointer update
-	 * only after all writes to setup the ucontext have completed
-	 */
+	 
 	smp_store_release(&file->ucontext, ucontext);
 
 	mutex_unlock(&file->ucontext_lock);
@@ -582,7 +519,7 @@ static int ib_uverbs_open_xrcd(struct uverbs_attr_bundle *attrs)
 	mutex_lock(&ibudev->xrcd_tree_mutex);
 
 	if (cmd.fd != -1) {
-		/* search for file descriptor */
+		 
 		f = fdget(cmd.fd);
 		if (!f.file) {
 			ret = -EBADF;
@@ -592,7 +529,7 @@ static int ib_uverbs_open_xrcd(struct uverbs_attr_bundle *attrs)
 		inode = file_inode(f.file);
 		xrcd = find_xrcd(ibudev, inode);
 		if (!xrcd && !(cmd.oflags & O_CREAT)) {
-			/* no file descriptor. Need CREATE flag */
+			 
 			ret = -EAGAIN;
 			goto err_tree_mutex_unlock;
 		}
@@ -624,7 +561,7 @@ static int ib_uverbs_open_xrcd(struct uverbs_attr_bundle *attrs)
 
 	if (inode) {
 		if (new_xrcd) {
-			/* create new inode/xrcd table entry */
+			 
 			ret = xrcd_table_insert(ibudev, inode, xrcd);
 			if (ret)
 				goto err_dealloc_xrcd;
@@ -817,10 +754,7 @@ static int ib_uverbs_rereg_mr(struct uverbs_attr_bundle *attrs)
 		new_pd = mr->pd;
 	}
 
-	/*
-	 * The driver might create a new HW object as part of the rereg, we need
-	 * to have a uobject ready to hold it.
-	 */
+	 
 	new_uobj = uobj_alloc(UVERBS_OBJECT_MR, attrs, &ib_dev);
 	if (IS_ERR(new_uobj)) {
 		ret = PTR_ERR(new_uobj);
@@ -846,10 +780,7 @@ static int ib_uverbs_rereg_mr(struct uverbs_attr_bundle *attrs)
 		rdma_restrack_set_name(&new_mr->res, NULL);
 		rdma_restrack_add(&new_mr->res);
 
-		/*
-		 * The new uobj for the new HW object is put into the same spot
-		 * in the IDR and the old uobj & HW object is deleted.
-		 */
+		 
 		rdma_assign_uobject(uobj, new_uobj, attrs);
 		rdma_alloc_commit_uobject(new_uobj, attrs);
 		uobj_put_destroy(uobj);
@@ -1192,7 +1123,7 @@ static int ib_uverbs_poll_cq(struct uverbs_attr_bundle *attrs)
 	if (!cq)
 		return -EINVAL;
 
-	/* we copy a struct ib_uverbs_poll_cq_resp to user space */
+	 
 	header_ptr = attrs->ucore.outbuf;
 	data_ptr = header_ptr + sizeof resp;
 
@@ -1711,7 +1642,7 @@ out:
 	return ret;
 }
 
-/* Remove ignored fields set in the attribute mask */
+ 
 static int modify_qp_mask(enum ib_qp_type qp_type, int mask)
 {
 	switch (qp_type) {
@@ -1780,38 +1711,13 @@ static int modify_qp(struct uverbs_attr_bundle *attrs,
 
 		if (cmd->base.attr_mask & IB_QP_STATE &&
 		    cmd->base.qp_state == IB_QPS_RTR) {
-		/* We are in INIT->RTR TRANSITION (if we are not,
-		 * this transition will be rejected in subsequent checks).
-		 * In the INIT->RTR transition, we cannot have IB_QP_PORT set,
-		 * but the IB_QP_STATE flag is required.
-		 *
-		 * Since kernel 3.14 (commit dbf727de7440), the uverbs driver,
-		 * when IB_QP_AV is set, has required inclusion of a valid
-		 * port number in the primary AV. (AVs are created and handled
-		 * differently for infiniband and ethernet (RoCE) ports).
-		 *
-		 * Check the port number included in the primary AV against
-		 * the port number in the qp struct, which was set (and saved)
-		 * in the RST->INIT transition.
-		 */
+		 
 			if (cmd->base.dest.port_num != qp->real_qp->port) {
 				ret = -EINVAL;
 				goto release_qp;
 			}
 		} else {
-		/* We are in SQD->SQD. (If we are not, this transition will
-		 * be rejected later in the verbs layer checks).
-		 * Check for both IB_QP_PORT and IB_QP_AV, these can be set
-		 * together in the SQD->SQD transition.
-		 *
-		 * If only IP_QP_AV was set, add in IB_QP_PORT as well (the
-		 * verbs layer driver does not track primary port changes
-		 * resulting from path migration. Thus, in SQD, if the primary
-		 * AV is modified, the primary port should also be modified).
-		 *
-		 * Note that in this transition, the IB_QP_STATE flag
-		 * is not allowed.
-		 */
+		 
 			if (((cmd->base.attr_mask & (IB_QP_AV | IB_QP_PORT))
 			     == (IB_QP_AV | IB_QP_PORT)) &&
 			    cmd->base.port_num != cmd->base.dest.port_num) {
@@ -1940,10 +1846,7 @@ static int ib_uverbs_ex_modify_qp(struct uverbs_attr_bundle *attrs)
 	if (ret)
 		return ret;
 
-	/*
-	 * Last bit is reserved for extending the attr_mask by
-	 * using another field.
-	 */
+	 
 	if (cmd.base.attr_mask & ~(IB_QP_ATTR_STANDARD_BITS | IB_QP_RATE_LIMIT))
 		return -EOPNOTSUPP;
 
@@ -2701,10 +2604,7 @@ static int kern_spec_to_ib_spec_action(struct uverbs_attr_bundle *attrs,
 static ssize_t spec_filter_size(const void *kern_spec_filter, u16 kern_filter_size,
 				u16 ib_real_filter_sz)
 {
-	/*
-	 * User space filter structures must be 64 bit aligned, otherwise this
-	 * may pass, but we won't handle additional new attributes.
-	 */
+	 
 
 	if (kern_filter_size > ib_real_filter_sz) {
 		if (memchr_inv(kern_spec_filter +
@@ -2725,7 +2625,7 @@ int ib_uverbs_kern_spec_to_ib_spec_filter(enum ib_flow_spec_type type,
 	ssize_t actual_filter_sz;
 	ssize_t ib_filter_sz;
 
-	/* User flow spec size must be aligned to 4 bytes */
+	 
 	if (kern_filter_sz != ALIGN(kern_filter_sz, 4))
 		return -EINVAL;
 
@@ -3676,15 +3576,7 @@ static int ib_uverbs_ex_modify_cq(struct uverbs_attr_bundle *attrs)
 	return ret;
 }
 
-/*
- * Describe the input structs for write(). Some write methods have an input
- * only struct, most have an input and output. If the struct has an output then
- * the 'response' u64 must be the first field in the request structure.
- *
- * If udata is present then both the request and response structs have a
- * trailing driver_data flex array. In this case the size of the base struct
- * cannot be changed.
- */
+ 
 #define UAPI_DEF_WRITE_IO(req, resp)                                           \
 	.write.has_resp = 1 +                                                  \
 			  BUILD_BUG_ON_ZERO(offsetof(req, response) != 0) +    \
@@ -3709,10 +3601,7 @@ static int ib_uverbs_ex_modify_cq(struct uverbs_attr_bundle *attrs)
 			1 + BUILD_BUG_ON_ZERO(offsetof(req, driver_data) !=    \
 					      sizeof(req))
 
-/*
- * The _EX versions are for use with WRITE_EX and allow the last struct member
- * to be specified. Buffers that do not include that member will be rejected.
- */
+ 
 #define UAPI_DEF_WRITE_IO_EX(req, req_last_member, resp, resp_last_member)     \
 	.write.has_resp = 1,                                                   \
 	.write.req_size = offsetofend(req, req_last_member),                   \

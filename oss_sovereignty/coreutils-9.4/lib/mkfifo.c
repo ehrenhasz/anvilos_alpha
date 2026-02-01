@@ -1,20 +1,4 @@
-/* Create a named fifo.
-   Copyright (C) 2009-2023 Free Software Foundation, Inc.
-
-   This file is free software: you can redistribute it and/or modify
-   it under the terms of the GNU Lesser General Public License as
-   published by the Free Software Foundation, either version 3 of the
-   License, or (at your option) any later version.
-
-   This file is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU Lesser General Public License for more details.
-
-   You should have received a copy of the GNU Lesser General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* written by Eric Blake */
+ 
 
 #include <config.h>
 
@@ -24,7 +8,7 @@
 #include <string.h>
 
 #if !HAVE_MKFIFO
-/* Mingw lacks mkfifo; always fail with ENOSYS.  */
+ 
 
 int
 mkfifo (_GL_UNUSED char const *name, _GL_UNUSED mode_t mode)
@@ -33,12 +17,11 @@ mkfifo (_GL_UNUSED char const *name, _GL_UNUSED mode_t mode)
   return -1;
 }
 
-#else /* HAVE_MKFIFO */
+#else  
 
 # undef mkfifo
 
-/* Create a named fifo FILE, with access permissions in MODE.  Work
-around trailing slash bugs.  */
+ 
 
 int
 rpl_mkfifo (char const *name, mode_t mode)
@@ -55,4 +38,4 @@ rpl_mkfifo (char const *name, mode_t mode)
 # endif
   return mkfifo (name, mode);
 }
-#endif /* HAVE_MKFIFO */
+#endif  

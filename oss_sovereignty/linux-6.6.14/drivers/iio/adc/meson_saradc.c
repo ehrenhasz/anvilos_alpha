@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Amlogic Meson Successive Approximation Register (SAR) A/D Converter
- *
- * Copyright (C) 2017 Martin Blumenstingl <martin.blumenstingl@googlemail.com>
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/clk.h>
@@ -148,11 +144,7 @@
 	#define MESON_SAR_ADC_DELTA_10_TS_VBG_EN		BIT(10)
 	#define MESON_SAR_ADC_DELTA_10_CHAN0_DELTA_VALUE_MASK	GENMASK(9, 0)
 
-/*
- * NOTE: registers from here are undocumented (the vendor Linux kernel driver
- * and u-boot source served as reference). These only seem to be relevant on
- * GXBB and newer.
- */
+ 
 #define MESON_SAR_ADC_REG11					0x2c
 	#define MESON_SAR_ADC_REG11_BANDGAP_EN			BIT(13)
 	#define MESON_SAR_ADC_REG11_CMV_SEL                     BIT(6)
@@ -164,12 +156,12 @@
 	#define MESON_SAR_ADC_REG13_12BIT_CALIBRATION_MASK	GENMASK(13, 8)
 
 #define MESON_SAR_ADC_MAX_FIFO_SIZE				32
-#define MESON_SAR_ADC_TIMEOUT					100 /* ms */
+#define MESON_SAR_ADC_TIMEOUT					100  
 #define MESON_SAR_ADC_VOLTAGE_AND_TEMP_CHANNEL			6
 #define MESON_SAR_ADC_VOLTAGE_AND_MUX_CHANNEL			7
 #define MESON_SAR_ADC_TEMP_OFFSET				27
 
-/* temperature sensor calibration information in eFuse */
+ 
 #define MESON_SAR_ADC_EFUSE_BYTES				4
 #define MESON_SAR_ADC_EFUSE_BYTE3_UPPER_ADC_VAL			GENMASK(6, 0)
 #define MESON_SAR_ADC_EFUSE_BYTE3_IS_CALIBRATED			BIT(7)
@@ -177,7 +169,7 @@
 #define MESON_HHI_DPLL_TOP_0					0x318
 #define MESON_HHI_DPLL_TOP_0_TSC_BIT4				BIT(9)
 
-/* for use with IIO_VAL_INT_PLUS_MICRO */
+ 
 #define MILLION							1000000
 
 #define MESON_SAR_ADC_CHAN(_chan) {					\
@@ -347,7 +339,7 @@ struct meson_sar_adc_priv {
 	struct clk				*adc_div_clk;
 	struct clk_divider			clk_div;
 	struct completion			done;
-	/* lock to protect against multiple access to the device */
+	 
 	struct mutex				lock;
 	int					calibbias;
 	int					calibscale;
@@ -398,7 +390,7 @@ static int meson_sar_adc_calib_val(struct iio_dev *indio_dev, int val)
 	struct meson_sar_adc_priv *priv = iio_priv(indio_dev);
 	int tmp;
 
-	/* use val_calib = scale * val_raw + offset calibration function */
+	 
 	tmp = div_s64((s64)val * priv->calibscale, MILLION) + priv->calibbias;
 
 	return clamp(tmp, 0, (1 << priv->param->resolution) - 1);
@@ -409,11 +401,7 @@ static int meson_sar_adc_wait_busy_clear(struct iio_dev *indio_dev)
 	struct meson_sar_adc_priv *priv = iio_priv(indio_dev);
 	int val;
 
-	/*
-	 * NOTE: we need a small delay before reading the status, otherwise
-	 * the sample engine may not have started internally (which would
-	 * seem to us that sampling is already finished).
-	 */
+	 
 	udelay(1);
 	return regmap_read_poll_timeout_atomic(priv->regmap, MESON_SAR_ADC_REG0, val,
 					       !FIELD_GET(MESON_SAR_ADC_REG0_BUSY_MASK, val),
@@ -492,16 +480,12 @@ static void meson_sar_adc_enable_channel(struct iio_dev *indio_dev,
 	struct meson_sar_adc_priv *priv = iio_priv(indio_dev);
 	u32 regval;
 
-	/*
-	 * the SAR ADC engine allows sampling multiple channels at the same
-	 * time. to keep it simple we're only working with one *internal*
-	 * channel, which starts counting at index 0 (which means: count = 1).
-	 */
+	 
 	regval = FIELD_PREP(MESON_SAR_ADC_CHAN_LIST_MAX_INDEX_MASK, 0);
 	regmap_update_bits(priv->regmap, MESON_SAR_ADC_CHAN_LIST,
 			   MESON_SAR_ADC_CHAN_LIST_MAX_INDEX_MASK, regval);
 
-	/* map channel index 0 to the channel which we want to read */
+	 
 	regval = FIELD_PREP(MESON_SAR_ADC_CHAN_LIST_ENTRY_MASK(0),
 			    chan->address);
 	regmap_update_bits(priv->regmap, MESON_SAR_ADC_CHAN_LIST,
@@ -570,7 +554,7 @@ static void meson_sar_adc_stop_sample_engine(struct iio_dev *indio_dev)
 			   MESON_SAR_ADC_REG0_SAMPLING_STOP,
 			   MESON_SAR_ADC_REG0_SAMPLING_STOP);
 
-	/* wait until all modules are stopped */
+	 
 	meson_sar_adc_wait_busy_clear(indio_dev);
 
 	regmap_update_bits(priv->regmap, MESON_SAR_ADC_REG0,
@@ -585,17 +569,14 @@ static int meson_sar_adc_lock(struct iio_dev *indio_dev)
 	mutex_lock(&priv->lock);
 
 	if (priv->param->has_bl30_integration) {
-		/* prevent BL30 from using the SAR ADC while we are using it */
+		 
 		regmap_update_bits(priv->regmap, MESON_SAR_ADC_DELAY,
 				   MESON_SAR_ADC_DELAY_KERNEL_BUSY,
 				   MESON_SAR_ADC_DELAY_KERNEL_BUSY);
 
 		udelay(1);
 
-		/*
-		 * wait until BL30 releases it's lock (so we can use the SAR
-		 * ADC)
-		 */
+		 
 		ret = regmap_read_poll_timeout_atomic(priv->regmap, MESON_SAR_ADC_DELAY, val,
 						      !(val & MESON_SAR_ADC_DELAY_BL30_BUSY),
 						      1, 10000);
@@ -613,7 +594,7 @@ static void meson_sar_adc_unlock(struct iio_dev *indio_dev)
 	struct meson_sar_adc_priv *priv = iio_priv(indio_dev);
 
 	if (priv->param->has_bl30_integration)
-		/* allow BL30 to use the SAR ADC again */
+		 
 		regmap_update_bits(priv->regmap, MESON_SAR_ADC_DELAY,
 				   MESON_SAR_ADC_DELAY_KERNEL_BUSY, 0);
 
@@ -650,7 +631,7 @@ static int meson_sar_adc_get_sample(struct iio_dev *indio_dev,
 	if (ret)
 		return ret;
 
-	/* clear the FIFO to make sure we're not reading old values */
+	 
 	meson_sar_adc_clear_fifo(indio_dev);
 
 	meson_sar_adc_set_averaging(indio_dev, chan, avg_mode, avg_samples);
@@ -702,11 +683,11 @@ static int meson_sar_adc_iio_info_read_raw(struct iio_dev *indio_dev,
 			*val2 = priv->param->resolution;
 			return IIO_VAL_FRACTIONAL_LOG2;
 		} else if (chan->type == IIO_TEMP) {
-			/* SoC specific multiplier and divider */
+			 
 			*val = priv->param->temperature_multiplier;
 			*val2 = priv->param->temperature_divider;
 
-			/* celsius to millicelsius */
+			 
 			*val *= 1000;
 
 			return IIO_VAL_FRACTIONAL;
@@ -797,10 +778,7 @@ static int meson_sar_adc_temp_sensor_init(struct iio_dev *indio_dev)
 	if (IS_ERR(temperature_calib)) {
 		ret = PTR_ERR(temperature_calib);
 
-		/*
-		 * leave the temperature sensor disabled if no calibration data
-		 * was passed via nvmem-cells.
-		 */
+		 
 		if (ret == -ENODEV)
 			return 0;
 
@@ -846,18 +824,11 @@ static int meson_sar_adc_init(struct iio_dev *indio_dev)
 	struct device *dev = indio_dev->dev.parent;
 	int regval, i, ret;
 
-	/*
-	 * make sure we start at CH7 input since the other muxes are only used
-	 * for internal calibration.
-	 */
+	 
 	meson_sar_adc_set_chan7_mux(indio_dev, CHAN7_MUX_CH7_INPUT);
 
 	if (priv->param->has_bl30_integration) {
-		/*
-		 * leave sampling delay and the input clocks as configured by
-		 * BL30 to make sure BL30 gets the values it expects when
-		 * reading the temperature sensor.
-		 */
+		 
 		regmap_read(priv->regmap, MESON_SAR_ADC_REG3, &regval);
 		if (regval & MESON_SAR_ADC_REG3_BL30_INITIALIZED)
 			return 0;
@@ -865,14 +836,11 @@ static int meson_sar_adc_init(struct iio_dev *indio_dev)
 
 	meson_sar_adc_stop_sample_engine(indio_dev);
 
-	/*
-	 * disable this bit as seems to be only relevant for Meson6 (based
-	 * on the vendor driver), which we don't support at the moment.
-	 */
+	 
 	regmap_update_bits(priv->regmap, MESON_SAR_ADC_REG0,
 			   MESON_SAR_ADC_REG0_ADC_TEMP_SEN_SEL, 0);
 
-	/* disable all channels by default */
+	 
 	regmap_write(priv->regmap, MESON_SAR_ADC_CHAN_LIST, 0x0);
 
 	regmap_update_bits(priv->regmap, MESON_SAR_ADC_REG3,
@@ -881,7 +849,7 @@ static int meson_sar_adc_init(struct iio_dev *indio_dev)
 			   MESON_SAR_ADC_REG3_CNTL_USE_SC_DLY,
 			   MESON_SAR_ADC_REG3_CNTL_USE_SC_DLY);
 
-	/* delay between two samples = (10+1) * 1uS */
+	 
 	regmap_update_bits(priv->regmap, MESON_SAR_ADC_DELAY,
 			   MESON_SAR_ADC_DELAY_INPUT_DLY_CNT_MASK,
 			   FIELD_PREP(MESON_SAR_ADC_DELAY_SAMPLE_DLY_CNT_MASK,
@@ -891,7 +859,7 @@ static int meson_sar_adc_init(struct iio_dev *indio_dev)
 			   FIELD_PREP(MESON_SAR_ADC_DELAY_SAMPLE_DLY_SEL_MASK,
 				      0));
 
-	/* delay between two samples = (10+1) * 1uS */
+	 
 	regmap_update_bits(priv->regmap, MESON_SAR_ADC_DELAY,
 			   MESON_SAR_ADC_DELAY_INPUT_DLY_CNT_MASK,
 			   FIELD_PREP(MESON_SAR_ADC_DELAY_INPUT_DLY_CNT_MASK,
@@ -901,10 +869,7 @@ static int meson_sar_adc_init(struct iio_dev *indio_dev)
 			   FIELD_PREP(MESON_SAR_ADC_DELAY_INPUT_DLY_SEL_MASK,
 				      1));
 
-	/*
-	 * set up the input channel muxes in MESON_SAR_ADC_CHAN_10_SW
-	 * (0 = SAR_ADC_CH0, 1 = SAR_ADC_CH1)
-	 */
+	 
 	regval = FIELD_PREP(MESON_SAR_ADC_CHAN_10_SW_CHAN0_MUX_SEL_MASK, 0);
 	regmap_update_bits(priv->regmap, MESON_SAR_ADC_CHAN_10_SW,
 			   MESON_SAR_ADC_CHAN_10_SW_CHAN0_MUX_SEL_MASK,
@@ -930,12 +895,7 @@ static int meson_sar_adc_init(struct iio_dev *indio_dev)
 			   MESON_SAR_ADC_CHAN_10_SW_CHAN1_YP_DRIVE_SW,
 			   MESON_SAR_ADC_CHAN_10_SW_CHAN1_YP_DRIVE_SW);
 
-	/*
-	 * set up the input channel muxes in MESON_SAR_ADC_AUX_SW
-	 * (2 = SAR_ADC_CH2, 3 = SAR_ADC_CH3, ...) and enable
-	 * MESON_SAR_ADC_AUX_SW_YP_DRIVE_SW and
-	 * MESON_SAR_ADC_AUX_SW_XP_DRIVE_SW like the vendor driver.
-	 */
+	 
 	regval = 0;
 	for (i = 2; i <= 7; i++)
 		regval |= i << MESON_SAR_ADC_AUX_SW_MUX_SEL_CHAN_SHIFT(i);
@@ -951,10 +911,7 @@ static int meson_sar_adc_init(struct iio_dev *indio_dev)
 				   MESON_SAR_ADC_DELTA_10_TS_REVE0,
 				   MESON_SAR_ADC_DELTA_10_TS_REVE0);
 
-		/*
-		 * set bits [3:0] of the TSC (temperature sensor coefficient)
-		 * to get the correct values when reading the temperature.
-		 */
+		 
 		regval = FIELD_PREP(MESON_SAR_ADC_DELTA_10_TS_C_MASK,
 				    priv->temperature_sensor_coefficient);
 		regmap_update_bits(priv->regmap, MESON_SAR_ADC_DELTA_10,
@@ -966,10 +923,7 @@ static int meson_sar_adc_init(struct iio_dev *indio_dev)
 			else
 				regval = 0;
 
-			/*
-			 * bit [4] (the 5th bit when starting to count at 1)
-			 * of the TSC is located in the HHI register area.
-			 */
+			 
 			regmap_update_bits(priv->tsc_regmap,
 					   MESON_HHI_DPLL_TOP_0,
 					   MESON_HHI_DPLL_TOP_0_TSC_BIT4,
@@ -1092,10 +1046,7 @@ static void meson_sar_adc_hw_disable(struct iio_dev *indio_dev)
 	struct meson_sar_adc_priv *priv = iio_priv(indio_dev);
 	int ret;
 
-	/*
-	 * If taking the lock fails we have to assume that BL30 is broken. The
-	 * best we can do then is to release the resources anyhow.
-	 */
+	 
 	ret = meson_sar_adc_lock(indio_dev);
 	if (ret)
 		dev_err(indio_dev->dev.parent, "Failed to lock ADC (%pE)\n", ERR_PTR(ret));
@@ -1137,7 +1088,7 @@ static int meson_sar_adc_calib(struct iio_dev *indio_dev)
 	struct meson_sar_adc_priv *priv = iio_priv(indio_dev);
 	int ret, nominal0, nominal1, value0, value1;
 
-	/* use points 25% and 75% for calibration */
+	 
 	nominal0 = (1 << priv->param->resolution) / 4;
 	nominal1 = (1 << priv->param->resolution) * 3 / 4;
 
@@ -1332,7 +1283,7 @@ static const struct of_device_id meson_sar_adc_of_match[] = {
 		.compatible = "amlogic,meson-g12a-saradc",
 		.data = &meson_sar_adc_g12a_data,
 	},
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, meson_sar_adc_of_match);
 
@@ -1394,7 +1345,7 @@ static int meson_sar_adc_probe(struct platform_device *pdev)
 	if (IS_ERR(priv->adc_sel_clk))
 		return dev_err_probe(dev, PTR_ERR(priv->adc_sel_clk), "failed to get adc_sel clk\n");
 
-	/* on pre-GXBB SoCs the SAR ADC itself provides the ADC clock: */
+	 
 	if (!priv->adc_clk) {
 		ret = meson_sar_adc_clk_init(indio_dev, base);
 		if (ret)

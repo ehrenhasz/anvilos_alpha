@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2013 Trond Myklebust <Trond.Myklebust@netapp.com>
- */
+ 
+ 
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM nfs4
 
@@ -243,7 +241,7 @@ TRACE_EVENT(nfs4_cb_offload,
 			show_nfs_stable_how(__entry->cb_how)
 		)
 );
-#endif /* CONFIG_NFS_V4_1 */
+#endif  
 
 TRACE_EVENT(nfs4_setup_sequence,
 		TP_PROTO(
@@ -1020,7 +1018,7 @@ DECLARE_EVENT_CLASS(nfs4_test_stateid_event,
 DEFINE_NFS4_TEST_STATEID_EVENT(nfs4_test_delegation_stateid);
 DEFINE_NFS4_TEST_STATEID_EVENT(nfs4_test_open_stateid);
 DEFINE_NFS4_TEST_STATEID_EVENT(nfs4_test_lock_stateid);
-#endif /* CONFIG_NFS_V4_1 */
+#endif  
 
 DECLARE_EVENT_CLASS(nfs4_lookup_event,
 		TP_PROTO(
@@ -1192,7 +1190,7 @@ DEFINE_NFS4_INODE_EVENT(nfs4_set_acl);
 #ifdef CONFIG_NFS_V4_SECURITY_LABEL
 DEFINE_NFS4_INODE_EVENT(nfs4_get_security_label);
 DEFINE_NFS4_INODE_EVENT(nfs4_set_security_label);
-#endif /* CONFIG_NFS_V4_SECURITY_LABEL */
+#endif  
 
 DECLARE_EVENT_CLASS(nfs4_inode_stateid_event,
 		TP_PROTO(
@@ -1544,7 +1542,7 @@ DECLARE_EVENT_CLASS(nfs4_read_event,
 DEFINE_NFS4_READ_EVENT(nfs4_read);
 #ifdef CONFIG_NFS_V4_1
 DEFINE_NFS4_READ_EVENT(nfs4_pnfs_read);
-#endif /* CONFIG_NFS_V4_1 */
+#endif  
 
 DECLARE_EVENT_CLASS(nfs4_write_event,
 		TP_PROTO(
@@ -1619,7 +1617,7 @@ DECLARE_EVENT_CLASS(nfs4_write_event,
 DEFINE_NFS4_WRITE_EVENT(nfs4_write);
 #ifdef CONFIG_NFS_V4_1
 DEFINE_NFS4_WRITE_EVENT(nfs4_pnfs_write);
-#endif /* CONFIG_NFS_V4_1 */
+#endif  
 
 DECLARE_EVENT_CLASS(nfs4_commit_event,
 		TP_PROTO(
@@ -2546,14 +2544,14 @@ DEFINE_NFS4_XATTR_EVENT(nfs4_setxattr);
 DEFINE_NFS4_XATTR_EVENT(nfs4_removexattr);
 
 DEFINE_NFS4_INODE_EVENT(nfs4_listxattr);
-#endif /* CONFIG_NFS_V4_2 */
+#endif  
 
-#endif /* CONFIG_NFS_V4_1 */
+#endif  
 
-#endif /* _TRACE_NFS4_H */
+#endif  
 
 #undef TRACE_INCLUDE_PATH
 #define TRACE_INCLUDE_PATH .
 #define TRACE_INCLUDE_FILE nfs4trace
-/* This part must be outside protection */
+ 
 #include <trace/define_trace.h>

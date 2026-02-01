@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* ad7949.c - Analog Devices ADC driver 14/16 bits 4/8 channels
- *
- * Copyright (C) 2018 CMC NV
- *
- * https://www.analog.com/media/en/technical-documentation/data-sheets/AD7949.pdf
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/iio/iio.h>
@@ -15,10 +10,10 @@
 
 #define AD7949_CFG_MASK_TOTAL		GENMASK(13, 0)
 
-/* CFG: Configuration Update */
+ 
 #define AD7949_CFG_MASK_OVERWRITE	BIT(13)
 
-/* INCC: Input Channel Configuration */
+ 
 #define AD7949_CFG_MASK_INCC		GENMASK(12, 10)
 #define AD7949_CFG_VAL_INCC_UNIPOLAR_GND	7
 #define AD7949_CFG_VAL_INCC_UNIPOLAR_COMM	6
@@ -27,13 +22,13 @@
 #define AD7949_CFG_VAL_INCC_BIPOLAR		2
 #define AD7949_CFG_VAL_INCC_BIPOLAR_DIFF	0
 
-/* INX: Input channel Selection in a binary fashion */
+ 
 #define AD7949_CFG_MASK_INX		GENMASK(9, 7)
 
-/* BW: select bandwidth for low-pass filter. Full or Quarter */
+ 
 #define AD7949_CFG_MASK_BW_FULL		BIT(6)
 
-/* REF: reference/buffer selection */
+ 
 #define AD7949_CFG_MASK_REF		GENMASK(5, 3)
 #define AD7949_CFG_VAL_REF_EXT_TEMP_BUF		3
 #define AD7949_CFG_VAL_REF_EXT_TEMP		2
@@ -41,10 +36,10 @@
 #define AD7949_CFG_VAL_REF_INT_2500		0
 #define AD7949_CFG_VAL_REF_EXTERNAL		BIT(1)
 
-/* SEQ: channel sequencer. Allows for scanning channels */
+ 
 #define AD7949_CFG_MASK_SEQ		GENMASK(2, 1)
 
-/* RB: Read back the CFG register */
+ 
 #define AD7949_CFG_MASK_RBN		BIT(0)
 
 enum {
@@ -64,19 +59,7 @@ static const struct ad7949_adc_spec ad7949_adc_spec[] = {
 	[ID_AD7689] = { .num_channels = 8, .resolution = 16 },
 };
 
-/**
- * struct ad7949_adc_chip - AD ADC chip
- * @lock: protects write sequences
- * @vref: regulator generating Vref
- * @indio_dev: reference to iio structure
- * @spi: reference to spi structure
- * @refsel: reference selection
- * @resolution: resolution of the chip
- * @cfg: copy of the configuration register
- * @current_channel: current channel in use
- * @buffer: buffer to send / receive data to / from device
- * @buf8b: be16 buffer to exchange data with the device in 8-bit transfers
- */
+ 
 struct ad7949_adc_chip {
 	struct mutex lock;
 	struct regulator *vref;
@@ -107,7 +90,7 @@ static int ad7949_spi_write_cfg(struct ad7949_adc_chip *ad7949_adc, u16 val,
 		ret = spi_write(ad7949_adc->spi, &ad7949_adc->buffer, 2);
 		break;
 	case 8:
-		/* Here, type is big endian as it must be sent in two transfers */
+		 
 		ad7949_adc->buf8b = cpu_to_be16(ad7949_adc->cfg << 2);
 		ret = spi_write(ad7949_adc->spi, &ad7949_adc->buf8b, 2);
 		break;
@@ -116,10 +99,7 @@ static int ad7949_spi_write_cfg(struct ad7949_adc_chip *ad7949_adc, u16 val,
 		return -EINVAL;
 	}
 
-	/*
-	 * This delay is to avoid a new request before the required time to
-	 * send a new command to the device
-	 */
+	 
 	udelay(2);
 	return ret;
 }
@@ -130,12 +110,7 @@ static int ad7949_spi_read_channel(struct ad7949_adc_chip *ad7949_adc, int *val,
 	int ret;
 	int i;
 
-	/*
-	 * 1: write CFG for sample N and read old data (sample N-2)
-	 * 2: if CFG was not changed since sample N-1 then we'll get good data
-	 *    at the next xfer, so we bail out now, otherwise we write something
-	 *    and we read garbage (sample N-1 configuration).
-	 */
+	 
 	for (i = 0; i < 2; i++) {
 		ret = ad7949_spi_write_cfg(ad7949_adc,
 					   FIELD_PREP(AD7949_CFG_MASK_INX, channel),
@@ -146,7 +121,7 @@ static int ad7949_spi_read_channel(struct ad7949_adc_chip *ad7949_adc, int *val,
 			break;
 	}
 
-	/* 3: write something and read actual data */
+	 
 	if (ad7949_adc->spi->bits_per_word == 8)
 		ret = spi_read(ad7949_adc->spi, &ad7949_adc->buf8b, 2);
 	else
@@ -155,10 +130,7 @@ static int ad7949_spi_read_channel(struct ad7949_adc_chip *ad7949_adc, int *val,
 	if (ret)
 		return ret;
 
-	/*
-	 * This delay is to avoid a new request before the required time to
-	 * send a new command to the device
-	 */
+	 
 	udelay(2);
 
 	ad7949_adc->current_channel = channel;
@@ -166,16 +138,16 @@ static int ad7949_spi_read_channel(struct ad7949_adc_chip *ad7949_adc, int *val,
 	switch (ad7949_adc->spi->bits_per_word) {
 	case 16:
 		*val = ad7949_adc->buffer;
-		/* Shift-out padding bits */
+		 
 		*val >>= 16 - ad7949_adc->resolution;
 		break;
 	case 14:
 		*val = ad7949_adc->buffer & GENMASK(13, 0);
 		break;
 	case 8:
-		/* Here, type is big endian as data was sent in two transfers */
+		 
 		*val = be16_to_cpu(ad7949_adc->buf8b);
-		/* Shift-out padding bits */
+		 
 		*val >>= 16 - ad7949_adc->resolution;
 		break;
 	default:
@@ -240,7 +212,7 @@ static int ad7949_spi_read_raw(struct iio_dev *indio_dev,
 			if (ret < 0)
 				return ret;
 
-			/* convert value back to mV */
+			 
 			*val = ret / 1000;
 			break;
 		}
@@ -291,10 +263,7 @@ static int ad7949_spi_init(struct ad7949_adc_chip *ad7949_adc)
 
 	ret = ad7949_spi_write_cfg(ad7949_adc, cfg, AD7949_CFG_MASK_TOTAL);
 
-	/*
-	 * Do two dummy conversions to apply the first configuration setting.
-	 * Required only after the start up of the device.
-	 */
+	 
 	ad7949_spi_read_channel(ad7949_adc, &val, ad7949_adc->current_channel);
 	ad7949_spi_read_channel(ad7949_adc, &val, ad7949_adc->current_channel);
 
@@ -336,7 +305,7 @@ static int ad7949_spi_probe(struct spi_device *spi)
 	indio_dev->num_channels = spec->num_channels;
 	ad7949_adc->resolution = spec->resolution;
 
-	/* Set SPI bits per word */
+	 
 	if (spi_ctrl_mask & SPI_BPW_MASK(ad7949_adc->resolution)) {
 		spi->bits_per_word = ad7949_adc->resolution;
 	} else if (spi_ctrl_mask == SPI_BPW_MASK(16)) {
@@ -348,7 +317,7 @@ static int ad7949_spi_probe(struct spi_device *spi)
 		return -EINVAL;
 	}
 
-	/* Setup internal voltage reference */
+	 
 	tmp = 4096000;
 	device_property_read_u32(dev, "adi,internal-ref-microvolt", &tmp);
 
@@ -364,13 +333,13 @@ static int ad7949_spi_probe(struct spi_device *spi)
 		return -EINVAL;
 	}
 
-	/* Setup external voltage reference, buffered? */
+	 
 	ad7949_adc->vref = devm_regulator_get_optional(dev, "vrefin");
 	if (IS_ERR(ad7949_adc->vref)) {
 		ret = PTR_ERR(ad7949_adc->vref);
 		if (ret != -ENODEV)
 			return ret;
-		/* unbuffered? */
+		 
 		ad7949_adc->vref = devm_regulator_get_optional(dev, "vref");
 		if (IS_ERR(ad7949_adc->vref)) {
 			ret = PTR_ERR(ad7949_adc->vref);

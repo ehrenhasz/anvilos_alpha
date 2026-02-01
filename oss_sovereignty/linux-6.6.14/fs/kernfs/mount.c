@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * fs/kernfs/mount.c - kernfs mount implementation
- *
- * Copyright (c) 2001-3 Patrick Mochel
- * Copyright (c) 2007 SUSE Linux Products GmbH
- * Copyright (c) 2007, 2013 Tejun Heo <tj@kernel.org>
- */
+
+ 
 
 #include <linux/fs.h>
 #include <linux/mount.h>
@@ -96,12 +90,7 @@ static struct dentry *__kernfs_fh_to_dentry(struct super_block *sb,
 		break;
 	case FILEID_INO32_GEN:
 	case FILEID_INO32_GEN_PARENT:
-		/*
-		 * blk_log_action() exposes "LOW32,HIGH32" pair without
-		 * type and userland can call us with generic fid
-		 * constructed from them.  Combine it back to ID.  See
-		 * blk_log_action().
-		 */
+		 
 		id = ((u64)fid->i32.gen << 32) | fid->i32.ino;
 		break;
 	default:
@@ -158,13 +147,7 @@ static const struct export_operations kernfs_export_ops = {
 	.get_parent	= kernfs_get_parent_dentry,
 };
 
-/**
- * kernfs_root_from_sb - determine kernfs_root associated with a super_block
- * @sb: the super_block in question
- *
- * Return: the kernfs_root associated with @sb.  If @sb is not a kernfs one,
- * %NULL is returned.
- */
+ 
 struct kernfs_root *kernfs_root_from_sb(struct super_block *sb)
 {
 	if (sb->s_op == &kernfs_sops)
@@ -172,14 +155,7 @@ struct kernfs_root *kernfs_root_from_sb(struct super_block *sb)
 	return NULL;
 }
 
-/*
- * find the next ancestor in the path down to @child, where @parent was the
- * ancestor whose descendant we want to find.
- *
- * Say the path is /a/b/c/d.  @child is d, @parent is %NULL.  We return the root
- * node.  If @parent is b, then we return the node for c.
- * Passing in d as @parent is not ok.
- */
+ 
 static struct kernfs_node *find_next_ancestor(struct kernfs_node *child,
 					      struct kernfs_node *parent)
 {
@@ -197,13 +173,7 @@ static struct kernfs_node *find_next_ancestor(struct kernfs_node *child,
 	return child;
 }
 
-/**
- * kernfs_node_dentry - get a dentry for the given kernfs_node
- * @kn: kernfs_node for which a dentry is needed
- * @sb: the kernfs super_block
- *
- * Return: the dentry pointer
- */
+ 
 struct dentry *kernfs_node_dentry(struct kernfs_node *kn,
 				  struct super_block *sb)
 {
@@ -214,7 +184,7 @@ struct dentry *kernfs_node_dentry(struct kernfs_node *kn,
 
 	dentry = dget(sb->s_root);
 
-	/* Check if this is the root kernfs_node */
+	 
 	if (!kn->parent)
 		return dentry;
 
@@ -253,7 +223,7 @@ static int kernfs_fill_super(struct super_block *sb, struct kernfs_fs_context *k
 	struct dentry *root;
 
 	info->sb = sb;
-	/* Userspace would break if executables or devices appear on sysfs */
+	 
 	sb->s_iflags |= SB_I_NOEXEC | SB_I_NODEV;
 	sb->s_blocksize = PAGE_SIZE;
 	sb->s_blocksize_bits = PAGE_SHIFT;
@@ -264,10 +234,10 @@ static int kernfs_fill_super(struct super_block *sb, struct kernfs_fs_context *k
 		sb->s_export_op = &kernfs_export_ops;
 	sb->s_time_gran = 1;
 
-	/* sysfs dentries and inodes don't require IO to create */
+	 
 	sb->s_shrink.seeks = 0;
 
-	/* get root inode, initialize and unlock it */
+	 
 	down_read(&kf_root->kernfs_rwsem);
 	inode = kernfs_get_inode(sb, info->root->kn);
 	up_read(&kf_root->kernfs_rwsem);
@@ -276,7 +246,7 @@ static int kernfs_fill_super(struct super_block *sb, struct kernfs_fs_context *k
 		return -ENOMEM;
 	}
 
-	/* instantiate and link root dentry */
+	 
 	root = d_make_root(inode);
 	if (!root) {
 		pr_debug("%s: could not get root dentry!\n", __func__);
@@ -303,12 +273,7 @@ static int kernfs_set_super(struct super_block *sb, struct fs_context *fc)
 	return set_anon_super_fc(sb, fc);
 }
 
-/**
- * kernfs_super_ns - determine the namespace tag of a kernfs super_block
- * @sb: super_block of interest
- *
- * Return: the namespace tag associated with kernfs super_block @sb.
- */
+ 
 const void *kernfs_super_ns(struct super_block *sb)
 {
 	struct kernfs_super_info *info = kernfs_info(sb);
@@ -316,17 +281,7 @@ const void *kernfs_super_ns(struct super_block *sb)
 	return info->ns;
 }
 
-/**
- * kernfs_get_tree - kernfs filesystem access/retrieval helper
- * @fc: The filesystem context.
- *
- * This is to be called from each kernfs user's fs_context->ops->get_tree()
- * implementation, which should set the specified ->@fs_type and ->@flags, and
- * specify the hierarchy and namespace tag to mount via ->@root and ->@ns,
- * respectively.
- *
- * Return: %0 on success, -errno on failure.
- */
+ 
 int kernfs_get_tree(struct fs_context *fc)
 {
 	struct kernfs_fs_context *kfc = fc->fs_private;
@@ -373,19 +328,12 @@ int kernfs_get_tree(struct fs_context *fc)
 
 void kernfs_free_fs_context(struct fs_context *fc)
 {
-	/* Note that we don't deal with kfc->ns_tag here. */
+	 
 	kfree(fc->s_fs_info);
 	fc->s_fs_info = NULL;
 }
 
-/**
- * kernfs_kill_sb - kill_sb for kernfs
- * @sb: super_block being killed
- *
- * This can be used directly for file_system_type->kill_sb().  If a kernfs
- * user needs extra cleanup, it can implement its own kill_sb() and call
- * this function at the end.
- */
+ 
 void kernfs_kill_sb(struct super_block *sb)
 {
 	struct kernfs_super_info *info = kernfs_info(sb);
@@ -395,10 +343,7 @@ void kernfs_kill_sb(struct super_block *sb)
 	list_del(&info->node);
 	up_write(&root->kernfs_supers_rwsem);
 
-	/*
-	 * Remove the superblock from fs_supers/s_instances
-	 * so we can't find it, before freeing kernfs_super_info.
-	 */
+	 
 	kill_anon_super(sb);
 	kfree(info);
 }
@@ -425,7 +370,7 @@ void __init kernfs_init(void)
 					      sizeof(struct kernfs_node),
 					      0, SLAB_PANIC, NULL);
 
-	/* Creates slab cache for kernfs inode attributes */
+	 
 	kernfs_iattrs_cache  = kmem_cache_create("kernfs_iattrs_cache",
 					      sizeof(struct kernfs_iattrs),
 					      0, SLAB_PANIC, NULL);

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2021, The Linux Foundation. All rights reserved.
- * Copyright (c) 2023, Linaro Limited
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/mod_devicetable.h>
@@ -46,7 +43,7 @@ static struct pll_vco lucid_vco[] = {
 	{ 249600000, 2000000000, 0 },
 };
 
-/* 532MHz Configuration */
+ 
 static const struct alpha_pll_config gpucc_pll0_config = {
 	.l = 0x1b,
 	.alpha = 0xb555,
@@ -75,7 +72,7 @@ static struct clk_alpha_pll gpucc_pll0 = {
 	},
 };
 
-/* 514MHz Configuration */
+ 
 static const struct alpha_pll_config gpucc_pll1_config = {
 	.l = 0x1a,
 	.alpha = 0xc555,

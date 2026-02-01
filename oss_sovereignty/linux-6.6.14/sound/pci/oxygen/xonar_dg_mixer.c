@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Mixer controls for the Xonar DG/DGX
- *
- * Copyright (c) Clemens Ladisch <clemens@ladisch.de>
- * Copyright (c) Roman Volkov <v1ron@mail.ru>
- */
+
+ 
 
 #include <linux/pci.h>
 #include <linux/delay.h>
@@ -17,7 +12,7 @@
 #include "xonar_dg.h"
 #include "cs4245.h"
 
-/* analog output select */
+ 
 
 static int output_select_apply(struct oxygen *chip)
 {
@@ -25,20 +20,14 @@ static int output_select_apply(struct oxygen *chip)
 
 	data->cs4245_shadow[CS4245_SIGNAL_SEL] &= ~CS4245_A_OUT_SEL_MASK;
 	if (data->output_sel == PLAYBACK_DST_HP) {
-		/* mute FP (aux output) amplifier, switch rear jack to CS4245 */
+		 
 		oxygen_set_bits8(chip, OXYGEN_GPIO_DATA, GPIO_HP_REAR);
 	} else if (data->output_sel == PLAYBACK_DST_HP_FP) {
-		/*
-		 * Unmute FP amplifier, switch rear jack to CS4361;
-		 * I2S channels 2,3,4 should be inactive.
-		 */
+		 
 		oxygen_clear_bits8(chip, OXYGEN_GPIO_DATA, GPIO_HP_REAR);
 		data->cs4245_shadow[CS4245_SIGNAL_SEL] |= CS4245_A_OUT_SEL_DAC;
 	} else {
-		/*
-		 * 2.0, 4.0, 5.1: switch to CS4361, mute FP amp.,
-		 * and change playback routing.
-		 */
+		 
 		oxygen_clear_bits8(chip, OXYGEN_GPIO_DATA, GPIO_HP_REAR);
 	}
 	return cs4245_write_spi(chip, CS4245_SIGNAL_SEL);
@@ -89,7 +78,7 @@ static int output_select_put(struct snd_kcontrol *ctl,
 	return changed;
 }
 
-/* CS4245 Headphone Channels A&B Volume Control */
+ 
 
 static int hp_stereo_volume_info(struct snd_kcontrol *ctl,
 				struct snd_ctl_elem_info *info)
@@ -145,7 +134,7 @@ static int hp_stereo_volume_put(struct snd_kcontrol *ctl,
 	return changed;
 }
 
-/* Headphone Mute */
+ 
 
 static int hp_mute_get(struct snd_kcontrol *ctl,
 			struct snd_ctl_elem_value *val)
@@ -180,7 +169,7 @@ static int hp_mute_put(struct snd_kcontrol *ctl,
 	return changed;
 }
 
-/* capture volume for all sources */
+ 
 
 static int input_volume_apply(struct oxygen *chip, char left, char right)
 {
@@ -250,7 +239,7 @@ static int input_vol_put(struct snd_kcontrol *ctl,
 	return changed;
 }
 
-/* Capture Source */
+ 
 
 static int input_source_apply(struct oxygen *chip)
 {
@@ -315,7 +304,7 @@ static int input_sel_put(struct snd_kcontrol *ctl,
 	return changed;
 }
 
-/* ADC high-pass filter */
+ 
 
 static int hpf_info(struct snd_kcontrol *ctl, struct snd_ctl_elem_info *info)
 {

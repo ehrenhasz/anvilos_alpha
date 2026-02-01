@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 or BSD-3-Clause */
-/*
- * Copyright(c) 2020 - Cornelis Networks, Inc.
- * Copyright(c) 2015 - 2017 Intel Corporation.
- */
+ 
+ 
 
 #ifndef _HFI1_USER_EXP_RCV_H
 #define _HFI1_USER_EXP_RCV_H
@@ -29,7 +26,7 @@ struct tid_user_buf {
 struct tid_rb_node {
 	struct mmu_interval_notifier notifier;
 	struct hfi1_filedata *fdata;
-	struct mutex invalidate_mutex; /* covers hw removal */
+	struct mutex invalidate_mutex;  
 	unsigned long phys;
 	struct tid_group *grp;
 	u32 rcventry;
@@ -63,4 +60,4 @@ static inline struct mm_struct *mm_from_tid_node(struct tid_rb_node *node)
 	return node->notifier.mm;
 }
 
-#endif /* _HFI1_USER_EXP_RCV_H */
+#endif  

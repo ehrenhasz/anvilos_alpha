@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: (GPL-2.0 OR MIT)
-//
-// Copyright (c) 2018 BayLibre, SAS.
-// Author: Jerome Brunet <jbrunet@baylibre.com>
+
+
+
+
 
 #include <linux/clk.h>
 #include <linux/module.h>
@@ -98,11 +98,11 @@ struct axg_pdm {
 
 static void axg_pdm_enable(struct regmap *map)
 {
-	/* Reset AFIFO */
+	 
 	regmap_update_bits(map, PDM_CTRL, PDM_CTRL_RST_FIFO, PDM_CTRL_RST_FIFO);
 	regmap_update_bits(map, PDM_CTRL, PDM_CTRL_RST_FIFO, 0);
 
-	/* Enable PDM */
+	 
 	regmap_update_bits(map, PDM_CTRL, PDM_CTRL_EN, PDM_CTRL_EN);
 }
 
@@ -151,10 +151,7 @@ static unsigned int axg_pdm_get_os(struct axg_pdm *priv)
 	unsigned int os = filters->hcic.ds;
 	int i;
 
-	/*
-	 * The global oversampling factor is defined by the down sampling
-	 * factor applied by each filter (HCIC and LPFs)
-	 */
+	 
 
 	for (i = 0; i < PDM_LPF_NUM; i++)
 		os *= filters->lpf[i].ds;
@@ -167,11 +164,7 @@ static int axg_pdm_set_sysclk(struct axg_pdm *priv, unsigned int os,
 {
 	unsigned int sys_rate = os * 2 * rate * PDM_CHAN_CTRL_POINTER_MAX;
 
-	/*
-	 * Set the default system clock rate unless it is too fast for
-	 * the requested sample rate. In this case, the sample pointer
-	 * counter could overflow so set a lower system clock rate
-	 */
+	 
 	if (sys_rate < priv->cfg->sys_rate)
 		return clk_set_rate(priv->sysclk, sys_rate);
 
@@ -183,15 +176,15 @@ static int axg_pdm_set_sample_pointer(struct axg_pdm *priv)
 	unsigned int spmax, sp, val;
 	int i;
 
-	/* Max sample counter value per half period of dclk */
+	 
 	spmax = DIV_ROUND_UP_ULL((u64)clk_get_rate(priv->sysclk),
 				 clk_get_rate(priv->dclk) * 2);
 
-	/* Check if sysclk is not too fast - should not happen */
+	 
 	if (WARN_ON(spmax > PDM_CHAN_CTRL_POINTER_MAX))
 		return -EINVAL;
 
-	/* Capture the data when we are at 75% of the half period */
+	 
 	sp = spmax * 3 / 4;
 
 	for (i = 0, val = 0; i < PDM_CHAN_CTRL_NUM; i++)
@@ -208,11 +201,11 @@ static void axg_pdm_set_channel_mask(struct axg_pdm *priv,
 {
 	unsigned int mask = GENMASK(channels - 1, 0);
 
-	/* Put all channel in reset */
+	 
 	regmap_update_bits(priv->map, PDM_CTRL,
 			   PDM_CTRL_CHAN_RSTN_MASK, 0);
 
-	/* Take the necessary channels out of reset and enable them */
+	 
 	regmap_update_bits(priv->map, PDM_CTRL,
 			   PDM_CTRL_CHAN_RSTN_MASK |
 			   PDM_CTRL_CHAN_EN_MASK,
@@ -279,7 +272,7 @@ static int axg_pdm_startup(struct snd_pcm_substream *substream,
 		return ret;
 	}
 
-	/* Enable the filters */
+	 
 	axg_pdm_filters_enable(priv->map, true);
 
 	return ret;
@@ -353,14 +346,14 @@ static int axg_pdm_set_lpf_filters(struct axg_pdm *priv)
 	for (i = 0; i < PDM_LPF_NUM; i++)
 		count += lpf[i].tap_num;
 
-	/* Make sure the coeffs fit in the memory */
+	 
 	if (count >= PDM_LPF_MAX_STAGE)
 		return -EINVAL;
 
-	/* Set the initial APB bus register address */
+	 
 	regmap_write(priv->map, PDM_COEFF_ADDR, 0);
 
-	/* Set the tap filter values of all 3 filters */
+	 
 	for (i = 0; i < PDM_LPF_NUM; i++) {
 		axg_pdm_set_lpf_ctrl(priv, i);
 
@@ -382,10 +375,7 @@ static int axg_pdm_dai_probe(struct snd_soc_dai *dai)
 		return ret;
 	}
 
-	/*
-	 * sysclk must be set and enabled as well to access the pdm registers
-	 * Accessing the register w/o it will give a bus error.
-	 */
+	 
 	ret = clk_set_rate(priv->sysclk, priv->cfg->sys_rate);
 	if (ret) {
 		dev_err(dai->dev, "setting sysclk failed\n");
@@ -398,13 +388,13 @@ static int axg_pdm_dai_probe(struct snd_soc_dai *dai)
 		goto err_pclk;
 	}
 
-	/* Make sure the device is initially disabled */
+	 
 	axg_pdm_disable(priv->map);
 
-	/* Make sure filter bypass is disabled */
+	 
 	regmap_update_bits(priv->map, PDM_CTRL, PDM_CTRL_BYPASS_MODE, 0);
 
-	/* Load filter settings */
+	 
 	axg_pdm_set_hcic_ctrl(priv);
 	axg_pdm_set_hpf_ctrl(priv);
 
@@ -526,17 +516,7 @@ static const unsigned int lpf3_default_tap[] = {
 	0x000081, 0x000000,
 };
 
-/*
- * These values are sane defaults for the axg platform:
- * - OS = 64
- * - Latency = 38700 (?)
- *
- * TODO: There is a lot of different HCIC, LPFs and HPF configurations possible.
- *       the configuration may depend on the dmic used by the platform, the
- *       expected tradeoff between latency and quality, etc ... If/When other
- *       settings are required, we should add a fw interface to this driver to
- *       load new filter settings.
- */
+ 
 static const struct axg_pdm_filters axg_default_filters = {
 	.hcic = {
 		.shift = 0x15,

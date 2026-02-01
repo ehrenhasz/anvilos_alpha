@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * SM4 Cipher Algorithm, AES-NI/AVX optimized.
- * as specified in
- * https://tools.ietf.org/id/draft-ribose-cfrg-sm4-10.html
- *
- * Copyright (c) 2021, Alibaba Group.
- * Copyright (c) 2021 Tianjia Zhang <tianjia.zhang@linux.alibaba.com>
- */
+ 
+ 
 
 #include <linux/module.h>
 #include <linux/crypto.h>
@@ -215,7 +208,7 @@ int sm4_cfb_encrypt(struct skcipher_request *req)
 		if (iv != walk.iv)
 			memcpy(walk.iv, iv, SM4_BLOCK_SIZE);
 
-		/* tail */
+		 
 		if (walk.nbytes == walk.total && nbytes > 0) {
 			sm4_crypt_block(ctx->rkey_enc, keystream, walk.iv);
 			crypto_xor_cpy(dst, src, keystream, nbytes);
@@ -276,7 +269,7 @@ int sm4_avx_cfb_decrypt(struct skcipher_request *req,
 
 		kernel_fpu_end();
 
-		/* tail */
+		 
 		if (walk.nbytes == walk.total && nbytes > 0) {
 			u8 keystream[SM4_BLOCK_SIZE];
 
@@ -344,7 +337,7 @@ int sm4_avx_ctr_crypt(struct skcipher_request *req,
 
 		kernel_fpu_end();
 
-		/* tail */
+		 
 		if (walk.nbytes == walk.total && nbytes > 0) {
 			u8 keystream[SM4_BLOCK_SIZE];
 

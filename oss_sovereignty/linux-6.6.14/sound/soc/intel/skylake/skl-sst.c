@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * skl-sst.c - HDA DSP library functions for SKL platform
- *
- * Copyright (C) 2014-15, Intel Corporation.
- * Author:Rafal Redzimski <rafal.f.redzimski@intel.com>
- *	Jeeja KP <jeeja.kp@intel.com>
- * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/delay.h>
@@ -21,10 +14,10 @@
 #define SKL_BASEFW_TIMEOUT	300
 #define SKL_INIT_TIMEOUT	1000
 
-/* Intel HD Audio SRAM Window 0*/
+ 
 #define SKL_ADSP_SRAM0_BASE	0x8000
 
-/* Firmware status window */
+ 
 #define SKL_ADSP_FW_STATUS	SKL_ADSP_SRAM0_BASE
 #define SKL_ADSP_ERROR_CODE	(SKL_ADSP_FW_STATUS + 0x4)
 
@@ -81,7 +74,7 @@ static int skl_load_base_firmware(struct sst_dsp *ctx)
 		}
 	}
 
-	/* prase uuids on first boot */
+	 
 	if (skl->is_first_boot) {
 		ret = snd_skl_parse_uuids(ctx, ctx->fw, SKL_ADSP_FW_BIN_HDR_OFFSET, 0);
 		if (ret < 0) {
@@ -92,7 +85,7 @@ static int skl_load_base_firmware(struct sst_dsp *ctx)
 		}
 	}
 
-	/* check for extended manifest */
+	 
 	stripped_fw.data = ctx->fw->data;
 	stripped_fw.size = ctx->fw->size;
 
@@ -110,11 +103,11 @@ static int skl_load_base_firmware(struct sst_dsp *ctx)
 		goto skl_load_base_firmware_failed;
 	}
 
-	/* enable Interrupt */
+	 
 	skl_ipc_int_enable(ctx);
 	skl_ipc_op_int_enable(ctx);
 
-	/* check ROM Status */
+	 
 	for (i = SKL_INIT_TIMEOUT; i > 0; --i) {
 		if (skl_check_fw_status(ctx, SKL_FW_INIT)) {
 			dev_dbg(ctx->dev,
@@ -164,7 +157,7 @@ static int skl_set_dsp_D0(struct sst_dsp *ctx, unsigned int core_id)
 	struct skl_dev *skl = ctx->thread_context;
 	unsigned int core_mask = SKL_DSP_CORE_MASK(core_id);
 
-	/* If core0 is being turned on, we need to load the FW */
+	 
 	if (core_id == SKL_DSP_CORE0_ID) {
 		ret = skl_load_base_firmware(ctx);
 		if (ret < 0) {
@@ -172,7 +165,7 @@ static int skl_set_dsp_D0(struct sst_dsp *ctx, unsigned int core_id)
 			return ret;
 		}
 
-		/* load libs as they are also lost on D3 */
+		 
 		if (skl->lib_count > 1) {
 			ret = ctx->fw_ops.load_library(ctx, skl->lib_info,
 							skl->lib_count);
@@ -185,10 +178,7 @@ static int skl_set_dsp_D0(struct sst_dsp *ctx, unsigned int core_id)
 		}
 	}
 
-	/*
-	 * If any core other than core 0 is being moved to D0, enable the
-	 * core and send the set dx IPC for the core.
-	 */
+	 
 	if (core_id != SKL_DSP_CORE0_ID) {
 		ret = skl_dsp_enable_core(ctx, core_mask);
 		if (ret < 0)
@@ -226,7 +216,7 @@ static int skl_set_dsp_D3(struct sst_dsp *ctx, unsigned int core_id)
 		dev_err(ctx->dev, "set Dx core %d fail: %d\n", core_id, ret);
 
 	if (core_id == SKL_DSP_CORE0_ID) {
-		/* disable Interrupt */
+		 
 		ctx->cl_dev.ops.cl_cleanup_controller(ctx);
 		skl_cldma_int_disable(ctx);
 		skl_ipc_op_int_disable(ctx);
@@ -246,10 +236,7 @@ static unsigned int skl_get_errorcode(struct sst_dsp *ctx)
 	 return sst_dsp_shim_read(ctx, SKL_ADSP_ERROR_CODE);
 }
 
-/*
- * since get/set_module are called from DAPM context,
- * we don't need lock for usage count
- */
+ 
 static int skl_get_module(struct sst_dsp *ctx, u16 mod_id)
 {
 	struct skl_module_table *module;
@@ -309,7 +296,7 @@ static struct skl_module_table *skl_fill_module_table(struct sst_dsp *ctx,
 	return skl_module;
 }
 
-/* get a module from it's unique ID */
+ 
 static struct skl_module_table *skl_module_get_from_id(
 			struct sst_dsp *ctx, u16 mod_id)
 {
@@ -339,7 +326,7 @@ static int skl_transfer_module(struct sst_dsp *ctx, const void *data,
 	if (bytes_left < 0)
 		return bytes_left;
 
-	/* check is_module flag to load module or library */
+	 
 	if (is_module)
 		ret = skl_ipc_load_modules(&skl->ipc, SKL_NUM_MODULES, &mod_id);
 	else
@@ -351,11 +338,7 @@ static int skl_transfer_module(struct sst_dsp *ctx, const void *data,
 		goto out;
 	}
 
-	/*
-	 * if bytes_left > 0 then wait for BDL complete interrupt and
-	 * copy the next chunk till bytes_left is 0. if bytes_left is
-	 * zero, then wait for load module IPC reply
-	 */
+	 
 	while (bytes_left > 0) {
 		curr_pos = size - bytes_left;
 
@@ -388,7 +371,7 @@ skl_load_library(struct sst_dsp *ctx, struct skl_lib_info *linfo, int lib_count)
 	struct firmware stripped_fw;
 	int ret, i;
 
-	/* library indices start from 1 to N. 0 represents base FW */
+	 
 	for (i = 1; i < lib_count; i++) {
 		ret = skl_prepare_lib_load(skl, &skl->lib_info[i], &stripped_fw,
 					SKL_ADSP_FW_BIN_HDR_OFFSET, i);
@@ -411,7 +394,7 @@ static int skl_load_module(struct sst_dsp *ctx, u16 mod_id, u8 *guid)
 {
 	struct skl_module_table *module_entry = NULL;
 	int ret = 0;
-	char mod_name[64]; /* guid str = 32 chars + 4 hyphens */
+	char mod_name[64];  
 
 	snprintf(mod_name, sizeof(mod_name), "intel/dsp_fw_%pUL.bin", guid);
 
@@ -451,7 +434,7 @@ static int skl_unload_module(struct sst_dsp *ctx, u16 mod_id)
 		return -EIO;
 	}
 
-	/* if module is used by others return, no need to unload */
+	 
 	if (usage_cnt > 0)
 		return 0;
 

@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * VRFB Rotation Engine
- *
- * Copyright (C) 2009 Nokia Corporation
- * Author: Tomi Valkeinen <tomi.valkeinen@nokia.com>
- */
+ 
+ 
 
 #ifndef __OMAP_VRFB_H__
 #define __OMAP_VRFB_H__
@@ -53,4 +48,4 @@ static inline int omap_vrfb_map_angle(struct vrfb *vrfb, u16 height, u8 rot)
 		{ return 0; }
 static inline void omap_vrfb_restore_context(void) {}
 #endif
-#endif /* __VRFB_H */
+#endif  

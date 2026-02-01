@@ -1,6 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Copyright 2019 Google LLC.
+
+
+
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -32,16 +32,7 @@ struct mtk_rpmsg_channel_info {
 	struct list_head list;
 };
 
-/**
- * struct rpmsg_ns_msg - dynamic name service announcement message
- * @name: name of remote service that is published
- * @addr: address of remote service that is published
- *
- * This message is sent across to publish a new service. When we receive these
- * messages, an appropriate rpmsg channel (i.e device) is created. In turn, the
- * ->probe() handler of the appropriate rpmsg driver will be invoked
- *  (if/as-soon-as one is registered).
- */
+ 
 struct rpmsg_ns_msg {
 	char name[RPMSG_NAME_SIZE];
 	u32 addr;
@@ -149,10 +140,7 @@ static int mtk_rpmsg_trysend(struct rpmsg_endpoint *ept, void *data, int len)
 	struct mtk_rpmsg_rproc_subdev *mtk_subdev =
 		to_mtk_rpmsg_endpoint(ept)->mtk_subdev;
 
-	/*
-	 * TODO: This currently is same as mtk_rpmsg_send, and wait until SCP
-	 * received the last command.
-	 */
+	 
 	return mtk_subdev->info->send_ipi(mtk_subdev->pdev, ept->addr, data,
 					  len, 0);
 }
@@ -281,18 +269,13 @@ static int mtk_rpmsg_ns_cb(struct rpmsg_device *rpdev, void *data, int len,
 		return -EINVAL;
 	}
 
-	/*
-	 * the name service ept does _not_ belong to a real rpmsg channel,
-	 * and is handled by the rpmsg bus itself.
-	 * for sanity reasons, make sure a valid rpdev has _not_ sneaked
-	 * in somehow.
-	 */
+	 
 	if (rpdev) {
 		dev_err(dev, "anomaly: ns ept has an rpdev handle\n");
 		return -EINVAL;
 	}
 
-	/* don't trust the remote processor for null terminating the name */
+	 
 	msg->name[RPMSG_NAME_SIZE - 1] = '\0';
 
 	dev_info(dev, "creating channel %s addr 0x%x\n", msg->name, msg->addr);
@@ -310,7 +293,7 @@ static int mtk_rpmsg_prepare(struct rproc_subdev *subdev)
 {
 	struct mtk_rpmsg_rproc_subdev *mtk_subdev = to_mtk_subdev(subdev);
 
-	/* a dedicated endpoint handles the name service msgs */
+	 
 	if (mtk_subdev->info->ns_ipi_id >= 0) {
 		mtk_subdev->ns_ept =
 			__mtk_create_ept(mtk_subdev, NULL, mtk_rpmsg_ns_cb,
@@ -342,10 +325,7 @@ static void mtk_rpmsg_stop(struct rproc_subdev *subdev, bool crashed)
 	struct mtk_rpmsg_rproc_subdev *mtk_subdev = to_mtk_subdev(subdev);
 	struct device *dev = &mtk_subdev->pdev->dev;
 
-	/*
-	 * Destroy the name service endpoint here, to avoid new channel being
-	 * created after the rpmsg_unregister_device loop below.
-	 */
+	 
 	if (mtk_subdev->ns_ept) {
 		mtk_rpmsg_destroy_ept(mtk_subdev->ns_ept);
 		mtk_subdev->ns_ept = NULL;

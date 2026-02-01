@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Maxim MAX14656 / AL32 USB Charger Detector driver
- *
- * Copyright (C) 2014 LG Electronics, Inc
- * Copyright (C) 2016 Alexander Kurz <akurz@blala.de>
- *
- * Components from Maxim AL32 Charger detection Driver for MX50 Yoshi Board
- * Copyright (C) Amazon Technologies Inc. All rights reserved.
- * Manish Lachwani (lachwani@lab126.com)
- */
+
+ 
 #include <linux/module.h>
 #include <linux/init.h>
 #include <linux/delay.h>
@@ -183,11 +174,11 @@ static int max14656_hw_init(struct max14656_chip *chip)
 	}
 	rev = val & DEVICE_REV_MASK;
 
-	/* Turn on ADC_EN */
+	 
 	if (max14656_write_reg(client, MAX14656_CONTROL_2, CONTROL2_ADC_EN))
 		return -EINVAL;
 
-	/* turn on interrupts and low power mode */
+	 
 	if (max14656_write_reg(client, MAX14656_CONTROL_1,
 		CONTROL1_DEFAULT |
 		CONTROL1_INT_EN |

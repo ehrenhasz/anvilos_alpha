@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  Routines for GF1 DMA control
- *  Copyright (c) by Jaroslav Kysela <perex@perex.cz>
- */
+
+ 
 
 #include <asm/dma.h>
 #include <linux/slab.h>
@@ -53,12 +50,12 @@ static void snd_gf1_dma_program(struct snd_gus_card * gus,
 #endif
 	if (dma_cmd & SNDRV_GF1_DMA_16BIT) {
 		count++;
-		count &= ~1;	/* align */
+		count &= ~1;	 
 	}
 	if (gus->gf1.dma1 > 3) {
 		dma_cmd |= SNDRV_GF1_DMA_WIDTH16;
 		count++;
-		count &= ~1;	/* align */
+		count &= ~1;	 
 	}
 	snd_gf1_dma_ack(gus);
 	snd_dma_program(gus->gf1.dma1, buf_addr, count, dma_cmd & SNDRV_GF1_DMA_READ ? DMA_MODE_READ : DMA_MODE_WRITE);
@@ -81,7 +78,7 @@ static struct snd_gf1_dma_block *snd_gf1_dma_next_block(struct snd_gus_card * gu
 {
 	struct snd_gf1_dma_block *block;
 
-	/* PCM block have bigger priority than synthesizer one */
+	 
 	if (gus->gf1.dma_data_pcm) {
 		block = gus->gf1.dma_data_pcm;
 		if (gus->gf1.dma_data_pcm_last == block) {

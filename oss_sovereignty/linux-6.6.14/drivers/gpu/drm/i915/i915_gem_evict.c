@@ -1,30 +1,4 @@
-/*
- * Copyright © 2008-2010 Intel Corporation
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice (including the next
- * paragraph) shall be included in all copies or substantial portions of the
- * Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
- * IN THE SOFTWARE.
- *
- * Authors:
- *    Eric Anholt <eric@anholt.net>
- *    Chris Wilson <chris@chris-wilson.co.uuk>
- *
- */
+ 
 
 #include "gem/i915_gem_context.h"
 #include "gt/intel_gt.h"
@@ -50,13 +24,7 @@ static int ggtt_flush(struct i915_address_space *vm)
 	int ret = 0;
 
 	list_for_each_entry(gt, &ggtt->gt_list, ggtt_link) {
-		/*
-		 * Not everything in the GGTT is tracked via vma (otherwise we
-		 * could evict as required with minimal stalling) so we are forced
-		 * to idle the GPU and explicitly retire outstanding requests in
-		 * the hopes that we can then remove contexts and the like only
-		 * bound by their active reference.
-		 */
+		 
 		ret = intel_gt_wait_for_idle(gt, MAX_SCHEDULE_TIMEOUT);
 		if (ret)
 			return ret;
@@ -66,17 +34,14 @@ static int ggtt_flush(struct i915_address_space *vm)
 
 static bool grab_vma(struct i915_vma *vma, struct i915_gem_ww_ctx *ww)
 {
-	/*
-	 * We add the extra refcount so the object doesn't drop to zero until
-	 * after ungrab_vma(), this way trylock is always paired with unlock.
-	 */
+	 
 	if (i915_gem_object_get_rcu(vma->obj)) {
 		if (!i915_gem_object_trylock(vma->obj, ww)) {
 			i915_gem_object_put(vma->obj);
 			return false;
 		}
 	} else {
-		/* Dead objects don't need pins */
+		 
 		atomic_and(~I915_VMA_PIN_MASK, &vma->flags);
 	}
 
@@ -120,30 +85,7 @@ static bool defer_evict(struct i915_vma *vma)
 	return false;
 }
 
-/**
- * i915_gem_evict_something - Evict vmas to make room for binding a new one
- * @vm: address space to evict from
- * @ww: An optional struct i915_gem_ww_ctx.
- * @min_size: size of the desired free space
- * @alignment: alignment constraint of the desired free space
- * @color: color for the desired space
- * @start: start (inclusive) of the range from which to evict objects
- * @end: end (exclusive) of the range from which to evict objects
- * @flags: additional flags to control the eviction algorithm
- *
- * This function will try to evict vmas until a free space satisfying the
- * requirements is found. Callers must check first whether any such hole exists
- * already before calling this function.
- *
- * This function is used by the object/vma binding code.
- *
- * Since this function is only used to free up virtual address space it only
- * ignores pinned vmas, and not object where the backing storage itself is
- * pinned. Hence obj->pages_pin_count does not protect against eviction.
- *
- * To clarify: This is for freeing up virtual address space, not for freeing
- * memory in e.g. the shrinker.
- */
+ 
 int
 i915_gem_evict_something(struct i915_address_space *vm,
 			 struct i915_gem_ww_ctx *ww,
@@ -164,17 +106,7 @@ i915_gem_evict_something(struct i915_address_space *vm,
 	lockdep_assert_held(&vm->mutex);
 	trace_i915_gem_evict(vm, min_size, alignment, flags);
 
-	/*
-	 * The goal is to evict objects and amalgamate space in rough LRU order.
-	 * Since both active and inactive objects reside on the same list,
-	 * in a mix of creation and last scanned order, as we process the list
-	 * we sort it into inactive/active, which keeps the active portion
-	 * in a rough MRU order.
-	 *
-	 * The retirement sequence is thus:
-	 *   1. Inactive objects (already retired, random order)
-	 *   2. Active objects (will stall on unbinding, oldest scanned first)
-	 */
+	 
 	mode = DRM_MM_INSERT_BEST;
 	if (flags & PIN_HIGH)
 		mode = DRM_MM_INSERT_HIGH;
@@ -197,28 +129,14 @@ search_again:
 	active = NULL;
 	INIT_LIST_HEAD(&eviction_list);
 	list_for_each_entry_safe(vma, next, &vm->bound_list, vm_link) {
-		if (vma == active) { /* now seen this vma twice */
+		if (vma == active) {  
 			if (flags & PIN_NONBLOCK)
 				break;
 
 			active = ERR_PTR(-EAGAIN);
 		}
 
-		/*
-		 * We keep this list in a rough least-recently scanned order
-		 * of active elements (inactive elements are cheap to reap).
-		 * New entries are added to the end, and we move anything we
-		 * scan to the end. The assumption is that the working set
-		 * of applications is either steady state (and thanks to the
-		 * userspace bo cache it almost always is) or volatile and
-		 * frequently replaced after a frame, which are self-evicting!
-		 * Given that assumption, the MRU order of the scan list is
-		 * fairly static, and keeping it in least-recently scan order
-		 * is suitable.
-		 *
-		 * To notice when we complete one full cycle, we record the
-		 * first active element seen, before moving it to the tail.
-		 */
+		 
 		if (active != ERR_PTR(-EAGAIN) && defer_evict(vma)) {
 			if (!active)
 				active = vma;
@@ -231,35 +149,18 @@ search_again:
 			goto found;
 	}
 
-	/* Nothing found, clean up and bail out! */
+	 
 	list_for_each_entry_safe(vma, next, &eviction_list, evict_link) {
 		ret = drm_mm_scan_remove_block(&scan, &vma->node);
 		BUG_ON(ret);
 		ungrab_vma(vma);
 	}
 
-	/*
-	 * Can we unpin some objects such as idle hw contents,
-	 * or pending flips? But since only the GGTT has global entries
-	 * such as scanouts, rinbuffers and contexts, we can skip the
-	 * purge when inspecting per-process local address spaces.
-	 */
+	 
 	if (!i915_is_ggtt(vm) || flags & PIN_NONBLOCK)
 		return -ENOSPC;
 
-	/*
-	 * Not everything in the GGTT is tracked via VMA using
-	 * i915_vma_move_to_active(), otherwise we could evict as required
-	 * with minimal stalling. Instead we are forced to idle the GPU and
-	 * explicitly retire outstanding requests which will then remove
-	 * the pinning for active objects such as contexts and ring,
-	 * enabling us to evict them on the next iteration.
-	 *
-	 * To ensure that all user contexts are evictable, we perform
-	 * a switch to the perma-pinned kernel context. This all also gives
-	 * us a termination condition, when the last retired context is
-	 * the kernel's there is no more we can evict.
-	 */
+	 
 	if (I915_SELFTEST_ONLY(igt_evict_ctl.fail_if_busy))
 		return -EBUSY;
 
@@ -273,12 +174,7 @@ search_again:
 	goto search_again;
 
 found:
-	/* drm_mm doesn't allow any other other operations while
-	 * scanning, therefore store to-be-evicted objects on a
-	 * temporary list and take a reference for all before
-	 * calling unbind (which may remove the active reference
-	 * of any of our objects, thus corrupting the list).
-	 */
+	 
 	list_for_each_entry_safe(vma, next, &eviction_list, evict_link) {
 		if (drm_mm_scan_remove_block(&scan, &vma->node)) {
 			__i915_vma_pin(vma);
@@ -288,7 +184,7 @@ found:
 		}
 	}
 
-	/* Unbinding will emit any required flushes */
+	 
 	ret = 0;
 	list_for_each_entry_safe(vma, next, &eviction_list, evict_link) {
 		__i915_vma_unpin(vma);
@@ -300,7 +196,7 @@ found:
 	while (ret == 0 && (node = drm_mm_scan_color_evict(&scan))) {
 		vma = container_of(node, struct i915_vma, node);
 
-		/* If we find any non-objects (!vma), we cannot evict them */
+		 
 		if (vma->node.color != I915_COLOR_UNEVICTABLE &&
 		    grab_vma(vma, ww)) {
 			ret = __i915_vma_unbind(vma);
@@ -313,18 +209,7 @@ found:
 	return ret;
 }
 
-/**
- * i915_gem_evict_for_node - Evict vmas to make room for binding a new one
- * @vm: address space to evict from
- * @ww: An optional struct i915_gem_ww_ctx.
- * @target: range (and color) to evict for
- * @flags: additional flags to control the eviction algorithm
- *
- * This function will try to evict vmas that overlap the target node.
- *
- * To clarify: This is for freeing up virtual address space, not for freeing
- * memory in e.g. the shrinker.
- */
+ 
 int i915_gem_evict_for_node(struct i915_address_space *vm,
 			    struct i915_gem_ww_ctx *ww,
 			    struct drm_mm_node *target,
@@ -343,12 +228,7 @@ int i915_gem_evict_for_node(struct i915_address_space *vm,
 
 	trace_i915_gem_evict_node(vm, target, flags);
 
-	/*
-	 * Retire before we search the active list. Although we have
-	 * reasonable accuracy in our retirement lists, we may have
-	 * a stray pin (preventing eviction) that can only be resolved by
-	 * retiring.
-	 */
+	 
 	if (i915_is_ggtt(vm)) {
 		struct i915_ggtt *ggtt = i915_vm_to_ggtt(vm);
 		struct intel_gt *gt;
@@ -360,17 +240,17 @@ int i915_gem_evict_for_node(struct i915_address_space *vm,
 	}
 
 	if (i915_vm_has_cache_coloring(vm)) {
-		/* Expand search to cover neighbouring guard pages (or lack!) */
+		 
 		if (start)
 			start -= I915_GTT_PAGE_SIZE;
 
-		/* Always look at the page afterwards to avoid the end-of-GTT */
+		 
 		end += I915_GTT_PAGE_SIZE;
 	}
 	GEM_BUG_ON(start >= end);
 
 	drm_mm_for_each_node_in_range(node, &vm->mm, start, end) {
-		/* If we find any non-objects (!vma), we cannot evict them */
+		 
 		if (node->color == I915_COLOR_UNEVICTABLE) {
 			ret = -ENOSPC;
 			break;
@@ -379,13 +259,7 @@ int i915_gem_evict_for_node(struct i915_address_space *vm,
 		GEM_BUG_ON(!drm_mm_node_allocated(node));
 		vma = container_of(node, typeof(*vma), node);
 
-		/*
-		 * If we are using coloring to insert guard pages between
-		 * different cache domains within the address space, we have
-		 * to check whether the objects on either side of our range
-		 * abutt and conflict. If they are in conflict, then we evict
-		 * those as well to make room for our guard pages.
-		 */
+		 
 		if (i915_vm_has_cache_coloring(vm)) {
 			if (node->start + node->size == target->start) {
 				if (node->color == target->color)
@@ -412,15 +286,7 @@ int i915_gem_evict_for_node(struct i915_address_space *vm,
 			break;
 		}
 
-		/*
-		 * Never show fear in the face of dragons!
-		 *
-		 * We cannot directly remove this node from within this
-		 * iterator and as with i915_gem_evict_something() we employ
-		 * the vma pin_count in order to prevent the action of
-		 * unbinding one vma from freeing (by dropping its active
-		 * reference) another in our eviction list.
-		 */
+		 
 		__i915_vma_pin(vma);
 		list_add(&vma->evict_link, &eviction_list);
 	}
@@ -436,25 +302,7 @@ int i915_gem_evict_for_node(struct i915_address_space *vm,
 	return ret;
 }
 
-/**
- * i915_gem_evict_vm - Evict all idle vmas from a vm
- * @vm: Address space to cleanse
- * @ww: An optional struct i915_gem_ww_ctx. If not NULL, i915_gem_evict_vm
- * will be able to evict vma's locked by the ww as well.
- * @busy_bo: Optional pointer to struct drm_i915_gem_object. If not NULL, then
- * in the event i915_gem_evict_vm() is unable to trylock an object for eviction,
- * then @busy_bo will point to it. -EBUSY is also returned. The caller must drop
- * the vm->mutex, before trying again to acquire the contended lock. The caller
- * also owns a reference to the object.
- *
- * This function evicts all vmas from a vm.
- *
- * This is used by the execbuf code as a last-ditch effort to defragment the
- * address space.
- *
- * To clarify: This is for freeing up virtual address space, not for freeing
- * memory in e.g. the shrinker.
- */
+ 
 int i915_gem_evict_vm(struct i915_address_space *vm, struct i915_gem_ww_ctx *ww,
 		      struct drm_i915_gem_object **busy_bo)
 {
@@ -463,11 +311,7 @@ int i915_gem_evict_vm(struct i915_address_space *vm, struct i915_gem_ww_ctx *ww,
 	lockdep_assert_held(&vm->mutex);
 	trace_i915_gem_evict_vm(vm);
 
-	/* Switch back to the default context in order to unpin
-	 * the existing context objects. However, such objects only
-	 * pin themselves inside the global GTT and performing the
-	 * switch otherwise is ineffective.
-	 */
+	 
 	if (i915_is_ggtt(vm)) {
 		ret = ggtt_flush(vm);
 		if (ret)
@@ -483,11 +327,7 @@ int i915_gem_evict_vm(struct i915_address_space *vm, struct i915_gem_ww_ctx *ww,
 			if (i915_vma_is_pinned(vma))
 				continue;
 
-			/*
-			 * If we already own the lock, trylock fails. In case
-			 * the resv is shared among multiple objects, we still
-			 * need the object ref.
-			 */
+			 
 			if (!i915_gem_object_get_rcu(vma->obj) ||
 			    (ww && (dma_resv_locking_ctx(vma->obj->base.resv) == &ww->ctx))) {
 				__i915_vma_pin(vma);
@@ -497,7 +337,7 @@ int i915_gem_evict_vm(struct i915_address_space *vm, struct i915_gem_ww_ctx *ww,
 
 			if (!i915_gem_object_trylock(vma->obj, ww)) {
 				if (busy_bo) {
-					*busy_bo = vma->obj; /* holds ref */
+					*busy_bo = vma->obj;  
 					ret = -EBUSY;
 					break;
 				}
@@ -511,13 +351,13 @@ int i915_gem_evict_vm(struct i915_address_space *vm, struct i915_gem_ww_ctx *ww,
 		if (list_empty(&eviction_list) && list_empty(&locked_eviction_list))
 			break;
 
-		/* Unbind locked objects first, before unlocking the eviction_list */
+		 
 		list_for_each_entry_safe(vma, vn, &locked_eviction_list, evict_link) {
 			__i915_vma_unpin(vma);
 
 			if (ret == 0) {
 				ret = __i915_vma_unbind(vma);
-				if (ret != -EINTR) /* "Get me out of here!" */
+				if (ret != -EINTR)  
 					ret = 0;
 			}
 			if (!dying_vma(vma))
@@ -528,7 +368,7 @@ int i915_gem_evict_vm(struct i915_address_space *vm, struct i915_gem_ww_ctx *ww,
 			__i915_vma_unpin(vma);
 			if (ret == 0) {
 				ret = __i915_vma_unbind(vma);
-				if (ret != -EINTR) /* "Get me out of here!" */
+				if (ret != -EINTR)  
 					ret = 0;
 			}
 

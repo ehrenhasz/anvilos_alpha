@@ -1,13 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * HID driver for Holtek gaming mice
- * Copyright (c) 2013 Christian Ohm
- * Heavily inspired by various other HID drivers that adjust the report
- * descriptor.
-*/
 
-/*
- */
+ 
+
+ 
 
 #include <linux/hid.h>
 #include <linux/module.h>
@@ -15,19 +9,7 @@
 
 #include "hid-ids.h"
 
-/*
- * The report descriptor of some Holtek based gaming mice specifies an
- * excessively large number of consumer usages (2^15), which is more than
- * HID_MAX_USAGES. This prevents proper parsing of the report descriptor.
- *
- * This driver fixes the report descriptor for:
- * - USB ID 04d9:a067, sold as Sharkoon Drakonia and Perixx MX-2000
- * - USB ID 04d9:a04a, sold as Tracer Sniper TRM-503, NOVA Gaming Slider X200
- *   and Zalman ZM-GM1
- * - USB ID 04d9:a081, sold as SHARKOON DarkGlider Gaming mouse
- * - USB ID 04d9:a072, sold as LEETGION Hellion Gaming Mouse
- * - USB ID 04d9:a0c2, sold as ETEKCITY Scroll T-140 Gaming Mouse
- */
+ 
 
 static __u8 *holtek_mouse_report_fixup(struct hid_device *hdev, __u8 *rdesc,
 		unsigned int *rsize)
@@ -35,8 +17,7 @@ static __u8 *holtek_mouse_report_fixup(struct hid_device *hdev, __u8 *rdesc,
 	struct usb_interface *intf = to_usb_interface(hdev->dev.parent);
 
 	if (intf->cur_altsetting->desc.bInterfaceNumber == 1) {
-		/* Change usage maximum and logical maximum from 0x7fff to
-		 * 0x2fff, so they don't exceed HID_MAX_USAGES */
+		 
 		switch (hdev->product) {
 		case USB_DEVICE_ID_HOLTEK_ALT_MOUSE_A067:
 		case USB_DEVICE_ID_HOLTEK_ALT_MOUSE_A072:

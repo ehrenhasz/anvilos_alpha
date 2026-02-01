@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * STMicroelectronics STM32 USB PHY Controller driver
- *
- * Copyright (C) 2018 STMicroelectronics
- * Author(s): Amelie Delaunay <amelie.delaunay@st.com>.
- */
+
+ 
 #include <linux/bitfield.h>
 #include <linux/clk.h>
 #include <linux/clk-provider.h>
@@ -24,7 +19,7 @@
 #define STM32_USBPHYC_TUNE(X)	(0x10C + ((X) * 0x100))
 #define STM32_USBPHYC_VERSION	0x3F4
 
-/* STM32_USBPHYC_PLL bit fields */
+ 
 #define PLLNDIV			GENMASK(6, 0)
 #define PLLFRACIN		GENMASK(25, 10)
 #define PLLEN			BIT(26)
@@ -34,16 +29,16 @@
 #define PLLDITHEN0		BIT(30)
 #define PLLDITHEN1		BIT(31)
 
-/* STM32_USBPHYC_MISC bit fields */
+ 
 #define SWITHOST		BIT(0)
 
-/* STM32_USBPHYC_MONITOR bit fields */
+ 
 #define STM32_USBPHYC_MON_OUT	GENMASK(3, 0)
 #define STM32_USBPHYC_MON_SEL	GENMASK(8, 4)
 #define STM32_USBPHYC_MON_SEL_LOCKP 0x1F
 #define STM32_USBPHYC_MON_OUT_LOCKP BIT(3)
 
-/* STM32_USBPHYC_TUNE bit fields */
+ 
 #define INCURREN		BIT(0)
 #define INCURRINT		BIT(1)
 #define LFSCAPEN		BIT(2)
@@ -120,7 +115,7 @@ enum rx_offset {
 	RX_OFFSET_MAX,
 };
 
-/* STM32_USBPHYC_VERSION bit fields */
+ 
 #define MINREV			GENMASK(3, 0)
 #define MAJREV			GENMASK(7, 4)
 
@@ -206,16 +201,7 @@ static void stm32_usbphyc_get_pll_params(u32 clk_rate,
 {
 	unsigned long long fvco, ndiv, frac;
 
-	/*    _
-	 *   | FVCO = INFF*2*(NDIV + FRACT/2^16) when DITHER_DISABLE[1] = 1
-	 *   | FVCO = 2880MHz
-	 *  <
-	 *   | NDIV = integer part of input bits to set the LDF
-	 *   |_FRACT = fractional part of input bits to set the LDF
-	 *  =>	PLLNDIV = integer part of (FVCO / (INFF*2))
-	 *  =>	PLLFRACIN = fractional part of(FVCO / INFF*2) * 2^16
-	 * <=>  PLLFRACIN = ((FVCO / (INFF*2)) - PLLNDIV) * 2^16
-	 */
+	 
 	fvco = (unsigned long long)PLL_FVCO_MHZ * HZ_PER_MHZ;
 
 	ndiv = fvco;
@@ -267,7 +253,7 @@ static int __stm32_usbphyc_pll_disable(struct stm32_usbphyc *usbphyc)
 
 	stm32_usbphyc_clr_bits(pll_reg, PLLEN);
 
-	/* Wait for minimum width of powerdown pulse (ENABLE = Low) */
+	 
 	if (readl_relaxed_poll_timeout(pll_reg, pllen, !(pllen & PLLEN), 5, 50))
 		dev_err(usbphyc->dev, "PLL not reset\n");
 
@@ -276,7 +262,7 @@ static int __stm32_usbphyc_pll_disable(struct stm32_usbphyc *usbphyc)
 
 static int stm32_usbphyc_pll_disable(struct stm32_usbphyc *usbphyc)
 {
-	/* Check if a phy port is still active or clk48 in use */
+	 
 	if (atomic_dec_return(&usbphyc->n_pll_cons) > 0)
 		return 0;
 
@@ -289,18 +275,12 @@ static int stm32_usbphyc_pll_enable(struct stm32_usbphyc *usbphyc)
 	bool pllen = readl_relaxed(pll_reg) & PLLEN;
 	int ret;
 
-	/*
-	 * Check if a phy port or clk48 prepare has configured the pll
-	 * and ensure the PLL is enabled
-	 */
+	 
 	if (atomic_inc_return(&usbphyc->n_pll_cons) > 1 && pllen)
 		return 0;
 
 	if (pllen) {
-		/*
-		 * PLL shouldn't be enabled without known consumer,
-		 * disable it and reinit n_pll_cons
-		 */
+		 
 		dev_warn(usbphyc->dev, "PLL enabled without known consumers\n");
 
 		ret = __stm32_usbphyc_pll_disable(usbphyc);
@@ -318,7 +298,7 @@ static int stm32_usbphyc_pll_enable(struct stm32_usbphyc *usbphyc)
 
 	stm32_usbphyc_set_bits(pll_reg, PLLEN);
 
-	/* Wait for maximum lock time */
+	 
 	usleep_range(200, 300);
 
 	return 0;
@@ -346,7 +326,7 @@ static int stm32_usbphyc_phy_init(struct phy *phy)
 	if (ret)
 		return ret;
 
-	/* Check that PLL Lock input to PHY is High */
+	 
 	writel_relaxed(monsel, usbphyc->base + reg_mon);
 	ret = readl_relaxed_poll_timeout(usbphyc->base + reg_mon, monout,
 					 (monout & STM32_USBPHYC_MON_OUT_LOCKP),
@@ -468,7 +448,7 @@ static void stm32_usbphyc_phy_tuning(struct stm32_usbphyc *usbphyc,
 	u32 otpcomp, val;
 	int ret;
 
-	/* Backup OTP compensation code */
+	 
 	otpcomp = FIELD_GET(OTPCOMP, readl_relaxed(usbphyc->base + reg));
 
 	ret = of_property_read_u32(np, "st,current-boost-microamp", &val);
@@ -490,9 +470,9 @@ static void stm32_usbphyc_phy_tuning(struct stm32_usbphyc *usbphyc,
 	ret = of_property_read_u32(np, "st,tune-hs-dc-level", &val);
 	if (ret != -EINVAL) {
 		if (!ret && val < DC_MAX) {
-			if (val == DC_MINUS_5_TO_7_MV) {/* Decreases HS driver DC level */
+			if (val == DC_MINUS_5_TO_7_MV) { 
 				usbphyc_phy->tune |= HSDRVDCCUR;
-			} else if (val > 0) {		/* Increases HS driver DC level */
+			} else if (val > 0) {		 
 				val = (val == DC_PLUS_10_TO_14_MV) ? 1 : 0;
 				usbphyc_phy->tune |= HSDRVCURINCR | FIELD_PREP(HSDRVDCLEV, val);
 			}
@@ -551,13 +531,10 @@ static void stm32_usbphyc_phy_tuning(struct stm32_usbphyc *usbphyc,
 	if (of_property_read_bool(np, "st,enable-hs-tx-staggering"))
 		usbphyc_phy->tune |= STAGSEL;
 
-	/* Restore OTP compensation code */
+	 
 	usbphyc_phy->tune |= FIELD_PREP(OTPCOMP, otpcomp);
 
-	/*
-	 * By default, if no st,xxx tuning property is used, usbphyc_phy->tune is equal to
-	 * STM32_USBPHYC_TUNE reset value (LFSCAPEN | SHTCCTCTLPROT | OTPCOMP).
-	 */
+	 
 	writel_relaxed(usbphyc_phy->tune, usbphyc->base + reg);
 }
 
@@ -599,7 +576,7 @@ static struct phy *stm32_usbphyc_of_xlate(struct device *dev,
 		return ERR_PTR(-EINVAL);
 	}
 
-	/* Configure the UTMI switch for PHY port#2 */
+	 
 	if (usbphyc_phy->index == 1) {
 		if (usbphyc->switch_setup < 0) {
 			stm32_usbphyc_switch_setup(usbphyc, args->args[0]);
@@ -656,10 +633,7 @@ static int stm32_usbphyc_probe(struct platform_device *pdev)
 		stm32_usbphyc_clr_bits(usbphyc->base + STM32_USBPHYC_PLL, PLLEN);
 	}
 
-	/*
-	 * Wait for minimum width of powerdown pulse (ENABLE = Low):
-	 * we have to ensure the PLL is disabled before phys initialization.
-	 */
+	 
 	if (readl_relaxed_poll_timeout(usbphyc->base + STM32_USBPHYC_PLL,
 				       pllen, !(pllen & PLLEN), 5, 50)) {
 		dev_warn(usbphyc->dev, "PLL not reset\n");
@@ -736,7 +710,7 @@ static int stm32_usbphyc_probe(struct platform_device *pdev)
 			usbphyc->phys[port]->vbus = NULL;
 		}
 
-		/* Configure phy tuning */
+		 
 		stm32_usbphyc_phy_tuning(usbphyc, child, index);
 
 		port++;
@@ -775,7 +749,7 @@ static void stm32_usbphyc_remove(struct platform_device *pdev)
 	struct stm32_usbphyc *usbphyc = dev_get_drvdata(&pdev->dev);
 	int port;
 
-	/* Ensure PHYs are not active, to allow PLL disabling */
+	 
 	for (port = 0; port < usbphyc->nphys; port++)
 		if (usbphyc->phys[port]->active)
 			stm32_usbphyc_phy_exit(usbphyc->phys[port]->phy);

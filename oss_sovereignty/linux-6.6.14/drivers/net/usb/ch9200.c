@@ -1,11 +1,4 @@
-/*
- * USB 10M/100M ethernet adapter
- *
- * This file is licensed under the terms of the GNU General Public License
- * version 2. This program is licensed "as is" without any warranty of any
- * kind, whether express or implied
- *
- */
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -31,12 +24,7 @@
 #define REQUEST_READ	0x0E
 #define REQUEST_WRITE	0x0F
 
-/* Address space:
- * 00-63 : MII
- * 64-128: MAC
- *
- * Note: all accesses must be 16-bit
- */
+ 
 
 #define MAC_REG_CTRL 64
 #define MAC_REG_STATUS 66
@@ -55,10 +43,7 @@
 #define MAC_REG_PAUSE 92
 #define MAC_REG_FLOW_CONTROL 94
 
-/* Control register bits
- *
- * Note: bits 13 and 15 are reserved
- */
+ 
 #define LOOPBACK		(0x01 << 14)
 #define BASE100X		(0x01 << 12)
 #define MBPS_10			(0x01 << 11)
@@ -74,10 +59,7 @@
 #define RECEIVER_ACTION		(0x01 << 1)
 #define DMA_ACTION		(0x01 << 0)
 
-/* Status register bits
- *
- * Note: bits 7-15 are reserved
- */
+ 
 #define ALIGNMENT		(0x01 << 6)
 #define FIFO_OVER_RUN		(0x01 << 5)
 #define FIFO_UNDER_RUN		(0x01 << 4)
@@ -86,10 +68,7 @@
 #define TX_ERROR		(0x01 << 1)
 #define TX_COMPLETE		(0x01 << 0)
 
-/* FIFO depth register bits
- *
- * Note: bits 6 and 14 are reserved
- */
+ 
 
 #define ETH_TXBD		(0x01 << 15)
 #define ETN_TX_FIFO_DEPTH	(0x01 << 8)
@@ -258,9 +237,7 @@ static struct sk_buff *ch9200_tx_fixup(struct usbnet *dev, struct sk_buff *skb,
 	}
 
 	__skb_push(skb, tx_overhead);
-	/* usbnet adds padding if length is a multiple of packet size
-	 * if so, adjust length value in header
-	 */
+	 
 	if ((skb->len % dev->maxpacket) == 0)
 		len++;
 
@@ -373,7 +350,7 @@ static int ch9200_bind(struct usbnet *dev, struct usb_interface *intf)
 	retval = control_write(dev, REQUEST_WRITE, 0, MAC_REG_FLOW_CONTROL,
 			       data, 0x02, CONTROL_TIMEOUT_MS);
 
-	/* Undocumented register */
+	 
 	data[0] = 0x01;
 	data[1] = 0x00;
 	retval = control_write(dev, REQUEST_WRITE, 0, 254, data, 0x02,

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * mchp23k256.c
- *
- * Driver for Microchip 23k256 SPI RAM chips
- *
- * Copyright © 2016 Andrew Lunn <andrew@lunn.ch>
- */
+
+ 
 #include <linux/device.h>
 #include <linux/module.h>
 #include <linux/mtd/mtd.h>
@@ -43,11 +37,7 @@ static void mchp23k256_addr2cmd(struct mchp23k256_flash *flash,
 {
 	int i;
 
-	/*
-	 * Address is sent in big endian (MSB first) and we skip
-	 * the first entry of the cmd array which contains the cmd
-	 * opcode.
-	 */
+	 
 	for (i = flash->caps->addr_width; i > 0; i--, addr >>= 8)
 		cmd[i] = addr;
 }
@@ -136,10 +126,7 @@ static int mchp23k256_read(struct mtd_info *mtd, loff_t from, size_t len,
 	return 0;
 }
 
-/*
- * Set the device into sequential mode. This allows read/writes to the
- * entire SRAM in a single operation
- */
+ 
 static int mchp23k256_set_mode(struct spi_device *spi)
 {
 	struct spi_transfer transfer = {};

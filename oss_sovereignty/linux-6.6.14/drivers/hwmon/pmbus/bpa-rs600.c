@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Hardware monitoring driver for BluTek BPA-RS600 Power Supplies
- *
- * Copyright 2021 Allied Telesis Labs
- */
+
+ 
 
 #include <linux/i2c.h>
 #include <linux/init.h>
@@ -23,10 +19,7 @@ static int bpa_rs600_read_byte_data(struct i2c_client *client, int page, int reg
 
 	switch (reg) {
 	case PMBUS_FAN_CONFIG_12:
-		/*
-		 * Two fans are reported in PMBUS_FAN_CONFIG_12 but there is
-		 * only one fan in the module. Mask out the FAN2 bits.
-		 */
+		 
 		ret = pmbus_read_byte_data(client, 0, PMBUS_FAN_CONFIG_12);
 		if (ret >= 0)
 			ret &= ~(PB_FAN_2_INSTALLED | PB_FAN_2_PULSE_MASK);
@@ -39,11 +32,7 @@ static int bpa_rs600_read_byte_data(struct i2c_client *client, int page, int reg
 	return ret;
 }
 
-/*
- * The BPA-RS600 violates the PMBus spec. Specifically it treats the
- * mantissa as unsigned. Deal with this here to allow the PMBus core
- * to work with correctly encoded data.
- */
+ 
 static int bpa_rs600_read_vin(struct i2c_client *client)
 {
 	int ret, exponent, mantissa;
@@ -65,10 +54,7 @@ static int bpa_rs600_read_vin(struct i2c_client *client)
 	return ret;
 }
 
-/*
- * Firmware V5.70 incorrectly reports 1640W for MFR_PIN_MAX.
- * Deal with this by returning a sensible value.
- */
+ 
 static int bpa_rs600_read_pin_max(struct i2c_client *client)
 {
 	int ret;
@@ -77,9 +63,9 @@ static int bpa_rs600_read_pin_max(struct i2c_client *client)
 	if (ret < 0)
 		return ret;
 
-	/* Detect invalid 1640W (linear encoding) */
+	 
 	if (ret == 0x0b34)
-		/* Report 700W (linear encoding) */
+		 
 		return 0x095e;
 
 	return ret;
@@ -105,7 +91,7 @@ static int bpa_rs600_read_word_data(struct i2c_client *client, int page, int pha
 	case PMBUS_VIN_OV_FAULT_LIMIT:
 	case PMBUS_VOUT_UV_FAULT_LIMIT:
 	case PMBUS_VOUT_OV_FAULT_LIMIT:
-		/* These commands return data but it is invalid/un-documented */
+		 
 		ret = -ENXIO;
 		break;
 	case PMBUS_READ_VIN:

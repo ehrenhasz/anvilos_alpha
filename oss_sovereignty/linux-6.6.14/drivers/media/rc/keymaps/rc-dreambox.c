@@ -1,29 +1,18 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (c) 2021 Emanuel Strobel <emanuel.strobel@yahoo.com>
- */
+
+ 
 
 #include <media/rc-map.h>
 #include <linux/module.h>
 
-/*
- * Keytable for Dreambox RC10/RC0 and RC20/RC-BT remote controls
- *
- * Keys that are not IR addressable:
- *
- * // DREAM switches to STB control mode
- * // TV switches to TV control mode
- * // MODE toggles STB/TV/BT control modes
- *
- */
+ 
 
 static struct rc_map_table dreambox[] = {
-	/* Dreambox RC10/RC0/RCU-BT remote */
+	 
 	{ 0x3200, KEY_POWER },
 
-	// DREAM
+	
 	{ 0x3290, KEY_HELP },
-	// TV
+	
 
 	{ 0x3201, KEY_1 },
 	{ 0x3202, KEY_2 },
@@ -57,7 +46,7 @@ static struct rc_map_table dreambox[] = {
 	{ 0x3219, KEY_VOLUMEUP },
 	{ 0x321c, KEY_VOLUMEDOWN },
 
-	{ 0x321d, KEY_ESC }, // EXIT
+	{ 0x321d, KEY_ESC }, 
 	{ 0x321a, KEY_MUTE },
 
 	{ 0x321b, KEY_PAGEUP },
@@ -73,9 +62,9 @@ static struct rc_map_table dreambox[] = {
 	{ 0x3229, KEY_TEXT },
 	{ 0x322a, KEY_RECORD },
 
-	/* Dreambox RC20/RC-BT */
+	 
 	{ 0x3407, KEY_MUTE },
-	// MODE
+	
 	{ 0x3401, KEY_POWER },
 
 	{ 0x3432, KEY_PREVIOUSSONG },
@@ -105,8 +94,8 @@ static struct rc_map_table dreambox[] = {
 	{ 0x3413, KEY_VOLUMEUP },
 	{ 0x3418, KEY_VOLUMEDOWN },
 
-	{ 0x3412, KEY_ESC }, // EXIT
-	{ 0x3426, KEY_HELP }, // MIC
+	{ 0x3412, KEY_ESC }, 
+	{ 0x3426, KEY_HELP }, 
 
 	{ 0x3417, KEY_PAGEUP },
 	{ 0x341a, KEY_PAGEDOWN },

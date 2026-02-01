@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// cs35l36.c -- CS35L36 ALSA SoC audio driver
-//
-// Copyright 2018 Cirrus Logic, Inc.
-//
-// Author: James Schulman <james.schulman@cirrus.com>
+
+
+
+
+
+
+
 
 #include <linux/module.h>
 #include <linux/moduleparam.h>
@@ -34,10 +34,7 @@
 
 #include "cs35l36.h"
 
-/*
- * Some fields take zero as a valid value so use a high bit flag that won't
- * get written to the device to mark those.
- */
+ 
 #define CS35L36_VALID_PDATA 0x80000000
 
 static const char * const cs35l36_supplies[] = {
@@ -1130,14 +1127,14 @@ static int cs35l36_boost_inductor(struct cs35l36_private *cs35l36, int inductor)
 			   CS35L36_BSTCVRT_CCMFREQ_MASK, 0x00);
 
 	switch (inductor) {
-	case 1000: /* 1 uH */
+	case 1000:  
 		regmap_update_bits(cs35l36->regmap, CS35L36_BSTCVRT_SLOPE_LBST,
 				   CS35L36_BSTCVRT_SLOPE_MASK,
 				   0x75 << CS35L36_BSTCVRT_SLOPE_SHIFT);
 		regmap_update_bits(cs35l36->regmap, CS35L36_BSTCVRT_SLOPE_LBST,
 				   CS35L36_BSTCVRT_LBSTVAL_MASK, 0x00);
 		break;
-	case 1200: /* 1.2 uH */
+	case 1200:  
 		regmap_update_bits(cs35l36->regmap, CS35L36_BSTCVRT_SLOPE_LBST,
 				   CS35L36_BSTCVRT_SLOPE_MASK,
 				   0x6B << CS35L36_BSTCVRT_SLOPE_SHIFT);
@@ -1241,14 +1238,7 @@ static int cs35l36_component_probe(struct snd_soc_component *component)
 				   cs35l36->pdata.irq_gpio_sel <<
 				   CS35L36_INT_GPIO_SEL_SHIFT);
 
-	/*
-	 * Rev B0 has 2 versions
-	 * L36 is 10V
-	 * L37 is 12V
-	 * If L36 we need to clamp some values for safety
-	 * after probe has setup dt values. We want to make
-	 * sure we dont miss any values set in probe
-	 */
+	 
 	if (cs35l36->chip_version == CS35L36_10V_L36) {
 		regmap_update_bits(cs35l36->regmap,
 				   CS35L36_BSTCVRT_OVERVOLT_CTRL,
@@ -1276,11 +1266,7 @@ static int cs35l36_component_probe(struct snd_soc_component *component)
 			     CS35L36_TEST_LOCK2);
 	}
 
-	/*
-	 * RevA and B require the disabling of
-	 * SYNC_GLOBAL_OVR when GLOBAL_EN = 0.
-	 * Just turn it off from default
-	 */
+	 
 	regmap_update_bits(cs35l36->regmap, CS35L36_CTRL_OVRRIDE,
 			   CS35L36_SYNC_GLOBAL_OVR_MASK,
 			   0 << CS35L36_SYNC_GLOBAL_OVR_SHIFT);
@@ -1322,24 +1308,20 @@ static irqreturn_t cs35l36_irq(int irq, void *data)
 	unsigned int masks[4];
 	int ret = IRQ_NONE;
 
-	/* ack the irq by reading all status registers */
+	 
 	regmap_bulk_read(cs35l36->regmap, CS35L36_INT1_STATUS, status,
 			 ARRAY_SIZE(status));
 
 	regmap_bulk_read(cs35l36->regmap, CS35L36_INT1_MASK, masks,
 			 ARRAY_SIZE(masks));
 
-	/* Check to see if unmasked bits are active */
+	 
 	if (!(status[0] & ~masks[0]) && !(status[1] & ~masks[1]) &&
 		!(status[2] & ~masks[2]) && !(status[3] & ~masks[3])) {
 		return IRQ_NONE;
 	}
 
-	/*
-	 * The following interrupts require a
-	 * protection release cycle to get the
-	 * speaker out of Safe-Mode.
-	 */
+	 
 	if (status[2] & CS35L36_AMP_SHORT_ERR) {
 		dev_crit(cs35l36->dev, "Amp short error\n");
 		regmap_update_bits(cs35l36->regmap, CS35L36_PROTECT_REL_ERR,
@@ -1504,7 +1486,7 @@ static int cs35l36_handle_of_data(struct i2c_client *i2c_client,
 	if (of_property_read_u32(np, "cirrus,irq-gpio-select", &val) >= 0)
 		pdata->irq_gpio_sel = val | CS35L36_VALID_PDATA;
 
-	/* VPBR Config */
+	 
 	vpbr_node = of_get_child_by_name(np, "cirrus,vpbr-config");
 	vpbr_config->is_present = vpbr_node ? true : false;
 	if (vpbr_config->is_present) {
@@ -1546,9 +1528,7 @@ static int cs35l36_pac(struct cs35l36_private *cs35l36)
 	if (cs35l36->rev_id != CS35L36_REV_B0)
 		return 0;
 
-	/*
-	 * Magic code for internal PAC
-	 */
+	 
 	regmap_write(cs35l36->regmap, CS35L36_TESTKEY_CTRL,
 		     CS35L36_TEST_UNLOCK1);
 	regmap_write(cs35l36->regmap, CS35L36_TESTKEY_CTRL,
@@ -1648,7 +1628,7 @@ static void cs35l36_apply_vpbr_config(struct cs35l36_private *cs35l36)
 static const struct reg_sequence cs35l36_reva0_errata_patch[] = {
 	{ CS35L36_TESTKEY_CTRL,		CS35L36_TEST_UNLOCK1 },
 	{ CS35L36_TESTKEY_CTRL,		CS35L36_TEST_UNLOCK2 },
-	/* Errata Writes */
+	 
 	{ CS35L36_OTP_CTRL1,		0x00002060 },
 	{ CS35L36_OTP_CTRL2,		0x00000001 },
 	{ CS35L36_OTP_CTRL1,		0x00002460 },
@@ -1666,7 +1646,7 @@ static const struct reg_sequence cs35l36_reva0_errata_patch[] = {
 	{ 0x00007E34,			0x0000000E },
 	{ 0x0000410C,			0x00000A11 },
 	{ 0x00007410,			0x20514B00 },
-	/* PAC Config */
+	 
 	{ CS35L36_CTRL_OVRRIDE,		0x00000000 },
 	{ CS35L36_PAC_INT0_CTRL,	0x00860001 },
 	{ CS35L36_PAC_INT1_CTRL,	0x00860001 },
@@ -1758,7 +1738,7 @@ static int cs35l36_i2c_probe(struct i2c_client *i2c_client)
 		return ret;
 	}
 
-	/* returning NULL can be an option if in stereo mode */
+	 
 	cs35l36->reset_gpio = devm_gpiod_get_optional(dev, "reset",
 						      GPIOD_OUT_LOW);
 	if (IS_ERR(cs35l36->reset_gpio)) {
@@ -1777,7 +1757,7 @@ static int cs35l36_i2c_probe(struct i2c_client *i2c_client)
 
 	usleep_range(2000, 2100);
 
-	/* initialize amplifier */
+	 
 	ret = regmap_read(cs35l36->regmap, CS35L36_SW_RESET, &reg_id);
 	if (ret < 0) {
 		dev_err(dev, "Get Device ID failed %d\n", ret);
@@ -1882,7 +1862,7 @@ static int cs35l36_i2c_probe(struct i2c_client *i2c_client)
 	regmap_update_bits(cs35l36->regmap, CS35L36_PAD_INTERFACE,
 			   CS35L36_INT_OUTPUT_EN_MASK, 1);
 
-	/* Set interrupt masks for critical errors */
+	 
 	regmap_write(cs35l36->regmap, CS35L36_INT1_MASK,
 		     CS35L36_INT1_MASK_DEFAULT);
 	regmap_write(cs35l36->regmap, CS35L36_INT3_MASK,
@@ -1914,7 +1894,7 @@ static void cs35l36_i2c_remove(struct i2c_client *client)
 {
 	struct cs35l36_private *cs35l36 = i2c_get_clientdata(client);
 
-	/* Reset interrupt masks for device removal */
+	 
 	regmap_write(cs35l36->regmap, CS35L36_INT1_MASK,
 		     CS35L36_INT1_MASK_RESET);
 	regmap_write(cs35l36->regmap, CS35L36_INT3_MASK,

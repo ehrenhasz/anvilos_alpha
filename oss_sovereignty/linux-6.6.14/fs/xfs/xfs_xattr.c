@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2008 Christoph Hellwig.
- * Portions Copyright (C) 2000-2008 Silicon Graphics, Inc.
- */
+
+ 
 
 #include "xfs.h"
 #include "xfs_shared.h"
@@ -20,44 +17,27 @@
 
 #include <linux/posix_acl_xattr.h>
 
-/*
- * Get permission to use log-assisted atomic exchange of file extents.
- *
- * Callers must not be running any transactions or hold any inode locks, and
- * they must release the permission by calling xlog_drop_incompat_feat
- * when they're done.
- */
+ 
 static inline int
 xfs_attr_grab_log_assist(
 	struct xfs_mount	*mp)
 {
 	int			error = 0;
 
-	/*
-	 * Protect ourselves from an idle log clearing the logged xattrs log
-	 * incompat feature bit.
-	 */
+	 
 	xlog_use_incompat_feat(mp->m_log);
 
-	/*
-	 * If log-assisted xattrs are already enabled, the caller can use the
-	 * log assisted swap functions with the log-incompat reference we got.
-	 */
+	 
 	if (xfs_sb_version_haslogxattrs(&mp->m_sb))
 		return 0;
 
-	/*
-	 * Check if the filesystem featureset is new enough to set this log
-	 * incompat feature bit.  Strictly speaking, the minimum requirement is
-	 * a V5 filesystem for the superblock field, but we'll require rmap
-	 * or reflink to avoid having to deal with really old kernels.
-	 */
+	 
 	if (!xfs_has_reflink(mp) && !xfs_has_rmapbt(mp)) {
 		error = -EOPNOTSUPP;
 		goto drop_incompat;
 	}
 
-	/* Enable log-assisted xattrs. */
+	 
 	error = xfs_add_incompat_log_feature(mp,
 			XFS_SB_FEAT_INCOMPAT_LOG_XATTRS);
 	if (error)
@@ -84,17 +64,14 @@ xfs_attr_want_log_assist(
 	struct xfs_mount	*mp)
 {
 #ifdef DEBUG
-	/* Logged xattrs require a V5 super for log_incompat */
+	 
 	return xfs_has_crc(mp) && xfs_globals.larp;
 #else
 	return false;
 #endif
 }
 
-/*
- * Set or remove an xattr, having grabbed the appropriate logging resources
- * prior to calling libxfs.
- */
+ 
 int
 xfs_attr_change(
 	struct xfs_da_args	*args)
@@ -167,7 +144,7 @@ xfs_xattr_set(const struct xattr_handler *handler,
 
 static const struct xattr_handler xfs_xattr_user_handler = {
 	.prefix	= XATTR_USER_PREFIX,
-	.flags	= 0, /* no flags implies user namespace */
+	.flags	= 0,  
 	.get	= xfs_xattr_get,
 	.set	= xfs_xattr_set,
 };
@@ -212,14 +189,14 @@ __xfs_xattr_put_listent(
 
 	arraytop = context->count + prefix_len + namelen + 1;
 	if (arraytop > context->firstu) {
-		context->count = -1;	/* insufficient space */
+		context->count = -1;	 
 		context->seen_enough = 1;
 		return;
 	}
 	offset = context->buffer + context->count;
 	memcpy(offset, prefix, prefix_len);
 	offset += prefix_len;
-	strncpy(offset, (char *)name, namelen);			/* real name */
+	strncpy(offset, (char *)name, namelen);			 
 	offset += namelen;
 	*offset = '\0';
 
@@ -262,10 +239,7 @@ xfs_xattr_put_listent(
 		}
 #endif
 
-		/*
-		 * Only show root namespace entries if we are actually allowed to
-		 * see them.
-		 */
+		 
 		if (!capable(CAP_SYS_ADMIN))
 			return;
 
@@ -294,9 +268,7 @@ xfs_vn_listxattr(
 	struct inode	*inode = d_inode(dentry);
 	int		error;
 
-	/*
-	 * First read the regular on-disk attributes.
-	 */
+	 
 	memset(&context, 0, sizeof(context));
 	context.dp = XFS_I(inode);
 	context.resynch = 1;

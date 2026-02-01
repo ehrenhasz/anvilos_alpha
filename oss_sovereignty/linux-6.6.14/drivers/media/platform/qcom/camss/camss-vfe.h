@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * camss-vfe.h
- *
- * Qualcomm MSM Camera Subsystem - VFE (Video Front End) Module
- *
- * Copyright (c) 2013-2015, The Linux Foundation. All rights reserved.
- * Copyright (C) 2015-2018 Linaro Ltd.
- */
+ 
+ 
 #ifndef QC_MSM_CAMSS_VFE_H
 #define QC_MSM_CAMSS_VFE_H
 
@@ -26,9 +19,9 @@
 #define MSM_VFE_IMAGE_MASTERS_NUM 7
 #define MSM_VFE_COMPOSITE_IRQ_NUM 4
 
-/* VFE halt timeout */
+ 
 #define VFE_HALT_TIMEOUT_MS 100
-/* Frame drop value. VAL + UPDATES - 1 should not exceed 31 */
+ 
 #define VFE_FRAME_DROP_VAL 30
 
 #define vfe_line_array(ptr_line)	\
@@ -163,22 +156,14 @@ int msm_vfe_register_entities(struct vfe_device *vfe,
 
 void msm_vfe_unregister_entities(struct vfe_device *vfe);
 
-/*
- * vfe_buf_add_pending - Add output buffer to list of pending
- * @output: VFE output
- * @buffer: Video buffer
- */
+ 
 void vfe_buf_add_pending(struct vfe_output *output, struct camss_buffer *buffer);
 
 struct camss_buffer *vfe_buf_get_pending(struct vfe_output *output);
 
 int vfe_flush_buffers(struct camss_video *vid, enum vb2_buffer_state state);
 
-/*
- * vfe_isr_comp_done - Process composite image done interrupt
- * @vfe: VFE Device
- * @comp: Composite image id
- */
+ 
 void vfe_isr_comp_done(struct vfe_device *vfe, u8 comp);
 
 void vfe_isr_reset_ack(struct vfe_device *vfe);
@@ -186,12 +171,7 @@ int vfe_put_output(struct vfe_line *line);
 int vfe_release_wm(struct vfe_device *vfe, u8 wm);
 int vfe_reserve_wm(struct vfe_device *vfe, enum vfe_line_id line_id);
 
-/*
- * vfe_reset - Trigger reset on VFE module and wait to complete
- * @vfe: VFE device
- *
- * Return 0 on success or a negative error code otherwise
- */
+ 
 int vfe_reset(struct vfe_device *vfe);
 
 extern const struct vfe_hw_ops vfe_ops_4_1;
@@ -203,4 +183,4 @@ extern const struct vfe_hw_ops vfe_ops_480;
 int vfe_get(struct vfe_device *vfe);
 void vfe_put(struct vfe_device *vfe);
 
-#endif /* QC_MSM_CAMSS_VFE_H */
+#endif  

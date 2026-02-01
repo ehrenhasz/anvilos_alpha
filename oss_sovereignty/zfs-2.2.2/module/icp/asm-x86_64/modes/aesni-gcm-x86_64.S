@@ -3,14 +3,14 @@
 # Licensed under the Apache License 2.0 (the "License").  You may not use
 # this file except in compliance with the License.  You can obtain a copy
 # in the file LICENSE in the source distribution or at
-# https://www.openssl.org/source/license.html
+# https: 
 
 #
 # ====================================================================
 # Written by Andy Polyakov <appro@openssl.org> for the OpenSSL
 # project. The module is, however, dual licensed under OpenSSL and
 # CRYPTOGAMS licenses depending on where you obtain it. For further
-# details see http://www.openssl.org/~appro/cryptogams/.
+# details see http: 
 # ====================================================================
 #
 #
@@ -36,11 +36,11 @@
 #
 # Knights Landing processes 1 byte in 1.25 cycles (measured with EVP).
 #
-# [1] http://rt.openssl.org/Ticket/Display.html?id=2900&user=guest&pass=guest
-# [2] http://www.intel.com/content/dam/www/public/us/en/documents/software-support/enabling-high-performance-gcm.pdf
+# [1] http: 
+# [2] http: 
 
 # Generated once from
-# https://github.com/openssl/openssl/blob/5ffc3324/crypto/modes/asm/aesni-gcm-x86_64.pl
+# https: 
 # and modified for ICP. Modification are kept at a bare minimum to ease later
 # upstream merges.
 
@@ -50,10 +50,10 @@
 #define _ASM
 #include <sys/asm_linkage.h>
 
-/* Windows userland links with OpenSSL */
+ 
 #if !defined (_WIN32) || defined (_KERNEL)
 
-/* Apple needs _ */
+ 
 #if defined (__APPLE__)
 #define	gcm_avx_can_use_movbe _gcm_avx_can_use_movbe
 #endif
@@ -254,7 +254,7 @@ FUNCTION(_aesni_ctr32_ghash_6x)
 	movbeq	0(%r14),%r12
 	vaesenc	%xmm1,%xmm14,%xmm14
 	vmovups	160-128(%rcx),%xmm1
-	cmpl	$12,%ebp	// ICP uses 10,12,14 not 9,11,13 for rounds.
+	cmpl	$12,%ebp	 
 	jb	.Lenc_tail
 
 	vaesenc	%xmm15,%xmm9,%xmm9
@@ -272,7 +272,7 @@ FUNCTION(_aesni_ctr32_ghash_6x)
 	vmovups	176-128(%rcx),%xmm15
 	vaesenc	%xmm1,%xmm14,%xmm14
 	vmovups	192-128(%rcx),%xmm1
-	cmpl	$14,%ebp	// ICP does not zero key schedule.
+	cmpl	$14,%ebp	 
 	jb	.Lenc_tail
 
 	vaesenc	%xmm15,%xmm9,%xmm9
@@ -377,7 +377,7 @@ FUNCTION(_aesni_ctr32_ghash_6x)
 	RET
 .cfi_endproc
 SET_SIZE(_aesni_ctr32_ghash_6x)
-#endif /* ifdef HAVE_MOVBE */
+#endif  
 
 .balign 32
 FUNCTION(_aesni_ctr32_ghash_no_movbe_6x)
@@ -582,7 +582,7 @@ FUNCTION(_aesni_ctr32_ghash_no_movbe_6x)
 	bswapq	%r12
 	vaesenc	%xmm1,%xmm14,%xmm14
 	vmovups	160-128(%rcx),%xmm1
-	cmpl	$12,%ebp	// ICP uses 10,12,14 not 9,11,13 for rounds.
+	cmpl	$12,%ebp	 
 	jb	.Lenc_tail_nmb
 
 	vaesenc	%xmm15,%xmm9,%xmm9
@@ -600,7 +600,7 @@ FUNCTION(_aesni_ctr32_ghash_no_movbe_6x)
 	vmovups	176-128(%rcx),%xmm15
 	vaesenc	%xmm1,%xmm14,%xmm14
 	vmovups	192-128(%rcx),%xmm1
-	cmpl	$14,%ebp	// ICP does not zero key schedule.
+	cmpl	$14,%ebp	 
 	jb	.Lenc_tail_nmb
 
 	vaesenc	%xmm15,%xmm9,%xmm9
@@ -743,7 +743,7 @@ ENTRY_ALIGN(aesni_gcm_decrypt, 32)
 	leaq	128(%rcx),%rcx
 	movq	32(%r9),%r9
 	leaq	32(%r9),%r9
-	movl	504-128(%rcx),%ebp	// ICP has a larger offset for rounds.
+	movl	504-128(%rcx),%ebp	 
 	vpshufb	%xmm0,%xmm8,%xmm8
 
 	andq	%r15,%r14
@@ -829,7 +829,7 @@ FUNCTION(_aesni_ctr32_6x)
 	ENDBR
 	vmovdqu	0-128(%rcx),%xmm4
 	vmovdqu	32(%r11),%xmm2
-	leaq	-2(%rbp),%r13	// ICP uses 10,12,14 not 9,11,13 for rounds.
+	leaq	-2(%rbp),%r13	 
 	vmovups	16-128(%rcx),%xmm15
 	leaq	32-128(%rcx),%r12
 	vpxor	%xmm4,%xmm1,%xmm9
@@ -950,7 +950,7 @@ ENTRY_ALIGN(aesni_gcm_encrypt, 32)
 	leaq	128(%rcx),%rcx
 	vmovdqu	(%r11),%xmm0
 	andq	$-128,%rsp
-	movl	504-128(%rcx),%ebp	// ICP has an larger offset for rounds.
+	movl	504-128(%rcx),%ebp	 
 
 	andq	%r15,%r14
 	andq	%rsp,%r15
@@ -1198,26 +1198,17 @@ ENTRY_ALIGN(aesni_gcm_encrypt, 32)
 .cfi_endproc
 SET_SIZE(aesni_gcm_encrypt)
 
-#endif /* !_WIN32 || _KERNEL */
+#endif  
 
-/* Some utility routines */
+ 
 
-/*
- * clear all fpu registers
- * void clear_fpu_regs_avx(void);
- */
+ 
 ENTRY_ALIGN(clear_fpu_regs_avx, 32)
 	vzeroall
 	RET
 SET_SIZE(clear_fpu_regs_avx)
 
-/*
- * void gcm_xor_avx(const uint8_t *src, uint8_t *dst);
- *
- * XORs one pair of unaligned 128-bit blocks from `src' and `dst' and
- * stores the result at `dst'. The XOR is performed using FPU registers,
- * so make sure FPU state is saved when running this in the kernel.
- */
+ 
 ENTRY_ALIGN(gcm_xor_avx, 32)
 	movdqu  (%rdi), %xmm0
 	movdqu  (%rsi), %xmm1
@@ -1226,10 +1217,7 @@ ENTRY_ALIGN(gcm_xor_avx, 32)
 	RET
 SET_SIZE(gcm_xor_avx)
 
-/*
- * Toggle a boolean_t value atomically and return the new value.
- * boolean_t atomic_toggle_boolean_nv(volatile boolean_t *);
- */
+ 
 ENTRY_ALIGN(atomic_toggle_boolean_nv, 32)
 	xorl	%eax, %eax
 	lock
@@ -1256,9 +1244,9 @@ SECTION_STATIC
 .byte	65,69,83,45,78,73,32,71,67,77,32,109,111,100,117,108,101,32,102,111,114,32,120,56,54,95,54,52,44,32,67,82,89,80,84,79,71,65,77,83,32,98,121,32,60,97,112,112,114,111,64,111,112,101,110,115,115,108,46,111,114,103,62,0
 .balign	64
 
-/* Mark the stack non-executable. */
+ 
 #if defined(__linux__) && defined(__ELF__)
 .section .note.GNU-stack,"",%progbits
 #endif
 
-#endif /* defined(__x86_64__) && defined(HAVE_AVX) && defined(HAVE_AES) ... */
+#endif  

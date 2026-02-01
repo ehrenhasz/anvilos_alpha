@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Panasonic MN88472 DVB-T/T2/C demodulator driver
- *
- * Copyright (C) 2013 Antti Palosaari <crope@iki.fi>
- */
+
+ 
 
 #include "mn88472_priv.h"
 
@@ -69,7 +65,7 @@ static int mn88472_read_status(struct dvb_frontend *fe, enum fe_status *status)
 		goto err;
 	}
 
-	/* Signal strength */
+	 
 	if (*status & FE_HAS_SIGNAL) {
 		for (i = 0; i < 2; i++) {
 			ret = regmap_bulk_read(dev->regmap[2], 0x8e + i,
@@ -87,17 +83,17 @@ static int mn88472_read_status(struct dvb_frontend *fe, enum fe_status *status)
 		c->strength.stat[0].scale = FE_SCALE_NOT_AVAILABLE;
 	}
 
-	/* CNR */
+	 
 	if (*status & FE_HAS_VITERBI && c->delivery_system == SYS_DVBT) {
-		/* DVB-T CNR */
+		 
 		ret = regmap_bulk_read(dev->regmap[0], 0x9c, buf, 2);
 		if (ret)
 			goto err;
 
 		utmp = buf[0] << 8 | buf[1] << 0;
 		if (utmp) {
-			/* CNR[dB]: 10 * log10(65536 / value) + 2 */
-			/* log10(65536) = 80807124, 0.2 = 3355443 */
+			 
+			 
 			stmp = ((u64)80807124 - intlog10(utmp) + 3355443)
 			       * 10000 >> 24;
 
@@ -110,7 +106,7 @@ static int mn88472_read_status(struct dvb_frontend *fe, enum fe_status *status)
 		c->cnr.stat[0].scale = FE_SCALE_DECIBEL;
 	} else if (*status & FE_HAS_VITERBI &&
 		   c->delivery_system == SYS_DVBT2) {
-		/* DVB-T2 CNR */
+		 
 		for (i = 0; i < 3; i++) {
 			ret = regmap_bulk_read(dev->regmap[2], 0xbc + i,
 					       &buf[i], 1);
@@ -119,18 +115,18 @@ static int mn88472_read_status(struct dvb_frontend *fe, enum fe_status *status)
 		}
 
 		utmp = buf[1] << 8 | buf[2] << 0;
-		utmp1 = (buf[0] >> 2) & 0x01; /* 0=SISO, 1=MISO */
+		utmp1 = (buf[0] >> 2) & 0x01;  
 		if (utmp) {
 			if (utmp1) {
-				/* CNR[dB]: 10 * log10(16384 / value) - 6 */
-				/* log10(16384) = 70706234, 0.6 = 10066330 */
+				 
+				 
 				stmp = ((u64)70706234 - intlog10(utmp)
 				       - 10066330) * 10000 >> 24;
 				dev_dbg(&client->dev, "cnr=%d value=%u MISO\n",
 					stmp, utmp);
 			} else {
-				/* CNR[dB]: 10 * log10(65536 / value) + 2 */
-				/* log10(65536) = 80807124, 0.2 = 3355443 */
+				 
+				 
 				stmp = ((u64)80807124 - intlog10(utmp)
 				       + 3355443) * 10000 >> 24;
 
@@ -145,16 +141,16 @@ static int mn88472_read_status(struct dvb_frontend *fe, enum fe_status *status)
 		c->cnr.stat[0].scale = FE_SCALE_DECIBEL;
 	} else if (*status & FE_HAS_VITERBI &&
 		   c->delivery_system == SYS_DVBC_ANNEX_A) {
-		/* DVB-C CNR */
+		 
 		ret = regmap_bulk_read(dev->regmap[1], 0xa1, buf, 4);
 		if (ret)
 			goto err;
 
-		utmp1 = buf[0] << 8 | buf[1] << 0; /* signal */
-		utmp2 = buf[2] << 8 | buf[3] << 0; /* noise */
+		utmp1 = buf[0] << 8 | buf[1] << 0;  
+		utmp2 = buf[2] << 8 | buf[3] << 0;  
 		if (utmp1 && utmp2) {
-			/* CNR[dB]: 10 * log10(8 * (signal / noise)) */
-			/* log10(8) = 15151336 */
+			 
+			 
 			stmp = ((u64)15151336 + intlog10(utmp1)
 			       - intlog10(utmp2)) * 10000 >> 24;
 
@@ -170,7 +166,7 @@ static int mn88472_read_status(struct dvb_frontend *fe, enum fe_status *status)
 		c->cnr.stat[0].scale = FE_SCALE_NOT_AVAILABLE;
 	}
 
-	/* PER */
+	 
 	if (*status & FE_HAS_SYNC) {
 		ret = regmap_bulk_read(dev->regmap[0], 0xe1, buf, 4);
 		if (ret)
@@ -278,7 +274,7 @@ static int mn88472_set_frontend(struct dvb_frontend *fe)
 		break;
 	}
 
-	/* Program tuner */
+	 
 	if (fe->ops.tuner_ops.set_params) {
 		ret = fe->ops.tuner_ops.set_params(fe);
 		if (ret)
@@ -312,7 +308,7 @@ static int mn88472_set_frontend(struct dvb_frontend *fe)
 	if (ret)
 		goto err;
 
-	/* IF */
+	 
 	utmp = DIV_ROUND_CLOSEST_ULL((u64)if_frequency * 0x1000000, dev->clk);
 	buf[0] = (utmp >> 16) & 0xff;
 	buf[1] = (utmp >>  8) & 0xff;
@@ -323,7 +319,7 @@ static int mn88472_set_frontend(struct dvb_frontend *fe)
 			goto err;
 	}
 
-	/* Bandwidth */
+	 
 	if (bandwidth_vals_ptr) {
 		for (i = 0; i < 7; i++) {
 			ret = regmap_write(dev->regmap[2], 0x13 + i,
@@ -380,7 +376,7 @@ static int mn88472_set_frontend(struct dvb_frontend *fe)
 		break;
 	}
 
-	/* Reset FSM */
+	 
 	ret = regmap_write(dev->regmap[2], 0xf8, 0x9f);
 	if (ret)
 		goto err;
@@ -402,7 +398,7 @@ static int mn88472_init(struct dvb_frontend *fe)
 
 	dev_dbg(&client->dev, "\n");
 
-	/* Power up */
+	 
 	ret = regmap_write(dev->regmap[2], 0x05, 0x00);
 	if (ret)
 		goto err;
@@ -413,7 +409,7 @@ static int mn88472_init(struct dvb_frontend *fe)
 	if (ret)
 		goto err;
 
-	/* Check if firmware is already running */
+	 
 	ret = regmap_read(dev->regmap[0], 0xf5, &utmp);
 	if (ret)
 		goto err;
@@ -444,7 +440,7 @@ static int mn88472_init(struct dvb_frontend *fe)
 		}
 	}
 
-	/* Parity check of firmware */
+	 
 	ret = regmap_read(dev->regmap[0], 0xf8, &utmp);
 	if (ret)
 		goto err_release_firmware;
@@ -460,7 +456,7 @@ static int mn88472_init(struct dvb_frontend *fe)
 
 	release_firmware(firmware);
 warm:
-	/* TS config */
+	 
 	switch (dev->ts_mode) {
 	case SERIAL_TS_MODE:
 		utmp = 0x1d;
@@ -509,7 +505,7 @@ static int mn88472_sleep(struct dvb_frontend *fe)
 
 	dev_dbg(&client->dev, "\n");
 
-	/* Power down */
+	 
 	ret = regmap_write(dev->regmap[2], 0x0c, 0x30);
 	if (ret)
 		goto err;
@@ -603,14 +599,7 @@ static int mn88472_probe(struct i2c_client *client)
 		goto err_kfree;
 	}
 
-	/*
-	 * Chip has three I2C addresses for different register banks. Used
-	 * addresses are 0x18, 0x1a and 0x1c. We register two dummy clients,
-	 * 0x1a and 0x1c, in order to get own I2C client for each register bank.
-	 *
-	 * Also, register bank 2 do not support sequential I/O. Only single
-	 * register write or read is allowed to that bank.
-	 */
+	 
 	dev->client[1] = i2c_new_dummy_device(client->adapter, 0x1a);
 	if (IS_ERR(dev->client[1])) {
 		ret = PTR_ERR(dev->client[1]);
@@ -637,7 +626,7 @@ static int mn88472_probe(struct i2c_client *client)
 	}
 	i2c_set_clientdata(dev->client[2], dev);
 
-	/* Check demod answers with correct chip id */
+	 
 	ret = regmap_read(dev->regmap[2], 0xff, &utmp);
 	if (ret)
 		goto err_regmap_2_regmap_exit;
@@ -649,25 +638,25 @@ static int mn88472_probe(struct i2c_client *client)
 		goto err_regmap_2_regmap_exit;
 	}
 
-	/* Sleep because chip is active by default */
+	 
 	ret = regmap_write(dev->regmap[2], 0x05, 0x3e);
 	if (ret)
 		goto err_regmap_2_regmap_exit;
 
-	/* Create dvb frontend */
+	 
 	memcpy(&dev->fe.ops, &mn88472_ops, sizeof(struct dvb_frontend_ops));
 	dev->fe.demodulator_priv = client;
 	*pdata->fe = &dev->fe;
 	i2c_set_clientdata(client, dev);
 
-	/* Init stats to indicate which stats are supported */
+	 
 	c = &dev->fe.dtv_property_cache;
 	c->strength.len = 1;
 	c->cnr.len = 1;
 	c->block_error.len = 1;
 	c->block_count.len = 1;
 
-	/* Setup callbacks */
+	 
 	pdata->get_dvb_frontend = mn88472_get_dvb_frontend;
 
 	dev_info(&client->dev, "Panasonic MN88472 successfully identified\n");

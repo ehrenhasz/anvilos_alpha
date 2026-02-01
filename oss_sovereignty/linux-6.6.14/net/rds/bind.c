@@ -1,35 +1,4 @@
-/*
- * Copyright (c) 2006, 2019 Oracle and/or its affiliates. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- *
- */
+ 
 #include <linux/kernel.h>
 #include <net/sock.h>
 #include <linux/in.h>
@@ -50,9 +19,7 @@ static const struct rhashtable_params ht_parms = {
 	.min_size = 1024,
 };
 
-/* Create a key for the bind hash table manipulation.  Port is in network byte
- * order.
- */
+ 
 static inline void __rds_create_bind_key(u8 *key, const struct in6_addr *addr,
 					 __be16 port, __u32 scope_id)
 {
@@ -63,12 +30,7 @@ static inline void __rds_create_bind_key(u8 *key, const struct in6_addr *addr,
 	memcpy(key, &scope_id, sizeof(scope_id));
 }
 
-/*
- * Return the rds_sock bound at the given local address.
- *
- * The rx path can race with rds_release.  We notice if rds_release() has
- * marked this socket and don't return a rs ref to the rx path.
- */
+ 
 struct rds_sock *rds_find_bound(const struct in6_addr *addr, __be16 port,
 				__u32 scope_id)
 {
@@ -90,7 +52,7 @@ struct rds_sock *rds_find_bound(const struct in6_addr *addr, __be16 port,
 	return rs;
 }
 
-/* returns -ve errno or +ve port */
+ 
 static int rds_add_bound(struct rds_sock *rs, const struct in6_addr *addr,
 			 __be16 *port, __u32 scope_id)
 {
@@ -170,9 +132,7 @@ int rds_bind(struct socket *sock, struct sockaddr *uaddr, int addr_len)
 	int ret = 0;
 	__be16 port;
 
-	/* We allow an RDS socket to be bound to either IPv4 or IPv6
-	 * address.
-	 */
+	 
 	if (addr_len < offsetofend(struct sockaddr, sa_family))
 		return -EINVAL;
 	if (uaddr->sa_family == AF_INET) {
@@ -200,16 +160,14 @@ int rds_bind(struct socket *sock, struct sockaddr *uaddr, int addr_len)
 			if (!(addr_type & IPV6_ADDR_MAPPED))
 				return -EINVAL;
 
-			/* It is a mapped address.  Need to do some sanity
-			 * checks.
-			 */
+			 
 			addr4 = sin6->sin6_addr.s6_addr32[3];
 			if (addr4 == htonl(INADDR_ANY) ||
 			    addr4 == htonl(INADDR_BROADCAST) ||
 			    ipv4_is_multicast(addr4))
 				return -EINVAL;
 		}
-		/* The scope ID must be specified for link local address. */
+		 
 		if (addr_type & IPV6_ADDR_LINKLOCAL) {
 			if (sin6->sin6_scope_id == 0)
 				return -EINVAL;
@@ -223,15 +181,12 @@ int rds_bind(struct socket *sock, struct sockaddr *uaddr, int addr_len)
 	}
 	lock_sock(sk);
 
-	/* RDS socket does not allow re-binding. */
+	 
 	if (!ipv6_addr_any(&rs->rs_bound_addr)) {
 		ret = -EINVAL;
 		goto out;
 	}
-	/* Socket is connected.  The binding address should have the same
-	 * scope ID as the connected address, except the case when one is
-	 * non-link local address (scope_id is 0).
-	 */
+	 
 	if (!ipv6_addr_any(&rs->rs_conn_addr) && scope_id &&
 	    rs->rs_bound_scope_id &&
 	    scope_id != rs->rs_bound_scope_id) {
@@ -239,9 +194,7 @@ int rds_bind(struct socket *sock, struct sockaddr *uaddr, int addr_len)
 		goto out;
 	}
 
-	/* The transport can be set using SO_RDS_TRANSPORT option before the
-	 * socket is bound.
-	 */
+	 
 	if (rs->rs_transport) {
 		trans = rs->rs_transport;
 		if (!trans->laddr_check ||

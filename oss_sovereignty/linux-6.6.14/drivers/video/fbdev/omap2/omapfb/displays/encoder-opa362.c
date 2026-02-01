@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * OPA362 analog video amplifier with output/power control
- *
- * Copyright (C) 2014 Golden Delicious Computers
- * Author: H. Nikolaus Schaller <hns@goldelico.com>
- *
- * based on encoder-tfp410
- *
- * Copyright (C) 2013 Texas Instruments
- * Author: Tomi Valkeinen <tomi.valkeinen@ti.com>
- */
+
+ 
 
 #include <linux/gpio/consumer.h>
 #include <linux/module.h>
@@ -158,7 +148,7 @@ static int opa362_check_timings(struct omap_dss_device *dssdev,
 static void opa362_set_type(struct omap_dss_device *dssdev,
 		enum omap_dss_venc_type type)
 {
-	/* we can only drive a COMPOSITE output */
+	 
 	WARN_ON(type != OMAP_DSS_VENC_TYPE_COMPOSITE);
 
 }

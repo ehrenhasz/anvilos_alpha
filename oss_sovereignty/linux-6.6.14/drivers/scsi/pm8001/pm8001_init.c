@@ -1,42 +1,4 @@
-/*
- * PMC-Sierra PM8001/8081/8088/8089 SAS/SATA based host adapters driver
- *
- * Copyright (c) 2008-2009 USI Co., Ltd.
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions, and the following disclaimer,
- *    without modification.
- * 2. Redistributions in binary form must reproduce at minimum a disclaimer
- *    substantially similar to the "NO WARRANTY" disclaimer below
- *    ("Disclaimer") and any redistribution must be conditioned upon
- *    including a substantially similar Disclaimer requirement for further
- *    binary redistribution.
- * 3. Neither the names of the above-listed copyright holders nor the names
- *    of any contributors may be used to endorse or promote products derived
- *    from this software without specific prior written permission.
- *
- * Alternatively, this software may be distributed under the terms of the
- * GNU General Public License ("GPL") version 2 as published by the Free
- * Software Foundation.
- *
- * NO WARRANTY
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTIBILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * HOLDERS OR CONTRIBUTORS BE LIABLE FOR SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
- * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
- * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
- * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGES.
- *
- */
+ 
 
 #include <linux/slab.h>
 #include "pm8001_sas.h"
@@ -59,10 +21,7 @@ MODULE_PARM_DESC(link_rate, "Enable link rate.\n"
 static struct scsi_transport_template *pm8001_stt;
 static int pm8001_init_ccb_tag(struct pm8001_hba_info *);
 
-/*
- * chip info structure to identify chip key functionality as
- * encryption available/not, no of ports, hw specific function ref
- */
+ 
 static const struct pm8001_chip_info pm8001_chips[] = {
 	[chip_8001] = {0,  8, &pm8001_8001_dispatch,},
 	[chip_8008] = {0,  8, &pm8001_80xx_dispatch,},
@@ -94,9 +53,7 @@ static void pm8001_map_queues(struct Scsi_Host *shost)
 	return blk_mq_map_queues(qmap);
 }
 
-/*
- * The main structure which LLDD must register for scsi core.
- */
+ 
 static const struct scsi_host_template pm8001_sht = {
 	.module			= THIS_MODULE,
 	.name			= DRV_NAME,
@@ -127,9 +84,7 @@ static const struct scsi_host_template pm8001_sht = {
 	.map_queues		= pm8001_map_queues,
 };
 
-/*
- * Sas layer call this function to execute specific task.
- */
+ 
 static struct sas_domain_function_template pm8001_transport_ops = {
 	.lldd_dev_found		= pm8001_dev_found,
 	.lldd_dev_gone		= pm8001_dev_gone,
@@ -148,11 +103,7 @@ static struct sas_domain_function_template pm8001_transport_ops = {
 	.lldd_tmf_aborted	= pm8001_tmf_aborted,
 };
 
-/**
- * pm8001_phy_init - initiate our adapter phys
- * @pm8001_ha: our hba structure.
- * @phy_id: phy id.
- */
+ 
 static void pm8001_phy_init(struct pm8001_hba_info *pm8001_ha, int phy_id)
 {
 	struct pm8001_phy *phy = &pm8001_ha->phy[phy_id];
@@ -174,10 +125,7 @@ static void pm8001_phy_init(struct pm8001_hba_info *pm8001_ha, int phy_id)
 	sas_phy->lldd_phy = phy;
 }
 
-/**
- * pm8001_free - free hba
- * @pm8001_ha:	our hba structure.
- */
+ 
 static void pm8001_free(struct pm8001_hba_info *pm8001_ha)
 {
 	int i;
@@ -202,11 +150,7 @@ static void pm8001_free(struct pm8001_hba_info *pm8001_ha)
 
 #ifdef PM8001_USE_TASKLET
 
-/**
- * pm8001_tasklet() - tasklet for 64 msi-x interrupt handler
- * @opaque: the passed general host adapter struct
- * Note: pm8001_tasklet is common for pm8001 & pm80xx
- */
+ 
 static void pm8001_tasklet(unsigned long opaque)
 {
 	struct pm8001_hba_info *pm8001_ha;
@@ -220,14 +164,7 @@ static void pm8001_tasklet(unsigned long opaque)
 }
 #endif
 
-/**
- * pm8001_interrupt_handler_msix - main MSIX interrupt handler.
- * It obtains the vector number and calls the equivalent bottom
- * half or services directly.
- * @irq: interrupt number
- * @opaque: the passed outbound queue/vector. Host structure is
- * retrieved from the same.
- */
+ 
 static irqreturn_t pm8001_interrupt_handler_msix(int irq, void *opaque)
 {
 	struct isr_param *irq_vector;
@@ -248,11 +185,7 @@ static irqreturn_t pm8001_interrupt_handler_msix(int irq, void *opaque)
 	return ret;
 }
 
-/**
- * pm8001_interrupt_handler_intx - main INTx interrupt handler.
- * @irq: interrupt number
- * @dev_id: sas_ha structure. The HBA is retrieved from sas_ha structure.
- */
+ 
 
 static irqreturn_t pm8001_interrupt_handler_intx(int irq, void *dev_id)
 {
@@ -275,11 +208,7 @@ static irqreturn_t pm8001_interrupt_handler_intx(int irq, void *dev_id)
 
 static u32 pm8001_request_irq(struct pm8001_hba_info *pm8001_ha);
 
-/**
- * pm8001_alloc - initiate our hba structure and 6 DMAs area.
- * @pm8001_ha: our hba structure.
- * @ent: PCI device ID structure to match on
- */
+ 
 static int pm8001_alloc(struct pm8001_hba_info *pm8001_ha,
 			const struct pci_device_id *ent)
 {
@@ -293,13 +222,13 @@ static int pm8001_alloc(struct pm8001_hba_info *pm8001_ha,
 	pm8001_dbg(pm8001_ha, INIT, "pm8001_alloc: PHY:%x\n",
 		   pm8001_ha->chip->n_phy);
 
-	/* Request Interrupt */
+	 
 	rc = pm8001_request_irq(pm8001_ha);
 	if (rc)
 		goto err_out;
 
 	count = pm8001_ha->max_q_num;
-	/* Queues are chosen based on the number of cores/msix availability */
+	 
 	ib_offset = pm8001_ha->ib_offset  = USI_MAX_MEMCNT_BASE;
 	ci_offset = pm8001_ha->ci_offset  = ib_offset + count;
 	ob_offset = pm8001_ha->ob_offset  = ci_offset + count;
@@ -314,13 +243,13 @@ static int pm8001_alloc(struct pm8001_hba_info *pm8001_ha,
 		INIT_LIST_HEAD(&pm8001_ha->port[i].list);
 	}
 
-	/* MPI Memory region 1 for AAP Event Log for fw */
+	 
 	pm8001_ha->memoryMap.region[AAP1].num_elements = 1;
 	pm8001_ha->memoryMap.region[AAP1].element_size = PM8001_EVENT_LOG_SIZE;
 	pm8001_ha->memoryMap.region[AAP1].total_len = PM8001_EVENT_LOG_SIZE;
 	pm8001_ha->memoryMap.region[AAP1].alignment = 32;
 
-	/* MPI Memory region 2 for IOP Event Log for fw */
+	 
 	pm8001_ha->memoryMap.region[IOP].num_elements = 1;
 	pm8001_ha->memoryMap.region[IOP].element_size = PM8001_EVENT_LOG_SIZE;
 	pm8001_ha->memoryMap.region[IOP].total_len = PM8001_EVENT_LOG_SIZE;
@@ -329,14 +258,14 @@ static int pm8001_alloc(struct pm8001_hba_info *pm8001_ha,
 	for (i = 0; i < count; i++) {
 		ibq = &pm8001_ha->inbnd_q_tbl[i];
 		spin_lock_init(&ibq->iq_lock);
-		/* MPI Memory region 3 for consumer Index of inbound queues */
+		 
 		pm8001_ha->memoryMap.region[ci_offset+i].num_elements = 1;
 		pm8001_ha->memoryMap.region[ci_offset+i].element_size = 4;
 		pm8001_ha->memoryMap.region[ci_offset+i].total_len = 4;
 		pm8001_ha->memoryMap.region[ci_offset+i].alignment = 4;
 
 		if ((ent->driver_data) != chip_8001) {
-			/* MPI Memory region 5 inbound queues */
+			 
 			pm8001_ha->memoryMap.region[ib_offset+i].num_elements =
 						PM8001_MPI_QUEUE;
 			pm8001_ha->memoryMap.region[ib_offset+i].element_size
@@ -359,14 +288,14 @@ static int pm8001_alloc(struct pm8001_hba_info *pm8001_ha,
 	for (i = 0; i < count; i++) {
 		obq = &pm8001_ha->outbnd_q_tbl[i];
 		spin_lock_init(&obq->oq_lock);
-		/* MPI Memory region 4 for producer Index of outbound queues */
+		 
 		pm8001_ha->memoryMap.region[pi_offset+i].num_elements = 1;
 		pm8001_ha->memoryMap.region[pi_offset+i].element_size = 4;
 		pm8001_ha->memoryMap.region[pi_offset+i].total_len = 4;
 		pm8001_ha->memoryMap.region[pi_offset+i].alignment = 4;
 
 		if (ent->driver_data != chip_8001) {
-			/* MPI Memory region 6 Outbound queues */
+			 
 			pm8001_ha->memoryMap.region[ob_offset+i].num_elements =
 						PM8001_MPI_QUEUE;
 			pm8001_ha->memoryMap.region[ob_offset+i].element_size
@@ -376,7 +305,7 @@ static int pm8001_alloc(struct pm8001_hba_info *pm8001_ha,
 			pm8001_ha->memoryMap.region[ob_offset+i].alignment
 								= 128;
 		} else {
-			/* MPI Memory region 6 Outbound queues */
+			 
 			pm8001_ha->memoryMap.region[ob_offset+i].num_elements =
 						PM8001_MPI_QUEUE;
 			pm8001_ha->memoryMap.region[ob_offset+i].element_size
@@ -387,12 +316,12 @@ static int pm8001_alloc(struct pm8001_hba_info *pm8001_ha,
 		}
 
 	}
-	/* Memory region write DMA*/
+	 
 	pm8001_ha->memoryMap.region[NVMD].num_elements = 1;
 	pm8001_ha->memoryMap.region[NVMD].element_size = 4096;
 	pm8001_ha->memoryMap.region[NVMD].total_len = 4096;
 
-	/* Memory region for fw flash */
+	 
 	pm8001_ha->memoryMap.region[FW_FLASH].total_len = 4096;
 
 	pm8001_ha->memoryMap.region[FORENSIC_MEM].num_elements = 1;
@@ -414,7 +343,7 @@ static int pm8001_alloc(struct pm8001_hba_info *pm8001_ha,
 		}
 	}
 
-	/* Memory region for devices*/
+	 
 	pm8001_ha->devices = kzalloc(PM8001_MAX_DEVICES
 				* sizeof(struct pm8001_device), GFP_KERNEL);
 	if (!pm8001_ha->devices) {
@@ -444,11 +373,7 @@ err_out:
 	return 1;
 }
 
-/**
- * pm8001_ioremap - remap the pci high physical address to kernel virtual
- * address so that we can access them.
- * @pm8001_ha: our hba structure.
- */
+ 
 static int pm8001_ioremap(struct pm8001_hba_info *pm8001_ha)
 {
 	u32 bar;
@@ -456,16 +381,9 @@ static int pm8001_ioremap(struct pm8001_hba_info *pm8001_ha)
 	struct pci_dev *pdev;
 
 	pdev = pm8001_ha->pdev;
-	/* map pci mem (PMC pci base 0-3)*/
+	 
 	for (bar = 0; bar < PCI_STD_NUM_BARS; bar++) {
-		/*
-		** logical BARs for SPC:
-		** bar 0 and 1 - logical BAR0
-		** bar 2 and 3 - logical BAR1
-		** bar4 - logical BAR2
-		** bar5 - logical BAR3
-		** Skip the appropriate assignments:
-		*/
+		 
 		if ((bar == 1) || (bar == 3))
 			continue;
 		if (pci_resource_flags(pdev, bar) & IORESOURCE_MEM) {
@@ -498,12 +416,7 @@ static int pm8001_ioremap(struct pm8001_hba_info *pm8001_ha)
 	return 0;
 }
 
-/**
- * pm8001_pci_alloc - initialize our ha card structure
- * @pdev: pci device.
- * @ent: ent
- * @shost: scsi host struct which has been initialized before.
- */
+ 
 static struct pm8001_hba_info *pm8001_pci_alloc(struct pci_dev *pdev,
 				 const struct pci_device_id *ent,
 				struct Scsi_Host *shost)
@@ -536,14 +449,14 @@ static struct pm8001_hba_info *pm8001_pci_alloc(struct pci_dev *pdev,
 			   "Setting link rate to default value\n");
 	}
 	sprintf(pm8001_ha->name, "%s%d", DRV_NAME, pm8001_ha->id);
-	/* IOMB size is 128 for 8088/89 controllers */
+	 
 	if (pm8001_ha->chip_id != chip_8001)
 		pm8001_ha->iomb_size = IOMB_SIZE_SPCV;
 	else
 		pm8001_ha->iomb_size = IOMB_SIZE_SPC;
 
 #ifdef PM8001_USE_TASKLET
-	/* Tasklet for non msi-x interrupt handler */
+	 
 	if ((!pdev->msix_cap || !pci_msi_enabled())
 	    || (pm8001_ha->chip_id == chip_8001))
 		tasklet_init(&pm8001_ha->tasklet[0], pm8001_tasklet,
@@ -562,10 +475,7 @@ failed_pci_alloc:
 	return NULL;
 }
 
-/**
- * pci_go_44 - pm8001 specified, its DMA is 44 bit rather than 64 bit
- * @pdev: pci device.
- */
+ 
 static int pci_go_44(struct pci_dev *pdev)
 {
 	int rc;
@@ -580,11 +490,7 @@ static int pci_go_44(struct pci_dev *pdev)
 	return rc;
 }
 
-/**
- * pm8001_prep_sas_ha_init - allocate memory in general hba struct && init them.
- * @shost: scsi host which has been allocated outside.
- * @chip_info: our ha struct.
- */
+ 
 static int pm8001_prep_sas_ha_init(struct Scsi_Host *shost,
 				   const struct pm8001_chip_info *chip_info)
 {
@@ -622,11 +528,7 @@ exit:
 	return -1;
 }
 
-/**
- * pm8001_post_sas_ha_init - initialize general hba struct defined in libsas
- * @shost: scsi host which has been allocated outside
- * @chip_info: our ha struct.
- */
+ 
 static void  pm8001_post_sas_ha_init(struct Scsi_Host *shost,
 				     const struct pm8001_chip_info *chip_info)
 {
@@ -649,22 +551,13 @@ static void  pm8001_post_sas_ha_init(struct Scsi_Host *shost,
 	sha->shost = shost;
 }
 
-/**
- * pm8001_init_sas_add - initialize sas address
- * @pm8001_ha: our ha struct.
- *
- * Currently we just set the fixed SAS address to our HBA, for manufacture,
- * it should read from the EEPROM
- */
+ 
 static int pm8001_init_sas_add(struct pm8001_hba_info *pm8001_ha)
 {
 	u8 i, j;
 	u8 sas_add[8];
 #ifdef PM8001_READ_VPD
-	/* For new SPC controllers WWN is stored in flash vpd
-	*  For SPC/SPCve controllers WWN is stored in EEPROM
-	*  For Older SPC WWN is stored in NVMD
-	*/
+	 
 	DECLARE_COMPLETION_ONSTACK(completion);
 	struct pm8001_ioctl_payload payload;
 	u16 deviceid;
@@ -709,7 +602,7 @@ static int pm8001_init_sas_add(struct pm8001_hba_info *pm8001_ha)
 		return -EIO;
 	}
 	time_remaining = wait_for_completion_timeout(&completion,
-				msecs_to_jiffies(60*1000)); // 1 min
+				msecs_to_jiffies(60*1000)); 
 	if (!time_remaining) {
 		kfree(payload.func_specific);
 		pm8001_dbg(pm8001_ha, FAIL, "get_nvmd_req timeout\n");
@@ -757,28 +650,25 @@ static int pm8001_init_sas_add(struct pm8001_hba_info *pm8001_ha)
 	return 0;
 }
 
-/*
- * pm8001_get_phy_settings_info : Read phy setting values.
- * @pm8001_ha : our hba.
- */
+ 
 static int pm8001_get_phy_settings_info(struct pm8001_hba_info *pm8001_ha)
 {
 
 #ifdef PM8001_READ_VPD
-	/*OPTION ROM FLASH read for the SPC cards */
+	 
 	DECLARE_COMPLETION_ONSTACK(completion);
 	struct pm8001_ioctl_payload payload;
 	int rc;
 
 	pm8001_ha->nvmd_completion = &completion;
-	/* SAS ADDRESS read from flash / EEPROM */
+	 
 	payload.minor_function = 6;
 	payload.offset = 0;
 	payload.rd_length = 4096;
 	payload.func_specific = kzalloc(4096, GFP_KERNEL);
 	if (!payload.func_specific)
 		return -ENOMEM;
-	/* Read phy setting values from flash */
+	 
 	rc = PM8001_CHIP_DISP->get_nvmd_req(pm8001_ha, &payload);
 	if (rc) {
 		kfree(payload.func_specific);
@@ -804,11 +694,7 @@ struct pm8001_mpi3_phy_pg_trx_config {
 	u32 LaneBctCtrl;
 };
 
-/**
- * pm8001_get_internal_phy_settings - Retrieves the internal PHY settings
- * @pm8001_ha : our adapter
- * @phycfg : PHY config page to populate
- */
+ 
 static
 void pm8001_get_internal_phy_settings(struct pm8001_hba_info *pm8001_ha,
 		struct pm8001_mpi3_phy_pg_trx_config *phycfg)
@@ -824,11 +710,7 @@ void pm8001_get_internal_phy_settings(struct pm8001_hba_info *pm8001_ha,
 	phycfg->LaneBctCtrl  = 0x00FB33F8;
 }
 
-/**
- * pm8001_get_external_phy_settings - Retrieves the external PHY settings
- * @pm8001_ha : our adapter
- * @phycfg : PHY config page to populate
- */
+ 
 static
 void pm8001_get_external_phy_settings(struct pm8001_hba_info *pm8001_ha,
 		struct pm8001_mpi3_phy_pg_trx_config *phycfg)
@@ -844,34 +726,30 @@ void pm8001_get_external_phy_settings(struct pm8001_hba_info *pm8001_ha,
 	phycfg->LaneBctCtrl  = 0x00FB33F8;
 }
 
-/**
- * pm8001_get_phy_mask - Retrieves the mask that denotes if a PHY is int/ext
- * @pm8001_ha : our adapter
- * @phymask : The PHY mask
- */
+ 
 static
 void pm8001_get_phy_mask(struct pm8001_hba_info *pm8001_ha, int *phymask)
 {
 	switch (pm8001_ha->pdev->subsystem_device) {
-	case 0x0070: /* H1280 - 8 external 0 internal */
-	case 0x0072: /* H12F0 - 16 external 0 internal */
+	case 0x0070:  
+	case 0x0072:  
 		*phymask = 0x0000;
 		break;
 
-	case 0x0071: /* H1208 - 0 external 8 internal */
-	case 0x0073: /* H120F - 0 external 16 internal */
+	case 0x0071:  
+	case 0x0073:  
 		*phymask = 0xFFFF;
 		break;
 
-	case 0x0080: /* H1244 - 4 external 4 internal */
+	case 0x0080:  
 		*phymask = 0x00F0;
 		break;
 
-	case 0x0081: /* H1248 - 4 external 8 internal */
+	case 0x0081:  
 		*phymask = 0x0FF0;
 		break;
 
-	case 0x0082: /* H1288 - 8 external 8 internal */
+	case 0x0082:  
 		*phymask = 0xFF00;
 		break;
 
@@ -882,10 +760,7 @@ void pm8001_get_phy_mask(struct pm8001_hba_info *pm8001_ha, int *phymask)
 	}
 }
 
-/**
- * pm8001_set_phy_settings_ven_117c_12G() - Configure ATTO 12Gb PHY settings
- * @pm8001_ha : our adapter
- */
+ 
 static
 int pm8001_set_phy_settings_ven_117c_12G(struct pm8001_hba_info *pm8001_ha)
 {
@@ -902,12 +777,12 @@ int pm8001_set_phy_settings_ven_117c_12G(struct pm8001_hba_info *pm8001_ha)
 	pm8001_get_phy_mask(pm8001_ha, &phymask);
 
 	for (i = 0; i < pm8001_ha->chip->n_phy; i++) {
-		if (phymask & (1 << i)) {/* Internal PHY */
+		if (phymask & (1 << i)) { 
 			pm8001_set_phy_profile_single(pm8001_ha, i,
 					sizeof(phycfg_int) / sizeof(u32),
 					(u32 *)&phycfg_int);
 
-		} else { /* External PHY */
+		} else {  
 			pm8001_set_phy_profile_single(pm8001_ha, i,
 					sizeof(phycfg_ext) / sizeof(u32),
 					(u32 *)&phycfg_ext);
@@ -917,15 +792,12 @@ int pm8001_set_phy_settings_ven_117c_12G(struct pm8001_hba_info *pm8001_ha)
 	return 0;
 }
 
-/**
- * pm8001_configure_phy_settings - Configures PHY settings based on vendor ID.
- * @pm8001_ha : our hba.
- */
+ 
 static int pm8001_configure_phy_settings(struct pm8001_hba_info *pm8001_ha)
 {
 	switch (pm8001_ha->pdev->subsystem_vendor) {
 	case PCI_VENDOR_ID_ATTO:
-		if (pm8001_ha->pdev->device == 0x0042) /* 6Gb */
+		if (pm8001_ha->pdev->device == 0x0042)  
 			return 0;
 		else
 			return pm8001_set_phy_settings_ven_117c_12G(pm8001_ha);
@@ -940,24 +812,18 @@ static int pm8001_configure_phy_settings(struct pm8001_hba_info *pm8001_ha)
 }
 
 #ifdef PM8001_USE_MSIX
-/**
- * pm8001_setup_msix - enable MSI-X interrupt
- * @pm8001_ha: our ha struct.
- */
+ 
 static u32 pm8001_setup_msix(struct pm8001_hba_info *pm8001_ha)
 {
 	unsigned int allocated_irq_vectors;
 	int rc;
 
-	/* SPCv controllers supports 64 msi-x */
+	 
 	if (pm8001_ha->chip_id == chip_8001) {
 		rc = pci_alloc_irq_vectors(pm8001_ha->pdev, 1, 1,
 					   PCI_IRQ_MSIX);
 	} else {
-		/*
-		 * Queue index #0 is used always for housekeeping, so don't
-		 * include in the affinity spreading.
-		 */
+		 
 		struct irq_affinity desc = {
 			.pre_vectors = 1,
 		};
@@ -970,10 +836,10 @@ static u32 pm8001_setup_msix(struct pm8001_hba_info *pm8001_ha)
 	if (rc < 0)
 		return rc;
 
-	/* Assigns the number of interrupts */
+	 
 	pm8001_ha->number_of_intr = allocated_irq_vectors;
 
-	/* Maximum queue number updating in HBA structure */
+	 
 	pm8001_ha->max_q_num = allocated_irq_vectors;
 
 	pm8001_dbg(pm8001_ha, INIT,
@@ -1023,10 +889,7 @@ static u32 pm8001_request_msix(struct pm8001_hba_info *pm8001_ha)
 }
 #endif
 
-/**
- * pm8001_request_irq - register interrupt
- * @pm8001_ha: our ha struct.
- */
+ 
 static u32 pm8001_request_irq(struct pm8001_hba_info *pm8001_ha)
 {
 	struct pci_dev *pdev = pm8001_ha->pdev;
@@ -1048,7 +911,7 @@ static u32 pm8001_request_irq(struct pm8001_hba_info *pm8001_ha)
 	pm8001_dbg(pm8001_ha, INIT, "MSIX not supported!!!\n");
 #endif
 
-	/* initialize the INT-X interrupt */
+	 
 	pm8001_ha->irq_vector[0].irq_id = 0;
 	pm8001_ha->irq_vector[0].drv_inst = pm8001_ha;
 
@@ -1057,15 +920,7 @@ static u32 pm8001_request_irq(struct pm8001_hba_info *pm8001_ha)
 			   SHOST_TO_SAS_HA(pm8001_ha->shost));
 }
 
-/**
- * pm8001_pci_probe - probe supported device
- * @pdev: pci device which kernel has been prepared for.
- * @ent: pci device id
- *
- * This function is the main initialization function, when register a new
- * pci driver it is invoked, all struct and hardware initialization should be
- * done here, also, register interrupt.
- */
+ 
 static int pm8001_pci_probe(struct pci_dev *pdev,
 			    const struct pci_device_id *ent)
 {
@@ -1083,10 +938,7 @@ static int pm8001_pci_probe(struct pci_dev *pdev,
 	if (rc)
 		goto err_out_enable;
 	pci_set_master(pdev);
-	/*
-	 * Enable pci slot busmaster by setting pci command register.
-	 * This is required by FW for Cyclone card.
-	 */
+	 
 
 	pci_read_config_dword(pdev, PCI_COMMAND, &pci_reg);
 	pci_reg |= 0x157;
@@ -1117,7 +969,7 @@ static int pm8001_pci_probe(struct pci_dev *pdev,
 		goto err_out_free;
 	}
 	pci_set_drvdata(pdev, SHOST_TO_SAS_HA(shost));
-	/* ent->driver variable is used to differentiate between controllers */
+	 
 	pm8001_ha = pm8001_pci_alloc(pdev, ent, shost);
 	if (!pm8001_ha) {
 		rc = -ENOMEM;
@@ -1141,11 +993,7 @@ static int pm8001_pci_probe(struct pci_dev *pdev,
 
 	if (pm8001_ha->number_of_intr > 1) {
 		shost->nr_hw_queues = pm8001_ha->number_of_intr - 1;
-		/*
-		 * For now, ensure we're not sent too many commands by setting
-		 * host_tagset. This is also required if we start using request
-		 * tag.
-		 */
+		 
 		shost->host_tagset = 1;
 	}
 
@@ -1157,14 +1005,14 @@ static int pm8001_pci_probe(struct pci_dev *pdev,
 	if (pm8001_ha->chip_id != chip_8001) {
 		for (i = 1; i < pm8001_ha->number_of_intr; i++)
 			PM8001_CHIP_DISP->interrupt_enable(pm8001_ha, i);
-		/* setup thermal configuration. */
+		 
 		pm80xx_set_thermal_config(pm8001_ha);
 	}
 
 	rc = pm8001_init_sas_add(pm8001_ha);
 	if (rc)
 		goto err_out_shost;
-	/* phy setting support for motherboard controller */
+	 
 	rc = pm8001_configure_phy_settings(pm8001_ha);
 	if (rc)
 		goto err_out_shost;
@@ -1197,10 +1045,7 @@ err_out_enable:
 	return rc;
 }
 
-/**
- * pm8001_init_ccb_tag - allocate memory to CCB and tag.
- * @pm8001_ha: our hba card information.
- */
+ 
 static int pm8001_init_ccb_tag(struct pm8001_hba_info *pm8001_ha)
 {
 	struct Scsi_Host *shost = pm8001_ha->shost;
@@ -1217,7 +1062,7 @@ static int pm8001_init_ccb_tag(struct pm8001_hba_info *pm8001_ha)
 	if (!pm8001_ha->rsvd_tags)
 		goto err_out;
 
-	/* Memory region for ccb_info*/
+	 
 	pm8001_ha->ccb_count = ccb_count;
 	pm8001_ha->ccb_info =
 		kcalloc(ccb_count, sizeof(struct pm8001_ccb_info), GFP_KERNEL);
@@ -1271,7 +1116,7 @@ static void pm8001_pci_remove(struct pci_dev *pdev)
 	free_irq(pm8001_ha->irq, sha);
 #endif
 #ifdef PM8001_USE_TASKLET
-	/* For non-msix and msix interrupts */
+	 
 	if ((!pdev->msix_cap || !pci_msi_enabled()) ||
 	    (pm8001_ha->chip_id == chip_8001))
 		tasklet_kill(&pm8001_ha->tasklet[0]);
@@ -1298,12 +1143,7 @@ static void pm8001_pci_remove(struct pci_dev *pdev)
 	pci_disable_device(pdev);
 }
 
-/**
- * pm8001_pci_suspend - power management suspend main entry point
- * @dev: Device struct
- *
- * Return: 0 on success, anything else on error.
- */
+ 
 static int __maybe_unused pm8001_pci_suspend(struct device *dev)
 {
 	struct pci_dev *pdev = to_pci_dev(dev);
@@ -1329,7 +1169,7 @@ static int __maybe_unused pm8001_pci_suspend(struct device *dev)
 	free_irq(pm8001_ha->irq, sha);
 #endif
 #ifdef PM8001_USE_TASKLET
-	/* For non-msix and msix interrupts */
+	 
 	if ((!pdev->msix_cap || !pci_msi_enabled()) ||
 	    (pm8001_ha->chip_id == chip_8001))
 		tasklet_kill(&pm8001_ha->tasklet[0]);
@@ -1343,12 +1183,7 @@ static int __maybe_unused pm8001_pci_suspend(struct device *dev)
 	return 0;
 }
 
-/**
- * pm8001_pci_resume - power management resume main entry point
- * @dev: Device struct
- *
- * Return: 0 on success, anything else on error.
- */
+ 
 static int __maybe_unused pm8001_pci_resume(struct device *dev)
 {
 	struct pci_dev *pdev = to_pci_dev(dev);
@@ -1368,7 +1203,7 @@ static int __maybe_unused pm8001_pci_resume(struct device *dev)
 	if (rc)
 		goto err_out_disable;
 	sas_prep_resume_ha(sha);
-	/* chip soft rst only for spc */
+	 
 	if (pm8001_ha->chip_id == chip_8001) {
 		PM8001_CHIP_DISP->chip_soft_rst(pm8001_ha);
 		pm8001_dbg(pm8001_ha, INIT, "chip soft reset successful\n");
@@ -1377,14 +1212,14 @@ static int __maybe_unused pm8001_pci_resume(struct device *dev)
 	if (rc)
 		goto err_out_disable;
 
-	/* disable all the interrupt bits */
+	 
 	PM8001_CHIP_DISP->interrupt_disable(pm8001_ha, 0xFF);
 
 	rc = pm8001_request_irq(pm8001_ha);
 	if (rc)
 		goto err_out_disable;
 #ifdef PM8001_USE_TASKLET
-	/*  Tasklet for non msi-x interrupt handler */
+	 
 	if ((!pdev->msix_cap || !pci_msi_enabled()) ||
 	    (pm8001_ha->chip_id == chip_8001))
 		tasklet_init(&pm8001_ha->tasklet[0], pm8001_tasklet,
@@ -1400,17 +1235,17 @@ static int __maybe_unused pm8001_pci_resume(struct device *dev)
 			PM8001_CHIP_DISP->interrupt_enable(pm8001_ha, i);
 	}
 
-	/* Chip documentation for the 8070 and 8072 SPCv    */
-	/* states that a 500ms minimum delay is required    */
-	/* before issuing commands. Otherwise, the firmware */
-	/* will enter an unrecoverable state.               */
+	 
+	 
+	 
+	 
 
 	if (pm8001_ha->chip_id == chip_8070 ||
 		pm8001_ha->chip_id == chip_8072) {
 		mdelay(500);
 	}
 
-	/* Spin up the PHYs */
+	 
 
 	pm8001_ha->flags = PM8001F_RUN_TIME;
 	for (i = 0; i < pm8001_ha->chip->n_phy; i++) {
@@ -1427,15 +1262,13 @@ err_out_disable:
 	return rc;
 }
 
-/* update of pci device, vendor id and driver data with
- * unique value for each of the controller
- */
+ 
 static struct pci_device_id pm8001_pci_table[] = {
 	{ PCI_VDEVICE(PMC_Sierra, 0x8001), chip_8001 },
 	{ PCI_VDEVICE(PMC_Sierra, 0x8006), chip_8006 },
 	{ PCI_VDEVICE(ADAPTEC2, 0x8006), chip_8006 },
 	{ PCI_VDEVICE(ATTO, 0x0042), chip_8001 },
-	/* Support for SPC/SPCv/SPCve controllers */
+	 
 	{ PCI_VDEVICE(ADAPTEC2, 0x8001), chip_8001 },
 	{ PCI_VDEVICE(PMC_Sierra, 0x8008), chip_8008 },
 	{ PCI_VDEVICE(ADAPTEC2, 0x8008), chip_8008 },
@@ -1503,7 +1336,7 @@ static struct pci_device_id pm8001_pci_table[] = {
 		PCI_VENDOR_ID_ATTO, 0x0081, 0, 0, chip_8072 },
 	{ PCI_VENDOR_ID_ATTO, 0x8072,
 		PCI_VENDOR_ID_ATTO, 0x0082, 0, 0, chip_8072 },
-	{} /* terminate list */
+	{}  
 };
 
 static SIMPLE_DEV_PM_OPS(pm8001_pci_pm_ops,
@@ -1518,9 +1351,7 @@ static struct pci_driver pm8001_pci_driver = {
 	.driver.pm	= &pm8001_pci_pm_ops,
 };
 
-/**
- *	pm8001_init - initialize scsi transport template
- */
+ 
 static int __init pm8001_init(void)
 {
 	int rc = -ENOMEM;

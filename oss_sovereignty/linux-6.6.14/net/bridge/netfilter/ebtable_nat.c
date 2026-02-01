@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  ebtable_nat
- *
- *	Authors:
- *	Bart De Schuymer <bdschuym@pandora.be>
- *
- *  April, 2002
- *
- */
+
+ 
 
 #include <linux/netfilter_bridge/ebtables.h>
 #include <uapi/linux/netfilter_bridge.h>

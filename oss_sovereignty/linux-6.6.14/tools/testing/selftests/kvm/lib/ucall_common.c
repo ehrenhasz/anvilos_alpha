@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 #include "kvm_util.h"
 #include "linux/types.h"
 #include "linux/bitmap.h"
@@ -16,10 +16,7 @@ int ucall_nr_pages_required(uint64_t page_size)
 	return align_up(sizeof(struct ucall_header), page_size) / page_size;
 }
 
-/*
- * ucall_pool holds per-VM values (global data is duplicated by each VM), it
- * must not be accessed from host code.
- */
+ 
 static struct ucall_header *ucall_pool;
 
 void ucall_init(struct kvm_vm *vm, vm_paddr_t mmio_gpa)
@@ -60,18 +57,14 @@ static struct ucall *ucall_alloc(void)
 	}
 
 ucall_failed:
-	/*
-	 * If the vCPU cannot grab a ucall structure, make a bare ucall with a
-	 * magic value to signal to get_ucall() that things went sideways.
-	 * GUEST_ASSERT() depends on ucall_alloc() and so cannot be used here.
-	 */
+	 
 	ucall_arch_do_ucall(GUEST_UCALL_FAILED);
 	return NULL;
 }
 
 static void ucall_free(struct ucall *uc)
 {
-	/* Beware, here be pointer arithmetic.  */
+	 
 	clear_bit(uc - ucall_pool->ucalls, ucall_pool->in_use);
 }
 

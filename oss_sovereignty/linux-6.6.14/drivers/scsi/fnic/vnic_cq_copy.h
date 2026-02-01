@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright 2008 Cisco Systems, Inc.  All rights reserved.
- * Copyright 2007 Nuova Systems, Inc.  All rights reserved.
- */
+ 
+ 
 #ifndef _VNIC_CQ_COPY_H_
 #define _VNIC_CQ_COPY_H_
 
@@ -47,4 +44,4 @@ static inline unsigned int vnic_cq_copy_service(
 	return work_done;
 }
 
-#endif /* _VNIC_CQ_COPY_H_ */
+#endif  

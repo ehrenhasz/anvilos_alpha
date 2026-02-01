@@ -1,142 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2019-2022 Red Hat, Inc. Daniel Bristot de Oliveira <bristot@kernel.org>
- *
- * This is the online Runtime Verification (RV) interface.
- *
- * RV is a lightweight (yet rigorous) method that complements classical
- * exhaustive verification techniques (such as model checking and
- * theorem proving) with a more practical approach to complex systems.
- *
- * RV works by analyzing the trace of the system's actual execution,
- * comparing it against a formal specification of the system behavior.
- * RV can give precise information on the runtime behavior of the
- * monitored system while enabling the reaction for unexpected
- * events, avoiding, for example, the propagation of a failure on
- * safety-critical systems.
- *
- * The development of this interface roots in the development of the
- * paper:
- *
- * De Oliveira, Daniel Bristot; Cucinotta, Tommaso; De Oliveira, Romulo
- * Silva. Efficient formal verification for the Linux kernel. In:
- * International Conference on Software Engineering and Formal Methods.
- * Springer, Cham, 2019. p. 315-332.
- *
- * And:
- *
- * De Oliveira, Daniel Bristot, et al. Automata-based formal analysis
- * and verification of the real-time Linux kernel. PhD Thesis, 2020.
- *
- * == Runtime monitor interface ==
- *
- * A monitor is the central part of the runtime verification of a system.
- *
- * The monitor stands in between the formal specification of the desired
- * (or undesired) behavior, and the trace of the actual system.
- *
- * In Linux terms, the runtime verification monitors are encapsulated
- * inside the "RV monitor" abstraction. A RV monitor includes a reference
- * model of the system, a set of instances of the monitor (per-cpu monitor,
- * per-task monitor, and so on), and the helper functions that glue the
- * monitor to the system via trace. Generally, a monitor includes some form
- * of trace output as a reaction for event parsing and exceptions,
- * as depicted bellow:
- *
- * Linux  +----- RV Monitor ----------------------------------+ Formal
- *  Realm |                                                   |  Realm
- *  +-------------------+     +----------------+     +-----------------+
- *  |   Linux kernel    |     |     Monitor    |     |     Reference   |
- *  |     Tracing       |  -> |   Instance(s)  | <-  |       Model     |
- *  | (instrumentation) |     | (verification) |     | (specification) |
- *  +-------------------+     +----------------+     +-----------------+
- *         |                          |                       |
- *         |                          V                       |
- *         |                     +----------+                 |
- *         |                     | Reaction |                 |
- *         |                     +--+--+--+-+                 |
- *         |                        |  |  |                   |
- *         |                        |  |  +-> trace output ?  |
- *         +------------------------|--|----------------------+
- *                                  |  +----> panic ?
- *                                  +-------> <user-specified>
- *
- * This file implements the interface for loading RV monitors, and
- * to control the verification session.
- *
- * == Registering monitors ==
- *
- * The struct rv_monitor defines a set of callback functions to control
- * a verification session. For instance, when a given monitor is enabled,
- * the "enable" callback function is called to hook the instrumentation
- * functions to the kernel trace events. The "disable" function is called
- * when disabling the verification session.
- *
- * A RV monitor is registered via:
- *   int rv_register_monitor(struct rv_monitor *monitor);
- * And unregistered via:
- *   int rv_unregister_monitor(struct rv_monitor *monitor);
- *
- * == User interface ==
- *
- * The user interface resembles kernel tracing interface. It presents
- * these files:
- *
- *  "available_monitors"
- *    - List the available monitors, one per line.
- *
- *    For example:
- *      # cat available_monitors
- *      wip
- *      wwnr
- *
- *  "enabled_monitors"
- *    - Lists the enabled monitors, one per line;
- *    - Writing to it enables a given monitor;
- *    - Writing a monitor name with a '!' prefix disables it;
- *    - Truncating the file disables all enabled monitors.
- *
- *    For example:
- *      # cat enabled_monitors
- *      # echo wip > enabled_monitors
- *      # echo wwnr >> enabled_monitors
- *      # cat enabled_monitors
- *      wip
- *      wwnr
- *      # echo '!wip' >> enabled_monitors
- *      # cat enabled_monitors
- *      wwnr
- *      # echo > enabled_monitors
- *      # cat enabled_monitors
- *      #
- *
- *    Note that more than one monitor can be enabled concurrently.
- *
- *  "monitoring_on"
- *    - It is an on/off general switcher for monitoring. Note
- *    that it does not disable enabled monitors or detach events,
- *    but stops the per-entity monitors from monitoring the events
- *    received from the instrumentation. It resembles the "tracing_on"
- *    switcher.
- *
- *  "monitors/"
- *    Each monitor will have its own directory inside "monitors/". There
- *    the monitor specific files will be presented.
- *    The "monitors/" directory resembles the "events" directory on
- *    tracefs.
- *
- *    For example:
- *      # cd monitors/wip/
- *      # ls
- *      desc  enable
- *      # cat desc
- *      auto-generated wakeup in preemptive monitor.
- *      # cat enable
- *      0
- *
- *  For further information, see:
- *   Documentation/trace/rv/runtime-verification.rst
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -159,9 +22,7 @@ struct dentry *get_monitors_root(void)
 	return rv_root.monitors_dir;
 }
 
-/*
- * Interface for the monitor register.
- */
+ 
 static LIST_HEAD(rv_monitors_list);
 
 static int task_monitor_count;
@@ -206,9 +67,7 @@ void rv_put_task_monitor_slot(int slot)
 	task_monitor_slots[slot] = false;
 }
 
-/*
- * This section collects the monitor/ files and folders.
- */
+ 
 static ssize_t monitor_enable_read_data(struct file *filp, char __user *user_buf, size_t count,
 					loff_t *ppos)
 {
@@ -220,9 +79,7 @@ static ssize_t monitor_enable_read_data(struct file *filp, char __user *user_buf
 	return simple_read_from_buffer(user_buf, count, ppos, buff, strlen(buff)+1);
 }
 
-/*
- * __rv_disable_monitor - disabled an enabled monitor
- */
+ 
 static int __rv_disable_monitor(struct rv_monitor_def *mdef, bool sync)
 {
 	lockdep_assert_held(&rv_interface_lock);
@@ -231,11 +88,7 @@ static int __rv_disable_monitor(struct rv_monitor_def *mdef, bool sync)
 		mdef->monitor->enabled = 0;
 		mdef->monitor->disable();
 
-		/*
-		 * Wait for the execution of all events to finish.
-		 * Otherwise, the data used by the monitor could
-		 * be inconsistent. i.e., if the monitor is re-enabled.
-		 */
+		 
 		if (sync)
 			tracepoint_synchronize_unregister();
 		return 1;
@@ -243,22 +96,14 @@ static int __rv_disable_monitor(struct rv_monitor_def *mdef, bool sync)
 	return 0;
 }
 
-/**
- * rv_disable_monitor - disable a given runtime monitor
- *
- * Returns 0 on success.
- */
+ 
 int rv_disable_monitor(struct rv_monitor_def *mdef)
 {
 	__rv_disable_monitor(mdef, true);
 	return 0;
 }
 
-/**
- * rv_enable_monitor - enable a given runtime monitor
- *
- * Returns 0 on success, error otherwise.
- */
+ 
 int rv_enable_monitor(struct rv_monitor_def *mdef)
 {
 	int retval;
@@ -276,9 +121,7 @@ int rv_enable_monitor(struct rv_monitor_def *mdef)
 	return retval;
 }
 
-/*
- * interface for enabling/disabling a monitor.
- */
+ 
 static ssize_t monitor_enable_write_data(struct file *filp, const char __user *user_buf,
 					 size_t count, loff_t *ppos)
 {
@@ -309,9 +152,7 @@ static const struct file_operations interface_enable_fops = {
 	.read   = monitor_enable_read_data,
 };
 
-/*
- * Interface to read monitors description.
- */
+ 
 static ssize_t monitor_desc_read_data(struct file *filp, char __user *user_buf, size_t count,
 				      loff_t *ppos)
 {
@@ -331,11 +172,7 @@ static const struct file_operations interface_desc_fops = {
 	.read	= monitor_desc_read_data,
 };
 
-/*
- * During the registration of a monitor, this function creates
- * the monitor dir, where the specific options of the monitor
- * are exposed.
- */
+ 
 static int create_monitor_dir(struct rv_monitor_def *mdef)
 {
 	struct dentry *root = get_monitors_root();
@@ -370,9 +207,7 @@ out_remove_root:
 	return retval;
 }
 
-/*
- * Available/Enable monitor shared seq functions.
- */
+ 
 static int monitors_show(struct seq_file *m, void *p)
 {
 	struct rv_monitor_def *mon_def = p;
@@ -381,18 +216,13 @@ static int monitors_show(struct seq_file *m, void *p)
 	return 0;
 }
 
-/*
- * Used by the seq file operations at the end of a read
- * operation.
- */
+ 
 static void monitors_stop(struct seq_file *m, void *p)
 {
 	mutex_unlock(&rv_interface_lock);
 }
 
-/*
- * Available monitor seq functions.
- */
+ 
 static void *available_monitors_start(struct seq_file *m, loff_t *pos)
 {
 	mutex_lock(&rv_interface_lock);
@@ -404,9 +234,7 @@ static void *available_monitors_next(struct seq_file *m, void *p, loff_t *pos)
 	return seq_list_next(p, &rv_monitors_list, pos);
 }
 
-/*
- * Enable monitor seq functions.
- */
+ 
 static void *enabled_monitors_next(struct seq_file *m, void *p, loff_t *pos)
 {
 	struct rv_monitor_def *m_def = p;
@@ -442,9 +270,7 @@ static void *enabled_monitors_start(struct seq_file *m, loff_t *pos)
 	return m_def;
 }
 
-/*
- * available/enabled monitors seq definition.
- */
+ 
 static const struct seq_operations available_monitors_seq_ops = {
 	.start	= available_monitors_start,
 	.next	= available_monitors_next,
@@ -459,9 +285,7 @@ static const struct seq_operations enabled_monitors_seq_ops = {
 	.show   = monitors_show
 };
 
-/*
- * available_monitors interface.
- */
+ 
 static int available_monitors_open(struct inode *inode, struct file *file)
 {
 	return seq_open(file, &available_monitors_seq_ops);
@@ -474,9 +298,7 @@ static const struct file_operations available_monitors_ops = {
 	.release = seq_release
 };
 
-/*
- * enabled_monitors interface.
- */
+ 
 static void disable_all_monitors(void)
 {
 	struct rv_monitor_def *mdef;
@@ -488,11 +310,7 @@ static void disable_all_monitors(void)
 		enabled += __rv_disable_monitor(mdef, false);
 
 	if (enabled) {
-		/*
-		 * Wait for the execution of all events to finish.
-		 * Otherwise, the data used by the monitor could
-		 * be inconsistent. i.e., if the monitor is re-enabled.
-		 */
+		 
 		tracepoint_synchronize_unregister();
 	}
 
@@ -545,9 +363,7 @@ static ssize_t enabled_monitors_write(struct file *filp, const char __user *user
 		if (strcmp(ptr, mdef->monitor->name) != 0)
 			continue;
 
-		/*
-		 * Monitor found!
-		 */
+		 
 		if (enable)
 			retval = rv_enable_monitor(mdef);
 		else
@@ -571,26 +387,18 @@ static const struct file_operations enabled_monitors_ops = {
 	.release	= seq_release,
 };
 
-/*
- * Monitoring on global switcher!
- */
+ 
 static bool __read_mostly monitoring_on;
 
-/**
- * rv_monitoring_on - checks if monitoring is on
- *
- * Returns 1 if on, 0 otherwise.
- */
+ 
 bool rv_monitoring_on(void)
 {
-	/* Ensures that concurrent monitors read consistent monitoring_on */
+	 
 	smp_rmb();
 	return READ_ONCE(monitoring_on);
 }
 
-/*
- * monitoring_on general switcher.
- */
+ 
 static ssize_t monitoring_on_read_data(struct file *filp, char __user *user_buf,
 				       size_t count, loff_t *ppos)
 {
@@ -604,7 +412,7 @@ static ssize_t monitoring_on_read_data(struct file *filp, char __user *user_buf,
 static void turn_monitoring_off(void)
 {
 	WRITE_ONCE(monitoring_on, false);
-	/* Ensures that concurrent monitors read consistent monitoring_on */
+	 
 	smp_wmb();
 }
 
@@ -621,7 +429,7 @@ static void reset_all_monitors(void)
 static void turn_monitoring_on(void)
 {
 	WRITE_ONCE(monitoring_on, true);
-	/* Ensures that concurrent monitors read consistent monitoring_on */
+	 
 	smp_wmb();
 }
 
@@ -632,12 +440,7 @@ static void turn_monitoring_on_with_reset(void)
 	if (rv_monitoring_on())
 		return;
 
-	/*
-	 * Monitors might be out of sync with the system if events were not
-	 * processed because of !rv_monitoring_on().
-	 *
-	 * Reset all monitors, forcing a re-sync.
-	 */
+	 
 	reset_all_monitors();
 	turn_monitoring_on();
 }
@@ -659,10 +462,7 @@ static ssize_t monitoring_on_write_data(struct file *filp, const char __user *us
 	else
 		turn_monitoring_off();
 
-	/*
-	 * Wait for the execution of all events to finish
-	 * before returning to user-space.
-	 */
+	 
 	tracepoint_synchronize_unregister();
 
 	mutex_unlock(&rv_interface_lock);
@@ -683,12 +483,7 @@ static void destroy_monitor_dir(struct rv_monitor_def *mdef)
 	rv_remove(mdef->root_d);
 }
 
-/**
- * rv_register_monitor - register a rv monitor.
- * @monitor:    The rv_monitor to be registered.
- *
- * Returns 0 if successful, error otherwise.
- */
+ 
 int rv_register_monitor(struct rv_monitor *monitor)
 {
 	struct rv_monitor_def *r;
@@ -731,12 +526,7 @@ out_unlock:
 	return retval;
 }
 
-/**
- * rv_unregister_monitor - unregister a rv monitor.
- * @monitor:    The rv_monitor to be unregistered.
- *
- * Returns 0 if successful, error otherwise.
- */
+ 
 int rv_unregister_monitor(struct rv_monitor *monitor)
 {
 	struct rv_monitor_def *ptr, *next;

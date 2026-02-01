@@ -1,8 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0-only
-//
-// tegra210_mbdrc.c - Tegra210 MBDRC driver
-//
-// Copyright (c) 2022, NVIDIA CORPORATION. All rights reserved.
+
+
+
+
+
 
 #include <linux/device.h>
 #include <linux/io.h>
@@ -49,12 +49,12 @@ static const struct reg_default tegra210_mbdrc_reg_defaults[] = {
 	MBDRC_FILTER_REG_DEFAULTS(2),
 };
 
-/* Default MBDRC parameters */
+ 
 static const struct tegra210_mbdrc_config mbdrc_init_config = {
-	.mode			= 0, /* Bypass */
+	.mode			= 0,  
 	.rms_off		= 48,
-	.peak_rms_mode		= 1, /* PEAK */
-	.filter_structure	= 0, /* All-pass tree */
+	.peak_rms_mode		= 1,  
+	.filter_structure	= 0,  
 	.shift_ctrl		= 30,
 	.frame_size		= 32,
 	.channel_mask		= 0x3,
@@ -77,35 +77,30 @@ static const struct tegra210_mbdrc_config mbdrc_init_config = {
 		.fast_release_tc	= 2147480170,
 
 		.biquad_params	= {
-			/*
-			 * Gains:
-			 *
-			 * b0, b1, a0,
-			 * a1, a2,
-			 */
+			 
 
-			/* Band-0 */
+			 
 			961046798, -2030431983, 1073741824,
 			2030431983, -961046798,
-			/* Band-1 */
+			 
 			1030244425, -2099481453, 1073741824,
 			2099481453, -1030244425,
-			/* Band-2 */
+			 
 			1067169294, -2136327263, 1073741824,
 			2136327263, -1067169294,
-			/* Band-3 */
+			 
 			434951949, -1306567134, 1073741824,
 			1306567134, -434951949,
-			/* Band-4 */
+			 
 			780656019, -1605955641, 1073741824,
 			1605955641, -780656019,
-			/* Band-5 */
+			 
 			1024497031, -1817128152, 1073741824,
 			1817128152, -1024497031,
-			/* Band-6 */
+			 
 			1073741824, 0, 0,
 			0, 0,
-			/* Band-7 */
+			 
 			1073741824, 0, 0,
 			0, 0,
 		}
@@ -127,35 +122,30 @@ static const struct tegra210_mbdrc_config mbdrc_init_config = {
 		.fast_release_tc	= 2147480170,
 
 		.biquad_params = {
-			/*
-			 * Gains:
-			 *
-			 * b0, b1, a0,
-			 * a1, a2,
-			 */
+			 
 
-			/* Band-0 */
+			 
 			-1005668963, 1073741824, 0,
 			1005668963, 0,
-			/* Band-1 */
+			 
 			998437058, -2067742187, 1073741824,
 			2067742187, -998437058,
-			/* Band-2 */
+			 
 			1051963422, -2121153948, 1073741824,
 			2121153948, -1051963422,
-			/* Band-3 */
+			 
 			434951949, -1306567134, 1073741824,
 			1306567134, -434951949,
-			/* Band-4 */
+			 
 			780656019, -1605955641, 1073741824,
 			1605955641, -780656019,
-			/* Band-5 */
+			 
 			1024497031, -1817128152, 1073741824,
 			1817128152, -1024497031,
-			/* Band-6 */
+			 
 			1073741824, 0, 0,
 			0, 0,
-			/* Band-7 */
+			 
 			1073741824, 0, 0,
 			0, 0,
 		}
@@ -177,35 +167,30 @@ static const struct tegra210_mbdrc_config mbdrc_init_config = {
 		.fast_release_tc	= 2147480170,
 
 		.biquad_params = {
-			/*
-			 * Gains:
-			 *
-			 * b0, b1, a0,
-			 * a1, a2,
-			 */
+			 
 
-			/* Band-0 */
+			 
 			1073741824, 0, 0,
 			0, 0,
-			/* Band-1 */
+			 
 			1073741824, 0, 0,
 			0, 0,
-			/* Band-2 */
+			 
 			1073741824, 0, 0,
 			0, 0,
-			/* Band-3 */
+			 
 			-619925131, 1073741824, 0,
 			619925131, 0,
-			/* Band-4 */
+			 
 			606839335, -1455425976, 1073741824,
 			1455425976, -606839335,
-			/* Band-5 */
+			 
 			917759617, -1724690840, 1073741824,
 			1724690840, -917759617,
-			/* Band-6 */
+			 
 			1073741824, 0, 0,
 			0, 0,
-			/* Band-7 */
+			 
 			1073741824, 0, 0,
 			0, 0,
 		}
@@ -804,7 +789,7 @@ int tegra210_mbdrc_component_init(struct snd_soc_component *cmpnt)
 
 	pm_runtime_get_sync(cmpnt->dev);
 
-	/* Initialize MBDRC registers and AHUB RAM with default params */
+	 
 	regmap_update_bits(ope->mbdrc_regmap, TEGRA210_MBDRC_CFG,
 		TEGRA210_MBDRC_CFG_MBDRC_MODE_MASK,
 		conf->mode << TEGRA210_MBDRC_CFG_MBDRC_MODE_SHIFT);

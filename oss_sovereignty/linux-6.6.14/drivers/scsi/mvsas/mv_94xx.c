@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Marvell 88SE94xx hardware specific
- *
- * Copyright 2007 Red Hat, Inc.
- * Copyright 2008 Marvell. <kewei@marvell.com>
- * Copyright 2009-2011 Marvell. <yuxiangl@marvell.com>
-*/
+
+ 
 
 #include "mv_sas.h"
 #include "mv_94xx.h"
@@ -38,24 +32,14 @@ static void set_phy_tuning(struct mvs_info *mvi, int phy_id,
 	u32 tmp, setting_0 = 0, setting_1 = 0;
 	u8 i;
 
-	/* Remap information for B0 chip:
-	*
-	* R0Ch -> R118h[15:0] (Adapted DFE F3 - F5 coefficient)
-	* R0Dh -> R118h[31:16] (Generation 1 Setting 0)
-	* R0Eh -> R11Ch[15:0]  (Generation 1 Setting 1)
-	* R0Fh -> R11Ch[31:16] (Generation 2 Setting 0)
-	* R10h -> R120h[15:0]  (Generation 2 Setting 1)
-	* R11h -> R120h[31:16] (Generation 3 Setting 0)
-	* R12h -> R124h[15:0]  (Generation 3 Setting 1)
-	* R13h -> R124h[31:16] (Generation 4 Setting 0 (Reserved))
-	*/
+	 
 
-	/* A0 has a different set of registers */
+	 
 	if (mvi->pdev->revision == VANIR_A0_REV)
 		return;
 
 	for (i = 0; i < 3; i++) {
-		/* loop 3 times, set Gen 1, Gen 2, Gen 3 */
+		 
 		switch (i) {
 		case 0:
 			setting_0 = GENERATION_1_SETTING;
@@ -71,12 +55,7 @@ static void set_phy_tuning(struct mvs_info *mvi, int phy_id,
 			break;
 		}
 
-		/* Set:
-		*
-		* Transmitter Emphasis Enable
-		* Transmitter Emphasis Amplitude
-		* Transmitter Amplitude
-		*/
+		 
 		mvs_write_port_vsr_addr(mvi, phy_id, setting_0);
 		tmp = mvs_read_port_vsr_data(mvi, phy_id);
 		tmp &= ~(0xFBE << 16);
@@ -85,7 +64,7 @@ static void set_phy_tuning(struct mvs_info *mvi, int phy_id,
 			(phy_tuning.trans_amp << 1)) << 16);
 		mvs_write_port_vsr_data(mvi, phy_id, tmp);
 
-		/* Set Transmitter Amplitude Adjust */
+		 
 		mvs_write_port_vsr_addr(mvi, phy_id, setting_1);
 		tmp = mvs_read_port_vsr_data(mvi, phy_id);
 		tmp &= ~(0xC000);
@@ -99,68 +78,53 @@ static void set_phy_ffe_tuning(struct mvs_info *mvi, int phy_id,
 {
 	u32 tmp;
 
-	/* Don't run this if A0/B0 */
+	 
 	if ((mvi->pdev->revision == VANIR_A0_REV)
 		|| (mvi->pdev->revision == VANIR_B0_REV))
 		return;
 
-	/* FFE Resistor and Capacitor */
-	/* R10Ch DFE Resolution Control/Squelch and FFE Setting
-	 *
-	 * FFE_FORCE            [7]
-	 * FFE_RES_SEL          [6:4]
-	 * FFE_CAP_SEL          [3:0]
-	 */
+	 
+	 
 	mvs_write_port_vsr_addr(mvi, phy_id, VSR_PHY_FFE_CONTROL);
 	tmp = mvs_read_port_vsr_data(mvi, phy_id);
 	tmp &= ~0xFF;
 
-	/* Read from HBA_Info_Page */
+	 
 	tmp |= ((0x1 << 7) |
 		(ffe.ffe_rss_sel << 4) |
 		(ffe.ffe_cap_sel << 0));
 
 	mvs_write_port_vsr_data(mvi, phy_id, tmp);
 
-	/* R064h PHY Mode Register 1
-	 *
-	 * DFE_DIS		18
-	 */
+	 
 	mvs_write_port_vsr_addr(mvi, phy_id, VSR_REF_CLOCK_CRTL);
 	tmp = mvs_read_port_vsr_data(mvi, phy_id);
 	tmp &= ~0x40001;
-	/* Hard coding */
-	/* No defines in HBA_Info_Page */
+	 
+	 
 	tmp |= (0 << 18);
 	mvs_write_port_vsr_data(mvi, phy_id, tmp);
 
-	/* R110h DFE F0-F1 Coefficient Control/DFE Update Control
-	 *
-	 * DFE_UPDATE_EN        [11:6]
-	 * DFE_FX_FORCE         [5:0]
-	 */
+	 
 	mvs_write_port_vsr_addr(mvi, phy_id, VSR_PHY_DFE_UPDATE_CRTL);
 	tmp = mvs_read_port_vsr_data(mvi, phy_id);
 	tmp &= ~0xFFF;
-	/* Hard coding */
-	/* No defines in HBA_Info_Page */
+	 
+	 
 	tmp |= ((0x3F << 6) | (0x0 << 0));
 	mvs_write_port_vsr_data(mvi, phy_id, tmp);
 
-	/* R1A0h Interface and Digital Reference Clock Control/Reserved_50h
-	 *
-	 * FFE_TRAIN_EN         3
-	 */
+	 
 	mvs_write_port_vsr_addr(mvi, phy_id, VSR_REF_CLOCK_CRTL);
 	tmp = mvs_read_port_vsr_data(mvi, phy_id);
 	tmp &= ~0x8;
-	/* Hard coding */
-	/* No defines in HBA_Info_Page */
+	 
+	 
 	tmp |= (0 << 3);
 	mvs_write_port_vsr_data(mvi, phy_id, tmp);
 }
 
-/*Notice: this function must be called when phy is disabled*/
+ 
 static void set_phy_rate(struct mvs_info *mvi, int phy_id, u8 rate)
 {
 	union reg_phy_cfg phy_cfg, phy_cfg_tmp;
@@ -174,7 +138,7 @@ static void set_phy_rate(struct mvs_info *mvi, int phy_id, u8 rate)
 
 	switch (rate) {
 	case 0x0:
-		/* support 1.5 Gbps */
+		 
 		phy_cfg.u.speed_support = 1;
 		phy_cfg.u.snw_3_support = 0;
 		phy_cfg.u.tx_lnk_parity = 1;
@@ -182,14 +146,14 @@ static void set_phy_rate(struct mvs_info *mvi, int phy_id, u8 rate)
 		break;
 	case 0x1:
 
-		/* support 1.5, 3.0 Gbps */
+		 
 		phy_cfg.u.speed_support = 3;
 		phy_cfg.u.tx_spt_phs_lnk_rate = 0x3c;
 		phy_cfg.u.tx_lgcl_lnk_rate = 0x08;
 		break;
 	case 0x2:
 	default:
-		/* support 1.5, 3.0, 6.0 Gbps */
+		 
 		phy_cfg.u.speed_support = 7;
 		phy_cfg.u.snw_3_support = 1;
 		phy_cfg.u.tx_lnk_parity = 1;
@@ -230,7 +194,7 @@ static void mvs_94xx_config_reg_from_hba(struct mvs_info *mvi, int phy_id)
 
 	temp = (u8)(*(u8 *)&mvi->hba_info_param.phy_rate[phy_id]);
 	if (temp == 0xFFL)
-		/*set default phy_rate = 6Gbps*/
+		 
 		mvi->hba_info_param.phy_rate[phy_id] = 0x2;
 
 	set_phy_tuning(mvi, phy_id,
@@ -336,15 +300,15 @@ static void mvs_94xx_sgpio_init(struct mvs_info *mvi)
 	);
 
 	mw32(MVS_SGPIO_CFG2 + MVS_SGPIO_HOST_OFFSET * mvi->id,
-		(300000 / 100) << MVS_SGPIO_CFG2_CLK_SHIFT | /* 100kHz clock */
-		66 << MVS_SGPIO_CFG2_BLINK_SHIFT /* (66 * 0,121 Hz?)*/
+		(300000 / 100) << MVS_SGPIO_CFG2_CLK_SHIFT |  
+		66 << MVS_SGPIO_CFG2_BLINK_SHIFT  
 	);
 
 	mw32(MVS_SGPIO_CFG0 + MVS_SGPIO_HOST_OFFSET * mvi->id,
 		MVS_SGPIO_CFG0_ENABLE |
 		MVS_SGPIO_CFG0_BLINKA |
 		MVS_SGPIO_CFG0_BLINKB |
-		/* 3*4 data bits / PDU */
+		 
 		(12 - 1) << MVS_SGPIO_CFG0_AUT_BITLEN_SHIFT
 	);
 
@@ -375,8 +339,8 @@ static int mvs_94xx_init(struct mvs_info *mvi)
 		mw32(MVS_PHY_CTL, tmp);
 	}
 
-	/* Init Chip */
-	/* make sure RST is set; HBA_RST /should/ have done that for us */
+	 
+	 
 	cctl = mr32(MVS_CTL) & 0xFFFF;
 	if (cctl & CCTL_RST)
 		cctl &= ~CCTL_RST;
@@ -396,7 +360,7 @@ static int mvs_94xx_init(struct mvs_info *mvi)
 		msleep(100);
 	}
 
-	/* disable Multiplexing, enable phy implemented */
+	 
 	mw32(MVS_PORTS_IMP, 0xFF);
 
 	if (revision == VANIR_A0_REV) {
@@ -405,10 +369,10 @@ static int mvs_94xx_init(struct mvs_info *mvi)
 	}
 	mw32(MVS_PA_VSR_ADDR, VSR_PHY_MODE2);
 	if (revision == VANIR_A0_REV || revision == VANIR_B0_REV)
-		/* set 6G/3G/1.5G, multiplexing, without SSC */
+		 
 		mw32(MVS_PA_VSR_PORT, 0x0084d4fe);
 	else
-		/* set 6G/3G/1.5G, multiplexing, with and without SSC */
+		 
 		mw32(MVS_PA_VSR_PORT, 0x0084fffe);
 
 	if (revision == VANIR_B0_REV) {
@@ -418,15 +382,15 @@ static int mvs_94xx_init(struct mvs_info *mvi)
 		mw32(MVS_PA_VSR_PORT, 0x0000705f);
 	}
 
-	/* reset control */
-	mw32(MVS_PCS, 0);		/* MVS_PCS */
+	 
+	mw32(MVS_PCS, 0);		 
 	mw32(MVS_STP_REG_SET_0, 0);
 	mw32(MVS_STP_REG_SET_1, 0);
 
-	/* init phys */
+	 
 	mvs_phy_hacks(mvi);
 
-	/* disable non data frame retry */
+	 
 	tmp = mvs_cr32(mvi, CMD_SAS_CTL1);
 	if ((revision == VANIR_A0_REV) ||
 		(revision == VANIR_B0_REV) ||
@@ -436,7 +400,7 @@ static int mvs_94xx_init(struct mvs_info *mvi)
 		mvs_cw32(mvi, CMD_SAS_CTL1, tmp);
 	}
 
-	/* set LED blink when IO*/
+	 
 	mw32(MVS_PA_VSR_ADDR, VSR_PHY_ACT_LED);
 	tmp = mr32(MVS_PA_VSR_PORT);
 	tmp &= 0xFFFF00FF;
@@ -459,7 +423,7 @@ static int mvs_94xx_init(struct mvs_info *mvi)
 
 	for (i = 0; i < mvi->chip->n_phy; i++) {
 		mvs_94xx_phy_disable(mvi, i);
-		/* set phy local SAS address */
+		 
 		mvs_set_sas_addr(mvi, i, CONFIG_ID_FRAME3, CONFIG_ID_FRAME4,
 						cpu_to_le64(mvi->phy[i].dev_sas_addr));
 
@@ -473,7 +437,7 @@ static int mvs_94xx_init(struct mvs_info *mvi)
 	}
 
 	if (mvi->flags & MVF_FLAG_SOC) {
-		/* set select registers */
+		 
 		writel(0x0E008000, regs + 0x000);
 		writel(0x59000008, regs + 0x004);
 		writel(0x20, regs + 0x008);
@@ -484,12 +448,12 @@ static int mvs_94xx_init(struct mvs_info *mvi)
 		writel(0x20, regs + 0x01c);
 	}
 	for (i = 0; i < mvi->chip->n_phy; i++) {
-		/* clear phy int status */
+		 
 		tmp = mvs_read_port_irq_stat(mvi, i);
 		tmp &= ~PHYEV_SIG_FIS;
 		mvs_write_port_irq_stat(mvi, i, tmp);
 
-		/* set phy int mask */
+		 
 		tmp = PHYEV_RDY_CH | PHYEV_BROAD_CH |
 			PHYEV_ID_DONE  | PHYEV_DCDR_ERR | PHYEV_CRC_ERR ;
 		mvs_write_port_irq_mask(mvi, i, tmp);
@@ -498,41 +462,38 @@ static int mvs_94xx_init(struct mvs_info *mvi)
 		mvs_update_phyinfo(mvi, i, 1);
 	}
 
-	/* little endian for open address and command table, etc. */
+	 
 	cctl = mr32(MVS_CTL);
 	cctl |= CCTL_ENDIAN_CMD;
 	cctl &= ~CCTL_ENDIAN_OPEN;
 	cctl |= CCTL_ENDIAN_RSP;
 	mw32_f(MVS_CTL, cctl);
 
-	/* reset CMD queue */
+	 
 	tmp = mr32(MVS_PCS);
 	tmp |= PCS_CMD_RST;
 	tmp &= ~PCS_SELF_CLEAR;
 	mw32(MVS_PCS, tmp);
-	/*
-	 * the max count is 0x1ff, while our max slot is 0x200,
-	 * it will make count 0.
-	 */
+	 
 	tmp = 0;
 	if (MVS_CHIP_SLOT_SZ > 0x1ff)
 		mw32(MVS_INT_COAL, 0x1ff | COAL_EN);
 	else
 		mw32(MVS_INT_COAL, MVS_CHIP_SLOT_SZ | COAL_EN);
 
-	/* default interrupt coalescing time is 128us */
+	 
 	tmp = 0x10000 | interrupt_coalescing;
 	mw32(MVS_INT_COAL_TMOUT, tmp);
 
-	/* ladies and gentlemen, start your engines */
+	 
 	mw32(MVS_TX_CFG, 0);
 	mw32(MVS_TX_CFG, MVS_CHIP_SLOT_SZ | TX_EN);
 	mw32(MVS_RX_CFG, MVS_RX_RING_SZ | RX_EN);
-	/* enable CMD/CMPL_Q/RESP mode */
+	 
 	mw32(MVS_PCS, PCS_SATA_RETRY_2 | PCS_FIS_RX_EN |
 		PCS_CMD_EN | PCS_CMD_STOP_ERR);
 
-	/* enable completion queue interrupt */
+	 
 	tmp = (CINT_PORT_MASK | CINT_DONE | CINT_MEM | CINT_SRS | CINT_CI_STOP |
 		CINT_DMA_PCIE | CINT_NON_SPEC_NCQ_ERROR);
 	tmp |= CINT_PHY_MASK;
@@ -542,24 +503,23 @@ static int mvs_94xx_init(struct mvs_info *mvi)
 	tmp |= 0xFFFF0000;
 	mvs_cw32(mvi, CMD_LINK_TIMER, tmp);
 
-	/* tune STP performance */
+	 
 	tmp = 0x003F003F;
 	mvs_cw32(mvi, CMD_PL_TIMER, tmp);
 
-	/* This can improve expander large block size seq write performance */
+	 
 	tmp = mvs_cr32(mvi, CMD_PORT_LAYER_TIMER1);
 	tmp |= 0xFFFF007F;
 	mvs_cw32(mvi, CMD_PORT_LAYER_TIMER1, tmp);
 
-	/* change the connection open-close behavior (bit 9)
-	 * set bit8 to 1 for performance tuning */
+	 
 	tmp = mvs_cr32(mvi, CMD_SL_MODE0);
 	tmp |= 0x00000300;
-	/* set bit0 to 0 to enable retry for no_dest reject case */
+	 
 	tmp &= 0xFFFFFFFE;
 	mvs_cw32(mvi, CMD_SL_MODE0, tmp);
 
-	/* Enable SRS interrupt */
+	 
 	mw32(MVS_INT_MASK_SRS_0, 0xFFFF);
 
 	mvs_94xx_sgpio_init(mvi);
@@ -885,7 +845,7 @@ static void mvs_94xx_fix_phy_info(struct mvs_info *mvi, int i,
 		phy->att_dev_info = PORT_DEV_STP_TRGT | 1;
 	}
 
-	/* enable spin up bit */
+	 
 	mvs_write_port_cfg_addr(mvi, i, PHYR_PHY_STAT);
 	mvs_write_port_cfg_data(mvi, i, 0x04);
 
@@ -1019,10 +979,7 @@ static void mvs_94xx_tune_interrupt(struct mvs_info *mvi, u32 time)
 {
 	void __iomem *regs = mvi->regs;
 	u32 tmp = 0;
-	/*
-	 * the max count is 0x1ff, while our max slot is 0x200,
-	 * it will make count 0.
-	 */
+	 
 	if (time == 0) {
 		mw32(MVS_INT_COAL, 0);
 		mw32(MVS_INT_COAL_TMOUT, 0x10000);
@@ -1056,45 +1013,39 @@ static int mvs_94xx_gpio_write(struct mvs_prv_info *mvs_prv,
 		if (reg_count == 0)
 			return 0;
 
-		/* maximum supported bits = hosts * 4 drives * 3 bits */
+		 
 		for (i = 0; i < mvs_prv->n_host * 4 * 3; i++) {
 
-			/* select host */
+			 
 			struct mvs_info *mvi = mvs_prv->mvi[i/(4*3)];
 
 			void __iomem *regs = mvi->regs_ex - 0x10200;
 
-			int drive = (i/3) & (4-1); /* drive number on host */
-			int driveshift = drive * 8; /* bit offset of drive */
+			int drive = (i/3) & (4-1);  
+			int driveshift = drive * 8;  
 			u32 block = ioread32be(regs + MVS_SGPIO_DCTRL +
 				MVS_SGPIO_HOST_OFFSET * mvi->id);
 
-			/*
-			* if bit is set then create a mask with the first
-			* bit of the drive set in the mask ...
-			*/
+			 
 			u32 bit = get_unaligned_be32(write_data) & (1 << i) ?
 				1 << driveshift : 0;
 
-			/*
-			* ... and then shift it to the right position based
-			* on the led type (activity/id/fail)
-			*/
+			 
 			switch (i%3) {
-			case 0: /* activity */
+			case 0:  
 				block &= ~((0x7 << MVS_SGPIO_DCTRL_ACT_SHIFT)
 					<< driveshift);
-					/* hardwire activity bit to SOF */
+					 
 				block |= LED_BLINKA_SOF << (
 					MVS_SGPIO_DCTRL_ACT_SHIFT +
 					driveshift);
 				break;
-			case 1: /* id */
+			case 1:  
 				block &= ~((0x3 << MVS_SGPIO_DCTRL_LOC_SHIFT)
 					<< driveshift);
 				block |= bit << MVS_SGPIO_DCTRL_LOC_SHIFT;
 				break;
-			case 2: /* fail */
+			case 2:  
 				block &= ~((0x7 << MVS_SGPIO_DCTRL_ERR_SHIFT)
 					<< driveshift);
 				block |= bit << MVS_SGPIO_DCTRL_ERR_SHIFT;

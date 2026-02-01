@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2020, The Linux Foundation. All rights reserved.
- * Copyright (c) 2021, Linaro Ltd.
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/kernel.h>
@@ -37,7 +34,7 @@ static const struct pll_vco spark_vco[] = {
 	{ 500000000, 1000000000, 2 },
 };
 
-/* 768MHz configuration */
+ 
 static const struct alpha_pll_config disp_cc_pll0_config = {
 	.l = 0x28,
 	.alpha = 0x0,
@@ -132,7 +129,7 @@ static struct clk_rcg2 disp_cc_mdss_byte0_clk_src = {
 		.name = "disp_cc_mdss_byte0_clk_src",
 		.parent_data = disp_cc_parent_data_0,
 		.num_parents = ARRAY_SIZE(disp_cc_parent_data_0),
-		/* For set_rate and set_parent to succeed, parent(s) must be enabled */
+		 
 		.flags = CLK_SET_RATE_PARENT | CLK_OPS_PARENT_ENABLE,
 		.ops = &clk_byte2_ops,
 	},
@@ -225,7 +222,7 @@ static struct clk_rcg2 disp_cc_mdss_pclk0_clk_src = {
 		.name = "disp_cc_mdss_pclk0_clk_src",
 		.parent_data = disp_cc_parent_data_4,
 		.num_parents = ARRAY_SIZE(disp_cc_parent_data_4),
-		/* For set_rate and set_parent to succeed, parent(s) must be enabled */
+		 
 		.flags = CLK_SET_RATE_PARENT | CLK_OPS_PARENT_ENABLE,
 		.ops = &clk_pixel_ops,
 	},
@@ -519,7 +516,7 @@ static int disp_cc_qcm2290_probe(struct platform_device *pdev)
 
 	clk_alpha_pll_configure(&disp_cc_pll0, regmap, &disp_cc_pll0_config);
 
-	/* Keep DISP_CC_XO_CLK always-ON */
+	 
 	regmap_update_bits(regmap, 0x604c, BIT(0), BIT(0));
 
 	ret = qcom_cc_really_probe(pdev, &disp_cc_qcm2290_desc, regmap);

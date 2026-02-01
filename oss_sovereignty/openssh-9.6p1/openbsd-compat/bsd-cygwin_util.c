@@ -1,33 +1,6 @@
-/*
- * Copyright (c) 2000, 2001, 2011, 2013 Corinna Vinschen <vinschen@redhat.com>
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- *
- * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
- * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
- * IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
- * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
- * NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
- * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * Created: Sat Sep 02 12:17:00 2000 cv
- *
- * This file contains functions for forcing opened file descriptors to
- * binary mode on Windows systems.
- */
+ 
 
-#define NO_BINARY_OPEN	/* Avoid redefining open to binary_open for this file */
+#define NO_BINARY_OPEN	 
 #include "includes.h"
 
 #ifdef HAVE_CYGWIN
@@ -120,70 +93,54 @@ free_windows_environment(char **p)
 	free(p);
 }
 
-/*
- * Returns true if the given string matches the pattern (which may contain ?
- * and * as wildcards), and zero if it does not match.
- *
- * The Cygwin version of this function must be case-insensitive and take
- * Unicode characters into account.
- */
+ 
 
 static int
 __match_pattern (const wchar_t *s, const wchar_t *pattern)
 {
 	for (;;) {
-		/* If at end of pattern, accept if also at end of string. */
+		 
 		if (!*pattern)
 			return !*s;
 
 		if (*pattern == '*') {
-			/* Skip the asterisk. */
+			 
 			pattern++;
 
-			/* If at end of pattern, accept immediately. */
+			 
 			if (!*pattern)
 				return 1;
 
-			/* If next character in pattern is known, optimize. */
+			 
 			if (*pattern != '?' && *pattern != '*') {
-				/*
-				 * Look instances of the next character in
-				 * pattern, and try to match starting from
-				 * those.
-				 */
+				 
 				for (; *s; s++)
 					if (*s == *pattern &&
 					    __match_pattern(s + 1, pattern + 1))
 						return 1;
-				/* Failed. */
+				 
 				return 0;
 			}
-			/*
-			 * Move ahead one character at a time and try to
-			 * match at each position.
-			 */
+			 
 			for (; *s; s++)
 				if (__match_pattern(s, pattern))
 					return 1;
-			/* Failed. */
+			 
 			return 0;
 		}
-		/*
-		 * There must be at least one more character in the string.
-		 * If we are at the end, fail.
-		 */
+		 
 		if (!*s)
 			return 0;
 
-		/* Check if the next character of the string is acceptable. */
+		 
 		if (*pattern != '?' && towlower(*pattern) != towlower(*s))
 			return 0;
 
-		/* Move to the next character, both in string and in pattern. */
+		 
 		s++;
 		pattern++;
 	}
-	/* NOTREACHED */
+	 
 }
 
 static int
@@ -208,12 +165,7 @@ _match_pattern(const char *s, const char *pattern)
 	return ret;
 }
 
-/*
- * Tries to match the string against the
- * comma-separated sequence of subpatterns (each possibly preceded by ! to
- * indicate negation).  Returns -1 if negation matches, 1 if there is
- * a positive match, 0 if there is no match at all.
- */
+ 
 int
 cygwin_ug_match_pattern_list(const char *string, const char *pattern)
 {
@@ -224,46 +176,40 @@ cygwin_ug_match_pattern_list(const char *string, const char *pattern)
 
 	got_positive = 0;
 	for (i = 0; i < len;) {
-		/* Check if the subpattern is negated. */
+		 
 		if (pattern[i] == '!') {
 			negated = 1;
 			i++;
 		} else
 			negated = 0;
 
-		/*
-		 * Extract the subpattern up to a comma or end.  Convert the
-		 * subpattern to lowercase.
-		 */
+		 
 		for (subi = 0;
 		    i < len && subi < sizeof(sub) - 1 && pattern[i] != ',';
 		    subi++, i++)
 			sub[subi] = pattern[i];
-		/* If subpattern too long, return failure (no match). */
+		 
 		if (subi >= sizeof(sub) - 1)
 			return 0;
 
-		/* If the subpattern was terminated by a comma, then skip it. */
+		 
 		if (i < len && pattern[i] == ',')
 			i++;
 
-		/* Null-terminate the subpattern. */
+		 
 		sub[subi] = '\0';
 
-		/* Try to match the subpattern against the string. */
+		 
 		if (_match_pattern(string, sub)) {
 			if (negated)
-				return -1;		/* Negative */
+				return -1;		 
 			else
-				got_positive = 1;	/* Positive */
+				got_positive = 1;	 
 		}
 	}
 
-	/*
-	 * Return success if got a positive match.  If there was a negative
-	 * match, we have already returned -1 and never get here.
-	 */
+	 
 	return got_positive;
 }
 
-#endif /* HAVE_CYGWIN */
+#endif  

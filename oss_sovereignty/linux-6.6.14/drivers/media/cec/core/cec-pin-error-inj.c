@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright 2017 Cisco Systems, Inc. and/or its affiliates. All rights reserved.
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/slab.h>
@@ -50,7 +48,7 @@ u16 cec_pin_rx_error_inj(struct cec_pin *pin)
 {
 	u16 cmd = CEC_ERROR_INJ_OP_ANY;
 
-	/* Only when 18 bits have been received do we have a valid cmd */
+	 
 	if (!(pin->error_inj[cmd] & CEC_ERROR_INJ_RX_MASK) &&
 	    pin->rx_bit >= 18)
 		cmd = pin->rx_msg.msg[1];
@@ -221,7 +219,7 @@ bool cec_pin_error_inj_parse_line(struct cec_adapter *adap, char *line)
 				return false;
 			if (has_op && pos < 10 + 8)
 				return false;
-			/* Invalid bit position may not be the Ack bit */
+			 
 			if ((mode_offset == CEC_ERROR_INJ_TX_SHORT_BIT_OFFSET ||
 			     mode_offset == CEC_ERROR_INJ_TX_LONG_BIT_OFFSET ||
 			     mode_offset == CEC_ERROR_INJ_TX_CUSTOM_BIT_OFFSET) &&

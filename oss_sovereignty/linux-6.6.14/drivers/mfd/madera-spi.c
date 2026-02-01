@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * SPI bus interface to Cirrus Logic Madera codecs
- *
- * Copyright (C) 2015-2018 Cirrus Logic
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/err.h>
@@ -77,7 +73,7 @@ static int madera_spi_probe(struct spi_device *spi)
 	name = madera_name_from_type(type);
 
 	if (!regmap_16bit_config) {
-		/* it's polite to say which codec isn't built into the kernel */
+		 
 		dev_err(&spi->dev,
 			"Kernel does not include support for %s\n", name);
 		return -EINVAL;

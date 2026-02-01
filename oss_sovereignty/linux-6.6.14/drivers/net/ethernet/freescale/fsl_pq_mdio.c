@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Freescale PowerQUICC Ethernet Driver -- MIIM bus implementation
- * Provides Bus interface for MIIM regs
- *
- * Author: Andy Fleming <afleming@freescale.com>
- * Modifier: Sandeep Gopalpet <sandeep.kumar@freescale.com>
- *
- * Copyright 2002-2004, 2008-2009 Freescale Semiconductor, Inc.
- *
- * Based on gianfar_mii.c and ucc_geth_mii.c (Li Yang, Kim Phillips)
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/platform_device.h>
@@ -38,28 +28,28 @@
 #define MII_READ_COMMAND	0x00000001
 
 struct fsl_pq_mii {
-	u32 miimcfg;	/* MII management configuration reg */
-	u32 miimcom;	/* MII management command reg */
-	u32 miimadd;	/* MII management address reg */
-	u32 miimcon;	/* MII management control reg */
-	u32 miimstat;	/* MII management status reg */
-	u32 miimind;	/* MII management indication reg */
+	u32 miimcfg;	 
+	u32 miimcom;	 
+	u32 miimadd;	 
+	u32 miimcon;	 
+	u32 miimstat;	 
+	u32 miimind;	 
 };
 
 struct fsl_pq_mdio {
 	u8 res1[16];
-	u32 ieventm;	/* MDIO Interrupt event register (for etsec2)*/
-	u32 imaskm;	/* MDIO Interrupt mask register (for etsec2)*/
+	u32 ieventm;	 
+	u32 imaskm;	 
 	u8 res2[4];
-	u32 emapm;	/* MDIO Event mapping register (for etsec2)*/
+	u32 emapm;	 
 	u8 res3[1280];
 	struct fsl_pq_mii mii;
 	u8 res4[28];
-	u32 utbipar;	/* TBI phy address reg (only on UCC) */
+	u32 utbipar;	 
 	u8 res5[2728];
 } __packed;
 
-/* Number of microseconds to wait for an MII register to respond */
+ 
 #define MII_TIMEOUT	1000
 
 struct fsl_pq_mdio_priv {
@@ -67,33 +57,14 @@ struct fsl_pq_mdio_priv {
 	struct fsl_pq_mii __iomem *regs;
 };
 
-/*
- * Per-device-type data.  Each type of device tree node that we support gets
- * one of these.
- *
- * @mii_offset: the offset of the MII registers within the memory map of the
- * node.  Some nodes define only the MII registers, and some define the whole
- * MAC (which includes the MII registers).
- *
- * @get_tbipa: determines the address of the TBIPA register
- *
- * @ucc_configure: a special function for extra QE configuration
- */
+ 
 struct fsl_pq_mdio_data {
-	unsigned int mii_offset;	/* offset of the MII registers */
+	unsigned int mii_offset;	 
 	uint32_t __iomem * (*get_tbipa)(void __iomem *p);
 	void (*ucc_configure)(phys_addr_t start, phys_addr_t end);
 };
 
-/*
- * Write value to the PHY at mii_id at register regnum, on the bus attached
- * to the local interface, which may be different from the generic mdio bus
- * (tied to a single interface), waiting until the write is done before
- * returning. This is helpful in programming interfaces like the TBI which
- * control interfaces like onchip SERDES and are always tied to the local
- * mdio pins, which may not be the same as system mdio bus, used for
- * controlling the external PHYs, for example.
- */
+ 
 static int fsl_pq_mdio_write(struct mii_bus *bus, int mii_id, int regnum,
 		u16 value)
 {
@@ -101,13 +72,13 @@ static int fsl_pq_mdio_write(struct mii_bus *bus, int mii_id, int regnum,
 	struct fsl_pq_mii __iomem *regs = priv->regs;
 	unsigned int timeout;
 
-	/* Set the PHY address and the register address we want to write */
+	 
 	iowrite32be((mii_id << 8) | regnum, &regs->miimadd);
 
-	/* Write out the value we want */
+	 
 	iowrite32be(value, &regs->miimcon);
 
-	/* Wait for the transaction to finish */
+	 
 	timeout = MII_TIMEOUT;
 	while ((ioread32be(&regs->miimind) & MIIMIND_BUSY) && timeout) {
 		cpu_relax();
@@ -117,16 +88,7 @@ static int fsl_pq_mdio_write(struct mii_bus *bus, int mii_id, int regnum,
 	return timeout ? 0 : -ETIMEDOUT;
 }
 
-/*
- * Read the bus for PHY at addr mii_id, register regnum, and return the value.
- * Clears miimcom first.
- *
- * All PHY operation done on the bus attached to the local interface, which
- * may be different from the generic mdio bus.  This is helpful in programming
- * interfaces like the TBI which, in turn, control interfaces like on-chip
- * SERDES and are always tied to the local mdio pins, which may not be the
- * same as system mdio bus, used for controlling the external PHYs, for eg.
- */
+ 
 static int fsl_pq_mdio_read(struct mii_bus *bus, int mii_id, int regnum)
 {
 	struct fsl_pq_mdio_priv *priv = bus->priv;
@@ -134,14 +96,14 @@ static int fsl_pq_mdio_read(struct mii_bus *bus, int mii_id, int regnum)
 	unsigned int timeout;
 	u16 value;
 
-	/* Set the PHY address and the register address we want to read */
+	 
 	iowrite32be((mii_id << 8) | regnum, &regs->miimadd);
 
-	/* Clear miimcom, and then initiate a read */
+	 
 	iowrite32be(0, &regs->miimcom);
 	iowrite32be(MII_READ_COMMAND, &regs->miimcom);
 
-	/* Wait for the transaction to finish, normally less than 100us */
+	 
 	timeout = MII_TIMEOUT;
 	while ((ioread32be(&regs->miimind) &
 	       (MIIMIND_NOTVALID | MIIMIND_BUSY)) && timeout) {
@@ -152,14 +114,14 @@ static int fsl_pq_mdio_read(struct mii_bus *bus, int mii_id, int regnum)
 	if (!timeout)
 		return -ETIMEDOUT;
 
-	/* Grab the value of the register from miimstat */
+	 
 	value = ioread32be(&regs->miimstat);
 
 	dev_dbg(&bus->dev, "read %04x from address %x/%x\n", value, mii_id, regnum);
 	return value;
 }
 
-/* Reset the MIIM registers, and wait for the bus to free */
+ 
 static int fsl_pq_mdio_reset(struct mii_bus *bus)
 {
 	struct fsl_pq_mdio_priv *priv = bus->priv;
@@ -168,13 +130,13 @@ static int fsl_pq_mdio_reset(struct mii_bus *bus)
 
 	mutex_lock(&bus->mdio_lock);
 
-	/* Reset the management interface */
+	 
 	iowrite32be(MIIMCFG_RESET, &regs->miimcfg);
 
-	/* Setup the MII Mgmt clock speed */
+	 
 	iowrite32be(MIIMCFG_INIT_VALUE, &regs->miimcfg);
 
-	/* Wait until the bus is free */
+	 
 	timeout = MII_TIMEOUT;
 	while ((ioread32be(&regs->miimind) & MIIMIND_BUSY) && timeout) {
 		cpu_relax();
@@ -192,13 +154,7 @@ static int fsl_pq_mdio_reset(struct mii_bus *bus)
 }
 
 #if IS_ENABLED(CONFIG_GIANFAR)
-/*
- * Return the TBIPA address, starting from the address
- * of the mapped GFAR MDIO registers (struct gfar)
- * This is mildly evil, but so is our hardware for doing this.
- * Also, we have to cast back to struct gfar because of
- * definition weirdness done in gianfar.h.
- */
+ 
 static uint32_t __iomem *get_gfar_tbipa_from_mdio(void __iomem *p)
 {
 	struct gfar __iomem *enet_regs = p;
@@ -206,18 +162,13 @@ static uint32_t __iomem *get_gfar_tbipa_from_mdio(void __iomem *p)
 	return &enet_regs->tbipa;
 }
 
-/*
- * Return the TBIPA address, starting from the address
- * of the mapped GFAR MII registers (gfar_mii_regs[] within struct gfar)
- */
+ 
 static uint32_t __iomem *get_gfar_tbipa_from_mii(void __iomem *p)
 {
 	return get_gfar_tbipa_from_mdio(container_of(p, struct gfar, gfar_mii_regs));
 }
 
-/*
- * Return the TBIPAR address for an eTSEC2 node
- */
+ 
 static uint32_t __iomem *get_etsec_tbipa(void __iomem *p)
 {
 	return p;
@@ -225,10 +176,7 @@ static uint32_t __iomem *get_etsec_tbipa(void __iomem *p)
 #endif
 
 #if IS_ENABLED(CONFIG_UCC_GETH)
-/*
- * Return the TBIPAR address for a QE MDIO node, starting from the address
- * of the mapped MII registers (struct fsl_pq_mii)
- */
+ 
 static uint32_t __iomem *get_ucc_tbipa(void __iomem *p)
 {
 	struct fsl_pq_mdio __iomem *mdio = container_of(p, struct fsl_pq_mdio, mii);
@@ -236,17 +184,7 @@ static uint32_t __iomem *get_ucc_tbipa(void __iomem *p)
 	return &mdio->utbipar;
 }
 
-/*
- * Find the UCC node that controls the given MDIO node
- *
- * For some reason, the QE MDIO nodes are not children of the UCC devices
- * that control them.  Therefore, we need to scan all UCC nodes looking for
- * the one that encompases the given MDIO node.  We do this by comparing
- * physical addresses.  The 'start' and 'end' addresses of the MDIO node are
- * passed, and the correct UCC node will cover the entire address range.
- *
- * This assumes that there is only one QE MDIO node in the entire device tree.
- */
+ 
 static void ucc_configure(phys_addr_t start, phys_addr_t end)
 {
 	static bool found_mii_master;
@@ -268,7 +206,7 @@ static void ucc_configure(phys_addr_t start, phys_addr_t end)
 			continue;
 		}
 
-		/* if our mdio regs fall within this UCC regs range */
+		 
 		if ((start < res.start) || (end > res.end))
 			continue;
 
@@ -284,10 +222,7 @@ static void ucc_configure(phys_addr_t start, phys_addr_t end)
 
 		id = be32_to_cpup(iprop);
 
-		/*
-		 * cell-index and device-id for QE nodes are
-		 * numbered from 1, not 0.
-		 */
+		 
 		if (ucc_set_qe_mux_mii_mng(id - 1) < 0) {
 			pr_debug("fsl-pq-mdio: invalid UCC ID in node %pOF\n",
 				 np);
@@ -350,7 +285,7 @@ static const struct of_device_id fsl_pq_mdio_match[] = {
 		},
 	},
 	{
-		/* Legacy UCC MDIO node */
+		 
 		.type = "mdio",
 		.compatible = "ucc_geth_phy",
 		.data = &(struct fsl_pq_mdio_data) {
@@ -360,12 +295,12 @@ static const struct of_device_id fsl_pq_mdio_match[] = {
 		},
 	},
 #endif
-	/* No Kconfig option for Fman support yet */
+	 
 	{
 		.compatible = "fsl,fman-mdio",
 		.data = &(struct fsl_pq_mdio_data) {
 			.mii_offset = 0,
-			/* Fman TBI operations are handled elsewhere */
+			 
 		},
 	},
 
@@ -388,12 +323,7 @@ static void set_tbipa(const u32 tbipa_val, struct platform_device *pdev,
 		tbipa_mapped = false;
 		tbipa = (*get_tbipa)(reg_map);
 
-		/*
-		 * Add consistency check to make sure TBI is contained within
-		 * the mapped range (not because we would get a segfault,
-		 * rather to catch bugs in computing TBI address). Print error
-		 * message but continue anyway.
-		 */
+		 
 		if ((void *)tbipa > reg_map + resource_size(reg_res) - 4)
 			dev_err(&pdev->dev, "invalid register map (should be at least 0x%04zx to contain TBI address)\n",
 				((void *)tbipa - reg_map) + 4);
@@ -451,12 +381,7 @@ static int fsl_pq_mdio_probe(struct platform_device *pdev)
 		goto error;
 	}
 
-	/*
-	 * Some device tree nodes represent only the MII registers, and
-	 * others represent the MAC and MII registers.  The 'mii_offset' field
-	 * contains the offset of the MII registers inside the mapped register
-	 * space.
-	 */
+	 
 	if (data->mii_offset > resource_size(&res)) {
 		dev_err(&pdev->dev, "invalid register map\n");
 		err = -EINVAL;

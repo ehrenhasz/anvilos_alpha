@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *
- *  Bluetooth HCI Three-wire UART driver
- *
- *  Copyright (C) 2012  Intel Corporation
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/errno.h>
@@ -27,19 +22,16 @@
 #define HCI_3WIRE_ACK_PKT	0
 #define HCI_3WIRE_LINK_PKT	15
 
-/* Sliding window size */
+ 
 #define H5_TX_WIN_MAX		4
 
 #define H5_ACK_TIMEOUT	msecs_to_jiffies(250)
 #define H5_SYNC_TIMEOUT	msecs_to_jiffies(100)
 
-/*
- * Maximum Three-wire packet:
- *     4 byte header + max value for 12-bit length + 2 bytes for CRC
- */
+ 
 #define H5_MAX_LEN (4 + 0xfff + 2)
 
-/* Convenience macros for reading Three-wire header values */
+ 
 #define H5_HDR_SEQ(hdr)		((hdr)[0] & 0x07)
 #define H5_HDR_ACK(hdr)		(((hdr)[0] >> 3) & 0x07)
 #define H5_HDR_CRC(hdr)		(((hdr)[0] >> 6) & 0x01)
@@ -52,36 +44,36 @@
 #define SLIP_ESC_DELIM	0xdc
 #define SLIP_ESC_ESC	0xdd
 
-/* H5 state flags */
+ 
 enum {
-	H5_RX_ESC,		/* SLIP escape mode */
-	H5_TX_ACK_REQ,		/* Pending ack to send */
-	H5_WAKEUP_DISABLE,	/* Device cannot wake host */
-	H5_HW_FLOW_CONTROL,	/* Use HW flow control */
+	H5_RX_ESC,		 
+	H5_TX_ACK_REQ,		 
+	H5_WAKEUP_DISABLE,	 
+	H5_HW_FLOW_CONTROL,	 
 };
 
 struct h5 {
-	/* Must be the first member, hci_serdev.c expects this. */
+	 
 	struct hci_uart		serdev_hu;
 
-	struct sk_buff_head	unack;		/* Unack'ed packets queue */
-	struct sk_buff_head	rel;		/* Reliable packets queue */
-	struct sk_buff_head	unrel;		/* Unreliable packets queue */
+	struct sk_buff_head	unack;		 
+	struct sk_buff_head	rel;		 
+	struct sk_buff_head	unrel;		 
 
 	unsigned long		flags;
 
-	struct sk_buff		*rx_skb;	/* Receive buffer */
-	size_t			rx_pending;	/* Expecting more bytes */
-	u8			rx_ack;		/* Last ack number received */
+	struct sk_buff		*rx_skb;	 
+	size_t			rx_pending;	 
+	u8			rx_ack;		 
 
 	int			(*rx_func)(struct hci_uart *hu, u8 c);
 
-	struct timer_list	timer;		/* Retransmission timer */
-	struct hci_uart		*hu;		/* Parent HCI UART */
+	struct timer_list	timer;		 
+	struct hci_uart		*hu;		 
 
-	u8			tx_seq;		/* Next seq number to send */
-	u8			tx_ack;		/* Next ack number to send */
-	u8			tx_win;		/* Sliding window size */
+	u8			tx_seq;		 
+	u8			tx_ack;		 
+	u8			tx_win;		 
 
 	enum {
 		H5_UNINITIALIZED,
@@ -140,7 +132,7 @@ static void h5_link_control(struct hci_uart *hu, const void *data, size_t len)
 
 static u8 h5_cfg_field(struct h5 *h5)
 {
-	/* Sliding window size (first 3 bits) */
+	 
 	return h5->tx_win & 0x07;
 }
 
@@ -205,7 +197,7 @@ static void h5_peer_reset(struct hci_uart *hu)
 	h5->tx_seq = 0;
 	h5->tx_ack = 0;
 
-	/* Send reset request to upper stack */
+	 
 	hci_reset_dev(hu->hdev);
 }
 
@@ -242,7 +234,7 @@ static int h5_open(struct hci_uart *hu)
 
 	set_bit(HCI_UART_INIT_PENDING, &hu->hdev_flags);
 
-	/* Send initial sync request */
+	 
 	h5_link_control(hu, sync, sizeof(sync));
 	mod_timer(&h5->timer, jiffies + H5_SYNC_TIMEOUT);
 
@@ -406,7 +398,7 @@ static void h5_complete_rx_pkt(struct hci_uart *hu)
 	case HCI_ISODATA_PKT:
 		hci_skb_pkt_type(h5->rx_skb) = H5_HDR_PKT_TYPE(hdr);
 
-		/* Remove Three-wire header */
+		 
 		skb_pull(h5->rx_skb, 4);
 
 		hci_recv_frame(hu->hdev, h5->rx_skb);
@@ -692,12 +684,7 @@ static struct sk_buff *h5_prepare_pkt(struct hci_uart *hu, u8 pkt_type,
 		return NULL;
 	}
 
-	/*
-	 * Max len of packet: (original len + 4 (H5 hdr) + 2 (crc)) * 2
-	 * (because bytes 0xc0 and 0xdb are escaped, worst case is when
-	 * the packet is all made of 0xc0 and 0xdb) + 2 (0xc0
-	 * delimiters at start and end).
-	 */
+	 
 	nskb = alloc_skb((len + 6) * 2 + 2, GFP_ATOMIC);
 	if (!nskb)
 		return NULL;
@@ -709,7 +696,7 @@ static struct sk_buff *h5_prepare_pkt(struct hci_uart *hu, u8 pkt_type,
 	hdr[0] = h5->tx_ack << 3;
 	clear_bit(H5_TX_ACK_REQ, &h5->flags);
 
-	/* Reliable packet? */
+	 
 	if (pkt_type == HCI_ACLDATA_PKT || pkt_type == HCI_COMMAND_PKT) {
 		hdr[0] |= 1 << 7;
 		hdr[0] |= h5->tx_seq;
@@ -926,7 +913,7 @@ static int h5_btrtl_setup(struct h5 *h5)
 	} else {
 		kfree_skb(skb);
 	}
-	/* Give the device some time to set up the new baudrate. */
+	 
 	usleep_range(10000, 20000);
 
 	serdev_device_set_baudrate(h5->hu->serdev, controller_baudrate);
@@ -936,7 +923,7 @@ static int h5_btrtl_setup(struct h5 *h5)
 		set_bit(H5_HW_FLOW_CONTROL, &h5->flags);
 
 	err = btrtl_download_firmware(h5->hu->hdev, btrtl_dev);
-	/* Give the device some time before the hci-core sends it a reset */
+	 
 	usleep_range(10000, 20000);
 	if (err)
 		goto out_free;
@@ -951,15 +938,11 @@ out_free:
 
 static void h5_btrtl_open(struct h5 *h5)
 {
-	/*
-	 * Since h5_btrtl_resume() does a device_reprobe() the suspend handling
-	 * done by the hci_suspend_notifier is not necessary; it actually causes
-	 * delays and a bunch of errors to get logged, so disable it.
-	 */
+	 
 	if (test_bit(H5_WAKEUP_DISABLE, &h5->flags))
 		set_bit(HCI_UART_NO_SUSPEND_NOTIFIER, &h5->hu->flags);
 
-	/* Devices always start with these fixed parameters */
+	 
 	serdev_device_set_flow_control(h5->hu->serdev, false);
 	serdev_device_set_parity(h5->hu->serdev, SERDEV_PARITY_EVEN);
 	serdev_device_set_baudrate(h5->hu->serdev, 115200);
@@ -972,12 +955,12 @@ static void h5_btrtl_open(struct h5 *h5)
 		pm_runtime_enable(&h5->hu->serdev->dev);
 	}
 
-	/* The controller needs reset to startup */
+	 
 	gpiod_set_value_cansleep(h5->enable_gpio, 0);
 	gpiod_set_value_cansleep(h5->device_wake_gpio, 0);
 	msleep(100);
 
-	/* The controller needs up to 500ms to wakeup */
+	 
 	gpiod_set_value_cansleep(h5->enable_gpio, 1);
 	gpiod_set_value_cansleep(h5->device_wake_gpio, 1);
 	msleep(500);
@@ -992,12 +975,7 @@ static void h5_btrtl_close(struct h5 *h5)
 	gpiod_set_value_cansleep(h5->enable_gpio, 0);
 }
 
-/* Suspend/resume support. On many devices the RTL BT device loses power during
- * suspend/resume, causing it to lose its firmware and all state. So we simply
- * turn it off on suspend and reprobe on resume. This mirrors how RTL devices
- * are handled in the USB driver, where the BTUSB_WAKEUP_DISABLE is used which
- * also causes a reprobe on resume.
- */
+ 
 static int h5_btrtl_suspend(struct h5 *h5)
 {
 	serdev_device_set_flow_control(h5->hu->serdev, false);

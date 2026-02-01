@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Driver for Realtek PCI-Express card reader
- *
- * Copyright(c) 2009-2013 Realtek Semiconductor Corp. All rights reserved.
- *
- * Author:
- *   Wei WANG (wei_wang@realsil.com.cn)
- *   Micky Ching (micky_ching@realsil.com.cn)
- */
+
+ 
 
 #include <linux/blkdev.h>
 #include <linux/kthread.h>
@@ -15,19 +7,9 @@
 
 #include "rtsx.h"
 
-/***********************************************************************
- * Scatter-gather transfer buffer access routines
- ***********************************************************************/
+ 
 
-/*
- * Copy a buffer of length buflen to/from the srb's transfer buffer.
- * (Note: for scatter-gather transfers (srb->use_sg > 0), srb->request_buffer
- * points to a list of s-g entries and we ignore srb->request_bufflen.
- * For non-scatter-gather transfers, srb->request_buffer points to the
- * transfer buffer itself and srb->request_bufflen is the buffer's length.)
- * Update the *index and *offset variables so that the next copy will
- * pick up from where this one left off.
- */
+ 
 
 unsigned int rtsx_stor_access_xfer_buf(unsigned char *buffer,
 				       unsigned int buflen,
@@ -38,7 +20,7 @@ unsigned int rtsx_stor_access_xfer_buf(unsigned char *buffer,
 {
 	unsigned int cnt;
 
-	/* If not using scatter-gather, just transfer the data directly. */
+	 
 	if (scsi_sg_count(srb) == 0) {
 		unsigned char *sgbuffer;
 
@@ -54,22 +36,13 @@ unsigned int rtsx_stor_access_xfer_buf(unsigned char *buffer,
 			memcpy(buffer, sgbuffer, cnt);
 		*offset += cnt;
 
-	/*
-	 * Using scatter-gather. We have to go through the list one entry
-	 * at a time. Each s-g entry contains some number of pages which
-	 * have to be copied one at a time.
-	 */
+	 
 	} else {
 		struct scatterlist *sg =
 				(struct scatterlist *)scsi_sglist(srb)
 				+ *index;
 
-		/*
-		 * This loop handles a single s-g list entry, which may
-		 * include multiple pages.  Find the initial page structure
-		 * and the starting offset within the page, and update
-		 * the *offset and *index values for the next loop.
-		 */
+		 
 		cnt = 0;
 		while (cnt < buflen && *index < scsi_sg_count(srb)) {
 			struct page *page = sg_page(sg) +
@@ -79,11 +52,11 @@ unsigned int rtsx_stor_access_xfer_buf(unsigned char *buffer,
 			unsigned int sglen = sg->length - *offset;
 
 			if (sglen > buflen - cnt) {
-				/* Transfer ends within this s-g entry */
+				 
 				sglen = buflen - cnt;
 				*offset += sglen;
 			} else {
-				/* Transfer continues to next s-g entry */
+				 
 				*offset = 0;
 				++*index;
 				++sg;
@@ -98,7 +71,7 @@ unsigned int rtsx_stor_access_xfer_buf(unsigned char *buffer,
 				else
 					memcpy_from_page(buffer + cnt, page, poff, plen);
 
-				/* Start at the beginning of the next page */
+				 
 				poff = 0;
 				++page;
 				cnt += plen;
@@ -107,14 +80,11 @@ unsigned int rtsx_stor_access_xfer_buf(unsigned char *buffer,
 		}
 	}
 
-	/* Return the amount actually transferred */
+	 
 	return cnt;
 }
 
-/*
- * Store the contents of buffer into srb's transfer buffer and set the
- * SCSI residue.
- */
+ 
 void rtsx_stor_set_xfer_buf(unsigned char *buffer,
 			    unsigned int buflen, struct scsi_cmnd *srb)
 {
@@ -137,32 +107,23 @@ void rtsx_stor_get_xfer_buf(unsigned char *buffer,
 		scsi_set_resid(srb, scsi_bufflen(srb) - buflen);
 }
 
-/***********************************************************************
- * Transport routines
- ***********************************************************************/
+ 
 
-/*
- * Invoke the transport and basic error-handling/recovery methods
- *
- * This is used to send the message to the device and receive the response.
- */
+ 
 void rtsx_invoke_transport(struct scsi_cmnd *srb, struct rtsx_chip *chip)
 {
 	int result;
 
 	result = rtsx_scsi_handler(srb, chip);
 
-	/*
-	 * if the command gets aborted by the higher layers, we need to
-	 * short-circuit all other processing.
-	 */
+	 
 	if (rtsx_chk_stat(chip, RTSX_STAT_ABORT)) {
 		dev_dbg(rtsx_dev(chip), "-- command was aborted\n");
 		srb->result = DID_ABORT << 16;
 		goto handle_errors;
 	}
 
-	/* if there is a transport error, reset and don't auto-sense */
+	 
 	if (result == TRANSPORT_ERROR) {
 		dev_dbg(rtsx_dev(chip), "-- transport indicates error, resetting\n");
 		srb->result = DID_ERROR << 16;
@@ -171,13 +132,9 @@ void rtsx_invoke_transport(struct scsi_cmnd *srb, struct rtsx_chip *chip)
 
 	srb->result = SAM_STAT_GOOD;
 
-	/*
-	 * If we have a failure, we're going to do a REQUEST_SENSE
-	 * automatically.  Note that we differentiate between a command
-	 * "failure" and an "error" in the transport mechanism.
-	 */
+	 
 	if (result == TRANSPORT_FAILED) {
-		/* set the result so the higher layers expect this data */
+		 
 		srb->result = SAM_STAT_CHECK_CONDITION;
 		memcpy(srb->sense_buffer,
 		       (unsigned char *)&chip->sense_buffer[SCSI_LUN(srb)],
@@ -215,7 +172,7 @@ void rtsx_send_cmd_no_wait(struct rtsx_chip *chip)
 	rtsx_writel(chip, RTSX_HCBAR, chip->host_cmds_addr);
 
 	val |= (u32)(chip->ci * 4) & 0x00FFFFFF;
-	/* Hardware Auto Response */
+	 
 	val |= 0x40000000;
 	rtsx_writel(chip, RTSX_HCBCTLR, val);
 }
@@ -239,7 +196,7 @@ int rtsx_send_cmd(struct rtsx_chip *chip, u8 card, int timeout)
 
 	spin_lock_irq(&rtsx->reg_lock);
 
-	/* set up data structures for the wakeup system */
+	 
 	rtsx->done = &trans_done;
 	rtsx->trans_result = TRANS_NOT_READY;
 	init_completion(&trans_done);
@@ -248,13 +205,13 @@ int rtsx_send_cmd(struct rtsx_chip *chip, u8 card, int timeout)
 	rtsx_writel(chip, RTSX_HCBAR, chip->host_cmds_addr);
 
 	val |= (u32)(chip->ci * 4) & 0x00FFFFFF;
-	/* Hardware Auto Response */
+	 
 	val |= 0x40000000;
 	rtsx_writel(chip, RTSX_HCBCTLR, val);
 
 	spin_unlock_irq(&rtsx->reg_lock);
 
-	/* Wait for TRANS_OK_INT */
+	 
 	timeleft = wait_for_completion_interruptible_timeout(&trans_done,
 							     msecs_to_jiffies(timeout));
 	if (timeleft <= 0) {
@@ -345,7 +302,7 @@ static int rtsx_transfer_sglist_adma_partial(struct rtsx_chip *chip, u8 card,
 
 	spin_lock_irq(&rtsx->reg_lock);
 
-	/* set up data structures for the wakeup system */
+	 
 	rtsx->done = &trans_done;
 
 	rtsx->trans_state = STATE_TRANS_SG;
@@ -358,12 +315,7 @@ static int rtsx_transfer_sglist_adma_partial(struct rtsx_chip *chip, u8 card,
 	resid = size;
 	sg_ptr = sg;
 	chip->sgi = 0;
-	/*
-	 * Usually the next entry will be @sg@ + 1, but if this sg element
-	 * is part of a chained scatterlist, it could jump to the start of
-	 * a new scatterlist array. So here we use sg_next to move to
-	 * the proper sg.
-	 */
+	 
 	for (i = 0; i < *index; i++)
 		sg_ptr = sg_next(sg_ptr);
 	for (i = *index; i < sg_cnt; i++) {
@@ -436,7 +388,7 @@ static int rtsx_transfer_sglist_adma_partial(struct rtsx_chip *chip, u8 card,
 	}
 	spin_unlock_irq(&rtsx->reg_lock);
 
-	/* Wait for TRANS_OK_INT */
+	 
 	spin_lock_irq(&rtsx->reg_lock);
 	if (rtsx->trans_result == TRANS_NOT_READY) {
 		init_completion(&trans_done);
@@ -508,7 +460,7 @@ static int rtsx_transfer_sglist_adma(struct rtsx_chip *chip, u8 card,
 
 	spin_lock_irq(&rtsx->reg_lock);
 
-	/* set up data structures for the wakeup system */
+	 
 	rtsx->done = &trans_done;
 
 	rtsx->trans_state = STATE_TRANS_SG;
@@ -583,7 +535,7 @@ static int rtsx_transfer_sglist_adma(struct rtsx_chip *chip, u8 card,
 		sg_ptr += sg_cnt;
 	}
 
-	/* Wait for TRANS_OK_INT */
+	 
 	spin_lock_irq(&rtsx->reg_lock);
 	if (rtsx->trans_result == TRANS_NOT_READY) {
 		init_completion(&trans_done);
@@ -661,7 +613,7 @@ static int rtsx_transfer_buf(struct rtsx_chip *chip, u8 card, void *buf,
 
 	spin_lock_irq(&rtsx->reg_lock);
 
-	/* set up data structures for the wakeup system */
+	 
 	rtsx->done = &trans_done;
 
 	init_completion(&trans_done);
@@ -674,7 +626,7 @@ static int rtsx_transfer_buf(struct rtsx_chip *chip, u8 card, void *buf,
 
 	spin_unlock_irq(&rtsx->reg_lock);
 
-	/* Wait for TRANS_OK_INT */
+	 
 	timeleft = wait_for_completion_interruptible_timeout(&trans_done,
 							     msecs_to_jiffies(timeout));
 	if (timeleft <= 0) {
@@ -712,7 +664,7 @@ int rtsx_transfer_data_partial(struct rtsx_chip *chip, u8 card,
 {
 	int err = 0;
 
-	/* don't transfer data during abort processing */
+	 
 	if (rtsx_chk_stat(chip, RTSX_STAT_ABORT))
 		return -EIO;
 
@@ -744,7 +696,7 @@ int rtsx_transfer_data(struct rtsx_chip *chip, u8 card, void *buf, size_t len,
 
 	dev_dbg(rtsx_dev(chip), "use_sg = %d\n", use_sg);
 
-	/* don't transfer data during abort processing */
+	 
 	if (rtsx_chk_stat(chip, RTSX_STAT_ABORT))
 		return -EIO;
 

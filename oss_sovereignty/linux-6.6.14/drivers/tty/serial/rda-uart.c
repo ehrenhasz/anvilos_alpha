@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * RDA8810PL serial device driver
- *
- * Copyright RDA Microelectronics Company Limited
- * Copyright (c) 2017 Andreas Färber
- * Copyright (c) 2018 Manivannan Sadhasivam
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/console.h>
@@ -31,7 +25,7 @@
 #define RDA_UART_CMD_SET	0x18
 #define RDA_UART_CMD_CLR	0x1c
 
-/* UART_CTRL Bits */
+ 
 #define RDA_UART_ENABLE			BIT(0)
 #define RDA_UART_DBITS_8		BIT(1)
 #define RDA_UART_TX_SBITS_2		BIT(2)
@@ -49,7 +43,7 @@
 #define RDA_UART_RX_LOCK_ERR		BIT(25)
 #define RDA_UART_RX_BREAK_LEN(x)	(((x) & 0xf) << 28)
 
-/* UART_STATUS Bits */
+ 
 #define RDA_UART_RX_FIFO(x)		(((x) & 0x7f) << 0)
 #define RDA_UART_RX_FIFO_MASK		(0x7f << 0)
 #define RDA_UART_TX_FIFO(x)		(((x) & 0x1f) << 8)
@@ -66,11 +60,11 @@
 #define RDA_UART_DTR			BIT(28)
 #define RDA_UART_CLK_ENABLED		BIT(31)
 
-/* UART_RXTX_BUFFER Bits */
+ 
 #define RDA_UART_RX_DATA(x)		(((x) & 0xff) << 0)
 #define RDA_UART_TX_DATA(x)		(((x) & 0xff) << 0)
 
-/* UART_IRQ_MASK Bits */
+ 
 #define RDA_UART_TX_MODEM_STATUS	BIT(0)
 #define RDA_UART_RX_DATA_AVAILABLE	BIT(1)
 #define RDA_UART_TX_DATA_NEEDED		BIT(2)
@@ -82,7 +76,7 @@
 #define RDA_UART_DTR_RISE		BIT(8)
 #define RDA_UART_DTR_FALL		BIT(9)
 
-/* UART_IRQ_CAUSE Bits */
+ 
 #define RDA_UART_TX_MODEM_STATUS_U	BIT(16)
 #define RDA_UART_RX_DATA_AVAILABLE_U	BIT(17)
 #define RDA_UART_TX_DATA_NEEDED_U	BIT(18)
@@ -94,12 +88,12 @@
 #define RDA_UART_DTR_RISE_U		BIT(24)
 #define RDA_UART_DTR_FALL_U		BIT(25)
 
-/* UART_TRIGGERS Bits */
+ 
 #define RDA_UART_RX_TRIGGER(x)		(((x) & 0x1f) << 0)
 #define RDA_UART_TX_TRIGGER(x)		(((x) & 0xf) << 8)
 #define RDA_UART_AFC_LEVEL(x)		(((x) & 0x1f) << 16)
 
-/* UART_CMD_SET Bits */
+ 
 #define RDA_UART_RI			BIT(0)
 #define RDA_UART_DCD			BIT(1)
 #define RDA_UART_DSR			BIT(2)
@@ -172,7 +166,7 @@ static void rda_uart_set_mctrl(struct uart_port *port, unsigned int mctrl)
 		val = rda_uart_read(port, RDA_UART_CMD_SET);
 		rda_uart_write(port, (val | RDA_UART_RTS), RDA_UART_CMD_SET);
 	} else {
-		/* Clear RTS to stop to receive. */
+		 
 		val = rda_uart_read(port, RDA_UART_CMD_CLR);
 		rda_uart_write(port, (val | RDA_UART_RTS), RDA_UART_CMD_CLR);
 	}
@@ -208,7 +202,7 @@ static void rda_uart_stop_rx(struct uart_port *port)
 	val &= ~(RDA_UART_RX_DATA_AVAILABLE | RDA_UART_RX_TIMEOUT);
 	rda_uart_write(port, val, RDA_UART_IRQ_MASK);
 
-	/* Read Rx buffer before reset to avoid Rx timeout interrupt */
+	 
 	val = rda_uart_read(port, RDA_UART_RXTX_BUFFER);
 
 	val = rda_uart_read(port, RDA_UART_CMD_SET);
@@ -270,17 +264,17 @@ static void rda_uart_set_termios(struct uart_port *port,
 		break;
 	}
 
-	/* stop bits */
+	 
 	if (termios->c_cflag & CSTOPB)
 		ctrl |= RDA_UART_TX_SBITS_2;
 	else
 		ctrl &= ~RDA_UART_TX_SBITS_2;
 
-	/* parity check */
+	 
 	if (termios->c_cflag & PARENB) {
 		ctrl |= RDA_UART_PARITY_EN;
 
-		/* Mark or Space parity */
+		 
 		if (termios->c_cflag & CMSPAR) {
 			if (termios->c_cflag & PARODD)
 				ctrl |= RDA_UART_PARITY_MARK;
@@ -295,7 +289,7 @@ static void rda_uart_set_termios(struct uart_port *port,
 		ctrl &= ~RDA_UART_PARITY_EN;
 	}
 
-	/* Hardware handshake (RTS/CTS) */
+	 
 	if (termios->c_cflag & CRTSCTS) {
 		ctrl   |= RDA_UART_FLOW_CNT_EN;
 		cmd_set |= RDA_UART_RTS;
@@ -318,11 +312,11 @@ static void rda_uart_set_termios(struct uart_port *port,
 
 	rda_uart_write(port, irq_mask, RDA_UART_IRQ_MASK);
 
-	/* Don't rewrite B0 */
+	 
 	if (tty_termios_baud_rate(termios))
 		tty_termios_encode_baud_rate(termios, baud, baud);
 
-	/* update the per-port timeout */
+	 
 	uart_update_timeout(port, termios->c_cflag, baud);
 
 	spin_unlock_irqrestore(&port->lock, flags);
@@ -360,7 +354,7 @@ static void rda_uart_send_chars(struct uart_port *port)
 		uart_write_wakeup(port);
 
 	if (!uart_circ_empty(xmit)) {
-		/* Re-enable Tx FIFO interrupt */
+		 
 		val = rda_uart_read(port, RDA_UART_IRQ_MASK);
 		val |= RDA_UART_TX_DATA_NEEDED;
 		rda_uart_write(port, val, RDA_UART_IRQ_MASK);
@@ -410,7 +404,7 @@ static irqreturn_t rda_interrupt(int irq, void *dev_id)
 
 	spin_lock_irqsave(&port->lock, flags);
 
-	/* Clear IRQ cause */
+	 
 	val = rda_uart_read(port, RDA_UART_IRQ_CAUSE);
 	rda_uart_write(port, val, RDA_UART_IRQ_CAUSE);
 
@@ -451,7 +445,7 @@ static int rda_uart_startup(struct uart_port *port)
 	val |= RDA_UART_ENABLE;
 	rda_uart_write(port, val, RDA_UART_CTRL);
 
-	/* enable rx interrupt */
+	 
 	val = rda_uart_read(port, RDA_UART_IRQ_MASK);
 	val |= (RDA_UART_RX_DATA_AVAILABLE | RDA_UART_RX_TIMEOUT);
 	rda_uart_write(port, val, RDA_UART_IRQ_MASK);
@@ -517,10 +511,10 @@ static void rda_uart_config_port(struct uart_port *port, int flags)
 
 	spin_lock_irqsave(&port->lock, irq_flags);
 
-	/* Clear mask, so no surprise interrupts. */
+	 
 	rda_uart_write(port, 0, RDA_UART_IRQ_MASK);
 
-	/* Clear status register */
+	 
 	rda_uart_write(port, 0, RDA_UART_STATUS);
 
 	spin_unlock_irqrestore(&port->lock, irq_flags);
@@ -608,7 +602,7 @@ static void rda_uart_port_write(struct uart_port *port, const char *s,
 
 	uart_console_write(port, s, count, rda_console_putchar);
 
-	/* wait until all contents have been sent out */
+	 
 	while (!(rda_uart_read(port, RDA_UART_STATUS) & RDA_UART_TX_FIFO_MASK))
 		cpu_relax();
 
@@ -697,7 +691,7 @@ OF_EARLYCON_DECLARE(rda, "rda,8810pl-uart",
 #define RDA_UART_CONSOLE (&rda_uart_console)
 #else
 #define RDA_UART_CONSOLE NULL
-#endif /* CONFIG_SERIAL_RDA_CONSOLE */
+#endif  
 
 static struct uart_driver rda_uart_driver = {
 	.owner = THIS_MODULE,

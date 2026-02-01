@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * RT288x/Au1xxx driver
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/io.h>
@@ -14,7 +12,7 @@
 
 #define RT288X_DL	0x28
 
-/* Au1x00/RT288x UART hardware has a weird register layout */
+ 
 static const u8 au_io_in_map[7] = {
 	[UART_RX]	= 0,
 	[UART_IER]	= 2,
@@ -51,7 +49,7 @@ static void au_serial_out(struct uart_port *p, int offset, int value)
 	__raw_writel(value, p->membase + (offset << p->regshift));
 }
 
-/* Au1x00 haven't got a standard divisor latch */
+ 
 static u32 au_serial_dl_read(struct uart_8250_port *up)
 {
 	return __raw_readl(up->port.membase + RT288X_DL);

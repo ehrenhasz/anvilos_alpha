@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Ampere Altra Family SMPro core driver
- * Copyright (c) 2022, Ampere Computing LLC
- */
+
+ 
 
 #include <linux/i2c.h>
 #include <linux/kernel.h>
@@ -11,7 +8,7 @@
 #include <linux/of_platform.h>
 #include <linux/regmap.h>
 
-/* Identification Registers */
+ 
 #define MANUFACTURER_ID_REG     0x02
 #define AMPERE_MANUFACTURER_ID  0xCD3A
 

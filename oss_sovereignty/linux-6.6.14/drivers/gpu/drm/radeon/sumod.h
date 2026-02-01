@@ -1,32 +1,10 @@
-/*
- * Copyright 2012 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: Alex Deucher
- */
+ 
 #ifndef _SUMOD_H_
 #define _SUMOD_H_
 
-/* pm registers */
+ 
 
-/* rcu */
+ 
 #define RCU_FW_VERSION                                  0x30c
 
 #define RCU_PWR_GATING_SEQ0                             0x408
@@ -83,7 +61,7 @@
 #       define IT_MASK                                  (0xffff << 16)
 #       define IT_SHIFT                                 16
 
-/* yes these two have the same address */
+ 
 #define RCU_PWR_GATING_CNTL_5                           0x504
 #define RCU_GPU_BOOST_DISABLE                           0x508
 
@@ -105,7 +83,7 @@
 #define SMU_PCIE_PG_ARGS_2                              0x598
 #define SMU_PCIE_PG_ARGS_3                              0x59C
 
-/* mmio */
+ 
 #define RCU_STATUS                                      0x11c
 #       define GMC_PWR_GATER_BUSY                       (1 << 8)
 #       define GFX_PWR_GATER_BUSY                       (1 << 9)
@@ -363,7 +341,7 @@
 #define HW_REV   					0x5564
 #       define ATI_REV_ID_MASK                          (0xf << 28)
 #       define ATI_REV_ID_SHIFT                         28
-/* 0 = A0, 1 = A1, 2 = B0, 3 = C0, etc. */
+ 
 
 #define DOUT_SCRATCH3   				0x611c
 

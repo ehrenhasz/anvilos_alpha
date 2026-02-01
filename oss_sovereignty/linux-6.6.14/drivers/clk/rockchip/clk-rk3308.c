@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (c) 2019 Rockchip Electronics Co. Ltd.
- * Author: Finley Xiao <finley.xiao@rock-chips.com>
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/io.h>
@@ -19,7 +16,7 @@ enum rk3308_plls {
 };
 
 static struct rockchip_pll_rate_table rk3308_pll_rates[] = {
-	/* _mhz, _refdiv, _fbdiv, _postdiv1, _postdiv2, _dsmpd, _frac */
+	 
 	RK3036_PLL_RATE(1608000000, 1, 67, 1, 1, 1, 0),
 	RK3036_PLL_RATE(1584000000, 1, 66, 1, 1, 1, 0),
 	RK3036_PLL_RATE(1560000000, 1, 65, 1, 1, 1, 0),
@@ -63,7 +60,7 @@ static struct rockchip_pll_rate_table rk3308_pll_rates[] = {
 	RK3036_PLL_RATE(312000000, 1, 52, 2, 2, 1, 0),
 	RK3036_PLL_RATE(216000000, 1, 72, 4, 2, 1, 0),
 	RK3036_PLL_RATE(96000000, 1, 64, 4, 4, 1, 0),
-	{ /* sentinel */ },
+	{   },
 };
 
 #define RK3308_DIV_ACLKM_MASK		0x7
@@ -277,17 +274,13 @@ static struct rockchip_clk_branch rk3308_spdif_rx_fracmux __initdata =
 
 
 static struct rockchip_clk_branch rk3308_clk_branches[] __initdata = {
-	/*
-	 * Clock-Architecture Diagram 1
-	 */
+	 
 
 	MUX(USB480M, "usb480m", mux_usb480m_p, CLK_SET_RATE_PARENT,
 			RK3308_MODE_CON, 8, 2, MFLAGS),
 	FACTOR(0, "xin12m", "xin24m", 0, 1, 2),
 
-	/*
-	 * Clock-Architecture Diagram 2
-	 */
+	 
 
 	GATE(0, "apll_core", "apll", CLK_IGNORE_UNUSED,
 			RK3308_CLKGATE_CON(0), 0, GFLAGS),
@@ -308,9 +301,7 @@ static struct rockchip_clk_branch rk3308_clk_branches[] __initdata = {
 	GATE(SCLK_PVTM_CORE, "clk_pvtm_core", "xin24m", 0,
 			RK3308_CLKGATE_CON(0), 4, GFLAGS),
 
-	/*
-	 * Clock-Architecture Diagram 3
-	 */
+	 
 
 	COMPOSITE_NODIV(ACLK_BUS_SRC, "clk_bus_src", mux_dpll_vpll0_vpll1_p, CLK_IGNORE_UNUSED,
 			RK3308_CLKSEL_CON(5), 6, 2, MFLAGS,
@@ -457,9 +448,7 @@ static struct rockchip_clk_branch rk3308_clk_branches[] __initdata = {
 	GATE(DCLK_VOP, "dclk_vop", "dclk_vop_mux", 0,
 			RK3308_CLKGATE_CON(1), 8, GFLAGS),
 
-	/*
-	 * Clock-Architecture Diagram 4
-	 */
+	 
 
 	COMPOSITE_NODIV(ACLK_PERI_SRC, "clk_peri_src", mux_dpll_vpll0_vpll1_p, CLK_IGNORE_UNUSED,
 			RK3308_CLKSEL_CON(36), 6, 2, MFLAGS,
@@ -545,9 +534,7 @@ static struct rockchip_clk_branch rk3308_clk_branches[] __initdata = {
 			RK3308_CLKSEL_CON(44), 14, 2, MFLAGS, 8, 6, DFLAGS,
 			RK3308_CLKGATE_CON(8), 15, GFLAGS),
 
-	/*
-	 * Clock-Architecture Diagram 5
-	 */
+	 
 
 	GATE(0, "clk_ddr_mon_timer", "xin24m", CLK_IGNORE_UNUSED,
 			RK3308_CLKGATE_CON(0), 12, GFLAGS),
@@ -572,9 +559,7 @@ static struct rockchip_clk_branch rk3308_clk_branches[] __initdata = {
 			RK3308_CLKSEL_CON(1), 8, 1, MFLAGS,
 			RK3308_CLKGATE_CON(4), 14, GFLAGS),
 
-	/*
-	 * Clock-Architecture Diagram 6
-	 */
+	 
 
 	GATE(PCLK_PMU, "pclk_pmu", "pclk_bus", CLK_IGNORE_UNUSED,
 			RK3308_CLKGATE_CON(4), 5, GFLAGS),
@@ -614,9 +599,7 @@ static struct rockchip_clk_branch rk3308_clk_branches[] __initdata = {
 	GATE(SCLK_PVTM_PMU, "clk_pvtm_pmu", "xin24m", 0,
 			RK3308_CLKGATE_CON(4), 4, GFLAGS),
 
-	/*
-	 * Clock-Architecture Diagram 7
-	 */
+	 
 
 	COMPOSITE_NODIV(0, "clk_audio_src", mux_vpll0_vpll1_xin24m_p, 0,
 			RK3308_CLKSEL_CON(45), 6, 2, MFLAGS,
@@ -802,9 +785,7 @@ static struct rockchip_clk_branch rk3308_clk_branches[] __initdata = {
 	GATE(SCLK_SPDIF_RX, "clk_spdif_rx", "clk_spdif_rx_mux", 0,
 			RK3308_CLKGATE_CON(10), 11, GFLAGS),
 
-	/*
-	 * Clock-Architecture Diagram 8
-	 */
+	 
 
 	GATE(0, "aclk_core_niu", "aclk_core", CLK_IGNORE_UNUSED, RK3308_CLKGATE_CON(0), 5, GFLAGS),
 	GATE(0, "pclk_core_dbg_niu", "aclk_core", CLK_IGNORE_UNUSED, RK3308_CLKGATE_CON(0), 6, GFLAGS),
@@ -849,11 +830,11 @@ static struct rockchip_clk_branch rk3308_clk_branches[] __initdata = {
 	GATE(ACLK_CRYPTO, "aclk_crypto", "aclk_bus", 0, RK3308_CLKGATE_CON(5), 2, GFLAGS),
 	GATE(ACLK_VOP, "aclk_vop", "aclk_bus", 0, RK3308_CLKGATE_CON(5), 3, GFLAGS),
 	GATE(0, "aclk_gic", "aclk_bus", CLK_IGNORE_UNUSED, RK3308_CLKGATE_CON(5), 4, GFLAGS),
-	/* aclk_dmaci0 is controlled by sgrf_clkgat_con. */
+	 
 	SGRF_GATE(ACLK_DMAC0, "aclk_dmac0", "aclk_bus"),
-	/* aclk_dmac1 is controlled by sgrf_clkgat_con. */
+	 
 	SGRF_GATE(ACLK_DMAC1, "aclk_dmac1", "aclk_bus"),
-	/* watchdog pclk is controlled by sgrf_clkgat_con. */
+	 
 	SGRF_GATE(PCLK_WDT, "pclk_wdt", "pclk_bus"),
 
 	GATE(0, "hclk_bus_niu", "hclk_bus", CLK_IGNORE_UNUSED, RK3308_CLKGATE_CON(5), 5, GFLAGS),

@@ -1,23 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * drivers/net/phy/micrel.c
- *
- * Driver for Micrel PHYs
- *
- * Author: David J. Choi
- *
- * Copyright (c) 2010-2013 Micrel, Inc.
- * Copyright (c) 2014 Johan Hovold <johan@kernel.org>
- *
- * Support : Micrel Phys:
- *		Giga phys: ksz9021, ksz9031, ksz9131, lan8841, lan8814
- *		100/10 Phys : ksz8001, ksz8721, ksz8737, ksz8041
- *			   ksz8021, ksz8031, ksz8051,
- *			   ksz8081, ksz8091,
- *			   ksz8061,
- *		Switch : ksz8873, ksz886x
- *			 ksz9477, lan8804
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/ethtool_netlink.h>
@@ -34,7 +16,7 @@
 #include <linux/net_tstamp.h>
 #include <linux/gpio/consumer.h>
 
-/* Operation Mode Strap Override */
+ 
 #define MII_KSZPHY_OMSO				0x16
 #define KSZPHY_OMSO_FACTORY_TEST		BIT(15)
 #define KSZPHY_OMSO_B_CAST_OFF			BIT(9)
@@ -42,7 +24,7 @@
 #define KSZPHY_OMSO_RMII_OVERRIDE		BIT(1)
 #define KSZPHY_OMSO_MII_OVERRIDE		BIT(0)
 
-/* general Interrupt control/status reg in vendor specific block. */
+ 
 #define MII_KSZPHY_INTCS			0x1B
 #define KSZPHY_INTCS_JABBER			BIT(15)
 #define KSZPHY_INTCS_RECEIVE_ERR		BIT(14)
@@ -59,7 +41,7 @@
 #define KSZPHY_INTCS_STATUS			(KSZPHY_INTCS_LINK_DOWN_STATUS |\
 						 KSZPHY_INTCS_LINK_UP_STATUS)
 
-/* LinkMD Control/Status */
+ 
 #define KSZ8081_LMD				0x1d
 #define KSZ8081_LMD_ENABLE_TEST			BIT(15)
 #define KSZ8081_LMD_STAT_NORMAL			0
@@ -67,7 +49,7 @@
 #define KSZ8081_LMD_STAT_SHORT			2
 #define KSZ8081_LMD_STAT_FAIL			3
 #define KSZ8081_LMD_STAT_MASK			GENMASK(14, 13)
-/* Short cable (<10 meter) has been detected by LinkMD */
+ 
 #define KSZ8081_LMD_SHORT_INDICATOR		BIT(12)
 #define KSZ8081_LMD_DELTA_TIME_MASK		GENMASK(8, 0)
 
@@ -101,7 +83,7 @@
 
 #define LAN8814_WIRE_PAIR_MASK			0xF
 
-/* Lan8814 general Interrupt control/status reg in GPHY specific block. */
+ 
 #define LAN8814_INTC				0x18
 #define LAN8814_INTS				0x1B
 
@@ -114,10 +96,7 @@
 #define LAN8814_INTR_CTRL_REG_POLARITY		BIT(1)
 #define LAN8814_INTR_CTRL_REG_INTR_ENABLE	BIT(0)
 
-/* Represents 1ppm adjustment in 2^32 format with
- * each nsec contains 4 clock cycles.
- * The value is calculated as following: (1/1000000)/((2^-32)/4)
- */
+ 
 #define LAN8814_1PPM_FORMAT			17179
 
 #define PTP_RX_MOD				0x024F
@@ -221,14 +200,14 @@
 #define LAN8814_LED_CTRL_1			0x0
 #define LAN8814_LED_CTRL_1_KSZ9031_LED_MODE_	BIT(6)
 
-/* PHY Control 1 */
+ 
 #define MII_KSZPHY_CTRL_1			0x1e
 #define KSZ8081_CTRL1_MDIX_STAT			BIT(4)
 
-/* PHY Control 2 / PHY Control (if no PHY Control 1) */
+ 
 #define MII_KSZPHY_CTRL_2			0x1f
 #define MII_KSZPHY_CTRL				MII_KSZPHY_CTRL_2
-/* bitmap of PHY register to set interrupt mode */
+ 
 #define KSZ8081_CTRL2_HP_MDIX			BIT(15)
 #define KSZ8081_CTRL2_MDI_MDI_X_SELECT		BIT(14)
 #define KSZ8081_CTRL2_DISABLE_AUTO_MDIX		BIT(13)
@@ -237,14 +216,14 @@
 #define KSZPHY_CTRL_INT_ACTIVE_HIGH		BIT(9)
 #define KSZPHY_RMII_REF_CLK_SEL			BIT(7)
 
-/* Write/read to/from extended registers */
+ 
 #define MII_KSZPHY_EXTREG			0x0b
 #define KSZPHY_EXTREG_WRITE			0x8000
 
 #define MII_KSZPHY_EXTREG_WRITE			0x0c
 #define MII_KSZPHY_EXTREG_READ			0x0d
 
-/* Extended registers */
+ 
 #define MII_KSZPHY_CLK_CONTROL_PAD_SKEW		0x104
 #define MII_KSZPHY_RX_DATA_PAD_SKEW		0x105
 #define MII_KSZPHY_TX_DATA_PAD_SKEW		0x106
@@ -252,7 +231,7 @@
 #define PS_TO_REG				200
 #define FIFO_SIZE				8
 
-/* Delay used to get the second part from the LTC */
+ 
 #define LAN8841_GET_SEC_LTC_DELAY		(500 * NSEC_PER_MSEC)
 
 struct kszphy_hw_stat {
@@ -279,18 +258,16 @@ struct kszphy_type {
 	bool has_rmii_ref_clk_sel;
 };
 
-/* Shared structure between the PHYs of the same package. */
+ 
 struct lan8814_shared_priv {
 	struct phy_device *phydev;
 	struct ptp_clock *ptp_clock;
 	struct ptp_clock_info ptp_clock_info;
 
-	/* Reference counter to how many ports in the package are enabling the
-	 * timestamping
-	 */
+	 
 	u8 ref;
 
-	/* Lock for ptp_clock and ref */
+	 
 	struct mutex shared_lock;
 };
 
@@ -309,7 +286,7 @@ struct kszphy_ptp_priv {
 	struct sk_buff_head rx_queue;
 
 	struct list_head rx_ts_list;
-	/* Lock for Rx ts fifo */
+	 
 	spinlock_t rx_ts_lock;
 
 	int hwts_tx_type;
@@ -319,12 +296,12 @@ struct kszphy_ptp_priv {
 
 	struct ptp_clock *ptp_clock;
 	struct ptp_clock_info ptp_clock_info;
-	/* Lock for ptp_clock */
+	 
 	struct mutex ptp_lock;
 	struct ptp_pin_desc *pin_config;
 
 	s64 seconds;
-	/* Lock for accessing seconds */
+	 
 	spinlock_t seconds_lock;
 };
 
@@ -411,7 +388,7 @@ static int kszphy_extended_read(struct phy_device *phydev,
 
 static int kszphy_ack_interrupt(struct phy_device *phydev)
 {
-	/* bit[7..0] int status, which is a read and clear register. */
+	 
 	int rc;
 
 	rc = phy_read(phydev, MII_KSZPHY_INTCS);
@@ -430,14 +407,14 @@ static int kszphy_config_intr(struct phy_device *phydev)
 	else
 		mask = KSZPHY_CTRL_INT_ACTIVE_HIGH;
 
-	/* set the interrupt pin active low */
+	 
 	temp = phy_read(phydev, MII_KSZPHY_CTRL);
 	if (temp < 0)
 		return temp;
 	temp &= ~mask;
 	phy_write(phydev, MII_KSZPHY_CTRL, temp);
 
-	/* enable / disable interrupts */
+	 
 	if (phydev->interrupts == PHY_INTERRUPT_ENABLED) {
 		err = kszphy_ack_interrupt(phydev);
 		if (err)
@@ -520,9 +497,7 @@ out:
 	return rc;
 }
 
-/* Disable PHY address 0 as the broadcast address, so that it can be used as a
- * unique (non-broadcast) address on a shared bus.
- */
+ 
 static int kszphy_broadcast_disable(struct phy_device *phydev)
 {
 	int ret;
@@ -559,7 +534,7 @@ out:
 	return ret;
 }
 
-/* Some config bits need to be set again on resume, handle them here. */
+ 
 static int kszphy_config_reset(struct phy_device *phydev)
 {
 	struct kszphy_priv *priv = phydev->priv;
@@ -610,7 +585,7 @@ static int ksz8041_config_init(struct phy_device *phydev)
 {
 	__ETHTOOL_DECLARE_LINK_MODE_MASK(mask) = { 0, };
 
-	/* Limit supported and advertised modes in fiber mode */
+	 
 	if (ksz8041_fiber_mode(phydev)) {
 		phydev->dev_flags |= MICREL_PHY_FXEN;
 		linkmode_set_bit(ETHTOOL_LINK_MODE_100baseT_Full_BIT, mask);
@@ -630,7 +605,7 @@ static int ksz8041_config_init(struct phy_device *phydev)
 
 static int ksz8041_config_aneg(struct phy_device *phydev)
 {
-	/* Skip auto-negotiation in fiber mode */
+	 
 	if (phydev->dev_flags & MICREL_PHY_FXEN) {
 		phydev->speed = SPEED_100;
 		return 0;
@@ -651,11 +626,7 @@ static int ksz8051_ksz8795_match_phy_device(struct phy_device *phydev,
 	if (ret < 0)
 		return ret;
 
-	/* KSZ8051 PHY and KSZ8794/KSZ8795/KSZ8765 switch share the same
-	 * exact PHY ID. However, they can be told apart by the extended
-	 * capability registers presence. The KSZ8051 PHY has them while
-	 * the switch does not.
-	 */
+	 
 	ret &= BMSR_ERCAP;
 	if (ksz_8051)
 		return ret;
@@ -670,11 +641,7 @@ static int ksz8051_match_phy_device(struct phy_device *phydev)
 
 static int ksz8081_config_init(struct phy_device *phydev)
 {
-	/* KSZPHY_OMSO_FACTORY_TEST is set at de-assertion of the reset line
-	 * based on the RXER (KSZ8081RNA/RND) or TXC (KSZ8081MNX/RNB) pin. If a
-	 * pull-down is missing, the factory test mode should be cleared by
-	 * manually writing a 0.
-	 */
+	 
 	phy_clear_bits(phydev, MII_KSZPHY_OMSO, KSZPHY_OMSO_FACTORY_TEST);
 
 	return kszphy_config_init(phydev);
@@ -714,10 +681,7 @@ static int ksz8081_config_aneg(struct phy_device *phydev)
 	if (ret)
 		return ret;
 
-	/* The MDI-X configuration is automatically changed by the PHY after
-	 * switching from autoneg off to on. So, take MDI-X configuration under
-	 * own control and set it after autoneg configuration was done.
-	 */
+	 
 	return ksz8081_config_mdix(phydev, phydev->mdix_ctrl);
 }
 
@@ -830,10 +794,7 @@ static int ksz9021_config_init(struct phy_device *phydev)
 	const struct device_node *of_node;
 	const struct device *dev_walker;
 
-	/* The Micrel driver has a deprecated option to place phy OF
-	 * properties in the MAC node. Walk up the tree of devices to
-	 * find a device with an OF node.
-	 */
+	 
 	dev_walker = &phydev->mdio.dev;
 	do {
 		of_node = dev_walker->of_node;
@@ -860,12 +821,12 @@ static int ksz9021_config_init(struct phy_device *phydev)
 
 #define KSZ9031_PS_TO_REG		60
 
-/* Extended registers */
-/* MMD Address 0x0 */
+ 
+ 
 #define MII_KSZ9031RN_FLP_BURST_TX_LO	3
 #define MII_KSZ9031RN_FLP_BURST_TX_HI	4
 
-/* MMD Address 0x2 */
+ 
 #define MII_KSZ9031RN_CONTROL_PAD_SKEW	4
 #define MII_KSZ9031RN_RX_CTL_M		GENMASK(7, 4)
 #define MII_KSZ9031RN_TX_CTL_M		GENMASK(3, 0)
@@ -886,33 +847,24 @@ static int ksz9021_config_init(struct phy_device *phydev)
 #define MII_KSZ9031RN_GTX_CLK		GENMASK(9, 5)
 #define MII_KSZ9031RN_RX_CLK		GENMASK(4, 0)
 
-/* KSZ9031 has internal RGMII_IDRX = 1.2ns and RGMII_IDTX = 0ns. To
- * provide different RGMII options we need to configure delay offset
- * for each pad relative to build in delay.
- */
-/* keep rx as "No delay adjustment" and set rx_clk to +0.60ns to get delays of
- * 1.80ns
- */
+ 
+ 
 #define RX_ID				0x7
 #define RX_CLK_ID			0x19
 
-/* set rx to +0.30ns and rx_clk to -0.90ns to compensate the
- * internal 1.2ns delay.
- */
+ 
 #define RX_ND				0xc
 #define RX_CLK_ND			0x0
 
-/* set tx to -0.42ns and tx_clk to +0.96ns to get 1.38ns delay */
+ 
 #define TX_ID				0x0
 #define TX_CLK_ID			0x1f
 
-/* set tx and tx_clk to "No delay adjustment" to keep 0ns
- * dealy
- */
+ 
 #define TX_ND				0x7
 #define TX_CLK_ND			0xf
 
-/* MMD Address 0x1C */
+ 
 #define MII_KSZ9031RN_EDPD		0x23
 #define MII_KSZ9031RN_EDPD_ENABLE	BIT(0)
 
@@ -956,7 +908,7 @@ static int ksz9031_of_load_skew_values(struct phy_device *phydev,
 	return phy_write_mmd(phydev, 2, reg, newval);
 }
 
-/* Center KSZ9031RNX FLP timing at 16ms. */
+ 
 static int ksz9031_center_flp_timing(struct phy_device *phydev)
 {
 	int result;
@@ -974,7 +926,7 @@ static int ksz9031_center_flp_timing(struct phy_device *phydev)
 	return genphy_restart_aneg(phydev);
 }
 
-/* Enable energy-detect power-down mode */
+ 
 static int ksz9031_enable_edpd(struct phy_device *phydev)
 {
 	int reg;
@@ -1067,10 +1019,7 @@ static int ksz9031_config_init(struct phy_device *phydev)
 	if (result < 0)
 		return result;
 
-	/* The Micrel driver has a deprecated option to place phy OF
-	 * properties in the MAC node. Walk up the tree of devices to
-	 * find a device with an OF node.
-	 */
+	 
 	dev_walker = &phydev->mdio.dev;
 	do {
 		of_node = dev_walker->of_node;
@@ -1106,27 +1055,13 @@ static int ksz9031_config_init(struct phy_device *phydev)
 			phydev_warn(phydev,
 				    "*-skew-ps values should be used only with RGMII PHY modes\n");
 
-		/* Silicon Errata Sheet (DS80000691D or DS80000692D):
-		 * When the device links in the 1000BASE-T slave mode only,
-		 * the optional 125MHz reference output clock (CLK125_NDO)
-		 * has wide duty cycle variation.
-		 *
-		 * The optional CLK125_NDO clock does not meet the RGMII
-		 * 45/55 percent (min/max) duty cycle requirement and therefore
-		 * cannot be used directly by the MAC side for clocking
-		 * applications that have setup/hold time requirements on
-		 * rising and falling clock edges.
-		 *
-		 * Workaround:
-		 * Force the phy to be the master to receive a stable clock
-		 * which meets the duty cycle requirement.
-		 */
+		 
 		if (of_property_read_bool(of_node, "micrel,force-master")) {
 			result = phy_read(phydev, MII_CTRL1000);
 			if (result < 0)
 				goto err_force_master;
 
-			/* enable master mode, config & prefer master */
+			 
 			result |= CTL1000_ENABLE_MASTER | CTL1000_AS_MASTER;
 			result = phy_write(phydev, MII_CTRL1000, result);
 			if (result < 0)
@@ -1160,7 +1095,7 @@ static int ksz9131_of_load_skew_values(struct phy_device *phydev,
 	u16 mask;
 	int i;
 
-	/* psec properties in dts should mean x pico seconds */
+	 
 	if (field_sz == 5)
 		skewmax = KSZ9131_SKEW_5BIT_MAX;
 	else
@@ -1241,12 +1176,7 @@ static int ksz9131_config_rgmii_delay(struct phy_device *phydev)
 			      txcdll_val);
 }
 
-/* Silicon Errata DS80000693B
- *
- * When LEDs are configured in Individual Mode, LED1 is ON in a no-link
- * condition. Workaround is to set register 0x1e, bit 9, this way LED1 behaves
- * according to the datasheet (off if there is no link).
- */
+ 
 static int ksz9131_led_errata(struct phy_device *phydev)
 {
 	int reg;
@@ -1406,12 +1336,7 @@ static int ksz9477_get_features(struct phy_device *phydev)
 	if (ret)
 		return ret;
 
-	/* The "EEE control and capability 1" (Register 3.20) seems to be
-	 * influenced by the "EEE advertisement 1" (Register 7.60). Changes
-	 * on the 7.60 will affect 3.20. So, we need to construct our own list
-	 * of caps.
-	 * KSZ8563R should have 100BaseTX/Full only.
-	 */
+	 
 	linkmode_and(phydev->supported_eee, phydev->supported,
 		     PHY_EEE_CAP1_FEATURES);
 
@@ -1425,7 +1350,7 @@ static int ksz8873mll_read_status(struct phy_device *phydev)
 {
 	int regval;
 
-	/* dummy read */
+	 
 	regval = phy_read(phydev, KSZ8873MLL_GLOBAL_CONTROL_4);
 
 	regval = phy_read(phydev, KSZ8873MLL_GLOBAL_CONTROL_4);
@@ -1454,20 +1379,10 @@ static int ksz9031_get_features(struct phy_device *phydev)
 	if (ret < 0)
 		return ret;
 
-	/* Silicon Errata Sheet (DS80000691D or DS80000692D):
-	 * Whenever the device's Asymmetric Pause capability is set to 1,
-	 * link-up may fail after a link-up to link-down transition.
-	 *
-	 * The Errata Sheet is for ksz9031, but ksz9021 has the same issue
-	 *
-	 * Workaround:
-	 * Do not enable the Asymmetric Pause capability bit.
-	 */
+	 
 	linkmode_clear_bit(ETHTOOL_LINK_MODE_Asym_Pause_BIT, phydev->supported);
 
-	/* We force setting the Pause capability as the core will force the
-	 * Asymmetric Pause capability to 1 otherwise.
-	 */
+	 
 	linkmode_set_bit(ETHTOOL_LINK_MODE_Pause_BIT, phydev->supported);
 
 	return 0;
@@ -1482,9 +1397,7 @@ static int ksz9031_read_status(struct phy_device *phydev)
 	if (err)
 		return err;
 
-	/* Make sure the PHY is not broken. Read idle error count,
-	 * and reset the PHY if it is maxed out.
-	 */
+	 
 	regval = phy_read(phydev, MII_STAT1000);
 	if ((regval & 0xFF) == 0xFF) {
 		phy_init_hw(phydev);
@@ -1502,11 +1415,7 @@ static int ksz9x31_cable_test_start(struct phy_device *phydev)
 	struct kszphy_priv *priv = phydev->priv;
 	int ret;
 
-	/* KSZ9131RNX, DS00002841B-page 38, 4.14 LinkMD (R) Cable Diagnostic
-	 * Prior to running the cable diagnostics, Auto-negotiation should
-	 * be disabled, full duplex set and the link speed set to 1000Mbps
-	 * via the Basic Control Register.
-	 */
+	 
 	ret = phy_modify(phydev, MII_BMCR,
 			 BMCR_SPEED1000 | BMCR_FULLDPLX |
 			 BMCR_ANENABLE | BMCR_SPEED100,
@@ -1514,16 +1423,12 @@ static int ksz9x31_cable_test_start(struct phy_device *phydev)
 	if (ret)
 		return ret;
 
-	/* KSZ9131RNX, DS00002841B-page 38, 4.14 LinkMD (R) Cable Diagnostic
-	 * The Master-Slave configuration should be set to Slave by writing
-	 * a value of 0x1000 to the Auto-Negotiation Master Slave Control
-	 * Register.
-	 */
+	 
 	ret = phy_read(phydev, MII_CTRL1000);
 	if (ret < 0)
 		return ret;
 
-	/* Cache these bits, they need to be restored once LinkMD finishes. */
+	 
 	priv->vct_ctrl1000 = ret & (CTL1000_ENABLE_MASTER | CTL1000_AS_MASTER);
 	ret &= ~(CTL1000_ENABLE_MASTER | CTL1000_AS_MASTER);
 	ret |= CTL1000_ENABLE_MASTER;
@@ -1569,10 +1474,7 @@ static int ksz9x31_cable_test_fault_length(struct phy_device *phydev, u16 stat)
 {
 	int dt = FIELD_GET(KSZ9x31_LMD_VCT_DATA_MASK, stat);
 
-	/* KSZ9131RNX, DS00002841B-page 38, 4.14 LinkMD (R) Cable Diagnostic
-	 *
-	 * distance to fault = (VCT_DATA - 22) * 4 / cable propagation velocity
-	 */
+	 
 	if (phydev_id_compare(phydev, PHY_ID_KSZ9131))
 		dt = clamp(dt - 22, 0, 255);
 
@@ -1606,13 +1508,7 @@ static int ksz9x31_cable_test_one_pair(struct phy_device *phydev, int pair)
 {
 	int ret, val;
 
-	/* KSZ9131RNX, DS00002841B-page 38, 4.14 LinkMD (R) Cable Diagnostic
-	 * To test each individual cable pair, set the cable pair in the Cable
-	 * Diagnostics Test Pair (VCT_PAIR[1:0]) field of the LinkMD Cable
-	 * Diagnostic Register, along with setting the Cable Diagnostics Test
-	 * Enable (VCT_EN) bit. The Cable Diagnostics Test Enable (VCT_EN) bit
-	 * will self clear when the test is concluded.
-	 */
+	 
 	ret = phy_write(phydev, KSZ9x31_LMD,
 			KSZ9x31_LMD_VCT_EN | KSZ9x31_LMD_VCT_PAIR(pair));
 	if (ret)
@@ -1653,7 +1549,7 @@ static int ksz9x31_cable_test_get_status(struct phy_device *phydev,
 
 	*finished = false;
 
-	/* Try harder if link partner is active */
+	 
 	while (pair_mask && retries--) {
 		for_each_set_bit(pair, &pair_mask, 4) {
 			ret = ksz9x31_cable_test_one_pair(phydev, pair);
@@ -1663,15 +1559,12 @@ static int ksz9x31_cable_test_get_status(struct phy_device *phydev,
 				return ret;
 			clear_bit(pair, &pair_mask);
 		}
-		/* If link partner is in autonegotiation mode it will send 2ms
-		 * of FLPs with at least 6ms of silence.
-		 * Add 2ms sleep to have better chances to hit this silence.
-		 */
+		 
 		if (pair_mask)
 			usleep_range(2000, 3000);
 	}
 
-	/* Report remaining unfinished pair result as unknown. */
+	 
 	for_each_set_bit(pair, &pair_mask, 4) {
 		ret = ethnl_cable_test_result(phydev,
 					      ksz9x31_cable_test_get_pair(pair),
@@ -1680,7 +1573,7 @@ static int ksz9x31_cable_test_get_status(struct phy_device *phydev,
 
 	*finished = true;
 
-	/* Restore cached bits from before LinkMD got started. */
+	 
 	rv = phy_modify(phydev, MII_CTRL1000,
 			CTL1000_ENABLE_MASTER | CTL1000_AS_MASTER,
 			priv->vct_ctrl1000);
@@ -1704,12 +1597,7 @@ static int ksz886x_config_mdix(struct phy_device *phydev, u8 ctrl)
 		val = KSZ886X_BMCR_DISABLE_AUTO_MDIX;
 		break;
 	case ETH_TP_MDI_X:
-		/* Note: The naming of the bit KSZ886X_BMCR_FORCE_MDI is bit
-		 * counter intuitive, the "-X" in "1 = Force MDI" in the data
-		 * sheet seems to be missing:
-		 * 1 = Force MDI (sic!) (transmit on RX+/RX- pins)
-		 * 0 = Normal operation (transmit on TX+/TX- pins)
-		 */
+		 
 		val = KSZ886X_BMCR_DISABLE_AUTO_MDIX | KSZ886X_BMCR_FORCE_MDI;
 		break;
 	case ETH_TP_MDI_AUTO:
@@ -1733,10 +1621,7 @@ static int ksz886x_config_aneg(struct phy_device *phydev)
 	if (ret)
 		return ret;
 
-	/* The MDI-X configuration is automatically changed by the PHY after
-	 * switching from autoneg off to on. So, take MDI-X configuration under
-	 * own control and set it after autoneg configuration was done.
-	 */
+	 
 	return ksz886x_config_mdix(phydev, phydev->mdix_ctrl);
 }
 
@@ -1761,7 +1646,7 @@ static int ksz886x_mdix_update(struct phy_device *phydev)
 	if (ret < 0)
 		return ret;
 
-	/* Same reverse logic as KSZ886X_BMCR_FORCE_MDI */
+	 
 	if (ret & KSZ886X_CTRL_MDIX_STAT)
 		phydev->mdix = ETH_TP_MDI_X;
 	else
@@ -1788,7 +1673,7 @@ struct ksz9477_errata_write {
 };
 
 static const struct ksz9477_errata_write ksz9477_errata_writes[] = {
-	 /* Register settings are needed to improve PHY receive performance */
+	  
 	{0x01, 0x6f, 0xdd0b},
 	{0x01, 0x8f, 0x6032},
 	{0x01, 0x9d, 0x248c},
@@ -1797,10 +1682,10 @@ static const struct ksz9477_errata_write ksz9477_errata_writes[] = {
 	{0x1c, 0x06, 0x3008},
 	{0x1c, 0x08, 0x2000},
 
-	/* Transmit waveform amplitude can be improved (1000BASE-T, 100BASE-TX, 10BASE-Te) */
+	 
 	{0x1c, 0x04, 0x00d0},
 
-	/* Register settings are required to meet data sheet supply current specifications */
+	 
 	{0x1c, 0x13, 0x6eff},
 	{0x1c, 0x14, 0xe6ff},
 	{0x1c, 0x15, 0x6eff},
@@ -1821,17 +1706,7 @@ static int ksz9477_config_init(struct phy_device *phydev)
 	int err;
 	int i;
 
-	/* Apply PHY settings to address errata listed in
-	 * KSZ9477, KSZ9897, KSZ9896, KSZ9567, KSZ8565
-	 * Silicon Errata and Data Sheet Clarification documents.
-	 *
-	 * Document notes: Before configuring the PHY MMD registers, it is
-	 * necessary to set the PHY to 100 Mbps speed with auto-negotiation
-	 * disabled by writing to register 0xN100-0xN101. After writing the
-	 * MMD registers, and after all errata workarounds that involve PHY
-	 * register settings, write register 0xN100-0xN101 again to enable
-	 * and restart auto-negotiation.
-	 */
+	 
 	err = phy_write(phydev, MII_BMCR, BMCR_SPEED100 | BMCR_FULLDPLX);
 	if (err)
 		return err;
@@ -1844,9 +1719,7 @@ static int ksz9477_config_init(struct phy_device *phydev)
 			return err;
 	}
 
-	/* According to KSZ9477 Errata DS80000754C (Module 4) all EEE modes
-	 * in this switch shall be regarded as broken.
-	 */
+	 
 	if (phydev->dev_flags & MICREL_NO_EEE)
 		phydev->eee_broken_modes = -1;
 
@@ -1902,7 +1775,7 @@ static void kszphy_get_stats(struct phy_device *phydev,
 
 static int kszphy_suspend(struct phy_device *phydev)
 {
-	/* Disable PHY Interrupts */
+	 
 	if (phy_interrupt_is_valid(phydev)) {
 		phydev->interrupts = PHY_INTERRUPT_DISABLED;
 		if (phydev->drv->config_intr)
@@ -1942,17 +1815,14 @@ static int kszphy_resume(struct phy_device *phydev)
 
 	genphy_resume(phydev);
 
-	/* After switching from power-down to normal mode, an internal global
-	 * reset is automatically generated. Wait a minimum of 1 ms before
-	 * read/write access to the PHY registers.
-	 */
+	 
 	usleep_range(1000, 2000);
 
 	ret = kszphy_config_reset(phydev);
 	if (ret)
 		return ret;
 
-	/* Enable PHY Interrupts */
+	 
 	if (phy_interrupt_is_valid(phydev)) {
 		phydev->interrupts = PHY_INTERRUPT_ENABLED;
 		if (phydev->drv->config_intr)
@@ -1980,7 +1850,7 @@ static int kszphy_probe(struct phy_device *phydev)
 	kszphy_parse_led_mode(phydev);
 
 	clk = devm_clk_get(&phydev->mdio.dev, "rmii-ref");
-	/* NOTE: clk may be NULL if building without CONFIG_HAVE_CLK */
+	 
 	if (!IS_ERR_OR_NULL(clk)) {
 		unsigned long rate = clk_get_rate(clk);
 		bool rmii_ref_clk_sel_25_mhz;
@@ -2004,7 +1874,7 @@ static int kszphy_probe(struct phy_device *phydev)
 	if (ksz8041_fiber_mode(phydev))
 		phydev->port = PORT_FIBRE;
 
-	/* Support legacy board-file configuration */
+	 
 	if (phydev->dev_flags & MICREL_PHY_50MHZ_CLK) {
 		priv->rmii_ref_clk_sel = true;
 		priv->rmii_ref_clk_sel_val = true;
@@ -2015,11 +1885,7 @@ static int kszphy_probe(struct phy_device *phydev)
 
 static int lan8814_cable_test_start(struct phy_device *phydev)
 {
-	/* If autoneg is enabled, we won't be able to test cross pair
-	 * short. In this case, the PHY will "detect" a link and
-	 * confuse the internal state machine - disable auto neg here.
-	 * Set the speed to 1000mbit and full duplex.
-	 */
+	 
 	return phy_modify(phydev, MII_BMCR, BMCR_ANENABLE | BMCR_SPEED100,
 			  BMCR_SPEED1000 | BMCR_FULLDPLX);
 }
@@ -2029,11 +1895,7 @@ static int ksz886x_cable_test_start(struct phy_device *phydev)
 	if (phydev->dev_flags & MICREL_KSZ8_P1_ERRATA)
 		return -EOPNOTSUPP;
 
-	/* If autoneg is enabled, we won't be able to test cross pair
-	 * short. In this case, the PHY will "detect" a link and
-	 * confuse the internal state machine - disable auto neg here.
-	 * If autoneg is disabled, we should set the speed to 10mbit.
-	 */
+	 
 	return phy_clear_bits(phydev, MII_BMCR, BMCR_ANENABLE | BMCR_SPEED100);
 }
 
@@ -2075,10 +1937,7 @@ static __always_inline int ksz886x_cable_test_fault_length(struct phy_device *ph
 {
 	int dt;
 
-	/* According to the data sheet the distance to the fault is
-	 * DELTA_TIME * 0.4 meters for ksz phys.
-	 * (DELTA_TIME - 22) * 0.8 for lan8814 phy.
-	 */
+	 
 	dt = FIELD_GET(data_mask, status);
 
 	if (phydev_id_compare(phydev, PHY_ID_LAN8814))
@@ -2153,9 +2012,7 @@ static int ksz886x_cable_test_one_pair(struct phy_device *phydev, int pair)
 	int ret, val, mdix;
 	u32 fault_length;
 
-	/* There is no way to choice the pair, like we do one ksz9031.
-	 * We can workaround this limitation by using the MDI-X functionality.
-	 */
+	 
 	if (pair == 0)
 		mdix = ETH_TP_MDI;
 	else
@@ -2175,9 +2032,7 @@ static int ksz886x_cable_test_one_pair(struct phy_device *phydev, int pair)
 	if (ret)
 		return ret;
 
-	/* Now we are ready to fire. This command will send a 100ns pulse
-	 * to the pair.
-	 */
+	 
 	ret = phy_write(phydev, KSZ8081_LMD, KSZ8081_LMD_ENABLE_TEST);
 	if (ret)
 		return ret;
@@ -2217,7 +2072,7 @@ static int ksz886x_cable_test_get_status(struct phy_device *phydev,
 
 	*finished = false;
 
-	/* Try harder if link partner is active */
+	 
 	while (pair_mask && retries--) {
 		for_each_set_bit(pair, &pair_mask, 4) {
 			if (type->cable_diag_reg == LAN8814_CABLE_DIAG)
@@ -2230,10 +2085,7 @@ static int ksz886x_cable_test_get_status(struct phy_device *phydev,
 				return ret;
 			clear_bit(pair, &pair_mask);
 		}
-		/* If link partner is in autonegotiation mode it will send 2ms
-		 * of FLPs with at least 6ms of silence.
-		 * Add 2ms sleep to have better chances to hit this silence.
-		 */
+		 
 		if (pair_mask)
 			msleep(2);
 	}
@@ -2369,7 +2221,7 @@ static void lan8814_flush_fifo(struct phy_device *phydev, bool egress)
 		lanphy_read_page_reg(phydev, 5,
 				     egress ? PTP_TX_MSG_HEADER2 : PTP_RX_MSG_HEADER2);
 
-	/* Read to clear overflow status bit */
+	 
 	lanphy_read_page_reg(phydev, 5, PTP_TSU_INT_STS);
 }
 
@@ -2455,7 +2307,7 @@ static int lan8814_hwtstamp(struct mii_timestamper *mii_ts, struct ifreq *ifr)
 				      PTP_CMD_CTL_PTP_DISABLE_);
 	mutex_unlock(&shared->shared_lock);
 
-	/* In case of multiple starts and stops, these needs to be cleared */
+	 
 	list_for_each_entry_safe(rx_ts, tmp, &ptp_priv->rx_ts_list, list) {
 		list_del(&rx_ts->list);
 		kfree(rx_ts);
@@ -2516,10 +2368,10 @@ static bool lan8814_match_rx_skb(struct kszphy_ptp_priv *ptp_priv,
 
 	lan8814_get_sig_rx(skb, &skb_sig);
 
-	/* Iterate over all RX timestamps and match it with the received skbs */
+	 
 	spin_lock_irqsave(&ptp_priv->rx_ts_lock, flags);
 	list_for_each_entry_safe(rx_ts, tmp, &ptp_priv->rx_ts_list, list) {
-		/* Check if we found the signature we were looking for. */
+		 
 		if (memcmp(&skb_sig, &rx_ts->seq_id, sizeof(rx_ts->seq_id)))
 			continue;
 
@@ -2552,9 +2404,7 @@ static bool lan8814_rxtstamp(struct mii_timestamper *mii_ts, struct sk_buff *skb
 	if ((type & ptp_priv->version) == 0 || (type & ptp_priv->layer) == 0)
 		return false;
 
-	/* If we failed to match then add it to the queue for when the timestamp
-	 * will come
-	 */
+	 
 	if (!lan8814_match_rx_skb(ptp_priv, skb))
 		skb_queue_tail(&ptp_priv->rx_queue, skb);
 
@@ -2636,7 +2486,7 @@ static void lan8814_ptp_clock_step(struct phy_device *phydev,
 	s32 seconds;
 
 	if (time_step_ns >  15000000000LL) {
-		/* convert to clock set */
+		 
 		lan8814_ptp_clock_get(phydev, &unsigned_seconds, &nano_seconds);
 		unsigned_seconds += div_u64_rem(time_step_ns, 1000000000LL,
 						&remainder);
@@ -2648,7 +2498,7 @@ static void lan8814_ptp_clock_step(struct phy_device *phydev,
 		lan8814_ptp_clock_set(phydev, unsigned_seconds, nano_seconds);
 		return;
 	} else if (time_step_ns < -15000000000LL) {
-		/* convert to clock set */
+		 
 		time_step_ns = -time_step_ns;
 
 		lan8814_ptp_clock_get(phydev, &unsigned_seconds, &nano_seconds);
@@ -2665,7 +2515,7 @@ static void lan8814_ptp_clock_step(struct phy_device *phydev,
 		return;
 	}
 
-	/* do clock step */
+	 
 	if (time_step_ns >= 0) {
 		abs_time_step_ns = (u64)time_step_ns;
 		seconds = (s32)div_u64_rem(abs_time_step_ns, 1000000000,
@@ -2677,22 +2527,19 @@ static void lan8814_ptp_clock_step(struct phy_device *phydev,
 			    &remainder));
 		nano_seconds = remainder;
 		if (nano_seconds > 0) {
-			/* subtracting nano seconds is not allowed
-			 * convert to subtracting from seconds,
-			 * and adding to nanoseconds
-			 */
+			 
 			seconds--;
 			nano_seconds = (1000000000 - nano_seconds);
 		}
 	}
 
 	if (nano_seconds > 0) {
-		/* add 8 ns to cover the likely normal increment */
+		 
 		nano_seconds += 8;
 	}
 
 	if (nano_seconds >= 1000000000) {
-		/* carry into seconds */
+		 
 		seconds++;
 		nano_seconds -= 1000000000;
 	}
@@ -2852,9 +2699,7 @@ static void lan8814_get_tx_ts(struct kszphy_ptp_priv *ptp_priv)
 	do {
 		lan8814_dequeue_tx_skb(ptp_priv);
 
-		/* If other timestamps are available in the FIFO,
-		 * process them.
-		 */
+		 
 		reg = lanphy_read_page_reg(phydev, 5, PTP_CAP_INFO);
 	} while (PTP_CAP_INFO_TX_TS_CNT_GET_(reg) > 0);
 }
@@ -2897,9 +2742,7 @@ static void lan8814_match_rx_ts(struct kszphy_ptp_priv *ptp_priv,
 {
 	unsigned long flags;
 
-	/* If we failed to match the skb add it to the queue for when
-	 * the frame will come
-	 */
+	 
 	if (!lan8814_match_skb(ptp_priv, rx_ts)) {
 		spin_lock_irqsave(&ptp_priv->rx_ts_lock, flags);
 		list_add(&rx_ts->list, &ptp_priv->rx_ts_list);
@@ -2924,9 +2767,7 @@ static void lan8814_get_rx_ts(struct kszphy_ptp_priv *ptp_priv)
 				      &rx_ts->seq_id);
 		lan8814_match_rx_ts(ptp_priv, rx_ts);
 
-		/* If other timestamps are available in the FIFO,
-		 * process them.
-		 */
+		 
 		reg = lanphy_read_page_reg(phydev, 5, PTP_CAP_INFO);
 	} while (PTP_CAP_INFO_RX_TS_CNT_GET_(reg) > 0);
 }
@@ -2957,15 +2798,13 @@ static int lan8804_config_init(struct phy_device *phydev)
 {
 	int val;
 
-	/* MDI-X setting for swap A,B transmit */
+	 
 	val = lanphy_read_page_reg(phydev, 2, LAN8804_ALIGN_SWAP);
 	val &= ~LAN8804_ALIGN_TX_A_B_SWAP_MASK;
 	val |= LAN8804_ALIGN_TX_A_B_SWAP;
 	lanphy_write_page_reg(phydev, 2, LAN8804_ALIGN_SWAP, val);
 
-	/* Make sure that the PHY will not stop generating the clock when the
-	 * link partner goes down
-	 */
+	 
 	lanphy_write_page_reg(phydev, 31, LAN8814_CLOCK_MANAGEMENT, 0x27e);
 	lanphy_read_page_reg(phydev, 1, LAN8814_LINK_QUALITY);
 
@@ -2997,17 +2836,10 @@ static int lan8804_config_intr(struct phy_device *phydev)
 {
 	int err;
 
-	/* This is an internal PHY of lan966x and is not possible to change the
-	 * polarity on the GIC found in lan966x, therefore change the polarity
-	 * of the interrupt in the PHY from being active low instead of active
-	 * high.
-	 */
+	 
 	phy_write(phydev, LAN8804_CONTROL, LAN8804_CONTROL_INTR_POLARITY);
 
-	/* By default interrupt buffer is open-drain in which case the interrupt
-	 * can be active only low. Therefore change the interrupt buffer to be
-	 * push-pull to be able to change interrupt polarity
-	 */
+	 
 	phy_write(phydev, LAN8804_OUTPUT_CONTROL,
 		  LAN8804_OUTPUT_CONTROL_INTR_BUFFER);
 
@@ -3062,7 +2894,7 @@ static irqreturn_t lan8814_handle_interrupt(struct phy_device *phydev)
 
 static int lan8814_ack_interrupt(struct phy_device *phydev)
 {
-	/* bit[12..0] int status, which is a read and clear register. */
+	 
 	int rc;
 
 	rc = phy_read(phydev, LAN8814_INTS);
@@ -3078,7 +2910,7 @@ static int lan8814_config_intr(struct phy_device *phydev)
 			      LAN8814_INTR_CTRL_REG_POLARITY |
 			      LAN8814_INTR_CTRL_REG_INTR_ENABLE);
 
-	/* enable / disable interrupts */
+	 
 	if (phydev->interrupts == PHY_INTERRUPT_ENABLED) {
 		err = lan8814_ack_interrupt(phydev);
 		if (err)
@@ -3119,7 +2951,7 @@ static void lan8814_ptp_init(struct phy_device *phydev)
 	lanphy_write_page_reg(phydev, 5, PTP_RX_PARSE_CONFIG, 0);
 	lanphy_write_page_reg(phydev, 5, PTP_TX_PARSE_CONFIG, 0);
 
-	/* Removing default registers configs related to L2 and IP */
+	 
 	lanphy_write_page_reg(phydev, 5, PTP_TX_PARSE_L2_ADDR_EN, 0);
 	lanphy_write_page_reg(phydev, 5, PTP_RX_PARSE_L2_ADDR_EN, 0);
 	lanphy_write_page_reg(phydev, 5, PTP_TX_PARSE_IP_ADDR_EN, 0);
@@ -3144,7 +2976,7 @@ static int lan8814_ptp_probe_once(struct phy_device *phydev)
 {
 	struct lan8814_shared_priv *shared = phydev->shared->priv;
 
-	/* Initialise shared lock for clock*/
+	 
 	mutex_init(&shared->shared_lock);
 
 	shared->ptp_clock_info.owner = THIS_MODULE;
@@ -3169,7 +3001,7 @@ static int lan8814_ptp_probe_once(struct phy_device *phydev)
 		return -EINVAL;
 	}
 
-	/* Check if PHC support is missing at the configuration level */
+	 
 	if (!shared->ptp_clock)
 		return 0;
 
@@ -3177,9 +3009,7 @@ static int lan8814_ptp_probe_once(struct phy_device *phydev)
 
 	shared->phydev = phydev;
 
-	/* The EP.4 is shared between all the PHYs in the package and also it
-	 * can be accessed by any of the PHYs
-	 */
+	 
 	lanphy_write_page_reg(phydev, 4, LTC_HARD_RESET, LTC_HARD_RESET_);
 	lanphy_write_page_reg(phydev, 4, PTP_OPERATING_MODE,
 			      PTP_OPERATING_MODE_STANDALONE_);
@@ -3206,17 +3036,17 @@ static int lan8814_config_init(struct phy_device *phydev)
 	struct kszphy_priv *lan8814 = phydev->priv;
 	int val;
 
-	/* Reset the PHY */
+	 
 	val = lanphy_read_page_reg(phydev, 4, LAN8814_QSGMII_SOFT_RESET);
 	val |= LAN8814_QSGMII_SOFT_RESET_BIT;
 	lanphy_write_page_reg(phydev, 4, LAN8814_QSGMII_SOFT_RESET, val);
 
-	/* Disable ANEG with QSGMII PCS Host side */
+	 
 	val = lanphy_read_page_reg(phydev, 5, LAN8814_QSGMII_PCS1G_ANEG_CONFIG);
 	val &= ~LAN8814_QSGMII_PCS1G_ANEG_CONFIG_ANEG_ENA;
 	lanphy_write_page_reg(phydev, 5, LAN8814_QSGMII_PCS1G_ANEG_CONFIG, val);
 
-	/* MDI-X setting for swap A,B transmit */
+	 
 	val = lanphy_read_page_reg(phydev, 2, LAN8814_ALIGN_SWAP);
 	val &= ~LAN8814_ALIGN_TX_A_B_SWAP_MASK;
 	val |= LAN8814_ALIGN_TX_A_B_SWAP;
@@ -3228,11 +3058,7 @@ static int lan8814_config_init(struct phy_device *phydev)
 	return 0;
 }
 
-/* It is expected that there will not be any 'lan8814_take_coma_mode'
- * function called in suspend. Because the GPIO line can be shared, so if one of
- * the phys goes back in coma mode, then all the other PHYs will go, which is
- * wrong.
- */
+ 
 static int lan8814_release_coma_mode(struct phy_device *phydev)
 {
 	struct gpio_desc *gpiod;
@@ -3266,9 +3092,7 @@ static int lan8814_probe(struct phy_device *phydev)
 
 	kszphy_parse_led_mode(phydev);
 
-	/* Strap-in value for PHY address, below register read gives starting
-	 * phy address value
-	 */
+	 
 	addr = lanphy_read_page_reg(phydev, 4, 0) & 0x1F;
 	devm_phy_package_join(&phydev->mdio.dev, phydev,
 			      addr, sizeof(struct lan8814_shared_priv));
@@ -3335,7 +3159,7 @@ static int lan8841_config_init(struct phy_device *phydev)
 	if (ret)
 		return ret;
 
-	/* Initialize the HW by resetting everything */
+	 
 	phy_modify_mmd(phydev, KSZ9131RN_MMD_COMMON_CTRL_REG,
 		       LAN8841_PTP_CMD_CTL,
 		       LAN8841_PTP_CMD_CTL_PTP_RESET,
@@ -3346,7 +3170,7 @@ static int lan8841_config_init(struct phy_device *phydev)
 		       LAN8841_PTP_CMD_CTL_PTP_ENABLE,
 		       LAN8841_PTP_CMD_CTL_PTP_ENABLE);
 
-	/* Don't process any frames */
+	 
 	phy_write_mmd(phydev, KSZ9131RN_MMD_COMMON_CTRL_REG,
 		      LAN8841_PTP_RX_PARSE_CONFIG, 0);
 	phy_write_mmd(phydev, KSZ9131RN_MMD_COMMON_CTRL_REG,
@@ -3360,13 +3184,13 @@ static int lan8841_config_init(struct phy_device *phydev)
 	phy_write_mmd(phydev, KSZ9131RN_MMD_COMMON_CTRL_REG,
 		      LAN8841_PTP_RX_PARSE_IP_ADDR_EN, 0);
 
-	/* Disable checking for minorVersionPTP field */
+	 
 	phy_write_mmd(phydev, KSZ9131RN_MMD_COMMON_CTRL_REG,
 		      LAN8841_PTP_RX_VERSION, 0xff00);
 	phy_write_mmd(phydev, KSZ9131RN_MMD_COMMON_CTRL_REG,
 		      LAN8841_PTP_TX_VERSION, 0xff00);
 
-	/* 100BT Clause 40 improvenent errata */
+	 
 	phy_write_mmd(phydev, LAN8841_MMD_ANALOG_REG,
 		      LAN8841_ANALOG_CONTROL_1,
 		      LAN8841_ANALOG_CONTROL_1_PLL_TRIM(0x2));
@@ -3374,9 +3198,7 @@ static int lan8841_config_init(struct phy_device *phydev)
 		      LAN8841_ANALOG_CONTROL_10,
 		      LAN8841_ANALOG_CONTROL_10_PLL_DIV(0x1));
 
-	/* 10M/100M Ethernet Signal Tuning Errata for Shorted-Center Tap
-	 * Magnetics
-	 */
+	 
 	ret = phy_read_mmd(phydev, KSZ9131RN_MMD_COMMON_CTRL_REG,
 			   LAN8841_OPERATION_MODE_STRAP_OVERRIDE_LOW_REG);
 	if (ret & LAN8841_OPERATION_MODE_STRAP_OVERRIDE_LOW_REG_MAGJACK) {
@@ -3393,12 +3215,12 @@ static int lan8841_config_init(struct phy_device *phydev)
 			      LAN8841_BTRX_POWER_DOWN_BTRX_CH_D);
 	}
 
-	/* LDO Adjustment errata */
+	 
 	phy_write_mmd(phydev, LAN8841_MMD_ANALOG_REG,
 		      LAN8841_ANALOG_CONTROL_11,
 		      LAN8841_ANALOG_CONTROL_11_LDO_REF(1));
 
-	/* 100BT RGMII latency tuning errata */
+	 
 	phy_write_mmd(phydev, MDIO_MMD_PMAPMD,
 		      LAN8841_ADC_CHANNEL_MASK, 0x0);
 	phy_write_mmd(phydev, LAN8841_MMD_TIMER_REG,
@@ -3425,11 +3247,7 @@ static int lan8841_config_intr(struct phy_device *phydev)
 		if (err)
 			return err;
 
-		/* Enable / disable interrupts. It is OK to enable PTP interrupt
-		 * even if it PTP is not enabled. Because the underneath blocks
-		 * will not enable the PTP so we will never get the PTP
-		 * interrupt.
-		 */
+		 
 		err = phy_write(phydev, LAN8814_INTC,
 				LAN8814_INT_LINK | LAN8841_INT_PTP);
 	} else {
@@ -3650,17 +3468,14 @@ static void lan8841_ptp_enable_processing(struct kszphy_ptp_priv *ptp_priv,
 	struct phy_device *phydev = ptp_priv->phydev;
 
 	if (enable) {
-		/* Enable interrupts on the TX side */
+		 
 		phy_modify_mmd(phydev, 2, LAN8841_PTP_INT_EN,
 			       LAN8841_PTP_INT_EN_PTP_TX_TS_OVRFL_EN |
 			       LAN8841_PTP_INT_EN_PTP_TX_TS_EN,
 			       LAN8841_PTP_INT_EN_PTP_TX_TS_OVRFL_EN |
 			       LAN8841_PTP_INT_EN_PTP_TX_TS_EN);
 
-		/* Enable the modification of the frame on RX side,
-		 * this will add the ns and 2 bits of sec in the reserved field
-		 * of the PTP header
-		 */
+		 
 		phy_modify_mmd(phydev, KSZ9131RN_MMD_COMMON_CTRL_REG,
 			       LAN8841_PTP_RX_MODE,
 			       LAN8841_PTP_INSERT_TS_EN |
@@ -3670,12 +3485,12 @@ static void lan8841_ptp_enable_processing(struct kszphy_ptp_priv *ptp_priv,
 
 		ptp_schedule_worker(ptp_priv->ptp_clock, 0);
 	} else {
-		/* Disable interrupts on the TX side */
+		 
 		phy_modify_mmd(phydev, 2, LAN8841_PTP_INT_EN,
 			       LAN8841_PTP_INT_EN_PTP_TX_TS_OVRFL_EN |
 			       LAN8841_PTP_INT_EN_PTP_TX_TS_EN, 0);
 
-		/* Disable modification of the RX frames */
+		 
 		phy_modify_mmd(phydev, KSZ9131RN_MMD_COMMON_CTRL_REG,
 			       LAN8841_PTP_RX_MODE,
 			       LAN8841_PTP_INSERT_TS_EN |
@@ -3730,9 +3545,7 @@ static int lan8841_hwtstamp(struct mii_timestamper *mii_ts, struct ifreq *ifr)
 		return -ERANGE;
 	}
 
-	/* Setup parsing of the frames and enable the timestamping for ptp
-	 * frames
-	 */
+	 
 	if (ptp_priv->layer & PTP_CLASS_L2) {
 		rxcfg |= PTP_RX_PARSE_CONFIG_LAYER2_EN_;
 		txcfg |= PTP_TX_PARSE_CONFIG_LAYER2_EN_;
@@ -3749,13 +3562,13 @@ static int lan8841_hwtstamp(struct mii_timestamper *mii_ts, struct ifreq *ifr)
 	phy_write_mmd(phydev, 2, LAN8841_PTP_RX_TIMESTAMP_EN, pkt_ts_enable);
 	phy_write_mmd(phydev, 2, LAN8841_PTP_TX_TIMESTAMP_EN, pkt_ts_enable);
 
-	/* Enable / disable of the TX timestamp in the SYNC frames */
+	 
 	phy_modify_mmd(phydev, 2, LAN8841_PTP_TX_MOD,
 		       PTP_TX_MOD_TX_PTP_SYNC_TS_INSERT_,
 		       ptp_priv->hwts_tx_type == HWTSTAMP_TX_ONESTEP_SYNC ?
 				PTP_TX_MOD_TX_PTP_SYNC_TS_INSERT_ : 0);
 
-	/* Now enable/disable the timestamping */
+	 
 	lan8841_ptp_enable_processing(ptp_priv,
 				      config.rx_filter != HWTSTAMP_FILTER_NONE);
 
@@ -3795,7 +3608,7 @@ static bool lan8841_rxtstamp(struct mii_timestamper *mii_ts,
 	shhwtstamps = skb_hwtstamps(skb);
 	memset(shhwtstamps, 0, sizeof(*shhwtstamps));
 
-	/* Check for any wrap arounds for the second part */
+	 
 	if ((ts.tv_sec & GENMASK(1, 0)) == 0 && (ts_header >> 30) == 3)
 		ts.tv_sec -= GENMASK(1, 0) + 1;
 	else if ((ts.tv_sec & GENMASK(1, 0)) == 3 && (ts_header >> 30) == 0)
@@ -3898,7 +3711,7 @@ static int lan8841_ptp_settime64(struct ptp_clock_info *ptp,
 	unsigned long flags;
 	int ret;
 
-	/* Set the value to be stored */
+	 
 	mutex_lock(&ptp_priv->ptp_lock);
 	phy_write_mmd(phydev, 2, LAN8841_PTP_LTC_SET_SEC_LO, lower_16_bits(ts->tv_sec));
 	phy_write_mmd(phydev, 2, LAN8841_PTP_LTC_SET_SEC_MID, upper_16_bits(ts->tv_sec));
@@ -3906,7 +3719,7 @@ static int lan8841_ptp_settime64(struct ptp_clock_info *ptp,
 	phy_write_mmd(phydev, 2, LAN8841_PTP_LTC_SET_NS_LO, lower_16_bits(ts->tv_nsec));
 	phy_write_mmd(phydev, 2, LAN8841_PTP_LTC_SET_NS_HI, upper_16_bits(ts->tv_nsec) & 0x3fff);
 
-	/* Set the command to load the LTC */
+	 
 	phy_write_mmd(phydev, 2, LAN8841_PTP_CMD_CTL,
 		      LAN8841_PTP_CMD_CTL_PTP_LTC_LOAD);
 	ret = lan8841_ptp_update_target(ptp_priv, ts);
@@ -3936,11 +3749,11 @@ static int lan8841_ptp_gettime64(struct ptp_clock_info *ptp,
 	s64 ns;
 
 	mutex_lock(&ptp_priv->ptp_lock);
-	/* Issue the command to read the LTC */
+	 
 	phy_write_mmd(phydev, 2, LAN8841_PTP_CMD_CTL,
 		      LAN8841_PTP_CMD_CTL_PTP_LTC_READ);
 
-	/* Read the LTC */
+	 
 	s = phy_read_mmd(phydev, 2, LAN8841_PTP_LTC_RD_SEC_HI);
 	s <<= 16;
 	s |= phy_read_mmd(phydev, 2, LAN8841_PTP_LTC_RD_SEC_MID);
@@ -3965,11 +3778,11 @@ static void lan8841_ptp_getseconds(struct ptp_clock_info *ptp,
 	time64_t s;
 
 	mutex_lock(&ptp_priv->ptp_lock);
-	/* Issue the command to read the LTC */
+	 
 	phy_write_mmd(phydev, 2, LAN8841_PTP_CMD_CTL,
 		      LAN8841_PTP_CMD_CTL_PTP_LTC_READ);
 
-	/* Read the LTC */
+	 
 	s = phy_read_mmd(phydev, 2, LAN8841_PTP_LTC_RD_SEC_HI);
 	s <<= 16;
 	s |= phy_read_mmd(phydev, 2, LAN8841_PTP_LTC_RD_SEC_MID);
@@ -3997,14 +3810,9 @@ static int lan8841_ptp_adjtime(struct ptp_clock_info *ptp, s64 delta)
 	s32 sec;
 	int ret;
 
-	/* The HW allows up to 15 sec to adjust the time, but here we limit to
-	 * 10 sec the adjustment. The reason is, in case the adjustment is 14
-	 * sec and 999999999 nsec, then we add 8ns to compansate the actual
-	 * increment so the value can be bigger than 15 sec. Therefore limit the
-	 * possible adjustments so we will not have these corner cases
-	 */
+	 
 	if (delta > 10000000000LL || delta < -10000000000LL) {
-		/* The timeadjustment is too big, so fall back using set time */
+		 
 		u64 now;
 
 		ptp->gettime64(ptp, &ts);
@@ -4018,24 +3826,21 @@ static int lan8841_ptp_adjtime(struct ptp_clock_info *ptp, s64 delta)
 
 	sec = div_u64_rem(delta < 0 ? -delta : delta, NSEC_PER_SEC, &nsec);
 	if (delta < 0 && nsec != 0) {
-		/* It is not allowed to adjust low the nsec part, therefore
-		 * subtract more from second part and add to nanosecond such
-		 * that would roll over, so the second part will increase
-		 */
+		 
 		sec--;
 		nsec = NSEC_PER_SEC - nsec;
 	}
 
-	/* Calculate the adjustments and the direction */
+	 
 	if (delta < 0)
 		add = false;
 
 	if (nsec > 0)
-		/* add 8 ns to cover the likely normal increment */
+		 
 		nsec += 8;
 
 	if (nsec >= NSEC_PER_SEC) {
-		/* carry into seconds */
+		 
 		sec++;
 		nsec -= NSEC_PER_SEC;
 	}
@@ -4059,7 +3864,7 @@ static int lan8841_ptp_adjtime(struct ptp_clock_info *ptp, s64 delta)
 	}
 	mutex_unlock(&ptp_priv->ptp_lock);
 
-	/* Update the target clock */
+	 
 	ptp->gettime64(ptp, &ts);
 	mutex_lock(&ptp_priv->ptp_lock);
 	ret = lan8841_ptp_update_target(ptp_priv, &ts);
@@ -4173,10 +3978,7 @@ static int lan8841_ptp_remove_event(struct kszphy_ptp_priv *ptp_priv, int pin,
 	u16 tmp;
 	int ret;
 
-	/* Now remove pin from the event. GPIO_DATA_SEL1 contains the GPIO
-	 * pins 0-4 while GPIO_DATA_SEL2 contains GPIO pins 5-9, therefore
-	 * depending on the pin, it requires to read a different register
-	 */
+	 
 	if (pin < 5) {
 		tmp = LAN8841_GPIO_DATA_SEL_GPIO_DATA_SEL_EVENT_MASK << (3 * pin);
 		ret = phy_clear_bits_mmd(phydev, 2, LAN8841_GPIO_DATA_SEL1, tmp);
@@ -4187,7 +3989,7 @@ static int lan8841_ptp_remove_event(struct kszphy_ptp_priv *ptp_priv, int pin,
 	if (ret)
 		return ret;
 
-	/* Disable the event */
+	 
 	if (event == LAN8841_EVENT_A)
 		tmp = LAN8841_PTP_GENERAL_CONFIG_LTC_EVENT_POL_A |
 		      LAN8841_PTP_GENERAL_CONFIG_LTC_EVENT_A_MASK;
@@ -4204,7 +4006,7 @@ static int lan8841_ptp_enable_event(struct kszphy_ptp_priv *ptp_priv, int pin,
 	u16 tmp;
 	int ret;
 
-	/* Enable the event */
+	 
 	if (event == LAN8841_EVENT_A)
 		ret = phy_modify_mmd(phydev, 2, LAN8841_PTP_GENERAL_CONFIG,
 				     LAN8841_PTP_GENERAL_CONFIG_LTC_EVENT_POL_A |
@@ -4220,10 +4022,7 @@ static int lan8841_ptp_enable_event(struct kszphy_ptp_priv *ptp_priv, int pin,
 	if (ret)
 		return ret;
 
-	/* Now connect the pin to the event. GPIO_DATA_SEL1 contains the GPIO
-	 * pins 0-4 while GPIO_DATA_SEL2 contains GPIO pins 5-9, therefore
-	 * depending on the pin, it requires to read a different register
-	 */
+	 
 	if (event == LAN8841_EVENT_A)
 		tmp = LAN8841_GPIO_DATA_SEL_GPIO_DATA_SEL_EVENT_A;
 	else
@@ -4387,7 +4186,7 @@ static int lan8841_ptp_extts_on(struct kszphy_ptp_priv *ptp_priv, int pin,
 	u16 tmp = 0;
 	int ret;
 
-	/* Set GPIO to be intput */
+	 
 	ret = phy_set_bits_mmd(phydev, 2, LAN8841_GPIO_EN, BIT(pin));
 	if (ret)
 		return ret;
@@ -4396,7 +4195,7 @@ static int lan8841_ptp_extts_on(struct kszphy_ptp_priv *ptp_priv, int pin,
 	if (ret)
 		return ret;
 
-	/* Enable capture on the edges of the pin */
+	 
 	if (flags & PTP_RISING_EDGE)
 		tmp |= LAN8841_PTP_GPIO_CAP_EN_GPIO_RE_CAPTURE_ENABLE(pin);
 	if (flags & PTP_FALLING_EDGE)
@@ -4405,7 +4204,7 @@ static int lan8841_ptp_extts_on(struct kszphy_ptp_priv *ptp_priv, int pin,
 	if (ret)
 		return ret;
 
-	/* Enable interrupt */
+	 
 	return phy_modify_mmd(phydev, 2, LAN8841_PTP_INT_EN,
 			      LAN8841_PTP_INT_EN_PTP_GPIO_CAP_EN,
 			      LAN8841_PTP_INT_EN_PTP_GPIO_CAP_EN);
@@ -4416,7 +4215,7 @@ static int lan8841_ptp_extts_off(struct kszphy_ptp_priv *ptp_priv, int pin)
 	struct phy_device *phydev = ptp_priv->phydev;
 	int ret;
 
-	/* Set GPIO to be output */
+	 
 	ret = phy_clear_bits_mmd(phydev, 2, LAN8841_GPIO_EN, BIT(pin));
 	if (ret)
 		return ret;
@@ -4425,7 +4224,7 @@ static int lan8841_ptp_extts_off(struct kszphy_ptp_priv *ptp_priv, int pin)
 	if (ret)
 		return ret;
 
-	/* Disable capture on both of the edges */
+	 
 	ret = phy_modify_mmd(phydev, 2, LAN8841_PTP_GPIO_CAP_EN,
 			     LAN8841_PTP_GPIO_CAP_EN_GPIO_RE_CAPTURE_ENABLE(pin) |
 			     LAN8841_PTP_GPIO_CAP_EN_GPIO_FE_CAPTURE_ENABLE(pin),
@@ -4433,7 +4232,7 @@ static int lan8841_ptp_extts_off(struct kszphy_ptp_priv *ptp_priv, int pin)
 	if (ret)
 		return ret;
 
-	/* Disable interrupt */
+	 
 	return phy_modify_mmd(phydev, 2, LAN8841_PTP_INT_EN,
 			      LAN8841_PTP_INT_EN_PTP_GPIO_CAP_EN,
 			      0);
@@ -4447,7 +4246,7 @@ static int lan8841_ptp_extts(struct ptp_clock_info *ptp,
 	int pin;
 	int ret;
 
-	/* Reject requests with unsupported flags */
+	 
 	if (rq->extts.flags & ~(PTP_ENABLE_FEATURE |
 				PTP_EXTTS_EDGES |
 				PTP_STRICT_FLAGS))
@@ -4532,7 +4331,7 @@ static int lan8841_probe(struct phy_device *phydev)
 	    LAN8841_OPERATION_MODE_STRAP_LOW_REGISTER_STRAP_RGMII_EN)
 		phydev->interface = PHY_INTERFACE_MODE_RGMII_RXID;
 
-	/* Register the clock */
+	 
 	if (!IS_ENABLED(CONFIG_NETWORK_PHY_TIMESTAMPING))
 		return 0;
 
@@ -4567,7 +4366,7 @@ static int lan8841_probe(struct phy_device *phydev)
 	if (!ptp_priv->ptp_clock)
 		return 0;
 
-	/* Initialize the SW */
+	 
 	skb_queue_head_init(&ptp_priv->tx_queue);
 	ptp_priv->phydev = phydev;
 	mutex_init(&ptp_priv->ptp_lock);
@@ -4598,7 +4397,7 @@ static struct phy_driver ksphy_driver[] = {
 	.phy_id		= PHY_ID_KS8737,
 	.phy_id_mask	= MICREL_PHY_ID_MASK,
 	.name		= "Micrel KS8737",
-	/* PHY_BASIC_FEATURES */
+	 
 	.driver_data	= &ks8737_type,
 	.probe		= kszphy_probe,
 	.config_init	= kszphy_config_init,
@@ -4610,7 +4409,7 @@ static struct phy_driver ksphy_driver[] = {
 	.phy_id		= PHY_ID_KSZ8021,
 	.phy_id_mask	= 0x00ffffff,
 	.name		= "Micrel KSZ8021 or KSZ8031",
-	/* PHY_BASIC_FEATURES */
+	 
 	.driver_data	= &ksz8021_type,
 	.probe		= kszphy_probe,
 	.config_init	= kszphy_config_init,
@@ -4625,7 +4424,7 @@ static struct phy_driver ksphy_driver[] = {
 	.phy_id		= PHY_ID_KSZ8031,
 	.phy_id_mask	= 0x00ffffff,
 	.name		= "Micrel KSZ8031",
-	/* PHY_BASIC_FEATURES */
+	 
 	.driver_data	= &ksz8021_type,
 	.probe		= kszphy_probe,
 	.config_init	= kszphy_config_init,
@@ -4640,7 +4439,7 @@ static struct phy_driver ksphy_driver[] = {
 	.phy_id		= PHY_ID_KSZ8041,
 	.phy_id_mask	= MICREL_PHY_ID_MASK,
 	.name		= "Micrel KSZ8041",
-	/* PHY_BASIC_FEATURES */
+	 
 	.driver_data	= &ksz8041_type,
 	.probe		= kszphy_probe,
 	.config_init	= ksz8041_config_init,
@@ -4650,14 +4449,12 @@ static struct phy_driver ksphy_driver[] = {
 	.get_sset_count = kszphy_get_sset_count,
 	.get_strings	= kszphy_get_strings,
 	.get_stats	= kszphy_get_stats,
-	/* No suspend/resume callbacks because of errata DS80000700A,
-	 * receiver error following software power down.
-	 */
+	 
 }, {
 	.phy_id		= PHY_ID_KSZ8041RNLI,
 	.phy_id_mask	= MICREL_PHY_ID_MASK,
 	.name		= "Micrel KSZ8041RNLI",
-	/* PHY_BASIC_FEATURES */
+	 
 	.driver_data	= &ksz8041_type,
 	.probe		= kszphy_probe,
 	.config_init	= kszphy_config_init,
@@ -4670,7 +4467,7 @@ static struct phy_driver ksphy_driver[] = {
 	.resume		= kszphy_resume,
 }, {
 	.name		= "Micrel KSZ8051",
-	/* PHY_BASIC_FEATURES */
+	 
 	.driver_data	= &ksz8051_type,
 	.probe		= kszphy_probe,
 	.config_init	= kszphy_config_init,
@@ -4686,7 +4483,7 @@ static struct phy_driver ksphy_driver[] = {
 	.phy_id		= PHY_ID_KSZ8001,
 	.name		= "Micrel KSZ8001 or KS8721",
 	.phy_id_mask	= 0x00fffffc,
-	/* PHY_BASIC_FEATURES */
+	 
 	.driver_data	= &ksz8041_type,
 	.probe		= kszphy_probe,
 	.config_init	= kszphy_config_init,
@@ -4702,7 +4499,7 @@ static struct phy_driver ksphy_driver[] = {
 	.name		= "Micrel KSZ8081 or KSZ8091",
 	.phy_id_mask	= MICREL_PHY_ID_MASK,
 	.flags		= PHY_POLL_CABLE_TEST,
-	/* PHY_BASIC_FEATURES */
+	 
 	.driver_data	= &ksz8081_type,
 	.probe		= kszphy_probe,
 	.config_init	= ksz8081_config_init,
@@ -4722,7 +4519,7 @@ static struct phy_driver ksphy_driver[] = {
 	.phy_id		= PHY_ID_KSZ8061,
 	.name		= "Micrel KSZ8061",
 	.phy_id_mask	= MICREL_PHY_ID_MASK,
-	/* PHY_BASIC_FEATURES */
+	 
 	.probe		= kszphy_probe,
 	.config_init	= ksz8061_config_init,
 	.config_intr	= kszphy_config_intr,
@@ -4733,7 +4530,7 @@ static struct phy_driver ksphy_driver[] = {
 	.phy_id		= PHY_ID_KSZ9021,
 	.phy_id_mask	= 0x000ffffe,
 	.name		= "Micrel KSZ9021 Gigabit PHY",
-	/* PHY_GBIT_FEATURES */
+	 
 	.driver_data	= &ksz9021_type,
 	.probe		= kszphy_probe,
 	.get_features	= ksz9031_get_features,
@@ -4824,7 +4621,7 @@ static struct phy_driver ksphy_driver[] = {
 	.phy_id		= PHY_ID_KSZ9131,
 	.phy_id_mask	= MICREL_PHY_ID_MASK,
 	.name		= "Microchip KSZ9131 Gigabit PHY",
-	/* PHY_GBIT_FEATURES */
+	 
 	.flags		= PHY_POLL_CABLE_TEST,
 	.driver_data	= &ksz9131_type,
 	.probe		= kszphy_probe,
@@ -4846,7 +4643,7 @@ static struct phy_driver ksphy_driver[] = {
 	.phy_id		= PHY_ID_KSZ8873MLL,
 	.phy_id_mask	= MICREL_PHY_ID_MASK,
 	.name		= "Micrel KSZ8873MLL Switch",
-	/* PHY_BASIC_FEATURES */
+	 
 	.config_init	= kszphy_config_init,
 	.config_aneg	= ksz8873mll_config_aneg,
 	.read_status	= ksz8873mll_read_status,
@@ -4857,7 +4654,7 @@ static struct phy_driver ksphy_driver[] = {
 	.phy_id_mask	= MICREL_PHY_ID_MASK,
 	.name		= "Micrel KSZ8851 Ethernet MAC or KSZ886X Switch",
 	.driver_data	= &ksz886x_type,
-	/* PHY_BASIC_FEATURES */
+	 
 	.flags		= PHY_POLL_CABLE_TEST,
 	.config_init	= kszphy_config_init,
 	.config_aneg	= ksz886x_config_aneg,
@@ -4868,7 +4665,7 @@ static struct phy_driver ksphy_driver[] = {
 	.cable_test_get_status	= ksz886x_cable_test_get_status,
 }, {
 	.name		= "Micrel KSZ87XX Switch",
-	/* PHY_BASIC_FEATURES */
+	 
 	.config_init	= kszphy_config_init,
 	.match_phy_device = ksz8795_match_phy_device,
 	.suspend	= genphy_suspend,
@@ -4877,7 +4674,7 @@ static struct phy_driver ksphy_driver[] = {
 	.phy_id		= PHY_ID_KSZ9477,
 	.phy_id_mask	= MICREL_PHY_ID_MASK,
 	.name		= "Microchip KSZ9477",
-	/* PHY_GBIT_FEATURES */
+	 
 	.config_init	= ksz9477_config_init,
 	.config_intr	= kszphy_config_intr,
 	.handle_interrupt = kszphy_handle_interrupt,

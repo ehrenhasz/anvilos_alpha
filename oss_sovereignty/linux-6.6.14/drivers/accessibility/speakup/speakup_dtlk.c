@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * originally written by: Kirk Reiser <kirk@braille.uwo.ca>
- * this version considerably modified by David Borowski, david575@rogers.com
- *
- * Copyright (C) 1998-99  Kirk Reiser.
- * Copyright (C) 2003 David Borowski.
- *
- * specifically written as a driver for the speakup screenreview
- * package it's not a general device driver.
- * This driver is for the RC Systems DoubleTalk PC internal synthesizer.
- */
+
+ 
 #include <linux/jiffies.h>
 #include <linux/sched.h>
 #include <linux/timer.h>
@@ -17,7 +7,7 @@
 
 #include "spk_priv.h"
 #include "serialio.h"
-#include "speakup_dtlk.h" /* local header file for DoubleTalk values */
+#include "speakup_dtlk.h"  
 #include "speakup.h"
 
 #define DRV_VERSION "2.10"
@@ -61,9 +51,7 @@ static struct var_t vars[NB_ID] = {
 	V_LAST_VAR
 };
 
-/*
- * These attributes will appear in /sys/accessibility/speakup/dtlk.
- */
+ 
 static struct kobj_attribute caps_start_attribute =
 	__ATTR(caps_start, 0644, spk_var_show, spk_var_store);
 static struct kobj_attribute caps_stop_attribute =
@@ -94,10 +82,7 @@ static struct kobj_attribute jiffy_delta_attribute =
 static struct kobj_attribute trigger_time_attribute =
 	__ATTR(trigger_time, 0644, spk_var_show, spk_var_store);
 
-/*
- * Create a group of attributes so that we can create and destroy them all
- * at once.
- */
+ 
 static struct attribute *synth_attrs[] = {
 	&caps_start_attribute.attr,
 	&caps_stop_attribute.attr,
@@ -113,7 +98,7 @@ static struct attribute *synth_attrs[] = {
 	&full_time_attribute.attr,
 	&jiffy_delta_attribute.attr,
 	&trigger_time_attribute.attr,
-	NULL,	/* need to NULL terminate the list of attributes */
+	NULL,	 
 };
 
 static struct spk_synth synth_dtlk = {
@@ -279,7 +264,7 @@ static char synth_read_tts(void)
 	return (char)ch;
 }
 
-/* interrogate the DoubleTalk PC and return its settings */
+ 
 static struct synth_settings *synth_interrogate(struct spk_synth *synth)
 {
 	u_char *t;
@@ -296,7 +281,7 @@ static struct synth_settings *synth_interrogate(struct spk_synth *synth)
 			total++;
 	}
 	t = buf;
-	/* serial number is little endian */
+	 
 	status.serial_number = t[0] + t[1] * 256;
 	t += 2;
 	for (i = 0; *t != '\r'; t++) {
@@ -366,7 +351,7 @@ static int synth_probe(struct spk_synth *synth)
 		return -ENODEV;
 	}
 	while (inw_p(synth_lpc) != 0x147f)
-		cpu_relax(); /* wait until it's ready */
+		cpu_relax();  
 	sp = synth_interrogate(synth);
 	pr_info("%s: %03x-%03x, ROM ver %s, s/n %u, driver: %s\n",
 		synth->long_name, synth_lpc, synth_lpc + SYNTH_IO_EXTENT - 1,

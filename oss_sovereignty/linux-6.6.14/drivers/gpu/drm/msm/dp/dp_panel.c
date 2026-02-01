@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2012-2020, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include "dp_panel.h"
 
@@ -27,7 +25,7 @@ static void dp_panel_read_psr_cap(struct dp_panel_private *panel)
 
 	dp_panel = &panel->dp_panel;
 
-	/* edp sink */
+	 
 	if (dp_panel->dpcd[DP_EDP_CONFIGURATION_CAP]) {
 		rlen = drm_dp_dpcd_read(panel->aux, DP_PSR_SUPPORT,
 				&dp_panel->psr_cap, sizeof(dp_panel->psr_cap));
@@ -70,7 +68,7 @@ static int dp_panel_read_dpcd(struct dp_panel *dp_panel)
 
 	temp = dpcd[DP_TRAINING_AUX_RD_INTERVAL];
 
-	/* check for EXTENDED_RECEIVER_CAPABILITY_FIELD_PRESENT */
+	 
 	if (temp & BIT(7)) {
 		drm_dbg_dp(panel->drm_dev,
 				"using EXTENDED_RECEIVER_CAPABILITY_FIELD\n");
@@ -96,11 +94,11 @@ static int dp_panel_read_dpcd(struct dp_panel *dp_panel)
 	link_info->rate = drm_dp_bw_code_to_link_rate(dpcd[DP_MAX_LINK_RATE]);
 	link_info->num_lanes = dpcd[DP_MAX_LANE_COUNT] & DP_MAX_LANE_COUNT_MASK;
 
-	/* Limit data lanes from data-lanes of endpoint property of dtsi */
+	 
 	if (link_info->num_lanes > dp_panel->max_dp_lanes)
 		link_info->num_lanes = dp_panel->max_dp_lanes;
 
-	/* Limit link rate from link-frequencies of endpoint property of dtsi */
+	 
 	if (link_info->rate > dp_panel->max_dp_link_rate)
 		link_info->rate = dp_panel->max_dp_link_rate;
 
@@ -226,7 +224,7 @@ int dp_panel_read_sink_caps(struct dp_panel *dp_panel,
 					      &panel->aux->ddc);
 	if (!dp_panel->edid) {
 		DRM_ERROR("panel edid read failed\n");
-		/* check edid read fail is due to unplug */
+		 
 		if (!dp_catalog_link_is_connected(panel->catalog)) {
 			rc = -ETIMEDOUT;
 			goto end;
@@ -423,10 +421,7 @@ int dp_panel_init_panel_info(struct dp_panel *dp_panel)
 
 	panel = container_of(dp_panel, struct dp_panel_private, dp_panel);
 
-	/*
-	 * print resolution info as this is a result
-	 * of user initiated action of cable connection
-	 */
+	 
 	drm_dbg_dp(panel->drm_dev, "SET NEW RESOLUTION:\n");
 	drm_dbg_dp(panel->drm_dev, "%dx%d@%dfps\n",
 		drm_mode->hdisplay, drm_mode->vdisplay, drm_mode_vrefresh(drm_mode));

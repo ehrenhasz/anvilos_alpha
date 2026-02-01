@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/bpf.h>
 #include <linux/if_link.h>
 #include <assert.h>
@@ -99,7 +99,7 @@ int main(int argc, char **argv)
 			xdp_flags |= XDP_FLAGS_SKB_MODE;
 			break;
 		case 'N':
-			/* default, set below */
+			 
 			break;
 		case 'F':
 			xdp_flags &= ~XDP_FLAGS_UPDATE_IF_NOEXIST;
@@ -164,7 +164,7 @@ int main(int argc, char **argv)
 	}
 
 	if (attach_egress_prog) {
-		/* Find ingress/egress prog for 2nd xdp prog */
+		 
 		ingress_prog = bpf_object__find_program_by_name(obj, "xdp_redirect_map_all_prog");
 		egress_prog = bpf_object__find_program_by_name(obj, "xdp_devmap_prog");
 		if (!ingress_prog || !egress_prog) {
@@ -182,7 +182,7 @@ int main(int argc, char **argv)
 	signal(SIGINT, int_exit);
 	signal(SIGTERM, int_exit);
 
-	/* Init forward multicast groups and exclude group */
+	 
 	for (i = 0; ifaces[i] > 0; i++) {
 		ifindex = ifaces[i];
 
@@ -199,7 +199,7 @@ int main(int argc, char **argv)
 			}
 		}
 
-		/* Add all the interfaces to group all */
+		 
 		devmap_val.ifindex = ifindex;
 		devmap_val.bpf_prog.fd = egress_prog_fd;
 		ret = bpf_map_update_elem(group_all, &ifindex, &devmap_val, 0);
@@ -208,7 +208,7 @@ int main(int argc, char **argv)
 			goto err_out;
 		}
 
-		/* bind prog_fd to each interface */
+		 
 		ret = bpf_xdp_attach(ifindex, prog_fd, xdp_flags, NULL);
 		if (ret) {
 			printf("Set xdp fd failed on %d\n", ifindex);
@@ -216,7 +216,7 @@ int main(int argc, char **argv)
 		}
 	}
 
-	/* sleep some time for testing */
+	 
 	sleep(999);
 
 	return 0;

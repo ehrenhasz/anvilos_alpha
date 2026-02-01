@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2017, Linaro Limited
- * Author: Georgi Djakov <georgi.djakov@linaro.org>
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/delay.h>
@@ -40,7 +37,7 @@ int mux_div_set_src_div(struct clk_regmap_mux_div *md, u32 src, u32 div)
 	if (ret)
 		return ret;
 
-	/* Wait for update to take effect */
+	 
 	for (count = 500; count > 0; count--) {
 		ret = regmap_read(md->clkr.regmap, CMD_RCGR + md->reg_offset,
 				  &val);

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2022 MediaTek Inc.
- * Author: Garmin Chang <garmin.chang@mediatek.com>
- */
+
+ 
 
 #include <dt-bindings/clock/mediatek,mt8188-clk.h>
 #include <linux/mod_devicetable.h>
@@ -948,11 +945,7 @@ static const char * const mfg_fast_ref_parents[] = {
 };
 
 static const struct mtk_mux top_mtk_muxes[] = {
-	/*
-	 * CLK_CFG_0
-	 * axi_sel and bus_aximem_sel are bus clocks, should not be closed by Linux.
-	 * spm_sel and scp_sel are main clocks in always-on co-processor.
-	 */
+	 
 	MUX_GATE_CLR_SET_UPD_FLAGS(CLK_TOP_AXI, "top_axi", axi_parents,
 				   0x020, 0x024, 0x028, 0, 4, 7, 0x04, 0,
 				   CLK_IS_CRITICAL | CLK_SET_RATE_PARENT),
@@ -965,7 +958,7 @@ static const struct mtk_mux top_mtk_muxes[] = {
 	MUX_GATE_CLR_SET_UPD_FLAGS(CLK_TOP_BUS_AXIMEM, "top_bus_aximem", bus_aximem_parents,
 				   0x020, 0x024, 0x028, 24, 4, 31, 0x04, 3,
 				   CLK_IS_CRITICAL | CLK_SET_RATE_PARENT),
-	/* CLK_CFG_1 */
+	 
 	MUX_GATE_CLR_SET_UPD(CLK_TOP_VPP, "top_vpp",
 			     vpp_parents, 0x02C, 0x030, 0x034, 0, 4, 7, 0x04, 4),
 	MUX_GATE_CLR_SET_UPD(CLK_TOP_ETHDR, "top_ethdr",
@@ -974,7 +967,7 @@ static const struct mtk_mux top_mtk_muxes[] = {
 			     ipe_parents, 0x02C, 0x030, 0x034, 16, 4, 23, 0x04, 6),
 	MUX_GATE_CLR_SET_UPD(CLK_TOP_CAM, "top_cam",
 			     cam_parents, 0x02C, 0x030, 0x034, 24, 4, 31, 0x04, 7),
-	/* CLK_CFG_2 */
+	 
 	MUX_GATE_CLR_SET_UPD(CLK_TOP_CCU, "top_ccu",
 			     ccu_parents, 0x038, 0x03C, 0x040, 0, 4, 7, 0x04, 8),
 	MUX_GATE_CLR_SET_UPD(CLK_TOP_CCU_AHB, "top_ccu_ahb",
@@ -983,7 +976,7 @@ static const struct mtk_mux top_mtk_muxes[] = {
 			     img_parents, 0x038, 0x03C, 0x040, 16, 4, 23, 0x04, 10),
 	MUX_GATE_CLR_SET_UPD(CLK_TOP_CAMTM, "top_camtm",
 			     camtm_parents, 0x038, 0x03C, 0x040, 24, 4, 31, 0x04, 11),
-	/* CLK_CFG_3 */
+	 
 	MUX_GATE_CLR_SET_UPD(CLK_TOP_DSP, "top_dsp",
 			     dsp_parents, 0x044, 0x048, 0x04C, 0, 4, 7, 0x04, 12),
 	MUX_GATE_CLR_SET_UPD(CLK_TOP_DSP1, "top_dsp1",
@@ -992,7 +985,7 @@ static const struct mtk_mux top_mtk_muxes[] = {
 			     dsp2_parents, 0x044, 0x048, 0x04C, 16, 4, 23, 0x04, 14),
 	MUX_GATE_CLR_SET_UPD(CLK_TOP_DSP3, "top_dsp3",
 			     dsp3_parents, 0x044, 0x048, 0x04C, 24, 4, 31, 0x04, 15),
-	/* CLK_CFG_4 */
+	 
 	MUX_GATE_CLR_SET_UPD(CLK_TOP_DSP4, "top_dsp4",
 			     dsp4_parents, 0x050, 0x054, 0x058, 0, 4, 7, 0x04, 16),
 	MUX_GATE_CLR_SET_UPD(CLK_TOP_DSP5, "top_dsp5",
@@ -1001,7 +994,7 @@ static const struct mtk_mux top_mtk_muxes[] = {
 			     dsp6_parents, 0x050, 0x054, 0x058, 16, 4, 23, 0x04, 18),
 	MUX_GATE_CLR_SET_UPD(CLK_TOP_DSP7, "top_dsp7",
 			     dsp7_parents, 0x050, 0x054, 0x058, 24, 4, 31, 0x04, 19),
-	/* CLK_CFG_5 */
+	 
 	MUX_GATE_CLR_SET_UPD(CLK_TOP_MFG_CORE_TMP, "top_mfg_core_tmp",
 			     mfg_core_tmp_parents, 0x05C, 0x060, 0x064, 0, 4, 7, 0x04, 20),
 	MUX_GATE_CLR_SET_UPD(CLK_TOP_CAMTG, "top_camtg",
@@ -1010,7 +1003,7 @@ static const struct mtk_mux top_mtk_muxes[] = {
 			     camtg2_parents, 0x05C, 0x060, 0x064, 16, 4, 23, 0x04, 22),
 	MUX_GATE_CLR_SET_UPD(CLK_TOP_CAMTG3, "top_camtg3",
 			     camtg3_parents, 0x05C, 0x060, 0x064, 24, 4, 31, 0x04, 23),
-	/* CLK_CFG_6 */
+	 
 	MUX_GATE_CLR_SET_UPD(CLK_TOP_UART, "top_uart",
 			     uart_parents, 0x068, 0x06C, 0x070, 0, 4, 7, 0x04, 24),
 	MUX_GATE_CLR_SET_UPD(CLK_TOP_SPI, "top_spi",
@@ -1019,7 +1012,7 @@ static const struct mtk_mux top_mtk_muxes[] = {
 				   msdc5hclk_parents, 0x068, 0x06C, 0x070, 16, 4, 23, 0x04, 26, 0),
 	MUX_GATE_CLR_SET_UPD_FLAGS(CLK_TOP_MSDC50_0, "top_msdc50_0",
 				   msdc50_0_parents, 0x068, 0x06C, 0x070, 24, 4, 31, 0x04, 27, 0),
-	/* CLK_CFG_7 */
+	 
 	MUX_GATE_CLR_SET_UPD_FLAGS(CLK_TOP_MSDC30_1, "top_msdc30_1",
 				   msdc30_1_parents, 0x074, 0x078, 0x07C, 0, 4, 7, 0x04, 28, 0),
 	MUX_GATE_CLR_SET_UPD_FLAGS(CLK_TOP_MSDC30_2, "top_msdc30_2",
@@ -1028,7 +1021,7 @@ static const struct mtk_mux top_mtk_muxes[] = {
 			     intdir_parents, 0x074, 0x078, 0x07C, 16, 4, 23, 0x04, 30),
 	MUX_GATE_CLR_SET_UPD(CLK_TOP_AUD_INTBUS, "top_aud_intbus",
 			     aud_intbus_parents, 0x074, 0x078, 0x07C, 24, 4, 31, 0x04, 31),
-	/* CLK_CFG_8 */
+	 
 	MUX_GATE_CLR_SET_UPD(CLK_TOP_AUDIO_H, "top_audio_h",
 			     audio_h_parents, 0x080, 0x084, 0x088, 0, 4, 7, 0x08, 0),
 	MUX_GATE_CLR_SET_UPD(CLK_TOP_PWRAP_ULPOSC, "top_pwrap_ulposc",
@@ -1037,7 +1030,7 @@ static const struct mtk_mux top_mtk_muxes[] = {
 			     atb_parents, 0x080, 0x084, 0x088, 16, 4, 23, 0x08, 2),
 	MUX_GATE_CLR_SET_UPD(CLK_TOP_SSPM, "top_sspm",
 			     sspm_parents, 0x080, 0x084, 0x088, 24, 4, 31, 0x08, 3),
-	/* CLK_CFG_9 */
+	 
 	MUX_GATE_CLR_SET_UPD(CLK_TOP_DP, "top_dp",
 			     dp_parents, 0x08C, 0x090, 0x094, 0, 4, 7, 0x08, 4),
 	MUX_GATE_CLR_SET_UPD(CLK_TOP_EDP, "top_edp",
@@ -1046,7 +1039,7 @@ static const struct mtk_mux top_mtk_muxes[] = {
 			     dpi_parents, 0x08C, 0x090, 0x094, 16, 4, 23, 0x08, 6),
 	MUX_GATE_CLR_SET_UPD(CLK_TOP_DISP_PWM0, "top_disp_pwm0",
 			     disp_pwm0_parents, 0x08C, 0x090, 0x094, 24, 4, 31, 0x08, 7),
-	/* CLK_CFG_10 */
+	 
 	MUX_GATE_CLR_SET_UPD(CLK_TOP_DISP_PWM1, "top_disp_pwm1",
 			     disp_pwm1_parents, 0x098, 0x09C, 0x0A0, 0, 4, 7, 0x08, 8),
 	MUX_GATE_CLR_SET_UPD(CLK_TOP_USB_TOP, "top_usb_top",
@@ -1055,7 +1048,7 @@ static const struct mtk_mux top_mtk_muxes[] = {
 			     ssusb_xhci_parents, 0x098, 0x09C, 0x0A0, 16, 4, 23, 0x08, 10),
 	MUX_GATE_CLR_SET_UPD(CLK_TOP_USB_TOP_2P, "top_usb_top_2p",
 			     usb_2p_parents, 0x098, 0x09C, 0x0A0, 24, 4, 31, 0x08, 11),
-	/* CLK_CFG_11 */
+	 
 	MUX_GATE_CLR_SET_UPD(CLK_TOP_SSUSB_XHCI_2P, "top_ssusb_xhci_2p",
 			     ssusb_xhci_2p_parents, 0x0A4, 0x0A8, 0x0AC, 0, 4, 7, 0x08, 12),
 	MUX_GATE_CLR_SET_UPD(CLK_TOP_USB_TOP_3P, "top_usb_top_3p",
@@ -1064,7 +1057,7 @@ static const struct mtk_mux top_mtk_muxes[] = {
 			     ssusb_xhci_3p_parents, 0x0A4, 0x0A8, 0x0AC, 16, 4, 23, 0x08, 14),
 	MUX_GATE_CLR_SET_UPD(CLK_TOP_I2C, "top_i2c",
 			     i2c_parents, 0x0A4, 0x0A8, 0x0AC, 24, 4, 31, 0x08, 15),
-	/* CLK_CFG_12 */
+	 
 	MUX_GATE_CLR_SET_UPD(CLK_TOP_SENINF, "top_seninf",
 			     seninf_parents, 0x0B0, 0x0B4, 0x0B8, 0, 4, 7, 0x08, 16),
 	MUX_GATE_CLR_SET_UPD(CLK_TOP_SENINF1, "top_seninf1",
@@ -1073,10 +1066,7 @@ static const struct mtk_mux top_mtk_muxes[] = {
 			     gcpu_parents, 0x0B0, 0x0B4, 0x0B8, 16, 4, 23, 0x08, 18),
 	MUX_GATE_CLR_SET_UPD(CLK_TOP_VENC, "top_venc",
 			     venc_parents, 0x0B0, 0x0B4, 0x0B8, 24, 4, 31, 0x08, 19),
-	/*
-	 * CLK_CFG_13
-	 * top_mcupm is main clock in co-processor, should not be handled by Linux.
-	 */
+	 
 	MUX_GATE_CLR_SET_UPD(CLK_TOP_VDEC, "top_vdec",
 			     vdec_parents, 0x0BC, 0x0C0, 0x0C4, 0, 4, 7, 0x08, 20),
 	MUX_GATE_CLR_SET_UPD(CLK_TOP_PWM, "top_pwm",
@@ -1086,10 +1076,7 @@ static const struct mtk_mux top_mtk_muxes[] = {
 				   CLK_IS_CRITICAL | CLK_SET_RATE_PARENT),
 	MUX_GATE_CLR_SET_UPD(CLK_TOP_SPMI_P_MST, "top_spmi_p_mst",
 			     spmi_p_mst_parents, 0x0BC, 0x0C0, 0x0C4, 24, 4, 31, 0x08, 23),
-	/*
-	 * CLK_CFG_14
-	 * dvfsrc_sel is for internal DVFS usage, should not be handled by Linux.
-	 */
+	 
 	MUX_GATE_CLR_SET_UPD(CLK_TOP_SPMI_M_MST, "top_spmi_m_mst",
 			     spmi_m_mst_parents, 0x0C8, 0x0CC, 0x0D0, 0, 4, 7, 0x08, 24),
 	MUX_GATE_CLR_SET_UPD_FLAGS(CLK_TOP_DVFSRC, "top_dvfsrc", dvfsrc_parents,
@@ -1099,7 +1086,7 @@ static const struct mtk_mux top_mtk_muxes[] = {
 			     tl_parents, 0x0C8, 0x0CC, 0x0D0, 16, 4, 23, 0x08, 26),
 	MUX_GATE_CLR_SET_UPD(CLK_TOP_AES_MSDCFDE, "top_aes_msdcfde",
 			     aes_msdcfde_parents, 0x0C8, 0x0CC, 0x0D0, 24, 4, 31, 0x08, 27),
-	/* CLK_CFG_15 */
+	 
 	MUX_GATE_CLR_SET_UPD(CLK_TOP_DSI_OCC, "top_dsi_occ",
 			     dsi_occ_parents, 0x0D4, 0x0D8, 0x0DC, 0, 4, 7, 0x08, 28),
 	MUX_GATE_CLR_SET_UPD(CLK_TOP_WPE_VPP, "top_wpe_vpp",
@@ -1108,7 +1095,7 @@ static const struct mtk_mux top_mtk_muxes[] = {
 			     hdcp_parents, 0x0D4, 0x0D8, 0x0DC, 16, 4, 23, 0x08, 30),
 	MUX_GATE_CLR_SET_UPD(CLK_TOP_HDCP_24M, "top_hdcp_24m",
 			     hdcp_24m_parents, 0x0D4, 0x0D8, 0x0DC, 24, 4, 31, 0x08, 31),
-	/* CLK_CFG_16 */
+	 
 	MUX_GATE_CLR_SET_UPD(CLK_TOP_HDMI_APB, "top_hdmi_apb",
 			     hdmi_apb_parents, 0x0E0, 0x0E4, 0x0E8, 0, 4, 7, 0x0C, 0),
 	MUX_GATE_CLR_SET_UPD(CLK_TOP_SNPS_ETH_250M, "top_snps_eth_250m",
@@ -1117,7 +1104,7 @@ static const struct mtk_mux top_mtk_muxes[] = {
 			     snps_eth_62p4m_ptp_parents, 0x0E0, 0x0E4, 0x0E8, 16, 4, 23, 0x0C, 2),
 	MUX_GATE_CLR_SET_UPD(CLK_TOP_SNPS_ETH_50M_RMII, "snps_eth_50m_rmii",
 			     snps_eth_50m_rmii_parents, 0x0E0, 0x0E4, 0x0E8, 24, 4, 31, 0x0C, 3),
-	/* CLK_CFG_17 */
+	 
 	MUX_GATE_CLR_SET_UPD(CLK_TOP_ADSP, "top_adsp",
 			     adsp_parents, 0x0EC, 0x0F0, 0x0F4, 0, 4, 7, 0x0C, 4),
 	MUX_GATE_CLR_SET_UPD(CLK_TOP_AUDIO_LOCAL_BUS, "top_audio_local_bus",
@@ -1126,7 +1113,7 @@ static const struct mtk_mux top_mtk_muxes[] = {
 			     asm_h_parents, 0x0EC, 0x0F0, 0x0F4, 16, 4, 23, 0x0C, 6),
 	MUX_GATE_CLR_SET_UPD(CLK_TOP_ASM_L, "top_asm_l",
 			     asm_l_parents, 0x0EC, 0x0F0, 0x0F4, 24, 4, 31, 0x0C, 7),
-	/* CLK_CFG_18 */
+	 
 	MUX_GATE_CLR_SET_UPD(CLK_TOP_APLL1, "top_apll1",
 			     apll1_parents, 0x0F8, 0x0FC, 0x100, 0, 4, 7, 0x0C, 8),
 	MUX_GATE_CLR_SET_UPD(CLK_TOP_APLL2, "top_apll2",
@@ -1135,7 +1122,7 @@ static const struct mtk_mux top_mtk_muxes[] = {
 			     apll3_parents, 0x0F8, 0x0FC, 0x100, 16, 4, 23, 0x0C, 10),
 	MUX_GATE_CLR_SET_UPD(CLK_TOP_APLL4, "top_apll4",
 			     apll4_parents, 0x0F8, 0x0FC, 0x100, 24, 4, 31, 0x0C, 11),
-	/* CLK_CFG_19 */
+	 
 	MUX_GATE_CLR_SET_UPD(CLK_TOP_APLL5, "top_apll5",
 			     apll5_parents, 0x0104, 0x0108, 0x010C, 0, 4, 7, 0x0C, 12),
 	MUX_GATE_CLR_SET_UPD(CLK_TOP_I2SO1, "top_i2so1",
@@ -1144,7 +1131,7 @@ static const struct mtk_mux top_mtk_muxes[] = {
 			     i2so2_parents, 0x0104, 0x0108, 0x010C, 16, 4, 23, 0x0C, 14),
 	MUX_GATE_CLR_SET_UPD(CLK_TOP_I2SI1, "top_i2si1",
 			     i2si1_parents, 0x0104, 0x0108, 0x010C, 24, 4, 31, 0x0C, 15),
-	/* CLK_CFG_20 */
+	 
 	MUX_GATE_CLR_SET_UPD(CLK_TOP_I2SI2, "top_i2si2",
 			     i2si2_parents, 0x0110, 0x0114, 0x0118, 0, 4, 7, 0x0C, 16),
 	MUX_GATE_CLR_SET_UPD(CLK_TOP_DPTX, "top_dptx",
@@ -1153,7 +1140,7 @@ static const struct mtk_mux top_mtk_muxes[] = {
 			     aud_iec_parents, 0x0110, 0x0114, 0x0118, 16, 4, 23, 0x0C, 18),
 	MUX_GATE_CLR_SET_UPD(CLK_TOP_A1SYS_HP, "top_a1sys_hp",
 			     a1sys_hp_parents, 0x0110, 0x0114, 0x0118, 24, 4, 31, 0x0C, 19),
-	/* CLK_CFG_21 */
+	 
 	MUX_GATE_CLR_SET_UPD(CLK_TOP_A2SYS, "top_a2sys",
 			     a2sys_parents, 0x011C, 0x0120, 0x0124, 0, 4, 7, 0x0C, 20),
 	MUX_GATE_CLR_SET_UPD(CLK_TOP_A3SYS, "top_a3sys",
@@ -1162,11 +1149,7 @@ static const struct mtk_mux top_mtk_muxes[] = {
 			     a4sys_parents, 0x011C, 0x0120, 0x0124, 16, 4, 23, 0x0C, 22),
 	MUX_GATE_CLR_SET_UPD(CLK_TOP_ECC, "top_ecc",
 			     ecc_parents, 0x011C, 0x0120, 0x0124, 24, 4, 31, 0x0C, 23),
-	/*
-	 * CLK_CFG_22
-	 * top_ulposc/top_srck are clock source of always on co-processor,
-	 * should not be closed by Linux.
-	 */
+	 
 	MUX_GATE_CLR_SET_UPD(CLK_TOP_SPINOR, "top_spinor",
 			     spinor_parents, 0x0128, 0x012C, 0x0130, 0, 4, 7, 0x0C, 24),
 	MUX_GATE_CLR_SET_UPD_FLAGS(CLK_TOP_ULPOSC, "top_ulposc", ulposc_parents,
@@ -1204,7 +1187,7 @@ static const struct mtk_gate_regs top1_cg_regs = {
 	GATE_MTK(_id, _name, _parent, &top1_cg_regs, _shift, &mtk_clk_gate_ops_no_setclr_inv)
 
 static const struct mtk_gate top_clks[] = {
-	/* TOP0 */
+	 
 	GATE_TOP0(CLK_TOP_CFGREG_CLOCK_EN_VPP0, "cfgreg_clock_vpp0", "top_vpp", 0),
 	GATE_TOP0(CLK_TOP_CFGREG_CLOCK_EN_VPP1, "cfgreg_clock_vpp1", "top_vpp", 1),
 	GATE_TOP0(CLK_TOP_CFGREG_CLOCK_EN_VDO0, "cfgreg_clock_vdo0", "top_vpp", 2),
@@ -1217,7 +1200,7 @@ static const struct mtk_gate top_clks[] = {
 	GATE_TOP0(CLK_TOP_CFGREG_AUD_F26M_AUD, "cfgreg_aud_f26m_aud", "clk26m", 9),
 	GATE_TOP0(CLK_TOP_CFGREG_UNIPLL_SES, "cfgreg_unipll_ses", "univpll_d2", 15),
 	GATE_TOP0(CLK_TOP_CFGREG_F_PCIE_PHY_REF, "cfgreg_f_pcie_phy_ref", "clk26m", 18),
-	/* TOP1 */
+	 
 	GATE_TOP1(CLK_TOP_SSUSB_TOP_REF, "ssusb_ref", "clk26m", 0),
 	GATE_TOP1(CLK_TOP_SSUSB_PHY_REF, "ssusb_phy_ref", "clk26m", 1),
 	GATE_TOP1(CLK_TOP_SSUSB_TOP_P1_REF, "ssusb_p1_ref", "clk26m", 2),
@@ -1230,11 +1213,11 @@ static const struct mtk_gate top_clks[] = {
 
 static const struct of_device_id of_match_clk_mt8188_topck[] = {
 	{ .compatible = "mediatek,mt8188-topckgen" },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, of_match_clk_mt8188_topck);
 
-/* Register mux notifier for MFG mux */
+ 
 static int clk_mt8188_reg_mfg_mux_notifier(struct device *dev, struct clk *clk)
 {
 	struct mtk_mux_nb *mfg_mux_nb;
@@ -1244,7 +1227,7 @@ static int clk_mt8188_reg_mfg_mux_notifier(struct device *dev, struct clk *clk)
 		return -ENOMEM;
 
 	mfg_mux_nb->ops = &clk_mux_ops;
-	mfg_mux_nb->bypass_index = 0; /* Bypass to TOP_MFG_CORE_TMP */
+	mfg_mux_nb->bypass_index = 0;  
 
 	return devm_mtk_clk_mux_notifier_register(dev, clk, mfg_mux_nb);
 }

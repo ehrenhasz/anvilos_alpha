@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Intel(R) Trace Hub Software Trace Hub support
- *
- * Copyright (C) 2014-2015 Intel Corporation.
- */
+
+ 
 
 #define pr_fmt(fmt)	KBUILD_MODNAME ": " fmt
 
@@ -81,7 +77,7 @@ static ssize_t notrace sth_stm_packet(struct stm_data *stm_data,
 	size = rounddown_pow_of_two(size);
 
 	switch (packet) {
-	/* Global packets (GERR, XSYNC, TRIG) are sent with register writes */
+	 
 	case STP_PACKET_GERR:
 		reg += 4;
 		fallthrough;

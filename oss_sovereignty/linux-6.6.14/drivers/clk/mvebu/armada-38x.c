@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Marvell Armada 380/385 SoC clocks
- *
- * Copyright (C) 2014 Marvell
- *
- * Gregory CLEMENT <gregory.clement@free-electrons.com>
- * Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>
- * Andrew Lunn <andrew@lunn.ch>
- *
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/clk-provider.h>
@@ -16,13 +7,7 @@
 #include <linux/of.h>
 #include "common.h"
 
-/*
- * SAR[14:10] : Ratios between PCLK0, NBCLK, HCLK and DRAM clocks
- *
- * SAR[15]    : TCLK frequency
- *		 0 = 250 MHz
- *		 1 = 200 MHz
- */
+ 
 
 #define SAR_A380_TCLK_FREQ_OPT		  15
 #define SAR_A380_TCLK_FREQ_OPT_MASK	  0x1
@@ -128,9 +113,7 @@ static void __init armada_38x_coreclk_init(struct device_node *np)
 CLK_OF_DECLARE(armada_38x_core_clk, "marvell,armada-380-core-clock",
 	       armada_38x_coreclk_init);
 
-/*
- * Clock Gating Control
- */
+ 
 static const struct clk_gating_soc_desc armada_38x_gating_desc[] __initconst = {
 	{ "audio", NULL, 0 },
 	{ "ge2", NULL, 2 },

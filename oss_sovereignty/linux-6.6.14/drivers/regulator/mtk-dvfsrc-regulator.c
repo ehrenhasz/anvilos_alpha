@@ -1,6 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Copyright (c) 2020 MediaTek Inc.
+
+
+
 
 #include <linux/err.h>
 #include <linux/init.h>
@@ -28,24 +28,13 @@
 	},	\
 }
 
-/*
- * DVFSRC regulators' information
- *
- * @desc: standard fields of regulator description.
- * @voltage_selector:  Selector used for get_voltage_sel() and
- *			   set_voltage_sel() callbacks
- */
+ 
 
 struct dvfsrc_regulator {
 	struct regulator_desc	desc;
 };
 
-/*
- * MTK DVFSRC regulators' init data
- *
- * @size: num of regulators
- * @regulator_info: regulator info.
- */
+ 
 struct dvfsrc_regulator_init_data {
 	u32 size;
 	struct dvfsrc_regulator *regulator_info;
@@ -150,7 +139,7 @@ static const struct of_device_id mtk_dvfsrc_regulator_match[] = {
 		.compatible = "mediatek,mt6873-dvfsrc",
 		.data = &regulator_mt6873_data,
 	}, {
-		/* sentinel */
+		 
 	},
 };
 MODULE_DEVICE_TABLE(of, mtk_dvfsrc_regulator_match);

@@ -1,26 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Export the firmware instance and label associated with a PCI device to
- * sysfs
- *
- * Copyright (C) 2010 Dell Inc.
- * by Narendra K <Narendra_K@dell.com>,
- * Jordan Hargrave <Jordan_Hargrave@dell.com>
- *
- * PCI Firmware Specification Revision 3.1 section 4.6.7 (DSM for Naming a
- * PCI or PCI Express Device Under Operating Systems) defines an instance
- * number and string name. This code retrieves them and exports them to sysfs.
- * If the system firmware does not provide the ACPI _DSM (Device Specific
- * Method), then the SMBIOS type 41 instance number and string is exported to
- * sysfs.
- *
- * SMBIOS defines type 41 for onboard pci devices. This code retrieves
- * the instance number and string from the type 41 record and exports
- * it to sysfs.
- *
- * Please see https://linux.dell.com/files/biosdevname/ for more
- * information.
- */
+
+ 
 
 #include <linux/dmi.h>
 #include <linux/sysfs.h>
@@ -172,11 +151,7 @@ static int dsm_get_label(struct device *dev, char *buf,
 	    tmp[0].type == ACPI_TYPE_INTEGER &&
 	    (tmp[1].type == ACPI_TYPE_STRING ||
 	     tmp[1].type == ACPI_TYPE_BUFFER)) {
-		/*
-		 * The second string element is optional even when
-		 * this _DSM is implemented; when not implemented,
-		 * this entry must return a null string.
-		 */
+		 
 		if (attr == ACPI_ATTR_INDEX_SHOW) {
 			len = sysfs_emit(buf, "%llu\n", tmp->integer.value);
 		} else if (attr == ACPI_ATTR_LABEL_SHOW) {

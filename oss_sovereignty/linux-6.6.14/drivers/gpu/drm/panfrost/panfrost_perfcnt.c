@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright 2019 Collabora Ltd */
+
+ 
 
 #include <linux/completion.h>
 #include <linux/iopoll.h>
@@ -94,7 +94,7 @@ static int panfrost_perfcnt_enable_locked(struct panfrost_device *pfdev,
 		goto err_put_pm;
 	}
 
-	/* Map the perfcnt buf in the address space attached to file_priv. */
+	 
 	ret = panfrost_gem_open(&bo->base, file_priv);
 	if (ret)
 		goto err_put_bo;
@@ -111,10 +111,7 @@ static int panfrost_perfcnt_enable_locked(struct panfrost_device *pfdev,
 		goto err_put_mapping;
 	perfcnt->buf = map.vaddr;
 
-	/*
-	 * Invalidate the cache and clear the counters to start from a fresh
-	 * state.
-	 */
+	 
 	reinit_completion(&pfdev->perfcnt->dump_comp);
 	gpu_write(pfdev, GPU_INT_CLEAR,
 		  GPU_IRQ_CLEAN_CACHES_COMPLETED |
@@ -134,10 +131,7 @@ static int panfrost_perfcnt_enable_locked(struct panfrost_device *pfdev,
 	cfg = GPU_PERFCNT_CFG_AS(as) |
 	      GPU_PERFCNT_CFG_MODE(GPU_PERFCNT_CFG_MODE_MANUAL);
 
-	/*
-	 * Bifrost GPUs have 2 set of counters, but we're only interested by
-	 * the first one for now.
-	 */
+	 
 	if (panfrost_model_is_bifrost(pfdev))
 		cfg |= GPU_PERFCNT_CFG_SETSEL(counterset);
 
@@ -145,10 +139,7 @@ static int panfrost_perfcnt_enable_locked(struct panfrost_device *pfdev,
 	gpu_write(pfdev, GPU_PRFCNT_SHADER_EN, 0xffffffff);
 	gpu_write(pfdev, GPU_PRFCNT_MMU_L2_EN, 0xffffffff);
 
-	/*
-	 * Due to PRLAM-8186 we need to disable the Tiler before we enable HW
-	 * counters.
-	 */
+	 
 	if (panfrost_has_hw_issue(pfdev, HW_ISSUE_8186))
 		gpu_write(pfdev, GPU_PRFCNT_TILER_EN, 0);
 	else
@@ -159,7 +150,7 @@ static int panfrost_perfcnt_enable_locked(struct panfrost_device *pfdev,
 	if (panfrost_has_hw_issue(pfdev, HW_ISSUE_8186))
 		gpu_write(pfdev, GPU_PRFCNT_TILER_EN, 0xffffffff);
 
-	/* The BO ref is retained by the mapping. */
+	 
 	drm_gem_object_put(&bo->base);
 
 	return 0;
@@ -219,7 +210,7 @@ int panfrost_ioctl_perfcnt_enable(struct drm_device *dev, void *data,
 	if (ret)
 		return ret;
 
-	/* Only Bifrost GPUs have 2 set of counters. */
+	 
 	if (req->counterset > (panfrost_model_is_bifrost(pfdev) ? 1 : 0))
 		return -EINVAL;
 
@@ -295,23 +286,13 @@ int panfrost_perfcnt_init(struct panfrost_device *pfdev)
 	} else {
 		unsigned int nl2c, ncores;
 
-		/*
-		 * TODO: define a macro to extract the number of l2 caches from
-		 * mem_features.
-		 */
+		 
 		nl2c = ((pfdev->features.mem_features >> 8) & GENMASK(3, 0)) + 1;
 
-		/*
-		 * shader_present might be sparse, but the counters layout
-		 * forces to dump unused regions too, hence the fls64() call
-		 * instead of hweight64().
-		 */
+		 
 		ncores = fls64(pfdev->features.shader_present);
 
-		/*
-		 * There's always one JM and one Tiler block, hence the '+ 2'
-		 * here.
-		 */
+		 
 		size = (nl2c + ncores + 2) *
 		       COUNTERS_PER_BLOCK * BYTES_PER_COUNTER;
 	}
@@ -322,7 +303,7 @@ int panfrost_perfcnt_init(struct panfrost_device *pfdev)
 
 	perfcnt->bosize = size;
 
-	/* Start with everything disabled. */
+	 
 	gpu_write(pfdev, GPU_PERFCNT_CFG,
 		  GPU_PERFCNT_CFG_MODE(GPU_PERFCNT_CFG_MODE_OFF));
 	gpu_write(pfdev, GPU_PRFCNT_JM_EN, 0);
@@ -339,7 +320,7 @@ int panfrost_perfcnt_init(struct panfrost_device *pfdev)
 
 void panfrost_perfcnt_fini(struct panfrost_device *pfdev)
 {
-	/* Disable everything before leaving. */
+	 
 	gpu_write(pfdev, GPU_PERFCNT_CFG,
 		  GPU_PERFCNT_CFG_MODE(GPU_PERFCNT_CFG_MODE_OFF));
 	gpu_write(pfdev, GPU_PRFCNT_JM_EN, 0);

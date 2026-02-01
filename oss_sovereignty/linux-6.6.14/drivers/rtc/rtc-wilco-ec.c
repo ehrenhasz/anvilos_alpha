@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * RTC interface for Wilco Embedded Controller with R/W abilities
- *
- * Copyright 2018 Google LLC
- *
- * The corresponding platform device is typically registered in
- * drivers/platform/chrome/wilco_ec/core.c
- */
+
+ 
 
 #include <linux/bcd.h>
 #include <linux/err.h>
@@ -21,7 +14,7 @@
 #define EC_CMOS_TOD_WRITE		0x02
 #define EC_CMOS_TOD_READ		0x08
 
-/* Message sent to the EC to request the current time. */
+ 
 struct ec_rtc_read_request {
 	u8 command;
 	u8 reserved;
@@ -32,19 +25,7 @@ static struct ec_rtc_read_request read_rq = {
 	.param = EC_CMOS_TOD_READ,
 };
 
-/**
- * struct ec_rtc_read_response - Format of RTC returned by EC.
- * @reserved: Unused byte
- * @second: Second value (0..59)
- * @minute: Minute value (0..59)
- * @hour: Hour value (0..23)
- * @day: Day value (1..31)
- * @month: Month value (1..12)
- * @year: Year value (full year % 100)
- * @century: Century value (full year / 100)
- *
- * All values are presented in binary (not BCD).
- */
+ 
 struct ec_rtc_read_response {
 	u8 reserved;
 	u8 second;
@@ -56,22 +37,7 @@ struct ec_rtc_read_response {
 	u8 century;
 } __packed;
 
-/**
- * struct ec_rtc_write_request - Format of RTC sent to the EC.
- * @command: Always EC_COMMAND_CMOS
- * @reserved: Unused byte
- * @param: Always EC_CMOS_TOD_WRITE
- * @century: Century value (full year / 100)
- * @year: Year value (full year % 100)
- * @month: Month value (1..12)
- * @day: Day value (1..31)
- * @hour: Hour value (0..23)
- * @minute: Minute value (0..59)
- * @second: Second value (0..59)
- * @weekday: Day of the week (0=Saturday)
- *
- * All values are presented in BCD.
- */
+ 
 struct ec_rtc_write_request {
 	u8 command;
 	u8 reserved;
@@ -110,7 +76,7 @@ static int wilco_ec_rtc_read(struct device *dev, struct rtc_time *tm)
 	tm->tm_mday	= rtc.day;
 	tm->tm_mon	= rtc.month - 1;
 	tm->tm_year	= rtc.year + (rtc.century * 100) - 1900;
-	/* Ignore other tm fields, man rtc says userspace shouldn't use them. */
+	 
 
 	if (rtc_valid_tm(tm)) {
 		dev_err(dev, "Time from RTC is invalid: %ptRr\n", tm);
@@ -126,11 +92,7 @@ static int wilco_ec_rtc_write(struct device *dev, struct rtc_time *tm)
 	struct ec_rtc_write_request rtc;
 	struct wilco_ec_message msg;
 	int year = tm->tm_year + 1900;
-	/*
-	 * Convert from 0=Sunday to 0=Saturday for the EC
-	 * We DO need to set weekday because the EC controls battery charging
-	 * schedules that depend on the day of the week.
-	 */
+	 
 	int wday = tm->tm_wday == 6 ? 0 : tm->tm_wday + 1;
 	int ret;
 
@@ -171,7 +133,7 @@ static int wilco_ec_rtc_probe(struct platform_device *pdev)
 		return PTR_ERR(rtc);
 
 	rtc->ops = &wilco_ec_rtc_ops;
-	/* EC only supports this century */
+	 
 	rtc->range_min = RTC_TIMESTAMP_BEGIN_2000;
 	rtc->range_max = RTC_TIMESTAMP_END_2099;
 	rtc->owner = THIS_MODULE;

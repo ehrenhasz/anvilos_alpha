@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*******************************************************************************
-  This contains the functions to handle the enhanced descriptors.
 
-  Copyright (C) 2007-2014  STMicroelectronics Ltd
-
-
-  Author: Giuseppe Cavallaro <peppe.cavallaro@st.com>
-*******************************************************************************/
+ 
 
 #include <linux/stmmac.h>
 #include "common.h"
@@ -18,11 +11,11 @@ static int enh_desc_get_tx_status(struct stmmac_extra_stats *x,
 	unsigned int tdes0 = le32_to_cpu(p->des0);
 	int ret = tx_done;
 
-	/* Get tx owner first */
+	 
 	if (unlikely(tdes0 & ETDES0_OWN))
 		return tx_dma_own;
 
-	/* Verify tx error by looking at the last segment. */
+	 
 	if (likely(!(tdes0 & ETDES0_LAST_SEGMENT)))
 		return tx_not_ls;
 
@@ -86,17 +79,7 @@ static int enh_desc_coe_rdes0(int ipc_err, int type, int payload_err)
 	int ret = good_frame;
 	u32 status = (type << 2 | ipc_err << 1 | payload_err) & 0x7;
 
-	/* bits 5 7 0 | Frame status
-	 * ----------------------------------------------------------
-	 *      0 0 0 | IEEE 802.3 Type frame (length < 1536 octects)
-	 *      1 0 0 | IPv4/6 No CSUM errorS.
-	 *      1 0 1 | IPv4/6 CSUM PAYLOAD error
-	 *      1 1 0 | IPv4/6 CSUM IP HR error
-	 *      1 1 1 | IPv4/6 IP PAYLOAD AND HEADER errorS
-	 *      0 0 1 | IPv4/6 unsupported IP PAYLOAD
-	 *      0 1 1 | COE bypassed.. no IPv4/6 frame
-	 *      0 1 0 | Reserved.
-	 */
+	 
 	if (status == 0x0)
 		ret = llc_snap;
 	else if (status == 0x4)
@@ -208,7 +191,7 @@ static int enh_desc_get_rx_status(struct stmmac_extra_stats *x,
 		if (unlikely(rdes0 & RDES0_RECEIVE_WATCHDOG))
 			x->rx_watchdog++;
 
-		if (unlikely(rdes0 & RDES0_MII_ERROR))	/* GMII */
+		if (unlikely(rdes0 & RDES0_MII_ERROR))	 
 			x->rx_mii++;
 
 		if (unlikely(rdes0 & RDES0_CRC_ERROR)) {
@@ -217,10 +200,7 @@ static int enh_desc_get_rx_status(struct stmmac_extra_stats *x,
 		ret = discard_frame;
 	}
 
-	/* After a payload csum error, the ES bit is set.
-	 * It doesn't match with the information reported into the databook.
-	 * At any rate, we need to understand if the CSUM hw computation is ok
-	 * and report this info to the upper layers. */
+	 
 	if (likely(ret == good_frame))
 		ret = enh_desc_coe_rdes0(!!(rdes0 & RDES0_IPC_CSUM_ERROR),
 					 !!(rdes0 & RDES0_FRAME_TYPE),
@@ -332,15 +312,12 @@ static void enh_desc_prepare_tx_desc(struct dma_desc *p, int is_fs, int len,
 	if (ls)
 		tdes0 |= ETDES0_LAST_SEGMENT;
 
-	/* Finally set the OWN bit. Later the DMA will start! */
+	 
 	if (tx_own)
 		tdes0 |= ETDES0_OWN;
 
 	if (is_fs && tx_own)
-		/* When the own bit, for the first frame, has to be set, all
-		 * descriptors for the same frame has to be set before, to
-		 * avoid race condition.
-		 */
+		 
 		dma_wmb();
 
 	p->des0 = cpu_to_le32(tdes0);
@@ -354,12 +331,7 @@ static void enh_desc_set_tx_ic(struct dma_desc *p)
 static int enh_desc_get_rx_frame_len(struct dma_desc *p, int rx_coe_type)
 {
 	unsigned int csum = 0;
-	/* The type-1 checksum offload engines append the checksum at
-	 * the end of frame and the two bytes of checksum are added in
-	 * the length.
-	 * Adjust for that in the framelen for type-1 checksum offload
-	 * engines.
-	 */
+	 
 	if (rx_coe_type == STMMAC_RX_COE_TYPE1)
 		csum = 2;
 
@@ -384,7 +356,7 @@ static void enh_desc_get_timestamp(void *desc, u32 ats, u64 *ts)
 	if (ats) {
 		struct dma_extended_desc *p = (struct dma_extended_desc *)desc;
 		ns = le32_to_cpu(p->des6);
-		/* convert high/sec time stamp value to nanosecond */
+		 
 		ns += le32_to_cpu(p->des7) * 1000000000ULL;
 	} else {
 		struct dma_desc *p = (struct dma_desc *)desc;
@@ -405,7 +377,7 @@ static int enh_desc_get_rx_timestamp_status(void *desc, void *next_desc,
 		struct dma_desc *p = (struct dma_desc *)desc;
 		if ((le32_to_cpu(p->des2) == 0xffffffff) &&
 		    (le32_to_cpu(p->des3) == 0xffffffff))
-			/* timestamp is corrupted, hence don't store it */
+			 
 			return 0;
 		else
 			return 1;

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0+
+
 
 #include <linux/bitops.h>
 #include <linux/bitfield.h>
@@ -11,7 +11,7 @@
 #include <linux/regulator/of_regulator.h>
 #include <linux/mod_devicetable.h>
 
-/* Register */
+ 
 #define RTQ2208_REG_GLOBAL_INT1			0x12
 #define RTQ2208_REG_FLT_RECORDBUCK_CB		0x18
 #define RTQ2208_REG_GLOBAL_INT1_MASK		0x1D
@@ -27,7 +27,7 @@
 #define RTQ2208_REG_LDO1_CFG			0xB1
 #define RTQ2208_REG_LDO2_CFG			0xC1
 
-/* Mask */
+ 
 #define RTQ2208_BUCK_NR_MTP_SEL_MASK		GENMASK(7, 0)
 #define RTQ2208_BUCK_EN_NR_MTP_SEL0_MASK	BIT(0)
 #define RTQ2208_BUCK_EN_NR_MTP_SEL1_MASK	BIT(1)
@@ -41,12 +41,12 @@
 #define RTQ2208_BUCK_RAMP_SEL_MASK		GENMASK(2, 0)
 #define RTQ2208_HD_INT_MASK			BIT(0)
 
-/* Size */
+ 
 #define RTQ2208_VOUT_MAXNUM			256
 #define RTQ2208_BUCK_NUM_IRQ_REGS		5
 #define RTQ2208_STS_NUM_IRQ_REGS		2
 
-/* Value */
+ 
 #define RTQ2208_RAMP_VALUE_MIN_uV		500
 #define RTQ2208_RAMP_VALUE_MAX_uV		64000
 
@@ -88,7 +88,7 @@ struct rtq2208_rdev_map {
 	struct device *dev;
 };
 
-/* set Normal Auto/FCCM mode */
+ 
 static int rtq2208_set_mode(struct regulator_dev *rdev, unsigned int mode)
 {
 	const struct rtq2208_regulator_desc *rdesc =
@@ -135,21 +135,7 @@ static int rtq2208_set_ramp_delay(struct regulator_dev *rdev, int ramp_delay)
 
 	ramp_delay /= RTQ2208_RAMP_VALUE_MIN_uV;
 
-	/*
-	 * fls(ramp_delay) - 1: doing LSB shift, let it starts from 0
-	 *
-	 * RTQ2208_BUCK_RAMP_SEL_MASK - sel: doing descending order shifting.
-	 * Because the relation of seleltion and value is like that
-	 *
-	 * seletion: value
-	 * 000: 64mv
-	 * 001: 32mv
-	 * ...
-	 * 111: 0.5mv
-	 *
-	 * For example, if I would like to select 64mv, the fls(ramp_delay) - 1 will be 0b111,
-	 * and I need to use 0b111 - sel to do the shifting
-	 */
+	 
 
 	sel = fls(ramp_delay) - 1;
 	sel = RTQ2208_BUCK_RAMP_SEL_MASK - sel;
@@ -242,22 +228,22 @@ static int rtq2208_init_irq_mask(struct rtq2208_rdev_map *rdev_map, unsigned int
 		      sts_clr_masks[2] = {0xE7, 0xF7}, sts_masks[2] = {0xE6, 0xF6};
 	int ret;
 
-	/* write clear all buck irq once */
+	 
 	ret = regmap_bulk_write(rdev_map->regmap, RTQ2208_REG_FLT_RECORDBUCK_CB, buck_clr_masks, 5);
 	if (ret)
 		return dev_err_probe(rdev_map->dev, ret, "Failed to clr buck irqs\n");
 
-	/* write clear general irq once */
+	 
 	ret = regmap_bulk_write(rdev_map->regmap, RTQ2208_REG_GLOBAL_INT1, sts_clr_masks, 2);
 	if (ret)
 		return dev_err_probe(rdev_map->dev, ret, "Failed to clr general irqs\n");
 
-	/* unmask buck ov/uv irq */
+	 
 	ret = regmap_bulk_write(rdev_map->regmap, RTQ2208_REG_FLT_MASKBUCK_CB, buck_masks, 5);
 	if (ret)
 		return dev_err_probe(rdev_map->dev, ret, "Failed to unmask buck irqs\n");
 
-	/* unmask needed general irq */
+	 
 	return regmap_bulk_write(rdev_map->regmap, RTQ2208_REG_GLOBAL_INT1_MASK, sts_masks, 2);
 }
 
@@ -271,7 +257,7 @@ static irqreturn_t rtq2208_irq_handler(int irqno, void *devid)
 	if (!rdev_map)
 		return IRQ_NONE;
 
-	/* read irq event */
+	 
 	ret = regmap_bulk_read(rdev_map->regmap, RTQ2208_REG_FLT_RECORDBUCK_CB,
 				buck_flags, ARRAY_SIZE(buck_flags));
 	if (ret)
@@ -282,7 +268,7 @@ static irqreturn_t rtq2208_irq_handler(int irqno, void *devid)
 	if (ret)
 		return IRQ_NONE;
 
-	/* clear irq event */
+	 
 	ret = regmap_bulk_write(rdev_map->regmap, RTQ2208_REG_FLT_RECORDBUCK_CB,
 				buck_flags, ARRAY_SIZE(buck_flags));
 	if (ret)
@@ -298,18 +284,18 @@ static irqreturn_t rtq2208_irq_handler(int irqno, void *devid)
 			continue;
 
 		rdev = rdev_map->rdev[i];
-		/* uv irq */
+		 
 		uv_bit = (i & 1) ? 4 : 0;
 		if (buck_flags[i >> 1] & (1 << uv_bit))
 			regulator_notifier_call_chain(rdev,
 					REGULATOR_EVENT_UNDER_VOLTAGE, NULL);
-		/* ov irq */
+		 
 		ov_bit = uv_bit + 1;
 		if (buck_flags[i >> 1] & (1 << ov_bit))
 			regulator_notifier_call_chain(rdev,
 					REGULATOR_EVENT_REGULATION_OUT, NULL);
 
-		/* hd irq */
+		 
 		if (sts_flags[1] & RTQ2208_HD_INT_MASK)
 			regulator_notifier_call_chain(rdev,
 					REGULATOR_EVENT_OVER_TEMP, NULL);
@@ -409,7 +395,7 @@ static void rtq2208_init_regulator_desc(struct rtq2208_regulator_desc *rdesc, in
 	rdesc->mode_mask = RTQ2208_BUCK_NRMODE_MASK;
 
 	if (idx >= RTQ2208_BUCK_B && idx <= RTQ2208_BUCK_E) {
-		/* init buck desc */
+		 
 		desc->enable_reg = BUCK_RG_SHIFT(curr_info->base, 2);
 		desc->ops = &rtq2208_regulator_buck_ops;
 		desc->vsel_reg = curr_info->base + VSEL_SHIFT(mtp_sel);
@@ -426,7 +412,7 @@ static void rtq2208_init_regulator_desc(struct rtq2208_regulator_desc *rdesc, in
 		rdesc->suspend_enable_mask = RTQ2208_BUCK_EN_STR_MASK;
 		rdesc->suspend_mode_mask = RTQ2208_BUCK_STRMODE_MASK;
 	} else {
-		/* init ldo desc */
+		 
 		desc->enable_reg = curr_info->base;
 		desc->ops = &rtq2208_regulator_ldo_ops;
 		desc->n_voltages = 1;
@@ -447,7 +433,7 @@ static int rtq2208_parse_regulator_dt_data(int n_regulator, const unsigned int *
 	struct of_regulator_match rtq2208_ldo_match[2];
 	int mtp_sel, ret, i, idx, ldo_idx = 0;
 
-	/* get mtp_sel0 or mtp_sel1 */
+	 
 	mtp_sel = device_property_read_bool(dev, "richtek,mtp-sel-high");
 
 	for (i = 0; i < n_regulator; i++) {
@@ -460,7 +446,7 @@ static int rtq2208_parse_regulator_dt_data(int n_regulator, const unsigned int *
 		rtq2208_init_regulator_desc(rdesc[i], mtp_sel, idx, rtq2208_ldo_match, &ldo_idx);
 	}
 
-	/* init ldo fixed_uV */
+	 
 	ret = rtq2208_of_get_fixed_voltage(dev, rtq2208_ldo_match, ldo_idx);
 	if (ret)
 		return dev_err_probe(dev, ret, "Failed to get ldo fixed_uV\n");
@@ -469,20 +455,16 @@ static int rtq2208_parse_regulator_dt_data(int n_regulator, const unsigned int *
 
 }
 
-/** different slave address corresponds different used bucks
- * slave address 0x10: BUCK[BCA FGE]
- * slave address 0x20: BUCK[BC FGHE]
- * slave address 0x40: BUCK[C G]
- */
+ 
 static int rtq2208_regulator_check(int slave_addr, int *num,
 				int *regulator_idx_table, unsigned int *buck_masks)
 {
 	static bool rtq2208_used_table[3][RTQ2208_LDO_MAX] = {
-		/* BUCK[BCA FGE], LDO[12] */
+		 
 		{1, 1, 0, 1, 1, 1, 0, 1, 1, 1},
-		/* BUCK[BC FGHE], LDO[12]*/
+		 
 		{1, 1, 0, 0, 1, 1, 1, 1, 1, 1},
-		/* BUCK[C G], LDO[12] */
+		 
 		{0, 1, 0, 0, 0, 1, 0, 0, 1, 1},
 	};
 	int i, idx = ffs(slave_addr >> 4) - 1;
@@ -527,7 +509,7 @@ static int rtq2208_probe(struct i2c_client *i2c)
 	if (IS_ERR(regmap))
 		return dev_err_probe(dev, PTR_ERR(regmap), "Failed to allocate regmap\n");
 
-	/* get needed regulator */
+	 
 	ret = rtq2208_regulator_check(i2c->addr, &n_regulator, regulator_idx_table, buck_masks);
 	if (ret)
 		return dev_err_probe(dev, ret, "Failed to check used regulators\n");
@@ -537,7 +519,7 @@ static int rtq2208_probe(struct i2c_client *i2c)
 
 	cfg.dev = dev;
 
-	/* init regulator desc */
+	 
 	ret = rtq2208_parse_regulator_dt_data(n_regulator, regulator_idx_table, rdesc, dev);
 	if (ret)
 		return ret;
@@ -545,7 +527,7 @@ static int rtq2208_probe(struct i2c_client *i2c)
 	for (i = 0; i < n_regulator; i++) {
 		idx = regulator_idx_table[i];
 
-		/* register regulator */
+		 
 		rdev = devm_regulator_register(dev, &rdesc[i]->desc, &cfg);
 		if (IS_ERR(rdev))
 			return PTR_ERR(rdev);
@@ -553,12 +535,12 @@ static int rtq2208_probe(struct i2c_client *i2c)
 		rdev_map->rdev[idx] = rdev;
 	}
 
-	/* init interrupt mask */
+	 
 	ret = rtq2208_init_irq_mask(rdev_map, buck_masks);
 	if (ret)
 		return ret;
 
-	/* register interrupt */
+	 
 	return devm_request_threaded_irq(dev, i2c->irq, NULL, rtq2208_irq_handler,
 					IRQF_ONESHOT, dev_name(dev), rdev_map);
 }

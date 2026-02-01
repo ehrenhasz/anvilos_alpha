@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* rtc-max6916.c
- *
- * Driver for MAXIM  max6916 Low Current, SPI Compatible
- * Real Time Clock
- *
- * Author : Venkat Prashanth B U <venkat.prashanth2498@gmail.com>
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/module.h>
@@ -15,7 +9,7 @@
 #include <linux/spi/spi.h>
 #include <linux/bcd.h>
 
-/* Registers in max6916 rtc */
+ 
 
 #define MAX6916_SECONDS_REG	0x01
 #define MAX6916_MINUTES_REG	0x02
@@ -95,7 +89,7 @@ static int max6916_set_time(struct device *dev, struct rtc_time *dt)
 	buf[7] = bin2bcd(dt->tm_year % 100);
 	buf[8] = bin2bcd(0x00);
 
-	/* write the rtc settings */
+	 
 	return spi_write_then_read(spi, buf, 9, NULL, 0);
 }
 
@@ -110,27 +104,27 @@ static int max6916_probe(struct spi_device *spi)
 	unsigned char data;
 	int res;
 
-	/* spi setup with max6916 in mode 3 and bits per word as 8 */
+	 
 	spi->mode = SPI_MODE_3;
 	spi->bits_per_word = 8;
 	spi_setup(spi);
 
-	/* RTC Settings */
+	 
 	res = max6916_read_reg(&spi->dev, MAX6916_SECONDS_REG, &data);
 	if (res)
 		return res;
 
-	/* Disable the write protect of rtc */
+	 
 	max6916_read_reg(&spi->dev, MAX6916_CONTROL_REG, &data);
 	data = data & ~(1 << 7);
 	max6916_write_reg(&spi->dev, MAX6916_CONTROL_REG, data);
 
-	/*Enable oscillator,disable oscillator stop flag, glitch filter*/
+	 
 	max6916_read_reg(&spi->dev, MAX6916_STATUS_REG, &data);
 	data = data & 0x1B;
 	max6916_write_reg(&spi->dev, MAX6916_STATUS_REG, data);
 
-	/* display the settings */
+	 
 	max6916_read_reg(&spi->dev, MAX6916_CONTROL_REG, &data);
 	dev_info(&spi->dev, "MAX6916 RTC CTRL Reg = 0x%02x\n", data);
 

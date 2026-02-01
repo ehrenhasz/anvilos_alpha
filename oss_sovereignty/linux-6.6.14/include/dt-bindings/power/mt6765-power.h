@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _DT_BINDINGS_POWER_MT6765_POWER_H
 #define _DT_BINDINGS_POWER_MT6765_POWER_H
 
@@ -11,4 +11,4 @@
 #define MT6765_POWER_DOMAIN_CAM			6
 #define MT6765_POWER_DOMAIN_VCODEC		7
 
-#endif /* _DT_BINDINGS_POWER_MT6765_POWER_H */
+#endif  

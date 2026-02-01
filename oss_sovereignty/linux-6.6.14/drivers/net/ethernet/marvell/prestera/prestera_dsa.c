@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
-/* Copyright (c) 2020 Marvell International Ltd. All rights reserved */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/bitops.h>
@@ -43,10 +43,10 @@ int prestera_dsa_parse(struct prestera_dsa *dsa, const u8 *dsa_buf)
 	words[2] = ntohl(dsa_words[2]);
 	words[3] = ntohl(dsa_words[3]);
 
-	/* set the common parameters */
+	 
 	cmd = (enum prestera_dsa_cmd)FIELD_GET(PRESTERA_DSA_W0_CMD, words[0]);
 
-	/* only to CPU is supported */
+	 
 	if (unlikely(cmd != PRESTERA_DSA_CMD_TO_CPU))
 		return -EINVAL;
 

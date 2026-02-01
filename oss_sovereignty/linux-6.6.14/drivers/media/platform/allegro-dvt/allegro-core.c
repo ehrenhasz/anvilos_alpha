@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2019 Pengutronix, Michael Tretter <kernel@pengutronix.de>
- *
- * Allegro DVT video encoder driver
- */
+
+ 
 
 #include <linux/bits.h>
 #include <linux/clk.h>
@@ -35,11 +31,7 @@
 #include "nal-h264.h"
 #include "nal-hevc.h"
 
-/*
- * Support up to 4k video streams. The hardware actually supports higher
- * resolutions, which are specified in PG252 June 6, 2018 (H.264/H.265 Video
- * Codec Unit v1.1) Chapter 3.
- */
+ 
 #define ALLEGRO_WIDTH_MIN 128
 #define ALLEGRO_WIDTH_DEFAULT 1920
 #define ALLEGRO_WIDTH_MAX 3840
@@ -52,14 +44,7 @@
 #define ALLEGRO_GOP_SIZE_DEFAULT 25
 #define ALLEGRO_GOP_SIZE_MAX 1000
 
-/*
- * MCU Control Registers
- *
- * The Zynq UltraScale+ Devices Register Reference documents the registers
- * with an offset of 0x9000, which equals the size of the SRAM and one page
- * gap. The driver handles SRAM and registers separately and, therefore, is
- * oblivious of the offset.
- */
+ 
 #define AL5_MCU_RESET                   0x0000
 #define AL5_MCU_RESET_SOFT              BIT(0)
 #define AL5_MCU_RESET_REGS              BIT(1)
@@ -83,31 +68,21 @@
 
 #define AXI_ADDR_OFFSET_IP              0x0208
 
-/*
- * The MCU accesses the system memory with a 2G offset compared to CPU
- * physical addresses.
- */
+ 
 #define MCU_CACHE_OFFSET SZ_2G
 
-/*
- * The driver needs to reserve some space at the beginning of capture buffers,
- * because it needs to write SPS/PPS NAL units. The encoder writes the actual
- * frame data after the offset.
- */
+ 
 #define ENCODER_STREAM_OFFSET SZ_128
 
 #define SIZE_MACROBLOCK 16
 
-/* Encoding options */
+ 
 #define LOG2_MAX_FRAME_NUM		4
 #define LOG2_MAX_PIC_ORDER_CNT		10
 #define BETA_OFFSET_DIV_2		-1
 #define TC_OFFSET_DIV_2			-1
 
-/*
- * This control allows applications to explicitly disable the encoder buffer.
- * This value is Allegro specific.
- */
+ 
 #define V4L2_CID_USER_ALLEGRO_ENCODER_BUFFER (V4L2_CID_USER_ALLEGRO_BASE + 0)
 
 static int debug;
@@ -130,7 +105,7 @@ struct allegro_mbox {
 	unsigned int tail;
 	unsigned int data;
 	size_t size;
-	/* protect mailbox from simultaneous accesses */
+	 
 	struct mutex lock;
 };
 
@@ -147,7 +122,7 @@ struct allegro_dev {
 	struct v4l2_m2m_dev *m2m_dev;
 	struct platform_device *plat_dev;
 
-	/* mutex protecting vb2_queue structure */
+	 
 	struct mutex lock;
 
 	struct regmap *regmap;
@@ -166,15 +141,11 @@ struct allegro_dev {
 	struct completion init_complete;
 	bool initialized;
 
-	/* The mailbox interface */
+	 
 	struct allegro_mbox *mbox_command;
 	struct allegro_mbox *mbox_status;
 
-	/*
-	 * The downstream driver limits the users to 64 users, thus I can use
-	 * a bitfield for the user_ids that are in use. See also user_id in
-	 * struct allegro_channel.
-	 */
+	 
 	unsigned long channel_user_ids;
 	struct list_head channels;
 };
@@ -240,15 +211,15 @@ struct allegro_channel {
 	unsigned int num_ref_idx_l0;
 	unsigned int num_ref_idx_l1;
 
-	/* Maximum range for motion estimation */
+	 
 	int b_hrz_me_range;
 	int b_vrt_me_range;
 	int p_hrz_me_range;
 	int p_vrt_me_range;
-	/* Size limits of coding unit */
+	 
 	int min_cu_size;
 	int max_cu_size;
-	/* Size limits of transform unit */
+	 
 	int min_tu_size;
 	int max_tu_size;
 	int max_transfo_depth_intra;
@@ -272,7 +243,7 @@ struct allegro_channel {
 	struct v4l2_ctrl *mpeg_video_hevc_b_frame_qp;
 
 	struct v4l2_ctrl *mpeg_video_frame_rc_enable;
-	struct { /* video bitrate mode control cluster */
+	struct {  
 		struct v4l2_ctrl *mpeg_video_bitrate_mode;
 		struct v4l2_ctrl *mpeg_video_bitrate;
 		struct v4l2_ctrl *mpeg_video_bitrate_peak;
@@ -282,10 +253,10 @@ struct allegro_channel {
 
 	struct v4l2_ctrl *encoder_buffer;
 
-	/* user_id is used to identify the channel during CREATE_CHANNEL */
-	/* not sure, what to set here and if this is actually required */
+	 
+	 
 	int user_id;
-	/* channel_id is set by the mcu and used by all later commands */
+	 
 	int mcu_channel_id;
 
 	struct list_head buffers_reference;
@@ -293,7 +264,7 @@ struct allegro_channel {
 
 	struct list_head source_shadow_list;
 	struct list_head stream_shadow_list;
-	/* protect shadow lists of buffers passed to firmware */
+	 
 	struct mutex shadow_list_lock;
 
 	struct list_head list;
@@ -416,7 +387,7 @@ static inline u64 ptr_to_u64(const void *ptr)
 	return (uintptr_t)ptr;
 }
 
-/* Helper functions for channel and user operations */
+ 
 
 static unsigned long allegro_next_user_id(struct allegro_dev *dev)
 {
@@ -529,13 +500,7 @@ select_minimum_h264_level(unsigned int width, unsigned int height)
 	unsigned int frame_size_in_mb = pic_width_in_mb * frame_height_in_mb;
 	enum v4l2_mpeg_video_h264_level level = V4L2_MPEG_VIDEO_H264_LEVEL_4_0;
 
-	/*
-	 * The level limits are specified in Rec. ITU-T H.264 Annex A.3.1 and
-	 * also specify limits regarding bit rate and CBP size. Only approximate
-	 * the levels using the frame size.
-	 *
-	 * Level 5.1 allows up to 4k video resolution.
-	 */
+	 
 	if (frame_size_in_mb <= 99)
 		level = V4L2_MPEG_VIDEO_H264_LEVEL_1_0;
 	else if (frame_size_in_mb <= 396)
@@ -666,10 +631,7 @@ select_minimum_hevc_level(unsigned int width, unsigned int height)
 
 static unsigned int hevc_maximum_bitrate(enum v4l2_mpeg_video_hevc_level level)
 {
-	/*
-	 * See Rec. ITU-T H.265 v5 (02/2018), A.4.2 Profile-specific level
-	 * limits for the video profiles.
-	 */
+	 
 	switch (level) {
 	case V4L2_MPEG_VIDEO_HEVC_LEVEL_1:
 		return 128;
@@ -735,9 +697,7 @@ allegro_get_firmware_info(struct allegro_dev *dev,
 	return NULL;
 }
 
-/*
- * Buffers that are used internally by the MCU.
- */
+ 
 
 static int allegro_alloc_buffer(struct allegro_dev *dev,
 				struct allegro_buffer *buffer, size_t size)
@@ -762,9 +722,7 @@ static void allegro_free_buffer(struct allegro_dev *dev,
 	}
 }
 
-/*
- * Mailbox interface to send messages to the MCU.
- */
+ 
 
 static void allegro_mcu_interrupt(struct allegro_dev *dev);
 static void allegro_handle_message(struct allegro_dev *dev,
@@ -845,7 +803,7 @@ static ssize_t allegro_mbox_read(struct allegro_mbox *mbox,
 	if (head > mbox->size)
 		return -EIO;
 
-	/* Assume that the header does not wrap. */
+	 
 	regmap_bulk_read(sram, mbox->data + head,
 			 dst, sizeof(*header) / stride);
 	header = (void *)dst;
@@ -855,15 +813,7 @@ static ssize_t allegro_mbox_read(struct allegro_mbox *mbox,
 	if (size > nbyte)
 		return -EINVAL;
 
-	/*
-	 * The message might wrap within the mailbox. If the message does not
-	 * wrap, the first read will read the entire message, otherwise the
-	 * first read will read message until the end of the mailbox and the
-	 * second read will read the remaining bytes from the beginning of the
-	 * mailbox.
-	 *
-	 * Skip the header, as was already read to get the size of the body.
-	 */
+	 
 	body_no_wrap = min((size_t)header->length,
 			   (size_t)(mbox->size - (head + sizeof(*header))));
 	regmap_bulk_read(sram, mbox->data + head + sizeof(*header),
@@ -878,11 +828,7 @@ static ssize_t allegro_mbox_read(struct allegro_mbox *mbox,
 	return size;
 }
 
-/**
- * allegro_mbox_send() - Send a message via the mailbox
- * @mbox: the mailbox which is used to send the message
- * @msg: the message to send
- */
+ 
 static int allegro_mbox_send(struct allegro_mbox *mbox, void *msg)
 {
 	struct allegro_dev *dev = mbox->dev;
@@ -909,10 +855,7 @@ out:
 	return err;
 }
 
-/**
- * allegro_mbox_notify() - Notify the mailbox about a new message
- * @mbox: The allegro_mbox to notify
- */
+ 
 static void allegro_mbox_notify(struct allegro_mbox *mbox)
 {
 	struct allegro_dev *dev = mbox->dev;
@@ -957,7 +900,7 @@ static int allegro_encoder_buffer_init(struct allegro_dev *dev,
 	unsigned int color_depth;
 	unsigned long clk_rate;
 
-	/* We don't support the encoder buffer pre Firmware version 2019.2 */
+	 
 	if (dev->fw_info->mailbox_version < MCU_MSG_VERSION_2019_2)
 		return -ENODEV;
 
@@ -979,7 +922,7 @@ static int allegro_encoder_buffer_init(struct allegro_dev *dev,
 		return -EINVAL;
 
 	color_depth = supports_10_bit ? 10 : 8;
-	/* The firmware expects the encoder buffer size in bits. */
+	 
 	buffer->size = color_depth * 32 * memory_depth;
 	buffer->color_depth = color_depth;
 	buffer->num_cores = num_cores;
@@ -1024,7 +967,7 @@ static u32 v4l2_pixelformat_to_mcu_format(u32 pixelformat)
 {
 	switch (pixelformat) {
 	case V4L2_PIX_FMT_NV12:
-		/* AL_420_8BITS: 0x100 -> NV12, 0x88 -> 8 bit */
+		 
 		return 0x100 | 0x88;
 	default:
 		return -EINVAL;
@@ -1043,7 +986,7 @@ static u32 v4l2_colorspace_to_mcu_colorspace(enum v4l2_colorspace colorspace)
 	case V4L2_COLORSPACE_SRGB:
 		return 7;
 	default:
-		/* UNKNOWN */
+		 
 		return 0;
 	}
 }
@@ -1160,11 +1103,7 @@ static u32 v4l2_cpb_size_to_mcu(unsigned int cpb_size, unsigned int bitrate)
 	unsigned int cpb_size_kbit;
 	unsigned int bitrate_kbps;
 
-	/*
-	 * The mcu expects the CPB size in units of a 90 kHz clock, but the
-	 * channel follows the V4L2_CID_MPEG_VIDEO_H264_CPB_SIZE and stores
-	 * the CPB size in kilobytes.
-	 */
+	 
 	cpb_size_kbit = cpb_size * BITS_PER_BYTE;
 	bitrate_kbps = bitrate / 1000;
 
@@ -1184,7 +1123,7 @@ static u32 allegro_channel_get_entropy_mode(struct allegro_channel *channel)
 #define ALLEGRO_ENTROPY_MODE_CAVLC 0
 #define ALLEGRO_ENTROPY_MODE_CABAC 1
 
-	/* HEVC always uses CABAC, but this has to be explicitly set */
+	 
 	if (channel->codec == V4L2_PIX_FMT_HEVC)
 		return ALLEGRO_ENTROPY_MODE_CABAC;
 
@@ -1269,7 +1208,7 @@ static int fill_create_channel_param(struct allegro_channel *channel,
 		v4l2_bitrate_mode_to_mcu_mode(bitrate_mode) : 0;
 
 	param->cpb_size = v4l2_cpb_size_to_mcu(cpb_size, channel->bitrate_peak);
-	/* Shall be ]0;cpb_size in 90 kHz units]. Use maximum value. */
+	 
 	param->initial_rem_delay = param->cpb_size;
 	param->framerate = DIV_ROUND_UP(channel->framerate.numerator,
 					channel->framerate.denominator);
@@ -1374,7 +1313,7 @@ static int allegro_mcu_send_put_stream_buffer(struct allegro_dev *dev,
 	msg.mcu_addr = to_mcu_addr(dev, paddr);
 	msg.size = size;
 	msg.offset = ENCODER_STREAM_OFFSET;
-	/* copied to mcu_msg_encode_frame_response */
+	 
 	msg.dst_handle = dst_handle;
 
 	allegro_mbox_send(dev->mbox_command, &msg);
@@ -1399,9 +1338,9 @@ static int allegro_mcu_send_encode_frame(struct allegro_dev *dev,
 	msg.encoding_options = AL_OPT_FORCE_LOAD;
 	if (use_encoder_buffer)
 		msg.encoding_options |= AL_OPT_USE_L2;
-	msg.pps_qp = 26; /* qp are relative to 26 */
-	msg.user_param = 0; /* copied to mcu_msg_encode_frame_response */
-	/* src_handle is copied to mcu_msg_encode_frame_response */
+	msg.pps_qp = 26;  
+	msg.user_param = 0;  
+	 
 	msg.src_handle = src_handle;
 	msg.src_y = to_codec_addr(dev, src_y);
 	msg.src_uv = to_codec_addr(dev, src_uv);
@@ -1572,7 +1511,7 @@ static ssize_t allegro_h264_write_sps(struct allegro_channel *channel,
 	struct nal_h264_sps *sps;
 	ssize_t size;
 	unsigned int size_mb = SIZE_MACROBLOCK;
-	/* Calculation of crop units in Rec. ITU-T H.264 (04/2017) p. 76 */
+	 
 	unsigned int crop_unit_x = 2;
 	unsigned int crop_unit_y = 2;
 	enum v4l2_mpeg_video_h264_profile profile;
@@ -1621,7 +1560,7 @@ static ssize_t allegro_h264_write_sps(struct allegro_channel *channel,
 	sps->vui.overscan_info_present_flag = 0;
 
 	sps->vui.video_signal_type_present_flag = 1;
-	sps->vui.video_format = 5; /* unspecified */
+	sps->vui.video_format = 5;  
 	sps->vui.video_full_range_flag = nal_h264_full_range(channel->quantization);
 	sps->vui.colour_description_present_flag = 1;
 	sps->vui.colour_primaries = nal_h264_color_primaries(channel->colorspace);
@@ -1642,12 +1581,12 @@ static ssize_t allegro_h264_write_sps(struct allegro_channel *channel,
 	sps->vui.nal_hrd_parameters_present_flag = 0;
 	sps->vui.vcl_hrd_parameters_present_flag = 1;
 	sps->vui.vcl_hrd_parameters.cpb_cnt_minus1 = 0;
-	/* See Rec. ITU-T H.264 (04/2017) p. 410 E-53 */
+	 
 	sps->vui.vcl_hrd_parameters.bit_rate_scale =
 		ffs(channel->bitrate_peak) - 6;
 	sps->vui.vcl_hrd_parameters.bit_rate_value_minus1[0] =
 		channel->bitrate_peak / (1 << (6 + sps->vui.vcl_hrd_parameters.bit_rate_scale)) - 1;
-	/* See Rec. ITU-T H.264 (04/2017) p. 410 E-54 */
+	 
 	cpb_size = v4l2_ctrl_g_ctrl(channel->mpeg_video_cpb_size);
 	cpb_size_scale = ffs(cpb_size) - 4;
 	sps->vui.vcl_hrd_parameters.cpb_size_scale = cpb_size_scale;
@@ -1785,7 +1724,7 @@ static ssize_t allegro_hevc_write_sps(struct allegro_channel *channel,
 	ptl->general_level_idc = nal_hevc_level(level);
 
 	sps->seq_parameter_set_id = 0;
-	sps->chroma_format_idc = 1; /* Only 4:2:0 sampling supported */
+	sps->chroma_format_idc = 1;  
 	sps->pic_width_in_luma_samples = round_up(channel->width, 8);
 	sps->pic_height_in_luma_samples = round_up(channel->height, 8);
 	sps->conf_win_right_offset =
@@ -1821,7 +1760,7 @@ static ssize_t allegro_hevc_write_sps(struct allegro_channel *channel,
 	vui = &sps->vui;
 
 	vui->video_signal_type_present_flag = 1;
-	vui->video_format = 5; /* unspecified */
+	vui->video_format = 5;  
 	vui->video_full_range_flag = nal_hevc_full_range(channel->quantization);
 	vui->colour_description_present_flag = 1;
 	vui->colour_primaries = nal_hevc_color_primaries(channel->colorspace);
@@ -2029,10 +1968,7 @@ static void allegro_channel_finish_frame(struct allegro_channel *channel,
 		 "channel %d: encoded frame of size %d is at offset 0x%x\n",
 		 channel->mcu_channel_id, partition->size, partition->offset);
 
-	/*
-	 * The payload must include the data before the partition offset,
-	 * because we will put the sps and pps data there.
-	 */
+	 
 	vb2_set_plane_payload(&dst_buf->vb2_buf, 0,
 			      partition->offset + partition->size);
 
@@ -2226,7 +2162,7 @@ out:
 	channel->error = err;
 	complete(&channel->completion);
 
-	/* Handled successfully, error is passed via channel->error */
+	 
 	return 0;
 }
 
@@ -2315,12 +2251,7 @@ static irqreturn_t allegro_irq_thread(int irq, void *data)
 {
 	struct allegro_dev *dev = data;
 
-	/*
-	 * The firmware is initialized after the mailbox is setup. We further
-	 * check the AL5_ITC_CPU_IRQ_STA register, if the firmware actually
-	 * triggered the interrupt. Although this should not happen, make sure
-	 * that we ignore interrupts, if the mailbox is not initialized.
-	 */
+	 
 	if (!dev->mbox_status)
 		return IRQ_NONE;
 
@@ -2348,12 +2279,7 @@ static void allegro_copy_fw_codec(struct allegro_dev *dev,
 	int err;
 	dma_addr_t icache_offset, dcache_offset;
 
-	/*
-	 * The downstream allocates 600 KB for the codec firmware to have some
-	 * extra space for "possible extensions." My tests were fine with
-	 * allocating just enough memory for the actual firmware, but I am not
-	 * sure that the firmware really does not use the remaining space.
-	 */
+	 
 	err = allegro_alloc_buffer(dev, &dev->firmware, size);
 	if (err) {
 		v4l2_err(&dev->v4l2_dev,
@@ -2394,9 +2320,7 @@ static void allegro_free_fw_codec(struct allegro_dev *dev)
 	allegro_free_buffer(dev, &dev->firmware);
 }
 
-/*
- * Control functions for the MCU
- */
+ 
 
 static int allegro_mcu_enable_interrupts(struct allegro_dev *dev)
 {
@@ -2453,10 +2377,7 @@ static int allegro_mcu_reset(struct allegro_dev *dev)
 {
 	int err;
 
-	/*
-	 * Ensure that the AL5_MCU_WAKEUP bit is set to 0 otherwise the mcu
-	 * does not go to sleep after the reset.
-	 */
+	 
 	err = regmap_write(dev->regmap, AL5_MCU_WAKEUP, 0);
 	if (err)
 		return err;
@@ -2531,16 +2452,7 @@ static void allegro_destroy_channel(struct allegro_channel *channel)
 	}
 }
 
-/*
- * Create the MCU channel
- *
- * After the channel has been created, the picture size, format, colorspace
- * and framerate are fixed. Also the codec, profile, bitrate, etc. cannot be
- * changed anymore.
- *
- * The channel can be created only once. The MCU will accept source buffers
- * and stream buffers only after a channel has been created.
- */
+ 
 static int allegro_create_channel(struct allegro_channel *channel)
 {
 	struct allegro_dev *dev = channel->dev;
@@ -2614,13 +2526,7 @@ err:
 	return channel->error;
 }
 
-/**
- * allegro_channel_adjust() - Adjust channel parameters to current format
- * @channel: the channel to adjust
- *
- * Various parameters of a channel and their limits depend on the currently
- * set format. Adjust the parameters after a format change in one go.
- */
+ 
 static void allegro_channel_adjust(struct allegro_channel *channel)
 {
 	struct allegro_dev *dev = channel->dev;
@@ -2947,7 +2853,7 @@ static int allegro_clamp_qp(struct allegro_channel *channel,
 	else
 		return 0;
 
-	/* Modify range automatically updates the value */
+	 
 	__v4l2_ctrl_modify_range(next_ctrl, ctrl->val, 51, 1, ctrl->val);
 
 	return allegro_clamp_qp(channel, next_ctrl);
@@ -3370,13 +3276,7 @@ static int allegro_try_fmt_vid_out(struct file *file, void *fh,
 {
 	f->fmt.pix.field = V4L2_FIELD_NONE;
 
-	/*
-	 * The firmware of the Allegro codec handles the padding internally
-	 * and expects the visual frame size when configuring a channel.
-	 * Therefore, unlike other encoder drivers, this driver does not round
-	 * up the width and height to macroblock alignment and does not
-	 * implement the selection api.
-	 */
+	 
 	f->fmt.pix.width = clamp_t(__u32, f->fmt.pix.width,
 				   ALLEGRO_WIDTH_MIN, ALLEGRO_WIDTH_MAX);
 	f->fmt.pix.height = clamp_t(__u32, f->fmt.pix.height,
@@ -3665,7 +3565,7 @@ static int allegro_mcu_hw_init(struct allegro_dev *dev,
 
 	allegro_mcu_enable_interrupts(dev);
 
-	/* The mcu sends INIT after reset. */
+	 
 	allegro_mcu_start(dev);
 	err = allegro_mcu_wait_for_init_timeout(dev, 5000);
 	if (err < 0) {
@@ -3755,7 +3655,7 @@ static void allegro_fw_callback(const struct firmware *fw, void *context)
 	if (err)
 		goto err_release_firmware_codec;
 
-	/* Ensure that the mcu is sleeping at the reset vector */
+	 
 	err = allegro_mcu_reset(dev);
 	if (err) {
 		v4l2_err(&dev->v4l2_dev, "failed to reset mcu\n");
@@ -3991,7 +3891,7 @@ static int allegro_runtime_suspend(struct device *device)
 
 static const struct of_device_id allegro_dt_ids[] = {
 	{ .compatible = "allegro,al5e-1.1" },
-	{ /* sentinel */ }
+	{   }
 };
 
 MODULE_DEVICE_TABLE(of, allegro_dt_ids);

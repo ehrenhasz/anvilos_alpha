@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Thunderbolt XDomain property support
- *
- * Copyright (C) 2017, Intel Corporation
- * Authors: Michael Jamet <michael.jamet@intel.com>
- *          Mika Westerberg <mika.westerberg@linux.intel.com>
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/slab.h>
@@ -142,7 +136,7 @@ static struct tb_property *tb_property_parse(const u32 *block, size_t block_len,
 		}
 		parse_dwdata(property->value.text, block + entry->value,
 			     entry->length);
-		/* Force null termination */
+		 
 		property->value.text[property->length * 4 - 1] = '\0';
 		break;
 
@@ -181,7 +175,7 @@ static struct tb_property_dir *__tb_property_parse_dir(const u32 *block,
 			return NULL;
 		}
 		content_offset = dir_offset + 4;
-		content_len = dir_len - 4; /* Length includes UUID */
+		content_len = dir_len - 4;  
 	}
 
 	entries = (const struct tb_property_entry *)&block[content_offset];
@@ -204,19 +198,7 @@ static struct tb_property_dir *__tb_property_parse_dir(const u32 *block,
 	return dir;
 }
 
-/**
- * tb_property_parse_dir() - Parses properties from given property block
- * @block: Property block to parse
- * @block_len: Number of dword elements in the property block
- *
- * This function parses the XDomain properties data block into format that
- * can be traversed using the helper functions provided by this module.
- * Upon success returns the parsed directory. In case of error returns
- * %NULL. The resulting &struct tb_property_dir needs to be released by
- * calling tb_property_free_dir() when not needed anymore.
- *
- * The @block is expected to be root directory.
- */
+ 
 struct tb_property_dir *tb_property_parse_dir(const u32 *block,
 					      size_t block_len)
 {
@@ -232,13 +214,7 @@ struct tb_property_dir *tb_property_parse_dir(const u32 *block,
 				       true);
 }
 
-/**
- * tb_property_create_dir() - Creates new property directory
- * @uuid: UUID used to identify the particular directory
- *
- * Creates new, empty property directory. If @uuid is %NULL then the
- * directory is assumed to be root directory.
- */
+ 
 struct tb_property_dir *tb_property_create_dir(const uuid_t *uuid)
 {
 	struct tb_property_dir *dir;
@@ -282,14 +258,7 @@ static void tb_property_free(struct tb_property *property)
 	kfree(property);
 }
 
-/**
- * tb_property_free_dir() - Release memory allocated for property directory
- * @dir: Directory to release
- *
- * This will release all the memory the directory occupies including all
- * descendants. It is OK to pass %NULL @dir, then the function does
- * nothing.
- */
+ 
 void tb_property_free_dir(struct tb_property_dir *dir)
 {
 	struct tb_property *property, *tmp;
@@ -326,7 +295,7 @@ static size_t tb_property_dir_length(const struct tb_property_dir *dir,
 				len += tb_property_dir_length(
 					property->value.dir, recurse, data_len);
 			}
-			/* Reserve dword padding after each directory */
+			 
 			if (data_len)
 				*data_len += 1;
 			break;
@@ -354,51 +323,7 @@ static ssize_t __tb_property_format_dir(const struct tb_property_dir *dir,
 	size_t dir_len, data_len = 0;
 	int ret;
 
-	/*
-	 * The structure of property block looks like following. Leaf
-	 * data/text is included right after the directory and each
-	 * directory follows each other (even nested ones).
-	 *
-	 * +----------+ <-- start_offset
-	 * |  header  | <-- root directory header
-	 * +----------+ ---
-	 * |  entry 0 | -^--------------------.
-	 * +----------+  |                    |
-	 * |  entry 1 | -|--------------------|--.
-	 * +----------+  |                    |  |
-	 * |  entry 2 | -|-----------------.  |  |
-	 * +----------+  |                 |  |  |
-	 * :          :  |  dir_len        |  |  |
-	 * .          .  |                 |  |  |
-	 * :          :  |                 |  |  |
-	 * +----------+  |                 |  |  |
-	 * |  entry n |  v                 |  |  |
-	 * +----------+ <-- data_offset    |  |  |
-	 * |  data 0  | <------------------|--'  |
-	 * +----------+                    |     |
-	 * |  data 1  | <------------------|-----'
-	 * +----------+                    |
-	 * | 00000000 | padding            |
-	 * +----------+ <-- dir_end <------'
-	 * |   UUID   | <-- directory UUID (child directory)
-	 * +----------+
-	 * |  entry 0 |
-	 * +----------+
-	 * |  entry 1 |
-	 * +----------+
-	 * :          :
-	 * .          .
-	 * :          :
-	 * +----------+
-	 * |  entry n |
-	 * +----------+
-	 * |  data 0  |
-	 * +----------+
-	 *
-	 * We use dir_end to hold pointer to the end of the directory. It
-	 * will increase as we add directories and each directory should be
-	 * added starting from previous dir_end.
-	 */
+	 
 	dir_len = tb_property_dir_length(dir, false, &data_len);
 	data_offset = start_offset + dir_len;
 	dir_end = start_offset + data_len + dir_len;
@@ -408,7 +333,7 @@ static ssize_t __tb_property_format_dir(const struct tb_property_dir *dir,
 	if (dir_end > block_len)
 		return -EINVAL;
 
-	/* Write headers first */
+	 
 	if (dir->uuid) {
 		struct tb_property_dir_entry *pe;
 
@@ -474,17 +399,7 @@ static ssize_t __tb_property_format_dir(const struct tb_property_dir *dir,
 	return dir_end;
 }
 
-/**
- * tb_property_format_dir() - Formats directory to the packed XDomain format
- * @dir: Directory to format
- * @block: Property block where the packed data is placed
- * @block_len: Length of the property block
- *
- * This function formats the directory to the packed format that can be
- * then send over the thunderbolt fabric to receiving host. Returns %0 in
- * case of success and negative errno on faulure. Passing %NULL in @block
- * returns number of entries the block takes.
- */
+ 
 ssize_t tb_property_format_dir(const struct tb_property_dir *dir, u32 *block,
 			       size_t block_len)
 {
@@ -501,14 +416,7 @@ ssize_t tb_property_format_dir(const struct tb_property_dir *dir, u32 *block,
 	return ret < 0 ? ret : 0;
 }
 
-/**
- * tb_property_copy_dir() - Take a deep copy of directory
- * @dir: Directory to copy
- *
- * This function takes a deep copy of @dir and returns back the copy. In
- * case of error returns %NULL. The resulting directory needs to be
- * released by calling tb_property_free_dir().
- */
+ 
 struct tb_property_dir *tb_property_copy_dir(const struct tb_property_dir *dir)
 {
 	struct tb_property *property, *p = NULL;
@@ -572,12 +480,7 @@ err_free:
 	return NULL;
 }
 
-/**
- * tb_property_add_immediate() - Add immediate property to directory
- * @parent: Directory to add the property
- * @key: Key for the property
- * @value: Immediate value to store with the property
- */
+ 
 int tb_property_add_immediate(struct tb_property_dir *parent, const char *key,
 			      u32 value)
 {
@@ -598,19 +501,11 @@ int tb_property_add_immediate(struct tb_property_dir *parent, const char *key,
 }
 EXPORT_SYMBOL_GPL(tb_property_add_immediate);
 
-/**
- * tb_property_add_data() - Adds arbitrary data property to directory
- * @parent: Directory to add the property
- * @key: Key for the property
- * @buf: Data buffer to add
- * @buflen: Number of bytes in the data buffer
- *
- * Function takes a copy of @buf and adds it to the directory.
- */
+ 
 int tb_property_add_data(struct tb_property_dir *parent, const char *key,
 			 const void *buf, size_t buflen)
 {
-	/* Need to pad to dword boundary */
+	 
 	size_t size = round_up(buflen, 4);
 	struct tb_property *property;
 
@@ -635,18 +530,11 @@ int tb_property_add_data(struct tb_property_dir *parent, const char *key,
 }
 EXPORT_SYMBOL_GPL(tb_property_add_data);
 
-/**
- * tb_property_add_text() - Adds string property to directory
- * @parent: Directory to add the property
- * @key: Key for the property
- * @text: String to add
- *
- * Function takes a copy of @text and adds it to the directory.
- */
+ 
 int tb_property_add_text(struct tb_property_dir *parent, const char *key,
 			 const char *text)
 {
-	/* Need to pad to dword boundary */
+	 
 	size_t size = round_up(strlen(text) + 1, 4);
 	struct tb_property *property;
 
@@ -671,12 +559,7 @@ int tb_property_add_text(struct tb_property_dir *parent, const char *key,
 }
 EXPORT_SYMBOL_GPL(tb_property_add_text);
 
-/**
- * tb_property_add_dir() - Adds a directory to the parent directory
- * @parent: Directory to add the property
- * @key: Key for the property
- * @dir: Directory to add
- */
+ 
 int tb_property_add_dir(struct tb_property_dir *parent, const char *key,
 			struct tb_property_dir *dir)
 {
@@ -696,13 +579,7 @@ int tb_property_add_dir(struct tb_property_dir *parent, const char *key,
 }
 EXPORT_SYMBOL_GPL(tb_property_add_dir);
 
-/**
- * tb_property_remove() - Removes property from a parent directory
- * @property: Property to remove
- *
- * Note memory for @property is released as well so it is not allowed to
- * touch the object after call to this function.
- */
+ 
 void tb_property_remove(struct tb_property *property)
 {
 	list_del(&property->list);
@@ -710,15 +587,7 @@ void tb_property_remove(struct tb_property *property)
 }
 EXPORT_SYMBOL_GPL(tb_property_remove);
 
-/**
- * tb_property_find() - Find a property from a directory
- * @dir: Directory where the property is searched
- * @key: Key to look for
- * @type: Type of the property
- *
- * Finds and returns property from the given directory. Does not recurse
- * into sub-directories. Returns %NULL if the property was not found.
- */
+ 
 struct tb_property *tb_property_find(struct tb_property_dir *dir,
 	const char *key, enum tb_property_type type)
 {
@@ -733,11 +602,7 @@ struct tb_property *tb_property_find(struct tb_property_dir *dir,
 }
 EXPORT_SYMBOL_GPL(tb_property_find);
 
-/**
- * tb_property_get_next() - Get next property from directory
- * @dir: Directory holding properties
- * @prev: Previous property in the directory (%NULL returns the first)
- */
+ 
 struct tb_property *tb_property_get_next(struct tb_property_dir *dir,
 					 struct tb_property *prev)
 {

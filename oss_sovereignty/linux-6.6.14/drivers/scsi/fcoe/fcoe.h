@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright(c) 2009 Intel Corporation. All rights reserved.
- *
- * Maintained at www.Open-FCoE.org
- */
+ 
+ 
 
 #ifndef _FCOE_H_
 #define _FCOE_H_
@@ -25,13 +21,13 @@
 
 #define FCOE_MAX_OUTSTANDING_COMMANDS	1024
 
-#define FCOE_MIN_XID		0x0000	/* the min xid supported by fcoe_sw */
-#define FCOE_MAX_XID		0x0FFF	/* the max xid supported by fcoe_sw */
+#define FCOE_MIN_XID		0x0000	 
+#define FCOE_MAX_XID		0x0FFF	 
 
 extern unsigned int fcoe_debug_logging;
 
-#define FCOE_LOGGING	    0x01 /* General logging, not categorized */
-#define FCOE_NETDEV_LOGGING 0x02 /* Netdevice logging */
+#define FCOE_LOGGING	    0x01  
+#define FCOE_NETDEV_LOGGING 0x02  
 
 #define FCOE_CHECK_LOGGING(LEVEL, CMD)					\
 do {                                                            	\
@@ -50,18 +46,7 @@ do {                                                            	\
 			   pr_info("fcoe: %s: " fmt,		\
 				   netdev->name, ##args);)
 
-/**
- * struct fcoe_interface - A FCoE interface
- * @list:	      Handle for a list of FCoE interfaces
- * @netdev:	      The associated net device
- * @fcoe_packet_type: FCoE packet type
- * @fip_packet_type:  FIP packet type
- * @oem:	      The offload exchange manager for all local port
- *		      instances associated with this port
- * @removed:	      Indicates fcoe interface removed from net device
- * @priority:	      Priority for the FCoE packet (DCB)
- * This structure is 1:1 with a net device.
- */
+ 
 struct fcoe_interface {
 	struct list_head   list;
 	struct net_device  *netdev;
@@ -80,14 +65,11 @@ struct fcoe_interface {
 #define fcoe_from_ctlr(x)			\
 	((struct fcoe_interface *)((x) + 1))
 
-/**
- * fcoe_netdev() - Return the net device associated with a local port
- * @lport: The local port to get the net device from
- */
+ 
 static inline struct net_device *fcoe_netdev(const struct fc_lport *lport)
 {
 	return ((struct fcoe_interface *)
 			((struct fcoe_port *)lport_priv(lport))->priv)->netdev;
 }
 
-#endif /* _FCOE_H_ */
+#endif  

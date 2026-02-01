@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
-/*
- * Copyright (C) 2015 Intel Mobile Communications GmbH
- * Copyright (C) 2016-2017 Intel Deutschland GmbH
- * Copyright (C) 2019-2021, 2023 Intel Corporation
- */
+
+ 
 #include <linux/kernel.h>
 #include <linux/bsearch.h>
 
@@ -72,9 +68,9 @@ int iwl_trans_init(struct iwl_trans *trans)
 	}
 
 	txcmd_size += sizeof(struct iwl_cmd_header);
-	txcmd_size += 36; /* biggest possible 802.11 header */
+	txcmd_size += 36;  
 
-	/* Ensure device TX cmd cannot reach/cross a page boundary in gen2 */
+	 
 	if (WARN_ON(trans->trans_cfg->gen2 && txcmd_size >= txcmd_align))
 		return -EINVAL;
 
@@ -86,11 +82,7 @@ int iwl_trans_init(struct iwl_trans *trans)
 			sizeof(struct iwl_gen3_bc_tbl_entry) * TFD_QUEUE_BC_SIZE_GEN3_AX210;
 	else
 		trans->txqs.bc_tbl_size = sizeof(struct iwlagn_scd_bc_tbl);
-	/*
-	 * For gen2 devices, we use a single allocation for each byte-count
-	 * table, but they're pretty small (1k) so use a DMA pool that we
-	 * allocate here.
-	 */
+	 
 	if (trans->trans_cfg->gen2) {
 		trans->txqs.bc_pool = dmam_pool_create("iwlwifi:bc", trans->dev,
 						       trans->txqs.bc_tbl_size,
@@ -99,7 +91,7 @@ int iwl_trans_init(struct iwl_trans *trans)
 			return -ENOMEM;
 	}
 
-	/* Some things must not change even if the config does */
+	 
 	WARN_ON(trans->txqs.tfd.addr_size !=
 		(trans->trans_cfg->gen2 ? 64 : 36));
 
@@ -118,7 +110,7 @@ int iwl_trans_init(struct iwl_trans *trans)
 		return -ENOMEM;
 	}
 
-	/* Initialize the wait queue for commands */
+	 
 	init_waitqueue_head(&trans->wait_command_queue);
 
 	return 0;
@@ -151,15 +143,7 @@ int iwl_trans_send_cmd(struct iwl_trans *trans, struct iwl_host_cmd *cmd)
 		     test_bit(STATUS_RFKILL_OPMODE, &trans->status)))
 		return -ERFKILL;
 
-	/*
-	 * We can't test IWL_MVM_STATUS_IN_D3 in mvm->status because this
-	 * bit is set early in the D3 flow, before we send all the commands
-	 * that configure the firmware for D3 operation (power, patterns, ...)
-	 * and we don't want to flag all those with CMD_SEND_IN_D3.
-	 * So use the system_pm_mode instead. The only command sent after
-	 * we set system_pm_mode is D3_CONFIG_CMD, which we now flag with
-	 * CMD_SEND_IN_D3.
-	 */
+	 
 	if (unlikely(trans->system_pm_mode == IWL_PLAT_PM_MODE_D3 &&
 		     !(cmd->flags & CMD_SEND_IN_D3)))
 		return -EHOSTDOWN;
@@ -196,14 +180,7 @@ int iwl_trans_send_cmd(struct iwl_trans *trans, struct iwl_host_cmd *cmd)
 }
 IWL_EXPORT_SYMBOL(iwl_trans_send_cmd);
 
-/* Comparator for struct iwl_hcmd_names.
- * Used in the binary search over a list of host commands.
- *
- * @key: command_id that we're looking for.
- * @elt: struct iwl_hcmd_names candidate for match.
- *
- * @return 0 iff equal.
- */
+ 
 static int iwl_hcmd_names_cmp(const void *key, const void *elt)
 {
 	const struct iwl_hcmd_names *name = elt;

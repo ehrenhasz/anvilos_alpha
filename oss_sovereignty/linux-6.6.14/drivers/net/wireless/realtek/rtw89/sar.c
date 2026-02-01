@@ -1,6 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
-/* Copyright(c) 2019-2020  Realtek Corporation
- */
+
+ 
 
 #include "acpi.h"
 #include "debug.h"
@@ -8,7 +7,7 @@
 #include "reg.h"
 #include "sar.h"
 
-#define RTW89_TAS_FACTOR 2 /* unit: 0.25 dBm */
+#define RTW89_TAS_FACTOR 2  
 #define RTW89_TAS_DPR_GAP (1 << RTW89_TAS_FACTOR)
 #define RTW89_TAS_DELTA (2 << RTW89_TAS_FACTOR)
 
@@ -40,10 +39,7 @@ static enum rtw89_sar_subband rtw89_sar_get_subband(struct rtw89_dev *rtwdev,
 	case 6715 ... 6855:
 		return RTW89_SAR_6GHZ_SUBBAND_7_H;
 
-	/* freq 6875 (ch 185, 20MHz) spans RTW89_SAR_6GHZ_SUBBAND_7_H
-	 * and RTW89_SAR_6GHZ_SUBBAND_8, so directly describe it with
-	 * struct rtw89_sar_span in the following.
-	 */
+	 
 
 	case 6895 ... 7115:
 		return RTW89_SAR_6GHZ_SUBBAND_8;
@@ -67,9 +63,7 @@ struct rtw89_sar_span {
 		.subband_high = RTW89_SAR_6GHZ_ ## subband_h, \
 	}
 
-/* Since 6GHz SAR subbands are not edge aligned, some cases span two SAR
- * subbands. In the following, we describe each of them with rtw89_sar_span.
- */
+ 
 static const struct rtw89_sar_span rtw89_sar_overlapping_6ghz[] = {
 	RTW89_DECL_SAR_6GHZ_SPAN(6145, SUBBAND_5_L, SUBBAND_5_H),
 	RTW89_DECL_SAR_6GHZ_SPAN(6165, SUBBAND_5_L, SUBBAND_5_H),
@@ -95,11 +89,7 @@ static int rtw89_query_sar_config_common(struct rtw89_dev *rtwdev,
 
 	if (center_freq >= RTW89_SAR_6GHZ_SPAN_HEAD) {
 		idx = RTW89_SAR_6GHZ_SPAN_IDX(center_freq);
-		/* To decrease size of rtw89_sar_overlapping_6ghz[],
-		 * RTW89_SAR_6GHZ_SPAN_IDX() truncates the leading NULLs
-		 * to make first span as index 0 of the table. So, if center
-		 * frequency is less than the first one, it will get netative.
-		 */
+		 
 		if (idx >= 0 && idx < ARRAY_SIZE(rtw89_sar_overlapping_6ghz))
 			span = &rtw89_sar_overlapping_6ghz[idx];
 	}
@@ -187,7 +177,7 @@ static s8 rtw89_txpwr_sar_to_tas(const struct rtw89_sar_handler *sar_hdl,
 s8 rtw89_query_sar(struct rtw89_dev *rtwdev, u32 center_freq)
 {
 	const enum rtw89_sar_sources src = rtwdev->sar.src;
-	/* its members are protected by rtw89_sar_set_src() */
+	 
 	const struct rtw89_sar_handler *sar_hdl = &rtw89_sar_handlers[src];
 	struct rtw89_tas_info *tas = &rtwdev->tas;
 	s8 delta;
@@ -226,7 +216,7 @@ s8 rtw89_query_sar(struct rtw89_dev *rtwdev, u32 center_freq)
 void rtw89_print_sar(struct seq_file *m, struct rtw89_dev *rtwdev, u32 center_freq)
 {
 	const enum rtw89_sar_sources src = rtwdev->sar.src;
-	/* its members are protected by rtw89_sar_set_src() */
+	 
 	const struct rtw89_sar_handler *sar_hdl = &rtw89_sar_handlers[src];
 	const u8 fct_mac = rtwdev->chip->txpwr_factor_mac;
 	int ret;
@@ -352,7 +342,7 @@ int rtw89_ops_set_sar_specs(struct ieee80211_hw *hw,
 static void rtw89_tas_state_update(struct rtw89_dev *rtwdev)
 {
 	const enum rtw89_sar_sources src = rtwdev->sar.src;
-	/* its members are protected by rtw89_sar_set_src() */
+	 
 	const struct rtw89_sar_handler *sar_hdl = &rtw89_sar_handlers[src];
 	struct rtw89_tas_info *tas = &rtwdev->tas;
 	s32 txpwr_avg = tas->total_txpwr / RTW89_TAS_MAX_WINDOW / PERCENT;
@@ -478,7 +468,7 @@ void rtw89_tas_track(struct rtw89_dev *rtwdev)
 	}
 
 	instant_txpwr /= max_nss_num;
-	/* in unit of 0.25 dBm multiply by percentage */
+	 
 	txpwr = instant_txpwr * env->ifs_clm_tx_ratio;
 	tas->total_txpwr += txpwr - tas->txpwr_history[tas->cur_idx];
 	tas->txpwr_history[tas->cur_idx] = txpwr;

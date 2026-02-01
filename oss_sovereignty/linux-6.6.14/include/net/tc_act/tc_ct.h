@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef __NET_TC_CT_H
 #define __NET_TC_CT_H
 
@@ -73,7 +73,7 @@ static inline struct nf_conntrack_helper *tcf_ct_helper(const struct tc_action *
 {
 	return NULL;
 }
-#endif /* CONFIG_NF_CONNTRACK */
+#endif  
 
 #if IS_ENABLED(CONFIG_NET_ACT_CT)
 static inline void
@@ -100,4 +100,4 @@ static inline bool is_tcf_ct(const struct tc_action *a)
 	return false;
 }
 
-#endif /* __NET_TC_CT_H */
+#endif  

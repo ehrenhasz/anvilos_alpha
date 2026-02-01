@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * net/sched/act_meta_prio.c IFE skb->priority metadata module
- *
- * copyright Jamal Hadi Salim (2015)
-*/
+
+ 
 
 #include <linux/types.h>
 #include <linux/kernel.h>
@@ -26,7 +22,7 @@ static int skbprio_check(struct sk_buff *skb, struct tcf_meta_info *e)
 static int skbprio_encode(struct sk_buff *skb, void *skbdata,
 			  struct tcf_meta_info *e)
 {
-	u32 ifeprio = skb->priority; /* avoid having to cast skb->priority*/
+	u32 ifeprio = skb->priority;  
 
 	return ife_encode_meta_u32(ifeprio, skbdata, e);
 }

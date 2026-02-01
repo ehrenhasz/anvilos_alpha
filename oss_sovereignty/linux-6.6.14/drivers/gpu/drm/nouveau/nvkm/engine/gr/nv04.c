@@ -1,26 +1,4 @@
-/*
- * Copyright 2007 Stephane Marchesin
- * All Rights Reserved.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice (including the next
- * paragr) shall be included in all copies or substantial portions of the
- * Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * PRECISION INSIGHT AND/OR ITS SUPPLIERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
- * DEALINGS IN THE SOFTWARE.
- */
+ 
 #include "priv.h"
 #include "regs.h"
 
@@ -363,83 +341,9 @@ struct nv04_gr_chan {
 	u32 nv04[ARRAY_SIZE(nv04_gr_ctx_regs)];
 };
 
-/*******************************************************************************
- * Graphics object classes
- ******************************************************************************/
+ 
 
-/*
- * Software methods, why they are needed, and how they all work:
- *
- * NV04 and NV05 keep most of the state in PGRAPH context itself, but some
- * 2d engine settings are kept inside the grobjs themselves. The grobjs are
- * 3 words long on both. grobj format on NV04 is:
- *
- * word 0:
- *  - bits 0-7: class
- *  - bit 12: color key active
- *  - bit 13: clip rect active
- *  - bit 14: if set, destination surface is swizzled and taken from buffer 5
- *            [set by NV04_SWIZZLED_SURFACE], otherwise it's linear and taken
- *            from buffer 0 [set by NV04_CONTEXT_SURFACES_2D or
- *            NV03_CONTEXT_SURFACE_DST].
- *  - bits 15-17: 2d operation [aka patch config]
- *  - bit 24: patch valid [enables rendering using this object]
- *  - bit 25: surf3d valid [for tex_tri and multitex_tri only]
- * word 1:
- *  - bits 0-1: mono format
- *  - bits 8-13: color format
- *  - bits 16-31: DMA_NOTIFY instance
- * word 2:
- *  - bits 0-15: DMA_A instance
- *  - bits 16-31: DMA_B instance
- *
- * On NV05 it's:
- *
- * word 0:
- *  - bits 0-7: class
- *  - bit 12: color key active
- *  - bit 13: clip rect active
- *  - bit 14: if set, destination surface is swizzled and taken from buffer 5
- *            [set by NV04_SWIZZLED_SURFACE], otherwise it's linear and taken
- *            from buffer 0 [set by NV04_CONTEXT_SURFACES_2D or
- *            NV03_CONTEXT_SURFACE_DST].
- *  - bits 15-17: 2d operation [aka patch config]
- *  - bits 20-22: dither mode
- *  - bit 24: patch valid [enables rendering using this object]
- *  - bit 25: surface_dst/surface_color/surf2d/surf3d valid
- *  - bit 26: surface_src/surface_zeta valid
- *  - bit 27: pattern valid
- *  - bit 28: rop valid
- *  - bit 29: beta1 valid
- *  - bit 30: beta4 valid
- * word 1:
- *  - bits 0-1: mono format
- *  - bits 8-13: color format
- *  - bits 16-31: DMA_NOTIFY instance
- * word 2:
- *  - bits 0-15: DMA_A instance
- *  - bits 16-31: DMA_B instance
- *
- * NV05 will set/unset the relevant valid bits when you poke the relevant
- * object-binding methods with object of the proper type, or with the NULL
- * type. It'll only allow rendering using the grobj if all needed objects
- * are bound. The needed set of objects depends on selected operation: for
- * example rop object is needed by ROP_AND, but not by SRCCOPY_AND.
- *
- * NV04 doesn't have these methods implemented at all, and doesn't have the
- * relevant bits in grobj. Instead, it'll allow rendering whenever bit 24
- * is set. So we have to emulate them in software, internally keeping the
- * same bits as NV05 does. Since grobjs are aligned to 16 bytes on nv04,
- * but the last word isn't actually used for anything, we abuse it for this
- * purpose.
- *
- * Actually, NV05 can optionally check bit 24 too, but we disable this since
- * there's no use for it.
- *
- * For unknown reasons, NV04 implements surf3d binding in hardware as an
- * exception. Also for unknown reasons, NV04 doesn't implement the clipping
- * methods on the surf3d object, so we have to emulate them too.
- */
+ 
 
 static void
 nv04_gr_set_ctx1(struct nvkm_device *device, u32 inst, u32 mask, u32 value)
@@ -471,29 +375,29 @@ nv04_gr_set_ctx_val(struct nvkm_device *device, u32 inst, u32 mask, u32 value)
 	tmp |= value;
 	nvkm_wr32(device, 0x70000c + inst, tmp);
 
-	/* check for valid surf2d/surf_dst/surf_color */
+	 
 	if (!(tmp & 0x02000000))
 		valid = 0;
-	/* check for valid surf_src/surf_zeta */
+	 
 	if ((class == 0x1f || class == 0x48) && !(tmp & 0x04000000))
 		valid = 0;
 
 	switch (op) {
-	/* SRCCOPY_AND, SRCCOPY: no extra objects required */
+	 
 	case 0:
 	case 3:
 		break;
-	/* ROP_AND: requires pattern and rop */
+	 
 	case 1:
 		if (!(tmp & 0x18000000))
 			valid = 0;
 		break;
-	/* BLEND_AND: requires beta1 */
+	 
 	case 2:
 		if (!(tmp & 0x20000000))
 			valid = 0;
 		break;
-	/* SRCCOPY_PREMULT, BLEND_PREMULT: beta4 required */
+	 
 	case 4:
 	case 5:
 		if (!(tmp & 0x40000000))
@@ -510,11 +414,11 @@ nv04_gr_mthd_set_operation(struct nvkm_device *device, u32 inst, u32 data)
 	u8 class = nvkm_rd32(device, 0x700000) & 0x000000ff;
 	if (data > 5)
 		return false;
-	/* Old versions of the objects only accept first three operations. */
+	 
 	if (data > 2 && class < 0x40)
 		return false;
 	nv04_gr_set_ctx1(device, inst, 0x00038000, data << 15);
-	/* changing operation changes set of objects needed for validation */
+	 
 	nv04_gr_set_ctx_val(device, inst, 0, 0);
 	return true;
 }
@@ -525,10 +429,10 @@ nv04_gr_mthd_surf3d_clip_h(struct nvkm_device *device, u32 inst, u32 data)
 	u32 min = data & 0xffff, max;
 	u32 w = data >> 16;
 	if (min & 0x8000)
-		/* too large */
+		 
 		return false;
 	if (w & 0x8000)
-		/* yes, it accepts negative for some reason. */
+		 
 		w |= 0xffff0000;
 	max = min + w;
 	max &= 0x3ffff;
@@ -543,10 +447,10 @@ nv04_gr_mthd_surf3d_clip_v(struct nvkm_device *device, u32 inst, u32 data)
 	u32 min = data & 0xffff, max;
 	u32 w = data >> 16;
 	if (min & 0x8000)
-		/* too large */
+		 
 		return false;
 	if (w & 0x8000)
-		/* yes, it accepts negative for some reason. */
+		 
 		w |= 0xffff0000;
 	max = min + w;
 	max &= 0x3ffff;
@@ -744,9 +648,7 @@ nv01_gr_mthd_bind_chroma(struct nvkm_device *device, u32 inst, u32 data)
 	case 0x30:
 		nv04_gr_set_ctx1(device, inst, 0x1000, 0);
 		return true;
-	/* Yes, for some reason even the old versions of objects
-	 * accept 0x57 and not 0x17. Consistency be damned.
-	 */
+	 
 	case 0x57:
 		nv04_gr_set_ctx1(device, inst, 0x1000, 0x1000);
 		return true;
@@ -1064,9 +966,7 @@ nv04_gr_object = {
 	.bind = nv04_gr_object_bind,
 };
 
-/*******************************************************************************
- * PGRAPH context
- ******************************************************************************/
+ 
 
 static struct nv04_gr_chan *
 nv04_gr_channel(struct nv04_gr *gr)
@@ -1120,12 +1020,12 @@ nv04_gr_context_switch(struct nv04_gr *gr)
 
 	nv04_gr_idle(&gr->base);
 
-	/* If previous context is valid, we need to save it */
+	 
 	prev = nv04_gr_channel(gr);
 	if (prev)
 		nv04_gr_unload_context(prev);
 
-	/* load context for next channel */
+	 
 	chid = (nvkm_rd32(device, NV04_PGRAPH_TRAPPED_ADDR) >> 24) & 0x0f;
 	next = gr->chan[chid];
 	if (next)
@@ -1203,9 +1103,7 @@ nv04_gr_chan_new(struct nvkm_gr *base, struct nvkm_chan *fifoch,
 	return 0;
 }
 
-/*******************************************************************************
- * PGRAPH engine/subdev functions
- ******************************************************************************/
+ 
 
 bool
 nv04_gr_idle(struct nvkm_gr *gr)
@@ -1330,32 +1228,31 @@ nv04_gr_init(struct nvkm_gr *base)
 	struct nv04_gr *gr = nv04_gr(base);
 	struct nvkm_device *device = gr->base.engine.subdev.device;
 
-	/* Enable PGRAPH interrupts */
+	 
 	nvkm_wr32(device, NV03_PGRAPH_INTR, 0xFFFFFFFF);
 	nvkm_wr32(device, NV03_PGRAPH_INTR_EN, 0xFFFFFFFF);
 
 	nvkm_wr32(device, NV04_PGRAPH_VALID1, 0);
 	nvkm_wr32(device, NV04_PGRAPH_VALID2, 0);
-	/*nvkm_wr32(device, NV04_PGRAPH_DEBUG_0, 0x000001FF);
-	nvkm_wr32(device, NV04_PGRAPH_DEBUG_0, 0x001FFFFF);*/
+	 
 	nvkm_wr32(device, NV04_PGRAPH_DEBUG_0, 0x1231c000);
-	/*1231C000 blob, 001 haiku*/
-	/*V_WRITE(NV04_PGRAPH_DEBUG_1, 0xf2d91100);*/
+	 
+	 
 	nvkm_wr32(device, NV04_PGRAPH_DEBUG_1, 0x72111100);
-	/*0x72111100 blob , 01 haiku*/
-	/*nvkm_wr32(device, NV04_PGRAPH_DEBUG_2, 0x11d5f870);*/
+	 
+	 
 	nvkm_wr32(device, NV04_PGRAPH_DEBUG_2, 0x11d5f071);
-	/*haiku same*/
+	 
 
-	/*nvkm_wr32(device, NV04_PGRAPH_DEBUG_3, 0xfad4ff31);*/
+	 
 	nvkm_wr32(device, NV04_PGRAPH_DEBUG_3, 0xf0d4ff31);
-	/*haiku and blob 10d4*/
+	 
 
 	nvkm_wr32(device, NV04_PGRAPH_STATE        , 0xFFFFFFFF);
 	nvkm_wr32(device, NV04_PGRAPH_CTX_CONTROL  , 0x10000100);
 	nvkm_mask(device, NV04_PGRAPH_CTX_USER, 0xff000000, 0x0f000000);
 
-	/* These don't belong here, they're part of a per-channel context */
+	 
 	nvkm_wr32(device, NV04_PGRAPH_PATTERN_SHAPE, 0x00000000);
 	nvkm_wr32(device, NV04_PGRAPH_BETA_AND     , 0xFFFFFFFF);
 	return 0;
@@ -1367,45 +1264,45 @@ nv04_gr = {
 	.intr = nv04_gr_intr,
 	.chan_new = nv04_gr_chan_new,
 	.sclass = {
-		{ -1, -1, 0x0012, &nv04_gr_object }, /* beta1 */
-		{ -1, -1, 0x0017, &nv04_gr_object }, /* chroma */
-		{ -1, -1, 0x0018, &nv04_gr_object }, /* pattern (nv01) */
-		{ -1, -1, 0x0019, &nv04_gr_object }, /* clip */
-		{ -1, -1, 0x001c, &nv04_gr_object }, /* line */
-		{ -1, -1, 0x001d, &nv04_gr_object }, /* tri */
-		{ -1, -1, 0x001e, &nv04_gr_object }, /* rect */
+		{ -1, -1, 0x0012, &nv04_gr_object },  
+		{ -1, -1, 0x0017, &nv04_gr_object },  
+		{ -1, -1, 0x0018, &nv04_gr_object },  
+		{ -1, -1, 0x0019, &nv04_gr_object },  
+		{ -1, -1, 0x001c, &nv04_gr_object },  
+		{ -1, -1, 0x001d, &nv04_gr_object },  
+		{ -1, -1, 0x001e, &nv04_gr_object },  
 		{ -1, -1, 0x001f, &nv04_gr_object },
 		{ -1, -1, 0x0021, &nv04_gr_object },
-		{ -1, -1, 0x0030, &nv04_gr_object }, /* null */
+		{ -1, -1, 0x0030, &nv04_gr_object },  
 		{ -1, -1, 0x0036, &nv04_gr_object },
 		{ -1, -1, 0x0037, &nv04_gr_object },
-		{ -1, -1, 0x0038, &nv04_gr_object }, /* dvd subpicture */
-		{ -1, -1, 0x0039, &nv04_gr_object }, /* m2mf */
-		{ -1, -1, 0x0042, &nv04_gr_object }, /* surf2d */
-		{ -1, -1, 0x0043, &nv04_gr_object }, /* rop */
-		{ -1, -1, 0x0044, &nv04_gr_object }, /* pattern */
+		{ -1, -1, 0x0038, &nv04_gr_object },  
+		{ -1, -1, 0x0039, &nv04_gr_object },  
+		{ -1, -1, 0x0042, &nv04_gr_object },  
+		{ -1, -1, 0x0043, &nv04_gr_object },  
+		{ -1, -1, 0x0044, &nv04_gr_object },  
 		{ -1, -1, 0x0048, &nv04_gr_object },
 		{ -1, -1, 0x004a, &nv04_gr_object },
 		{ -1, -1, 0x004b, &nv04_gr_object },
-		{ -1, -1, 0x0052, &nv04_gr_object }, /* swzsurf */
+		{ -1, -1, 0x0052, &nv04_gr_object },  
 		{ -1, -1, 0x0053, &nv04_gr_object },
-		{ -1, -1, 0x0054, &nv04_gr_object }, /* ttri */
-		{ -1, -1, 0x0055, &nv04_gr_object }, /* mtri */
-		{ -1, -1, 0x0057, &nv04_gr_object }, /* chroma */
-		{ -1, -1, 0x0058, &nv04_gr_object }, /* surf_dst */
-		{ -1, -1, 0x0059, &nv04_gr_object }, /* surf_src */
-		{ -1, -1, 0x005a, &nv04_gr_object }, /* surf_color */
-		{ -1, -1, 0x005b, &nv04_gr_object }, /* surf_zeta */
-		{ -1, -1, 0x005c, &nv04_gr_object }, /* line */
-		{ -1, -1, 0x005d, &nv04_gr_object }, /* tri */
-		{ -1, -1, 0x005e, &nv04_gr_object }, /* rect */
+		{ -1, -1, 0x0054, &nv04_gr_object },  
+		{ -1, -1, 0x0055, &nv04_gr_object },  
+		{ -1, -1, 0x0057, &nv04_gr_object },  
+		{ -1, -1, 0x0058, &nv04_gr_object },  
+		{ -1, -1, 0x0059, &nv04_gr_object },  
+		{ -1, -1, 0x005a, &nv04_gr_object },  
+		{ -1, -1, 0x005b, &nv04_gr_object },  
+		{ -1, -1, 0x005c, &nv04_gr_object },  
+		{ -1, -1, 0x005d, &nv04_gr_object },  
+		{ -1, -1, 0x005e, &nv04_gr_object },  
 		{ -1, -1, 0x005f, &nv04_gr_object },
 		{ -1, -1, 0x0060, &nv04_gr_object },
 		{ -1, -1, 0x0061, &nv04_gr_object },
-		{ -1, -1, 0x0064, &nv04_gr_object }, /* iifc (nv05) */
-		{ -1, -1, 0x0065, &nv04_gr_object }, /* ifc (nv05) */
-		{ -1, -1, 0x0066, &nv04_gr_object }, /* sifc (nv05) */
-		{ -1, -1, 0x0072, &nv04_gr_object }, /* beta4 */
+		{ -1, -1, 0x0064, &nv04_gr_object },  
+		{ -1, -1, 0x0065, &nv04_gr_object },  
+		{ -1, -1, 0x0066, &nv04_gr_object },  
+		{ -1, -1, 0x0072, &nv04_gr_object },  
 		{ -1, -1, 0x0076, &nv04_gr_object },
 		{ -1, -1, 0x0077, &nv04_gr_object },
 		{}

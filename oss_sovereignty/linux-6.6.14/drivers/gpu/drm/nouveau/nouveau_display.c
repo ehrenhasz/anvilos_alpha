@@ -1,28 +1,4 @@
-/*
- * Copyright (C) 2008 Maarten Maathuis.
- * All Rights Reserved.
- *
- * Permission is hereby granted, free of charge, to any person obtaining
- * a copy of this software and associated documentation files (the
- * "Software"), to deal in the Software without restriction, including
- * without limitation the rights to use, copy, modify, merge, publish,
- * distribute, sublicense, and/or sell copies of the Software, and to
- * permit persons to whom the Software is furnished to do so, subject to
- * the following conditions:
- *
- * The above copyright notice and this permission notice (including the
- * next paragraph) shall be included in all copies or substantial
- * portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
- * IN NO EVENT SHALL THE COPYRIGHT OWNER(S) AND/OR ITS SUPPLIERS BE
- * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
- * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
- * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 
 #include <acpi/video.h>
 
@@ -137,17 +113,14 @@ nouveau_decode_mod(struct nouveau_drm *drm,
 	BUG_ON(!tile_mode || !kind);
 
 	if (modifier == DRM_FORMAT_MOD_LINEAR) {
-		/* tile_mode will not be used in this case */
+		 
 		*tile_mode = 0;
 		*kind = 0;
 	} else {
-		/*
-		 * Extract the block height and kind from the corresponding
-		 * modifier fields.  See drm_fourcc.h for details.
-		 */
+		 
 
 		if ((modifier & (0xffull << 12)) == 0ull) {
-			/* Legacy modifier.  Translate to this dev's 'kind.' */
+			 
 			modifier |= disp->format_modifiers[0] & (0xffull << 12);
 		}
 
@@ -223,9 +196,7 @@ nouveau_validate_decode_mod(struct nouveau_drm *drm,
 static inline uint32_t
 nouveau_get_width_in_blocks(uint32_t stride)
 {
-	/* GOBs per block in the x direction is always one, and GOBs are
-	 * 64 bytes wide
-	 */
+	 
 	static const uint32_t log_block_width = 6;
 
 	return (stride + (1 << log_block_width) - 1) >> log_block_width;
@@ -305,16 +276,16 @@ nouveau_framebuffer_new(struct drm_device *dev,
 	uint8_t kind;
 	int ret;
 
-        /* YUV overlays have special requirements pre-NV50 */
+         
 	if (drm->client.device.info.family < NV_DEVICE_INFO_V0_TESLA &&
 
 	    (mode_cmd->pixel_format == DRM_FORMAT_YUYV ||
 	     mode_cmd->pixel_format == DRM_FORMAT_UYVY ||
 	     mode_cmd->pixel_format == DRM_FORMAT_NV12 ||
 	     mode_cmd->pixel_format == DRM_FORMAT_NV21) &&
-	    (mode_cmd->pitches[0] & 0x3f || /* align 64 */
-	     mode_cmd->pitches[0] >= 0x10000 || /* at most 64k pitch */
-	     (mode_cmd->pitches[1] && /* pitches for planes must match */
+	    (mode_cmd->pitches[0] & 0x3f ||  
+	     mode_cmd->pitches[0] >= 0x10000 ||  
+	     (mode_cmd->pitches[1] &&  
 	      mode_cmd->pitches[0] != mode_cmd->pitches[1]))) {
 		DRM_DEBUG_KMS("Unsuitable framebuffer: format: %p4cc; pitches: 0x%x\n 0x%x\n",
 			      &mode_cmd->pixel_format,
@@ -475,7 +446,7 @@ nouveau_display_hpd_work(struct work_struct *work)
 	drm->hpd_pending = 0;
 	spin_unlock_irq(&drm->hpd_lock);
 
-	/* Nothing to do, exit early without updating the last busy counter */
+	 
 	if (!pending)
 		goto noop;
 
@@ -553,16 +524,10 @@ nouveau_display_acpi_ntfy(struct notifier_block *nb, unsigned long val,
 		if (info->type == ACPI_VIDEO_NOTIFY_PROBE) {
 			ret = pm_runtime_get(drm->dev->dev);
 			if (ret == 1 || ret == -EACCES) {
-				/* If the GPU is already awake, or in a state
-				 * where we can't wake it up, it can handle
-				 * it's own hotplug events.
-				 */
+				 
 				pm_runtime_put_autosuspend(drm->dev->dev);
 			} else if (ret == 0 || ret == -EINPROGRESS) {
-				/* We've started resuming the GPU already, so
-				 * it will handle scheduling a full reprobe
-				 * itself
-				 */
+				 
 				NV_DEBUG(drm, "ACPI requested connector reprobe\n");
 				pm_runtime_put_noidle(drm->dev->dev);
 			} else {
@@ -570,7 +535,7 @@ nouveau_display_acpi_ntfy(struct notifier_block *nb, unsigned long val,
 					ret);
 			}
 
-			/* acpi-video should not generate keypresses for this */
+			 
 			return NOTIFY_BAD;
 		}
 	}
@@ -587,10 +552,7 @@ nouveau_display_init(struct drm_device *dev, bool resume, bool runtime)
 	struct drm_connector_list_iter conn_iter;
 	int ret;
 
-	/*
-	 * Enable hotplug interrupts (done as early as possible, since we need
-	 * them for MST)
-	 */
+	 
 	drm_connector_list_iter_begin(dev, &conn_iter);
 	nouveau_for_each_non_mst_connector_iter(connector, &conn_iter) {
 		struct nouveau_connector *conn = nouveau_connector(connector);
@@ -603,9 +565,7 @@ nouveau_display_init(struct drm_device *dev, bool resume, bool runtime)
 	if (ret)
 		return ret;
 
-	/* enable connector detection and polling for connectors without HPD
-	 * support
-	 */
+	 
 	drm_kms_helper_poll_enable(dev);
 
 	return ret;
@@ -626,7 +586,7 @@ nouveau_display_fini(struct drm_device *dev, bool suspend, bool runtime)
 			drm_helper_force_disable_all(dev);
 	}
 
-	/* disable hotplug interrupts */
+	 
 	drm_connector_list_iter_begin(dev, &conn_iter);
 	nouveau_for_each_non_mst_connector_iter(connector, &conn_iter) {
 		struct nouveau_connector *conn = nouveau_connector(connector);
@@ -669,11 +629,11 @@ nouveau_display_create_properties(struct drm_device *dev)
 	if (gen < 1)
 		return;
 
-	/* -90..+90 */
+	 
 	disp->vibrant_hue_property =
 		drm_property_create_range(dev, 0, "vibrant hue", 0, 180);
 
-	/* -100..+100 */
+	 
 	disp->color_vibrance_property =
 		drm_property_create_range(dev, 0, "color vibrance", 0, 200);
 }
@@ -798,7 +758,7 @@ nouveau_display_suspend(struct drm_device *dev, bool runtime)
 {
 	struct nouveau_display *disp = nouveau_display(dev);
 
-	/* Disable console. */
+	 
 	drm_fb_helper_set_suspend_unlocked(dev->fb_helper, true);
 
 	if (drm_drv_uses_atomic_modeset(dev)) {
@@ -830,7 +790,7 @@ nouveau_display_resume(struct drm_device *dev, bool runtime)
 		}
 	}
 
-	/* Enable console. */
+	 
 	drm_fb_helper_set_suspend_unlocked(dev->fb_helper, false);
 }
 
@@ -847,7 +807,7 @@ nouveau_display_dumb_create(struct drm_file *file_priv, struct drm_device *dev,
 	args->size = args->pitch * args->height;
 	args->size = roundup(args->size, PAGE_SIZE);
 
-	/* Use VRAM if there is any ; otherwise fallback to system memory */
+	 
 	if (nouveau_drm(dev)->client.device.info.ram_size != 0)
 		domain = NOUVEAU_GEM_DOMAIN_VRAM;
 	else

@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2005-2014 Brocade Communications Systems, Inc.
- * Copyright (c) 2014- QLogic Corporation.
- * All rights reserved
- * www.qlogic.com
- *
- * Linux driver for QLogic BR-series Fibre Channel Host Bus Adapter.
- */
+ 
+ 
 
 #ifndef __BFA_PORT_H__
 #define __BFA_PORT_H__
@@ -63,9 +56,7 @@ void	     bfa_port_mem_claim(struct bfa_port_s *port,
 void	bfa_port_set_dportenabled(struct bfa_port_s *port,
 				  bfa_boolean_t enabled);
 
-/*
- * CEE declaration
- */
+ 
 typedef void (*bfa_cee_get_attr_cbfn_t) (void *dev, bfa_status_t status);
 typedef void (*bfa_cee_get_stats_cbfn_t) (void *dev, bfa_status_t status);
 typedef void (*bfa_cee_reset_stats_cbfn_t) (void *dev, bfa_status_t status);
@@ -116,4 +107,4 @@ bfa_status_t	bfa_cee_get_stats(struct bfa_cee_s *cee,
 bfa_status_t	bfa_cee_reset_stats(struct bfa_cee_s *cee,
 				bfa_cee_reset_stats_cbfn_t cbfn, void *cbarg);
 
-#endif	/* __BFA_PORT_H__ */
+#endif	 

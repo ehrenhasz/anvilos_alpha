@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2012 Red Hat. All rights reserved.
- *
- * This file is released under the GPL.
- */
+ 
+ 
 
 #ifndef DM_CACHE_POLICY_INTERNAL_H
 #define DM_CACHE_POLICY_INTERNAL_H
@@ -11,7 +7,7 @@
 #include <linux/vmalloc.h>
 #include "dm-cache-policy.h"
 
-/*----------------------------------------------------------------*/
+ 
 
 static inline int policy_lookup(struct dm_cache_policy *p, dm_oblock_t oblock, dm_cblock_t *cblock,
 				int data_dir, bool fast_copy, bool *background_queued)
@@ -109,11 +105,9 @@ static inline void policy_allow_migrations(struct dm_cache_policy *p, bool allow
 	return p->allow_migrations(p, allow);
 }
 
-/*----------------------------------------------------------------*/
+ 
 
-/*
- * Some utility functions commonly used by policies and the core target.
- */
+ 
 static inline size_t bitset_size_in_bytes(unsigned int nr_entries)
 {
 	return sizeof(unsigned long) * dm_div_up(nr_entries, BITS_PER_LONG);
@@ -138,30 +132,22 @@ static inline void free_bitset(unsigned long *bits)
 	vfree(bits);
 }
 
-/*----------------------------------------------------------------*/
+ 
 
-/*
- * Creates a new cache policy given a policy name, a cache size, an origin size and the block size.
- */
+ 
 struct dm_cache_policy *dm_cache_policy_create(const char *name, dm_cblock_t cache_size,
 					       sector_t origin_size, sector_t block_size);
 
-/*
- * Destroys the policy.  This drops references to the policy module as well
- * as calling it's destroy method.  So always use this rather than calling
- * the policy->destroy method directly.
- */
+ 
 void dm_cache_policy_destroy(struct dm_cache_policy *p);
 
-/*
- * In case we've forgotten.
- */
+ 
 const char *dm_cache_policy_get_name(struct dm_cache_policy *p);
 
 const unsigned int *dm_cache_policy_get_version(struct dm_cache_policy *p);
 
 size_t dm_cache_policy_get_hint_size(struct dm_cache_policy *p);
 
-/*----------------------------------------------------------------*/
+ 
 
-#endif /* DM_CACHE_POLICY_INTERNAL_H */
+#endif  

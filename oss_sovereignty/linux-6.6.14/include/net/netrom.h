@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- *	Declarations of NET/ROM type objects.
- *
- *	Jonathan Naylor G4KLX	9/4/95
- */
+ 
+ 
 
 #ifndef _NETROM_H
 #define _NETROM_H 
@@ -34,7 +30,7 @@
 #define	NR_NAK_FLAG			0x40
 #define	NR_MORE_FLAG			0x20
 
-/* Define Link State constants. */
+ 
 enum {
 	NR_STATE_0,
 	NR_STATE_1,
@@ -47,22 +43,22 @@ enum {
 #define	NR_COND_PEER_RX_BUSY		0x04
 #define	NR_COND_OWN_RX_BUSY		0x08
 
-#define NR_DEFAULT_T1			120000		/* Outstanding frames - 120 seconds */
-#define NR_DEFAULT_T2			5000		/* Response delay     - 5 seconds */
-#define NR_DEFAULT_N2			3		/* Number of Retries - 3 */
-#define	NR_DEFAULT_T4			180000		/* Busy Delay - 180 seconds */
-#define	NR_DEFAULT_IDLE			0		/* No Activity Timeout - none */
-#define	NR_DEFAULT_WINDOW		4		/* Default Window Size - 4 */
-#define	NR_DEFAULT_OBS			6		/* Default Obsolescence Count - 6 */
-#define	NR_DEFAULT_QUAL			10		/* Default Neighbour Quality - 10 */
-#define	NR_DEFAULT_TTL			16		/* Default Time To Live - 16 */
-#define	NR_DEFAULT_ROUTING		1		/* Is routing enabled ? */
-#define	NR_DEFAULT_FAILS		2		/* Link fails until route fails */
-#define	NR_DEFAULT_RESET		0		/* Sent / accept reset cmds? */
+#define NR_DEFAULT_T1			120000		 
+#define NR_DEFAULT_T2			5000		 
+#define NR_DEFAULT_N2			3		 
+#define	NR_DEFAULT_T4			180000		 
+#define	NR_DEFAULT_IDLE			0		 
+#define	NR_DEFAULT_WINDOW		4		 
+#define	NR_DEFAULT_OBS			6		 
+#define	NR_DEFAULT_QUAL			10		 
+#define	NR_DEFAULT_TTL			16		 
+#define	NR_DEFAULT_ROUTING		1		 
+#define	NR_DEFAULT_FAILS		2		 
+#define	NR_DEFAULT_RESET		0		 
 
 #define NR_MODULUS 			256
-#define NR_MAX_WINDOW_SIZE		127			/* Maximum Window Allowable - 127 */
-#define	NR_MAX_PACKET_SIZE		236			/* Maximum Packet Length - 236 */
+#define NR_MAX_WINDOW_SIZE		127			 
+#define	NR_MAX_PACKET_SIZE		236			 
 
 struct nr_sock {
 	struct sock		sock;
@@ -117,9 +113,7 @@ struct nr_node {
 	spinlock_t		node_lock;
 };
 
-/*********************************************************************
- *	nr_node & nr_neigh lists, refcounting and locking
- *********************************************************************/
+ 
 
 #define nr_node_hold(__nr_node) \
 	refcount_inc(&((__nr_node)->refcount))
@@ -144,8 +138,7 @@ static __inline__ void nr_neigh_put(struct nr_neigh *nr_neigh)
 	}
 }
 
-/* nr_node_lock and nr_node_unlock also hold/put the node's refcounter.
- */
+ 
 static __inline__ void nr_node_lock(struct nr_node *nr_node)
 {
 	nr_node_hold(nr_node);
@@ -171,9 +164,9 @@ static __inline__ void nr_node_unlock(struct nr_node *nr_node)
 	hlist_for_each_entry_safe(__nr_node, node2, list, node_node)
 
 
-/*********************************************************************/
+ 
 
-/* af_netrom.c */
+ 
 extern int  sysctl_netrom_default_path_quality;
 extern int  sysctl_netrom_obsolescence_count_initialiser;
 extern int  sysctl_netrom_network_ttl_initialiser;
@@ -190,19 +183,19 @@ extern int  sysctl_netrom_reset_circuit;
 int nr_rx_frame(struct sk_buff *, struct net_device *);
 void nr_destroy_socket(struct sock *);
 
-/* nr_dev.c */
+ 
 int nr_rx_ip(struct sk_buff *, struct net_device *);
 void nr_setup(struct net_device *);
 
-/* nr_in.c */
+ 
 int nr_process_rx_frame(struct sock *, struct sk_buff *);
 
-/* nr_loopback.c */
+ 
 void nr_loopback_init(void);
 void nr_loopback_clear(void);
 int nr_loopback_queue(struct sk_buff *);
 
-/* nr_out.c */
+ 
 void nr_output(struct sock *, struct sk_buff *);
 void nr_send_nak_frame(struct sock *);
 void nr_kick(struct sock *);
@@ -211,7 +204,7 @@ void nr_establish_data_link(struct sock *);
 void nr_enquiry_response(struct sock *);
 void nr_check_iframes_acked(struct sock *, unsigned short);
 
-/* nr_route.c */
+ 
 void nr_rt_device_down(struct net_device *);
 struct net_device *nr_dev_first(void);
 struct net_device *nr_dev_get(ax25_address *);
@@ -222,7 +215,7 @@ extern const struct seq_operations nr_node_seqops;
 extern const struct seq_operations nr_neigh_seqops;
 void nr_rt_free(void);
 
-/* nr_subr.c */
+ 
 void nr_clear_queues(struct sock *);
 void nr_frames_acked(struct sock *, unsigned short);
 void nr_requeue_frames(struct sock *);
@@ -232,19 +225,13 @@ void nr_write_internal(struct sock *, int);
 
 void __nr_transmit_reply(struct sk_buff *skb, int mine, unsigned char cmdflags);
 
-/*
- * This routine is called when a Connect Acknowledge with the Choke Flag
- * set is needed to refuse a connection.
- */
+ 
 #define nr_transmit_refusal(skb, mine)					\
 do {									\
 	__nr_transmit_reply((skb), (mine), NR_CONNACK | NR_CHOKE_FLAG);	\
 } while (0)
 
-/*
- * This routine is called when we don't have a circuit matching an incoming
- * NET/ROM packet.  This is an G8PZT Xrouter extension.
- */
+ 
 #define nr_transmit_reset(skb, mine)					\
 do {									\
 	__nr_transmit_reply((skb), (mine), NR_RESET);			\
@@ -252,7 +239,7 @@ do {									\
 
 void nr_disconnect(struct sock *, int);
 
-/* nr_timer.c */
+ 
 void nr_init_timers(struct sock *sk);
 void nr_start_heartbeat(struct sock *);
 void nr_start_t1timer(struct sock *);
@@ -266,7 +253,7 @@ void nr_stop_t4timer(struct sock *);
 void nr_stop_idletimer(struct sock *);
 int nr_t1timer_running(struct sock *);
 
-/* sysctl_net_netrom.c */
+ 
 int nr_register_sysctl(void);
 void nr_unregister_sysctl(void);
 

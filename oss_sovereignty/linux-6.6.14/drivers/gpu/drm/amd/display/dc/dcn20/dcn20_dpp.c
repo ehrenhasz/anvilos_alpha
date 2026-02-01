@@ -1,27 +1,4 @@
-/*
- * Copyright 2016 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 #include "dm_services.h"
 
@@ -57,9 +34,9 @@ void dpp20_read_state(struct dpp *dpp_base,
 			DPP_CLOCK_ENABLE, &s->is_enabled);
 	REG_GET(CM_DGAM_CONTROL,
 			CM_DGAM_LUT_MODE, &s->dgam_lut_mode);
-	// BGAM has no ROM, and definition is different, can't reuse same dump
-	//REG_GET(CM_BLNDGAM_CONTROL,
-	//		CM_BLNDGAM_LUT_MODE, &s->rgam_lut_mode);
+	
+	
+	
 	REG_GET(CM_GAMUT_REMAP_CONTROL,
 			CM_GAMUT_REMAP_MODE, &s->gamut_remap_mode);
 	if (s->gamut_remap_mode) {
@@ -114,11 +91,11 @@ static void dpp2_cnv_setup (
 		CNVC_BYPASS, 0,
 		FORMAT_EXPANSION_MODE, mode);
 
-	//hardcode default
-    //FORMAT_CONTROL. FORMAT_CNV16                                 	default 0: U0.16/S.1.15;         1: U1.15/ S.1.14
-    //FORMAT_CONTROL. CNVC_BYPASS_MSB_ALIGN          				default 0: disabled              1: enabled
-    //FORMAT_CONTROL. CLAMP_POSITIVE                               	default 0: disabled              1: enabled
-    //FORMAT_CONTROL. CLAMP_POSITIVE_C                          	default 0: disabled              1: enabled
+	
+    
+    
+    
+    
 	REG_UPDATE(FORMAT_CONTROL, FORMAT_CNV16, 0);
 	REG_UPDATE(FORMAT_CONTROL, CNVC_BYPASS_MSB_ALIGN, 0);
 	REG_UPDATE(FORMAT_CONTROL, CLAMP_POSITIVE, 0);
@@ -167,7 +144,7 @@ static void dpp2_cnv_setup (
 		break;
 	case SURFACE_PIXEL_FORMAT_GRPH_ARGB16161616:
 	case SURFACE_PIXEL_FORMAT_GRPH_ABGR16161616:
-		pixel_format = 26; /* ARGB16161616_UNORM */
+		pixel_format = 26;  
 		break;
 	case SURFACE_PIXEL_FORMAT_GRPH_ARGB16161616F:
 		pixel_format = 24;
@@ -212,7 +189,7 @@ static void dpp2_cnv_setup (
 		break;
 	}
 
-	/* Set default color space based on format if none is given. */
+	 
 	color_space = input_color_space ? input_color_space : color_space;
 
 	if (is_2bit == 1 && alpha_2bit_lut != NULL) {
@@ -226,7 +203,7 @@ static void dpp2_cnv_setup (
 			CNVC_SURFACE_PIXEL_FORMAT, pixel_format);
 	REG_UPDATE(FORMAT_CONTROL, FORMAT_CONTROL__ALPHA_EN, alpha_en);
 
-	// if input adjustments exist, program icsc with those values
+	
 	if (input_csc_color_matrix.enable_adjustment
 				== true) {
 		for (i = 0; i < 12; i++)
@@ -254,7 +231,7 @@ static void dpp2_cnv_setup (
 
 }
 
-/*compute the maximum number of lines that we can fit in the line buffer*/
+ 
 void dscl2_calc_lb_num_partitions(
 		const struct scaler_data *scl_data,
 		enum lb_memory_config lb_config,
@@ -275,9 +252,9 @@ void dscl2_calc_lb_num_partitions(
 	if (line_size_c == 0)
 		line_size_c = 1;
 
-	memory_line_size_y = (line_size + 5) / 6; /* +5 to ceil */
-	memory_line_size_c = (line_size_c + 5) / 6; /* +5 to ceil */
-	memory_line_size_a = (line_size + 5) / 6; /* +5 to ceil */
+	memory_line_size_y = (line_size + 5) / 6;  
+	memory_line_size_c = (line_size_c + 5) / 6;  
+	memory_line_size_a = (line_size + 5) / 6;  
 
 	if (lb_config == LB_MEMORY_CONFIG_1) {
 		lb_memory_size = 970;
@@ -288,7 +265,7 @@ void dscl2_calc_lb_num_partitions(
 		lb_memory_size_c = 1290;
 		lb_memory_size_a = 1290;
 	} else if (lb_config == LB_MEMORY_CONFIG_3) {
-		/* 420 mode: using 3rd mem from Y, Cr and Cb */
+		 
 		lb_memory_size = 970 + 1290 + 484 + 484 + 484;
 		lb_memory_size_c = 970 + 1290;
 		lb_memory_size_a = 970 + 1290 + 484;
@@ -355,7 +332,7 @@ void dpp2_set_cursor_attributes(
 			CUR0_ROM_EN, cur_rom_en);
 
 	if (color_format == CURSOR_MODE_MONO) {
-		/* todo: clarify what to program these to */
+		 
 		REG_UPDATE(CURSOR0_COLOR0,
 				CUR0_COLOR0, 0x00000000);
 		REG_UPDATE(CURSOR0_COLOR1,
@@ -425,7 +402,7 @@ bool dpp2_construct(
 		LB_PIXEL_DEPTH_36BPP;
 
 	dpp->lb_bits_per_entry = LB_BITS_PER_ENTRY;
-	dpp->lb_memory_size = LB_TOTAL_NUMBER_OF_ENTRIES; /*0x1404*/
+	dpp->lb_memory_size = LB_TOTAL_NUMBER_OF_ENTRIES;  
 
 	return true;
 }

@@ -1,25 +1,4 @@
-/*
- * Copyright 2022 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 
 #include "amdgpu.h"
 #include "amdgpu_psp_ta.h"
@@ -101,45 +80,7 @@ static const struct file_operations ta_invoke_debugfs_fops = {
 	.owner  = THIS_MODULE
 };
 
-/*
- * DOC: AMDGPU TA debugfs interfaces
- *
- * Three debugfs interfaces can be opened by a program to
- * load/invoke/unload TA,
- *
- * - /sys/kernel/debug/dri/<N>/ta_if/ta_load
- * - /sys/kernel/debug/dri/<N>/ta_if/ta_invoke
- * - /sys/kernel/debug/dri/<N>/ta_if/ta_unload
- *
- * How to use the interfaces in a program?
- *
- * A program needs to provide transmit buffer to the interfaces
- * and will receive buffer from the interfaces below,
- *
- * - For TA load debugfs interface:
- *   Transmit buffer:
- *    - TA type (4bytes)
- *    - TA bin length (4bytes)
- *    - TA bin
- *   Receive buffer:
- *    - TA ID (4bytes)
- *
- * - For TA invoke debugfs interface:
- *   Transmit buffer:
- *    - TA type (4bytes)
- *    - TA ID (4bytes)
- *    - TA CMD ID (4bytes)
- *    - TA shard buf length
- *      (4bytes, value not beyond TA shared memory size)
- *    - TA shared buf
- *   Receive buffer:
- *    - TA shared buf
- *
- * - For TA unload debugfs interface:
- *   Transmit buffer:
- *    - TA type (4bytes)
- *    - TA ID (4bytes)
- */
+ 
 
 static ssize_t ta_if_load_debugfs_write(struct file *fp, const char *buf, size_t len, loff_t *off)
 {
@@ -176,7 +117,7 @@ static ssize_t ta_if_load_debugfs_write(struct file *fp, const char *buf, size_t
 		goto err_free_bin;
 	}
 
-	/* Set TA context and functions */
+	 
 	set_ta_context_funcs(psp, ta_type, &context);
 
 	if (!psp->ta_funcs || !psp->ta_funcs->fn_ta_terminate) {
@@ -185,10 +126,7 @@ static ssize_t ta_if_load_debugfs_write(struct file *fp, const char *buf, size_t
 		goto err_free_bin;
 	}
 
-	/*
-	 * Allocate TA shared buf in case shared buf was freed
-	 * due to loading TA failed before.
-	 */
+	 
 	if (!context->mem_context.shared_buf) {
 		ret = psp_ta_init_shared_buf(psp, &context->mem_context);
 		if (ret) {
@@ -207,7 +145,7 @@ static ssize_t ta_if_load_debugfs_write(struct file *fp, const char *buf, size_t
 		goto err_free_ta_shared_buf;
 	}
 
-	/* Prepare TA context for TA initialization */
+	 
 	context->ta_type                     = ta_type;
 	context->bin_desc.fw_version         = get_bin_version(ta_bin);
 	context->bin_desc.size_bytes         = ta_bin_len;
@@ -232,7 +170,7 @@ static ssize_t ta_if_load_debugfs_write(struct file *fp, const char *buf, size_t
 		ret = -EFAULT;
 
 err_free_ta_shared_buf:
-	/* Only free TA shared buf when returns error code */
+	 
 	if (ret && context->mem_context.shared_buf)
 		psp_ta_free_shared_buf(&context->mem_context);
 err_free_bin:

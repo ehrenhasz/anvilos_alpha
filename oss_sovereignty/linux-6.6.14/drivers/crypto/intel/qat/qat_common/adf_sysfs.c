@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: (BSD-3-Clause OR GPL-2.0-only)
-/* Copyright(c) 2022 Intel Corporation */
+
+ 
 #include <linux/device.h>
 #include <linux/errno.h>
 #include <linux/pci.h>
@@ -139,10 +139,7 @@ static ssize_t cfg_services_store(struct device *dev, struct device_attribute *a
 
 	hw_data = GET_HW_DATA(accel_dev);
 
-	/* Update capabilities mask after change in configuration.
-	 * A call to this function is required as capabilities are, at the
-	 * moment, tied to configuration
-	 */
+	 
 	hw_data->accel_capabilities_mask = hw_data->get_accel_cap(accel_dev);
 	if (!hw_data->accel_capabilities_mask)
 		return -EINVAL;

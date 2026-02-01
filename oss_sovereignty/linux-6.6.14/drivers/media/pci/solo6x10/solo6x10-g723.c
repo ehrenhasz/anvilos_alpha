@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2010-2013 Bluecherry, LLC <https://www.bluecherrydvr.com>
- *
- * Original author:
- * Ben Collins <bcollins@ubuntu.com>
- *
- * Additional work by:
- * John Brooks <john.brooks@bluecherry.net>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/mempool.h>
@@ -30,17 +22,15 @@
 #define G723_PERIOD_BLOCK	1024
 #define G723_FRAMES_PER_PAGE	48
 
-/* Sets up channels 16-19 for decoding and 0-15 for encoding */
+ 
 #define OUTMODE_MASK		0x300
 
 #define SAMPLERATE		8000
 #define BITRATE			25
 
-/* The solo writes to 1k byte pages, 32 pages, in the dma. Each 1k page
- * is broken down to 20 * 48 byte regions (one for each channel possible)
- * with the rest of the page being dummy data. */
+ 
 #define PERIODS			G723_FDMA_PAGES
-#define G723_INTR_ORDER		4 /* 0 - 4 */
+#define G723_INTR_ORDER		4  
 
 struct solo_snd_pcm {
 	int				on;
@@ -84,11 +74,11 @@ void solo_g723_isr(struct solo_dev *solo_dev)
 		if (snd_pcm_substream_chip(ss) == NULL)
 			continue;
 
-		/* This means open() hasn't been called on this one */
+		 
 		if (snd_pcm_substream_chip(ss) == solo_dev)
 			continue;
 
-		/* Haven't triggered a start yet */
+		 
 		solo_pcm = snd_pcm_substream_chip(ss);
 		if (!solo_pcm->on)
 			continue;
@@ -167,7 +157,7 @@ static int snd_solo_pcm_trigger(struct snd_pcm_substream *ss, int cmd)
 	switch (cmd) {
 	case SNDRV_PCM_TRIGGER_START:
 		if (solo_pcm->on == 0) {
-			/* If this is the first user, switch on interrupts */
+			 
 			if (atomic_inc_return(&solo_dev->snd_users) == 1)
 				solo_irq_on(solo_dev, SOLO_IRQ_G723);
 			solo_pcm->on = 1;
@@ -175,7 +165,7 @@ static int snd_solo_pcm_trigger(struct snd_pcm_substream *ss, int cmd)
 		break;
 	case SNDRV_PCM_TRIGGER_STOP:
 		if (solo_pcm->on) {
-			/* If this was our last user, switch them off */
+			 
 			if (atomic_dec_return(&solo_dev->snd_users) == 0)
 				solo_irq_off(solo_dev, SOLO_IRQ_G723);
 			solo_pcm->on = 0;
@@ -332,7 +322,7 @@ int solo_g723_init(struct solo_dev *solo_dev)
 
 	atomic_set(&solo_dev->snd_users, 0);
 
-	/* Allows for easier mapping between video and audio */
+	 
 	sprintf(name, "Softlogic%d", solo_dev->vfd->num);
 
 	ret = snd_card_new(&solo_dev->pdev->dev,
@@ -352,7 +342,7 @@ int solo_g723_init(struct solo_dev *solo_dev)
 	if (ret < 0)
 		goto snd_error;
 
-	/* Mixer controls */
+	 
 	strscpy(card->mixername, "SOLO-6x10", sizeof(card->mixername));
 	kctl = snd_solo_capture_volume;
 	kctl.count = solo_dev->nr_chans;

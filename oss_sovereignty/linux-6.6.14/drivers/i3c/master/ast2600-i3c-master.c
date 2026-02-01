@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2023 Code Construct
- *
- * Author: Jeremy Kerr <jk@codeconstruct.com.au>
- */
+
+ 
 
 #include <linux/mfd/syscon.h>
 #include <linux/module.h>
@@ -13,7 +9,7 @@
 
 #include "dw-i3c-master.h"
 
-/* AST2600-specific global register set */
+ 
 #define AST2600_I3CG_REG0(idx)	(((idx) * 4 * 4) + 0x10)
 #define AST2600_I3CG_REG1(idx)	(((idx) * 4 * 4) + 0x14)
 
@@ -80,7 +76,7 @@ static int ast2600_i3c_init(struct dw_i3c_master *dw)
 	u32 reg = 0;
 	int rc;
 
-	/* reg0: set SDA pullup values */
+	 
 	rc = ast2600_i3c_pullup_to_reg(i3c->sda_pullup, &reg);
 	if (rc)
 		return rc;
@@ -90,9 +86,7 @@ static int ast2600_i3c_init(struct dw_i3c_master *dw)
 	if (rc)
 		return rc;
 
-	/* reg1: set up the instance id, but leave everything else disabled,
-	 * as it's all for client mode
-	 */
+	 
 	reg = AST2600_I3CG_REG1_INST_ID(i3c->global_idx);
 	rc = regmap_write(i3c->global_regs,
 			  AST2600_I3CG_REG1(i3c->global_idx), reg);
@@ -104,12 +98,7 @@ static void ast2600_i3c_set_dat_ibi(struct dw_i3c_master *i3c,
 				    struct i3c_dev_desc *dev,
 				    bool enable, u32 *dat)
 {
-	/*
-	 * The ast2600 i3c controller will lock up on receiving 4n+1-byte IBIs
-	 * if the PEC is disabled. We have no way to restrict the length of
-	 * IBIs sent to the controller, so we need to unconditionally enable
-	 * PEC checking, which means we drop a byte of payload data
-	 */
+	 
 	if (enable && dev->info.bcr & I3C_BCR_IBI_PAYLOAD) {
 		dev_warn_once(&i3c->base.dev,
 		      "Enabling PEC workaround. IBI payloads will be truncated\n");

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
-	Mantis PCI bridge driver
 
-	Copyright (C) Manu Abraham (abraham.manu@gmail.com)
-
-*/
+ 
 
 #include <linux/kernel.h>
 #include <linux/i2c.h>
@@ -63,7 +58,7 @@ int mantis_get_mac(struct mantis_pci *mantis)
 }
 EXPORT_SYMBOL_GPL(mantis_get_mac);
 
-/* Turn the given bit on or off. */
+ 
 void mantis_gpio_set_bits(struct mantis_pci *mantis, u32 bitpos, u8 value)
 {
 	u32 cur;

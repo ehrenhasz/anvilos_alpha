@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * RDMA Network Block Driver
- *
- * Copyright (c) 2014 - 2018 ProfitBricks GmbH. All rights reserved.
- * Copyright (c) 2018 - 2019 1&1 IONOS Cloud GmbH. All rights reserved.
- * Copyright (c) 2019 - 2020 1&1 IONOS SE. All rights reserved.
- */
+
+ 
 #undef pr_fmt
 #define pr_fmt(fmt) KBUILD_MODNAME " L" __stringify(__LINE__) ": " fmt
 
@@ -188,9 +182,7 @@ static void destroy_device(struct kref *kref)
 
 	mutex_destroy(&dev->lock);
 	if (dev->dev_kobj.state_in_sysfs)
-		/*
-		 * Destroy kobj only if it was really created.
-		 */
+		 
 		rnbd_srv_destroy_dev_sysfs(dev);
 	else
 		kfree(dev);
@@ -206,9 +198,9 @@ void rnbd_destroy_sess_dev(struct rnbd_srv_sess_dev *sess_dev, bool keep_id)
 	DECLARE_COMPLETION_ONSTACK(dc);
 
 	if (keep_id)
-		/* free the resources for the id but don't  */
-		/* allow to re-use the id itself because it */
-		/* is still used by the client              */
+		 
+		 
+		 
 		xa_cmpxchg(&sess_dev->sess->index_idr, sess_dev->device_id,
 			   sess_dev, NULL, 0);
 	else
@@ -217,7 +209,7 @@ void rnbd_destroy_sess_dev(struct rnbd_srv_sess_dev *sess_dev, bool keep_id)
 
 	sess_dev->destroy_comp = &dc;
 	rnbd_put_sess_dev(sess_dev);
-	wait_for_completion(&dc); /* wait for inflights to drop to zero */
+	wait_for_completion(&dc);  
 
 	blkdev_put(sess_dev->bdev, NULL);
 	mutex_lock(&sess_dev->dev->lock);
@@ -321,12 +313,12 @@ void rnbd_srv_sess_dev_force_close(struct rnbd_srv_sess_dev *sess_dev,
 {
 	struct rnbd_srv_session	*sess = sess_dev->sess;
 
-	/* It is already started to close by client's close message. */
+	 
 	if (!mutex_trylock(&sess->lock))
 		return;
 
 	sess_dev->keep_id = true;
-	/* first remove sysfs itself to avoid deadlock */
+	 
 	sysfs_remove_file_self(&sess_dev->kobj, &attr->attr);
 	rnbd_srv_destroy_dev_session_sysfs(sess_dev);
 	mutex_unlock(&sess->lock);
@@ -392,11 +384,7 @@ static int rnbd_srv_rdma_ev(void *priv, struct rtrs_srv_op *id,
 		return -EINVAL;
 	}
 
-	/*
-	 * Since ret is passed to rtrs to handle the failure case, we
-	 * just return 0 at the end otherwise callers in rtrs would call
-	 * send_io_resp_imm again to print redundant err message.
-	 */
+	 
 	rtrs_srv_resp_rdma(id, ret);
 	return 0;
 }
@@ -447,10 +435,7 @@ rnbd_srv_find_or_add_srv_dev(struct rnbd_srv_dev *new_dev)
 	list_for_each_entry(dev, &dev_list, list) {
 		if (!strncmp(dev->name, new_dev->name, sizeof(dev->name))) {
 			if (!kref_get_unless_zero(&dev->kref))
-				/*
-				 * We lost the race, device is almost dead.
-				 *  Continue traversing to find a valid one.
-				 */
+				 
 				continue;
 			spin_unlock(&dev_lock);
 			return dev;
@@ -590,10 +575,7 @@ static char *rnbd_srv_get_full_path(struct rnbd_srv_session *srv_sess,
 	if (!full_path)
 		return ERR_PTR(-ENOMEM);
 
-	/*
-	 * Replace %SESSNAME% with a real session name in order to
-	 * create device namespace.
-	 */
+	 
 	a = strnstr(dev_search_path, "%SESSNAME%", sizeof(dev_search_path));
 	if (a) {
 		int len = a - dev_search_path;
@@ -611,7 +593,7 @@ static char *rnbd_srv_get_full_path(struct rnbd_srv_session *srv_sess,
 			 dev_search_path, dev_name);
 	}
 
-	/* eliminitate duplicated slashes */
+	 
 	a = strchr(full_path, '/');
 	b = a;
 	while (*b != '\0') {
@@ -644,14 +626,7 @@ static void process_msg_sess_info(struct rnbd_srv_session *srv_sess,
 	rsp->ver = srv_sess->ver;
 }
 
-/**
- * find_srv_sess_dev() - a dev is already opened by this name
- * @srv_sess:	the session to search.
- * @dev_name:	string containing the name of the device.
- *
- * Return struct rnbd_srv_sess_dev if srv_sess already opened the dev_name
- * NULL if the session didn't open the device yet.
- */
+ 
 static struct rnbd_srv_sess_dev *
 find_srv_sess_dev(struct rnbd_srv_session *srv_sess, const char *dev_name)
 {
@@ -741,10 +716,7 @@ static int process_msg_open(struct rnbd_srv_session *srv_sess,
 		goto srv_dev_put;
 	}
 
-	/* Create the srv_dev sysfs files if they haven't been created yet. The
-	 * reason to delay the creation is not to create the sysfs files before
-	 * we are sure the device can be opened.
-	 */
+	 
 	mutex_lock(&srv_dev->lock);
 	if (!srv_dev->dev_kobj.state_in_sysfs) {
 		ret = rnbd_srv_create_dev_sysfs(srv_dev, bdev);

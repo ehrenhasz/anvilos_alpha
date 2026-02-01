@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * USB Attached SCSI
- * Note that this is not the same as the USB Mass Storage driver
- *
- * Copyright Hans de Goede <hdegoede@redhat.com> for Red Hat, Inc. 2013 - 2016
- * Copyright Matthew Wilcox for Intel Corp, 2010
- * Copyright Sarah Sharp for Intel Corp, 2010
- */
+
+ 
 
 #include <linux/blkdev.h>
 #include <linux/slab.h>
@@ -45,7 +38,7 @@ struct uas_dev_info {
 	struct scsi_cmnd *cmnd[MAX_CMNDS];
 	spinlock_t lock;
 	struct work_struct work;
-	struct work_struct scan_work;      /* for async scanning */
+	struct work_struct scan_work;       
 };
 
 enum {
@@ -63,7 +56,7 @@ enum {
 	IS_IN_WORK_LIST         = BIT(12),
 };
 
-/* Overrides scsi_pointer */
+ 
 struct uas_cmd_info {
 	unsigned int state;
 	unsigned int uas_tag;
@@ -72,7 +65,7 @@ struct uas_cmd_info {
 	struct urb *data_out_urb;
 };
 
-/* I hate forward declarations, but I actually have a loop */
+ 
 static int uas_submit_urbs(struct scsi_cmnd *cmnd,
 				struct uas_dev_info *devinfo);
 static void uas_do_work(struct work_struct *work);
@@ -81,17 +74,7 @@ static void uas_free_streams(struct uas_dev_info *devinfo);
 static void uas_log_cmd_state(struct scsi_cmnd *cmnd, const char *prefix,
 				int status);
 
-/*
- * This driver needs its own workqueue, as we need to control memory allocation.
- *
- * In the course of error handling and power management uas_wait_for_pending_cmnds()
- * needs to flush pending work items. In these contexts we cannot allocate memory
- * by doing block IO as we would deadlock. For the same reason we cannot wait
- * for anything allocating memory not heeding these constraints.
- *
- * So we have to control all work items that can be on the workqueue we flush.
- * Hence we cannot share a queue and need our own.
- */
+ 
 static struct workqueue_struct *workqueue;
 
 static void uas_do_work(struct work_struct *work)
@@ -164,7 +147,7 @@ static void uas_zap_pending(struct uas_dev_info *devinfo, int result)
 		cmnd = devinfo->cmnd[i];
 		cmdinfo = scsi_cmd_priv(cmnd);
 		uas_log_cmd_state(cmnd, __func__, 0);
-		/* Sense urbs were killed, clear COMMAND_INFLIGHT manually */
+		 
 		cmdinfo->state &= ~COMMAND_INFLIGHT;
 		cmnd->result = result << 16;
 		err = uas_try_complete(cmnd, __func__);
@@ -201,7 +184,7 @@ static void uas_log_cmd_state(struct scsi_cmnd *cmnd, const char *prefix,
 {
 	struct uas_cmd_info *ci = scsi_cmd_priv(cmnd);
 
-	if (status == -ENODEV) /* too late */
+	if (status == -ENODEV)  
 		return;
 
 	scmd_printk(KERN_INFO, cmnd,
@@ -234,7 +217,7 @@ static void uas_free_unsubmitted_urbs(struct scsi_cmnd *cmnd)
 	if (cmdinfo->state & SUBMIT_CMD_URB)
 		usb_free_urb(cmdinfo->cmd_urb);
 
-	/* data urbs may have never gotten their submit flag set */
+	 
 	if (!(cmdinfo->state & DATA_IN_URB_INFLIGHT))
 		usb_free_urb(cmdinfo->data_in_urb);
 	if (!(cmdinfo->state & DATA_OUT_URB_INFLIGHT))
@@ -338,7 +321,7 @@ static void uas_stat_cmplt(struct urb *urb)
 	case IU_ID_STATUS:
 		uas_sense(urb, cmnd);
 		if (cmnd->result != 0) {
-			/* cancel data transfers on error */
+			 
 			data_in_urb = usb_get_urb(cmdinfo->data_in_urb);
 			data_out_urb = usb_get_urb(cmdinfo->data_out_urb);
 		}
@@ -365,7 +348,7 @@ static void uas_stat_cmplt(struct urb *urb)
 		cmdinfo->state &= ~COMMAND_INFLIGHT;
 		success = uas_evaluate_response_iu((struct response_iu *)iu, cmnd);
 		if (!success) {
-			/* Error, cancel data transfers */
+			 
 			data_in_urb = usb_get_urb(cmdinfo->data_in_urb);
 			data_out_urb = usb_get_urb(cmdinfo->data_out_urb);
 		}
@@ -378,7 +361,7 @@ out:
 	usb_free_urb(urb);
 	spin_unlock_irqrestore(&devinfo->lock, flags);
 
-	/* Unlinking of data urbs must be done without holding the lock */
+	 
 	if (data_in_urb) {
 		usb_unlink_urb(data_in_urb);
 		usb_put_urb(data_in_urb);
@@ -411,7 +394,7 @@ static void uas_data_cmplt(struct urb *urb)
 	if (devinfo->resetting)
 		goto out;
 
-	/* Data urbs should not complete before the cmd urb is submitted */
+	 
 	if (cmdinfo->state & SUBMIT_CMD_URB) {
 		uas_log_cmd_state(cmnd, "unexpected data cmplt", 0);
 		goto out;
@@ -420,7 +403,7 @@ static void uas_data_cmplt(struct urb *urb)
 	if (status) {
 		if (status != -ENOENT && status != -ECONNRESET && status != -ESHUTDOWN)
 			uas_log_cmd_state(cmnd, "data cmplt err", status);
-		/* error: no data transfered */
+		 
 		scsi_set_resid(cmnd, sdb->length);
 	} else {
 		scsi_set_resid(cmnd, sdb->length - urb->actual_length);
@@ -527,11 +510,7 @@ static struct urb *uas_alloc_cmd_urb(struct uas_dev_info *devinfo, gfp_t gfp,
 	return NULL;
 }
 
-/*
- * Why should I request the Status IU before sending the Command IU?  Spec
- * says to, but also says the device may receive them in any order.  Seems
- * daft to me.
- */
+ 
 
 static struct urb *uas_submit_sense_urb(struct scsi_cmnd *cmnd, gfp_t gfp)
 {
@@ -639,7 +618,7 @@ static int uas_queuecommand_lck(struct scsi_cmnd *cmnd)
 	unsigned long flags;
 	int idx, err;
 
-	/* Re-check scsi_block_requests now that we've the host-lock */
+	 
 	if (cmnd->device->host->host_self_blocked)
 		return SCSI_MLQUEUE_DEVICE_BUSY;
 
@@ -660,7 +639,7 @@ static int uas_queuecommand_lck(struct scsi_cmnd *cmnd)
 		goto zombie;
 	}
 
-	/* Find a free uas-tag */
+	 
 	for (idx = 0; idx < devinfo->qdepth; idx++) {
 		if (!devinfo->cmnd[idx])
 			break;
@@ -671,7 +650,7 @@ static int uas_queuecommand_lck(struct scsi_cmnd *cmnd)
 	}
 
 	memset(cmdinfo, 0, sizeof(*cmdinfo));
-	cmdinfo->uas_tag = idx + 1; /* uas-tag == usb-stream-id, so 1 based */
+	cmdinfo->uas_tag = idx + 1;  
 	cmdinfo->state = SUBMIT_STATUS_URB | ALLOC_CMD_URB | SUBMIT_CMD_URB;
 
 	switch (cmnd->sc_data_direction) {
@@ -692,18 +671,14 @@ static int uas_queuecommand_lck(struct scsi_cmnd *cmnd)
 		cmdinfo->state &= ~(SUBMIT_DATA_IN_URB | SUBMIT_DATA_OUT_URB);
 
 	err = uas_submit_urbs(cmnd, devinfo);
-	/*
-	 * in case of fatal errors the SCSI layer is peculiar
-	 * a command that has finished is a success for the purpose
-	 * of queueing, no matter how fatal the error
-	 */
+	 
 	if (err == -ENODEV) {
 		set_host_byte(cmnd, DID_ERROR);
 		scsi_done(cmnd);
 		goto zombie;
 	}
 	if (err) {
-		/* If we did nothing, give up now */
+		 
 		if (cmdinfo->state & SUBMIT_STATUS_URB) {
 			spin_unlock_irqrestore(&devinfo->lock, flags);
 			return SCSI_MLQUEUE_DEVICE_BUSY;
@@ -719,11 +694,7 @@ zombie:
 
 static DEF_SCSI_QCMD(uas_queuecommand)
 
-/*
- * For now we do not support actually sending an abort to the device, so
- * this eh always fails. Still we must define it to make sure that we've
- * dropped all references to the cmnd in question once this function exits.
- */
+ 
 static int uas_eh_abort_handler(struct scsi_cmnd *cmnd)
 {
 	struct uas_cmd_info *cmdinfo = scsi_cmd_priv(cmnd);
@@ -736,10 +707,10 @@ static int uas_eh_abort_handler(struct scsi_cmnd *cmnd)
 
 	uas_log_cmd_state(cmnd, __func__, 0);
 
-	/* Ensure that try_complete does not call scsi_done */
+	 
 	cmdinfo->state |= COMMAND_ABORTED;
 
-	/* Drop all refs to this cmnd, kill data urbs to break their ref */
+	 
 	devinfo->cmnd[cmdinfo->uas_tag - 1] = NULL;
 	if (cmdinfo->state & DATA_IN_URB_INFLIGHT)
 		data_in_urb = usb_get_urb(cmdinfo->data_in_urb);
@@ -824,11 +795,7 @@ static int uas_slave_alloc(struct scsi_device *sdev)
 
 	sdev->hostdata = devinfo;
 
-	/*
-	 * The protocol has no requirements on alignment in the strict sense.
-	 * Controllers may or may not have alignment restrictions.
-	 * As this is not exported, we use an extremely conservative guess.
-	 */
+	 
 	blk_queue_update_dma_alignment(sdev->request_queue, (512 - 1));
 
 	if (devinfo->flags & US_FL_MAX_SECTORS_64)
@@ -846,47 +813,33 @@ static int uas_slave_configure(struct scsi_device *sdev)
 	if (devinfo->flags & US_FL_NO_REPORT_OPCODES)
 		sdev->no_report_opcodes = 1;
 
-	/* A few buggy USB-ATA bridges don't understand FUA */
+	 
 	if (devinfo->flags & US_FL_BROKEN_FUA)
 		sdev->broken_fua = 1;
 
-	/* UAS also needs to support FL_ALWAYS_SYNC */
+	 
 	if (devinfo->flags & US_FL_ALWAYS_SYNC) {
 		sdev->skip_ms_page_3f = 1;
 		sdev->skip_ms_page_8 = 1;
 		sdev->wce_default_on = 1;
 	}
 
-	/* Some disks cannot handle READ_CAPACITY_16 */
+	 
 	if (devinfo->flags & US_FL_NO_READ_CAPACITY_16)
 		sdev->no_read_capacity_16 = 1;
 
-	/* Some disks cannot handle WRITE_SAME */
+	 
 	if (devinfo->flags & US_FL_NO_SAME)
 		sdev->no_write_same = 1;
-	/*
-	 * Some disks return the total number of blocks in response
-	 * to READ CAPACITY rather than the highest block number.
-	 * If this device makes that mistake, tell the sd driver.
-	 */
+	 
 	if (devinfo->flags & US_FL_FIX_CAPACITY)
 		sdev->fix_capacity = 1;
 
-	/*
-	 * in some cases we have to guess
-	 */
+	 
 	if (devinfo->flags & US_FL_CAPACITY_HEURISTICS)
 		sdev->guess_capacity = 1;
 
-	/*
-	 * Some devices don't like MODE SENSE with page=0x3f,
-	 * which is the command used for checking if a device
-	 * is write-protected.  Now that we tell the sd driver
-	 * to do a 192-byte transfer with this command the
-	 * majority of devices work fine, but a few still can't
-	 * handle it.  The sd driver will simply assume those
-	 * devices are write-enabled.
-	 */
+	 
 	if (devinfo->flags & US_FL_NO_WP_DETECT)
 		sdev->skip_ms_page_3f = 1;
 
@@ -1024,10 +977,7 @@ static int uas_probe(struct usb_interface *intf, const struct usb_device_id *id)
 	if (result)
 		goto set_alt0;
 
-	/*
-	 * 1 tag is reserved for untagged commands +
-	 * 1 tag to avoid off by one errors in some bridge firmwares
-	 */
+	 
 	shost->can_queue = devinfo->qdepth - 2;
 
 	usb_set_intfdata(intf, shost);
@@ -1035,7 +985,7 @@ static int uas_probe(struct usb_interface *intf, const struct usb_device_id *id)
 	if (result)
 		goto free_streams;
 
-	/* Submit the delayed_work for SCSI-device scanning */
+	 
 	schedule_work(&devinfo->scan_work);
 
 	return result;
@@ -1059,7 +1009,7 @@ static int uas_cmnd_list_empty(struct uas_dev_info *devinfo)
 
 	for (i = 0; i < devinfo->qdepth; i++) {
 		if (devinfo->cmnd[i]) {
-			r = 0; /* Not empty */
+			r = 0;  
 			break;
 		}
 	}
@@ -1069,11 +1019,7 @@ static int uas_cmnd_list_empty(struct uas_dev_info *devinfo)
 	return r;
 }
 
-/*
- * Wait for any pending cmnds to complete, on usb-2 sense_urbs may temporarily
- * get empty while there still is more work to do due to sense-urbs completing
- * with a READ/WRITE_READY iu code, so keep waiting until the list gets empty.
- */
+ 
 static int uas_wait_for_pending_cmnds(struct uas_dev_info *devinfo)
 {
 	unsigned long start_time;
@@ -1107,7 +1053,7 @@ static int uas_pre_reset(struct usb_interface *intf)
 	if (devinfo->shutdown)
 		return 0;
 
-	/* Block new requests */
+	 
 	spin_lock_irqsave(shost->host_lock, flags);
 	scsi_block_requests(shost);
 	spin_unlock_irqrestore(shost->host_lock, flags);
@@ -1139,7 +1085,7 @@ static int uas_post_reset(struct usb_interface *intf)
 			     "%s: alloc streams error %d after reset",
 			     __func__, err);
 
-	/* we must unblock the host in every case lest we deadlock */
+	 
 	spin_lock_irqsave(shost->host_lock, flags);
 	scsi_report_bus_reset(shost, 0);
 	spin_unlock_irqrestore(shost->host_lock, flags);
@@ -1205,10 +1151,7 @@ static void uas_disconnect(struct usb_interface *intf)
 	usb_kill_anchored_urbs(&devinfo->data_urbs);
 	uas_zap_pending(devinfo, DID_NO_CONNECT);
 
-	/*
-	 * Prevent SCSI scanning (if it hasn't started yet)
-	 * or wait for the SCSI-scanning routine to stop.
-	 */
+	 
 	cancel_work_sync(&devinfo->scan_work);
 
 	scsi_remove_host(shost);
@@ -1216,11 +1159,7 @@ static void uas_disconnect(struct usb_interface *intf)
 	scsi_host_put(shost);
 }
 
-/*
- * Put the device back in usb-storage mode on shutdown, as some BIOS-es
- * hang on reboot when the device is still in uas mode. Note the reset is
- * necessary as some devices won't revert to usb-storage mode without it.
- */
+ 
 static void uas_shutdown(struct device *dev)
 {
 	struct usb_interface *intf = to_usb_interface(dev);

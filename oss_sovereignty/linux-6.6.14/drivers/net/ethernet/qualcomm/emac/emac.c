@@ -1,8 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright (c) 2013-2016, The Linux Foundation. All rights reserved.
- */
 
-/* Qualcomm Technologies, Inc. EMAC Gigabit Ethernet Driver */
+ 
+
+ 
 
 #include <linux/if_ether.h>
 #include <linux/if_vlan.h>
@@ -23,7 +22,7 @@
 		NETIF_MSG_TIMER | NETIF_MSG_IFDOWN | NETIF_MSG_IFUP)
 
 #define EMAC_RRD_SIZE					     4
-/* The RRD size if timestamping is enabled: */
+ 
 #define EMAC_TS_RRD_SIZE				     6
 #define EMAC_TPD_SIZE					     4
 #define EMAC_RFD_SIZE					     2
@@ -63,7 +62,7 @@
 	DMAW_TO_INT     |\
 	TXQ_TO_INT)
 
-/* in sync with enum emac_clk_id */
+ 
 static const char * const emac_clk_name[] = {
 	"axi_clk", "cfg_ahb_clk", "high_speed_clk", "mdio_clk", "tx_clk",
 	"rx_clk", "sys_clk"
@@ -76,7 +75,7 @@ void emac_reg_update32(void __iomem *addr, u32 mask, u32 val)
 	writel(((data & ~mask) | val), addr);
 }
 
-/* reinitialize */
+ 
 int emac_reinit_locked(struct emac_adapter *adpt)
 {
 	int ret;
@@ -92,7 +91,7 @@ int emac_reinit_locked(struct emac_adapter *adpt)
 	return ret;
 }
 
-/* NAPI */
+ 
 static int emac_napi_rtx(struct napi_struct *napi, int budget)
 {
 	struct emac_rx_queue *rx_q =
@@ -113,7 +112,7 @@ static int emac_napi_rtx(struct napi_struct *napi, int budget)
 	return work_done;
 }
 
-/* Transmit the packet */
+ 
 static netdev_tx_t emac_start_xmit(struct sk_buff *skb,
 				   struct net_device *netdev)
 {
@@ -130,7 +129,7 @@ static irqreturn_t emac_isr(int _irq, void *data)
 	struct emac_rx_queue *rx_q = &adpt->rx_q;
 	u32 isr, status;
 
-	/* disable the interrupt */
+	 
 	writel(0, adpt->base + EMAC_INT_MASK);
 
 	isr = readl_relaxed(adpt->base + EMAC_INT_STATUS);
@@ -142,13 +141,11 @@ static irqreturn_t emac_isr(int _irq, void *data)
 	if (status & ISR_ERROR) {
 		net_err_ratelimited("%s: error interrupt 0x%lx\n",
 				    adpt->netdev->name, status & ISR_ERROR);
-		/* reset MAC */
+		 
 		schedule_work(&adpt->work_thread);
 	}
 
-	/* Schedule the napi for receive queue with interrupt
-	 * status bit set
-	 */
+	 
 	if (status & rx_q->intr) {
 		if (napi_schedule_prep(&rx_q->napi)) {
 			irq->mask &= ~rx_q->intr;
@@ -164,37 +161,33 @@ static irqreturn_t emac_isr(int _irq, void *data)
 				     adpt->netdev->name);
 
 exit:
-	/* enable the interrupt */
+	 
 	writel(irq->mask, adpt->base + EMAC_INT_MASK);
 
 	return IRQ_HANDLED;
 }
 
-/* Configure VLAN tag strip/insert feature */
+ 
 static int emac_set_features(struct net_device *netdev,
 			     netdev_features_t features)
 {
 	netdev_features_t changed = features ^ netdev->features;
 	struct emac_adapter *adpt = netdev_priv(netdev);
 
-	/* We only need to reprogram the hardware if the VLAN tag features
-	 * have changed, and if it's already running.
-	 */
+	 
 	if (!(changed & (NETIF_F_HW_VLAN_CTAG_TX | NETIF_F_HW_VLAN_CTAG_RX)))
 		return 0;
 
 	if (!netif_running(netdev))
 		return 0;
 
-	/* emac_mac_mode_config() uses netdev->features to configure the EMAC,
-	 * so make sure it's set first.
-	 */
+	 
 	netdev->features = features;
 
 	return emac_reinit_locked(adpt);
 }
 
-/* Configure Multicast and Promiscuous modes */
+ 
 static void emac_rx_mode_set(struct net_device *netdev)
 {
 	struct emac_adapter *adpt = netdev_priv(netdev);
@@ -202,13 +195,13 @@ static void emac_rx_mode_set(struct net_device *netdev)
 
 	emac_mac_mode_config(adpt);
 
-	/* update multicast address filtering */
+	 
 	emac_mac_multicast_addr_clear(adpt);
 	netdev_for_each_mc_addr(ha, netdev)
 		emac_mac_multicast_addr_set(adpt, ha->addr);
 }
 
-/* Change the Maximum Transfer Unit (MTU) */
+ 
 static int emac_change_mtu(struct net_device *netdev, int new_mtu)
 {
 	struct emac_adapter *adpt = netdev_priv(netdev);
@@ -224,7 +217,7 @@ static int emac_change_mtu(struct net_device *netdev, int new_mtu)
 	return 0;
 }
 
-/* Called when the network interface is made active */
+ 
 static int emac_open(struct net_device *netdev)
 {
 	struct emac_adapter *adpt = netdev_priv(netdev);
@@ -237,7 +230,7 @@ static int emac_open(struct net_device *netdev)
 		return ret;
 	}
 
-	/* allocate rx/tx dma buffer & descriptors */
+	 
 	ret = emac_mac_rx_tx_rings_alloc_all(adpt);
 	if (ret) {
 		netdev_err(adpt->netdev, "error allocating rx/tx rings\n");
@@ -263,7 +256,7 @@ static int emac_open(struct net_device *netdev)
 	return 0;
 }
 
-/* Called when the network interface is disabled */
+ 
 static int emac_close(struct net_device *netdev)
 {
 	struct emac_adapter *adpt = netdev_priv(netdev);
@@ -281,7 +274,7 @@ static int emac_close(struct net_device *netdev)
 	return 0;
 }
 
-/* Respond to a TX hang */
+ 
 static void emac_tx_timeout(struct net_device *netdev, unsigned int txqueue)
 {
 	struct emac_adapter *adpt = netdev_priv(netdev);
@@ -289,15 +282,7 @@ static void emac_tx_timeout(struct net_device *netdev, unsigned int txqueue)
 	schedule_work(&adpt->work_thread);
 }
 
-/**
- * emac_update_hw_stats - read the EMAC stat registers
- * @adpt: pointer to adapter struct
- *
- * Reads the stats registers and write the values to adpt->stats.
- *
- * adpt->stats.lock must be held while calling this function,
- * and while reading from adpt->stats.
- */
+ 
 void emac_update_hw_stats(struct emac_adapter *adpt)
 {
 	struct emac_stats *stats = &adpt->stats;
@@ -312,11 +297,11 @@ void emac_update_hw_stats(struct emac_adapter *adpt)
 		addr += sizeof(u32);
 	}
 
-	/* additional rx status */
+	 
 	stats->rx_crc_align += readl_relaxed(base + EMAC_RXMAC_STATC_REG23);
 	stats->rx_jabbers += readl_relaxed(base + EMAC_RXMAC_STATC_REG24);
 
-	/* update tx status */
+	 
 	addr = REG_MAC_TX_STATUS_BIN;
 	stats_itr = &stats->tx_ok;
 
@@ -326,11 +311,11 @@ void emac_update_hw_stats(struct emac_adapter *adpt)
 		addr += sizeof(u32);
 	}
 
-	/* additional tx status */
+	 
 	stats->tx_col += readl_relaxed(base + EMAC_TXMAC_STATC_REG25);
 }
 
-/* Provide network statistics info for the interface */
+ 
 static void emac_get_stats64(struct net_device *netdev,
 			     struct rtnl_link_stats64 *net_stats)
 {
@@ -341,7 +326,7 @@ static void emac_get_stats64(struct net_device *netdev,
 
 	emac_update_hw_stats(adpt);
 
-	/* return parsed statistics */
+	 
 	net_stats->rx_packets = stats->rx_ok;
 	net_stats->tx_packets = stats->tx_ok;
 	net_stats->rx_bytes = stats->rx_byte_cnt;
@@ -383,7 +368,7 @@ static const struct net_device_ops emac_netdev_ops = {
 	.ndo_set_rx_mode        = emac_rx_mode_set,
 };
 
-/* Watchdog task routine, called to reinitialize the EMAC */
+ 
 static void emac_work_thread(struct work_struct *work)
 {
 	struct emac_adapter *adpt =
@@ -392,7 +377,7 @@ static void emac_work_thread(struct work_struct *work)
 	emac_reinit_locked(adpt);
 }
 
-/* Initialize various data structures  */
+ 
 static void emac_init_adapter(struct emac_adapter *adpt)
 {
 	u32 reg;
@@ -401,11 +386,11 @@ static void emac_init_adapter(struct emac_adapter *adpt)
 	adpt->tpd_size = EMAC_TPD_SIZE;
 	adpt->rfd_size = EMAC_RFD_SIZE;
 
-	/* descriptors */
+	 
 	adpt->tx_desc_cnt = EMAC_DEF_TX_DESCS;
 	adpt->rx_desc_cnt = EMAC_DEF_RX_DESCS;
 
-	/* dma */
+	 
 	adpt->dma_order = emac_dma_ord_out;
 	adpt->dmar_block = emac_dma_req_4096;
 	adpt->dmaw_block = emac_dma_req_128;
@@ -414,22 +399,22 @@ static void emac_init_adapter(struct emac_adapter *adpt)
 	adpt->tpd_burst = TXQ0_NUM_TPD_PREF_DEF;
 	adpt->rfd_burst = RXQ0_NUM_RFD_PREF_DEF;
 
-	/* irq moderator */
+	 
 	reg = ((EMAC_DEF_RX_IRQ_MOD >> 1) << IRQ_MODERATOR2_INIT_SHFT) |
 	      ((EMAC_DEF_TX_IRQ_MOD >> 1) << IRQ_MODERATOR_INIT_SHFT);
 	adpt->irq_mod = reg;
 
-	/* others */
+	 
 	adpt->preamble = EMAC_PREAMBLE_DEF;
 
-	/* default to automatic flow control */
+	 
 	adpt->automatic = true;
 
-	/* Disable single-pause-frame mode by default */
+	 
 	adpt->single_pause_mode = false;
 }
 
-/* Get the clock */
+ 
 static int emac_clks_get(struct platform_device *pdev,
 			 struct emac_adapter *adpt)
 {
@@ -452,15 +437,13 @@ static int emac_clks_get(struct platform_device *pdev,
 	return 0;
 }
 
-/* Initialize clocks */
+ 
 static int emac_clks_phase1_init(struct platform_device *pdev,
 				 struct emac_adapter *adpt)
 {
 	int ret;
 
-	/* On ACPI platforms, clocks are controlled by firmware and/or
-	 * ACPI, not by drivers.
-	 */
+	 
 	if (has_acpi_companion(&pdev->dev))
 		return 0;
 
@@ -494,7 +477,7 @@ disable_clk_axi:
 	return ret;
 }
 
-/* Enable clocks; needs emac_clks_phase1_init to be called before */
+ 
 static int emac_clks_phase2_init(struct platform_device *pdev,
 				 struct emac_adapter *adpt)
 {
@@ -539,29 +522,29 @@ static void emac_clks_teardown(struct emac_adapter *adpt)
 		clk_disable_unprepare(adpt->clk[i]);
 }
 
-/* Get the resources */
+ 
 static int emac_probe_resources(struct platform_device *pdev,
 				struct emac_adapter *adpt)
 {
 	struct net_device *netdev = adpt->netdev;
 	int ret = 0;
 
-	/* get mac address */
+	 
 	if (device_get_ethdev_address(&pdev->dev, netdev))
 		eth_hw_addr_random(netdev);
 
-	/* Core 0 interrupt */
+	 
 	ret = platform_get_irq(pdev, 0);
 	if (ret < 0)
 		return ret;
 	adpt->irq.irq = ret;
 
-	/* base register address */
+	 
 	adpt->base = devm_platform_ioremap_resource(pdev, 0);
 	if (IS_ERR(adpt->base))
 		return PTR_ERR(adpt->base);
 
-	/* CSR register address */
+	 
 	adpt->csr = devm_platform_ioremap_resource(pdev, 1);
 	if (IS_ERR(adpt->csr))
 		return PTR_ERR(adpt->csr);
@@ -598,10 +581,7 @@ static int emac_probe(struct platform_device *pdev)
 	u32 reg;
 	int ret;
 
-	/* The TPD buffer address is limited to:
-	 * 1. PTP:	45bits. (Driver doesn't support yet.)
-	 * 2. NON-PTP:	46bits.
-	 */
+	 
 	ret = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(46));
 	if (ret) {
 		dev_err(&pdev->dev, "could not set DMA mask\n");
@@ -632,7 +612,7 @@ static int emac_probe(struct platform_device *pdev)
 	if (ret)
 		goto err_undo_netdev;
 
-	/* initialize clocks */
+	 
 	ret = emac_clks_phase1_init(pdev, adpt);
 	if (ret) {
 		dev_err(&pdev->dev, "could not initialize clocks\n");
@@ -646,24 +626,24 @@ static int emac_probe(struct platform_device *pdev)
 
 	emac_init_adapter(adpt);
 
-	/* init external phy */
+	 
 	ret = emac_phy_config(pdev, adpt);
 	if (ret)
 		goto err_undo_clocks;
 
-	/* init internal sgmii phy */
+	 
 	ret = emac_sgmii_config(pdev, adpt);
 	if (ret)
 		goto err_undo_mdiobus;
 
-	/* enable clocks */
+	 
 	ret = emac_clks_phase2_init(pdev, adpt);
 	if (ret) {
 		dev_err(&pdev->dev, "could not initialize clocks\n");
 		goto err_undo_mdiobus;
 	}
 
-	/* set hw features */
+	 
 	netdev->features = NETIF_F_SG | NETIF_F_HW_CSUM | NETIF_F_RXCSUM |
 			NETIF_F_TSO | NETIF_F_TSO6 | NETIF_F_HW_VLAN_CTAG_RX |
 			NETIF_F_HW_VLAN_CTAG_TX;
@@ -672,7 +652,7 @@ static int emac_probe(struct platform_device *pdev)
 	netdev->vlan_features |= NETIF_F_SG | NETIF_F_HW_CSUM |
 				 NETIF_F_TSO | NETIF_F_TSO6;
 
-	/* MTU range: 46 - 9194 */
+	 
 	netdev->min_mtu = EMAC_MIN_ETH_FRAME_SIZE -
 			  (ETH_HLEN + ETH_FCS_LEN + VLAN_HLEN);
 	netdev->max_mtu = EMAC_MAX_ETH_FRAME_SIZE -
@@ -680,7 +660,7 @@ static int emac_probe(struct platform_device *pdev)
 
 	INIT_WORK(&adpt->work_thread, emac_work_thread);
 
-	/* Initialize queues */
+	 
 	emac_mac_rx_tx_ring_init_all(pdev, adpt);
 
 	netif_napi_add(netdev, &adpt->rx_q.napi, emac_napi_rtx);
@@ -752,10 +732,10 @@ static void emac_shutdown(struct platform_device *pdev)
 	struct emac_adapter *adpt = netdev_priv(netdev);
 
 	if (netdev->flags & IFF_UP) {
-		/* Closing the SGMII turns off its interrupts */
+		 
 		emac_sgmii_close(adpt);
 
-		/* Resetting the MAC turns off all DMA and its interrupts */
+		 
 		emac_mac_reset(adpt);
 	}
 }

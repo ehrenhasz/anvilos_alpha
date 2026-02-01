@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * LP8755 High Performance Power Management Unit : System Interface Driver
- * (based on rev. 0.26)
- * Copyright 2012 Texas Instruments
- *
- * Author: Daniel(Geon Si) Jeong <daniel.jeong@ti.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/slab.h>
@@ -71,17 +65,17 @@ static int lp8755_buck_set_mode(struct regulator_dev *rdev, unsigned int mode)
 
 	switch (mode) {
 	case REGULATOR_MODE_FAST:
-		/* forced pwm mode */
+		 
 		regbval = (0x01 << id);
 		break;
 	case REGULATOR_MODE_NORMAL:
-		/* enable automatic pwm/pfm mode */
+		 
 		ret = regmap_update_bits(rdev->regmap, 0x08 + id, 0x20, 0x00);
 		if (ret < 0)
 			goto err_i2c;
 		break;
 	case REGULATOR_MODE_IDLE:
-		/* enable automatic pwm/pfm/lppfm mode */
+		 
 		ret = regmap_update_bits(rdev->regmap, 0x08 + id, 0x20, 0x20);
 		if (ret < 0)
 			goto err_i2c;
@@ -92,7 +86,7 @@ static int lp8755_buck_set_mode(struct regulator_dev *rdev, unsigned int mode)
 		break;
 	default:
 		dev_err(pchip->dev, "Not supported buck mode %s\n", __func__);
-		/* forced pwm mode */
+		 
 		regbval = (0x01 << id);
 	}
 
@@ -115,7 +109,7 @@ static unsigned int lp8755_buck_get_mode(struct regulator_dev *rdev)
 	if (ret < 0)
 		goto err_i2c;
 
-	/* mode fast means forced pwm mode */
+	 
 	if (regval & (0x01 << id))
 		return REGULATOR_MODE_FAST;
 
@@ -123,11 +117,11 @@ static unsigned int lp8755_buck_get_mode(struct regulator_dev *rdev)
 	if (ret < 0)
 		goto err_i2c;
 
-	/* mode idle means automatic pwm/pfm/lppfm mode */
+	 
 	if (regval & 0x20)
 		return REGULATOR_MODE_IDLE;
 
-	/* mode normal means automatic pwm/pfm mode */
+	 
 	return REGULATOR_MODE_NORMAL;
 
 err_i2c:
@@ -193,13 +187,13 @@ static int lp8755_init_data(struct lp8755_chip *pchip)
 	int ret, icnt, buck_num;
 	struct lp8755_platform_data *pdata = pchip->pdata;
 
-	/* read back  muti-phase configuration */
+	 
 	ret = regmap_read(pchip->regmap, 0x3D, &regval);
 	if (ret < 0)
 		goto out_i2c_error;
 	pchip->mphase = regval & 0x0F;
 
-	/* set default data based on multi-phase config */
+	 
 	for (icnt = 0; icnt < mphase_buck[pchip->mphase].nreg; icnt++) {
 		buck_num = mphase_buck[pchip->mphase].buck_num[icnt];
 		pdata->buck_data[buck_num] = &lp8755_reg_default[buck_num];
@@ -275,16 +269,16 @@ static irqreturn_t lp8755_irq_handler(int irq, void *data)
 	unsigned int flag0, flag1;
 	struct lp8755_chip *pchip = data;
 
-	/* read flag0 register */
+	 
 	ret = regmap_read(pchip->regmap, 0x0D, &flag0);
 	if (ret < 0)
 		goto err_i2c;
-	/* clear flag register to pull up int. pin */
+	 
 	ret = regmap_write(pchip->regmap, 0x0D, 0x00);
 	if (ret < 0)
 		goto err_i2c;
 
-	/* sent power fault detection event to specific regulator */
+	 
 	for (icnt = 0; icnt < LP8755_BUCK_MAX; icnt++)
 		if ((flag0 & (0x4 << icnt))
 		    && (pchip->irqmask & (0x04 << icnt))
@@ -294,16 +288,16 @@ static irqreturn_t lp8755_irq_handler(int irq, void *data)
 						      NULL);
 		}
 
-	/* read flag1 register */
+	 
 	ret = regmap_read(pchip->regmap, 0x0E, &flag1);
 	if (ret < 0)
 		goto err_i2c;
-	/* clear flag register to pull up int. pin */
+	 
 	ret = regmap_write(pchip->regmap, 0x0E, 0x00);
 	if (ret < 0)
 		goto err_i2c;
 
-	/* send OCP event to all regulator devices */
+	 
 	if ((flag1 & 0x01) && (pchip->irqmask & 0x01))
 		for (icnt = 0; icnt < LP8755_BUCK_MAX; icnt++)
 			if (pchip->rdev[icnt] != NULL) {
@@ -312,7 +306,7 @@ static irqreturn_t lp8755_irq_handler(int irq, void *data)
 							      NULL);
 			}
 
-	/* send OVP event to all regulator devices */
+	 
 	if ((flag1 & 0x02) && (pchip->irqmask & 0x02))
 		for (icnt = 0; icnt < LP8755_BUCK_MAX; icnt++)
 			if (pchip->rdev[icnt] != NULL) {
@@ -413,7 +407,7 @@ static int lp8755_probe(struct i2c_client *client)
 	return ret;
 
 err:
-	/* output disable */
+	 
 	for (icnt = 0; icnt < LP8755_BUCK_MAX; icnt++)
 		regmap_write(pchip->regmap, icnt, 0x00);
 

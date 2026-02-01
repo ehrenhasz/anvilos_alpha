@@ -1,59 +1,32 @@
-/*
- * Copyright (c) 2017		Intel Deutschland GmbH
- * Copyright (c) 2018-2019, 2021-2022 Intel Corporation
- *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
+ 
 #ifndef __RADIOTAP_H
 #define __RADIOTAP_H
 
 #include <linux/kernel.h>
 #include <asm/unaligned.h>
 
-/**
- * struct ieee80211_radiotap_header - base radiotap header
- */
+ 
 struct ieee80211_radiotap_header {
-	/**
-	 * @it_version: radiotap version, always 0
-	 */
+	 
 	uint8_t it_version;
 
-	/**
-	 * @it_pad: padding (or alignment)
-	 */
+	 
 	uint8_t it_pad;
 
-	/**
-	 * @it_len: overall radiotap header length
-	 */
+	 
 	__le16 it_len;
 
-	/**
-	 * @it_present: (first) present word
-	 */
+	 
 	__le32 it_present;
 
-	/**
-	 * @it_optional: all remaining presence bitmaps
-	 */
+	 
 	__le32 it_optional[];
 } __packed;
 
-/* version is always 0 */
+ 
 #define PKTHDR_RADIOTAP_VERSION	0
 
-/* see the radiotap website for the descriptions */
+ 
 enum ieee80211_radiotap_presence {
 	IEEE80211_RADIOTAP_TSFT = 0,
 	IEEE80211_RADIOTAP_FLAGS = 1,
@@ -73,7 +46,7 @@ enum ieee80211_radiotap_presence {
 	IEEE80211_RADIOTAP_TX_FLAGS = 15,
 	IEEE80211_RADIOTAP_RTS_RETRIES = 16,
 	IEEE80211_RADIOTAP_DATA_RETRIES = 17,
-	/* 18 is XChannel, but it's not defined yet */
+	 
 	IEEE80211_RADIOTAP_MCS = 19,
 	IEEE80211_RADIOTAP_AMPDU_STATUS = 20,
 	IEEE80211_RADIOTAP_VHT = 21,
@@ -84,7 +57,7 @@ enum ieee80211_radiotap_presence {
 	IEEE80211_RADIOTAP_LSIG = 27,
 	IEEE80211_RADIOTAP_TLV = 28,
 
-	/* valid in every it_present bitmap, even vendor namespaces */
+	 
 	IEEE80211_RADIOTAP_RADIOTAP_NAMESPACE = 29,
 	IEEE80211_RADIOTAP_VENDOR_NAMESPACE = 30,
 	IEEE80211_RADIOTAP_EXT = 31,
@@ -92,7 +65,7 @@ enum ieee80211_radiotap_presence {
 	IEEE80211_RADIOTAP_EHT = 34,
 };
 
-/* for IEEE80211_RADIOTAP_FLAGS */
+ 
 enum ieee80211_radiotap_flags {
 	IEEE80211_RADIOTAP_F_CFP = 0x01,
 	IEEE80211_RADIOTAP_F_SHORTPRE = 0x02,
@@ -103,7 +76,7 @@ enum ieee80211_radiotap_flags {
 	IEEE80211_RADIOTAP_F_BADFCS = 0x40,
 };
 
-/* for IEEE80211_RADIOTAP_CHANNEL */
+ 
 enum ieee80211_radiotap_channel_flags {
 	IEEE80211_CHAN_CCK = 0x0020,
 	IEEE80211_CHAN_OFDM = 0x0040,
@@ -114,12 +87,12 @@ enum ieee80211_radiotap_channel_flags {
 	IEEE80211_CHAN_QUARTER = 0x8000,
 };
 
-/* for IEEE80211_RADIOTAP_RX_FLAGS */
+ 
 enum ieee80211_radiotap_rx_flags {
 	IEEE80211_RADIOTAP_F_RX_BADPLCP = 0x0002,
 };
 
-/* for IEEE80211_RADIOTAP_TX_FLAGS */
+ 
 enum ieee80211_radiotap_tx_flags {
 	IEEE80211_RADIOTAP_F_TX_FAIL = 0x0001,
 	IEEE80211_RADIOTAP_F_TX_CTS = 0x0002,
@@ -129,7 +102,7 @@ enum ieee80211_radiotap_tx_flags {
 	IEEE80211_RADIOTAP_F_TX_ORDER = 0x0020,
 };
 
-/* for IEEE80211_RADIOTAP_MCS "have" flags */
+ 
 enum ieee80211_radiotap_mcs_have {
 	IEEE80211_RADIOTAP_MCS_HAVE_BW = 0x01,
 	IEEE80211_RADIOTAP_MCS_HAVE_MCS = 0x02,
@@ -156,7 +129,7 @@ enum ieee80211_radiotap_mcs_flags {
 	IEEE80211_RADIOTAP_MCS_STBC_SHIFT = 5,
 };
 
-/* for IEEE80211_RADIOTAP_AMPDU_STATUS */
+ 
 enum ieee80211_radiotap_ampdu_flags {
 	IEEE80211_RADIOTAP_AMPDU_REPORT_ZEROLEN = 0x0001,
 	IEEE80211_RADIOTAP_AMPDU_IS_ZEROLEN = 0x0002,
@@ -168,7 +141,7 @@ enum ieee80211_radiotap_ampdu_flags {
 	IEEE80211_RADIOTAP_AMPDU_EOF_KNOWN = 0x0080,
 };
 
-/* for IEEE80211_RADIOTAP_VHT */
+ 
 enum ieee80211_radiotap_vht_known {
 	IEEE80211_RADIOTAP_VHT_KNOWN_STBC = 0x0001,
 	IEEE80211_RADIOTAP_VHT_KNOWN_TXOP_PS_NA = 0x0002,
@@ -197,7 +170,7 @@ enum ieee80211_radiotap_vht_coding {
 	IEEE80211_RADIOTAP_CODING_LDPC_USER3 = 0x08,
 };
 
-/* for IEEE80211_RADIOTAP_TIMESTAMP */
+ 
 enum ieee80211_radiotap_timestamp_unit_spos {
 	IEEE80211_RADIOTAP_TIMESTAMP_UNIT_MASK = 0x000F,
 	IEEE80211_RADIOTAP_TIMESTAMP_UNIT_MS = 0x0000,
@@ -369,14 +342,7 @@ struct ieee80211_radiotap_tlv {
 	u8 data[];
 } __packed;
 
-/**
- * struct ieee80211_radiotap_vendor_content - radiotap vendor data content
- * @oui: radiotap vendor namespace OUI
- * @oui_subtype: radiotap vendor sub namespace
- * @vendor_type: radiotap vendor type
- * @reserved: should always be set to zero (to avoid leaking memory)
- * @data: the actual vendor namespace data
- */
+ 
 struct ieee80211_radiotap_vendor_content {
 	u8 oui[3];
 	u8 oui_subtype;
@@ -385,40 +351,28 @@ struct ieee80211_radiotap_vendor_content {
 	u8 data[];
 } __packed;
 
-/**
- * struct ieee80211_radiotap_vendor_tlv - vendor radiotap data information
- * @type: should always be set to IEEE80211_RADIOTAP_VENDOR_NAMESPACE
- * @len: length of data
- * @content: vendor content see @ieee80211_radiotap_vendor_content
- */
+ 
 struct ieee80211_radiotap_vendor_tlv {
-	__le16 type; /* IEEE80211_RADIOTAP_VENDOR_NAMESPACE */
+	__le16 type;  
 	__le16 len;
 	struct ieee80211_radiotap_vendor_content content;
 };
 
-/* ieee80211_radiotap_eht_usig - content of U-SIG tlv (type 33)
- * see www.radiotap.org/fields/U-SIG.html for details
- */
+ 
 struct ieee80211_radiotap_eht_usig {
 	__le32 common;
 	__le32 value;
 	__le32 mask;
 } __packed;
 
-/* ieee80211_radiotap_eht - content of EHT tlv (type 34)
- * see www.radiotap.org/fields/EHT.html for details
- */
+ 
 struct ieee80211_radiotap_eht {
 	__le32 known;
 	__le32 data[9];
 	__le32 user_info[];
 } __packed;
 
-/* Known field for EHT TLV
- * The ending defines for what the field applies as following
- * O - OFDMA (including TB), M - MU-MIMO, S - EHT sounding.
- */
+ 
 enum ieee80211_radiotap_eht_known {
 	IEEE80211_RADIOTAP_EHT_KNOWN_SPATIAL_REUSE		= 0x00000002,
 	IEEE80211_RADIOTAP_EHT_KNOWN_GI				= 0x00000004,
@@ -444,7 +398,7 @@ enum ieee80211_radiotap_eht_known {
 };
 
 enum ieee80211_radiotap_eht_data {
-	/* Data 0 */
+	 
 	IEEE80211_RADIOTAP_EHT_DATA0_SPATIAL_REUSE		= 0x00000078,
 	IEEE80211_RADIOTAP_EHT_DATA0_GI				= 0x00000180,
 	IEEE80211_RADIOTAP_EHT_DATA0_LTF			= 0x00000600,
@@ -456,48 +410,48 @@ enum ieee80211_radiotap_eht_data {
 	IEEE80211_RADIOTAP_EHT_DATA0_DISREGARD_O		= 0x003c0000,
 	IEEE80211_RADIOTAP_EHT_DATA0_CRC1_O			= 0x03c00000,
 	IEEE80211_RADIOTAP_EHT_DATA0_TAIL1_O			= 0xfc000000,
-	/* Data 1 */
+	 
 	IEEE80211_RADIOTAP_EHT_DATA1_RU_SIZE			= 0x0000001f,
 	IEEE80211_RADIOTAP_EHT_DATA1_RU_INDEX			= 0x00001fe0,
 	IEEE80211_RADIOTAP_EHT_DATA1_RU_ALLOC_CC_1_1_1		= 0x003fe000,
 	IEEE80211_RADIOTAP_EHT_DATA1_RU_ALLOC_CC_1_1_1_KNOWN	= 0x00400000,
 	IEEE80211_RADIOTAP_EHT_DATA1_PRIMARY_80			= 0xc0000000,
-	/* Data 2 */
+	 
 	IEEE80211_RADIOTAP_EHT_DATA2_RU_ALLOC_CC_2_1_1		= 0x000001ff,
 	IEEE80211_RADIOTAP_EHT_DATA2_RU_ALLOC_CC_2_1_1_KNOWN	= 0x00000200,
 	IEEE80211_RADIOTAP_EHT_DATA2_RU_ALLOC_CC_1_1_2		= 0x0007fc00,
 	IEEE80211_RADIOTAP_EHT_DATA2_RU_ALLOC_CC_1_1_2_KNOWN	= 0x00080000,
 	IEEE80211_RADIOTAP_EHT_DATA2_RU_ALLOC_CC_2_1_2		= 0x1ff00000,
 	IEEE80211_RADIOTAP_EHT_DATA2_RU_ALLOC_CC_2_1_2_KNOWN	= 0x20000000,
-	/* Data 3 */
+	 
 	IEEE80211_RADIOTAP_EHT_DATA3_RU_ALLOC_CC_1_2_1		= 0x000001ff,
 	IEEE80211_RADIOTAP_EHT_DATA3_RU_ALLOC_CC_1_2_1_KNOWN	= 0x00000200,
 	IEEE80211_RADIOTAP_EHT_DATA3_RU_ALLOC_CC_2_2_1		= 0x0007fc00,
 	IEEE80211_RADIOTAP_EHT_DATA3_RU_ALLOC_CC_2_2_1_KNOWN	= 0x00080000,
 	IEEE80211_RADIOTAP_EHT_DATA3_RU_ALLOC_CC_1_2_2		= 0x1ff00000,
 	IEEE80211_RADIOTAP_EHT_DATA3_RU_ALLOC_CC_1_2_2_KNOWN	= 0x20000000,
-	/* Data 4 */
+	 
 	IEEE80211_RADIOTAP_EHT_DATA4_RU_ALLOC_CC_2_2_2		= 0x000001ff,
 	IEEE80211_RADIOTAP_EHT_DATA4_RU_ALLOC_CC_2_2_2_KNOWN	= 0x00000200,
 	IEEE80211_RADIOTAP_EHT_DATA4_RU_ALLOC_CC_1_2_3		= 0x0007fc00,
 	IEEE80211_RADIOTAP_EHT_DATA4_RU_ALLOC_CC_1_2_3_KNOWN	= 0x00080000,
 	IEEE80211_RADIOTAP_EHT_DATA4_RU_ALLOC_CC_2_2_3		= 0x1ff00000,
 	IEEE80211_RADIOTAP_EHT_DATA4_RU_ALLOC_CC_2_2_3_KNOWN	= 0x20000000,
-	/* Data 5 */
+	 
 	IEEE80211_RADIOTAP_EHT_DATA5_RU_ALLOC_CC_1_2_4		= 0x000001ff,
 	IEEE80211_RADIOTAP_EHT_DATA5_RU_ALLOC_CC_1_2_4_KNOWN	= 0x00000200,
 	IEEE80211_RADIOTAP_EHT_DATA5_RU_ALLOC_CC_2_2_4		= 0x0007fc00,
 	IEEE80211_RADIOTAP_EHT_DATA5_RU_ALLOC_CC_2_2_4_KNOWN	= 0x00080000,
 	IEEE80211_RADIOTAP_EHT_DATA5_RU_ALLOC_CC_1_2_5		= 0x1ff00000,
 	IEEE80211_RADIOTAP_EHT_DATA5_RU_ALLOC_CC_1_2_5_KNOWN	= 0x20000000,
-	/* Data 6 */
+	 
 	IEEE80211_RADIOTAP_EHT_DATA6_RU_ALLOC_CC_2_2_5		= 0x000001ff,
 	IEEE80211_RADIOTAP_EHT_DATA6_RU_ALLOC_CC_2_2_5_KNOWN	= 0x00000200,
 	IEEE80211_RADIOTAP_EHT_DATA6_RU_ALLOC_CC_1_2_6		= 0x0007fc00,
 	IEEE80211_RADIOTAP_EHT_DATA6_RU_ALLOC_CC_1_2_6_KNOWN	= 0x00080000,
 	IEEE80211_RADIOTAP_EHT_DATA6_RU_ALLOC_CC_2_2_6		= 0x1ff00000,
 	IEEE80211_RADIOTAP_EHT_DATA6_RU_ALLOC_CC_2_2_6_KNOWN	= 0x20000000,
-	/* Data 7 */
+	 
 	IEEE80211_RADIOTAP_EHT_DATA7_CRC2_O			= 0x0000000f,
 	IEEE80211_RADIOTAP_EHT_DATA7_TAIL_2_O			= 0x000003f0,
 	IEEE80211_RADIOTAP_EHT_DATA7_NSS_S			= 0x0000f000,
@@ -505,7 +459,7 @@ enum ieee80211_radiotap_eht_data {
 	IEEE80211_RADIOTAP_EHT_DATA7_NUM_OF_NON_OFDMA_USERS	= 0x000e0000,
 	IEEE80211_RADIOTAP_EHT_DATA7_USER_ENCODING_BLOCK_CRC	= 0x00f00000,
 	IEEE80211_RADIOTAP_EHT_DATA7_USER_ENCODING_BLOCK_TAIL	= 0x3f000000,
-	/* Data 8 */
+	 
 	IEEE80211_RADIOTAP_EHT_DATA8_RU_ALLOC_TB_FMT_PS_160	= 0x00000001,
 	IEEE80211_RADIOTAP_EHT_DATA8_RU_ALLOC_TB_FMT_B0		= 0x00000002,
 	IEEE80211_RADIOTAP_EHT_DATA8_RU_ALLOC_TB_FMT_B7_B1	= 0x000001fc,
@@ -545,10 +499,10 @@ enum ieee80211_radiotap_eht_usig_common {
 };
 
 enum ieee80211_radiotap_eht_usig_mu {
-	/* MU-USIG-1 */
+	 
 	IEEE80211_RADIOTAP_EHT_USIG1_MU_B20_B24_DISREGARD	= 0x0000001f,
 	IEEE80211_RADIOTAP_EHT_USIG1_MU_B25_VALIDATE		= 0x00000020,
-	/* MU-USIG-2 */
+	 
 	IEEE80211_RADIOTAP_EHT_USIG2_MU_B0_B1_PPDU_TYPE		= 0x000000c0,
 	IEEE80211_RADIOTAP_EHT_USIG2_MU_B2_VALIDATE		= 0x00000100,
 	IEEE80211_RADIOTAP_EHT_USIG2_MU_B3_B7_PUNCTURED_INFO	= 0x00003e00,
@@ -560,10 +514,10 @@ enum ieee80211_radiotap_eht_usig_mu {
 };
 
 enum ieee80211_radiotap_eht_usig_tb {
-	/* TB-USIG-1 */
+	 
 	IEEE80211_RADIOTAP_EHT_USIG1_TB_B20_B25_DISREGARD	= 0x0000001f,
 
-	/* TB-USIG-2 */
+	 
 	IEEE80211_RADIOTAP_EHT_USIG2_TB_B0_B1_PPDU_TYPE		= 0x000000c0,
 	IEEE80211_RADIOTAP_EHT_USIG2_TB_B2_VALIDATE		= 0x00000100,
 	IEEE80211_RADIOTAP_EHT_USIG2_TB_B3_B6_SPATIAL_REUSE_1	= 0x00001e00,
@@ -573,10 +527,7 @@ enum ieee80211_radiotap_eht_usig_tb {
 	IEEE80211_RADIOTAP_EHT_USIG2_TB_B20_B25_TAIL		= 0xfc000000,
 };
 
-/**
- * ieee80211_get_radiotap_len - get radiotap header length
- * @data: pointer to the header
- */
+ 
 static inline u16 ieee80211_get_radiotap_len(const char *data)
 {
 	const struct ieee80211_radiotap_header *hdr = (const void *)data;
@@ -584,4 +535,4 @@ static inline u16 ieee80211_get_radiotap_len(const char *data)
 	return get_unaligned_le16(&hdr->it_len);
 }
 
-#endif /* __RADIOTAP_H */
+#endif  

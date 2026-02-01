@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (C) 2021, Intel Corporation. */
+
+ 
 
 #include "ice.h"
 #include "ice_base.h"
@@ -15,10 +15,7 @@
 #define ICE_FLOW_PROF_VSI_S	32
 #define ICE_FLOW_PROF_VSI_M	(0xFFFFFFFFULL << ICE_FLOW_PROF_VSI_S)
 
-/* Flow profile ID format:
- * [0:31] - flow type, flow + tun_offs
- * [32:63] - VSI index
- */
+ 
 #define ICE_FLOW_PROF_FD(vsi, flow, tun_offs) \
 	((u64)(((((flow) + (tun_offs)) & ICE_FLOW_PROF_TYPE_M)) | \
 	      (((u64)(vsi) << ICE_FLOW_PROF_VSI_S) & ICE_FLOW_PROF_VSI_M)))
@@ -84,15 +81,7 @@ static const struct virtchnl_fdir_inset_map fdir_inset_map[] = {
 	{VIRTCHNL_PROTO_HDR_PFCP_S_FIELD, ICE_FLOW_FIELD_IDX_UDP_DST_PORT, 0, 0},
 };
 
-/**
- * ice_vc_fdir_param_check
- * @vf: pointer to the VF structure
- * @vsi_id: VF relative VSI ID
- *
- * Check for the valid VSI ID, PF's state and VF's state
- *
- * Return: 0 on success, and -EINVAL on error.
- */
+ 
 static int
 ice_vc_fdir_param_check(struct ice_vf *vf, u16 vsi_id)
 {
@@ -119,14 +108,7 @@ ice_vc_fdir_param_check(struct ice_vf *vf, u16 vsi_id)
 	return 0;
 }
 
-/**
- * ice_vf_start_ctrl_vsi
- * @vf: pointer to the VF structure
- *
- * Allocate ctrl_vsi for the first time and open the ctrl_vsi port for VF
- *
- * Return: 0 on success, and other on error.
- */
+ 
 static int ice_vf_start_ctrl_vsi(struct ice_vf *vf)
 {
 	struct ice_pf *pf = vf->pf;
@@ -163,13 +145,7 @@ err_vsi_open:
 	return err;
 }
 
-/**
- * ice_vc_fdir_alloc_prof - allocate profile for this filter flow type
- * @vf: pointer to the VF structure
- * @flow: filter flow type
- *
- * Return: 0 on success, and other on error.
- */
+ 
 static int
 ice_vc_fdir_alloc_prof(struct ice_vf *vf, enum ice_fltr_ptype flow)
 {
@@ -195,11 +171,7 @@ ice_vc_fdir_alloc_prof(struct ice_vf *vf, enum ice_fltr_ptype flow)
 	return 0;
 }
 
-/**
- * ice_vc_fdir_free_prof - free profile for this filter flow type
- * @vf: pointer to the VF structure
- * @flow: filter flow type
- */
+ 
 static void
 ice_vc_fdir_free_prof(struct ice_vf *vf, enum ice_fltr_ptype flow)
 {
@@ -215,10 +187,7 @@ ice_vc_fdir_free_prof(struct ice_vf *vf, enum ice_fltr_ptype flow)
 	fdir->fdir_prof[flow] = NULL;
 }
 
-/**
- * ice_vc_fdir_free_prof_all - free all the profile for this VF
- * @vf: pointer to the VF structure
- */
+ 
 static void ice_vc_fdir_free_prof_all(struct ice_vf *vf)
 {
 	struct ice_vf_fdir *fdir = &vf->fdir;
@@ -234,17 +203,7 @@ static void ice_vc_fdir_free_prof_all(struct ice_vf *vf)
 	fdir->fdir_prof = NULL;
 }
 
-/**
- * ice_vc_fdir_parse_flow_fld
- * @proto_hdr: virtual channel protocol filter header
- * @conf: FDIR configuration for each filter
- * @fld: field type array
- * @fld_cnt: field counter
- *
- * Parse the virtual channel filter header and store them into field type array
- *
- * Return: 0 on success, and other on error.
- */
+ 
 static int
 ice_vc_fdir_parse_flow_fld(struct virtchnl_proto_hdr *proto_hdr,
 			   struct virtchnl_fdir_fltr_conf *conf,
@@ -274,18 +233,7 @@ ice_vc_fdir_parse_flow_fld(struct virtchnl_proto_hdr *proto_hdr,
 	return 0;
 }
 
-/**
- * ice_vc_fdir_set_flow_fld
- * @vf: pointer to the VF structure
- * @fltr: virtual channel add cmd buffer
- * @conf: FDIR configuration for each filter
- * @seg: array of one or more packet segments that describe the flow
- *
- * Parse the virtual channel add msg buffer's field vector and store them into
- * flow's packet segment field
- *
- * Return: 0 on success, and other on error.
- */
+ 
 static int
 ice_vc_fdir_set_flow_fld(struct ice_vf *vf, struct virtchnl_fdir_add *fltr,
 			 struct virtchnl_fdir_fltr_conf *conf,
@@ -322,14 +270,7 @@ ice_vc_fdir_set_flow_fld(struct ice_vf *vf, struct virtchnl_fdir_add *fltr,
 	return 0;
 }
 
-/**
- * ice_vc_fdir_set_flow_hdr - config the flow's packet segment header
- * @vf: pointer to the VF structure
- * @conf: FDIR configuration for each filter
- * @seg: array of one or more packet segments that describe the flow
- *
- * Return: 0 on success, and other on error.
- */
+ 
 static int
 ice_vc_fdir_set_flow_hdr(struct ice_vf *vf,
 			 struct virtchnl_fdir_fltr_conf *conf,
@@ -469,12 +410,7 @@ ice_vc_fdir_set_flow_hdr(struct ice_vf *vf,
 	return 0;
 }
 
-/**
- * ice_vc_fdir_rem_prof - remove profile for this filter flow type
- * @vf: pointer to the VF structure
- * @flow: filter flow type
- * @tun: 0 implies non-tunnel type filter, 1 implies tunnel type filter
- */
+ 
 static void
 ice_vc_fdir_rem_prof(struct ice_vf *vf, enum ice_fltr_ptype flow, int tun)
 {
@@ -526,10 +462,7 @@ ice_vc_fdir_rem_prof(struct ice_vf *vf, enum ice_fltr_ptype flow, int tun)
 	fdir->prof_entry_cnt[flow][tun] = 0;
 }
 
-/**
- * ice_vc_fdir_rem_prof_all - remove profile for this VF
- * @vf: pointer to the VF structure
- */
+ 
 static void ice_vc_fdir_rem_prof_all(struct ice_vf *vf)
 {
 	enum ice_fltr_ptype flow;
@@ -541,10 +474,7 @@ static void ice_vc_fdir_rem_prof_all(struct ice_vf *vf)
 	}
 }
 
-/**
- * ice_vc_fdir_reset_cnt_all - reset all FDIR counters for this VF FDIR
- * @fdir: pointer to the VF FDIR structure
- */
+ 
 static void ice_vc_fdir_reset_cnt_all(struct ice_vf_fdir *fdir)
 {
 	enum ice_fltr_ptype flow;
@@ -556,15 +486,7 @@ static void ice_vc_fdir_reset_cnt_all(struct ice_vf_fdir *fdir)
 	}
 }
 
-/**
- * ice_vc_fdir_has_prof_conflict
- * @vf: pointer to the VF structure
- * @conf: FDIR configuration for each filter
- *
- * Check if @conf has conflicting profile with existing profiles
- *
- * Return: true on success, and false on error.
- */
+ 
 static bool
 ice_vc_fdir_has_prof_conflict(struct ice_vf *vf,
 			      struct virtchnl_fdir_fltr_conf *conf)
@@ -582,9 +504,7 @@ ice_vc_fdir_has_prof_conflict(struct ice_vf *vf,
 		flow_type_a = a->flow_type;
 		flow_type_b = b->flow_type;
 
-		/* No need to compare two rules with different tunnel types or
-		 * with the same protocol type.
-		 */
+		 
 		if (existing_conf->ttype != conf->ttype ||
 		    flow_type_a == flow_type_b)
 			continue;
@@ -622,17 +542,7 @@ ice_vc_fdir_has_prof_conflict(struct ice_vf *vf,
 	return false;
 }
 
-/**
- * ice_vc_fdir_write_flow_prof
- * @vf: pointer to the VF structure
- * @flow: filter flow type
- * @seg: array of one or more packet segments that describe the flow
- * @tun: 0 implies non-tunnel type filter, 1 implies tunnel type filter
- *
- * Write the flow's profile config and packet segment into the hardware
- *
- * Return: 0 on success, and other on error.
- */
+ 
 static int
 ice_vc_fdir_write_flow_prof(struct ice_vf *vf, enum ice_fltr_ptype flow,
 			    struct ice_flow_seg_info *seg, int tun)
@@ -677,7 +587,7 @@ ice_vc_fdir_write_flow_prof(struct ice_vf *vf, enum ice_fltr_ptype flow,
 			goto err_exit;
 		}
 
-		/* remove previously allocated profile */
+		 
 		ice_vc_fdir_rem_prof(vf, flow, tun);
 	}
 
@@ -737,17 +647,7 @@ err_exit:
 	return ret;
 }
 
-/**
- * ice_vc_fdir_config_input_set
- * @vf: pointer to the VF structure
- * @fltr: virtual channel add cmd buffer
- * @conf: FDIR configuration for each filter
- * @tun: 0 implies non-tunnel type filter, 1 implies tunnel type filter
- *
- * Config the input set type and value for virtual channel add msg buffer
- *
- * Return: 0 on success, and other on error.
- */
+ 
 static int
 ice_vc_fdir_config_input_set(struct ice_vf *vf, struct virtchnl_fdir_add *fltr,
 			     struct virtchnl_fdir_fltr_conf *conf, int tun)
@@ -804,16 +704,7 @@ err_exit:
 	return ret;
 }
 
-/**
- * ice_vc_fdir_parse_pattern
- * @vf: pointer to the VF info
- * @fltr: virtual channel add cmd buffer
- * @conf: FDIR configuration for each filter
- *
- * Parse the virtual channel filter's pattern and store them into conf
- *
- * Return: 0 on success, and other on error.
- */
+ 
 static int
 ice_vc_fdir_parse_pattern(struct ice_vf *vf, struct virtchnl_fdir_add *fltr,
 			  struct virtchnl_fdir_fltr_conf *conf)
@@ -1028,16 +919,7 @@ ice_vc_fdir_parse_pattern(struct ice_vf *vf, struct virtchnl_fdir_add *fltr,
 	return 0;
 }
 
-/**
- * ice_vc_fdir_parse_action
- * @vf: pointer to the VF info
- * @fltr: virtual channel add cmd buffer
- * @conf: FDIR configuration for each filter
- *
- * Parse the virtual channel filter's action and store them into conf
- *
- * Return: 0 on success, and other on error.
- */
+ 
 static int
 ice_vc_fdir_parse_action(struct ice_vf *vf, struct virtchnl_fdir_add *fltr,
 			 struct virtchnl_fdir_fltr_conf *conf)
@@ -1104,14 +986,7 @@ ice_vc_fdir_parse_action(struct ice_vf *vf, struct virtchnl_fdir_add *fltr,
 	return 0;
 }
 
-/**
- * ice_vc_validate_fdir_fltr - validate the virtual channel filter
- * @vf: pointer to the VF info
- * @fltr: virtual channel add cmd buffer
- * @conf: FDIR configuration for each filter
- *
- * Return: 0 on success, and other on error.
- */
+ 
 static int
 ice_vc_validate_fdir_fltr(struct ice_vf *vf, struct virtchnl_fdir_add *fltr,
 			  struct virtchnl_fdir_fltr_conf *conf)
@@ -1129,13 +1004,7 @@ ice_vc_validate_fdir_fltr(struct ice_vf *vf, struct virtchnl_fdir_add *fltr,
 	return ice_vc_fdir_parse_action(vf, fltr, conf);
 }
 
-/**
- * ice_vc_fdir_comp_rules - compare if two filter rules have the same value
- * @conf_a: FDIR configuration for filter a
- * @conf_b: FDIR configuration for filter b
- *
- * Return: 0 on success, and other on error.
- */
+ 
 static bool
 ice_vc_fdir_comp_rules(struct virtchnl_fdir_fltr_conf *conf_a,
 		       struct virtchnl_fdir_fltr_conf *conf_b)
@@ -1167,15 +1036,7 @@ ice_vc_fdir_comp_rules(struct virtchnl_fdir_fltr_conf *conf_a,
 	return true;
 }
 
-/**
- * ice_vc_fdir_is_dup_fltr
- * @vf: pointer to the VF info
- * @conf: FDIR configuration for each filter
- *
- * Check if there is duplicated rule with same conf value
- *
- * Return: 0 true success, and false on error.
- */
+ 
 static bool
 ice_vc_fdir_is_dup_fltr(struct ice_vf *vf, struct virtchnl_fdir_fltr_conf *conf)
 {
@@ -1194,16 +1055,7 @@ ice_vc_fdir_is_dup_fltr(struct ice_vf *vf, struct virtchnl_fdir_fltr_conf *conf)
 	return false;
 }
 
-/**
- * ice_vc_fdir_insert_entry
- * @vf: pointer to the VF info
- * @conf: FDIR configuration for each filter
- * @id: pointer to ID value allocated by driver
- *
- * Insert FDIR conf entry into list and allocate ID for this filter
- *
- * Return: 0 true success, and other on error.
- */
+ 
 static int
 ice_vc_fdir_insert_entry(struct ice_vf *vf,
 			 struct virtchnl_fdir_fltr_conf *conf, u32 *id)
@@ -1211,7 +1063,7 @@ ice_vc_fdir_insert_entry(struct ice_vf *vf,
 	struct ice_fdir_fltr *input = &conf->input;
 	int i;
 
-	/* alloc ID corresponding with conf */
+	 
 	i = idr_alloc(&vf->fdir.fdir_rule_idr, conf, 0,
 		      ICE_FDIR_MAX_FLTRS, GFP_KERNEL);
 	if (i < 0)
@@ -1222,12 +1074,7 @@ ice_vc_fdir_insert_entry(struct ice_vf *vf,
 	return 0;
 }
 
-/**
- * ice_vc_fdir_remove_entry - remove FDIR conf entry by ID value
- * @vf: pointer to the VF info
- * @conf: FDIR configuration for each filter
- * @id: filter rule's ID
- */
+ 
 static void
 ice_vc_fdir_remove_entry(struct ice_vf *vf,
 			 struct virtchnl_fdir_fltr_conf *conf, u32 id)
@@ -1238,23 +1085,14 @@ ice_vc_fdir_remove_entry(struct ice_vf *vf,
 	list_del(&input->fltr_node);
 }
 
-/**
- * ice_vc_fdir_lookup_entry - lookup FDIR conf entry by ID value
- * @vf: pointer to the VF info
- * @id: filter rule's ID
- *
- * Return: NULL on error, and other on success.
- */
+ 
 static struct virtchnl_fdir_fltr_conf *
 ice_vc_fdir_lookup_entry(struct ice_vf *vf, u32 id)
 {
 	return idr_find(&vf->fdir.fdir_rule_idr, id);
 }
 
-/**
- * ice_vc_fdir_flush_entry - remove all FDIR conf entry
- * @vf: pointer to the VF info
- */
+ 
 static void ice_vc_fdir_flush_entry(struct ice_vf *vf)
 {
 	struct virtchnl_fdir_fltr_conf *conf;
@@ -1268,15 +1106,7 @@ static void ice_vc_fdir_flush_entry(struct ice_vf *vf)
 	}
 }
 
-/**
- * ice_vc_fdir_write_fltr - write filter rule into hardware
- * @vf: pointer to the VF info
- * @conf: FDIR configuration for each filter
- * @add: true implies add rule, false implies del rules
- * @is_tun: false implies non-tunnel type filter, true implies tunnel filter
- *
- * Return: 0 on success, and other on error.
- */
+ 
 static int ice_vc_fdir_write_fltr(struct ice_vf *vf,
 				  struct virtchnl_fdir_fltr_conf *conf,
 				  bool add, bool is_tun)
@@ -1331,10 +1161,7 @@ err_free_pkt:
 	return ret;
 }
 
-/**
- * ice_vf_fdir_timer - FDIR program waiting timer interrupt handler
- * @t: pointer to timer_list
- */
+ 
 static void ice_vf_fdir_timer(struct timer_list *t)
 {
 	struct ice_vf_fdir_ctx *ctx_irq = from_timer(ctx_irq, t, rx_tmr);
@@ -1367,11 +1194,7 @@ static void ice_vf_fdir_timer(struct timer_list *t)
 	ice_service_task_schedule(pf);
 }
 
-/**
- * ice_vc_fdir_irq_handler - ctrl_vsi Rx queue interrupt handler
- * @ctrl_vsi: pointer to a VF's CTRL VSI
- * @rx_desc: pointer to FDIR Rx queue descriptor
- */
+ 
 void
 ice_vc_fdir_irq_handler(struct ice_vsi *ctrl_vsi,
 			union ice_32b_rx_flex_desc *rx_desc)
@@ -1416,10 +1239,7 @@ ice_vc_fdir_irq_handler(struct ice_vsi *ctrl_vsi,
 	ice_service_task_schedule(pf);
 }
 
-/**
- * ice_vf_fdir_dump_info - dump FDIR information for diagnosis
- * @vf: pointer to the VF info
- */
+ 
 static void ice_vf_fdir_dump_info(struct ice_vf *vf)
 {
 	struct ice_vsi *vf_vsi;
@@ -1450,14 +1270,7 @@ static void ice_vf_fdir_dump_info(struct ice_vf *vf)
 		(fd_cnt & VSIQF_FD_CNT_FD_BCNT_M) >> VSIQF_FD_CNT_FD_BCNT_S);
 }
 
-/**
- * ice_vf_verify_rx_desc - verify received FDIR programming status descriptor
- * @vf: pointer to the VF info
- * @ctx: FDIR context info for post processing
- * @status: virtchnl FDIR program status
- *
- * Return: 0 on success, and other on error.
- */
+ 
 static int
 ice_vf_verify_rx_desc(struct ice_vf *vf, struct ice_vf_fdir_ctx *ctx,
 		      enum virtchnl_fdir_prgm_status *status)
@@ -1529,19 +1342,7 @@ err_exit:
 	return ret;
 }
 
-/**
- * ice_vc_add_fdir_fltr_post
- * @vf: pointer to the VF structure
- * @ctx: FDIR context info for post processing
- * @status: virtchnl FDIR program status
- * @success: true implies success, false implies failure
- *
- * Post process for flow director add command. If success, then do post process
- * and send back success msg by virtchnl. Otherwise, do context reversion and
- * send back failure msg by virtchnl.
- *
- * Return: 0 on success, and other on error.
- */
+ 
 static int
 ice_vc_add_fdir_fltr_post(struct ice_vf *vf, struct ice_vf_fdir_ctx *ctx,
 			  enum virtchnl_fdir_prgm_status status,
@@ -1593,19 +1394,7 @@ err_exit:
 	return ret;
 }
 
-/**
- * ice_vc_del_fdir_fltr_post
- * @vf: pointer to the VF structure
- * @ctx: FDIR context info for post processing
- * @status: virtchnl FDIR program status
- * @success: true implies success, false implies failure
- *
- * Post process for flow director del command. If success, then do post process
- * and send back success msg by virtchnl. Otherwise, do context reversion and
- * send back failure msg by virtchnl.
- *
- * Return: 0 on success, and other on error.
- */
+ 
 static int
 ice_vc_del_fdir_fltr_post(struct ice_vf *vf, struct ice_vf_fdir_ctx *ctx,
 			  enum virtchnl_fdir_prgm_status status,
@@ -1658,12 +1447,7 @@ err_exit:
 	return ret;
 }
 
-/**
- * ice_flush_fdir_ctx
- * @pf: pointer to the PF structure
- *
- * Flush all the pending event on ctx_done list and process them.
- */
+ 
 void ice_flush_fdir_ctx(struct ice_pf *pf)
 {
 	struct ice_vf *vf;
@@ -1732,14 +1516,7 @@ err_exit:
 	mutex_unlock(&pf->vfs.table_lock);
 }
 
-/**
- * ice_vc_fdir_set_irq_ctx - set FDIR context info for later IRQ handler
- * @vf: pointer to the VF structure
- * @conf: FDIR configuration for each filter
- * @v_opcode: virtual channel operation code
- *
- * Return: 0 on success, and other on error.
- */
+ 
 static int
 ice_vc_fdir_set_irq_ctx(struct ice_vf *vf, struct virtchnl_fdir_fltr_conf *conf,
 			enum virtchnl_ops v_opcode)
@@ -1770,12 +1547,7 @@ ice_vc_fdir_set_irq_ctx(struct ice_vf *vf, struct virtchnl_fdir_fltr_conf *conf,
 	return 0;
 }
 
-/**
- * ice_vc_fdir_clear_irq_ctx - clear FDIR context info for IRQ handler
- * @vf: pointer to the VF structure
- *
- * Return: 0 on success, and other on error.
- */
+ 
 static void ice_vc_fdir_clear_irq_ctx(struct ice_vf *vf)
 {
 	struct ice_vf_fdir_ctx *ctx = &vf->fdir.ctx_irq;
@@ -1787,13 +1559,7 @@ static void ice_vc_fdir_clear_irq_ctx(struct ice_vf *vf)
 	spin_unlock_irqrestore(&vf->fdir.ctx_lock, flags);
 }
 
-/**
- * ice_vc_add_fdir_fltr - add a FDIR filter for VF by the msg buffer
- * @vf: pointer to the VF info
- * @msg: pointer to the msg buffer
- *
- * Return: 0 on success, and other on error.
- */
+ 
 int ice_vc_add_fdir_fltr(struct ice_vf *vf, u8 *msg)
 {
 	struct virtchnl_fdir_add *fltr = (struct virtchnl_fdir_add *)msg;
@@ -1915,13 +1681,7 @@ err_exit:
 	return ret;
 }
 
-/**
- * ice_vc_del_fdir_fltr - delete a FDIR filter for VF by the msg buffer
- * @vf: pointer to the VF info
- * @msg: pointer to the msg buffer
- *
- * Return: 0 on success, and other on error.
- */
+ 
 int ice_vc_del_fdir_fltr(struct ice_vf *vf, u8 *msg)
 {
 	struct virtchnl_fdir_del *fltr = (struct virtchnl_fdir_del *)msg;
@@ -1961,7 +1721,7 @@ int ice_vc_del_fdir_fltr(struct ice_vf *vf, u8 *msg)
 		goto err_exit;
 	}
 
-	/* Just return failure when ctrl_vsi idx is invalid */
+	 
 	if (vf->ctrl_vsi_idx == ICE_NO_VSI) {
 		v_ret = VIRTCHNL_STATUS_SUCCESS;
 		stat->status = VIRTCHNL_FDIR_FAILURE_RULE_NORESOURCE;
@@ -1999,10 +1759,7 @@ err_exit:
 	return ret;
 }
 
-/**
- * ice_vf_fdir_init - init FDIR resource for VF
- * @vf: pointer to the VF info
- */
+ 
 void ice_vf_fdir_init(struct ice_vf *vf)
 {
 	struct ice_vf_fdir *fdir = &vf->fdir;
@@ -2016,10 +1773,7 @@ void ice_vf_fdir_init(struct ice_vf *vf)
 	ice_vc_fdir_reset_cnt_all(fdir);
 }
 
-/**
- * ice_vf_fdir_exit - destroy FDIR resource for VF
- * @vf: pointer to the VF info
- */
+ 
 void ice_vf_fdir_exit(struct ice_vf *vf)
 {
 	ice_vc_fdir_flush_entry(vf);

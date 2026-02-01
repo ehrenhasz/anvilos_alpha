@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/* Copyright (C) 2021 Maxlinear Corporation
- * Copyright (C) 2020 Intel Corporation
- *
- * Drivers for Maxlinear Ethernet GPY
- *
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/bitfield.h>
@@ -15,7 +10,7 @@
 #include <linux/property.h>
 #include <linux/netdevice.h>
 
-/* PHY ID */
+ 
 #define PHY_ID_GPYx15B_MASK	0xFFFFFFFC
 #define PHY_ID_GPY21xB_MASK	0xFFFFFFF9
 #define PHY_ID_GPY2xx		0x67C9DC00
@@ -35,10 +30,10 @@
 #define PHY_CTL1_MDICD		BIT(3)
 #define PHY_CTL1_MDIAB		BIT(2)
 #define PHY_CTL1_AMDIX		BIT(0)
-#define PHY_MIISTAT		0x18	/* MII state */
-#define PHY_IMASK		0x19	/* interrupt mask */
-#define PHY_ISTAT		0x1A	/* interrupt status */
-#define PHY_FWV			0x1E	/* firmware version */
+#define PHY_MIISTAT		0x18	 
+#define PHY_IMASK		0x19	 
+#define PHY_ISTAT		0x1A	 
+#define PHY_FWV			0x1E	 
 
 #define PHY_MIISTAT_SPD_MASK	GENMASK(2, 0)
 #define PHY_MIISTAT_DPX		BIT(3)
@@ -49,12 +44,12 @@
 #define PHY_MIISTAT_SPD_1000	2
 #define PHY_MIISTAT_SPD_2500	4
 
-#define PHY_IMASK_WOL		BIT(15)	/* Wake-on-LAN */
-#define PHY_IMASK_ANC		BIT(10)	/* Auto-Neg complete */
-#define PHY_IMASK_ADSC		BIT(5)	/* Link auto-downspeed detect */
-#define PHY_IMASK_DXMC		BIT(2)	/* Duplex mode change */
-#define PHY_IMASK_LSPC		BIT(1)	/* Link speed change */
-#define PHY_IMASK_LSTC		BIT(0)	/* Link state change */
+#define PHY_IMASK_WOL		BIT(15)	 
+#define PHY_IMASK_ANC		BIT(10)	 
+#define PHY_IMASK_ADSC		BIT(5)	 
+#define PHY_IMASK_DXMC		BIT(2)	 
+#define PHY_IMASK_LSPC		BIT(1)	 
+#define PHY_IMASK_LSTC		BIT(0)	 
 #define PHY_IMASK_MASK		(PHY_IMASK_LSTC | \
 				 PHY_IMASK_LSPC | \
 				 PHY_IMASK_DXMC | \
@@ -72,18 +67,18 @@
 #define PHY_MDI_MDI_X_CD	0x1
 #define PHY_MDI_MDI_X_CROSS	0x0
 
-/* SGMII */
+ 
 #define VSPEC1_SGMII_CTRL	0x08
-#define VSPEC1_SGMII_CTRL_ANEN	BIT(12)		/* Aneg enable */
-#define VSPEC1_SGMII_CTRL_ANRS	BIT(9)		/* Restart Aneg */
+#define VSPEC1_SGMII_CTRL_ANEN	BIT(12)		 
+#define VSPEC1_SGMII_CTRL_ANRS	BIT(9)		 
 #define VSPEC1_SGMII_ANEN_ANRS	(VSPEC1_SGMII_CTRL_ANEN | \
 				 VSPEC1_SGMII_CTRL_ANRS)
 
-/* Temperature sensor */
+ 
 #define VSPEC1_TEMP_STA	0x0E
 #define VSPEC1_TEMP_STA_DATA	GENMASK(9, 0)
 
-/* Mailbox */
+ 
 #define VSPEC1_MBOX_DATA	0x5
 #define VSPEC1_MBOX_ADDRLO	0x6
 #define VSPEC1_MBOX_CMD		0x7
@@ -91,28 +86,24 @@
 #define VSPEC1_MBOX_CMD_RD	(0 << 8)
 #define VSPEC1_MBOX_CMD_READY	BIT(15)
 
-/* WoL */
+ 
 #define VPSPEC2_WOL_CTL		0x0E06
 #define VPSPEC2_WOL_AD01	0x0E08
 #define VPSPEC2_WOL_AD23	0x0E09
 #define VPSPEC2_WOL_AD45	0x0E0A
 #define WOL_EN			BIT(0)
 
-/* Internal registers, access via mbox */
+ 
 #define REG_GPIO0_OUT		0xd3ce00
 
 struct gpy_priv {
-	/* serialize mailbox acesses */
+	 
 	struct mutex mbox_lock;
 
 	u8 fw_major;
 	u8 fw_minor;
 
-	/* It takes 3 seconds to fully switch out of loopback mode before
-	 * it can safely re-enter loopback mode. Record the time when
-	 * loopback is disabled. Check and wait if necessary before loopback
-	 * is enabled.
-	 */
+	 
 	u64 lb_dis_to;
 };
 
@@ -126,26 +117,7 @@ static const struct {
 };
 
 #if IS_ENABLED(CONFIG_HWMON)
-/* The original translation formulae of the temperature (in degrees of Celsius)
- * are as follows:
- *
- *   T = -2.5761e-11*(N^4) + 9.7332e-8*(N^3) + -1.9165e-4*(N^2) +
- *       3.0762e-1*(N^1) + -5.2156e1
- *
- * where [-52.156, 137.961]C and N = [0, 1023].
- *
- * They must be accordingly altered to be suitable for the integer arithmetics.
- * The technique is called 'factor redistribution', which just makes sure the
- * multiplications and divisions are made so to have a result of the operations
- * within the integer numbers limit. In addition we need to translate the
- * formulae to accept millidegrees of Celsius. Here what it looks like after
- * the alterations:
- *
- *   T = -25761e-12*(N^4) + 97332e-9*(N^3) + -191650e-6*(N^2) +
- *       307620e-3*(N^1) + -52156
- *
- * where T = [-52156, 137961]mC and N = [0, 1023].
- */
+ 
 static const struct polynomial poly_N_to_temp = {
 	.terms = {
 		{4,  -25761, 1000, 1},
@@ -241,11 +213,7 @@ static int gpy_mbox_read(struct phy_device *phydev, u32 addr)
 	if (ret)
 		goto out;
 
-	/* The mbox read is used in the interrupt workaround. It was observed
-	 * that a read might take up to 2.5ms. This is also the time for which
-	 * the interrupt line is stuck low. To be on the safe side, poll the
-	 * ready bit for 10ms.
-	 */
+	 
 	ret = phy_read_mmd_poll_timeout(phydev, MDIO_MMD_VEND1,
 					VSPEC1_MBOX_CMD, val,
 					(val & VSPEC1_MBOX_CMD_READY),
@@ -264,12 +232,12 @@ static int gpy_config_init(struct phy_device *phydev)
 {
 	int ret;
 
-	/* Mask all interrupts */
+	 
 	ret = phy_write(phydev, PHY_IMASK, 0);
 	if (ret)
 		return ret;
 
-	/* Clear all pending interrupts */
+	 
 	ret = phy_read(phydev, PHY_ISTAT);
 	return ret < 0 ? ret : 0;
 }
@@ -306,7 +274,7 @@ static int gpy_probe(struct phy_device *phydev)
 	if (ret)
 		return ret;
 
-	/* Show GPY PHY FW version in dmesg */
+	 
 	phydev_info(phydev, "Firmware Version: %d.%d (0x%04X%s)\n",
 		    priv->fw_major, priv->fw_minor, fw_version,
 		    fw_version & PHY_FWV_REL_MASK ? "" : " test version");
@@ -400,9 +368,7 @@ static int gpy_config_aneg(struct phy_device *phydev)
 	int ret;
 
 	if (phydev->autoneg == AUTONEG_DISABLE) {
-		/* Configure half duplex with genphy_setup_forced,
-		 * because genphy_c45_pma_setup_forced does not support.
-		 */
+		 
 		return phydev->duplex != DUPLEX_FULL
 			? genphy_setup_forced(phydev)
 			: genphy_c45_pma_setup_forced(phydev);
@@ -435,33 +401,12 @@ static int gpy_config_aneg(struct phy_device *phydev)
 	    phydev->interface == PHY_INTERFACE_MODE_INTERNAL)
 		return 0;
 
-	/* No need to trigger re-ANEG if link speed is 2.5G or SGMII ANEG is
-	 * disabled.
-	 */
+	 
 	if (!gpy_sgmii_need_reaneg(phydev) || gpy_2500basex_chk(phydev) ||
 	    !gpy_sgmii_aneg_en(phydev))
 		return 0;
 
-	/* There is a design constraint in GPY2xx device where SGMII AN is
-	 * only triggered when there is change of speed. If, PHY link
-	 * partner`s speed is still same even after PHY TPI is down and up
-	 * again, SGMII AN is not triggered and hence no new in-band message
-	 * from GPY to MAC side SGMII.
-	 * This could cause an issue during power up, when PHY is up prior to
-	 * MAC. At this condition, once MAC side SGMII is up, MAC side SGMII
-	 * wouldn`t receive new in-band message from GPY with correct link
-	 * status, speed and duplex info.
-	 *
-	 * 1) If PHY is already up and TPI link status is still down (such as
-	 *    hard reboot), TPI link status is polled for 4 seconds before
-	 *    retriggerring SGMII AN.
-	 * 2) If PHY is already up and TPI link status is also up (such as soft
-	 *    reboot), polling of TPI link status is not needed and SGMII AN is
-	 *    immediately retriggered.
-	 * 3) Other conditions such as PHY is down, speed change etc, skip
-	 *    retriggering SGMII AN. Note: in case of speed change, GPY FW will
-	 *    initiate SGMII AN.
-	 */
+	 
 
 	if (phydev->state != PHY_UP)
 		return 0;
@@ -473,7 +418,7 @@ static int gpy_config_aneg(struct phy_device *phydev)
 	else if (ret < 0)
 		return ret;
 
-	/* Trigger SGMII AN. */
+	 
 	return phy_modify_mmd(phydev, MDIO_MMD_VEND1, VSPEC1_SGMII_CTRL,
 			      VSPEC1_SGMII_CTRL_ANRS, VSPEC1_SGMII_CTRL_ANRS);
 }
@@ -510,14 +455,12 @@ static int gpy_update_interface(struct phy_device *phydev)
 {
 	int ret;
 
-	/* Interface mode is fixed for USXGMII and integrated PHY */
+	 
 	if (phydev->interface == PHY_INTERFACE_MODE_USXGMII ||
 	    phydev->interface == PHY_INTERFACE_MODE_INTERNAL)
 		return -EINVAL;
 
-	/* Automatically switch SERDES interface between SGMII and 2500-BaseX
-	 * according to speed. Disable ANEG in 2500-BaseX mode.
-	 */
+	 
 	switch (phydev->speed) {
 	case SPEED_2500:
 		phydev->interface = PHY_INTERFACE_MODE_2500BASEX;
@@ -536,9 +479,7 @@ static int gpy_update_interface(struct phy_device *phydev)
 		phydev->interface = PHY_INTERFACE_MODE_SGMII;
 		if (gpy_sgmii_aneg_en(phydev))
 			break;
-		/* Enable and restart SGMII ANEG for 10/100/1000Mbps link speed
-		 * if ANEG is disabled (in 2500-BaseX mode).
-		 */
+		 
 		ret = phy_modify_mmd(phydev, MDIO_MMD_VEND1, VSPEC1_SGMII_CTRL,
 				     VSPEC1_SGMII_ANEN_ANRS,
 				     VSPEC1_SGMII_ANEN_ANRS);
@@ -578,7 +519,7 @@ static int gpy_read_status(struct phy_device *phydev)
 		if (ret < 0)
 			return ret;
 
-		/* Read the link partner's 1G advertisement */
+		 
 		ret = phy_read(phydev, MII_STAT1000);
 		if (ret < 0)
 			return ret;
@@ -640,19 +581,7 @@ static irqreturn_t gpy_handle_interrupt(struct phy_device *phydev)
 	if (!(reg & PHY_IMASK_MASK))
 		return IRQ_NONE;
 
-	/* The PHY might leave the interrupt line asserted even after PHY_ISTAT
-	 * is read. To avoid interrupt storms, delay the interrupt handling as
-	 * long as the PHY drives the interrupt line. An internal bus read will
-	 * stall as long as the interrupt line is asserted, thus just read a
-	 * random register here.
-	 * Because we cannot access the internal bus at all while the interrupt
-	 * is driven by the PHY, there is no way to make the interrupt line
-	 * unstuck (e.g. by changing the pinmux to GPIO input) during that time
-	 * frame. Therefore, polling is the best we can do and won't do any more
-	 * harm.
-	 * It was observed that this bug happens on link state and link speed
-	 * changes independent of the firmware version.
-	 */
+	 
 	if (reg & (PHY_IMASK_LSTC | PHY_IMASK_LSPC)) {
 		reg = gpy_mbox_read(phydev, REG_GPIO0_OUT);
 		if (reg < 0) {
@@ -673,11 +602,7 @@ static int gpy_set_wol(struct phy_device *phydev,
 	int ret;
 
 	if (wol->wolopts & WAKE_MAGIC) {
-		/* MAC address - Byte0:Byte1:Byte2:Byte3:Byte4:Byte5
-		 * VPSPEC2_WOL_AD45 = Byte0:Byte1
-		 * VPSPEC2_WOL_AD23 = Byte2:Byte3
-		 * VPSPEC2_WOL_AD01 = Byte4:Byte5
-		 */
+		 
 		ret = phy_set_bits_mmd(phydev, MDIO_MMD_VEND2,
 				       VPSPEC2_WOL_AD45,
 				       ((attach_dev->dev_addr[0] << 8) |
@@ -699,26 +624,24 @@ static int gpy_set_wol(struct phy_device *phydev,
 		if (ret < 0)
 			return ret;
 
-		/* Enable the WOL interrupt */
+		 
 		ret = phy_write(phydev, PHY_IMASK, PHY_IMASK_WOL);
 		if (ret < 0)
 			return ret;
 
-		/* Enable magic packet matching */
+		 
 		ret = phy_set_bits_mmd(phydev, MDIO_MMD_VEND2,
 				       VPSPEC2_WOL_CTL,
 				       WOL_EN);
 		if (ret < 0)
 			return ret;
 
-		/* Clear the interrupt status register.
-		 * Only WoL is enabled so clear all.
-		 */
+		 
 		ret = phy_read(phydev, PHY_ISTAT);
 		if (ret < 0)
 			return ret;
 	} else {
-		/* Disable magic packet matching */
+		 
 		ret = phy_clear_bits_mmd(phydev, MDIO_MMD_VEND2,
 					 VPSPEC2_WOL_CTL,
 					 WOL_EN);
@@ -727,12 +650,12 @@ static int gpy_set_wol(struct phy_device *phydev,
 	}
 
 	if (wol->wolopts & WAKE_PHY) {
-		/* Enable the link state change interrupt */
+		 
 		ret = phy_set_bits(phydev, PHY_IMASK, PHY_IMASK_LSTC);
 		if (ret < 0)
 			return ret;
 
-		/* Clear the interrupt status register */
+		 
 		ret = phy_read(phydev, PHY_ISTAT);
 		if (ret < 0)
 			return ret;
@@ -743,7 +666,7 @@ static int gpy_set_wol(struct phy_device *phydev,
 		return 0;
 	}
 
-	/* Disable the link state change interrupt */
+	 
 	return phy_clear_bits(phydev, PHY_IMASK, PHY_IMASK_LSTC);
 }
 
@@ -773,7 +696,7 @@ static int gpy_loopback(struct phy_device *phydev, bool enable)
 	if (enable) {
 		u64 now = get_jiffies_64();
 
-		/* wait until 3 seconds from last disable */
+		 
 		if (time_before64(now, priv->lb_dis_to))
 			msleep(jiffies64_to_msecs(priv->lb_dis_to - now));
 
@@ -785,9 +708,7 @@ static int gpy_loopback(struct phy_device *phydev, bool enable)
 		return ret;
 
 	if (enable) {
-		/* It takes some time for PHY device to switch into
-		 * loopback mode.
-		 */
+		 
 		msleep(100);
 	} else {
 		priv->lb_dis_to = get_jiffies_64() + HZ * 3;

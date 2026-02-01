@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * tools/testing/selftests/kvm/include/x86_64/vmx.h
- *
- * Copyright (C) 2018, Google LLC.
- */
+ 
+ 
 
 #ifndef SELFTEST_KVM_VMX_H
 #define SELFTEST_KVM_VMX_H
@@ -14,9 +10,7 @@
 #include "processor.h"
 #include "apic.h"
 
-/*
- * Definitions of Primary Processor-Based VM-Execution Controls.
- */
+ 
 #define CPU_BASED_INTR_WINDOW_EXITING		0x00000004
 #define CPU_BASED_USE_TSC_OFFSETTING		0x00000008
 #define CPU_BASED_HLT_EXITING			0x00000080
@@ -41,9 +35,7 @@
 
 #define CPU_BASED_ALWAYSON_WITHOUT_TRUE_MSR	0x0401e172
 
-/*
- * Definitions of Secondary Processor-Based VM-Execution Controls.
- */
+ 
 #define SECONDARY_EXEC_VIRTUALIZE_APIC_ACCESSES 0x00000001
 #define SECONDARY_EXEC_ENABLE_EPT		0x00000002
 #define SECONDARY_EXEC_DESC			0x00000004
@@ -354,10 +346,7 @@ static inline int vmptrst(uint64_t *value)
 	return ret;
 }
 
-/*
- * A wrapper around vmptrst that ignores errors and returns zero if the
- * vmptrst instruction fails.
- */
+ 
 static inline uint64_t vmptrstz(void)
 {
 	uint64_t value = 0;
@@ -365,9 +354,7 @@ static inline uint64_t vmptrstz(void)
 	return value;
 }
 
-/*
- * No guest state (e.g. GPRs) is established by this vmlaunch.
- */
+ 
 static inline int vmlaunch(void)
 {
 	int ret;
@@ -400,9 +387,7 @@ static inline int vmlaunch(void)
 	return ret;
 }
 
-/*
- * No guest state (e.g. GPRs) is established by this vmresume.
- */
+ 
 static inline int vmresume(void)
 {
 	int ret;
@@ -437,12 +422,7 @@ static inline int vmresume(void)
 
 static inline void vmcall(void)
 {
-	/*
-	 * Stuff RAX and RCX with "safe" values to make sure L0 doesn't handle
-	 * it as a valid hypercall (e.g. Hyper-V L2 TLB flush) as the intended
-	 * use of this function is to exit to L1 from L2.  Clobber all other
-	 * GPRs as L1 doesn't correctly preserve them during vmexits.
-	 */
+	 
 	__asm__ __volatile__("push %%rbp; vmcall; pop %%rbp"
 			     : : "a"(0xdeadbeef), "c"(0xbeefdead)
 			     : "rbx", "rdx", "rsi", "rdi", "r8", "r9",
@@ -466,10 +446,7 @@ static inline int vmread(uint64_t encoding, uint64_t *value)
 	return ret;
 }
 
-/*
- * A wrapper around vmread that ignores errors and returns zero if the
- * vmread instruction fails.
- */
+ 
 static inline uint64_t vmreadz(uint64_t encoding)
 {
 	uint64_t value = 0;
@@ -574,4 +551,4 @@ void prepare_eptp(struct vmx_pages *vmx, struct kvm_vm *vm,
 		  uint32_t eptp_memslot);
 void prepare_virtualize_apic_accesses(struct vmx_pages *vmx, struct kvm_vm *vm);
 
-#endif /* SELFTEST_KVM_VMX_H */
+#endif  

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Support for OLPC XO-1.5 System Control Interrupts (SCI)
- *
- * Copyright (C) 2009-2010 One Laptop per Child
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/slab.h>
@@ -22,17 +18,7 @@
 static unsigned long			xo15_sci_gpe;
 static bool				lid_wake_on_close;
 
-/*
- * The normal ACPI LID wakeup behavior is wake-on-open, but not
- * wake-on-close. This is implemented as standard by the XO-1.5 DSDT.
- *
- * We provide here a sysfs attribute that will additionally enable
- * wake-on-close behavior. This is useful (e.g.) when we opportunistically
- * suspend with the display running; if the lid is then closed, we want to
- * wake up to turn the display off.
- *
- * This is controlled through a custom method in the XO-1.5 DSDT.
- */
+ 
 static int set_lid_wake_behavior(bool wake_on_close)
 {
 	acpi_status status;
@@ -147,7 +133,7 @@ static int xo15_sci_add(struct acpi_device *device)
 	strcpy(acpi_device_name(device), XO15_SCI_DEVICE_NAME);
 	strcpy(acpi_device_class(device), XO15_SCI_CLASS);
 
-	/* Get GPE bit assignment (EC events). */
+	 
 	status = acpi_evaluate_integer(device->handle, "_GPE", NULL, &tmp);
 	if (ACPI_FAILURE(status))
 		return -EINVAL;
@@ -165,13 +151,13 @@ static int xo15_sci_add(struct acpi_device *device)
 	if (r)
 		goto err_sysfs;
 
-	/* Flush queue, and enable all SCI events */
+	 
 	process_sci_queue();
 	olpc_ec_mask_write(EC_SCI_SRC_ALL);
 
 	acpi_enable_gpe(NULL, xo15_sci_gpe);
 
-	/* Enable wake-on-EC */
+	 
 	if (device->wakeup.flags.valid)
 		device_init_wakeup(&device->dev, true);
 
@@ -194,10 +180,10 @@ static void xo15_sci_remove(struct acpi_device *device)
 #ifdef CONFIG_PM_SLEEP
 static int xo15_sci_resume(struct device *dev)
 {
-	/* Enable all EC events */
+	 
 	olpc_ec_mask_write(EC_SCI_SRC_ALL);
 
-	/* Power/battery status might have changed */
+	 
 	battery_status_changed();
 	ac_status_changed();
 

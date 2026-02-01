@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 or Linux-OpenIB */
-/* Copyright (c) 2015 - 2021 Intel Corporation */
+ 
+ 
 #ifndef IRDMA_OSDEP_H
 #define IRDMA_OSDEP_H
 
@@ -79,4 +79,4 @@ u64 rd64(struct irdma_hw *hw, u32 reg);
 int irdma_map_vm_page_list(struct irdma_hw *hw, void *va, dma_addr_t *pg_dma,
 			   u32 pg_cnt);
 void irdma_unmap_vm_page_list(struct irdma_hw *hw, dma_addr_t *pg_dma, u32 pg_cnt);
-#endif /* IRDMA_OSDEP_H */
+#endif  

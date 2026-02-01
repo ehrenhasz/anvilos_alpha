@@ -1,35 +1,4 @@
-/*
- * Copyright (c) 2017 Mellanox Technologies. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- *
- */
+ 
 
 #include <net/addrconf.h>
 #include <linux/etherdevice.h>
@@ -40,7 +9,7 @@
 #include "fpga/conn.h"
 
 #define MLX5_FPGA_PKEY 0xFFFF
-#define MLX5_FPGA_PKEY_INDEX 0 /* RoCE PKEY 0xFFFF is always at index 0 */
+#define MLX5_FPGA_PKEY_INDEX 0  
 #define MLX5_FPGA_RECV_SIZE 2048
 #define MLX5_FPGA_PORT_NUM 1
 #define MLX5_FPGA_CQ_BUDGET 64
@@ -121,7 +90,7 @@ static int mlx5_fpga_conn_post_recv(struct mlx5_fpga_conn *conn,
 	conn->qp.rq.pc++;
 	conn->qp.rq.bufs[ix] = buf;
 
-	/* Make sure that descriptors are written before doorbell record. */
+	 
 	dma_wmb();
 	*conn->qp.wq.rq.db = cpu_to_be32(conn->qp.rq.pc & 0xffff);
 out:
@@ -130,10 +99,10 @@ out:
 
 static void mlx5_fpga_conn_notify_hw(struct mlx5_fpga_conn *conn, void *wqe)
 {
-	/* ensure wqe is visible to device before updating doorbell record */
+	 
 	dma_wmb();
 	*conn->qp.wq.sq.db = cpu_to_be32(conn->qp.sq.pc);
-	/* Make sure that doorbell record is visible before ringing */
+	 
 	wmb();
 	mlx5_write64(wqe, conn->fdev->conn_res.uar->map + MLX5_BF_OFFSET);
 }
@@ -301,7 +270,7 @@ static void mlx5_fpga_conn_sq_cqe(struct mlx5_fpga_conn *conn,
 	conn->qp.sq.bufs[ix] = NULL;
 	conn->qp.sq.cc++;
 
-	/* Handle backlog still under the spinlock to ensure message post order */
+	 
 	if (unlikely(!list_empty(&conn->qp.sq.backlog))) {
 		if (likely(conn->qp.active)) {
 			nextbuf = list_first_entry(&conn->qp.sq.backlog,
@@ -383,7 +352,7 @@ static inline void mlx5_fpga_conn_cqes(struct mlx5_fpga_conn *conn,
 	}
 
 	mlx5_fpga_dbg(conn->fdev, "Re-arming CQ with cc# %u\n", conn->cq.wq.cc);
-	/* ensure cq space is freed before enabling more cqes */
+	 
 	wmb();
 	mlx5_fpga_conn_arm_cq(conn);
 }
@@ -741,11 +710,11 @@ static int mlx5_fpga_conn_rts_qp(struct mlx5_fpga_conn *conn)
 
 	MLX5_SET(qpc, qpc, log_ack_req_freq, 8);
 	MLX5_SET(qpc, qpc, min_rnr_nak, 0x12);
-	MLX5_SET(qpc, qpc, primary_address_path.ack_timeout, 0x12); /* ~1.07s */
+	MLX5_SET(qpc, qpc, primary_address_path.ack_timeout, 0x12);  
 	MLX5_SET(qpc, qpc, next_send_psn,
 		 MLX5_GET(fpga_qpc, conn->fpga_qpc, next_rcv_psn));
 	MLX5_SET(qpc, qpc, retry_count, 7);
-	MLX5_SET(qpc, qpc, rnr_retry, 7); /* Infinite retry if RNR NACK */
+	MLX5_SET(qpc, qpc, rnr_retry, 7);  
 
 	MLX5_SET(rtr2rts_qp_in, in, opcode, MLX5_CMD_OP_RTR2RTS_QP);
 	MLX5_SET(rtr2rts_qp_in, in, qpn, conn->qp.qpn);
@@ -838,7 +807,7 @@ struct mlx5_fpga_conn *mlx5_fpga_conn_create(struct mlx5_fpga_device *fdev,
 		goto err;
 	}
 
-	/* Build Modified EUI-64 IPv6 address from the MAC address */
+	 
 	remote_ip = MLX5_ADDR_OF(fpga_qpc, conn->fpga_qpc, remote_ip);
 	remote_ip[0] = 0xfe;
 	remote_ip[1] = 0x80;
@@ -863,9 +832,7 @@ struct mlx5_fpga_conn *mlx5_fpga_conn_create(struct mlx5_fpga_device *fdev,
 	}
 	mlx5_fpga_dbg(fdev, "Reserved SGID index %u\n", conn->qp.sgid_index);
 
-	/* Allow for one cqe per rx/tx wqe, plus one cqe for the next wqe,
-	 * created during processing of the cqe
-	 */
+	 
 	err = mlx5_fpga_conn_create_cq(conn,
 				       (attr->tx_size + attr->rx_size) * 2);
 	if (err) {

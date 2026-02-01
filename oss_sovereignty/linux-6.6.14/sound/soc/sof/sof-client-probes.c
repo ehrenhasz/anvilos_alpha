@@ -1,13 +1,13 @@
-// SPDX-License-Identifier: GPL-2.0-only
-//
-// Copyright(c) 2019-2022 Intel Corporation. All rights reserved.
-//
-// Author: Cezary Rojewski <cezary.rojewski@intel.com>
-//
-// SOF client support:
-//  Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
-//  Peter Ujfalusi <peter.ujfalusi@linux.intel.com>
-//
+
+
+
+
+
+
+
+
+
+
 
 #include <linux/debugfs.h>
 #include <linux/module.h>
@@ -21,7 +21,7 @@
 #include "sof-client-probes.h"
 
 #define SOF_PROBES_SUSPEND_DELAY_MS 3000
-/* only extraction supported for now */
+ 
 #define SOF_PROBES_NUM_DAI_LINKS 1
 
 #define SOF_PROBES_INVALID_NODE_ID UINT_MAX
@@ -68,7 +68,7 @@ static int sof_probes_compr_shutdown(struct snd_compr_stream *cstream,
 	size_t num_desc;
 	int i, ret;
 
-	/* disconnect all probe points */
+	 
 	ret = ipc->points_info(cdev, &desc, &num_desc);
 	if (ret < 0) {
 		dev_err(dai->dev, "Failed to get probe points: %d\n", ret);
@@ -227,7 +227,7 @@ static ssize_t sof_probes_dfs_points_read(struct file *file, char __user *to,
 			       "Id: %#010x  Purpose: %u  Node id: %#x\n",
 				desc[i].buffer_id, desc[i].purpose, desc[i].stream_tag);
 		if (ret < 0 || ret >= remaining) {
-			/* truncate the output buffer at the last full line */
+			 
 			buf[offset] = '\0';
 			break;
 		}
@@ -401,7 +401,7 @@ static int sof_probes_client_probe(struct auxiliary_device *auxdev,
 	struct snd_soc_dai_link *links;
 	int ret;
 
-	/* do not set up the probes support if it is not enabled */
+	 
 	if (!sof_probes_enabled)
 		return -ENXIO;
 
@@ -440,7 +440,7 @@ static int sof_probes_client_probe(struct auxiliary_device *auxdev,
 
 	cdev->data = priv;
 
-	/* register probes component driver and dai */
+	 
 	ret = devm_snd_soc_register_component(dev, &sof_probes_component,
 					      sof_probes_dai_drv,
 					      ARRAY_SIZE(sof_probes_dai_drv));
@@ -449,14 +449,14 @@ static int sof_probes_client_probe(struct auxiliary_device *auxdev,
 		return ret;
 	}
 
-	/* set client data */
+	 
 	priv->extractor_stream_tag = SOF_PROBES_INVALID_NODE_ID;
 
-	/* create read-write probes_points debugfs entry */
+	 
 	priv->dfs_points = debugfs_create_file("probe_points", 0644, dfsroot,
 					       cdev, &sof_probes_points_fops);
 
-	/* create read-write probe_points_remove debugfs entry */
+	 
 	priv->dfs_points_remove = debugfs_create_file("probe_points_remove", 0644,
 						      dfsroot, cdev,
 						      &sof_probes_points_remove_fops);
@@ -469,7 +469,7 @@ static int sof_probes_client_probe(struct auxiliary_device *auxdev,
 		return -ENOMEM;
 	}
 
-	/* extraction DAI link */
+	 
 	links[0].name = "Compress Probe Capture";
 	links[0].id = 0;
 	links[0].cpus = &cpus[0];
@@ -489,7 +489,7 @@ static int sof_probes_client_probe(struct auxiliary_device *auxdev,
 	card->num_links = SOF_PROBES_NUM_DAI_LINKS;
 	card->dai_link = links;
 
-	/* set idle_bias_off to prevent the core from resuming the card->dev */
+	 
 	card->dapm.idle_bias_off = true;
 
 	snd_soc_card_set_drvdata(card, cdev);
@@ -502,7 +502,7 @@ static int sof_probes_client_probe(struct auxiliary_device *auxdev,
 		return ret;
 	}
 
-	/* enable runtime PM */
+	 
 	pm_runtime_set_autosuspend_delay(dev, SOF_PROBES_SUSPEND_DELAY_MS);
 	pm_runtime_use_autosuspend(dev);
 	pm_runtime_enable(dev);
@@ -532,7 +532,7 @@ static const struct auxiliary_device_id sof_probes_client_id_table[] = {
 };
 MODULE_DEVICE_TABLE(auxiliary, sof_probes_client_id_table);
 
-/* driver name will be set based on KBUILD_MODNAME */
+ 
 static struct auxiliary_driver sof_probes_client_drv = {
 	.probe = sof_probes_client_probe,
 	.remove = sof_probes_client_remove,

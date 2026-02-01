@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Input driver for Microchip CAP11xx based capacitive touch sensors
- *
- * (c) 2014 Daniel Mack <linux@zonque.org>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -83,7 +79,7 @@ struct cap11xx_priv {
 	struct cap11xx_led *leds;
 	int num_leds;
 
-	/* config */
+	 
 	u32 keycodes[];
 };
 
@@ -187,10 +183,7 @@ static irqreturn_t cap11xx_thread_func(int irq_num, void *data)
 	unsigned int status;
 	int ret, i;
 
-	/*
-	 * Deassert interrupt. This needs to be done before reading the status
-	 * registers, which will not carry valid values otherwise.
-	 */
+	 
 	ret = regmap_update_bits(priv->regmap, CAP11XX_REG_MAIN_CONTROL, 1, 0);
 	if (ret < 0)
 		goto out;
@@ -211,9 +204,7 @@ out:
 
 static int cap11xx_set_sleep(struct cap11xx_priv *priv, bool sleep)
 {
-	/*
-	 * DLSEEP mode will turn off all LEDS, prevent this
-	 */
+	 
 	if (IS_ENABLED(CONFIG_LEDS_CLASS) && priv->num_leds)
 		return 0;
 
@@ -243,11 +234,7 @@ static int cap11xx_led_set(struct led_classdev *cdev,
 	struct cap11xx_led *led = container_of(cdev, struct cap11xx_led, cdev);
 	struct cap11xx_priv *priv = led->priv;
 
-	/*
-	 * All LEDs share the same duty cycle as this is a HW
-	 * limitation. Brightness levels per LED are either
-	 * 0 (OFF) and 1 (ON).
-	 */
+	 
 	return regmap_update_bits(priv->regmap,
 				  CAP11XX_REG_LED_OUTPUT_CONTROL,
 				  BIT(led->reg),
@@ -410,7 +397,7 @@ static int cap11xx_i2c_probe(struct i2c_client *i2c_client)
 		}
 	}
 
-	/* Provide some useful defaults */
+	 
 	for (i = 0; i < cap->num_channels; i++)
 		priv->keycodes[i] = KEY_A + i;
 
@@ -426,7 +413,7 @@ static int cap11xx_i2c_probe(struct i2c_client *i2c_client)
 			return error;
 	}
 
-	/* Disable autorepeat. The Linux input system has its own handling. */
+	 
 	error = regmap_write(priv->regmap, CAP11XX_REG_REPEAT_RATE, 0);
 	if (error)
 		return error;
@@ -464,10 +451,7 @@ static int cap11xx_i2c_probe(struct i2c_client *i2c_client)
 
 	input_set_drvdata(priv->idev, priv);
 
-	/*
-	 * Put the device in deep sleep mode for now.
-	 * ->open() will bring it back once the it is actually needed.
-	 */
+	 
 	cap11xx_set_sleep(priv, true);
 
 	error = input_register_device(priv->idev);

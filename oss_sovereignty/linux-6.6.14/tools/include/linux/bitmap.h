@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _TOOLS_LINUX_BITMAP_H
 #define _TOOLS_LINUX_BITMAP_H
 
@@ -77,41 +77,23 @@ static inline void bitmap_or(unsigned long *dst, const unsigned long *src1,
 		__bitmap_or(dst, src1, src2, nbits);
 }
 
-/**
- * bitmap_zalloc - Allocate bitmap
- * @nbits: Number of bits
- */
+ 
 static inline unsigned long *bitmap_zalloc(int nbits)
 {
 	return calloc(1, BITS_TO_LONGS(nbits) * sizeof(unsigned long));
 }
 
-/*
- * bitmap_free - Free bitmap
- * @bitmap: pointer to bitmap
- */
+ 
 static inline void bitmap_free(unsigned long *bitmap)
 {
 	free(bitmap);
 }
 
-/*
- * bitmap_scnprintf - print bitmap list into buffer
- * @bitmap: bitmap
- * @nbits: size of bitmap
- * @buf: buffer to store output
- * @size: size of @buf
- */
+ 
 size_t bitmap_scnprintf(unsigned long *bitmap, unsigned int nbits,
 			char *buf, size_t size);
 
-/**
- * bitmap_and - Do logical and on bitmaps
- * @dst: resulting bitmap
- * @src1: operand 1
- * @src2: operand 2
- * @nbits: size of bitmap
- */
+ 
 static inline bool bitmap_and(unsigned long *dst, const unsigned long *src1,
 			     const unsigned long *src2, unsigned int nbits)
 {
@@ -149,4 +131,4 @@ static inline bool bitmap_intersects(const unsigned long *src1,
 		return __bitmap_intersects(src1, src2, nbits);
 }
 
-#endif /* _TOOLS_LINUX_BITMAP_H */
+#endif  

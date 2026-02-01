@@ -1,15 +1,13 @@
-// SPDX-License-Identifier: (GPL-2.0+ OR BSD-3-Clause)
-/* Copyright 2014-2016 Freescale Semiconductor Inc.
- * Copyright 2016-2022 NXP
- */
+
+ 
 
 #include <linux/net_tstamp.h>
 #include <linux/nospec.h>
 
-#include "dpni.h"	/* DPNI_LINK_OPT_* */
+#include "dpni.h"	 
 #include "dpaa2-eth.h"
 
-/* To be kept in sync with DPNI statistics */
+ 
 static char dpaa2_ethtool_stats[][ETH_GSTRING_LEN] = {
 	"[hw] rx frames",
 	"[hw] rx bytes",
@@ -38,7 +36,7 @@ static char dpaa2_ethtool_stats[][ETH_GSTRING_LEN] = {
 #define DPAA2_ETH_NUM_STATS	ARRAY_SIZE(dpaa2_ethtool_stats)
 
 static char dpaa2_ethtool_extras[][ETH_GSTRING_LEN] = {
-	/* per-cpu stats */
+	 
 	"[drv] tx conf frames",
 	"[drv] tx conf bytes",
 	"[drv] tx sg frames",
@@ -50,7 +48,7 @@ static char dpaa2_ethtool_extras[][ETH_GSTRING_LEN] = {
 	"[drv] tx converted sg frames",
 	"[drv] tx converted sg bytes",
 	"[drv] enqueue portal busy",
-	/* Channel stats */
+	 
 	"[drv] dequeue portal busy",
 	"[drv] channel pull errors",
 	"[drv] cdan",
@@ -58,7 +56,7 @@ static char dpaa2_ethtool_extras[][ETH_GSTRING_LEN] = {
 	"[drv] xdp tx",
 	"[drv] xdp tx errors",
 	"[drv] xdp redirect",
-	/* FQ stats */
+	 
 	"[qbman] rx pending frames",
 	"[qbman] rx pending bytes",
 	"[qbman] tx conf pending frames",
@@ -238,7 +236,7 @@ static void dpaa2_eth_get_strings(struct net_device *netdev, u32 stringset,
 static int dpaa2_eth_get_sset_count(struct net_device *net_dev, int sset)
 {
 	switch (sset) {
-	case ETH_SS_STATS: /* ethtool_get_stats(), ethtool_get_drvinfo() */
+	case ETH_SS_STATS:  
 		return DPAA2_ETH_NUM_STATS + DPAA2_ETH_NUM_EXTRA_STATS +
 		       dpaa2_mac_get_sset_count();
 	default:
@@ -246,8 +244,7 @@ static int dpaa2_eth_get_sset_count(struct net_device *net_dev, int sset)
 	}
 }
 
-/** Fill in hardware counters, as returned by MC.
- */
+ 
 static void dpaa2_eth_get_ethtool_stats(struct net_device *net_dev,
 					struct ethtool_stats *stats,
 					u64 *data)
@@ -274,15 +271,15 @@ static void dpaa2_eth_get_ethtool_stats(struct net_device *net_dev,
 	memset(data, 0,
 	       sizeof(u64) * (DPAA2_ETH_NUM_STATS + DPAA2_ETH_NUM_EXTRA_STATS));
 
-	/* Print standard counters, from DPNI statistics */
+	 
 	for (j = 0; j <= 6; j++) {
-		/* We're not interested in pages 4 & 5 for now */
+		 
 		if (j == 4 || j == 5)
 			continue;
 		err = dpni_get_statistics(priv->mc_io, 0, priv->mc_token,
 					  j, &dpni_stats);
 		if (err == -EINVAL)
-			/* Older firmware versions don't support all pages */
+			 
 			memset(&dpni_stats, 0, sizeof(dpni_stats));
 		else if (err)
 			netdev_warn(net_dev, "dpni_get_stats(%d) failed\n", j);
@@ -292,7 +289,7 @@ static void dpaa2_eth_get_ethtool_stats(struct net_device *net_dev,
 			*(data + i++) = dpni_stats.raw.counter[k];
 	}
 
-	/* Print per-cpu extra stats */
+	 
 	for_each_online_cpu(k) {
 		extras = per_cpu_ptr(priv->percpu_extras, k);
 		for (j = 0; j < sizeof(*extras) / sizeof(__u64); j++)
@@ -300,7 +297,7 @@ static void dpaa2_eth_get_ethtool_stats(struct net_device *net_dev,
 	}
 	i += j;
 
-	/* Per-channel stats */
+	 
 	for (k = 0; k < priv->num_channels; k++) {
 		ch_stats = &priv->channel[k]->stats;
 		for (j = 0; j < DPAA2_ETH_CH_STATS; j++)
@@ -309,7 +306,7 @@ static void dpaa2_eth_get_ethtool_stats(struct net_device *net_dev,
 	i += j;
 
 	for (j = 0; j < priv->num_fqs; j++) {
-		/* Print FQ instantaneous counts */
+		 
 		err = dpaa2_io_query_fq_count(NULL, priv->fq[j].fqid,
 					      &fcnt, &bcnt);
 		if (err) {
@@ -424,7 +421,7 @@ static int dpaa2_eth_prep_uip_rule(struct ethtool_usrip4_spec *uip_value,
 		*fields |= DPAA2_ETH_DIST_L4DST;
 	}
 
-	/* Only apply the rule for IPv4 frames */
+	 
 	off = dpaa2_eth_cls_fld_off(NET_PROT_ETH, NH_FLD_ETH_TYPE);
 	*(__be16 *)(key + off) = htons(ETH_P_IP);
 	*(__be16 *)(mask + off) = htons(0xFFFF);
@@ -470,7 +467,7 @@ static int dpaa2_eth_prep_l4_rule(struct ethtool_tcpip4_spec *l4_value,
 		*fields |= DPAA2_ETH_DIST_L4DST;
 	}
 
-	/* Only apply the rule for IPv4 frames with the specified L4 proto */
+	 
 	off = dpaa2_eth_cls_fld_off(NET_PROT_ETH, NH_FLD_ETH_TYPE);
 	*(__be16 *)(key + off) = htons(ETH_P_IP);
 	*(__be16 *)(mask + off) = htons(0xFFFF);
@@ -588,26 +585,18 @@ static int dpaa2_eth_do_cls_rule(struct net_device *net_dev,
 
 	rule_cfg.key_size = dpaa2_eth_cls_key_size(DPAA2_ETH_DIST_ALL);
 
-	/* allocate twice the key size, for the actual key and for mask */
+	 
 	key_buf = kzalloc(rule_cfg.key_size * 2, GFP_KERNEL);
 	if (!key_buf)
 		return -ENOMEM;
 
-	/* Fill the key and mask memory areas */
+	 
 	err = dpaa2_eth_prep_cls_rule(fs, key_buf, key_buf + rule_cfg.key_size, &fields);
 	if (err)
 		goto free_mem;
 
 	if (!dpaa2_eth_fs_mask_enabled(priv)) {
-		/* Masking allows us to configure a maximal key during init and
-		 * use it for all flow steering rules. Without it, we include
-		 * in the key only the fields actually used, so we need to
-		 * extract the others from the final key buffer.
-		 *
-		 * Program the FS key if needed, or return error if previously
-		 * set key can't be used for the current rule. User needs to
-		 * delete existing rules in this case to allow for the new one.
-		 */
+		 
 		if (!priv->rx_cls_fields) {
 			err = dpaa2_eth_set_cls(net_dev, fields);
 			if (err)
@@ -689,7 +678,7 @@ static int dpaa2_eth_update_cls_rule(struct net_device *net_dev,
 
 	rule = &priv->cls_rules[location];
 
-	/* If a rule is present at the specified location, delete it. */
+	 
 	if (rule->in_use) {
 		err = dpaa2_eth_do_cls_rule(net_dev, &rule->fs, false);
 		if (err)
@@ -702,7 +691,7 @@ static int dpaa2_eth_update_cls_rule(struct net_device *net_dev,
 			priv->rx_cls_fields = 0;
 	}
 
-	/* If no new entry to add, return here */
+	 
 	if (!new_fs)
 		return err;
 
@@ -725,10 +714,7 @@ static int dpaa2_eth_get_rxnfc(struct net_device *net_dev,
 
 	switch (rxnfc->cmd) {
 	case ETHTOOL_GRXFH:
-		/* we purposely ignore cmd->flow_type for now, because the
-		 * classifier only supports a single set of fields for all
-		 * protocols
-		 */
+		 
 		rxnfc->data = priv->rx_hash_fields;
 		break;
 	case ETHTOOL_GRXRINGS:
@@ -877,12 +863,12 @@ static int dpaa2_eth_set_coalesce(struct net_device *dev,
 	u32 prev_rx_usecs;
 	int i, j, err;
 
-	/* Keep track of the previous value, just in case we fail */
+	 
 	dpio = priv->channel[0]->dpio;
 	dpaa2_io_get_irq_coalescing(dpio, &prev_rx_usecs);
 	prev_adaptive = dpaa2_io_get_adaptive_coalescing(dpio);
 
-	/* Setup new value for rx coalescing */
+	 
 	for (i = 0; i < priv->num_channels; i++) {
 		dpio = priv->channel[i]->dpio;
 
@@ -917,12 +903,12 @@ static void dpaa2_eth_get_channels(struct net_device *net_dev,
 	channels->rx_count = queue_count;
 	channels->tx_count = queue_count;
 
-	/* Tx confirmation and Rx error */
+	 
 	channels->max_other = queue_count + 1;
 	channels->max_combined = channels->max_rx +
 				 channels->max_tx +
 				 channels->max_other;
-	/* Tx conf and Rx err */
+	 
 	channels->other_count = queue_count + 1;
 	channels->combined_count = channels->rx_count +
 				   channels->tx_count +

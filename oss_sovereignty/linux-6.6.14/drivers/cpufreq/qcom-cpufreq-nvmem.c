@@ -1,19 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2018, The Linux Foundation. All rights reserved.
- */
 
-/*
- * In Certain QCOM SoCs like apq8096 and msm8996 that have KRYO processors,
- * the CPU frequency subset and voltage value of each OPP varies
- * based on the silicon variant in use. Qualcomm Process Voltage Scaling Tables
- * defines the voltage and frequency value based on the msm-id in SMEM
- * and speedbin blown in the efuse combination.
- * The qcom-cpufreq-nvmem driver reads the msm-id and efuse value from the SoC
- * to provide the OPP framework with required information.
- * This is used to determine the voltage and frequency value for each OPP of
- * operating-points-v2 table when it is parsed by the OPP framework.
- */
+ 
+
+ 
 
 #include <linux/cpu.h>
 #include <linux/err.h>
@@ -100,12 +88,12 @@ static void get_krait_bin_format_b(struct device *cpu_dev,
 		*speed = pte_efuse & 0x7;
 		break;
 	default:
-		/* 4 bits of PVS are in efuse register bits 31, 8-6. */
+		 
 		*pvs = ((pte_efuse >> 28) & 0x8) | ((pte_efuse >> 6) & 0x7);
 		*speed = pte_efuse & 0x7;
 	}
 
-	/* Check SPEED_BIN_BLOW_STATUS */
+	 
 	if (pte_efuse & BIT(3)) {
 		dev_dbg(cpu_dev, "Speed bin: %d\n", *speed);
 	} else {
@@ -113,7 +101,7 @@ static void get_krait_bin_format_b(struct device *cpu_dev,
 		*speed = 0;
 	}
 
-	/* Check PVS_BLOW_STATUS */
+	 
 	pte_efuse = *(((u32 *)buf) + 1);
 	pte_efuse &= BIT(21);
 	if (pte_efuse) {
@@ -367,12 +355,7 @@ static const struct of_device_id qcom_cpufreq_match_list[] __initconst = {
 };
 MODULE_DEVICE_TABLE(of, qcom_cpufreq_match_list);
 
-/*
- * Since the driver depends on smem and nvmem drivers, which may
- * return EPROBE_DEFER, all the real activity is done in the probe,
- * which may be defered as well. The init here is only registering
- * the driver and the platform device.
- */
+ 
 static int __init qcom_cpufreq_init(void)
 {
 	struct device_node *np = of_find_node_by_path("/");

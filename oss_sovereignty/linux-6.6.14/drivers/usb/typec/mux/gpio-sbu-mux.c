@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2022 Linaro Ltd.
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/module.h>
@@ -18,7 +16,7 @@ struct gpio_sbu_mux {
 	struct typec_switch_dev *sw;
 	struct typec_mux_dev *mux;
 
-	struct mutex lock; /* protect enabled and swapped */
+	struct mutex lock;  
 	bool enabled;
 	bool swapped;
 };

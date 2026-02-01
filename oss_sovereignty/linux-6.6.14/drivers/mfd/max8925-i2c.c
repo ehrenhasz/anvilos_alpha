@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * I2C driver for Maxim MAX8925
- *
- * Copyright (C) 2009 Marvell International Ltd.
- *	Haojian Zhuang <haojian.zhuang@marvell.com>
- */
+
+ 
 #include <linux/kernel.h>
 #include <linux/init.h>
 #include <linux/platform_device.h>
@@ -151,7 +146,7 @@ static int max8925_probe(struct i2c_client *client)
 	struct device_node *node = client->dev.of_node;
 
 	if (node && !pdata) {
-		/* parse DT to get platform data */
+		 
 		pdata = devm_kzalloc(&client->dev,
 				     sizeof(struct max8925_platform_data),
 				     GFP_KERNEL);

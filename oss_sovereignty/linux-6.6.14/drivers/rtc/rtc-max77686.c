@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0+
-//
-// RTC driver for Maxim MAX77686 and MAX77802
-//
-// Copyright (C) 2012 Samsung Electronics Co.Ltd
-//
-//  based on rtc-max8997.c
+
+
+
+
+
+
+
 
 #include <linux/i2c.h>
 #include <linux/slab.h>
@@ -22,30 +22,26 @@
 #define MAX77714_I2C_ADDR_RTC		0x48
 #define MAX77686_INVALID_I2C_ADDR	(-1)
 
-/* Define non existing register */
+ 
 #define MAX77686_INVALID_REG		(-1)
 
-/* RTC Control Register */
+ 
 #define BCD_EN_SHIFT			0
 #define BCD_EN_MASK			BIT(BCD_EN_SHIFT)
 #define MODEL24_SHIFT			1
 #define MODEL24_MASK			BIT(MODEL24_SHIFT)
-/* RTC Update Register1 */
+ 
 #define RTC_UDR_SHIFT			0
 #define RTC_UDR_MASK			BIT(RTC_UDR_SHIFT)
 #define RTC_RBUDR_SHIFT			4
 #define RTC_RBUDR_MASK			BIT(RTC_RBUDR_SHIFT)
-/* RTC Alarm Enable */
+ 
 #define ALARM_ENABLE_SHIFT		7
 #define ALARM_ENABLE_MASK		BIT(ALARM_ENABLE_SHIFT)
 
 #define REG_RTC_NONE			0xdeadbeef
 
-/*
- * MAX77802 has separate register (RTCAE1) for alarm enable instead
- * using 1 bit from registers RTC{SEC,MIN,HOUR,DAY,MONTH,YEAR,DATE}
- * as in done in MAX77686.
- */
+ 
 #define MAX77802_ALARM_ENABLE_VALUE	0x77
 
 enum {
@@ -59,18 +55,7 @@ enum {
 	RTC_NR_TIME
 };
 
-/**
- * struct max77686_rtc_driver_data - model-specific configuration
- * @delay: Minimum usecs needed for a RTC update
- * @mask: Mask used to read RTC registers value
- * @map: Registers offset to I2C addresses map
- * @alarm_enable_reg: Has a separate alarm enable register?
- * @rtc_i2c_addr: I2C address for RTC block
- * @rtc_irq_from_platform: RTC interrupt via platform resource
- * @alarm_pending_status_reg: Pending alarm status register
- * @rtc_irq_chip: RTC IRQ CHIP for regmap
- * @regmap_config: regmap configuration for the chip
- */
+ 
 struct max77686_rtc_driver_data {
 	unsigned long		delay;
 	u8			mask;
@@ -104,7 +89,7 @@ enum MAX77686_RTC_OP {
 	MAX77686_RTC_READ,
 };
 
-/* These are not registers but just offsets that are mapped to addresses */
+ 
 enum max77686_rtc_reg_offset {
 	REG_RTC_CONTROLM = 0,
 	REG_RTC_CONTROL,
@@ -135,7 +120,7 @@ enum max77686_rtc_reg_offset {
 	REG_RTC_END,
 };
 
-/* Maps RTC registers offset to the MAX77686 register addresses */
+ 
 static const unsigned int max77686_map[REG_RTC_END] = {
 	[REG_RTC_CONTROLM]   = MAX77686_RTC_CONTROLM,
 	[REG_RTC_CONTROL]    = MAX77686_RTC_CONTROL,
@@ -166,7 +151,7 @@ static const unsigned int max77686_map[REG_RTC_END] = {
 };
 
 static const struct regmap_irq max77686_rtc_irqs[] = {
-	/* RTC interrupts */
+	 
 	REGMAP_IRQ_REG(0, 0, MAX77686_RTCINT_RTC60S_MSK),
 	REGMAP_IRQ_REG(1, 0, MAX77686_RTCINT_RTCA1_MSK),
 	REGMAP_IRQ_REG(2, 0, MAX77686_RTCINT_RTCA2_MSK),
@@ -207,7 +192,7 @@ static const struct regmap_irq_chip max77714_rtc_irq_chip = {
 	.mask_base	= MAX77686_RTC_INTM,
 	.num_regs	= 1,
 	.irqs		= max77686_rtc_irqs,
-	.num_irqs	= ARRAY_SIZE(max77686_rtc_irqs) - 1, /* no WTSR on 77714 */
+	.num_irqs	= ARRAY_SIZE(max77686_rtc_irqs) - 1,  
 };
 
 static const struct max77686_rtc_driver_data max77714_drv_data = {
@@ -216,7 +201,7 @@ static const struct max77686_rtc_driver_data max77714_drv_data = {
 	.map   = max77686_map,
 	.alarm_enable_reg = false,
 	.rtc_irq_from_platform = false,
-	/* On MAX77714 RTCA1 is BIT 1 of RTCINT (0x00). Not supported by this driver. */
+	 
 	.alarm_pending_status_reg = MAX77686_INVALID_REG,
 	.rtc_i2c_addr = MAX77714_I2C_ADDR_RTC,
 	.rtc_irq_chip = &max77714_rtc_irq_chip,
@@ -275,7 +260,7 @@ static const struct regmap_irq_chip max77802_rtc_irq_chip = {
 	.status_base	= MAX77802_RTC_INT,
 	.mask_base	= MAX77802_RTC_INTM,
 	.num_regs	= 1,
-	.irqs		= max77686_rtc_irqs, /* same masks as 77686 */
+	.irqs		= max77686_rtc_irqs,  
 	.num_irqs	= ARRAY_SIZE(max77686_rtc_irqs),
 };
 
@@ -299,7 +284,7 @@ static void max77686_rtc_data_to_tm(u8 *data, struct rtc_time *tm,
 	tm->tm_min = data[RTC_MIN] & mask;
 	tm->tm_hour = data[RTC_HOUR] & 0x1f;
 
-	/* Only a single bit is set in data[], so fls() would be equivalent */
+	 
 	tm->tm_wday = ffs(data[RTC_WEEKDAY] & mask) - 1;
 	tm->tm_mday = data[RTC_MONTHDAY] & 0x1f;
 	tm->tm_mon = (data[RTC_MONTH] & 0x0f) - 1;
@@ -307,10 +292,7 @@ static void max77686_rtc_data_to_tm(u8 *data, struct rtc_time *tm,
 	tm->tm_yday = 0;
 	tm->tm_isdst = 0;
 
-	/*
-	 * MAX77686 uses 1 bit from sec/min/hour/etc RTC registers and the
-	 * year values are just 0..99 so add 100 to support up to 2099.
-	 */
+	 
 	if (!info->drv_data->alarm_enable_reg)
 		tm->tm_year += 100;
 }
@@ -360,7 +342,7 @@ static int max77686_rtc_update(struct max77686_rtc_info *info,
 		dev_err(info->dev, "Fail to write update reg(ret=%d, data=0x%x)\n",
 			ret, data);
 	else {
-		/* Minimum delay required before RTC update. */
+		 
 		usleep_range(delay, delay * 2);
 	}
 
@@ -485,7 +467,7 @@ static int max77686_rtc_read_alarm(struct device *dev, struct rtc_wkalrm *alrm)
 		goto out;
 	}
 
-	if (val & (1 << 4)) /* RTCA1 */
+	if (val & (1 << 4))  
 		alrm->pending = 1;
 
 out:
@@ -671,7 +653,7 @@ static int max77686_rtc_init_reg(struct max77686_rtc_info *info)
 	u8 data[2];
 	int ret;
 
-	/* Set RTC control register : Binary mode, 24hour mdoe */
+	 
 	data[0] = (1 << BCD_EN_SHIFT) | (1 << MODEL24_SHIFT);
 	data[1] = (0 << BCD_EN_SHIFT) | (1 << MODEL24_SHIFT);
 
@@ -826,14 +808,7 @@ static int max77686_rtc_suspend(struct device *dev)
 		ret = enable_irq_wake(info->virq);
 	}
 
-	/*
-	 * If the main IRQ (not virtual) is the parent IRQ, then it must be
-	 * disabled during suspend because if it happens while suspended it
-	 * will be handled before resuming I2C.
-	 *
-	 * Since Main IRQ is shared, all its users should disable it to be sure
-	 * it won't fire while one of them is still suspended.
-	 */
+	 
 	if (!info->drv_data->rtc_irq_from_platform)
 		disable_irq(info->rtc_irq);
 

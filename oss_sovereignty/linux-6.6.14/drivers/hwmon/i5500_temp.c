@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * i5500_temp - Driver for Intel 5500/5520/X58 chipset thermal sensor
- *
- * Copyright (C) 2012, 2014 Jean Delvare <jdelvare@suse.de>
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/module.h>
@@ -16,7 +12,7 @@
 #include <linux/err.h>
 #include <linux/mutex.h>
 
-/* Register definitions from datasheet */
+ 
 #define REG_TSTHRCATA	0xE2
 #define REG_TSCTRL	0xE8
 #define REG_TSTHRRPEX	0xEB
@@ -46,7 +42,7 @@ static int i5500_read(struct device *dev, enum hwmon_sensor_types type, u32 attr
 	switch (type) {
 	case hwmon_temp:
 		switch (attr) {
-		/* Sensor resolution : 0.5 degree C */
+		 
 		case hwmon_temp_input:
 			pci_read_config_word(pdev, REG_TSTHRHI, &tsthr);
 			pci_read_config_byte(pdev, REG_TSFSC, &tsfsc);

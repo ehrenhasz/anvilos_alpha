@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2022 MediaTek Inc.
- * Author: Garmin Chang <garmin.chang@mediatek.com>
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/mod_devicetable.h>
@@ -39,7 +36,7 @@ static const struct mtk_clk_desc venc1_desc = {
 
 static const struct of_device_id of_match_clk_mt8188_venc1[] = {
 	{ .compatible = "mediatek,mt8188-vencsys", .data = &venc1_desc },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, of_match_clk_mt8188_venc1);
 

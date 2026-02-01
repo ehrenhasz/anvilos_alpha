@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * AMD SoC Power Management Controller Driver Quirks
- *
- * Copyright (c) 2023, Advanced Micro Devices, Inc.
- * All Rights Reserved.
- *
- * Author: Mario Limonciello <mario.limonciello@amd.com>
- */
+
+ 
 
 #include <linux/dmi.h>
 #include <linux/io.h>
@@ -116,110 +109,7 @@ static const struct dmi_system_id fwbug_list[] = {
 			DMI_MATCH(DMI_PRODUCT_NAME, "21A1"),
 		}
 	},
-	/* https://bugzilla.kernel.org/show_bug.cgi?id=218024 */
-	{
-		.ident = "V14 G4 AMN",
-		.driver_data = &quirk_s2idle_bug,
-		.matches = {
-			DMI_MATCH(DMI_BOARD_VENDOR, "LENOVO"),
-			DMI_MATCH(DMI_PRODUCT_NAME, "82YT"),
-		}
-	},
-	{
-		.ident = "V14 G4 AMN",
-		.driver_data = &quirk_s2idle_bug,
-		.matches = {
-			DMI_MATCH(DMI_BOARD_VENDOR, "LENOVO"),
-			DMI_MATCH(DMI_PRODUCT_NAME, "83GE"),
-		}
-	},
-	{
-		.ident = "V15 G4 AMN",
-		.driver_data = &quirk_s2idle_bug,
-		.matches = {
-			DMI_MATCH(DMI_BOARD_VENDOR, "LENOVO"),
-			DMI_MATCH(DMI_PRODUCT_NAME, "82YU"),
-		}
-	},
-	{
-		.ident = "V15 G4 AMN",
-		.driver_data = &quirk_s2idle_bug,
-		.matches = {
-			DMI_MATCH(DMI_BOARD_VENDOR, "LENOVO"),
-			DMI_MATCH(DMI_PRODUCT_NAME, "83CQ"),
-		}
-	},
-	{
-		.ident = "IdeaPad 1 14AMN7",
-		.driver_data = &quirk_s2idle_bug,
-		.matches = {
-			DMI_MATCH(DMI_BOARD_VENDOR, "LENOVO"),
-			DMI_MATCH(DMI_PRODUCT_NAME, "82VF"),
-		}
-	},
-	{
-		.ident = "IdeaPad 1 15AMN7",
-		.driver_data = &quirk_s2idle_bug,
-		.matches = {
-			DMI_MATCH(DMI_BOARD_VENDOR, "LENOVO"),
-			DMI_MATCH(DMI_PRODUCT_NAME, "82VG"),
-		}
-	},
-	{
-		.ident = "IdeaPad 1 15AMN7",
-		.driver_data = &quirk_s2idle_bug,
-		.matches = {
-			DMI_MATCH(DMI_BOARD_VENDOR, "LENOVO"),
-			DMI_MATCH(DMI_PRODUCT_NAME, "82X5"),
-		}
-	},
-	{
-		.ident = "IdeaPad Slim 3 14AMN8",
-		.driver_data = &quirk_s2idle_bug,
-		.matches = {
-			DMI_MATCH(DMI_BOARD_VENDOR, "LENOVO"),
-			DMI_MATCH(DMI_PRODUCT_NAME, "82XN"),
-		}
-	},
-	{
-		.ident = "IdeaPad Slim 3 15AMN8",
-		.driver_data = &quirk_s2idle_bug,
-		.matches = {
-			DMI_MATCH(DMI_BOARD_VENDOR, "LENOVO"),
-			DMI_MATCH(DMI_PRODUCT_NAME, "82XQ"),
-		}
-	},
-	/* https://gitlab.freedesktop.org/drm/amd/-/issues/2684 */
-	{
-		.ident = "HP Laptop 15s-eq2xxx",
-		.driver_data = &quirk_s2idle_bug,
-		.matches = {
-			DMI_MATCH(DMI_SYS_VENDOR, "HP"),
-			DMI_MATCH(DMI_PRODUCT_NAME, "HP Laptop 15s-eq2xxx"),
-		}
-	},
-	/* https://community.frame.work/t/tracking-framework-amd-ryzen-7040-series-lid-wakeup-behavior-feedback/39128 */
-	{
-		.ident = "Framework Laptop 13 (Phoenix)",
-		.driver_data = &quirk_spurious_8042,
-		.matches = {
-			DMI_MATCH(DMI_SYS_VENDOR, "Framework"),
-			DMI_MATCH(DMI_PRODUCT_NAME, "Laptop 13 (AMD Ryzen 7040Series)"),
-			DMI_MATCH(DMI_BIOS_VERSION, "03.03"),
-		}
-	},
-	{}
-};
-
-/*
- * Laptops that run a SMI handler during the D3->D0 transition that occurs
- * specifically when exiting suspend to idle which can cause
- * large delays during resume when the IOMMU translation layer is enabled (the default
- * behavior) for NVME devices:
- *
- * To avoid this firmware problem, skip the SMI handler on these machines before the
- * D0 transition occurs.
- */
+	 
 static void amd_pmc_skip_nvme_smi_handler(u32 s2idle_bug_mmio)
 {
 	void __iomem *addr;

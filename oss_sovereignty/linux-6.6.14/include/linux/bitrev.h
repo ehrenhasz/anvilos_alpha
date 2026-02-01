@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _LINUX_BITREV_H
 #define _LINUX_BITREV_H
 
@@ -28,7 +28,7 @@ static inline u32 __bitrev32(u32 x)
 	return (__bitrev16(x & 0xffff) << 16) | __bitrev16(x >> 16);
 }
 
-#endif /* CONFIG_HAVE_ARCH_BITREVERSE */
+#endif  
 
 #define __bitrev8x4(x)	(__bitrev32(swab32(x)))
 
@@ -102,4 +102,4 @@ static inline u32 __bitrev32(u32 x)
 	__constant_bitrev8(__x) :			\
 	__bitrev8(__x)	;			\
  })
-#endif /* _LINUX_BITREV_H */
+#endif  

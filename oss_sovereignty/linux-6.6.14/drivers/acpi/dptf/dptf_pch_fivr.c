@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * dptf_pch_fivr:  DPTF PCH FIVR Participant driver
- * Copyright (c) 2020, Intel Corporation.
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/kernel.h>
@@ -45,14 +42,7 @@ release_buffer:
 	return ret;
 }
 
-/*
- * Presentation of attributes which are defined for INTC10xx
- * They are:
- * freq_mhz_low_clock : Set PCH FIVR switching freq for
- *			FIVR clock 19.2MHz and 24MHz
- * freq_mhz_high_clock : Set PCH FIVR switching freq for
- *			FIVR clock 38.4MHz
- */
+ 
 #define PCH_FIVR_SHOW(name, method) \
 static ssize_t name##_show(struct device *dev,\
 			   struct device_attribute *attr,\

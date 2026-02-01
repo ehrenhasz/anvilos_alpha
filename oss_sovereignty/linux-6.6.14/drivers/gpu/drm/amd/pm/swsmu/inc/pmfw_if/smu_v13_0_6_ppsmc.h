@@ -1,36 +1,15 @@
-/*
- * Copyright 2021 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 #ifndef SMU_13_0_6_PPSMC_H
 #define SMU_13_0_6_PPSMC_H
 
-// SMU Response Codes:
+
 #define PPSMC_Result_OK                             0x1
 #define PPSMC_Result_Failed                         0xFF
 #define PPSMC_Result_UnknownCmd                     0xFE
 #define PPSMC_Result_CmdRejectedPrereq              0xFD
 #define PPSMC_Result_CmdRejectedBusy                0xFC
 
-// Message Definitions:
+
 #define PPSMC_MSG_TestMessage                       0x1
 #define PPSMC_MSG_GetSmuVersion                     0x2
 #define PPSMC_MSG_GfxDriverReset                    0x3
@@ -89,16 +68,16 @@
 #define PPSMC_MSG_GetCTFLimit                       0x38
 #define PPSMC_Message_Count                         0x39
 
-//PPSMC Reset Types for driver msg argument
+
 #define PPSMC_RESET_TYPE_DRIVER_MODE_1_RESET        0x1
 #define PPSMC_RESET_TYPE_DRIVER_MODE_2_RESET	      0x2
 #define PPSMC_RESET_TYPE_DRIVER_MODE_3_RESET        0x3
 
-//PPSMC Reset Types for driver msg argument
+
 #define PPSMC_THROTTLING_LIMIT_TYPE_SOCKET          0x1
 #define PPSMC_THROTTLING_LIMIT_TYPE_HBM             0x2
 
-//CTF/Throttle Limit types
+
 #define PPSMC_AID_THM_TYPE                          0x1
 #define PPSMC_CCD_THM_TYPE                          0x2
 #define PPSMC_XCD_THM_TYPE                          0x3

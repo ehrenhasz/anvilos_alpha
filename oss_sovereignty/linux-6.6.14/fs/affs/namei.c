@@ -1,20 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *  linux/fs/affs/namei.c
- *
- *  (c) 1996  Hans-Joachim Widmaier - Rewritten
- *
- *  (C) 1993  Ray Burr - Modified for Amiga FFS filesystem.
- *
- *  (C) 1991  Linus Torvalds - minix filesystem
- */
+
+ 
 
 #include "affs.h"
 #include <linux/exportfs.h>
 
 typedef int (*toupper_t)(int);
 
-/* Simple toupper() for DOS\1 */
+ 
 
 static int
 affs_toupper(int ch)
@@ -22,7 +14,7 @@ affs_toupper(int ch)
 	return ch >= 'a' && ch <= 'z' ? ch -= ('a' - 'A') : ch;
 }
 
-/* International toupper() for DOS\3 ("international") */
+ 
 
 static int
 affs_intl_toupper(int ch)
@@ -39,9 +31,7 @@ affs_get_toupper(struct super_block *sb)
 	       affs_intl_toupper : affs_toupper;
 }
 
-/*
- * Note: the dentry argument is the parent dentry.
- */
+ 
 static inline int
 __affs_hash_dentry(const struct dentry *dentry, struct qstr *qstr, toupper_t fn, bool notruncate)
 {
@@ -86,18 +76,12 @@ static inline int __affs_compare_dentry(unsigned int len,
 	const u8 *aname = str;
 	const u8 *bname = name->name;
 
-	/*
-	 * 'str' is the name of an already existing dentry, so the name
-	 * must be valid. 'name' must be validated first.
-	 */
+	 
 
 	if (affs_check_name(name->name, name->len, notruncate))
 		return 1;
 
-	/*
-	 * If the names are longer than the allowed 30 chars,
-	 * the excess is ignored, so their length may differ.
-	 */
+	 
 	if (len >= AFFSNAMEMAX) {
 		if (name->len < AFFSNAMEMAX)
 			return 1;
@@ -130,9 +114,7 @@ affs_intl_compare_dentry(const struct dentry *dentry,
 
 }
 
-/*
- * NOTE! unlike strncmp, affs_match returns 1 for success, 0 for failure.
- */
+ 
 
 static inline int
 affs_match(struct dentry *dentry, const u8 *name2, toupper_t fn)
@@ -214,11 +196,11 @@ affs_lookup(struct inode *dir, struct dentry *dentry, unsigned int flags)
 	if (bh) {
 		u32 ino = bh->b_blocknr;
 
-		/* store the real header ino in d_fsdata for faster lookups */
+		 
 		dentry->d_fsdata = (void *)(long)ino;
 		switch (be32_to_cpu(AFFS_TAIL(sb, bh)->stype)) {
-		//link to dirs disabled
-		//case ST_LINKDIR:
+		
+		
 		case ST_LINKFILE:
 			ino = be32_to_cpu(AFFS_TAIL(sb, bh)->original);
 		}
@@ -349,7 +331,7 @@ affs_symlink(struct mnt_idmap *idmap, struct inode *dir,
 		while (*symname == '/')
 			symname++;
 		spin_lock(&sbi->symlink_lock);
-		while (sbi->s_volume[i])	/* Cannot overflow */
+		while (sbi->s_volume[i])	 
 			*p++ = sbi->s_volume[i++];
 		spin_unlock(&sbi->symlink_lock);
 	}
@@ -416,7 +398,7 @@ affs_rename(struct inode *old_dir, struct dentry *old_dentry,
 	if (retval)
 		return retval;
 
-	/* Unlink destination if it already exists */
+	 
 	if (d_really_is_positive(new_dentry)) {
 		retval = affs_remove_header(new_dentry);
 		if (retval)
@@ -427,20 +409,20 @@ affs_rename(struct inode *old_dir, struct dentry *old_dentry,
 	if (!bh)
 		return -EIO;
 
-	/* Remove header from its parent directory. */
+	 
 	affs_lock_dir(old_dir);
 	retval = affs_remove_hash(old_dir, bh);
 	affs_unlock_dir(old_dir);
 	if (retval)
 		goto done;
 
-	/* And insert it into the new directory with the new name. */
+	 
 	affs_copy_name(AFFS_TAIL(sb, bh)->name, new_dentry);
 	affs_fix_checksum(sb, bh);
 	affs_lock_dir(new_dir);
 	retval = affs_insert_hash(new_dir, bh);
 	affs_unlock_dir(new_dir);
-	/* TODO: move it back to old_dir, if error? */
+	 
 
 done:
 	mark_buffer_dirty_inode(bh, retval ? old_dir : new_dir);
@@ -468,28 +450,28 @@ affs_xrename(struct inode *old_dir, struct dentry *old_dentry,
 		return -EIO;
 	}
 
-	/* Remove old header from its parent directory. */
+	 
 	affs_lock_dir(old_dir);
 	retval = affs_remove_hash(old_dir, bh_old);
 	affs_unlock_dir(old_dir);
 	if (retval)
 		goto done;
 
-	/* Remove new header from its parent directory. */
+	 
 	affs_lock_dir(new_dir);
 	retval = affs_remove_hash(new_dir, bh_new);
 	affs_unlock_dir(new_dir);
 	if (retval)
 		goto done;
 
-	/* Insert old into the new directory with the new name. */
+	 
 	affs_copy_name(AFFS_TAIL(sb, bh_old)->name, new_dentry);
 	affs_fix_checksum(sb, bh_old);
 	affs_lock_dir(new_dir);
 	retval = affs_insert_hash(new_dir, bh_old);
 	affs_unlock_dir(new_dir);
 
-	/* Insert new into the old directory with the old name. */
+	 
 	affs_copy_name(AFFS_TAIL(sb, bh_new)->name, old_dentry);
 	affs_fix_checksum(sb, bh_new);
 	affs_lock_dir(old_dir);

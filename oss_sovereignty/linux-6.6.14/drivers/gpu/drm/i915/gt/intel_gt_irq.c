@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright © 2019 Intel Corporation
- */
+
+ 
 
 #include <linux/sched/clock.h>
 
@@ -39,10 +37,7 @@ gen11_gt_engine_identity(struct intel_gt *gt,
 
 	raw_reg_write(regs, GEN11_IIR_REG_SELECTOR(bank), BIT(bit));
 
-	/*
-	 * NB: Specs do not specify how long to spin wait,
-	 * so we do ~100us as an educated guess.
-	 */
+	 
 	timeout_ts = (local_clock() >> 10) + 100;
 	do {
 		ident = raw_reg_read(regs, GEN11_INTR_IDENTITY_REG(bank));
@@ -94,7 +89,7 @@ static struct intel_gt *pick_gt(struct intel_gt *gt, u8 class, u8 instance)
 {
 	struct intel_gt *media_gt = gt->i915->media_gt;
 
-	/* we expect the non-media gt to be passed in */
+	 
 	GEM_BUG_ON(gt == media_gt);
 
 	if (!media_gt)
@@ -126,10 +121,7 @@ gen11_gt_identity_handler(struct intel_gt *gt, const u32 identity)
 	if (unlikely(!intr))
 		return;
 
-	/*
-	 * Platforms with standalone media have the media and GSC engines in
-	 * another GT.
-	 */
+	 
 	gt = pick_gt(gt, class, instance);
 
 	if (class <= MAX_ENGINE_CLASS && instance <= MAX_ENGINE_INSTANCE) {
@@ -162,7 +154,7 @@ gen11_gt_bank_handler(struct intel_gt *gt, const unsigned int bank)
 		gen11_gt_identity_handler(gt, ident);
 	}
 
-	/* Clear must be after shared has been served for engine */
+	 
 	raw_reg_write(regs, GEN11_GT_INTR_DW(bank), intr_dw);
 }
 
@@ -190,18 +182,10 @@ bool gen11_gt_reset_one_iir(struct intel_gt *gt,
 
 	dw = raw_reg_read(regs, GEN11_GT_INTR_DW(bank));
 	if (dw & BIT(bit)) {
-		/*
-		 * According to the BSpec, DW_IIR bits cannot be cleared without
-		 * first servicing the Selector & Shared IIR registers.
-		 */
+		 
 		gen11_gt_engine_identity(gt, bank, bit);
 
-		/*
-		 * We locked GT INT DW by reading it. If we want to (try
-		 * to) recover from this successfully, we need to clear
-		 * our bit, otherwise we are locking the register for
-		 * everybody.
-		 */
+		 
 		raw_reg_write(regs, GEN11_GT_INTR_DW(bank), BIT(bit));
 
 		return true;
@@ -214,7 +198,7 @@ void gen11_gt_irq_reset(struct intel_gt *gt)
 {
 	struct intel_uncore *uncore = gt->uncore;
 
-	/* Disable RCS, BCS, VCS and VECS class engines. */
+	 
 	intel_uncore_write(uncore, GEN11_RENDER_COPY_INTR_ENABLE, 0);
 	intel_uncore_write(uncore, GEN11_VCS_VECS_INTR_ENABLE,	  0);
 	if (CCS_MASK(gt))
@@ -222,7 +206,7 @@ void gen11_gt_irq_reset(struct intel_gt *gt)
 	if (HAS_HECI_GSC(gt->i915) || HAS_ENGINE(gt, GSC0))
 		intel_uncore_write(uncore, GEN11_GUNIT_CSME_INTR_ENABLE, 0);
 
-	/* Restore masks irqs on RCS, BCS, VCS and VECS engines. */
+	 
 	intel_uncore_write(uncore, GEN11_RCS0_RSVD_INTR_MASK,	~0);
 	intel_uncore_write(uncore, GEN11_BCS_RSVD_INTR_MASK,	~0);
 	if (HAS_ENGINE(gt, BCS1) || HAS_ENGINE(gt, BCS2))
@@ -277,19 +261,16 @@ void gen11_gt_irq_postinstall(struct intel_gt *gt)
 	smask = irqs << 16;
 
 	if (HAS_ENGINE(gt, GSC0)) {
-		/*
-		 * the heci2 interrupt is enabled via the same register as the
-		 * GSC interrupt, but it has its own mask register.
-		 */
+		 
 		gsc_mask = irqs;
-		heci_mask = GSC_IRQ_INTF(1); /* HECI2 IRQ for SW Proxy*/
+		heci_mask = GSC_IRQ_INTF(1);  
 	} else if (HAS_HECI_GSC(gt->i915)) {
 		gsc_mask = GSC_IRQ_INTF(0) | GSC_IRQ_INTF(1);
 	}
 
 	BUILD_BUG_ON(irqs & 0xffff0000);
 
-	/* Enable RCS, BCS, VCS and VECS class interrupts. */
+	 
 	intel_uncore_write(uncore, GEN11_RENDER_COPY_INTR_ENABLE, dmask);
 	intel_uncore_write(uncore, GEN11_VCS_VECS_INTR_ENABLE, dmask);
 	if (CCS_MASK(gt))
@@ -297,7 +278,7 @@ void gen11_gt_irq_postinstall(struct intel_gt *gt)
 	if (gsc_mask)
 		intel_uncore_write(uncore, GEN11_GUNIT_CSME_INTR_ENABLE, gsc_mask | heci_mask);
 
-	/* Unmask irqs on RCS, BCS, VCS and VECS engines. */
+	 
 	intel_uncore_write(uncore, GEN11_RCS0_RSVD_INTR_MASK, ~smask);
 	intel_uncore_write(uncore, GEN11_BCS_RSVD_INTR_MASK, ~smask);
 	if (HAS_ENGINE(gt, BCS1) || HAS_ENGINE(gt, BCS2))
@@ -328,7 +309,7 @@ void gen11_gt_irq_postinstall(struct intel_gt *gt)
 				   ~REG_FIELD_PREP(ENGINE1_MASK, heci_mask));
 
 	if (guc_mask) {
-		/* the enable bit is common for both GTs but the masks are separate */
+		 
 		u32 mask = gt->type == GT_MEDIA ?
 			REG_FIELD_PREP(ENGINE0_MASK, guc_mask) :
 			REG_FIELD_PREP(ENGINE1_MASK, guc_mask);
@@ -336,14 +317,11 @@ void gen11_gt_irq_postinstall(struct intel_gt *gt)
 		intel_uncore_write(uncore, GEN11_GUC_SG_INTR_ENABLE,
 				   REG_FIELD_PREP(ENGINE1_MASK, guc_mask));
 
-		/* we might not be the first GT to write this reg */
+		 
 		intel_uncore_rmw(uncore, MTL_GUC_MGUC_INTR_MASK, mask, 0);
 	}
 
-	/*
-	 * RPS interrupts will get enabled/disabled on demand when RPS itself
-	 * is enabled/disabled.
-	 */
+	 
 	gt->pm_ier = 0x0;
 	gt->pm_imr = ~gt->pm_ier;
 	intel_uncore_write(uncore, GEN11_GPM_WGBOXPERF_INTR_ENABLE, 0);
@@ -460,7 +438,7 @@ void gen8_gt_irq_reset(struct intel_gt *gt)
 
 void gen8_gt_irq_postinstall(struct intel_gt *gt)
 {
-	/* These are interrupts we'll toggle with the ring mask register */
+	 
 	const u32 irqs =
 		GT_CS_MASTER_ERROR_INTERRUPT |
 		GT_RENDER_USER_INTERRUPT |
@@ -478,10 +456,7 @@ void gen8_gt_irq_postinstall(struct intel_gt *gt)
 	gt->pm_imr = ~gt->pm_ier;
 	GEN8_IRQ_INIT_NDX(uncore, GT, 0, ~gt_interrupts[0], gt_interrupts[0]);
 	GEN8_IRQ_INIT_NDX(uncore, GT, 1, ~gt_interrupts[1], gt_interrupts[1]);
-	/*
-	 * RPS interrupts will get enabled/disabled on demand when RPS itself
-	 * is enabled/disabled. Same wil be the case for GuC interrupts.
-	 */
+	 
 	GEN8_IRQ_INIT_NDX(uncore, GT, 2, gt->pm_imr, gt->pm_ier);
 	GEN8_IRQ_INIT_NDX(uncore, GT, 3, ~gt_interrupts[3], gt_interrupts[3]);
 }
@@ -527,7 +502,7 @@ void gen5_gt_irq_postinstall(struct intel_gt *gt)
 
 	gt->gt_imr = ~0;
 	if (HAS_L3_DPF(gt->i915)) {
-		/* L3 parity interrupt is always unmasked. */
+		 
 		gt->gt_imr = ~GT_PARITY_ERROR(gt->i915);
 		gt_irqs |= GT_PARITY_ERROR(gt->i915);
 	}
@@ -541,10 +516,7 @@ void gen5_gt_irq_postinstall(struct intel_gt *gt)
 	GEN3_IRQ_INIT(uncore, GT, gt->gt_imr, gt_irqs);
 
 	if (GRAPHICS_VER(gt->i915) >= 6) {
-		/*
-		 * RPS interrupts will get enabled/disabled on demand when RPS
-		 * itself is enabled/disabled.
-		 */
+		 
 		if (HAS_ENGINE(gt, VECS0)) {
 			pm_irqs |= PM_VEBOX_USER_INTERRUPT;
 			gt->pm_ier |= PM_VEBOX_USER_INTERRUPT;

@@ -1,14 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  Force feedback driver for USB HID PID compliant devices
- *
- *  Copyright (c) 2005, 2006 Anssi Hannula <anssi.hannula@gmail.com>
- */
 
-/*
- */
+ 
 
-/* #define DEBUG */
+ 
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -22,7 +17,7 @@
 
 #define	PID_EFFECTS_MAX		64
 
-/* Report usage table used to put reports into an array */
+ 
 
 #define PID_SET_EFFECT		0
 #define PID_EFFECT_OPERATION	1
@@ -45,10 +40,9 @@ static const u8 pidff_reports[] = {
 	0x5a, 0x5f, 0x6e, 0x73, 0x74
 };
 
-/* device_control is really 0x95, but 0x96 specified as it is the usage of
-the only field in that report */
+ 
 
-/* Value usage tables used to put fields and values into arrays */
+ 
 
 #define PID_EFFECT_BLOCK_INDEX	0
 
@@ -106,7 +100,7 @@ static const u8 pidff_device_gain[] = { 0x7e };
 #define PID_DEVICE_MANAGED_POOL	2
 static const u8 pidff_pool[] = { 0x80, 0x83, 0xa9 };
 
-/* Special field key tables used to put special field keys into arrays */
+ 
 
 #define PID_ENABLE_ACTUATORS	0
 #define PID_RESET		1
@@ -159,23 +153,22 @@ struct pidff_device {
 	struct pidff_usage effect_operation[sizeof(pidff_effect_operation)];
 	struct pidff_usage block_free[sizeof(pidff_block_free)];
 
-	/* Special field is a field that is not composed of
-	   usage<->value pairs that pidff_usage values are */
+	 
 
-	/* Special field in create_new_effect */
+	 
 	struct hid_field *create_new_effect_type;
 
-	/* Special fields in set_effect */
+	 
 	struct hid_field *set_effect_type;
 	struct hid_field *effect_direction;
 
-	/* Special field in device_control */
+	 
 	struct hid_field *device_control;
 
-	/* Special field in block_load */
+	 
 	struct hid_field *block_load_status;
 
-	/* Special field in effect_operation */
+	 
 	struct hid_field *effect_operation_status;
 
 	int control_id[sizeof(pidff_device_control)];
@@ -186,18 +179,14 @@ struct pidff_device {
 	int pid_id[PID_EFFECTS_MAX];
 };
 
-/*
- * Scale an unsigned value with range 0..max for the given field
- */
+ 
 static int pidff_rescale(int i, int max, struct hid_field *field)
 {
 	return i * (field->logical_maximum - field->logical_minimum) / max +
 	    field->logical_minimum;
 }
 
-/*
- * Scale a signed value in range -0x8000..0x7fff for the given field
- */
+ 
 static int pidff_rescale_signed(int i, struct hid_field *field)
 {
 	return i == 0 ? 0 : i >
@@ -226,9 +215,7 @@ static void pidff_set_signed(struct pidff_usage *usage, s16 value)
 	pr_debug("calculated from %d to %d\n", value, usage->value[0]);
 }
 
-/*
- * Send envelope report to the device
- */
+ 
 static void pidff_set_envelope_report(struct pidff_device *pidff,
 				      struct ff_envelope *envelope)
 {
@@ -255,9 +242,7 @@ static void pidff_set_envelope_report(struct pidff_device *pidff,
 			HID_REQ_SET_REPORT);
 }
 
-/*
- * Test if the new envelope differs from old one
- */
+ 
 static int pidff_needs_set_envelope(struct ff_envelope *envelope,
 				    struct ff_envelope *old)
 {
@@ -267,9 +252,7 @@ static int pidff_needs_set_envelope(struct ff_envelope *envelope,
 	       envelope->fade_length != old->fade_length;
 }
 
-/*
- * Send constant force report to the device
- */
+ 
 static void pidff_set_constant_force_report(struct pidff_device *pidff,
 					    struct ff_effect *effect)
 {
@@ -282,18 +265,14 @@ static void pidff_set_constant_force_report(struct pidff_device *pidff,
 			HID_REQ_SET_REPORT);
 }
 
-/*
- * Test if the constant parameters have changed between effects
- */
+ 
 static int pidff_needs_set_constant(struct ff_effect *effect,
 				    struct ff_effect *old)
 {
 	return effect->u.constant.level != old->u.constant.level;
 }
 
-/*
- * Send set effect report to the device
- */
+ 
 static void pidff_set_effect_report(struct pidff_device *pidff,
 				    struct ff_effect *effect)
 {
@@ -317,9 +296,7 @@ static void pidff_set_effect_report(struct pidff_device *pidff,
 			HID_REQ_SET_REPORT);
 }
 
-/*
- * Test if the values used in set_effect have changed
- */
+ 
 static int pidff_needs_set_effect(struct ff_effect *effect,
 				  struct ff_effect *old)
 {
@@ -330,9 +307,7 @@ static int pidff_needs_set_effect(struct ff_effect *effect,
 	       effect->replay.delay != old->replay.delay;
 }
 
-/*
- * Send periodic effect report to the device
- */
+ 
 static void pidff_set_periodic_report(struct pidff_device *pidff,
 				      struct ff_effect *effect)
 {
@@ -350,9 +325,7 @@ static void pidff_set_periodic_report(struct pidff_device *pidff,
 
 }
 
-/*
- * Test if periodic effect parameters have changed
- */
+ 
 static int pidff_needs_set_periodic(struct ff_effect *effect,
 				    struct ff_effect *old)
 {
@@ -362,9 +335,7 @@ static int pidff_needs_set_periodic(struct ff_effect *effect,
 	       effect->u.periodic.period != old->u.periodic.period;
 }
 
-/*
- * Send condition effect reports to the device
- */
+ 
 static void pidff_set_condition_report(struct pidff_device *pidff,
 				       struct ff_effect *effect)
 {
@@ -392,9 +363,7 @@ static void pidff_set_condition_report(struct pidff_device *pidff,
 	}
 }
 
-/*
- * Test if condition effect parameters have changed
- */
+ 
 static int pidff_needs_set_condition(struct ff_effect *effect,
 				     struct ff_effect *old)
 {
@@ -416,9 +385,7 @@ static int pidff_needs_set_condition(struct ff_effect *effect,
 	return ret;
 }
 
-/*
- * Send ramp force report to the device
- */
+ 
 static void pidff_set_ramp_force_report(struct pidff_device *pidff,
 					struct ff_effect *effect)
 {
@@ -432,22 +399,14 @@ static void pidff_set_ramp_force_report(struct pidff_device *pidff,
 			HID_REQ_SET_REPORT);
 }
 
-/*
- * Test if ramp force parameters have changed
- */
+ 
 static int pidff_needs_set_ramp(struct ff_effect *effect, struct ff_effect *old)
 {
 	return effect->u.ramp.start_level != old->u.ramp.start_level ||
 	       effect->u.ramp.end_level != old->u.ramp.end_level;
 }
 
-/*
- * Send a request for effect upload to the device
- *
- * Returns 0 if device reported success, -ENOSPC if the device reported memory
- * is full. Upon unknown response the function will retry for 60 times, if
- * still unsuccessful -EIO is returned.
- */
+ 
 static int pidff_request_effect_upload(struct pidff_device *pidff, int efnum)
 {
 	int j;
@@ -485,9 +444,7 @@ static int pidff_request_effect_upload(struct pidff_device *pidff, int efnum)
 	return -EIO;
 }
 
-/*
- * Play the effect with PID id n times
- */
+ 
 static void pidff_playback_pid(struct pidff_device *pidff, int pid_id, int n)
 {
 	pidff->effect_operation[PID_EFFECT_BLOCK_INDEX].value[0] = pid_id;
@@ -505,9 +462,7 @@ static void pidff_playback_pid(struct pidff_device *pidff, int pid_id, int n)
 			HID_REQ_SET_REPORT);
 }
 
-/*
- * Play the effect with effect id @effect_id for @value times
- */
+ 
 static int pidff_playback(struct input_dev *dev, int effect_id, int value)
 {
 	struct pidff_device *pidff = dev->ff->private;
@@ -517,9 +472,7 @@ static int pidff_playback(struct input_dev *dev, int effect_id, int value)
 	return 0;
 }
 
-/*
- * Erase effect with PID id
- */
+ 
 static void pidff_erase_pid(struct pidff_device *pidff, int pid_id)
 {
 	pidff->block_free[PID_EFFECT_BLOCK_INDEX].value[0] = pid_id;
@@ -527,9 +480,7 @@ static void pidff_erase_pid(struct pidff_device *pidff, int pid_id)
 			HID_REQ_SET_REPORT);
 }
 
-/*
- * Stop and erase effect with effect_id
- */
+ 
 static int pidff_erase_effect(struct input_dev *dev, int effect_id)
 {
 	struct pidff_device *pidff = dev->ff->private;
@@ -537,8 +488,7 @@ static int pidff_erase_effect(struct input_dev *dev, int effect_id)
 
 	hid_dbg(pidff->hid, "starting to erase %d/%d\n",
 		effect_id, pidff->pid_id[effect_id]);
-	/* Wait for the queue to clear. We do not want a full fifo to
-	   prevent the effect removal. */
+	 
 	hid_hw_wait(pidff->hid);
 	pidff_playback_pid(pidff, pid_id, 0);
 	pidff_erase_pid(pidff, pid_id);
@@ -546,9 +496,7 @@ static int pidff_erase_effect(struct input_dev *dev, int effect_id)
 	return 0;
 }
 
-/*
- * Effect upload handler
- */
+ 
 static int pidff_upload_effect(struct input_dev *dev, struct ff_effect *effect,
 			       struct ff_effect *old)
 {
@@ -704,9 +652,7 @@ static int pidff_upload_effect(struct input_dev *dev, struct ff_effect *effect,
 	return 0;
 }
 
-/*
- * set_gain() handler
- */
+ 
 static void pidff_set_gain(struct input_dev *dev, u16 gain)
 {
 	struct pidff_device *pidff = dev->ff->private;
@@ -742,9 +688,7 @@ static void pidff_autocenter(struct pidff_device *pidff, u16 magnitude)
 			HID_REQ_SET_REPORT);
 }
 
-/*
- * pidff_set_autocenter() handler
- */
+ 
 static void pidff_set_autocenter(struct input_dev *dev, u16 magnitude)
 {
 	struct pidff_device *pidff = dev->ff->private;
@@ -752,9 +696,7 @@ static void pidff_set_autocenter(struct input_dev *dev, u16 magnitude)
 	pidff_autocenter(pidff, magnitude);
 }
 
-/*
- * Find fields from a report and fill a pidff_usage
- */
+ 
 static int pidff_find_fields(struct pidff_usage *usage, const u8 *table,
 			     struct hid_report *report, int count, int strict)
 {
@@ -791,9 +733,7 @@ static int pidff_find_fields(struct pidff_usage *usage, const u8 *table,
 	return 0;
 }
 
-/*
- * Return index into pidff_reports for the given usage
- */
+ 
 static int pidff_check_usage(int usage)
 {
 	int i;
@@ -805,10 +745,7 @@ static int pidff_check_usage(int usage)
 	return -1;
 }
 
-/*
- * Find the reports and fill pidff->reports[]
- * report_type specifies either OUTPUT or FEATURE reports
- */
+ 
 static void pidff_find_reports(struct hid_device *hid, int report_type,
 			       struct pidff_device *pidff)
 {
@@ -827,13 +764,7 @@ static void pidff_find_reports(struct hid_device *hid, int report_type,
 			continue;
 		}
 
-		/*
-		 * Sometimes logical collections are stacked to indicate
-		 * different usages for the report and the field, in which
-		 * case we want the usage of the parent. However, Linux HID
-		 * implementation hides this fact, so we have to dig it up
-		 * ourselves
-		 */
+		 
 		i = report->field[0]->usage[0].collection_index;
 		if (i <= 0 ||
 		    hid->collection[i - 1].type != HID_COLLECTION_LOGICAL)
@@ -848,9 +779,7 @@ static void pidff_find_reports(struct hid_device *hid, int report_type,
 	}
 }
 
-/*
- * Test if the required reports have been found
- */
+ 
 static int pidff_reports_ok(struct pidff_device *pidff)
 {
 	int i;
@@ -865,9 +794,7 @@ static int pidff_reports_ok(struct pidff_device *pidff)
 	return 1;
 }
 
-/*
- * Find a field with a specific usage within a report
- */
+ 
 static struct hid_field *pidff_find_special_field(struct hid_report *report,
 						  int usage, int enforce_min)
 {
@@ -888,9 +815,7 @@ static struct hid_field *pidff_find_special_field(struct hid_report *report,
 	return NULL;
 }
 
-/*
- * Fill a pidff->*_id struct table
- */
+ 
 static int pidff_find_special_keys(int *keys, struct hid_field *fld,
 				   const u8 *usagetable, int count)
 {
@@ -914,9 +839,7 @@ static int pidff_find_special_keys(int *keys, struct hid_field *fld,
 	pidff_find_special_keys(pidff->keys, pidff->field, pidff_ ## name, \
 		sizeof(pidff_ ## name))
 
-/*
- * Find and check the special fields
- */
+ 
 static int pidff_find_special_fields(struct pidff_device *pidff)
 {
 	hid_dbg(pidff->hid, "finding special fields\n");
@@ -997,9 +920,7 @@ static int pidff_find_special_fields(struct pidff_device *pidff)
 	return 0;
 }
 
-/*
- * Find the implemented effect types
- */
+ 
 static int pidff_find_effects(struct pidff_device *pidff,
 			      struct input_dev *dev)
 {
@@ -1057,9 +978,7 @@ static int pidff_find_effects(struct pidff_device *pidff,
 		pidff->reports[report], \
 		sizeof(pidff_ ## name), strict)
 
-/*
- * Fill and check the pidff_usages
- */
+ 
 static int pidff_init_fields(struct pidff_device *pidff, struct input_dev *dev)
 {
 	int envelope_ok = 0;
@@ -1142,16 +1061,14 @@ static int pidff_init_fields(struct pidff_device *pidff, struct input_dev *dev)
 	return 0;
 }
 
-/*
- * Reset the device
- */
+ 
 static void pidff_reset(struct pidff_device *pidff)
 {
 	struct hid_device *hid = pidff->hid;
 	int i = 0;
 
 	pidff->device_control->value[0] = pidff->control_id[PID_RESET];
-	/* We reset twice as sometimes hid_wait_io isn't waiting long enough */
+	 
 	hid_hw_request(hid, pidff->reports[PID_DEVICE_CONTROL], HID_REQ_SET_REPORT);
 	hid_hw_wait(hid);
 	hid_hw_request(hid, pidff->reports[PID_DEVICE_CONTROL], HID_REQ_SET_REPORT);
@@ -1162,7 +1079,7 @@ static void pidff_reset(struct pidff_device *pidff)
 	hid_hw_request(hid, pidff->reports[PID_DEVICE_CONTROL], HID_REQ_SET_REPORT);
 	hid_hw_wait(hid);
 
-	/* pool report is sometimes messed up, refetch it */
+	 
 	hid_hw_request(hid, pidff->reports[PID_POOL], HID_REQ_GET_REPORT);
 	hid_hw_wait(hid);
 
@@ -1182,21 +1099,13 @@ static void pidff_reset(struct pidff_device *pidff)
 	}
 }
 
-/*
- * Test if autocenter modification is using the supported method
- */
+ 
 static int pidff_check_autocenter(struct pidff_device *pidff,
 				  struct input_dev *dev)
 {
 	int error;
 
-	/*
-	 * Let's find out if autocenter modification is supported
-	 * Specification doesn't specify anything, so we request an
-	 * effect upload and cancel it immediately. If the approved
-	 * effect id was one above the minimum, then we assume the first
-	 * effect id is a built-in spring type effect used for autocenter
-	 */
+	 
 
 	error = pidff_request_effect_upload(pidff, 1);
 	if (error) {
@@ -1220,9 +1129,7 @@ static int pidff_check_autocenter(struct pidff_device *pidff,
 
 }
 
-/*
- * Check if the device is PID and initialize it
- */
+ 
 int hid_pidff_init(struct hid_device *hid)
 {
 	struct pidff_device *pidff;

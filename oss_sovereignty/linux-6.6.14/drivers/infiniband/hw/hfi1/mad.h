@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 or BSD-3-Clause */
-/*
- * Copyright(c) 2015 - 2017 Intel Corporation.
- */
+ 
+ 
 
 #ifndef _HFI1_MAD_H
 #define _HFI1_MAD_H
@@ -11,9 +9,7 @@
 #include <rdma/opa_port_info.h>
 #include "opa_compat.h"
 
-/*
- * OPA Traps
- */
+ 
 #define OPA_TRAP_GID_NOW_IN_SERVICE             cpu_to_be16(64)
 #define OPA_TRAP_GID_OUT_OF_SERVICE             cpu_to_be16(65)
 #define OPA_TRAP_ADD_MULTICAST_GROUP            cpu_to_be16(66)
@@ -32,14 +28,10 @@
 #define OPA_TRAP_SWITCH_BAD_PKEY                cpu_to_be16(259)
 #define OPA_SMA_TRAP_DATA_LINK_WIDTH            cpu_to_be16(2048)
 
-/*
- * Generic trap/notice other local changes flags (trap 144).
- */
-#define	OPA_NOTICE_TRAP_LWDE_CHG        0x08 /* Link Width Downgrade Enable
-					      * changed
-					      */
-#define OPA_NOTICE_TRAP_LSE_CHG         0x04 /* Link Speed Enable changed */
-#define OPA_NOTICE_TRAP_LWE_CHG         0x02 /* Link Width Enable changed */
+ 
+#define	OPA_NOTICE_TRAP_LWDE_CHG        0x08  
+#define OPA_NOTICE_TRAP_LSE_CHG         0x04  
+#define OPA_NOTICE_TRAP_LWE_CHG         0x02  
 #define OPA_NOTICE_TRAP_NODE_DESC_CHG   0x01
 
 struct opa_mad_notice_attr {
@@ -66,21 +58,21 @@ struct opa_mad_notice_attr {
 		} __packed ntc_128;
 
 		struct {
-			__be32	lid;		/* where violation happened */
-			u8	port_num;	/* where violation happened */
+			__be32	lid;		 
+			u8	port_num;	 
 		} __packed ntc_129_130_131;
 
 		struct {
-			__be32	lid;		/* LID where change occurred */
-			__be32	new_cap_mask;	/* new capability mask */
+			__be32	lid;		 
+			__be32	new_cap_mask;	 
 			__be16	reserved2;
 			__be16	cap_mask3;
-			__be16	change_flags;	/* low 4 bits only */
+			__be16	change_flags;	 
 		} __packed ntc_144;
 
 		struct {
 			__be64	new_sys_guid;
-			__be32	lid;		/* lid where sys guid changed */
+			__be32	lid;		 
 		} __packed ntc_145;
 
 		struct {
@@ -98,25 +90,25 @@ struct opa_mad_notice_attr {
 			__be32		lid1;
 			__be32		lid2;
 			__be32		key;
-			u8		sl;	/* SL: high 5 bits */
+			u8		sl;	 
 			u8		reserved3[3];
 			union ib_gid	gid1;
 			union ib_gid	gid2;
-			__be32		qp1;	/* high 8 bits reserved */
-			__be32		qp2;	/* high 8 bits reserved */
+			__be32		qp1;	 
+			__be32		qp2;	 
 		} __packed ntc_257_258;
 
 		struct {
-			__be16		flags;	/* low 8 bits reserved */
+			__be16		flags;	 
 			__be16		pkey;
 			__be32		lid1;
 			__be32		lid2;
-			u8		sl;	/* SL: high 5 bits */
+			u8		sl;	 
 			u8		reserved4[3];
 			union ib_gid	gid1;
 			union ib_gid	gid2;
-			__be32		qp1;	/* high 8 bits reserved */
-			__be32		qp2;	/* high 8 bits reserved */
+			__be32		qp1;	 
+			__be32		qp2;	 
 		} __packed ntc_259;
 
 		struct {
@@ -143,10 +135,7 @@ struct opa_mad_notice_attr {
 #define LINK_SPEED_12_5G	2
 #define LINK_WIDTH_DEFAULT	4
 #define DECIMAL_FACTORING	1000
-/*
- * The default link width is multiplied by 1000
- * to get accurate value after division.
- */
+ 
 #define FACTOR_LINK_WIDTH	(LINK_WIDTH_DEFAULT * DECIMAL_FACTORING)
 
 struct ib_pma_portcounters_cong {
@@ -163,7 +152,7 @@ struct ib_pma_portcounters_cong {
 	u8 port_xmit_constraint_errors;
 	u8 port_rcv_constraint_errors;
 	u8 reserved2;
-	u8 link_overrun_errors; /* LocalLink: 7:4, BufferOverrun: 3:0 */
+	u8 link_overrun_errors;  
 	__be16 reserved3;
 	__be16 vl15_dropped;
 	__be64 port_xmit_data;
@@ -187,7 +176,7 @@ struct ib_pma_portcounters_cong {
 
 #define HFI1_XMIT_RATE_UNSUPPORTED               0x0
 #define HFI1_XMIT_RATE_PICO                      0x7
-/* number of 4nsec cycles equaling 2secs */
+ 
 #define HFI1_CONG_TIMER_PSINTERVAL               0x1DCD64EC
 
 #define IB_CC_SVCTYPE_RC 0x0
@@ -195,10 +184,7 @@ struct ib_pma_portcounters_cong {
 #define IB_CC_SVCTYPE_RD 0x2
 #define IB_CC_SVCTYPE_UD 0x3
 
-/*
- * There should be an equivalent IB #define for the following, but
- * I cannot find it.
- */
+ 
 #define OPA_CC_LOG_TYPE_HFI	2
 
 struct opa_hfi1_cong_log_event_internal {
@@ -207,13 +193,13 @@ struct opa_hfi1_cong_log_event_internal {
 	u8 sl;
 	u8 svc_type;
 	u32 rlid;
-	u64 timestamp; /* wider than 32 bits to detect 32 bit rollover */
+	u64 timestamp;  
 };
 
 struct opa_hfi1_cong_log_event {
 	u8 local_qp_cn_entry[3];
 	u8 remote_qp_number_cn_entry[3];
-	u8 sl_svc_type_cn_entry; /* 5 bits SL, 3 bits svc type */
+	u8 sl_svc_type_cn_entry;  
 	u8 reserved;
 	__be32 remote_lid_cn_entry;
 	__be32 timestamp_cn_entry;
@@ -232,7 +218,7 @@ struct opa_hfi1_cong_log {
 
 #define IB_CC_TABLE_CAP_DEFAULT 31
 
-/* Port control flags */
+ 
 #define IB_CC_CCS_PC_SL_BASED 0x01
 
 struct opa_congestion_setting_entry {
@@ -240,7 +226,7 @@ struct opa_congestion_setting_entry {
 	u8 reserved;
 	__be16 ccti_timer;
 	u8 trigger_threshold;
-	u8 ccti_min; /* min CCTI for cc table */
+	u8 ccti_min;  
 } __packed;
 
 struct opa_congestion_setting_entry_shadow {
@@ -248,7 +234,7 @@ struct opa_congestion_setting_entry_shadow {
 	u8 reserved;
 	u16 ccti_timer;
 	u8 trigger_threshold;
-	u8 ccti_min; /* min CCTI for cc table */
+	u8 ccti_min;  
 } __packed;
 
 struct opa_congestion_setting_attr {
@@ -266,25 +252,25 @@ struct opa_congestion_setting_attr_shadow {
 #define IB_CC_TABLE_ENTRY_INCREASE_DEFAULT 1
 #define IB_CC_TABLE_ENTRY_TIMER_DEFAULT 1
 
-/* 64 Congestion Control table entries in a single MAD */
+ 
 #define IB_CCT_ENTRIES 64
 #define IB_CCT_MIN_ENTRIES (IB_CCT_ENTRIES * 2)
 
 struct ib_cc_table_entry {
-	__be16 entry; /* shift:2, multiplier:14 */
+	__be16 entry;  
 };
 
 struct ib_cc_table_entry_shadow {
-	u16 entry; /* shift:2, multiplier:14 */
+	u16 entry;  
 };
 
 struct ib_cc_table_attr {
-	__be16 ccti_limit; /* max CCTI for cc table */
+	__be16 ccti_limit;  
 	struct ib_cc_table_entry ccti_entries[IB_CCT_ENTRIES];
 } __packed;
 
 struct ib_cc_table_attr_shadow {
-	u16 ccti_limit; /* max CCTI for cc table */
+	u16 ccti_limit;  
 	struct ib_cc_table_entry_shadow ccti_entries[IB_CCT_ENTRIES];
 } __packed;
 
@@ -292,27 +278,20 @@ struct ib_cc_table_attr_shadow {
 	(IB_CC_TABLE_CAP_DEFAULT * IB_CCT_ENTRIES)
 
 struct cc_table_shadow {
-	u16 ccti_limit; /* max CCTI for cc table */
+	u16 ccti_limit;  
 	struct ib_cc_table_entry_shadow entries[CC_TABLE_SHADOW_MAX];
 } __packed;
 
-/*
- * struct cc_state combines the (active) per-port congestion control
- * table, and the (active) per-SL congestion settings. cc_state data
- * may need to be read in code paths that we want to be fast, so it
- * is an RCU protected structure.
- */
+ 
 struct cc_state {
 	struct rcu_head rcu;
 	struct cc_table_shadow cct;
 	struct opa_congestion_setting_attr_shadow cong_setting;
 };
 
-/*
- * OPA BufferControl MAD
- */
+ 
 
-/* attribute modifier macros */
+ 
 #define OPA_AM_NPORT_SHIFT	24
 #define OPA_AM_NPORT_MASK	0xff
 #define OPA_AM_NPORT_SMASK	(OPA_AM_NPORT_MASK << OPA_AM_NPORT_SHIFT)
@@ -363,7 +342,7 @@ struct cc_state {
 #define OPA_AM_CI_LEN(am)	(((am) >> OPA_AM_CI_LEN_SHIFT) & \
 					OPA_AM_CI_LEN_MASK)
 
-/* error info macros */
+ 
 #define OPA_EI_STATUS_SMASK	0x80
 #define OPA_EI_CODE_SMASK	0x0f
 
@@ -379,14 +358,10 @@ struct buffer_control {
 };
 
 struct sc2vlnt {
-	u8 vlnt[32]; /* 5 bit VL, 3 bits reserved */
+	u8 vlnt[32];  
 };
 
-/*
- * The PortSamplesControl.CounterMasks field is an array of 3 bit fields
- * which specify the N'th counter's capabilities. See ch. 16.1.3.2.
- * We support 5 counters which only count the mandatory quantities.
- */
+ 
 #define COUNTER_MASK(q, n) (q << ((9 - n) * 3))
 #define COUNTER_MASK0_9 \
 	cpu_to_be32(COUNTER_MASK(1, 0) | \
@@ -400,38 +375,18 @@ void hfi1_handle_trap_timer(struct timer_list *t);
 u16 tx_link_width(u16 link_width);
 u64 get_xmit_wait_counters(struct hfi1_pportdata *ppd, u16 link_width,
 			   u16 link_speed, int vl);
-/**
- * get_link_speed - determine whether 12.5G or 25G speed
- * @link_speed: the speed of active link
- * @return: Return 2 if link speed identified as 12.5G
- * or return 1 if link speed is 25G.
- *
- * The function indirectly calculate required link speed
- * value for convert_xmit_counter function. If the link
- * speed is 25G, the function return as 1 as it is required
- * by xmit counter conversion formula :-( 25G / link_speed).
- * This conversion will provide value 1 if current
- * link speed is 25G or 2 if 12.5G.This is done to avoid
- * 12.5 float number conversion.
- */
+ 
 static inline u16 get_link_speed(u16 link_speed)
 {
 	return (link_speed == 1) ?
 		 LINK_SPEED_12_5G : LINK_SPEED_25G;
 }
 
-/**
- * convert_xmit_counter - calculate flit times for given xmit counter
- * value
- * @xmit_wait_val: current xmit counter value
- * @link_width: width of active link
- * @link_speed: speed of active link
- * @return: return xmit counter value in flit times.
- */
+ 
 static inline u64 convert_xmit_counter(u64 xmit_wait_val, u16 link_width,
 				       u16 link_speed)
 {
 	return (xmit_wait_val * 2 * (FACTOR_LINK_WIDTH / link_width)
 		 * link_speed) / DECIMAL_FACTORING;
 }
-#endif				/* _HFI1_MAD_H */
+#endif				 

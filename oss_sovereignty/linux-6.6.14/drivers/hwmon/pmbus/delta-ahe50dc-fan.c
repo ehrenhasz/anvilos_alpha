@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Delta AHE-50DC power shelf fan control module driver
- *
- * Copyright 2021 Zev Weiss <zev@bewilderbeest.net>
- */
+
+ 
 
 #include <linux/i2c.h>
 #include <linux/kernel.h>
@@ -16,33 +12,20 @@
 
 static int ahe50dc_fan_write_byte(struct i2c_client *client, int page, u8 value)
 {
-	/*
-	 * The CLEAR_FAULTS operation seems to sometimes (unpredictably, perhaps
-	 * 5% of the time or so) trigger a problematic phenomenon in which the
-	 * fan speeds surge momentarily and at least some (perhaps all?) of the
-	 * system's power outputs experience a glitch.
-	 *
-	 * However, according to Delta it should be OK to simply not send any
-	 * CLEAR_FAULTS commands (the device doesn't seem to be capable of
-	 * reporting any faults anyway), so just blackhole them unconditionally.
-	 */
+	 
 	return value == PMBUS_CLEAR_FAULTS ? -EOPNOTSUPP : -ENODATA;
 }
 
 static int ahe50dc_fan_read_word_data(struct i2c_client *client, int page, int phase, int reg)
 {
-	/* temp1 in (virtual) page 1 is remapped to mfr-specific temp4 */
+	 
 	if (page == 1) {
 		if (reg == PMBUS_READ_TEMPERATURE_1)
 			return i2c_smbus_read_word_data(client, AHE50DC_PMBUS_READ_TEMP4);
 		return -EOPNOTSUPP;
 	}
 
-	/*
-	 * There's a fairly limited set of commands this device actually
-	 * supports, so here we block attempts to read anything else (which
-	 * return 0xffff and would cause confusion elsewhere).
-	 */
+	 
 	switch (reg) {
 	case PMBUS_STATUS_WORD:
 	case PMBUS_FAN_COMMAND_1:
@@ -87,11 +70,7 @@ static struct pmbus_driver_info ahe50dc_fan_info = {
 	.read_word_data = ahe50dc_fan_read_word_data,
 };
 
-/*
- * CAPABILITY returns 0xff, which appears to be this device's way indicating
- * it doesn't support something (and if we enable I2C_CLIENT_PEC on seeing bit
- * 7 being set it generates bad PECs, so let's not go there).
- */
+ 
 static struct pmbus_platform_data ahe50dc_fan_data = {
 	.flags = PMBUS_NO_CAPABILITY,
 };

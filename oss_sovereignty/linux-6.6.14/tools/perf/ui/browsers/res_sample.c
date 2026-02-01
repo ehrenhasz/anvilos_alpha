@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Display a menu with individual samples to browse with perf script */
+
+ 
 #include "hist.h"
 #include "evsel.h"
 #include "hists.h"
@@ -7,7 +7,7 @@
 #include "config.h"
 #include "time-utils.h"
 #include "../util.h"
-#include "../../util/util.h" // perf_exe()
+#include "../../util/util.h" 
 #include "../../perf.h"
 #include <stdlib.h>
 #include <string.h>

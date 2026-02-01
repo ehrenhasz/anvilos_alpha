@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * VMware vSockets Driver
- *
- * Copyright (C) 2009-2013 VMware, Inc. All rights reserved.
- */
+
+ 
 
 #include <linux/types.h>
 #include <linux/socket.h>
@@ -24,12 +20,7 @@ static bool vmci_transport_notify_waiting_write(struct vsock_sock *vsk)
 		return false;
 
 #ifdef VSOCK_OPTIMIZATION_FLOW_CONTROL
-	/* When the sender blocks, we take that as a sign that the sender is
-	 * faster than the receiver. To reduce the transmit rate of the sender,
-	 * we delay the sending of the read notification by decreasing the
-	 * write_notify_window. The notification is delayed until the number of
-	 * bytes used in the queue drops below the write_notify_window.
-	 */
+	 
 
 	if (!PKT_FIELD(vsk, peer_waiting_write_detected)) {
 		PKT_FIELD(vsk, peer_waiting_write_detected) = true;
@@ -51,28 +42,12 @@ static bool vmci_transport_notify_waiting_write(struct vsock_sock *vsk)
 	notify_limit = 0;
 #endif
 
-	/* For now we ignore the wait information and just see if the free
-	 * space exceeds the notify limit.  Note that improving this function
-	 * to be more intelligent will not require a protocol change and will
-	 * retain compatibility between endpoints with mixed versions of this
-	 * function.
-	 *
-	 * The notify_limit is used to delay notifications in the case where
-	 * flow control is enabled. Below the test is expressed in terms of
-	 * free space in the queue: if free_space > ConsumeSize -
-	 * write_notify_window then notify An alternate way of expressing this
-	 * is to rewrite the expression to use the data ready in the receive
-	 * queue: if write_notify_window > bufferReady then notify as
-	 * free_space == ConsumeSize - bufferReady.
-	 */
+	 
 	retval = vmci_qpair_consume_free_space(vmci_trans(vsk)->qpair) >
 		notify_limit;
 #ifdef VSOCK_OPTIMIZATION_FLOW_CONTROL
 	if (retval) {
-		/*
-		 * Once we notify the peer, we reset the detected flag so the
-		 * next wait will again cause a decrease in the window size.
-		 */
+		 
 
 		PKT_FIELD(vsk, peer_waiting_write_detected) = false;
 	}
@@ -89,12 +64,7 @@ static bool vmci_transport_notify_waiting_read(struct vsock_sock *vsk)
 	if (!PKT_FIELD(vsk, peer_waiting_read))
 		return false;
 
-	/* For now we ignore the wait information and just see if there is any
-	 * data for our peer to read.  Note that improving this function to be
-	 * more intelligent will not require a protocol change and will retain
-	 * compatibility between endpoints with mixed versions of this
-	 * function.
-	 */
+	 
 	return vmci_qpair_produce_buf_ready(vmci_trans(vsk)->qpair) > 0;
 #else
 	return true;
@@ -237,7 +207,7 @@ static bool send_waiting_write(struct sock *sk, u64 room_needed)
 	vmci_qpair_get_produce_indexes(vmci_trans(vsk)->qpair, &tail, &head);
 	room_left = vmci_trans(vsk)->produce_size - tail;
 	if (room_needed + 1 >= room_left) {
-		/* Wraps around to current generation. */
+		 
 		waiting_info.offset = room_needed + 1 - room_left;
 		waiting_info.generation = PKT_FIELD(vsk, produce_q_generation);
 	} else {
@@ -269,13 +239,7 @@ static int vmci_transport_send_read_notification(struct sock *sk)
 	err = 0;
 
 	if (vmci_transport_notify_waiting_write(vsk)) {
-		/* Notify the peer that we have read, retrying the send on
-		 * failure up to our maximum value.  XXX For now we just log
-		 * the failure, but later we should schedule a work item to
-		 * handle the resend until it succeeds.  That would require
-		 * keeping track of work items in the vsk and cleaning them up
-		 * upon socket close.
-		 */
+		 
 		while (!(vsk->peer_shutdown & RCV_SHUTDOWN) &&
 		       !sent_read &&
 		       retries < VMCI_TRANSPORT_MAX_DGRAM_RESENDS) {
@@ -343,10 +307,7 @@ vmci_transport_notify_pkt_poll_in(struct sock *sk,
 	if (vsock_stream_has_data(vsk) >= target) {
 		*data_ready_now = true;
 	} else {
-		/* We can't read right now because there is not enough data
-		 * in the queue. Ask for notifications when there is something
-		 * to read.
-		 */
+		 
 		if (sk->sk_state == TCP_ESTABLISHED) {
 			if (!send_waiting_read(sk, 1))
 				return -1;
@@ -370,14 +331,7 @@ vmci_transport_notify_pkt_poll_out(struct sock *sk,
 		*space_avail_now = true;
 		return 0;
 	} else if (produce_q_free_space == 0) {
-		/* This is a connected socket but we can't currently send data.
-		 * Notify the peer that we are waiting if the queue is full. We
-		 * only send a waiting write if the queue is full because
-		 * otherwise we end up in an infinite WAITING_WRITE, READ,
-		 * WAITING_WRITE, READ, etc. loop. Treat failing to send the
-		 * notification as a socket error, passing that back through
-		 * the mask.
-		 */
+		 
 		if (!send_waiting_write(sk, 1))
 			return -1;
 
@@ -405,12 +359,7 @@ vmci_transport_notify_pkt_recv_init(
 		PKT_FIELD(vsk, write_notify_min_window) = target + 1;
 		if (PKT_FIELD(vsk, write_notify_window) <
 		    PKT_FIELD(vsk, write_notify_min_window)) {
-			/* If the current window is smaller than the new
-			 * minimal window size, we need to reevaluate whether
-			 * we need to notify the sender. If the number of ready
-			 * bytes are smaller than the new window, we need to
-			 * send a notification to the sender before we block.
-			 */
+			 
 
 			PKT_FIELD(vsk, write_notify_window) =
 			    PKT_FIELD(vsk, write_notify_min_window);
@@ -431,7 +380,7 @@ vmci_transport_notify_pkt_recv_pre_block(
 {
 	int err = 0;
 
-	/* Notify our peer that we are waiting for data to read. */
+	 
 	if (!send_waiting_read(sk, target)) {
 		err = -EHOSTUNREACH;
 		return err;
@@ -457,9 +406,7 @@ vmci_transport_notify_pkt_recv_pre_dequeue(
 {
 	struct vsock_sock *vsk = vsock_sk(sk);
 
-	/* Now consume up to len bytes from the queue.  Note that since we have
-	 * the socket locked we should copy at least ready bytes.
-	 */
+	 
 #if defined(VSOCK_OPTIMIZATION_WAITING_NOTIFY)
 	vmci_qpair_get_consume_indexes(vmci_trans(vsk)->qpair,
 				       &data->produce_tail,
@@ -485,10 +432,7 @@ vmci_transport_notify_pkt_recv_post_dequeue(
 
 	if (data_read) {
 #if defined(VSOCK_OPTIMIZATION_WAITING_NOTIFY)
-		/* Detect a wrap-around to maintain queue generation.  Note
-		 * that this is safe since we hold the socket lock across the
-		 * two queue pair operations.
-		 */
+		 
 		if (copied >=
 			vmci_trans(vsk)->consume_size - data->consume_head)
 			PKT_FIELD(vsk, consume_q_generation)++;
@@ -520,7 +464,7 @@ vmci_transport_notify_pkt_send_pre_block(
 				struct sock *sk,
 				struct vmci_transport_send_notify_data *data)
 {
-	/* Notify our peer that we are waiting for room to write. */
+	 
 	if (!send_waiting_write(sk, 1))
 		return -EHOSTUNREACH;
 
@@ -557,21 +501,14 @@ vmci_transport_notify_pkt_send_post_enqueue(
 	vsk = vsock_sk(sk);
 
 #if defined(VSOCK_OPTIMIZATION_WAITING_NOTIFY)
-	/* Detect a wrap-around to maintain queue generation.  Note that this
-	 * is safe since we hold the socket lock across the two queue pair
-	 * operations.
-	 */
+	 
 	if (written >= vmci_trans(vsk)->produce_size - data->produce_tail)
 		PKT_FIELD(vsk, produce_q_generation)++;
 
 #endif
 
 	if (vmci_transport_notify_waiting_read(vsk)) {
-		/* Notify the peer that we have written, retrying the send on
-		 * failure up to our maximum value. See the XXX comment for the
-		 * corresponding piece of code in StreamRecvmsg() for potential
-		 * improvements.
-		 */
+		 
 		while (!(vsk->peer_shutdown & RCV_SHUTDOWN) &&
 		       !sent_wrote &&
 		       retries < VMCI_TRANSPORT_MAX_DGRAM_RESENDS) {
@@ -652,7 +589,7 @@ static void vmci_transport_notify_pkt_process_negotiate(struct sock *sk)
 			vmci_trans(vsk)->consume_size;
 }
 
-/* Socket control packet based operations. */
+ 
 const struct vmci_transport_notify_ops vmci_transport_notify_pkt_ops = {
 	.socket_init = vmci_transport_notify_pkt_socket_init,
 	.socket_destruct = vmci_transport_notify_pkt_socket_destruct,

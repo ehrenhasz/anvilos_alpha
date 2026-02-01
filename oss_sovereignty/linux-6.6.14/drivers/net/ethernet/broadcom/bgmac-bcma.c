@@ -1,10 +1,4 @@
-/*
- * Driver for (BCM4706)? GBit MAC core on BCMA bus.
- *
- * Copyright (C) 2012 Rafał Miłecki <zajec5@gmail.com>
- *
- * Licensed under the GNU/GPL. See COPYING for details.
- */
+ 
 
 #define pr_fmt(fmt)		KBUILD_MODNAME ": " fmt
 
@@ -27,9 +21,7 @@ static inline bool bgmac_is_bcm4707_family(struct bcma_device *core)
 	}
 }
 
-/**************************************************
- * BCMA bus ops
- **************************************************/
+ 
 
 static u32 bcma_bgmac_read(struct bgmac *bgmac, u16 offset)
 {
@@ -87,13 +79,13 @@ static int bcma_phy_connect(struct bgmac *bgmac)
 	struct phy_device *phy_dev;
 	char bus_id[MII_BUS_ID_SIZE + 3];
 
-	/* DT info should be the most accurate */
+	 
 	phy_dev = of_phy_get_and_connect(bgmac->net_dev, bgmac->dev->of_node,
 					 bgmac_adjust_link);
 	if (phy_dev)
 		return 0;
 
-	/* Connect to the PHY */
+	 
 	if (bgmac->mii_bus && bgmac->phyaddr != BGMAC_PHY_NOREGS) {
 		snprintf(bus_id, sizeof(bus_id), PHY_ID_FMT, bgmac->mii_bus->id,
 			 bgmac->phyaddr);
@@ -107,7 +99,7 @@ static int bcma_phy_connect(struct bgmac *bgmac)
 		return 0;
 	}
 
-	/* Assume a fixed link to the switch port */
+	 
 	return bgmac_phy_connect_direct(bgmac);
 }
 
@@ -120,31 +112,7 @@ static const struct bcma_device_id bgmac_bcma_tbl[] = {
 };
 MODULE_DEVICE_TABLE(bcma, bgmac_bcma_tbl);
 
-/* http://bcm-v4.sipsolutions.net/mac-gbit/gmac/chipattach */
-static int bgmac_probe(struct bcma_device *core)
-{
-	struct bcma_chipinfo *ci = &core->bus->chipinfo;
-	struct ssb_sprom *sprom = &core->bus->sprom;
-	struct mii_bus *mii_bus;
-	struct bgmac *bgmac;
-	const u8 *mac;
-	int err;
-
-	bgmac = bgmac_alloc(&core->dev);
-	if (!bgmac)
-		return -ENOMEM;
-
-	bgmac->bcma.core = core;
-	bgmac->dma_dev = core->dma_dev;
-	bgmac->irq = core->irq;
-
-	bcma_set_drvdata(core, bgmac);
-
-	err = of_get_ethdev_address(bgmac->dev->of_node, bgmac->net_dev);
-	if (err == -EPROBE_DEFER)
-		return err;
-
-	/* If no MAC address assigned via device tree, check SPROM */
+ 
 	if (err) {
 		switch (core->core_unit) {
 		case 0:
@@ -165,7 +133,7 @@ static int bgmac_probe(struct bcma_device *core)
 		eth_hw_addr_set(bgmac->net_dev, mac);
 	}
 
-	/* On BCM4706 we need common core to access PHY */
+	 
 	if (core->id.id == BCMA_CORE_4706_MAC_GBIT &&
 	    !core->bus->drv_gmac_cmn.core) {
 		dev_err(bgmac->dev, "GMAC CMN core not found (required for BCM4706)\n");
@@ -224,9 +192,9 @@ static int bgmac_probe(struct bcma_device *core)
 	if (sprom->boardflags_lo & BGMAC_BFL_ENETADM)
 		dev_warn(bgmac->dev, "Support for ADMtek ethernet switch not implemented\n");
 
-	/* Feature Flags */
+	 
 	switch (ci->id) {
-	/* BCM 471X/535X family */
+	 
 	case BCMA_CHIP_ID_BCM4716:
 		bgmac->feature_flags |= BGMAC_FEAT_CLKCTLST;
 		fallthrough;
@@ -273,7 +241,7 @@ static int bgmac_probe(struct bcma_device *core)
 			bgmac->feature_flags |= BGMAC_FEAT_IOST_ATTACHED;
 		}
 		break;
-	/* bcm4707_family */
+	 
 	case BCMA_CHIP_ID_BCM4707:
 	case BCMA_CHIP_ID_BCM47094:
 	case BCMA_CHIP_ID_BCM53018:

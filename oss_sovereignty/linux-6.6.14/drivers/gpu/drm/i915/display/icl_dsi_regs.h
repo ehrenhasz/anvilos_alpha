@@ -1,14 +1,12 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2022 Intel Corporation
- */
+ 
+ 
 
 #ifndef __ICL_DSI_REGS_H__
 #define __ICL_DSI_REGS_H__
 
 #include "intel_display_reg_defs.h"
 
-/* Gen11 DSI */
+ 
 #define _MMIO_DSI(tc, dsi0, dsi1)	_MMIO_TRANS((tc) - TRANSCODER_DSI_0, \
 						    dsi0, dsi1)
 #define _ICL_DSI_ESC_CLK_DIV0		0x6b090
@@ -25,7 +23,7 @@
 #define  ICL_BYTE_CLK_PER_ESC_CLK_SHIFT	16
 #define  ICL_ESC_CLK_DIV_MASK			0x1ff
 #define  ICL_ESC_CLK_DIV_SHIFT			0
-#define DSI_MAX_ESC_CLK			20000		/* in KHz */
+#define DSI_MAX_ESC_CLK			20000		 
 
 #define _ADL_MIPIO_REG			0x180
 #define ADL_MIPIO_DW(port, dw)		_MMIO(_ICL_COMBOPHY(port) + _ADL_MIPIO_REG + 4 * (dw))
@@ -84,7 +82,7 @@
 #define   DSI_SOT_SYNC_ERROR			(1 << 1)
 #define   DSI_SOT_ERROR				(1 << 0)
 
-/* ICL DSI MODE control */
+ 
 #define _ICL_DSI_IO_MODECTL_0				0x6B094
 #define _ICL_DSI_IO_MODECTL_1				0x6B894
 #define ICL_DSI_IO_MODECTL(port)	_MMIO_PORT(port,	\
@@ -92,7 +90,7 @@
 						    _ICL_DSI_IO_MODECTL_1)
 #define  COMBO_PHY_MODE_DSI				(1 << 0)
 
-/* TGL DSI Chicken register */
+ 
 #define _TGL_DSI_CHKN_REG_0			0x6B0C0
 #define _TGL_DSI_CHKN_REG_1			0x6B8C0
 #define TGL_DSI_CHKN_REG(port)		_MMIO_PORT(port,	\
@@ -189,7 +187,7 @@
 #define  TA_GET_MASK			(0xf << 0)
 #define  TA_GET_SHIFT			0
 
-/* DSI transcoder configuration */
+ 
 #define _DSI_TRANS_FUNC_CONF_0		0x6b030
 #define _DSI_TRANS_FUNC_CONF_1		0x6b830
 #define DSI_TRANS_FUNC_CONF(tc)		_MMIO_DSI(tc,	\
@@ -296,7 +294,7 @@
 #define  LINK_ULPS_TYPE_LP11		(1 << 8)
 #define  LINK_ENTER_ULPS		(1 << 0)
 
-/* DSI timeout registers */
+ 
 #define _DSI_HSTX_TO_0			0x6b044
 #define _DSI_HSTX_TO_1			0x6b844
 #define DSI_HSTX_TO(tc)			_MMIO_DSI(tc,	\
@@ -339,4 +337,4 @@
 #define  TA_TIMEOUT_VALUE_SHIFT		0
 #define  TA_TIMEOUT_VALUE(x)		((x) << 0)
 
-#endif /* __ICL_DSI_REGS_H__ */
+#endif  

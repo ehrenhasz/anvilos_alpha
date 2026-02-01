@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Texas Instruments PCM186x Universal Audio ADC
- *
- * Copyright (C) 2015-2017 Texas Instruments Incorporated - https://www.ti.com
- *	Andreas Dannenberg <dannenberg@ti.com>
- *	Andrew F. Davis <afd@ti.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/moduleparam.h>
@@ -26,9 +20,9 @@
 #include "pcm186x.h"
 
 static const char * const pcm186x_supply_names[] = {
-	"avdd",		/* Analog power supply. Connect to 3.3-V supply. */
-	"dvdd",		/* Digital power supply. Connect to 3.3-V supply. */
-	"iovdd",	/* I/O power supply. Connect to 3.3-V or 1.8-V. */
+	"avdd",		 
+	"dvdd",		 
+	"iovdd",	 
 };
 #define PCM186x_NUM_SUPPLIES ARRAY_SIZE(pcm186x_supply_names)
 
@@ -66,8 +60,8 @@ static const unsigned int pcm186x_adc_input_channel_sel_value[] = {
 
 static const char * const pcm186x_adcl_input_channel_sel_text[] = {
 	"No Select",
-	"VINL1[SE]",					/* Default for ADC1L */
-	"VINL2[SE]",					/* Default for ADC2L */
+	"VINL1[SE]",					 
+	"VINL2[SE]",					 
 	"VINL2[SE] + VINL1[SE]",
 	"VINL3[SE]",
 	"VINL3[SE] + VINL1[SE]",
@@ -88,8 +82,8 @@ static const char * const pcm186x_adcl_input_channel_sel_text[] = {
 
 static const char * const pcm186x_adcr_input_channel_sel_text[] = {
 	"No Select",
-	"VINR1[SE]",					/* Default for ADC1R */
-	"VINR2[SE]",					/* Default for ADC2R */
+	"VINR1[SE]",					 
+	"VINR2[SE]",					 
 	"VINR2[SE] + VINR1[SE]",
 	"VINR3[SE]",
 	"VINR3[SE] + VINR1[SE]",
@@ -153,10 +147,7 @@ static const struct snd_soc_dapm_widget pcm1863_dapm_widgets[] = {
 	SND_SOC_DAPM_MUX("ADC Right Capture Source", SND_SOC_NOPM, 0, 0,
 			 &pcm186x_adc_mux_controls[1]),
 
-	/*
-	 * Put the codec into SLEEP mode when not in use, allowing the
-	 * Energysense mechanism to operate.
-	 */
+	 
 	SND_SOC_DAPM_ADC("ADC", "HiFi Capture", PCM186X_POWER_CTRL, 1,  1),
 };
 
@@ -179,10 +170,7 @@ static const struct snd_soc_dapm_widget pcm1865_dapm_widgets[] = {
 	SND_SOC_DAPM_MUX("ADC2 Right Capture Source", SND_SOC_NOPM, 0, 0,
 			 &pcm186x_adc_mux_controls[3]),
 
-	/*
-	 * Put the codec into SLEEP mode when not in use, allowing the
-	 * Energysense mechanism to operate.
-	 */
+	 
 	SND_SOC_DAPM_ADC("ADC1", "HiFi Capture 1", PCM186X_POWER_CTRL, 1,  1),
 	SND_SOC_DAPM_ADC("ADC2", "HiFi Capture 2", PCM186X_POWER_CTRL, 1,  1),
 };
@@ -312,7 +300,7 @@ static int pcm186x_hw_params(struct snd_pcm_substream *substream,
 	div_lrck = width * channels;
 
 	if (priv->is_tdm_mode) {
-		/* Select TDM transmission data */
+		 
 		switch (channels) {
 		case 2:
 			tdm_tx_sel = PCM186X_TDM_TX_SEL_2CH;
@@ -330,16 +318,16 @@ static int pcm186x_hw_params(struct snd_pcm_substream *substream,
 		snd_soc_component_update_bits(component, PCM186X_TDM_TX_SEL,
 				    PCM186X_TDM_TX_SEL_MASK, tdm_tx_sel);
 
-		/* In DSP/TDM mode, the LRCLK divider must be 256 */
+		 
 		div_lrck = 256;
 
-		/* Configure 1/256 duty cycle for LRCK */
+		 
 		snd_soc_component_update_bits(component, PCM186X_PCM_CFG,
 				    PCM186X_PCM_CFG_TDM_LRCK_MODE,
 				    PCM186X_PCM_CFG_TDM_LRCK_MODE);
 	}
 
-	/* Only configure clock dividers in provider mode. */
+	 
 	if (priv->is_provider_mode) {
 		div_bck = priv->sysclk / (div_lrck * rate);
 
@@ -380,7 +368,7 @@ static int pcm186x_set_fmt(struct snd_soc_dai *dai, unsigned int format)
 		return -EINVAL;
 	}
 
-	/* set interface polarity */
+	 
 	switch (format & SND_SOC_DAIFMT_INV_MASK) {
 	case SND_SOC_DAIFMT_NB_NF:
 		break;
@@ -389,7 +377,7 @@ static int pcm186x_set_fmt(struct snd_soc_dai *dai, unsigned int format)
 		return -EINVAL;
 	}
 
-	/* set interface format */
+	 
 	switch (format & SND_SOC_DAIFMT_FORMAT_MASK) {
 	case SND_SOC_DAIFMT_I2S:
 		pcm_cfg = PCM186X_PCM_CFG_FMT_I2S;
@@ -400,9 +388,7 @@ static int pcm186x_set_fmt(struct snd_soc_dai *dai, unsigned int format)
 	case SND_SOC_DAIFMT_DSP_A:
 		priv->tdm_offset += 1;
 		fallthrough;
-		/* DSP_A uses the same basic config as DSP_B
-		 * except we need to shift the TDM output by one BCK cycle
-		 */
+		 
 	case SND_SOC_DAIFMT_DSP_B:
 		priv->is_tdm_mode = true;
 		pcm_cfg = PCM186X_PCM_CFG_FMT_TDM;
@@ -663,7 +649,7 @@ int pcm186x_probe(struct device *dev, enum pcm186x_type type, int irq,
 		return ret;
 	}
 
-	/* Reset device registers for a consistent power-on like state */
+	 
 	ret = regmap_write(regmap, PCM186X_PAGE, PCM186X_RESET);
 	if (ret) {
 		dev_err(dev, "failed to write device: %d\n", ret);

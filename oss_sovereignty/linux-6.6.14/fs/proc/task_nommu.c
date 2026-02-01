@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #include <linux/mm.h>
 #include <linux/file.h>
@@ -12,12 +12,7 @@
 
 #include "internal.h"
 
-/*
- * Logic: we've got two memory sums for each process, "shared", and
- * "non-shared". Shared memory may get counted more than once, for
- * each process that owns it. Non-shared memory is counted
- * accurately.
- */
+ 
 void task_mem(struct seq_file *m, struct mm_struct *mm)
 {
 	VMA_ITERATOR(vmi, mm, 0);
@@ -67,7 +62,7 @@ void task_mem(struct seq_file *m, struct mm_struct *mm)
 	else
 		bytes += kobjsize(current->sighand);
 
-	bytes += kobjsize(current); /* includes kernel stack */
+	bytes += kobjsize(current);  
 
 	mmap_read_unlock(mm);
 
@@ -121,9 +116,7 @@ unsigned long task_statm(struct mm_struct *mm,
 	return size;
 }
 
-/*
- * display a single VMA to a sequenced file
- */
+ 
 static int nommu_vma_show(struct seq_file *m, struct vm_area_struct *vma)
 {
 	struct mm_struct *mm = vma->vm_mm;
@@ -167,9 +160,7 @@ static int nommu_vma_show(struct seq_file *m, struct vm_area_struct *vma)
 	return 0;
 }
 
-/*
- * display mapping lines for a particular process's /proc/pid/maps
- */
+ 
 static int show_map(struct seq_file *m, void *_p)
 {
 	return nommu_vma_show(m, _p);
@@ -195,11 +186,11 @@ static void *m_start(struct seq_file *m, loff_t *ppos)
 	unsigned long last_addr = *ppos;
 	struct mm_struct *mm;
 
-	/* See proc_get_vma(). Zero at the start or after lseek. */
+	 
 	if (last_addr == -1UL)
 		return NULL;
 
-	/* pin the task and mm whilst we play with them */
+	 
 	priv->task = get_proc_task(priv->inode);
 	if (!priv->task)
 		return ERR_PTR(-ESRCH);

@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2019 Intel Corporation
- */
+ 
+ 
 
 #ifndef __INTEL_FBDEV_H__
 #define __INTEL_FBDEV_H__
@@ -57,4 +55,4 @@ static inline struct intel_framebuffer *intel_fbdev_framebuffer(struct intel_fbd
 }
 #endif
 
-#endif /* __INTEL_FBDEV_H__ */
+#endif  

@@ -1,118 +1,4 @@
-/*
- * AMD 10Gb Ethernet driver
- *
- * This file is available to you under your choice of the following two
- * licenses:
- *
- * License 1: GPLv2
- *
- * Copyright (c) 2016 Advanced Micro Devices, Inc.
- *
- * This file is free software; you may copy, redistribute and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 2 of the License, or (at
- * your option) any later version.
- *
- * This file is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
- * This file incorporates work covered by the following copyright and
- * permission notice:
- *     The Synopsys DWC ETHER XGMAC Software Driver and documentation
- *     (hereinafter "Software") is an unsupported proprietary work of Synopsys,
- *     Inc. unless otherwise expressly agreed to in writing between Synopsys
- *     and you.
- *
- *     The Software IS NOT an item of Licensed Software or Licensed Product
- *     under any End User Software License Agreement or Agreement for Licensed
- *     Product with Synopsys or any supplement thereto.  Permission is hereby
- *     granted, free of charge, to any person obtaining a copy of this software
- *     annotated with this license and the Software, to deal in the Software
- *     without restriction, including without limitation the rights to use,
- *     copy, modify, merge, publish, distribute, sublicense, and/or sell copies
- *     of the Software, and to permit persons to whom the Software is furnished
- *     to do so, subject to the following conditions:
- *
- *     The above copyright notice and this permission notice shall be included
- *     in all copies or substantial portions of the Software.
- *
- *     THIS SOFTWARE IS BEING DISTRIBUTED BY SYNOPSYS SOLELY ON AN "AS IS"
- *     BASIS AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
- *     TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
- *     PARTICULAR PURPOSE ARE HEREBY DISCLAIMED. IN NO EVENT SHALL SYNOPSYS
- *     BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- *     CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- *     SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- *     INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- *     CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- *     ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
- *     THE POSSIBILITY OF SUCH DAMAGE.
- *
- *
- * License 2: Modified BSD
- *
- * Copyright (c) 2016 Advanced Micro Devices, Inc.
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *     * Redistributions of source code must retain the above copyright
- *       notice, this list of conditions and the following disclaimer.
- *     * Redistributions in binary form must reproduce the above copyright
- *       notice, this list of conditions and the following disclaimer in the
- *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of Advanced Micro Devices, Inc. nor the
- *       names of its contributors may be used to endorse or promote products
- *       derived from this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT HOLDER> BE LIABLE FOR ANY
- * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
- * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * This file incorporates work covered by the following copyright and
- * permission notice:
- *     The Synopsys DWC ETHER XGMAC Software Driver and documentation
- *     (hereinafter "Software") is an unsupported proprietary work of Synopsys,
- *     Inc. unless otherwise expressly agreed to in writing between Synopsys
- *     and you.
- *
- *     The Software IS NOT an item of Licensed Software or Licensed Product
- *     under any End User Software License Agreement or Agreement for Licensed
- *     Product with Synopsys or any supplement thereto.  Permission is hereby
- *     granted, free of charge, to any person obtaining a copy of this software
- *     annotated with this license and the Software, to deal in the Software
- *     without restriction, including without limitation the rights to use,
- *     copy, modify, merge, publish, distribute, sublicense, and/or sell copies
- *     of the Software, and to permit persons to whom the Software is furnished
- *     to do so, subject to the following conditions:
- *
- *     The above copyright notice and this permission notice shall be included
- *     in all copies or substantial portions of the Software.
- *
- *     THIS SOFTWARE IS BEING DISTRIBUTED BY SYNOPSYS SOLELY ON AN "AS IS"
- *     BASIS AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
- *     TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
- *     PARTICULAR PURPOSE ARE HEREBY DISCLAIMED. IN NO EVENT SHALL SYNOPSYS
- *     BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- *     CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- *     SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- *     INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- *     CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- *     ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
- *     THE POSSIBILITY OF SUCH DAMAGE.
- */
+ 
 
 #include <linux/module.h>
 #include <linux/kmod.h>
@@ -131,7 +17,7 @@
 #define XGBE_DFE_CFG_PROPERTY		"amd,serdes-dfe-tap-config"
 #define XGBE_DFE_ENA_PROPERTY		"amd,serdes-dfe-tap-enable"
 
-/* Default SerDes settings */
+ 
 #define XGBE_SPEED_1000_BLWC		1
 #define XGBE_SPEED_1000_CDR		0x2
 #define XGBE_SPEED_1000_PLL		0x0
@@ -162,7 +48,7 @@
 #define XGBE_SPEED_10000_DFE_TAP_CONFIG	0x1
 #define XGBE_SPEED_10000_DFE_TAP_ENABLE	0x7f
 
-/* Rate-change complete wait/retry count */
+ 
 #define XGBE_RATECHANGE_COUNT		500
 
 static const u32 xgbe_phy_blwc[] = {
@@ -202,15 +88,10 @@ static const u32 xgbe_phy_dfe_tap_ena[] = {
 };
 
 struct xgbe_phy_data {
-	/* 1000/10000 vs 2500/10000 indicator */
+	 
 	unsigned int speed_set;
 
-	/* SerDes UEFI configurable settings.
-	 *   Switching between modes/speeds requires new values for some
-	 *   SerDes settings.  The values can be supplied as device
-	 *   properties in array format.  The first array entry is for
-	 *   1GbE, second for 2.5GbE and third for 10GbE
-	 */
+	 
 	u32 blwc[XGBE_SPEEDS];
 	u32 cdr_rate[XGBE_SPEEDS];
 	u32 pq_skew[XGBE_SPEEDS];
@@ -239,7 +120,7 @@ static enum xgbe_mode xgbe_phy_an_outcome(struct xgbe_prv_data *pdata)
 	XGBE_SET_LP_ADV(lks, Autoneg);
 	XGBE_SET_LP_ADV(lks, Backplane);
 
-	/* Compare Advertisement and Link Partner register 1 */
+	 
 	ad_reg = XMDIO_READ(pdata, MDIO_MMD_AN, MDIO_AN_ADVERTISE);
 	lp_reg = XMDIO_READ(pdata, MDIO_MMD_AN, MDIO_AN_LPA);
 	if (lp_reg & 0x400)
@@ -248,7 +129,7 @@ static enum xgbe_mode xgbe_phy_an_outcome(struct xgbe_prv_data *pdata)
 		XGBE_SET_LP_ADV(lks, Asym_Pause);
 
 	if (pdata->phy.pause_autoneg) {
-		/* Set flow control based on auto-negotiation result */
+		 
 		pdata->phy.tx_pause = 0;
 		pdata->phy.rx_pause = 0;
 
@@ -263,7 +144,7 @@ static enum xgbe_mode xgbe_phy_an_outcome(struct xgbe_prv_data *pdata)
 		}
 	}
 
-	/* Compare Advertisement and Link Partner register 2 */
+	 
 	ad_reg = XMDIO_READ(pdata, MDIO_MMD_AN, MDIO_AN_ADVERTISE + 1);
 	lp_reg = XMDIO_READ(pdata, MDIO_MMD_AN, MDIO_AN_LPA + 1);
 	if (lp_reg & 0x80)
@@ -287,7 +168,7 @@ static enum xgbe_mode xgbe_phy_an_outcome(struct xgbe_prv_data *pdata)
 		mode = XGBE_MODE_UNKNOWN;
 	}
 
-	/* Compare Advertisement and Link Partner register 3 */
+	 
 	ad_reg = XMDIO_READ(pdata, MDIO_MMD_AN, MDIO_AN_ADVERTISE + 2);
 	lp_reg = XMDIO_READ(pdata, MDIO_MMD_AN, MDIO_AN_LPA + 2);
 	if (lp_reg & 0xc000)
@@ -306,7 +187,7 @@ static void xgbe_phy_an_advertising(struct xgbe_prv_data *pdata,
 
 static int xgbe_phy_an_config(struct xgbe_prv_data *pdata)
 {
-	/* Nothing uniquely required for an configuration */
+	 
 	return 0;
 }
 
@@ -332,7 +213,7 @@ static void xgbe_phy_pcs_power_cycle(struct xgbe_prv_data *pdata)
 
 static void xgbe_phy_start_ratechange(struct xgbe_prv_data *pdata)
 {
-	/* Assert Rx and Tx ratechange */
+	 
 	XSIR1_IOWRITE_BITS(pdata, SIR1_SPEED, RATECHANGE, 1);
 }
 
@@ -341,10 +222,10 @@ static void xgbe_phy_complete_ratechange(struct xgbe_prv_data *pdata)
 	unsigned int wait;
 	u16 status;
 
-	/* Release Rx and Tx ratechange */
+	 
 	XSIR1_IOWRITE_BITS(pdata, SIR1_SPEED, RATECHANGE, 0);
 
-	/* Wait for Rx and Tx ready */
+	 
 	wait = XGBE_RATECHANGE_COUNT;
 	while (wait--) {
 		usleep_range(50, 75);
@@ -359,7 +240,7 @@ static void xgbe_phy_complete_ratechange(struct xgbe_prv_data *pdata)
 		  status);
 
 rx_reset:
-	/* Perform Rx reset for the DFE changes */
+	 
 	XRXTX_IOWRITE_BITS(pdata, RXTX_REG6, RESETB_RXD, 0);
 	XRXTX_IOWRITE_BITS(pdata, RXTX_REG6, RESETB_RXD, 1);
 }
@@ -369,7 +250,7 @@ static void xgbe_phy_kr_mode(struct xgbe_prv_data *pdata)
 	struct xgbe_phy_data *phy_data = pdata->phy_data;
 	unsigned int reg;
 
-	/* Set PCS to KR/10G speed */
+	 
 	reg = XMDIO_READ(pdata, MDIO_MMD_PCS, MDIO_CTRL2);
 	reg &= ~MDIO_PCS_CTRL2_TYPE;
 	reg |= MDIO_PCS_CTRL2_10GBR;
@@ -382,7 +263,7 @@ static void xgbe_phy_kr_mode(struct xgbe_prv_data *pdata)
 
 	xgbe_phy_pcs_power_cycle(pdata);
 
-	/* Set SerDes to 10G speed */
+	 
 	xgbe_phy_start_ratechange(pdata);
 
 	XSIR1_IOWRITE_BITS(pdata, SIR1_SPEED, DATARATE, XGBE_SPEED_10000_RATE);
@@ -412,7 +293,7 @@ static void xgbe_phy_kx_2500_mode(struct xgbe_prv_data *pdata)
 	struct xgbe_phy_data *phy_data = pdata->phy_data;
 	unsigned int reg;
 
-	/* Set PCS to KX/1G speed */
+	 
 	reg = XMDIO_READ(pdata, MDIO_MMD_PCS, MDIO_CTRL2);
 	reg &= ~MDIO_PCS_CTRL2_TYPE;
 	reg |= MDIO_PCS_CTRL2_10GBX;
@@ -425,7 +306,7 @@ static void xgbe_phy_kx_2500_mode(struct xgbe_prv_data *pdata)
 
 	xgbe_phy_pcs_power_cycle(pdata);
 
-	/* Set SerDes to 2.5G speed */
+	 
 	xgbe_phy_start_ratechange(pdata);
 
 	XSIR1_IOWRITE_BITS(pdata, SIR1_SPEED, DATARATE, XGBE_SPEED_2500_RATE);
@@ -455,7 +336,7 @@ static void xgbe_phy_kx_1000_mode(struct xgbe_prv_data *pdata)
 	struct xgbe_phy_data *phy_data = pdata->phy_data;
 	unsigned int reg;
 
-	/* Set PCS to KX/1G speed */
+	 
 	reg = XMDIO_READ(pdata, MDIO_MMD_PCS, MDIO_CTRL2);
 	reg &= ~MDIO_PCS_CTRL2_TYPE;
 	reg |= MDIO_PCS_CTRL2_10GBX;
@@ -468,7 +349,7 @@ static void xgbe_phy_kx_1000_mode(struct xgbe_prv_data *pdata)
 
 	xgbe_phy_pcs_power_cycle(pdata);
 
-	/* Set SerDes to 1G speed */
+	 
 	xgbe_phy_start_ratechange(pdata);
 
 	XSIR1_IOWRITE_BITS(pdata, SIR1_SPEED, DATARATE, XGBE_SPEED_1000_RATE);
@@ -519,7 +400,7 @@ static enum xgbe_mode xgbe_phy_switch_mode(struct xgbe_prv_data *pdata)
 	struct xgbe_phy_data *phy_data = pdata->phy_data;
 	enum xgbe_mode mode;
 
-	/* If we are in KR switch to KX, and vice-versa */
+	 
 	if (xgbe_phy_cur_mode(pdata) == XGBE_MODE_KR) {
 		if (phy_data->speed_set == XGBE_SPEEDSET_2500_10000)
 			mode = XGBE_MODE_KX_2500;
@@ -629,9 +510,7 @@ static int xgbe_phy_link_status(struct xgbe_prv_data *pdata, int *an_restart)
 
 	*an_restart = 0;
 
-	/* Link status is latched low, so read once to clear
-	 * and then read again to get current state
-	 */
+	 
 	reg = XMDIO_READ(pdata, MDIO_MMD_PCS, MDIO_STAT1);
 	reg = XMDIO_READ(pdata, MDIO_MMD_PCS, MDIO_STAT1);
 
@@ -640,12 +519,12 @@ static int xgbe_phy_link_status(struct xgbe_prv_data *pdata, int *an_restart)
 
 static void xgbe_phy_stop(struct xgbe_prv_data *pdata)
 {
-	/* Nothing uniquely required for stop */
+	 
 }
 
 static int xgbe_phy_start(struct xgbe_prv_data *pdata)
 {
-	/* Nothing uniquely required for start */
+	 
 	return 0;
 }
 
@@ -653,7 +532,7 @@ static int xgbe_phy_reset(struct xgbe_prv_data *pdata)
 {
 	unsigned int reg, count;
 
-	/* Perform a software reset of the PCS */
+	 
 	reg = XMDIO_READ(pdata, MDIO_MMD_PCS, MDIO_CTRL1);
 	reg |= MDIO_CTRL1_RESET;
 	XMDIO_WRITE(pdata, MDIO_MMD_PCS, MDIO_CTRL1, reg);
@@ -672,7 +551,7 @@ static int xgbe_phy_reset(struct xgbe_prv_data *pdata)
 
 static void xgbe_phy_exit(struct xgbe_prv_data *pdata)
 {
-	/* Nothing uniquely required for exit */
+	 
 }
 
 static int xgbe_phy_init(struct xgbe_prv_data *pdata)
@@ -685,7 +564,7 @@ static int xgbe_phy_init(struct xgbe_prv_data *pdata)
 	if (!phy_data)
 		return -ENOMEM;
 
-	/* Retrieve the PHY speedset */
+	 
 	ret = device_property_read_u32(pdata->phy_dev, XGBE_SPEEDSET_PROPERTY,
 				       &phy_data->speed_set);
 	if (ret) {
@@ -704,7 +583,7 @@ static int xgbe_phy_init(struct xgbe_prv_data *pdata)
 		return -EINVAL;
 	}
 
-	/* Retrieve the PHY configuration properties */
+	 
 	if (device_property_present(pdata->phy_dev, XGBE_BLWC_PROPERTY)) {
 		ret = device_property_read_u32_array(pdata->phy_dev,
 						     XGBE_BLWC_PROPERTY,
@@ -795,7 +674,7 @@ static int xgbe_phy_init(struct xgbe_prv_data *pdata)
 		       sizeof(phy_data->dfe_tap_ena));
 	}
 
-	/* Initialize supported features */
+	 
 	XGBE_ZERO_SUP(lks);
 	XGBE_SET_SUP(lks, Autoneg);
 	XGBE_SET_SUP(lks, Pause);

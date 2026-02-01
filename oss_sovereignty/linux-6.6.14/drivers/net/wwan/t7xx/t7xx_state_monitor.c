@@ -1,18 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2021, MediaTek Inc.
- * Copyright (c) 2021-2022, Intel Corporation.
- *
- * Authors:
- *  Haijun Liu <haijun.liu@mediatek.com>
- *  Eliot Lee <eliot.lee@intel.com>
- *  Moises Veleta <moises.veleta@intel.com>
- *  Ricardo Martinez <ricardo.martinez@linux.intel.com>
- *
- * Contributors:
- *  Amir Hanania <amir.hanania@intel.com>
- *  Sreehari Kancharla <sreehari.kancharla@intel.com>
- */
+
+ 
 
 #include <linux/bits.h>
 #include <linux/bitfield.h>
@@ -92,7 +79,7 @@ void t7xx_fsm_broadcast_state(struct t7xx_fsm_ctl *ctl, enum md_state state)
 {
 	ctl->md_state = state;
 
-	/* Update to port first, otherwise sending message on HS2 may fail */
+	 
 	t7xx_port_proxy_md_status_notify(ctl->md->port_prox, state);
 	fsm_state_notify(ctl->md, state);
 }
@@ -244,7 +231,7 @@ static void fsm_routine_stopping(struct t7xx_fsm_ctl *ctl, struct t7xx_fsm_comma
 
 	if (!ctl->md->rgu_irq_asserted) {
 		t7xx_mhccif_h2d_swint_trigger(t7xx_dev, H2D_CH_DRM_DISABLE_AP);
-		/* Wait for the DRM disable to take effect */
+		 
 		msleep(FSM_DRM_DISABLE_DELAY_MS);
 
 		err = t7xx_acpi_fldr_func(t7xx_dev);

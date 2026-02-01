@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2014-2018, NVIDIA CORPORATION.  All rights reserved.
- *
- * This software is licensed under the terms of the GNU General Public
- * License version 2, as published by the Free Software Foundation, and
- * may be copied, distributed, and modified under those terms.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/platform_device.h>
@@ -192,11 +180,7 @@ static const struct tegra_tsensor tegra124_tsensors[] = {
 	},
 };
 
-/*
- * Mask/shift bits in FUSE_TSENSOR_COMMON and
- * FUSE_TSENSOR_COMMON, which are described in
- * tegra_soctherm_fuse.c
- */
+ 
 static const struct tegra_soctherm_fuse tegra124_soctherm_fuse = {
 	.fuse_base_cp_mask = 0x3ff,
 	.fuse_base_cp_shift = 0,

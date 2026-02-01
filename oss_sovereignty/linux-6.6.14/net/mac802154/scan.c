@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * IEEE 802.15.4 scanning management
- *
- * Copyright (C) 2021 Qorvo US, Inc
- * Authors:
- *   - David Girault <david.girault@qorvo.com>
- *   - Miquel Raynal <miquel.raynal@bootlin.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/rtnetlink.h>
@@ -25,22 +18,7 @@
 #define IEEE802154_MAC_CMD_SKB_SZ (IEEE802154_MAC_CMD_MHR_SZ + \
 				   IEEE802154_MAC_CMD_PL_SZ)
 
-/* mac802154_scan_cleanup_locked() must be called upon scan completion or abort.
- * - Completions are asynchronous, not locked by the rtnl and decided by the
- *   scan worker.
- * - Aborts are decided by userspace, and locked by the rtnl.
- *
- * Concurrent modifications to the PHY, the interfaces or the hardware is in
- * general prevented by the rtnl. So in most cases we don't need additional
- * protection.
- *
- * However, the scan worker get's triggered without anybody noticing and thus we
- * must ensure the presence of the devices as well as data consistency:
- * - The sub-interface and device driver module get both their reference
- *   counters incremented whenever we start a scan, so they cannot disappear
- *   during operation.
- * - Data consistency is achieved by the use of rcu protected pointers.
- */
+ 
 static int mac802154_scan_cleanup_locked(struct ieee802154_local *local,
 					 struct ieee802154_sub_if_data *sdata,
 					 bool aborted)
@@ -50,7 +28,7 @@ static int mac802154_scan_cleanup_locked(struct ieee802154_local *local,
 	struct cfg802154_scan_request *request;
 	u8 arg;
 
-	/* Prevent any further use of the scan request */
+	 
 	clear_bit(IEEE802154_IS_SCANNING, &local->ongoing);
 	cancel_delayed_work(&local->scan_work);
 	request = rcu_replace_pointer(local->scan_req, NULL, 1);
@@ -58,17 +36,17 @@ static int mac802154_scan_cleanup_locked(struct ieee802154_local *local,
 		return 0;
 	kvfree_rcu_mightsleep(request);
 
-	/* Advertize first, while we know the devices cannot be removed */
+	 
 	if (aborted)
 		arg = NL802154_SCAN_DONE_REASON_ABORTED;
 	else
 		arg = NL802154_SCAN_DONE_REASON_FINISHED;
 	nl802154_scan_done(wpan_phy, wpan_dev, arg);
 
-	/* Cleanup software stack */
+	 
 	ieee802154_mlme_op_post(local);
 
-	/* Set the hardware back in its original state */
+	 
 	drv_set_channel(local, wpan_phy->current_page,
 			wpan_phy->current_channel);
 	ieee802154_configure_durations(wpan_phy, wpan_phy->current_page,
@@ -183,10 +161,7 @@ void mac802154_scan_worker(struct work_struct *work)
 	u8 page, channel;
 	int ret;
 
-	/* Ensure the device receiver is turned off when changing channels
-	 * because there is no atomic way to change the channel and know on
-	 * which one a beacon might have been received.
-	 */
+	 
 	drv_stop(local);
 	synchronize_net();
 	mac802154_flush_queued_beacons(local);
@@ -200,7 +175,7 @@ void mac802154_scan_worker(struct work_struct *work)
 
 	sdata = IEEE802154_WPAN_DEV_TO_SUB_IF(scan_req->wpan_dev);
 
-	/* Wait an arbitrary amount of time in case we cannot use the device */
+	 
 	if (local->suspended || !ieee802154_sdata_running(sdata)) {
 		rcu_read_unlock();
 		queue_delayed_work(local->mac_wq, &local->scan_work,
@@ -211,7 +186,7 @@ void mac802154_scan_worker(struct work_struct *work)
 	wpan_phy = scan_req->wpan_phy;
 	scan_req_duration = scan_req->duration;
 
-	/* Look for the next valid chan */
+	 
 	page = local->scan_page;
 	channel = local->scan_channel;
 	do {
@@ -224,7 +199,7 @@ void mac802154_scan_worker(struct work_struct *work)
 
 	rcu_read_unlock();
 
-	/* Bypass the stack on purpose when changing the channel */
+	 
 	rtnl_lock();
 	ret = drv_set_channel(local, page, channel);
 	rtnl_unlock();
@@ -282,12 +257,10 @@ int mac802154_trigger_scan_locked(struct ieee802154_sub_if_data *sdata,
 	    request->type != NL802154_SCAN_ACTIVE)
 		return -EOPNOTSUPP;
 
-	/* Store scanning parameters */
+	 
 	rcu_assign_pointer(local->scan_req, request);
 
-	/* Software scanning requires to set promiscuous mode, so we need to
-	 * pause the Tx queue during the entire operation.
-	 */
+	 
 	ieee802154_mlme_op_pre(local);
 
 	sdata->required_filtering = IEEE802154_FILTERING_3_SCAN;
@@ -349,7 +322,7 @@ static int mac802154_transmit_beacon(struct ieee802154_local *local,
 	struct sk_buff *skb;
 	int ret;
 
-	/* Update the sequence number */
+	 
 	local->beacon.mhr.seq = atomic_inc_return(&wpan_dev->bsn) & 0xFF;
 
 	skb = alloc_skb(IEEE802154_BEACON_SKB_SZ, GFP_KERNEL);
@@ -375,24 +348,7 @@ static int mac802154_transmit_beacon(struct ieee802154_local *local,
 		return ret;
 	}
 
-	/* Using the MLME transmission helper for sending beacons is a bit
-	 * overkill because we do not really care about the final outcome.
-	 *
-	 * Even though, going through the whole net stack with a regular
-	 * dev_queue_xmit() is not relevant either because we want beacons to be
-	 * sent "now" rather than go through the whole net stack scheduling
-	 * (qdisc & co).
-	 *
-	 * Finally, using ieee802154_subif_start_xmit() would only be an option
-	 * if we had a generic transmit helper which would acquire the
-	 * HARD_TX_LOCK() to prevent buffer handling conflicts with regular
-	 * packets.
-	 *
-	 * So for now we keep it simple and send beacons with our MLME helper,
-	 * even if it stops the ieee802154 queue entirely during these
-	 * transmissions, wich anyway does not have a huge impact on the
-	 * performances given the current design of the stack.
-	 */
+	 
 	return ieee802154_mlme_tx(local, sdata, skb);
 }
 
@@ -415,7 +371,7 @@ void mac802154_beacon_worker(struct work_struct *work)
 
 	sdata = IEEE802154_WPAN_DEV_TO_SUB_IF(beacon_req->wpan_dev);
 
-	/* Wait an arbitrary amount of time in case we cannot use the device */
+	 
 	if (local->suspended || !ieee802154_sdata_running(sdata)) {
 		rcu_read_unlock();
 		queue_delayed_work(local->mac_wq, &local->beacon_work,
@@ -472,7 +428,7 @@ int mac802154_send_beacons_locked(struct ieee802154_sub_if_data *sdata,
 	if (mac802154_is_beaconing(local))
 		mac802154_stop_beacons_locked(local, sdata);
 
-	/* Store beaconing parameters */
+	 
 	rcu_assign_pointer(local->beacon_req, request);
 
 	set_bit(IEEE802154_IS_BEACONING, &local->ongoing);
@@ -495,14 +451,14 @@ int mac802154_send_beacons_locked(struct ieee802154_sub_if_data *sdata,
 		local->beacon.mac_pl.superframe_order = request->interval;
 	local->beacon.mac_pl.final_cap_slot = 0xf;
 	local->beacon.mac_pl.battery_life_ext = 0;
-	/* TODO: Fill this field with the coordinator situation in the network */
+	 
 	local->beacon.mac_pl.pan_coordinator = 1;
 	local->beacon.mac_pl.assoc_permit = 1;
 
 	if (request->interval == IEEE802154_ACTIVE_SCAN_DURATION)
 		return 0;
 
-	/* Start the beacon work */
+	 
 	local->beacon_interval =
 		mac802154_scan_get_channel_time(request->interval,
 						request->wpan_phy->symbol_duration);

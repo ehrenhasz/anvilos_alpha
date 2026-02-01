@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * vsp1_histo.c  --  R-Car VSP1 Histogram API
- *
- * Copyright (C) 2016 Renesas Electronics Corporation
- * Copyright (C) 2016 Laurent Pinchart
- *
- * Contact: Laurent Pinchart (laurent.pinchart@ideasonboard.com)
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/gfp.h>
@@ -22,9 +15,7 @@
 #define HISTO_MIN_SIZE				4U
 #define HISTO_MAX_SIZE				8192U
 
-/* -----------------------------------------------------------------------------
- * Buffer Operations
- */
+ 
 
 static inline struct vsp1_histogram_buffer *
 to_vsp1_histogram_buffer(struct vb2_v4l2_buffer *vbuf)
@@ -60,11 +51,7 @@ void vsp1_histogram_buffer_complete(struct vsp1_histogram *histo,
 	struct vsp1_pipeline *pipe = histo->entity.pipe;
 	unsigned long flags;
 
-	/*
-	 * The pipeline pointer is guaranteed to be valid as this function is
-	 * called from the frame completion interrupt handler, which can only
-	 * occur when video streaming is active.
-	 */
+	 
 	buf->buf.sequence = pipe->sequence;
 	buf->buf.vb2_buf.timestamp = ktime_get_ns();
 	vb2_set_plane_payload(&buf->buf.vb2_buf, 0, size);
@@ -76,9 +63,7 @@ void vsp1_histogram_buffer_complete(struct vsp1_histogram *histo,
 	spin_unlock_irqrestore(&histo->irqlock, flags);
 }
 
-/* -----------------------------------------------------------------------------
- * videobuf2 Queue Operations
- */
+ 
 
 static int histo_queue_setup(struct vb2_queue *vq, unsigned int *nbuffers,
 			     unsigned int *nplanes, unsigned int sizes[],
@@ -144,12 +129,12 @@ static void histo_stop_streaming(struct vb2_queue *vq)
 
 	spin_lock_irqsave(&histo->irqlock, flags);
 
-	/* Remove all buffers from the IRQ queue. */
+	 
 	list_for_each_entry(buffer, &histo->irqqueue, queue)
 		vb2_buffer_done(&buffer->buf.vb2_buf, VB2_BUF_STATE_ERROR);
 	INIT_LIST_HEAD(&histo->irqqueue);
 
-	/* Wait for the buffer being read out (if any) to complete. */
+	 
 	wait_event_lock_irq(histo->wait_queue, !histo->readout, histo->irqlock);
 
 	spin_unlock_irqrestore(&histo->irqlock, flags);
@@ -165,9 +150,7 @@ static const struct vb2_ops histo_video_queue_qops = {
 	.stop_streaming = histo_stop_streaming,
 };
 
-/* -----------------------------------------------------------------------------
- * V4L2 Subdevice Operations
- */
+ 
 
 static int histo_enum_mbus_code(struct v4l2_subdev *subdev,
 				struct v4l2_subdev_state *sd_state,
@@ -266,7 +249,7 @@ static int histo_set_crop(struct v4l2_subdev *subdev,
 	struct v4l2_mbus_framefmt *format;
 	struct v4l2_rect *selection;
 
-	/* The crop rectangle must be inside the input frame. */
+	 
 	format = vsp1_entity_get_pad_format(&histo->entity, sd_state,
 					    HISTO_PAD_SINK);
 	sel->r.left = clamp_t(unsigned int, sel->r.left, 0, format->width - 1);
@@ -276,7 +259,7 @@ static int histo_set_crop(struct v4l2_subdev *subdev,
 	sel->r.height = clamp_t(unsigned int, sel->r.height, HISTO_MIN_SIZE,
 				format->height - sel->r.top);
 
-	/* Set the crop rectangle and reset the compose rectangle. */
+	 
 	selection = vsp1_entity_get_pad_selection(&histo->entity, sd_state,
 						  sel->pad, V4L2_SEL_TGT_CROP);
 	*selection = sel->r;
@@ -298,11 +281,7 @@ static int histo_set_compose(struct v4l2_subdev *subdev,
 	struct v4l2_rect *crop;
 	unsigned int ratio;
 
-	/*
-	 * The compose rectangle is used to configure downscaling, the top left
-	 * corner is fixed to (0,0) and the size to 1/2 or 1/4 of the crop
-	 * rectangle.
-	 */
+	 
 	sel->r.left = 0;
 	sel->r.top = 0;
 
@@ -310,20 +289,7 @@ static int histo_set_compose(struct v4l2_subdev *subdev,
 					     sel->pad,
 					     V4L2_SEL_TGT_CROP);
 
-	/*
-	 * Clamp the width and height to acceptable values first and then
-	 * compute the closest rounded dividing ratio.
-	 *
-	 * Ratio	Rounded ratio
-	 * --------------------------
-	 * [1.0 1.5[	1
-	 * [1.5 3.0[	2
-	 * [3.0 4.0]	4
-	 *
-	 * The rounded ratio can be computed using
-	 *
-	 * 1 << (ceil(ratio * 2) / 3)
-	 */
+	 
 	sel->r.width = clamp(sel->r.width, crop->width / 4, crop->width);
 	ratio = 1 << (crop->width * 2 / sel->r.width / 3);
 	sel->r.width = crop->width / ratio;
@@ -417,9 +383,7 @@ static const struct v4l2_subdev_ops histo_ops = {
 	.pad    = &histo_pad_ops,
 };
 
-/* -----------------------------------------------------------------------------
- * V4L2 ioctls
- */
+ 
 
 static int histo_v4l2_querycap(struct file *file, void *fh,
 			       struct v4l2_capability *cap)
@@ -486,9 +450,7 @@ static const struct v4l2_ioctl_ops histo_v4l2_ioctl_ops = {
 	.vidioc_streamoff		= vb2_ioctl_streamoff,
 };
 
-/* -----------------------------------------------------------------------------
- * V4L2 File Operations
- */
+ 
 
 static const struct v4l2_file_operations histo_v4l2_fops = {
 	.owner = THIS_MODULE,
@@ -535,7 +497,7 @@ int vsp1_histogram_init(struct vsp1_device *vsp1, struct vsp1_histogram *histo,
 	INIT_LIST_HEAD(&histo->irqqueue);
 	init_waitqueue_head(&histo->wait_queue);
 
-	/* Initialize the VSP entity... */
+	 
 	histo->entity.ops = ops;
 	histo->entity.type = type;
 
@@ -544,12 +506,12 @@ int vsp1_histogram_init(struct vsp1_device *vsp1, struct vsp1_histogram *histo,
 	if (ret < 0)
 		return ret;
 
-	/* ... and the media entity... */
+	 
 	ret = media_entity_pads_init(&histo->video.entity, 1, &histo->pad);
 	if (ret < 0)
 		return ret;
 
-	/* ... and the video node... */
+	 
 	histo->video.v4l2_dev = &vsp1->v4l2_dev;
 	histo->video.fops = &histo_v4l2_fops;
 	snprintf(histo->video.name, sizeof(histo->video.name),
@@ -561,7 +523,7 @@ int vsp1_histogram_init(struct vsp1_device *vsp1, struct vsp1_histogram *histo,
 
 	video_set_drvdata(&histo->video, histo);
 
-	/* ... and the buffers queue... */
+	 
 	histo->queue.type = V4L2_BUF_TYPE_META_CAPTURE;
 	histo->queue.io_modes = VB2_MMAP | VB2_USERPTR | VB2_DMABUF;
 	histo->queue.lock = &histo->lock;
@@ -577,7 +539,7 @@ int vsp1_histogram_init(struct vsp1_device *vsp1, struct vsp1_histogram *histo,
 		goto error;
 	}
 
-	/* ... and register the video device. */
+	 
 	histo->video.queue = &histo->queue;
 	ret = video_register_device(&histo->video, VFL_TYPE_VIDEO, -1);
 	if (ret < 0) {

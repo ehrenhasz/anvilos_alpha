@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Microchip LAN966x SoC Clock driver.
- *
- * Copyright (C) 2021 Microchip Technology, Inc. and its subsidiaries
- *
- * Author: Kavyasree Kotagiri <kavyasree.kotagiri@microchip.com>
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/clk-provider.h>
@@ -94,7 +88,7 @@ static int lan966x_gck_set_rate(struct clk_hw *hw,
 	if (rate == 0 || parent_rate == 0)
 		return -EINVAL;
 
-	/* Set Prescalar */
+	 
 	div = parent_rate / rate;
 	val &= ~GCK_PRESCALER;
 	val |= FIELD_PREP(GCK_PRESCALER, (div - 1));
@@ -125,7 +119,7 @@ static int lan966x_gck_determine_rate(struct clk_hw *hw,
 		if (!parent)
 			continue;
 
-		/* Allowed prescaler divider range is 0-255 */
+		 
 		if (clk_hw_get_rate(parent) / req->rate <= DIV_MAX) {
 			req->best_parent_hw = parent;
 			req->best_parent_rate = clk_hw_get_rate(parent);

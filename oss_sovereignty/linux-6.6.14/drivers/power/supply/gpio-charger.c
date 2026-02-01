@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  Copyright (C) 2010, Lars-Peter Clausen <lars@metafoo.de>
- *  Driver for chargers which report their online status through a GPIO pin
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/init.h>
@@ -229,7 +226,7 @@ static int init_charge_current_limit(struct device *dev,
 		cur_limit = gpio_charger->current_limit_map[i].limit_ua;
 	}
 
-	/* default to smallest current limitation for safety reasons */
+	 
 	len = gpio_charger->current_limit_map_size - 1;
 	set_charge_current_limit(gpio_charger,
 		gpio_charger->current_limit_map[len].limit_ua);
@@ -237,11 +234,7 @@ static int init_charge_current_limit(struct device *dev,
 	return 0;
 }
 
-/*
- * The entries will be overwritten by driver's probe routine depending
- * on the available features. This list ensures, that the array is big
- * enough for all optional features.
- */
+ 
 static enum power_supply_property gpio_charger_properties[] = {
 	POWER_SUPPLY_PROP_ONLINE,
 	POWER_SUPPLY_PROP_STATUS,
@@ -270,13 +263,10 @@ static int gpio_charger_probe(struct platform_device *pdev)
 		return -ENOMEM;
 	gpio_charger->dev = dev;
 
-	/*
-	 * This will fetch a GPIO descriptor from device tree, ACPI or
-	 * boardfile descriptor tables. It's good to try this first.
-	 */
+	 
 	gpio_charger->gpiod = devm_gpiod_get_optional(dev, NULL, GPIOD_IN);
 	if (IS_ERR(gpio_charger->gpiod)) {
-		/* Just try again if this happens */
+		 
 		return dev_err_probe(dev, PTR_ERR(gpio_charger->gpiod),
 				     "error getting GPIO descriptor\n");
 	}

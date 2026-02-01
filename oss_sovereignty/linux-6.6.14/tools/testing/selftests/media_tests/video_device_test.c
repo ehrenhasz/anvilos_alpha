@@ -1,30 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0
 
-/*
- * video_device_test - Video Device Test
- *
- * Copyright (c) 2016 Shuah Khan <shuahkh@osg.samsung.com>
- * Copyright (c) 2016 Samsung Electronics Co., Ltd.
- *
- */
 
-/*
- * This file adds a test for Video Device. This test should not be included
- * in the Kselftest run. This test should be run when hardware and driver
- * that makes use of V4L2 API is present.
- *
- * This test opens user specified Video Device and calls video ioctls in a
- * loop once every 10 seconds.
- *
- * Usage:
- *	sudo ./video_device_test -d /dev/videoX
- *
- *	While test is running, remove the device or unbind the driver and
- *	ensure there are no use after free errors and other Oops in the
- *	dmesg.
- *	When possible, enable KaSan kernel config option for use-after-free
- *	error detection.
-*/
+ 
+
+ 
 
 #include <stdio.h>
 #include <unistd.h>
@@ -41,7 +19,7 @@
 
 int priority_test(int fd)
 {
-	/* This test will try to update the priority associated with a file descriptor */
+	 
 
 	enum v4l2_priority old_priority, new_priority, priority_to_compare;
 	int ret;
@@ -85,7 +63,7 @@ int loop_test(int fd)
 	struct v4l2_capability vcap;
 	int ret;
 
-	/* Generate random number of interations */
+	 
 	srand((unsigned int) time(NULL));
 	count = rand();
 
@@ -126,7 +104,7 @@ int main(int argc, char **argv)
 		exit(-1);
 	}
 
-	/* Process arguments */
+	 
 	while ((opt = getopt(argc, argv, "d:")) != -1) {
 		switch (opt) {
 		case 'd':
@@ -139,7 +117,7 @@ int main(int argc, char **argv)
 		}
 	}
 
-	/* Open Video device and keep it open */
+	 
 	fd = open(video_dev, O_RDWR);
 	if (fd == -1) {
 		printf("Video Device open errno %s\n", strerror(errno));

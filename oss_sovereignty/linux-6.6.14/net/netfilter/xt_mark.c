@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *	xt_mark - Netfilter module to match NFMARK value
- *
- *	(C) 1999-2001 Marc Boucher <marc@mbsi.ca>
- *	Copyright © CC Computer Consultants GmbH, 2007 - 2008
- *	Jan Engelhardt <jengelh@medozas.de>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/skbuff.h>

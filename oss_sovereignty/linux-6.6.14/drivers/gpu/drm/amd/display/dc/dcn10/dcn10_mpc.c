@@ -1,27 +1,4 @@
-/*
- * Copyright 2012-15 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 #include "reg_helper.h"
 #include "dcn10_mpc.h"
@@ -47,9 +24,9 @@ void mpc1_set_bg_color(struct mpc *mpc,
 
 	bottommost_mpcc->blnd_cfg.black_color = *bg_color;
 
-	/* find bottommost mpcc. */
+	 
 	while (bottommost_mpcc->mpcc_bot) {
-		/* avoid circular linked link */
+		 
 		ASSERT(bottommost_mpcc != bottommost_mpcc->mpcc_bot);
 		if (bottommost_mpcc == bottommost_mpcc->mpcc_bot)
 			break;
@@ -57,10 +34,8 @@ void mpc1_set_bg_color(struct mpc *mpc,
 		bottommost_mpcc = bottommost_mpcc->mpcc_bot;
 	}
 
-	/* mpc color is 12 bit.  tg_color is 10 bit */
-	/* todo: might want to use 16 bit to represent color and have each
-	 * hw block translate to correct color depth.
-	 */
+	 
+	 
 	bg_r_cr = bg_color->color_r_cr << 2;
 	bg_g_y = bg_color->color_g_y << 2;
 	bg_b_cb = bg_color->color_b_cb << 2;
@@ -132,7 +107,7 @@ struct mpcc *mpc1_get_mpcc_for_dpp(struct mpc_tree *tree, int dpp_id)
 		if (tmp_mpcc->dpp_id == dpp_id)
 			return tmp_mpcc;
 
-		/* avoid circular linked list */
+		 
 		ASSERT(tmp_mpcc != tmp_mpcc->mpcc_bot);
 		if (tmp_mpcc == tmp_mpcc->mpcc_bot)
 			break;
@@ -176,22 +151,7 @@ void mpc1_assert_mpcc_idle_before_connect(struct mpc *mpc, int mpcc_id)
 	}
 }
 
-/*
- * Insert DPP into MPC tree based on specified blending position.
- * Only used for planes that are part of blending chain for OPP output
- *
- * Parameters:
- * [in/out] mpc		- MPC context.
- * [in/out] tree	- MPC tree structure that plane will be added to.
- * [in]	blnd_cfg	- MPCC blending configuration for the new blending layer.
- * [in]	sm_cfg		- MPCC stereo mix configuration for the new blending layer.
- *			  stereo mix must disable for the very bottom layer of the tree config.
- * [in]	insert_above_mpcc - Insert new plane above this MPCC.  If NULL, insert as bottom plane.
- * [in]	dpp_id		- DPP instance for the plane to be added.
- * [in]	mpcc_id		- The MPCC physical instance to use for blending.
- *
- * Return:  struct mpcc* - MPCC that was added.
- */
+ 
 struct mpcc *mpc1_insert_plane(
 	struct mpc *mpc,
 	struct mpc_tree *tree,
@@ -204,12 +164,12 @@ struct mpcc *mpc1_insert_plane(
 	struct dcn10_mpc *mpc10 = TO_DCN10_MPC(mpc);
 	struct mpcc *new_mpcc = NULL;
 
-	/* sanity check parameters */
+	 
 	ASSERT(mpcc_id < mpc10->num_mpcc);
 	ASSERT(!(mpc10->mpcc_in_use_mask & 1 << mpcc_id));
 
 	if (insert_above_mpcc) {
-		/* check insert_above_mpcc exist in tree->opp_list */
+		 
 		struct mpcc *temp_mpcc = tree->opp_list;
 
 		if (temp_mpcc != insert_above_mpcc)
@@ -219,11 +179,11 @@ struct mpcc *mpc1_insert_plane(
 			return NULL;
 	}
 
-	/* Get and update MPCC struct parameters */
+	 
 	new_mpcc = mpc1_get_mpcc(mpc, mpcc_id);
 	new_mpcc->dpp_id = dpp_id;
 
-	/* program mux and MPCC_MODE */
+	 
 	if (insert_above_mpcc) {
 		new_mpcc->mpcc_bot = insert_above_mpcc;
 		REG_SET(MPCC_BOT_SEL[mpcc_id], 0, MPCC_BOT_SEL, insert_above_mpcc->mpcc_id);
@@ -236,16 +196,16 @@ struct mpcc *mpc1_insert_plane(
 	REG_SET(MPCC_TOP_SEL[mpcc_id], 0, MPCC_TOP_SEL, dpp_id);
 	REG_SET(MPCC_OPP_ID[mpcc_id], 0, MPCC_OPP_ID, tree->opp_id);
 
-	/* Configure VUPDATE lock set for this MPCC to map to the OPP */
+	 
 	REG_SET(MPCC_UPDATE_LOCK_SEL[mpcc_id], 0, MPCC_UPDATE_LOCK_SEL, tree->opp_id);
 
-	/* update mpc tree mux setting */
+	 
 	if (tree->opp_list == insert_above_mpcc) {
-		/* insert the toppest mpcc */
+		 
 		tree->opp_list = new_mpcc;
 		REG_UPDATE(MUX[tree->opp_id], MPC_OUT_MUX, mpcc_id);
 	} else {
-		/* find insert position */
+		 
 		struct mpcc *temp_mpcc = tree->opp_list;
 
 		while (temp_mpcc && temp_mpcc->mpcc_bot != insert_above_mpcc)
@@ -259,31 +219,22 @@ struct mpcc *mpc1_insert_plane(
 		}
 	}
 
-	/* update the blending configuration */
+	 
 	mpc->funcs->update_blending(mpc, blnd_cfg, mpcc_id);
 
-	/* update the stereo mix settings, if provided */
+	 
 	if (sm_cfg != NULL) {
 		new_mpcc->sm_cfg = *sm_cfg;
 		mpc1_update_stereo_mix(mpc, sm_cfg, mpcc_id);
 	}
 
-	/* mark this mpcc as in use */
+	 
 	mpc10->mpcc_in_use_mask |= 1 << mpcc_id;
 
 	return new_mpcc;
 }
 
-/*
- * Remove a specified MPCC from the MPC tree.
- *
- * Parameters:
- * [in/out] mpc		- MPC context.
- * [in/out] tree	- MPC tree structure that plane will be removed from.
- * [in/out] mpcc	- MPCC to be removed from tree.
- *
- * Return:  void
- */
+ 
 void mpc1_remove_mpcc(
 	struct mpc *mpc,
 	struct mpc_tree *tree,
@@ -295,18 +246,18 @@ void mpc1_remove_mpcc(
 
 	if (tree->opp_list == mpcc_to_remove) {
 		found = true;
-		/* remove MPCC from top of tree */
+		 
 		if (mpcc_to_remove->mpcc_bot) {
-			/* set the next MPCC in list to be the top MPCC */
+			 
 			tree->opp_list = mpcc_to_remove->mpcc_bot;
 			REG_UPDATE(MUX[tree->opp_id], MPC_OUT_MUX, tree->opp_list->mpcc_id);
 		} else {
-			/* there are no other MPCC is list */
+			 
 			tree->opp_list = NULL;
 			REG_UPDATE(MUX[tree->opp_id], MPC_OUT_MUX, 0xf);
 		}
 	} else {
-		/* find mpcc to remove MPCC list */
+		 
 		struct mpcc *temp_mpcc = tree->opp_list;
 
 		while (temp_mpcc && temp_mpcc->mpcc_bot != mpcc_to_remove)
@@ -316,11 +267,11 @@ void mpc1_remove_mpcc(
 			found = true;
 			temp_mpcc->mpcc_bot = mpcc_to_remove->mpcc_bot;
 			if (mpcc_to_remove->mpcc_bot) {
-				/* remove MPCC in middle of list */
+				 
 				REG_SET(MPCC_BOT_SEL[temp_mpcc->mpcc_id], 0,
 						MPCC_BOT_SEL, mpcc_to_remove->mpcc_bot->mpcc_id);
 			} else {
-				/* remove MPCC from bottom of list */
+				 
 				REG_SET(MPCC_BOT_SEL[temp_mpcc->mpcc_id], 0,
 						MPCC_BOT_SEL, 0xf);
 				REG_UPDATE(MPCC_CONTROL[temp_mpcc->mpcc_id],
@@ -330,18 +281,18 @@ void mpc1_remove_mpcc(
 	}
 
 	if (found) {
-		/* turn off MPCC mux registers */
+		 
 		REG_SET(MPCC_TOP_SEL[mpcc_id], 0, MPCC_TOP_SEL, 0xf);
 		REG_SET(MPCC_BOT_SEL[mpcc_id], 0, MPCC_BOT_SEL, 0xf);
 		REG_SET(MPCC_OPP_ID[mpcc_id],  0, MPCC_OPP_ID,  0xf);
 		REG_SET(MPCC_UPDATE_LOCK_SEL[mpcc_id], 0, MPCC_UPDATE_LOCK_SEL, 0xf);
 
-		/* mark this mpcc as not in use */
+		 
 		mpc10->mpcc_in_use_mask &= ~(1 << mpcc_id);
 		mpcc_to_remove->dpp_id = 0xf;
 		mpcc_to_remove->mpcc_bot = NULL;
 	} else {
-		/* In case of resume from S3/S4, remove mpcc from bios left over */
+		 
 		REG_SET(MPCC_TOP_SEL[mpcc_id], 0, MPCC_TOP_SEL, 0xf);
 		REG_SET(MPCC_BOT_SEL[mpcc_id], 0, MPCC_BOT_SEL, 0xf);
 		REG_SET(MPCC_OPP_ID[mpcc_id],  0, MPCC_OPP_ID,  0xf);
@@ -360,14 +311,7 @@ static void mpc1_init_mpcc(struct mpcc *mpcc, int mpcc_inst)
 	mpcc->sm_cfg.enable = false;
 }
 
-/*
- * Reset the MPCC HW status by disconnecting all muxes.
- *
- * Parameters:
- * [in/out] mpc		- MPC context.
- *
- * Return:  void
- */
+ 
 void mpc1_mpc_init(struct mpc *mpc)
 {
 	struct dcn10_mpc *mpc10 = TO_DCN10_MPC(mpc);

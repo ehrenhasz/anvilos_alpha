@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * digi00x-midi.h - a part of driver for Digidesign Digi 002/003 family
- *
- * Copyright (c) 2014-2015 Takashi Sakamoto
- */
+
+ 
 
 #include "digi00x.h"
 
@@ -130,7 +126,7 @@ static int add_substream_pair(struct snd_dg00x *dg00x, unsigned int out_ports,
 	struct snd_rawmidi *rmidi;
 	int err;
 
-	/* Add physical midi ports. */
+	 
 	err = snd_rawmidi_new(dg00x->card, dg00x->card->driver, is_console,
 			      out_ports, in_ports, &rmidi);
 	if (err < 0)
@@ -160,7 +156,7 @@ int snd_dg00x_create_midi_devices(struct snd_dg00x *dg00x)
 {
 	int err;
 
-	/* Add physical midi ports. */
+	 
 	err = add_substream_pair(dg00x, DOT_MIDI_OUT_PORTS, DOT_MIDI_IN_PORTS,
 				 false);
 	if (err < 0)

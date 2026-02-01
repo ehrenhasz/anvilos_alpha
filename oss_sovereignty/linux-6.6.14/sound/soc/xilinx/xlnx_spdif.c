@@ -1,11 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Xilinx ASoC SPDIF audio support
-//
-// Copyright (C) 2018 Xilinx, Inc.
-//
-// Author: Maruthi Srinivas Bayyavarapu <maruthis@xilinx.com>
-//
+
+
+
+
+
+
+
+
 
 #include <linux/clk.h>
 #include <linux/io.h>
@@ -152,7 +152,7 @@ static int rx_stream_detect(struct snd_soc_dai *dai)
 	struct spdif_dev_data *ctx = dev_get_drvdata(dai->dev);
 	unsigned long jiffies = msecs_to_jiffies(CH_STATUS_UPDATE_TIMEOUT);
 
-	/* start capture only if stream is detected within 40ms timeout */
+	 
 	err = wait_event_interruptible_timeout(ctx->chsts_q,
 					       ctx->rx_chsts_updated,
 					       jiffies);

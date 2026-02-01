@@ -1,8 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0
-// Melfas MMS114/MMS136/MMS152 touchscreen device driver
-//
-// Copyright (c) 2012 Samsung Electronics Co., Ltd.
-// Author: Joonyoung Shim <jy0922.shim@samsung.com>
+
+
+
+
+
 
 #include <linux/module.h>
 #include <linux/delay.h>
@@ -14,7 +14,7 @@
 #include <linux/regulator/consumer.h>
 #include <linux/slab.h>
 
-/* Write only registers */
+ 
 #define MMS114_MODE_CONTROL		0x01
 #define MMS114_OPERATION_MODE_MASK	0xE
 #define MMS114_ACTIVE			BIT(1)
@@ -25,7 +25,7 @@
 #define MMS114_CONTACT_THRESHOLD	0x05
 #define MMS114_MOVING_THRESHOLD		0x06
 
-/* Read only registers */
+ 
 #define MMS114_PACKET_SIZE		0x0F
 #define MMS114_INFORMATION		0x10
 #define MMS114_TSP_REV			0xF0
@@ -33,13 +33,13 @@
 #define MMS152_FW_REV			0xE1
 #define MMS152_COMPAT_GROUP		0xF2
 
-/* Minimum delay time is 50us between stop and start signal of i2c */
+ 
 #define MMS114_I2C_DELAY		50
 
-/* 200ms needs after power on */
+ 
 #define MMS114_POWERON_DELAY		200
 
-/* Touchscreen absolute values */
+ 
 #define MMS114_MAX_AREA			0xff
 
 #define MMS114_MAX_TOUCHKEYS		15
@@ -47,7 +47,7 @@
 #define MMS114_EVENT_SIZE		8
 #define MMS136_EVENT_SIZE		6
 
-/* Touch type */
+ 
 #define MMS114_TYPE_NONE		0
 #define MMS114_TYPE_TOUCHSCREEN		1
 #define MMS114_TYPE_TOUCHKEY		2
@@ -73,7 +73,7 @@ struct mms114_data {
 	u32 keycodes[MMS114_MAX_TOUCHKEYS];
 	int num_keycodes;
 
-	/* Use cache data for mode control register(write only) */
+	 
 	u8			cache_mode_control;
 };
 
@@ -98,13 +98,13 @@ static int __mms114_read_reg(struct mms114_data *data, unsigned int reg,
 	if (reg <= MMS114_MODE_CONTROL && reg + len > MMS114_MODE_CONTROL)
 		BUG();
 
-	/* Write register */
+	 
 	xfer[0].addr = client->addr;
 	xfer[0].flags = client->flags & I2C_M_TEN;
 	xfer[0].len = 1;
 	xfer[0].buf = &buf;
 
-	/* Read data */
+	 
 	xfer[1].addr = client->addr;
 	xfer[1].flags = (client->flags & I2C_M_TEN) | I2C_M_RD;
 	xfer[1].len = len;
@@ -234,7 +234,7 @@ static irqreturn_t mms114_interrupt(int irq, void *dev_id)
 	if (packet_size <= 0)
 		goto out;
 
-	/* MMS136 has slightly different event size */
+	 
 	if (data->type == TYPE_MMS134S || data->type == TYPE_MMS136)
 		touch_size = packet_size / MMS136_EVENT_SIZE;
 	else
@@ -279,7 +279,7 @@ static int mms114_set_active(struct mms114_data *data, bool active)
 
 	val &= ~MMS114_OPERATION_MODE_MASK;
 
-	/* If active is false, sleep mode */
+	 
 	if (active)
 		val |= MMS114_ACTIVE;
 
@@ -342,7 +342,7 @@ static int mms114_setup_regs(struct mms114_data *data)
 	if (error < 0)
 		return error;
 
-	/* MMS114, MMS134S and MMS136 have configuration and power on registers */
+	 
 	if (data->type != TYPE_MMS114 && data->type != TYPE_MMS134S &&
 	    data->type != TYPE_MMS136)
 		return 0;
@@ -564,10 +564,7 @@ static int mms114_probe(struct i2c_client *client)
 
 	if (data->type == TYPE_MMS114 || data->type == TYPE_MMS134S ||
 	    data->type == TYPE_MMS136) {
-		/*
-		 * The firmware handles movement and pressure fuzz, so
-		 * don't duplicate that in software.
-		 */
+		 
 		data->moving_threshold = input_abs_get_fuzz(input_dev,
 							    ABS_MT_POSITION_X);
 		data->contact_threshold = input_abs_get_fuzz(input_dev,
@@ -637,7 +634,7 @@ static int mms114_suspend(struct device *dev)
 	struct input_dev *input_dev = data->input_dev;
 	int id;
 
-	/* Release all touch */
+	 
 	for (id = 0; id < MMS114_MAX_TOUCH; id++) {
 		input_mt_slot(input_dev, id);
 		input_mt_report_slot_inactive(input_dev);
@@ -717,7 +714,7 @@ static struct i2c_driver mms114_driver = {
 
 module_i2c_driver(mms114_driver);
 
-/* Module information */
+ 
 MODULE_AUTHOR("Joonyoung Shim <jy0922.shim@samsung.com>");
 MODULE_DESCRIPTION("MELFAS mms114 Touchscreen driver");
 MODULE_LICENSE("GPL v2");

@@ -1,9 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
 
-/*
- * Copyright 2016-2019 HabanaLabs, Ltd.
- * All Rights Reserved.
- */
+
+ 
 
 #include "../habanalabs.h"
 #include "../../include/hw_ip/mmu/mmu_general.h"
@@ -98,21 +95,15 @@ static inline u64 get_hop0_addr(struct hl_ctx *ctx)
 
 static void flush(struct hl_ctx *ctx)
 {
-	/* flush all writes from all cores to reach PCI */
+	 
 	mb();
 	ctx->hdev->asic_funcs->read_pte(ctx->hdev, get_phys_hop0_addr(ctx));
 }
 
-/* transform the value to physical address when writing to H/W */
+ 
 static inline void write_pte(struct hl_ctx *ctx, u64 shadow_pte_addr, u64 val)
 {
-	/*
-	 * The value to write is actually the address of the next shadow hop +
-	 * flags at the 12 LSBs.
-	 * Hence in order to get the value to write to the physical PTE, we
-	 * clear the 12 LSBs and translate the shadow hop to its associated
-	 * physical hop, and add back the original 12 LSBs.
-	 */
+	 
 	u64 phys_val = get_phys_addr(ctx, val & HOP_PHYS_ADDR_MASK) |
 				(val & FLAGS_MASK);
 
@@ -123,7 +114,7 @@ static inline void write_pte(struct hl_ctx *ctx, u64 shadow_pte_addr, u64 val)
 	*(u64 *) (uintptr_t) shadow_pte_addr = val;
 }
 
-/* do not transform the value to physical address when writing to H/W */
+ 
 static inline void write_final_pte(struct hl_ctx *ctx, u64 shadow_pte_addr,
 					u64 val)
 {
@@ -133,10 +124,10 @@ static inline void write_final_pte(struct hl_ctx *ctx, u64 shadow_pte_addr,
 	*(u64 *) (uintptr_t) shadow_pte_addr = val;
 }
 
-/* clear the last and present bits */
+ 
 static inline void clear_pte(struct hl_ctx *ctx, u64 pte_addr)
 {
-	/* no need to transform the value to physical address */
+	 
 	write_final_pte(ctx, pte_addr, 0);
 }
 
@@ -145,15 +136,7 @@ static inline void get_pte(struct hl_ctx *ctx, u64 hop_addr)
 	get_pgt_info(ctx, hop_addr)->num_of_ptes++;
 }
 
-/*
- * put_pte - decrement the num of ptes and free the hop if possible
- *
- * @ctx: pointer to the context structure
- * @hop_addr: addr of the hop
- *
- * This function returns the number of ptes left on this hop. If the number is
- * 0, it means the pte was freed.
- */
+ 
 static inline int put_pte(struct hl_ctx *ctx, u64 hop_addr)
 {
 	struct pgt_info *pgt_info = get_pgt_info(ctx, hop_addr);
@@ -161,10 +144,7 @@ static inline int put_pte(struct hl_ctx *ctx, u64 hop_addr)
 
 	pgt_info->num_of_ptes--;
 
-	/*
-	 * Need to save the number of ptes left because free_hop might free
-	 * the pgt_info
-	 */
+	 
 	num_of_ptes_left = pgt_info->num_of_ptes;
 	if (!num_of_ptes_left)
 		_free_hop(ctx, pgt_info);
@@ -196,7 +176,7 @@ static inline u64 get_alloc_next_hop_addr(struct hl_ctx *ctx, u64 curr_pte,
 	return hop_addr;
 }
 
-/* translates shadow address inside hop to a physical address */
+ 
 static inline u64 get_phys_addr(struct hl_ctx *ctx, u64 shadow_addr)
 {
 	u64 page_mask = (ctx->hdev->asic_prop.mmu_hop_table_size - 1);
@@ -229,7 +209,7 @@ static int dram_default_mapping_init(struct hl_ctx *ctx)
 	do_div(num_of_hop3, prop->dram_page_size);
 	do_div(num_of_hop3, HOP_PTE_ENTRIES_512);
 
-	/* add hop1 and hop2 */
+	 
 	total_hops = num_of_hop3 + 2;
 
 	ctx->dram_default_hops = kzalloc(HL_PTE_SIZE * total_hops,  GFP_KERNEL);
@@ -266,7 +246,7 @@ static int dram_default_mapping_init(struct hl_ctx *ctx)
 		hop3_allocated++;
 	}
 
-	/* need only pte 0 in hops 0 and 1 */
+	 
 	pte_val = (hop1_addr & HOP_PHYS_ADDR_MASK) | PAGE_PRESENT_MASK;
 	write_pte(ctx, hop0_addr, pte_val);
 
@@ -330,7 +310,7 @@ static void dram_default_mapping_fini(struct hl_ctx *ctx)
 	do_div(num_of_hop3, HOP_PTE_ENTRIES_512);
 
 	hop0_addr = get_hop0_addr(ctx);
-	/* add hop1 and hop2 */
+	 
 	total_hops = num_of_hop3 + 2;
 	hop1_addr = ctx->dram_default_hops[total_hops - 1];
 	hop2_addr = ctx->dram_default_hops[total_hops - 2];
@@ -360,16 +340,7 @@ static void dram_default_mapping_fini(struct hl_ctx *ctx)
 	flush(ctx);
 }
 
-/**
- * hl_mmu_v1_init() - initialize the MMU module.
- * @hdev: habanalabs device structure.
- *
- * This function does the following:
- * - Create a pool of pages for pgt_infos.
- * - Create a shadow table for pgt
- *
- * Return: 0 for success, non-zero for failure.
- */
+ 
 static int hl_mmu_v1_init(struct hl_device *hdev)
 {
 	struct asic_fixed_properties *prop = &hdev->asic_prop;
@@ -399,7 +370,7 @@ static int hl_mmu_v1_init(struct hl_device *hdev)
 		goto err_pool_add;
 	}
 
-	/* MMU H/W init will be done in device hw_init() */
+	 
 
 	return 0;
 
@@ -409,56 +380,28 @@ err_pool_add:
 	return rc;
 }
 
-/**
- * hl_mmu_v1_fini() - release the MMU module.
- * @hdev: habanalabs device structure.
- *
- * This function does the following:
- * - Disable MMU in H/W.
- * - Free the pgt_infos pool.
- *
- * All contexts should be freed before calling this function.
- */
+ 
 static void hl_mmu_v1_fini(struct hl_device *hdev)
 {
-	/* MMU H/W fini was already done in device hw_fini() */
+	 
 
 	if (!ZERO_OR_NULL_PTR(hdev->mmu_priv.dr.mmu_shadow_hop0)) {
 		kvfree(hdev->mmu_priv.dr.mmu_shadow_hop0);
 		gen_pool_destroy(hdev->mmu_priv.dr.mmu_pgt_pool);
 
-		/* Make sure that if we arrive here again without init was
-		 * called we won't cause kernel panic. This can happen for
-		 * example if we fail during hard reset code at certain points
-		 */
+		 
 		hdev->mmu_priv.dr.mmu_shadow_hop0 = NULL;
 	}
 }
 
-/**
- * hl_mmu_v1_ctx_init() - initialize a context for using the MMU module.
- * @ctx: pointer to the context structure to initialize.
- *
- * Initialize a mutex to protect the concurrent mapping flow, a hash to hold all
- * page tables hops related to this context.
- * Return: 0 on success, non-zero otherwise.
- */
+ 
 static int hl_mmu_v1_ctx_init(struct hl_ctx *ctx)
 {
 	hash_init(ctx->mmu_shadow_hash);
 	return dram_default_mapping_init(ctx);
 }
 
-/*
- * hl_mmu_ctx_fini - disable a ctx from using the mmu module
- *
- * @ctx: pointer to the context structure
- *
- * This function does the following:
- * - Free any pgts which were not freed yet
- * - Free the mutex
- * - Free DRAM default page mapping hops
- */
+ 
 static void hl_mmu_v1_ctx_fini(struct hl_ctx *ctx)
 {
 	struct hl_device *hdev = ctx->hdev;
@@ -490,7 +433,7 @@ static int hl_mmu_v1_unmap(struct hl_ctx *ctx,
 	bool is_huge, clear_hop3 = true;
 	int hop_idx;
 
-	/* shifts and masks are the same in PMMU and HPMMU, use one of them */
+	 
 	mmu_prop = is_dram_addr ? &prop->dmmu : &prop->pmmu;
 
 	for (hop_idx = MMU_HOP0; hop_idx < MMU_HOP4; hop_idx++) {
@@ -594,13 +537,7 @@ static int hl_mmu_v1_map(struct hl_ctx *ctx, u64 virt_addr, u64 phys_addr,
 	bool is_huge, hop_new[MMU_V1_MAX_HOPS] = {false};
 	int num_hops, hop_idx, prev_hop, rc = -ENOMEM;
 
-	/*
-	 * This mapping function can map a page or a huge page. For huge page
-	 * there are only 3 hops rather than 4. Currently the DRAM allocation
-	 * uses huge pages only but user memory could have been allocated with
-	 * one of the two page sizes. Since this is a common code for all the
-	 * three cases, we need this hugs page check.
-	 */
+	 
 	if (is_dram_addr) {
 		mmu_prop = &prop->dmmu;
 		is_huge = true;
@@ -692,23 +629,13 @@ err:
 	return rc;
 }
 
-/*
- * hl_mmu_v1_swap_out - marks all mapping of the given ctx as swapped out
- *
- * @ctx: pointer to the context structure
- *
- */
+ 
 static void hl_mmu_v1_swap_out(struct hl_ctx *ctx)
 {
 
 }
 
-/*
- * hl_mmu_v1_swap_in - marks all mapping of the given ctx as swapped in
- *
- * @ctx: pointer to the context structure
- *
- */
+ 
 static void hl_mmu_v1_swap_in(struct hl_ctx *ctx)
 {
 
@@ -748,7 +675,7 @@ static int hl_mmu_v1_get_tlb_info(struct hl_ctx *ctx, u64 virt_addr,
 
 	used_hops = mmu_prop->num_hops;
 
-	/* huge pages use lesser hops */
+	 
 	if (is_huge)
 		used_hops--;
 
@@ -782,7 +709,7 @@ static int hl_mmu_v1_get_tlb_info(struct hl_ctx *ctx, u64 virt_addr,
 			break;
 	}
 
-	/* if passed over all hops then no last hop was found */
+	 
 	if (i == mmu_prop->num_hops)
 		return -EFAULT;
 
@@ -794,11 +721,7 @@ static int hl_mmu_v1_get_tlb_info(struct hl_ctx *ctx, u64 virt_addr,
 	return 0;
 }
 
-/*
- * hl_mmu_v1_prepare - prepare mmu  for working with mmu v1
- *
- * @hdev: pointer to the device structure
- */
+ 
 void hl_mmu_v1_set_funcs(struct hl_device *hdev, struct hl_mmu_funcs *mmu)
 {
 	mmu->init = hl_mmu_v1_init;

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * RDMA Network Block Driver
- *
- * Copyright (c) 2014 - 2018 ProfitBricks GmbH. All rights reserved.
- * Copyright (c) 2018 - 2019 1&1 IONOS Cloud GmbH. All rights reserved.
- * Copyright (c) 2019 - 2020 1&1 IONOS SE. All rights reserved.
- */
+
+ 
 
 #undef pr_fmt
 #define pr_fmt(fmt) KBUILD_MODNAME " L" __stringify(__LINE__) ": " fmt
@@ -27,10 +21,7 @@ static DEFINE_MUTEX(sess_lock);
 static LIST_HEAD(sess_list);
 static struct workqueue_struct *rnbd_clt_wq;
 
-/*
- * Maximum number of partitions an instance can have.
- * 6 bits = 64 minors = 63 partitions (one minor is used for the device itself)
- */
+ 
 #define RNBD_PART_BITS		6
 
 static inline bool rnbd_clt_get_sess(struct rnbd_clt_session *sess)
@@ -74,9 +65,7 @@ static void rnbd_clt_change_capacity(struct rnbd_clt_dev *dev,
 	if (get_capacity(dev->gd) == new_nsectors)
 		return;
 
-	/*
-	 * If the size changed, we need to revalidate it
-	 */
+	 
 	rnbd_clt_info(dev, "Device size changed from %llu to %llu sectors\n",
 		      get_capacity(dev->gd), new_nsectors);
 	set_capacity_and_notify(dev->gd, new_nsectors);
@@ -139,7 +128,7 @@ static inline void rnbd_clt_dev_requeue(struct rnbd_queue *q)
 	if (WARN_ON(!q->hctx))
 		return;
 
-	/* We can come here from interrupt, thus async=true */
+	 
 	blk_mq_run_hw_queue(q->hctx, true);
 }
 
@@ -147,27 +136,18 @@ enum {
 	RNBD_DELAY_IFBUSY = -1,
 };
 
-/**
- * rnbd_get_cpu_qlist() - finds a list with HW queues to be rerun
- * @sess:	Session to find a queue for
- * @cpu:	Cpu to start the search from
- *
- * Description:
- *     Each CPU has a list of HW queues, which needs to be rerun.  If a list
- *     is not empty - it is marked with a bit.  This function finds first
- *     set bit in a bitmap and returns corresponding CPU list.
- */
+ 
 static struct rnbd_cpu_qlist *
 rnbd_get_cpu_qlist(struct rnbd_clt_session *sess, int cpu)
 {
 	int bit;
 
-	/* Search from cpu to nr_cpu_ids */
+	 
 	bit = find_next_bit(sess->cpu_queues_bm, nr_cpu_ids, cpu);
 	if (bit < nr_cpu_ids) {
 		return per_cpu_ptr(sess->cpu_queues, bit);
 	} else if (cpu != 0) {
-		/* Search from 0 to cpu */
+		 
 		bit = find_first_bit(sess->cpu_queues_bm, cpu);
 		if (bit < cpu)
 			return per_cpu_ptr(sess->cpu_queues, bit);
@@ -181,21 +161,7 @@ static inline int nxt_cpu(int cpu)
 	return (cpu + 1) % nr_cpu_ids;
 }
 
-/**
- * rnbd_rerun_if_needed() - rerun next queue marked as stopped
- * @sess:	Session to rerun a queue on
- *
- * Description:
- *     Each CPU has it's own list of HW queues, which should be rerun.
- *     Function finds such list with HW queues, takes a list lock, picks up
- *     the first HW queue out of the list and requeues it.
- *
- * Return:
- *     True if the queue was requeued, false otherwise.
- *
- * Context:
- *     Does not matter.
- */
+ 
 static bool rnbd_rerun_if_needed(struct rnbd_clt_session *sess)
 {
 	struct rnbd_queue *q = NULL;
@@ -203,11 +169,7 @@ static bool rnbd_rerun_if_needed(struct rnbd_clt_session *sess)
 	unsigned long flags;
 	int *cpup;
 
-	/*
-	 * To keep fairness and not to let other queues starve we always
-	 * try to wake up someone else in round-robin manner.  That of course
-	 * increases latency but queues always have a chance to be executed.
-	 */
+	 
 	cpup = get_cpu_ptr(sess->cpu_rr);
 	for (cpu_q = rnbd_get_cpu_qlist(sess, nxt_cpu(*cpup)); cpu_q;
 	     cpu_q = rnbd_get_cpu_qlist(sess, nxt_cpu(cpu_q->cpu))) {
@@ -223,7 +185,7 @@ static bool rnbd_rerun_if_needed(struct rnbd_clt_session *sess)
 		clear_bit_unlock(0, &q->in_list);
 
 		if (list_empty(&cpu_q->requeue_list)) {
-			/* Clear bit if nothing is left */
+			 
 clear_bit:
 			clear_bit(cpu_q->cpu, sess->cpu_queues_bm);
 		}
@@ -234,13 +196,7 @@ unlock:
 			break;
 	}
 
-	/**
-	 * Saves the CPU that is going to be requeued on the per-cpu var. Just
-	 * incrementing it doesn't work because rnbd_get_cpu_qlist() will
-	 * always return the first CPU with something on the queue list when the
-	 * value stored on the var is greater than the last CPU with something
-	 * on the list.
-	 */
+	 
 	if (cpu_q)
 		*cpup = cpu_q->cpu;
 	put_cpu_ptr(sess->cpu_rr);
@@ -251,31 +207,7 @@ unlock:
 	return q;
 }
 
-/**
- * rnbd_rerun_all_if_idle() - rerun all queues left in the list if
- *				 session is idling (there are no requests
- *				 in-flight).
- * @sess:	Session to rerun the queues on
- *
- * Description:
- *     This function tries to rerun all stopped queues if there are no
- *     requests in-flight anymore.  This function tries to solve an obvious
- *     problem, when number of tags < than number of queues (hctx), which
- *     are stopped and put to sleep.  If last permit, which has been just put,
- *     does not wake up all left queues (hctxs), IO requests hang forever.
- *
- *     That can happen when all number of permits, say N, have been exhausted
- *     from one CPU, and we have many block devices per session, say M.
- *     Each block device has it's own queue (hctx) for each CPU, so eventually
- *     we can put that number of queues (hctxs) to sleep: M x nr_cpu_ids.
- *     If number of permits N < M x nr_cpu_ids finally we will get an IO hang.
- *
- *     To avoid this hang last caller of rnbd_put_permit() (last caller is the
- *     one who observes sess->busy == 0) must wake up all remaining queues.
- *
- * Context:
- *     Does not matter.
- */
+ 
 static void rnbd_rerun_all_if_idle(struct rnbd_clt_session *sess)
 {
 	bool requeued;
@@ -293,11 +225,7 @@ static struct rtrs_permit *rnbd_get_permit(struct rnbd_clt_session *sess,
 
 	permit = rtrs_clt_get_permit(sess->rtrs, con_type, wait);
 	if (permit)
-		/* We have a subtle rare case here, when all permits can be
-		 * consumed before busy counter increased.  This is safe,
-		 * because loser will get NULL as a permit, observe 0 busy
-		 * counter and immediately restart the queue himself.
-		 */
+		 
 		atomic_inc(&sess->busy);
 
 	return permit;
@@ -308,9 +236,7 @@ static void rnbd_put_permit(struct rnbd_clt_session *sess,
 {
 	rtrs_clt_put_permit(sess->rtrs, permit);
 	atomic_dec(&sess->busy);
-	/* Paired with rnbd_clt_dev_add_to_requeue().  Decrement first
-	 * and then check queue bits.
-	 */
+	 
 	smp_mb__after_atomic();
 	rnbd_rerun_all_if_idle(sess);
 }
@@ -333,14 +259,7 @@ static struct rnbd_iu *rnbd_get_iu(struct rnbd_clt_session *sess,
 	}
 
 	iu->permit = permit;
-	/*
-	 * 1st reference is dropped after finishing sending a "user" message,
-	 * 2nd reference is dropped after confirmation with the response is
-	 * returned.
-	 * 1st and 2nd can happen in any order, so the rnbd_iu should be
-	 * released (rtrs_permit returned to rtrs) only after both
-	 * are finished.
-	 */
+	 
 	atomic_set(&iu->refcount, 2);
 	init_waitqueue_head(&iu->comp.wait);
 	iu->comp.errno = INT_MAX;
@@ -485,7 +404,7 @@ static void msg_open_conf(struct work_struct *work)
 	int errno = iu->errno;
 	bool from_map = false;
 
-	/* INIT state is only triggered from rnbd_clt_map_device */
+	 
 	if (dev->dev_state == DEV_STATE_INIT)
 		from_map = true;
 
@@ -497,14 +416,11 @@ static void msg_open_conf(struct work_struct *work)
 		errno = process_msg_open_rsp(dev, rsp);
 		if (errno) {
 			u32 device_id = le32_to_cpu(rsp->device_id);
-			/*
-			 * If server thinks its fine, but we fail to process
-			 * then be nice and send a close to server.
-			 */
+			 
 			send_msg_close(dev, device_id, RTRS_PERMIT_NOWAIT);
 		}
 	}
-	/* We free rsp in rnbd_clt_map_device for map scenario */
+	 
 	if (!from_map)
 		kfree(rsp);
 	wake_up_iu_comp(iu, errno);
@@ -603,12 +519,7 @@ static int send_msg_sess_info(struct rnbd_clt_session *sess, enum wait_type wait
 	msg.ver      = RNBD_PROTO_VER_MAJOR;
 
 	if (!rnbd_clt_get_sess(sess)) {
-		/*
-		 * That can happen only in one case, when RTRS has restablished
-		 * the connection and link_ev() is called, but session is almost
-		 * dead, last reference on session is put and caller is waiting
-		 * for RTRS to close everything.
-		 */
+		 
 		err = -ENODEV;
 		goto put_iu;
 	}
@@ -653,16 +564,7 @@ static void remap_devs(struct rnbd_clt_session *sess)
 	struct rtrs_attrs attrs;
 	int err;
 
-	/*
-	 * Careful here: we are called from RTRS link event directly,
-	 * thus we can't send any RTRS request and wait for response
-	 * or RTRS will not be able to complete request with failure
-	 * if something goes wrong (failing of outstanding requests
-	 * happens exactly from the context where we are blocking now).
-	 *
-	 * So to avoid deadlocks each usr message sent from here must
-	 * be asynchronous.
-	 */
+	 
 
 	err = send_msg_sess_info(sess, RTRS_PERMIT_NOWAIT);
 	if (err) {
@@ -685,10 +587,7 @@ static void remap_devs(struct rnbd_clt_session *sess)
 		skip = (dev->dev_state == DEV_STATE_INIT);
 		mutex_unlock(&dev->lock);
 		if (skip)
-			/*
-			 * When device is establishing connection for the first
-			 * time - do not remap, it will be closed soon.
-			 */
+			 
 			continue;
 
 		rnbd_clt_info(dev, "session reconnected, remapping device\n");
@@ -798,11 +697,7 @@ static struct rnbd_clt_session *alloc_sess(const char *sessname)
 	}
 	rnbd_init_cpu_qlists(sess->cpu_queues);
 
-	/*
-	 * That is simple percpu variable which stores cpu indices, which are
-	 * incremented on each access.  We need that for the sake of fairness
-	 * to wake up queues in a round-robin manner.
-	 */
+	 
 	sess->cpu_rr = alloc_percpu(int);
 	if (!sess->cpu_rr) {
 		err = -ENOMEM;
@@ -840,12 +735,7 @@ static void wait_for_rtrs_disconnection(struct rnbd_clt_session *sess)
 		return;
 	}
 	mutex_unlock(&sess_lock);
-	/* loop in caller, see __find_and_get_sess().
-	 * You can't leave mutex locked and call schedule(), you will catch a
-	 * deadlock with a caller of free_sess(), which has just put the last
-	 * reference and is about to take the sess_lock in order to delete
-	 * the session from the list.
-	 */
+	 
 	schedule();
 	mutex_lock(&sess_lock);
 }
@@ -863,15 +753,11 @@ again:
 			continue;
 
 		if (sess->rtrs_ready && IS_ERR_OR_NULL(sess->rtrs))
-			/*
-			 * No RTRS connection, session is dying.
-			 */
+			 
 			continue;
 
 		if (rnbd_clt_get_sess(sess)) {
-			/*
-			 * Alive session is found, wait for RTRS connection.
-			 */
+			 
 			mutex_unlock(&sess_lock);
 			err = wait_for_rtrs_connection(sess);
 			if (err)
@@ -879,27 +765,21 @@ again:
 			mutex_lock(&sess_lock);
 
 			if (err)
-				/* Session is dying, repeat the loop */
+				 
 				goto again;
 
 			return sess;
 		}
-		/*
-		 * Ref is 0, session is dying, wait for RTRS disconnect
-		 * in order to avoid session names clashes.
-		 */
+		 
 		wait_for_rtrs_disconnection(sess);
-		/*
-		 * RTRS is disconnected and soon session will be freed,
-		 * so repeat a loop.
-		 */
+		 
 		goto again;
 	}
 
 	return NULL;
 }
 
-/* caller is responsible for initializing 'first' to false */
+ 
 static struct
 rnbd_clt_session *find_or_create_sess(const char *sessname, bool *first)
 {
@@ -950,7 +830,7 @@ static int rnbd_client_getgeo(struct block_device *block_device,
 	struct queue_limits *limit = &dev->queue->limits;
 
 	size = dev->size * (limit->logical_block_size / SECTOR_SIZE);
-	geo->cylinders	= size >> 6;	/* size/64 */
+	geo->cylinders	= size >> 6;	 
 	geo->heads	= 4;
 	geo->sectors	= 16;
 	geo->start	= 0;
@@ -965,15 +845,7 @@ static const struct block_device_operations rnbd_client_ops = {
 	.getgeo		= rnbd_client_getgeo
 };
 
-/* The amount of data that belongs to an I/O and the amount of data that
- * should be read or written to the disk (bi_size) can differ.
- *
- * E.g. When WRITE_SAME is used, only a small amount of data is
- * transferred that is then written repeatedly over a lot of sectors.
- *
- * Get the size of data to be transferred via RTRS by summing up the size
- * of the scather-gather list entries.
- */
+ 
 static size_t rnbd_clt_get_sg_size(struct scatterlist *sglist, u32 len)
 {
 	struct scatterlist *sg;
@@ -1005,10 +877,7 @@ static int rnbd_client_xfer_request(struct rnbd_clt_dev *dev,
 	msg.rw		= cpu_to_le32(rq_to_rnbd_flags(rq));
 	msg.prio	= cpu_to_le16(req_get_ioprio(rq));
 
-	/*
-	 * We only support discards with single segment for now.
-	 * See queue limits.
-	 */
+	 
 	if (req_op(rq) != REQ_OP_DISCARD)
 		sg_cnt = blk_rq_map_sg(dev->queue, rq, iu->sgt.sgl);
 
@@ -1038,16 +907,7 @@ static int rnbd_client_xfer_request(struct rnbd_clt_dev *dev,
 	return 0;
 }
 
-/**
- * rnbd_clt_dev_add_to_requeue() - add device to requeue if session is busy
- * @dev:	Device to be checked
- * @q:		Queue to be added to the requeue list if required
- *
- * Description:
- *     If session is busy, that means someone will requeue us when resources
- *     are freed.  If session is not doing anything - device is not added to
- *     the list and @false is returned.
- */
+ 
 static bool rnbd_clt_dev_add_to_requeue(struct rnbd_clt_dev *dev,
 						struct rnbd_queue *q)
 {
@@ -1067,18 +927,13 @@ static bool rnbd_clt_dev_add_to_requeue(struct rnbd_clt_dev *dev,
 		need_set = !test_bit(cpu_q->cpu, sess->cpu_queues_bm);
 		if (need_set) {
 			set_bit(cpu_q->cpu, sess->cpu_queues_bm);
-			/* Paired with rnbd_put_permit(). Set a bit first
-			 * and then observe the busy counter.
-			 */
+			 
 			smp_mb__before_atomic();
 		}
 		if (atomic_read(&sess->busy)) {
 			list_add_tail(&q->requeue_list, &cpu_q->requeue_list);
 		} else {
-			/* Very unlikely, but possible: busy counter was
-			 * observed as zero.  Drop all bits and return
-			 * false to restart the queue by ourselves.
-			 */
+			 
 			if (need_set)
 				clear_bit(cpu_q->cpu, sess->cpu_queues_bm);
 			clear_bit_unlock(0, &q->in_list);
@@ -1101,11 +956,8 @@ static void rnbd_clt_dev_kick_mq_queue(struct rnbd_clt_dev *dev,
 	if (delay != RNBD_DELAY_IFBUSY)
 		blk_mq_delay_run_hw_queue(hctx, delay);
 	else if (!rnbd_clt_dev_add_to_requeue(dev, q))
-		/*
-		 * If session is not busy we have to restart
-		 * the queue ourselves.
-		 */
-		blk_mq_delay_run_hw_queue(hctx, 10/*ms*/);
+		 
+		blk_mq_delay_run_hw_queue(hctx, 10 );
 }
 
 static blk_status_t rnbd_queue_rq(struct blk_mq_hw_ctx *hctx,
@@ -1129,15 +981,13 @@ static blk_status_t rnbd_queue_rq(struct blk_mq_hw_ctx *hctx,
 
 	iu->sgt.sgl = iu->first_sgl;
 	err = sg_alloc_table_chained(&iu->sgt,
-				     /* Even-if the request has no segment,
-				      * sglist must have one entry at least.
-				      */
+				      
 				     blk_rq_nr_phys_segments(rq) ? : 1,
 				     iu->sgt.sgl,
 				     RNBD_INLINE_SG_CNT);
 	if (err) {
 		rnbd_clt_err_rl(dev, "sg_alloc_table_chained ret=%d\n", err);
-		rnbd_clt_dev_kick_mq_queue(dev, hctx, 10/*ms*/);
+		rnbd_clt_dev_kick_mq_queue(dev, hctx, 10 );
 		rnbd_put_permit(dev->sess, iu->permit);
 		return BLK_STS_RESOURCE;
 	}
@@ -1147,7 +997,7 @@ static blk_status_t rnbd_queue_rq(struct blk_mq_hw_ctx *hctx,
 	if (err == 0)
 		return BLK_STS_OK;
 	if (err == -EAGAIN || err == -ENOMEM) {
-		rnbd_clt_dev_kick_mq_queue(dev, hctx, 10/*ms*/);
+		rnbd_clt_dev_kick_mq_queue(dev, hctx, 10 );
 		ret = BLK_STS_RESOURCE;
 	}
 	sg_free_table_chained(&iu->sgt, RNBD_INLINE_SG_CNT);
@@ -1167,7 +1017,7 @@ static void rnbd_rdma_map_queues(struct blk_mq_tag_set *set)
 {
 	struct rnbd_clt_session *sess = set->driver_data;
 
-	/* shared read/write queues */
+	 
 	set->map[HCTX_TYPE_DEFAULT].nr_queues = num_online_cpus();
 	set->map[HCTX_TYPE_DEFAULT].queue_offset = 0;
 	set->map[HCTX_TYPE_READ].nr_queues = num_online_cpus();
@@ -1176,7 +1026,7 @@ static void rnbd_rdma_map_queues(struct blk_mq_tag_set *set)
 	blk_mq_map_queues(&set->map[HCTX_TYPE_READ]);
 
 	if (sess->nr_poll_queues) {
-		/* dedicated queue for poll */
+		 
 		set->map[HCTX_TYPE_POLL].nr_queues = sess->nr_poll_queues;
 		set->map[HCTX_TYPE_POLL].queue_offset = set->map[HCTX_TYPE_READ].queue_offset +
 			set->map[HCTX_TYPE_READ].nr_queues;
@@ -1213,12 +1063,9 @@ static int setup_mq_tags(struct rnbd_clt_session *sess)
 				  BLK_MQ_F_TAG_QUEUE_SHARED;
 	tag_set->cmd_size	= sizeof(struct rnbd_iu) + RNBD_RDMA_SGL_SIZE;
 
-	/* for HCTX_TYPE_DEFAULT, HCTX_TYPE_READ, HCTX_TYPE_POLL */
+	 
 	tag_set->nr_maps        = sess->nr_poll_queues ? HCTX_MAX_TYPES : 2;
-	/*
-	 * HCTX_TYPE_DEFAULT and HCTX_TYPE_READ share one set of queues
-	 * others are for HCTX_TYPE_POLL
-	 */
+	 
 	tag_set->nr_hw_queues	= num_online_cpus() + sess->nr_poll_queues;
 	tag_set->driver_data    = sess;
 
@@ -1240,10 +1087,7 @@ find_and_get_or_create_sess(const char *sessname,
 	if (sess == ERR_PTR(-ENOMEM)) {
 		return ERR_PTR(-ENOMEM);
 	} else if ((nr_poll_queues && !first) ||  (!nr_poll_queues && sess->nr_poll_queues)) {
-		/*
-		 * A device MUST have its own session to use the polling-mode.
-		 * It must fail to map new device with the same session.
-		 */
+		 
 		err = -EINVAL;
 		goto put_sess;
 	}
@@ -1261,12 +1105,10 @@ find_and_get_or_create_sess(const char *sessname,
 		.priv = sess,
 		.link_ev = rnbd_clt_link_ev,
 	};
-	/*
-	 * Nothing was found, establish rtrs connection and proceed further.
-	 */
+	 
 	sess->rtrs = rtrs_clt_open(&rtrs_ops, sessname,
 				   paths, path_cnt, port_nr,
-				   0, /* Do not use pdu of rtrs */
+				   0,  
 				   RECONNECT_DELAY,
 				   MAX_RECONNECTS, nr_poll_queues);
 	if (IS_ERR(sess->rtrs)) {
@@ -1339,10 +1181,7 @@ static void setup_request_queue(struct rnbd_clt_dev *dev,
 	blk_queue_max_hw_sectors(dev->queue,
 				 dev->sess->max_io_size / SECTOR_SIZE);
 
-	/*
-	 * we don't support discards to "discontiguous" segments
-	 * in on request
-	 */
+	 
 	blk_queue_max_discard_segments(dev->queue, 1);
 
 	blk_queue_max_discard_sectors(dev->queue,
@@ -1387,9 +1226,7 @@ static int rnbd_clt_setup_gen_disk(struct rnbd_clt_dev *dev,
 	if (dev->access_mode == RNBD_ACCESS_RO)
 		set_disk_ro(dev->gd, true);
 
-	/*
-	 * Network device does not need rotational
-	 */
+	 
 	blk_queue_flag_set(QUEUE_FLAG_NONROT, dev->queue);
 	err = add_disk(dev->gd);
 	if (err)
@@ -1428,10 +1265,7 @@ static struct rnbd_clt_dev *init_dev(struct rnbd_clt_session *sess,
 	if (!dev)
 		return ERR_PTR(-ENOMEM);
 
-	/*
-	 * nr_cpu_ids: the number of softirq queues
-	 * nr_poll_queues: the number of polling queues
-	 */
+	 
 	dev->hw_queues = kcalloc(nr_cpu_ids + nr_poll_queues,
 				 sizeof(*dev->hw_queues),
 				 GFP_KERNEL);
@@ -1462,10 +1296,7 @@ static struct rnbd_clt_dev *init_dev(struct rnbd_clt_session *sess,
 	refcount_set(&dev->refcount, 1);
 	dev->dev_state = DEV_STATE_INIT;
 
-	/*
-	 * Here we called from sysfs entry, thus clt-sysfs is
-	 * responsible that session will not disappear.
-	 */
+	 
 	WARN_ON(!rnbd_clt_get_sess(sess));
 
 	return dev;
@@ -1672,7 +1503,7 @@ static void destroy_sysfs(struct rnbd_clt_dev *dev,
 	rnbd_clt_remove_dev_symlink(dev);
 	if (dev->kobj.state_initialized) {
 		if (sysfs_self)
-			/* To avoid deadlock firstly remove itself */
+			 
 			sysfs_remove_file_self(&dev->kobj, sysfs_self);
 		kobject_del(&dev->kobj);
 		kobject_put(&dev->kobj);
@@ -1712,12 +1543,10 @@ int rnbd_clt_unmap_device(struct rnbd_clt_dev *dev, bool force,
 
 	rnbd_clt_info(dev, "Device is unmapped\n");
 
-	/* Likely last reference put */
+	 
 	rnbd_clt_put_dev(dev);
 
-	/*
-	 * Here device and session can be vanished!
-	 */
+	 
 
 	return 0;
 err:
@@ -1763,41 +1592,23 @@ static void rnbd_destroy_sessions(void)
 	struct rnbd_clt_session *sess, *sn;
 	struct rnbd_clt_dev *dev, *tn;
 
-	/* Firstly forbid access through sysfs interface */
+	 
 	rnbd_clt_destroy_sysfs_files();
 
-	/*
-	 * Here at this point there is no any concurrent access to sessions
-	 * list and devices list:
-	 *   1. New session or device can't be created - session sysfs files
-	 *      are removed.
-	 *   2. Device or session can't be removed - module reference is taken
-	 *      into account in unmap device sysfs callback.
-	 *   3. No IO requests inflight - each file open of block_dev increases
-	 *      module reference in get_disk().
-	 *
-	 * But still there can be user requests inflights, which are sent by
-	 * asynchronous send_msg_*() functions, thus before unmapping devices
-	 * RTRS session must be explicitly closed.
-	 */
+	 
 
 	list_for_each_entry_safe(sess, sn, &sess_list, list) {
 		if (!rnbd_clt_get_sess(sess))
 			continue;
 		close_rtrs(sess);
 		list_for_each_entry_safe(dev, tn, &sess->devs_list, list) {
-			/*
-			 * Here unmap happens in parallel for only one reason:
-			 * del_gendisk() takes around half a second, so
-			 * on huge amount of devices the whole module unload
-			 * procedure takes minutes.
-			 */
+			 
 			INIT_WORK(&dev->unmap_on_rmmod_work, unmap_device_work);
 			queue_work(rnbd_clt_wq, &dev->unmap_on_rmmod_work);
 		}
 		rnbd_clt_put_sess(sess);
 	}
-	/* Wait for all scheduled unmap works */
+	 
 	flush_workqueue(rnbd_clt_wq);
 	WARN_ON(!list_empty(&sess_list));
 }

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* (C) 1999-2001 Paul `Rusty' Russell
- * (C) 2002-2004 Netfilter Core Team <coreteam@netfilter.org>
- * (C) 2006-2012 Patrick McHardy <kaber@trash.net>
- */
+
+ 
 
 #include <linux/types.h>
 #include <linux/timer.h>
@@ -49,27 +46,24 @@ static bool udp_error(struct sk_buff *skb,
 	const struct udphdr *hdr;
 	struct udphdr _hdr;
 
-	/* Header is too small? */
+	 
 	hdr = skb_header_pointer(skb, dataoff, sizeof(_hdr), &_hdr);
 	if (!hdr) {
 		udp_error_log(skb, state, "short packet");
 		return true;
 	}
 
-	/* Truncated/malformed packets */
+	 
 	if (ntohs(hdr->len) > udplen || ntohs(hdr->len) < sizeof(*hdr)) {
 		udp_error_log(skb, state, "truncated/malformed packet");
 		return true;
 	}
 
-	/* Packet with no checksum */
+	 
 	if (!hdr->check)
 		return false;
 
-	/* Checksum invalid? Ignore.
-	 * We skip checking packets on the outgoing path
-	 * because the checksum is assumed to be correct.
-	 * FIXME: Source route IP option packets --RR */
+	 
 	if (state->hook == NF_INET_PRE_ROUTING &&
 	    state->net->ct.sysctl_checksum &&
 	    nf_checksum(skb, state->hook, dataoff, IPPROTO_UDP, state->pf)) {
@@ -80,7 +74,7 @@ static bool udp_error(struct sk_buff *skb,
 	return false;
 }
 
-/* Returns verdict for packet, and may modify conntracktype */
+ 
 int nf_conntrack_udp_packet(struct nf_conn *ct,
 			    struct sk_buff *skb,
 			    unsigned int dataoff,
@@ -101,14 +95,12 @@ int nf_conntrack_udp_packet(struct nf_conn *ct,
 	if ((status & IPS_CONFIRMED) == 0)
 		ct->proto.udp.stream_ts = 2 * HZ + jiffies;
 
-	/* If we've seen traffic both ways, this is some kind of UDP
-	 * stream. Set Assured.
-	 */
+	 
 	if (status & IPS_SEEN_REPLY) {
 		unsigned long extra = timeouts[UDP_CT_UNREPLIED];
 		bool stream = false;
 
-		/* Still active after two seconds? Extend timeout. */
+		 
 		if (time_after(jiffies, ct->proto.udp.stream_ts)) {
 			extra = timeouts[UDP_CT_REPLIED];
 			stream = (status & IPS_ASSURED) == 0;
@@ -116,11 +108,11 @@ int nf_conntrack_udp_packet(struct nf_conn *ct,
 
 		nf_ct_refresh_acct(ct, ctinfo, skb, extra);
 
-		/* never set ASSURED for IPS_NAT_CLASH, they time out soon */
+		 
 		if (unlikely((status & IPS_NAT_CLASH)))
 			return NF_ACCEPT;
 
-		/* Also, more likely to be important, and not a probe */
+		 
 		if (stream && !test_and_set_bit(IPS_ASSURED_BIT, &ct->status))
 			nf_conntrack_event_cache(IPCT_ASSURED, ct);
 	} else {
@@ -146,7 +138,7 @@ static bool udplite_error(struct sk_buff *skb,
 	struct udphdr _hdr;
 	unsigned int cscov;
 
-	/* Header is too small? */
+	 
 	hdr = skb_header_pointer(skb, dataoff, sizeof(_hdr), &_hdr);
 	if (!hdr) {
 		udplite_error_log(skb, state, "short packet");
@@ -161,13 +153,13 @@ static bool udplite_error(struct sk_buff *skb,
 		return true;
 	}
 
-	/* UDPLITE mandates checksums */
+	 
 	if (!hdr->check) {
 		udplite_error_log(skb, state, "checksum missing");
 		return true;
 	}
 
-	/* Checksum invalid? Ignore. */
+	 
 	if (state->hook == NF_INET_PRE_ROUTING &&
 	    state->net->ct.sysctl_checksum &&
 	    nf_checksum_partial(skb, state->hook, dataoff, cscov, IPPROTO_UDP,
@@ -179,7 +171,7 @@ static bool udplite_error(struct sk_buff *skb,
 	return false;
 }
 
-/* Returns verdict for packet, and may modify conntracktype */
+ 
 int nf_conntrack_udplite_packet(struct nf_conn *ct,
 				struct sk_buff *skb,
 				unsigned int dataoff,
@@ -195,8 +187,7 @@ int nf_conntrack_udplite_packet(struct nf_conn *ct,
 	if (!timeouts)
 		timeouts = udp_get_timeouts(nf_ct_net(ct));
 
-	/* If we've seen traffic both ways, this is some kind of UDP
-	   stream.  Extend timeout. */
+	 
 	if (test_bit(IPS_SEEN_REPLY_BIT, &ct->status)) {
 		nf_ct_refresh_acct(ct, ctinfo, skb,
 				   timeouts[UDP_CT_REPLIED]);
@@ -204,7 +195,7 @@ int nf_conntrack_udplite_packet(struct nf_conn *ct,
 		if (unlikely((ct->status & IPS_NAT_CLASH)))
 			return NF_ACCEPT;
 
-		/* Also, more likely to be important, and not a probe */
+		 
 		if (!test_and_set_bit(IPS_ASSURED_BIT, &ct->status))
 			nf_conntrack_event_cache(IPCT_ASSURED, ct);
 	} else {
@@ -228,7 +219,7 @@ static int udp_timeout_nlattr_to_obj(struct nlattr *tb[],
 	if (!timeouts)
 		timeouts = un->timeouts;
 
-	/* set default timeouts for UDP. */
+	 
 	timeouts[UDP_CT_UNREPLIED] = un->timeouts[UDP_CT_UNREPLIED];
 	timeouts[UDP_CT_REPLIED] = un->timeouts[UDP_CT_REPLIED];
 
@@ -264,7 +255,7 @@ udp_timeout_nla_policy[CTA_TIMEOUT_UDP_MAX+1] = {
        [CTA_TIMEOUT_UDP_UNREPLIED]	= { .type = NLA_U32 },
        [CTA_TIMEOUT_UDP_REPLIED]	= { .type = NLA_U32 },
 };
-#endif /* CONFIG_NF_CONNTRACK_TIMEOUT */
+#endif  
 
 void nf_conntrack_udp_init_net(struct net *net)
 {
@@ -297,7 +288,7 @@ const struct nf_conntrack_l4proto nf_conntrack_l4proto_udp =
 		.obj_size	= sizeof(unsigned int) * CTA_TIMEOUT_UDP_MAX,
 		.nla_policy	= udp_timeout_nla_policy,
 	},
-#endif /* CONFIG_NF_CONNTRACK_TIMEOUT */
+#endif  
 };
 
 #ifdef CONFIG_NF_CT_PROTO_UDPLITE
@@ -319,6 +310,6 @@ const struct nf_conntrack_l4proto nf_conntrack_l4proto_udplite =
 		.obj_size	= sizeof(unsigned int) * CTA_TIMEOUT_UDP_MAX,
 		.nla_policy	= udp_timeout_nla_policy,
 	},
-#endif /* CONFIG_NF_CONNTRACK_TIMEOUT */
+#endif  
 };
 #endif

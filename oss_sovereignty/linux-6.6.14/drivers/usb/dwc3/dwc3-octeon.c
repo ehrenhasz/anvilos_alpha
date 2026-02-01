@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * DWC3 glue for Cavium Octeon III SOCs.
- *
- * Copyright (C) 2010-2017 Cavium Networks
- * Copyright (C) 2023 RACOM s.r.o.
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/bits.h>
@@ -17,104 +12,57 @@
 #include <linux/of_platform.h>
 #include <linux/platform_device.h>
 
-/*
- * USB Control Register
- */
+ 
 #define USBDRD_UCTL_CTL				0x00
-/* BIST fast-clear mode select. A BIST run with this bit set
- * clears all entries in USBH RAMs to 0x0.
- */
+ 
 # define USBDRD_UCTL_CTL_CLEAR_BIST		BIT_ULL(63)
-/* 1 = Start BIST and cleared by hardware */
+ 
 # define USBDRD_UCTL_CTL_START_BIST		BIT_ULL(62)
-/* Reference clock select for SuperSpeed and HighSpeed PLLs:
- *	0x0 = Both PLLs use DLMC_REF_CLK0 for reference clock
- *	0x1 = Both PLLs use DLMC_REF_CLK1 for reference clock
- *	0x2 = SuperSpeed PLL uses DLMC_REF_CLK0 for reference clock &
- *	      HighSpeed PLL uses PLL_REF_CLK for reference clck
- *	0x3 = SuperSpeed PLL uses DLMC_REF_CLK1 for reference clock &
- *	      HighSpeed PLL uses PLL_REF_CLK for reference clck
- */
+ 
 # define USBDRD_UCTL_CTL_REF_CLK_SEL		GENMASK_ULL(61, 60)
-/* 1 = Spread-spectrum clock enable, 0 = SS clock disable */
+ 
 # define USBDRD_UCTL_CTL_SSC_EN			BIT_ULL(59)
-/* Spread-spectrum clock modulation range:
- *	0x0 = -4980 ppm downspread
- *	0x1 = -4492 ppm downspread
- *	0x2 = -4003 ppm downspread
- *	0x3 - 0x7 = Reserved
- */
+ 
 # define USBDRD_UCTL_CTL_SSC_RANGE		GENMASK_ULL(58, 56)
-/* Enable non-standard oscillator frequencies:
- *	[55:53] = modules -1
- *	[52:47] = 2's complement push amount, 0 = Feature disabled
- */
+ 
 # define USBDRD_UCTL_CTL_SSC_REF_CLK_SEL	GENMASK_ULL(55, 47)
-/* Reference clock multiplier for non-standard frequencies:
- *	0x19 = 100MHz on DLMC_REF_CLK* if REF_CLK_SEL = 0x0 or 0x1
- *	0x28 = 125MHz on DLMC_REF_CLK* if REF_CLK_SEL = 0x0 or 0x1
- *	0x32 =  50MHz on DLMC_REF_CLK* if REF_CLK_SEL = 0x0 or 0x1
- *	Other Values = Reserved
- */
+ 
 # define USBDRD_UCTL_CTL_MPLL_MULTIPLIER	GENMASK_ULL(46, 40)
-/* Enable reference clock to prescaler for SuperSpeed functionality.
- * Should always be set to "1"
- */
+ 
 # define USBDRD_UCTL_CTL_REF_SSP_EN		BIT_ULL(39)
-/* Divide the reference clock by 2 before entering the
- * REF_CLK_FSEL divider:
- *	If REF_CLK_SEL = 0x0 or 0x1, then only 0x0 is legal
- *	If REF_CLK_SEL = 0x2 or 0x3, then:
- *		0x1 = DLMC_REF_CLK* is 125MHz
- *		0x0 = DLMC_REF_CLK* is another supported frequency
- */
+ 
 # define USBDRD_UCTL_CTL_REF_CLK_DIV2		BIT_ULL(38)
-/* Select reference clock freqnuency for both PLL blocks:
- *	0x27 = REF_CLK_SEL is 0x0 or 0x1
- *	0x07 = REF_CLK_SEL is 0x2 or 0x3
- */
+ 
 # define USBDRD_UCTL_CTL_REF_CLK_FSEL		GENMASK_ULL(37, 32)
-/* Controller clock enable. */
+ 
 # define USBDRD_UCTL_CTL_H_CLK_EN		BIT_ULL(30)
-/* Select bypass input to controller clock divider:
- *	0x0 = Use divided coprocessor clock from H_CLKDIV
- *	0x1 = Use clock from GPIO pins
- */
+ 
 # define USBDRD_UCTL_CTL_H_CLK_BYP_SEL		BIT_ULL(29)
-/* Reset controller clock divider. */
+ 
 # define USBDRD_UCTL_CTL_H_CLKDIV_RST		BIT_ULL(28)
-/* Clock divider select:
- *	0x0 = divide by 1
- *	0x1 = divide by 2
- *	0x2 = divide by 4
- *	0x3 = divide by 6
- *	0x4 = divide by 8
- *	0x5 = divide by 16
- *	0x6 = divide by 24
- *	0x7 = divide by 32
- */
+ 
 # define USBDRD_UCTL_CTL_H_CLKDIV_SEL		GENMASK_ULL(26, 24)
-/* USB3 port permanently attached: 0x0 = No, 0x1 = Yes */
+ 
 # define USBDRD_UCTL_CTL_USB3_PORT_PERM_ATTACH	BIT_ULL(21)
-/* USB2 port permanently attached: 0x0 = No, 0x1 = Yes */
+ 
 # define USBDRD_UCTL_CTL_USB2_PORT_PERM_ATTACH	BIT_ULL(20)
-/* Disable SuperSpeed PHY: 0x0 = No, 0x1 = Yes */
+ 
 # define USBDRD_UCTL_CTL_USB3_PORT_DISABLE	BIT_ULL(18)
-/* Disable HighSpeed PHY: 0x0 = No, 0x1 = Yes */
+ 
 # define USBDRD_UCTL_CTL_USB2_PORT_DISABLE	BIT_ULL(16)
-/* Enable PHY SuperSpeed block power: 0x0 = No, 0x1 = Yes */
+ 
 # define USBDRD_UCTL_CTL_SS_POWER_EN		BIT_ULL(14)
-/* Enable PHY HighSpeed block power: 0x0 = No, 0x1 = Yes */
+ 
 # define USBDRD_UCTL_CTL_HS_POWER_EN		BIT_ULL(12)
-/* Enable USB UCTL interface clock: 0xx = No, 0x1 = Yes */
+ 
 # define USBDRD_UCTL_CTL_CSCLK_EN		BIT_ULL(4)
-/* Controller mode: 0x0 = Host, 0x1 = Device */
+ 
 # define USBDRD_UCTL_CTL_DRD_MODE		BIT_ULL(3)
-/* PHY reset */
+ 
 # define USBDRD_UCTL_CTL_UPHY_RST		BIT_ULL(2)
-/* Software reset UAHC */
+ 
 # define USBDRD_UCTL_CTL_UAHC_RST		BIT_ULL(1)
-/* Software resets UCTL */
+ 
 # define USBDRD_UCTL_CTL_UCTL_RST		BIT_ULL(0)
 
 #define USBDRD_UCTL_BIST_STATUS			0x08
@@ -125,63 +73,38 @@
 #define USBDRD_UCTL_PORT_CR_DBG_CFG(port)	(0x50 + (0x20 * port))
 #define USBDRD_UCTL_PORT_CR_DBG_STATUS(port)	(0x58 + (0x20 * port))
 
-/*
- * UCTL Configuration Register
- */
+ 
 #define USBDRD_UCTL_HOST_CFG			0xe0
-/* Indicates minimum value of all received BELT values */
+ 
 # define USBDRD_UCTL_HOST_CFG_HOST_CURRENT_BELT	GENMASK_ULL(59, 48)
-/* HS jitter adjustment */
+ 
 # define USBDRD_UCTL_HOST_CFG_FLA		GENMASK_ULL(37, 32)
-/* Bus-master enable: 0x0 = Disabled (stall DMAs), 0x1 = enabled */
+ 
 # define USBDRD_UCTL_HOST_CFG_BME		BIT_ULL(28)
-/* Overcurrent protection enable: 0x0 = unavailable, 0x1 = available */
+ 
 # define USBDRD_UCTL_HOST_OCI_EN		BIT_ULL(27)
-/* Overcurrent sene selection:
- *	0x0 = Overcurrent indication from off-chip is active-low
- *	0x1 = Overcurrent indication from off-chip is active-high
- */
+ 
 # define USBDRD_UCTL_HOST_OCI_ACTIVE_HIGH_EN	BIT_ULL(26)
-/* Port power control enable: 0x0 = unavailable, 0x1 = available */
+ 
 # define USBDRD_UCTL_HOST_PPC_EN		BIT_ULL(25)
-/* Port power control sense selection:
- *	0x0 = Port power to off-chip is active-low
- *	0x1 = Port power to off-chip is active-high
- */
+ 
 # define USBDRD_UCTL_HOST_PPC_ACTIVE_HIGH_EN	BIT_ULL(24)
 
-/*
- * UCTL Shim Features Register
- */
+ 
 #define USBDRD_UCTL_SHIM_CFG			0xe8
-/* Out-of-bound UAHC register access: 0 = read, 1 = write */
+ 
 # define USBDRD_UCTL_SHIM_CFG_XS_NCB_OOB_WRN	BIT_ULL(63)
-/* SRCID error log for out-of-bound UAHC register access:
- *	[59:58] = chipID
- *	[57] = Request source: 0 = core, 1 = NCB-device
- *	[56:51] = Core/NCB-device number, [56] always 0 for NCB devices
- *	[50:48] = SubID
- */
+ 
 # define USBDRD_UCTL_SHIM_CFG_XS_NCB_OOB_OSRC	GENMASK_ULL(59, 48)
-/* Error log for bad UAHC DMA access: 0 = Read log, 1 = Write log */
+ 
 # define USBDRD_UCTL_SHIM_CFG_XM_BAD_DMA_WRN	BIT_ULL(47)
-/* Encoded error type for bad UAHC DMA */
+ 
 # define USBDRD_UCTL_SHIM_CFG_XM_BAD_DMA_TYPE	GENMASK_ULL(43, 40)
-/* Select the IOI read command used by DMA accesses */
+ 
 # define USBDRD_UCTL_SHIM_CFG_DMA_READ_CMD	BIT_ULL(12)
-/* Select endian format for DMA accesses to the L2C:
- *	0x0 = Little endian
- *	0x1 = Big endian
- *	0x2 = Reserved
- *	0x3 = Reserved
- */
+ 
 # define USBDRD_UCTL_SHIM_CFG_DMA_ENDIAN_MODE	GENMASK_ULL(9, 8)
-/* Select endian format for IOI CSR access to UAHC:
- *	0x0 = Little endian
- *	0x1 = Big endian
- *	0x2 = Reserved
- *	0x3 = Reserved
- */
+ 
 # define USBDRD_UCTL_SHIM_CFG_CSR_ENDIAN_MODE	GENMASK_ULL(1, 0)
 
 #define USBDRD_UCTL_ECC				0xf0
@@ -270,26 +193,23 @@ static int dwc3_octeon_setup(struct dwc3_octeon *octeon,
 	void __iomem *uctl_ctl_reg = octeon->base + USBDRD_UCTL_CTL;
 	void __iomem *uctl_host_cfg_reg = octeon->base + USBDRD_UCTL_HOST_CFG;
 
-	/*
-	 * Step 1: Wait for all voltages to be stable...that surely
-	 *         happened before starting the kernel. SKIP
-	 */
+	 
 
-	/* Step 2: Select GPIO for overcurrent indication, if desired. SKIP */
+	 
 
-	/* Step 3: Assert all resets. */
+	 
 	val = dwc3_octeon_readq(uctl_ctl_reg);
 	val |= USBDRD_UCTL_CTL_UPHY_RST |
 	       USBDRD_UCTL_CTL_UAHC_RST |
 	       USBDRD_UCTL_CTL_UCTL_RST;
 	dwc3_octeon_writeq(uctl_ctl_reg, val);
 
-	/* Step 4a: Reset the clock dividers. */
+	 
 	val = dwc3_octeon_readq(uctl_ctl_reg);
 	val |= USBDRD_UCTL_CTL_H_CLKDIV_RST;
 	dwc3_octeon_writeq(uctl_ctl_reg, val);
 
-	/* Step 4b: Select controller clock frequency. */
+	 
 	div = dwc3_octeon_get_divider();
 	if (div < 0) {
 		dev_err(dev, "clock divider invalid\n");
@@ -307,11 +227,11 @@ static int dwc3_octeon_setup(struct dwc3_octeon *octeon,
 		return -EINVAL;
 	}
 
-	/* Step 4c: Deassert the controller clock divider reset. */
+	 
 	val &= ~USBDRD_UCTL_CTL_H_CLKDIV_RST;
 	dwc3_octeon_writeq(uctl_ctl_reg, val);
 
-	/* Step 5a: Reference clock configuration. */
+	 
 	val = dwc3_octeon_readq(uctl_ctl_reg);
 	val &= ~USBDRD_UCTL_CTL_REF_CLK_DIV2;
 	val &= ~USBDRD_UCTL_CTL_REF_CLK_SEL;
@@ -323,31 +243,31 @@ static int dwc3_octeon_setup(struct dwc3_octeon *octeon,
 	val &= ~USBDRD_UCTL_CTL_MPLL_MULTIPLIER;
 	val |= FIELD_PREP(USBDRD_UCTL_CTL_MPLL_MULTIPLIER, mpll_mul);
 
-	/* Step 5b: Configure and enable spread-spectrum for SuperSpeed. */
+	 
 	val |= USBDRD_UCTL_CTL_SSC_EN;
 
-	/* Step 5c: Enable SuperSpeed. */
+	 
 	val |= USBDRD_UCTL_CTL_REF_SSP_EN;
 
-	/* Step 5d: Configure PHYs. SKIP */
+	 
 
-	/* Step 6a & 6b: Power up PHYs. */
+	 
 	val |= USBDRD_UCTL_CTL_HS_POWER_EN;
 	val |= USBDRD_UCTL_CTL_SS_POWER_EN;
 	dwc3_octeon_writeq(uctl_ctl_reg, val);
 
-	/* Step 7: Wait 10 controller-clock cycles to take effect. */
+	 
 	udelay(10);
 
-	/* Step 8a: Deassert UCTL reset signal. */
+	 
 	val = dwc3_octeon_readq(uctl_ctl_reg);
 	val &= ~USBDRD_UCTL_CTL_UCTL_RST;
 	dwc3_octeon_writeq(uctl_ctl_reg, val);
 
-	/* Step 8b: Wait 10 controller-clock cycles. */
+	 
 	udelay(10);
 
-	/* Step 8c: Setup power control. */
+	 
 	val = dwc3_octeon_readq(uctl_host_cfg_reg);
 	val |= USBDRD_UCTL_HOST_PPC_EN;
 	if (power_gpio == DWC3_GPIO_POWER_NONE) {
@@ -364,20 +284,20 @@ static int dwc3_octeon_setup(struct dwc3_octeon *octeon,
 		val |= USBDRD_UCTL_HOST_PPC_ACTIVE_HIGH_EN;
 	dwc3_octeon_writeq(uctl_host_cfg_reg, val);
 
-	/* Step 8d: Deassert UAHC reset signal. */
+	 
 	val = dwc3_octeon_readq(uctl_ctl_reg);
 	val &= ~USBDRD_UCTL_CTL_UAHC_RST;
 	dwc3_octeon_writeq(uctl_ctl_reg, val);
 
-	/* Step 8e: Wait 10 controller-clock cycles. */
+	 
 	udelay(10);
 
-	/* Step 9: Enable conditional coprocessor clock of UCTL. */
+	 
 	val = dwc3_octeon_readq(uctl_ctl_reg);
 	val |= USBDRD_UCTL_CTL_CSCLK_EN;
 	dwc3_octeon_writeq(uctl_ctl_reg, val);
 
-	/*Step 10: Set for host mode only. */
+	 
 	val = dwc3_octeon_readq(uctl_ctl_reg);
 	val &= ~USBDRD_UCTL_CTL_DRD_MODE;
 	dwc3_octeon_writeq(uctl_ctl_reg, val);

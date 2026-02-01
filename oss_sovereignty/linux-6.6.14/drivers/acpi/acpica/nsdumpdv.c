@@ -1,36 +1,16 @@
-// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
-/******************************************************************************
- *
- * Module Name: nsdump - table dumping routines for debug
- *
- * Copyright (C) 2000 - 2023, Intel Corp.
- *
- *****************************************************************************/
+
+ 
 
 #include <acpi/acpi.h>
 
-/* TBD: This entire module is apparently obsolete and should be removed */
+ 
 
 #define _COMPONENT          ACPI_NAMESPACE
 ACPI_MODULE_NAME("nsdumpdv")
 #ifdef ACPI_OBSOLETE_FUNCTIONS
 #if defined(ACPI_DEBUG_OUTPUT) || defined(ACPI_DEBUGGER)
 #include "acnamesp.h"
-/*******************************************************************************
- *
- * FUNCTION:    acpi_ns_dump_one_device
- *
- * PARAMETERS:  handle              - Node to be dumped
- *              level               - Nesting level of the handle
- *              context             - Passed into walk_namespace
- *              return_value        - Not used
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Dump a single Node that represents a device
- *              This procedure is a user_function called by acpi_ns_walk_namespace.
- *
- ******************************************************************************/
+ 
 static acpi_status
 acpi_ns_dump_one_device(acpi_handle obj_handle,
 			u32 level, void *context, void **return_value)
@@ -63,17 +43,7 @@ acpi_ns_dump_one_device(acpi_handle obj_handle,
 	return (status);
 }
 
-/*******************************************************************************
- *
- * FUNCTION:    acpi_ns_dump_root_devices
- *
- * PARAMETERS:  None
- *
- * RETURN:      None
- *
- * DESCRIPTION: Dump all objects of type "device"
- *
- ******************************************************************************/
+ 
 
 void acpi_ns_dump_root_devices(void)
 {
@@ -82,7 +52,7 @@ void acpi_ns_dump_root_devices(void)
 
 	ACPI_FUNCTION_NAME(ns_dump_root_devices);
 
-	/* Only dump the table if tracing is enabled */
+	 
 
 	if (!(ACPI_LV_TABLES & acpi_dbg_level)) {
 		return;

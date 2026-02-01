@@ -1,28 +1,4 @@
-/*
- * This file is part of the MicroPython project, http://micropython.org/
- *
- * The MIT License (MIT)
- *
- * Copyright (c) SatoshiLabs
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
+ 
 
 #include "py/profile.h"
 #include "py/bc0.h"
@@ -32,8 +8,8 @@
 #if MICROPY_PY_SYS_SETTRACE
 
 #if !MICROPY_PERSISTENT_CODE_SAVE
-// The settrace feature requires that we maintain additional metadata on the raw
-// code object which is normally only done when writing .mpy files.
+
+
 #error "MICROPY_PY_SYS_SETTRACE requires MICROPY_PERSISTENT_CODE_SAVE to be enabled"
 #endif
 
@@ -68,8 +44,8 @@ void mp_prof_extract_prelude(const byte *bytecode, mp_bytecode_prelude_t *prelud
     prelude->line_info = ip;
 }
 
-/******************************************************************************/
-// code object
+ 
+
 
 static void code_print(const mp_print_t *print, mp_obj_t o_in, mp_print_kind_t kind) {
     (void)kind;
@@ -102,14 +78,14 @@ static mp_obj_tuple_t *code_consts(const mp_module_context_t *context, const mp_
 }
 
 static mp_obj_t raw_code_lnotab(const mp_raw_code_t *rc) {
-    // const mp_bytecode_prelude_t *prelude = &rc->prelude;
+    
     uint start = 0;
     uint stop = rc->fun_data_len - start;
 
     uint last_lineno = mp_prof_bytecode_lineno(rc, start);
     uint lasti = 0;
 
-    const uint buffer_chunk_size = (stop - start) >> 2; // heuristic magic
+    const uint buffer_chunk_size = (stop - start) >> 2; 
     uint buffer_size = buffer_chunk_size;
     byte *buffer = m_new(byte, buffer_size);
     uint buffer_index = 0;
@@ -141,7 +117,7 @@ static mp_obj_t raw_code_lnotab(const mp_raw_code_t *rc) {
 
 static void code_attr(mp_obj_t self_in, qstr attr, mp_obj_t *dest) {
     if (dest[0] != MP_OBJ_NULL) {
-        // not load attribute
+        
         return;
     }
     mp_obj_code_t *o = MP_OBJ_TO_PTR(self_in);
@@ -194,13 +170,13 @@ mp_obj_t mp_obj_new_code(const mp_module_context_t *context, const mp_raw_code_t
     o->base.type = &mp_type_settrace_codeobj;
     o->context = context;
     o->rc = rc;
-    o->dict_locals = mp_locals_get(); // this is a wrong! how to do this properly?
+    o->dict_locals = mp_locals_get(); 
     o->lnotab = MP_OBJ_NULL;
     return MP_OBJ_FROM_PTR(o);
 }
 
-/******************************************************************************/
-// frame object
+ 
+
 
 static void frame_print(const mp_print_t *print, mp_obj_t o_in, mp_print_kind_t kind) {
     (void)kind;
@@ -219,7 +195,7 @@ static void frame_print(const mp_print_t *print, mp_obj_t o_in, mp_print_kind_t 
 
 static void frame_attr(mp_obj_t self_in, qstr attr, mp_obj_t *dest) {
     if (dest[0] != MP_OBJ_NULL) {
-        // not load attribute
+        
         return;
     }
 
@@ -285,8 +261,8 @@ mp_obj_t mp_obj_new_frame(const mp_code_state_t *code_state) {
 }
 
 
-/******************************************************************************/
-// Trace logic
+ 
+
 
 typedef struct {
     struct _mp_obj_frame_t *frame;
@@ -324,14 +300,14 @@ mp_obj_t mp_prof_frame_enter(mp_code_state_t *code_state) {
 
     mp_obj_frame_t *frame = MP_OBJ_TO_PTR(mp_obj_new_frame(code_state));
     if (frame == NULL) {
-        // Couldn't allocate a frame object
+        
         return MP_OBJ_NULL;
     }
 
     if (code_state->prev_state && code_state->frame == NULL) {
-        // We are entering not-yet-traced frame
-        // which means it's a CALL event (not a GENERATOR)
-        // so set the function definition line.
+        
+        
+        
         const mp_raw_code_t *rc = code_state->fun_bc->rc;
         frame->lineno = rc->line_of_definition;
         if (!rc->line_of_definition) {
@@ -348,14 +324,14 @@ mp_obj_t mp_prof_frame_enter(mp_code_state_t *code_state) {
     prof_callback_args_t _args, *args = &_args;
     args->frame = code_state->frame;
 
-    // SETTRACE event CALL
+    
     args->event = MP_OBJ_NEW_QSTR(MP_QSTR_call);
     args->arg = mp_const_none;
     top = mp_prof_callback_invoke(prof_trace_cb, args);
 
     code_state->frame->callback = mp_obj_is_callable(top) ? top : MP_OBJ_NULL;
 
-    // Invalidate the last executed line number so the LINE trace can trigger after this CALL.
+    
     frame->lineno = 0;
 
     return top;
@@ -364,7 +340,7 @@ mp_obj_t mp_prof_frame_enter(mp_code_state_t *code_state) {
 mp_obj_t mp_prof_frame_update(const mp_code_state_t *code_state) {
     mp_obj_frame_t *frame = code_state->frame;
     if (frame == NULL) {
-        // Frame was not allocated (eg because there was no memory available)
+        
         return MP_OBJ_NULL;
     }
 
@@ -382,12 +358,12 @@ mp_obj_t mp_prof_frame_update(const mp_code_state_t *code_state) {
 }
 
 mp_obj_t mp_prof_instr_tick(mp_code_state_t *code_state, bool is_exception) {
-    // Detect execution recursion
+    
     assert(!mp_prof_is_executing);
     assert(code_state->frame);
     assert(mp_obj_get_type(code_state->frame) == &mp_type_frame);
 
-    // Detect data recursion
+    
     assert(code_state != code_state->prev_state);
 
     mp_obj_t top = mp_const_none;
@@ -398,16 +374,16 @@ mp_obj_t mp_prof_instr_tick(mp_code_state_t *code_state, bool is_exception) {
     args->event = mp_const_none;
     args->arg = mp_const_none;
 
-    // Call event's are handled inside mp_prof_frame_enter
+    
 
-    // SETTRACE event EXCEPTION
+    
     if (is_exception) {
         args->event = MP_OBJ_NEW_QSTR(MP_QSTR_exception);
         top = mp_prof_callback_invoke(callback, args);
         return top;
     }
 
-    // SETTRACE event LINE
+    
     const mp_raw_code_t *rc = code_state->fun_bc->rc;
     const mp_bytecode_prelude_t *prelude = &rc->prelude;
     size_t prev_line_no = args->frame->lineno;
@@ -418,7 +394,7 @@ mp_obj_t mp_prof_instr_tick(mp_code_state_t *code_state, bool is_exception) {
         top = mp_prof_callback_invoke(callback, args);
     }
 
-    // SETTRACE event RETURN
+    
     const byte *ip = code_state->ip;
     if (*ip == MP_BC_RETURN_VALUE || *ip == MP_BC_YIELD_VALUE) {
         args->event = MP_OBJ_NEW_QSTR(MP_QSTR_return);
@@ -428,8 +404,8 @@ mp_obj_t mp_prof_instr_tick(mp_code_state_t *code_state, bool is_exception) {
         }
     }
 
-    // SETTRACE event OPCODE
-    // TODO: frame.f_trace_opcodes=True
+    
+    
     if (false) {
         args->event = MP_OBJ_NEW_QSTR(MP_QSTR_opcode);
     }
@@ -437,13 +413,13 @@ mp_obj_t mp_prof_instr_tick(mp_code_state_t *code_state, bool is_exception) {
     return top;
 }
 
-/******************************************************************************/
-// DEBUG
+ 
 
-// This section is for debugging the settrace feature itself, and is not intended
-// to be included in production/release builds.  The code structure for this block
-// was taken from py/showbc.c and should not be used as a reference.  To enable
-// this debug feature enable MICROPY_PROF_INSTR_DEBUG_PRINT_ENABLE in py/profile.h.
+
+
+
+
+
 #if MICROPY_PROF_INSTR_DEBUG_PRINT_ENABLE
 
 #include "runtime0.h"
@@ -501,7 +477,7 @@ static const byte *mp_prof_opcode_decode(const byte *ip, const mp_uint_t *const_
         case MP_BC_LOAD_CONST_SMALL_INT: {
             mp_int_t num = 0;
             if ((ip[0] & 0x40) != 0) {
-                // Number is negative
+                
                 num--;
             }
             do {
@@ -699,7 +675,7 @@ static const byte *mp_prof_opcode_decode(const byte *ip, const mp_uint_t *const_
             break;
 
         case MP_BC_SETUP_WITH:
-            DECODE_ULABEL; // loop-like labels are always forward
+            DECODE_ULABEL; 
             instruction->qstr_opname = MP_QSTR_SETUP_WITH;
             instruction->arg = unum;
             break;
@@ -715,22 +691,22 @@ static const byte *mp_prof_opcode_decode(const byte *ip, const mp_uint_t *const_
             break;
 
         case MP_BC_SETUP_EXCEPT:
-            DECODE_ULABEL; // except labels are always forward
+            DECODE_ULABEL; 
             instruction->qstr_opname = MP_QSTR_SETUP_EXCEPT;
             instruction->arg = unum;
             break;
 
         case MP_BC_SETUP_FINALLY:
-            DECODE_ULABEL; // except labels are always forward
+            DECODE_ULABEL; 
             instruction->qstr_opname = MP_QSTR_SETUP_FINALLY;
             instruction->arg = unum;
             break;
 
         case MP_BC_END_FINALLY:
-            // if TOS is an exception, reraises the exception (3 values on TOS)
-            // if TOS is an integer, does something else
-            // if TOS is None, just pops it and continues
-            // else error
+            
+            
+            
+            
             instruction->qstr_opname = MP_QSTR_END_FINALLY;
             break;
 
@@ -743,7 +719,7 @@ static const byte *mp_prof_opcode_decode(const byte *ip, const mp_uint_t *const_
             break;
 
         case MP_BC_FOR_ITER:
-            DECODE_ULABEL; // the jump offset if iteration finishes; for labels are always forward
+            DECODE_ULABEL; 
             instruction->qstr_opname = MP_QSTR_FOR_ITER;
             instruction->arg = unum;
             break;
@@ -943,7 +919,7 @@ void mp_prof_print_instr(const byte *ip, mp_code_state_t *code_state) {
     mp_uint_t offset = ip - prelude->opcodes;
     mp_printf(&mp_plat_print, "instr");
 
-    /* long path */ if (1) {
+      if (1) {
         mp_printf(&mp_plat_print,
             "@0x%p:%q:%q+0x%04x:%d",
             ip,
@@ -954,7 +930,7 @@ void mp_prof_print_instr(const byte *ip, mp_code_state_t *code_state) {
             );
     }
 
-    /* bytecode */ if (0) {
+      if (0) {
         mp_printf(&mp_plat_print, " %02x %02x %02x %02x", ip[0], ip[1], ip[2], ip[3]);
     }
 
@@ -972,6 +948,6 @@ void mp_prof_print_instr(const byte *ip, mp_code_state_t *code_state) {
     mp_printf(&mp_plat_print, "\n");
 }
 
-#endif // MICROPY_PROF_INSTR_DEBUG_PRINT_ENABLE
+#endif 
 
-#endif // MICROPY_PY_SYS_SETTRACE
+#endif 

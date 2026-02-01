@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Driver for Atmel I2S controller
- *
- * Copyright (C) 2015 Atmel Corporation
- *
- * Author: Cyrille Pitchen <cyrille.pitchen@atmel.com>
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/module.h>
@@ -25,35 +19,29 @@
 
 #define ATMEL_I2SC_MAX_TDM_CHANNELS	8
 
-/*
- * ---- I2S Controller Register map ----
- */
-#define ATMEL_I2SC_CR		0x0000	/* Control Register */
-#define ATMEL_I2SC_MR		0x0004	/* Mode Register */
-#define ATMEL_I2SC_SR		0x0008	/* Status Register */
-#define ATMEL_I2SC_SCR		0x000c	/* Status Clear Register */
-#define ATMEL_I2SC_SSR		0x0010	/* Status Set Register */
-#define ATMEL_I2SC_IER		0x0014	/* Interrupt Enable Register */
-#define ATMEL_I2SC_IDR		0x0018	/* Interrupt Disable Register */
-#define ATMEL_I2SC_IMR		0x001c	/* Interrupt Mask Register */
-#define ATMEL_I2SC_RHR		0x0020	/* Receiver Holding Register */
-#define ATMEL_I2SC_THR		0x0024	/* Transmitter Holding Register */
-#define ATMEL_I2SC_VERSION	0x0028	/* Version Register */
+ 
+#define ATMEL_I2SC_CR		0x0000	 
+#define ATMEL_I2SC_MR		0x0004	 
+#define ATMEL_I2SC_SR		0x0008	 
+#define ATMEL_I2SC_SCR		0x000c	 
+#define ATMEL_I2SC_SSR		0x0010	 
+#define ATMEL_I2SC_IER		0x0014	 
+#define ATMEL_I2SC_IDR		0x0018	 
+#define ATMEL_I2SC_IMR		0x001c	 
+#define ATMEL_I2SC_RHR		0x0020	 
+#define ATMEL_I2SC_THR		0x0024	 
+#define ATMEL_I2SC_VERSION	0x0028	 
 
-/*
- * ---- Control Register (Write-only) ----
- */
-#define ATMEL_I2SC_CR_RXEN	BIT(0)	/* Receiver Enable */
-#define ATMEL_I2SC_CR_RXDIS	BIT(1)	/* Receiver Disable */
-#define ATMEL_I2SC_CR_CKEN	BIT(2)	/* Clock Enable */
-#define ATMEL_I2SC_CR_CKDIS	BIT(3)	/* Clock Disable */
-#define ATMEL_I2SC_CR_TXEN	BIT(4)	/* Transmitter Enable */
-#define ATMEL_I2SC_CR_TXDIS	BIT(5)	/* Transmitter Disable */
-#define ATMEL_I2SC_CR_SWRST	BIT(7)	/* Software Reset */
+ 
+#define ATMEL_I2SC_CR_RXEN	BIT(0)	 
+#define ATMEL_I2SC_CR_RXDIS	BIT(1)	 
+#define ATMEL_I2SC_CR_CKEN	BIT(2)	 
+#define ATMEL_I2SC_CR_CKDIS	BIT(3)	 
+#define ATMEL_I2SC_CR_TXEN	BIT(4)	 
+#define ATMEL_I2SC_CR_TXDIS	BIT(5)	 
+#define ATMEL_I2SC_CR_SWRST	BIT(7)	 
 
-/*
- * ---- Mode Register (Read/Write) ----
- */
+ 
 #define ATMEL_I2SC_MR_MODE_MASK		GENMASK(0, 0)
 #define ATMEL_I2SC_MR_MODE_SLAVE	(0 << 0)
 #define ATMEL_I2SC_MR_MODE_MASTER	(1 << 0)
@@ -70,78 +58,74 @@
 
 #define ATMEL_I2SC_MR_FORMAT_MASK	GENMASK(7, 6)
 #define ATMEL_I2SC_MR_FORMAT_I2S	(0 << 6)
-#define ATMEL_I2SC_MR_FORMAT_LJ		(1 << 6)  /* Left Justified */
+#define ATMEL_I2SC_MR_FORMAT_LJ		(1 << 6)   
 #define ATMEL_I2SC_MR_FORMAT_TDM	(2 << 6)
 #define ATMEL_I2SC_MR_FORMAT_TDMLJ	(3 << 6)
 
-/* Left audio samples duplicated to right audio channel */
+ 
 #define ATMEL_I2SC_MR_RXMONO		BIT(8)
 
-/* Receiver uses one DMA channel ... */
+ 
 #define ATMEL_I2SC_MR_RXDMA_MASK	GENMASK(9, 9)
-#define ATMEL_I2SC_MR_RXDMA_SINGLE	(0 << 9)  /* for all audio channels */
-#define ATMEL_I2SC_MR_RXDMA_MULTIPLE	(1 << 9)  /* per audio channel */
+#define ATMEL_I2SC_MR_RXDMA_SINGLE	(0 << 9)   
+#define ATMEL_I2SC_MR_RXDMA_MULTIPLE	(1 << 9)   
 
-/* I2SDO output of I2SC is internally connected to I2SDI input */
+ 
 #define ATMEL_I2SC_MR_RXLOOP		BIT(10)
 
-/* Left audio samples duplicated to right audio channel */
+ 
 #define ATMEL_I2SC_MR_TXMONO		BIT(12)
 
-/* Transmitter uses one DMA channel ... */
+ 
 #define ATMEL_I2SC_MR_TXDMA_MASK	GENMASK(13, 13)
-#define ATMEL_I2SC_MR_TXDMA_SINGLE	(0 << 13)  /* for all audio channels */
-#define ATMEL_I2SC_MR_TXDME_MULTIPLE	(1 << 13)  /* per audio channel */
+#define ATMEL_I2SC_MR_TXDMA_SINGLE	(0 << 13)   
+#define ATMEL_I2SC_MR_TXDME_MULTIPLE	(1 << 13)   
 
-/* x sample transmitted when underrun */
+ 
 #define ATMEL_I2SC_MR_TXSAME_MASK	GENMASK(14, 14)
-#define ATMEL_I2SC_MR_TXSAME_ZERO	(0 << 14)  /* Zero sample */
-#define ATMEL_I2SC_MR_TXSAME_PREVIOUS	(1 << 14)  /* Previous sample */
+#define ATMEL_I2SC_MR_TXSAME_ZERO	(0 << 14)   
+#define ATMEL_I2SC_MR_TXSAME_PREVIOUS	(1 << 14)   
 
-/* Audio Clock to I2SC Master Clock ratio */
+ 
 #define ATMEL_I2SC_MR_IMCKDIV_MASK	GENMASK(21, 16)
 #define ATMEL_I2SC_MR_IMCKDIV(div) \
 	(((div) << 16) & ATMEL_I2SC_MR_IMCKDIV_MASK)
 
-/* Master Clock to fs ratio */
+ 
 #define ATMEL_I2SC_MR_IMCKFS_MASK	GENMASK(29, 24)
 #define ATMEL_I2SC_MR_IMCKFS(fs) \
 	(((fs) << 24) & ATMEL_I2SC_MR_IMCKFS_MASK)
 
-/* Master Clock mode */
+ 
 #define ATMEL_I2SC_MR_IMCKMODE_MASK	GENMASK(30, 30)
-/* 0: No master clock generated (selected clock drives I2SCK pin) */
+ 
 #define ATMEL_I2SC_MR_IMCKMODE_I2SCK	(0 << 30)
-/* 1: master clock generated (internally generated clock drives I2SMCK pin) */
+ 
 #define ATMEL_I2SC_MR_IMCKMODE_I2SMCK	(1 << 30)
 
-/* Slot Width */
-/* 0: slot is 32 bits wide for DATALENGTH = 18/20/24 bits. */
-/* 1: slot is 24 bits wide for DATALENGTH = 18/20/24 bits. */
+ 
+ 
+ 
 #define ATMEL_I2SC_MR_IWS		BIT(31)
 
-/*
- * ---- Status Registers ----
- */
-#define ATMEL_I2SC_SR_RXEN	BIT(0)	/* Receiver Enabled */
-#define ATMEL_I2SC_SR_RXRDY	BIT(1)	/* Receive Ready */
-#define ATMEL_I2SC_SR_RXOR	BIT(2)	/* Receive Overrun */
+ 
+#define ATMEL_I2SC_SR_RXEN	BIT(0)	 
+#define ATMEL_I2SC_SR_RXRDY	BIT(1)	 
+#define ATMEL_I2SC_SR_RXOR	BIT(2)	 
 
-#define ATMEL_I2SC_SR_TXEN	BIT(4)	/* Transmitter Enabled */
-#define ATMEL_I2SC_SR_TXRDY	BIT(5)	/* Transmit Ready */
-#define ATMEL_I2SC_SR_TXUR	BIT(6)	/* Transmit Underrun */
+#define ATMEL_I2SC_SR_TXEN	BIT(4)	 
+#define ATMEL_I2SC_SR_TXRDY	BIT(5)	 
+#define ATMEL_I2SC_SR_TXUR	BIT(6)	 
 
-/* Receive Overrun Channel */
+ 
 #define ATMEL_I2SC_SR_RXORCH_MASK	GENMASK(15, 8)
 #define ATMEL_I2SC_SR_RXORCH(ch)	(1 << (((ch) & 0x7) + 8))
 
-/* Transmit Underrun Channel */
+ 
 #define ATMEL_I2SC_SR_TXURCH_MASK	GENMASK(27, 20)
 #define ATMEL_I2SC_SR_TXURCH(ch)	(1 << (((ch) & 0x7) + 20))
 
-/*
- * ---- Interrupt Enable/Disable/Mask Registers ----
- */
+ 
 #define ATMEL_I2SC_INT_RXRDY	ATMEL_I2SC_SR_RXRDY
 #define ATMEL_I2SC_INT_RXOR	ATMEL_I2SC_SR_RXOR
 #define ATMEL_I2SC_INT_TXRDY	ATMEL_I2SC_SR_TXRDY
@@ -165,26 +149,26 @@ struct atmel_i2s_gck_param {
 #define I2S_MCK_11M2896		11289600UL
 #define I2S_MCK_6M144		6144000UL
 
-/* mck = (32 * (imckfs+1) / (imckdiv+1)) * fs */
+ 
 static const struct atmel_i2s_gck_param gck_params[] = {
-	/* mck = 6.144Mhz */
-	{  8000, I2S_MCK_6M144,  1, 47},	/* mck =  768 fs */
+	 
+	{  8000, I2S_MCK_6M144,  1, 47},	 
 
-	/* mck = 12.288MHz */
-	{ 16000, I2S_MCK_12M288, 1, 47},	/* mck =  768 fs */
-	{ 24000, I2S_MCK_12M288, 3, 63},	/* mck =  512 fs */
-	{ 32000, I2S_MCK_12M288, 3, 47},	/* mck =  384 fs */
-	{ 48000, I2S_MCK_12M288, 7, 63},	/* mck =  256 fs */
-	{ 64000, I2S_MCK_12M288, 7, 47},	/* mck =  192 fs */
-	{ 96000, I2S_MCK_12M288, 7, 31},	/* mck =  128 fs */
-	{192000, I2S_MCK_12M288, 7, 15},	/* mck =   64 fs */
+	 
+	{ 16000, I2S_MCK_12M288, 1, 47},	 
+	{ 24000, I2S_MCK_12M288, 3, 63},	 
+	{ 32000, I2S_MCK_12M288, 3, 47},	 
+	{ 48000, I2S_MCK_12M288, 7, 63},	 
+	{ 64000, I2S_MCK_12M288, 7, 47},	 
+	{ 96000, I2S_MCK_12M288, 7, 31},	 
+	{192000, I2S_MCK_12M288, 7, 15},	 
 
-	/* mck = 11.2896MHz */
-	{ 11025, I2S_MCK_11M2896, 1, 63},	/* mck = 1024 fs */
-	{ 22050, I2S_MCK_11M2896, 3, 63},	/* mck =  512 fs */
-	{ 44100, I2S_MCK_11M2896, 7, 63},	/* mck =  256 fs */
-	{ 88200, I2S_MCK_11M2896, 7, 31},	/* mck =  128 fs */
-	{176400, I2S_MCK_11M2896, 7, 15},	/* mck =   64 fs */
+	 
+	{ 11025, I2S_MCK_11M2896, 1, 63},	 
+	{ 22050, I2S_MCK_11M2896, 3, 63},	 
+	{ 44100, I2S_MCK_11M2896, 7, 63},	 
+	{ 88200, I2S_MCK_11M2896, 7, 31},	 
+	{176400, I2S_MCK_11M2896, 7, 15},	 
 };
 
 struct atmel_i2s_dev;
@@ -278,11 +262,7 @@ static int atmel_i2s_prepare(struct snd_pcm_substream *substream,
 	if (is_playback) {
 		regmap_read(dev->regmap, ATMEL_I2SC_SR, &sr);
 		if (sr & ATMEL_I2SC_SR_RXRDY) {
-			/*
-			 * The RX Ready flag should not be set. However if here,
-			 * we flush (read) the Receive Holding Register to start
-			 * from a clean state.
-			 */
+			 
 			dev_dbg(dev->dev, "RXRDY is set\n");
 			regmap_read(dev->regmap, ATMEL_I2SC_RHR, &rhr);
 		}
@@ -300,10 +280,7 @@ static int atmel_i2s_get_gck_param(struct atmel_i2s_dev *dev, int fs)
 		return -EINVAL;
 	}
 
-	/*
-	 * Find the best possible settings to generate the I2S Master Clock
-	 * from the PLL Audio.
-	 */
+	 
 	dev->gck_param = NULL;
 	best = INT_MAX;
 	for (i = 0; i < ARRAY_SIZE(gck_params); ++i) {
@@ -347,7 +324,7 @@ static int atmel_i2s_hw_params(struct snd_pcm_substream *substream,
 
 	switch (dev->fmt & SND_SOC_DAIFMT_CLOCK_PROVIDER_MASK) {
 	case SND_SOC_DAIFMT_BP_FP:
-		/* codec is slave, so cpu is master */
+		 
 		mr |= ATMEL_I2SC_MR_MODE_MASTER;
 		ret = atmel_i2s_get_gck_param(dev, params_rate(params));
 		if (ret)
@@ -355,7 +332,7 @@ static int atmel_i2s_hw_params(struct snd_pcm_substream *substream,
 		break;
 
 	case SND_SOC_DAIFMT_BC_FC:
-		/* codec is master, so cpu is slave */
+		 
 		mr |= ATMEL_I2SC_MR_MODE_SLAVE;
 		dev->gck_param = NULL;
 		break;
@@ -429,19 +406,19 @@ static int atmel_i2s_switch_mck_generator(struct atmel_i2s_dev *dev,
 		   ATMEL_I2SC_MR_IMCKMODE_MASK);
 
 	if (!enabled) {
-		/* Disable the I2S Master Clock generator. */
+		 
 		ret = regmap_write(dev->regmap, ATMEL_I2SC_CR,
 				   ATMEL_I2SC_CR_CKDIS);
 		if (ret)
 			return ret;
 
-		/* Reset the I2S Master Clock generator settings. */
+		 
 		ret = regmap_update_bits(dev->regmap, ATMEL_I2SC_MR,
 					 mr_mask, mr);
 		if (ret)
 			return ret;
 
-		/* Disable/unprepare the PMC generated clock. */
+		 
 		clk_disable_unprepare(dev->gclk);
 
 		return 0;
@@ -460,7 +437,7 @@ static int atmel_i2s_switch_mck_generator(struct atmel_i2s_dev *dev,
 	if (ret)
 		return ret;
 
-	/* Update the Mode Register to generate the I2S Master Clock. */
+	 
 	mr |= ATMEL_I2SC_MR_IMCKDIV(dev->gck_param->imckdiv);
 	mr |= ATMEL_I2SC_MR_IMCKFS(dev->gck_param->imckfs);
 	mr |= ATMEL_I2SC_MR_IMCKMODE_I2SMCK;
@@ -468,7 +445,7 @@ static int atmel_i2s_switch_mck_generator(struct atmel_i2s_dev *dev,
 	if (ret)
 		return ret;
 
-	/* Finally enable the I2S Master Clock generator. */
+	 
 	return regmap_write(dev->regmap, ATMEL_I2SC_CR,
 			    ATMEL_I2SC_CR_CKEN);
 }
@@ -499,13 +476,13 @@ static int atmel_i2s_trigger(struct snd_pcm_substream *substream, int cmd,
 		return -EINVAL;
 	}
 
-	/* Read the Mode Register to retrieve the master/slave state. */
+	 
 	err = regmap_read(dev->regmap, ATMEL_I2SC_MR, &mr);
 	if (err)
 		return err;
 	is_master = (mr & ATMEL_I2SC_MR_MODE_MASK) == ATMEL_I2SC_MR_MODE_MASTER;
 
-	/* If master starts, enable the audio clock. */
+	 
 	if (is_master && mck_enabled) {
 		if (!dev->clk_use_no) {
 			err = atmel_i2s_switch_mck_generator(dev, true);
@@ -519,7 +496,7 @@ static int atmel_i2s_trigger(struct snd_pcm_substream *substream, int cmd,
 	if (err)
 		return err;
 
-	/* If master stops, disable the audio clock. */
+	 
 	if (is_master && !mck_enabled) {
 		if (dev->clk_use_no == 1) {
 			err = atmel_i2s_switch_mck_generator(dev, false);
@@ -580,7 +557,7 @@ static int atmel_i2s_sama5d2_mck_init(struct atmel_i2s_dev *dev,
 	if (!dev->gclk)
 		return 0;
 
-	/* muxclk is optional, so we return error for probe defer only */
+	 
 	muxclk = devm_clk_get(dev->dev, "muxclk");
 	if (IS_ERR(muxclk)) {
 		err = PTR_ERR(muxclk);
@@ -604,7 +581,7 @@ static const struct of_device_id atmel_i2s_dt_ids[] = {
 		.data = (void *)&atmel_i2s_sama5d2_caps,
 	},
 
-	{ /* sentinel */ }
+	{   }
 };
 
 MODULE_DEVICE_TABLE(of, atmel_i2s_dt_ids);
@@ -622,17 +599,17 @@ static int atmel_i2s_probe(struct platform_device *pdev)
 	unsigned int pcm_flags = 0;
 	unsigned int version;
 
-	/* Get memory for driver data. */
+	 
 	dev = devm_kzalloc(&pdev->dev, sizeof(*dev), GFP_KERNEL);
 	if (!dev)
 		return -ENOMEM;
 
-	/* Get hardware capabilities. */
+	 
 	match = of_match_node(atmel_i2s_dt_ids, np);
 	if (match)
 		dev->caps = match->data;
 
-	/* Map I/O registers. */
+	 
 	base = devm_platform_get_and_ioremap_resource(pdev, 0, &mem);
 	if (IS_ERR(base))
 		return PTR_ERR(base);
@@ -642,7 +619,7 @@ static int atmel_i2s_probe(struct platform_device *pdev)
 	if (IS_ERR(regmap))
 		return PTR_ERR(regmap);
 
-	/* Request IRQ. */
+	 
 	irq = platform_get_irq(pdev, 0);
 	if (irq < 0)
 		return irq;
@@ -652,7 +629,7 @@ static int atmel_i2s_probe(struct platform_device *pdev)
 	if (err)
 		return err;
 
-	/* Get the peripheral clock. */
+	 
 	dev->pclk = devm_clk_get(&pdev->dev, "pclk");
 	if (IS_ERR(dev->pclk)) {
 		err = PTR_ERR(dev->pclk);
@@ -661,35 +638,35 @@ static int atmel_i2s_probe(struct platform_device *pdev)
 		return err;
 	}
 
-	/* Get audio clock to generate the I2S Master Clock (I2S_MCK) */
+	 
 	dev->gclk = devm_clk_get(&pdev->dev, "gclk");
 	if (IS_ERR(dev->gclk)) {
 		if (PTR_ERR(dev->gclk) == -EPROBE_DEFER)
 			return -EPROBE_DEFER;
-		/* Master Mode not supported */
+		 
 		dev->gclk = NULL;
 	}
 	dev->dev = &pdev->dev;
 	dev->regmap = regmap;
 	platform_set_drvdata(pdev, dev);
 
-	/* Do hardware specific settings to initialize I2S_MCK generator */
+	 
 	if (dev->caps && dev->caps->mck_init) {
 		err = dev->caps->mck_init(dev, np);
 		if (err)
 			return err;
 	}
 
-	/* Enable the peripheral clock. */
+	 
 	err = clk_prepare_enable(dev->pclk);
 	if (err)
 		return err;
 
-	/* Get IP version. */
+	 
 	regmap_read(dev->regmap, ATMEL_I2SC_VERSION, &version);
 	dev_info(&pdev->dev, "hw version: %#x\n", version);
 
-	/* Enable error interrupts. */
+	 
 	regmap_write(dev->regmap, ATMEL_I2SC_IER,
 		     ATMEL_I2SC_INT_RXOR | ATMEL_I2SC_INT_TXUR);
 
@@ -702,7 +679,7 @@ static int atmel_i2s_probe(struct platform_device *pdev)
 		return err;
 	}
 
-	/* Prepare DMA config. */
+	 
 	dev->playback.addr	= (dma_addr_t)mem->start + ATMEL_I2SC_THR;
 	dev->playback.maxburst	= 1;
 	dev->capture.addr	= (dma_addr_t)mem->start + ATMEL_I2SC_RHR;

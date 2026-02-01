@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *
- *  Digianswer Bluetooth USB driver
- *
- *  Copyright (C) 2004-2007  Marcel Holtmann <marcel@holtmann.org>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -25,10 +20,10 @@
 #define VERSION "0.11"
 
 static const struct usb_device_id bpa10x_table[] = {
-	/* Tektronix BPA 100/105 (Digianswer) */
+	 
 	{ USB_DEVICE(0x08fd, 0x0002) },
 
-	{ }	/* Terminating entry */
+	{ }	 
 };
 
 MODULE_DEVICE_TABLE(usb, bpa10x_table);
@@ -249,7 +244,7 @@ static int bpa10x_setup(struct hci_dev *hdev)
 
 	BT_DBG("%s", hdev->name);
 
-	/* Read revision string */
+	 
 	skb = __hci_cmd_sync(hdev, 0xfc0e, sizeof(req), req, HCI_INIT_TIMEOUT);
 	if (IS_ERR(skb))
 		return PTR_ERR(skb);
@@ -278,7 +273,7 @@ static int bpa10x_send_frame(struct hci_dev *hdev, struct sk_buff *skb)
 	if (!urb)
 		return -ENOMEM;
 
-	/* Prepend skb with frame type */
+	 
 	*(u8 *)skb_push(skb, 1) = hci_skb_pkt_type(skb);
 
 	switch (hci_skb_pkt_type(skb)) {
@@ -350,7 +345,7 @@ static int bpa10x_set_diag(struct hci_dev *hdev, bool enable)
 	if (!test_bit(HCI_RUNNING, &hdev->flags))
 		return -ENETDOWN;
 
-	/* Enable sniffer operation */
+	 
 	skb = __hci_cmd_sync(hdev, 0xfc0e, sizeof(req), req, HCI_INIT_TIMEOUT);
 	if (IS_ERR(skb))
 		return PTR_ERR(skb);

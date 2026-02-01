@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Greybus operations
- *
- * Copyright 2015-2016 Google Inc.
- */
+
+ 
 
 #include <linux/slab.h>
 
@@ -69,7 +65,7 @@ static void gb_audio_module_release(struct kobject *kobj)
 	struct gb_audio_manager_module *module = to_gb_audio_module(kobj);
 
 	pr_info("Destroying audio module #%d\n", module->id);
-	/* TODO -> delete from list */
+	 
 	kfree(module);
 }
 
@@ -140,7 +136,7 @@ static struct attribute *gb_audio_module_default_attrs[] = {
 	&gb_audio_module_intf_id_attribute.attr,
 	&gb_audio_module_ip_devices_attribute.attr,
 	&gb_audio_module_op_devices_attribute.attr,
-	NULL,   /* need to NULL terminate the list of attributes */
+	NULL,    
 };
 ATTRIBUTE_GROUPS(gb_audio_module_default);
 
@@ -192,24 +188,19 @@ int gb_audio_manager_module_create(struct gb_audio_manager_module **module,
 	if (!m)
 		return -ENOMEM;
 
-	/* Initialize the node */
+	 
 	INIT_LIST_HEAD(&m->list);
 
-	/* Set the module id */
+	 
 	m->id = id;
 
-	/* Copy the provided descriptor */
+	 
 	memcpy(&m->desc, desc, sizeof(*desc));
 
-	/* set the kset */
+	 
 	m->kobj.kset = manager_kset;
 
-	/*
-	 * Initialize and add the kobject to the kernel.  All the default files
-	 * will be created here.  As we have already specified a kset for this
-	 * kobject, we don't have to set a parent for the kobject, the kobject
-	 * will be placed beneath that kset automatically.
-	 */
+	 
 	err = kobject_init_and_add(&m->kobj, &gb_audio_module_type, NULL, "%d",
 				   id);
 	if (err) {
@@ -218,9 +209,7 @@ int gb_audio_manager_module_create(struct gb_audio_manager_module **module,
 		return err;
 	}
 
-	/*
-	 * Notify the object was created
-	 */
+	 
 	send_add_uevent(m);
 
 	*module = m;

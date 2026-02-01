@@ -1,35 +1,4 @@
-/*
- * Copyright (c) 2007 Cisco Systems, Inc. All rights reserved.
- * Copyright (c) 2007, 2008 Mellanox Technologies. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 
 #include <linux/slab.h>
 #include <rdma/ib_user_verbs.h>
@@ -114,22 +83,13 @@ static int mlx4_ib_umem_write_mtt_block(struct mlx4_ib_dev *dev,
 
 	mtt_entries = (len >> mtt_shift);
 
-	/*
-	 * Align the MTT start address to the mtt_size.
-	 * Required to handle cases when the MR starts in the middle of an MTT
-	 * record. Was not required in old code since the physical addresses
-	 * provided by the dma subsystem were page aligned, which was also the
-	 * MTT size.
-	 */
+	 
 	cur_start_addr = round_down(cur_start_addr, mtt_size);
-	/* A new block is started ... */
+	 
 	for (k = 0; k < mtt_entries; ++k) {
 		pages[*npages] = cur_start_addr + (mtt_size * k);
 		(*npages)++;
-		/*
-		 * Be friendly to mlx4_write_mtt() and pass it chunks of
-		 * appropriate size.
-		 */
+		 
 		if (*npages == PAGE_SIZE / sizeof(u64)) {
 			err = mlx4_write_mtt(dev->dev, mtt, *start_index,
 					     *npages, pages);
@@ -153,27 +113,14 @@ static int mlx4_ib_umem_calc_block_mtt(u64 next_block_start,
 				       u64 current_block_end,
 				       u64 block_shift)
 {
-	/* Check whether the alignment of the new block is aligned as well as
-	 * the previous block.
-	 * Block address must start with zeros till size of entity_size.
-	 */
+	 
 	if ((next_block_start & ((1ULL << block_shift) - 1ULL)) != 0)
-		/*
-		 * It is not as well aligned as the previous block-reduce the
-		 * mtt size accordingly. Here we take the last right bit which
-		 * is 1.
-		 */
+		 
 		block_shift = alignment_of(next_block_start);
 
-	/*
-	 * Check whether the alignment of the end of previous block - is it
-	 * aligned as well as the start of the block
-	 */
+	 
 	if (((current_block_end) & ((1ULL << block_shift) - 1ULL)) != 0)
-		/*
-		 * It is not as well aligned as the start of the block -
-		 * reduce the mtt size accordingly.
-		 */
+		 
 		block_shift = alignment_of(current_block_end);
 
 	return block_shift;
@@ -202,15 +149,11 @@ int mlx4_ib_umem_write_mtt(struct mlx4_ib_dev *dev, struct mlx4_mtt *mtt,
 
 	for_each_sgtable_dma_sg(&umem->sgt_append.sgt, sg, i) {
 		if (cur_start_addr + len == sg_dma_address(sg)) {
-			/* still the same block */
+			 
 			len += sg_dma_len(sg);
 			continue;
 		}
-		/*
-		 * A new block is started ...
-		 * If len is malaligned, write an extra mtt entry to cover the
-		 * misaligned area (round up the division)
-		 */
+		 
 		err = mlx4_ib_umem_write_mtt_block(dev, mtt, mtt_size,
 						   mtt_shift, len,
 						   cur_start_addr,
@@ -223,12 +166,9 @@ int mlx4_ib_umem_write_mtt(struct mlx4_ib_dev *dev, struct mlx4_mtt *mtt,
 		len = sg_dma_len(sg);
 	}
 
-	/* Handle the last block */
+	 
 	if (len > 0) {
-		/*
-		 * If len is malaligned, write an extra mtt entry to cover
-		 * the misaligned area (round up the division)
-		 */
+		 
 		err = mlx4_ib_umem_write_mtt_block(dev, mtt, mtt_size,
 						   mtt_shift, len,
 						   cur_start_addr, pages,
@@ -245,15 +185,7 @@ out:
 	return err;
 }
 
-/*
- * Calculate optimal mtt size based on contiguous pages.
- * Function will return also the number of pages that are not aligned to the
- * calculated mtt_size to be added to total number of pages. For that we should
- * check the first chunk length & last chunk length and if not aligned to
- * mtt_size we should increment the non_aligned_pages number. All chunks in the
- * middle already handled as part of mtt shift calculation for both their start
- * & end addresses.
- */
+ 
 int mlx4_ib_umem_calc_optimal_mtt_size(struct ib_umem *umem, u64 start_va,
 				       int *num_of_mtts)
 {
@@ -274,28 +206,11 @@ int mlx4_ib_umem_calc_optimal_mtt_size(struct ib_umem *umem, u64 start_va,
 	*num_of_mtts = ib_umem_num_dma_blocks(umem, PAGE_SIZE);
 
 	for_each_sgtable_dma_sg(&umem->sgt_append.sgt, sg, i) {
-		/*
-		 * Initialization - save the first chunk start as the
-		 * current_block_start - block means contiguous pages.
-		 */
+		 
 		if (current_block_len == 0 && current_block_start == 0) {
 			current_block_start = sg_dma_address(sg);
 			first_block_start = current_block_start;
-			/*
-			 * Find the bits that are different between the physical
-			 * address and the virtual address for the start of the
-			 * MR.
-			 * umem_get aligned the start_va to a page boundary.
-			 * Therefore, we need to align the start va to the same
-			 * boundary.
-			 * misalignment_bits is needed to handle the  case of a
-			 * single memory region. In this case, the rest of the
-			 * logic will not reduce the block size.  If we use a
-			 * block size which is bigger than the alignment of the
-			 * misalignment bits, we might use the virtual page
-			 * number instead of the physical page number, resulting
-			 * in access to the wrong data.
-			 */
+			 
 			misalignment_bits =
 				(start_va & (~(((u64)(PAGE_SIZE)) - 1ULL))) ^
 				current_block_start;
@@ -303,49 +218,35 @@ int mlx4_ib_umem_calc_optimal_mtt_size(struct ib_umem *umem, u64 start_va,
 					  block_shift);
 		}
 
-		/*
-		 * Go over the scatter entries and check if they continue the
-		 * previous scatter entry.
-		 */
+		 
 		next_block_start = sg_dma_address(sg);
 		current_block_end = current_block_start	+ current_block_len;
-		/* If we have a split (non-contig.) between two blocks */
+		 
 		if (current_block_end != next_block_start) {
 			block_shift = mlx4_ib_umem_calc_block_mtt
 					(next_block_start,
 					 current_block_end,
 					 block_shift);
 
-			/*
-			 * If we reached the minimum shift for 4k page we stop
-			 * the loop.
-			 */
+			 
 			if (block_shift <= min_shift)
 				goto end;
 
-			/*
-			 * If not saved yet we are in first block - we save the
-			 * length of first block to calculate the
-			 * non_aligned_pages number at the end.
-			 */
+			 
 			total_len += current_block_len;
 
-			/* Start a new block */
+			 
 			current_block_start = next_block_start;
 			current_block_len = sg_dma_len(sg);
 			continue;
 		}
-		/* The scatter entry is another part of the current block,
-		 * increase the block size.
-		 * An entry in the scatter can be larger than 4k (page) as of
-		 * dma mapping which merge some blocks together.
-		 */
+		 
 		current_block_len += sg_dma_len(sg);
 	}
 
-	/* Account for the last block in the total len */
+	 
 	total_len += current_block_len;
-	/* Add to the first block the misalignment that it suffers from. */
+	 
 	total_len += (first_block_start & ((1ULL << block_shift) - 1ULL));
 	last_block_end = current_block_start + current_block_len;
 	last_block_aligned_end = round_up(last_block_end, 1ULL << block_shift);
@@ -358,10 +259,7 @@ int mlx4_ib_umem_calc_optimal_mtt_size(struct ib_umem *umem, u64 start_va,
 	*num_of_mtts = total_len >> block_shift;
 end:
 	if (block_shift < min_shift) {
-		/*
-		 * If shift is less than the min we set a warning and return the
-		 * min shift.
-		 */
+		 
 		pr_warn("umem_calc_optimal_mtt_size - unexpected shift %lld\n", block_shift);
 
 		block_shift = min_shift;
@@ -372,22 +270,13 @@ end:
 static struct ib_umem *mlx4_get_umem_mr(struct ib_device *device, u64 start,
 					u64 length, int access_flags)
 {
-	/*
-	 * Force registering the memory as writable if the underlying pages
-	 * are writable.  This is so rereg can change the access permissions
-	 * from readable to writable without having to run through ib_umem_get
-	 * again
-	 */
+	 
 	if (!ib_access_writable(access_flags)) {
 		unsigned long untagged_start = untagged_addr(start);
 		struct vm_area_struct *vma;
 
 		mmap_read_lock(current->mm);
-		/*
-		 * FIXME: Ideally this would iterate over all the vmas that
-		 * cover the memory, but for now it requires a single vma to
-		 * entirely cover the MR to support RO mappings.
-		 */
+		 
 		vma = find_vma(current->mm, untagged_start);
 		if (vma && vma->vm_end >= untagged_start + length &&
 		    vma->vm_start <= untagged_start) {
@@ -466,10 +355,7 @@ struct ib_mr *mlx4_ib_rereg_user_mr(struct ib_mr *mr, int flags, u64 start,
 	struct mlx4_mpt_entry **pmpt_entry = &mpt_entry;
 	int err;
 
-	/* Since we synchronize this call and mlx4_ib_dereg_mr via uverbs,
-	 * we assume that the calls can't run concurrently. Otherwise, a
-	 * race exists.
-	 */
+	 
 	err =  mlx4_mr_hw_get_mpt(dev->dev, &mmr->mmr, &pmpt_entry);
 	if (err)
 		return ERR_PTR(err);
@@ -506,7 +392,7 @@ struct ib_mr *mlx4_ib_rereg_user_mr(struct ib_mr *mr, int flags, u64 start,
 					     mr_access_flags);
 		if (IS_ERR(mmr->umem)) {
 			err = PTR_ERR(mmr->umem);
-			/* Prevent mlx4_ib_dereg_mr from free'ing invalid pointer */
+			 
 			mmr->umem = NULL;
 			goto release_mpt_entry;
 		}
@@ -531,9 +417,7 @@ struct ib_mr *mlx4_ib_rereg_user_mr(struct ib_mr *mr, int flags, u64 start,
 		}
 	}
 
-	/* If we couldn't transfer the MR to the HCA, just remember to
-	 * return a failure. But dereg_mr will free the resources.
-	 */
+	 
 	err = mlx4_mr_hw_write_mpt(dev->dev, &mmr->mmr, pmpt_entry);
 	if (!err && flags & IB_MR_REREG_ACCESS)
 		mmr->mmr.access = mr_access_flags;
@@ -552,15 +436,11 @@ mlx4_alloc_priv_pages(struct ib_device *device,
 {
 	int ret;
 
-	/* Ensure that size is aligned to DMA cacheline
-	 * requirements.
-	 * max_pages is limited to MLX4_MAX_FAST_REG_PAGES
-	 * so page_map_size will never cross PAGE_SIZE.
-	 */
+	 
 	mr->page_map_size = roundup(max_pages * sizeof(u64),
 				    MLX4_MR_PAGES_ALIGN);
 
-	/* Prevent cross page boundary allocation. */
+	 
 	mr->pages = (__be64 *)get_zeroed_page(GFP_KERNEL);
 	if (!mr->pages)
 		return -ENOMEM;

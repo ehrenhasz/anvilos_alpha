@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2013 Red Hat
- * Author: Rob Clark <robdclark@gmail.com>
- */
+ 
+ 
 
 #ifndef __MDP4_KMS_H__
 #define __MDP4_KMS_H__
@@ -36,7 +33,7 @@ struct mdp4_kms {
 
 	bool rpm_enabled;
 
-	/* empty/blank cursor bo to use when cursor is "disabled" */
+	 
 	struct drm_gem_object *blank_cursor_bo;
 	uint64_t blank_cursor_iova;
 };
@@ -86,7 +83,7 @@ static inline uint32_t dma2err(enum mdp4_dma dma)
 {
 	switch (dma) {
 	case DMA_P:    return MDP4_IRQ_PRIMARY_INTF_UDERRUN;
-	case DMA_S:    return 0;  // ???
+	case DMA_S:    return 0;  
 	case DMA_E:    return MDP4_IRQ_EXTERNAL_INTF_UDERRUN;
 	default:       return 0;
 	}
@@ -216,4 +213,4 @@ static inline struct clk *mpd4_lvds_pll_init(struct drm_device *dev)
 }
 #endif
 
-#endif /* __MDP4_KMS_H__ */
+#endif  

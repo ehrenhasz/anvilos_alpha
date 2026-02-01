@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Driver for Renesas RZ/G2L CRU
- *
- * Copyright (C) 2022 Renesas Electronics Corp.
- */
+
+ 
 
 #include "rzg2l-cru.h"
 
@@ -87,7 +83,7 @@ static int rzg2l_cru_ip_s_stream(struct v4l2_subdev *sd, int enable)
 			if (!ret)
 				return 0;
 		} else {
-			/* enable back vclk so that s_stream in error path disables it */
+			 
 			if (rzg2l_cru_vclk_prepare(cru))
 				dev_err(cru->dev, "Failed to enable vclk\n");
 		}
@@ -133,7 +129,7 @@ static int rzg2l_cru_ip_set_format(struct v4l2_subdev *sd,
 
 	fmt->format = *sink_format;
 
-	/* propagate format to source pad */
+	 
 	*src_format = *sink_format;
 
 	return 0;

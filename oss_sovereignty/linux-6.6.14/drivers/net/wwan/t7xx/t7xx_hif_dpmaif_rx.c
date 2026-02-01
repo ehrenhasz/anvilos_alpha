@@ -1,20 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2021, MediaTek Inc.
- * Copyright (c) 2021-2022, Intel Corporation.
- *
- * Authors:
- *  Amir Hanania <amir.hanania@intel.com>
- *  Haijun Liu <haijun.liu@mediatek.com>
- *  Eliot Lee <eliot.lee@intel.com>
- *  Moises Veleta <moises.veleta@intel.com>
- *  Ricardo Martinez <ricardo.martinez@linux.intel.com>
- *
- * Contributors:
- *  Andy Shevchenko <andriy.shevchenko@linux.intel.com>
- *  Chiranjeevi Rapolu <chiranjeevi.rapolu@intel.com>
- *  Sreehari Kancharla <sreehari.kancharla@intel.com>
- */
+
+ 
 
 #include <linux/atomic.h>
 #include <linux/bitfield.h>
@@ -61,10 +46,10 @@
 #define DPMAIF_WQ_TIME_LIMIT_MS		2
 #define DPMAIF_CS_RESULT_PASS		0
 
-/* Packet type */
+ 
 #define DES_PT_PD			0
 #define DES_PT_MSG			1
-/* Buffer type */
+ 
 #define PKT_BUF_FRAG			1
 
 static unsigned int t7xx_normal_pit_bid(const struct dpmaif_pit *pit_info)
@@ -146,21 +131,7 @@ static void t7xx_unmap_bat_skb(struct device *dev, struct dpmaif_bat_skb *bat_sk
 	}
 }
 
-/**
- * t7xx_dpmaif_rx_buf_alloc() - Allocate buffers for the BAT ring.
- * @dpmaif_ctrl: Pointer to DPMAIF context structure.
- * @bat_req: Pointer to BAT request structure.
- * @q_num: Queue number.
- * @buf_cnt: Number of buffers to allocate.
- * @initial: Indicates if the ring is being populated for the first time.
- *
- * Allocate skb and store the start address of the data buffer into the BAT ring.
- * If this is not the initial call, notify the HW about the new entries.
- *
- * Return:
- * * 0		- Success.
- * * -ERROR	- Error code.
- */
+ 
 int t7xx_dpmaif_rx_buf_alloc(struct dpmaif_ctrl *dpmaif_ctrl,
 			     const struct dpmaif_bat_request *bat_req,
 			     const unsigned int q_num, const unsigned int buf_cnt,
@@ -172,7 +143,7 @@ int t7xx_dpmaif_rx_buf_alloc(struct dpmaif_ctrl *dpmaif_ctrl,
 	if (!buf_cnt || buf_cnt > bat_req->bat_size_cnt)
 		return -EINVAL;
 
-	/* Check BAT buffer space */
+	 
 	bat_max_cnt = bat_req->bat_size_cnt;
 
 	bat_cnt = t7xx_ring_buf_rd_wr_count(bat_max_cnt, bat_req->bat_release_rd_idx,
@@ -300,22 +271,7 @@ static void t7xx_unmap_bat_page(struct device *dev, struct dpmaif_bat_page *bat_
 	}
 }
 
-/**
- * t7xx_dpmaif_rx_frag_alloc() - Allocates buffers for the Fragment BAT ring.
- * @dpmaif_ctrl: Pointer to DPMAIF context structure.
- * @bat_req: Pointer to BAT request structure.
- * @buf_cnt: Number of buffers to allocate.
- * @initial: Indicates if the ring is being populated for the first time.
- *
- * Fragment BAT is used when the received packet does not fit in a normal BAT entry.
- * This function allocates a page fragment and stores the start address of the page
- * into the Fragment BAT ring.
- * If this is not the initial call, notify the HW about the new entries.
- *
- * Return:
- * * 0		- Success.
- * * -ERROR	- Error code.
- */
+ 
 int t7xx_dpmaif_rx_frag_alloc(struct dpmaif_ctrl *dpmaif_ctrl, struct dpmaif_bat_request *bat_req,
 			      const unsigned int buf_cnt, const bool initial)
 {
@@ -490,7 +446,7 @@ static unsigned int t7xx_dpmaif_avail_pkt_bat_cnt(struct dpmaif_bat_request *bat
 		return zero_index - bat_req->bat_release_rd_idx;
 	}
 
-	/* limiting the search till bat_release_rd_idx */
+	 
 	zero_index = find_first_zero_bit(bat_req->bat_bitmap, bat_req->bat_release_rd_idx);
 	spin_unlock_irqrestore(&bat_req->mask_lock, flags);
 	return bat_req->bat_size_cnt - bat_req->bat_release_rd_idx + zero_index;
@@ -522,7 +478,7 @@ static int t7xx_dpmaif_release_bat_entry(const struct dpmaif_rx_queue *rxq,
 	old_rel_idx = bat->bat_release_rd_idx;
 	new_rel_idx = old_rel_idx + rel_entry_num;
 
-	/* Do not need to release if the queue is empty */
+	 
 	if (bat->bat_wr_idx == old_rel_idx)
 		return 0;
 
@@ -747,7 +703,7 @@ static int t7xx_dpmaif_rx_start(struct dpmaif_rx_queue *rxq, const unsigned int 
 
 			skb_info->msg_pit_received = true;
 			t7xx_dpmaif_parse_msg_pit(rxq, pkt_info, skb_info);
-		} else { /* DES_PT_PD */
+		} else {  
 			val = FIELD_GET(PD_PIT_BUFFER_TYPE, le32_to_cpu(pkt_info->header));
 			if (val != PKT_BUF_FRAG)
 				ret = t7xx_dpmaif_get_rx_pkt(rxq, pkt_info, skb_info);
@@ -835,7 +791,7 @@ int t7xx_dpmaif_napi_rx_poll(struct napi_struct *napi, const int budget)
 	int ret, once_more = 0, work_done = 0;
 
 	atomic_set(&rxq->rx_processing, 1);
-	/* Ensure rx_processing is changed to 1 before actually begin RX flow */
+	 
 	smp_mb();
 
 	if (!rxq->que_started) {
@@ -900,12 +856,7 @@ void t7xx_dpmaif_irq_rx_done(struct dpmaif_ctrl *dpmaif_ctrl, const unsigned int
 
 	rxq = &dpmaif_ctrl->rxq[qno];
 	ctrl = rxq->dpmaif_ctrl;
-	/* We need to make sure that the modem has been resumed before
-	 * calling napi. This can't be done inside the polling function
-	 * as we could be blocked waiting for device to be resumed,
-	 * which can't be done from softirq context the poll function
-	 * is running in.
-	 */
+	 
 	ret = pm_runtime_resume_and_get(ctrl->dev);
 	if (ret < 0 && ret != -EACCES) {
 		dev_err(ctrl->dev, "Failed to resume device: %d\n", ret);
@@ -923,19 +874,7 @@ static void t7xx_dpmaif_base_free(const struct dpmaif_ctrl *dpmaif_ctrl,
 				  bat_req->bat_base, bat_req->bat_bus_addr);
 }
 
-/**
- * t7xx_dpmaif_bat_alloc() - Allocate the BAT ring buffer.
- * @dpmaif_ctrl: Pointer to DPMAIF context structure.
- * @bat_req: Pointer to BAT request structure.
- * @buf_type: BAT ring type.
- *
- * This function allocates the BAT ring buffer shared with the HW device, also allocates
- * a buffer used to store information about the BAT skbs for further release.
- *
- * Return:
- * * 0		- Success.
- * * -ERROR	- Error code.
- */
+ 
 int t7xx_dpmaif_bat_alloc(const struct dpmaif_ctrl *dpmaif_ctrl, struct dpmaif_bat_request *bat_req,
 			  const enum bat_type buf_type)
 {
@@ -961,7 +900,7 @@ int t7xx_dpmaif_bat_alloc(const struct dpmaif_ctrl *dpmaif_ctrl, struct dpmaif_b
 	if (!bat_req->bat_base)
 		return -ENOMEM;
 
-	/* For AP SW to record skb information */
+	 
 	bat_req->bat_skb = devm_kzalloc(dpmaif_ctrl->dev, bat_req->bat_size_cnt * sw_buf_size,
 					GFP_KERNEL);
 	if (!bat_req->bat_skb)
@@ -1069,7 +1008,7 @@ static void t7xx_dpmaif_bat_release_work(struct work_struct *work)
 
 	t7xx_pci_disable_sleep(dpmaif_ctrl->t7xx_dev);
 
-	/* ALL RXQ use one BAT table, so choose DPF_RX_QNO_DFT */
+	 
 	rxq = &dpmaif_ctrl->rxq[DPF_RX_QNO_DFT];
 	if (t7xx_pci_sleep_disable_complete(dpmaif_ctrl->t7xx_dev)) {
 		t7xx_dpmaif_bat_release_and_add(rxq);
@@ -1102,12 +1041,7 @@ void t7xx_dpmaif_bat_wq_rel(struct dpmaif_ctrl *dpmaif_ctrl)
 	}
 }
 
-/**
- * t7xx_dpmaif_rx_stop() - Suspend RX flow.
- * @dpmaif_ctrl: Pointer to data path control struct dpmaif_ctrl.
- *
- * Wait for all the RX work to finish executing and mark the RX queue as paused.
- */
+ 
 void t7xx_dpmaif_rx_stop(struct dpmaif_ctrl *dpmaif_ctrl)
 {
 	unsigned int i;
@@ -1121,7 +1055,7 @@ void t7xx_dpmaif_rx_stop(struct dpmaif_ctrl *dpmaif_ctrl)
 		if (timeout)
 			dev_err(dpmaif_ctrl->dev, "Stop RX SW failed\n");
 
-		/* Ensure RX processing has stopped before we set rxq->que_started to false */
+		 
 		smp_mb();
 		rxq->que_started = false;
 	}

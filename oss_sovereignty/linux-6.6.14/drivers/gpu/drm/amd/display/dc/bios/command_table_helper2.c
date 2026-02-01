@@ -1,27 +1,4 @@
-/*
- * Copyright 2012-15 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 #include "dm_services.h"
 
@@ -84,13 +61,13 @@ bool dal_bios_parser_init_cmd_tbl_helper2(
 		return true;
 
 	default:
-		/* Unsupported DCE */
+		 
 		BREAK_TO_DEBUGGER();
 		return false;
 	}
 }
 
-/* real implementations */
+ 
 
 bool dal_cmd_table_helper_controller_id_to_atom2(
 	enum controller_id id,
@@ -120,29 +97,18 @@ bool dal_cmd_table_helper_controller_id_to_atom2(
 	case CONTROLLER_ID_D5:
 		*atom_id = ATOM_CRTC6;
 		return true;
-	/* TODO :case CONTROLLER_ID_UNDERLAY0:
-		*atom_id = ATOM_UNDERLAY_PIPE0;
-		return true;
-	*/
+	 
 	case CONTROLLER_ID_UNDEFINED:
 		*atom_id = ATOM_CRTC_INVALID;
 		return true;
 	default:
-		/* Wrong controller id */
+		 
 		BREAK_TO_DEBUGGER();
 		return false;
 	}
 }
 
-/**
- * dal_cmd_table_helper_transmitter_bp_to_atom2 - Translate the Transmitter to the
- *                                     corresponding ATOM BIOS value
- *  @t: transmitter
- *  returns: digitalTransmitter
- *    // =00: Digital Transmitter1 ( UNIPHY linkAB )
- *    // =01: Digital Transmitter2 ( UNIPHY linkCD )
- *    // =02: Digital Transmitter3 ( UNIPHY linkEF )
- */
+ 
 uint8_t dal_cmd_table_helper_transmitter_bp_to_atom2(
 	enum transmitter t)
 {
@@ -158,7 +124,7 @@ uint8_t dal_cmd_table_helper_transmitter_bp_to_atom2(
 	case TRANSMITTER_UNIPHY_F:
 		return 2;
 	default:
-		/* Invalid Transmitter Type! */
+		 
 		BREAK_TO_DEBUGGER();
 		return 0;
 	}
@@ -207,10 +173,7 @@ bool dal_cmd_table_helper_clock_source_id_to_ref_clk_src2(
 	case CLOCK_SOURCE_ID_PLL2:
 		*ref_clk_src_id = ENCODER_REFCLK_SRC_P2PLL;
 		return true;
-	/*TODO:case CLOCK_SOURCE_ID_DCPLL:
-		*ref_clk_src_id = ENCODER_REFCLK_SRC_DCPLL;
-		return true;
-	*/
+	 
 	case CLOCK_SOURCE_ID_EXTERNAL:
 		*ref_clk_src_id = ENCODER_REFCLK_SRC_EXTCLK;
 		return true;
@@ -218,7 +181,7 @@ bool dal_cmd_table_helper_clock_source_id_to_ref_clk_src2(
 		*ref_clk_src_id = ENCODER_REFCLK_SRC_INVALID;
 		return true;
 	default:
-		/* Unsupported clock source id */
+		 
 		BREAK_TO_DEBUGGER();
 		return false;
 	}
@@ -273,7 +236,7 @@ uint8_t dal_cmd_table_helper_encoder_id_to_atom2(
 	case ENCODER_ID_UNKNOWN:
 		return ENCODER_OBJECT_ID_NONE;
 	default:
-		/* Invalid encoder id */
+		 
 		BREAK_TO_DEBUGGER();
 		return ENCODER_OBJECT_ID_NONE;
 	}

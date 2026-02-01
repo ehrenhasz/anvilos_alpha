@@ -1,10 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
 
-/* Texas Instruments ICSSG Ethernet Driver
- *
- * Copyright (C) 2018-2022 Texas Instruments Incorporated - https://www.ti.com/
- *
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/clk.h>
@@ -34,7 +30,7 @@
 
 #define PRUETH_MODULE_DESCRIPTION "PRUSS ICSSG Ethernet driver"
 
-/* Netif debug messages possible */
+ 
 #define PRUETH_EMAC_DEBUG       (NETIF_MSG_DRV | \
 				 NETIF_MSG_PROBE | \
 				 NETIF_MSG_LINK | \
@@ -53,10 +49,10 @@
 
 #define prueth_napi_to_emac(napi) container_of(napi, struct prueth_emac, napi_rx)
 
-/* CTRLMMR_ICSSG_RGMII_CTRL register bits */
+ 
 #define ICSSG_CTRL_RGMII_ID_MODE                BIT(24)
 
-#define IEP_DEFAULT_CYCLE_TIME_NS	1000000	/* 1 ms */
+#define IEP_DEFAULT_CYCLE_TIME_NS	1000000	 
 
 static void prueth_cleanup_rx_chns(struct prueth_emac *emac,
 				   struct prueth_rx_chn *rx_chn,
@@ -82,9 +78,7 @@ static void prueth_cleanup_tx_chns(struct prueth_emac *emac)
 		if (tx_chn->tx_chn)
 			k3_udma_glue_release_tx_chn(tx_chn->tx_chn);
 
-		/* Assume prueth_cleanup_tx_chns() is called at the
-		 * end after all channel resources are freed
-		 */
+		 
 		memset(tx_chn, 0, sizeof(*tx_chn));
 	}
 }
@@ -158,7 +152,7 @@ static int emac_tx_complete_packets(struct prueth_emac *emac, int chn,
 		if (res == -ENODATA)
 			break;
 
-		/* teardown completion */
+		 
 		if (cppi5_desc_is_tdcm(desc_dma)) {
 			if (atomic_dec_and_test(&emac->tdown_cnt))
 				complete(&emac->tdown_complete);
@@ -187,9 +181,7 @@ static int emac_tx_complete_packets(struct prueth_emac *emac, int chn,
 	netdev_tx_completed_queue(netif_txq, num_tx, total_bytes);
 
 	if (netif_tx_queue_stopped(netif_txq)) {
-		/* If the TX queue was stopped, wake it now
-		 * if we have enough room.
-		 */
+		 
 		__netif_tx_lock(netif_txq, smp_processor_id());
 		if (netif_running(ndev) &&
 		    (k3_cppi_desc_pool_avail(tx_chn->desc_pool) >=
@@ -284,7 +276,7 @@ static int prueth_init_tx_chns(struct prueth_emac *emac)
 	for (i = 0; i < emac->tx_ch_num; i++) {
 		struct prueth_tx_chn *tx_chn = &emac->tx_chns[i];
 
-		/* To differentiate channels for SLICE0 vs SLICE1 */
+		 
 		snprintf(tx_chn->name, sizeof(tx_chn->name),
 			 "tx%d-%d", slice, i);
 
@@ -349,7 +341,7 @@ static int prueth_init_rx_chns(struct prueth_emac *emac,
 	if (slice < 0)
 		return slice;
 
-	/* To differentiate channels for SLICE0 vs SLICE1 */
+	 
 	snprintf(rx_chn->name, sizeof(rx_chn->name), "%s%d", name, slice);
 
 	hdesc_size = cppi5_hdesc_calc_size(true, PRUETH_NAV_PS_DATA_SIZE,
@@ -357,9 +349,9 @@ static int prueth_init_rx_chns(struct prueth_emac *emac,
 	memset(&rx_cfg, 0, sizeof(rx_cfg));
 	rx_cfg.swdata_size = PRUETH_NAV_SW_DATA_SIZE;
 	rx_cfg.flow_id_num = max_rflows;
-	rx_cfg.flow_id_base = -1; /* udmax will auto select flow id base */
+	rx_cfg.flow_id_base = -1;  
 
-	/* init all flows */
+	 
 	rx_chn->dev = dev;
 	rx_chn->descs_num = max_desc_num;
 
@@ -523,7 +515,7 @@ static int emac_rx_packet(struct prueth_emac *emac, u32 flow_id)
 		return ret;
 	}
 
-	if (cppi5_desc_is_tdcm(desc_dma)) /* Teardown ? */
+	if (cppi5_desc_is_tdcm(desc_dma))  
 		return 0;
 
 	desc_rx = k3_cppi_desc_pool_dma2virt(rx_chn->desc_pool, desc_dma);
@@ -532,14 +524,14 @@ static int emac_rx_packet(struct prueth_emac *emac, u32 flow_id)
 	skb = *swdata;
 
 	psdata = cppi5_hdesc_get_psdata(desc_rx);
-	/* RX HW timestamp */
+	 
 	if (emac->rx_ts_enabled)
 		emac_rx_timestamp(emac, skb, psdata);
 
 	cppi5_hdesc_get_obuf(desc_rx, &buf_dma, &buf_dma_len);
 	k3_udma_glue_rx_cppi5_to_dma_addr(rx_chn->rx_chn, &buf_dma);
 	pkt_len = cppi5_hdesc_get_pktlen(desc_rx);
-	/* firmware adds 4 CRC bytes, strip them */
+	 
 	pkt_len -= 4;
 	cppi5_desc_get_tags_ids(&desc_rx->hdr, &port_id, NULL);
 
@@ -548,14 +540,12 @@ static int emac_rx_packet(struct prueth_emac *emac, u32 flow_id)
 
 	skb->dev = ndev;
 	new_skb = netdev_alloc_skb_ip_align(ndev, PRUETH_MAX_PKT_SIZE);
-	/* if allocation fails we drop the packet but push the
-	 * descriptor back to the ring with old skb to prevent a stall
-	 */
+	 
 	if (!new_skb) {
 		ndev->stats.rx_dropped++;
 		new_skb = skb;
 	} else {
-		/* send the filled skb up the n/w stack */
+		 
 		skb_put(skb, pkt_len);
 		skb->protocol = eth_type_trans(skb, ndev);
 		napi_gro_receive(&emac->napi_rx, skb);
@@ -563,7 +553,7 @@ static int emac_rx_packet(struct prueth_emac *emac, u32 flow_id)
 		ndev->stats.rx_packets++;
 	}
 
-	/* queue another RX DMA */
+	 
 	ret = prueth_dma_rx_push(emac, new_skb, &emac->rx_chns);
 	if (WARN_ON(ret < 0)) {
 		dev_kfree_skb_any(new_skb);
@@ -609,7 +599,7 @@ static int emac_get_tx_ts(struct prueth_emac *emac,
 		return addr;
 
 	memcpy_fromio(rsp, prueth->shram.va + addr, sizeof(*rsp));
-	/* return buffer back for to pool */
+	 
 	icssg_queue_push(prueth, slice == 0 ?
 			 ICSSG_TS_PUSH_SLICE0 : ICSSG_TS_PUSH_SLICE1, addr);
 
@@ -625,10 +615,10 @@ static void tx_ts_work(struct prueth_emac *emac)
 	u32 hi_sw;
 	u64 ns;
 
-	/* There may be more than one pending requests */
+	 
 	while (1) {
 		ret = emac_get_tx_ts(emac, &tsr);
-		if (ret) /* nothing more */
+		if (ret)  
 			break;
 
 		if (tsr.cookie >= PRUETH_MAX_TX_TS_REQUESTS ||
@@ -639,7 +629,7 @@ static void tx_ts_work(struct prueth_emac *emac)
 		}
 
 		skb = emac->tx_ts_skb[tsr.cookie];
-		emac->tx_ts_skb[tsr.cookie] = NULL;	/* free slot */
+		emac->tx_ts_skb[tsr.cookie] = NULL;	 
 		if (!skb) {
 			netdev_err(emac->ndev, "Driver Bug! got NULL skb\n");
 			break;
@@ -656,7 +646,7 @@ static void tx_ts_work(struct prueth_emac *emac)
 		skb_tstamp_tx(skb, &ssh);
 		dev_consume_skb_any(skb);
 
-		if (atomic_dec_and_test(&emac->tx_ts_pending))	/* no more? */
+		if (atomic_dec_and_test(&emac->tx_ts_pending))	 
 			break;
 	}
 }
@@ -665,10 +655,10 @@ static int prueth_tx_ts_cookie_get(struct prueth_emac *emac)
 {
 	int i;
 
-	/* search and get the next free slot */
+	 
 	for (i = 0; i < PRUETH_MAX_TX_TS_REQUESTS; i++) {
 		if (!emac->tx_ts_skb[i]) {
-			emac->tx_ts_skb[i] = ERR_PTR(-EBUSY); /* reserve slot */
+			emac->tx_ts_skb[i] = ERR_PTR(-EBUSY);  
 			return i;
 		}
 	}
@@ -676,18 +666,7 @@ static int prueth_tx_ts_cookie_get(struct prueth_emac *emac)
 	return -EBUSY;
 }
 
-/**
- * emac_ndo_start_xmit - EMAC Transmit function
- * @skb: SKB pointer
- * @ndev: EMAC network adapter
- *
- * Called by the system to transmit a packet  - we queue the packet in
- * EMAC hardware transmit queue
- * Doesn't wait for completion we'll check for TX completion in
- * emac_tx_complete_packets().
- *
- * Return: enum netdev_tx
- */
+ 
 static enum netdev_tx emac_ndo_start_xmit(struct sk_buff *skb, struct net_device *ndev)
 {
 	struct cppi5_host_desc_t *first_desc, *next_desc, *cur_desc;
@@ -708,7 +687,7 @@ static enum netdev_tx emac_ndo_start_xmit(struct sk_buff *skb, struct net_device
 	tx_chn = &emac->tx_chns[q_idx];
 	netif_txq = netdev_get_tx_queue(ndev, q_idx);
 
-	/* Map the linear buffer */
+	 
 	buf_dma = dma_map_single(tx_chn->dma_dev, skb->data, pkt_len, DMA_TO_DEVICE);
 	if (dma_mapping_error(tx_chn->dma_dev, buf_dma)) {
 		netdev_err(ndev, "tx: failed to map skb buffer\n");
@@ -734,25 +713,22 @@ static enum netdev_tx emac_ndo_start_xmit(struct sk_buff *skb, struct net_device
 		tx_ts_cookie = prueth_tx_ts_cookie_get(emac);
 		if (tx_ts_cookie >= 0) {
 			skb_shinfo(skb)->tx_flags |= SKBTX_IN_PROGRESS;
-			/* Request TX timestamp */
+			 
 			epib[0] = (u32)tx_ts_cookie;
-			epib[1] = 0x80000000;	/* TX TS request */
+			epib[1] = 0x80000000;	 
 			emac->tx_ts_skb[tx_ts_cookie] = skb_get(skb);
 			in_tx_ts = 1;
 		}
 	}
 
-	/* set dst tag to indicate internal qid at the firmware which is at
-	 * bit8..bit15. bit0..bit7 indicates port num for directed
-	 * packets in case of switch mode operation
-	 */
+	 
 	cppi5_desc_set_tags_ids(&first_desc->hdr, 0, (emac->port_id | (q_idx << 8)));
 	k3_udma_glue_tx_dma_to_cppi5_addr(tx_chn->tx_chn, &buf_dma);
 	cppi5_hdesc_attach_buf(first_desc, buf_dma, pkt_len, buf_dma, pkt_len);
 	swdata = cppi5_hdesc_get_swdata(first_desc);
 	*swdata = skb;
 
-	/* Handle the case where skb is fragmented in pages */
+	 
 	cur_desc = first_desc;
 	for (i = 0; i < skb_shinfo(skb)->nr_frags; i++) {
 		skb_frag_t *frag = &skb_shinfo(skb)->frags[i];
@@ -789,14 +765,14 @@ static enum netdev_tx emac_ndo_start_xmit(struct sk_buff *skb, struct net_device
 	}
 	WARN_ON_ONCE(pkt_len != skb->len);
 
-	/* report bql before sending packet */
+	 
 	netdev_tx_sent_queue(netif_txq, pkt_len);
 
 	cppi5_hdesc_set_pktlen(first_desc, pkt_len);
 	desc_dma = k3_cppi_desc_pool_virt2dma(tx_chn->desc_pool, first_desc);
-	/* cppi5_desc_dump(first_desc, 64); */
+	 
 
-	skb_tx_timestamp(skb);  /* SW timestamp if SKBTX_IN_PROGRESS not set */
+	skb_tx_timestamp(skb);   
 	ret = k3_udma_glue_push_tx_chn(tx_chn->tx_chn, first_desc, desc_dma);
 	if (ret) {
 		netdev_err(ndev, "tx: push failed: %d\n", ret);
@@ -808,7 +784,7 @@ static enum netdev_tx emac_ndo_start_xmit(struct sk_buff *skb, struct net_device
 
 	if (k3_cppi_desc_pool_avail(tx_chn->desc_pool) < MAX_SKB_FRAGS) {
 		netif_tx_stop_queue(netif_txq);
-		/* Barrier, so that stop_queue visible to other cpus */
+		 
 		smp_mb__after_atomic();
 
 		if (k3_cppi_desc_pool_avail(tx_chn->desc_pool) >=
@@ -830,7 +806,7 @@ drop_free_descs:
 drop_free_skb:
 	dev_kfree_skb_any(skb);
 
-	/* error */
+	 
 	ndev->stats.tx_dropped++;
 	netdev_err(ndev, "tx: error: %d\n", ret);
 
@@ -867,7 +843,7 @@ static irqreturn_t prueth_tx_ts_irq(int irq, void *dev_id)
 {
 	struct prueth_emac *emac = dev_id;
 
-	/* currently only TX timestamp is being returned */
+	 
 	tx_ts_work(emac);
 
 	return IRQ_HANDLED;
@@ -988,7 +964,7 @@ static void prueth_cleanup_tx_ts(struct prueth_emac *emac)
 	}
 }
 
-/* called back by PHY layer if there is change in link state of hw port*/
+ 
 static void emac_adjust_link(struct net_device *ndev)
 {
 	struct prueth_emac *emac = netdev_priv(ndev);
@@ -998,7 +974,7 @@ static void emac_adjust_link(struct net_device *ndev)
 	unsigned long flags;
 
 	if (phydev->link) {
-		/* check the mode of operation - full/half duplex */
+		 
 		if (phydev->duplex != emac->duplex) {
 			new_state = true;
 			emac->duplex = phydev->duplex;
@@ -1015,24 +991,22 @@ static void emac_adjust_link(struct net_device *ndev)
 		new_state = true;
 		emac->link = 0;
 
-		/* f/w should support 100 & 1000 */
+		 
 		emac->speed = SPEED_1000;
 
-		/* half duplex may not be supported by f/w */
+		 
 		emac->duplex = DUPLEX_FULL;
 	}
 
 	if (new_state) {
 		phy_print_status(phydev);
 
-		/* update RGMII and MII configuration based on PHY negotiated
-		 * values
-		 */
+		 
 		if (emac->link) {
-			/* Set the RGMII cfg for gig en and full duplex */
+			 
 			icssg_update_rgmii_cfg(prueth->miig_rt, emac);
 
-			/* update the Tx IPG based on 100M/1G speed */
+			 
 			spin_lock_irqsave(&emac->lock, flags);
 			icssg_config_ipg(emac);
 			spin_unlock_irqrestore(&emac->lock, flags);
@@ -1045,7 +1019,7 @@ static void emac_adjust_link(struct net_device *ndev)
 	}
 
 	if (emac->link) {
-		/* reactivate the transmit queue */
+		 
 		netif_tx_wake_all_queues(ndev);
 	} else {
 		netif_tx_stop_all_queues(ndev);
@@ -1137,7 +1111,7 @@ static int emac_phy_connect(struct prueth_emac *emac)
 {
 	struct prueth *prueth = emac->prueth;
 	struct net_device *ndev = emac->ndev;
-	/* connect PHY */
+	 
 	ndev->phydev = of_phy_connect(emac->ndev, emac->phy_node,
 				      &emac_adjust_link, 0,
 				      emac->phy_if);
@@ -1147,7 +1121,7 @@ static int emac_phy_connect(struct prueth_emac *emac)
 		return -ENODEV;
 	}
 
-	/* remove unsupported modes */
+	 
 	phy_remove_link_mode(ndev->phydev, ETHTOOL_LINK_MODE_10baseT_Half_BIT);
 	phy_remove_link_mode(ndev->phydev, ETHTOOL_LINK_MODE_100baseT_Half_BIT);
 	phy_remove_link_mode(ndev->phydev, ETHTOOL_LINK_MODE_1000baseT_Half_BIT);
@@ -1219,13 +1193,13 @@ static void prueth_iep_settime(void *clockops_data, u64 ns)
 	sc_desc.cyclecounter0_set = cyclecount & GENMASK(31, 0);
 	sc_desc.cyclecounter1_set = (cyclecount & GENMASK(63, 32)) >> 32;
 	sc_desc.iepcount_set = ns % cycletime;
-	sc_desc.CMP0_current = cycletime - 4; //Count from 0 to (cycle time)-4
+	sc_desc.CMP0_current = cycletime - 4; 
 
 	memcpy_toio(sc_descp, &sc_desc, sizeof(sc_desc));
 
 	writeb(1, &sc_descp->request);
 
-	timeout = 5;	/* fw should take 2-3 ms */
+	timeout = 5;	 
 	while (timeout--) {
 		if (readb(&sc_descp->acknowledgment))
 			return;
@@ -1248,34 +1222,27 @@ static int prueth_perout_enable(void *clockops_data,
 	if (!on)
 		return 0;
 
-	/* Any firmware specific stuff for PPS/PEROUT handling */
+	 
 	ts.tv_sec = req->period.sec;
 	ts.tv_nsec = req->period.nsec;
 	ns_period = timespec64_to_ns(&ts);
 
-	/* f/w doesn't support period less than cycle time */
+	 
 	if (ns_period < IEP_DEFAULT_CYCLE_TIME_NS)
 		return -ENXIO;
 
 	reduction_factor = ns_period / IEP_DEFAULT_CYCLE_TIME_NS;
 	offset = ns_period % IEP_DEFAULT_CYCLE_TIME_NS;
 
-	/* f/w requires at least 1uS within a cycle so CMP
-	 * can trigger after SYNC is enabled
-	 */
+	 
 	if (offset < 5 * NSEC_PER_USEC)
 		offset = 5 * NSEC_PER_USEC;
 
-	/* if offset is close to cycle time then we will miss
-	 * the CMP event for last tick when IEP rolls over.
-	 * In normal mode, IEP tick is 4ns.
-	 * In slow compensation it could be 0ns or 8ns at
-	 * every slow compensation cycle.
-	 */
+	 
 	if (offset > IEP_DEFAULT_CYCLE_TIME_NS - 8)
 		offset = IEP_DEFAULT_CYCLE_TIME_NS - 8;
 
-	/* we're in shadow mode so need to set upper 32-bits */
+	 
 	*cmp = (u64)offset << 32;
 
 	writel(reduction_factor, emac->prueth->shram.va +
@@ -1293,14 +1260,7 @@ const struct icss_iep_clockops prueth_iep_clockops = {
 	.perout_enable = prueth_perout_enable,
 };
 
-/**
- * emac_ndo_open - EMAC device open
- * @ndev: network adapter device
- *
- * Called when system wants to start the interface.
- *
- * Return: 0 for a successful open, or appropriate error code
- */
+ 
 static int emac_ndo_open(struct net_device *ndev)
 {
 	struct prueth_emac *emac = netdev_priv(ndev);
@@ -1311,13 +1271,13 @@ static int emac_ndo_open(struct net_device *ndev)
 	int max_rx_flows;
 	int rx_flow;
 
-	/* clear SMEM and MSMC settings for all slices */
+	 
 	if (!prueth->emacs_initialized) {
 		memset_io(prueth->msmcram.va, 0, prueth->msmcram.size);
 		memset_io(prueth->shram.va, 0, ICSSG_CONFIG_OFFSET_SLICE1 * PRUETH_NUM_MACS);
 	}
 
-	/* set h/w MAC as user might have re-configured */
+	 
 	ether_addr_copy(emac->mac_addr, ndev->dev_addr);
 
 	icssg_class_set_mac_addr(prueth->miig_rt, slice, emac->mac_addr);
@@ -1325,7 +1285,7 @@ static int emac_ndo_open(struct net_device *ndev)
 
 	icssg_class_default(prueth->miig_rt, slice, 0);
 
-	/* Notify the stack of the actual queue counts. */
+	 
 	ret = netif_set_real_num_tx_queues(ndev, num_data_chn);
 	if (ret) {
 		dev_err(dev, "cannot set real number of tx queues\n");
@@ -1351,7 +1311,7 @@ static int emac_ndo_open(struct net_device *ndev)
 	if (ret)
 		goto cleanup_rx;
 
-	/* we use only the highest priority flow for now i.e. @irq[3] */
+	 
 	rx_flow = PRUETH_RX_FLOW_DATA;
 	ret = request_irq(emac->rx_chns.irq[rx_flow], prueth_rx_irq,
 			  IRQF_TRIGGER_HIGH, dev_name(dev), emac);
@@ -1360,7 +1320,7 @@ static int emac_ndo_open(struct net_device *ndev)
 		goto cleanup_napi;
 	}
 
-	/* reset and start PRU firmware */
+	 
 	ret = prueth_emac_start(prueth, emac);
 	if (ret)
 		goto free_rx_irq;
@@ -1377,7 +1337,7 @@ static int emac_ndo_open(struct net_device *ndev)
 	if (ret)
 		goto stop;
 
-	/* Prepare RX */
+	 
 	ret = prueth_prepare_rx_chan(emac, &emac->rx_chns, PRUETH_MAX_PKT_SIZE);
 	if (ret)
 		goto free_tx_ts_irq;
@@ -1392,12 +1352,12 @@ static int emac_ndo_open(struct net_device *ndev)
 			goto reset_tx_chan;
 	}
 
-	/* Enable NAPI in Tx and Rx direction */
+	 
 	for (i = 0; i < emac->tx_ch_num; i++)
 		napi_enable(&emac->tx_chns[i].napi_tx);
 	napi_enable(&emac->napi_rx);
 
-	/* start PHY */
+	 
 	phy_start(ndev->phydev);
 
 	prueth->emacs_initialized++;
@@ -1407,9 +1367,7 @@ static int emac_ndo_open(struct net_device *ndev)
 	return 0;
 
 reset_tx_chan:
-	/* Since interface is not yet up, there is wouldn't be
-	 * any SKB for completion. So set false to free_skb
-	 */
+	 
 	prueth_reset_tx_chan(emac, i, false);
 reset_rx_chn:
 	prueth_reset_rx_chan(&emac->rx_chns, max_rx_flows, false);
@@ -1429,14 +1387,7 @@ cleanup_tx:
 	return ret;
 }
 
-/**
- * emac_ndo_stop - EMAC device stop
- * @ndev: network adapter device
- *
- * Called when system wants to stop or down the interface.
- *
- * Return: Always 0 (Success)
- */
+ 
 static int emac_ndo_stop(struct net_device *ndev)
 {
 	struct prueth_emac *emac = netdev_priv(ndev);
@@ -1445,19 +1396,19 @@ static int emac_ndo_stop(struct net_device *ndev)
 	int max_rx_flows;
 	int ret, i;
 
-	/* inform the upper layers. */
+	 
 	netif_tx_stop_all_queues(ndev);
 
-	/* block packets from wire */
+	 
 	if (ndev->phydev)
 		phy_stop(ndev->phydev);
 
 	icssg_class_disable(prueth->miig_rt, prueth_emac_slice(emac));
 
 	atomic_set(&emac->tdown_cnt, emac->tx_ch_num);
-	/* ensure new tdown_cnt value is visible */
+	 
 	smp_mb__after_atomic();
-	/* tear down and disable UDMA channels */
+	 
 	reinit_completion(&emac->tdown_complete);
 	for (i = 0; i < emac->tx_ch_num; i++)
 		k3_udma_glue_tdown_tx_chn(emac->tx_chns[i].tx_chn, false);
@@ -1480,16 +1431,16 @@ static int emac_ndo_stop(struct net_device *ndev)
 
 	cancel_work_sync(&emac->rx_mode_work);
 
-	/* Destroying the queued work in ndo_stop() */
+	 
 	cancel_delayed_work_sync(&emac->stats_work);
 
-	/* stop PRUs */
+	 
 	prueth_emac_stop(emac);
 
 	if (prueth->emacs_initialized == 1)
 		icss_iep_exit(emac->iep);
 
-	/* stop PRUs */
+	 
 	prueth_emac_stop(emac);
 
 	free_irq(emac->tx_ts_irq, emac);
@@ -1542,13 +1493,7 @@ static void emac_ndo_set_rx_mode_work(struct work_struct *work)
 	}
 }
 
-/**
- * emac_ndo_set_rx_mode - EMAC set receive mode function
- * @ndev: The EMAC network adapter
- *
- * Called when system wants to set the receive mode of the device.
- *
- */
+ 
 static void emac_ndo_set_rx_mode(struct net_device *ndev)
 {
 	struct prueth_emac *emac = netdev_priv(ndev);
@@ -1665,7 +1610,7 @@ static const struct net_device_ops emac_netdev_ops = {
 	.ndo_get_stats64 = emac_ndo_get_stats64,
 };
 
-/* get emac_port corresponding to eth_node name */
+ 
 static int prueth_node_port(struct device_node *eth_node)
 {
 	u32 port_id;
@@ -1683,7 +1628,7 @@ static int prueth_node_port(struct device_node *eth_node)
 		return PRUETH_PORT_INVALID;
 }
 
-/* get MAC instance corresponding to eth_node name */
+ 
 static int prueth_node_mac(struct device_node *eth_node)
 {
 	u32 port_id;
@@ -1790,11 +1735,7 @@ static int prueth_netdev_init(struct prueth *prueth,
 		goto free;
 	}
 
-	/* AM65 SR2.0 has TX Internal delay always enabled by hardware
-	 * and it is not possible to disable TX Internal delay. The below
-	 * switch case block describes how we handle different phy modes
-	 * based on hardware restriction.
-	 */
+	 
 	switch (emac->phy_if) {
 	case PHY_INTERFACE_MODE_RGMII_ID:
 		emac->phy_if = PHY_INTERFACE_MODE_RGMII_RXID;
@@ -1811,7 +1752,7 @@ static int prueth_netdev_init(struct prueth *prueth,
 		break;
 	}
 
-	/* get mac address from DT and set private and netdev addr */
+	 
 	ret = of_get_ethdev_address(eth_node, ndev);
 	if (!is_valid_ether_addr(ndev->dev_addr)) {
 		eth_hw_addr_random(ndev);
@@ -1997,7 +1938,7 @@ static int prueth_probe(struct platform_device *pdev)
 
 	of_node_put(eth_ports_node);
 
-	/* At least one node must be present and available else we fail */
+	 
 	if (!eth0_node && !eth1_node) {
 		dev_err(dev, "neither port0 nor port1 node available\n");
 		return -ENODEV;
@@ -2063,7 +2004,7 @@ static int prueth_probe(struct platform_device *pdev)
 
 	msmc_ram_size = MSMC_RAM_SIZE;
 
-	/* NOTE: FW bug needs buffer base to be 64KB aligned */
+	 
 	prueth->msmcram.va =
 		(void __iomem *)gen_pool_alloc_algo(prueth->sram_pool,
 						    msmc_ram_size,
@@ -2096,13 +2037,11 @@ static int prueth_probe(struct platform_device *pdev)
 	}
 
 	if (prueth->pdata.quirk_10m_link_issue) {
-		/* Enable IEP1 for FW in 64bit mode as W/A for 10M FD link detect issue under TX
-		 * traffic.
-		 */
+		 
 		icss_iep_init_fw(prueth->iep1);
 	}
 
-	/* setup netdev interfaces */
+	 
 	if (eth0_node) {
 		ret = prueth_netdev_init(prueth, eth0_node);
 		if (ret) {
@@ -2124,7 +2063,7 @@ static int prueth_probe(struct platform_device *pdev)
 		prueth->emac[PRUETH_MAC1]->iep = prueth->iep0;
 	}
 
-	/* register the network devices */
+	 
 	if (eth0_node) {
 		ret = register_netdev(prueth->emac[PRUETH_MAC0]->ndev);
 		if (ret) {
@@ -2307,7 +2246,7 @@ static int prueth_resume(struct device *dev)
 
 	return 0;
 }
-#endif /* CONFIG_PM_SLEEP */
+#endif  
 
 static const struct dev_pm_ops prueth_dev_pm_ops = {
 	SET_SYSTEM_SLEEP_PM_OPS(prueth_suspend, prueth_resume)
@@ -2320,7 +2259,7 @@ static const struct prueth_pdata am654_icssg_pdata = {
 
 static const struct of_device_id prueth_dt_match[] = {
 	{ .compatible = "ti,am654-icssg-prueth", .data = &am654_icssg_pdata },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, prueth_dt_match);
 

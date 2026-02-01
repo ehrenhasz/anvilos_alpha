@@ -1,14 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0-only
 
-/*
- * drm_sysfs.c - Modifications to drm_sysfs_class.c to support
- *               extra sysfs attribute from DRM. Normal drm_sysfs_class
- *               does not allow adding attributes.
- *
- * Copyright (c) 2004 Jon Smirl <jonsmirl@gmail.com>
- * Copyright (c) 2003-2004 Greg Kroah-Hartman <greg@kroah.com>
- * Copyright (c) 2003-2004 IBM Corp.
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/component.h>
@@ -36,19 +28,7 @@
 #define to_drm_minor(d) dev_get_drvdata(d)
 #define to_drm_connector(d) dev_get_drvdata(d)
 
-/**
- * DOC: overview
- *
- * DRM provides very little additional support to drivers for sysfs
- * interactions, beyond just all the standard stuff. Drivers who want to expose
- * additional sysfs properties and property groups can attach them at either
- * &drm_device.dev or &drm_connector.kdev.
- *
- * Registration is automatically handled when calling drm_dev_register(), or
- * drm_connector_register() in case of hot-plugged connectors. Unregistration is
- * also automatically handled by drm_dev_unregister() and
- * drm_connector_unregister().
- */
+ 
 
 static struct device_type drm_sysfs_device_minor = {
 	.name = "drm_minor"
@@ -128,16 +108,7 @@ static const struct component_ops typec_connector_ops = {
 
 static CLASS_ATTR_STRING(version, S_IRUGO, "drm 1.1.0 20060810");
 
-/**
- * drm_sysfs_init - initialize sysfs helpers
- *
- * This is used to create the DRM class, which is the implicit parent of any
- * other top-level DRM sysfs objects.
- *
- * You must call drm_sysfs_destroy() to release the allocated resources.
- *
- * Return: 0 on success, negative error code on failure.
- */
+ 
 int drm_sysfs_init(void)
 {
 	int err;
@@ -159,11 +130,7 @@ int drm_sysfs_init(void)
 	return 0;
 }
 
-/**
- * drm_sysfs_destroy - destroys DRM class
- *
- * Destroy the DRM device class.
- */
+ 
 void drm_sysfs_destroy(void)
 {
 	if (IS_ERR_OR_NULL(drm_class))
@@ -179,9 +146,7 @@ static void drm_sysfs_release(struct device *dev)
 	kfree(dev);
 }
 
-/*
- * Connector properties
- */
+ 
 static ssize_t status_store(struct device *device,
 			   struct device_attribute *attr,
 			   const char *buf, size_t count)
@@ -439,17 +404,7 @@ void drm_sysfs_lease_event(struct drm_device *dev)
 	kobject_uevent_env(&dev->primary->kdev->kobj, KOBJ_CHANGE, envp);
 }
 
-/**
- * drm_sysfs_hotplug_event - generate a DRM uevent
- * @dev: DRM device
- *
- * Send a uevent for the DRM device specified by @dev.  Currently we only
- * set HOTPLUG=1 in the uevent environment, but this could be expanded to
- * deal with other types of events.
- *
- * Any new uapi should be using the drm_sysfs_connector_status_event()
- * for uevents on connector status change.
- */
+ 
 void drm_sysfs_hotplug_event(struct drm_device *dev)
 {
 	char *event_string = "HOTPLUG=1";
@@ -461,14 +416,7 @@ void drm_sysfs_hotplug_event(struct drm_device *dev)
 }
 EXPORT_SYMBOL(drm_sysfs_hotplug_event);
 
-/**
- * drm_sysfs_connector_hotplug_event - generate a DRM uevent for any connector
- * change
- * @connector: connector which has changed
- *
- * Send a uevent for the DRM connector specified by @connector. This will send
- * a uevent with the properties HOTPLUG=1 and CONNECTOR.
- */
+ 
 void drm_sysfs_connector_hotplug_event(struct drm_connector *connector)
 {
 	struct drm_device *dev = connector->dev;
@@ -486,16 +434,7 @@ void drm_sysfs_connector_hotplug_event(struct drm_connector *connector)
 }
 EXPORT_SYMBOL(drm_sysfs_connector_hotplug_event);
 
-/**
- * drm_sysfs_connector_property_event - generate a DRM uevent for connector
- * property change
- * @connector: connector on which property changed
- * @property: connector property which has changed.
- *
- * Send a uevent for the specified DRM connector and property.  Currently we
- * set HOTPLUG=1 and connector id along with the attached property id
- * related to the change.
- */
+ 
 void drm_sysfs_connector_property_event(struct drm_connector *connector,
 					struct drm_property *property)
 {
@@ -561,14 +500,7 @@ err_free:
 	return ERR_PTR(r);
 }
 
-/**
- * drm_class_device_register - register new device with the DRM sysfs class
- * @dev: device to register
- *
- * Registers a new &struct device within the DRM sysfs class. Essentially only
- * used by ttm to have a place for its global settings. Drivers should never use
- * this.
- */
+ 
 int drm_class_device_register(struct device *dev)
 {
 	if (!drm_class || IS_ERR(drm_class))
@@ -579,14 +511,7 @@ int drm_class_device_register(struct device *dev)
 }
 EXPORT_SYMBOL_GPL(drm_class_device_register);
 
-/**
- * drm_class_device_unregister - unregister device with the DRM sysfs class
- * @dev: device to unregister
- *
- * Unregisters a &struct device from the DRM sysfs class. Essentially only used
- * by ttm to have a place for its global settings. Drivers should never use
- * this.
- */
+ 
 void drm_class_device_unregister(struct device *dev)
 {
 	return device_unregister(dev);

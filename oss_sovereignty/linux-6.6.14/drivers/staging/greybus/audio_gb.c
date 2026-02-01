@@ -1,14 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Greybus Audio Device Class Protocol helpers
- *
- * Copyright 2015-2016 Google Inc.
- */
+
+ 
 
 #include <linux/greybus.h>
 #include "audio_codec.h"
 
-/* TODO: Split into separate calls */
+ 
 int gb_audio_gb_get_topology(struct gb_connection *connection,
 			     struct gb_audio_topology **topology)
 {

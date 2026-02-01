@@ -1,14 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * (C) 2001 Clemson University and The University of Chicago
- * Copyright 2018 Omnibond Systems, L.L.C.
- *
- * See COPYING in top-level directory.
- */
 
-/*
- *  Linux VFS inode operations.
- */
+ 
+
+ 
 
 #include <linux/blkdev.h>
 #include <linux/fileattr.h>
@@ -46,7 +39,7 @@ static int orangefs_writepage_locked(struct page *page,
 		else
 			wlen = PAGE_SIZE;
 	}
-	/* Should've been handled in orangefs_invalidate_folio. */
+	 
 	WARN_ON(off == len || off + wlen > len);
 
 	WARN_ON(wlen == 0);
@@ -157,7 +150,7 @@ static int orangefs_writepages_callback(struct folio *folio,
 
 	if (!wr) {
 		folio_unlock(folio);
-		/* It's not private so there's nothing to write, right? */
+		 
 		printk("writepages_callback not private!\n");
 		BUG();
 		return 0;
@@ -265,7 +258,7 @@ static void orangefs_readahead(struct readahead_control *rac)
 
 	iov_iter_xarray(&iter, ITER_DEST, i_pages, offset, readahead_length(rac));
 
-	/* read in the pages. */
+	 
 	if ((ret = wait_for_direct_io(ORANGEFS_IO_READ, inode,
 			&offset, &iter, readahead_length(rac),
 			inode->i_size, NULL, NULL, rac->file)) < 0)
@@ -274,7 +267,7 @@ static void orangefs_readahead(struct readahead_control *rac)
 	else
 		ret = 0;
 
-	/* clean up. */
+	 
 	while ((folio = readahead_folio(rac))) {
 		if (!ret)
 			folio_mark_uptodate(folio);
@@ -288,7 +281,7 @@ static int orangefs_read_folio(struct file *file, struct folio *folio)
 	struct iov_iter iter;
 	struct bio_vec bv;
 	ssize_t ret;
-	loff_t off; /* offset of this folio in the file */
+	loff_t off;  
 
 	if (folio_test_dirty(folio))
 		orangefs_launder_folio(folio);
@@ -299,9 +292,9 @@ static int orangefs_read_folio(struct file *file, struct folio *folio)
 
 	ret = wait_for_direct_io(ORANGEFS_IO_READ, inode, &off, &iter,
 			folio_size(folio), inode->i_size, NULL, NULL, file);
-	/* this will only zero remaining unread portions of the folio data */
+	 
 	iov_iter_zero(~0U, &iter);
-	/* takes care of potential aliasing */
+	 
 	flush_dcache_folio(folio);
 	if (ret < 0) {
 		folio_set_error(folio);
@@ -309,7 +302,7 @@ static int orangefs_read_folio(struct file *file, struct folio *folio)
 		folio_mark_uptodate(folio);
 		ret = 0;
 	}
-	/* unlock the folio after the ->read_folio() routine completes */
+	 
 	folio_unlock(folio);
         return ret;
 }
@@ -334,11 +327,7 @@ static int orangefs_write_begin(struct file *file,
 	folio = page_folio(page);
 
 	if (folio_test_dirty(folio) && !folio_test_private(folio)) {
-		/*
-		 * Should be impossible.  If it happens, launder the page
-		 * since we don't know what's dirty.  This will WARN in
-		 * orangefs_writepage_locked.
-		 */
+		 
 		ret = orangefs_launder_folio(folio);
 		if (ret)
 			return ret;
@@ -377,20 +366,17 @@ static int orangefs_write_end(struct file *file, struct address_space *mapping,
 	struct inode *inode = page->mapping->host;
 	loff_t last_pos = pos + copied;
 
-	/*
-	 * No need to use i_size_read() here, the i_size
-	 * cannot change under us because we hold the i_mutex.
-	 */
+	 
 	if (last_pos > inode->i_size)
 		i_size_write(inode, last_pos);
 
-	/* zero the stale part of the page if we did a short copy */
+	 
 	if (!PageUptodate(page)) {
 		unsigned from = pos & (PAGE_SIZE - 1);
 		if (copied < len) {
 			zero_user(page, from + copied, len - copied);
 		}
-		/* Set fully written pages uptodate. */
+		 
 		if (pos == page_offset(page) &&
 		    (len == PAGE_SIZE || pos + len == inode->i_size)) {
 			zero_user_segment(page, from + copied, PAGE_SIZE);
@@ -414,14 +400,14 @@ static void orangefs_invalidate_folio(struct folio *folio,
 	if (offset == 0 && length == PAGE_SIZE) {
 		kfree(folio_detach_private(folio));
 		return;
-	/* write range entirely within invalidate range (or equal) */
+	 
 	} else if (folio_pos(folio) + offset <= wr->pos &&
 	    wr->pos + wr->len <= folio_pos(folio) + offset + length) {
 		kfree(folio_detach_private(folio));
-		/* XXX is this right? only caller in fs */
+		 
 		folio_cancel_dirty(folio);
 		return;
-	/* invalidate range chops off end of write range */
+	 
 	} else if (wr->pos < folio_pos(folio) + offset &&
 	    wr->pos + wr->len <= folio_pos(folio) + offset + length &&
 	     folio_pos(folio) + offset < wr->pos + wr->len) {
@@ -431,7 +417,7 @@ static void orangefs_invalidate_folio(struct folio *folio,
 		wr->len -= x;
 		wr->uid = current_fsuid();
 		wr->gid = current_fsgid();
-	/* invalidate range chops off beginning of write range */
+	 
 	} else if (folio_pos(folio) + offset <= wr->pos &&
 	    folio_pos(folio) + offset + length < wr->pos + wr->len &&
 	    wr->pos < folio_pos(folio) + offset + length) {
@@ -442,20 +428,17 @@ static void orangefs_invalidate_folio(struct folio *folio,
 		wr->len -= x;
 		wr->uid = current_fsuid();
 		wr->gid = current_fsgid();
-	/* invalidate range entirely within write range (punch hole) */
+	 
 	} else if (wr->pos < folio_pos(folio) + offset &&
 	    folio_pos(folio) + offset + length < wr->pos + wr->len) {
-		/* XXX what do we do here... should not WARN_ON */
+		 
 		WARN_ON(1);
-		/* punch hole */
-		/*
-		 * should we just ignore this and write it out anyway?
-		 * it hardly makes sense
-		 */
+		 
+		 
 		return;
-	/* non-overlapping ranges */
+	 
 	} else {
-		/* WARN if they do overlap */
+		 
 		if (!((folio_pos(folio) + offset + length <= wr->pos) ^
 		    (wr->pos + wr->len <= folio_pos(folio) + offset))) {
 			WARN_ON(1);
@@ -467,10 +450,7 @@ static void orangefs_invalidate_folio(struct folio *folio,
 		return;
 	}
 
-	/*
-	 * Above there are returns where wr is freed or where we WARN.
-	 * Thus the following runs if wr was modified above.
-	 */
+	 
 
 	orangefs_launder_folio(folio);
 }
@@ -503,14 +483,7 @@ static int orangefs_launder_folio(struct folio *folio)
 static ssize_t orangefs_direct_IO(struct kiocb *iocb,
 				  struct iov_iter *iter)
 {
-	/*
-	 * Comment from original do_readv_writev:
-	 * Common entry point for read/write/readv/writev
-	 * This function will dispatch it to either the direct I/O
-	 * or buffered I/O path depending on the mount options and/or
-	 * augmented/extended metadata attached to the file.
-	 * Note: File extended attributes override any mount options.
-	 */
+	 
 	struct file *file = iocb->ki_filp;
 	loff_t pos = iocb->ki_pos;
 	enum ORANGEFS_io_type type = iov_iter_rw(iter) == WRITE ?
@@ -548,7 +521,7 @@ static ssize_t orangefs_direct_IO(struct kiocb *iocb,
 		size_t each_count = iov_iter_count(iter);
 		size_t amt_complete;
 
-		/* how much to transfer in this loop iteration */
+		 
 		if (each_count > orangefs_bufmap_size_query())
 			each_count = orangefs_bufmap_size_query();
 
@@ -584,13 +557,10 @@ static ssize_t orangefs_direct_IO(struct kiocb *iocb,
 			     handle,
 			     (int)*offset);
 
-		/*
-		 * if we got a short I/O operations,
-		 * fall out and return what we got so far
-		 */
+		 
 		if (amt_complete < each_count)
 			break;
-	} /*end while */
+	}  
 
 out:
 	if (total_count > 0)
@@ -614,7 +584,7 @@ out:
 	return ret;
 }
 
-/** ORANGEFS2 implementation of address space operations */
+ 
 static const struct address_space_operations orangefs_address_operations = {
 	.writepage = orangefs_writepage,
 	.readahead = orangefs_readahead,
@@ -648,11 +618,7 @@ vm_fault_t orangefs_page_mkwrite(struct vm_fault *vmf)
 
 	folio_lock(folio);
 	if (folio_test_dirty(folio) && !folio_test_private(folio)) {
-		/*
-		 * Should be impossible.  If it happens, launder the folio
-		 * since we don't know what's dirty.  This will WARN in
-		 * orangefs_writepage_locked.
-		 */
+		 
 		if (orangefs_launder_folio(folio)) {
 			ret = VM_FAULT_LOCKED|VM_FAULT_RETRY;
 			goto out;
@@ -691,11 +657,7 @@ okay:
 		goto out;
 	}
 
-	/*
-	 * We mark the folio dirty already here so that when freeze is in
-	 * progress, we are guaranteed that writeback during freezing will
-	 * see the dirty folio and writeprotect it again.
-	 */
+	 
 	folio_mark_dirty(folio);
 	folio_wait_stable(folio);
 	ret = VM_FAULT_LOCKED;
@@ -719,7 +681,7 @@ static int orangefs_setattr_size(struct inode *inode, struct iattr *iattr)
 		     orangefs_inode->refn.fs_id,
 		     iattr->ia_size);
 
-	/* Ensure that we have a up to date size, so we know if it changed. */
+	 
 	ret = orangefs_inode_getattr(inode, ORANGEFS_GETATTR_SIZE);
 	if (ret == -ESTALE)
 		ret = -EIO;
@@ -730,7 +692,7 @@ static int orangefs_setattr_size(struct inode *inode, struct iattr *iattr)
 	}
 	orig_size = i_size_read(inode);
 
-	/* This is truncate_setsize in a different order. */
+	 
 	truncate_pagecache(inode, iattr->ia_size);
 	i_size_write(inode, iattr->ia_size);
 	if (iattr->ia_size > orig_size)
@@ -747,10 +709,7 @@ static int orangefs_setattr_size(struct inode *inode, struct iattr *iattr)
 		__func__,
 		get_interruptible_flag(inode));
 
-	/*
-	 * the truncate has no downcall members to retrieve, but
-	 * the status value tells us if it went through ok or not
-	 */
+	 
 	gossip_debug(GOSSIP_INODE_DEBUG, "%s: ret:%d:\n", __func__, ret);
 
 	op_release(new_op);
@@ -771,11 +730,7 @@ int __orangefs_setattr(struct inode *inode, struct iattr *iattr)
 	if (iattr->ia_valid & ATTR_MODE) {
 		if (iattr->ia_mode & (S_ISVTX)) {
 			if (is_root_handle(inode)) {
-				/*
-				 * allow sticky bit to be set on root (since
-				 * it shows up that way by default anyhow),
-				 * but don't show it to the server
-				 */
+				 
 				iattr->ia_mode -= S_ISVTX;
 			} else {
 				gossip_debug(GOSSIP_UTILS_DEBUG,
@@ -829,15 +784,13 @@ int __orangefs_setattr_mode(struct dentry *dentry, struct iattr *iattr)
 	struct inode *inode = d_inode(dentry);
 
 	ret = __orangefs_setattr(inode, iattr);
-	/* change mode on a file that has ACLs */
+	 
 	if (!ret && (iattr->ia_valid & ATTR_MODE))
 		ret = posix_acl_chmod(&nop_mnt_idmap, dentry, inode->i_mode);
 	return ret;
 }
 
-/*
- * Change attributes of an object referenced by dentry.
- */
+ 
 int orangefs_setattr(struct mnt_idmap *idmap, struct dentry *dentry,
 		     struct iattr *iattr)
 {
@@ -855,9 +808,7 @@ out:
 	return ret;
 }
 
-/*
- * Obtain attributes of an object given a dentry
- */
+ 
 int orangefs_getattr(struct mnt_idmap *idmap, const struct path *path,
 		     struct kstat *stat, u32 request_mask, unsigned int flags)
 {
@@ -873,7 +824,7 @@ int orangefs_getattr(struct mnt_idmap *idmap, const struct path *path,
 	if (ret == 0) {
 		generic_fillattr(&nop_mnt_idmap, request_mask, inode, stat);
 
-		/* override block size reported to stat */
+		 
 		if (!(request_mask & STATX_SIZE))
 			stat->result_mask &= ~STATX_SIZE;
 
@@ -892,7 +843,7 @@ int orangefs_permission(struct mnt_idmap *idmap,
 
 	gossip_debug(GOSSIP_INODE_DEBUG, "%s: refreshing\n", __func__);
 
-	/* Make sure the permission (and other common attrs) are up to date. */
+	 
 	ret = orangefs_inode_getattr(inode, 0);
 	if (ret < 0)
 		return ret;
@@ -944,13 +895,7 @@ static int orangefs_fileattr_set(struct mnt_idmap *idmap,
 
 	gossip_debug(GOSSIP_FILE_DEBUG, "%s: called on %pd\n", __func__,
 		     dentry);
-	/*
-	 * ORANGEFS_MIRROR_FL is set internally when the mirroring mode is
-	 * turned on for a file. The user is not allowed to turn on this bit,
-	 * but the bit is present if the user first gets the flags and then
-	 * updates the flags with some new settings. So, we ignore it in the
-	 * following edit. bligon.
-	 */
+	 
 	if (fileattr_has_fsx(fa) ||
 	    (fa->flags & ~(FS_IMMUTABLE_FL | FS_APPEND_FL | FS_NOATIME_FL | ORANGEFS_MIRROR_FL))) {
 		gossip_err("%s: only supports setting one of FS_IMMUTABLE_FL|FS_APPEND_FL|FS_NOATIME_FL\n",
@@ -964,7 +909,7 @@ static int orangefs_fileattr_set(struct mnt_idmap *idmap,
 				       &val, sizeof(val), 0);
 }
 
-/* ORANGEFS2 implementation of VFS inode operations for files */
+ 
 static const struct inode_operations orangefs_file_inode_operations = {
 	.get_inode_acl = orangefs_get_acl,
 	.set_acl = orangefs_set_acl,
@@ -1003,11 +948,7 @@ static int orangefs_init_iops(struct inode *inode)
 	return 0;
 }
 
-/*
- * Given an ORANGEFS object identifier (fsid, handle), convert it into
- * a ino_t type that will be used as a hash-index from where the handle will
- * be searched for in the VFS hash table of inodes.
- */
+ 
 static inline ino_t orangefs_handle_hash(struct orangefs_object_kref *ref)
 {
 	if (!ref)
@@ -1015,9 +956,7 @@ static inline ino_t orangefs_handle_hash(struct orangefs_object_kref *ref)
 	return orangefs_khandle_to_ino(&(ref->khandle));
 }
 
-/*
- * Called to set up an inode from iget5_locked.
- */
+ 
 static int orangefs_set_inode(struct inode *inode, void *data)
 {
 	struct orangefs_object_kref *ref = (struct orangefs_object_kref *) data;
@@ -1030,28 +969,20 @@ static int orangefs_set_inode(struct inode *inode, void *data)
 	return 0;
 }
 
-/*
- * Called to determine if handles match.
- */
+ 
 static int orangefs_test_inode(struct inode *inode, void *data)
 {
 	struct orangefs_object_kref *ref = (struct orangefs_object_kref *) data;
 	struct orangefs_inode_s *orangefs_inode = NULL;
 
 	orangefs_inode = ORANGEFS_I(inode);
-	/* test handles and fs_ids... */
+	 
 	return (!ORANGEFS_khandle_cmp(&(orangefs_inode->refn.khandle),
 				&(ref->khandle)) &&
 			orangefs_inode->refn.fs_id == ref->fs_id);
 }
 
-/*
- * Front-end to lookup the inode-cache maintained by the VFS using the ORANGEFS
- * file handle.
- *
- * @sb: the file system super block instance.
- * @ref: The ORANGEFS object for which we are trying to locate an inode.
- */
+ 
 struct inode *orangefs_iget(struct super_block *sb,
 		struct orangefs_object_kref *ref)
 {
@@ -1078,7 +1009,7 @@ struct inode *orangefs_iget(struct super_block *sb,
 		return ERR_PTR(error);
 	}
 
-	inode->i_ino = hash;	/* needed for stat etc */
+	inode->i_ino = hash;	 
 	orangefs_init_iops(inode);
 	unlock_new_inode(inode);
 
@@ -1092,9 +1023,7 @@ struct inode *orangefs_iget(struct super_block *sb,
 	return inode;
 }
 
-/*
- * Allocate an inode for a newly created file and insert it into the inode hash.
- */
+ 
 struct inode *orangefs_new_inode(struct super_block *sb, struct inode *dir,
 		umode_t mode, dev_t dev, struct orangefs_object_kref *ref)
 {
@@ -1120,7 +1049,7 @@ struct inode *orangefs_new_inode(struct super_block *sb, struct inode *dir,
 		goto out_iput;
 
 	orangefs_set_inode(inode, ref);
-	inode->i_ino = hash;	/* needed for stat etc */
+	inode->i_ino = hash;	 
 
 	error = orangefs_inode_getattr(inode, ORANGEFS_GETATTR_NEW);
 	if (error)

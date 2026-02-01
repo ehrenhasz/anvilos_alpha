@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright © 2019-2021 Intel Corporation
- */
+
+ 
 
 #include <drm/ttm/ttm_placement.h>
 #include <linux/scatterlist.h>

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  WMI hotkeys support for Dell All-In-One series
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -22,8 +20,7 @@ MODULE_LICENSE("GPL");
 
 struct dell_wmi_event {
 	u16	length;
-	/* 0x000: A hot key pressed or an event occurred
-	 * 0x00F: A sequence of hot keys are pressed */
+	 
 	u16	type;
 	u16	event[];
 };
@@ -52,10 +49,7 @@ static const struct key_entry dell_wmi_aio_keymap[] = {
 
 static struct input_dev *dell_wmi_aio_input_dev;
 
-/*
- * The new WMI event data format will follow the dell_wmi_event structure
- * So, we will check if the buffer matches the format
- */
+ 
 static bool dell_wmi_aio_event_check(u8 *buffer, int length)
 {
 	struct dell_wmi_event *event = (struct dell_wmi_event *)buffer;
@@ -89,7 +83,7 @@ static void dell_wmi_aio_notify(u32 value, void *context)
 
 		switch (obj->type) {
 		case ACPI_TYPE_INTEGER:
-			/* Most All-In-One correctly return integer scancode */
+			 
 			scancode = obj->integer.value;
 			sparse_keymap_report_event(dell_wmi_aio_input_dev,
 				scancode, 1, true);
@@ -101,8 +95,7 @@ static void dell_wmi_aio_notify(u32 value, void *context)
 					obj->buffer.pointer;
 				scancode = event->event[0];
 			} else {
-				/* Broken machines return the scancode in a
-				   buffer */
+				 
 				if (obj->buffer.pointer &&
 						obj->buffer.length > 0)
 					scancode = obj->buffer.pointer[0];

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/property.h>
 #include <linux/regmap.h>
 #include <net/dsa.h>
@@ -8,12 +8,7 @@
 
 static u32 qca8k_phy_to_port(int phy)
 {
-	/* Internal PHY 0 has port at index 1.
-	 * Internal PHY 1 has port at index 2.
-	 * Internal PHY 2 has port at index 3.
-	 * Internal PHY 3 has port at index 4.
-	 * Internal PHY 4 has port at index 5.
-	 */
+	 
 
 	return phy + 1;
 }
@@ -29,7 +24,7 @@ qca8k_get_enable_led_reg(int port_num, int led_num, struct qca8k_led_pattern_en 
 	case 1:
 	case 2:
 	case 3:
-		/* Port 123 are controlled on a different reg */
+		 
 		reg_info->reg = QCA8K_LED_CTRL3_REG;
 		reg_info->shift = QCA8K_LED_PHY123_PATTERN_EN_SHIFT(port_num, led_num);
 		break;
@@ -49,10 +44,7 @@ qca8k_get_control_led_reg(int port_num, int led_num, struct qca8k_led_pattern_en
 {
 	reg_info->reg = QCA8K_LED_CTRL_REG(led_num);
 
-	/* 6 total control rule:
-	 * 3 control rules for phy0-3 that applies to all their leds
-	 * 3 control rules for phy4
-	 */
+	 
 	if (port_num == 4)
 		reg_info->shift = QCA8K_LED_PHY4_CONTROL_RULE_SHIFT;
 	else
@@ -64,7 +56,7 @@ qca8k_get_control_led_reg(int port_num, int led_num, struct qca8k_led_pattern_en
 static int
 qca8k_parse_netdev(unsigned long rules, u32 *offload_trigger)
 {
-	/* Parsing specific to netdev trigger */
+	 
 	if (test_bit(TRIGGER_NETDEV_TX, &rules))
 		*offload_trigger |= QCA8K_LED_TX_BLINK_MASK;
 	if (test_bit(TRIGGER_NETDEV_RX, &rules))
@@ -83,9 +75,7 @@ qca8k_parse_netdev(unsigned long rules, u32 *offload_trigger)
 	if (rules && !*offload_trigger)
 		return -EOPNOTSUPP;
 
-	/* Enable some default rule by default to the requested mode:
-	 * - Blink at 4Hz by default
-	 */
+	 
 	*offload_trigger |= QCA8K_LED_BLINK_4HZ;
 
 	return 0;
@@ -105,40 +95,7 @@ qca8k_led_brightness_set(struct qca8k_led *led,
 	if (brightness)
 		val = QCA8K_LED_ALWAYS_ON;
 
-	/* HW regs to control brightness is special and port 1-2-3
-	 * are placed in a different reg.
-	 *
-	 * To control port 0 brightness:
-	 * - the 2 bit (15, 14) of:
-	 *   - QCA8K_LED_CTRL0_REG for led1
-	 *   - QCA8K_LED_CTRL1_REG for led2
-	 *   - QCA8K_LED_CTRL2_REG for led3
-	 *
-	 * To control port 4:
-	 * - the 2 bit (31, 30) of:
-	 *   - QCA8K_LED_CTRL0_REG for led1
-	 *   - QCA8K_LED_CTRL1_REG for led2
-	 *   - QCA8K_LED_CTRL2_REG for led3
-	 *
-	 * To control port 1:
-	 *   - the 2 bit at (9, 8) of QCA8K_LED_CTRL3_REG are used for led1
-	 *   - the 2 bit at (11, 10) of QCA8K_LED_CTRL3_REG are used for led2
-	 *   - the 2 bit at (13, 12) of QCA8K_LED_CTRL3_REG are used for led3
-	 *
-	 * To control port 2:
-	 *   - the 2 bit at (15, 14) of QCA8K_LED_CTRL3_REG are used for led1
-	 *   - the 2 bit at (17, 16) of QCA8K_LED_CTRL3_REG are used for led2
-	 *   - the 2 bit at (19, 18) of QCA8K_LED_CTRL3_REG are used for led3
-	 *
-	 * To control port 3:
-	 *   - the 2 bit at (21, 20) of QCA8K_LED_CTRL3_REG are used for led1
-	 *   - the 2 bit at (23, 22) of QCA8K_LED_CTRL3_REG are used for led2
-	 *   - the 2 bit at (25, 24) of QCA8K_LED_CTRL3_REG are used for led3
-	 *
-	 * To abstract this and have less code, we use the port and led numm
-	 * to calculate the shift and the correct reg due to this problem of
-	 * not having a 1:1 map of LED with the regs.
-	 */
+	 
 	if (led->port_num == 0 || led->port_num == 4) {
 		mask = QCA8K_LED_PATTERN_EN_MASK;
 		val <<= QCA8K_LED_PATTERN_EN_SHIFT;
@@ -183,7 +140,7 @@ qca8k_led_brightness_get(struct qca8k_led *led)
 		val &= QCA8K_LED_PHY123_PATTERN_EN_MASK;
 	}
 
-	/* Assume brightness ON only when the LED is set to always ON */
+	 
 	return val == QCA8K_LED_ALWAYS_ON;
 }
 
@@ -203,9 +160,7 @@ qca8k_cled_blink_set(struct led_classdev *ldev,
 	}
 
 	if (*delay_on != 125 || *delay_off != 125) {
-		/* The hardware only supports blinking at 4Hz. Fall back
-		 * to software implementation in other cases.
-		 */
+		 
 		return -EINVAL;
 	}
 
@@ -315,7 +270,7 @@ qca8k_cled_hw_control_get(struct led_classdev *ldev, unsigned long *rules)
 	u32 val;
 	int ret;
 
-	/* With hw control not active return err */
+	 
 	if (!qca8k_cled_hw_control_status(ldev))
 		return -EINVAL;
 
@@ -328,7 +283,7 @@ qca8k_cled_hw_control_get(struct led_classdev *ldev, unsigned long *rules)
 	val >>= reg_info.shift;
 	val &= QCA8K_LED_RULE_MASK;
 
-	/* Parsing specific to netdev trigger */
+	 
 	if (val & QCA8K_LED_TX_BLINK_MASK)
 		set_bit(TRIGGER_NETDEV_TX, rules);
 	if (val & QCA8K_LED_RX_BLINK_MASK)
@@ -380,13 +335,7 @@ qca8k_parse_port_leds(struct qca8k_priv *priv, struct fwnode_handle *port, int p
 	}
 
 	fwnode_for_each_child_node(leds, led) {
-		/* Reg represent the led number of the port.
-		 * Each port can have at most 3 leds attached
-		 * Commonly:
-		 * 1. is gigabit led
-		 * 2. is mbit led
-		 * 3. additional status led
-		 */
+		 
 		if (fwnode_property_read_u32(led, "reg", &led_num))
 			continue;
 
@@ -461,15 +410,11 @@ qca8k_setup_led_ctrl(struct qca8k_priv *priv)
 		if (fwnode_property_read_u32(port, "reg", &port_num))
 			continue;
 
-		/* Skip checking for CPU port 0 and CPU port 6 as not supported */
+		 
 		if (port_num == 0 || port_num == 6)
 			continue;
 
-		/* Each port can have at most 3 different leds attached.
-		 * Switch port starts from 0 to 6, but port 0 and 6 are CPU
-		 * port. The port index needs to be decreased by one to identify
-		 * the correct port for LED setup.
-		 */
+		 
 		ret = qca8k_parse_port_leds(priv, port, qca8k_port_to_phy(port_num));
 		if (ret)
 			return ret;

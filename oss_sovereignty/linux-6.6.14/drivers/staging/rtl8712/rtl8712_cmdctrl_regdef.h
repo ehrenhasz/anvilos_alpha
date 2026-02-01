@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/******************************************************************************
- *
- * Copyright(c) 2007 - 2010 Realtek Corporation. All rights reserved.
- *
- ******************************************************************************/
+ 
+ 
 #ifndef __RTL8712_CMDCTRL_REGDEF_H__
 #define __RTL8712_CMDCTRL_REGDEF_H__
 
@@ -15,5 +11,5 @@
 #define SYSF_CFG		(RTL8712_CMDCTRL_ + 0x000D)
 #define MBIDCTRL		(RTL8712_CMDCTRL_ + 0x000E)
 
-#endif /* __RTL8712_CMDCTRL_REGDEF_H__ */
+#endif  
 

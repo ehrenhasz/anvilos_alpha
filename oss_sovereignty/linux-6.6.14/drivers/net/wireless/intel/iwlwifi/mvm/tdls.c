@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
-/*
- * Copyright (C) 2014 Intel Mobile Communications GmbH
- * Copyright (C) 2017 Intel Deutschland GmbH
- * Copyright (C) 2018-2020, 2022 Intel Corporation
- */
+
+ 
 #include <linux/etherdevice.h>
 #include "mvm.h"
 #include "time-event.h"
@@ -82,11 +78,11 @@ static void iwl_mvm_tdls_config(struct iwl_mvm *mvm, struct ieee80211_vif *vif)
 	tdls_cfg_cmd.id_and_color =
 		cpu_to_le32(FW_CMD_ID_AND_COLOR(mvmvif->id, mvmvif->color));
 	tdls_cfg_cmd.tx_to_ap_tid = IWL_MVM_TDLS_FW_TID;
-	tdls_cfg_cmd.tx_to_ap_ssn = cpu_to_le16(0); /* not used for now */
+	tdls_cfg_cmd.tx_to_ap_ssn = cpu_to_le16(0);  
 
-	/* for now the Tx cmd is empty and unused */
+	 
 
-	/* populate TDLS peer data */
+	 
 	cnt = 0;
 	for (i = 0; i < mvm->fw->ucode_capa.num_stations; i++) {
 		sta = rcu_dereference_protected(mvm->fw_id_to_mac_id[i],
@@ -115,7 +111,7 @@ static void iwl_mvm_tdls_config(struct iwl_mvm *mvm, struct ieee80211_vif *vif)
 
 	WARN_ON_ONCE(iwl_rx_packet_payload_len(pkt) != sizeof(*resp));
 
-	/* we don't really care about the response at this point */
+	 
 
 	iwl_free_resp(&cmd);
 }
@@ -125,20 +121,16 @@ void iwl_mvm_recalc_tdls_state(struct iwl_mvm *mvm, struct ieee80211_vif *vif,
 {
 	int tdls_sta_cnt = iwl_mvm_tdls_sta_count(mvm, vif);
 
-	/* when the first peer joins, send a power update first */
+	 
 	if (tdls_sta_cnt == 1 && sta_added)
 		iwl_mvm_power_update_mac(mvm);
 
-	/* Configure the FW with TDLS peer info only if TDLS channel switch
-	 * capability is set.
-	 * TDLS config data is used currently only in TDLS channel switch code.
-	 * Supposed to serve also TDLS buffer station which is not implemneted
-	 * yet in FW*/
+	 
 	if (fw_has_capa(&mvm->fw->ucode_capa,
 			IWL_UCODE_TLV_CAPA_TDLS_CHANNEL_SWITCH))
 		iwl_mvm_tdls_config(mvm, vif);
 
-	/* when the last peer leaves, send a power update last */
+	 
 	if (tdls_sta_cnt == 0 && !sta_added)
 		iwl_mvm_power_update_mac(mvm);
 }
@@ -149,7 +141,7 @@ void iwl_mvm_mac_mgd_protect_tdls_discover(struct ieee80211_hw *hw,
 	struct iwl_mvm *mvm = IWL_MAC80211_GET_MVM(hw);
 	u32 duration = 2 * vif->bss_conf.dtim_period * vif->bss_conf.beacon_int;
 
-	/* Protect the session to hear the TDLS setup response on the channel */
+	 
 	mutex_lock(&mvm->mutex);
 	if (fw_has_capa(&mvm->fw->ucode_capa,
 			IWL_UCODE_TLV_CAPA_SESSION_PROT_CMD))
@@ -191,7 +183,7 @@ static void iwl_mvm_tdls_update_cs_state(struct iwl_mvm *mvm,
 		       iwl_mvm_tdls_cs_state_str(state));
 	mvm->tdls_cs.state = state;
 
-	/* we only send requests to our switching peer - update sent time */
+	 
 	if (state == IWL_MVM_TDLS_SW_REQ_SENT)
 		mvm->tdls_cs.peer.sent_timestamp = iwl_mvm_get_systime(mvm);
 
@@ -211,7 +203,7 @@ void iwl_mvm_rx_tdls_notif(struct iwl_mvm *mvm, struct iwl_rx_cmd_buffer *rxb)
 
 	lockdep_assert_held(&mvm->mutex);
 
-	/* can fail sometimes */
+	 
 	if (!le32_to_cpu(notif->status)) {
 		iwl_mvm_tdls_update_cs_state(mvm, IWL_MVM_TDLS_SW_IDLE);
 		return;
@@ -222,17 +214,14 @@ void iwl_mvm_rx_tdls_notif(struct iwl_mvm *mvm, struct iwl_rx_cmd_buffer *rxb)
 
 	sta = rcu_dereference_protected(mvm->fw_id_to_mac_id[sta_id],
 					lockdep_is_held(&mvm->mutex));
-	/* the station may not be here, but if it is, it must be a TDLS peer */
+	 
 	if (IS_ERR_OR_NULL(sta) || WARN_ON(!sta->tdls))
 		return;
 
 	mvmsta = iwl_mvm_sta_from_mac80211(sta);
 	vif = mvmsta->vif;
 
-	/*
-	 * Update state and possibly switch again after this is over (DTIM).
-	 * Also convert TU to msec.
-	 */
+	 
 	delay = TU_TO_MS(vif->bss_conf.dtim_period * vif->bss_conf.beacon_int);
 	mod_delayed_work(system_wq, &mvm->tdls_cs.dwork,
 			 msecs_to_jiffies(delay));
@@ -248,7 +237,7 @@ iwl_mvm_tdls_check_action(struct iwl_mvm *mvm,
 	bool same_peer = false;
 	int ret = 0;
 
-	/* get the existing peer if it's there */
+	 
 	if (mvm->tdls_cs.state != IWL_MVM_TDLS_SW_IDLE &&
 	    mvm->tdls_cs.cur_sta_id != IWL_MVM_INVALID_STA) {
 		struct ieee80211_sta *sta = rcu_dereference_protected(
@@ -260,55 +249,42 @@ iwl_mvm_tdls_check_action(struct iwl_mvm *mvm,
 
 	switch (mvm->tdls_cs.state) {
 	case IWL_MVM_TDLS_SW_IDLE:
-		/*
-		 * might be spurious packet from the peer after the switch is
-		 * already done
-		 */
+		 
 		if (type == TDLS_MOVE_CH)
 			ret = -EINVAL;
 		break;
 	case IWL_MVM_TDLS_SW_REQ_SENT:
-		/* only allow requests from the same peer */
+		 
 		if (!same_peer)
 			ret = -EBUSY;
 		else if (type == TDLS_SEND_CHAN_SW_RESP_AND_MOVE_CH &&
 			 !peer_initiator)
-			/*
-			 * We received a ch-switch request while an outgoing
-			 * one is pending. Allow it if the peer is the link
-			 * initiator.
-			 */
+			 
 			ret = -EBUSY;
 		else if (type == TDLS_SEND_CHAN_SW_REQ)
-			/* wait for idle before sending another request */
+			 
 			ret = -EBUSY;
 		else if (timestamp <= mvm->tdls_cs.peer.sent_timestamp)
-			/* we got a stale response - ignore it */
+			 
 			ret = -EINVAL;
 		break;
 	case IWL_MVM_TDLS_SW_RESP_RCVD:
-		/*
-		 * we are waiting for the FW to give an "active" notification,
-		 * so ignore requests in the meantime
-		 */
+		 
 		ret = -EBUSY;
 		break;
 	case IWL_MVM_TDLS_SW_REQ_RCVD:
-		/* as above, allow the link initiator to proceed */
+		 
 		if (type == TDLS_SEND_CHAN_SW_REQ) {
 			if (!same_peer)
 				ret = -EBUSY;
-			else if (peer_initiator) /* they are the initiator */
+			else if (peer_initiator)  
 				ret = -EBUSY;
 		} else if (type == TDLS_MOVE_CH) {
 			ret = -EINVAL;
 		}
 		break;
 	case IWL_MVM_TDLS_SW_ACTIVE:
-		/*
-		 * the only valid request when active is a request to return
-		 * to the base channel by the current off-channel peer
-		 */
+		 
 		if (type != TDLS_MOVE_CH || !same_peer)
 			ret = -EBUSY;
 		break;
@@ -374,11 +350,11 @@ iwl_mvm_tdls_config_channel_switch(struct iwl_mvm *mvm,
 	if (!chandef) {
 		if (mvm->tdls_cs.state == IWL_MVM_TDLS_SW_REQ_SENT &&
 		    mvm->tdls_cs.peer.chandef.chan) {
-			/* actually moving to the channel */
+			 
 			chandef = &mvm->tdls_cs.peer.chandef;
 		} else if (mvm->tdls_cs.state == IWL_MVM_TDLS_SW_ACTIVE &&
 			   type == TDLS_MOVE_CH) {
-			/* we need to return to base channel */
+			 
 			struct ieee80211_chanctx_conf *chanctx =
 					rcu_dereference(vif->bss_conf.chanctx_conf);
 
@@ -394,12 +370,12 @@ iwl_mvm_tdls_config_channel_switch(struct iwl_mvm *mvm,
 	if (chandef)
 		iwl_mvm_set_chan_info_chandef(mvm, &cmd.ci, chandef);
 
-	/* keep quota calculation simple for now - 50% of DTIM for TDLS */
+	 
 	tail->timing.max_offchan_duration =
 			cpu_to_le32(TU_TO_US(vif->bss_conf.dtim_period *
 					     vif->bss_conf.beacon_int) / 2);
 
-	/* Switch time is the first element in the switch-timing IE. */
+	 
 	tail->frame.switch_time_offset = cpu_to_le32(ch_sw_tm_ie + 2);
 
 	info = IEEE80211_SKB_CB(skb);
@@ -429,7 +405,7 @@ iwl_mvm_tdls_config_channel_switch(struct iwl_mvm *mvm,
 		goto out;
 	}
 
-	/* channel switch has started, update state */
+	 
 	if (type != TDLS_MOVE_CH) {
 		mvm->tdls_cs.cur_sta_id = mvmsta->deflink.sta_id;
 		iwl_mvm_tdls_update_cs_state(mvm,
@@ -442,7 +418,7 @@ iwl_mvm_tdls_config_channel_switch(struct iwl_mvm *mvm,
 
 out:
 
-	/* channel switch failed - we are idle */
+	 
 	if (ret)
 		iwl_mvm_tdls_update_cs_state(mvm, IWL_MVM_TDLS_SW_IDLE);
 
@@ -461,17 +437,17 @@ void iwl_mvm_tdls_ch_switch_work(struct work_struct *work)
 	mvm = container_of(work, struct iwl_mvm, tdls_cs.dwork.work);
 	mutex_lock(&mvm->mutex);
 
-	/* called after an active channel switch has finished or timed-out */
+	 
 	iwl_mvm_tdls_update_cs_state(mvm, IWL_MVM_TDLS_SW_IDLE);
 
-	/* station might be gone, in that case do nothing */
+	 
 	if (mvm->tdls_cs.peer.sta_id == IWL_MVM_INVALID_STA)
 		goto out;
 
 	sta = rcu_dereference_protected(
 				mvm->fw_id_to_mac_id[mvm->tdls_cs.peer.sta_id],
 				lockdep_is_held(&mvm->mutex));
-	/* the station may not be here, but if it is, it must be a TDLS peer */
+	 
 	if (!sta || IS_ERR(sta) || WARN_ON(!sta->tdls))
 		goto out;
 
@@ -489,7 +465,7 @@ void iwl_mvm_tdls_ch_switch_work(struct work_struct *work)
 	if (ret)
 		IWL_ERR(mvm, "Not sending TDLS channel switch: %d\n", ret);
 
-	/* retry after a DTIM if we failed sending now */
+	 
 	delay = TU_TO_MS(vif->bss_conf.dtim_period * vif->bss_conf.beacon_int);
 	schedule_delayed_work(&mvm->tdls_cs.dwork, msecs_to_jiffies(delay));
 out:
@@ -513,7 +489,7 @@ iwl_mvm_tdls_channel_switch(struct ieee80211_hw *hw,
 	IWL_DEBUG_TDLS(mvm, "TDLS channel switch with %pM ch %d width %d\n",
 		       sta->addr, chandef->chan->center_freq, chandef->width);
 
-	/* we only support a single peer for channel switching */
+	 
 	if (mvm->tdls_cs.peer.sta_id != IWL_MVM_INVALID_STA) {
 		IWL_DEBUG_TDLS(mvm,
 			       "Existing peer. Can't start switch with %pM\n",
@@ -530,10 +506,7 @@ iwl_mvm_tdls_channel_switch(struct ieee80211_hw *hw,
 	if (ret)
 		goto out;
 
-	/*
-	 * Mark the peer as "in tdls switch" for this vif. We only allow a
-	 * single such peer per vif.
-	 */
+	 
 	mvm->tdls_cs.peer.skb = skb_copy(tmpl_skb, GFP_KERNEL);
 	if (!mvm->tdls_cs.peer.skb) {
 		ret = -ENOMEM;
@@ -547,10 +520,7 @@ iwl_mvm_tdls_channel_switch(struct ieee80211_hw *hw,
 	mvm->tdls_cs.peer.op_class = oper_class;
 	mvm->tdls_cs.peer.ch_sw_tm_ie = ch_sw_tm_ie;
 
-	/*
-	 * Wait for 2 DTIM periods before attempting the next switch. The next
-	 * switch will be made sooner if the current one completes before that.
-	 */
+	 
 	delay = 2 * TU_TO_MS(vif->bss_conf.dtim_period *
 			     vif->bss_conf.beacon_int);
 	mod_delayed_work(system_wq, &mvm->tdls_cs.dwork,
@@ -573,7 +543,7 @@ void iwl_mvm_tdls_cancel_channel_switch(struct ieee80211_hw *hw,
 
 	IWL_DEBUG_TDLS(mvm, "TDLS cancel channel switch with %pM\n", sta->addr);
 
-	/* we only support a single peer for channel switching */
+	 
 	if (mvm->tdls_cs.peer.sta_id == IWL_MVM_INVALID_STA) {
 		IWL_DEBUG_TDLS(mvm, "No ch switch peer - %pM\n", sta->addr);
 		goto out;
@@ -582,15 +552,11 @@ void iwl_mvm_tdls_cancel_channel_switch(struct ieee80211_hw *hw,
 	cur_sta = rcu_dereference_protected(
 				mvm->fw_id_to_mac_id[mvm->tdls_cs.peer.sta_id],
 				lockdep_is_held(&mvm->mutex));
-	/* make sure it's the same peer */
+	 
 	if (cur_sta != sta)
 		goto out;
 
-	/*
-	 * If we're currently in a switch because of the now canceled peer,
-	 * wait a DTIM here to make sure the phy is back on the base channel.
-	 * We can't otherwise force it.
-	 */
+	 
 	if (mvm->tdls_cs.cur_sta_id == mvm->tdls_cs.peer.sta_id &&
 	    mvm->tdls_cs.state != IWL_MVM_TDLS_SW_IDLE)
 		wait_for_phy = true;
@@ -602,12 +568,12 @@ void iwl_mvm_tdls_cancel_channel_switch(struct ieee80211_hw *hw,
 out:
 	mutex_unlock(&mvm->mutex);
 
-	/* make sure the phy is on the base channel */
+	 
 	if (wait_for_phy)
 		msleep(TU_TO_MS(vif->bss_conf.dtim_period *
 				vif->bss_conf.beacon_int));
 
-	/* flush the channel switch state */
+	 
 	flush_delayed_work(&mvm->tdls_cs.dwork);
 
 	IWL_DEBUG_TDLS(mvm, "TDLS ending channel switch with %pM\n", sta->addr);
@@ -631,17 +597,14 @@ iwl_mvm_tdls_recv_channel_switch(struct ieee80211_hw *hw,
 		       "Received TDLS ch switch action %s from %pM status %d\n",
 		       action_str, params->sta->addr, params->status);
 
-	/*
-	 * we got a non-zero status from a peer we were switching to - move to
-	 * the idle state and retry again later
-	 */
+	 
 	if (params->action_code == WLAN_TDLS_CHANNEL_SWITCH_RESPONSE &&
 	    params->status != 0 &&
 	    mvm->tdls_cs.state == IWL_MVM_TDLS_SW_REQ_SENT &&
 	    mvm->tdls_cs.cur_sta_id != IWL_MVM_INVALID_STA) {
 		struct ieee80211_sta *cur_sta;
 
-		/* make sure it's the same peer */
+		 
 		cur_sta = rcu_dereference_protected(
 				mvm->fw_id_to_mac_id[mvm->tdls_cs.cur_sta_id],
 				lockdep_is_held(&mvm->mutex));
@@ -664,7 +627,7 @@ iwl_mvm_tdls_recv_channel_switch(struct ieee80211_hw *hw,
 					   params->ch_sw_tm_ie);
 
 retry:
-	/* register a timeout in case we don't succeed in switching */
+	 
 	delay = vif->bss_conf.dtim_period * vif->bss_conf.beacon_int *
 		1024 / 1000;
 	mod_delayed_work(system_wq, &mvm->tdls_cs.dwork,

@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * AMD MP2 1.1 communication driver
- *
- * Copyright (c) 2022, Advanced Micro Devices, Inc.
- * All Rights Reserved.
- *
- * Author: Basavaraj Natikar <Basavaraj.Natikar@amd.com>
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/hid.h>
@@ -297,7 +290,7 @@ int amd_sfh1_1_init(struct amd_mp2_dev *mp2)
 		return -ENOMEM;
 	}
 
-	/* Before accessing give time for SFH firmware for processing configuration */
+	 
 	msleep(5000);
 
 	memcpy_fromio(&binfo, mp2->vsbase, sizeof(struct sfh_base_info));

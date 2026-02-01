@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * udc.c - ChipIdea UDC driver
- *
- * Copyright (C) 2008 Chipidea - MIPS Technologies, Inc. All rights reserved.
- *
- * Author: David Lopo
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/device.h>
@@ -28,7 +22,7 @@
 #include "otg_fsm.h"
 #include "trace.h"
 
-/* control endpoint description */
+ 
 static const struct usb_endpoint_descriptor
 ctrl_endpt_out_desc = {
 	.bLength         = USB_DT_ENDPOINT_SIZE,
@@ -51,13 +45,7 @@ ctrl_endpt_in_desc = {
 
 static int reprime_dtd(struct ci_hdrc *ci, struct ci_hw_ep *hwep,
 		       struct td_node *node);
-/**
- * hw_ep_bit: calculates the bit number
- * @num: endpoint number
- * @dir: endpoint direction
- *
- * This function returns bit number
- */
+ 
 static inline int hw_ep_bit(int num, int dir)
 {
 	return num + ((dir == TX) ? 16 : 0);
@@ -73,18 +61,12 @@ static inline int ep_to_bit(struct ci_hdrc *ci, int n)
 	return n;
 }
 
-/**
- * hw_device_state: enables/disables interrupts (execute without interruption)
- * @ci: the controller
- * @dma: 0 => disable, !0 => enable and set dma engine
- *
- * This function returns an error code
- */
+ 
 static int hw_device_state(struct ci_hdrc *ci, u32 dma)
 {
 	if (dma) {
 		hw_write(ci, OP_ENDPTLISTADDR, ~0, dma);
-		/* interrupt, error, port change, reset, sleep/suspend */
+		 
 		hw_write(ci, OP_USBINTR, ~0,
 			     USBi_UI|USBi_UEI|USBi_PCI|USBi_URI|USBi_SLI);
 	} else {
@@ -93,20 +75,13 @@ static int hw_device_state(struct ci_hdrc *ci, u32 dma)
 	return 0;
 }
 
-/**
- * hw_ep_flush: flush endpoint fifo (execute without interruption)
- * @ci: the controller
- * @num: endpoint number
- * @dir: endpoint direction
- *
- * This function returns an error code
- */
+ 
 static int hw_ep_flush(struct ci_hdrc *ci, int num, int dir)
 {
 	int n = hw_ep_bit(num, dir);
 
 	do {
-		/* flush any pending transfer */
+		 
 		hw_write(ci, OP_ENDPTFLUSH, ~0, BIT(n));
 		while (hw_read(ci, OP_ENDPTFLUSH, BIT(n)))
 			cpu_relax();
@@ -115,14 +90,7 @@ static int hw_ep_flush(struct ci_hdrc *ci, int num, int dir)
 	return 0;
 }
 
-/**
- * hw_ep_disable: disables endpoint (execute without interruption)
- * @ci: the controller
- * @num: endpoint number
- * @dir: endpoint direction
- *
- * This function returns an error code
- */
+ 
 static int hw_ep_disable(struct ci_hdrc *ci, int num, int dir)
 {
 	hw_write(ci, OP_ENDPTCTRL + num,
@@ -130,50 +98,35 @@ static int hw_ep_disable(struct ci_hdrc *ci, int num, int dir)
 	return 0;
 }
 
-/**
- * hw_ep_enable: enables endpoint (execute without interruption)
- * @ci: the controller
- * @num:  endpoint number
- * @dir:  endpoint direction
- * @type: endpoint type
- *
- * This function returns an error code
- */
+ 
 static int hw_ep_enable(struct ci_hdrc *ci, int num, int dir, int type)
 {
 	u32 mask, data;
 
 	if (dir == TX) {
-		mask  = ENDPTCTRL_TXT;  /* type    */
+		mask  = ENDPTCTRL_TXT;   
 		data  = type << __ffs(mask);
 
-		mask |= ENDPTCTRL_TXS;  /* unstall */
-		mask |= ENDPTCTRL_TXR;  /* reset data toggle */
+		mask |= ENDPTCTRL_TXS;   
+		mask |= ENDPTCTRL_TXR;   
 		data |= ENDPTCTRL_TXR;
-		mask |= ENDPTCTRL_TXE;  /* enable  */
+		mask |= ENDPTCTRL_TXE;   
 		data |= ENDPTCTRL_TXE;
 	} else {
-		mask  = ENDPTCTRL_RXT;  /* type    */
+		mask  = ENDPTCTRL_RXT;   
 		data  = type << __ffs(mask);
 
-		mask |= ENDPTCTRL_RXS;  /* unstall */
-		mask |= ENDPTCTRL_RXR;  /* reset data toggle */
+		mask |= ENDPTCTRL_RXS;   
+		mask |= ENDPTCTRL_RXR;   
 		data |= ENDPTCTRL_RXR;
-		mask |= ENDPTCTRL_RXE;  /* enable  */
+		mask |= ENDPTCTRL_RXE;   
 		data |= ENDPTCTRL_RXE;
 	}
 	hw_write(ci, OP_ENDPTCTRL + num, mask, data);
 	return 0;
 }
 
-/**
- * hw_ep_get_halt: return endpoint halt status
- * @ci: the controller
- * @num: endpoint number
- * @dir: endpoint direction
- *
- * This function returns 1 if endpoint halted
- */
+ 
 static int hw_ep_get_halt(struct ci_hdrc *ci, int num, int dir)
 {
 	u32 mask = (dir == TX) ? ENDPTCTRL_TXS : ENDPTCTRL_RXS;
@@ -181,20 +134,12 @@ static int hw_ep_get_halt(struct ci_hdrc *ci, int num, int dir)
 	return hw_read(ci, OP_ENDPTCTRL + num, mask) ? 1 : 0;
 }
 
-/**
- * hw_ep_prime: primes endpoint (execute without interruption)
- * @ci: the controller
- * @num:     endpoint number
- * @dir:     endpoint direction
- * @is_ctrl: true if control endpoint
- *
- * This function returns an error code
- */
+ 
 static int hw_ep_prime(struct ci_hdrc *ci, int num, int dir, int is_ctrl)
 {
 	int n = hw_ep_bit(num, dir);
 
-	/* Synchronize before ep prime */
+	 
 	wmb();
 
 	if (is_ctrl && dir == RX && hw_read(ci, OP_ENDPTSETUPSTAT, BIT(num)))
@@ -207,20 +152,11 @@ static int hw_ep_prime(struct ci_hdrc *ci, int num, int dir, int is_ctrl)
 	if (is_ctrl && dir == RX && hw_read(ci, OP_ENDPTSETUPSTAT, BIT(num)))
 		return -EAGAIN;
 
-	/* status shoult be tested according with manual but it doesn't work */
+	 
 	return 0;
 }
 
-/**
- * hw_ep_set_halt: configures ep halt & resets data toggle after clear (execute
- *                 without interruption)
- * @ci: the controller
- * @num:   endpoint number
- * @dir:   endpoint direction
- * @value: true => stall, false => unstall
- *
- * This function returns an error code
- */
+ 
 static int hw_ep_set_halt(struct ci_hdrc *ci, int num, int dir, int value)
 {
 	if (value != 0 && value != 1)
@@ -231,7 +167,7 @@ static int hw_ep_set_halt(struct ci_hdrc *ci, int num, int dir, int value)
 		u32 mask_xs = (dir == TX) ? ENDPTCTRL_TXS : ENDPTCTRL_RXS;
 		u32 mask_xr = (dir == TX) ? ENDPTCTRL_TXR : ENDPTCTRL_RXR;
 
-		/* data toggle - reserved for EP0 but it's in ESS */
+		 
 		hw_write(ci, reg, mask_xs|mask_xr,
 			  value ? mask_xs : mask_xr);
 	} while (value != hw_ep_get_halt(ci, num, dir));
@@ -239,39 +175,21 @@ static int hw_ep_set_halt(struct ci_hdrc *ci, int num, int dir, int value)
 	return 0;
 }
 
-/**
- * hw_port_is_high_speed: test if port is high speed
- * @ci: the controller
- *
- * This function returns true if high speed port
- */
+ 
 static int hw_port_is_high_speed(struct ci_hdrc *ci)
 {
 	return ci->hw_bank.lpm ? hw_read(ci, OP_DEVLC, DEVLC_PSPD) :
 		hw_read(ci, OP_PORTSC, PORTSC_HSP);
 }
 
-/**
- * hw_test_and_clear_complete: test & clear complete status (execute without
- *                             interruption)
- * @ci: the controller
- * @n: endpoint number
- *
- * This function returns complete status
- */
+ 
 static int hw_test_and_clear_complete(struct ci_hdrc *ci, int n)
 {
 	n = ep_to_bit(ci, n);
 	return hw_test_and_clear(ci, OP_ENDPTCOMPLETE, BIT(n));
 }
 
-/**
- * hw_test_and_clear_intr_active: test & clear active interrupts (execute
- *                                without interruption)
- * @ci: the controller
- *
- * This function returns active interrutps
- */
+ 
 static u32 hw_test_and_clear_intr_active(struct ci_hdrc *ci)
 {
 	u32 reg = hw_read_intr_status(ci) & hw_read_intr_enable(ci);
@@ -280,79 +198,51 @@ static u32 hw_test_and_clear_intr_active(struct ci_hdrc *ci)
 	return reg;
 }
 
-/**
- * hw_test_and_clear_setup_guard: test & clear setup guard (execute without
- *                                interruption)
- * @ci: the controller
- *
- * This function returns guard value
- */
+ 
 static int hw_test_and_clear_setup_guard(struct ci_hdrc *ci)
 {
 	return hw_test_and_write(ci, OP_USBCMD, USBCMD_SUTW, 0);
 }
 
-/**
- * hw_test_and_set_setup_guard: test & set setup guard (execute without
- *                              interruption)
- * @ci: the controller
- *
- * This function returns guard value
- */
+ 
 static int hw_test_and_set_setup_guard(struct ci_hdrc *ci)
 {
 	return hw_test_and_write(ci, OP_USBCMD, USBCMD_SUTW, USBCMD_SUTW);
 }
 
-/**
- * hw_usb_set_address: configures USB address (execute without interruption)
- * @ci: the controller
- * @value: new USB address
- *
- * This function explicitly sets the address, without the "USBADRA" (advance)
- * feature, which is not supported by older versions of the controller.
- */
+ 
 static void hw_usb_set_address(struct ci_hdrc *ci, u8 value)
 {
 	hw_write(ci, OP_DEVICEADDR, DEVICEADDR_USBADR,
 		 value << __ffs(DEVICEADDR_USBADR));
 }
 
-/**
- * hw_usb_reset: restart device after a bus reset (execute without
- *               interruption)
- * @ci: the controller
- *
- * This function returns an error code
- */
+ 
 static int hw_usb_reset(struct ci_hdrc *ci)
 {
 	hw_usb_set_address(ci, 0);
 
-	/* ESS flushes only at end?!? */
+	 
 	hw_write(ci, OP_ENDPTFLUSH,    ~0, ~0);
 
-	/* clear setup token semaphores */
+	 
 	hw_write(ci, OP_ENDPTSETUPSTAT, 0,  0);
 
-	/* clear complete status */
+	 
 	hw_write(ci, OP_ENDPTCOMPLETE,  0,  0);
 
-	/* wait until all bits cleared */
+	 
 	while (hw_read(ci, OP_ENDPTPRIME, ~0))
-		udelay(10);             /* not RTOS friendly */
+		udelay(10);              
 
-	/* reset all endpoints ? */
+	 
 
-	/* reset internal status and wait for further instructions
-	   no need to verify the port reset status (ESS does it) */
+	 
 
 	return 0;
 }
 
-/******************************************************************************
- * UTIL block
- *****************************************************************************/
+ 
 
 static int add_td_to_list(struct ci_hw_ep *hwep, struct ci_hw_req *hwreq,
 			unsigned int length, struct scatterlist *s)
@@ -402,7 +292,7 @@ static int add_td_to_list(struct ci_hw_ep *hwep, struct ci_hw_req *hwreq,
 	hwreq->req.actual += length;
 
 	if (!list_empty(&hwreq->tds)) {
-		/* get the last entry */
+		 
 		lastnode = list_entry(hwreq->tds.prev,
 				struct td_node, td);
 		lastnode->ptr->next = cpu_to_le32(node->dma);
@@ -414,10 +304,7 @@ static int add_td_to_list(struct ci_hw_ep *hwep, struct ci_hw_req *hwreq,
 	return 0;
 }
 
-/**
- * _usb_addr: calculates endpoint address from direction & number
- * @ep:  endpoint
- */
+ 
 static inline u8 _usb_addr(struct ci_hw_ep *ep)
 {
 	return ((ep->dir == TX) ? USB_ENDPOINT_DIR_MASK : 0) | ep->num;
@@ -436,10 +323,7 @@ static int prepare_td_for_non_sg(struct ci_hw_ep *hwep,
 			return ret;
 	}
 
-	/*
-	 * The first buffer could be not page aligned.
-	 * In that case we have to span into one extra td.
-	 */
+	 
 	if (hwreq->req.dma % PAGE_SIZE)
 		pages--;
 
@@ -540,20 +424,14 @@ static int prepare_td_for_sg(struct ci_hw_ep *hwep, struct ci_hw_req *hwreq)
 	return ret;
 }
 
-/**
- * _hardware_enqueue: configures a request at hardware level
- * @hwep:   endpoint
- * @hwreq:  request
- *
- * This function returns an error code
- */
+ 
 static int _hardware_enqueue(struct ci_hw_ep *hwep, struct ci_hw_req *hwreq)
 {
 	struct ci_hdrc *ci = hwep->ci;
 	int ret = 0;
 	struct td_node *firstnode, *lastnode;
 
-	/* don't queue twice */
+	 
 	if (hwreq->req.status == -EALREADY)
 		return -EALREADY;
 
@@ -618,7 +496,7 @@ static int _hardware_enqueue(struct ci_hw_ep *hwep, struct ci_hw_req *hwreq)
 			goto done;
 	}
 
-	/*  QH configuration */
+	 
 	hwep->qh.ptr->td.next = cpu_to_le32(firstnode->dma);
 	hwep->qh.ptr->td.token &=
 		cpu_to_le32(~(TD_STATUS_HALTED|TD_STATUS_ACTIVE));
@@ -638,10 +516,7 @@ done:
 	return ret;
 }
 
-/**
- * free_pending_td: remove a pending request for the endpoint
- * @hwep: endpoint
- */
+ 
 static void free_pending_td(struct ci_hw_ep *hwep)
 {
 	struct td_node *pending = hwep->pending_td;
@@ -662,13 +537,7 @@ static int reprime_dtd(struct ci_hdrc *ci, struct ci_hw_ep *hwep,
 				hwep->type == USB_ENDPOINT_XFER_CONTROL);
 }
 
-/**
- * _hardware_dequeue: handles a request at hardware level
- * @hwep: endpoint
- * @hwreq:  request
- *
- * This function returns an error code
- */
+ 
 static int _hardware_dequeue(struct ci_hw_ep *hwep, struct ci_hw_req *hwreq)
 {
 	u32 tmptoken;
@@ -717,11 +586,7 @@ static int _hardware_dequeue(struct ci_hw_ep *hwep, struct ci_hw_req *hwreq)
 				break;
 			}
 		}
-		/*
-		 * As the hardware could still address the freed td
-		 * which will run the udc unusable, the cleanup of the
-		 * td has to be delayed by one.
-		 */
+		 
 		if (hwep->pending_td)
 			free_pending_td(hwep);
 
@@ -740,13 +605,7 @@ static int _hardware_dequeue(struct ci_hw_ep *hwep, struct ci_hw_req *hwreq)
 	return hwreq->req.actual;
 }
 
-/**
- * _ep_nuke: dequeues all endpoint requests
- * @hwep: endpoint
- *
- * This function returns an error code
- * Caller must hold lock
- */
+ 
 static int _ep_nuke(struct ci_hw_ep *hwep)
 __releases(hwep->lock)
 __acquires(hwep->lock)
@@ -759,7 +618,7 @@ __acquires(hwep->lock)
 
 	while (!list_empty(&hwep->qh.queue)) {
 
-		/* pop oldest request */
+		 
 		struct ci_hw_req *hwreq = list_entry(hwep->qh.queue.next,
 						     struct ci_hw_req, queue);
 
@@ -824,26 +683,21 @@ static int _ep_set_halt(struct usb_ep *ep, int value, bool check_transfer)
 }
 
 
-/**
- * _gadget_stop_activity: stops all USB activity, flushes & disables all endpts
- * @gadget: gadget
- *
- * This function returns an error code
- */
+ 
 static int _gadget_stop_activity(struct usb_gadget *gadget)
 {
 	struct usb_ep *ep;
 	struct ci_hdrc    *ci = container_of(gadget, struct ci_hdrc, gadget);
 	unsigned long flags;
 
-	/* flush all endpoints */
+	 
 	gadget_for_each_ep(ep, gadget) {
 		usb_ep_fifo_flush(ep);
 	}
 	usb_ep_fifo_flush(&ci->ep0out->ep);
 	usb_ep_fifo_flush(&ci->ep0in->ep);
 
-	/* make sure to disable all endpoints */
+	 
 	gadget_for_each_ep(ep, gadget) {
 		usb_ep_disable(ep);
 	}
@@ -862,15 +716,8 @@ static int _gadget_stop_activity(struct usb_gadget *gadget)
 	return 0;
 }
 
-/******************************************************************************
- * ISR block
- *****************************************************************************/
-/**
- * isr_reset_handler: USB reset interrupt handler
- * @ci: UDC device
- *
- * This function resets USB engine after a bus reset occurred
- */
+ 
+ 
 static void isr_reset_handler(struct ci_hdrc *ci)
 __releases(ci->lock)
 __acquires(ci->lock)
@@ -900,13 +747,7 @@ done:
 		dev_err(ci->dev, "error: %i\n", retval);
 }
 
-/**
- * isr_get_status_complete: get_status request complete function
- * @ep:  endpoint
- * @req: request handled
- *
- * Caller must release lock
- */
+ 
 static void isr_get_status_complete(struct usb_ep *ep, struct usb_request *req)
 {
 	if (ep == NULL || req == NULL)
@@ -916,15 +757,7 @@ static void isr_get_status_complete(struct usb_ep *ep, struct usb_request *req)
 	usb_ep_free_request(ep, req);
 }
 
-/**
- * _ep_queue: queues (submits) an I/O request to an endpoint
- * @ep:        endpoint
- * @req:       request
- * @gfp_flags: GFP flags (not used)
- *
- * Caller must hold lock
- * This function returns an error code
- */
+ 
 static int _ep_queue(struct usb_ep *ep, struct usb_request *req,
 		    gfp_t __maybe_unused gfp_flags)
 {
@@ -953,13 +786,13 @@ static int _ep_queue(struct usb_ep *ep, struct usb_request *req,
 		return -EMSGSIZE;
 	}
 
-	/* first nuke then test link, e.g. previous status has not sent */
+	 
 	if (!list_empty(&hwreq->queue)) {
 		dev_err(hwep->ci->dev, "request already in queue\n");
 		return -EBUSY;
 	}
 
-	/* push request */
+	 
 	hwreq->req.status = -EINPROGRESS;
 	hwreq->req.actual = 0;
 
@@ -973,13 +806,7 @@ static int _ep_queue(struct usb_ep *ep, struct usb_request *req,
 	return retval;
 }
 
-/**
- * isr_get_status_response: get_status request response
- * @ci: ci struct
- * @setup: setup request packet
- *
- * This function returns an error code
- */
+ 
 static int isr_get_status_response(struct ci_hdrc *ci,
 				   struct usb_ctrlrequest *setup)
 __releases(hwep->lock)
@@ -1017,7 +844,7 @@ __acquires(hwep->lock)
 		num =  le16_to_cpu(setup->wIndex) & USB_ENDPOINT_NUMBER_MASK;
 		*(u16 *)req->buf = hw_ep_get_halt(ci, num, dir);
 	}
-	/* else do nothing; reserved for future use */
+	 
 
 	retval = _ep_queue(&hwep->ep, req, gfp_flags);
 	if (retval)
@@ -1034,14 +861,7 @@ __acquires(hwep->lock)
 	return retval;
 }
 
-/**
- * isr_setup_status_complete: setup_status request complete function
- * @ep:  endpoint
- * @req: request handled
- *
- * Caller must release lock. Put the port in test mode if test mode
- * feature is selected.
- */
+ 
 static void
 isr_setup_status_complete(struct usb_ep *ep, struct usb_request *req)
 {
@@ -1064,22 +884,12 @@ isr_setup_status_complete(struct usb_ep *ep, struct usb_request *req)
 	spin_unlock_irqrestore(&ci->lock, flags);
 }
 
-/**
- * isr_setup_status_phase: queues the status phase of a setup transation
- * @ci: ci struct
- *
- * This function returns an error code
- */
+ 
 static int isr_setup_status_phase(struct ci_hdrc *ci)
 {
 	struct ci_hw_ep *hwep;
 
-	/*
-	 * Unexpected USB controller behavior, caused by bad signal integrity
-	 * or ground reference problems, can lead to isr_setup_status_phase
-	 * being called with ci->status equal to NULL.
-	 * If this situation occurs, you should review your USB hardware design.
-	 */
+	 
 	if (WARN_ON_ONCE(!ci->status))
 		return -EPIPE;
 
@@ -1090,13 +900,7 @@ static int isr_setup_status_phase(struct ci_hdrc *ci)
 	return _ep_queue(&hwep->ep, ci->status, GFP_ATOMIC);
 }
 
-/**
- * isr_tr_complete_low: transaction complete low level handler
- * @hwep: endpoint
- *
- * This function returns an error code
- * Caller must hold lock
- */
+ 
 static int isr_tr_complete_low(struct ci_hw_ep *hwep)
 __releases(hwep->lock)
 __acquires(hwep->lock)
@@ -1134,12 +938,7 @@ static int otg_a_alt_hnp_support(struct ci_hdrc *ci)
 	return isr_setup_status_phase(ci);
 }
 
-/**
- * isr_setup_packet_handler: setup packet handler
- * @ci: UDC descriptor
- *
- * This function handles setup packet 
- */
+ 
 static void isr_setup_packet_handler(struct ci_hdrc *ci)
 __releases(ci->lock)
 __acquires(ci->lock)
@@ -1149,14 +948,11 @@ __acquires(ci->lock)
 	int type, num, dir, err = -EINVAL;
 	u8 tmode = 0;
 
-	/*
-	 * Flush data and handshake transactions of previous
-	 * setup packet.
-	 */
+	 
 	_ep_nuke(ci->ep0out);
 	_ep_nuke(ci->ep0in);
 
-	/* read_setup_packet */
+	 
 	do {
 		hw_test_and_set_setup_guard(ci);
 		memcpy(&req, &hwep->qh.ptr->setup, sizeof(req));
@@ -1287,7 +1083,7 @@ __acquires(ci->lock)
 		break;
 	default:
 delegate:
-		if (req.wLength == 0)   /* no data phase */
+		if (req.wLength == 0)    
 			ci->ep0_dir = TX;
 
 		spin_unlock(&ci->lock);
@@ -1304,12 +1100,7 @@ delegate:
 	}
 }
 
-/**
- * isr_tr_complete_handler: transaction complete interrupt handler
- * @ci: UDC descriptor
- *
- * This function handles traffic events
- */
+ 
 static void isr_tr_complete_handler(struct ci_hdrc *ci)
 __releases(ci->lock)
 __acquires(ci->lock)
@@ -1321,12 +1112,12 @@ __acquires(ci->lock)
 		struct ci_hw_ep *hwep  = &ci->ci_hw_ep[i];
 
 		if (hwep->ep.desc == NULL)
-			continue;   /* not configured */
+			continue;    
 
 		if (hw_test_and_clear_complete(ci, i)) {
 			err = isr_tr_complete_low(hwep);
 			if (hwep->type == USB_ENDPOINT_XFER_CONTROL) {
-				if (err > 0)   /* needs status phase */
+				if (err > 0)    
 					err = isr_setup_status_phase(ci);
 				if (err < 0) {
 					spin_unlock(&ci->lock);
@@ -1338,21 +1129,15 @@ __acquires(ci->lock)
 			}
 		}
 
-		/* Only handle setup packet below */
+		 
 		if (i == 0 &&
 			hw_test_and_clear(ci, OP_ENDPTSETUPSTAT, BIT(0)))
 			isr_setup_packet_handler(ci);
 	}
 }
 
-/******************************************************************************
- * ENDPT block
- *****************************************************************************/
-/*
- * ep_enable: configure endpoint, making it usable
- *
- * Check usb_ep_enable() at "usb_gadget.h" for details
- */
+ 
+ 
 static int ep_enable(struct usb_ep *ep,
 		     const struct usb_endpoint_descriptor *desc)
 {
@@ -1366,7 +1151,7 @@ static int ep_enable(struct usb_ep *ep,
 
 	spin_lock_irqsave(hwep->lock, flags);
 
-	/* only internal SW should enable ctrl endpts */
+	 
 
 	if (!list_empty(&hwep->qh.queue)) {
 		dev_warn(hwep->ci->dev, "enabling a non-empty endpoint!\n");
@@ -1388,26 +1173,20 @@ static int ep_enable(struct usb_ep *ep,
 
 	cap |= QH_ZLT;
 	cap |= (hwep->ep.maxpacket << __ffs(QH_MAX_PKT)) & QH_MAX_PKT;
-	/*
-	 * For ISO-TX, we set mult at QH as the largest value, and use
-	 * MultO at TD as real mult value.
-	 */
+	 
 	if (hwep->type == USB_ENDPOINT_XFER_ISOC && hwep->dir == TX)
 		cap |= 3 << __ffs(QH_MULT);
 
 	hwep->qh.ptr->cap = cpu_to_le32(cap);
 
-	hwep->qh.ptr->td.next |= cpu_to_le32(TD_TERMINATE);   /* needed? */
+	hwep->qh.ptr->td.next |= cpu_to_le32(TD_TERMINATE);    
 
 	if (hwep->num != 0 && hwep->type == USB_ENDPOINT_XFER_CONTROL) {
 		dev_err(hwep->ci->dev, "Set control xfer at non-ep0\n");
 		retval = -EINVAL;
 	}
 
-	/*
-	 * Enable endpoints in the HW other than ep0 as ep0
-	 * is always enabled
-	 */
+	 
 	if (hwep->num)
 		retval |= hw_ep_enable(hwep->ci, hwep->num, hwep->dir,
 				       hwep->type);
@@ -1416,11 +1195,7 @@ static int ep_enable(struct usb_ep *ep,
 	return retval;
 }
 
-/*
- * ep_disable: endpoint is no longer usable
- *
- * Check usb_ep_disable() at "usb_gadget.h" for details
- */
+ 
 static int ep_disable(struct usb_ep *ep)
 {
 	struct ci_hw_ep *hwep = container_of(ep, struct ci_hw_ep, ep);
@@ -1438,7 +1213,7 @@ static int ep_disable(struct usb_ep *ep)
 		return 0;
 	}
 
-	/* only internal SW should disable ctrl endpts */
+	 
 
 	direction = hwep->dir;
 	do {
@@ -1456,11 +1231,7 @@ static int ep_disable(struct usb_ep *ep)
 	return retval;
 }
 
-/*
- * ep_alloc_request: allocate a request object to use with this endpoint
- *
- * Check usb_ep_alloc_request() at "usb_gadget.h" for details
- */
+ 
 static struct usb_request *ep_alloc_request(struct usb_ep *ep, gfp_t gfp_flags)
 {
 	struct ci_hw_req *hwreq;
@@ -1477,11 +1248,7 @@ static struct usb_request *ep_alloc_request(struct usb_ep *ep, gfp_t gfp_flags)
 	return (hwreq == NULL) ? NULL : &hwreq->req;
 }
 
-/*
- * ep_free_request: frees a request object
- *
- * Check usb_ep_free_request() at "usb_gadget.h" for details
- */
+ 
 static void ep_free_request(struct usb_ep *ep, struct usb_request *req)
 {
 	struct ci_hw_ep  *hwep  = container_of(ep,  struct ci_hw_ep, ep);
@@ -1510,11 +1277,7 @@ static void ep_free_request(struct usb_ep *ep, struct usb_request *req)
 	spin_unlock_irqrestore(hwep->lock, flags);
 }
 
-/*
- * ep_queue: queues (submits) an I/O request to an endpoint
- *
- * Check usb_ep_queue()* at usb_gadget.h" for details
- */
+ 
 static int ep_queue(struct usb_ep *ep, struct usb_request *req,
 		    gfp_t __maybe_unused gfp_flags)
 {
@@ -1535,11 +1298,7 @@ static int ep_queue(struct usb_ep *ep, struct usb_request *req,
 	return retval;
 }
 
-/*
- * ep_dequeue: dequeues (cancels, unlinks) an I/O request from an endpoint
- *
- * Check usb_ep_dequeue() at "usb_gadget.h" for details
- */
+ 
 static int ep_dequeue(struct usb_ep *ep, struct usb_request *req)
 {
 	struct ci_hw_ep  *hwep  = container_of(ep,  struct ci_hw_ep, ep);
@@ -1562,7 +1321,7 @@ static int ep_dequeue(struct usb_ep *ep, struct usb_request *req)
 		kfree(node);
 	}
 
-	/* pop request */
+	 
 	list_del_init(&hwreq->queue);
 
 	usb_gadget_unmap_request(&hwep->ci->gadget, req, hwep->dir);
@@ -1579,21 +1338,13 @@ static int ep_dequeue(struct usb_ep *ep, struct usb_request *req)
 	return 0;
 }
 
-/*
- * ep_set_halt: sets the endpoint halt feature
- *
- * Check usb_ep_set_halt() at "usb_gadget.h" for details
- */
+ 
 static int ep_set_halt(struct usb_ep *ep, int value)
 {
 	return _ep_set_halt(ep, value, true);
 }
 
-/*
- * ep_set_wedge: sets the halt feature and ignores clear requests
- *
- * Check usb_ep_set_wedge() at "usb_gadget.h" for details
- */
+ 
 static int ep_set_wedge(struct usb_ep *ep)
 {
 	struct ci_hw_ep *hwep = container_of(ep, struct ci_hw_ep, ep);
@@ -1609,11 +1360,7 @@ static int ep_set_wedge(struct usb_ep *ep)
 	return usb_ep_set_halt(ep);
 }
 
-/*
- * ep_fifo_flush: flushes contents of a fifo
- *
- * Check usb_ep_fifo_flush() at "usb_gadget.h" for details
- */
+ 
 static void ep_fifo_flush(struct usb_ep *ep)
 {
 	struct ci_hw_ep *hwep = container_of(ep, struct ci_hw_ep, ep);
@@ -1635,10 +1382,7 @@ static void ep_fifo_flush(struct usb_ep *ep)
 	spin_unlock_irqrestore(hwep->lock, flags);
 }
 
-/*
- * Endpoint-specific part of the API to the USB controller hardware
- * Check "usb_gadget.h" for details
- */
+ 
 static const struct usb_ep_ops usb_ep_ops = {
 	.enable	       = ep_enable,
 	.disable       = ep_disable,
@@ -1651,9 +1395,7 @@ static const struct usb_ep_ops usb_ep_ops = {
 	.fifo_flush    = ep_fifo_flush,
 };
 
-/******************************************************************************
- * GADGET block
- *****************************************************************************/
+ 
 
 static int ci_udc_get_frame(struct usb_gadget *_gadget)
 {
@@ -1667,9 +1409,7 @@ static int ci_udc_get_frame(struct usb_gadget *_gadget)
 	return ret >> 3;
 }
 
-/*
- * ci_hdrc_gadget_connect: caller makes sure gadget driver is binded
- */
+ 
 static void ci_hdrc_gadget_connect(struct usb_gadget *_gadget, int is_active)
 {
 	struct ci_hdrc *ci = container_of(_gadget, struct ci_hdrc, gadget);
@@ -1778,17 +1518,12 @@ static int ci_udc_selfpowered(struct usb_gadget *_gadget, int is_on)
 	return 0;
 }
 
-/* Change Data+ pullup status
- * this func is used by usb_gadget_connect/disconnect
- */
+ 
 static int ci_udc_pullup(struct usb_gadget *_gadget, int is_on)
 {
 	struct ci_hdrc *ci = container_of(_gadget, struct ci_hdrc, gadget);
 
-	/*
-	 * Data+ pullup controlled by OTG state machine in OTG fsm mode;
-	 * and don't touch Data+ in host mode for dual role config.
-	 */
+	 
 	if (ci_otg_is_fsm_mode(ci) || ci->role == CI_ROLE_HOST)
 		return 0;
 
@@ -1806,7 +1541,7 @@ static int ci_udc_start(struct usb_gadget *gadget,
 			 struct usb_gadget_driver *driver);
 static int ci_udc_stop(struct usb_gadget *gadget);
 
-/* Match ISOC IN from the highest endpoint */
+ 
 static struct usb_ep *ci_udc_match_ep(struct usb_gadget *gadget,
 			      struct usb_endpoint_descriptor *desc,
 			      struct usb_ss_ep_comp_descriptor *comp_desc)
@@ -1824,11 +1559,7 @@ static struct usb_ep *ci_udc_match_ep(struct usb_gadget *gadget,
 	return NULL;
 }
 
-/*
- * Device operations part of the API to the USB controller hardware,
- * which don't involve endpoints (or i/o)
- * Check  "usb_gadget.h" for details
- */
+ 
 static const struct usb_gadget_ops usb_gadget_ops = {
 	.get_frame	= ci_udc_get_frame,
 	.vbus_session	= ci_udc_vbus_session,
@@ -1873,11 +1604,7 @@ static int init_eps(struct ci_hdrc *ci)
 			else
 				hwep->ep.caps.dir_out = true;
 
-			/*
-			 * for ep0: maxP defined in desc, for other
-			 * eps, maxP is set by epautoconfig() called
-			 * by gadget layer
-			 */
+			 
 			usb_ep_set_maxpacket_limit(&hwep->ep, (unsigned short)~0);
 
 			INIT_LIST_HEAD(&hwep->qh.queue);
@@ -1886,10 +1613,7 @@ static int init_eps(struct ci_hdrc *ci)
 			if (hwep->qh.ptr == NULL)
 				retval = -ENOMEM;
 
-			/*
-			 * set up shorthands for ep0 out and in endpoints,
-			 * don't add to gadget's ep_list
-			 */
+			 
 			if (i == 0) {
 				if (j == RX)
 					ci->ep0out = hwep;
@@ -1919,13 +1643,7 @@ static void destroy_eps(struct ci_hdrc *ci)
 	}
 }
 
-/**
- * ci_udc_start: register a gadget driver
- * @gadget: our gadget
- * @driver: the driver being registered
- *
- * Interrupts are enabled here.
- */
+ 
 static int ci_udc_start(struct usb_gadget *gadget,
 			 struct usb_gadget_driver *driver)
 {
@@ -1947,7 +1665,7 @@ static int ci_udc_start(struct usb_gadget *gadget,
 
 	ci->driver = driver;
 
-	/* Start otg fsm for B-device */
+	 
 	if (ci_otg_is_fsm_mode(ci) && ci->fsm.id) {
 		ci_hdrc_otg_fsm_start(ci);
 		return retval;
@@ -1977,9 +1695,7 @@ static void ci_udc_stop_for_otg_fsm(struct ci_hdrc *ci)
 	mutex_unlock(&ci->fsm.lock);
 }
 
-/*
- * ci_udc_stop: unregister a gadget driver
- */
+ 
 static int ci_udc_stop(struct usb_gadget *gadget)
 {
 	struct ci_hdrc *ci = container_of(gadget, struct ci_hdrc, gadget);
@@ -2005,15 +1721,8 @@ static int ci_udc_stop(struct usb_gadget *gadget)
 	return 0;
 }
 
-/******************************************************************************
- * BUS block
- *****************************************************************************/
-/*
- * udc_irq: ci interrupt handler
- *
- * This function returns IRQ_HANDLED if the IRQ has been handled
- * It locks access to registers
- */
+ 
+ 
 static irqreturn_t udc_irq(struct ci_hdrc *ci)
 {
 	irqreturn_t retval;
@@ -2034,7 +1743,7 @@ static irqreturn_t udc_irq(struct ci_hdrc *ci)
 	intr = hw_test_and_clear_intr_active(ci);
 
 	if (intr) {
-		/* order defines priority - do NOT change it */
+		 
 		if (USBi_URI & intr)
 			isr_reset_handler(ci);
 
@@ -2080,10 +1789,7 @@ static irqreturn_t udc_irq(struct ci_hdrc *ci)
 	return retval;
 }
 
-/**
- * udc_start: initialize gadget role
- * @ci: chipidea controller
- */
+ 
 static int udc_start(struct ci_hdrc *ci)
 {
 	struct device *dev = ci->dev;
@@ -2107,7 +1813,7 @@ static int udc_start(struct ci_hdrc *ci)
 
 	INIT_LIST_HEAD(&ci->gadget.ep_list);
 
-	/* alloc resources */
+	 
 	ci->qh_pool = dma_pool_create("ci_hw_qh", dev->parent,
 				       sizeof(struct ci_hw_qh),
 				       64, CI_HDRC_PAGE_SIZE);
@@ -2143,11 +1849,7 @@ free_qh_pool:
 	return retval;
 }
 
-/*
- * ci_hdrc_gadget_destroy: parent remove must call this to remove UDC
- *
- * No interrupts active, the IRQ has been released
- */
+ 
 void ci_hdrc_gadget_destroy(struct ci_hdrc *ci)
 {
 	if (!ci->roles[CI_ROLE_GADGET])
@@ -2168,7 +1870,7 @@ static int udc_id_switch_for_device(struct ci_hdrc *ci)
 				     ci->platdata->pins_device);
 
 	if (ci->is_otg)
-		/* Clear and enable BSV irq */
+		 
 		hw_write_otgsc(ci, OTGSC_BSVIS | OTGSC_BSVIE,
 					OTGSC_BSVIS | OTGSC_BSVIE);
 
@@ -2177,10 +1879,7 @@ static int udc_id_switch_for_device(struct ci_hdrc *ci)
 
 static void udc_id_switch_for_host(struct ci_hdrc *ci)
 {
-	/*
-	 * host doesn't care B_SESSION_VALID event
-	 * so clear and disable BSV irq
-	 */
+	 
 	if (ci->is_otg)
 		hw_write_otgsc(ci, OTGSC_BSVIE | OTGSC_BSVIS, OTGSC_BSVIS);
 
@@ -2194,11 +1893,7 @@ static void udc_id_switch_for_host(struct ci_hdrc *ci)
 #ifdef CONFIG_PM_SLEEP
 static void udc_suspend(struct ci_hdrc *ci)
 {
-	/*
-	 * Set OP_ENDPTLISTADDR to be non-zero for
-	 * checking if controller resume from power lost
-	 * in non-host mode.
-	 */
+	 
 	if (hw_read(ci, OP_ENDPTLISTADDR, ~0) == 0)
 		hw_write(ci, OP_ENDPTLISTADDR, ~0, ~0);
 }
@@ -2213,18 +1908,13 @@ static void udc_resume(struct ci_hdrc *ci, bool power_lost)
 			usb_gadget_vbus_disconnect(&ci->gadget);
 	}
 
-	/* Restore value 0 if it was set for power lost check */
+	 
 	if (hw_read(ci, OP_ENDPTLISTADDR, ~0) == 0xFFFFFFFF)
 		hw_write(ci, OP_ENDPTLISTADDR, ~0, 0);
 }
 #endif
 
-/**
- * ci_hdrc_gadget_init - initialize device related bits
- * @ci: the controller
- *
- * This function initializes the gadget, if the device is "device capable".
- */
+ 
 int ci_hdrc_gadget_init(struct ci_hdrc *ci)
 {
 	struct ci_role_driver *rdrv;

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: LGPL-2.1
-/*
- * trace/beauty/prctl.c
- *
- *  Copyright (C) 2017, Red Hat Inc, Arnaldo Carvalho de Melo <acme@redhat.com>
- */
+
+ 
 
 #include "trace/beauty/beauty.h"
 #include <linux/kernel.h>
@@ -30,10 +26,7 @@ size_t syscall_arg__scnprintf_prctl_arg2(char *bf, size_t size, struct syscall_a
 
 	if (option == PR_SET_MM)
 		return prctl__scnprintf_set_mm(arg->val, bf, size, arg->show_string_prefix);
-	/*
-	 * We still don't grab the contents of pointers on entry or exit,
-	 * so just print them as hex numbers
-	 */
+	 
 	if (option == PR_SET_NAME)
 		return syscall_arg__scnprintf_hex(bf, size, arg);
 

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * NETLINK      Policy advertisement to userspace
- *
- * 		Authors:	Johannes Berg <johannes@sipsolutions.net>
- *
- * Copyright 2019 Intel Corporation
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/errno.h>
@@ -63,21 +57,7 @@ static int add_policy(struct netlink_policy_dump_state **statep,
 	return 0;
 }
 
-/**
- * netlink_policy_dump_get_policy_idx - retrieve policy index
- * @state: the policy dump state
- * @policy: the policy to find
- * @maxtype: the policy's maxattr
- *
- * Returns: the index of the given policy in the dump state
- *
- * Call this to find a policy index when you've added multiple and e.g.
- * need to tell userspace which command has which policy (by index).
- *
- * Note: this will WARN and return 0 if the policy isn't found, which
- *	 means it wasn't added in the first place, which would be an
- *	 internal consistency bug.
- */
+ 
 int netlink_policy_dump_get_policy_idx(struct netlink_policy_dump_state *state,
 				       const struct nla_policy *policy,
 				       unsigned int maxtype)
@@ -110,19 +90,7 @@ static struct netlink_policy_dump_state *alloc_state(void)
 	return state;
 }
 
-/**
- * netlink_policy_dump_add_policy - add a policy to the dump
- * @pstate: state to add to, may be reallocated, must be %NULL the first time
- * @policy: the new policy to add to the dump
- * @maxtype: the new policy's max attr type
- *
- * Returns: 0 on success, a negative error code otherwise.
- *
- * Call this to allocate a policy dump state, and to add policies to it. This
- * should be called from the dump start() callback.
- *
- * Note: on failures, any previously allocated state is freed.
- */
+ 
 int netlink_policy_dump_add_policy(struct netlink_policy_dump_state **pstate,
 				   const struct nla_policy *policy,
 				   unsigned int maxtype)
@@ -137,10 +105,7 @@ int netlink_policy_dump_add_policy(struct netlink_policy_dump_state **pstate,
 			return PTR_ERR(state);
 	}
 
-	/*
-	 * walk the policies and nested ones first, and build
-	 * a linear list of them.
-	 */
+	 
 
 	err = add_policy(&state, policy, maxtype);
 	if (err)
@@ -176,9 +141,7 @@ int netlink_policy_dump_add_policy(struct netlink_policy_dump_state **pstate,
 	return 0;
 
 err_try_undo:
-	/* Try to preserve reasonable unwind semantics - if we're starting from
-	 * scratch clean up fully, otherwise record what we got and caller will.
-	 */
+	 
 	if (!*pstate)
 		netlink_policy_dump_free(state);
 	else
@@ -193,14 +156,7 @@ netlink_policy_dump_finished(struct netlink_policy_dump_state *state)
 	       !state->policies[state->policy_idx].policy;
 }
 
-/**
- * netlink_policy_dump_loop - dumping loop indicator
- * @state: the policy dump state
- *
- * Returns: %true if the dump continues, %false otherwise
- *
- * Note: this frees the dump state when finishing
- */
+ 
 bool netlink_policy_dump_loop(struct netlink_policy_dump_state *state)
 {
 	return !netlink_policy_dump_finished(state);
@@ -208,17 +164,17 @@ bool netlink_policy_dump_loop(struct netlink_policy_dump_state *state)
 
 int netlink_policy_dump_attr_size_estimate(const struct nla_policy *pt)
 {
-	/* nested + type */
+	 
 	int common = 2 * nla_attr_size(sizeof(u32));
 
 	switch (pt->type) {
 	case NLA_UNSPEC:
 	case NLA_REJECT:
-		/* these actually don't need any space */
+		 
 		return 0;
 	case NLA_NESTED:
 	case NLA_NESTED_ARRAY:
-		/* common, policy idx, policy maxattr */
+		 
 		return common + 2 * nla_attr_size(sizeof(u32));
 	case NLA_U8:
 	case NLA_U16:
@@ -229,7 +185,7 @@ int netlink_policy_dump_attr_size_estimate(const struct nla_policy *pt)
 	case NLA_S16:
 	case NLA_S32:
 	case NLA_S64:
-		/* maximum is common, u64 min/max with padding */
+		 
 		return common +
 		       2 * (nla_attr_size(0) + nla_attr_size(sizeof(u64)));
 	case NLA_BITFIELD32:
@@ -237,13 +193,13 @@ int netlink_policy_dump_attr_size_estimate(const struct nla_policy *pt)
 	case NLA_STRING:
 	case NLA_NUL_STRING:
 	case NLA_BINARY:
-		/* maximum is common, u32 min-length/max-length */
+		 
 		return common + 2 * nla_attr_size(sizeof(u32));
 	case NLA_FLAG:
 		return common;
 	}
 
-	/* this should then cause a warning later */
+	 
 	return 0;
 }
 
@@ -265,7 +221,7 @@ __netlink_policy_dump_write_attr(struct netlink_policy_dump_state *state,
 	default:
 	case NLA_UNSPEC:
 	case NLA_REJECT:
-		/* skip - use NLA_MIN_LEN to advertise such */
+		 
 		nla_nest_cancel(skb, attr);
 		return -ENODATA;
 	case NLA_NESTED:
@@ -394,16 +350,7 @@ nla_put_failure:
 	return -ENOBUFS;
 }
 
-/**
- * netlink_policy_dump_write_attr - write a given attribute policy
- * @skb: the message skb to write to
- * @pt: the attribute's policy
- * @nestattr: the nested attribute ID to use
- *
- * Returns: 0 on success, an error code otherwise; -%ENODATA is
- *	    special, indicating that there's no policy data and
- *	    the attribute is generally rejected.
- */
+ 
 int netlink_policy_dump_write_attr(struct sk_buff *skb,
 				   const struct nla_policy *pt,
 				   int nestattr)
@@ -411,13 +358,7 @@ int netlink_policy_dump_write_attr(struct sk_buff *skb,
 	return __netlink_policy_dump_write_attr(NULL, skb, pt, nestattr);
 }
 
-/**
- * netlink_policy_dump_write - write current policy dump attributes
- * @skb: the message skb to write to
- * @state: the policy dump state
- *
- * Returns: 0 on success, an error code otherwise
- */
+ 
 int netlink_policy_dump_write(struct sk_buff *skb,
 			      struct netlink_policy_dump_state *state)
 {
@@ -444,7 +385,7 @@ send_attribute:
 		goto nla_put_failure;
 	}
 
-	/* finish and move state to next attribute */
+	 
 	nla_nest_end(skb, policy);
 
 next:
@@ -467,12 +408,7 @@ nla_put_failure:
 	return -ENOBUFS;
 }
 
-/**
- * netlink_policy_dump_free - free policy dump state
- * @state: the policy dump state to free
- *
- * Call this from the done() method to ensure dump state is freed.
- */
+ 
 void netlink_policy_dump_free(struct netlink_policy_dump_state *state)
 {
 	kfree(state);

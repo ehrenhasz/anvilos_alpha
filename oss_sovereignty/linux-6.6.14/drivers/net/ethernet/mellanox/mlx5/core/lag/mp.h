@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB */
-/* Copyright (c) 2019 Mellanox Technologies. */
+ 
+ 
 
 #ifndef __MLX5_LAG_MP_H__
 #define __MLX5_LAG_MP_H__
@@ -16,7 +16,7 @@ enum mlx5_lag_port_affinity {
 struct lag_mp {
 	struct notifier_block     fib_nb;
 	struct {
-		const void        *mfi; /* used in tracking fib events */
+		const void        *mfi;  
 		u32               priority;
 		u32               dst;
 		int               dst_len;
@@ -31,12 +31,12 @@ int mlx5_lag_mp_init(struct mlx5_lag *ldev);
 void mlx5_lag_mp_cleanup(struct mlx5_lag *ldev);
 bool mlx5_lag_is_multipath(struct mlx5_core_dev *dev);
 
-#else /* CONFIG_MLX5_ESWITCH */
+#else  
 
 static inline void mlx5_lag_mp_reset(struct mlx5_lag *ldev) {};
 static inline int mlx5_lag_mp_init(struct mlx5_lag *ldev) { return 0; }
 static inline void mlx5_lag_mp_cleanup(struct mlx5_lag *ldev) {}
 static inline bool mlx5_lag_is_multipath(struct mlx5_core_dev *dev) { return false; }
 
-#endif /* CONFIG_MLX5_ESWITCH */
-#endif /* __MLX5_LAG_MP_H__ */
+#endif  
+#endif  

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (C) 2023 Loongson Technology Corporation Limited
- */
+
+ 
 
 #include <drm/drm_debugfs.h>
 
@@ -11,7 +9,7 @@
 #include "lsdc_probe.h"
 #include "lsdc_ttm.h"
 
-/* device level debugfs */
+ 
 
 static int lsdc_identify(struct seq_file *m, void *arg)
 {

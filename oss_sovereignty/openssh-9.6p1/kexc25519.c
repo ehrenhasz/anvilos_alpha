@@ -1,29 +1,5 @@
-/* $OpenBSD: kexc25519.c,v 1.17 2019/01/21 10:40:11 djm Exp $ */
-/*
- * Copyright (c) 2019 Markus Friedl.  All rights reserved.
- * Copyright (c) 2010 Damien Miller.  All rights reserved.
- * Copyright (c) 2013 Aris Adamantiadis.  All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- *
- * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
- * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
- * IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
- * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
- * NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
- * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+ 
+ 
 
 #include "includes.h"
 
@@ -65,7 +41,7 @@ kexc25519_shared_key_ext(const u_char key[CURVE25519_SIZE],
 
 	crypto_scalarmult_curve25519(shared_key, key, pub);
 
-	/* Check for all-zero shared secret */
+	 
 	explicit_bzero(zero, CURVE25519_SIZE);
 	if (timingsafe_bcmp(zero, shared_key, CURVE25519_SIZE) == 0)
 		return SSH_ERR_KEY_INVALID_EC_VALUE;
@@ -132,7 +108,7 @@ kex_c25519_enc(struct kex *kex, const struct sshbuf *client_blob,
 #ifdef DEBUG_KEXECDH
 	dump_digest("client public key 25519:", client_pub, CURVE25519_SIZE);
 #endif
-	/* allocate space for encrypted KEM key and ECDH pub key */
+	 
 	if ((server_blob = sshbuf_new()) == NULL) {
 		r = SSH_ERR_ALLOC_FAIL;
 		goto out;
@@ -140,7 +116,7 @@ kex_c25519_enc(struct kex *kex, const struct sshbuf *client_blob,
 	if ((r = sshbuf_reserve(server_blob, CURVE25519_SIZE, &server_pub)) != 0)
 		goto out;
 	kexc25519_keygen(server_key, server_pub);
-	/* allocate shared secret */
+	 
 	if ((buf = sshbuf_new()) == NULL) {
 		r = SSH_ERR_ALLOC_FAIL;
 		goto out;
@@ -180,7 +156,7 @@ kex_c25519_dec(struct kex *kex, const struct sshbuf *server_blob,
 #ifdef DEBUG_KEXECDH
 	dump_digest("server public key c25519:", server_pub, CURVE25519_SIZE);
 #endif
-	/* shared secret */
+	 
 	if ((buf = sshbuf_new()) == NULL) {
 		r = SSH_ERR_ALLOC_FAIL;
 		goto out;

@@ -1,16 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Mac80211 STA interface for ST-Ericsson CW1200 mac80211 drivers
- *
- * Copyright (c) 2010, ST-Ericsson
- * Author: Dmitry Tarnyagin <dmitry.tarnyagin@lockless.no>
- */
+ 
+ 
 
 #ifndef STA_H_INCLUDED
 #define STA_H_INCLUDED
 
-/* ******************************************************************** */
-/* mac80211 API								*/
+ 
+ 
 
 int cw1200_start(struct ieee80211_hw *dev);
 void cw1200_stop(struct ieee80211_hw *dev);
@@ -46,14 +41,14 @@ u64 cw1200_prepare_multicast(struct ieee80211_hw *hw,
 
 int cw1200_set_pm(struct cw1200_common *priv, const struct wsm_set_pm *arg);
 
-/* ******************************************************************** */
-/* WSM callbacks							*/
+ 
+ 
 
 void cw1200_join_complete_cb(struct cw1200_common *priv,
 				struct wsm_join_complete *arg);
 
-/* ******************************************************************** */
-/* WSM events								*/
+ 
+ 
 
 void cw1200_free_event_queue(struct cw1200_common *priv);
 void cw1200_event_handler(struct work_struct *work);
@@ -72,8 +67,8 @@ static inline void cw1200_cqm_bssloss_sm(struct cw1200_common *priv,
 	spin_unlock(&priv->bss_loss_lock);
 }
 
-/* ******************************************************************** */
-/* Internal API								*/
+ 
+ 
 
 int cw1200_setup_mac(struct cw1200_common *priv);
 void cw1200_join_timeout(struct work_struct *work);
@@ -91,7 +86,7 @@ int cw1200_set_uapsd_param(struct cw1200_common *priv,
 void cw1200_ba_work(struct work_struct *work);
 void cw1200_ba_timer(unsigned long arg);
 
-/* AP stuffs */
+ 
 int cw1200_set_tim(struct ieee80211_hw *dev, struct ieee80211_sta *sta,
 		   bool set);
 int cw1200_sta_add(struct ieee80211_hw *hw, struct ieee80211_vif *vif,

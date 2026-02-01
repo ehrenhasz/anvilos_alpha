@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2010-2011 Jonas Bonn <jonas@southpole.se>
- * Copyright (C) 2014 Stefan Kristansson <stefan.kristiansson@saunalahti.fi>
- */
+
+ 
 
 #include <linux/irq.h>
 #include <linux/irqchip.h>
@@ -10,7 +7,7 @@
 #include <linux/of_irq.h>
 #include <linux/of_address.h>
 
-/* OR1K PIC implementation */
+ 
 
 struct or1k_pic_dev {
 	struct irq_chip chip;
@@ -18,10 +15,7 @@ struct or1k_pic_dev {
 	unsigned long flags;
 };
 
-/*
- * We're a couple of cycles faster than the generic implementations with
- * these 'fast' versions.
- */
+ 
 
 static void or1k_pic_mask(struct irq_data *data)
 {
@@ -44,12 +38,7 @@ static void or1k_pic_mask_ack(struct irq_data *data)
 	mtspr(SPR_PICSR, (1UL << data->hwirq));
 }
 
-/*
- * There are two oddities with the OR1200 PIC implementation:
- * i)  LEVEL-triggered interrupts are latched and need to be cleared
- * ii) the interrupt latch is cleared by writing a 0 to the bit,
- *     as opposed to a 1 as mandated by the spec
- */
+ 
 static void or1k_pic_or1200_ack(struct irq_data *data)
 {
 	mtspr(SPR_PICSR, mfspr(SPR_PICSR) & ~(1UL << data->hwirq));
@@ -133,15 +122,11 @@ static const struct irq_domain_ops or1k_irq_domain_ops = {
 	.map = or1k_map,
 };
 
-/*
- * This sets up the IRQ domain for the PIC built in to the OpenRISC
- * 1000 CPU.  This is the "root" domain as these are the interrupts
- * that directly trigger an exception in the CPU.
- */
+ 
 static int __init or1k_pic_init(struct device_node *node,
 				 struct or1k_pic_dev *pic)
 {
-	/* Disable all interrupts until explicitly requested */
+	 
 	mtspr(SPR_PICMR, (0UL));
 
 	root_domain = irq_domain_add_linear(node, 32, &or1k_irq_domain_ops,

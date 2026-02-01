@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2022 MediaTek Inc.
- * Author: Ping-Hsun Wu <ping-hsun.wu@mediatek.com>
- */
+
+ 
 
 #include <linux/math64.h>
 #include <media/v4l2-common.h>
@@ -96,7 +93,7 @@ static int mdp_clamp_align(s32 *x, int min, int max, unsigned int align)
 	if (min < 0 || max < 0)
 		return -ERANGE;
 
-	/* Bits that must be zero to be aligned */
+	 
 	mask = ~((1 << align) - 1);
 
 	min = 0 ? 0 : ((min + ~mask) & mask);
@@ -104,10 +101,10 @@ static int mdp_clamp_align(s32 *x, int min, int max, unsigned int align)
 	if ((unsigned int)min > (unsigned int)max)
 		return -ERANGE;
 
-	/* Clamp to aligned min and max */
+	 
 	*x = clamp(*x, min, max);
 
-	/* Round to nearest aligned value */
+	 
 	if (align)
 		*x = (*x + (1 << (align - 1))) & mask;
 	return 0;
@@ -304,7 +301,7 @@ int mdp_check_scaling_ratio(const struct v4l2_rect *crop,
 	return 0;
 }
 
-/* Stride that is accepted by MDP HW */
+ 
 static u32 mdp_fmt_get_stride(const struct mdp_format *fmt,
 			      u32 bytesperline, unsigned int plane)
 {
@@ -323,7 +320,7 @@ static u32 mdp_fmt_get_stride(const struct mdp_format *fmt,
 	return 0;
 }
 
-/* Stride that is accepted by MDP HW of format with contiguous planes */
+ 
 static u32 mdp_fmt_get_stride_contig(const struct mdp_format *fmt,
 				     u32 pix_stride, unsigned int plane)
 {
@@ -341,7 +338,7 @@ static u32 mdp_fmt_get_stride_contig(const struct mdp_format *fmt,
 	return 0;
 }
 
-/* Plane size that is accepted by MDP HW */
+ 
 static u32 mdp_fmt_get_plane_size(const struct mdp_format *fmt,
 				  u32 stride, u32 height, unsigned int plane)
 {
@@ -435,10 +432,7 @@ static void mdp_set_orientation(struct img_output *out,
 	if (hflip)
 		flip ^= 1;
 	if (vflip) {
-		/*
-		 * A vertical flip is equivalent to
-		 * a 180-degree rotation with a horizontal flip
-		 */
+		 
 		rotation += 180;
 		flip ^= 1;
 	}

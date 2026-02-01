@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * i.MX Pixel Pipeline (PXP) mem-to-mem scaler/CSC/rotator driver
- *
- * Copyright (c) 2018 Pengutronix, Philipp Zabel
- *
- * based on vim2m
- *
- * Copyright (c) 2009-2010 Samsung Electronics Co., Ltd.
- * Pawel Osciak, <pawel@osciak.com>
- * Marek Szyprowski, <m.szyprowski@samsung.com>
- */
+
+ 
 #include <linux/bitfield.h>
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -42,16 +32,16 @@ MODULE_PARM_DESC(debug, "activates debug info");
 #define MIN_H 8
 #define MAX_W 4096
 #define MAX_H 4096
-#define ALIGN_W 3 /* 8x8 pixel blocks */
+#define ALIGN_W 3  
 #define ALIGN_H 3
 
-/* Flags that indicate a format can be used for capture/output */
+ 
 #define MEM2MEM_CAPTURE	(1 << 0)
 #define MEM2MEM_OUTPUT	(1 << 1)
 
 #define MEM2MEM_NAME		"pxp"
 
-/* Flags that indicate processing mode */
+ 
 #define MEM2MEM_HFLIP	(1 << 0)
 #define MEM2MEM_VFLIP	(1 << 1)
 
@@ -66,7 +56,7 @@ MODULE_PARM_DESC(debug, "activates debug info");
 struct pxp_fmt {
 	u32	fourcc;
 	int	depth;
-	/* Types the format can be used for */
+	 
 	u32	types;
 };
 
@@ -74,12 +64,12 @@ static struct pxp_fmt formats[] = {
 	{
 		.fourcc	= V4L2_PIX_FMT_XBGR32,
 		.depth	= 32,
-		/* Both capture and output format */
+		 
 		.types	= MEM2MEM_CAPTURE | MEM2MEM_OUTPUT,
 	}, {
 		.fourcc	= V4L2_PIX_FMT_ABGR32,
 		.depth	= 32,
-		/* Capture-only format */
+		 
 		.types	= MEM2MEM_CAPTURE,
 	}, {
 		.fourcc	= V4L2_PIX_FMT_BGR24,
@@ -112,7 +102,7 @@ static struct pxp_fmt formats[] = {
 	}, {
 		.fourcc = V4L2_PIX_FMT_YUYV,
 		.depth	= 16,
-		/* Output-only format */
+		 
 		.types	= MEM2MEM_OUTPUT,
 	}, {
 		.fourcc = V4L2_PIX_FMT_VYUY,
@@ -159,7 +149,7 @@ static struct pxp_fmt formats[] = {
 
 #define NUM_FORMATS ARRAY_SIZE(formats)
 
-/* Per-queue, driver-specific private data */
+ 
 struct pxp_q_data {
 	unsigned int		width;
 	unsigned int		height;
@@ -231,10 +221,10 @@ struct pxp_ctx {
 
 	struct v4l2_ctrl_handler hdl;
 
-	/* Abort requested by m2m */
+	 
 	int			aborting;
 
-	/* Processing mode */
+	 
 	int			mode;
 	u8			alpha_component;
 	u8			rotation;
@@ -242,7 +232,7 @@ struct pxp_ctx {
 	enum v4l2_colorspace	colorspace;
 	enum v4l2_xfer_func	xfer_func;
 
-	/* Source and destination queue data */
+	 
 	struct pxp_q_data   q_data[2];
 };
 
@@ -306,7 +296,7 @@ static u32 pxp_v4l2_pix_fmt_to_out_format(u32 v4l2_pix_fmt)
 	case V4L2_PIX_FMT_XBGR32:   return BV_PXP_OUT_CTRL_FORMAT__RGB888;
 	case V4L2_PIX_FMT_ABGR32:   return BV_PXP_OUT_CTRL_FORMAT__ARGB8888;
 	case V4L2_PIX_FMT_BGR24:    return BV_PXP_OUT_CTRL_FORMAT__RGB888P;
-	/* Missing V4L2 pixel formats for ARGB1555 and ARGB4444 */
+	 
 	case V4L2_PIX_FMT_RGB555:   return BV_PXP_OUT_CTRL_FORMAT__RGB555;
 	case V4L2_PIX_FMT_RGB444:   return BV_PXP_OUT_CTRL_FORMAT__RGB444;
 	case V4L2_PIX_FMT_RGB565:   return BV_PXP_OUT_CTRL_FORMAT__RGB565;
@@ -355,149 +345,93 @@ static void pxp_setup_csc(struct pxp_ctx *ctx)
 
 	if (pxp_v4l2_pix_fmt_is_yuv(ctx->q_data[V4L2_M2M_SRC].fmt->fourcc) &&
 	    !pxp_v4l2_pix_fmt_is_yuv(ctx->q_data[V4L2_M2M_DST].fmt->fourcc)) {
-		/*
-		 * CSC1 YUV/YCbCr to RGB conversion is implemented as follows:
-		 *
-		 * |R|   |C0 0  C1|   |Y  + Yoffset |
-		 * |G| = |C0 C3 C2| * |Cb + UVoffset|
-		 * |B|   |C0 C4 0 |   |Cr + UVoffset|
-		 *
-		 * Results are clamped to 0..255.
-		 *
-		 * BT.601 limited range:
-		 *
-		 * |R|   |1.1644  0.0000  1.5960|   |Y  - 16 |
-		 * |G| = |1.1644 -0.3917 -0.8129| * |Cb - 128|
-		 * |B|   |1.1644  2.0172  0.0000|   |Cr - 128|
-		 */
+		 
 		static const u32 csc1_coef_bt601_lim[3] = {
 			BM_PXP_CSC1_COEF0_YCBCR_MODE |
-			BF_PXP_CSC1_COEF0_C0(0x12a) |	/*  1.1641 (-0.03 %) */
+			BF_PXP_CSC1_COEF0_C0(0x12a) |	 
 			BF_PXP_CSC1_COEF0_UV_OFFSET(-128) |
 			BF_PXP_CSC1_COEF0_Y_OFFSET(-16),
-			BF_PXP_CSC1_COEF1_C1(0x198) |	/*  1.5938 (-0.23 %) */
-			BF_PXP_CSC1_COEF1_C4(0x204),	/*  2.0156 (-0.16 %) */
-			BF_PXP_CSC1_COEF2_C2(0x730) |	/* -0.8125 (+0.04 %) */
-			BF_PXP_CSC1_COEF2_C3(0x79c),	/* -0.3906 (+0.11 %) */
+			BF_PXP_CSC1_COEF1_C1(0x198) |	 
+			BF_PXP_CSC1_COEF1_C4(0x204),	 
+			BF_PXP_CSC1_COEF2_C2(0x730) |	 
+			BF_PXP_CSC1_COEF2_C3(0x79c),	 
 		};
-		/*
-		 * BT.601 full range:
-		 *
-		 * |R|   |1.0000  0.0000  1.4020|   |Y  + 0  |
-		 * |G| = |1.0000 -0.3441 -0.7141| * |Cb - 128|
-		 * |B|   |1.0000  1.7720  0.0000|   |Cr - 128|
-		 */
+		 
 		static const u32 csc1_coef_bt601_full[3] = {
 			BM_PXP_CSC1_COEF0_YCBCR_MODE |
-			BF_PXP_CSC1_COEF0_C0(0x100) |	/*  1.0000 (+0.00 %) */
+			BF_PXP_CSC1_COEF0_C0(0x100) |	 
 			BF_PXP_CSC1_COEF0_UV_OFFSET(-128) |
 			BF_PXP_CSC1_COEF0_Y_OFFSET(0),
-			BF_PXP_CSC1_COEF1_C1(0x166) |	/*  1.3984 (-0.36 %) */
-			BF_PXP_CSC1_COEF1_C4(0x1c5),	/*  1.7695 (-0.25 %) */
-			BF_PXP_CSC1_COEF2_C2(0x74a) |	/* -0.7109 (+0.32 %) */
-			BF_PXP_CSC1_COEF2_C3(0x7a8),	/* -0.3438 (+0.04 %) */
+			BF_PXP_CSC1_COEF1_C1(0x166) |	 
+			BF_PXP_CSC1_COEF1_C4(0x1c5),	 
+			BF_PXP_CSC1_COEF2_C2(0x74a) |	 
+			BF_PXP_CSC1_COEF2_C3(0x7a8),	 
 		};
-		/*
-		 * Rec.709 limited range:
-		 *
-		 * |R|   |1.1644  0.0000  1.7927|   |Y  - 16 |
-		 * |G| = |1.1644 -0.2132 -0.5329| * |Cb - 128|
-		 * |B|   |1.1644  2.1124  0.0000|   |Cr - 128|
-		 */
+		 
 		static const u32 csc1_coef_rec709_lim[3] = {
 			BM_PXP_CSC1_COEF0_YCBCR_MODE |
-			BF_PXP_CSC1_COEF0_C0(0x12a) |	/*  1.1641 (-0.03 %) */
+			BF_PXP_CSC1_COEF0_C0(0x12a) |	 
 			BF_PXP_CSC1_COEF0_UV_OFFSET(-128) |
 			BF_PXP_CSC1_COEF0_Y_OFFSET(-16),
-			BF_PXP_CSC1_COEF1_C1(0x1ca) |	/*  1.7891 (-0.37 %) */
-			BF_PXP_CSC1_COEF1_C4(0x21c),	/*  2.1094 (-0.30 %) */
-			BF_PXP_CSC1_COEF2_C2(0x778) |	/* -0.5312 (+0.16 %) */
-			BF_PXP_CSC1_COEF2_C3(0x7ca),	/* -0.2109 (+0.23 %) */
+			BF_PXP_CSC1_COEF1_C1(0x1ca) |	 
+			BF_PXP_CSC1_COEF1_C4(0x21c),	 
+			BF_PXP_CSC1_COEF2_C2(0x778) |	 
+			BF_PXP_CSC1_COEF2_C3(0x7ca),	 
 		};
-		/*
-		 * Rec.709 full range:
-		 *
-		 * |R|   |1.0000  0.0000  1.5748|   |Y  + 0  |
-		 * |G| = |1.0000 -0.1873 -0.4681| * |Cb - 128|
-		 * |B|   |1.0000  1.8556  0.0000|   |Cr - 128|
-		 */
+		 
 		static const u32 csc1_coef_rec709_full[3] = {
 			BM_PXP_CSC1_COEF0_YCBCR_MODE |
-			BF_PXP_CSC1_COEF0_C0(0x100) |	/*  1.0000 (+0.00 %) */
+			BF_PXP_CSC1_COEF0_C0(0x100) |	 
 			BF_PXP_CSC1_COEF0_UV_OFFSET(-128) |
 			BF_PXP_CSC1_COEF0_Y_OFFSET(0),
-			BF_PXP_CSC1_COEF1_C1(0x193) |	/*  1.5742 (-0.06 %) */
-			BF_PXP_CSC1_COEF1_C4(0x1db),	/*  1.8555 (-0.01 %) */
-			BF_PXP_CSC1_COEF2_C2(0x789) |	/* -0.4648 (+0.33 %) */
-			BF_PXP_CSC1_COEF2_C3(0x7d1),	/* -0.1836 (+0.37 %) */
+			BF_PXP_CSC1_COEF1_C1(0x193) |	 
+			BF_PXP_CSC1_COEF1_C4(0x1db),	 
+			BF_PXP_CSC1_COEF2_C2(0x789) |	 
+			BF_PXP_CSC1_COEF2_C3(0x7d1),	 
 		};
-		/*
-		 * BT.2020 limited range:
-		 *
-		 * |R|   |1.1644  0.0000  1.6787|   |Y  - 16 |
-		 * |G| = |1.1644 -0.1874 -0.6505| * |Cb - 128|
-		 * |B|   |1.1644  2.1418  0.0000|   |Cr - 128|
-		 */
+		 
 		static const u32 csc1_coef_bt2020_lim[3] = {
 			BM_PXP_CSC1_COEF0_YCBCR_MODE |
-			BF_PXP_CSC1_COEF0_C0(0x12a) |	/*  1.1641 (-0.03 %) */
+			BF_PXP_CSC1_COEF0_C0(0x12a) |	 
 			BF_PXP_CSC1_COEF0_UV_OFFSET(-128) |
 			BF_PXP_CSC1_COEF0_Y_OFFSET(-16),
-			BF_PXP_CSC1_COEF1_C1(0x1ad) |	/*  1.6758 (-0.29 %) */
-			BF_PXP_CSC1_COEF1_C4(0x224),	/*  2.1406 (-0.11 %) */
-			BF_PXP_CSC1_COEF2_C2(0x75a) |	/* -0.6484 (+0.20 %) */
-			BF_PXP_CSC1_COEF2_C3(0x7d1),	/* -0.1836 (+0.38 %) */
+			BF_PXP_CSC1_COEF1_C1(0x1ad) |	 
+			BF_PXP_CSC1_COEF1_C4(0x224),	 
+			BF_PXP_CSC1_COEF2_C2(0x75a) |	 
+			BF_PXP_CSC1_COEF2_C3(0x7d1),	 
 		};
-		/*
-		 * BT.2020 full range:
-		 *
-		 * |R|   |1.0000  0.0000  1.4746|   |Y  + 0  |
-		 * |G| = |1.0000 -0.1646 -0.5714| * |Cb - 128|
-		 * |B|   |1.0000  1.8814  0.0000|   |Cr - 128|
-		 */
+		 
 		static const u32 csc1_coef_bt2020_full[3] = {
 			BM_PXP_CSC1_COEF0_YCBCR_MODE |
-			BF_PXP_CSC1_COEF0_C0(0x100) |	/*  1.0000 (+0.00 %) */
+			BF_PXP_CSC1_COEF0_C0(0x100) |	 
 			BF_PXP_CSC1_COEF0_UV_OFFSET(-128) |
 			BF_PXP_CSC1_COEF0_Y_OFFSET(0),
-			BF_PXP_CSC1_COEF1_C1(0x179) |	/*  1.4727 (-0.19 %) */
-			BF_PXP_CSC1_COEF1_C4(0x1e1),	/*  1.8789 (-0.25 %) */
-			BF_PXP_CSC1_COEF2_C2(0x76e) |	/* -0.5703 (+0.11 %) */
-			BF_PXP_CSC1_COEF2_C3(0x7d6),	/* -0.1641 (+0.05 %) */
+			BF_PXP_CSC1_COEF1_C1(0x179) |	 
+			BF_PXP_CSC1_COEF1_C4(0x1e1),	 
+			BF_PXP_CSC1_COEF2_C2(0x76e) |	 
+			BF_PXP_CSC1_COEF2_C3(0x7d6),	 
 		};
-		/*
-		 * SMPTE 240m limited range:
-		 *
-		 * |R|   |1.1644  0.0000  1.7937|   |Y  - 16 |
-		 * |G| = |1.1644 -0.2565 -0.5427| * |Cb - 128|
-		 * |B|   |1.1644  2.0798  0.0000|   |Cr - 128|
-		 */
+		 
 		static const u32 csc1_coef_smpte240m_lim[3] = {
 			BM_PXP_CSC1_COEF0_YCBCR_MODE |
-			BF_PXP_CSC1_COEF0_C0(0x12a) |	/*  1.1641 (-0.03 %) */
+			BF_PXP_CSC1_COEF0_C0(0x12a) |	 
 			BF_PXP_CSC1_COEF0_UV_OFFSET(-128) |
 			BF_PXP_CSC1_COEF0_Y_OFFSET(-16),
-			BF_PXP_CSC1_COEF1_C1(0x1cb) |	/*  1.7930 (-0.07 %) */
-			BF_PXP_CSC1_COEF1_C4(0x214),	/*  2.0781 (-0.17 %) */
-			BF_PXP_CSC1_COEF2_C2(0x776) |	/* -0.5391 (+0.36 %) */
-			BF_PXP_CSC1_COEF2_C3(0x7bf),	/* -0.2539 (+0.26 %) */
+			BF_PXP_CSC1_COEF1_C1(0x1cb) |	 
+			BF_PXP_CSC1_COEF1_C4(0x214),	 
+			BF_PXP_CSC1_COEF2_C2(0x776) |	 
+			BF_PXP_CSC1_COEF2_C3(0x7bf),	 
 		};
-		/*
-		 * SMPTE 240m full range:
-		 *
-		 * |R|   |1.0000  0.0000  1.5756|   |Y  + 0  |
-		 * |G| = |1.0000 -0.2253 -0.4767| * |Cb - 128|
-		 * |B|   |1.0000  1.8270  0.0000|   |Cr - 128|
-		 */
+		 
 		static const u32 csc1_coef_smpte240m_full[3] = {
 			BM_PXP_CSC1_COEF0_YCBCR_MODE |
-			BF_PXP_CSC1_COEF0_C0(0x100) |	/*  1.0000 (+0.00 %) */
+			BF_PXP_CSC1_COEF0_C0(0x100) |	 
 			BF_PXP_CSC1_COEF0_UV_OFFSET(-128) |
 			BF_PXP_CSC1_COEF0_Y_OFFSET(0),
-			BF_PXP_CSC1_COEF1_C1(0x193) |	/*  1.5742 (-0.14 %) */
-			BF_PXP_CSC1_COEF1_C4(0x1d3),	/*  1.8242 (-0.28 %) */
-			BF_PXP_CSC1_COEF2_C2(0x786) |	/* -0.4766 (+0.01 %) */
-			BF_PXP_CSC1_COEF2_C3(0x7c7),	/* -0.2227 (+0.26 %) */
+			BF_PXP_CSC1_COEF1_C1(0x193) |	 
+			BF_PXP_CSC1_COEF1_C4(0x1d3),	 
+			BF_PXP_CSC1_COEF2_C2(0x786) |	 
+			BF_PXP_CSC1_COEF2_C3(0x7c7),	 
 		};
 		const u32 *csc1_coef;
 
@@ -535,179 +469,123 @@ static void pxp_setup_csc(struct pxp_ctx *ctx)
 
 	if (!pxp_v4l2_pix_fmt_is_yuv(ctx->q_data[V4L2_M2M_SRC].fmt->fourcc) &&
 	    pxp_v4l2_pix_fmt_is_yuv(ctx->q_data[V4L2_M2M_DST].fmt->fourcc)) {
-		/*
-		 * CSC2 RGB to YUV/YCbCr conversion is implemented as follows:
-		 *
-		 * |Y |   |A1 A2 A3|   |R|   |D1|
-		 * |Cb| = |B1 B2 B3| * |G| + |D2|
-		 * |Cr|   |C1 C2 C3|   |B|   |D3|
-		 *
-		 * Results are clamped to 0..255.
-		 *
-		 * BT.601 limited range:
-		 *
-		 * |Y |   | 0.2568  0.5041  0.0979|   |R|   |16 |
-		 * |Cb| = |-0.1482 -0.2910  0.4392| * |G| + |128|
-		 * |Cr|   | 0.4392  0.4392 -0.3678|   |B|   |128|
-		 */
+		 
 		static const u32 csc2_coef_bt601_lim[6] = {
-			BF_PXP_CSC2_COEF0_A2(0x081) |	/*  0.5039 (-0.02 %) */
-			BF_PXP_CSC2_COEF0_A1(0x041),	/*  0.2539 (-0.29 %) */
-			BF_PXP_CSC2_COEF1_B1(0x7db) |	/* -0.1445 (+0.37 %) */
-			BF_PXP_CSC2_COEF1_A3(0x019),	/*  0.0977 (-0.02 %) */
-			BF_PXP_CSC2_COEF2_B3(0x070) |	/*  0.4375 (-0.17 %) */
-			BF_PXP_CSC2_COEF2_B2(0x7b6),	/* -0.2891 (+0.20 %) */
-			BF_PXP_CSC2_COEF3_C2(0x7a2) |	/* -0.3672 (+0.06 %) */
-			BF_PXP_CSC2_COEF3_C1(0x070),	/*  0.4375 (-0.17 %) */
+			BF_PXP_CSC2_COEF0_A2(0x081) |	 
+			BF_PXP_CSC2_COEF0_A1(0x041),	 
+			BF_PXP_CSC2_COEF1_B1(0x7db) |	 
+			BF_PXP_CSC2_COEF1_A3(0x019),	 
+			BF_PXP_CSC2_COEF2_B3(0x070) |	 
+			BF_PXP_CSC2_COEF2_B2(0x7b6),	 
+			BF_PXP_CSC2_COEF3_C2(0x7a2) |	 
+			BF_PXP_CSC2_COEF3_C1(0x070),	 
 			BF_PXP_CSC2_COEF4_D1(16) |
-			BF_PXP_CSC2_COEF4_C3(0x7ee),	/* -0.0703 (+0.11 %) */
+			BF_PXP_CSC2_COEF4_C3(0x7ee),	 
 			BF_PXP_CSC2_COEF5_D3(128) |
 			BF_PXP_CSC2_COEF5_D2(128),
 		};
-		/*
-		 * BT.601 full range:
-		 *
-		 * |Y |   | 0.2990  0.5870  0.1140|   |R|   |0  |
-		 * |Cb| = |-0.1687 -0.3313  0.5000| * |G| + |128|
-		 * |Cr|   | 0.5000  0.5000 -0.4187|   |B|   |128|
-		 */
+		 
 		static const u32 csc2_coef_bt601_full[6] = {
-			BF_PXP_CSC2_COEF0_A2(0x096) |	/*  0.5859 (-0.11 %) */
-			BF_PXP_CSC2_COEF0_A1(0x04c),	/*  0.2969 (-0.21 %) */
-			BF_PXP_CSC2_COEF1_B1(0x7d5) |	/* -0.1680 (+0.07 %) */
-			BF_PXP_CSC2_COEF1_A3(0x01d),	/*  0.1133 (-0.07 %) */
-			BF_PXP_CSC2_COEF2_B3(0x080) |	/*  0.5000 (+0.00 %) */
-			BF_PXP_CSC2_COEF2_B2(0x7ac),	/* -0.3281 (+0.32 %) */
-			BF_PXP_CSC2_COEF3_C2(0x795) |	/* -0.4180 (+0.07 %) */
-			BF_PXP_CSC2_COEF3_C1(0x080),	/*  0.5000 (+0.00 %) */
+			BF_PXP_CSC2_COEF0_A2(0x096) |	 
+			BF_PXP_CSC2_COEF0_A1(0x04c),	 
+			BF_PXP_CSC2_COEF1_B1(0x7d5) |	 
+			BF_PXP_CSC2_COEF1_A3(0x01d),	 
+			BF_PXP_CSC2_COEF2_B3(0x080) |	 
+			BF_PXP_CSC2_COEF2_B2(0x7ac),	 
+			BF_PXP_CSC2_COEF3_C2(0x795) |	 
+			BF_PXP_CSC2_COEF3_C1(0x080),	 
 			BF_PXP_CSC2_COEF4_D1(0) |
-			BF_PXP_CSC2_COEF4_C3(0x7ec),	/* -0.0781 (+0.32 %) */
+			BF_PXP_CSC2_COEF4_C3(0x7ec),	 
 			BF_PXP_CSC2_COEF5_D3(128) |
 			BF_PXP_CSC2_COEF5_D2(128),
 		};
-		/*
-		 * Rec.709 limited range:
-		 *
-		 * |Y |   | 0.1826  0.6142  0.0620|   |R|   |16 |
-		 * |Cb| = |-0.1007 -0.3385  0.4392| * |G| + |128|
-		 * |Cr|   | 0.4392  0.4392 -0.3990|   |B|   |128|
-		 */
+		 
 		static const u32 csc2_coef_rec709_lim[6] = {
-			BF_PXP_CSC2_COEF0_A2(0x09d) |	/*  0.6133 (-0.09 %) */
-			BF_PXP_CSC2_COEF0_A1(0x02e),	/*  0.1797 (-0.29 %) */
-			BF_PXP_CSC2_COEF1_B1(0x7e7) |	/* -0.0977 (+0.30 %) */
-			BF_PXP_CSC2_COEF1_A3(0x00f),	/*  0.0586 (-0.34 %) */
-			BF_PXP_CSC2_COEF2_B3(0x070) |	/*  0.4375 (-0.17 %) */
-			BF_PXP_CSC2_COEF2_B2(0x7aa),	/* -0.3359 (+0.26 %) */
-			BF_PXP_CSC2_COEF3_C2(0x79a) |	/* -0.3984 (+0.05 %) */
-			BF_PXP_CSC2_COEF3_C1(0x070),	/*  0.4375 (-0.17 %) */
+			BF_PXP_CSC2_COEF0_A2(0x09d) |	 
+			BF_PXP_CSC2_COEF0_A1(0x02e),	 
+			BF_PXP_CSC2_COEF1_B1(0x7e7) |	 
+			BF_PXP_CSC2_COEF1_A3(0x00f),	 
+			BF_PXP_CSC2_COEF2_B3(0x070) |	 
+			BF_PXP_CSC2_COEF2_B2(0x7aa),	 
+			BF_PXP_CSC2_COEF3_C2(0x79a) |	 
+			BF_PXP_CSC2_COEF3_C1(0x070),	 
 			BF_PXP_CSC2_COEF4_D1(16) |
-			BF_PXP_CSC2_COEF4_C3(0x7f6),	/* -0.0391 (+0.12 %) */
+			BF_PXP_CSC2_COEF4_C3(0x7f6),	 
 			BF_PXP_CSC2_COEF5_D3(128) |
 			BF_PXP_CSC2_COEF5_D2(128),
 		};
-		/*
-		 * Rec.709 full range:
-		 *
-		 * |Y |   | 0.2126  0.7152  0.0722|   |R|   |0  |
-		 * |Cb| = |-0.1146 -0.3854  0.5000| * |G| + |128|
-		 * |Cr|   | 0.5000  0.5000 -0.4542|   |B|   |128|
-		 */
+		 
 		static const u32 csc2_coef_rec709_full[6] = {
-			BF_PXP_CSC2_COEF0_A2(0x0b7) |	/*  0.7148 (-0.04 %) */
-			BF_PXP_CSC2_COEF0_A1(0x036),	/*  0.2109 (-0.17 %) */
-			BF_PXP_CSC2_COEF1_B1(0x7e3) |	/* -0.1133 (+0.13 %) */
-			BF_PXP_CSC2_COEF1_A3(0x012),	/*  0.0703 (-0.19 %) */
-			BF_PXP_CSC2_COEF2_B3(0x080) |	/*  0.5000 (+0.00 %) */
-			BF_PXP_CSC2_COEF2_B2(0x79e),	/* -0.3828 (+0.26 %) */
-			BF_PXP_CSC2_COEF3_C2(0x78c) |	/* -0.4531 (+0.11 %) */
-			BF_PXP_CSC2_COEF3_C1(0x080),	/*  0.5000 (+0.00 %) */
+			BF_PXP_CSC2_COEF0_A2(0x0b7) |	 
+			BF_PXP_CSC2_COEF0_A1(0x036),	 
+			BF_PXP_CSC2_COEF1_B1(0x7e3) |	 
+			BF_PXP_CSC2_COEF1_A3(0x012),	 
+			BF_PXP_CSC2_COEF2_B3(0x080) |	 
+			BF_PXP_CSC2_COEF2_B2(0x79e),	 
+			BF_PXP_CSC2_COEF3_C2(0x78c) |	 
+			BF_PXP_CSC2_COEF3_C1(0x080),	 
 			BF_PXP_CSC2_COEF4_D1(0) |
-			BF_PXP_CSC2_COEF4_C3(0x7f5),	/* -0.0430 (+0.28 %) */
+			BF_PXP_CSC2_COEF4_C3(0x7f5),	 
 			BF_PXP_CSC2_COEF5_D3(128) |
 			BF_PXP_CSC2_COEF5_D2(128),
 		};
-		/*
-		 * BT.2020 limited range:
-		 *
-		 * |Y |   | 0.2256  0.5823  0.0509|   |R|   |16 |
-		 * |Cb| = |-0.1226 -0.3166  0.4392| * |G| + |128|
-		 * |Cr|   | 0.4392  0.4392 -0.4039|   |B|   |128|
-		 */
+		 
 		static const u32 csc2_coef_bt2020_lim[6] = {
-			BF_PXP_CSC2_COEF0_A2(0x095) |	/*  0.5820 (-0.03 %) */
-			BF_PXP_CSC2_COEF0_A1(0x039),	/*  0.2227 (-0.30 %) */
-			BF_PXP_CSC2_COEF1_B1(0x7e1) |	/* -0.1211 (+0.15 %) */
-			BF_PXP_CSC2_COEF1_A3(0x00d),	/*  0.0508 (-0.01 %) */
-			BF_PXP_CSC2_COEF2_B3(0x070) |	/*  0.4375 (-0.17 %) */
-			BF_PXP_CSC2_COEF2_B2(0x7af),	/* -0.3164 (+0.02 %) */
-			BF_PXP_CSC2_COEF3_C2(0x799) |	/* -0.4023 (+0.16 %) */
-			BF_PXP_CSC2_COEF3_C1(0x070),	/*  0.4375 (-0.17 %) */
+			BF_PXP_CSC2_COEF0_A2(0x095) |	 
+			BF_PXP_CSC2_COEF0_A1(0x039),	 
+			BF_PXP_CSC2_COEF1_B1(0x7e1) |	 
+			BF_PXP_CSC2_COEF1_A3(0x00d),	 
+			BF_PXP_CSC2_COEF2_B3(0x070) |	 
+			BF_PXP_CSC2_COEF2_B2(0x7af),	 
+			BF_PXP_CSC2_COEF3_C2(0x799) |	 
+			BF_PXP_CSC2_COEF3_C1(0x070),	 
 			BF_PXP_CSC2_COEF4_D1(16) |
-			BF_PXP_CSC2_COEF4_C3(0x7f7),	/* -0.0352 (+0.02 %) */
+			BF_PXP_CSC2_COEF4_C3(0x7f7),	 
 			BF_PXP_CSC2_COEF5_D3(128) |
 			BF_PXP_CSC2_COEF5_D2(128),
 		};
-		/*
-		 * BT.2020 full range:
-		 *
-		 * |Y |   | 0.2627  0.6780  0.0593|   |R|   |0  |
-		 * |Cb| = |-0.1396 -0.3604  0.5000| * |G| + |128|
-		 * |Cr|   | 0.5000  0.5000 -0.4598|   |B|   |128|
-		 */
+		 
 		static const u32 csc2_coef_bt2020_full[6] = {
-			BF_PXP_CSC2_COEF0_A2(0x0ad) |	/*  0.6758 (-0.22 %) */
-			BF_PXP_CSC2_COEF0_A1(0x043),	/*  0.2617 (-0.10 %) */
-			BF_PXP_CSC2_COEF1_B1(0x7dd) |	/* -0.1367 (+0.29 %) */
-			BF_PXP_CSC2_COEF1_A3(0x00f),	/*  0.0586 (-0.07 %) */
-			BF_PXP_CSC2_COEF2_B3(0x080) |	/*  0.5000 (+0.00 %) */
-			BF_PXP_CSC2_COEF2_B2(0x7a4),	/* -0.3594 (+0.10 %) */
-			BF_PXP_CSC2_COEF3_C2(0x78b) |	/* -0.4570 (+0.28 %) */
-			BF_PXP_CSC2_COEF3_C1(0x080),	/*  0.5000 (+0.00 %) */
+			BF_PXP_CSC2_COEF0_A2(0x0ad) |	 
+			BF_PXP_CSC2_COEF0_A1(0x043),	 
+			BF_PXP_CSC2_COEF1_B1(0x7dd) |	 
+			BF_PXP_CSC2_COEF1_A3(0x00f),	 
+			BF_PXP_CSC2_COEF2_B3(0x080) |	 
+			BF_PXP_CSC2_COEF2_B2(0x7a4),	 
+			BF_PXP_CSC2_COEF3_C2(0x78b) |	 
+			BF_PXP_CSC2_COEF3_C1(0x080),	 
 			BF_PXP_CSC2_COEF4_D1(0) |
-			BF_PXP_CSC2_COEF4_C3(0x7f6),	/* -0.0391 (+0.11 %) */
+			BF_PXP_CSC2_COEF4_C3(0x7f6),	 
 			BF_PXP_CSC2_COEF5_D3(128) |
 			BF_PXP_CSC2_COEF5_D2(128),
 		};
-		/*
-		 * SMPTE 240m limited range:
-		 *
-		 * |Y |   | 0.1821  0.6020  0.0747|   |R|   |16 |
-		 * |Cb| = |-0.1019 -0.3373  0.4392| * |G| + |128|
-		 * |Cr|   | 0.4392  0.4392 -0.3909|   |B|   |128|
-		 */
+		 
 		static const u32 csc2_coef_smpte240m_lim[6] = {
-			BF_PXP_CSC2_COEF0_A2(0x09a) |	/*  0.6016 (-0.05 %) */
-			BF_PXP_CSC2_COEF0_A1(0x02e),	/*  0.1797 (-0.24 %) */
-			BF_PXP_CSC2_COEF1_B1(0x7e6) |	/* -0.1016 (+0.03 %) */
-			BF_PXP_CSC2_COEF1_A3(0x013),	/*  0.0742 (-0.05 %) */
-			BF_PXP_CSC2_COEF2_B3(0x070) |	/*  0.4375 (-0.17 %) */
-			BF_PXP_CSC2_COEF2_B2(0x7aa),	/* -0.3359 (+0.14 %) */
-			BF_PXP_CSC2_COEF3_C2(0x79c) |	/* -0.3906 (+0.03 %) */
-			BF_PXP_CSC2_COEF3_C1(0x070),	/*  0.4375 (-0.17 %) */
+			BF_PXP_CSC2_COEF0_A2(0x09a) |	 
+			BF_PXP_CSC2_COEF0_A1(0x02e),	 
+			BF_PXP_CSC2_COEF1_B1(0x7e6) |	 
+			BF_PXP_CSC2_COEF1_A3(0x013),	 
+			BF_PXP_CSC2_COEF2_B3(0x070) |	 
+			BF_PXP_CSC2_COEF2_B2(0x7aa),	 
+			BF_PXP_CSC2_COEF3_C2(0x79c) |	 
+			BF_PXP_CSC2_COEF3_C1(0x070),	 
 			BF_PXP_CSC2_COEF4_D1(16) |
-			BF_PXP_CSC2_COEF4_C3(0x7f4),	/* -0.0469 (+0.14 %) */
+			BF_PXP_CSC2_COEF4_C3(0x7f4),	 
 			BF_PXP_CSC2_COEF5_D3(128) |
 			BF_PXP_CSC2_COEF5_D2(128),
 		};
-		/*
-		 * SMPTE 240m full range:
-		 *
-		 * |Y |   | 0.2120  0.7010  0.0870|   |R|   |0  |
-		 * |Cb| = |-0.1160 -0.3840  0.5000| * |G| + |128|
-		 * |Cr|   | 0.5000  0.5000 -0.4450|   |B|   |128|
-		 */
+		 
 		static const u32 csc2_coef_smpte240m_full[6] = {
-			BF_PXP_CSC2_COEF0_A2(0x0b3) |	/*  0.6992 (-0.18 %) */
-			BF_PXP_CSC2_COEF0_A1(0x036),	/*  0.2109 (-0.11 %) */
-			BF_PXP_CSC2_COEF1_B1(0x7e3) |	/* -0.1133 (+0.27 %) */
-			BF_PXP_CSC2_COEF1_A3(0x016),	/*  0.0859 (-0.11 %) */
-			BF_PXP_CSC2_COEF2_B3(0x080) |	/*  0.5000 (+0.00 %) */
-			BF_PXP_CSC2_COEF2_B2(0x79e),	/* -0.3828 (+0.12 %) */
-			BF_PXP_CSC2_COEF3_C2(0x78f) |	/* -0.4414 (+0.36 %) */
-			BF_PXP_CSC2_COEF3_C1(0x080),	/*  0.5000 (+0.00 %) */
+			BF_PXP_CSC2_COEF0_A2(0x0b3) |	 
+			BF_PXP_CSC2_COEF0_A1(0x036),	 
+			BF_PXP_CSC2_COEF1_B1(0x7e3) |	 
+			BF_PXP_CSC2_COEF1_A3(0x016),	 
+			BF_PXP_CSC2_COEF2_B3(0x080) |	 
+			BF_PXP_CSC2_COEF2_B2(0x79e),	 
+			BF_PXP_CSC2_COEF3_C2(0x78f) |	 
+			BF_PXP_CSC2_COEF3_C1(0x080),	 
 			BF_PXP_CSC2_COEF4_D1(0) |
-			BF_PXP_CSC2_COEF4_C3(0x7f2),	/* -0.0547 (+0.03 %) */
+			BF_PXP_CSC2_COEF4_C3(0x7f2),	 
 			BF_PXP_CSC2_COEF5_D3(128) |
 			BF_PXP_CSC2_COEF5_D2(128),
 		};
@@ -764,22 +642,22 @@ static u32 pxp_imx6ull_data_path_ctrl0(struct pxp_ctx *ctx)
 
 	ctrl0 = 0;
 	ctrl0 |= BF_PXP_DATA_PATH_CTRL0_MUX15_SEL(3);
-	/* Bypass Dithering x3CH */
+	 
 	ctrl0 |= BF_PXP_DATA_PATH_CTRL0_MUX14_SEL(1);
 	ctrl0 |= BF_PXP_DATA_PATH_CTRL0_MUX13_SEL(3);
-	/* Select Rotation */
+	 
 	ctrl0 |= BF_PXP_DATA_PATH_CTRL0_MUX12_SEL(0);
-	/* Bypass LUT */
+	 
 	ctrl0 |= BF_PXP_DATA_PATH_CTRL0_MUX11_SEL(1);
 	ctrl0 |= BF_PXP_DATA_PATH_CTRL0_MUX10_SEL(3);
 	ctrl0 |= BF_PXP_DATA_PATH_CTRL0_MUX9_SEL(3);
-	/* Select CSC 2 */
+	 
 	ctrl0 |= BF_PXP_DATA_PATH_CTRL0_MUX8_SEL(0);
 	ctrl0 |= BF_PXP_DATA_PATH_CTRL0_MUX7_SEL(3);
 	ctrl0 |= BF_PXP_DATA_PATH_CTRL0_MUX6_SEL(3);
 	ctrl0 |= BF_PXP_DATA_PATH_CTRL0_MUX5_SEL(3);
 	ctrl0 |= BF_PXP_DATA_PATH_CTRL0_MUX4_SEL(3);
-	/* Bypass Rotation 2 */
+	 
 	ctrl0 |= BF_PXP_DATA_PATH_CTRL0_MUX3_SEL(0);
 	ctrl0 |= BF_PXP_DATA_PATH_CTRL0_MUX2_SEL(3);
 	ctrl0 |= BF_PXP_DATA_PATH_CTRL0_MUX1_SEL(3);
@@ -794,23 +672,23 @@ static u32 pxp_imx7d_data_path_ctrl0(struct pxp_ctx *ctx)
 
 	ctrl0 = 0;
 	ctrl0 |= BF_PXP_DATA_PATH_CTRL0_MUX15_SEL(3);
-	/* Select Rotation 0 */
+	 
 	ctrl0 |= BF_PXP_DATA_PATH_CTRL0_MUX14_SEL(0);
 	ctrl0 |= BF_PXP_DATA_PATH_CTRL0_MUX13_SEL(3);
-	/* Select MUX11 for Rotation 0 */
+	 
 	ctrl0 |= BF_PXP_DATA_PATH_CTRL0_MUX12_SEL(1);
-	/* Bypass LUT */
+	 
 	ctrl0 |= BF_PXP_DATA_PATH_CTRL0_MUX11_SEL(1);
 	ctrl0 |= BF_PXP_DATA_PATH_CTRL0_MUX10_SEL(3);
 	ctrl0 |= BF_PXP_DATA_PATH_CTRL0_MUX9_SEL(3);
-	/* Select CSC 2 */
+	 
 	ctrl0 |= BF_PXP_DATA_PATH_CTRL0_MUX8_SEL(0);
 	ctrl0 |= BF_PXP_DATA_PATH_CTRL0_MUX7_SEL(3);
-	/* Select Composite Alpha Blending/Color Key 0 for CSC 2 */
+	 
 	ctrl0 |= BF_PXP_DATA_PATH_CTRL0_MUX6_SEL(1);
 	ctrl0 |= BF_PXP_DATA_PATH_CTRL0_MUX5_SEL(3);
 	ctrl0 |= BF_PXP_DATA_PATH_CTRL0_MUX4_SEL(3);
-	/* Bypass Rotation 1 */
+	 
 	ctrl0 |= BF_PXP_DATA_PATH_CTRL0_MUX3_SEL(0);
 	ctrl0 |= BF_PXP_DATA_PATH_CTRL0_MUX2_SEL(3);
 	ctrl0 |= BF_PXP_DATA_PATH_CTRL0_MUX1_SEL(3);
@@ -885,11 +763,11 @@ static int pxp_start(struct pxp_ctx *ctx, struct vb2_v4l2_buffer *in_vb,
 		 V4L2_BUF_FLAG_BFRAME |
 		 V4L2_BUF_FLAG_TSTAMP_SRC_MASK);
 
-	/* 8x8 block size */
+	 
 	ctrl = BF_PXP_CTRL_VFLIP0(!!(ctx->mode & MEM2MEM_VFLIP)) |
 	       BF_PXP_CTRL_HFLIP0(!!(ctx->mode & MEM2MEM_HFLIP)) |
 	       BF_PXP_CTRL_ROTATE0(ctx->rotation);
-	/* Always write alpha value as V4L2_CID_ALPHA_COMPONENT */
+	 
 	out_ctrl = BF_PXP_OUT_CTRL_ALPHA(ctx->alpha_component) |
 		   BF_PXP_OUT_CTRL_ALPHA_OUTPUT(1) |
 		   pxp_v4l2_pix_fmt_to_out_format(dst_fourcc);
@@ -913,11 +791,11 @@ static int pxp_start(struct pxp_ctx *ctx, struct vb2_v4l2_buffer *in_vb,
 	out_pitch = BF_PXP_OUT_PITCH_PITCH(dst_stride);
 	out_lrc = BF_PXP_OUT_LRC_X(dst_width - 1) |
 		  BF_PXP_OUT_LRC_Y(dst_height - 1);
-	/* PS covers whole output */
+	 
 	out_ps_ulc = BF_PXP_OUT_PS_ULC_X(0) | BF_PXP_OUT_PS_ULC_Y(0);
 	out_ps_lrc = BF_PXP_OUT_PS_LRC_X(dst_width - 1) |
 		     BF_PXP_OUT_PS_LRC_Y(dst_height - 1);
-	/* no AS */
+	 
 	as_ulc = BF_PXP_OUT_AS_ULC_X(1) | BF_PXP_OUT_AS_ULC_Y(1);
 	as_lrc = BF_PXP_OUT_AS_LRC_X(0) | BF_PXP_OUT_AS_LRC_Y(0);
 
@@ -946,7 +824,7 @@ static int pxp_start(struct pxp_ctx *ctx, struct vb2_v4l2_buffer *in_vb,
 	case V4L2_PIX_FMT_GREY:
 	case V4L2_PIX_FMT_Y4:
 		ps_ubuf = 0;
-		/* In grayscale mode, ps_vbuf contents are reused as CbCr */
+		 
 		ps_vbuf = 0x8080;
 		break;
 	default:
@@ -969,10 +847,7 @@ static int pxp_start(struct pxp_ctx *ctx, struct vb2_v4l2_buffer *in_vb,
 		case V4L2_PIX_FMT_NV61:
 		case V4L2_PIX_FMT_YUV422P:
 		case V4L2_PIX_FMT_YUV420:
-			/*
-			 * This avoids sampling past the right edge for
-			 * horizontally chroma subsampled formats.
-			 */
+			 
 			xscale = (src_width - 2) * 0x1000 / (dst_width - 1);
 			break;
 		default:
@@ -989,7 +864,7 @@ static int pxp_start(struct pxp_ctx *ctx, struct vb2_v4l2_buffer *in_vb,
 	ps_offset = BF_PXP_PS_OFFSET_YOFFSET(0) | BF_PXP_PS_OFFSET_XOFFSET(0);
 
 	pxp_write(dev, HW_PXP_CTRL, ctrl);
-	/* skip STAT */
+	 
 	pxp_write(dev, HW_PXP_OUT_CTRL, out_ctrl);
 	pxp_write(dev, HW_PXP_OUT_BUF, out_buf);
 	pxp_write(dev, HW_PXP_OUT_BUF2, out_buf2);
@@ -1007,25 +882,25 @@ static int pxp_start(struct pxp_ctx *ctx, struct vb2_v4l2_buffer *in_vb,
 	pxp_write(dev, HW_PXP_PS_BACKGROUND_0, 0x00ffffff);
 	pxp_write(dev, HW_PXP_PS_SCALE, ps_scale);
 	pxp_write(dev, HW_PXP_PS_OFFSET, ps_offset);
-	/* disable processed surface color keying */
+	 
 	pxp_write(dev, HW_PXP_PS_CLRKEYLOW_0, 0x00ffffff);
 	pxp_write(dev, HW_PXP_PS_CLRKEYHIGH_0, 0x00000000);
 
-	/* disable alpha surface color keying */
+	 
 	pxp_write(dev, HW_PXP_AS_CLRKEYLOW_0, 0x00ffffff);
 	pxp_write(dev, HW_PXP_AS_CLRKEYHIGH_0, 0x00000000);
 
-	/* setup CSC */
+	 
 	pxp_setup_csc(ctx);
 
-	/* bypass LUT */
+	 
 	pxp_write(dev, HW_PXP_LUT_CTRL, BM_PXP_LUT_CTRL_BYPASS);
 
 	pxp_set_data_path(ctx);
 
 	pxp_write(dev, HW_PXP_IRQ_MASK, 0xffff);
 
-	/* ungate, enable PS/AS/OUT and PXP operation */
+	 
 	pxp_write(dev, HW_PXP_CTRL_SET, BM_PXP_CTRL_IRQ_ENABLE);
 	pxp_write(dev, HW_PXP_CTRL_SET,
 		  BM_PXP_CTRL_ENABLE | BM_PXP_CTRL_ENABLE_CSC2 |
@@ -1059,9 +934,7 @@ static void pxp_job_finish(struct pxp_dev *dev)
 	v4l2_m2m_job_finish(dev->m2m_dev, curr_ctx->fh.m2m_ctx);
 }
 
-/*
- * mem2mem callbacks
- */
+ 
 static void pxp_device_run(void *priv)
 {
 	struct pxp_ctx *ctx = priv;
@@ -1090,13 +963,11 @@ static void pxp_job_abort(void *priv)
 {
 	struct pxp_ctx *ctx = priv;
 
-	/* Will cancel the transaction in the next interrupt handler */
+	 
 	ctx->aborting = 1;
 }
 
-/*
- * interrupt handler
- */
+ 
 static irqreturn_t pxp_irq_handler(int irq, void *dev_id)
 {
 	struct pxp_dev *dev = dev_id;
@@ -1105,7 +976,7 @@ static irqreturn_t pxp_irq_handler(int irq, void *dev_id)
 	stat = pxp_read(dev, HW_PXP_STAT);
 
 	if (stat & BM_PXP_STAT_IRQ0) {
-		/* we expect x = 0, y = height, irq0 = 1 */
+		 
 		if (stat & ~(BM_PXP_STAT_BLOCKX | BM_PXP_STAT_BLOCKY |
 			     BM_PXP_STAT_IRQ0))
 			dprintk(dev, "%s: stat = 0x%08x\n", __func__, stat);
@@ -1124,9 +995,7 @@ static irqreturn_t pxp_irq_handler(int irq, void *dev_id)
 	return IRQ_HANDLED;
 }
 
-/*
- * video ioctls
- */
+ 
 static int pxp_querycap(struct file *file, void *priv,
 			   struct v4l2_capability *cap)
 {
@@ -1144,25 +1013,22 @@ static int pxp_enum_fmt(struct v4l2_fmtdesc *f, u32 type)
 
 	for (i = 0; i < NUM_FORMATS; ++i) {
 		if (formats[i].types & type) {
-			/* index-th format of type type found ? */
+			 
 			if (num == f->index)
 				break;
-			/*
-			 * Correct type but haven't reached our index yet,
-			 * just increment per-type index
-			 */
+			 
 			++num;
 		}
 	}
 
 	if (i < NUM_FORMATS) {
-		/* Format found */
+		 
 		fmt = &formats[i];
 		f->pixelformat = fmt->fourcc;
 		return 0;
 	}
 
-	/* Format not found */
+	 
 	return -EINVAL;
 }
 
@@ -1257,10 +1123,7 @@ pxp_fixup_colorimetry_cap(struct pxp_ctx *ctx, u32 dst_fourcc,
 
 	if (pxp_v4l2_pix_fmt_is_yuv(ctx->q_data[V4L2_M2M_SRC].fmt->fourcc) ==
 	    dst_is_yuv) {
-		/*
-		 * There is no support for conversion between different YCbCr
-		 * encodings or between RGB limited and full range.
-		 */
+		 
 		*ycbcr_enc = ctx->q_data[V4L2_M2M_SRC].ycbcr_enc;
 		*quantization = ctx->q_data[V4L2_M2M_SRC].quant;
 	} else {
@@ -1505,9 +1368,7 @@ static const struct v4l2_ioctl_ops pxp_ioctl_ops = {
 	.vidioc_unsubscribe_event = v4l2_event_unsubscribe,
 };
 
-/*
- * Queue operations
- */
+ 
 static int pxp_queue_setup(struct vb2_queue *vq,
 			   unsigned int *nbuffers, unsigned int *nplanes,
 			   unsigned int sizes[], struct device *alloc_devs[])
@@ -1643,9 +1504,7 @@ static int queue_init(void *priv, struct vb2_queue *src_vq,
 	return vb2_queue_init(dst_vq);
 }
 
-/*
- * File operations
- */
+ 
 static int pxp_open(struct file *file)
 {
 	struct pxp_dev *dev = video_drvdata(file);

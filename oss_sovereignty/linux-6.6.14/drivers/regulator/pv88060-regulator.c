@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0+
-//
-// pv88060-regulator.c - Regulator device driver for PV88060
-// Copyright (C) 2015  Powerventure Semiconductor Ltd.
+
+
+
+
 
 #include <linux/err.h>
 #include <linux/i2c.h>
@@ -18,12 +18,12 @@
 
 #define PV88060_MAX_REGULATORS	14
 
-/* PV88060 REGULATOR IDs */
+ 
 enum {
-	/* BUCKs */
+	 
 	PV88060_ID_BUCK1,
 
-	/* LDOs */
+	 
 	PV88060_ID_LDO1,
 	PV88060_ID_LDO2,
 	PV88060_ID_LDO3,
@@ -32,7 +32,7 @@ enum {
 	PV88060_ID_LDO6,
 	PV88060_ID_LDO7,
 
-	/* SWTs */
+	 
 	PV88060_ID_SW1,
 	PV88060_ID_SW2,
 	PV88060_ID_SW3,
@@ -43,7 +43,7 @@ enum {
 
 struct pv88060_regulator {
 	struct regulator_desc desc;
-	unsigned int conf;		/* buck configuration register */
+	unsigned int conf;		 
 };
 
 struct pv88060 {
@@ -57,9 +57,7 @@ static const struct regmap_config pv88060_regmap_config = {
 	.val_bits = 8,
 };
 
-/* Current limits array (in uA) for BUCK1
- * Entry indexes corresponds to register values.
- */
+ 
 
 static const unsigned int pv88060_buck1_limits[] = {
 	1496000, 2393000, 3291000, 4189000
@@ -270,9 +268,7 @@ error_i2c:
 	return IRQ_NONE;
 }
 
-/*
- * I2C driver interface functions
- */
+ 
 static int pv88060_i2c_probe(struct i2c_client *i2c)
 {
 	struct regulator_init_data *init_data = dev_get_platdata(&i2c->dev);

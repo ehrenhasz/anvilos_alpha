@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2015, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <drm/drm_crtc.h>
 #include <drm/drm_probe_helper.h>
@@ -51,13 +49,7 @@ static int pingpong_tearcheck_setup(struct drm_encoder *encoder,
 		| MDP5_PP_SYNC_CONFIG_VSYNC_IN_EN;
 	cfg |= MDP5_PP_SYNC_CONFIG_VSYNC_COUNT(vclks_line);
 
-	/*
-	 * Tearcheck emits a blanking signal every vclks_line * vtotal * 2 ticks on
-	 * the vsync_clk equating to roughly half the desired panel refresh rate.
-	 * This is only necessary as stability fallback if interrupts from the
-	 * panel arrive too late or not at all, but is currently used by default
-	 * because these panel interrupts are not wired up yet.
-	 */
+	 
 	mdp5_write(mdp5_kms, REG_MDP5_PP_SYNC_CONFIG_VSYNC(pp_id), cfg);
 	mdp5_write(mdp5_kms,
 		REG_MDP5_PP_SYNC_CONFIG_HEIGHT(pp_id), (2 * mode->vtotal));
@@ -174,9 +166,7 @@ int mdp5_cmd_encoder_set_split_display(struct drm_encoder *encoder,
 	mdp5_kms = get_kms(encoder);
 	intf_num = mdp5_cmd_enc->intf->num;
 
-	/* Switch slave encoder's trigger MUX, to use the master's
-	 * start signal for the slave encoder
-	 */
+	 
 	if (intf_num == 1)
 		data |= MDP5_SPLIT_DPL_UPPER_INTF2_SW_TRG_MUX;
 	else if (intf_num == 2)
@@ -184,12 +174,12 @@ int mdp5_cmd_encoder_set_split_display(struct drm_encoder *encoder,
 	else
 		return -EINVAL;
 
-	/* Smart Panel, Sync mode */
+	 
 	data |= MDP5_SPLIT_DPL_UPPER_SMART_PANEL;
 
 	dev = &mdp5_kms->pdev->dev;
 
-	/* Make sure clocks are on when connectors calling this function. */
+	 
 	pm_runtime_get_sync(dev);
 	mdp5_write(mdp5_kms, REG_MDP5_SPLIT_DPL_UPPER, data);
 
@@ -200,4 +190,4 @@ int mdp5_cmd_encoder_set_split_display(struct drm_encoder *encoder,
 
 	return 0;
 }
-#endif /* CONFIG_DRM_MSM_DSI */
+#endif  

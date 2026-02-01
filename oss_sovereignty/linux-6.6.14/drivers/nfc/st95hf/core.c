@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * --------------------------------------------------------------------
- * Driver for ST NFC Transceiver ST95HF
- * --------------------------------------------------------------------
- * Copyright (C) 2015 STMicroelectronics Pvt. Ltd. All rights reserved.
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/gpio.h>
@@ -24,42 +19,32 @@
 
 #include "spi.h"
 
-/* supported protocols */
+ 
 #define ST95HF_SUPPORTED_PROT		(NFC_PROTO_ISO14443_MASK | \
 					NFC_PROTO_ISO14443_B_MASK | \
 					NFC_PROTO_ISO15693_MASK)
-/* driver capabilities */
+ 
 #define ST95HF_CAPABILITIES		NFC_DIGITAL_DRV_CAPS_IN_CRC
 
-/* Command Send Interface */
-/* ST95HF_COMMAND_SEND CMD Ids */
+ 
+ 
 #define ECHO_CMD			0x55
 #define WRITE_REGISTER_CMD		0x9
 #define PROTOCOL_SELECT_CMD		0x2
 #define SEND_RECEIVE_CMD		0x4
 
-/* Select protocol codes */
+ 
 #define ISO15693_PROTOCOL_CODE		0x1
 #define ISO14443A_PROTOCOL_CODE		0x2
 #define ISO14443B_PROTOCOL_CODE		0x3
 
-/*
- * head room len is 3
- * 1 byte for control byte
- * 1 byte for cmd
- * 1 byte for size
- */
+ 
 #define ST95HF_HEADROOM_LEN		3
 
-/*
- * tailroom is 1 for ISO14443A
- * and 0 for ISO14443B/ISO15693,
- * hence the max value 1 should be
- * taken.
- */
+ 
 #define ST95HF_TAILROOM_LEN		1
 
-/* Command Response interface */
+ 
 #define MAX_RESPONSE_BUFFER_SIZE	280
 #define ECHORESPONSE			0x55
 #define ST95HF_ERR_MASK			0xF
@@ -67,12 +52,12 @@
 #define ST95HF_NFCA_CRC_ERR_MASK	0x20
 #define ST95HF_NFCB_CRC_ERR_MASK	0x01
 
-/* ST95HF transmission flag values */
+ 
 #define TRFLAG_NFCA_SHORT_FRAME		0x07
 #define TRFLAG_NFCA_STD_FRAME		0x08
 #define TRFLAG_NFCA_STD_FRAME_CRC	0x28
 
-/* Misc defs */
+ 
 #define HIGH				1
 #define LOW				0
 #define ISO14443A_RATS_REQ		0xE0
@@ -97,14 +82,7 @@ struct param_list {
 	int new_param_val;
 };
 
-/*
- * List of top-level cmds to be used internally by the driver.
- * All these commands are build on top of ST95HF basic commands
- * such as SEND_RECEIVE_CMD, PROTOCOL_SELECT_CMD, etc.
- * These top level cmds are used internally while implementing various ops of
- * digital layer/driver probe or extending the digital framework layer for
- * features that are not yet implemented there, for example, WTX cmd handling.
- */
+ 
 enum st95hf_cmd_list {
 	CMD_ECHO,
 	CMD_ISO14443A_CONFIG,
@@ -182,7 +160,7 @@ static const struct cmd cmd_array[] = {
 	},
 };
 
-/* st95_digital_cmd_complete_arg stores client context */
+ 
 struct st95_digital_cmd_complete_arg {
 	struct sk_buff *skb_resp;
 	nfc_digital_cmd_complete_t complete_cb;
@@ -190,31 +168,7 @@ struct st95_digital_cmd_complete_arg {
 	bool rats;
 };
 
-/*
- * structure containing ST95HF driver specific data.
- * @spicontext: structure containing information required
- *	for spi communication between st95hf and host.
- * @ddev: nfc digital device object.
- * @nfcdev: nfc device object.
- * @enable_gpio: gpio used to enable st95hf transceiver.
- * @complete_cb_arg: structure to store various context information
- *	that is passed from nfc requesting thread to the threaded ISR.
- * @st95hf_supply: regulator "consumer" for NFC device.
- * @sendrcv_trflag: last byte of frame send by sendrecv command
- *	of st95hf. This byte contains transmission flag info.
- * @exchange_lock: semaphore used for signaling the st95hf_remove
- *	function that the last outstanding async nfc request is finished.
- * @rm_lock: mutex for ensuring safe access of nfc digital object
- *	from threaded ISR. Usage of this mutex avoids any race between
- *	deletion of the object from st95hf_remove() and its access from
- *	the threaded ISR.
- * @nfcdev_free: flag to have the state of nfc device object.
- *	[alive | died]
- * @current_protocol: current nfc protocol.
- * @current_rf_tech: current rf technology.
- * @fwi: frame waiting index, received in reply of RATS according to
- *	digital protocol.
- */
+ 
 struct st95hf_context {
 	struct st95hf_spi_context spicontext;
 	struct nfc_digital_dev *ddev;
@@ -231,15 +185,7 @@ struct st95hf_context {
 	int fwi;
 };
 
-/*
- * st95hf_send_recv_cmd() is for sending commands to ST95HF
- * that are described in the cmd_array[]. It can optionally
- * receive the response if the cmd request is of type
- * SYNC. For that to happen caller must pass true to recv_res.
- * For ASYNC request, recv_res is ignored and the
- * function will never try to receive the response on behalf
- * of the caller.
- */
+ 
 static int st95hf_send_recv_cmd(struct st95hf_context *st95context,
 				enum st95hf_cmd_list cmd,
 				int no_modif,
@@ -310,7 +256,7 @@ static int st95hf_echo_command(struct st95hf_context *st95context)
 	if (result)
 		return result;
 
-	/* If control reached here, response can be taken */
+	 
 	result = st95hf_spi_recv_echo_res(&st95context->spicontext,
 					  &echo_response);
 	if (result) {
@@ -333,7 +279,7 @@ static int secondary_configuration_type4a(struct st95hf_context *stcontext)
 	int result = 0;
 	struct device *dev = &stcontext->nfcdev->dev;
 
-	/* 14443A config setting after select protocol */
+	 
 	result = st95hf_send_recv_cmd(stcontext,
 				      CMD_ISO14443A_CONFIG,
 				      0,
@@ -344,7 +290,7 @@ static int secondary_configuration_type4a(struct st95hf_context *stcontext)
 		return result;
 	}
 
-	/* 14443A demo gain setting */
+	 
 	result = st95hf_send_recv_cmd(stcontext,
 				      CMD_ISO14443A_DEMOGAIN,
 				      0,
@@ -393,7 +339,7 @@ static int st95hf_select_protocol(struct st95hf_context *stcontext, int type)
 			return result;
 		}
 
-		/* secondary config. for 14443Type 4A after protocol select */
+		 
 		result = secondary_configuration_type4a(stcontext);
 		if (result) {
 			dev_err(dev, "type a secondary config, err = 0x%x\n",
@@ -414,13 +360,10 @@ static int st95hf_select_protocol(struct st95hf_context *stcontext, int type)
 			return result;
 		}
 
-		/*
-		 * delay of 5-6 ms is required after select protocol
-		 * command in case of ISO14443 Type B
-		 */
+		 
 		usleep_range(50000, 60000);
 
-		/* secondary config. for 14443Type 4B after protocol select */
+		 
 		result = secondary_configuration_type4b(stcontext);
 		if (result) {
 			dev_err(dev, "type b secondary config, err = 0x%x\n",
@@ -450,26 +393,23 @@ static int st95hf_select_protocol(struct st95hf_context *stcontext, int type)
 
 static void st95hf_send_st95enable_negativepulse(struct st95hf_context *st95con)
 {
-	/* First make irq_in pin high */
+	 
 	gpio_set_value(st95con->enable_gpio, HIGH);
 
-	/* wait for 1 milisecond */
+	 
 	usleep_range(1000, 2000);
 
-	/* Make irq_in pin low */
+	 
 	gpio_set_value(st95con->enable_gpio, LOW);
 
-	/* wait for minimum interrupt pulse to make st95 active */
+	 
 	usleep_range(1000, 2000);
 
-	/* At end make it high */
+	 
 	gpio_set_value(st95con->enable_gpio, HIGH);
 }
 
-/*
- * Send a reset sequence over SPI bus (Reset command + wait 3ms +
- * negative pulse on st95hf enable gpio
- */
+ 
 static int st95hf_send_spi_reset_sequence(struct st95hf_context *st95context)
 {
 	int result = 0;
@@ -485,13 +425,13 @@ static int st95hf_send_spi_reset_sequence(struct st95hf_context *st95context)
 		return result;
 	}
 
-	/* wait for 3 milisecond to complete the controller reset process */
+	 
 	usleep_range(3000, 4000);
 
-	/* send negative pulse to make st95hf active */
+	 
 	st95hf_send_st95enable_negativepulse(st95context);
 
-	/* wait for 10 milisecond : HFO setup time */
+	 
 	usleep_range(10000, 20000);
 
 	return result;
@@ -506,7 +446,7 @@ static int st95hf_por_sequence(struct st95hf_context *st95context)
 
 	usleep_range(5000, 6000);
 	do {
-		/* send an ECHO command and checks ST95HF response */
+		 
 		result = st95hf_echo_command(st95context);
 
 		dev_dbg(&st95context->spicontext.spidev->dev,
@@ -516,13 +456,13 @@ static int st95hf_por_sequence(struct st95hf_context *st95context)
 		if (!result)
 			return 0;
 
-		/* send an pulse on IRQ in case of the chip is on sleep state */
+		 
 		if (nth_attempt == 2)
 			st95hf_send_st95enable_negativepulse(st95context);
 		else
 			st95hf_send_spi_reset_sequence(st95context);
 
-		/* delay of 50 milisecond */
+		 
 		usleep_range(50000, 51000);
 	} while (nth_attempt++ < 3);
 
@@ -565,7 +505,7 @@ static int iso14443_config_fdt(struct st95hf_context *st95context, int wtxm)
 			return result;
 		}
 
-		/* secondary config. for 14443Type 4A after protocol select */
+		 
 		result = secondary_configuration_type4a(st95context);
 		if (result) {
 			dev_err(dev, "WTX type a second. config, err = 0x%x\n",
@@ -585,7 +525,7 @@ static int iso14443_config_fdt(struct st95hf_context *st95context, int wtxm)
 			return result;
 		}
 
-		/* secondary config. for 14443Type 4B after protocol select */
+		 
 		result = secondary_configuration_type4b(st95context);
 		if (result) {
 			dev_err(dev, "WTX type b second. config, err = 0x%x\n",
@@ -618,7 +558,7 @@ static int st95hf_handle_wtx(struct st95hf_context *stcontext,
 			return result;
 		}
 
-		/* Send response of wtx with ASYNC as no response expected */
+		 
 		new_params[0].param_offset = 1;
 		new_params[0].new_param_val = wtx_val;
 
@@ -632,7 +572,7 @@ static int st95hf_handle_wtx(struct st95hf_context *stcontext,
 		return result;
 	}
 
-	/* if no new wtx, cofigure with default values */
+	 
 	if (nfcddev->curr_protocol == NFC_PROTO_ISO14443)
 		val_mm = cmd_array[CMD_ISO14443A_PROTOCOL_SELECT].cmd_params[3];
 	else if (nfcddev->curr_protocol == NFC_PROTO_ISO14443_B)
@@ -654,7 +594,7 @@ static int st95hf_error_handling(struct st95hf_context *stcontext,
 	unsigned char error_byte;
 	struct device *dev = &stcontext->nfcdev->dev;
 
-	/* First check ST95HF specific error */
+	 
 	if (skb_resp->data[0] & ST95HF_ERR_MASK) {
 		if (skb_resp->data[0] == ST95HF_TIMEOUT_ERROR)
 			result = -ETIMEDOUT;
@@ -663,13 +603,13 @@ static int st95hf_error_handling(struct st95hf_context *stcontext,
 		return result;
 	}
 
-	/* Check for CRC err only if CRC is present in the tag response */
+	 
 	switch (stcontext->current_rf_tech) {
 	case NFC_DIGITAL_RF_TECH_106A:
 		if (stcontext->sendrcv_trflag == TRFLAG_NFCA_STD_FRAME_CRC) {
 			error_byte = skb_resp->data[res_len - 3];
 			if (error_byte & ST95HF_NFCA_CRC_ERR_MASK) {
-				/* CRC error occurred */
+				 
 				dev_err(dev, "CRC error, byte received = 0x%x\n",
 					error_byte);
 				result = -EIO;
@@ -680,7 +620,7 @@ static int st95hf_error_handling(struct st95hf_context *stcontext,
 	case NFC_DIGITAL_RF_TECH_ISO15693:
 		error_byte = skb_resp->data[res_len - 1];
 		if (error_byte & ST95HF_NFCB_CRC_ERR_MASK) {
-			/* CRC error occurred */
+			 
 			dev_err(dev, "CRC error, byte received = 0x%x\n",
 				error_byte);
 			result = -EIO;
@@ -704,15 +644,15 @@ static int st95hf_response_handler(struct st95hf_context *stcontext,
 
 	cb_arg = &stcontext->complete_cb_arg;
 
-	/* Process the response */
+	 
 	skb_put(skb_resp, res_len);
 
-	/* Remove st95 header */
+	 
 	skb_pull(skb_resp, 2);
 
 	skb_len = skb_resp->len;
 
-	/* check if it is case of RATS request reply & FWI is present */
+	 
 	if (nfcddev->curr_protocol == NFC_PROTO_ISO14443 && cb_arg->rats &&
 	    (skb_resp->data[1] & RATS_TB1_PRESENT_MASK)) {
 		if (skb_resp->data[1] & RATS_TA1_PRESENT_MASK)
@@ -733,7 +673,7 @@ static int st95hf_response_handler(struct st95hf_context *stcontext,
 	}
 	cb_arg->rats = false;
 
-	/* Remove CRC bytes only if received frames data has an eod (CRC) */
+	 
 	switch (stcontext->current_rf_tech) {
 	case NFC_DIGITAL_RF_TECH_106A:
 		if (stcontext->sendrcv_trflag == TRFLAG_NFCA_STD_FRAME_CRC)
@@ -777,19 +717,7 @@ static irqreturn_t st95hf_irq_thread_handler(int irq, void  *st95hfcontext)
 
 	spidevice = &stcontext->spicontext.spidev->dev;
 
-	/*
-	 * check semaphore, if not down() already, then we don't
-	 * know in which context the ISR is called and surely it
-	 * will be a bug. Note that down() of the semaphore is done
-	 * in the corresponding st95hf_in_send_cmd() and then
-	 * only this ISR should be called. ISR will up() the
-	 * semaphore before leaving. Hence when the ISR is called
-	 * the correct behaviour is down_trylock() should always
-	 * return 1 (indicating semaphore cant be taken and hence no
-	 * change in semaphore count).
-	 * If not, then we up() the semaphore and crash on
-	 * a BUG() !
-	 */
+	 
 	if (!down_trylock(&stcontext->exchange_lock)) {
 		up(&stcontext->exchange_lock);
 		WARN(1, "unknown context in ST95HF ISR");
@@ -808,14 +736,14 @@ static irqreturn_t st95hf_irq_thread_handler(int irq, void  *st95hfcontext)
 		goto end;
 	}
 
-	/* if stcontext->nfcdev_free is true, it means remove already ran */
+	 
 	if (stcontext->nfcdev_free) {
 		result = -ENODEV;
 		goto end;
 	}
 
 	if (skb_resp->data[2] == WTX_REQ_FROM_TAG) {
-		/* Request for new FWT from tag */
+		 
 		result = st95hf_handle_wtx(stcontext, true, skb_resp->data[3]);
 		if (result)
 			goto end;
@@ -833,10 +761,7 @@ static irqreturn_t st95hf_irq_thread_handler(int irq, void  *st95hfcontext)
 	if (result)
 		goto end;
 
-	/*
-	 * If select protocol is done on wtx req. do select protocol
-	 * again with default values
-	 */
+	 
 	if (wtx) {
 		wtx = false;
 		result = st95hf_handle_wtx(stcontext, false, 0);
@@ -844,10 +769,10 @@ static irqreturn_t st95hf_irq_thread_handler(int irq, void  *st95hfcontext)
 			goto end;
 	}
 
-	/* call digital layer callback */
+	 
 	cb_arg->complete_cb(stcontext->ddev, cb_arg->cb_usrarg, skb_resp);
 
-	/* up the semaphore before returning */
+	 
 	up(&stcontext->exchange_lock);
 	mutex_unlock(&stcontext->rm_lock);
 
@@ -858,15 +783,15 @@ end:
 	wtx = false;
 	cb_arg->rats = false;
 	skb_resp = ERR_PTR(result);
-	/* call of callback with error */
+	 
 	cb_arg->complete_cb(stcontext->ddev, cb_arg->cb_usrarg, skb_resp);
-	/* up the semaphore before returning */
+	 
 	up(&stcontext->exchange_lock);
 	mutex_unlock(&stcontext->rm_lock);
 	return IRQ_HANDLED;
 }
 
-/* NFC ops functions definition */
+ 
 static int st95hf_in_configure_hw(struct nfc_digital_dev *ddev,
 				  int type,
 				  int param)
@@ -955,11 +880,7 @@ static int st95hf_in_send_cmd(struct nfc_digital_dev *ddev,
 	    ddev->curr_protocol == NFC_PROTO_ISO14443)
 		stcontext->complete_cb_arg.rats = true;
 
-	/*
-	 * down the semaphore to indicate to remove func that an
-	 * ISR is pending, note that it will not block here in any case.
-	 * If found blocked, it is a BUG!
-	 */
+	 
 	rc = down_killable(&stcontext->exchange_lock);
 	if (rc) {
 		WARN(1, "Semaphore is not found up in st95hf_in_send_cmd\n");
@@ -972,7 +893,7 @@ static int st95hf_in_send_cmd(struct nfc_digital_dev *ddev,
 	if (rc) {
 		dev_err(&stcontext->nfcdev->dev,
 			"Error %d trying to perform data_exchange", rc);
-		/* up the semaphore since ISR will never come in this case */
+		 
 		up(&stcontext->exchange_lock);
 		goto free_skb_resp;
 	}
@@ -986,7 +907,7 @@ free_skb_resp:
 	return rc;
 }
 
-/* p2p will be supported in a later release ! */
+ 
 static int st95hf_tg_configure_hw(struct nfc_digital_dev *ddev,
 				  int type,
 				  int param)
@@ -1024,14 +945,14 @@ static int st95hf_switch_rf(struct nfc_digital_dev *ddev, bool on)
 	rf_tech = ddev->curr_rf_tech;
 
 	if (on)
-		/* switch on RF field */
+		 
 		return st95hf_select_protocol(stcontext, rf_tech);
 
-	/* switch OFF RF field */
+	 
 	return rf_off(stcontext);
 }
 
-/* TODO st95hf_abort_cmd */
+ 
 static void st95hf_abort_cmd(struct nfc_digital_dev *ddev)
 {
 }
@@ -1102,10 +1023,7 @@ static int st95hf_probe(struct spi_device *nfc_spi_dev)
 	init_completion(&spicontext->done);
 	mutex_init(&spicontext->spi_lock);
 
-	/*
-	 * Store spicontext in spi device object for using it in
-	 * remove function
-	 */
+	 
 	dev_set_drvdata(&nfc_spi_dev->dev, spicontext);
 
 	st95context->enable_gpio =
@@ -1142,26 +1060,21 @@ static int st95hf_probe(struct spi_device *nfc_spi_dev)
 		goto err_disable_regulator;
 	}
 
-	/*
-	 * First reset SPI to handle warm reset of the system.
-	 * It will put the ST95HF device in Power ON state
-	 * which make the state of device identical to state
-	 * at the time of cold reset of the system.
-	 */
+	 
 	ret = st95hf_send_spi_reset_sequence(st95context);
 	if (ret) {
 		dev_err(&nfc_spi_dev->dev, "err: spi_reset_sequence failed\n");
 		goto err_disable_regulator;
 	}
 
-	/* call PowerOnReset sequence of ST95hf to activate it */
+	 
 	ret = st95hf_por_sequence(st95context);
 	if (ret) {
 		dev_err(&nfc_spi_dev->dev, "err: por seq failed for st95hf\n");
 		goto err_disable_regulator;
 	}
 
-	/* create NFC dev object and register with NFC Subsystem */
+	 
 	st95context->ddev = nfc_digital_allocate_device(&st95hf_nfc_digital_ops,
 							ST95HF_SUPPORTED_PROT,
 							ST95HF_CAPABILITIES,
@@ -1181,7 +1094,7 @@ static int st95hf_probe(struct spi_device *nfc_spi_dev)
 		goto err_free_digital_device;
 	}
 
-	/* store st95context in nfc device object */
+	 
 	nfc_digital_set_drvdata(st95context->ddev, st95context);
 
 	sema_init(&st95context->exchange_lock, 1);
@@ -1216,12 +1129,12 @@ static void st95hf_remove(struct spi_device *nfc_spi_dev)
 
 	mutex_unlock(&stcontext->rm_lock);
 
-	/* if last in_send_cmd's ISR is pending, wait for it to finish */
+	 
 	result = down_killable(&stcontext->exchange_lock);
 	if (result == -EINTR)
 		dev_err(&spictx->spidev->dev, "sleep for semaphore interrupted by signal\n");
 
-	/* next reset the ST95HF controller */
+	 
 	result = st95hf_spi_send(&stcontext->spicontext,
 				 &reset_cmd,
 				 ST95HF_RESET_CMD_LEN,
@@ -1230,15 +1143,15 @@ static void st95hf_remove(struct spi_device *nfc_spi_dev)
 		dev_err(&spictx->spidev->dev,
 			"ST95HF reset failed in remove() err = %d\n", result);
 
-	/* wait for 3 ms to complete the controller reset process */
+	 
 	usleep_range(3000, 4000);
 
-	/* disable regulator */
+	 
 	if (stcontext->st95hf_supply)
 		regulator_disable(stcontext->st95hf_supply);
 }
 
-/* Register as SPI protocol driver */
+ 
 static struct spi_driver st95hf_driver = {
 	.driver = {
 		.name = "st95hf",

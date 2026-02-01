@@ -1,124 +1,7 @@
 
-/*
- * Adaptec AIC7xxx device driver for Linux.
- *
- * $Id: //depot/aic7xxx/linux/drivers/scsi/aic7xxx/aic7xxx_osm.c#235 $
- *
- * Copyright (c) 1994 John Aycock
- *   The University of Calgary Department of Computer Science.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2, or (at your option)
- * any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; see the file COPYING.  If not, write to
- * the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
- *
- * Sources include the Adaptec 1740 driver (aha1740.c), the Ultrastor 24F
- * driver (ultrastor.c), various Linux kernel source, the Adaptec EISA
- * config file (!adp7771.cfg), the Adaptec AHA-2740A Series User's Guide,
- * the Linux Kernel Hacker's Guide, Writing a SCSI Device Driver for Linux,
- * the Adaptec 1542 driver (aha1542.c), the Adaptec EISA overlay file
- * (adp7770.ovl), the Adaptec AHA-2740 Series Technical Reference Manual,
- * the Adaptec AIC-7770 Data Book, the ANSI SCSI specification, the
- * ANSI SCSI-2 specification (draft 10c), ...
- *
- * --------------------------------------------------------------------------
- *
- *  Modifications by Daniel M. Eischen (deischen@iworks.InterWorks.org):
- *
- *  Substantially modified to include support for wide and twin bus
- *  adapters, DMAing of SCBs, tagged queueing, IRQ sharing, bug fixes,
- *  SCB paging, and other rework of the code.
- *
- * --------------------------------------------------------------------------
- * Copyright (c) 1994-2000 Justin T. Gibbs.
- * Copyright (c) 2000-2001 Adaptec Inc.
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions, and the following disclaimer,
- *    without modification.
- * 2. Redistributions in binary form must reproduce at minimum a disclaimer
- *    substantially similar to the "NO WARRANTY" disclaimer below
- *    ("Disclaimer") and any redistribution must be conditioned upon
- *    including a substantially similar Disclaimer requirement for further
- *    binary redistribution.
- * 3. Neither the names of the above-listed copyright holders nor the names
- *    of any contributors may be used to endorse or promote products derived
- *    from this software without specific prior written permission.
- *
- * Alternatively, this software may be distributed under the terms of the
- * GNU General Public License ("GPL") version 2 as published by the Free
- * Software Foundation.
- *
- * NO WARRANTY
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTIBILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * HOLDERS OR CONTRIBUTORS BE LIABLE FOR SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
- * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
- * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
- * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGES.
- *
- *---------------------------------------------------------------------------
- *
- *  Thanks also go to (in alphabetical order) the following:
- *
- *    Rory Bolt     - Sequencer bug fixes
- *    Jay Estabrook - Initial DEC Alpha support
- *    Doug Ledford  - Much needed abort/reset bug fixes
- *    Kai Makisara  - DMAing of SCBs
- *
- *  A Boot time option was also added for not resetting the scsi bus.
- *
- *    Form:  aic7xxx=extended
- *           aic7xxx=no_reset
- *           aic7xxx=verbose
- *
- *  Daniel M. Eischen, deischen@iworks.InterWorks.org, 1/23/97
- *
- *  Id: aic7xxx.c,v 4.1 1997/06/12 08:23:42 deang Exp
- */
+ 
 
-/*
- * Further driver modifications made by Doug Ledford <dledford@redhat.com>
- *
- * Copyright (c) 1997-1999 Doug Ledford
- *
- * These changes are released under the same licensing terms as the FreeBSD
- * driver written by Justin Gibbs.  Please see his Copyright notice above
- * for the exact terms and conditions covering my changes as well as the
- * warranty statement.
- *
- * Modifications made to the aic7xxx.c,v 4.1 driver from Dan Eischen include
- * but are not limited to:
- *
- *  1: Import of the latest FreeBSD sequencer code for this driver
- *  2: Modification of kernel code to accommodate different sequencer semantics
- *  3: Extensive changes throughout kernel portion of driver to improve
- *     abort/reset processing and error hanndling
- *  4: Other work contributed by various people on the Internet
- *  5: Changes to printk information and verbosity selection code
- *  6: General reliability related changes, especially in IRQ management
- *  7: Modifications to the default probe/attach order for supported cards
- *  8: SMP friendliness has been improved
- *
- */
+ 
 
 #include "aic7xxx_osm.h"
 #include "aic7xxx_inline.h"
@@ -126,82 +9,28 @@
 
 static struct scsi_transport_template *ahc_linux_transport_template = NULL;
 
-#include <linux/init.h>		/* __setup */
-#include <linux/mm.h>		/* For fetching system memory size */
-#include <linux/blkdev.h>		/* For block_size() */
-#include <linux/delay.h>	/* For ssleep/msleep */
+#include <linux/init.h>		 
+#include <linux/mm.h>		 
+#include <linux/blkdev.h>		 
+#include <linux/delay.h>	 
 #include <linux/slab.h>
 
 
-/*
- * Set this to the delay in seconds after SCSI bus reset.
- * Note, we honor this only for the initial bus reset.
- * The scsi error recovery code performs its own bus settle
- * delay handling for error recovery actions.
- */
+ 
 #ifdef CONFIG_AIC7XXX_RESET_DELAY_MS
 #define AIC7XXX_RESET_DELAY CONFIG_AIC7XXX_RESET_DELAY_MS
 #else
 #define AIC7XXX_RESET_DELAY 5000
 #endif
 
-/*
- * To change the default number of tagged transactions allowed per-device,
- * add a line to the lilo.conf file like:
- * append="aic7xxx=verbose,tag_info:{{32,32,32,32},{32,32,32,32}}"
- * which will result in the first four devices on the first two
- * controllers being set to a tagged queue depth of 32.
- *
- * The tag_commands is an array of 16 to allow for wide and twin adapters.
- * Twin adapters will use indexes 0-7 for channel 0, and indexes 8-15
- * for channel 1.
- */
+ 
 typedef struct {
-	uint8_t tag_commands[16];	/* Allow for wide/twin adapters. */
+	uint8_t tag_commands[16];	 
 } adapter_tag_info_t;
 
-/*
- * Modify this as you see fit for your system.
- *
- * 0			tagged queuing disabled
- * 1 <= n <= 253	n == max tags ever dispatched.
- *
- * The driver will throttle the number of commands dispatched to a
- * device if it returns queue full.  For devices with a fixed maximum
- * queue depth, the driver will eventually determine this depth and
- * lock it in (a console message is printed to indicate that a lock
- * has occurred).  On some devices, queue full is returned for a temporary
- * resource shortage.  These devices will return queue full at varying
- * depths.  The driver will throttle back when the queue fulls occur and
- * attempt to slowly increase the depth over time as the device recovers
- * from the resource shortage.
- *
- * In this example, the first line will disable tagged queueing for all
- * the devices on the first probed aic7xxx adapter.
- *
- * The second line enables tagged queueing with 4 commands/LUN for IDs
- * (0, 2-11, 13-15), disables tagged queueing for ID 12, and tells the
- * driver to attempt to use up to 64 tags for ID 1.
- *
- * The third line is the same as the first line.
- *
- * The fourth line disables tagged queueing for devices 0 and 3.  It
- * enables tagged queueing for the other IDs, with 16 commands/LUN
- * for IDs 1 and 4, 127 commands/LUN for ID 8, and 4 commands/LUN for
- * IDs 2, 5-7, and 9-15.
- */
+ 
 
-/*
- * NOTE: The below structure is for reference only, the actual structure
- *       to modify in order to change things is just below this comment block.
-adapter_tag_info_t aic7xxx_tag_info[] =
-{
-	{{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}},
-	{{4, 64, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 0, 4, 4, 4}},
-	{{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}},
-	{{0, 16, 4, 0, 16, 4, 4, 4, 127, 4, 4, 4, 4, 4, 4, 4}}
-};
-*/
+ 
 
 #ifdef CONFIG_AIC7XXX_CMDS_PER_DEVICE
 #define AIC7XXX_CMDS_PER_DEVICE CONFIG_AIC7XXX_CMDS_PER_DEVICE
@@ -220,10 +49,7 @@ adapter_tag_info_t aic7xxx_tag_info[] =
 	AIC7XXX_CMDS_PER_DEVICE, AIC7XXX_CMDS_PER_DEVICE		\
 }
 
-/*
- * By default, use the number of commands specified by
- * the users kernel configuration.
- */
+ 
 static adapter_tag_info_t aic7xxx_tag_info[] =
 {
 	{AIC7XXX_CONFIGED_TAG_COMMANDS},
@@ -244,10 +70,7 @@ static adapter_tag_info_t aic7xxx_tag_info[] =
 	{AIC7XXX_CONFIGED_TAG_COMMANDS}
 };
 
-/*
- * There should be a specific return value for this in scsi.h, but
- * it seems that most drivers ignore it.
- */
+ 
 #define DID_UNDERFLOW   DID_ERROR
 
 void
@@ -260,71 +83,27 @@ ahc_print_path(struct ahc_softc *ahc, struct scb *scb)
 	       scb != NULL ? SCB_GET_LUN(scb) : -1);
 }
 
-/*
- * XXX - these options apply unilaterally to _all_ 274x/284x/294x
- *       cards in the system.  This should be fixed.  Exceptions to this
- *       rule are noted in the comments.
- */
+ 
 
-/*
- * Skip the scsi bus reset.  Non 0 make us skip the reset at startup.  This
- * has no effect on any later resets that might occur due to things like
- * SCSI bus timeouts.
- */
+ 
 static uint32_t aic7xxx_no_reset;
 
-/*
- * Should we force EXTENDED translation on a controller.
- *     0 == Use whatever is in the SEEPROM or default to off
- *     1 == Use whatever is in the SEEPROM or default to on
- */
+ 
 static uint32_t aic7xxx_extended;
 
-/*
- * PCI bus parity checking of the Adaptec controllers.  This is somewhat
- * dubious at best.  To my knowledge, this option has never actually
- * solved a PCI parity problem, but on certain machines with broken PCI
- * chipset configurations where stray PCI transactions with bad parity are
- * the norm rather than the exception, the error messages can be overwhelming.
- * It's included in the driver for completeness.
- *   0	   = Shut off PCI parity check
- *   non-0 = reverse polarity pci parity checking
- */
+ 
 static uint32_t aic7xxx_pci_parity = ~0;
 
-/*
- * There are lots of broken chipsets in the world.  Some of them will
- * violate the PCI spec when we issue byte sized memory writes to our
- * controller.  I/O mapped register access, if allowed by the given
- * platform, will work in almost all cases.
- */
+ 
 uint32_t aic7xxx_allow_memio = ~0;
 
-/*
- * So that we can set how long each device is given as a selection timeout.
- * The table of values goes like this:
- *   0 - 256ms
- *   1 - 128ms
- *   2 - 64ms
- *   3 - 32ms
- * We default to 256ms because some older devices need a longer time
- * to respond to initial selection.
- */
+ 
 static uint32_t aic7xxx_seltime;
 
-/*
- * Certain devices do not perform any aging on commands.  Should the
- * device be saturated by commands in one portion of the disk, it is
- * possible for transactions on far away sectors to never be serviced.
- * To handle these devices, we can periodically send an ordered tag to
- * force all outstanding transactions to be serviced prior to a new
- * transaction.
- */
+ 
 static uint32_t aic7xxx_periodic_otag;
 
-/*
- * Module information and settable options.
- */
+ 
 static char *aic7xxx = NULL;
 
 MODULE_AUTHOR("Maintainer: Hannes Reinecke <hare@suse.de>");
@@ -380,22 +159,18 @@ static int  aic7xxx_setup(char *s);
 static int ahc_linux_unit;
 
 
-/************************** OS Utility Wrappers *******************************/
+ 
 void
 ahc_delay(long usec)
 {
-	/*
-	 * udelay on Linux can have problems for
-	 * multi-millisecond waits.  Wait at most
-	 * 1024us per call.
-	 */
+	 
 	while (usec > 0) {
 		udelay(usec % 1024);
 		usec -= 1024;
 	}
 }
 
-/***************************** Low Level I/O **********************************/
+ 
 uint8_t
 ahc_inb(struct ahc_softc * ahc, long port)
 {
@@ -426,11 +201,7 @@ ahc_outsb(struct ahc_softc * ahc, long port, uint8_t *array, int count)
 {
 	int i;
 
-	/*
-	 * There is probably a more efficient way to do this on Linux
-	 * but we don't use this for anything speed critical and this
-	 * should work.
-	 */
+	 
 	for (i = 0; i < count; i++)
 		ahc_outb(ahc, port, *array++);
 }
@@ -440,16 +211,12 @@ ahc_insb(struct ahc_softc * ahc, long port, uint8_t *array, int count)
 {
 	int i;
 
-	/*
-	 * There is probably a more efficient way to do this on Linux
-	 * but we don't use this for anything speed critical and this
-	 * should work.
-	 */
+	 
 	for (i = 0; i < count; i++)
 		*array++ = ahc_inb(ahc, port);
 }
 
-/********************************* Inlines ************************************/
+ 
 static void ahc_linux_unmap_scb(struct ahc_softc*, struct scb*);
 
 static int ahc_linux_map_seg(struct ahc_softc *ahc, struct scb *scb,
@@ -489,9 +256,7 @@ ahc_linux_map_seg(struct ahc_softc *ahc, struct scb *scb,
 	return (consumed);
 }
 
-/*
- * Return a string describing the driver.
- */
+ 
 static const char *
 ahc_linux_info(struct Scsi_Host *host)
 {
@@ -515,9 +280,7 @@ ahc_linux_info(struct Scsi_Host *host)
 	return (bp);
 }
 
-/*
- * Queue an SCB to the controller.
- */
+ 
 static int ahc_linux_queue_lck(struct scsi_cmnd *cmd)
 {
 	struct	 ahc_softc *ahc;
@@ -590,8 +353,7 @@ ahc_linux_target_alloc(struct scsi_target *starget)
 			ultra = 1;
 		} else if (flags & CFULTRAEN)
 			ultra = 1;
-		/* AIC nutcase; 10MHz appears as ultra = 1, CFXFER = 0x04
-		 * change it to ultra=0, CFXFER = 0 */
+		 
 		if(ultra && (flags & CFXFER) == 0x04) {
 			ultra = 0;
 			flags &= ~CFXFER;
@@ -614,9 +376,9 @@ ahc_linux_target_alloc(struct scsi_target *starget)
 			    CAM_LUN_WILDCARD, channel,
 			    ROLE_INITIATOR);
 	ahc_set_syncrate(ahc, &devinfo, NULL, 0, 0, 0,
-			 AHC_TRANS_GOAL, /*paused*/FALSE);
+			 AHC_TRANS_GOAL,  FALSE);
 	ahc_set_width(ahc, &devinfo, MSG_EXT_WDTR_BUS_8_BIT,
-		      AHC_TRANS_GOAL, /*paused*/FALSE);
+		      AHC_TRANS_GOAL,  FALSE);
 	ahc_unlock(ahc, &flags);
 
 	return 0;
@@ -644,17 +406,10 @@ ahc_linux_slave_alloc(struct scsi_device *sdev)
 	dev = scsi_transport_device_data(sdev);
 	memset(dev, 0, sizeof(*dev));
 
-	/*
-	 * We start out life using untagged
-	 * transactions of which we allow one.
-	 */
+	 
 	dev->openings = 1;
 
-	/*
-	 * Set maxtags to 0.  This will be changed if we
-	 * later determine that we are dealing with
-	 * a tagged queuing capable device.
-	 */
+	 
 	dev->maxtags = 0;
 
 	spi_period(starget) = 0;
@@ -670,7 +425,7 @@ ahc_linux_slave_configure(struct scsi_device *sdev)
 
 	ahc_linux_device_queue_depth(sdev);
 
-	/* Initial Domain Validation */
+	 
 	if (!spi_initial_dv(sdev->sdev_target))
 		spi_dv_device(sdev);
 
@@ -678,9 +433,7 @@ ahc_linux_slave_configure(struct scsi_device *sdev)
 }
 
 #if defined(__i386__)
-/*
- * Return the disk geometry for the given SCSI device.
- */
+ 
 static int
 ahc_linux_biosparam(struct scsi_device *sdev, struct block_device *bdev,
 		    sector_t capacity, int geom[])
@@ -720,9 +473,7 @@ ahc_linux_biosparam(struct scsi_device *sdev, struct block_device *bdev,
 }
 #endif
 
-/*
- * Abort the current SCSI command(s).
- */
+ 
 static int
 ahc_linux_abort(struct scsi_cmnd *cmd)
 {
@@ -734,9 +485,7 @@ ahc_linux_abort(struct scsi_cmnd *cmd)
 	return (error);
 }
 
-/*
- * Attempt to send a target reset message to the device that timed out.
- */
+ 
 static int
 ahc_linux_dev_reset(struct scsi_cmnd *cmd)
 {
@@ -748,9 +497,7 @@ ahc_linux_dev_reset(struct scsi_cmnd *cmd)
 	return (error);
 }
 
-/*
- * Reset the SCSI bus.
- */
+ 
 static int
 ahc_linux_bus_reset(struct scsi_cmnd *cmd)
 {
@@ -762,7 +509,7 @@ ahc_linux_bus_reset(struct scsi_cmnd *cmd)
 
 	ahc_lock(ahc, &flags);
 	found = ahc_reset_channel(ahc, scmd_channel(cmd) + 'A',
-				  /*initiate reset*/TRUE);
+				   TRUE);
 	ahc_unlock(ahc, &flags);
 
 	if (bootverbose)
@@ -796,15 +543,15 @@ struct scsi_host_template aic7xxx_driver_template = {
 	.target_destroy		= ahc_linux_target_destroy,
 };
 
-/**************************** Tasklet Handler *********************************/
+ 
 
-/******************************** Macros **************************************/
+ 
 #define BUILD_SCSIID(ahc, cmd)						    \
 	((((cmd)->device->id << TID_SHIFT) & TID)			    \
 	| (((cmd)->device->channel == 0) ? (ahc)->our_id : (ahc)->our_id_b) \
 	| (((cmd)->device->channel == 0) ? 0 : TWIN_CHNLB))
 
-/******************************** Bus DMA *************************************/
+ 
 int
 ahc_dma_tag_create(struct ahc_softc *ahc, bus_dma_tag_t parent,
 		   bus_size_t alignment, bus_size_t boundary,
@@ -819,13 +566,7 @@ ahc_dma_tag_create(struct ahc_softc *ahc, bus_dma_tag_t parent,
 	if (dmat == NULL)
 		return (ENOMEM);
 
-	/*
-	 * Linux is very simplistic about DMA memory.  For now don't
-	 * maintain all specification information.  Once Linux supplies
-	 * better facilities for doing these operations, or the
-	 * needs of this particular driver change, we might need to do
-	 * more here.
-	 */
+	 
 	dmat->alignment = alignment;
 	dmat->boundary = boundary;
 	dmat->maxsize = maxsize;
@@ -843,7 +584,7 @@ int
 ahc_dmamem_alloc(struct ahc_softc *ahc, bus_dma_tag_t dmat, void** vaddr,
 		 int flags, bus_dmamap_t *mapp)
 {
-	/* XXX: check if we really need the GFP_ATOMIC and unwind this mess! */
+	 
 	*vaddr = dma_alloc_coherent(ahc->dev, dmat->maxsize, mapp, GFP_ATOMIC);
 	if (*vaddr == NULL)
 		return ENOMEM;
@@ -862,15 +603,12 @@ ahc_dmamap_load(struct ahc_softc *ahc, bus_dma_tag_t dmat, bus_dmamap_t map,
 		void *buf, bus_size_t buflen, bus_dmamap_callback_t *cb,
 		void *cb_arg, int flags)
 {
-	/*
-	 * Assume for now that this will only be used during
-	 * initialization and not for per-transaction buffer mapping.
-	 */
+	 
 	bus_dma_segment_t stack_sg;
 
 	stack_sg.ds_addr = map;
 	stack_sg.ds_len = dmat->maxsize;
-	cb(cb_arg, &stack_sg, /*nseg*/1, /*error*/0);
+	cb(cb_arg, &stack_sg,  1,  0);
 	return (0);
 }
 
@@ -882,7 +620,7 @@ ahc_dmamap_destroy(struct ahc_softc *ahc, bus_dma_tag_t dmat, bus_dmamap_t map)
 int
 ahc_dmamap_unload(struct ahc_softc *ahc, bus_dma_tag_t dmat, bus_dmamap_t map)
 {
-	/* Nothing to do */
+	 
 	return (0);
 }
 
@@ -927,17 +665,14 @@ ahc_parse_brace_option(char *opt_name, char *opt_arg, char *end, int depth,
 	int	 done;
 	char	 tok_list[] = {'.', ',', '{', '}', '\0'};
 
-	/* All options use a ':' name/arg separator */
+	 
 	if (*opt_arg != ':')
 		return (opt_arg);
 	opt_arg++;
 	instance = -1;
 	targ = -1;
 	done = FALSE;
-	/*
-	 * Restore separator that may be in
-	 * the middle of our option argument.
-	 */
+	 
 	tok_end = strchr(opt_arg, '\0');
 	if (tok_end < end)
 		*tok_end = ',';
@@ -994,11 +729,7 @@ ahc_parse_brace_option(char *opt_name, char *opt_arg, char *end, int depth,
 	return (opt_arg);
 }
 
-/*
- * Handle Linux boot parameters. This routine allows for assigning a value
- * to a parameter with a ':' between the parameter and the value.
- * ie. aic7xxx=stpwlev:1,extended
- */
+ 
 static int
 aic7xxx_setup(char *s)
 {
@@ -1027,10 +758,7 @@ aic7xxx_setup(char *s)
 
 	end = strchr(s, '\0');
 
-	/*
-	 * XXX ia64 gcc isn't smart enough to know that ARRAY_SIZE
-	 * will never be 0 in this case.
-	 */
+	 
 	n = 0;
 
 	while ((p = strsep(&s, ",.")) != NULL) {
@@ -1083,7 +811,7 @@ ahc_linux_register_host(struct ahc_softc *ahc, struct scsi_host_template *templa
 	ahc->platform_data->host = host;
 	host->can_queue = AHC_MAX_QUEUE;
 	host->cmd_per_lun = 2;
-	/* XXX No way to communicate the ID for multiple channels */
+	 
 	host->this_id = ahc->our_id;
 	host->irq = ahc->platform_data->irq;
 	host->max_id = (ahc->features & AHC_WIDE) ? 16 : 8;
@@ -1116,11 +844,7 @@ ahc_linux_register_host(struct ahc_softc *ahc, struct scsi_host_template *templa
 	return 0;
 }
 
-/*
- * Place the SCSI bus into a known state by either resetting it,
- * or forcing transfer negotiations on the next command to any
- * target.
- */
+ 
 static void
 ahc_linux_initialize_scsi_bus(struct ahc_softc *ahc)
 {
@@ -1137,14 +861,14 @@ ahc_linux_initialize_scsi_bus(struct ahc_softc *ahc)
 		ahc->flags &= ~(AHC_RESET_BUS_A|AHC_RESET_BUS_B);
 
 	if ((ahc->flags & AHC_RESET_BUS_A) != 0)
-		ahc_reset_channel(ahc, 'A', /*initiate_reset*/TRUE);
+		ahc_reset_channel(ahc, 'A',  TRUE);
 	else
 		numtarg = (ahc->features & AHC_WIDE) ? 16 : 8;
 
 	if ((ahc->features & AHC_TWIN) != 0) {
 
 		if ((ahc->flags & AHC_RESET_BUS_B) != 0) {
-			ahc_reset_channel(ahc, 'B', /*initiate_reset*/TRUE);
+			ahc_reset_channel(ahc, 'B',  TRUE);
 		} else {
 			if (numtarg == 0)
 				i = 8;
@@ -1152,10 +876,7 @@ ahc_linux_initialize_scsi_bus(struct ahc_softc *ahc)
 		}
 	}
 
-	/*
-	 * Force negotiation to async for all targets that
-	 * will not see an initial bus reset.
-	 */
+	 
 	for (; i < numtarg; i++) {
 		struct ahc_devinfo devinfo;
 		struct ahc_initiator_tinfo *tinfo;
@@ -1180,7 +901,7 @@ ahc_linux_initialize_scsi_bus(struct ahc_softc *ahc)
 				       tinfo, AHC_NEG_ALWAYS);
 	}
 	ahc_unlock(ahc, &s);
-	/* Give the bus some time to recover */
+	 
 	if ((ahc->flags & (AHC_RESET_BUS_A|AHC_RESET_BUS_B)) != 0) {
 		ahc_linux_freeze_simq(ahc);
 		msleep(AIC7XXX_RESET_DELAY);
@@ -1213,7 +934,7 @@ ahc_platform_free(struct ahc_softc *ahc)
 	int i;
 
 	if (ahc->platform_data != NULL) {
-		/* destroy all of the device and target objects */
+		 
 		for (i = 0; i < AHC_NUM_TARGETS; i++) {
 			starget = ahc->platform_data->starget[i];
 			if (starget != NULL) {
@@ -1287,18 +1008,12 @@ ahc_platform_set_tags(struct ahc_softc *ahc, struct scsi_device *sdev,
 
 		usertags = ahc_linux_user_tagdepth(ahc, devinfo);
 		if (!was_queuing) {
-			/*
-			 * Start out aggressively and allow our
-			 * dynamic queue depth algorithm to take
-			 * care of the rest.
-			 */
+			 
 			dev->maxtags = usertags;
 			dev->openings = dev->maxtags - dev->active;
 		}
 		if (dev->maxtags == 0) {
-			/*
-			 * Queueing is disabled by the user.
-			 */
+			 
 			dev->openings = 1;
 		} else if (alg == AHC_QUEUE_TAGGED) {
 			dev->flags |= AHC_DEV_Q_TAGGED;
@@ -1307,7 +1022,7 @@ ahc_platform_set_tags(struct ahc_softc *ahc, struct scsi_device *sdev,
 		} else
 			dev->flags |= AHC_DEV_Q_BASIC;
 	} else {
-		/* We can only have one opening. */
+		 
 		dev->maxtags = 0;
 		dev->openings =  1 - dev->active;
 	}
@@ -1318,12 +1033,7 @@ ahc_platform_set_tags(struct ahc_softc *ahc, struct scsi_device *sdev,
 				dev->openings + dev->active);
 		break;
 	default:
-		/*
-		 * We allow the OS to queue 2 untagged transactions to
-		 * us at any time even though we can only execute them
-		 * serially on the controller/device.  This should
-		 * remove some latency.
-		 */
+		 
 		scsi_change_queue_depth(sdev, 2);
 		break;
 	}
@@ -1367,9 +1077,7 @@ ahc_linux_user_tagdepth(struct ahc_softc *ahc, struct ahc_devinfo *devinfo)
 	return (tags);
 }
 
-/*
- * Determines the queue depth for a given device.
- */
+ 
 static void
 ahc_linux_device_queue_depth(struct scsi_device *sdev)
 {
@@ -1410,19 +1118,11 @@ ahc_linux_run_command(struct ahc_softc *ahc, struct ahc_linux_device *dev,
 	struct scb_tailq *untagged_q = NULL;
 	int nseg;
 
-	/*
-	 * Schedule us to run later.  The only reason we are not
-	 * running is because the whole controller Q is frozen.
-	 */
+	 
 	if (ahc->platform_data->qfrozen != 0)
 		return SCSI_MLQUEUE_HOST_BUSY;
 
-	/*
-	 * We only allow one untagged transaction
-	 * per target in the initiator role unless
-	 * we are storing a full busy target *lun*
-	 * table in SCB space.
-	 */
+	 
 	if (!(cmd->flags & SCMD_TAGGED)
 	    && (ahc->features & AHC_SCB_BTT) == 0) {
 		int target_offset;
@@ -1430,8 +1130,7 @@ ahc_linux_run_command(struct ahc_softc *ahc, struct ahc_linux_device *dev,
 		target_offset = cmd->device->id + cmd->device->channel * 8;
 		untagged_q = &(ahc->untagged_queues[target_offset]);
 		if (!TAILQ_EMPTY(untagged_q))
-			/* if we're already executing an untagged command
-			 * we're busy to another */
+			 
 			return SCSI_MLQUEUE_DEVICE_BUSY;
 	}
 
@@ -1439,9 +1138,7 @@ ahc_linux_run_command(struct ahc_softc *ahc, struct ahc_linux_device *dev,
 	if (nseg < 0)
 		return SCSI_MLQUEUE_HOST_BUSY;
 
-	/*
-	 * Get an scb to use.
-	 */
+	 
 	scb = ahc_get_scb(ahc);
 	if (!scb) {
 		scsi_dma_unmap(cmd);
@@ -1453,9 +1150,7 @@ ahc_linux_run_command(struct ahc_softc *ahc, struct ahc_linux_device *dev,
 	hscb = scb->hscb;
 	cmd->host_scribble = (char *)scb;
 
-	/*
-	 * Fill out basics of the HSCB.
-	 */
+	 
 	hscb->control = 0;
 	hscb->scsiid = BUILD_SCSIID(ahc, cmd);
 	hscb->lun = cmd->device->lun;
@@ -1504,12 +1199,9 @@ ahc_linux_run_command(struct ahc_softc *ahc, struct ahc_linux_device *dev,
 		struct	scatterlist *cur_seg;
 		int i;
 
-		/* Copy the segments into the SG list. */
+		 
 		sg = scb->sg_list;
-		/*
-		 * The sg_count may be larger than nseg if
-		 * a transfer crosses a 32bit page.
-		 */
+		 
 		scsi_for_each_sg(cmd, cur_seg, nseg, i) {
 			dma_addr_t addr;
 			bus_size_t len;
@@ -1525,16 +1217,11 @@ ahc_linux_run_command(struct ahc_softc *ahc, struct ahc_linux_device *dev,
 		sg--;
 		sg->len |= ahc_htole32(AHC_DMA_LAST_SEG);
 
-		/*
-		 * Reset the sg list pointer.
-		 */
+		 
 		scb->hscb->sgptr =
 			ahc_htole32(scb->sg_list_phys | SG_FULL_RESID);
 
-		/*
-		 * Copy the first SG into the "current"
-		 * data pointer area.
-		 */
+		 
 		scb->hscb->dataptr = scb->sg_list->addr;
 		scb->hscb->datacnt = scb->sg_list->len;
 	} else {
@@ -1560,9 +1247,7 @@ ahc_linux_run_command(struct ahc_softc *ahc, struct ahc_linux_device *dev,
 	return 0;
 }
 
-/*
- * SCSI controller interrupt handler.
- */
+ 
 irqreturn_t
 ahc_linux_isr(int irq, void *dev_id)
 {
@@ -1603,10 +1288,7 @@ ahc_send_async(struct ahc_softc *ahc, char channel,
 							       : ahc->our_id_b,
 						target, &tstate);
 
-		/*
-		 * Don't bother reporting results while
-		 * negotiations are still pending.
-		 */
+		 
 		if (tinfo->curr.period != tinfo->goal.period
 		 || tinfo->curr.width != tinfo->goal.width
 		 || tinfo->curr.offset != tinfo->goal.offset
@@ -1614,10 +1296,7 @@ ahc_send_async(struct ahc_softc *ahc, char channel,
 			if (bootverbose == 0)
 				break;
 
-		/*
-		 * Don't bother reporting results that
-		 * are identical to those last reported.
-		 */
+		 
 		target_offset = target;
 		if (channel == 'B')
 			target_offset += 8;
@@ -1664,9 +1343,7 @@ ahc_send_async(struct ahc_softc *ahc, char channel,
 	}
 }
 
-/*
- * Calls the higher level scsi done function and frees the scb.
- */
+ 
 void
 ahc_done(struct ahc_softc *ahc, struct scb *scb)
 {
@@ -1683,11 +1360,7 @@ ahc_done(struct ahc_softc *ahc, struct scb *scb)
 		TAILQ_REMOVE(untagged_q, scb, links.tqe);
 		BUG_ON(!TAILQ_EMPTY(untagged_q));
 	} else if ((scb->flags & SCB_ACTIVE) == 0) {
-		/*
-		 * Transactions aborted from the untagged queue may
-		 * not have been dispatched to the controller, so
-		 * only check the SCB_ACTIVE flag for tagged transactions.
-		 */
+		 
 		printk("SCB %d done'd twice\n", scb->hscb->tag);
 		ahc_dump_card_state(ahc);
 		panic("Stopping for safety");
@@ -1702,12 +1375,7 @@ ahc_done(struct ahc_softc *ahc, struct scb *scb)
 	}
 	ahc_linux_unmap_scb(ahc, scb);
 
-	/*
-	 * Guard against stale sense data.
-	 * The Linux mid-layer assumes that sense
-	 * was retrieved anytime the first byte of
-	 * the sense buffer looks "sane".
-	 */
+	 
 	cmd->sense_buffer[0] = 0;
 	if (ahc_get_transaction_status(scb) == CAM_REQ_INPROG) {
 #ifdef AHC_REPORT_UNDERFLOWS
@@ -1725,15 +1393,7 @@ ahc_done(struct ahc_softc *ahc, struct scb *scb)
 #endif
 			ahc_set_transaction_status(scb, CAM_UNCOR_PARITY);
 #ifdef AHC_REPORT_UNDERFLOWS
-		/*
-		 * This code is disabled by default as some
-		 * clients of the SCSI system do not properly
-		 * initialize the underflow parameter.  This
-		 * results in spurious termination of commands
-		 * that complete as expected (e.g. underflow is
-		 * allowed as command can return variable amounts
-		 * of data.
-		 */
+		 
 		} else if (amount_xferred < scb->io_ctx->underflow) {
 			u_int i;
 
@@ -1760,12 +1420,7 @@ ahc_done(struct ahc_softc *ahc, struct scb *scb)
 	 && ahc_get_transaction_status(scb) == CAM_REQ_CMP
 	 && ahc_get_scsi_status(scb) != SAM_STAT_TASK_SET_FULL)
 		dev->tag_success_count++;
-	/*
-	 * Some devices deal with temporary internal resource
-	 * shortages by returning queue full.  When the queue
-	 * full occurrs, we throttle back.  Slowly try to get
-	 * back to our previous queue depth.
-	 */
+	 
 	if ((dev->openings + dev->active) < dev->maxtags
 	 && dev->tag_success_count > AHC_TAG_SUCCESS_INTERVAL) {
 		dev->tag_success_count = 0;
@@ -1802,16 +1457,7 @@ ahc_linux_handle_scsi_status(struct ahc_softc *ahc,
 			    sdev->sdev_target->channel == 0 ? 'A' : 'B',
 			    ROLE_INITIATOR);
 
-	/*
-	 * We don't currently trust the mid-layer to
-	 * properly deal with queue full or busy.  So,
-	 * when one occurs, we tell the mid-layer to
-	 * unconditionally requeue the command to us
-	 * so that we can retry it ourselves.  We also
-	 * implement our own throttling mechanism so
-	 * we don't clobber the device with too many
-	 * commands.
-	 */
+	 
 	switch (ahc_get_scsi_status(scb)) {
 	default:
 		break;
@@ -1820,10 +1466,7 @@ ahc_linux_handle_scsi_status(struct ahc_softc *ahc,
 	{
 		struct scsi_cmnd *cmd;
 
-		/*
-		 * Copy sense information to the OS's cmd
-		 * structure if it is available.
-		 */
+		 
 		cmd = scb->io_ctx;
 		if (scb->flags & SCB_SENSE) {
 			u_int sense_size;
@@ -1855,36 +1498,16 @@ ahc_linux_handle_scsi_status(struct ahc_softc *ahc,
 	}
 	case SAM_STAT_TASK_SET_FULL:
 	{
-		/*
-		 * By the time the core driver has returned this
-		 * command, all other commands that were queued
-		 * to us but not the device have been returned.
-		 * This ensures that dev->active is equal to
-		 * the number of commands actually queued to
-		 * the device.
-		 */
+		 
 		dev->tag_success_count = 0;
 		if (dev->active != 0) {
-			/*
-			 * Drop our opening count to the number
-			 * of commands currently outstanding.
-			 */
+			 
 			dev->openings = 0;
-/*
-			ahc_print_path(ahc, scb);
-			printk("Dropping tag count to %d\n", dev->active);
- */
+ 
 			if (dev->active == dev->tags_on_last_queuefull) {
 
 				dev->last_queuefull_same_count++;
-				/*
-				 * If we repeatedly see a queue full
-				 * at the same queue depth, this
-				 * device has a fixed number of tag
-				 * slots.  Lock in this tag depth
-				 * so we stop seeing queue fulls from
-				 * this device.
-				 */
+				 
 				if (dev->last_queuefull_same_count
 				 == AHC_LOCK_TAGS_COUNT) {
 					dev->maxtags = dev->active;
@@ -1903,10 +1526,7 @@ ahc_linux_handle_scsi_status(struct ahc_softc *ahc,
 				   ? AHC_QUEUE_BASIC : AHC_QUEUE_TAGGED);
 			break;
 		}
-		/*
-		 * Drop down to a single opening, and treat this
-		 * as if the target returned BUSY SCSI status.
-		 */
+		 
 		dev->openings = 1;
 		ahc_set_scsi_status(scb, SAM_STAT_BUSY);
 		ahc_platform_set_tags(ahc, sdev, &devinfo,
@@ -1920,12 +1540,7 @@ ahc_linux_handle_scsi_status(struct ahc_softc *ahc,
 static void
 ahc_linux_queue_cmd_complete(struct ahc_softc *ahc, struct scsi_cmnd *cmd)
 {
-	/*
-	 * Map CAM error codes into Linux Error codes.  We
-	 * avoid the conversion so that the DV code has the
-	 * full error information available when making
-	 * state change decisions.
-	 */
+	 
 	{
 		u_int new_status;
 
@@ -1976,7 +1591,7 @@ ahc_linux_queue_cmd_complete(struct ahc_softc *ahc, struct scsi_cmnd *cmd)
 			new_status = DID_REQUEUE;
 			break;
 		default:
-			/* We should never get here */
+			 
 			new_status = DID_ERROR;
 			break;
 		}
@@ -1997,7 +1612,7 @@ ahc_linux_freeze_simq(struct ahc_softc *ahc)
 	if (ahc->platform_data->qfrozen == 1) {
 		scsi_block_requests(ahc->platform_data->host);
 
-		/* XXX What about Twin channels? */
+		 
 		ahc_platform_abort_scbs(ahc, CAM_TARGET_WILDCARD, ALL_CHANNELS,
 					CAM_LUN_WILDCARD, SCB_LIST_NULL,
 					ROLE_INITIATOR, CAM_REQUEUE_REQ);
@@ -2018,12 +1633,7 @@ ahc_linux_release_simq(struct ahc_softc *ahc)
 	if (ahc->platform_data->qfrozen == 0)
 		unblock_reqs = 1;
 	ahc_unlock(ahc, &s);
-	/*
-	 * There is still a race here.  The mid-layer
-	 * should keep its own freeze count and use
-	 * a bottom half handler to run the queues
-	 * so we can unblock with our own lock held.
-	 */
+	 
 	if (unblock_reqs)
 		scsi_unblock_requests(ahc->platform_data->host);
 }
@@ -2061,20 +1671,11 @@ ahc_linux_queue_recovery_cmd(struct scsi_cmnd *cmd, scb_flag flag)
 
 	ahc_lock(ahc, &flags);
 
-	/*
-	 * First determine if we currently own this command.
-	 * Start by searching the device queue.  If not found
-	 * there, check the pending_scb list.  If not found
-	 * at all, and the system wanted us to just abort the
-	 * command, return success.
-	 */
+	 
 	dev = scsi_transport_device_data(cmd->device);
 
 	if (dev == NULL) {
-		/*
-		 * No target device for this command exists,
-		 * so we must not still own the command.
-		 */
+		 
 		printk("%s:%d:%d:%d: Is not an active device\n",
 		       ahc_name(ahc), cmd->device->channel, cmd->device->id,
 		       (u8)cmd->device->lun);
@@ -2094,9 +1695,7 @@ ahc_linux_queue_recovery_cmd(struct scsi_cmnd *cmd, scb_flag flag)
 		goto done;
 	}
 
-	/*
-	 * See if we can find a matching cmd in the pending list.
-	 */
+	 
 	LIST_FOREACH(pending_scb, &ahc->pending_scbs, pending_links) {
 		if (pending_scb->io_ctx == cmd)
 			break;
@@ -2104,7 +1703,7 @@ ahc_linux_queue_recovery_cmd(struct scsi_cmnd *cmd, scb_flag flag)
 
 	if (pending_scb == NULL && flag == SCB_DEVICE_RESET) {
 
-		/* Any SCB for this device will do for a target reset */
+		 
 		LIST_FOREACH(pending_scb, &ahc->pending_scbs, pending_links) {
 			if (ahc_match_scb(ahc, pending_scb, scmd_id(cmd),
 					  scmd_channel(cmd) + 'A',
@@ -2120,18 +1719,12 @@ ahc_linux_queue_recovery_cmd(struct scsi_cmnd *cmd, scb_flag flag)
 	}
 
 	if ((pending_scb->flags & SCB_RECOVERY_SCB) != 0) {
-		/*
-		 * We can't queue two recovery actions using the same SCB
-		 */
+		 
 		retval = FAILED;
 		goto  done;
 	}
 
-	/*
-	 * Ensure that the card doesn't do anything
-	 * behind our back and that we didn't "just" miss
-	 * an interrupt that would affect this cmd.
-	 */
+	 
 	was_paused = ahc_is_paused(ahc);
 	ahc_pause_and_flushwork(ahc);
 	paused = TRUE;
@@ -2163,7 +1756,7 @@ ahc_linux_queue_recovery_cmd(struct scsi_cmnd *cmd, scb_flag flag)
 				      cmd->device->channel + 'A',
 				      cmd->device->lun,
 				      pending_scb->hscb->tag,
-				      ROLE_INITIATOR, /*status*/0,
+				      ROLE_INITIATOR,  0,
 				      SEARCH_COUNT) > 0) {
 		disconnected = FALSE;
 	}
@@ -2180,14 +1773,7 @@ ahc_linux_queue_recovery_cmd(struct scsi_cmnd *cmd, scb_flag flag)
 			disconnected = FALSE;
 	}
 
-	/*
-	 * At this point, pending_scb is the scb associated with the
-	 * passed in command.  That command is currently active on the
-	 * bus, is in the disconnected state, or we're hoping to find
-	 * a command for the same target active on the bus to abuse to
-	 * send a BDR.  Queue the appropriate message based on which of
-	 * these states we are in.
-	 */
+	 
 	last_phase = ahc_inb(ahc, LASTPHASE);
 	saved_scbptr = ahc_inb(ahc, SCBPTR);
 	active_scb_index = ahc_inb(ahc, SCB_TAG);
@@ -2197,10 +1783,7 @@ ahc_linux_queue_recovery_cmd(struct scsi_cmnd *cmd, scb_flag flag)
 	  || (flag == SCB_DEVICE_RESET
 	   && SCSIID_TARGET(ahc, saved_scsiid) == scmd_id(cmd)))) {
 
-		/*
-		 * We're active on the bus, so assert ATN
-		 * and hope that the target responds.
-		 */
+		 
 		pending_scb = ahc_lookup_scb(ahc, active_scb_index);
 		pending_scb->flags |= SCB_RECOVERY_SCB|flag;
 		ahc_outb(ahc, MSG_OUT, HOST_MSG);
@@ -2209,57 +1792,26 @@ ahc_linux_queue_recovery_cmd(struct scsi_cmnd *cmd, scb_flag flag)
 		wait = TRUE;
 	} else if (disconnected) {
 
-		/*
-		 * Actually re-queue this SCB in an attempt
-		 * to select the device before it reconnects.
-		 * In either case (selection or reselection),
-		 * we will now issue the approprate message
-		 * to the timed-out device.
-		 *
-		 * Set the MK_MESSAGE control bit indicating
-		 * that we desire to send a message.  We
-		 * also set the disconnected flag since
-		 * in the paging case there is no guarantee
-		 * that our SCB control byte matches the
-		 * version on the card.  We don't want the
-		 * sequencer to abort the command thinking
-		 * an unsolicited reselection occurred.
-		 */
+		 
 		pending_scb->hscb->control |= MK_MESSAGE|DISCONNECTED;
 		pending_scb->flags |= SCB_RECOVERY_SCB|flag;
 
-		/*
-		 * Remove any cached copy of this SCB in the
-		 * disconnected list in preparation for the
-		 * queuing of our abort SCB.  We use the
-		 * same element in the SCB, SCB_NEXT, for
-		 * both the qinfifo and the disconnected list.
-		 */
+		 
 		ahc_search_disc_list(ahc, cmd->device->id,
 				     cmd->device->channel + 'A',
 				     cmd->device->lun, pending_scb->hscb->tag,
-				     /*stop_on_first*/TRUE,
-				     /*remove*/TRUE,
-				     /*save_state*/FALSE);
+				      TRUE,
+				      TRUE,
+				      FALSE);
 
-		/*
-		 * In the non-paging case, the sequencer will
-		 * never re-reference the in-core SCB.
-		 * To make sure we are notified during
-		 * reselection, set the MK_MESSAGE flag in
-		 * the card's copy of the SCB.
-		 */
+		 
 		if ((ahc->flags & AHC_PAGESCBS) == 0) {
 			ahc_outb(ahc, SCBPTR, pending_scb->hscb->tag);
 			ahc_outb(ahc, SCB_CONTROL,
 				 ahc_inb(ahc, SCB_CONTROL)|MK_MESSAGE);
 		}
 
-		/*
-		 * Clear out any entries in the QINFIFO first
-		 * so we are the next SCB for this target
-		 * to run.
-		 */
+		 
 		ahc_search_qinfifo(ahc, cmd->device->id,
 				   cmd->device->channel + 'A',
 				   cmd->device->lun, SCB_LIST_NULL,
@@ -2277,12 +1829,7 @@ ahc_linux_queue_recovery_cmd(struct scsi_cmnd *cmd, scb_flag flag)
 	}
 
 no_cmd:
-	/*
-	 * Our assumption is that if we don't have the command, no
-	 * recovery action was required, so we return success.  Again,
-	 * the semantics of the mid-layer recovery engine are not
-	 * well defined, so this may change in time.
-	 */
+	 
 	retval = SUCCESS;
 done:
 	if (paused)
@@ -2341,19 +1888,19 @@ static void ahc_linux_set_period(struct scsi_target *starget, int period)
 		offset = MAX_OFFSET;
 
 	if (period < 9)
-		period = 9;	/* 12.5ns is our minimum */
+		period = 9;	 
 	if (period == 9) {
 		if (spi_max_width(starget))
 			ppr_options |= MSG_EXT_PPR_DT_REQ;
 		else
-			/* need wide for DT and need DT for 12.5 ns */
+			 
 			period = 10;
 	}
 
 	ahc_compile_devinfo(&devinfo, shost->this_id, starget->id, 0,
 			    starget->channel + 'A', ROLE_INITIATOR);
 
-	/* all PPR requests apart from QAS require wide transfers */
+	 
 	if (ppr_options & ~MSG_EXT_PPR_QAS_REQ) {
 		if (spi_width(starget) == 0)
 			ppr_options &= MSG_EXT_PPR_QAS_REQ;
@@ -2418,7 +1965,7 @@ static void ahc_linux_set_dt(struct scsi_target *starget, int dt)
 		if (!width)
 			ahc_linux_set_width(starget, 1);
 	} else if (period == 9)
-		period = 10;	/* if resetting DT, period must be >= 25ns */
+		period = 10;	 
 
 	ahc_compile_devinfo(&devinfo, shost->this_id, starget->id, 0,
 			    starget->channel + 'A', ROLE_INITIATOR);
@@ -2431,10 +1978,7 @@ static void ahc_linux_set_dt(struct scsi_target *starget, int dt)
 }
 
 #if 0
-/* FIXME: This code claims to support IU and QAS.  However, the actual
- * sequencer code and aic7xxx_core have no support for these parameters and
- * will get into a bad state if they're negotiated.  Do not enable this
- * unless you know what you're doing */
+ 
 static void ahc_linux_set_qas(struct scsi_target *starget, int qas)
 {
 	struct Scsi_Host *shost = dev_to_shost(starget->dev.parent);
@@ -2501,7 +2045,7 @@ static void ahc_linux_get_signalling(struct Scsi_Host *shost)
 	u8 mode;
 
 	if (!(ahc->features & AHC_ULTRA2)) {
-		/* non-LVD chipset, may not have SBLKCTL reg */
+		 
 		spi_signalling(shost) =
 			ahc->features & AHC_HVD ?
 			SPI_SIGNAL_HVD :
@@ -2546,9 +2090,7 @@ static struct spi_function_template ahc_linux_transport_functions = {
 static int __init
 ahc_linux_init(void)
 {
-	/*
-	 * If we've been passed any parameters, process them now.
-	 */
+	 
 	if (aic7xxx)
 		aic7xxx_setup(aic7xxx);
 

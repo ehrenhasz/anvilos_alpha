@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * trace_events_inject - trace event injection
- *
- * Copyright (C) 2019 Cong Wang <cwang@twitter.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/ctype.h>
@@ -44,7 +40,7 @@ parse_field(char *str, struct trace_event_call *call,
 
 	if (!str[i])
 		return 0;
-	/* First find the field to associate to */
+	 
 	while (isspace(str[i]))
 		i++;
 	s = i;
@@ -75,14 +71,14 @@ parse_field(char *str, struct trace_event_call *call,
 		char *num, c;
 		int ret;
 
-		/* Make sure the field is not a string */
+		 
 		if (is_string_field(field))
 			return -EINVAL;
 
 		if (str[i] == '-')
 			i++;
 
-		/* We allow 0xDEADBEEF */
+		 
 		while (isalnum(str[i]))
 			i++;
 		num = str + s;
@@ -90,7 +86,7 @@ parse_field(char *str, struct trace_event_call *call,
 		if (c != '\0' && !isspace(c))
 			return -EINVAL;
 		str[i] = '\0';
-		/* Make sure it is a value */
+		 
 		if (field->is_signed)
 			ret = kstrtoll(num, 0, &val);
 		else
@@ -104,7 +100,7 @@ parse_field(char *str, struct trace_event_call *call,
 	} else if (str[i] == '\'' || str[i] == '"') {
 		char q = str[i];
 
-		/* Make sure the field is OK for strings */
+		 
 		if (!is_string_field(field))
 			return -EINVAL;
 
@@ -119,7 +115,7 @@ parse_field(char *str, struct trace_event_call *call,
 		if (!str[i])
 			return -EINVAL;
 
-		/* Skip quotes */
+		 
 		s++;
 		len = i - s;
 		if (len >= MAX_FILTER_STR_VAL)
@@ -127,7 +123,7 @@ parse_field(char *str, struct trace_event_call *call,
 
 		*pv = (unsigned long)(str + s);
 		str[i] = 0;
-		/* go past the last quote */
+		 
 		i++;
 		return i;
 	}
@@ -157,7 +153,7 @@ static void *trace_alloc_entry(struct trace_event_call *call, int *size)
 	struct list_head *head;
 	void *entry = NULL;
 
-	/* We need an extra '\0' at the end. */
+	 
 	entry = kzalloc(entry_size + 1, GFP_KERNEL);
 	if (!entry)
 		return NULL;
@@ -177,7 +173,7 @@ static void *trace_alloc_entry(struct trace_event_call *call, int *size)
 				str_loc -= field->offset + field->size;
 
 			str_item = (u32 *)(entry + field->offset);
-			*str_item = str_loc; /* string length is 0. */
+			*str_item = str_loc;  
 		} else {
 			char **paddr;
 
@@ -192,7 +188,7 @@ static void *trace_alloc_entry(struct trace_event_call *call, int *size)
 
 #define INJECT_STRING "STATIC STRING CAN NOT BE INJECTED"
 
-/* Caller is responsible to free the *pentry. */
+ 
 static int parse_entry(char *str, struct trace_event_call *call, void **pentry)
 {
 	struct ftrace_event_field *field;

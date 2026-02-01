@@ -1,6 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// ASoC machine driver for Snow boards
+
+
+
 
 #include <linux/clk.h>
 #include <linux/module.h>
@@ -108,10 +108,10 @@ static int snow_late_probe(struct snd_soc_card *card)
 
 	rtd = snd_soc_get_pcm_runtime(card, &card->dai_link[0]);
 
-	/* In the multi-codec case codec_dais 0 is MAX98095 and 1 is HDMI. */
+	 
 	codec_dai = asoc_rtd_to_codec(rtd, 0);
 
-	/* Set the MCLK rate for the codec */
+	 
 	return snd_soc_dai_set_sysclk(codec_dai, 0,
 				FIN_PLL_RATE, SND_SOC_CLOCK_IN);
 }
@@ -154,7 +154,7 @@ static int snow_probe(struct platform_device *pdev)
 	card->num_links = 1;
 	card->dev = dev;
 
-	/* Try new DT bindings with HDMI support first. */
+	 
 	cpu = of_get_child_by_name(dev->of_node, "cpu");
 
 	if (cpu) {
@@ -206,7 +206,7 @@ static int snow_probe(struct platform_device *pdev)
 
 	link->platforms->of_node = link->cpus->of_node;
 
-	/* Update card-name if provided through DT, else use default name */
+	 
 	snd_soc_of_parse_card_name(card, "samsung,model");
 
 	snd_soc_card_set_drvdata(card, priv);

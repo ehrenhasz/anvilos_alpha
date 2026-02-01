@@ -1,24 +1,4 @@
-/*
- * Copyright 2017 Red Hat Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- */
+ 
 #include "vmm.h"
 
 #include <subdev/fb.h>
@@ -114,7 +94,7 @@ gf100_vmm_pgd_pde(struct nvkm_vmm *vmm, struct nvkm_vmm_pt *pgd, u32 pdei)
 		switch (nvkm_memory_target(pt->memory)) {
 		case NVKM_MEM_TARGET_VRAM: data |= 1ULL << 0; break;
 		case NVKM_MEM_TARGET_HOST: data |= 2ULL << 0;
-			data |= BIT_ULL(35); /* VOL */
+			data |= BIT_ULL(35);  
 			break;
 		case NVKM_MEM_TARGET_NCOH: data |= 3ULL << 0; break;
 		default:
@@ -128,7 +108,7 @@ gf100_vmm_pgd_pde(struct nvkm_vmm *vmm, struct nvkm_vmm_pt *pgd, u32 pdei)
 		switch (nvkm_memory_target(pt->memory)) {
 		case NVKM_MEM_TARGET_VRAM: data |= 1ULL << 32; break;
 		case NVKM_MEM_TARGET_HOST: data |= 2ULL << 32;
-			data |= BIT_ULL(34); /* VOL */
+			data |= BIT_ULL(34);  
 			break;
 		case NVKM_MEM_TARGET_NCOH: data |= 3ULL << 32; break;
 		default:
@@ -192,15 +172,13 @@ gf100_vmm_invalidate(struct nvkm_vmm *vmm, u32 type)
 	u64 addr = 0;
 
 	mutex_lock(&vmm->mmu->mutex);
-	/* Looks like maybe a "free flush slots" counter, the
-	 * faster you write to 0x100cbc to more it decreases.
-	 */
+	 
 	nvkm_msec(device, 2000,
 		if (nvkm_rd32(device, 0x100c80) & 0x00ff0000)
 			break;
 	);
 
-	if (!(type & 0x00000002) /* ALL_PDB. */) {
+	if (!(type & 0x00000002)  ) {
 		switch (nvkm_memory_target(pd->memory)) {
 		case NVKM_MEM_TARGET_VRAM: addr |= 0x00000000; break;
 		case NVKM_MEM_TARGET_HOST: addr |= 0x00000002; break;
@@ -216,7 +194,7 @@ gf100_vmm_invalidate(struct nvkm_vmm *vmm, u32 type)
 
 	nvkm_wr32(device, 0x100cbc, 0x80000000 | type);
 
-	/* Wait for flush to be queued? */
+	 
 	nvkm_msec(device, 2000,
 		if (nvkm_rd32(device, 0x100c80) & 0x00008000)
 			break;
@@ -227,9 +205,9 @@ gf100_vmm_invalidate(struct nvkm_vmm *vmm, u32 type)
 void
 gf100_vmm_flush(struct nvkm_vmm *vmm, int depth)
 {
-	u32 type = 0x00000001; /* PAGE_ALL */
+	u32 type = 0x00000001;  
 	if (atomic_read(&vmm->engref[NVKM_SUBDEV_BAR]))
-		type |= 0x00000004; /* HUB_ONLY */
+		type |= 0x00000004;  
 	gf100_vmm_invalidate(vmm, type);
 }
 
@@ -346,7 +324,7 @@ gf100_vmm_join_(struct nvkm_vmm *vmm, struct nvkm_memory *inst, u64 base)
 	switch (nvkm_memory_target(pd->memory)) {
 	case NVKM_MEM_TARGET_VRAM: base |= 0ULL << 0; break;
 	case NVKM_MEM_TARGET_HOST: base |= 2ULL << 0;
-		base |= BIT_ULL(2) /* VOL. */;
+		base |= BIT_ULL(2)  ;
 		break;
 	case NVKM_MEM_TARGET_NCOH: base |= 3ULL << 0; break;
 	default:

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* (C) 1999-2001 Paul `Rusty' Russell
- * (C) 2002-2004 Netfilter Core Team <coreteam@netfilter.org>
- * (C) 2006-2010 Patrick McHardy <kaber@trash.net>
- */
+
+ 
 
 #include <linux/types.h>
 #include <linux/timer.h>
@@ -41,7 +38,7 @@ bool icmp_pkt_to_tuple(const struct sk_buff *skb, unsigned int dataoff,
 	return true;
 }
 
-/* Add 1; spaces filled with 0. */
+ 
 static const u_int8_t invmap[] = {
 	[ICMP_ECHO] = ICMP_ECHOREPLY + 1,
 	[ICMP_ECHOREPLY] = ICMP_ECHO + 1,
@@ -66,15 +63,13 @@ bool nf_conntrack_invert_icmp_tuple(struct nf_conntrack_tuple *tuple,
 	return true;
 }
 
-/* Returns verdict for packet, or -1 for invalid. */
+ 
 int nf_conntrack_icmp_packet(struct nf_conn *ct,
 			     struct sk_buff *skb,
 			     enum ip_conntrack_info ctinfo,
 			     const struct nf_hook_state *state)
 {
-	/* Do not immediately delete the connection after the first
-	   successful reply to avoid excessive conntrackd traffic
-	   and also to handle correctly ICMP echo reply duplicates. */
+	 
 	unsigned int *timeout = nf_ct_timeout_lookup(ct);
 	static const u_int8_t valid_new[] = {
 		[ICMP_ECHO] = 1,
@@ -88,7 +83,7 @@ int nf_conntrack_icmp_packet(struct nf_conn *ct,
 
 	if (ct->tuplehash[0].tuple.dst.u.icmp.type >= sizeof(valid_new) ||
 	    !valid_new[ct->tuplehash[0].tuple.dst.u.icmp.type]) {
-		/* Can't create a new ICMP `conn' with this. */
+		 
 		pr_debug("icmp: can't create new conn with type %u\n",
 			 ct->tuplehash[0].tuple.dst.u.icmp.type);
 		nf_ct_dump_tuple_ip(&ct->tuplehash[0].tuple);
@@ -102,7 +97,7 @@ int nf_conntrack_icmp_packet(struct nf_conn *ct,
 	return NF_ACCEPT;
 }
 
-/* Check inner header is related to any of the existing connections */
+ 
 int nf_conntrack_inet_error(struct nf_conn *tmpl, struct sk_buff *skb,
 			    unsigned int dataoff,
 			    const struct nf_hook_state *state,
@@ -120,13 +115,12 @@ int nf_conntrack_inet_error(struct nf_conn *tmpl, struct sk_buff *skb,
 	WARN_ON(skb_nfct(skb));
 	zone = nf_ct_zone_tmpl(tmpl, skb, &tmp);
 
-	/* Are they talking about one of our connections? */
+	 
 	if (!nf_ct_get_tuplepr(skb, dataoff,
 			       state->pf, state->net, &origtuple))
 		return -NF_ACCEPT;
 
-	/* Ordinarily, we'd expect the inverted tupleproto, but it's
-	   been preserved inside the ICMP. */
+	 
 	if (!nf_ct_invert_tuple(&innertuple, &origtuple))
 		return -NF_ACCEPT;
 
@@ -134,37 +128,7 @@ int nf_conntrack_inet_error(struct nf_conn *tmpl, struct sk_buff *skb,
 	if (!h)
 		return -NF_ACCEPT;
 
-	/* Consider: A -> T (=This machine) -> B
-	 *   Conntrack entry will look like this:
-	 *      Original:  A->B
-	 *      Reply:     B->T (SNAT case) OR A
-	 *
-	 * When this function runs, we got packet that looks like this:
-	 * iphdr|icmphdr|inner_iphdr|l4header (tcp, udp, ..).
-	 *
-	 * Above nf_conntrack_find_get() makes lookup based on inner_hdr,
-	 * so we should expect that destination of the found connection
-	 * matches outer header destination address.
-	 *
-	 * In above example, we can consider these two cases:
-	 *  1. Error coming in reply direction from B or M (middle box) to
-	 *     T (SNAT case) or A.
-	 *     Inner saddr will be B, dst will be T or A.
-	 *     The found conntrack will be reply tuple (B->T/A).
-	 *  2. Error coming in original direction from A or M to B.
-	 *     Inner saddr will be A, inner daddr will be B.
-	 *     The found conntrack will be original tuple (A->B).
-	 *
-	 * In both cases, conntrack[dir].dst == inner.dst.
-	 *
-	 * A bogus packet could look like this:
-	 *   Inner: B->T
-	 *   Outer: B->X (other machine reachable by T).
-	 *
-	 * In this case, lookup yields connection A->B and will
-	 * set packet from B->X as *RELATED*, even though no connection
-	 * from X was ever seen.
-	 */
+	 
 	ct = nf_ct_tuplehash_to_ctrack(h);
 	dir = NF_CT_DIRECTION(h);
 	ct_daddr = &ct->tuplehash[dir].tuple.dst.u3;
@@ -188,7 +152,7 @@ int nf_conntrack_inet_error(struct nf_conn *tmpl, struct sk_buff *skb,
 	if (dir == IP_CT_DIR_REPLY)
 		ctinfo += IP_CT_IS_REPLY;
 
-	/* Update skb to refer to this connection */
+	 
 	nf_ct_set(skb, ct, ctinfo);
 	return NF_ACCEPT;
 }
@@ -200,7 +164,7 @@ static void icmp_error_log(const struct sk_buff *skb,
 	nf_l4proto_log_invalid(skb, state, IPPROTO_ICMP, "%s", msg);
 }
 
-/* Small and modified version of icmp_rcv */
+ 
 int nf_conntrack_icmpv4_error(struct nf_conn *tmpl,
 			      struct sk_buff *skb, unsigned int dataoff,
 			      const struct nf_hook_state *state)
@@ -209,14 +173,14 @@ int nf_conntrack_icmpv4_error(struct nf_conn *tmpl,
 	const struct icmphdr *icmph;
 	struct icmphdr _ih;
 
-	/* Not enough header? */
+	 
 	icmph = skb_header_pointer(skb, dataoff, sizeof(_ih), &_ih);
 	if (icmph == NULL) {
 		icmp_error_log(skb, state, "short packet");
 		return -NF_ACCEPT;
 	}
 
-	/* See nf_conntrack_proto_tcp.c */
+	 
 	if (state->net->ct.sysctl_checksum &&
 	    state->hook == NF_INET_PRE_ROUTING &&
 	    nf_ip_checksum(skb, state->hook, dataoff, IPPROTO_ICMP)) {
@@ -224,18 +188,13 @@ int nf_conntrack_icmpv4_error(struct nf_conn *tmpl,
 		return -NF_ACCEPT;
 	}
 
-	/*
-	 *	18 is the highest 'known' ICMP type. Anything else is a mystery
-	 *
-	 *	RFC 1122: 3.2.2  Unknown ICMP messages types MUST be silently
-	 *		  discarded.
-	 */
+	 
 	if (icmph->type > NR_ICMP_TYPES) {
 		icmp_error_log(skb, state, "invalid icmp type");
 		return -NF_ACCEPT;
 	}
 
-	/* Need to track icmp error message? */
+	 
 	if (!icmp_is_err(icmph->type))
 		return NF_ACCEPT;
 
@@ -330,7 +289,7 @@ static int icmp_timeout_nlattr_to_obj(struct nlattr *tb[],
 		*timeout =
 			ntohl(nla_get_be32(tb[CTA_TIMEOUT_ICMP_TIMEOUT])) * HZ;
 	} else if (timeout) {
-		/* Set default ICMP timeout. */
+		 
 		*timeout = in->timeout;
 	}
 	return 0;
@@ -353,7 +312,7 @@ static const struct nla_policy
 icmp_timeout_nla_policy[CTA_TIMEOUT_ICMP_MAX+1] = {
 	[CTA_TIMEOUT_ICMP_TIMEOUT]	= { .type = NLA_U32 },
 };
-#endif /* CONFIG_NF_CONNTRACK_TIMEOUT */
+#endif  
 
 void nf_conntrack_icmp_init_net(struct net *net)
 {
@@ -379,5 +338,5 @@ const struct nf_conntrack_l4proto nf_conntrack_l4proto_icmp =
 		.obj_size	= sizeof(unsigned int),
 		.nla_policy	= icmp_timeout_nla_policy,
 	},
-#endif /* CONFIG_NF_CONNTRACK_TIMEOUT */
+#endif  
 };

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * STMicroelectronics STUSB160x Type-C controller family driver
- *
- * Copyright (C) 2020, STMicroelectronics
- * Author(s): Amelie Delaunay <amelie.delaunay@st.com>
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/i2c.h>
@@ -16,61 +11,61 @@
 #include <linux/usb/role.h>
 #include <linux/usb/typec.h>
 
-#define STUSB160X_ALERT_STATUS			0x0B /* RC */
-#define STUSB160X_ALERT_STATUS_MASK_CTRL	0x0C /* RW */
-#define STUSB160X_CC_CONNECTION_STATUS_TRANS	0x0D /* RC */
-#define STUSB160X_CC_CONNECTION_STATUS		0x0E /* RO */
-#define STUSB160X_MONITORING_STATUS_TRANS	0x0F /* RC */
-#define STUSB160X_MONITORING_STATUS		0x10 /* RO */
-#define STUSB160X_CC_OPERATION_STATUS		0x11 /* RO */
-#define STUSB160X_HW_FAULT_STATUS_TRANS		0x12 /* RC */
-#define STUSB160X_HW_FAULT_STATUS		0x13 /* RO */
-#define STUSB160X_CC_CAPABILITY_CTRL		0x18 /* RW */
-#define STUSB160X_CC_VCONN_SWITCH_CTRL		0x1E /* RW */
-#define STUSB160X_VCONN_MONITORING_CTRL		0x20 /* RW */
-#define STUSB160X_VBUS_MONITORING_RANGE_CTRL	0x22 /* RW */
-#define STUSB160X_RESET_CTRL			0x23 /* RW */
-#define STUSB160X_VBUS_DISCHARGE_TIME_CTRL	0x25 /* RW */
-#define STUSB160X_VBUS_DISCHARGE_STATUS		0x26 /* RO */
-#define STUSB160X_VBUS_ENABLE_STATUS		0x27 /* RO */
-#define STUSB160X_CC_POWER_MODE_CTRL		0x28 /* RW */
-#define STUSB160X_VBUS_MONITORING_CTRL		0x2E /* RW */
-#define STUSB1600_REG_MAX			0x2F /* RO - Reserved */
+#define STUSB160X_ALERT_STATUS			0x0B  
+#define STUSB160X_ALERT_STATUS_MASK_CTRL	0x0C  
+#define STUSB160X_CC_CONNECTION_STATUS_TRANS	0x0D  
+#define STUSB160X_CC_CONNECTION_STATUS		0x0E  
+#define STUSB160X_MONITORING_STATUS_TRANS	0x0F  
+#define STUSB160X_MONITORING_STATUS		0x10  
+#define STUSB160X_CC_OPERATION_STATUS		0x11  
+#define STUSB160X_HW_FAULT_STATUS_TRANS		0x12  
+#define STUSB160X_HW_FAULT_STATUS		0x13  
+#define STUSB160X_CC_CAPABILITY_CTRL		0x18  
+#define STUSB160X_CC_VCONN_SWITCH_CTRL		0x1E  
+#define STUSB160X_VCONN_MONITORING_CTRL		0x20  
+#define STUSB160X_VBUS_MONITORING_RANGE_CTRL	0x22  
+#define STUSB160X_RESET_CTRL			0x23  
+#define STUSB160X_VBUS_DISCHARGE_TIME_CTRL	0x25  
+#define STUSB160X_VBUS_DISCHARGE_STATUS		0x26  
+#define STUSB160X_VBUS_ENABLE_STATUS		0x27  
+#define STUSB160X_CC_POWER_MODE_CTRL		0x28  
+#define STUSB160X_VBUS_MONITORING_CTRL		0x2E  
+#define STUSB1600_REG_MAX			0x2F  
 
-/* STUSB160X_ALERT_STATUS/STUSB160X_ALERT_STATUS_MASK_CTRL bitfields */
+ 
 #define STUSB160X_HW_FAULT			BIT(4)
 #define STUSB160X_MONITORING			BIT(5)
 #define STUSB160X_CC_CONNECTION			BIT(6)
 #define STUSB160X_ALL_ALERTS			GENMASK(6, 4)
 
-/* STUSB160X_CC_CONNECTION_STATUS_TRANS bitfields */
+ 
 #define STUSB160X_CC_ATTACH_TRANS		BIT(0)
 
-/* STUSB160X_CC_CONNECTION_STATUS bitfields */
+ 
 #define STUSB160X_CC_ATTACH			BIT(0)
 #define STUSB160X_CC_VCONN_SUPPLY		BIT(1)
 #define STUSB160X_CC_DATA_ROLE(s)		(!!((s) & BIT(2)))
 #define STUSB160X_CC_POWER_ROLE(s)		(!!((s) & BIT(3)))
 #define STUSB160X_CC_ATTACHED_MODE		GENMASK(7, 5)
 
-/* STUSB160X_MONITORING_STATUS_TRANS bitfields */
+ 
 #define STUSB160X_VCONN_PRESENCE_TRANS		BIT(0)
 #define STUSB160X_VBUS_PRESENCE_TRANS		BIT(1)
 #define STUSB160X_VBUS_VSAFE0V_TRANS		BIT(2)
 #define STUSB160X_VBUS_VALID_TRANS		BIT(3)
 
-/* STUSB160X_MONITORING_STATUS bitfields */
+ 
 #define STUSB160X_VCONN_PRESENCE		BIT(0)
 #define STUSB160X_VBUS_PRESENCE			BIT(1)
 #define STUSB160X_VBUS_VSAFE0V			BIT(2)
 #define STUSB160X_VBUS_VALID			BIT(3)
 
-/* STUSB160X_CC_OPERATION_STATUS bitfields */
+ 
 #define STUSB160X_TYPEC_FSM_STATE		GENMASK(4, 0)
 #define STUSB160X_SINK_POWER_STATE		GENMASK(6, 5)
 #define STUSB160X_CC_ATTACHED			BIT(7)
 
-/* STUSB160X_HW_FAULT_STATUS_TRANS bitfields */
+ 
 #define STUSB160X_VCONN_SW_OVP_FAULT_TRANS	BIT(0)
 #define STUSB160X_VCONN_SW_OCP_FAULT_TRANS	BIT(1)
 #define STUSB160X_VCONN_SW_RVP_FAULT_TRANS	BIT(2)
@@ -78,7 +73,7 @@
 #define STUSB160X_VPU_OVP_FAULT_TRANS		BIT(5)
 #define STUSB160X_THERMAL_FAULT			BIT(7)
 
-/* STUSB160X_HW_FAULT_STATUS bitfields */
+ 
 #define STUSB160X_VCONN_SW_OVP_FAULT_CC2	BIT(0)
 #define STUSB160X_VCONN_SW_OVP_FAULT_CC1	BIT(1)
 #define STUSB160X_VCONN_SW_OCP_FAULT_CC2	BIT(2)
@@ -88,40 +83,40 @@
 #define STUSB160X_VPU_VALID			BIT(6)
 #define STUSB160X_VPU_OVP_FAULT			BIT(7)
 
-/* STUSB160X_CC_CAPABILITY_CTRL bitfields */
+ 
 #define STUSB160X_CC_VCONN_SUPPLY_EN		BIT(0)
 #define STUSB160X_CC_VCONN_DISCHARGE_EN		BIT(4)
 #define STUSB160X_CC_CURRENT_ADVERTISED		GENMASK(7, 6)
 
-/* STUSB160X_VCONN_SWITCH_CTRL bitfields */
+ 
 #define STUSB160X_CC_VCONN_SWITCH_ILIM		GENMASK(3, 0)
 
-/* STUSB160X_VCONN_MONITORING_CTRL bitfields */
+ 
 #define STUSB160X_VCONN_UVLO_THRESHOLD		BIT(6)
 #define STUSB160X_VCONN_MONITORING_EN		BIT(7)
 
-/* STUSB160X_VBUS_MONITORING_RANGE_CTRL bitfields */
+ 
 #define STUSB160X_SHIFT_LOW_VBUS_LIMIT		GENMASK(3, 0)
 #define STUSB160X_SHIFT_HIGH_VBUS_LIMIT		GENMASK(7, 4)
 
-/* STUSB160X_RESET_CTRL bitfields */
+ 
 #define STUSB160X_SW_RESET_EN			BIT(0)
 
-/* STUSB160X_VBUS_DISCHARGE_TIME_CTRL bitfields */
+ 
 #define STUSBXX02_VBUS_DISCHARGE_TIME_TO_PDO	GENMASK(3, 0)
 #define STUSB160X_VBUS_DISCHARGE_TIME_TO_0V	GENMASK(7, 4)
 
-/* STUSB160X_VBUS_DISCHARGE_STATUS bitfields */
+ 
 #define STUSB160X_VBUS_DISCHARGE_EN		BIT(7)
 
-/* STUSB160X_VBUS_ENABLE_STATUS bitfields */
+ 
 #define STUSB160X_VBUS_SOURCE_EN		BIT(0)
 #define STUSB160X_VBUS_SINK_EN			BIT(1)
 
-/* STUSB160X_CC_POWER_MODE_CTRL bitfields */
+ 
 #define STUSB160X_CC_POWER_MODE			GENMASK(2, 0)
 
-/* STUSB160X_VBUS_MONITORING_CTRL bitfields */
+ 
 #define STUSB160X_VDD_UVLO_DISABLE		BIT(0)
 #define STUSB160X_VBUS_VSAFE0V_THRESHOLD	GENMASK(2, 1)
 #define STUSB160X_VBUS_RANGE_DISABLE		BIT(4)
@@ -255,7 +250,7 @@ static int stusb160x_set_vconn(struct stusb160x *chip, bool on)
 {
 	int ret;
 
-	/* Manage VCONN input supply */
+	 
 	if (chip->vconn_supply) {
 		if (on) {
 			ret = regulator_enable(chip->vconn_supply);
@@ -270,7 +265,7 @@ static int stusb160x_set_vconn(struct stusb160x *chip, bool on)
 		}
 	}
 
-	/* Manage VCONN monitoring and power path */
+	 
 	ret = regmap_update_bits(chip->regmap, STUSB160X_VCONN_MONITORING_CTRL,
 				 STUSB160X_VCONN_MONITORING_EN,
 				 on ? STUSB160X_VCONN_MONITORING_EN : 0);
@@ -455,7 +450,7 @@ static int stusb160x_irq_init(struct stusb160x *chip, int irq)
 	if (ret)
 		goto partner_unregister;
 
-	/* Unmask CC_CONNECTION events */
+	 
 	ret = regmap_write_bits(chip->regmap, STUSB160X_ALERT_STATUS_MASK_CTRL,
 				STUSB160X_CC_CONNECTION, 0);
 	if (ret)
@@ -477,7 +472,7 @@ static int stusb160x_chip_init(struct stusb160x *chip)
 	u32 val;
 	int ret;
 
-	/* Change the default Type-C power mode */
+	 
 	if (chip->port_type == TYPEC_PORT_SRC)
 		ret = regmap_update_bits(chip->regmap,
 					 STUSB160X_CC_POWER_MODE_CTRL,
@@ -488,7 +483,7 @@ static int stusb160x_chip_init(struct stusb160x *chip)
 					 STUSB160X_CC_POWER_MODE_CTRL,
 					 STUSB160X_CC_POWER_MODE,
 					 SINK_WITH_ACCESSORY);
-	else /* (chip->port_type == TYPEC_PORT_DRP) */
+	else  
 		ret = regmap_update_bits(chip->regmap,
 					 STUSB160X_CC_POWER_MODE_CTRL,
 					 STUSB160X_CC_POWER_MODE,
@@ -499,7 +494,7 @@ static int stusb160x_chip_init(struct stusb160x *chip)
 	if (chip->port_type == TYPEC_PORT_SNK)
 		goto skip_src;
 
-	/* Change the default Type-C Source power operation mode capability */
+	 
 	ret = regmap_update_bits(chip->regmap, STUSB160X_CC_CAPABILITY_CTRL,
 				 STUSB160X_CC_CURRENT_ADVERTISED,
 				 FIELD_PREP(STUSB160X_CC_CURRENT_ADVERTISED,
@@ -507,7 +502,7 @@ static int stusb160x_chip_init(struct stusb160x *chip)
 	if (ret)
 		return ret;
 
-	/* Manage Type-C Source Vconn supply */
+	 
 	if (stusb160x_get_vconn(chip)) {
 		ret = stusb160x_set_vconn(chip, true);
 		if (ret)
@@ -515,13 +510,13 @@ static int stusb160x_chip_init(struct stusb160x *chip)
 	}
 
 skip_src:
-	/* Mask all events interrupts - to be unmasked with interrupt support */
+	 
 	ret = regmap_update_bits(chip->regmap, STUSB160X_ALERT_STATUS_MASK_CTRL,
 				 STUSB160X_ALL_ALERTS, STUSB160X_ALL_ALERTS);
 	if (ret)
 		return ret;
 
-	/* Read status at least once to clear any stale interrupts */
+	 
 	regmap_read(chip->regmap, STUSB160X_ALERT_STATUS, &val);
 	regmap_read(chip->regmap, STUSB160X_CC_CONNECTION_STATUS_TRANS, &val);
 	regmap_read(chip->regmap, STUSB160X_MONITORING_STATUS_TRANS, &val);
@@ -538,10 +533,7 @@ static int stusb160x_get_fw_caps(struct stusb160x *chip,
 
 	chip->capability.fwnode = fwnode;
 
-	/*
-	 * Supported port type can be configured through device tree
-	 * else it is read from chip registers in stusb160x_get_caps.
-	 */
+	 
 	ret = fwnode_property_read_string(fwnode, "power-role", &cap_str);
 	if (!ret) {
 		ret = typec_find_port_power_role(cap_str);
@@ -551,21 +543,18 @@ static int stusb160x_get_fw_caps(struct stusb160x *chip,
 	}
 	chip->capability.type = chip->port_type;
 
-	/* Skip DRP/Source capabilities in case of Sink only */
+	 
 	if (chip->port_type == TYPEC_PORT_SNK)
 		return 0;
 
 	if (chip->port_type == TYPEC_PORT_DRP)
 		chip->capability.prefer_role = TYPEC_SINK;
 
-	/*
-	 * Supported power operation mode can be configured through device tree
-	 * else it is read from chip registers in stusb160x_get_caps.
-	 */
+	 
 	ret = fwnode_property_read_string(fwnode, "typec-power-opmode", &cap_str);
 	if (!ret) {
 		ret = typec_find_pwr_opmode(cap_str);
-		/* Power delivery not yet supported */
+		 
 		if (ret < 0 || ret == TYPEC_PWR_MODE_PD) {
 			dev_err(chip->dev, "bad power operation mode: %d\n", ret);
 			return -EINVAL;
@@ -685,20 +674,10 @@ static int stusb160x_probe(struct i2c_client *client)
 	if (!fwnode)
 		return -ENODEV;
 
-	/*
-	 * This fwnode has a "compatible" property, but is never populated as a
-	 * struct device. Instead we simply parse it to read the properties.
-	 * This it breaks fw_devlink=on. To maintain backward compatibility
-	 * with existing DT files, we work around this by deleting any
-	 * fwnode_links to/from this fwnode.
-	 */
+	 
 	fw_devlink_purge_absent_suppliers(fwnode);
 
-	/*
-	 * When both VDD and VSYS power supplies are present, the low power
-	 * supply VSYS is selected when VSYS voltage is above 3.1 V.
-	 * Otherwise VDD is selected.
-	 */
+	 
 	if (chip->vdd_supply &&
 	    (!chip->vsys_supply ||
 	     (regulator_get_voltage(chip->vsys_supply) <= 3100000)))
@@ -715,14 +694,14 @@ static int stusb160x_probe(struct i2c_client *client)
 		}
 	}
 
-	/* Get configuration from chip */
+	 
 	ret = stusb160x_get_caps(chip);
 	if (ret) {
 		dev_err(chip->dev, "Failed to get port caps: %d\n", ret);
 		goto main_reg_disable;
 	}
 
-	/* Get optional re-configuration from device tree */
+	 
 	ret = stusb160x_get_fw_caps(chip, fwnode);
 	if (ret) {
 		dev_err(chip->dev, "Failed to get connector caps: %d\n", ret);
@@ -741,10 +720,7 @@ static int stusb160x_probe(struct i2c_client *client)
 		goto all_reg_disable;
 	}
 
-	/*
-	 * Default power operation mode initialization: will be updated upon
-	 * attach/detach interrupt
-	 */
+	 
 	typec_set_pwr_opmode(chip->port, chip->pwr_opmode);
 
 	if (client->irq) {
@@ -759,12 +735,7 @@ static int stusb160x_probe(struct i2c_client *client)
 		if (ret)
 			goto role_sw_put;
 	} else {
-		/*
-		 * If Source or Dual power role, need to enable VDD supply
-		 * providing Vbus if present. In case of interrupt support,
-		 * VDD supply will be dynamically managed upon attach/detach
-		 * interrupt.
-		 */
+		 
 		if (chip->port_type != TYPEC_PORT_SNK && chip->vdd_supply) {
 			ret = regulator_enable(chip->vdd_supply);
 			if (ret) {
@@ -826,7 +797,7 @@ static int __maybe_unused stusb160x_suspend(struct device *dev)
 {
 	struct stusb160x *chip = dev_get_drvdata(dev);
 
-	/* Mask interrupts */
+	 
 	return regmap_update_bits(chip->regmap,
 				  STUSB160X_ALERT_STATUS_MASK_CTRL,
 				  STUSB160X_ALL_ALERTS, STUSB160X_ALL_ALERTS);
@@ -842,7 +813,7 @@ static int __maybe_unused stusb160x_resume(struct device *dev)
 	if (ret)
 		return ret;
 
-	/* Check if attach/detach occurred during low power */
+	 
 	ret = regmap_read(chip->regmap,
 			  STUSB160X_CC_CONNECTION_STATUS, &status);
 	if (ret)
@@ -857,7 +828,7 @@ static int __maybe_unused stusb160x_resume(struct device *dev)
 			dev_err(chip->dev, "attach failed: %d\n", ret);
 	}
 
-	/* Unmask interrupts */
+	 
 	return regmap_write_bits(chip->regmap, STUSB160X_ALERT_STATUS_MASK_CTRL,
 				 STUSB160X_CC_CONNECTION, 0);
 }

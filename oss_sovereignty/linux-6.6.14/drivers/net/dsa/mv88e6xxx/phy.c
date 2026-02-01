@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Marvell 88e6xxx Ethernet switch PHY and PPU support
- *
- * Copyright (c) 2008 Marvell Semiconductor
- *
- * Copyright (c) 2017 Andrew Lunn <andrew@lunn.ch>
- */
+
+ 
 
 #include <linux/mdio.h>
 #include <linux/module.h>
@@ -27,7 +21,7 @@ int mv88e6165_phy_write(struct mv88e6xxx_chip *chip, struct mii_bus *bus,
 
 int mv88e6xxx_phy_read(struct mv88e6xxx_chip *chip, int phy, int reg, u16 *val)
 {
-	int addr = phy; /* PHY devices addresses start at 0x0 */
+	int addr = phy;  
 	struct mii_bus *bus;
 
 	bus = mv88e6xxx_default_mdio_bus(chip);
@@ -42,7 +36,7 @@ int mv88e6xxx_phy_read(struct mv88e6xxx_chip *chip, int phy, int reg, u16 *val)
 
 int mv88e6xxx_phy_write(struct mv88e6xxx_chip *chip, int phy, int reg, u16 val)
 {
-	int addr = phy; /* PHY devices addresses start at 0x0 */
+	int addr = phy;  
 	struct mii_bus *bus;
 
 	bus = mv88e6xxx_default_mdio_bus(chip);
@@ -58,7 +52,7 @@ int mv88e6xxx_phy_write(struct mv88e6xxx_chip *chip, int phy, int reg, u16 val)
 int mv88e6xxx_phy_read_c45(struct mv88e6xxx_chip *chip, int phy, int devad,
 			   int reg, u16 *val)
 {
-	int addr = phy; /* PHY devices addresses start at 0x0 */
+	int addr = phy;  
 	struct mii_bus *bus;
 
 	bus = mv88e6xxx_default_mdio_bus(chip);
@@ -74,7 +68,7 @@ int mv88e6xxx_phy_read_c45(struct mv88e6xxx_chip *chip, int phy, int devad,
 int mv88e6xxx_phy_write_c45(struct mv88e6xxx_chip *chip, int phy, int devad,
 			    int reg, u16 val)
 {
-	int addr = phy; /* PHY devices addresses start at 0x0 */
+	int addr = phy;  
 	struct mii_bus *bus;
 
 	bus = mv88e6xxx_default_mdio_bus(chip);
@@ -96,9 +90,7 @@ static void mv88e6xxx_phy_page_put(struct mv88e6xxx_chip *chip, int phy)
 {
 	int err;
 
-	/* Restore PHY page Copper 0x0 for access via the registered
-	 * MDIO bus
-	 */
+	 
 	err = mv88e6xxx_phy_write(chip, phy, MV88E6XXX_PHY_PAGE,
 				  MV88E6XXX_PHY_PAGE_COPPER);
 	if (unlikely(err)) {
@@ -113,7 +105,7 @@ int mv88e6xxx_phy_page_read(struct mv88e6xxx_chip *chip, int phy,
 {
 	int err;
 
-	/* There is no paging for registers 22 */
+	 
 	if (reg == MV88E6XXX_PHY_PAGE)
 		return -EINVAL;
 
@@ -131,7 +123,7 @@ int mv88e6xxx_phy_page_write(struct mv88e6xxx_chip *chip, int phy,
 {
 	int err;
 
-	/* There is no paging for registers 22 */
+	 
 	if (reg == MV88E6XXX_PHY_PAGE)
 		return -EINVAL;
 
@@ -193,11 +185,7 @@ static int mv88e6xxx_phy_ppu_access_get(struct mv88e6xxx_chip *chip)
 
 	mutex_lock(&chip->ppu_mutex);
 
-	/* If the PHY polling unit is enabled, disable it so that
-	 * we can access the PHY registers.  If it was already
-	 * disabled, cancel the timer that is going to re-enable
-	 * it.
-	 */
+	 
 	if (!chip->ppu_disabled) {
 		ret = mv88e6xxx_phy_ppu_disable(chip);
 		if (ret < 0) {
@@ -215,7 +203,7 @@ static int mv88e6xxx_phy_ppu_access_get(struct mv88e6xxx_chip *chip)
 
 static void mv88e6xxx_phy_ppu_access_put(struct mv88e6xxx_chip *chip)
 {
-	/* Schedule a timer to re-enable the PHY polling unit. */
+	 
 	mod_timer(&chip->ppu_timer, jiffies + msecs_to_jiffies(10));
 	mutex_unlock(&chip->ppu_mutex);
 }

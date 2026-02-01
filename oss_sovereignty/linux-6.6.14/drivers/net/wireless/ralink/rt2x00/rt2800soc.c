@@ -1,18 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*	Copyright (C) 2009 - 2010 Ivo van Doorn <IvDoorn@gmail.com>
- *	Copyright (C) 2009 Alban Browaeys <prahal@yahoo.com>
- *	Copyright (C) 2009 Felix Fietkau <nbd@openwrt.org>
- *	Copyright (C) 2009 Luis Correia <luis.f.correia@gmail.com>
- *	Copyright (C) 2009 Mattias Nissler <mattias.nissler@gmx.de>
- *	Copyright (C) 2009 Mark Asselstine <asselsm@gmail.com>
- *	Copyright (C) 2009 Xose Vazquez Perez <xose.vazquez@gmail.com>
- *	Copyright (C) 2009 Bart Zolnierkiewicz <bzolnier@gmail.com>
- *	<http://rt2x00.serialmonkey.com>
- */
 
-/*	Module: rt2800soc
- *	Abstract: rt2800 WiSoC specific routines.
- */
+ 
+
+ 
 
 #include <linux/etherdevice.h>
 #include <linux/init.h>
@@ -27,7 +16,7 @@
 #include "rt2800lib.h"
 #include "rt2800mmio.h"
 
-/* Allow hardware encryption to be disabled. */
+ 
 static bool modparam_nohwcrypt;
 module_param_named(nohwcrypt, modparam_nohwcrypt, bool, 0444);
 MODULE_PARM_DESC(nohwcrypt, "Disable hardware encryption.");
@@ -74,7 +63,7 @@ static int rt2800soc_set_device_state(struct rt2x00_dev *rt2x00dev,
 	case STATE_SLEEP:
 	case STATE_STANDBY:
 	case STATE_AWAKE:
-		/* These states are not supported, but don't report an error */
+		 
 		retval = 0;
 		break;
 
@@ -103,7 +92,7 @@ static int rt2800soc_read_eeprom(struct rt2x00_dev *rt2x00dev)
 	return 0;
 }
 
-/* Firmware functions */
+ 
 static char *rt2800soc_get_firmware_name(struct rt2x00_dev *rt2x00dev)
 {
 	WARN_ON_ONCE(1);
@@ -162,9 +151,9 @@ static const struct ieee80211_ops rt2800soc_mac80211_ops = {
 
 static const struct rt2800_ops rt2800soc_rt2800_ops = {
 	.register_read		= rt2x00mmio_register_read,
-	.register_read_lock	= rt2x00mmio_register_read, /* same for SoCs */
+	.register_read_lock	= rt2x00mmio_register_read,  
 	.register_write		= rt2x00mmio_register_write,
-	.register_write_lock	= rt2x00mmio_register_write, /* same for SoCs */
+	.register_write_lock	= rt2x00mmio_register_write,  
 	.register_multiread	= rt2x00mmio_register_multiread,
 	.register_multiwrite	= rt2x00mmio_register_multiwrite,
 	.regbusy_read		= rt2x00mmio_regbusy_read,
@@ -231,7 +220,7 @@ static const struct rt2x00_ops rt2800soc_ops = {
 	.hw			= &rt2800soc_mac80211_ops,
 #ifdef CONFIG_RT2X00_LIB_DEBUGFS
 	.debugfs		= &rt2800_rt2x00debug,
-#endif /* CONFIG_RT2X00_LIB_DEBUGFS */
+#endif  
 };
 
 static int rt2800soc_probe(struct platform_device *pdev)

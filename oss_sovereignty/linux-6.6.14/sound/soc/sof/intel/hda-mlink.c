@@ -1,14 +1,12 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
-//
-// This file is provided under a dual BSD/GPLv2 license.  When using or
-// redistributing this file, you may do so under either license.
-//
-// Copyright(c) 2022 Intel Corporation. All rights reserved.
-//
 
-/*
- * Management of HDaudio multi-link (capabilities, power, coupling)
- */
+
+
+
+
+
+
+
+ 
 
 #include <sound/hdaudio_ext.h>
 #include <sound/hda_register.h>
@@ -19,34 +17,14 @@
 
 #if IS_ENABLED(CONFIG_SND_SOC_SOF_HDA_MLINK)
 
-/* worst-case number of sublinks is used for sublink refcount array allocation only */
+ 
 #define HDAML_MAX_SUBLINKS (AZX_ML_LCTL_CPA_SHIFT - AZX_ML_LCTL_SPA_SHIFT)
 
-/**
- * struct hdac_ext2_link - HDAudio extended+alternate link
- *
- * @hext_link:		hdac_ext_link
- * @alt:		flag set for alternate extended links
- * @intc:		boolean for interrupt capable
- * @ofls:		boolean for offload support
- * @lss:		boolean for link synchronization capabilities
- * @slcount:		sublink count
- * @elid:		extended link ID (AZX_REG_ML_LEPTR_ID_ defines)
- * @elver:		extended link version
- * @leptr:		extended link pointer
- * @eml_lock:		mutual exclusion to access shared registers e.g. CPA/SPA bits
- * in LCTL register
- * @sublink_ref_count:	array of refcounts, required to power-manage sublinks independently
- * @base_ptr:		pointer to shim/ip/shim_vs space
- * @instance_offset:	offset between each of @slcount instances managed by link
- * @shim_offset:	offset to SHIM register base
- * @ip_offset:		offset to IP register base
- * @shim_vs_offset:	offset to vendor-specific (VS) SHIM base
- */
+ 
 struct hdac_ext2_link {
 	struct hdac_ext_link hext_link;
 
-	/* read directly from LCAP register */
+	 
 	bool alt;
 	bool intc;
 	bool ofls;
@@ -56,10 +34,10 @@ struct hdac_ext2_link {
 	int elver;
 	u32 leptr;
 
-	struct mutex eml_lock; /* prevent concurrent access to e.g. CPA/SPA */
+	struct mutex eml_lock;  
 	int sublink_ref_count[HDAML_MAX_SUBLINKS];
 
-	/* internal values computed from LCAP contents */
+	 
 	void __iomem *base_ptr;
 	u32 instance_offset;
 	u32 shim_offset;
@@ -75,7 +53,7 @@ struct hdac_ext2_link {
 #define AZX_REG_SDW_VS_SHIM_OFFSET			0x6000
 #define AZX_REG_SDW_SHIM_PCMSyCM(y)			(0x16 + 0x4 * (y))
 
-/* only one instance supported */
+ 
 #define AZX_REG_INTEL_DMIC_SHIM_OFFSET			0x0
 #define AZX_REG_INTEL_DMIC_IP_OFFSET			0x100
 #define AZX_REG_INTEL_DMIC_VS_SHIM_OFFSET		0x6000
@@ -85,16 +63,12 @@ struct hdac_ext2_link {
 #define AZX_REG_INTEL_SSP_IP_OFFSET			0x100
 #define AZX_REG_INTEL_SSP_VS_SHIM_OFFSET		0xC00
 
-/* only one instance supported */
+ 
 #define AZX_REG_INTEL_UAOL_SHIM_OFFSET			0x0
 #define AZX_REG_INTEL_UAOL_IP_OFFSET			0x100
 #define AZX_REG_INTEL_UAOL_VS_SHIM_OFFSET		0xC00
 
-/* HDAML section - this part follows sequences in the hardware specification,
- * including naming conventions and the use of the hdaml_ prefix.
- * The code is intentionally minimal with limited dependencies on frameworks or
- * helpers. Locking and scanning lists is handled at a higher level
- */
+ 
 
 static int hdaml_lnk_enum(struct device *dev, struct hdac_ext2_link *h2link,
 			  void __iomem *remap_addr, void __iomem *ml_addr, int link_idx)
@@ -106,14 +80,11 @@ static int hdaml_lnk_enum(struct device *dev, struct hdac_ext2_link *h2link,
 
 	h2link->alt = FIELD_GET(AZX_ML_HDA_LCAP_ALT, hlink->lcaps);
 
-	/* handle alternate extensions */
+	 
 	if (!h2link->alt) {
 		h2link->slcount = 1;
 
-		/*
-		 * LSDIID is initialized by hardware for HDaudio link,
-		 * it needs to be setup by software for alternate links
-		 */
+		 
 		hlink->lsdiid = readw(ml_addr + AZX_REG_ML_LSDIID);
 
 		dev_dbg(dev, "Link %d: HDAudio - lsdiid=%d\n",
@@ -126,12 +97,12 @@ static int hdaml_lnk_enum(struct device *dev, struct hdac_ext2_link *h2link,
 	h2link->ofls = FIELD_GET(AZX_ML_HDA_LCAP_OFLS, hlink->lcaps);
 	h2link->lss = FIELD_GET(AZX_ML_HDA_LCAP_LSS, hlink->lcaps);
 
-	/* read slcount (increment due to zero-based hardware representation */
+	 
 	h2link->slcount = FIELD_GET(AZX_ML_HDA_LCAP_SLCOUNT, hlink->lcaps) + 1;
 	dev_dbg(dev, "Link %d: HDAudio extended - sublink count %d\n",
 		link_idx, h2link->slcount);
 
-	/* find IP ID and offsets */
+	 
 	h2link->leptr = readl(ml_addr + AZX_REG_ML_LEPTR);
 
 	h2link->elid = FIELD_GET(AZX_REG_ML_LEPTR_ID, h2link->leptr);
@@ -178,12 +149,7 @@ static int hdaml_lnk_enum(struct device *dev, struct hdac_ext2_link *h2link,
 	return 0;
 }
 
-/*
- * Hardware recommendations are to wait ~10us before checking any hardware transition
- * reported by bits changing status.
- * This value does not need to be super-precise, a slack of 5us is perfectly acceptable.
- * The worst-case is about 1ms before reporting an issue
- */
+ 
 #define HDAML_POLL_DELAY_MIN_US 10
 #define HDAML_POLL_DELAY_SLACK_US 5
 #define HDAML_POLL_DELAY_RETRY  100
@@ -288,10 +254,7 @@ static void hdaml_link_set_syncprd(u32 __iomem *lsync, u32 syncprd)
 	val &= ~AZX_REG_ML_LSYNC_SYNCPRD;
 	val |= (syncprd & AZX_REG_ML_LSYNC_SYNCPRD);
 
-	/*
-	 * set SYNCPU but do not wait. The bit is cleared by hardware when
-	 * the link becomes active.
-	 */
+	 
 	val |= AZX_REG_ML_LSYNC_SYNCPU;
 
 	writel(val, lsync);
@@ -373,7 +336,7 @@ static void hdaml_lctl_offload_enable(u32 __iomem *lctl, bool enable)
 	writel(val, lctl);
 }
 
-/* END HDAML section */
+ 
 
 static int hda_ml_alloc_h2link(struct hdac_bus *bus, int index)
 {
@@ -385,7 +348,7 @@ static int hda_ml_alloc_h2link(struct hdac_bus *bus, int index)
 	if (!h2link)
 		return -ENOMEM;
 
-	/* basic initialization */
+	 
 	hlink = &h2link->hext_link;
 
 	hlink->index = index;
@@ -402,10 +365,7 @@ static int hda_ml_alloc_h2link(struct hdac_bus *bus, int index)
 
 	list_add_tail(&hlink->list, &bus->hlink_list);
 
-	/*
-	 * HDaudio regular links are powered-on by default, the
-	 * refcount needs to be initialized.
-	 */
+	 
 	if (!h2link->alt)
 		hlink->ref_count = 1;
 
@@ -793,10 +753,7 @@ int hdac_bus_eml_sdw_set_lsdiid(struct hdac_bus *bus, int sublink, int dev_num)
 	return 0;
 } EXPORT_SYMBOL_NS(hdac_bus_eml_sdw_set_lsdiid, SND_SOC_SOF_HDA_MLINK);
 
-/*
- * the 'y' parameter comes from the PCMSyCM hardware register naming. 'y' refers to the
- * PDI index, i.e. the FIFO used for RX or TX
- */
+ 
 int hdac_bus_eml_sdw_map_stream_ch(struct hdac_bus *bus, int sublink, int y,
 				   int channel_mask, int stream_id, int dir)
 {
@@ -854,7 +811,7 @@ void hda_bus_ml_reset_losidv(struct hdac_bus *bus)
 {
 	struct hdac_ext_link *hlink;
 
-	/* Reset stream-to-link mapping */
+	 
 	list_for_each_entry(hlink, &bus->hlink_list, list)
 		writel(0, hlink->ml_addr + AZX_REG_ML_LOSIDV);
 }
@@ -865,7 +822,7 @@ int hda_bus_ml_resume(struct hdac_bus *bus)
 	struct hdac_ext_link *hlink;
 	int ret;
 
-	/* power up links that were active before suspend */
+	 
 	list_for_each_entry(hlink, &bus->hlink_list, list) {
 		struct hdac_ext2_link *h2link = hdac_ext_link_to_ext2(hlink);
 

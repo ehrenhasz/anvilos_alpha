@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 
 #include "netlink.h"
 #include "common.h"
@@ -135,9 +135,7 @@ static int stats_prepare_data(const struct ethnl_req_info *req_base,
 		return -EOPNOTSUPP;
 	}
 
-	/* Mark all stats as unset (see ETHTOOL_STAT_NOT_SET) to prevent them
-	 * from being reported to user space in case driver did not set them.
-	 */
+	 
 	memset(&data->stats, 0xff, sizeof(data->stats));
 
 	data->phy_stats.src = src;
@@ -170,7 +168,7 @@ static int stats_reply_size(const struct ethnl_req_info *req_base,
 	unsigned int n_grps = 0, n_stats = 0;
 	int len = 0;
 
-	len += nla_total_size(sizeof(u32)); /* _STATS_SRC */
+	len += nla_total_size(sizeof(u32));  
 
 	if (test_bit(ETHTOOL_STATS_ETH_PHY, req_info->stat_mask)) {
 		n_stats += sizeof(struct ethtool_eth_phy_stats) / sizeof(u64);
@@ -187,18 +185,18 @@ static int stats_reply_size(const struct ethnl_req_info *req_base,
 	if (test_bit(ETHTOOL_STATS_RMON, req_info->stat_mask)) {
 		n_stats += sizeof(struct ethtool_rmon_stats) / sizeof(u64);
 		n_grps++;
-		/* Above includes the space for _A_STATS_GRP_HIST_VALs */
+		 
 
-		len += (nla_total_size(0) +	/* _A_STATS_GRP_HIST */
-			nla_total_size(4) +	/* _A_STATS_GRP_HIST_BKT_LOW */
-			nla_total_size(4)) *	/* _A_STATS_GRP_HIST_BKT_HI */
+		len += (nla_total_size(0) +	 
+			nla_total_size(4) +	 
+			nla_total_size(4)) *	 
 			ETHTOOL_RMON_HIST_MAX * 2;
 	}
 
-	len += n_grps * (nla_total_size(0) + /* _A_STATS_GRP */
-			 nla_total_size(4) + /* _A_STATS_GRP_ID */
-			 nla_total_size(4)); /* _A_STATS_GRP_SS_ID */
-	len += n_stats * (nla_total_size(0) + /* _A_STATS_GRP_STAT */
+	len += n_grps * (nla_total_size(0) +  
+			 nla_total_size(4) +  
+			 nla_total_size(4));  
+	len += n_stats * (nla_total_size(0) +  
 			  nla_total_size_64bit(sizeof(u64)));
 
 	return len;
@@ -212,12 +210,7 @@ static int stat_put(struct sk_buff *skb, u16 attrtype, u64 val)
 	if (val == ETHTOOL_STAT_NOT_SET)
 		return 0;
 
-	/* We want to start stats attr types from 0, so we don't have a type
-	 * for pad inside ETHTOOL_A_STATS_GRP_STAT. Pad things on the outside
-	 * of ETHTOOL_A_STATS_GRP_STAT. Since we're one nest away from the
-	 * actual attr we're 4B off - nla_need_padding_for_64bit() & co.
-	 * can't be used.
-	 */
+	 
 #ifndef CONFIG_HAVE_EFFICIENT_UNALIGNED_ACCESS
 	if (!IS_ALIGNED((unsigned long)skb_tail_pointer(skb), 8))
 		if (!nla_reserve(skb, ETHTOOL_A_STATS_GRP_PAD, 0))
@@ -228,7 +221,7 @@ static int stat_put(struct sk_buff *skb, u16 attrtype, u64 val)
 	if (!nest)
 		return -EMSGSIZE;
 
-	ret = nla_put_u64_64bit(skb, attrtype, val, -1 /* not used */);
+	ret = nla_put_u64_64bit(skb, attrtype, val, -1  );
 	if (ret) {
 		nla_nest_cancel(skb, nest);
 		return ret;
@@ -449,9 +442,7 @@ static u64 ethtool_stats_sum(u64 a, u64 b)
 	return a + b;
 }
 
-/* Avoid modifying the aggregation procedure every time a new counter is added
- * by treating the structures as an array of u64 statistics.
- */
+ 
 static void ethtool_aggregate_stats(void *aggr_stats, const void *emac_stats,
 				    const void *pmac_stats, size_t stats_size,
 				    size_t stats_offset)

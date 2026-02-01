@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2009 Nokia Corporation
- * Author: Tomi Valkeinen <tomi.valkeinen@ti.com>
- *
- * Some code and ideas taken from drivers/video/omap/ driver
- * by Imre Deak.
- */
+
+ 
 
 #define DSS_SUBSYS_NAME "DISPC"
 
@@ -38,7 +32,7 @@
 
 struct dispc_device;
 
-/* DISPC */
+ 
 #define DISPC_SZ_REGS			SZ_4K
 
 enum omap_burst_size {
@@ -54,7 +48,7 @@ enum omap_burst_size {
 	dispc_write_reg(dispc, idx, \
 			FLD_MOD(dispc_read_reg(dispc, idx), val, start, end))
 
-/* DISPC has feature id */
+ 
 enum dispc_feature_id {
 	FEAT_LCDENABLEPOL,
 	FEAT_LCDENABLESIGNAL,
@@ -65,7 +59,7 @@ enum dispc_feature_id {
 	FEAT_LINEBUFFERSPLIT,
 	FEAT_ROWREPEATENABLE,
 	FEAT_RESIZECONF,
-	/* Independent core clk divider */
+	 
 	FEAT_CORE_CLK_DIV,
 	FEAT_HANDLE_UV_SEPARATE,
 	FEAT_ATTR2,
@@ -75,7 +69,7 @@ enum dispc_feature_id {
 	FEAT_ALPHA_FIXED_ZORDER,
 	FEAT_ALPHA_FREE_ZORDER,
 	FEAT_FIFO_MERGE,
-	/* An unknown HW bug causing the normal FIFO thresholds not to work */
+	 
 	FEAT_OMAP3_DSI_FIFO_BUG,
 	FEAT_BURST_2D,
 	FEAT_MFLAG,
@@ -122,32 +116,28 @@ struct dispc_features {
 	unsigned int buffer_size_unit;
 	unsigned int burst_size_unit;
 
-	/* swap GFX & WB fifos */
+	 
 	bool gfx_fifo_workaround:1;
 
-	/* no DISPC_IRQ_FRAMEDONETV on this SoC */
+	 
 	bool no_framedone_tv:1;
 
-	/* revert to the OMAP4 mechanism of DISPC Smart Standby operation */
+	 
 	bool mstandby_workaround:1;
 
 	bool set_max_preload:1;
 
-	/* PIXEL_INC is not added to the last pixel of a line */
+	 
 	bool last_pixel_inc_missing:1;
 
-	/* POL_FREQ has ALIGN bit */
+	 
 	bool supports_sync_align:1;
 
 	bool has_writeback:1;
 
 	bool supports_double_pixel:1;
 
-	/*
-	 * Field order for VENC is different than HDMI. We should handle this in
-	 * some intelligent manner, but as the SoCs have either HDMI or VENC,
-	 * never both, we can just use this flag for now.
-	 */
+	 
 	bool reverse_ilace_field_order:1;
 
 	bool has_gamma_table:1;
@@ -173,7 +163,7 @@ struct dispc_device {
 	unsigned long tv_pclk_rate;
 
 	u32 fifo_size[DISPC_MAX_NR_FIFOS];
-	/* maps which plane is using a fifo. fifo-id -> plane-id */
+	 
 	int fifo_assignment[DISPC_MAX_NR_FIFOS];
 
 	bool		ctx_valid;
@@ -190,14 +180,9 @@ struct dispc_device {
 };
 
 enum omap_color_component {
-	/* used for all color formats for OMAP3 and earlier
-	 * and for RGB and Y color component on OMAP4
-	 */
+	 
 	DISPC_COLOR_COMPONENT_RGB_Y		= 1 << 0,
-	/* used for UV component for
-	 * DRM_FORMAT_YUYV, DRM_FORMAT_UYVY, DRM_FORMAT_NV12
-	 * color formats on OMAP4
-	 */
+	 
 	DISPC_COLOR_COMPONENT_UV		= 1 << 1,
 };
 
@@ -211,11 +196,11 @@ enum mgr_reg_fields {
 	DISPC_MGR_FLD_TCKSELECTION,
 	DISPC_MGR_FLD_CPR,
 	DISPC_MGR_FLD_FIFOHANDCHECK,
-	/* used to maintain a count of the above fields */
+	 
 	DISPC_MGR_FLD_NUM,
 };
 
-/* DISPC register field id */
+ 
 enum dispc_feat_reg_field {
 	FEAT_REG_FIRHINC,
 	FEAT_REG_FIRVINC,
@@ -533,8 +518,8 @@ static void dispc_restore_context(struct dispc_device *dispc)
 	if (!dispc->ctx_valid)
 		return;
 
-	/*RR(dispc, IRQENABLE);*/
-	/*RR(dispc, CONTROL);*/
+	 
+	 
 	RR(dispc, CONFIG);
 	RR(dispc, LINE_NUMBER);
 	if (dispc_has_feature(dispc, FEAT_ALPHA_FIXED_ZORDER) ||
@@ -625,19 +610,16 @@ static void dispc_restore_context(struct dispc_device *dispc)
 	if (dispc_has_feature(dispc, FEAT_CORE_CLK_DIV))
 		RR(dispc, DIVISOR);
 
-	/* enable last, because LCD & DIGIT enable are here */
+	 
 	RR(dispc, CONTROL);
 	if (dispc_has_feature(dispc, FEAT_MGR_LCD2))
 		RR(dispc, CONTROL2);
 	if (dispc_has_feature(dispc, FEAT_MGR_LCD3))
 		RR(dispc, CONTROL3);
-	/* clear spurious SYNC_LOST_DIGIT interrupts */
+	 
 	dispc_clear_irqstatus(dispc, DISPC_IRQ_SYNC_LOST_DIGIT);
 
-	/*
-	 * enable last so IRQs won't trigger before
-	 * the context is fully restored
-	 */
+	 
 	RR(dispc, IRQENABLE);
 
 	DSSDBG("context restored\n");
@@ -700,7 +682,7 @@ void dispc_mgr_enable(struct dispc_device *dispc,
 			     enum omap_channel channel, bool enable)
 {
 	mgr_fld_write(dispc, channel, DISPC_MGR_FLD_ENABLE, enable);
-	/* flush posted write */
+	 
 	mgr_fld_read(dispc, channel, DISPC_MGR_FLD_ENABLE);
 }
 
@@ -872,36 +854,36 @@ static void dispc_ovl_write_color_conv_coef(struct dispc_device *dispc,
 #undef CVAL
 }
 
-/* YUV -> RGB, ITU-R BT.601, full range */
+ 
 static const struct csc_coef_yuv2rgb coefs_yuv2rgb_bt601_full = {
-	256,   0,  358,		/* ry, rcb, rcr |1.000  0.000  1.402|*/
-	256, -88, -182,		/* gy, gcb, gcr |1.000 -0.344 -0.714|*/
-	256, 452,    0,		/* by, bcb, bcr |1.000  1.772  0.000|*/
-	true,			/* full range */
+	256,   0,  358,		 
+	256, -88, -182,		 
+	256, 452,    0,		 
+	true,			 
 };
 
-/* YUV -> RGB, ITU-R BT.601, limited range */
+ 
 static const struct csc_coef_yuv2rgb coefs_yuv2rgb_bt601_lim = {
-	298,    0,  409,	/* ry, rcb, rcr |1.164  0.000  1.596|*/
-	298, -100, -208,	/* gy, gcb, gcr |1.164 -0.392 -0.813|*/
-	298,  516,    0,	/* by, bcb, bcr |1.164  2.017  0.000|*/
-	false,			/* limited range */
+	298,    0,  409,	 
+	298, -100, -208,	 
+	298,  516,    0,	 
+	false,			 
 };
 
-/* YUV -> RGB, ITU-R BT.709, full range */
+ 
 static const struct csc_coef_yuv2rgb coefs_yuv2rgb_bt709_full = {
-	256,    0,  402,        /* ry, rcb, rcr |1.000  0.000  1.570|*/
-	256,  -48, -120,        /* gy, gcb, gcr |1.000 -0.187 -0.467|*/
-	256,  475,    0,        /* by, bcb, bcr |1.000  1.856  0.000|*/
-	true,                   /* full range */
+	256,    0,  402,         
+	256,  -48, -120,         
+	256,  475,    0,         
+	true,                    
 };
 
-/* YUV -> RGB, ITU-R BT.709, limited range */
+ 
 static const struct csc_coef_yuv2rgb coefs_yuv2rgb_bt709_lim = {
-	298,    0,  459,	/* ry, rcb, rcr |1.164  0.000  1.793|*/
-	298,  -55, -136,	/* gy, gcb, gcr |1.164 -0.213 -0.533|*/
-	298,  541,    0,	/* by, bcb, bcr |1.164  2.112  0.000|*/
-	false,			/* limited range */
+	298,    0,  459,	 
+	298,  -55, -136,	 
+	298,  541,    0,	 
+	false,			 
 };
 
 static void dispc_ovl_set_csc(struct dispc_device *dispc,
@@ -1262,7 +1244,7 @@ static void dispc_configure_burst_sizes(struct dispc_device *dispc)
 	int i;
 	const int burst_size = BURST_SIZE_X8;
 
-	/* Configure burst size always to maximum size */
+	 
 	for (i = 0; i < dispc_get_num_ovls(dispc); ++i)
 		dispc_ovl_set_burst_size(dispc, i, burst_size);
 	if (dispc->feat->has_writeback)
@@ -1272,7 +1254,7 @@ static void dispc_configure_burst_sizes(struct dispc_device *dispc)
 static u32 dispc_ovl_get_burst_size(struct dispc_device *dispc,
 				    enum omap_plane_id plane)
 {
-	/* burst multiplier is always x8 (see dispc_configure_burst_sizes()) */
+	 
 	return dispc->feat->burst_size_unit * 8;
 }
 
@@ -1384,29 +1366,20 @@ static void dispc_init_fifos(struct dispc_device *dispc)
 		size *= unit;
 		dispc->fifo_size[fifo] = size;
 
-		/*
-		 * By default fifos are mapped directly to overlays, fifo 0 to
-		 * ovl 0, fifo 1 to ovl 1, etc.
-		 */
+		 
 		dispc->fifo_assignment[fifo] = fifo;
 	}
 
-	/*
-	 * The GFX fifo on OMAP4 is smaller than the other fifos. The small fifo
-	 * causes problems with certain use cases, like using the tiler in 2D
-	 * mode. The below hack swaps the fifos of GFX and WB planes, thus
-	 * giving GFX plane a larger fifo. WB but should work fine with a
-	 * smaller fifo.
-	 */
+	 
 	if (dispc->feat->gfx_fifo_workaround) {
 		u32 v;
 
 		v = dispc_read_reg(dispc, DISPC_GLOBAL_BUFFER);
 
-		v = FLD_MOD(v, 4, 2, 0); /* GFX BUF top to WB */
-		v = FLD_MOD(v, 4, 5, 3); /* GFX BUF bottom to WB */
-		v = FLD_MOD(v, 0, 26, 24); /* WB BUF top to GFX */
-		v = FLD_MOD(v, 0, 29, 27); /* WB BUF bottom to GFX */
+		v = FLD_MOD(v, 4, 2, 0);  
+		v = FLD_MOD(v, 4, 5, 3);  
+		v = FLD_MOD(v, 0, 26, 24);  
+		v = FLD_MOD(v, 0, 29, 27);  
 
 		dispc_write_reg(dispc, DISPC_GLOBAL_BUFFER, v);
 
@@ -1414,9 +1387,7 @@ static void dispc_init_fifos(struct dispc_device *dispc)
 		dispc->fifo_assignment[OMAP_DSS_WB] = OMAP_DSS_GFX;
 	}
 
-	/*
-	 * Setup default fifo thresholds.
-	 */
+	 
 	for (i = 0; i < dispc_get_num_ovls(dispc); ++i) {
 		u32 low, high;
 		const bool use_fifomerge = false;
@@ -1487,11 +1458,7 @@ void dispc_ovl_set_fifo_threshold(struct dispc_device *dispc,
 			FLD_VAL(high, hi_start, hi_end) |
 			FLD_VAL(low, lo_start, lo_end));
 
-	/*
-	 * configure the preload to the pipeline's high threhold, if HT it's too
-	 * large for the preload field, set the threshold to the maximum value
-	 * that can be held by the preload register
-	 */
+	 
 	if (dispc_has_feature(dispc, FEAT_PRELOAD) &&
 	    dispc->feat->set_max_preload && plane != OMAP_DSS_WB)
 		dispc_write_reg(dispc, DISPC_OVL_PRELOAD(plane),
@@ -1514,10 +1481,7 @@ void dispc_ovl_compute_fifo_thresholds(struct dispc_device *dispc,
 				       u32 *fifo_low, u32 *fifo_high,
 				       bool use_fifomerge, bool manual_update)
 {
-	/*
-	 * All sizes are in bytes. Both the buffer and burst are made of
-	 * buffer_units, and the fifo thresholds must be buffer_unit aligned.
-	 */
+	 
 	unsigned int buf_unit = dispc->feat->buffer_size_unit;
 	unsigned int ovl_fifo_size, total_fifo_size, burst_size;
 	int i;
@@ -1533,21 +1497,13 @@ void dispc_ovl_compute_fifo_thresholds(struct dispc_device *dispc,
 		total_fifo_size = ovl_fifo_size;
 	}
 
-	/*
-	 * We use the same low threshold for both fifomerge and non-fifomerge
-	 * cases, but for fifomerge we calculate the high threshold using the
-	 * combined fifo size
-	 */
+	 
 
 	if (manual_update && dispc_has_feature(dispc, FEAT_OMAP3_DSI_FIFO_BUG)) {
 		*fifo_low = ovl_fifo_size - burst_size * 2;
 		*fifo_high = total_fifo_size - burst_size;
 	} else if (plane == OMAP_DSS_WB) {
-		/*
-		 * Most optimal configuration for writeback is to push out data
-		 * to the interconnect the moment writeback pushes enough pixels
-		 * in the FIFO to form a burst
-		 */
+		 
 		*fifo_low = 0;
 		*fifo_high = burst_size;
 	} else {
@@ -1581,19 +1537,10 @@ static void dispc_init_mflag(struct dispc_device *dispc)
 {
 	int i;
 
-	/*
-	 * HACK: NV12 color format and MFLAG seem to have problems working
-	 * together: using two displays, and having an NV12 overlay on one of
-	 * the displays will cause underflows/synclosts when MFLAG_CTRL=2.
-	 * Changing MFLAG thresholds and PRELOAD to certain values seem to
-	 * remove the errors, but there doesn't seem to be a clear logic on
-	 * which values work and which not.
-	 *
-	 * As a work-around, set force MFLAG to always on.
-	 */
+	 
 	dispc_write_reg(dispc, DISPC_GLOBAL_MFLAG_ATTRIBUTE,
-		(1 << 0) |	/* MFLAG_CTRL = force always on */
-		(0 << 2));	/* MFLAG_START = disable */
+		(1 << 0) |	 
+		(0 << 2));	 
 
 	for (i = 0; i < dispc_get_num_ovls(dispc); ++i) {
 		u32 size = dispc_ovl_get_fifo_size(dispc, i);
@@ -1602,11 +1549,7 @@ static void dispc_init_mflag(struct dispc_device *dispc)
 
 		dispc_ovl_set_mflag(dispc, i, true);
 
-		/*
-		 * Simulation team suggests below thesholds:
-		 * HT = fifosize * 5 / 8;
-		 * LT = fifosize * 4 / 8;
-		 */
+		 
 
 		low = size * 4 / 8 / unit;
 		high = size * 5 / 8 / unit;
@@ -1621,11 +1564,7 @@ static void dispc_init_mflag(struct dispc_device *dispc)
 
 		dispc_ovl_set_mflag(dispc, OMAP_DSS_WB, true);
 
-		/*
-		 * Simulation team suggests below thesholds:
-		 * HT = fifosize * 5 / 8;
-		 * LT = fifosize * 4 / 8;
-		 */
+		 
 
 		low = size * 4 / 8 / unit;
 		high = size * 5 / 8 / unit;
@@ -1773,7 +1712,7 @@ static void dispc_ovl_set_accu_uv(struct dispc_device *dispc,
 		{  0, 1, 0, 1, -1, 1, 0, 1 },
 	};
 
-	/* Note: DSS HW rotates clockwise, DRM_MODE_ROTATE_* counter-clockwise */
+	 
 	switch (rotation & DRM_MODE_ROTATE_MASK) {
 	default:
 	case DRM_MODE_ROTATE_0:
@@ -1837,20 +1776,20 @@ static void dispc_ovl_set_scaling_common(struct dispc_device *dispc,
 				  rotation, DISPC_COLOR_COMPONENT_RGB_Y);
 	l = dispc_read_reg(dispc, DISPC_OVL_ATTRIBUTES(plane));
 
-	/* RESIZEENABLE and VERTICALTAPS */
+	 
 	l &= ~((0x3 << 5) | (0x1 << 21));
 	l |= (orig_width != out_width) ? (1 << 5) : 0;
 	l |= (orig_height != out_height) ? (1 << 6) : 0;
 	l |= five_taps ? (1 << 21) : 0;
 
-	/* VRESIZECONF and HRESIZECONF */
+	 
 	if (dispc_has_feature(dispc, FEAT_RESIZECONF)) {
 		l &= ~(0x3 << 7);
 		l |= (orig_width <= out_width) ? 0 : (1 << 7);
 		l |= (orig_height <= out_height) ? 0 : (1 << 8);
 	}
 
-	/* LINEBUFFERSPLIT */
+	 
 	if (dispc_has_feature(dispc, FEAT_LINEBUFFERSPLIT)) {
 		l &= ~(0x1 << 22);
 		l |= five_taps ? (1 << 22) : 0;
@@ -1858,10 +1797,7 @@ static void dispc_ovl_set_scaling_common(struct dispc_device *dispc,
 
 	dispc_write_reg(dispc, DISPC_OVL_ATTRIBUTES(plane), l);
 
-	/*
-	 * field 0 = even field = bottom field
-	 * field 1 = odd field = top field
-	 */
+	 
 	if (ilace && !fieldmode) {
 		accu1 = 0;
 		accu0 = ((1024 * orig_height / out_height) / 2) & 0x3ff;
@@ -1894,7 +1830,7 @@ static void dispc_ovl_set_scaling_uv(struct dispc_device *dispc,
 		return;
 
 	if (!info->is_yuv) {
-		/* reset chroma resampling for RGB formats  */
+		 
 		if (plane != OMAP_DSS_WB)
 			REG_FLD_MOD(dispc, DISPC_OVL_ATTRIBUTES2(plane),
 				    0, 8, 8);
@@ -1907,11 +1843,11 @@ static void dispc_ovl_set_scaling_uv(struct dispc_device *dispc,
 	switch (fourcc) {
 	case DRM_FORMAT_NV12:
 		if (chroma_upscale) {
-			/* UV is subsampled by 2 horizontally and vertically */
+			 
 			orig_height >>= 1;
 			orig_width >>= 1;
 		} else {
-			/* UV is downsampled by 2 horizontally and vertically */
+			 
 			orig_height <<= 1;
 			orig_width <<= 1;
 		}
@@ -1919,17 +1855,17 @@ static void dispc_ovl_set_scaling_uv(struct dispc_device *dispc,
 		break;
 	case DRM_FORMAT_YUYV:
 	case DRM_FORMAT_UYVY:
-		/* For YUV422 with 90/270 rotation, we don't upsample chroma */
+		 
 		if (!drm_rotation_90_or_270(rotation)) {
 			if (chroma_upscale)
-				/* UV is subsampled by 2 horizontally */
+				 
 				orig_width >>= 1;
 			else
-				/* UV is downsampled by 2 horizontally */
+				 
 				orig_width <<= 1;
 		}
 
-		/* must use FIR for YUV422 if rotated */
+		 
 		if ((rotation & DRM_MODE_ROTATE_MASK) != DRM_MODE_ROTATE_0)
 			scale_x = scale_y = true;
 
@@ -1952,9 +1888,9 @@ static void dispc_ovl_set_scaling_uv(struct dispc_device *dispc,
 		REG_FLD_MOD(dispc, DISPC_OVL_ATTRIBUTES2(plane),
 			(scale_x || scale_y) ? 1 : 0, 8, 8);
 
-	/* set H scaling */
+	 
 	REG_FLD_MOD(dispc, DISPC_OVL_ATTRIBUTES(plane), scale_x ? 1 : 0, 5, 5);
-	/* set V scaling */
+	 
 	REG_FLD_MOD(dispc, DISPC_OVL_ATTRIBUTES(plane), scale_y ? 1 : 0, 6, 6);
 }
 
@@ -1985,7 +1921,7 @@ static void dispc_ovl_set_rotation_attrs(struct dispc_device *dispc,
 	bool row_repeat = false;
 	int vidrot = 0;
 
-	/* Note: DSS HW rotates clockwise, DRM_MODE_ROTATE_* counter-clockwise */
+	 
 	if (fourcc == DRM_FORMAT_YUYV || fourcc == DRM_FORMAT_UYVY) {
 
 		if (rotation & DRM_MODE_REFLECT_X) {
@@ -2026,11 +1962,7 @@ static void dispc_ovl_set_rotation_attrs(struct dispc_device *dispc,
 			row_repeat = false;
 	}
 
-	/*
-	 * OMAP4/5 Errata i631:
-	 * NV12 in 1D mode must use ROTATION=1. Otherwise DSS will fetch extra
-	 * rows beyond the framebuffer, which may cause OCP error.
-	 */
+	 
 	if (fourcc == DRM_FORMAT_NV12 && rotation_type != OMAP_DSS_ROT_TILER)
 		vidrot = 1;
 
@@ -2045,7 +1977,7 @@ static void dispc_ovl_set_rotation_attrs(struct dispc_device *dispc,
 			rotation_type == OMAP_DSS_ROT_TILER &&
 			!drm_rotation_90_or_270(rotation);
 
-		/* DOUBLESTRIDE */
+		 
 		REG_FLD_MOD(dispc, DISPC_OVL_ATTRIBUTES(plane),
 			    doublestride, 22, 22);
 	}
@@ -2106,21 +2038,11 @@ static void calc_offset(u16 screen_width, u16 width,
 	if (rotation_type == OMAP_DSS_ROT_TILER &&
 	    (fourcc == DRM_FORMAT_UYVY || fourcc == DRM_FORMAT_YUYV) &&
 	    drm_rotation_90_or_270(rotation)) {
-		/*
-		 * HACK: ROW_INC needs to be calculated with TILER units.
-		 * We get such 'screen_width' that multiplying it with the
-		 * YUV422 pixel size gives the correct TILER container width.
-		 * However, 'width' is in pixels and multiplying it with YUV422
-		 * pixel size gives incorrect result. We thus multiply it here
-		 * with 2 to match the 32 bit TILER unit size.
-		 */
+		 
 		width *= 2;
 	}
 
-	/*
-	 * field 0 = even field = bottom field
-	 * field 1 = odd field = top field
-	 */
+	 
 	*offset0 = field_offset * screen_width * ps;
 	*offset1 = 0;
 
@@ -2132,10 +2054,7 @@ static void calc_offset(u16 screen_width, u16 width,
 		*pix_inc = pixinc(x_predecim, ps);
 }
 
-/*
- * This function is used to avoid synclosts in OMAP3, because of some
- * undocumented horizontal position and timing related limitations.
- */
+ 
 static int check_horiz_timing_omap3(unsigned long pclk, unsigned long lclk,
 		const struct videomode *vm, u16 pos_x,
 		u16 width, u16 height, u16 out_width, u16 out_height,
@@ -2161,26 +2080,18 @@ static int check_horiz_timing_omap3(unsigned long pclk, unsigned long lclk,
 	if (blank <= limits[i])
 		return -EINVAL;
 
-	/* FIXME add checks for 3-tap filter once the limitations are known */
+	 
 	if (!five_taps)
 		return 0;
 
-	/*
-	 * Pixel data should be prepared before visible display point starts.
-	 * So, atleast DS-2 lines must have already been fetched by DISPC
-	 * during nonactive - pos_x period.
-	 */
+	 
 	val = div_u64((u64)(nonactive - pos_x) * lclk, pclk);
 	DSSDBG("(nonactive - pos_x) * pcd = %llu max(0, DS - 2) * width = %d\n",
 		val, max(0, ds - 2) * width);
 	if (val < max(0, ds - 2) * width)
 		return -EINVAL;
 
-	/*
-	 * All lines need to be refilled during the nonactive period of which
-	 * only one line can be loaded during the active period. So, atleast
-	 * DS - 1 lines should be loaded during nonactive period.
-	 */
+	 
 	val =  div_u64((u64)nonactive * lclk, pclk);
 	DSSDBG("nonactive * pcd  = %llu, max(0, DS - 1) * width = %d\n",
 		val, max(0, ds - 1) * width);
@@ -2244,10 +2155,7 @@ static unsigned long calc_core_clk_34xx(unsigned long pclk, u16 width,
 {
 	unsigned int hf, vf;
 
-	/*
-	 * FIXME how to determine the 'A' factor
-	 * for the no downscaling case ?
-	 */
+	 
 
 	if (width > 3 * out_width)
 		hf = 4;
@@ -2268,12 +2176,7 @@ static unsigned long calc_core_clk_34xx(unsigned long pclk, u16 width,
 static unsigned long calc_core_clk_44xx(unsigned long pclk, u16 width,
 		u16 height, u16 out_width, u16 out_height, bool mem_to_mem)
 {
-	/*
-	 * If the overlay/writeback is in mem to mem mode, there are no
-	 * downscaling limitations with respect to pixel clock, return 1 as
-	 * required core clock to represent that we have sufficient enough
-	 * core clock to do maximum downscaling
-	 */
+	 
 	if (mem_to_mem)
 		return 1;
 
@@ -2379,7 +2282,7 @@ again:
 			!*core_clk || *core_clk > dispc_core_clk_rate(dispc));
 
 		if (!error) {
-			/* verify that we're inside the limits of scaler */
+			 
 			if (in_width / 4 > out_width)
 					error = 1;
 
@@ -2461,19 +2364,7 @@ static int dispc_ovl_calc_scaling_44xx(struct dispc_device *dispc,
 	}
 
 	if (*decim_x > 4 && fourcc != DRM_FORMAT_NV12) {
-		/*
-		 * Let's disable all scaling that requires horizontal
-		 * decimation with higher factor than 4, until we have
-		 * better estimates of what we can and can not
-		 * do. However, NV12 color format appears to work Ok
-		 * with all decimation factors.
-		 *
-		 * When decimating horizontally by more that 4 the dss
-		 * is not able to fetch the data in burst mode. When
-		 * this happens it is hard to tell if there enough
-		 * bandwidth. Despite what theory says this appears to
-		 * be true also for 16-bit color formats.
-		 */
+		 
 		DSSERR("Not enough bandwidth, too much downscaling (x-decimation factor %d > 4)\n", *decim_x);
 
 		return -EINVAL;
@@ -2640,7 +2531,7 @@ static int dispc_ovl_setup_common(struct dispc_device *dispc,
 
 	info = drm_format_info(fourcc);
 
-	/* when setting up WB, dispc_plane_pclk_rate() returns 0 */
+	 
 	if (plane == OMAP_DSS_WB)
 		pclk = vm->pixelclock;
 
@@ -2699,20 +2590,14 @@ static int dispc_ovl_setup_common(struct dispc_device *dispc,
 		cconv = 1;
 
 	if (ilace && !fieldmode) {
-		/*
-		 * when downscaling the bottom field may have to start several
-		 * source lines below the top field. Unfortunately ACCUI
-		 * registers will only hold the fractional part of the offset
-		 * so the integer part must be added to the base address of the
-		 * bottom field.
-		 */
+		 
 		if (!in_height || in_height == out_height)
 			field_offset = 0;
 		else
 			field_offset = in_height / out_height / 2;
 	}
 
-	/* Fields are independent but interleaved in memory. */
+	 
 	if (fieldmode)
 		field_offset = 1;
 
@@ -2863,19 +2748,19 @@ int dispc_wb_setup(struct dispc_device *dispc,
 		break;
 	}
 
-	/* setup extra DISPC_WB_ATTRIBUTES */
+	 
 	l = dispc_read_reg(dispc, DISPC_OVL_ATTRIBUTES(plane));
-	l = FLD_MOD(l, truncation, 10, 10);	/* TRUNCATIONENABLE */
-	l = FLD_MOD(l, channel_in, 18, 16);	/* CHANNELIN */
-	l = FLD_MOD(l, mem_to_mem, 19, 19);	/* WRITEBACKMODE */
+	l = FLD_MOD(l, truncation, 10, 10);	 
+	l = FLD_MOD(l, channel_in, 18, 16);	 
+	l = FLD_MOD(l, mem_to_mem, 19, 19);	 
 	if (mem_to_mem)
-		l = FLD_MOD(l, 1, 26, 24);	/* CAPTUREMODE */
+		l = FLD_MOD(l, 1, 26, 24);	 
 	else
-		l = FLD_MOD(l, 0, 26, 24);	/* CAPTUREMODE */
+		l = FLD_MOD(l, 0, 26, 24);	 
 	dispc_write_reg(dispc, DISPC_OVL_ATTRIBUTES(plane), l);
 
 	if (mem_to_mem) {
-		/* WBDELAYCOUNT */
+		 
 		REG_FLD_MOD(dispc, DISPC_OVL_ATTRIBUTES2(plane), 0, 7, 0);
 	} else {
 		u32 wbdelay;
@@ -2891,7 +2776,7 @@ int dispc_wb_setup(struct dispc_device *dispc,
 
 		wbdelay = min(wbdelay, 255u);
 
-		/* WBDELAYCOUNT */
+		 
 		REG_FLD_MOD(dispc, DISPC_OVL_ATTRIBUTES2(plane), wbdelay, 7, 0);
 	}
 
@@ -3133,7 +3018,7 @@ int dispc_mgr_check_timings(struct dispc_device *dispc,
 		return MODE_BAD;
 
 	if (dss_mgr_is_lcd(channel)) {
-		/* TODO: OMAP4+ supports interlace for LCD outputs */
+		 
 		if (vm->flags & DISPLAY_FLAGS_INTERLACED)
 			return MODE_BAD;
 
@@ -3168,7 +3053,7 @@ static void _dispc_mgr_set_lcd_timings(struct dispc_device *dispc,
 	hs = !!(vm->flags & DISPLAY_FLAGS_HSYNC_LOW);
 	de = !!(vm->flags & DISPLAY_FLAGS_DE_LOW);
 	ipc = !!(vm->flags & DISPLAY_FLAGS_PIXDATA_NEGEDGE);
-	onoff = true; /* always use the 'rf' setting */
+	onoff = true;  
 	rf = !!(vm->flags & DISPLAY_FLAGS_SYNC_POSEDGE);
 
 	l = FLD_VAL(onoff, 17, 17) |
@@ -3178,7 +3063,7 @@ static void _dispc_mgr_set_lcd_timings(struct dispc_device *dispc,
 		FLD_VAL(hs, 13, 13) |
 		FLD_VAL(vs, 12, 12);
 
-	/* always set ALIGN bit when available */
+	 
 	if (dispc->feat->supports_sync_align)
 		l |= (1 << 18);
 
@@ -3214,7 +3099,7 @@ static int vm_flag_to_int(enum display_flags flags, enum display_flags high,
 	return 0;
 }
 
-/* change name to mode? */
+ 
 void dispc_mgr_set_timings(struct dispc_device *dispc,
 				  enum omap_channel channel,
 				  const struct videomode *vm)
@@ -3318,7 +3203,7 @@ static unsigned long dispc_mgr_lclk_rate(struct dispc_device *dispc,
 	unsigned long r;
 	enum dss_clk_source src;
 
-	/* for TV, LCLK rate is the FCLK rate */
+	 
 	if (!dss_mgr_is_lcd(channel))
 		return dispc_fclk_rate(dispc);
 
@@ -3481,7 +3366,7 @@ static int dispc_dump_regs(struct seq_file *s, void *p)
 	if (dispc_runtime_get(dispc))
 		return 0;
 
-	/* DISPC common registers */
+	 
 	DUMPREG(dispc, DISPC_REVISION);
 	DUMPREG(dispc, DISPC_SYSCONFIG);
 	DUMPREG(dispc, DISPC_SYSSTATUS);
@@ -3515,7 +3400,7 @@ static int dispc_dump_regs(struct seq_file *s, void *p)
 
 	p_names = mgr_names;
 
-	/* DISPC channel specific registers */
+	 
 	for (i = 0; i < dispc_get_num_mgrs(dispc); i++) {
 		DUMPREG(dispc, i, DISPC_DEFAULT_COLOR);
 		DUMPREG(dispc, i, DISPC_TRANS_COLOR);
@@ -3617,9 +3502,9 @@ static int dispc_dump_regs(struct seq_file *s, void *p)
 	(int)(46 - strlen(#name) - strlen(p_names[plane])), " ", \
 	dispc_read_reg(dispc, DISPC_REG(plane, name, i)))
 
-	/* Video pipeline coefficient registers */
+	 
 
-	/* start from OMAP_DSS_VIDEO1 */
+	 
 	for (i = 1; i < dispc_get_num_ovls(dispc); i++) {
 		for (j = 0; j < 8; j++)
 			DUMPREG(dispc, i, DISPC_OVL_FIR_COEF_H, j);
@@ -3655,7 +3540,7 @@ static int dispc_dump_regs(struct seq_file *s, void *p)
 	return 0;
 }
 
-/* calculate clock rates using dividers in cinfo */
+ 
 int dispc_calc_clock_rates(struct dispc_device *dispc,
 			   unsigned long dispc_fclk_rate,
 			   struct dispc_clock_info *cinfo)
@@ -3709,12 +3594,7 @@ bool dispc_div_calc(struct dispc_device *dispc, unsigned long dispc_freq,
 		for (pckd = pckd_start; pckd <= pckd_stop; ++pckd) {
 			pck = lck / pckd;
 
-			/*
-			 * For OMAP2/3 the DISPC fclk is the same as LCD's logic
-			 * clock, which means we're configuring DISPC fclk here
-			 * also. Thus we need to use the calculated lck. For
-			 * OMAP4+ the DISPC fclk is a separate clock.
-			 */
+			 
 			if (dispc_has_feature(dispc, FEAT_CORE_CLK_DIV))
 				fck = dispc_core_clk_rate(dispc);
 			else
@@ -3773,24 +3653,24 @@ void dispc_write_irqenable(struct dispc_device *dispc, u32 mask)
 {
 	u32 old_mask = dispc_read_reg(dispc, DISPC_IRQENABLE);
 
-	/* clear the irqstatus for newly enabled irqs */
+	 
 	dispc_clear_irqstatus(dispc, (mask ^ old_mask) & mask);
 
 	dispc_write_reg(dispc, DISPC_IRQENABLE, mask);
 
-	/* flush posted write */
+	 
 	dispc_read_reg(dispc, DISPC_IRQENABLE);
 }
 
 void dispc_enable_sidle(struct dispc_device *dispc)
 {
-	/* SIDLEMODE: smart idle */
+	 
 	REG_FLD_MOD(dispc, DISPC_SYSCONFIG, 2, 4, 3);
 }
 
 void dispc_disable_sidle(struct dispc_device *dispc)
 {
-	REG_FLD_MOD(dispc, DISPC_SYSCONFIG, 1, 4, 3);	/* SIDLEMODE: no idle */
+	REG_FLD_MOD(dispc, DISPC_SYSCONFIG, 1, 4, 3);	 
 }
 
 u32 dispc_mgr_gamma_size(struct dispc_device *dispc,
@@ -3931,10 +3811,10 @@ static void _omap_dispc_initial_config(struct dispc_device *dispc)
 {
 	u32 l;
 
-	/* Exclusively enable DISPC_CORE_CLK and set divider to 1 */
+	 
 	if (dispc_has_feature(dispc, FEAT_CORE_CLK_DIV)) {
 		l = dispc_read_reg(dispc, DISPC_DIVISOR);
-		/* Use DISPC_DIVISOR.LCD, instead of DISPC_DIVISOR1.LCD */
+		 
 		l = FLD_MOD(l, 1, 0, 0);
 		l = FLD_MOD(l, 1, 23, 16);
 		dispc_write_reg(dispc, DISPC_DIVISOR, l);
@@ -3942,14 +3822,11 @@ static void _omap_dispc_initial_config(struct dispc_device *dispc)
 		dispc->core_clk_rate = dispc_fclk_rate(dispc);
 	}
 
-	/* Use gamma table mode, instead of palette mode */
+	 
 	if (dispc->feat->has_gamma_table)
 		REG_FLD_MOD(dispc, DISPC_CONFIG, 1, 3, 3);
 
-	/* For older DSS versions (FEAT_FUNCGATED) this enables
-	 * func-clock auto-gating. For newer versions
-	 * (dispc->feat->has_gamma_table) this enables tv-out gamma tables.
-	 */
+	 
 	if (dispc_has_feature(dispc, FEAT_FUNCGATED) ||
 	    dispc->feat->has_gamma_table)
 		REG_FLD_MOD(dispc, DISPC_CONFIG, 1, 9, 9);
@@ -4068,64 +3945,64 @@ static const struct dss_reg_field omap4_dispc_reg_fields[] = {
 };
 
 static const enum omap_overlay_caps omap2_dispc_overlay_caps[] = {
-	/* OMAP_DSS_GFX */
+	 
 	OMAP_DSS_OVL_CAP_POS | OMAP_DSS_OVL_CAP_REPLICATION,
 
-	/* OMAP_DSS_VIDEO1 */
+	 
 	OMAP_DSS_OVL_CAP_SCALE | OMAP_DSS_OVL_CAP_POS |
 		OMAP_DSS_OVL_CAP_REPLICATION,
 
-	/* OMAP_DSS_VIDEO2 */
+	 
 	OMAP_DSS_OVL_CAP_SCALE | OMAP_DSS_OVL_CAP_POS |
 		OMAP_DSS_OVL_CAP_REPLICATION,
 };
 
 static const enum omap_overlay_caps omap3430_dispc_overlay_caps[] = {
-	/* OMAP_DSS_GFX */
+	 
 	OMAP_DSS_OVL_CAP_GLOBAL_ALPHA | OMAP_DSS_OVL_CAP_POS |
 		OMAP_DSS_OVL_CAP_REPLICATION,
 
-	/* OMAP_DSS_VIDEO1 */
+	 
 	OMAP_DSS_OVL_CAP_SCALE | OMAP_DSS_OVL_CAP_POS |
 		OMAP_DSS_OVL_CAP_REPLICATION,
 
-	/* OMAP_DSS_VIDEO2 */
+	 
 	OMAP_DSS_OVL_CAP_SCALE | OMAP_DSS_OVL_CAP_GLOBAL_ALPHA |
 		OMAP_DSS_OVL_CAP_POS | OMAP_DSS_OVL_CAP_REPLICATION,
 };
 
 static const enum omap_overlay_caps omap3630_dispc_overlay_caps[] = {
-	/* OMAP_DSS_GFX */
+	 
 	OMAP_DSS_OVL_CAP_GLOBAL_ALPHA | OMAP_DSS_OVL_CAP_PRE_MULT_ALPHA |
 		OMAP_DSS_OVL_CAP_POS | OMAP_DSS_OVL_CAP_REPLICATION,
 
-	/* OMAP_DSS_VIDEO1 */
+	 
 	OMAP_DSS_OVL_CAP_SCALE | OMAP_DSS_OVL_CAP_POS |
 		OMAP_DSS_OVL_CAP_REPLICATION,
 
-	/* OMAP_DSS_VIDEO2 */
+	 
 	OMAP_DSS_OVL_CAP_SCALE | OMAP_DSS_OVL_CAP_GLOBAL_ALPHA |
 		OMAP_DSS_OVL_CAP_PRE_MULT_ALPHA | OMAP_DSS_OVL_CAP_POS |
 		OMAP_DSS_OVL_CAP_REPLICATION,
 };
 
 static const enum omap_overlay_caps omap4_dispc_overlay_caps[] = {
-	/* OMAP_DSS_GFX */
+	 
 	OMAP_DSS_OVL_CAP_GLOBAL_ALPHA | OMAP_DSS_OVL_CAP_PRE_MULT_ALPHA |
 		OMAP_DSS_OVL_CAP_ZORDER | OMAP_DSS_OVL_CAP_POS |
 		OMAP_DSS_OVL_CAP_REPLICATION,
 
-	/* OMAP_DSS_VIDEO1 */
+	 
 	OMAP_DSS_OVL_CAP_SCALE | OMAP_DSS_OVL_CAP_GLOBAL_ALPHA |
 		OMAP_DSS_OVL_CAP_PRE_MULT_ALPHA | OMAP_DSS_OVL_CAP_ZORDER |
 		OMAP_DSS_OVL_CAP_POS | OMAP_DSS_OVL_CAP_REPLICATION,
 
-	/* OMAP_DSS_VIDEO2 */
+	 
 	OMAP_DSS_OVL_CAP_SCALE | OMAP_DSS_OVL_CAP_GLOBAL_ALPHA |
 		OMAP_DSS_OVL_CAP_PRE_MULT_ALPHA | OMAP_DSS_OVL_CAP_ZORDER |
 		OMAP_DSS_OVL_CAP_POS | OMAP_DSS_OVL_CAP_REPLICATION,
 
-	/* OMAP_DSS_VIDEO3 */
+	 
 	OMAP_DSS_OVL_CAP_SCALE | OMAP_DSS_OVL_CAP_GLOBAL_ALPHA |
 		OMAP_DSS_OVL_CAP_PRE_MULT_ALPHA | OMAP_DSS_OVL_CAP_ZORDER |
 		OMAP_DSS_OVL_CAP_POS | OMAP_DSS_OVL_CAP_REPLICATION,
@@ -4135,18 +4012,18 @@ static const enum omap_overlay_caps omap4_dispc_overlay_caps[] = {
 
 static const u32 *omap2_dispc_supported_color_modes[] = {
 
-	/* OMAP_DSS_GFX */
+	 
 	COLOR_ARRAY(
 	DRM_FORMAT_RGBX4444, DRM_FORMAT_RGB565,
 	DRM_FORMAT_XRGB8888, DRM_FORMAT_RGB888),
 
-	/* OMAP_DSS_VIDEO1 */
+	 
 	COLOR_ARRAY(
 	DRM_FORMAT_RGB565, DRM_FORMAT_XRGB8888,
 	DRM_FORMAT_RGB888, DRM_FORMAT_YUYV,
 	DRM_FORMAT_UYVY),
 
-	/* OMAP_DSS_VIDEO2 */
+	 
 	COLOR_ARRAY(
 	DRM_FORMAT_RGB565, DRM_FORMAT_XRGB8888,
 	DRM_FORMAT_RGB888, DRM_FORMAT_YUYV,
@@ -4154,20 +4031,20 @@ static const u32 *omap2_dispc_supported_color_modes[] = {
 };
 
 static const u32 *omap3_dispc_supported_color_modes[] = {
-	/* OMAP_DSS_GFX */
+	 
 	COLOR_ARRAY(
 	DRM_FORMAT_RGBX4444, DRM_FORMAT_ARGB4444,
 	DRM_FORMAT_RGB565, DRM_FORMAT_XRGB8888,
 	DRM_FORMAT_RGB888, DRM_FORMAT_ARGB8888,
 	DRM_FORMAT_RGBA8888, DRM_FORMAT_RGBX8888),
 
-	/* OMAP_DSS_VIDEO1 */
+	 
 	COLOR_ARRAY(
 	DRM_FORMAT_XRGB8888, DRM_FORMAT_RGB888,
 	DRM_FORMAT_RGBX4444, DRM_FORMAT_RGB565,
 	DRM_FORMAT_YUYV, DRM_FORMAT_UYVY),
 
-	/* OMAP_DSS_VIDEO2 */
+	 
 	COLOR_ARRAY(
 	DRM_FORMAT_RGBX4444, DRM_FORMAT_ARGB4444,
 	DRM_FORMAT_RGB565, DRM_FORMAT_XRGB8888,
@@ -4177,7 +4054,7 @@ static const u32 *omap3_dispc_supported_color_modes[] = {
 };
 
 static const u32 *omap4_dispc_supported_color_modes[] = {
-	/* OMAP_DSS_GFX */
+	 
 	COLOR_ARRAY(
 	DRM_FORMAT_RGBX4444, DRM_FORMAT_ARGB4444,
 	DRM_FORMAT_RGB565, DRM_FORMAT_XRGB8888,
@@ -4186,7 +4063,7 @@ static const u32 *omap4_dispc_supported_color_modes[] = {
 	DRM_FORMAT_ARGB1555, DRM_FORMAT_XRGB4444,
 	DRM_FORMAT_RGBA4444, DRM_FORMAT_XRGB1555),
 
-	/* OMAP_DSS_VIDEO1 */
+	 
 	COLOR_ARRAY(
 	DRM_FORMAT_RGB565, DRM_FORMAT_RGBX4444,
 	DRM_FORMAT_YUYV, DRM_FORMAT_ARGB1555,
@@ -4197,7 +4074,7 @@ static const u32 *omap4_dispc_supported_color_modes[] = {
 	DRM_FORMAT_ARGB8888, DRM_FORMAT_XRGB4444,
 	DRM_FORMAT_RGBX8888),
 
-       /* OMAP_DSS_VIDEO2 */
+        
 	COLOR_ARRAY(
 	DRM_FORMAT_RGB565, DRM_FORMAT_RGBX4444,
 	DRM_FORMAT_YUYV, DRM_FORMAT_ARGB1555,
@@ -4208,7 +4085,7 @@ static const u32 *omap4_dispc_supported_color_modes[] = {
 	DRM_FORMAT_ARGB8888, DRM_FORMAT_XRGB4444,
 	DRM_FORMAT_RGBX8888),
 
-	/* OMAP_DSS_VIDEO3 */
+	 
 	COLOR_ARRAY(
 	DRM_FORMAT_RGB565, DRM_FORMAT_RGBX4444,
 	DRM_FORMAT_YUYV, DRM_FORMAT_ARGB1555,
@@ -4219,7 +4096,7 @@ static const u32 *omap4_dispc_supported_color_modes[] = {
 	DRM_FORMAT_ARGB8888, DRM_FORMAT_XRGB4444,
 	DRM_FORMAT_RGBX8888),
 
-	/* OMAP_DSS_WB */
+	 
 	COLOR_ARRAY(
 	DRM_FORMAT_RGB565, DRM_FORMAT_RGBX4444,
 	DRM_FORMAT_YUYV, DRM_FORMAT_ARGB1555,
@@ -4252,10 +4129,7 @@ static const struct dispc_features omap24xx_dispc_feats = {
 	.ovl_height_max		=	2048,
 	.max_lcd_pclk		=	66500000,
 	.max_downscale		=	2,
-	/*
-	 * Assume the line width buffer to be 768 pixels as OMAP2 DISPC scaler
-	 * cannot scale an image width larger than 768.
-	 */
+	 
 	.max_line_width		=	768,
 	.min_pcd		=	2,
 	.calc_scaling		=	dispc_ovl_calc_scaling_24xx,
@@ -4529,7 +4403,7 @@ int dispc_request_irq(struct dispc_device *dispc, irq_handler_t handler,
 	dispc->user_handler = handler;
 	dispc->user_data = dev_id;
 
-	/* ensure the dispc_irq_handler sees the values above */
+	 
 	smp_wmb();
 
 	r = devm_request_irq(&dispc->pdev->dev, dispc->irq, dispc_irq_handler,
@@ -4554,30 +4428,14 @@ u32 dispc_get_memory_bandwidth_limit(struct dispc_device *dispc)
 {
 	u32 limit = 0;
 
-	/* Optional maximum memory bandwidth */
+	 
 	of_property_read_u32(dispc->pdev->dev.of_node, "max-memory-bandwidth",
 			     &limit);
 
 	return limit;
 }
 
-/*
- * Workaround for errata i734 in DSS dispc
- *  - LCD1 Gamma Correction Is Not Working When GFX Pipe Is Disabled
- *
- * For gamma tables to work on LCD1 the GFX plane has to be used at
- * least once after DSS HW has come out of reset. The workaround
- * sets up a minimal LCD setup with GFX plane and waits for one
- * vertical sync irq before disabling the setup and continuing with
- * the context restore. The physical outputs are gated during the
- * operation. This workaround requires that gamma table's LOADMODE
- * is set to 0x2 in DISPC_CONTROL1 register.
- *
- * For details see:
- * OMAP543x Multimedia Device Silicon Revision 2.0 Silicon Errata
- * Literature Number: SWPZ037E
- * Or some other relevant errata document for the DSS IP version.
- */
+ 
 
 static const struct dispc_errata_i734_data {
 	struct videomode vm;
@@ -4678,15 +4536,15 @@ static void dispc_errata_i734_wa(struct dispc_device *dispc)
 	ovli.paddr = i734_buf.paddr;
 	lcd_conf = i734.lcd_conf;
 
-	/* Gate all LCD1 outputs */
+	 
 	REG_FLD_MOD(dispc, DISPC_CONFIG, 0x1f, 8, 4);
 
-	/* Setup and enable GFX plane */
+	 
 	dispc_ovl_setup(dispc, OMAP_DSS_GFX, &ovli, &i734.vm, false,
 			OMAP_DSS_CHANNEL_LCD);
 	dispc_ovl_enable(dispc, OMAP_DSS_GFX, true);
 
-	/* Set up and enable display manager for LCD1 */
+	 
 	dispc_mgr_setup(dispc, OMAP_DSS_CHANNEL_LCD, &i734.mgri);
 	dispc_calc_clock_rates(dispc, dss_get_dispc_clk_rate(dispc->dss),
 			       &lcd_conf.clock_info);
@@ -4695,14 +4553,11 @@ static void dispc_errata_i734_wa(struct dispc_device *dispc)
 
 	dispc_clear_irqstatus(dispc, framedone_irq);
 
-	/* Enable and shut the channel to produce just one frame */
+	 
 	dispc_mgr_enable(dispc, OMAP_DSS_CHANNEL_LCD, true);
 	dispc_mgr_enable(dispc, OMAP_DSS_CHANNEL_LCD, false);
 
-	/* Busy wait for framedone. We can't fiddle with irq handlers
-	 * in PM resume. Typically the loop runs less than 5 times and
-	 * waits less than a micro second.
-	 */
+	 
 	count = 0;
 	while (!(dispc_read_irqstatus(dispc) & framedone_irq)) {
 		if (count++ > 10000) {
@@ -4713,14 +4568,14 @@ static void dispc_errata_i734_wa(struct dispc_device *dispc)
 	}
 	dispc_ovl_enable(dispc, OMAP_DSS_GFX, false);
 
-	/* Clear all irq bits before continuing */
+	 
 	dispc_clear_irqstatus(dispc, 0xffffffff);
 
-	/* Restore the original state to LCD1 output gates */
+	 
 	REG_FLD_MOD(dispc, DISPC_CONFIG, gatestate, 8, 4);
 }
 
-/* DISPC HW IP initialisation */
+ 
 static const struct of_device_id dispc_of_match[] = {
 	{ .compatible = "ti,omap2-dispc", .data = &omap24xx_dispc_feats },
 	{ .compatible = "ti,omap3-dispc", .data = &omap36xx_dispc_feats },
@@ -4736,7 +4591,7 @@ static const struct soc_device_attribute dispc_soc_devices[] = {
 	{ .machine = "OMAP3[45]*",	.data = &omap34xx_rev3_0_dispc_feats },
 	{ .machine = "AM35*",		.data = &omap34xx_rev3_0_dispc_feats },
 	{ .machine = "AM43*",		.data = &am43xx_dispc_feats },
-	{ /* sentinel */ }
+	{   }
 };
 
 static int dispc_bind(struct device *dev, struct device *master, void *data)
@@ -4757,10 +4612,7 @@ static int dispc_bind(struct device *dev, struct device *master, void *data)
 	platform_set_drvdata(pdev, dispc);
 	dispc->dss = dss;
 
-	/*
-	 * The OMAP3-based models can't be told apart using the compatible
-	 * string, use SoC device matching.
-	 */
+	 
 	soc = soc_device_match(dispc_soc_devices);
 	if (soc)
 		dispc->feat = soc->data;
@@ -4868,9 +4720,9 @@ static __maybe_unused int dispc_runtime_suspend(struct device *dev)
 	struct dispc_device *dispc = dev_get_drvdata(dev);
 
 	dispc->is_enabled = false;
-	/* ensure the dispc_irq_handler sees the is_enabled value */
+	 
 	smp_wmb();
-	/* wait for current handler to finish before turning the DISPC off */
+	 
 	synchronize_irq(dispc->irq);
 
 	dispc_save_context(dispc);
@@ -4882,12 +4734,7 @@ static __maybe_unused int dispc_runtime_resume(struct device *dev)
 {
 	struct dispc_device *dispc = dev_get_drvdata(dev);
 
-	/*
-	 * The reset value for load mode is 0 (OMAP_DSS_LOAD_CLUT_AND_FRAME)
-	 * but we always initialize it to 2 (OMAP_DSS_LOAD_FRAME_ONLY) in
-	 * _omap_dispc_initial_config(). We can thus use it to detect if
-	 * we have lost register context.
-	 */
+	 
 	if (REG_GET(dispc, DISPC_CONFIG, 2, 1) != OMAP_DSS_LOAD_FRAME_ONLY) {
 		_omap_dispc_initial_config(dispc);
 
@@ -4899,7 +4746,7 @@ static __maybe_unused int dispc_runtime_resume(struct device *dev)
 	}
 
 	dispc->is_enabled = true;
-	/* ensure the dispc_irq_handler sees the is_enabled value */
+	 
 	smp_wmb();
 
 	return 0;

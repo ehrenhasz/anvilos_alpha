@@ -1,26 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR MIT
-/*
- * Copyright 2018-2022 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+
+ 
 
 #include "kfd_device_queue_manager.h"
 #include "navi10_enum.h"
@@ -56,7 +35,7 @@ static int update_qpd_v10(struct device_queue_manager *dqm,
 
 	pdd = qpd_to_pdd(qpd);
 
-	/* check if sh_mem_config register already configured */
+	 
 	if (qpd->sh_mem_config == 0) {
 		qpd->sh_mem_config =
 			(SH_MEM_ALIGNMENT_MODE_UNALIGNED <<
@@ -76,6 +55,6 @@ static int update_qpd_v10(struct device_queue_manager *dqm,
 static void init_sdma_vm_v10(struct device_queue_manager *dqm, struct queue *q,
 			    struct qcm_process_device *qpd)
 {
-	/* Not needed on SDMAv4 onwards any more */
+	 
 	q->properties.sdma_vm_addr = 0;
 }

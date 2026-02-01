@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Renesas RZ/G1M System Controller
- *
- * Copyright (C) 2016 Cogent Embedded Inc.
- */
+
+ 
 
 #include <linux/kernel.h>
 

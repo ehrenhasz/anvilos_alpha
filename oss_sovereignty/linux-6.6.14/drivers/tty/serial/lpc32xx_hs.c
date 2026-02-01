@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * High Speed Serial Ports on NXP LPC32xx SoC
- *
- * Authors: Kevin Wells <kevin.wells@nxp.com>
- *          Roland Stigge <stigge@antcom.de>
- *
- * Copyright (C) 2010 NXP Semiconductors
- * Copyright (C) 2012 Roland Stigge
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/ioport.h>
@@ -27,9 +19,7 @@
 #include <linux/sizes.h>
 #include <linux/soc/nxp/lpc32xx-misc.h>
 
-/*
- * High Speed UART register offsets
- */
+ 
 #define LPC32XX_HSUART_FIFO(x)			((x) + 0x00)
 #define LPC32XX_HSUART_LEVEL(x)			((x) + 0x04)
 #define LPC32XX_HSUART_IIR(x)			((x) + 0x08)
@@ -171,7 +161,7 @@ static int __init lpc32xx_hsuart_console_setup(struct console *co,
 	if (options)
 		uart_parse_options(options, &baud, &parity, &bits, &flow);
 
-	lpc32xx_loopback_set(port->mapbase, 0); /* get out of loopback mode */
+	lpc32xx_loopback_set(port->mapbase, 0);  
 
 	return uart_set_options(port, co, baud, parity, bits, flow);
 }
@@ -214,13 +204,13 @@ static unsigned int __serial_get_clock_div(unsigned long uartclk,
 	u32 div, goodrate, hsu_rate, l_hsu_rate, comprate;
 	u32 rate_diff;
 
-	/* Find the closest divider to get the desired clock rate */
+	 
 	div = uartclk / rate;
 	goodrate = hsu_rate = (div / 14) - 1;
 	if (hsu_rate != 0)
 		hsu_rate--;
 
-	/* Tweak divider */
+	 
 	l_hsu_rate = hsu_rate + 3;
 	rate_diff = 0xFFFFFFFF;
 
@@ -253,14 +243,14 @@ static void __serial_lpc32xx_rx(struct uart_port *port)
 	struct tty_port *tport = &port->state->port;
 	unsigned int tmp, flag;
 
-	/* Read data from FIFO and push into terminal */
+	 
 	tmp = readl(LPC32XX_HSUART_FIFO(port->membase));
 	while (!(tmp & LPC32XX_HSU_RX_EMPTY)) {
 		flag = TTY_NORMAL;
 		port->icount.rx++;
 
 		if (tmp & LPC32XX_HSU_ERROR_DATA) {
-			/* Framing error */
+			 
 			writel(LPC32XX_HSU_FE_INT,
 			       LPC32XX_HSUART_IIR(port->membase));
 			port->icount.frame++;
@@ -300,22 +290,22 @@ static irqreturn_t serial_lpc32xx_interrupt(int irq, void *dev_id)
 
 	spin_lock(&port->lock);
 
-	/* Read UART status and clear latched interrupts */
+	 
 	status = readl(LPC32XX_HSUART_IIR(port->membase));
 
 	if (status & LPC32XX_HSU_BRK_INT) {
-		/* Break received */
+		 
 		writel(LPC32XX_HSU_BRK_INT, LPC32XX_HSUART_IIR(port->membase));
 		port->icount.brk++;
 		uart_handle_break(port);
 	}
 
-	/* Framing error */
+	 
 	if (status & LPC32XX_HSU_FE_INT)
 		writel(LPC32XX_HSU_FE_INT, LPC32XX_HSUART_IIR(port->membase));
 
 	if (status & LPC32XX_HSU_RX_OE_INT) {
-		/* Receive FIFO overrun */
+		 
 		writel(LPC32XX_HSU_RX_OE_INT,
 		       LPC32XX_HSUART_IIR(port->membase));
 		port->icount.overrun++;
@@ -323,11 +313,11 @@ static irqreturn_t serial_lpc32xx_interrupt(int irq, void *dev_id)
 		tty_flip_buffer_push(tport);
 	}
 
-	/* Data received? */
+	 
 	if (status & (LPC32XX_HSU_RX_TIMEOUT_INT | LPC32XX_HSU_RX_TRIG_INT))
 		__serial_lpc32xx_rx(port);
 
-	/* Transmit data request? */
+	 
 	if ((status & LPC32XX_HSU_TX_INT) && (!uart_tx_stopped(port))) {
 		writel(LPC32XX_HSU_TX_INT, LPC32XX_HSUART_IIR(port->membase));
 		__serial_lpc32xx_tx(port);
@@ -338,7 +328,7 @@ static irqreturn_t serial_lpc32xx_interrupt(int irq, void *dev_id)
 	return IRQ_HANDLED;
 }
 
-/* port->lock is not held.  */
+ 
 static unsigned int serial_lpc32xx_tx_empty(struct uart_port *port)
 {
 	unsigned int ret = 0;
@@ -349,21 +339,21 @@ static unsigned int serial_lpc32xx_tx_empty(struct uart_port *port)
 	return ret;
 }
 
-/* port->lock held by caller.  */
+ 
 static void serial_lpc32xx_set_mctrl(struct uart_port *port,
 				     unsigned int mctrl)
 {
-	/* No signals are supported on HS UARTs */
+	 
 }
 
-/* port->lock is held by caller and interrupts are disabled.  */
+ 
 static unsigned int serial_lpc32xx_get_mctrl(struct uart_port *port)
 {
-	/* No signals are supported on HS UARTs */
+	 
 	return TIOCM_CAR | TIOCM_DSR | TIOCM_CTS;
 }
 
-/* port->lock held by caller.  */
+ 
 static void serial_lpc32xx_stop_tx(struct uart_port *port)
 {
 	u32 tmp;
@@ -373,7 +363,7 @@ static void serial_lpc32xx_stop_tx(struct uart_port *port)
 	writel(tmp, LPC32XX_HSUART_CTRL(port->membase));
 }
 
-/* port->lock held by caller.  */
+ 
 static void serial_lpc32xx_start_tx(struct uart_port *port)
 {
 	u32 tmp;
@@ -384,7 +374,7 @@ static void serial_lpc32xx_start_tx(struct uart_port *port)
 	writel(tmp, LPC32XX_HSUART_CTRL(port->membase));
 }
 
-/* port->lock held by caller.  */
+ 
 static void serial_lpc32xx_stop_rx(struct uart_port *port)
 {
 	u32 tmp;
@@ -397,7 +387,7 @@ static void serial_lpc32xx_stop_rx(struct uart_port *port)
 		LPC32XX_HSU_FE_INT), LPC32XX_HSUART_IIR(port->membase));
 }
 
-/* port->lock is not held.  */
+ 
 static void serial_lpc32xx_break_ctl(struct uart_port *port,
 				     int break_state)
 {
@@ -414,7 +404,7 @@ static void serial_lpc32xx_break_ctl(struct uart_port *port,
 	spin_unlock_irqrestore(&port->lock, flags);
 }
 
-/* port->lock is not held.  */
+ 
 static int serial_lpc32xx_startup(struct uart_port *port)
 {
 	int retval;
@@ -431,15 +421,12 @@ static int serial_lpc32xx_startup(struct uart_port *port)
 
 	writel(0xFF, LPC32XX_HSUART_RATE(port->membase));
 
-	/*
-	 * Set receiver timeout, HSU offset of 20, no break, no interrupts,
-	 * and default FIFO trigger levels
-	 */
+	 
 	tmp = LPC32XX_HSU_TX_TL8B | LPC32XX_HSU_RX_TL32B |
 		LPC32XX_HSU_OFFSET(20) | LPC32XX_HSU_TMO_INACT_4B;
 	writel(tmp, LPC32XX_HSUART_CTRL(port->membase));
 
-	lpc32xx_loopback_set(port->mapbase, 0); /* get out of loopback mode */
+	lpc32xx_loopback_set(port->mapbase, 0);  
 
 	spin_unlock_irqrestore(&port->lock, flags);
 
@@ -452,7 +439,7 @@ static int serial_lpc32xx_startup(struct uart_port *port)
 	return retval;
 }
 
-/* port->lock is not held.  */
+ 
 static void serial_lpc32xx_shutdown(struct uart_port *port)
 {
 	u32 tmp;
@@ -464,14 +451,14 @@ static void serial_lpc32xx_shutdown(struct uart_port *port)
 		LPC32XX_HSU_OFFSET(20) | LPC32XX_HSU_TMO_INACT_4B;
 	writel(tmp, LPC32XX_HSUART_CTRL(port->membase));
 
-	lpc32xx_loopback_set(port->mapbase, 1); /* go to loopback mode */
+	lpc32xx_loopback_set(port->mapbase, 1);  
 
 	spin_unlock_irqrestore(&port->lock, flags);
 
 	free_irq(port->irq, port);
 }
 
-/* port->lock is not held.  */
+ 
 static void serial_lpc32xx_set_termios(struct uart_port *port,
 				       struct ktermios *termios,
 				       const struct ktermios *old)
@@ -480,7 +467,7 @@ static void serial_lpc32xx_set_termios(struct uart_port *port,
 	unsigned int baud, quot;
 	u32 tmp;
 
-	/* Always 8-bit, no parity, 1 stop bit */
+	 
 	termios->c_cflag &= ~(CSIZE | CSTOPB | PARENB | PARODD);
 	termios->c_cflag |= CS8;
 
@@ -493,7 +480,7 @@ static void serial_lpc32xx_set_termios(struct uart_port *port,
 
 	spin_lock_irqsave(&port->lock, flags);
 
-	/* Ignore characters? */
+	 
 	tmp = readl(LPC32XX_HSUART_CTRL(port->membase));
 	if ((termios->c_cflag & CREAD) == 0)
 		tmp &= ~(LPC32XX_HSU_RX_INT_EN | LPC32XX_HSU_ERR_INT_EN);
@@ -507,7 +494,7 @@ static void serial_lpc32xx_set_termios(struct uart_port *port,
 
 	spin_unlock_irqrestore(&port->lock, flags);
 
-	/* Don't rewrite B0 */
+	 
 	if (tty_termios_baud_rate(termios))
 		tty_termios_encode_baud_rate(termios, baud, baud);
 }
@@ -568,8 +555,7 @@ static void serial_lpc32xx_config_port(struct uart_port *port, int uflags)
 
 	writel(0xFF, LPC32XX_HSUART_RATE(port->membase));
 
-	/* Set receiver timeout, HSU offset of 20, no break, no interrupts,
-	   and default FIFO trigger levels */
+	 
 	writel(LPC32XX_HSU_TX_TL8B | LPC32XX_HSU_RX_TL32B |
 	       LPC32XX_HSU_OFFSET(20) | LPC32XX_HSU_TMO_INACT_4B,
 	       LPC32XX_HSUART_CTRL(port->membase));
@@ -604,9 +590,7 @@ static const struct uart_ops serial_lpc32xx_pops = {
 	.verify_port	= serial_lpc32xx_verify_port,
 };
 
-/*
- * Register a set of serial devices attached to a platform device
- */
+ 
 static int serial_hs_lpc32xx_probe(struct platform_device *pdev)
 {
 	struct lpc32xx_hsuart_port *p = &lpc32xx_hs_ports[uarts_registered];
@@ -646,7 +630,7 @@ static int serial_hs_lpc32xx_probe(struct platform_device *pdev)
 	p->port.line = uarts_registered++;
 	spin_lock_init(&p->port.lock);
 
-	/* send port to loopback mode by default */
+	 
 	lpc32xx_loopback_set(p->port.mapbase, 1);
 
 	ret = uart_add_one_port(&lpc32xx_hs_reg, &p->port);
@@ -656,9 +640,7 @@ static int serial_hs_lpc32xx_probe(struct platform_device *pdev)
 	return ret;
 }
 
-/*
- * Remove serial ports registered against a platform device.
- */
+ 
 static int serial_hs_lpc32xx_remove(struct platform_device *pdev)
 {
 	struct lpc32xx_hsuart_port *p = platform_get_drvdata(pdev);
@@ -695,7 +677,7 @@ static int serial_hs_lpc32xx_resume(struct platform_device *pdev)
 
 static const struct of_device_id serial_hs_lpc32xx_dt_ids[] = {
 	{ .compatible = "nxp,lpc3220-hsuart" },
-	{ /* sentinel */ }
+	{   }
 };
 
 MODULE_DEVICE_TABLE(of, serial_hs_lpc32xx_dt_ids);

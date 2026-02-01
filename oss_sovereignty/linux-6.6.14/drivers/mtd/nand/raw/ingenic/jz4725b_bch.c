@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * JZ4725B BCH controller driver
- *
- * Copyright (C) 2019 Paul Cercueil <paul@crapouillou.net>
- *
- * Based on jz4780_bch.c
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/device.h>
@@ -56,7 +50,7 @@
 #define BCH_BHINT_UNCOR			BIT(1)
 #define BCH_BHINT_ERR			BIT(0)
 
-/* Timeout for BCH calculation/correction. */
+ 
 #define BCH_TIMEOUT_US			100000
 
 static inline void jz4725b_bch_config_set(struct ingenic_ecc *bch, u32 cfg)
@@ -74,10 +68,10 @@ static int jz4725b_bch_reset(struct ingenic_ecc *bch,
 {
 	u32 reg, max_value;
 
-	/* Clear interrupt status. */
+	 
 	writel(readl(bch->base + BCH_BHINT), bch->base + BCH_BHINT);
 
-	/* Initialise and enable BCH. */
+	 
 	jz4725b_bch_config_clear(bch, 0x1f);
 	jz4725b_bch_config_set(bch, BCH_BHCR_BCHE);
 
@@ -86,9 +80,9 @@ static int jz4725b_bch_reset(struct ingenic_ecc *bch,
 	else
 		jz4725b_bch_config_clear(bch, BCH_BHCR_BSEL);
 
-	if (calc_ecc) /* calculate ECC from data */
+	if (calc_ecc)  
 		jz4725b_bch_config_set(bch, BCH_BHCR_ENCE);
-	else /* correct data from ECC */
+	else  
 		jz4725b_bch_config_clear(bch, BCH_BHCR_ENCE);
 
 	jz4725b_bch_config_set(bch, BCH_BHCR_INIT);
@@ -101,7 +95,7 @@ static int jz4725b_bch_reset(struct ingenic_ecc *bch,
 	if (params->size + params->bytes > max_value)
 		return -EINVAL;
 
-	/* Set up BCH count register. */
+	 
 	reg = params->size << BCH_BHCNT_ENC_COUNT_SHIFT;
 	reg |= (params->size + params->bytes) << BCH_BHCNT_DEC_COUNT_SHIFT;
 	writel(reg, bch->base + BCH_BHCNT);
@@ -111,10 +105,10 @@ static int jz4725b_bch_reset(struct ingenic_ecc *bch,
 
 static void jz4725b_bch_disable(struct ingenic_ecc *bch)
 {
-	/* Clear interrupts */
+	 
 	writel(readl(bch->base + BCH_BHINT), bch->base + BCH_BHINT);
 
-	/* Disable the hardware */
+	 
 	jz4725b_bch_config_clear(bch, BCH_BHCR_BCHE);
 }
 
@@ -161,12 +155,7 @@ static int jz4725b_bch_wait_complete(struct ingenic_ecc *bch, unsigned int irq,
 	u32 reg;
 	int ret;
 
-	/*
-	 * While we could use interrupts here and sleep until the operation
-	 * completes, the controller works fairly quickly (usually a few
-	 * microseconds) and so the overhead of sleeping until we get an
-	 * interrupt quite noticeably decreases performance.
-	 */
+	 
 	ret = readl_relaxed_poll_timeout(bch->base + BCH_BHINT, reg,
 					 reg & irq, 0, BCH_TIMEOUT_US);
 	if (ret)
@@ -237,20 +226,20 @@ static int jz4725b_correct(struct ingenic_ecc *bch,
 	}
 
 	if (reg & (BCH_BHINT_ALL_F | BCH_BHINT_ALL_0)) {
-		/* Data and ECC is all 0xff or 0x00 - nothing to correct */
+		 
 		ret = 0;
 		goto out;
 	}
 
 	if (reg & BCH_BHINT_UNCOR) {
-		/* Uncorrectable ECC error */
+		 
 		ret = -EBADMSG;
 		goto out;
 	}
 
 	errors = (reg & BCH_BHINT_ERRC_MASK) >> BCH_BHINT_ERRC_SHIFT;
 
-	/* Correct any detected errors. */
+	 
 	for (i = 0; i < errors; i++) {
 		if (i & 1) {
 			bit = (reg & BCH_BHERR_INDEX1_MASK) >> BCH_BHERR_INDEX1_SHIFT;

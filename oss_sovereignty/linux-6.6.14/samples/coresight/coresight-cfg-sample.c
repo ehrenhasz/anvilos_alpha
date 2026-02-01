@@ -1,27 +1,21 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright(C) 2020 Linaro Limited. All rights reserved.
- * Author: Mike Leach <mike.leach@linaro.org>
- */
+
+ 
 
 #include "coresight-config.h"
 #include "coresight-syscfg.h"
 
-/* create an alternate autofdo configuration */
+ 
 
-/* we will provide 4 sets of preset parameter values */
+ 
 #define AFDO2_NR_PRESETS	4
-/* the total number of parameters in used features - strobing has 2 */
+ 
 #define AFDO2_NR_PARAM_SUM	2
 
 static const char *afdo2_ref_names[] = {
 	"strobing",
 };
 
-/*
- * set of presets leaves strobing window constant while varying period to allow
- * experimentation with mark / space ratios for various workloads
- */
+ 
 static u64 afdo2_presets[AFDO2_NR_PRESETS][AFDO2_NR_PARAM_SUM] = {
 	{ 1000, 100 },
 	{ 1000, 1000 },
@@ -54,7 +48,7 @@ static struct cscfg_load_owner_info mod_owner = {
 	.owner_handle = THIS_MODULE,
 };
 
-/* module init and exit - just load and unload configs */
+ 
 static int __init cscfg_sample_init(void)
 {
 	return cscfg_load_config_sets(sample_cfgs, sample_feats, &mod_owner);

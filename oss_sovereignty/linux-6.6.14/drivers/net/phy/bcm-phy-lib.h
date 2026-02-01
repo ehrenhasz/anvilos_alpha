@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) 2015 Broadcom Corporation
- */
+ 
+ 
 
 #ifndef _LINUX_BCM_PHY_LIB_H
 #define _LINUX_BCM_PHY_LIB_H
@@ -12,7 +10,7 @@
 
 struct ethtool_wolinfo;
 
-/* 28nm only register definitions */
+ 
 #define MISC_ADDR(base, channel)	base, channel
 
 #define DSP_TAP10			MISC_ADDR(0x0a, 0)
@@ -121,4 +119,4 @@ irqreturn_t bcm_phy_wol_isr(int irq, void *dev_id);
 int bcm_phy_led_brightness_set(struct phy_device *phydev,
 			       u8 index, enum led_brightness value);
 
-#endif /* _LINUX_BCM_PHY_LIB_H */
+#endif  

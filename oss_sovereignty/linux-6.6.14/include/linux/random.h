@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 
 #ifndef _LINUX_RANDOM_H
 #define _LINUX_RANDOM_H
@@ -52,24 +52,13 @@ static inline unsigned long get_random_long(void)
 
 u32 __get_random_u32_below(u32 ceil);
 
-/*
- * Returns a random integer in the interval [0, ceil), with uniform
- * distribution, suitable for all uses. Fastest when ceil is a constant, but
- * still fast for variable ceil as well.
- */
+ 
 static inline u32 get_random_u32_below(u32 ceil)
 {
 	if (!__builtin_constant_p(ceil))
 		return __get_random_u32_below(ceil);
 
-	/*
-	 * For the fast path, below, all operations on ceil are precomputed by
-	 * the compiler, so this incurs no overhead for checking pow2, doing
-	 * divisions, or branching based on integer size. The resultant
-	 * algorithm does traditional reciprocal multiplication (typically
-	 * optimized by the compiler into shifts and adds), rejecting samples
-	 * whose lower half would indicate a range indivisible by ceil.
-	 */
+	 
 	BUILD_BUG_ON_MSG(!ceil, "get_random_u32_below() must take ceil > 0");
 	if (ceil <= 1)
 		return 0;
@@ -90,11 +79,7 @@ static inline u32 get_random_u32_below(u32 ceil)
 	}
 }
 
-/*
- * Returns a random integer in the interval (floor, U32_MAX], with uniform
- * distribution, suitable for all uses. Fastest when floor is a constant, but
- * still fast for variable floor as well.
- */
+ 
 static inline u32 get_random_u32_above(u32 floor)
 {
 	BUILD_BUG_ON_MSG(__builtin_constant_p(floor) && floor == U32_MAX,
@@ -102,11 +87,7 @@ static inline u32 get_random_u32_above(u32 floor)
 	return floor + 1 + get_random_u32_below(U32_MAX - floor);
 }
 
-/*
- * Returns a random integer in the interval [floor, ceil], with uniform
- * distribution, suitable for all uses. Fastest when floor and ceil are
- * constant, but still fast for variable floor and ceil as well.
- */
+ 
 static inline u32 get_random_u32_inclusive(u32 floor, u32 ceil)
 {
 	BUILD_BUG_ON_MSG(__builtin_constant_p(floor) && __builtin_constant_p(ceil) &&
@@ -121,8 +102,7 @@ bool rng_is_initialized(void);
 int wait_for_random_bytes(void);
 int execute_with_initialized_rng(struct notifier_block *nb);
 
-/* Calls wait_for_random_bytes() and then calls get_random_bytes(buf, nbytes).
- * Returns the result of the call to wait_for_random_bytes. */
+ 
 static inline int get_random_bytes_wait(void *buf, size_t nbytes)
 {
 	int ret = wait_for_random_bytes();
@@ -145,11 +125,7 @@ declare_get_random_var_wait(u64, u32)
 declare_get_random_var_wait(long, unsigned long)
 #undef declare_get_random_var
 
-/*
- * This is designed to be standalone for just prandom
- * users, but for now we include it from <linux/random.h>
- * for legacy reasons.
- */
+ 
 #include <linux/prandom.h>
 
 #ifdef CONFIG_SMP
@@ -161,4 +137,4 @@ int random_online_cpu(unsigned int cpu);
 extern const struct file_operations random_fops, urandom_fops;
 #endif
 
-#endif /* _LINUX_RANDOM_H */
+#endif  

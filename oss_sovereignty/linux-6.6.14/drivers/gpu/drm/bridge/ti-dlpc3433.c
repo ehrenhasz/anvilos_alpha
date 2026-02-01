@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (C) 2021 RenewOutReach
- * Copyright (C) 2021 Amarula Solutions(India)
- *
- * Author:
- * Jagan Teki <jagan@amarulasolutions.com>
- * Christopher Vollo <chris@renewoutreach.org>
- */
+
+ 
 
 #include <drm/drm_atomic_helper.h>
 #include <drm/drm_of.h>
@@ -22,18 +15,18 @@
 #include <linux/regulator/consumer.h>
 
 enum cmd_registers {
-	WR_INPUT_SOURCE		= 0x05,	/* Write Input Source Select */
-	WR_EXT_SOURCE_FMT	= 0x07, /* Write External Video Source Format */
-	WR_IMAGE_CROP		= 0x10,	/* Write Image Crop */
-	WR_DISPLAY_SIZE		= 0x12,	/* Write Display Size */
-	WR_IMAGE_FREEZE		= 0x1A,	/* Write Image Freeze */
-	WR_INPUT_IMAGE_SIZE	= 0x2E,	/* Write External Input Image Size */
-	WR_RGB_LED_EN		= 0x52,	/* Write RGB LED Enable */
-	WR_RGB_LED_CURRENT	= 0x54,	/* Write RGB LED Current */
-	WR_RGB_LED_MAX_CURRENT	= 0x5C,	/* Write RGB LED Max Current */
-	WR_DSI_HS_CLK		= 0xBD,	/* Write DSI HS Clock */
-	RD_DEVICE_ID		= 0xD4,	/* Read Controller Device ID */
-	WR_DSI_PORT_EN		= 0xD7,	/* Write DSI Port Enable */
+	WR_INPUT_SOURCE		= 0x05,	 
+	WR_EXT_SOURCE_FMT	= 0x07,  
+	WR_IMAGE_CROP		= 0x10,	 
+	WR_DISPLAY_SIZE		= 0x12,	 
+	WR_IMAGE_FREEZE		= 0x1A,	 
+	WR_INPUT_IMAGE_SIZE	= 0x2E,	 
+	WR_RGB_LED_EN		= 0x52,	 
+	WR_RGB_LED_CURRENT	= 0x54,	 
+	WR_RGB_LED_MAX_CURRENT	= 0x5C,	 
+	WR_DSI_HS_CLK		= 0xBD,	 
+	RD_DEVICE_ID		= 0xD4,	 
+	WR_DSI_PORT_EN		= 0xD7,	 
 };
 
 enum input_source {
@@ -124,45 +117,45 @@ static void dlpc_atomic_enable(struct drm_bridge *bridge,
 		return;
 	}
 
-	/* disable image freeze */
+	 
 	regmap_write(regmap, WR_IMAGE_FREEZE, IMAGE_FREESE_EN);
 
-	/* enable DSI port */
+	 
 	regmap_write(regmap, WR_DSI_PORT_EN, DSI_PORT_EN);
 
 	memset(buf, 0, MAX_BYTE_SIZE);
 
-	/* set image crop */
+	 
 	buf[4] = mode->hdisplay & 0xff;
 	buf[5] = (mode->hdisplay & 0xff00) >> 8;
 	buf[6] = mode->vdisplay & 0xff;
 	buf[7] = (mode->vdisplay & 0xff00) >> 8;
 	regmap_noinc_write(regmap, WR_IMAGE_CROP, buf, MAX_BYTE_SIZE);
 
-	/* set display size */
+	 
 	buf[4] = mode->hdisplay & 0xff;
 	buf[5] = (mode->hdisplay & 0xff00) >> 8;
 	buf[6] = mode->vdisplay & 0xff;
 	buf[7] = (mode->vdisplay & 0xff00) >> 8;
 	regmap_noinc_write(regmap, WR_DISPLAY_SIZE, buf, MAX_BYTE_SIZE);
 
-	/* set input image size */
+	 
 	buf[0] = mode->hdisplay & 0xff;
 	buf[1] = (mode->hdisplay & 0xff00) >> 8;
 	buf[2] = mode->vdisplay & 0xff;
 	buf[3] = (mode->vdisplay & 0xff00) >> 8;
 	regmap_noinc_write(regmap, WR_INPUT_IMAGE_SIZE, buf, 4);
 
-	/* set external video port */
+	 
 	regmap_write(regmap, WR_INPUT_SOURCE, INPUT_EXTERNAL_VIDEO);
 
-	/* set external video format select as DSI */
+	 
 	regmap_write(regmap, WR_EXT_SOURCE_FMT, EXT_SOURCE_FMT_DSI);
 
-	/* disable image freeze */
+	 
 	regmap_write(regmap, WR_IMAGE_FREEZE, 0x00);
 
-	/* enable RGB led */
+	 
 	regmap_update_bits(regmap, WR_RGB_LED_EN, LED_MASK,
 			   RED_LED_EN | GREEN_LED_EN | BLUE_LED_EN);
 
@@ -226,7 +219,7 @@ dlpc_atomic_get_input_bus_fmts(struct drm_bridge *bridge,
 	if (!input_fmts)
 		return NULL;
 
-	/* This is the DSI-end bus format */
+	 
 	input_fmts[0] = MEDIA_BUS_FMT_RGB888_1X24;
 	*num_input_fmts = 1;
 
@@ -389,13 +382,13 @@ static void dlpc3433_remove(struct i2c_client *client)
 
 static const struct i2c_device_id dlpc3433_id[] = {
 	{ "ti,dlpc3433", 0 },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(i2c, dlpc3433_id);
 
 static const struct of_device_id dlpc3433_match_table[] = {
 	{ .compatible = "ti,dlpc3433" },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, dlpc3433_match_table);
 

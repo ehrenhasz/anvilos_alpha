@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2016-2018 Broadcom
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -13,7 +11,7 @@
 #include <linux/platform_device.h>
 #include <linux/regmap.h>
 
-/* we have up to 8 PAXB based RC. The 9th one is always PAXC */
+ 
 #define SR_NR_PCIE_PHYS               9
 #define SR_PAXC_PHY_IDX               (SR_NR_PCIE_PHYS - 1)
 
@@ -36,29 +34,14 @@
 
 struct sr_pcie_phy_core;
 
-/**
- * struct sr_pcie_phy - Stingray PCIe PHY
- *
- * @core: pointer to the Stingray PCIe PHY core control
- * @index: PHY index
- * @phy: pointer to the kernel PHY device
- */
+ 
 struct sr_pcie_phy {
 	struct sr_pcie_phy_core *core;
 	unsigned int index;
 	struct phy *phy;
 };
 
-/**
- * struct sr_pcie_phy_core - Stingray PCIe PHY core control
- *
- * @dev: pointer to device
- * @base: base register of PCIe SS
- * @cdru: regmap to the CDRU device
- * @mhb: regmap to the MHB device
- * @pipemux: pipemuex strap
- * @phys: array of PCIe PHYs
- */
+ 
 struct sr_pcie_phy_core {
 	struct device *dev;
 	void __iomem *base;
@@ -68,65 +51,50 @@ struct sr_pcie_phy_core {
 	struct sr_pcie_phy phys[SR_NR_PCIE_PHYS];
 };
 
-/*
- * PCIe PIPEMUX lookup table
- *
- * Each array index represents a PIPEMUX strap setting
- * The array element represents a bitmap where a set bit means the PCIe
- * core and associated serdes has been enabled as RC and is available for use
- */
+ 
 static const u8 pipemux_table[] = {
-	/* PIPEMUX = 0, EP 1x16 */
+	 
 	0x00,
-	/* PIPEMUX = 1, EP 1x8 + RC 1x8, core 7 */
+	 
 	0x80,
-	/* PIPEMUX = 2, EP 4x4 */
+	 
 	0x00,
-	/* PIPEMUX = 3, RC 2x8, cores 0, 7 */
+	 
 	0x81,
-	/* PIPEMUX = 4, RC 4x4, cores 0, 1, 6, 7 */
+	 
 	0xc3,
-	/* PIPEMUX = 5, RC 8x2, all 8 cores */
+	 
 	0xff,
-	/* PIPEMUX = 6, RC 3x4 + 2x2, cores 0, 2, 3, 6, 7 */
+	 
 	0xcd,
-	/* PIPEMUX = 7, RC 1x4 + 6x2, cores 0, 2, 3, 4, 5, 6, 7 */
+	 
 	0xfd,
-	/* PIPEMUX = 8, EP 1x8 + RC 4x2, cores 4, 5, 6, 7 */
+	 
 	0xf0,
-	/* PIPEMUX = 9, EP 1x8 + RC 2x4, cores 6, 7 */
+	 
 	0xc0,
-	/* PIPEMUX = 10, EP 2x4 + RC 2x4, cores 1, 6 */
+	 
 	0x42,
-	/* PIPEMUX = 11, EP 2x4 + RC 4x2, cores 2, 3, 4, 5 */
+	 
 	0x3c,
-	/* PIPEMUX = 12, EP 1x4 + RC 6x2, cores 2, 3, 4, 5, 6, 7 */
+	 
 	0xfc,
-	/* PIPEMUX = 13, RC 2x4 + RC 1x4 + 2x2, cores 2, 3, 6 */
+	 
 	0x4c,
 };
 
-/*
- * Return true if the strap setting is valid
- */
+ 
 static bool pipemux_strap_is_valid(u32 pipemux)
 {
 	return !!(pipemux < ARRAY_SIZE(pipemux_table));
 }
 
-/*
- * Read the PCIe PIPEMUX from strap
- */
+ 
 static u32 pipemux_strap_read(struct sr_pcie_phy_core *core)
 {
 	u32 pipemux;
 
-	/*
-	 * Read PIPEMUX configuration register to determine the pipemux setting
-	 *
-	 * In the case when the value indicates using HW strap, fall back to
-	 * use HW strap
-	 */
+	 
 	pipemux = readl(core->base + PCIE_PIPEMUX_CFG_OFFSET);
 	pipemux &= PCIE_PIPEMUX_MASK;
 	if (pipemux == PCIE_PIPEMUX_SELECT_STRAP) {
@@ -138,10 +106,7 @@ static u32 pipemux_strap_read(struct sr_pcie_phy_core *core)
 	return pipemux;
 }
 
-/*
- * Given a PIPEMUX strap and PCIe core index, this function returns true if the
- * PCIe core needs to be enabled
- */
+ 
 static bool pcie_core_is_for_rc(struct sr_pcie_phy *phy)
 {
 	struct sr_pcie_phy_core *core = phy->core;
@@ -154,11 +119,7 @@ static int sr_pcie_phy_init(struct phy *p)
 {
 	struct sr_pcie_phy *phy = phy_get_drvdata(p);
 
-	/*
-	 * Check whether this PHY is for root complex or not. If yes, return
-	 * zero so the host driver can proceed to enumeration. If not, return
-	 * an error and that will force the host driver to bail out
-	 */
+	 
 	if (pcie_core_is_for_rc(phy))
 		return 0;
 
@@ -241,7 +202,7 @@ static int sr_pcie_phy_probe(struct platform_device *pdev)
 		return PTR_ERR(core->mhb);
 	}
 
-	/* read the PCIe PIPEMUX strap setting */
+	 
 	core->pipemux = pipemux_strap_read(core);
 	if (!pipemux_strap_is_valid(core->pipemux)) {
 		dev_err(core->dev, "invalid PCIe PIPEMUX strap %u\n",

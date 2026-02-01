@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright 2011-2012 Calxeda, Inc.
- */
+
+ 
 #include <linux/types.h>
 #include <linux/kernel.h>
 #include <linux/ctype.h>

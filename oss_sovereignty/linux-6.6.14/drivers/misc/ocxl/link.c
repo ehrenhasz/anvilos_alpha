@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-// Copyright 2017 IBM Corp.
+
+
 #include <linux/sched/mm.h>
 #include <linux/mutex.h>
 #include <linux/mm.h>
@@ -18,21 +18,21 @@
 #define SPA_PASID_BITS		15
 #define SPA_PASID_MAX		((1 << SPA_PASID_BITS) - 1)
 #define SPA_PE_MASK		SPA_PASID_MAX
-#define SPA_SPA_SIZE_LOG	22 /* Each SPA is 4 Mb */
+#define SPA_SPA_SIZE_LOG	22  
 
 #define SPA_CFG_SF		(1ull << (63-0))
 #define SPA_CFG_TA		(1ull << (63-1))
 #define SPA_CFG_HV		(1ull << (63-3))
 #define SPA_CFG_UV		(1ull << (63-4))
-#define SPA_CFG_XLAT_hpt	(0ull << (63-6)) /* Hashed page table (HPT) mode */
-#define SPA_CFG_XLAT_roh	(2ull << (63-6)) /* Radix on HPT mode */
-#define SPA_CFG_XLAT_ror	(3ull << (63-6)) /* Radix on Radix mode */
+#define SPA_CFG_XLAT_hpt	(0ull << (63-6))  
+#define SPA_CFG_XLAT_roh	(2ull << (63-6))  
+#define SPA_CFG_XLAT_ror	(3ull << (63-6))  
 #define SPA_CFG_PR		(1ull << (63-49))
 #define SPA_CFG_TC		(1ull << (63-54))
 #define SPA_CFG_DR		(1ull << (63-59))
 
-#define SPA_XSL_TF		(1ull << (63-3))  /* Translation fault */
-#define SPA_XSL_S		(1ull << (63-38)) /* Store operation */
+#define SPA_XSL_TF		(1ull << (63-3))   
+#define SPA_XSL_S		(1ull << (63-38))  
 
 #define SPA_PE_VALID		0x80000000
 
@@ -40,9 +40,9 @@ struct ocxl_link;
 
 struct pe_data {
 	struct mm_struct *mm;
-	/* callback to trigger when a translation fault occurs */
+	 
 	void (*xsl_err_cb)(void *data, u64 addr, u64 dsisr);
-	/* opaque pointer to be passed to the above callback */
+	 
 	void *xsl_err_data;
 	struct rcu_head rcu;
 	struct ocxl_link *link;
@@ -53,19 +53,14 @@ struct spa {
 	struct ocxl_process_element *spa_mem;
 	int spa_order;
 	struct mutex spa_lock;
-	struct radix_tree_root pe_tree; /* Maps PE handles to pe_data */
+	struct radix_tree_root pe_tree;  
 	char *irq_name;
 	int virq;
 	void __iomem *reg_dsisr;
 	void __iomem *reg_dar;
 	void __iomem *reg_tfc;
 	void __iomem *reg_pe_handle;
-	/*
-	 * The following field are used by the memory fault
-	 * interrupt handler. We can only have one interrupt at a
-	 * time. The NPU won't raise another interrupt until the
-	 * previous one has been ack'd by writing to the TFC register
-	 */
+	 
 	struct xsl_fault {
 		struct work_struct fault_work;
 		u64 pe;
@@ -75,22 +70,15 @@ struct spa {
 	} xsl_fault;
 };
 
-/*
- * A opencapi link can be used be by several PCI functions. We have
- * one link per device slot.
- *
- * A linked list of opencapi links should suffice, as there's a
- * limited number of opencapi slots on a system and lookup is only
- * done when the device is probed
- */
+ 
 struct ocxl_link {
 	struct list_head list;
 	struct kref ref;
 	int domain;
 	int bus;
 	int dev;
-	void __iomem *arva;     /* ATSD register virtual address */
-	spinlock_t atsd_lock;   /* to serialize shootdowns */
+	void __iomem *arva;      
+	spinlock_t atsd_lock;    
 	atomic_t irq_available;
 	struct spa *spa;
 	void *platform_data;
@@ -119,7 +107,7 @@ static void ack_irq(struct spa *spa, enum xsl_response r)
 {
 	u64 reg = 0;
 
-	/* continue is not supported */
+	 
 	if (r == RESTART)
 		reg = PPC_BIT(31);
 	else if (r == ADDRESS_ERROR)
@@ -145,10 +133,7 @@ static void xsl_fault_handler_bh(struct work_struct *fault_work)
 
 	int rc;
 
-	/*
-	 * We must release a reference on mm_users whenever exiting this
-	 * function (taken in the memory fault interrupt handler)
-	 */
+	 
 	rc = copro_handle_mm_fault(fault->pe_data.mm, fault->dar, fault->dsisr,
 				&flt);
 	if (rc) {
@@ -163,11 +148,7 @@ static void xsl_fault_handler_bh(struct work_struct *fault_work)
 	}
 
 	if (!radix_enabled()) {
-		/*
-		 * update_mmu_cache() will not have loaded the hash
-		 * since current->trap is not a 0x400 or 0x300, so
-		 * just call hash_page_mm() here.
-		 */
+		 
 		access = _PAGE_PRESENT | _PAGE_READ;
 		if (fault->dsisr & SPA_XSL_S)
 			access |= _PAGE_WRITE;
@@ -202,13 +183,7 @@ static irqreturn_t xsl_fault_handler(int irq, void *data)
 	WARN_ON(pe_handle > SPA_PE_MASK);
 	pe = spa->spa_mem + pe_handle;
 	pid = be32_to_cpu(pe->pid);
-	/* We could be reading all null values here if the PE is being
-	 * removed while an interrupt kicks in. It's not supposed to
-	 * happen if the driver notified the AFU to terminate the
-	 * PASID, and the AFU waited for pending operations before
-	 * acknowledging. But even if it happens, we won't find a
-	 * memory context below and fail silently, so it should be ok.
-	 */
+	 
 	if (!(dsisr & SPA_XSL_TF)) {
 		WARN(1, "Invalid xsl interrupt fault register %#llx\n", dsisr);
 		ack_irq(spa, ADDRESS_ERROR);
@@ -218,16 +193,7 @@ static irqreturn_t xsl_fault_handler(int irq, void *data)
 	rcu_read_lock();
 	pe_data = radix_tree_lookup(&spa->pe_tree, pe_handle);
 	if (!pe_data) {
-		/*
-		 * Could only happen if the driver didn't notify the
-		 * AFU about PASID termination before removing the PE,
-		 * or the AFU didn't wait for all memory access to
-		 * have completed.
-		 *
-		 * Either way, we fail early, but we shouldn't log an
-		 * error message, as it is a valid (if unexpected)
-		 * scenario
-		 */
+		 
 		rcu_read_unlock();
 		pr_debug("Unknown mm context for xsl interrupt\n");
 		ack_irq(spa, ADDRESS_ERROR);
@@ -235,10 +201,7 @@ static irqreturn_t xsl_fault_handler(int irq, void *data)
 	}
 
 	if (!pe_data->mm) {
-		/*
-		 * translation fault from a kernel context - an OpenCAPI
-		 * device tried to access a bad kernel address
-		 */
+		 
 		rcu_read_unlock();
 		pr_warn("Unresolved OpenCAPI xsl fault in kernel context\n");
 		ack_irq(spa, ADDRESS_ERROR);
@@ -252,7 +215,7 @@ static irqreturn_t xsl_fault_handler(int irq, void *data)
 			spa->xsl_fault.dsisr = dsisr;
 			spa->xsl_fault.pe_data = *pe_data;
 			schedule = true;
-			/* mm_users count released by bottom half */
+			 
 	}
 	rcu_read_unlock();
 	if (schedule)
@@ -295,10 +258,7 @@ static int setup_xsl_irq(struct pci_dev *dev, struct ocxl_link *link)
 		rc = -ENOMEM;
 		goto err_xsl;
 	}
-	/*
-	 * At some point, we'll need to look into allowing a higher
-	 * number of interrupts. Could we have an IRQ domain per link?
-	 */
+	 
 	spa->virq = irq_create_mapping(NULL, hwirq);
 	if (!spa->virq) {
 		dev_err(&dev->dev,
@@ -406,17 +366,13 @@ static int alloc_link(struct pci_dev *dev, int PE_mask, struct ocxl_link **out_l
 	if (rc)
 		goto err_spa;
 
-	/* platform specific hook */
+	 
 	rc = pnv_ocxl_spa_setup(dev, link->spa->spa_mem, PE_mask,
 				&link->platform_data);
 	if (rc)
 		goto err_xsl_irq;
 
-	/* if link->arva is not defeined, MMIO registers are not used to
-	 * generate TLB invalidate. PowerBus snooping is enabled.
-	 * Otherwise, PowerBus snooping is disabled. TLB Invalidates are
-	 * initiated using MMIO registers.
-	 */
+	 
 	pnv_ocxl_map_lpar(dev, mfspr(SPRN_LPID), 0, &link->arva);
 
 	*out_link = link;
@@ -445,7 +401,7 @@ int ocxl_link_setup(struct pci_dev *dev, int PE_mask, void **link_handle)
 
 	mutex_lock(&links_list_lock);
 	list_for_each_entry(link, &links_list, list) {
-		/* The functions of a device all share the same link */
+		 
 		if (link->domain == pci_domain_nr(dev->bus) &&
 			link->bus == dev->bus->number &&
 			link->dev == PCI_SLOT(dev->devfn)) {
@@ -476,7 +432,7 @@ static void release_xsl(struct kref *ref)
 	}
 
 	list_del(&link->list);
-	/* call platform code before releasing data */
+	 
 	pnv_ocxl_spa_release(link->platform_data);
 	free_link(link);
 }
@@ -581,44 +537,21 @@ int ocxl_link_add_pe(void *link_handle, int pasid, u32 pidr, u32 tidr,
 	pe->amr = cpu_to_be64(amr);
 	pe->software_state = cpu_to_be32(SPA_PE_VALID);
 
-	/*
-	 * For user contexts, register a copro so that TLBIs are seen
-	 * by the nest MMU. If we have a kernel context, TLBIs are
-	 * already global.
-	 */
+	 
 	if (mm) {
 		mm_context_add_copro(mm);
 		if (link->arva) {
-			/* Use MMIO registers for the TLB Invalidate
-			 * operations.
-			 */
+			 
 			trace_ocxl_init_mmu_notifier(pasid, mm->context.id);
 			mmu_notifier_register(&pe_data->mmu_notifier, mm);
 		}
 	}
 
-	/*
-	 * Barrier is to make sure PE is visible in the SPA before it
-	 * is used by the device. It also helps with the global TLBI
-	 * invalidation
-	 */
+	 
 	mb();
 	radix_tree_insert(&spa->pe_tree, pe_handle, pe_data);
 
-	/*
-	 * The mm must stay valid for as long as the device uses it. We
-	 * lower the count when the context is removed from the SPA.
-	 *
-	 * We grab mm_count (and not mm_users), as we don't want to
-	 * end up in a circular dependency if a process mmaps its
-	 * mmio, therefore incrementing the file ref count when
-	 * calling mmap(), and forgets to unmap before exiting. In
-	 * that scenario, when the kernel handles the death of the
-	 * process, the file is not cleaned because unmap was not
-	 * called, and the mm wouldn't be freed because we would still
-	 * have a reference on mm_users. Incrementing mm_count solves
-	 * the problem.
-	 */
+	 
 	if (mm)
 		mmgrab(mm);
 	trace_ocxl_context_add(current->pid, spa->spa_mem, pasid, pidr, tidr);
@@ -645,18 +578,10 @@ int ocxl_link_update_pe(void *link_handle, int pasid, __u16 tid)
 
 	pe->tid = cpu_to_be32(tid);
 
-	/*
-	 * The barrier makes sure the PE is updated
-	 * before we clear the NPU context cache below, so that the
-	 * old PE cannot be reloaded erroneously.
-	 */
+	 
 	mb();
 
-	/*
-	 * hook to platform code
-	 * On powerpc, the entry needs to be cleared from the context
-	 * cache of the NPU.
-	 */
+	 
 	rc = pnv_ocxl_spa_remove_pe_from_cache(link->platform_data, pe_handle);
 	WARN_ON(rc);
 
@@ -675,24 +600,7 @@ int ocxl_link_remove_pe(void *link_handle, int pasid)
 	if (pasid > SPA_PASID_MAX)
 		return -EINVAL;
 
-	/*
-	 * About synchronization with our memory fault handler:
-	 *
-	 * Before removing the PE, the driver is supposed to have
-	 * notified the AFU, which should have cleaned up and make
-	 * sure the PASID is no longer in use, including pending
-	 * interrupts. However, there's no way to be sure...
-	 *
-	 * We clear the PE and remove the context from our radix
-	 * tree. From that point on, any new interrupt for that
-	 * context will fail silently, which is ok. As mentioned
-	 * above, that's not expected, but it could happen if the
-	 * driver or AFU didn't do the right thing.
-	 *
-	 * There could still be a bottom half running, but we don't
-	 * need to wait/flush, as it is managing a reference count on
-	 * the mm it reads from the radix tree.
-	 */
+	 
 	pe_handle = pasid & SPA_PE_MASK;
 	pe = spa->spa_mem + pe_handle;
 
@@ -707,18 +615,10 @@ int ocxl_link_remove_pe(void *link_handle, int pasid)
 				be32_to_cpu(pe->pid), be32_to_cpu(pe->tid));
 
 	memset(pe, 0, sizeof(struct ocxl_process_element));
-	/*
-	 * The barrier makes sure the PE is removed from the SPA
-	 * before we clear the NPU context cache below, so that the
-	 * old PE cannot be reloaded erroneously.
-	 */
+	 
 	mb();
 
-	/*
-	 * hook to platform code
-	 * On powerpc, the entry needs to be cleared from the context
-	 * cache of the NPU.
-	 */
+	 
 	rc = pnv_ocxl_spa_remove_pe_from_cache(link->platform_data, pe_handle);
 	WARN_ON(rc);
 

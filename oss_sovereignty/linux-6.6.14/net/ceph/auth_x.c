@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #include <linux/ceph/ceph_debug.h>
 
@@ -23,7 +23,7 @@ static int ceph_x_is_authenticated(struct ceph_auth_client *ac)
 {
 	struct ceph_x_info *xi = ac->private;
 	int missing;
-	int need;  /* missing + need renewal */
+	int need;   
 
 	ceph_x_validate_tickets(ac, &need);
 	missing = ac->want_keys & ~xi->have_keys;
@@ -113,9 +113,7 @@ e_inval:
 	return -EINVAL;
 }
 
-/*
- * get existing (or insert new) ticket handler
- */
+ 
 static struct ceph_x_ticket_handler *
 get_ticket_handler(struct ceph_auth_client *ac, int service)
 {
@@ -134,7 +132,7 @@ get_ticket_handler(struct ceph_auth_client *ac, int service)
 			return th;
 	}
 
-	/* add it */
+	 
 	th = kzalloc(sizeof(*th), GFP_NOFS);
 	if (!th)
 		return ERR_PTR(-ENOMEM);
@@ -192,7 +190,7 @@ static int process_one_ticket(struct ceph_auth_client *ac,
 		goto out;
 	}
 
-	/* blob for me */
+	 
 	dp = *p + ceph_x_encrypt_offset();
 	ret = ceph_x_decrypt(secret, p, end);
 	if (ret < 0)
@@ -216,10 +214,10 @@ static int process_one_ticket(struct ceph_auth_client *ac,
 	dout(" expires=%llu renew_after=%llu\n", new_expires,
 	     new_renew_after);
 
-	/* ticket blob for service */
+	 
 	ceph_decode_8_safe(p, end, is_enc, bad);
 	if (is_enc) {
-		/* encrypted */
+		 
 		tp = *p + ceph_x_encrypt_offset();
 		ret = ceph_x_decrypt(&th->session_key, p, end);
 		if (ret < 0)
@@ -228,7 +226,7 @@ static int process_one_ticket(struct ceph_auth_client *ac,
 		ptp = &tp;
 		tpend = tp + ret;
 	} else {
-		/* unencrypted */
+		 
 		ptp = p;
 		tpend = end;
 	}
@@ -244,7 +242,7 @@ static int process_one_ticket(struct ceph_auth_client *ac,
 	if (ret)
 		goto out;
 
-	/* all is well, update our ticket */
+	 
 	ceph_crypto_key_destroy(&th->session_key);
 	if (th->ticket_blob)
 		ceph_buffer_put(th->ticket_blob);
@@ -294,11 +292,7 @@ bad:
 	return -EINVAL;
 }
 
-/*
- * Encode and encrypt the second part (ceph_x_authorize_b) of the
- * authorizer.  The first part (ceph_x_authorize_a) should already be
- * encoded.
- */
+ 
 static int encrypt_authorizer(struct ceph_x_authorizer *au,
 			      u64 *server_challenge)
 {
@@ -517,7 +511,7 @@ static int ceph_x_build_request(struct ceph_auth_client *ac,
 		dout(" get_auth_session_key\n");
 		head->op = cpu_to_le16(CEPHX_GET_AUTH_SESSION_KEY);
 
-		/* encrypt and hash */
+		 
 		get_random_bytes(&auth->client_challenge, sizeof(u64));
 		blob->client_challenge = auth->client_challenge;
 		blob->server_challenge = cpu_to_le64(xi->server_challenge);
@@ -526,7 +520,7 @@ static int ceph_x_build_request(struct ceph_auth_client *ac,
 		if (ret < 0)
 			return ret;
 
-		auth->struct_v = 3;  /* nautilus+ */
+		auth->struct_v = 3;   
 		auth->key = 0;
 		for (u = (u64 *)enc_buf; u + 1 <= (u64 *)(enc_buf + ret); u++)
 			auth->key ^= *(__le64 *)u;
@@ -534,12 +528,12 @@ static int ceph_x_build_request(struct ceph_auth_client *ac,
 		     xi->server_challenge, le64_to_cpu(auth->client_challenge),
 		     le64_to_cpu(auth->key));
 
-		/* now encode the old ticket if exists */
+		 
 		ret = ceph_x_encode_ticket(th, &p, end);
 		if (ret < 0)
 			return ret;
 
-		/* nautilus+: request service tickets at the same time */
+		 
 		need = ac->want_keys & ~CEPH_ENTITY_TYPE_AUTH;
 		WARN_ON(!need);
 		ceph_encode_32_safe(&p, end, need, e_range);
@@ -608,14 +602,14 @@ static int handle_auth_session_key(struct ceph_auth_client *ac, u64 global_id,
 	int len;
 	int ret;
 
-	/* AUTH ticket */
+	 
 	ret = ceph_x_proc_ticket_reply(ac, &xi->secret, p, end);
 	if (ret)
 		return ret;
 
 	ceph_auth_set_global_id(ac, global_id);
 	if (*p == end) {
-		/* pre-nautilus (or didn't request service tickets!) */
+		 
 		WARN_ON(session_key || con_secret);
 		return 0;
 	}
@@ -629,7 +623,7 @@ static int handle_auth_session_key(struct ceph_auth_client *ac, u64 global_id,
 		*session_key_len = th->session_key.len;
 	}
 
-	/* connection secret */
+	 
 	ceph_decode_32_safe(p, end, len, e_inval);
 	dout("%s connection secret blob len %d\n", __func__, len);
 	if (len > 0) {
@@ -646,7 +640,7 @@ static int handle_auth_session_key(struct ceph_auth_client *ac, u64 global_id,
 			return ret;
 	}
 
-	/* service tickets */
+	 
 	ceph_decode_32_safe(p, end, len, e_inval);
 	dout("%s service tickets blob len %d\n", __func__, len);
 	if (len > 0) {
@@ -676,7 +670,7 @@ static int ceph_x_handle_reply(struct ceph_auth_client *ac, u64 global_id,
 	int ret;
 
 	if (xi->starting) {
-		/* it's a hello */
+		 
 		struct ceph_x_server_challenge *sc = buf;
 
 		if (len != sizeof(*sc))
@@ -695,7 +689,7 @@ static int ceph_x_handle_reply(struct ceph_auth_client *ac, u64 global_id,
 	dout("handle_reply op %d result %d\n", op, result);
 	switch (op) {
 	case CEPHX_GET_AUTH_SESSION_KEY:
-		/* AUTH ticket + [connection secret] + service tickets */
+		 
 		ret = handle_auth_session_key(ac, global_id, &p, end,
 					      session_key, session_key_len,
 					      con_secret, con_secret_len);
@@ -706,7 +700,7 @@ static int ceph_x_handle_reply(struct ceph_auth_client *ac, u64 global_id,
 		if (IS_ERR(th))
 			return PTR_ERR(th);
 
-		/* service tickets */
+		 
 		ret = ceph_x_proc_ticket_reply(ac, &th->session_key, &p, end);
 		break;
 
@@ -786,9 +780,7 @@ static int ceph_x_update_authorizer(
 	return 0;
 }
 
-/*
- * CephXAuthorizeChallenge
- */
+ 
 static int decrypt_authorizer_challenge(struct ceph_crypto_key *secret,
 					void *challenge, int challenge_len,
 					u64 *server_challenge)
@@ -796,7 +788,7 @@ static int decrypt_authorizer_challenge(struct ceph_crypto_key *secret,
 	void *dp, *dend;
 	int ret;
 
-	/* no leading len */
+	 
 	ret = __ceph_x_decrypt(secret, challenge, challenge_len);
 	if (ret < 0)
 		return ret;
@@ -805,7 +797,7 @@ static int decrypt_authorizer_challenge(struct ceph_crypto_key *secret,
 	dp = challenge + sizeof(struct ceph_x_encrypt_header);
 	dend = dp + ret;
 
-	ceph_decode_skip_8(&dp, dend, e_inval);  /* struct_v */
+	ceph_decode_skip_8(&dp, dend, e_inval);   
 	ceph_decode_64_safe(&dp, dend, *server_challenge, e_inval);
 	dout("%s server_challenge %llu\n", __func__, *server_challenge);
 	return 0;
@@ -838,9 +830,7 @@ static int ceph_x_add_authorizer_challenge(struct ceph_auth_client *ac,
 	return 0;
 }
 
-/*
- * CephXAuthorizeReply
- */
+ 
 static int decrypt_authorizer_reply(struct ceph_crypto_key *secret,
 				    void **p, void *end, u64 *nonce_plus_one,
 				    u8 *con_secret, int *con_secret_len)
@@ -949,12 +939,7 @@ static void invalidate_ticket(struct ceph_auth_client *ac, int peer_type)
 static void ceph_x_invalidate_authorizer(struct ceph_auth_client *ac,
 					 int peer_type)
 {
-	/*
-	 * We are to invalidate a service ticket in the hopes of
-	 * getting a new, hopefully more valid, one.  But, we won't get
-	 * it unless our AUTH ticket is good, so invalidate AUTH ticket
-	 * as well, just in case.
-	 */
+	 
 	invalidate_ticket(ac, peer_type);
 	invalidate_ticket(ac, CEPH_ENTITY_TYPE_AUTH);
 }
@@ -1011,7 +996,7 @@ static int calc_signature(struct ceph_x_authorizer *au, struct ceph_msg *msg,
 		sigblock->data_len = msg->hdr.data_len;
 		sigblock->seq_lower_word = *(__le32 *)&msg->hdr.seq;
 
-		/* no leading len, no ceph_x_encrypt_header */
+		 
 		ret = ceph_crypt(&au->session_key, true, enc_buf,
 				 CEPHX_AU_ENC_BUF_LEN, sizeof(*sigblock),
 				 &ciphertext_len);

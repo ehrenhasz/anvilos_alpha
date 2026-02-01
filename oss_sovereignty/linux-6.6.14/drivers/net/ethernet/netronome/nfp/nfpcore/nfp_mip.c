@@ -1,12 +1,7 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-/* Copyright (C) 2015-2017 Netronome Systems, Inc. */
 
-/*
- * nfp_mip.c
- * Authors: Jakub Kicinski <jakub.kicinski@netronome.com>
- *          Jason McMullan <jason.mcmullan@netronome.com>
- *          Espen Skoglund <espen.skoglund@netronome.com>
- */
+ 
+
+ 
 #include <linux/kernel.h>
 #include <linux/slab.h>
 
@@ -14,7 +9,7 @@
 #include "nfp_cpp.h"
 #include "nfp_nffw.h"
 
-#define NFP_MIP_SIGNATURE	cpu_to_le32(0x0050494d)  /* "MIP\0" */
+#define NFP_MIP_SIGNATURE	cpu_to_le32(0x0050494d)   
 #define NFP_MIP_VERSION		cpu_to_le32(1)
 #define NFP_MIP_MAX_OFFSET	(256 * 1024)
 
@@ -38,7 +33,7 @@ struct nfp_mip {
 	char toolchain[32];
 };
 
-/* Read memory and check if it could be a valid MIP */
+ 
 static int
 nfp_mip_try_read(struct nfp_cpp *cpp, u32 cpp_id, u64 addr, struct nfp_mip *mip)
 {
@@ -64,7 +59,7 @@ nfp_mip_try_read(struct nfp_cpp *cpp, u32 cpp_id, u64 addr, struct nfp_mip *mip)
 	return 0;
 }
 
-/* Try to locate MIP using the resource table */
+ 
 static int nfp_mip_read_resource(struct nfp_cpp *cpp, struct nfp_mip *mip)
 {
 	struct nfp_nffw_info *nffw_info;
@@ -86,16 +81,7 @@ exit_close_nffw:
 	return err;
 }
 
-/**
- * nfp_mip_open() - Get device MIP structure
- * @cpp:	NFP CPP Handle
- *
- * Copy MIP structure from NFP device and return it.  The returned
- * structure is handled internally by the library and should be
- * freed by calling nfp_mip_close().
- *
- * Return: pointer to mip, NULL on failure.
- */
+ 
 const struct nfp_mip *nfp_mip_open(struct nfp_cpp *cpp)
 {
 	struct nfp_mip *mip;
@@ -126,24 +112,14 @@ const char *nfp_mip_name(const struct nfp_mip *mip)
 	return mip->name;
 }
 
-/**
- * nfp_mip_symtab() - Get the address and size of the MIP symbol table
- * @mip:	MIP handle
- * @addr:	Location for NFP DDR address of MIP symbol table
- * @size:	Location for size of MIP symbol table
- */
+ 
 void nfp_mip_symtab(const struct nfp_mip *mip, u32 *addr, u32 *size)
 {
 	*addr = le32_to_cpu(mip->symtab_addr);
 	*size = le32_to_cpu(mip->symtab_size);
 }
 
-/**
- * nfp_mip_strtab() - Get the address and size of the MIP symbol name table
- * @mip:	MIP handle
- * @addr:	Location for NFP DDR address of MIP symbol name table
- * @size:	Location for size of MIP symbol name table
- */
+ 
 void nfp_mip_strtab(const struct nfp_mip *mip, u32 *addr, u32 *size)
 {
 	*addr = le32_to_cpu(mip->strtab_addr);

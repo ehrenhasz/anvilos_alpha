@@ -1,34 +1,4 @@
-/*
- * Copyright (C) 2008-2023 Free Software Foundation, Inc.
- * Written by Eric Blake and Bruno Haible
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-#include <config.h>
-
-#include <string.h>
-
-#include "signature.h"
-SIGNATURE_CHECK (memchr, void *, (void const *, int, size_t));
-
-#include <stdlib.h>
-
-#include "zerosize-ptr.h"
-#include "macros.h"
-
-/* Calculating void * + int is not portable, so this wrapper converts
-   to char * to make the tests easier to write.  */
+ 
 #define MEMCHR (char *) memchr
 
 int
@@ -45,7 +15,7 @@ main (void)
   input[n - 2] = 'e';
   input[n - 1] = 'a';
 
-  /* Basic behavior tests.  */
+   
   ASSERT (MEMCHR (input, 'a', n) == input);
 
   ASSERT (MEMCHR (input, 'a', 0) == NULL);
@@ -67,8 +37,7 @@ main (void)
   ASSERT (MEMCHR (input, 'f', n) == NULL);
   ASSERT (MEMCHR (input, '\0', n) == NULL);
 
-  /* Check that a very long haystack is handled quickly if the byte is
-     found near the beginning.  */
+   
   {
     size_t repeat = 10000;
     for (; repeat > 0; repeat--)
@@ -77,7 +46,7 @@ main (void)
       }
   }
 
-  /* Alignment tests.  */
+   
   {
     int i, j;
     for (i = 0; i < 32; i++)
@@ -91,16 +60,10 @@ main (void)
       }
   }
 
-  /* Check that memchr() does not read past the first occurrence of the
-     byte being searched.  See the Austin Group's clarification
-     <https://www.opengroup.org/austin/docs/austin_454.txt>.
-     Test both '\0' and something else, since some implementations
-     special-case searching for NUL.
-  */
+   
   {
     char *page_boundary = (char *) zerosize_ptr ();
-    /* Too small, and we miss cache line boundary tests; too large,
-       and the test takes cubically longer to complete.  */
+     
     int limit = 257;
 
     if (page_boundary != NULL)

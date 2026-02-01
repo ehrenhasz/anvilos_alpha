@@ -1,28 +1,4 @@
-/*
- * This file is part of the MicroPython project, http://micropython.org/
- *
- * The MIT License (MIT)
- *
- * Copyright (c) 2013, 2014 Damien P. George
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
+ 
 
 #include <assert.h>
 
@@ -30,9 +6,9 @@
 
 #if MICROPY_ENABLE_COMPILER
 
-// These low numbered qstrs should fit in 8 bits.  See assertions below.
-// The (unescaped) names appear in `unsorted_str_list` in the QSTR
-// generator script py/makeqstrdata.py to ensure they are assigned low numbers.
+
+
+
 static const uint8_t scope_simple_name_table[] = {
     [SCOPE_MODULE] = MP_QSTR__lt_module_gt_,
     [SCOPE_LAMBDA] = MP_QSTR__lt_lambda_gt_,
@@ -43,7 +19,7 @@ static const uint8_t scope_simple_name_table[] = {
 };
 
 scope_t *scope_new(scope_kind_t kind, mp_parse_node_t pn, mp_uint_t emit_options) {
-    // Make sure those qstrs indeed fit in an uint8_t.
+    
     MP_STATIC_ASSERT(MP_QSTR__lt_module_gt_ <= UINT8_MAX);
     MP_STATIC_ASSERT(MP_QSTR__lt_lambda_gt_ <= UINT8_MAX);
     MP_STATIC_ASSERT(MP_QSTR__lt_listcomp_gt_ <= UINT8_MAX);
@@ -79,15 +55,15 @@ id_info_t *scope_find_or_add_id(scope_t *scope, qstr qst, id_info_kind_t kind) {
         return id_info;
     }
 
-    // make sure we have enough memory
+    
     if (scope->id_info_len >= scope->id_info_alloc) {
         scope->id_info = m_renew(id_info_t, scope->id_info, scope->id_info_alloc, scope->id_info_alloc + MICROPY_ALLOC_SCOPE_ID_INC);
         scope->id_info_alloc += MICROPY_ALLOC_SCOPE_ID_INC;
     }
 
-    // add new id to end of array of all ids; this seems to match CPython
-    // important thing is that function arguments are first, but that is
-    // handled by the compiler because it adds arguments before compiling the body
+    
+    
+    
     id_info = &scope->id_info[scope->id_info_len++];
 
     id_info->kind = kind;
@@ -114,21 +90,21 @@ id_info_t *scope_find_global(scope_t *scope, qstr qst) {
 }
 
 static void scope_close_over_in_parents(scope_t *scope, qstr qst) {
-    assert(scope->parent != NULL); // we should have at least 1 parent
+    assert(scope->parent != NULL); 
     for (scope_t *s = scope->parent;; s = s->parent) {
-        assert(s->parent != NULL); // we should not get to the outer scope
+        assert(s->parent != NULL); 
         id_info_t *id = scope_find_or_add_id(s, qst, ID_INFO_KIND_UNDECIDED);
         if (id->kind == ID_INFO_KIND_UNDECIDED) {
-            // variable not previously declared in this scope, so declare it as free and keep searching parents
+            
             id->kind = ID_INFO_KIND_FREE;
         } else {
-            // variable is declared in this scope, so finish
+            
             if (id->kind == ID_INFO_KIND_LOCAL) {
-                // variable local to this scope, close it over
+                
                 id->kind = ID_INFO_KIND_CELL;
             } else {
-                // ID_INFO_KIND_FREE: variable already closed over in a parent scope
-                // ID_INFO_KIND_CELL: variable already closed over in this scope
+                
+                
                 assert(id->kind == ID_INFO_KIND_FREE || id->kind == ID_INFO_KIND_CELL);
             }
             return;
@@ -151,4 +127,4 @@ void scope_check_to_close_over(scope_t *scope, id_info_t *id) {
     }
 }
 
-#endif // MICROPY_ENABLE_COMPILER
+#endif 

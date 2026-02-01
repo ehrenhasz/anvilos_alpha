@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
+ 
 #ifndef _TESTCASES_MMAP_TEST_H
 #define _TESTCASES_MMAP_TEST_H
 #include <sys/mman.h>
@@ -20,11 +20,7 @@ struct addresses {
 
 static inline void do_mmaps(struct addresses *mmap_addresses)
 {
-	/*
-	 * Place all of the hint addresses on the boundaries of mmap
-	 * sv39, sv48, sv57
-	 * User addresses end at 1<<38, 1<<47, 1<<56 respectively
-	 */
+	 
 	void *on_37_bits = (void *)(1UL << 37);
 	void *on_38_bits = (void *)(1UL << 38);
 	void *on_46_bits = (void *)(1UL << 46);
@@ -61,4 +57,4 @@ static inline int memory_layout(void)
 
 	return value2 > value1;
 }
-#endif /* _TESTCASES_MMAP_TEST_H */
+#endif  

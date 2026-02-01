@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: ISC
-/* Copyright (C) 2023 MediaTek Inc. */
+
+ 
 
 #include <linux/acpi.h>
 #include "mt792x.h"
@@ -65,7 +65,7 @@ free:
 	return ret;
 }
 
-/* MTCL : Country List Table for 6G band */
+ 
 static void
 mt792x_asar_acpi_read_mtcl(struct mt792x_dev *dev, u8 **table, u8 *version)
 {
@@ -75,7 +75,7 @@ mt792x_asar_acpi_read_mtcl(struct mt792x_dev *dev, u8 **table, u8 *version)
 		*version = 2;
 }
 
-/* MTDS : Dynamic SAR Power Table */
+ 
 static int
 mt792x_asar_acpi_read_mtds(struct mt792x_dev *dev, u8 **table, u8 version)
 {
@@ -86,7 +86,7 @@ mt792x_asar_acpi_read_mtds(struct mt792x_dev *dev, u8 **table, u8 version)
 	if (ret)
 		return ret;
 
-	/* Table content validation */
+	 
 	switch (version) {
 	case 1:
 		enable = ((struct mt792x_asar_dyn *)*table)->enable;
@@ -110,7 +110,7 @@ mt792x_asar_acpi_read_mtds(struct mt792x_dev *dev, u8 **table, u8 version)
 	return 0;
 }
 
-/* MTGS : Geo SAR Power Table */
+ 
 static int
 mt792x_asar_acpi_read_mtgs(struct mt792x_dev *dev, u8 **table, u8 version)
 {
@@ -120,7 +120,7 @@ mt792x_asar_acpi_read_mtgs(struct mt792x_dev *dev, u8 **table, u8 version)
 	if (ret)
 		return ret;
 
-	/* Table content validation */
+	 
 	switch (version) {
 	case 1:
 		sarlen = sizeof(struct mt792x_asar_geo_limit);
@@ -141,7 +141,7 @@ mt792x_asar_acpi_read_mtgs(struct mt792x_dev *dev, u8 **table, u8 version)
 	return 0;
 }
 
-/* MTFG : Flag Table */
+ 
 static int
 mt792x_asar_acpi_read_mtfg(struct mt792x_dev *dev, u8 **table)
 {
@@ -168,7 +168,7 @@ int mt792x_init_acpi_sar(struct mt792x_dev *dev)
 
 	mt792x_asar_acpi_read_mtcl(dev, (u8 **)&asar->countrylist, &asar->ver);
 
-	/* MTDS is mandatory. Return error if table is invalid */
+	 
 	ret = mt792x_asar_acpi_read_mtds(dev, (u8 **)&asar->dyn, asar->ver);
 	if (ret) {
 		devm_kfree(dev->mt76.dev, asar->dyn);
@@ -178,14 +178,14 @@ int mt792x_init_acpi_sar(struct mt792x_dev *dev)
 		return ret;
 	}
 
-	/* MTGS is optional */
+	 
 	ret = mt792x_asar_acpi_read_mtgs(dev, (u8 **)&asar->geo, asar->ver);
 	if (ret) {
 		devm_kfree(dev->mt76.dev, asar->geo);
 		asar->geo = NULL;
 	}
 
-	/* MTFG is optional */
+	 
 	ret = mt792x_asar_acpi_read_mtfg(dev, (u8 **)&asar->fg);
 	if (ret) {
 		devm_kfree(dev->mt76.dev, asar->fg);
@@ -216,7 +216,7 @@ mt792x_asar_get_geo_pwr(struct mt792x_phy *phy,
 	case NL80211_DFS_ETSI:
 		idx = 1;
 		break;
-	default: /* WW */
+	default:  
 		idx = 2;
 		break;
 	}
@@ -293,10 +293,7 @@ int mt792x_init_acpi_sar_power(struct mt792x_phy *phy, bool set_default)
 	if (!phy->acpisar)
 		return 0;
 
-	/* When ACPI SAR enabled in HW, we should apply rules for .frp
-	 * 1. w/o .sar_specs : set ACPI SAR power as the defatul value
-	 * 2. w/  .sar_specs : set power with min(.sar_specs, ACPI_SAR)
-	 */
+	 
 	for (i = 0; i < capa->num_freq_ranges; i++) {
 		struct mt76_freq_range_power *frp = &phy->mt76->frp[i];
 
@@ -333,9 +330,7 @@ u8 mt792x_acpi_get_flags(struct mt792x_phy *phy)
 	if (!fg)
 		return flags;
 
-	/* pickup necessary settings per device and
-	 * translate the index of bitmap for chip command.
-	 */
+	 
 	for (i = 0; i < fg->nr_flag; i++) {
 		for (j = 0; j < ARRAY_SIZE(map); j++) {
 			if (fg->flag[i] == map[j].acpi_idx) {

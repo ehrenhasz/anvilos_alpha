@@ -1,12 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0 OR MIT
 
-/*
- *  Xen para-virtual DRM device
- *
- * Copyright (C) 2016-2018 EPAM Systems Inc.
- *
- * Author: Oleksandr Andrushchenko <oleksandr_andrushchenko@epam.com>
- */
+
+ 
 
 #include <linux/dma-buf.h>
 #include <linux/scatterlist.h>
@@ -28,10 +22,10 @@ struct xen_gem_object {
 	size_t num_pages;
 	struct page **pages;
 
-	/* set for buffers allocated by the backend */
+	 
 	bool be_alloc;
 
-	/* this is for imported PRIME buffer */
+	 
 	struct sg_table *sgt_imported;
 };
 
@@ -64,31 +58,14 @@ static int xen_drm_front_gem_object_mmap(struct drm_gem_object *gem_obj,
 
 	vma->vm_ops = gem_obj->funcs->vm_ops;
 
-	/*
-	 * Clear the VM_PFNMAP flag that was set by drm_gem_mmap(), and set the
-	 * vm_pgoff (used as a fake buffer offset by DRM) to 0 as we want to map
-	 * the whole buffer.
-	 */
+	 
 	vm_flags_mod(vma, VM_MIXEDMAP | VM_DONTEXPAND, VM_PFNMAP);
 	vma->vm_pgoff = 0;
 
-	/*
-	 * According to Xen on ARM ABI (xen/include/public/arch-arm.h):
-	 * all memory which is shared with other entities in the system
-	 * (including the hypervisor and other guests) must reside in memory
-	 * which is mapped as Normal Inner Write-Back Outer Write-Back
-	 * Inner-Shareable.
-	 */
+	 
 	vma->vm_page_prot = vm_get_page_prot(vma->vm_flags);
 
-	/*
-	 * vm_operations_struct.fault handler will be called if CPU access
-	 * to VM is here. For GPUs this isn't the case, because CPU  doesn't
-	 * touch the memory. Insert pages now, so both CPU and GPU are happy.
-	 *
-	 * FIXME: as we insert all the pages now then no .fault handler must
-	 * be called, so don't provide one
-	 */
+	 
 	ret = vm_map_pages(vma, xen_obj->pages, xen_obj->num_pages);
 	if (ret < 0)
 		DRM_ERROR("Failed to map pages into vma: %d\n", ret);
@@ -143,18 +120,12 @@ static struct xen_gem_object *gem_create(struct drm_device *dev, size_t size)
 		return xen_obj;
 
 	if (drm_info->front_info->cfg.be_alloc) {
-		/*
-		 * backend will allocate space for this buffer, so
-		 * only allocate array of pointers to pages
-		 */
+		 
 		ret = gem_alloc_pages_array(xen_obj, size);
 		if (ret < 0)
 			goto fail;
 
-		/*
-		 * allocate ballooned pages which will be used to map
-		 * grant references provided by the backend
-		 */
+		 
 		ret = xen_alloc_unpopulated_pages(xen_obj->num_pages,
 					          xen_obj->pages);
 		if (ret < 0) {
@@ -167,10 +138,7 @@ static struct xen_gem_object *gem_create(struct drm_device *dev, size_t size)
 		xen_obj->be_alloc = true;
 		return xen_obj;
 	}
-	/*
-	 * need to allocate backing pages now, so we can share those
-	 * with the backend
-	 */
+	 
 	xen_obj->num_pages = DIV_ROUND_UP(size, PAGE_SIZE);
 	xen_obj->pages = drm_gem_get_pages(&xen_obj->base);
 	if (IS_ERR(xen_obj->pages)) {
@@ -287,7 +255,7 @@ int xen_drm_front_gem_prime_vmap(struct drm_gem_object *gem_obj,
 	if (!xen_obj->pages)
 		return -ENOMEM;
 
-	/* Please see comment in gem_mmap_obj on mapping and attributes. */
+	 
 	vaddr = vmap(xen_obj->pages, xen_obj->num_pages,
 		     VM_MAP, PAGE_KERNEL);
 	if (!vaddr)

@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * VMware VMCI driver (vmciContext.h)
- *
- * Copyright (C) 2012 VMware, Inc. All rights reserved.
- */
+ 
+ 
 
 #ifndef _VMCI_CONTEXT_H_
 #define _VMCI_CONTEXT_H_
@@ -17,7 +13,7 @@
 #include "vmci_handle_array.h"
 #include "vmci_datagram.h"
 
-/* Used to determine what checkpoint state to get and set. */
+ 
 enum {
 	VMCI_NOTIFICATION_CPT_STATE = 1,
 	VMCI_WELLKNOWN_CPT_STATE    = 2,
@@ -27,7 +23,7 @@ enum {
 	VMCI_DOORBELL_CPT_STATE     = 6,
 };
 
-/* Host specific struct used for signalling */
+ 
 struct vmci_host {
 	wait_queue_head_t wait_queue;
 };
@@ -38,39 +34,27 @@ struct vmci_handle_list {
 };
 
 struct vmci_ctx {
-	struct list_head list_item;       /* For global VMCI list. */
+	struct list_head list_item;        
 	u32 cid;
 	struct kref kref;
-	struct list_head datagram_queue;  /* Head of per VM queue. */
+	struct list_head datagram_queue;   
 	u32 pending_datagrams;
-	size_t datagram_queue_size;	  /* Size of datagram queue in bytes. */
+	size_t datagram_queue_size;	   
 
-	/*
-	 * Version of the code that created
-	 * this context; e.g., VMX.
-	 */
+	 
 	int user_version;
-	spinlock_t lock;  /* Locks callQueue and handle_arrays. */
+	spinlock_t lock;   
 
-	/*
-	 * queue_pairs attached to.  The array of
-	 * handles for queue pairs is accessed
-	 * from the code for QP API, and there
-	 * it is protected by the QP lock.  It
-	 * is also accessed from the context
-	 * clean up path, which does not
-	 * require a lock.  VMCILock is not
-	 * used to protect the QP array field.
-	 */
+	 
 	struct vmci_handle_arr *queue_pair_array;
 
-	/* Doorbells created by context. */
+	 
 	struct vmci_handle_arr *doorbell_array;
 
-	/* Doorbells pending for context. */
+	 
 	struct vmci_handle_arr *pending_doorbell_array;
 
-	/* Contexts current context is subscribing to. */
+	 
 	struct list_head notifier_list;
 	unsigned int n_notifiers;
 
@@ -78,17 +62,17 @@ struct vmci_ctx {
 	u32 priv_flags;
 
 	const struct cred *cred;
-	bool *notify;		/* Notify flag pointer - hosted only. */
-	struct page *notify_page;	/* Page backing the notify UVA. */
+	bool *notify;		 
+	struct page *notify_page;	 
 };
 
-/* VMCINotifyAddRemoveInfo: Used to add/remove remote context notifications. */
+ 
 struct vmci_ctx_info {
 	u32 remote_cid;
 	int result;
 };
 
-/* VMCICptBufInfo: Used to set/get current context's checkpoint state. */
+ 
 struct vmci_ctx_chkpt_buf_info {
 	u64 cpt_buf;
 	u32 cpt_type;
@@ -97,10 +81,7 @@ struct vmci_ctx_chkpt_buf_info {
 	u32 _pad;
 };
 
-/*
- * VMCINotificationReceiveInfo: Used to recieve pending notifications
- * for doorbells and queue pairs.
- */
+ 
 struct vmci_ctx_notify_recv_info {
 	u64 db_handle_buf_uva;
 	u64 db_handle_buf_size;
@@ -110,11 +91,7 @@ struct vmci_ctx_notify_recv_info {
 	u32 _pad;
 };
 
-/*
- * Utilility function that checks whether two entities are allowed
- * to interact. If one of them is restricted, the other one must
- * be trusted.
- */
+ 
 static inline bool vmci_deny_interaction(u32 part_one, u32 part_two)
 {
 	return ((part_one & VMCI_PRIVILEGE_FLAG_RESTRICTED) &&
@@ -171,4 +148,4 @@ static inline u32 vmci_ctx_get_id(struct vmci_ctx *context)
 	return context->cid;
 }
 
-#endif /* _VMCI_CONTEXT_H_ */
+#endif  

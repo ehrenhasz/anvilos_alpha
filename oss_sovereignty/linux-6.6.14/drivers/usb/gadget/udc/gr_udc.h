@@ -1,32 +1,18 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * USB Peripheral Controller driver for Aeroflex Gaisler GRUSBDC.
- *
- * 2013 (c) Aeroflex Gaisler AB
- *
- * This driver supports GRUSBDC USB Device Controller cores available in the
- * GRLIB VHDL IP core library.
- *
- * Full documentation of the GRUSBDC core can be found here:
- * https://www.gaisler.com/products/grlib/grip.pdf
- *
- * Contributors:
- * - Andreas Larsson <andreas@gaisler.com>
- * - Marko Isomaki
- */
 
-/* Control registers on the AMBA bus */
+ 
 
-#define GR_MAXEP	16	/* Max # endpoints for *each* direction */
+ 
+
+#define GR_MAXEP	16	 
 
 struct gr_epregs {
 	u32 epctrl;
 	union {
-		struct { /* Slave mode*/
+		struct {  
 			u32 slvctrl;
 			u32 slvdata;
 		};
-		struct { /* DMA mode*/
+		struct {  
 			u32 dmactrl;
 			u32 dmaaddr;
 		};
@@ -35,10 +21,10 @@ struct gr_epregs {
 };
 
 struct gr_regs {
-	struct gr_epregs	epo[GR_MAXEP];	/* 0x000 - 0x0fc */
-	struct gr_epregs	epi[GR_MAXEP];	/* 0x100 - 0x1fc */
-	u32			control;	/* 0x200 */
-	u32			status;		/* 0x204 */
+	struct gr_epregs	epo[GR_MAXEP];	 
+	struct gr_epregs	epi[GR_MAXEP];	 
+	u32			control;	 
+	u32			status;		 
 };
 
 #define GR_EPCTRL_BUFSZ_SCALER	8
@@ -103,18 +89,18 @@ struct gr_regs {
 #define GR_STATUS_FN_POS	0
 
 
-#define MAX_CTRL_PL_SIZE 64 /* As per USB standard for full and high speed */
+#define MAX_CTRL_PL_SIZE 64  
 
-/*-------------------------------------------------------------------------*/
+ 
 
-/* Driver data structures and utilities */
+ 
 
 struct gr_dma_desc {
 	u32 ctrl;
 	u32 data;
 	u32 next;
 
-	/* These must be last because hw uses the previous three */
+	 
 	u32 paddr;
 	struct gr_dma_desc *next_desc;
 };
@@ -148,12 +134,12 @@ struct gr_ep {
 	unsigned wedged:1;
 	unsigned callback:1;
 
-	/* analogous to a host-side qh */
+	 
 	struct list_head queue;
 
 	struct list_head ep_list;
 
-	/* Bounce buffer for end of "odd" sized OUT requests */
+	 
 	void *tailbuf;
 	dma_addr_t tailbuf_paddr;
 };
@@ -162,26 +148,26 @@ struct gr_request {
 	struct usb_request req;
 	struct list_head queue;
 
-	/* Chain of dma descriptors */
-	struct gr_dma_desc *first_desc; /* First in the chain */
-	struct gr_dma_desc *curr_desc; /* Current descriptor */
-	struct gr_dma_desc *last_desc; /* Last in the chain */
+	 
+	struct gr_dma_desc *first_desc;  
+	struct gr_dma_desc *curr_desc;  
+	struct gr_dma_desc *last_desc;  
 
-	u16 evenlen; /* Size of even length head (if oddlen != 0) */
-	u16 oddlen; /* Size of odd length tail if buffer length is "odd" */
+	u16 evenlen;  
+	u16 oddlen;  
 
-	u8 setup; /* Setup packet */
+	u8 setup;  
 };
 
 enum gr_ep0state {
-	GR_EP0_DISCONNECT = 0,	/* No host */
-	GR_EP0_SETUP,		/* Between STATUS ack and SETUP report */
-	GR_EP0_IDATA,		/* IN data stage */
-	GR_EP0_ODATA,		/* OUT data stage */
-	GR_EP0_ISTATUS,		/* Status stage after IN data stage */
-	GR_EP0_OSTATUS,		/* Status stage after OUT data stage */
-	GR_EP0_STALL,		/* Data or status stages */
-	GR_EP0_SUSPEND,		/* USB suspend */
+	GR_EP0_DISCONNECT = 0,	 
+	GR_EP0_SETUP,		 
+	GR_EP0_IDATA,		 
+	GR_EP0_ODATA,		 
+	GR_EP0_ISTATUS,		 
+	GR_EP0_OSTATUS,		 
+	GR_EP0_STALL,		 
+	GR_EP0_SUSPEND,		 
 };
 
 struct gr_udc {
@@ -214,7 +200,7 @@ struct gr_udc {
 
 	struct list_head ep_list;
 
-	spinlock_t lock; /* General lock, a.k.a. "dev->lock" in comments */
+	spinlock_t lock;  
 };
 
 #define to_gr_udc(gadget)	(container_of((gadget), struct gr_udc, gadget))

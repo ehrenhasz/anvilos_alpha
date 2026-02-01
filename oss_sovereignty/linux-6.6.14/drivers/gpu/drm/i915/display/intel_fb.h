@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2020-2021 Intel Corporation
- */
+ 
+ 
 
 #ifndef __INTEL_FB_H__
 #define __INTEL_FB_H__
@@ -95,4 +93,4 @@ intel_user_framebuffer_create(struct drm_device *dev,
 bool intel_fb_modifier_uses_dpt(struct drm_i915_private *i915, u64 modifier);
 bool intel_fb_uses_dpt(const struct drm_framebuffer *fb);
 
-#endif /* __INTEL_FB_H__ */
+#endif  

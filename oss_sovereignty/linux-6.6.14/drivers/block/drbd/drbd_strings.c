@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
-  drbd.h
 
-  This file is part of DRBD by Philipp Reisner and Lars Ellenberg.
-
-  Copyright (C) 2003-2008, LINBIT Information Technologies GmbH.
-  Copyright (C) 2003-2008, Philipp Reisner <philipp.reisner@linbit.com>.
-  Copyright (C) 2003-2008, Lars Ellenberg <lars.ellenberg@linbit.com>.
-
-
-*/
+ 
 
 #include <linux/drbd.h>
 #include "drbd_strings.h"
@@ -84,7 +74,7 @@ static const char * const drbd_state_sw_errors[] = {
 
 const char *drbd_conn_str(enum drbd_conns s)
 {
-	/* enums are unsigned... */
+	 
 	return s > C_BEHIND ? "TOO_LARGE" : drbd_conn_s_names[s];
 }
 

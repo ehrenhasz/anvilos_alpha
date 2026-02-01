@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-/* Copyright (c) 2021 Mellanox Technologies. */
+
+ 
 
 #include <net/fib_notifier.h>
 #include <net/nexthop.h>
@@ -61,7 +61,7 @@ struct mlx5e_route_entry {
 struct mlx5e_tc_tun_encap {
 	struct mlx5e_priv *priv;
 	struct notifier_block fib_nb;
-	spinlock_t route_lock; /* protects route_tbl */
+	spinlock_t route_lock;  
 	unsigned long route_tbl_last_update;
 	DECLARE_HASHTABLE(route_tbl, 8);
 };
@@ -111,9 +111,7 @@ int mlx5e_tc_set_attr_rx_tun(struct mlx5e_tc_flow *flow,
 			return 0;
 	}
 #endif
-	/* Only set the flag if both src and dst ip addresses exist. They are
-	 * required to establish routing.
-	 */
+	 
 	flow_flag_set(flow, TUN_RX);
 	flow->attr->tun_ip_version = ip_version;
 	return 0;
@@ -124,10 +122,7 @@ static bool mlx5e_tc_flow_all_encaps_valid(struct mlx5_esw_flow_attr *esw_attr)
 	bool all_flow_encaps_valid = true;
 	int i;
 
-	/* Flow can be associated with multiple encap entries.
-	 * Before offloading the flow verify that all of them have
-	 * a valid neighbour.
-	 */
+	 
 	for (i = 0; i < MLX5_MAX_FLOW_FWD_VPORTS; i++) {
 		if (!(esw_attr->dests[i].flags & MLX5_ESW_DEST_ENCAP))
 			continue;
@@ -182,7 +177,7 @@ void mlx5e_tc_encap_flows_add(struct mlx5e_priv *priv,
 		esw_attr->dests[flow->tmp_entry_index].pkt_reformat = e->pkt_reformat;
 		esw_attr->dests[flow->tmp_entry_index].flags |= MLX5_ESW_DEST_ENCAP_VALID;
 
-		/* Do not offload flows with unresolved neighbors */
+		 
 		if (!mlx5e_tc_flow_all_encaps_valid(esw_attr))
 			continue;
 
@@ -193,7 +188,7 @@ void mlx5e_tc_encap_flows_add(struct mlx5e_priv *priv,
 			continue;
 		}
 
-		/* update from slow path rule to encap rule */
+		 
 		rule = mlx5e_tc_offload_fdb_rules(esw, flow, spec, flow->attr);
 		if (IS_ERR(rule)) {
 			mlx5e_tc_unoffload_flow_post_acts(flow);
@@ -205,7 +200,7 @@ void mlx5e_tc_encap_flows_add(struct mlx5e_priv *priv,
 
 		mlx5e_tc_unoffload_from_slow_path(esw, flow);
 		flow->rule[0] = rule;
-		/* was unset when slow path rule removed */
+		 
 		flow_flag_set(flow, OFFLOADED);
 	}
 }
@@ -228,18 +223,15 @@ void mlx5e_tc_encap_flows_del(struct mlx5e_priv *priv,
 
 		attr = mlx5e_tc_get_encap_attr(flow);
 		esw_attr = attr->esw_attr;
-		/* mark the flow's encap dest as non-valid */
+		 
 		esw_attr->dests[flow->tmp_entry_index].flags &= ~MLX5_ESW_DEST_ENCAP_VALID;
 		esw_attr->dests[flow->tmp_entry_index].pkt_reformat = NULL;
 
-		/* Clear pkt_reformat before checking slow path flag. Because
-		 * in next iteration, the same flow is already set slow path
-		 * flag, but still need to clear the pkt_reformat.
-		 */
+		 
 		if (flow_flag_test(flow, SLOW))
 			continue;
 
-		/* update from encap rule to slow path rule */
+		 
 		spec = &flow->attr->parse_attr->spec;
 		rule = mlx5e_tc_offload_to_slow_path(esw, flow, spec);
 
@@ -253,11 +245,11 @@ void mlx5e_tc_encap_flows_del(struct mlx5e_priv *priv,
 		mlx5e_tc_unoffload_fdb_rules(esw, flow, flow->attr);
 		mlx5e_tc_unoffload_flow_post_acts(flow);
 		flow->rule[0] = rule;
-		/* was unset when fast path rule removed */
+		 
 		flow_flag_set(flow, OFFLOADED);
 	}
 
-	/* we know that the encap is valid */
+	 
 	e->flags &= ~MLX5_ENCAP_ENTRY_VALID;
 	mlx5_packet_reformat_dealloc(priv->mdev, e->pkt_reformat);
 	e->pkt_reformat = NULL;
@@ -268,10 +260,7 @@ static void mlx5e_take_tmp_flow(struct mlx5e_tc_flow *flow,
 				int index)
 {
 	if (IS_ERR(mlx5e_flow_get(flow))) {
-		/* Flow is being deleted concurrently. Wait for it to be
-		 * unoffloaded from hardware, otherwise deleting encap will
-		 * fail.
-		 */
+		 
 		wait_for_completion(&flow->del_hw_done);
 		return;
 	}
@@ -281,9 +270,7 @@ static void mlx5e_take_tmp_flow(struct mlx5e_tc_flow *flow,
 	list_add(&flow->tmp_list, flow_list);
 }
 
-/* Takes reference to all flows attached to encap and adds the flows to
- * flow_list using 'tmp_list' list_head in mlx5e_tc_flow.
- */
+ 
 void mlx5e_take_all_encap_flows(struct mlx5e_encap_entry *e, struct list_head *flow_list)
 {
 	struct encap_flow_item *efi;
@@ -295,9 +282,7 @@ void mlx5e_take_all_encap_flows(struct mlx5e_encap_entry *e, struct list_head *f
 	}
 }
 
-/* Takes reference to all flows attached to route and adds the flows to
- * flow_list using 'tmp_list' list_head in mlx5e_tc_flow.
- */
+ 
 static void mlx5e_take_all_route_decap_flows(struct mlx5e_route_entry *r,
 					     struct list_head *flow_list)
 {
@@ -319,7 +304,7 @@ mlx5e_get_next_matching_encap(struct mlx5e_neigh_hash_entry *nhe,
 retry:
 	rcu_read_lock();
 
-	/* find encap with non-zero reference counter value */
+	 
 	for (next = e ?
 		     list_next_or_null_rcu(&nhe->encap_list,
 					   &e->encap_list,
@@ -338,15 +323,15 @@ retry:
 
 	rcu_read_unlock();
 
-	/* release starting encap */
+	 
 	if (e)
 		mlx5e_encap_put(netdev_priv(e->out_dev), e);
 	if (!next)
 		return next;
 
-	/* wait for encap to be fully initialized */
+	 
 	wait_for_completion(&next->res_ready);
-	/* continue searching if encap entry is not in valid state after completion */
+	 
 	if (!match(next)) {
 		e = next;
 		goto retry;
@@ -399,9 +384,7 @@ void mlx5e_tc_update_neigh_used_value(struct mlx5e_neigh_hash_entry *nhe)
 	else
 		return;
 
-	/* mlx5e_get_next_valid_encap() releases previous encap before returning
-	 * next one.
-	 */
+	 
 	while ((e = mlx5e_get_next_valid_encap(nhe, e)) != NULL) {
 		struct mlx5e_priv *priv = netdev_priv(e->out_dev);
 		struct encap_flow_item *efi, *tmp;
@@ -430,7 +413,7 @@ void mlx5e_tc_update_neigh_used_value(struct mlx5e_neigh_hash_entry *nhe)
 
 		mlx5e_put_flow_list(priv, &flow_list);
 		if (neigh_used) {
-			/* release current encap before breaking the loop */
+			 
 			mlx5e_encap_put(priv, e);
 			break;
 		}
@@ -441,9 +424,7 @@ void mlx5e_tc_update_neigh_used_value(struct mlx5e_neigh_hash_entry *nhe)
 	if (neigh_used) {
 		nhe->reported_lastuse = jiffies;
 
-		/* find the relevant neigh according to the cached device and
-		 * dst ip pair
-		 */
+		 
 		n = neigh_lookup(tbl, &m_neigh->dst_ip, READ_ONCE(nhe->neigh_dev));
 		if (!n)
 			return;
@@ -537,7 +518,7 @@ void mlx5e_detach_encap(struct mlx5e_priv *priv,
 	    MLX5_ESW_DEST_CHAIN_WITH_SRC_PORT_CHANGE)
 		mlx5e_detach_encap_route(priv, flow, out_index);
 
-	/* flow wasn't fully initialized */
+	 
 	if (!e)
 		return;
 
@@ -599,14 +580,14 @@ bool mlx5e_tc_tun_encap_info_equal_options(struct mlx5e_encap_key *a,
 	a_has_opts = !!(a->ip_tun_key->tun_flags & tun_flags);
 	b_has_opts = !!(b->ip_tun_key->tun_flags & tun_flags);
 
-	/* keys are equal when both don't have any options attached */
+	 
 	if (!a_has_opts && !b_has_opts)
 		return true;
 
 	if (a_has_opts != b_has_opts)
 		return false;
 
-	/* options stored in memory next to ip_tunnel_info struct */
+	 
 	a_info = container_of(a->ip_tun_key, struct ip_tunnel_info, key);
 	b_info = container_of(b->ip_tun_key, struct ip_tunnel_info, key);
 
@@ -847,9 +828,9 @@ int mlx5e_attach_encap(struct mlx5e_priv *priv,
 
 	e = mlx5e_encap_get(priv, &key, hash_key);
 
-	/* must verify if encap is valid or not */
+	 
 	if (e) {
-		/* Check that entry was not already attached to this flow */
+		 
 		if (is_duplicated_encap_entry(priv, flow, out_index, e, extack)) {
 			err = -EOPNOTSUPP;
 			goto out_err;
@@ -904,9 +885,7 @@ attach_flow:
 
 	err = mlx5e_set_int_port_tunnel(priv, attr, e, out_index);
 	if (err == -EOPNOTSUPP) {
-		/* If device doesn't support int port offload,
-		 * redirect to uplink vport.
-		 */
+		 
 		mlx5_core_dbg(priv->mdev, "attaching int port as encap dev not supported, using uplink\n");
 		err = 0;
 	} else if (err) {
@@ -1317,9 +1296,7 @@ int mlx5e_attach_decap_route(struct mlx5e_priv *priv,
 		err = PTR_ERR(r);
 		goto out;
 	}
-	/* Routing changed concurrently. FIB event handler might have missed new
-	 * entry, schedule update.
-	 */
+	 
 	if (tbl_time_before != tbl_time_after) {
 		err = mlx5e_route_enqueue_update(priv, r, FIB_EVENT_ENTRY_REPLACE);
 		if (err) {
@@ -1379,9 +1356,7 @@ static int mlx5e_attach_encap_route(struct mlx5e_priv *priv,
 				   &tbl_time_after);
 	if (IS_ERR(r))
 		return PTR_ERR(r);
-	/* Routing changed concurrently. FIB event handler might have missed new
-	 * entry, schedule update.
-	 */
+	 
 	if (tbl_time_before != tbl_time_after) {
 		err = mlx5e_route_enqueue_update(priv, r, FIB_EVENT_ENTRY_REPLACE);
 		if (err) {
@@ -1546,7 +1521,7 @@ static void mlx5e_reoffload_encap(struct mlx5e_priv *priv,
 				goto offload_to_slow_path;
 			}
 
-			/* update from slow path rule to encap rule */
+			 
 			rule = mlx5e_tc_offload_fdb_rules(esw, flow, spec, flow->attr);
 			if (IS_ERR(rule)) {
 				mlx5e_tc_unoffload_flow_post_acts(flow);
@@ -1559,7 +1534,7 @@ static void mlx5e_reoffload_encap(struct mlx5e_priv *priv,
 		} else {
 offload_to_slow_path:
 			rule = mlx5e_tc_offload_to_slow_path(esw, flow, spec);
-			/* mark the flow's encap dest as non-valid */
+			 
 			esw_attr->dests[flow->tmp_entry_index].flags &=
 				~MLX5_ESW_DEST_ENCAP_VALID;
 
@@ -1692,7 +1667,7 @@ static void mlx5e_tc_fib_event_work(struct work_struct *work)
 	bool replace;
 	int err;
 
-	/* sync with concurrent neigh updates */
+	 
 	rtnl_lock();
 	esw = priv->mdev->priv.eswitch;
 	mutex_lock(&esw->offloads.encap_tbl_lock);
@@ -1751,10 +1726,7 @@ mlx5e_init_fib_work_ipv4(struct mlx5e_priv *priv,
 	key.endpoint_ip.v4 = htonl(fen_info->dst);
 	key.ip_version = 4;
 
-	/* Can't fail after this point because releasing reference to r
-	 * requires obtaining sleeping mutex which we can't do in atomic
-	 * context.
-	 */
+	 
 	r = mlx5e_route_lookup_for_update(encap, &key);
 	if (!r)
 		goto out;
@@ -1795,10 +1767,7 @@ mlx5e_init_fib_work_ipv6(struct mlx5e_priv *priv,
 	       sizeof(fen_info->rt->fib6_dst.addr));
 	key.ip_version = 6;
 
-	/* Can't fail after this point because releasing reference to r
-	 * requires obtaining sleeping mutex which we can't do in atomic
-	 * context.
-	 */
+	 
 	r = mlx5e_route_lookup_for_update(encap, &key);
 	if (!r)
 		goto out;
@@ -1880,6 +1849,6 @@ void mlx5e_tc_tun_cleanup(struct mlx5e_tc_tun_encap *encap)
 		return;
 
 	unregister_fib_notifier(dev_net(encap->priv->netdev), &encap->fib_nb);
-	flush_workqueue(encap->priv->wq); /* flush fib event works */
+	flush_workqueue(encap->priv->wq);  
 	kvfree(encap);
 }

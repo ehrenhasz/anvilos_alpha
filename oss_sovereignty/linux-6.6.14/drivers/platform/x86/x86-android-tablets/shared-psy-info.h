@@ -1,12 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later
- *
- * Shared psy info for X86 tablets which ship with Android as the factory image
- * and which have broken DSDT tables. The factory kernels shipped on these
- * devices typically have a bunch of things hardcoded, rather than specified
- * in their DSDT.
- *
- * Copyright (C) 2021-2023 Hans de Goede <hdegoede@redhat.com>
- */
+ 
 #ifndef __PDX86_SHARED_PSY_INFO_H
 #define __PDX86_SHARED_PSY_INFO_H
 

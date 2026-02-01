@@ -1,28 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * When connected to the machine, the Thrustmaster wheels appear as
- * a «generic» hid gamepad called "Thrustmaster FFB Wheel".
- *
- * When in this mode not every functionality of the wheel, like the force feedback,
- * are available. To enable all functionalities of a Thrustmaster wheel we have to send
- * to it a specific USB CONTROL request with a code different for each wheel.
- *
- * This driver tries to understand which model of Thrustmaster wheel the generic
- * "Thrustmaster FFB Wheel" really is and then sends the appropriate control code.
- *
- * Copyright (c) 2020-2021 Dario Pagani <dario.pagani.146+linuxk@gmail.com>
- * Copyright (c) 2020-2021 Kim Kuparinen <kimi.h.kuparinen@gmail.com>
- */
+
+ 
 #include <linux/hid.h>
 #include <linux/usb.h>
 #include <linux/input.h>
 #include <linux/slab.h>
 #include <linux/module.h>
 
-/*
- * These interrupts are used to prevent a nasty crash when initializing the
- * T300RS. Used in thrustmaster_interrupts().
- */
+ 
 static const u8 setup_0[] = { 0x42, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
 static const u8 setup_1[] = { 0x0a, 0x04, 0x90, 0x03, 0x00, 0x00, 0x00, 0x00 };
 static const u8 setup_2[] = { 0x0a, 0x04, 0x00, 0x0c, 0x00, 0x00, 0x00, 0x00 };
@@ -36,32 +20,17 @@ static const unsigned int setup_arr_sizes[] = {
 	ARRAY_SIZE(setup_3),
 	ARRAY_SIZE(setup_4)
 };
-/*
- * This struct contains for each type of
- * Thrustmaster wheel
- *
- * Note: The values are stored in the CPU
- * endianness, the USB protocols always use
- * little endian; the macro cpu_to_le[BIT]()
- * must be used when preparing USB packets
- * and vice-versa
- */
+ 
 struct tm_wheel_info {
 	uint16_t wheel_type;
 
-	/*
-	 * See when the USB control out packet is prepared...
-	 * @TODO The TMX seems to require multiple control codes to switch.
-	 */
+	 
 	uint16_t switch_value;
 
 	char const *const wheel_name;
 };
 
-/*
- * Known wheels.
- * Note: TMX does not work as it requires 2 control packets
- */
+ 
 static const struct tm_wheel_info tm_wheels_infos[] = {
 	{0x0306, 0x0006, "Thrustmaster T150RS"},
 	{0x0200, 0x0005, "Thrustmaster T300RS (Missing Attachment)"},
@@ -70,36 +39,22 @@ static const struct tm_wheel_info tm_wheels_infos[] = {
 	{0x020a, 0x0005, "Thrustmaster T300RS (Sparco R383 Mod)"},
 	{0x0204, 0x0005, "Thrustmaster T300 Ferrari Alcantara Edition"},
 	{0x0002, 0x0002, "Thrustmaster T500RS"}
-	//{0x0407, 0x0001, "Thrustmaster TMX"}
+	
 };
 
 static const uint8_t tm_wheels_infos_length = 7;
 
-/*
- * This structs contains (in little endian) the response data
- * of the wheel to the request 73
- *
- * A sufficient research to understand what each field does is not
- * beign conducted yet. The position and meaning of fields are a
- * just a very optimistic guess based on instinct....
- */
+ 
 struct __packed tm_wheel_response
 {
-	/*
-	 * Seems to be the type of packet
-	 * - 0x0049 if is data.a (15 bytes)
-	 * - 0x0047 if is data.b (7 bytes)
-	 */
+	 
 	uint16_t type;
 
 	union {
 		struct __packed {
 			uint16_t field0;
 			uint16_t field1;
-			/*
-			 * Seems to be the model code of the wheel
-			 * Read table thrustmaster_wheels to values
-			 */
+			 
 			uint16_t model;
 
 			uint16_t field2;
@@ -125,7 +80,7 @@ struct tm_wheel {
 	struct usb_ctrlrequest *change_request;
 };
 
-/* The control packet to send to wheel */
+ 
 static const struct usb_ctrlrequest model_request = {
 	.bRequestType = 0xc1,
 	.bRequest = 73,
@@ -137,16 +92,12 @@ static const struct usb_ctrlrequest model_request = {
 static const struct usb_ctrlrequest change_request = {
 	.bRequestType = 0x41,
 	.bRequest = 83,
-	.wValue = 0, // Will be filled by the driver
+	.wValue = 0, 
 	.wIndex = 0,
 	.wLength = 0
 };
 
-/*
- * On some setups initializing the T300RS crashes the kernel,
- * these interrupts fix that particular issue. So far they haven't caused any
- * adverse effects in other wheels.
- */
+ 
 static void thrustmaster_interrupts(struct hid_device *hdev)
 {
 	int ret, trans, i, b_ep;
@@ -194,20 +145,14 @@ static void thrustmaster_change_handler(struct urb *urb)
 {
 	struct hid_device *hdev = urb->context;
 
-	// The wheel seems to kill himself before answering the host and therefore is violating the USB protocol...
+	 
 	if (urb->status == 0 || urb->status == -EPROTO || urb->status == -EPIPE)
 		hid_info(hdev, "Success?! The wheel should have been initialized!\n");
 	else
 		hid_warn(hdev, "URB to change wheel mode seems to have failed with error %d\n", urb->status);
 }
 
-/*
- * Called by the USB subsystem when the wheel responses to our request
- * to get [what it seems to be] the wheel's model.
- *
- * If the model id is recognized then we send an opportune USB CONTROL REQUEST
- * to switch the wheel to its full capabilities
- */
+ 
 static void thrustmaster_model_handler(struct urb *urb)
 {
 	struct hid_device *hdev = urb->context;
@@ -247,7 +192,7 @@ static void thrustmaster_model_handler(struct urb *urb)
 		tm_wheel->usb_dev,
 		usb_sndctrlpipe(tm_wheel->usb_dev, 0),
 		(char *)tm_wheel->change_request,
-		NULL, 0, // We do not expect any response from the wheel
+		NULL, 0,  
 		thrustmaster_change_handler,
 		hdev
 	);
@@ -272,12 +217,7 @@ static void thrustmaster_remove(struct hid_device *hdev)
 	hid_hw_stop(hdev);
 }
 
-/*
- * Function called by HID when a hid Thrustmaster FFB wheel is connected to the host.
- * This function starts the hid dev, tries to allocate the tm_wheel data structure and
- * finally send an USB CONTROL REQUEST to the wheel to get [what it seems to be] its
- * model type.
- */
+ 
 static int thrustmaster_probe(struct hid_device *hdev, const struct hid_device_id *id)
 {
 	int ret = 0;
@@ -298,7 +238,7 @@ static int thrustmaster_probe(struct hid_device *hdev, const struct hid_device_i
 		goto error0;
 	}
 
-	// Now we allocate the tm_wheel
+	 
 	tm_wheel = kzalloc(sizeof(struct tm_wheel), GFP_KERNEL);
 	if (!tm_wheel) {
 		ret = -ENOMEM;

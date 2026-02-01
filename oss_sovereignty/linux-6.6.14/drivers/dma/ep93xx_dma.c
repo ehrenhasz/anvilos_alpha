@@ -1,18 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Driver for the Cirrus Logic EP93xx DMA Controller
- *
- * Copyright (C) 2011 Mika Westerberg
- *
- * DMA M2P implementation is based on the original
- * arch/arm/mach-ep93xx/dma-m2p.c which has following copyrights:
- *
- *   Copyright (C) 2006 Lennert Buytenhek <buytenh@wantstofly.org>
- *   Copyright (C) 2006 Applied Data Systems
- *   Copyright (C) 2009 Ryan Mallon <rmallon@gmail.com>
- *
- * This driver is based on dw_dmac and amba-pl08x drivers.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/init.h>
@@ -27,7 +14,7 @@
 
 #include "dmaengine.h"
 
-/* M2P registers */
+ 
 #define M2P_CONTROL			0x0000
 #define M2P_CONTROL_STALLINT		BIT(0)
 #define M2P_CONTROL_NFBINT		BIT(1)
@@ -53,7 +40,7 @@
 #define M2P_STATE_ON			2
 #define M2P_STATE_NEXT			3
 
-/* M2M registers */
+ 
 #define M2M_CONTROL			0x0000
 #define M2M_CONTROL_DONEINT		BIT(2)
 #define M2M_CONTROL_ENABLE		BIT(3)
@@ -109,16 +96,7 @@ static int ep93xx_dma_slave_config_write(struct dma_chan *chan,
 					 enum dma_transfer_direction dir,
 					 struct dma_slave_config *config);
 
-/**
- * struct ep93xx_dma_desc - EP93xx specific transaction descriptor
- * @src_addr: source address of the transaction
- * @dst_addr: destination address of the transaction
- * @size: size of the transaction (in bytes)
- * @complete: this descriptor is completed
- * @txd: dmaengine API descriptor
- * @tx_list: list of linked descriptors
- * @node: link used for putting this into a channel queue
- */
+ 
 struct ep93xx_dma_desc {
 	u32				src_addr;
 	u32				dst_addr;
@@ -129,38 +107,7 @@ struct ep93xx_dma_desc {
 	struct list_head		node;
 };
 
-/**
- * struct ep93xx_dma_chan - an EP93xx DMA M2P/M2M channel
- * @chan: dmaengine API channel
- * @edma: pointer to the engine device
- * @regs: memory mapped registers
- * @irq: interrupt number of the channel
- * @clk: clock used by this channel
- * @tasklet: channel specific tasklet used for callbacks
- * @lock: lock protecting the fields following
- * @flags: flags for the channel
- * @buffer: which buffer to use next (0/1)
- * @active: flattened chain of descriptors currently being processed
- * @queue: pending descriptors which are handled next
- * @free_list: list of free descriptors which can be used
- * @runtime_addr: physical address currently used as dest/src (M2M only). This
- *                is set via .device_config before slave operation is
- *                prepared
- * @runtime_ctrl: M2M runtime values for the control register.
- * @slave_config: slave configuration
- *
- * As EP93xx DMA controller doesn't support real chained DMA descriptors we
- * will have slightly different scheme here: @active points to a head of
- * flattened DMA descriptor chain.
- *
- * @queue holds pending transactions. These are linked through the first
- * descriptor in the chain. When a descriptor is moved to the @active queue,
- * the first and chained descriptors are flattened into a single list.
- *
- * @chan.private holds pointer to &struct ep93xx_dma_data which contains
- * necessary channel configuration information. For memcpy channels this must
- * be %NULL.
- */
+ 
 struct ep93xx_dma_chan {
 	struct dma_chan			chan;
 	const struct ep93xx_dma_engine	*edma;
@@ -168,10 +115,10 @@ struct ep93xx_dma_chan {
 	int				irq;
 	struct clk			*clk;
 	struct tasklet_struct		tasklet;
-	/* protects the fields following */
+	 
 	spinlock_t			lock;
 	unsigned long			flags;
-/* Channel is configured for cyclic transfers */
+ 
 #define EP93XX_DMA_IS_CYCLIC		0
 
 	int				buffer;
@@ -183,23 +130,7 @@ struct ep93xx_dma_chan {
 	struct dma_slave_config		slave_config;
 };
 
-/**
- * struct ep93xx_dma_engine - the EP93xx DMA engine instance
- * @dma_dev: holds the dmaengine device
- * @m2m: is this an M2M or M2P device
- * @hw_setup: method which sets the channel up for operation
- * @hw_synchronize: synchronizes DMA channel termination to current context
- * @hw_shutdown: shuts the channel down and flushes whatever is left
- * @hw_submit: pushes active descriptor(s) to the hardware
- * @hw_interrupt: handle the interrupt
- * @num_channels: number of channels for this instance
- * @channels: array of channels
- *
- * There is one instance of this struct for the M2P channels and one for the
- * M2M channels. hw_xxx() methods are used to perform operations which are
- * different on M2M and M2P channels. These methods are called with channel
- * lock held and interrupts disabled so they cannot sleep.
- */
+ 
 struct ep93xx_dma_engine {
 	struct dma_device	dma_dev;
 	bool			m2m;
@@ -226,17 +157,7 @@ static struct ep93xx_dma_chan *to_ep93xx_dma_chan(struct dma_chan *chan)
 	return container_of(chan, struct ep93xx_dma_chan, chan);
 }
 
-/**
- * ep93xx_dma_set_active - set new active descriptor chain
- * @edmac: channel
- * @desc: head of the new active descriptor chain
- *
- * Sets @desc to be the head of the new active descriptor chain. This is the
- * chain which is processed next. The active list must be empty before calling
- * this function.
- *
- * Called with @edmac->lock held and interrupts disabled.
- */
+ 
 static void ep93xx_dma_set_active(struct ep93xx_dma_chan *edmac,
 				  struct ep93xx_dma_desc *desc)
 {
@@ -244,17 +165,12 @@ static void ep93xx_dma_set_active(struct ep93xx_dma_chan *edmac,
 
 	list_add_tail(&desc->node, &edmac->active);
 
-	/* Flatten the @desc->tx_list chain into @edmac->active list */
+	 
 	while (!list_empty(&desc->tx_list)) {
 		struct ep93xx_dma_desc *d = list_first_entry(&desc->tx_list,
 			struct ep93xx_dma_desc, node);
 
-		/*
-		 * We copy the callback parameters from the first descriptor
-		 * to all the chained descriptors. This way we can call the
-		 * callback without having to find out the first descriptor in
-		 * the chain. Useful for cyclic transfers.
-		 */
+		 
 		d->txd.callback = desc->txd.callback;
 		d->txd.callback_param = desc->txd.callback_param;
 
@@ -262,7 +178,7 @@ static void ep93xx_dma_set_active(struct ep93xx_dma_chan *edmac,
 	}
 }
 
-/* Called with @edmac->lock held and interrupts disabled */
+ 
 static struct ep93xx_dma_desc *
 ep93xx_dma_get_active(struct ep93xx_dma_chan *edmac)
 {
@@ -270,18 +186,7 @@ ep93xx_dma_get_active(struct ep93xx_dma_chan *edmac)
 					struct ep93xx_dma_desc, node);
 }
 
-/**
- * ep93xx_dma_advance_active - advances to the next active descriptor
- * @edmac: channel
- *
- * Function advances active descriptor to the next in the @edmac->active and
- * returns %true if we still have descriptors in the chain to process.
- * Otherwise returns %false.
- *
- * When the channel is in cyclic mode always returns %true.
- *
- * Called with @edmac->lock held and interrupts disabled.
- */
+ 
 static bool ep93xx_dma_advance_active(struct ep93xx_dma_chan *edmac)
 {
 	struct ep93xx_dma_desc *desc;
@@ -295,24 +200,16 @@ static bool ep93xx_dma_advance_active(struct ep93xx_dma_chan *edmac)
 	if (!desc)
 		return false;
 
-	/*
-	 * If txd.cookie is set it means that we are back in the first
-	 * descriptor in the chain and hence done with it.
-	 */
+	 
 	return !desc->txd.cookie;
 }
 
-/*
- * M2P DMA implementation
- */
+ 
 
 static void m2p_set_control(struct ep93xx_dma_chan *edmac, u32 control)
 {
 	writel(control, edmac->regs + M2P_CONTROL);
-	/*
-	 * EP93xx User's Guide states that we must perform a dummy read after
-	 * write to the control register.
-	 */
+	 
 	readl(edmac->regs + M2P_CONTROL);
 }
 
@@ -410,17 +307,10 @@ static int m2p_hw_interrupt(struct ep93xx_dma_chan *edmac)
 	if (irq_status & M2P_INTERRUPT_ERROR) {
 		struct ep93xx_dma_desc *desc = ep93xx_dma_get_active(edmac);
 
-		/* Clear the error interrupt */
+		 
 		writel(1, edmac->regs + M2P_INTERRUPT);
 
-		/*
-		 * It seems that there is no easy way of reporting errors back
-		 * to client so we just report the error here and continue as
-		 * usual.
-		 *
-		 * Revisit this when there is a mechanism to report back the
-		 * errors.
-		 */
+		 
 		dev_err(chan2dev(edmac),
 			"DMA transfer failed! Details:\n"
 			"\tcookie	: %d\n"
@@ -431,11 +321,7 @@ static int m2p_hw_interrupt(struct ep93xx_dma_chan *edmac)
 			desc->size);
 	}
 
-	/*
-	 * Even latest E2 silicon revision sometimes assert STALL interrupt
-	 * instead of NFB. Therefore we treat them equally, basing on the
-	 * amount of data we still have to transfer.
-	 */
+	 
 	if (!(irq_status & (M2P_INTERRUPT_STALL | M2P_INTERRUPT_NFB)))
 		return INTERRUPT_UNKNOWN;
 
@@ -444,7 +330,7 @@ static int m2p_hw_interrupt(struct ep93xx_dma_chan *edmac)
 		return INTERRUPT_NEXT_BUFFER;
 	}
 
-	/* Disable interrupts */
+	 
 	control = readl(edmac->regs + M2P_CONTROL);
 	control &= ~(M2P_CONTROL_STALLINT | M2P_CONTROL_NFBINT);
 	m2p_set_control(edmac, control);
@@ -452,9 +338,7 @@ static int m2p_hw_interrupt(struct ep93xx_dma_chan *edmac)
 	return INTERRUPT_DONE;
 }
 
-/*
- * M2M DMA implementation
- */
+ 
 
 static int m2m_hw_setup(struct ep93xx_dma_chan *edmac)
 {
@@ -462,18 +346,14 @@ static int m2m_hw_setup(struct ep93xx_dma_chan *edmac)
 	u32 control = 0;
 
 	if (!data) {
-		/* This is memcpy channel, nothing to configure */
+		 
 		writel(control, edmac->regs + M2M_CONTROL);
 		return 0;
 	}
 
 	switch (data->port) {
 	case EP93XX_DMA_SSP:
-		/*
-		 * This was found via experimenting - anything less than 5
-		 * causes the channel to perform only a partial transfer which
-		 * leads to problems since we don't get DONE interrupt then.
-		 */
+		 
 		control = (5 << M2M_CONTROL_PWSC_SHIFT);
 		control |= M2M_CONTROL_NO_HDSK;
 
@@ -489,12 +369,9 @@ static int m2m_hw_setup(struct ep93xx_dma_chan *edmac)
 		break;
 
 	case EP93XX_DMA_IDE:
-		/*
-		 * This IDE part is totally untested. Values below are taken
-		 * from the EP93xx Users's Guide and might not be correct.
-		 */
+		 
 		if (data->direction == DMA_MEM_TO_DEV) {
-			/* Worst case from the UG */
+			 
 			control = (3 << M2M_CONTROL_PWSC_SHIFT);
 			control |= M2M_CONTROL_DAH;
 			control |= M2M_CONTROL_TM_TX;
@@ -519,7 +396,7 @@ static int m2m_hw_setup(struct ep93xx_dma_chan *edmac)
 
 static void m2m_hw_shutdown(struct ep93xx_dma_chan *edmac)
 {
-	/* Just disable the channel */
+	 
 	writel(0, edmac->regs + M2M_CONTROL);
 }
 
@@ -551,11 +428,7 @@ static void m2m_hw_submit(struct ep93xx_dma_chan *edmac)
 	struct ep93xx_dma_data *data = edmac->chan.private;
 	u32 control = readl(edmac->regs + M2M_CONTROL);
 
-	/*
-	 * Since we allow clients to configure PW (peripheral width) we always
-	 * clear PW bits here and then set them according what is given in
-	 * the runtime configuration.
-	 */
+	 
 	control &= ~M2M_CONTROL_PW_MASK;
 	control |= edmac->runtime_ctrl;
 
@@ -567,33 +440,18 @@ static void m2m_hw_submit(struct ep93xx_dma_chan *edmac)
 		control |= M2M_CONTROL_NFBINT;
 	}
 
-	/*
-	 * Now we can finally enable the channel. For M2M channel this must be
-	 * done _after_ the BCRx registers are programmed.
-	 */
+	 
 	control |= M2M_CONTROL_ENABLE;
 	writel(control, edmac->regs + M2M_CONTROL);
 
 	if (!data) {
-		/*
-		 * For memcpy channels the software trigger must be asserted
-		 * in order to start the memcpy operation.
-		 */
+		 
 		control |= M2M_CONTROL_START;
 		writel(control, edmac->regs + M2M_CONTROL);
 	}
 }
 
-/*
- * According to EP93xx User's Guide, we should receive DONE interrupt when all
- * M2M DMA controller transactions complete normally. This is not always the
- * case - sometimes EP93xx M2M DMA asserts DONE interrupt when the DMA channel
- * is still running (channel Buffer FSM in DMA_BUF_ON state, and channel
- * Control FSM in DMA_MEM_RD state, observed at least in IDE-DMA operation).
- * In effect, disabling the channel when only DONE bit is set could stop
- * currently running DMA transfer. To avoid this, we use Buffer FSM and
- * Control FSM to check current state of DMA channel.
- */
+ 
 static int m2m_hw_interrupt(struct ep93xx_dma_chan *edmac)
 {
 	u32 status = readl(edmac->regs + M2M_STATUS);
@@ -604,40 +462,28 @@ static int m2m_hw_interrupt(struct ep93xx_dma_chan *edmac)
 	u32 control;
 	struct ep93xx_dma_desc *desc;
 
-	/* Accept only DONE and NFB interrupts */
+	 
 	if (!(readl(edmac->regs + M2M_INTERRUPT) & M2M_INTERRUPT_MASK))
 		return INTERRUPT_UNKNOWN;
 
 	if (done) {
-		/* Clear the DONE bit */
+		 
 		writel(0, edmac->regs + M2M_INTERRUPT);
 	}
 
-	/*
-	 * Check whether we are done with descriptors or not. This, together
-	 * with DMA channel state, determines action to take in interrupt.
-	 */
+	 
 	desc = ep93xx_dma_get_active(edmac);
 	last_done = !desc || desc->txd.cookie;
 
-	/*
-	 * Use M2M DMA Buffer FSM and Control FSM to check current state of
-	 * DMA channel. Using DONE and NFB bits from channel status register
-	 * or bits from channel interrupt register is not reliable.
-	 */
+	 
 	if (!last_done &&
 	    (buf_fsm == M2M_STATUS_BUF_NO ||
 	     buf_fsm == M2M_STATUS_BUF_ON)) {
-		/*
-		 * Two buffers are ready for update when Buffer FSM is in
-		 * DMA_NO_BUF state. Only one buffer can be prepared without
-		 * disabling the channel or polling the DONE bit.
-		 * To simplify things, always prepare only one buffer.
-		 */
+		 
 		if (ep93xx_dma_advance_active(edmac)) {
 			m2m_fill_desc(edmac);
 			if (done && !edmac->chan.private) {
-				/* Software trigger for memcpy channel */
+				 
 				control = readl(edmac->regs + M2M_CONTROL);
 				control |= M2M_CONTROL_START;
 				writel(control, edmac->regs + M2M_CONTROL);
@@ -648,14 +494,11 @@ static int m2m_hw_interrupt(struct ep93xx_dma_chan *edmac)
 		}
 	}
 
-	/*
-	 * Disable the channel only when Buffer FSM is in DMA_NO_BUF state
-	 * and Control FSM is in DMA_STALL state.
-	 */
+	 
 	if (last_done &&
 	    buf_fsm == M2M_STATUS_BUF_NO &&
 	    ctl_fsm == M2M_STATUS_CTL_STALL) {
-		/* Disable interrupts and the channel */
+		 
 		control = readl(edmac->regs + M2M_CONTROL);
 		control &= ~(M2M_CONTROL_DONEINT | M2M_CONTROL_NFBINT
 			    | M2M_CONTROL_ENABLE);
@@ -663,15 +506,11 @@ static int m2m_hw_interrupt(struct ep93xx_dma_chan *edmac)
 		return INTERRUPT_DONE;
 	}
 
-	/*
-	 * Nothing to do this time.
-	 */
+	 
 	return INTERRUPT_NEXT_BUFFER;
 }
 
-/*
- * DMA engine API implementation
- */
+ 
 
 static struct ep93xx_dma_desc *
 ep93xx_dma_desc_get(struct ep93xx_dma_chan *edmac)
@@ -685,7 +524,7 @@ ep93xx_dma_desc_get(struct ep93xx_dma_chan *edmac)
 		if (async_tx_test_ack(&desc->txd)) {
 			list_del_init(&desc->node);
 
-			/* Re-initialize the descriptor */
+			 
 			desc->src_addr = 0;
 			desc->dst_addr = 0;
 			desc->size = 0;
@@ -715,14 +554,7 @@ static void ep93xx_dma_desc_put(struct ep93xx_dma_chan *edmac,
 	}
 }
 
-/**
- * ep93xx_dma_advance_work - start processing the next pending transaction
- * @edmac: channel
- *
- * If we have pending transactions queued and we are currently idling, this
- * function takes the next queued transaction from the @edmac->queue and
- * pushes it to the hardware for execution.
- */
+ 
 static void ep93xx_dma_advance_work(struct ep93xx_dma_chan *edmac)
 {
 	struct ep93xx_dma_desc *new;
@@ -734,13 +566,13 @@ static void ep93xx_dma_advance_work(struct ep93xx_dma_chan *edmac)
 		return;
 	}
 
-	/* Take the next descriptor from the pending queue */
+	 
 	new = list_first_entry(&edmac->queue, struct ep93xx_dma_desc, node);
 	list_del_init(&new->node);
 
 	ep93xx_dma_set_active(edmac, new);
 
-	/* Push it to the hardware */
+	 
 	edmac->edma->hw_submit(edmac);
 	spin_unlock_irqrestore(&edmac->lock, flags);
 }
@@ -754,15 +586,11 @@ static void ep93xx_dma_tasklet(struct tasklet_struct *t)
 
 	memset(&cb, 0, sizeof(cb));
 	spin_lock_irq(&edmac->lock);
-	/*
-	 * If dma_terminate_all() was called before we get to run, the active
-	 * list has become empty. If that happens we aren't supposed to do
-	 * anything more than call ep93xx_dma_advance_work().
-	 */
+	 
 	desc = ep93xx_dma_get_active(edmac);
 	if (desc) {
 		if (desc->complete) {
-			/* mark descriptor complete for non cyclic case only */
+			 
 			if (!test_bit(EP93XX_DMA_IS_CYCLIC, &edmac->flags))
 				dma_cookie_complete(&desc->txd);
 			list_splice_init(&edmac->active, &list);
@@ -771,10 +599,10 @@ static void ep93xx_dma_tasklet(struct tasklet_struct *t)
 	}
 	spin_unlock_irq(&edmac->lock);
 
-	/* Pick up the next descriptor from the queue */
+	 
 	ep93xx_dma_advance_work(edmac);
 
-	/* Now we can release all the chained descriptors */
+	 
 	list_for_each_entry_safe(desc, d, &list, node) {
 		dma_descriptor_unmap(&desc->txd);
 		ep93xx_dma_desc_put(edmac, desc);
@@ -820,14 +648,7 @@ static irqreturn_t ep93xx_dma_interrupt(int irq, void *dev_id)
 	return ret;
 }
 
-/**
- * ep93xx_dma_tx_submit - set the prepared descriptor(s) to be executed
- * @tx: descriptor to be executed
- *
- * Function will execute given descriptor on the hardware or if the hardware
- * is busy, queue the descriptor to be executed later on. Returns cookie which
- * can be used to poll the status of the descriptor.
- */
+ 
 static dma_cookie_t ep93xx_dma_tx_submit(struct dma_async_tx_descriptor *tx)
 {
 	struct ep93xx_dma_chan *edmac = to_ep93xx_dma_chan(tx->chan);
@@ -840,11 +661,7 @@ static dma_cookie_t ep93xx_dma_tx_submit(struct dma_async_tx_descriptor *tx)
 
 	desc = container_of(tx, struct ep93xx_dma_desc, txd);
 
-	/*
-	 * If nothing is currently prosessed, we push this descriptor
-	 * directly to the hardware. Otherwise we put the descriptor
-	 * to the pending queue.
-	 */
+	 
 	if (list_empty(&edmac->active)) {
 		ep93xx_dma_set_active(edmac, desc);
 		edmac->edma->hw_submit(edmac);
@@ -856,14 +673,7 @@ static dma_cookie_t ep93xx_dma_tx_submit(struct dma_async_tx_descriptor *tx)
 	return cookie;
 }
 
-/**
- * ep93xx_dma_alloc_chan_resources - allocate resources for the channel
- * @chan: channel to allocate resources
- *
- * Function allocates necessary resources for the given DMA channel and
- * returns number of allocated descriptors for the channel. Negative errno
- * is returned in case of failure.
- */
+ 
 static int ep93xx_dma_alloc_chan_resources(struct dma_chan *chan)
 {
 	struct ep93xx_dma_chan *edmac = to_ep93xx_dma_chan(chan);
@@ -871,7 +681,7 @@ static int ep93xx_dma_alloc_chan_resources(struct dma_chan *chan)
 	const char *name = dma_chan_name(chan);
 	int ret, i;
 
-	/* Sanity check the channel parameters */
+	 
 	if (!edmac->edma->m2m) {
 		if (!data)
 			return -EINVAL;
@@ -941,13 +751,7 @@ fail_clk_disable:
 	return ret;
 }
 
-/**
- * ep93xx_dma_free_chan_resources - release resources for the channel
- * @chan: channel
- *
- * Function releases all the resources allocated for the given channel.
- * The channel must be idle when this is called.
- */
+ 
 static void ep93xx_dma_free_chan_resources(struct dma_chan *chan)
 {
 	struct ep93xx_dma_chan *edmac = to_ep93xx_dma_chan(chan);
@@ -973,16 +777,7 @@ static void ep93xx_dma_free_chan_resources(struct dma_chan *chan)
 	free_irq(edmac->irq, edmac);
 }
 
-/**
- * ep93xx_dma_prep_dma_memcpy - prepare a memcpy DMA operation
- * @chan: channel
- * @dest: destination bus address
- * @src: source bus address
- * @len: size of the transaction
- * @flags: flags for the descriptor
- *
- * Returns a valid DMA descriptor or %NULL in case of failure.
- */
+ 
 static struct dma_async_tx_descriptor *
 ep93xx_dma_prep_dma_memcpy(struct dma_chan *chan, dma_addr_t dest,
 			   dma_addr_t src, size_t len, unsigned long flags)
@@ -1020,17 +815,7 @@ fail:
 	return NULL;
 }
 
-/**
- * ep93xx_dma_prep_slave_sg - prepare a slave DMA operation
- * @chan: channel
- * @sgl: list of buffers to transfer
- * @sg_len: number of entries in @sgl
- * @dir: direction of tha DMA transfer
- * @flags: flags for the descriptor
- * @context: operation context (ignored)
- *
- * Returns a valid DMA descriptor or %NULL in case of failure.
- */
+ 
 static struct dma_async_tx_descriptor *
 ep93xx_dma_prep_slave_sg(struct dma_chan *chan, struct scatterlist *sgl,
 			 unsigned int sg_len, enum dma_transfer_direction dir,
@@ -1096,23 +881,7 @@ fail:
 	return NULL;
 }
 
-/**
- * ep93xx_dma_prep_dma_cyclic - prepare a cyclic DMA operation
- * @chan: channel
- * @dma_addr: DMA mapped address of the buffer
- * @buf_len: length of the buffer (in bytes)
- * @period_len: length of a single period
- * @dir: direction of the operation
- * @flags: tx descriptor status flags
- *
- * Prepares a descriptor for cyclic DMA operation. This means that once the
- * descriptor is submitted, we will be submitting in a @period_len sized
- * buffers and calling callback once the period has been elapsed. Transfer
- * terminates only when client calls dmaengine_terminate_all() for this
- * channel.
- *
- * Returns a valid DMA descriptor or %NULL in case of failure.
- */
+ 
 static struct dma_async_tx_descriptor *
 ep93xx_dma_prep_dma_cyclic(struct dma_chan *chan, dma_addr_t dma_addr,
 			   size_t buf_len, size_t period_len,
@@ -1142,7 +911,7 @@ ep93xx_dma_prep_dma_cyclic(struct dma_chan *chan, dma_addr_t dma_addr,
 
 	ep93xx_dma_slave_config_write(chan, dir, &edmac->slave_config);
 
-	/* Split the buffer into period size chunks */
+	 
 	first = NULL;
 	for (offset = 0; offset < buf_len; offset += period_len) {
 		desc = ep93xx_dma_desc_get(edmac);
@@ -1176,18 +945,7 @@ fail:
 	return NULL;
 }
 
-/**
- * ep93xx_dma_synchronize - Synchronizes the termination of transfers to the
- * current context.
- * @chan: channel
- *
- * Synchronizes the DMA channel termination to the current context. When this
- * function returns it is guaranteed that all transfers for previously issued
- * descriptors have stopped and it is safe to free the memory associated
- * with them. Furthermore it is guaranteed that all complete callback functions
- * for a previously submitted descriptor have finished running and it is safe to
- * free resources accessed from within the complete callbacks.
- */
+ 
 static void ep93xx_dma_synchronize(struct dma_chan *chan)
 {
 	struct ep93xx_dma_chan *edmac = to_ep93xx_dma_chan(chan);
@@ -1196,13 +954,7 @@ static void ep93xx_dma_synchronize(struct dma_chan *chan)
 		edmac->edma->hw_synchronize(edmac);
 }
 
-/**
- * ep93xx_dma_terminate_all - terminate all transactions
- * @chan: channel
- *
- * Stops all DMA transactions. All descriptors are put back to the
- * @edmac->free_list and callbacks are _not_ called.
- */
+ 
 static int ep93xx_dma_terminate_all(struct dma_chan *chan)
 {
 	struct ep93xx_dma_chan *edmac = to_ep93xx_dma_chan(chan);
@@ -1211,15 +963,12 @@ static int ep93xx_dma_terminate_all(struct dma_chan *chan)
 	LIST_HEAD(list);
 
 	spin_lock_irqsave(&edmac->lock, flags);
-	/* First we disable and flush the DMA channel */
+	 
 	edmac->edma->hw_shutdown(edmac);
 	clear_bit(EP93XX_DMA_IS_CYCLIC, &edmac->flags);
 	list_splice_init(&edmac->active, &list);
 	list_splice_init(&edmac->queue, &list);
-	/*
-	 * We then re-enable the channel. This way we can continue submitting
-	 * the descriptors by just calling ->hw_submit() again.
-	 */
+	 
 	edmac->edma->hw_setup(edmac);
 	spin_unlock_irqrestore(&edmac->lock, flags);
 
@@ -1288,14 +1037,7 @@ static int ep93xx_dma_slave_config_write(struct dma_chan *chan,
 	return 0;
 }
 
-/**
- * ep93xx_dma_tx_status - check if a transaction is completed
- * @chan: channel
- * @cookie: transaction specific cookie
- * @state: state of the transaction is stored here if given
- *
- * This function can be used to query state of a given transaction.
- */
+ 
 static enum dma_status ep93xx_dma_tx_status(struct dma_chan *chan,
 					    dma_cookie_t cookie,
 					    struct dma_tx_state *state)
@@ -1303,13 +1045,7 @@ static enum dma_status ep93xx_dma_tx_status(struct dma_chan *chan,
 	return dma_cookie_status(chan, cookie, state);
 }
 
-/**
- * ep93xx_dma_issue_pending - push pending transactions to the hardware
- * @chan: channel
- *
- * When this function is called, all pending transactions are pushed to the
- * hardware and executed.
- */
+ 
 static void ep93xx_dma_issue_pending(struct dma_chan *chan)
 {
 	ep93xx_dma_advance_work(to_ep93xx_dma_chan(chan));

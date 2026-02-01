@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * tsl4531.c - Support for TAOS TSL4531 ambient light sensor
- *
- * Copyright 2013 Peter Meerwald <pmeerw@pmeerw.net>
- *
- * IIO driver for the TSL4531x family
- *   TSL45311/TSL45313: 7-bit I2C slave address 0x39
- *   TSL45315/TSL45317: 7-bit I2C slave address 0x29
- *
- * TODO: single cycle measurement
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/i2c.h>
@@ -28,17 +18,17 @@
 #define TSL4531_DATA (TSL4531_COMMAND | 0x04)
 #define TSL4531_ID (TSL4531_COMMAND | 0x0a)
 
-/* operating modes in control register */
+ 
 #define TSL4531_MODE_POWERDOWN 0x00
 #define TSL4531_MODE_SINGLE_ADC 0x02
 #define TSL4531_MODE_NORMAL 0x03
 
-/* integration time control in config register */
+ 
 #define TSL4531_TCNTRL_400MS 0x00
 #define TSL4531_TCNTRL_200MS 0x01
 #define TSL4531_TCNTRL_100MS 0x02
 
-/* part number in id register */
+ 
 #define TSL45311_ID 0x8
 #define TSL45313_ID 0x9
 #define TSL45315_ID 0xa
@@ -87,7 +77,7 @@ static int tsl4531_read_raw(struct iio_dev *indio_dev,
 		*val = ret;
 		return IIO_VAL_INT;
 	case IIO_CHAN_INFO_SCALE:
-		/* 0.. 1x, 1 .. 2x, 2 .. 4x */
+		 
 		*val = 1 << data->int_time;
 		return IIO_VAL_INT;
 	case IIO_CHAN_INFO_INT_TIME:

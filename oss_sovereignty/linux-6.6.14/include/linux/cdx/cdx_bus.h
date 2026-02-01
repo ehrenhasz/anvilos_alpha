@@ -1,10 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0
- *
- * CDX bus public interface
- *
- * Copyright (C) 2022-2023, Advanced Micro Devices, Inc.
- *
- */
+ 
 
 #ifndef _CDX_BUS_H_
 #define _CDX_BUS_H_
@@ -17,7 +11,7 @@
 #define CDX_CONTROLLER_ID_SHIFT 4
 #define CDX_BUS_NUM_MASK 0xF
 
-/* Forward declaration for CDX controller */
+ 
 struct cdx_controller;
 
 enum {
@@ -34,37 +28,17 @@ typedef int (*cdx_dev_configure_cb)(struct cdx_controller *cdx,
 				    u8 bus_num, u8 dev_num,
 				    struct cdx_device_config *dev_config);
 
-/**
- * CDX_DEVICE_DRIVER_OVERRIDE - macro used to describe a CDX device with
- *                              override_only flags.
- * @vend: the 16 bit CDX Vendor ID
- * @dev: the 16 bit CDX Device ID
- * @driver_override: the 32 bit CDX Device override_only
- *
- * This macro is used to create a struct cdx_device_id that matches only a
- * driver_override device.
- */
+ 
 #define CDX_DEVICE_DRIVER_OVERRIDE(vend, dev, driver_override) \
 	.vendor = (vend), .device = (dev), .override_only = (driver_override)
 
-/**
- * struct cdx_ops - Callbacks supported by CDX controller.
- * @scan: scan the devices on the controller
- * @dev_configure: configuration like reset, master_enable,
- *		   msi_config etc for a CDX device
- */
+ 
 struct cdx_ops {
 	cdx_scan_cb scan;
 	cdx_dev_configure_cb dev_configure;
 };
 
-/**
- * struct cdx_controller: CDX controller object
- * @dev: Linux device associated with the CDX controller.
- * @priv: private data
- * @id: Controller ID
- * @ops: CDX controller ops
- */
+ 
 struct cdx_controller {
 	struct device *dev;
 	void *priv;
@@ -72,24 +46,7 @@ struct cdx_controller {
 	struct cdx_ops *ops;
 };
 
-/**
- * struct cdx_device - CDX device object
- * @dev: Linux driver model device object
- * @cdx: CDX controller associated with the device
- * @vendor: Vendor ID for CDX device
- * @device: Device ID for CDX device
- * @bus_num: Bus number for this CDX device
- * @dev_num: Device number for this device
- * @res: array of MMIO region entries
- * @res_attr: resource binary attribute
- * @res_count: number of valid MMIO regions
- * @dma_mask: Default DMA mask
- * @flags: CDX device flags
- * @req_id: Requestor ID associated with CDX device
- * @driver_override: driver name to force a match; do not set directly,
- *                   because core frees it; use driver_set_override() to
- *                   set or clear it.
- */
+ 
 struct cdx_device {
 	struct device dev;
 	struct cdx_controller *cdx;
@@ -108,23 +65,7 @@ struct cdx_device {
 #define to_cdx_device(_dev) \
 	container_of(_dev, struct cdx_device, dev)
 
-/**
- * struct cdx_driver - CDX device driver
- * @driver: Generic device driver
- * @match_id_table: table of supported device matching Ids
- * @probe: Function called when a device is added
- * @remove: Function called when a device is removed
- * @shutdown: Function called at shutdown time to quiesce the device
- * @reset_prepare: Function called before is reset to notify driver
- * @reset_done: Function called after reset is complete to notify driver
- * @driver_managed_dma: Device driver doesn't use kernel DMA API for DMA.
- *		For most device drivers, no need to care about this flag
- *		as long as all DMAs are handled through the kernel DMA API.
- *		For some special ones, for example VFIO drivers, they know
- *		how to manage the DMA themselves and set this flag so that
- *		the IOMMU layer will allow them to setup and manage their
- *		own I/O address space.
- */
+ 
 struct cdx_driver {
 	struct device_driver driver;
 	const struct cdx_device_id *match_id_table;
@@ -139,35 +80,20 @@ struct cdx_driver {
 #define to_cdx_driver(_drv) \
 	container_of(_drv, struct cdx_driver, driver)
 
-/* Macro to avoid include chaining to get THIS_MODULE */
+ 
 #define cdx_driver_register(drv) \
 	__cdx_driver_register(drv, THIS_MODULE)
 
-/**
- * __cdx_driver_register - registers a CDX device driver
- * @cdx_driver: CDX driver to register
- * @owner: module owner
- *
- * Return: -errno on failure, 0 on success.
- */
+ 
 int __must_check __cdx_driver_register(struct cdx_driver *cdx_driver,
 				       struct module *owner);
 
-/**
- * cdx_driver_unregister - unregisters a device driver from the
- * CDX bus.
- * @cdx_driver: CDX driver to register
- */
+ 
 void cdx_driver_unregister(struct cdx_driver *cdx_driver);
 
 extern struct bus_type cdx_bus_type;
 
-/**
- * cdx_dev_reset - Reset CDX device
- * @dev: device pointer
- *
- * Return: 0 for success, -errno on failure
- */
+ 
 int cdx_dev_reset(struct device *dev);
 
-#endif /* _CDX_BUS_H_ */
+#endif  

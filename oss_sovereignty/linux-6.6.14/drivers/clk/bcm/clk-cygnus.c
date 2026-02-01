@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-// Copyright (C) 2014 Broadcom Corporation
+
+
 
 #include <linux/kernel.h>
 #include <linux/err.h>
@@ -162,11 +162,9 @@ static void __init cygnus_lcpll0_clk_init(struct device_node *node)
 }
 CLK_OF_DECLARE(cygnus_lcpll0, "brcm,cygnus-lcpll0", cygnus_lcpll0_clk_init);
 
-/*
- * MIPI PLL VCO frequency parameter table
- */
+ 
 static const struct iproc_pll_vco_param mipipll_vco_params[] = {
-	/* rate (Hz) ndiv_int ndiv_frac pdiv */
+	 
 	{ 750000000UL,   30,     0,        1 },
 	{ 1000000000UL,  40,     0,        1 },
 	{ 1350000000ul,  54,     0,        1 },

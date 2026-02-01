@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright(c) 2013 - 2018 Intel Corporation. */
+
+ 
 
 #ifdef CONFIG_DEBUG_FS
 
@@ -16,11 +16,7 @@ enum ring_type {
 	RING_TYPE_XDP
 };
 
-/**
- * i40e_dbg_find_vsi - searches for the vsi with the given seid
- * @pf: the PF structure to search for the vsi
- * @seid: seid of the vsi it is searching for
- **/
+ 
 static struct i40e_vsi *i40e_dbg_find_vsi(struct i40e_pf *pf, int seid)
 {
 	int i;
@@ -35,11 +31,7 @@ static struct i40e_vsi *i40e_dbg_find_vsi(struct i40e_pf *pf, int seid)
 	return NULL;
 }
 
-/**
- * i40e_dbg_find_veb - searches for the veb with the given seid
- * @pf: the PF structure to search for the veb
- * @seid: seid of the veb it is searching for
- **/
+ 
 static struct i40e_veb *i40e_dbg_find_veb(struct i40e_pf *pf, int seid)
 {
 	int i;
@@ -50,22 +42,10 @@ static struct i40e_veb *i40e_dbg_find_veb(struct i40e_pf *pf, int seid)
 	return NULL;
 }
 
-/**************************************************************
- * command
- * The command entry in debugfs is for giving the driver commands
- * to be executed - these may be for changing the internal switch
- * setup, adding or removing filters, or other things.  Many of
- * these will be useful for some forms of unit testing.
- **************************************************************/
+ 
 static char i40e_dbg_command_buf[256] = "";
 
-/**
- * i40e_dbg_command_read - read for command datum
- * @filp: the opened file
- * @buffer: where to write the data for the user to read
- * @count: the size of the user's buffer
- * @ppos: file position offset
- **/
+ 
 static ssize_t i40e_dbg_command_read(struct file *filp, char __user *buffer,
 				     size_t count, loff_t *ppos)
 {
@@ -75,7 +55,7 @@ static ssize_t i40e_dbg_command_read(struct file *filp, char __user *buffer,
 	char *buf;
 	int len;
 
-	/* don't allow partial reads */
+	 
 	if (*ppos != 0)
 		return 0;
 	if (count < buf_size)
@@ -107,11 +87,7 @@ static char *i40e_filter_state_string[] = {
 	"REMOVE",
 };
 
-/**
- * i40e_dbg_dump_vsi_seid - handles dump vsi seid write into command datum
- * @pf: the i40e_pf created in command write
- * @seid: the seid the user put in
- **/
+ 
 static void i40e_dbg_dump_vsi_seid(struct i40e_pf *pf, int seid)
 {
 	struct rtnl_link_stats64 *nstat;
@@ -486,10 +462,7 @@ static void i40e_dbg_dump_vsi_seid(struct i40e_pf *pf, int seid)
 	}
 }
 
-/**
- * i40e_dbg_dump_aq_desc - handles dump aq_desc write into command datum
- * @pf: the i40e_pf created in command write
- **/
+ 
 static void i40e_dbg_dump_aq_desc(struct i40e_pf *pf)
 {
 	struct i40e_adminq_ring *ring;
@@ -501,7 +474,7 @@ static void i40e_dbg_dump_aq_desc(struct i40e_pf *pf)
 		 dev_driver_string(&pf->pdev->dev),
 		 dev_name(&pf->pdev->dev));
 
-	/* first the send (command) ring, then the receive (event) ring */
+	 
 	dev_info(&pf->pdev->dev, "AdminQ Tx Ring\n");
 	ring = &(hw->aq.asq);
 	for (i = 0; i < ring->count; i++) {
@@ -529,15 +502,7 @@ static void i40e_dbg_dump_aq_desc(struct i40e_pf *pf)
 	}
 }
 
-/**
- * i40e_dbg_dump_desc - handles dump desc write into command datum
- * @cnt: number of arguments that the user supplied
- * @vsi_seid: vsi id entered by user
- * @ring_id: ring id entered by user
- * @desc_n: descriptor number entered by user
- * @pf: the i40e_pf created in command write
- * @type: enum describing whether ring is RX, TX or XDP
- **/
+ 
 static void i40e_dbg_dump_desc(int cnt, int vsi_seid, int ring_id, int desc_n,
 			       struct i40e_pf *pf, enum ring_type type)
 {
@@ -647,10 +612,7 @@ out:
 	kfree(ring);
 }
 
-/**
- * i40e_dbg_dump_vsi_no_seid - handles dump vsi write into command datum
- * @pf: the i40e_pf created in command write
- **/
+ 
 static void i40e_dbg_dump_vsi_no_seid(struct i40e_pf *pf)
 {
 	int i;
@@ -661,11 +623,7 @@ static void i40e_dbg_dump_vsi_no_seid(struct i40e_pf *pf)
 				 i, pf->vsi[i]->seid);
 }
 
-/**
- * i40e_dbg_dump_eth_stats - handles dump stats write into command datum
- * @pf: the i40e_pf created in command write
- * @estats: the eth stats structure to be dumped
- **/
+ 
 static void i40e_dbg_dump_eth_stats(struct i40e_pf *pf,
 				    struct i40e_eth_stats *estats)
 {
@@ -687,11 +645,7 @@ static void i40e_dbg_dump_eth_stats(struct i40e_pf *pf,
 		 estats->tx_discards, estats->tx_errors);
 }
 
-/**
- * i40e_dbg_dump_veb_seid - handles dump stats of a single given veb
- * @pf: the i40e_pf created in command write
- * @seid: the seid the user put in
- **/
+ 
 static void i40e_dbg_dump_veb_seid(struct i40e_pf *pf, int seid)
 {
 	struct i40e_veb *veb;
@@ -709,10 +663,7 @@ static void i40e_dbg_dump_veb_seid(struct i40e_pf *pf, int seid)
 	i40e_dbg_dump_eth_stats(pf, &veb->stats);
 }
 
-/**
- * i40e_dbg_dump_veb_all - dumps all known veb's stats
- * @pf: the i40e_pf created in command write
- **/
+ 
 static void i40e_dbg_dump_veb_all(struct i40e_pf *pf)
 {
 	struct i40e_veb *veb;
@@ -725,11 +676,7 @@ static void i40e_dbg_dump_veb_all(struct i40e_pf *pf)
 	}
 }
 
-/**
- * i40e_dbg_dump_vf - dump VF info
- * @pf: the i40e_pf created in command write
- * @vf_id: the vf_id from the user
- **/
+ 
 static void i40e_dbg_dump_vf(struct i40e_pf *pf, int vf_id)
 {
 	struct i40e_vf *vf;
@@ -749,10 +696,7 @@ static void i40e_dbg_dump_vf(struct i40e_pf *pf, int vf_id)
 	}
 }
 
-/**
- * i40e_dbg_dump_vf_all - dump VF info for all VFs
- * @pf: the i40e_pf created in command write
- **/
+ 
 static void i40e_dbg_dump_vf_all(struct i40e_pf *pf)
 {
 	int i;
@@ -764,13 +708,7 @@ static void i40e_dbg_dump_vf_all(struct i40e_pf *pf)
 			i40e_dbg_dump_vf(pf, i);
 }
 
-/**
- * i40e_dbg_command_write - write into command datum
- * @filp: the opened file
- * @buffer: where to find the user's data
- * @count: the length of the user's data
- * @ppos: file position offset
- **/
+ 
 static ssize_t i40e_dbg_command_write(struct file *filp,
 				      const char __user *buffer,
 				      size_t count, loff_t *ppos)
@@ -784,7 +722,7 @@ static ssize_t i40e_dbg_command_write(struct file *filp,
 	int vf_id;
 	int cnt;
 
-	/* don't allow partial writes */
+	 
 	if (*ppos != 0)
 		return 0;
 
@@ -808,7 +746,7 @@ static ssize_t i40e_dbg_command_write(struct file *filp,
 		vsi_seid = -1;
 		cnt = sscanf(&cmd_buf[7], "%i", &vsi_seid);
 		if (cnt == 0) {
-			/* default to PF VSI */
+			 
 			vsi_seid = pf->vsi[pf->lan_vsi]->seid;
 		} else if (vsi_seid < 0) {
 			dev_info(&pf->pdev->dev, "add VSI %d: bad vsi seid\n",
@@ -816,9 +754,7 @@ static ssize_t i40e_dbg_command_write(struct file *filp,
 			goto command_write_done;
 		}
 
-		/* By default we are in VEPA mode, if this is the first VF/VMDq
-		 * VSI to be added switch to VEB mode.
-		 */
+		 
 		if (!(pf->flags & I40E_FLAG_VEB_MODE_ENABLED)) {
 			pf->flags |= I40E_FLAG_VEB_MODE_ENABLED;
 			i40e_do_reset_safe(pf, I40E_PF_RESET_FLAG);
@@ -905,7 +841,7 @@ static ssize_t i40e_dbg_command_write(struct file *filp,
 			goto command_write_done;
 		}
 
-		/* find the veb */
+		 
 		for (i = 0; i < I40E_MAX_VEB; i++)
 			if (pf->veb[i] && pf->veb[i]->seid == veb_seid)
 				break;
@@ -1109,7 +1045,7 @@ static ssize_t i40e_dbg_command_write(struct file *filp,
 					 cfg->app[i].selector,
 					 cfg->app[i].protocolid);
 			}
-			/* Peer TLV DCBX data */
+			 
 			dev_info(&pf->pdev->dev,
 				 "remote port ets_cfg: willing=%d cbs=%d, maxtcs=%d\n",
 				 r_cfg->etscfg.willing,
@@ -1218,7 +1154,7 @@ static ssize_t i40e_dbg_command_write(struct file *filp,
 			goto command_write_done;
 		}
 
-		/* check the range on address */
+		 
 		if (address > (pf->ioremap_len - sizeof(u32))) {
 			dev_info(&pf->pdev->dev, "read reg address 0x%08x too large, max=0x%08lx\n",
 				 address, (unsigned long int)(pf->ioremap_len - sizeof(u32)));
@@ -1238,7 +1174,7 @@ static ssize_t i40e_dbg_command_write(struct file *filp,
 			goto command_write_done;
 		}
 
-		/* check the range on address */
+		 
 		if (address > (pf->ioremap_len - sizeof(u32))) {
 			dev_info(&pf->pdev->dev, "write reg address 0x%08x too large, max=0x%08lx\n",
 				 address, (unsigned long int)(pf->ioremap_len - sizeof(u32)));
@@ -1355,7 +1291,7 @@ static ssize_t i40e_dbg_command_write(struct file *filp,
 			desc = NULL;
 			goto command_write_done;
 		}
-		/* Just stub a buffer big enough in case user messed up */
+		 
 		if (buffer_len == 0)
 			buffer_len = 1280;
 
@@ -1422,7 +1358,7 @@ static ssize_t i40e_dbg_command_write(struct file *filp,
 #ifdef CONFIG_I40E_DCB
 			pf->dcbx_cap = DCB_CAP_DCBX_HOST |
 				       DCB_CAP_DCBX_VER_IEEE;
-#endif /* CONFIG_I40E_DCB */
+#endif  
 		} else if (strncmp(&cmd_buf[5], "start", 5) == 0) {
 			int ret;
 
@@ -1435,7 +1371,7 @@ static ssize_t i40e_dbg_command_write(struct file *filp,
 				dev_info(&pf->pdev->dev,
 					"%s: Remove Control Packet Filter AQ command failed =0x%x\n",
 					__func__, pf->hw.aq.asq_last_status);
-				/* Continue and start FW LLDP anyways */
+				 
 			}
 
 			ret = i40e_aq_start_lldp(&pf->hw, false, NULL);
@@ -1448,7 +1384,7 @@ static ssize_t i40e_dbg_command_write(struct file *filp,
 #ifdef CONFIG_I40E_DCB
 			pf->dcbx_cap = DCB_CAP_DCBX_LLD_MANAGED |
 				       DCB_CAP_DCBX_VER_IEEE;
-#endif /* CONFIG_I40E_DCB */
+#endif  
 		} else if (strncmp(&cmd_buf[5],
 			   "get local", 9) == 0) {
 			u16 llen, rlen;
@@ -1552,12 +1488,12 @@ static ssize_t i40e_dbg_command_write(struct file *filp,
 			goto command_write_done;
 		}
 
-		/* set the max length */
+		 
 		buffer_len = min_t(u16, buffer_len, I40E_MAX_AQ_BUF_SIZE/2);
 
 		bytes = 2 * buffer_len;
 
-		/* read at least 1k bytes, no more than 4kB */
+		 
 		bytes = clamp(bytes, (u16)1024, (u16)I40E_MAX_AQ_BUF_SIZE);
 		buff = kzalloc(bytes, GFP_KERNEL);
 		if (!buff)
@@ -1639,20 +1575,10 @@ static const struct file_operations i40e_dbg_command_fops = {
 	.write = i40e_dbg_command_write,
 };
 
-/**************************************************************
- * netdev_ops
- * The netdev_ops entry in debugfs is for giving the driver commands
- * to be executed from the netdev operations.
- **************************************************************/
+ 
 static char i40e_dbg_netdev_ops_buf[256] = "";
 
-/**
- * i40e_dbg_netdev_ops_read - read for netdev_ops datum
- * @filp: the opened file
- * @buffer: where to write the data for the user to read
- * @count: the size of the user's buffer
- * @ppos: file position offset
- **/
+ 
 static ssize_t i40e_dbg_netdev_ops_read(struct file *filp, char __user *buffer,
 					size_t count, loff_t *ppos)
 {
@@ -1662,7 +1588,7 @@ static ssize_t i40e_dbg_netdev_ops_read(struct file *filp, char __user *buffer,
 	char *buf;
 	int len;
 
-	/* don't allow partal reads */
+	 
 	if (*ppos != 0)
 		return 0;
 	if (count < buf_size)
@@ -1686,13 +1612,7 @@ static ssize_t i40e_dbg_netdev_ops_read(struct file *filp, char __user *buffer,
 	return len;
 }
 
-/**
- * i40e_dbg_netdev_ops_write - write into netdev_ops datum
- * @filp: the opened file
- * @buffer: where to find the user's data
- * @count: the length of the user's data
- * @ppos: file position offset
- **/
+ 
 static ssize_t i40e_dbg_netdev_ops_write(struct file *filp,
 					 const char __user *buffer,
 					 size_t count, loff_t *ppos)
@@ -1704,7 +1624,7 @@ static ssize_t i40e_dbg_netdev_ops_write(struct file *filp,
 	int vsi_seid;
 	int i, cnt;
 
-	/* don't allow partial writes */
+	 
 	if (*ppos != 0)
 		return 0;
 	if (count >= sizeof(i40e_dbg_netdev_ops_buf))
@@ -1806,10 +1726,7 @@ static const struct file_operations i40e_dbg_netdev_ops_fops = {
 	.write = i40e_dbg_netdev_ops_write,
 };
 
-/**
- * i40e_dbg_pf_init - setup the debugfs directory for the PF
- * @pf: the PF that is starting up
- **/
+ 
 void i40e_dbg_pf_init(struct i40e_pf *pf)
 {
 	const char *name = pci_name(pf->pdev);
@@ -1823,19 +1740,14 @@ void i40e_dbg_pf_init(struct i40e_pf *pf)
 			    &i40e_dbg_netdev_ops_fops);
 }
 
-/**
- * i40e_dbg_pf_exit - clear out the PF's debugfs entries
- * @pf: the PF that is stopping
- **/
+ 
 void i40e_dbg_pf_exit(struct i40e_pf *pf)
 {
 	debugfs_remove_recursive(pf->i40e_dbg_pf);
 	pf->i40e_dbg_pf = NULL;
 }
 
-/**
- * i40e_dbg_init - start up debugfs for the driver
- **/
+ 
 void i40e_dbg_init(void)
 {
 	i40e_dbg_root = debugfs_create_dir(i40e_driver_name, NULL);
@@ -1843,13 +1755,11 @@ void i40e_dbg_init(void)
 		pr_info("init of debugfs failed\n");
 }
 
-/**
- * i40e_dbg_exit - clean out the driver's debugfs entries
- **/
+ 
 void i40e_dbg_exit(void)
 {
 	debugfs_remove_recursive(i40e_dbg_root);
 	i40e_dbg_root = NULL;
 }
 
-#endif /* CONFIG_DEBUG_FS */
+#endif  

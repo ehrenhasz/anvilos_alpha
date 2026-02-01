@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (c) 2016 Mellanox Technologies. All rights reserved.
- * Copyright (c) 2016 Jiri Pirko <jiri@mellanox.com>
- */
+
+ 
 
 #include <net/genetlink.h>
 #include <net/sock.h>
@@ -19,12 +16,7 @@ struct devlink_fmsg_item {
 
 struct devlink_fmsg {
 	struct list_head item_list;
-	bool putting_binary; /* This flag forces enclosing of binary data
-			      * in an array brackets. It forces using
-			      * of designated API:
-			      * devlink_fmsg_binary_pair_nest_start()
-			      * devlink_fmsg_binary_pair_nest_end()
-			      */
+	bool putting_binary;  
 };
 
 static struct devlink_fmsg *devlink_fmsg_alloc(void)
@@ -127,15 +119,7 @@ __devlink_health_reporter_create(struct devlink *devlink,
 	return reporter;
 }
 
-/**
- * devl_port_health_reporter_create() - create devlink health reporter for
- *                                      specified port instance
- *
- * @port: devlink_port to which health reports will relate
- * @ops: devlink health reporter ops
- * @graceful_period: min time (in msec) between recovery attempts
- * @priv: driver priv pointer
- */
+ 
 struct devlink_health_reporter *
 devl_port_health_reporter_create(struct devlink_port *port,
 				 const struct devlink_health_reporter_ops *ops,
@@ -176,14 +160,7 @@ devlink_port_health_reporter_create(struct devlink_port *port,
 }
 EXPORT_SYMBOL_GPL(devlink_port_health_reporter_create);
 
-/**
- * devl_health_reporter_create - create devlink health reporter
- *
- * @devlink: devlink instance which the health reports will relate
- * @ops: devlink health reporter ops
- * @graceful_period: min time (in msec) between recovery attempts
- * @priv: driver priv pointer
- */
+ 
 struct devlink_health_reporter *
 devl_health_reporter_create(struct devlink *devlink,
 			    const struct devlink_health_reporter_ops *ops,
@@ -229,11 +206,7 @@ devlink_health_reporter_free(struct devlink_health_reporter *reporter)
 	kfree(reporter);
 }
 
-/**
- * devl_health_reporter_destroy() - destroy devlink health reporter
- *
- * @reporter: devlink health reporter to destroy
- */
+ 
 void
 devl_health_reporter_destroy(struct devlink_health_reporter *reporter)
 {
@@ -598,7 +571,7 @@ int devlink_health_report(struct devlink_health_reporter *reporter,
 	unsigned long recover_ts_threshold;
 	int ret;
 
-	/* write a log message of the current error */
+	 
 	WARN_ON(!msg);
 	trace_devlink_health_report(devlink, reporter->ops->name, msg);
 	reporter->error_count++;
@@ -606,7 +579,7 @@ int devlink_health_report(struct devlink_health_reporter *reporter,
 	reporter->health_state = DEVLINK_HEALTH_REPORTER_STATE_ERROR;
 	devlink_recover_notify(reporter, DEVLINK_CMD_HEALTH_REPORTER_RECOVER);
 
-	/* abort if the previous error wasn't recovered */
+	 
 	recover_ts_threshold = reporter->last_recovery_ts +
 			       msecs_to_jiffies(reporter->graceful_period);
 	if (reporter->auto_recover &&
@@ -623,7 +596,7 @@ int devlink_health_report(struct devlink_health_reporter *reporter,
 
 	if (reporter->auto_dump) {
 		devl_lock(devlink);
-		/* store current dump of current error, for later analysis */
+		 
 		devlink_health_do_dump(reporter, priv_ctx, NULL);
 		devl_unlock(devlink);
 	}
@@ -1026,10 +999,7 @@ int devlink_fmsg_binary_pair_put(struct devlink_fmsg *fmsg, const char *name,
 		err = devlink_fmsg_binary_put(fmsg, value + offset, data_size);
 		if (err)
 			break;
-		/* Exit from loop with a break (instead of
-		 * return) to make sure putting_binary is turned off in
-		 * devlink_fmsg_binary_pair_nest_end
-		 */
+		 
 	}
 
 	end_err = devlink_fmsg_binary_pair_nest_end(fmsg);
@@ -1065,7 +1035,7 @@ devlink_fmsg_item_fill_data(struct devlink_fmsg_item *msg, struct sk_buff *skb)
 
 	switch (msg->nla_type) {
 	case NLA_FLAG:
-		/* Always provide flag data, regardless of its value */
+		 
 		tmp = *(bool *)msg->value;
 
 		return nla_put_u8(skb, attrtype, tmp);

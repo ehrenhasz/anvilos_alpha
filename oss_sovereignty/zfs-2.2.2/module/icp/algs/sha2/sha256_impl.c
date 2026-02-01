@@ -1,27 +1,6 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
+ 
 
-/*
- * Copyright (c) 2022 Tino Reichardt <milky-zfs@mcmilk.de>
- */
+ 
 
 #include <sys/simd.h>
 #include <sys/zfs_context.h>
@@ -37,7 +16,7 @@
 	kfpu_begin(); E(s, d, b); kfpu_end(); \
 }
 
-/* some implementation is always okay */
+ 
 static inline boolean_t sha2_is_supported(void)
 {
 	return (B_TRUE);
@@ -45,7 +24,7 @@ static inline boolean_t sha2_is_supported(void)
 
 #if defined(__x86_64)
 
-/* Users of ASMABI requires all calls to be from wrappers */
+ 
 extern void ASMABI
 zfs_sha256_transform_x64(uint32_t s[8], const void *, size_t);
 
@@ -169,12 +148,12 @@ const sha256_ops_t sha256_power8_impl = {
 	.transform = tf_sha256_power8,
 	.name = "power8"
 };
-#endif /* __PPC64__ */
+#endif  
 
-/* the two generic ones */
+ 
 extern const sha256_ops_t sha256_generic_impl;
 
-/* array with all sha256 implementations */
+ 
 static const sha256_ops_t *const sha256_impls[] = {
 	&sha256_generic_impl,
 #if defined(__x86_64)
@@ -200,10 +179,10 @@ static const sha256_ops_t *const sha256_impls[] = {
 #if defined(__PPC64__)
 	&sha256_ppc_impl,
 	&sha256_power8_impl,
-#endif /* __PPC64__ */
+#endif  
 };
 
-/* use the generic implementation functions */
+ 
 #define	IMPL_NAME		"sha256"
 #define	IMPL_OPS_T		sha256_ops_t
 #define	IMPL_ARRAY		sha256_impls
@@ -224,15 +203,15 @@ sha256_param_get(char *buffer, zfs_kernel_param_t *unused)
 	char *fmt;
 	int cnt = 0;
 
-	/* cycling */
+	 
 	fmt = IMPL_FMT(impl, IMPL_CYCLE);
 	cnt += sprintf(buffer + cnt, fmt, "cycle");
 
-	/* list fastest */
+	 
 	fmt = IMPL_FMT(impl, IMPL_FASTEST);
 	cnt += sprintf(buffer + cnt, fmt, "fastest");
 
-	/* list all supported implementations */
+	 
 	generic_impl_init();
 	for (uint32_t i = 0; i < generic_supp_impls_cnt; ++i) {
 		fmt = IMPL_FMT(impl, i);
@@ -268,15 +247,15 @@ sha256_param(ZFS_MODULE_PARAM_ARGS)
 
 		s = sbuf_new_for_sysctl(NULL, NULL, init_buflen, req);
 
-		/* cycling */
+		 
 		fmt = IMPL_FMT(impl, IMPL_CYCLE);
 		(void) sbuf_printf(s, fmt, "cycle");
 
-		/* list fastest */
+		 
 		fmt = IMPL_FMT(impl, IMPL_FASTEST);
 		(void) sbuf_printf(s, fmt, "fastest");
 
-		/* list all supported implementations */
+		 
 		for (uint32_t i = 0; i < generic_supp_impls_cnt; ++i) {
 			fmt = IMPL_FMT(impl, i);
 			(void) sbuf_printf(s, fmt, generic_supp_impls[i]->name);

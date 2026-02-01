@@ -1,8 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
 
-/* Copyright (c) 2012-2018, The Linux Foundation. All rights reserved.
- * Copyright (C) 2018-2022 Linaro Ltd.
- */
+
+ 
 
 #include <linux/types.h>
 #include <linux/kernel.h>
@@ -12,19 +10,7 @@
 #include "ipa_reg.h"
 #include "ipa_resource.h"
 
-/**
- * DOC: IPA Resources
- *
- * The IPA manages a set of resources internally for various purposes.
- * A given IPA version has a fixed number of resource types, and a fixed
- * total number of resources of each type.  "Source" resource types
- * are separate from "destination" resource types.
- *
- * Each version of IPA also has some number of resource groups.  Each
- * endpoint is assigned to a resource group, and all endpoints in the
- * same group share pools of each type of resource.  A subset of the
- * total resources of each type is assigned for use by each group.
- */
+ 
 
 static bool ipa_resource_limits_valid(struct ipa *ipa,
 				      const struct ipa_resource_data *data)
@@ -33,16 +19,14 @@ static bool ipa_resource_limits_valid(struct ipa *ipa,
 	u32 i;
 	u32 j;
 
-	/* We program at most 8 source or destination resource group limits */
+	 
 	BUILD_BUG_ON(IPA_RESOURCE_GROUP_MAX > 8);
 
 	group_count = data->rsrc_group_src_count;
 	if (!group_count || group_count > IPA_RESOURCE_GROUP_MAX)
 		return false;
 
-	/* Return an error if a non-zero resource limit is specified
-	 * for a resource group not supported by hardware.
-	 */
+	 
 	for (i = 0; i < data->resource_src_count; i++) {
 		const struct ipa_resource *resource;
 
@@ -160,7 +144,7 @@ static void ipa_resource_config_dst(struct ipa *ipa, u32 resource_type,
 				   &resource->limits[6], ylimits);
 }
 
-/* Configure resources; there is no ipa_resource_deconfig() */
+ 
 int ipa_resource_config(struct ipa *ipa, const struct ipa_resource_data *data)
 {
 	u32 i;

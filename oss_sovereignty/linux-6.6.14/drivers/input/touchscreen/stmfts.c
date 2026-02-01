@@ -1,8 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0
-// STMicroelectronics FTS Touchscreen device driver
-//
-// Copyright (c) 2017 Samsung Electronics Co., Ltd.
-// Copyright (c) 2017 Andi Shyti <andi@etezian.org>
+
+
+
+
+
 
 #include <linux/delay.h>
 #include <linux/i2c.h>
@@ -15,7 +15,7 @@
 #include <linux/pm_runtime.h>
 #include <linux/regulator/consumer.h>
 
-/* I2C commands */
+ 
 #define STMFTS_READ_INFO			0x80
 #define STMFTS_READ_STATUS			0x84
 #define STMFTS_READ_ONE_EVENT			0x85
@@ -35,7 +35,7 @@
 #define STMFTS_MS_CX_TUNING			0xa3
 #define STMFTS_SS_CX_TUNING			0xa4
 
-/* events */
+ 
 #define STMFTS_EV_NO_EVENT			0x00
 #define STMFTS_EV_MULTI_TOUCH_DETECTED		0x02
 #define STMFTS_EV_MULTI_TOUCH_ENTER		0x03
@@ -51,14 +51,14 @@
 #define STMFTS_EV_STATUS			0x16
 #define STMFTS_EV_DEBUG				0xdb
 
-/* multi touch related event masks */
+ 
 #define STMFTS_MASK_EVENT_ID			0x0f
 #define STMFTS_MASK_TOUCH_ID			0xf0
 #define STMFTS_MASK_LEFT_EVENT			0x0f
 #define STMFTS_MASK_X_MSB			0x0f
 #define STMFTS_MASK_Y_LSB			0xf0
 
-/* key related event masks */
+ 
 #define STMFTS_MASK_KEY_NO_TOUCH		0x00
 #define STMFTS_MASK_KEY_MENU			0x01
 #define STMFTS_MASK_KEY_BACK			0x02
@@ -84,10 +84,7 @@ struct stmfts_data {
 
 	struct regulator_bulk_data regulators[2];
 
-	/*
-	 * Presence of ledvdd will be used also to check
-	 * whether the LED is supported.
-	 */
+	 
 	struct regulator *ledvdd;
 
 	u16 chip_id;
@@ -139,10 +136,7 @@ static enum led_brightness stmfts_brightness_get(struct led_classdev *led_cdev)
 	return !!regulator_is_enabled(sdata->ledvdd);
 }
 
-/*
- * We can't simply use i2c_smbus_read_i2c_block_data because we
- * need to read more than 255 bytes (
- */
+ 
 static int stmfts_read_events(struct stmfts_data *sdata)
 {
 	u8 cmd = STMFTS_READ_ALL_EVENT;
@@ -363,7 +357,7 @@ static int stmfts_input_open(struct input_dev *dev)
 		err = i2c_smbus_write_byte(sdata->client,
 					   STMFTS_MS_KEY_SENSE_ON);
 		if (err)
-			/* I can still use only the touch screen */
+			 
 			dev_warn(&sdata->client->dev,
 				 "failed to enable touchkey\n");
 	}
@@ -532,10 +526,7 @@ static int stmfts_power_on(struct stmfts_data *sdata)
 	if (err)
 		return err;
 
-	/*
-	 * The datasheet does not specify the power on time, but considering
-	 * that the reset time is < 10ms, I sleep 20ms to be sure
-	 */
+	 
 	msleep(20);
 
 	err = i2c_smbus_read_i2c_block_data(sdata->client, STMFTS_READ_INFO,
@@ -563,13 +554,13 @@ static int stmfts_power_on(struct stmfts_data *sdata)
 	if (err)
 		return err;
 
-	/* optional tuning */
+	 
 	err = stmfts_command(sdata, STMFTS_MS_CX_TUNING);
 	if (err)
 		dev_warn(&sdata->client->dev,
 			 "failed to perform mutual auto tune: %d\n", err);
 
-	/* optional tuning */
+	 
 	err = stmfts_command(sdata, STMFTS_SS_CX_TUNING);
 	if (err)
 		dev_warn(&sdata->client->dev,
@@ -579,10 +570,7 @@ static int stmfts_power_on(struct stmfts_data *sdata)
 	if (err)
 		return err;
 
-	/*
-	 * At this point no one is using the touchscreen
-	 * and I don't really care about the return value
-	 */
+	 
 	(void) i2c_smbus_write_byte(sdata->client, STMFTS_SLEEP_IN);
 
 	return 0;
@@ -597,14 +585,12 @@ static void stmfts_power_off(void *data)
 						sdata->regulators);
 }
 
-/* This function is void because I don't want to prevent using the touch key
- * only because the LEDs don't get registered
- */
+ 
 static int stmfts_enable_led(struct stmfts_data *sdata)
 {
 	int err;
 
-	/* get the regulator for powering the leds on */
+	 
 	sdata->ledvdd = devm_regulator_get(&sdata->client->dev, "ledvdd");
 	if (IS_ERR(sdata->ledvdd))
 		return PTR_ERR(sdata->ledvdd);
@@ -685,13 +671,7 @@ static int stmfts_probe(struct i2c_client *client)
 
 	input_set_drvdata(sdata->input, sdata);
 
-	/*
-	 * stmfts_power_on expects interrupt to be disabled, but
-	 * at this point the device is still off and I do not trust
-	 * the status of the irq line that can generate some spurious
-	 * interrupts. To be on the safe side it's better to not enable
-	 * the interrupts during their request.
-	 */
+	 
 	err = devm_request_threaded_irq(&client->dev, client->irq,
 					NULL, stmfts_irq_handler,
 					IRQF_ONESHOT | IRQF_NO_AUTOEN,
@@ -716,12 +696,7 @@ static int stmfts_probe(struct i2c_client *client)
 	if (sdata->use_key) {
 		err = stmfts_enable_led(sdata);
 		if (err) {
-			/*
-			 * Even if the LEDs have failed to be initialized and
-			 * used in the driver, I can still use the device even
-			 * without LEDs. The ledvdd regulator pointer will be
-			 * used as a flag.
-			 */
+			 
 			dev_warn(&client->dev, "unable to use touchkey leds\n");
 			sdata->ledvdd = NULL;
 		}

@@ -1,33 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2019 Facebook
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of version 2 of the GNU General Public
- * License as published by the Free Software Foundation.
- *
- * Example program for Host Bandwidth Managment
- *
- * This program loads a cgroup skb BPF program to enforce cgroup output
- * (egress) or input (ingress) bandwidth limits.
- *
- * USAGE: hbm [-d] [-l] [-n <id>] [-r <rate>] [-s] [-t <secs>] [-w] [-h] [prog]
- *   Where:
- *    -d	Print BPF trace debug buffer
- *    -l	Also limit flows doing loopback
- *    -n <#>	To create cgroup \"/hbm#\" and attach prog
- *		Default is /hbm1
- *    --no_cn   Do not return cn notifications
- *    -r <rate>	Rate limit in Mbps
- *    -s	Get HBM stats (marked, dropped, etc.)
- *    -t <time>	Exit after specified seconds (default is 0)
- *    -w	Work conserving flag. cgroup can increase its bandwidth
- *		beyond the rate limit specified while there is available
- *		bandwidth. Current implementation assumes there is only
- *		NIC (eth0), but can be extended to support multiple NICs.
- *		Currrently only supported for egress.
- *    -h	Print this info
- *    prog	BPF program file name. Name defaults to hbm_out_kern.o
- */
+
+ 
 
 #define _GNU_SOURCE
 
@@ -51,8 +23,8 @@
 #include <bpf/libbpf.h>
 
 bool outFlag = true;
-int minRate = 1000;		/* cgroup rate limit in Mbps */
-int rate = 1000;		/* can grow if rate conserving is enabled */
+int minRate = 1000;		 
+int rate = 1000;		 
 int dur = 1;
 bool stats_flag;
 bool loopback_flag;
@@ -83,9 +55,9 @@ static void read_trace_pipe2(void)
 		return;
 	}
 
-//	Future support of ingress
-//	if (!outFlag)
-//		outFname = "hbm_in.log";
+ 
+ 
+ 
 	outf = fopen(outFname, "w");
 
 	if (outf == NULL)
@@ -127,7 +99,7 @@ static int prog_load(char *prog)
 		return 1;
 	}
 
-	/* load BPF program */
+	 
 	if (bpf_object__load(obj)) {
 		printf("ERROR: loading BPF object file failed\n");
 		goto err;
@@ -218,8 +190,8 @@ static int run_bpf_prog(char *prog, int cg_id)
 		signed long long last_cg_tx_bytes, new_cg_tx_bytes;
 		signed long long delta_time, delta_bytes, delta_rate;
 		int delta_ms;
-#define DELTA_RATE_CHECK 10000		/* in us */
-#define RATE_THRESHOLD 9500000000	/* 9.5 Gbps */
+#define DELTA_RATE_CHECK 10000		 
+#define RATE_THRESHOLD 9500000000	 
 
 		bpf_map_lookup_elem(queue_stats_fd, &key, &qstats);
 		if (gettimeofday(&t0, NULL) < 0)
@@ -259,11 +231,7 @@ static int run_bpf_prog(char *prog, int cg_id)
 			       delta_ms, delta_rate/1000000000.0,
 			       rate/1000.0);
 			if (delta_rate < RATE_THRESHOLD) {
-				/* can increase cgroup rate limit, but first
-				 * check if we are using the current limit.
-				 * Currently increasing by 6.25%, unknown
-				 * if that is the optimal rate.
-				 */
+				 
 				int rate_diff100;
 
 				delta_bytes = new_cg_tx_bytes -
@@ -287,10 +255,7 @@ static int run_bpf_prog(char *prog, int cg_id)
 					printf("\n");
 				}
 			} else {
-				/* Need to decrease cgroup rate limit.
-				 * Currently decreasing by 12.5%, unknown
-				 * if that is optimal
-				 */
+				 
 				printf(" DEC\n");
 				rate -= (rate >> 3);
 				if (rate < minRate)
@@ -303,7 +268,7 @@ static int run_bpf_prog(char *prog, int cg_id)
 	} else {
 		sleep(dur);
 	}
-	// Get stats!
+	 
 	if (stats_flag && bpf_map_lookup_elem(queue_stats_fd, &key, &qstats)) {
 		char fname[100];
 		FILE *fout;
@@ -335,10 +300,10 @@ static int run_bpf_prog(char *prog, int cg_id)
 		};
 #define RET_VAL_COUNT 4
 
-// Future support of ingress
-//		if (!outFlag)
-//			sprintf(fname, "hbm.%d.in", cg_id);
-//		else
+ 
+ 
+ 
+ 
 		sprintf(fname, "hbm.%d.out", cg_id);
 		fout = fopen(fname, "w");
 		fprintf(fout, "id:%d\n", cg_id);
@@ -353,7 +318,7 @@ static int run_bpf_prog(char *prog, int cg_id)
 		fprintf(fout, "bytes_dropped_MB:%d\n",
 			(int)(qstats.bytes_dropped /
 						       1000000));
-		// Marked Pkts and Bytes
+		 
 		percent_pkts = (qstats.pkts_marked * 100.0) /
 			(qstats.pkts_total + 1);
 		percent_bytes = (qstats.bytes_marked * 100.0) /
@@ -361,7 +326,7 @@ static int run_bpf_prog(char *prog, int cg_id)
 		fprintf(fout, "pkts_marked_percent:%6.2f\n", percent_pkts);
 		fprintf(fout, "bytes_marked_percent:%6.2f\n", percent_bytes);
 
-		// Dropped Pkts and Bytes
+		 
 		percent_pkts = (qstats.pkts_dropped * 100.0) /
 			(qstats.pkts_total + 1);
 		percent_bytes = (qstats.bytes_dropped * 100.0) /
@@ -369,19 +334,19 @@ static int run_bpf_prog(char *prog, int cg_id)
 		fprintf(fout, "pkts_dropped_percent:%6.2f\n", percent_pkts);
 		fprintf(fout, "bytes_dropped_percent:%6.2f\n", percent_bytes);
 
-		// ECN CE markings
+		 
 		percent_pkts = (qstats.pkts_ecn_ce * 100.0) /
 			(qstats.pkts_total + 1);
 		fprintf(fout, "pkts_ecn_ce:%6.2f (%d)\n", percent_pkts,
 			(int)qstats.pkts_ecn_ce);
 
-		// Average cwnd
+		 
 		fprintf(fout, "avg cwnd:%d\n",
 			(int)(qstats.sum_cwnd / (qstats.sum_cwnd_cnt + 1)));
-		// Average rtt
+		 
 		fprintf(fout, "avg rtt:%d\n",
 			(int)(qstats.sum_rtt / (qstats.pkts_total + 1)));
-		// Average credit
+		 
 		if (edt_flag)
 			fprintf(fout, "avg credit_ms:%.03f\n",
 				(qstats.sum_credit /
@@ -391,7 +356,7 @@ static int run_bpf_prog(char *prog, int cg_id)
 				(int)(qstats.sum_credit /
 				      (1500 * ((int)qstats.pkts_total ) + 1)));
 
-		// Return values stats
+		 
 		for (k = 0; k < RET_VAL_COUNT; k++) {
 			percent_pkts = (qstats.returnValCount[k] * 100.0) /
 				(qstats.pkts_total + 1);
@@ -508,7 +473,7 @@ int main(int argc, char **argv)
 		prog = argv[optind];
 	printf("HBM prog: %s\n", prog != NULL ? prog : "NULL");
 
-	/* Use libbpf 1.0 API mode */
+	 
 	libbpf_set_strict_mode(LIBBPF_STRICT_ALL);
 
 	return run_bpf_prog(prog, cg_id);

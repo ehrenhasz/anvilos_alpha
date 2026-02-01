@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Abilis Systems interrupt controller driver
- *
- * Copyright (C) Abilis Systems 2012
- *
- * Author: Christian Ruppert <christian.ruppert@abilis.com>
- */
+
+ 
 
 #include <linux/interrupt.h>
 #include <linux/irqdomain.h>

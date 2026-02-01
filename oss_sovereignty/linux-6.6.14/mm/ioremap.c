@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Re-map IO memory to kernel address space so that we can access it.
- * This is needed for high PCI addresses that aren't mapped in the
- * 640k-1MB IO memory area on PC's
- *
- * (C) Copyright 1995 1996 Linus Torvalds
- */
+
+ 
 #include <linux/vmalloc.h>
 #include <linux/mm.h>
 #include <linux/io.h>
@@ -19,16 +13,16 @@ void __iomem *generic_ioremap_prot(phys_addr_t phys_addr, size_t size,
 	phys_addr_t last_addr;
 	struct vm_struct *area;
 
-	/* An early platform driver might end up here */
+	 
 	if (WARN_ON_ONCE(!slab_is_available()))
 		return NULL;
 
-	/* Disallow wrap-around or zero size */
+	 
 	last_addr = phys_addr + size - 1;
 	if (!size || last_addr < phys_addr)
 		return NULL;
 
-	/* Page-align mappings */
+	 
 	offset = phys_addr & (~PAGE_MASK);
 	phys_addr -= offset;
 	size = PAGE_ALIGN(size + offset);

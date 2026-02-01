@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * sun4i-ss-cipher.c - hardware cryptographic accelerator for Allwinner A20 SoC
- *
- * Copyright (C) 2013-2015 Corentin LABBE <clabbe.montjoie@gmail.com>
- *
- * This file add support for AES cipher with 128,192,256 bits
- * keysize in CBC and ECB mode.
- * Add support also for DES and 3DES in CBC and ECB mode.
- *
- * You could find the datasheet in Documentation/arch/arm/sunxi.rst
- */
+
+ 
 #include "sun4i-ss.h"
 
 static int noinline_for_stack sun4i_ss_opti_poll(struct skcipher_request *areq)
@@ -20,7 +10,7 @@ static int noinline_for_stack sun4i_ss_opti_poll(struct skcipher_request *areq)
 	unsigned int ivsize = crypto_skcipher_ivsize(tfm);
 	struct sun4i_cipher_req_ctx *ctx = skcipher_request_ctx(areq);
 	u32 mode = ctx->mode;
-	/* when activating SS, the default FIFO space is SS_RX_DEFAULT(32) */
+	 
 	u32 rx_cnt = SS_RX_DEFAULT;
 	u32 tx_cnt = 0;
 	u32 spaces;
@@ -30,10 +20,10 @@ static int noinline_for_stack sun4i_ss_opti_poll(struct skcipher_request *areq)
 	unsigned int ileft = areq->cryptlen;
 	unsigned int oleft = areq->cryptlen;
 	unsigned int todo;
-	unsigned long pi = 0, po = 0; /* progress for in and out */
+	unsigned long pi = 0, po = 0;  
 	bool miter_err;
 	struct sg_mapping_iter mi, mo;
-	unsigned int oi, oo; /* offset for in and out */
+	unsigned int oi, oo;  
 	unsigned long flags;
 	struct skcipher_alg *alg = crypto_skcipher_alg(tfm);
 	struct sun4i_ss_alg_template *algt;
@@ -172,7 +162,7 @@ static int noinline_for_stack sun4i_ss_cipher_poll_fallback(struct skcipher_requ
 	return err;
 }
 
-/* Generic function that support SG with size not multiple of 4 */
+ 
 static int sun4i_ss_cipher_poll(struct skcipher_request *areq)
 {
 	struct crypto_skcipher *tfm = crypto_skcipher_reqtfm(areq);
@@ -186,7 +176,7 @@ static int sun4i_ss_cipher_poll(struct skcipher_request *areq)
 	struct skcipher_alg *alg = crypto_skcipher_alg(tfm);
 	struct sun4i_ss_alg_template *algt;
 	u32 mode = ctx->mode;
-	/* when activating SS, the default FIFO space is SS_RX_DEFAULT(32) */
+	 
 	u32 rx_cnt = SS_RX_DEFAULT;
 	u32 tx_cnt = 0;
 	u32 v;
@@ -197,12 +187,12 @@ static int sun4i_ss_cipher_poll(struct skcipher_request *areq)
 	unsigned int oleft = areq->cryptlen;
 	unsigned int todo;
 	struct sg_mapping_iter mi, mo;
-	unsigned long pi = 0, po = 0; /* progress for in and out */
+	unsigned long pi = 0, po = 0;  
 	bool miter_err;
-	unsigned int oi, oo;	/* offset for in and out */
-	unsigned int ob = 0;	/* offset in buf */
-	unsigned int obo = 0;	/* offset in bufo*/
-	unsigned int obl = 0;	/* length of data in bufo */
+	unsigned int oi, oo;	 
+	unsigned int ob = 0;	 
+	unsigned int obo = 0;	 
+	unsigned int obl = 0;	 
 	unsigned long flags;
 	bool need_fallback = false;
 
@@ -218,10 +208,7 @@ static int sun4i_ss_cipher_poll(struct skcipher_request *areq)
 	if (areq->cryptlen % algt->alg.crypto.base.cra_blocksize)
 		need_fallback = true;
 
-	/*
-	 * if we have only SGs with size multiple of 4,
-	 * we can use the SS optimized function
-	 */
+	 
 	while (in_sg && no_chunk == 1) {
 		if ((in_sg->length | in_sg->offset) & 3u)
 			no_chunk = 0;
@@ -279,10 +266,7 @@ static int sun4i_ss_cipher_poll(struct skcipher_request *areq)
 				err = -EINVAL;
 				goto release_ss;
 			}
-			/*
-			 * todo is the number of consecutive 4byte word that we
-			 * can read from current SG
-			 */
+			 
 			todo = min(rx_cnt, ileft / 4);
 			todo = min_t(size_t, todo, (mi.length - oi) / 4);
 			if (todo && !ob) {
@@ -291,13 +275,7 @@ static int sun4i_ss_cipher_poll(struct skcipher_request *areq)
 				ileft -= todo * 4;
 				oi += todo * 4;
 			} else {
-				/*
-				 * not enough consecutive bytes, so we need to
-				 * linearize in buf. todo is in bytes
-				 * After that copy, if we have a multiple of 4
-				 * we need to be able to write all buf in one
-				 * pass, so it is why we min() with rx_cnt
-				 */
+				 
 				todo = min(rx_cnt * 4 - ob, ileft);
 				todo = min_t(size_t, todo, mi.length - oi);
 				memcpy(ss->buf + ob, mi.addr + oi, todo);
@@ -333,7 +311,7 @@ static int sun4i_ss_cipher_poll(struct skcipher_request *areq)
 			err = -EINVAL;
 			goto release_ss;
 		}
-		/* todo in 4bytes word */
+		 
 		todo = min(tx_cnt, oleft / 4);
 		todo = min_t(size_t, todo, (mo.length - oo) / 4);
 
@@ -346,20 +324,12 @@ static int sun4i_ss_cipher_poll(struct skcipher_request *areq)
 				oo = 0;
 			}
 		} else {
-			/*
-			 * read obl bytes in bufo, we read at maximum for
-			 * emptying the device
-			 */
+			 
 			readsl(ss->base + SS_TXFIFO, ss->bufo, tx_cnt);
 			obl = tx_cnt * 4;
 			obo = 0;
 			do {
-				/*
-				 * how many bytes we can copy ?
-				 * no more than remaining SG size
-				 * no more than remaining buffer
-				 * no need to test against oleft
-				 */
+				 
 				todo = min_t(size_t,
 					     mo.length - oo, obl - obo);
 				memcpy(mo.addr + oo, ss->bufo + obo, todo);
@@ -372,7 +342,7 @@ static int sun4i_ss_cipher_poll(struct skcipher_request *areq)
 					oo = 0;
 				}
 			} while (obo < obl);
-			/* bufo must be fully used here */
+			 
 		}
 		sg_miter_stop(&mo);
 	}
@@ -393,7 +363,7 @@ release_ss:
 	return err;
 }
 
-/* CBC AES */
+ 
 int sun4i_ss_cbc_aes_encrypt(struct skcipher_request *areq)
 {
 	struct crypto_skcipher *tfm = crypto_skcipher_reqtfm(areq);
@@ -416,7 +386,7 @@ int sun4i_ss_cbc_aes_decrypt(struct skcipher_request *areq)
 	return sun4i_ss_cipher_poll(areq);
 }
 
-/* ECB AES */
+ 
 int sun4i_ss_ecb_aes_encrypt(struct skcipher_request *areq)
 {
 	struct crypto_skcipher *tfm = crypto_skcipher_reqtfm(areq);
@@ -439,7 +409,7 @@ int sun4i_ss_ecb_aes_decrypt(struct skcipher_request *areq)
 	return sun4i_ss_cipher_poll(areq);
 }
 
-/* CBC DES */
+ 
 int sun4i_ss_cbc_des_encrypt(struct skcipher_request *areq)
 {
 	struct crypto_skcipher *tfm = crypto_skcipher_reqtfm(areq);
@@ -462,7 +432,7 @@ int sun4i_ss_cbc_des_decrypt(struct skcipher_request *areq)
 	return sun4i_ss_cipher_poll(areq);
 }
 
-/* ECB DES */
+ 
 int sun4i_ss_ecb_des_encrypt(struct skcipher_request *areq)
 {
 	struct crypto_skcipher *tfm = crypto_skcipher_reqtfm(areq);
@@ -485,7 +455,7 @@ int sun4i_ss_ecb_des_decrypt(struct skcipher_request *areq)
 	return sun4i_ss_cipher_poll(areq);
 }
 
-/* CBC 3DES */
+ 
 int sun4i_ss_cbc_des3_encrypt(struct skcipher_request *areq)
 {
 	struct crypto_skcipher *tfm = crypto_skcipher_reqtfm(areq);
@@ -508,7 +478,7 @@ int sun4i_ss_cbc_des3_decrypt(struct skcipher_request *areq)
 	return sun4i_ss_cipher_poll(areq);
 }
 
-/* ECB 3DES */
+ 
 int sun4i_ss_ecb_des3_encrypt(struct skcipher_request *areq)
 {
 	struct crypto_skcipher *tfm = crypto_skcipher_reqtfm(areq);
@@ -573,7 +543,7 @@ void sun4i_ss_cipher_exit(struct crypto_tfm *tfm)
 	pm_runtime_put(op->ss->dev);
 }
 
-/* check and set the AES key, prepare the mode to be used */
+ 
 int sun4i_ss_aes_setkey(struct crypto_skcipher *tfm, const u8 *key,
 			unsigned int keylen)
 {
@@ -603,7 +573,7 @@ int sun4i_ss_aes_setkey(struct crypto_skcipher *tfm, const u8 *key,
 	return crypto_skcipher_setkey(op->fallback_tfm, key, keylen);
 }
 
-/* check and set the DES key, prepare the mode to be used */
+ 
 int sun4i_ss_des_setkey(struct crypto_skcipher *tfm, const u8 *key,
 			unsigned int keylen)
 {
@@ -623,7 +593,7 @@ int sun4i_ss_des_setkey(struct crypto_skcipher *tfm, const u8 *key,
 	return crypto_skcipher_setkey(op->fallback_tfm, key, keylen);
 }
 
-/* check and set the 3DES key, prepare the mode to be used */
+ 
 int sun4i_ss_des3_setkey(struct crypto_skcipher *tfm, const u8 *key,
 			 unsigned int keylen)
 {

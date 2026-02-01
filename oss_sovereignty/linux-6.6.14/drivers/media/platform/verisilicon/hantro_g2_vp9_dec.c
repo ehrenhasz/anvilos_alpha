@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Hantro VP9 codec driver
- *
- * Copyright (C) 2021 Collabora Ltd.
- */
+
+ 
 #include "media/videobuf2-core.h"
 #include "media/videobuf2-dma-contig.h"
 #include "media/videobuf2-v4l2.h"
@@ -33,7 +29,7 @@ static int start_prepare_run(struct hantro_ctx *ctx, const struct v4l2_ctrl_vp9_
 	struct v4l2_ctrl *ctrl;
 	unsigned int fctx_idx;
 
-	/* v4l2-specific stuff */
+	 
 	hantro_start_prepare_run(ctx);
 
 	ctrl = v4l2_ctrl_find(&ctx->ctrl_handler, V4L2_CID_STATELESS_VP9_FRAME);
@@ -47,44 +43,14 @@ static int start_prepare_run(struct hantro_ctx *ctx, const struct v4l2_ctrl_vp9_
 	prob_updates = ctrl->p_cur.p;
 	vp9_ctx->cur.tx_mode = prob_updates->tx_mode;
 
-	/*
-	 * vp9 stuff
-	 *
-	 * by this point the userspace has done all parts of 6.2 uncompressed_header()
-	 * except this fragment:
-	 * if ( FrameIsIntra || error_resilient_mode ) {
-	 *	setup_past_independence ( )
-	 *	if ( frame_type == KEY_FRAME || error_resilient_mode == 1 ||
-	 *	     reset_frame_context == 3 ) {
-	 *		for ( i = 0; i < 4; i ++ ) {
-	 *			save_probs( i )
-	 *		}
-	 *	} else if ( reset_frame_context == 2 ) {
-	 *		save_probs( frame_context_idx )
-	 *	}
-	 *	frame_context_idx = 0
-	 * }
-	 */
+	 
 	fctx_idx = v4l2_vp9_reset_frame_ctx(*dec_params, vp9_ctx->frame_context);
 	vp9_ctx->cur.frame_context_idx = fctx_idx;
 
-	/* 6.1 frame(sz): load_probs() and load_probs2() */
+	 
 	vp9_ctx->probability_tables = vp9_ctx->frame_context[fctx_idx];
 
-	/*
-	 * The userspace has also performed 6.3 compressed_header(), but handling the
-	 * probs in a special way. All probs which need updating, except MV-related,
-	 * have been read from the bitstream and translated through inv_map_table[],
-	 * but no 6.3.6 inv_recenter_nonneg(v, m) has been performed. The values passed
-	 * by userspace are either translated values (there are no 0 values in
-	 * inv_map_table[]), or zero to indicate no update. All MV-related probs which need
-	 * updating have been read from the bitstream and (mv_prob << 1) | 1 has been
-	 * performed. The values passed by userspace are either new values
-	 * to replace old ones (the above mentioned shift and bitwise or never result in
-	 * a zero) or zero to indicate no update.
-	 * fw_update_probs() performs actual probs updates or leaves probs as-is
-	 * for values for which a zero was passed from userspace.
-	 */
+	 
 	v4l2_vp9_fw_update_probs(&vp9_ctx->probability_tables, prob_updates, *dec_params);
 
 	return 0;
@@ -113,10 +79,7 @@ get_ref_buf(struct hantro_ctx *ctx, struct vb2_v4l2_buffer *dst, u64 timestamp)
 	struct vb2_queue *cap_q = &m2m_ctx->cap_q_ctx.q;
 	struct vb2_buffer *buf;
 
-	/*
-	 * If a ref is unused or invalid, address of current destination
-	 * buffer is returned.
-	 */
+	 
 	buf = vb2_find_buffer(cap_q, timestamp);
 	if (!buf)
 		buf = &dst->vb2_buf;
@@ -206,7 +169,7 @@ static void config_ref_registers(struct hantro_ctx *ctx,
 {
 	static const struct hantro_vp9_ref_reg ref_regs[] = {
 		{
-			/* Last */
+			 
 			.width = vp9_lref_width,
 			.height = vp9_lref_height,
 			.hor_scale = vp9_lref_hor_scale,
@@ -214,7 +177,7 @@ static void config_ref_registers(struct hantro_ctx *ctx,
 			.y_base = G2_REF_LUMA_ADDR(0),
 			.c_base = G2_REF_CHROMA_ADDR(0),
 		}, {
-			/* Golden */
+			 
 			.width = vp9_gref_width,
 			.height = vp9_gref_height,
 			.hor_scale = vp9_gref_hor_scale,
@@ -222,7 +185,7 @@ static void config_ref_registers(struct hantro_ctx *ctx,
 			.y_base = G2_REF_LUMA_ADDR(4),
 			.c_base = G2_REF_CHROMA_ADDR(4),
 		}, {
-			/* Altref */
+			 
 			.width = vp9_aref_width,
 			.height = vp9_aref_height,
 			.hor_scale = vp9_aref_hor_scale,
@@ -366,7 +329,7 @@ config_tiles(struct hantro_ctx *ctx,
 		hantro_reg_write(ctx->dev, &g2_num_tile_rows, rows);
 	}
 
-	/* provide aux buffers even if no tiles are used */
+	 
 	addr = tile_edge->dma;
 	hantro_write_addr(ctx->dev, G2_TILE_FILTER_ADDR, addr);
 
@@ -432,7 +395,7 @@ static void config_segment(struct hantro_ctx *ctx, const struct v4l2_ctrl_vp9_fr
 	update_data = !!(seg->flags & V4L2_VP9_SEGMENTATION_FLAG_UPDATE_DATA);
 
 	for (segid = 0; segid < 8; ++segid) {
-		/* Quantizer segment feature */
+		 
 		feat_id = V4L2_VP9_SEG_LVL_ALT_Q;
 		feat_val = dec_params->quant.base_q_idx;
 		if (segment_enabled) {
@@ -445,7 +408,7 @@ static void config_segment(struct hantro_ctx *ctx, const struct v4l2_ctrl_vp9_fr
 		}
 		hantro_reg_write(ctx->dev, &seg_regs[segid][feat_id], feat_val);
 
-		/* Loop filter segment feature */
+		 
 		feat_id = V4L2_VP9_SEG_LVL_ALT_L;
 		feat_val = dec_params->lf.level;
 		if (segment_enabled) {
@@ -458,7 +421,7 @@ static void config_segment(struct hantro_ctx *ctx, const struct v4l2_ctrl_vp9_fr
 		}
 		hantro_reg_write(ctx->dev, &seg_regs[segid][feat_id], feat_val);
 
-		/* Reference frame segment feature */
+		 
 		feat_id = V4L2_VP9_SEG_LVL_REF_FRAME;
 		feat_val = 0;
 		if (segment_enabled) {
@@ -470,7 +433,7 @@ static void config_segment(struct hantro_ctx *ctx, const struct v4l2_ctrl_vp9_fr
 		}
 		hantro_reg_write(ctx->dev, &seg_regs[segid][feat_id], feat_val);
 
-		/* Skip segment feature */
+		 
 		feat_id = V4L2_VP9_SEG_LVL_SKIP;
 		feat_val = 0;
 		if (segment_enabled) {
@@ -607,7 +570,7 @@ config_compound_reference(struct hantro_ctx *ctx,
 	golden_ref_frame_sign_bias = dec_params->ref_frame_sign_bias & V4L2_VP9_SIGN_BIAS_GOLDEN;
 	alt_ref_frame_sign_bias = dec_params->ref_frame_sign_bias & V4L2_VP9_SIGN_BIAS_ALT;
 
-	/* 6.3.12 Frame reference mode syntax */
+	 
 	comp_ref_allowed |= golden_ref_frame_sign_bias != last_ref_frame_sign_bias;
 	comp_ref_allowed |= alt_ref_frame_sign_bias != last_ref_frame_sign_bias;
 
@@ -830,7 +793,7 @@ config_registers(struct hantro_ctx *ctx, const struct v4l2_ctrl_vp9_frame *dec_p
 	const struct v4l2_vp9_segmentation *seg;
 	bool intra_only, resolution_change;
 
-	/* vp9 stuff */
+	 
 	dst = vb2_to_hantro_decoded_buf(&vb2_dst->vb2_buf);
 
 	if (vp9_ctx->last.valid)
@@ -856,7 +819,7 @@ config_registers(struct hantro_ctx *ctx, const struct v4l2_ctrl_vp9_frame *dec_p
 	resolution_change = dst->vp9.width != last->vp9.width ||
 			    dst->vp9.height != last->vp9.height;
 
-	/* configure basic registers */
+	 
 	hantro_reg_write(ctx->dev, &g2_mode, VP9_DEC_MODE);
 	if (!ctx->dev->variant->legacy_regs) {
 		hantro_reg_write(ctx->dev, &g2_strm_swap, 0xf);
@@ -948,7 +911,7 @@ void hantro_g2_vp9_dec_done(struct hantro_ctx *ctx)
 	fctx_idx = vp9_ctx->cur.frame_context_idx;
 
 	if (!(vp9_ctx->cur.flags & V4L2_VP9_FRAME_FLAG_PARALLEL_DEC_MODE)) {
-		/* error_resilient_mode == 0 && frame_parallel_decoding_mode == 0 */
+		 
 		struct v4l2_vp9_frame_context *probs = &vp9_ctx->probability_tables;
 		bool frame_is_intra = vp9_ctx->cur.flags &
 		    (V4L2_VP9_FRAME_FLAG_KEY_FRAME | V4L2_VP9_FRAME_FLAG_INTRA_ONLY);
@@ -963,14 +926,14 @@ void hantro_g2_vp9_dec_done(struct hantro_ctx *ctx)
 		u32 tx16p[2][4];
 		int i;
 
-		/* buffer the forward-updated TX and skip probs */
+		 
 		if (frame_is_intra)
 			copy_tx_and_skip(tx_skip, probs);
 
-		/* 6.1.2 refresh_probs(): load_probs() and load_probs2() */
+		 
 		*probs = vp9_ctx->frame_context[fctx_idx];
 
-		/* if FrameIsIntra then undo the effect of load_probs2() */
+		 
 		if (frame_is_intra)
 			copy_tx_and_skip(probs, tx_skip);
 
@@ -990,7 +953,7 @@ void hantro_g2_vp9_dec_done(struct hantro_ctx *ctx)
 					  frame_is_intra);
 
 		if (!frame_is_intra) {
-			/* load_probs2() already done */
+			 
 			u32 mv_mode[7][4];
 
 			for (i = 0; i < ARRAY_SIZE(mv_mode); ++i) {

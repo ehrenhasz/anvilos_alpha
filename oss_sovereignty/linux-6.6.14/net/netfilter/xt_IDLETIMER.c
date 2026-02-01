@@ -1,18 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * linux/net/netfilter/xt_IDLETIMER.c
- *
- * Netfilter module to trigger a timer when packet matches.
- * After timer expires a kevent will be sent.
- *
- * Copyright (C) 2004, 2010 Nokia Corporation
- * Written by Timo Teras <ext-timo.teras@nokia.com>
- *
- * Converted to x_tables and reworked for upstream inclusion
- * by Luciano Coelho <luciano.coelho@nokia.com>
- *
- * Contact: Luciano Coelho <luciano.coelho@nokia.com>
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -211,7 +198,7 @@ static int idletimer_tg_create_v1(struct idletimer_tg_info_v1 *info)
 		goto out_free_attr;
 	}
 
-	/*  notify userspace  */
+	 
 	kobject_uevent(idletimer_tg_kobj,KOBJ_ADD);
 
 	list_add(&info->timer->entry, &idletimer_tg_list);
@@ -244,9 +231,7 @@ out:
 	return ret;
 }
 
-/*
- * The actual xt_tables plugin.
- */
+ 
 static unsigned int idletimer_tg_target(struct sk_buff *skb,
 					 const struct xt_action_param *par)
 {
@@ -261,9 +246,7 @@ static unsigned int idletimer_tg_target(struct sk_buff *skb,
 	return XT_CONTINUE;
 }
 
-/*
- * The actual xt_tables plugin.
- */
+ 
 static unsigned int idletimer_tg_target_v1(struct sk_buff *skb,
 					 const struct xt_action_param *par)
 {
@@ -373,7 +356,7 @@ static int idletimer_tg_checkentry_v1(const struct xt_tgchk_param *par)
 
 		info->timer->refcnt++;
 		if (info->timer_type & XT_IDLETIMER_ALARM) {
-			/* calculate remaining expiry time */
+			 
 			ktime_t tout = alarm_expires_remaining(&info->timer->alarm);
 			struct timespec64 ktimespec = ktime_to_timespec64(tout);
 

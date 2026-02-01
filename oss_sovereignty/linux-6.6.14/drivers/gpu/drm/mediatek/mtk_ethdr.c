@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2021 MediaTek Inc.
- */
+
+ 
 
 #include <drm/drm_fourcc.h>
 #include <drm/drm_framebuffer.h>

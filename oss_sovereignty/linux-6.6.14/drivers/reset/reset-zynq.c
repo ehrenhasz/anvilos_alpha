@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2015, National Instruments Corp.
- *
- * Xilinx Zynq Reset controller driver
- *
- * Author: Moritz Fischer <moritz.fischer@ettus.com>
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/io.h>
@@ -120,7 +114,7 @@ static int zynq_reset_probe(struct platform_device *pdev)
 
 static const struct of_device_id zynq_reset_dt_ids[] = {
 	{ .compatible = "xlnx,zynq-reset", },
-	{ /* sentinel */ },
+	{   },
 };
 
 static struct platform_driver zynq_reset_driver = {

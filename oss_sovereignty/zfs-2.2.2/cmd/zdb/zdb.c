@@ -1,41 +1,6 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
+ 
 
-/*
- * Copyright (c) 2005, 2010, Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2011, 2019 by Delphix. All rights reserved.
- * Copyright (c) 2014 Integros [integros.com]
- * Copyright 2016 Nexenta Systems, Inc.
- * Copyright (c) 2017, 2018 Lawrence Livermore National Security, LLC.
- * Copyright (c) 2015, 2017, Intel Corporation.
- * Copyright (c) 2020 Datto Inc.
- * Copyright (c) 2020, The FreeBSD Foundation [1]
- *
- * [1] Portions of this software were developed by Allan Jude
- *     under sponsorship from the FreeBSD Foundation.
- * Copyright (c) 2021 Allan Jude
- * Copyright (c) 2021 Toomas Soome <tsoome@me.com>
- * Copyright (c) 2023, Klara Inc.
- * Copyright (c) 2023, Rob Norris <robn@despairlabs.com>
- */
+ 
 
 #include <stdio.h>
 #include <unistd.h>
@@ -100,7 +65,7 @@
 	(idx) == DMU_OTN_UINT64_DATA || (idx) == DMU_OTN_UINT64_METADATA ? \
 	DMU_OT_UINT64_OTHER : DMU_OT_NUMTYPES)
 
-/* Some platforms require part of inode IDs to be remapped */
+ 
 #ifdef __APPLE__
 #define	ZDB_MAP_OBJECT_ID(obj) INO_XNUTOZFS(obj, 2)
 #else
@@ -165,7 +130,7 @@ static int flagbits[256];
 #define	ZDB_FLAG_PRINT_BLKPTR	0x0040
 #define	ZDB_FLAG_VERBOSE	0x0080
 
-static uint64_t max_inflight_bytes = 256 * 1024 * 1024; /* 256MB */
+static uint64_t max_inflight_bytes = 256 * 1024 * 1024;  
 static int leaked_objects = 0;
 static range_tree_t *mos_refd_objs;
 
@@ -177,10 +142,10 @@ static int dump_bpobj_cb(void *arg, const blkptr_t *bp, boolean_t free,
     dmu_tx_t *tx);
 
 typedef struct sublivelist_verify {
-	/* FREE's that haven't yet matched to an ALLOC, in one sub-livelist */
+	 
 	zfs_btree_t sv_pair;
 
-	/* ALLOC's without a matching FREE, accumulates across sub-livelists */
+	 
 	zfs_btree_t sv_leftover;
 } sublivelist_verify_t;
 
@@ -190,7 +155,7 @@ livelist_compare(const void *larg, const void *rarg)
 	const blkptr_t *l = larg;
 	const blkptr_t *r = rarg;
 
-	/* Sort them according to dva[0] */
+	 
 	uint64_t l_dva0_vdev, r_dva0_vdev;
 	l_dva0_vdev = DVA_GET_VDEV(&l->blk_dva[0]);
 	r_dva0_vdev = DVA_GET_VDEV(&r->blk_dva[0]);
@@ -199,7 +164,7 @@ livelist_compare(const void *larg, const void *rarg)
 	else if (l_dva0_vdev > r_dva0_vdev)
 		return (+1);
 
-	/* if vdevs are equal, sort by offsets. */
+	 
 	uint64_t l_dva0_offset;
 	uint64_t r_dva0_offset;
 	l_dva0_offset = DVA_GET_OFFSET(&l->blk_dva[0]);
@@ -210,10 +175,7 @@ livelist_compare(const void *larg, const void *rarg)
 		return (+1);
 	}
 
-	/*
-	 * Since we're storing blkptrs without cancelling FREE/ALLOC pairs,
-	 * it's possible the offsets are equal. In that case, sort by txg
-	 */
+	 
 	if (l->blk_birth < r->blk_birth) {
 		return (-1);
 	} else if (l->blk_birth > r->blk_birth) {
@@ -225,37 +187,17 @@ livelist_compare(const void *larg, const void *rarg)
 typedef struct sublivelist_verify_block {
 	dva_t svb_dva;
 
-	/*
-	 * We need this to check if the block marked as allocated
-	 * in the livelist was freed (and potentially reallocated)
-	 * in the metaslab spacemaps at a later TXG.
-	 */
+	 
 	uint64_t svb_allocated_txg;
 } sublivelist_verify_block_t;
 
 static void zdb_print_blkptr(const blkptr_t *bp, int flags);
 
 typedef struct sublivelist_verify_block_refcnt {
-	/* block pointer entry in livelist being verified */
+	 
 	blkptr_t svbr_blk;
 
-	/*
-	 * Refcount gets incremented to 1 when we encounter the first
-	 * FREE entry for the svfbr block pointer and a node for it
-	 * is created in our ZDB verification/tracking metadata.
-	 *
-	 * As we encounter more FREE entries we increment this counter
-	 * and similarly decrement it whenever we find the respective
-	 * ALLOC entries for this block.
-	 *
-	 * When the refcount gets to 0 it means that all the FREE and
-	 * ALLOC entries of this block have paired up and we no longer
-	 * need to track it in our verification logic (e.g. the node
-	 * containing this struct in our verification data structure
-	 * should be freed).
-	 *
-	 * [refer to sublivelist_verify_blkptr() for the actual code]
-	 */
+	 
 	uint32_t svbr_refcnt;
 } sublivelist_verify_block_refcnt_t;
 
@@ -276,11 +218,7 @@ sublivelist_verify_blkptr(void *arg, const blkptr_t *bp, boolean_t free,
 	sublivelist_verify_block_refcnt_t current = {
 			.svbr_blk = *bp,
 
-			/*
-			 * Start with 1 in case this is the first free entry.
-			 * This field is not used for our B-Tree comparisons
-			 * anyway.
-			 */
+			 
 			.svbr_refcnt = 1,
 	};
 
@@ -289,14 +227,14 @@ sublivelist_verify_blkptr(void *arg, const blkptr_t *bp, boolean_t free,
 	    zfs_btree_find(&sv->sv_pair, &current, &where);
 	if (free) {
 		if (pair == NULL) {
-			/* first free entry for this block pointer */
+			 
 			zfs_btree_add(&sv->sv_pair, &current);
 		} else {
 			pair->svbr_refcnt++;
 		}
 	} else {
 		if (pair == NULL) {
-			/* block that is currently marked as allocated */
+			 
 			for (int i = 0; i < SPA_DVAS_PER_BP; i++) {
 				if (DVA_IS_EMPTY(&bp->blk_dva[i]))
 					break;
@@ -312,10 +250,10 @@ sublivelist_verify_blkptr(void *arg, const blkptr_t *bp, boolean_t free,
 				}
 			}
 		} else {
-			/* alloc matches a free entry */
+			 
 			pair->svbr_refcnt--;
 			if (pair->svbr_refcnt == 0) {
-				/* all allocs and frees have been matched */
+				 
 				zfs_btree_remove_idx(&sv->sv_pair, &where);
 			}
 		}
@@ -374,10 +312,7 @@ livelist_block_compare(const void *larg, const void *rarg)
 	return (0);
 }
 
-/*
- * Check for errors in a livelist while tracking all unfreed ALLOCs in the
- * sublivelist_verify_t: sv->sv_leftover
- */
+ 
 static void
 livelist_verify(dsl_deadlist_t *dl, void *arg)
 {
@@ -385,10 +320,7 @@ livelist_verify(dsl_deadlist_t *dl, void *arg)
 	dsl_deadlist_iterate(dl, sublivelist_verify_func, sv);
 }
 
-/*
- * Check for errors in the livelist entry and discard the intermediary
- * data structures
- */
+ 
 static int
 sublivelist_verify_lightweight(void *args, dsl_deadlist_entry_t *dle)
 {
@@ -403,23 +335,16 @@ sublivelist_verify_lightweight(void *args, dsl_deadlist_entry_t *dle)
 }
 
 typedef struct metaslab_verify {
-	/*
-	 * Tree containing all the leftover ALLOCs from the livelists
-	 * that are part of this metaslab.
-	 */
+	 
 	zfs_btree_t mv_livelist_allocs;
 
-	/*
-	 * Metaslab information.
-	 */
+	 
 	uint64_t mv_vdid;
 	uint64_t mv_msid;
 	uint64_t mv_start;
 	uint64_t mv_end;
 
-	/*
-	 * What's currently allocated for this metaslab.
-	 */
+	 
 	range_tree_t *mv_allocated;
 } metaslab_verify_t;
 
@@ -479,11 +404,7 @@ verify_livelist_allocs(metaslab_verify_t *mv, uint64_t txg,
 	zfs_btree_index_t where;
 	uint64_t end_offset = offset + size;
 
-	/*
-	 *  Look for an exact match for spacemap entry in the livelist entries.
-	 *  Then, look for other livelist entries that fall within the range
-	 *  of the spacemap entry as it may have been condensed
-	 */
+	 
 	sublivelist_verify_block_t *found =
 	    zfs_btree_find(&mv->mv_livelist_allocs, &svb, &where);
 	if (found == NULL) {
@@ -540,10 +461,7 @@ metaslab_spacemap_validation_cb(space_map_entry_t *sme, void *arg)
 	}
 
 	if (sme->sme_type != SM_ALLOC) {
-		/*
-		 * If something is freed in the spacemap, verify that
-		 * it is not listed as allocated in the livelist.
-		 */
+		 
 		verify_livelist_allocs(mv, txg, offset, size);
 	}
 	return (0);
@@ -559,7 +477,7 @@ spacemap_check_sm_log_cb(spa_t *spa, space_map_entry_t *sme,
 
 	vdev_t *vd = vdev_lookup_top(spa, vdev_id);
 
-	/* skip indirect vdevs */
+	 
 	if (!vdev_is_concrete(vd))
 		return (0);
 
@@ -596,10 +514,7 @@ spacemap_check_ms_sm(space_map_t  *sm, metaslab_verify_t *mv)
 
 static void iterate_deleted_livelists(spa_t *spa, ll_iter_t func, void *arg);
 
-/*
- * Transfer blocks from sv_leftover tree to the mv_livelist_allocs if
- * they are part of that metaslab (mv_msid).
- */
+ 
 static void
 mv_populate_livelist_allocs(metaslab_verify_t *mv, sublivelist_verify_t *sv)
 {
@@ -649,37 +564,7 @@ mv_populate_livelist_allocs(metaslab_verify_t *mv, sublivelist_verify_t *sv)
 	}
 }
 
-/*
- * [Livelist Check]
- * Iterate through all the sublivelists and:
- * - report leftover frees (**)
- * - record leftover ALLOCs together with their TXG [see Cross Check]
- *
- * (**) Note: Double ALLOCs are valid in datasets that have dedup
- *      enabled. Similarly double FREEs are allowed as well but
- *      only if they pair up with a corresponding ALLOC entry once
- *      we our done with our sublivelist iteration.
- *
- * [Spacemap Check]
- * for each metaslab:
- * - iterate over spacemap and then the metaslab's entries in the
- *   spacemap log, then report any double FREEs and ALLOCs (do not
- *   blow up).
- *
- * [Cross Check]
- * After finishing the Livelist Check phase and while being in the
- * Spacemap Check phase, we find all the recorded leftover ALLOCs
- * of the livelist check that are part of the metaslab that we are
- * currently looking at in the Spacemap Check. We report any entries
- * that are marked as ALLOCs in the livelists but have been actually
- * freed (and potentially allocated again) after their TXG stamp in
- * the spacemaps. Also report any ALLOCs from the livelists that
- * belong to indirect vdevs (e.g. their vdev completed removal).
- *
- * Note that this will miss Log Spacemap entries that cancelled each other
- * out before being flushed to the metaslab, so we are not guaranteed
- * to match all erroneous ALLOCs.
- */
+ 
 static void
 livelist_metaslab_validate(spa_t *spa)
 {
@@ -736,12 +621,7 @@ livelist_metaslab_validate(spa_t *spa)
 	}
 	(void) fprintf(stderr, "\n");
 
-	/*
-	 * If there are any segments in the leftover tree after we walked
-	 * through all the metaslabs in the concrete vdevs then this means
-	 * that we have segments in the livelists that belong to indirect
-	 * vdevs and are marked as allocated.
-	 */
+	 
 	if (zfs_btree_numnodes(&sv.sv_leftover) == 0) {
 		zfs_btree_destroy(&sv.sv_leftover);
 		return;
@@ -766,20 +646,17 @@ livelist_metaslab_validate(spa_t *spa)
 	zfs_btree_destroy(&sv.sv_leftover);
 }
 
-/*
- * These libumem hooks provide a reasonable set of defaults for the allocator's
- * debugging facilities.
- */
+ 
 const char *
 _umem_debug_init(void)
 {
-	return ("default,verbose"); /* $UMEM_DEBUG setting */
+	return ("default,verbose");  
 }
 
 const char *
 _umem_logging_init(void)
 {
-	return ("fail,contents"); /* $UMEM_LOGGING setting */
+	return ("fail,contents");  
 }
 
 static void
@@ -933,10 +810,7 @@ dump_debug_buffer(void)
 	}
 }
 
-/*
- * Called for usage errors that are discovered after a call to spa_open(),
- * dmu_bonus_hold(), or pool_match().  abort() is called for other errors.
- */
+ 
 
 static void
 fatal(const char *fmt, ...)
@@ -1139,11 +1013,7 @@ dump_uint64(objset_t *os, uint64_t object, void *data, size_t size)
 
 		VERIFY0(dmu_object_info(os, object, &doi));
 		size = doi.doi_max_offset;
-		/*
-		 * We cap the size at 1 mebibyte here to prevent
-		 * allocation failures and nigh-infinite printing if the
-		 * object is extremely large.
-		 */
+		 
 		oursize = MIN(size, 1 << 20);
 		arr = kmem_alloc(oursize, KM_SLEEP);
 
@@ -1154,10 +1024,7 @@ dump_uint64(objset_t *os, uint64_t object, void *data, size_t size)
 			return;
 		}
 	} else {
-		/*
-		 * Even though the allocation is already done in this code path,
-		 * we still cap the size to prevent excessive printing.
-		 */
+		 
 		oursize = MIN(size, 1 << 20);
 		arr = data;
 	}
@@ -1255,7 +1122,7 @@ dump_bpobj(objset_t *os, uint64_t object, void *data, size_t size)
 	uint64_t i;
 	char bytes[32], comp[32], uncomp[32];
 
-	/* make sure the output won't get truncated */
+	 
 	_Static_assert(sizeof (bytes) >= NN_NUMBUF_SZ, "bytes truncated");
 	_Static_assert(sizeof (comp) >= NN_NUMBUF_SZ, "comp truncated");
 	_Static_assert(sizeof (uncomp) >= NN_NUMBUF_SZ, "uncomp truncated");
@@ -1338,7 +1205,7 @@ dump_ddt_zap(objset_t *os, uint64_t object, void *data, size_t size)
 {
 	(void) data, (void) size;
 	dump_zap_stats(os, object);
-	/* contents are printed elsewhere, properly decoded */
+	 
 }
 
 static void
@@ -1413,22 +1280,22 @@ dump_zpldir(objset_t *os, uint64_t object, void *data, size_t size)
 	zap_cursor_t zc;
 	zap_attribute_t attr;
 	const char *typenames[] = {
-		/* 0 */ "not specified",
-		/* 1 */ "FIFO",
-		/* 2 */ "Character Device",
-		/* 3 */ "3 (invalid)",
-		/* 4 */ "Directory",
-		/* 5 */ "5 (invalid)",
-		/* 6 */ "Block Device",
-		/* 7 */ "7 (invalid)",
-		/* 8 */ "Regular File",
-		/* 9 */ "9 (invalid)",
-		/* 10 */ "Symbolic Link",
-		/* 11 */ "11 (invalid)",
-		/* 12 */ "Socket",
-		/* 13 */ "Door",
-		/* 14 */ "Event Port",
-		/* 15 */ "15 (invalid)",
+		  "not specified",
+		  "FIFO",
+		  "Character Device",
+		  "3 (invalid)",
+		  "Directory",
+		  "5 (invalid)",
+		  "Block Device",
+		  "7 (invalid)",
+		  "Regular File",
+		  "9 (invalid)",
+		  "Symbolic Link",
+		  "11 (invalid)",
+		  "Socket",
+		  "Door",
+		  "Event Port",
+		  "15 (invalid)",
 	};
 
 	dump_zap_stats(os, object);
@@ -1590,9 +1457,7 @@ dump_spacemap(objset_t *os, space_map_t *sm)
 	if (dump_opt['d'] < 6 && dump_opt['m'] < 4)
 		return;
 
-	/*
-	 * Print out the freelist entries in both encoded and decoded form.
-	 */
+	 
 	uint8_t mapshift = sm->sm_shift;
 	int64_t alloc = 0;
 	uint64_t word, entry_id = 0;
@@ -1633,7 +1498,7 @@ dump_spacemap(objset_t *os, space_map_t *sm)
 			entry_run = SM_RUN_DECODE(word) << mapshift;
 			words = 1;
 		} else {
-			/* it is a two-word entry so we read another word */
+			 
 			ASSERT(sm_entry_is_double_word(word));
 
 			uint64_t extra_word;
@@ -1682,7 +1547,7 @@ dump_metaslab_stats(metaslab_t *msp)
 	zfs_btree_t *t = &msp->ms_allocatable_by_size;
 	int free_pct = range_tree_space(rt) * 100 / msp->ms_size;
 
-	/* max sure nicenum has enough space */
+	 
 	_Static_assert(sizeof (maxbuf) >= NN_NUMBUF_SZ, "maxbuf truncated");
 
 	zdb_nicenum(metaslab_largest_allocatable(msp), maxbuf, sizeof (maxbuf));
@@ -1721,10 +1586,7 @@ dump_metaslab(metaslab_t *msp)
 
 	if (dump_opt['m'] > 1 && sm != NULL &&
 	    spa_feature_is_active(spa, SPA_FEATURE_SPACEMAP_HISTOGRAM)) {
-		/*
-		 * The space map histogram represents free space in chunks
-		 * of sm_shift (i.e. bucket 0 refers to 2^sm_shift).
-		 */
+		 
 		(void) printf("\tOn-disk histogram:\t\tfragmentation %llu\n",
 		    (u_longlong_t)msp->ms_fragmentation);
 		dump_histogram(sm->sm_phys->smp_histogram,
@@ -2394,7 +2256,7 @@ snprintf_zstd_header(spa_t *spa, char *blkbuf, size_t buflen,
 	pabd = abd_alloc_for_io(SPA_MAXBLOCKSIZE, B_FALSE);
 	zio = zio_root(spa, NULL, NULL, 0);
 
-	/* Decrypt but don't decompress so we can read the compression header */
+	 
 	zio_nowait(zio_read(zio, spa, bp, pabd, BP_GET_PSIZE(bp), NULL, NULL,
 	    ZIO_PRIORITY_SYNC_READ, ZIO_FLAG_CANFAIL | ZIO_FLAG_RAW_COMPRESS,
 	    NULL));
@@ -2537,7 +2399,7 @@ visit_indirect(spa_t *spa, const dnode_phys_t *dnp,
 			return (err);
 		ASSERT(buf->b_data);
 
-		/* recursively visit blocks below this */
+		 
 		cbp = buf->b_data;
 		for (i = 0; i < epb; i++, cbp++) {
 			zbookmark_phys_t czb;
@@ -2585,7 +2447,7 @@ dump_dsl_dir(objset_t *os, uint64_t object, void *data, size_t size)
 	time_t crtime;
 	char nice[32];
 
-	/* make sure nicenum has enough space */
+	 
 	_Static_assert(sizeof (nice) >= NN_NUMBUF_SZ, "nice truncated");
 
 	if (dd == NULL)
@@ -2643,7 +2505,7 @@ dump_dsl_dataset(objset_t *os, uint64_t object, void *data, size_t size)
 	char used[32], compressed[32], uncompressed[32], unique[32];
 	char blkbuf[BP_SPRINTF_LEN];
 
-	/* make sure nicenum has enough space */
+	 
 	_Static_assert(sizeof (used) >= NN_NUMBUF_SZ, "used truncated");
 	_Static_assert(sizeof (compressed) >= NN_NUMBUF_SZ,
 	    "compressed truncated");
@@ -2719,7 +2581,7 @@ dump_bptree(objset_t *os, uint64_t obj, const char *name)
 	bptree_phys_t *bt;
 	dmu_buf_t *db;
 
-	/* make sure nicenum has enough space */
+	 
 	_Static_assert(sizeof (bytes) >= NN_NUMBUF_SZ, "bytes truncated");
 
 	if (dump_opt['d'] < 3)
@@ -2760,7 +2622,7 @@ dump_full_bpobj(bpobj_t *bpo, const char *name, int indent)
 	char uncomp[32];
 	uint64_t i;
 
-	/* make sure nicenum has enough space */
+	 
 	_Static_assert(sizeof (bytes) >= NN_NUMBUF_SZ, "bytes truncated");
 	_Static_assert(sizeof (comp) >= NN_NUMBUF_SZ, "comp truncated");
 	_Static_assert(sizeof (uncomp) >= NN_NUMBUF_SZ, "uncomp truncated");
@@ -3040,7 +2902,7 @@ dump_blkptr_list(dsl_deadlist_t *dl, const char *name)
 		dsl_deadlist_iterate(dl, dsl_deadlist_entry_count_refd, spa);
 	}
 
-	/* make sure nicenum has enough space */
+	 
 	_Static_assert(sizeof (bytes) >= NN_NUMBUF_SZ, "bytes truncated");
 	_Static_assert(sizeof (comp) >= NN_NUMBUF_SZ, "comp truncated");
 	_Static_assert(sizeof (uncomp) >= NN_NUMBUF_SZ, "uncomp truncated");
@@ -3080,7 +2942,7 @@ verify_dd_livelist(objset_t *os)
 	if (!dsl_deadlist_is_open(&dd->dd_livelist))
 		return (0);
 
-	/* Iterate through the livelist to check for duplicates */
+	 
 	dsl_deadlist_iterate(&dd->dd_livelist, sublivelist_verify_lightweight,
 	    NULL);
 
@@ -3096,10 +2958,7 @@ verify_dd_livelist(objset_t *os)
 	    &used, &comp, &uncomp));
 	dsl_dataset_rele(origin_ds, FTAG);
 	dsl_pool_config_exit(dp, FTAG);
-	/*
-	 *  It's possible that the dataset's uncomp space is larger than the
-	 *  livelist's because livelists do not track embedded block pointers
-	 */
+	 
 	if (used != ll_used || comp != ll_comp || uncomp < ll_uncomp) {
 		char nice_used[32], nice_comp[32], nice_uncomp[32];
 		(void) printf("Discrepancy in space accounting:\n");
@@ -3245,14 +3104,10 @@ open_objset(const char *path, const void *tag, objset_t **osp)
 
 	VERIFY3P(sa_os, ==, NULL);
 
-	/*
-	 * We can't own an objset if it's redacted.  Therefore, we do this
-	 * dance: hold the objset, then acquire a long hold on its dataset, then
-	 * release the pool (which is held as part of holding the objset).
-	 */
+	 
 
 	if (dump_opt['K']) {
-		/* decryption requested, try to load keys */
+		 
 		err = dmu_objset_hold(path, tag, osp);
 		if (err != 0) {
 			(void) fprintf(stderr, "failed to hold dataset "
@@ -3263,10 +3118,10 @@ open_objset(const char *path, const void *tag, objset_t **osp)
 		dsl_dataset_long_hold(dmu_objset_ds(*osp), tag);
 		dsl_pool_rele(dmu_objset_pool(*osp), tag);
 
-		/* succeeds or dies */
+		 
 		zdb_load_key(*osp);
 
-		/* release it all */
+		 
 		dsl_dataset_long_rele(dmu_objset_ds(*osp), tag);
 		dsl_dataset_rele(dmu_objset_ds(*osp), tag);
 	}
@@ -3330,12 +3185,7 @@ fuid_table_destroy(void)
 	}
 }
 
-/*
- * print uid or gid information.
- * For normal POSIX id just the id is printed in decimal format.
- * For CIFS files with FUID the fuid is printed in hex followed by
- * the domain-rid string.
- */
+ 
 static void
 print_idstr(uint64_t id, const char *id_type)
 {
@@ -3358,11 +3208,11 @@ dump_uidgid(objset_t *os, uint64_t uid, uint64_t gid)
 	uid_idx = FUID_INDEX(uid);
 	gid_idx = FUID_INDEX(gid);
 
-	/* Load domain table, if not already loaded */
+	 
 	if (!fuid_table_loaded && (uid_idx || gid_idx)) {
 		uint64_t fuid_obj;
 
-		/* first find the fuid object.  It lives in the master node */
+		 
 		VERIFY(zap_lookup(os, MASTER_NODE_OBJ, ZFS_FUID_TABLES,
 		    8, 1, &fuid_obj) == 0);
 		zfs_fuid_avl_tree_create(&idx_tree, &domain_tree);
@@ -3465,7 +3315,7 @@ static void
 dump_znode(objset_t *os, uint64_t object, void *data, size_t size)
 {
 	(void) data, (void) size;
-	char path[MAXPATHLEN * 2];	/* allow for xattr and failure prefix */
+	char path[MAXPATHLEN * 2];	 
 	sa_handle_t *hdl;
 	uint64_t xattr, rdev, gen;
 	uint64_t uid, gid, mode, fsize, parent, links;
@@ -3569,61 +3419,61 @@ dump_dmu_objset(objset_t *os, uint64_t object, void *data, size_t size)
 }
 
 static object_viewer_t *object_viewer[DMU_OT_NUMTYPES + 1] = {
-	dump_none,		/* unallocated			*/
-	dump_zap,		/* object directory		*/
-	dump_uint64,		/* object array			*/
-	dump_none,		/* packed nvlist		*/
-	dump_packed_nvlist,	/* packed nvlist size		*/
-	dump_none,		/* bpobj			*/
-	dump_bpobj,		/* bpobj header			*/
-	dump_none,		/* SPA space map header		*/
-	dump_none,		/* SPA space map		*/
-	dump_none,		/* ZIL intent log		*/
-	dump_dnode,		/* DMU dnode			*/
-	dump_dmu_objset,	/* DMU objset			*/
-	dump_dsl_dir,		/* DSL directory		*/
-	dump_zap,		/* DSL directory child map	*/
-	dump_zap,		/* DSL dataset snap map		*/
-	dump_zap,		/* DSL props			*/
-	dump_dsl_dataset,	/* DSL dataset			*/
-	dump_znode,		/* ZFS znode			*/
-	dump_acl,		/* ZFS V0 ACL			*/
-	dump_uint8,		/* ZFS plain file		*/
-	dump_zpldir,		/* ZFS directory		*/
-	dump_zap,		/* ZFS master node		*/
-	dump_zap,		/* ZFS delete queue		*/
-	dump_uint8,		/* zvol object			*/
-	dump_zap,		/* zvol prop			*/
-	dump_uint8,		/* other uint8[]		*/
-	dump_uint64,		/* other uint64[]		*/
-	dump_zap,		/* other ZAP			*/
-	dump_zap,		/* persistent error log		*/
-	dump_uint8,		/* SPA history			*/
-	dump_history_offsets,	/* SPA history offsets		*/
-	dump_zap,		/* Pool properties		*/
-	dump_zap,		/* DSL permissions		*/
-	dump_acl,		/* ZFS ACL			*/
-	dump_uint8,		/* ZFS SYSACL			*/
-	dump_none,		/* FUID nvlist			*/
-	dump_packed_nvlist,	/* FUID nvlist size		*/
-	dump_zap,		/* DSL dataset next clones	*/
-	dump_zap,		/* DSL scrub queue		*/
-	dump_zap,		/* ZFS user/group/project used	*/
-	dump_zap,		/* ZFS user/group/project quota	*/
-	dump_zap,		/* snapshot refcount tags	*/
-	dump_ddt_zap,		/* DDT ZAP object		*/
-	dump_zap,		/* DDT statistics		*/
-	dump_znode,		/* SA object			*/
-	dump_zap,		/* SA Master Node		*/
-	dump_sa_attrs,		/* SA attribute registration	*/
-	dump_sa_layouts,	/* SA attribute layouts		*/
-	dump_zap,		/* DSL scrub translations	*/
-	dump_none,		/* fake dedup BP		*/
-	dump_zap,		/* deadlist			*/
-	dump_none,		/* deadlist hdr			*/
-	dump_zap,		/* dsl clones			*/
-	dump_bpobj_subobjs,	/* bpobj subobjs		*/
-	dump_unknown,		/* Unknown type, must be last	*/
+	dump_none,		 
+	dump_zap,		 
+	dump_uint64,		 
+	dump_none,		 
+	dump_packed_nvlist,	 
+	dump_none,		 
+	dump_bpobj,		 
+	dump_none,		 
+	dump_none,		 
+	dump_none,		 
+	dump_dnode,		 
+	dump_dmu_objset,	 
+	dump_dsl_dir,		 
+	dump_zap,		 
+	dump_zap,		 
+	dump_zap,		 
+	dump_dsl_dataset,	 
+	dump_znode,		 
+	dump_acl,		 
+	dump_uint8,		 
+	dump_zpldir,		 
+	dump_zap,		 
+	dump_zap,		 
+	dump_uint8,		 
+	dump_zap,		 
+	dump_uint8,		 
+	dump_uint64,		 
+	dump_zap,		 
+	dump_zap,		 
+	dump_uint8,		 
+	dump_history_offsets,	 
+	dump_zap,		 
+	dump_zap,		 
+	dump_acl,		 
+	dump_uint8,		 
+	dump_none,		 
+	dump_packed_nvlist,	 
+	dump_zap,		 
+	dump_zap,		 
+	dump_zap,		 
+	dump_zap,		 
+	dump_zap,		 
+	dump_ddt_zap,		 
+	dump_zap,		 
+	dump_znode,		 
+	dump_zap,		 
+	dump_sa_attrs,		 
+	dump_sa_layouts,	 
+	dump_zap,		 
+	dump_none,		 
+	dump_zap,		 
+	dump_none,		 
+	dump_zap,		 
+	dump_bpobj_subobjs,	 
+	dump_unknown,		 
 };
 
 static boolean_t
@@ -3651,12 +3501,7 @@ match_object_type(dmu_object_type_t obj_type, uint64_t flags)
 			break;
 		}
 
-		/*
-		 * If all bits except some of the supported flags are
-		 * set, the user combined the all-types flag (A) with
-		 * a negated flag to exclude some types (e.g. A-f to
-		 * show all object types except plain files).
-		 */
+		 
 		if ((flags | ZOR_SUPPORTED_FLAGS) != ZOR_FLAG_ALL_TYPES)
 			match = B_FALSE;
 
@@ -3681,7 +3526,7 @@ dump_object(objset_t *os, uint64_t object, int verbosity,
 	char aux[50];
 	int error;
 
-	/* make sure nicenum has enough space */
+	 
 	_Static_assert(sizeof (iblk) >= NN_NUMBUF_SZ, "iblk truncated");
 	_Static_assert(sizeof (dblk) >= NN_NUMBUF_SZ, "dblk truncated");
 	_Static_assert(sizeof (lsize) >= NN_NUMBUF_SZ, "lsize truncated");
@@ -3700,11 +3545,7 @@ dump_object(objset_t *os, uint64_t object, int verbosity,
 		dn = DMU_META_DNODE(os);
 		dmu_object_info_from_dnode(dn, &doi);
 	} else {
-		/*
-		 * Encrypted datasets will have sensitive bonus buffers
-		 * encrypted. Therefore we cannot hold the bonus buffer and
-		 * must hold the dnode itself instead.
-		 */
+		 
 		error = dmu_object_info(os, object, &doi);
 		if (error)
 			fatal("dmu_object_info() failed, errno %u", error);
@@ -3726,9 +3567,7 @@ dump_object(objset_t *os, uint64_t object, int verbosity,
 		}
 	}
 
-	/*
-	 * Default to showing all object types if no flags were specified.
-	 */
+	 
 	if (flags != 0 && flags != ZOR_FLAG_ALL_TYPES &&
 	    !match_object_type(doi.doi_type, flags))
 		goto out;
@@ -3828,9 +3667,7 @@ dump_object(objset_t *os, uint64_t object, int verbosity,
 	}
 
 	if (verbosity >= 5) {
-		/*
-		 * Report the list of segments that comprise the object.
-		 */
+		 
 		uint64_t start = 0;
 		uint64_t end;
 		uint64_t blkfill = 1;
@@ -3843,7 +3680,7 @@ dump_object(objset_t *os, uint64_t object, int verbosity,
 
 		for (;;) {
 			char segsize[32];
-			/* make sure nicenum has enough space */
+			 
 			_Static_assert(sizeof (segsize) >= NN_NUMBUF_SZ,
 			    "segsize truncated");
 			error = dnode_next_offset(dn,
@@ -3879,10 +3716,7 @@ count_dir_mos_objects(dsl_dir_t *dd)
 	mos_obj_refd(dsl_dir_phys(dd)->dd_props_zapobj);
 	mos_obj_refd(dsl_dir_phys(dd)->dd_clones);
 
-	/*
-	 * The dd_crypto_obj can be referenced by multiple dsl_dir's.
-	 * Ignore the references after the first one.
-	 */
+	 
 	mos_obj_refd_multiple(dd->dd_crypto_obj);
 }
 
@@ -3904,12 +3738,7 @@ count_ds_mos_objects(dsl_dataset_t *ds)
 static const char *const objset_types[DMU_OST_NUMTYPES] = {
 	"NONE", "META", "ZPL", "ZVOL", "OTHER", "ANY" };
 
-/*
- * Parse a string denoting a range of object IDs of the form
- * <start>[:<end>[:flags]], and store the results in zor.
- * Return 0 on success. On error, return 1 and update the msg
- * pointer to point to a descriptive error message.
- */
+ 
 static int
 parse_object_range(char *range, zopt_object_range_t *zor, const char **msg)
 {
@@ -4033,7 +3862,7 @@ dump_objset(objset_t *os)
 	uint64_t obj_end;
 	uint64_t flags;
 
-	/* make sure nicenum has enough space */
+	 
 	_Static_assert(sizeof (numbuf) >= NN_NUMBUF_SZ, "numbuf truncated");
 
 	dsl_pool_config_enter(dmu_objset_pool(os), FTAG);
@@ -4205,7 +4034,7 @@ dump_uberblock(uberblock_t *ub, const char *header, const char *footer)
 		if (MMP_INTERVAL_VALID(ub))
 			(void) printf("\tmmp_write = %u\n",
 			    (unsigned int) MMP_INTERVAL(ub));
-		/* After MMP_* to make summarize_uberblock_mmp cleaner */
+		 
 		(void) printf("\tmmp_valid = %x\n",
 		    (unsigned int) ub->ub_mmp_config & 0xFF);
 	}
@@ -4290,9 +4119,7 @@ dump_cachefile(const char *cachefile)
 	nvlist_free(config);
 }
 
-/*
- * ZFS label nvlist stats
- */
+ 
 typedef struct zdb_nvl_stats {
 	int		zns_list_count;
 	int		zns_leaf_count;
@@ -4339,7 +4166,7 @@ collect_nvlist_stats(nvlist_t *nvl, zdb_nvl_stats_t *stats)
 			for (i = 0; i < items; i++) {
 				collect_nvlist_stats(array[i], stats);
 
-				/* collect stats on leaf vdev */
+				 
 				if (strcmp(name, "children") == 0) {
 					size_t size;
 
@@ -4365,7 +4192,7 @@ dump_nvlist_stats(nvlist_t *nvl, size_t cap)
 	size_t size, sum = 0, total;
 	size_t noise;
 
-	/* requires nvlist with non-unique names for stat collection */
+	 
 	VERIFY0(nvlist_alloc(&stats.zns_string, 0, 0));
 	VERIFY0(nvlist_alloc(&stats.zns_uint64, 0, 0));
 	VERIFY0(nvlist_alloc(&stats.zns_boolean, 0, 0));
@@ -4400,7 +4227,7 @@ dump_nvlist_stats(nvlist_t *nvl, size_t cap)
 	    (int)fnvlist_num_pairs(stats.zns_boolean),
 	    (int)size, 100.0 * size / total);
 
-	size = total - sum;	/* treat remainder as nvlist overhead */
+	size = total - sum;	 
 	(void) printf("%12s %4d %6d bytes (%5.2f%%)\n\n", "nvlists:",
 	    stats.zns_list_count, (int)size, 100.0 * size / total);
 
@@ -4627,7 +4454,7 @@ dump_l2arc_log_blocks(int fd, const l2arc_dev_hdr_phys_t *l2dhdr,
 	dev.l2ad_end = l2dhdr->dh_end;
 
 	if (l2dhdr->dh_start_lbps[0].lbp_daddr == 0) {
-		/* no log blocks to read */
+		 
 		if (!dump_opt['q']) {
 			(void) printf("No log blocks to read\n");
 			(void) printf("\n");
@@ -4644,7 +4471,7 @@ dump_l2arc_log_blocks(int fd, const l2arc_dev_hdr_phys_t *l2dhdr,
 		if (!l2arc_log_blkptr_valid(&dev, &lbps[0]))
 			break;
 
-		/* L2BLK_GET_PSIZE returns aligned size for log blocks */
+		 
 		asize = L2BLK_GET_PSIZE((&lbps[0])->lbp_prop);
 		if (pread64(fd, &this_lb, asize, lbps[0].lbp_daddr) != asize) {
 			if (!dump_opt['q']) {
@@ -4741,7 +4568,7 @@ dump_l2arc_header(int fd)
 
 	if (error) {
 		(void) printf("L2ARC device header not found\n\n");
-		/* Do not return an error here for backward compatibility */
+		 
 		return (0);
 	} else if (!dump_opt['q']) {
 		print_l2arc_header();
@@ -4779,20 +4606,7 @@ dump_l2arc_header(int fd)
 	}
 
 	dump_l2arc_log_blocks(fd, &l2dhdr, &rebuild);
-	/*
-	 * The total aligned size of log blocks and the number of log blocks
-	 * reported in the header of the device may be less than what zdb
-	 * reports by dump_l2arc_log_blocks() which emulates l2arc_rebuild().
-	 * This happens because dump_l2arc_log_blocks() lacks the memory
-	 * pressure valve that l2arc_rebuild() has. Thus, if we are on a system
-	 * with low memory, l2arc_rebuild will exit prematurely and dh_lb_asize
-	 * and dh_lb_count will be lower to begin with than what exists on the
-	 * device. This is normal and zdb should not exit with an error. The
-	 * opposite case should never happen though, the values reported in the
-	 * header should never be higher than what dump_l2arc_log_blocks() and
-	 * l2arc_rebuild() report. If this happens there is a leak in the
-	 * accounting of log blocks.
-	 */
+	 
 	if (l2dhdr.dh_lb_asize > rebuild.dh_lb_asize ||
 	    l2dhdr.dh_lb_count > rebuild.dh_lb_count)
 		return (1);
@@ -4860,11 +4674,7 @@ dump_label_uberblocks(zdb_label_t *label, uint64_t ashift, int label_num)
 
 static char curpath[PATH_MAX];
 
-/*
- * Iterate through the path components, recursively passing
- * current one's obj and remaining path until we find the obj
- * for the last one.
- */
+ 
 static int
 dump_path_impl(objset_t *os, uint64_t obj, char *name, uint64_t *retobj)
 {
@@ -4935,9 +4745,7 @@ dump_path_impl(objset_t *os, uint64_t obj, char *name, uint64_t *retobj)
 	return (EINVAL);
 }
 
-/*
- * Dump the blocks for the object specified by path inside the dataset.
- */
+ 
 static int
 dump_path(char *ds, char *path, uint64_t *retobj)
 {
@@ -4974,7 +4782,7 @@ dump_backup_bytes(objset_t *os, void *buf, int len, void *arg)
 	(void) os;
 	(void) arg;
 
-	/* Write the data out, handling short writes and signals. */
+	 
 	while ((nwritten = write(STDOUT_FILENO, p, len)) < len) {
 		if (nwritten < 0) {
 			if (errno == EINTR)
@@ -5030,8 +4838,8 @@ dump_backup(const char *pool, uint64_t objset_id, const char *flagstr)
 	    .dso_dryrun  = B_FALSE,
 	};
 
-	int err = dmu_send_obj(pool, objset_id, /* fromsnap */0, embed,
-	    large_block, compress, raw, /* saved */ B_FALSE, STDOUT_FILENO,
+	int err = dmu_send_obj(pool, objset_id,  0, embed,
+	    large_block, compress, raw,   B_FALSE, STDOUT_FILENO,
 	    &off, &out);
 	if (err != 0) {
 		fprintf(stderr, "dump_backup: dmu_send_obj: %s\n",
@@ -5071,11 +4879,7 @@ zdb_copy_object(objset_t *os, uint64_t srcobj, char *destfile)
 	int fd = open(destfile, O_WRONLY | O_CREAT | O_TRUNC, 0644);
 	if (fd == -1)
 		return (errno);
-	/*
-	 * We cap the size at 1 mebibyte here to prevent
-	 * allocation failures and nigh-infinite printing if the
-	 * object is extremely large.
-	 */
+	 
 	oursize = MIN(size, 1 << 20);
 	offset = 0;
 	char *buf = kmem_alloc(oursize, KM_NOSLEEP);
@@ -5103,7 +4907,7 @@ zdb_copy_object(objset_t *os, uint64_t srcobj, char *destfile)
 			err = errno;
 			break;
 		} else if (writesize != readsize) {
-			/* Incomplete write */
+			 
 			(void) fprintf(stderr, "Short write, only wrote %llu of"
 			    " %" PRIu64 " bytes, exiting...\n",
 			    (u_longlong_t)writesize, readsize);
@@ -5172,11 +4976,7 @@ dump_label(const char *dev)
 	void *node, *cookie;
 	int fd;
 
-	/*
-	 * Check if we were given absolute path and use it as is.
-	 * Otherwise if the provided vdev name doesn't point to a file,
-	 * try prepending expected disk paths and partition numbers.
-	 */
+	 
 	(void) strlcpy(path, dev, sizeof (path));
 	if (dev[0] != '/' && stat64(path, &statbuf) != 0) {
 		int error;
@@ -5219,12 +5019,7 @@ dump_label(const char *dev)
 	psize = P2ALIGN(psize, (uint64_t)sizeof (vdev_label_t));
 	ashift = SPA_MINBLOCKSHIFT;
 
-	/*
-	 * 1. Read the label from disk
-	 * 2. Verify label cksum
-	 * 3. Unpack the configuration and insert in config tree.
-	 * 4. Traverse all uberblocks and insert in uberblock tree.
-	 */
+	 
 	for (int l = 0; l < VDEV_LABELS; l++) {
 		zdb_label_t *label = &labels[l];
 		char *buf = label->label.vl_vdev_phys.vp_nvlist;
@@ -5262,7 +5057,7 @@ dump_label(const char *dev)
 			if (nvlist_size(config, &size, NV_ENCODE_XDR) != 0)
 				size = buflen;
 
-			/* If the device is a cache device read the header. */
+			 
 			if (!read_l2arc_header) {
 				if (nvlist_lookup_uint64(config,
 				    ZPOOL_CONFIG_POOL_STATE, &l2cache) == 0 &&
@@ -5298,9 +5093,7 @@ dump_label(const char *dev)
 		}
 	}
 
-	/*
-	 * Dump the label and uberblocks.
-	 */
+	 
 	for (int l = 0; l < VDEV_LABELS; l++) {
 		zdb_label_t *label = &labels[l];
 		size_t buflen = sizeof (label->label.vl_vdev_phys.vp_nvlist);
@@ -5321,9 +5114,7 @@ dump_label(const char *dev)
 		nvlist_free(label->config_nv);
 	}
 
-	/*
-	 * Dump the L2ARC header, if existent.
-	 */
+	 
 	if (read_l2arc_header)
 		error |= dump_l2arc_header(fd);
 
@@ -5393,9 +5184,7 @@ dump_one_objset(const char *dsname, void *arg)
 	return (0);
 }
 
-/*
- * Block statistics.
- */
+ 
 #define	PSIZE_HISTO_SIZE (SPA_OLD_MAXBLOCKSIZE / SPA_MINBLOCKSIZE + 2)
 typedef struct zdb_blkstats {
 	uint64_t zb_asize;
@@ -5408,9 +5197,7 @@ typedef struct zdb_blkstats {
 	uint64_t zb_psize_histogram[PSIZE_HISTO_SIZE];
 } zdb_blkstats_t;
 
-/*
- * Extended object types to report deferred frees and dedup auto-ditto blocks.
- */
+ 
 #define	ZDB_OT_DEFERRED	(DMU_OT_NUMTYPES + 0)
 #define	ZDB_OT_DITTO	(DMU_OT_NUMTYPES + 1)
 #define	ZDB_OT_OTHER	(DMU_OT_NUMTYPES + 2)
@@ -5464,7 +5251,7 @@ typedef struct zdb_cb {
 	boolean_t	zcb_brt_is_active;
 } zdb_cb_t;
 
-/* test if two DVA offsets from same vdev are within the same metaslab */
+ 
 static boolean_t
 same_metaslab(spa_t *spa, uint64_t vdev, uint64_t off1, uint64_t off2)
 {
@@ -5474,9 +5261,7 @@ same_metaslab(spa_t *spa, uint64_t vdev, uint64_t off1, uint64_t off2)
 	return ((off1 >> ms_shift) == (off2 >> ms_shift));
 }
 
-/*
- * Used to simplify reporting of the histogram data.
- */
+ 
 typedef struct one_histo {
 	const char *name;
 	uint64_t *count;
@@ -5484,46 +5269,24 @@ typedef struct one_histo {
 	uint64_t cumulative;
 } one_histo_t;
 
-/*
- * The number of separate histograms processed for psize, lsize and asize.
- */
+ 
 #define	NUM_HISTO 3
 
-/*
- * This routine will create a fixed column size output of three different
- * histograms showing by blocksize of 512 - 2^ SPA_MAX_FOR_16M
- * the count, length and cumulative length of the psize, lsize and
- * asize blocks.
- *
- * All three types of blocks are listed on a single line
- *
- * By default the table is printed in nicenumber format (e.g. 123K) but
- * if the '-P' parameter is specified then the full raw number (parseable)
- * is printed out.
- */
+ 
 static void
 dump_size_histograms(zdb_cb_t *zcb)
 {
-	/*
-	 * A temporary buffer that allows us to convert a number into
-	 * a string using zdb_nicenumber to allow either raw or human
-	 * readable numbers to be output.
-	 */
+	 
 	char numbuf[32];
 
-	/*
-	 * Define titles which are used in the headers of the tables
-	 * printed by this routine.
-	 */
+	 
 	const char blocksize_title1[] = "block";
 	const char blocksize_title2[] = "size";
 	const char count_title[] = "Count";
 	const char length_title[] = "Size";
 	const char cumulative_title[] = "Cum.";
 
-	/*
-	 * Setup the histogram arrays (psize, lsize, and asize).
-	 */
+	 
 	one_histo_t parm_histo[NUM_HISTO];
 
 	parm_histo[0].name = "psize";
@@ -5543,9 +5306,7 @@ dump_size_histograms(zdb_cb_t *zcb)
 
 
 	(void) printf("\nBlock Size Histogram\n");
-	/*
-	 * Print the first line titles
-	 */
+	 
 	if (dump_opt['P'])
 		(void) printf("\n%s\t", blocksize_title1);
 	else
@@ -5556,25 +5317,23 @@ dump_size_histograms(zdb_cb_t *zcb)
 			if (j < NUM_HISTO - 1) {
 				(void) printf("%s\t\t\t", parm_histo[j].name);
 			} else {
-				/* Don't print trailing spaces */
+				 
 				(void) printf("  %s", parm_histo[j].name);
 			}
 		} else {
 			if (j < NUM_HISTO - 1) {
-				/* Left aligned strings in the output */
+				 
 				(void) printf("%-7s              ",
 				    parm_histo[j].name);
 			} else {
-				/* Don't print trailing spaces */
+				 
 				(void) printf("%s", parm_histo[j].name);
 			}
 		}
 	}
 	(void) printf("\n");
 
-	/*
-	 * Print the second line titles
-	 */
+	 
 	if (dump_opt['P']) {
 		(void) printf("%s\t", blocksize_title2);
 	} else {
@@ -5592,14 +5351,10 @@ dump_size_histograms(zdb_cb_t *zcb)
 	}
 	(void) printf("\n");
 
-	/*
-	 * Print the rows
-	 */
+	 
 	for (int i = SPA_MINBLOCKSHIFT; i < SPA_MAX_FOR_16M; i++) {
 
-		/*
-		 * Print the first column showing the blocksize
-		 */
+		 
 		zdb_nicenum((1ULL << i), numbuf, sizeof (numbuf));
 
 		if (dump_opt['P']) {
@@ -5608,10 +5363,7 @@ dump_size_histograms(zdb_cb_t *zcb)
 			printf("%7s:", numbuf);
 		}
 
-		/*
-		 * Print the remaining set of 3 columns per size:
-		 * for psize, lsize and asize
-		 */
+		 
 		for (int j = 0; j < NUM_HISTO; j++) {
 			parm_histo[j].cumulative += parm_histo[j].len[i];
 
@@ -5665,11 +5417,7 @@ zdb_count_block(zdb_cb_t *zcb, zilog_t *zilog, const blkptr_t *bp,
 		zb->zb_psize += BP_GET_PSIZE(bp);
 		zb->zb_count++;
 
-		/*
-		 * The histogram is only big enough to record blocks up to
-		 * SPA_OLD_MAXBLOCKSIZE; larger blocks go into the last,
-		 * "other", bucket.
-		 */
+		 
 		unsigned idx = BP_GET_PSIZE(bp) >> SPA_MINBLOCKSHIFT;
 		idx = MIN(idx, SPA_OLD_MAXBLOCKSIZE / SPA_MINBLOCKSIZE + 1);
 		zb->zb_psize_histogram[idx]++;
@@ -5733,11 +5481,7 @@ zdb_count_block(zdb_cb_t *zcb, zilog_t *zilog, const blkptr_t *bp,
 		    [BPE_GET_PSIZE(bp)]++;
 		return;
 	}
-	/*
-	 * The binning histogram bins by powers of two up to
-	 * SPA_MAXBLOCKSIZE rather than creating bins for
-	 * every possible blocksize found in the pool.
-	 */
+	 
 	int bin = highbit64(BP_GET_PSIZE(bp)) - 1;
 
 	zcb->zcb_psize_count[bin]++;
@@ -5757,17 +5501,7 @@ zdb_count_block(zdb_cb_t *zcb, zilog_t *zilog, const blkptr_t *bp,
 	zcb->zcb_asize_total += BP_GET_ASIZE(bp);
 
 	if (zcb->zcb_brt_is_active && brt_maybe_exists(zcb->zcb_spa, bp)) {
-		/*
-		 * Cloned blocks are special. We need to count them, so we can
-		 * later uncount them when reporting leaked space, and we must
-		 * only claim them them once.
-		 *
-		 * To do this, we keep our own in-memory BRT. For each block
-		 * we haven't seen before, we look it up in the real BRT and
-		 * if its there, we note it and its refcount then proceed as
-		 * normal. If we see the block again, we count it as a clone
-		 * and then give it no further consideration.
-		 */
+		 
 		zdb_brt_entry_t zbre_search, *zbre;
 		avl_index_t where;
 
@@ -5901,7 +5635,7 @@ zdb_blkptr_cb(spa_t *spa, zilog_t *zilog, const blkptr_t *bp,
 		abd_t *abd = abd_alloc(size, B_FALSE);
 		int flags = ZIO_FLAG_CANFAIL | ZIO_FLAG_SCRUB | ZIO_FLAG_RAW;
 
-		/* If it's an intent log block, failure is expected. */
+		 
 		if (zb->zb_level == ZB_ZIL_LEVEL)
 			flags |= ZIO_FLAG_SPECULATIVE;
 
@@ -5917,7 +5651,7 @@ zdb_blkptr_cb(spa_t *spa, zilog_t *zilog, const blkptr_t *bp,
 
 	zcb->zcb_readfails = 0;
 
-	/* only call gethrtime() every 100 blocks */
+	 
 	static int iters;
 	if (++iters > 100)
 		iters = 0;
@@ -5933,7 +5667,7 @@ zdb_blkptr_cb(spa_t *spa, zilog_t *zilog, const blkptr_t *bp,
 		uint64_t sec_remaining =
 		    (zcb->zcb_totalasize - bytes) / 1024 / kb_per_sec;
 
-		/* make sure nicenum has enough space */
+		 
 		_Static_assert(sizeof (buf) >= NN_NUMBUF_SZ, "buf truncated");
 
 		zfs_nicebytes(bytes, buf, sizeof (buf));
@@ -5962,7 +5696,7 @@ zdb_leak(void *arg, uint64_t start, uint64_t size)
 }
 
 static metaslab_ops_t zdb_metaslab_ops = {
-	NULL	/* alloc */
+	NULL	 
 };
 
 static int
@@ -5974,7 +5708,7 @@ load_unflushed_svr_segs_cb(spa_t *spa, space_map_entry_t *sme,
 	uint64_t offset = sme->sme_offset;
 	uint64_t size = sme->sme_run;
 
-	/* skip vdevs we don't care about */
+	 
 	if (sme->sme_vdev != svr->svr_vdev_id)
 		return (0);
 
@@ -5999,12 +5733,7 @@ claim_segment_impl_cb(uint64_t inner_offset, vdev_t *vd, uint64_t offset,
 {
 	(void) inner_offset, (void) arg;
 
-	/*
-	 * This callback was called through a remap from
-	 * a device being removed. Therefore, the vdev that
-	 * this callback is applied to is a concrete
-	 * vdev.
-	 */
+	 
 	ASSERT(vdev_is_concrete(vd));
 
 	VERIFY0(metaslab_claim_impl(vd, offset, size,
@@ -6020,13 +5749,7 @@ claim_segment_cb(void *arg, uint64_t offset, uint64_t size)
 	    claim_segment_impl_cb, NULL);
 }
 
-/*
- * After accounting for all allocated blocks that are directly referenced,
- * we might have missed a reference to a block from a partially complete
- * (and thus unused) indirect mapping object. We perform a secondary pass
- * through the metaslabs we have already mapped and claim the destination
- * blocks.
- */
+ 
 static void
 zdb_claim_removing(spa_t *spa, zdb_cb_t *zcb)
 {
@@ -6057,11 +5780,7 @@ zdb_claim_removing(spa_t *spa, zdb_cb_t *zcb)
 
 	iterate_through_spacemap_logs(spa, load_unflushed_svr_segs_cb, svr);
 
-	/*
-	 * Clear everything past what has been synced,
-	 * because we have not allocated mappings for
-	 * it yet.
-	 */
+	 
 	range_tree_clear(svr->svr_allocd_segs,
 	    vdev_indirect_mapping_max_offset(vim),
 	    vd->vdev_asize - vdev_indirect_mapping_max_offset(vim));
@@ -6187,29 +5906,11 @@ checkpoint_sm_exclude_entry_cb(space_map_entry_t *sme, void *arg)
 
 	ASSERT(sme->sme_type == SM_FREE);
 
-	/*
-	 * Since the vdev_checkpoint_sm exists in the vdev level
-	 * and the ms_sm space maps exist in the metaslab level,
-	 * an entry in the checkpoint space map could theoretically
-	 * cross the boundaries of the metaslab that it belongs.
-	 *
-	 * In reality, because of the way that we populate and
-	 * manipulate the checkpoint's space maps currently,
-	 * there shouldn't be any entries that cross metaslabs.
-	 * Hence the assertion below.
-	 *
-	 * That said, there is no fundamental requirement that
-	 * the checkpoint's space map entries should not cross
-	 * metaslab boundaries. So if needed we could add code
-	 * that handles metaslab-crossing segments in the future.
-	 */
+	 
 	VERIFY3U(sme->sme_offset, >=, ms->ms_start);
 	VERIFY3U(end, <=, ms->ms_start + ms->ms_size);
 
-	/*
-	 * By removing the entry from the allocated segments we
-	 * also verify that the entry is there to begin with.
-	 */
+	 
 	mutex_enter(&ms->ms_lock);
 	range_tree_remove(ms->ms_allocatable, sme->sme_offset, sme->sme_run);
 	mutex_exit(&ms->ms_lock);
@@ -6225,25 +5926,11 @@ zdb_leak_init_vdev_exclude_checkpoint(vdev_t *vd, zdb_cb_t *zcb)
 	space_map_t *checkpoint_sm = NULL;
 	uint64_t checkpoint_sm_obj;
 
-	/*
-	 * If there is no vdev_top_zap, we are in a pool whose
-	 * version predates the pool checkpoint feature.
-	 */
+	 
 	if (vd->vdev_top_zap == 0)
 		return;
 
-	/*
-	 * If there is no reference of the vdev_checkpoint_sm in
-	 * the vdev_top_zap, then one of the following scenarios
-	 * is true:
-	 *
-	 * 1] There is no checkpoint
-	 * 2] There is a checkpoint, but no checkpointed blocks
-	 *    have been freed yet
-	 * 3] The current vdev is indirect
-	 *
-	 * In these cases we return immediately.
-	 */
+	 
 	if (zap_contains(spa_meta_objset(spa), vd->vdev_top_zap,
 	    VDEV_TOP_ZAP_POOL_CHECKPOINT_SM) != 0)
 		return;
@@ -6329,7 +6016,7 @@ load_unflushed_cb(spa_t *spa, space_map_entry_t *sme, uint64_t txg, void *arg)
 
 	vdev_t *vd = vdev_lookup_top(spa, vdev_id);
 
-	/* skip indirect vdevs */
+	 
 	if (!vdev_is_concrete(vd))
 		return (0);
 
@@ -6380,10 +6067,7 @@ load_concrete_ms_allocatable_trees(spa_t *spa, maptype_t maptype)
 			mutex_enter(&msp->ms_lock);
 			range_tree_vacate(msp->ms_allocatable, NULL, NULL);
 
-			/*
-			 * We don't want to spend the CPU manipulating the
-			 * size-ordered tree, so clear the range_tree ops.
-			 */
+			 
 			msp->ms_allocatable->rt_ops = NULL;
 
 			if (msp->ms_sm != NULL) {
@@ -6399,11 +6083,7 @@ load_concrete_ms_allocatable_trees(spa_t *spa, maptype_t maptype)
 	load_unflushed_to_ms_allocatables(spa, maptype);
 }
 
-/*
- * vm_idxp is an in-out parameter which (for indirect vdevs) is the
- * index in vim_entries that has the first entry in this metaslab.
- * On return, it will be set to the first entry after this metaslab.
- */
+ 
 static void
 load_indirect_ms_allocatable_tree(vdev_t *vd, metaslab_t *msp,
     uint64_t *vim_idxp)
@@ -6413,10 +6093,7 @@ load_indirect_ms_allocatable_tree(vdev_t *vd, metaslab_t *msp,
 	mutex_enter(&msp->ms_lock);
 	range_tree_vacate(msp->ms_allocatable, NULL, NULL);
 
-	/*
-	 * We don't want to spend the CPU manipulating the
-	 * size-ordered tree, so clear the range_tree ops.
-	 */
+	 
 	msp->ms_allocatable->rt_ops = NULL;
 
 	for (; *vim_idxp < vdev_indirect_mapping_num_entries(vim);
@@ -6429,10 +6106,7 @@ load_indirect_ms_allocatable_tree(vdev_t *vd, metaslab_t *msp,
 		if (ent_offset >= msp->ms_start + msp->ms_size)
 			break;
 
-		/*
-		 * Mappings do not cross metaslab boundaries,
-		 * because we create them by walking the metaslabs.
-		 */
+		 
 		ASSERT3U(ent_offset + ent_len, <=,
 		    msp->ms_start + msp->ms_size);
 		range_tree_add(msp->ms_allocatable, ent_offset, ent_len);
@@ -6457,18 +6131,10 @@ zdb_leak_init_prepare_indirect_vdevs(spa_t *spa, zdb_cb_t *zcb)
 		if (vd->vdev_ops != &vdev_indirect_ops)
 			continue;
 
-		/*
-		 * Note: we don't check for mapping leaks on
-		 * removing vdevs because their ms_allocatable's
-		 * are used to look for leaks in allocated space.
-		 */
+		 
 		zcb->zcb_vd_obsolete_counts[c] = zdb_load_obsolete_counts(vd);
 
-		/*
-		 * Normally, indirect vdevs don't have any
-		 * metaslabs.  We want to set them up for
-		 * zio_claim().
-		 */
+		 
 		vdev_metaslab_group_create(vd);
 		VERIFY0(vdev_metaslab_init(vd, 0));
 
@@ -6502,11 +6168,7 @@ zdb_leak_init(spa_t *spa, zdb_cb_t *zcb)
 	dsl_pool_t *dp = spa->spa_dsl_pool;
 	vdev_t *rvd = spa->spa_root_vdev;
 
-	/*
-	 * We are going to be changing the meaning of the metaslab's
-	 * ms_allocatable.  Ensure that the allocator doesn't try to
-	 * use the tree.
-	 */
+	 
 	spa->spa_normal_class->mc_ops = &zdb_metaslab_ops;
 	spa->spa_log_class->mc_ops = &zdb_metaslab_ops;
 	spa->spa_embedded_log_class->mc_ops = &zdb_metaslab_ops;
@@ -6515,38 +6177,15 @@ zdb_leak_init(spa_t *spa, zdb_cb_t *zcb)
 	    umem_zalloc(rvd->vdev_children * sizeof (uint32_t *),
 	    UMEM_NOFAIL);
 
-	/*
-	 * For leak detection, we overload the ms_allocatable trees
-	 * to contain allocated segments instead of free segments.
-	 * As a result, we can't use the normal metaslab_load/unload
-	 * interfaces.
-	 */
+	 
 	zdb_leak_init_prepare_indirect_vdevs(spa, zcb);
 	load_concrete_ms_allocatable_trees(spa, SM_ALLOC);
 
-	/*
-	 * On load_concrete_ms_allocatable_trees() we loaded all the
-	 * allocated entries from the ms_sm to the ms_allocatable for
-	 * each metaslab. If the pool has a checkpoint or is in the
-	 * middle of discarding a checkpoint, some of these blocks
-	 * may have been freed but their ms_sm may not have been
-	 * updated because they are referenced by the checkpoint. In
-	 * order to avoid false-positives during leak-detection, we
-	 * go through the vdev's checkpoint space map and exclude all
-	 * its entries from their relevant ms_allocatable.
-	 *
-	 * We also aggregate the space held by the checkpoint and add
-	 * it to zcb_checkpoint_size.
-	 *
-	 * Note that at this point we are also verifying that all the
-	 * entries on the checkpoint_sm are marked as allocated in
-	 * the ms_sm of their relevant metaslab.
-	 * [see comment in checkpoint_sm_exclude_entry_cb()]
-	 */
+	 
 	zdb_leak_init_exclude_checkpoint(spa, zcb);
 	ASSERT3U(zcb->zcb_checkpoint_size, ==, spa_get_checkpoint_space(spa));
 
-	/* for cleaner progress output */
+	 
 	(void) fprintf(stderr, "\n");
 
 	if (bpobj_is_open(&dp->dp_obsolete_bpobj)) {
@@ -6578,10 +6217,7 @@ zdb_check_for_obsolete_leaks(vdev_t *vd, zdb_cb_t *zcb)
 		uint64_t offset = DVA_MAPPING_GET_SRC_OFFSET(vimep);
 		metaslab_t *msp = vd->vdev_ms[offset >> vd->vdev_ms_shift];
 
-		/*
-		 * This is not very efficient but it's easy to
-		 * verify correctness.
-		 */
+		 
 		for (uint64_t inner_offset = 0;
 		    inner_offset < DVA_GET_ASIZE(&vimep->vimep_dst);
 		    inner_offset += 1ULL << vd->vdev_ashift) {
@@ -6654,19 +6290,7 @@ zdb_leak_fini(spa_t *spa, zdb_cb_t *zcb)
 			    spa_embedded_log_class(spa)) ?
 			    vd->vdev_log_mg : vd->vdev_mg);
 
-			/*
-			 * ms_allocatable has been overloaded
-			 * to contain allocated segments. Now that
-			 * we finished traversing all blocks, any
-			 * block that remains in the ms_allocatable
-			 * represents an allocated block that we
-			 * did not claim during the traversal.
-			 * Claimed blocks would have been removed
-			 * from the ms_allocatable.  For indirect
-			 * vdevs, space remaining in the tree
-			 * represents parts of the mapping that are
-			 * not referenced, which is not a bug.
-			 */
+			 
 			if (vd->vdev_ops == &vdev_indirect_ops) {
 				range_tree_vacate(msp->ms_allocatable,
 				    NULL, NULL);
@@ -6703,10 +6327,7 @@ count_block_cb(void *arg, const blkptr_t *bp, dmu_tx_t *tx)
 	return (0);
 }
 
-/*
- * Iterate over livelists which have been destroyed by the user but
- * are still present in the MOS, waiting to be freed
- */
+ 
 static void
 iterate_deleted_livelists(spa_t *spa, ll_iter_t func, void *arg)
 {
@@ -6721,7 +6342,7 @@ iterate_deleted_livelists(spa_t *spa, ll_iter_t func, void *arg)
 	zap_cursor_t zc;
 	zap_attribute_t attr;
 	dsl_deadlist_t ll;
-	/* NULL out os prior to dsl_deadlist_open in case it's garbage */
+	 
 	ll.dl_os = NULL;
 	for (zap_cursor_init(&zc, mos, zap_obj);
 	    zap_cursor_retrieve(&zc, &attr) == 0;
@@ -6747,9 +6368,9 @@ livelist_entry_count_blocks_cb(void *args, dsl_deadlist_entry_t *dle)
 	zdb_cb_t *zbc = args;
 	bplist_t blks;
 	bplist_create(&blks);
-	/* determine which blocks have been alloc'd but not freed */
+	 
 	VERIFY0(dsl_process_sub_livelist(&dle->dle_bpobj, &blks, NULL, NULL));
-	/* count those blocks */
+	 
 	(void) bplist_iterate(&blks, count_block_cb, zbc, NULL);
 	bplist_destroy(&blks);
 	return (0);
@@ -6761,10 +6382,7 @@ livelist_count_blocks(dsl_deadlist_t *ll, void *arg)
 	dsl_deadlist_iterate(ll, livelist_entry_count_blocks_cb, arg);
 }
 
-/*
- * Count the blocks in the livelists that have been destroyed by the user
- * but haven't yet been freed.
- */
+ 
 static void
 deleted_livelists_count_blocks(spa_t *spa, zdb_cb_t *zbc)
 {
@@ -6780,10 +6398,7 @@ dump_livelist_cb(dsl_deadlist_t *ll, void *arg)
 	dsl_deadlist_iterate(ll, sublivelist_verify_lightweight, NULL);
 }
 
-/*
- * Print out, register object references to, and increment feature counts for
- * livelists that have been destroyed by the user but haven't yet been freed.
- */
+ 
 static void
 deleted_livelists_dump_mos(spa_t *spa)
 {
@@ -6839,23 +6454,10 @@ dump_block_stats(spa_t *spa)
 	    (dump_opt['c'] && !dump_opt['L']) ? "and verify " : "",
 	    !dump_opt['L'] ? "nothing leaked " : "");
 
-	/*
-	 * When leak detection is enabled we load all space maps as SM_ALLOC
-	 * maps, then traverse the pool claiming each block we discover. If
-	 * the pool is perfectly consistent, the segment trees will be empty
-	 * when we're done. Anything left over is a leak; any block we can't
-	 * claim (because it's not part of any space map) is a double
-	 * allocation, reference to a freed block, or an unclaimed log block.
-	 *
-	 * When leak detection is disabled (-L option) we still traverse the
-	 * pool claiming each block we discover, but we skip opening any space
-	 * maps.
-	 */
+	 
 	zdb_leak_init(spa, zcb);
 
-	/*
-	 * If there's a deferred-free bplist, process that first.
-	 */
+	 
 	(void) bpobj_iterate_nofree(&spa->spa_deferred_bpobj,
 	    bpobj_count_block_cb, zcb, NULL);
 
@@ -6885,11 +6487,7 @@ dump_block_stats(spa_t *spa)
 	zcb->zcb_start = zcb->zcb_lastprint = gethrtime();
 	err = traverse_pool(spa, 0, flags, zdb_blkptr_cb, zcb);
 
-	/*
-	 * If we've traversed the data blocks then we need to wait for those
-	 * I/Os to complete. We leverage "The Godfather" zio to wait on
-	 * all async I/Os to complete.
-	 */
+	 
 	if (dump_opt['c']) {
 		for (c = 0; c < max_ncpus; c++) {
 			(void) zio_wait(spa->spa_async_zio_root[c]);
@@ -6900,10 +6498,7 @@ dump_block_stats(spa_t *spa)
 	}
 	ASSERT0(spa->spa_load_verify_bytes);
 
-	/*
-	 * Done after zio_wait() since zcb_haderrors is modified in
-	 * zdb_blkptr_done()
-	 */
+	 
 	zcb->zcb_haderrors |= err;
 
 	if (zcb->zcb_haderrors) {
@@ -6917,9 +6512,7 @@ dump_block_stats(spa_t *spa)
 		}
 	}
 
-	/*
-	 * Report any leaked segments.
-	 */
+	 
 	leaks |= zdb_leak_fini(spa, zcb);
 
 	tzb = &zcb->zcb_type[ZB_TOTAL][ZDB_OT_TOTAL];
@@ -7071,7 +6664,7 @@ dump_block_stats(spa_t *spa)
 		for (t = 0; t <= ZDB_OT_TOTAL; t++) {
 			const char *typename;
 
-			/* make sure nicenum has enough space */
+			 
 			_Static_assert(sizeof (csize) >= NN_NUMBUF_SZ,
 			    "csize truncated");
 			_Static_assert(sizeof (lsize) >= NN_NUMBUF_SZ,
@@ -7184,7 +6777,7 @@ dump_block_stats(spa_t *spa)
 		    100.0 * mdstats->zb_asize / tzb->zb_asize);
 		(void) printf("%s\n", "Metadata Total");
 
-		/* Output a table summarizing block sizes in the pool */
+		 
 		if (dump_opt['b'] >= 2) {
 			dump_size_histograms(zcb);
 		}
@@ -7439,10 +7032,7 @@ zdb_set_skip_mmp(char *target)
 {
 	spa_t *spa;
 
-	/*
-	 * Disable the activity check to allow examination of
-	 * active pools.
-	 */
+	 
 	mutex_enter(&spa_namespace_lock);
 	if ((spa = spa_lookup(target)) != NULL) {
 		spa->spa_import_flags |= ZFS_IMPORT_SKIP_MMP;
@@ -7451,23 +7041,7 @@ zdb_set_skip_mmp(char *target)
 }
 
 #define	BOGUS_SUFFIX "_CHECKPOINTED_UNIVERSE"
-/*
- * Import the checkpointed state of the pool specified by the target
- * parameter as readonly. The function also accepts a pool config
- * as an optional parameter, else it attempts to infer the config by
- * the name of the target pool.
- *
- * Note that the checkpointed state's pool name will be the name of
- * the original pool with the above suffix appended to it. In addition,
- * if the target is not a pool name (e.g. a path to a dataset) then
- * the new_path parameter is populated with the updated path to
- * reflect the fact that we are looking into the checkpointed state.
- *
- * The function returns a newly-allocated copy of the name of the
- * pool containing the checkpointed state. When this copy is no
- * longer needed it should be freed with free(3C). Same thing
- * applies to the new_path parameter if allocated.
- */
+ 
 static char *
 import_checkpointed_state(char *target, nvlist_t *cfg, char **new_path)
 {
@@ -7475,7 +7049,7 @@ import_checkpointed_state(char *target, nvlist_t *cfg, char **new_path)
 	char *poolname, *bogus_name = NULL;
 	boolean_t freecfg = B_FALSE;
 
-	/* If the target is not a pool, the extract the pool name */
+	 
 	char *path_start = strchr(target, '/');
 	if (path_start != NULL) {
 		size_t poolname_len = path_start - target;
@@ -7530,7 +7104,7 @@ import_checkpointed_state(char *target, nvlist_t *cfg, char **new_path)
 typedef struct verify_checkpoint_sm_entry_cb_arg {
 	vdev_t *vcsec_vd;
 
-	/* the following fields are only used for printing progress */
+	 
 	uint64_t vcsec_entryid;
 	uint64_t vcsec_num_entries;
 } verify_checkpoint_sm_entry_cb_arg_t;
@@ -7556,17 +7130,11 @@ verify_checkpoint_sm_entry_cb(space_map_entry_t *sme, void *arg)
 	}
 	vcsec->vcsec_entryid++;
 
-	/*
-	 * See comment in checkpoint_sm_exclude_entry_cb()
-	 */
+	 
 	VERIFY3U(sme->sme_offset, >=, ms->ms_start);
 	VERIFY3U(end, <=, ms->ms_start + ms->ms_size);
 
-	/*
-	 * The entries in the vdev_checkpoint_sm should be marked as
-	 * allocated in the checkpointed state of the pool, therefore
-	 * their respective ms_allocateable trees should not contain them.
-	 */
+	 
 	mutex_enter(&ms->ms_lock);
 	range_tree_verify_not_present(ms->ms_allocatable,
 	    sme->sme_offset, sme->sme_run);
@@ -7575,20 +7143,7 @@ verify_checkpoint_sm_entry_cb(space_map_entry_t *sme, void *arg)
 	return (0);
 }
 
-/*
- * Verify that all segments in the vdev_checkpoint_sm are allocated
- * according to the checkpoint's ms_sm (i.e. are not in the checkpoint's
- * ms_allocatable).
- *
- * Do so by comparing the checkpoint space maps (vdev_checkpoint_sm) of
- * each vdev in the current state of the pool to the metaslab space maps
- * (ms_sm) of the checkpointed state of the pool.
- *
- * Note that the function changes the state of the ms_allocatable
- * trees of the current spa_t. The entries of these ms_allocatable
- * trees are cleared out and then repopulated from with the free
- * entries of their respective ms_sm space maps.
- */
+ 
 static void
 verify_checkpoint_vdev_spacemaps(spa_t *checkpoint, spa_t *current)
 {
@@ -7605,20 +7160,12 @@ verify_checkpoint_vdev_spacemaps(spa_t *checkpoint, spa_t *current)
 		uint64_t checkpoint_sm_obj;
 
 		if (ckpoint_vd->vdev_ops == &vdev_indirect_ops) {
-			/*
-			 * Since we don't allow device removal in a pool
-			 * that has a checkpoint, we expect that all removed
-			 * vdevs were removed from the pool before the
-			 * checkpoint.
-			 */
+			 
 			ASSERT3P(current_vd->vdev_ops, ==, &vdev_indirect_ops);
 			continue;
 		}
 
-		/*
-		 * If the checkpoint space map doesn't exist, then nothing
-		 * here is checkpointed so there's nothing to verify.
-		 */
+		 
 		if (current_vd->vdev_top_zap == 0 ||
 		    zap_contains(spa_meta_objset(current),
 		    current_vd->vdev_top_zap,
@@ -7646,10 +7193,7 @@ verify_checkpoint_vdev_spacemaps(spa_t *checkpoint, spa_t *current)
 		space_map_close(checkpoint_sm);
 	}
 
-	/*
-	 * If we've added vdevs since we took the checkpoint, ensure
-	 * that their checkpoint space maps are empty.
-	 */
+	 
 	if (ckpoint_rvd->vdev_children < current_rvd->vdev_children) {
 		for (uint64_t c = ckpoint_rvd->vdev_children;
 		    c < current_rvd->vdev_children; c++) {
@@ -7658,22 +7202,11 @@ verify_checkpoint_vdev_spacemaps(spa_t *checkpoint, spa_t *current)
 		}
 	}
 
-	/* for cleaner progress output */
+	 
 	(void) fprintf(stderr, "\n");
 }
 
-/*
- * Verifies that all space that's allocated in the checkpoint is
- * still allocated in the current version, by checking that everything
- * in checkpoint's ms_allocatable (which is actually allocated, not
- * allocatable/free) is not present in current's ms_allocatable.
- *
- * Note that the function changes the state of the ms_allocatable
- * trees of both spas when called. The entries of all ms_allocatable
- * trees are cleared out and then repopulated from their respective
- * ms_sm space maps. In the checkpointed state we load the allocated
- * entries, and in the current state we load the free entries.
- */
+ 
 static void
 verify_checkpoint_ms_spacemaps(spa_t *checkpoint, spa_t *current)
 {
@@ -7688,9 +7221,7 @@ verify_checkpoint_ms_spacemaps(spa_t *checkpoint, spa_t *current)
 		vdev_t *current_vd = current_rvd->vdev_child[i];
 
 		if (ckpoint_vd->vdev_ops == &vdev_indirect_ops) {
-			/*
-			 * See comment in verify_checkpoint_vdev_spacemaps()
-			 */
+			 
 			ASSERT3P(current_vd->vdev_ops, ==, &vdev_indirect_ops);
 			continue;
 		}
@@ -7707,25 +7238,14 @@ verify_checkpoint_ms_spacemaps(spa_t *checkpoint, spa_t *current)
 			    (longlong_t)current_vd->vdev_ms[m]->ms_id,
 			    (longlong_t)current_vd->vdev_ms_count);
 
-			/*
-			 * We walk through the ms_allocatable trees that
-			 * are loaded with the allocated blocks from the
-			 * ms_sm spacemaps of the checkpoint. For each
-			 * one of these ranges we ensure that none of them
-			 * exists in the ms_allocatable trees of the
-			 * current state which are loaded with the ranges
-			 * that are currently free.
-			 *
-			 * This way we ensure that none of the blocks that
-			 * are part of the checkpoint were freed by mistake.
-			 */
+			 
 			range_tree_walk(ckpoint_msp->ms_allocatable,
 			    (range_tree_func_t *)range_tree_verify_not_present,
 			    current_msp->ms_allocatable);
 		}
 	}
 
-	/* for cleaner progress output */
+	 
 	(void) fprintf(stderr, "\n");
 }
 
@@ -7738,11 +7258,7 @@ verify_checkpoint_blocks(spa_t *spa)
 	char *checkpoint_pool;
 	int error = 0;
 
-	/*
-	 * We import the checkpointed state of the pool (under a different
-	 * name) so we can do verification on it against the current state
-	 * of the pool.
-	 */
+	 
 	checkpoint_pool = import_checkpointed_state(spa->spa_name, NULL,
 	    NULL);
 	ASSERT(strcmp(spa->spa_name, checkpoint_pool) != 0);
@@ -7753,23 +7269,13 @@ verify_checkpoint_blocks(spa_t *spa)
 		    "error %d\n", checkpoint_pool, error);
 	}
 
-	/*
-	 * Ensure that ranges in the checkpoint space maps of each vdev
-	 * are allocated according to the checkpointed state's metaslab
-	 * space maps.
-	 */
+	 
 	verify_checkpoint_vdev_spacemaps(checkpoint_spa, spa);
 
-	/*
-	 * Ensure that allocated ranges in the checkpoint's metaslab
-	 * space maps remain allocated in the metaslab space maps of
-	 * the current state.
-	 */
+	 
 	verify_checkpoint_ms_spacemaps(checkpoint_spa, spa);
 
-	/*
-	 * Once we are done, we get rid of the checkpointed state.
-	 */
+	 
 	spa_close(checkpoint_spa, FTAG);
 	free(checkpoint_pool);
 }
@@ -7817,11 +7323,7 @@ verify_checkpoint(spa_t *spa)
 	    sizeof (uberblock_t) / sizeof (uint64_t), &checkpoint);
 
 	if (error == ENOENT && !dump_opt['L']) {
-		/*
-		 * If the feature is active but the uberblock is missing
-		 * then we must be in the middle of discarding the
-		 * checkpoint.
-		 */
+		 
 		(void) printf("\nPartially discarded checkpoint "
 		    "state found:\n");
 		if (dump_opt['m'] > 3)
@@ -7863,9 +7365,7 @@ mos_obj_refd(uint64_t obj)
 		range_tree_add(mos_refd_objs, obj, 1);
 }
 
-/*
- * Call on a MOS object that may already have been referenced.
- */
+ 
 static void
 mos_obj_refd_multiple(uint64_t obj)
 {
@@ -7960,7 +7460,7 @@ dump_mos_leaks(spa_t *spa)
 	objset_t *mos = spa->spa_meta_objset;
 	dsl_pool_t *dp = spa->spa_dsl_pool;
 
-	/* Visit and mark all referenced objects in the MOS */
+	 
 
 	mos_obj_refd(DMU_POOL_DIRECTORY_OBJECT);
 	mos_obj_refd(spa->spa_pool_props_object);
@@ -8040,9 +7540,7 @@ dump_mos_leaks(spa_t *spa)
 		}
 	}
 
-	/*
-	 * Visit all allocated objects and make sure they are referenced.
-	 */
+	 
 	uint64_t object = 0;
 	while (dmu_object_next(mos, &object, B_FALSE, 0) == 0) {
 		if (range_tree_contains(mos_refd_objs, object, 1)) {
@@ -8092,10 +7590,10 @@ log_spacemap_obsolete_stats_cb(spa_t *spa, space_map_entry_t *sme,
 	uint64_t vdev_id = sme->sme_vdev;
 
 	if (lsos->lsos_current_txg == 0) {
-		/* this is the first log */
+		 
 		lsos->lsos_current_txg = txg;
 	} else if (lsos->lsos_current_txg < txg) {
-		/* we just changed log - print stats and reset */
+		 
 		(void) printf("%-8llu valid entries out of %-8llu - txg %llu\n",
 		    (u_longlong_t)lsos->lsos_valid_sm_entries,
 		    (u_longlong_t)lsos->lsos_sm_entries,
@@ -8136,7 +7634,7 @@ dump_log_spacemap_obsolete_stats(spa_t *spa)
 	iterate_through_spacemap_logs(spa,
 	    log_spacemap_obsolete_stats_cb, &lsos);
 
-	/* print stats for latest log */
+	 
 	(void) printf("%-8llu valid entries out of %-8llu - txg %llu\n",
 	    (u_longlong_t)lsos.lsos_valid_sm_entries,
 	    (u_longlong_t)lsos.lsos_sm_entries,
@@ -8358,7 +7856,7 @@ zdb_dump_block(char *label, void *buf, uint64_t size, int flags)
 	(void) printf("\n%s\n%6s   %s  0123456789abcdef\n", label, "", hdr);
 
 #ifdef _LITTLE_ENDIAN
-	/* correct the endianness */
+	 
 	do_bswap = !do_bswap;
 #endif
 	for (i = 0; i < nwords; i += 2) {
@@ -8374,15 +7872,7 @@ zdb_dump_block(char *label, void *buf, uint64_t size, int flags)
 	}
 }
 
-/*
- * There are two acceptable formats:
- *	leaf_name	  - For example: c1t0d0 or /tmp/ztest.0a
- *	child[.child]*    - For example: 0.1.1
- *
- * The second form can be used to specify arbitrary vdevs anywhere
- * in the hierarchy.  For example, in a pool with a mirror of
- * RAID-Zs, you can specify either RAID-Z vdev with 0.0 or 0.1 .
- */
+ 
 static vdev_t *
 zdb_vdev_lookup(vdev_t *vdev, const char *path)
 {
@@ -8392,7 +7882,7 @@ zdb_vdev_lookup(vdev_t *vdev, const char *path)
 	if (vdev == NULL)
 		return (NULL);
 
-	/* First, assume the x.x.x.x format */
+	 
 	i = strtoul(path, &s, 10);
 	if (s == path || (s && *s != '.' && *s != '\0'))
 		goto name;
@@ -8476,10 +7966,7 @@ zdb_decompress_block(abd_t *pabd, void *buf, void *lbuf, uint64_t lsize,
 {
 	(void) buf;
 	boolean_t exceeded = B_FALSE;
-	/*
-	 * We don't know how the data was compressed, so just try
-	 * every decompress function at every inflated blocksize.
-	 */
+	 
 	void *lbuf2 = umem_alloc(SPA_MAXBLOCKSIZE, UMEM_NOFAIL);
 	int cfuncs[ZIO_COMPRESS_FUNCTIONS] = { 0 };
 	int *cfuncp = cfuncs;
@@ -8494,13 +7981,7 @@ zdb_decompress_block(abd_t *pabd, void *buf, void *lbuf, uint64_t lsize,
 		if (((1ULL << c) & mask) == 0)
 			*cfuncp++ = c;
 
-	/*
-	 * On the one hand, with SPA_MAXBLOCKSIZE at 16MB, this
-	 * could take a while and we should let the user know
-	 * we are not stuck.  On the other hand, printing progress
-	 * info gets old after a while.  User can specify 'v' flag
-	 * to see the progression.
-	 */
+	 
 	if (lsize == psize)
 		lsize += SPA_MINBLOCKSIZE;
 	else
@@ -8516,11 +7997,7 @@ zdb_decompress_block(abd_t *pabd, void *buf, void *lbuf, uint64_t lsize,
 				    ci_name);
 			}
 
-			/*
-			 * We randomize lbuf2, and decompress to both
-			 * lbuf and lbuf2. This way, we will know if
-			 * decompression fill exactly to lsize.
-			 */
+			 
 			VERIFY0(random_get_pseudo_bytes(lbuf2, lsize));
 
 			if (zio_decompress_data(*cfuncp, pabd,
@@ -8547,27 +8024,7 @@ zdb_decompress_block(abd_t *pabd, void *buf, void *lbuf, uint64_t lsize,
 	return (exceeded);
 }
 
-/*
- * Read a block from a pool and print it out.  The syntax of the
- * block descriptor is:
- *
- *	pool:vdev_specifier:offset:[lsize/]psize[:flags]
- *
- *	pool           - The name of the pool you wish to read from
- *	vdev_specifier - Which vdev (see comment for zdb_vdev_lookup)
- *	offset         - offset, in hex, in bytes
- *	size           - Amount of data to read, in hex, in bytes
- *	flags          - A string of characters specifying options
- *		 b: Decode a blkptr at given offset within block
- *		 c: Calculate and display checksums
- *		 d: Decompress data before dumping
- *		 e: Byteswap data before dumping
- *		 g: Display data as a gang block header
- *		 i: Display as an indirect block
- *		 r: Dump raw data to stdout
- *		 v: Verbose
- *
- */
+ 
 static void
 zdb_read_block(char *thing, spa_t *spa)
 {
@@ -8626,7 +8083,7 @@ zdb_read_block(char *thing, spa_t *spa)
 				char *end, offstr[8] = { 0 };
 				if ((bit == ZDB_FLAG_PRINT_BLKPTR) &&
 				    (nextbit == 0)) {
-					/* look ahead to isolate the offset */
+					 
 					while (nextbit == 0 &&
 					    strchr(flagbitstr, *p) == NULL) {
 						offstr[j] = *p;
@@ -8695,16 +8152,12 @@ zdb_read_block(char *thing, spa_t *spa)
 	zio = zio_root(spa, NULL, NULL, 0);
 
 	if (vd == vd->vdev_top) {
-		/*
-		 * Treat this as a normal block read.
-		 */
+		 
 		zio_nowait(zio_read(zio, spa, bp, pabd, psize, NULL, NULL,
 		    ZIO_PRIORITY_SYNC_READ,
 		    ZIO_FLAG_CANFAIL | ZIO_FLAG_RAW, NULL));
 	} else {
-		/*
-		 * Treat this as a vdev child I/O.
-		 */
+		 
 		zio_nowait(zio_vdev_child_io(zio, bp, vd, offset, pabd,
 		    psize, ZIO_TYPE_READ, ZIO_PRIORITY_SYNC_READ,
 		    ZIO_FLAG_DONT_PROPAGATE | ZIO_FLAG_DONT_RETRY |
@@ -8733,10 +8186,7 @@ zdb_read_block(char *thing, spa_t *spa)
 		buf = abd_borrow_buf_copy(pabd, lsize);
 		borrowed = B_TRUE;
 	}
-	/*
-	 * Try to detect invalid block pointer.  If invalid, try
-	 * decompressing.
-	 */
+	 
 	if ((flags & ZDB_FLAG_PRINT_BLKPTR || flags & ZDB_FLAG_INDIRECT) &&
 	    !(flags & ZDB_FLAG_DECOMPRESS)) {
 		const blkptr_t *b = (const blkptr_t *)(void *)
@@ -8771,11 +8221,7 @@ zdb_read_block(char *thing, spa_t *spa)
 	else
 		zdb_dump_block(thing, buf, lsize, flags);
 
-	/*
-	 * If :c was specified, iterate through the checksum table to
-	 * calculate and display each checksum for our specified
-	 * DVA and length.
-	 */
+	 
 	if ((flags & ZDB_FLAG_CHECKSUM) && !(flags & ZDB_FLAG_RAW) &&
 	    !(flags & ZDB_FLAG_GBH)) {
 		zio_t *czio;
@@ -8876,7 +8322,7 @@ zdb_embedded_block(char *thing)
 	free(buf);
 }
 
-/* check for valid hex or decimal numeric string */
+ 
 static boolean_t
 zdb_numeric(char *str)
 {
@@ -8917,20 +8363,12 @@ main(int argc, char **argv)
 
 	dprintf_setup(&argc, argv);
 
-	/*
-	 * If there is an environment variable SPA_CONFIG_PATH it overrides
-	 * default spa_config_path setting. If -U flag is specified it will
-	 * override this environment variable settings once again.
-	 */
+	 
 	spa_config_path_env = getenv("SPA_CONFIG_PATH");
 	if (spa_config_path_env != NULL)
 		spa_config_path = spa_config_path_env;
 
-	/*
-	 * For performance reasons, we set this tunable down. We do so before
-	 * the arg parsing section so that the user can override this value if
-	 * they choose.
-	 */
+	 
 	zfs_btree_verify_intensity = 3;
 
 	struct option long_options[] = {
@@ -9022,7 +8460,7 @@ main(int argc, char **argv)
 			zfs_reconstruct_indirect_combinations_max = INT_MAX;
 			zfs_deadman_enabled = 0;
 			break;
-		/* NB: Sort single match options below. */
+		 
 		case 'I':
 			max_inflight_bytes = strtoull(optarg, NULL, 0);
 			if (max_inflight_bytes == 0) {
@@ -9035,7 +8473,7 @@ main(int argc, char **argv)
 		case 'K':
 			dump_opt[c]++;
 			key_material = strdup(optarg);
-			/* redact key material in process table */
+			 
 			while (*optarg != '\0') { *optarg++ = '*'; }
 			break;
 		case 'o':
@@ -9095,35 +8533,21 @@ main(int argc, char **argv)
 		usage();
 	}
 #if defined(_LP64)
-	/*
-	 * ZDB does not typically re-read blocks; therefore limit the ARC
-	 * to 256 MB, which can be used entirely for metadata.
-	 */
+	 
 	zfs_arc_min = 2ULL << SPA_MAXBLOCKSHIFT;
 	zfs_arc_max = 256 * 1024 * 1024;
 #endif
 
-	/*
-	 * "zdb -c" uses checksum-verifying scrub i/os which are async reads.
-	 * "zdb -b" uses traversal prefetch which uses async reads.
-	 * For good performance, let several of them be active at once.
-	 */
+	 
 	zfs_vdev_async_read_max_active = 10;
 
-	/*
-	 * Disable reference tracking for better performance.
-	 */
+	 
 	reference_tracking_enable = B_FALSE;
 
-	/*
-	 * Do not fail spa_load when spa_load_verify fails. This is needed
-	 * to load non-idle pools.
-	 */
+	 
 	spa_load_verify_dryrun = B_TRUE;
 
-	/*
-	 * ZDB should have ability to read spacemaps.
-	 */
+	 
 	spa_mode_readable_spacemaps = B_TRUE;
 
 	kernel_init(SPA_MODE_READ);
@@ -9168,7 +8592,7 @@ main(int argc, char **argv)
 		rewind = ZPOOL_DO_REWIND |
 		    (dump_opt['X'] ? ZPOOL_EXTREME_REWIND : 0);
 
-	/* -N implies -d */
+	 
 	if (dump_opt['N'] && dump_opt['d'] == 0)
 		dump_opt['d'] = dump_opt['N'];
 
@@ -9191,12 +8615,7 @@ main(int argc, char **argv)
 		if (targetlen && target[targetlen - 1] == '/')
 			target[targetlen - 1] = '\0';
 
-		/*
-		 * See if an objset ID was supplied (-d <pool>/<objset ID>).
-		 * To disambiguate tank/100, consider the 100 as objsetID
-		 * if -N was given, otherwise 100 is an objsetID iff
-		 * tank/100 as a named dataset fails on lookup.
-		 */
+		 
 		objset_str = strchr(target, '/');
 		if (objset_str && strlen(objset_str) > 1 &&
 		    zdb_numeric(objset_str + 1)) {
@@ -9204,13 +8623,13 @@ main(int argc, char **argv)
 			errno = 0;
 			objset_str++;
 			objset_id = strtoull(objset_str, &endptr, 0);
-			/* dataset 0 is the same as opening the pool */
+			 
 			if (errno == 0 && endptr != objset_str &&
 			    objset_id != 0) {
 				if (dump_opt['N'])
 					dataset_lookup = B_TRUE;
 			}
-			/* normal dataset name not an objset ID */
+			 
 			if (endptr == objset_str) {
 				objset_id = -1;
 			}
@@ -9250,10 +8669,7 @@ main(int argc, char **argv)
 				dump_nvlist(cfg, 8);
 			}
 
-			/*
-			 * Disable the activity check to allow examination of
-			 * active pools.
-			 */
+			 
 			error = spa_import(target_pool, cfg, NULL,
 			    flags | ZFS_IMPORT_SKIP_MMP);
 		}
@@ -9264,12 +8680,7 @@ main(int argc, char **argv)
 		searchdirs = NULL;
 	}
 
-	/*
-	 * We need to make sure to process -O option or call
-	 * dump_path after the -e option has been processed,
-	 * which imports the pool to the namespace if it's
-	 * not in the cachefile.
-	 */
+	 
 	if (dump_opt['O']) {
 		if (argc != 2)
 			usage();
@@ -9287,14 +8698,7 @@ main(int argc, char **argv)
 			fatal("internal error: %s", strerror(error));
 	}
 
-	/*
-	 * import_checkpointed_state makes the assumption that the
-	 * target pool that we pass it is already part of the spa
-	 * namespace. Because of that we need to make sure to call
-	 * it always after the -e option has been processed, which
-	 * imports the pool to the namespace if it's not in the
-	 * cachefile.
-	 */
+	 
 	char *checkpoint_pool = NULL;
 	char *checkpoint_target = NULL;
 	if (dump_opt['k']) {
@@ -9331,11 +8735,7 @@ main(int argc, char **argv)
 			error = spa_open_rewind(target, &spa, FTAG, policy,
 			    NULL);
 			if (error) {
-				/*
-				 * If we're missing the log device then
-				 * try opening the pool after clearing the
-				 * log state.
-				 */
+				 
 				mutex_enter(&spa_namespace_lock);
 				if ((spa = spa_lookup(target)) != NULL &&
 				    spa->spa_log_state == SPA_LOG_MISSING) {
@@ -9369,21 +8769,11 @@ main(int argc, char **argv)
 				*strpbrk(target_pool, "/@") = '\0';
 
 			zdb_set_skip_mmp(target);
-			/*
-			 * If -N was supplied, the user has indicated that
-			 * zdb -d <pool>/<objsetID> is in effect.  Otherwise
-			 * we first assume that the dataset string is the
-			 * dataset name.  If dmu_objset_hold fails with the
-			 * dataset string, and we have an objset_id, retry the
-			 * lookup with the objsetID.
-			 */
+			 
 			boolean_t retry = B_TRUE;
 retry_lookup:
 			if (dataset_lookup == B_TRUE) {
-				/*
-				 * Use the supplied id to get the name
-				 * for open_objset.
-				 */
+				 
 				error = spa_open(target_pool, &spa, FTAG);
 				if (error == 0) {
 					error = name_from_objset_id(spa,
@@ -9417,11 +8807,7 @@ retry_lookup:
 	if (error)
 		fatal("can't open '%s': %s", target, strerror(error));
 
-	/*
-	 * Set the pool failure mode to panic in order to prevent the pool
-	 * from suspending.  A suspended I/O will have no way to resume and
-	 * can prevent the zdb(8) command from terminating as expected.
-	 */
+	 
 	if (spa != NULL)
 		spa->spa_failmode = ZIO_FAILURE_MODE_PANIC;
 

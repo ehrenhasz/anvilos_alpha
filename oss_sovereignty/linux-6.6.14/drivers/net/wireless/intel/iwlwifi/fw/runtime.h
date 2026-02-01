@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause */
-/*
- * Copyright (C) 2017 Intel Deutschland GmbH
- * Copyright (C) 2018-2023 Intel Corporation
- */
+ 
+ 
 #ifndef __iwl_fw_runtime_h__
 #define __iwl_fw_runtime_h__
 
@@ -41,11 +38,7 @@ struct iwl_fwrt_shared_mem_cfg {
 
 #define IWL_FW_RUNTIME_DUMP_WK_NUM 5
 
-/**
- * struct iwl_fwrt_dump_data - dump data
- * @trig: trigger the worker was scheduled upon
- * @fw_pkt: packet received from FW
- */
+ 
 struct iwl_fwrt_dump_data {
 	union {
 		struct {
@@ -59,24 +52,14 @@ struct iwl_fwrt_dump_data {
 	};
 };
 
-/**
- * struct iwl_fwrt_wk_data - dump worker data struct
- * @idx: index of the worker
- * @wk: worker
- */
+ 
 struct iwl_fwrt_wk_data  {
 	u8 idx;
 	struct delayed_work wk;
 	struct iwl_fwrt_dump_data dump_data;
 };
 
-/**
- * struct iwl_txf_iter_data - Tx fifo iterator data struct
- * @fifo: fifo number
- * @lmac: lmac number
- * @fifo_size: fifo size
- * @internal_txf: non zero if fifo is  internal Tx fifo
- */
+ 
 struct iwl_txf_iter_data {
 	int fifo;
 	int lmac;
@@ -84,21 +67,7 @@ struct iwl_txf_iter_data {
 	u8 internal_txf;
 };
 
-/**
- * struct iwl_fw_runtime - runtime data for firmware
- * @fw: firmware image
- * @cfg: NIC configuration
- * @dev: device pointer
- * @ops: user ops
- * @ops_ctx: user ops context
- * @fw_paging_db: paging database
- * @num_of_paging_blk: number of paging blocks
- * @num_of_pages_in_last_blk: number of pages in the last block
- * @smem_cfg: saved firmware SMEM configuration
- * @cur_fw_img: current firmware image, must be maintained by
- *	the driver by calling &iwl_fw_set_current_image()
- * @dump: debug dump data
- */
+ 
 struct iwl_fw_runtime {
 	struct iwl_trans *trans;
 	const struct iwl_fw *fw;
@@ -110,24 +79,24 @@ struct iwl_fw_runtime {
 	const struct iwl_dump_sanitize_ops *sanitize_ops;
 	void *sanitize_ctx;
 
-	/* Paging */
+	 
 	struct iwl_fw_paging fw_paging_db[NUM_OF_FW_PAGING_BLOCKS];
 	u16 num_of_paging_blk;
 	u16 num_of_pages_in_last_blk;
 
 	enum iwl_ucode_type cur_fw_img;
 
-	/* memory configuration */
+	 
 	struct iwl_fwrt_shared_mem_cfg smem_cfg;
 
-	/* debug */
+	 
 	struct {
 		struct iwl_fwrt_wk_data wks[IWL_FW_RUNTIME_DUMP_WK_NUM];
 		unsigned long active_wks;
 
 		u8 conf;
 
-		/* ts of the beginning of a non-collect fw dbg data period */
+		 
 		unsigned long non_collect_ts_start[IWL_FW_INI_TIME_POINT_NUM];
 		u32 *d3_debug_data;
 		u32 lmac_err_id[MAX_NUM_LMAC];
@@ -155,7 +124,7 @@ struct iwl_fw_runtime {
 	} timestamp;
 #ifdef CONFIG_IWLWIFI_DEBUGFS
 	bool tpc_enabled;
-#endif /* CONFIG_IWLWIFI_DEBUGFS */
+#endif  
 #ifdef CONFIG_ACPI
 	struct iwl_sar_profile sar_profiles[ACPI_SAR_PROFILE_NUM];
 	u8 sar_chain_a_profile;
@@ -210,4 +179,4 @@ void iwl_get_shared_mem_conf(struct iwl_fw_runtime *fwrt);
 int iwl_set_soc_latency(struct iwl_fw_runtime *fwrt);
 int iwl_configure_rxq(struct iwl_fw_runtime *fwrt);
 
-#endif /* __iwl_fw_runtime_h__ */
+#endif  

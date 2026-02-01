@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Generic PCI host driver common code
- *
- * Copyright (C) 2014 ARM Limited
- *
- * Author: Will Deacon <will.deacon@arm.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -68,12 +62,12 @@ int pci_host_common_probe(struct platform_device *pdev)
 
 	of_pci_check_probe_only();
 
-	/* Parse and map our Configuration Space windows */
+	 
 	cfg = gen_pci_init(dev, bridge, ops);
 	if (IS_ERR(cfg))
 		return PTR_ERR(cfg);
 
-	/* Do not reassign resources if probe only */
+	 
 	if (!pci_has_flag(PCI_PROBE_ONLY))
 		pci_add_flags(PCI_REASSIGN_ALL_BUS);
 

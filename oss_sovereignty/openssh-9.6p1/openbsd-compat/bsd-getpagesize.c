@@ -1,4 +1,4 @@
-/* Placed in the public domain */
+ 
 
 #include "includes.h"
 
@@ -15,11 +15,8 @@ getpagesize(void)
 	if (r > 0 && r < INT_MAX)
 		return (int)r;
 #endif
-	/*
-	 * This is at the lower end of common values and appropriate for
-	 * our current use of getpagesize() in recallocarray().
-	 */
+	 
 	return 4096;
 }
 
-#endif /* HAVE_GETPAGESIZE */
+#endif  

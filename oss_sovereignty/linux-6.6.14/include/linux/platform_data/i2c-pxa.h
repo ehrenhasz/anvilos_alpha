@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- *  i2c_pxa.h
- *
- *  Copyright (C) 2002 Intrinsyc Software Inc.
- */
+ 
+ 
 #ifndef _I2C_PXA_H_
 #define _I2C_PXA_H_
 

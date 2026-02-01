@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: ISC
-/*
- * Copyright (C) 2016 Felix Fietkau <nbd@nbd.name>
- * Copyright (C) 2018 Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>
- * Copyright (C) 2018 Stanislaw Gruszka <stf_xl@wp.pl>
- */
+
+ 
 
 #include "mt76x02.h"
 
@@ -30,9 +26,7 @@ mt76x02_write_beacon(struct mt76x02_dev *dev, int offset, struct sk_buff *skb)
 	if (WARN_ON_ONCE(beacon_len < skb->len + sizeof(struct mt76x02_txwi)))
 		return -ENOSPC;
 
-	/* USB devices already reserve enough skb headroom for txwi's. This
-	 * helps to save slow copies over USB.
-	 */
+	 
 	if (mt76_is_usb(&dev->mt76)) {
 		struct mt76x02_txwi *txwi;
 
@@ -110,18 +104,11 @@ mt76x02_resync_beacon_timer(struct mt76x02_dev *dev)
 
 	dev->tbtt_count++;
 
-	/*
-	 * Beacon timer drifts by 1us every tick, the timer is configured
-	 * in 1/16 TU (64us) units.
-	 */
+	 
 	if (dev->tbtt_count < 63)
 		return;
 
-	/*
-	 * The updated beacon interval takes effect after two TBTT, because
-	 * at this point the original interval has already been loaded into
-	 * the next TBTT_TIMER value
-	 */
+	 
 	if (dev->tbtt_count == 63)
 		timer_val -= 1;
 

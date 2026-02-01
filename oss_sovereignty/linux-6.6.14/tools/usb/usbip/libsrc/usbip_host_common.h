@@ -1,13 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copyright (C) 2015-2016 Samsung Electronics
- *               Igor Kotrasinski <i.kotrasinsk@samsung.com>
- *               Krzysztof Opasiak <k.opasiak@samsung.com>
- *
- * Refactored from usbip_host_driver.c, which is:
- * Copyright (C) 2011 matt mooney <mfm@muteddisk.com>
- *               2005-2007 Takahiro Hirofuchi
- */
+ 
+ 
 
 #ifndef __USBIP_HOST_COMMON_H
 #define __USBIP_HOST_COMMON_H
@@ -37,7 +29,7 @@ struct usbip_host_driver_ops {
 
 struct usbip_host_driver {
 	int ndevs;
-	/* list of exported device */
+	 
 	struct list_head edev_list;
 	const char *udev_subsystem;
 	struct usbip_host_driver_ops ops;
@@ -51,7 +43,7 @@ struct usbip_exported_device {
 	struct usbip_usb_interface uinf[];
 };
 
-/* External API to access the driver */
+ 
 static inline int usbip_driver_open(struct usbip_host_driver *hdriver)
 {
 	if (!hdriver->ops.open)
@@ -81,7 +73,7 @@ usbip_get_device(struct usbip_host_driver *hdriver, int num)
 	return hdriver->ops.get_device(hdriver, num);
 }
 
-/* Helper functions for implementing driver backend */
+ 
 int usbip_generic_driver_open(struct usbip_host_driver *hdriver);
 void usbip_generic_driver_close(struct usbip_host_driver *hdriver);
 int usbip_generic_refresh_device_list(struct usbip_host_driver *hdriver);
@@ -89,4 +81,4 @@ int usbip_export_device(struct usbip_exported_device *edev, int sockfd);
 struct usbip_exported_device *usbip_generic_get_device(
 		struct usbip_host_driver *hdriver, int num);
 
-#endif /* __USBIP_HOST_COMMON_H */
+#endif  

@@ -1,18 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Ethernet device driver for Cortina Systems Gemini SoC
- * Also known as the StorLink SL3512 and SL3516 (SL351x) or Lepus
- * Net Engine and Gigabit Ethernet MAC (GMAC)
- * This hardware contains a TCP Offload Engine (TOE) but currently the
- * driver does not make use of it.
- *
- * Authors:
- * Linus Walleij <linus.walleij@linaro.org>
- * Tobias Waldvogel <tobias.waldvogel@gmail.com> (OpenWRT)
- * Michał Mirosław <mirq-linux@rere.qmqm.pl>
- * Paulius Zaleckas <paulius.zaleckas@gmail.com>
- * Giuseppe De Robertis <Giuseppe.DeRobertis@ba.infn.it>
- * Gary Chen & Ch Hsu Storlink Semiconductor
- */
+
+ 
 #include <linux/kernel.h>
 #include <linux/init.h>
 #include <linux/module.h>
@@ -69,7 +56,7 @@ MODULE_PARM_DESC(debug, "Debug level (0=none,...,16=all)");
 #define DEFAULT_GMAC_TXQ_ORDER		8
 #define DEFAULT_RX_BUF_ORDER		11
 #define TX_MAX_FRAGS			16
-#define TX_QUEUE_NUM			1	/* max: 6 */
+#define TX_QUEUE_NUM			1	 
 #define RX_MAX_ALLOC_ORDER		2
 
 #define GMAC0_IRQ0_2 (GMAC0_TXDERR_INT_BIT | GMAC0_TXPERR_INT_BIT | \
@@ -82,11 +69,7 @@ MODULE_PARM_DESC(debug, "Debug level (0=none,...,16=all)");
 		NETIF_F_IPV6_CSUM | NETIF_F_RXCSUM | \
 		NETIF_F_TSO | NETIF_F_TSO_ECN | NETIF_F_TSO6)
 
-/**
- * struct gmac_queue_page - page buffer per-page info
- * @page: the page struct
- * @mapping: the dma address handle
- */
+ 
 struct gmac_queue_page {
 	struct page *page;
 	dma_addr_t mapping;
@@ -102,7 +85,7 @@ struct gmac_txq {
 struct gemini_ethernet;
 
 struct gemini_ethernet_port {
-	u8 id; /* 0 or 1 */
+	u8 id;  
 
 	struct gemini_ethernet *geth;
 	struct net_device *netdev;
@@ -130,7 +113,7 @@ struct gemini_ethernet_port {
 	dma_addr_t		txq_dma_base;
 
 	unsigned int		msg_enable;
-	spinlock_t		config_lock; /* Locks config register */
+	spinlock_t		config_lock;  
 
 	struct u64_stats_sync	tx_stats_syncp;
 	struct u64_stats_sync	rx_stats_syncp;
@@ -153,14 +136,14 @@ struct gemini_ethernet {
 	struct gemini_ethernet_port *port1;
 	bool initialized;
 
-	spinlock_t	irq_lock; /* Locks IRQ-related registers */
+	spinlock_t	irq_lock;  
 	unsigned int	freeq_order;
 	unsigned int	freeq_frag_order;
 	struct gmac_rxdesc *freeq_ring;
 	dma_addr_t	freeq_dma_base;
 	struct gmac_queue_page	*freeq_pages;
 	unsigned int	num_freeq_pages;
-	spinlock_t	freeq_lock; /* Locks queue from reentrance */
+	spinlock_t	freeq_lock;  
 };
 
 #define GMAC_STATS_NUM	( \
@@ -266,7 +249,7 @@ static void gmac_disable_tx_rx(struct net_device *netdev)
 
 	spin_unlock_irqrestore(&port->config_lock, flags);
 
-	mdelay(10);	/* let GMAC consume packet */
+	mdelay(10);	 
 }
 
 static void gmac_set_flow_control(struct net_device *netdev, bool tx, bool rx)
@@ -375,7 +358,7 @@ static int gmac_setup_phy(struct net_device *netdev)
 	phy_set_max_speed(phy, SPEED_1000);
 	phy_support_asym_pause(phy);
 
-	/* set PHY interface type */
+	 
 	switch (phy->interface) {
 	case PHY_INTERFACE_MODE_MII:
 		netdev_dbg(netdev,
@@ -409,10 +392,7 @@ static int gmac_setup_phy(struct net_device *netdev)
 	return 0;
 }
 
-/* The maximum frame length is not logically enumerated in the
- * hardware, so we do a table lookup to find the applicable max
- * frame length.
- */
+ 
 struct gmac_max_framelen {
 	unsigned int max_l3_len;
 	u8 val;
@@ -534,9 +514,7 @@ static int gmac_init(struct net_device *netdev)
 	port->txq_order = DEFAULT_GMAC_TXQ_ORDER;
 	port->rx_coalesce_nsecs = DEFAULT_RX_COALESCE_NSECS;
 
-	/* Mark every quarter of the queue a packet for interrupt
-	 * in order to be able to wake up the queue if it was stopped
-	 */
+	 
 	port->irq_every_tx_packets = 1 << (port->txq_order - 2);
 
 	return 0;
@@ -707,7 +685,7 @@ static int gmac_setup_rxq(struct net_device *netdev)
 	qhdr = geth->base + TOE_DEFAULT_Q_HDR_BASE(netdev->dev_id);
 	port->rxq_rwptr = &qhdr->word1;
 
-	/* Remap a slew of memory to use for the RX queue */
+	 
 	port->rxq_ring = dma_alloc_coherent(geth->dev,
 				sizeof(*port->rxq_ring) << port->rxq_order,
 				&port->rxq_dma_base, GFP_KERNEL);
@@ -732,7 +710,7 @@ gmac_get_queue_page(struct gemini_ethernet *geth,
 	dma_addr_t mapping;
 	int i;
 
-	/* Only look for even pages */
+	 
 	mapping = addr & PAGE_MASK;
 
 	if (!geth->freeq_pages) {
@@ -740,7 +718,7 @@ gmac_get_queue_page(struct gemini_ethernet *geth,
 		return NULL;
 	}
 
-	/* Look up a ring buffer page from virtual mapping */
+	 
 	for (i = 0; i < geth->num_freeq_pages; i++) {
 		gpage = &geth->freeq_pages[i];
 		if (gpage->mapping == mapping)
@@ -775,9 +753,7 @@ static void gmac_cleanup_rxq(struct net_device *netdev)
 
 	writel(0, dma_reg);
 
-	/* Loop from read pointer to write pointer of the RX queue
-	 * and free up all pages by the queue.
-	 */
+	 
 	while (r != w) {
 		mapping = rxd[r].word2.buf_adr;
 		r++;
@@ -786,13 +762,13 @@ static void gmac_cleanup_rxq(struct net_device *netdev)
 		if (!mapping)
 			continue;
 
-		/* Freeq pointers are one page off */
+		 
 		gpage = gmac_get_queue_page(geth, port, mapping + PAGE_SIZE);
 		if (!gpage) {
 			dev_err(geth->dev, "could not find page\n");
 			continue;
 		}
-		/* Release the RX queue reference to the page */
+		 
 		put_page(gpage->page);
 	}
 
@@ -811,7 +787,7 @@ static struct page *geth_freeq_alloc_map_page(struct gemini_ethernet *geth,
 	struct page *page;
 	int i;
 
-	/* First allocate and DMA map a single page */
+	 
 	page = alloc_page(GFP_ATOMIC);
 	if (!page)
 		return NULL;
@@ -823,13 +799,8 @@ static struct page *geth_freeq_alloc_map_page(struct gemini_ethernet *geth,
 		return NULL;
 	}
 
-	/* The assign the page mapping (physical address) to the buffer address
-	 * in the hardware queue. PAGE_SHIFT on ARM is 12 (1 page is 4096 bytes,
-	 * 4k), and the default RX frag order is 11 (fragments are up 20 2048
-	 * bytes, 2k) so fpp_order (fragments per page order) is default 1. Thus
-	 * each page normally needs two entries in the queue.
-	 */
-	frag_len = 1 << geth->freeq_frag_order; /* Usually 2048 */
+	 
+	frag_len = 1 << geth->freeq_frag_order;  
 	fpp_order = PAGE_SHIFT - geth->freeq_frag_order;
 	freeq_entry = geth->freeq_ring + (pn << fpp_order);
 	dev_dbg(geth->dev, "allocate page %d fragment length %d fragments per page %d, freeq entry %p\n",
@@ -840,18 +811,16 @@ static struct page *geth_freeq_alloc_map_page(struct gemini_ethernet *geth,
 		mapping += frag_len;
 	}
 
-	/* If the freeq entry already has a page mapped, then unmap it. */
+	 
 	gpage = &geth->freeq_pages[pn];
 	if (gpage->page) {
 		mapping = geth->freeq_ring[pn << fpp_order].word2.buf_adr;
 		dma_unmap_single(geth->dev, mapping, frag_len, DMA_FROM_DEVICE);
-		/* This should be the last reference to the page so it gets
-		 * released
-		 */
+		 
 		put_page(gpage->page);
 	}
 
-	/* Then put our new mapping into the page table */
+	 
 	dev_dbg(geth->dev, "page %d, DMA addr: %08x, page %p\n",
 		pn, (unsigned int)mapping, page);
 	gpage->mapping = mapping;
@@ -860,13 +829,7 @@ static struct page *geth_freeq_alloc_map_page(struct gemini_ethernet *geth,
 	return page;
 }
 
-/**
- * geth_fill_freeq() - Fill the freeq with empty fragments to use
- * @geth: the ethernet adapter
- * @refill: whether to reset the queue by filling in all freeq entries or
- * just refill it, usually the interrupt to refill the queue happens when
- * the queue is half empty.
- */
+ 
 static unsigned int geth_fill_freeq(struct gemini_ethernet *geth, bool refill)
 {
 	unsigned int fpp_order = PAGE_SHIFT - geth->freeq_frag_order;
@@ -876,7 +839,7 @@ static unsigned int geth_fill_freeq(struct gemini_ethernet *geth, bool refill)
 	union dma_rwptr rw;
 	unsigned int m_pn;
 
-	/* Mask for page */
+	 
 	m_pn = (1 << (geth->freeq_order - fpp_order)) - 1;
 
 	spin_lock_irqsave(&geth->freeq_lock, flags);
@@ -886,7 +849,7 @@ static unsigned int geth_fill_freeq(struct gemini_ethernet *geth, bool refill)
 	epn = (rw.bits.rptr >> fpp_order) - 1;
 	epn &= m_pn;
 
-	/* Loop over the freeq ring buffer entries */
+	 
 	while (pn != epn) {
 		struct gmac_queue_page *gpage;
 		struct page *page;
@@ -908,7 +871,7 @@ static unsigned int geth_fill_freeq(struct gemini_ethernet *geth, bool refill)
 				break;
 		}
 
-		/* Add one reference per fragment in the page */
+		 
 		page_ref_add(page, 1 << fpp_order);
 		count += 1 << fpp_order;
 		pn++;
@@ -943,7 +906,7 @@ static int geth_setup_freeq(struct gemini_ethernet *geth)
 		goto err_freeq;
 	}
 
-	/* Allocate a mapping to page look-up index */
+	 
 	geth->freeq_pages = kcalloc(pages, sizeof(*geth->freeq_pages),
 				    GFP_KERNEL);
 	if (!geth->freeq_pages)
@@ -991,10 +954,7 @@ err_freeq:
 	return -ENOMEM;
 }
 
-/**
- * geth_cleanup_freeq() - cleanup the DMA mappings and free the queue
- * @geth: the Gemini global ethernet state
- */
+ 
 static void geth_cleanup_freeq(struct gemini_ethernet *geth)
 {
 	unsigned int fpp_order = PAGE_SHIFT - geth->freeq_frag_order;
@@ -1026,15 +986,7 @@ static void geth_cleanup_freeq(struct gemini_ethernet *geth)
 			  geth->freeq_ring, geth->freeq_dma_base);
 }
 
-/**
- * geth_resize_freeq() - resize the software queue depth
- * @port: the port requesting the change
- *
- * This gets called at least once during probe() so the device queue gets
- * "resized" from the hardware defaults. Since both ports/net devices share
- * the same hardware queue, some synchronization between the ports is
- * needed.
- */
+ 
 static int geth_resize_freeq(struct gemini_ethernet_port *port)
 {
 	struct gemini_ethernet *geth = port->geth;
@@ -1077,24 +1029,21 @@ static int geth_resize_freeq(struct gemini_ethernet_port *port)
 
 	spin_lock_irqsave(&geth->irq_lock, flags);
 
-	/* Disable the software queue IRQs */
+	 
 	en = readl(geth->base + GLOBAL_INTERRUPT_ENABLE_4_REG);
 	en &= ~SWFQ_EMPTY_INT_BIT;
 	writel(en, geth->base + GLOBAL_INTERRUPT_ENABLE_4_REG);
 	spin_unlock_irqrestore(&geth->irq_lock, flags);
 
-	/* Drop the old queue */
+	 
 	if (geth->freeq_ring)
 		geth_cleanup_freeq(geth);
 
-	/* Allocate a new queue with the desired order */
+	 
 	geth->freeq_order = new_order;
 	ret = geth_setup_freeq(geth);
 
-	/* Restart the interrupts - NOTE if this is the first resize
-	 * after probe(), this is where the interrupts get turned on
-	 * in the first place.
-	 */
+	 
 	spin_lock_irqsave(&geth->irq_lock, flags);
 	en |= SWFQ_EMPTY_INT_BIT;
 	writel(en, geth->base + GLOBAL_INTERRUPT_ENABLE_4_REG);
@@ -1161,14 +1110,7 @@ static int gmac_map_tx_bufs(struct net_device *netdev, struct sk_buff *skb,
 	}
 
 	if (skb->len >= ETH_FRAME_LEN) {
-		/* Hardware offloaded checksumming isn't working on frames
-		 * bigger than 1514 bytes. A hypothesis about this is that the
-		 * checksum buffer is only 1518 bytes, so when the frames get
-		 * bigger they get truncated, or the last few bytes get
-		 * overwritten by the FCS.
-		 *
-		 * Just use software checksumming and bypass on bigger frames.
-		 */
+		 
 		if (skb->ip_summed == CHECKSUM_PARTIAL) {
 			ret = skb_checksum_help(skb);
 			if (ret)
@@ -1178,16 +1120,11 @@ static int gmac_map_tx_bufs(struct net_device *netdev, struct sk_buff *skb,
 	} else if (skb->ip_summed == CHECKSUM_PARTIAL) {
 		int tcp = 0;
 
-		/* We do not switch off the checksumming on non TCP/UDP
-		 * frames: as is shown from tests, the checksumming engine
-		 * is smart enough to see that a frame is not actually TCP
-		 * or UDP and then just pass it through without any changes
-		 * to the frame.
-		 */
+		 
 		if (skb->protocol == htons(ETH_P_IP)) {
 			word1 |= TSS_IP_CHKSUM_BIT;
 			tcp = ip_hdr(skb)->protocol == IPPROTO_TCP;
-		} else { /* IPv6 */
+		} else {  
 			word1 |= TSS_IPV6_ENABLE_BIT;
 			tcp = ipv6_hdr(skb)->nexthdr == IPPROTO_TCP;
 		}
@@ -1432,7 +1369,7 @@ static unsigned int gmac_rx(struct net_device *netdev, unsigned int budget)
 	int frag_nr = 0;
 
 	rw.bits32 = readl(ptr_reg);
-	/* Reset interrupt as all packages until here are taken into account */
+	 
 	writel(DEFAULT_Q0_INT_BIT << netdev->dev_id,
 	       geth->base + GLOBAL_INTERRUPT_STATUS_1_REG);
 	r = rw.bits.rptr;
@@ -1458,7 +1395,7 @@ static unsigned int gmac_rx(struct net_device *netdev, unsigned int budget)
 			goto err_drop;
 		}
 
-		/* Freeq pointers are one page off */
+		 
 		gpage = gmac_get_queue_page(geth, port, mapping + PAGE_SIZE);
 		if (!gpage) {
 			dev_err(geth->dev, "could not find mapping\n");
@@ -1488,7 +1425,7 @@ static unsigned int gmac_rx(struct net_device *netdev, unsigned int budget)
 		if (word3.bits32 & EOF_BIT)
 			frag_len = frame_len - skb->len;
 
-		/* append page frag to skb */
+		 
 		if (frag_nr == MAX_SKB_FRAGS)
 			goto err_drop;
 
@@ -1559,7 +1496,7 @@ static void gmac_dump_dma_state(struct net_device *netdev)
 	void __iomem *ptr_reg;
 	u32 reg[5];
 
-	/* Interrupt status */
+	 
 	reg[0] = readl(geth->base + GLOBAL_INTERRUPT_STATUS_0_REG);
 	reg[1] = readl(geth->base + GLOBAL_INTERRUPT_STATUS_1_REG);
 	reg[2] = readl(geth->base + GLOBAL_INTERRUPT_STATUS_2_REG);
@@ -1568,7 +1505,7 @@ static void gmac_dump_dma_state(struct net_device *netdev)
 	netdev_err(netdev, "IRQ status: 0x%08x 0x%08x 0x%08x 0x%08x 0x%08x\n",
 		   reg[0], reg[1], reg[2], reg[3], reg[4]);
 
-	/* Interrupt enable */
+	 
 	reg[0] = readl(geth->base + GLOBAL_INTERRUPT_ENABLE_0_REG);
 	reg[1] = readl(geth->base + GLOBAL_INTERRUPT_ENABLE_1_REG);
 	reg[2] = readl(geth->base + GLOBAL_INTERRUPT_ENABLE_2_REG);
@@ -1577,7 +1514,7 @@ static void gmac_dump_dma_state(struct net_device *netdev)
 	netdev_err(netdev, "IRQ enable: 0x%08x 0x%08x 0x%08x 0x%08x 0x%08x\n",
 		   reg[0], reg[1], reg[2], reg[3], reg[4]);
 
-	/* RX DMA status */
+	 
 	reg[0] = readl(port->dma_base + GMAC_DMA_RX_FIRST_DESC_REG);
 	reg[1] = readl(port->dma_base + GMAC_DMA_RX_CURR_DESC_REG);
 	reg[2] = GET_RPTR(port->rxq_rwptr);
@@ -1592,7 +1529,7 @@ static void gmac_dump_dma_state(struct net_device *netdev)
 	netdev_err(netdev, "RX DMA descriptor: 0x%08x 0x%08x 0x%08x 0x%08x\n",
 		   reg[0], reg[1], reg[2], reg[3]);
 
-	/* TX DMA status */
+	 
 	ptr_reg = port->dma_base + GMAC_SW_TX_QUEUE0_PTR_REG;
 
 	reg[0] = readl(port->dma_base + GMAC_DMA_TX_FIRST_DESC_REG);
@@ -1609,7 +1546,7 @@ static void gmac_dump_dma_state(struct net_device *netdev)
 	netdev_err(netdev, "TX DMA descriptor: 0x%08x 0x%08x 0x%08x 0x%08x\n",
 		   reg[0], reg[1], reg[2], reg[3]);
 
-	/* FREE queues status */
+	 
 	ptr_reg = geth->base + GLOBAL_SWFQ_RWPTR_REG;
 
 	reg[0] = GET_RPTR(ptr_reg);
@@ -1654,11 +1591,7 @@ static void gmac_update_hw_stats(struct net_device *netdev)
 	spin_unlock_irqrestore(&geth->irq_lock, flags);
 }
 
-/**
- * gmac_get_intr_flags() - get interrupt status flags for a port from
- * @netdev: the net device for the port to get flags from
- * @i: the interrupt status register 0..4
- */
+ 
 static u32 gmac_get_intr_flags(struct net_device *netdev, int i)
 {
 	struct gemini_ethernet_port *port = netdev_priv(netdev);
@@ -1666,7 +1599,7 @@ static u32 gmac_get_intr_flags(struct net_device *netdev, int i)
 	void __iomem *irqif_reg, *irqen_reg;
 	unsigned int offs, val;
 
-	/* Calculate the offset using the stride of the status registers */
+	 
 	offs = i * (GLOBAL_INTERRUPT_STATUS_1_REG -
 		    GLOBAL_INTERRUPT_STATUS_0_REG);
 
@@ -1701,11 +1634,11 @@ static irqreturn_t gmac_irq(int irq, void *data)
 	orr |= val;
 
 	if (val & (GMAC0_IRQ0_2 << (netdev->dev_id * 2))) {
-		/* Oh, crap */
+		 
 		netdev_err(netdev, "hw failure/sw bug\n");
 		gmac_dump_dma_state(netdev);
 
-		/* don't know how to recover, just reduce losses */
+		 
 		gmac_enable_irq(netdev, 0);
 		return IRQ_HANDLED;
 	}
@@ -1798,9 +1731,7 @@ static int gmac_open(struct net_device *netdev)
 	phy_start(netdev->phydev);
 
 	err = geth_resize_freeq(port);
-	/* It's fine if it's just busy, the other port has set up
-	 * the freeq in that case.
-	 */
+	 
 	if (err && (err != -EBUSY)) {
 		netdev_err(netdev, "could not resize freeq\n");
 		goto err_stop_phy;
@@ -1939,7 +1870,7 @@ static void gmac_get_stats64(struct net_device *netdev,
 
 	gmac_update_hw_stats(netdev);
 
-	/* Racing with RX NAPI */
+	 
 	do {
 		start = u64_stats_fetch_begin(&port->rx_stats_syncp);
 
@@ -1955,7 +1886,7 @@ static void gmac_get_stats64(struct net_device *netdev,
 
 	} while (u64_stats_fetch_retry(&port->rx_stats_syncp, start));
 
-	/* Racing with MIB and TX completion interrupts */
+	 
 	do {
 		start = u64_stats_fetch_begin(&port->ir_stats_syncp);
 
@@ -1969,7 +1900,7 @@ static void gmac_get_stats64(struct net_device *netdev,
 
 	} while (u64_stats_fetch_retry(&port->ir_stats_syncp, start));
 
-	/* Racing with hard_start_xmit */
+	 
 	do {
 		start = u64_stats_fetch_begin(&port->tx_stats_syncp);
 
@@ -2041,7 +1972,7 @@ static void gmac_get_ethtool_stats(struct net_device *netdev,
 
 	gmac_update_hw_stats(netdev);
 
-	/* Racing with MIB interrupt */
+	 
 	do {
 		p = values;
 		start = u64_stats_fetch_begin(&port->ir_stats_syncp);
@@ -2052,7 +1983,7 @@ static void gmac_get_ethtool_stats(struct net_device *netdev,
 	} while (u64_stats_fetch_retry(&port->ir_stats_syncp, start));
 	values = p;
 
-	/* Racing with RX NAPI */
+	 
 	do {
 		p = values;
 		start = u64_stats_fetch_begin(&port->rx_stats_syncp);
@@ -2066,7 +1997,7 @@ static void gmac_get_ethtool_stats(struct net_device *netdev,
 	} while (u64_stats_fetch_retry(&port->rx_stats_syncp, start));
 	values = p;
 
-	/* Racing with TX start_xmit */
+	 
 	do {
 		p = values;
 		start = u64_stats_fetch_begin(&port->tx_stats_syncp);
@@ -2256,13 +2187,13 @@ static irqreturn_t gemini_port_irq_thread(int irq, void *data)
 	unsigned long flags;
 
 	geth = port->geth;
-	/* The queue is half empty so refill it */
+	 
 	geth_fill_freeq(geth, true);
 
 	spin_lock_irqsave(&geth->irq_lock, flags);
-	/* ACK queue interrupt */
+	 
 	writel(irqmask, geth->base + GLOBAL_INTERRUPT_STATUS_4_REG);
-	/* Enable queue interrupt again */
+	 
 	irqmask |= readl(geth->base + GLOBAL_INTERRUPT_ENABLE_4_REG);
 	writel(irqmask, geth->base + GLOBAL_INTERRUPT_ENABLE_4_REG);
 	spin_unlock_irqrestore(&geth->irq_lock, flags);
@@ -2284,10 +2215,7 @@ static irqreturn_t gemini_port_irq(int irq, void *data)
 	en = readl(geth->base + GLOBAL_INTERRUPT_ENABLE_4_REG);
 
 	if (val & en & SWFQ_EMPTY_INT_BIT) {
-		/* Disable the queue empty interrupt while we work on
-		 * processing the queue. Also disable overrun interrupts
-		 * as there is not much we can do about it here.
-		 */
+		 
 		en &= ~(SWFQ_EMPTY_INT_BIT | GMAC0_RX_OVERRUN_INT_BIT
 					   | GMAC1_RX_OVERRUN_INT_BIT);
 		writel(en, geth->base + GLOBAL_INTERRUPT_ENABLE_4_REG);
@@ -2311,7 +2239,7 @@ static void gemini_port_remove(struct gemini_ethernet_port *port)
 
 static void gemini_ethernet_init(struct gemini_ethernet *geth)
 {
-	/* Only do this once both ports are online */
+	 
 	if (geth->initialized)
 		return;
 	if (geth->port0 && geth->port1)
@@ -2325,39 +2253,28 @@ static void gemini_ethernet_init(struct gemini_ethernet *geth)
 	writel(0, geth->base + GLOBAL_INTERRUPT_ENABLE_3_REG);
 	writel(0, geth->base + GLOBAL_INTERRUPT_ENABLE_4_REG);
 
-	/* Interrupt config:
-	 *
-	 *	GMAC0 intr bits ------> int0 ----> eth0
-	 *	GMAC1 intr bits ------> int1 ----> eth1
-	 *	TOE intr -------------> int1 ----> eth1
-	 *	Classification Intr --> int0 ----> eth0
-	 *	Default Q0 -----------> int0 ----> eth0
-	 *	Default Q1 -----------> int1 ----> eth1
-	 *	FreeQ intr -----------> int1 ----> eth1
-	 */
+	 
 	writel(0xCCFC0FC0, geth->base + GLOBAL_INTERRUPT_SELECT_0_REG);
 	writel(0x00F00002, geth->base + GLOBAL_INTERRUPT_SELECT_1_REG);
 	writel(0xFFFFFFFF, geth->base + GLOBAL_INTERRUPT_SELECT_2_REG);
 	writel(0xFFFFFFFF, geth->base + GLOBAL_INTERRUPT_SELECT_3_REG);
 	writel(0xFF000003, geth->base + GLOBAL_INTERRUPT_SELECT_4_REG);
 
-	/* edge-triggered interrupts packed to level-triggered one... */
+	 
 	writel(~0, geth->base + GLOBAL_INTERRUPT_STATUS_0_REG);
 	writel(~0, geth->base + GLOBAL_INTERRUPT_STATUS_1_REG);
 	writel(~0, geth->base + GLOBAL_INTERRUPT_STATUS_2_REG);
 	writel(~0, geth->base + GLOBAL_INTERRUPT_STATUS_3_REG);
 	writel(~0, geth->base + GLOBAL_INTERRUPT_STATUS_4_REG);
 
-	/* Set up queue */
+	 
 	writel(0, geth->base + GLOBAL_SW_FREEQ_BASE_SIZE_REG);
 	writel(0, geth->base + GLOBAL_HW_FREEQ_BASE_SIZE_REG);
 	writel(0, geth->base + GLOBAL_SWFQ_RWPTR_REG);
 	writel(0, geth->base + GLOBAL_HWFQ_RWPTR_REG);
 
 	geth->freeq_frag_order = DEFAULT_RX_BUF_ORDER;
-	/* This makes the queue resize on probe() so that we
-	 * set up and enable the queue IRQ. FIXME: fragile.
-	 */
+	 
 	geth->freeq_order = 1;
 }
 
@@ -2411,27 +2328,27 @@ static int gemini_ethernet_port_probe(struct platform_device *pdev)
 	port->dev = dev;
 	port->msg_enable = netif_msg_init(debug, DEFAULT_MSG_ENABLE);
 
-	/* DMA memory */
+	 
 	port->dma_base = devm_platform_get_and_ioremap_resource(pdev, 0, NULL);
 	if (IS_ERR(port->dma_base)) {
 		dev_err(dev, "get DMA address failed\n");
 		return PTR_ERR(port->dma_base);
 	}
 
-	/* GMAC config memory */
+	 
 	port->gmac_base = devm_platform_get_and_ioremap_resource(pdev, 1, NULL);
 	if (IS_ERR(port->gmac_base)) {
 		dev_err(dev, "get GMAC address failed\n");
 		return PTR_ERR(port->gmac_base);
 	}
 
-	/* Interrupt */
+	 
 	irq = platform_get_irq(pdev, 0);
 	if (irq < 0)
 		return irq;
 	port->irq = irq;
 
-	/* Clock the port */
+	 
 	port->pclk = devm_clk_get(dev, "PCLK");
 	if (IS_ERR(port->pclk)) {
 		dev_err(dev, "no PCLK\n");
@@ -2441,10 +2358,10 @@ static int gemini_ethernet_port_probe(struct platform_device *pdev)
 	if (ret)
 		return ret;
 
-	/* Maybe there is a nice ethernet address we should use */
+	 
 	gemini_port_save_mac_addr(port);
 
-	/* Reset the port */
+	 
 	port->reset = devm_reset_control_get_exclusive(dev, NULL);
 	if (IS_ERR(port->reset)) {
 		dev_err(dev, "no reset\n");
@@ -2454,18 +2371,18 @@ static int gemini_ethernet_port_probe(struct platform_device *pdev)
 	reset_control_reset(port->reset);
 	usleep_range(100, 500);
 
-	/* Assign pointer in the main state container */
+	 
 	if (!id)
 		geth->port0 = port;
 	else
 		geth->port1 = port;
 
-	/* This will just be done once both ports are up and reset */
+	 
 	gemini_ethernet_init(geth);
 
 	platform_set_drvdata(pdev, port);
 
-	/* Set up and register the netdev */
+	 
 	netdev->dev_id = port->id;
 	netdev->irq = irq;
 	netdev->netdev_ops = &gmac_351x_ops;
@@ -2476,10 +2393,7 @@ static int gemini_ethernet_port_probe(struct platform_device *pdev)
 
 	netdev->hw_features = GMAC_OFFLOAD_FEATURES;
 	netdev->features |= GMAC_OFFLOAD_FEATURES | NETIF_F_GRO;
-	/* We can receive jumbo frames up to 10236 bytes but only
-	 * transmit 2047 bytes so, let's accept payloads of 2047
-	 * bytes minus VLAN and ethernet header
-	 */
+	 
 	netdev->min_mtu = ETH_MIN_MTU;
 	netdev->max_mtu = MTU_SIZE_BIT_MASK - VLAN_ETH_HLEN;
 
@@ -2564,7 +2478,7 @@ static int gemini_ethernet_probe(struct platform_device *pdev)
 	unsigned int retry = 5;
 	u32 val;
 
-	/* Global registers */
+	 
 	geth = devm_kzalloc(dev, sizeof(*geth), GFP_KERNEL);
 	if (!geth)
 		return -ENOMEM;
@@ -2573,7 +2487,7 @@ static int gemini_ethernet_probe(struct platform_device *pdev)
 		return PTR_ERR(geth->base);
 	geth->dev = dev;
 
-	/* Wait for ports to stabilize */
+	 
 	do {
 		udelay(2);
 		val = readl(geth->base + GLOBAL_TOE_VERSION_REG);
@@ -2589,10 +2503,10 @@ static int gemini_ethernet_probe(struct platform_device *pdev)
 	spin_lock_init(&geth->irq_lock);
 	spin_lock_init(&geth->freeq_lock);
 
-	/* The children will use this */
+	 
 	platform_set_drvdata(pdev, geth);
 
-	/* Spawn child devices for the two ports */
+	 
 	return devm_of_platform_populate(dev);
 }
 

@@ -1,27 +1,5 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
-/*
- * Copyright (C) 2019 Romain Dolbeau. All rights reserved.
- *           <romain.dolbeau@european-processor-initiative.eu>
- */
+ 
+ 
 
 #include <sys/isa_defs.h>
 #include <sys/types.h>
@@ -221,12 +199,12 @@ const raidz_impl_ops_t vdev_raidz_powerpc_altivec_impl = {
 	.name = "powerpc_altivec"
 };
 
-#endif /* defined(__powerpc__) */
+#endif  
 
 
 #if defined(__powerpc__)
 #if defined(_ZFS_LITTLE_ENDIAN) && _LITTLE_ENDIAN
-/* BEGIN CSTYLED */
+ 
 const uint8_t
 __attribute__((aligned(256))) gf_clmul_mod_lt[4*256][16] = {
 	{	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -2278,9 +2256,9 @@ __attribute__((aligned(256))) gf_clmul_mod_lt[4*256][16] = {
 	{	0x05, 0xfa, 0xfb, 0x04, 0xf9, 0x06, 0x07, 0xf8,
 		0xfd, 0x02, 0x03, 0xfc, 0x01, 0xfe, 0xff, 0x00  }
 };
-/* END CSTYLED */
+ 
 #else
-/* BEGIN CSTYLED */
+ 
 const uint8_t
 __attribute__((aligned(256))) gf_clmul_mod_lt[4*256][16] = {
 	{	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -4332,6 +4310,6 @@ __attribute__((aligned(256))) gf_clmul_mod_lt[4*256][16] = {
 	{	0x00, 0xff, 0xfe, 0x01, 0xfc, 0x03, 0x02, 0xfd,
 		0xf8, 0x07, 0x06, 0xf9, 0x04, 0xfb, 0xfa, 0x05  }
 };
-/* END CSTYLED */
-#endif // ENDIANNESS
-#endif /* defined(__powerpc__) */
+ 
+#endif 
+#endif  

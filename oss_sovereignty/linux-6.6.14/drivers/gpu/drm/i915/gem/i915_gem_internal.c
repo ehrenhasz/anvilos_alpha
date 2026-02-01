@@ -1,8 +1,4 @@
-/*
- * SPDX-License-Identifier: MIT
- *
- * Copyright © 2014-2016 Intel Corporation
- */
+ 
 
 #include <linux/scatterlist.h>
 #include <linux/slab.h>
@@ -35,7 +31,7 @@ static int i915_gem_object_get_pages_internal(struct drm_i915_gem_object *obj)
 	struct drm_i915_private *i915 = to_i915(obj->base.dev);
 	struct sg_table *st;
 	struct scatterlist *sg;
-	unsigned int npages; /* restricted by sg_alloc_table */
+	unsigned int npages;  
 	int max_order = MAX_ORDER;
 	unsigned int max_segment;
 	gfp_t gfp;
@@ -49,7 +45,7 @@ static int i915_gem_object_get_pages_internal(struct drm_i915_gem_object *obj)
 
 	gfp = GFP_KERNEL | __GFP_HIGHMEM | __GFP_RECLAIMABLE;
 	if (IS_I965GM(i915) || IS_I965G(i915)) {
-		/* 965gm cannot relocate objects above 4GiB. */
+		 
 		gfp &= ~__GFP_HIGHMEM;
 		gfp |= __GFP_DMA32;
 	}
@@ -79,7 +75,7 @@ create_st:
 			if (!order--)
 				goto err;
 
-			/* Limit subsequent allocations as well */
+			 
 			max_order = order;
 		} while (1);
 
@@ -96,7 +92,7 @@ create_st:
 	} while (1);
 
 	if (i915_gem_gtt_prepare_pages(obj, st)) {
-		/* Failed to dma-map try again with single page sg segments */
+		 
 		if (get_order(st->sgl->length)) {
 			internal_free_pages(st);
 			max_order = 0;
@@ -158,13 +154,7 @@ __i915_gem_object_create_internal(struct drm_i915_private *i915,
 	i915_gem_object_init(obj, ops, &lock_class, 0);
 	obj->mem_flags |= I915_BO_FLAG_STRUCT_PAGE;
 
-	/*
-	 * Mark the object as volatile, such that the pages are marked as
-	 * dontneed whilst they are still pinned. As soon as they are unpinned
-	 * they are allowed to be reaped by the shrinker, and the caller is
-	 * expected to repopulate - the contents of this object are only valid
-	 * whilst active and pinned.
-	 */
+	 
 	i915_gem_object_set_volatile(obj);
 
 	obj->read_domains = I915_GEM_DOMAIN_CPU;
@@ -176,21 +166,7 @@ __i915_gem_object_create_internal(struct drm_i915_private *i915,
 	return obj;
 }
 
-/**
- * i915_gem_object_create_internal: create an object with volatile pages
- * @i915: the i915 device
- * @size: the size in bytes of backing storage to allocate for the object
- *
- * Creates a new object that wraps some internal memory for private use.
- * This object is not backed by swappable storage, and as such its contents
- * are volatile and only valid whilst pinned. If the object is reaped by the
- * shrinker, its pages and data will be discarded. Equally, it is not a full
- * GEM object and so not valid for access from userspace. This makes it useful
- * for hardware interfaces like ringbuffers (which are pinned from the time
- * the request is written to the time the hardware stops accessing it), but
- * not for contexts (which need to be preserved when not active for later
- * reuse). Note that it is not cleared upon allocation.
- */
+ 
 struct drm_i915_gem_object *
 i915_gem_object_create_internal(struct drm_i915_private *i915,
 				phys_addr_t size)

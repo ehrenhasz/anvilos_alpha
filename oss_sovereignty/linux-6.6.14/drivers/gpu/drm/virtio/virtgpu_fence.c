@@ -1,27 +1,4 @@
-/*
- * Copyright (C) 2015 Red Hat, Inc.
- * All Rights Reserved.
- *
- * Permission is hereby granted, free of charge, to any person obtaining
- * a copy of this software and associated documentation files (the
- * "Software"), to deal in the Software without restriction, including
- * without limitation the rights to use, copy, modify, merge, publish,
- * distribute, sublicense, and/or sell copies of the Software, and to
- * permit persons to whom the Software is furnished to do so, subject to
- * the following conditions:
- *
- * The above copyright notice and this permission notice (including the
- * next paragraph) shall be included in all copies or substantial
- * portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
- * IN NO EVENT SHALL THE COPYRIGHT OWNER(S) AND/OR ITS SUPPLIERS BE
- * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
- * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
- * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- */
+ 
 
 #include <trace/events/dma_fence.h>
 
@@ -42,9 +19,7 @@ static const char *virtio_gpu_get_timeline_name(struct dma_fence *f)
 
 static bool virtio_gpu_fence_signaled(struct dma_fence *f)
 {
-	/* leaked fence outside driver before completing
-	 * initialization with virtio_gpu_fence_emit.
-	 */
+	 
 	WARN_ON_ONCE(f->seqno == 0);
 	return false;
 }
@@ -87,10 +62,7 @@ struct virtio_gpu_fence *virtio_gpu_fence_alloc(struct virtio_gpu_device *vgdev,
 	fence->ring_idx = ring_idx;
 	fence->emit_fence_info = !(base_fence_ctx == drv->context);
 
-	/* This only partially initializes the fence because the seqno is
-	 * unknown yet.  The fence must not be used outside of the driver
-	 * until virtio_gpu_fence_emit is called.
-	 */
+	 
 
 	dma_fence_init(&fence->f, &virtio_gpu_fence_ops, &drv->lock,
 		       fence_context, 0);
@@ -116,7 +88,7 @@ void virtio_gpu_fence_emit(struct virtio_gpu_device *vgdev,
 	cmd_hdr->flags |= cpu_to_le32(VIRTIO_GPU_FLAG_FENCE);
 	cmd_hdr->fence_id = cpu_to_le64(fence->fence_id);
 
-	/* Only currently defined fence param. */
+	 
 	if (fence->emit_fence_info) {
 		cmd_hdr->flags |=
 			cpu_to_le32(VIRTIO_GPU_FLAG_INFO_RING_IDX);
@@ -139,12 +111,9 @@ void virtio_gpu_fence_event_process(struct virtio_gpu_device *vgdev,
 
 		signaled = curr;
 
-		/*
-		 * Signal any fences with a strictly smaller sequence number
-		 * than the current signaled fence.
-		 */
+		 
 		list_for_each_entry_safe(curr, tmp, &drv->fences, node) {
-			/* dma-fence contexts must match */
+			 
 			if (signaled->f.context != curr->f.context)
 				continue;
 

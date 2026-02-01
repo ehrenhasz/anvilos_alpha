@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2022 Facebook */
+
+ 
 #include "vmlinux.h"
 #include <bpf/bpf_helpers.h>
 #include <bpf/bpf_tracing.h>
@@ -28,9 +28,7 @@ int BPF_PROG(test_user2, struct bpf_testmod_btf_type_tag_2 *arg)
 	return 0;
 }
 
-/* int __sys_getsockname(int fd, struct sockaddr __user *usockaddr,
- *                       int __user *usockaddr_len);
- */
+ 
 SEC("fentry/__sys_getsockname")
 int BPF_PROG(test_sys_getsockname, int fd, struct sockaddr *usockaddr,
 	     int *usockaddr_len)

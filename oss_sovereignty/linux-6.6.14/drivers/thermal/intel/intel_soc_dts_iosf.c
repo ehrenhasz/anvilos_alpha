@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * intel_soc_dts_iosf.c
- * Copyright (c) 2015, Intel Corporation.
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -34,10 +31,10 @@
 #define SOC_DTS_TE_APICA_ENABLE		BIT(14)
 #define SOC_DTS_PTMC_APIC_DEASSERT_BIT	BIT(4)
 
-/* DTS encoding for TJ MAX temperature */
+ 
 #define SOC_DTS_TJMAX_ENCODING		0x7F
 
-/* Mask for two trips in status bits */
+ 
 #define SOC_DTS_TRIP_MASK		0x03
 
 static int update_trip_temp(struct intel_soc_dts_sensors *sensors,
@@ -87,7 +84,7 @@ static int update_trip_temp(struct intel_soc_dts_sensors *sensors,
 		goto err_restore_ptmc;
 
 	store_te_out = te_out;
-	/* Enable for CPU module 0 and module 1 */
+	 
 	out |= (SOC_DTS_CPU_MODULE0_ENABLE_BIT |
 					SOC_DTS_CPU_MODULE1_ENABLE_BIT);
 	if (temp) {
@@ -124,7 +121,7 @@ err_restore_ptmc:
 err_restore_ptps:
 	iosf_mbi_write(BT_MBI_UNIT_PMC, MBI_REG_WRITE,
 		       SOC_DTS_OFFSET_PTPS, store_ptps);
-	/* Nothing we can do if restore fails */
+	 
 
 	return status;
 }
@@ -229,7 +226,7 @@ static int add_dts_thermal_zone(int id, struct intel_soc_dts_sensor_entry *dts,
 	unsigned long i;
 	int ret;
 
-	/* Store status to restor on exit */
+	 
 	ret = iosf_mbi_read(BT_MBI_UNIT_PMC, MBI_REG_READ,
 			    SOC_DTS_OFFSET_ENABLE, &dts->store_status);
 	if (ret)
@@ -242,7 +239,7 @@ static int add_dts_thermal_zone(int id, struct intel_soc_dts_sensor_entry *dts,
 
 	trip_mask = GENMASK(writable_trip_cnt - 1, 0);
 
-	/* Check if the writable trip we provide is not used by BIOS */
+	 
 	ret = iosf_mbi_read(BT_MBI_UNIT_PMC, MBI_REG_READ,
 			    SOC_DTS_OFFSET_PTPS, &store_ptps);
 	if (ret)
@@ -298,7 +295,7 @@ void intel_soc_dts_iosf_interrupt_handler(struct intel_soc_dts_sensors *sensors)
 	pr_debug("status %d PTTSS %x\n", status, sticky_out);
 	if (sticky_out & SOC_DTS_TRIP_MASK) {
 		int i;
-		/* reset sticky bit */
+		 
 		status = iosf_mbi_write(BT_MBI_UNIT_PMC, MBI_REG_WRITE,
 					SOC_DTS_OFFSET_PTTSS, sticky_out);
 		spin_unlock_irqrestore(&sensors->intr_notify_lock, flags);

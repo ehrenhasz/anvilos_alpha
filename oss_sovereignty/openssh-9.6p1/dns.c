@@ -1,29 +1,6 @@
-/* $OpenBSD: dns.c,v 1.44 2023/03/10 04:06:21 dtucker Exp $ */
+ 
 
-/*
- * Copyright (c) 2003 Wesley Griffin. All rights reserved.
- * Copyright (c) 2003 Jakob Schlyter. All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- *
- * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
- * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
- * IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
- * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
- * NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
- * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+ 
 
 #include "includes.h"
 
@@ -44,12 +21,12 @@
 #include "digest.h"
 
 static const char * const errset_text[] = {
-	"success",		/* 0 ERRSET_SUCCESS */
-	"out of memory",	/* 1 ERRSET_NOMEMORY */
-	"general failure",	/* 2 ERRSET_FAIL */
-	"invalid parameter",	/* 3 ERRSET_INVAL */
-	"name does not exist",	/* 4 ERRSET_NONAME */
-	"data does not exist",	/* 5 ERRSET_NODATA */
+	"success",		 
+	"out of memory",	 
+	"general failure",	 
+	"invalid parameter",	 
+	"name does not exist",	 
+	"data does not exist",	 
 };
 
 static const char *
@@ -73,10 +50,7 @@ dns_result_totext(unsigned int res)
 	}
 }
 
-/*
- * Read SSHFP parameters from key buffer.
- * Caller must free digest which is allocated by sshkey_fingerprint_raw().
- */
+ 
 static int
 dns_read_key(u_int8_t *algorithm, u_int8_t *digest_type,
     u_char **digest, size_t *digest_len, struct sshkey *key)
@@ -101,7 +75,7 @@ dns_read_key(u_int8_t *algorithm, u_int8_t *digest_type,
 		*algorithm = SSHFP_KEY_XMSS;
 		break;
 	default:
-		*algorithm = SSHFP_KEY_RESERVED; /* 0 */
+		*algorithm = SSHFP_KEY_RESERVED;  
 	}
 
 	switch (*digest_type) {
@@ -112,7 +86,7 @@ dns_read_key(u_int8_t *algorithm, u_int8_t *digest_type,
 		fp_alg = SSH_DIGEST_SHA256;
 		break;
 	default:
-		*digest_type = SSHFP_HASH_RESERVED; /* 0 */
+		*digest_type = SSHFP_HASH_RESERVED;  
 	}
 
 	if (*algorithm && *digest_type) {
@@ -128,9 +102,7 @@ dns_read_key(u_int8_t *algorithm, u_int8_t *digest_type,
 	return success;
 }
 
-/*
- * Read SSHFP parameters from rdata buffer.
- */
+ 
 static int
 dns_read_rdata(u_int8_t *algorithm, u_int8_t *digest_type,
     u_char **digest, size_t *digest_len, u_char *rdata, int rdata_len)
@@ -158,19 +130,13 @@ dns_read_rdata(u_int8_t *algorithm, u_int8_t *digest_type,
 	return success;
 }
 
-/*
- * Check if hostname is numerical.
- * Returns -1 if hostname is numeric, 0 otherwise
- */
+ 
 static int
 is_numeric_hostname(const char *hostname)
 {
 	struct addrinfo hints, *ai;
 
-	/*
-	 * We shouldn't ever get a null host but if we do then log an error
-	 * and return -1 which stops DNS key fingerprint processing.
-	 */
+	 
 	if (hostname == NULL) {
 		error("is_numeric_hostname called with NULL hostname");
 		return -1;
@@ -188,10 +154,7 @@ is_numeric_hostname(const char *hostname)
 	return 0;
 }
 
-/*
- * Verify the given hostname, address and host key using DNS.
- * Returns 0 if lookup succeeds, -1 otherwise
- */
+ 
 int
 verify_host_key_dns(const char *hostname, struct sockaddr *address,
     struct sshkey *hostkey, int *flags)
@@ -240,10 +203,7 @@ verify_host_key_dns(const char *hostname, struct sockaddr *address,
 		*flags |= DNS_VERIFY_FOUND;
 
 	for (counter = 0; counter < fingerprints->rri_nrdatas; counter++) {
-		/*
-		 * Extract the key from the answer. Ignore any badly
-		 * formatted fingerprints.
-		 */
+		 
 		if (!dns_read_rdata(&dnskey_algorithm, &dnskey_digest_type,
 		    &dnskey_digest, &dnskey_digest_len,
 		    fingerprints->rri_rdatas[counter].rdi_data,
@@ -254,7 +214,7 @@ verify_host_key_dns(const char *hostname, struct sockaddr *address,
 		debug3_f("checking SSHFP type %d fptype %d", dnskey_algorithm,
 		    dnskey_digest_type);
 
-		/* Calculate host key fingerprint. */
+		 
 		if (!dns_read_key(&hostkey_algorithm, &dnskey_digest_type,
 		    &hostkey_digest, &hostkey_digest_len, hostkey)) {
 			error("Error calculating key fingerprint.");
@@ -263,7 +223,7 @@ verify_host_key_dns(const char *hostname, struct sockaddr *address,
 			return -1;
 		}
 
-		/* Check if the current key is the same as the given key */
+		 
 		if (hostkey_algorithm == dnskey_algorithm &&
 		    hostkey_digest_len == dnskey_digest_len) {
 			if (timingsafe_bcmp(hostkey_digest, dnskey_digest,
@@ -278,12 +238,12 @@ verify_host_key_dns(const char *hostname, struct sockaddr *address,
 			}
 		}
 		free(dnskey_digest);
-		free(hostkey_digest); /* from sshkey_fingerprint_raw() */
+		free(hostkey_digest);  
 	}
 
 	freerrset(fingerprints);
 
-	/* If any fingerprint failed to validate, return failure. */
+	 
 	if (*flags & DNS_VERIFY_FAILED)
 		*flags &= ~DNS_VERIFY_MATCH;
 
@@ -298,9 +258,7 @@ verify_host_key_dns(const char *hostname, struct sockaddr *address,
 	return 0;
 }
 
-/*
- * Export the fingerprint of a key as a DNS resource record
- */
+ 
 int
 export_dns_rr(const char *hostname, struct sshkey *key, FILE *f, int generic,
     int alg)
@@ -330,12 +288,12 @@ export_dns_rr(const char *hostname, struct sshkey *key, FILE *f, int generic,
 			for (i = 0; i < rdata_digest_len; i++)
 				fprintf(f, "%02x", rdata_digest[i]);
 			fprintf(f, "\n");
-			free(rdata_digest); /* from sshkey_fingerprint_raw() */
+			free(rdata_digest);  
 			success = 1;
 		}
 	}
 
-	/* No SSHFP record was generated at all */
+	 
 	if (success == 0) {
 		error_f("unsupported algorithm and/or digest_type");
 	}

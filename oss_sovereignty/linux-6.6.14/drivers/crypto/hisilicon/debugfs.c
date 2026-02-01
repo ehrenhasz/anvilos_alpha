@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2022 HiSilicon Limited. */
+
+ 
 #include <linux/hisi_acc_qm.h>
 #include "qm_common.h"
 
@@ -52,7 +52,7 @@ static struct qm_dfx_item qm_dfx_files[] = {
 
 #define CNT_CYC_REGS_NUM		10
 static const struct debugfs_reg32 qm_dfx_regs[] = {
-	/* XXX_CNT are reading clear register */
+	 
 	{"QM_ECC_1BIT_CNT               ",  0x104000ull},
 	{"QM_ECC_MBIT_CNT               ",  0x104008ull},
 	{"QM_DFX_MB_CNT                 ",  0x104018ull},
@@ -83,7 +83,7 @@ static const struct debugfs_reg32 qm_vf_dfx_regs[] = {
 	{"QM_DFX_FUNS_ACTIVE_ST         ",  0x200ull},
 };
 
-/* define the QM's dfx regs region and region length */
+ 
 static struct dfx_diff_registers qm_diff_regs[] = {
 	{
 		.reg_offset = QM_DFX_BASE,
@@ -501,7 +501,7 @@ static ssize_t qm_cmd_write(struct file *filp, const char __user *buffer,
 	if (ret)
 		return ret;
 
-	/* Judge if the instance is being reset. */
+	 
 	if (unlikely(atomic_read(&qm->status.flags) == QM_STOP)) {
 		ret = 0;
 		goto put_dfx_access;
@@ -546,13 +546,7 @@ static const struct file_operations qm_cmd_fops = {
 	.write = qm_cmd_write,
 };
 
-/**
- * hisi_qm_regs_dump() - Dump registers's value.
- * @s: debugfs file handle.
- * @regset: accelerator registers information.
- *
- * Dump accelerator registers.
- */
+ 
 void hisi_qm_regs_dump(struct seq_file *s, struct debugfs_regset32 *regset)
 {
 	struct pci_dev *pdev = to_pci_dev(regset->dev);
@@ -626,7 +620,7 @@ static u32 clear_enable_read(struct hisi_qm *qm)
 	return readl(qm->io_base + QM_DFX_CNT_CLR_CE);
 }
 
-/* rd_clr_ctrl 1 enable read clear, otherwise 0 disable it */
+ 
 static int clear_enable_write(struct hisi_qm *qm, u32 rd_clr_ctrl)
 {
 	if (rd_clr_ctrl > 1)
@@ -655,10 +649,7 @@ static int qm_get_vf_qp_num(struct hisi_qm *qm, u32 fun_num)
 	if (vfq_num + remain_q_num <= qm->max_qp_num)
 		return fun_num == num_vfs ? vfq_num + remain_q_num : vfq_num;
 
-	/*
-	 * if vfq_num + remain_q_num > max_qp_num, the last VFs,
-	 * each with one more queue.
-	 */
+	 
 	return fun_num + remain_q_num > num_vfs ? vfq_num + 1 : vfq_num;
 }
 
@@ -669,7 +660,7 @@ static int current_qm_write(struct hisi_qm *qm, u32 val)
 	if (val > qm->vfs_num)
 		return -EINVAL;
 
-	/* According PF or VF Dev ID to calculation curr_qm_qp_num and store */
+	 
 	if (!val)
 		qm->debug.curr_qm_qp_num = qm->qp_num;
 	else
@@ -794,7 +785,7 @@ static void dfx_regs_uninit(struct hisi_qm *qm,
 {
 	int i;
 
-	/* Setting the pointer is NULL to prevent double free */
+	 
 	for (i = 0; i < reg_len; i++) {
 		kfree(dregs[i].regs);
 		dregs[i].regs = NULL;
@@ -896,12 +887,7 @@ static void qm_diff_regs_uninit(struct hisi_qm *qm, u32 reg_len)
 	dfx_regs_uninit(qm, qm->debug.qm_diff_regs, ARRAY_SIZE(qm_diff_regs));
 }
 
-/**
- * hisi_qm_regs_debugfs_init() - Allocate memory for registers.
- * @qm: device qm handle.
- * @dregs: diff registers handle.
- * @reg_len: diff registers region length.
- */
+ 
 int hisi_qm_regs_debugfs_init(struct hisi_qm *qm,
 		struct dfx_diff_registers *dregs, u32 reg_len)
 {
@@ -929,11 +915,7 @@ int hisi_qm_regs_debugfs_init(struct hisi_qm *qm,
 }
 EXPORT_SYMBOL_GPL(hisi_qm_regs_debugfs_init);
 
-/**
- * hisi_qm_regs_debugfs_uninit() - Free memory for registers.
- * @qm: device qm handle.
- * @reg_len: diff registers region length.
- */
+ 
 void hisi_qm_regs_debugfs_uninit(struct hisi_qm *qm, u32 reg_len)
 {
 	if (!qm || qm->fun_type != QM_HW_PF)
@@ -944,13 +926,7 @@ void hisi_qm_regs_debugfs_uninit(struct hisi_qm *qm, u32 reg_len)
 }
 EXPORT_SYMBOL_GPL(hisi_qm_regs_debugfs_uninit);
 
-/**
- * hisi_qm_acc_diff_regs_dump() - Dump registers's value.
- * @qm: device qm handle.
- * @s: Debugfs file handle.
- * @dregs: diff registers handle.
- * @regs_len: diff registers region length.
- */
+ 
 void hisi_qm_acc_diff_regs_dump(struct hisi_qm *qm, struct seq_file *s,
 	struct dfx_diff_registers *dregs, u32 regs_len)
 {
@@ -1064,12 +1040,7 @@ static int qm_debugfs_atomic64_get(void *data, u64 *val)
 DEFINE_DEBUGFS_ATTRIBUTE(qm_atomic64_ops, qm_debugfs_atomic64_get,
 			 qm_debugfs_atomic64_set, "%llu\n");
 
-/**
- * hisi_qm_debug_init() - Initialize qm related debugfs files.
- * @qm: The qm for which we want to add debugfs files.
- *
- * Create qm related debugfs files.
- */
+ 
 void hisi_qm_debug_init(struct hisi_qm *qm)
 {
 	struct dfx_diff_registers *qm_regs = qm->debug.qm_diff_regs;
@@ -1081,7 +1052,7 @@ void hisi_qm_debug_init(struct hisi_qm *qm)
 	qm_d = debugfs_create_dir("qm", qm->debug.debug_root);
 	qm->debug.qm_d = qm_d;
 
-	/* only show this in PF */
+	 
 	if (qm->fun_type == QM_HW_PF) {
 		qm_create_debugfs_file(qm, qm->debug.debug_root, CURRENT_QM);
 		for (i = CURRENT_Q; i < DEBUG_FILE_NUM; i++)
@@ -1112,27 +1083,21 @@ void hisi_qm_debug_init(struct hisi_qm *qm)
 }
 EXPORT_SYMBOL_GPL(hisi_qm_debug_init);
 
-/**
- * hisi_qm_debug_regs_clear() - clear qm debug related registers.
- * @qm: The qm for which we want to clear its debug registers.
- */
+ 
 void hisi_qm_debug_regs_clear(struct hisi_qm *qm)
 {
 	const struct debugfs_reg32 *regs;
 	int i;
 
-	/* clear current_qm */
+	 
 	writel(0x0, qm->io_base + QM_DFX_MB_CNT_VF);
 	writel(0x0, qm->io_base + QM_DFX_DB_CNT_VF);
 
-	/* clear current_q */
+	 
 	writel(0x0, qm->io_base + QM_DFX_SQE_CNT_VF_SQN);
 	writel(0x0, qm->io_base + QM_DFX_CQE_CNT_VF_CQN);
 
-	/*
-	 * these registers are reading and clearing, so clear them after
-	 * reading them.
-	 */
+	 
 	writel(0x1, qm->io_base + QM_DFX_CNT_CLR_CE);
 
 	regs = qm_dfx_regs;
@@ -1141,7 +1106,7 @@ void hisi_qm_debug_regs_clear(struct hisi_qm *qm)
 		regs++;
 	}
 
-	/* clear clear_enable */
+	 
 	writel(0x0, qm->io_base + QM_DFX_CNT_CLR_CE);
 }
 EXPORT_SYMBOL_GPL(hisi_qm_debug_regs_clear);

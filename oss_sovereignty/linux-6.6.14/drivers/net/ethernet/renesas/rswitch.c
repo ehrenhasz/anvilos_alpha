@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Renesas Ethernet Switch device driver
- *
- * Copyright (C) 2022 Renesas Electronics Corporation
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/dma-mapping.h>
@@ -38,7 +35,7 @@ static void rswitch_modify(void __iomem *addr, enum rswitch_reg reg, u32 clear, 
 	iowrite32((ioread32(addr + reg) & ~clear) | set, addr + reg);
 }
 
-/* Common Agent block (COMA) */
+ 
 static void rswitch_reset(struct rswitch_private *priv)
 {
 	iowrite32(RRC_RR, priv->addr + RRC);
@@ -96,7 +93,7 @@ static void rswitch_coma_init(struct rswitch_private *priv)
 	iowrite32(CABPPFLC_INIT_VALUE, priv->addr + CABPPFLC0);
 }
 
-/* R-Switch-2 block (TOP) */
+ 
 static void rswitch_top_init(struct rswitch_private *priv)
 {
 	int i;
@@ -105,12 +102,12 @@ static void rswitch_top_init(struct rswitch_private *priv)
 		iowrite32((i / 16) << (GWCA_INDEX * 8), priv->addr + TPEMIMC7(i));
 }
 
-/* Forwarding engine block (MFWD) */
+ 
 static void rswitch_fwd_init(struct rswitch_private *priv)
 {
 	int i;
 
-	/* For ETHA */
+	 
 	for (i = 0; i < RSWITCH_NUM_PORTS; i++) {
 		iowrite32(FWPC0_DEFAULT, priv->addr + FWPC0(i));
 		iowrite32(0, priv->addr + FWPBFC(i));
@@ -122,14 +119,14 @@ static void rswitch_fwd_init(struct rswitch_private *priv)
 		iowrite32(BIT(priv->gwca.index), priv->addr + FWPBFC(i));
 	}
 
-	/* For GWCA */
+	 
 	iowrite32(FWPC0_DEFAULT, priv->addr + FWPC0(priv->gwca.index));
 	iowrite32(FWPC1_DDE, priv->addr + FWPC1(priv->gwca.index));
 	iowrite32(0, priv->addr + FWPBFC(priv->gwca.index));
 	iowrite32(GENMASK(RSWITCH_NUM_PORTS - 1, 0), priv->addr + FWPBFC(priv->gwca.index));
 }
 
-/* Gateway CPU agent block (GWCA) */
+ 
 static int rswitch_gwca_change_mode(struct rswitch_private *priv,
 				    enum rswitch_gwca_mode mode)
 {
@@ -469,7 +466,7 @@ static int rswitch_gwca_queue_ext_ts_format(struct net_device *ndev,
 	if (err < 0)
 		return err;
 
-	desc = &gq->rx_ring[gq->ring_size];	/* Last */
+	desc = &gq->rx_ring[gq->ring_size];	 
 	rswitch_desc_set_dptr(&desc->desc, gq->ring_dma);
 	desc->desc.die_dt = DT_LINKFIX;
 
@@ -977,7 +974,7 @@ static int rswitch_gwca_ts_request_irqs(struct rswitch_private *priv)
 				0, GWCA_TS_IRQ_NAME, priv);
 }
 
-/* Ethernet TSN Agent block (ETHA) and Ethernet MAC IP block (RMAC) */
+ 
 static int rswitch_etha_change_mode(struct rswitch_etha *etha,
 				    enum rswitch_etha_mode mode)
 {
@@ -1137,7 +1134,7 @@ static int rswitch_etha_mii_write_c45(struct mii_bus *bus, int addr, int devad,
 	return rswitch_etha_set_access(etha, false, addr, devad, regad, val);
 }
 
-/* Call of_node_put(port) after done */
+ 
 static struct device_node *rswitch_get_port_node(struct rswitch_device *rdev)
 {
 	struct device_node *ports, *port;
@@ -1174,7 +1171,7 @@ static int rswitch_etha_get_params(struct rswitch_device *rdev)
 	int err;
 
 	if (!rdev->np_port)
-		return 0;	/* ignored */
+		return 0;	 
 
 	err = of_get_phy_mode(rdev->np_port, &rdev->etha->phy_interface);
 	if (err)
@@ -1186,7 +1183,7 @@ static int rswitch_etha_get_params(struct rswitch_device *rdev)
 		return 0;
 	}
 
-	/* if no "max-speed" property, let's use default speed */
+	 
 	switch (rdev->etha->phy_interface) {
 	case PHY_INTERFACE_MODE_MII:
 		rdev->etha->speed = SPEED_100;
@@ -1308,9 +1305,7 @@ static int rswitch_phy_device_init(struct rswitch_device *rdev)
 	if (!phy)
 		return -ENODEV;
 
-	/* Set phydev->host_interfaces before calling of_phy_connect() to
-	 * configure the PHY with the information of host_interfaces.
-	 */
+	 
 	phydev = of_phy_find_device(phy);
 	if (!phydev)
 		goto out;
@@ -1546,7 +1541,7 @@ static netdev_tx_t rswitch_start_xmit(struct sk_buff *skb, struct net_device *nd
 	dma_wmb();
 
 	desc->desc.die_dt = DT_FSINGLE | DIE;
-	wmb();	/* gq->cur must be incremented after die_dt was set */
+	wmb();	 
 
 	gq->cur = rswitch_next_queue_index(gq, true, 1);
 	rswitch_modify(rdev->addr, GWTRC(gq->index), 0, BIT(gq->index % 32));
@@ -1699,10 +1694,7 @@ static void rswitch_etha_init(struct rswitch_private *priv, int index)
 	etha->addr = priv->addr + RSWITCH_ETHA_OFFSET + index * RSWITCH_ETHA_SIZE;
 	etha->coma_addr = priv->addr;
 
-	/* MPIC.PSMCS = (clk [MHz] / (MDC frequency [MHz] * 2) - 1.
-	 * Calculating PSMCS value as MDC frequency = 2.5MHz. So, multiply
-	 * both the numerator and the denominator by 10.
-	 */
+	 
 	etha->psmcs = clk_get_rate(priv->clk) / 100000 / (25 * 2) - 1;
 }
 
@@ -1890,7 +1882,7 @@ err_ts_queue_alloc:
 
 static const struct soc_device_attribute rswitch_soc_no_speed_change[]  = {
 	{ .soc_id = "r8a779f0", .revision = "ES1.0" },
-	{ /* Sentinel */ }
+	{   }
 };
 
 static int renesas_eth_sw_probe(struct platform_device *pdev)

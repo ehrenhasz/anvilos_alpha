@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2012 Red Hat, Inc.
- * Copyright (C) 2012 Jeremy Kerr <jeremy.kerr@canonical.com>
- */
+
+ 
 
 #include <linux/efi.h>
 #include <linux/delay.h>
@@ -78,10 +75,7 @@ static ssize_t efivarfs_file_read(struct file *file, char __user *userbuf,
 
 	err = efivar_entry_size(var, &datasize);
 
-	/*
-	 * efivarfs represents uncommitted variables with
-	 * zero-length files. Reading them should return EOF.
-	 */
+	 
 	if (err == -ENOENT)
 		return 0;
 	else if (err)

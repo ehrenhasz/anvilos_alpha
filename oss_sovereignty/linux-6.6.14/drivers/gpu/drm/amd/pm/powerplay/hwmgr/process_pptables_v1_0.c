@@ -1,25 +1,4 @@
-/*
- * Copyright 2015 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 #include "pp_debug.h"
 #include <linux/module.h>
 #include <linux/slab.h>
@@ -31,12 +10,7 @@
 #include "cgs_common.h"
 #include "pptable_v1_0.h"
 
-/**
- * set_hw_cap - Private Function used during initialization.
- * @hwmgr: Pointer to the hardware manager.
- * @setIt: A flag indication if the capability should be set (TRUE) or reset (FALSE).
- * @cap: Which capability to set/reset.
- */
+ 
 static void set_hw_cap(struct pp_hwmgr *hwmgr, bool setIt, enum phm_platform_caps cap)
 {
 	if (setIt)
@@ -46,12 +20,7 @@ static void set_hw_cap(struct pp_hwmgr *hwmgr, bool setIt, enum phm_platform_cap
 }
 
 
-/**
- * set_platform_caps - Private Function used during initialization.
- * @hwmgr: Pointer to the hardware manager.
- * @powerplay_caps: the bit array (from BIOS) of capability bits.
- * Exception:  the current implementation always returns 1.
- */
+ 
 static int set_platform_caps(struct pp_hwmgr *hwmgr, uint32_t powerplay_caps)
 {
 	PP_ASSERT_WITH_CODE((~powerplay_caps & ____RETIRE16____),
@@ -128,9 +97,7 @@ static int set_platform_caps(struct pp_hwmgr *hwmgr, uint32_t powerplay_caps)
 	return 0;
 }
 
-/*
- * Private Function to get the PowerPlay Table Address.
- */
+ 
 static const void *get_powerplay_table(struct pp_hwmgr *hwmgr)
 {
 	int index = GetIndexIntoMasterTable(DATA, PowerPlayInfo);
@@ -143,7 +110,7 @@ static const void *get_powerplay_table(struct pp_hwmgr *hwmgr)
 		table_address = (ATOM_Tonga_POWERPLAYTABLE *)
 				smu_atom_get_data_table(hwmgr->adev,
 						index, &size, &frev, &crev);
-		hwmgr->soft_pp_table = table_address;	/*Cache the result in RAM.*/
+		hwmgr->soft_pp_table = table_address;	 
 		hwmgr->soft_pp_table_size = size;
 	}
 
@@ -190,12 +157,7 @@ static int get_vddc_lookup_table(
 	return 0;
 }
 
-/**
- * get_platform_power_management_table - Private Function used during initialization.
- * Initialize Platform Power Management Parameter table
- * @hwmgr: Pointer to the hardware manager.
- * @atom_ppm_table: Pointer to PPM table in VBIOS
- */
+ 
 static int get_platform_power_management_table(
 		struct pp_hwmgr *hwmgr,
 		ATOM_Tonga_PPM_Table *atom_ppm_table)
@@ -233,12 +195,7 @@ static int get_platform_power_management_table(
 	return 0;
 }
 
-/**
- * init_dpm_2_parameters - Private Function used during initialization.
- * Initialize TDP limits for DPM2
- * @hwmgr: Pointer to the hardware manager.
- * @powerplay_table: Pointer to the PowerPlay Table.
- */
+ 
 static int init_dpm_2_parameters(
 		struct pp_hwmgr *hwmgr,
 		const ATOM_Tonga_POWERPLAYTABLE *powerplay_table
@@ -256,7 +213,7 @@ static int init_dpm_2_parameters(
 	pp_table_information->ppm_parameter_table = NULL;
 	pp_table_information->vddc_lookup_table = NULL;
 	pp_table_information->vddgfx_lookup_table = NULL;
-	/* TDP limits */
+	 
 	hwmgr->platform_descriptor.TDPODLimit =
 		le16_to_cpu(powerplay_table->usPowerControlLimit);
 	hwmgr->platform_descriptor.TDPAdjustment = 0;
@@ -268,7 +225,7 @@ static int init_dpm_2_parameters(
 
 	disable_power_control = 0;
 	if (0 == disable_power_control) {
-		/* enable TDP overdrive (PowerControl) feature as well if supported */
+		 
 		if (hwmgr->platform_descriptor.TDPODLimit != 0)
 			phm_cap_set(hwmgr->platform_descriptor.platformCaps,
 			PHM_PlatformCaps_PowerControl);
@@ -347,7 +304,7 @@ static int get_hard_limits(
 {
 	PP_ASSERT_WITH_CODE((0 != limitable->ucNumEntries), "Invalid PowerPlay Table!", return -1);
 
-	/* currently we always take entries[0] parameters */
+	 
 	limits->sclk = le32_to_cpu(limitable->entries[0].ulSCLKLimit);
 	limits->mclk = le32_to_cpu(limitable->entries[0].ulMCLKLimit);
 	limits->vddc = le16_to_cpu(limitable->entries[0].usVddcLimit);
@@ -497,10 +454,7 @@ static int get_pcie_table(
 		if (!pcie_table)
 			return -ENOMEM;
 
-		/*
-		* Make sure the number of pcie entries are less than or equal to sclk dpm levels.
-		* Since first PCIE entry is for ULV, #pcie has to be <= SclkLevel + 1.
-		*/
+		 
 		pcie_count = (pp_table_information->vdd_dep_on_sclk->count) + 1;
 		if ((uint32_t)atom_pcie_table->ucNumEntries <= pcie_count)
 			pcie_count = (uint32_t)atom_pcie_table->ucNumEntries;
@@ -521,7 +475,7 @@ static int get_pcie_table(
 
 		*pp_tonga_pcie_table = pcie_table;
 	} else {
-		/* Polaris10/Polaris11 and newer. */
+		 
 		const ATOM_Polaris10_PCIE_Table *atom_pcie_table = (ATOM_Polaris10_PCIE_Table *)ptable;
 		ATOM_Polaris10_PCIE_Record *atom_pcie_record;
 
@@ -534,10 +488,7 @@ static int get_pcie_table(
 		if (!pcie_table)
 			return -ENOMEM;
 
-		/*
-		* Make sure the number of pcie entries are less than or equal to sclk dpm levels.
-		* Since first PCIE entry is for ULV, #pcie has to be <= SclkLevel + 1.
-		*/
+		 
 		pcie_count = (pp_table_information->vdd_dep_on_sclk->count) + 1;
 		if ((uint32_t)atom_pcie_table->ucNumEntries <= pcie_count)
 			pcie_count = (uint32_t)atom_pcie_table->ucNumEntries;
@@ -606,14 +557,14 @@ static int get_cac_tdp_table(
 		tdp_table->usDefaultTargetOperatingTemp =
 			le16_to_cpu(tonga_table->usTjMax);
 		tdp_table->usTargetOperatingTemp =
-			le16_to_cpu(tonga_table->usTjMax); /*Set the initial temp to the same as default */
+			le16_to_cpu(tonga_table->usTjMax);  
 		tdp_table->usPowerTuneDataSetID =
 			le16_to_cpu(tonga_table->usPowerTuneDataSetID);
 		tdp_table->usSoftwareShutdownTemp =
 			le16_to_cpu(tonga_table->usSoftwareShutdownTemp);
 		tdp_table->usClockStretchAmount =
 			le16_to_cpu(tonga_table->usClockStretchAmount);
-	} else if (table->ucRevId < 4) {   /* Fiji and newer */
+	} else if (table->ucRevId < 4) {    
 		const ATOM_Fiji_PowerTune_Table *fijitable =
 			(ATOM_Fiji_PowerTune_Table *)table;
 		tdp_table->usTDP = le16_to_cpu(fijitable->usTDP);
@@ -628,7 +579,7 @@ static int get_cac_tdp_table(
 		tdp_table->usDefaultTargetOperatingTemp =
 			le16_to_cpu(fijitable->usTjMax);
 		tdp_table->usTargetOperatingTemp =
-			le16_to_cpu(fijitable->usTjMax); /*Set the initial temp to the same as default */
+			le16_to_cpu(fijitable->usTjMax);  
 		tdp_table->usPowerTuneDataSetID =
 			le16_to_cpu(fijitable->usPowerTuneDataSetID);
 		tdp_table->usSoftwareShutdownTemp =
@@ -672,7 +623,7 @@ static int get_cac_tdp_table(
 		tdp_table->usDefaultTargetOperatingTemp =
 			le16_to_cpu(polaristable->usTjMax);
 		tdp_table->usTargetOperatingTemp =
-			le16_to_cpu(polaristable->usTjMax); /*Set the initial temp to the same as default */
+			le16_to_cpu(polaristable->usTjMax);  
 		tdp_table->usPowerTuneDataSetID =
 			le16_to_cpu(polaristable->usPowerTuneDataSetID);
 		tdp_table->usSoftwareShutdownTemp =
@@ -778,12 +729,7 @@ static int get_gpio_table(struct pp_hwmgr *hwmgr,
 
 	return 0;
 }
-/**
- * init_clock_voltage_dependency - Private Function used during initialization.
- * Initialize clock voltage dependency
- * @hwmgr: Pointer to the hardware manager.
- * @powerplay_table: Pointer to the PowerPlay Table.
- */
+ 
 static int init_clock_voltage_dependency(
 		struct pp_hwmgr *hwmgr,
 		const ATOM_Tonga_POWERPLAYTABLE *powerplay_table
@@ -871,17 +817,7 @@ static int init_clock_voltage_dependency(
 	return result;
 }
 
-/**
- * init_over_drive_limits - Retrieves the (signed) Overdrive limits from VBIOS.
- * The max engine clock, memory clock and max temperature come from the firmware info table.
- *
- * The information is placed into the platform descriptor.
- *
- * @hwmgr: source of the VBIOS table and owner of the platform descriptor to be updated.
- * @powerplay_table: the address of the PowerPlay table.
- *
- * Return: 1 as long as the firmware info table was present and of a supported version.
- */
+ 
 static int init_over_drive_limits(
 		struct pp_hwmgr *hwmgr,
 		const ATOM_Tonga_POWERPLAYTABLE *powerplay_table)
@@ -898,13 +834,7 @@ static int init_over_drive_limits(
 	return 0;
 }
 
-/**
- * init_thermal_controller - Private Function used during initialization.
- * Inspect the PowerPlay table for obvious signs of corruption.
- * @hwmgr: Pointer to the hardware manager.
- * @powerplay_table: Pointer to the PowerPlay Table.
- * Exception:  This implementation always returns 1.
- */
+ 
 static int init_thermal_controller(
 		struct pp_hwmgr *hwmgr,
 		const ATOM_Tonga_POWERPLAYTABLE *powerplay_table
@@ -978,7 +908,7 @@ static int init_thermal_controller(
 		hwmgr->thermal_controller.advanceFanControlParameters.usPWMHigh
 			= le16_to_cpu(tonga_fan_table->usPWMHigh);
 		hwmgr->thermal_controller.advanceFanControlParameters.usTMax
-			= 10900;                  /* hard coded */
+			= 10900;                   
 		hwmgr->thermal_controller.advanceFanControlParameters.usTMax
 			= le16_to_cpu(tonga_fan_table->usTMax);
 		hwmgr->thermal_controller.advanceFanControlParameters.ucFanControlMode
@@ -992,7 +922,7 @@ static int init_thermal_controller(
 		hwmgr->thermal_controller.advanceFanControlParameters.usDefaultMaxFanRPM
 			= le16_to_cpu(tonga_fan_table->usFanRPMMax);
 		hwmgr->thermal_controller.advanceFanControlParameters.ulMinFanSCLKAcousticLimit
-			= (le32_to_cpu(tonga_fan_table->ulMinFanSCLKAcousticLimit) / 100); /* PPTable stores it in 10Khz unit for 2 decimal places.  SMC wants MHz. */
+			= (le32_to_cpu(tonga_fan_table->ulMinFanSCLKAcousticLimit) / 100);  
 		hwmgr->thermal_controller.advanceFanControlParameters.ucTargetTemperature
 			= tonga_fan_table->ucTargetTemperature;
 		hwmgr->thermal_controller.advanceFanControlParameters.ucMinimumPWMLimit
@@ -1027,7 +957,7 @@ static int init_thermal_controller(
 		hwmgr->thermal_controller.advanceFanControlParameters.usDefaultMaxFanRPM
 			= le16_to_cpu(fiji_fan_table->usFanRPMMax);
 		hwmgr->thermal_controller.advanceFanControlParameters.ulMinFanSCLKAcousticLimit
-			= (le32_to_cpu(fiji_fan_table->ulMinFanSCLKAcousticLimit) / 100); /* PPTable stores it in 10Khz unit for 2 decimal places.  SMC wants MHz. */
+			= (le32_to_cpu(fiji_fan_table->ulMinFanSCLKAcousticLimit) / 100);  
 		hwmgr->thermal_controller.advanceFanControlParameters.ucTargetTemperature
 			= fiji_fan_table->ucTargetTemperature;
 		hwmgr->thermal_controller.advanceFanControlParameters.ucMinimumPWMLimit
@@ -1077,7 +1007,7 @@ static int init_thermal_controller(
 		hwmgr->thermal_controller.advanceFanControlParameters.usDefaultMaxFanRPM
 			= le16_to_cpu(polaris_fan_table->usFanRPMMax);
 		hwmgr->thermal_controller.advanceFanControlParameters.ulMinFanSCLKAcousticLimit
-			= (le32_to_cpu(polaris_fan_table->ulMinFanSCLKAcousticLimit) / 100); /* PPTable stores it in 10Khz unit for 2 decimal places.  SMC wants MHz. */
+			= (le32_to_cpu(polaris_fan_table->ulMinFanSCLKAcousticLimit) / 100);  
 		hwmgr->thermal_controller.advanceFanControlParameters.ucTargetTemperature
 			= polaris_fan_table->ucTargetTemperature;
 		hwmgr->thermal_controller.advanceFanControlParameters.ucMinimumPWMLimit
@@ -1108,13 +1038,7 @@ static int init_thermal_controller(
 	return 0;
 }
 
-/**
- * check_powerplay_tables - Private Function used during initialization.
- * Inspect the PowerPlay table for obvious signs of corruption.
- * @hwmgr: Pointer to the hardware manager.
- * @powerplay_table: Pointer to the PowerPlay Table.
- * Exception:  2 if the powerplay table is incorrect.
- */
+ 
 static int check_powerplay_tables(
 		struct pp_hwmgr *hwmgr,
 		const ATOM_Tonga_POWERPLAYTABLE *powerplay_table
@@ -1256,9 +1180,7 @@ int get_number_of_powerplay_table_entries_v1_0(struct pp_hwmgr *hwmgr)
 	return (uint32_t)(state_arrays->ucNumEntries);
 }
 
-/*
- * Private function to convert flags stored in the BIOS to software flags in PowerPlay.
- */
+ 
 static uint32_t make_classification_flags(struct pp_hwmgr *hwmgr,
 		uint16_t classification, uint16_t classification2)
 {
@@ -1356,15 +1278,7 @@ static int ppt_get_vce_state_table_entry_v1_0(struct pp_hwmgr *hwmgr, uint32_t i
 	return 0;
 }
 
-/**
- * get_powerplay_table_entry_v1_0 - Create a Power State out of an entry in the PowerPlay table.
- * This function is called by the hardware back-end.
- * @hwmgr: Pointer to the hardware manager.
- * @entry_index: The index of the entry to be extracted from the table.
- * @power_state: The address of the PowerState instance being created.
- * @call_back_func: The function to call into to fill power state
- * Return: -1 if the entry cannot be retrieved.
- */
+ 
 int get_powerplay_table_entry_v1_0(struct pp_hwmgr *hwmgr,
 		uint32_t entry_index, struct pp_power_state *power_state,
 		int (*call_back_func)(struct pp_hwmgr *, void *,

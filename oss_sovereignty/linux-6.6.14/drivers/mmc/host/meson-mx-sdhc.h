@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * Copyright (C) 2020 Martin Blumenstingl <martin.blumenstingl@googlemail.com>
- */
+ 
+ 
 
 #ifndef _MESON_MX_SDHC_H_
 #define _MESON_MX_SDHC_H_
@@ -138,4 +136,4 @@ struct clk_bulk_data;
 int meson_mx_sdhc_register_clkc(struct device *dev, void __iomem *base,
 				struct clk_bulk_data *clk_bulk_data);
 
-#endif /* _MESON_MX_SDHC_H_ */
+#endif  

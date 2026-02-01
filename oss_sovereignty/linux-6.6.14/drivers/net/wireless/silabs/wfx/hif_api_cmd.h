@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only or Apache-2.0 */
-/*
- * WF200 hardware interface definitions
- *
- * Copyright (c) 2018-2020, Silicon Laboratories Inc.
- */
+ 
+ 
 
 #ifndef WFX_HIF_API_CMD_H
 #define WFX_HIF_API_CMD_H
@@ -132,7 +128,7 @@ struct wfx_hif_req_start_scan_alt {
 	u8     num_of_channels;
 	__le32 min_channel_time;
 	__le32 max_channel_time;
-	__le32 tx_power_level; /* signed value */
+	__le32 tx_power_level;  
 	struct wfx_hif_ssid_def ssid_def[HIF_API_MAX_NB_SSIDS];
 	u8     channel_list[];
 } __packed;
@@ -172,9 +168,7 @@ enum wfx_hif_frame_format {
 };
 
 struct wfx_hif_req_tx {
-	/* packet_id is not interpreted by the device, so it is not necessary to declare it little
-	 * endian
-	 */
+	 
 	u32    packet_id;
 	u8     max_tx_rate;
 	u8     queue_id:2;
@@ -210,9 +204,7 @@ enum wfx_hif_qos_ackplcy {
 
 struct wfx_hif_cnf_tx {
 	__le32 status;
-	/* packet_id is copied from struct wfx_hif_req_tx without been interpreted by the device, so
-	 * it is not necessary to declare it little endian
-	 */
+	 
 	u32    packet_id;
 	u8     txed_rate;
 	u8     ack_failures;

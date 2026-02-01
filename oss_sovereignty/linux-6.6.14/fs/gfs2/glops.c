@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) Sistina Software, Inc.  1997-2003 All rights reserved.
- * Copyright (C) 2004-2008 Red Hat, Inc.  All rights reserved.
- */
+
+ 
 
 #include <linux/spinlock.h>
 #include <linux/completion.h>
@@ -47,14 +44,7 @@ static void gfs2_ail_error(struct gfs2_glock *gl, const struct buffer_head *bh)
 	gfs2_withdraw_delayed(sdp);
 }
 
-/**
- * __gfs2_ail_flush - remove all buffers for a given lock from the AIL
- * @gl: the glock
- * @fsync: set when called from fsync (not all buffers will be clean)
- * @nr_revokes: Number of buffers to revoke
- *
- * None of the buffers should be dirty, locked, or pinned.
- */
+ 
 
 static void __gfs2_ail_flush(struct gfs2_glock *gl, bool fsync,
 			     unsigned int nr_revokes)
@@ -98,18 +88,7 @@ static int gfs2_ail_empty_gl(struct gfs2_glock *gl)
 		bool have_revokes;
 		bool log_in_flight;
 
-		/*
-		 * We have nothing on the ail, but there could be revokes on
-		 * the sdp revoke queue, in which case, we still want to flush
-		 * the log and wait for it to finish.
-		 *
-		 * If the sdp revoke list is empty too, we might still have an
-		 * io outstanding for writing revokes, so we should wait for
-		 * it before returning.
-		 *
-		 * If none of these conditions are true, our revokes are all
-		 * flushed and we can return.
-		 */
+		 
 		gfs2_log_lock(sdp);
 		have_revokes = !list_empty(&sdp->sd_log_revokes);
 		log_in_flight = atomic_read(&sdp->sd_log_in_flight);
@@ -156,11 +135,7 @@ void gfs2_ail_flush(struct gfs2_glock *gl, bool fsync)
 		       GFS2_LFC_AIL_FLUSH);
 }
 
-/**
- * gfs2_rgrp_metasync - sync out the metadata of a resource group
- * @gl: the glock protecting the resource group
- *
- */
+ 
 
 static int gfs2_rgrp_metasync(struct gfs2_glock *gl)
 {
@@ -181,14 +156,7 @@ static int gfs2_rgrp_metasync(struct gfs2_glock *gl)
 	return error;
 }
 
-/**
- * rgrp_go_sync - sync out the metadata for this glock
- * @gl: the glock
- *
- * Called when demoting or unlocking an EX glock.  We must flush
- * to disk all dirty buffers/pages relating to this glock, and must not
- * return to caller to demote/unlock the glock until I/O is complete.
- */
+ 
 
 static int rgrp_go_sync(struct gfs2_glock *gl)
 {
@@ -209,15 +177,7 @@ static int rgrp_go_sync(struct gfs2_glock *gl)
 	return error;
 }
 
-/**
- * rgrp_go_inval - invalidate the metadata for this glock
- * @gl: the glock
- * @flags:
- *
- * We never used LM_ST_DEFERRED with resource groups, so that we
- * should always see the metadata flag set here.
- *
- */
+ 
 
 static void rgrp_go_inval(struct gfs2_glock *gl, int flags)
 {
@@ -277,11 +237,7 @@ static void gfs2_clear_glop_pending(struct gfs2_inode *ip)
 	wake_up_bit(&ip->i_flags, GIF_GLOP_PENDING);
 }
 
-/**
- * gfs2_inode_metasync - sync out the metadata of an inode
- * @gl: the glock protecting the inode
- *
- */
+ 
 int gfs2_inode_metasync(struct gfs2_glock *gl)
 {
 	struct address_space *metamapping = gfs2_glock2aspace(gl);
@@ -294,11 +250,7 @@ int gfs2_inode_metasync(struct gfs2_glock *gl)
 	return error;
 }
 
-/**
- * inode_go_sync - Sync the dirty metadata of an inode
- * @gl: the glock protecting the inode
- *
- */
+ 
 
 static int inode_go_sync(struct gfs2_glock *gl)
 {
@@ -332,10 +284,7 @@ static int inode_go_sync(struct gfs2_glock *gl)
 	ret = gfs2_ail_empty_gl(gl);
 	if (!error)
 		error = ret;
-	/*
-	 * Writeback of the data mapping may cause the dirty flag to be set
-	 * so we have to clear it again here.
-	 */
+	 
 	smp_mb__before_atomic();
 	clear_bit(GLF_DIRTY, &gl->gl_flags);
 
@@ -344,16 +293,7 @@ out:
 	return error;
 }
 
-/**
- * inode_go_inval - prepare a inode glock to be released
- * @gl: the glock
- * @flags:
- *
- * Normally we invalidate everything, but if we are moving into
- * LM_ST_DEFERRED from LM_ST_SHARED or LM_ST_EXCLUSIVE then we
- * can keep hold of the metadata, since it won't have changed.
- *
- */
+ 
 
 static void inode_go_inval(struct gfs2_glock *gl, int flags)
 {
@@ -382,12 +322,7 @@ static void inode_go_inval(struct gfs2_glock *gl, int flags)
 	gfs2_clear_glop_pending(ip);
 }
 
-/**
- * inode_go_demote_ok - Check to see if it's ok to unlock an inode glock
- * @gl: the glock
- *
- * Returns: 1 if it's ok
- */
+ 
 
 static int inode_go_demote_ok(const struct gfs2_glock *gl)
 {
@@ -445,7 +380,7 @@ static int gfs2_dinode_in(struct gfs2_inode *ip, const void *buf)
 
 	ip->i_diskflags = be32_to_cpu(str->di_flags);
 	ip->i_eattr = be64_to_cpu(str->di_eattr);
-	/* i_diskflags and i_eattr must be set before gfs2_set_inode_flags() */
+	 
 	gfs2_set_inode_flags(inode);
 	height = be16_to_cpu(str->di_height);
 	if (unlikely(height > sdp->sd_max_height))
@@ -470,12 +405,7 @@ corrupt:
 	return -EIO;
 }
 
-/**
- * gfs2_inode_refresh - Refresh the incore copy of the dinode
- * @ip: The GFS2 inode
- *
- * Returns: errno
- */
+ 
 
 int gfs2_inode_refresh(struct gfs2_inode *ip)
 {
@@ -491,18 +421,13 @@ int gfs2_inode_refresh(struct gfs2_inode *ip)
 	return error;
 }
 
-/**
- * inode_go_instantiate - read in an inode if necessary
- * @gh: The glock holder
- *
- * Returns: errno
- */
+ 
 
 static int inode_go_instantiate(struct gfs2_glock *gl)
 {
 	struct gfs2_inode *ip = gl->gl_object;
 
-	if (!ip) /* no inode to populate - read it in later */
+	if (!ip)  
 		return 0;
 
 	return gfs2_inode_refresh(ip);
@@ -514,7 +439,7 @@ static int inode_go_held(struct gfs2_holder *gh)
 	struct gfs2_inode *ip = gl->gl_object;
 	int error = 0;
 
-	if (!ip) /* no inode to populate - read it in later */
+	if (!ip)  
 		return 0;
 
 	if (gh->gh_state != LM_ST_DEFERRED)
@@ -528,13 +453,7 @@ static int inode_go_held(struct gfs2_holder *gh)
 	return error;
 }
 
-/**
- * inode_go_dump - print information about an inode
- * @seq: The iterator
- * @gl: The glock
- * @fs_id_buf: file system id (may be empty)
- *
- */
+ 
 
 static void inode_go_dump(struct seq_file *seq, const struct gfs2_glock *gl,
 			  const char *fs_id_buf)
@@ -555,11 +474,7 @@ static void inode_go_dump(struct seq_file *seq, const struct gfs2_glock *gl,
 		  inode->i_data.nrpages);
 }
 
-/**
- * freeze_go_callback - A cluster node is requesting a freeze
- * @gl: the glock
- * @remote: true if this came from a different cluster node
- */
+ 
 
 static void freeze_go_callback(struct gfs2_glock *gl, bool remote)
 {
@@ -572,12 +487,7 @@ static void freeze_go_callback(struct gfs2_glock *gl, bool remote)
 	    gl->gl_demote_state != LM_ST_UNLOCKED)
 		return;
 
-	/*
-	 * Try to get an active super block reference to prevent racing with
-	 * unmount (see super_trylock_shared()).  But note that unmount isn't
-	 * the only place where a write lock on s_umount is taken, and we can
-	 * fail here because of things like remount as well.
-	 */
+	 
 	if (down_read_trylock(&sb->s_umount)) {
 		atomic_inc(&sb->s_active);
 		up_read(&sb->s_umount);
@@ -586,10 +496,7 @@ static void freeze_go_callback(struct gfs2_glock *gl, bool remote)
 	}
 }
 
-/**
- * freeze_go_xmote_bh - After promoting/demoting the freeze glock
- * @gl: the glock
- */
+ 
 static int freeze_go_xmote_bh(struct gfs2_glock *gl)
 {
 	struct gfs2_sbd *sdp = gl->gl_name.ln_sbd;
@@ -613,25 +520,14 @@ static int freeze_go_xmote_bh(struct gfs2_glock *gl)
 	return 0;
 }
 
-/**
- * freeze_go_demote_ok
- * @gl: the glock
- *
- * Always returns 0
- */
+ 
 
 static int freeze_go_demote_ok(const struct gfs2_glock *gl)
 {
 	return 0;
 }
 
-/**
- * iopen_go_callback - schedule the dcache entry for the inode to be deleted
- * @gl: the glock
- * @remote: true if this came from a different cluster node
- *
- * gl_lockref.lock lock is held while calling this
- */
+ 
 static void iopen_go_callback(struct gfs2_glock *gl, bool remote)
 {
 	struct gfs2_inode *ip = gl->gl_object;
@@ -649,53 +545,36 @@ static void iopen_go_callback(struct gfs2_glock *gl, bool remote)
 	}
 }
 
-/**
- * inode_go_free - wake up anyone waiting for dlm's unlock ast to free it
- * @gl: glock being freed
- *
- * For now, this is only used for the journal inode glock. In withdraw
- * situations, we need to wait for the glock to be freed so that we know
- * other nodes may proceed with recovery / journal replay.
- */
+ 
 static void inode_go_free(struct gfs2_glock *gl)
 {
-	/* Note that we cannot reference gl_object because it's already set
-	 * to NULL by this point in its lifecycle. */
+	 
 	if (!test_bit(GLF_FREEING, &gl->gl_flags))
 		return;
 	clear_bit_unlock(GLF_FREEING, &gl->gl_flags);
 	wake_up_bit(&gl->gl_flags, GLF_FREEING);
 }
 
-/**
- * nondisk_go_callback - used to signal when a node did a withdraw
- * @gl: the nondisk glock
- * @remote: true if this came from a different cluster node
- *
- */
+ 
 static void nondisk_go_callback(struct gfs2_glock *gl, bool remote)
 {
 	struct gfs2_sbd *sdp = gl->gl_name.ln_sbd;
 
-	/* Ignore the callback unless it's from another node, and it's the
-	   live lock. */
+	 
 	if (!remote || gl->gl_name.ln_number != GFS2_LIVE_LOCK)
 		return;
 
-	/* First order of business is to cancel the demote request. We don't
-	 * really want to demote a nondisk glock. At best it's just to inform
-	 * us of another node's withdraw. We'll keep it in SH mode. */
+	 
 	clear_bit(GLF_DEMOTE, &gl->gl_flags);
 	clear_bit(GLF_PENDING_DEMOTE, &gl->gl_flags);
 
-	/* Ignore the unlock if we're withdrawn, unmounting, or in recovery. */
+	 
 	if (test_bit(SDF_NORECOVERY, &sdp->sd_flags) ||
 	    test_bit(SDF_WITHDRAWN, &sdp->sd_flags) ||
 	    test_bit(SDF_REMOTE_WITHDRAW, &sdp->sd_flags))
 		return;
 
-	/* We only care when a node wants us to unlock, because that means
-	 * they want a journal recovered. */
+	 
 	if (gl->gl_demote_state != LM_ST_UNLOCKED)
 		return;
 
@@ -706,13 +585,7 @@ static void nondisk_go_callback(struct gfs2_glock *gl, bool remote)
 
 	fs_warn(sdp, "Some node has withdrawn; checking for recovery.\n");
 	set_bit(SDF_REMOTE_WITHDRAW, &sdp->sd_flags);
-	/*
-	 * We can't call remote_withdraw directly here or gfs2_recover_journal
-	 * because this is called from the glock unlock function and the
-	 * remote_withdraw needs to enqueue and dequeue the same "live" glock
-	 * we were called from. So we queue it to the control work queue in
-	 * lock_dlm.
-	 */
+	 
 	queue_delayed_work(gfs2_control_wq, &sdp->sd_control_work, 0);
 }
 

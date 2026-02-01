@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  sst_mfld_platform.c - Intel MID Platform driver
- *
- *  Copyright (C) 2010-2014 Intel Corp
- *  Author: Vinod Koul <vinod.koul@intel.com>
- *  Author: Harsha Priya <priya.harsha@intel.com>
- *  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- *
- * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- */
+
+ 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
 #include <linux/slab.h>
@@ -86,7 +77,7 @@ static const struct snd_pcm_hardware sst_platform_pcm_hw = {
 };
 
 static struct sst_dev_stream_map dpcm_strm_map[] = {
-	{0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF}, /* Reserved, not in use */
+	{0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF},  
 	{MERR_DPCM_AUDIO, 0, SNDRV_PCM_STREAM_PLAYBACK, PIPE_MEDIA1_IN, SST_TASK_ID_MEDIA, 0},
 	{MERR_DPCM_COMPR, 0, SNDRV_PCM_STREAM_PLAYBACK, PIPE_MEDIA0_IN, SST_TASK_ID_MEDIA, 0},
 	{MERR_DPCM_AUDIO, 0, SNDRV_PCM_STREAM_CAPTURE, PIPE_PCM1_OUT, SST_TASK_ID_MEDIA, 0},
@@ -99,7 +90,7 @@ static int sst_media_digital_mute(struct snd_soc_dai *dai, int mute, int stream)
 	return sst_send_pipe_gains(dai, stream, mute);
 }
 
-/* helper functions */
+ 
 void sst_set_stream_status(struct sst_runtime_stream *stream,
 					int state)
 {
@@ -146,7 +137,7 @@ static void sst_fill_pcm_params(struct snd_pcm_substream *substream,
 	param->uc.pcm_params.pcm_wd_sz = substream->runtime->sample_bits;
 	param->uc.pcm_params.sfreq = substream->runtime->rate;
 
-	/* PCM stream via ALSA interface */
+	 
 	param->uc.pcm_params.use_offload_path = 0;
 	param->uc.pcm_params.reserved2 = 0;
 	memset(param->uc.pcm_params.channel_map, 0, sizeof(u8));
@@ -162,7 +153,7 @@ static int sst_get_stream_mapping(int dev, int sdev, int dir,
 		return -EINVAL;
 
 
-	/* index 0 is not used in stream map */
+	 
 	for (i = 1; i < size; i++) {
 		if ((map[i].dev_num == dev) && (map[i].direction == dir))
 			return i;
@@ -189,7 +180,7 @@ int sst_fill_stream_params(void *substream,
 
 	str_params->stream_type = SST_STREAM_TYPE_MUSIC;
 
-	/* For pcm streams */
+	 
 	if (pstream) {
 		index = sst_get_stream_mapping(pstream->pcm->device,
 					  pstream->number, pstream->stream,
@@ -230,14 +221,14 @@ static int sst_platform_alloc_stream(struct snd_pcm_substream *substream,
 	int ret_val = 0;
 	struct sst_data *ctx = snd_soc_dai_get_drvdata(dai);
 
-	/* set codec params and inform SST driver the same */
+	 
 	sst_fill_pcm_params(substream, &param);
 	sst_fill_alloc_params(substream, &alloc_params);
 	str_params.sparams = param;
 	str_params.aparams = alloc_params;
 	str_params.codec = SST_CODEC_TYPE_PCM;
 
-	/* fill the device type and stream id to pass to SST driver */
+	 
 	ret_val = sst_fill_stream_params(substream, ctx, &str_params, false);
 	if (ret_val < 0)
 		return ret_val;
@@ -311,7 +302,7 @@ static int sst_media_open(struct snd_pcm_substream *substream,
 		return -ENOMEM;
 	spin_lock_init(&stream->status_lock);
 
-	/* get the sst ops */
+	 
 	mutex_lock(&sst_lock);
 	if (!sst ||
 	    !try_module_get(sst->dev->driver->owner)) {
@@ -325,25 +316,20 @@ static int sst_media_open(struct snd_pcm_substream *substream,
 	stream->stream_info.str_id = 0;
 
 	stream->stream_info.arg = substream;
-	/* allocate memory for SST API set */
+	 
 	runtime->private_data = stream;
 
 	ret_val = power_up_sst(stream);
 	if (ret_val < 0)
 		goto out_power_up;
 
-	/*
-	 * Make sure the period to be multiple of 1ms to align the
-	 * design of firmware. Apply same rule to buffer size to make
-	 * sure alsa could always find a value for period size
-	 * regardless the buffer size given by user space.
-	 */
+	 
 	snd_pcm_hw_constraint_step(substream->runtime, 0,
 			   SNDRV_PCM_HW_PARAM_PERIOD_SIZE, 48);
 	snd_pcm_hw_constraint_step(substream->runtime, 0,
 			   SNDRV_PCM_HW_PARAM_BUFFER_SIZE, 48);
 
-	/* Make sure, that the period size is always even */
+	 
 	snd_pcm_hw_constraint_step(substream->runtime, 0,
 			   SNDRV_PCM_HW_PARAM_PERIODS, 2);
 
@@ -517,7 +503,7 @@ static struct snd_soc_dai_driver sst_platform_dai[] = {
 		.channels_min = 1,
 	},
 },
-/* BE CPU  Dais */
+ 
 {
 	.name = "ssp0-port",
 	.ops = &sst_be_dai_ops,
@@ -756,11 +742,11 @@ static int sst_soc_prepare(struct device *dev)
 	if (!drv->soc_card)
 		return 0;
 
-	/* suspend all pcms first */
+	 
 	snd_soc_suspend(drv->soc_card->dev);
 	snd_soc_poweroff(drv->soc_card->dev);
 
-	/* set the SSPs to idle */
+	 
 	for_each_card_rtds(drv->soc_card, rtd) {
 		struct snd_soc_dai *dai = asoc_rtd_to_cpu(rtd, 0);
 
@@ -781,7 +767,7 @@ static void sst_soc_complete(struct device *dev)
 	if (!drv->soc_card)
 		return;
 
-	/* restart SSPs */
+	 
 	for_each_card_rtds(drv->soc_card, rtd) {
 		struct snd_soc_dai *dai = asoc_rtd_to_cpu(rtd, 0);
 

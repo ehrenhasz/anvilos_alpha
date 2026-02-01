@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * drivers/rtc/rtc-pcf85363.c
- *
- * Driver for NXP PCF85363 real-time clock.
- *
- * Copyright (C) 2017 Eric Nelson
- */
+
+ 
 #include <linux/module.h>
 #include <linux/i2c.h>
 #include <linux/slab.h>
@@ -17,9 +11,7 @@
 #include <linux/of.h>
 #include <linux/regmap.h>
 
-/*
- * Date/Time registers
- */
+ 
 #define DT_100THS	0x00
 #define DT_SECS		0x01
 #define DT_MINUTES	0x02
@@ -29,9 +21,7 @@
 #define DT_MONTHS	0x06
 #define DT_YEARS	0x07
 
-/*
- * Alarm registers
- */
+ 
 #define DT_SECOND_ALM1	0x08
 #define DT_MINUTE_ALM1	0x09
 #define DT_HOUR_ALM1	0x0a
@@ -42,17 +32,13 @@
 #define DT_WEEKDAY_ALM2	0x0f
 #define DT_ALARM_EN	0x10
 
-/*
- * Time stamp registers
- */
+ 
 #define DT_TIMESTAMP1	0x11
 #define DT_TIMESTAMP2	0x17
 #define DT_TIMESTAMP3	0x1d
 #define DT_TS_MODE	0x23
 
-/*
- * control registers
- */
+ 
 #define CTRL_OFFSET	0x24
 #define CTRL_OSCILLATOR	0x25
 #define CTRL_BATTERY	0x26
@@ -152,7 +138,7 @@ static int pcf85363_rtc_read_time(struct device *dev, struct rtc_time *tm)
 	unsigned char buf[DT_YEARS + 1];
 	int ret, len = sizeof(buf);
 
-	/* read the RTC date and time registers all at once */
+	 
 	ret = regmap_bulk_read(pcf85363->regmap, DT_100THS, buf, len);
 	if (ret) {
 		dev_err(dev, "%s: error %d\n", __func__, ret);
@@ -160,7 +146,7 @@ static int pcf85363_rtc_read_time(struct device *dev, struct rtc_time *tm)
 	}
 
 	tm->tm_year = bcd2bin(buf[DT_YEARS]);
-	/* adjust for 1900 base of rtc_time */
+	 
 	tm->tm_year += 100;
 
 	tm->tm_wday = buf[DT_WEEKDAYS] & 7;
@@ -252,7 +238,7 @@ static int _pcf85363_rtc_alarm_irq_enable(struct pcf85363 *pcf85363, unsigned
 	if (ret || enabled)
 		return ret;
 
-	/* clear current flags */
+	 
 	return regmap_update_bits(pcf85363->regmap, CTRL_FLAGS, FLAGS_A1F, 0);
 }
 
@@ -276,10 +262,7 @@ static int pcf85363_rtc_set_alarm(struct device *dev, struct rtc_wkalrm *alrm)
 	buf[3] = bin2bcd(alrm->time.tm_mday);
 	buf[4] = bin2bcd(alrm->time.tm_mon + 1);
 
-	/*
-	 * Disable the alarm interrupt before changing the value to avoid
-	 * spurious interrupts
-	 */
+	 
 	ret = _pcf85363_rtc_alarm_irq_enable(pcf85363, 0);
 	if (ret)
 		return ret;
@@ -477,7 +460,7 @@ static int pcf85363_probe(struct i2c_client *client)
 static const __maybe_unused struct of_device_id dev_ids[] = {
 	{ .compatible = "nxp,pcf85263", .data = &pcf_85263_config },
 	{ .compatible = "nxp,pcf85363", .data = &pcf_85363_config },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, dev_ids);
 

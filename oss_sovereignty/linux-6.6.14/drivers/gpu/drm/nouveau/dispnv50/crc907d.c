@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: MIT
+
 #include <drm/drm_crtc.h>
 
 #include "crc.h"
@@ -14,7 +14,7 @@
 
 struct crc907d_notifier {
 	u32 status;
-	u32 :32; /* reserved */
+	u32 :32;  
 	struct crc907d_entry {
 		u32 status;
 		u32 compositor_crc;

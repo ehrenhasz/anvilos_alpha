@@ -1,11 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef B43legacy_DEBUGFS_H_
 #define B43legacy_DEBUGFS_H_
 
 struct b43legacy_wldev;
 struct b43legacy_txstatus;
 
-enum b43legacy_dyndbg { /* Dynamic debugging features */
+enum b43legacy_dyndbg {  
 	B43legacy_DBG_XMITPOWER,
 	B43legacy_DBG_DMAOVERFLOW,
 	B43legacy_DBG_DMAVERBOSE,
@@ -24,7 +24,7 @@ struct dentry;
 struct b43legacy_txstatus_log {
 	struct b43legacy_txstatus *log;
 	int end;
-	spinlock_t lock;	/* lock for debugging */
+	spinlock_t lock;	 
 };
 
 struct b43legacy_dfs_file {
@@ -46,7 +46,7 @@ struct b43legacy_dfsentry {
 
 	struct b43legacy_txstatus_log txstatlog;
 
-	/* Enabled/Disabled list for the dynamic debugging features. */
+	 
 	bool dyn_debug[__B43legacy_NR_DYNDBG];
 };
 
@@ -60,7 +60,7 @@ void b43legacy_debugfs_remove_device(struct b43legacy_wldev *dev);
 void b43legacy_debugfs_log_txstat(struct b43legacy_wldev *dev,
 				  const struct b43legacy_txstatus *status);
 
-#else /* CONFIG_B43LEGACY_DEBUG*/
+#else  
 
 static inline
 int b43legacy_debug(struct b43legacy_wldev *dev,
@@ -82,6 +82,6 @@ void b43legacy_debugfs_log_txstat(struct b43legacy_wldev *dev,
 				  const struct b43legacy_txstatus *status)
 				  { }
 
-#endif /* CONFIG_B43LEGACY_DEBUG*/
+#endif  
 
-#endif /* B43legacy_DEBUGFS_H_ */
+#endif  

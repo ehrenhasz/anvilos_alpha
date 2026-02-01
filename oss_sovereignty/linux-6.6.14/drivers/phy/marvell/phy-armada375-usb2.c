@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * USB cluster support for Armada 375 platform.
- *
- * Copyright (C) 2014 Marvell
- *
- * Gregory CLEMENT <gregory.clement@free-electrons.com>
- *
- * Armada 375 comes with an USB2 host and device controller and an
- * USB3 controller. The USB cluster control register allows to manage
- * common features of both USB controllers.
- */
+
+ 
 
 #include <dt-bindings/phy/phy.h>
 #include <linux/init.h>
@@ -52,14 +42,7 @@ static const struct phy_ops armada375_usb_phy_ops = {
 	.owner = THIS_MODULE,
 };
 
-/*
- * Only one controller can use this PHY. We shouldn't have the case
- * when two controllers want to use this PHY. But if this case occurs
- * then we provide a phy to the first one and return an error for the
- * next one. This error has also to be an error returned by
- * devm_phy_optional_get() so different from ENODEV for USB2. In the
- * USB3 case it still optional and we use ENODEV.
- */
+ 
 static struct phy *armada375_usb_phy_xlate(struct device *dev,
 					struct of_phandle_args *args)
 {
@@ -68,12 +51,7 @@ static struct phy *armada375_usb_phy_xlate(struct device *dev,
 	if (!cluster_phy)
 		return  ERR_PTR(-ENODEV);
 
-	/*
-	 * Either the phy had never been requested and then the first
-	 * usb claiming it can get it, or it had already been
-	 * requested in this case, we only allow to use it with the
-	 * same configuration.
-	 */
+	 
 	if (WARN_ON((cluster_phy->phy_provided != PHY_NONE) &&
 			(cluster_phy->phy_provided != args->args[0]))) {
 		dev_err(dev, "This PHY has already been provided!\n");
@@ -93,7 +71,7 @@ static struct phy *armada375_usb_phy_xlate(struct device *dev,
 		return ERR_PTR(-ENODEV);
 	}
 
-	/* Store which phy mode is used for next test */
+	 
 	cluster_phy->phy_provided = args->args[0];
 
 	return cluster_phy->phy;
@@ -134,7 +112,7 @@ static int armada375_usb_phy_probe(struct platform_device *pdev)
 
 static const struct of_device_id of_usb_cluster_table[] = {
 	{ .compatible = "marvell,armada-375-usb-cluster", },
-	{ /* end of list */ },
+	{   },
 };
 
 static struct platform_driver armada375_usb_phy_driver = {

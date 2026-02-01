@@ -1,28 +1,19 @@
-// SPDX-License-Identifier: GPL-2.0+
-// avermedia-m135a.c - Keytable for Avermedia M135A Remote Controllers
-//
-// Copyright (c) 2010 by Mauro Carvalho Chehab
-// Copyright (c) 2010 by Herton Ronaldo Krzesinski <herton@mandriva.com.br>
+
+
+
+
+
 
 #include <media/rc-map.h>
 #include <linux/module.h>
 
-/*
- * Avermedia M135A with RM-JX and RM-K6 remote controls
- *
- * On Avermedia M135A with IR model RM-JX, the same codes exist on both
- * Positivo (BR) and original IR, initial version and remote control codes
- * added by Mauro Carvalho Chehab <mchehab@kernel.org>
- *
- * Positivo also ships Avermedia M135A with model RM-K6, extra control
- * codes added by Herton Ronaldo Krzesinski <herton@mandriva.com.br>
- */
+ 
 
 static struct rc_map_table avermedia_m135a[] = {
-	/* RM-JX */
+	 
 	{ 0x0200, KEY_POWER2 },
-	{ 0x022e, KEY_DOT },		/* '.' */
-	{ 0x0201, KEY_MODE },		/* TV/FM or SOURCE */
+	{ 0x022e, KEY_DOT },		 
+	{ 0x0201, KEY_MODE },		 
 
 	{ 0x0205, KEY_NUMERIC_1 },
 	{ 0x0206, KEY_NUMERIC_2 },
@@ -35,25 +26,25 @@ static struct rc_map_table avermedia_m135a[] = {
 	{ 0x020f, KEY_NUMERIC_9 },
 	{ 0x0211, KEY_NUMERIC_0 },
 
-	{ 0x0213, KEY_RIGHT },		/* -> or L */
-	{ 0x0212, KEY_LEFT },		/* <- or R */
+	{ 0x0213, KEY_RIGHT },		 
+	{ 0x0212, KEY_LEFT },		 
 
 	{ 0x0215, KEY_MENU },
-	{ 0x0217, KEY_CAMERA },		/* Capturar Imagem or Snapshot */
-	{ 0x0210, KEY_SHUFFLE },	/* Amostra or 16 chan prev */
+	{ 0x0217, KEY_CAMERA },		 
+	{ 0x0210, KEY_SHUFFLE },	 
 
 	{ 0x0303, KEY_CHANNELUP },
 	{ 0x0302, KEY_CHANNELDOWN },
 	{ 0x021f, KEY_VOLUMEUP },
 	{ 0x021e, KEY_VOLUMEDOWN },
-	{ 0x020c, KEY_ENTER },		/* Full Screen */
+	{ 0x020c, KEY_ENTER },		 
 
 	{ 0x0214, KEY_MUTE },
 	{ 0x0208, KEY_AUDIO },
 
-	{ 0x0203, KEY_TEXT },		/* Teletext */
+	{ 0x0203, KEY_TEXT },		 
 	{ 0x0204, KEY_EPG },
-	{ 0x022b, KEY_TV2 },		/* TV2 or PIP */
+	{ 0x022b, KEY_TV2 },		 
 
 	{ 0x021d, KEY_RED },
 	{ 0x021c, KEY_YELLOW },
@@ -65,10 +56,10 @@ static struct rc_map_table avermedia_m135a[] = {
 	{ 0x0218, KEY_PLAY },
 	{ 0x021b, KEY_STOP },
 
-	/* RM-K6 */
+	 
 	{ 0x0401, KEY_POWER2 },
 	{ 0x0406, KEY_MUTE },
-	{ 0x0408, KEY_MODE },     /* TV/FM */
+	{ 0x0408, KEY_MODE },      
 
 	{ 0x0409, KEY_NUMERIC_1 },
 	{ 0x040a, KEY_NUMERIC_2 },
@@ -79,12 +70,12 @@ static struct rc_map_table avermedia_m135a[] = {
 	{ 0x040f, KEY_NUMERIC_7 },
 	{ 0x0410, KEY_NUMERIC_8 },
 	{ 0x0411, KEY_NUMERIC_9 },
-	{ 0x044c, KEY_DOT },      /* '.' */
+	{ 0x044c, KEY_DOT },       
 	{ 0x0412, KEY_NUMERIC_0 },
-	{ 0x0407, KEY_REFRESH },  /* Refresh/Reload */
+	{ 0x0407, KEY_REFRESH },   
 
 	{ 0x0413, KEY_AUDIO },
-	{ 0x0440, KEY_SCREEN },   /* Full Screen toggle */
+	{ 0x0440, KEY_SCREEN },    
 	{ 0x0441, KEY_HOME },
 	{ 0x0442, KEY_BACK },
 	{ 0x0447, KEY_UP },
@@ -104,8 +95,8 @@ static struct rc_map_table avermedia_m135a[] = {
 
 	{ 0x0414, KEY_TEXT },
 	{ 0x0415, KEY_EPG },
-	{ 0x041a, KEY_TV2 },      /* PIP */
-	{ 0x041b, KEY_CAMERA },      /* Snapshot */
+	{ 0x041a, KEY_TV2 },       
+	{ 0x041b, KEY_CAMERA },       
 
 	{ 0x0417, KEY_RECORD },
 	{ 0x0416, KEY_PLAYPAUSE },

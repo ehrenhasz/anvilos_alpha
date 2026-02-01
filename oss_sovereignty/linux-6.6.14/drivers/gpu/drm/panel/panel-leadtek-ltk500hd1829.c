@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (c) 2019 Theobroma Systems Design und Consulting GmbH
- *
- * base on panel-kingdisplay-kd097d04.c
- * Copyright (c) 2017, Fuzhou Rockchip Electronics Co., Ltd
- */
+
+ 
 
 #include <linux/backlight.h>
 #include <linux/delay.h>
@@ -35,10 +30,7 @@ struct ltk500hd1829_cmd {
 	char data;
 };
 
-/*
- * There is no description in the Reference Manual about these commands.
- * We received them from the vendor, so just use them as is.
- */
+ 
 static const struct ltk500hd1829_cmd init_code[] = {
 	{ 0xE0, 0x00 },
 	{ 0xE1, 0x93 },
@@ -284,7 +276,7 @@ static int ltk500hd1829_unprepare(struct drm_panel *panel)
 		dev_err(panel->dev, "failed to enter sleep mode: %d\n", ret);
 	}
 
-	/* 120ms to enter sleep mode */
+	 
 	msleep(120);
 
 	regulator_disable(ctx->iovcc);
@@ -317,11 +309,11 @@ static int ltk500hd1829_prepare(struct drm_panel *panel)
 	}
 
 	gpiod_set_value_cansleep(ctx->reset_gpio, 1);
-	/* tRW: 10us */
+	 
 	usleep_range(10, 20);
 	gpiod_set_value_cansleep(ctx->reset_gpio, 0);
 
-	/* tRT: >= 5ms */
+	 
 	usleep_range(5000, 6000);
 
 	for (i = 0; i < ARRAY_SIZE(init_code); i++) {
@@ -339,7 +331,7 @@ static int ltk500hd1829_prepare(struct drm_panel *panel)
 		goto disable_iovcc;
 	}
 
-	/* 120ms to exit sleep mode */
+	 
 	msleep(120);
 
 	ret = mipi_dsi_dcs_set_display_on(dsi);
@@ -493,7 +485,7 @@ static void ltk500hd1829_remove(struct mipi_dsi_device *dsi)
 
 static const struct of_device_id ltk500hd1829_of_match[] = {
 	{ .compatible = "leadtek,ltk500hd1829", },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, ltk500hd1829_of_match);
 

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright 2014, Michael Ellerman, IBM Corp.
- */
+
+ 
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -9,10 +7,7 @@
 #include "ebb.h"
 
 
-/*
- * Test basic access to the EBB regs, they should be user accessible with no
- * kernel interaction required.
- */
+ 
 int reg_access(void)
 {
 	uint64_t val, expected;

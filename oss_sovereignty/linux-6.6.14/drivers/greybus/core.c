@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Greybus "Core"
- *
- * Copyright 2014-2015 Google Inc.
- * Copyright 2014-2015 Linaro Ltd.
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -14,7 +9,7 @@
 
 #define GB_BUNDLE_AUTOSUSPEND_MS	3000
 
-/* Allow greybus to be disabled at boot if needed */
+ 
 static bool nogreybus;
 #ifdef MODULE
 module_param(nogreybus, bool, 0444);
@@ -74,7 +69,7 @@ static int greybus_match_device(struct device *dev, struct device_driver *drv)
 	id = greybus_match_id(bundle, driver->id_table);
 	if (id)
 		return 1;
-	/* FIXME - Dynamic ids? */
+	 
 	return 0;
 }
 
@@ -131,10 +126,10 @@ static int greybus_uevent(const struct device *dev, struct kobj_uevent_env *env)
 	}
 
 	if (bundle) {
-		// FIXME
-		// add a uevent that can "load" a bundle type
-		// This is what we need to bind a driver to so use the info
-		// in gmod here as well
+		
+		
+		
+		
 
 		if (add_uevent_var(env, "BUNDLE=%u", bundle->id))
 			return -ENOMEM;
@@ -169,7 +164,7 @@ static int greybus_probe(struct device *dev)
 	const struct greybus_bundle_id *id;
 	int retval;
 
-	/* match id */
+	 
 	id = greybus_match_id(bundle, driver->id_table);
 	if (!id)
 		return -ENODEV;
@@ -186,13 +181,7 @@ static int greybus_probe(struct device *dev)
 		return retval;
 	}
 
-	/*
-	 * Unbound bundle devices are always deactivated. During probe, the
-	 * Runtime PM is set to enabled and active and the usage count is
-	 * incremented. If the driver supports runtime PM, it should call
-	 * pm_runtime_put() in its probe routine and pm_runtime_get_sync()
-	 * in remove routine.
-	 */
+	 
 	pm_runtime_set_autosuspend_delay(dev, GB_BUNDLE_AUTOSUSPEND_MS);
 	pm_runtime_use_autosuspend(dev);
 	pm_runtime_get_noresume(dev);
@@ -201,9 +190,7 @@ static int greybus_probe(struct device *dev)
 
 	retval = driver->probe(bundle, id);
 	if (retval) {
-		/*
-		 * Catch buggy drivers that fail to destroy their connections.
-		 */
+		 
 		WARN_ON(!list_empty(&bundle->connections));
 
 		gb_control_bundle_deactivate(bundle->intf->control, bundle->id);
@@ -233,11 +220,7 @@ static int greybus_remove(struct device *dev)
 	if (retval < 0)
 		dev_err(dev, "failed to resume bundle: %d\n", retval);
 
-	/*
-	 * Disable (non-offloaded) connections early in case the interface is
-	 * already gone to avoid unceccessary operation timeouts during
-	 * driver disconnect. Otherwise, only disable incoming requests.
-	 */
+	 
 	list_for_each_entry(connection, &bundle->connections, bundle_links) {
 		if (gb_connection_is_offloaded(connection))
 			continue;
@@ -250,7 +233,7 @@ static int greybus_remove(struct device *dev)
 
 	driver->disconnect(bundle);
 
-	/* Catch buggy drivers that fail to destroy their connections. */
+	 
 	WARN_ON(!list_empty(&bundle->connections));
 
 	if (!bundle->intf->disconnected)
@@ -323,7 +306,7 @@ static int __init gb_init(void)
 		pr_err("gb_operation_init failed (%d)\n", retval);
 		goto error_operation;
 	}
-	return 0;	/* Success */
+	return 0;	 
 
 error_operation:
 	gb_hd_exit();

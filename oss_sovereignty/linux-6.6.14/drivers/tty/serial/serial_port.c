@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Serial core port device driver
- *
- * Copyright (C) 2023 Texas Instruments Incorporated - https://www.ti.com/
- * Author: Tony Lindgren <tony@atomide.com>
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/module.h>
@@ -16,7 +11,7 @@
 
 #define SERIAL_PORT_AUTOSUSPEND_DELAY_MS	500
 
-/* Only considers pending TX for now. Caller must take care of locking */
+ 
 static int __serial_port_busy(struct uart_port *port)
 {
 	return !uart_tx_stopped(port) &&
@@ -34,7 +29,7 @@ static int serial_port_runtime_resume(struct device *dev)
 	if (port->flags & UPF_DEAD)
 		goto out;
 
-	/* Flush any pending TX for the port */
+	 
 	spin_lock_irqsave(&port->lock, flags);
 	if (__serial_port_busy(port))
 		port->ops->start_tx(port);
@@ -66,10 +61,7 @@ static int serial_port_remove(struct device *dev)
 	return 0;
 }
 
-/*
- * Serial core port device init functions. Note that the physical serial
- * port device driver may not have completed probe at this point.
- */
+ 
 int uart_add_one_port(struct uart_driver *drv, struct uart_port *port)
 {
 	return serial_ctrl_register_port(drv, port);

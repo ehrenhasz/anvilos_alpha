@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0-only
-//
-// rt712-sdca-dmic.c -- rt712 SDCA DMIC ALSA SoC audio driver
-//
-// Copyright(c) 2023 Realtek Semiconductor Corp.
-//
-//
+
+
+
+
+
+
+
 
 #include <linux/module.h>
 #include <linux/mod_devicetable.h>
@@ -188,11 +188,9 @@ static int rt712_sdca_dmic_io_init(struct device *dev, struct sdw_slave *slave)
 		regcache_cache_bypass(rt712->regmap, true);
 		regcache_cache_bypass(rt712->mbq_regmap, true);
 	} else {
-		/*
-		 * PM runtime status is marked as 'active' only when a Slave reports as Attached
-		 */
+		 
 
-		/* update count of parent 'active' children */
+		 
 		pm_runtime_set_active(&slave->dev);
 	}
 
@@ -233,7 +231,7 @@ static int rt712_sdca_dmic_io_init(struct device *dev, struct sdw_slave *slave)
 	} else
 		rt712->first_hw_init = true;
 
-	/* Mark Slave initialization complete */
+	 
 	rt712->hw_init = true;
 
 	pm_runtime_mark_last_busy(&slave->dev);
@@ -257,13 +255,13 @@ static int rt712_sdca_dmic_set_gain_get(struct snd_kcontrol *kcontrol,
 	if (strstr(ucontrol->id.name, "FU1E Capture Volume"))
 		adc_vol_flag = 1;
 
-	/* check all channels */
+	 
 	for (i = 0; i < p->count; i++) {
 		regmap_read(rt712->mbq_regmap, p->reg_base + i, &regvalue);
 
-		if (!adc_vol_flag) /* boost gain */
+		if (!adc_vol_flag)  
 			ctl = regvalue / 0x0a00;
-		else { /* ADC gain */
+		else {  
 			if (adc_vol_flag)
 				ctl = p->max - (((0x1e00 - regvalue) & 0xffff) / interval_offset);
 			else
@@ -292,7 +290,7 @@ static int rt712_sdca_dmic_set_gain_put(struct snd_kcontrol *kcontrol,
 	if (strstr(ucontrol->id.name, "FU1E Capture Volume"))
 		adc_vol_flag = 1;
 
-	/* check all channels */
+	 
 	for (i = 0; i < p->count; i++) {
 		regmap_read(rt712->mbq_regmap, p->reg_base + i, &regvalue[i]);
 
@@ -300,9 +298,9 @@ static int rt712_sdca_dmic_set_gain_put(struct snd_kcontrol *kcontrol,
 		if (gain_val[i] > p->max)
 			gain_val[i] = p->max;
 
-		if (!adc_vol_flag) /* boost gain */
+		if (!adc_vol_flag)  
 			gain_val[i] = gain_val[i] * 0x0a00;
-		else { /* ADC gain */
+		else {  
 			gain_val[i] = 0x1e00 - ((p->max - gain_val[i]) * interval_offset);
 			gain_val[i] &= 0xffff;
 		}
@@ -677,7 +675,7 @@ static int rt712_sdca_dmic_hw_params(struct snd_pcm_substream *substream,
 		return -EINVAL;
 	}
 
-	/* sampling rate configuration */
+	 
 	switch (params_rate(params)) {
 	case 16000:
 		sampling_rate = RT712_SDCA_RATE_16000HZ;
@@ -703,7 +701,7 @@ static int rt712_sdca_dmic_hw_params(struct snd_pcm_substream *substream,
 		return -EINVAL;
 	}
 
-	/* set sampling frequency */
+	 
 	regmap_write(rt712->regmap,
 		SDW_SDCA_CTL(FUNC_NUM_MIC_ARRAY, RT712_SDCA_ENT_CS1F, RT712_SDCA_CTL_SAMPLE_FREQ_INDEX, 0),
 		sampling_rate);
@@ -774,10 +772,7 @@ static int rt712_sdca_dmic_init(struct device *dev, struct regmap *regmap,
 	regcache_cache_only(rt712->regmap, true);
 	regcache_cache_only(rt712->mbq_regmap, true);
 
-	/*
-	 * Mark hw_init to false
-	 * HW init will be performed when device reports present
-	 */
+	 
 	rt712->hw_init = false;
 	rt712->first_hw_init = false;
 	rt712->fu1e_dapm_mute = true;
@@ -791,20 +786,16 @@ static int rt712_sdca_dmic_init(struct device *dev, struct regmap *regmap,
 	if (ret < 0)
 		return ret;
 
-	/* set autosuspend parameters */
+	 
 	pm_runtime_set_autosuspend_delay(dev, 3000);
 	pm_runtime_use_autosuspend(dev);
 
-	/* make sure the device does not suspend immediately */
+	 
 	pm_runtime_mark_last_busy(dev);
 
 	pm_runtime_enable(dev);
 
-	/* important note: the device is NOT tagged as 'active' and will remain
-	 * 'suspended' until the hardware is enumerated/initialized. This is required
-	 * to make sure the ASoC framework use of pm_runtime_get_sync() does not silently
-	 * fail with -EACCESS because of race conditions between card creation and enumeration
-	 */
+	 
 
 	dev_dbg(dev, "%s\n", __func__);
 
@@ -820,14 +811,11 @@ static int rt712_sdca_dmic_update_status(struct sdw_slave *slave,
 	if (status == SDW_SLAVE_UNATTACHED)
 		rt712->hw_init = false;
 
-	/*
-	 * Perform initialization only if slave status is present and
-	 * hw_init flag is false
-	 */
+	 
 	if (rt712->hw_init || status != SDW_SLAVE_ATTACHED)
 		return 0;
 
-	/* perform I/O transfers required for Slave initialization */
+	 
 	return rt712_sdca_dmic_io_init(&slave->dev, slave);
 }
 
@@ -844,8 +832,8 @@ static int rt712_sdca_dmic_read_prop(struct sdw_slave *slave)
 
 	prop->paging_support = true;
 
-	/* first we need to allocate memory for set bits in port lists */
-	prop->source_ports = BIT(2); /* BITMAP: 00000100 */
+	 
+	prop->source_ports = BIT(2);  
 	prop->sink_ports = 0;
 
 	nval = hweight32(prop->source_ports);
@@ -865,10 +853,10 @@ static int rt712_sdca_dmic_read_prop(struct sdw_slave *slave)
 		i++;
 	}
 
-	/* set the timeout values */
+	 
 	prop->clk_stop_timeout = 200;
 
-	/* wake-up event */
+	 
 	prop->wake_capable = 1;
 
 	return 0;
@@ -954,7 +942,7 @@ static int rt712_sdca_dmic_sdw_probe(struct sdw_slave *slave,
 {
 	struct regmap *regmap, *mbq_regmap;
 
-	/* Regmap Initialization */
+	 
 	mbq_regmap = devm_regmap_init_sdw_mbq(slave, &rt712_sdca_dmic_mbq_regmap);
 	if (IS_ERR(mbq_regmap))
 		return PTR_ERR(mbq_regmap);

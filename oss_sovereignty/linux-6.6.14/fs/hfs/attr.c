@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *  linux/fs/hfs/attr.c
- *
- * (C) 2003 Ardis Technologies <roman@ardistech.com>
- *
- * Export hfs data via xattr
- */
+
+ 
 
 
 #include <linux/fs.h>

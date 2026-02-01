@@ -1,25 +1,4 @@
-/*
- * Copyright 2013 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 
 #include <linux/pci.h>
 #include <linux/seq_file.h>
@@ -1137,7 +1116,7 @@ int kv_dpm_late_enable(struct radeon_device *rdev)
 		kv_enable_thermal_int(rdev, true);
 	}
 
-	/* powerdown unused blocks for now */
+	 
 	kv_dpm_powergate_acp(rdev, true);
 	kv_dpm_powergate_samu(rdev, true);
 	kv_dpm_powergate_vce(rdev, true);
@@ -1153,7 +1132,7 @@ void kv_dpm_disable(struct radeon_device *rdev)
 	if (rdev->family == CHIP_MULLINS)
 		kv_enable_nb_dpm(rdev, false);
 
-	/* powerup blocks */
+	 
 	kv_dpm_powergate_acp(rdev, false);
 	kv_dpm_powergate_samu(rdev, false);
 	kv_dpm_powergate_vce(rdev, false);
@@ -1302,7 +1281,7 @@ static int kv_update_vce_dpm(struct radeon_device *rdev,
 
 	if (radeon_new_state->evclk > 0 && radeon_current_state->evclk == 0) {
 		kv_dpm_powergate_vce(rdev, false);
-		/* turn the clocks on when encoding */
+		 
 		cik_update_cg(rdev, RADEON_CG_BLOCK_VCE, false);
 		if (pi->caps_stable_p_state)
 			pi->vce_boot_level = table->count - 1;
@@ -1326,7 +1305,7 @@ static int kv_update_vce_dpm(struct radeon_device *rdev,
 		kv_enable_vce_dpm(rdev, true);
 	} else if (radeon_new_state->evclk == 0 && radeon_current_state->evclk > 0) {
 		kv_enable_vce_dpm(rdev, false);
-		/* turn the clocks off when not encoding */
+		 
 		cik_update_cg(rdev, RADEON_CG_BLOCK_VCE, true);
 		kv_dpm_powergate_vce(rdev, true);
 	}
@@ -1372,7 +1351,7 @@ static u8 kv_get_acp_boot_level(struct radeon_device *rdev)
 		&rdev->pm.dpm.dyn_state.acp_clock_voltage_dependency_table;
 
 	for (i = 0; i < table->count; i++) {
-		if (table->entries[i].clk >= 0) /* XXX */
+		if (table->entries[i].clk >= 0)  
 			break;
 	}
 
@@ -1468,7 +1447,7 @@ static void kv_dpm_powergate_vce(struct radeon_device *rdev, bool gate)
 
 	if (gate) {
 		if (pi->caps_vce_pg) {
-			/* XXX do we need a vce_v1_0_stop() ?  */
+			 
 			kv_notify_message_to_smu(rdev, PPSMC_MSG_VCEPowerOFF);
 		}
 	} else {
@@ -1759,7 +1738,7 @@ void kv_dpm_setup_asic(struct radeon_device *rdev)
 	kv_init_sclk_t(rdev);
 }
 
-//XXX use sumo_dpm_display_configuration_changed
+
 
 static void kv_construct_max_power_limits_table(struct radeon_device *rdev,
 						struct radeon_clock_and_voltage_limits *table)
@@ -1938,7 +1917,7 @@ static void kv_apply_state_adjust_rules(struct radeon_device *rdev,
 {
 	struct kv_ps *ps = kv_get_ps(new_rps);
 	struct kv_power_info *pi = kv_get_pi(rdev);
-	u32 min_sclk = 10000; /* ??? */
+	u32 min_sclk = 10000;  
 	u32 sclk, mclk = 0;
 	int i, limit;
 	bool force_high;
@@ -2059,7 +2038,7 @@ static void kv_dpm_power_level_enabled_for_throttle(struct radeon_device *rdev,
 static int kv_calculate_ds_divider(struct radeon_device *rdev)
 {
 	struct kv_power_info *pi = kv_get_pi(rdev);
-	u32 sclk_in_sr = 10000; /* ??? */
+	u32 sclk_in_sr = 10000;  
 	u32 i;
 
 	if (pi->lowest_valid > pi->highest_valid)
@@ -2501,7 +2480,7 @@ static int kv_parse_power_table(struct radeon_device *rdev)
 	}
 	rdev->pm.dpm.num_ps = state_array->ucNumEntries;
 
-	/* fill in the vce power states */
+	 
 	for (i = 0; i < RADEON_MAX_VCE_LEVELS; i++) {
 		u32 sclk;
 		clock_array_index = rdev->pm.dpm.vce_states[i].clk_idx;
@@ -2539,7 +2518,7 @@ int kv_dpm_init(struct radeon_device *rdev)
 
 	pi->sram_end = SMC_RAM_END;
 
-	/* Enabling nb dpm on an asrock system prevents dpm from working */
+	 
 	if (rdev->pdev->subsystem_vendor == 0x1849)
 		pi->enable_nb_dpm = false;
 	else
@@ -2559,7 +2538,7 @@ int kv_dpm_init(struct radeon_device *rdev)
 	pi->enable_auto_thermal_throttling = true;
 	pi->disable_nb_ps3_in_battery = false;
 	if (radeon_bapm == -1) {
-		/* only enable bapm on KB, ML by default */
+		 
 		if (rdev->family == CHIP_KABINI || rdev->family == CHIP_MULLINS)
 			pi->bapm_enable = true;
 		else
@@ -2571,10 +2550,10 @@ int kv_dpm_init(struct radeon_device *rdev)
 	}
 	pi->voltage_drop_t = 0;
 	pi->caps_sclk_throttle_low_notification = false;
-	pi->caps_fps = false; /* true? */
+	pi->caps_fps = false;  
 	pi->caps_uvd_pg = true;
 	pi->caps_uvd_dpm = true;
-	pi->caps_vce_pg = false; /* XXX true */
+	pi->caps_vce_pg = false;  
 	pi->caps_samu_pg = false;
 	pi->caps_acp_pg = false;
 	pi->caps_stable_p_state = false;

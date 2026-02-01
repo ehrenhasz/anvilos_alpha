@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Module-based torture test facility for locking
- *
- * Copyright (C) IBM Corporation, 2014
- *
- * Authors: Paul E. McKenney <paulmck@linux.ibm.com>
- *          Davidlohr Bueso <dave@stgolabs.net>
- *	Based on kernel/rcu/torture.c.
- */
+
+ 
 
 #define pr_fmt(fmt) fmt
 
@@ -48,7 +40,7 @@ torture_param(int, rt_boost_factor, 50, "A factor determining how often rt-boost
 torture_param(int, writer_fifo, 0, "Run writers at sched_set_fifo() priority");
 torture_param(int, verbose, 1, "Enable verbose debugging printk()s");
 torture_param(int, nested_locks, 0, "Number of nested locks (max = 8)");
-/* Going much higher trips "BUG: MAX_LOCKDEP_CHAIN_HLOCKS too low!" errors */
+ 
 #define MAX_NESTED_LOCKS 8
 
 static char *torture_type = IS_ENABLED(CONFIG_PREEMPT_RT) ? "raw_spin_lock" : "spin_lock";
@@ -69,12 +61,10 @@ struct lock_stress_stats {
 	long n_lock_acquired;
 };
 
-/* Forward reference. */
+ 
 static void lock_torture_cleanup(void);
 
-/*
- * Operations vector for selecting different types of tests.
- */
+ 
 struct lock_torture_ops {
 	void (*init)(void);
 	void (*exit)(void);
@@ -88,7 +78,7 @@ struct lock_torture_ops {
 	void (*read_delay)(struct torture_random_state *trsp);
 	void (*readunlock)(int tid);
 
-	unsigned long flags; /* for irq spinlocks */
+	unsigned long flags;  
 	const char *name;
 };
 
@@ -99,36 +89,34 @@ struct lock_torture_cxt {
 	bool init_called;
 	atomic_t n_lock_torture_errors;
 	struct lock_torture_ops *cur_ops;
-	struct lock_stress_stats *lwsa; /* writer statistics */
-	struct lock_stress_stats *lrsa; /* reader statistics */
+	struct lock_stress_stats *lwsa;  
+	struct lock_stress_stats *lrsa;  
 };
 static struct lock_torture_cxt cxt = { 0, 0, false, false,
 				       ATOMIC_INIT(0),
 				       NULL, NULL};
-/*
- * Definitions for lock torture testing.
- */
+ 
 
 static int torture_lock_busted_write_lock(int tid __maybe_unused)
 {
-	return 0;  /* BUGGY, do not use in real life!!! */
+	return 0;   
 }
 
 static void torture_lock_busted_write_delay(struct torture_random_state *trsp)
 {
 	const unsigned long longdelay_ms = long_hold ? long_hold : ULONG_MAX;
 
-	/* We want a long delay occasionally to force massive contention.  */
+	 
 	if (!(torture_random(trsp) %
 	      (cxt.nrealwriters_stress * 2000 * longdelay_ms)))
 		mdelay(longdelay_ms);
 	if (!(torture_random(trsp) % (cxt.nrealwriters_stress * 20000)))
-		torture_preempt_schedule();  /* Allow test to be preempted. */
+		torture_preempt_schedule();   
 }
 
 static void torture_lock_busted_write_unlock(int tid __maybe_unused)
 {
-	  /* BUGGY, do not use in real life!!! */
+	   
 }
 
 static void __torture_rt_boost(struct torture_random_state *trsp)
@@ -136,29 +124,18 @@ static void __torture_rt_boost(struct torture_random_state *trsp)
 	const unsigned int factor = rt_boost_factor;
 
 	if (!rt_task(current)) {
-		/*
-		 * Boost priority once every rt_boost_factor operations. When
-		 * the task tries to take the lock, the rtmutex it will account
-		 * for the new priority, and do any corresponding pi-dance.
-		 */
+		 
 		if (trsp && !(torture_random(trsp) %
 			      (cxt.nrealwriters_stress * factor))) {
 			sched_set_fifo(current);
-		} else /* common case, do nothing */
+		} else  
 			return;
 	} else {
-		/*
-		 * The task will remain boosted for another 10 * rt_boost_factor
-		 * operations, then restored back to its original prio, and so
-		 * forth.
-		 *
-		 * When @trsp is nil, we want to force-reset the task for
-		 * stopping the kthread.
-		 */
+		 
 		if (!trsp || !(torture_random(trsp) %
 			       (cxt.nrealwriters_stress * factor * 2))) {
 			sched_set_normal(current, 0);
-		} else /* common case, do nothing */
+		} else  
 			return;
 	}
 }
@@ -197,9 +174,7 @@ static void torture_spin_lock_write_delay(struct torture_random_state *trsp)
 	const unsigned long longdelay_ms = long_hold ? long_hold : ULONG_MAX;
 	unsigned long j;
 
-	/* We want a short delay mostly to emulate likely code, and
-	 * we want a long delay occasionally to force massive contention.
-	 */
+	 
 	if (!(torture_random(trsp) % (cxt.nrealwriters_stress * 2000 * longdelay_ms))) {
 		j = jiffies;
 		mdelay(longdelay_ms);
@@ -208,7 +183,7 @@ static void torture_spin_lock_write_delay(struct torture_random_state *trsp)
 	if (!(torture_random(trsp) % (cxt.nrealwriters_stress * 200 * shortdelay_us)))
 		udelay(shortdelay_us);
 	if (!(torture_random(trsp) % (cxt.nrealwriters_stress * 20000)))
-		torture_preempt_schedule();  /* Allow test to be preempted. */
+		torture_preempt_schedule();   
 }
 
 static void torture_spin_lock_write_unlock(int tid __maybe_unused)
@@ -322,9 +297,7 @@ static void torture_rwlock_write_delay(struct torture_random_state *trsp)
 	const unsigned long shortdelay_us = 2;
 	const unsigned long longdelay_ms = long_hold ? long_hold : ULONG_MAX;
 
-	/* We want a short delay mostly to emulate likely code, and
-	 * we want a long delay occasionally to force massive contention.
-	 */
+	 
 	if (!(torture_random(trsp) %
 	      (cxt.nrealwriters_stress * 2000 * longdelay_ms)))
 		mdelay(longdelay_ms);
@@ -350,9 +323,7 @@ static void torture_rwlock_read_delay(struct torture_random_state *trsp)
 	const unsigned long shortdelay_us = 10;
 	const unsigned long longdelay_ms = 100;
 
-	/* We want a short delay mostly to emulate likely code, and
-	 * we want a long delay occasionally to force massive contention.
-	 */
+	 
 	if (!(torture_random(trsp) %
 	      (cxt.nrealreaders_stress * 2000 * longdelay_ms)))
 		mdelay(longdelay_ms);
@@ -455,12 +426,12 @@ static void torture_mutex_delay(struct torture_random_state *trsp)
 {
 	const unsigned long longdelay_ms = long_hold ? long_hold : ULONG_MAX;
 
-	/* We want a long delay occasionally to force massive contention.  */
+	 
 	if (!(torture_random(trsp) %
 	      (cxt.nrealwriters_stress * 2000 * longdelay_ms)))
 		mdelay(longdelay_ms * 5);
 	if (!(torture_random(trsp) % (cxt.nrealwriters_stress * 20000)))
-		torture_preempt_schedule();  /* Allow test to be preempted. */
+		torture_preempt_schedule();   
 }
 
 static void torture_mutex_unlock(int tid __maybe_unused)
@@ -494,11 +465,7 @@ static struct lock_torture_ops mutex_lock_ops = {
 };
 
 #include <linux/ww_mutex.h>
-/*
- * The torture ww_mutexes should belong to the same lock class as
- * torture_ww_class to avoid lockdep problem. The ww_mutex_init()
- * function is called for initialization to ensure that.
- */
+ 
 static DEFINE_WD_CLASS(torture_ww_class);
 static struct ww_mutex torture_ww_mutex_0, torture_ww_mutex_1, torture_ww_mutex_2;
 static struct ww_acquire_ctx *ww_acquire_ctxs;
@@ -628,10 +595,7 @@ static void torture_rtmutex_delay(struct torture_random_state *trsp)
 	const unsigned long shortdelay_us = 2;
 	const unsigned long longdelay_ms = long_hold ? long_hold : ULONG_MAX;
 
-	/*
-	 * We want a short delay mostly to emulate likely code, and
-	 * we want a long delay occasionally to force massive contention.
-	 */
+	 
 	if (!(torture_random(trsp) %
 	      (cxt.nrealwriters_stress * 2000 * longdelay_ms)))
 		mdelay(longdelay_ms);
@@ -639,7 +603,7 @@ static void torture_rtmutex_delay(struct torture_random_state *trsp)
 	      (cxt.nrealwriters_stress * 200 * shortdelay_us)))
 		udelay(shortdelay_us);
 	if (!(torture_random(trsp) % (cxt.nrealwriters_stress * 20000)))
-		torture_preempt_schedule();  /* Allow test to be preempted. */
+		torture_preempt_schedule();   
 }
 
 static void torture_rtmutex_unlock(int tid __maybe_unused)
@@ -693,12 +657,12 @@ static void torture_rwsem_write_delay(struct torture_random_state *trsp)
 {
 	const unsigned long longdelay_ms = long_hold ? long_hold : ULONG_MAX;
 
-	/* We want a long delay occasionally to force massive contention.  */
+	 
 	if (!(torture_random(trsp) %
 	      (cxt.nrealwriters_stress * 2000 * longdelay_ms)))
 		mdelay(longdelay_ms * 10);
 	if (!(torture_random(trsp) % (cxt.nrealwriters_stress * 20000)))
-		torture_preempt_schedule();  /* Allow test to be preempted. */
+		torture_preempt_schedule();   
 }
 
 static void torture_rwsem_up_write(int tid __maybe_unused)
@@ -718,14 +682,14 @@ static void torture_rwsem_read_delay(struct torture_random_state *trsp)
 {
 	const unsigned long longdelay_ms = 100;
 
-	/* We want a long delay occasionally to force massive contention.  */
+	 
 	if (!(torture_random(trsp) %
 	      (cxt.nrealreaders_stress * 2000 * longdelay_ms)))
 		mdelay(longdelay_ms * 2);
 	else
 		mdelay(longdelay_ms / 2);
 	if (!(torture_random(trsp) % (cxt.nrealreaders_stress * 20000)))
-		torture_preempt_schedule();  /* Allow test to be preempted. */
+		torture_preempt_schedule();   
 }
 
 static void torture_rwsem_up_read(int tid __maybe_unused)
@@ -797,10 +761,7 @@ static struct lock_torture_ops percpu_rwsem_lock_ops = {
 	.name		= "percpu_rwsem_lock"
 };
 
-/*
- * Lock torture writer kthread.  Repeatedly acquires and releases
- * the lock, checking for duplicate acquisitions.
- */
+ 
 static int lock_torture_writer(void *arg)
 {
 	struct lock_stress_stats *lwsp = arg;
@@ -818,14 +779,7 @@ static int lock_torture_writer(void *arg)
 			schedule_timeout_uninterruptible(1);
 
 		lockset_mask = torture_random(&rand);
-		/*
-		 * When using nested_locks, we want to occasionally
-		 * skip the main lock so we can avoid always serializing
-		 * the lock chains on that central lock. By skipping the
-		 * main lock occasionally, we can create different
-		 * contention patterns (allowing for multiple disjoint
-		 * blocked trees)
-		 */
+		 
 		skip_main_lock = (nested_locks &&
 				 !(torture_random(&rand) % 100));
 
@@ -839,7 +793,7 @@ static int lock_torture_writer(void *arg)
 				lwsp->n_lock_fail++;
 			lock_is_write_held = true;
 			if (WARN_ON_ONCE(atomic_read(&lock_is_read_held)))
-				lwsp->n_lock_fail++; /* rare, but... */
+				lwsp->n_lock_fail++;  
 
 			lwsp->n_lock_acquired++;
 		}
@@ -855,15 +809,12 @@ static int lock_torture_writer(void *arg)
 		stutter_wait("lock_torture_writer");
 	} while (!torture_must_stop());
 
-	cxt.cur_ops->task_boost(NULL); /* reset prio */
+	cxt.cur_ops->task_boost(NULL);  
 	torture_kthread_stopping("lock_torture_writer");
 	return 0;
 }
 
-/*
- * Lock torture reader kthread.  Repeatedly acquires and releases
- * the reader lock.
- */
+ 
 static int lock_torture_reader(void *arg)
 {
 	struct lock_stress_stats *lrsp = arg;
@@ -880,7 +831,7 @@ static int lock_torture_reader(void *arg)
 		cxt.cur_ops->readlock(tid);
 		atomic_inc(&lock_is_read_held);
 		if (WARN_ON_ONCE(lock_is_write_held))
-			lrsp->n_lock_fail++; /* rare, but... */
+			lrsp->n_lock_fail++;  
 
 		lrsp->n_lock_acquired++;
 		cxt.cur_ops->read_delay(&rand);
@@ -893,9 +844,7 @@ static int lock_torture_reader(void *arg)
 	return 0;
 }
 
-/*
- * Create an lock-torture-statistics message in the specified buffer.
- */
+ 
 static void __torture_print_stats(char *page,
 				  struct lock_stress_stats *statp, bool write)
 {
@@ -926,14 +875,7 @@ static void __torture_print_stats(char *page,
 		atomic_inc(&cxt.n_lock_torture_errors);
 }
 
-/*
- * Print torture statistics.  Caller must ensure that there is only one
- * call to this function at a given time!!!  This is normally accomplished
- * by relying on the module system to only have one copy of the module
- * loaded, and then by giving the lock_torture_stats kthread full control
- * (or the init/cleanup functions when lock_torture_stats thread is not
- * running).
- */
+ 
 static void lock_torture_stats_print(void)
 {
 	int size = cxt.nrealwriters_stress * 200 + 8192;
@@ -967,13 +909,7 @@ static void lock_torture_stats_print(void)
 	}
 }
 
-/*
- * Periodically prints torture statistics, if periodic statistics printing
- * was specified via the stat_interval module parameter.
- *
- * No need to worry about fullstop here, since this one doesn't reference
- * volatile state or register callbacks.
- */
+ 
 static int lock_torture_stats(void *arg)
 {
 	VERBOSE_TOROUT_STRING("lock_torture_stats task started");
@@ -1005,13 +941,7 @@ static void lock_torture_cleanup(void)
 	if (torture_cleanup_begin())
 		return;
 
-	/*
-	 * Indicates early cleanup, meaning that the test has not run,
-	 * such as when passing bogus args when loading the module.
-	 * However cxt->cur_ops.init() may have been invoked, so beside
-	 * perform the underlying torture-specific cleanups, cur_ops.exit()
-	 * will be invoked if needed.
-	 */
+	 
 	if (!cxt.lwsa && !cxt.lrsa)
 		goto end;
 
@@ -1031,7 +961,7 @@ static void lock_torture_cleanup(void)
 	}
 
 	torture_stop_kthread(lock_torture_stats, stats_task);
-	lock_torture_stats_print();  /* -After- the stats thread is stopped! */
+	lock_torture_stats_print();   
 
 	if (atomic_read(&cxt.n_lock_torture_errors))
 		lock_torture_print_module_parms(cxt.cur_ops,
@@ -1078,7 +1008,7 @@ static int __init lock_torture_init(void)
 	if (!torture_init_begin(torture_type, verbose))
 		return -EBUSY;
 
-	/* Process args and tell the world that the torturer is on the job. */
+	 
 	for (i = 0; i < ARRAY_SIZE(torture_ops); i++) {
 		cxt.cur_ops = torture_ops[i];
 		if (strcmp(torture_type, cxt.cur_ops->name) == 0)
@@ -1126,7 +1056,7 @@ static int __init lock_torture_init(void)
 		cxt.debug_lock = true;
 #endif
 
-	/* Initialize the statistics so that each run gets its own numbers. */
+	 
 	if (nwriters_stress) {
 		lock_is_write_held = false;
 		cxt.lwsa = kmalloc_array(cxt.nrealwriters_stress,
@@ -1148,12 +1078,8 @@ static int __init lock_torture_init(void)
 		if (nreaders_stress >= 0)
 			cxt.nrealreaders_stress = nreaders_stress;
 		else {
-			/*
-			 * By default distribute evenly the number of
-			 * readers and writers. We still run the same number
-			 * of threads as the writer-only locks default.
-			 */
-			if (nwriters_stress < 0) /* user doesn't care */
+			 
+			if (nwriters_stress < 0)  
 				cxt.nrealwriters_stress = num_online_cpus();
 			cxt.nrealreaders_stress = cxt.nrealwriters_stress;
 		}
@@ -1179,7 +1105,7 @@ static int __init lock_torture_init(void)
 
 	lock_torture_print_module_parms(cxt.cur_ops, "Start of test");
 
-	/* Prepare torture context. */
+	 
 	if (onoff_interval > 0) {
 		firsterr = torture_onoff_init(onoff_holdoff * HZ,
 					      onoff_interval * HZ, NULL);
@@ -1214,7 +1140,7 @@ static int __init lock_torture_init(void)
 		}
 	}
 
-	/* cap nested_locks to MAX_NESTED_LOCKS */
+	 
 	if (nested_locks > MAX_NESTED_LOCKS)
 		nested_locks = MAX_NESTED_LOCKS;
 
@@ -1231,20 +1157,13 @@ static int __init lock_torture_init(void)
 		}
 	}
 
-	/*
-	 * Create the kthreads and start torturing (oh, those poor little locks).
-	 *
-	 * TODO: Note that we interleave writers with readers, giving writers a
-	 * slight advantage, by creating its kthread first. This can be modified
-	 * for very specific needs, or even let the user choose the policy, if
-	 * ever wanted.
-	 */
+	 
 	for (i = 0, j = 0; i < cxt.nrealwriters_stress ||
 		    j < cxt.nrealreaders_stress; i++, j++) {
 		if (i >= cxt.nrealwriters_stress)
 			goto create_reader;
 
-		/* Create writer. */
+		 
 		firsterr = torture_create_kthread_cb(lock_torture_writer, &cxt.lwsa[i],
 						     writer_tasks[i],
 						     writer_fifo ? sched_set_fifo : NULL);
@@ -1254,7 +1173,7 @@ static int __init lock_torture_init(void)
 	create_reader:
 		if (cxt.cur_ops->readlock == NULL || (j >= cxt.nrealreaders_stress))
 			continue;
-		/* Create reader. */
+		 
 		firsterr = torture_create_kthread(lock_torture_reader, &cxt.lrsa[j],
 						  reader_tasks[j]);
 		if (torture_init_error(firsterr))

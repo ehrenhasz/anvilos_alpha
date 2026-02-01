@@ -1,40 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * access_tracking_perf_test
- *
- * Copyright (C) 2021, Google, Inc.
- *
- * This test measures the performance effects of KVM's access tracking.
- * Access tracking is driven by the MMU notifiers test_young, clear_young, and
- * clear_flush_young. These notifiers do not have a direct userspace API,
- * however the clear_young notifier can be triggered by marking a pages as idle
- * in /sys/kernel/mm/page_idle/bitmap. This test leverages that mechanism to
- * enable access tracking on guest memory.
- *
- * To measure performance this test runs a VM with a configurable number of
- * vCPUs that each touch every page in disjoint regions of memory. Performance
- * is measured in the time it takes all vCPUs to finish touching their
- * predefined region.
- *
- * Note that a deterministic correctness test of access tracking is not possible
- * by using page_idle as it exists today. This is for a few reasons:
- *
- * 1. page_idle only issues clear_young notifiers, which lack a TLB flush. This
- *    means subsequent guest accesses are not guaranteed to see page table
- *    updates made by KVM until some time in the future.
- *
- * 2. page_idle only operates on LRU pages. Newly allocated pages are not
- *    immediately allocated to LRU lists. Instead they are held in a "pagevec",
- *    which is drained to LRU lists some time in the future. There is no
- *    userspace API to force this drain to occur.
- *
- * These limitations are worked around in this test by using a large enough
- * region of memory for each vCPU such that the number of translations cached in
- * the TLB and the number of pages held in pagevecs are a small fraction of the
- * overall workload. And if either of those conditions are not true (for example
- * in nesting, where TLB size is unlimited) this test will print a warning
- * rather than silently passing.
- */
+
+ 
 #include <inttypes.h>
 #include <limits.h>
 #include <pthread.h>
@@ -48,31 +13,31 @@
 #include "guest_modes.h"
 #include "processor.h"
 
-/* Global variable used to synchronize all of the vCPU threads. */
+ 
 static int iteration;
 
-/* Defines what vCPU threads should do during a given iteration. */
+ 
 static enum {
-	/* Run the vCPU to access all its memory. */
+	 
 	ITERATION_ACCESS_MEMORY,
-	/* Mark the vCPU's memory idle in page_idle. */
+	 
 	ITERATION_MARK_IDLE,
 } iteration_work;
 
-/* The iteration that was last completed by each vCPU. */
+ 
 static int vcpu_last_completed_iteration[KVM_MAX_VCPUS];
 
-/* Whether to overlap the regions of memory vCPUs access. */
+ 
 static bool overlap_memory_access;
 
 struct test_params {
-	/* The backing source for the region of memory. */
+	 
 	enum vm_mem_backing_src_type backing_src;
 
-	/* The amount of memory to allocate for each vCPU. */
+	 
 	uint64_t vcpu_memory_bytes;
 
-	/* The number of vCPUs to create in the VM. */
+	 
 	int nr_vcpus;
 };
 
@@ -135,7 +100,7 @@ static void mark_vcpu_memory_idle(struct kvm_vm *vm,
 	int page_idle_fd;
 	int pagemap_fd;
 
-	/* If vCPUs are using an overlapping region, let vCPU 0 mark it idle. */
+	 
 	if (overlap_memory_access && vcpu_idx)
 		return;
 
@@ -162,27 +127,12 @@ static void mark_vcpu_memory_idle(struct kvm_vm *vm,
 		mark_page_idle(page_idle_fd, pfn);
 	}
 
-	/*
-	 * Assumption: Less than 1% of pages are going to be swapped out from
-	 * under us during this test.
-	 */
+	 
 	TEST_ASSERT(no_pfn < pages / 100,
 		    "vCPU %d: No PFN for %" PRIu64 " out of %" PRIu64 " pages.",
 		    vcpu_idx, no_pfn, pages);
 
-	/*
-	 * Check that at least 90% of memory has been marked idle (the rest
-	 * might not be marked idle because the pages have not yet made it to an
-	 * LRU list or the translations are still cached in the TLB). 90% is
-	 * arbitrary; high enough that we ensure most memory access went through
-	 * access tracking but low enough as to not make the test too brittle
-	 * over time and across architectures.
-	 *
-	 * When running the guest as a nested VM, "warn" instead of asserting
-	 * as the TLB size is effectively unlimited and the KVM doesn't
-	 * explicitly flush the TLB when aging SPTEs.  As a result, more pages
-	 * are cached and the guest won't see the "idle" bit cleared.
-	 */
+	 
 	if (still_idle >= pages / 10) {
 #ifdef __x86_64__
 		TEST_ASSERT(this_cpu_has(X86_FEATURE_HYPERVISOR),
@@ -253,7 +203,7 @@ static void spin_wait_for_vcpu(int vcpu_idx, int target_iteration)
 	}
 }
 
-/* The type of memory accesses to perform in the VM. */
+ 
 enum access_type {
 	ACCESS_READ,
 	ACCESS_WRITE,
@@ -265,12 +215,12 @@ static void run_iteration(struct kvm_vm *vm, int nr_vcpus, const char *descripti
 	struct timespec ts_elapsed;
 	int next_iteration, i;
 
-	/* Kick off the vCPUs by incrementing iteration. */
+	 
 	next_iteration = ++iteration;
 
 	clock_gettime(CLOCK_MONOTONIC, &ts_start);
 
-	/* Wait for all vCPUs to finish the iteration. */
+	 
 	for (i = 0; i < nr_vcpus; i++)
 		spin_wait_for_vcpu(i, next_iteration);
 
@@ -289,12 +239,7 @@ static void access_memory(struct kvm_vm *vm, int nr_vcpus,
 
 static void mark_memory_idle(struct kvm_vm *vm, int nr_vcpus)
 {
-	/*
-	 * Even though this parallelizes the work across vCPUs, this is still a
-	 * very slow operation because page_idle forces the test to mark one pfn
-	 * at a time and the clear_young notifier serializes on the KVM MMU
-	 * lock.
-	 */
+	 
 	pr_debug("Marking VM memory idle (slow)...\n");
 	iteration_work = ITERATION_MARK_IDLE;
 	run_iteration(vm, nr_vcpus, "Mark memory idle");
@@ -314,11 +259,11 @@ static void run_test(enum vm_guest_mode mode, void *arg)
 	pr_info("\n");
 	access_memory(vm, nr_vcpus, ACCESS_WRITE, "Populating memory");
 
-	/* As a control, read and write to the populated memory first. */
+	 
 	access_memory(vm, nr_vcpus, ACCESS_WRITE, "Writing to populated memory");
 	access_memory(vm, nr_vcpus, ACCESS_READ, "Reading from populated memory");
 
-	/* Repeat on memory that has been marked as idle. */
+	 
 	mark_memory_idle(vm, nr_vcpus);
 	access_memory(vm, nr_vcpus, ACCESS_WRITE, "Writing to idle memory");
 	mark_memory_idle(vm, nr_vcpus);

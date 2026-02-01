@@ -1,39 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *
- * keyboard input driver for i2c IR remote controls
- *
- * Copyright (c) 2000-2003 Gerd Knorr <kraxel@bytesex.org>
- * modified for PixelView (BT878P+W/FM) by
- *      Michal Kochanowicz <mkochano@pld.org.pl>
- *      Christoph Bartelmus <lirc@bartelmus.de>
- * modified for KNC ONE TV Station/Anubis Typhoon TView Tuner by
- *      Ulrich Mueller <ulrich.mueller42@web.de>
- * modified for em2820 based USB TV tuners by
- *      Markus Rechberger <mrechberger@gmail.com>
- * modified for DViCO Fusion HDTV 5 RT GOLD by
- *      Chaogui Zhang <czhang1974@gmail.com>
- * modified for MSI TV@nywhere Plus by
- *      Henry Wong <henry@stuffedcow.net>
- *      Mark Schultz <n9xmj@yahoo.com>
- *      Brian Rogers <brian_rogers@comcast.net>
- * modified for AVerMedia Cardbus by
- *      Oldrich Jedlicka <oldium.pro@seznam.cz>
- * Zilog Transmitter portions/ideas were derived from GPLv2+ sources:
- *  - drivers/char/pctv_zilogir.[ch] from Hauppauge Broadway product
- *	Copyright 2011 Hauppauge Computer works
- *  - drivers/staging/media/lirc/lirc_zilog.c
- *	Copyright (c) 2000 Gerd Knorr <kraxel@goldbach.in-berlin.de>
- *	Michal Kochanowicz <mkochano@pld.org.pl>
- *	Christoph Bartelmus <lirc@bartelmus.de>
- *	Ulrich Mueller <ulrich.mueller42@web.de>
- *	Stefan Jahn <stefan@lkcc.org>
- *	Jerome Brock <jbrock@users.sourceforge.net>
- *	Thomas Reitmayr (treitmayr@yahoo.com)
- *	Mark Weaver <mark@npsl.co.uk>
- *	Jarod Wilson <jarod@redhat.com>
- *	Copyright (C) 2011 Andy Walls <awalls@md.metrocast.net>
- */
+
+ 
 
 #include <asm/unaligned.h>
 #include <linux/module.h>
@@ -62,30 +28,26 @@ static int get_key_haup_common(struct IR_i2c *ir, enum rc_proto *protocol,
 	unsigned char buf[6];
 	int start, range, toggle, dev, code, ircode, vendor;
 
-	/* poll IR chip */
+	 
 	if (size != i2c_master_recv(ir->c, buf, size))
 		return -EIO;
 
 	if (buf[0] & 0x80) {
 		int offset = (size == 6) ? 3 : 0;
 
-		/* split rc5 data block ... */
+		 
 		start  = (buf[offset] >> 7) &    1;
 		range  = (buf[offset] >> 6) &    1;
 		toggle = (buf[offset] >> 5) &    1;
 		dev    =  buf[offset]       & 0x1f;
 		code   = (buf[offset+1] >> 2) & 0x3f;
 
-		/* rc5 has two start bits
-		 * the first bit must be one
-		 * the second bit defines the command range:
-		 * 1 = 0-63, 0 = 64 - 127
-		 */
+		 
 		if (!start)
-			/* no key pressed */
+			 
 			return 0;
 
-		/* filter out invalid key presses */
+		 
 		ircode = (start << 12) | (toggle << 11) | (dev << 6) | code;
 		if ((ircode & 0x1fff) == 0x1fff)
 			return 0;
@@ -142,12 +104,7 @@ static int get_key_haup_xvr(struct IR_i2c *ir, enum rc_proto *protocol,
 	int ret;
 	unsigned char buf[1] = { 0 };
 
-	/*
-	 * This is the same apparent "are you ready?" poll command observed
-	 * watching Windows driver traffic and implemented in lirc_zilog. With
-	 * this added, we get far saner remote behavior with z8 chips on usb
-	 * connected devices, even with the default polling interval of 100ms.
-	 */
+	 
 	ret = i2c_master_send(ir->c, buf, 1);
 	if (ret != 1)
 		return (ret < 0) ? ret : -EINVAL;
@@ -161,7 +118,7 @@ static int get_key_pixelview(struct IR_i2c *ir, enum rc_proto *protocol,
 	int rc;
 	unsigned char b;
 
-	/* poll IR chip */
+	 
 	rc = i2c_master_recv(ir->c, &b, 1);
 	if (rc != 1) {
 		dev_dbg(&ir->rc->dev, "read error\n");
@@ -182,7 +139,7 @@ static int get_key_fusionhdtv(struct IR_i2c *ir, enum rc_proto *protocol,
 	int rc;
 	unsigned char buf[4];
 
-	/* poll IR chip */
+	 
 	rc = i2c_master_recv(ir->c, buf, 4);
 	if (rc != 4) {
 		dev_dbg(&ir->rc->dev, "read error\n");
@@ -194,7 +151,7 @@ static int get_key_fusionhdtv(struct IR_i2c *ir, enum rc_proto *protocol,
 	if (buf[0] != 0 || buf[1] != 0 || buf[2] != 0 || buf[3] != 0)
 		dev_dbg(&ir->rc->dev, "%s: %*ph\n", __func__, 4, buf);
 
-	/* no key pressed or signal from other ir remote */
+	 
 	if(buf[0] != 0x1 ||  buf[1] != 0xfe)
 		return 0;
 
@@ -210,7 +167,7 @@ static int get_key_knc1(struct IR_i2c *ir, enum rc_proto *protocol,
 	int rc;
 	unsigned char b;
 
-	/* poll IR chip */
+	 
 	rc = i2c_master_recv(ir->c, &b, 1);
 	if (rc != 1) {
 		dev_dbg(&ir->rc->dev, "read error\n");
@@ -219,9 +176,7 @@ static int get_key_knc1(struct IR_i2c *ir, enum rc_proto *protocol,
 		return -EIO;
 	}
 
-	/* it seems that 0xFE indicates that a button is still hold
-	   down, while 0xff indicates that no button is hold
-	   down. 0xfe sequences are sometimes interrupted by 0xFF */
+	 
 
 	dev_dbg(&ir->rc->dev, "key %02x\n", b);
 
@@ -229,7 +184,7 @@ static int get_key_knc1(struct IR_i2c *ir, enum rc_proto *protocol,
 		return 0;
 
 	if (b == 0xfe)
-		/* keep old data */
+		 
 		return 1;
 
 	*protocol = RC_PROTO_UNKNOWN;
@@ -244,7 +199,7 @@ static int get_key_geniatech(struct IR_i2c *ir, enum rc_proto *protocol,
 	int i, rc;
 	unsigned char b;
 
-	/* poll IR chip */
+	 
 	for (i = 0; i < 4; i++) {
 		rc = i2c_master_recv(ir->c, &b, 1);
 		if (rc == 1)
@@ -258,12 +213,12 @@ static int get_key_geniatech(struct IR_i2c *ir, enum rc_proto *protocol,
 		return -EIO;
 	}
 
-	/* don't repeat the key */
+	 
 	if (ir->old == b)
 		return 0;
 	ir->old = b;
 
-	/* decode to RC5 */
+	 
 	b &= 0x7f;
 	b = (b - 1) / 2;
 
@@ -311,13 +266,13 @@ static int get_key_avermedia_cardbus(struct IR_i2c *ir, enum rc_proto *protocol,
 
 	*protocol = RC_PROTO_UNKNOWN;
 	*scancode = key;
-	if (ir->c->addr == 0x41) /* AVerMedia EM78P153 */
+	if (ir->c->addr == 0x41)  
 		*scancode |= keygroup << 8;
 	*toggle = 0;
 	return 1;
 }
 
-/* ----------------------------------------------------------------------- */
+ 
 
 static int ir_key_poll(struct IR_i2c *ir)
 {
@@ -346,10 +301,7 @@ static void ir_work(struct work_struct *work)
 	int rc;
 	struct IR_i2c *ir = container_of(work, struct IR_i2c, work.work);
 
-	/*
-	 * If the transmit code is holding the lock, skip polling for
-	 * IR, we'll get it to it next time round
-	 */
+	 
 	if (mutex_trylock(&ir->lock)) {
 		rc = ir_key_poll(ir);
 		mutex_unlock(&ir->lock);
@@ -379,7 +331,7 @@ static void ir_close(struct rc_dev *dev)
 	cancel_delayed_work_sync(&ir->work);
 }
 
-/* Zilog Transmit Interface */
+ 
 #define XTAL_FREQ		18432000
 
 #define ZILOG_SEND		0x80
@@ -391,18 +343,13 @@ static void ir_close(struct rc_dev *dev)
 #define ZILOG_STATUS_TX		0x40
 #define ZILOG_STATUS_SET	0x20
 
-/*
- * As you can see here, very few different lengths of pulse and space
- * can be encoded. This means that the hardware does not work well with
- * recorded IR. It's best to work with generated IR, like from ir-ctl or
- * the in-kernel encoders.
- */
+ 
 struct code_block {
 	u8	length;
-	u16	pulse[7];	/* not aligned */
+	u16	pulse[7];	 
 	u8	carrier_pulse;
 	u8	carrier_space;
-	u16	space[8];	/* not aligned */
+	u16	space[8];	 
 	u8	codes[61];
 	u8	csum[2];
 } __packed;
@@ -481,10 +428,7 @@ static int zilog_init(struct IR_i2c *ir)
 	return 0;
 }
 
-/*
- * If the last slot for pulse is the same as the current slot for pulse,
- * then use slot no 7.
- */
+ 
 static void copy_codes(u8 *dst, u8 *src, unsigned int count)
 {
 	u8 c, last = 0xff;
@@ -500,10 +444,7 @@ static void copy_codes(u8 *dst, u8 *src, unsigned int count)
 	}
 }
 
-/*
- * When looking for repeats, we don't care about the trailing space. This
- * is set to the shortest possible anyway.
- */
+ 
 static int cmp_no_trail(u8 *a, u8 *b, unsigned int count)
 {
 	while (--count) {
@@ -549,10 +490,7 @@ static int zilog_ir_format(struct rc_dev *rcdev, unsigned int *txbuf,
 			return -EINVAL;
 		}
 
-		/*
-		 * Lengths more than 142220us cannot be encoded; also
-		 * this checks for multiply overflow
-		 */
+		 
 		if (txbuf[i] > 142220)
 			return -EINVAL;
 
@@ -566,7 +504,7 @@ static int zilog_ir_format(struct rc_dev *rcdev, unsigned int *txbuf,
 				return -EINVAL;
 			}
 
-			/* We have a pulse and space */
+			 
 			codes[c++] = (p << 4) | s;
 		} else {
 			p = find_slot(code_block->pulse,
@@ -578,7 +516,7 @@ static int zilog_ir_format(struct rc_dev *rcdev, unsigned int *txbuf,
 		}
 	}
 
-	/* We have to encode the trailing pulse. Find the shortest space */
+	 
 	s = 0;
 	for (i = 1; i < ARRAY_SIZE(code_block->space); i++) {
 		u16 d = get_unaligned_be16(&code_block->space[i]);
@@ -591,11 +529,7 @@ static int zilog_ir_format(struct rc_dev *rcdev, unsigned int *txbuf,
 
 	dev_dbg(&rcdev->dev, "generated %d codes\n", c);
 
-	/*
-	 * Are the last N codes (so pulse + space) repeating 3 times?
-	 * if so we can shorten the codes list and use code 0xc0 to repeat
-	 * them.
-	 */
+	 
 	repeating = false;
 
 	for (rep = c / 3; rep >= 1; rep--) {
@@ -607,7 +541,7 @@ static int zilog_ir_format(struct rc_dev *rcdev, unsigned int *txbuf,
 	}
 
 	if (repeating) {
-		/* first copy any leading non-repeating */
+		 
 		int leading = c - rep * 3;
 
 		if (leading >= ARRAY_SIZE(code_block->codes) - 3 - rep) {
@@ -689,12 +623,7 @@ static int zilog_tx(struct rc_dev *rcdev, unsigned int *txbuf,
 
 	dev_dbg(&ir->rc->dev, "send command sent\n");
 
-	/*
-	 * This bit NAKs until the device is ready, so we retry it
-	 * sleeping a bit each time.  This seems to be what the windows
-	 * driver does, approximately.
-	 * Try for up to 1s.
-	 */
+	 
 	for (i = 0; i < 20; ++i) {
 		set_current_state(TASK_UNINTERRUPTIBLE);
 		schedule_timeout(msecs_to_jiffies(50));
@@ -728,7 +657,7 @@ static int zilog_tx(struct rc_dev *rcdev, unsigned int *txbuf,
 	}
 	dev_dbg(&ir->rc->dev, "transmit complete\n");
 
-	/* Oh good, it worked */
+	 
 	ret = count;
 out_unlock:
 	mutex_unlock(&ir->lock);
@@ -827,7 +756,7 @@ static int ir_probe(struct i2c_client *client)
 		name        = "AVerMedia EM78P153";
 		ir->get_key = get_key_avermedia_cardbus;
 		rc_proto    = RC_PROTO_BIT_OTHER;
-		/* RM-KV remote, seems to be same as RM-K6 */
+		 
 		ir_codes    = RC_MAP_AVERMEDIA_M733A_RM_K6;
 		break;
 	case 0x71:
@@ -841,7 +770,7 @@ static int ir_probe(struct i2c_client *client)
 		break;
 	}
 
-	/* Let the caller override settings */
+	 
 	if (client->dev.platform_data) {
 		const struct IR_i2c_init_data *init_data =
 						client->dev.platform_data;
@@ -858,7 +787,7 @@ static int ir_probe(struct i2c_client *client)
 
 		switch (init_data->internal_get_key_func) {
 		case IR_KBD_GET_KEY_CUSTOM:
-			/* The bridge driver provided us its own function */
+			 
 			ir->get_key = init_data->get_key;
 			break;
 		case IR_KBD_GET_KEY_PIXELVIEW:
@@ -886,17 +815,14 @@ static int ir_probe(struct i2c_client *client)
 	}
 
 	if (!rc) {
-		/*
-		 * If platform_data doesn't specify rc_dev, initialize it
-		 * internally
-		 */
+		 
 		rc = rc_allocate_device(RC_DRIVER_SCANCODE);
 		if (!rc)
 			return -ENOMEM;
 	}
 	ir->rc = rc;
 
-	/* Make sure we are all setup before going on */
+	 
 	if (!name || !ir->get_key || !rc_proto || !ir_codes) {
 		dev_warn(&client->dev, "Unsupported device at address 0x%02x\n",
 			 addr);
@@ -909,10 +835,7 @@ static int ir_probe(struct i2c_client *client)
 	snprintf(ir->phys, sizeof(ir->phys), "%s/%s", dev_name(&adap->dev),
 		 dev_name(&client->dev));
 
-	/*
-	 * Initialize input_dev fields
-	 * It doesn't make sense to allow overriding them via platform_data
-	 */
+	 
 	rc->input_id.bustype = BUS_I2C;
 	rc->input_phys       = ir->phys;
 	rc->device_name	     = name;
@@ -921,9 +844,7 @@ static int ir_probe(struct i2c_client *client)
 	rc->open             = ir_open;
 	rc->close            = ir_close;
 
-	/*
-	 * Initialize the other fields of rc_dev
-	 */
+	 
 	rc->map_name       = ir->ir_codes;
 	rc->allowed_protocols = rc_proto;
 	if (!rc->driver_name)
@@ -958,7 +879,7 @@ static int ir_probe(struct i2c_client *client)
 	if (!IS_ERR(ir->tx_c))
 		i2c_unregister_device(ir->tx_c);
 
-	/* Only frees rc if it were allocated internally */
+	 
 	rc_free_device(rc);
 	return err;
 }
@@ -975,9 +896,9 @@ static void ir_remove(struct i2c_client *client)
 }
 
 static const struct i2c_device_id ir_kbd_id[] = {
-	/* Generic entry for any IR receiver */
+	 
 	{ "ir_video", 0 },
-	/* IR device specific entries should be added here */
+	 
 	{ "ir_z8f0811_haup", FLAG_TX },
 	{ "ir_z8f0811_hdpvr", FLAG_TX | FLAG_HDPVR },
 	{ }
@@ -995,7 +916,7 @@ static struct i2c_driver ir_kbd_driver = {
 
 module_i2c_driver(ir_kbd_driver);
 
-/* ----------------------------------------------------------------------- */
+ 
 
 MODULE_AUTHOR("Gerd Knorr, Michal Kochanowicz, Christoph Bartelmus, Ulrich Mueller");
 MODULE_DESCRIPTION("input driver for i2c IR remote controls");

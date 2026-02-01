@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Berkeley Packet Filter based traffic classifier
- *
- * Might be used to classify traffic through flexible, user-defined and
- * possibly JIT-ed BPF filters for traffic control as an alternative to
- * ematches.
- *
- * (C) 2013 Daniel Borkmann <dborkman@redhat.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/types.h>
@@ -95,7 +87,7 @@ TC_INDIRECT_SCOPE int cls_bpf_classify(struct sk_buff *skb,
 		if (tc_skip_sw(prog->gen_flags)) {
 			filter_res = prog->exts_integrated ? TC_ACT_UNSPEC : 0;
 		} else if (at_ingress) {
-			/* It is safe to push/pull even if skb_shared() */
+			 
 			__skb_push(skb, skb->mac_len);
 			bpf_compute_data_pointers(skb);
 			filter_res = bpf_prog_run(prog->filter, skb);

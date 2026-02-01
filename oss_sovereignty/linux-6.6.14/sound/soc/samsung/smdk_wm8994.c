@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0+
+
 
 #include "../codecs/wm8994.h"
 #include <sound/pcm_params.h>
@@ -7,36 +7,18 @@
 #include <linux/of.h>
 #include <linux/of_device.h>
 
- /*
-  * Default CFG switch settings to use this driver:
-  *	SMDKV310: CFG5-1000, CFG7-111111
-  */
+  
 
- /*
-  * Configure audio route as :-
-  * $ amixer sset 'DAC1' on,on
-  * $ amixer sset 'Right Headphone Mux' 'DAC'
-  * $ amixer sset 'Left Headphone Mux' 'DAC'
-  * $ amixer sset 'DAC1R Mixer AIF1.1' on
-  * $ amixer sset 'DAC1L Mixer AIF1.1' on
-  * $ amixer sset 'IN2L' on
-  * $ amixer sset 'IN2L PGA IN2LN' on
-  * $ amixer sset 'MIXINL IN2L' on
-  * $ amixer sset 'AIF1ADC1L Mixer ADC/DMIC' on
-  * $ amixer sset 'IN2R' on
-  * $ amixer sset 'IN2R PGA IN2RN' on
-  * $ amixer sset 'MIXINR IN2R' on
-  * $ amixer sset 'AIF1ADC1R Mixer ADC/DMIC' on
-  */
+  
 
-/* SMDK has a 16.934MHZ crystal attached to WM8994 */
+ 
 #define SMDK_WM8994_FREQ 16934000
 
 struct smdk_wm8994_data {
 	int mclk1_rate;
 };
 
-/* Default SMDKs */
+ 
 static struct smdk_wm8994_data smdk_board_data = {
 	.mclk1_rate = SMDK_WM8994_FREQ,
 };
@@ -49,7 +31,7 @@ static int smdk_hw_params(struct snd_pcm_substream *substream,
 	unsigned int pll_out;
 	int ret;
 
-	/* AIF1CLK should be >=3MHz for optimal performance */
+	 
 	if (params_width(params) == 24)
 		pll_out = params_rate(params) * 384;
 	else if (params_rate(params) == 8000 || params_rate(params) == 11025)
@@ -70,9 +52,7 @@ static int smdk_hw_params(struct snd_pcm_substream *substream,
 	return 0;
 }
 
-/*
- * SMDK WM8994 DAI operations.
- */
+ 
 static const struct snd_soc_ops smdk_ops = {
 	.hw_params = smdk_hw_params,
 };
@@ -81,7 +61,7 @@ static int smdk_wm8994_init_paiftx(struct snd_soc_pcm_runtime *rtd)
 {
 	struct snd_soc_dapm_context *dapm = &rtd->card->dapm;
 
-	/* Other pins NC */
+	 
 	snd_soc_dapm_nc_pin(dapm, "HPOUT2P");
 	snd_soc_dapm_nc_pin(dapm, "HPOUT2N");
 	snd_soc_dapm_nc_pin(dapm, "SPKOUTLN");
@@ -111,7 +91,7 @@ SND_SOC_DAILINK_DEFS(fifo_tx,
 	DAILINK_COMP_ARRAY(COMP_PLATFORM("samsung-i2s-sec")));
 
 static struct snd_soc_dai_link smdk_dai[] = {
-	{ /* Primary DAI i/f */
+	{  
 		.name = "WM8994 AIF1",
 		.stream_name = "Pri_Dai",
 		.init = smdk_wm8994_init_paiftx,
@@ -119,7 +99,7 @@ static struct snd_soc_dai_link smdk_dai[] = {
 			SND_SOC_DAIFMT_CBM_CFM,
 		.ops = &smdk_ops,
 		SND_SOC_DAILINK_REG(aif1),
-	}, { /* Sec_Fifo Playback i/f */
+	}, {  
 		.name = "Sec_FIFO TX",
 		.stream_name = "Sec_Dai",
 		.dai_fmt = SND_SOC_DAIFMT_I2S | SND_SOC_DAIFMT_NB_NF |

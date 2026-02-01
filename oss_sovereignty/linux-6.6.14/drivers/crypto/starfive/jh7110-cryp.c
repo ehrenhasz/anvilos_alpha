@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Cryptographic API.
- *
- * Support for StarFive hardware cryptographic engine.
- * Copyright (c) 2022 StarFive Technology
- *
- */
+
+ 
 
 #include <crypto/engine.h>
 #include "jh7110-cryp.h"
@@ -26,7 +20,7 @@
 
 struct starfive_dev_list {
 	struct list_head        dev_list;
-	spinlock_t              lock; /* protect dev_list */
+	spinlock_t              lock;  
 };
 
 static struct starfive_dev_list dev_list = {
@@ -183,7 +177,7 @@ static int starfive_cryp_probe(struct platform_device *pdev)
 	if (ret)
 		goto err_dma_init;
 
-	/* Initialize crypto engine */
+	 
 	cryp->engine = crypto_engine_alloc_init(&pdev->dev, 1);
 	if (!cryp->engine) {
 		ret = -ENOMEM;

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/* Microchip Sparx5 Switch driver
- *
- * Copyright (c) 2021 Microchip Technology Inc. and its subsidiaries.
- */
+
+ 
 
 #include <net/switchdev.h>
 #include <linux/if_bridge.h>
@@ -11,17 +8,17 @@
 #include "sparx5_main_regs.h"
 #include "sparx5_main.h"
 
-/* Commands for Mac Table Command register */
-#define MAC_CMD_LEARN         0 /* Insert (Learn) 1 entry */
-#define MAC_CMD_UNLEARN       1 /* Unlearn (Forget) 1 entry */
-#define MAC_CMD_LOOKUP        2 /* Look up 1 entry */
-#define MAC_CMD_READ          3 /* Read entry at Mac Table Index */
-#define MAC_CMD_WRITE         4 /* Write entry at Mac Table Index */
-#define MAC_CMD_SCAN          5 /* Scan (Age or find next) */
-#define MAC_CMD_FIND_SMALLEST 6 /* Get next entry */
-#define MAC_CMD_CLEAR_ALL     7 /* Delete all entries in table */
+ 
+#define MAC_CMD_LEARN         0  
+#define MAC_CMD_UNLEARN       1  
+#define MAC_CMD_LOOKUP        2  
+#define MAC_CMD_READ          3  
+#define MAC_CMD_WRITE         4  
+#define MAC_CMD_SCAN          5  
+#define MAC_CMD_FIND_SMALLEST 6  
+#define MAC_CMD_CLEAR_ALL     7  
 
-/* Commands for MAC_ENTRY_ADDR_TYPE */
+ 
 #define  MAC_ENTRY_ADDR_TYPE_UPSID_PN         0
 #define  MAC_ENTRY_ADDR_TYPE_UPSID_CPU_OR_INT 1
 #define  MAC_ENTRY_ADDR_TYPE_GLAG             2
@@ -62,9 +59,7 @@ static void sparx5_mact_select(struct sparx5 *sparx5,
 {
 	u32 macl = 0, mach = 0;
 
-	/* Set the MAC address to handle and the vlan associated in a format
-	 * understood by the hardware.
-	 */
+	 
 	mach |= vid    << 16;
 	mach |= mac[0] << 8;
 	mach |= mac[1] << 0;
@@ -85,7 +80,7 @@ int sparx5_mact_learn(struct sparx5 *sparx5, int pgid,
 	if (pgid < SPX5_PORTS) {
 		type = MAC_ENTRY_ADDR_TYPE_UPSID_PN;
 		addr = pgid % 32;
-		addr += (pgid / 32) << 5; /* Add upsid */
+		addr += (pgid / 32) << 5;  
 	} else {
 		type = MAC_ENTRY_ADDR_TYPE_MC_IDX;
 		addr = pgid - SPX5_PORTS;
@@ -95,7 +90,7 @@ int sparx5_mact_learn(struct sparx5 *sparx5, int pgid,
 
 	sparx5_mact_select(sparx5, mac, vid);
 
-	/* MAC entry properties */
+	 
 	spx5_wr(LRN_MAC_ACCESS_CFG_2_MAC_ENTRY_ADDR_SET(addr) |
 		LRN_MAC_ACCESS_CFG_2_MAC_ENTRY_ADDR_TYPE_SET(type) |
 		LRN_MAC_ACCESS_CFG_2_MAC_ENTRY_VLD_SET(1) |
@@ -103,7 +98,7 @@ int sparx5_mact_learn(struct sparx5 *sparx5, int pgid,
 		sparx5, LRN_MAC_ACCESS_CFG_2);
 	spx5_wr(0, sparx5, LRN_MAC_ACCESS_CFG_3);
 
-	/*  Insert/learn new entry */
+	 
 	spx5_wr(LRN_COMMON_ACCESS_CTRL_CPU_ACCESS_CMD_SET(MAC_CMD_LEARN) |
 		LRN_COMMON_ACCESS_CTRL_MAC_TABLE_ACCESS_SHOT_SET(1),
 		sparx5, LRN_COMMON_ACCESS_CTRL);
@@ -196,7 +191,7 @@ int sparx5_mact_find(struct sparx5 *sparx5,
 
 	sparx5_mact_select(sparx5, mac, vid);
 
-	/* Issue a lookup command */
+	 
 	spx5_wr(LRN_COMMON_ACCESS_CTRL_CPU_ACCESS_CMD_SET(MAC_CMD_LOOKUP) |
 		LRN_COMMON_ACCESS_CTRL_MAC_TABLE_ACCESS_SHOT_SET(1),
 		sparx5, LRN_COMMON_ACCESS_CTRL);
@@ -224,7 +219,7 @@ int sparx5_mact_forget(struct sparx5 *sparx5,
 
 	sparx5_mact_select(sparx5, mac, vid);
 
-	/* Issue an unlearn command */
+	 
 	spx5_wr(LRN_COMMON_ACCESS_CTRL_CPU_ACCESS_CMD_SET(MAC_CMD_UNLEARN) |
 		LRN_COMMON_ACCESS_CTRL_MAC_TABLE_ACCESS_SHOT_SET(1),
 		sparx5, LRN_COMMON_ACCESS_CTRL);
@@ -299,19 +294,12 @@ int sparx5_add_mact_entry(struct sparx5 *sparx5,
 	if (!ret)
 		return 0;
 
-	/* In case the entry already exists, don't add it again to SW,
-	 * just update HW, but we need to look in the actual HW because
-	 * it is possible for an entry to be learn by HW and before the
-	 * mact thread to start the frame will reach CPU and the CPU will
-	 * add the entry but without the extern_learn flag.
-	 */
+	 
 	mact_entry = find_mact_entry(sparx5, addr, vid, portno);
 	if (mact_entry)
 		goto update_hw;
 
-	/* Add the entry in SW MAC table not to get the notification when
-	 * SW is pulling again
-	 */
+	 
 	mact_entry = alloc_mact_entry(sparx5, addr, vid, portno);
 	if (!mact_entry)
 		return -ENOMEM;
@@ -323,9 +311,9 @@ int sparx5_add_mact_entry(struct sparx5 *sparx5,
 update_hw:
 	ret = sparx5_mact_learn(sparx5, portno, addr, vid);
 
-	/* New entry? */
+	 
 	if (mact_entry->flags == 0) {
-		mact_entry->flags |= MAC_ENT_LOCK; /* Don't age this */
+		mact_entry->flags |= MAC_ENT_LOCK;  
 		sparx5_fdb_call_notifiers(SWITCHDEV_FDB_ADD_TO_BRIDGE, addr, vid,
 					  dev, true);
 	}
@@ -339,9 +327,7 @@ int sparx5_del_mact_entry(struct sparx5 *sparx5,
 {
 	struct sparx5_mact_entry *mact_entry, *tmp;
 
-	/* Delete the entry in SW MAC table not to get the notification when
-	 * SW is pulling again
-	 */
+	 
 	mutex_lock(&sparx5->mact_lock);
 	list_for_each_entry_safe(mact_entry, tmp, &sparx5->mact_entries,
 				 list) {
@@ -389,18 +375,18 @@ static void sparx5_mact_handle_entry(struct sparx5 *sparx5,
 				mact_entry->port = port;
 				mact_entry->flags |= MAC_ENT_MOVED;
 			}
-			/* Entry handled */
+			 
 			break;
 		}
 	}
 	mutex_unlock(&sparx5->mact_lock);
 
 	if (found && !(mact_entry->flags & MAC_ENT_MOVED))
-		/* Present, not moved */
+		 
 		return;
 
 	if (!found) {
-		/* Entry not found - now add */
+		 
 		mact_entry = alloc_mact_entry(sparx5, mac, vid, port);
 		if (!mact_entry)
 			return;
@@ -411,7 +397,7 @@ static void sparx5_mact_handle_entry(struct sparx5 *sparx5,
 		mutex_unlock(&sparx5->mact_lock);
 	}
 
-	/* New or moved entry - notify bridge */
+	 
 	sparx5_fdb_call_notifiers(SWITCHDEV_FDB_ADD_TO_BRIDGE,
 				  mac, vid, sparx5->ports[port]->ndev,
 				  true);
@@ -428,13 +414,13 @@ void sparx5_mact_pull_work(struct work_struct *work)
 	u16 vid;
 	int ret;
 
-	/* Reset MAC entry flags */
+	 
 	mutex_lock(&sparx5->mact_lock);
 	list_for_each_entry(mact_entry, &sparx5->mact_entries, list)
 		mact_entry->flags &= MAC_ENT_LOCK;
 	mutex_unlock(&sparx5->mact_lock);
 
-	/* MAIN mac address processing loop */
+	 
 	vid = 0;
 	memset(mac, 0, sizeof(mac));
 	do {
@@ -457,7 +443,7 @@ void sparx5_mact_pull_work(struct work_struct *work)
 	mutex_lock(&sparx5->mact_lock);
 	list_for_each_entry_safe(mact_entry, tmp, &sparx5->mact_entries,
 				 list) {
-		/* If the entry is in HW or permanent, then skip */
+		 
 		if (mact_entry->flags & (MAC_ENT_ALIVE | MAC_ENT_LOCK))
 			continue;
 
@@ -477,10 +463,10 @@ void sparx5_mact_pull_work(struct work_struct *work)
 
 void sparx5_set_ageing(struct sparx5 *sparx5, int msecs)
 {
-	int value = max(1, msecs / 10); /* unit 10 ms */
+	int value = max(1, msecs / 10);  
 
-	spx5_rmw(LRN_AUTOAGE_CFG_UNIT_SIZE_SET(2) | /* 10 ms */
-		 LRN_AUTOAGE_CFG_PERIOD_VAL_SET(value / 2), /* one bit ageing */
+	spx5_rmw(LRN_AUTOAGE_CFG_UNIT_SIZE_SET(2) |  
+		 LRN_AUTOAGE_CFG_PERIOD_VAL_SET(value / 2),  
 		 LRN_AUTOAGE_CFG_UNIT_SIZE |
 		 LRN_AUTOAGE_CFG_PERIOD_VAL,
 		 sparx5,
@@ -491,7 +477,7 @@ void sparx5_mact_init(struct sparx5 *sparx5)
 {
 	mutex_init(&sparx5->lock);
 
-	/*  Flush MAC table */
+	 
 	spx5_wr(LRN_COMMON_ACCESS_CTRL_CPU_ACCESS_CMD_SET(MAC_CMD_CLEAR_ALL) |
 		LRN_COMMON_ACCESS_CTRL_MAC_TABLE_ACCESS_SHOT_SET(1),
 		sparx5, LRN_COMMON_ACCESS_CTRL);

@@ -1,9 +1,4 @@
-/*
- * Broadcom specific AMBA
- * PCI Host
- *
- * Licensed under the GNU/GPL. See COPYING for details.
- */
+ 
 
 #include "bcma_private.h"
 #include <linux/slab.h>
@@ -23,8 +18,7 @@ static void bcma_host_pci_switch_core(struct bcma_device *core)
 	bcma_debug(core->bus, "Switched to core: 0x%X\n", core->id.id);
 }
 
-/* Provides access to the requested core. Returns base offset that has to be
- * used. It makes use of fixed windows when possible. */
+ 
 static u16 bcma_host_pci_provide_access_to_core(struct bcma_device *core)
 {
 	switch (core->id.id) {
@@ -164,12 +158,12 @@ static int bcma_host_pci_probe(struct pci_dev *dev,
 	int err = -ENOMEM;
 	u32 val;
 
-	/* Alloc */
+	 
 	bus = kzalloc(sizeof(*bus), GFP_KERNEL);
 	if (!bus)
 		goto out;
 
-	/* Basic PCI configuration */
+	 
 	err = pci_enable_device(dev);
 	if (err)
 		goto err_kfree_bus;
@@ -179,13 +173,12 @@ static int bcma_host_pci_probe(struct pci_dev *dev,
 		goto err_pci_disable;
 	pci_set_master(dev);
 
-	/* Disable the RETRY_TIMEOUT register (0x41) to keep
-	 * PCI Tx retries from interfering with C3 CPU state */
+	 
 	pci_read_config_dword(dev, 0x40, &val);
 	if ((val & 0x0000ff00) != 0)
 		pci_write_config_dword(dev, 0x40, val & 0xffff00ff);
 
-	/* SSB needed additional powering up, do we have any AMBA PCI cards? */
+	 
 	if (!pci_is_pcie(dev)) {
 		bcma_err(bus, "PCI card detected, they are not supported.\n");
 		err = -ENXIO;
@@ -194,13 +187,13 @@ static int bcma_host_pci_probe(struct pci_dev *dev,
 
 	bus->dev = &dev->dev;
 
-	/* Map MMIO */
+	 
 	err = -ENOMEM;
 	bus->mmio = pci_iomap(dev, 0, ~0UL);
 	if (!bus->mmio)
 		goto err_pci_release_regions;
 
-	/* Host specific */
+	 
 	bus->host_pci = dev;
 	bus->hosttype = BCMA_HOSTTYPE_PCI;
 	bus->ops = &bcma_host_pci_ops;
@@ -208,10 +201,10 @@ static int bcma_host_pci_probe(struct pci_dev *dev,
 	bus->boardinfo.vendor = bus->host_pci->subsystem_vendor;
 	bus->boardinfo.type = bus->host_pci->subsystem_device;
 
-	/* Initialize struct, detect chip */
+	 
 	bcma_init_bus(bus);
 
-	/* Scan bus to find out generation of PCIe core */
+	 
 	err = bcma_bus_scan(bus);
 	if (err)
 		goto err_pci_unmap_mmio;
@@ -219,7 +212,7 @@ static int bcma_host_pci_probe(struct pci_dev *dev,
 	if (bcma_find_core(bus, BCMA_CORE_PCIE2))
 		bus->host_is_pcie2 = true;
 
-	/* Register */
+	 
 	err = bcma_bus_register(bus);
 	if (err)
 		goto err_unregister_cores;
@@ -274,16 +267,16 @@ static SIMPLE_DEV_PM_OPS(bcma_pm_ops, bcma_host_pci_suspend,
 			 bcma_host_pci_resume);
 #define BCMA_PM_OPS	(&bcma_pm_ops)
 
-#else /* CONFIG_PM_SLEEP */
+#else  
 
 #define BCMA_PM_OPS     NULL
 
-#endif /* CONFIG_PM_SLEEP */
+#endif  
 
 static const struct pci_device_id bcma_pci_bridge_tbl[] = {
 	{ PCI_DEVICE(PCI_VENDOR_ID_BROADCOM, 0x0576) },
 	{ PCI_DEVICE(PCI_VENDOR_ID_BROADCOM, 0x4313) },
-	{ PCI_DEVICE(PCI_VENDOR_ID_BROADCOM, 43224) },	/* 0xa8d8 */
+	{ PCI_DEVICE(PCI_VENDOR_ID_BROADCOM, 43224) },	 
 	{ PCI_DEVICE(PCI_VENDOR_ID_BROADCOM, 0x4331) },
 	{ PCI_DEVICE(PCI_VENDOR_ID_BROADCOM, 0x4353) },
 	{ PCI_DEVICE(PCI_VENDOR_ID_BROADCOM, 0x4357) },
@@ -299,8 +292,8 @@ static const struct pci_device_id bcma_pci_bridge_tbl[] = {
 	{ PCI_DEVICE(PCI_VENDOR_ID_BROADCOM, 0x43aa) },
 	{ PCI_DEVICE(PCI_VENDOR_ID_BROADCOM, 0x43b1) },
 	{ PCI_DEVICE(PCI_VENDOR_ID_BROADCOM, 0x4727) },
-	{ PCI_DEVICE(PCI_VENDOR_ID_BROADCOM, 43227) },	/* 0xa8db, BCM43217 (sic!) */
-	{ PCI_DEVICE(PCI_VENDOR_ID_BROADCOM, 43228) },	/* 0xa8dc */
+	{ PCI_DEVICE(PCI_VENDOR_ID_BROADCOM, 43227) },	 
+	{ PCI_DEVICE(PCI_VENDOR_ID_BROADCOM, 43228) },	 
 	{ 0, },
 };
 MODULE_DEVICE_TABLE(pci, bcma_pci_bridge_tbl);
@@ -323,11 +316,9 @@ void __exit bcma_host_pci_exit(void)
 	pci_unregister_driver(&bcma_pci_bridge_driver);
 }
 
-/**************************************************
- * Runtime ops for drivers.
- **************************************************/
+ 
 
-/* See also pcicore_up */
+ 
 void bcma_host_pci_up(struct bcma_bus *bus)
 {
 	if (bus->hosttype != BCMA_HOSTTYPE_PCI)
@@ -340,7 +331,7 @@ void bcma_host_pci_up(struct bcma_bus *bus)
 }
 EXPORT_SYMBOL_GPL(bcma_host_pci_up);
 
-/* See also pcicore_down */
+ 
 void bcma_host_pci_down(struct bcma_bus *bus)
 {
 	if (bus->hosttype != BCMA_HOSTTYPE_PCI)
@@ -351,7 +342,7 @@ void bcma_host_pci_down(struct bcma_bus *bus)
 }
 EXPORT_SYMBOL_GPL(bcma_host_pci_down);
 
-/* See also si_pci_setup */
+ 
 int bcma_host_pci_irq_ctl(struct bcma_bus *bus, struct bcma_device *core,
 			  bool enable)
 {
@@ -360,9 +351,7 @@ int bcma_host_pci_irq_ctl(struct bcma_bus *bus, struct bcma_device *core,
 	int err = 0;
 
 	if (bus->hosttype != BCMA_HOSTTYPE_PCI) {
-		/* This bcma device is not on a PCI host-bus. So the IRQs are
-		 * not routed through the PCI core.
-		 * So we must not enable routing through the PCI core. */
+		 
 		goto out;
 	}
 

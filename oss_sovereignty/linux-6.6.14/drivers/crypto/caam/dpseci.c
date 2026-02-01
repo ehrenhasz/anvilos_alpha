@@ -1,29 +1,11 @@
-// SPDX-License-Identifier: (GPL-2.0+ OR BSD-3-Clause)
-/*
- * Copyright 2013-2016 Freescale Semiconductor Inc.
- * Copyright 2017-2018 NXP
- */
+
+ 
 
 #include <linux/fsl/mc.h>
 #include "dpseci.h"
 #include "dpseci_cmd.h"
 
-/**
- * dpseci_open() - Open a control session for the specified object
- * @mc_io:	Pointer to MC portal's I/O object
- * @cmd_flags:	Command flags; one or more of 'MC_CMD_FLAG_'
- * @dpseci_id:	DPSECI unique ID
- * @token:	Returned token; use in subsequent API calls
- *
- * This function can be used to open a control session for an already created
- * object; an object may have been declared statically in the DPL
- * or created dynamically.
- * This function returns a unique authentication token, associated with the
- * specific object ID and the specific MC portal; this token must be used in all
- * subsequent commands for this specific object.
- *
- * Return:	'0' on success, error code otherwise
- */
+ 
 int dpseci_open(struct fsl_mc_io *mc_io, u32 cmd_flags, int dpseci_id,
 		u16 *token)
 {
@@ -45,17 +27,7 @@ int dpseci_open(struct fsl_mc_io *mc_io, u32 cmd_flags, int dpseci_id,
 	return 0;
 }
 
-/**
- * dpseci_close() - Close the control session of the object
- * @mc_io:	Pointer to MC portal's I/O object
- * @cmd_flags:	Command flags; one or more of 'MC_CMD_FLAG_'
- * @token:	Token of DPSECI object
- *
- * After this function is called, no further operations are allowed on the
- * object without opening a new control session.
- *
- * Return:	'0' on success, error code otherwise
- */
+ 
 int dpseci_close(struct fsl_mc_io *mc_io, u32 cmd_flags, u16 token)
 {
 	struct fsl_mc_command cmd = { 0 };
@@ -66,14 +38,7 @@ int dpseci_close(struct fsl_mc_io *mc_io, u32 cmd_flags, u16 token)
 	return mc_send_command(mc_io, &cmd);
 }
 
-/**
- * dpseci_enable() - Enable the DPSECI, allow sending and receiving frames
- * @mc_io:	Pointer to MC portal's I/O object
- * @cmd_flags:	Command flags; one or more of 'MC_CMD_FLAG_'
- * @token:	Token of DPSECI object
- *
- * Return:	'0' on success, error code otherwise
- */
+ 
 int dpseci_enable(struct fsl_mc_io *mc_io, u32 cmd_flags, u16 token)
 {
 	struct fsl_mc_command cmd = { 0 };
@@ -84,14 +49,7 @@ int dpseci_enable(struct fsl_mc_io *mc_io, u32 cmd_flags, u16 token)
 	return mc_send_command(mc_io, &cmd);
 }
 
-/**
- * dpseci_disable() - Disable the DPSECI, stop sending and receiving frames
- * @mc_io:	Pointer to MC portal's I/O object
- * @cmd_flags:	Command flags; one or more of 'MC_CMD_FLAG_'
- * @token:	Token of DPSECI object
- *
- * Return:	'0' on success, error code otherwise
- */
+ 
 int dpseci_disable(struct fsl_mc_io *mc_io, u32 cmd_flags, u16 token)
 {
 	struct fsl_mc_command cmd = { 0 };
@@ -103,14 +61,7 @@ int dpseci_disable(struct fsl_mc_io *mc_io, u32 cmd_flags, u16 token)
 	return mc_send_command(mc_io, &cmd);
 }
 
-/**
- * dpseci_reset() - Reset the DPSECI, returns the object to initial state
- * @mc_io:	Pointer to MC portal's I/O object
- * @cmd_flags:	Command flags; one or more of 'MC_CMD_FLAG_'
- * @token:	Token of DPSECI object
- *
- * Return:	'0' on success, error code otherwise
- */
+ 
 int dpseci_reset(struct fsl_mc_io *mc_io, u32 cmd_flags, u16 token)
 {
 	struct fsl_mc_command cmd = { 0 };
@@ -121,15 +72,7 @@ int dpseci_reset(struct fsl_mc_io *mc_io, u32 cmd_flags, u16 token)
 	return mc_send_command(mc_io, &cmd);
 }
 
-/**
- * dpseci_is_enabled() - Check if the DPSECI is enabled.
- * @mc_io:	Pointer to MC portal's I/O object
- * @cmd_flags:	Command flags; one or more of 'MC_CMD_FLAG_'
- * @token:	Token of DPSECI object
- * @en:		Returns '1' if object is enabled; '0' otherwise
- *
- * Return:	'0' on success, error code otherwise
- */
+ 
 int dpseci_is_enabled(struct fsl_mc_io *mc_io, u32 cmd_flags, u16 token,
 		      int *en)
 {
@@ -150,15 +93,7 @@ int dpseci_is_enabled(struct fsl_mc_io *mc_io, u32 cmd_flags, u16 token,
 	return 0;
 }
 
-/**
- * dpseci_get_attributes() - Retrieve DPSECI attributes
- * @mc_io:	Pointer to MC portal's I/O object
- * @cmd_flags:	Command flags; one or more of 'MC_CMD_FLAG_'
- * @token:	Token of DPSECI object
- * @attr:	Returned object's attributes
- *
- * Return:	'0' on success, error code otherwise
- */
+ 
 int dpseci_get_attributes(struct fsl_mc_io *mc_io, u32 cmd_flags, u16 token,
 			  struct dpseci_attr *attr)
 {
@@ -182,18 +117,7 @@ int dpseci_get_attributes(struct fsl_mc_io *mc_io, u32 cmd_flags, u16 token,
 	return 0;
 }
 
-/**
- * dpseci_set_rx_queue() - Set Rx queue configuration
- * @mc_io:	Pointer to MC portal's I/O object
- * @cmd_flags:	Command flags; one or more of 'MC_CMD_FLAG_'
- * @token:	Token of DPSECI object
- * @queue:	Select the queue relative to number of priorities configured at
- *		DPSECI creation; use DPSECI_ALL_QUEUES to configure all
- *		Rx queues identically.
- * @cfg:	Rx queue configuration
- *
- * Return:	'0' on success, error code otherwise
- */
+ 
 int dpseci_set_rx_queue(struct fsl_mc_io *mc_io, u32 cmd_flags, u16 token,
 			u8 queue, const struct dpseci_rx_queue_cfg *cfg)
 {
@@ -217,17 +141,7 @@ int dpseci_set_rx_queue(struct fsl_mc_io *mc_io, u32 cmd_flags, u16 token,
 	return mc_send_command(mc_io, &cmd);
 }
 
-/**
- * dpseci_get_rx_queue() - Retrieve Rx queue attributes
- * @mc_io:	Pointer to MC portal's I/O object
- * @cmd_flags:	Command flags; one or more of 'MC_CMD_FLAG_'
- * @token:	Token of DPSECI object
- * @queue:	Select the queue relative to number of priorities configured at
- *		DPSECI creation
- * @attr:	Returned Rx queue attributes
- *
- * Return:	'0' on success, error code otherwise
- */
+ 
 int dpseci_get_rx_queue(struct fsl_mc_io *mc_io, u32 cmd_flags, u16 token,
 			u8 queue, struct dpseci_rx_queue_attr *attr)
 {
@@ -257,17 +171,7 @@ int dpseci_get_rx_queue(struct fsl_mc_io *mc_io, u32 cmd_flags, u16 token,
 	return 0;
 }
 
-/**
- * dpseci_get_tx_queue() - Retrieve Tx queue attributes
- * @mc_io:	Pointer to MC portal's I/O object
- * @cmd_flags:	Command flags; one or more of 'MC_CMD_FLAG_'
- * @token:	Token of DPSECI object
- * @queue:	Select the queue relative to number of priorities configured at
- *		DPSECI creation
- * @attr:	Returned Tx queue attributes
- *
- * Return:	'0' on success, error code otherwise
- */
+ 
 int dpseci_get_tx_queue(struct fsl_mc_io *mc_io, u32 cmd_flags, u16 token,
 			u8 queue, struct dpseci_tx_queue_attr *attr)
 {
@@ -292,15 +196,7 @@ int dpseci_get_tx_queue(struct fsl_mc_io *mc_io, u32 cmd_flags, u16 token,
 	return 0;
 }
 
-/**
- * dpseci_get_sec_attr() - Retrieve SEC accelerator attributes
- * @mc_io:	Pointer to MC portal's I/O object
- * @cmd_flags:	Command flags; one or more of 'MC_CMD_FLAG_'
- * @token:	Token of DPSECI object
- * @attr:	Returned SEC attributes
- *
- * Return:	'0' on success, error code otherwise
- */
+ 
 int dpseci_get_sec_attr(struct fsl_mc_io *mc_io, u32 cmd_flags, u16 token,
 			struct dpseci_sec_attr *attr)
 {
@@ -339,15 +235,7 @@ int dpseci_get_sec_attr(struct fsl_mc_io *mc_io, u32 cmd_flags, u16 token,
 	return 0;
 }
 
-/**
- * dpseci_get_api_version() - Get Data Path SEC Interface API version
- * @mc_io:	Pointer to MC portal's I/O object
- * @cmd_flags:	Command flags; one or more of 'MC_CMD_FLAG_'
- * @major_ver:	Major version of data path sec API
- * @minor_ver:	Minor version of data path sec API
- *
- * Return:	'0' on success, error code otherwise
- */
+ 
 int dpseci_get_api_version(struct fsl_mc_io *mc_io, u32 cmd_flags,
 			   u16 *major_ver, u16 *minor_ver)
 {
@@ -368,16 +256,7 @@ int dpseci_get_api_version(struct fsl_mc_io *mc_io, u32 cmd_flags,
 	return 0;
 }
 
-/**
- * dpseci_set_congestion_notification() - Set congestion group
- *	notification configuration
- * @mc_io:	Pointer to MC portal's I/O object
- * @cmd_flags:	Command flags; one or more of 'MC_CMD_FLAG_'
- * @token:	Token of DPSECI object
- * @cfg:	congestion notification configuration
- *
- * Return:	'0' on success, error code otherwise
- */
+ 
 int dpseci_set_congestion_notification(struct fsl_mc_io *mc_io, u32 cmd_flags,
 	u16 token, const struct dpseci_congestion_notification_cfg *cfg)
 {
@@ -403,16 +282,7 @@ int dpseci_set_congestion_notification(struct fsl_mc_io *mc_io, u32 cmd_flags,
 	return mc_send_command(mc_io, &cmd);
 }
 
-/**
- * dpseci_get_congestion_notification() - Get congestion group notification
- *	configuration
- * @mc_io:	Pointer to MC portal's I/O object
- * @cmd_flags:	Command flags; one or more of 'MC_CMD_FLAG_'
- * @token:	Token of DPSECI object
- * @cfg:	congestion notification configuration
- *
- * Return:	'0' on success, error code otherwise
- */
+ 
 int dpseci_get_congestion_notification(struct fsl_mc_io *mc_io, u32 cmd_flags,
 	u16 token, struct dpseci_congestion_notification_cfg *cfg)
 {

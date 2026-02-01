@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2008, Christoph Hellwig
- * All Rights Reserved.
- */
+
+ 
 #include "xfs.h"
 #include "xfs_shared.h"
 #include "xfs_format.h"
@@ -47,10 +44,7 @@ xfs_qm_fill_state(
 		xfs_irele(ip);
 }
 
-/*
- * Return quota status information, such as enforcements, quota file inode
- * numbers etc.
- */
+ 
 static int
 xfs_fs_get_quota_state(
 	struct super_block	*sb,
@@ -100,9 +94,7 @@ xfs_quota_type(int type)
 
 #define XFS_QC_SETINFO_MASK (QC_TIMER_MASK)
 
-/*
- * Adjust quota timers & warnings
- */
+ 
 static int
 xfs_fs_set_info(
 	struct super_block	*sb,
@@ -226,7 +218,7 @@ xfs_fs_get_dqblk(
 	return xfs_qm_scall_getquota(mp, id, xfs_quota_type(qid.type), qdq);
 }
 
-/* Return quota info for active quota >= this qid */
+ 
 STATIC int
 xfs_fs_get_nextdqblk(
 	struct super_block	*sb,
@@ -246,7 +238,7 @@ xfs_fs_get_nextdqblk(
 	if (ret)
 		return ret;
 
-	/* ID may be different, so convert back what we got */
+	 
 	*qid = make_kqid(current_user_ns(), qid->type, id);
 	return 0;
 }

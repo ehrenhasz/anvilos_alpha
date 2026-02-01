@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Ptrace test for TAR, PPR, DSCR registers in the TM Suspend context
- *
- * Copyright (C) 2015 Anshuman Khandual, IBM Corporation.
- */
+
+ 
 #include "ptrace.h"
 #include "tm.h"
 #include "ptrace-tar.h"
@@ -30,27 +26,27 @@ trans:
 	cptr[2] = 0;
 	asm __volatile__(
 		"li	4, %[tar_1];"
-		"mtspr %[sprn_tar],  4;"	/* TAR_1 */
+		"mtspr %[sprn_tar],  4;"	 
 		"li	4, %[dscr_1];"
-		"mtspr %[sprn_dscr], 4;"	/* DSCR_1 */
-		"or     31,31,31;"		/* PPR_1*/
+		"mtspr %[sprn_dscr], 4;"	 
+		"or     31,31,31;"		 
 
 		"1: ;"
 		"tbegin.;"
 		"beq 2f;"
 
 		"li	4, %[tar_2];"
-		"mtspr %[sprn_tar],  4;"	/* TAR_2 */
+		"mtspr %[sprn_tar],  4;"	 
 		"li	4, %[dscr_2];"
-		"mtspr %[sprn_dscr], 4;"	/* DSCR_2 */
-		"or     1,1,1;"			/* PPR_2 */
+		"mtspr %[sprn_dscr], 4;"	 
+		"or     1,1,1;"			 
 
 		"tsuspend.;"
 		"li	4, %[tar_3];"
-		"mtspr %[sprn_tar],  4;"	/* TAR_3 */
+		"mtspr %[sprn_tar],  4;"	 
 		"li	4, %[dscr_3];"
-		"mtspr %[sprn_dscr], 4;"	/* DSCR_3 */
-		"or     6,6,6;"			/* PPR_3 */
+		"mtspr %[sprn_dscr], 4;"	 
+		"or     6,6,6;"			 
 		"bl wait_parent;"
 		"tresume.;"
 
@@ -59,7 +55,7 @@ trans:
 		"ori %[res], 0, 0;"
 		"b 3f;"
 
-		/* Transaction abort handler */
+		 
 		"2: ;"
 		"li 0, 1;"
 		"ori %[res], 0, 0;"
@@ -76,7 +72,7 @@ trans:
 		: "memory", "r0", "r3", "r4", "r5", "r6", "lr"
 		);
 
-	/* TM failed, analyse */
+	 
 	if (result) {
 		if (!cptr[0])
 			goto trans;

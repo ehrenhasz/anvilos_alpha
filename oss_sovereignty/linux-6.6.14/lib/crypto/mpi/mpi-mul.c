@@ -1,15 +1,4 @@
-/* mpi-mul.c  -  MPI functions
- * Copyright (C) 1994, 1996, 1998, 2001, 2002,
- *               2003 Free Software Foundation, Inc.
- *
- * This file is part of Libgcrypt.
- *
- * Note: This code is heavily based on the GNU MP Library.
- *	 Actually it's the same code with only minor changes in the
- *	 way the data is stored; this is to support the abstraction
- *	 of an optional secure memory allocation which may be used
- *	 to avoid revealing of sensitive data due to paging etc.
- */
+ 
 
 #include "mpi-internal.h"
 
@@ -23,7 +12,7 @@ void mpi_mul(MPI w, MPI u, MPI v)
 	mpi_ptr_t tmp_limb = NULL;
 
 	if (u->nlimbs < v->nlimbs) {
-		/* Swap U and V. */
+		 
 		usize = v->nlimbs;
 		usign = v->sign;
 		up    = v->d;
@@ -41,7 +30,7 @@ void mpi_mul(MPI w, MPI u, MPI v)
 	sign_product = usign ^ vsign;
 	wp = w->d;
 
-	/* Ensure W has space enough to store the result.  */
+	 
 	wsize = usize + vsize;
 	if (w->alloced < wsize) {
 		if (wp == up || wp == vp) {
@@ -51,19 +40,19 @@ void mpi_mul(MPI w, MPI u, MPI v)
 			mpi_resize(w, wsize);
 			wp = w->d;
 		}
-	} else { /* Make U and V not overlap with W.	*/
+	} else {  
 		if (wp == up) {
-			/* W and U are identical.  Allocate temporary space for U. */
+			 
 			up = tmp_limb = mpi_alloc_limb_space(usize);
-			/* Is V identical too?  Keep it identical with U.  */
+			 
 			if (wp == vp)
 				vp = up;
-			/* Copy to the temporary space.  */
+			 
 			MPN_COPY(up, wp, usize);
 		} else if (wp == vp) {
-			/* W and V are identical.  Allocate temporary space for V. */
+			 
 			vp = tmp_limb = mpi_alloc_limb_space(vsize);
-			/* Copy to the temporary space.  */
+			 
 			MPN_COPY(vp, wp, vsize);
 		}
 	}

@@ -1,15 +1,4 @@
-/*
- * This file is subject to the terms and conditions of the GNU General Public
- * License.  See the file "COPYING" in the main directory of this archive
- * for more details.
- *
- * Numascale NumaConnect-Specific APIC Code
- *
- * Copyright (C) 2011 Numascale AS. All rights reserved.
- *
- * Send feedback to <support@numascale.com>
- *
- */
+ 
 #include <linux/types.h>
 #include <linux/init.h>
 #include <linux/pgtable.h>
@@ -88,7 +77,7 @@ static void numachip_send_IPI_one(int cpu, int vector)
 	preempt_disable();
 	local_apicid = __this_cpu_read(x86_cpu_to_apicid);
 
-	/* Send via local APIC where non-local part matches */
+	 
 	if (!((apicid ^ local_apicid) >> NUMACHIP_LAPIC_BITS)) {
 		unsigned long flags;
 
@@ -163,7 +152,7 @@ static void fixup_cpu_id(struct cpuinfo_x86 *c, int node)
 
 	this_cpu_write(cpu_llc_id, node);
 
-	/* Account for nodes per socket in multi-core-module processors */
+	 
 	if (boot_cpu_has(X86_FEATURE_NODEID_MSR)) {
 		rdmsrl(MSR_FAM10H_NODE_ID, val);
 		nodes = ((val >> 3) & 7) + 1;
@@ -174,7 +163,7 @@ static void fixup_cpu_id(struct cpuinfo_x86 *c, int node)
 
 static int __init numachip_system_init(void)
 {
-	/* Map the LCSR area and set up the apic_icr_write function */
+	 
 	switch (numachip_system) {
 	case 1:
 		init_extra_mapping_uc(NUMACHIP_LCSR_BASE, NUMACHIP_LCSR_SIZE);

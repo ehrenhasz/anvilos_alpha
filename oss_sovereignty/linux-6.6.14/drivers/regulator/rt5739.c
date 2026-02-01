@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Device driver for RT5739 regulator
- *
- * Copyright (C) 2023 Richtek Technology Corp.
- *
- * Author: ChiYuan Huang <cy_huang@richtek.com>
- */
+
+ 
 
 #include <linux/bits.h>
 #include <linux/gpio/consumer.h>
@@ -201,7 +195,7 @@ static unsigned int rt5739_of_map_mode(unsigned int mode)
 static void rt5739_init_regulator_desc(struct regulator_desc *desc,
 				       bool vsel_active_high, u8 did)
 {
-	/* Fixed */
+	 
 	desc->name = "rt5739-regulator";
 	desc->owner = THIS_MODULE;
 	desc->ops = &rt5739_regulator_ops;
@@ -212,7 +206,7 @@ static void rt5739_init_regulator_desc(struct regulator_desc *desc,
 	desc->active_discharge_on = RT5739_ACTD_MASK;
 	desc->of_map_mode = rt5739_of_map_mode;
 
-	/* Assigned by vsel level */
+	 
 	if (vsel_active_high) {
 		desc->vsel_reg = RT5739_REG_NSEL1;
 		desc->enable_mask = RT5739_ENVSEL1_MASK;
@@ -221,7 +215,7 @@ static void rt5739_init_regulator_desc(struct regulator_desc *desc,
 		desc->enable_mask = RT5739_ENVSEL0_MASK;
 	}
 
-	/* Assigned by CHIPDIE ID */
+	 
 	switch (did) {
 	case RT5733_CHIPDIE_ID:
 		desc->n_voltages = RT5733_N_VOLTS;
@@ -273,7 +267,7 @@ static int rt5739_probe(struct i2c_client *i2c)
 	if (ret)
 		return dev_err_probe(dev, ret, "Failed to read VID\n");
 
-	/* RT5739: (VID & MASK) must be 0 */
+	 
 	if (vid & RT5739_VID_MASK)
 		return dev_err_probe(dev, -ENODEV, "Incorrect VID (0x%02x)\n", vid);
 
@@ -294,7 +288,7 @@ static int rt5739_probe(struct i2c_client *i2c)
 static const struct of_device_id rt5739_device_table[] = {
 	{ .compatible = "richtek,rt5733" },
 	{ .compatible = "richtek,rt5739" },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, rt5739_device_table);
 

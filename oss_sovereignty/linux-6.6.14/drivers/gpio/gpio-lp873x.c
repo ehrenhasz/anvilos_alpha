@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2016 Texas Instruments Incorporated - http://www.ti.com/
- *	Keerthy <j-keerthy@ti.com>
- *
- * Based on the TPS65218 driver
- */
+
+ 
 
 #include <linux/gpio/driver.h>
 #include <linux/module.h>
@@ -24,14 +19,14 @@ struct lp873x_gpio {
 static int lp873x_gpio_get_direction(struct gpio_chip *chip,
 				     unsigned int offset)
 {
-	/* This device is output only */
+	 
 	return GPIO_LINE_DIRECTION_OUT;
 }
 
 static int lp873x_gpio_direction_input(struct gpio_chip *chip,
 				       unsigned int offset)
 {
-	/* This device is output only */
+	 
 	return -EINVAL;
 }
 
@@ -40,7 +35,7 @@ static int lp873x_gpio_direction_output(struct gpio_chip *chip,
 {
 	struct lp873x_gpio *gpio = gpiochip_get_data(chip);
 
-	/* Set the initial value */
+	 
 	return regmap_update_bits(gpio->lp873->regmap, LP873X_REG_GPO_CTRL,
 				  BIT(offset * BITS_PER_GPO),
 				  value ? BIT(offset * BITS_PER_GPO) : 0);
@@ -75,10 +70,10 @@ static int lp873x_gpio_request(struct gpio_chip *gc, unsigned int offset)
 
 	switch (offset) {
 	case 0:
-		/* No MUX Set up Needed for GPO */
+		 
 		break;
 	case 1:
-		/* Setup the CLKIN_PIN_SEL MUX to GPO2 */
+		 
 		ret = regmap_update_bits(gpio->lp873->regmap, LP873X_REG_CONFIG,
 					 LP873X_CONFIG_CLKIN_PIN_SEL, 0);
 		if (ret)
@@ -157,7 +152,7 @@ static int lp873x_gpio_probe(struct platform_device *pdev)
 
 static const struct platform_device_id lp873x_gpio_id_table[] = {
 	{ "lp873x-gpio", },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(platform, lp873x_gpio_id_table);
 

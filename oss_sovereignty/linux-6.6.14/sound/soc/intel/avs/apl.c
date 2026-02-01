@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0-only
-//
-// Copyright(c) 2021-2022 Intel Corporation. All rights reserved.
-//
-// Authors: Cezary Rojewski <cezary.rojewski@intel.com>
-//          Amadeusz Slawinski <amadeuszx.slawinski@linux.intel.com>
-//
+
+
+
+
+
+
+
 
 #include <linux/devcoredump.h>
 #include <linux/slab.h>
@@ -60,7 +60,7 @@ static int apl_log_buffer_status(struct avs_dev *adev, union avs_notify_msg *msg
 	memcpy_fromio(&layout, addr, sizeof(layout));
 
 	if (!avs_logging_fw(adev))
-		/* consume the logs regardless of consumer presence */
+		 
 		goto update_read_ptr;
 
 	buf = apl_log_payload_addr(addr);
@@ -98,7 +98,7 @@ static int apl_wait_log_entry(struct avs_dev *adev, u32 core, struct apl_log_buf
 	return -ETIMEDOUT;
 }
 
-/* reads log header and tests its type */
+ 
 #define apl_is_entry_stackdump(addr) ((readl(addr) >> 30) & 0x1)
 
 static int apl_coredump(struct avs_dev *adev, union avs_notify_msg *msg)
@@ -119,7 +119,7 @@ static int apl_coredump(struct avs_dev *adev, union avs_notify_msg *msg)
 	if (!msg->ext.coredump.stack_dump_size)
 		goto exit;
 
-	/* Dump the registers even if an external error prevents gathering the stack. */
+	 
 	addr = avs_log_buffer_addr(adev, msg->ext.coredump.core_id);
 	if (!addr)
 		goto exit;
@@ -129,16 +129,13 @@ static int apl_coredump(struct avs_dev *adev, union avs_notify_msg *msg)
 	if (!apl_is_entry_stackdump(buf + layout.read_ptr)) {
 		union avs_notify_msg lbs_msg = AVS_NOTIFICATION(LOG_BUFFER_STATUS);
 
-		/*
-		 * DSP awaits the remaining logs to be
-		 * gathered before dumping stack
-		 */
+		 
 		lbs_msg.log.core = msg->ext.coredump.core_id;
 		avs_log_buffer_status_locked(adev, &lbs_msg);
 	}
 
 	pos = dump + AVS_FW_REGS_SIZE;
-	/* gather the stack */
+	 
 	do {
 		u32 count;
 
@@ -155,7 +152,7 @@ static int apl_coredump(struct avs_dev *adev, union avs_notify_msg *msg)
 		memcpy_fromio(pos + offset, buf + layout.read_ptr, count);
 		offset += count;
 
-		/* update read pointer */
+		 
 		writel(layout.write_ptr, addr);
 	} while (offset < msg->ext.coredump.stack_dump_size);
 
@@ -170,7 +167,7 @@ static bool apl_lp_streaming(struct avs_dev *adev)
 	struct avs_path *path;
 
 	spin_lock(&adev->path_list_lock);
-	/* Any gateway without buffer allocated in LP area disqualifies D0IX. */
+	 
 	list_for_each_entry(path, &adev->path_list, node) {
 		struct avs_path_pipeline *ppl;
 
@@ -182,10 +179,10 @@ static bool apl_lp_streaming(struct avs_dev *adev)
 
 				cfg = mod->template->cfg_ext;
 
-				/* only copiers have gateway attributes */
+				 
 				if (!guid_equal(&cfg->type, &AVS_COPIER_MOD_UUID))
 					continue;
-				/* non-gateway copiers do not prevent PG */
+				 
 				if (cfg->copier.dma_type == INVALID_OBJECT_ID)
 					continue;
 
@@ -203,18 +200,11 @@ static bool apl_lp_streaming(struct avs_dev *adev)
 
 static bool apl_d0ix_toggle(struct avs_dev *adev, struct avs_ipc_msg *tx, bool wake)
 {
-	/* wake in all cases */
+	 
 	if (wake)
 		return true;
 
-	/*
-	 * If no pipelines are running, allow for d0ix schedule.
-	 * If all gateways have lp=1, allow for d0ix schedule.
-	 * If any gateway with lp=0 is allocated, abort scheduling d0ix.
-	 *
-	 * Note: for cAVS 1.5+ and 1.8, D0IX is LP-firmware transition,
-	 * not the power-gating mechanism known from cAVS 2.0.
-	 */
+	 
 	return apl_lp_streaming(adev);
 }
 
@@ -224,7 +214,7 @@ static int apl_set_d0ix(struct avs_dev *adev, bool enable)
 	int ret;
 
 	if (enable)
-		/* Either idle or all gateways with lp=1. */
+		 
 		streaming = !list_empty(&adev->path_list);
 
 	ret = avs_ipc_set_d0ix(adev, enable, streaming);

@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * cn_proc.c - process events connector
- *
- * Copyright (C) Matt Helsley, IBM Corp. 2005
- * Based on cn_fork.c by Guillaume Thouvenin <guillaume.thouvenin@bull.net>
- * Original copyright notice follows:
- * Copyright (C) 2005 BULL SA.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/ktime.h>
@@ -20,16 +13,10 @@
 #include <linux/cn_proc.h>
 #include <linux/local_lock.h>
 
-/*
- * Size of a cn_msg followed by a proc_event structure.  Since the
- * sizeof struct cn_msg is a multiple of 4 bytes, but not 8 bytes, we
- * add one 4-byte word to the size here, and then start the actual
- * cn_msg structure 4 bytes into the stack buffer.  The result is that
- * the immediately following proc_event structure is aligned to 8 bytes.
- */
+ 
 #define CN_PROC_MSG_SIZE (sizeof(struct cn_msg) + sizeof(struct proc_event) + 4)
 
-/* See comment above; we test our assumption about sizeof struct cn_msg here. */
+ 
 static inline struct cn_msg *buffer_to_cn_msg(__u8 *buffer)
 {
 	BUILD_BUG_ON(sizeof(struct cn_msg) != 20);
@@ -39,7 +26,7 @@ static inline struct cn_msg *buffer_to_cn_msg(__u8 *buffer)
 static atomic_t proc_event_num_listeners = ATOMIC_INIT(0);
 static struct cb_id cn_proc_event_id = { CN_IDX_PROC, CN_VAL_PROC };
 
-/* local_event.count is used as the sequence number of the netlink message */
+ 
 struct local_event {
 	local_lock_t lock;
 	__u32 count;
@@ -69,10 +56,7 @@ static int cn_filter(struct sock *dsk, struct sk_buff *skb, void *data)
 	if ((__u32)val == PROC_EVENT_ALL)
 		return 0;
 
-	/*
-	 * Drop packet if we have to report only non-zero exit status
-	 * (PROC_EVENT_NONZERO_EXIT) and exit status is 0
-	 */
+	 
 	if (((__u32)val & PROC_EVENT_NONZERO_EXIT) &&
 	    (what == PROC_EVENT_EXIT)) {
 		if (exit_code)
@@ -94,12 +78,7 @@ static inline void send_msg(struct cn_msg *msg)
 	msg->seq = __this_cpu_inc_return(local_event.count) - 1;
 	((struct proc_event *)msg->data)->cpu = smp_processor_id();
 
-	/*
-	 * local_lock() disables preemption during send to ensure the messages
-	 * are ordered according to their sequence numbers.
-	 *
-	 * If cn_netlink_send() fails, the data is not sent.
-	 */
+	 
 	filter_data[0] = ((struct proc_event *)msg->data)->what;
 	if (filter_data[0] == PROC_EVENT_EXIT) {
 		filter_data[1] =
@@ -139,9 +118,9 @@ void proc_fork_connector(struct task_struct *task)
 	ev->event_data.fork.child_tgid = task->tgid;
 
 	memcpy(&msg->id, &cn_proc_event_id, sizeof(msg->id));
-	msg->ack = 0; /* not used */
+	msg->ack = 0;  
 	msg->len = sizeof(*ev);
-	msg->flags = 0; /* not used */
+	msg->flags = 0;  
 	send_msg(msg);
 }
 
@@ -163,9 +142,9 @@ void proc_exec_connector(struct task_struct *task)
 	ev->event_data.exec.process_tgid = task->tgid;
 
 	memcpy(&msg->id, &cn_proc_event_id, sizeof(msg->id));
-	msg->ack = 0; /* not used */
+	msg->ack = 0;  
 	msg->len = sizeof(*ev);
-	msg->flags = 0; /* not used */
+	msg->flags = 0;  
 	send_msg(msg);
 }
 
@@ -201,9 +180,9 @@ void proc_id_connector(struct task_struct *task, int which_id)
 	ev->timestamp_ns = ktime_get_ns();
 
 	memcpy(&msg->id, &cn_proc_event_id, sizeof(msg->id));
-	msg->ack = 0; /* not used */
+	msg->ack = 0;  
 	msg->len = sizeof(*ev);
-	msg->flags = 0; /* not used */
+	msg->flags = 0;  
 	send_msg(msg);
 }
 
@@ -225,9 +204,9 @@ void proc_sid_connector(struct task_struct *task)
 	ev->event_data.sid.process_tgid = task->tgid;
 
 	memcpy(&msg->id, &cn_proc_event_id, sizeof(msg->id));
-	msg->ack = 0; /* not used */
+	msg->ack = 0;  
 	msg->len = sizeof(*ev);
-	msg->flags = 0; /* not used */
+	msg->flags = 0;  
 	send_msg(msg);
 }
 
@@ -257,9 +236,9 @@ void proc_ptrace_connector(struct task_struct *task, int ptrace_id)
 		return;
 
 	memcpy(&msg->id, &cn_proc_event_id, sizeof(msg->id));
-	msg->ack = 0; /* not used */
+	msg->ack = 0;  
 	msg->len = sizeof(*ev);
-	msg->flags = 0; /* not used */
+	msg->flags = 0;  
 	send_msg(msg);
 }
 
@@ -282,9 +261,9 @@ void proc_comm_connector(struct task_struct *task)
 	get_task_comm(ev->event_data.comm.comm, task);
 
 	memcpy(&msg->id, &cn_proc_event_id, sizeof(msg->id));
-	msg->ack = 0; /* not used */
+	msg->ack = 0;  
 	msg->len = sizeof(*ev);
-	msg->flags = 0; /* not used */
+	msg->flags = 0;  
 	send_msg(msg);
 }
 
@@ -315,9 +294,9 @@ void proc_coredump_connector(struct task_struct *task)
 	rcu_read_unlock();
 
 	memcpy(&msg->id, &cn_proc_event_id, sizeof(msg->id));
-	msg->ack = 0; /* not used */
+	msg->ack = 0;  
 	msg->len = sizeof(*ev);
-	msg->flags = 0; /* not used */
+	msg->flags = 0;  
 	send_msg(msg);
 }
 
@@ -350,20 +329,13 @@ void proc_exit_connector(struct task_struct *task)
 	rcu_read_unlock();
 
 	memcpy(&msg->id, &cn_proc_event_id, sizeof(msg->id));
-	msg->ack = 0; /* not used */
+	msg->ack = 0;  
 	msg->len = sizeof(*ev);
-	msg->flags = 0; /* not used */
+	msg->flags = 0;  
 	send_msg(msg);
 }
 
-/*
- * Send an acknowledgement message to userspace
- *
- * Use 0 for success, EFOO otherwise.
- * Note: this is the negative of conventional kernel error
- * values because it's not being returned via syscall return
- * mechanisms.
- */
+ 
 static void cn_proc_ack(int err, int rcvd_seq, int rcvd_ack)
 {
 	struct cn_msg *msg;
@@ -384,15 +356,11 @@ static void cn_proc_ack(int err, int rcvd_seq, int rcvd_ack)
 	memcpy(&msg->id, &cn_proc_event_id, sizeof(msg->id));
 	msg->ack = rcvd_ack + 1;
 	msg->len = sizeof(*ev);
-	msg->flags = 0; /* not used */
+	msg->flags = 0;  
 	send_msg(msg);
 }
 
-/**
- * cn_proc_mcast_ctl
- * @msg: message sent from userspace via the connector
- * @nsp: NETLINK_CB of the client's socket buffer
- */
+ 
 static void cn_proc_mcast_ctl(struct cn_msg *msg,
 			      struct netlink_skb_parms *nsp)
 {
@@ -402,11 +370,7 @@ static void cn_proc_mcast_ctl(struct cn_msg *msg,
 	int err = 0, initial = 0;
 	struct sock *sk = NULL;
 
-	/* 
-	 * Events are reported with respect to the initial pid
-	 * and user namespaces so ignore requestors from
-	 * other namespaces.
-	 */
+	 
 	if ((current_user_ns() != &init_user_ns) ||
 	    !task_is_in_init_pid_ns(current))
 		return;
@@ -466,11 +430,7 @@ out:
 	cn_proc_ack(err, msg->seq, msg->ack);
 }
 
-/*
- * cn_proc_init - initialization entry point
- *
- * Adds the connector callback to the connector driver.
- */
+ 
 static int __init cn_proc_init(void)
 {
 	int err = cn_add_callback(&cn_proc_event_id,

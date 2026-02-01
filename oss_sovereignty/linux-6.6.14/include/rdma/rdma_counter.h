@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB */
-/*
- * Copyright (c) 2019 Mellanox Technologies. All rights reserved.
- */
+ 
+ 
 
 #ifndef _RDMA_COUNTER_H_
 #define _RDMA_COUNTER_H_
@@ -65,4 +63,4 @@ int rdma_counter_get_mode(struct ib_device *dev, u32 port,
 
 int rdma_counter_modify(struct ib_device *dev, u32 port,
 			unsigned int index, bool enable);
-#endif /* _RDMA_COUNTER_H_ */
+#endif  

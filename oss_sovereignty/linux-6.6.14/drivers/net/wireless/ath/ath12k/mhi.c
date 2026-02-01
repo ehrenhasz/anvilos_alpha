@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: BSD-3-Clause-Clear
-/*
- * Copyright (c) 2020-2021 The Linux Foundation. All rights reserved.
- * Copyright (c) 2021-2022 Qualcomm Innovation Center, Inc. All rights reserved.
- */
+
+ 
 
 #include <linux/msi.h>
 #include <linux/pci.h>
@@ -208,10 +205,7 @@ void ath12k_mhi_set_mhictrl_reset(struct ath12k_base *ab)
 
 	ath12k_dbg(ab, ATH12K_DBG_PCI, "MHISTATUS 0x%x\n", val);
 
-	/* Observed on some targets that after SOC_GLOBAL_RESET, MHISTATUS
-	 * has SYSERR bit set and thus need to set MHICTRL_RESET
-	 * to clear SYSERR.
-	 */
+	 
 	ath12k_pci_write32(ab, MHICTRL, MHICTRL_RESET_MASK);
 
 	mdelay(10);

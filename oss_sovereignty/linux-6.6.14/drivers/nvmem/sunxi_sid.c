@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Allwinner sunXi SoCs Security ID support.
- *
- * Copyright (c) 2013 Oliver Schinagl <oliver@schinagl.nl>
- * Copyright (C) 2014 Maxime Ripard <maxime.ripard@free-electrons.com>
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/io.h>
@@ -16,7 +11,7 @@
 #include <linux/slab.h>
 #include <linux/random.h>
 
-/* Registers and special values for doing register-based SID readout on H3 */
+ 
 #define SUN8I_SID_PRCTL		0x40
 #define SUN8I_SID_RDKEY		0x60
 
@@ -42,7 +37,7 @@ static int sunxi_sid_read(void *context, unsigned int offset,
 	struct sunxi_sid *sid = context;
 	u32 word;
 
-	/* .stride = 4 so offset is guaranteed to be aligned */
+	 
 	__ioread32_copy(val, sid->base + sid->value_offset + offset, bytes / 4);
 
 	val += round_down(bytes, 4);
@@ -52,7 +47,7 @@ static int sunxi_sid_read(void *context, unsigned int offset,
 	if (!bytes)
 		return 0;
 
-	/* Handle any trailing bytes */
+	 
 	word = readl_relaxed(sid->base + sid->value_offset + offset);
 	memcpy(val, &word, bytes);
 
@@ -66,7 +61,7 @@ static int sun8i_sid_register_readout(const struct sunxi_sid *sid,
 	u32 reg_val;
 	int ret;
 
-	/* Set word, lock access, and set read command */
+	 
 	reg_val = (offset & SUN8I_SID_OFFSET_MASK)
 		  << SUN8I_SID_OFFSET_SHIFT;
 	reg_val |= SUN8I_SID_OP_LOCK | SUN8I_SID_READ;
@@ -85,11 +80,7 @@ static int sun8i_sid_register_readout(const struct sunxi_sid *sid,
 	return 0;
 }
 
-/*
- * On Allwinner H3, the value on the 0x200 offset of the SID controller seems
- * to be not reliable at all.
- * Read by the registers instead.
- */
+ 
 static int sun8i_sid_read_by_reg(void *context, unsigned int offset,
 				 void *val, size_t bytes)
 {
@@ -97,7 +88,7 @@ static int sun8i_sid_read_by_reg(void *context, unsigned int offset,
 	u32 word;
 	int ret;
 
-	/* .stride = 4 so offset is guaranteed to be aligned */
+	 
 	while (bytes >= 4) {
 		ret = sun8i_sid_register_readout(sid, offset, val);
 		if (ret)
@@ -111,7 +102,7 @@ static int sun8i_sid_read_by_reg(void *context, unsigned int offset,
 	if (!bytes)
 		return 0;
 
-	/* Handle any trailing bytes */
+	 
 	ret = sun8i_sid_register_readout(sid, offset, &word);
 	if (ret)
 		return ret;
@@ -213,7 +204,7 @@ static const struct of_device_id sunxi_sid_of_match[] = {
 	{ .compatible = "allwinner,sun50i-a64-sid", .data = &sun50i_a64_cfg },
 	{ .compatible = "allwinner,sun50i-h5-sid", .data = &sun50i_a64_cfg },
 	{ .compatible = "allwinner,sun50i-h6-sid", .data = &sun50i_h6_cfg },
-	{/* sentinel */},
+	{ },
 };
 MODULE_DEVICE_TABLE(of, sunxi_sid_of_match);
 

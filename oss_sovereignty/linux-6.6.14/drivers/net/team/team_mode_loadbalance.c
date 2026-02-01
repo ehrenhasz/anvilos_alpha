@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * drivers/net/team/team_mode_loadbalance.c - Load-balancing mode for team
- * Copyright (c) 2012 Jiri Pirko <jpirko@redhat.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/types.h>
@@ -18,7 +15,7 @@ static rx_handler_result_t lb_receive(struct team *team, struct team_port *port,
 				      struct sk_buff *skb)
 {
 	if (unlikely(skb->protocol == htons(ETH_P_SLOW))) {
-		/* LACPDU packets should go to exact delivery */
+		 
 		const unsigned char *dest = eth_hdr(skb)->h_dest;
 
 		if (is_link_local_ether_addr(dest) && dest[5] == 0x02)
@@ -32,7 +29,7 @@ struct lb_priv;
 typedef struct team_port *lb_select_tx_port_func_t(struct team *,
 						   unsigned char);
 
-#define LB_TX_HASHTABLE_SIZE 256 /* hash is a char */
+#define LB_TX_HASHTABLE_SIZE 256  
 
 struct lb_stats {
 	u64 tx_bytes;
@@ -59,7 +56,7 @@ struct lb_priv_ex {
 	struct lb_port_mapping tx_hash_to_port_mapping[LB_TX_HASHTABLE_SIZE];
 	struct sock_fprog_kern *orig_fprog;
 	struct {
-		unsigned int refresh_interval; /* in tenths of second */
+		unsigned int refresh_interval;  
 		struct delayed_work refresh_dw;
 		struct lb_stats_info info[LB_TX_HASHTABLE_SIZE];
 	} stats;
@@ -69,7 +66,7 @@ struct lb_priv {
 	struct bpf_prog __rcu *fp;
 	lb_select_tx_port_func_t __rcu *select_tx_port_func;
 	struct lb_pcpu_stats __percpu *pcpu_stats;
-	struct lb_priv_ex *ex; /* priv extension */
+	struct lb_priv_ex *ex;  
 };
 
 static struct lb_priv *get_lb_priv(struct team *team)
@@ -114,7 +111,7 @@ static void lb_tx_hash_to_port_mapping_null_port(struct team *team,
 		team_options_change_check(team);
 }
 
-/* Basic tx selection based solely by hash */
+ 
 static struct team_port *lb_hash_select_tx_port(struct team *team,
 						unsigned char hash)
 {
@@ -123,7 +120,7 @@ static struct team_port *lb_hash_select_tx_port(struct team *team,
 	return team_get_port_by_index_rcu(team, port_index);
 }
 
-/* Hash to port mapping select tx port */
+ 
 static struct team_port *lb_htpm_select_tx_port(struct team *team,
 						unsigned char hash)
 {
@@ -133,7 +130,7 @@ static struct team_port *lb_htpm_select_tx_port(struct team *team,
 	port = rcu_dereference_bh(LB_HTPM_PORT_BY_HASH(lb_priv, hash));
 	if (likely(port))
 		return port;
-	/* If no valid port in the table, fall back to simple hash */
+	 
 	return lb_hash_select_tx_port(team, hash);
 }
 
@@ -299,7 +296,7 @@ static int lb_bpf_func_set(struct team *team, struct team_gsetter_ctx *ctx)
 	}
 
 	if (lb_priv->ex->orig_fprog) {
-		/* Clear old filter data */
+		 
 		__fprog_destroy(lb_priv->ex->orig_fprog);
 		orig_fp = rcu_dereference_protected(lb_priv->fp,
 						lockdep_is_held(&team->lock));
@@ -592,7 +589,7 @@ static int lb_init(struct team *team)
 	lb_select_tx_port_func_t *func;
 	int i, err;
 
-	/* set default tx port selector */
+	 
 	func = lb_select_tx_port_get_func("hash");
 	BUG_ON(!func);
 	rcu_assign_pointer(lb_priv->select_tx_port_func, func);

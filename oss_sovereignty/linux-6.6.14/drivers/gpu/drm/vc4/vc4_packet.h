@@ -1,30 +1,9 @@
-/*
- * Copyright © 2014 Broadcom
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice (including the next
- * paragraph) shall be included in all copies or substantial portions of the
- * Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
- * IN THE SOFTWARE.
- */
+ 
 
 #ifndef VC4_PACKET_H
 #define VC4_PACKET_H
 
-#include "vc4_regs.h" /* for VC4_MASK, VC4_GET_FIELD, VC4_SET_FIELD */
+#include "vc4_regs.h"  
 
 enum vc4_packet {
 	VC4_PACKET_HALT = 0,
@@ -75,11 +54,7 @@ enum vc4_packet {
 	VC4_PACKET_CLEAR_COLORS = 114,
 	VC4_PACKET_TILE_COORDINATES = 115,
 
-	/* Not an actual hardware packet -- this is what we use to put
-	 * references to GEM bos in the command stream, since we need the u32
-	 * int the actual address packet in order to store the offset from the
-	 * start of the BO.
-	 */
+	 
 	VC4_PACKET_GEM_HANDLES = 254,
 } __attribute__ ((__packed__));
 
@@ -123,58 +98,39 @@ enum vc4_packet {
 #define VC4_PACKET_TILE_COORDINATES_SIZE				3
 #define VC4_PACKET_GEM_HANDLES_SIZE					9
 
-/* Number of multisamples supported. */
+ 
 #define VC4_MAX_SAMPLES							4
-/* Size of a full resolution color or Z tile buffer load/store. */
+ 
 #define VC4_TILE_BUFFER_SIZE			(64 * 64 * 4)
 
-/** @{
- * Bits used by packets like VC4_PACKET_STORE_TILE_BUFFER_GENERAL and
- * VC4_PACKET_TILE_RENDERING_MODE_CONFIG.
-*/
+ 
 #define VC4_TILING_FORMAT_LINEAR    0
 #define VC4_TILING_FORMAT_T         1
 #define VC4_TILING_FORMAT_LT        2
-/** @} */
+ 
 
-/** @{
- *
- * low bits of VC4_PACKET_STORE_FULL_RES_TILE_BUFFER and
- * VC4_PACKET_LOAD_FULL_RES_TILE_BUFFER.
- */
+ 
 #define VC4_LOADSTORE_FULL_RES_EOF                     BIT(3)
 #define VC4_LOADSTORE_FULL_RES_DISABLE_CLEAR_ALL       BIT(2)
 #define VC4_LOADSTORE_FULL_RES_DISABLE_ZS              BIT(1)
 #define VC4_LOADSTORE_FULL_RES_DISABLE_COLOR           BIT(0)
 
-/** @{
- *
- * low bits of VC4_PACKET_STORE_FULL_RES_TILE_BUFFER and
- * VC4_PACKET_LOAD_FULL_RES_TILE_BUFFER.
- */
+ 
 #define VC4_LOADSTORE_FULL_RES_EOF                     BIT(3)
 #define VC4_LOADSTORE_FULL_RES_DISABLE_CLEAR_ALL       BIT(2)
 #define VC4_LOADSTORE_FULL_RES_DISABLE_ZS              BIT(1)
 #define VC4_LOADSTORE_FULL_RES_DISABLE_COLOR           BIT(0)
 
-/** @{
- *
- * byte 2 of VC4_PACKET_STORE_TILE_BUFFER_GENERAL and
- * VC4_PACKET_LOAD_TILE_BUFFER_GENERAL (low bits of the address)
- */
+ 
 
 #define VC4_LOADSTORE_TILE_BUFFER_EOF                  BIT(3)
 #define VC4_LOADSTORE_TILE_BUFFER_DISABLE_FULL_VG_MASK BIT(2)
 #define VC4_LOADSTORE_TILE_BUFFER_DISABLE_FULL_ZS      BIT(1)
 #define VC4_LOADSTORE_TILE_BUFFER_DISABLE_FULL_COLOR   BIT(0)
 
-/** @} */
+ 
 
-/** @{
- *
- * byte 0-1 of VC4_PACKET_STORE_TILE_BUFFER_GENERAL and
- * VC4_PACKET_LOAD_TILE_BUFFER_GENERAL
- */
+ 
 #define VC4_STORE_TILE_BUFFER_DISABLE_VG_MASK_CLEAR BIT(15)
 #define VC4_STORE_TILE_BUFFER_DISABLE_ZS_CLEAR     BIT(14)
 #define VC4_STORE_TILE_BUFFER_DISABLE_COLOR_CLEAR  BIT(13)
@@ -185,20 +141,16 @@ enum vc4_packet {
 #define VC4_LOADSTORE_TILE_BUFFER_RGBA8888         0
 #define VC4_LOADSTORE_TILE_BUFFER_BGR565_DITHER    1
 #define VC4_LOADSTORE_TILE_BUFFER_BGR565           2
-/** @} */
+ 
 
-/** @{
- *
- * byte 0 of VC4_PACKET_STORE_TILE_BUFFER_GENERAL and
- * VC4_PACKET_LOAD_TILE_BUFFER_GENERAL
- */
+ 
 #define VC4_STORE_TILE_BUFFER_MODE_MASK            VC4_MASK(7, 6)
 #define VC4_STORE_TILE_BUFFER_MODE_SHIFT           6
 #define VC4_STORE_TILE_BUFFER_MODE_SAMPLE0         (0 << 6)
 #define VC4_STORE_TILE_BUFFER_MODE_DECIMATE_X4     (1 << 6)
 #define VC4_STORE_TILE_BUFFER_MODE_DECIMATE_X16    (2 << 6)
 
-/** The values of the field are VC4_TILING_FORMAT_* */
+ 
 #define VC4_LOADSTORE_TILE_BUFFER_TILING_MASK      VC4_MASK(5, 4)
 #define VC4_LOADSTORE_TILE_BUFFER_TILING_SHIFT     4
 
@@ -210,25 +162,25 @@ enum vc4_packet {
 #define VC4_LOADSTORE_TILE_BUFFER_Z                3
 #define VC4_LOADSTORE_TILE_BUFFER_VG_MASK          4
 #define VC4_LOADSTORE_TILE_BUFFER_FULL             5
-/** @} */
+ 
 
 #define VC4_INDEX_BUFFER_U8                        (0 << 4)
 #define VC4_INDEX_BUFFER_U16                       (1 << 4)
 
-/* This flag is only present in NV shader state. */
+ 
 #define VC4_SHADER_FLAG_SHADED_CLIP_COORDS         BIT(3)
 #define VC4_SHADER_FLAG_ENABLE_CLIPPING            BIT(2)
 #define VC4_SHADER_FLAG_VS_POINT_SIZE              BIT(1)
 #define VC4_SHADER_FLAG_FS_SINGLE_THREAD           BIT(0)
 
-/** @{ byte 2 of config bits. */
+ 
 #define VC4_CONFIG_BITS_EARLY_Z_UPDATE             BIT(1)
 #define VC4_CONFIG_BITS_EARLY_Z                    BIT(0)
-/** @} */
+ 
 
-/** @{ byte 1 of config bits. */
+ 
 #define VC4_CONFIG_BITS_Z_UPDATE                   BIT(7)
-/** same values in this 3-bit field as PIPE_FUNC_* */
+ 
 #define VC4_CONFIG_BITS_DEPTH_FUNC_SHIFT           4
 #define VC4_CONFIG_BITS_COVERAGE_READ_LEAVE        BIT(3)
 
@@ -238,9 +190,9 @@ enum vc4_packet {
 #define VC4_CONFIG_BITS_COVERAGE_UPDATE_ZERO       (3 << 1)
 
 #define VC4_CONFIG_BITS_COVERAGE_PIPE_SELECT       BIT(0)
-/** @} */
+ 
 
-/** @{ byte 0 of config bits. */
+ 
 #define VC4_CONFIG_BITS_RASTERIZER_OVERSAMPLE_NONE (0 << 6)
 #define VC4_CONFIG_BITS_RASTERIZER_OVERSAMPLE_4X   (1 << 6)
 #define VC4_CONFIG_BITS_RASTERIZER_OVERSAMPLE_16X  (2 << 6)
@@ -250,9 +202,9 @@ enum vc4_packet {
 #define VC4_CONFIG_BITS_CW_PRIMITIVES              BIT(2)
 #define VC4_CONFIG_BITS_ENABLE_PRIM_BACK           BIT(1)
 #define VC4_CONFIG_BITS_ENABLE_PRIM_FRONT          BIT(0)
-/** @} */
+ 
 
-/** @{ bits in the last u8 of VC4_PACKET_TILE_BINNING_MODE_CONFIG */
+ 
 #define VC4_BIN_CONFIG_DB_NON_MS                   BIT(7)
 
 #define VC4_BIN_CONFIG_ALLOC_BLOCK_SIZE_MASK       VC4_MASK(6, 5)
@@ -272,16 +224,16 @@ enum vc4_packet {
 #define VC4_BIN_CONFIG_AUTO_INIT_TSDA              BIT(2)
 #define VC4_BIN_CONFIG_TILE_BUFFER_64BIT           BIT(1)
 #define VC4_BIN_CONFIG_MS_MODE_4X                  BIT(0)
-/** @} */
+ 
 
-/** @{ bits in the last u16 of VC4_PACKET_TILE_RENDERING_MODE_CONFIG */
+ 
 #define VC4_RENDER_CONFIG_DB_NON_MS                BIT(12)
 #define VC4_RENDER_CONFIG_EARLY_Z_COVERAGE_DISABLE BIT(11)
 #define VC4_RENDER_CONFIG_EARLY_Z_DIRECTION_G      BIT(10)
 #define VC4_RENDER_CONFIG_COVERAGE_MODE            BIT(9)
 #define VC4_RENDER_CONFIG_ENABLE_VG_MASK           BIT(8)
 
-/** The values of the field are VC4_TILING_FORMAT_* */
+ 
 #define VC4_RENDER_CONFIG_MEMORY_FORMAT_MASK       VC4_MASK(7, 6)
 #define VC4_RENDER_CONFIG_MEMORY_FORMAT_SHIFT      6
 
@@ -378,22 +330,22 @@ enum vc4_texture_data_type {
 # define VC4_TEX_P2_PTYPE_CHILD_IMAGE_DIMENSIONS   2
 # define VC4_TEX_P2_PTYPE_CHILD_IMAGE_OFFSETS      3
 
-/* VC4_TEX_P2_PTYPE_CUBE_MAP_STRIDE bits */
+ 
 #define VC4_TEX_P2_CMST_MASK                       VC4_MASK(29, 12)
 #define VC4_TEX_P2_CMST_SHIFT                      12
 #define VC4_TEX_P2_BSLOD_MASK                      VC4_MASK(0, 0)
 #define VC4_TEX_P2_BSLOD_SHIFT                     0
 
-/* VC4_TEX_P2_PTYPE_CHILD_IMAGE_DIMENSIONS */
+ 
 #define VC4_TEX_P2_CHEIGHT_MASK                    VC4_MASK(22, 12)
 #define VC4_TEX_P2_CHEIGHT_SHIFT                   12
 #define VC4_TEX_P2_CWIDTH_MASK                     VC4_MASK(10, 0)
 #define VC4_TEX_P2_CWIDTH_SHIFT                    0
 
-/* VC4_TEX_P2_PTYPE_CHILD_IMAGE_OFFSETS */
+ 
 #define VC4_TEX_P2_CYOFF_MASK                      VC4_MASK(22, 12)
 #define VC4_TEX_P2_CYOFF_SHIFT                     12
 #define VC4_TEX_P2_CXOFF_MASK                      VC4_MASK(10, 0)
 #define VC4_TEX_P2_CXOFF_SHIFT                     0
 
-#endif /* VC4_PACKET_H */
+#endif  

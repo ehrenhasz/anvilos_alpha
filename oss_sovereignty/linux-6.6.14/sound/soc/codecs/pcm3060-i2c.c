@@ -1,8 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// PCM3060 I2C driver
-//
-// Copyright (C) 2018 Kirill Marinushkin <kmarinushkin@birdec.com>
+
+
+
+
+
 
 #include <linux/i2c.h>
 #include <linux/module.h>
@@ -39,14 +39,14 @@ static const struct of_device_id pcm3060_of_match[] = {
 	{ },
 };
 MODULE_DEVICE_TABLE(of, pcm3060_of_match);
-#endif /* CONFIG_OF */
+#endif  
 
 static struct i2c_driver pcm3060_i2c_driver = {
 	.driver = {
 		.name = "pcm3060",
 #ifdef CONFIG_OF
 		.of_match_table = pcm3060_of_match,
-#endif /* CONFIG_OF */
+#endif  
 	},
 	.id_table = pcm3060_i2c_id,
 	.probe = pcm3060_i2c_probe,

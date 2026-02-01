@@ -1,12 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2019 Hangzhou C-SKY Microsystems co.,ltd.
- * Mapping of DWARF debug register numbers into register names.
- */
+
+ 
 
 #include <stddef.h>
-#include <errno.h> /* for EINVAL */
-#include <string.h> /* for strcmp */
+#include <errno.h>  
+#include <string.h>  
 #include <dwarf-regs.h>
 
 struct pt_regs_dwarfnum {

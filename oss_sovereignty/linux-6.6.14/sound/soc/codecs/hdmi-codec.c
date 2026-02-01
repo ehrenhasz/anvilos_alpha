@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * ALSA SoC codec for HDMI encoder drivers
- * Copyright (C) 2015 Texas Instruments Incorporated - https://www.ti.com/
- * Author: Jyri Sarha <jsarha@ti.com>
- */
+
+ 
 #include <linux/module.h>
 #include <linux/string.h>
 #include <sound/core.h>
@@ -16,206 +12,188 @@
 #include <sound/hdmi-codec.h>
 #include <sound/pcm_iec958.h>
 
-#include <drm/drm_crtc.h> /* This is only to get MAX_ELD_BYTES */
+#include <drm/drm_crtc.h>  
 
 #define HDMI_CODEC_CHMAP_IDX_UNKNOWN  -1
 
-/*
- * CEA speaker placement for HDMI 1.4:
- *
- *  FL  FLC   FC   FRC   FR   FRW
- *
- *                                  LFE
- *
- *  RL  RLC   RC   RRC   RR
- *
- *  Speaker placement has to be extended to support HDMI 2.0
- */
+ 
 enum hdmi_codec_cea_spk_placement {
-	FL  = BIT(0),	/* Front Left           */
-	FC  = BIT(1),	/* Front Center         */
-	FR  = BIT(2),	/* Front Right          */
-	FLC = BIT(3),	/* Front Left Center    */
-	FRC = BIT(4),	/* Front Right Center   */
-	RL  = BIT(5),	/* Rear Left            */
-	RC  = BIT(6),	/* Rear Center          */
-	RR  = BIT(7),	/* Rear Right           */
-	RLC = BIT(8),	/* Rear Left Center     */
-	RRC = BIT(9),	/* Rear Right Center    */
-	LFE = BIT(10),	/* Low Frequency Effect */
+	FL  = BIT(0),	 
+	FC  = BIT(1),	 
+	FR  = BIT(2),	 
+	FLC = BIT(3),	 
+	FRC = BIT(4),	 
+	RL  = BIT(5),	 
+	RC  = BIT(6),	 
+	RR  = BIT(7),	 
+	RLC = BIT(8),	 
+	RRC = BIT(9),	 
+	LFE = BIT(10),	 
 };
 
-/*
- * cea Speaker allocation structure
- */
+ 
 struct hdmi_codec_cea_spk_alloc {
 	const int ca_id;
 	unsigned int n_ch;
 	unsigned long mask;
 };
 
-/* Channel maps  stereo HDMI */
+ 
 static const struct snd_pcm_chmap_elem hdmi_codec_stereo_chmaps[] = {
 	{ .channels = 2,
 	  .map = { SNDRV_CHMAP_FL, SNDRV_CHMAP_FR } },
 	{ }
 };
 
-/* Channel maps for multi-channel playbacks, up to 8 n_ch */
+ 
 static const struct snd_pcm_chmap_elem hdmi_codec_8ch_chmaps[] = {
-	{ .channels = 2, /* CA_ID 0x00 */
+	{ .channels = 2,  
 	  .map = { SNDRV_CHMAP_FL, SNDRV_CHMAP_FR } },
-	{ .channels = 4, /* CA_ID 0x01 */
+	{ .channels = 4,  
 	  .map = { SNDRV_CHMAP_FL, SNDRV_CHMAP_FR, SNDRV_CHMAP_LFE,
 		   SNDRV_CHMAP_NA } },
-	{ .channels = 4, /* CA_ID 0x02 */
+	{ .channels = 4,  
 	  .map = { SNDRV_CHMAP_FL, SNDRV_CHMAP_FR, SNDRV_CHMAP_NA,
 		   SNDRV_CHMAP_FC } },
-	{ .channels = 4, /* CA_ID 0x03 */
+	{ .channels = 4,  
 	  .map = { SNDRV_CHMAP_FL, SNDRV_CHMAP_FR, SNDRV_CHMAP_LFE,
 		   SNDRV_CHMAP_FC } },
-	{ .channels = 6, /* CA_ID 0x04 */
+	{ .channels = 6,  
 	  .map = { SNDRV_CHMAP_FL, SNDRV_CHMAP_FR, SNDRV_CHMAP_NA,
 		   SNDRV_CHMAP_NA, SNDRV_CHMAP_RC, SNDRV_CHMAP_NA } },
-	{ .channels = 6, /* CA_ID 0x05 */
+	{ .channels = 6,  
 	  .map = { SNDRV_CHMAP_FL, SNDRV_CHMAP_FR, SNDRV_CHMAP_LFE,
 		   SNDRV_CHMAP_NA, SNDRV_CHMAP_RC, SNDRV_CHMAP_NA } },
-	{ .channels = 6, /* CA_ID 0x06 */
+	{ .channels = 6,  
 	  .map = { SNDRV_CHMAP_FL, SNDRV_CHMAP_FR, SNDRV_CHMAP_NA,
 		   SNDRV_CHMAP_FC, SNDRV_CHMAP_RC, SNDRV_CHMAP_NA } },
-	{ .channels = 6, /* CA_ID 0x07 */
+	{ .channels = 6,  
 	  .map = { SNDRV_CHMAP_FL, SNDRV_CHMAP_FR, SNDRV_CHMAP_LFE,
 		   SNDRV_CHMAP_FC, SNDRV_CHMAP_RC, SNDRV_CHMAP_NA } },
-	{ .channels = 6, /* CA_ID 0x08 */
+	{ .channels = 6,  
 	  .map = { SNDRV_CHMAP_FL, SNDRV_CHMAP_FR, SNDRV_CHMAP_NA,
 		   SNDRV_CHMAP_NA, SNDRV_CHMAP_RL, SNDRV_CHMAP_RR } },
-	{ .channels = 6, /* CA_ID 0x09 */
+	{ .channels = 6,  
 	  .map = { SNDRV_CHMAP_FL, SNDRV_CHMAP_FR, SNDRV_CHMAP_LFE,
 		   SNDRV_CHMAP_NA, SNDRV_CHMAP_RL, SNDRV_CHMAP_RR } },
-	{ .channels = 6, /* CA_ID 0x0A */
+	{ .channels = 6,  
 	  .map = { SNDRV_CHMAP_FL, SNDRV_CHMAP_FR, SNDRV_CHMAP_NA,
 		   SNDRV_CHMAP_FC, SNDRV_CHMAP_RL, SNDRV_CHMAP_RR } },
-	{ .channels = 6, /* CA_ID 0x0B */
+	{ .channels = 6,  
 	  .map = { SNDRV_CHMAP_FL, SNDRV_CHMAP_FR, SNDRV_CHMAP_LFE,
 		   SNDRV_CHMAP_FC, SNDRV_CHMAP_RL, SNDRV_CHMAP_RR } },
-	{ .channels = 8, /* CA_ID 0x0C */
+	{ .channels = 8,  
 	  .map = { SNDRV_CHMAP_FL, SNDRV_CHMAP_FR, SNDRV_CHMAP_NA,
 		   SNDRV_CHMAP_NA, SNDRV_CHMAP_RL, SNDRV_CHMAP_RR,
 		   SNDRV_CHMAP_RC, SNDRV_CHMAP_NA } },
-	{ .channels = 8, /* CA_ID 0x0D */
+	{ .channels = 8,  
 	  .map = { SNDRV_CHMAP_FL, SNDRV_CHMAP_FR, SNDRV_CHMAP_LFE,
 		   SNDRV_CHMAP_NA, SNDRV_CHMAP_RL, SNDRV_CHMAP_RR,
 		   SNDRV_CHMAP_RC, SNDRV_CHMAP_NA } },
-	{ .channels = 8, /* CA_ID 0x0E */
+	{ .channels = 8,  
 	  .map = { SNDRV_CHMAP_FL, SNDRV_CHMAP_FR, SNDRV_CHMAP_NA,
 		   SNDRV_CHMAP_FC, SNDRV_CHMAP_RL, SNDRV_CHMAP_RR,
 		   SNDRV_CHMAP_RC, SNDRV_CHMAP_NA } },
-	{ .channels = 8, /* CA_ID 0x0F */
+	{ .channels = 8,  
 	  .map = { SNDRV_CHMAP_FL, SNDRV_CHMAP_FR, SNDRV_CHMAP_LFE,
 		   SNDRV_CHMAP_FC, SNDRV_CHMAP_RL, SNDRV_CHMAP_RR,
 		   SNDRV_CHMAP_RC, SNDRV_CHMAP_NA } },
-	{ .channels = 8, /* CA_ID 0x10 */
+	{ .channels = 8,  
 	  .map = { SNDRV_CHMAP_FL, SNDRV_CHMAP_FR, SNDRV_CHMAP_NA,
 		   SNDRV_CHMAP_NA, SNDRV_CHMAP_RL, SNDRV_CHMAP_RR,
 		   SNDRV_CHMAP_RLC, SNDRV_CHMAP_RRC } },
-	{ .channels = 8, /* CA_ID 0x11 */
+	{ .channels = 8,  
 	  .map = { SNDRV_CHMAP_FL, SNDRV_CHMAP_FR, SNDRV_CHMAP_LFE,
 		   SNDRV_CHMAP_NA, SNDRV_CHMAP_RL, SNDRV_CHMAP_RR,
 		   SNDRV_CHMAP_RLC, SNDRV_CHMAP_RRC } },
-	{ .channels = 8, /* CA_ID 0x12 */
+	{ .channels = 8,  
 	  .map = { SNDRV_CHMAP_FL, SNDRV_CHMAP_FR, SNDRV_CHMAP_NA,
 		   SNDRV_CHMAP_FC, SNDRV_CHMAP_RL, SNDRV_CHMAP_RR,
 		   SNDRV_CHMAP_RLC, SNDRV_CHMAP_RRC } },
-	{ .channels = 8, /* CA_ID 0x13 */
+	{ .channels = 8,  
 	  .map = { SNDRV_CHMAP_FL, SNDRV_CHMAP_FR, SNDRV_CHMAP_LFE,
 		   SNDRV_CHMAP_FC, SNDRV_CHMAP_RL, SNDRV_CHMAP_RR,
 		   SNDRV_CHMAP_RLC, SNDRV_CHMAP_RRC } },
-	{ .channels = 8, /* CA_ID 0x14 */
+	{ .channels = 8,  
 	  .map = { SNDRV_CHMAP_FL, SNDRV_CHMAP_FR, SNDRV_CHMAP_NA,
 		   SNDRV_CHMAP_NA, SNDRV_CHMAP_NA, SNDRV_CHMAP_NA,
 		   SNDRV_CHMAP_FLC, SNDRV_CHMAP_FRC } },
-	{ .channels = 8, /* CA_ID 0x15 */
+	{ .channels = 8,  
 	  .map = { SNDRV_CHMAP_FL, SNDRV_CHMAP_FR, SNDRV_CHMAP_LFE,
 		   SNDRV_CHMAP_NA, SNDRV_CHMAP_NA, SNDRV_CHMAP_NA,
 		   SNDRV_CHMAP_FLC, SNDRV_CHMAP_FRC } },
-	{ .channels = 8, /* CA_ID 0x16 */
+	{ .channels = 8,  
 	  .map = { SNDRV_CHMAP_FL, SNDRV_CHMAP_FR, SNDRV_CHMAP_NA,
 		   SNDRV_CHMAP_FC, SNDRV_CHMAP_NA, SNDRV_CHMAP_NA,
 		   SNDRV_CHMAP_FLC, SNDRV_CHMAP_FRC } },
-	{ .channels = 8, /* CA_ID 0x17 */
+	{ .channels = 8,  
 	  .map = { SNDRV_CHMAP_FL, SNDRV_CHMAP_FR, SNDRV_CHMAP_LFE,
 		   SNDRV_CHMAP_FC, SNDRV_CHMAP_NA, SNDRV_CHMAP_NA,
 		   SNDRV_CHMAP_FLC, SNDRV_CHMAP_FRC } },
-	{ .channels = 8, /* CA_ID 0x18 */
+	{ .channels = 8,  
 	  .map = { SNDRV_CHMAP_FL, SNDRV_CHMAP_FR, SNDRV_CHMAP_NA,
 		   SNDRV_CHMAP_NA, SNDRV_CHMAP_NA, SNDRV_CHMAP_NA,
 		   SNDRV_CHMAP_FLC, SNDRV_CHMAP_FRC } },
-	{ .channels = 8, /* CA_ID 0x19 */
+	{ .channels = 8,  
 	  .map = { SNDRV_CHMAP_FL, SNDRV_CHMAP_FR, SNDRV_CHMAP_LFE,
 		   SNDRV_CHMAP_NA, SNDRV_CHMAP_NA, SNDRV_CHMAP_NA,
 		   SNDRV_CHMAP_FLC, SNDRV_CHMAP_FRC } },
-	{ .channels = 8, /* CA_ID 0x1A */
+	{ .channels = 8,  
 	  .map = { SNDRV_CHMAP_FL, SNDRV_CHMAP_FR, SNDRV_CHMAP_NA,
 		   SNDRV_CHMAP_FC, SNDRV_CHMAP_NA, SNDRV_CHMAP_NA,
 		   SNDRV_CHMAP_FLC, SNDRV_CHMAP_FRC } },
-	{ .channels = 8, /* CA_ID 0x1B */
+	{ .channels = 8,  
 	  .map = { SNDRV_CHMAP_FL, SNDRV_CHMAP_FR, SNDRV_CHMAP_LFE,
 		   SNDRV_CHMAP_FC, SNDRV_CHMAP_NA, SNDRV_CHMAP_NA,
 		   SNDRV_CHMAP_FLC, SNDRV_CHMAP_FRC } },
-	{ .channels = 8, /* CA_ID 0x1C */
+	{ .channels = 8,  
 	  .map = { SNDRV_CHMAP_FL, SNDRV_CHMAP_FR, SNDRV_CHMAP_NA,
 		   SNDRV_CHMAP_NA, SNDRV_CHMAP_NA, SNDRV_CHMAP_NA,
 		   SNDRV_CHMAP_FLC, SNDRV_CHMAP_FRC } },
-	{ .channels = 8, /* CA_ID 0x1D */
+	{ .channels = 8,  
 	  .map = { SNDRV_CHMAP_FL, SNDRV_CHMAP_FR, SNDRV_CHMAP_LFE,
 		   SNDRV_CHMAP_NA, SNDRV_CHMAP_NA, SNDRV_CHMAP_NA,
 		   SNDRV_CHMAP_FLC, SNDRV_CHMAP_FRC } },
-	{ .channels = 8, /* CA_ID 0x1E */
+	{ .channels = 8,  
 	  .map = { SNDRV_CHMAP_FL, SNDRV_CHMAP_FR, SNDRV_CHMAP_NA,
 		   SNDRV_CHMAP_FC, SNDRV_CHMAP_NA, SNDRV_CHMAP_NA,
 		   SNDRV_CHMAP_FLC, SNDRV_CHMAP_FRC } },
-	{ .channels = 8, /* CA_ID 0x1F */
+	{ .channels = 8,  
 	  .map = { SNDRV_CHMAP_FL, SNDRV_CHMAP_FR, SNDRV_CHMAP_LFE,
 		   SNDRV_CHMAP_FC, SNDRV_CHMAP_NA, SNDRV_CHMAP_NA,
 		   SNDRV_CHMAP_FLC, SNDRV_CHMAP_FRC } },
 	{ }
 };
 
-/*
- * hdmi_codec_channel_alloc: speaker configuration available for CEA
- *
- * This is an ordered list that must match with hdmi_codec_8ch_chmaps struct
- * The preceding ones have better chances to be selected by
- * hdmi_codec_get_ch_alloc_table_idx().
- */
+ 
 static const struct hdmi_codec_cea_spk_alloc hdmi_codec_channel_alloc[] = {
 	{ .ca_id = 0x00, .n_ch = 2,
 	  .mask = FL | FR},
-	/* 2.1 */
+	 
 	{ .ca_id = 0x01, .n_ch = 4,
 	  .mask = FL | FR | LFE},
-	/* Dolby Surround */
+	 
 	{ .ca_id = 0x02, .n_ch = 4,
 	  .mask = FL | FR | FC },
-	/* surround51 */
+	 
 	{ .ca_id = 0x0b, .n_ch = 6,
 	  .mask = FL | FR | LFE | FC | RL | RR},
-	/* surround40 */
+	 
 	{ .ca_id = 0x08, .n_ch = 6,
 	  .mask = FL | FR | RL | RR },
-	/* surround41 */
+	 
 	{ .ca_id = 0x09, .n_ch = 6,
 	  .mask = FL | FR | LFE | RL | RR },
-	/* surround50 */
+	 
 	{ .ca_id = 0x0a, .n_ch = 6,
 	  .mask = FL | FR | FC | RL | RR },
-	/* 6.1 */
+	 
 	{ .ca_id = 0x0f, .n_ch = 8,
 	  .mask = FL | FR | LFE | FC | RL | RR | RC },
-	/* surround71 */
+	 
 	{ .ca_id = 0x13, .n_ch = 8,
 	  .mask = FL | FR | LFE | FC | RL | RR | RLC | RRC },
-	/* others */
+	 
 	{ .ca_id = 0x03, .n_ch = 8,
 	  .mask = FL | FR | LFE | FC },
 	{ .ca_id = 0x04, .n_ch = 8,
@@ -331,7 +309,7 @@ static void hdmi_codec_eld_chmap(struct hdmi_codec_priv *hcp)
 	spk_alloc = drm_eld_get_spk_alloc(hcp->eld);
 	spk_mask = hdmi_codec_spk_mask_from_alloc(spk_alloc);
 
-	/* Detect if only stereo supported, else return 8 channels mappings */
+	 
 	if ((spk_mask & ~(FL | FR)) && hcp->chmap_info->max_channels > 2)
 		hcp->chmap_info->chmap = hdmi_codec_8ch_chmaps;
 	else
@@ -350,7 +328,7 @@ static int hdmi_codec_get_ch_alloc_table_idx(struct hdmi_codec_priv *hcp,
 	spk_mask = hdmi_codec_spk_mask_from_alloc(spk_alloc);
 
 	for (i = 0; i < ARRAY_SIZE(hdmi_codec_channel_alloc); i++, cap++) {
-		/* If spk_alloc == 0, HDMI is unplugged return stereo config*/
+		 
 		if (!spk_alloc && cap->ca_id == 0)
 			return i;
 		if (cap->n_ch != channels)
@@ -458,7 +436,7 @@ static int hdmi_codec_startup(struct snd_pcm_substream *substream,
 		if (ret)
 			goto err;
 
-		/* Select chmap supported */
+		 
 		hdmi_codec_eld_chmap(hcp);
 	}
 
@@ -500,7 +478,7 @@ static int hdmi_codec_fill_codec_params(struct snd_soc_dai *dai,
 	bool pcm_audio = !(hcp->iec_status[0] & IEC958_AES0_NONAUDIO);
 
 	if (pcm_audio) {
-		/* Select a channel allocation that matches with ELD and pcm channels */
+		 
 		idx = hdmi_codec_get_ch_alloc_table_idx(hcp, channels);
 
 		if (idx < 0) {
@@ -625,7 +603,7 @@ static int hdmi_codec_i2s_set_fmt(struct snd_soc_dai *dai,
 {
 	struct hdmi_codec_daifmt *cf = snd_soc_dai_dma_data_get_playback(dai);
 
-	/* Reset daifmt */
+	 
 	memset(cf, 0, sizeof(*cf));
 
 	switch (fmt & SND_SOC_DAIFMT_CLOCK_PROVIDER_MASK) {
@@ -691,12 +669,7 @@ static int hdmi_codec_mute(struct snd_soc_dai *dai, int mute, int direction)
 {
 	struct hdmi_codec_priv *hcp = snd_soc_dai_get_drvdata(dai);
 
-	/*
-	 * ignore if direction was CAPTURE
-	 * and it had .no_capture_mute flag
-	 * see
-	 *	snd_soc_dai_digital_mute()
-	 */
+	 
 	if (hcp->hcd.ops->mute_stream &&
 	    (direction == SNDRV_PCM_STREAM_PLAYBACK ||
 	     !hcp->hcd.ops->no_capture_mute))
@@ -707,13 +680,7 @@ static int hdmi_codec_mute(struct snd_soc_dai *dai, int mute, int direction)
 	return -ENOTSUPP;
 }
 
-/*
- * This driver can select all SND_SOC_DAIFMT_CBx_CFx,
- * but need to be selected from Sound Card, not be auto selected.
- * Because it might be used from other driver.
- * For example,
- *	${LINUX}/drivers/gpu/drm/bridge/synopsys/dw-hdmi-i2s-audio.c
- */
+ 
 static u64 hdmi_codec_formats =
 	SND_SOC_POSSIBLE_DAIFMT_NB_NF	|
 	SND_SOC_POSSIBLE_DAIFMT_NB_IF	|
@@ -734,14 +701,7 @@ static u64 hdmi_codec_formats =
 #define SPDIF_FORMATS	(SNDRV_PCM_FMTBIT_S16_LE | SNDRV_PCM_FMTBIT_S20_3LE |\
 			 SNDRV_PCM_FMTBIT_S24_3LE | SNDRV_PCM_FMTBIT_S24_LE)
 
-/*
- * This list is only for formats allowed on the I2S bus. So there is
- * some formats listed that are not supported by HDMI interface. For
- * instance allowing the 32-bit formats enables 24-precision with CPU
- * DAIs that do not support 24-bit formats. If the extra formats cause
- * problems, we should add the video side driver an option to disable
- * them.
- */
+ 
 #define I2S_FORMATS	(SNDRV_PCM_FMTBIT_S16_LE | SNDRV_PCM_FMTBIT_S20_3LE |\
 			 SNDRV_PCM_FMTBIT_S24_3LE | SNDRV_PCM_FMTBIT_S24_LE |\
 			 SNDRV_PCM_FMTBIT_S32_LE | SNDRV_PCM_FMTBIT_IEC958_SUBFRAME_LE)
@@ -785,18 +745,18 @@ static int hdmi_codec_pcm_new(struct snd_soc_pcm_runtime *rtd,
 	if (ret < 0)
 		return ret;
 
-	/* override handlers */
+	 
 	hcp->chmap_info->private_data = hcp;
 	hcp->chmap_info->kctl->get = hdmi_codec_chmap_ctl_get;
 
-	/* default chmap supported is stereo */
+	 
 	hcp->chmap_info->chmap = hdmi_codec_stereo_chmaps;
 	hcp->chmap_idx = HDMI_CODEC_CHMAP_IDX_UNKNOWN;
 
 	for (i = 0; i < ARRAY_SIZE(hdmi_codec_controls); i++) {
 		struct snd_kcontrol *kctl;
 
-		/* add ELD ctl with the device number corresponding to the PCM stream */
+		 
 		kctl = snd_ctl_new1(&hdmi_codec_controls[i], dai->component);
 		if (!kctl)
 			return -ENOMEM;
@@ -828,7 +788,7 @@ static int hdmi_dai_probe(struct snd_soc_dai *dai)
 
 	dapm = snd_soc_component_get_dapm(dai->component);
 
-	/* One of the directions might be omitted for unidirectional DAIs */
+	 
 	for (i = 0; i < ARRAY_SIZE(route); i++) {
 		if (!route[i].source || !route[i].sink)
 			continue;
@@ -882,10 +842,7 @@ static int hdmi_codec_set_jack(struct snd_soc_component *component,
 	if (hcp->hcd.ops->hook_plugged_cb) {
 		hcp->jack = jack;
 
-		/*
-		 * Report the initial jack status which may have been provided
-		 * by the parent hdmi driver while the hpd hook was registered.
-		 */
+		 
 		snd_soc_jack_report(jack, hcp->jack_status, SND_JACK_LINEOUT);
 
 		return 0;
@@ -977,7 +934,7 @@ static int hdmi_of_xlate_dai_id(struct snd_soc_component *component,
 				 struct device_node *endpoint)
 {
 	struct hdmi_codec_priv *hcp = snd_soc_component_get_drvdata(component);
-	int ret = -ENOTSUPP; /* see snd_soc_get_dai_id() */
+	int ret = -ENOTSUPP;  
 
 	if (hcp->hcd.ops->get_dai_id)
 		ret = hcp->hcd.ops->get_dai_id(component, endpoint);

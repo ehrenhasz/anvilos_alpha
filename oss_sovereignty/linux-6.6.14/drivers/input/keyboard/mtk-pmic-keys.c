@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2017 MediaTek, Inc.
- *
- * Author: Chen Zhong <chen.zhong@mediatek.com>
- */
+
+ 
 
 #include <linux/input.h>
 #include <linux/interrupt.h>
@@ -53,7 +49,7 @@ struct mtk_pmic_keys_regs {
 struct mtk_pmic_regs {
 	const struct mtk_pmic_keys_regs keys_regs[MTK_PMIC_MAX_KEY_COUNT];
 	u32 pmic_rst_reg;
-	u32 rst_lprst_mask; /* Long-press reset timeout bitmask */
+	u32 rst_lprst_mask;  
 };
 
 static const struct mtk_pmic_regs mt6397_regs = {
@@ -122,7 +118,7 @@ struct mtk_pmic_keys_info {
 	const struct mtk_pmic_keys_regs *regs;
 	unsigned int keycode;
 	int irq;
-	int irq_r; /* optional: release irq if different */
+	int irq_r;  
 	bool wakeup:1;
 };
 
@@ -297,7 +293,7 @@ static const struct of_device_id of_mtk_pmic_keys_match_tbl[] = {
 		.compatible = "mediatek,mt6358-keys",
 		.data = &mt6358_regs,
 	}, {
-		/* sentinel */
+		 
 	}
 };
 MODULE_DEVICE_TABLE(of, of_mtk_pmic_keys_match_tbl);

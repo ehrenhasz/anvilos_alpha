@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * TI ADC MFD driver
- *
- * Copyright (C) 2012 Texas Instruments Incorporated - https://www.ti.com/
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/err.h>
@@ -41,7 +37,7 @@ struct tiadc_dma {
 struct tiadc_device {
 	struct ti_tscadc_dev *mfd_tscadc;
 	struct tiadc_dma dma;
-	struct mutex fifo1_lock; /* to protect fifo access */
+	struct mutex fifo1_lock;  
 	int channels;
 	int total_ch_enabled;
 	u8 channel_line[8];
@@ -81,7 +77,7 @@ static u32 get_adc_chan_step_mask(struct tiadc_device *adc_dev,
 			u32 step;
 
 			step = adc_dev->channel_step[i];
-			/* +1 for the charger */
+			 
 			return 1 << (step + 1);
 		}
 	}
@@ -109,15 +105,7 @@ static void tiadc_step_config(struct iio_dev *indio_dev)
 	unsigned int stepconfig;
 	int i, steps = 0;
 
-	/*
-	 * There are 16 configurable steps and 8 analog input
-	 * lines available which are shared between Touchscreen and ADC.
-	 *
-	 * Steps forwards i.e. from 0 towards 16 are used by ADC
-	 * depending on number of input lines needed.
-	 * Channel would represent which analog input
-	 * needs to be given to ADC to digitalize data.
-	 */
+	 
 	for (i = 0; i < adc_dev->channels; i++) {
 		int chan;
 
@@ -155,12 +143,9 @@ static irqreturn_t tiadc_irq_h(int irq, void *private)
 
 	status = tiadc_readl(adc_dev, REG_IRQSTATUS);
 
-	/*
-	 * ADC and touchscreen share the IRQ line.
-	 * FIFO0 interrupts are used by TSC. Handle FIFO1 IRQs here only
-	 */
+	 
 	if (status & IRQENB_FIFO1OVRRUN) {
-		/* FIFO Overrun. Clear flag. Disable/Enable ADC to recover */
+		 
 		config = tiadc_readl(adc_dev, REG_CTRL);
 		config &= ~(CNTRLREG_SSENB);
 		tiadc_writel(adc_dev, REG_CTRL, config);
@@ -168,11 +153,7 @@ static irqreturn_t tiadc_irq_h(int irq, void *private)
 			     IRQENB_FIFO1OVRRUN | IRQENB_FIFO1UNDRFLW |
 			     IRQENB_FIFO1THRES);
 
-		/*
-		 * Wait for the idle state.
-		 * ADC needs to finish the current conversion
-		 * before disabling the module
-		 */
+		 
 		do {
 			adc_fsm = tiadc_readl(adc_dev, REG_ADCFSM);
 		} while (adc_fsm != 0x10 && count++ < 100);
@@ -180,7 +161,7 @@ static irqreturn_t tiadc_irq_h(int irq, void *private)
 		tiadc_writel(adc_dev, REG_CTRL, (config | CNTRLREG_SSENB));
 		return IRQ_HANDLED;
 	} else if (status & IRQENB_FIFO1THRES) {
-		/* Disable irq and wake worker thread */
+		 
 		tiadc_writel(adc_dev, REG_IRQCLR, IRQENB_FIFO1THRES);
 		return IRQ_WAKE_THREAD;
 	}
@@ -219,7 +200,7 @@ static void tiadc_dma_rx_complete(void *param)
 	int i;
 
 	data = dma->buf + dma->current_period * dma->period_size;
-	dma->current_period = 1 - dma->current_period; /* swap the buffer ID */
+	dma->current_period = 1 - dma->current_period;  
 
 	for (i = 0; i < dma->period_size; i += indio_dev->scan_bytes) {
 		iio_push_to_buffers(indio_dev, data);
@@ -233,19 +214,13 @@ static int tiadc_start_dma(struct iio_dev *indio_dev)
 	struct tiadc_dma *dma = &adc_dev->dma;
 	struct dma_async_tx_descriptor *desc;
 
-	dma->current_period = 0; /* We start to fill period 0 */
+	dma->current_period = 0;  
 
-	/*
-	 * Make the fifo thresh as the multiple of total number of
-	 * channels enabled, so make sure that cyclic DMA period
-	 * length is also a multiple of total number of channels
-	 * enabled. This ensures that no invalid data is reported
-	 * to the stack via iio_push_to_buffers().
-	 */
+	 
 	dma->fifo_thresh = rounddown(FIFO1_THRESHOLD + 1,
 				     adc_dev->total_ch_enabled) - 1;
 
-	/* Make sure that period length is multiple of fifo thresh level */
+	 
 	dma->period_size = rounddown(DMA_BUFFER_SIZE / 2,
 				     (dma->fifo_thresh + 1) * sizeof(u16));
 
@@ -287,7 +262,7 @@ static int tiadc_buffer_preenable(struct iio_dev *indio_dev)
 		     IRQENB_FIFO1THRES | IRQENB_FIFO1OVRRUN |
 		     IRQENB_FIFO1UNDRFLW);
 
-	/* Flush FIFO. Needed in corner cases in simultaneous tsc/adc use */
+	 
 	fifo1count = tiadc_readl(adc_dev, REG_FIFO1CNT);
 	for (i = 0; i < fifo1count; i++)
 		tiadc_readl(adc_dev, REG_FIFO1);
@@ -344,7 +319,7 @@ static int tiadc_buffer_predisable(struct iio_dev *indio_dev)
 		dmaengine_terminate_async(dma->chan);
 	}
 
-	/* Flush FIFO of leftover data in the time it takes to disable adc */
+	 
 	fifo1count = tiadc_readl(adc_dev, REG_FIFO1CNT);
 	for (i = 0; i < fifo1count; i++)
 		tiadc_readl(adc_dev, REG_FIFO1);
@@ -475,7 +450,7 @@ static int tiadc_read_raw(struct iio_dev *indio_dev,
 
 	am335x_tsc_se_set_once(adc_dev->mfd_tscadc, step_en);
 
-	/* Wait for Fifo threshold interrupt */
+	 
 	timeout = jiffies + msecs_to_jiffies(IDLE_TIMEOUT_MS * adc_dev->channels);
 	while (1) {
 		fifo1count = tiadc_readl(adc_dev, REG_FIFO1CNT);
@@ -491,13 +466,7 @@ static int tiadc_read_raw(struct iio_dev *indio_dev,
 
 	map_val = adc_dev->channel_step[chan->scan_index];
 
-	/*
-	 * We check the complete FIFO. We programmed just one entry but in case
-	 * something went wrong we left empty handed (-EAGAIN previously) and
-	 * then the value apeared somehow in the FIFO we would have two entries.
-	 * Therefore we read every item and keep only the latest version of the
-	 * requested channel.
-	 */
+	 
 	for (i = 0; i < fifo1count; i++) {
 		read = tiadc_readl(adc_dev, REG_FIFO1);
 		stepid = read & FIFOREAD_CHNLID_MASK;
@@ -530,7 +499,7 @@ static int tiadc_request_dma(struct platform_device *pdev,
 	struct tiadc_dma	*dma = &adc_dev->dma;
 	dma_cap_mask_t		mask;
 
-	/* Default slave configuration parameters */
+	 
 	dma->conf.direction = DMA_DEV_TO_MEM;
 	dma->conf.src_addr_width = DMA_SLAVE_BUSWIDTH_2_BYTES;
 	dma->conf.src_addr = adc_dev->mfd_tscadc->tscadc_phys_base + REG_FIFO1;
@@ -538,7 +507,7 @@ static int tiadc_request_dma(struct platform_device *pdev,
 	dma_cap_zero(mask);
 	dma_cap_set(DMA_CYCLIC, mask);
 
-	/* Get a channel for RX */
+	 
 	dma->chan = dma_request_chan(adc_dev->mfd_tscadc->dev, "fifo1");
 	if (IS_ERR(dma->chan)) {
 		int ret = PTR_ERR(dma->chan);
@@ -547,7 +516,7 @@ static int tiadc_request_dma(struct platform_device *pdev,
 		return ret;
 	}
 
-	/* RX buffer */
+	 
 	dma->buf = dma_alloc_coherent(dma->chan->device->dev, DMA_BUFFER_SIZE,
 				      &dma->addr, GFP_KERNEL);
 	if (!dma->buf)
@@ -573,7 +542,7 @@ static int tiadc_parse_dt(struct platform_device *pdev,
 	of_property_for_each_u32(node, "ti,adc-channels", prop, cur, val) {
 		adc_dev->channel_line[channels] = val;
 
-		/* Set Default values for optional DT parameters */
+		 
 		adc_dev->open_delay[channels] = STEPCONFIG_OPENDLY;
 		adc_dev->sample_delay[channels] = STEPCONFIG_SAMPLEDLY;
 		adc_dev->step_avg[channels] = 16;
@@ -722,7 +691,7 @@ static int tiadc_resume(struct device *dev)
 	struct tiadc_device *adc_dev = iio_priv(indio_dev);
 	unsigned int restore;
 
-	/* Make sure ADC is powered up */
+	 
 	restore = tiadc_readl(adc_dev, REG_CTRL);
 	restore &= ~CNTRLREG_POWERDOWN;
 	tiadc_writel(adc_dev, REG_CTRL, restore);

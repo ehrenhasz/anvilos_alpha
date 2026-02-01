@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0 or BSD-3-Clause
 
-/* Authors: Bernard Metzler <bmt@zurich.ibm.com> */
-/* Copyright (c) 2008-2019, IBM Corporation */
+
+ 
+ 
 
 #include <linux/errno.h>
 #include <linux/types.h>
@@ -34,9 +34,7 @@ static struct page *siw_get_pblpage(struct siw_mem *mem, u64 addr, int *idx)
 	return NULL;
 }
 
-/*
- * Copy short payload at provided destination payload address
- */
+ 
 static int siw_try_1seg(struct siw_iwarp_tx *c_tx, void *paddr)
 {
 	struct siw_wqe *wqe = &c_tx->wqe_active;
@@ -55,7 +53,7 @@ static int siw_try_1seg(struct siw_iwarp_tx *c_tx, void *paddr)
 		struct siw_mem *mem = wqe->mem[0];
 
 		if (!mem->mem_obj) {
-			/* Kernel client using kva */
+			 
 			memcpy(paddr, ib_virt_dma_to_ptr(sge->laddr), bytes);
 		} else if (c_tx->in_syscall) {
 			if (copy_from_user(paddr, u64_to_user_ptr(sge->laddr),
@@ -107,14 +105,7 @@ static int siw_try_1seg(struct siw_iwarp_tx *c_tx, void *paddr)
 #define PKT_FRAGMENTED 1
 #define PKT_COMPLETE 0
 
-/*
- * siw_qp_prepare_tx()
- *
- * Prepare tx state for sending out one fpdu. Builds complete pkt
- * if no user data or only immediate data are present.
- *
- * returns PKT_COMPLETE if complete pkt built, PKT_FRAGMENTED otherwise.
- */
+ 
 static int siw_qp_prepare_tx(struct siw_iwarp_tx *c_tx)
 {
 	struct siw_wqe *wqe = &c_tx->wqe_active;
@@ -206,7 +197,7 @@ static int siw_qp_prepare_tx(struct siw_iwarp_tx *c_tx)
 		       &iwarp_pktinfo[RDMAP_RDMA_READ_RESP].ctrl,
 		       sizeof(struct iwarp_ctrl));
 
-		/* NBO */
+		 
 		c_tx->pkt.rresp.sink_stag = cpu_to_be32(wqe->sqe.rkey);
 		c_tx->pkt.rresp.sink_to = cpu_to_be64(wqe->sqe.raddr);
 
@@ -232,9 +223,9 @@ static int siw_qp_prepare_tx(struct siw_iwarp_tx *c_tx)
 			c_tx->pkt.ctrl.mpa_len =
 				htons(c_tx->ctrl_len + data - MPA_HDR_SIZE);
 
-			/* Add pad, if needed */
+			 
 			data += -(int)data & 0x3;
-			/* advance CRC location after payload */
+			 
 			crc += data;
 			c_tx->ctrl_len += data;
 
@@ -246,9 +237,7 @@ static int siw_qp_prepare_tx(struct siw_iwarp_tx *c_tx)
 		}
 
 		*(u32 *)crc = 0;
-		/*
-		 * Do complete CRC if enabled and short packet
-		 */
+		 
 		if (c_tx->mpa_crc_hd) {
 			crypto_shash_init(c_tx->mpa_crc_hd);
 			if (crypto_shash_update(c_tx->mpa_crc_hd,
@@ -266,15 +255,7 @@ static int siw_qp_prepare_tx(struct siw_iwarp_tx *c_tx)
 	c_tx->sge_off = 0;
 	c_tx->pbl_idx = 0;
 
-	/*
-	 * Allow direct sending out of user buffer if WR is non signalled
-	 * and payload is over threshold.
-	 * Per RDMA verbs, the application should not change the send buffer
-	 * until the work completed. In iWarp, work completion is only
-	 * local delivery to TCP. TCP may reuse the buffer for
-	 * retransmission. Changing unsent data also breaks the CRC,
-	 * if applied.
-	 */
+	 
 	if (c_tx->zcopy_tx && wqe->bytes >= SENDPAGE_THRESH &&
 	    !(tx_flags(wqe) & SIW_WQE_SIGNALLED))
 		c_tx->use_sendpage = 1;
@@ -284,11 +265,7 @@ static int siw_qp_prepare_tx(struct siw_iwarp_tx *c_tx)
 	return PKT_FRAGMENTED;
 }
 
-/*
- * Send out one complete control type FPDU, or header of FPDU carrying
- * data. Used for fixed sized packets like Read.Requests or zero length
- * SENDs, WRITEs, READ.Responses, or header only.
- */
+ 
 static int siw_tx_ctrl(struct siw_iwarp_tx *c_tx, struct socket *s,
 			      int flags)
 {
@@ -311,15 +288,7 @@ static int siw_tx_ctrl(struct siw_iwarp_tx *c_tx, struct socket *s,
 	return rv;
 }
 
-/*
- * 0copy TCP transmit interface: Use MSG_SPLICE_PAGES.
- *
- * Using sendpage to push page by page appears to be less efficient
- * than using sendmsg, even if data are copied.
- *
- * A general performance limitation might be the extra four bytes
- * trailer checksum segment to be pushed after user data.
- */
+ 
 static int siw_tcp_sendpages(struct socket *s, struct page **page, int offset,
 			     size_t size)
 {
@@ -364,13 +333,7 @@ try_page_again:
 	return sent;
 }
 
-/*
- * siw_0copy_tx()
- *
- * Pushes list of pages to TCP socket. If pages from multiple
- * SGE's, all referenced pages of each SGE are pushed in one
- * shot.
- */
+ 
 static int siw_0copy_tx(struct socket *s, struct page **page,
 			struct siw_sge *sge, unsigned int offset,
 			unsigned int size)
@@ -405,10 +368,7 @@ static void siw_unmap_pages(struct kvec *iov, unsigned long kmap_mask, int len)
 {
 	int i;
 
-	/*
-	 * Work backwards through the array to honor the kmap_local_page()
-	 * ordering requirements.
-	 */
+	 
 	for (i = (len-1); i >= 0; i--) {
 		if (kmap_mask & BIT(i)) {
 			unsigned long addr = (unsigned long)iov[i].iov_base;
@@ -418,21 +378,10 @@ static void siw_unmap_pages(struct kvec *iov, unsigned long kmap_mask, int len)
 	}
 }
 
-/*
- * siw_tx_hdt() tries to push a complete packet to TCP where all
- * packet fragments are referenced by the elements of one iovec.
- * For the data portion, each involved page must be referenced by
- * one extra element. All sge's data can be non-aligned to page
- * boundaries. Two more elements are referencing iWARP header
- * and trailer:
- * MAX_ARRAY = 64KB/PAGE_SIZE + 1 + (2 * (SIW_MAX_SGE - 1) + HDR + TRL
- */
+ 
 #define MAX_ARRAY ((0xffff / PAGE_SIZE) + 1 + (2 * (SIW_MAX_SGE - 1) + 2))
 
-/*
- * Write out iov referencing hdr, data and trailer of current FPDU.
- * Update transmit state dependent on write return status
- */
+ 
 static int siw_tx_hdt(struct siw_iwarp_tx *c_tx, struct socket *s)
 {
 	struct siw_wqe *wqe = &c_tx->wqe_active;
@@ -465,7 +414,7 @@ static int siw_tx_hdt(struct siw_iwarp_tx *c_tx, struct socket *s)
 
 	wqe->processed += data_len;
 
-	while (data_len) { /* walk the list of SGE's */
+	while (data_len) {  
 		unsigned int sge_len = min(sge->length - sge_off, data_len);
 		unsigned int fp_off = (sge->laddr + sge_off) & ~PAGE_MASK;
 		struct siw_mem *mem;
@@ -477,10 +426,7 @@ static int siw_tx_hdt(struct siw_iwarp_tx *c_tx, struct socket *s)
 			is_kva = 1;
 		}
 		if (is_kva && !c_tx->use_sendpage) {
-			/*
-			 * tx from kernel virtual address: either inline data
-			 * or memory region with assigned kernel buffer
-			 */
+			 
 			iov[seg].iov_base =
 				ib_virt_dma_to_ptr(sge->laddr + sge_off);
 			iov[seg].iov_len = sge_len;
@@ -520,7 +466,7 @@ static int siw_tx_hdt(struct siw_iwarp_tx *c_tx, struct socket *s)
 				if (!c_tx->use_sendpage) {
 					void *kaddr = kmap_local_page(p);
 
-					/* Remember for later kunmap() */
+					 
 					kmap_mask |= BIT(seg);
 					iov[seg].iov_base = kaddr + fp_off;
 					iov[seg].iov_len = plen;
@@ -538,10 +484,7 @@ static int siw_tx_hdt(struct siw_iwarp_tx *c_tx, struct socket *s)
 					kunmap_local(kaddr);
 				}
 			} else {
-				/*
-				 * Cast to an uintptr_t to preserve all 64 bits
-				 * in sge->laddr.
-				 */
+				 
 				u64 va = sge->laddr + sge_off;
 
 				page_array[seg] = ib_virt_dma_to_page(va);
@@ -566,7 +509,7 @@ static int siw_tx_hdt(struct siw_iwarp_tx *c_tx, struct socket *s)
 			}
 		}
 sge_done:
-		/* Update SGE variables at end of SGE */
+		 
 		if (sge_off == sge->length &&
 		    (data_len != 0 || wqe->processed < wqe->bytes)) {
 			sge_idx++;
@@ -574,7 +517,7 @@ sge_done:
 			sge_off = 0;
 		}
 	}
-	/* trailer */
+	 
 	if (likely(c_tx->state != SIW_SEND_TRAILER)) {
 		iov[seg].iov_base = &c_tx->trailer.pad[4 - c_tx->pad];
 		iov[seg].iov_len = trl_len = MAX_TRAILER - (4 - c_tx->pad);
@@ -613,7 +556,7 @@ sge_done:
 		siw_unmap_pages(iov, kmap_mask, seg);
 	}
 	if (rv < (int)hdr_len) {
-		/* Not even complete hdr pushed or negative rv */
+		 
 		wqe->processed -= data_len;
 		if (rv >= 0) {
 			c_tx->ctrl_sent += rv;
@@ -624,16 +567,16 @@ sge_done:
 	rv -= hdr_len;
 
 	if (rv >= (int)data_len) {
-		/* all user data pushed to TCP or no data to push */
+		 
 		if (data_len > 0 && wqe->processed < wqe->bytes) {
-			/* Save the current state for next tx */
+			 
 			c_tx->sge_idx = sge_idx;
 			c_tx->sge_off = sge_off;
 			c_tx->pbl_idx = pbl_idx;
 		}
 		rv -= data_len;
 
-		if (rv == trl_len) /* all pushed */
+		if (rv == trl_len)  
 			rv = 0;
 		else {
 			c_tx->state = SIW_SEND_TRAILER;
@@ -644,15 +587,12 @@ sge_done:
 		}
 
 	} else if (data_len > 0) {
-		/* Maybe some user data pushed to TCP */
+		 
 		c_tx->state = SIW_SEND_DATA;
 		wqe->processed -= data_len - rv;
 
 		if (rv) {
-			/*
-			 * Some bytes out. Recompute tx state based
-			 * on old state and bytes pushed
-			 */
+			 
 			unsigned int sge_unsent;
 
 			c_tx->bytes_unsent -= rv;
@@ -691,24 +631,11 @@ static void siw_update_tcpseg(struct siw_iwarp_tx *c_tx,
 	} else {
 		c_tx->tcp_seglen = tp->mss_cache;
 	}
-	/* Loopback may give odd numbers */
+	 
 	c_tx->tcp_seglen &= 0xfffffff8;
 }
 
-/*
- * siw_prepare_fpdu()
- *
- * Prepares transmit context to send out one FPDU if FPDU will contain
- * user data and user data are not immediate data.
- * Computes maximum FPDU length to fill up TCP MSS if possible.
- *
- * @qp:		QP from which to transmit
- * @wqe:	Current WQE causing transmission
- *
- * TODO: Take into account real available sendspace on socket
- *       to avoid header misalignment due to send pausing within
- *       fpdu transmission
- */
+ 
 static void siw_prepare_fpdu(struct siw_qp *qp, struct siw_wqe *wqe)
 {
 	struct siw_iwarp_tx *c_tx = &qp->tx_ctx;
@@ -718,19 +645,17 @@ static void siw_prepare_fpdu(struct siw_qp *qp, struct siw_wqe *wqe)
 		iwarp_pktinfo[__rdmap_get_opcode(&c_tx->pkt.ctrl)].hdr_len;
 	c_tx->ctrl_sent = 0;
 
-	/*
-	 * Update target buffer offset if any
-	 */
+	 
 	if (!(c_tx->pkt.ctrl.ddp_rdmap_ctrl & DDP_FLAG_TAGGED))
-		/* Untagged message */
+		 
 		c_tx->pkt.c_untagged.ddp_mo = cpu_to_be32(wqe->processed);
-	else /* Tagged message */
+	else  
 		c_tx->pkt.c_tagged.ddp_to =
 			cpu_to_be64(wqe->sqe.raddr + wqe->processed);
 
 	data_len = wqe->bytes - wqe->processed;
 	if (data_len + c_tx->ctrl_len + MPA_CRC_SIZE > c_tx->tcp_seglen) {
-		/* Trim DDP payload to fit into current TCP segment */
+		 
 		data_len = c_tx->tcp_seglen - (c_tx->ctrl_len + MPA_CRC_SIZE);
 		c_tx->pkt.ctrl.ddp_rdmap_ctrl &= ~DDP_FLAG_LAST;
 		c_tx->pad = 0;
@@ -743,9 +668,7 @@ static void siw_prepare_fpdu(struct siw_qp *qp, struct siw_wqe *wqe)
 	c_tx->pkt.ctrl.mpa_len =
 		htons(c_tx->ctrl_len + data_len - MPA_HDR_SIZE);
 
-	/*
-	 * Init MPA CRC computation
-	 */
+	 
 	if (c_tx->mpa_crc_hd) {
 		crypto_shash_init(c_tx->mpa_crc_hd);
 		crypto_shash_update(c_tx->mpa_crc_hd, (u8 *)&c_tx->pkt,
@@ -754,18 +677,7 @@ static void siw_prepare_fpdu(struct siw_qp *qp, struct siw_wqe *wqe)
 	}
 }
 
-/*
- * siw_check_sgl_tx()
- *
- * Check permissions for a list of SGE's (SGL).
- * A successful check will have all memory referenced
- * for transmission resolved and assigned to the WQE.
- *
- * @pd:		Protection Domain SGL should belong to
- * @wqe:	WQE to be checked
- * @perms:	requested access permissions
- *
- */
+ 
 
 static int siw_check_sgl_tx(struct ib_pd *pd, struct siw_wqe *wqe,
 			    enum ib_access_flags perms)
@@ -777,9 +689,7 @@ static int siw_check_sgl_tx(struct ib_pd *pd, struct siw_wqe *wqe,
 		return -EINVAL;
 
 	for (i = 0, len = 0; num_sge; num_sge--, i++, sge++) {
-		/*
-		 * rdma verbs: do not check stag for a zero length sge
-		 */
+		 
 		if (sge->length) {
 			int rv = siw_check_sge(pd, sge, &wqe->mem[i], perms, 0,
 					       sge->length);
@@ -792,11 +702,7 @@ static int siw_check_sgl_tx(struct ib_pd *pd, struct siw_wqe *wqe,
 	return len;
 }
 
-/*
- * siw_qp_sq_proc_tx()
- *
- * Process one WQE which needs transmission on the wire.
- */
+ 
 static int siw_qp_sq_proc_tx(struct siw_qp *qp, struct siw_wqe *wqe)
 {
 	struct siw_iwarp_tx *c_tx = &qp->tx_ctx;
@@ -817,11 +723,7 @@ static int siw_qp_sq_proc_tx(struct siw_qp *qp, struct siw_wqe *wqe)
 
 			if (tx_type(wqe) != SIW_OP_READ &&
 			    tx_type(wqe) != SIW_OP_READ_LOCAL_INV) {
-				/*
-				 * Reference memory to be tx'd w/o checking
-				 * access for LOCAL_READ permission, since
-				 * not defined in RDMA core.
-				 */
+				 
 				rv = siw_check_sgl_tx(qp->pd, wqe, 0);
 				if (rv < 0) {
 					if (tx_type(wqe) ==
@@ -875,11 +777,7 @@ next_segment:
 		unsigned int msg_flags;
 
 		if (siw_sq_empty(qp) || !siw_tcp_nagle || burst_len == 1)
-			/*
-			 * End current TCP segment, if SQ runs empty,
-			 * or siw_tcp_nagle is not set, or we bail out
-			 * soon due to no burst credit left.
-			 */
+			 
 			msg_flags = MSG_DONTWAIT;
 		else
 			msg_flags = MSG_DONTWAIT | MSG_MORE;
@@ -896,16 +794,9 @@ next_segment:
 		rv = siw_tx_hdt(c_tx, s);
 	}
 	if (!rv) {
-		/*
-		 * One segment sent. Processing completed if last
-		 * segment, Do next segment otherwise.
-		 */
+		 
 		if (unlikely(c_tx->tx_suspend)) {
-			/*
-			 * Verbs, 6.4.: Try stopping sending after a full
-			 * DDP segment if the connection goes down
-			 * (== peer halfclose)
-			 */
+			 
 			rv = -ECONNABORTED;
 			goto tx_done;
 		}
@@ -970,7 +861,7 @@ static int siw_fastreg_mr(struct ib_pd *pd, struct siw_sqe *sqe)
 		rv = -EINVAL;
 		goto out;
 	}
-	/* Refresh STag since user may have changed key part */
+	 
 	mem->stag = sqe->rkey;
 	mem->perms = sqe->access;
 
@@ -1001,33 +892,7 @@ static int siw_qp_sq_proc_local(struct siw_qp *qp, struct siw_wqe *wqe)
 	return rv;
 }
 
-/*
- * siw_qp_sq_process()
- *
- * Core TX path routine for RDMAP/DDP/MPA using a TCP kernel socket.
- * Sends RDMAP payload for the current SQ WR @wqe of @qp in one or more
- * MPA FPDUs, each containing a DDP segment.
- *
- * SQ processing may occur in user context as a result of posting
- * new WQE's or from siw_sq_work_handler() context. Processing in
- * user context is limited to non-kernel verbs users.
- *
- * SQ processing may get paused anytime, possibly in the middle of a WR
- * or FPDU, if insufficient send space is available. SQ processing
- * gets resumed from siw_sq_work_handler(), if send space becomes
- * available again.
- *
- * Must be called with the QP state read-locked.
- *
- * Note:
- * An outbound RREQ can be satisfied by the corresponding RRESP
- * _before_ it gets assigned to the ORQ. This happens regularly
- * in RDMA READ via loopback case. Since both outbound RREQ and
- * inbound RRESP can be handled by the same CPU, locking the ORQ
- * is dead-lock prone and thus not an option. With that, the
- * RREQ gets assigned to the ORQ _before_ being sent - see
- * siw_activate_tx() - and pulled back in case of send failure.
- */
+ 
 int siw_qp_sq_process(struct siw_qp *qp)
 {
 	struct siw_wqe *wqe = tx_wqe(qp);
@@ -1038,9 +903,7 @@ int siw_qp_sq_process(struct siw_qp *qp)
 	siw_dbg_qp(qp, "enter for type %d\n", tx_type(wqe));
 
 next_wqe:
-	/*
-	 * Stop QP processing if SQ state changed
-	 */
+	 
 	if (unlikely(qp->tx_ctx.tx_suspend)) {
 		siw_dbg_qp(qp, "tx suspended\n");
 		goto done;
@@ -1053,9 +916,7 @@ next_wqe:
 		rv = siw_qp_sq_proc_local(qp, wqe);
 
 	if (!rv) {
-		/*
-		 * WQE processing done
-		 */
+		 
 		switch (tx_type) {
 		case SIW_OP_SEND:
 		case SIW_OP_SEND_REMOTE_INV:
@@ -1072,9 +933,7 @@ next_wqe:
 
 		case SIW_OP_READ:
 		case SIW_OP_READ_LOCAL_INV:
-			/*
-			 * already enqueued to ORQ queue
-			 */
+			 
 			break;
 
 		case SIW_OP_READ_RESPONSE:
@@ -1107,35 +966,20 @@ next_wqe:
 		rv = siw_sq_start(qp);
 		goto done;
 	} else {
-		/*
-		 * WQE processing failed.
-		 * Verbs 8.3.2:
-		 * o It turns any WQE into a signalled WQE.
-		 * o Local catastrophic error must be surfaced
-		 * o QP must be moved into Terminate state: done by code
-		 *   doing socket state change processing
-		 *
-		 * o TODO: Termination message must be sent.
-		 * o TODO: Implement more precise work completion errors,
-		 *         see enum ib_wc_status in ib_verbs.h
-		 */
+		 
 		siw_dbg_qp(qp, "wqe type %d processing failed: %d\n",
 			   tx_type(wqe), rv);
 
 		spin_lock_irqsave(&qp->sq_lock, flags);
-		/*
-		 * RREQ may have already been completed by inbound RRESP!
-		 */
+		 
 		if ((tx_type == SIW_OP_READ ||
 		     tx_type == SIW_OP_READ_LOCAL_INV) && qp->attrs.orq_size) {
-			/* Cleanup pending entry in ORQ */
+			 
 			qp->orq_put--;
 			qp->orq[qp->orq_put % qp->attrs.orq_size].flags = 0;
 		}
 		spin_unlock_irqrestore(&qp->sq_lock, flags);
-		/*
-		 * immediately suspends further TX processing
-		 */
+		 
 		if (!qp->tx_ctx.tx_suspend)
 			siw_qp_cm_drop(qp, 0);
 
@@ -1215,7 +1059,7 @@ int siw_create_tx_threads(void)
 	for_each_online_cpu(cpu) {
 		struct tx_task_t *tx_task;
 
-		/* Skip HT cores */
+		 
 		if (cpu % cpumask_weight(topology_sibling_cpumask(cpu)))
 			continue;
 
@@ -1267,10 +1111,7 @@ int siw_run_sq(void *data)
 			break;
 
 		active = llist_del_all(&tx_task->active);
-		/*
-		 * llist_del_all returns a list with newest entry first.
-		 * Re-order list for fairness among QP's.
-		 */
+		 
 		fifo_list = llist_reverse_order(active);
 		while (fifo_list) {
 			qp = container_of(fifo_list, struct siw_qp, tx_list);

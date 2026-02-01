@@ -1,13 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- *
- * Copyright (c) 2011, Microsoft Corporation.
- *
- * Authors:
- *   Haiyang Zhang <haiyangz@microsoft.com>
- *   Hank Janssen  <hjanssen@microsoft.com>
- *   K. Y. Srinivasan <kys@microsoft.com>
- */
+ 
+ 
 
 #ifndef _HYPERV_NET_H
 #define _HYPERV_NET_H
@@ -18,9 +10,9 @@
 #include <linux/jhash.h>
 #include <net/xdp.h>
 
-/* RSS related */
-#define OID_GEN_RECEIVE_SCALE_CAPABILITIES 0x00010203  /* query only */
-#define OID_GEN_RECEIVE_SCALE_PARAMETERS 0x00010204  /* query and set */
+ 
+#define OID_GEN_RECEIVE_SCALE_CAPABILITIES 0x00010203   
+#define OID_GEN_RECEIVE_SCALE_PARAMETERS 0x00010204   
 
 #define NDIS_OBJECT_TYPE_RSS_CAPABILITIES 0x88
 #define NDIS_OBJECT_TYPE_RSS_PARAMETERS 0x89
@@ -35,7 +27,7 @@ struct ndis_obj_header {
 	u16 size;
 } __packed;
 
-/* ndis_recv_scale_cap/cap_flag */
+ 
 #define NDIS_RSS_CAPS_MESSAGE_SIGNALED_INTERRUPTS 0x01000000
 #define NDIS_RSS_CAPS_CLASSIFICATION_AT_ISR       0x02000000
 #define NDIS_RSS_CAPS_CLASSIFICATION_AT_DPC       0x04000000
@@ -46,7 +38,7 @@ struct ndis_obj_header {
 #define NDIS_RSS_CAPS_HASH_TYPE_TCP_IPV6          0x00000200
 #define NDIS_RSS_CAPS_HASH_TYPE_TCP_IPV6_EX       0x00000400
 
-struct ndis_recv_scale_cap { /* NDIS_RECEIVE_SCALE_CAPABILITIES */
+struct ndis_recv_scale_cap {  
 	struct ndis_obj_header hdr;
 	u32 cap_flag;
 	u32 num_int_msg;
@@ -55,14 +47,14 @@ struct ndis_recv_scale_cap { /* NDIS_RECEIVE_SCALE_CAPABILITIES */
 } __packed;
 
 
-/* ndis_recv_scale_param flags */
+ 
 #define NDIS_RSS_PARAM_FLAG_BASE_CPU_UNCHANGED     0x0001
 #define NDIS_RSS_PARAM_FLAG_HASH_INFO_UNCHANGED    0x0002
 #define NDIS_RSS_PARAM_FLAG_ITABLE_UNCHANGED       0x0004
 #define NDIS_RSS_PARAM_FLAG_HASH_KEY_UNCHANGED     0x0008
 #define NDIS_RSS_PARAM_FLAG_DISABLE_RSS            0x0010
 
-/* Hash info bits */
+ 
 #define NDIS_HASH_FUNC_TOEPLITZ 0x00000001
 #define NDIS_HASH_IPV4          0x00000100
 #define NDIS_HASH_TCP_IPV4      0x00000200
@@ -77,30 +69,28 @@ struct ndis_recv_scale_cap { /* NDIS_RECEIVE_SCALE_CAPABILITIES */
 #define ITAB_NUM 128
 #define ITAB_NUM_MAX 256
 
-struct ndis_recv_scale_param { /* NDIS_RECEIVE_SCALE_PARAMETERS */
+struct ndis_recv_scale_param {  
 	struct ndis_obj_header hdr;
 
-	/* Qualifies the rest of the information */
+	 
 	u16 flag;
 
-	/* The base CPU number to do receive processing. not used */
+	 
 	u16 base_cpu_number;
 
-	/* This describes the hash function and type being enabled */
+	 
 	u32 hashinfo;
 
-	/* The size of indirection table array */
+	 
 	u16 indirect_tabsize;
 
-	/* The offset of the indirection table from the beginning of this
-	 * structure
-	 */
+	 
 	u32 indirect_taboffset;
 
-	/* The size of the hash secret key */
+	 
 	u16 hashkey_size;
 
-	/* The offset of the secret key from the beginning of this structure */
+	 
 	u32 hashkey_offset;
 
 	u32 processor_masks_offset;
@@ -137,28 +127,22 @@ struct ndis_tcp_ip_checksum_info {
 struct ndis_pkt_8021q_info {
 	union {
 		struct {
-			u32 pri:3; /* User Priority */
-			u32 cfi:1; /* Canonical Format ID */
-			u32 vlanid:12; /* VLAN ID */
+			u32 pri:3;  
+			u32 cfi:1;  
+			u32 vlanid:12;  
 			u32 reserved:16;
 		};
 		u32 value;
 	};
 };
 
-/*
- * Represent netvsc packet which contains 1 RNDIS and 1 ethernet frame
- * within the RNDIS
- *
- * The size of this structure is less than 48 bytes and we can now
- * place this structure in the skb->cb field.
- */
+ 
 struct hv_netvsc_packet {
-	/* Bookkeeping stuff */
-	u8 cp_partial; /* partial copy into send buffer */
+	 
+	u8 cp_partial;  
 
-	u8 rmsg_size; /* RNDIS header and PPI size */
-	u8 rmsg_pgcnt; /* page count of RNDIS header and PPI */
+	u8 rmsg_size;  
+	u8 rmsg_pgcnt;  
 	u8 page_buf_cnt;
 
 	u16 q_idx;
@@ -205,14 +189,14 @@ struct rndis_device {
 	struct work_struct mcast_work;
 	u32 filter;
 
-	bool link_state;        /* 0 - link up, 1 - link down */
+	bool link_state;         
 
 	u8 hw_mac_adr[ETH_ALEN];
 	u8 rss_key[NETVSC_HASH_KEYLEN];
 };
 
 
-/* Interface */
+ 
 struct rndis_message;
 struct ndis_offload_params;
 struct netvsc_device;
@@ -290,13 +274,13 @@ int netvsc_switch_datapath(struct net_device *nv_dev, bool vf);
 enum {
 	NVSP_MSG_TYPE_NONE = 0,
 
-	/* Init Messages */
+	 
 	NVSP_MSG_TYPE_INIT			= 1,
 	NVSP_MSG_TYPE_INIT_COMPLETE		= 2,
 
 	NVSP_VERSION_MSG_START			= 100,
 
-	/* Version 1 Messages */
+	 
 	NVSP_MSG1_TYPE_SEND_NDIS_VER		= NVSP_VERSION_MSG_START,
 
 	NVSP_MSG1_TYPE_SEND_RECV_BUF,
@@ -310,7 +294,7 @@ enum {
 	NVSP_MSG1_TYPE_SEND_RNDIS_PKT,
 	NVSP_MSG1_TYPE_SEND_RNDIS_PKT_COMPLETE,
 
-	/* Version 2 messages */
+	 
 	NVSP_MSG2_TYPE_SEND_CHIMNEY_DELEGATED_BUF,
 	NVSP_MSG2_TYPE_SEND_CHIMNEY_DELEGATED_BUF_COMP,
 	NVSP_MSG2_TYPE_REVOKE_CHIMNEY_DELEGATED_BUF,
@@ -343,14 +327,14 @@ enum {
 
 	NVSP_MSG2_MAX = NVSP_MSG2_TYPE_ALLOC_CHIMNEY_HANDLE_COMP,
 
-	/* Version 4 messages */
+	 
 	NVSP_MSG4_TYPE_SEND_VF_ASSOCIATION,
 	NVSP_MSG4_TYPE_SWITCH_DATA_PATH,
 	NVSP_MSG4_TYPE_UPLINK_CONNECT_STATE_DEPRECATED,
 
 	NVSP_MSG4_MAX = NVSP_MSG4_TYPE_UPLINK_CONNECT_STATE_DEPRECATED,
 
-	/* Version 5 messages */
+	 
 	NVSP_MSG5_TYPE_OID_QUERY_EX,
 	NVSP_MSG5_TYPE_OID_QUERY_EX_COMP,
 	NVSP_MSG5_TYPE_SUBCHANNEL,
@@ -358,7 +342,7 @@ enum {
 
 	NVSP_MSG5_MAX = NVSP_MSG5_TYPE_SEND_INDIRECTION_TABLE,
 
-	/* Version 6 messages */
+	 
 	NVSP_MSG6_TYPE_PD_API,
 	NVSP_MSG6_TYPE_PD_POST_BATCH,
 
@@ -381,23 +365,15 @@ struct nvsp_message_header {
 	u32 msg_type;
 };
 
-/* Init Messages */
+ 
 
-/*
- * This message is used by the VSC to initialize the channel after the channels
- * has been opened. This message should never include anything other then
- * versioning (i.e. this message will be the same for ever).
- */
+ 
 struct nvsp_message_init {
 	u32 min_protocol_ver;
 	u32 max_protocol_ver;
 } __packed;
 
-/*
- * This message is used by the VSP to complete the initialization of the
- * channel. This message should never include anything other then versioning
- * (i.e. this message will be the same for ever).
- */
+ 
 struct nvsp_message_init_complete {
 	u32 negotiated_protocol_ver;
 	u32 max_mdl_chain_len;
@@ -409,21 +385,15 @@ union nvsp_message_init_uber {
 	struct nvsp_message_init_complete init_complete;
 } __packed;
 
-/* Version 1 Messages */
+ 
 
-/*
- * This message is used by the VSC to send the NDIS version to the VSP. The VSP
- * can use this information when handling OIDs sent by the VSC.
- */
+ 
 struct nvsp_1_message_send_ndis_version {
 	u32 ndis_major_ver;
 	u32 ndis_minor_ver;
 } __packed;
 
-/*
- * This message is used by the VSC to send a receive buffer to the VSP. The VSP
- * can then use the receive buffer to send data to the VSC.
- */
+ 
 struct nvsp_1_message_send_receive_buffer {
 	u32 gpadl_handle;
 	u16 id;
@@ -436,107 +406,55 @@ struct nvsp_1_receive_buffer_section {
 	u32 end_offset;
 } __packed;
 
-/*
- * This message is used by the VSP to acknowledge a receive buffer send by the
- * VSC. This message must be sent by the VSP before the VSP uses the receive
- * buffer.
- */
+ 
 struct nvsp_1_message_send_receive_buffer_complete {
 	u32 status;
 	u32 num_sections;
 
-	/*
-	 * The receive buffer is split into two parts, a large suballocation
-	 * section and a small suballocation section. These sections are then
-	 * suballocated by a certain size.
-	 */
+	 
 
-	/*
-	 * For example, the following break up of the receive buffer has 6
-	 * large suballocations and 10 small suballocations.
-	 */
+	 
 
-	/*
-	 * |            Large Section          |  |   Small Section   |
-	 * ------------------------------------------------------------
-	 * |     |     |     |     |     |     |  | | | | | | | | | | |
-	 * |                                      |
-	 *  LargeOffset                            SmallOffset
-	 */
+	 
 
 	struct nvsp_1_receive_buffer_section sections[1];
 } __packed;
 
-/*
- * This message is sent by the VSC to revoke the receive buffer.  After the VSP
- * completes this transaction, the vsp should never use the receive buffer
- * again.
- */
+ 
 struct nvsp_1_message_revoke_receive_buffer {
 	u16 id;
 };
 
-/*
- * This message is used by the VSC to send a send buffer to the VSP. The VSC
- * can then use the send buffer to send data to the VSP.
- */
+ 
 struct nvsp_1_message_send_send_buffer {
 	u32 gpadl_handle;
 	u16 id;
 } __packed;
 
-/*
- * This message is used by the VSP to acknowledge a send buffer sent by the
- * VSC. This message must be sent by the VSP before the VSP uses the sent
- * buffer.
- */
+ 
 struct nvsp_1_message_send_send_buffer_complete {
 	u32 status;
 
-	/*
-	 * The VSC gets to choose the size of the send buffer and the VSP gets
-	 * to choose the sections size of the buffer.  This was done to enable
-	 * dynamic reconfigurations when the cost of GPA-direct buffers
-	 * decreases.
-	 */
+	 
 	u32 section_size;
 } __packed;
 
-/*
- * This message is sent by the VSC to revoke the send buffer.  After the VSP
- * completes this transaction, the vsp should never use the send buffer again.
- */
+ 
 struct nvsp_1_message_revoke_send_buffer {
 	u16 id;
 };
 
-/*
- * This message is used by both the VSP and the VSC to send a RNDIS message to
- * the opposite channel endpoint.
- */
+ 
 struct nvsp_1_message_send_rndis_packet {
-	/*
-	 * This field is specified by RNDIS. They assume there's two different
-	 * channels of communication. However, the Network VSP only has one.
-	 * Therefore, the channel travels with the RNDIS packet.
-	 */
+	 
 	u32 channel_type;
 
-	/*
-	 * This field is used to send part or all of the data through a send
-	 * buffer. This values specifies an index into the send buffer. If the
-	 * index is 0xFFFFFFFF, then the send buffer is not being used and all
-	 * of the data was sent through other VMBus mechanisms.
-	 */
+	 
 	u32 send_buf_section_index;
 	u32 send_buf_section_size;
 } __packed;
 
-/*
- * This message is used by both the VSP and the VSC to complete a RNDIS message
- * to the opposite channel endpoint. At this point, the initiator of this
- * message cannot use any resources associated with the original RNDIS packet.
- */
+ 
 struct nvsp_1_message_send_rndis_packet_complete {
 	u32 status;
 };
@@ -559,9 +477,7 @@ union nvsp_1_message_uber {
 } __packed;
 
 
-/*
- * Network VSP protocol version 2 messages:
- */
+ 
 struct nvsp_2_vsc_capability {
 	union {
 		u64 data;
@@ -584,28 +500,26 @@ struct nvsp_2_send_ndis_config {
 	struct nvsp_2_vsc_capability capability;
 } __packed;
 
-/* Allocate receive buffer */
+ 
 struct nvsp_2_alloc_rxbuf {
-	/* Allocation ID to match the allocation request and response */
+	 
 	u32 alloc_id;
 
-	/* Length of the VM shared memory receive buffer that needs to
-	 * be allocated
-	 */
+	 
 	u32 len;
 } __packed;
 
-/* Allocate receive buffer complete */
+ 
 struct nvsp_2_alloc_rxbuf_comp {
-	/* The NDIS_STATUS code for buffer allocation */
+	 
 	u32 status;
 
 	u32 alloc_id;
 
-	/* GPADL handle for the allocated receive buffer */
+	 
 	u32 gpadl_handle;
 
-	/* Receive buffer ID */
+	 
 	u64 recv_buf_id;
 } __packed;
 
@@ -621,10 +535,10 @@ union nvsp_2_message_uber {
 } __packed;
 
 struct nvsp_4_send_vf_association {
-	/* 1: allocated, serial number is valid. 0: not allocated */
+	 
 	u32 allocated;
 
-	/* Serial number of the VF to team with */
+	 
 	u32 serial;
 } __packed;
 
@@ -635,7 +549,7 @@ enum nvsp_vm_datapath {
 };
 
 struct nvsp_4_sw_datapath {
-	u32 active_datapath; /* active data path in VM */
+	u32 active_datapath;  
 } __packed;
 
 union nvsp_4_message_uber {
@@ -656,18 +570,14 @@ struct nvsp_5_subchannel_request {
 
 struct nvsp_5_subchannel_complete {
 	u32 status;
-	u32 num_subchannels; /* Actual number of subchannels allocated */
+	u32 num_subchannels;  
 } __packed;
 
 struct nvsp_5_send_indirect_table {
-	/* The number of entries in the send indirection table */
+	 
 	u32 count;
 
-	/* The offset of the send indirection table from the beginning of
-	 * struct nvsp_message.
-	 * The send indirection table tells which channel to put the send
-	 * traffic on. Each entry is a channel number.
-	 */
+	 
 	u32 offset;
 } __packed;
 
@@ -679,14 +589,14 @@ union nvsp_5_message_uber {
 
 enum nvsp_6_pd_api_op {
 	PD_API_OP_CONFIG = 1,
-	PD_API_OP_SW_DATAPATH, /* Switch Datapath */
+	PD_API_OP_SW_DATAPATH,  
 	PD_API_OP_OPEN_PROVIDER,
 	PD_API_OP_CLOSE_PROVIDER,
 	PD_API_OP_CREATE_QUEUE,
 	PD_API_OP_FLUSH_QUEUE,
 	PD_API_OP_FREE_QUEUE,
-	PD_API_OP_ALLOC_COM_BUF, /* Allocate Common Buffer */
-	PD_API_OP_FREE_COM_BUF, /* Free Common Buffer */
+	PD_API_OP_ALLOC_COM_BUF,  
+	PD_API_OP_FREE_COM_BUF,  
 	PD_API_OP_MAX
 };
 
@@ -700,36 +610,36 @@ struct nvsp_6_pd_api_req {
 	u32 op;
 
 	union {
-		/* MMIO information is sent from the VM to VSP */
+		 
 		struct __packed {
-			u64 mmio_pa; /* MMIO Physical Address */
+			u64 mmio_pa;  
 			u32 mmio_len;
 
-			/* Number of PD queues a VM can support */
+			 
 			u16 num_subchn;
 		} config;
 
-		/* Switch Datapath */
+		 
 		struct __packed {
-			/* Host Datapath Is PacketDirect */
+			 
 			u8 host_dpath_is_pd;
 
-			/* Guest PacketDirect Is Enabled */
+			 
 			u8 guest_pd_enabled;
 		} sw_dpath;
 
-		/* Open Provider*/
+		 
 		struct __packed {
-			u32 prov_id; /* Provider id */
+			u32 prov_id;  
 			u32 flag;
 		} open_prov;
 
-		/* Close Provider */
+		 
 		struct __packed {
 			u32 prov_id;
 		} cls_prov;
 
-		/* Create Queue*/
+		 
 		struct __packed {
 			u32 prov_id;
 			u16 q_id;
@@ -740,30 +650,30 @@ struct nvsp_6_pd_api_req {
 			struct grp_affinity affy;
 		} cr_q;
 
-		/* Delete Queue*/
+		 
 		struct __packed {
 			u32 prov_id;
 			u16 q_id;
 		} del_q;
 
-		/* Flush Queue */
+		 
 		struct __packed {
 			u32 prov_id;
 			u16 q_id;
 		} flush_q;
 
-		/* Allocate Common Buffer */
+		 
 		struct __packed {
 			u32 len;
-			u32 pf_node; /* Preferred Node */
+			u32 pf_node;  
 			u16 region_id;
 		} alloc_com_buf;
 
-		/* Free Common Buffer */
+		 
 		struct __packed {
 			u32 len;
-			u64 pa; /* Physical Address */
-			u32 pf_node; /* Preferred Node */
+			u64 pa;  
+			u32 pf_node;  
 			u16 region_id;
 			u8 cache_type;
 		} free_com_buf;
@@ -776,22 +686,22 @@ struct nvsp_6_pd_api_comp {
 
 	union {
 		struct __packed {
-			/* actual number of PD queues allocated to the VM */
+			 
 			u16 num_pd_q;
 
-			/* Num Receive Rss PD Queues */
+			 
 			u8 num_rss_q;
 
-			u8 is_supported; /* Is supported by VSP */
-			u8 is_enabled; /* Is enabled by VSP */
+			u8 is_supported;  
+			u8 is_enabled;  
 		} config;
 
-		/* Open Provider */
+		 
 		struct __packed {
 			u32 prov_id;
 		} open_prov;
 
-		/* Create Queue */
+		 
 		struct __packed {
 			u32 prov_id;
 			u16 q_id;
@@ -800,11 +710,11 @@ struct nvsp_6_pd_api_comp {
 			struct grp_affinity affy;
 		} cr_q;
 
-		/* Allocate Common Buffer */
+		 
 		struct __packed {
-			u64 pa; /* Physical Address */
+			u64 pa;  
 			u32 len;
-			u32 pf_node; /* Preferred Node */
+			u32 pf_node;  
 			u16 region_id;
 			u8 cache_type;
 		} alloc_com_buf;
@@ -841,7 +751,7 @@ union nvsp_all_messages {
 	union nvsp_6_message_uber v6_msg;
 } __packed;
 
-/* ALL Messages */
+ 
 struct nvsp_message {
 	struct nvsp_message_header hdr;
 	union nvsp_all_messages msg;
@@ -851,12 +761,12 @@ struct nvsp_message {
 #define NETVSC_MTU 65535
 #define NETVSC_MTU_MIN ETH_MIN_MTU
 
-/* Max buffer sizes allowed by a host */
-#define NETVSC_RECEIVE_BUFFER_SIZE		(1024 * 1024 * 31) /* 31MB */
-#define NETVSC_RECEIVE_BUFFER_SIZE_LEGACY	(1024 * 1024 * 15) /* 15MB */
+ 
+#define NETVSC_RECEIVE_BUFFER_SIZE		(1024 * 1024 * 31)  
+#define NETVSC_RECEIVE_BUFFER_SIZE_LEGACY	(1024 * 1024 * 15)  
 #define NETVSC_RECEIVE_BUFFER_DEFAULT		(1024 * 1024 * 16)
 
-#define NETVSC_SEND_BUFFER_SIZE			(1024 * 1024 * 15)  /* 15MB */
+#define NETVSC_SEND_BUFFER_SIZE			(1024 * 1024 * 15)   
 #define NETVSC_SEND_BUFFER_DEFAULT		(1024 * 1024)
 
 #define NETVSC_INVALID_INDEX			-1
@@ -864,7 +774,7 @@ struct nvsp_message {
 #define NETVSC_SEND_SECTION_SIZE		6144
 #define NETVSC_RECV_SECTION_SIZE		1728
 
-/* Default size of TX buf: 1MB, RX buf: 16MB */
+ 
 #define NETVSC_MIN_TX_SECTIONS	10
 #define NETVSC_DEFAULT_TX	(NETVSC_SEND_BUFFER_DEFAULT \
 				 / NETVSC_SEND_SECTION_SIZE)
@@ -880,7 +790,7 @@ struct nvsp_message {
 				      NETIF_F_TSO6 | NETIF_F_LRO | \
 				      NETIF_F_SG | NETIF_F_RXHASH)
 
-#define VRSS_SEND_TAB_SIZE 16  /* must be power of 2 */
+#define VRSS_SEND_TAB_SIZE 16   
 #define VRSS_CHANNEL_MAX 64
 #define VRSS_CHANNEL_DEFAULT 8
 
@@ -893,19 +803,14 @@ struct nvsp_message {
 				 sizeof(struct nvsp_message))
 #define NETVSC_MIN_IN_MSG_SIZE sizeof(struct vmpacket_descriptor)
 
-/* Estimated requestor size:
- * out_ring_size/min_out_msg_size + in_ring_size/min_in_msg_size
- */
+ 
 static inline u32 netvsc_rqstor_size(unsigned long ringbytes)
 {
 	return ringbytes / NETVSC_MIN_OUT_MSG_SIZE +
 		ringbytes / NETVSC_MIN_IN_MSG_SIZE;
 }
 
-/* XFER PAGE packets can specify a maximum of 375 ranges for NDIS >= 6.0
- * and a maximum of 64 ranges for NDIS < 6.0 with no RSC; with RSC, this
- * limit is raised to 562 (= NVSP_RSC_MAX).
- */
+ 
 #define NETVSC_MAX_XFER_PAGE_RANGES NVSP_RSC_MAX
 #define NETVSC_XFER_HEADER_SIZE(rng_cnt) \
 		(offsetof(struct vmtransfer_page_packet_header, ranges) + \
@@ -914,39 +819,39 @@ static inline u32 netvsc_rqstor_size(unsigned long ringbytes)
 		sizeof(struct nvsp_message) + (sizeof(u32) * VRSS_SEND_TAB_SIZE))
 
 struct multi_send_data {
-	struct sk_buff *skb; /* skb containing the pkt */
-	struct hv_netvsc_packet *pkt; /* netvsc pkt pending */
-	u32 count; /* counter of batched packets */
+	struct sk_buff *skb;  
+	struct hv_netvsc_packet *pkt;  
+	u32 count;  
 };
 
 struct recv_comp_data {
-	u64 tid; /* transaction id */
+	u64 tid;  
 	u32 status;
 };
 
 struct multi_recv_comp {
 	struct recv_comp_data *slots;
-	u32 first;	/* first data entry */
-	u32 next;	/* next entry for writing */
+	u32 first;	 
+	u32 next;	 
 };
 
-#define NVSP_RSC_MAX 562 /* Max #RSC frags in a vmbus xfer page pkt */
+#define NVSP_RSC_MAX 562  
 
 struct nvsc_rsc {
 	struct ndis_pkt_8021q_info vlan;
 	struct ndis_tcp_ip_checksum_info csum_info;
 	u32 hash_info;
-	u8 ppi_flags; /* valid/present bits for the above PPIs */
-	u8 is_last; /* last RNDIS msg in a vmtransfer_page */
-	u32 cnt; /* #fragments in an RSC packet */
-	u32 pktlen; /* Full packet length */
+	u8 ppi_flags;  
+	u8 is_last;  
+	u32 cnt;  
+	u32 pktlen;  
 	void *data[NVSP_RSC_MAX];
 	u32 len[NVSP_RSC_MAX];
 };
 
-#define NVSC_RSC_VLAN		BIT(0)	/* valid/present bit for 'vlan' */
-#define NVSC_RSC_CSUM_INFO	BIT(1)	/* valid/present bit for 'csum_info' */
-#define NVSC_RSC_HASH_INFO	BIT(2)	/* valid/present bit for 'hash_info' */
+#define NVSC_RSC_VLAN		BIT(0)	 
+#define NVSC_RSC_CSUM_INFO	BIT(1)	 
+#define NVSC_RSC_HASH_INFO	BIT(2)	 
 
 struct netvsc_stats_tx {
 	u64 packets;
@@ -1005,7 +910,7 @@ struct netvsc_reconfig {
 	u32 event;
 };
 
-/* L4 hash bits for different protocols */
+ 
 #define HV_TCP4_L4HASH 1
 #define HV_TCP6_L4HASH 2
 #define HV_UDP4_L4HASH 4
@@ -1013,24 +918,24 @@ struct netvsc_reconfig {
 #define HV_DEFAULT_L4HASH (HV_TCP4_L4HASH | HV_TCP6_L4HASH | HV_UDP4_L4HASH | \
 			   HV_UDP6_L4HASH)
 
-/* The context of the netvsc device  */
+ 
 struct net_device_context {
-	/* point back to our device context */
+	 
 	struct hv_device *device_ctx;
-	/* netvsc_device */
+	 
 	struct netvsc_device __rcu *nvdev;
-	/* list of netvsc net_devices */
+	 
 	struct list_head list;
-	/* reconfigure work */
+	 
 	struct delayed_work dwork;
-	/* last reconfig time */
+	 
 	unsigned long last_reconfig;
-	/* reconfig events */
+	 
 	struct list_head reconfig_events;
-	/* list protection */
+	 
 	spinlock_t lock;
 
-	u32 msg_enable; /* debug level */
+	u32 msg_enable;  
 
 	u32 tx_checksum_mask;
 
@@ -1040,33 +945,31 @@ struct net_device_context {
 
 	u32 rx_table_sz;
 
-	/* Ethtool settings */
+	 
 	u8 duplex;
 	u32 speed;
-	u32 l4_hash; /* L4 hash settings */
+	u32 l4_hash;  
 	struct netvsc_ethtool_stats eth_stats;
 
-	/* State to manage the associated VF interface. */
+	 
 	struct net_device __rcu *vf_netdev;
 	struct netvsc_vf_pcpu_stats __percpu *vf_stats;
 	struct delayed_work vf_takeover;
 
-	/* 1: allocated, serial number is valid. 0: not allocated */
+	 
 	u32 vf_alloc;
-	/* Serial number of the VF to team with */
+	 
 	u32 vf_serial;
-	/* completion variable to confirm vf association */
+	 
 	struct completion vf_add;
-	/* Is the current data path through the VF NIC? */
+	 
 	bool  data_path_is_vf;
 
-	/* Used to temporarily save the config info across hibernation */
+	 
 	struct netvsc_device_info *saved_netvsc_dev_info;
 };
 
-/* Azure hosts don't support non-TCP port numbers in hashing for fragmented
- * packets. We can use ethtool to change UDP hash level when necessary.
- */
+ 
 static inline u32 netvsc_get_hash(struct sk_buff *skb,
 				  const struct net_device_context *ndc)
 {
@@ -1113,11 +1016,11 @@ static inline u32 netvsc_get_hash(struct sk_buff *skb,
 	return hash;
 }
 
-/* Per channel data */
+ 
 struct netvsc_channel {
 	struct vmbus_channel *channel;
 	struct netvsc_device *net_device;
-	void *recv_buf; /* buffer to copy packets out from the receive buffer */
+	void *recv_buf;  
 	const struct vmpacket_descriptor *desc;
 	struct napi_struct napi;
 	struct multi_send_data msd;
@@ -1133,23 +1036,23 @@ struct netvsc_channel {
 	struct netvsc_stats_rx rx_stats;
 };
 
-/* Per netvsc device */
+ 
 struct netvsc_device {
 	u32 nvsp_version;
 
 	wait_queue_head_t wait_drain;
 	bool destroy;
-	bool tx_disable; /* if true, do not wake up queue again */
+	bool tx_disable;  
 
-	/* Receive buffer allocated by us but manages by NetVSP */
+	 
 	void *recv_buf;
-	u32 recv_buf_size; /* allocated bytes */
+	u32 recv_buf_size;  
 	struct vmbus_gpadl recv_buf_gpadl_handle;
 	u32 recv_section_cnt;
 	u32 recv_section_size;
 	u32 recv_completion_cnt;
 
-	/* Send buffer allocated by us */
+	 
 	void *send_buf;
 	u32 send_buf_size;
 	struct vmbus_gpadl send_buf_gpadl_handle;
@@ -1157,7 +1060,7 @@ struct netvsc_device {
 	u32 send_section_size;
 	unsigned long *send_section_map;
 
-	/* Used for NetVSP initialization protocol */
+	 
 	struct completion channel_init_wait;
 	struct nvsp_message channel_init_pkt;
 
@@ -1172,15 +1075,15 @@ struct netvsc_device {
 
 	struct rndis_device *extension;
 
-	u32 max_pkt; /* max number of pkt in one send, e.g. 8 */
-	u32 pkt_align; /* alignment bytes, e.g. 8 */
+	u32 max_pkt;  
+	u32 pkt_align;  
 
 	struct netvsc_channel chan_table[VRSS_CHANNEL_MAX];
 
 	struct rcu_head rcu;
 };
 
-/* NdisInitialize message */
+ 
 struct rndis_initialize_request {
 	u32 req_id;
 	u32 major_ver;
@@ -1188,7 +1091,7 @@ struct rndis_initialize_request {
 	u32 max_xfer_size;
 };
 
-/* Response to NdisInitialize */
+ 
 struct rndis_initialize_complete {
 	u32 req_id;
 	u32 status;
@@ -1203,20 +1106,20 @@ struct rndis_initialize_complete {
 	u32 af_list_size;
 };
 
-/* Call manager devices only: Information about an address family */
-/* supported by the device is appended to the response to NdisInitialize. */
+ 
+ 
 struct rndis_co_address_family {
 	u32 address_family;
 	u32 major_ver;
 	u32 minor_ver;
 };
 
-/* NdisHalt message */
+ 
 struct rndis_halt_request {
 	u32 req_id;
 };
 
-/* NdisQueryRequest message */
+ 
 struct rndis_query_request {
 	u32 req_id;
 	u32 oid;
@@ -1225,7 +1128,7 @@ struct rndis_query_request {
 	u32 dev_vc_handle;
 };
 
-/* Response to NdisQueryRequest */
+ 
 struct rndis_query_complete {
 	u32 req_id;
 	u32 status;
@@ -1233,7 +1136,7 @@ struct rndis_query_complete {
 	u32 info_buf_offset;
 };
 
-/* NdisSetRequest message */
+ 
 struct rndis_set_request {
 	u32 req_id;
 	u32 oid;
@@ -1243,53 +1146,49 @@ struct rndis_set_request {
 	u8  info_buf[];
 };
 
-/* Response to NdisSetRequest */
+ 
 struct rndis_set_complete {
 	u32 req_id;
 	u32 status;
 };
 
-/* NdisReset message */
+ 
 struct rndis_reset_request {
 	u32 reserved;
 };
 
-/* Response to NdisReset */
+ 
 struct rndis_reset_complete {
 	u32 status;
 	u32 addressing_reset;
 };
 
-/* NdisMIndicateStatus message */
+ 
 struct rndis_indicate_status {
 	u32 status;
 	u32 status_buflen;
 	u32 status_buf_offset;
 };
 
-/* Diagnostic information passed as the status buffer in */
-/* struct rndis_indicate_status messages signifying error conditions. */
+ 
+ 
 struct rndis_diagnostic_info {
 	u32 diag_status;
 	u32 error_offset;
 };
 
-/* NdisKeepAlive message */
+ 
 struct rndis_keepalive_request {
 	u32 req_id;
 };
 
-/* Response to NdisKeepAlive */
+ 
 struct rndis_keepalive_complete {
 	u32 req_id;
 	u32 status;
 };
 
-/*
- * Data message. All Offset fields contain byte offsets from the beginning of
- * struct rndis_packet. All Length fields are in bytes.  VcHandle is set
- * to 0 for connectionless data, otherwise it contains the VC handle.
- */
+ 
 struct rndis_packet {
 	u32 data_offset;
 	u32 data_len;
@@ -1302,14 +1201,14 @@ struct rndis_packet {
 	u32 reserved;
 };
 
-/* Optional Out of Band data associated with a Data message. */
+ 
 struct rndis_oobd {
 	u32 size;
 	u32 type;
 	u32 class_info_offset;
 };
 
-/* Packet extension field contents associated with a Data message. */
+ 
 struct rndis_per_packet_info {
 	u32 size;
 	u32 type:31;
@@ -1336,7 +1235,7 @@ enum ndis_per_pkt_info_type {
 
 enum rndis_per_pkt_info_interal_type {
 	RNDIS_PKTINFO_ID = 1,
-	/* Add more members here */
+	 
 
 	RNDIS_PKTINFO_MAX
 };
@@ -1380,20 +1279,15 @@ struct ndis_object_header {
 #define NDIS_TCP_LARGE_SEND_OFFLOAD_IPV6	1
 
 #define VERSION_4_OFFLOAD_SIZE			22
-/*
- * New offload OIDs for NDIS 6
- */
-#define OID_TCP_OFFLOAD_CURRENT_CONFIG 0xFC01020B /* query only */
-#define OID_TCP_OFFLOAD_PARAMETERS 0xFC01020C		/* set only */
-#define OID_TCP_OFFLOAD_HARDWARE_CAPABILITIES 0xFC01020D/* query only */
-#define OID_TCP_CONNECTION_OFFLOAD_CURRENT_CONFIG 0xFC01020E /* query only */
-#define OID_TCP_CONNECTION_OFFLOAD_HARDWARE_CAPABILITIES 0xFC01020F /* query */
-#define OID_OFFLOAD_ENCAPSULATION 0x0101010A /* set/query */
+ 
+#define OID_TCP_OFFLOAD_CURRENT_CONFIG 0xFC01020B  
+#define OID_TCP_OFFLOAD_PARAMETERS 0xFC01020C		 
+#define OID_TCP_OFFLOAD_HARDWARE_CAPABILITIES 0xFC01020D 
+#define OID_TCP_CONNECTION_OFFLOAD_CURRENT_CONFIG 0xFC01020E  
+#define OID_TCP_CONNECTION_OFFLOAD_HARDWARE_CAPABILITIES 0xFC01020F  
+#define OID_OFFLOAD_ENCAPSULATION 0x0101010A  
 
-/*
- * OID_TCP_OFFLOAD_HARDWARE_CAPABILITIES
- * ndis_type: NDIS_OBJTYPE_OFFLOAD
- */
+ 
 
 #define	NDIS_OFFLOAD_ENCAP_NONE		0x0000
 #define	NDIS_OFFLOAD_ENCAP_NULL		0x0001
@@ -1506,9 +1400,9 @@ struct ndis_offload {
 	struct ndis_ipsecv1_offload	ipsecv1;
 	struct ndis_lsov2_offload	lsov2;
 	u32				flags;
-	/* NDIS >= 6.1 */
+	 
 	struct ndis_ipsecv2_offload	ipsecv2;
-	/* NDIS >= 6.30 */
+	 
 	struct ndis_rsc_offload		rsc;
 	struct ndis_encap_offload	encap_gre;
 };
@@ -1588,12 +1482,12 @@ struct ndis_tcp_lso_info {
 #define NDIS_HASH_PPI_SIZE (sizeof(struct rndis_per_packet_info) + \
 		sizeof(u32))
 
-/* Total size of all PPI data */
+ 
 #define NDIS_ALL_PPI_SIZE (NDIS_VLAN_PPI_SIZE + NDIS_CSUM_PPI_SIZE + \
 			   NDIS_LSO_PPI_SIZE + NDIS_HASH_PPI_SIZE)
 
-/* Format of Information buffer passed in a SetRequest for the OID */
-/* OID_GEN_RNDIS_CONFIG_PARAMETER. */
+ 
+ 
 struct rndis_config_parameter_info {
 	u32 parameter_name_offset;
 	u32 parameter_name_length;
@@ -1602,39 +1496,39 @@ struct rndis_config_parameter_info {
 	u32 parameter_value_length;
 };
 
-/* Values for ParameterType in struct rndis_config_parameter_info */
+ 
 #define RNDIS_CONFIG_PARAM_TYPE_INTEGER     0
 #define RNDIS_CONFIG_PARAM_TYPE_STRING      2
 
-/* CONDIS Miniport messages for connection oriented devices */
-/* that do not implement a call manager. */
+ 
+ 
 
-/* CoNdisMiniportCreateVc message */
+ 
 struct rcondis_mp_create_vc {
 	u32 req_id;
 	u32 ndis_vc_handle;
 };
 
-/* Response to CoNdisMiniportCreateVc */
+ 
 struct rcondis_mp_create_vc_complete {
 	u32 req_id;
 	u32 dev_vc_handle;
 	u32 status;
 };
 
-/* CoNdisMiniportDeleteVc message */
+ 
 struct rcondis_mp_delete_vc {
 	u32 req_id;
 	u32 dev_vc_handle;
 };
 
-/* Response to CoNdisMiniportDeleteVc */
+ 
 struct rcondis_mp_delete_vc_complete {
 	u32 req_id;
 	u32 status;
 };
 
-/* CoNdisMiniportQueryRequest message */
+ 
 struct rcondis_mp_query_request {
 	u32 req_id;
 	u32 request_type;
@@ -1644,7 +1538,7 @@ struct rcondis_mp_query_request {
 	u32 info_buf_offset;
 };
 
-/* CoNdisMiniportSetRequest message */
+ 
 struct rcondis_mp_set_request {
 	u32 req_id;
 	u32 request_type;
@@ -1654,7 +1548,7 @@ struct rcondis_mp_set_request {
 	u32 info_buf_offset;
 };
 
-/* CoNdisIndicateStatus message */
+ 
 struct rcondis_indicate_status {
 	u32 ndis_vc_handle;
 	u32 status;
@@ -1662,7 +1556,7 @@ struct rcondis_indicate_status {
 	u32 status_buf_offset;
 };
 
-/* CONDIS Call/VC parameters */
+ 
 struct rcondis_specific_parameters {
 	u32 parameter_type;
 	u32 parameter_length;
@@ -1693,7 +1587,7 @@ struct rcondis_call_manager_parameters {
 	struct rcondis_specific_parameters call_mgr_specific;
 };
 
-/* CoNdisMiniportActivateVc message */
+ 
 struct rcondis_mp_activate_vc_request {
 	u32 req_id;
 	u32 flags;
@@ -1704,27 +1598,27 @@ struct rcondis_mp_activate_vc_request {
 	u32 call_mgr_params_length;
 };
 
-/* Response to CoNdisMiniportActivateVc */
+ 
 struct rcondis_mp_activate_vc_complete {
 	u32 req_id;
 	u32 status;
 };
 
-/* CoNdisMiniportDeactivateVc message */
+ 
 struct rcondis_mp_deactivate_vc_request {
 	u32 req_id;
 	u32 flags;
 	u32 dev_vc_handle;
 };
 
-/* Response to CoNdisMiniportDeactivateVc */
+ 
 struct rcondis_mp_deactivate_vc_complete {
 	u32 req_id;
 	u32 status;
 };
 
 
-/* union with all of the RNDIS messages */
+ 
 union rndis_message_container {
 	struct rndis_packet pkt;
 	struct rndis_initialize_request init_req;
@@ -1751,23 +1645,23 @@ union rndis_message_container {
 		co_miniport_deactivate_vc_complete;
 };
 
-/* Remote NDIS message format */
+ 
 struct rndis_message {
 	u32 ndis_msg_type;
 
-	/* Total length of this message, from the beginning */
-	/* of the struct rndis_message, in bytes. */
+	 
+	 
 	u32 msg_len;
 
-	/* Actual message */
+	 
 	union rndis_message_container msg;
 };
 
 
-/* Handy macros */
+ 
 
-/* get the size of an RNDIS message. Pass in the message type, */
-/* struct rndis_set_request, struct rndis_packet for example */
+ 
+ 
 #define RNDIS_MESSAGE_SIZE(msg)				\
 	(sizeof(msg) + (sizeof(struct rndis_message) -	\
 	 sizeof(union rndis_message_container)))
@@ -1798,8 +1692,8 @@ struct rndis_message {
 
 #define RETRY_US_LO	5000
 #define RETRY_US_HI	10000
-#define RETRY_MAX	2000	/* >10 sec */
+#define RETRY_MAX	2000	 
 
 void netvsc_dma_unmap(struct hv_device *hv_dev,
 		      struct hv_netvsc_packet *packet);
-#endif /* _HYPERV_NET_H */
+#endif  

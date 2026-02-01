@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * USB Debug cable driver
- *
- * Copyright (C) 2006 Greg Kroah-Hartman <greg@kroah.com>
- */
+
+ 
 
 #include <linux/gfp.h>
 #include <linux/kernel.h>
@@ -44,9 +40,7 @@ static const struct usb_device_id id_table_combined[] = {
 };
 MODULE_DEVICE_TABLE(usb, id_table_combined);
 
-/* This HW really does not support a serial break, so one will be
- * emulated when ever the break state is set to true.
- */
+ 
 static int usb_debug_break_ctl(struct tty_struct *tty, int break_state)
 {
 	struct usb_serial_port *port = tty->driver_data;

@@ -1,22 +1,4 @@
-/* Character set conversion.
-   Copyright (C) 1999-2001, 2007, 2009-2023 Free Software Foundation, Inc.
-
-   This file is free software: you can redistribute it and/or modify
-   it under the terms of the GNU Lesser General Public License as
-   published by the Free Software Foundation; either version 2.1 of the
-   License, or (at your option) any later version.
-
-   This file is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU Lesser General Public License for more details.
-
-   You should have received a copy of the GNU Lesser General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-#include <config.h>
-
-/* Specification.  */
+ 
 #include <iconv.h>
 
 #include <stddef.h>
@@ -30,23 +12,21 @@
 
 #if REPLACE_ICONV_UTF
 
-/* UTF-{16,32}{BE,LE} converters taken from GNU libiconv 1.11.  */
+ 
 
-/* Return code if invalid. (xxx_mbtowc) */
+ 
 # define RET_ILSEQ      -1
-/* Return code if no bytes were read. (xxx_mbtowc) */
+ 
 # define RET_TOOFEW     -2
 
-/* Return code if invalid. (xxx_wctomb) */
+ 
 # define RET_ILUNI      -1
-/* Return code if output buffer is too small. (xxx_wctomb, xxx_reset) */
+ 
 # define RET_TOOSMALL   -2
 
-/*
- * UTF-16BE
- */
+ 
 
-/* Specification: RFC 2781 */
+ 
 
 static int
 utf16be_mbtowc (ucs4_t *pwc, const unsigned char *s, size_t n)
@@ -113,11 +93,9 @@ utf16be_wctomb (unsigned char *r, ucs4_t wc, size_t n)
   return RET_ILUNI;
 }
 
-/*
- * UTF-16LE
- */
+ 
 
-/* Specification: RFC 2781 */
+ 
 
 static int
 utf16le_mbtowc (ucs4_t *pwc, const unsigned char *s, size_t n)
@@ -184,11 +162,9 @@ utf16le_wctomb (unsigned char *r, ucs4_t wc, size_t n)
   return RET_ILUNI;
 }
 
-/*
- * UTF-32BE
- */
+ 
 
-/* Specification: Unicode 3.1 Standard Annex #19 */
+ 
 
 static int
 utf32be_mbtowc (ucs4_t *pwc, const unsigned char *s, size_t n)
@@ -226,11 +202,9 @@ utf32be_wctomb (unsigned char *r, ucs4_t wc, size_t n)
   return RET_ILUNI;
 }
 
-/*
- * UTF-32LE
- */
+ 
 
-/* Specification: Unicode 3.1 Standard Annex #19 */
+ 
 
 static int
 utf32le_mbtowc (ucs4_t *pwc, const unsigned char *s, size_t n)

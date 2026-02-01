@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * (C) 2001 Clemson University and The University of Chicago
- *
- * Changes by Acxiom Corporation to add protocol version to kernel
- * communication, Copyright Acxiom Corporation, 2005.
- *
- * See COPYING in top-level directory.
- */
+
+ 
 
 #include "protocol.h"
 #include "orangefs-kernel.h"
@@ -17,7 +10,7 @@
 #include <linux/debugfs.h>
 #include <linux/slab.h>
 
-/* this file implements the /dev/pvfs2-req device node */
+ 
 
 uint32_t orangefs_userspace_version;
 
@@ -52,10 +45,7 @@ static void orangefs_devreq_add_op(struct orangefs_kernel_op_s *op)
 	list_add_tail(&op->list, &orangefs_htable_ops_in_progress[index]);
 }
 
-/*
- * find the op with this tag and remove it from the in progress
- * hash table.
- */
+ 
 static struct orangefs_kernel_op_s *orangefs_devreq_remove_op(__u64 tag)
 {
 	struct orangefs_kernel_op_s *op, *next;
@@ -80,7 +70,7 @@ static struct orangefs_kernel_op_s *orangefs_devreq_remove_op(__u64 tag)
 	return NULL;
 }
 
-/* Returns whether any FS are still pending remounted */
+ 
 static int mark_all_pending_mounts(void)
 {
 	int unmounted = 1;
@@ -88,7 +78,7 @@ static int mark_all_pending_mounts(void)
 
 	spin_lock(&orangefs_superblocks_lock);
 	list_for_each_entry(orangefs_sb, &orangefs_superblocks, list) {
-		/* All of these file system require a remount */
+		 
 		orangefs_sb->mount_pending = 1;
 		unmounted = 0;
 	}
@@ -96,12 +86,7 @@ static int mark_all_pending_mounts(void)
 	return unmounted;
 }
 
-/*
- * Determine if a given file system needs to be remounted or not
- *  Returns -1 on error
- *           0 if already mounted
- *           1 if needs remount
- */
+ 
 static int fs_mount_pending(__s32 fsid)
 {
 	int mount_pending = -1;
@@ -122,7 +107,7 @@ static int orangefs_devreq_open(struct inode *inode, struct file *file)
 {
 	int ret = -EINVAL;
 
-	/* in order to ensure that the filesystem driver sees correct UIDs */
+	 
 	if (file->f_cred->user_ns != &init_user_ns) {
 		gossip_err("%s: device cannot be opened outside init_user_ns\n",
 			   __func__);
@@ -154,7 +139,7 @@ out:
 	return ret;
 }
 
-/* Function for read() callers into the device */
+ 
 static ssize_t orangefs_devreq_read(struct file *file,
 				 char __user *buf,
 				 size_t count, loff_t *offset)
@@ -165,33 +150,30 @@ static ssize_t orangefs_devreq_read(struct file *file,
 	struct orangefs_kernel_op_s *cur_op;
 	unsigned long ret;
 
-	/* We do not support blocking IO. */
+	 
 	if (!(file->f_flags & O_NONBLOCK)) {
 		gossip_err("%s: blocking read from client-core.\n",
 			   __func__);
 		return -EINVAL;
 	}
 
-	/*
-	 * The client will do an ioctl to find MAX_DEV_REQ_UPSIZE, then
-	 * always read with that size buffer.
-	 */
+	 
 	if (count != MAX_DEV_REQ_UPSIZE) {
 		gossip_err("orangefs: client-core tried to read wrong size\n");
 		return -EINVAL;
 	}
 
-	/* Check for an empty list before locking. */
+	 
 	if (list_empty(&orangefs_request_list))
 		return -EAGAIN;
 
 restart:
 	cur_op = NULL;
-	/* Get next op (if any) from top of list. */
+	 
 	spin_lock(&orangefs_request_list_lock);
 	list_for_each_entry_safe(op, temp, &orangefs_request_list, list) {
 		__s32 fsid;
-		/* This lock is held past the end of the loop when we break. */
+		 
 		spin_lock(&op->lock);
 		if (unlikely(op_state_purged(op) || op_state_given_up(op))) {
 			spin_unlock(&op->lock);
@@ -201,7 +183,7 @@ restart:
 		fsid = fsid_of_op(op);
 		if (fsid != ORANGEFS_FS_ID_NULL) {
 			int ret;
-			/* Skip ops whose filesystem needs to be mounted. */
+			 
 			ret = fs_mount_pending(fsid);
 			if (ret == 1) {
 				gossip_debug(GOSSIP_DEV_DEBUG,
@@ -212,14 +194,8 @@ restart:
 				    get_opname_string(op));
 				spin_unlock(&op->lock);
 				continue;
-			/*
-			 * Skip ops whose filesystem we don't know about unless
-			 * it is being mounted or unmounted.  It is possible for
-			 * a filesystem we don't know about to be unmounted if
-			 * it fails to mount in the kernel after userspace has
-			 * been sent the mount request.
-			 */
-			/* XXX: is there a better way to detect this? */
+			 
+			 
 			} else if (ret == -1 &&
 				   !(op->upcall.type ==
 					ORANGEFS_VFS_OP_FS_MOUNT ||
@@ -237,19 +213,12 @@ restart:
 				continue;
 			}
 		}
-		/*
-		 * Either this op does not pertain to a filesystem, is mounting
-		 * a filesystem, or pertains to a mounted filesystem. Let it
-		 * through.
-		 */
+		 
 		cur_op = op;
 		break;
 	}
 
-	/*
-	 * At this point we either have a valid op and can continue or have not
-	 * found an op and must ask the client to try again later.
-	 */
+	 
 	if (!cur_op) {
 		spin_unlock(&orangefs_request_list_lock);
 		return -EAGAIN;
@@ -260,10 +229,7 @@ restart:
 		     llu(cur_op->tag),
 		     get_opname_string(cur_op));
 
-	/*
-	 * Such an op should never be on the list in the first place. If so, we
-	 * will abort.
-	 */
+	 
 	if (op_state_in_progress(cur_op) || op_state_serviced(cur_op)) {
 		gossip_err("orangefs: ERROR: Current op already queued.\n");
 		list_del_init(&cur_op->list);
@@ -277,7 +243,7 @@ restart:
 
 	spin_unlock(&cur_op->lock);
 
-	/* Push the upcall out. */
+	 
 	ret = copy_to_user(buf, &proto_ver, sizeof(__s32));
 	if (ret != 0)
 		goto error;
@@ -304,10 +270,7 @@ restart:
 		goto restart;
 	}
 
-	/*
-	 * Set the operation to be in progress and move it between lists since
-	 * it has been sent to the client.
-	 */
+	 
 	set_op_state_inprogress(cur_op);
 	gossip_debug(GOSSIP_DEV_DEBUG,
 		     "%s: 1 op:%s: op_state:%d: process:%s:\n",
@@ -319,14 +282,10 @@ restart:
 	spin_unlock(&cur_op->lock);
 	spin_unlock(&orangefs_htable_ops_in_progress_lock);
 
-	/* The client only asks to read one size buffer. */
+	 
 	return MAX_DEV_REQ_UPSIZE;
 error:
-	/*
-	 * We were unable to copy the op data to the client. Put the op back in
-	 * list. If client has crashed, the op will be purged later when the
-	 * device is released.
-	 */
+	 
 	gossip_err("orangefs: Failed to copy data to user space\n");
 	spin_lock(&orangefs_request_list_lock);
 	spin_lock(&cur_op->lock);
@@ -348,16 +307,7 @@ error:
 	return -EFAULT;
 }
 
-/*
- * Function for writev() callers into the device.
- *
- * Userspace should have written:
- *  - __u32 version
- *  - __u32 magic
- *  - __u64 tag
- *  - struct orangefs_downcall_s
- *  - trailer buffer (in the case of READDIR operations)
- */
+ 
 static ssize_t orangefs_devreq_write_iter(struct kiocb *iocb,
 				      struct iov_iter *iter)
 {
@@ -411,7 +361,7 @@ static ssize_t orangefs_devreq_write_iter(struct kiocb *iocb,
 		return -EPROTO;
 	}
 
-	/* remove the op from the in progress hash table */
+	 
 	op = orangefs_devreq_remove_op(head.tag);
 	if (!op) {
 		gossip_debug(GOSSIP_DEV_DEBUG,
@@ -428,11 +378,7 @@ static ssize_t orangefs_devreq_write_iter(struct kiocb *iocb,
 	if (op->downcall.status)
 		goto wakeup;
 
-	/*
-	 * We've successfully peeled off the head and the downcall.
-	 * Something has gone awry if total doesn't equal the
-	 * sum of head_size, downcall_size and trailer_size.
-	 */
+	 
 	if ((head_size + downcall_size + op->downcall.trailer_size) != total) {
 		gossip_err("%s: funky write, head_size:%d"
 			   ": downcall_size:%d: trailer_size:%lld"
@@ -445,7 +391,7 @@ static ssize_t orangefs_devreq_write_iter(struct kiocb *iocb,
 		goto Efault;
 	}
 
-	/* Only READDIR operations should have trailers. */
+	 
 	if ((op->downcall.type != ORANGEFS_VFS_OP_READDIR) &&
 	    (op->downcall.trailer_size != 0)) {
 		gossip_err("%s: %x operation with trailer.",
@@ -454,7 +400,7 @@ static ssize_t orangefs_devreq_write_iter(struct kiocb *iocb,
 		goto Efault;
 	}
 
-	/* READDIR operations should always have trailers. */
+	 
 	if ((op->downcall.type == ORANGEFS_VFS_OP_READDIR) &&
 	    (op->downcall.trailer_size == 0)) {
 		gossip_err("%s: %x operation with no trailer.",
@@ -478,10 +424,7 @@ static ssize_t orangefs_devreq_write_iter(struct kiocb *iocb,
 	}
 
 wakeup:
-	/*
-	 * Return to vfs waitqueue, and back to service_operation
-	 * through wait_for_matching_downcall.
-	 */
+	 
 	spin_lock(&op->lock);
 	if (unlikely(op_is_cancel(op))) {
 		spin_unlock(&op->lock);
@@ -512,14 +455,7 @@ Enomem:
 	goto wakeup;
 }
 
-/*
- * NOTE: gets called when the last reference to this device is dropped.
- * Using the open_access_count variable, we enforce a reference count
- * on this file so that it can be opened by only one process at a time.
- * the devreq_mutex is used to make sure all i/o has completed
- * before we call orangefs_bufmap_finalize, and similar such tricky
- * situations
- */
+ 
 static int orangefs_devreq_release(struct inode *inode, struct file *file)
 {
 	int unmounted = 0;
@@ -554,10 +490,7 @@ int is_daemon_in_service(void)
 {
 	int in_service;
 
-	/*
-	 * What this function does is checks if client-core is alive
-	 * based on the access count we maintain on the device.
-	 */
+	 
 	mutex_lock(&devreq_mutex);
 	in_service = open_access_count == 1 ? 0 : -EIO;
 	mutex_unlock(&devreq_mutex);
@@ -571,7 +504,7 @@ bool __is_daemon_in_service(void)
 
 static inline long check_ioctl_command(unsigned int command)
 {
-	/* Check for valid ioctl codes */
+	 
 	if (_IOC_TYPE(command) != ORANGEFS_DEV_MAGIC) {
 		gossip_err("device ioctl magic numbers don't match! Did you rebuild pvfs2-client-core/libpvfs2? [cmd %x, magic %x != %x]\n",
 			command,
@@ -579,7 +512,7 @@ static inline long check_ioctl_command(unsigned int command)
 			ORANGEFS_DEV_MAGIC);
 		return -EINVAL;
 	}
-	/* and valid ioctl commands */
+	 
 	if (_IOC_NR(command) >= ORANGEFS_DEV_MAXNR || _IOC_NR(command) <= 0) {
 		gossip_err("Invalid ioctl command number [%d >= %d]\n",
 			   _IOC_NR(command), ORANGEFS_DEV_MAXNR);
@@ -598,7 +531,7 @@ static long dispatch_ioctl_command(unsigned int command, unsigned long arg)
 	int upstream_kmod = 1;
 	struct orangefs_sb_info_s *orangefs_sb;
 
-	/* mtmoore: add locking here */
+	 
 
 	switch (command) {
 	case ORANGEFS_DEV_GET_MAGIC:
@@ -620,22 +553,14 @@ static long dispatch_ioctl_command(unsigned int command, unsigned long arg)
 				     (struct ORANGEFS_dev_map_desc __user *)
 				     arg,
 				     sizeof(struct ORANGEFS_dev_map_desc));
-		/* WTF -EIO and not -EFAULT? */
+		 
 		return ret ? -EIO : orangefs_bufmap_initialize(&user_desc);
 	case ORANGEFS_DEV_REMOUNT_ALL:
 		gossip_debug(GOSSIP_DEV_DEBUG,
 			     "%s: got ORANGEFS_DEV_REMOUNT_ALL\n",
 			     __func__);
 
-		/*
-		 * remount all mounted orangefs volumes to regain the lost
-		 * dynamic mount tables (if any) -- NOTE: this is done
-		 * without keeping the superblock list locked due to the
-		 * upcall/downcall waiting.  also, the request mutex is
-		 * used to ensure that no operations will be serviced until
-		 * all of the remounts are serviced (to avoid ops between
-		 * mounts to fail)
-		 */
+		 
 		ret = mutex_lock_interruptible(&orangefs_request_mutex);
 		if (ret < 0)
 			return ret;
@@ -644,12 +569,7 @@ static long dispatch_ioctl_command(unsigned int command, unsigned long arg)
 			     __func__);
 		spin_lock(&orangefs_superblocks_lock);
 		list_for_each_entry(orangefs_sb, &orangefs_superblocks, list) {
-			/*
-			 * We have to drop the spinlock, so entries can be
-			 * removed.  They can't be freed, though, so we just
-			 * keep the forward pointers and zero the back ones -
-			 * that way we can get to the rest of the list.
-			 */
+			 
 			if (!orangefs_sb->list.prev)
 				continue;
 			gossip_debug(GOSSIP_DEV_DEBUG,
@@ -701,7 +621,7 @@ static long orangefs_devreq_ioctl(struct file *file,
 {
 	long ret;
 
-	/* Check for properly constructed commands */
+	 
 	ret = check_ioctl_command(command);
 	if (ret < 0)
 		return (int)ret;
@@ -709,9 +629,9 @@ static long orangefs_devreq_ioctl(struct file *file,
 	return (int)dispatch_ioctl_command(command, arg);
 }
 
-#ifdef CONFIG_COMPAT		/* CONFIG_COMPAT is in .config */
+#ifdef CONFIG_COMPAT		 
 
-/*  Compat structure for the ORANGEFS_DEV_MAP ioctl */
+ 
 struct ORANGEFS_dev_map_desc32 {
 	compat_uptr_t ptr;
 	__s32 total_size;
@@ -719,16 +639,13 @@ struct ORANGEFS_dev_map_desc32 {
 	__s32 count;
 };
 
-/*
- * 32 bit user-space apps' ioctl handlers when kernel modules
- * is compiled as a 64 bit one
- */
+ 
 static long orangefs_devreq_compat_ioctl(struct file *filp, unsigned int cmd,
 				      unsigned long args)
 {
 	long ret;
 
-	/* Check for properly constructed commands */
+	 
 	ret = check_ioctl_command(cmd);
 	if (ret < 0)
 		return ret;
@@ -745,11 +662,11 @@ static long orangefs_devreq_compat_ioctl(struct file *filp, unsigned int cmd,
 		desc.count = d32.count;
 		return orangefs_bufmap_initialize(&desc);
 	}
-	/* no other ioctl requires translation */
+	 
 	return dispatch_ioctl_command(cmd, args);
 }
 
-#endif /* CONFIG_COMPAT is in .config */
+#endif  
 
 static __poll_t orangefs_devreq_poll(struct file *file,
 				      struct poll_table_struct *poll_table)
@@ -763,7 +680,7 @@ static __poll_t orangefs_devreq_poll(struct file *file,
 	return poll_revent_mask;
 }
 
-/* the assigned character device major number */
+ 
 static int orangefs_dev_major;
 
 static const struct file_operations orangefs_devreq_file_operations = {
@@ -774,19 +691,16 @@ static const struct file_operations orangefs_devreq_file_operations = {
 	.release = orangefs_devreq_release,
 	.unlocked_ioctl = orangefs_devreq_ioctl,
 
-#ifdef CONFIG_COMPAT		/* CONFIG_COMPAT is in .config */
+#ifdef CONFIG_COMPAT		 
 	.compat_ioctl = orangefs_devreq_compat_ioctl,
 #endif
 	.poll = orangefs_devreq_poll
 };
 
-/*
- * Initialize orangefs device specific state:
- * Must be called at module load time only
- */
+ 
 int orangefs_dev_init(void)
 {
-	/* register orangefs-req device  */
+	 
 	orangefs_dev_major = register_chrdev(0,
 					  ORANGEFS_REQDEVICE_NAME,
 					  &orangefs_devreq_file_operations);

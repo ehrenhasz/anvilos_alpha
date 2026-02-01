@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR MIT
-/* Copyright 2017-2019 Qiang Yu <yuq825@gmail.com> */
+
+ 
 
 #include <linux/interrupt.h>
 #include <linux/iopoll.h>
@@ -27,7 +27,7 @@ static irqreturn_t lima_gp_irq_handler(int irq, void *data)
 	u32 status = gp_read(LIMA_GP_STATUS);
 	bool done = false;
 
-	/* for shared irq case */
+	 
 	if (!state)
 		return IRQ_NONE;
 
@@ -43,7 +43,7 @@ static irqreturn_t lima_gp_irq_handler(int irq, void *data)
 				task->recoverable = false;
 		}
 
-		/* mask all interrupts before hard reset */
+		 
 		gp_write(LIMA_GP_INT_MASK, 0);
 
 		pipe->error = true;
@@ -133,7 +133,7 @@ static void lima_gp_task_run(struct lima_sched_pipe *pipe,
 	u32 cmd = 0;
 	int i;
 
-	/* update real heap buffer size for GP */
+	 
 	for (i = 0; i < task->num_bos; i++) {
 		struct lima_bo *bo = task->bos[i];
 
@@ -156,7 +156,7 @@ static void lima_gp_task_run(struct lima_sched_pipe *pipe,
 	    f[LIMA_GP_PLBUCL_END_ADDR >> 2])
 		cmd |= LIMA_GP_CMD_START_PLBU;
 
-	/* before any hw ops, wait last success task async soft reset */
+	 
 	lima_gp_soft_reset_async_wait(ip);
 
 	for (i = 0; i < LIMA_GP_FRAME_REG_NUM; i++)
@@ -231,7 +231,7 @@ static int lima_gp_task_recover(struct lima_sched_pipe *pipe)
 	}
 
 	gp_write(LIMA_GP_INT_MASK, LIMA_GP_IRQ_MASK_USED);
-	/* Resume from where we stopped, i.e. new start is old end */
+	 
 	gp_write(LIMA_GP_PLBU_ALLOC_START_ADDR,
 		 f[LIMA_GP_PLBU_ALLOC_END_ADDR >> 2]);
 	f[LIMA_GP_PLBU_ALLOC_END_ADDR >> 2] =

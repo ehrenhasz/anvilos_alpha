@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* (C) 1999-2001 Paul `Rusty' Russell
- * (C) 2002-2004 Netfilter Core Team <coreteam@netfilter.org>
- */
+
+ 
 
 #include <linux/types.h>
 #include <linux/jiffies.h>
@@ -30,7 +28,7 @@ static int generic_timeout_nlattr_to_obj(struct nlattr *tb[],
 		*timeout =
 		    ntohl(nla_get_be32(tb[CTA_TIMEOUT_GENERIC_TIMEOUT])) * HZ;
 	else {
-		/* Set default generic timeout. */
+		 
 		*timeout = gn->timeout;
 	}
 
@@ -55,7 +53,7 @@ static const struct nla_policy
 generic_timeout_nla_policy[CTA_TIMEOUT_GENERIC_MAX+1] = {
 	[CTA_TIMEOUT_GENERIC_TIMEOUT]	= { .type = NLA_U32 },
 };
-#endif /* CONFIG_NF_CONNTRACK_TIMEOUT */
+#endif  
 
 void nf_conntrack_generic_init_net(struct net *net)
 {
@@ -75,5 +73,5 @@ const struct nf_conntrack_l4proto nf_conntrack_l4proto_generic =
 		.obj_size	= sizeof(unsigned int),
 		.nla_policy	= generic_timeout_nla_policy,
 	},
-#endif /* CONFIG_NF_CONNTRACK_TIMEOUT */
+#endif  
 };

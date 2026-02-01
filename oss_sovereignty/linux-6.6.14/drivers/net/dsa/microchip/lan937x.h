@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Microchip lan937x dev ops headers
- * Copyright (C) 2019-2022 Microchip Technology Inc.
- */
+ 
+ 
 
 #ifndef __LAN937X_CFG_H
 #define __LAN937X_CFG_H

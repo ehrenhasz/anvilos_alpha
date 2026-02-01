@@ -1,18 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/******************************************************************************
- *
- *   Copyright © International Business Machines  Corp., 2009
- *
- * DESCRIPTION
- *      Glibc independent futex library for testing kernel functionality.
- *
- * AUTHOR
- *      Darren Hart <dvhart@linux.intel.com>
- *
- * HISTORY
- *      2009-Nov-6: Initial version by Darren Hart <dvhart@linux.intel.com>
- *
- *****************************************************************************/
+ 
+ 
 
 #ifndef _LOGGING_H
 #define _LOGGING_H
@@ -23,10 +10,7 @@
 #include <linux/futex.h>
 #include "kselftest.h"
 
-/*
- * Define PASS, ERROR, and FAIL strings with and without color escape
- * sequences, default to no color.
- */
+ 
 #define ESC 0x1B, '['
 #define BRIGHT '1'
 #define GREEN '3', '2'
@@ -52,22 +36,19 @@ const char *PASS = PASS_NORMAL;
 const char *ERROR = ERROR_NORMAL;
 const char *FAIL = FAIL_NORMAL;
 
-/* Verbosity setting for INFO messages */
+ 
 #define VQUIET    0
 #define VCRITICAL 1
 #define VINFO     2
 #define VMAX      VINFO
 int _verbose = VCRITICAL;
 
-/* Functional test return codes */
+ 
 #define RET_PASS   0
 #define RET_ERROR -1
 #define RET_FAIL  -2
 
-/**
- * log_color() - Use colored output for PASS, ERROR, and FAIL strings
- * @use_color:	use color (1) or not (0)
- */
+ 
 void log_color(int use_color)
 {
 	if (use_color) {
@@ -81,13 +62,7 @@ void log_color(int use_color)
 	}
 }
 
-/**
- * log_verbosity() - Set verbosity of test output
- * @verbose:	Enable (1) verbose output or not (0)
- *
- * Currently setting verbose=1 will enable INFO messages and 0 will disable
- * them. FAIL and ERROR messages are always displayed.
- */
+ 
 void log_verbosity(int level)
 {
 	if (level > VMAX)
@@ -97,12 +72,7 @@ void log_verbosity(int level)
 	_verbose = level;
 }
 
-/**
- * print_result() - Print standard PASS | ERROR | FAIL results
- * @ret:	the return value to be considered: 0 | RET_ERROR | RET_FAIL
- *
- * print_result() is primarily intended for functional tests.
- */
+ 
 void print_result(const char *test_name, int ret)
 {
 	switch (ret) {
@@ -121,7 +91,7 @@ void print_result(const char *test_name, int ret)
 	}
 }
 
-/* log level macros */
+ 
 #define info(message, vargs...) \
 do { \
 	if (_verbose >= VINFO) \

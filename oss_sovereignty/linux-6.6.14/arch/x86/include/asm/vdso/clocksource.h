@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef __ASM_VDSO_CLOCKSOURCE_H
 #define __ASM_VDSO_CLOCKSOURCE_H
 
@@ -9,4 +9,4 @@
 
 #define HAVE_VDSO_CLOCKMODE_HVCLOCK
 
-#endif /* __ASM_VDSO_CLOCKSOURCE_H */
+#endif  

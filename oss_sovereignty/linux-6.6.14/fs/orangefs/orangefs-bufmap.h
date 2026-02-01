@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * (C) 2001 Clemson University and The University of Chicago
- *
- * See COPYING in top-level directory.
- */
+ 
+ 
 
 #ifndef __ORANGEFS_BUFMAP_H
 #define __ORANGEFS_BUFMAP_H
@@ -36,4 +32,4 @@ int orangefs_bufmap_copy_to_iovec(struct iov_iter *iter,
 
 void orangefs_bufmap_page_fill(void *kaddr, int buffer_index, int slot_index);
 
-#endif /* __ORANGEFS_BUFMAP_H */
+#endif  

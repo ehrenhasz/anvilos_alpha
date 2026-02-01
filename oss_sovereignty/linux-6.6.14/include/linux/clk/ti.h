@@ -1,20 +1,12 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * TI clock drivers support
- *
- * Copyright (C) 2013 Texas Instruments, Inc.
- */
+ 
+ 
 #ifndef __LINUX_CLK_TI_H__
 #define __LINUX_CLK_TI_H__
 
 #include <linux/clk-provider.h>
 #include <linux/clkdev.h>
 
-/**
- * struct clk_omap_reg - OMAP register declaration
- * @offset: offset from the master IP module base address
- * @index: index of the master IP module
- */
+ 
 struct clk_omap_reg {
 	void __iomem *ptr;
 	u16 offset;
@@ -22,65 +14,7 @@ struct clk_omap_reg {
 	u8 flags;
 };
 
-/**
- * struct dpll_data - DPLL registers and integration data
- * @mult_div1_reg: register containing the DPLL M and N bitfields
- * @mult_mask: mask of the DPLL M bitfield in @mult_div1_reg
- * @div1_mask: mask of the DPLL N bitfield in @mult_div1_reg
- * @clk_bypass: struct clk_hw pointer to the clock's bypass clock input
- * @clk_ref: struct clk_hw pointer to the clock's reference clock input
- * @control_reg: register containing the DPLL mode bitfield
- * @enable_mask: mask of the DPLL mode bitfield in @control_reg
- * @last_rounded_rate: cache of the last rate result of omap2_dpll_round_rate()
- * @last_rounded_m: cache of the last M result of omap2_dpll_round_rate()
- * @last_rounded_m4xen: cache of the last M4X result of
- *			omap4_dpll_regm4xen_round_rate()
- * @last_rounded_lpmode: cache of the last lpmode result of
- *			 omap4_dpll_lpmode_recalc()
- * @max_multiplier: maximum valid non-bypass multiplier value (actual)
- * @last_rounded_n: cache of the last N result of omap2_dpll_round_rate()
- * @min_divider: minimum valid non-bypass divider value (actual)
- * @max_divider: maximum valid non-bypass divider value (actual)
- * @max_rate: maximum clock rate for the DPLL
- * @modes: possible values of @enable_mask
- * @autoidle_reg: register containing the DPLL autoidle mode bitfield
- * @idlest_reg: register containing the DPLL idle status bitfield
- * @autoidle_mask: mask of the DPLL autoidle mode bitfield in @autoidle_reg
- * @freqsel_mask: mask of the DPLL jitter correction bitfield in @control_reg
- * @dcc_mask: mask of the DPLL DCC correction bitfield @mult_div1_reg
- * @dcc_rate: rate atleast which DCC @dcc_mask must be set
- * @idlest_mask: mask of the DPLL idle status bitfield in @idlest_reg
- * @lpmode_mask: mask of the DPLL low-power mode bitfield in @control_reg
- * @m4xen_mask: mask of the DPLL M4X multiplier bitfield in @control_reg
- * @auto_recal_bit: bitshift of the driftguard enable bit in @control_reg
- * @recal_en_bit: bitshift of the PRM_IRQENABLE_* bit for recalibration IRQs
- * @recal_st_bit: bitshift of the PRM_IRQSTATUS_* bit for recalibration IRQs
- * @ssc_deltam_reg: register containing the DPLL SSC frequency spreading
- * @ssc_modfreq_reg: register containing the DPLL SSC modulation frequency
- * @ssc_modfreq_mant_mask: mask of the mantissa component in @ssc_modfreq_reg
- * @ssc_modfreq_exp_mask: mask of the exponent component in @ssc_modfreq_reg
- * @ssc_enable_mask: mask of the DPLL SSC enable bit in @control_reg
- * @ssc_downspread_mask: mask of the DPLL SSC low frequency only bit in
- *                       @control_reg
- * @ssc_modfreq: the DPLL SSC frequency modulation in kHz
- * @ssc_deltam: the DPLL SSC frequency spreading in permille (10th of percent)
- * @ssc_downspread: require the only low frequency spread of the DPLL in SSC
- *                   mode
- * @flags: DPLL type/features (see below)
- *
- * Possible values for @flags:
- * DPLL_J_TYPE: "J-type DPLL" (only some 36xx, 4xxx DPLLs)
- *
- * @freqsel_mask is only used on the OMAP34xx family and AM35xx.
- *
- * XXX Some DPLLs have multiple bypass inputs, so it's not technically
- * correct to only have one @clk_bypass pointer.
- *
- * XXX The runtime-variable fields (@last_rounded_rate, @last_rounded_m,
- * @last_rounded_n) should be separated from the runtime-fixed fields
- * and placed into a different structure, so that the runtime-fixed data
- * can be placed into read-only space.
- */
+ 
 struct dpll_data {
 	struct clk_omap_reg	mult_div1_reg;
 	u32			mult_mask;
@@ -129,14 +63,7 @@ struct dpll_data {
 
 struct clk_hw_omap;
 
-/**
- * struct clk_hw_omap_ops - OMAP clk ops
- * @find_idlest: find idlest register information for a clock
- * @find_companion: find companion clock register information for a clock,
- *		    basically converts CM_ICLKEN* <-> CM_FCLKEN*
- * @allow_idle: enables autoidle hardware functionality for a clock
- * @deny_idle: prevent autoidle hardware functionality for a clock
- */
+ 
 struct clk_hw_omap_ops {
 	void	(*find_idlest)(struct clk_hw_omap *oclk,
 			       struct clk_omap_reg *idlest_reg,
@@ -148,18 +75,7 @@ struct clk_hw_omap_ops {
 	void	(*deny_idle)(struct clk_hw_omap *oclk);
 };
 
-/**
- * struct clk_hw_omap - OMAP struct clk
- * @node: list_head connecting this clock into the full clock list
- * @enable_reg: register to write to enable the clock (see @enable_bit)
- * @enable_bit: bitshift to write to enable/disable the clock (see @enable_reg)
- * @flags: see "struct clk.flags possibilities" above
- * @clksel_reg: for clksel clks, register va containing src/divisor select
- * @dpll_data: for DPLLs, pointer to struct dpll_data for this clock
- * @clkdm_name: clockdomain name that this clock is contained in
- * @clkdm: pointer to struct clockdomain, resolved from @clkdm_name at runtime
- * @ops: clock ops for this clock
- */
+ 
 struct clk_hw_omap {
 	struct clk_hw		hw;
 	struct list_head	node;
@@ -177,42 +93,23 @@ struct clk_hw_omap {
 	int			autoidle_count;
 };
 
-/*
- * struct clk_hw_omap.flags possibilities
- *
- * XXX document the rest of the clock flags here
- *
- * ENABLE_REG_32BIT: (OMAP1 only) clock control register must be accessed
- *     with 32bit ops, by default OMAP1 uses 16bit ops.
- * CLOCK_IDLE_CONTROL: (OMAP1 only) clock has autoidle support.
- * CLOCK_NO_IDLE_PARENT: (OMAP1 only) when clock is enabled, its parent
- *     clock is put to no-idle mode.
- * ENABLE_ON_INIT: Clock is enabled on init.
- * INVERT_ENABLE: By default, clock enable bit behavior is '1' enable, '0'
- *     disable. This inverts the behavior making '0' enable and '1' disable.
- * CLOCK_CLKOUTX2: (OMAP4 only) DPLL CLKOUT and CLKOUTX2 GATE_CTRL
- *     bits share the same register.  This flag allows the
- *     omap4_dpllmx*() code to determine which GATE_CTRL bit field
- *     should be used.  This is a temporary solution - a better approach
- *     would be to associate clock type-specific data with the clock,
- *     similar to the struct dpll_data approach.
- */
-#define ENABLE_REG_32BIT	(1 << 0)	/* Use 32-bit access */
+ 
+#define ENABLE_REG_32BIT	(1 << 0)	 
 #define CLOCK_IDLE_CONTROL	(1 << 1)
 #define CLOCK_NO_IDLE_PARENT	(1 << 2)
-#define ENABLE_ON_INIT		(1 << 3)	/* Enable upon framework init */
-#define INVERT_ENABLE		(1 << 4)	/* 0 enables, 1 disables */
+#define ENABLE_ON_INIT		(1 << 3)	 
+#define INVERT_ENABLE		(1 << 4)	 
 #define CLOCK_CLKOUTX2		(1 << 5)
 
-/* CM_CLKEN_PLL*.EN* bit values - not all are available for every DPLL */
+ 
 #define DPLL_LOW_POWER_STOP	0x1
 #define DPLL_LOW_POWER_BYPASS	0x5
 #define DPLL_LOCKED		0x7
 
-/* DPLL Type and DCO Selection Flags */
+ 
 #define DPLL_J_TYPE		0x1
 
-/* Static memmap indices */
+ 
 enum {
 	TI_CLKM_CM = 0,
 	TI_CLKM_CM2,
@@ -224,23 +121,7 @@ enum {
 	CLK_MAX_MEMMAPS
 };
 
-/**
- * struct ti_clk_ll_ops - low-level ops for clocks
- * @clk_readl: pointer to register read function
- * @clk_writel: pointer to register write function
- * @clk_rmw: pointer to register read-modify-write function
- * @clkdm_clk_enable: pointer to clockdomain enable function
- * @clkdm_clk_disable: pointer to clockdomain disable function
- * @clkdm_lookup: pointer to clockdomain lookup function
- * @cm_wait_module_ready: pointer to CM module wait ready function
- * @cm_split_idlest_reg: pointer to CM module function to split idlest reg
- *
- * Low-level ops are generally used by the basic clock types (clk-gate,
- * clk-mux, clk-divider etc.) to provide support for various low-level
- * hadrware interfaces (direct MMIO, regmap etc.), and is initialized
- * by board code. Low-level ops also contain some other platform specific
- * operations not provided directly by clock drivers.
- */
+ 
 struct ti_clk_ll_ops {
 	u32	(*clk_readl)(const struct clk_omap_reg *reg);
 	void	(*clk_writel)(u32 val, const struct clk_omap_reg *reg);

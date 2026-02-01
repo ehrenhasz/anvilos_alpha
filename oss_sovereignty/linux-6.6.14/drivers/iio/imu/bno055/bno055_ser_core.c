@@ -1,18 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Serial line interface for Bosh BNO055 IMU (via serdev).
- * This file implements serial communication up to the register read/write
- * level.
- *
- * Copyright (C) 2021-2022 Istituto Italiano di Tecnologia
- * Electronic Design Laboratory
- * Written by Andrea Merello <andrea.merello@iit.it>
- *
- * This driver is based on
- *	Plantower PMS7003 particulate matter sensor driver
- *	Which is
- *	Copyright (c) Tomasz Duszynski <tduszyns@gmail.com>
- */
+
+ 
 
 #include <linux/completion.h>
 #include <linux/device.h>
@@ -28,92 +15,9 @@
 #include "bno055_ser_trace.h"
 #include "bno055.h"
 
-/*
- * Register writes cmd have the following format
- * +------+------+-----+-----+----- ... ----+
- * | 0xAA | 0xOO | REG | LEN | payload[LEN] |
- * +------+------+-----+-----+----- ... ----+
- *
- * Register write responses have the following format
- * +------+----------+
- * | 0xEE | ERROCODE |
- * +------+----------+
- *
- * .. except when writing the SYS_RST bit (i.e. triggering a system reset); in
- * case the IMU accepts the command, then it resets without responding. We don't
- * handle this (yet) here (so we inform the common bno055 code not to perform
- * sw resets - bno055 on serial bus basically requires the hw reset pin).
- *
- * Register read have the following format
- * +------+------+-----+-----+
- * | 0xAA | 0xO1 | REG | LEN |
- * +------+------+-----+-----+
- *
- * Successful register read response have the following format
- * +------+-----+----- ... ----+
- * | 0xBB | LEN | payload[LEN] |
- * +------+-----+----- ... ----+
- *
- * Failed register read response have the following format
- * +------+--------+
- * | 0xEE | ERRCODE|  (ERRCODE always > 1)
- * +------+--------+
- *
- * Error codes are
- * 01: OK
- * 02: read/write FAIL
- * 04: invalid address
- * 05: write on RO
- * 06: wrong start byte
- * 07: bus overrun
- * 08: len too high
- * 09: len too low
- * 10: bus RX byte timeout (timeout is 30mS)
- *
- *
- * **WORKAROUND ALERT**
- *
- * Serial communication seems very fragile: the BNO055 buffer seems to overflow
- * very easy; BNO055 seems able to sink few bytes, then it needs a brief pause.
- * On the other hand, it is also picky on timeout: if there is a pause > 30mS in
- * between two bytes then the transaction fails (IMU internal RX FSM resets).
- *
- * BNO055 has been seen also failing to process commands in case we send them
- * too close each other (or if it is somehow busy?)
- *
- * In particular I saw these scenarios:
- * 1) If we send 2 bytes per time, then the IMU never(?) overflows.
- * 2) If we send 4 bytes per time (i.e. the full header), then the IMU could
- *    overflow, but it seem to sink all 4 bytes, then it returns error.
- * 3) If we send more than 4 bytes, the IMU could overflow, and I saw it sending
- *    error after 4 bytes are sent; we have troubles in synchronizing again,
- *    because we are still sending data, and the IMU interprets it as the 1st
- *    byte of a new command.
- *
- * While we must avoid case 3, we could send 4 bytes per time and eventually
- * retry in case of failure; this seemed convenient for reads (which requires
- * TXing exactly 4 bytes), however it has been seen that, depending by the IMU
- * settings (e.g. LPF), failures became less or more frequent; in certain IMU
- * configurations they are very rare, but in certain others we keeps failing
- * even after like 30 retries.
- *
- * So, we just split TXes in [2-bytes + delay] steps, and still keep an eye on
- * the IMU response; in case it overflows (which is now unlikely), we retry.
- */
+ 
 
-/*
- * Read operation overhead:
- *  4 bytes req + 2byte resp hdr.
- *  6 bytes = 60 bit (considering 1start + 1stop bits).
- *  60/115200 = ~520uS + about 2500mS delay -> ~3mS
- * In 3mS we could read back about 34 bytes that means 17 samples, this means
- * that in case of scattered reads in which the gap is 17 samples or less it is
- * still convenient to go for a burst.
- * We have to take into account also IMU response time - IMU seems to be often
- * reasonably quick to respond, but sometimes it seems to be in some "critical
- * section" in which it delays handling of serial protocol. Because of this we
- * round-up to 22, which is the max number of samples, always bursting indeed.
- */
+ 
 #define BNO055_SER_XFER_BURST_BREAK_THRESHOLD 22
 
 struct bno055_ser_priv {
@@ -125,25 +29,17 @@ struct bno055_ser_priv {
 	int expected_data_len;
 	u8 *response_buf;
 
-	/**
-	 * enum cmd_status - represent the status of a command sent to the HW.
-	 * @STATUS_CRIT: The command failed: the serial communication failed.
-	 * @STATUS_OK:   The command executed successfully.
-	 * @STATUS_FAIL: The command failed: HW responded with an error.
-	 */
+	 
 	enum {
 		STATUS_CRIT = -1,
 		STATUS_OK = 0,
 		STATUS_FAIL = 1,
 	} cmd_status;
 
-	/*
-	 * Protects all the above fields, which are accessed in behalf of both
-	 * the serdev RX callback and the regmap side
-	 */
+	 
 	struct mutex lock;
 
-	/* Only accessed in serdev RX callback context*/
+	 
 	struct {
 		enum {
 			RX_IDLE,
@@ -155,7 +51,7 @@ struct bno055_ser_priv {
 		int type;
 	} rx;
 
-	/* Never accessed in behalf of serdev RX callback context */
+	 
 	bool cmd_stale;
 
 	struct completion cmd_complete;
@@ -177,11 +73,7 @@ static int bno055_ser_send_chunk(struct bno055_ser_priv *priv, const u8 *data, i
 	return 0;
 }
 
-/*
- * Send a read or write command.
- * 'data' can be NULL (used in read case). 'len' parameter is always valid; in
- * case 'data' is non-NULL then it must match 'data' size.
- */
+ 
 static int bno055_ser_do_send_cmd(struct bno055_ser_priv *priv,
 				  bool read, int addr, int len, const u8 *data)
 {
@@ -212,7 +104,7 @@ static int bno055_ser_do_send_cmd(struct bno055_ser_priv *priv,
 
 	return 0;
 fail:
-	/* waiting more than 30mS should clear the BNO055 internal state */
+	 
 	usleep_range(40000, 50000);
 	return ret;
 }
@@ -224,10 +116,7 @@ static int bno055_ser_send_cmd(struct bno055_ser_priv *priv,
 	int retry = retry_max;
 	int ret = 0;
 
-	/*
-	 * In case previous command was interrupted we still need to wait it to
-	 * complete before we can issue new commands
-	 */
+	 
 	if (priv->cmd_stale) {
 		ret = wait_for_completion_interruptible_timeout(&priv->cmd_complete,
 								msecs_to_jiffies(100));
@@ -235,16 +124,12 @@ static int bno055_ser_send_cmd(struct bno055_ser_priv *priv,
 			return -ERESTARTSYS;
 
 		priv->cmd_stale = false;
-		/* if serial protocol broke, bail out */
+		 
 		if (priv->cmd_status == STATUS_CRIT)
 			return -EIO;
 	}
 
-	/*
-	 * Try to convince the IMU to cooperate.. as explained in the comments
-	 * at the top of this file, the IMU could also refuse the command (i.e.
-	 * it is not ready yet); retry in this case.
-	 */
+	 
 	do {
 		mutex_lock(&priv->lock);
 		priv->expect_response = read ? CMD_READ : CMD_WRITE;
@@ -272,7 +157,7 @@ static int bno055_ser_send_cmd(struct bno055_ser_priv *priv,
 		if (priv->cmd_status == STATUS_CRIT)
 			return -EIO;
 
-		/* loop in case priv->cmd_status == STATUS_FAIL */
+		 
 	} while (--retry);
 
 	if (ret < 0)
@@ -326,13 +211,7 @@ static int bno055_ser_read_reg(void *context,
 	return ret;
 }
 
-/*
- * Handler for received data; this is called from the receiver callback whenever
- * it got some packet from the serial bus. The status tells us whether the
- * packet is valid (i.e. header ok && received payload len consistent wrt the
- * header). It's now our responsibility to check whether this is what we
- * expected, of whether we got some unexpected, yet valid, packet.
- */
+ 
 static void bno055_ser_handle_rx(struct bno055_ser_priv *priv, int status)
 {
 	mutex_lock(&priv->lock);
@@ -346,11 +225,7 @@ static void bno055_ser_handle_rx(struct bno055_ser_priv *priv, int status)
 		priv->cmd_status = status;
 		if (status == STATUS_OK &&
 		    priv->rx.databuf_count != priv->expected_data_len) {
-			/*
-			 * If we got here, then the lower layer serial protocol
-			 * seems consistent with itself; if we got an unexpected
-			 * amount of data then signal it as a non critical error
-			 */
+			 
 			priv->cmd_status = STATUS_FAIL;
 			dev_warn(&priv->serdev->dev,
 				 "received an unexpected amount of, yet valid, data from sensor");
@@ -367,17 +242,7 @@ static void bno055_ser_handle_rx(struct bno055_ser_priv *priv, int status)
 	complete(&priv->cmd_complete);
 }
 
-/*
- * Serdev receiver FSM. This tracks the serial communication and parse the
- * header. It pushes packets to bno055_ser_handle_rx(), eventually communicating
- * failures (i.e. malformed packets).
- * Ideally it doesn't know anything about upper layer (i.e. if this is the
- * packet we were really expecting), but since we copies the payload into the
- * receiver buffer (that is not valid when i.e. we don't expect data), we
- * snoop a bit in the upper layer..
- * Also, we assume to RX one pkt per time (i.e. the HW doesn't send anything
- * unless we require to AND we don't queue more than one request per time).
- */
+ 
 static int bno055_ser_receive_buf(struct serdev_device *serdev,
 				  const unsigned char *buf, size_t size)
 {
@@ -391,10 +256,7 @@ static int bno055_ser_receive_buf(struct serdev_device *serdev,
 	trace_recv(size, buf);
 	switch (priv->rx.state) {
 	case RX_IDLE:
-		/*
-		 * New packet.
-		 * Check for its 1st byte that identifies the pkt type.
-		 */
+		 
 		if (buf[0] != 0xEE && buf[0] != 0xBB) {
 			dev_err(&priv->serdev->dev,
 				"Invalid packet start %x", buf[0]);
@@ -409,10 +271,7 @@ static int bno055_ser_receive_buf(struct serdev_device *serdev,
 		fallthrough;
 
 	case RX_START:
-		/*
-		 * Packet RX in progress, we expect either 1-byte len or 1-byte
-		 * status depending by the packet type.
-		 */
+		 
 		if (remaining == 0)
 			break;
 
@@ -428,7 +287,7 @@ static int bno055_ser_receive_buf(struct serdev_device *serdev,
 			break;
 
 		} else {
-			/*priv->rx.type == 0xBB */
+			 
 			priv->rx.state = RX_DATA;
 			priv->rx.expected_len = buf[0];
 			remaining--;
@@ -437,15 +296,12 @@ static int bno055_ser_receive_buf(struct serdev_device *serdev,
 		fallthrough;
 
 	case RX_DATA:
-		/* Header parsed; now receiving packet data payload */
+		 
 		if (remaining == 0)
 			break;
 
 		if (priv->rx.databuf_count + remaining > priv->rx.expected_len) {
-			/*
-			 * This is an inconsistency in serial protocol, we lost
-			 * sync and we don't know how to handle further data
-			 */
+			 
 			dev_err(&priv->serdev->dev, "BB pkt. Extra data received");
 			bno055_ser_handle_rx(priv, STATUS_CRIT);
 			priv->rx.state = RX_IDLE;
@@ -453,19 +309,9 @@ static int bno055_ser_receive_buf(struct serdev_device *serdev,
 		}
 
 		mutex_lock(&priv->lock);
-		/*
-		 * NULL e.g. when read cmd is stale or when no read cmd is
-		 * actually pending.
-		 */
+		 
 		if (priv->response_buf &&
-		    /*
-		     * Snoop on the upper layer protocol stuff to make sure not
-		     * to write to an invalid memory. Apart for this, let's the
-		     * upper layer manage any inconsistency wrt expected data
-		     * len (as long as the serial protocol is consistent wrt
-		     * itself (i.e. response header is consistent with received
-		     * response len.
-		     */
+		     
 		    (priv->rx.databuf_count + remaining <= priv->expected_data_len))
 			memcpy(priv->response_buf + priv->rx.databuf_count,
 			       buf, remaining);
@@ -473,10 +319,7 @@ static int bno055_ser_receive_buf(struct serdev_device *serdev,
 
 		priv->rx.databuf_count += remaining;
 
-		/*
-		 * Reached expected len advertised by the IMU for the current
-		 * packet. Pass it to the upper layer (for us it is just valid).
-		 */
+		 
 		if (priv->rx.databuf_count == priv->rx.expected_len) {
 			bno055_ser_handle_rx(priv, STATUS_OK);
 			priv->rx.state = RX_IDLE;

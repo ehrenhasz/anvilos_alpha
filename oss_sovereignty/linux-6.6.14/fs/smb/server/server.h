@@ -1,16 +1,12 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- *   Copyright (C) 2018 Samsung Electronics Co., Ltd.
- */
+ 
+ 
 
 #ifndef __SERVER_H__
 #define __SERVER_H__
 
 #include "smbacl.h"
 
-/*
- * Server state type
- */
+ 
 enum {
 	SERVER_STATE_STARTING_UP,
 	SERVER_STATE_RUNNING,
@@ -18,9 +14,7 @@ enum {
 	SERVER_STATE_SHUTTING_DOWN,
 };
 
-/*
- * Server global config string index
- */
+ 
 enum {
 	SERVER_CONF_NETBIOS_NAME,
 	SERVER_CONF_SERVER_STRING,
@@ -68,4 +62,4 @@ static inline int ksmbd_server_configurable(void)
 
 int server_queue_ctrl_init_work(void);
 int server_queue_ctrl_reset_work(void);
-#endif /* __SERVER_H__ */
+#endif  

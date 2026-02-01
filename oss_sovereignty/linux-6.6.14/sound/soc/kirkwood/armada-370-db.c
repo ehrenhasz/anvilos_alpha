@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2014 Marvell
- *
- * Thomas Petazzoni <thomas.petazzoni@free-electrons.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/moduleparam.h>

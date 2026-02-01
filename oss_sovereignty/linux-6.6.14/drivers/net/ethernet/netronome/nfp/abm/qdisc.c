@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-/* Copyright (C) 2018 Netronome Systems, Inc. */
+
+ 
 
 #include <linux/rtnetlink.h>
 #include <net/pkt_cls.h>
@@ -91,10 +91,7 @@ static void nfp_abm_stats_update(struct nfp_abm_link *alink)
 {
 	u64 now;
 
-	/* Limit the frequency of updates - stats of non-leaf qdiscs are a sum
-	 * of all their leafs, so we would read the same stat multiple times
-	 * for every dump.
-	 */
+	 
 	now = ktime_get();
 	if (now - alink->last_stats_update < NFP_ABM_STATS_REFRESH_IVAL)
 		return;
@@ -120,7 +117,7 @@ nfp_abm_qdisc_offload_stop(struct nfp_abm_link *alink, struct nfp_qdisc *qdisc)
 {
 	unsigned int i;
 
-	/* Don't complain when qdisc is getting unlinked */
+	 
 	if (qdisc->use_cnt)
 		nfp_warn(alink->abm->app->cpp, "Offload of '%08x' stopped\n",
 			 qdisc->handle);
@@ -142,9 +139,7 @@ __nfp_abm_stats_init(struct nfp_abm_link *alink, unsigned int band,
 	u64 backlog_pkts, backlog_bytes;
 	int err;
 
-	/* Don't touch the backlog, backlog can only be reset after it has
-	 * been reported back to the tc qdisc stats.
-	 */
+	 
 	backlog_pkts = prev_stats->backlog_pkts;
 	backlog_bytes = prev_stats->backlog_bytes;
 
@@ -204,7 +199,7 @@ nfp_abm_offload_compile_red(struct nfp_abm_link *alink, struct nfp_qdisc *qdisc,
 		    qdisc->use_cnt == 1;
 	qdisc->offload_mark = good_red || good_gred;
 
-	/* If we are starting offload init prev_stats */
+	 
 	if (qdisc->offload_mark && !qdisc->offloaded)
 		if (nfp_abm_stats_init(alink, qdisc, queue))
 			qdisc->offload_mark = false;
@@ -250,13 +245,13 @@ void nfp_abm_qdisc_offload_update(struct nfp_abm_link *alink)
 	void __rcu **slot;
 	size_t i;
 
-	/* Mark all thresholds as unconfigured */
+	 
 	for (i = 0; i < abm->num_bands; i++)
 		__bitmap_set(abm->threshold_undef,
 			     i * NFP_NET_MAX_RX_RINGS + alink->queue_base,
 			     alink->total_queues);
 
-	/* Clear offload marks */
+	 
 	radix_tree_for_each_slot(slot, &alink->qdiscs, &iter, 0) {
 		qdisc = nfp_abm_qdisc_tree_deref_slot(slot);
 		qdisc->offload_mark = false;
@@ -265,7 +260,7 @@ void nfp_abm_qdisc_offload_update(struct nfp_abm_link *alink)
 	if (alink->root_qdisc)
 		nfp_abm_offload_compile_mq(alink, alink->root_qdisc);
 
-	/* Refresh offload status */
+	 
 	radix_tree_for_each_slot(slot, &alink->qdiscs, &iter, 0) {
 		qdisc = nfp_abm_qdisc_tree_deref_slot(slot);
 		if (!qdisc->offload_mark && qdisc->offloaded)
@@ -273,7 +268,7 @@ void nfp_abm_qdisc_offload_update(struct nfp_abm_link *alink)
 		qdisc->offloaded = qdisc->offload_mark;
 	}
 
-	/* Reset the unconfigured thresholds */
+	 
 	for (i = 0; i < abm->num_thresholds; i++)
 		if (test_bit(i, abm->threshold_undef))
 			__nfp_abm_ctrl_set_q_lvl(abm, i, NFP_ABM_LVL_INFINITY);
@@ -291,15 +286,13 @@ nfp_abm_qdisc_clear_mq(struct net_device *netdev, struct nfp_abm_link *alink,
 
 	if (!qdisc->use_cnt)
 		return;
-	/* MQ doesn't notify well on destruction, we need special handling of
-	 * MQ's children.
-	 */
+	 
 	if (qdisc->type == NFP_QDISC_MQ &&
 	    qdisc == alink->root_qdisc &&
 	    netdev->reg_state == NETREG_UNREGISTERING)
 		return;
 
-	/* Count refs held by MQ instances and clear pointers */
+	 
 	radix_tree_for_each_slot(slot, &alink->qdiscs, &iter, 0) {
 		struct nfp_qdisc *mq = nfp_abm_qdisc_tree_deref_slot(slot);
 		unsigned int i;
@@ -410,7 +403,7 @@ nfp_abm_qdisc_destroy(struct net_device *netdev, struct nfp_abm_link *alink,
 	if (!qdisc)
 		return;
 
-	/* We don't get TC_SETUP_ROOT_QDISC w/ MQ when netdev is unregistered */
+	 
 	if (alink->root_qdisc == qdisc)
 		qdisc->use_cnt--;
 
@@ -419,9 +412,7 @@ nfp_abm_qdisc_destroy(struct net_device *netdev, struct nfp_abm_link *alink,
 
 	if (alink->root_qdisc == qdisc) {
 		alink->root_qdisc = NULL;
-		/* Only root change matters, other changes are acted upon on
-		 * the graft notification.
-		 */
+		 
 		nfp_abm_qdisc_offload_update(alink);
 	}
 }
@@ -490,9 +481,7 @@ nfp_abm_gred_stats(struct nfp_abm_link *alink, u32 handle,
 	qdisc = nfp_abm_qdisc_find(alink, handle);
 	if (!qdisc)
 		return -EOPNOTSUPP;
-	/* If the qdisc offload has stopped we may need to adjust the backlog
-	 * counters back so carry on even if qdisc is not currently offloaded.
-	 */
+	 
 
 	for (i = 0; i < qdisc->red.num_bands; i++) {
 		if (!stats->xstats[i])
@@ -645,9 +634,7 @@ nfp_abm_red_stats(struct nfp_abm_link *alink, u32 handle,
 	qdisc = nfp_abm_qdisc_find(alink, handle);
 	if (!qdisc)
 		return -EOPNOTSUPP;
-	/* If the qdisc offload has stopped we may need to adjust the backlog
-	 * counters back so carry on even if qdisc is not currently offloaded.
-	 */
+	 
 
 	nfp_abm_stats_calculate(&qdisc->red.band[0].stats,
 				&qdisc->red.band[0].prev_stats,
@@ -706,15 +693,13 @@ nfp_abm_red_replace(struct net_device *netdev, struct nfp_abm_link *alink,
 	if (ret < 0)
 		return ret;
 
-	/* If limit != 0 child gets reset */
+	 
 	if (opt->set.limit) {
 		if (nfp_abm_qdisc_child_valid(qdisc, 0))
 			qdisc->children[0]->use_cnt--;
 		qdisc->children[0] = NULL;
 	} else {
-		/* Qdisc was just allocated without a limit will use noop_qdisc,
-		 * i.e. a block hole.
-		 */
+		 
 		if (!ret)
 			qdisc->children[0] = NFP_QDISC_UNTRACKED;
 	}
@@ -785,9 +770,7 @@ nfp_abm_mq_stats(struct nfp_abm_link *alink, u32 handle,
 
 	nfp_abm_stats_update(alink);
 
-	/* MQ stats are summed over the children in the core, so we need
-	 * to add up the unreported child values.
-	 */
+	 
 	memset(&qdisc->mq.stats, 0, sizeof(qdisc->mq.stats));
 	memset(&qdisc->mq.prev_stats, 0, sizeof(qdisc->mq.prev_stats));
 

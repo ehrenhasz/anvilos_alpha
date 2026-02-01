@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: ISC
-/* Copyright (C) 2019 MediaTek Inc.
- *
- * Author: Roy Luo <royluo@google.com>
- *         Ryder Lee <ryder.lee@mediatek.com>
- *         Felix Fietkau <nbd@nbd.name>
- *         Lorenzo Bianconi <lorenzo@kernel.org>
- */
+
+ 
 
 #include <linux/etherdevice.h>
 #include <linux/hwmon.h>
@@ -32,7 +26,7 @@ static ssize_t mt7615_thermal_show_temp(struct device *dev,
 	if (temperature < 0)
 		return temperature;
 
-	/* display in millidegree celcius */
+	 
 	return sprintf(buf, "%u\n", temperature * 1000);
 }
 
@@ -68,7 +62,7 @@ EXPORT_SYMBOL_GPL(mt7615_thermal_init);
 static void
 mt7615_phy_init(struct mt7615_dev *dev)
 {
-	/* disable rf low power beacon mode */
+	 
 	mt76_set(dev, MT_WF_PHY_WF2_RFCTRL0(0), MT_WF_PHY_WF2_RFCTRL0_LPBCN_EN);
 	mt76_set(dev, MT_WF_PHY_WF2_RFCTRL0(1), MT_WF_PHY_WF2_RFCTRL0_LPBCN_EN);
 }
@@ -83,7 +77,7 @@ mt7615_init_mac_chain(struct mt7615_dev *dev, int chain)
 	else
 		val = MT_CFG_CCR_MAC_D1_1X_GC_EN | MT_CFG_CCR_MAC_D1_2X_GC_EN;
 
-	/* enable band 0/1 clk */
+	 
 	mt76_set(dev, MT_CFG_CCR, val);
 
 	mt76_rmw(dev, MT_TMAC_TRCR(chain),
@@ -172,7 +166,7 @@ mt7615_mac_init(struct mt7615_dev *dev)
 		FIELD_PREP(MT_DMA_DCR0_MAX_RX_LEN, 3072) |
 		MT_DMA_DCR0_RX_VEC_DROP | MT_DMA_DCR0_DAMSDU_EN |
 		MT_DMA_DCR0_RX_HDR_TRANS_EN);
-	/* disable TDLS filtering */
+	 
 	mt76_clear(dev, MT_WF_PFCR, MT_WF_PFCR_TDLS_EN);
 	mt76_set(dev, MT_WF_MIB_SCR0, MT_MIB_SCR0_AGG_CNT_RANGE_EN);
 	if (is_mt7663(&dev->mt76)) {
@@ -562,24 +556,21 @@ int mt7615_register_ext_phy(struct mt7615_dev *dev)
 
 	mt7615_mac_set_scs(phy, true);
 
-	/*
-	 * Make the secondary PHY MAC address local without overlapping with
-	 * the usual MAC address allocation scheme on multiple virtual interfaces
-	 */
+	 
 	memcpy(mphy->macaddr, dev->mt76.eeprom.data + MT_EE_MAC_ADDR,
 	       ETH_ALEN);
 	mphy->macaddr[0] |= 2;
 	mphy->macaddr[0] ^= BIT(7);
 	mt76_eeprom_override(mphy);
 
-	/* second phy can only handle 5 GHz */
+	 
 	mphy->cap.has_5ghz = true;
 
-	/* mt7615 second phy shares the same hw queues with the primary one */
+	 
 	for (i = 0; i <= MT_TXQ_PSD ; i++)
 		mphy->q_tx[i] = dev->mphy.q_tx[i];
 
-	/* init led callbacks */
+	 
 	if (IS_ENABLED(CONFIG_MT76_LEDS)) {
 		mphy->leds.cdev.brightness_set = mt7615_led_set_brightness;
 		mphy->leds.cdev.blink_set = mt7615_led_set_blink;

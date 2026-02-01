@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2016 Maxime Ripard. All rights reserved.
- */
+ 
+ 
 
 #ifndef _CCU_RESET_H_
 #define _CCU_RESET_H_
@@ -30,4 +28,4 @@ static inline struct ccu_reset *rcdev_to_ccu_reset(struct reset_controller_dev *
 
 extern const struct reset_control_ops ccu_reset_ops;
 
-#endif /* _CCU_RESET_H_ */
+#endif  

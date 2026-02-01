@@ -1,8 +1,6 @@
-/* SPDX-License-Identifier: MIT */
+ 
 
-/*
- * Copyright © 2019 Intel Corporation
- */
+ 
 
 #include <linux/compiler.h>
 #include <linux/kernel.h>
@@ -28,7 +26,7 @@ static struct selftest {
 };
 #undef selftest
 
-/* Embed the line number into the parameter name so that we can order tests */
+ 
 #define param(n) __PASTE(igt__, __PASTE(__PASTE(__LINE__, __), n))
 #define selftest_0(n, func, id) \
 module_param_named(id, selftests[__idx_##n].enabled, bool, 0400);
@@ -131,7 +129,7 @@ static int run_selftests(struct selftest *st, unsigned long count)
 
 	set_default_test_all(st, count);
 
-	/* Tests are listed in natural order in selftests.h */
+	 
 	for (; count--; st++) {
 		if (!st->enabled)
 			continue;

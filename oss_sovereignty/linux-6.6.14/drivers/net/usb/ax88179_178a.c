@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * ASIX AX88179/178A USB 3.0/2.0 to Gigabit Ethernet Devices
- *
- * Copyright (C) 2011-2013 ASIX
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/etherdevice.h>
@@ -40,7 +36,7 @@
 	#define	AX_USB_HS		0x02
 
 #define GENERAL_STATUS				0x03
-/* Check AX88179 version. UA1:Bit2 = 0,  UA2:Bit2 = 1 */
+ 
 	#define	AX_SECLD		0x04
 
 #define AX_SROM_ADDR				0x07
@@ -413,7 +409,7 @@ static int ax88179_suspend(struct usb_interface *intf, pm_message_t message)
 
 	usbnet_suspend(intf, message);
 
-	/* Enable WoL */
+	 
 	if (priv->wolopts) {
 		ax88179_read_cmd(dev, AX_ACCESS_MAC, AX_MONITOR_MOD,
 				 1, 1, &tmp8);
@@ -426,14 +422,14 @@ static int ax88179_suspend(struct usb_interface *intf, pm_message_t message)
 				  1, 1, &tmp8);
 	}
 
-	/* Disable RX path */
+	 
 	ax88179_read_cmd(dev, AX_ACCESS_MAC, AX_MEDIUM_STATUS_MODE,
 			 2, 2, &tmp16);
 	tmp16 &= ~AX_MEDIUM_RECEIVE_EN;
 	ax88179_write_cmd(dev, AX_ACCESS_MAC, AX_MEDIUM_STATUS_MODE,
 			  2, 2, &tmp16);
 
-	/* Force bulk-in zero length */
+	 
 	ax88179_read_cmd(dev, AX_ACCESS_MAC, AX_PHYPWR_RSTCTL,
 			 2, 2, &tmp16);
 
@@ -441,11 +437,11 @@ static int ax88179_suspend(struct usb_interface *intf, pm_message_t message)
 	ax88179_write_cmd(dev, AX_ACCESS_MAC, AX_PHYPWR_RSTCTL,
 			  2, 2, &tmp16);
 
-	/* change clock */
+	 
 	tmp8 = 0;
 	ax88179_write_cmd(dev, AX_ACCESS_MAC, AX_CLK_SELECT, 1, 1, &tmp8);
 
-	/* Configure RX control register => stop operation */
+	 
 	tmp16 = AX_RX_CTL_STOP;
 	ax88179_write_cmd(dev, AX_ACCESS_MAC, AX_RX_CTL, 2, 2, &tmp16);
 
@@ -454,8 +450,8 @@ static int ax88179_suspend(struct usb_interface *intf, pm_message_t message)
 	return 0;
 }
 
-/* This function is used to enable the autodetach function. */
-/* This function is determined by offset 0x43 of EEPROM */
+ 
+ 
 static int ax88179_auto_detach(struct usbnet *dev)
 {
 	u16 tmp16;
@@ -467,7 +463,7 @@ static int ax88179_auto_detach(struct usbnet *dev)
 	if ((tmp16 == 0xFFFF) || (!(tmp16 & 0x0100)))
 		return 0;
 
-	/* Enable Auto Detach bit */
+	 
 	tmp8 = 0;
 	ax88179_read_cmd(dev, AX_ACCESS_MAC, AX_CLK_SELECT, 1, 1, &tmp8);
 	tmp8 |= AX_CLK_SELECT_ULR;
@@ -559,7 +555,7 @@ ax88179_get_eeprom(struct net_device *net, struct ethtool_eeprom *eeprom,
 	if (!eeprom_buff)
 		return -ENOMEM;
 
-	/* ax88179/178A returns 2 bytes from eeprom on read */
+	 
 	for (i = first_word; i <= last_word; i++) {
 		ret = __ax88179_read_cmd(dev, AX_ACCESS_EEPROM, i, 1, 2,
 					 &eeprom_buff[i - first_word]);
@@ -602,8 +598,7 @@ ax88179_set_eeprom(struct net_device *net, struct ethtool_eeprom *eeprom,
 	if (!eeprom_buff)
 		return -ENOMEM;
 
-	/* align data to 16 bit boundaries, read the missing data from
-	   the EEPROM */
+	 
 	if (eeprom->offset & 1) {
 		ret = ax88179_read_cmd(dev, AX_ACCESS_EEPROM, first_word, 1, 2,
 				       &eeprom_buff[0]);
@@ -636,7 +631,7 @@ ax88179_set_eeprom(struct net_device *net, struct ethtool_eeprom *eeprom,
 		msleep(20);
 	}
 
-	/* reload EEPROM data */
+	 
 	ret = ax88179_write_cmd(dev, AX_RELOAD_EEPROM_EFUSE, 0x0000, 0, 0, NULL);
 	if (ret < 0) {
 		netdev_err(net, "Failed to reload EEPROM data\n");
@@ -671,21 +666,21 @@ ax88179_ethtool_get_eee(struct usbnet *dev, struct ethtool_eee *data)
 {
 	int val;
 
-	/* Get Supported EEE */
+	 
 	val = ax88179_phy_read_mmd_indirect(dev, MDIO_PCS_EEE_ABLE,
 					    MDIO_MMD_PCS);
 	if (val < 0)
 		return val;
 	data->supported = mmd_eee_cap_to_ethtool_sup_t(val);
 
-	/* Get advertisement EEE */
+	 
 	val = ax88179_phy_read_mmd_indirect(dev, MDIO_AN_EEE_ADV,
 					    MDIO_MMD_AN);
 	if (val < 0)
 		return val;
 	data->advertised = mmd_eee_adv_to_ethtool_adv_t(val);
 
-	/* Get LP advertisement EEE */
+	 
 	val = ax88179_phy_read_mmd_indirect(dev, MDIO_AN_EEE_LPABLE,
 					    MDIO_MMD_AN);
 	if (val < 0)
@@ -883,11 +878,9 @@ static void ax88179_set_multicast(struct net_device *net)
 		   netdev_mc_count(net) > AX_MAX_MCAST) {
 		data->rxctl |= AX_RX_CTL_AMALL;
 	} else if (netdev_mc_empty(net)) {
-		/* just broadcast and directed */
+		 
 	} else {
-		/* We use dev->data for our 8 byte filter buffer
-		 * to avoid allocating memory that is tricky to free later
-		 */
+		 
 		u32 crc_bits;
 		struct netdev_hw_addr *ha;
 
@@ -960,7 +953,7 @@ static int ax88179_change_mtu(struct net_device *net, int new_mtu)
 				  2, 2, &tmp16);
 	}
 
-	/* max qlen depend on hard_mtu and rx_urb_size */
+	 
 	usbnet_update_max_qlen(dev);
 
 	return 0;
@@ -979,7 +972,7 @@ static int ax88179_set_mac_addr(struct net_device *net, void *p)
 
 	eth_hw_addr_set(net, addr->sa_data);
 
-	/* Set the MAC address */
+	 
 	ret = ax88179_write_cmd(dev, AX_ACCESS_MAC, AX_NODE_ID, ETH_ALEN,
 				 ETH_ALEN, net->dev_addr);
 	if (ret < 0)
@@ -1008,7 +1001,7 @@ static int ax88179_check_eeprom(struct usbnet *dev)
 	u16 csum, delay = HZ / 10;
 	unsigned long jtimeout;
 
-	/* Read EEPROM content */
+	 
 	for (i = 0; i < 6; i++) {
 		buf = i;
 		if (ax88179_write_cmd(dev, AX_ACCESS_MAC, AX_SROM_ADDR,
@@ -1075,7 +1068,7 @@ static int ax88179_convert_old_led(struct usbnet *dev, u16 *ledvalue)
 {
 	u16 led;
 
-	/* Loaded the old eFuse LED Mode */
+	 
 	if (ax88179_read_cmd(dev, AX_ACCESS_EEPROM, 0x3C, 1, 2, &led) < 0)
 		return -EINVAL;
 
@@ -1115,10 +1108,10 @@ static int ax88179_led_setting(struct usbnet *dev)
 	u16 tmp, ledact, ledlink, ledvalue = 0, delay = HZ / 10;
 	unsigned long jtimeout;
 
-	/* Check AX88179 version. UA1 or UA2*/
+	 
 	ax88179_read_cmd(dev, AX_ACCESS_MAC, GENERAL_STATUS, 1, 1, &value);
 
-	if (!(value & AX_SECLD)) {	/* UA1 */
+	if (!(value & AX_SECLD)) {	 
 		value = AX_GPIO_CTRL_GPIO3EN | AX_GPIO_CTRL_GPIO2EN |
 			AX_GPIO_CTRL_GPIO1EN;
 		if (ax88179_write_cmd(dev, AX_ACCESS_MAC, AX_GPIO_CTRL,
@@ -1126,7 +1119,7 @@ static int ax88179_led_setting(struct usbnet *dev)
 			return -EINVAL;
 	}
 
-	/* Check EEPROM */
+	 
 	if (!ax88179_check_eeprom(dev)) {
 		value = 0x42;
 		if (ax88179_write_cmd(dev, AX_ACCESS_MAC, AX_SROM_ADDR,
@@ -1156,7 +1149,7 @@ static int ax88179_led_setting(struct usbnet *dev)
 				 1, 1, &value);
 		ledvalue |= value;
 
-		/* load internal ROM for defaule setting */
+		 
 		if ((ledvalue == 0xFFFF) || ((ledvalue & LED_VALID) == 0))
 			ax88179_convert_old_led(dev, &ledvalue);
 
@@ -1232,7 +1225,7 @@ static int ax88179_led_setting(struct usbnet *dev)
 	ax88179_write_cmd(dev, AX_ACCESS_PHY, AX88179_PHY_ID,
 			  GMII_PHY_PAGE_SELECT, 2, &tmp);
 
-	/* LED full duplex setting */
+	 
 	ledfd = 0;
 	if (ledvalue & LED0_FD)
 		ledfd |= 0x01;
@@ -1260,7 +1253,7 @@ static void ax88179_get_mac_addr(struct usbnet *dev)
 
 	memset(mac, 0, sizeof(mac));
 
-	/* Maybe the boot loader passed the MAC address via device tree */
+	 
 	if (!eth_platform_get_mac_address(&dev->udev->dev, mac)) {
 		netif_dbg(dev, ifup, dev->net,
 			  "MAC address read from device tree");
@@ -1299,7 +1292,7 @@ static int ax88179_bind(struct usbnet *dev, struct usb_interface *intf)
 	dev->net->needed_headroom = 8;
 	dev->net->max_mtu = 4088;
 
-	/* Initialize MII structure */
+	 
 	dev->mii.dev = dev->net;
 	dev->mii.mdio_read = ax88179_mdio_read;
 	dev->mii.mdio_write = ax88179_mdio_write;
@@ -1325,14 +1318,14 @@ static void ax88179_unbind(struct usbnet *dev, struct usb_interface *intf)
 	struct ax88179_data *ax179_data = dev->driver_priv;
 	u16 tmp16;
 
-	/* Configure RX control register => stop operation */
+	 
 	tmp16 = AX_RX_CTL_STOP;
 	ax88179_write_cmd(dev, AX_ACCESS_MAC, AX_RX_CTL, 2, 2, &tmp16);
 
 	tmp16 = 0;
 	ax88179_write_cmd(dev, AX_ACCESS_MAC, AX_CLK_SELECT, 1, 1, &tmp16);
 
-	/* Power down ethernet PHY */
+	 
 	tmp16 = 0;
 	ax88179_write_cmd(dev, AX_ACCESS_MAC, AX_PHYPWR_RSTCTL, 2, 2, &tmp16);
 
@@ -1344,12 +1337,12 @@ ax88179_rx_checksum(struct sk_buff *skb, u32 *pkt_hdr)
 {
 	skb->ip_summed = CHECKSUM_NONE;
 
-	/* checksum error bit is set */
+	 
 	if ((*pkt_hdr & AX_RXHDR_L3CSUM_ERR) ||
 	    (*pkt_hdr & AX_RXHDR_L4CSUM_ERR))
 		return;
 
-	/* It must be a TCP or UDP packet with a valid checksum */
+	 
 	if (((*pkt_hdr & AX_RXHDR_L4_TYPE_MASK) == AX_RXHDR_L4_TYPE_TCP) ||
 	    ((*pkt_hdr & AX_RXHDR_L4_TYPE_MASK) == AX_RXHDR_L4_TYPE_UDP))
 		skb->ip_summed = CHECKSUM_UNNECESSARY;
@@ -1363,45 +1356,9 @@ static int ax88179_rx_fixup(struct usbnet *dev, struct sk_buff *skb)
 	u16 hdr_off;
 	u32 *pkt_hdr;
 
-	/* At the end of the SKB, there's a header telling us how many packets
-	 * are bundled into this buffer and where we can find an array of
-	 * per-packet metadata (which contains elements encoded into u16).
-	 */
+	 
 
-	/* SKB contents for current firmware:
-	 *   <packet 1> <padding>
-	 *   ...
-	 *   <packet N> <padding>
-	 *   <per-packet metadata entry 1> <dummy header>
-	 *   ...
-	 *   <per-packet metadata entry N> <dummy header>
-	 *   <padding2> <rx_hdr>
-	 *
-	 * where:
-	 *   <packet N> contains pkt_len bytes:
-	 *		2 bytes of IP alignment pseudo header
-	 *		packet received
-	 *   <per-packet metadata entry N> contains 4 bytes:
-	 *		pkt_len and fields AX_RXHDR_*
-	 *   <padding>	0-7 bytes to terminate at
-	 *		8 bytes boundary (64-bit).
-	 *   <padding2> 4 bytes to make rx_hdr terminate at
-	 *		8 bytes boundary (64-bit)
-	 *   <dummy-header> contains 4 bytes:
-	 *		pkt_len=0 and AX_RXHDR_DROP_ERR
-	 *   <rx-hdr>	contains 4 bytes:
-	 *		pkt_cnt and hdr_off (offset of
-	 *		  <per-packet metadata entry 1>)
-	 *
-	 * pkt_cnt is number of entrys in the per-packet metadata.
-	 * In current firmware there is 2 entrys per packet.
-	 * The first points to the packet and the
-	 *  second is a dummy header.
-	 * This was done probably to align fields in 64-bit and
-	 *  maintain compatibility with old firmware.
-	 * This code assumes that <dummy header> and <padding2> are
-	 *  optional.
-	 */
+	 
 
 	if (skb->len < 4)
 		return 0;
@@ -1413,14 +1370,12 @@ static int ax88179_rx_fixup(struct usbnet *dev, struct sk_buff *skb)
 	if (pkt_cnt == 0)
 		return 0;
 
-	/* Make sure that the bounds of the metadata array are inside the SKB
-	 * (and in front of the counter at the end).
-	 */
+	 
 	if (pkt_cnt * 4 + hdr_off > skb->len)
 		return 0;
 	pkt_hdr = (u32 *)(skb->data + hdr_off);
 
-	/* Packets must not overlap the metadata array */
+	 
 	skb_trim(skb, hdr_off);
 
 	for (; pkt_cnt > 0; pkt_cnt--, pkt_hdr++) {
@@ -1431,15 +1386,14 @@ static int ax88179_rx_fixup(struct usbnet *dev, struct sk_buff *skb)
 		pkt_len = (*pkt_hdr >> 16) & 0x1fff;
 		pkt_len_plus_padd = (pkt_len + 7) & 0xfff8;
 
-		/* Skip dummy header used for alignment
-		 */
+		 
 		if (pkt_len == 0)
 			continue;
 
 		if (pkt_len_plus_padd > skb->len)
 			return 0;
 
-		/* Check CRC or runt packet */
+		 
 		if ((*pkt_hdr & (AX_RXHDR_CRC_ERR | AX_RXHDR_DROP_ERR)) ||
 		    pkt_len < 2 + ETH_HLEN) {
 			dev->net->stats.rx_errors++;
@@ -1447,11 +1401,11 @@ static int ax88179_rx_fixup(struct usbnet *dev, struct sk_buff *skb)
 			continue;
 		}
 
-		/* last packet */
+		 
 		if (pkt_len_plus_padd == skb->len) {
 			skb_trim(skb, pkt_len);
 
-			/* Skip IP alignment pseudo header */
+			 
 			skb_pull(skb, 2);
 
 			skb->truesize = SKB_TRUESIZE(pkt_len_plus_padd);
@@ -1464,7 +1418,7 @@ static int ax88179_rx_fixup(struct usbnet *dev, struct sk_buff *skb)
 			return 0;
 		skb_trim(ax_skb, pkt_len);
 
-		/* Skip IP alignment pseudo header */
+		 
 		skb_pull(ax_skb, 2);
 
 		skb->truesize = pkt_len_plus_padd +
@@ -1487,9 +1441,9 @@ ax88179_tx_fixup(struct usbnet *dev, struct sk_buff *skb, gfp_t flags)
 	void *ptr;
 
 	tx_hdr1 = skb->len;
-	tx_hdr2 = skb_shinfo(skb)->gso_size; /* Set TSO mss */
+	tx_hdr2 = skb_shinfo(skb)->gso_size;  
 	if (((skb->len + 8) % frame_size) == 0)
-		tx_hdr2 |= 0x80008000;	/* Enable padding */
+		tx_hdr2 |= 0x80008000;	 
 
 	headroom = skb_headroom(skb) - 8;
 
@@ -1526,7 +1480,7 @@ static int ax88179_link_reset(struct usbnet *dev)
 		ax88179_write_cmd(dev, AX_ACCESS_MAC, AX_RX_CTL, 2, 2,
 				  &ax179_data->rxctl);
 
-		/*link up, check the usb device control TX FIFO full or empty*/
+		 
 		ax88179_read_cmd(dev, 0x81, 0x8c, 0, 4, &tmp32);
 
 		if (time_after(jiffies, jtimeout))
@@ -1566,7 +1520,7 @@ static int ax88179_link_reset(struct usbnet *dev)
 		memcpy(tmp, &AX88179_BULKIN_SIZE[3], 5);
 	}
 
-	/* RX bulk configuration */
+	 
 	ax88179_write_cmd(dev, AX_ACCESS_MAC, AX_RX_BULKIN_QCTRL, 5, 5, tmp);
 
 	dev->rx_urb_size = (1024 * (tmp[3] + 2));
@@ -1594,7 +1548,7 @@ static int ax88179_reset(struct usbnet *dev)
 	tmp16 = (u16 *)buf;
 	tmp = (u8 *)buf;
 
-	/* Power up ethernet PHY */
+	 
 	*tmp16 = 0;
 	ax88179_write_cmd(dev, AX_ACCESS_MAC, AX_PHYPWR_RSTCTL, 2, 2, tmp16);
 
@@ -1606,14 +1560,14 @@ static int ax88179_reset(struct usbnet *dev)
 	ax88179_write_cmd(dev, AX_ACCESS_MAC, AX_CLK_SELECT, 1, 1, tmp);
 	msleep(200);
 
-	/* Ethernet PHY Auto Detach*/
+	 
 	ax88179_auto_detach(dev);
 
-	/* Read MAC address from DTB or asix chip */
+	 
 	ax88179_get_mac_addr(dev);
 	memcpy(dev->net->perm_addr, dev->net->dev_addr, ETH_ALEN);
 
-	/* RX bulk configuration */
+	 
 	memcpy(tmp, &AX88179_BULKIN_SIZE[0], 5);
 	ax88179_write_cmd(dev, AX_ACCESS_MAC, AX_RX_BULKIN_QCTRL, 5, 5, tmp);
 
@@ -1626,7 +1580,7 @@ static int ax88179_reset(struct usbnet *dev)
 	ax88179_write_cmd(dev, AX_ACCESS_MAC, AX_PAUSE_WATERLVL_HIGH,
 			  1, 1, tmp);
 
-	/* Enable checksum offload */
+	 
 	*tmp = AX_RXCOE_IP | AX_RXCOE_TCP | AX_RXCOE_UDP |
 	       AX_RXCOE_TCPV6 | AX_RXCOE_UDPV6;
 	ax88179_write_cmd(dev, AX_ACCESS_MAC, AX_RXCOE_CTL, 1, 1, tmp);
@@ -1635,7 +1589,7 @@ static int ax88179_reset(struct usbnet *dev)
 	       AX_TXCOE_TCPV6 | AX_TXCOE_UDPV6;
 	ax88179_write_cmd(dev, AX_ACCESS_MAC, AX_TXCOE_CTL, 1, 1, tmp);
 
-	/* Configure RX control register => start operation */
+	 
 	*tmp16 = AX_RX_CTL_DROPCRCERR | AX_RX_CTL_IPE | AX_RX_CTL_START |
 		 AX_RX_CTL_AP | AX_RX_CTL_AMALL | AX_RX_CTL_AB;
 	ax88179_write_cmd(dev, AX_ACCESS_MAC, AX_RX_CTL, 2, 2, tmp16);
@@ -1644,14 +1598,14 @@ static int ax88179_reset(struct usbnet *dev)
 	       AX_MONITOR_MODE_RWMP;
 	ax88179_write_cmd(dev, AX_ACCESS_MAC, AX_MONITOR_MOD, 1, 1, tmp);
 
-	/* Configure default medium type => giga */
+	 
 	*tmp16 = AX_MEDIUM_RECEIVE_EN | AX_MEDIUM_TXFLOW_CTRLEN |
 		 AX_MEDIUM_RXFLOW_CTRLEN | AX_MEDIUM_FULL_DUPLEX |
 		 AX_MEDIUM_GIGAMODE;
 	ax88179_write_cmd(dev, AX_ACCESS_MAC, AX_MEDIUM_STATUS_MODE,
 			  2, 2, tmp16);
 
-	/* Check if WoL is supported */
+	 
 	ax179_data->wol_supported = 0;
 	if (ax88179_read_cmd(dev, AX_ACCESS_MAC, AX_MONITOR_MOD,
 			     1, 1, &tmp) > 0)
@@ -1668,7 +1622,7 @@ static int ax88179_reset(struct usbnet *dev)
 	eee_data.advertised = 0;
 	ax88179_ethtool_set_eee(dev, &eee_data);
 
-	/* Restart autoneg */
+	 
 	mii_nway_restart(&dev->mii);
 
 	usbnet_link_change(dev, 0, 0);
@@ -1860,55 +1814,55 @@ static const struct driver_info at_umc2000sp_info = {
 
 static const struct usb_device_id products[] = {
 {
-	/* ASIX AX88179 10/100/1000 */
+	 
 	USB_DEVICE_AND_INTERFACE_INFO(0x0b95, 0x1790, 0xff, 0xff, 0),
 	.driver_info = (unsigned long)&ax88179_info,
 }, {
-	/* ASIX AX88178A 10/100/1000 */
+	 
 	USB_DEVICE_AND_INTERFACE_INFO(0x0b95, 0x178a, 0xff, 0xff, 0),
 	.driver_info = (unsigned long)&ax88178a_info,
 }, {
-	/* Cypress GX3 SuperSpeed to Gigabit Ethernet Bridge Controller */
+	 
 	USB_DEVICE_AND_INTERFACE_INFO(0x04b4, 0x3610, 0xff, 0xff, 0),
 	.driver_info = (unsigned long)&cypress_GX3_info,
 }, {
-	/* D-Link DUB-1312 USB 3.0 to Gigabit Ethernet Adapter */
+	 
 	USB_DEVICE_AND_INTERFACE_INFO(0x2001, 0x4a00, 0xff, 0xff, 0),
 	.driver_info = (unsigned long)&dlink_dub1312_info,
 }, {
-	/* Sitecom USB 3.0 to Gigabit Adapter */
+	 
 	USB_DEVICE_AND_INTERFACE_INFO(0x0df6, 0x0072, 0xff, 0xff, 0),
 	.driver_info = (unsigned long)&sitecom_info,
 }, {
-	/* Samsung USB Ethernet Adapter */
+	 
 	USB_DEVICE_AND_INTERFACE_INFO(0x04e8, 0xa100, 0xff, 0xff, 0),
 	.driver_info = (unsigned long)&samsung_info,
 }, {
-	/* Lenovo OneLinkDock Gigabit LAN */
+	 
 	USB_DEVICE_AND_INTERFACE_INFO(0x17ef, 0x304b, 0xff, 0xff, 0),
 	.driver_info = (unsigned long)&lenovo_info,
 }, {
-	/* Belkin B2B128 USB 3.0 Hub + Gigabit Ethernet Adapter */
+	 
 	USB_DEVICE_AND_INTERFACE_INFO(0x050d, 0x0128, 0xff, 0xff, 0),
 	.driver_info = (unsigned long)&belkin_info,
 }, {
-	/* Toshiba USB 3.0 GBit Ethernet Adapter */
+	 
 	USB_DEVICE_AND_INTERFACE_INFO(0x0930, 0x0a13, 0xff, 0xff, 0),
 	.driver_info = (unsigned long)&toshiba_info,
 }, {
-	/* Magic Control Technology U3-A9003 USB 3.0 Gigabit Ethernet Adapter */
+	 
 	USB_DEVICE_AND_INTERFACE_INFO(0x0711, 0x0179, 0xff, 0xff, 0),
 	.driver_info = (unsigned long)&mct_info,
 }, {
-	/* Allied Telesis AT-UMC2000 USB 3.0/USB 3.1 Gen 1 to Gigabit Ethernet Adapter */
+	 
 	USB_DEVICE_AND_INTERFACE_INFO(0x07c9, 0x000e, 0xff, 0xff, 0),
 	.driver_info = (unsigned long)&at_umc2000_info,
 }, {
-	/* Allied Telesis AT-UMC200 USB 3.0/USB 3.1 Gen 1 to Fast Ethernet Adapter */
+	 
 	USB_DEVICE_AND_INTERFACE_INFO(0x07c9, 0x000f, 0xff, 0xff, 0),
 	.driver_info = (unsigned long)&at_umc200_info,
 }, {
-	/* Allied Telesis AT-UMC2000/SP USB 3.0/USB 3.1 Gen 1 to Gigabit Ethernet Adapter */
+	 
 	USB_DEVICE_AND_INTERFACE_INFO(0x07c9, 0x0010, 0xff, 0xff, 0),
 	.driver_info = (unsigned long)&at_umc2000sp_info,
 },

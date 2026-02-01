@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2012 ST Microelectronics
- * Viresh Kumar <vireshk@kernel.org>
- *
- * Auxiliary Synthesizer clock implementation
- */
+
+ 
 
 #define pr_fmt(fmt) "clk-aux-synth: " fmt
 
@@ -14,15 +9,7 @@
 #include <linux/err.h>
 #include "clk.h"
 
-/*
- * DOC: Auxiliary Synthesizer clock
- *
- * Aux synth gives rate for different values of eq, x and y
- *
- * Fout from synthesizer can be given from two equations:
- * Fout1 = (Fin * X/Y)/2		EQ1
- * Fout2 = Fin * X/Y			EQ2
- */
+ 
 
 #define to_clk_aux(_hw) container_of(_hw, struct clk_aux, hw)
 
@@ -78,11 +65,11 @@ static unsigned long clk_aux_recalc_rate(struct clk_hw *hw,
 	if (eqn == aux->masks->eq1_mask)
 		den = 2;
 
-	/* calculate numerator */
+	 
 	num = (val >> aux->masks->xscale_sel_shift) &
 		aux->masks->xscale_sel_mask;
 
-	/* calculate denominator */
+	 
 	den *= (val >> aux->masks->yscale_sel_shift) &
 		aux->masks->yscale_sel_mask;
 
@@ -92,7 +79,7 @@ static unsigned long clk_aux_recalc_rate(struct clk_hw *hw,
 	return (((parent_rate / 10000) * num) / den) * 10000;
 }
 
-/* Configures new clock rate of aux */
+ 
 static int clk_aux_set_rate(struct clk_hw *hw, unsigned long drate,
 				unsigned long prate)
 {
@@ -149,7 +136,7 @@ struct clk *clk_register_aux(const char *aux_name, const char *gate_name,
 	if (!aux)
 		return ERR_PTR(-ENOMEM);
 
-	/* struct clk_aux assignments */
+	 
 	if (!masks)
 		aux->masks = &default_aux_masks;
 	else

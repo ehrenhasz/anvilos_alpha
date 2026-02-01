@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright (C) 2021 Marvell. */
+
+ 
 
 #include "otx2_cpt_devlink.h"
 

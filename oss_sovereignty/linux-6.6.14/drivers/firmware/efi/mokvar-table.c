@@ -1,34 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * mokvar-table.c
- *
- * Copyright (c) 2020 Red Hat
- * Author: Lenny Szubowicz <lszubowi@redhat.com>
- *
- * This module contains the kernel support for the Linux EFI Machine
- * Owner Key (MOK) variable configuration table, which is identified by
- * the LINUX_EFI_MOK_VARIABLE_TABLE_GUID.
- *
- * This EFI configuration table provides a more robust alternative to
- * EFI volatile variables by which an EFI boot loader can pass the
- * contents of the Machine Owner Key (MOK) certificate stores to the
- * kernel during boot. If both the EFI MOK config table and corresponding
- * EFI MOK variables are present, the table should be considered as
- * more authoritative.
- *
- * This module includes code that validates and maps the EFI MOK table,
- * if it's presence was detected very early in boot.
- *
- * Kernel interface routines are provided to walk through all the
- * entries in the MOK config table or to search for a specific named
- * entry.
- *
- * The contents of the individual named MOK config table entries are
- * made available to user space via read-only sysfs binary files under:
- *
- * /sys/firmware/efi/mok-variables/
- *
- */
+
+ 
 #define pr_fmt(fmt) "mokvar: " fmt
 
 #include <linux/capability.h>
@@ -42,33 +13,13 @@
 
 #include <asm/early_ioremap.h>
 
-/*
- * The LINUX_EFI_MOK_VARIABLE_TABLE_GUID config table is a packed
- * sequence of struct efi_mokvar_table_entry, one for each named
- * MOK variable. The sequence is terminated by an entry with a
- * completely NULL name and 0 data size.
- *
- * efi_mokvar_table_size is set to the computed size of the
- * MOK config table by efi_mokvar_table_init(). This will be
- * non-zero if and only if the table if present and has been
- * validated by efi_mokvar_table_init().
- */
+ 
 static size_t efi_mokvar_table_size;
 
-/*
- * efi_mokvar_table_va is the kernel virtual address at which the
- * EFI MOK config table has been mapped by efi_mokvar_sysfs_init().
- */
+ 
 static struct efi_mokvar_table_entry *efi_mokvar_table_va;
 
-/*
- * Each /sys/firmware/efi/mok-variables/ sysfs file is represented by
- * an instance of struct efi_mokvar_sysfs_attr on efi_mokvar_sysfs_list.
- * bin_attr.private points to the associated EFI MOK config table entry.
- *
- * This list is created during boot and then remains unchanged.
- * So no synchronization is currently required to walk the list.
- */
+ 
 struct efi_mokvar_sysfs_attr {
 	struct bin_attribute bin_attr;
 	struct list_head node;
@@ -77,26 +28,7 @@ struct efi_mokvar_sysfs_attr {
 static LIST_HEAD(efi_mokvar_sysfs_list);
 static struct kobject *mokvar_kobj;
 
-/*
- * efi_mokvar_table_init() - Early boot validation of EFI MOK config table
- *
- * If present, validate and compute the size of the EFI MOK variable
- * configuration table. This table may be provided by an EFI boot loader
- * as an alternative to ordinary EFI variables, due to platform-dependent
- * limitations. The memory occupied by this table is marked as reserved.
- *
- * This routine must be called before efi_free_boot_services() in order
- * to guarantee that it can mark the table as reserved.
- *
- * Implicit inputs:
- * efi.mokvar_table:	Physical address of EFI MOK variable config table
- *			or special value that indicates no such table.
- *
- * Implicit outputs:
- * efi_mokvar_table_size: Computed size of EFI MOK variable config table.
- *			The table is considered present and valid if this
- *			is non-zero.
- */
+ 
 void __init efi_mokvar_table_init(void)
 {
 	efi_memory_desc_t md;
@@ -114,10 +46,7 @@ void __init efi_mokvar_table_init(void)
 
 	if (efi.mokvar_table == EFI_INVALID_TABLE_ADDR)
 		return;
-	/*
-	 * The EFI MOK config table must fit within a single EFI memory
-	 * descriptor range.
-	 */
+	 
 	err = efi_mem_desc_lookup(efi.mokvar_table, &md);
 	if (err) {
 		pr_warn("EFI MOKvar config table is not within the EFI memory map\n");
@@ -126,12 +55,7 @@ void __init efi_mokvar_table_init(void)
 
 	offset_limit = efi_mem_desc_end(&md) - efi.mokvar_table;
 
-	/*
-	 * Validate the MOK config table. Since there is no table header
-	 * from which we could get the total size of the MOK config table,
-	 * we compute the total size as we validate each variably sized
-	 * entry, remapping as necessary.
-	 */
+	 
 	err = -EINVAL;
 	while (cur_offset + sizeof(*mokvar_entry) <= offset_limit) {
 		mokvar_entry = va + cur_offset;
@@ -139,12 +63,7 @@ void __init efi_mokvar_table_init(void)
 		if (map_size_needed > map_size) {
 			if (va)
 				early_memunmap(va, map_size);
-			/*
-			 * Map a little more than the fixed size entry
-			 * header, anticipating some data. It's safe to
-			 * do so as long as we stay within current memory
-			 * descriptor.
-			 */
+			 
 			map_size = min(map_size_needed + 2*EFI_PAGE_SIZE,
 				       offset_limit);
 			va = early_memremap(efi.mokvar_table, map_size);
@@ -156,7 +75,7 @@ void __init efi_mokvar_table_init(void)
 			mokvar_entry = va + cur_offset;
 		}
 
-		/* Check for last sentinel entry */
+		 
 		if (mokvar_entry->name[0] == '\0') {
 			if (mokvar_entry->data_size != 0)
 				break;
@@ -164,13 +83,13 @@ void __init efi_mokvar_table_init(void)
 			break;
 		}
 
-		/* Sanity check that the name is null terminated */
+		 
 		size = strnlen(mokvar_entry->name,
 			       sizeof(mokvar_entry->name));
 		if (size >= sizeof(mokvar_entry->name))
 			break;
 
-		/* Advance to the next entry */
+		 
 		cur_offset = map_size_needed + mokvar_entry->data_size;
 	}
 
@@ -187,22 +106,7 @@ void __init efi_mokvar_table_init(void)
 	efi_mokvar_table_size = map_size_needed;
 }
 
-/*
- * efi_mokvar_entry_next() - Get next entry in the EFI MOK config table
- *
- * mokvar_entry:	Pointer to current EFI MOK config table entry
- *			or null. Null indicates get first entry.
- *			Passed by reference. This is updated to the
- *			same value as the return value.
- *
- * Returns:		Pointer to next EFI MOK config table entry
- *			or null, if there are no more entries.
- *			Same value is returned in the mokvar_entry
- *			parameter.
- *
- * This routine depends on the EFI MOK config table being entirely
- * mapped with it's starting virtual address in efi_mokvar_table_va.
- */
+ 
 struct efi_mokvar_table_entry *efi_mokvar_entry_next(
 			struct efi_mokvar_table_entry **mokvar_entry)
 {
@@ -232,17 +136,7 @@ struct efi_mokvar_table_entry *efi_mokvar_entry_next(
 	return mokvar_next;
 }
 
-/*
- * efi_mokvar_entry_find() - Find EFI MOK config entry by name
- *
- * name:	Name of the entry to look for.
- *
- * Returns:	Pointer to EFI MOK config table entry if found;
- *		null otherwise.
- *
- * This routine depends on the EFI MOK config table being entirely
- * mapped with it's starting virtual address in efi_mokvar_table_va.
- */
+ 
 struct efi_mokvar_table_entry *efi_mokvar_entry_find(const char *name)
 {
 	struct efi_mokvar_table_entry *mokvar_entry = NULL;
@@ -255,16 +149,7 @@ struct efi_mokvar_table_entry *efi_mokvar_entry_find(const char *name)
 	return NULL;
 }
 
-/*
- * efi_mokvar_sysfs_read() - sysfs binary file read routine
- *
- * Returns:	Count of bytes read.
- *
- * Copy EFI MOK config table entry data for this mokvar sysfs binary file
- * to the supplied buffer, starting at the specified offset into mokvar table
- * entry data, for the specified count bytes. The copy is limited by the
- * amount of data in this mokvar config table entry.
- */
+ 
 static ssize_t efi_mokvar_sysfs_read(struct file *file, struct kobject *kobj,
 				 struct bin_attribute *bin_attr, char *buf,
 				 loff_t off, size_t count)
@@ -283,30 +168,7 @@ static ssize_t efi_mokvar_sysfs_read(struct file *file, struct kobject *kobj,
 	return count;
 }
 
-/*
- * efi_mokvar_sysfs_init() - Map EFI MOK config table and create sysfs
- *
- * Map the EFI MOK variable config table for run-time use by the kernel
- * and create the sysfs entries in /sys/firmware/efi/mok-variables/
- *
- * This routine just returns if a valid EFI MOK variable config table
- * was not found earlier during boot.
- *
- * This routine must be called during a "middle" initcall phase, i.e.
- * after efi_mokvar_table_init() but before UEFI certs are loaded
- * during late init.
- *
- * Implicit inputs:
- * efi.mokvar_table:	Physical address of EFI MOK variable config table
- *			or special value that indicates no such table.
- *
- * efi_mokvar_table_size: Computed size of EFI MOK variable config table.
- *			The table is considered present and valid if this
- *			is non-zero.
- *
- * Implicit outputs:
- * efi_mokvar_table_va:	Start virtual address of the EFI MOK config table.
- */
+ 
 static int __init efi_mokvar_sysfs_init(void)
 {
 	void *config_va;

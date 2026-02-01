@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2022 Meta Platforms, Inc. and affiliates. */
+
+ 
 
 #include <vmlinux.h>
 #include <bpf/bpf_tracing.h>
@@ -195,9 +195,7 @@ long rbtree_api_release_aliasing(void *ctx)
 
 	bpf_spin_lock(&glock);
 
-	/* m and o point to the same node,
-	 * but verifier doesn't know this
-	 */
+	 
 	res = bpf_rbtree_first(&groot);
 	if (!res)
 		goto err_out;
@@ -209,16 +207,7 @@ long rbtree_api_release_aliasing(void *ctx)
 	m = container_of(res, struct node_data, node);
 
 	res = bpf_rbtree_remove(&groot, &m->node);
-	/* Retval of previous remove returns an owning reference to m,
-	 * which is the same node non-owning ref o is pointing at.
-	 * We can safely try to remove o as the second rbtree_remove will
-	 * return NULL since the node isn't in a tree.
-	 *
-	 * Previously we relied on the verifier type system + rbtree_remove
-	 * invalidating non-owning refs to ensure that rbtree_remove couldn't
-	 * fail, but now rbtree_remove does runtime checking so we no longer
-	 * invalidate non-owning refs after remove.
-	 */
+	 
 	res2 = bpf_rbtree_remove(&groot, &o->node);
 
 	bpf_spin_unlock(&glock);
@@ -229,9 +218,7 @@ long rbtree_api_release_aliasing(void *ctx)
 		bpf_obj_drop(o);
 	}
 	if (res2) {
-		/* The second remove fails, so res2 is null and this doesn't
-		 * execute
-		 */
+		 
 		m = container_of(res2, struct node_data, node);
 		first_data[1] = m->data;
 		bpf_obj_drop(m);

@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB */
-/* Copyright (c) 2019 Mellanox Technologies. */
+ 
+ 
 
 #include "ecpf.h"
 
@@ -10,10 +10,7 @@ bool mlx5_read_embedded_cpu(struct mlx5_core_dev *dev)
 
 static bool mlx5_ecpf_esw_admins_host_pf(const struct mlx5_core_dev *dev)
 {
-	/* In separate host mode, PF enables itself.
-	 * When ECPF is eswitch manager, eswitch enables host PF after
-	 * eswitch is setup.
-	 */
+	 
 	return mlx5_core_is_ecpf_esw_manager(dev);
 }
 
@@ -46,9 +43,7 @@ static int mlx5_host_pf_init(struct mlx5_core_dev *dev)
 	if (mlx5_ecpf_esw_admins_host_pf(dev))
 		return 0;
 
-	/* ECPF shall enable HCA for host PF in the same way a PF
-	 * does this for its VFs when ECPF is not a eswitch manager.
-	 */
+	 
 	err = mlx5_cmd_host_pf_enable_hca(dev);
 	if (err)
 		mlx5_core_err(dev, "Failed to enable external host PF HCA err(%d)\n", err);

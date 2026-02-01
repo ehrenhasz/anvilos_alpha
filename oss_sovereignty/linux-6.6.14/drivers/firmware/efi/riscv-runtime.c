@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Extensible Firmware Interface
- *
- * Copyright (C) 2020 Western Digital Corporation or its affiliates.
- *
- * Based on Extensible Firmware Interface Specification version 2.4
- * Adapted from drivers/firmware/efi/arm-runtime.c
- *
- */
+
+ 
 
 #include <linux/dmi.h>
 #include <linux/efi.h>
@@ -58,11 +50,7 @@ static bool __init efi_virtmap_init(void)
 	return true;
 }
 
-/*
- * Enable the UEFI Runtime Services if all prerequisites are in place, i.e.,
- * non-early mapping of the UEFI system table and virtual mappings for all
- * EFI_MEMORY_RUNTIME regions.
- */
+ 
 static int __init riscv_enable_runtime_services(void)
 {
 	u64 mapsize;
@@ -122,7 +110,7 @@ static int __init riscv_enable_runtime_services(void)
 		return -ENOMEM;
 	}
 
-	/* Set up runtime services function pointers */
+	 
 	efi_native_runtime_setup();
 	set_bit(EFI_RUNTIME_SERVICES, &efi.flags);
 

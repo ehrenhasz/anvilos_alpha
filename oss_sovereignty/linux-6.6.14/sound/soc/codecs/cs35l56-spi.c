@@ -1,9 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0-only
-//
-// CS35L56 ALSA SoC audio driver SPI binding
-//
-// Copyright (C) 2023 Cirrus Logic, Inc. and
-//                    Cirrus Logic International Semiconductor Ltd.
+
+
+
+
+
+
 
 #include <linux/acpi.h>
 #include <linux/module.h>

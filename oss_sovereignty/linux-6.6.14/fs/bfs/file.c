@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *	fs/bfs/file.c
- *	BFS file operations.
- *	Copyright (C) 1999-2018 Tigran Aivazian <aivazian.tigran@gmail.com>
- *
- *	Make the file block allocation algorithm understand the size
- *	of the underlying block device.
- *	Copyright (C) 2007 Dmitri Vorobiev <dmitri.vorobiev@gmail.com>
- *
- */
+
+ 
 
 #include <linux/fs.h>
 #include <linux/buffer_head.h>
@@ -80,10 +71,7 @@ static int bfs_get_block(struct inode *inode, sector_t block,
 		return 0;
 	}
 
-	/*
-	 * If the file is not empty and the requested block is within the
-	 * range of blocks allocated for this file, we can grant it.
-	 */
+	 
 	if (bi->i_sblock && (phys <= bi->i_eblock)) {
 		dprintf("c=%d, b=%08lx, phys=%08lx (interim block granted)\n", 
 				create, (unsigned long)block, phys);
@@ -91,18 +79,14 @@ static int bfs_get_block(struct inode *inode, sector_t block,
 		return 0;
 	}
 
-	/* The file will be extended, so let's see if there is enough space. */
+	 
 	if (phys >= info->si_blocks)
 		return -ENOSPC;
 
-	/* The rest has to be protected against itself. */
+	 
 	mutex_lock(&info->bfs_lock);
 
-	/*
-	 * If the last data block for this file is the last allocated
-	 * block, we can extend the file trivially, without moving it
-	 * anywhere.
-	 */
+	 
 	if (bi->i_eblock == info->si_lf_eblk) {
 		dprintf("c=%d, b=%08lx, phys=%08lx (simple extension)\n", 
 				create, (unsigned long)block, phys);
@@ -114,7 +98,7 @@ static int bfs_get_block(struct inode *inode, sector_t block,
 		goto out;
 	}
 
-	/* Ok, we have to move this entire file to the next free block. */
+	 
 	phys = info->si_lf_eblk + 1;
 	if (phys + block >= info->si_blocks) {
 		err = -ENOSPC;
@@ -138,10 +122,7 @@ static int bfs_get_block(struct inode *inode, sector_t block,
 	phys += block;
 	info->si_lf_eblk = bi->i_eblock = phys;
 
-	/*
-	 * This assumes nothing can write the inode back while we are here
-	 * and thus update inode->i_blocks! (XXX)
-	 */
+	 
 	info->si_freeb -= bi->i_eblock - bi->i_sblock + 1 - inode->i_blocks;
 	mark_inode_dirty(inode);
 	map_bh(bh_result, sb, phys);

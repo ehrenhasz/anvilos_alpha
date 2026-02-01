@@ -1,25 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * recordmcount.c: construct a table of the locations of calls to 'mcount'
- * so that ftrace can find them quickly.
- * Copyright 2009 John F. Reiser <jreiser@BitWagon.com>.  All rights reserved.
- *
- * Restructured to fit Linux format, as well as other updates:
- *  Copyright 2010 Steven Rostedt <srostedt@redhat.com>, Red Hat Inc.
- */
 
-/*
- * Strategy: alter the .o file in-place.
- *
- * Append a new STRTAB that has the new section names, followed by a new array
- * ElfXX_Shdr[] that has the new section headers, followed by the section
- * contents for __mcount_loc and its relocations.  The old shstrtab strings,
- * and the old ElfXX_Shdr[] array, remain as "garbage" (commonly, a couple
- * kilobytes.)  Subsequent processing by /bin/ld (or the kernel module loader)
- * will ignore the garbage regions, because they are not designated by the
- * new .e_shoff nor the new ElfXX_Shdr[].  [In order to remove the garbage,
- * then use "ld -r" to create a new file that omits the garbage.]
- */
+ 
+
+ 
 
 #include <sys/types.h>
 #include <sys/mman.h>
@@ -52,21 +34,21 @@
 
 #define R_AARCH64_CALL26	283
 
-static int fd_map;	/* File descriptor for file being modified. */
-static int mmap_failed; /* Boolean flag. */
-static char gpfx;	/* prefix for global symbol name (sometimes '_') */
-static struct stat sb;	/* Remember .st_size, etc. */
-static const char *altmcount;	/* alternate mcount symbol name */
-static int warn_on_notrace_sect; /* warn when section has mcount not being recorded */
-static void *file_map;	/* pointer of the mapped file */
-static void *file_end;	/* pointer to the end of the mapped file */
-static int file_updated; /* flag to state file was changed */
-static void *file_ptr;	/* current file pointer location */
+static int fd_map;	 
+static int mmap_failed;  
+static char gpfx;	 
+static struct stat sb;	 
+static const char *altmcount;	 
+static int warn_on_notrace_sect;  
+static void *file_map;	 
+static void *file_end;	 
+static int file_updated;  
+static void *file_ptr;	 
 
-static void *file_append; /* added to the end of the file */
-static size_t file_append_size; /* how much is added to end of file */
+static void *file_append;  
+static size_t file_append_size;  
 
-/* Per-file resource cleanup when multiple files. */
+ 
 static void file_append_cleanup(void)
 {
 	free(file_append);
@@ -84,7 +66,7 @@ static void mmap_cleanup(void)
 	file_map = NULL;
 }
 
-/* ulseek, uwrite, ...:  Check return value for errors. */
+ 
 
 static off_t ulseek(off_t const offset, int const whence)
 {
@@ -160,22 +142,10 @@ static void * umalloc(size_t size)
 	return addr;
 }
 
-/*
- * Get the whole file as a programming convenience in order to avoid
- * malloc+lseek+read+free of many pieces.  If successful, then mmap
- * avoids copying unused pieces; else just read the whole file.
- * Open for both read and write; new info will be appended to the file.
- * Use MAP_PRIVATE so that a few changes to the in-memory ElfXX_Ehdr
- * do not propagate to the file until an explicit overwrite at the last.
- * This preserves most aspects of consistency (all except .st_size)
- * for simultaneous readers of the file while we are appending to it.
- * However, multiple writers still are bad.  We choose not to use
- * locking because it is expensive and the use case of kernel build
- * makes multiple writers unlikely.
- */
+ 
 static void *mmap_file(char const *fname)
 {
-	/* Avoid problems if early cleanup() */
+	 
 	fd_map = -1;
 	mmap_failed = 1;
 	file_map = NULL;
@@ -236,7 +206,7 @@ static int make_nop_x86(void *map, size_t const offset)
 	uint32_t *ptr;
 	unsigned char *op;
 
-	/* Confirm we have 0xe8 0x0 0x0 0x0 0x0 */
+	 
 	ptr = map + offset;
 	if (*ptr != 0)
 		return -1;
@@ -245,7 +215,7 @@ static int make_nop_x86(void *map, size_t const offset)
 	if (*op != 0xe8)
 		return -1;
 
-	/* convert to nop */
+	 
 	if (ulseek(offset - 1, SEEK_SET) < 0)
 		return -1;
 	if (uwrite(ideal_nop, 5) < 0)
@@ -253,24 +223,24 @@ static int make_nop_x86(void *map, size_t const offset)
 	return 0;
 }
 
-static unsigned char ideal_nop4_arm_le[4] = { 0x00, 0x00, 0xa0, 0xe1 }; /* mov r0, r0 */
-static unsigned char ideal_nop4_arm_be[4] = { 0xe1, 0xa0, 0x00, 0x00 }; /* mov r0, r0 */
+static unsigned char ideal_nop4_arm_le[4] = { 0x00, 0x00, 0xa0, 0xe1 };  
+static unsigned char ideal_nop4_arm_be[4] = { 0xe1, 0xa0, 0x00, 0x00 };  
 static unsigned char *ideal_nop4_arm;
 
-static unsigned char bl_mcount_arm_le[4] = { 0xfe, 0xff, 0xff, 0xeb }; /* bl */
-static unsigned char bl_mcount_arm_be[4] = { 0xeb, 0xff, 0xff, 0xfe }; /* bl */
+static unsigned char bl_mcount_arm_le[4] = { 0xfe, 0xff, 0xff, 0xeb };  
+static unsigned char bl_mcount_arm_be[4] = { 0xeb, 0xff, 0xff, 0xfe };  
 static unsigned char *bl_mcount_arm;
 
-static unsigned char push_arm_le[4] = { 0x04, 0xe0, 0x2d, 0xe5 }; /* push {lr} */
-static unsigned char push_arm_be[4] = { 0xe5, 0x2d, 0xe0, 0x04 }; /* push {lr} */
+static unsigned char push_arm_le[4] = { 0x04, 0xe0, 0x2d, 0xe5 };  
+static unsigned char push_arm_be[4] = { 0xe5, 0x2d, 0xe0, 0x04 };  
 static unsigned char *push_arm;
 
-static unsigned char ideal_nop2_thumb_le[2] = { 0x00, 0xbf }; /* nop */
-static unsigned char ideal_nop2_thumb_be[2] = { 0xbf, 0x00 }; /* nop */
+static unsigned char ideal_nop2_thumb_le[2] = { 0x00, 0xbf };  
+static unsigned char ideal_nop2_thumb_be[2] = { 0xbf, 0x00 };  
 static unsigned char *ideal_nop2_thumb;
 
-static unsigned char push_bl_mcount_thumb_le[6] = { 0x00, 0xb5, 0xff, 0xf7, 0xfe, 0xff }; /* push {lr}, bl */
-static unsigned char push_bl_mcount_thumb_be[6] = { 0xb5, 0x00, 0xf7, 0xff, 0xff, 0xfe }; /* push {lr}, bl */
+static unsigned char push_bl_mcount_thumb_le[6] = { 0x00, 0xb5, 0xff, 0xf7, 0xfe, 0xff };  
+static unsigned char push_bl_mcount_thumb_be[6] = { 0xb5, 0x00, 0xf7, 0xff, 0xff, 0xfe };  
 static unsigned char *push_bl_mcount_thumb;
 
 static int make_nop_arm(void *map, size_t const offset)
@@ -296,7 +266,7 @@ static int make_nop_arm(void *map, size_t const offset)
 	} else
 		return -1;
 
-	/* Convert to nop */
+	 
 	if (ulseek(off, SEEK_SET) < 0)
 		return -1;
 
@@ -314,11 +284,11 @@ static int make_nop_arm64(void *map, size_t const offset)
 	uint32_t *ptr;
 
 	ptr = map + offset;
-	/* bl <_mcount> is 0x94000000 before relocation */
+	 
 	if (*ptr != 0x94000000)
 		return -1;
 
-	/* Convert to nop */
+	 
 	if (ulseek(offset, SEEK_SET) < 0)
 		return -1;
 	if (uwrite(ideal_nop, 4) < 0)
@@ -336,11 +306,7 @@ static int write_file(const char *fname)
 
 	sprintf(tmp_file, "%s.rc", fname);
 
-	/*
-	 * After reading the entire file into memory, delete it
-	 * and write it back, to prevent weird side effects of modifying
-	 * an object file in place.
-	 */
+	 
 	fd_map = open(tmp_file, O_WRONLY | O_TRUNC | O_CREAT, sb.st_mode);
 	if (fd_map < 0) {
 		perror(fname);
@@ -368,7 +334,7 @@ static int write_file(const char *fname)
 	return 0;
 }
 
-/* w8rev, w8nat, ...: Handle endianness. */
+ 
 
 static uint64_t w8rev(uint64_t const x)
 {
@@ -415,7 +381,7 @@ static uint64_t (*w8)(uint64_t);
 static uint32_t (*w)(uint32_t);
 static uint32_t (*w2)(uint16_t);
 
-/* Names of the sections that could contain calls to mcount. */
+ 
 static int is_mcounted_section_name(char const *const txtname)
 {
 	return strncmp(".text",          txtname, 5) == 0 ||
@@ -429,9 +395,9 @@ static int is_mcounted_section_name(char const *const txtname)
 		strcmp(".cpuidle.text", txtname) == 0;
 }
 
-static char const *already_has_rel_mcount = "success"; /* our work here is done! */
+static char const *already_has_rel_mcount = "success";  
 
-/* 32 bit and 64 bit are very similar */
+ 
 #include "recordmcount.h"
 #define RECORD_MCOUNT_64
 #include "recordmcount.h"
@@ -475,24 +441,18 @@ static int LARCH64_is_fake_mcount(Elf64_Rel const *rp)
 	return 1;
 }
 
-/* 64-bit EM_MIPS has weird ELF64_Rela.r_info.
- * http://techpubs.sgi.com/library/manuals/4000/007-4658-001/pdf/007-4658-001.pdf
- * We interpret Table 29 Relocation Operation (Elf64_Rel, Elf64_Rela) [p.40]
- * to imply the order of the members; the spec does not say so.
- *	typedef unsigned char Elf64_Byte;
- * fails on MIPS64 because their <elf.h> already has it!
- */
+ 
 
-typedef uint8_t myElf64_Byte;		/* Type for a 8-bit quantity.  */
+typedef uint8_t myElf64_Byte;		 
 
 union mips_r_info {
 	Elf64_Xword r_info;
 	struct {
-		Elf64_Word r_sym;		/* Symbol index.  */
-		myElf64_Byte r_ssym;		/* Special symbol.  */
-		myElf64_Byte r_type3;		/* Third relocation.  */
-		myElf64_Byte r_type2;		/* Second relocation.  */
-		myElf64_Byte r_type;		/* First relocation.  */
+		Elf64_Word r_sym;		 
+		myElf64_Byte r_ssym;		 
+		myElf64_Byte r_type3;		 
+		myElf64_Byte r_type2;		 
+		myElf64_Byte r_type;		 
 	} r_mips;
 };
 
@@ -529,7 +489,7 @@ static int do_file(char const *const fname)
 		goto out;
 	case ELFDATA2LSB:
 		if (*(unsigned char const *)&endian != 1) {
-			/* main() is big endian, file.o is little endian. */
+			 
 			w = w4rev;
 			w2 = w2rev;
 			w8 = w8rev;
@@ -542,7 +502,7 @@ static int do_file(char const *const fname)
 		break;
 	case ELFDATA2MSB:
 		if (*(unsigned char const *)&endian != 0) {
-			/* main() is little endian, file.o is big endian. */
+			 
 			w = w4rev;
 			w2 = w2rev;
 			w8 = w8rev;
@@ -553,7 +513,7 @@ static int do_file(char const *const fname)
 		ideal_nop2_thumb = ideal_nop2_thumb_be;
 		push_bl_mcount_thumb = push_bl_mcount_thumb_be;
 		break;
-	}  /* end switch */
+	}   
 	if (memcmp(ELFMAG, ehdr->e_ident, SELFMAG) != 0 ||
 	    w2(ehdr->e_type) != ET_REL ||
 	    ehdr->e_ident[EI_VERSION] != EV_CURRENT) {
@@ -591,11 +551,11 @@ static int do_file(char const *const fname)
 		is_fake_mcount64 = arm64_is_fake_mcount;
 		break;
 	case EM_IA_64:	reltype = R_IA64_IMM64; break;
-	case EM_MIPS:	/* reltype: e_class    */ break;
-	case EM_LOONGARCH:	/* reltype: e_class    */ break;
+	case EM_MIPS:	  break;
+	case EM_LOONGARCH:	  break;
 	case EM_PPC:	reltype = R_PPC_ADDR32; break;
 	case EM_PPC64:	reltype = R_PPC64_ADDR64; break;
-	case EM_S390:	/* reltype: e_class    */ break;
+	case EM_S390:	  break;
 	case EM_SH:	reltype = R_SH_DIR32; gpfx = 0; break;
 	case EM_SPARCV9: reltype = R_SPARC_64; break;
 	case EM_X86_64:
@@ -606,7 +566,7 @@ static int do_file(char const *const fname)
 		mcount_adjust_64 = -1;
 		gpfx = 0;
 		break;
-	}  /* end switch */
+	}   
 
 	switch (ehdr->e_ident[EI_CLASS]) {
 	default:
@@ -657,7 +617,7 @@ static int do_file(char const *const fname)
 			goto out;
 		break;
 	}
-	}  /* end switch */
+	}   
 
 	rc = write_file(fname);
 out:
@@ -670,7 +630,7 @@ int main(int argc, char *argv[])
 {
 	const char ftrace[] = "/ftrace.o";
 	int ftrace_size = sizeof(ftrace) - 1;
-	int n_error = 0;  /* gcc-4.3.0 false positive complaint */
+	int n_error = 0;   
 	int c;
 	int i;
 
@@ -690,16 +650,12 @@ int main(int argc, char *argv[])
 		return 0;
 	}
 
-	/* Process each file in turn, allowing deep failure. */
+	 
 	for (i = optind; i < argc; i++) {
 		char *file = argv[i];
 		int len;
 
-		/*
-		 * The file kernel/trace/ftrace.o references the mcount
-		 * function but does not call it. Since ftrace.o should
-		 * not be traced anyway, we just skip it.
-		 */
+		 
 		len = strlen(file);
 		if (len >= ftrace_size &&
 		    strcmp(file + (len - ftrace_size), ftrace) == 0)

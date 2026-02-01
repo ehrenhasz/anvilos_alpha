@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-/* Copyright (c) 2022, NVIDIA CORPORATION & AFFILIATES. All rights reserved. */
+
+ 
 
 #include <net/pkt_cls.h>
 #include "htb.h"
@@ -13,7 +13,7 @@ struct mlx5e_qos_node {
 	u32 bw_share;
 	u32 max_average_bw;
 	u32 hw_id;
-	u32 classid; /* 16-bit, except root. */
+	u32 classid;  
 	u16 qid;
 };
 
@@ -29,7 +29,7 @@ struct mlx5e_htb {
 #define MLX5E_QOS_QID_INNER 0xffff
 #define MLX5E_HTB_CLASSID_ROOT 0xffffffff
 
-/* Software representation of the QoS tree */
+ 
 
 int mlx5e_htb_enumerate_leaves(struct mlx5e_htb *htb, mlx5e_fp_htb_enumerate callback, void *data)
 {
@@ -135,14 +135,12 @@ static void mlx5e_htb_node_delete(struct mlx5e_htb *htb, struct mlx5e_qos_node *
 		__clear_bit(node->qid, htb->qos_used_qids);
 		mlx5e_update_tx_netdev_queues(htb->priv);
 	}
-	/* Make sure this qid is no longer selected by mlx5e_select_queue, so
-	 * that mlx5e_reactivate_qos_sq can safely restart the netdev TX queue.
-	 */
+	 
 	synchronize_net();
 	kfree(node);
 }
 
-/* TX datapath API */
+ 
 
 int mlx5e_htb_get_txq_by_classid(struct mlx5e_htb *htb, u16 classid)
 {
@@ -169,7 +167,7 @@ out:
 	return res;
 }
 
-/* HTB TC handlers */
+ 
 
 static int
 mlx5e_htb_root_add(struct mlx5e_htb *htb, u16 htb_maj_id, u16 htb_defcls,
@@ -226,9 +224,7 @@ static int mlx5e_htb_root_del(struct mlx5e_htb *htb)
 
 	qos_dbg(htb->mdev, "TC_HTB_DESTROY\n");
 
-	/* Wait until real_num_tx_queues is updated for mlx5e_select_queue,
-	 * so that we can safely switch to its non-HTB non-PTP fastpath.
-	 */
+	 
 	synchronize_net();
 
 	mlx5e_selq_prepare_htb(htb->selq, 0, 0);
@@ -275,7 +271,7 @@ static int mlx5e_htb_convert_rate(struct mlx5e_htb *htb, u64 rate,
 
 static void mlx5e_htb_convert_ceil(struct mlx5e_htb *htb, u64 ceil, u32 *max_average_bw)
 {
-	/* Hardware treats 0 as "unlimited", set at least 1. */
+	 
 	*max_average_bw = max_t(u32, div_u64(ceil, BYTES_IN_MBIT), 1);
 
 	qos_dbg(htb->mdev, "Convert: ceil %llu -> max_average_bw %u\n",
@@ -365,7 +361,7 @@ mlx5e_htb_leaf_to_inner(struct mlx5e_htb *htb, u16 classid, u16 child_classid,
 		return err;
 	}
 
-	/* Intentionally reuse the qid for the upcoming first child. */
+	 
 	child = mlx5e_htb_node_create_leaf(htb, child_classid, node->qid, node);
 	if (IS_ERR(child)) {
 		err = PTR_ERR(child);
@@ -385,10 +381,10 @@ mlx5e_htb_leaf_to_inner(struct mlx5e_htb *htb, u16 classid, u16 child_classid,
 		goto err_delete_sw_node;
 	}
 
-	/* No fail point. */
+	 
 
 	qid = node->qid;
-	/* Pairs with mlx5e_htb_get_txq_by_classid. */
+	 
 	WRITE_ONCE(node->qid, MLX5E_QOS_QID_INNER);
 
 	if (test_bit(MLX5E_STATE_OPENED, &priv->state)) {
@@ -397,7 +393,7 @@ mlx5e_htb_leaf_to_inner(struct mlx5e_htb *htb, u16 classid, u16 child_classid,
 	}
 
 	err = mlx5_qos_destroy_node(htb->mdev, node->hw_id);
-	if (err) /* Not fatal. */
+	if (err)  
 		qos_warn(htb->mdev, "Failed to destroy leaf node %u (class %04x), err = %d\n",
 			 node->hw_id, classid, err);
 
@@ -422,7 +418,7 @@ err_delete_sw_node:
 
 err_destroy_hw_node:
 	tmp_err = mlx5_qos_destroy_node(htb->mdev, new_hw_id);
-	if (tmp_err) /* Not fatal. */
+	if (tmp_err)  
 		qos_warn(htb->mdev, "Failed to roll back creation of an inner node %u (class %04x), err = %d\n",
 			 new_hw_id, classid, tmp_err);
 	return err;
@@ -456,7 +452,7 @@ int mlx5e_htb_leaf_del(struct mlx5e_htb *htb, u16 *classid,
 	if (!node)
 		return -ENOENT;
 
-	/* Store qid for reuse. */
+	 
 	qid = node->qid;
 
 	opened = test_bit(MLX5E_STATE_OPENED, &priv->state);
@@ -468,7 +464,7 @@ int mlx5e_htb_leaf_del(struct mlx5e_htb *htb, u16 *classid,
 	}
 
 	err = mlx5_qos_destroy_node(htb->mdev, node->hw_id);
-	if (err) /* Not fatal. */
+	if (err)  
 		qos_warn(htb->mdev, "Failed to destroy leaf node %u (class %04x), err = %d\n",
 			 node->hw_id, *classid, err);
 
@@ -477,7 +473,7 @@ int mlx5e_htb_leaf_del(struct mlx5e_htb *htb, u16 *classid,
 	moved_qid = mlx5e_htb_cur_leaf_nodes(htb);
 
 	if (moved_qid == 0) {
-		/* The last QoS SQ was just destroyed. */
+		 
 		if (opened)
 			mlx5e_reactivate_qos_sq(priv, qid, txq);
 		return 0;
@@ -485,7 +481,7 @@ int mlx5e_htb_leaf_del(struct mlx5e_htb *htb, u16 *classid,
 	moved_qid--;
 
 	if (moved_qid < qid) {
-		/* The highest QoS SQ was just destroyed. */
+		 
 		WARN(moved_qid != qid - 1, "Gaps in queue numeration: destroyed queue %u, the highest queue is %u",
 		     qid, moved_qid);
 		if (opened)
@@ -500,7 +496,7 @@ int mlx5e_htb_leaf_del(struct mlx5e_htb *htb, u16 *classid,
 	WARN(!node, "Could not find a node with qid %u to move to queue %u",
 	     moved_qid, qid);
 
-	/* Stop traffic to the old queue. */
+	 
 	WRITE_ONCE(node->qid, MLX5E_QOS_QID_INNER);
 	__clear_bit(moved_qid, priv->htb->qos_used_qids);
 
@@ -511,7 +507,7 @@ int mlx5e_htb_leaf_del(struct mlx5e_htb *htb, u16 *classid,
 		mlx5e_close_qos_sq(priv, moved_qid);
 	}
 
-	/* Prevent packets from the old class from getting into the new one. */
+	 
 	mlx5e_reset_qdisc(htb->netdev, moved_qid);
 
 	__set_bit(qid, htb->qos_used_qids);
@@ -566,9 +562,9 @@ mlx5e_htb_leaf_del_last(struct mlx5e_htb *htb, u16 classid, bool force,
 		saved_err = err;
 	}
 
-	/* Store qid for reuse and prevent clearing the bit. */
+	 
 	qid = node->qid;
-	/* Pairs with mlx5e_htb_get_txq_by_classid. */
+	 
 	WRITE_ONCE(node->qid, MLX5E_QOS_QID_INNER);
 
 	if (test_bit(MLX5E_STATE_OPENED, &priv->state)) {
@@ -576,11 +572,11 @@ mlx5e_htb_leaf_del_last(struct mlx5e_htb *htb, u16 classid, bool force,
 		mlx5e_close_qos_sq(priv, qid);
 	}
 
-	/* Prevent packets from the old class from getting into the new one. */
+	 
 	mlx5e_reset_qdisc(htb->netdev, qid);
 
 	err = mlx5_qos_destroy_node(htb->mdev, node->hw_id);
-	if (err) /* Not fatal. */
+	if (err)  
 		qos_warn(htb->mdev, "Failed to destroy leaf node %u (class %04x), err = %d\n",
 			 node->hw_id, classid, err);
 
@@ -590,9 +586,7 @@ mlx5e_htb_leaf_del_last(struct mlx5e_htb *htb, u16 classid, bool force,
 	node = parent;
 	WRITE_ONCE(node->qid, qid);
 
-	/* Early return on error in force mode. Parent will still be an inner
-	 * node to be deleted by a following delete operation.
-	 */
+	 
 	if (saved_err)
 		return saved_err;
 
@@ -611,7 +605,7 @@ mlx5e_htb_leaf_del_last(struct mlx5e_htb *htb, u16 classid, bool force,
 	}
 
 	err = mlx5_qos_destroy_node(htb->mdev, old_hw_id);
-	if (err) /* Not fatal. */
+	if (err)  
 		qos_warn(htb->mdev, "Failed to destroy leaf node %u (class %04x), err = %d\n",
 			 node->hw_id, classid, err);
 

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2014 Linaro Ltd.
- *
- * Author: Linus Walleij <linus.walleij@linaro.org>
- */
+
+ 
 #include <linux/init.h>
 #include <linux/io.h>
 #include <linux/slab.h>

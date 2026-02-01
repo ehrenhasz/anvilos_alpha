@@ -1,13 +1,13 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Cryptographic API.
-//
-// Support for Samsung S5PV210 and Exynos HW acceleration.
-//
-// Copyright (C) 2011 NetUP Inc. All rights reserved.
-// Copyright (c) 2017 Samsung Electronics Co., Ltd. All rights reserved.
-//
-// Hash part based on omap-sham.c driver.
+
+
+
+
+
+
+
+
+
+
 
 #include <linux/clk.h>
 #include <linux/crypto.h>
@@ -36,7 +36,7 @@
 
 #define _SBF(s, v)			((v) << (s))
 
-/* Feed control registers */
+ 
 #define SSS_REG_FCINTSTAT		0x0000
 #define SSS_FCINTSTAT_HPARTINT		BIT(7)
 #define SSS_FCINTSTAT_HDONEINT		BIT(5)
@@ -114,7 +114,7 @@
 
 #define SSS_REG_FCPKDMAO		0x005C
 
-/* AES registers */
+ 
 #define SSS_REG_AES_CONTROL		0x00
 #define SSS_AES_BYTESWAP_DI		BIT(11)
 #define SSS_AES_BYTESWAP_DO		BIT(10)
@@ -150,7 +150,7 @@
 #define SSS_AES_WRITE(dev, reg, val)    __raw_writel((val), \
 						SSS_AES_REG(dev, reg))
 
-/* HW engine modes */
+ 
 #define FLAGS_AES_DECRYPT		BIT(0)
 #define FLAGS_AES_MODE_MASK		_SBF(1, 0x03)
 #define FLAGS_AES_CBC			_SBF(1, 0x01)
@@ -159,7 +159,7 @@
 #define AES_KEY_LEN			16
 #define CRYPTO_QUEUE_LEN		1
 
-/* HASH registers */
+ 
 #define SSS_REG_HASH_CTRL		0x00
 
 #define SSS_HASH_USER_IV_EN		BIT(5)
@@ -207,12 +207,7 @@
 #define HASH_SHA1_MAX_REG		(SHA1_DIGEST_SIZE / HASH_REG_SIZEOF)
 #define HASH_SHA256_MAX_REG		(SHA256_DIGEST_SIZE / HASH_REG_SIZEOF)
 
-/*
- * HASH bit numbers, used by device, setting in dev->hash_flags with
- * functions set_bit(), clear_bit() or tested with test_bit() or BIT(),
- * to keep HASH state BUSY or FREE, or to signal state from irq_handler
- * to hash_tasklet. SGS keep track of allocated memory for scatterlist
- */
+ 
 #define HASH_FLAGS_BUSY		0
 #define HASH_FLAGS_FINAL	1
 #define HASH_FLAGS_DMA_ACTIVE	2
@@ -221,7 +216,7 @@
 #define HASH_FLAGS_SGS_COPIED	5
 #define HASH_FLAGS_SGS_ALLOCED	6
 
-/* HASH HW constants */
+ 
 #define BUFLEN			HASH_BLOCK_SIZE
 
 #define SSS_HASH_DMA_LEN_ALIGN	8
@@ -229,16 +224,7 @@
 
 #define SSS_HASH_QUEUE_LENGTH	10
 
-/**
- * struct samsung_aes_variant - platform specific SSS driver data
- * @aes_offset: AES register offset from SSS module's base.
- * @hash_offset: HASH register offset from SSS module's base.
- * @clk_names: names of clocks needed to run SSS IP
- *
- * Specifies platform specific configuration of SSS module.
- * Note: A structure for driver specific platform data is used for future
- * expansion of its usage.
- */
+ 
 struct samsung_aes_variant {
 	unsigned int			aes_offset;
 	unsigned int			hash_offset;
@@ -257,46 +243,7 @@ struct s5p_aes_ctx {
 	int				keylen;
 };
 
-/**
- * struct s5p_aes_dev - Crypto device state container
- * @dev:	Associated device
- * @clk:	Clock for accessing hardware
- * @pclk:	APB bus clock necessary to access the hardware
- * @ioaddr:	Mapped IO memory region
- * @aes_ioaddr:	Per-varian offset for AES block IO memory
- * @irq_fc:	Feed control interrupt line
- * @req:	Crypto request currently handled by the device
- * @ctx:	Configuration for currently handled crypto request
- * @sg_src:	Scatter list with source data for currently handled block
- *		in device.  This is DMA-mapped into device.
- * @sg_dst:	Scatter list with destination data for currently handled block
- *		in device. This is DMA-mapped into device.
- * @sg_src_cpy:	In case of unaligned access, copied scatter list
- *		with source data.
- * @sg_dst_cpy:	In case of unaligned access, copied scatter list
- *		with destination data.
- * @tasklet:	New request scheduling jib
- * @queue:	Crypto queue
- * @busy:	Indicates whether the device is currently handling some request
- *		thus it uses some of the fields from this state, like:
- *		req, ctx, sg_src/dst (and copies).  This essentially
- *		protects against concurrent access to these fields.
- * @lock:	Lock for protecting both access to device hardware registers
- *		and fields related to current request (including the busy field).
- * @res:	Resources for hash.
- * @io_hash_base: Per-variant offset for HASH block IO memory.
- * @hash_lock:	Lock for protecting hash_req, hash_queue and hash_flags
- *		variable.
- * @hash_flags:	Flags for current HASH op.
- * @hash_queue:	Async hash queue.
- * @hash_tasklet: New HASH request scheduling job.
- * @xmit_buf:	Buffer for current HASH request transfer into SSS block.
- * @hash_req:	Current request sending to SSS HASH block.
- * @hash_sg_iter: Scatterlist transferred through DMA into SSS HASH block.
- * @hash_sg_cnt: Counter for hash_sg_iter.
- *
- * @use_hash:	true if HASH algs enabled
- */
+ 
 struct s5p_aes_dev {
 	struct device			*dev;
 	struct clk			*clk;
@@ -321,7 +268,7 @@ struct s5p_aes_dev {
 	struct resource			*res;
 	void __iomem			*io_hash_base;
 
-	spinlock_t			hash_lock; /* protect hash_ vars */
+	spinlock_t			hash_lock;  
 	unsigned long			hash_flags;
 	struct crypto_queue		hash_queue;
 	struct tasklet_struct		hash_tasklet;
@@ -334,24 +281,7 @@ struct s5p_aes_dev {
 	bool				use_hash;
 };
 
-/**
- * struct s5p_hash_reqctx - HASH request context
- * @dd:		Associated device
- * @op_update:	Current request operation (OP_UPDATE or OP_FINAL)
- * @digcnt:	Number of bytes processed by HW (without buffer[] ones)
- * @digest:	Digest message or IV for partial result
- * @nregs:	Number of HW registers for digest or IV read/write
- * @engine:	Bits for selecting type of HASH in SSS block
- * @sg:		sg for DMA transfer
- * @sg_len:	Length of sg for DMA transfer
- * @sgl:	sg for joining buffer and req->src scatterlist
- * @skip:	Skip offset in req->src for current op
- * @total:	Total number of bytes for current request
- * @finup:	Keep state for finup or final.
- * @error:	Keep track of error.
- * @bufcnt:	Number of bytes holded in buffer[]
- * @buffer:	For byte(s) from end of req->src in UPDATE op
- */
+ 
 struct s5p_hash_reqctx {
 	struct s5p_aes_dev	*dd;
 	bool			op_update;
@@ -359,7 +289,7 @@ struct s5p_hash_reqctx {
 	u64			digcnt;
 	u8			digest[SHA256_DIGEST_SIZE];
 
-	unsigned int		nregs; /* digest_size / sizeof(reg) */
+	unsigned int		nregs;  
 	u32			engine;
 
 	struct scatterlist	*sg;
@@ -374,12 +304,7 @@ struct s5p_hash_reqctx {
 	u8			buffer[];
 };
 
-/**
- * struct s5p_hash_ctx - HASH transformation context
- * @dd:		Associated device
- * @flags:	Bits for algorithm HASH.
- * @fallback:	Software transformation for zero message or size < BUFLEN.
- */
+ 
 struct s5p_hash_ctx {
 	struct s5p_aes_dev	*dd;
 	unsigned long		flags;
@@ -495,7 +420,7 @@ static void s5p_sg_done(struct s5p_aes_dev *dev)
 		memcpy_fromio(req->iv, dev->aes_ioaddr + SSS_REG_AES_CNT_DATA(0), AES_BLOCK_SIZE);
 }
 
-/* Calls the completion. Cannot be called with dev->lock hold. */
+ 
 static void s5p_aes_complete(struct skcipher_request *req, int err)
 {
 	skcipher_request_complete(req, err);
@@ -563,13 +488,7 @@ static int s5p_set_indata(struct s5p_aes_dev *dev, struct scatterlist *sg)
 	return 0;
 }
 
-/*
- * Returns -ERRNO on error (mapping of new data failed).
- * On success returns:
- *  - 0 if there is no more data,
- *  - 1 if new transmitting (output) data is ready and its address+length
- *     have to be written to device (by calling s5p_set_dma_outdata()).
- */
+ 
 static int s5p_aes_tx(struct s5p_aes_dev *dev)
 {
 	int ret = 0;
@@ -585,14 +504,8 @@ static int s5p_aes_tx(struct s5p_aes_dev *dev)
 	return ret;
 }
 
-/*
- * Returns -ERRNO on error (mapping of new data failed).
- * On success returns:
- *  - 0 if there is no more data,
- *  - 1 if new receiving (input) data is ready and its address+length
- *     have to be written to device (by calling s5p_set_dma_indata()).
- */
-static int s5p_aes_rx(struct s5p_aes_dev *dev/*, bool *set_dma*/)
+ 
+static int s5p_aes_rx(struct s5p_aes_dev *dev )
 {
 	int ret = 0;
 
@@ -618,28 +531,16 @@ static inline void s5p_hash_write(struct s5p_aes_dev *dd,
 	__raw_writel(value, dd->io_hash_base + offset);
 }
 
-/**
- * s5p_set_dma_hashdata() - start DMA with sg
- * @dev:	device
- * @sg:		scatterlist ready to DMA transmit
- */
+ 
 static void s5p_set_dma_hashdata(struct s5p_aes_dev *dev,
 				 const struct scatterlist *sg)
 {
 	dev->hash_sg_cnt--;
 	SSS_WRITE(dev, FCHRDMAS, sg_dma_address(sg));
-	SSS_WRITE(dev, FCHRDMAL, sg_dma_len(sg)); /* DMA starts */
+	SSS_WRITE(dev, FCHRDMAL, sg_dma_len(sg));  
 }
 
-/**
- * s5p_hash_rx() - get next hash_sg_iter
- * @dev:	device
- *
- * Return:
- * 2	if there is no more data and it is UPDATE op
- * 1	if new receiving (input) data is ready and can be written to device
- * 0	if there is no more data and it is FINAL op
- */
+ 
 static int s5p_hash_rx(struct s5p_aes_dev *dev)
 {
 	if (dev->hash_sg_cnt > 0) {
@@ -670,16 +571,7 @@ static irqreturn_t s5p_aes_interrupt(int irq, void *dev_id)
 
 	spin_lock_irqsave(&dev->lock, flags);
 
-	/*
-	 * Handle rx or tx interrupt. If there is still data (scatterlist did not
-	 * reach end), then map next scatterlist entry.
-	 * In case of such mapping error, s5p_aes_complete() should be called.
-	 *
-	 * If there is no more data in tx scatter list, call s5p_aes_complete()
-	 * and schedule new tasklet.
-	 *
-	 * Handle hx interrupt. If there is still data map next entry.
-	 */
+	 
 	status = SSS_READ(dev, FCINTSTAT);
 	if (status & SSS_FCINTSTAT_BRDMAINT)
 		err_dma_rx = s5p_aes_rx(dev);
@@ -695,12 +587,12 @@ static irqreturn_t s5p_aes_interrupt(int irq, void *dev_id)
 
 	st_bits = status & (SSS_FCINTSTAT_BRDMAINT | SSS_FCINTSTAT_BTDMAINT |
 				SSS_FCINTSTAT_HRDMAINT);
-	/* clear DMA bits */
+	 
 	SSS_WRITE(dev, FCINTPEND, st_bits);
 
-	/* clear HASH irq bits */
+	 
 	if (status & (SSS_FCINTSTAT_HDONEINT | SSS_FCINTSTAT_HPARTINT)) {
-		/* cannot have both HPART and HDONE */
+		 
 		if (status & SSS_FCINTSTAT_HPARTINT)
 			st_bits = SSS_HASH_STATUS_PARTIAL_DONE;
 
@@ -710,7 +602,7 @@ static irqreturn_t s5p_aes_interrupt(int irq, void *dev_id)
 		set_bit(HASH_FLAGS_OUTPUT_READY, &dev->hash_flags);
 		s5p_hash_write(dev, SSS_REG_HASH_STATUS, st_bits);
 		hx_end = true;
-		/* when DONE or PART, do not handle HASH DMA */
+		 
 		err_dma_hx = 0;
 	}
 
@@ -731,15 +623,10 @@ static irqreturn_t s5p_aes_interrupt(int irq, void *dev_id)
 		spin_unlock_irqrestore(&dev->lock, flags);
 
 		s5p_aes_complete(dev->req, 0);
-		/* Device is still busy */
+		 
 		tasklet_schedule(&dev->tasklet);
 	} else {
-		/*
-		 * Writing length of DMA block (either receiving or
-		 * transmitting) will start the operation immediately, so this
-		 * should be done at the end (even after clearing pending
-		 * interrupts to not miss the interrupt).
-		 */
+		 
 		if (err_dma_tx == 1)
 			s5p_set_dma_outdata(dev, dev->sg_dst);
 		if (err_dma_rx == 1)
@@ -763,11 +650,7 @@ error:
 	s5p_aes_complete(req, err);
 
 hash_irq_end:
-	/*
-	 * Note about else if:
-	 *   when hash_sg_iter reaches end and its UPDATE op,
-	 *   issue SSS_HASH_PAUSE and wait for HPART irq
-	 */
+	 
 	if (hx_end)
 		tasklet_schedule(&dev->hash_tasklet);
 	else if (err_dma_hx == 2)
@@ -777,10 +660,7 @@ hash_irq_end:
 	return IRQ_HANDLED;
 }
 
-/**
- * s5p_hash_read_msg() - read message or IV from HW
- * @req:	AHASH request
- */
+ 
 static void s5p_hash_read_msg(struct ahash_request *req)
 {
 	struct s5p_hash_reqctx *ctx = ahash_request_ctx(req);
@@ -792,11 +672,7 @@ static void s5p_hash_read_msg(struct ahash_request *req)
 		hash[i] = s5p_hash_read(dd, SSS_REG_HASH_OUT(i));
 }
 
-/**
- * s5p_hash_write_ctx_iv() - write IV for next partial/finup op.
- * @dd:		device
- * @ctx:	request context
- */
+ 
 static void s5p_hash_write_ctx_iv(struct s5p_aes_dev *dd,
 				  const struct s5p_hash_reqctx *ctx)
 {
@@ -807,10 +683,7 @@ static void s5p_hash_write_ctx_iv(struct s5p_aes_dev *dd,
 		s5p_hash_write(dd, SSS_REG_HASH_IV(i), hash[i]);
 }
 
-/**
- * s5p_hash_write_iv() - write IV for next partial/finup op.
- * @req:	AHASH request
- */
+ 
 static void s5p_hash_write_iv(struct ahash_request *req)
 {
 	struct s5p_hash_reqctx *ctx = ahash_request_ctx(req);
@@ -818,10 +691,7 @@ static void s5p_hash_write_iv(struct ahash_request *req)
 	s5p_hash_write_ctx_iv(ctx->dd, ctx);
 }
 
-/**
- * s5p_hash_copy_result() - copy digest into req->result
- * @req:	AHASH request
- */
+ 
 static void s5p_hash_copy_result(struct ahash_request *req)
 {
 	const struct s5p_hash_reqctx *ctx = ahash_request_ctx(req);
@@ -832,51 +702,31 @@ static void s5p_hash_copy_result(struct ahash_request *req)
 	memcpy(req->result, ctx->digest, ctx->nregs * HASH_REG_SIZEOF);
 }
 
-/**
- * s5p_hash_dma_flush() - flush HASH DMA
- * @dev:	secss device
- */
+ 
 static void s5p_hash_dma_flush(struct s5p_aes_dev *dev)
 {
 	SSS_WRITE(dev, FCHRDMAC, SSS_FCHRDMAC_FLUSH);
 }
 
-/**
- * s5p_hash_dma_enable() - enable DMA mode for HASH
- * @dev:	secss device
- *
- * enable DMA mode for HASH
- */
+ 
 static void s5p_hash_dma_enable(struct s5p_aes_dev *dev)
 {
 	s5p_hash_write(dev, SSS_REG_HASH_CTRL_FIFO, SSS_HASH_FIFO_MODE_DMA);
 }
 
-/**
- * s5p_hash_irq_disable() - disable irq HASH signals
- * @dev:	secss device
- * @flags:	bitfield with irq's to be disabled
- */
+ 
 static void s5p_hash_irq_disable(struct s5p_aes_dev *dev, u32 flags)
 {
 	SSS_WRITE(dev, FCINTENCLR, flags);
 }
 
-/**
- * s5p_hash_irq_enable() - enable irq signals
- * @dev:	secss device
- * @flags:	bitfield with irq's to be enabled
- */
+ 
 static void s5p_hash_irq_enable(struct s5p_aes_dev *dev, int flags)
 {
 	SSS_WRITE(dev, FCINTENSET, flags);
 }
 
-/**
- * s5p_hash_set_flow() - set flow inside SecSS AES/DES with/without HASH
- * @dev:	secss device
- * @hashflow:	HASH stream flow with/without crypto AES/DES
- */
+ 
 static void s5p_hash_set_flow(struct s5p_aes_dev *dev, u32 hashflow)
 {
 	unsigned long flags;
@@ -892,14 +742,7 @@ static void s5p_hash_set_flow(struct s5p_aes_dev *dev, u32 hashflow)
 	spin_unlock_irqrestore(&dev->lock, flags);
 }
 
-/**
- * s5p_ahash_dma_init() - enable DMA and set HASH flow inside SecSS
- * @dev:	secss device
- * @hashflow:	HASH stream flow with/without AES/DES
- *
- * flush HASH DMA and enable DMA, set HASH stream flow inside SecSS HW,
- * enable HASH irq's HRDMA, HDONE, HPART
- */
+ 
 static void s5p_ahash_dma_init(struct s5p_aes_dev *dev, u32 hashflow)
 {
 	s5p_hash_irq_disable(dev, SSS_FCINTENCLR_HRDMAINTENCLR |
@@ -914,20 +757,7 @@ static void s5p_ahash_dma_init(struct s5p_aes_dev *dev, u32 hashflow)
 			    SSS_FCINTENSET_HPARTINTENSET);
 }
 
-/**
- * s5p_hash_write_ctrl() - prepare HASH block in SecSS for processing
- * @dd:		secss device
- * @length:	length for request
- * @final:	true if final op
- *
- * Prepare SSS HASH block for processing bytes in DMA mode. If it is called
- * after previous updates, fill up IV words. For final, calculate and set
- * lengths for HASH so SecSS can finalize hash. For partial, set SSS HASH
- * length as 2^63 so it will be never reached and set to zero prelow and
- * prehigh.
- *
- * This function does not start DMA transfer.
- */
+ 
 static void s5p_hash_write_ctrl(struct s5p_aes_dev *dd, size_t length,
 				bool final)
 {
@@ -944,10 +774,10 @@ static void s5p_hash_write_ctrl(struct s5p_aes_dev *dd, size_t length,
 	}
 
 	if (final) {
-		/* number of bytes for last part */
+		 
 		low = length;
 		high = 0;
-		/* total number of bits prev hashed */
+		 
 		tmplen = ctx->digcnt * 8;
 		prelow = (u32)tmplen;
 		prehigh = (u32)(tmplen >> 32);
@@ -970,14 +800,7 @@ static void s5p_hash_write_ctrl(struct s5p_aes_dev *dd, size_t length,
 	s5p_hash_write(dd, SSS_REG_HASH_CTRL, configflags);
 }
 
-/**
- * s5p_hash_xmit_dma() - start DMA hash processing
- * @dd:		secss device
- * @length:	length for request
- * @final:	true if final op
- *
- * Update digcnt here, as it is needed for finup/final op.
- */
+ 
 static int s5p_hash_xmit_dma(struct s5p_aes_dev *dd, size_t length,
 			     bool final)
 {
@@ -998,27 +821,16 @@ static int s5p_hash_xmit_dma(struct s5p_aes_dev *dd, size_t length,
 	ctx->digcnt += length;
 	ctx->total -= length;
 
-	/* catch last interrupt */
+	 
 	if (final)
 		set_bit(HASH_FLAGS_FINAL, &dd->hash_flags);
 
-	s5p_set_dma_hashdata(dd, dd->hash_sg_iter); /* DMA starts */
+	s5p_set_dma_hashdata(dd, dd->hash_sg_iter);  
 
 	return -EINPROGRESS;
 }
 
-/**
- * s5p_hash_copy_sgs() - copy request's bytes into new buffer
- * @ctx:	request context
- * @sg:		source scatterlist request
- * @new_len:	number of bytes to process from sg
- *
- * Allocate new buffer, copy data for HASH into it. If there was xmit_buf
- * filled, copy it first, then copy data from sg into it. Prepare one sgl[0]
- * with allocated buffer.
- *
- * Set bit in dd->hash_flag so we can free it after irq ends processing.
- */
+ 
 static int s5p_hash_copy_sgs(struct s5p_hash_reqctx *ctx,
 			     struct scatterlist *sg, unsigned int new_len)
 {
@@ -1051,20 +863,7 @@ static int s5p_hash_copy_sgs(struct s5p_hash_reqctx *ctx,
 	return 0;
 }
 
-/**
- * s5p_hash_copy_sg_lists() - copy sg list and make fixes in copy
- * @ctx:	request context
- * @sg:		source scatterlist request
- * @new_len:	number of bytes to process from sg
- *
- * Allocate new scatterlist table, copy data for HASH into it. If there was
- * xmit_buf filled, prepare it first, then copy page, length and offset from
- * source sg into it, adjusting begin and/or end for skip offset and
- * hash_later value.
- *
- * Resulting sg table will be assigned to ctx->sg. Set flag so we can free
- * it after irq ends processing.
- */
+ 
 static int s5p_hash_copy_sg_lists(struct s5p_hash_reqctx *ctx,
 				  struct scatterlist *sg, unsigned int new_len)
 {
@@ -1119,22 +918,7 @@ static int s5p_hash_copy_sg_lists(struct s5p_hash_reqctx *ctx,
 	return 0;
 }
 
-/**
- * s5p_hash_prepare_sgs() - prepare sg for processing
- * @ctx:	request context
- * @sg:		source scatterlist request
- * @new_len:	number of bytes to process from sg
- * @final:	final flag
- *
- * Check two conditions: (1) if buffers in sg have len aligned data, and (2)
- * sg table have good aligned elements (list_ok). If one of this checks fails,
- * then either (1) allocates new buffer for data with s5p_hash_copy_sgs, copy
- * data into this buffer and prepare request in sgl, or (2) allocates new sg
- * table and prepare sg elements.
- *
- * For digest or finup all conditions can be good, and we may not need any
- * fixes.
- */
+ 
 static int s5p_hash_prepare_sgs(struct s5p_hash_reqctx *ctx,
 				struct scatterlist *sg,
 				unsigned int new_len, bool final)
@@ -1180,10 +964,7 @@ static int s5p_hash_prepare_sgs(struct s5p_hash_reqctx *ctx,
 	else if (!list_ok)
 		return s5p_hash_copy_sg_lists(ctx, sg, new_len);
 
-	/*
-	 * Have aligned data from previous operation and/or current
-	 * Note: will enter here only if (digest or finup) and aligned
-	 */
+	 
 	if (ctx->bufcnt) {
 		ctx->sg_len = n;
 		sg_init_table(ctx->sgl, 2);
@@ -1199,16 +980,7 @@ static int s5p_hash_prepare_sgs(struct s5p_hash_reqctx *ctx,
 	return 0;
 }
 
-/**
- * s5p_hash_prepare_request() - prepare request for processing
- * @req:	AHASH request
- * @update:	true if UPDATE op
- *
- * Note 1: we can have update flag _and_ final flag at the same time.
- * Note 2: we enter here when digcnt > BUFLEN (=HASH_BLOCK_SIZE) or
- *	   either req->nbytes or ctx->bufcnt + req->nbytes is > BUFLEN or
- *	   we have final op
- */
+ 
 static int s5p_hash_prepare_request(struct ahash_request *req, bool update)
 {
 	struct s5p_hash_reqctx *ctx = ahash_request_ctx(req);
@@ -1226,7 +998,7 @@ static int s5p_hash_prepare_request(struct ahash_request *req, bool update)
 		return 0;
 
 	if (nbytes && (!IS_ALIGNED(ctx->bufcnt, BUFLEN))) {
-		/* bytes left from previous request, so fill up to BUFLEN */
+		 
 		int len = BUFLEN - ctx->bufcnt % BUFLEN;
 
 		if (len > nbytes)
@@ -1254,8 +1026,8 @@ static int s5p_hash_prepare_request(struct ahash_request *req, bool update)
 			xmit_len -= xmit_len & (BUFLEN - 1);
 
 		hash_later = ctx->total - xmit_len;
-		/* copy hash_later bytes from end of req->src */
-		/* previous bytes are in xmit_buf, so no overwrite */
+		 
+		 
 		scatterwalk_map_and_copy(ctx->buffer, req->src,
 					 req->nbytes - hash_later,
 					 hash_later, 0);
@@ -1267,9 +1039,9 @@ static int s5p_hash_prepare_request(struct ahash_request *req, bool update)
 		if (ret)
 			return ret;
 	} else {
-		/* have buffered data only */
+		 
 		if (unlikely(!ctx->bufcnt)) {
-			/* first update didn't fill up buffer */
+			 
 			scatterwalk_map_and_copy(ctx->dd->xmit_buf, req->src,
 						 0, xmit_len, 0);
 		}
@@ -1288,12 +1060,7 @@ static int s5p_hash_prepare_request(struct ahash_request *req, bool update)
 	return 0;
 }
 
-/**
- * s5p_hash_update_dma_stop() - unmap DMA
- * @dd:		secss device
- *
- * Unmap scatterlist ctx->sg.
- */
+ 
 static void s5p_hash_update_dma_stop(struct s5p_aes_dev *dd)
 {
 	const struct s5p_hash_reqctx *ctx = ahash_request_ctx(dd->hash_req);
@@ -1302,10 +1069,7 @@ static void s5p_hash_update_dma_stop(struct s5p_aes_dev *dd)
 	clear_bit(HASH_FLAGS_DMA_ACTIVE, &dd->hash_flags);
 }
 
-/**
- * s5p_hash_finish() - copy calculated digest to crypto layer
- * @req:	AHASH request
- */
+ 
 static void s5p_hash_finish(struct ahash_request *req)
 {
 	struct s5p_hash_reqctx *ctx = ahash_request_ctx(req);
@@ -1317,11 +1081,7 @@ static void s5p_hash_finish(struct ahash_request *req)
 	dev_dbg(dd->dev, "hash_finish digcnt: %lld\n", ctx->digcnt);
 }
 
-/**
- * s5p_hash_finish_req() - finish request
- * @req:	AHASH request
- * @err:	error
- */
+ 
 static void s5p_hash_finish_req(struct ahash_request *req, int err)
 {
 	struct s5p_hash_reqctx *ctx = ahash_request_ctx(req);
@@ -1357,16 +1117,7 @@ static void s5p_hash_finish_req(struct ahash_request *req, int err)
 		ahash_request_complete(req, err);
 }
 
-/**
- * s5p_hash_handle_queue() - handle hash queue
- * @dd:		device s5p_aes_dev
- * @req:	AHASH request
- *
- * If req!=NULL enqueue it on dd->queue, if FLAGS_BUSY is not set on the
- * device then processes the first request from the dd->queue
- *
- * Returns: see s5p_hash_final below.
- */
+ 
 static int s5p_hash_handle_queue(struct s5p_aes_dev *dd,
 				 struct ahash_request *req)
 {
@@ -1411,36 +1162,30 @@ retry:
 
 	s5p_ahash_dma_init(dd, SSS_HASHIN_INDEPENDENT);
 	if (ctx->digcnt)
-		s5p_hash_write_iv(req); /* restore hash IV */
+		s5p_hash_write_iv(req);  
 
-	if (ctx->op_update) { /* HASH_OP_UPDATE */
+	if (ctx->op_update) {  
 		err = s5p_hash_xmit_dma(dd, ctx->total, ctx->finup);
 		if (err != -EINPROGRESS && ctx->finup && !ctx->error)
-			/* no final() after finup() */
+			 
 			err = s5p_hash_xmit_dma(dd, ctx->total, true);
-	} else { /* HASH_OP_FINAL */
+	} else {  
 		err = s5p_hash_xmit_dma(dd, ctx->total, true);
 	}
 out:
 	if (err != -EINPROGRESS) {
-		/* hash_tasklet_cb will not finish it, so do it here */
+		 
 		s5p_hash_finish_req(req, err);
 		req = NULL;
 
-		/*
-		 * Execute next request immediately if there is anything
-		 * in queue.
-		 */
+		 
 		goto retry;
 	}
 
 	return ret;
 }
 
-/**
- * s5p_hash_tasklet_cb() - hash tasklet
- * @data:	ptr to s5p_aes_dev
- */
+ 
 static void s5p_hash_tasklet_cb(unsigned long data)
 {
 	struct s5p_aes_dev *dd = (struct s5p_aes_dev *)data;
@@ -1458,7 +1203,7 @@ static void s5p_hash_tasklet_cb(unsigned long data)
 
 		if (test_and_clear_bit(HASH_FLAGS_OUTPUT_READY,
 				       &dd->hash_flags)) {
-			/* hash or semi-hash ready */
+			 
 			clear_bit(HASH_FLAGS_DMA_READY, &dd->hash_flags);
 			goto finish;
 		}
@@ -1467,21 +1212,15 @@ static void s5p_hash_tasklet_cb(unsigned long data)
 	return;
 
 finish:
-	/* finish curent request */
+	 
 	s5p_hash_finish_req(dd->hash_req, 0);
 
-	/* If we are not busy, process next req */
+	 
 	if (!test_bit(HASH_FLAGS_BUSY, &dd->hash_flags))
 		s5p_hash_handle_queue(dd, NULL);
 }
 
-/**
- * s5p_hash_enqueue() - enqueue request
- * @req:	AHASH request
- * @op:		operation UPDATE (true) or FINAL (false)
- *
- * Returns: see s5p_hash_final below.
- */
+ 
 static int s5p_hash_enqueue(struct ahash_request *req, bool op)
 {
 	struct s5p_hash_reqctx *ctx = ahash_request_ctx(req);
@@ -1492,15 +1231,7 @@ static int s5p_hash_enqueue(struct ahash_request *req, bool op)
 	return s5p_hash_handle_queue(tctx->dd, req);
 }
 
-/**
- * s5p_hash_update() - process the hash input data
- * @req:	AHASH request
- *
- * If request will fit in buffer, copy it and return immediately
- * else enqueue it with OP_UPDATE.
- *
- * Returns: see s5p_hash_final below.
- */
+ 
 static int s5p_hash_update(struct ahash_request *req)
 {
 	struct s5p_hash_reqctx *ctx = ahash_request_ctx(req);
@@ -1515,39 +1246,17 @@ static int s5p_hash_update(struct ahash_request *req)
 		return 0;
 	}
 
-	return s5p_hash_enqueue(req, true); /* HASH_OP_UPDATE */
+	return s5p_hash_enqueue(req, true);  
 }
 
-/**
- * s5p_hash_final() - close up hash and calculate digest
- * @req:	AHASH request
- *
- * Note: in final req->src do not have any data, and req->nbytes can be
- * non-zero.
- *
- * If there were no input data processed yet and the buffered hash data is
- * less than BUFLEN (64) then calculate the final hash immediately by using
- * SW algorithm fallback.
- *
- * Otherwise enqueues the current AHASH request with OP_FINAL operation op
- * and finalize hash message in HW. Note that if digcnt!=0 then there were
- * previous update op, so there are always some buffered bytes in ctx->buffer,
- * which means that ctx->bufcnt!=0
- *
- * Returns:
- * 0 if the request has been processed immediately,
- * -EINPROGRESS if the operation has been queued for later execution or is set
- *		to processing by HW,
- * -EBUSY if queue is full and request should be resubmitted later,
- * other negative values denotes an error.
- */
+ 
 static int s5p_hash_final(struct ahash_request *req)
 {
 	struct s5p_hash_reqctx *ctx = ahash_request_ctx(req);
 
 	ctx->finup = true;
 	if (ctx->error)
-		return -EINVAL; /* uncompleted hash is not needed */
+		return -EINVAL;  
 
 	if (!ctx->digcnt && ctx->bufcnt < BUFLEN) {
 		struct s5p_hash_ctx *tctx = crypto_tfm_ctx(req->base.tfm);
@@ -1556,15 +1265,10 @@ static int s5p_hash_final(struct ahash_request *req)
 					       ctx->bufcnt, req->result);
 	}
 
-	return s5p_hash_enqueue(req, false); /* HASH_OP_FINAL */
+	return s5p_hash_enqueue(req, false);  
 }
 
-/**
- * s5p_hash_finup() - process last req->src and calculate digest
- * @req:	AHASH request containing the last update data
- *
- * Return values: see s5p_hash_final above.
- */
+ 
 static int s5p_hash_finup(struct ahash_request *req)
 {
 	struct s5p_hash_reqctx *ctx = ahash_request_ctx(req);
@@ -1576,22 +1280,13 @@ static int s5p_hash_finup(struct ahash_request *req)
 	if (err1 == -EINPROGRESS || err1 == -EBUSY)
 		return err1;
 
-	/*
-	 * final() has to be always called to cleanup resources even if
-	 * update() failed, except EINPROGRESS or calculate digest for small
-	 * size
-	 */
+	 
 	err2 = s5p_hash_final(req);
 
 	return err1 ?: err2;
 }
 
-/**
- * s5p_hash_init() - initialize AHASH request contex
- * @req:	AHASH request
- *
- * Init async hash request context.
- */
+ 
 static int s5p_hash_init(struct ahash_request *req)
 {
 	struct s5p_hash_reqctx *ctx = ahash_request_ctx(req);
@@ -1630,28 +1325,20 @@ static int s5p_hash_init(struct ahash_request *req)
 	return 0;
 }
 
-/**
- * s5p_hash_digest - calculate digest from req->src
- * @req:	AHASH request
- *
- * Return values: see s5p_hash_final above.
- */
+ 
 static int s5p_hash_digest(struct ahash_request *req)
 {
 	return s5p_hash_init(req) ?: s5p_hash_finup(req);
 }
 
-/**
- * s5p_hash_cra_init_alg - init crypto alg transformation
- * @tfm:	crypto transformation
- */
+ 
 static int s5p_hash_cra_init_alg(struct crypto_tfm *tfm)
 {
 	struct s5p_hash_ctx *tctx = crypto_tfm_ctx(tfm);
 	const char *alg_name = crypto_tfm_alg_name(tfm);
 
 	tctx->dd = s5p_dev;
-	/* Allocate a fallback and abort if it failed. */
+	 
 	tctx->fallback = crypto_alloc_shash(alg_name, 0,
 					    CRYPTO_ALG_NEED_FALLBACK);
 	if (IS_ERR(tctx->fallback)) {
@@ -1665,21 +1352,13 @@ static int s5p_hash_cra_init_alg(struct crypto_tfm *tfm)
 	return 0;
 }
 
-/**
- * s5p_hash_cra_init - init crypto tfm
- * @tfm:	crypto transformation
- */
+ 
 static int s5p_hash_cra_init(struct crypto_tfm *tfm)
 {
 	return s5p_hash_cra_init_alg(tfm);
 }
 
-/**
- * s5p_hash_cra_exit - exit crypto tfm
- * @tfm:	crypto transformation
- *
- * free allocated fallback
- */
+ 
 static void s5p_hash_cra_exit(struct crypto_tfm *tfm)
 {
 	struct s5p_hash_ctx *tctx = crypto_tfm_ctx(tfm);
@@ -1688,11 +1367,7 @@ static void s5p_hash_cra_exit(struct crypto_tfm *tfm)
 	tctx->fallback = NULL;
 }
 
-/**
- * s5p_hash_export - export hash state
- * @req:	AHASH request
- * @out:	buffer for exported state
- */
+ 
 static int s5p_hash_export(struct ahash_request *req, void *out)
 {
 	const struct s5p_hash_reqctx *ctx = ahash_request_ctx(req);
@@ -1702,11 +1377,7 @@ static int s5p_hash_export(struct ahash_request *req, void *out)
 	return 0;
 }
 
-/**
- * s5p_hash_import - import hash state
- * @req:	AHASH request
- * @in:		buffer with state to be imported from
- */
+ 
 static int s5p_hash_import(struct ahash_request *req, const void *in)
 {
 	struct s5p_hash_reqctx *ctx = ahash_request_ctx(req);
@@ -1902,7 +1573,7 @@ static void s5p_aes_crypt_start(struct s5p_aes_dev *dev, unsigned long mode)
 	int err;
 	u8 *iv, *ctr;
 
-	/* This sets bit [13:12] to 00, which selects 128-bit counter */
+	 
 	aes_control = SSS_AES_KEY_CHANGE_MODE;
 	if (mode & FLAGS_AES_DECRYPT)
 		aes_control |= SSS_AES_MODE_DECRYPT;
@@ -1916,7 +1587,7 @@ static void s5p_aes_crypt_start(struct s5p_aes_dev *dev, unsigned long mode)
 		iv = NULL;
 		ctr = req->iv;
 	} else {
-		iv = NULL; /* AES_ECB */
+		iv = NULL;  
 		ctr = NULL;
 	}
 
@@ -1927,7 +1598,7 @@ static void s5p_aes_crypt_start(struct s5p_aes_dev *dev, unsigned long mode)
 
 	aes_control |= SSS_AES_FIFO_MODE;
 
-	/* as a variant it is possible to use byte swapping on DMA side */
+	 
 	aes_control |= SSS_AES_BYTESWAP_DI
 		    |  SSS_AES_BYTESWAP_DO
 		    |  SSS_AES_BYTESWAP_IV
@@ -2173,12 +1844,7 @@ static int s5p_aes_probe(struct platform_device *pdev)
 	if (!res)
 		return -EINVAL;
 
-	/*
-	 * Note: HASH and PRNG uses the same registers in secss, avoid
-	 * overwrite each other. This will drop HASH when CONFIG_EXYNOS_RNG
-	 * is enabled in config. We need larger size for HASH registers in
-	 * secss, current describe only AES/DES
-	 */
+	 
 	if (IS_ENABLED(CONFIG_CRYPTO_DEV_EXYNOS_HASH)) {
 		if (variant == &exynos_aes_data) {
 			res->end += 0x300;
@@ -2191,7 +1857,7 @@ static int s5p_aes_probe(struct platform_device *pdev)
 	if (IS_ERR(pdata->ioaddr)) {
 		if (!pdata->use_hash)
 			return PTR_ERR(pdata->ioaddr);
-		/* try AES without HASH */
+		 
 		res->end -= 0x300;
 		pdata->use_hash = false;
 		pdata->ioaddr = devm_ioremap_resource(dev, res);

@@ -1,10 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0-only
 
-/*
- *  HID-BPF support for Linux
- *
- *  Copyright (c) 2022 Benjamin Tissoires
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 #include <linux/bitops.h>
@@ -24,22 +20,8 @@
 struct hid_bpf_ops *hid_bpf_ops;
 EXPORT_SYMBOL(hid_bpf_ops);
 
-/**
- * hid_bpf_device_event - Called whenever an event is coming in from the device
- *
- * @ctx: The HID-BPF context
- *
- * @return %0 on success and keep processing; a positive value to change the
- * incoming size buffer; a negative error code to interrupt the processing
- * of this event
- *
- * Declare an %fmod_ret tracing bpf program to this function and attach this
- * program through hid_bpf_attach_prog() to have this helper called for
- * any incoming event from the device itself.
- *
- * The function is called while on IRQ context, so we can not sleep.
- */
-/* never used by the kernel but declared so we can load and attach a tracepoint */
+ 
+ 
 __weak noinline int hid_bpf_device_event(struct hid_bpf_ctx *ctx)
 {
 	return 0;
@@ -63,7 +45,7 @@ dispatch_hid_bpf_device_event(struct hid_device *hdev, enum hid_report_type type
 	if (type >= HID_REPORT_TYPES)
 		return ERR_PTR(-EINVAL);
 
-	/* no program has been attached yet */
+	 
 	if (!hdev->bpf.device_data)
 		return data;
 
@@ -85,21 +67,8 @@ dispatch_hid_bpf_device_event(struct hid_device *hdev, enum hid_report_type type
 }
 EXPORT_SYMBOL_GPL(dispatch_hid_bpf_device_event);
 
-/**
- * hid_bpf_rdesc_fixup - Called when the probe function parses the report
- * descriptor of the HID device
- *
- * @ctx: The HID-BPF context
- *
- * @return 0 on success and keep processing; a positive value to change the
- * incoming size buffer; a negative error code to interrupt the processing
- * of this event
- *
- * Declare an %fmod_ret tracing bpf program to this function and attach this
- * program through hid_bpf_attach_prog() to have this helper called before any
- * parsing of the report descriptor by HID.
- */
-/* never used by the kernel but declared so we can load and attach a tracepoint */
+ 
+ 
 __weak noinline int hid_bpf_rdesc_fixup(struct hid_bpf_ctx *ctx)
 {
 	return 0;
@@ -143,15 +112,7 @@ u8 *call_hid_bpf_rdesc_fixup(struct hid_device *hdev, u8 *rdesc, unsigned int *s
 }
 EXPORT_SYMBOL_GPL(call_hid_bpf_rdesc_fixup);
 
-/**
- * hid_bpf_get_data - Get the kernel memory pointer associated with the context @ctx
- *
- * @ctx: The HID-BPF context
- * @offset: The offset within the memory
- * @rdwr_buf_size: the const size of the buffer
- *
- * @returns %NULL on error, an %__u8 memory pointer on success
- */
+ 
 noinline __u8 *
 hid_bpf_get_data(struct hid_bpf_ctx *ctx, unsigned int offset, const size_t rdwr_buf_size)
 {
@@ -168,10 +129,7 @@ hid_bpf_get_data(struct hid_bpf_ctx *ctx, unsigned int offset, const size_t rdwr
 	return ctx_kern->data + offset;
 }
 
-/*
- * The following set contains all functions we agree BPF programs
- * can use.
- */
+ 
 BTF_SET8_START(hid_bpf_kfunc_ids)
 BTF_ID_FLAGS(func, hid_bpf_get_data, KF_RET_NULL)
 BTF_SET8_END(hid_bpf_kfunc_ids)
@@ -194,7 +152,7 @@ static int __hid_bpf_allocate_data(struct hid_device *hdev, u8 **data, u32 *size
 	unsigned int i, j, max_report_len = 0;
 	size_t alloc_size = 0;
 
-	/* compute the maximum report length for this device */
+	 
 	for (i = 0; i < HID_REPORT_TYPES; i++) {
 		struct hid_report_enum *report_enum = hdev->report_enum + i;
 
@@ -206,12 +164,7 @@ static int __hid_bpf_allocate_data(struct hid_device *hdev, u8 **data, u32 *size
 		}
 	}
 
-	/*
-	 * Give us a little bit of extra space and some predictability in the
-	 * buffer length we create. This way, we can tell users that they can
-	 * work on chunks of 64 bytes of memory without having the bpf verifier
-	 * scream at them.
-	 */
+	 
 	alloc_size = DIV_ROUND_UP(max_report_len, 64) * 64;
 
 	alloc_data = kzalloc(alloc_size, GFP_KERNEL);
@@ -226,7 +179,7 @@ static int __hid_bpf_allocate_data(struct hid_device *hdev, u8 **data, u32 *size
 
 static int hid_bpf_allocate_event_data(struct hid_device *hdev)
 {
-	/* hdev->bpf.device_data is already allocated, abort */
+	 
 	if (hdev->bpf.device_data)
 		return 0;
 
@@ -241,18 +194,8 @@ int hid_bpf_reconnect(struct hid_device *hdev)
 	return 0;
 }
 
-/**
- * hid_bpf_attach_prog - Attach the given @prog_fd to the given HID device
- *
- * @hid_id: the system unique identifier of the HID device
- * @prog_fd: an fd in the user process representing the program to attach
- * @flags: any logical OR combination of &enum hid_bpf_attach_flags
- *
- * @returns an fd of a bpf_link object on success (> %0), an error code otherwise.
- * Closing this fd will detach the program from the HID device (unless the bpf_link
- * is pinned to the BPF file system).
- */
-/* called from syscall */
+ 
+ 
 noinline int
 hid_bpf_attach_prog(unsigned int hid_id, int prog_fd, __u32 flags)
 {
@@ -299,13 +242,7 @@ hid_bpf_attach_prog(unsigned int hid_id, int prog_fd, __u32 flags)
 	return fd;
 }
 
-/**
- * hid_bpf_allocate_context - Allocate a context to the given HID device
- *
- * @hid_id: the system unique identifier of the HID device
- *
- * @returns A pointer to &struct hid_bpf_ctx on success, %NULL on error.
- */
+ 
 noinline struct hid_bpf_ctx *
 hid_bpf_allocate_context(unsigned int hid_id)
 {
@@ -331,12 +268,7 @@ hid_bpf_allocate_context(unsigned int hid_id)
 	return &ctx_kern->ctx;
 }
 
-/**
- * hid_bpf_release_context - Release the previously allocated context @ctx
- *
- * @ctx: the HID-BPF context to release
- *
- */
+ 
 noinline void
 hid_bpf_release_context(struct hid_bpf_ctx *ctx)
 {
@@ -347,17 +279,7 @@ hid_bpf_release_context(struct hid_bpf_ctx *ctx)
 	kfree(ctx_kern);
 }
 
-/**
- * hid_bpf_hw_request - Communicate with a HID device
- *
- * @ctx: the HID-BPF context previously allocated in hid_bpf_allocate_context()
- * @buf: a %PTR_TO_MEM buffer
- * @buf__sz: the size of the data to transfer
- * @rtype: the type of the report (%HID_INPUT_REPORT, %HID_FEATURE_REPORT, %HID_OUTPUT_REPORT)
- * @reqtype: the type of the request (%HID_REQ_GET_REPORT, %HID_REQ_SET_REPORT, ...)
- *
- * @returns %0 on success, a negative error code otherwise.
- */
+ 
 noinline int
 hid_bpf_hw_request(struct hid_bpf_ctx *ctx, __u8 *buf, size_t buf__sz,
 		   enum hid_report_type rtype, enum hid_class_request reqtype)
@@ -369,7 +291,7 @@ hid_bpf_hw_request(struct hid_bpf_ctx *ctx, __u8 *buf, size_t buf__sz,
 	u32 report_len;
 	int ret;
 
-	/* check arguments */
+	 
 	if (!ctx || !hid_bpf_ops || !buf)
 		return -EINVAL;
 
@@ -397,7 +319,7 @@ hid_bpf_hw_request(struct hid_bpf_ctx *ctx, __u8 *buf, size_t buf__sz,
 	if (buf__sz < 1)
 		return -EINVAL;
 
-	hdev = (struct hid_device *)ctx->hid; /* discard const */
+	hdev = (struct hid_device *)ctx->hid;  
 
 	report_enum = hdev->report_enum + rtype;
 	report = hid_bpf_ops->hid_get_report(report_enum, buf);
@@ -427,7 +349,7 @@ hid_bpf_hw_request(struct hid_bpf_ctx *ctx, __u8 *buf, size_t buf__sz,
 	return ret;
 }
 
-/* our HID-BPF entrypoints */
+ 
 BTF_SET8_START(hid_bpf_fmodret_ids)
 BTF_ID_FLAGS(func, hid_bpf_device_event)
 BTF_ID_FLAGS(func, hid_bpf_rdesc_fixup)
@@ -439,7 +361,7 @@ static const struct btf_kfunc_id_set hid_bpf_fmodret_set = {
 	.set   = &hid_bpf_fmodret_ids,
 };
 
-/* for syscall HID-BPF */
+ 
 BTF_SET8_START(hid_bpf_syscall_kfunc_ids)
 BTF_ID_FLAGS(func, hid_bpf_attach_prog)
 BTF_ID_FLAGS(func, hid_bpf_allocate_context, KF_ACQUIRE | KF_RET_NULL)
@@ -460,7 +382,7 @@ int hid_bpf_connect_device(struct hid_device *hdev)
 	prog_list = rcu_dereference(hdev->bpf.progs[HID_BPF_PROG_TYPE_DEVICE_EVENT]);
 	rcu_read_unlock();
 
-	/* only allocate BPF data if there are programs attached */
+	 
 	if (!prog_list)
 		return 0;
 
@@ -481,7 +403,7 @@ void hid_bpf_destroy_device(struct hid_device *hdev)
 	if (!hdev)
 		return;
 
-	/* mark the device as destroyed in bpf so we don't reattach it */
+	 
 	hdev->bpf.destroyed = true;
 
 	__hid_bpf_destroy_device(hdev);
@@ -498,12 +420,7 @@ static int __init hid_bpf_init(void)
 {
 	int err;
 
-	/* Note: if we exit with an error any time here, we would entirely break HID, which
-	 * is probably not something we want. So we log an error and return success.
-	 *
-	 * This is not a big deal: the syscall allowing to attach a BPF program to a HID device
-	 * will not be available, so nobody will be able to use the functionality.
-	 */
+	 
 
 	err = register_btf_fmodret_id_set(&hid_bpf_fmodret_set);
 	if (err) {
@@ -517,14 +434,14 @@ static int __init hid_bpf_init(void)
 		return 0;
 	}
 
-	/* register tracing kfuncs after we are sure we can load our preloaded bpf program */
+	 
 	err = register_btf_kfunc_id_set(BPF_PROG_TYPE_TRACING, &hid_bpf_kfunc_set);
 	if (err) {
 		pr_warn("error while setting HID BPF tracing kfuncs: %d", err);
 		return 0;
 	}
 
-	/* register syscalls after we are sure we can load our preloaded bpf program */
+	 
 	err = register_btf_kfunc_id_set(BPF_PROG_TYPE_SYSCALL, &hid_bpf_syscall_kfunc_set);
 	if (err) {
 		pr_warn("error while setting HID BPF syscall kfuncs: %d", err);
@@ -536,9 +453,7 @@ static int __init hid_bpf_init(void)
 
 static void __exit hid_bpf_exit(void)
 {
-	/* HID depends on us, so if we hit that code, we are guaranteed that hid
-	 * has been removed and thus we do not need to clear the HID devices
-	 */
+	 
 	hid_bpf_free_links_and_skel();
 }
 

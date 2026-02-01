@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2000-2001,2005 Silicon Graphics, Inc.
- * All Rights Reserved.
- */
+
+ 
 #include "xfs.h"
 #include "xfs_fs.h"
 #include "xfs_shared.h"
@@ -44,7 +41,7 @@ STATIC void
 xfs_inobt_set_root(
 	struct xfs_btree_cur		*cur,
 	const union xfs_btree_ptr	*nptr,
-	int				inc)	/* level change */
+	int				inc)	 
 {
 	struct xfs_buf		*agbp = cur->bc_ag.agbp;
 	struct xfs_agi		*agi = agbp->b_addr;
@@ -58,7 +55,7 @@ STATIC void
 xfs_finobt_set_root(
 	struct xfs_btree_cur		*cur,
 	const union xfs_btree_ptr	*nptr,
-	int				inc)	/* level change */
+	int				inc)	 
 {
 	struct xfs_buf		*agbp = cur->bc_ag.agbp;
 	struct xfs_agi		*agi = agbp->b_addr;
@@ -69,7 +66,7 @@ xfs_finobt_set_root(
 			   XFS_AGI_FREE_ROOT | XFS_AGI_FREE_LEVEL);
 }
 
-/* Update the inode btree block counter for this btree. */
+ 
 static inline void
 xfs_inobt_mod_blockcount(
 	struct xfs_btree_cur	*cur,
@@ -96,8 +93,8 @@ __xfs_inobt_alloc_block(
 	int				*stat,
 	enum xfs_ag_resv_type		resv)
 {
-	xfs_alloc_arg_t		args;		/* block allocation args */
-	int			error;		/* error return value */
+	xfs_alloc_arg_t		args;		 
+	int			error;		 
 	xfs_agblock_t		sbno = be32_to_cpu(start->s);
 
 	memset(&args, 0, sizeof(args));
@@ -222,16 +219,14 @@ xfs_inobt_init_rec_from_cur(
 		rec->inobt.ir_u.sp.ir_count = cur->bc_rec.i.ir_count;
 		rec->inobt.ir_u.sp.ir_freecount = cur->bc_rec.i.ir_freecount;
 	} else {
-		/* ir_holemask/ir_count not supported on-disk */
+		 
 		rec->inobt.ir_u.f.ir_freecount =
 					cpu_to_be32(cur->bc_rec.i.ir_freecount);
 	}
 	rec->inobt.ir_free = cpu_to_be64(cur->bc_rec.i.ir_free);
 }
 
-/*
- * initial value of ptr for lookup
- */
+ 
 STATIC void
 xfs_inobt_init_ptr_from_cur(
 	struct xfs_btree_cur	*cur,
@@ -289,23 +284,14 @@ xfs_inobt_verify(
 	if (!xfs_verify_magic(bp, block->bb_magic))
 		return __this_address;
 
-	/*
-	 * During growfs operations, we can't verify the exact owner as the
-	 * perag is not fully initialised and hence not attached to the buffer.
-	 *
-	 * Similarly, during log recovery we will have a perag structure
-	 * attached, but the agi information will not yet have been initialised
-	 * from the on disk AGI. We don't currently use any of this information,
-	 * but beware of the landmine (i.e. need to check
-	 * xfs_perag_initialised_agi(pag)) if we ever do.
-	 */
+	 
 	if (xfs_has_crc(mp)) {
 		fa = xfs_btree_sblock_v5hdr_verify(bp);
 		if (fa)
 			return fa;
 	}
 
-	/* level verification */
+	 
 	level = be16_to_cpu(block->bb_level);
 	if (level >= M_IGEO(mp)->inobt_maxlevels)
 		return __this_address;
@@ -442,14 +428,12 @@ static const struct xfs_btree_ops xfs_finobt_ops = {
 	.keys_contiguous	= xfs_inobt_keys_contiguous,
 };
 
-/*
- * Initialize a new inode btree cursor.
- */
+ 
 static struct xfs_btree_cur *
 xfs_inobt_init_common(
 	struct xfs_perag	*pag,
-	struct xfs_trans	*tp,		/* transaction pointer */
-	xfs_btnum_t		btnum)		/* ialloc or free ino btree */
+	struct xfs_trans	*tp,		 
+	xfs_btnum_t		btnum)		 
 {
 	struct xfs_mount	*mp = pag->pag_mount;
 	struct xfs_btree_cur	*cur;
@@ -471,7 +455,7 @@ xfs_inobt_init_common(
 	return cur;
 }
 
-/* Create an inode btree cursor. */
+ 
 struct xfs_btree_cur *
 xfs_inobt_init_cursor(
 	struct xfs_perag	*pag,
@@ -491,7 +475,7 @@ xfs_inobt_init_cursor(
 	return cur;
 }
 
-/* Create an inode btree cursor with a fake root for staging. */
+ 
 struct xfs_btree_cur *
 xfs_inobt_stage_cursor(
 	struct xfs_perag	*pag,
@@ -505,10 +489,7 @@ xfs_inobt_stage_cursor(
 	return cur;
 }
 
-/*
- * Install a new inobt btree root.  Caller is responsible for invalidating
- * and freeing the old btree blocks.
- */
+ 
 void
 xfs_inobt_commit_staged_btree(
 	struct xfs_btree_cur	*cur,
@@ -544,7 +525,7 @@ xfs_inobt_commit_staged_btree(
 	}
 }
 
-/* Calculate number of records in an inode btree block. */
+ 
 static inline unsigned int
 xfs_inobt_block_maxrecs(
 	unsigned int		blocklen,
@@ -555,9 +536,7 @@ xfs_inobt_block_maxrecs(
 	return blocklen / (sizeof(xfs_inobt_key_t) + sizeof(xfs_inobt_ptr_t));
 }
 
-/*
- * Calculate number of records in an inobt btree block.
- */
+ 
 int
 xfs_inobt_maxrecs(
 	struct xfs_mount	*mp,
@@ -568,15 +547,12 @@ xfs_inobt_maxrecs(
 	return xfs_inobt_block_maxrecs(blocklen, leaf);
 }
 
-/*
- * Maximum number of inode btree records per AG.  Pretend that we can fill an
- * entire AG completely full of inodes except for the AG headers.
- */
+ 
 #define XFS_MAX_INODE_RECORDS \
 	((XFS_MAX_AG_BYTES - (4 * BBSIZE)) / XFS_DINODE_MIN_SIZE) / \
 			XFS_INODES_PER_CHUNK
 
-/* Compute the max possible height for the inode btree. */
+ 
 static inline unsigned int
 xfs_inobt_maxlevels_ondisk(void)
 {
@@ -592,7 +568,7 @@ xfs_inobt_maxlevels_ondisk(void)
 	return xfs_btree_compute_maxlevels(minrecs, XFS_MAX_INODE_RECORDS);
 }
 
-/* Compute the max possible height for the free inode btree. */
+ 
 static inline unsigned int
 xfs_finobt_maxlevels_ondisk(void)
 {
@@ -607,7 +583,7 @@ xfs_finobt_maxlevels_ondisk(void)
 	return xfs_btree_compute_maxlevels(minrecs, XFS_MAX_INODE_RECORDS);
 }
 
-/* Compute the max possible height for either inode btree. */
+ 
 unsigned int
 xfs_iallocbt_maxlevels_ondisk(void)
 {
@@ -615,14 +591,7 @@ xfs_iallocbt_maxlevels_ondisk(void)
 		   xfs_finobt_maxlevels_ondisk());
 }
 
-/*
- * Convert the inode record holemask to an inode allocation bitmap. The inode
- * allocation bitmap is inode granularity and specifies whether an inode is
- * physically allocated on disk (not whether the inode is considered allocated
- * or free by the fs).
- *
- * A bit value of 1 means the inode is allocated, a value of 0 means it is free.
- */
+ 
 uint64_t
 xfs_inobt_irec_to_allocmask(
 	const struct xfs_inobt_rec_incore	*rec)
@@ -632,27 +601,13 @@ xfs_inobt_irec_to_allocmask(
 	int				nextbit;
 	uint				allocbitmap;
 
-	/*
-	 * The holemask has 16-bits for a 64 inode record. Therefore each
-	 * holemask bit represents multiple inodes. Create a mask of bits to set
-	 * in the allocmask for each holemask bit.
-	 */
+	 
 	inodespbit = (1 << XFS_INODES_PER_HOLEMASK_BIT) - 1;
 
-	/*
-	 * Allocated inodes are represented by 0 bits in holemask. Invert the 0
-	 * bits to 1 and convert to a uint so we can use xfs_next_bit(). Mask
-	 * anything beyond the 16 holemask bits since this casts to a larger
-	 * type.
-	 */
+	 
 	allocbitmap = ~rec->ir_holemask & ((1 << XFS_INOBT_HOLEMASK_BITS) - 1);
 
-	/*
-	 * allocbitmap is the inverted holemask so every set bit represents
-	 * allocated inodes. To expand from 16-bit holemask granularity to
-	 * 64-bit (e.g., bit-per-inode), set inodespbit bits in the target
-	 * bitmap for every holemask bit.
-	 */
+	 
 	nextbit = xfs_next_bit(&allocbitmap, 1, 0);
 	while (nextbit != -1) {
 		ASSERT(nextbit < (sizeof(rec->ir_holemask) * NBBY));
@@ -667,9 +622,7 @@ xfs_inobt_irec_to_allocmask(
 }
 
 #if defined(DEBUG) || defined(XFS_WARN)
-/*
- * Verify that an in-core inode record has a valid inode count.
- */
+ 
 int
 xfs_inobt_rec_check_count(
 	struct xfs_mount		*mp,
@@ -695,7 +648,7 @@ xfs_inobt_rec_check_count(
 
 	return 0;
 }
-#endif	/* DEBUG */
+#endif	 
 
 static xfs_extlen_t
 xfs_inobt_max_size(
@@ -704,15 +657,11 @@ xfs_inobt_max_size(
 	struct xfs_mount	*mp = pag->pag_mount;
 	xfs_agblock_t		agblocks = pag->block_count;
 
-	/* Bail out if we're uninitialized, which can happen in mkfs. */
+	 
 	if (M_IGEO(mp)->inobt_mxr[0] == 0)
 		return 0;
 
-	/*
-	 * The log is permanently allocated, so the space it occupies will
-	 * never be available for the kinds of things that would require btree
-	 * expansion.  We therefore can pretend the space isn't there.
-	 */
+	 
 	if (xfs_ag_contains_log(mp, pag->pag_agno))
 		agblocks -= mp->m_sb.sb_logblocks;
 
@@ -721,7 +670,7 @@ xfs_inobt_max_size(
 					XFS_INODES_PER_CHUNK);
 }
 
-/* Read AGI and create inobt cursor. */
+ 
 int
 xfs_inobt_cur(
 	struct xfs_perag	*pag,
@@ -767,7 +716,7 @@ xfs_inobt_count_blocks(
 	return error;
 }
 
-/* Read finobt block count from AGI header. */
+ 
 static int
 xfs_finobt_read_blocks(
 	struct xfs_perag	*pag,
@@ -788,9 +737,7 @@ xfs_finobt_read_blocks(
 	return 0;
 }
 
-/*
- * Figure out how many blocks to reserve and how many are used by this btree.
- */
+ 
 int
 xfs_finobt_calc_reserves(
 	struct xfs_perag	*pag,
@@ -817,7 +764,7 @@ xfs_finobt_calc_reserves(
 	return 0;
 }
 
-/* Calculate the inobt btree size for some records. */
+ 
 xfs_extlen_t
 xfs_iallocbt_calc_size(
 	struct xfs_mount	*mp,

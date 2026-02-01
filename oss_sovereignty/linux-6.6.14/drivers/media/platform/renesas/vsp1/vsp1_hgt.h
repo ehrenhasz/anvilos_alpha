@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * vsp1_hgt.h  --  R-Car VSP1 Histogram Generator 2D
- *
- * Copyright (C) 2016 Renesas Electronics Corporation
- *
- * Contact: Niklas Söderlund (niklas.soderlund@ragnatech.se)
- */
+ 
+ 
 #ifndef __VSP1_HGT_H__
 #define __VSP1_HGT_H__
 
@@ -35,4 +29,4 @@ static inline struct vsp1_hgt *to_hgt(struct v4l2_subdev *subdev)
 struct vsp1_hgt *vsp1_hgt_create(struct vsp1_device *vsp1);
 void vsp1_hgt_frame_end(struct vsp1_entity *hgt);
 
-#endif /* __VSP1_HGT_H__ */
+#endif  

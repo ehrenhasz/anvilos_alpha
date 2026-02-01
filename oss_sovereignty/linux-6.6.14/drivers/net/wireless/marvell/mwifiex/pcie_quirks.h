@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/* NXP Wireless LAN device driver: PCIE and platform specific quirks */
+ 
+ 
 
 #include "pcie.h"
 

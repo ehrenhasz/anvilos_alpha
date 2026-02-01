@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Atlantic Network Driver
- * Copyright (C) 2020 Marvell International Ltd.
- */
+
+ 
 
 #include <linux/iopoll.h>
 
@@ -60,7 +58,7 @@ static bool hw_atl2_mcp_boot_complete(struct aq_hw_s *self)
 	if (rbl_status & AQ_A2_FW_BOOT_COMPLETE_MASK)
 		return true;
 
-	/* Host boot requested */
+	 
 	if (hw_atl2_mif_host_req_int_get(self) & HW_ATL2_MCP_HOST_REQ_INT_READY)
 		return true;
 
@@ -81,7 +79,7 @@ int hw_atl2_utils_soft_reset(struct aq_hw_s *self)
 #endif
 	hw_atl2_mif_mcp_boot_reg_set(self, rbl_request);
 
-	/* Wait for RBL boot */
+	 
 	err = readx_poll_timeout_atomic(hw_atl2_mif_mcp_boot_reg_get, self,
 				rbl_status,
 				((rbl_status & AQ_A2_BOOT_STARTED) &&

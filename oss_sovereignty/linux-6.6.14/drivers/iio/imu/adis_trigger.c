@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Common library for ADIS16XXX devices
- *
- * Copyright 2012 Analog Devices Inc.
- *   Author: Lars-Peter Clausen <lars@metafoo.de>
- */
+
+ 
 
 #include <linux/interrupt.h>
 #include <linux/kernel.h>
@@ -30,16 +25,10 @@ static int adis_validate_irq_flag(struct adis *adis)
 {
 	unsigned long direction = adis->irq_flag & IRQF_TRIGGER_MASK;
 
-	/* We cannot mask the interrupt so ensure it's not enabled at request */
+	 
 	if (adis->data->unmasked_drdy)
 		adis->irq_flag |= IRQF_NO_AUTOEN;
-	/*
-	 * Typically this devices have data ready either on the rising edge or
-	 * on the falling edge of the data ready pin. This checks enforces that
-	 * one of those is set in the drivers... It defaults to
-	 * IRQF_TRIGGER_RISING for backward compatibility with devices that
-	 * don't support changing the pin polarity.
-	 */
+	 
 	if (direction == IRQF_TRIGGER_NONE) {
 		adis->irq_flag |= IRQF_TRIGGER_RISING;
 		return 0;
@@ -53,13 +42,7 @@ static int adis_validate_irq_flag(struct adis *adis)
 	return 0;
 }
 
-/**
- * devm_adis_probe_trigger() - Sets up trigger for a managed adis device
- * @adis: The adis device
- * @indio_dev: The IIO device
- *
- * Returns 0 on success or a negative error code
- */
+ 
 int devm_adis_probe_trigger(struct adis *adis, struct iio_dev *indio_dev)
 {
 	int ret;

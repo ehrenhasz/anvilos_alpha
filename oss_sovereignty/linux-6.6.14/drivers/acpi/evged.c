@@ -1,35 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Generic Event Device for ACPI.
- *
- * Copyright (c) 2016, The Linux Foundation. All rights reserved.
- *
- * Generic Event Device allows platforms to handle interrupts in ACPI
- * ASL statements. It follows very similar to  _EVT method approach
- * from GPIO events. All interrupts are listed in _CRS and the handler
- * is written in _EVT method. Here is an example.
- *
- * Device (GED0)
- * {
- *
- *     Name (_HID, "ACPI0013")
- *     Name (_UID, 0)
- *     Method (_CRS, 0x0, Serialized)
- *     {
- *		Name (RBUF, ResourceTemplate ()
- *		{
- *		Interrupt(ResourceConsumer, Edge, ActiveHigh, Shared, , , )
- *		{123}
- *		}
- *     })
- *
- *     Method (_EVT, 1) {
- *             if (Lequal(123, Arg0))
- *             {
- *             }
- *     }
- * }
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/init.h>

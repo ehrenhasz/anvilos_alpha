@@ -1,13 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * Copyright (c) 2013 Samsung Electronics Co., Ltd
- *		http://www.samsung.com
- */
+ 
+ 
 
 #ifndef __LINUX_MFD_S2MPA01_H
 #define __LINUX_MFD_S2MPA01_H
 
-/* S2MPA01 registers */
+ 
 enum s2mpa01_reg {
 	S2MPA01_REG_ID,
 	S2MPA01_REG_INT1,
@@ -107,7 +104,7 @@ enum s2mpa01_reg {
 
 };
 
-/* S2MPA01 regulator ids */
+ 
 enum s2mpa01_regulators {
 	S2MPA01_LDO1,
 	S2MPA01_LDO2,
@@ -157,7 +154,7 @@ enum s2mpa01_regulators {
 #define S2MPA01_LDO_N_VOLTAGES	(S2MPA01_LDO_VSEL_MASK + 1)
 #define S2MPA01_BUCK_N_VOLTAGES (S2MPA01_BUCK_VSEL_MASK + 1)
 
-#define S2MPA01_RAMP_DELAY	12500	/* uV/us */
+#define S2MPA01_RAMP_DELAY	12500	 
 
 #define S2MPA01_BUCK16_RAMP_SHIFT	4
 #define S2MPA01_BUCK24_RAMP_SHIFT	6
@@ -172,4 +169,4 @@ enum s2mpa01_regulators {
 #define S2MPA01_BUCK4_RAMP_EN_SHIFT	0
 #define S2MPA01_PMIC_EN_SHIFT	6
 
-#endif /*__LINUX_MFD_S2MPA01_H */
+#endif  

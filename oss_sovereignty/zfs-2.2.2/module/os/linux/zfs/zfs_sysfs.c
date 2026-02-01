@@ -1,26 +1,5 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
-/*
- * Copyright (c) 2018, 2019 by Delphix. All rights reserved.
- */
+ 
+ 
 
 #include <sys/types.h>
 #include <sys/param.h>
@@ -37,79 +16,49 @@
 #error kernel builds only
 #endif
 
-/*
- * ZFS Module sysfs support
- *
- * This extends our sysfs '/sys/module/zfs' entry to include feature
- * and property attributes. The primary consumer of this information
- * is user processes, like the zfs CLI, that need to know what the
- * current loaded ZFS module supports. The libzfs binary will consult
- * this information when instantiating the zfs|zpool property tables
- * and the pool features table.
- *
- * The added top-level directories are:
- * /sys/module/zfs
- *		├── features.kernel
- *		├── features.pool
- *		├── properties.dataset
- *		└── properties.pool
- *
- * The local interface for the zfs kobjects includes:
- *	zfs_kobj_init()
- *	zfs_kobj_add()
- *	zfs_kobj_release()
- *	zfs_kobj_add_attr()
- *	zfs_kobj_fini()
- */
+ 
 
-/*
- * A zfs_mod_kobj_t represents a zfs kobject under '/sys/module/zfs'
- */
+ 
 typedef struct zfs_mod_kobj zfs_mod_kobj_t;
 struct zfs_mod_kobj {
 	struct kobject		zko_kobj;
 	struct kobj_type	zko_kobj_type;
 	struct sysfs_ops	zko_sysfs_ops;
 	size_t			zko_attr_count;
-	struct attribute	*zko_attr_list;		/* allocated */
-	struct attribute_group	zko_default_group;	/* .attrs allocated */
+	struct attribute	*zko_attr_list;		 
+	struct attribute_group	zko_default_group;	 
 	const struct attribute_group	*zko_default_groups[2];
 	size_t			zko_child_count;
-	zfs_mod_kobj_t		*zko_children;		/* allocated */
+	zfs_mod_kobj_t		*zko_children;		 
 };
 
 #define	ATTR_TABLE_SIZE(cnt)	(sizeof (struct attribute) * (cnt))
-/* Note +1 for NULL terminator slot */
+ 
 #define	DEFAULT_ATTR_SIZE(cnt)	(sizeof (struct attribute *) * (cnt + 1))
 #define	CHILD_TABLE_SIZE(cnt)	(sizeof (zfs_mod_kobj_t) * (cnt))
 
-/*
- * These are the top-level kobjects under '/sys/module/zfs/'
- */
+ 
 static zfs_mod_kobj_t kernel_features_kobj;
 static zfs_mod_kobj_t pool_features_kobj;
 static zfs_mod_kobj_t dataset_props_kobj;
 static zfs_mod_kobj_t vdev_props_kobj;
 static zfs_mod_kobj_t pool_props_kobj;
 
-/*
- * The show function is used to provide the content
- * of an attribute into a PAGE_SIZE buffer.
- */
+ 
 typedef ssize_t	(*sysfs_show_func)(struct kobject *, struct attribute *,
     char *);
 
 static void
 zfs_kobj_fini(zfs_mod_kobj_t *zkobj)
 {
-	/* finalize any child kobjects */
+	 
 	if (zkobj->zko_child_count != 0) {
 		ASSERT(zkobj->zko_children);
 		for (int i = 0; i < zkobj->zko_child_count; i++)
 			zfs_kobj_fini(&zkobj->zko_children[i]);
 	}
 
-	/* kobject_put() will call zfs_kobj_release() to release memory */
+	 
 	kobject_del(&zkobj->zko_kobj);
 	kobject_put(&zkobj->zko_kobj);
 }
@@ -166,16 +115,14 @@ static int
 zfs_kobj_init(zfs_mod_kobj_t *zkobj, int attr_cnt, int child_cnt,
     sysfs_show_func show_func)
 {
-	/*
-	 * Initialize object's attributes. Count can be zero.
-	 */
+	 
 	if (attr_cnt > 0) {
 		zkobj->zko_attr_list = kmem_zalloc(ATTR_TABLE_SIZE(attr_cnt),
 		    KM_SLEEP);
 		if (zkobj->zko_attr_list == NULL)
 			return (ENOMEM);
 	}
-	/* this will always have at least one slot for NULL termination */
+	 
 	zkobj->zko_default_group.attrs =
 	    kmem_zalloc(DEFAULT_ATTR_SIZE(attr_cnt), KM_SLEEP);
 	if (zkobj->zko_default_group.attrs == NULL) {
@@ -220,7 +167,7 @@ zfs_kobj_init(zfs_mod_kobj_t *zkobj, int attr_cnt, int child_cnt,
 static int
 zfs_kobj_add(zfs_mod_kobj_t *zkobj, struct kobject *parent, const char *name)
 {
-	/* zko_default_group.attrs must be NULL terminated */
+	 
 	ASSERT(zkobj->zko_default_group.attrs != NULL);
 	ASSERT(zkobj->zko_default_group.attrs[zkobj->zko_attr_count] == NULL);
 
@@ -228,9 +175,7 @@ zfs_kobj_add(zfs_mod_kobj_t *zkobj, struct kobject *parent, const char *name)
 	return (kobject_add(&zkobj->zko_kobj, parent, name));
 }
 
-/*
- * Each zfs property has these common attributes
- */
+ 
 static const char *const zprop_attrs[]  = {
 	"type",
 	"readonly",
@@ -238,7 +183,7 @@ static const char *const zprop_attrs[]  = {
 	"visible",
 	"values",
 	"default",
-	"datasets"	/* zfs properties only */
+	"datasets"	 
 };
 
 #define	ZFS_PROP_ATTR_COUNT	ARRAY_SIZE(zprop_attrs)
@@ -262,9 +207,7 @@ static const zfs_type_map_t type_map[] = {
 	{ZFS_TYPE_BOOKMARK,	"bookmark"}
 };
 
-/*
- * Show the content for a zfs property attribute
- */
+ 
 static ssize_t
 zprop_sysfs_show(const char *attr_name, const zprop_desc_t *property,
     char *buf, size_t buflen)
@@ -272,7 +215,7 @@ zprop_sysfs_show(const char *attr_name, const zprop_desc_t *property,
 	const char *show_str;
 	char number[32];
 
-	/* For dataset properties list the dataset types that apply */
+	 
 	if (strcmp(attr_name, "datasets") == 0 &&
 	    property->pd_types != ZFS_TYPE_POOL) {
 		int len = 0;
@@ -367,17 +310,9 @@ pool_property_show(struct kobject *kobj, struct attribute *attr, char *buf)
 	return (len);
 }
 
-/*
- * ZFS kernel feature attributes for '/sys/module/zfs/features.kernel'
- *
- * This list is intended for kernel features that don't have a pool feature
- * association or that extend existing user kernel interfaces.
- *
- * A user process can easily check if the running zfs kernel module
- * supports the new feature.
- */
+ 
 static const char *const zfs_kernel_features[] = {
-	/* --> Add new kernel features here */
+	 
 	"com.delphix:vdev_initialize",
 	"org.zfsonlinux:vdev_trim",
 	"org.openzfs:l2arc_persistent",
@@ -415,11 +350,7 @@ kernel_feature_to_kobj(zfs_mod_kobj_t *parent, int slot, const char *name)
 static int
 zfs_kernel_features_init(zfs_mod_kobj_t *zfs_kobj, struct kobject *parent)
 {
-	/*
-	 * Create a parent kobject to host kernel features.
-	 *
-	 * '/sys/module/zfs/features.kernel'
-	 */
+	 
 	int err = zfs_kobj_init(zfs_kobj, 0, KERNEL_FEATURE_COUNT,
 	    kernel_feature_show);
 	if (err)
@@ -430,20 +361,14 @@ zfs_kernel_features_init(zfs_mod_kobj_t *zfs_kobj, struct kobject *parent)
 		return (err);
 	}
 
-	/*
-	 * Now create a kobject for each feature.
-	 *
-	 * '/sys/module/zfs/features.kernel/<feature>'
-	 */
+	 
 	for (int f = 0; f < KERNEL_FEATURE_COUNT; f++)
 		kernel_feature_to_kobj(zfs_kobj, f, zfs_kernel_features[f]);
 
 	return (0);
 }
 
-/*
- * Each pool feature has these common attributes
- */
+ 
 static const char *const pool_feature_attrs[]  = {
 	"description",
 	"guid",
@@ -456,9 +381,7 @@ static const char *const pool_feature_attrs[]  = {
 
 #define	ZPOOL_FEATURE_ATTR_COUNT	ARRAY_SIZE(pool_feature_attrs)
 
-/*
- * Show the content for the given zfs pool feature attribute
- */
+ 
 static ssize_t
 pool_feature_show(struct kobject *kobj, struct attribute *attr, char *buf)
 {
@@ -518,11 +441,7 @@ pool_feature_to_kobj(zfs_mod_kobj_t *parent, spa_feature_t fid,
 static int
 zfs_pool_features_init(zfs_mod_kobj_t *zfs_kobj, struct kobject *parent)
 {
-	/*
-	 * Create a parent kobject to host pool features.
-	 *
-	 * '/sys/module/zfs/features.pool'
-	 */
+	 
 	int err = zfs_kobj_init(zfs_kobj, 0, SPA_FEATURES, pool_feature_show);
 	if (err)
 		return (err);
@@ -532,11 +451,7 @@ zfs_pool_features_init(zfs_mod_kobj_t *zfs_kobj, struct kobject *parent)
 		return (err);
 	}
 
-	/*
-	 * Now create a kobject for each feature.
-	 *
-	 * '/sys/module/zfs/features.pool/<feature>'
-	 */
+	 
 	for (spa_feature_t i = 0; i < SPA_FEATURES; i++)
 		pool_feature_to_kobj(zfs_kobj, i, spa_feature_table[i].fi_guid);
 
@@ -584,11 +499,7 @@ zfs_sysfs_properties_init(zfs_mod_kobj_t *zfs_kobj, struct kobject *parent,
 	const char *name;
 	int err;
 
-	/*
-	 * Create a parent kobject to host properties.
-	 *
-	 * '/sys/module/zfs/properties.<type>'
-	 */
+	 
 	if (type == ZFS_TYPE_POOL) {
 		name = ZFS_SYSFS_POOL_PROPERTIES;
 		context.p2k_table = zpool_prop_get_table();
@@ -624,11 +535,7 @@ zfs_sysfs_properties_init(zfs_mod_kobj_t *zfs_kobj, struct kobject *parent,
 		return (err);
 	}
 
-	/*
-	 * Create a kobject for each property.
-	 *
-	 * '/sys/module/zfs/properties.<type>/<property>'
-	 */
+	 
 	(void) zprop_iter_common(zprop_to_kobj, &context, B_TRUE,
 	    B_FALSE, type);
 
@@ -690,9 +597,7 @@ zfs_sysfs_init(void)
 void
 zfs_sysfs_fini(void)
 {
-	/*
-	 * Remove top-level kobjects; each will remove any children kobjects
-	 */
+	 
 	zfs_kobj_fini(&kernel_features_kobj);
 	zfs_kobj_fini(&pool_features_kobj);
 	zfs_kobj_fini(&pool_props_kobj);

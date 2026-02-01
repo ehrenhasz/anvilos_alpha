@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/* Microchip VCAP API debug file system support
- *
- * Copyright (c) 2022 Microchip Technology Inc. and its subsidiaries.
- *
- */
+
+ 
 
 #include "vcap_api_private.h"
 #include "vcap_api_debugfs.h"
@@ -18,7 +14,7 @@ struct vcap_port_debugfs_info {
 	struct net_device *ndev;
 };
 
-/* Dump the keyfields value and mask values */
+ 
 static void vcap_debugfs_show_rule_keyfield(struct vcap_control *vctrl,
 					    struct vcap_output_print *out,
 					    enum vcap_key_field key,
@@ -333,7 +329,7 @@ static int vcap_show_admin_raw(struct vcap_control *vctrl,
 
 	ri = list_first_entry(&admin->rules, struct vcap_rule_internal, list);
 
-	/* Go from higher to lower addresses searching for a keyset */
+	 
 	kslist.keysets = keysets;
 	kslist.max = ARRAY_SIZE(keysets);
 	for (addr = admin->last_valid_addr; addr >= admin->first_valid_addr;
@@ -364,7 +360,7 @@ static int vcap_show_admin_raw(struct vcap_control *vctrl,
 	return 0;
 }
 
-/* Show the port configuration and status */
+ 
 static int vcap_port_debugfs_show(struct seq_file *m, void *unused)
 {
 	struct vcap_port_debugfs_info *info = m->private;
@@ -400,7 +396,7 @@ void vcap_port_debugfs(struct device *dev, struct dentry *parent,
 }
 EXPORT_SYMBOL_GPL(vcap_port_debugfs);
 
-/* Show the full VCAP instance data (rules with all fields) */
+ 
 static int vcap_debugfs_show(struct seq_file *m, void *unused)
 {
 	struct vcap_admin_debugfs_info *info = m->private;
@@ -417,7 +413,7 @@ static int vcap_debugfs_show(struct seq_file *m, void *unused)
 }
 DEFINE_SHOW_ATTRIBUTE(vcap_debugfs);
 
-/* Show the raw VCAP instance data (rules with address info) */
+ 
 static int vcap_raw_debugfs_show(struct seq_file *m, void *unused)
 {
 	struct vcap_admin_debugfs_info *info = m->private;

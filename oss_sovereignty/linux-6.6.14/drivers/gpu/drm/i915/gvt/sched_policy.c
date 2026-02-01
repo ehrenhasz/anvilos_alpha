@@ -1,35 +1,4 @@
-/*
- * Copyright(c) 2011-2016 Intel Corporation. All rights reserved.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice (including the next
- * paragraph) shall be included in all copies or substantial portions of the
- * Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- *
- * Authors:
- *    Anhua Xu
- *    Kevin Tian <kevin.tian@intel.com>
- *
- * Contributors:
- *    Min He <min.he@intel.com>
- *    Bing Niu <bing.niu@intel.com>
- *    Zhi Wang <zhi.a.wang@intel.com>
- *
- */
+ 
 
 #include "i915_drv.h"
 #include "gvt.h"
@@ -47,7 +16,7 @@ static bool vgpu_has_pending_workload(struct intel_vgpu *vgpu)
 	return false;
 }
 
-/* We give 2 seconds higher prio for vGPU during start */
+ 
 #define GVT_SCHED_VGPU_PRI_TIME  2
 
 struct vgpu_sched_data {
@@ -97,9 +66,7 @@ static void gvt_balance_timeslice(struct gvt_sched_data *sched_data)
 	static u64 stage_check;
 	int stage = stage_check++ % GVT_TS_BALANCE_STAGE_NUM;
 
-	/* The timeslice accumulation reset at stage 0, which is
-	 * allocated again without adding previous debt.
-	 */
+	 
 	if (stage == 0) {
 		int total_weight = 0;
 		ktime_t fair_timeslice;
@@ -121,9 +88,7 @@ static void gvt_balance_timeslice(struct gvt_sched_data *sched_data)
 		list_for_each(pos, &sched_data->lru_runq_head) {
 			vgpu_data = container_of(pos, struct vgpu_sched_data, lru_list);
 
-			/* timeslice for next 100ms should add the left/debt
-			 * slice of previous stages.
-			 */
+			 
 			vgpu_data->left_ts += vgpu_data->allocated_ts;
 		}
 	}
@@ -137,21 +102,16 @@ static void try_to_schedule_next_vgpu(struct intel_gvt *gvt)
 	struct vgpu_sched_data *vgpu_data;
 	ktime_t cur_time;
 
-	/* no need to schedule if next_vgpu is the same with current_vgpu,
-	 * let scheduler chose next_vgpu again by setting it to NULL.
-	 */
+	 
 	if (scheduler->next_vgpu == scheduler->current_vgpu) {
 		scheduler->next_vgpu = NULL;
 		return;
 	}
 
-	/*
-	 * after the flag is set, workload dispatch thread will
-	 * stop dispatching workload for current vgpu
-	 */
+	 
 	scheduler->need_reschedule = true;
 
-	/* still have uncompleted workload? */
+	 
 	for_each_engine(engine, gvt->gt, i) {
 		if (scheduler->current_workload[engine->id])
 			return;
@@ -162,13 +122,13 @@ static void try_to_schedule_next_vgpu(struct intel_gvt *gvt)
 	vgpu_data = scheduler->next_vgpu->sched_data;
 	vgpu_data->sched_in_time = cur_time;
 
-	/* switch current vgpu */
+	 
 	scheduler->current_vgpu = scheduler->next_vgpu;
 	scheduler->next_vgpu = NULL;
 
 	scheduler->need_reschedule = false;
 
-	/* wake up workload dispatch thread */
+	 
 	for_each_engine(engine, gvt->gt, i)
 		wake_up(&scheduler->waitq[engine->id]);
 }
@@ -180,7 +140,7 @@ static struct intel_vgpu *find_busy_vgpu(struct gvt_sched_data *sched_data)
 	struct list_head *head = &sched_data->lru_runq_head;
 	struct list_head *pos;
 
-	/* search a vgpu with pending workload */
+	 
 	list_for_each(pos, head) {
 
 		vgpu_data = container_of(pos, struct vgpu_sched_data, lru_list);
@@ -195,7 +155,7 @@ static struct intel_vgpu *find_busy_vgpu(struct gvt_sched_data *sched_data)
 				vgpu_data->pri_sched = false;
 		}
 
-		/* Return the vGPU only if it has time slice left */
+		 
 		if (vgpu_data->left_ts > 0) {
 			vgpu = vgpu_data->vgpu;
 			break;
@@ -205,7 +165,7 @@ static struct intel_vgpu *find_busy_vgpu(struct gvt_sched_data *sched_data)
 	return vgpu;
 }
 
-/* in nanosecond */
+ 
 #define GVT_DEFAULT_TIME_SLICE 1000000
 
 static void tbs_sched_func(struct gvt_sched_data *sched_data)
@@ -215,7 +175,7 @@ static void tbs_sched_func(struct gvt_sched_data *sched_data)
 	struct vgpu_sched_data *vgpu_data;
 	struct intel_vgpu *vgpu = NULL;
 
-	/* no active vgpu or has already had a target */
+	 
 	if (list_empty(&sched_data->lru_runq_head) || scheduler->next_vgpu)
 		goto out;
 
@@ -224,7 +184,7 @@ static void tbs_sched_func(struct gvt_sched_data *sched_data)
 		scheduler->next_vgpu = vgpu;
 		vgpu_data = vgpu->sched_data;
 		if (!vgpu_data->pri_sched) {
-			/* Move the last used vGPU to the tail of lru_list */
+			 
 			list_del_init(&vgpu_data->lru_list);
 			list_add_tail(&vgpu_data->lru_list,
 				      &sched_data->lru_runq_head);
@@ -333,7 +293,7 @@ static void tbs_sched_clean_vgpu(struct intel_vgpu *vgpu)
 	kfree(vgpu->sched_data);
 	vgpu->sched_data = NULL;
 
-	/* this vgpu id has been removed */
+	 
 	if (idr_is_empty(&gvt->vgpu_idr))
 		hrtimer_cancel(&sched_data->timer);
 }
@@ -396,12 +356,7 @@ void intel_gvt_clean_sched_policy(struct intel_gvt *gvt)
 	mutex_unlock(&gvt->sched_lock);
 }
 
-/* for per-vgpu scheduler policy, there are 2 per-vgpu data:
- * sched_data, and sched_ctl. We see these 2 data as part of
- * the global scheduler which are proteced by gvt->sched_lock.
- * Caller should make their decision if the vgpu_lock should
- * be hold outside.
- */
+ 
 
 int intel_vgpu_init_sched_policy(struct intel_vgpu *vgpu)
 {
@@ -461,7 +416,7 @@ void intel_vgpu_stop_schedule(struct intel_vgpu *vgpu)
 		scheduler->next_vgpu = NULL;
 
 	if (scheduler->current_vgpu == vgpu) {
-		/* stop workload dispatching */
+		 
 		scheduler->need_reschedule = true;
 		scheduler->current_vgpu = NULL;
 	}

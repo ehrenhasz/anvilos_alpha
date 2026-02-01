@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * NVMe over Fabrics DH-HMAC-CHAP authentication.
- * Copyright (c) 2020 Hannes Reinecke, SUSE Software Solutions.
- * All rights reserved.
- */
+
+ 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 #include <linux/module.h>
 #include <linux/init.h>
@@ -33,7 +29,7 @@ int nvmet_auth_set_key(struct nvmet_host *host, const char *secret,
 		return -EINVAL;
 	}
 	if (key_hash > 0) {
-		/* Validate selected hash algorithm */
+		 
 		const char *hmac = nvme_auth_hmac_name(key_hash);
 
 		if (!crypto_has_shash(hmac, 0, 0)) {
@@ -173,7 +169,7 @@ int nvmet_setup_auth(struct nvmet_ctrl *ctrl)
 		ctrl->shash_id = host->dhchap_hash_id;
 	}
 
-	/* Skip the 'DHHC-1:XX:' prefix */
+	 
 	nvme_auth_free_key(ctrl->host_key);
 	ctrl->host_key = nvme_auth_extract_key(host->dhchap_secret + 10,
 					       host->dhchap_key_hash);

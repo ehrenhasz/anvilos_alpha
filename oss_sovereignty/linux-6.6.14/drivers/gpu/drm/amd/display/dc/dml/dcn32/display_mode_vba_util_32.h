@@ -1,27 +1,4 @@
-/*
- * Copyright 2022 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 #ifndef __DML_DCN32_DISPLAY_MODE_VBA_UTIL_32_H__
 #define __DML_DCN32_DISPLAY_MODE_VBA_UTIL_32_H__
@@ -48,7 +25,7 @@ void dml32_CalculateBytePerPixelAndBlockSizes(
 		enum source_format_class SourcePixelFormat,
 		enum dm_swizzle_mode SurfaceTiling,
 
-		/*Output*/
+		 
 		unsigned int *BytePerPixelY,
 		unsigned int *BytePerPixelC,
 		double           *BytePerPixelDETY,
@@ -76,7 +53,7 @@ void dml32_CalculateSinglePipeDPPCLKAndSCLThroughput(
 		unsigned int VTaps,
 		unsigned int VTapsChroma,
 
-		/* output */
+		 
 		double *PSCL_THROUGHPUT,
 		double *PSCL_THROUGHPUT_CHROMA,
 		double *DPPCLKUsingSingleDPP);
@@ -129,7 +106,7 @@ void dml32_CalculateSwathAndDETConfiguration(
 		double HRatioChroma[],
 		unsigned int DPPPerSurface[],
 
-		/* Output */
+		 
 		unsigned int swath_width_luma_ub[],
 		unsigned int swath_width_chroma_ub[],
 		double SwathWidth[],
@@ -174,14 +151,14 @@ void dml32_CalculateSwathWidth(
 		double HRatio[],
 		unsigned int DPPPerSurface[],
 
-		/* Output */
+		 
 		double SwathWidthdoubleDPPY[],
 		double SwathWidthdoubleDPPC[],
-		double SwathWidthY[], // per-pipe
-		double SwathWidthC[], // per-pipe
+		double SwathWidthY[], 
+		double SwathWidthC[], 
 		unsigned int MaximumSwathHeightY[],
 		unsigned int MaximumSwathHeightC[],
-		unsigned int swath_width_luma_ub[], // per-pipe
+		unsigned int swath_width_luma_ub[], 
 		unsigned int swath_width_chroma_ub[]);
 
 bool dml32_UnboundedRequest(enum unbounded_requesting_policy UseUnboundedRequestingFinal,
@@ -209,7 +186,7 @@ void dml32_CalculateDETBufferSize(
 		unsigned int RoundedUpMaxSwathSizeBytesY[],
 		unsigned int RoundedUpMaxSwathSizeBytesC[],
 		unsigned int DPPPerSurface[],
-		/* Output */
+		 
 		unsigned int DETBufferSizeInKByte[],
 		unsigned int *CompressedBufferSizeInkByte);
 
@@ -230,7 +207,7 @@ void dml32_CalculateODMMode(
 		double DISPCLKDPPCLKVCOSpeed,
 		unsigned int NumberOfDSCSlices,
 
-		/* Output */
+		 
 		bool *TotalAvailablePipesSupport,
 		unsigned int *NumberOfDPP,
 		enum odm_combine_mode *ODMMode,
@@ -268,7 +245,7 @@ void dml32_CalculateOutputLink(
 		unsigned int OutputLinkDPLanes,
 		enum dm_output_link_dp_rate OutputLinkDPRate,
 
-		/* Output */
+		 
 		bool *RequiresDSC,
 		double *RequiresFEC,
 		double  *OutBpp,
@@ -283,7 +260,7 @@ void dml32_CalculateDPPCLK(
 		double DPPCLKUsingSingleDPP[],
 		unsigned int DPPPerSurface[],
 
-		/* output */
+		 
 		double *GlobalDPPCLK,
 		double Dppclk[]);
 
@@ -303,7 +280,7 @@ double dml32_TruncToValidBPP(
 		unsigned int AudioLayout,
 		enum odm_combine_mode ODMModeNoDSC,
 		enum odm_combine_mode ODMModeDSC,
-		/* Output */
+		 
 		unsigned int *RequiredSlots);
 
 double dml32_RequiredDTBCLK(
@@ -362,7 +339,7 @@ void dml32_CalculateSurfaceSizeInMall(
 		unsigned int DCCMetaPitchY[],
 		unsigned int DCCMetaPitchC[],
 
-		/* Output */
+		 
 		unsigned int    SurfaceSizeInMALL[],
 		bool *ExceededMALLSize);
 
@@ -385,15 +362,15 @@ void dml32_CalculateVMRowAndSwath(
 		unsigned int GPUVMMinPageSizeKBytes[],
 		unsigned int HostVMMinPageSize,
 
-		/* Output */
+		 
 		bool PTEBufferSizeNotExceeded[],
 		bool DCCMetaBufferSizeNotExceeded[],
 		unsigned int dpte_row_width_luma_ub[],
 		unsigned int dpte_row_width_chroma_ub[],
 		unsigned int dpte_row_height_luma[],
 		unsigned int dpte_row_height_chroma[],
-		unsigned int dpte_row_height_linear_luma[],     // VBA_DELTA
-		unsigned int dpte_row_height_linear_chroma[],   // VBA_DELTA
+		unsigned int dpte_row_height_linear_luma[],     
+		unsigned int dpte_row_height_linear_chroma[],   
 		unsigned int meta_req_width[],
 		unsigned int meta_req_width_chroma[],
 		unsigned int meta_req_height[],
@@ -457,7 +434,7 @@ unsigned int dml32_CalculateVMAndRowBytes(
 		unsigned int MacroTileWidth,
 		unsigned int MacroTileHeight,
 
-		/* Output */
+		 
 		unsigned int *MetaRowByte,
 		unsigned int *PixelPTEBytesPerRow,
 		unsigned int    *dpte_row_width_ub,
@@ -489,7 +466,7 @@ double dml32_CalculatePrefetchSourceLines(
 		unsigned int ViewportXStart,
 		unsigned int ViewportYStart,
 
-		/* Output */
+		 
 		double *VInitPreFill,
 		unsigned int *MaxNumSwath);
 
@@ -500,7 +477,7 @@ void dml32_CalculateMALLUseForStaticScreen(
 		unsigned int SurfaceSizeInMALL[],
 		bool one_row_per_frame_fits_in_buffer[],
 
-		/* output */
+		 
 		bool UsesMALLForStaticScreen[]);
 
 void dml32_CalculateRowBandwidth(
@@ -518,7 +495,7 @@ void dml32_CalculateRowBandwidth(
 		unsigned int PixelPTEBytesPerRowChroma,
 		unsigned int dpte_row_height_luma,
 		unsigned int dpte_row_height_chroma,
-		/* Output */
+		 
 		double *meta_row_bw,
 		double *dpte_row_bw);
 
@@ -548,7 +525,7 @@ void dml32_CalculateUrgentBurstFactor(
 		double  BytePerPixelInDETC,
 		unsigned int    DETBufferSizeY,
 		unsigned int    DETBufferSizeC,
-		/* Output */
+		 
 		double *UrgentBurstFactorCursor,
 		double *UrgentBurstFactorLuma,
 		double *UrgentBurstFactorChroma,
@@ -573,7 +550,7 @@ void dml32_CalculateDCFCLKDeepSleep(
 		double ReadBandwidthChroma[],
 		unsigned int ReturnBusWidth,
 
-		/* Output */
+		 
 		double *DCFClkDeepSleep);
 
 double dml32_CalculateWriteBackDelay(
@@ -640,7 +617,7 @@ void dml32_UseMinimumDCFCLK(
 		double ReadBandwidthLuma[],
 		double ReadBandwidthChroma[],
 		double DCFCLKPerState[],
-		/* Output */
+		 
 		double DCFCLKState[][2]);
 
 unsigned int dml32_CalculateExtraLatencyBytes(unsigned int ReorderingBytes,
@@ -747,7 +724,7 @@ bool dml32_CalculatePrefetchSchedule(
 		unsigned int SwathHeightC,
 		double TWait,
 		double TPreReq,
-		/* Output */
+		 
 		double   *DSTXAfterScaler,
 		double   *DSTYAfterScaler,
 		double *DestinationLinesForPrefetch,
@@ -794,7 +771,7 @@ void dml32_CalculateFlipSchedule(
 		unsigned int meta_row_height_chroma,
 		bool    use_one_row_for_frame_flip,
 
-		/* Output */
+		 
 		double *DestinationLinesToRequestVMInImmediateFlip,
 		double *DestinationLinesToRequestRowInImmediateFlip,
 		double *final_flip_bw,
@@ -822,7 +799,7 @@ void dml32_CalculateWatermarksMALLUseAndDRAMSpeedChangeSupport(
 		bool UnboundedRequestEnabled,
 		unsigned int CompressedBufferSizeInkByte,
 
-		/* Output */
+		 
 		enum clock_change_support *DRAMClockChangeSupport,
 		double MaxActiveDRAMClockChangeLatencySupported[],
 		unsigned int SubViewportLinesNeededInMALL[],
@@ -874,7 +851,7 @@ void dml32_CalculatePixelDeliveryTimes(
 		unsigned int             BlockWidth256BytesC[],
 		unsigned int             BlockHeight256BytesC[],
 
-		/* Output */
+		 
 		double              DisplayPipeLineDeliveryTimeLuma[],
 		double              DisplayPipeLineDeliveryTimeChroma[],
 		double              DisplayPipeLineDeliveryTimeLumaPrefetch[],
@@ -922,7 +899,7 @@ void dml32_CalculateMetaAndPTETimes(
 		unsigned int    dpte_row_width_luma_ub[],
 		unsigned int    dpte_row_width_chroma_ub[],
 
-		/* Output */
+		 
 		double DST_Y_PER_PTE_ROW_NOM_L[],
 		double DST_Y_PER_PTE_ROW_NOM_C[],
 		double DST_Y_PER_META_ROW_NOM_L[],
@@ -958,7 +935,7 @@ void dml32_CalculateVMGroupAndRequestTimes(
 		unsigned int        meta_pte_bytes_per_frame_ub_l[],
 		unsigned int        meta_pte_bytes_per_frame_ub_c[],
 
-		/* Output */
+		 
 		double      TimePerVMGroupVBlank[],
 		double      TimePerVMGroupFlip[],
 		double      TimePerVMRequestVBlank[],
@@ -981,7 +958,7 @@ void dml32_CalculateDCCConfiguration(
 		double              BytePerPixelDETY,
 		double              BytePerPixelDETC,
 		enum dm_rotation_angle   SourceRotation,
-		/* Output */
+		 
 		unsigned int        *MaxUncompressedBlockLuma,
 		unsigned int        *MaxUncompressedBlockChroma,
 		unsigned int        *MaxCompressedBlockLuma,
@@ -1042,7 +1019,7 @@ void dml32_CalculateStutterEfficiency(
 		double    meta_row_bw[],
 		double    dpte_row_bw[],
 
-		/* Output */
+		 
 		double   *StutterEfficiencyNotIncludingVBlank,
 		double   *StutterEfficiency,
 		unsigned int     *NumberOfStutterBurstsPerFrame,
@@ -1056,10 +1033,10 @@ void dml32_CalculateMaxDETAndMinCompressedBufferSize(
 		unsigned int    ConfigReturnBufferSizeInKByte,
 		unsigned int    ROBBufferSizeInKByte,
 		unsigned int MaxNumDPP,
-		bool nomDETInKByteOverrideEnable, // VBA_DELTA, allow DV to override default DET size
-		unsigned int nomDETInKByteOverrideValue,  // VBA_DELTA
+		bool nomDETInKByteOverrideEnable, 
+		unsigned int nomDETInKByteOverrideValue,  
 
-		/* Output */
+		 
 		unsigned int *MaxTotalDETInKByte,
 		unsigned int *nomDETInKByte,
 		unsigned int *MinCompressedBufferSizeInKByte);
@@ -1100,7 +1077,7 @@ void dml32_CalculatePrefetchBandwithSupport(unsigned int NumberOfActiveSurfaces,
 		double VRatio[],
 		double MaxVRatioPre,
 
-		/* output */
+		 
 		double  *MaxPrefetchBandwidth,
 		double  *FractionOfUrgentBandwidth,
 		bool *PrefetchBandwidthSupport);
@@ -1142,7 +1119,7 @@ void dml32_CalculateImmediateFlipBandwithSupport(unsigned int NumberOfActiveSurf
 		double UrgentBurstFactorChromaPre[],
 		double UrgentBurstFactorCursorPre[],
 
-		/* output */
+		 
 		double  *TotalBandwidth,
 		double  *FractionOfUrgentBandwidth,
 		bool *ImmediateFlipBandwidthSupport);

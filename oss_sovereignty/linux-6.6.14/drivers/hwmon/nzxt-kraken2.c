@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * nzxt-kraken2.c - hwmon driver for NZXT Kraken X42/X52/X62/X72 coolers
- *
- * The device asynchronously sends HID reports (with id 0x04) twice a second to
- * communicate current fan speed, pump speed and coolant temperature.  The
- * device does not respond to Get_Report requests for this status report.
- *
- * Copyright 2019-2021  Jonas Malaco <jonas@protocubo.io>
- */
+
+ 
 
 #include <asm/unaligned.h>
 #include <linux/hid.h>
@@ -16,7 +8,7 @@
 #include <linux/module.h>
 
 #define STATUS_REPORT_ID	0x04
-#define STATUS_VALIDITY		2 /* seconds; equivalent to 4 missed updates */
+#define STATUS_VALIDITY		2  
 
 static const char *const kraken2_temp_label[] = {
 	"Coolant",
@@ -32,7 +24,7 @@ struct kraken2_priv_data {
 	struct device *hwmon_dev;
 	s32 temp_input[1];
 	u16 fan_input[2];
-	unsigned long updated; /* jiffies */
+	unsigned long updated;  
 };
 
 static umode_t kraken2_is_visible(const void *data,
@@ -58,7 +50,7 @@ static int kraken2_read(struct device *dev, enum hwmon_sensor_types type,
 		*val = priv->fan_input[channel];
 		break;
 	default:
-		return -EOPNOTSUPP; /* unreachable */
+		return -EOPNOTSUPP;  
 	}
 
 	return 0;
@@ -75,7 +67,7 @@ static int kraken2_read_string(struct device *dev, enum hwmon_sensor_types type,
 		*str = kraken2_fan_label[channel];
 		break;
 	default:
-		return -EOPNOTSUPP; /* unreachable */
+		return -EOPNOTSUPP;  
 	}
 	return 0;
 }
@@ -110,15 +102,7 @@ static int kraken2_raw_event(struct hid_device *hdev,
 
 	priv = hid_get_drvdata(hdev);
 
-	/*
-	 * The fractional byte of the coolant temperature has been observed to
-	 * be in the interval [1,9], but some of these steps are also
-	 * consistently skipped for certain integer parts.
-	 *
-	 * For the lack of a better idea, assume that the resolution is 0.1°C,
-	 * and that the missing steps are artifacts of how the firmware
-	 * processes the raw sensor data.
-	 */
+	 
 	priv->temp_input[0] = data[1] * 1000 + data[2] * 100;
 
 	priv->fan_input[0] = get_unaligned_be16(data + 3);
@@ -142,11 +126,7 @@ static int kraken2_probe(struct hid_device *hdev,
 	priv->hid_dev = hdev;
 	hid_set_drvdata(hdev, priv);
 
-	/*
-	 * Initialize ->updated to STATUS_VALIDITY seconds in the past, making
-	 * the initial empty data invalid for kraken2_read without the need for
-	 * a special case there.
-	 */
+	 
 	priv->updated = jiffies - STATUS_VALIDITY * HZ;
 
 	ret = hid_parse(hdev);
@@ -155,9 +135,7 @@ static int kraken2_probe(struct hid_device *hdev,
 		return ret;
 	}
 
-	/*
-	 * Enable hidraw so existing user-space tools can continue to work.
-	 */
+	 
 	ret = hid_hw_start(hdev, HID_CONNECT_HIDRAW);
 	if (ret) {
 		hid_err(hdev, "hid hw start failed with %d\n", ret);
@@ -199,7 +177,7 @@ static void kraken2_remove(struct hid_device *hdev)
 }
 
 static const struct hid_device_id kraken2_table[] = {
-	{ HID_USB_DEVICE(0x1e71, 0x170e) }, /* NZXT Kraken X42/X52/X62/X72 */
+	{ HID_USB_DEVICE(0x1e71, 0x170e) },  
 	{ }
 };
 
@@ -223,9 +201,7 @@ static void __exit kraken2_exit(void)
 	hid_unregister_driver(&kraken2_driver);
 }
 
-/*
- * When compiled into the kernel, initialize after the hid bus.
- */
+ 
 late_initcall(kraken2_init);
 module_exit(kraken2_exit);
 

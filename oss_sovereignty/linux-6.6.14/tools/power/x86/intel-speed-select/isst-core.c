@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Intel Speed Select -- Enumerate and control features
- * Copyright (c) 2019 Intel Corporation.
- */
+
+ 
 
 #include "isst.h"
 
@@ -319,7 +316,7 @@ int isst_set_trl_from_current_tdp(struct isst_id *id, unsigned long long trl)
 	return 0;
 }
 
-/* Return 1 if locked */
+ 
 int isst_get_config_tdp_lock_status(struct isst_id *id)
 {
 	unsigned long long tdp_control = 0;

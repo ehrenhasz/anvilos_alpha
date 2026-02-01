@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Watchdog driver for Ricoh RN5T618 PMIC
- *
- * Copyright (C) 2014 Beniamino Galvani <b.galvani@gmail.com>
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/mfd/rn5t618.h>
@@ -28,12 +24,7 @@ struct rn5t618_wdt {
 	struct rn5t618 *rn5t618;
 };
 
-/*
- * This array encodes the values of WDOGTIM field for the supported
- * watchdog expiration times. If the watchdog is not accessed before
- * the timer expiration, the PMU generates an interrupt and if the CPU
- * doesn't clear it within one second the system is restarted.
- */
+ 
 static const struct {
 	u8 reg_val;
 	unsigned int time;
@@ -76,21 +67,21 @@ static int rn5t618_wdt_start(struct watchdog_device *wdt_dev)
 	if (ret)
 		return ret;
 
-	/* enable repower-on */
+	 
 	ret = regmap_update_bits(wdt->rn5t618->regmap, RN5T618_REPCNT,
 				 RN5T618_REPCNT_REPWRON,
 				 RN5T618_REPCNT_REPWRON);
 	if (ret)
 		return ret;
 
-	/* enable watchdog */
+	 
 	ret = regmap_update_bits(wdt->rn5t618->regmap, RN5T618_WATCHDOG,
 				 RN5T618_WATCHDOG_WDOGEN,
 				 RN5T618_WATCHDOG_WDOGEN);
 	if (ret)
 		return ret;
 
-	/* enable watchdog interrupt */
+	 
 	return regmap_update_bits(wdt->rn5t618->regmap, RN5T618_PWRIREN,
 				  RN5T618_PWRIRQ_IR_WDOG,
 				  RN5T618_PWRIRQ_IR_WDOG);
@@ -110,7 +101,7 @@ static int rn5t618_wdt_ping(struct watchdog_device *wdt_dev)
 	unsigned int val;
 	int ret;
 
-	/* The counter is restarted after a R/W access to watchdog register */
+	 
 	ret = regmap_read(wdt->rn5t618->regmap, RN5T618_WATCHDOG, &val);
 	if (ret)
 		return ret;
@@ -119,7 +110,7 @@ static int rn5t618_wdt_ping(struct watchdog_device *wdt_dev)
 	if (ret)
 		return ret;
 
-	/* Clear pending watchdog interrupt */
+	 
 	return regmap_update_bits(wdt->rn5t618->regmap, RN5T618_PWRIRQ,
 				  RN5T618_PWRIRQ_IR_WDOG, 0);
 }
@@ -162,7 +153,7 @@ static int rn5t618_wdt_probe(struct platform_device *pdev)
 	wdt->wdt_dev.timeout = max_timeout;
 	wdt->wdt_dev.parent = dev;
 
-	/* Read out previous power-off factor */
+	 
 	ret = regmap_read(wdt->rn5t618->regmap, RN5T618_POFFHIS, &val);
 	if (ret)
 		return ret;

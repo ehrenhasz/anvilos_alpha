@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Core driver for the pin config portions of the pin control subsystem
- *
- * Copyright (C) 2011 ST-Ericsson SA
- * Written on behalf of Linaro for ST-Ericsson
- *
- * Author: Linus Walleij <linus.walleij@linaro.org>
- */
+
+ 
 #define pr_fmt(fmt) "pinconfig core: " fmt
 
 #include <linux/kernel.h>
@@ -26,7 +19,7 @@ int pinconf_check_ops(struct pinctrl_dev *pctldev)
 {
 	const struct pinconf_ops *ops = pctldev->desc->confops;
 
-	/* We have to be able to config the pins in SOME way */
+	 
 	if (!ops->pin_config_set && !ops->pin_config_group_set) {
 		dev_err(pctldev->dev,
 			"pinconf has to be able to set a pins config\n");
@@ -280,10 +273,7 @@ void pinconf_show_setting(struct seq_file *s,
 		break;
 	}
 
-	/*
-	 * FIXME: We should really get the pin controller to dump the config
-	 * values, so they can be decoded to something meaningful.
-	 */
+	 
 	pinconf_show_config(s, pctldev, setting->data.configs.configs,
 			    setting->data.configs.num_configs);
 }
@@ -293,7 +283,7 @@ static void pinconf_dump_pin(struct pinctrl_dev *pctldev,
 {
 	const struct pinconf_ops *ops = pctldev->desc->confops;
 
-	/* no-op when not using generic pin config */
+	 
 	pinconf_generic_dump_pins(pctldev, s, NULL, pin);
 	if (ops && ops->pin_config_dbg_show)
 		ops->pin_config_dbg_show(pctldev, s, pin);
@@ -309,13 +299,13 @@ static int pinconf_pins_show(struct seq_file *s, void *what)
 
 	mutex_lock(&pctldev->mutex);
 
-	/* The pin number can be retrived from the pin controller descriptor */
+	 
 	for (i = 0; i < pctldev->desc->npins; i++) {
 		struct pin_desc *desc;
 
 		pin = pctldev->desc->pins[i].number;
 		desc = pin_desc_get(pctldev, pin);
-		/* Skip if we cannot search the pin */
+		 
 		if (!desc)
 			continue;
 
@@ -336,7 +326,7 @@ static void pinconf_dump_group(struct pinctrl_dev *pctldev,
 {
 	const struct pinconf_ops *ops = pctldev->desc->confops;
 
-	/* no-op when not using generic pin config */
+	 
 	pinconf_generic_dump_pins(pctldev, s, gname, 0);
 	if (ops && ops->pin_config_group_dbg_show)
 		ops->pin_config_group_dbg_show(pctldev, s, selector);

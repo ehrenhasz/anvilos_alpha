@@ -1,14 +1,4 @@
-/*
- * PCI bus driver for Bosch C_CAN/D_CAN controller
- *
- * Copyright (C) 2012 Federico Vaga <federico.vaga@gmail.com>
- *
- * Borrowed from c_can_platform.c
- *
- * This file is licensed under the terms of the GNU General Public
- * License version 2. This program is licensed "as is" without any
- * warranty of any kind, whether express or implied.
- */
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -29,25 +19,21 @@ enum c_can_pci_reg_align {
 };
 
 struct c_can_pci_data {
-	/* Specify if is C_CAN or D_CAN */
+	 
 	enum c_can_dev_id type;
-	/* Number of message objects */
+	 
 	unsigned int msg_obj_num;
-	/* Set the register alignment in the memory */
+	 
 	enum c_can_pci_reg_align reg_align;
-	/* Set the frequency */
+	 
 	unsigned int freq;
-	/* PCI bar number */
+	 
 	int bar;
-	/* Callback for reset */
+	 
 	void (*init)(const struct c_can_priv *priv, bool enable);
 };
 
-/* 16-bit c_can registers can be arranged differently in the memory
- * architecture of different implementations. For example: 16-bit
- * registers can be aligned to a 16-bit boundary or 32-bit boundary etc.
- * Handle the same by providing a common read/write interface.
- */
+ 
 static u16 c_can_pci_read_reg_aligned_to_16bit(const struct c_can_priv *priv,
 					       enum reg index)
 {
@@ -106,7 +92,7 @@ static void c_can_pci_reset_pch(const struct c_can_priv *priv, bool enable)
 	if (enable) {
 		u32 __iomem *addr = priv->base + PCH_PCI_SOFT_RESET;
 
-		/* write to sw reset register */
+		 
 		iowrite32(1, addr);
 		iowrite32(0, addr);
 	}
@@ -148,7 +134,7 @@ static int c_can_pci_probe(struct pci_dev *pdev,
 		goto out_release_regions;
 	}
 
-	/* allocate the c_can device */
+	 
 	dev = alloc_c_can_dev(c_can_pci_data->msg_obj_num);
 	if (!dev) {
 		ret = -ENOMEM;
@@ -171,7 +157,7 @@ static int c_can_pci_probe(struct pci_dev *pdev,
 		priv->can.clock.freq = c_can_pci_data->freq;
 	}
 
-	/* Configure CAN type */
+	 
 	switch (c_can_pci_data->type) {
 	case BOSCH_C_CAN:
 		priv->regs = reg_map_c_can;
@@ -186,7 +172,7 @@ static int c_can_pci_probe(struct pci_dev *pdev,
 
 	priv->type = c_can_pci_data->type;
 
-	/* Configure access to registers */
+	 
 	switch (c_can_pci_data->reg_align) {
 	case C_CAN_REG_ALIGN_32:
 		priv->read_reg = c_can_pci_read_reg_aligned_to_32bit;
@@ -254,7 +240,7 @@ static const struct c_can_pci_data c_can_sta2x11 = {
 	.type = BOSCH_C_CAN,
 	.msg_obj_num = 32,
 	.reg_align = C_CAN_REG_ALIGN_32,
-	.freq = 52000000, /* 52 Mhz */
+	.freq = 52000000,  
 	.bar = 0,
 };
 
@@ -262,7 +248,7 @@ static const struct c_can_pci_data c_can_pch = {
 	.type = BOSCH_C_CAN,
 	.msg_obj_num = 32,
 	.reg_align = C_CAN_REG_32,
-	.freq = 50000000, /* 50 MHz */
+	.freq = 50000000,  
 	.init = c_can_pci_reset_pch,
 	.bar = 1,
 };

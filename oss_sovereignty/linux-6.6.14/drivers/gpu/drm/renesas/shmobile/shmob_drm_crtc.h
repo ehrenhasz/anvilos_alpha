@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * shmob_drm_crtc.h  --  SH Mobile DRM CRTCs
- *
- * Copyright (C) 2012 Renesas Electronics Corporation
- *
- * Laurent Pinchart (laurent.pinchart@ideasonboard.com)
- */
+ 
+ 
 
 #ifndef __SHMOB_DRM_CRTC_H__
 #define __SHMOB_DRM_CRTC_H__
@@ -52,4 +46,4 @@ int shmob_drm_encoder_create(struct shmob_drm_device *sdev);
 int shmob_drm_connector_create(struct shmob_drm_device *sdev,
 			       struct drm_encoder *encoder);
 
-#endif /* __SHMOB_DRM_CRTC_H__ */
+#endif  

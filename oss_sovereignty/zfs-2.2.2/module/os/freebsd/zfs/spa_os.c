@@ -1,29 +1,6 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
+ 
 
-/*
- * Copyright (c) 2005, 2010, Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2011 by Delphix. All rights reserved.
- * Copyright (c) 2013 Martin Matuska <mm@FreeBSD.org>. All rights reserved.
- */
+ 
 
 
 #include <sys/zfs_context.h>
@@ -140,14 +117,10 @@ spa_generate_rootconf(const char *name)
 		fnvlist_add_uint64(tops[i], ZPOOL_CONFIG_GUID, 0);
 	}
 
-	/*
-	 * Create pool config based on the best vdev config.
-	 */
+	 
 	config = fnvlist_dup(best_cfg);
 
-	/*
-	 * Put this pool's top-level vdevs into a root vdev.
-	 */
+	 
 	pgid = fnvlist_lookup_uint64(config, ZPOOL_CONFIG_POOL_GUID);
 	nvroot = fnvlist_alloc();
 	fnvlist_add_string(nvroot, ZPOOL_CONFIG_TYPE, VDEV_TYPE_ROOT);
@@ -156,15 +129,10 @@ spa_generate_rootconf(const char *name)
 	fnvlist_add_nvlist_array(nvroot, ZPOOL_CONFIG_CHILDREN,
 	    (const nvlist_t * const *)tops, nchildren);
 
-	/*
-	 * Replace the existing vdev_tree with the new root vdev in
-	 * this pool's configuration (remove the old, add the new).
-	 */
+	 
 	fnvlist_add_nvlist(config, ZPOOL_CONFIG_VDEV_TREE, nvroot);
 
-	/*
-	 * Drop vdev config elements that should not be present at pool level.
-	 */
+	 
 	fnvlist_remove(config, ZPOOL_CONFIG_GUID);
 	fnvlist_remove(config, ZPOOL_CONFIG_TOP_GUID);
 
@@ -187,9 +155,7 @@ spa_import_rootpool(const char *name, bool checkpointrewind)
 	const char *pname;
 	int error;
 
-	/*
-	 * Read the label from the boot device and generate a configuration.
-	 */
+	 
 	config = spa_generate_rootconf(name);
 
 	mutex_enter(&spa_namespace_lock);
@@ -198,29 +164,19 @@ spa_import_rootpool(const char *name, bool checkpointrewind)
 		VERIFY0(strcmp(name, pname));
 
 		if ((spa = spa_lookup(pname)) != NULL) {
-			/*
-			 * The pool could already be imported,
-			 * e.g., after reboot -r.
-			 */
+			 
 			if (spa->spa_state == POOL_STATE_ACTIVE) {
 				mutex_exit(&spa_namespace_lock);
 				fnvlist_free(config);
 				return (0);
 			}
 
-			/*
-			 * Remove the existing root pool from the namespace so
-			 * that we can replace it with the correct config
-			 * we just read in.
-			 */
+			 
 			spa_remove(spa);
 		}
 		spa = spa_add(pname, config, NULL);
 
-		/*
-		 * Set spa_ubsync.ub_version as it can be used in vdev_alloc()
-		 * via spa_version().
-		 */
+		 
 		if (nvlist_lookup_uint64(config, ZPOOL_CONFIG_VERSION,
 		    &spa->spa_ubsync.ub_version) != 0)
 			spa->spa_ubsync.ub_version = SPA_VERSION_INITIAL;
@@ -239,9 +195,7 @@ spa_import_rootpool(const char *name, bool checkpointrewind)
 		spa->spa_import_flags |= ZFS_IMPORT_CHECKPOINT;
 	}
 
-	/*
-	 * Build up a vdev tree based on the boot device's label config.
-	 */
+	 
 	nvtop = fnvlist_lookup_nvlist(config, ZPOOL_CONFIG_VDEV_TREE);
 	spa_config_enter(spa, SCL_ALL, FTAG, RW_WRITER);
 	error = spa_config_parse(spa, &rvd, nvtop, NULL, 0,

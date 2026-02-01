@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * i.MX9 OCOTP fusebox driver
- *
- * Copyright 2023 NXP
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/io.h>
@@ -20,8 +16,8 @@ enum fuse_type {
 };
 
 struct ocotp_map_entry {
-	u32 start; /* start word */
-	u32 num; /* num words */
+	u32 start;  
+	u32 num;  
 	enum fuse_type type;
 };
 

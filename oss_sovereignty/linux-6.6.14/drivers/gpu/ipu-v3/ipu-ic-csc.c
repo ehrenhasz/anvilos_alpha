@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (C) 2019 Mentor Graphics Inc.
- */
+
+ 
 
 #include <linux/types.h>
 #include <linux/init.h>
@@ -14,7 +12,7 @@
 	((q) == V4L2_QUANTIZATION_FULL_RANGE ||		\
 	 (q) == V4L2_QUANTIZATION_DEFAULT ? 0 : 1)
 
-/* identity matrix */
+ 
 static const struct ipu_ic_csc_params identity = {
 	.coeff = {
 		{  128,    0,    0, },
@@ -25,13 +23,7 @@ static const struct ipu_ic_csc_params identity = {
 	.scale = 2,
 };
 
-/*
- * RGB full-range to RGB limited-range
- *
- * R_lim = 0.8588 * R_full + 16
- * G_lim = 0.8588 * G_full + 16
- * B_lim = 0.8588 * B_full + 16
- */
+ 
 static const struct ipu_ic_csc_params rgbf2rgbl = {
 	.coeff = {
 		{  220,    0,    0, },
@@ -42,13 +34,7 @@ static const struct ipu_ic_csc_params rgbf2rgbl = {
 	.scale = 1,
 };
 
-/*
- * RGB limited-range to RGB full-range
- *
- * R_full = 1.1644 * (R_lim - 16)
- * G_full = 1.1644 * (G_lim - 16)
- * B_full = 1.1644 * (B_lim - 16)
- */
+ 
 static const struct ipu_ic_csc_params rgbl2rgbf = {
 	.coeff = {
 		{  149,    0,    0, },
@@ -59,13 +45,7 @@ static const struct ipu_ic_csc_params rgbl2rgbf = {
 	.scale = 2,
 };
 
-/*
- * YUV full-range to YUV limited-range
- *
- * Y_lim  = 0.8588 * Y_full + 16
- * Cb_lim = 0.8784 * (Cb_full - 128) + 128
- * Cr_lim = 0.8784 * (Cr_full - 128) + 128
- */
+ 
 static const struct ipu_ic_csc_params yuvf2yuvl = {
 	.coeff = {
 		{  220,    0,    0, },
@@ -77,13 +57,7 @@ static const struct ipu_ic_csc_params yuvf2yuvl = {
 	.sat = true,
 };
 
-/*
- * YUV limited-range to YUV full-range
- *
- * Y_full  = 1.1644 * (Y_lim - 16)
- * Cb_full = 1.1384 * (Cb_lim - 128) + 128
- * Cr_full = 1.1384 * (Cr_lim - 128) + 128
- */
+ 
 static const struct ipu_ic_csc_params yuvl2yuvf = {
 	.coeff = {
 		{  149,    0,    0, },
@@ -108,13 +82,7 @@ static const struct ipu_ic_csc_params *yuv2yuv[] = {
 	&identity,
 };
 
-/*
- * BT.601 RGB full-range to YUV full-range
- *
- * Y =  .2990 * R + .5870 * G + .1140 * B
- * U = -.1687 * R - .3313 * G + .5000 * B + 128
- * V =  .5000 * R - .4187 * G - .0813 * B + 128
- */
+ 
 static const struct ipu_ic_csc_params rgbf2yuvf_601 = {
 	.coeff = {
 		{   77,  150,   29, },
@@ -125,7 +93,7 @@ static const struct ipu_ic_csc_params rgbf2yuvf_601 = {
 	.scale = 1,
 };
 
-/* BT.601 RGB full-range to YUV limited-range */
+ 
 static const struct ipu_ic_csc_params rgbf2yuvl_601 = {
 	.coeff = {
 		{   66,  129,   25, },
@@ -137,7 +105,7 @@ static const struct ipu_ic_csc_params rgbf2yuvl_601 = {
 	.sat = true,
 };
 
-/* BT.601 RGB limited-range to YUV full-range */
+ 
 static const struct ipu_ic_csc_params rgbl2yuvf_601 = {
 	.coeff = {
 		{   89,  175,   34, },
@@ -148,7 +116,7 @@ static const struct ipu_ic_csc_params rgbl2yuvf_601 = {
 	.scale = 1,
 };
 
-/* BT.601 RGB limited-range to YUV limited-range */
+ 
 static const struct ipu_ic_csc_params rgbl2yuvl_601 = {
 	.coeff = {
 		{   77,  150,   29, },
@@ -160,19 +128,7 @@ static const struct ipu_ic_csc_params rgbl2yuvl_601 = {
 	.sat = true,
 };
 
-/*
- * BT.601 YUV full-range to RGB full-range
- *
- * R = 1. * Y +      0 * (Cb - 128) + 1.4020 * (Cr - 128)
- * G = 1. * Y -  .3441 * (Cb - 128) -  .7141 * (Cr - 128)
- * B = 1. * Y + 1.7720 * (Cb - 128) +      0 * (Cr - 128)
- *
- * equivalently (factoring out the offsets):
- *
- * R = 1. * Y  +      0 * Cb + 1.4020 * Cr - 179.456
- * G = 1. * Y  -  .3441 * Cb -  .7141 * Cr + 135.450
- * B = 1. * Y  + 1.7720 * Cb +      0 * Cr - 226.816
- */
+ 
 static const struct ipu_ic_csc_params yuvf2rgbf_601 = {
 	.coeff = {
 		{  128,    0,  179, },
@@ -183,7 +139,7 @@ static const struct ipu_ic_csc_params yuvf2rgbf_601 = {
 	.scale = 2,
 };
 
-/* BT.601 YUV full-range to RGB limited-range */
+ 
 static const struct ipu_ic_csc_params yuvf2rgbl_601 = {
 	.coeff = {
 		{  110,    0,  154, },
@@ -194,7 +150,7 @@ static const struct ipu_ic_csc_params yuvf2rgbl_601 = {
 	.scale = 2,
 };
 
-/* BT.601 YUV limited-range to RGB full-range */
+ 
 static const struct ipu_ic_csc_params yuvl2rgbf_601 = {
 	.coeff = {
 		{   75,    0,  102, },
@@ -205,7 +161,7 @@ static const struct ipu_ic_csc_params yuvl2rgbf_601 = {
 	.scale = 3,
 };
 
-/* BT.601 YUV limited-range to RGB limited-range */
+ 
 static const struct ipu_ic_csc_params yuvl2rgbl_601 = {
 	.coeff = {
 		{  128,    0,  175, },
@@ -230,13 +186,7 @@ static const struct ipu_ic_csc_params *yuv2rgb_601[] = {
 	&yuvl2rgbl_601,
 };
 
-/*
- * REC.709 encoding from RGB full range to YUV full range:
- *
- * Y =  .2126 * R + .7152 * G + .0722 * B
- * U = -.1146 * R - .3854 * G + .5000 * B + 128
- * V =  .5000 * R - .4542 * G - .0458 * B + 128
- */
+ 
 static const struct ipu_ic_csc_params rgbf2yuvf_709 = {
 	.coeff = {
 		{  54,  183,  19 },
@@ -247,7 +197,7 @@ static const struct ipu_ic_csc_params rgbf2yuvf_709 = {
 	.scale = 1,
 };
 
-/* Rec.709 RGB full-range to YUV limited-range */
+ 
 static const struct ipu_ic_csc_params rgbf2yuvl_709 = {
 	.coeff = {
 		{   47,  157,   16, },
@@ -259,7 +209,7 @@ static const struct ipu_ic_csc_params rgbf2yuvl_709 = {
 	.sat = true,
 };
 
-/* Rec.709 RGB limited-range to YUV full-range */
+ 
 static const struct ipu_ic_csc_params rgbl2yuvf_709 = {
 	.coeff = {
 		{   63,  213,   22, },
@@ -270,7 +220,7 @@ static const struct ipu_ic_csc_params rgbl2yuvf_709 = {
 	.scale = 1,
 };
 
-/* Rec.709 RGB limited-range to YUV limited-range */
+ 
 static const struct ipu_ic_csc_params rgbl2yuvl_709 = {
 	.coeff = {
 		{   54,  183,   18, },
@@ -282,19 +232,7 @@ static const struct ipu_ic_csc_params rgbl2yuvl_709 = {
 	.sat = true,
 };
 
-/*
- * Inverse REC.709 encoding from YUV full range to RGB full range:
- *
- * R = 1. * Y +      0 * (Cb - 128) + 1.5748 * (Cr - 128)
- * G = 1. * Y -  .1873 * (Cb - 128) -  .4681 * (Cr - 128)
- * B = 1. * Y + 1.8556 * (Cb - 128) +      0 * (Cr - 128)
- *
- * equivalently (factoring out the offsets):
- *
- * R = 1. * Y  +      0 * Cb + 1.5748 * Cr - 201.574
- * G = 1. * Y  -  .1873 * Cb -  .4681 * Cr +  83.891
- * B = 1. * Y  + 1.8556 * Cb +      0 * Cr - 237.517
- */
+ 
 static const struct ipu_ic_csc_params yuvf2rgbf_709 = {
 	.coeff = {
 		{  128,   0, 202 },
@@ -305,7 +243,7 @@ static const struct ipu_ic_csc_params yuvf2rgbf_709 = {
 	.scale = 2,
 };
 
-/* Rec.709 YUV full-range to RGB limited-range */
+ 
 static const struct ipu_ic_csc_params yuvf2rgbl_709 = {
 	.coeff = {
 		{  110,    0,  173, },
@@ -316,7 +254,7 @@ static const struct ipu_ic_csc_params yuvf2rgbl_709 = {
 	.scale = 2,
 };
 
-/* Rec.709 YUV limited-range to RGB full-range */
+ 
 static const struct ipu_ic_csc_params yuvl2rgbf_709 = {
 	.coeff = {
 		{   75,    0,  115, },
@@ -327,7 +265,7 @@ static const struct ipu_ic_csc_params yuvl2rgbf_709 = {
 	.scale = 3,
 };
 
-/* Rec.709 YUV limited-range to RGB limited-range */
+ 
 static const struct ipu_ic_csc_params yuvl2rgbl_709 = {
 	.coeff = {
 		{  128,    0,  197, },
@@ -367,7 +305,7 @@ static int calc_csc_coeffs(struct ipu_ic_csc *csc)
 		return 0;
 	}
 
-	/* YUV <-> RGB encoding is required */
+	 
 
 	switch (csc->out_cs.enc) {
 	case V4L2_YCBCR_ENC_601:

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * DWC AHCI SATA Platform driver
- *
- * Copyright (C) 2021 BAIKAL ELECTRONICS, JSC
- */
+
+ 
 
 #include <linux/ahci_platform.h>
 #include <linux/bitfield.h>
@@ -26,7 +22,7 @@
 
 #define AHCI_DWC_FBS_PMPN_MAX		15
 
-/* DWC AHCI SATA controller specific registers */
+ 
 #define AHCI_DWC_HOST_OOBR		0xbc
 #define AHCI_DWC_HOST_OOB_WE		BIT(31)
 #define AHCI_DWC_HOST_CWMIN_MASK	GENMASK(30, 24)
@@ -92,7 +88,7 @@
 #define AHCI_DWC_PORT_PHYCR		0x74
 #define AHCI_DWC_PORT_PHYSR		0x78
 
-/* Baikal-T1 AHCI SATA specific registers */
+ 
 #define AHCI_BT1_HOST_PHYCR		AHCI_DWC_HOST_GPCR
 #define AHCI_BT1_HOST_MPLM_MASK		GENMASK(29, 23)
 #define AHCI_BT1_HOST_LOSDT_MASK	GENMASK(22, 20)
@@ -127,7 +123,7 @@ static int ahci_bt1_init(struct ahci_host_priv *hpriv)
 	struct ahci_dwc_host_priv *dpriv = hpriv->plat_data;
 	int ret;
 
-	/* APB, application and reference clocks are required */
+	 
 	if (!ahci_platform_find_clk(hpriv, "pclk") ||
 	    !ahci_platform_find_clk(hpriv, "aclk") ||
 	    !ahci_platform_find_clk(hpriv, "ref")) {
@@ -135,11 +131,7 @@ static int ahci_bt1_init(struct ahci_host_priv *hpriv)
 		return -EINVAL;
 	}
 
-	/*
-	 * Fully reset the SATA AXI and ref clocks domain to ensure the state
-	 * machine is working from scratch especially if the reference clocks
-	 * source has been changed.
-	 */
+	 
 	ret = ahci_platform_assert_rsts(hpriv);
 	if (ret) {
 		dev_err(&dpriv->pdev->dev, "Couldn't assert the resets\n");
@@ -230,21 +222,18 @@ static void ahci_dwc_init_timer(struct ahci_host_priv *hpriv)
 	struct clk *aclk;
 	u32 cap, cap2;
 
-	/* 1ms tick is generated only for the CCC or DevSleep features */
+	 
 	cap = readl(hpriv->mmio + HOST_CAP);
 	cap2 = readl(hpriv->mmio + HOST_CAP2);
 	if (!(cap & HOST_CAP_CCC) && !(cap2 & HOST_CAP2_SDS))
 		return;
 
-	/*
-	 * Tick is generated based on the AXI/AHB application clocks signal
-	 * so we need to be sure in the clock we are going to use.
-	 */
+	 
 	aclk = ahci_platform_find_clk(hpriv, "aclk");
 	if (!aclk)
 		return;
 
-	/* 1ms timer interval is set as TIMV = AMBA_FREQ[MHZ] * 1000 */
+	 
 	dpriv->timv = readl(hpriv->mmio + AHCI_DWC_HOST_TIMER1MS);
 	dpriv->timv = FIELD_GET(AHCI_DWC_HOST_TIMV_MASK, dpriv->timv);
 	rate = clk_get_rate(aclk) / 1000UL;
@@ -264,13 +253,7 @@ static int ahci_dwc_init_dmacr(struct ahci_host_priv *hpriv)
 	void __iomem *port_mmio;
 	u32 port, dmacr, ts;
 
-	/*
-	 * Update the DMA Tx/Rx transaction sizes in accordance with the
-	 * platform setup. Note values exceeding maximal or minimal limits will
-	 * be automatically clamped. Also note the register isn't affected by
-	 * the HBA global reset so we can freely initialize it once until the
-	 * next system reset.
-	 */
+	 
 	for_each_child_of_node(dpriv->pdev->dev.of_node, child) {
 		if (!of_device_is_available(child))
 			continue;

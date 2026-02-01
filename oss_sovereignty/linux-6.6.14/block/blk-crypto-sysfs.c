@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright 2021 Google LLC
- *
- * sysfs support for blk-crypto.  This file contains the code which exports the
- * crypto capabilities of devices via /sys/block/$disk/queue/crypto/.
- */
+
+ 
 
 #include <linux/blk-crypto-profile.h>
 
@@ -59,10 +54,7 @@ static const struct attribute_group blk_crypto_attr_group = {
 	.attrs = blk_crypto_attrs,
 };
 
-/*
- * The encryption mode attributes.  To avoid hard-coding the list of encryption
- * modes, these are initialized at boot time by blk_crypto_sysfs_init().
- */
+ 
 static struct blk_crypto_attr __blk_crypto_mode_attrs[BLK_ENCRYPTION_MODE_MAX];
 static struct attribute *blk_crypto_mode_attrs[BLK_ENCRYPTION_MODE_MAX + 1];
 
@@ -122,10 +114,7 @@ static const struct kobj_type blk_crypto_ktype = {
 	.release	= blk_crypto_release,
 };
 
-/*
- * If the request_queue has a blk_crypto_profile, create the "crypto"
- * subdirectory in sysfs (/sys/block/$disk/queue/crypto/).
- */
+ 
 int blk_crypto_sysfs_register(struct gendisk *disk)
 {
 	struct request_queue *q = disk->queue;

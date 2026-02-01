@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * HD-audio codec driver binding
- * Copyright (c) Takashi Iwai <tiwai@suse.de>
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/slab.h>
@@ -15,16 +12,14 @@
 #include "hda_local.h"
 #include "hda_jack.h"
 
-/*
- * find a matching codec id
- */
+ 
 static int hda_codec_match(struct hdac_device *dev, struct hdac_driver *drv)
 {
 	struct hda_codec *codec = container_of(dev, struct hda_codec, core);
 	struct hda_codec_driver *driver =
 		container_of(drv, struct hda_codec_driver, core);
 	const struct hda_device_id *list;
-	/* check probe_id instead of vendor_id if set */
+	 
 	u32 id = codec->probe_id ? codec->probe_id : codec->core.vendor_id;
 	u32 rev_id = codec->core.revision_id;
 
@@ -38,16 +33,16 @@ static int hda_codec_match(struct hdac_device *dev, struct hdac_driver *drv)
 	return 0;
 }
 
-/* process an unsolicited event */
+ 
 static void hda_codec_unsol_event(struct hdac_device *dev, unsigned int ev)
 {
 	struct hda_codec *codec = container_of(dev, struct hda_codec, core);
 
-	/* ignore unsol events during shutdown */
+	 
 	if (codec->bus->shutdown)
 		return;
 
-	/* ignore unsol events during system suspend/resume */
+	 
 	if (codec->core.dev.power.power_state.event != PM_EVENT_ON)
 		return;
 
@@ -55,11 +50,7 @@ static void hda_codec_unsol_event(struct hdac_device *dev, unsigned int ev)
 		codec->patch_ops.unsol_event(codec, ev);
 }
 
-/**
- * snd_hda_codec_set_name - set the codec name
- * @codec: the HDA codec
- * @name: name string to set
- */
+ 
 int snd_hda_codec_set_name(struct hda_codec *codec, const char *name)
 {
 	int err;
@@ -70,7 +61,7 @@ int snd_hda_codec_set_name(struct hda_codec *codec, const char *name)
 	if (err < 0)
 		return err;
 
-	/* update the mixer name */
+	 
 	if (!*codec->card->mixername ||
 	    codec->bus->mixer_assigned >= codec->core.addr) {
 		snprintf(codec->card->mixername,
@@ -124,7 +115,7 @@ static int hda_codec_driver_probe(struct device *dev)
 	err = snd_hda_codec_build_controls(codec);
 	if (err < 0)
 		goto error_module;
-	/* only register after the bus probe finished; otherwise it's racy */
+	 
 	if (!codec->bus->bus_probing && codec->card->registered) {
 		err = snd_card_register(codec->card);
 		if (err < 0)
@@ -204,7 +195,7 @@ static inline bool codec_probed(struct hda_codec *codec)
 	return device_attach(hda_codec_dev(codec)) > 0 && codec->preset;
 }
 
-/* try to auto-load codec module */
+ 
 static void request_codec_module(struct hda_codec *codec)
 {
 #ifdef MODULE
@@ -230,10 +221,10 @@ static void request_codec_module(struct hda_codec *codec)
 
 	if (mod)
 		request_module(mod);
-#endif /* MODULE */
+#endif  
 }
 
-/* try to auto-load and bind the codec module */
+ 
 static void codec_bind_module(struct hda_codec *codec)
 {
 #ifdef MODULE
@@ -244,15 +235,12 @@ static void codec_bind_module(struct hda_codec *codec)
 }
 
 #if IS_ENABLED(CONFIG_SND_HDA_CODEC_HDMI)
-/* if all audio out widgets are digital, let's assume the codec as a HDMI/DP */
+ 
 static bool is_likely_hdmi_codec(struct hda_codec *codec)
 {
 	hda_nid_t nid;
 
-	/*
-	 * For ASoC users, if snd_hda_hdmi_codec module is denylisted and any
-	 * event causes i915 enumeration to fail, ->wcaps remains uninitialized.
-	 */
+	 
 	if (!codec->wcaps)
 		return true;
 
@@ -260,7 +248,7 @@ static bool is_likely_hdmi_codec(struct hda_codec *codec)
 		unsigned int wcaps = get_wcaps(codec, nid);
 		switch (get_wcaps_type(wcaps)) {
 		case AC_WID_AUD_IN:
-			return false; /* HDMI parser supports only HDMI out */
+			return false;  
 		case AC_WID_AUD_OUT:
 			if (!(wcaps & AC_WCAP_DIGITAL))
 				return false;
@@ -270,9 +258,9 @@ static bool is_likely_hdmi_codec(struct hda_codec *codec)
 	return true;
 }
 #else
-/* no HDMI codec parser support */
+ 
 #define is_likely_hdmi_codec(codec)	false
-#endif /* CONFIG_SND_HDA_CODEC_HDMI */
+#endif  
 
 static int codec_bind_generic(struct hda_codec *codec)
 {
@@ -300,15 +288,7 @@ static int codec_bind_generic(struct hda_codec *codec)
 #define is_generic_config(codec)	0
 #endif
 
-/**
- * snd_hda_codec_configure - (Re-)configure the HD-audio codec
- * @codec: the HDA codec
- *
- * Start parsing of the given codec tree and (re-)initialize the whole
- * patch instance.
- *
- * Returns 0 if successful or a negative error code.
- */
+ 
 int snd_hda_codec_configure(struct hda_codec *codec)
 {
 	int err;

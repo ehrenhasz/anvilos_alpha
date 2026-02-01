@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * debugfs routines supporting the Power 7+ Nest Accelerators driver
- *
- * Copyright (C) 2011-2012 International Business Machines Inc.
- *
- * Author: Kent Yoder <yoder1@us.ibm.com>
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/kobject.h>
@@ -22,13 +16,7 @@
 
 #ifdef CONFIG_DEBUG_FS
 
-/*
- * debugfs
- *
- * For documentation on these attributes, please see:
- *
- * Documentation/ABI/testing/debugfs-pfo-nx-crypto
- */
+ 
 
 void nx_debugfs_init(struct nx_crypto_driver *drv)
 {

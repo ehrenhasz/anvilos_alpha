@@ -1,65 +1,4 @@
-/*
- * HP i8042-based System Device Controller driver.
- *
- * Copyright (c) 2001 Brian S. Julin
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions, and the following disclaimer,
- *    without modification.
- * 2. The name of the author may not be used to endorse or promote products
- *    derived from this software without specific prior written permission.
- *
- * Alternatively, this software may be distributed under the terms of the
- * GNU General Public License ("GPL").
- *
- * THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE FOR
- * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
- * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
- * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
- *
- * References:
- * System Device Controller Microprocessor Firmware Theory of Operation
- *      for Part Number 1820-4784 Revision B.  Dwg No. A-1820-4784-2
- * Helge Deller's original hilkbd.c port for PA-RISC.
- *
- *
- * Driver theory of operation:
- *
- * hp_sdc_put does all writing to the SDC.  ISR can run on a different
- * CPU than hp_sdc_put, but only one CPU runs hp_sdc_put at a time
- * (it cannot really benefit from SMP anyway.)  A tasket fit this perfectly.
- *
- * All data coming back from the SDC is sent via interrupt and can be read
- * fully in the ISR, so there are no latency/throughput problems there.
- * The problem is with output, due to the slow clock speed of the SDC
- * compared to the CPU.  This should not be too horrible most of the time,
- * but if used with HIL devices that support the multibyte transfer command,
- * keeping outbound throughput flowing at the 6500KBps that the HIL is
- * capable of is more than can be done at HZ=100.
- *
- * Busy polling for IBF clear wastes CPU cycles and bus cycles.  hp_sdc.ibf
- * is set to 0 when the IBF flag in the status register has cleared.  ISR
- * may do this, and may also access the parts of queued transactions related
- * to reading data back from the SDC, but otherwise will not touch the
- * hp_sdc state. Whenever a register is written hp_sdc.ibf is set to 1.
- *
- * The i8042 write index and the values in the 4-byte input buffer
- * starting at 0x70 are kept track of in hp_sdc.wi, and .r7[], respectively,
- * to minimize the amount of IO needed to the SDC.  However these values
- * do not need to be locked since they are only ever accessed by hp_sdc_put.
- *
- * A timer task schedules the tasklet once per second just to make
- * sure it doesn't freeze up and to allow for bad reads to time out.
- */
+ 
 
 #include <linux/hp_sdc.h>
 #include <linux/errno.h>
@@ -72,7 +11,7 @@
 #include <linux/hil.h>
 #include <asm/io.h>
 
-/* Machine-specific abstraction */
+ 
 
 #if defined(__hppa__)
 # include <asm/parisc-device.h>
@@ -108,9 +47,9 @@ static bool hp_sdc_disabled;
 module_param_named(no_hpsdc, hp_sdc_disabled, bool, 0);
 MODULE_PARM_DESC(no_hpsdc, "Do not enable HP SDC driver.");
 
-static hp_i8042_sdc	hp_sdc;	/* All driver state is kept in here. */
+static hp_i8042_sdc	hp_sdc;	 
 
-/*************** primitives for use in any context *********************/
+ 
 static inline uint8_t hp_sdc_status_in8(void)
 {
 	uint8_t status;
@@ -152,10 +91,7 @@ static inline void hp_sdc_data_out8(uint8_t val)
 	write_unlock_irqrestore(&hp_sdc.ibf_lock, flags);
 }
 
-/*	Care must be taken to only invoke hp_sdc_spin_ibf when
- *	absolutely needed, or in rarely invoked subroutines.
- *	Not only does it waste CPU cycles, it also wastes bus cycles.
- */
+ 
 static inline void hp_sdc_spin_ibf(void)
 {
 	unsigned long flags;
@@ -177,7 +113,7 @@ static inline void hp_sdc_spin_ibf(void)
 }
 
 
-/************************ Interrupt context functions ************************/
+ 
 static void hp_sdc_take(int irq, void *dev_id, uint8_t status, uint8_t data)
 {
 	hp_sdc_transaction *curr;
@@ -196,7 +132,7 @@ static void hp_sdc_take(int irq, void *dev_id, uint8_t status, uint8_t data)
 	hp_sdc.rtime = ktime_get();
 
 	if (hp_sdc.rqty <= 0) {
-		/* All data has been gathered. */
+		 
 		if (curr->seq[curr->actidx] & HP_SDC_ACT_SEMAPHORE)
 			if (curr->act.semaphore)
 				up(curr->act.semaphore);
@@ -207,7 +143,7 @@ static void hp_sdc_take(int irq, void *dev_id, uint8_t status, uint8_t data)
 
 		curr->actidx = curr->idx;
 		curr->idx++;
-		/* Return control of this transaction */
+		 
 		write_lock(&hp_sdc.rtq_lock);
 		hp_sdc.rcurr = -1;
 		hp_sdc.rqty = 0;
@@ -221,15 +157,15 @@ static irqreturn_t hp_sdc_isr(int irq, void *dev_id)
 	uint8_t status, data;
 
 	status = hp_sdc_status_in8();
-	/* Read data unconditionally to advance i8042. */
+	 
 	data =   hp_sdc_data_in8();
 
-	/* For now we are ignoring these until we get the SDC to behave. */
+	 
 	if (((status & 0xf1) == 0x51) && data == 0x82)
 		return IRQ_HANDLED;
 
 	switch (status & HP_SDC_STATUS_IRQMASK) {
-	case 0: /* This case is not documented. */
+	case 0:  
 		break;
 
 	case HP_SDC_STATUS_USERTIMER:
@@ -288,7 +224,7 @@ static irqreturn_t hp_sdc_nmisr(int irq, void *dev_id)
 			hp_sdc.timer(irq, dev_id, status, 0);
 		read_unlock(&hp_sdc.hook_lock);
 	} else {
-		/* TODO: pass this on to the HIL handler, or do SAK here? */
+		 
 		printk(KERN_WARNING PREFIX "HIL NMI\n");
 	}
 #endif
@@ -297,7 +233,7 @@ static irqreturn_t hp_sdc_nmisr(int irq, void *dev_id)
 }
 
 
-/***************** Kernel (tasklet) context functions ****************/
+ 
 
 unsigned long hp_sdc_put(void);
 
@@ -314,10 +250,7 @@ static void hp_sdc_tasklet(unsigned long foo)
 			uint8_t tmp;
 
 			curr = hp_sdc.tq[hp_sdc.rcurr];
-			/* If this turns out to be a normal failure mode
-			 * we'll need to figure out a way to communicate
-			 * it back to the application. and be less verbose.
-			 */
+			 
 			printk(KERN_WARNING PREFIX "read timeout (%lldus)!\n",
 			       ktime_us_delta(now, hp_sdc.rtime));
 			curr->idx += hp_sdc.rqty;
@@ -329,9 +262,7 @@ static void hp_sdc_tasklet(unsigned long foo)
 					up(curr->act.semaphore);
 
 			if (tmp & HP_SDC_ACT_CALLBACK) {
-				/* Note this means that irqhooks may be called
-				 * in tasklet/bh context.
-				 */
+				 
 				if (curr->act.irqhook)
 					curr->act.irqhook(0, NULL, 0, 0);
 			}
@@ -355,8 +286,7 @@ unsigned long hp_sdc_put(void)
 
 	write_lock(&hp_sdc.lock);
 
-	/* If i8042 buffers are full, we cannot do anything that
-	   requires output, so we skip to the administrativa. */
+	 
 	if (hp_sdc.ibf) {
 		hp_sdc_status_in8();
 		if (hp_sdc.ibf)
@@ -364,7 +294,7 @@ unsigned long hp_sdc_put(void)
 	}
 
  anew:
-	/* See if we are in the middle of a sequence. */
+	 
 	if (hp_sdc.wcurr < 0)
 		hp_sdc.wcurr = 0;
 	read_lock_irq(&hp_sdc.rtq_lock);
@@ -380,7 +310,7 @@ unsigned long hp_sdc_put(void)
 
 	while (++curridx != hp_sdc.wcurr) {
 		if (curridx >= HP_SDC_QUEUE_LEN) {
-			curridx = -1; /* Wrap to top */
+			curridx = -1;  
 			continue;
 		}
 		read_lock_irq(&hp_sdc.rtq_lock);
@@ -390,16 +320,16 @@ unsigned long hp_sdc_put(void)
 		}
 		read_unlock_irq(&hp_sdc.rtq_lock);
 		if (hp_sdc.tq[curridx] != NULL)
-			break; /* Found one. */
+			break;  
 	}
-	if (curridx == hp_sdc.wcurr) { /* There's nothing queued to do. */
+	if (curridx == hp_sdc.wcurr) {  
 		curridx = -1;
 	}
 	hp_sdc.wcurr = curridx;
 
  start:
 
-	/* Check to see if the interrupt mask needs to be set. */
+	 
 	if (hp_sdc.set_im) {
 		hp_sdc_status_out8(hp_sdc.im | HP_SDC_CMD_SET_IM);
 		hp_sdc.set_im = 0;
@@ -414,7 +344,7 @@ unsigned long hp_sdc_put(void)
 
 	if (curr->actidx >= curr->endidx) {
 		hp_sdc.tq[curridx] = NULL;
-		/* Interleave outbound data between the transactions. */
+		 
 		hp_sdc.wcurr++;
 		if (hp_sdc.wcurr >= HP_SDC_QUEUE_LEN)
 			hp_sdc.wcurr = 0;
@@ -428,7 +358,7 @@ unsigned long hp_sdc_put(void)
 		if (act & HP_SDC_ACT_DEALLOC)
 			kfree(curr);
 		hp_sdc.tq[curridx] = NULL;
-		/* Interleave outbound data between the transactions. */
+		 
 		hp_sdc.wcurr++;
 		if (hp_sdc.wcurr >= HP_SDC_QUEUE_LEN)
 			hp_sdc.wcurr = 0;
@@ -443,10 +373,10 @@ unsigned long hp_sdc_put(void)
 		}
 		hp_sdc_status_out8(curr->seq[idx]);
 		curr->idx++;
-		/* act finished? */
+		 
 		if ((act & HP_SDC_ACT_DURING) == HP_SDC_ACT_PRECMD)
 			goto actdone;
-		/* skip quantity field if data-out sequence follows. */
+		 
 		if (act & HP_SDC_ACT_DATAOUT)
 			curr->idx++;
 		goto finish;
@@ -459,7 +389,7 @@ unsigned long hp_sdc_put(void)
 		if (curr->idx - idx < qty) {
 			hp_sdc_data_out8(curr->seq[curr->idx]);
 			curr->idx++;
-			/* act finished? */
+			 
 			if (curr->idx - idx >= qty &&
 			    (act & HP_SDC_ACT_DURING) == HP_SDC_ACT_DATAOUT)
 				goto actdone;
@@ -492,7 +422,7 @@ unsigned long hp_sdc_put(void)
 		    w7[hp_sdc.wi - 0x70] == hp_sdc.r7[hp_sdc.wi - 0x70]) {
 			int i = 0;
 
-			/* Need to point the write index register */
+			 
 			while (i < 4 && w7[i] == hp_sdc.r7[i])
 				i++;
 
@@ -513,7 +443,7 @@ unsigned long hp_sdc_put(void)
 
 		hp_sdc_data_out8(w7[hp_sdc.wi - 0x70]);
 		hp_sdc.r7[hp_sdc.wi - 0x70] = w7[hp_sdc.wi - 0x70];
-		hp_sdc.wi++; /* write index register autoincrements */
+		hp_sdc.wi++;  
 		{
 			int i = 0;
 
@@ -528,8 +458,7 @@ unsigned long hp_sdc_put(void)
 		}
 		goto finish;
 	}
-	/* We don't go any further in the command if there is a pending read,
-	   because we don't want interleaved results. */
+	 
 	read_lock_irq(&hp_sdc.rtq_lock);
 	if (hp_sdc.rcurr >= 0) {
 		read_unlock_irq(&hp_sdc.rtq_lock);
@@ -541,16 +470,16 @@ unsigned long hp_sdc_put(void)
 	if (act & HP_SDC_ACT_POSTCMD) {
 		uint8_t postcmd;
 
-		/* curr->idx should == idx at this point. */
+		 
 		postcmd = curr->seq[idx];
 		curr->idx++;
 		if (act & HP_SDC_ACT_DATAIN) {
 
-			/* Start a new read */
+			 
 			hp_sdc.rqty = curr->seq[curr->idx];
 			hp_sdc.rtime = ktime_get();
 			curr->idx++;
-			/* Still need to lock here in case of spurious irq. */
+			 
 			write_lock_irq(&hp_sdc.rtq_lock);
 			hp_sdc.rcurr = curridx;
 			write_unlock_irq(&hp_sdc.rtq_lock);
@@ -567,7 +496,7 @@ unsigned long hp_sdc_put(void)
 	else if (act & HP_SDC_ACT_CALLBACK)
 		curr->act.irqhook(0,NULL,0,0);
 
-	if (curr->idx >= curr->endidx) { /* This transaction is over. */
+	if (curr->idx >= curr->endidx) {  
 		if (act & HP_SDC_ACT_DEALLOC)
 			kfree(curr);
 		hp_sdc.tq[curridx] = NULL;
@@ -575,14 +504,13 @@ unsigned long hp_sdc_put(void)
 		curr->actidx = idx + 1;
 		curr->idx = idx + 2;
 	}
-	/* Interleave outbound data between the transactions. */
+	 
 	hp_sdc.wcurr++;
 	if (hp_sdc.wcurr >= HP_SDC_QUEUE_LEN)
 		hp_sdc.wcurr = 0;
 
  finish:
-	/* If by some quirk IBF has cleared and our ISR has run to
-	   see that that has happened, do it all again. */
+	 
 	if (!hp_sdc.ibf && limit++ < 20)
 		goto anew;
 
@@ -594,7 +522,7 @@ unsigned long hp_sdc_put(void)
 	return 0;
 }
 
-/******* Functions called in either user or kernel context ****/
+ 
 int __hp_sdc_enqueue_transaction(hp_sdc_transaction *this)
 {
 	int i;
@@ -604,7 +532,7 @@ int __hp_sdc_enqueue_transaction(hp_sdc_transaction *this)
 		return -EINVAL;
 	}
 
-	/* Can't have same transaction on queue twice */
+	 
 	for (i = 0; i < HP_SDC_QUEUE_LEN; i++)
 		if (hp_sdc.tq[i] == this)
 			goto fail;
@@ -612,7 +540,7 @@ int __hp_sdc_enqueue_transaction(hp_sdc_transaction *this)
 	this->actidx = 0;
 	this->idx = 1;
 
-	/* Search for empty slot */
+	 
 	for (i = 0; i < HP_SDC_QUEUE_LEN; i++)
 		if (hp_sdc.tq[i] == NULL) {
 			hp_sdc.tq[i] = this;
@@ -646,7 +574,7 @@ int hp_sdc_dequeue_transaction(hp_sdc_transaction *this)
 
 	write_lock_irqsave(&hp_sdc.lock, flags);
 
-	/* TODO: don't remove it if it's not done. */
+	 
 
 	for (i = 0; i < HP_SDC_QUEUE_LEN; i++)
 		if (hp_sdc.tq[i] == this)
@@ -658,7 +586,7 @@ int hp_sdc_dequeue_transaction(hp_sdc_transaction *this)
 
 
 
-/********************** User context functions **************************/
+ 
 int hp_sdc_request_timer_irq(hp_sdc_irqhook *callback)
 {
 	if (callback == NULL || hp_sdc.dev == NULL)
@@ -671,7 +599,7 @@ int hp_sdc_request_timer_irq(hp_sdc_irqhook *callback)
 	}
 
 	hp_sdc.timer = callback;
-	/* Enable interrupts from the timers */
+	 
 	hp_sdc.im &= ~HP_SDC_IM_FH;
         hp_sdc.im &= ~HP_SDC_IM_PT;
 	hp_sdc.im &= ~HP_SDC_IM_TIMERS;
@@ -715,7 +643,7 @@ int hp_sdc_request_cooked_irq(hp_sdc_irqhook *callback)
 		return -EBUSY;
 	}
 
-	/* Enable interrupts from the HIL MLC */
+	 
 	hp_sdc.cooked = callback;
 	hp_sdc.im &= ~(HP_SDC_IM_HIL | HP_SDC_IM_RESET);
 	hp_sdc.set_im = 1;
@@ -735,7 +663,7 @@ int hp_sdc_release_timer_irq(hp_sdc_irqhook *callback)
 		return -EINVAL;
 	}
 
-	/* Disable interrupts from the timers */
+	 
 	hp_sdc.timer = NULL;
 	hp_sdc.im |= HP_SDC_IM_TIMERS;
 	hp_sdc.im |= HP_SDC_IM_FH;
@@ -757,7 +685,7 @@ int hp_sdc_release_hil_irq(hp_sdc_irqhook *callback)
 	}
 
 	hp_sdc.hil = NULL;
-	/* Disable interrupts from HIL only if there is no cooked driver. */
+	 
 	if(hp_sdc.cooked == NULL) {
 		hp_sdc.im |= (HP_SDC_IM_HIL | HP_SDC_IM_RESET);
 		hp_sdc.set_im = 1;
@@ -778,7 +706,7 @@ int hp_sdc_release_cooked_irq(hp_sdc_irqhook *callback)
 	}
 
 	hp_sdc.cooked = NULL;
-	/* Disable interrupts from HIL only if there is no raw HIL driver. */
+	 
 	if(hp_sdc.hil == NULL) {
 		hp_sdc.im |= (HP_SDC_IM_HIL | HP_SDC_IM_RESET);
 		hp_sdc.set_im = 1;
@@ -789,16 +717,16 @@ int hp_sdc_release_cooked_irq(hp_sdc_irqhook *callback)
 	return 0;
 }
 
-/************************* Keepalive timer task *********************/
+ 
 
 static void hp_sdc_kicker(struct timer_list *unused)
 {
 	tasklet_schedule(&hp_sdc.task);
-	/* Re-insert the periodic task. */
+	 
 	mod_timer(&hp_sdc.kicker, jiffies + HZ);
 }
 
-/************************** Module Initialization ***************************/
+ 
 
 #if defined(__hppa__)
 
@@ -823,7 +751,7 @@ static struct parisc_driver hp_sdc_driver __refdata = {
 	.probe =	hp_sdc_init_hppa,
 };
 
-#endif /* __hppa__ */
+#endif  
 
 static int __init hp_sdc_init(void)
 {
@@ -841,7 +769,7 @@ static int __init hp_sdc_init(void)
 	hp_sdc.hil		= NULL;
 	hp_sdc.pup		= NULL;
 	hp_sdc.cooked		= NULL;
-	hp_sdc.im		= HP_SDC_IM_MASK;  /* Mask maskable irqs */
+	hp_sdc.im		= HP_SDC_IM_MASK;   
 	hp_sdc.set_im		= 1;
 	hp_sdc.wi		= 0xff;
 	hp_sdc.r7[0]		= 0xff;
@@ -892,7 +820,7 @@ static int __init hp_sdc_init(void)
 
 	tasklet_init(&hp_sdc.task, hp_sdc_tasklet, 0);
 
-	/* Sync the output buffer registers, thus scheduling hp_sdc_tasklet. */
+	 
 	t_sync.actidx	= 0;
 	t_sync.idx	= 1;
 	t_sync.endidx	= 6;
@@ -903,9 +831,9 @@ static int __init hp_sdc_init(void)
 	t_sync.act.semaphore = &s_sync;
 	sema_init(&s_sync, 0);
 	hp_sdc_enqueue_transaction(&t_sync);
-	down(&s_sync); /* Wait for t_sync to complete */
+	down(&s_sync);  
 
-	/* Create the keepalive task */
+	 
 	timer_setup(&hp_sdc.kicker, hp_sdc_kicker, 0);
 	hp_sdc.kicker.expires = jiffies + HZ;
 	add_timer(&hp_sdc.kicker);
@@ -938,7 +866,7 @@ static int __init hp_sdc_init_hppa(struct parisc_device *d)
 	if (!d)
 		return 1;
 	if (hp_sdc.dev != NULL)
-		return 1;	/* We only expect one SDC */
+		return 1;	 
 
 	hp_sdc.dev		= d;
 	hp_sdc.irq		= d->irq;
@@ -950,8 +878,7 @@ static int __init hp_sdc_init_hppa(struct parisc_device *d)
 	INIT_DELAYED_WORK(&moduleloader_work, request_module_delayed);
 
 	ret = hp_sdc_init();
-	/* after successful initialization give SDC some time to settle
-	 * and then load the hp_sdc_mlc upper layer driver */
+	 
 	if (!ret)
 		schedule_delayed_work(&moduleloader_work,
 			msecs_to_jiffies(2000));
@@ -959,21 +886,21 @@ static int __init hp_sdc_init_hppa(struct parisc_device *d)
 	return ret;
 }
 
-#endif /* __hppa__ */
+#endif  
 
 static void hp_sdc_exit(void)
 {
-	/* do nothing if we don't have a SDC */
+	 
 	if (!hp_sdc.dev)
 		return;
 
 	write_lock_irq(&hp_sdc.lock);
 
-	/* Turn off all maskable "sub-function" irq's. */
+	 
 	hp_sdc_spin_ibf();
 	sdc_writeb(HP_SDC_CMD_SET_IM | HP_SDC_IM_MASK, hp_sdc.status_io);
 
-	/* Wait until we know this has been processed by the i8042 */
+	 
 	hp_sdc_spin_ibf();
 
 	free_irq(hp_sdc.nmi, &hp_sdc);
@@ -1101,27 +1028,4 @@ static int __init hp_sdc_register(void)
 module_init(hp_sdc_register);
 module_exit(hp_sdc_exit);
 
-/* Timing notes:  These measurements taken on my 64MHz 7100-LC (715/64)
- *                                              cycles cycles-adj    time
- * between two consecutive mfctl(16)'s:              4        n/a    63ns
- * hp_sdc_spin_ibf when idle:                      119        115   1.7us
- * gsc_writeb status register:                      83         79   1.2us
- * IBF to clear after sending SET_IM:             6204       6006    93us
- * IBF to clear after sending LOAD_RT:            4467       4352    68us
- * IBF to clear after sending two LOAD_RTs:      18974      18859   295us
- * READ_T1, read status/data, IRQ, call handler: 35564        n/a   556us
- * cmd to ~IBF READ_T1 2nd time right after:   5158403        n/a    81ms
- * between IRQ received and ~IBF for above:    2578877        n/a    40ms
- *
- * Performance stats after a run of this module configuring HIL and
- * receiving a few mouse events:
- *
- * status in8  282508 cycles 7128 calls
- * status out8   8404 cycles  341 calls
- * data out8     1734 cycles   78 calls
- * isr         174324 cycles  617 calls (includes take)
- * take          1241 cycles    2 calls
- * put        1411504 cycles 6937 calls
- * task       1655209 cycles 6937 calls (includes put)
- *
- */
+ 

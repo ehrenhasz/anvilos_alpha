@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2015 Free Electrons
- * Copyright (C) 2015 NextThing Co
- *
- * Maxime Ripard <maxime.ripard@free-electrons.com>
- */
+
+ 
 
 #include <linux/component.h>
 #include <linux/dma-mapping.h>
@@ -34,7 +29,7 @@ static int drm_sun4i_gem_dumb_create(struct drm_file *file_priv,
 				     struct drm_device *drm,
 				     struct drm_mode_create_dumb *args)
 {
-	/* The hardware only allows even pitches for YUV buffers. */
+	 
 	args->pitch = ALIGN(DIV_ROUND_UP(args->width * args->bpp, 8), 2);
 
 	return drm_gem_dma_dumb_create_internal(file_priv, drm, args);
@@ -45,7 +40,7 @@ DEFINE_DRM_GEM_DMA_FOPS(sun4i_drv_fops);
 static const struct drm_driver sun4i_drv_driver = {
 	.driver_features	= DRIVER_GEM | DRIVER_MODESET | DRIVER_ATOMIC,
 
-	/* Generic Operations */
+	 
 	.fops			= &sun4i_drv_fops,
 	.name			= "sun4i-drm",
 	.desc			= "Allwinner sun4i Display Engine",
@@ -53,7 +48,7 @@ static const struct drm_driver sun4i_drv_driver = {
 	.major			= 1,
 	.minor			= 0,
 
-	/* GEM Operations */
+	 
 	DRM_GEM_DMA_DRIVER_OPS_WITH_DUMB_CREATE(drm_sun4i_gem_dumb_create),
 };
 
@@ -92,19 +87,19 @@ static int sun4i_drv_bind(struct device *dev)
 		goto cleanup_mode_config;
 	}
 
-	/* drm_vblank_init calls kcalloc, which can fail */
+	 
 	ret = drm_vblank_init(drm, drm->mode_config.num_crtc);
 	if (ret)
 		goto unbind_all;
 
-	/* Remove early framebuffers (ie. simplefb) */
+	 
 	ret = drm_aperture_remove_framebuffers(&sun4i_drv_driver);
 	if (ret)
 		goto unbind_all;
 
 	sun4i_framebuffer_init(drm);
 
-	/* Enable connectors polling */
+	 
 	drm_kms_helper_poll_init(drm);
 
 	ret = drm_dev_register(drm, 0);
@@ -206,27 +201,7 @@ static bool sun4i_drv_node_is_tcon_top(struct device_node *node)
 		!!of_match_node(sun8i_tcon_top_of_table, node);
 }
 
-/*
- * The encoder drivers use drm_of_find_possible_crtcs to get upstream
- * crtcs from the device tree using of_graph. For the results to be
- * correct, encoders must be probed/bound after _all_ crtcs have been
- * created. The existing code uses a depth first recursive traversal
- * of the of_graph, which means the encoders downstream of the TCON
- * get add right after the first TCON. The second TCON or CRTC will
- * never be properly associated with encoders connected to it.
- *
- * Also, in a dual display pipeline setup, both frontends can feed
- * either backend, and both backends can feed either TCON, we want
- * all components of the same type to be added before the next type
- * in the pipeline. Fortunately, the pipelines are perfectly symmetric,
- * i.e. components of the same type are at the same depth when counted
- * from the frontend. The only exception is the third pipeline in
- * the A80 SoC, which we do not support anyway.
- *
- * Hence we can use a breadth first search traversal order to add
- * components. We do not need to check for duplicates. The component
- * matching system handles this for us.
- */
+ 
 struct endpoint_list {
 	DECLARE_KFIFO(fifo, struct device_node *, 16);
 };
@@ -251,23 +226,14 @@ static void sun4i_drv_traverse_endpoints(struct endpoint_list *list,
 		}
 
 		if (sun4i_drv_node_is_tcon(node)) {
-			/*
-			 * TCON TOP is always probed before TCON. However, TCON
-			 * points back to TCON TOP when it is source for HDMI.
-			 * We have to skip it here to prevent infinite looping
-			 * between TCON TOP and TCON.
-			 */
+			 
 			if (sun4i_drv_node_is_tcon_top(remote)) {
 				DRM_DEBUG_DRIVER("TCON output endpoint is TCON TOP... skipping\n");
 				of_node_put(remote);
 				continue;
 			}
 
-			/*
-			 * If the node is our TCON with channel 0, the first
-			 * port is used for panel or bridges, and will not be
-			 * part of the component framework.
-			 */
+			 
 			if (sun4i_drv_node_is_tcon_with_ch0(node)) {
 				struct of_endpoint endpoint;
 
@@ -296,43 +262,30 @@ static int sun4i_drv_add_endpoints(struct device *dev,
 {
 	int count = 0;
 
-	/*
-	 * The frontend has been disabled in some of our old device
-	 * trees. If we find a node that is the frontend and is
-	 * disabled, we should just follow through and parse its
-	 * child, but without adding it to the component list.
-	 * Otherwise, we obviously want to add it to the list.
-	 */
+	 
 	if (!sun4i_drv_node_is_frontend(node) &&
 	    !of_device_is_available(node))
 		return 0;
 
-	/*
-	 * The connectors will be the last nodes in our pipeline, we
-	 * can just bail out.
-	 */
+	 
 	if (sun4i_drv_node_is_connector(node))
 		return 0;
 
-	/*
-	 * If the device is either just a regular device, or an
-	 * enabled frontend supported by the driver, we add it to our
-	 * component list.
-	 */
+	 
 	if (!(sun4i_drv_node_is_frontend(node) ||
 	      sun4i_drv_node_is_deu(node)) ||
 	    (sun4i_drv_node_is_supported_frontend(node) &&
 	     of_device_is_available(node))) {
-		/* Add current component */
+		 
 		DRM_DEBUG_DRIVER("Adding component %pOF\n", node);
 		drm_of_component_match_add(dev, match, component_compare_of, node);
 		count++;
 	}
 
-	/* each node has at least one output */
+	 
 	sun4i_drv_traverse_endpoints(list, node, 1);
 
-	/* TCON TOP has second and third output */
+	 
 	if (sun4i_drv_node_is_tcon_top(node)) {
 		sun4i_drv_traverse_endpoints(list, node, 3);
 		sun4i_drv_traverse_endpoints(list, node, 5);
@@ -371,10 +324,7 @@ static int sun4i_drv_probe(struct platform_device *pdev)
 
 	INIT_KFIFO(list.fifo);
 
-	/*
-	 * DE2 and DE3 cores actually supports 40-bit addresses, but
-	 * driver does not.
-	 */
+	 
 	dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(32));
 	dma_set_max_seg_size(&pdev->dev, UINT_MAX);
 
@@ -389,11 +339,11 @@ static int sun4i_drv_probe(struct platform_device *pdev)
 	}
 
 	while (kfifo_get(&list.fifo, &endpoint)) {
-		/* process this endpoint */
+		 
 		ret = sun4i_drv_add_endpoints(&pdev->dev, &list, &match,
 					      endpoint);
 
-		/* sun4i_drv_add_endpoints can fail to allocate memory */
+		 
 		if (ret < 0)
 			return ret;
 

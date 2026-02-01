@@ -1,11 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-//
-// sma1303.c -- sma1303 ALSA SoC Audio driver
-//
-// Copyright 2023 Iron Device Corporation
-//
-// Auther: Gyuhwa Park <gyuhwa.park@irondevice.com>
-//         Kiseok Jo <kiseok.jo@irondevice.com>
+
+
+
+
+
+
+
+
 
 #include <linux/module.h>
 #include <linux/moduleparam.h>
@@ -27,7 +27,7 @@
 
 #include "sma1303.h"
 
-#define CHECK_PERIOD_TIME 1 /* sec per HZ */
+#define CHECK_PERIOD_TIME 1  
 #define MAX_CONTROL_NAME 48
 
 #define PLL_MATCH(_input_clk_name, _output_clk_name, _input_clk,\
@@ -864,11 +864,11 @@ static const struct snd_kcontrol_new sma1303_snd_controls[] = {
 };
 
 static const struct snd_soc_dapm_widget sma1303_dapm_widgets[] = {
-	/* platform domain */
+	 
 	SND_SOC_DAPM_OUTPUT("SPK"),
 	SND_SOC_DAPM_INPUT("SDO"),
 
-	/* path domain */
+	 
 	SND_SOC_DAPM_MUX_E("AIF IN Source", SND_SOC_NOPM, 0, 0,
 			&sma1303_aif_in_source_control,
 			sma1303_aif_in_event,
@@ -892,13 +892,13 @@ static const struct snd_soc_dapm_widget sma1303_dapm_widgets[] = {
 	SND_SOC_DAPM_SWITCH("AMP Enable", SND_SOC_NOPM, 0, 1,
 			&sma1303_enable_control),
 
-	/* stream domain */
+	 
 	SND_SOC_DAPM_AIF_IN("AIF IN", "Playback", 0, SND_SOC_NOPM, 0, 0),
 	SND_SOC_DAPM_AIF_OUT("AIF OUT", "Capture", 0, SND_SOC_NOPM, 0, 0),
 };
 
 static const struct snd_soc_dapm_route sma1303_audio_map[] = {
-	/* Playback */
+	 
 	{"AIF IN Source", "Mono", "AIF IN"},
 	{"AIF IN Source", "Left", "AIF IN"},
 	{"AIF IN Source", "Right", "AIF IN"},
@@ -922,7 +922,7 @@ static const struct snd_soc_dapm_route sma1303_audio_map[] = {
 	{"AMP Enable", "Switch", "AMP Power"},
 	{"SPK", NULL, "AMP Enable"},
 
-	/* Capture */
+	 
 	{"AIF OUT", NULL, "AMP Enable"},
 };
 
@@ -1207,7 +1207,7 @@ static int sma1303_dai_mute(struct snd_soc_dai *dai, int mute, int stream)
 				SMA1303_SPK_MUTE,
 				NULL);
 
-		/* Need to wait time for mute slope */
+		 
 		msleep(55);
 	} else {
 		if (!sma1303->force_mute_status) {

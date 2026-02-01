@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <vmlinux.h>
 #include <bpf/bpf_tracing.h>
 #include <bpf/bpf_helpers.h>
@@ -99,9 +99,7 @@ int list_push_pop_multiple(struct bpf_spin_lock *lock, struct bpf_list_head *hea
 	struct foo *f[200], *pf;
 	int i;
 
-	/* Loop following this check adds nodes 2-at-a-time in order to
-	 * validate multiple release_on_unlock release logic
-	 */
+	 
 	if (ARRAY_SIZE(f) % 2)
 		return 10;
 

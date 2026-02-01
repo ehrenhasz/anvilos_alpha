@@ -1,24 +1,5 @@
-// SPDX-License-Identifier: GPL-1.0+
-/*
- * OHCI HCD (Host Controller Driver) for USB.
- *
- * (C) Copyright 1999 Roman Weissgaerber <weissg@vienna.at>
- * (C) Copyright 2000-2002 David Brownell <dbrownell@users.sourceforge.net>
- * (C) Copyright 2002 Hewlett-Packard Company
- *
- * USB Bus Glue for Samsung S3C2410
- *
- * Written by Christopher Hoover <ch@hpl.hp.com>
- * Based on fragments of previous driver by Russell King et al.
- *
- * Modified for S3C2410 from ohci-sa1111.c, ohci-omap.c and ohci-lh7a40.c
- *	by Ben Dooks, <ben@simtec.co.uk>
- *	Copyright (C) 2004 Simtec Electronics
- *
- * Thanks to basprog@mail.ru for updates to newer kernels
- *
- * This file is licenced under the GPL.
-*/
+
+ 
 
 #include <linux/clk.h>
 #include <linux/io.h>
@@ -34,7 +15,7 @@
 
 #define valid_port(idx) ((idx) == 1 || (idx) == 2)
 
-/* clock device associated with the hcd */
+ 
 
 
 #define DRIVER_DESC "OHCI S3C2410 driver"
@@ -44,11 +25,11 @@ static struct clk *usb_clk;
 
 static struct hc_driver __read_mostly ohci_s3c2410_hc_driver;
 
-/* forward definitions */
+ 
 
 static void s3c2410_hcd_oc(struct s3c2410_hcd_info *info, int port_oc);
 
-/* conversion functions */
+ 
 
 static struct s3c2410_hcd_info *to_s3c2410_info(struct usb_hcd *hcd)
 {
@@ -62,7 +43,7 @@ static void s3c2410_start_hc(struct platform_device *dev, struct usb_hcd *hcd)
 	dev_dbg(&dev->dev, "s3c2410_start_hc:\n");
 
 	clk_prepare_enable(usb_clk);
-	mdelay(2);			/* let the bus clock stabilise */
+	mdelay(2);			 
 
 	clk_prepare_enable(clk);
 
@@ -93,11 +74,7 @@ static void s3c2410_stop_hc(struct platform_device *dev)
 	clk_disable_unprepare(usb_clk);
 }
 
-/* ohci_s3c2410_hub_status_data
- *
- * update the status data from the hub with anything that
- * has been detected by our system
-*/
+ 
 
 static int
 ohci_s3c2410_hub_status_data(struct usb_hcd *hcd, char *buf)
@@ -114,7 +91,7 @@ ohci_s3c2410_hub_status_data(struct usb_hcd *hcd, char *buf)
 
 	port = &info->port[0];
 
-	/* mark any changed port as changed */
+	 
 
 	for (portno = 0; portno < 2; port++, portno++) {
 		if (port->oc_changed == 1 &&
@@ -132,11 +109,7 @@ ohci_s3c2410_hub_status_data(struct usb_hcd *hcd, char *buf)
 	return orig;
 }
 
-/* s3c2410_usb_set_power
- *
- * configure the power on a port, by calling the platform device
- * routine registered with the platform device
-*/
+ 
 
 static void s3c2410_usb_set_power(struct s3c2410_hcd_info *info,
 				  int port, int to)
@@ -150,12 +123,7 @@ static void s3c2410_usb_set_power(struct s3c2410_hcd_info *info,
 	}
 }
 
-/* ohci_s3c2410_hub_control
- *
- * look at control requests to the hub, and see if we need
- * to take any action or over-ride the results from the
- * request.
-*/
+ 
 
 static int ohci_s3c2410_hub_control(
 	struct usb_hcd	*hcd,
@@ -174,8 +142,7 @@ static int ohci_s3c2410_hub_control(
 		"s3c2410_hub_control(%p,0x%04x,0x%04x,0x%04x,%p,%04x)\n",
 		hcd, typeReq, wValue, wIndex, buf, wLength);
 
-	/* if we are only an humble host without any special capabilities
-	 * process the request straight away and exit */
+	 
 
 	if (info == NULL) {
 		ret = ohci_hub_control(hcd, typeReq, wValue,
@@ -183,7 +150,7 @@ static int ohci_s3c2410_hub_control(
 		goto out;
 	}
 
-	/* check the request to see if it needs handling */
+	 
 
 	switch (typeReq) {
 	case SetPortFeature:
@@ -235,7 +202,7 @@ static int ohci_s3c2410_hub_control(
 	switch (typeReq) {
 	case GetHubDescriptor:
 
-		/* update the hub's descriptor */
+		 
 
 		desc = (struct usb_hub_descriptor *)buf;
 
@@ -245,9 +212,7 @@ static int ohci_s3c2410_hub_control(
 		dev_dbg(hcd->self.controller, "wHubCharacteristics 0x%04x\n",
 			desc->wHubCharacteristics);
 
-		/* remove the old configurations for power-switching, and
-		 * over-current protection, and insert our new configuration
-		 */
+		 
 
 		desc->wHubCharacteristics &= ~cpu_to_le16(HUB_CHAR_LPSM);
 		desc->wHubCharacteristics |= cpu_to_le16(
@@ -266,7 +231,7 @@ static int ohci_s3c2410_hub_control(
 		return ret;
 
 	case GetPortStatus:
-		/* check port status */
+		 
 
 		dev_dbg(hcd->self.controller, "GetPortStatus(%d)\n", wIndex);
 
@@ -283,10 +248,7 @@ static int ohci_s3c2410_hub_control(
 	return ret;
 }
 
-/* s3c2410_hcd_oc
- *
- * handle an over-current report
-*/
+ 
 
 static void s3c2410_hcd_oc(struct s3c2410_hcd_info *info, int port_oc)
 {
@@ -307,8 +269,7 @@ static void s3c2410_hcd_oc(struct s3c2410_hcd_info *info, int port_oc)
 			port->oc_status = 1;
 			port->oc_changed = 1;
 
-			/* ok, once over-current is detected,
-			   the port needs to be powered down */
+			 
 			s3c2410_usb_set_power(info, portno+1, 0);
 		}
 	}
@@ -316,19 +277,10 @@ static void s3c2410_hcd_oc(struct s3c2410_hcd_info *info, int port_oc)
 	local_irq_restore(flags);
 }
 
-/* may be called without controller electrically present */
-/* may be called with controller, bus, and devices active */
+ 
+ 
 
-/*
- * ohci_hcd_s3c2410_remove - shutdown processing for HCD
- * @dev: USB Host Controller being removed
- *
- * Context: task context, might sleep
- *
- * Reverses the effect of ohci_hcd_3c2410_probe(), first invoking
- * the HCD's stop() method.  It is always called from a thread
- * context, normally "rmmod", "apmd", or something similar.
- */
+ 
 static void
 ohci_hcd_s3c2410_remove(struct platform_device *dev)
 {
@@ -339,16 +291,7 @@ ohci_hcd_s3c2410_remove(struct platform_device *dev)
 	usb_put_hcd(hcd);
 }
 
-/*
- * ohci_hcd_s3c2410_probe - initialize S3C2410-based HCDs
- * @dev: USB Host Controller to be probed
- *
- * Context: task context, might sleep
- *
- * Allocates basic resources for this USB host controller, and
- * then invokes the start() method for the HCD associated with it
- * through the hotplug entry's driver_data.
- */
+ 
 static int ohci_hcd_s3c2410_probe(struct platform_device *dev)
 {
 	struct usb_hcd *hcd = NULL;
@@ -408,7 +351,7 @@ static int ohci_hcd_s3c2410_probe(struct platform_device *dev)
 	return retval;
 }
 
-/*-------------------------------------------------------------------------*/
+ 
 
 #ifdef CONFIG_PM
 static int ohci_hcd_s3c2410_drv_suspend(struct device *dev)
@@ -450,7 +393,7 @@ static const struct dev_pm_ops ohci_hcd_s3c2410_pm_ops = {
 
 static const struct of_device_id ohci_hcd_s3c2410_dt_ids[] = {
 	{ .compatible = "samsung,s3c2410-ohci" },
-	{ /* sentinel */ }
+	{   }
 };
 
 MODULE_DEVICE_TABLE(of, ohci_hcd_s3c2410_dt_ids);
@@ -473,14 +416,7 @@ static int __init ohci_s3c2410_init(void)
 
 	ohci_init_driver(&ohci_s3c2410_hc_driver, NULL);
 
-	/*
-	 * The Samsung HW has some unusual quirks, which require
-	 * Sumsung-specific workarounds. We override certain hc_driver
-	 * functions here to achieve that. We explicitly do not enhance
-	 * ohci_driver_overrides to allow this more easily, since this
-	 * is an unusual case, and we don't want to encourage others to
-	 * override these functions by making it too easy.
-	 */
+	 
 
 	ohci_s3c2410_hc_driver.hub_status_data	= ohci_s3c2410_hub_status_data;
 	ohci_s3c2410_hc_driver.hub_control	= ohci_s3c2410_hub_control;

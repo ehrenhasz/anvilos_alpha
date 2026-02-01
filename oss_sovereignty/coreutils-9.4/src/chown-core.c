@@ -1,20 +1,4 @@
-/* chown-core.c -- core functions for changing ownership.
-   Copyright (C) 2000-2023 Free Software Foundation, Inc.
-
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* Extracted from chown.c/chgrp.c and librarified by Jim Meyering.  */
+ 
 
 #include <config.h>
 #include <stdio.h>
@@ -37,20 +21,19 @@
 
 enum RCH_status
   {
-    /* we called fchown and close, and both succeeded */
+     
     RC_ok = 2,
 
-    /* required_uid and/or required_gid are specified, but don't match */
+     
     RC_excluded,
 
-    /* SAME_INODE check failed */
+     
     RC_inode_changed,
 
-    /* open/fchown isn't needed, isn't safe, or doesn't work due to
-       permissions problems; fall back on chown */
+     
     RC_do_ordinary_chown,
 
-    /* open, fstat, fchown, or close failed */
+     
     RC_error
   };
 
@@ -73,8 +56,7 @@ chopt_free (struct Chown_option *chopt)
   free (chopt->group_name);
 }
 
-/* Convert the numeric user-id, UID, to a string stored in xmalloc'd memory,
-   and return it.  Use the decimal representation of the ID.  */
+ 
 
 static char *
 uid_to_str (uid_t uid)
@@ -84,8 +66,7 @@ uid_to_str (uid_t uid)
                   : umaxtostr (uid, buf));
 }
 
-/* Convert the numeric group-id, GID, to a string stored in xmalloc'd memory,
-   and return it.  Use the decimal representation of the ID.  */
+ 
 
 static char *
 gid_to_str (gid_t gid)
@@ -95,9 +76,7 @@ gid_to_str (gid_t gid)
                   : umaxtostr (gid, buf));
 }
 
-/* Convert the numeric group-id, GID, to a string stored in xmalloc'd memory,
-   and return it.  If there's no corresponding group name, use the decimal
-   representation of the ID.  */
+ 
 
 extern char *
 gid_to_name (gid_t gid)
@@ -106,9 +85,7 @@ gid_to_name (gid_t gid)
   return grp ? xstrdup (grp->gr_name) : gid_to_str (gid);
 }
 
-/* Convert the numeric user-id, UID, to a string stored in xmalloc'd memory,
-   and return it.  If there's no corresponding user name, use the decimal
-   representation of the ID.  */
+ 
 
 extern char *
 uid_to_name (uid_t uid)
@@ -117,7 +94,7 @@ uid_to_name (uid_t uid)
   return pwd ? xstrdup (pwd->pw_name) : uid_to_str (uid);
 }
 
-/* Allocate a string representing USER and GROUP.  */
+ 
 
 static char *
 user_group_str (char const *user, char const *group)
@@ -144,9 +121,7 @@ user_group_str (char const *user, char const *group)
   return spec;
 }
 
-/* Tell the user how/if the user and group of FILE have been changed.
-   If USER is null, give the group-oriented messages.
-   CHANGED describes what (if anything) has happened. */
+ 
 
 static void
 describe_change (char const *file, enum Change_status changed,
@@ -207,23 +182,7 @@ describe_change (char const *file, enum Change_status changed,
   free (spec);
 }
 
-/* Change the owner and/or group of the FILE to UID and/or GID (safely)
-   only if REQUIRED_UID and REQUIRED_GID match the owner and group IDs
-   of FILE.  ORIG_ST must be the result of 'stat'ing FILE.
-
-   The 'safely' part above means that we can't simply use chown(2),
-   since FILE might be replaced with some other file between the time
-   of the preceding stat/lstat and this chown call.  So here we open
-   FILE and do everything else via the resulting file descriptor.
-   We first call fstat and verify that the dev/inode match those from
-   the preceding stat call, and only then, if appropriate (given the
-   required_uid and required_gid constraints) do we call fchown.
-
-   Return RC_do_ordinary_chown if we can't open FILE, or if FILE is a
-   special file that might have undesirable side effects when opening.
-   In this case the caller can use the less-safe ordinary chown.
-
-   Return one of the RCH_status values.  */
+ 
 
 static enum RCH_status
 restricted_chown (int cwd_fd, char const *file,
@@ -278,12 +237,7 @@ restricted_chown (int cwd_fd, char const *file,
   return status;
 }
 
-/* Change the owner and/or group of the file specified by FTS and ENT
-   to UID and/or GID as appropriate.
-   If REQUIRED_UID is not -1, then skip files with any other user ID.
-   If REQUIRED_GID is not -1, then skip files with any other group ID.
-   CHOPT specifies additional options.
-   Return true if successful.  */
+ 
 static bool
 change_file_owner (FTS *fts, FTSENT *ent,
                    uid_t uid, gid_t gid,
@@ -305,12 +259,11 @@ change_file_owner (FTS *fts, FTSENT *ent,
         {
           if (ROOT_DEV_INO_CHECK (chopt->root_dev_ino, ent->fts_statp))
             {
-              /* This happens e.g., with "chown -R --preserve-root 0 /"
-                 and with "chown -RH --preserve-root 0 symlink-to-root".  */
+               
               ROOT_DEV_INO_WARN (file_full_name);
-              /* Tell fts not to traverse into this hierarchy.  */
+               
               fts_set (fts, ent, FTS_SKIP);
-              /* Ensure that we do not process "/" on the second visit.  */
+               
               ignore_value (fts_read (fts));
               return false;
             }
@@ -324,13 +277,7 @@ change_file_owner (FTS *fts, FTSENT *ent,
       break;
 
     case FTS_NS:
-      /* For a top-level file or directory, this FTS_NS (stat failed)
-         indicator is determined at the time of the initial fts_open call.
-         With programs like chmod, chown, and chgrp, that modify
-         permissions, it is possible that the file in question is
-         accessible when control reaches this point.  So, if this is
-         the first time we've seen the FTS_NS for this file, tell
-         fts_read to stat it "again".  */
+       
       if (ent->fts_level == 0 && ent->fts_number == 0)
         {
           ent->fts_number = 1;
@@ -356,7 +303,7 @@ change_file_owner (FTS *fts, FTSENT *ent,
       ok = false;
       break;
 
-    case FTS_DC:		/* directory that causes cycles */
+    case FTS_DC:		 
       if (cycle_warning_required (fts, ent))
         {
           emit_cycle_warning (file_full_name);
@@ -385,8 +332,7 @@ change_file_owner (FTS *fts, FTSENT *ent,
     {
       file_stats = ent->fts_statp;
 
-      /* If this is a symlink and we're dereferencing them,
-         stat it to get info on the referent.  */
+       
       if (chopt->affect_symlink_referent && S_ISLNK (file_stats->st_mode))
         {
           if (fstatat (fts->fts_cwd_fd, file, &stat_buf, 0) != 0)
@@ -407,7 +353,7 @@ change_file_owner (FTS *fts, FTSENT *ent,
                       || required_gid == file_stats->st_gid));
     }
 
-  /* This happens when chown -LR --preserve-root encounters a symlink-to-/.  */
+   
   if (ok
       && FTSENT_IS_DIRECTORY (ent)
       && ROOT_DEV_INO_CHECK (chopt->root_dev_ino, file_stats))
@@ -422,9 +368,7 @@ change_file_owner (FTS *fts, FTSENT *ent,
         {
           ok = (lchownat (fts->fts_cwd_fd, file, uid, gid) == 0);
 
-          /* Ignore any error due to lack of support; POSIX requires
-             this behavior for top-level symbolic links with -h, and
-             implies that it's required for all symbolic links.  */
+           
           if (!ok && errno == EOPNOTSUPP)
             {
               ok = true;
@@ -433,15 +377,7 @@ change_file_owner (FTS *fts, FTSENT *ent,
         }
       else
         {
-          /* If possible, avoid a race condition with --from=O:G and without the
-             (-h) --no-dereference option.  If fts's stat call determined
-             that the uid/gid of FILE matched the --from=O:G-selected
-             owner and group IDs, blindly using chown(2) here could lead
-             chown(1) or chgrp(1) mistakenly to dereference a *symlink*
-             to an arbitrary file that an attacker had moved into the
-             place of FILE during the window between the stat and
-             chown(2) calls.  If FILE is a regular file or a directory
-             that can be opened, this race condition can be avoided safely.  */
+           
 
           enum RCH_status err
             = restricted_chown (fts->fts_cwd_fd, file, file_stats, uid, gid,
@@ -460,7 +396,7 @@ change_file_owner (FTS *fts, FTSENT *ent,
               break;
 
             case RC_inode_changed:
-              /* FIXME: give a diagnostic in this case?  */
+               
             case RC_excluded:
               do_chown = false;
               ok = false;
@@ -471,12 +407,7 @@ change_file_owner (FTS *fts, FTSENT *ent,
             }
         }
 
-      /* On some systems (e.g., GNU/Linux 2.4.x),
-         the chown function resets the 'special' permission bits.
-         Do *not* restore those bits;  doing so would open a window in
-         which a malicious user, M, could subvert a chown command run
-         by some other user and operating on files in a directory
-         where M has write access.  */
+       
 
       if (do_chown && !ok && ! chopt->force_silent)
         error (0, errno, (uid != (uid_t) -1
@@ -527,15 +458,7 @@ change_file_owner (FTS *fts, FTSENT *ent,
   return ok;
 }
 
-/* Change the owner and/or group of the specified FILES.
-   BIT_FLAGS specifies how to treat each symlink-to-directory
-   that is encountered during a recursive traversal.
-   CHOPT specifies additional options.
-   If UID is not -1, then change the owner id of each file to UID.
-   If GID is not -1, then change the group id of each file to GID.
-   If REQUIRED_UID and/or REQUIRED_GID is not -1, then change only
-   files with user ID and group ID that match the non-(-1) value(s).
-   Return true if successful.  */
+ 
 extern bool
 chown_files (char **files, int bit_flags,
              uid_t uid, gid_t gid,
@@ -544,7 +467,7 @@ chown_files (char **files, int bit_flags,
 {
   bool ok = true;
 
-  /* Use lstat and stat only if they're needed.  */
+   
   int stat_flags = ((required_uid != (uid_t) -1 || required_gid != (gid_t) -1
                      || chopt->affect_symlink_referent
                      || chopt->verbosity != V_off)
@@ -562,7 +485,7 @@ chown_files (char **files, int bit_flags,
         {
           if (errno != 0)
             {
-              /* FIXME: try to give a better message  */
+               
               if (! chopt->force_silent)
                 error (0, errno, _("fts_read failed"));
               ok = false;

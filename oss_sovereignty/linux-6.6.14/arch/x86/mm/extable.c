@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 #include <linux/extable.h>
 #include <linux/uaccess.h>
 #include <linux/sched/debug.h>
@@ -41,18 +41,7 @@ static bool ex_handler_default(const struct exception_table_entry *e,
 	return true;
 }
 
-/*
- * This is the *very* rare case where we do a "load_unaligned_zeropad()"
- * and it's a page crosser into a non-existent page.
- *
- * This happens when we optimistically load a pathname a word-at-a-time
- * and the name is less than the full word and the  next page is not
- * mapped. Typically that only happens for CONFIG_DEBUG_PAGEALLOC.
- *
- * NOTE! The faulting address is always a 'mov mem,reg' type instruction
- * of size 'long', and the exception fixup must always point to right
- * after the instruction.
- */
+ 
 static bool ex_handler_zeropad(const struct exception_table_entry *e,
 			       struct pt_regs *regs,
 			       unsigned long fault_addr)
@@ -108,16 +97,7 @@ static bool ex_handler_sgx(const struct exception_table_entry *fixup,
 	return ex_handler_default(fixup, regs);
 }
 
-/*
- * Handler for when we fail to restore a task's FPU state.  We should never get
- * here because the FPU state of a task using the FPU (task->thread.fpu.state)
- * should always be valid.  However, past bugs have allowed userspace to set
- * reserved bits in the XSAVE area using PTRACE_SETREGSET or sys_rt_sigreturn().
- * These caused XRSTOR to fail when switching to the task, leaking the FPU
- * registers of the task previously executing on the CPU.  Mitigate this class
- * of vulnerability by restoring from the initial state (essentially, zeroing
- * out all the FPU registers) if we can't restore from the task's FPU state.
- */
+ 
 static bool ex_handler_fprestore(const struct exception_table_entry *fixup,
 				 struct pt_regs *regs)
 {
@@ -130,23 +110,15 @@ static bool ex_handler_fprestore(const struct exception_table_entry *fixup,
 	return true;
 }
 
-/*
- * On x86-64, we end up being imprecise with 'access_ok()', and allow
- * non-canonical user addresses to make the range comparisons simpler,
- * and to not have to worry about LAM being enabled.
- *
- * In fact, we allow up to one page of "slop" at the sign boundary,
- * which means that we can do access_ok() by just checking the sign
- * of the pointer for the common case of having a small access size.
- */
+ 
 static bool gp_fault_address_ok(unsigned long fault_address)
 {
 #ifdef CONFIG_X86_64
-	/* Is it in the "user space" part of the non-canonical space? */
+	 
 	if (valid_user_address(fault_address))
 		return true;
 
-	/* .. or just above it? */
+	 
 	fault_address -= PAGE_SIZE;
 	if (valid_user_address(fault_address))
 		return true;
@@ -187,7 +159,7 @@ static bool ex_handler_msr(const struct exception_table_entry *fixup,
 	}
 
 	if (!wrmsr) {
-		/* Pretend that the read succeeded and returned 0. */
+		 
 		regs->ax = 0;
 		regs->dx = 0;
 	}
@@ -306,54 +278,32 @@ int fixup_exception(struct pt_regs *regs, int trapnr, unsigned long error_code,
 
 extern unsigned int early_recursion_flag;
 
-/* Restricted version used during very early boot */
+ 
 void __init early_fixup_exception(struct pt_regs *regs, int trapnr)
 {
-	/* Ignore early NMIs. */
+	 
 	if (trapnr == X86_TRAP_NMI)
 		return;
 
 	if (early_recursion_flag > 2)
 		goto halt_loop;
 
-	/*
-	 * Old CPUs leave the high bits of CS on the stack
-	 * undefined.  I'm not sure which CPUs do this, but at least
-	 * the 486 DX works this way.
-	 * Xen pv domains are not using the default __KERNEL_CS.
-	 */
+	 
 	if (!xen_pv_domain() && regs->cs != __KERNEL_CS)
 		goto fail;
 
-	/*
-	 * The full exception fixup machinery is available as soon as
-	 * the early IDT is loaded.  This means that it is the
-	 * responsibility of extable users to either function correctly
-	 * when handlers are invoked early or to simply avoid causing
-	 * exceptions before they're ready to handle them.
-	 *
-	 * This is better than filtering which handlers can be used,
-	 * because refusing to call a handler here is guaranteed to
-	 * result in a hard-to-debug panic.
-	 *
-	 * Keep in mind that not all vectors actually get here.  Early
-	 * page faults, for example, are special.
-	 */
+	 
 	if (fixup_exception(regs, trapnr, regs->orig_ax, 0))
 		return;
 
 	if (trapnr == X86_TRAP_UD) {
 		if (report_bug(regs->ip, regs) == BUG_TRAP_TYPE_WARN) {
-			/* Skip the ud2. */
+			 
 			regs->ip += LEN_UD2;
 			return;
 		}
 
-		/*
-		 * If this was a BUG and report_bug returns or if this
-		 * was just a normal #UD, we want to continue onward and
-		 * crash.
-		 */
+		 
 	}
 
 fail:

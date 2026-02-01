@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Functions corresponding to SET password methods under BIOS attributes interface GUID
- *
- *  Copyright (c) 2020 Dell Inc.
- */
+
+ 
 
 #include <linux/wmi.h>
 #include "dell-wmi-sysman.h"
@@ -26,18 +22,12 @@ static int call_password_interface(struct wmi_device *wdev, char *in_args, size_
 		ret = obj->integer.value;
 
 	kfree(output.pointer);
-	/* let userland know it may need to check is_password_set again */
+	 
 	kobject_uevent(&wmi_priv.class_dev->kobj, KOBJ_CHANGE);
 	return map_wmi_error(ret);
 }
 
-/**
- * set_new_password() - Sets a system admin password
- * @password_type: The type of password to set
- * @new: The new password
- *
- * Sets the password using plaintext interface
- */
+ 
 int set_new_password(const char *password_type, const char *new)
 {
 	size_t password_type_size, current_password_size, new_size;
@@ -62,7 +52,7 @@ int set_new_password(const char *password_type, const char *new)
 		goto out;
 	}
 
-	/* build/calculate buffer */
+	 
 	security_area_size = calculate_security_buffer(wmi_priv.current_admin_password);
 	password_type_size = calculate_string_buffer(password_type);
 	current_password_size = calculate_string_buffer(current_password);
@@ -74,10 +64,10 @@ int set_new_password(const char *password_type, const char *new)
 		goto out;
 	}
 
-	/* build security area */
+	 
 	populate_security_buffer(buffer, wmi_priv.current_admin_password);
 
-	/* build variables to set */
+	 
 	start = buffer + security_area_size;
 	ret = populate_string_buffer(start, password_type_size, password_type);
 	if (ret < 0)
@@ -95,10 +85,10 @@ int set_new_password(const char *password_type, const char *new)
 
 	print_hex_dump_bytes("set new password data: ", DUMP_PREFIX_NONE, buffer, buffer_size);
 	ret = call_password_interface(wmi_priv.password_attr_wdev, buffer, buffer_size);
-	/* on success copy the new password to current password */
+	 
 	if (!ret)
 		strscpy(current_password, new, MAX_BUFF);
-	/* explain to user the detailed failure reason */
+	 
 	else if (ret == -EOPNOTSUPP)
 		dev_err(&wmi_priv.password_attr_wdev->dev, "admin password must be configured\n");
 	else if (ret == -EACCES)

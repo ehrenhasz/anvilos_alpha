@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Landlock LSM - Security framework setup
- *
- * Copyright © 2016-2020 Mickaël Salaün <mic@digikod.net>
- * Copyright © 2018-2020 ANSSI
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/lsm_hooks.h>

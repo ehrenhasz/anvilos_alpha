@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * builtin-config.c
- *
- * Copyright (C) 2015, Taeung Song <treeze.taeung@gmail.com>
- *
- */
+
+ 
 #include "builtin.h"
 
 #include "util/cache.h"
@@ -51,7 +46,7 @@ static int set_config(struct perf_config_set *set, const char *file_name)
 
 	fprintf(fp, "%s\n", first_line);
 
-	/* overwrite configvariables */
+	 
 	perf_config_items__for_each_entry(&set->sections, section) {
 		if (!use_system_config && section->from_system_config)
 			continue;
@@ -123,10 +118,7 @@ static int parse_config_arg(char *arg, char **var, char **value)
 {
 	const char *last_dot = strchr(arg, '.');
 
-	/*
-	 * Since "var" actually contains the section name and the real
-	 * config variable name separated by a dot, we have to know where the dot is.
-	 */
+	 
 	if (last_dot == NULL || last_dot == arg) {
 		pr_err("The config variable does not contain a section name: %s\n", arg);
 		return -1;
@@ -143,7 +135,7 @@ static int parse_config_arg(char *arg, char **var, char **value)
 		pr_err("The config variable does not contain a value: %s\n", arg);
 		return -1;
 	} else {
-		*value = *value + 1; /* excluding a first character '=' */
+		*value = *value + 1;  
 		*var = strsep(&arg, "=");
 		if (*var[0] == '\0') {
 			pr_err("invalid config variable: %s\n", arg);
@@ -183,10 +175,7 @@ int cmd_config(int argc, const char **argv)
 	else
 		config_filename = config_exclusive_filename;
 
-	/*
-	 * At only 'config' sub-command, individually use the config set
-	 * because of reinitializing with options config file location.
-	 */
+	 
 	set = perf_config_set__new();
 	if (!set)
 		goto out_err;

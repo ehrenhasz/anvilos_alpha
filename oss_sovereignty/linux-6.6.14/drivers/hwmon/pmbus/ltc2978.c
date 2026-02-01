@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Hardware monitoring driver for LTC2978 and compatible chips.
- *
- * Copyright (c) 2011 Ericsson AB.
- * Copyright (c) 2013, 2014, 2015 Guenter Roeck
- * Copyright (c) 2015 Linear Technology
- * Copyright (c) 2018 Analog Devices Inc.
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/jiffies.h>
@@ -20,40 +13,40 @@
 #include "pmbus.h"
 
 enum chips {
-	/* Managers */
+	 
 	ltc2972, ltc2974, ltc2975, ltc2977, ltc2978, ltc2979, ltc2980,
-	/* Controllers */
+	 
 	ltc3880, ltc3882, ltc3883, ltc3884, ltc3886, ltc3887, ltc3889, ltc7132, ltc7880,
-	/* Modules */
+	 
 	ltm2987, ltm4664, ltm4675, ltm4676, ltm4677, ltm4678, ltm4680, ltm4686,
 	ltm4700,
 };
 
-/* Common for all chips */
+ 
 #define LTC2978_MFR_VOUT_PEAK		0xdd
 #define LTC2978_MFR_VIN_PEAK		0xde
 #define LTC2978_MFR_TEMPERATURE_PEAK	0xdf
-#define LTC2978_MFR_SPECIAL_ID		0xe7	/* Undocumented on LTC3882 */
+#define LTC2978_MFR_SPECIAL_ID		0xe7	 
 #define LTC2978_MFR_COMMON		0xef
 
-/* LTC2974, LTC2975, LCT2977, LTC2980, LTC2978, and LTM2987 */
+ 
 #define LTC2978_MFR_VOUT_MIN		0xfb
 #define LTC2978_MFR_VIN_MIN		0xfc
 #define LTC2978_MFR_TEMPERATURE_MIN	0xfd
 
-/* LTC2974, LTC2975 */
+ 
 #define LTC2974_MFR_IOUT_PEAK		0xd7
 #define LTC2974_MFR_IOUT_MIN		0xd8
 
-/* LTC3880, LTC3882, LTC3883, LTC3887, LTM4675, LTM4676, LTC7132 */
+ 
 #define LTC3880_MFR_IOUT_PEAK		0xd7
 #define LTC3880_MFR_CLEAR_PEAKS		0xe3
 #define LTC3880_MFR_TEMPERATURE2_PEAK	0xf4
 
-/* LTC3883, LTC3884, LTC3886, LTC3889, LTC7132, LTC7880 */
+ 
 #define LTC3883_MFR_IIN_PEAK		0xe1
 
-/* LTC2975 only */
+ 
 #define LTC2975_MFR_IIN_PEAK		0xc4
 #define LTC2975_MFR_IIN_MIN		0xc5
 #define LTC2975_MFR_PIN_PEAK		0xc6
@@ -65,15 +58,15 @@ enum chips {
 #define LTC2974_ID			0x0210
 #define LTC2975_ID			0x0220
 #define LTC2977_ID			0x0130
-#define LTC2978_ID_REV1			0x0110	/* Early revision */
+#define LTC2978_ID_REV1			0x0110	 
 #define LTC2978_ID_REV2			0x0120
 #define LTC2979_ID_A			0x8060
 #define LTC2979_ID_B			0x8070
-#define LTC2980_ID_A			0x8030	/* A/B for two die IDs */
+#define LTC2980_ID_A			0x8030	 
 #define LTC2980_ID_B			0x8040
 #define LTC3880_ID			0x4020
 #define LTC3882_ID			0x4200
-#define LTC3882_ID_D1			0x4240	/* Dash 1 */
+#define LTC3882_ID_D1			0x4240	 
 #define LTC3883_ID			0x4300
 #define LTC3884_ID			0x4C00
 #define LTC3886_ID			0x4600
@@ -81,7 +74,7 @@ enum chips {
 #define LTC3889_ID			0x4900
 #define LTC7132_ID			0x4CE0
 #define LTC7880_ID			0x49E0
-#define LTM2987_ID_A			0x8010	/* A/B for two die IDs */
+#define LTM2987_ID_A			0x8010	 
 #define LTM2987_ID_B			0x8020
 #define LTM4664_ID			0x4120
 #define LTM4675_ID			0x47a0
@@ -102,18 +95,12 @@ enum chips {
 #define LTC3880_NUM_PAGES		2
 #define LTC3883_NUM_PAGES		1
 
-#define LTC_POLL_TIMEOUT		100	/* in milli-seconds */
+#define LTC_POLL_TIMEOUT		100	 
 
 #define LTC_NOT_BUSY			BIT(6)
 #define LTC_NOT_PENDING			BIT(5)
 
-/*
- * LTC2978 clears peak data whenever the CLEAR_FAULTS command is executed, which
- * happens pretty much each time chip data is updated. Raw peak data therefore
- * does not provide much value. To be able to provide useful peak data, keep an
- * internal cache of measured peak data, which is only cleared if an explicit
- * "clear peak" command is executed for the sensor in question.
- */
+ 
 
 struct ltc2978_data {
 	enum chips id;
@@ -146,10 +133,7 @@ static int ltc_wait_ready(struct i2c_client *client)
 	if (!needs_polling(data))
 		return 0;
 
-	/*
-	 * LTC3883 does not support LTC_NOT_PENDING, even though
-	 * the datasheet claims that it does.
-	 */
+	 
 	mask = LTC_NOT_BUSY;
 	if (data->id != ltc3883)
 		mask |= LTC_NOT_PENDING;
@@ -157,7 +141,7 @@ static int ltc_wait_ready(struct i2c_client *client)
 	do {
 		status = pmbus_read_byte_data(client, 0, LTC2978_MFR_COMMON);
 		if (status == -EBADMSG || status == -ENXIO) {
-			/* PEC error or NACK: chip may be busy, try again */
+			 
 			usleep_range(50, 100);
 			continue;
 		}
@@ -223,10 +207,7 @@ static inline int lin11_to_val(int data)
 	s16 e = ((s16)data) >> 11;
 	s32 m = (((s16)(data << 5)) >> 5);
 
-	/*
-	 * mantissa is 10 bit + sign, exponent adds up to 15 bit.
-	 * Add 6 bit to exponent for maximum accuracy (10 + 15 + 6 = 31).
-	 */
+	 
 	e += 6;
 	return (e < 0 ? m >> -e : m << e);
 }
@@ -275,10 +256,7 @@ static int ltc2978_read_word_data_common(struct i2c_client *client, int page,
 		ret = ltc_read_word_data(client, page, 0xff,
 					 LTC2978_MFR_VOUT_PEAK);
 		if (ret >= 0) {
-			/*
-			 * VOUT is 16 bit unsigned with fixed exponent,
-			 * so we can compare it directly
-			 */
+			 
 			if (ret > data->vout_max[page])
 				data->vout_max[page] = ret;
 			ret = data->vout_max[page];
@@ -320,12 +298,7 @@ static int ltc2978_read_word_data(struct i2c_client *client, int page,
 		ret = ltc_read_word_data(client, page, phase,
 					 LTC2978_MFR_VOUT_MIN);
 		if (ret >= 0) {
-			/*
-			 * VOUT_MIN is known to not be supported on some lots
-			 * of LTC2978 revision 1, and will return the maximum
-			 * possible voltage if read. If VOUT_MAX is valid and
-			 * lower than the reading of VOUT_MIN, use it instead.
-			 */
+			 
 			if (data->vout_max[page] && ret > data->vout_max[page])
 				ret = data->vout_max[page];
 			if (ret < data->vout_min[page])
@@ -590,7 +563,7 @@ static const struct regulator_desc ltc2978_reg_desc_default[] = {
 	PMBUS_REGULATOR("vout", 6),
 	PMBUS_REGULATOR("vout", 7),
 };
-#endif /* CONFIG_SENSORS_LTC2978_REGULATOR */
+#endif  
 
 static int ltc2978_get_id(struct i2c_client *client)
 {

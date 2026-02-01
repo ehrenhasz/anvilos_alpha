@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2005-2014 Brocade Communications Systems, Inc.
- * Copyright (c) 2014- QLogic Corporation.
- * All rights reserved
- * www.qlogic.com
- *
- * Linux driver for QLogic BR-series Fibre Channel Host Bus Adapter.
- */
+ 
+ 
 
 #ifndef __BFAD_IM_H__
 #define __BFAD_IM_H__
@@ -38,17 +31,10 @@ u32 bfad_im_supported_speeds(struct bfa_s *bfa);
 #define BFAD_LUN_RESET_TMO 60
 #define BFA_QUEUE_FULL_RAMP_UP_TIME 120
 
-/*
- * itnim flags
- */
+ 
 #define IO_DONE_BIT			0
 
-/**
- * struct bfad_cmd_priv - private data per SCSI command.
- * @status: Lowest bit represents IO_DONE. The next seven bits hold a value of
- * type enum bfi_tskim_status.
- * @wq: Wait queue used to wait for completion of an operation.
- */
+ 
 struct bfad_cmd_priv {
 	unsigned long status;
 	wait_queue_head_t *wq;
@@ -95,9 +81,7 @@ enum bfad_itnim_state {
 	ITNIM_STATE_FREE,
 };
 
-/*
- * Per itnim data structure
- */
+ 
 struct bfad_itnim_s {
 	struct list_head list_entry;
 	struct bfa_fcs_itnim_s fcs_itnim;
@@ -147,7 +131,7 @@ struct bfad_im_s {
 	spin_unlock_irqrestore(&(_drv)->bfad_aen_spinlock, _flags);	\
 } while (0)
 
-/* post fc_host vendor event */
+ 
 static inline void bfad_im_post_vendor_event(struct bfa_aen_entry_s *entry,
 					     struct bfad_s *drv, int cnt,
 					     enum bfa_aen_category cat,
@@ -156,11 +140,7 @@ static inline void bfad_im_post_vendor_event(struct bfa_aen_entry_s *entry,
 	struct timespec64 ts;
 
 	ktime_get_real_ts64(&ts);
-	/*
-	 * 'unsigned long aen_tv_sec' overflows in y2106 on 32-bit
-	 * architectures, or in 2038 if user space interprets it
-	 * as 'signed'.
-	 */
+	 
 	entry->aen_tv_sec = ts.tv_sec;
 	entry->aen_tv_usec = ts.tv_nsec / NSEC_PER_USEC;
 	entry->bfad_num = drv->inst_no;

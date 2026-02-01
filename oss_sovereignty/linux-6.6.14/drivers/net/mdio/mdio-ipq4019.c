@@ -1,6 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
-/* Copyright (c) 2015, The Linux Foundation. All rights reserved. */
-/* Copyright (c) 2020 Sartura Ltd. */
+
+ 
+ 
 
 #include <linux/delay.h>
 #include <linux/io.h>
@@ -26,13 +26,13 @@
 #define MDIO_CMD_ACCESS_CODE_C45_WRITE	1
 #define MDIO_CMD_ACCESS_CODE_C45_READ	2
 
-/* 0 = Clause 22, 1 = Clause 45 */
+ 
 #define MDIO_MODE_C45				BIT(8)
 
 #define IPQ4019_MDIO_TIMEOUT	10000
 #define IPQ4019_MDIO_SLEEP		10
 
-/* MDIO clock source frequency is fixed to 100M */
+ 
 #define IPQ_MDIO_CLK_RATE	100000000
 
 #define IPQ_PHY_SET_DELAY_US	100000
@@ -69,18 +69,18 @@ static int ipq4019_mdio_read_c45(struct mii_bus *bus, int mii_id, int mmd,
 
 	writel(data, priv->membase + MDIO_MODE_REG);
 
-	/* issue the phy address and mmd */
+	 
 	writel((mii_id << 8) | mmd, priv->membase + MDIO_ADDR_REG);
 
-	/* issue reg */
+	 
 	writel(reg, priv->membase + MDIO_DATA_WRITE_REG);
 
 	cmd = MDIO_CMD_ACCESS_START | MDIO_CMD_ACCESS_CODE_C45_ADDR;
 
-	/* issue read command */
+	 
 	writel(cmd, priv->membase + MDIO_CMD_REG);
 
-	/* Wait read complete */
+	 
 	if (ipq4019_mdio_wait_busy(bus))
 		return -ETIMEDOUT;
 
@@ -91,7 +91,7 @@ static int ipq4019_mdio_read_c45(struct mii_bus *bus, int mii_id, int mmd,
 	if (ipq4019_mdio_wait_busy(bus))
 		return -ETIMEDOUT;
 
-	/* Read and return data */
+	 
 	return readl(priv->membase + MDIO_DATA_READ_REG);
 }
 
@@ -110,19 +110,19 @@ static int ipq4019_mdio_read_c22(struct mii_bus *bus, int mii_id, int regnum)
 
 	writel(data, priv->membase + MDIO_MODE_REG);
 
-	/* issue the phy address and reg */
+	 
 	writel((mii_id << 8) | regnum, priv->membase + MDIO_ADDR_REG);
 
 	cmd = MDIO_CMD_ACCESS_START | MDIO_CMD_ACCESS_CODE_READ;
 
-	/* issue read command */
+	 
 	writel(cmd, priv->membase + MDIO_CMD_REG);
 
-	/* Wait read complete */
+	 
 	if (ipq4019_mdio_wait_busy(bus))
 		return -ETIMEDOUT;
 
-	/* Read and return data */
+	 
 	return readl(priv->membase + MDIO_DATA_READ_REG);
 }
 
@@ -142,10 +142,10 @@ static int ipq4019_mdio_write_c45(struct mii_bus *bus, int mii_id, int mmd,
 
 	writel(data, priv->membase + MDIO_MODE_REG);
 
-	/* issue the phy address and mmd */
+	 
 	writel((mii_id << 8) | mmd, priv->membase + MDIO_ADDR_REG);
 
-	/* issue reg */
+	 
 	writel(reg, priv->membase + MDIO_DATA_WRITE_REG);
 
 	cmd = MDIO_CMD_ACCESS_START | MDIO_CMD_ACCESS_CODE_C45_ADDR;
@@ -155,13 +155,13 @@ static int ipq4019_mdio_write_c45(struct mii_bus *bus, int mii_id, int mmd,
 	if (ipq4019_mdio_wait_busy(bus))
 		return -ETIMEDOUT;
 
-	/* issue write data */
+	 
 	writel(value, priv->membase + MDIO_DATA_WRITE_REG);
 
 	cmd = MDIO_CMD_ACCESS_START | MDIO_CMD_ACCESS_CODE_C45_WRITE;
 	writel(cmd, priv->membase + MDIO_CMD_REG);
 
-	/* Wait write complete */
+	 
 	if (ipq4019_mdio_wait_busy(bus))
 		return -ETIMEDOUT;
 
@@ -178,25 +178,25 @@ static int ipq4019_mdio_write_c22(struct mii_bus *bus, int mii_id, int regnum,
 	if (ipq4019_mdio_wait_busy(bus))
 		return -ETIMEDOUT;
 
-	/* Enter Clause 22 mode */
+	 
 	data = readl(priv->membase + MDIO_MODE_REG);
 
 	data &= ~MDIO_MODE_C45;
 
 	writel(data, priv->membase + MDIO_MODE_REG);
 
-	/* issue the phy address and reg */
+	 
 	writel((mii_id << 8) | regnum, priv->membase + MDIO_ADDR_REG);
 
-	/* issue write data */
+	 
 	writel(value, priv->membase + MDIO_DATA_WRITE_REG);
 
-	/* issue write command */
+	 
 	cmd = MDIO_CMD_ACCESS_START | MDIO_CMD_ACCESS_CODE_WRITE;
 
 	writel(cmd, priv->membase + MDIO_CMD_REG);
 
-	/* Wait write complete */
+	 
 	if (ipq4019_mdio_wait_busy(bus))
 		return -ETIMEDOUT;
 
@@ -209,9 +209,7 @@ static int ipq_mdio_reset(struct mii_bus *bus)
 	u32 val;
 	int ret;
 
-	/* To indicate CMN_PLL that ethernet_ldo has been ready if platform resource 1
-	 * is specified in the device tree.
-	 */
+	 
 	if (priv->eth_ldo_rdy) {
 		val = readl(priv->eth_ldo_rdy);
 		val |= BIT(0);
@@ -219,7 +217,7 @@ static int ipq_mdio_reset(struct mii_bus *bus)
 		fsleep(IPQ_PHY_SET_DELAY_US);
 	}
 
-	/* Configure MDIO clock source frequency if clock is specified in the device tree */
+	 
 	ret = clk_set_rate(priv->mdio_clk, IPQ_MDIO_CLK_RATE);
 	if (ret)
 		return ret;
@@ -252,8 +250,8 @@ static int ipq4019_mdio_probe(struct platform_device *pdev)
 	if (IS_ERR(priv->mdio_clk))
 		return PTR_ERR(priv->mdio_clk);
 
-	/* The platform resource is provided on the chipset IPQ5018 */
-	/* This resource is optional */
+	 
+	 
 	res = platform_get_resource(pdev, IORESOURCE_MEM, 1);
 	if (res)
 		priv->eth_ldo_rdy = devm_ioremap_resource(&pdev->dev, res);

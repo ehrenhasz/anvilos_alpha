@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *    Copyright IBM Corp. 2007
- *    Author(s): Utz Bacher <utz.bacher@de.ibm.com>,
- *		 Frank Pavlic <fpavlic@de.ibm.com>,
- *		 Thomas Spatzier <tspat@de.ibm.com>,
- *		 Frank Blaschka <frank.blaschka@de.ibm.com>
- */
+
+ 
 
 #define KMSG_COMPONENT "qeth"
 #define pr_fmt(fmt) KMSG_COMPONENT ": " fmt
@@ -187,9 +181,7 @@ static ssize_t qeth_dev_prioqing_store(struct device *dev,
 		goto out;
 	}
 
-	/* check if 1920 devices are supported ,
-	 * if though we have to permit priority queueing
-	 */
+	 
 	if (card->qdio.no_out_queues == 1) {
 		card->qdio.do_prio_queueing = QETH_PRIOQ_DEFAULT;
 		rc = -EPERM;
@@ -371,13 +363,13 @@ static ssize_t qeth_dev_layer2_store(struct device *dev,
 	if (card->options.layer == newdis)
 		goto out;
 	if (card->info.layer_enforced) {
-		/* fixed layer, can't switch */
+		 
 		rc = -EOPNOTSUPP;
 		goto out;
 	}
 
 	if (card->discipline) {
-		/* start with a new, pristine netdevice: */
+		 
 		ndev = qeth_clone_netdev(card->dev);
 		if (!ndev) {
 			rc = -ENOMEM;
@@ -435,7 +427,7 @@ static ssize_t qeth_dev_isolation_store(struct device *dev,
 		goto out;
 	}
 
-	/* parse input into isolation mode */
+	 
 	if (sysfs_streq(buf, ATTR_QETH_ISOLATION_NONE)) {
 		isolation = ISOLATION_MODE_NONE;
 	} else if (sysfs_streq(buf, ATTR_QETH_ISOLATION_FWD)) {

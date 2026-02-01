@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Synopsys DesignWare PCIe host controller driver
- *
- * Copyright (C) 2013 Samsung Electronics Co., Ltd.
- *		https://www.samsung.com
- *
- * Author: Jingoo Han <jg1.han@samsung.com>
- */
+
+ 
 
 #include <linux/align.h>
 #include <linux/bitops.h>
@@ -114,7 +107,7 @@ int dw_pcie_get_resources(struct dw_pcie *pci)
 			return PTR_ERR(pci->dbi_base);
 	}
 
-	/* DBI2 is mainly useful for the endpoint controller */
+	 
 	if (!pci->dbi_base2) {
 		res = platform_get_resource_byname(pdev, IORESOURCE_MEM, "dbi2");
 		if (res) {
@@ -126,7 +119,7 @@ int dw_pcie_get_resources(struct dw_pcie *pci)
 		}
 	}
 
-	/* For non-unrolled iATU/eDMA platforms this range will be ignored */
+	 
 	if (!pci->atu_base) {
 		res = platform_get_resource_byname(pdev, IORESOURCE_MEM, "atu");
 		if (res) {
@@ -139,11 +132,11 @@ int dw_pcie_get_resources(struct dw_pcie *pci)
 		}
 	}
 
-	/* Set a default value suitable for at most 8 in and 8 out windows */
+	 
 	if (!pci->atu_size)
 		pci->atu_size = SZ_4K;
 
-	/* eDMA region can be mapped to a custom base address */
+	 
 	if (!pci->edma.reg_base) {
 		res = platform_get_resource_byname(pdev, IORESOURCE_MEM, "dma");
 		if (res) {
@@ -155,7 +148,7 @@ int dw_pcie_get_resources(struct dw_pcie *pci)
 		}
 	}
 
-	/* LLDD is supposed to manually switch the clocks and resets state */
+	 
 	if (dw_pcie_cap_is(pci, REQ_RES)) {
 		ret = dw_pcie_get_clocks(pci);
 		if (ret)
@@ -181,7 +174,7 @@ void dw_pcie_version_detect(struct dw_pcie *pci)
 {
 	u32 ver;
 
-	/* The content of the CSR is zero on DWC PCIe older than v4.70a */
+	 
 	ver = dw_pcie_readl_dbi(pci, PCIE_VERSION_NUMBER);
 	if (!ver)
 		return;
@@ -201,11 +194,7 @@ void dw_pcie_version_detect(struct dw_pcie *pci)
 		pci->type = ver;
 }
 
-/*
- * These interfaces resemble the pci_find_*capability() interfaces, but these
- * are for configuring host controllers, which are bridges *to* PCI devices but
- * are not PCI devices themselves.
- */
+ 
 static u8 __dw_pcie_find_next_cap(struct dw_pcie *pci, u8 cap_ptr,
 				  u8 cap)
 {
@@ -247,17 +236,14 @@ static u16 dw_pcie_find_next_ext_capability(struct dw_pcie *pci, u16 start,
 	int ttl;
 	int pos = PCI_CFG_SPACE_SIZE;
 
-	/* minimum 8 bytes per capability */
+	 
 	ttl = (PCI_CFG_SPACE_EXP_SIZE - PCI_CFG_SPACE_SIZE) / 8;
 
 	if (start)
 		pos = start;
 
 	header = dw_pcie_readl_dbi(pci, pos);
-	/*
-	 * If we have no capabilities, this is indicated by cap ID,
-	 * cap version and next pointer all being 0.
-	 */
+	 
 	if (header == 0)
 		return 0;
 
@@ -425,41 +411,7 @@ static inline void dw_pcie_writel_atu_ob(struct dw_pcie *pci, u32 index, u32 reg
 
 static inline u32 dw_pcie_enable_ecrc(u32 val)
 {
-	/*
-	 * DesignWare core version 4.90A has a design issue where the 'TD'
-	 * bit in the Control register-1 of the ATU outbound region acts
-	 * like an override for the ECRC setting, i.e., the presence of TLP
-	 * Digest (ECRC) in the outgoing TLPs is solely determined by this
-	 * bit. This is contrary to the PCIe spec which says that the
-	 * enablement of the ECRC is solely determined by the AER
-	 * registers.
-	 *
-	 * Because of this, even when the ECRC is enabled through AER
-	 * registers, the transactions going through ATU won't have TLP
-	 * Digest as there is no way the PCI core AER code could program
-	 * the TD bit which is specific to the DesignWare core.
-	 *
-	 * The best way to handle this scenario is to program the TD bit
-	 * always. It affects only the traffic from root port to downstream
-	 * devices.
-	 *
-	 * At this point,
-	 * When ECRC is enabled in AER registers, everything works normally
-	 * When ECRC is NOT enabled in AER registers, then,
-	 * on Root Port:- TLP Digest (DWord size) gets appended to each packet
-	 *                even through it is not required. Since downstream
-	 *                TLPs are mostly for configuration accesses and BAR
-	 *                accesses, they are not in critical path and won't
-	 *                have much negative effect on the performance.
-	 * on End Point:- TLP Digest is received for some/all the packets coming
-	 *                from the root port. TLP Digest is ignored because,
-	 *                as per the PCIe Spec r5.0 v1.0 section 2.2.3
-	 *                "TLP Digest Rules", when an endpoint receives TLP
-	 *                Digest when its ECRC check functionality is disabled
-	 *                in AER registers, received TLP Digest is just ignored.
-	 * Since there is no issue or error reported either side, best way to
-	 * handle the scenario is to program TD bit by default.
-	 */
+	 
 
 	return val | PCIE_ATU_TD;
 }
@@ -508,10 +460,7 @@ static int __dw_pcie_prog_outbound_atu(struct dw_pcie *pci, u8 func_no,
 
 	dw_pcie_writel_atu_ob(pci, index, PCIE_ATU_REGION_CTRL2, PCIE_ATU_ENABLE);
 
-	/*
-	 * Make sure ATU enable takes effect before any subsequent config
-	 * and I/O accesses.
-	 */
+	 
 	for (retries = 0; retries < LINK_WAIT_MAX_IATU_RETRIES; retries++) {
 		val = dw_pcie_readl_atu_ob(pci, index, PCIE_ATU_REGION_CTRL2);
 		if (val & PCIE_ATU_ENABLE)
@@ -586,10 +535,7 @@ int dw_pcie_prog_inbound_atu(struct dw_pcie *pci, int index, int type,
 	dw_pcie_writel_atu_ib(pci, index, PCIE_ATU_REGION_CTRL1, val);
 	dw_pcie_writel_atu_ib(pci, index, PCIE_ATU_REGION_CTRL2, PCIE_ATU_ENABLE);
 
-	/*
-	 * Make sure ATU enable takes effect before any subsequent config
-	 * and I/O accesses.
-	 */
+	 
 	for (retries = 0; retries < LINK_WAIT_MAX_IATU_RETRIES; retries++) {
 		val = dw_pcie_readl_atu_ib(pci, index, PCIE_ATU_REGION_CTRL2);
 		if (val & PCIE_ATU_ENABLE)
@@ -622,10 +568,7 @@ int dw_pcie_prog_ep_inbound_atu(struct dw_pcie *pci, u8 func_no, int index,
 			      PCIE_ATU_ENABLE | PCIE_ATU_FUNC_NUM_MATCH_EN |
 			      PCIE_ATU_BAR_MODE_ENABLE | (bar << 8));
 
-	/*
-	 * Make sure ATU enable takes effect before any subsequent config
-	 * and I/O accesses.
-	 */
+	 
 	for (retries = 0; retries < LINK_WAIT_MAX_IATU_RETRIES; retries++) {
 		val = dw_pcie_readl_atu_ib(pci, index, PCIE_ATU_REGION_CTRL2);
 		if (val & PCIE_ATU_ENABLE)
@@ -649,7 +592,7 @@ int dw_pcie_wait_for_link(struct dw_pcie *pci)
 	u32 offset, val;
 	int retries;
 
-	/* Check if the link is up or not */
+	 
 	for (retries = 0; retries < LINK_WAIT_MAX_RETRIES; retries++) {
 		if (dw_pcie_link_up(pci))
 			break;
@@ -719,7 +662,7 @@ static void dw_pcie_link_set_max_speed(struct dw_pcie *pci, u32 link_gen)
 		link_speed = PCI_EXP_LNKCTL2_TLS_16_0GT;
 		break;
 	default:
-		/* Use hardware capability */
+		 
 		link_speed = FIELD_GET(PCI_EXP_LNKCAP_SLS, cap);
 		ctrl2 &= ~PCI_EXP_LNKCTL2_HASD;
 		break;
@@ -740,12 +683,12 @@ static void dw_pcie_link_set_max_link_width(struct dw_pcie *pci, u32 num_lanes)
 	if (!num_lanes)
 		return;
 
-	/* Set the number of lanes */
+	 
 	plc = dw_pcie_readl_dbi(pci, PCIE_PORT_LINK_CONTROL);
 	plc &= ~PORT_LINK_FAST_LINK_MODE;
 	plc &= ~PORT_LINK_MODE_MASK;
 
-	/* Set link width speed control register */
+	 
 	lwsc = dw_pcie_readl_dbi(pci, PCIE_LINK_WIDTH_SPEED_CONTROL);
 	lwsc &= ~PORT_LOGIC_LINK_WIDTH_MASK;
 	switch (num_lanes) {
@@ -883,11 +826,7 @@ static int dw_pcie_edma_find_chip(struct dw_pcie *pci)
 {
 	u32 val;
 
-	/*
-	 * Indirect eDMA CSRs access has been completely removed since v5.40a
-	 * thus no space is now reserved for the eDMA channels viewport and
-	 * former DMA CTRL register is no longer fixed to FFs.
-	 */
+	 
 	if (dw_pcie_ver_is_ge(pci, 540A))
 		val = 0xFFFFFFFF;
 	else
@@ -915,7 +854,7 @@ static int dw_pcie_edma_find_chip(struct dw_pcie *pci)
 	pci->edma.ll_wr_cnt = FIELD_GET(PCIE_DMA_NUM_WR_CHAN, val);
 	pci->edma.ll_rd_cnt = FIELD_GET(PCIE_DMA_NUM_RD_CHAN, val);
 
-	/* Sanity check the channels count if the mapping was incorrect */
+	 
 	if (!pci->edma.ll_wr_cnt || pci->edma.ll_wr_cnt > EDMA_MAX_WR_CH ||
 	    !pci->edma.ll_rd_cnt || pci->edma.ll_rd_cnt > EDMA_MAX_RD_CH)
 		return -EINVAL;
@@ -987,12 +926,12 @@ int dw_pcie_edma_detect(struct dw_pcie *pci)
 {
 	int ret;
 
-	/* Don't fail if no eDMA was found (for the backward compatibility) */
+	 
 	ret = dw_pcie_edma_find_chip(pci);
 	if (ret)
 		return 0;
 
-	/* Don't fail on the IRQs verification (for the backward compatibility) */
+	 
 	ret = dw_pcie_edma_irq_verify(pci);
 	if (ret) {
 		dev_err(pci->dev, "Invalid eDMA IRQs found\n");
@@ -1005,7 +944,7 @@ int dw_pcie_edma_detect(struct dw_pcie *pci)
 		return ret;
 	}
 
-	/* Don't fail if the DW eDMA driver can't find the device */
+	 
 	ret = dw_edma_probe(&pci->edma);
 	if (ret && ret != -ENODEV) {
 		dev_err(pci->dev, "Couldn't register eDMA device\n");
@@ -1031,7 +970,7 @@ void dw_pcie_setup(struct dw_pcie *pci)
 	if (pci->link_gen > 0)
 		dw_pcie_link_set_max_speed(pci, pci->link_gen);
 
-	/* Configure Gen1 N_FTS */
+	 
 	if (pci->n_fts[0]) {
 		val = dw_pcie_readl_dbi(pci, PCIE_PORT_AFR);
 		val &= ~(PORT_AFR_N_FTS_MASK | PORT_AFR_CC_N_FTS_MASK);
@@ -1040,7 +979,7 @@ void dw_pcie_setup(struct dw_pcie *pci)
 		dw_pcie_writel_dbi(pci, PCIE_PORT_AFR, val);
 	}
 
-	/* Configure Gen2+ N_FTS */
+	 
 	if (pci->n_fts[1]) {
 		val = dw_pcie_readl_dbi(pci, PCIE_LINK_WIDTH_SPEED_CONTROL);
 		val &= ~PORT_LOGIC_N_FTS_MASK;

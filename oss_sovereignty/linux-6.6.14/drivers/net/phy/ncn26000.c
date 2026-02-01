@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0+ OR BSD-3-Clause)
-/*
- *  Driver for the onsemi 10BASE-T1S NCN26000 PHYs family.
- *
- * Copyright 2022 onsemi
- */
+
+ 
 #include <linux/kernel.h>
 #include <linux/bitfield.h>
 #include <linux/errno.h>
@@ -19,10 +15,10 @@
 #define NCN26000_REG_IRQ_CTL            16
 #define NCN26000_REG_IRQ_STATUS         17
 
-// the NCN26000 maps link_ctrl to BMCR_ANENABLE
+
 #define NCN26000_BCMR_LINK_CTRL_BIT	BMCR_ANENABLE
 
-// the NCN26000 maps link_status to BMSR_ANEGCOMPLETE
+
 #define NCN26000_BMSR_LINK_STATUS_BIT	BMSR_ANEGCOMPLETE
 
 #define NCN26000_IRQ_LINKST_BIT		BIT(0)
@@ -37,41 +33,27 @@
 
 static int ncn26000_config_init(struct phy_device *phydev)
 {
-	/* HW bug workaround: the default value of the PLCA TO_TIMER should be
-	 * 32, where the current version of NCN26000 reports 24. This will be
-	 * fixed in future PHY versions. For the time being, we force the
-	 * correct default here.
-	 */
+	 
 	return phy_write_mmd(phydev, MDIO_MMD_VEND2, MDIO_OATC14_PLCA_TOTMR,
 			     TO_TMR_DEFAULT);
 }
 
 static int ncn26000_config_aneg(struct phy_device *phydev)
 {
-	/* Note: the NCN26000 supports only P2MP link mode. Therefore, AN is not
-	 * supported. However, this function is invoked by phylib to enable the
-	 * PHY, regardless of the AN support.
-	 */
+	 
 	phydev->mdix_ctrl = ETH_TP_MDI_AUTO;
 	phydev->mdix = ETH_TP_MDI;
 
-	// bring up the link
+	
 	return phy_write(phydev, MII_BMCR, NCN26000_BCMR_LINK_CTRL_BIT);
 }
 
 static int ncn26000_read_status(struct phy_device *phydev)
 {
-	/* The NCN26000 reports NCN26000_LINK_STATUS_BIT if the link status of
-	 * the PHY is up. It further reports the logical AND of the link status
-	 * and the PLCA status in the BMSR_LSTATUS bit.
-	 */
+	 
 	int ret;
 
-	/* The link state is latched low so that momentary link
-	 * drops can be detected. Do not double-read the status
-	 * in polling mode to detect such short link drops except
-	 * the link was already down.
-	 */
+	 
 	if (!phy_polling_mode(phydev) || !phydev->link) {
 		ret = phy_read(phydev, MII_BMSR);
 		if (ret < 0)
@@ -85,7 +67,7 @@ static int ncn26000_read_status(struct phy_device *phydev)
 		return ret;
 
 upd_link:
-	// update link status
+	
 	if (ret & NCN26000_BMSR_LINK_STATUS_BIT) {
 		phydev->link = 1;
 		phydev->pause = 0;
@@ -104,10 +86,10 @@ static irqreturn_t ncn26000_handle_interrupt(struct phy_device *phydev)
 {
 	int ret;
 
-	// read and aknowledge the IRQ status register
+	
 	ret = phy_read(phydev, NCN26000_REG_IRQ_STATUS);
 
-	// check only link status changes
+	
 	if (ret < 0 || (ret & NCN26000_REG_IRQ_STATUS) == 0)
 		return IRQ_NONE;
 
@@ -121,15 +103,15 @@ static int ncn26000_config_intr(struct phy_device *phydev)
 	u16 irqe;
 
 	if (phydev->interrupts == PHY_INTERRUPT_ENABLED) {
-		// acknowledge IRQs
+		
 		ret = phy_read(phydev, NCN26000_REG_IRQ_STATUS);
 		if (ret < 0)
 			return ret;
 
-		// get link status notifications
+		
 		irqe = NCN26000_IRQ_LINKST_BIT;
 	} else {
-		// disable all IRQs
+		
 		irqe = 0;
 	}
 

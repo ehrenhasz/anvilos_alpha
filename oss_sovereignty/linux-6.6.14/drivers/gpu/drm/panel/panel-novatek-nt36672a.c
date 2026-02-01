@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (C) 2020 Linaro Ltd
- * Author: Sumit Semwal <sumit.semwal@linaro.org>
- *
- * This driver is for the DSI interface to panels using the NT36672A display driver IC
- * from Novatek.
- * Currently supported are the Tianma FHD+ panels found in some Xiaomi phones, including
- * some variants of the Poco F1 phone.
- *
- * Panels using the Novatek NT37762A IC should add appropriate configuration per-panel and
- * use this driver.
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/kernel.h>
@@ -122,7 +111,7 @@ static int nt36672a_panel_unprepare(struct drm_panel *panel)
 	if (!pinfo->prepared)
 		return 0;
 
-	/* send off cmds */
+	 
 	ret = nt36672a_send_cmds(panel, pinfo->desc->off_cmds,
 				 pinfo->desc->num_off_cmds);
 
@@ -133,14 +122,14 @@ static int nt36672a_panel_unprepare(struct drm_panel *panel)
 	if (ret < 0)
 		dev_err(panel->dev, "set_display_off cmd failed ret = %d\n", ret);
 
-	/* 120ms delay required here as per DCS spec */
+	 
 	msleep(120);
 
 	ret = mipi_dsi_dcs_enter_sleep_mode(pinfo->link);
 	if (ret < 0)
 		dev_err(panel->dev, "enter_sleep cmd failed ret = %d\n", ret);
 
-	/* 0x3C = 60ms delay */
+	 
 	msleep(60);
 
 	ret = nt36672a_panel_power_off(panel);
@@ -160,12 +149,7 @@ static int nt36672a_panel_power_on(struct nt36672a_panel *pinfo)
 	if (ret < 0)
 		return ret;
 
-	/*
-	 * As per downstream kernel, Reset sequence of Tianma FHD panel requires the panel to
-	 * be out of reset for 10ms, followed by being held in reset for 10ms. But for Android
-	 * AOSP, we needed to bump it upto 200ms otherwise we get white screen sometimes.
-	 * FIXME: Try to reduce this 200ms to a lesser value.
-	 */
+	 
 	gpiod_set_value(pinfo->reset_gpio, 1);
 	msleep(200);
 	gpiod_set_value(pinfo->reset_gpio, 0);
@@ -186,7 +170,7 @@ static int nt36672a_panel_prepare(struct drm_panel *panel)
 	if (err < 0)
 		goto poweroff;
 
-	/* send first part of init cmds */
+	 
 	err = nt36672a_send_cmds(panel, pinfo->desc->on_cmds_1,
 				 pinfo->desc->num_on_cmds_1);
 
@@ -201,7 +185,7 @@ static int nt36672a_panel_prepare(struct drm_panel *panel)
 		goto poweroff;
 	}
 
-	/* 0x46 = 70 ms delay */
+	 
 	msleep(70);
 
 	err = mipi_dsi_dcs_set_display_on(pinfo->link);
@@ -210,7 +194,7 @@ static int nt36672a_panel_prepare(struct drm_panel *panel)
 		goto poweroff;
 	}
 
-	/* Send rest of the init cmds */
+	 
 	err = nt36672a_send_cmds(panel, pinfo->desc->on_cmds_2,
 				 pinfo->desc->num_on_cmds_2);
 
@@ -260,7 +244,7 @@ static const struct drm_panel_funcs panel_funcs = {
 };
 
 static const struct nt36672a_panel_cmd tianma_fhd_video_on_cmds_1[] = {
-	/* skin enhancement mode */
+	 
 	{ .data = {0xFF, 0x22} },
 	{ .data = {0x00, 0x40} },
 	{ .data = {0x01, 0xC0} },
@@ -473,16 +457,16 @@ static const struct nt36672a_panel_cmd tianma_fhd_video_on_cmds_1[] = {
 	{ .data = {0xFB, 0x1} },
 	{ .data = {0xFF, 0x23} },
 	{ .data = {0xFB, 0x01} },
-	/* dimming enable */
+	 
 	{ .data = {0x01, 0x84} },
 	{ .data = {0x05, 0x2D} },
 	{ .data = {0x06, 0x00} },
-	 /* resolution 1080*2246 */
+	  
 	{ .data = {0x11, 0x01} },
 	{ .data = {0x12, 0x7B} },
 	{ .data = {0x15, 0x6F} },
 	{ .data = {0x16, 0x0B} },
-	 /* UI mode */
+	  
 	{ .data = {0x29, 0x0A} },
 	{ .data = {0x30, 0xFF} },
 	{ .data = {0x31, 0xFF} },
@@ -500,7 +484,7 @@ static const struct nt36672a_panel_cmd tianma_fhd_video_on_cmds_1[] = {
 	{ .data = {0x3F, 0xEB} },
 	{ .data = {0x40, 0xE8} },
 	{ .data = {0x41, 0xE5} },
-	 /* STILL mode */
+	  
 	{ .data = {0x2A, 0x13} },
 	{ .data = {0x45, 0xFF} },
 	{ .data = {0x46, 0xFF} },
@@ -518,7 +502,7 @@ static const struct nt36672a_panel_cmd tianma_fhd_video_on_cmds_1[] = {
 	{ .data = {0x52, 0x86} },
 	{ .data = {0x53, 0x76} },
 	{ .data = {0x54, 0x66} },
-	 /* MOVING mode */
+	  
 	{ .data = {0x2B, 0x0E} },
 	{ .data = {0x58, 0xFF} },
 	{ .data = {0x59, 0xFF} },

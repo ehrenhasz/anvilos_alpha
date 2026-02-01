@@ -1,18 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * Amlogic A1 Peripherals Clock Controller internals
- *
- * Copyright (c) 2019 Amlogic, Inc. All rights reserved.
- * Author: Jian Hu <jian.hu@amlogic.com>
- *
- * Copyright (c) 2023, SberDevices. All Rights Reserved.
- * Author: Dmitry Rokosov <ddrokosov@sberdevices.ru>
- */
+ 
+ 
 
 #ifndef __A1_PERIPHERALS_H
 #define __A1_PERIPHERALS_H
 
-/* peripherals clock controller register offset */
+ 
 #define SYS_OSCIN_CTRL		0x0
 #define RTC_BY_OSCIN_CTRL0	0x4
 #define RTC_BY_OSCIN_CTRL1	0x8
@@ -43,4 +35,4 @@
 #define PSRAM_CLK_CTRL		0xf4
 #define DMC_CLK_CTRL		0xf8
 
-#endif /* __A1_PERIPHERALS_H */
+#endif  

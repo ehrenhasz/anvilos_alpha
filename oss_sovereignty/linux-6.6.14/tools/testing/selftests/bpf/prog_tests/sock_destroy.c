@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <test_progs.h>
 #include <bpf/bpf_endian.h>
 
@@ -52,7 +52,7 @@ static void test_tcp_client(struct sock_destroy_prog *skel)
 	if (!ASSERT_EQ(n, 1, "client send"))
 		goto cleanup;
 
-	/* Run iterator program that destroys connected client sockets. */
+	 
 	start_iter_sockets(skel->progs.iter_tcp6_client);
 
 	n = send(clien, "t", 1, 0);
@@ -93,7 +93,7 @@ static void test_tcp_server(struct sock_destroy_prog *skel)
 	if (!ASSERT_EQ(n, 1, "client send"))
 		goto cleanup;
 
-	/* Run iterator program that destroys server sockets. */
+	 
 	start_iter_sockets(skel->progs.iter_tcp6_server);
 
 	n = send(clien, "t", 1, 0);
@@ -126,15 +126,13 @@ static void test_udp_client(struct sock_destroy_prog *skel)
 	if (!ASSERT_EQ(n, 1, "client send"))
 		goto cleanup;
 
-	/* Run iterator program that destroys sockets. */
+	 
 	start_iter_sockets(skel->progs.iter_udp6_client);
 
 	n = send(clien, "t", 1, 0);
 	if (!ASSERT_LT(n, 0, "client_send on destroyed socket"))
 		goto cleanup;
-	/* UDP sockets have an overriding error code after they are disconnected,
-	 * so we don't check for ECONNABORTED error code.
-	 */
+	 
 
 cleanup:
 	if (clien != -1)
@@ -149,7 +147,7 @@ static void test_udp_server(struct sock_destroy_prog *skel)
 	unsigned int num_listens = 5;
 	char buf[1];
 
-	/* Start reuseport servers. */
+	 
 	listen_fds = start_reuseport_server(AF_INET6, SOCK_DGRAM,
 					    "::1", 0, 0, num_listens);
 	if (!ASSERT_OK_PTR(listen_fds, "start_reuseport_server"))
@@ -159,7 +157,7 @@ static void test_udp_server(struct sock_destroy_prog *skel)
 		goto cleanup;
 	skel->bss->serv_port = (__be16) serv_port;
 
-	/* Run iterator program that destroys server sockets. */
+	 
 	start_iter_sockets(skel->progs.iter_udp6_server);
 
 	for (i = 0; i < num_listens; ++i) {

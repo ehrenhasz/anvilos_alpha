@@ -1,18 +1,4 @@
-/*
- * Copyright (c) 2008-2011 Atheros Communications Inc.
- *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -74,7 +60,7 @@ int ath9k_use_chanctx;
 module_param_named(use_chanctx, ath9k_use_chanctx, int, 0444);
 MODULE_PARM_DESC(use_chanctx, "Enable channel context for concurrency");
 
-#endif /* CONFIG_ATH9K_CHANNEL_CONTEXT */
+#endif  
 
 int ath9k_use_msi;
 module_param_named(use_msi, ath9k_use_msi, int, 0444);
@@ -164,11 +150,7 @@ static const struct ath_ps_ops ath9k_ps_ops = {
 	.restore = ath9k_op_ps_restore,
 };
 
-/*
- * Read and write, they both share the same lock. We do this to serialize
- * reads and writes on Atheros 802.11n PCI devices only. This is required
- * as the FIFO on these devices can only accept sanely 2 requests.
- */
+ 
 
 static void ath9k_iowrite32(void *hw_priv, u32 val, u32 reg_offset)
 {
@@ -243,9 +225,9 @@ static unsigned int ath9k_reg_rmw(void *hw_priv, u32 reg_offset, u32 set, u32 cl
 	return val;
 }
 
-/**************************/
-/*     Initialization     */
-/**************************/
+ 
+ 
+ 
 
 static void ath9k_reg_notifier(struct wiphy *wiphy,
 			       struct regulatory_request *request)
@@ -257,12 +239,12 @@ static void ath9k_reg_notifier(struct wiphy *wiphy,
 
 	ath_reg_notifier_apply(wiphy, request, reg);
 
-	/* synchronize DFS detector if regulatory domain changed */
+	 
 	if (sc->dfs_detector != NULL)
 		sc->dfs_detector->set_dfs_domain(sc->dfs_detector,
 						 request->dfs_region);
 
-	/* Set tx power */
+	 
 	if (!ah->curchan)
 		return;
 
@@ -275,11 +257,7 @@ static void ath9k_reg_notifier(struct wiphy *wiphy,
 	ath9k_ps_restore(sc);
 }
 
-/*
- *  This function will allocate both the DMA descriptor structure, and the
- *  buffers it contains.  These are used to contain the descriptors used
- *  by the system.
-*/
+ 
 int ath_descdma_setup(struct ath_softc *sc, struct ath_descdma *dd,
 		      struct list_head *head, const char *name,
 		      int nbuf, int ndesc, bool is_tx)
@@ -298,7 +276,7 @@ int ath_descdma_setup(struct ath_softc *sc, struct ath_descdma *dd,
 	else
 		desc_len = sizeof(struct ath_desc);
 
-	/* ath_desc must be a multiple of DWORDs */
+	 
 	if ((desc_len % 4) != 0) {
 		ath_err(common, "ath_desc not DWORD aligned\n");
 		BUG_ON((desc_len % 4) != 0);
@@ -307,11 +285,7 @@ int ath_descdma_setup(struct ath_softc *sc, struct ath_descdma *dd,
 
 	dd->dd_desc_len = desc_len * nbuf * ndesc;
 
-	/*
-	 * Need additional DMA memory because we can't use
-	 * descriptors that cross the 4K page boundary. Assume
-	 * one skipped descriptor per 4K page.
-	 */
+	 
 	if (!(sc->sc_ah->caps.hw_caps & ATH9K_HW_CAP_4KB_SPLITTRANS)) {
 		u32 ndesc_skipped =
 			ATH_DESC_4KB_BOUND_NUM_SKIPPED(dd->dd_desc_len);
@@ -325,7 +299,7 @@ int ath_descdma_setup(struct ath_softc *sc, struct ath_descdma *dd,
 		}
 	}
 
-	/* allocate descriptors */
+	 
 	dd->dd_desc = dmam_alloc_coherent(sc->dev, dd->dd_desc_len,
 					  &dd->dd_desc_paddr, GFP_KERNEL);
 	if (!dd->dd_desc)
@@ -334,9 +308,9 @@ int ath_descdma_setup(struct ath_softc *sc, struct ath_descdma *dd,
 	ds = dd->dd_desc;
 	ath_dbg(common, CONFIG, "%s DMA map: %p (%u) -> %llx (%u)\n",
 		name, ds, (u32) dd->dd_desc_len,
-		ito64(dd->dd_desc_paddr), /*XXX*/(u32) dd->dd_desc_len);
+		ito64(dd->dd_desc_paddr),  (u32) dd->dd_desc_len);
 
-	/* allocate buffers */
+	 
 	if (is_tx) {
 		struct ath_buf *bf;
 
@@ -351,11 +325,7 @@ int ath_descdma_setup(struct ath_softc *sc, struct ath_descdma *dd,
 
 			if (!(sc->sc_ah->caps.hw_caps &
 				  ATH9K_HW_CAP_4KB_SPLITTRANS)) {
-				/*
-				 * Skip descriptor addresses which can cause 4KB
-				 * boundary crossing (addr + length) with a 32 dword
-				 * descriptor fetch.
-				 */
+				 
 				while (ATH_DESC_4KB_BOUND_CHECK(bf->bf_daddr)) {
 					BUG_ON((caddr_t) bf->bf_desc >=
 						   ((caddr_t) dd->dd_desc +
@@ -382,11 +352,7 @@ int ath_descdma_setup(struct ath_softc *sc, struct ath_descdma *dd,
 
 			if (!(sc->sc_ah->caps.hw_caps &
 				  ATH9K_HW_CAP_4KB_SPLITTRANS)) {
-				/*
-				 * Skip descriptor addresses which can cause 4KB
-				 * boundary crossing (addr + length) with a 32 dword
-				 * descriptor fetch.
-				 */
+				 
 				while (ATH_DESC_4KB_BOUND_CHECK(bf->bf_daddr)) {
 					BUG_ON((caddr_t) bf->bf_desc >=
 						   ((caddr_t) dd->dd_desc +
@@ -487,12 +453,7 @@ static void ath9k_init_pcoem_platform(struct ath_softc *sc)
 	if (sc->driver_data & ATH9K_PCI_KILLER)
 		ath_info(common, "Killer Wireless card detected\n");
 
-	/*
-	 * Some WB335 cards do not support antenna diversity. Since
-	 * we use a hardcoded value for AR9565 instead of using the
-	 * EEPROM/OTP data, remove the combining feature from
-	 * the HW capabilities bitmap.
-	 */
+	 
 	if (sc->driver_data & (ATH9K_PCI_AR9565_1ANT | ATH9K_PCI_AR9565_2ANT)) {
 		if (!(sc->driver_data & ATH9K_PCI_BT_ANT_DIV))
 			pCap->hw_caps &= ~ATH9K_HW_CAP_ANT_DIV_COMB;
@@ -508,11 +469,7 @@ static void ath9k_init_pcoem_platform(struct ath_softc *sc)
 		ath_info(common, "Enable WAR for ASPM D3/L1\n");
 	}
 
-	/*
-	 * The default value of pll_pwrsave is 1.
-	 * For certain AR9485 cards, it is set to 0.
-	 * For AR9462, AR9565 it's set to 7.
-	 */
+	 
 	ah->config.pll_pwrsave = 1;
 
 	if (sc->driver_data & ATH9K_PCI_NO_PLL_PWRSAVE) {
@@ -541,7 +498,7 @@ static int ath9k_eeprom_request(struct ath_softc *sc, const char *name)
 	struct ath_hw *ah = sc->sc_ah;
 	int err;
 
-	/* try to load the EEPROM content asynchronously */
+	 
 	init_completion(&ec.complete);
 	ec.ah = sc->sc_ah;
 
@@ -581,12 +538,7 @@ static int ath9k_nvmem_request_eeprom(struct ath_softc *sc)
 	if (IS_ERR(cell)) {
 		err = PTR_ERR(cell);
 
-		/* nvmem cell might not be defined, or the nvmem
-		 * subsystem isn't included. In this case, follow
-		 * the established "just return 0;" convention of
-		 * ath9k_init_platform to say:
-		 * "All good. Nothing to see here. Please go on."
-		 */
+		 
 		if (err == -ENOENT || err == -EOPNOTSUPP)
 			return 0;
 
@@ -597,17 +549,13 @@ static int ath9k_nvmem_request_eeprom(struct ath_softc *sc)
 	if (IS_ERR(buf))
 		return PTR_ERR(buf);
 
-	/* run basic sanity checks on the returned nvram cell length.
-	 * That length has to be a multiple of a "u16" (i.e.: & 1).
-	 * Furthermore, it has to be more than "let's say" 512 bytes
-	 * but less than the maximum of AR9300_EEPROM_SIZE (16kb).
-	 */
+	 
 	if ((len & 1) == 1 || len < 512 || len >= AR9300_EEPROM_SIZE) {
 		kfree(buf);
 		return -EINVAL;
 	}
 
-	/* devres manages the calibration values release on shutdown */
+	 
 	ah->nvmem_blob = (u16 *)devm_kmemdup(sc->dev, buf, len, GFP_KERNEL);
 	kfree(buf);
 	if (!ah->nvmem_blob)
@@ -678,7 +626,7 @@ static int ath9k_of_init(struct ath_softc *sc)
 	ath_dbg(common, CONFIG, "parsing configuration from OF node\n");
 
 	if (of_property_read_bool(np, "qca,no-eeprom")) {
-		/* ath9k-eeprom-<bus>-<id>.bin */
+		 
 		scnprintf(eeprom_name, sizeof(eeprom_name),
 			  "ath9k-eeprom-%s-%s.bin",
 			  ath_bus_type_to_string(bus_type), dev_name(ah->dev));
@@ -722,7 +670,7 @@ static int ath9k_init_softc(u16 devid, struct ath_softc *sc,
 
 	common = ath9k_hw_common(ah);
 
-	/* Will be cleared in ath9k_start() */
+	 
 	set_bit(ATH_OP_INVALID, &common->op_flags);
 
 	sc->sc_ah = ah;
@@ -743,9 +691,7 @@ static int ath9k_init_softc(u16 devid, struct ath_softc *sc,
 	common->btcoex_enabled = ath9k_btcoex_enable == 1;
 	common->disable_ani = false;
 
-	/*
-	 * Platform quirks.
-	 */
+	 
 	ath9k_init_pcoem_platform(sc);
 
 	ret = ath9k_init_platform(sc);
@@ -763,13 +709,7 @@ static int ath9k_init_softc(u16 devid, struct ath_softc *sc,
 	if (ath9k_led_active_high != -1)
 		ah->config.led_active_high = ath9k_led_active_high == 1;
 
-	/*
-	 * Enable WLAN/BT RX Antenna diversity only when:
-	 *
-	 * - BTCOEX is disabled.
-	 * - the user manually requests the feature.
-	 * - the HW cap is set using the platform data.
-	 */
+	 
 	if (!common->btcoex_enabled && ath9k_bt_ant_diversity &&
 	    (pCap->hw_caps & ATH9K_HW_CAP_BT_ANT_DIV))
 		common->bt_ant_diversity = 1;
@@ -791,14 +731,11 @@ static int ath9k_init_softc(u16 devid, struct ath_softc *sc,
 
 	ath9k_init_channel_context(sc);
 
-	/*
-	 * Cache line size is used to size and align various
-	 * structures used to communicate with the hardware.
-	 */
+	 
 	ath_read_cachesize(common, &csz);
-	common->cachelsz = csz << 2; /* convert to bytes */
+	common->cachelsz = csz << 2;  
 
-	/* Initializes the hardware for all supported chipsets */
+	 
 	ret = ath9k_hw_init(ah);
 	if (ret)
 		goto err_hw;
@@ -905,7 +842,7 @@ static const struct ieee80211_iface_combination if_comb_multi[] = {
 	},
 };
 
-#endif /* CONFIG_ATH9K_CHANNEL_CONTEXT */
+#endif  
 
 static const struct ieee80211_iface_combination if_comb[] = {
 	{
@@ -945,7 +882,7 @@ static void ath9k_set_mcc_capab(struct ath_softc *sc, struct ieee80211_hw *hw)
 
 	ath_dbg(common, CHAN_CTX, "Use channel contexts\n");
 }
-#endif /* CONFIG_ATH9K_CHANNEL_CONTEXT */
+#endif  
 
 static void ath9k_set_hw_capab(struct ath_softc *sc, struct ieee80211_hw *hw)
 {
@@ -1020,7 +957,7 @@ static void ath9k_set_hw_capab(struct ath_softc *sc, struct ieee80211_hw *hw)
 	hw->wiphy->available_antennas_rx = BIT(ah->caps.max_rxchains) - 1;
 	hw->wiphy->available_antennas_tx = BIT(ah->caps.max_txchains) - 1;
 
-	/* single chain devices with rx diversity */
+	 
 	if (ah->caps.hw_caps & ATH9K_HW_CAP_ANT_DIV_COMB)
 		hw->wiphy->available_antennas_rx = BIT(0) | BIT(1);
 
@@ -1058,7 +995,7 @@ int ath9k_init_device(u16 devid, struct ath_softc *sc,
 	int error = 0;
 	struct ath_regulatory *reg;
 
-	/* Bring up device */
+	 
 	error = ath9k_init_softc(devid, sc, bus_ops);
 	if (error)
 		return error;
@@ -1067,7 +1004,7 @@ int ath9k_init_device(u16 devid, struct ath_softc *sc,
 	common = ath9k_hw_common(ah);
 	ath9k_set_hw_capab(sc, hw);
 
-	/* Initialize regulatory */
+	 
 	error = ath_regd_init(&common->regulatory, sc->hw->wiphy,
 			      ath9k_reg_notifier);
 	if (error)
@@ -1075,12 +1012,12 @@ int ath9k_init_device(u16 devid, struct ath_softc *sc,
 
 	reg = &common->regulatory;
 
-	/* Setup TX DMA */
+	 
 	error = ath_tx_init(sc, ATH_TXBUF);
 	if (error != 0)
 		goto deinit;
 
-	/* Setup RX DMA */
+	 
 	error = ath_rx_init(sc, ATH_RXBUF);
 	if (error != 0)
 		goto deinit;
@@ -1088,7 +1025,7 @@ int ath9k_init_device(u16 devid, struct ath_softc *sc,
 	ath9k_init_txpower_limits(sc);
 
 #ifdef CONFIG_MAC80211_LEDS
-	/* must be initialized before ieee80211_register_hw */
+	 
 	sc->led_cdev.default_trigger = ieee80211_create_tpt_led_trigger(sc->hw,
 		IEEE80211_TPT_LEDTRIG_FL_RADIO, ath9k_tpt_blink,
 		ARRAY_SIZE(ath9k_tpt_blink));
@@ -1096,7 +1033,7 @@ int ath9k_init_device(u16 devid, struct ath_softc *sc,
 
 	wiphy_read_of_freq_limits(hw->wiphy);
 
-	/* Register with mac80211 */
+	 
 	error = ieee80211_register_hw(hw);
 	if (error)
 		goto rx_cleanup;
@@ -1107,7 +1044,7 @@ int ath9k_init_device(u16 devid, struct ath_softc *sc,
 		goto unregister;
 	}
 
-	/* Handle world regulatory */
+	 
 	if (!ath_is_world_regd(reg)) {
 		error = regulatory_hint(hw->wiphy, reg->alpha2);
 		if (error)
@@ -1130,9 +1067,9 @@ deinit:
 	return error;
 }
 
-/*****************************/
-/*     De-Initialization     */
-/*****************************/
+ 
+ 
+ 
 
 static void ath9k_deinit_softc(struct ath_softc *sc)
 {
@@ -1171,9 +1108,9 @@ void ath9k_deinit_device(struct ath_softc *sc)
 	ath9k_deinit_softc(sc);
 }
 
-/************************/
-/*     Module Hooks     */
-/************************/
+ 
+ 
+ 
 
 static int __init ath9k_init(void)
 {

@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * GPIO driver for TI TPS65912x PMICs
- *
- * Copyright (C) 2015 Texas Instruments Incorporated - http://www.ti.com/
- *	Andrew F. Davis <afd@ti.com>
- *
- * Based on the Arizona GPIO driver and the previous TPS65912 driver by
- * Margarita Olaya Cabrera <magi@slimlogic.co.uk>
- */
+
+ 
 
 #include <linux/gpio/driver.h>
 #include <linux/module.h>
@@ -50,7 +42,7 @@ static int tps65912_gpio_direction_output(struct gpio_chip *gc,
 {
 	struct tps65912_gpio *gpio = gpiochip_get_data(gc);
 
-	/* Set the initial value */
+	 
 	regmap_update_bits(gpio->tps->regmap, TPS65912_GPIO1 + offset,
 			   GPIO_SET_MASK, value ? GPIO_SET_MASK : 0);
 
@@ -113,7 +105,7 @@ static int tps65912_gpio_probe(struct platform_device *pdev)
 
 static const struct platform_device_id tps65912_gpio_id_table[] = {
 	{ "tps65912-gpio", },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(platform, tps65912_gpio_id_table);
 

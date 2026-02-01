@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2015 Linaro, Ltd.
- * Rob Herring <robh@kernel.org>
- *
- * Based on vendor driver:
- * Copyright (C) 2013 Marvell Inc.
- * Author: Chao Xie <xiechao.mail@gmail.com>
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/slab.h>
@@ -19,7 +12,7 @@
 #include <linux/platform_device.h>
 #include <linux/phy/phy.h>
 
-/* USB PXA1928 PHY mapping */
+ 
 #define PHY_28NM_PLL_REG0			0x0
 #define PHY_28NM_PLL_REG1			0x4
 #define PHY_28NM_CAL_REG			0x8
@@ -40,7 +33,7 @@
 #define PHY_28NM_CTRL_REG2			0xd4
 #define PHY_28NM_CTRL_REG3			0xdc
 
-/* PHY_28NM_PLL_REG0 */
+ 
 #define PHY_28NM_PLL_READY			BIT(31)
 
 #define PHY_28NM_PLL_SELLPFR_SHIFT		28
@@ -55,12 +48,12 @@
 #define PHY_28NM_PLL_REFDIV_SHIFT		0
 #define PHY_28NM_PLL_REFDIV_MASK		0x7f
 
-/* PHY_28NM_PLL_REG1 */
+ 
 #define PHY_28NM_PLL_PU_BY_REG			BIT(1)
 
 #define PHY_28NM_PLL_PU_PLL			BIT(0)
 
-/* PHY_28NM_CAL_REG */
+ 
 #define PHY_28NM_PLL_PLLCAL_DONE		BIT(31)
 
 #define PHY_28NM_PLL_IMPCAL_DONE		BIT(23)
@@ -77,7 +70,7 @@
 #define PHY_28NM_PLLCAL_START_SHIFT		22
 #define PHY_28NM_IMPCAL_START_SHIFT		13
 
-/* PHY_28NM_TX_REG0 */
+ 
 #define PHY_28NM_TX_PU_BY_REG			BIT(25)
 
 #define PHY_28NM_TX_PU_ANA			BIT(24)
@@ -85,14 +78,14 @@
 #define PHY_28NM_TX_AMP_SHIFT			20
 #define PHY_28NM_TX_AMP_MASK			(0x7 << 20)
 
-/* PHY_28NM_RX_REG0 */
+ 
 #define PHY_28NM_RX_SQ_THRESH_SHIFT		0
 #define PHY_28NM_RX_SQ_THRESH_MASK		(0xf << 0)
 
-/* PHY_28NM_RX_REG1 */
+ 
 #define PHY_28NM_RX_SQCAL_DONE			BIT(31)
 
-/* PHY_28NM_DIG_REG0 */
+ 
 #define PHY_28NM_DIG_BITSTAFFING_ERR		BIT(31)
 #define PHY_28NM_DIG_SYNC_ERR			BIT(30)
 
@@ -107,7 +100,7 @@
 
 #define PHY_28NM_PLL_LOCK_BYPASS		BIT(7)
 
-/* PHY_28NM_OTG_REG */
+ 
 #define PHY_28NM_OTG_CONTROL_BY_PIN		BIT(5)
 #define PHY_28NM_OTG_PU_OTG			BIT(4)
 
@@ -156,7 +149,7 @@ static int mv_usb2_phy_28nm_init(struct phy *phy)
 
 	clk_prepare_enable(mv_phy->clk);
 
-	/* PHY_28NM_PLL_REG0 */
+	 
 	reg = readl(base + PHY_28NM_PLL_REG0) &
 		~(PHY_28NM_PLL_SELLPFR_MASK | PHY_28NM_PLL_FBDIV_MASK
 		| PHY_28NM_PLL_ICP_MASK	| PHY_28NM_PLL_REFDIV_MASK);
@@ -166,23 +159,23 @@ static int mv_usb2_phy_28nm_init(struct phy *phy)
 		| 0xd << PHY_28NM_PLL_REFDIV_SHIFT),
 		base + PHY_28NM_PLL_REG0);
 
-	/* PHY_28NM_PLL_REG1 */
+	 
 	reg = readl(base + PHY_28NM_PLL_REG1);
 	writel(reg | PHY_28NM_PLL_PU_PLL | PHY_28NM_PLL_PU_BY_REG,
 		base + PHY_28NM_PLL_REG1);
 
-	/* PHY_28NM_TX_REG0 */
+	 
 	reg = readl(base + PHY_28NM_TX_REG0) & ~PHY_28NM_TX_AMP_MASK;
 	writel(reg | PHY_28NM_TX_PU_BY_REG | 0x3 << PHY_28NM_TX_AMP_SHIFT |
 		PHY_28NM_TX_PU_ANA,
 		base + PHY_28NM_TX_REG0);
 
-	/* PHY_28NM_RX_REG0 */
+	 
 	reg = readl(base + PHY_28NM_RX_REG0) & ~PHY_28NM_RX_SQ_THRESH_MASK;
 	writel(reg | 0xa << PHY_28NM_RX_SQ_THRESH_SHIFT,
 		base + PHY_28NM_RX_REG0);
 
-	/* PHY_28NM_DIG_REG0 */
+	 
 	reg = readl(base + PHY_28NM_DIG_REG0) &
 		~(PHY_28NM_DIG_BITSTAFFING_ERR | PHY_28NM_DIG_SYNC_ERR |
 		PHY_28NM_DIG_SQ_FILT_MASK | PHY_28NM_DIG_SQ_BLK_MASK |
@@ -191,20 +184,13 @@ static int mv_usb2_phy_28nm_init(struct phy *phy)
 		PHY_28NM_PLL_LOCK_BYPASS),
 		base + PHY_28NM_DIG_REG0);
 
-	/* PHY_28NM_OTG_REG */
+	 
 	reg = readl(base + PHY_28NM_OTG_REG) | PHY_28NM_OTG_PU_OTG;
 	writel(reg & ~PHY_28NM_OTG_CONTROL_BY_PIN, base + PHY_28NM_OTG_REG);
 
-	/*
-	 *  Calibration Timing
-	 *		   ____________________________
-	 *  CAL START   ___|
-	 *			   ____________________
-	 *  CAL_DONE    ___________|
-	 *		   | 400us |
-	 */
+	 
 
-	/* Make sure PHY Calibration is ready */
+	 
 	ret = wait_for_reg(base + PHY_28NM_CAL_REG,
 			   PHY_28NM_PLL_PLLCAL_DONE | PHY_28NM_PLL_IMPCAL_DONE,
 			   100);
@@ -218,7 +204,7 @@ static int mv_usb2_phy_28nm_init(struct phy *phy)
 		dev_warn(&pdev->dev, "USB PHY RX SQ calibrate not done after 100mS.");
 		goto err_clk;
 	}
-	/* Make sure PHY PLL is ready */
+	 
 	ret = wait_for_reg(base + PHY_28NM_PLL_REG0, PHY_28NM_PLL_READY, 100);
 	if (ret) {
 		dev_warn(&pdev->dev, "PLL_READY not set after 100mS.");
@@ -267,12 +253,12 @@ static int mv_usb2_phy_28nm_exit(struct phy *phy)
 	val &= ~PHY_28NM_PLL_PU_PLL;
 	writew(val, base + PHY_28NM_PLL_REG1);
 
-	/* power down PHY Analog part */
+	 
 	val = readw(base + PHY_28NM_TX_REG0);
 	val &= ~PHY_28NM_TX_PU_ANA;
 	writew(val, base + PHY_28NM_TX_REG0);
 
-	/* power down PHY OTG part */
+	 
 	val = readw(base + PHY_28NM_OTG_REG);
 	val &= ~PHY_28NM_OTG_PU_OTG;
 	writew(val, base + PHY_28NM_OTG_REG);

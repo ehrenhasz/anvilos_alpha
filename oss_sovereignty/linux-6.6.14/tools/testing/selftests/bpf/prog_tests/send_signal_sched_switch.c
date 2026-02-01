@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <test_progs.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -25,7 +25,7 @@ static void *worker(void *p)
 	return NULL;
 }
 
-/* NOTE: cause events loss */
+ 
 void serial_test_send_signal_sched_switch(void)
 {
 	struct test_send_signal_kern *skel;

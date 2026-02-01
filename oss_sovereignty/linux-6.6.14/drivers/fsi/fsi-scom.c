@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * SCOM FSI Client device driver
- *
- * Copyright (C) IBM Corporation 2016
- */
+
+ 
 
 #include <linux/fsi.h>
 #include <linux/module.h>
@@ -19,19 +15,19 @@
 
 #define FSI_ENGID_SCOM		0x5
 
-/* SCOM engine register set */
+ 
 #define SCOM_DATA0_REG		0x00
 #define SCOM_DATA1_REG		0x04
 #define SCOM_CMD_REG		0x08
 #define SCOM_FSI2PIB_RESET_REG	0x18
-#define SCOM_STATUS_REG		0x1C /* Read */
-#define SCOM_PIB_RESET_REG	0x1C /* Write */
+#define SCOM_STATUS_REG		0x1C  
+#define SCOM_PIB_RESET_REG	0x1C  
 
-/* Command register */
+ 
 #define SCOM_WRITE_CMD		0x80000000
 #define SCOM_READ_CMD		0x00000000
 
-/* Status register bits */
+ 
 #define SCOM_STATUS_ERR_SUMMARY		0x80000000
 #define SCOM_STATUS_PROTECTION		0x01000000
 #define SCOM_STATUS_PARITY		0x04000000
@@ -44,11 +40,11 @@
 					 SCOM_STATUS_PIB_ABORT)
 #define SCOM_STATUS_ANY_ERR		(SCOM_STATUS_FSI2PIB_ERROR |	\
 					 SCOM_STATUS_PIB_RESP_MASK)
-/* SCOM address encodings */
+ 
 #define XSCOM_ADDR_IND_FLAG		BIT_ULL(63)
 #define XSCOM_ADDR_INF_FORM1		BIT_ULL(60)
 
-/* SCOM indirect stuff */
+ 
 #define XSCOM_ADDR_DIRECT_PART		0x7fffffffull
 #define XSCOM_ADDR_INDIRECT_PART	0x000fffff00000000ull
 #define XSCOM_DATA_IND_READ		BIT_ULL(63)
@@ -61,8 +57,8 @@
 #define XSCOM_ADDR_FORM1_HI		0xfff00000000ull
 #define XSCOM_ADDR_FORM1_HI_SHIFT	20
 
-/* Retries */
-#define SCOM_MAX_IND_RETRIES		10	/* Retries indirect not ready */
+ 
+#define SCOM_MAX_IND_RETRIES		10	 
 
 struct scom_device {
 	struct list_head link;
@@ -123,10 +119,7 @@ static int __get_scom(struct scom_device *scom_dev, uint64_t *value,
 	if (rc)
 		return rc;
 
-	/*
-	 * Read the data registers even on error, so we don't have
-	 * to interpret the status register here.
-	 */
+	 
 	rc = fsi_device_read(scom_dev->fsi_dev, SCOM_DATA0_REG, &data,
 				sizeof(uint32_t));
 	if (rc)
@@ -253,7 +246,7 @@ static int handle_pib_status(struct scom_device *scom, uint8_t status)
 	if (status == SCOM_PIB_BLOCKED)
 		return -EBUSY;
 
-	/* Reset the bridge */
+	 
 	fsi_device_write(scom->fsi_dev, SCOM_FSI2PIB_RESET_REG, &dummy,
 			 sizeof(uint32_t));
 
@@ -468,7 +461,7 @@ static int scom_reset(struct scom_device *scom, void __user *argp)
 
 static int scom_check(struct scom_device *scom, void __user *argp)
 {
-	/* Still need to find out how to get "protected" */
+	 
 	return put_user(SCOM_CHECK_SUPPORTED, (__u32 __user *)argp);
 }
 
@@ -539,20 +532,20 @@ static int scom_probe(struct device *dev)
 	dev_set_drvdata(dev, scom);
 	mutex_init(&scom->lock);
 
-	/* Grab a reference to the device (parent of our cdev), we'll drop it later */
+	 
 	if (!get_device(dev)) {
 		kfree(scom);
 		return -ENODEV;
 	}
 	scom->fsi_dev = fsi_dev;
 
-	/* Create chardev for userspace access */
+	 
 	scom->dev.type = &fsi_cdev_type;
 	scom->dev.parent = dev;
 	scom->dev.release = scom_free;
 	device_initialize(&scom->dev);
 
-	/* Allocate a minor in the FSI space */
+	 
 	rc = fsi_get_new_minor(fsi_dev, fsi_dev_scom, &scom->dev.devt, &didx);
 	if (rc)
 		goto err;

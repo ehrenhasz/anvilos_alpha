@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * This file is part of wl1251
- *
- * Copyright (c) 1998-2007 Texas Instruments Incorporated
- * Copyright (C) 2008-2009 Nokia Corporation
- */
+ 
+ 
 
 #ifndef __WL1251_H__
 #define __WL1251_H__
@@ -183,7 +178,7 @@ struct wl1251_debugfs {
 
 	struct dentry *wep_addr_key_count;
 	struct dentry *wep_default_key_count;
-	/* skipping wep.reserved */
+	 
 	struct dentry *wep_key_not_found;
 	struct dentry *wep_decrypt_fail;
 	struct dentry *wep_packets;
@@ -201,7 +196,7 @@ struct wl1251_debugfs {
 	struct dentry *pwr_enable_ps;
 	struct dentry *pwr_disable_ps;
 	struct dentry *pwr_fix_tsf_ps;
-	/* skipping cont_miss_bcns_spread for now */
+	 
 	struct dentry *pwr_rcvd_awake_beacons;
 
 	struct dentry *mic_rx_pkts;
@@ -297,49 +292,45 @@ struct wl1251 {
 	void *target_mem_map;
 	struct acx_data_path_params_resp *data_path;
 
-	/* Number of TX packets transferred to the FW, modulo 16 */
+	 
 	u32 data_in_count;
 
-	/* Frames scheduled for transmission, not handled yet */
+	 
 	struct sk_buff_head tx_queue;
 	bool tx_queue_stopped;
 
 	struct work_struct tx_work;
 
-	/* Pending TX frames */
+	 
 	struct sk_buff *tx_frames[16];
 
-	/*
-	 * Index pointing to the next TX complete entry
-	 * in the cyclic XT complete array we get from
-	 * the FW.
-	 */
+	 
 	u32 next_tx_complete;
 
-	/* FW Rx counter */
+	 
 	u32 rx_counter;
 
-	/* Rx frames handled */
+	 
 	u32 rx_handled;
 
-	/* Current double buffer */
+	 
 	u32 rx_current_buffer;
 	u32 rx_last_id;
 
-	/* The target interrupt mask */
+	 
 	u32 intr_mask;
 	struct work_struct irq_work;
 
-	/* The mbox event mask */
+	 
 	u32 event_mask;
 
-	/* Mailbox pointers */
+	 
 	u32 mbox_ptr[2];
 
-	/* Are we currently scanning */
+	 
 	bool scanning;
 
-	/* Default key (for WEP) */
+	 
 	u32 default_key;
 
 	unsigned int tx_mgmt_frm_rate;
@@ -348,23 +339,23 @@ struct wl1251 {
 	unsigned int rx_config;
 	unsigned int rx_filter;
 
-	/* is firmware in elp mode */
+	 
 	bool elp;
 
 	struct delayed_work elp_work;
 
 	enum wl1251_station_mode station_mode;
 
-	/* PSM mode requested */
+	 
 	bool psm_requested;
 
-	/* retry counter for PSM entries */
+	 
 	u8 psm_entry_retry;
 
 	u16 beacon_int;
 	u8 dtim_period;
 
-	/* in dBm */
+	 
 	int power_level;
 
 	int rssi_thold;
@@ -382,7 +373,7 @@ struct wl1251 {
 	u32 chip_id;
 	char fw_ver[21];
 
-	/* Most recently reported noise in dBm */
+	 
 	s8 noise;
 };
 
@@ -395,9 +386,9 @@ int wl1251_init_ieee80211(struct wl1251 *wl);
 void wl1251_enable_interrupts(struct wl1251 *wl);
 void wl1251_disable_interrupts(struct wl1251 *wl);
 
-#define DEFAULT_HW_GEN_MODULATION_TYPE    CCK_LONG /* Long Preamble */
+#define DEFAULT_HW_GEN_MODULATION_TYPE    CCK_LONG  
 #define DEFAULT_HW_GEN_TX_RATE          RATE_2MBPS
-#define JOIN_TIMEOUT 5000 /* 5000 milliseconds to join */
+#define JOIN_TIMEOUT 5000  
 
 #define WL1251_DEFAULT_POWER_LEVEL 20
 
@@ -420,7 +411,7 @@ void wl1251_disable_interrupts(struct wl1251 *wl);
 #define WL1251_FW_NAME "ti-connectivity/wl1251-fw.bin"
 #define WL1251_NVS_NAME "ti-connectivity/wl1251-nvs.bin"
 
-#define WL1251_POWER_ON_SLEEP 10 /* in milliseconds */
+#define WL1251_POWER_ON_SLEEP 10  
 
 #define WL1251_PART_DOWN_MEM_START	0x0
 #define WL1251_PART_DOWN_MEM_SIZE	0x16800

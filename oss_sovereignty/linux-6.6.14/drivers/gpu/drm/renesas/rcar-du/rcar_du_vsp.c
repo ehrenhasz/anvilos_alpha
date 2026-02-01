@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * R-Car Display Unit VSP-Based Compositor
- *
- * Copyright (C) 2015 Renesas Electronics Corporation
- *
- * Contact: Laurent Pinchart (laurent.pinchart@ideasonboard.com)
- */
+
+ 
 
 #include <drm/drm_atomic.h>
 #include <drm/drm_atomic_helper.h>
@@ -142,10 +136,7 @@ static const u32 rcar_du_vsp_formats[] = {
 	DRM_FORMAT_YVU444,
 };
 
-/*
- * Gen4 supports the same formats as above, and additionally 2-10-10-10 RGB
- * formats and Y210 & Y212 formats.
- */
+ 
 static const u32 rcar_du_vsp_formats_gen4[] = {
 	DRM_FORMAT_RGB332,
 	DRM_FORMAT_ARGB4444,
@@ -270,13 +261,7 @@ int rcar_du_vsp_map_fb(struct rcar_du_vsp *vsp, struct drm_framebuffer *fb,
 			struct scatterlist *src;
 			struct scatterlist *dst;
 
-			/*
-			 * If the GEM buffer has a scatter gather table, it has
-			 * been imported from a dma-buf and has no physical
-			 * address as it might not be physically contiguous.
-			 * Copy the original scatter gather table to map it to
-			 * the VSP.
-			 */
+			 
 			ret = sg_alloc_table(sgt, gem->sgt->orig_nents,
 					     GFP_KERNEL);
 			if (ret)
@@ -324,10 +309,7 @@ static int rcar_du_vsp_plane_prepare_fb(struct drm_plane *plane,
 	struct rcar_du_vsp *vsp = to_rcar_vsp_plane(plane)->vsp;
 	int ret;
 
-	/*
-	 * There's no need to prepare (and unprepare) the framebuffer when the
-	 * plane is not visible, as it will not be displayed.
-	 */
+	 
 	if (!state->visible)
 		return 0;
 
@@ -471,7 +453,7 @@ int rcar_du_vsp_init(struct rcar_du_vsp *vsp, struct device_node *np,
 	unsigned int i;
 	int ret;
 
-	/* Find the VSP device and initialize it. */
+	 
 	pdev = of_find_device_by_node(np);
 	if (!pdev)
 		return -ENXIO;

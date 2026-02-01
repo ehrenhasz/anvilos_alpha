@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/module.h>
 #include <linux/kernel.h>
 #include <linux/errno.h>
@@ -21,7 +21,7 @@
 #define poke32(addr, data) \
 writel((data), cursor->mmio + (addr))
 
-/* cursor control for voyager and 718/750*/
+ 
 #define HWC_ADDRESS                         0x0
 #define HWC_ADDRESS_ENABLE                  BIT(31)
 #define HWC_ADDRESS_EXT                     BIT(27)
@@ -43,7 +43,7 @@ writel((data), cursor->mmio + (addr))
 #define HWC_COLOR_3                         0xC
 #define HWC_COLOR_3_RGB565_MASK             0xffff
 
-/* hw_cursor_xxx works for voyager,718 and 750 */
+ 
 void sm750_hw_cursor_enable(struct lynx_cursor *cursor)
 {
 	u32 reg;
@@ -89,13 +89,13 @@ void sm750_hw_cursor_setData(struct lynx_cursor *cursor, u16 rop,
 	u16 data;
 	void __iomem *pbuffer, *pstart;
 
-	/*  in byte*/
+	 
 	pitch = cursor->w >> 3;
 
-	/* in byte	*/
+	 
 	count = pitch * cursor->h;
 
-	/* in byte */
+	 
 	offset = cursor->max_w * 2 / 8;
 
 	data = 0;
@@ -114,15 +114,15 @@ void sm750_hw_cursor_setData(struct lynx_cursor *cursor, u16 rop,
 				else
 					opr = mask & color;
 
-				/* 2 stands for forecolor and 1 for backcolor */
+				 
 				data |= ((opr & (0x80 >> j)) ? 2 : 1) << (j * 2);
 			}
 		}
 		iowrite16(data, pbuffer);
 
-		/* assume pitch is 1,2,4,8,...*/
+		 
 		if ((i + 1) % pitch == 0) {
-			/* need a return */
+			 
 			pstart += offset;
 			pbuffer = pstart;
 		} else {
@@ -139,13 +139,13 @@ void sm750_hw_cursor_setData2(struct lynx_cursor *cursor, u16 rop,
 	u16 data;
 	void __iomem *pbuffer, *pstart;
 
-	/*  in byte*/
+	 
 	pitch = cursor->w >> 3;
 
-	/* in byte	*/
+	 
 	count = pitch * cursor->h;
 
-	/* in byte */
+	 
 	offset = cursor->max_w * 2 / 8;
 
 	data = 0;
@@ -163,9 +163,9 @@ void sm750_hw_cursor_setData2(struct lynx_cursor *cursor, u16 rop,
 		}
 		iowrite16(data, pbuffer);
 
-		/* assume pitch is 1,2,4,8,...*/
+		 
 		if (!(i & (pitch - 1))) {
-			/* need a return */
+			 
 			pstart += offset;
 			pbuffer = pstart;
 		} else {

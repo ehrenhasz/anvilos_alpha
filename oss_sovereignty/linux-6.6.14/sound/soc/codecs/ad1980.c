@@ -1,19 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * ad1980.c  --  ALSA Soc AD1980 codec support
- *
- * Copyright:	Analog Devices Inc.
- * Author:	Roy Huang <roy.huang@analog.com>
- * 		Cliff Cai <cliff.cai@analog.com>
- */
 
-/*
- * WARNING:
- *
- * Because Analog Devices Inc. discontinued the ad1980 sound chip since
- * Sep. 2009, this ad1980 driver is not maintained, tested and supported
- * by ADI now.
- */
+ 
+
+ 
 
 #include <linux/init.h>
 #include <linux/slab.h>
@@ -213,12 +201,7 @@ static int ad1980_reset(struct snd_soc_component *component, int try_warm)
 		if (ret >= 0)
 			return 0;
 
-		/*
-		 * Set bit 16slot in register 74h, then every slot will has only
-		 * 16 bits. This command is sent out in 20bit mode, in which
-		 * case the first nibble of data is eaten by the addr. (Tag is
-		 * always 16 bit)
-		 */
+		 
 		snd_soc_component_write(component, AC97_AD_SERIAL_CFG, 0x9900);
 
 	} while (retry_cnt++ < 10);
@@ -262,14 +245,14 @@ static int ad1980_soc_probe(struct snd_soc_component *component)
 			"Found AD1981 - only 2/2 IN/OUT Channels supported\n");
 	}
 
-	/* unmute captures and playbacks volume */
+	 
 	snd_soc_component_write(component, AC97_MASTER, 0x0000);
 	snd_soc_component_write(component, AC97_PCM, 0x0000);
 	snd_soc_component_write(component, AC97_REC_GAIN, 0x0000);
 	snd_soc_component_write(component, AC97_CENTER_LFE_MASTER, 0x0000);
 	snd_soc_component_write(component, AC97_SURROUND_MASTER, 0x0000);
 
-	/*power on LFE/CENTER/Surround DACs*/
+	 
 	ext_status = snd_soc_component_read(component, AC97_EXTENDED_STATUS);
 	snd_soc_component_write(component, AC97_EXTENDED_STATUS, ext_status&~0x3800);
 

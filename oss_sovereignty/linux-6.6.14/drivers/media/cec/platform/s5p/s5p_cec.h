@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/* drivers/media/platform/s5p-cec/s5p_cec.h
- *
- * Samsung S5P HDMI CEC driver
- *
- * Copyright (c) 2014 Samsung Electronics Co., Ltd.
- */
+ 
+ 
 
 #ifndef _S5P_CEC_H_
 #define _S5P_CEC_H_ __FILE__
@@ -43,9 +38,9 @@
 #define CEC_WORKER_TX_DONE		(1 << 0)
 #define CEC_WORKER_RX_MSG		(1 << 1)
 
-/* CEC Rx buffer size */
+ 
 #define CEC_RX_BUFF_SIZE		16
-/* CEC Tx buffer size */
+ 
 #define CEC_TX_BUFF_SIZE		16
 
 enum cec_state {
@@ -73,4 +68,4 @@ struct s5p_cec_dev {
 	struct cec_msg		msg;
 };
 
-#endif /* _S5P_CEC_H_ */
+#endif  

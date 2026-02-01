@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0+ OR BSD-3-Clause)
-/*
- * Copyright 2013-2016 Freescale Semiconductor Inc.
- *
- */
+
+ 
 
 #include <linux/io.h>
 #include <linux/fsl/mc.h>
@@ -49,19 +46,7 @@ static void fsl_mc_io_unset_dpmcp(struct fsl_mc_io *mc_io)
 	dpmcp_dev->mc_io = NULL;
 }
 
-/**
- * fsl_create_mc_io() - Creates an MC I/O object
- *
- * @dev: device to be associated with the MC I/O object
- * @mc_portal_phys_addr: physical address of the MC portal to use
- * @mc_portal_size: size in bytes of the MC portal
- * @dpmcp_dev: Pointer to the DPMCP object associated with this MC I/O
- * object or NULL if none.
- * @flags: flags for the new MC I/O object
- * @new_mc_io: Area to return pointer to newly created MC I/O object
- *
- * Returns '0' on Success; Error code otherwise.
- */
+ 
 int __must_check fsl_create_mc_io(struct device *dev,
 				  phys_addr_t mc_portal_phys_addr,
 				  u32 mc_portal_size,
@@ -122,11 +107,7 @@ error_destroy_mc_io:
 	return error;
 }
 
-/**
- * fsl_destroy_mc_io() - Destroys an MC I/O object
- *
- * @mc_io: MC I/O object to destroy
- */
+ 
 void fsl_destroy_mc_io(struct fsl_mc_io *mc_io)
 {
 	struct fsl_mc_device *dpmcp_dev;
@@ -148,20 +129,7 @@ void fsl_destroy_mc_io(struct fsl_mc_io *mc_io)
 	devm_kfree(mc_io->dev, mc_io);
 }
 
-/**
- * fsl_mc_portal_allocate - Allocates an MC portal
- *
- * @mc_dev: MC device for which the MC portal is to be allocated
- * @mc_io_flags: Flags for the fsl_mc_io object that wraps the allocated
- * MC portal.
- * @new_mc_io: Pointer to area where the pointer to the fsl_mc_io object
- * that wraps the allocated MC portal is to be returned
- *
- * This function allocates an MC portal from the device's parent DPRC,
- * from the corresponding MC bus' pool of MC portals and wraps
- * it in a new fsl_mc_io object. If 'mc_dev' is a DPRC itself, the
- * portal is allocated from its own MC bus.
- */
+ 
 int __must_check fsl_mc_portal_allocate(struct fsl_mc_device *mc_dev,
 					u16 mc_io_flags,
 					struct fsl_mc_io **new_mc_io)
@@ -233,21 +201,13 @@ error_cleanup_resource:
 }
 EXPORT_SYMBOL_GPL(fsl_mc_portal_allocate);
 
-/**
- * fsl_mc_portal_free - Returns an MC portal to the pool of free MC portals
- * of a given MC bus
- *
- * @mc_io: Pointer to the fsl_mc_io object that wraps the MC portal to free
- */
+ 
 void fsl_mc_portal_free(struct fsl_mc_io *mc_io)
 {
 	struct fsl_mc_device *dpmcp_dev;
 	struct fsl_mc_resource *resource;
 
-	/*
-	 * Every mc_io obtained by calling fsl_mc_portal_allocate() is supposed
-	 * to have a DPMCP object associated with.
-	 */
+	 
 	dpmcp_dev = mc_io->dpmcp_dev;
 
 	resource = dpmcp_dev->resource;
@@ -264,11 +224,7 @@ void fsl_mc_portal_free(struct fsl_mc_io *mc_io)
 }
 EXPORT_SYMBOL_GPL(fsl_mc_portal_free);
 
-/**
- * fsl_mc_portal_reset - Resets the dpmcp object for a given fsl_mc_io object
- *
- * @mc_io: Pointer to the fsl_mc_io object that wraps the MC portal to free
- */
+ 
 int fsl_mc_portal_reset(struct fsl_mc_io *mc_io)
 {
 	int error;

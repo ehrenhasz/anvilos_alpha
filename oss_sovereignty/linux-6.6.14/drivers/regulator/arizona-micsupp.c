@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0+
-//
-// arizona-micsupp.c  --  Microphone supply for Arizona devices
-//
-// Copyright 2012 Wolfson Microelectronics PLC.
-//
-// Author: Mark Brown <broonie@opensource.wolfsonmicro.com>
+
+
+
+
+
+
+
 
 #include <linux/module.h>
 #include <linux/moduleparam.h>
@@ -283,7 +283,7 @@ static int arizona_micsupp_common_init(struct platform_device *pdev,
 	else
 		config.init_data = &micsupp->init_data;
 
-	/* Default to regulated mode */
+	 
 	regmap_update_bits(micsupp->regmap, desc->enable_reg, desc->bypass_mask, 0);
 
 	micsupp->regulator = devm_regulator_register(&pdev->dev,
@@ -320,11 +320,7 @@ static int arizona_micsupp_probe(struct platform_device *pdev)
 
 	micsupp->supply.supply = "MICVDD";
 
-	/*
-	 * Since the chip usually supplies itself we provide some
-	 * default init_data for it.  This will be overridden with
-	 * platform data if provided.
-	 */
+	 
 	switch (arizona->type) {
 	case WM5110:
 	case WM8280:
@@ -396,7 +392,7 @@ static void __exit arizona_micsupp_exit(void)
 }
 module_exit(arizona_micsupp_exit);
 
-/* Module information */
+ 
 MODULE_AUTHOR("Mark Brown <broonie@opensource.wolfsonmicro.com>");
 MODULE_DESCRIPTION("Arizona microphone supply driver");
 MODULE_LICENSE("GPL");

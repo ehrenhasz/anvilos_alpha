@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 or BSD-3-Clause */
-/*
- * Copyright(c) 2015 - 2017 Intel Corporation.
- */
+ 
+ 
 #if !defined(__HFI1_TRACE_TX_H) || defined(TRACE_HEADER_MULTI_READ)
 #define __HFI1_TRACE_TX_H
 
@@ -880,7 +878,7 @@ DEFINE_EVENT(
 	TP_ARGS(qp, flag)
 );
 
-DEFINE_EVENT(/* event */
+DEFINE_EVENT( 
 	hfi1_do_send_template, hfi1_rc_do_tid_send,
 	TP_PROTO(struct rvt_qp *qp, bool flag),
 	TP_ARGS(qp, flag)
@@ -892,11 +890,11 @@ DEFINE_EVENT(
 	TP_ARGS(qp, flag)
 );
 
-DECLARE_EVENT_CLASS(/* AIP  */
+DECLARE_EVENT_CLASS( 
 	hfi1_ipoib_txq_template,
 	TP_PROTO(struct hfi1_ipoib_txq *txq),
 	TP_ARGS(txq),
-	TP_STRUCT__entry(/* entry */
+	TP_STRUCT__entry( 
 		DD_DEV_ENTRY(txq->priv->dd)
 		__field(struct hfi1_ipoib_txq *, txq)
 		__field(struct sdma_engine *, sde)
@@ -909,7 +907,7 @@ DECLARE_EVENT_CLASS(/* AIP  */
 		__field(u8, idx)
 		__field(u8, stopped)
 	),
-	TP_fast_assign(/* assign */
+	TP_fast_assign( 
 		DD_DEV_ASSIGN(txq->priv->dd);
 		__entry->txq = txq;
 		__entry->sde = txq->sde;
@@ -925,7 +923,7 @@ DECLARE_EVENT_CLASS(/* AIP  */
 		__entry->stopped =
 		 __netif_subqueue_stopped(txq->priv->netdev, txq->q_idx);
 	),
-	TP_printk(/* print  */
+	TP_printk( 
 		"[%s] txq %llx idx %u sde %llx:%u cpu %d head %lx tail %lx flow %x used %u stops %d no_desc %d stopped %u",
 		__get_str(dev),
 		(unsigned long long)__entry->txq,
@@ -943,79 +941,79 @@ DECLARE_EVENT_CLASS(/* AIP  */
 	)
 );
 
-DEFINE_EVENT(/* queue stop */
+DEFINE_EVENT( 
 	hfi1_ipoib_txq_template, hfi1_txq_stop,
 	TP_PROTO(struct hfi1_ipoib_txq *txq),
 	TP_ARGS(txq)
 );
 
-DEFINE_EVENT(/* queue wake */
+DEFINE_EVENT( 
 	hfi1_ipoib_txq_template, hfi1_txq_wake,
 	TP_PROTO(struct hfi1_ipoib_txq *txq),
 	TP_ARGS(txq)
 );
 
-DEFINE_EVENT(/* flow flush */
+DEFINE_EVENT( 
 	hfi1_ipoib_txq_template, hfi1_flow_flush,
 	TP_PROTO(struct hfi1_ipoib_txq *txq),
 	TP_ARGS(txq)
 );
 
-DEFINE_EVENT(/* flow switch */
+DEFINE_EVENT( 
 	hfi1_ipoib_txq_template, hfi1_flow_switch,
 	TP_PROTO(struct hfi1_ipoib_txq *txq),
 	TP_ARGS(txq)
 );
 
-DEFINE_EVENT(/* wakeup */
+DEFINE_EVENT( 
 	hfi1_ipoib_txq_template, hfi1_txq_wakeup,
 	TP_PROTO(struct hfi1_ipoib_txq *txq),
 	TP_ARGS(txq)
 );
 
-DEFINE_EVENT(/* full */
+DEFINE_EVENT( 
 	hfi1_ipoib_txq_template, hfi1_txq_full,
 	TP_PROTO(struct hfi1_ipoib_txq *txq),
 	TP_ARGS(txq)
 );
 
-DEFINE_EVENT(/* queued */
+DEFINE_EVENT( 
 	hfi1_ipoib_txq_template, hfi1_txq_queued,
 	TP_PROTO(struct hfi1_ipoib_txq *txq),
 	TP_ARGS(txq)
 );
 
-DEFINE_EVENT(/* xmit_stopped */
+DEFINE_EVENT( 
 	hfi1_ipoib_txq_template, hfi1_txq_xmit_stopped,
 	TP_PROTO(struct hfi1_ipoib_txq *txq),
 	TP_ARGS(txq)
 );
 
-DEFINE_EVENT(/* xmit_unstopped */
+DEFINE_EVENT( 
 	hfi1_ipoib_txq_template, hfi1_txq_xmit_unstopped,
 	TP_PROTO(struct hfi1_ipoib_txq *txq),
 	TP_ARGS(txq)
 );
 
-DECLARE_EVENT_CLASS(/* AIP  */
+DECLARE_EVENT_CLASS( 
 	hfi1_ipoib_tx_template,
 	TP_PROTO(struct ipoib_txreq *tx, u32 idx),
 	TP_ARGS(tx, idx),
-	TP_STRUCT__entry(/* entry */
+	TP_STRUCT__entry( 
 		DD_DEV_ENTRY(tx->txq->priv->dd)
 		__field(struct ipoib_txreq *, tx)
 		__field(struct hfi1_ipoib_txq *, txq)
 		__field(struct sk_buff *, skb)
 		__field(ulong, idx)
 	),
-	TP_fast_assign(/* assign */
+	TP_fast_assign( 
 		DD_DEV_ASSIGN(tx->txq->priv->dd);
 		__entry->tx = tx;
 		__entry->skb = tx->skb;
 		__entry->txq = tx->txq;
 		__entry->idx = idx;
 	),
-	TP_printk(/* print  */
+	TP_printk( 
 		"[%s] tx %llx txq %llx,%u skb %llx idx %lu",
 		__get_str(dev),
 		(unsigned long long)__entry->tx,
@@ -1026,37 +1024,37 @@ DECLARE_EVENT_CLASS(/* AIP  */
 	)
 );
 
-DEFINE_EVENT(/* produce */
+DEFINE_EVENT( 
 	hfi1_ipoib_tx_template, hfi1_tx_produce,
 	TP_PROTO(struct ipoib_txreq *tx, u32 idx),
 	TP_ARGS(tx, idx)
 );
 
-DEFINE_EVENT(/* consume */
+DEFINE_EVENT( 
 	hfi1_ipoib_tx_template, hfi1_tx_consume,
 	TP_PROTO(struct ipoib_txreq *tx, u32 idx),
 	TP_ARGS(tx, idx)
 );
 
-DEFINE_EVENT(/* alloc_tx */
+DEFINE_EVENT( 
 	hfi1_ipoib_txq_template, hfi1_txq_alloc_tx,
 	TP_PROTO(struct hfi1_ipoib_txq *txq),
 	TP_ARGS(txq)
 );
 
-DEFINE_EVENT(/* poll */
+DEFINE_EVENT( 
 	hfi1_ipoib_txq_template, hfi1_txq_poll,
 	TP_PROTO(struct hfi1_ipoib_txq *txq),
 	TP_ARGS(txq)
 );
 
-DEFINE_EVENT(/* complete */
+DEFINE_EVENT( 
 	hfi1_ipoib_txq_template, hfi1_txq_complete,
 	TP_PROTO(struct hfi1_ipoib_txq *txq),
 	TP_ARGS(txq)
 );
 
-#endif /* __HFI1_TRACE_TX_H */
+#endif  
 
 #undef TRACE_INCLUDE_PATH
 #undef TRACE_INCLUDE_FILE

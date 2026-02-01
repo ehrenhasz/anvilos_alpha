@@ -1,8 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0-only
-//
-// tegra210_mixer.c - Tegra210 MIXER driver
-//
-// Copyright (c) 2021 NVIDIA CORPORATION.  All rights reserved.
+
+
+
+
+
 
 #include <linux/clk.h>
 #include <linux/device.h>
@@ -40,7 +40,7 @@
 #define REG_DURATION_PARAM(reg, i) ((reg) + NUM_GAIN_POLY_COEFFS + 1 + (i))
 
 static const struct reg_default tegra210_mixer_reg_defaults[] = {
-	/* Inputs */
+	 
 	MIXER_RX_REG_DEFAULTS(0),
 	MIXER_RX_REG_DEFAULTS(1),
 	MIXER_RX_REG_DEFAULTS(2),
@@ -51,7 +51,7 @@ static const struct reg_default tegra210_mixer_reg_defaults[] = {
 	MIXER_RX_REG_DEFAULTS(7),
 	MIXER_RX_REG_DEFAULTS(8),
 	MIXER_RX_REG_DEFAULTS(9),
-	/* Outputs */
+	 
 	MIXER_TX_REG_DEFAULTS(0),
 	MIXER_TX_REG_DEFAULTS(1),
 	MIXER_TX_REG_DEFAULTS(2),
@@ -64,13 +64,13 @@ static const struct reg_default tegra210_mixer_reg_defaults[] = {
 	{ TEGRA210_MIXER_ENABLE, 0x1 },
 };
 
-/* Default gain parameters */
+ 
 static const struct tegra210_mixer_gain_params gain_params = {
-	/* Polynomial coefficients */
+	 
 	{ 0, 0, 0, 0, 0, 0, 0, 0x1000000, 0 },
-	/* Gain value */
+	 
 	0x10000,
-	/* Duration Parameters */
+	 
 	{ 0, 0, 0x400, 0x8000000 },
 };
 
@@ -101,7 +101,7 @@ static int tegra210_mixer_write_ram(struct tegra210_mixer *mixer,
 	unsigned int reg, val;
 	int err;
 
-	/* Check if busy */
+	 
 	err = regmap_read_poll_timeout(mixer->regmap,
 				       TEGRA210_MIXER_GAIN_CFG_RAM_CTRL,
 				       val, !(val & 0x80000000), 10, 10000);
@@ -133,7 +133,7 @@ static int tegra210_mixer_configure_gain(struct snd_soc_component *cmpnt,
 
 	pm_runtime_get_sync(cmpnt->dev);
 
-	/* Write default gain poly coefficients */
+	 
 	for (i = 0; i < NUM_GAIN_POLY_COEFFS; i++) {
 		err = tegra210_mixer_write_ram(mixer, reg + i,
 					       gain_params.poly_coeff[i]);
@@ -142,13 +142,13 @@ static int tegra210_mixer_configure_gain(struct snd_soc_component *cmpnt,
 			goto rpm_put;
 	}
 
-	/* Write stored gain value */
+	 
 	err = tegra210_mixer_write_ram(mixer, reg + NUM_GAIN_POLY_COEFFS,
 				       mixer->gain_value[id]);
 	if (err < 0)
 		goto rpm_put;
 
-	/* Write duration parameters */
+	 
 	for (i = 0; i < NUM_DURATION_PARMS; i++) {
 		int val;
 
@@ -164,7 +164,7 @@ static int tegra210_mixer_configure_gain(struct snd_soc_component *cmpnt,
 			goto rpm_put;
 	}
 
-	/* Trigger to apply gain configurations */
+	 
 	err = tegra210_mixer_write_ram(mixer, reg + REG_CFG_DONE_TRIGGER,
 				       VAL_CFG_DONE_TRIGGER);
 
@@ -203,7 +203,7 @@ static int tegra210_mixer_apply_gain(struct snd_kcontrol *kcontrol,
 	unsigned int reg = mc->reg, id;
 	int err;
 
-	/* Save gain value for specific MIXER input */
+	 
 	id = (reg - TEGRA210_MIXER_GAIN_CFG_RAM_ADDR_0) /
 	     TEGRA210_MIXER_GAIN_CFG_RAM_ADDR_STRIDE;
 
@@ -352,7 +352,7 @@ static const struct snd_soc_dai_ops tegra210_mixer_in_dai_ops = {
 	}
 
 static struct snd_soc_dai_driver tegra210_mixer_dais[] = {
-	/* Mixer Input */
+	 
 	IN_DAI(1),
 	IN_DAI(2),
 	IN_DAI(3),
@@ -364,7 +364,7 @@ static struct snd_soc_dai_driver tegra210_mixer_dais[] = {
 	IN_DAI(9),
 	IN_DAI(10),
 
-	/* Mixer Output */
+	 
 	OUT_DAI(1),
 	OUT_DAI(2),
 	OUT_DAI(3),
@@ -402,7 +402,7 @@ ADDER_CTRL_DECL(adder5, TEGRA210_MIXER_TX5_ADDER_CONFIG);
 		       0x20000, 0, tegra210_mixer_get_gain,	\
 		       tegra210_mixer_put_instant_gain),
 
-/* Volume controls for all MIXER inputs */
+ 
 static const struct snd_kcontrol_new tegra210_mixer_gain_ctls[] = {
 	GAIN_CTRL(1)
 	GAIN_CTRL(2)
@@ -481,7 +481,7 @@ static const struct snd_soc_dapm_widget tegra210_mixer_widgets[] = {
 	TX_ROUTES(id, "Capture")
 
 static const struct snd_soc_dapm_route tegra210_mixer_routes[] = {
-	/* Input */
+	 
 	MIXER_RX_ROUTES(1),
 	MIXER_RX_ROUTES(2),
 	MIXER_RX_ROUTES(3),
@@ -492,7 +492,7 @@ static const struct snd_soc_dapm_route tegra210_mixer_routes[] = {
 	MIXER_RX_ROUTES(8),
 	MIXER_RX_ROUTES(9),
 	MIXER_RX_ROUTES(10),
-	/* Output */
+	 
 	MIXER_TX_ROUTES(1),
 	MIXER_TX_ROUTES(2),
 	MIXER_TX_ROUTES(3),
@@ -626,7 +626,7 @@ static int tegra210_mixer_platform_probe(struct platform_device *pdev)
 
 	dev_set_drvdata(dev, mixer);
 
-	/* Use default gain value for all MIXER inputs */
+	 
 	for (i = 0; i < TEGRA210_MIXER_RX_MAX; i++)
 		mixer->gain_value[i] = gain_params.gain_value;
 

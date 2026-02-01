@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: (LGPL-2.1 OR BSD-2-Clause) */
-/* Copyright (c) 2021 Facebook */
+ 
+ 
 #ifndef __BPF_GEN_INTERNAL_H
 #define __BPF_GEN_INTERNAL_H
 
@@ -19,9 +19,9 @@ struct ksym_desc {
 	int ref;
 	int kind;
 	union {
-		/* used for kfunc */
+		 
 		int off;
-		/* used for typeless ksym */
+		 
 		bool typeless;
 	};
 	int insn;

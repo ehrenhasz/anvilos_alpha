@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: (GPL-2.0+ OR BSD-3-Clause) */
-/* Copyright 2019 NXP */
+ 
+ 
 #ifndef DPAA2_MAC_H
 #define DPAA2_MAC_H
 
@@ -57,4 +57,4 @@ void dpaa2_mac_start(struct dpaa2_mac *mac);
 
 void dpaa2_mac_stop(struct dpaa2_mac *mac);
 
-#endif /* DPAA2_MAC_H */
+#endif  

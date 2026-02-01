@@ -1,17 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Support for Intel Camera Imaging ISP subsystem.
- * Copyright (c) 2015, Intel Corporation.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms and conditions of the GNU General Public License,
- * version 2, as published by the Free Software Foundation.
- *
- * This program is distributed in the hope it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- * more details.
- */
+ 
+ 
 
 #ifndef __GDC_GLOBAL_H_INCLUDED__
 #define __GDC_GLOBAL_H_INCLUDED__
@@ -21,19 +9,17 @@
 #include <type_support.h>
 #include "gdc_v2_defs.h"
 
-/*
- * Storage addresses for packed data transfer
- */
+ 
 #define GDC_PARAM_ICX_LEFT_ROUNDED_IDX            0
 #define GDC_PARAM_OXDIM_FLOORED_IDX               1
 #define GDC_PARAM_OXDIM_LAST_IDX                  2
 #define GDC_PARAM_WOIX_LAST_IDX                   3
 #define GDC_PARAM_IY_TOPLEFT_IDX                  4
 #define GDC_PARAM_CHUNK_CNT_IDX                   5
-/*#define GDC_PARAM_ELEMENTS_PER_XMEM_ADDR_IDX    6 */		/* Derived from bpp */
+ 		 
 #define GDC_PARAM_BPP_IDX                         6
 #define GDC_PARAM_BLOCK_HEIGHT_IDX                7
-/*#define GDC_PARAM_DMA_CHANNEL_STRIDE_A_IDX      8*/		/* The DMA stride == the GDC buffer stride */
+ 		 
 #define GDC_PARAM_WOIX_IDX                        8
 #define GDC_PARAM_DMA_CHANNEL_STRIDE_B_IDX        9
 #define GDC_PARAM_DMA_CHANNEL_WIDTH_A_IDX        10
@@ -44,10 +30,10 @@
 #define GDC_PARAM_COMMAND_IDX                    15
 #define N_GDC_PARAM                              16
 
-/* Because of the packed parameter transfer max(params) == max(fragments) */
+ 
 #define	N_GDC_FRAGMENTS		N_GDC_PARAM
 
-/* The GDC is capable of higher internal precision than the parameter data structures */
+ 
 #define HRT_GDC_COORD_SCALE_BITS	6
 #define HRT_GDC_COORD_SCALE			BIT(HRT_GDC_COORD_SCALE_BITS)
 
@@ -87,4 +73,4 @@ typedef struct gdc_warp_param_mem_s {
 	u32      padding[3];
 } gdc_warp_param_mem_t;
 
-#endif /* __GDC_GLOBAL_H_INCLUDED__ */
+#endif  

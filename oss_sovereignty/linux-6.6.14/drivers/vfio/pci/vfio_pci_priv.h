@@ -1,14 +1,14 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
+ 
 #ifndef VFIO_PCI_PRIV_H
 #define VFIO_PCI_PRIV_H
 
 #include <linux/vfio_pci_core.h>
 
-/* Special capability IDs predefined access */
-#define PCI_CAP_ID_INVALID		0xFF	/* default raw access */
-#define PCI_CAP_ID_INVALID_VIRT		0xFE	/* default virt access */
+ 
+#define PCI_CAP_ID_INVALID		0xFF	 
+#define PCI_CAP_ID_INVALID_VIRT		0xFE	 
 
-/* Cap maximum number of ioeventfds per device (arbitrary) */
+ 
 #define VFIO_PCI_IOEVENTFD_MAX		1000
 
 struct vfio_pci_ioeventfd {

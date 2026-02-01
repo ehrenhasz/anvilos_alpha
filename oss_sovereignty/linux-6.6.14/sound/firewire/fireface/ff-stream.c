@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * ff-stream.c - a part of driver for RME Fireface series
- *
- * Copyright (c) 2015-2017 Takashi Sakamoto
- */
+
+ 
 
 #include "ff.h"
 
@@ -94,10 +90,7 @@ int snd_ff_stream_init_duplex(struct snd_ff *ff)
 	return err;
 }
 
-/*
- * This function should be called before starting streams or after stopping
- * streams.
- */
+ 
 void snd_ff_stream_destroy_duplex(struct snd_ff *ff)
 {
 	amdtp_domain_destroy(&ff->domain);
@@ -178,10 +171,7 @@ int snd_ff_stream_start_duplex(struct snd_ff *ff, unsigned int rate)
 		finish_session(ff);
 	}
 
-	/*
-	 * Regardless of current source of clock signal, drivers transfer some
-	 * packets. Then, the device transfers packets.
-	 */
+	 
 	if (!amdtp_stream_running(&ff->rx_stream)) {
 		int spd = fw_parent_device(ff->unit)->max_speed;
 
@@ -199,10 +189,10 @@ int snd_ff_stream_start_duplex(struct snd_ff *ff, unsigned int rate)
 		if (err < 0)
 			goto error;
 
-		// NOTE: The device doesn't transfer packets unless receiving any packet. The
-		// sequence of tx packets includes cycle skip corresponding to empty packet or
-		// NODATA packet in IEC 61883-1/6. The sequence of the number of data blocks per
-		// packet is important for media clock recovery.
+		
+		
+		
+		
 		err = amdtp_domain_start(&ff->domain, 0, true, true);
 		if (err < 0)
 			goto error;
@@ -240,7 +230,7 @@ void snd_ff_stream_update_duplex(struct snd_ff *ff)
 {
 	amdtp_domain_stop(&ff->domain);
 
-	// The device discontinue to transfer packets.
+	
 	amdtp_stream_pcm_abort(&ff->tx_stream);
 	amdtp_stream_pcm_abort(&ff->rx_stream);
 }
@@ -257,13 +247,13 @@ int snd_ff_stream_lock_try(struct snd_ff *ff)
 
 	spin_lock_irq(&ff->lock);
 
-	/* user land lock this */
+	 
 	if (ff->dev_lock_count < 0) {
 		err = -EBUSY;
 		goto end;
 	}
 
-	/* this is the first time */
+	 
 	if (ff->dev_lock_count++ == 0)
 		snd_ff_stream_lock_changed(ff);
 	err = 0;

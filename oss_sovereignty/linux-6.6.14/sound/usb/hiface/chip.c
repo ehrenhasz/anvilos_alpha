@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Linux driver for M2Tech hiFace compatible devices
- *
- * Copyright 2012-2013 (C) M2TECH S.r.l and Amarula Solutions B.V.
- *
- * Authors:  Michael Trimarchi <michael@amarulasolutions.com>
- *           Antonio Ospite <ao2@amarulasolutions.com>
- *
- * The driver is based on the work done in TerraTec DMX 6Fire USB
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/slab.h>
@@ -22,9 +13,9 @@ MODULE_AUTHOR("Antonio Ospite <ao2@amarulasolutions.com>");
 MODULE_DESCRIPTION("M2Tech hiFace USB-SPDIF audio driver");
 MODULE_LICENSE("GPL v2");
 
-static int index[SNDRV_CARDS] = SNDRV_DEFAULT_IDX; /* Index 0-max */
-static char *id[SNDRV_CARDS] = SNDRV_DEFAULT_STR; /* Id for card */
-static bool enable[SNDRV_CARDS] = SNDRV_DEFAULT_ENABLE_PNP; /* Enable this card */
+static int index[SNDRV_CARDS] = SNDRV_DEFAULT_IDX;  
+static char *id[SNDRV_CARDS] = SNDRV_DEFAULT_STR;  
+static bool enable[SNDRV_CARDS] = SNDRV_DEFAULT_ENABLE_PNP;  
 
 #define DRIVER_NAME "snd-usb-hiface"
 #define CARD_NAME "hiFace"
@@ -55,7 +46,7 @@ static int hiface_chip_create(struct usb_interface *intf,
 
 	*rchip = NULL;
 
-	/* if we are here, card can be registered in alsa. */
+	 
 	ret = snd_card_new(&intf->dev, index[idx], id[idx], THIS_MODULE,
 			   sizeof(*chip), &card);
 	if (ret < 0) {
@@ -99,7 +90,7 @@ static int hiface_chip_probe(struct usb_interface *intf,
 		return -EIO;
 	}
 
-	/* check whether the card is already registered */
+	 
 	chip = NULL;
 	mutex_lock(&register_mutex);
 
@@ -150,7 +141,7 @@ static void hiface_chip_disconnect(struct usb_interface *intf)
 
 	card = chip->card;
 
-	/* Make sure that the userspace cannot create new request */
+	 
 	snd_card_disconnect(card);
 
 	hiface_pcm_abort(chip);

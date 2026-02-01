@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * net/core/dst.c	Protocol independent destination cache.
- *
- * Authors:		Alexey Kuznetsov, <kuznet@ms2.inr.ac.ru>
- *
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/errno.h>
@@ -35,11 +30,7 @@ int dst_discard_out(struct net *net, struct sock *sk, struct sk_buff *skb)
 EXPORT_SYMBOL(dst_discard_out);
 
 const struct dst_metrics dst_default_metrics = {
-	/* This initializer is needed to force linker to place this variable
-	 * into const section. Otherwise it might end into bss section.
-	 * We really want to avoid false sharing on this variable, and catch
-	 * any writes on it.
-	 */
+	 
 	.refcnt = REFCOUNT_INIT(1),
 };
 EXPORT_SYMBOL(dst_default_metrics);
@@ -137,15 +128,7 @@ static void dst_destroy_rcu(struct rcu_head *head)
 	dst = dst_destroy(dst);
 }
 
-/* Operations to mark dst as DEAD and clean up the net device referenced
- * by dst:
- * 1. put the dst under blackhole interface and discard all tx/rx packets
- *    on this route.
- * 2. release the net_device
- * This function should be called when removing routes from the fib tree
- * in preparation for a NETDEV_DOWN/NETDEV_UNREGISTER event and also to
- * make the next dst_ops->check() fail.
- */
+ 
 void dst_dev_put(struct dst_entry *dst)
 {
 	struct net_device *dev = dst->dev;
@@ -204,7 +187,7 @@ u32 *dst_cow_metrics_generic(struct dst_entry *dst, unsigned long old)
 }
 EXPORT_SYMBOL(dst_cow_metrics_generic);
 
-/* Caller asserts that dst_metrics_read_only(dst) is false.  */
+ 
 void __dst_destroy_metrics_generic(struct dst_entry *dst, unsigned long old)
 {
 	unsigned long prev, new;

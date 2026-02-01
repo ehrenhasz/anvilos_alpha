@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  CLPS711X SPI bus driver
- *
- *  Copyright (C) 2012-2016 Alexander Shiyan <shc_work@mail.ru>
- */
+
+ 
 
 #include <linux/io.h>
 #include <linux/clk.h>
@@ -39,7 +35,7 @@ static int spi_clps711x_prepare_message(struct spi_controller *host,
 	struct spi_clps711x_data *hw = spi_controller_get_devdata(host);
 	struct spi_device *spi = msg->spi;
 
-	/* Setup mode for transfer */
+	 
 	return regmap_update_bits(hw->syscon, SYSCON_OFFSET, SYSCON3_ADCCKNSEN,
 				  (spi->mode & SPI_CPHA) ?
 				  SYSCON3_ADCCKNSEN : 0);
@@ -59,7 +55,7 @@ static int spi_clps711x_transfer_one(struct spi_controller *host,
 	hw->tx_buf = (u8 *)xfer->tx_buf;
 	hw->rx_buf = (u8 *)xfer->rx_buf;
 
-	/* Initiate transfer */
+	 
 	data = hw->tx_buf ? *hw->tx_buf++ : 0;
 	writel(data | SYNCIO_FRMLEN(hw->bpw) | SYNCIO_TXFRMEN, hw->syncio);
 
@@ -72,12 +68,12 @@ static irqreturn_t spi_clps711x_isr(int irq, void *dev_id)
 	struct spi_clps711x_data *hw = spi_controller_get_devdata(host);
 	u8 data;
 
-	/* Handle RX */
+	 
 	data = readb(hw->syncio);
 	if (hw->rx_buf)
 		*hw->rx_buf++ = data;
 
-	/* Handle TX */
+	 
 	if (--hw->len > 0) {
 		data = hw->tx_buf ? *hw->tx_buf++ : 0;
 		writel(data | SYNCIO_FRMLEN(hw->bpw) | SYNCIO_TXFRMEN,
@@ -131,10 +127,10 @@ static int spi_clps711x_probe(struct platform_device *pdev)
 		goto err_out;
 	}
 
-	/* Disable extended mode due hardware problems */
+	 
 	regmap_update_bits(hw->syscon, SYSCON_OFFSET, SYSCON3_ADCCON, 0);
 
-	/* Clear possible pending interrupt */
+	 
 	readl(hw->syncio);
 
 	ret = devm_request_irq(&pdev->dev, irq, spi_clps711x_isr, 0,

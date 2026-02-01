@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *	IEEE 802.1Q Multiple VLAN Registration Protocol (MVRP)
- *
- *	Copyright (c) 2012 Massachusetts Institute of Technology
- *
- *	Adapted from code in net/8021q/vlan_gvrp.c
- *	Copyright (c) 2008 Patrick McHardy <kaber@trash.net>
- */
+
+ 
 #include <linux/types.h>
 #include <linux/if_ether.h>
 #include <linux/if_vlan.h>

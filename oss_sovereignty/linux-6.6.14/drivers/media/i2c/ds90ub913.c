@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Driver for the Texas Instruments DS90UB913 video serializer
- *
- * Based on a driver from Luca Ceresoli <luca@lucaceresoli.net>
- *
- * Copyright (c) 2019 Luca Ceresoli <luca@lucaceresoli.net>
- * Copyright (c) 2023 Tomi Valkeinen <tomi.valkeinen@ideasonboard.com>
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/clk.h>
@@ -28,10 +21,7 @@
 #define UB913_PAD_SINK			0
 #define UB913_PAD_SOURCE		1
 
-/*
- * UB913 has 4 gpios, but gpios 3 and 4 are reserved for external oscillator
- * mode. Thus we only support 2 gpios for now.
- */
+ 
 #define UB913_NUM_GPIOS			2
 
 #define UB913_REG_RESET_CTL			0x01
@@ -99,7 +89,7 @@ struct ub913_format_info {
 };
 
 static const struct ub913_format_info ub913_formats[] = {
-	/* Only RAW10 with 8-bit payload is supported at the moment */
+	 
 	{ .incode = MEDIA_BUS_FMT_YUYV8_2X8, .outcode = MEDIA_BUS_FMT_YUYV8_1X16 },
 	{ .incode = MEDIA_BUS_FMT_UYVY8_2X8, .outcode = MEDIA_BUS_FMT_UYVY8_1X16 },
 	{ .incode = MEDIA_BUS_FMT_VYUY8_2X8, .outcode = MEDIA_BUS_FMT_VYUY8_1X16 },
@@ -146,9 +136,7 @@ static int ub913_write(const struct ub913_data *priv, u8 reg, u8 val)
 	return ret;
 }
 
-/*
- * GPIO chip
- */
+ 
 static int ub913_gpio_get_direction(struct gpio_chip *gc, unsigned int offset)
 {
 	return GPIO_LINE_DIRECTION_OUT;
@@ -189,7 +177,7 @@ static int ub913_gpiochip_probe(struct ub913_data *priv)
 	struct gpio_chip *gc = &priv->gpio_chip;
 	int ret;
 
-	/* Initialize GPIOs 0 and 1 to local control, tri-state */
+	 
 	ub913_write(priv, UB913_REG_GPIO_CFG(0), 0);
 
 	gc->label = dev_name(dev);
@@ -226,9 +214,7 @@ static const struct regmap_config ub913_regmap_config = {
 	.val_format_endian = REGMAP_ENDIAN_DEFAULT,
 };
 
-/*
- * V4L2
- */
+ 
 
 static int ub913_enable_streams(struct v4l2_subdev *sd,
 				struct v4l2_subdev_state *state, u32 pad,
@@ -302,10 +288,7 @@ static int _ub913_set_routing(struct v4l2_subdev *sd,
 	unsigned int i;
 	int ret;
 
-	/*
-	 * Note: we can only support up to V4L2_FRAME_DESC_ENTRY_MAX, until
-	 * frame desc is made dynamically allocated.
-	 */
+	 
 
 	if (routing->num_routes > V4L2_FRAME_DESC_ENTRY_MAX)
 		return -EINVAL;
@@ -415,7 +398,7 @@ static int ub913_set_fmt(struct v4l2_subdev *sd,
 	    priv->enabled_source_streams)
 		return -EBUSY;
 
-	/* Source format is fully defined by the sink format, so not settable */
+	 
 	if (format->pad == UB913_PAD_SOURCE)
 		return v4l2_subdev_get_fmt(sd, state, format);
 
@@ -425,7 +408,7 @@ static int ub913_set_fmt(struct v4l2_subdev *sd,
 		format->format.code = finfo->incode;
 	}
 
-	/* Set sink format */
+	 
 	fmt = v4l2_subdev_state_get_stream_format(state, format->pad,
 						  format->stream);
 	if (!fmt)
@@ -433,7 +416,7 @@ static int ub913_set_fmt(struct v4l2_subdev *sd,
 
 	*fmt = format->format;
 
-	/* Propagate to source format, and adjust the mbus code */
+	 
 	fmt = v4l2_subdev_state_get_opposite_stream_format(state, format->pad,
 							   format->stream);
 	if (!fmt)
@@ -480,7 +463,7 @@ static int ub913_log_status(struct v4l2_subdev *sd)
 	ub913_read(priv, UB913_REG_CRC_ERRORS_MSB, &v2);
 	dev_info(dev, "CRC errors %u\n", v1 | (v2 << 8));
 
-	/* clear CRC errors */
+	 
 	ub913_read(priv, UB913_REG_GENERAL_CFG, &v);
 	ub913_write(priv, UB913_REG_GENERAL_CFG,
 		    v | UB913_REG_GENERAL_CFG_CRC_ERR_RESET);
@@ -631,9 +614,9 @@ static int ub913_register_clkout(struct ub913_data *priv)
 
 static int ub913_i2c_master_init(struct ub913_data *priv)
 {
-	/* i2c fast mode */
-	u32 scl_high = 600 + 300; /* high period + rise time, ns */
-	u32 scl_low = 1300 + 300; /* low period + fall time, ns */
+	 
+	u32 scl_high = 600 + 300;  
+	u32 scl_low = 1300 + 300;  
 	unsigned long ref;
 	int ret;
 
@@ -817,10 +800,7 @@ static int ub913_probe(struct i2c_client *client)
 		return dev_err_probe(dev, PTR_ERR(priv->regmap),
 				     "Failed to init regmap\n");
 
-	/*
-	 * ub913 can also work without ext clock, but that is not supported by
-	 * the driver yet.
-	 */
+	 
 	priv->clkin = devm_clk_get(dev, "clkin");
 	if (IS_ERR(priv->clkin))
 		return dev_err_probe(dev, PTR_ERR(priv->clkin),

@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* XTS: as defined in IEEE1619/D16
- *	http://grouper.ieee.org/groups/1619/email/pdf00086.pdf
- *
- * Copyright (c) 2007 Rik Snel <rsnel@cube.dyndns.org>
- *
- * Based on ecb.c
- * Copyright (c) 2006 Herbert Xu <herbert@gondor.apana.org.au>
- */
+
+ 
 #include <crypto/internal/cipher.h>
 #include <crypto/internal/skcipher.h>
 #include <crypto/scatterwalk.h>
@@ -52,11 +45,9 @@ static int xts_setkey(struct crypto_skcipher *parent, const u8 *key,
 
 	keylen /= 2;
 
-	/* we need two cipher instances: one to compute the initial 'tweak'
-	 * by encrypting the IV (usually the 'plain' iv) and the other
-	 * one to encrypt and decrypt the data */
+	 
 
-	/* tweak cipher, uses Key2 i.e. the second half of *key */
+	 
 	tweak = ctx->tweak;
 	crypto_cipher_clear_flags(tweak, CRYPTO_TFM_REQ_MASK);
 	crypto_cipher_set_flags(tweak, crypto_skcipher_get_flags(parent) &
@@ -65,7 +56,7 @@ static int xts_setkey(struct crypto_skcipher *parent, const u8 *key,
 	if (err)
 		return err;
 
-	/* data cipher, uses Key1 i.e. the first half of *key */
+	 
 	child = ctx->child;
 	crypto_skcipher_clear_flags(child, CRYPTO_TFM_REQ_MASK);
 	crypto_skcipher_set_flags(child, crypto_skcipher_get_flags(parent) &
@@ -73,12 +64,7 @@ static int xts_setkey(struct crypto_skcipher *parent, const u8 *key,
 	return crypto_skcipher_setkey(child, key, keylen);
 }
 
-/*
- * We compute the tweak masks twice (both before and after the ECB encryption or
- * decryption) to avoid having to allocate a temporary buffer and/or make
- * mutliple calls to the 'ecb(..)' instance, which usually would be slower than
- * just doing the gf128mul_x_ble() calls again.
- */
+ 
 static int xts_xor_tweak(struct skcipher_request *req, bool second_pass,
 			 bool enc)
 {
@@ -92,7 +78,7 @@ static int xts_xor_tweak(struct skcipher_request *req, bool second_pass,
 
 	if (second_pass) {
 		req = &rctx->subreq;
-		/* set to our TFM to enforce correct alignment: */
+		 
 		skcipher_request_set_tfm(req, tfm);
 	}
 	err = skcipher_walk_virt(&w, req, false);
@@ -252,7 +238,7 @@ static int xts_init_crypt(struct skcipher_request *req,
 	skcipher_request_set_crypt(subreq, req->dst, req->dst,
 				   req->cryptlen & ~(XTS_BLOCK_SIZE - 1), NULL);
 
-	/* calculate first value of T */
+	 
 	crypto_cipher_encrypt_one(ctx->tweak, (u8 *)&rctx->t, req->iv);
 
 	return 0;
@@ -394,9 +380,7 @@ static int xts_create(struct crypto_template *tmpl, struct rtattr **tb)
 	err = -EINVAL;
 	cipher_name = alg->base.cra_name;
 
-	/* Alas we screwed up the naming so we have to mangle the
-	 * cipher name.
-	 */
+	 
 	if (!strncmp(cipher_name, "ecb(", 4)) {
 		int len;
 

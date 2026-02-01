@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- *  Copyright 2016-2023 Broadcom Inc. All rights reserved.
- *
- */
+ 
+ 
 #ifndef MPI30_PCI_H
 #define MPI30_PCI_H     1
 #ifndef MPI3_NVME_ENCAP_CMD_MAX

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Driver for the Texas Instruments DP83848 PHY
- *
- * Copyright (C) 2015-2016 Texas Instruments Incorporated - http://www.ti.com/
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/phy.h>
@@ -13,23 +9,23 @@
 #define NS_DP83848C_PHY_ID		0x20005c90
 #define TLK10X_PHY_ID			0x2000a210
 
-/* Registers */
-#define DP83848_MICR			0x11 /* MII Interrupt Control Register */
-#define DP83848_MISR			0x12 /* MII Interrupt Status Register */
+ 
+#define DP83848_MICR			0x11  
+#define DP83848_MISR			0x12  
 
-/* MICR Register Fields */
-#define DP83848_MICR_INT_OE		BIT(0) /* Interrupt Output Enable */
-#define DP83848_MICR_INTEN		BIT(1) /* Interrupt Enable */
+ 
+#define DP83848_MICR_INT_OE		BIT(0)  
+#define DP83848_MICR_INTEN		BIT(1)  
 
-/* MISR Register Fields */
-#define DP83848_MISR_RHF_INT_EN		BIT(0) /* Receive Error Counter */
-#define DP83848_MISR_FHF_INT_EN		BIT(1) /* False Carrier Counter */
-#define DP83848_MISR_ANC_INT_EN		BIT(2) /* Auto-negotiation complete */
-#define DP83848_MISR_DUP_INT_EN		BIT(3) /* Duplex Status */
-#define DP83848_MISR_SPD_INT_EN		BIT(4) /* Speed status */
-#define DP83848_MISR_LINK_INT_EN	BIT(5) /* Link status */
-#define DP83848_MISR_ED_INT_EN		BIT(6) /* Energy detect */
-#define DP83848_MISR_LQM_INT_EN		BIT(7) /* Link Quality Monitor */
+ 
+#define DP83848_MISR_RHF_INT_EN		BIT(0)  
+#define DP83848_MISR_FHF_INT_EN		BIT(1)  
+#define DP83848_MISR_ANC_INT_EN		BIT(2)  
+#define DP83848_MISR_DUP_INT_EN		BIT(3)  
+#define DP83848_MISR_SPD_INT_EN		BIT(4)  
+#define DP83848_MISR_LINK_INT_EN	BIT(5)  
+#define DP83848_MISR_ED_INT_EN		BIT(6)  
+#define DP83848_MISR_LQM_INT_EN		BIT(7)  
 
 #define DP83848_INT_EN_MASK		\
 	(DP83848_MISR_ANC_INT_EN |	\
@@ -113,9 +109,7 @@ static int dp83848_config_init(struct phy_device *phydev)
 {
 	int val;
 
-	/* DP83620 always reports Auto Negotiation Ability on BMSR. Instead,
-	 * we check initial value of BMCR Auto negotiation enable bit
-	 */
+	 
 	val = phy_read(phydev, MII_BMCR);
 	if (!(val & BMCR_ANENABLE))
 		phydev->autoneg = AUTONEG_DISABLE;
@@ -137,14 +131,14 @@ MODULE_DEVICE_TABLE(mdio, dp83848_tbl);
 		.phy_id		= _id,				\
 		.phy_id_mask	= 0xfffffff0,			\
 		.name		= _name,			\
-		/* PHY_BASIC_FEATURES */			\
+		 			\
 								\
 		.soft_reset	= genphy_soft_reset,		\
 		.config_init	= _config_init,			\
 		.suspend	= genphy_suspend,		\
 		.resume		= genphy_resume,		\
 								\
-		/* IRQ related */				\
+		 				\
 		.config_intr	= dp83848_config_intr,		\
 		.handle_interrupt = dp83848_handle_interrupt,	\
 	}

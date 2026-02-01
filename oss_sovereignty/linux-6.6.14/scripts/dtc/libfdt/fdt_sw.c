@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0-or-later OR BSD-2-Clause)
-/*
- * libfdt - Flat Device Tree manipulation
- * Copyright (C) 2006 David Gibson, IBM Corporation.
- */
+
+ 
 #include "libfdt_env.h"
 
 #include <fdt.h>
@@ -29,12 +26,7 @@ static int fdt_sw_probe_(void *fdt)
 			return err; \
 	}
 
-/* 'memrsv' state:	Initial state after fdt_create()
- *
- * Allowed functions:
- *	fdt_add_reservemap_entry()
- *	fdt_finish_reservemap()		[moves to 'struct' state]
- */
+ 
 static int fdt_sw_probe_memrsv_(void *fdt)
 {
 	int err = fdt_sw_probe_(fdt);
@@ -53,14 +45,7 @@ static int fdt_sw_probe_memrsv_(void *fdt)
 			return err; \
 	}
 
-/* 'struct' state:	Enter this state after fdt_finish_reservemap()
- *
- * Allowed functions:
- *	fdt_begin_node()
- *	fdt_end_node()
- *	fdt_property*()
- *	fdt_finish()			[moves to 'complete' state]
- */
+ 
 static int fdt_sw_probe_struct_(void *fdt)
 {
 	int err = fdt_sw_probe_(fdt);
@@ -82,14 +67,11 @@ static int fdt_sw_probe_struct_(void *fdt)
 
 static inline uint32_t sw_flags(void *fdt)
 {
-	/* assert: (fdt_magic(fdt) == FDT_SW_MAGIC) */
+	 
 	return fdt_last_comp_version(fdt);
 }
 
-/* 'complete' state:	Enter this state after fdt_finish()
- *
- * Allowed functions: none
- */
+ 
 
 static void *fdt_grab_space_(void *fdt, size_t len)
 {
@@ -120,13 +102,7 @@ int fdt_create_with_flags(void *buf, int bufsize, uint32_t flags)
 
 	memset(buf, 0, bufsize);
 
-	/*
-	 * magic and last_comp_version keep intermediate state during the fdt
-	 * creation process, which is replaced with the proper FDT format by
-	 * fdt_finish().
-	 *
-	 * flags should be accessed with sw_flags().
-	 */
+	 
 	fdt_set_magic(fdt, FDT_SW_MAGIC);
 	fdt_set_version(fdt, FDT_LAST_SUPPORTED_VERSION);
 	fdt_set_last_comp_version(fdt, flags);
@@ -168,8 +144,7 @@ int fdt_resize(void *fdt, void *buf, int bufsize)
 	oldtail = (char *)fdt + fdt_totalsize(fdt) - tailsize;
 	newtail = (char *)buf + bufsize - tailsize;
 
-	/* Two cases to avoid clobbering data if the old and new
-	 * buffers partially overlap */
+	 
 	if (buf <= fdt) {
 		memmove(buf, fdt, headsize);
 		memmove(newtail, oldtail, tailsize);
@@ -257,14 +232,14 @@ static int fdt_add_string_(void *fdt, const char *s)
 	offset = strtabsize + len;
 	struct_top = fdt_off_dt_struct(fdt) + fdt_size_dt_struct(fdt);
 	if (fdt_totalsize(fdt) - offset < struct_top)
-		return 0; /* no more room :( */
+		return 0;  
 
 	memcpy(strtab - offset, s, len);
 	fdt_set_size_dt_strings(fdt, strtabsize + len);
 	return -offset;
 }
 
-/* Must only be used to roll back in case of error */
+ 
 static void fdt_del_last_string_(void *fdt, const char *s)
 {
 	int strtabsize = fdt_size_dt_strings(fdt);
@@ -298,7 +273,7 @@ int fdt_property_placeholder(void *fdt, const char *name, int len, void **valp)
 
 	FDT_SW_PROBE_STRUCT(fdt);
 
-	/* String de-duplication can be slow, _NO_NAME_DEDUP skips it */
+	 
 	if (sw_flags(fdt) & FDT_CREATE_FLAG_NO_NAME_DEDUP) {
 		allocated = 1;
 		nameoff = fdt_add_string_(fdt, name);
@@ -344,19 +319,19 @@ int fdt_finish(void *fdt)
 
 	FDT_SW_PROBE_STRUCT(fdt);
 
-	/* Add terminator */
+	 
 	end = fdt_grab_space_(fdt, sizeof(*end));
 	if (! end)
 		return -FDT_ERR_NOSPACE;
 	*end = cpu_to_fdt32(FDT_END);
 
-	/* Relocate the string table */
+	 
 	oldstroffset = fdt_totalsize(fdt) - fdt_size_dt_strings(fdt);
 	newstroffset = fdt_off_dt_struct(fdt) + fdt_size_dt_struct(fdt);
 	memmove(p + newstroffset, p + oldstroffset, fdt_size_dt_strings(fdt));
 	fdt_set_off_dt_strings(fdt, newstroffset);
 
-	/* Walk the structure, correcting string offsets */
+	 
 	offset = 0;
 	while ((tag = fdt_next_tag(fdt, offset, &nextoffset)) != FDT_END) {
 		if (tag == FDT_PROP) {
@@ -373,10 +348,10 @@ int fdt_finish(void *fdt)
 	if (nextoffset < 0)
 		return nextoffset;
 
-	/* Finally, adjust the header */
+	 
 	fdt_set_totalsize(fdt, newstroffset + fdt_size_dt_strings(fdt));
 
-	/* And fix up fields that were keeping intermediate state. */
+	 
 	fdt_set_last_comp_version(fdt, FDT_LAST_COMPATIBLE_VERSION);
 	fdt_set_magic(fdt, FDT_MAGIC);
 

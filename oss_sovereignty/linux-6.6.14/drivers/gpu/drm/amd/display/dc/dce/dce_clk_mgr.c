@@ -1,27 +1,4 @@
-/*
- * Copyright 2012-16 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 #include <linux/slab.h>
 
@@ -47,53 +24,53 @@
 #define DC_LOGGER \
 	clk_mgr->ctx->logger
 
-/* Max clock values for each state indexed by "enum clocks_state": */
+ 
 static const struct state_dependent_clocks dce80_max_clks_by_state[] = {
-/* ClocksStateInvalid - should not be used */
+ 
 { .display_clk_khz = 0, .pixel_clk_khz = 0 },
-/* ClocksStateUltraLow - not expected to be used for DCE 8.0 */
+ 
 { .display_clk_khz = 0, .pixel_clk_khz = 0 },
-/* ClocksStateLow */
+ 
 { .display_clk_khz = 352000, .pixel_clk_khz = 330000},
-/* ClocksStateNominal */
+ 
 { .display_clk_khz = 600000, .pixel_clk_khz = 400000 },
-/* ClocksStatePerformance */
+ 
 { .display_clk_khz = 600000, .pixel_clk_khz = 400000 } };
 
 static const struct state_dependent_clocks dce110_max_clks_by_state[] = {
-/*ClocksStateInvalid - should not be used*/
+ 
 { .display_clk_khz = 0, .pixel_clk_khz = 0 },
-/*ClocksStateUltraLow - currently by HW design team not supposed to be used*/
+ 
 { .display_clk_khz = 352000, .pixel_clk_khz = 330000 },
-/*ClocksStateLow*/
+ 
 { .display_clk_khz = 352000, .pixel_clk_khz = 330000 },
-/*ClocksStateNominal*/
+ 
 { .display_clk_khz = 467000, .pixel_clk_khz = 400000 },
-/*ClocksStatePerformance*/
+ 
 { .display_clk_khz = 643000, .pixel_clk_khz = 400000 } };
 
 static const struct state_dependent_clocks dce112_max_clks_by_state[] = {
-/*ClocksStateInvalid - should not be used*/
+ 
 { .display_clk_khz = 0, .pixel_clk_khz = 0 },
-/*ClocksStateUltraLow - currently by HW design team not supposed to be used*/
+ 
 { .display_clk_khz = 389189, .pixel_clk_khz = 346672 },
-/*ClocksStateLow*/
+ 
 { .display_clk_khz = 459000, .pixel_clk_khz = 400000 },
-/*ClocksStateNominal*/
+ 
 { .display_clk_khz = 667000, .pixel_clk_khz = 600000 },
-/*ClocksStatePerformance*/
+ 
 { .display_clk_khz = 1132000, .pixel_clk_khz = 600000 } };
 
 static const struct state_dependent_clocks dce120_max_clks_by_state[] = {
-/*ClocksStateInvalid - should not be used*/
+ 
 { .display_clk_khz = 0, .pixel_clk_khz = 0 },
-/*ClocksStateUltraLow - currently by HW design team not supposed to be used*/
+ 
 { .display_clk_khz = 0, .pixel_clk_khz = 0 },
-/*ClocksStateLow*/
+ 
 { .display_clk_khz = 460000, .pixel_clk_khz = 400000 },
-/*ClocksStateNominal*/
+ 
 { .display_clk_khz = 670000, .pixel_clk_khz = 600000 },
-/*ClocksStatePerformance*/
+ 
 { .display_clk_khz = 1133000, .pixel_clk_khz = 600000 } };
 
 int dentist_get_divider_from_did(int did)
@@ -118,18 +95,7 @@ int dentist_get_divider_from_did(int did)
 	}
 }
 
-/* SW will adjust DP REF Clock average value for all purposes
- * (DP DTO / DP Audio DTO and DP GTC)
- if clock is spread for all cases:
- -if SS enabled on DP Ref clock and HW de-spreading enabled with SW
- calculations for DS_INCR/DS_MODULO (this is planned to be default case)
- -if SS enabled on DP Ref clock and HW de-spreading enabled with HW
- calculations (not planned to be used, but average clock should still
- be valid)
- -if SS enabled on DP Ref clock and HW de-spreading disabled
- (should not be case with CIK) then SW should program all rates
- generated according to average value (case as with previous ASICs)
-  */
+ 
 static int clk_mgr_adjust_dp_ref_freq_for_ss(struct dce_clk_mgr *clk_mgr_dce, int dp_ref_clk_khz)
 {
 	if (clk_mgr_dce->ss_on_dprefclk && clk_mgr_dce->dprefclk_ss_divider != 0) {
@@ -153,18 +119,17 @@ static int dce_get_dp_ref_freq_khz(struct clk_mgr *clk_mgr)
 	int dp_ref_clk_khz = 600000;
 	int target_div;
 
-	/* ASSERT DP Reference Clock source is from DFS*/
+	 
 	REG_GET(DPREFCLK_CNTL, DPREFCLK_SRC_SEL, &dprefclk_src_sel);
 	ASSERT(dprefclk_src_sel == 0);
 
-	/* Read the mmDENTIST_DISPCLK_CNTL to get the currently
-	 * programmed DID DENTIST_DPREFCLK_WDIVIDER*/
+	 
 	REG_GET(DENTIST_DISPCLK_CNTL, DENTIST_DPREFCLK_WDIVIDER, &dprefclk_wdivider);
 
-	/* Convert DENTIST_DPREFCLK_WDIVIDERto actual divider*/
+	 
 	target_div = dentist_get_divider_from_did(dprefclk_wdivider);
 
-	/* Calculate the current DFS clock, in kHz.*/
+	 
 	dp_ref_clk_khz = (DENTIST_DIVIDER_RANGE_SCALE_FACTOR
 		* clk_mgr_dce->dentist_vco_freq_khz) / target_div;
 
@@ -178,9 +143,7 @@ int dce12_get_dp_ref_freq_khz(struct clk_mgr *clk_mgr)
 	return clk_mgr_adjust_dp_ref_freq_for_ss(clk_mgr_dce, clk_mgr_dce->dprefclk_khz);
 }
 
-/* unit: in_khz before mode set, get pixel clock from context. ASIC register
- * may not be programmed yet
- */
+ 
 static uint32_t get_max_pixel_clock_for_all_paths(struct dc_state *context)
 {
 	uint32_t max_pix_clk = 0;
@@ -192,16 +155,14 @@ static uint32_t get_max_pixel_clock_for_all_paths(struct dc_state *context)
 		if (pipe_ctx->stream == NULL)
 			continue;
 
-		/* do not check under lay */
+		 
 		if (pipe_ctx->top_pipe)
 			continue;
 
 		if (pipe_ctx->stream_res.pix_clk_params.requested_pix_clk_100hz / 10 > max_pix_clk)
 			max_pix_clk = pipe_ctx->stream_res.pix_clk_params.requested_pix_clk_100hz / 10;
 
-		/* raise clock state for HBR3/2 if required. Confirmed with HW DCE/DPCS
-		 * logic for HBR3 still needs Nominal (0.8V) on VDDC rail
-		 */
+		 
 		if (dc_is_dp_signal(pipe_ctx->stream->signal) &&
 				pipe_ctx->stream_res.pix_clk_params.requested_sym_clk > max_pix_clk)
 			max_pix_clk = pipe_ctx->stream_res.pix_clk_params.requested_sym_clk;
@@ -219,10 +180,7 @@ static enum dm_pp_clocks_state dce_get_required_clocks_state(
 	enum dm_pp_clocks_state low_req_clk;
 	int max_pix_clk = get_max_pixel_clock_for_all_paths(context);
 
-	/* Iterate from highest supported to lowest valid state, and update
-	 * lowest RequiredState with the lowest state that satisfies
-	 * all required clocks
-	 */
+	 
 	for (i = clk_mgr_dce->max_clks_state; i >= DM_PP_CLOCKS_STATE_ULTRA_LOW; i--)
 		if (context->bw_ctx.bw.dce.dispclk_khz >
 				clk_mgr_dce->max_clks_by_state[i].display_clk_khz
@@ -232,7 +190,7 @@ static enum dm_pp_clocks_state dce_get_required_clocks_state(
 
 	low_req_clk = i + 1;
 	if (low_req_clk > clk_mgr_dce->max_clks_state) {
-		/* set max clock state for high phyclock, invalid on exceeding display clock */
+		 
 		if (clk_mgr_dce->max_clks_by_state[clk_mgr_dce->max_clks_state].display_clk_khz
 				< context->bw_ctx.bw.dce.dispclk_khz)
 			low_req_clk = DM_PP_CLOCKS_STATE_INVALID;
@@ -253,12 +211,12 @@ static int dce_set_clock(
 	int actual_clock = requested_clk_khz;
 	struct dmcu *dmcu = clk_mgr_dce->base.ctx->dc->res_pool->dmcu;
 
-	/* Make sure requested clock isn't lower than minimum threshold*/
+	 
 	if (requested_clk_khz > 0)
 		requested_clk_khz = max(requested_clk_khz,
 				clk_mgr_dce->dentist_vco_freq_khz / 64);
 
-	/* Prepare to program display clock*/
+	 
 	pxl_clk_params.target_pixel_clock_100hz = requested_clk_khz * 10;
 	pxl_clk_params.pll_id = CLOCK_SOURCE_ID_DFS;
 
@@ -268,14 +226,13 @@ static int dce_set_clock(
 	bp->funcs->program_display_engine_pll(bp, &pxl_clk_params);
 
 	if (clk_mgr_dce->dfs_bypass_active) {
-		/* Cache the fixed display clock*/
+		 
 		clk_mgr_dce->dfs_bypass_disp_clk =
 			pxl_clk_params.dfs_bypass_display_clock;
 		actual_clock = pxl_clk_params.dfs_bypass_display_clock;
 	}
 
-	/* from power down, we need mark the clock state as ClocksStateNominal
-	 * from HWReset, so when resume we will call pplib voltage regulator.*/
+	 
 	if (requested_clk_khz == 0)
 		clk_mgr_dce->cur_min_clks_state = DM_PP_CLOCKS_STATE_NOMINAL;
 
@@ -293,10 +250,10 @@ int dce112_set_clock(struct clk_mgr *clk_mgr, int requested_clk_khz)
 	struct dc *core_dc = clk_mgr->ctx->dc;
 	struct dmcu *dmcu = core_dc->res_pool->dmcu;
 	int actual_clock = requested_clk_khz;
-	/* Prepare to program display clock*/
+	 
 	memset(&dce_clk_params, 0, sizeof(dce_clk_params));
 
-	/* Make sure requested clock isn't lower than minimum threshold*/
+	 
 	if (requested_clk_khz > 0)
 		requested_clk_khz = max(requested_clk_khz,
 				clk_mgr_dce->dentist_vco_freq_khz / 62);
@@ -308,13 +265,12 @@ int dce112_set_clock(struct clk_mgr *clk_mgr, int requested_clk_khz)
 	bp->funcs->set_dce_clock(bp, &dce_clk_params);
 	actual_clock = dce_clk_params.target_clock_frequency;
 
-	/* from power down, we need mark the clock state as ClocksStateNominal
-	 * from HWReset, so when resume we will call pplib voltage regulator.*/
+	 
 	if (requested_clk_khz == 0)
 		clk_mgr_dce->cur_min_clks_state = DM_PP_CLOCKS_STATE_NOMINAL;
 
-	/*Program DP ref Clock*/
-	/*VBIOS will determine DPREFCLK frequency, so we don't set it*/
+	 
+	 
 	dce_clk_params.target_clock_frequency = 0;
 	dce_clk_params.clock_type = DCECLOCK_TYPE_DPREFCLK;
 
@@ -360,7 +316,7 @@ static void dce_clock_read_integrated_info(struct dce_clk_mgr *clk_mgr_dce)
 			clk_mgr_dce->dentist_vco_freq_khz = 3600000;
 	}
 
-	/*update the maximum display clock for each power state*/
+	 
 	for (i = 0; i < NUMBER_OF_DISP_CLK_VOLTAGE; ++i) {
 		enum dm_pp_clocks_state clk_state = DM_PP_CLOCKS_STATE_INVALID;
 
@@ -386,8 +342,7 @@ static void dce_clock_read_integrated_info(struct dce_clk_mgr *clk_mgr_dce)
 			break;
 		}
 
-		/*Do not allow bad VBIOS/SBIOS to override with invalid values,
-		 * check for > 100MHz*/
+		 
 		if (info.disp_clk_voltage[i].max_supported_clk >= 100000)
 			clk_mgr_dce->max_clks_by_state[clk_state].display_clk_khz =
 				info.disp_clk_voltage[i].max_supported_clk;
@@ -409,20 +364,14 @@ void dce_clock_read_ss_info(struct dce_clk_mgr *clk_mgr_dce)
 		enum bp_result result = bp->funcs->get_spread_spectrum_info(
 				bp, AS_SIGNAL_TYPE_GPU_PLL, 0, &info);
 
-		/* Based on VBIOS, VBIOS will keep entry for GPU PLL SS
-		 * even if SS not enabled and in that case
-		 * SSInfo.spreadSpectrumPercentage !=0 would be sign
-		 * that SS is enabled
-		 */
+		 
 		if (result == BP_RESULT_OK &&
 				info.spread_spectrum_percentage != 0) {
 			clk_mgr_dce->ss_on_dprefclk = true;
 			clk_mgr_dce->dprefclk_ss_divider = info.spread_percentage_divider;
 
 			if (info.type.CENTER_MODE == 0) {
-				/* TODO: Currently for DP Reference clock we
-				 * need only SS percentage for
-				 * downspread */
+				 
 				clk_mgr_dce->dprefclk_ss_percentage =
 						info.spread_spectrum_percentage;
 			}
@@ -433,20 +382,14 @@ void dce_clock_read_ss_info(struct dce_clk_mgr *clk_mgr_dce)
 		result = bp->funcs->get_spread_spectrum_info(
 				bp, AS_SIGNAL_TYPE_DISPLAY_PORT, 0, &info);
 
-		/* Based on VBIOS, VBIOS will keep entry for DPREFCLK SS
-		 * even if SS not enabled and in that case
-		 * SSInfo.spreadSpectrumPercentage !=0 would be sign
-		 * that SS is enabled
-		 */
+		 
 		if (result == BP_RESULT_OK &&
 				info.spread_spectrum_percentage != 0) {
 			clk_mgr_dce->ss_on_dprefclk = true;
 			clk_mgr_dce->dprefclk_ss_divider = info.spread_percentage_divider;
 
 			if (info.type.CENTER_MODE == 0) {
-				/* Currently for DP Reference clock we
-				 * need only SS percentage for
-				 * downspread */
+				 
 				clk_mgr_dce->dprefclk_ss_percentage =
 						info.spread_spectrum_percentage;
 			}
@@ -456,15 +399,7 @@ void dce_clock_read_ss_info(struct dce_clk_mgr *clk_mgr_dce)
 	}
 }
 
-/**
- * dce121_clock_patch_xgmi_ss_info() - Save XGMI spread spectrum info
- * @clk_mgr: clock manager base structure
- *
- * Reads from VBIOS the XGMI spread spectrum info and saves it within
- * the dce clock manager. This operation will overwrite the existing dprefclk
- * SS values if the vBIOS query succeeds. Otherwise, it does nothing. It also
- * sets the ->xgmi_enabled flag.
- */
+ 
 void dce121_clock_patch_xgmi_ss_info(struct clk_mgr *clk_mgr)
 {
 	struct dce_clk_mgr *clk_mgr_dce = TO_DCE_CLK_MGR(clk_mgr);
@@ -483,9 +418,7 @@ void dce121_clock_patch_xgmi_ss_info(struct clk_mgr *clk_mgr)
 				info.spread_percentage_divider;
 
 		if (info.type.CENTER_MODE == 0) {
-			/* Currently for DP Reference clock we
-			 * need only SS percentage for
-			 * downspread */
+			 
 			clk_mgr_dce->dprefclk_ss_percentage =
 					info.spread_spectrum_percentage;
 		}
@@ -515,7 +448,7 @@ void dce110_fill_display_configs(
 
 		ASSERT(pipe_ctx != NULL);
 
-		/* only notify active stream */
+		 
 		if (stream->dpms_off)
 			continue;
 
@@ -535,7 +468,7 @@ void dce110_fill_display_configs(
 		cfg->link_settings.link_spread =
 			stream->link->cur_link_settings.link_spread;
 		cfg->sym_clock = stream->phy_pix_clk;
-		/* Round v_refresh*/
+		 
 		cfg->v_refresh = stream->timing.pix_clk_100hz * 100;
 		cfg->v_refresh /= stream->timing.h_total;
 		cfg->v_refresh = (cfg->v_refresh + stream->timing.v_total / 2)
@@ -575,10 +508,7 @@ static int determine_sclk_from_bounding_box(
 {
 	int i;
 
-	/*
-	 * Some asics do not give us sclk levels, so we just report the actual
-	 * required sclk
-	 */
+	 
 	if (dc->sclk_lvls.num_levels == 0)
 		return required_sclk;
 
@@ -586,11 +516,7 @@ static int determine_sclk_from_bounding_box(
 		if (dc->sclk_lvls.clocks_in_khz[i] >= required_sclk)
 			return dc->sclk_lvls.clocks_in_khz[i];
 	}
-	/*
-	 * even maximum level could not satisfy requirement, this
-	 * is unexpected at this stage, should have been caught at
-	 * validation time
-	 */
+	 
 	ASSERT(0);
 	return dc->sclk_lvls.clocks_in_khz[dc->sclk_lvls.num_levels - 1];
 }
@@ -633,13 +559,7 @@ static void dce11_pplib_apply_display_requirements(
 			dc,
 			context->bw_ctx.bw.dce.sclk_khz);
 
-	/*
-	 * As workaround for >4x4K lightup set dcfclock to min_engine_clock value.
-	 * This is not required for less than 5 displays,
-	 * thus don't request decfclk in dc to avoid impact
-	 * on power saving.
-	 *
-	 */
+	 
 	pp_display_cfg->min_dcfclock_khz = (context->stream_count > 4) ?
 			pp_display_cfg->min_engine_clock_khz : 0;
 
@@ -648,14 +568,14 @@ static void dce11_pplib_apply_display_requirements(
 
 	pp_display_cfg->avail_mclk_switch_time_us =
 						dce110_get_min_vblank_time_us(context);
-	/* TODO: dce11.2*/
+	 
 	pp_display_cfg->avail_mclk_switch_time_in_disp_active_us = 0;
 
 	pp_display_cfg->disp_clk_khz = dc->res_pool->clk_mgr->clks.dispclk_khz;
 
 	dce110_fill_display_configs(context, pp_display_cfg);
 
-	/* TODO: is this still applicable?*/
+	 
 	if (pp_display_cfg->display_count == 1) {
 		const struct dc_crtc_timing *timing =
 			&context->streams[0]->timing;
@@ -677,12 +597,12 @@ static void dce_update_clocks(struct clk_mgr *clk_mgr,
 	struct dm_pp_power_level_change_request level_change_req;
 	int patched_disp_clk = context->bw_ctx.bw.dce.dispclk_khz;
 
-	/*TODO: W/A for dal3 linux, investigate why this works */
+	 
 	if (!clk_mgr_dce->dfs_bypass_active)
 		patched_disp_clk = patched_disp_clk * 115 / 100;
 
 	level_change_req.power_level = dce_get_required_clocks_state(clk_mgr, context);
-	/* get max clock state from PPLIB */
+	 
 	if ((level_change_req.power_level < clk_mgr_dce->cur_min_clks_state && safe_to_lower)
 			|| level_change_req.power_level > clk_mgr_dce->cur_min_clks_state) {
 		if (dm_pp_apply_power_level_change_request(clk_mgr->ctx, &level_change_req))
@@ -704,12 +624,12 @@ static void dce11_update_clocks(struct clk_mgr *clk_mgr,
 	struct dm_pp_power_level_change_request level_change_req;
 	int patched_disp_clk = context->bw_ctx.bw.dce.dispclk_khz;
 
-	/*TODO: W/A for dal3 linux, investigate why this works */
+	 
 	if (!clk_mgr_dce->dfs_bypass_active)
 		patched_disp_clk = patched_disp_clk * 115 / 100;
 
 	level_change_req.power_level = dce_get_required_clocks_state(clk_mgr, context);
-	/* get max clock state from PPLIB */
+	 
 	if ((level_change_req.power_level < clk_mgr_dce->cur_min_clks_state && safe_to_lower)
 			|| level_change_req.power_level > clk_mgr_dce->cur_min_clks_state) {
 		if (dm_pp_apply_power_level_change_request(clk_mgr->ctx, &level_change_req))
@@ -731,12 +651,12 @@ static void dce112_update_clocks(struct clk_mgr *clk_mgr,
 	struct dm_pp_power_level_change_request level_change_req;
 	int patched_disp_clk = context->bw_ctx.bw.dce.dispclk_khz;
 
-	/*TODO: W/A for dal3 linux, investigate why this works */
+	 
 	if (!clk_mgr_dce->dfs_bypass_active)
 		patched_disp_clk = patched_disp_clk * 115 / 100;
 
 	level_change_req.power_level = dce_get_required_clocks_state(clk_mgr, context);
-	/* get max clock state from PPLIB */
+	 
 	if ((level_change_req.power_level < clk_mgr_dce->cur_min_clks_state && safe_to_lower)
 			|| level_change_req.power_level > clk_mgr_dce->cur_min_clks_state) {
 		if (dm_pp_apply_power_level_change_request(clk_mgr->ctx, &level_change_req))
@@ -759,16 +679,13 @@ static void dce12_update_clocks(struct clk_mgr *clk_mgr,
 	int max_pix_clk = get_max_pixel_clock_for_all_paths(context);
 	int patched_disp_clk = context->bw_ctx.bw.dce.dispclk_khz;
 
-	/*TODO: W/A for dal3 linux, investigate why this works */
+	 
 	if (!clk_mgr_dce->dfs_bypass_active)
 		patched_disp_clk = patched_disp_clk * 115 / 100;
 
 	if (should_set_clock(safe_to_lower, patched_disp_clk, clk_mgr->clks.dispclk_khz)) {
 		clock_voltage_req.clk_type = DM_PP_CLOCK_TYPE_DISPLAY_CLK;
-		/*
-		 * When xGMI is enabled, the display clk needs to be adjusted
-		 * with the WAFL link's SS percentage.
-		 */
+		 
 		if (clk_mgr_dce->xgmi_enabled)
 			patched_disp_clk = clk_mgr_adjust_dp_ref_freq_for_ss(
 					clk_mgr_dce, patched_disp_clk);

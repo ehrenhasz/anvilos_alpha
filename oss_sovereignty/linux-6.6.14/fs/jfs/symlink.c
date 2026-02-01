@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *   Copyright (C) Christoph Hellwig, 2001-2002
- */
+
+ 
 
 #include <linux/fs.h>
 #include "jfs_incore.h"

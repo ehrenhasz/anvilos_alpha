@@ -1,18 +1,13 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* rc-delock-61959.c - Keytable for Delock
- *
- * Copyright (c) 2013 by Jakob Haufe <sur5r@sur5r.net>
- */
+
+ 
 
 #include <media/rc-map.h>
 #include <linux/module.h>
 
-/*
- * Keytable for remote provided with Delock 61959
- */
+ 
 static struct rc_map_table delock_61959[] = {
-	{ 0x866b16, KEY_POWER2 },	/* Power */
-	{ 0x866b0c, KEY_POWER },	/* Shut Down */
+	{ 0x866b16, KEY_POWER2 },	 
+	{ 0x866b0c, KEY_POWER },	 
 
 	{ 0x866b00, KEY_NUMERIC_1},
 	{ 0x866b01, KEY_NUMERIC_2},
@@ -25,10 +20,10 @@ static struct rc_map_table delock_61959[] = {
 	{ 0x866b08, KEY_NUMERIC_9},
 	{ 0x866b14, KEY_NUMERIC_0},
 
-	{ 0x866b0a, KEY_ZOOM},		/* Full Screen */
-	{ 0x866b10, KEY_CAMERA},	/* Photo */
-	{ 0x866b0e, KEY_CHANNEL},	/* circular arrow / Recall */
-	{ 0x866b13, KEY_ESC},           /* Back */
+	{ 0x866b0a, KEY_ZOOM},		 
+	{ 0x866b10, KEY_CAMERA},	 
+	{ 0x866b0e, KEY_CHANNEL},	 
+	{ 0x866b13, KEY_ESC},            
 
 	{ 0x866b20, KEY_UP},
 	{ 0x866b21, KEY_DOWN},
@@ -47,8 +42,8 @@ static struct rc_map_table delock_61959[] = {
 	{ 0x866b41, KEY_PLAY},
 	{ 0x866b40, KEY_STOP},
 	{ 0x866b19, KEY_PAUSE},
-	{ 0x866b1c, KEY_FASTFORWARD},	/* >> / FWD */
-	{ 0x866b1e, KEY_REWIND},	/* << / REW */
+	{ 0x866b1c, KEY_FASTFORWARD},	 
+	{ 0x866b1e, KEY_REWIND},	 
 
 };
 

@@ -1,14 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * (C) 2001 Clemson University and The University of Chicago
- * Copyright 2018 Omnibond Systems, L.L.C.
- *
- * See COPYING in top-level directory.
- */
 
-/*
- *  Linux VFS file operations.
- */
+ 
+
+ 
 
 #include "protocol.h"
 #include "orangefs-kernel.h"
@@ -43,9 +36,7 @@ static int flush_racache(struct inode *inode)
 	return ret;
 }
 
-/*
- * Post and wait for the I/O upcall to finish
- */
+ 
 ssize_t wait_for_direct_io(enum ORANGEFS_io_type type, struct inode *inode,
 	loff_t *offset, struct iov_iter *iter, size_t total_size,
 	loff_t readahead_size, struct orangefs_write_range *wr,
@@ -64,13 +55,13 @@ ssize_t wait_for_direct_io(enum ORANGEFS_io_type type, struct inode *inode,
 	if (!new_op)
 		return -ENOMEM;
 
-	/* synchronous I/O */
+	 
 	new_op->upcall.req.io.readahead_size = readahead_size;
 	new_op->upcall.req.io.io_type = type;
 	new_op->upcall.req.io.refn = orangefs_inode->refn;
 
 populate_shared_memory:
-	/* get a shared buffer index */
+	 
 	buffer_index = orangefs_bufmap_get();
 	if (buffer_index < 0) {
 		ret = buffer_index;
@@ -94,33 +85,13 @@ populate_shared_memory:
 		new_op->upcall.uid = from_kuid(&init_user_ns, wr->uid);
 		new_op->upcall.gid = from_kgid(&init_user_ns, wr->gid);
 	}
-	/*
-	 * Orangefs has no open, and orangefs checks file permissions
-	 * on each file access. Posix requires that file permissions
-	 * be checked on open and nowhere else. Orangefs-through-the-kernel
-	 * needs to seem posix compliant.
-	 *
-	 * The VFS opens files, even if the filesystem provides no
-	 * method. We can see if a file was successfully opened for
-	 * read and or for write by looking at file->f_mode.
-	 *
-	 * When writes are flowing from the page cache, file is no
-	 * longer available. We can trust the VFS to have checked
-	 * file->f_mode before writing to the page cache.
-	 *
-	 * The mode of a file might change between when it is opened
-	 * and IO commences, or it might be created with an arbitrary mode.
-	 *
-	 * We'll make sure we don't hit EACCES during the IO stage by
-	 * using UID 0. Some of the time we have access without changing
-	 * to UID 0 - how to check?
-	 */
+	 
 	if (file) {
 		open_for_write = file->f_mode & FMODE_WRITE;
 		open_for_read = file->f_mode & FMODE_READ;
 	} else {
 		open_for_write = 1;
-		open_for_read = 0; /* not relevant? */
+		open_for_read = 0;  
 	}
 	if ((type == ORANGEFS_IO_WRITE) && open_for_write)
 		new_op->upcall.uid = 0;
@@ -133,9 +104,7 @@ populate_shared_memory:
 		     handle,
 		     llu(*offset),
 		     total_size);
-	/*
-	 * Stage 1: copy the buffers into client-core's address space
-	 */
+	 
 	if (type == ORANGEFS_IO_WRITE && total_size) {
 		ret = orangefs_bufmap_copy_from_iovec(iter, buffer_index,
 		    total_size);
@@ -152,22 +121,14 @@ populate_shared_memory:
 		     handle,
 		     llu(new_op->tag));
 
-	/* Stage 2: Service the I/O operation */
+	 
 	ret = service_operation(new_op,
 				type == ORANGEFS_IO_WRITE ?
 					"file_write" :
 					"file_read",
 				get_interruptible_flag(inode));
 
-	/*
-	 * If service_operation() returns -EAGAIN #and# the operation was
-	 * purged from orangefs_request_list or htable_ops_in_progress, then
-	 * we know that the client was restarted, causing the shared memory
-	 * area to be wiped clean.  To restart a  write operation in this
-	 * case, we must re-copy the data from the user's iovec to a NEW
-	 * shared memory location. To restart a read operation, we must get
-	 * a new shared memory location.
-	 */
+	 
 	if (ret == -EAGAIN && op_state_purged(new_op)) {
 		orangefs_bufmap_put(buffer_index);
 		if (type == ORANGEFS_IO_WRITE)
@@ -180,34 +141,16 @@ populate_shared_memory:
 
 	if (ret < 0) {
 		if (ret == -EINTR) {
-			/*
-			 * We can't return EINTR if any data was written,
-			 * it's not POSIX. It is minimally acceptable
-			 * to give a partial write, the way NFS does.
-			 *
-			 * It would be optimal to return all or nothing,
-			 * but if a userspace write is bigger than
-			 * an IO buffer, and the interrupt occurs
-			 * between buffer writes, that would not be
-			 * possible.
-			 */
+			 
 			switch (new_op->op_state - OP_VFS_STATE_GIVEN_UP) {
-			/*
-			 * If the op was waiting when the interrupt
-			 * occurred, then the client-core did not
-			 * trigger the write.
-			 */
+			 
 			case OP_VFS_STATE_WAITING:
 				if (*offset == 0)
 					ret = -EINTR;
 				else
 					ret = 0;
 				break;
-			/*
-			 * If the op was in progress when the interrupt
-			 * occurred, then the client-core was able to
-			 * trigger the write.
-			 */
+			 
 			case OP_VFS_STATE_INPROGR:
 				if (type == ORANGEFS_IO_READ)
 					ret = -EINTR;
@@ -239,15 +182,9 @@ populate_shared_memory:
 		goto out;
 	}
 
-	/*
-	 * Stage 3: Post copy buffers from client-core's address space
-	 */
+	 
 	if (type == ORANGEFS_IO_READ && new_op->downcall.resp.io.amt_complete) {
-		/*
-		 * NOTE: the iovector can either contain addresses which
-		 *       can futher be kernel-space or user-space addresses.
-		 *       or it can pointers to struct page's
-		 */
+		 
 
 		copy_amount = new_op->downcall.resp.io.amt_complete;
 
@@ -395,9 +332,7 @@ static const struct vm_operations_struct orangefs_file_vm_ops = {
 	.page_mkwrite = orangefs_page_mkwrite,
 };
 
-/*
- * Memory map a region of a file.
- */
+ 
 static int orangefs_file_mmap(struct file *file, struct vm_area_struct *vma)
 {
 	int ret;
@@ -409,7 +344,7 @@ static int orangefs_file_mmap(struct file *file, struct vm_area_struct *vma)
 	gossip_debug(GOSSIP_FILE_DEBUG,
 		     "orangefs_file_mmap: called on %pD\n", file);
 
-	/* set the sequential readahead hint */
+	 
 	vm_flags_mod(vma, VM_SEQ_READ, VM_RAND_READ);
 
 	file_accessed(file);
@@ -419,23 +354,14 @@ static int orangefs_file_mmap(struct file *file, struct vm_area_struct *vma)
 
 #define mapping_nrpages(idata) ((idata)->nrpages)
 
-/*
- * Called to notify the module that there are no more references to
- * this file (i.e. no processes have it open).
- *
- * \note Not called when each file is closed.
- */
+ 
 static int orangefs_file_release(struct inode *inode, struct file *file)
 {
 	gossip_debug(GOSSIP_FILE_DEBUG,
 		     "orangefs_file_release: called on %pD\n",
 		     file);
 
-	/*
-	 * remove all associated inode pages from the page cache and
-	 * readahead cache (if any); this forces an expensive refresh of
-	 * data for the next caller of mmap (or 'get_block' accesses)
-	 */
+	 
 	if (mapping_nrpages(file->f_mapping)) {
 		if (orangefs_features & ORANGEFS_FEATURE_READAHEAD) {
 			gossip_debug(GOSSIP_INODE_DEBUG,
@@ -450,9 +376,7 @@ static int orangefs_file_release(struct inode *inode, struct file *file)
 	return 0;
 }
 
-/*
- * Push all data for a specific file onto permanent storage.
- */
+ 
 static int orangefs_fsync(struct file *file,
 		       loff_t start,
 		       loff_t end,
@@ -485,26 +409,14 @@ static int orangefs_fsync(struct file *file,
 	return ret;
 }
 
-/*
- * Change the file pointer position for an instance of an open file.
- *
- * \note If .llseek is overriden, we must acquire lock as described in
- *       Documentation/filesystems/locking.rst.
- *
- * Future upgrade could support SEEK_DATA and SEEK_HOLE but would
- * require much changes to the FS
- */
+ 
 static loff_t orangefs_file_llseek(struct file *file, loff_t offset, int origin)
 {
 	int ret = -EINVAL;
 	struct inode *inode = file_inode(file);
 
 	if (origin == SEEK_END) {
-		/*
-		 * revalidate the inode's file size.
-		 * NOTE: We are only interested in file size here,
-		 * so we set mask accordingly.
-		 */
+		 
 		ret = orangefs_inode_getattr(file->f_mapping->host,
 		    ORANGEFS_GETATTR_SIZE);
 		if (ret == -ESTALE)
@@ -529,10 +441,7 @@ static loff_t orangefs_file_llseek(struct file *file, loff_t offset, int origin)
 	return generic_file_llseek(file, offset, origin);
 }
 
-/*
- * Support local locks (locks that only this kernel knows about)
- * if Orangefs was mounted -o local_lock.
- */
+ 
 static int orangefs_lock(struct file *filp, int cmd, struct file_lock *fl)
 {
 	int rc = -EINVAL;
@@ -551,14 +460,7 @@ static int orangefs_lock(struct file *filp, int cmd, struct file_lock *fl)
 
 static int orangefs_flush(struct file *file, fl_owner_t id)
 {
-	/*
-	 * This is vfs_fsync_range(file, 0, LLONG_MAX, 0) without the
-	 * service_operation in orangefs_fsync.
-	 *
-	 * Do not send fsync to OrangeFS server on a close.  Do send fsync
-	 * on an explicit fsync call.  This duplicates historical OrangeFS
-	 * behavior.
-	 */
+	 
 	int r;
 
 	r = filemap_write_and_wait_range(file->f_mapping, 0, LLONG_MAX);
@@ -568,7 +470,7 @@ static int orangefs_flush(struct file *file, fl_owner_t id)
 		return r;
 }
 
-/** ORANGEFS implementation of VFS file operations */
+ 
 const struct file_operations orangefs_file_operations = {
 	.llseek		= orangefs_file_llseek,
 	.read_iter	= orangefs_file_read_iter,

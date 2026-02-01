@@ -1,14 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/******************************************************************************
- *
- * Copyright(c) 2007 - 2012 Realtek Corporation. All rights reserved.
- *
- ******************************************************************************/
-/*-------------------------------------------------------------------------------
-
-	For type defines and data structure defines
-
---------------------------------------------------------------------------------*/
+ 
+ 
+ 
 
 
 #ifndef __DRV_TYPES_H__
@@ -69,14 +61,14 @@ struct registry_priv {
 	u8 lbkmode;
 	u8 hci;
 	struct ndis_802_11_ssid	ssid;
-	u8 network_mode;	/* infra, ad-hoc, auto */
-	u8 channel;/* ad-hoc support requirement */
-	u8 wireless_mode;/* A, B, G, auto */
-	u8 scan_mode;/* active, passive */
+	u8 network_mode;	 
+	u8 channel; 
+	u8 wireless_mode; 
+	u8 scan_mode; 
 	u8 radio_enable;
-	u8 preamble;/* long, short, auto */
-	u8 vrtl_carrier_sense;/* Enable, Disable, Auto */
-	u8 vcs_type;/* RTS/CTS, CTS-to-self */
+	u8 preamble; 
+	u8 vrtl_carrier_sense; 
+	u8 vcs_type; 
 	u16 rts_thresh;
 	u16  frag_thresh;
 	u8 adhoc_tx_pwr;
@@ -93,7 +85,7 @@ struct registry_priv {
 	u8 software_encrypt;
 	u8 software_decrypt;
 	u8 acm_method;
-	  /* UAPSD */
+	   
 	u8 wmm_enable;
 	u8 uapsd_enable;
 	u8 uapsd_max_sp;
@@ -105,51 +97,47 @@ struct registry_priv {
 	struct wlan_bssid_ex    dev_network;
 
 	u8 ht_enable;
-	/*
-	 * 0: 20 MHz, 1: 40 MHz
-	 * 2.4G use bit 0 ~ 3
-	 * 0x01 means enable 2.4G 40MHz
-	 */
+	 
 	u8 bw_mode;
-	u8 ampdu_enable;/* for tx */
+	u8 ampdu_enable; 
 	u8 rx_stbc;
-	u8 ampdu_amsdu;/* A-MPDU Supports A-MSDU is permitted */
-	/*  Short GI support Bit Map */
-	/*  BIT0 - 20MHz, 1: support, 0: non-support */
-	/*  BIT1 - 40MHz, 1: support, 0: non-support */
-	/*  BIT2 - 80MHz, 1: support, 0: non-support */
-	/*  BIT3 - 160MHz, 1: support, 0: non-support */
+	u8 ampdu_amsdu; 
+	 
+	 
+	 
+	 
+	 
 	u8 short_gi;
-	/*  BIT0: Enable VHT LDPC Rx, BIT1: Enable VHT LDPC Tx, BIT4: Enable HT LDPC Rx, BIT5: Enable HT LDPC Tx */
+	 
 	u8 ldpc_cap;
-	/*  BIT0: Enable VHT STBC Rx, BIT1: Enable VHT STBC Tx, BIT4: Enable HT STBC Rx, BIT5: Enable HT STBC Tx */
+	 
 	u8 stbc_cap;
-	/*  BIT0: Enable VHT Beamformer, BIT1: Enable VHT Beamformee, BIT4: Enable HT Beamformer, BIT5: Enable HT Beamformee */
+	 
 	u8 beamform_cap;
 
 	u8 lowrate_two_xmit;
 
 	u8 low_power;
 
-	u8 wifi_spec;/*  !turbo_mode */
+	u8 wifi_spec; 
 
 	u8 channel_plan;
 
 	s8	ant_num;
 
-	/* false:Reject AP's Add BA req, true:accept AP's Add BA req */
+	 
 	bool	accept_addba_req;
 
 	u8 antdiv_cfg;
 	u8 antdiv_type;
 
-	u8 usbss_enable;/* 0:disable, 1:enable */
-	u8 hwpdn_mode;/* 0:disable, 1:enable, 2:decide by EFUSE config */
-	u8 hwpwrp_detect;/* 0:disable, 1:enable */
+	u8 usbss_enable; 
+	u8 hwpdn_mode; 
+	u8 hwpwrp_detect; 
 
-	u8 hw_wps_pbc;/* 0:disable, 1:enable */
+	u8 hw_wps_pbc; 
 
-	u8 max_roaming_times; /*  the max number driver will try to roaming */
+	u8 max_roaming_times;  
 
 	u8 enable80211d;
 
@@ -157,7 +145,7 @@ struct registry_priv {
 
 	u8 notch_filter;
 
-	/* define for tx power adjust */
+	 
 	u8 RegEnableTxPowerLimit;
 	u8 RegEnableTxPowerByRate;
 	u8 RegPowerBase;
@@ -174,7 +162,7 @@ struct registry_priv {
 };
 
 
-/* For registry parameters */
+ 
 #define RGTRY_OFT(field) ((u32)FIELD_OFFSET(struct registry_priv, field))
 #define RGTRY_SZ(field)   sizeof(((struct registry_priv *)0)->field)
 #define BSSID_OFT(field) ((u32)FIELD_OFFSET(struct wlan_bssid_ex, field))
@@ -228,21 +216,21 @@ struct debug_priv {
 };
 
 struct rtw_traffic_statistics {
-	/*  tx statistics */
+	 
 	u64	tx_bytes;
 	u64	tx_pkts;
 	u64	tx_drop;
 	u64	cur_tx_bytes;
 	u64	last_tx_bytes;
-	u32 cur_tx_tp; /*  Tx throughput in MBps. */
+	u32 cur_tx_tp;  
 
-	/*  rx statistics */
+	 
 	u64	rx_bytes;
 	u64	rx_pkts;
 	u64	rx_drop;
 	u64	cur_rx_bytes;
 	u64	last_rx_bytes;
-	u32 cur_rx_tp; /*  Rx throughput in MBps. */
+	u32 cur_rx_tp;  
 };
 
 struct cam_ctl_t {
@@ -257,15 +245,15 @@ struct cam_entry_cache {
 };
 
 struct dvobj_priv {
-	/*-------- below is common data --------*/
-	struct adapter *if1; /* PRIMARY_ADAPTER */
+	 
+	struct adapter *if1;  
 
 	s32	processing_dev_remove;
 
 	struct debug_priv drv_dbg;
 
-	/* for local/global synchronization */
-	/*  */
+	 
+	 
 	spinlock_t	lock;
 	int macid[NUM_STA];
 
@@ -274,9 +262,9 @@ struct dvobj_priv {
 	struct mutex setch_mutex;
 	struct mutex setbw_mutex;
 
-	unsigned char oper_channel; /* saved channel info when call set_channel_bw */
+	unsigned char oper_channel;  
 	unsigned char oper_bwmode;
-	unsigned char oper_ch_offset;/* PRIME_CHNL_OFFSET */
+	unsigned char oper_ch_offset; 
 	unsigned long on_oper_ch_time;
 
 	struct adapter *padapters;
@@ -284,10 +272,10 @@ struct dvobj_priv {
 	struct cam_ctl_t cam_ctl;
 	struct cam_entry_cache cam_cache[TOTAL_CAM_ENTRY];
 
-	/* In /Out Pipe information */
+	 
 	int	RtInPipe[2];
 	int	RtOutPipe[4];
-	u8 Queue2Pipe[HW_QUEUE_ENTRY];/* for out pipe mapping */
+	u8 Queue2Pipe[HW_QUEUE_ENTRY]; 
 
 	u8 irq_alloc;
 	atomic_t continual_io_error;
@@ -298,7 +286,7 @@ struct dvobj_priv {
 
 	struct rtw_traffic_statistics	traffic_stat;
 
-/*-------- below is for SDIO INTERFACE --------*/
+ 
 
 struct sdio_data intf_data;
 
@@ -313,7 +301,7 @@ static inline struct dvobj_priv *pwrctl_to_dvobj(struct pwrctrl_priv *pwrctl_pri
 
 static inline struct device *dvobj_to_dev(struct dvobj_priv *dvobj)
 {
-	/* todo: get interface type from dvobj and the return the dev accordingly */
+	 
 #ifdef RTW_DVOBJ_CHIP_HW_TYPE
 #endif
 
@@ -323,8 +311,8 @@ static inline struct device *dvobj_to_dev(struct dvobj_priv *dvobj)
 struct adapter *dvobj_get_port0_adapter(struct dvobj_priv *dvobj);
 
 enum {
-	IFACE_PORT0, /* mapping to port0 for C/D series chips */
-	IFACE_PORT1, /* mapping to port1 for C/D series chip */
+	IFACE_PORT0,  
+	IFACE_PORT1,  
 	MAX_IFACE_PORT,
 };
 
@@ -335,22 +323,22 @@ enum {
 };
 
 struct adapter {
-	int	DriverState;/*  for disable driver using module, use dongle to replace module. */
-	int	pid[3];/* process id from UI, 0:wps, 1:hostapd, 2:dhcpcd */
-	int	bDongle;/* build-in module or external dongle */
+	int	DriverState; 
+	int	pid[3]; 
+	int	bDongle; 
 
 	struct dvobj_priv *dvobj;
 	struct	mlme_priv mlmepriv;
 	struct	mlme_ext_priv mlmeextpriv;
 	struct	cmd_priv cmdpriv;
 	struct	evt_priv evtpriv;
-	/* struct	io_queue	*pio_queue; */
+	 
 	struct	io_priv iopriv;
 	struct	xmit_priv xmitpriv;
 	struct	recv_priv recvpriv;
 	struct	sta_priv stapriv;
 	struct	security_priv securitypriv;
-	spinlock_t   security_key_mutex; /*  add for CONFIG_IEEE80211W, none 11w also can use */
+	spinlock_t   security_key_mutex;  
 	struct	registry_priv registrypriv;
 	struct	eeprom_priv eeprompriv;
 
@@ -392,7 +380,7 @@ struct adapter {
 	struct net_device *pnetdev;
 	char old_ifname[IFNAMSIZ];
 
-	/*  used by rtw_rereg_nd_name related function */
+	 
 	struct rereg_nd_name_data {
 		struct net_device *old_pnetdev;
 		char old_ifname[IFNAMSIZ];
@@ -414,29 +402,29 @@ struct adapter {
 	u8 bBTFWReady;
 	u8 bLinkInfoDump;
 	u8 bRxRSSIDisplay;
-	/* 	Added by Albert 2012/10/26 */
-	/* 	The driver will show up the desired channel number when this flag is 1. */
+	 
+	 
 	u8 bNotifyChannelChange;
 
-	/* pbuddystruct adapter is used only in two interface case, (iface_nums =2 in struct dvobj_priv) */
-	/* PRIMARY ADAPTER's buddy is SECONDARY_ADAPTER */
-	/* SECONDARY_ADAPTER's buddy is PRIMARY_ADAPTER */
-	/* for iface_id > SECONDARY_ADAPTER(IFACE_ID1), refer to padapters[iface_id]  in struct dvobj_priv */
-	/* and their pbuddystruct adapter is PRIMARY_ADAPTER. */
-	/* for PRIMARY_ADAPTER(IFACE_ID0) can directly refer to if1 in struct dvobj_priv */
+	 
+	 
+	 
+	 
+	 
+	 
 	struct adapter *pbuddy_adapter;
 
-	/* extend to support multi interface */
-       /* IFACE_ID0 is equals to PRIMARY_ADAPTER */
-       /* IFACE_ID1 is equals to SECONDARY_ADAPTER */
+	 
+        
+        
 	u8 iface_id;
 
-	/* for debug purpose */
+	 
 	u8 fix_rate;
-	u8 driver_vcs_en; /* Enable = 1, Disable = 0 driver control vrtl_carrier_sense for tx */
-	u8 driver_vcs_type;/* force 0:disable VCS, 1:RTS-CTS, 2:CTS-to-self when vcs_en = 1. */
-	u8 driver_ampdu_spacing;/* driver control AMPDU Density for peer sta's rx */
-	u8 driver_rx_ampdu_factor;/* 0xff: disable drv ctrl, 0:8k, 1:16k, 2:32k, 3:64k; */
+	u8 driver_vcs_en;  
+	u8 driver_vcs_type; 
+	u8 driver_ampdu_spacing; 
+	u8 driver_rx_ampdu_factor; 
 
 	unsigned char     in_cta_test;
 };
@@ -445,15 +433,15 @@ struct adapter {
 #define adapter_to_pwrctl(adapter) (dvobj_to_pwrctl(adapter->dvobj))
 #define adapter_wdev_data(adapter) (&((adapter)->wdev_data))
 
-/*  */
-/*  Function disabled. */
-/*  */
+ 
+ 
+ 
 #define DF_TX_BIT		BIT0
 #define DF_RX_BIT		BIT1
 #define DF_IO_BIT		BIT2
 
-/* define RTW_DISABLE_FUNC(padapter, func) (atomic_add(&adapter_to_dvobj(padapter)->disable_func, (func))) */
-/* define RTW_ENABLE_FUNC(padapter, func) (atomic_sub(&adapter_to_dvobj(padapter)->disable_func, (func))) */
+ 
+ 
 static inline void RTW_DISABLE_FUNC(struct adapter *padapter, int func_bit)
 {
 	int	df = atomic_read(&adapter_to_dvobj(padapter)->disable_func);
@@ -489,7 +477,7 @@ static inline u8 *myid(struct eeprom_priv *peepriv)
 	return peepriv->mac_addr;
 }
 
-/*  HCI Related header file */
+ 
 #include <sdio_osintf.h>
 #include <sdio_ops.h>
 #include <sdio_hal.h>
@@ -503,4 +491,4 @@ extern u32 g_wait_hiq_empty;
 extern u8 g_fwdl_wintint_rdy_fail;
 extern u8 g_fwdl_chksum_fail;
 
-#endif /* __DRV_TYPES_H__ */
+#endif  

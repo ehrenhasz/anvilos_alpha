@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Pluggable TCP upper layer protocol support.
- *
- * Copyright (c) 2016-2017, Mellanox Technologies. All rights reserved.
- * Copyright (c) 2016-2017, Dave Watson <davejwatson@fb.com>. All rights reserved.
- *
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/mm.h>
@@ -17,7 +11,7 @@
 static DEFINE_SPINLOCK(tcp_ulp_list_lock);
 static LIST_HEAD(tcp_ulp_list);
 
-/* Simple linear search, don't expect many entries! */
+ 
 static struct tcp_ulp_ops *tcp_ulp_find(const char *name)
 {
 	struct tcp_ulp_ops *e;
@@ -53,9 +47,7 @@ static const struct tcp_ulp_ops *__tcp_ulp_find_autoload(const char *name)
 	return ulp;
 }
 
-/* Attach new upper layer protocol to the list
- * of available protocols.
- */
+ 
 int tcp_register_ulp(struct tcp_ulp_ops *ulp)
 {
 	int ret = 0;
@@ -81,7 +73,7 @@ void tcp_unregister_ulp(struct tcp_ulp_ops *ulp)
 }
 EXPORT_SYMBOL_GPL(tcp_unregister_ulp);
 
-/* Build string with list of available upper layer protocl values */
+ 
 void tcp_get_available_ulp(char *buf, size_t maxlen)
 {
 	struct tcp_ulp_ops *ulp_ops;
@@ -113,10 +105,7 @@ void tcp_cleanup_ulp(struct sock *sk)
 {
 	struct inet_connection_sock *icsk = inet_csk(sk);
 
-	/* No sock_owned_by_me() check here as at the time the
-	 * stack calls this function, the socket is dead and
-	 * about to be destroyed.
-	 */
+	 
 	if (!icsk->icsk_ulp_ops)
 		return;
 

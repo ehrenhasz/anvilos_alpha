@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _I8042_SPARCIO_H
 #define _I8042_SPARCIO_H
 
@@ -125,7 +125,7 @@ static bool i8042_is_mr_coffee(void)
 static int __init i8042_platform_init(void)
 {
 	if (i8042_is_mr_coffee()) {
-		/* Hardcoded values for MrCoffee.  */
+		 
 		i8042_kbd_irq = i8042_aux_irq = 13 | 0x20;
 		kbd_iobase = ioremap(0x71300060, 8);
 		if (!kbd_iobase)
@@ -156,7 +156,7 @@ static inline void i8042_platform_exit(void)
 		platform_driver_unregister(&sparc_i8042_driver);
 }
 
-#else /* !CONFIG_PCI */
+#else  
 static int __init i8042_platform_init(void)
 {
 	return -ENODEV;
@@ -165,6 +165,6 @@ static int __init i8042_platform_init(void)
 static inline void i8042_platform_exit(void)
 {
 }
-#endif /* !CONFIG_PCI */
+#endif  
 
-#endif /* _I8042_SPARCIO_H */
+#endif  

@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Texas Instruments LMP92064 SPI ADC driver
- *
- * Copyright (c) 2022 Leonard Göhrs <kernel@pengutronix.de>, Pengutronix
- *
- * Based on linux/drivers/iio/adc/ti-tsc2046.c
- * Copyright (c) 2021 Oleksij Rempel <kernel@pengutronix.de>, Pengutronix
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/gpio/consumer.h>
@@ -41,11 +34,7 @@
 #define TI_LMP92064_VAL_CONFIG_B 0x00
 #define TI_LMP92064_VAL_STATUS_OK 0x01
 
-/*
- * Channel number definitions for the two channels of the device
- * - IN Current (INC)
- * - IN Voltage (INV)
- */
+ 
 #define TI_LMP92064_CHAN_INC 0
 #define TI_LMP92064_CHAN_INV 1
 
@@ -128,14 +117,7 @@ static int lmp92064_read_meas(struct lmp92064_adc_priv *priv, u16 *res)
 	__be16 raw[2];
 	int ret;
 
-	/*
-	 * The ADC only latches in new samples if all DATA registers are read
-	 * in descending sequential order.
-	 * The ADC auto-decrements the register index with each clocked byte.
-	 * Read both channels in single SPI transfer by selecting the highest
-	 * register using the command below and clocking out all four data
-	 * bytes.
-	 */
+	 
 
 	ret = regmap_bulk_read(priv->regmap, TI_LMP92064_REG_DATA_COUT_MSB,
 			 &raw, sizeof(raw));
@@ -171,18 +153,11 @@ static int lmp92064_read_raw(struct iio_dev *indio_dev,
 		return IIO_VAL_INT;
 	case IIO_CHAN_INFO_SCALE:
 		if (chan->address == TI_LMP92064_CHAN_INC) {
-			/*
-			 * processed (mA) = raw * current_lsb (mA)
-			 * current_lsb (mA) = shunt_voltage_lsb (nV) / shunt_resistor (uOhm)
-			 * shunt_voltage_lsb (nV) = 81920000 / 4096 = 20000
-			 */
+			 
 			*val = 20000;
 			*val2 = priv->shunt_resistor_uohm;
 		} else {
-			/*
-			 * processed (mV) = raw * voltage_lsb (mV)
-			 * voltage_lsb (mV) = 2048 / 4096
-			 */
+			 
 			*val = 2048;
 			*val2 = 4096;
 		}
@@ -225,23 +200,13 @@ static int lmp92064_reset(struct lmp92064_adc_priv *priv,
 	int ret, i;
 
 	if (gpio_reset) {
-		/*
-		 * Perform a hard reset if gpio_reset is available.
-		 * The datasheet specifies a very low 3.5ns reset pulse duration and does not
-		 * specify how long to wait after a reset to access the device.
-		 * Use more conservative pulse lengths to allow analog RC filtering of the
-		 * reset line at the board level (as recommended in the datasheet).
-		 */
+		 
 		gpiod_set_value_cansleep(gpio_reset, 1);
 		usleep_range(1, 10);
 		gpiod_set_value_cansleep(gpio_reset, 0);
 		usleep_range(500, 750);
 	} else {
-		/*
-		 * Perform a soft-reset if not.
-		 * Also write default values to the config registers that are not
-		 * affected by soft reset.
-		 */
+		 
 		ret = regmap_write(priv->regmap, TI_LMP92064_REG_CONFIG_A,
 				   TI_LMP92064_VAL_CONFIG_A);
 		if (ret < 0)
@@ -253,12 +218,7 @@ static int lmp92064_reset(struct lmp92064_adc_priv *priv,
 			return ret;
 	}
 
-	/*
-	 * Wait for the device to signal readiness to prevent reading bogus data
-	 * and make sure device is actually connected.
-	 * The datasheet does not specify how long this takes but usually it is
-	 * not more than 3-4 iterations of this loop.
-	 */
+	 
 	for (i = 0; i < 10; i++) {
 		ret = regmap_read(priv->regmap, TI_LMP92064_REG_STATUS, &status);
 		if (ret < 0)
@@ -270,10 +230,7 @@ static int lmp92064_reset(struct lmp92064_adc_priv *priv,
 		usleep_range(1000, 2000);
 	}
 
-	/*
-	 * No (correct) response received.
-	 * Device is mostly likely not connected to the bus.
-	 */
+	 
 	return -ENXIO;
 }
 
@@ -315,10 +272,7 @@ static int lmp92064_adc_probe(struct spi_device *spi)
 		return dev_err_probe(dev, ret,
 				     "Failed to get shunt-resistor value\n");
 
-	/*
-	 * The shunt resistance is passed to userspace as the denominator of an iio
-	 * fraction. Make sure it is in range for that.
-	 */
+	 
 	if (shunt_resistor_uohm == 0 || shunt_resistor_uohm > INT_MAX) {
 		dev_err(dev, "Shunt resistance is out of range\n");
 		return -EINVAL;

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Marvell Armada CP110 pinctrl driver based on mvebu pinctrl core
- *
- * Copyright (C) 2017 Marvell
- *
- * Hanna Hawa <hannah@marvell.com>
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/init.h>
@@ -18,16 +12,7 @@
 
 #include "pinctrl-mvebu.h"
 
-/*
- * Even if the pin controller is the same the MMP available depend on the SoC
- * integration.
- *  - In Armada7K (single CP) almost all the MPPs are available (except the
- *    MMP 39 to 43)
- *  - In Armada8K (dual CP) the MPPs are split into 2 parts, MPPs 0-31 from
- *    CPS, and MPPs 32-62 from CPM, the below flags (V_ARMADA_8K_CPM,
- *    V_ARMADA_8K_CPS) set which MPP is available to the CPx.
- * The x_PLUS enum mean that the MPP available for CPx and for Armada70x0
- */
+ 
 enum {
 	V_ARMADA_7K = BIT(0),
 	V_ARMADA_8K_CPM = BIT(1),

@@ -1,27 +1,4 @@
-/*
- * Copyright 2012-17 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 #include <drm/display/drm_dsc_helper.h>
 #include "dscc_types.h"
 #include "rc_calc.h"
@@ -83,7 +60,7 @@ static void copy_rc_to_cfg(struct drm_dsc_config *dsc_cfg, const struct rc_param
 	for (i = 0; i < QP_SET_SIZE; ++i) {
 		dsc_cfg->rc_range_params[i].range_min_qp     = rc->qp_min[i];
 		dsc_cfg->rc_range_params[i].range_max_qp     = rc->qp_max[i];
-		/* Truncate 8-bit signed value to 6-bit signed value */
+		 
 		dsc_cfg->rc_range_params[i].range_bpg_offset = 0x3f & rc->ofs[i];
 	}
 	dsc_cfg->rc_model_size    = rc->rc_model_size;
@@ -113,7 +90,7 @@ int dscc_compute_dsc_parameters(const struct drm_dsc_config *pps,
 
 	ret = drm_dsc_compute_rc_parameters(&dsc_cfg);
 	tmp = (unsigned long long)dsc_cfg.slice_chunk_size * 0x10000000 + (dsc_cfg.slice_width - 1);
-	do_div(tmp, (uint32_t)dsc_cfg.slice_width);  //ROUND-UP
+	do_div(tmp, (uint32_t)dsc_cfg.slice_width);  
 	dsc_params->bytes_per_pixel = (uint32_t)tmp;
 
 	copy_pps_fields(&dsc_params->pps, &dsc_cfg);

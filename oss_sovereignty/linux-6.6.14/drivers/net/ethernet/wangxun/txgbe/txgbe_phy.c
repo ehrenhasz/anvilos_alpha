@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2015 - 2023 Beijing WangXun Technology Co., Ltd. */
+
+ 
 
 #include <linux/gpio/machine.h>
 #include <linux/gpio/driver.h>
@@ -36,13 +36,7 @@ static int txgbe_swnodes_register(struct txgbe *txgbe)
 
 	swnodes = nodes->swnodes;
 
-	/* GPIO 0: tx fault
-	 * GPIO 1: tx disable
-	 * GPIO 2: sfp module absent
-	 * GPIO 3: rx signal lost
-	 * GPIO 4: rate select, 1G(0) 10G(1)
-	 * GPIO 5: rate select, 1G(0) 10G(1)
-	 */
+	 
 	nodes->gpio_props[0] = PROPERTY_ENTRY_STRING("pinctrl-names", "default");
 	swnodes[SWNODE_GPIO] = NODE_PROP(nodes->gpio_name, nodes->gpio_props);
 	nodes->gpio0_ref[0] = SOFTWARE_NODE_REFERENCE(&swnodes[SWNODE_GPIO], 0, GPIO_ACTIVE_HIGH);
@@ -91,10 +85,10 @@ static int txgbe_pcs_read(struct mii_bus *bus, int addr, int devnum, int regnum)
 
 	offset = devnum << 16 | regnum;
 
-	/* Set the LAN port indicator to IDA_ADDR */
+	 
 	wr32(wx, TXGBE_XPCS_IDA_ADDR, offset);
 
-	/* Read the data from IDA_DATA register */
+	 
 	val = rd32(wx, TXGBE_XPCS_IDA_DATA);
 
 	return (u16)val;
@@ -110,10 +104,10 @@ static int txgbe_pcs_write(struct mii_bus *bus, int addr, int devnum, int regnum
 
 	offset = devnum << 16 | regnum;
 
-	/* Set the LAN port indicator to IDA_ADDR */
+	 
 	wr32(wx, TXGBE_XPCS_IDA_ADDR, offset);
 
-	/* Write the data to IDA_DATA register */
+	 
 	wr32(wx, TXGBE_XPCS_IDA_DATA, val);
 
 	return 0;
@@ -207,7 +201,7 @@ static void txgbe_mac_link_up(struct phylink_config *config,
 
 	wr32(wx, WX_MAC_TX_CFG, txcfg | WX_MAC_TX_CFG_TE);
 
-	/* Re configure MAC Rx */
+	 
 	wr32m(wx, WX_MAC_RX_CFG, WX_MAC_RX_CFG_RE, WX_MAC_RX_CFG_RE);
 	wr32(wx, WX_MAC_PKT_FLT, WX_MAC_PKT_FLT_PR);
 	wdg = rd32(wx, WX_MAC_WDG_TIMEOUT);
@@ -486,7 +480,7 @@ static void txgbe_irq_handler(struct irq_desc *desc)
 		phylink_mac_change(txgbe->phylink, !!(reg & TXGBE_CFG_PORT_ST_LINK_UP));
 	}
 
-	/* unmask interrupt */
+	 
 	wx_intr_enable(wx, TXGBE_INTR_MISC(wx));
 }
 
@@ -654,7 +648,7 @@ static int txgbe_phy_read(struct mii_bus *bus, int phy_addr,
 	u32 val, command;
 	int ret;
 
-	/* setup and write the address cycle command */
+	 
 	command = WX_MSCA_RA(regnum) |
 		  WX_MSCA_PA(phy_addr) |
 		  WX_MSCA_DA(devnum);
@@ -663,7 +657,7 @@ static int txgbe_phy_read(struct mii_bus *bus, int phy_addr,
 	command = WX_MSCC_CMD(WX_MSCA_CMD_READ) | WX_MSCC_BUSY;
 	wr32(wx, WX_MSCC, command);
 
-	/* wait to complete */
+	 
 	ret = read_poll_timeout(rd32, val, !(val & WX_MSCC_BUSY), 1000,
 				100000, false, wx, WX_MSCC);
 	if (ret) {
@@ -681,7 +675,7 @@ static int txgbe_phy_write(struct mii_bus *bus, int phy_addr,
 	int ret, command;
 	u16 val;
 
-	/* setup and write the address cycle command */
+	 
 	command = WX_MSCA_RA(regnum) |
 		  WX_MSCA_PA(phy_addr) |
 		  WX_MSCA_DA(devnum);
@@ -690,7 +684,7 @@ static int txgbe_phy_write(struct mii_bus *bus, int phy_addr,
 	command = value | WX_MSCC_CMD(WX_MSCA_CMD_WRITE) | WX_MSCC_BUSY;
 	wr32(wx, WX_MSCC, command);
 
-	/* wait to complete */
+	 
 	ret = read_poll_timeout(rd32, val, !(val & WX_MSCC_BUSY), 1000,
 				100000, false, wx, WX_MSCC);
 	if (ret)

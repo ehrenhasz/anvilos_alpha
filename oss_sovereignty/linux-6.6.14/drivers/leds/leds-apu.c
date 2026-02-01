@@ -1,35 +1,4 @@
-/*
- * drivers/leds/leds-apu.c
- * Copyright (C) 2017 Alan Mizrahi, alan at mizrahi dot com dot ve
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- * 3. Neither the names of the copyright holders nor the names of its
- *    contributors may be used to endorse or promote products derived from
- *    this software without specific prior written permission.
- *
- * Alternatively, this software may be distributed under the terms of the
- * GNU General Public License ("GPL") version 2 as published by the Free
- * Software Foundation.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGE.
- */
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -49,23 +18,23 @@
 #define APU1_NUM_GPIO           3
 #define APU1_IOSIZE             sizeof(u8)
 
-/* LED access parameters */
+ 
 struct apu_param {
-	void __iomem *addr; /* for ioread/iowrite */
+	void __iomem *addr;  
 };
 
-/* LED private data */
+ 
 struct apu_led_priv {
 	struct led_classdev cdev;
 	struct apu_param param;
 };
 #define cdev_to_priv(c) container_of(c, struct apu_led_priv, cdev)
 
-/* LED profile */
+ 
 struct apu_led_profile {
 	const char *name;
 	enum led_brightness brightness;
-	unsigned long offset; /* for devm_ioremap */
+	unsigned long offset;  
 };
 
 struct apu_led_pdata {
@@ -83,7 +52,7 @@ static const struct apu_led_profile apu1_led_profile[] = {
 };
 
 static const struct dmi_system_id apu_led_dmi_table[] __initconst = {
-	/* PC Engines APU with factory bios "SageBios_PCEngines_APU-45" */
+	 
 	{
 		.ident = "apu",
 		.matches = {
@@ -91,7 +60,7 @@ static const struct dmi_system_id apu_led_dmi_table[] __initconst = {
 			DMI_MATCH(DMI_PRODUCT_NAME, "APU")
 		}
 	},
-	/* PC Engines APU with "Mainline" bios >= 4.6.8 */
+	 
 	{
 		.ident = "apu",
 		.matches = {

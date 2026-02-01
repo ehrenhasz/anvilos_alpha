@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  ISA Plug & Play support
- *  Copyright (c) by Jaroslav Kysela <perex@perex.cz>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/isapnp.h>

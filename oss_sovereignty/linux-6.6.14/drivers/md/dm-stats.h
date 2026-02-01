@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef DM_STATS_H
 #define DM_STATS_H
 
@@ -11,7 +11,7 @@ void dm_statistics_exit(void);
 
 struct dm_stats {
 	struct mutex mutex;
-	struct list_head list;	/* list of struct dm_stat */
+	struct list_head list;	 
 	struct dm_stats_last_position __percpu *last;
 	bool precise_timestamps;
 };

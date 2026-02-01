@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Camellia Cipher Algorithm (x86_64)
- *
- * Copyright (C) 2012 Jussi Kivilinna <jussi.kivilinna@mbnet.fi>
- */
+ 
+ 
 
 #include <linux/linkage.h>
 
@@ -30,11 +26,11 @@
 
 #define CAMELLIA_TABLE_BYTE_LEN 272
 
-/* struct camellia_ctx: */
+ 
 #define key_table 0
 #define key_length CAMELLIA_TABLE_BYTE_LEN
 
-/* register macros */
+ 
 #define CTX %rdi
 #define RIO %rsi
 #define RIOd %esi
@@ -85,9 +81,7 @@
 	rorq $16,			ab; \
 	xorq (tmp2, tmp1, 8),		dst;
 
-/**********************************************************************
-  1-way camellia
- **********************************************************************/
+ 
 #define roundsm(ab, subkey, cd) \
 	movq (key_table + ((subkey) * 2) * 4)(CTX),	RT2; \
 	\
@@ -178,12 +172,7 @@
 	movq RAB0,			4*2(RIO);
 
 SYM_FUNC_START(__camellia_enc_blk)
-	/* input:
-	 *	%rdi: ctx, CTX
-	 *	%rsi: dst
-	 *	%rdx: src
-	 *	%rcx: bool xor
-	 */
+	 
 	movq %r12, RR12;
 
 	movq %rcx, RXOR;
@@ -197,14 +186,14 @@ SYM_FUNC_START(__camellia_enc_blk)
 	enc_rounds(8);
 	enc_fls(16);
 	enc_rounds(16);
-	movl $24, RT1d; /* max */
+	movl $24, RT1d;  
 
 	cmpb $16, key_length(CTX);
 	je .L__enc_done;
 
 	enc_fls(24);
 	enc_rounds(24);
-	movl $32, RT1d; /* max */
+	movl $32, RT1d;  
 
 .L__enc_done:
 	testb RXORbl, RXORbl;
@@ -225,15 +214,11 @@ SYM_FUNC_START(__camellia_enc_blk)
 SYM_FUNC_END(__camellia_enc_blk)
 
 SYM_FUNC_START(camellia_dec_blk)
-	/* input:
-	 *	%rdi: ctx, CTX
-	 *	%rsi: dst
-	 *	%rdx: src
-	 */
+	 
 	cmpl $16, key_length(CTX);
 	movl $32, RT2d;
 	movl $24, RXORd;
-	cmovel RXORd, RT2d; /* max */
+	cmovel RXORd, RT2d;  
 
 	movq %r12, RR12;
 	movq %rsi, RDST;
@@ -262,9 +247,7 @@ SYM_FUNC_START(camellia_dec_blk)
 	RET;
 SYM_FUNC_END(camellia_dec_blk)
 
-/**********************************************************************
-  2-way camellia
- **********************************************************************/
+ 
 #define roundsm2(ab, subkey, cd) \
 	movq (key_table + ((subkey) * 2) * 4)(CTX),	RT2; \
 	xorq RT2,					cd ## 1; \
@@ -412,12 +395,7 @@ SYM_FUNC_END(camellia_dec_blk)
 		movq RAB1,			12*2(RIO);
 
 SYM_FUNC_START(__camellia_enc_blk_2way)
-	/* input:
-	 *	%rdi: ctx, CTX
-	 *	%rsi: dst
-	 *	%rdx: src
-	 *	%rcx: bool xor
-	 */
+	 
 	pushq %rbx;
 
 	movq %r12, RR12;
@@ -432,14 +410,14 @@ SYM_FUNC_START(__camellia_enc_blk_2way)
 	enc_rounds2(8);
 	enc_fls2(16);
 	enc_rounds2(16);
-	movl $24, RT2d; /* max */
+	movl $24, RT2d;  
 
 	cmpb $16, key_length(CTX);
 	je .L__enc2_done;
 
 	enc_fls2(24);
 	enc_rounds2(24);
-	movl $32, RT2d; /* max */
+	movl $32, RT2d;  
 
 .L__enc2_done:
 	test RXORbl, RXORbl;
@@ -461,15 +439,11 @@ SYM_FUNC_START(__camellia_enc_blk_2way)
 SYM_FUNC_END(__camellia_enc_blk_2way)
 
 SYM_FUNC_START(camellia_dec_blk_2way)
-	/* input:
-	 *	%rdi: ctx, CTX
-	 *	%rsi: dst
-	 *	%rdx: src
-	 */
+	 
 	cmpl $16, key_length(CTX);
 	movl $32, RT2d;
 	movl $24, RXORd;
-	cmovel RXORd, RT2d; /* max */
+	cmovel RXORd, RT2d;  
 
 	movq %rbx, RXOR;
 	movq %r12, RR12;

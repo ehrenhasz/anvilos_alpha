@@ -1,13 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright 2013 Red Hat Inc.
- *
- * Authors: Jérôme Glisse <jglisse@redhat.com>
- */
-/*
- * Refer to include/linux/hmm.h for information about heterogeneous memory
- * management or HMM for short.
- */
+
+ 
+ 
 #include <linux/pagewalk.h>
 #include <linux/hmm.h>
 #include <linux/init.h>
@@ -49,17 +42,7 @@ static int hmm_pfns_fill(unsigned long addr, unsigned long end,
 	return 0;
 }
 
-/*
- * hmm_vma_fault() - fault in a range lacking valid pmd or pte(s)
- * @addr: range virtual start address (inclusive)
- * @end: range virtual end address (exclusive)
- * @required_fault: HMM_NEED_* flags
- * @walk: mm_walk structure
- * Return: -EBUSY after page fault, or page fault error
- *
- * This function will be called whenever pmd_none() or pte_none() returns true,
- * or whenever there is no page directory covering the virtual address range.
- */
+ 
 static int hmm_vma_fault(unsigned long addr, unsigned long end,
 			 unsigned int required_fault, struct mm_walk *walk)
 {
@@ -89,29 +72,20 @@ static unsigned int hmm_pte_need_fault(const struct hmm_vma_walk *hmm_vma_walk,
 {
 	struct hmm_range *range = hmm_vma_walk->range;
 
-	/*
-	 * So we not only consider the individual per page request we also
-	 * consider the default flags requested for the range. The API can
-	 * be used 2 ways. The first one where the HMM user coalesces
-	 * multiple page faults into one request and sets flags per pfn for
-	 * those faults. The second one where the HMM user wants to pre-
-	 * fault a range with specific flags. For the latter one it is a
-	 * waste to have the user pre-fill the pfn arrays with a default
-	 * flags value.
-	 */
+	 
 	pfn_req_flags &= range->pfn_flags_mask;
 	pfn_req_flags |= range->default_flags;
 
-	/* We aren't ask to do anything ... */
+	 
 	if (!(pfn_req_flags & HMM_PFN_REQ_FAULT))
 		return 0;
 
-	/* Need to write fault ? */
+	 
 	if ((pfn_req_flags & HMM_PFN_REQ_WRITE) &&
 	    !(cpu_flags & HMM_PFN_WRITE))
 		return HMM_NEED_FAULT | HMM_NEED_WRITE_FAULT;
 
-	/* If CPU page table is not valid then we need to fault */
+	 
 	if (!(cpu_flags & HMM_PFN_VALID))
 		return HMM_NEED_FAULT;
 	return 0;
@@ -126,11 +100,7 @@ hmm_range_need_fault(const struct hmm_vma_walk *hmm_vma_walk,
 	unsigned int required_fault = 0;
 	unsigned long i;
 
-	/*
-	 * If the default flags do not request to fault pages, and the mask does
-	 * not allow for individual pages to be faulted, then
-	 * hmm_pte_need_fault() will always return 0.
-	 */
+	 
 	if (!((range->default_flags | range->pfn_flags_mask) &
 	      HMM_PFN_REQ_FAULT))
 		return 0;
@@ -206,11 +176,11 @@ static int hmm_vma_handle_pmd(struct mm_walk *walk, unsigned long addr,
 		hmm_pfns[i] = pfn | cpu_flags;
 	return 0;
 }
-#else /* CONFIG_TRANSPARENT_HUGEPAGE */
-/* stub to allow the code below to compile */
+#else  
+ 
 int hmm_vma_handle_pmd(struct mm_walk *walk, unsigned long addr,
 		unsigned long end, unsigned long hmm_pfns[], pmd_t pmd);
-#endif /* CONFIG_TRANSPARENT_HUGEPAGE */
+#endif  
 
 static inline unsigned long pte_to_hmm_pfn_flags(struct hmm_range *range,
 						 pte_t pte)
@@ -243,10 +213,7 @@ static int hmm_vma_handle_pte(struct mm_walk *walk, unsigned long addr,
 	if (!pte_present(pte)) {
 		swp_entry_t entry = pte_to_swp_entry(pte);
 
-		/*
-		 * Don't fault in device private pages owned by the caller,
-		 * just report the PFN.
-		 */
+		 
 		if (is_device_private_entry(entry) &&
 		    pfn_swap_entry_to_page(entry)->pgmap->owner ==
 		    range->dev_private_owner) {
@@ -280,7 +247,7 @@ static int hmm_vma_handle_pte(struct mm_walk *walk, unsigned long addr,
 			return -EBUSY;
 		}
 
-		/* Report error for everything else */
+		 
 		pte_unmap(ptep);
 		return -EFAULT;
 	}
@@ -291,12 +258,7 @@ static int hmm_vma_handle_pte(struct mm_walk *walk, unsigned long addr,
 	if (required_fault)
 		goto fault;
 
-	/*
-	 * Bypass devmap pte such as DAX page when all pfn requested
-	 * flags(pfn_req_flags) are fulfilled.
-	 * Since each architecture defines a struct page for the zero page, just
-	 * fall through and treat it like a normal page.
-	 */
+	 
 	if (!vm_normal_page(walk->vma, addr, pte) &&
 	    !pte_devmap(pte) &&
 	    !is_zero_pfn(pte_pfn(pte))) {
@@ -313,7 +275,7 @@ static int hmm_vma_handle_pte(struct mm_walk *walk, unsigned long addr,
 
 fault:
 	pte_unmap(ptep);
-	/* Fault any virtual address we were asked to fault */
+	 
 	return hmm_vma_fault(addr, end, required_fault, walk);
 }
 
@@ -352,15 +314,7 @@ again:
 	}
 
 	if (pmd_devmap(pmd) || pmd_trans_huge(pmd)) {
-		/*
-		 * No need to take pmd_lock here, even if some other thread
-		 * is splitting the huge pmd we will get that event through
-		 * mmu_notifier callback.
-		 *
-		 * So just read pmd value and check again it's a transparent
-		 * huge or device mapping one and compute corresponding pfn
-		 * values.
-		 */
+		 
 		pmd = pmdp_get_lockless(pmdp);
 		if (!pmd_devmap(pmd) && !pmd_trans_huge(pmd))
 			goto again;
@@ -368,12 +322,7 @@ again:
 		return hmm_vma_handle_pmd(walk, addr, end, hmm_pfns, pmd);
 	}
 
-	/*
-	 * We have handled all the valid cases above ie either none, migration,
-	 * huge or transparent huge. At this point either it is a valid pmd
-	 * entry pointing to pte directory or it is a bad pmd that will not
-	 * recover.
-	 */
+	 
 	if (pmd_bad(pmd)) {
 		if (hmm_range_need_fault(hmm_vma_walk, hmm_pfns, npages, 0))
 			return -EFAULT;
@@ -388,7 +337,7 @@ again:
 
 		r = hmm_vma_handle_pte(walk, addr, end, pmdp, ptep, hmm_pfns);
 		if (r) {
-			/* hmm_vma_handle_pte() did pte_unmap() */
+			 
 			return r;
 		}
 	}
@@ -420,7 +369,7 @@ static int hmm_vma_walk_pud(pud_t *pudp, unsigned long start, unsigned long end,
 	if (!ptl)
 		return 0;
 
-	/* Normally we don't want to split the huge page */
+	 
 	walk->action = ACTION_CONTINUE;
 
 	pud = READ_ONCE(*pudp);
@@ -458,7 +407,7 @@ static int hmm_vma_walk_pud(pud_t *pudp, unsigned long start, unsigned long end,
 		goto out_unlock;
 	}
 
-	/* Ask for the PUD to be split */
+	 
 	walk->action = ACTION_SUBTREE;
 
 out_unlock:
@@ -498,14 +447,7 @@ static int hmm_vma_walk_hugetlb_entry(pte_t *pte, unsigned long hmask,
 
 		spin_unlock(ptl);
 		hugetlb_vma_unlock_read(vma);
-		/*
-		 * Avoid deadlock: drop the vma lock before calling
-		 * hmm_vma_fault(), which will itself potentially take and
-		 * drop the vma lock. This is also correct from a
-		 * protection point of view, because there is no further
-		 * use here of either pte or ptl after dropping the vma
-		 * lock.
-		 */
+		 
 		ret = hmm_vma_fault(addr, end, required_fault, walk);
 		hugetlb_vma_lock_read(vma);
 		return ret;
@@ -520,7 +462,7 @@ static int hmm_vma_walk_hugetlb_entry(pte_t *pte, unsigned long hmask,
 }
 #else
 #define hmm_vma_walk_hugetlb_entry NULL
-#endif /* CONFIG_HUGETLB_PAGE */
+#endif  
 
 static int hmm_vma_walk_test(unsigned long start, unsigned long end,
 			     struct mm_walk *walk)
@@ -533,17 +475,7 @@ static int hmm_vma_walk_test(unsigned long start, unsigned long end,
 	    vma->vm_flags & VM_READ)
 		return 0;
 
-	/*
-	 * vma ranges that don't have struct page backing them or map I/O
-	 * devices directly cannot be handled by hmm_range_fault().
-	 *
-	 * If the vma does not allow read access, then assume that it does not
-	 * allow write access either. HMM does not support architectures that
-	 * allow write without read.
-	 *
-	 * If a fault is requested for an unsupported range then it is a hard
-	 * failure.
-	 */
+	 
 	if (hmm_range_need_fault(hmm_vma_walk,
 				 range->hmm_pfns +
 					 ((start - range->start) >> PAGE_SHIFT),
@@ -552,7 +484,7 @@ static int hmm_vma_walk_test(unsigned long start, unsigned long end,
 
 	hmm_pfns_fill(start, end, range, HMM_PFN_ERROR);
 
-	/* Skip this vma and continue processing the next vma. */
+	 
 	return 1;
 }
 
@@ -565,25 +497,7 @@ static const struct mm_walk_ops hmm_walk_ops = {
 	.walk_lock	= PGWALK_RDLOCK,
 };
 
-/**
- * hmm_range_fault - try to fault some address in a virtual address range
- * @range:	argument structure
- *
- * Returns 0 on success or one of the following error codes:
- *
- * -EINVAL:	Invalid arguments or mm or virtual address is in an invalid vma
- *		(e.g., device file vma).
- * -ENOMEM:	Out of memory.
- * -EPERM:	Invalid permission (e.g., asking for write and range is read
- *		only).
- * -EBUSY:	The range has been invalidated and the caller needs to wait for
- *		the invalidation to finish.
- * -EFAULT:     A page was requested to be valid and could not be made valid
- *              ie it has no backing VMA or it is illegal to access
- *
- * This is similar to get_user_pages(), except that it can read the page tables
- * without mutating them (ie causing faults).
- */
+ 
 int hmm_range_fault(struct hmm_range *range)
 {
 	struct hmm_vma_walk hmm_vma_walk = {
@@ -596,18 +510,13 @@ int hmm_range_fault(struct hmm_range *range)
 	mmap_assert_locked(mm);
 
 	do {
-		/* If range is no longer valid force retry. */
+		 
 		if (mmu_interval_check_retry(range->notifier,
 					     range->notifier_seq))
 			return -EBUSY;
 		ret = walk_page_range(mm, hmm_vma_walk.last, range->end,
 				      &hmm_walk_ops, &hmm_vma_walk);
-		/*
-		 * When -EBUSY is returned the loop restarts with
-		 * hmm_vma_walk.last set to an address that has not been stored
-		 * in pfns. All entries < last in the pfn array are set to their
-		 * output, and all >= are still at their input values.
-		 */
+		 
 	} while (ret == -EBUSY);
 	return ret;
 }

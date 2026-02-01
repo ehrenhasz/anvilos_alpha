@@ -1,6 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0-only
-// Copyright 2022 Google LLC
-// Author: Ard Biesheuvel <ardb@google.com>
+
+
+
 
 #include <linux/efi.h>
 

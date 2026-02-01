@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * net/core/dst_cache.c - dst entry cache
- *
- * Copyright (c) 2016 Paolo Abeni <pabeni@redhat.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/percpu.h>
@@ -44,7 +40,7 @@ static struct dst_entry *dst_cache_per_cpu_get(struct dst_cache *dst_cache,
 	if (!dst)
 		goto fail;
 
-	/* the cache already hold a dst reference; it can't go away */
+	 
 	dst_hold(dst);
 
 	if (unlikely(!time_after(idst->refresh_ts, dst_cache->reset_ts) ||

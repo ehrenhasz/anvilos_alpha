@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: ISC
-/* Copyright (C) 2020 MediaTek Inc. */
+
+ 
 
 #include <linux/etherdevice.h>
 #include <linux/platform_device.h>
@@ -480,9 +480,7 @@ static int mt7921_set_key(struct ieee80211_hw *hw, enum set_key_cmd cmd,
 	u8 *wcid_keyidx = &wcid->hw_key_idx;
 	int idx = key->keyidx, err = 0;
 
-	/* The hardware does not support per-STA RX GTK, fallback
-	 * to software mode for these.
-	 */
+	 
 	if ((vif->type == NL80211_IFTYPE_ADHOC ||
 	     vif->type == NL80211_IFTYPE_MESH_POINT) &&
 	    (key->cipher == WLAN_CIPHER_SUITE_TKIP ||
@@ -490,7 +488,7 @@ static int mt7921_set_key(struct ieee80211_hw *hw, enum set_key_cmd cmd,
 	    !(key->flags & IEEE80211_KEY_FLAG_PAIRWISE))
 		return -EOPNOTSUPP;
 
-	/* fall back to sw encryption for unsupported ciphers */
+	 
 	switch (key->cipher) {
 	case WLAN_CIPHER_SUITE_AES_CMAC:
 		key->flags |= IEEE80211_KEY_FLAG_GENERATE_MMIE;
@@ -681,7 +679,7 @@ static void mt7921_bss_info_changed(struct ieee80211_hw *hw,
 		mt7921_mcu_uni_add_beacon_offload(dev, hw, vif,
 						  info->enable_beacon);
 
-	/* ensure that enable txcmd_mode after bss_info */
+	 
 	if (changed & (BSS_CHANGED_QOS | BSS_CHANGED_BEACON_ENABLED))
 		mt7921_mcu_set_tx(dev, vif);
 
@@ -1066,7 +1064,7 @@ static void mt7921_set_rekey_data(struct ieee80211_hw *hw,
 	mt76_connac_mcu_update_gtk_rekey(hw, vif, data);
 	mt792x_mutex_release(dev);
 }
-#endif /* CONFIG_PM */
+#endif  
 
 static void mt7921_sta_set_decap_offload(struct ieee80211_hw *hw,
 					 struct ieee80211_vif *vif,
@@ -1113,8 +1111,8 @@ static void mt7921_ipv6_addr_change(struct ieee80211_hw *hw,
 		},
 		.arpns = {
 			.tag = cpu_to_le16(UNI_OFFLOAD_OFFLOAD_ND),
-			.mode = 2,  /* update */
-			.option = 1, /* update only */
+			.mode = 2,   
+			.option = 1,  
 		},
 	};
 
@@ -1330,7 +1328,7 @@ const struct ieee80211_ops mt7921_ops = {
 	.sta_set_decap_offload = mt7921_sta_set_decap_offload,
 #if IS_ENABLED(CONFIG_IPV6)
 	.ipv6_addr_change = mt7921_ipv6_addr_change,
-#endif /* CONFIG_IPV6 */
+#endif  
 	.ampdu_action = mt7921_ampdu_action,
 	.set_rts_threshold = mt7921_set_rts_threshold,
 	.wake_tx_queue = mt76_wake_tx_queue,
@@ -1359,7 +1357,7 @@ const struct ieee80211_ops mt7921_ops = {
 	.resume = mt7921_resume,
 	.set_wakeup = mt792x_set_wakeup,
 	.set_rekey_data = mt7921_set_rekey_data,
-#endif /* CONFIG_PM */
+#endif  
 	.flush = mt792x_flush,
 	.set_sar_specs = mt7921_set_sar_specs,
 	.remain_on_channel = mt7921_remain_on_channel,

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * CMA DebugFS Interface
- *
- * Copyright (c) 2015 Sasha Levin <sasha.levin@oracle.com>
- */
+
+ 
 
 
 #include <linux/debugfs.h>
@@ -37,7 +33,7 @@ static int cma_used_get(void *data, u64 *val)
 	unsigned long used;
 
 	spin_lock_irq(&cma->lock);
-	/* pages counter is smaller than sizeof(int) */
+	 
 	used = bitmap_weight(cma->bitmap, (int)cma_bitmap_maxno(cma));
 	spin_unlock_irq(&cma->lock);
 	*val = (u64)used << cma->order_per_bit;

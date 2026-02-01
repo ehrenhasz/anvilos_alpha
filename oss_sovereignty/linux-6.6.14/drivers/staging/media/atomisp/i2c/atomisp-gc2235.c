@@ -1,19 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Support for GalaxyCore GC2235 2M camera sensor.
- *
- * Copyright (c) 2014 Intel Corporation. All Rights Reserved.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License version
- * 2 as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/types.h>
@@ -35,7 +21,7 @@
 
 #include "gc2235.h"
 
-/* i2c read/write stuff */
+ 
 static int gc2235_read_reg(struct i2c_client *client,
 			   u16 data_length, u16 reg, u16 *val)
 {
@@ -62,7 +48,7 @@ static int gc2235_read_reg(struct i2c_client *client,
 	msg[0].len = 1;
 	msg[0].buf = data;
 
-	/* high byte goes out first */
+	 
 	data[0] = (u8)(reg & 0xff);
 
 	msg[1].addr = client->addr;
@@ -80,7 +66,7 @@ static int gc2235_read_reg(struct i2c_client *client,
 	}
 
 	*val = 0;
-	/* high byte comes first */
+	 
 	if (data_length == GC2235_8BIT)
 		*val = (u8)data[0];
 
@@ -107,7 +93,7 @@ static int gc2235_write_reg(struct i2c_client *client, u16 data_length,
 {
 	int ret;
 	unsigned char data[4] = {0};
-	const u16 len = data_length + sizeof(u8); /* 16-bit address + data */
+	const u16 len = data_length + sizeof(u8);  
 
 	if (data_length != GC2235_8BIT) {
 		dev_err(&client->dev,
@@ -115,7 +101,7 @@ static int gc2235_write_reg(struct i2c_client *client, u16 data_length,
 		return -EINVAL;
 	}
 
-	/* high byte goes out first */
+	 
 	data[0] = reg;
 	data[1] = val;
 
@@ -136,7 +122,7 @@ static int __gc2235_flush_reg_array(struct i2c_client *client,
 	if (ctrl->index == 0)
 		return 0;
 
-	size = sizeof(u8) + ctrl->index; /* 8-bit address + data */
+	size = sizeof(u8) + ctrl->index;  
 	ctrl->index = 0;
 
 	return gc2235_i2c_write(client, size, (u8 *)&ctrl->buffer);
@@ -154,16 +140,13 @@ static int __gc2235_buf_reg_array(struct i2c_client *client,
 	size = 1;
 	ctrl->buffer.data[ctrl->index] = (u8)next->val;
 
-	/* When first item is added, we need to store its starting address */
+	 
 	if (ctrl->index == 0)
 		ctrl->buffer.addr = next->reg;
 
 	ctrl->index += size;
 
-	/*
-	 * Buffer cannot guarantee free space for u32? Better flush it to avoid
-	 * possible lack of memory for next item.
-	 */
+	 
 	if (ctrl->index + sizeof(u8) >= GC2235_MAX_WRITE_BUF_SIZE)
 		return __gc2235_flush_reg_array(client, ctrl);
 
@@ -197,10 +180,7 @@ static int gc2235_write_reg_array(struct i2c_client *client,
 			msleep(next->val);
 			break;
 		default:
-			/*
-			 * If next address is not consecutive, data needs to be
-			 * flushed before proceed.
-			 */
+			 
 			if (!__gc2235_write_reg_is_consecutive(client, &ctrl,
 							       next)) {
 				err = __gc2235_flush_reg_array(client, &ctrl);
@@ -276,7 +256,7 @@ static long gc2235_s_exposure(struct v4l2_subdev *sd,
 	int gain = exposure->gain[0];
 	int digitgain = exposure->gain[1];
 
-	/* we should not accept the invalid value below. */
+	 
 	if (gain == 0) {
 		struct i2c_client *client = v4l2_get_subdevdata(sd);
 
@@ -298,17 +278,14 @@ static long gc2235_ioctl(struct v4l2_subdev *sd, unsigned int cmd, void *arg)
 	return 0;
 }
 
-/*
- * This returns the exposure time being used. This should only be used
- * for filling in EXIF data, not for actual image processing.
- */
+ 
 static int gc2235_q_exposure(struct v4l2_subdev *sd, s32 *value)
 {
 	struct i2c_client *client = v4l2_get_subdevdata(sd);
 	u16 reg_v, reg_v2;
 	int ret;
 
-	/* get exposure */
+	 
 	ret = gc2235_read_reg(client, GC2235_8BIT,
 			      GC2235_EXPOSURE_L,
 			      &reg_v);
@@ -367,7 +344,7 @@ static int __gc2235_init(struct v4l2_subdev *sd)
 {
 	struct i2c_client *client = v4l2_get_subdevdata(sd);
 
-	/* restore settings */
+	 
 	gc2235_res = gc2235_res_preview;
 	N_RES = N_RES_PREVIEW;
 
@@ -422,12 +399,12 @@ static int power_up(struct v4l2_subdev *sd)
 			"no camera_sensor_platform_data");
 		return -ENODEV;
 	}
-	/* power control */
+	 
 	ret = power_ctrl(sd, 1);
 	if (ret)
 		goto fail_power;
 
-	/* according to DS, at least 5ms is needed between DOVDD and PWDN */
+	 
 	usleep_range(5000, 6000);
 
 	ret = dev->platform_data->flisclk_ctrl(sd, 1);
@@ -435,7 +412,7 @@ static int power_up(struct v4l2_subdev *sd)
 		goto fail_clk;
 	usleep_range(5000, 6000);
 
-	/* gpio ctrl */
+	 
 	ret = gpio_ctrl(sd, 1);
 	if (ret) {
 		ret = gpio_ctrl(sd, 1);
@@ -466,7 +443,7 @@ static int power_down(struct v4l2_subdev *sd)
 			"no camera_sensor_platform_data");
 		return -ENODEV;
 	}
-	/* gpio ctrl */
+	 
 	ret = gpio_ctrl(sd, 0);
 	if (ret) {
 		ret = gpio_ctrl(sd, 0);
@@ -478,7 +455,7 @@ static int power_down(struct v4l2_subdev *sd)
 	if (ret)
 		dev_err(&client->dev, "flisclk failed\n");
 
-	/* power control */
+	 
 	ret = power_ctrl(sd, 0);
 	if (ret)
 		dev_err(&client->dev, "vprog failed.\n");
@@ -508,12 +485,7 @@ static int startup(struct v4l2_subdev *sd)
 	int ret = 0;
 
 	if (is_init == 0) {
-		/*
-		 * force gc2235 to do a reset in res change, otherwise it
-		 * can not output normal after switching res. and it is not
-		 * necessary for first time run up after power on, for the sack
-		 * of performance
-		 */
+		 
 		power_down(sd);
 		power_up(sd);
 		gc2235_write_reg_array(client, gc2235_init_settings);
@@ -650,11 +622,7 @@ static int gc2235_s_config(struct v4l2_subdev *sd,
 	    (struct camera_sensor_platform_data *)platform_data;
 
 	mutex_lock(&dev->input_lock);
-	/*
-	 * power off the module, then power on it in future
-	 * as first power on by board may not fulfill the
-	 * power on sequqence needed by the module
-	 */
+	 
 	ret = power_down(sd);
 	if (ret) {
 		dev_err(&client->dev, "gc2235 power-off err.\n");
@@ -671,14 +639,14 @@ static int gc2235_s_config(struct v4l2_subdev *sd,
 	if (ret)
 		goto fail_csi_cfg;
 
-	/* config & detect sensor */
+	 
 	ret = gc2235_detect(client);
 	if (ret) {
 		dev_err(&client->dev, "gc2235_detect err s_config.\n");
 		goto fail_csi_cfg;
 	}
 
-	/* turn off sensor, after probed */
+	 
 	ret = power_down(sd);
 	if (ret) {
 		dev_err(&client->dev, "gc2235 power-off err.\n");
@@ -836,7 +804,7 @@ static int gc2235_probe(struct i2c_client *client)
 		return dev->ctrl_handler.error;
 	}
 
-	/* Use same lock for controls as for everything else. */
+	 
 	dev->ctrl_handler.lock = &dev->input_lock;
 	dev->sd.ctrl_handler = &dev->ctrl_handler;
 

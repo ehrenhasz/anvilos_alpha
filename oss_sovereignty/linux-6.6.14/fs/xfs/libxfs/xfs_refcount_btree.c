@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (C) 2016 Oracle.  All Rights Reserved.
- * Author: Darrick J. Wong <darrick.wong@oracle.com>
- */
+
+ 
 #include "xfs.h"
 #include "xfs_fs.h"
 #include "xfs_shared.h"
@@ -61,8 +58,8 @@ xfs_refcountbt_alloc_block(
 {
 	struct xfs_buf		*agbp = cur->bc_ag.agbp;
 	struct xfs_agf		*agf = agbp->b_addr;
-	struct xfs_alloc_arg	args;		/* block allocation args */
-	int			error;		/* error return value */
+	struct xfs_alloc_arg	args;		 
+	int			error;		 
 
 	memset(&args, 0, sizeof(args));
 	args.tp = cur->bc_tp;
@@ -332,9 +329,7 @@ static const struct xfs_btree_ops xfs_refcountbt_ops = {
 	.keys_contiguous	= xfs_refcountbt_keys_contiguous,
 };
 
-/*
- * Initialize a new refcount btree cursor.
- */
+ 
 static struct xfs_btree_cur *
 xfs_refcountbt_init_common(
 	struct xfs_mount	*mp,
@@ -358,7 +353,7 @@ xfs_refcountbt_init_common(
 	return cur;
 }
 
-/* Create a btree cursor. */
+ 
 struct xfs_btree_cur *
 xfs_refcountbt_init_cursor(
 	struct xfs_mount	*mp,
@@ -375,7 +370,7 @@ xfs_refcountbt_init_cursor(
 	return cur;
 }
 
-/* Create a btree cursor with a fake root for staging. */
+ 
 struct xfs_btree_cur *
 xfs_refcountbt_stage_cursor(
 	struct xfs_mount	*mp,
@@ -389,10 +384,7 @@ xfs_refcountbt_stage_cursor(
 	return cur;
 }
 
-/*
- * Swap in the new btree root.  Once we pass this point the newly rebuilt btree
- * is in place and we have to kill off all the old btree blocks.
- */
+ 
 void
 xfs_refcountbt_commit_staged_btree(
 	struct xfs_btree_cur	*cur,
@@ -413,7 +405,7 @@ xfs_refcountbt_commit_staged_btree(
 	xfs_btree_commit_afakeroot(cur, tp, agbp, &xfs_refcountbt_ops);
 }
 
-/* Calculate number of records in a refcount btree block. */
+ 
 static inline unsigned int
 xfs_refcountbt_block_maxrecs(
 	unsigned int		blocklen,
@@ -425,9 +417,7 @@ xfs_refcountbt_block_maxrecs(
 			   sizeof(xfs_refcount_ptr_t));
 }
 
-/*
- * Calculate the number of records in a refcount btree block.
- */
+ 
 int
 xfs_refcountbt_maxrecs(
 	int			blocklen,
@@ -437,7 +427,7 @@ xfs_refcountbt_maxrecs(
 	return xfs_refcountbt_block_maxrecs(blocklen, leaf);
 }
 
-/* Compute the max possible height of the maximally sized refcount btree. */
+ 
 unsigned int
 xfs_refcountbt_maxlevels_ondisk(void)
 {
@@ -452,7 +442,7 @@ xfs_refcountbt_maxlevels_ondisk(void)
 	return xfs_btree_compute_maxlevels(minrecs, XFS_MAX_CRC_AG_BLOCKS);
 }
 
-/* Compute the maximum height of a refcount btree. */
+ 
 void
 xfs_refcountbt_compute_maxlevels(
 	struct xfs_mount		*mp)
@@ -467,7 +457,7 @@ xfs_refcountbt_compute_maxlevels(
 	ASSERT(mp->m_refc_maxlevels <= xfs_refcountbt_maxlevels_ondisk());
 }
 
-/* Calculate the refcount btree size for some records. */
+ 
 xfs_extlen_t
 xfs_refcountbt_calc_size(
 	struct xfs_mount	*mp,
@@ -476,24 +466,20 @@ xfs_refcountbt_calc_size(
 	return xfs_btree_calc_size(mp->m_refc_mnr, len);
 }
 
-/*
- * Calculate the maximum refcount btree size.
- */
+ 
 xfs_extlen_t
 xfs_refcountbt_max_size(
 	struct xfs_mount	*mp,
 	xfs_agblock_t		agblocks)
 {
-	/* Bail out if we're uninitialized, which can happen in mkfs. */
+	 
 	if (mp->m_refc_mxr[0] == 0)
 		return 0;
 
 	return xfs_refcountbt_calc_size(mp, agblocks);
 }
 
-/*
- * Figure out how many blocks to reserve and how many are used by this btree.
- */
+ 
 int
 xfs_refcountbt_calc_reserves(
 	struct xfs_mount	*mp,
@@ -520,11 +506,7 @@ xfs_refcountbt_calc_reserves(
 	tree_len = be32_to_cpu(agf->agf_refcount_blocks);
 	xfs_trans_brelse(tp, agbp);
 
-	/*
-	 * The log is permanently allocated, so the space it occupies will
-	 * never be available for the kinds of things that would require btree
-	 * expansion.  We therefore can pretend the space isn't there.
-	 */
+	 
 	if (xfs_ag_contains_log(mp, pag->pag_agno))
 		agblocks -= mp->m_sb.sb_logblocks;
 

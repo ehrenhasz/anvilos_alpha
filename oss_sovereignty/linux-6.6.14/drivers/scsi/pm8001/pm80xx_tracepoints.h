@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Trace events in pm8001 driver.
- *
- * Copyright 2020 Google LLC
- * Author: Akshat Jain <akshatzen@google.com>
- */
+ 
+ 
 
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM pm80xx
@@ -103,7 +98,7 @@ TRACE_EVENT(pm80xx_mpi_build_cmd,
 		    __entry->pi, __entry->ci)
 );
 
-#endif /* _TRACE_PM80XX_H_ */
+#endif  
 
 #undef TRACE_INCLUDE_PATH
 #undef TRACE_INCLUDE_FILE

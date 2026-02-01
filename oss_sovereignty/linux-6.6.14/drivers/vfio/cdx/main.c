@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2022-2023, Advanced Micro Devices, Inc.
- */
+
+ 
 
 #include <linux/vfio.h>
 #include <linux/cdx/cdx_bus.h>
@@ -27,10 +25,7 @@ static int vfio_cdx_open_device(struct vfio_device *core_vdev)
 		vdev->regions[i].addr = res->start;
 		vdev->regions[i].size = resource_size(res);
 		vdev->regions[i].type = res->flags;
-		/*
-		 * Only regions addressed with PAGE granularity may be
-		 * MMAP'ed securely.
-		 */
+		 
 		if (!(vdev->regions[i].addr & ~PAGE_MASK) &&
 		    !(vdev->regions[i].size & ~PAGE_MASK))
 			vdev->regions[i].flags |=
@@ -90,7 +85,7 @@ static int vfio_cdx_ioctl_get_region_info(struct vfio_cdx_device *vdev,
 	if (info.index >= cdx_dev->res_count)
 		return -EINVAL;
 
-	/* map offset to the physical address */
+	 
 	info.offset = vfio_cdx_index_to_offset(info.index);
 	info.size = vdev->regions[info.index].size;
 	info.flags = vdev->regions[info.index].flags;
@@ -211,7 +206,7 @@ static int vfio_cdx_remove(struct cdx_device *cdx_dev)
 
 static const struct cdx_device_id vfio_cdx_table[] = {
 	{ CDX_DEVICE_DRIVER_OVERRIDE(CDX_ANY_ID, CDX_ANY_ID,
-				     CDX_ID_F_VFIO_DRIVER_OVERRIDE) }, /* match all by default */
+				     CDX_ID_F_VFIO_DRIVER_OVERRIDE) },  
 	{}
 };
 

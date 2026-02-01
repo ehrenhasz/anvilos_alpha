@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Driver for the internal tuner of Montage M88RS6000
- *
- * Copyright (C) 2014 Max nibble <nibble.max@gmail.com>
- */
+
+ 
 
 #include "m88rs6000t.h"
 #include <linux/regmap.h>
@@ -20,7 +16,7 @@ struct m88rs6000t_reg_val {
 	u8 val;
 };
 
-/* set demod main mclk and ts mclk */
+ 
 static int m88rs6000t_set_demod_mclk(struct dvb_frontend *fe)
 {
 	struct m88rs6000t_dev *dev = fe->tuner_priv;
@@ -32,7 +28,7 @@ static int m88rs6000t_set_demod_mclk(struct dvb_frontend *fe)
 	unsigned int utmp;
 	int ret;
 
-	/* select demod main mclk */
+	 
 	ret = regmap_read(dev->regmap, 0x15, &utmp);
 	if (ret)
 		goto err;
@@ -40,14 +36,14 @@ static int m88rs6000t_set_demod_mclk(struct dvb_frontend *fe)
 	if (c->symbol_rate > 45010000) {
 		reg11 = 0x0E;
 		reg15 |= 0x02;
-		reg16 = 115; /* mclk = 110.25MHz */
+		reg16 = 115;  
 	} else {
 		reg11 = 0x0A;
 		reg15 &= ~0x02;
-		reg16 = 96; /* mclk = 96MHz */
+		reg16 = 96;  
 	}
 
-	/* set ts mclk */
+	 
 	if (c->delivery_system == SYS_DVBS)
 		ts_mclk = 96000;
 	else
@@ -104,7 +100,7 @@ static int m88rs6000t_set_demod_mclk(struct dvb_frontend *fe)
 	reg1E = ((f3 << 4) + f2) & 0xFF;
 	reg1F = ((f1 << 4) + f0) & 0xFF;
 
-	/* program and recalibrate demod PLL */
+	 
 	ret = regmap_write(dev->regmap, 0x05, 0x40);
 	if (ret)
 		goto err;
@@ -155,7 +151,7 @@ static int m88rs6000t_set_pll_freq(struct m88rs6000t_dev *dev,
 	unsigned int utmp;
 	int ret;
 
-	fcry_KHz = 27000; /* in kHz */
+	fcry_KHz = 27000;  
 	refDiv = 27;
 
 	ret = regmap_write(dev->regmap, 0x36, (refDiv - 8));
@@ -400,7 +396,7 @@ static int m88rs6000t_set_params(struct dvb_frontend *fe)
 		lpf_offset_KHz = 0;
 
 	realFreq = c->frequency + lpf_offset_KHz;
-	/* set tuner pll.*/
+	 
 	freq_MHz = (realFreq + 500) / 1000;
 	ret = m88rs6000t_set_pll_freq(dev, freq_MHz);
 	if (ret)
@@ -414,7 +410,7 @@ static int m88rs6000t_set_params(struct dvb_frontend *fe)
 	ret = regmap_write(dev->regmap, 0x00, 0x00);
 	if (ret)
 		goto err;
-	/* set demod mlck */
+	 
 	ret = m88rs6000t_set_demod_mclk(fe);
 err:
 	if (ret)
@@ -476,7 +472,7 @@ static int m88rs6000t_get_if_frequency(struct dvb_frontend *fe, u32 *frequency)
 
 	dev_dbg(&dev->client->dev, "\n");
 
-	*frequency = 0; /* Zero-IF */
+	*frequency = 0;  
 	return 0;
 }
 
@@ -549,7 +545,7 @@ static int m88rs6000t_get_rf_strength(struct dvb_frontend *fe, u16 *strength)
 
 	gain = RFG + IFG - TIAG + BBG + PGA2G;
 
-	/* scale value to 0x0000-0xffff */
+	 
 	gain = clamp_val(gain, 1000U, 10500U);
 	*strength = (10500 - gain) * 0xffff / (10500 - 1000);
 err:
@@ -642,7 +638,7 @@ static int m88rs6000t_probe(struct i2c_client *client)
 	if (ret)
 		goto err;
 
-	/* check tuner chip id */
+	 
 	ret = regmap_read(dev->regmap, 0x01, &utmp);
 	if (ret)
 		goto err;
@@ -652,7 +648,7 @@ static int m88rs6000t_probe(struct i2c_client *client)
 		goto err;
 	}
 
-	/* tuner init. */
+	 
 	ret = regmap_write(dev->regmap, 0x05, 0x40);
 	if (ret)
 		goto err;

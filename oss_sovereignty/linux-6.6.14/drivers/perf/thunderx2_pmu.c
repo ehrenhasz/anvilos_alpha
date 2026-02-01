@@ -1,20 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * CAVIUM THUNDERX2 SoC PMU UNCORE
- * Copyright (C) 2018 Cavium Inc.
- * Author: Ganapatrao Kulkarni <gkulkarni@cavium.com>
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/cpuhotplug.h>
 #include <linux/perf_event.h>
 #include <linux/platform_device.h>
 
-/* Each ThunderX2(TX2) Socket has a L3C and DMC UNCORE PMU device.
- * Each UNCORE PMU device consists of 4 independent programmable counters.
- * Counters are 32 bit and do not support overflow interrupt,
- * they need to be sampled before overflow(i.e, at every 2 seconds).
- */
+ 
 
 #define TX2_PMU_DMC_L3C_MAX_COUNTERS	4
 #define TX2_PMU_CCPI2_MAX_COUNTERS	8
@@ -27,12 +19,10 @@
 #define TX2_PMU_HRTIMER_INTERVAL	(2 * NSEC_PER_SEC)
 #define GET_EVENTID(ev, mask)		((ev->hw.config) & mask)
 #define GET_COUNTERID(ev, mask)		((ev->hw.idx) & mask)
- /* 1 byte per counter(4 counters).
-  * Event id is encoded in bits [5:1] of a byte,
-  */
+  
 #define DMC_EVENT_CFG(idx, val)		((val) << (((idx) * 8) + 1))
 
-/* bits[3:0] to select counters, are indexed from 8 to 15. */
+ 
 #define CCPI2_COUNTER_OFFSET		8
 
 #define L3C_COUNTER_CTL			0xA8
@@ -46,7 +36,7 @@
 #define CCPI2_COUNTER_DATA_L		0x130
 #define CCPI2_COUNTER_DATA_H		0x134
 
-/* L3C event IDs */
+ 
 #define L3_EVENT_READ_REQ		0xD
 #define L3_EVENT_WRITEBACK_REQ		0xE
 #define L3_EVENT_INV_N_WRITE_REQ	0xF
@@ -57,7 +47,7 @@
 #define L3_EVENT_READ_HIT		0x17
 #define L3_EVENT_MAX			0x18
 
-/* DMC event IDs */
+ 
 #define DMC_EVENT_COUNT_CYCLES		0x1
 #define DMC_EVENT_WRITE_TXNS		0xB
 #define DMC_EVENT_DATA_TRANSFERS	0xD
@@ -83,10 +73,7 @@ enum tx2_uncore_type {
 	PMU_TYPE_INVALID,
 };
 
-/*
- * Each socket has 3 uncore devices associated with a PMU. The DMC and
- * L3C have 4 32-bit counters and the CCPI2 has 8 64-bit counters.
- */
+ 
 struct tx2_uncore_pmu {
 	struct hlist_node hpnode;
 	struct list_head  entry;
@@ -167,9 +154,7 @@ static const struct attribute_group ccpi2_pmu_format_attr_group = {
 	.attrs = ccpi2_pmu_format_attrs,
 };
 
-/*
- * sysfs event attributes
- */
+ 
 static ssize_t tx2_pmu_event_show(struct device *dev,
 				    struct device_attribute *attr, char *buf)
 {
@@ -245,9 +230,7 @@ static const struct attribute_group ccpi2_pmu_events_attr_group = {
 	.attrs = ccpi2_pmu_events_attrs,
 };
 
-/*
- * sysfs cpumask attributes
- */
+ 
 static ssize_t cpumask_show(struct device *dev, struct device_attribute *attr,
 		char *buf)
 {
@@ -267,9 +250,7 @@ static const struct attribute_group pmu_cpumask_attr_group = {
 	.attrs = tx2_pmu_cpumask_attrs,
 };
 
-/*
- * Per PMU device attribute groups
- */
+ 
 static const struct attribute_group *l3c_pmu_attr_groups[] = {
 	&l3c_pmu_format_attr_group,
 	&pmu_cpumask_attr_group,
@@ -328,7 +309,7 @@ static void init_cntr_base_l3c(struct perf_event *event,
 	tx2_pmu = pmu_to_tx2_pmu(event->pmu);
 	cmask = tx2_pmu->counters_mask;
 
-	/* counter ctrl/data reg offset at 8 */
+	 
 	hwc->config_base = (unsigned long)tx2_pmu->base
 		+ L3C_COUNTER_CTL + (8 * GET_COUNTERID(event, cmask));
 	hwc->event_base =  (unsigned long)tx2_pmu->base
@@ -346,7 +327,7 @@ static void init_cntr_base_dmc(struct perf_event *event,
 
 	hwc->config_base = (unsigned long)tx2_pmu->base
 		+ DMC_COUNTER_CTL;
-	/* counter data reg offset at 0xc */
+	 
 	hwc->event_base = (unsigned long)tx2_pmu->base
 		+ DMC_COUNTER_DATA + (0xc * GET_COUNTERID(event, cmask));
 }
@@ -373,7 +354,7 @@ static void uncore_start_event_l3c(struct perf_event *event, int flags)
 	tx2_pmu = pmu_to_tx2_pmu(event->pmu);
 	emask = tx2_pmu->events_mask;
 
-	/* event id encoded in bits [07:03] */
+	 
 	val = GET_EVENTID(event, emask) << 3;
 	reg_writel(val, hwc->config_base);
 	local64_set(&hwc->prev_count, 0);
@@ -399,9 +380,7 @@ static void uncore_start_event_dmc(struct perf_event *event, int flags)
 	idx = GET_COUNTERID(event, cmask);
 	event_id = GET_EVENTID(event, emask);
 
-	/* enable and start counters.
-	 * 8 bits for each counter, bits[05:01] of a counter to set event type.
-	 */
+	 
 	val = reg_readl(hwc->config_base);
 	val &= ~DMC_EVENT_CFG(idx, 0x1f);
 	val |= DMC_EVENT_CFG(idx, event_id);
@@ -421,7 +400,7 @@ static void uncore_stop_event_dmc(struct perf_event *event)
 	cmask = tx2_pmu->counters_mask;
 	idx = GET_COUNTERID(event, cmask);
 
-	/* clear event type(bits[05:01]) to stop counter */
+	 
 	val = reg_readl(hwc->config_base);
 	val &= ~DMC_EVENT_CFG(idx, 0x1f);
 	reg_writel(val, hwc->config_base);
@@ -436,15 +415,12 @@ static void uncore_start_event_ccpi2(struct perf_event *event, int flags)
 	tx2_pmu = pmu_to_tx2_pmu(event->pmu);
 	emask = tx2_pmu->events_mask;
 
-	/* Bit [09:00] to set event id.
-	 * Bits [10], set level to rising edge.
-	 * Bits [11], set type to edge sensitive.
-	 */
+	 
 	reg_writel((CCPI2_EVENT_TYPE_EDGE_SENSITIVE |
 			CCPI2_EVENT_LEVEL_RISING_EDGE |
 			GET_EVENTID(event, emask)), hwc->config_base);
 
-	/* reset[4], enable[0] and start[1] counters */
+	 
 	reg_writel(CCPI2_PERF_CTL_RESET |
 			CCPI2_PERF_CTL_START |
 			CCPI2_PERF_CTL_ENABLE,
@@ -456,7 +432,7 @@ static void uncore_stop_event_ccpi2(struct perf_event *event)
 {
 	struct hw_perf_event *hwc = &event->hw;
 
-	/* disable and stop counter */
+	 
 	reg_writel(0, hwc->event_base + CCPI2_PERF_CTL);
 }
 
@@ -486,19 +462,16 @@ static void tx2_uncore_event_update(struct perf_event *event)
 	} else {
 		new = reg_readl(hwc->event_base);
 		prev = local64_xchg(&hwc->prev_count, new);
-		/* handles rollover of 32 bit counter */
+		 
 		delta = (u32)(((1ULL << 32) - prev) + new);
 	}
 
-	/* DMC event data_transfers granularity is 16 Bytes, convert it to 64 */
+	 
 	if (type == PMU_TYPE_DMC &&
 			GET_EVENTID(event, emask) == DMC_EVENT_DATA_TRANSFERS)
 		delta = delta/4;
 
-	/* L3C and DMC has 16 and 8 interleave channels respectively.
-	 * The sampled value is for channel 0 and multiplied with
-	 * prorate_factor to get the count for a device.
-	 */
+	 
 	local64_add(delta * prorate_factor, &event->count);
 }
 
@@ -529,7 +502,7 @@ static bool tx2_uncore_validate_event(struct pmu *pmu,
 {
 	if (is_software_event(event))
 		return true;
-	/* Reject groups spanning multiple HW PMUs. */
+	 
 	if (event->pmu != pmu)
 		return false;
 
@@ -537,10 +510,7 @@ static bool tx2_uncore_validate_event(struct pmu *pmu,
 	return true;
 }
 
-/*
- * Make sure the group of events can be scheduled at once
- * on the PMU.
- */
+ 
 static bool tx2_uncore_validate_event_group(struct perf_event *event,
 		int max_counters)
 {
@@ -561,10 +531,7 @@ static bool tx2_uncore_validate_event_group(struct perf_event *event,
 	if (!tx2_uncore_validate_event(event->pmu, event, &counters))
 		return false;
 
-	/*
-	 * If the group requires more counters than the HW has,
-	 * it cannot ever be scheduled.
-	 */
+	 
 	return counters <= max_counters;
 }
 
@@ -574,15 +541,11 @@ static int tx2_uncore_event_init(struct perf_event *event)
 	struct hw_perf_event *hwc = &event->hw;
 	struct tx2_uncore_pmu *tx2_pmu;
 
-	/* Test the event attr type check for PMU enumeration */
+	 
 	if (event->attr.type != event->pmu->type)
 		return -ENOENT;
 
-	/*
-	 * SOC PMU counters are shared across all cores.
-	 * Therefore, it does not support per-process mode.
-	 * Also, it does not support event sampling mode.
-	 */
+	 
 	if (is_sampling_event(event) || event->attach_state & PERF_ATTACH_TASK)
 		return -EINVAL;
 
@@ -597,10 +560,10 @@ static int tx2_uncore_event_init(struct perf_event *event)
 	if (event->attr.config >= tx2_pmu->max_events)
 		return -EINVAL;
 
-	/* store event id */
+	 
 	hwc->config = event->attr.config;
 
-	/* Validate the group */
+	 
 	if (!tx2_uncore_validate_event_group(event, tx2_pmu->max_counters))
 		return -EINVAL;
 
@@ -618,11 +581,11 @@ static void tx2_uncore_event_start(struct perf_event *event, int flags)
 	tx2_pmu->start_event(event, flags);
 	perf_event_update_userpage(event);
 
-	/* No hrtimer needed for CCPI2, 64-bit counters */
+	 
 	if (!tx2_pmu->hrtimer_callback)
 		return;
 
-	/* Start timer for first event */
+	 
 	if (bitmap_weight(tx2_pmu->active_counters,
 				tx2_pmu->max_counters) == 1) {
 		hrtimer_start(&tx2_pmu->hrtimer,
@@ -656,13 +619,13 @@ static int tx2_uncore_event_add(struct perf_event *event, int flags)
 
 	tx2_pmu = pmu_to_tx2_pmu(event->pmu);
 
-	/* Allocate a free counter */
+	 
 	hwc->idx  = alloc_counter(tx2_pmu);
 	if (hwc->idx < 0)
 		return -EAGAIN;
 
 	tx2_pmu->events[hwc->idx] = event;
-	/* set counter control and data registers base address */
+	 
 	tx2_pmu->init_cntr_base(event, tx2_pmu);
 
 	hwc->state = PERF_HES_UPTODATE | PERF_HES_STOPPED;
@@ -681,7 +644,7 @@ static void tx2_uncore_event_del(struct perf_event *event, int flags)
 	cmask = tx2_pmu->counters_mask;
 	tx2_uncore_event_stop(event, PERF_EF_UPDATE);
 
-	/* clear the assigned counter */
+	 
 	free_counter(tx2_pmu, GET_COUNTERID(event, cmask));
 
 	perf_event_update_userpage(event);
@@ -726,7 +689,7 @@ static int tx2_uncore_pmu_register(
 	struct device *dev = tx2_pmu->dev;
 	char *name = tx2_pmu->name;
 
-	/* Perf event registration */
+	 
 	tx2_pmu->pmu = (struct pmu) {
 		.module         = THIS_MODULE,
 		.attr_groups	= tx2_pmu->attr_groups,
@@ -768,7 +731,7 @@ static int tx2_uncore_pmu_add_dev(struct tx2_uncore_pmu *tx2_pmu)
 		return -ENODEV;
 	}
 
-	/* register hotplug callback for the pmu */
+	 
 	ret = cpuhp_state_add_instance(
 			CPUHP_AP_PERF_ARM_CAVIUM_TX2_UNCORE_ONLINE,
 			&tx2_pmu->hpnode);
@@ -777,7 +740,7 @@ static int tx2_uncore_pmu_add_dev(struct tx2_uncore_pmu *tx2_pmu)
 		return ret;
 	}
 
-	/* Add to list */
+	 
 	list_add(&tx2_pmu->entry, &tx2_pmus);
 
 	dev_dbg(tx2_pmu->dev, "%s PMU UNCORE registered\n",
@@ -862,7 +825,7 @@ static struct tx2_uncore_pmu *tx2_uncore_pmu_init_dev(struct device *dev,
 		tx2_pmu->stop_event = uncore_stop_event_dmc;
 		break;
 	case PMU_TYPE_CCPI2:
-		/* CCPI2 has 8 counters */
+		 
 		tx2_pmu->max_counters = TX2_PMU_CCPI2_MAX_COUNTERS;
 		tx2_pmu->counters_mask = 0x7;
 		tx2_pmu->prorate_factor = 1;
@@ -905,7 +868,7 @@ static acpi_status tx2_uncore_pmu_add(acpi_handle handle, u32 level,
 		return AE_ERROR;
 
 	if (tx2_uncore_pmu_add_dev(tx2_pmu)) {
-		/* Can't add the PMU device, abort */
+		 
 		return AE_ERROR;
 	}
 	return AE_OK;
@@ -919,9 +882,7 @@ static int tx2_uncore_pmu_online_cpu(unsigned int cpu,
 	tx2_pmu = hlist_entry_safe(hpnode,
 			struct tx2_uncore_pmu, hpnode);
 
-	/* Pick this CPU, If there is no CPU/PMU association and both are
-	 * from same node.
-	 */
+	 
 	if ((tx2_pmu->cpu >= nr_cpu_ids) &&
 		(tx2_pmu->node == cpu_to_node(cpu)))
 		tx2_pmu->cpu = cpu;
@@ -980,7 +941,7 @@ static int tx2_uncore_probe(struct platform_device *pdev)
 	if (!handle)
 		return -EINVAL;
 
-	/* Walk through the tree for all PMU UNCORE devices */
+	 
 	status = acpi_walk_namespace(ACPI_TYPE_DEVICE, handle, 1,
 				     tx2_uncore_pmu_add,
 				     NULL, dev, NULL);

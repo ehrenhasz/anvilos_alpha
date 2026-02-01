@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Shared support code for AMD K8 northbridges and derivatives.
- * Copyright 2006 Andi Kleen, SUSE Labs.
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -44,7 +41,7 @@
 #define PCI_DEVICE_ID_AMD_1AH_M00H_DF_F4	0x12c4
 #define PCI_DEVICE_ID_AMD_MI200_DF_F4		0x14d4
 
-/* Protect the PCI config register pairs used for SMN. */
+ 
 static DEFINE_MUTEX(smn_mutex);
 
 static u32 *flush_words;
@@ -255,10 +252,7 @@ static int amd_cache_northbridges(void)
 	if (root_count) {
 		roots_per_misc = root_count / misc_count;
 
-		/*
-		 * There should be _exactly_ N roots for each DF/SMN
-		 * interface.
-		 */
+		 
 		if (!roots_per_misc || (root_count % roots_per_misc)) {
 			pr_info("Unsupported AMD DF/PCI configuration found\n");
 			return -ENODEV;
@@ -281,15 +275,7 @@ static int amd_cache_northbridges(void)
 		node_to_amd_nb(i)->link = link =
 			next_northbridge(link, link_ids);
 
-		/*
-		 * If there are more PCI root devices than data fabric/
-		 * system management network interfaces, then the (N)
-		 * PCI roots per DF/SMN interface are functionally the
-		 * same (for DF/SMN access) and N-1 are redundant.  N-1
-		 * PCI roots should be skipped per DF/SMN interface so
-		 * the following DF/SMN interfaces get mapped to
-		 * correct PCI roots.
-		 */
+		 
 		for (j = 1; j < roots_per_misc; j++)
 			root = next_northbridge(root, root_ids);
 	}
@@ -297,16 +283,11 @@ static int amd_cache_northbridges(void)
 	if (amd_gart_present())
 		amd_northbridges.flags |= AMD_NB_GART;
 
-	/*
-	 * Check for L3 cache presence.
-	 */
+	 
 	if (!cpuid_edx(0x80000006))
 		return 0;
 
-	/*
-	 * Some CPU families support L3 Cache Index Disable. There are some
-	 * limitations because of E382 and E388 on family 0x10.
-	 */
+	 
 	if (boot_cpu_data.x86 == 0x10 &&
 	    boot_cpu_data.x86_model >= 0x8 &&
 	    (boot_cpu_data.x86_model > 0x9 ||
@@ -316,17 +297,14 @@ static int amd_cache_northbridges(void)
 	if (boot_cpu_data.x86 == 0x15)
 		amd_northbridges.flags |= AMD_NB_L3_INDEX_DISABLE;
 
-	/* L3 cache partitioning is supported on family 0x15 */
+	 
 	if (boot_cpu_data.x86 == 0x15)
 		amd_northbridges.flags |= AMD_NB_L3_PARTITIONING;
 
 	return 0;
 }
 
-/*
- * Ignores subdevice/subvendor but as far as I can figure out
- * they're useless anyways
- */
+ 
 bool __init early_is_amd_nb(u32 device)
 {
 	const struct pci_device_id *misc_ids = amd_nb_misc_ids;
@@ -357,14 +335,14 @@ struct resource *amd_get_mmconfig_range(struct resource *res)
 	    boot_cpu_data.x86_vendor != X86_VENDOR_HYGON)
 		return NULL;
 
-	/* assume all cpus from fam10h have mmconfig */
+	 
 	if (boot_cpu_data.x86 < 0x10)
 		return NULL;
 
 	address = MSR_FAM10H_MMIO_CONF_BASE;
 	rdmsrl(address, msr);
 
-	/* mmconfig is not enabled */
+	 
 	if (!(msr & FAM10H_MMIO_CONF_ENABLE))
 		return NULL;
 
@@ -402,14 +380,14 @@ int amd_set_subcaches(int cpu, unsigned long mask)
 	if (!amd_nb_has_feature(AMD_NB_L3_PARTITIONING) || mask > 0xf)
 		return -EINVAL;
 
-	/* if necessary, collect reset state of L3 partitioning and BAN mode */
+	 
 	if (reset == 0) {
 		pci_read_config_dword(nb->link, 0x1d4, &reset);
 		pci_read_config_dword(nb->misc, 0x1b8, &ban);
 		ban &= 0x180000;
 	}
 
-	/* deactivate BAN mode if any subcaches are to be disabled */
+	 
 	if (mask != 0xf) {
 		pci_read_config_dword(nb->misc, 0x1b8, &reg);
 		pci_write_config_dword(nb->misc, 0x1b8, reg & ~0x180000);
@@ -421,7 +399,7 @@ int amd_set_subcaches(int cpu, unsigned long mask)
 
 	pci_write_config_dword(nb->link, 0x1d4, mask);
 
-	/* reset BAN mode if L3 partitioning returned to reset state */
+	 
 	pci_read_config_dword(nb->link, 0x1d4, &reg);
 	if (reg == reset) {
 		pci_read_config_dword(nb->misc, 0x1b8, &reg);
@@ -459,12 +437,7 @@ void amd_flush_garts(void)
 	if (!amd_nb_has_feature(AMD_NB_GART))
 		return;
 
-	/*
-	 * Avoid races between AGP and IOMMU. In theory it's not needed
-	 * but I'm not sure if the hardware won't lose flush requests
-	 * when another is pending. This whole thing is so expensive anyways
-	 * that it doesn't matter to serialize more. -AK
-	 */
+	 
 	spin_lock_irqsave(&gart_lock, flags);
 	flushed = 0;
 	for (i = 0; i < amd_northbridges.num; i++) {
@@ -474,7 +447,7 @@ void amd_flush_garts(void)
 	}
 	for (i = 0; i < amd_northbridges.num; i++) {
 		u32 w;
-		/* Make sure the hardware actually executed the flush*/
+		 
 		for (;;) {
 			pci_read_config_dword(node_to_amd_nb(i)->misc,
 					      0x9c, &w);
@@ -497,7 +470,7 @@ static void __fix_erratum_688(void *info)
 	msr_set_bit(MSR_AMD64_IC_CFG, 14);
 }
 
-/* Apply erratum 688 fix so machines without a BIOS fix work. */
+ 
 static __init void fix_erratum_688(void)
 {
 	struct pci_dev *F4;
@@ -534,5 +507,5 @@ static __init int init_amd_nbs(void)
 	return 0;
 }
 
-/* This has to go after the PCI subsystem */
+ 
 fs_initcall(init_amd_nbs);

@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2021 Facebook */
+
+ 
 #include "vmlinux.h"
 #include <bpf/bpf_helpers.h>
 
@@ -39,7 +39,7 @@ check_array_elem(struct bpf_map *map, __u32 *key, __u64 *val,
 {
 	data->output += *val;
 	if (*key == 1)
-		return 1; /* stop the iteration */
+		return 1;  
 	return 0;
 }
 

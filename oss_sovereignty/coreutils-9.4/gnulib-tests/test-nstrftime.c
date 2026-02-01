@@ -1,20 +1,4 @@
-/* Test that nstrftime works as required.
-   Copyright (C) 2011-2023 Free Software Foundation, Inc.
-
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* Written by Jim Meyering.  */
+ 
 
 #include <config.h>
 
@@ -32,7 +16,7 @@
 #include "macros.h"
 #define STREQ(a, b) (strcmp (a, b) == 0)
 
-/* Support for settings like TZ='<+00>0' was added in IEEE Std 1003.1-2001.  */
+ 
 #define TZ_ANGLE_BRACKETS_SHOULD_WORK (200112 <= _POSIX_VERSION)
 
 struct posixtm_test
@@ -111,15 +95,14 @@ static struct tzalloc_test TZ[] =
 
 struct localtime_rz_test
 {
-  /* Input parameters.  */
+   
   struct tzalloc_test *tza;
   time_t t;
 
-  /* Expected result.  */
+   
   char const *exp;
 
-  /* Determines if an incorrectly unset tm_isdst
-     results in failure or just a warning.  */
+   
   int ahistorical;
 };
 
@@ -203,8 +186,7 @@ tzalloc_test (void)
                  && memcmp (buf, LT[i].exp, n - sizeof "(GMT)" + 1) == 0
                  && STREQ (buf + n - sizeof "(GMT)" + 1, "(GMT)"))))
         {
-          /* Don't fail for unhandled dst in ahistorical entries,
-             as gnulib doesn't currently fix that issue, seen on Darwin 14.  */
+           
           if (!LT[i].ahistorical || tm.tm_isdst)
             fail = 1;
           printf ("%s: expected \"%s\", got \"%s\"\n",
@@ -222,7 +204,7 @@ quarter_test (void)
   int result = 0;
   size_t mon;
 
-  /* Check %q.  */
+   
   for (mon = 1; mon <= 12; mon++)
     {
       char out[2];
@@ -336,8 +318,4 @@ main (void)
   return fail;
 }
 
-/*
-Local Variables:
-indent-tabs-mode: nil
-End:
-*/
+ 

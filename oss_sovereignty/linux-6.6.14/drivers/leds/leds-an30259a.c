@@ -1,11 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0+
-//
-// Driver for Panasonic AN30259A 3-channel LED driver
-//
-// Copyright (c) 2018 Simon Shields <simon@lineageos.org>
-//
-// Datasheet:
-// https://www.alliedelec.com/m/d/a9d2b3ee87c2d1a535a41dd747b1c247.pdf
+
+
+
+
+
+
+
+
 
 #include <linux/i2c.h>
 #include <linux/leds.h>
@@ -19,14 +19,14 @@
 #define AN30259A_REG_SRESET 0x00
 #define AN30259A_LED_SRESET BIT(0)
 
-/* LED power registers */
+ 
 #define AN30259A_REG_LED_ON 0x01
 #define AN30259A_LED_EN(x) BIT((x) - 1)
 #define AN30259A_LED_SLOPE(x) BIT(((x) - 1) + 4)
 
 #define AN30259A_REG_LEDCC(x) (0x03 + ((x) - 1))
 
-/* slope control registers */
+ 
 #define AN30259A_REG_SLOPE(x) (0x06 + ((x) - 1))
 #define AN30259A_LED_SLOPETIME1(x) (x)
 #define AN30259A_LED_SLOPETIME2(x) ((x) << 4)
@@ -39,7 +39,7 @@
 #define AN30259A_LED_DELAY(x) ((x) << 4)
 #define AN30259A_LED_DUTYMIN(x) (x)
 
-/* detention time control (length of each slope step) */
+ 
 #define AN30259A_REG_LEDCNT3(x) (0x0B + (4 * ((x) - 1)))
 #define AN30259A_LED_DT1(x) (x)
 #define AN30259A_LED_DT2(x) ((x) << 4)
@@ -50,8 +50,8 @@
 
 #define AN30259A_REG_MAX 0x14
 
-#define AN30259A_BLINK_MAX_TIME 7500 /* ms */
-#define AN30259A_SLOPE_RESOLUTION 500 /* ms */
+#define AN30259A_BLINK_MAX_TIME 7500  
+#define AN30259A_SLOPE_RESOLUTION 500  
 
 #define AN30259A_NAME "an30259a"
 
@@ -67,7 +67,7 @@ struct an30259a_led {
 };
 
 struct an30259a {
-	struct mutex mutex; /* held when writing to registers */
+	struct mutex mutex;  
 	struct i2c_client *client;
 	struct an30259a_led leds[AN30259A_MAX_LEDS];
 	struct regmap *regmap;
@@ -133,35 +133,35 @@ static int an30259a_blink_set(struct led_classdev *cdev,
 	mutex_lock(&led->chip->mutex);
 	num = led->num;
 
-	/* slope time can only be a multiple of 500ms. */
+	 
 	if (off % AN30259A_SLOPE_RESOLUTION || on % AN30259A_SLOPE_RESOLUTION) {
 		ret = -EINVAL;
 		goto error;
 	}
 
-	/* up to a maximum of 7500ms. */
+	 
 	if (off > AN30259A_BLINK_MAX_TIME || on > AN30259A_BLINK_MAX_TIME) {
 		ret = -EINVAL;
 		goto error;
 	}
 
-	/* if no blink specified, default to 1 Hz. */
+	 
 	if (!off && !on) {
 		*delay_off = off = 500;
 		*delay_on = on = 500;
 	}
 
-	/* convert into values the HW will understand. */
+	 
 	off /= AN30259A_SLOPE_RESOLUTION;
 	on /= AN30259A_SLOPE_RESOLUTION;
 
-	/* duty min should be zero (=off), delay should be zero. */
+	 
 	ret = regmap_write(led->chip->regmap, AN30259A_REG_LEDCNT2(num),
 			   AN30259A_LED_DELAY(0) | AN30259A_LED_DUTYMIN(0));
 	if (ret)
 		goto error;
 
-	/* reset detention time (no "breathing" effect). */
+	 
 	ret = regmap_write(led->chip->regmap, AN30259A_REG_LEDCNT3(num),
 			   AN30259A_LED_DT1(0) | AN30259A_LED_DT2(0));
 	if (ret)
@@ -171,14 +171,14 @@ static int an30259a_blink_set(struct led_classdev *cdev,
 	if (ret)
 		goto error;
 
-	/* slope time controls on/off cycle length. */
+	 
 	ret = regmap_write(led->chip->regmap, AN30259A_REG_SLOPE(num),
 			   AN30259A_LED_SLOPETIME1(off) |
 			   AN30259A_LED_SLOPETIME2(on));
 	if (ret)
 		goto error;
 
-	/* Finally, enable slope mode. */
+	 
 	ret = regmap_read(led->chip->regmap, AN30259A_REG_LED_ON, &led_on);
 	if (ret)
 		goto error;
@@ -330,14 +330,14 @@ static void an30259a_remove(struct i2c_client *client)
 
 static const struct of_device_id an30259a_match_table[] = {
 	{ .compatible = "panasonic,an30259a", },
-	{ /* sentinel */ },
+	{   },
 };
 
 MODULE_DEVICE_TABLE(of, an30259a_match_table);
 
 static const struct i2c_device_id an30259a_id[] = {
 	{ "an30259a", 0 },
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(i2c, an30259a_id);
 

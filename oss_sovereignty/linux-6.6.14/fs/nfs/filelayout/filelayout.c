@@ -1,33 +1,4 @@
-/*
- *  Module for the pnfs nfs4 file layout driver.
- *  Defines all I/O and Policy interface operations, plus code
- *  to register itself with the pNFS client.
- *
- *  Copyright (c) 2002
- *  The Regents of the University of Michigan
- *  All Rights Reserved
- *
- *  Dean Hildebrand <dhildebz@umich.edu>
- *
- *  Permission is granted to use, copy, create derivative works, and
- *  redistribute this software and such derivative works for any purpose,
- *  so long as the name of the University of Michigan is not used in
- *  any advertising or publicity pertaining to the use or distribution
- *  of this software without specific, written prior authorization. If
- *  the above copyright notice or any other identification of the
- *  University of Michigan is included in any copy of any portion of
- *  this software, then the disclaimer below must also be included.
- *
- *  This software is provided as is, without representation or warranty
- *  of any kind either express or implied, including without limitation
- *  the implied warranties of merchantability, fitness for a particular
- *  purpose, or noninfringement.  The Regents of the University of
- *  Michigan shall not be liable for any damages, including special,
- *  indirect, incidental, or consequential damages, with respect to any
- *  claim arising out of or in connection with the use of the software,
- *  even if it has been or is hereafter advised of the possibility of
- *  such damages.
- */
+ 
 
 #include <linux/nfs_fs.h>
 #include <linux/nfs_page.h>
@@ -66,10 +37,7 @@ filelayout_get_dense_offset(struct nfs4_filelayout_segment *flseg,
 	return stripe_no * flseg->stripe_unit + rem;
 }
 
-/* This function is used by the layout driver to calculate the
- * offset of the file on the dserver based on whether the
- * layout type is STRIPE_DENSE or STRIPE_SPARSE
- */
+ 
 static loff_t
 filelayout_get_dserver_offset(struct pnfs_layout_segment *lseg, loff_t offset)
 {
@@ -134,7 +102,7 @@ static int filelayout_async_handle_error(struct rpc_task *task,
 		return 0;
 
 	switch (task->tk_status) {
-	/* DS session errors */
+	 
 	case -NFS4ERR_BADSESSION:
 	case -NFS4ERR_BADSLOT:
 	case -NFS4ERR_BAD_HIGH_SLOT:
@@ -153,27 +121,21 @@ static int filelayout_async_handle_error(struct rpc_task *task,
 		break;
 	case -NFS4ERR_RETRY_UNCACHED_REP:
 		break;
-	/* Invalidate Layout errors */
+	 
 	case -NFS4ERR_ACCESS:
 	case -NFS4ERR_PNFS_NO_LAYOUT:
-	case -ESTALE:           /* mapped NFS4ERR_STALE */
-	case -EBADHANDLE:       /* mapped NFS4ERR_BADHANDLE */
-	case -EISDIR:           /* mapped NFS4ERR_ISDIR */
+	case -ESTALE:            
+	case -EBADHANDLE:        
+	case -EISDIR:            
 	case -NFS4ERR_FHEXPIRED:
 	case -NFS4ERR_WRONG_TYPE:
 		dprintk("%s Invalid layout error %d\n", __func__,
 			task->tk_status);
-		/*
-		 * Destroy layout so new i/o will get a new layout.
-		 * Layout will not be destroyed until all current lseg
-		 * references are put. Mark layout as invalid to resend failed
-		 * i/o and all i/o waiting on the slot table to the MDS until
-		 * layout is destroyed and a new valid layout is obtained.
-		 */
+		 
 		pnfs_destroy_layout(NFS_I(inode));
 		rpc_wake_up(&tbl->slot_tbl_waitq);
 		goto reset;
-	/* RPC connection errors */
+	 
 	case -ECONNREFUSED:
 	case -EHOSTDOWN:
 	case -EHOSTUNREACH:
@@ -200,7 +162,7 @@ reset:
 	return -EAGAIN;
 }
 
-/* NFS_PROTO call done callback routines */
+ 
 
 static int filelayout_read_done_cb(struct rpc_task *task,
 				struct nfs_pgio_header *hdr)
@@ -223,11 +185,7 @@ static int filelayout_read_done_cb(struct rpc_task *task,
 	return 0;
 }
 
-/*
- * We reference the rpc_cred of the first WRITE that triggers the need for
- * a LAYOUTCOMMIT, and use it to send the layoutcommit compound.
- * rfc5661 is not clear about which credential should be used.
- */
+ 
 static void
 filelayout_set_layoutcommit(struct nfs_pgio_header *hdr)
 {
@@ -239,7 +197,7 @@ filelayout_set_layoutcommit(struct nfs_pgio_header *hdr)
 	if (hdr->res.verf->committed == NFS_DATA_SYNC)
 		end_offs = hdr->mds_offset + (loff_t)hdr->res.count;
 
-	/* Note: if the write is unstable, don't set end_offs until commit */
+	 
 	pnfs_set_layoutcommit(hdr->inode, hdr->lseg, end_offs);
 	dprintk("%s inode %lu pls_end_pos %lu\n", __func__, hdr->inode->i_ino,
 		(unsigned long) NFS_I(hdr->inode)->layout->plh_lwb);
@@ -260,11 +218,7 @@ filelayout_reset_to_mds(struct pnfs_layout_segment *lseg)
 	return filelayout_test_devid_unavailable(node);
 }
 
-/*
- * Call ops for the async read/write cases
- * In the case of dense layouts, the offset needs to be reset to its
- * original value.
- */
+ 
 static void filelayout_read_prepare(struct rpc_task *task, void *data)
 {
 	struct nfs_pgio_header *hdr = data;
@@ -288,7 +242,7 @@ static void filelayout_read_prepare(struct rpc_task *task, void *data)
 		return;
 	if (nfs4_set_rw_stateid(&hdr->args.stateid, hdr->args.context,
 			hdr->args.lock_context, FMODE_READ) == -EIO)
-		rpc_exit(task, -EIO); /* lost lock, terminate I/O */
+		rpc_exit(task, -EIO);  
 }
 
 static void filelayout_read_call_done(struct rpc_task *task, void *data)
@@ -301,7 +255,7 @@ static void filelayout_read_call_done(struct rpc_task *task, void *data)
 		return;
 	}
 
-	/* Note this may cause RPC to be resent */
+	 
 	hdr->mds_ops->rpc_call_done(task, data);
 }
 
@@ -332,7 +286,7 @@ static int filelayout_write_done_cb(struct rpc_task *task,
 
 	filelayout_set_layoutcommit(hdr);
 
-	/* zero out the fattr */
+	 
 	hdr->fattr.valid = 0;
 	if (task->tk_status >= 0)
 		nfs_writeback_update_inode(hdr);
@@ -384,7 +338,7 @@ static void filelayout_write_prepare(struct rpc_task *task, void *data)
 		return;
 	if (nfs4_set_rw_stateid(&hdr->args.stateid, hdr->args.context,
 			hdr->args.lock_context, FMODE_WRITE) == -EIO)
-		rpc_exit(task, -EIO); /* lost lock, terminate I/O */
+		rpc_exit(task, -EIO);  
 }
 
 static void filelayout_write_call_done(struct rpc_task *task, void *data)
@@ -397,7 +351,7 @@ static void filelayout_write_call_done(struct rpc_task *task, void *data)
 		return;
 	}
 
-	/* Note this may cause RPC to be resent */
+	 
 	hdr->mds_ops->rpc_call_done(task, data);
 }
 
@@ -460,7 +414,7 @@ filelayout_read_pagelist(struct nfs_pgio_header *hdr)
 		__func__, hdr->inode->i_ino,
 		hdr->args.pgbase, (size_t)hdr->args.count, offset);
 
-	/* Retrieve the correct rpc_client for the byte range */
+	 
 	j = nfs4_fl_calc_j_index(lseg, offset);
 	idx = nfs4_fl_calc_ds_index(lseg, j);
 	ds = nfs4_fl_prepare_ds(lseg, idx);
@@ -474,7 +428,7 @@ filelayout_read_pagelist(struct nfs_pgio_header *hdr)
 	dprintk("%s USE DS: %s cl_count %d\n", __func__,
 		ds->ds_remotestr, refcount_read(&ds->ds_clp->cl_count));
 
-	/* No multipath support. Use first DS */
+	 
 	refcount_inc(&ds->ds_clp->cl_count);
 	hdr->ds_clp = ds->ds_clp;
 	hdr->ds_commit_idx = idx;
@@ -485,14 +439,14 @@ filelayout_read_pagelist(struct nfs_pgio_header *hdr)
 	hdr->args.offset = filelayout_get_dserver_offset(lseg, offset);
 	hdr->mds_offset = offset;
 
-	/* Perform an asynchronous read to ds */
+	 
 	nfs_initiate_pgio(ds_clnt, hdr, hdr->cred,
 			  NFS_PROTO(hdr->inode), &filelayout_read_call_ops,
 			  0, RPC_TASK_SOFTCONN);
 	return PNFS_ATTEMPTED;
 }
 
-/* Perform async writes. */
+ 
 static enum pnfs_try_status
 filelayout_write_pagelist(struct nfs_pgio_header *hdr, int sync)
 {
@@ -503,7 +457,7 @@ filelayout_write_pagelist(struct nfs_pgio_header *hdr, int sync)
 	u32 j, idx;
 	struct nfs_fh *fh;
 
-	/* Retrieve the correct rpc_client for the byte range */
+	 
 	j = nfs4_fl_calc_j_index(lseg, offset);
 	idx = nfs4_fl_calc_ds_index(lseg, j);
 	ds = nfs4_fl_prepare_ds(lseg, idx);
@@ -527,7 +481,7 @@ filelayout_write_pagelist(struct nfs_pgio_header *hdr, int sync)
 		hdr->args.fh = fh;
 	hdr->args.offset = filelayout_get_dserver_offset(lseg, offset);
 
-	/* Perform an asynchronous write */
+	 
 	nfs_initiate_pgio(ds_clnt, hdr, hdr->cred,
 			  NFS_PROTO(hdr->inode), &filelayout_write_call_ops,
 			  sync, RPC_TASK_SOFTCONN);
@@ -543,18 +497,18 @@ filelayout_check_deviceid(struct pnfs_layout_hdr *lo,
 	struct nfs4_file_layout_dsaddr *dsaddr;
 	int status = -EINVAL;
 
-	/* Is the deviceid already set? If so, we're good. */
+	 
 	if (fl->dsaddr != NULL)
 		return 0;
 
-	/* find and reference the deviceid */
+	 
 	d = nfs4_find_get_deviceid(NFS_SERVER(lo->plh_inode), &fl->deviceid,
 			lo->plh_lc_cred, gfp_flags);
 	if (d == NULL)
 		goto out;
 
 	dsaddr = container_of(d, struct nfs4_file_layout_dsaddr, id_node);
-	/* Found deviceid is unavailable */
+	 
 	if (filelayout_test_devid_unavailable(&dsaddr->id_node))
 		goto out_put;
 
@@ -574,10 +528,7 @@ filelayout_check_deviceid(struct pnfs_layout_hdr *lo,
 	}
 	status = 0;
 
-	/*
-	 * Atomic compare and xchange to ensure we don't scribble
-	 * over a non-NULL pointer.
-	 */
+	 
 	if (cmpxchg(&fl->dsaddr, NULL, dsaddr) != NULL)
 		goto out_put;
 out:
@@ -587,14 +538,7 @@ out_put:
 	goto out;
 }
 
-/*
- * filelayout_check_layout()
- *
- * Make sure layout segment parameters are sane WRT the device.
- * At this point no generic layer initialization of the lseg has occurred,
- * and nothing has been added to the layout_hdr cache.
- *
- */
+ 
 static int
 filelayout_check_layout(struct pnfs_layout_hdr *lo,
 			struct nfs4_filelayout_segment *fl,
@@ -605,7 +549,7 @@ filelayout_check_layout(struct pnfs_layout_hdr *lo,
 
 	dprintk("--> %s\n", __func__);
 
-	/* FIXME: remove this check when layout segment support is added */
+	 
 	if (lgr->range.offset != 0 ||
 	    lgr->range.length != NFS4_MAX_UINT64) {
 		dprintk("%s Only whole file layouts supported. Use MDS i/o\n",
@@ -668,8 +612,7 @@ filelayout_decode_layout(struct pnfs_layout_hdr *flo,
 	xdr_init_decode_pages(&stream, &buf, lgr->layoutp->pages, lgr->layoutp->len);
 	xdr_set_scratch_page(&stream, scratch);
 
-	/* 20 = ufl_util (4), first_stripe_index (4), pattern_offset (8),
-	 * num_fh (4) */
+	 
 	p = xdr_inline_decode(&stream, NFS4_DEVICEID4_SIZE + 20);
 	if (unlikely(!p))
 		goto out_err;
@@ -695,8 +638,7 @@ filelayout_decode_layout(struct pnfs_layout_hdr *flo,
 		__func__, nfl_util, fl->num_fh, fl->first_stripe_index,
 		fl->pattern_offset);
 
-	/* Note that a zero value for num_fh is legal for STRIPE_SPARSE.
-	 * Futher checking is done in filelayout_check_layout */
+	 
 	if (fl->num_fh >
 	    max(NFS4_PNFS_MAX_STRIPE_CNT, NFS4_PNFS_MAX_MULTI_CNT))
 		goto out_err;
@@ -709,7 +651,7 @@ filelayout_decode_layout(struct pnfs_layout_hdr *flo,
 	}
 
 	for (i = 0; i < fl->num_fh; i++) {
-		/* Do we want to use a mempool here? */
+		 
 		fl->fh_array[i] = kmalloc(sizeof(struct nfs_fh), gfp_flags);
 		if (!fl->fh_array[i])
 			goto out_err;
@@ -748,7 +690,7 @@ filelayout_free_lseg(struct pnfs_layout_segment *lseg)
 	dprintk("--> %s\n", __func__);
 	if (fl->dsaddr != NULL)
 		nfs4_fl_put_deviceid(fl->dsaddr);
-	/* This assumes a single RW lseg */
+	 
 	if (lseg->pls_range.iomode == IOMODE_RW) {
 		struct nfs4_filelayout *flo;
 		struct inode *inode;
@@ -789,12 +731,7 @@ filelayout_lseg_is_striped(const struct nfs4_filelayout_segment *flseg)
 	return flseg->num_fh > 1;
 }
 
-/*
- * filelayout_pg_test(). Called by nfs_can_coalesce_requests()
- *
- * Return 0 if @req cannot be coalesced into @pgio, otherwise return the number
- * of bytes (maximum @req->wb_bytes) that can be coalesced.
- */
+ 
 static size_t
 filelayout_pg_test(struct nfs_pageio_descriptor *pgio, struct nfs_page *prev,
 		   struct nfs_page *req)
@@ -805,14 +742,14 @@ filelayout_pg_test(struct nfs_pageio_descriptor *pgio, struct nfs_page *prev,
 	u64 segment_offset = pgio->pg_lseg->pls_range.offset;
 	u32 stripe_unit = FILELAYOUT_LSEG(pgio->pg_lseg)->stripe_unit;
 
-	/* calls nfs_generic_pg_test */
+	 
 	size = pnfs_generic_pg_test(pgio, prev, req);
 	if (!size)
 		return 0;
 	else if (!filelayout_lseg_is_striped(FILELAYOUT_LSEG(pgio->pg_lseg)))
 		return size;
 
-	/* see if req and prev are in the same stripe */
+	 
 	if (prev) {
 		p_stripe = (u64)req_offset(prev) - segment_offset;
 		r_stripe = (u64)req_offset(req) - segment_offset;
@@ -823,7 +760,7 @@ filelayout_pg_test(struct nfs_pageio_descriptor *pgio, struct nfs_page *prev,
 			return 0;
 	}
 
-	/* calculate remaining bytes in the current stripe */
+	 
 	div_u64_rem((u64)req_offset(req) - segment_offset,
 			stripe_unit,
 			&stripe_offset);
@@ -850,7 +787,7 @@ fl_pnfs_update_layout(struct inode *ino,
 	lseg = pnfs_update_layout(ino, ctx, pos, count, iomode, strict_iomode,
 				  gfp_flags);
 	if (IS_ERR(lseg)) {
-		/* Fall back to MDS on recoverable errors */
+		 
 		if (!nfs_error_is_fatal_on_server(PTR_ERR(lseg)))
 			lseg = NULL;
 		goto out;
@@ -890,7 +827,7 @@ filelayout_pg_init_read(struct nfs_pageio_descriptor *pgio,
 			return;
 		}
 	}
-	/* If no lseg, fall back to read through mds */
+	 
 	if (pgio->pg_lseg == NULL)
 		nfs_pageio_reset_read_mds(pgio);
 }
@@ -915,7 +852,7 @@ filelayout_pg_init_write(struct nfs_pageio_descriptor *pgio,
 		}
 	}
 
-	/* If no lseg, fall back to write through mds */
+	 
 	if (pgio->pg_lseg == NULL)
 		nfs_pageio_reset_write_mds(pgio);
 }
@@ -955,12 +892,7 @@ filelayout_mark_request_commit(struct nfs_page *req,
 	if (fl->commit_through_mds) {
 		nfs_request_add_commit_list(req, cinfo);
 	} else {
-		/* Note that we are calling nfs4_fl_calc_j_index on each page
-		 * that ends up being committed to a data server.  An attractive
-		 * alternative is to add a field to nfs_write_data and nfs_page
-		 * to store the value calculated in filelayout_write_pagelist
-		 * and just use that here.
-		 */
+		 
 		j = nfs4_fl_calc_j_index(lseg, req_offset(req));
 		i = select_bucket_index(fl, j);
 		pnfs_layout_mark_request_commit(req, lseg, cinfo, i);
@@ -986,7 +918,7 @@ select_ds_fh_from_commit(struct pnfs_layout_segment *lseg, u32 i)
 		if (flseg->num_fh == 1)
 			i = 0;
 		else if (flseg->num_fh == 0)
-			/* Use the MDS OPEN fh set in nfs_read_rpcsetup */
+			 
 			return NULL;
 	}
 	return flseg->fh_array[i];
@@ -1127,7 +1059,7 @@ static struct pnfs_layoutdriver_type filelayout_type = {
 	.name			= "LAYOUT_NFSV4_1_FILES",
 	.owner			= THIS_MODULE,
 	.flags			= PNFS_LAYOUTGET_ON_OPEN,
-	.max_layoutget_response	= 4096, /* 1 page or so... */
+	.max_layoutget_response	= 4096,  
 	.alloc_layout_hdr	= filelayout_alloc_layout_hdr,
 	.free_layout_hdr	= filelayout_free_layout_hdr,
 	.alloc_lseg		= filelayout_alloc_lseg,

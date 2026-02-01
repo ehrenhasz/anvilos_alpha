@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * TI LP8788 MFD - interrupt handler
- *
- * Copyright 2012 Texas Instruments
- *
- * Author: Milo(Woogyom) Kim <milo.kim@ti.com>
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/err.h>
@@ -17,7 +11,7 @@
 #include <linux/module.h>
 #include <linux/slab.h>
 
-/* register address */
+ 
 #define LP8788_INT_1			0x00
 #define LP8788_INTEN_1			0x03
 
@@ -25,13 +19,7 @@
 #define SIZE_REG			8
 #define NUM_REGS			3
 
-/*
- * struct lp8788_irq_data
- * @lp               : used for accessing to lp8788 registers
- * @irq_lock         : mutex for enabling/disabling the interrupt
- * @domain           : IRQ domain for handling nested interrupt
- * @enabled          : status of enabled interrupt
- */
+ 
 struct lp8788_irq_data {
 	struct lp8788 *lp;
 	struct mutex irq_lock;
@@ -118,7 +106,7 @@ static irqreturn_t lp8788_irq_handler(int irq, void *ptr)
 		addr = _irq_to_addr(i);
 		mask = _irq_to_mask(i);
 
-		/* reporting only if the irq is enabled */
+		 
 		if (status[addr] & mask) {
 			handle_nested_irq(irq_find_mapping(irqd->domain, i));
 			handled = true;

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * ADXL345 3-Axis Digital Accelerometer IIO core driver
- *
- * Copyright (c) 2017 Eva Rachel Retuya <eraretuya@gmail.com>
- *
- * Datasheet: https://www.analog.com/media/en/technical-documentation/data-sheets/ADXL345.pdf
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/property.h>
@@ -37,7 +31,7 @@
 #define ADXL345_POWER_CTL_MEASURE	BIT(3)
 #define ADXL345_POWER_CTL_STANDBY	0x00
 
-#define ADXL345_DATA_FORMAT_FULL_RES	BIT(3) /* Up to 13-bits resolution */
+#define ADXL345_DATA_FORMAT_FULL_RES	BIT(3)  
 #define ADXL345_DATA_FORMAT_2G		0
 #define ADXL345_DATA_FORMAT_4G		1
 #define ADXL345_DATA_FORMAT_8G		2
@@ -45,19 +39,10 @@
 
 #define ADXL345_DEVID			0xE5
 
-/*
- * In full-resolution mode, scale factor is maintained at ~4 mg/LSB
- * in all g ranges.
- *
- * At +/- 16g with 13-bit resolution, scale is computed as:
- * (16 + 16) * 9.81 / (2^13 - 1) = 0.0383
- */
+ 
 static const int adxl345_uscale = 38300;
 
-/*
- * The Datasheet lists a resolution of Resolution is ~49 mg per LSB. That's
- * ~480mm/s**2 per LSB.
- */
+ 
 static const int adxl375_uscale = 480000;
 
 struct adxl345_data {
@@ -95,11 +80,7 @@ static int adxl345_read_raw(struct iio_dev *indio_dev,
 
 	switch (mask) {
 	case IIO_CHAN_INFO_RAW:
-		/*
-		 * Data is stored in adjacent registers:
-		 * ADXL345_REG_DATA(X0/Y0/Z0) contain the least significant byte
-		 * and ADXL345_REG_DATA(X0/Y0/Z0) + 1 the most significant byte
-		 */
+		 
 		ret = regmap_bulk_read(data->regmap,
 				       ADXL345_REG_DATA_AXIS(chan->address),
 				       &accel, sizeof(accel));
@@ -125,10 +106,7 @@ static int adxl345_read_raw(struct iio_dev *indio_dev,
 				  ADXL345_REG_OFS_AXIS(chan->address), &regval);
 		if (ret < 0)
 			return ret;
-		/*
-		 * 8-bit resolution at +/- 2g, that is 4x accel data scale
-		 * factor
-		 */
+		 
 		*val = sign_extend32(regval, 7) * 4;
 
 		return IIO_VAL_INT;
@@ -156,10 +134,7 @@ static int adxl345_write_raw(struct iio_dev *indio_dev,
 
 	switch (mask) {
 	case IIO_CHAN_INFO_CALIBBIAS:
-		/*
-		 * 8-bit resolution at +/- 2g, that is 4x accel data scale
-		 * factor
-		 */
+		 
 		return regmap_write(data->regmap,
 				    ADXL345_REG_OFS_AXIS(chan->address),
 				    val / 4);
@@ -256,7 +231,7 @@ int adxl345_core_probe(struct device *dev, struct regmap *regmap)
 	data = iio_priv(indio_dev);
 	data->regmap = regmap;
 	data->type = type;
-	/* Enable full-resolution mode */
+	 
 	data->data_range = ADXL345_DATA_FORMAT_FULL_RES;
 
 	ret = regmap_write(data->regmap, ADXL345_REG_DATA_FORMAT,
@@ -270,7 +245,7 @@ int adxl345_core_probe(struct device *dev, struct regmap *regmap)
 	indio_dev->channels = adxl345_channels;
 	indio_dev->num_channels = ARRAY_SIZE(adxl345_channels);
 
-	/* Enable measurement mode */
+	 
 	ret = adxl345_powerup(data->regmap);
 	if (ret < 0)
 		return dev_err_probe(dev, ret, "Failed to enable measurement mode\n");

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2021 Red Hat Inc, Daniel Bristot de Oliveira <bristot@kernel.org>
- */
+
+ 
 
 #include <getopt.h>
 #include <stdlib.h>
@@ -11,9 +9,7 @@
 #include "osnoise.h"
 #include "timerlat.h"
 
-/*
- * rtla_usage - print rtla usage
- */
+ 
 static void rtla_usage(int err)
 {
 	int i;
@@ -37,12 +33,7 @@ static void rtla_usage(int err)
 	exit(err);
 }
 
-/*
- * run_command - try to run a rtla tool command
- *
- * It returns 0 if it fails. The tool's main will generally not
- * return as they should call exit().
- */
+ 
 int run_command(int argc, char **argv, int start_position)
 {
 	if (strcmp(argv[start_position], "osnoise") == 0) {
@@ -65,7 +56,7 @@ int main(int argc, char *argv[])
 {
 	int retval;
 
-	/* is it an alias? */
+	 
 	retval = run_command(argc, argv, 0);
 	if (retval)
 		exit(0);

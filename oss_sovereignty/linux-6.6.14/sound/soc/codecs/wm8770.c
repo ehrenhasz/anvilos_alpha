@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * wm8770.c  --  WM8770 ALSA SoC Audio driver
- *
- * Copyright 2010 Wolfson Microelectronics plc
- *
- * Author: Dimitris Papastamos <dp@opensource.wolfsonmicro.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/moduleparam.h>
@@ -90,11 +84,7 @@ static int vout12supply_event(struct snd_soc_dapm_widget *w,
 static int vout34supply_event(struct snd_soc_dapm_widget *w,
 	struct snd_kcontrol *kcontrol, int event);
 
-/*
- * We can't use the same notifier block for more than one supply and
- * there's no way I can see to get from a callback to the caller
- * except container_of().
- */
+ 
 #define WM8770_REGULATOR_EVENT(n) \
 static int wm8770_regulator_event_##n(struct notifier_block *nb, \
 				      unsigned long event, void *data)    \
@@ -130,18 +120,18 @@ static const struct soc_enum dac_phase[] = {
 };
 
 static const struct snd_kcontrol_new wm8770_snd_controls[] = {
-	/* global DAC playback controls */
+	 
 	SOC_SINGLE_TLV("DAC Playback Volume", WM8770_MSDIGVOL, 0, 255, 0,
 		dac_dig_tlv),
 	SOC_SINGLE("DAC Playback Switch", WM8770_DACMUTE, 4, 1, 1),
 	SOC_SINGLE("DAC Playback ZC Switch", WM8770_DACCTRL1, 0, 1, 0),
 
-	/* global VOUT playback controls */
+	 
 	SOC_SINGLE_TLV("VOUT Playback Volume", WM8770_MSALGVOL, 0, 127, 0,
 		dac_alg_tlv),
 	SOC_SINGLE("VOUT Playback ZC Switch", WM8770_MSALGVOL, 7, 1, 0),
 
-	/* VOUT1/2/3/4 specific controls */
+	 
 	SOC_DOUBLE_R_TLV("VOUT1 Playback Volume", WM8770_VOUT1LVOL,
 		WM8770_VOUT1RVOL, 0, 127, 0, dac_alg_tlv),
 	SOC_DOUBLE_R("VOUT1 Playback ZC Switch", WM8770_VOUT1LVOL,
@@ -159,7 +149,7 @@ static const struct snd_kcontrol_new wm8770_snd_controls[] = {
 	SOC_DOUBLE_R("VOUT4 Playback ZC Switch", WM8770_VOUT4LVOL,
 		WM8770_VOUT4RVOL, 7, 1, 0),
 
-	/* DAC1/2/3/4 specific controls */
+	 
 	SOC_DOUBLE_R_TLV("DAC1 Playback Volume", WM8770_DAC1LVOL,
 		WM8770_DAC1RVOL, 0, 255, 0, dac_dig_tlv),
 	SOC_SINGLE("DAC1 Deemphasis Switch", WM8770_DACCTRL2, 0, 1, 0),
@@ -177,13 +167,13 @@ static const struct snd_kcontrol_new wm8770_snd_controls[] = {
 	SOC_SINGLE("DAC4 Deemphasis Switch", WM8770_DACCTRL2, 3, 1, 0),
 	SOC_ENUM("DAC4 Phase", dac_phase[3]),
 
-	/* ADC specific controls */
+	 
 	SOC_DOUBLE_R_TLV("Capture Volume", WM8770_ADCLCTRL, WM8770_ADCRCTRL,
 		0, 31, 0, adc_tlv),
 	SOC_DOUBLE_R("Capture Switch", WM8770_ADCLCTRL, WM8770_ADCRCTRL,
 		5, 1, 1),
 
-	/* other controls */
+	 
 	SOC_SINGLE("ADC 128x Oversampling Switch", WM8770_MSTRCTRL, 3, 1, 0),
 	SOC_SINGLE("ADC Highpass Filter Switch", WM8770_IFACECTRL, 8, 1, 1)
 };
@@ -446,7 +436,7 @@ static int wm8770_hw_params(struct snd_pcm_substream *substream,
 		return -EINVAL;
 	}
 
-	/* Only need to set MCLK/LRCLK ratio if we're master */
+	 
 	if (snd_soc_component_read(component, WM8770_MSTRCTRL) & 0x100) {
 		for (; i < ARRAY_SIZE(mclk_ratios); ++i) {
 			ratio = wm8770->sysclk / params_rate(params);
@@ -519,12 +509,12 @@ static int wm8770_set_bias_level(struct snd_soc_component *component,
 
 			regcache_sync(wm8770->regmap);
 
-			/* global powerup */
+			 
 			snd_soc_component_write(component, WM8770_PWDNCTRL, 0);
 		}
 		break;
 	case SND_SOC_BIAS_OFF:
-		/* global powerdown */
+		 
 		snd_soc_component_write(component, WM8770_PWDNCTRL, 1);
 		regulator_bulk_disable(ARRAY_SIZE(wm8770->supplies),
 				       wm8770->supplies);
@@ -586,7 +576,7 @@ static int wm8770_probe(struct snd_soc_component *component)
 		goto err_reg_enable;
 	}
 
-	/* latch the volume update bits */
+	 
 	snd_soc_component_update_bits(component, WM8770_MSDIGVOL, 0x100, 0x100);
 	snd_soc_component_update_bits(component, WM8770_MSALGVOL, 0x100, 0x100);
 	snd_soc_component_update_bits(component, WM8770_VOUT1RVOL, 0x100, 0x100);
@@ -598,7 +588,7 @@ static int wm8770_probe(struct snd_soc_component *component)
 	snd_soc_component_update_bits(component, WM8770_DAC3RVOL, 0x100, 0x100);
 	snd_soc_component_update_bits(component, WM8770_DAC4RVOL, 0x100, 0x100);
 
-	/* mute all DACs */
+	 
 	snd_soc_component_update_bits(component, WM8770_DACMUTE, 0x10, 0x10);
 
 err_reg_enable:
@@ -661,7 +651,7 @@ static int wm8770_spi_probe(struct spi_device *spi)
 	wm8770->disable_nb[1].notifier_call = wm8770_regulator_event_1;
 	wm8770->disable_nb[2].notifier_call = wm8770_regulator_event_2;
 
-	/* This should really be moved into the regulator core */
+	 
 	for (i = 0; i < ARRAY_SIZE(wm8770->supplies); i++) {
 		ret = devm_regulator_register_notifier(
 						wm8770->supplies[i].consumer,

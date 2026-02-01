@@ -1,19 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2021 Broadcom. All Rights Reserved. The term
- * “Broadcom” refers to Broadcom Inc. and/or its subsidiaries.
- */
+
+ 
 
 #include <target/target_core_base.h>
 #include <target/target_core_fabric.h>
 #include "efct_driver.h"
 #include "efct_lio.h"
 
-/*
- * lio_wq is used to call the LIO backed during creation or deletion of
- * sessions. This brings serialization to the session management as we create
- * single threaded work queue.
- */
+ 
 static struct workqueue_struct *lio_wq;
 
 static int
@@ -60,7 +53,7 @@ efct_lio_parse_npiv_wwn(const char *name, size_t size, u64 *wwpn, u64 *wwnn)
 	if (name[cnt - 1] == '\n' || name[cnt - 1] == 0)
 		cnt--;
 
-	/* validate we have enough characters for WWPN */
+	 
 	if ((cnt != (16 + 1 + 16)) || (name[16] != ':'))
 		return -EINVAL;
 
@@ -194,9 +187,7 @@ efct_lio_npiv_tpg_enable_store(struct config_item *item, const char *page,
 		efc_log_debug(efct, "disable portal group %d\n", tpg->tpgt);
 
 		tpg->enabled = false;
-		/* only physical nport should exist, free lio_nport
-		 * allocated in efct_lio_make_nport
-		 */
+		 
 		if (efc->domain) {
 			efc_nport_vport_del(efct->efcport, efc->domain,
 					    lio_vport->npiv_wwpn,
@@ -316,10 +307,10 @@ efct_lio_aborted_task(struct se_cmd *se_cmd)
 	if (ocp->rsp_sent)
 		return;
 
-	/* command has been aborted, cleanup here */
+	 
 	ocp->aborting = true;
 	ocp->err = EFCT_SCSI_STATUS_ABORTED;
-	/* terminate the exchange */
+	 
 	efct_scsi_tgt_abort_io(io, efct_lio_abort_tgt_cb, NULL);
 }
 
@@ -439,10 +430,10 @@ efct_lio_write_pending(struct se_cmd *cmd)
 	}
 	curcnt = (ocp->seg_map_cnt - ocp->cur_seg);
 	curcnt = (curcnt < io->sgl_allocated) ? curcnt : io->sgl_allocated;
-	/* find current sg */
+	 
 	for (cnt = 0, sg = cmd->t_data_sg; cnt < ocp->cur_seg; cnt++,
 	     sg = sg_next(sg))
-		;/* do nothing */
+		; 
 
 	for (cnt = 0; cnt < curcnt; cnt++, sg = sg_next(sg)) {
 		sgl[cnt].addr = sg_dma_address(sg);
@@ -482,7 +473,7 @@ efct_lio_queue_data_in(struct se_cmd *cmd)
 				return -EAGAIN;
 			}
 		} else {
-			/* If command length is 0, send the response status */
+			 
 			struct efct_scsi_cmd_resp rsp;
 
 			memset(&rsp, 0, sizeof(rsp));
@@ -517,7 +508,7 @@ efct_lio_queue_data_in(struct se_cmd *cmd)
 		ocp->seg_cnt = ocp->cur_seg;
 	}
 
-	/* If there is residual, disable Auto Good Response */
+	 
 	if (cmd->residual_count)
 		flags |= EFCT_SCSI_NO_AUTO_RESPONSE;
 
@@ -543,13 +534,13 @@ efct_lio_send_resp(struct efct_io *io, enum efct_scsi_io_status scsi_status,
 		return;
 	}
 
-	/* send check condition if an error occurred */
+	 
 	memset(&rsp, 0, sizeof(rsp));
 	rsp.scsi_status = cmd->scsi_status;
 	rsp.sense_data = (uint8_t *)io->tgt_io.sense_buffer;
 	rsp.sense_data_length = cmd->scsi_sense_length;
 
-	/* Check for residual underrun or overrun */
+	 
 	if (cmd->se_cmd_flags & SCF_OVERFLOW_BIT)
 		rsp.residual = -cmd->residual_count;
 	else if (cmd->se_cmd_flags & SCF_UNDERFLOW_BIT)
@@ -643,7 +634,7 @@ efct_lio_null_tmf_done(struct efct_io *tmfio,
 	efct_lio_tmfio_printf(tmfio, "cmd=%p status=%d, flags=0x%x\n",
 			      &tmfio->tgt_io.cmd, scsi_status, flags);
 
-	/* free struct efct_io only, no active se_cmd */
+	 
 	efct_scsi_io_complete(tmfio);
 	return 0;
 }
@@ -668,9 +659,7 @@ efct_lio_queue_status(struct se_cmd *cmd)
 	rsp.sense_data = (u8 *)io->tgt_io.sense_buffer;
 	rsp.sense_data_length = cmd->scsi_sense_length;
 
-	/* Check for residual underrun or overrun, mark negitive value for
-	 * underrun to recognize in HW
-	 */
+	 
 	if (cmd->se_cmd_flags & SCF_OVERFLOW_BIT)
 		rsp.residual = -cmd->residual_count;
 	else if (cmd->se_cmd_flags & SCF_UNDERFLOW_BIT)
@@ -715,7 +704,7 @@ static struct efct *efct_find_wwpn(u64 wwpn)
 {
 	struct efct *efct;
 
-	 /* Search for the HBA that has this WWPN */
+	  
 	list_for_each_entry(efct, &efct_devices, list_entry) {
 
 		if (wwpn == efct_get_wwpn(&efct->hw))
@@ -847,9 +836,7 @@ efct_lio_drop_nport(struct se_wwn *wwn)
 		container_of(wwn, struct efct_lio_nport, nport_wwn);
 	struct efct *efct = lio_nport->efct;
 
-	/* only physical nport should exist, free lio_nport allocated
-	 * in efct_lio_make_nport.
-	 */
+	 
 	kfree(efct->tgt_efct.lio_nport);
 	efct->tgt_efct.lio_nport = NULL;
 }
@@ -1097,11 +1084,11 @@ int efct_scsi_tgt_new_device(struct efct *efct)
 {
 	u32 total_ios;
 
-	/* Get the max settings */
+	 
 	efct->tgt_efct.max_sge = sli_get_max_sge(&efct->hw.sli);
 	efct->tgt_efct.max_sgl = sli_get_max_sgl(&efct->hw.sli);
 
-	/* initialize IO watermark fields */
+	 
 	atomic_set(&efct->tgt_efct.ios_in_use, 0);
 	total_ios = efct->hw.config.n_io;
 	efc_log_debug(efct, "total_ios=%d\n", total_ios);
@@ -1165,9 +1152,7 @@ static void efct_lio_setup_session(struct work_struct *work)
 	int ini_count;
 	u64 id;
 
-	/* Check to see if it's belongs to vport,
-	 * if not get physical port
-	 */
+	 
 	tpg = efct_get_vport_tpg(node);
 	if (tpg) {
 		se_tpg = &tpg->tpg;
@@ -1179,11 +1164,7 @@ static void efct_lio_setup_session(struct work_struct *work)
 		return;
 	}
 
-	/*
-	 * Format the FCP Initiator port_name into colon
-	 * separated values to match the format by our explicit
-	 * ConfigFS NodeACLs.
-	 */
+	 
 	efct_format_wwn(wwpn, sizeof(wwpn), "",	efc_node_get_wwpn(node));
 
 	se_sess = target_setup_session(se_tpg, 0, 0, TARGET_PROT_NORMAL, wwpn,
@@ -1206,7 +1187,7 @@ static void efct_lio_setup_session(struct work_struct *work)
 
 	efc_scsi_sess_reg_complete(node, 0);
 
-	/* update IO watermark: increment initiator count */
+	 
 	ini_count = atomic_add_return(1, &efct->tgt_efct.initiator_count);
 	watermark = efct->tgt_efct.watermark_max -
 		    ini_count * EFCT_IO_WATERMARK_PER_INITIATOR;
@@ -1222,10 +1203,7 @@ int efct_scsi_new_initiator(struct efc *efc, struct efc_node *node)
 	struct efct *efct = node->efc->base;
 	struct efct_lio_wq_data *wq_data;
 
-	/*
-	 * Since LIO only supports initiator validation at thread level,
-	 * we are open minded and accept all callers.
-	 */
+	 
 	wq_data = kzalloc(sizeof(*wq_data), GFP_ATOMIC);
 	if (!wq_data)
 		return -ENOMEM;
@@ -1248,10 +1226,7 @@ static void efct_lio_remove_session(struct work_struct *work)
 
 	tgt_node = node->tgt_node;
 	if (!tgt_node) {
-		/* base driver has sent back-to-back requests
-		 * to unreg session with no intervening
-		 * register
-		 */
+		 
 		efc_log_err(efct, "unreg session for NULL session\n");
 		efc_scsi_del_initiator_complete(node->efc, node);
 		return;
@@ -1261,10 +1236,10 @@ static void efct_lio_remove_session(struct work_struct *work)
 	efc_log_debug(efct, "unreg session se_sess=%p node=%p\n",
 		       se_sess, node);
 
-	/* first flag all session commands to complete */
+	 
 	target_stop_session(se_sess);
 
-	/* now wait for session commands to complete */
+	 
 	target_wait_for_sess_cmds(se_sess);
 	target_remove_session(se_sess);
 	tgt_node->session = NULL;
@@ -1303,9 +1278,7 @@ int efct_scsi_del_initiator(struct efc *efc, struct efc_node *node, int reason)
 	INIT_WORK(&wq_data->work, efct_lio_remove_session);
 	queue_work(lio_wq, &wq_data->work);
 
-	/*
-	 * update IO watermark: decrement initiator count
-	 */
+	 
 	ini_count = atomic_sub_return(1, &efct->tgt_efct.initiator_count);
 
 	watermark = efct->tgt_efct.watermark_max -
@@ -1332,7 +1305,7 @@ void efct_scsi_recv_cmd(struct efct_io *io, uint64_t lun, u8 *cdb,
 	efct_set_lio_io_state(io, EFCT_LIO_STATE_SCSI_RECV_CMD);
 	atomic_add_return(1, &efct->tgt_efct.ios_in_use);
 
-	/* set target timeout */
+	 
 	io->timeout = efct->target_io_timer_sec;
 
 	if (flags & EFCT_SCSI_CMD_SIMPLE)
@@ -1460,7 +1433,7 @@ tmf_fail:
 	return 0;
 }
 
-/* Start items for efct_lio_tpg_attrib_cit */
+ 
 
 #define DEF_EFCT_TPG_ATTRIB(name)					  \
 									  \
@@ -1652,7 +1625,7 @@ int efct_scsi_tgt_driver_init(void)
 {
 	int rc;
 
-	/* Register the top level struct config_item_type with TCM core */
+	 
 	rc = target_register_template(&efct_lio_ops);
 	if (rc < 0) {
 		pr_err("target_fabric_configfs_register failed with %d\n", rc);

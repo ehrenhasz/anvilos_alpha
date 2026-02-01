@@ -1,45 +1,8 @@
-/****************************************************************************
- * Copyright 2020,2021 Thomas E. Dickey                                     *
- * Copyright 1998-2014,2017 Free Software Foundation, Inc.                  *
- *                                                                          *
- * Permission is hereby granted, free of charge, to any person obtaining a  *
- * copy of this software and associated documentation files (the            *
- * "Software"), to deal in the Software without restriction, including      *
- * without limitation the rights to use, copy, modify, merge, publish,      *
- * distribute, distribute with modifications, sublicense, and/or sell       *
- * copies of the Software, and to permit persons to whom the Software is    *
- * furnished to do so, subject to the following conditions:                 *
- *                                                                          *
- * The above copyright notice and this permission notice shall be included  *
- * in all copies or substantial portions of the Software.                   *
- *                                                                          *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS  *
- * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF               *
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.   *
- * IN NO EVENT SHALL THE ABOVE COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,   *
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR    *
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR    *
- * THE USE OR OTHER DEALINGS IN THE SOFTWARE.                               *
- *                                                                          *
- * Except as contained in this notice, the name(s) of the above copyright   *
- * holders shall not be used in advertising or otherwise to promote the     *
- * sale, use or other dealings in this Software without prior written       *
- * authorization.                                                           *
- ****************************************************************************/
+ 
 
-/****************************************************************************
- *  Author: Zeyd M. Ben-Halim <zmbenhal@netcom.com> 1992,1995               *
- *     and: Eric S. Raymond <esr@snark.thyrsus.com>                         *
- *     and: Thomas E. Dickey                        1996-on                 *
- *     and: Juergen Pfeifer                         2009                    *
- ****************************************************************************/
+ 
 
-/*
-**	lib_options.c
-**
-**	The routines to handle option setting.
-**
-*/
+ 
 
 #include <curses.priv.h>
 
@@ -160,10 +123,10 @@ meta(WINDOW *win GCC_UNUSED, bool flag)
     int result = ERR;
     SCREEN *sp = (win == 0) ? CURRENT_SCREEN : _nc_screen_of(win);
 
-    /* Ok, we stay relaxed and don't signal an error if win is NULL */
+     
     T((T_CALLED("meta(%p,%d)"), (void *) win, flag));
 
-    /* Ok, we stay relaxed and don't signal an error if win is NULL */
+     
 
     if (sp != 0) {
 	sp->_use_meta = flag;
@@ -187,7 +150,7 @@ meta(WINDOW *win GCC_UNUSED, bool flag)
     returnCode(result);
 }
 
-/* curs_set() moved here to narrow the kernel interface */
+ 
 
 NCURSES_EXPORT(int)
 NCURSES_SP_NAME(curs_set) (NCURSES_SP_DCLx int vis)
@@ -258,12 +221,7 @@ typeahead(int fd)
 }
 #endif
 
-/*
-**      has_key()
-**
-**      Return TRUE if the current terminal has the given key
-**
-*/
+ 
 
 #if NCURSES_EXT_FUNCS
 static int
@@ -301,7 +259,7 @@ has_key(int keycode)
 }
 #endif
 #endif
-#endif /* NCURSES_EXT_FUNCS */
+#endif  
 
 NCURSES_EXPORT(int)
 NCURSES_SP_NAME(_nc_putp_flush) (NCURSES_SP_DCLx
@@ -322,13 +280,7 @@ _nc_putp_flush(const char *name, const char *value)
 }
 #endif
 
-/* Turn the keypad on/off
- *
- * Note:  we flush the output because changing this mode causes some terminals
- * to emit different escape sequences for cursor and keypad keys.  If we don't
- * flush, then the next wgetch may get the escape sequence that corresponds to
- * the terminal state _before_ switching modes.
- */
+ 
 NCURSES_EXPORT(int)
 _nc_keypad(SCREEN *sp, int flag)
 {
@@ -336,15 +288,11 @@ _nc_keypad(SCREEN *sp, int flag)
 
     if (sp != 0) {
 #ifdef USE_PTHREADS
-	/*
-	 * We might have this situation in a multithreaded application that
-	 * has wgetch() reading in more than one thread.  putp() and below
-	 * may use SP explicitly.
-	 */
+	 
 	if (_nc_use_pthreads && sp != CURRENT_SCREEN) {
 	    SCREEN *save_sp;
 
-	    /* cannot use use_screen(), since that is not in tinfo library */
+	     
 	    _nc_lock_global(curses);
 	    save_sp = CURRENT_SCREEN;
 	    _nc_set_screen(sp);

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include "reiserfs.h"
 #include <linux/errno.h>
 #include <linux/fs.h>
@@ -55,9 +55,7 @@ reiserfs_initxattrs(struct inode *inode, const struct xattr *xattr_array,
 	return 0;
 }
 
-/* Initializes the security context for a new inode and returns the number
- * of blocks needed for the transaction. If successful, reiserfs_security
- * must be released using reiserfs_security_free when the caller is done. */
+ 
 int reiserfs_security_init(struct inode *dir, struct inode *inode,
 			   const struct qstr *qstr,
 			   struct reiserfs_security_handle *sec)
@@ -69,7 +67,7 @@ int reiserfs_security_init(struct inode *dir, struct inode *inode,
 	sec->value = NULL;
 	sec->length = 0;
 
-	/* Don't add selinux attributes on xattrs - they'll never get used */
+	 
 	if (IS_PRIVATE(dir))
 		return 0;
 
@@ -85,8 +83,7 @@ int reiserfs_security_init(struct inode *dir, struct inode *inode,
 	if (sec->length && reiserfs_xattrs_initialized(inode->i_sb)) {
 		blocks = reiserfs_xattr_jcreate_nblocks(inode) +
 			 reiserfs_xattr_nblocks(inode, sec->length);
-		/* We don't want to count the directories twice if we have
-		 * a default ACL. */
+		 
 		REISERFS_I(inode)->i_flags |= i_has_xattr_dir;
 	}
 	return blocks;

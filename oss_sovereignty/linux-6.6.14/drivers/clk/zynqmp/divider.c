@@ -1,42 +1,20 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Zynq UltraScale+ MPSoC Divider support
- *
- *  Copyright (C) 2016-2019 Xilinx
- *
- * Adjustable divider clock implementation
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/clk-provider.h>
 #include <linux/slab.h>
 #include "clk-zynqmp.h"
 
-/*
- * DOC: basic adjustable divider clock that cannot gate
- *
- * Traits of this clock:
- * prepare - clk_prepare only ensures that parents are prepared
- * enable - clk_enable only ensures that parents are enabled
- * rate - rate is adjustable.  clk->rate = ceiling(parent->rate / divisor)
- * parent - fixed parent.  No clk_set_parent support
- */
+ 
 
 #define to_zynqmp_clk_divider(_hw)		\
 	container_of(_hw, struct zynqmp_clk_divider, hw)
 
-#define CLK_FRAC		BIT(13) /* has a fractional parent */
-#define CUSTOM_FLAG_CLK_FRAC	BIT(0) /* has a fractional parent in custom type flag */
+#define CLK_FRAC		BIT(13)  
+#define CUSTOM_FLAG_CLK_FRAC	BIT(0)  
 
-/**
- * struct zynqmp_clk_divider - adjustable divider clock
- * @hw:		handle between common and hardware-specific interfaces
- * @flags:	Hardware specific flags
- * @is_frac:	The divider is a fractional divider
- * @clk_id:	Id of clock
- * @div_type:	divisor type (TYPE_DIV1 or TYPE_DIV2)
- * @max_div:	maximum supported divisor (fetched from firmware)
- */
+ 
 struct zynqmp_clk_divider {
 	struct clk_hw hw;
 	u8 flags;
@@ -69,13 +47,7 @@ static inline int zynqmp_divider_get_val(unsigned long parent_rate,
 	}
 }
 
-/**
- * zynqmp_clk_divider_recalc_rate() - Recalc rate of divider clock
- * @hw:			handle between common and hardware-specific interfaces
- * @parent_rate:	rate of parent clock
- *
- * Return: 0 on success else error+reason
- */
+ 
 static unsigned long zynqmp_clk_divider_recalc_rate(struct clk_hw *hw,
 						    unsigned long parent_rate)
 {
@@ -110,14 +82,7 @@ static unsigned long zynqmp_clk_divider_recalc_rate(struct clk_hw *hw,
 	return DIV_ROUND_UP_ULL(parent_rate, value);
 }
 
-/**
- * zynqmp_clk_divider_round_rate() - Round rate of divider clock
- * @hw:			handle between common and hardware-specific interfaces
- * @rate:		rate of clock to be set
- * @prate:		rate of parent clock
- *
- * Return: 0 on success else error+reason
- */
+ 
 static long zynqmp_clk_divider_round_rate(struct clk_hw *hw,
 					  unsigned long rate,
 					  unsigned long *prate)
@@ -130,7 +95,7 @@ static long zynqmp_clk_divider_round_rate(struct clk_hw *hw,
 	int ret;
 	u8 width;
 
-	/* if read only, just return current value */
+	 
 	if (divider->flags & CLK_DIVIDER_READ_ONLY) {
 		ret = zynqmp_pm_clock_getdivider(clk_id, &bestdiv);
 
@@ -158,14 +123,7 @@ static long zynqmp_clk_divider_round_rate(struct clk_hw *hw,
 	return rate;
 }
 
-/**
- * zynqmp_clk_divider_set_rate() - Set rate of divider clock
- * @hw:			handle between common and hardware-specific interfaces
- * @rate:		rate of clock to be set
- * @parent_rate:	rate of parent clock
- *
- * Return: 0 on success else error+reason
- */
+ 
 static int zynqmp_clk_divider_set_rate(struct clk_hw *hw, unsigned long rate,
 				       unsigned long parent_rate)
 {
@@ -208,14 +166,7 @@ static const struct clk_ops zynqmp_clk_divider_ro_ops = {
 	.round_rate = zynqmp_clk_divider_round_rate,
 };
 
-/**
- * zynqmp_clk_get_max_divisor() - Get maximum supported divisor from firmware.
- * @clk_id:		Id of clock
- * @type:		Divider type
- *
- * Return: Maximum divisor of a clock if query data is successful
- *	   U16_MAX in case of query data is not success
- */
+ 
 static u32 zynqmp_clk_get_max_divisor(u32 clk_id, u32 type)
 {
 	struct zynqmp_pm_query_data qdata = {0};
@@ -226,10 +177,7 @@ static u32 zynqmp_clk_get_max_divisor(u32 clk_id, u32 type)
 	qdata.arg1 = clk_id;
 	qdata.arg2 = type;
 	ret = zynqmp_pm_query_data(qdata, ret_payload);
-	/*
-	 * To maintain backward compatibility return maximum possible value
-	 * (0xFFFF) if query for max divisor is not successful.
-	 */
+	 
 	if (ret)
 		return U16_MAX;
 
@@ -259,16 +207,7 @@ static inline unsigned long zynqmp_clk_map_divider_ccf_flags(
 	return ccf_flag;
 }
 
-/**
- * zynqmp_clk_register_divider() - Register a divider clock
- * @name:		Name of this clock
- * @clk_id:		Id of clock
- * @parents:		Name of this clock's parents
- * @num_parents:	Number of parents
- * @nodes:		Clock topology node
- *
- * Return: clock hardware to registered clock divider
- */
+ 
 struct clk_hw *zynqmp_clk_register_divider(const char *name,
 					   u32 clk_id,
 					   const char * const *parents,
@@ -280,7 +219,7 @@ struct clk_hw *zynqmp_clk_register_divider(const char *name,
 	struct clk_init_data init;
 	int ret;
 
-	/* allocate the divider */
+	 
 	div = kzalloc(sizeof(*div), GFP_KERNEL);
 	if (!div)
 		return ERR_PTR(-ENOMEM);
@@ -296,7 +235,7 @@ struct clk_hw *zynqmp_clk_register_divider(const char *name,
 	init.parent_names = parents;
 	init.num_parents = 1;
 
-	/* struct clk_divider assignments */
+	 
 	div->is_frac = !!((nodes->flag & CLK_FRAC) |
 			  (nodes->custom_type_flag & CUSTOM_FLAG_CLK_FRAC));
 	div->flags = zynqmp_clk_map_divider_ccf_flags(nodes->type_flag);
@@ -304,10 +243,7 @@ struct clk_hw *zynqmp_clk_register_divider(const char *name,
 	div->clk_id = clk_id;
 	div->div_type = nodes->type;
 
-	/*
-	 * To achieve best possible rate, maximum limit of divider is required
-	 * while computation.
-	 */
+	 
 	div->max_div = zynqmp_clk_get_max_divisor(clk_id, nodes->type);
 
 	hw = &div->hw;

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Xen PCI Frontend
- *
- * Author: Ryan Wilson <hap9@epoch.ncsc.mil>
- */
+
+ 
 #include <linux/module.h>
 #include <linux/init.h>
 #include <linux/mm.h>
@@ -45,7 +41,7 @@ struct pcifront_device {
 
 	int irq;
 
-	/* Lock this when doing any operations in sh_info */
+	 
 	spinlock_t sh_info_lock;
 	struct xen_pci_sharedinfo *sh_info;
 	struct work_struct op_work;
@@ -68,7 +64,7 @@ static inline void pcifront_init_sd(struct pcifront_sd *sd,
 				    unsigned int domain, unsigned int bus,
 				    struct pcifront_device *pdev)
 {
-	/* Because we do not expose that information via XenBus. */
+	 
 	sd->sd.node = first_online_node;
 	sd->sd.domain = domain;
 	sd->pdev = pdev;
@@ -121,17 +117,12 @@ static int do_pci_op(struct pcifront_device *pdev, struct xen_pci_op *op)
 
 	memcpy(active_op, op, sizeof(struct xen_pci_op));
 
-	/* Go */
+	 
 	wmb();
 	set_bit(_XEN_PCIF_active, (unsigned long *)&pdev->sh_info->flags);
 	notify_remote_via_evtchn(port);
 
-	/*
-	 * We set a poll timeout of 3 seconds but give up on return after
-	 * 2 seconds. It is better to time out too late rather than too early
-	 * (in the latter case we end up continually re-executing poll() with a
-	 * timeout in the past). 1s difference gives plenty of slack for error.
-	 */
+	 
 	ns_timeout = ktime_get_ns() + 2 * (s64)NSEC_PER_SEC;
 
 	xen_clear_irq_pending(irq);
@@ -151,11 +142,7 @@ static int do_pci_op(struct pcifront_device *pdev, struct xen_pci_op *op)
 		}
 	}
 
-	/*
-	 * We might lose backend service request since we
-	 * reuse same evtchn with pci_conf backend response. So re-schedule
-	 * aer pcifront service.
-	 */
+	 
 	if (test_bit(_XEN_PCIB_active,
 			(unsigned long *)&pdev->sh_info->flags)) {
 		dev_err(&pdev->xdev->dev,
@@ -171,7 +158,7 @@ out:
 	return err;
 }
 
-/* Access to this function is spinlocked in drivers/pci/access.c */
+ 
 static int pcifront_bus_read(struct pci_bus *bus, unsigned int devfn,
 			     int where, int size, u32 *val)
 {
@@ -200,7 +187,7 @@ static int pcifront_bus_read(struct pci_bus *bus, unsigned int devfn,
 
 		*val = op.value;
 	} else if (err == -ENODEV) {
-		/* No device here, pretend that it just returned 0 */
+		 
 		err = 0;
 		*val = 0;
 	}
@@ -208,7 +195,7 @@ static int pcifront_bus_read(struct pci_bus *bus, unsigned int devfn,
 	return errno_to_pcibios_err(err);
 }
 
-/* Access to this function is spinlocked in drivers/pci/access.c */
+ 
 static int pcifront_bus_write(struct pci_bus *bus, unsigned int devfn,
 			      int where, int size, u32 val)
 {
@@ -263,7 +250,7 @@ static int pci_frontend_enable_msix(struct pci_dev *dev,
 	i = 0;
 	msi_for_each_desc(entry, &dev->dev, MSI_DESC_NOTASSOCIATED) {
 		op.msix_entries[i].entry = entry->msi_index;
-		/* Vector is useless at this point. */
+		 
 		op.msix_entries[i].vector = -1;
 		i++;
 	}
@@ -272,7 +259,7 @@ static int pci_frontend_enable_msix(struct pci_dev *dev,
 
 	if (likely(!err)) {
 		if (likely(!op.value)) {
-			/* we get the result */
+			 
 			for (i = 0; i < nvec; i++) {
 				if (op.msix_entries[i].vector <= 0) {
 					pci_warn(dev, "MSI-X entry %d is invalid: %d!\n",
@@ -307,7 +294,7 @@ static void pci_frontend_disable_msix(struct pci_dev *dev)
 
 	err = do_pci_op(pdev, &op);
 
-	/* What should do for error ? */
+	 
 	if (err)
 		pci_err(dev, "pci_disable_msix get err %x\n", err);
 }
@@ -355,12 +342,12 @@ static void pci_frontend_disable_msi(struct pci_dev *dev)
 
 	err = do_pci_op(pdev, &op);
 	if (err == XEN_PCI_ERR_dev_not_found) {
-		/* XXX No response from backend, what shall we do? */
+		 
 		pr_info("get no response from backend for disable MSI\n");
 		return;
 	}
 	if (err)
-		/* how can pciback notify us fail? */
+		 
 		pr_info("get fake response from backend\n");
 }
 
@@ -380,9 +367,9 @@ static void pci_frontend_registrar(int enable)
 };
 #else
 static inline void pci_frontend_registrar(int enable) { };
-#endif /* CONFIG_PCI_MSI */
+#endif  
 
-/* Claim resources for the PCI frontend as-is, backend won't allow changes */
+ 
 static int pcifront_claim_resource(struct pci_dev *dev, void *data)
 {
 	struct pcifront_device *pdev = data;
@@ -411,15 +398,11 @@ static int pcifront_scan_bus(struct pcifront_device *pdev,
 	struct pci_dev *d;
 	unsigned int devfn;
 
-	/*
-	 * Scan the bus for functions and add.
-	 * We omit handling of PCI bridge attachment because pciback prevents
-	 * bridges from being exported.
-	 */
+	 
 	for (devfn = 0; devfn < 0x100; devfn++) {
 		d = pci_get_slot(b, devfn);
 		if (d) {
-			/* Device is already known. */
+			 
 			pci_dev_put(d);
 			continue;
 		}
@@ -490,16 +473,13 @@ static int pcifront_scan_root(struct pcifront_device *pdev,
 
 	list_add(&bus_entry->list, &pdev->root_buses);
 
-	/*
-	 * pci_scan_root_bus skips devices which do not have a
-	 * devfn==0. The pcifront_scan_bus enumerates all devfn.
-	 */
+	 
 	err = pcifront_scan_bus(pdev, domain, bus, b);
 
-	/* Claim resources before going "live" with our devices */
+	 
 	pci_walk_bus(b, pcifront_claim_resource, pdev);
 
-	/* Create SysFS and notify udev of the devices. Aka: "going live" */
+	 
 	pci_bus_add_devices(b);
 
 	pci_unlock_rescan_remove();
@@ -520,7 +500,7 @@ static int pcifront_rescan_root(struct pcifront_device *pdev,
 
 	b = pci_find_bus(domain, bus);
 	if (!b)
-		/* If the bus is unknown, create it. */
+		 
 		return pcifront_scan_root(pdev, domain, bus);
 
 	dev_info(&pdev->xdev->dev, "Rescanning PCI Frontend Bus %04x:%02x\n",
@@ -528,10 +508,10 @@ static int pcifront_rescan_root(struct pcifront_device *pdev,
 
 	err = pcifront_scan_bus(pdev, domain, bus, b);
 
-	/* Claim resources before going "live" with our devices */
+	 
 	pci_walk_bus(b, pcifront_claim_resource, pdev);
 
-	/* Create SysFS and notify udev of the devices. Aka: "going live" */
+	 
 	pci_bus_add_devices(b);
 
 	return err;
@@ -623,22 +603,19 @@ static void pcifront_do_aer(struct work_struct *data)
 	pci_channel_state_t state =
 		(pci_channel_state_t)pdev->sh_info->aer_op.err;
 
-	/*
-	 * If a pci_conf op is in progress, we have to wait until it is done
-	 * before service aer op
-	 */
+	 
 	dev_dbg(&pdev->xdev->dev,
 		"pcifront service aer bus %x devfn %x\n",
 		pdev->sh_info->aer_op.bus, pdev->sh_info->aer_op.devfn);
 
 	pdev->sh_info->aer_op.err = pcifront_common_process(cmd, pdev, state);
 
-	/* Post the operation to the guest. */
+	 
 	wmb();
 	clear_bit(_XEN_PCIB_active, (unsigned long *)&pdev->sh_info->flags);
 	notify_remote_via_evtchn(pdev->evtchn);
 
-	/*in case of we lost an aer request in four lines time_window*/
+	 
 	smp_mb__before_atomic();
 	clear_bit(_PDEVB_op_active, &pdev->flags);
 	smp_mb__after_atomic();
@@ -699,7 +676,7 @@ static struct pcifront_device *alloc_pdev(struct xenbus_device *xdev)
 	}
 	pdev->sh_info->flags = 0;
 
-	/*Flag for registering PV AER handler*/
+	 
 	set_bit(_XEN_PCIB_AERHANDLER, (void *)&pdev->sh_info->flags);
 
 	dev_set_drvdata(&xdev->dev, pdev);
@@ -855,7 +832,7 @@ static void pcifront_try_connect(struct pcifront_device *pdev)
 {
 	int err;
 
-	/* Only connect once */
+	 
 	if (xenbus_read_driver_state(pdev->xdev->nodename) !=
 	    XenbusStateInitialised)
 		return;
@@ -912,7 +889,7 @@ static int pcifront_detach_devices(struct pcifront_device *pdev)
 	state = xenbus_read_driver_state(pdev->xdev->nodename);
 	if (state == XenbusStateInitialised) {
 		dev_dbg(&pdev->xdev->dev, "Handle skipped connect.\n");
-		/* We missed Connected and need to initialize. */
+		 
 		err = pcifront_connect_and_init_dma(pdev);
 		if (err && err != -EEXIST) {
 			xenbus_dev_fatal(pdev->xdev, err,
@@ -935,7 +912,7 @@ static int pcifront_detach_devices(struct pcifront_device *pdev)
 		goto out;
 	}
 
-	/* Find devices being detached and remove them. */
+	 
 	for (i = 0; i < num_devs; i++) {
 		int l, state;
 
@@ -950,7 +927,7 @@ static int pcifront_detach_devices(struct pcifront_device *pdev)
 		if (state != XenbusStateClosing)
 			continue;
 
-		/* Remove device. */
+		 
 		l = snprintf(str, sizeof(str), "vdev-%d", i);
 		if (unlikely(l >= (sizeof(str) - 1))) {
 			err = -ENOMEM;
@@ -1010,7 +987,7 @@ static void pcifront_backend_changed(struct xenbus_device *xdev,
 	case XenbusStateClosed:
 		if (xdev->state == XenbusStateClosed)
 			break;
-		fallthrough;	/* Missed the backend's CLOSING state */
+		fallthrough;	 
 	case XenbusStateClosing:
 		dev_warn(&xdev->dev, "backend going away!\n");
 		pcifront_try_disconnect(pdev);
@@ -1076,7 +1053,7 @@ static int __init pcifront_init(void)
 	if (!xen_has_pv_devices())
 		return -ENODEV;
 
-	pci_frontend_registrar(1 /* enable */);
+	pci_frontend_registrar(1  );
 
 	return xenbus_register_frontend(&xenpci_driver);
 }
@@ -1084,7 +1061,7 @@ static int __init pcifront_init(void)
 static void __exit pcifront_cleanup(void)
 {
 	xenbus_unregister_driver(&xenpci_driver);
-	pci_frontend_registrar(0 /* disable */);
+	pci_frontend_registrar(0  );
 }
 module_init(pcifront_init);
 module_exit(pcifront_cleanup);

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * pinctrl-palmas.c -- TI PALMAS series pin control driver.
- *
- * Copyright (c) 2013, NVIDIA Corporation.
- *
- * Author: Laxman Dewangan <ldewangan@nvidia.com>
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/module.h>
@@ -682,7 +676,7 @@ static int palmas_pinctrl_set_mux(struct pinctrl_dev *pctldev,
 
 	g = &pci->pin_groups[group];
 
-	/* If direct option is provided here */
+	 
 	if (function <= PALMAS_PINMUX_OPTION3) {
 		if (!g->opt[function]) {
 			dev_err(pci->dev, "Pin %s does not support option %d\n",
@@ -941,7 +935,7 @@ static int palmas_pinconf_set(struct pinctrl_dev *pctldev,
 				add, ret);
 			return ret;
 		}
-	} /* for each config */
+	}  
 
 	return 0;
 }

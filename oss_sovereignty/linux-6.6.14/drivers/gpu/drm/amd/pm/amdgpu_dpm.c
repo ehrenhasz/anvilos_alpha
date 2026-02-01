@@ -1,26 +1,4 @@
-/*
- * Copyright 2011 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: Alex Deucher
- */
+ 
 
 #include "amdgpu.h"
 #include "amdgpu_atombios.h"
@@ -134,7 +112,7 @@ int amdgpu_dpm_baco_enter(struct amdgpu_device *adev)
 
 	mutex_lock(&adev->pm.mutex);
 
-	/* enter BACO state */
+	 
 	ret = pp_funcs->set_asic_baco_state(pp_handle, 1);
 
 	mutex_unlock(&adev->pm.mutex);
@@ -153,7 +131,7 @@ int amdgpu_dpm_baco_exit(struct amdgpu_device *adev)
 
 	mutex_lock(&adev->pm.mutex);
 
-	/* exit BACO state */
+	 
 	ret = pp_funcs->set_asic_baco_state(pp_handle, 0);
 
 	mutex_unlock(&adev->pm.mutex);
@@ -189,15 +167,7 @@ bool amdgpu_dpm_is_baco_supported(struct amdgpu_device *adev)
 
 	if (!pp_funcs || !pp_funcs->get_asic_baco_capability)
 		return false;
-	/* Don't use baco for reset in S3.
-	 * This is a workaround for some platforms
-	 * where entering BACO during suspend
-	 * seems to cause reboots or hangs.
-	 * This might be related to the fact that BACO controls
-	 * power to the whole GPU including devices like audio and USB.
-	 * Powering down/up everything may adversely affect these other
-	 * devices.  Needs more investigation.
-	 */
+	 
 	if (adev->in_s3)
 		return false;
 
@@ -258,12 +228,12 @@ int amdgpu_dpm_baco_reset(struct amdgpu_device *adev)
 
 	mutex_lock(&adev->pm.mutex);
 
-	/* enter BACO state */
+	 
 	ret = pp_funcs->set_asic_baco_state(pp_handle, 1);
 	if (ret)
 		goto out;
 
-	/* exit BACO state */
+	 
 	ret = pp_funcs->set_asic_baco_state(pp_handle, 0);
 
 out:
@@ -543,7 +513,7 @@ void amdgpu_dpm_enable_vce(struct amdgpu_device *adev, bool enable)
 		mutex_lock(&adev->pm.mutex);
 		if (enable) {
 			adev->pm.dpm.vce_active = true;
-			/* XXX select vce level based on ring/task */
+			 
 			adev->pm.dpm.vce_level = AMD_VCE_LEVEL_AC_ALL;
 		} else {
 			adev->pm.dpm.vce_active = false;
@@ -786,11 +756,7 @@ uint64_t amdgpu_dpm_get_thermal_throttling_counter(struct amdgpu_device *adev)
 	return atomic64_read(&smu->throttle_int_counter);
 }
 
-/* amdgpu_dpm_gfx_state_change - Handle gfx power state change set
- * @adev: amdgpu_device pointer
- * @state: gfx power state(1 -sGpuChangeState_D0Entry and 2 -sGpuChangeState_D3Entry)
- *
- */
+ 
 void amdgpu_dpm_gfx_state_change(struct amdgpu_device *adev,
 				 enum gfx_change_state state)
 {
@@ -927,7 +893,7 @@ int amdgpu_dpm_force_performance_level(struct amdgpu_device *adev,
 
 	if (!(current_level & profile_mode_mask) &&
 	      (level & profile_mode_mask)) {
-		/* enter UMD Pstate */
+		 
 		amdgpu_device_ip_set_powergating_state(adev,
 						       AMD_IP_BLOCK_TYPE_GFX,
 						       AMD_PG_STATE_UNGATE);
@@ -936,7 +902,7 @@ int amdgpu_dpm_force_performance_level(struct amdgpu_device *adev,
 						       AMD_CG_STATE_UNGATE);
 	} else if ((current_level & profile_mode_mask) &&
 		    !(level & profile_mode_mask)) {
-		/* exit UMD Pstate */
+		 
 		amdgpu_device_ip_set_clockgating_state(adev,
 						       AMD_IP_BLOCK_TYPE_GFX,
 						       AMD_CG_STATE_GATE);
@@ -1469,10 +1435,7 @@ int amdgpu_dpm_is_overdrive_supported(struct amdgpu_device *adev)
 	} else {
 		struct pp_hwmgr *hwmgr;
 
-		/*
-		 * dpm on some legacy asics don't carry od_enabled member
-		 * as its pp_handle is casted directly from adev.
-		 */
+		 
 		if (amdgpu_dpm_is_legacy_dpm(adev))
 			return false;
 

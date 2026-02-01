@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Phy provider for USB 3.0 controller on HiSilicon 3660 platform
- *
- * Copyright (C) 2017-2018 Hilisicon Electronics Co., Ltd.
- *		http://www.huawei.com
- *
- * Authors: Yu Chen <chenyu56@huawei.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/mfd/syscon.h>
@@ -52,7 +45,7 @@
 #define USBOTG3_CTRL7				0x1c
 #define REF_SSP_EN				BIT(16)
 
-/* This value config the default txtune parameter of the usb 2.0 phy */
+ 
 #define HI3660_USB_DEFAULT_PHY_PARAM		0x1c466e3
 
 struct hi3660_priv {
@@ -69,24 +62,24 @@ static int hi3660_phy_init(struct phy *phy)
 	u32 val, mask;
 	int ret;
 
-	/* usb refclk iso disable */
+	 
 	ret = regmap_write(priv->peri_crg, PERI_CRG_ISODIS, USB_REFCLK_ISO_EN);
 	if (ret)
 		goto out;
 
-	/* enable usb_tcxo_en */
+	 
 	val = USB_TCXO_EN | (USB_TCXO_EN << PCTRL_PERI_CTRL3_MSK_START);
 	ret = regmap_write(priv->pctrl, PCTRL_PERI_CTRL3, val);
 	if (ret)
 		goto out;
 
-	/* assert phy */
+	 
 	val = IP_RST_USB3OTGPHY_POR | IP_RST_USB3OTG;
 	ret = regmap_write(priv->peri_crg, PERI_CRG_RSTEN4, val);
 	if (ret)
 		goto out;
 
-	/* enable phy ref clk */
+	 
 	val = SC_USB3PHY_ABB_GT_EN;
 	mask = val;
 	ret = regmap_update_bits(priv->otg_bc, USBOTG3_CTRL0, mask, val);
@@ -99,32 +92,32 @@ static int hi3660_phy_init(struct phy *phy)
 	if (ret)
 		goto out;
 
-	/* exit from IDDQ mode */
+	 
 	mask = USBOTG3CTRL2_POWERDOWN_HSP | USBOTG3CTRL2_POWERDOWN_SSP;
 	ret = regmap_update_bits(priv->otg_bc, USBOTG3_CTRL2, mask, 0);
 	if (ret)
 		goto out;
 
-	/* delay for exit from IDDQ mode */
+	 
 	usleep_range(100, 120);
 
-	/* deassert phy */
+	 
 	val = IP_RST_USB3OTGPHY_POR | IP_RST_USB3OTG;
 	ret = regmap_write(priv->peri_crg, PERI_CRG_RSTDIS4, val);
 	if (ret)
 		goto out;
 
-	/* delay for phy deasserted */
+	 
 	usleep_range(10000, 15000);
 
-	/* fake vbus valid signal */
+	 
 	val = USBOTG3_CTRL3_VBUSVLDEXT | USBOTG3_CTRL3_VBUSVLDEXTSEL;
 	mask = val;
 	ret = regmap_update_bits(priv->otg_bc, USBOTG3_CTRL3, mask, val);
 	if (ret)
 		goto out;
 
-	/* delay for vbus valid */
+	 
 	usleep_range(100, 120);
 
 	ret = regmap_write(priv->otg_bc, USBOTG3_CTRL4,
@@ -144,13 +137,13 @@ static int hi3660_phy_exit(struct phy *phy)
 	u32 val;
 	int ret;
 
-	/* assert phy */
+	 
 	val = IP_RST_USB3OTGPHY_POR;
 	ret = regmap_write(priv->peri_crg, PERI_CRG_RSTEN4, val);
 	if (ret)
 		goto out;
 
-	/* disable usb_tcxo_en */
+	 
 	val = USB_TCXO_EN << PCTRL_PERI_CTRL3_MSK_START;
 	ret = regmap_write(priv->pctrl, PCTRL_PERI_CTRL3, val);
 	if (ret)
@@ -194,7 +187,7 @@ static int hi3660_phy_probe(struct platform_device *pdev)
 		return PTR_ERR(priv->pctrl);
 	}
 
-	/* node of hi3660 phy is a sub-node of usb3_otg_bc */
+	 
 	priv->otg_bc = syscon_node_to_regmap(dev->parent->of_node);
 	if (IS_ERR(priv->otg_bc)) {
 		dev_err(dev, "no hisilicon,usb3-otg-bc-syscon\n");

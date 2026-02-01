@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2008 IBM Corporation
- * Author: Mimi Zohar <zohar@us.ibm.com>
- */
+ 
+ 
 
 #ifndef _LINUX_IMA_H
 #define _LINUX_IMA_H
@@ -140,7 +137,7 @@ static inline int ima_measure_critical_data(const char *event_label,
 	return -ENOENT;
 }
 
-#endif /* CONFIG_IMA */
+#endif  
 
 #ifdef CONFIG_HAVE_IMA_KEXEC
 int __init ima_free_kexec_buffer(void);
@@ -181,7 +178,7 @@ static inline void ima_post_key_create_or_update(struct key *keyring,
 						 size_t plen,
 						 unsigned long flags,
 						 bool create) {}
-#endif  /* CONFIG_IMA_MEASURE_ASYMMETRIC_KEYS */
+#endif   
 
 #ifdef CONFIG_IMA_APPRAISE
 extern bool is_ima_appraise_enabled(void);
@@ -239,7 +236,7 @@ static inline int ima_inode_remove_acl(struct mnt_idmap *idmap,
 {
 	return 0;
 }
-#endif /* CONFIG_IMA_APPRAISE */
+#endif  
 
 #if defined(CONFIG_IMA_APPRAISE) && defined(CONFIG_INTEGRITY_TRUSTED_KEYRING)
 extern bool ima_appraise_signature(enum kernel_read_file_id func);
@@ -248,5 +245,5 @@ static inline bool ima_appraise_signature(enum kernel_read_file_id func)
 {
 	return false;
 }
-#endif /* CONFIG_IMA_APPRAISE && CONFIG_INTEGRITY_TRUSTED_KEYRING */
-#endif /* _LINUX_IMA_H */
+#endif  
+#endif  

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Driver for Analog Devices ADV748X CSI-2 Transmitter
- *
- * Copyright (C) 2017 Renesas Electronics Corp.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/mutex.h>
@@ -19,18 +15,7 @@ int adv748x_csi2_set_virtual_channel(struct adv748x_csi2 *tx, unsigned int vc)
 	return tx_write(tx, ADV748X_CSI_VC_REF, vc << ADV748X_CSI_VC_REF_SHIFT);
 }
 
-/**
- * adv748x_csi2_register_link : Register and link internal entities
- *
- * @tx: CSI2 private entity
- * @v4l2_dev: Video registration device
- * @src: Source subdevice to establish link
- * @src_pad: Pad number of source to link to this @tx
- * @enable: Link enabled flag
- *
- * Ensure that the subdevice is registered against the v4l2_device, and link the
- * source pad to the sink pad of the CSI2 bus entity.
- */
+ 
 static int adv748x_csi2_register_link(struct adv748x_csi2 *tx,
 				      struct v4l2_device *v4l2_dev,
 				      struct v4l2_subdev *src,
@@ -57,13 +42,7 @@ static int adv748x_csi2_register_link(struct adv748x_csi2 *tx,
 	return 0;
 }
 
-/* -----------------------------------------------------------------------------
- * v4l2_subdev_internal_ops
- *
- * We use the internal registered operation to be able to ensure that our
- * incremental subdevices (not connected in the forward path) can be registered
- * against the resulting video path and media device.
- */
+ 
 
 static int adv748x_csi2_registered(struct v4l2_subdev *sd)
 {
@@ -74,12 +53,7 @@ static int adv748x_csi2_registered(struct v4l2_subdev *sd)
 	adv_dbg(state, "Registered %s (%s)", is_txa(tx) ? "TXA":"TXB",
 			sd->name);
 
-	/*
-	 * Link TXA to AFE and HDMI, and TXB to AFE only as TXB cannot output
-	 * HDMI.
-	 *
-	 * The HDMI->TXA link is enabled by default, as is the AFE->TXB one.
-	 */
+	 
 	if (is_afe_enabled(state)) {
 		ret = adv748x_csi2_register_link(tx, sd->v4l2_dev,
 						 &state->afe.sd,
@@ -88,12 +62,12 @@ static int adv748x_csi2_registered(struct v4l2_subdev *sd)
 		if (ret)
 			return ret;
 
-		/* TXB can output AFE signals only. */
+		 
 		if (is_txb(tx))
 			state->afe.tx = tx;
 	}
 
-	/* Register link to HDMI for TXA only. */
+	 
 	if (is_txb(tx) || !is_hdmi_enabled(state))
 		return 0;
 
@@ -102,7 +76,7 @@ static int adv748x_csi2_registered(struct v4l2_subdev *sd)
 	if (ret)
 		return ret;
 
-	/* The default HDMI output is TXA. */
+	 
 	state->hdmi.tx = tx;
 
 	return 0;
@@ -112,9 +86,7 @@ static const struct v4l2_subdev_internal_ops adv748x_csi2_internal_ops = {
 	.registered = adv748x_csi2_registered,
 };
 
-/* -----------------------------------------------------------------------------
- * v4l2_subdev_video_ops
- */
+ 
 
 static int adv748x_csi2_s_stream(struct v4l2_subdev *sd, int enable)
 {
@@ -132,12 +104,7 @@ static const struct v4l2_subdev_video_ops adv748x_csi2_video_ops = {
 	.s_stream = adv748x_csi2_s_stream,
 };
 
-/* -----------------------------------------------------------------------------
- * v4l2_subdev_pad_ops
- *
- * The CSI2 bus pads are ignorant to the data sizes or formats.
- * But we must support setting the pad formats for format propagation.
- */
+ 
 
 static struct v4l2_mbus_framefmt *
 adv748x_csi2_get_pad_format(struct v4l2_subdev *sd,
@@ -233,18 +200,14 @@ static const struct v4l2_subdev_pad_ops adv748x_csi2_pad_ops = {
 	.get_mbus_config = adv748x_csi2_get_mbus_config,
 };
 
-/* -----------------------------------------------------------------------------
- * v4l2_subdev_ops
- */
+ 
 
 static const struct v4l2_subdev_ops adv748x_csi2_ops = {
 	.video = &adv748x_csi2_video_ops,
 	.pad = &adv748x_csi2_pad_ops,
 };
 
-/* -----------------------------------------------------------------------------
- * Subdev module and controls
- */
+ 
 
 int adv748x_csi2_set_pixelrate(struct v4l2_subdev *sd, s64 rate)
 {
@@ -300,7 +263,7 @@ int adv748x_csi2_init(struct adv748x_state *state, struct adv748x_csi2 *tx)
 			    MEDIA_ENT_F_VID_IF_BRIDGE,
 			    is_txa(tx) ? "txa" : "txb");
 
-	/* Register internal ops for incremental subdev registration */
+	 
 	tx->sd.internal_ops = &adv748x_csi2_internal_ops;
 
 	tx->pads[ADV748X_CSI2_SINK].flags = MEDIA_PAD_FL_SINK;

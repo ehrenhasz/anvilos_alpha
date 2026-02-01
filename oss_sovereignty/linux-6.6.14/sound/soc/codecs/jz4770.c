@@ -1,9 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Ingenic JZ4770 CODEC driver
-//
-// Copyright (C) 2012, Maarten ter Huurne <maarten@treewalker.org>
-// Copyright (C) 2019, Paul Cercueil <paul@crapouillou.net>
+
+
+
+
+
+
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -21,7 +21,7 @@
 #define ICDC_RGADW_OFFSET		0x00
 #define ICDC_RGDATA_OFFSET		0x04
 
-/* ICDC internal register access control register(RGADW) */
+ 
 #define ICDC_RGADW_RGWR			BIT(16)
 
 #define ICDC_RGADW_RGADDR_OFFSET	8
@@ -30,13 +30,13 @@
 #define ICDC_RGADW_RGDIN_OFFSET		0
 #define	ICDC_RGADW_RGDIN_MASK		GENMASK(7, ICDC_RGADW_RGDIN_OFFSET)
 
-/* ICDC internal register data output register (RGDATA)*/
+ 
 #define ICDC_RGDATA_IRQ			BIT(8)
 
 #define ICDC_RGDATA_RGDOUT_OFFSET	0
 #define ICDC_RGDATA_RGDOUT_MASK		GENMASK(7, ICDC_RGDATA_RGDOUT_OFFSET)
 
-/* Internal register space, accessed through regmap */
+ 
 enum {
 	JZ4770_CODEC_REG_SR,
 	JZ4770_CODEC_REG_AICR_DAC,
@@ -174,7 +174,7 @@ enum {
 
 #define REG_AGC1_EN			BIT(7)
 
-/* codec private data */
+ 
 struct jz_codec {
 	struct device *dev;
 	struct regmap *regmap;
@@ -190,7 +190,7 @@ static int jz4770_codec_set_bias_level(struct snd_soc_component *codec,
 
 	switch (level) {
 	case SND_SOC_BIAS_PREPARE:
-		/* Reset all interrupt flags. */
+		 
 		regmap_write(regmap, JZ4770_CODEC_REG_IFR, REG_IFR_ALL_MASK);
 
 		regmap_clear_bits(regmap, JZ4770_CODEC_REG_CR_VIC,
@@ -219,11 +219,7 @@ static int jz4770_codec_startup(struct snd_pcm_substream *substream,
 	struct snd_soc_component *codec = dai->component;
 	struct snd_soc_dapm_context *dapm = snd_soc_component_get_dapm(codec);
 
-	/*
-	 * SYSCLK output from the codec to the AIC is required to keep the
-	 * DMA transfer going during playback when all audible outputs have
-	 * been disabled.
-	 */
+	 
 	if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK)
 		snd_soc_dapm_force_enable_pin(dapm, "SYSCLK");
 
@@ -258,7 +254,7 @@ static int jz4770_codec_pcm_trigger(struct snd_pcm_substream *substream,
 	case SNDRV_PCM_TRIGGER_STOP:
 	case SNDRV_PCM_TRIGGER_SUSPEND:
 	case SNDRV_PCM_TRIGGER_PAUSE_PUSH:
-		/* do nothing */
+		 
 		break;
 	default:
 		ret = -EINVAL;
@@ -294,7 +290,7 @@ static int jz4770_codec_mute_stream(struct snd_soc_dai *dai, int mute, int direc
 			return err;
 		}
 
-		/* clear GUP/GDO flag */
+		 
 		regmap_set_bits(jz_codec->regmap, JZ4770_CODEC_REG_IFR,
 				gain_bit);
 	}
@@ -302,16 +298,16 @@ static int jz4770_codec_mute_stream(struct snd_soc_dai *dai, int mute, int direc
 	return 0;
 }
 
-/* unit: 0.01dB */
+ 
 static const DECLARE_TLV_DB_MINMAX_MUTE(dac_tlv, -3100, 0);
 static const DECLARE_TLV_DB_SCALE(adc_tlv, 0, 100, 0);
 static const DECLARE_TLV_DB_MINMAX(out_tlv, -2500, 600);
 static const DECLARE_TLV_DB_SCALE(linein_tlv, -2500, 100, 0);
 static const DECLARE_TLV_DB_MINMAX(mixer_tlv, -3100, 0);
 
-/* Unconditional controls. */
+ 
 static const struct snd_kcontrol_new jz4770_codec_snd_controls[] = {
-	/* record gain control */
+	 
 	SOC_DOUBLE_R_TLV("PCM Capture Volume",
 			 JZ4770_CODEC_REG_GCR_ADCL, JZ4770_CODEC_REG_GCR_ADCR,
 			 REG_GCR_ADC_GAIN_OFFSET, REG_GCR_ADC_GAIN_MAX,
@@ -340,11 +336,7 @@ static const struct snd_kcontrol_new jz4770_codec_pcm_playback_controls[] = {
 		.tlv.p = dac_tlv,
 		.get = snd_soc_dapm_get_volsw,
 		.put = snd_soc_dapm_put_volsw,
-		/*
-		 * NOTE: DACR/DACL are inversed; the gain value written to DACR
-		 * seems to affect the left channel, and the gain value written
-		 * to DACL seems to affect the right channel.
-		 */
+		 
 		.private_value = SOC_DOUBLE_R_VALUE(JZ4770_CODEC_REG_GCR_DACR,
 						    JZ4770_CODEC_REG_GCR_DACL,
 						    REG_GCR_GAIN_OFFSET,
@@ -362,7 +354,7 @@ static const struct snd_kcontrol_new jz4770_codec_hp_playback_controls[] = {
 		.tlv.p = out_tlv,
 		.get = snd_soc_dapm_get_volsw,
 		.put = snd_soc_dapm_put_volsw,
-		/* HPR/HPL inversed for the same reason as above */
+		 
 		.private_value = SOC_DOUBLE_R_VALUE(JZ4770_CODEC_REG_GCR_HPR,
 						    JZ4770_CODEC_REG_GCR_HPL,
 						    REG_GCR_GAIN_OFFSET,
@@ -380,13 +372,13 @@ static int hpout_event(struct snd_soc_dapm_widget *w,
 
 	switch (event) {
 	case SND_SOC_DAPM_PRE_PMU:
-		/* unmute HP */
+		 
 		regmap_clear_bits(jz_codec->regmap, JZ4770_CODEC_REG_CR_HP,
 				  REG_CR_HP_MUTE);
 		break;
 
 	case SND_SOC_DAPM_POST_PMU:
-		/* wait for ramp-up complete (RUP) */
+		 
 		err = regmap_read_poll_timeout(jz_codec->regmap,
 					       JZ4770_CODEC_REG_IFR,
 					       val, val & REG_IFR_RUP,
@@ -396,14 +388,14 @@ static int hpout_event(struct snd_soc_dapm_widget *w,
 			return err;
 		}
 
-		/* clear RUP flag */
+		 
 		regmap_set_bits(jz_codec->regmap, JZ4770_CODEC_REG_IFR,
 				REG_IFR_RUP);
 
 		break;
 
 	case SND_SOC_DAPM_POST_PMD:
-		/* mute HP */
+		 
 		regmap_set_bits(jz_codec->regmap, JZ4770_CODEC_REG_CR_HP,
 				REG_CR_HP_MUTE);
 
@@ -416,7 +408,7 @@ static int hpout_event(struct snd_soc_dapm_widget *w,
 			return err;
 		}
 
-		/* clear RDO flag */
+		 
 		regmap_set_bits(jz_codec->regmap, JZ4770_CODEC_REG_IFR,
 				REG_IFR_RDO);
 
@@ -548,7 +540,7 @@ static const struct snd_soc_dapm_widget jz4770_codec_dapm_widgets[] = {
 	SND_SOC_DAPM_OUTPUT("SYSCLK"),
 };
 
-/* Unconditional routes. */
+ 
 static const struct snd_soc_dapm_route jz4770_codec_dapm_routes[] = {
 	{ "Mic 1", NULL, "MIC1P" },
 	{ "Mic Diff", NULL, "MIC1N" },
@@ -602,60 +594,60 @@ static void jz4770_codec_codec_init_regs(struct snd_soc_component *codec)
 	struct jz_codec *jz_codec = snd_soc_component_get_drvdata(codec);
 	struct regmap *regmap = jz_codec->regmap;
 
-	/* Collect updates for later sending. */
+	 
 	regcache_cache_only(regmap, true);
 
-	/* default HP output to PCM */
+	 
 	regmap_set_bits(regmap, JZ4770_CODEC_REG_CR_HP, REG_CR_HP_SEL_MASK);
 
-	/* default line output to PCM */
+	 
 	regmap_set_bits(regmap, JZ4770_CODEC_REG_CR_LO, REG_CR_LO_SEL_MASK);
 
-	/* Disable stereo mic */
+	 
 	regmap_clear_bits(regmap, JZ4770_CODEC_REG_CR_MIC,
 			  BIT(REG_CR_MIC_STEREO_OFFSET));
 
-	/* Set mic 1 as default source for ADC */
+	 
 	regmap_clear_bits(regmap, JZ4770_CODEC_REG_CR_ADC,
 			  REG_CR_ADC_IN_SEL_MASK);
 
-	/* ADC/DAC: serial + i2s */
+	 
 	regmap_set_bits(regmap, JZ4770_CODEC_REG_AICR_ADC,
 			REG_AICR_ADC_SERIAL | REG_AICR_ADC_I2S);
 	regmap_set_bits(regmap, JZ4770_CODEC_REG_AICR_DAC,
 			REG_AICR_DAC_SERIAL | REG_AICR_DAC_I2S);
 
-	/* The generated IRQ is a high level */
+	 
 	regmap_clear_bits(regmap, JZ4770_CODEC_REG_ICR, REG_ICR_INT_FORM_MASK);
 	regmap_update_bits(regmap, JZ4770_CODEC_REG_IMR, REG_IMR_ALL_MASK,
 			   REG_IMR_JACK_MASK | REG_IMR_RUP_MASK |
 			   REG_IMR_RDO_MASK | REG_IMR_GUP_MASK |
 			   REG_IMR_GDO_MASK);
 
-	/* 12M oscillator */
+	 
 	regmap_clear_bits(regmap, JZ4770_CODEC_REG_CCR, REG_CCR_CRYSTAL_MASK);
 
-	/* 0: 16ohm/220uF, 1: 10kohm/1uF */
+	 
 	regmap_clear_bits(regmap, JZ4770_CODEC_REG_CR_HP, REG_CR_HP_LOAD);
 
-	/* disable automatic gain */
+	 
 	regmap_clear_bits(regmap, JZ4770_CODEC_REG_AGC1, REG_AGC1_EN);
 
-	/* Disable DAC lrswap */
+	 
 	regmap_set_bits(regmap, JZ4770_CODEC_REG_CR_DAC, REG_CR_DAC_LRSWAP);
 
-	/* Independent L/R DAC gain control */
+	 
 	regmap_clear_bits(regmap, JZ4770_CODEC_REG_GCR_DACL,
 			  REG_GCR_DACL_RLGOD);
 
-	/* Disable ADC lrswap */
+	 
 	regmap_set_bits(regmap, JZ4770_CODEC_REG_CR_ADC, REG_CR_ADC_LRSWAP);
 
-	/* default to cap-less mode(0) */
+	 
 	regmap_clear_bits(regmap, JZ4770_CODEC_REG_CR_HP,
 			  BIT(REG_CR_HP_SB_HPCM_OFFSET));
 
-	/* Send collected updates. */
+	 
 	regcache_cache_only(regmap, false);
 	regcache_sync(regmap);
 }
@@ -836,7 +828,7 @@ static int jz4770_codec_reg_read(void *context, unsigned int reg,
 	    | (reg << ICDC_RGADW_RGADDR_OFFSET);
 	writel(tmp, codec->base + ICDC_RGADW_OFFSET);
 
-	/* wait 6+ cycles */
+	 
 	for (i = 0; i < 6; i++)
 		*val = readl(codec->base + ICDC_RGDATA_OFFSET) &
 			ICDC_RGDATA_RGDOUT_MASK;
@@ -928,7 +920,7 @@ static int jz4770_codec_probe(struct platform_device *pdev)
 
 static const struct of_device_id jz4770_codec_of_matches[] = {
 	{ .compatible = "ingenic,jz4770-codec", },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, jz4770_codec_of_matches);
 

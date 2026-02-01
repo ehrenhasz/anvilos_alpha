@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Exynos Specific Extensions for Synopsys DW Multimedia Card Interface driver
- *
- * Copyright (C) 2012, Samsung Electronics Co., Ltd.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/platform_device.h>
@@ -19,7 +15,7 @@
 #include "dw_mmc-pltfm.h"
 #include "dw_mmc-exynos.h"
 
-/* Variations in Exynos specific dw-mshc controller */
+ 
 enum dw_mci_exynos_type {
 	DW_MCI_TYPE_EXYNOS4210,
 	DW_MCI_TYPE_EXYNOS4412,
@@ -31,7 +27,7 @@ enum dw_mci_exynos_type {
 	DW_MCI_TYPE_ARTPEC8,
 };
 
-/* Exynos implementation specific driver private data */
+ 
 struct dw_mci_exynos_priv_data {
 	enum dw_mci_exynos_type		ctrl_type;
 	u8				ciu_div;
@@ -96,10 +92,7 @@ static void dw_mci_exynos_config_smu(struct dw_mci *host)
 {
 	struct dw_mci_exynos_priv_data *priv = host->priv;
 
-	/*
-	 * If Exynos is provided the Security management,
-	 * set for non-ecryption mode at this time.
-	 */
+	 
 	if (priv->ctrl_type == DW_MCI_TYPE_EXYNOS5420_SMU ||
 		priv->ctrl_type == DW_MCI_TYPE_EXYNOS7_SMU) {
 		mci_writel(host, MPSBEGIN0, 0);
@@ -128,7 +121,7 @@ static int dw_mci_exynos_priv_init(struct dw_mci *host)
 	}
 
 	if (priv->ctrl_type == DW_MCI_TYPE_ARTPEC8) {
-		/* Quirk needed for the ARTPEC-8 SoC */
+		 
 		host->quirks |= DW_MMC_QUIRK_EXTENDED_TMOUT;
 	}
 
@@ -158,13 +151,7 @@ static void dw_mci_exynos_set_clksel_timing(struct dw_mci *host, u32 timing)
 	else
 		mci_writel(host, CLKSEL, clksel);
 
-	/*
-	 * Exynos4412 and Exynos5250 extends the use of CMD register with the
-	 * use of bit 29 (which is reserved on standard MSHC controllers) for
-	 * optionally bypassing the HOLD register for command and data. The
-	 * HOLD register should be bypassed in case there is no phase shift
-	 * applied on CMD/DATA that is sent to the card.
-	 */
+	 
 	if (!SDMMC_CLKSEL_GET_DRV_WD3(clksel) && host->slot)
 		set_bit(DW_MMC_CARD_NO_USE_HOLD, &host->slot->flags);
 }
@@ -183,33 +170,17 @@ static int dw_mci_exynos_runtime_resume(struct device *dev)
 
 	return ret;
 }
-#endif /* CONFIG_PM */
+#endif  
 
 #ifdef CONFIG_PM_SLEEP
-/**
- * dw_mci_exynos_suspend_noirq - Exynos-specific suspend code
- * @dev: Device to suspend (this device)
- *
- * This ensures that device will be in runtime active state in
- * dw_mci_exynos_resume_noirq after calling pm_runtime_force_resume()
- */
+ 
 static int dw_mci_exynos_suspend_noirq(struct device *dev)
 {
 	pm_runtime_get_noresume(dev);
 	return pm_runtime_force_suspend(dev);
 }
 
-/**
- * dw_mci_exynos_resume_noirq - Exynos-specific resume code
- * @dev: Device to resume (this device)
- *
- * On exynos5420 there is a silicon errata that will sometimes leave the
- * WAKEUP_INT bit in the CLKSEL register asserted.  This bit is 1 to indicate
- * that it fired and we can clear it by writing a 1 back.  Clear it to prevent
- * interrupts from going off constantly.
- *
- * We run this code on all exynos variants because it doesn't hurt.
- */
+ 
 static int dw_mci_exynos_resume_noirq(struct device *dev)
 {
 	struct dw_mci *host = dev_get_drvdata(dev);
@@ -241,17 +212,14 @@ static int dw_mci_exynos_resume_noirq(struct device *dev)
 
 	return 0;
 }
-#endif /* CONFIG_PM_SLEEP */
+#endif  
 
 static void dw_mci_exynos_config_hs400(struct dw_mci *host, u32 timing)
 {
 	struct dw_mci_exynos_priv_data *priv = host->priv;
 	u32 dqs, strobe;
 
-	/*
-	 * Not supported to configure register
-	 * related to HS400
-	 */
+	 
 	if ((priv->ctrl_type < DW_MCI_TYPE_EXYNOS5420) ||
 		(priv->ctrl_type == DW_MCI_TYPE_ARTPEC8)) {
 		if (timing == MMC_TIMING_MMC_HS400)
@@ -282,14 +250,11 @@ static void dw_mci_exynos_adjust_clock(struct dw_mci *host, unsigned int wanted)
 	unsigned long actual;
 	u8 div;
 	int ret;
-	/*
-	 * Don't care if wanted clock is zero or
-	 * ciu clock is unavailable
-	 */
+	 
 	if (!wanted || IS_ERR(host->ciu_clk))
 		return;
 
-	/* Guaranteed minimum frequency for cclkin */
+	 
 	if (wanted < EXYNOS_CCLKIN_MIN)
 		wanted = EXYNOS_CCLKIN_MIN;
 
@@ -316,14 +281,14 @@ static void dw_mci_exynos_set_ios(struct dw_mci *host, struct mmc_ios *ios)
 
 	switch (timing) {
 	case MMC_TIMING_MMC_HS400:
-		/* Update tuned sample timing */
+		 
 		clksel = SDMMC_CLKSEL_UP_SAMPLE(
 				priv->hs400_timing, priv->tuned_sample);
 		wanted <<= 1;
 		break;
 	case MMC_TIMING_MMC_DDR52:
 		clksel = priv->ddr_timing;
-		/* Should be double rate for DDR mode */
+		 
 		if (ios->bus_width == MMC_BUS_WIDTH_8)
 			wanted <<= 1;
 		break;
@@ -340,13 +305,13 @@ static void dw_mci_exynos_set_ios(struct dw_mci *host, struct mmc_ios *ios)
 		clksel = priv->sdr_timing;
 	}
 
-	/* Set clock timing for the requested speed mode*/
+	 
 	dw_mci_exynos_set_clksel_timing(host, clksel);
 
-	/* Configure setting for HS400 */
+	 
 	dw_mci_exynos_config_hs400(host, timing);
 
-	/* Configure clock rate */
+	 
 	dw_mci_exynos_adjust_clock(host, wanted);
 }
 
@@ -484,11 +449,7 @@ static s8 dw_mci_exynos_get_best_clksmpl(u8 candidates)
 		}
 	}
 
-	/*
-	 * If there is no cadiates value, then it needs to return -EIO.
-	 * If there are candidates values and don't find bset clk sample value,
-	 * then use a first candidates clock sample value.
-	 */
+	 
 	for (i = 0; i < iter; i++) {
 		__c = ror8(candidates, i);
 		if ((__c & 0x1) == 0x1) {
@@ -558,21 +519,18 @@ static void dw_mci_exynos_set_data_timeout(struct dw_mci *host,
 	tmp = DIV_ROUND_UP_ULL((u64)timeout_ns * host->bus_hz, NSEC_PER_SEC);
 	tmp = DIV_ROUND_UP_ULL(tmp, clk_div);
 
-	/* TMOUT[7:0] (RESPONSE_TIMEOUT) */
-	tmout = 0xFF; /* Set maximum */
+	 
+	tmout = 0xFF;  
 
-	/*
-	 * Extended HW timer (max = 0x6FFFFF2):
-	 * ((TMOUT[10:8] - 1) * 0xFFFFFF + TMOUT[31:11] * 8)
-	 */
+	 
 	if (!tmp || tmp > 0x6FFFFF2)
 		tmout |= (0xFFFFFF << 8);
 	else {
-		/* TMOUT[10:8] */
+		 
 		tmp2 = (((unsigned int)tmp / 0xFFFFFF) + 1) & 0x7;
 		tmout |= tmp2 << 8;
 
-		/* TMOUT[31:11] */
+		 
 		tmp = tmp - ((tmp2 - 1) * 0xFFFFFF);
 		tmout |= (tmp & 0xFFFFF8) << 8;
 	}
@@ -591,7 +549,7 @@ static u32 dw_mci_exynos_get_drto_clks(struct dw_mci *host)
 	return (((drto_clks & 0x7) - 1) * 0xFFFFFF) + ((drto_clks & 0xFFFFF8));
 }
 
-/* Common capabilities of Exynos4/Exynos5 SoC */
+ 
 static unsigned long exynos_dwmmc_caps[4] = {
 	MMC_CAP_1_8V_DDR | MMC_CAP_8_BIT_DATA,
 	0,

@@ -1,17 +1,4 @@
-/*
- * Intel D82875P Memory Controller kernel module
- * (C) 2003 Linux Networx (http://lnxi.com)
- * This file may be distributed under the terms of the
- * GNU General Public License.
- *
- * Written by Thayne Harbaugh
- * Contributors:
- *	Wang Zhenyu at intel.com
- *
- * $Id: edac_i82875p.c,v 1.5.2.11 2005/10/05 00:43:44 dsp_llnl Exp $
- *
- * Note: E7210 appears same as D82875P - zhenyu.z.wang at intel.com
- */
+ 
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -30,126 +17,40 @@
 
 #ifndef PCI_DEVICE_ID_INTEL_82875_0
 #define PCI_DEVICE_ID_INTEL_82875_0	0x2578
-#endif				/* PCI_DEVICE_ID_INTEL_82875_0 */
+#endif				 
 
 #ifndef PCI_DEVICE_ID_INTEL_82875_6
 #define PCI_DEVICE_ID_INTEL_82875_6	0x257e
-#endif				/* PCI_DEVICE_ID_INTEL_82875_6 */
+#endif				 
 
-/* four csrows in dual channel, eight in single channel */
+ 
 #define I82875P_NR_DIMMS		8
 #define I82875P_NR_CSROWS(nr_chans)	(I82875P_NR_DIMMS / (nr_chans))
 
-/* Intel 82875p register addresses - device 0 function 0 - DRAM Controller */
-#define I82875P_EAP		0x58	/* Error Address Pointer (32b)
-					 *
-					 * 31:12 block address
-					 * 11:0  reserved
-					 */
+ 
+#define I82875P_EAP		0x58	 
 
-#define I82875P_DERRSYN		0x5c	/* DRAM Error Syndrome (8b)
-					 *
-					 *  7:0  DRAM ECC Syndrome
-					 */
+#define I82875P_DERRSYN		0x5c	 
 
-#define I82875P_DES		0x5d	/* DRAM Error Status (8b)
-					 *
-					 *  7:1  reserved
-					 *  0    Error channel 0/1
-					 */
+#define I82875P_DES		0x5d	 
 
-#define I82875P_ERRSTS		0xc8	/* Error Status Register (16b)
-					 *
-					 * 15:10 reserved
-					 *  9    non-DRAM lock error (ndlock)
-					 *  8    Sftwr Generated SMI
-					 *  7    ECC UE
-					 *  6    reserved
-					 *  5    MCH detects unimplemented cycle
-					 *  4    AGP access outside GA
-					 *  3    Invalid AGP access
-					 *  2    Invalid GA translation table
-					 *  1    Unsupported AGP command
-					 *  0    ECC CE
-					 */
+#define I82875P_ERRSTS		0xc8	 
 
-#define I82875P_ERRCMD		0xca	/* Error Command (16b)
-					 *
-					 * 15:10 reserved
-					 *  9    SERR on non-DRAM lock
-					 *  8    SERR on ECC UE
-					 *  7    SERR on ECC CE
-					 *  6    target abort on high exception
-					 *  5    detect unimplemented cyc
-					 *  4    AGP access outside of GA
-					 *  3    SERR on invalid AGP access
-					 *  2    invalid translation table
-					 *  1    SERR on unsupported AGP command
-					 *  0    reserved
-					 */
+#define I82875P_ERRCMD		0xca	 
 
-/* Intel 82875p register addresses - device 6 function 0 - DRAM Controller */
-#define I82875P_PCICMD6		0x04	/* PCI Command Register (16b)
-					 *
-					 * 15:10 reserved
-					 *  9    fast back-to-back - ro 0
-					 *  8    SERR enable - ro 0
-					 *  7    addr/data stepping - ro 0
-					 *  6    parity err enable - ro 0
-					 *  5    VGA palette snoop - ro 0
-					 *  4    mem wr & invalidate - ro 0
-					 *  3    special cycle - ro 0
-					 *  2    bus master - ro 0
-					 *  1    mem access dev6 - 0(dis),1(en)
-					 *  0    IO access dev3 - 0(dis),1(en)
-					 */
+ 
+#define I82875P_PCICMD6		0x04	 
 
-#define I82875P_BAR6		0x10	/* Mem Delays Base ADDR Reg (32b)
-					 *
-					 * 31:12 mem base addr [31:12]
-					 * 11:4  address mask - ro 0
-					 *  3    prefetchable - ro 0(non),1(pre)
-					 *  2:1  mem type - ro 0
-					 *  0    mem space - ro 0
-					 */
+#define I82875P_BAR6		0x10	 
 
-/* Intel 82875p MMIO register space - device 0 function 0 - MMR space */
+ 
 
-#define I82875P_DRB_SHIFT 26	/* 64MiB grain */
-#define I82875P_DRB		0x00	/* DRAM Row Boundary (8b x 8)
-					 *
-					 *  7    reserved
-					 *  6:0  64MiB row boundary addr
-					 */
+#define I82875P_DRB_SHIFT 26	 
+#define I82875P_DRB		0x00	 
 
-#define I82875P_DRA		0x10	/* DRAM Row Attribute (4b x 8)
-					 *
-					 *  7    reserved
-					 *  6:4  row attr row 1
-					 *  3    reserved
-					 *  2:0  row attr row 0
-					 *
-					 * 000 =  4KiB
-					 * 001 =  8KiB
-					 * 010 = 16KiB
-					 * 011 = 32KiB
-					 */
+#define I82875P_DRA		0x10	 
 
-#define I82875P_DRC		0x68	/* DRAM Controller Mode (32b)
-					 *
-					 * 31:30 reserved
-					 * 29    init complete
-					 * 28:23 reserved
-					 * 22:21 nr chan 00=1,01=2
-					 * 20    reserved
-					 * 19:18 Data Integ Mode 00=none,01=ecc
-					 * 17:11 reserved
-					 * 10:8  refresh mode
-					 *  7    reserved
-					 *  6:4  mode select
-					 *  3:2  reserved
-					 *  1:0  DRAM type 01=DDR
-					 */
+#define I82875P_DRC		0x68	 
 
 enum i82875p_chips {
 	I82875P = 0,
@@ -177,9 +78,7 @@ static const struct i82875p_dev_info i82875p_devs[] = {
 		.ctl_name = "i82875p"},
 };
 
-static struct pci_dev *mci_pdev;	/* init dev: in case that AGP code has
-					 * already registered driver
-					 */
+static struct pci_dev *mci_pdev;	 
 
 static struct edac_pci_ctl_info *i82875p_pci;
 
@@ -190,11 +89,7 @@ static void i82875p_get_error_info(struct mem_ctl_info *mci,
 
 	pdev = to_pci_dev(mci->pdev);
 
-	/*
-	 * This is a mess because there is no atomic way to read all the
-	 * registers at once and the registers can transition from CE being
-	 * overwritten by UE.
-	 */
+	 
 	pci_read_config_word(pdev, I82875P_ERRSTS, &info->errsts);
 
 	if (!(info->errsts & 0x0081))
@@ -205,12 +100,7 @@ static void i82875p_get_error_info(struct mem_ctl_info *mci,
 	pci_read_config_byte(pdev, I82875P_DERRSYN, &info->derrsyn);
 	pci_read_config_word(pdev, I82875P_ERRSTS, &info->errsts2);
 
-	/*
-	 * If the error is the same then we can for both reads then
-	 * the first set of reads is valid.  If there is a change then
-	 * there is a CE no info and the second set of reads is valid
-	 * and should be UE info.
-	 */
+	 
 	if ((info->errsts ^ info->errsts2) & 0x0081) {
 		pci_read_config_dword(pdev, I82875P_EAP, &info->eap);
 		pci_read_config_byte(pdev, I82875P_DES, &info->des);
@@ -266,7 +156,7 @@ static void i82875p_check(struct mem_ctl_info *mci)
 	i82875p_process_error_info(mci, &info, 1);
 }
 
-/* Return 0 on success or 1 on failure. */
+ 
 static int i82875p_setup_overfl_dev(struct pci_dev *pdev,
 				struct pci_dev **ovrfl_pdev,
 				void __iomem **ovrfl_window)
@@ -279,11 +169,7 @@ static int i82875p_setup_overfl_dev(struct pci_dev *pdev,
 	dev = pci_get_device(PCI_VEND_DEV(INTEL, 82875_6), NULL);
 
 	if (dev == NULL) {
-		/* Intel tells BIOS developers to hide device 6 which
-		 * configures the overflow device access containing
-		 * the DRBs - this is where we expose device 6.
-		 * http://www.x86-secret.com/articles/tweak/pat/patsecrets-2.htm
-		 */
+		 
 		pci_write_bits8(pdev, 0xf4, 0x2, 0x2);
 		dev = pci_scan_single_device(pdev->bus, PCI_DEVFN(6, 0));
 
@@ -308,7 +194,7 @@ static int i82875p_setup_overfl_dev(struct pci_dev *pdev,
 #endif
 	}
 
-	/* cache is irrelevant for PCI bus reads/writes */
+	 
 	window = pci_ioremap_bar(dev, 0);
 	if (window == NULL) {
 		i82875p_printk(KERN_ERR, "%s(): Failed to ioremap bar6\n",
@@ -326,11 +212,11 @@ fail1:
 fail0:
 	pci_disable_device(dev);
 #endif
-	/* NOTE: the ovrfl proc entry and pci_dev are intentionally left */
+	 
 	return 1;
 }
 
-/* Return 1 if dual channel mode is active.  Else return 0. */
+ 
 static inline int dual_channel_active(u32 drc)
 {
 	return (drc >> 21) & 0x1;
@@ -345,18 +231,14 @@ static void i82875p_init_csrows(struct mem_ctl_info *mci,
 	unsigned nr_chans = dual_channel_active(drc) + 1;
 	unsigned long last_cumul_size;
 	u8 value;
-	u32 drc_ddim;		/* DRAM Data Integrity Mode 0=none,2=edac */
+	u32 drc_ddim;		 
 	u32 cumul_size, nr_pages;
 	int index, j;
 
 	drc_ddim = (drc >> 18) & 0x1;
 	last_cumul_size = 0;
 
-	/* The dram row boundary (DRB) reg values are boundary address
-	 * for each DRAM row with a granularity of 32 or 64MB (single/dual
-	 * channel operation).  DRB regs are cumulative; therefore DRB7 will
-	 * contain the total memory contained in all eight rows.
-	 */
+	 
 
 	for (index = 0; index < mci->nr_csrows; index++) {
 		csrow = mci->csrows[index];
@@ -365,7 +247,7 @@ static void i82875p_init_csrows(struct mem_ctl_info *mci,
 		cumul_size = value << (I82875P_DRB_SHIFT - PAGE_SHIFT);
 		edac_dbg(3, "(%d) cumul_size 0x%x\n", index, cumul_size);
 		if (cumul_size == last_cumul_size)
-			continue;	/* not populated */
+			continue;	 
 
 		csrow->first_page = last_cumul_size;
 		csrow->last_page = cumul_size - 1;
@@ -376,7 +258,7 @@ static void i82875p_init_csrows(struct mem_ctl_info *mci,
 			dimm = csrow->channels[j]->dimm;
 
 			dimm->nr_pages = nr_pages / nr_chans;
-			dimm->grain = 1 << 12;	/* I82875P_EAP has 4KiB reolution */
+			dimm->grain = 1 << 12;	 
 			dimm->mtype = MEM_DDR;
 			dimm->dtype = DEV_UNKNOWN;
 			dimm->edac_mode = drc_ddim ? EDAC_SECDED : EDAC_NONE;
@@ -430,17 +312,15 @@ static int i82875p_probe1(struct pci_dev *pdev, int dev_idx)
 	pvt->ovrfl_pdev = ovrfl_pdev;
 	pvt->ovrfl_window = ovrfl_window;
 	i82875p_init_csrows(mci, pdev, ovrfl_window, drc);
-	i82875p_get_error_info(mci, &discard);	/* clear counters */
+	i82875p_get_error_info(mci, &discard);	 
 
-	/* Here we assume that we will never see multiple instances of this
-	 * type of memory controller.  The ID is therefore hardcoded to 0.
-	 */
+	 
 	if (edac_mc_add_mc(mci)) {
 		edac_dbg(3, "failed edac_mc_add_mc()\n");
 		goto fail1;
 	}
 
-	/* allocating generic PCI control info */
+	 
 	i82875p_pci = edac_pci_create_generic_ctl(&pdev->dev, EDAC_MOD_STR);
 	if (!i82875p_pci) {
 		printk(KERN_WARNING
@@ -451,7 +331,7 @@ static int i82875p_probe1(struct pci_dev *pdev, int dev_idx)
 			__func__);
 	}
 
-	/* get this far and it's successful */
+	 
 	edac_dbg(3, "success\n");
 	return 0;
 
@@ -463,11 +343,11 @@ fail0:
 	pci_release_regions(ovrfl_pdev);
 
 	pci_disable_device(ovrfl_pdev);
-	/* NOTE: the ovrfl proc entry and pci_dev are intentionally left */
+	 
 	return rc;
 }
 
-/* returns count (>= 0), or negative on error */
+ 
 static int i82875p_init_one(struct pci_dev *pdev,
 			    const struct pci_device_id *ent)
 {
@@ -508,7 +388,7 @@ static void i82875p_remove_one(struct pci_dev *pdev)
 	if (pvt->ovrfl_pdev) {
 #ifdef CORRECT_BIOS
 		pci_release_regions(pvt->ovrfl_pdev);
-#endif				/*CORRECT_BIOS */
+#endif				 
 		pci_disable_device(pvt->ovrfl_pdev);
 		pci_dev_put(pvt->ovrfl_pdev);
 	}
@@ -522,7 +402,7 @@ static const struct pci_device_id i82875p_pci_tbl[] = {
 	 I82875P},
 	{
 	 0,
-	 }			/* 0 terminated list. */
+	 }			 
 };
 
 MODULE_DEVICE_TABLE(pci, i82875p_pci_tbl);
@@ -540,7 +420,7 @@ static int __init i82875p_init(void)
 
 	edac_dbg(3, "\n");
 
-       /* Ensure that the OPSTATE is set correctly for POLL or NMI */
+        
        opstate_init();
 
 	pci_rc = pci_register_driver(&i82875p_driver);

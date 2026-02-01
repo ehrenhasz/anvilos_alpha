@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * CrOS Kunit tests utilities.
- */
+
+ 
 
 #include <kunit/test.h>
 

@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Coda multi-standard codec IP
- *
- * Copyright (C) 2012 Vista Silicon S.L.
- *    Javier Martin, <javier.martin@vista-silicon.com>
- *    Xavier Duret
- * Copyright (C) 2012-2014 Philipp Zabel, Pengutronix
- */
+ 
+ 
 
 #ifndef __CODA_H__
 #define __CODA_H__
@@ -29,11 +22,7 @@
 #define CODA_MAX_FRAMEBUFFERS	19
 #define FMO_SLICE_SAVE_BUF_SIZE	(32)
 
-/*
- * This control allows applications to read the per-stream
- * (i.e. per-context) Macroblocks Error Count. This value
- * is CODA specific.
- */
+ 
 #define V4L2_CID_CODA_MB_ERR_CNT (V4L2_CID_USER_CODA_BASE + 0)
 
 enum {
@@ -171,7 +160,7 @@ struct coda_buffer_meta {
 	bool			last;
 };
 
-/* Per-queue, driver-specific private data */
+ 
 struct coda_q_data {
 	unsigned int		width;
 	unsigned int		height;
@@ -285,11 +274,7 @@ struct coda_ctx {
 	bool				use_bit;
 	bool				use_vdoa;
 	struct vdoa_ctx			*vdoa;
-	/*
-	 * wakeup mutex used to serialize encoder stop command and finish_run,
-	 * ensures that finish_run always either flags the last returned buffer
-	 * or wakes up the capture queue to signal EOS afterwards.
-	 */
+	 
 	struct mutex			wakeup_mutex;
 };
 
@@ -344,10 +329,7 @@ static inline unsigned int coda_get_bitstream_payload(struct coda_ctx *ctx)
 	return kfifo_len(&ctx->bitstream_fifo);
 }
 
-/*
- * The bitstream prefetcher needs to read at least 2 256 byte periods past
- * the desired bitstream position for all data to reach the decoder.
- */
+ 
 static inline bool coda_bitstream_can_fetch_past(struct coda_ctx *ctx,
 						 unsigned int pos)
 {
@@ -400,4 +382,4 @@ extern const struct coda_context_ops coda9_jpeg_decode_ops;
 irqreturn_t coda_irq_handler(int irq, void *data);
 irqreturn_t coda9_jpeg_irq_handler(int irq, void *data);
 
-#endif /* __CODA_H__ */
+#endif  

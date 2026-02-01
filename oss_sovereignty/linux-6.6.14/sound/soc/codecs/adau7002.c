@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * ADAU7002 Stereo PDM-to-I2S/TDM converter driver
- *
- * Copyright 2014-2016 Analog Devices
- *  Author: Lars-Peter Clausen <lars@metafoo.de>
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/delay.h>

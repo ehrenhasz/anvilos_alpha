@@ -1,23 +1,12 @@
-// SPDX-License-Identifier: MIT
-/* Copyright (C) 2006-2017 Oracle Corporation */
+
+ 
 
 #include <linux/vbox_err.h>
 #include "vbox_drv.h"
 #include "vboxvideo_guest.h"
 #include "hgsmi_channels.h"
 
-/*
- * There is a hardware ring buffer in the graphics device video RAM, formerly
- * in the VBox VMMDev PCI memory space.
- * All graphics commands go there serialized by vbva_buffer_begin_update.
- * and vbva_buffer_end_update.
- *
- * free_offset is writing position. data_offset is reading position.
- * free_offset == data_offset means buffer is empty.
- * There must be always gap between data_offset and free_offset when data
- * are in the buffer.
- * Guest only changes free_offset, host changes data_offset.
- */
+ 
 
 static u32 vbva_buffer_available(const struct vbva_buffer *vbva)
 {
@@ -35,10 +24,10 @@ static void vbva_buffer_place_data_at(struct vbva_buf_ctx *vbva_ctx,
 	s32 diff = len - bytes_till_boundary;
 
 	if (diff <= 0) {
-		/* Chunk will not cross buffer boundary. */
+		 
 		memcpy(dst, p, len);
 	} else {
-		/* Chunk crosses buffer boundary. */
+		 
 		memcpy(dst, p, bytes_till_boundary);
 		memcpy(&vbva->data[0], (u8 *)p + bytes_till_boundary, diff);
 	}
@@ -175,18 +164,18 @@ bool vbva_buffer_begin_update(struct vbva_buf_ctx *vbva_ctx,
 
 	next = (vbva_ctx->vbva->record_free_index + 1) % VBVA_MAX_RECORDS;
 
-	/* Flush if all slots in the records queue are used */
+	 
 	if (next == vbva_ctx->vbva->record_first_index)
 		vbva_buffer_flush(ctx);
 
-	/* If even after flush there is no place then fail the request */
+	 
 	if (next == vbva_ctx->vbva->record_first_index)
 		return false;
 
 	record = &vbva_ctx->vbva->records[vbva_ctx->vbva->record_free_index];
 	record->len_and_flags = VBVA_F_RECORD_PARTIAL;
 	vbva_ctx->vbva->record_free_index = next;
-	/* Remember which record we are using. */
+	 
 	vbva_ctx->record = record;
 
 	return true;
@@ -199,7 +188,7 @@ void vbva_buffer_end_update(struct vbva_buf_ctx *vbva_ctx)
 	WARN_ON(!vbva_ctx->vbva || !record ||
 		!(record->len_and_flags & VBVA_F_RECORD_PARTIAL));
 
-	/* Mark the record completed. */
+	 
 	record->len_and_flags &= ~VBVA_F_RECORD_PARTIAL;
 
 	vbva_ctx->buffer_overflow = false;

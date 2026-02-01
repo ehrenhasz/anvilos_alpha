@@ -1,17 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * ASIX AX8817X based USB 2.0 Ethernet Devices
- * Copyright (C) 2003-2006 David Hollis <dhollis@davehollis.com>
- * Copyright (C) 2005 Phil Chang <pchang23@sbcglobal.net>
- * Copyright (C) 2006 James Painter <jamie.painter@iname.com>
- * Copyright (c) 2002-2003 TiVo Inc.
- */
+ 
+ 
 
 #ifndef _ASIX_H
 #define _ASIX_H
 
-// #define	DEBUG			// error path messages, extra info
-// #define	VERBOSE			// more; success messages
+
+
 
 #include <linux/module.h>
 #include <linux/kmod.h>
@@ -32,7 +26,7 @@
 #define DRIVER_VERSION "22-Dec-2011"
 #define DRIVER_NAME "asix"
 
-/* ASIX AX8817X based USB 2.0 Ethernet Devices */
+ 
 
 #define AX_CMD_SET_SW_MII		0x06
 #define AX_CMD_READ_MII_REG		0x07
@@ -84,7 +78,7 @@
 #define AX_MONITOR_MAGIC		0x04
 #define AX_MONITOR_HSFS			0x10
 
-/* AX88172 Medium Status Register values */
+ 
 #define AX88172_MEDIUM_FD		0x02
 #define AX88172_MEDIUM_TX		0x04
 #define AX88172_MEDIUM_FC		0x10
@@ -107,7 +101,7 @@
 #define AX88772_IPG1_DEFAULT		0x0c
 #define AX88772_IPG2_DEFAULT		0x12
 
-/* AX88772 & AX88178 Medium Mode Register */
+ 
 #define AX_MEDIUM_PF		0x0080
 #define AX_MEDIUM_JFE		0x0040
 #define AX_MEDIUM_TFC		0x0020
@@ -130,7 +124,7 @@
 	(AX_MEDIUM_FD | AX_MEDIUM_PS | \
 	 AX_MEDIUM_AC | AX_MEDIUM_RE)
 
-/* AX88772 & AX88178 RX_CTL values */
+ 
 #define AX_RX_CTL_SO		0x0080
 #define AX_RX_CTL_AP		0x0020
 #define AX_RX_CTL_AM		0x0010
@@ -145,22 +139,22 @@
 
 #define AX_DEFAULT_RX_CTL	(AX_RX_CTL_SO | AX_RX_CTL_AB)
 
-/* GPIO 0 .. 2 toggles */
-#define AX_GPIO_GPO0EN		0x01	/* GPIO0 Output enable */
-#define AX_GPIO_GPO_0		0x02	/* GPIO0 Output value */
-#define AX_GPIO_GPO1EN		0x04	/* GPIO1 Output enable */
-#define AX_GPIO_GPO_1		0x08	/* GPIO1 Output value */
-#define AX_GPIO_GPO2EN		0x10	/* GPIO2 Output enable */
-#define AX_GPIO_GPO_2		0x20	/* GPIO2 Output value */
-#define AX_GPIO_RESERVED	0x40	/* Reserved */
-#define AX_GPIO_RSE		0x80	/* Reload serial EEPROM */
+ 
+#define AX_GPIO_GPO0EN		0x01	 
+#define AX_GPIO_GPO_0		0x02	 
+#define AX_GPIO_GPO1EN		0x04	 
+#define AX_GPIO_GPO_1		0x08	 
+#define AX_GPIO_GPO2EN		0x10	 
+#define AX_GPIO_GPO_2		0x20	 
+#define AX_GPIO_RESERVED	0x40	 
+#define AX_GPIO_RSE		0x80	 
 
 #define AX_EEPROM_MAGIC		0xdeadbeef
 #define AX_EEPROM_LEN		0x200
 
 #define AX_EMBD_PHY_ADDR	0x10
 
-/* This structure cannot exceed sizeof(unsigned long [5]) AKA 20 bytes */
+ 
 struct asix_data {
 	u8 multi_filter[AX_MCAST_FILTER_SIZE];
 	u8 mac_addr[ETH_ALEN];
@@ -195,8 +189,8 @@ struct asix_common_private {
 
 extern const struct driver_info ax88172a_info;
 
-/* ASIX specific flags */
-#define FLAG_EEPROM_MAC		(1UL << 0)  /* init device MAC from eeprom */
+ 
+#define FLAG_EEPROM_MAC		(1UL << 0)   
 
 int __must_check asix_read_cmd(struct usbnet *dev, u8 cmd, u16 value, u16 index,
 			       u16 size, void *data, int in_pm);
@@ -253,4 +247,4 @@ void asix_get_drvinfo(struct net_device *net, struct ethtool_drvinfo *info);
 
 int asix_set_mac_address(struct net_device *net, void *p);
 
-#endif /* _ASIX_H */
+#endif  

@@ -1,28 +1,4 @@
-/*
- * Copyright © 2006-2011 Intel Corporation
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice (including the next
- * paragraph) shall be included in all copies or substantial portions of the
- * Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
- * DEALINGS IN THE SOFTWARE.
- *
- * Authors:
- *	jim liu <jim.liu@intel.com>
- */
+ 
 
 #include <linux/pm_runtime.h>
 
@@ -38,13 +14,13 @@
 #include "psb_intel_drv.h"
 #include "psb_intel_reg.h"
 
-/* hdmi control bits */
+ 
 #define HDMI_NULL_PACKETS_DURING_VSYNC	(1 << 9)
 #define HDMI_BORDER_ENABLE		(1 << 7)
 #define HDMI_AUDIO_ENABLE		(1 << 6)
 #define HDMI_VSYNC_ACTIVE_HIGH		(1 << 4)
 #define HDMI_HSYNC_ACTIVE_HIGH		(1 << 3)
-/* hdmi-b control bits */
+ 
 #define	HDMIB_PIPE_B_SELECT		(1 << 30)
 
 
@@ -53,7 +29,7 @@ struct mid_intel_hdmi_priv {
 	u32 save_HDMIB;
 	bool has_hdmi_sink;
 	bool has_hdmi_audio;
-	/* Should set this when detect hotplug */
+	 
 	bool hdmi_device_connected;
 	struct drm_device *dev;
 };
@@ -204,9 +180,7 @@ static int cdv_hdmi_set_property(struct drm_connector *connector,
 	return 0;
 }
 
-/*
- * Return the list of HDMI DDC modes if available.
- */
+ 
 static int cdv_hdmi_get_modes(struct drm_connector *connector)
 {
 	struct edid *edid = NULL;
@@ -229,11 +203,11 @@ static enum drm_mode_status cdv_hdmi_mode_valid(struct drm_connector *connector,
 	if (mode->clock < 20000)
 		return MODE_CLOCK_HIGH;
 
-	/* just in case */
+	 
 	if (mode->flags & DRM_MODE_FLAG_DBLSCAN)
 		return MODE_NO_DBLESCAN;
 
-	/* just in case */
+	 
 	if (mode->flags & DRM_MODE_FLAG_INTERLACE)
 		return MODE_NO_INTERLACE;
 

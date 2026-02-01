@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
-/*******************************************************************************
- *
- * Module Name: utresdecode - Resource descriptor keyword strings
- *
- ******************************************************************************/
+
+ 
 
 #include <acpi/acpi.h>
 #include "accommon.h"
@@ -15,10 +11,7 @@ ACPI_MODULE_NAME("utresdecode")
 #if defined (ACPI_DEBUG_OUTPUT) || \
 	defined (ACPI_DISASSEMBLER) || \
 	defined (ACPI_DEBUGGER)
-/*
- * Strings used to decode resource descriptors.
- * Used by both the disassembler and the debugger resource dump routines
- */
+ 
 const char *acpi_gbl_bm_decode[] = {
 	"NotBusMaster",
 	"BusMaster"
@@ -104,8 +97,8 @@ const char *acpi_gbl_rw_decode[] = {
 const char *acpi_gbl_shr_decode[] = {
 	"Exclusive",
 	"Shared",
-	"ExclusiveAndWake",	/* ACPI 5.0 */
-	"SharedAndWake"		/* ACPI 5.0 */
+	"ExclusiveAndWake",	 
+	"SharedAndWake"		 
 };
 
 const char *acpi_gbl_siz_decode[] = {
@@ -155,14 +148,14 @@ const char *acpi_gbl_dts_decode[] = {
 	"Width256bit",
 };
 
-/* GPIO connection type */
+ 
 
 const char *acpi_gbl_ct_decode[] = {
 	"Interrupt",
 	"I/O"
 };
 
-/* Serial bus type */
+ 
 
 const char *acpi_gbl_sbt_decode[] = {
 	"/* UNKNOWN serial bus type */",
@@ -172,56 +165,56 @@ const char *acpi_gbl_sbt_decode[] = {
 	"CSI2"
 };
 
-/* I2C serial bus access mode */
+ 
 
 const char *acpi_gbl_am_decode[] = {
 	"AddressingMode7Bit",
 	"AddressingMode10Bit"
 };
 
-/* I2C serial bus slave mode */
+ 
 
 const char *acpi_gbl_sm_decode[] = {
 	"ControllerInitiated",
 	"DeviceInitiated"
 };
 
-/* SPI serial bus wire mode */
+ 
 
 const char *acpi_gbl_wm_decode[] = {
 	"FourWireMode",
 	"ThreeWireMode"
 };
 
-/* SPI serial clock phase */
+ 
 
 const char *acpi_gbl_cph_decode[] = {
 	"ClockPhaseFirst",
 	"ClockPhaseSecond"
 };
 
-/* SPI serial bus clock polarity */
+ 
 
 const char *acpi_gbl_cpo_decode[] = {
 	"ClockPolarityLow",
 	"ClockPolarityHigh"
 };
 
-/* SPI serial bus device polarity */
+ 
 
 const char *acpi_gbl_dp_decode[] = {
 	"PolarityLow",
 	"PolarityHigh"
 };
 
-/* UART serial bus endian */
+ 
 
 const char *acpi_gbl_ed_decode[] = {
 	"LittleEndian",
 	"BigEndian"
 };
 
-/* UART serial bus bits per byte */
+ 
 
 const char *acpi_gbl_bpb_decode[] = {
 	"DataBitsFive",
@@ -234,7 +227,7 @@ const char *acpi_gbl_bpb_decode[] = {
 	"/* UNKNOWN Bits per byte */"
 };
 
-/* UART serial bus stop bits */
+ 
 
 const char *acpi_gbl_sb_decode[] = {
 	"StopBitsZero",
@@ -243,7 +236,7 @@ const char *acpi_gbl_sb_decode[] = {
 	"StopBitsTwo"
 };
 
-/* UART serial bus flow control */
+ 
 
 const char *acpi_gbl_fc_decode[] = {
 	"FlowControlNone",
@@ -252,7 +245,7 @@ const char *acpi_gbl_fc_decode[] = {
 	"/* UNKNOWN flow control keyword */"
 };
 
-/* UART serial bus parity type */
+ 
 
 const char *acpi_gbl_pt_decode[] = {
 	"ParityTypeNone",
@@ -265,7 +258,7 @@ const char *acpi_gbl_pt_decode[] = {
 	"/* UNKNOWN parity keyword */"
 };
 
-/* pin_config type */
+ 
 
 const char *acpi_gbl_ptyp_decode[] = {
 	"Default",

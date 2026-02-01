@@ -1,36 +1,4 @@
-/*
- * This file is part of the Chelsio FCoE driver for Linux.
- *
- * Copyright (c) 2008-2012 Chelsio Communications, Inc. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 
 #include <linux/string.h>
 #include <scsi/scsi_device.h>
@@ -45,41 +13,41 @@
 static int csio_rnode_init(struct csio_rnode *, struct csio_lnode *);
 static void csio_rnode_exit(struct csio_rnode *);
 
-/* Static machine forward declarations */
+ 
 static void csio_rns_uninit(struct csio_rnode *, enum csio_rn_ev);
 static void csio_rns_ready(struct csio_rnode *, enum csio_rn_ev);
 static void csio_rns_offline(struct csio_rnode *, enum csio_rn_ev);
 static void csio_rns_disappeared(struct csio_rnode *, enum csio_rn_ev);
 
-/* RNF event mapping */
+ 
 static enum csio_rn_ev fwevt_to_rnevt[] = {
-	CSIO_RNFE_NONE,		/* None */
-	CSIO_RNFE_LOGGED_IN,	/* PLOGI_ACC_RCVD  */
-	CSIO_RNFE_NONE,		/* PLOGI_RJT_RCVD  */
-	CSIO_RNFE_PLOGI_RECV,	/* PLOGI_RCVD	   */
-	CSIO_RNFE_LOGO_RECV,	/* PLOGO_RCVD	   */
-	CSIO_RNFE_PRLI_DONE,	/* PRLI_ACC_RCVD   */
-	CSIO_RNFE_NONE,		/* PRLI_RJT_RCVD   */
-	CSIO_RNFE_PRLI_RECV,	/* PRLI_RCVD	   */
-	CSIO_RNFE_PRLO_RECV,	/* PRLO_RCVD	   */
-	CSIO_RNFE_NONE,		/* NPORT_ID_CHGD   */
-	CSIO_RNFE_LOGO_RECV,	/* FLOGO_RCVD	   */
-	CSIO_RNFE_NONE,		/* CLR_VIRT_LNK_RCVD */
-	CSIO_RNFE_LOGGED_IN,	/* FLOGI_ACC_RCVD   */
-	CSIO_RNFE_NONE,		/* FLOGI_RJT_RCVD   */
-	CSIO_RNFE_LOGGED_IN,	/* FDISC_ACC_RCVD   */
-	CSIO_RNFE_NONE,		/* FDISC_RJT_RCVD   */
-	CSIO_RNFE_NONE,		/* FLOGI_TMO_MAX_RETRY */
-	CSIO_RNFE_NONE,		/* IMPL_LOGO_ADISC_ACC */
-	CSIO_RNFE_NONE,		/* IMPL_LOGO_ADISC_RJT */
-	CSIO_RNFE_NONE,		/* IMPL_LOGO_ADISC_CNFLT */
-	CSIO_RNFE_NONE,		/* PRLI_TMO		*/
-	CSIO_RNFE_NONE,		/* ADISC_TMO		*/
-	CSIO_RNFE_NAME_MISSING,	/* RSCN_DEV_LOST  */
-	CSIO_RNFE_NONE,		/* SCR_ACC_RCVD	*/
-	CSIO_RNFE_NONE,		/* ADISC_RJT_RCVD */
-	CSIO_RNFE_NONE,		/* LOGO_SNT */
-	CSIO_RNFE_LOGO_RECV,	/* PROTO_ERR_IMPL_LOGO */
+	CSIO_RNFE_NONE,		 
+	CSIO_RNFE_LOGGED_IN,	 
+	CSIO_RNFE_NONE,		 
+	CSIO_RNFE_PLOGI_RECV,	 
+	CSIO_RNFE_LOGO_RECV,	 
+	CSIO_RNFE_PRLI_DONE,	 
+	CSIO_RNFE_NONE,		 
+	CSIO_RNFE_PRLI_RECV,	 
+	CSIO_RNFE_PRLO_RECV,	 
+	CSIO_RNFE_NONE,		 
+	CSIO_RNFE_LOGO_RECV,	 
+	CSIO_RNFE_NONE,		 
+	CSIO_RNFE_LOGGED_IN,	 
+	CSIO_RNFE_NONE,		 
+	CSIO_RNFE_LOGGED_IN,	 
+	CSIO_RNFE_NONE,		 
+	CSIO_RNFE_NONE,		 
+	CSIO_RNFE_NONE,		 
+	CSIO_RNFE_NONE,		 
+	CSIO_RNFE_NONE,		 
+	CSIO_RNFE_NONE,		 
+	CSIO_RNFE_NONE,		 
+	CSIO_RNFE_NAME_MISSING,	 
+	CSIO_RNFE_NONE,		 
+	CSIO_RNFE_NONE,		 
+	CSIO_RNFE_NONE,		 
+	CSIO_RNFE_LOGO_RECV,	 
 };
 
 #define CSIO_FWE_TO_RNFE(_evt)	((_evt > PROTO_ERR_IMPL_LOGO) ?		\
@@ -109,14 +77,7 @@ csio_is_rnode_wka(uint8_t rport_type)
 	return 0;
 }
 
-/*
- * csio_rn_lookup - Finds the rnode with the given flowid
- * @ln - lnode
- * @flowid - flowid.
- *
- * Does the rnode lookup on the given lnode and flowid.If no matching entry
- * found, NULL is returned.
- */
+ 
 static struct csio_rnode *
 csio_rn_lookup(struct csio_lnode *ln, uint32_t flowid)
 {
@@ -133,14 +94,7 @@ csio_rn_lookup(struct csio_lnode *ln, uint32_t flowid)
 	return NULL;
 }
 
-/*
- * csio_rn_lookup_wwpn - Finds the rnode with the given wwpn
- * @ln: lnode
- * @wwpn: wwpn
- *
- * Does the rnode lookup on the given lnode and wwpn. If no matching entry
- * found, NULL is returned.
- */
+ 
 static struct csio_rnode *
 csio_rn_lookup_wwpn(struct csio_lnode *ln, uint8_t *wwpn)
 {
@@ -157,14 +111,7 @@ csio_rn_lookup_wwpn(struct csio_lnode *ln, uint8_t *wwpn)
 	return NULL;
 }
 
-/**
- * csio_rnode_lookup_portid - Finds the rnode with the given portid
- * @ln:		lnode
- * @portid:	port id
- *
- * Lookup the rnode list for a given portid. If no matching entry
- * found, NULL is returned.
- */
+ 
 struct csio_rnode *
 csio_rnode_lookup_portid(struct csio_lnode *ln, uint32_t portid)
 {
@@ -246,14 +193,7 @@ csio_free_rnode(struct csio_rnode *rn)
 	mempool_free(rn, hw->rnode_mempool);
 }
 
-/*
- * csio_get_rnode - Gets rnode with the given flowid
- * @ln - lnode
- * @flowid - flow id.
- *
- * Does the rnode lookup on the given lnode and flowid. If no matching
- * rnode found, then new rnode with given npid is allocated and returned.
- */
+ 
 static struct csio_rnode *
 csio_get_rnode(struct csio_lnode *ln, uint32_t flowid)
 {
@@ -271,14 +211,7 @@ csio_get_rnode(struct csio_lnode *ln, uint32_t flowid)
 	return rn;
 }
 
-/*
- * csio_put_rnode - Frees the given rnode
- * @ln - lnode
- * @flowid - flow id.
- *
- * Does the rnode lookup on the given lnode and flowid. If no matching
- * rnode found, then new rnode with given npid is allocated and returned.
- */
+ 
 void
 csio_put_rnode(struct csio_lnode *ln, struct csio_rnode *rn)
 {
@@ -286,16 +219,7 @@ csio_put_rnode(struct csio_lnode *ln, struct csio_rnode *rn)
 	csio_free_rnode(rn);
 }
 
-/*
- * csio_confirm_rnode - confirms rnode based on wwpn.
- * @ln: lnode
- * @rdev_flowid: remote device flowid
- * @rdevp: remote device params
- * This routines searches other rnode in list having same wwpn of new rnode.
- * If there is a match, then matched rnode is returned and otherwise new rnode
- * is returned.
- * returns rnode.
- */
+ 
 struct csio_rnode *
 csio_confirm_rnode(struct csio_lnode *ln, uint32_t rdev_flowid,
 		   struct fcoe_rdev_entry *rdevp)
@@ -309,7 +233,7 @@ csio_confirm_rnode(struct csio_lnode *ln, uint32_t rdev_flowid,
 	rport_type =
 		FW_RDEV_WR_RPORT_TYPE_GET(rdevp->rd_xfer_rdy_to_rport_type);
 
-	/* Drop rdev event for cntrl port */
+	 
 	if (rport_type == FAB_CTLR_VNPORT) {
 		csio_ln_dbg(ln,
 			    "Unhandled rport_type:%d recv in rdev evt "
@@ -317,11 +241,11 @@ csio_confirm_rnode(struct csio_lnode *ln, uint32_t rdev_flowid,
 		return NULL;
 	}
 
-	/* Lookup on flowid */
+	 
 	rn = csio_rn_lookup(ln, rdev_flowid);
 	if (!rn) {
 
-		/* Drop events with duplicate flowid */
+		 
 		if (csio_rn_dup_flowid(ln, rdev_flowid, &vnp_flowid)) {
 			csio_ln_warn(ln,
 				     "ssni:%x already active on vnpi:%x",
@@ -329,13 +253,13 @@ csio_confirm_rnode(struct csio_lnode *ln, uint32_t rdev_flowid,
 			return NULL;
 		}
 
-		/* Lookup on wwpn for NPORTs */
+		 
 		rn = csio_rn_lookup_wwpn(ln, rdevp->wwpn);
 		if (!rn)
 			goto alloc_rnode;
 
 	} else {
-		/* Lookup well-known ports with nport id */
+		 
 		if (csio_is_rnode_wka(rport_type)) {
 			match_rn = csio_rnode_lookup_portid(ln,
 				      ((ntohl(*port_id) >> 8) & CSIO_DID_MASK));
@@ -344,11 +268,7 @@ csio_confirm_rnode(struct csio_lnode *ln, uint32_t rdev_flowid,
 				goto alloc_rnode;
 			}
 
-			/*
-			 * Now compare the wwpn to confirm that
-			 * same port relogged in. If so update the matched rn.
-			 * Else, go ahead and alloc a new rnode.
-			 */
+			 
 			if (!memcmp(csio_rn_wwpn(match_rn), rdevp->wwpn, 8)) {
 				if (rn == match_rn)
 					goto found_rnode;
@@ -368,18 +288,18 @@ csio_confirm_rnode(struct csio_lnode *ln, uint32_t rdev_flowid,
 				csio_rn_flowid(rn) = CSIO_INVALID_IDX;
 				rn = match_rn;
 
-				/* Update rn */
+				 
 				goto found_rnode;
 			}
 			csio_rn_flowid(rn) = CSIO_INVALID_IDX;
 			goto alloc_rnode;
 		}
 
-		/* wwpn match */
+		 
 		if (!memcmp(csio_rn_wwpn(rn), rdevp->wwpn, 8))
 			goto found_rnode;
 
-		/* Search for rnode that have same wwpn */
+		 
 		match_rn = csio_rn_lookup_wwpn(ln, rdevp->wwpn);
 		if (match_rn != NULL) {
 			csio_ln_dbg(ln,
@@ -412,10 +332,10 @@ found_rnode:
 	csio_ln_dbg(ln, "found rnode:%p ssni:x%x name(wwpn):%llx\n",
 		rn, rdev_flowid, wwn_to_u64(rdevp->wwpn));
 
-	/* Update flowid */
+	 
 	csio_rn_flowid(rn) = rdev_flowid;
 
-	/* update rdev entry */
+	 
 	rn->rdev_entry = rdevp;
 	CSIO_INC_STATS(ln, n_rnode_match);
 	return rn;
@@ -428,18 +348,12 @@ alloc_rnode:
 	csio_ln_dbg(ln, "alloc rnode:%p ssni:x%x name(wwpn):%llx\n",
 		rn, rdev_flowid, wwn_to_u64(rdevp->wwpn));
 
-	/* update rdev entry */
+	 
 	rn->rdev_entry = rdevp;
 	return rn;
 }
 
-/*
- * csio_rn_verify_rparams - verify rparams.
- * @ln: lnode
- * @rn: rnode
- * @rdevp: remote device params
- * returns success if rparams are verified.
- */
+ 
 static int
 csio_rn_verify_rparams(struct csio_lnode *ln, struct csio_rnode *rn,
 			struct fcoe_rdev_entry *rdevp)
@@ -460,7 +374,7 @@ csio_rn_verify_rparams(struct csio_lnode *ln, struct csio_rnode *rn,
 				csio_rn_flowid(rn));
 			return -EINVAL;
 		}
-		/* NPIV support */
+		 
 		if (FW_RDEV_WR_NPIV_GET(rdevp->vft_to_qos))
 			ln->flags |= CSIO_LNF_NPIVSUPP;
 
@@ -510,7 +424,7 @@ csio_rn_verify_rparams(struct csio_lnode *ln, struct csio_rnode *rn,
 		return -EINVAL;
 	}
 
-	/* validate wwpn/wwnn for Name server/remote port */
+	 
 	if (rport_type == REG_VNPORT || rport_type == NS_VNPORT) {
 		memset(null, 0, 8);
 		if (!memcmp(rdevp->wwnn, null, 8)) {
@@ -533,7 +447,7 @@ csio_rn_verify_rparams(struct csio_lnode *ln, struct csio_rnode *rn,
 
 	}
 
-	/* Copy wwnn, wwpn and nport id */
+	 
 	rn->nport_id = (ntohl(*did) >> 8) & CSIO_DID_MASK;
 	memcpy(csio_rn_wwnn(rn), rdevp->wwnn, 8);
 	memcpy(csio_rn_wwpn(rn), rdevp->wwpn, 8);
@@ -584,22 +498,17 @@ __csio_unreg_rnode(struct csio_rnode *rn)
 	csio_unreg_rnode(rn);
 	spin_lock_irq(&hw->lock);
 
-	/* Cleanup I/Os that were waiting for rnode to unregister */
+	 
 	if (cmpl)
 		csio_scsi_cleanup_io_q(csio_hw_to_scsim(hw), &tmp_q);
 
 }
 
-/*****************************************************************************/
-/* START: Rnode SM                                                           */
-/*****************************************************************************/
+ 
+ 
+ 
 
-/*
- * csio_rns_uninit -
- * @rn - rnode
- * @evt - SM event.
- *
- */
+ 
 static void
 csio_rns_uninit(struct csio_rnode *rn, enum csio_rn_ev evt)
 {
@@ -634,12 +543,7 @@ csio_rns_uninit(struct csio_rnode *rn, enum csio_rn_ev evt)
 	}
 }
 
-/*
- * csio_rns_ready -
- * @rn - rnode
- * @evt - SM event.
- *
- */
+ 
 static void
 csio_rns_ready(struct csio_rnode *rn, enum csio_rn_ev evt)
 {
@@ -671,9 +575,7 @@ csio_rns_ready(struct csio_rnode *rn, enum csio_rn_ev evt)
 		csio_set_state(&rn->sm, csio_rns_offline);
 		__csio_unreg_rnode(rn);
 
-		/* FW expected to internally aborted outstanding SCSI WRs
-		 * and return all SCSI WRs to host with status "ABORTED".
-		 */
+		 
 		break;
 
 	case CSIO_RNFE_LOGO_RECV:
@@ -681,19 +583,11 @@ csio_rns_ready(struct csio_rnode *rn, enum csio_rn_ev evt)
 
 		__csio_unreg_rnode(rn);
 
-		/* FW expected to internally aborted outstanding SCSI WRs
-		 * and return all SCSI WRs to host with status "ABORTED".
-		 */
+		 
 		break;
 
 	case CSIO_RNFE_CLOSE:
-		/*
-		 * Each rnode receives CLOSE event when driver is removed or
-		 * device is reset
-		 * Note: All outstanding IOs on remote port need to returned
-		 * to uppper layer with appropriate error before sending
-		 * CLOSE event
-		 */
+		 
 		csio_set_state(&rn->sm, csio_rns_uninit);
 		__csio_unreg_rnode(rn);
 		break;
@@ -702,10 +596,7 @@ csio_rns_ready(struct csio_rnode *rn, enum csio_rn_ev evt)
 		csio_set_state(&rn->sm, csio_rns_disappeared);
 		__csio_unreg_rnode(rn);
 
-		/*
-		 * FW expected to internally aborted outstanding SCSI WRs
-		 * and return all SCSI WRs to host with status "ABORTED".
-		 */
+		 
 
 		break;
 
@@ -719,12 +610,7 @@ csio_rns_ready(struct csio_rnode *rn, enum csio_rn_ev evt)
 	}
 }
 
-/*
- * csio_rns_offline -
- * @rn - rnode
- * @evt - SM event.
- *
- */
+ 
 static void
 csio_rns_offline(struct csio_rnode *rn, enum csio_rn_ev evt)
 {
@@ -755,12 +641,7 @@ csio_rns_offline(struct csio_rnode *rn, enum csio_rn_ev evt)
 		break;
 
 	case CSIO_RNFE_CLOSE:
-		/* Each rnode receives CLOSE event when driver is removed or
-		 * device is reset
-		 * Note: All outstanding IOs on remote port need to returned
-		 * to uppper layer with appropriate error before sending
-		 * CLOSE event
-		 */
+		 
 		csio_set_state(&rn->sm, csio_rns_uninit);
 		break;
 
@@ -778,12 +659,7 @@ csio_rns_offline(struct csio_rnode *rn, enum csio_rn_ev evt)
 	}
 }
 
-/*
- * csio_rns_disappeared -
- * @rn - rnode
- * @evt - SM event.
- *
- */
+ 
 static void
 csio_rns_disappeared(struct csio_rnode *rn, enum csio_rn_ev evt)
 {
@@ -806,12 +682,7 @@ csio_rns_disappeared(struct csio_rnode *rn, enum csio_rn_ev evt)
 		break;
 
 	case CSIO_RNFE_CLOSE:
-		/* Each rnode receives CLOSE event when driver is removed or
-		 * device is reset.
-		 * Note: All outstanding IOs on remote port need to returned
-		 * to uppper layer with appropriate error before sending
-		 * CLOSE event
-		 */
+		 
 		csio_set_state(&rn->sm, csio_rns_uninit);
 		break;
 
@@ -833,37 +704,28 @@ csio_rns_disappeared(struct csio_rnode *rn, enum csio_rn_ev evt)
 	}
 }
 
-/*****************************************************************************/
-/* END: Rnode SM                                                             */
-/*****************************************************************************/
+ 
+ 
+ 
 
-/*
- * csio_rnode_devloss_handler - Device loss event handler
- * @rn: rnode
- *
- * Post event to close rnode SM and free rnode.
- */
+ 
 void
 csio_rnode_devloss_handler(struct csio_rnode *rn)
 {
 	struct csio_lnode *ln = csio_rnode_to_lnode(rn);
 
-	/* ignore if same rnode came back as online */
+	 
 	if (csio_is_rnode_ready(rn))
 		return;
 
 	csio_post_event(&rn->sm, CSIO_RNFE_CLOSE);
 
-	/* Free rn if in uninit state */
+	 
 	if (csio_is_rnode_uninit(rn))
 		csio_put_rnode(ln, rn);
 }
 
-/**
- * csio_rnode_fwevt_handler - Event handler for firmware rnode events.
- * @rn:		rnode
- * @fwevt:	firmware event to handle
- */
+ 
 void
 csio_rnode_fwevt_handler(struct csio_rnode *rn, uint8_t fwevt)
 {
@@ -879,26 +741,19 @@ csio_rnode_fwevt_handler(struct csio_rnode *rn, uint8_t fwevt)
 	}
 	CSIO_INC_STATS(rn, n_evt_fw[fwevt]);
 
-	/* Track previous & current events for debugging */
+	 
 	rn->prev_evt = rn->cur_evt;
 	rn->cur_evt = fwevt;
 
-	/* Post event to rnode SM */
+	 
 	csio_post_event(&rn->sm, evt);
 
-	/* Free rn if in uninit state */
+	 
 	if (csio_is_rnode_uninit(rn))
 		csio_put_rnode(ln, rn);
 }
 
-/*
- * csio_rnode_init - Initialize rnode.
- * @rn: RNode
- * @ln: Associated lnode
- *
- * Caller is responsible for holding the lock. The lock is required
- * to be held for inserting the rnode in ln->rnhead list.
- */
+ 
 static int
 csio_rnode_init(struct csio_rnode *rn, struct csio_lnode *ln)
 {
@@ -907,7 +762,7 @@ csio_rnode_init(struct csio_rnode *rn, struct csio_lnode *ln)
 	INIT_LIST_HEAD(&rn->host_cmpl_q);
 	csio_rn_flowid(rn) = CSIO_INVALID_IDX;
 
-	/* Add rnode to list of lnodes->rnhead */
+	 
 	list_add_tail(&rn->sm.sm_list, &ln->rnhead);
 
 	return 0;

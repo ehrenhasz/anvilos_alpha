@@ -1,21 +1,4 @@
-/* Work around rename bugs in some systems.
-
-   Copyright (C) 2001-2003, 2005-2006, 2009-2023 Free Software Foundation, Inc.
-
-   This file is free software: you can redistribute it and/or modify
-   it under the terms of the GNU Lesser General Public License as
-   published by the Free Software Foundation; either version 2.1 of the
-   License, or (at your option) any later version.
-
-   This file is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU Lesser General Public License for more details.
-
-   You should have received a copy of the GNU Lesser General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* Written by Volker Borchert, Eric Blake.  */
+ 
 
 #include <config.h>
 
@@ -24,9 +7,7 @@
 #undef rename
 
 #if defined _WIN32 && ! defined __CYGWIN__
-/* The mingw rename has problems with trailing slashes; it also
-   requires use of native Windows calls to allow atomic renames over
-   existing files.  */
+ 
 
 # include <errno.h>
 # include <stdlib.h>
@@ -38,13 +19,11 @@
 
 # include "dirname.h"
 
-/* Don't assume that UNICODE is not defined.  */
+ 
 # undef MoveFileEx
 # define MoveFileEx MoveFileExA
 
-/* Rename the file SRC to DST.  This replacement is necessary on
-   Windows, on which the system rename function will not replace
-   an existing DST.  */
+ 
 int
 rpl_rename (char const *src, char const *dst)
 {
@@ -59,7 +38,7 @@ rpl_rename (char const *src, char const *dst)
   struct stat src_st;
   struct stat dst_st;
 
-  /* Filter out dot as last component.  */
+   
   if (!src_len || !dst_len)
     {
       errno = ENOENT;
@@ -84,11 +63,7 @@ rpl_rename (char const *src, char const *dst)
         }
     }
 
-  /* Presence of a trailing slash requires directory semantics.  If
-     the source does not exist, or if the destination cannot be turned
-     into a directory, give up now.  Otherwise, strip trailing slashes
-     before calling rename.  There are no symlinks on mingw, so stat
-     works instead of lstat.  */
+   
   src_slash = ISSLASH (src[src_len - 1]);
   dst_slash = ISSLASH (dst[dst_len - 1]);
   if (stat (src, &src_st))
@@ -109,16 +84,7 @@ rpl_rename (char const *src, char const *dst)
       dst_exists = true;
     }
 
-  /* There are no symlinks, so if a file existed with a trailing
-     slash, it must be a directory, and we don't have to worry about
-     stripping strip trailing slash.  However, mingw refuses to
-     replace an existing empty directory, so we have to help it out.
-     And canonicalize_file_name is not yet ported to mingw; however,
-     for directories, getcwd works as a viable alternative.  Ensure
-     that we can get back to where we started before using it; later
-     attempts to return are fatal.  Note that we can end up losing a
-     directory if rename then fails, but it was empty, so not much
-     damage was done.  */
+   
   if (dst_exists && S_ISDIR (dst_st.st_mode))
     {
       char *cwd = getcwd (NULL, 0);
@@ -172,15 +138,11 @@ rpl_rename (char const *src, char const *dst)
       free (dst_temp);
     }
 
-  /* MoveFileEx works if SRC is a directory without any flags, but
-     fails with MOVEFILE_REPLACE_EXISTING, so try without flags first.
-     Thankfully, MoveFileEx handles hard links correctly, even though
-     rename() does not.  */
+   
   if (MoveFileEx (src, dst, 0))
     return 0;
 
-  /* Retry with MOVEFILE_REPLACE_EXISTING if the move failed
-     due to the destination already existing.  */
+   
   error = GetLastError ();
   if (error == ERROR_FILE_EXISTS || error == ERROR_ALREADY_EXISTS)
     {
@@ -244,11 +206,11 @@ rpl_rename (char const *src, char const *dst)
 
     case ERROR_INVALID_NAME:
     case ERROR_DELETE_PENDING:
-      errno = EPERM;        /* ? */
+      errno = EPERM;         
       break;
 
 # ifndef ERROR_FILE_TOO_LARGE
-/* This value is documented but not defined in all versions of windows.h.  */
+ 
 #  define ERROR_FILE_TOO_LARGE 223
 # endif
     case ERROR_FILE_TOO_LARGE:
@@ -263,7 +225,7 @@ rpl_rename (char const *src, char const *dst)
   return -1;
 }
 
-#else /* ! W32 platform */
+#else  
 
 # include <errno.h>
 # include <stdio.h>
@@ -275,7 +237,7 @@ rpl_rename (char const *src, char const *dst)
 # include "dirname.h"
 # include "same-inode.h"
 
-/* Rename the file SRC to DST, fixing any trailing slash bugs.  */
+ 
 
 int
 rpl_rename (char const *src, char const *dst)
@@ -293,7 +255,7 @@ rpl_rename (char const *src, char const *dst)
   struct stat dst_st;
 
   if (!src_len || !dst_len)
-    return rename (src, dst); /* Let strace see the ENOENT failure.  */
+    return rename (src, dst);  
 
 # if RENAME_DEST_EXISTS_BUG
   {
@@ -318,23 +280,18 @@ rpl_rename (char const *src, char const *dst)
           }
       }
   }
-# endif /* RENAME_DEST_EXISTS_BUG */
+# endif  
 
   src_slash = src[src_len - 1] == '/';
   dst_slash = dst[dst_len - 1] == '/';
 
 # if !RENAME_HARD_LINK_BUG && !RENAME_DEST_EXISTS_BUG
-  /* If there are no trailing slashes, then trust the native
-     implementation unless we also suspect issues with hard link
-     detection or file/directory conflicts.  */
+   
   if (!src_slash && !dst_slash)
     return rename (src, dst);
-# endif /* !RENAME_HARD_LINK_BUG && !RENAME_DEST_EXISTS_BUG */
+# endif  
 
-  /* Presence of a trailing slash requires directory semantics.  If
-     the source does not exist, or if the destination cannot be turned
-     into a directory, give up now.  Otherwise, strip trailing slashes
-     before calling rename.  */
+   
   if (lstat (src, &src_st))
     return -1;
   if (lstat (dst, &dst_st))
@@ -353,38 +310,19 @@ rpl_rename (char const *src, char const *dst)
 # if RENAME_HARD_LINK_BUG
       if (SAME_INODE (src_st, dst_st))
         return 0;
-# endif /* RENAME_HARD_LINK_BUG */
+# endif  
       dst_exists = true;
     }
 
 # if (RENAME_TRAILING_SLASH_SOURCE_BUG || RENAME_DEST_EXISTS_BUG        \
       || RENAME_HARD_LINK_BUG)
-  /* If the only bug was that a trailing slash was allowed on a
-     nonexistent file destination, as in Solaris 10, then we've
-     already covered that situation.  But if there is any problem with
-     a trailing slash on an existing source or destination, as in
-     Solaris 9, or if a directory can overwrite a symlink, as on
-     Cygwin 1.5, or if directories cannot be created with trailing
-     slash, as on NetBSD 1.6, then we must strip the offending slash
-     and check that we have not encountered a symlink instead of a
-     directory.
-
-     Stripping a trailing slash interferes with POSIX semantics, where
-     rename behavior on a symlink with a trailing slash operates on
-     the corresponding target directory.  We prefer the GNU semantics
-     of rejecting any use of a symlink with trailing slash, but do not
-     enforce them, since Solaris 10 is able to obey POSIX semantics
-     and there might be clients expecting it, as counter-intuitive as
-     those semantics are.
-
-     Technically, we could also follow the POSIX behavior by chasing a
-     readlink trail, but that is harder to implement.  */
+   
   if (src_slash)
     {
       src_temp = strdup (src);
       if (!src_temp)
         {
-          /* Rather than rely on strdup-posix, we set errno ourselves.  */
+           
           rename_errno = ENOMEM;
           goto out;
         }
@@ -417,17 +355,10 @@ rpl_rename (char const *src, char const *dst)
       else if (S_ISLNK (dst_st.st_mode))
         goto out;
     }
-# endif /* RENAME_TRAILING_SLASH_SOURCE_BUG || RENAME_DEST_EXISTS_BUG
-           || RENAME_HARD_LINK_BUG */
+# endif  
 
 # if RENAME_DEST_EXISTS_BUG
-  /* Cygwin 1.5 sometimes behaves oddly when moving a non-empty
-     directory on top of an empty one (the old directory name can
-     reappear if the new directory tree is removed).  Work around this
-     by removing the target first, but don't remove the target if it
-     is a subdirectory of the source.  Note that we can end up losing
-     a directory if rename then fails, but it was empty, so not much
-     damage was done.  */
+   
   if (dst_exists && S_ISDIR (dst_st.st_mode))
     {
       if (src_st.st_dev != dst_st.st_dev)
@@ -459,7 +390,7 @@ rpl_rename (char const *src, char const *dst)
           goto out;
         }
     }
-# endif /* RENAME_DEST_EXISTS_BUG */
+# endif  
 
   ret_val = rename (src_temp, dst_temp);
   rename_errno = errno;
@@ -473,4 +404,4 @@ rpl_rename (char const *src, char const *dst)
   errno = rename_errno;
   return ret_val;
 }
-#endif /* ! W32 platform */
+#endif  

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright © 2020-2021 Intel Corporation
- */
+
+ 
 
 #include "gt/intel_migrate.h"
 #include "gt/intel_gpu_commands.h"
@@ -56,7 +54,7 @@ static int igt_create_migrate(struct intel_gt *gt, enum intel_region_id src,
 	GEM_BUG_ON(!src_mr);
 	GEM_BUG_ON(!dst_mr);
 
-	/* Switch object backing-store on create */
+	 
 	obj = i915_gem_object_create_region(src_mr, dst_mr->min_page_size, 0, 0);
 	if (IS_ERR(obj))
 		return PTR_ERR(obj);
@@ -133,10 +131,7 @@ static int lmem_pages_migrate_one(struct i915_gem_ww_ctx *ww,
 		i915_vma_unpin(vma);
 	}
 
-	/*
-	 * Migration will implicitly unbind (asynchronously) any bound
-	 * vmas.
-	 */
+	 
 	if (i915_gem_object_is_lmem(obj)) {
 		err = i915_gem_object_migrate(obj, ww, INTEL_REGION_SMEM);
 		if (err) {
@@ -194,7 +189,7 @@ static int __igt_lmem_pages_migrate(struct intel_gt *gt,
 	int err;
 	int i;
 
-	/* From LMEM to shmem and back again */
+	 
 
 	obj = i915_gem_object_create_lmem(i915, SZ_2M, 0);
 	if (IS_ERR(obj))
@@ -208,7 +203,7 @@ static int __igt_lmem_pages_migrate(struct intel_gt *gt,
 		}
 	}
 
-	/* Initial GPU fill, sync, CPU initialization. */
+	 
 	for_i915_gem_ww(&ww, err, true) {
 		err = i915_gem_object_lock(obj, &ww);
 		if (err)
@@ -241,10 +236,7 @@ static int __igt_lmem_pages_migrate(struct intel_gt *gt,
 	if (err)
 		goto out_put;
 
-	/*
-	 * Migrate to and from smem without explicitly syncing.
-	 * Finalize with data in smem for fast readout.
-	 */
+	 
 	for (i = 1; i <= 5; ++i) {
 		for_i915_gem_ww(&ww, err, true)
 			err = lmem_pages_migrate_one(&ww, obj, vma,
@@ -266,7 +258,7 @@ static int __igt_lmem_pages_migrate(struct intel_gt *gt,
 		igt_spinner_end(spin);
 	}
 
-	/* Finally sync migration and check content. */
+	 
 	err = i915_gem_object_wait_migration(obj, true);
 	if (err)
 		goto out_unlock;
@@ -356,18 +348,7 @@ out_err:
 	return ret;
 }
 
-/*
- * This subtest tests that unbinding at migration is indeed performed
- * async. We launch a spinner and a number of migrations depending on
- * that spinner to have terminated. Before each migration we bind a
- * vma, which should then be async unbound by the migration operation.
- * If we are able to schedule migrations without blocking while the
- * spinner is still running, those unbinds are indeed async and non-
- * blocking.
- *
- * Note that each async bind operation is awaiting the previous migration
- * due to the moving fence resulting from the migration.
- */
+ 
 static int igt_async_migrate(struct intel_gt *gt)
 {
 	struct intel_engine_cs *engine;
@@ -400,14 +381,7 @@ static int igt_async_migrate(struct intel_gt *gt)
 			goto out_ce;
 		}
 
-		/*
-		 * Use MI_NOOP, making the spinner non-preemptible. If there
-		 * is a code path where we fail async operation due to the
-		 * running spinner, we will block and fail to end the
-		 * spinner resulting in a deadlock. But with a non-
-		 * preemptible spinner, hangcheck will terminate the spinner
-		 * for us, and we will later detect that and fail the test.
-		 */
+		 
 		rq = igt_spinner_create_request(&spin, ce, MI_NOOP);
 		intel_context_put(ce);
 		if (IS_ERR(rq)) {
@@ -438,12 +412,7 @@ out_spin:
 	return err;
 }
 
-/*
- * Setting ASYNC_FAIL_ALLOC to 2 will simulate memory allocation failure while
- * arming the migration error check and block async migration. This
- * will cause us to deadlock and hangcheck will terminate the spinner
- * causing the test to fail.
- */
+ 
 #define ASYNC_FAIL_ALLOC 1
 static int igt_lmem_async_migrate(void *arg)
 {

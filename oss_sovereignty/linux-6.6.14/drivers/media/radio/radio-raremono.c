@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright 2013 Cisco Systems, Inc. and/or its affiliates. All rights reserved.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -18,47 +16,29 @@
 #include <media/v4l2-ctrls.h>
 #include <media/v4l2-event.h>
 
-/*
- * 'Thanko's Raremono' is a Japanese si4734-based AM/FM/SW USB receiver:
- *
- * http://www.raremono.jp/product/484.html/
- *
- * The USB protocol has been reversed engineered using wireshark, initially
- * by Dinesh Ram <dinesh.ram@cern.ch> and finished by Hans Verkuil
- * <hverkuil@xs4all.nl>.
- *
- * Sadly the firmware used in this product hides lots of goodies since the
- * si4734 has more features than are supported by the firmware. Oh well...
- */
+ 
 
-/* driver and module definitions */
+ 
 MODULE_AUTHOR("Hans Verkuil <hverkuil@xs4all.nl>");
 MODULE_DESCRIPTION("Thanko's Raremono AM/FM/SW Receiver USB driver");
 MODULE_LICENSE("GPL v2");
 
-/*
- * The Device announces itself as Cygnal Integrated Products, Inc.
- *
- * The vendor and product IDs (and in fact all other lsusb information as
- * well) are identical to the si470x Silicon Labs USB FM Radio Reference
- * Design board, even though this card has a si4734 device. Clearly the
- * designer of this product never bothered to change the USB IDs.
- */
+ 
 
-/* USB Device ID List */
+ 
 static const struct usb_device_id usb_raremono_device_table[] = {
 	{USB_DEVICE_AND_INTERFACE_INFO(0x10c4, 0x818a, USB_CLASS_HID, 0, 0) },
-	{ }						/* Terminating entry */
+	{ }						 
 };
 
 MODULE_DEVICE_TABLE(usb, usb_raremono_device_table);
 
 #define BUFFER_LENGTH 64
 
-/* Timeout is set to a high value, could probably be reduced. Need more tests */
+ 
 #define USB_TIMEOUT 10000
 
-/* Frequency limits in KHz */
+ 
 #define FM_FREQ_RANGE_LOW	64000
 #define FM_FREQ_RANGE_HIGH	108000
 
@@ -71,7 +51,7 @@ MODULE_DEVICE_TABLE(usb, usb_raremono_device_table);
 enum { BAND_FM, BAND_AM, BAND_SW };
 
 static const struct v4l2_frequency_band bands[] = {
-	/* Band FM */
+	 
 	{
 		.type = V4L2_TUNER_RADIO,
 		.index = 0,
@@ -81,7 +61,7 @@ static const struct v4l2_frequency_band bands[] = {
 		.rangehigh  = FM_FREQ_RANGE_HIGH * 16,
 		.modulation = V4L2_BAND_MODULATION_FM,
 	},
-	/* Band AM */
+	 
 	{
 		.type = V4L2_TUNER_RADIO,
 		.index = 1,
@@ -90,7 +70,7 @@ static const struct v4l2_frequency_band bands[] = {
 		.rangehigh  = AM_FREQ_RANGE_HIGH * 16,
 		.modulation = V4L2_BAND_MODULATION_AM,
 	},
-	/* Band SW */
+	 
 	{
 		.type = V4L2_TUNER_RADIO,
 		.index = 2,
@@ -118,7 +98,7 @@ static inline struct raremono_device *to_raremono_dev(struct v4l2_device *v4l2_d
 	return container_of(v4l2_dev, struct raremono_device, v4l2_dev);
 }
 
-/* Set frequency. */
+ 
 static int raremono_cmd_main(struct raremono_device *radio, unsigned band, unsigned freq)
 {
 	unsigned band_offset;
@@ -154,11 +134,7 @@ static int raremono_cmd_main(struct raremono_device *radio, unsigned band, unsig
 	return 0;
 }
 
-/* Handle unplugging the device.
- * We call video_unregister_device in any case.
- * The last function called in this procedure is
- * usb_raremono_device_release.
- */
+ 
 static void usb_raremono_disconnect(struct usb_interface *intf)
 {
 	struct raremono_device *radio = to_raremono_dev(usb_get_intfdata(intf));
@@ -173,9 +149,7 @@ static void usb_raremono_disconnect(struct usb_interface *intf)
 	v4l2_device_put(&radio->v4l2_dev);
 }
 
-/*
- * Linux Video interface
- */
+ 
 static int vidioc_querycap(struct file *file, void *priv,
 					struct v4l2_capability *v)
 {
@@ -277,7 +251,7 @@ static void raremono_device_release(struct v4l2_device *v4l2_dev)
 	kfree(radio);
 }
 
-/* File system interface */
+ 
 static const struct v4l2_file_operations usb_raremono_fops = {
 	.owner		= THIS_MODULE,
 	.open           = v4l2_fh_open,
@@ -294,7 +268,7 @@ static const struct v4l2_ioctl_ops usb_raremono_ioctl_ops = {
 	.vidioc_enum_freq_bands = vidioc_enum_freq_bands,
 };
 
-/* check if the device is present and register with v4l and usb if it is */
+ 
 static int usb_raremono_probe(struct usb_interface *intf,
 				const struct usb_device_id *id)
 {
@@ -313,15 +287,7 @@ static int usb_raremono_probe(struct usb_interface *intf,
 	radio->usbdev = interface_to_usbdev(intf);
 	radio->intf = intf;
 
-	/*
-	 * This device uses the same USB IDs as the si470x SiLabs reference
-	 * design. So do an additional check: attempt to read the device ID
-	 * from the si470x: the lower 12 bits are 0x0242 for the si470x. The
-	 * Raremono always returns 0x0800 (the meaning of that is unknown, but
-	 * at least it works).
-	 *
-	 * We use this check to determine which device we are dealing with.
-	 */
+	 
 	msleep(20);
 	retval = usb_control_msg(radio->usbdev,
 		usb_rcvctrlpipe(radio->usbdev, 0),
@@ -378,7 +344,7 @@ free_mem:
 	return retval;
 }
 
-/* USB subsystem interface */
+ 
 static struct usb_driver usb_raremono_driver = {
 	.name			= "radio-raremono",
 	.probe			= usb_raremono_probe,

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Hash Info: Hash algorithms information
- *
- * Copyright (c) 2013 Dmitry Kasatkin <d.kasatkin@samsung.com>
- */
+
+ 
 
 #include <linux/export.h>
 #include <crypto/hash_info.h>

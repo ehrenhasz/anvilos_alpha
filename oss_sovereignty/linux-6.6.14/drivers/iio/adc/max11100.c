@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * iio/adc/max11100.c
- * Maxim max11100 ADC Driver with IIO interface
- *
- * Copyright (C) 2016-17 Renesas Electronics Corporation
- * Copyright (C) 2016-17 Jacopo Mondi
- */
+
+ 
 #include <linux/delay.h>
 #include <linux/kernel.h>
 #include <linux/mod_devicetable.h>
@@ -17,30 +11,19 @@
 #include <linux/iio/iio.h>
 #include <linux/iio/driver.h>
 
-/*
- * LSB is the ADC single digital step
- * 1 LSB = (vref_mv / 2 ^ 16)
- *
- * LSB is used to calculate analog voltage value
- * from the number of ADC steps count
- *
- * Ain = (count * LSB)
- */
+ 
 #define MAX11100_LSB_DIV		(1 << 16)
 
 struct max11100_state {
 	struct regulator *vref_reg;
 	struct spi_device *spi;
 
-	/*
-	 * DMA (thus cache coherency maintenance) may require the
-	 * transfer buffers to live in their own cache lines.
-	 */
+	 
 	u8 buffer[3] __aligned(IIO_DMA_MINALIGN);
 };
 
 static const struct iio_chan_spec max11100_channels[] = {
-	{ /* [0] */
+	{  
 		.type = IIO_VOLTAGE,
 		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
 				      BIT(IIO_CHAN_INFO_SCALE),
@@ -58,7 +41,7 @@ static int max11100_read_single(struct iio_dev *indio_dev, int *val)
 		return ret;
 	}
 
-	/* the first 8 bits sent out from ADC must be 0s */
+	 
 	if (state->buffer[0]) {
 		dev_err(&indio_dev->dev, "Invalid value: buffer[0] != 0\n");
 		return -EINVAL;
@@ -87,7 +70,7 @@ static int max11100_read_raw(struct iio_dev *indio_dev,
 	case IIO_CHAN_INFO_SCALE:
 		vref_uv = regulator_get_voltage(state->vref_reg);
 		if (vref_uv < 0)
-			/* dummy regulator "get_voltage" returns -EINVAL */
+			 
 			return -EINVAL;
 
 		*val =  vref_uv / 1000;

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2011 matt mooney <mfm@muteddisk.com>
- *               2005-2007 Takahiro Hirofuchi
- */
+
+ 
 
 #include <libudev.h>
 
@@ -41,24 +38,24 @@ static int unbind_device(char *busid)
 	struct udev_device *dev;
 	const char *driver;
 
-	/* Create libudev context. */
+	 
 	udev = udev_new();
 
-	/* Check whether the device with this bus ID exists. */
+	 
 	dev = udev_device_new_from_subsystem_sysname(udev, "usb", busid);
 	if (!dev) {
 		err("device with the specified bus ID does not exist");
 		goto err_close_udev;
 	}
 
-	/* Check whether the device is using usbip-host driver. */
+	 
 	driver = udev_device_get_driver(dev);
 	if (!driver || strcmp(driver, "usbip-host")) {
 		err("device is not bound to usbip-host driver");
 		goto err_close_udev;
 	}
 
-	/* Unbind device from driver. */
+	 
 	snprintf(unbind_attr_path, sizeof(unbind_attr_path), "%s/%s/%s/%s/%s/%s",
 		 SYSFS_MNT_PATH, SYSFS_BUS_NAME, bus_type, SYSFS_DRIVERS_NAME,
 		 USBIP_HOST_DRV_NAME, unbind_attr_name);
@@ -69,14 +66,14 @@ static int unbind_device(char *busid)
 		goto err_close_udev;
 	}
 
-	/* Notify driver of unbind. */
+	 
 	rc = modify_match_busid(busid, 0);
 	if (rc < 0) {
 		err("unable to unbind device on %s", busid);
 		goto err_close_udev;
 	}
 
-	/* Trigger new probing. */
+	 
 	snprintf(rebind_attr_path, sizeof(unbind_attr_path), "%s/%s/%s/%s/%s/%s",
 			SYSFS_MNT_PATH, SYSFS_BUS_NAME, bus_type, SYSFS_DRIVERS_NAME,
 			USBIP_HOST_DRV_NAME, rebind_attr_name);

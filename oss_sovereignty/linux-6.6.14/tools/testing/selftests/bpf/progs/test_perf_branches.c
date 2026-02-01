@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2019 Facebook
+
+
 
 #include <stddef.h>
 #include <linux/ptrace.h>
@@ -24,18 +24,18 @@ int perf_branches(void *ctx)
 	__u64 entries[4 * 3] = {0};
 	int required_size, written_stack, written_global;
 
-	/* write to stack */
+	 
 	written_stack = bpf_read_branch_records(ctx, entries, sizeof(entries), 0);
-	/* ignore spurious events */
+	 
 	if (!written_stack)
 		return 1;
 
-	/* get required size */
+	 
 	required_size = bpf_read_branch_records(ctx, NULL, 0,
 						BPF_F_GET_BRANCH_RECORDS_SIZE);
 
 	written_global = bpf_read_branch_records(ctx, fpbe, sizeof(fpbe), 0);
-	/* ignore spurious events */
+	 
 	if (!written_global)
 		return 1;
 

@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * R-Car Display Unit DRM driver
- *
- * Copyright (C) 2013-2015 Renesas Electronics Corporation
- *
- * Contact: Laurent Pinchart (laurent.pinchart@ideasonboard.com)
- */
+ 
+ 
 
 #ifndef __RCAR_DU_DRV_H__
 #define __RCAR_DU_DRV_H__
@@ -26,14 +20,14 @@ struct drm_bridge;
 struct drm_property;
 struct rcar_du_device;
 
-#define RCAR_DU_FEATURE_CRTC_IRQ	BIT(0)	/* Per-CRTC IRQ */
-#define RCAR_DU_FEATURE_CRTC_CLOCK	BIT(1)	/* Per-CRTC clock */
-#define RCAR_DU_FEATURE_VSP1_SOURCE	BIT(2)	/* Has inputs from VSP1 */
-#define RCAR_DU_FEATURE_INTERLACED	BIT(3)	/* HW supports interlaced */
-#define RCAR_DU_FEATURE_TVM_SYNC	BIT(4)	/* Has TV switch/sync modes */
-#define RCAR_DU_FEATURE_NO_BLENDING	BIT(5)	/* PnMR.SPIM does not have ALP nor EOR bits */
+#define RCAR_DU_FEATURE_CRTC_IRQ	BIT(0)	 
+#define RCAR_DU_FEATURE_CRTC_CLOCK	BIT(1)	 
+#define RCAR_DU_FEATURE_VSP1_SOURCE	BIT(2)	 
+#define RCAR_DU_FEATURE_INTERLACED	BIT(3)	 
+#define RCAR_DU_FEATURE_TVM_SYNC	BIT(4)	 
+#define RCAR_DU_FEATURE_NO_BLENDING	BIT(5)	 
 
-#define RCAR_DU_QUIRK_ALIGN_128B	BIT(0)	/* Align pitches to 128 bytes */
+#define RCAR_DU_QUIRK_ALIGN_128B	BIT(0)	 
 
 enum rcar_du_output {
 	RCAR_DU_OUTPUT_DPAD0,
@@ -48,33 +42,13 @@ enum rcar_du_output {
 	RCAR_DU_OUTPUT_MAX,
 };
 
-/*
- * struct rcar_du_output_routing - Output routing specification
- * @possible_crtcs: bitmask of possible CRTCs for the output
- * @port: device tree port number corresponding to this output route
- *
- * The DU has 5 possible outputs (DPAD0/1, LVDS0/1, TCON). Output routing data
- * specify the valid SoC outputs, which CRTCs can drive the output, and the type
- * of in-SoC encoder for the output.
- */
+ 
 struct rcar_du_output_routing {
 	unsigned int possible_crtcs;
 	unsigned int port;
 };
 
-/*
- * struct rcar_du_device_info - DU model-specific information
- * @gen: device generation (2 or 3)
- * @features: device features (RCAR_DU_FEATURE_*)
- * @quirks: device quirks (RCAR_DU_QUIRK_*)
- * @channels_mask: bit mask of available DU channels
- * @routes: array of CRTC to output routes, indexed by output (RCAR_DU_OUTPUT_*)
- * @num_lvds: number of internal LVDS encoders
- * @num_rpf: number of RPFs in VSP
- * @dpll_mask: bit mask of DU channels equipped with a DPLL
- * @dsi_clk_mask: bitmask of channels that can use the DSI clock as dot clock
- * @lvds_clk_mask: bitmask of channels that can use the LVDS clock as dot clock
- */
+ 
 struct rcar_du_device_info {
 	unsigned int gen;
 	unsigned int features;
@@ -149,4 +123,4 @@ static inline void rcar_du_write(struct rcar_du_device *rcdu, u32 reg, u32 data)
 
 const char *rcar_du_output_name(enum rcar_du_output output);
 
-#endif /* __RCAR_DU_DRV_H__ */
+#endif  

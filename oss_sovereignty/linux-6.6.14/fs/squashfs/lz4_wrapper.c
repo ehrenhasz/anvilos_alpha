@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2013, 2014
- * Phillip Lougher <phillip@squashfs.org.uk>
- */
+
+ 
 
 #include <linux/bio.h>
 #include <linux/mutex.h>
@@ -34,13 +31,12 @@ static void *lz4_comp_opts(struct squashfs_sb_info *msblk,
 {
 	struct lz4_comp_opts *comp_opts = buff;
 
-	/* LZ4 compressed filesystems always have compression options */
+	 
 	if (comp_opts == NULL || len < sizeof(*comp_opts))
 		return ERR_PTR(-EIO);
 
 	if (le32_to_cpu(comp_opts->version) != LZ4_LEGACY) {
-		/* LZ4 format currently used by the kernel is the 'legacy'
-		 * format */
+		 
 		ERROR("Unknown LZ4 version\n");
 		return ERR_PTR(-EINVAL);
 	}

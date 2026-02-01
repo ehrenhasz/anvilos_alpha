@@ -1,15 +1,15 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// LED Kernel Transient Trigger
-//
-// Transient trigger allows one shot timer activation. Please refer to
-// Documentation/leds/ledtrig-transient.rst for details
-// Copyright (C) 2012 Shuah Khan <shuahkhan@gmail.com>
-//
-// Based on Richard Purdie's ledtrig-timer.c and Atsushi Nemoto's
-// ledtrig-heartbeat.c
-// Design and use-case input from Jonas Bonn <jonas@southpole.se> and
-// Neil Brown <neilb@suse.de>
+
+
+
+
+
+
+
+
+
+
+
+
 
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -64,7 +64,7 @@ static ssize_t transient_activate_store(struct device *dev,
 	if (state != 1 && state != 0)
 		return -EINVAL;
 
-	/* cancel the running timer */
+	 
 	if (state == 0 && transient_data->activate == 1) {
 		del_timer(&transient_data->timer);
 		transient_data->activate = state;
@@ -73,7 +73,7 @@ static ssize_t transient_activate_store(struct device *dev,
 		return size;
 	}
 
-	/* start timer if there is no active timer */
+	 
 	if (state == 1 && transient_data->activate == 0 &&
 	    transient_data->duration != 0) {
 		transient_data->activate = state;
@@ -84,10 +84,8 @@ static ssize_t transient_activate_store(struct device *dev,
 			  jiffies + msecs_to_jiffies(transient_data->duration));
 	}
 
-	/* state == 0 && transient_data->activate == 0
-		timer is not active - just return */
-	/* state == 1 && transient_data->activate == 1
-		timer is already active - just return */
+	 
+	 
 
 	return size;
 }

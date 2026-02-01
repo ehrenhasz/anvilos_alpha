@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * NVMe Over Fabrics Target File I/O commands implementation.
- * Copyright (c) 2017-2018 Western Digital Corporation or its
- * affiliates.
- */
+
+ 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 #include <linux/uio.h>
 #include <linux/falloc.h>
@@ -49,10 +45,7 @@ int nvmet_file_ns_enable(struct nvmet_ns *ns)
 
 	nvmet_file_ns_revalidate(ns);
 
-	/*
-	 * i_blkbits can be greater than the universally accepted upper bound,
-	 * so make sure we export a sane namespace lba_shift.
-	 */
+	 
 	ns->blksize_shift = min_t(u8,
 			file_inode(ns->file)->i_blkbits, 12);
 
@@ -170,10 +163,7 @@ static bool nvmet_file_execute_io(struct nvmet_req *req, int ki_flags)
 		goto complete;
 	}
 
-	/*
-	 * A NULL ki_complete ask for synchronous execution, which we want
-	 * for the IOCB_NOWAIT case.
-	 */
+	 
 	if (!(ki_flags & IOCB_NOWAIT))
 		req->f.iocb.ki_complete = nvmet_file_io_done;
 
@@ -187,11 +177,7 @@ static bool nvmet_file_execute_io(struct nvmet_req *req, int ki_flags)
 			goto complete;
 		return false;
 	case -EOPNOTSUPP:
-		/*
-		 * For file systems returning error -EOPNOTSUPP, handle
-		 * IOCB_NOWAIT error case separately and retry without
-		 * IOCB_NOWAIT.
-		 */
+		 
 		if ((ki_flags & IOCB_NOWAIT))
 			return false;
 		break;
@@ -234,7 +220,7 @@ static void nvmet_file_execute_rw(struct nvmet_req *req)
 		req->f.bvec = req->inline_bvec;
 
 	if (unlikely(!req->f.bvec)) {
-		/* fallback under memory pressure */
+		 
 		req->f.bvec = mempool_alloc(req->ns->bvec_pool, GFP_KERNEL);
 		req->f.mpool_alloc = true;
 	} else
@@ -316,7 +302,7 @@ static void nvmet_file_dsm_work(struct work_struct *w)
 	case NVME_DSMGMT_IDR:
 	case NVME_DSMGMT_IDW:
 	default:
-		/* Not supported yet */
+		 
 		nvmet_req_complete(req, 0);
 		return;
 	}

@@ -5,14 +5,7 @@
 # error "please don't include this file directly"
 #endif
 
-/*
- * rwlock related methods
- *
- * split out from spinlock.h
- *
- * portions Copyright 2005, Red Hat, Inc., Ingo Molnar
- * Released under the General Public License (GPL).
- */
+ 
 
 #ifdef CONFIG_DEBUG_SPINLOCK
   extern void __rwlock_init(rwlock_t *lock, const char *name,
@@ -44,11 +37,7 @@ do {								\
 # define do_raw_write_unlock(rwlock)	do {arch_write_unlock(&(rwlock)->raw_lock); __release(lock); } while (0)
 #endif
 
-/*
- * Define the various rw_lock methods.  Note we define these
- * regardless of whether CONFIG_SMP or CONFIG_PREEMPT are set. The various
- * methods are defined as nops in the case they are not required.
- */
+ 
 #define read_trylock(lock)	__cond_lock(lock, _raw_read_trylock(lock))
 #define write_trylock(lock)	__cond_lock(lock, _raw_write_trylock(lock))
 
@@ -124,6 +113,6 @@ do {								\
 	 arch_rwlock_is_contended(&(lock)->raw_lock)
 #else
 #define rwlock_is_contended(lock)	((void)(lock), 0)
-#endif /* arch_rwlock_is_contended */
+#endif  
 
-#endif /* __LINUX_RWLOCK_H */
+#endif  

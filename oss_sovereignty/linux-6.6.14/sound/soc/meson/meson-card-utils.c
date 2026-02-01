@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Copyright (c) 2020 BayLibre, SAS.
-// Author: Jerome Brunet <jbrunet@baylibre.com>
+
+
+
+
 
 #include <linux/module.h>
 #include <linux/of_platform.h>
@@ -116,7 +116,7 @@ unsigned int meson_card_parse_daifmt(struct device_node *node,
 
 	snd_soc_daifmt_parse_clock_provider_as_phandle(node, NULL, &bitclkmaster, &framemaster);
 
-	/* If no master is provided, default to cpu master */
+	 
 	if (!bitclkmaster || bitclkmaster == cpu_node) {
 		daifmt |= (!framemaster || framemaster == cpu_node) ?
 			SND_SOC_DAIFMT_CBS_CFS : SND_SOC_DAIFMT_CBS_CFM;
@@ -230,11 +230,11 @@ static int meson_card_parse_of_optional(struct snd_soc_card *card,
 					int (*func)(struct snd_soc_card *c,
 						    const char *p))
 {
-	/* If property is not provided, don't fail ... */
+	 
 	if (!of_property_read_bool(card->dev->of_node, propname))
 		return 0;
 
-	/* ... but do fail if it is provided and the parsing fails */
+	 
 	return func(card, propname);
 }
 

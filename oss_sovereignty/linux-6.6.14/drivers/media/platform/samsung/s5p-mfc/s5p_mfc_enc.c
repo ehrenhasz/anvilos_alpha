@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * linux/drivers/media/platform/samsung/s5p-mfc/s5p_mfc_enc.c
- *
- * Copyright (c) 2010-2011 Samsung Electronics Co., Ltd.
- *		http://www.samsung.com/
- *
- * Jeongtae Park	<jtp.park@samsung.com>
- * Kamil Debski		<k.debski@samsung.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/interrupt.h>
@@ -1095,15 +1087,15 @@ static int s5p_mfc_ctx_ready(struct s5p_mfc_ctx *ctx)
 {
 	mfc_debug(2, "src=%d, dst=%d, state=%d\n",
 		  ctx->src_queue_cnt, ctx->dst_queue_cnt, ctx->state);
-	/* context is ready to make header */
+	 
 	if (ctx->state == MFCINST_GOT_INST && ctx->dst_queue_cnt >= 1)
 		return 1;
-	/* context is ready to encode a frame */
+	 
 	if ((ctx->state == MFCINST_RUNNING ||
 		ctx->state == MFCINST_HEAD_PRODUCED) &&
 		ctx->src_queue_cnt >= 1 && ctx->dst_queue_cnt >= 1)
 		return 1;
-	/* context is ready to encode remaining frames */
+	 
 	if (ctx->state == MFCINST_FINISHING &&
 		ctx->dst_queue_cnt >= 1)
 		return 1;
@@ -1115,7 +1107,7 @@ static void cleanup_ref_queue(struct s5p_mfc_ctx *ctx)
 {
 	struct s5p_mfc_buf *mb_entry;
 
-	/* move buffers in ref queue to src queue */
+	 
 	while (!list_empty(&ctx->ref_queue)) {
 		mb_entry = list_entry((&ctx->ref_queue)->next,
 						struct s5p_mfc_buf, list);
@@ -1309,7 +1301,7 @@ static const struct s5p_mfc_codec_ops encoder_codec_ops = {
 	.post_frame_start	= enc_post_frame_start,
 };
 
-/* Query capabilities of the device */
+ 
 static int vidioc_querycap(struct file *file, void *priv,
 			   struct v4l2_capability *cap)
 {
@@ -1362,7 +1354,7 @@ static int vidioc_g_fmt(struct file *file, void *priv, struct v4l2_format *f)
 
 	mfc_debug(2, "f->type = %d ctx->state = %d\n", f->type, ctx->state);
 	if (f->type == V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE) {
-		/* This is run on output (encoder dest) */
+		 
 		pix_fmt_mp->width = 0;
 		pix_fmt_mp->height = 0;
 		pix_fmt_mp->field = V4L2_FIELD_NONE;
@@ -1372,7 +1364,7 @@ static int vidioc_g_fmt(struct file *file, void *priv, struct v4l2_format *f)
 		pix_fmt_mp->plane_fmt[0].bytesperline = ctx->enc_dst_buf_size;
 		pix_fmt_mp->plane_fmt[0].sizeimage = ctx->enc_dst_buf_size;
 	} else if (f->type == V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE) {
-		/* This is run on capture (encoder src) */
+		 
 		pix_fmt_mp->width = ctx->img_width;
 		pix_fmt_mp->height = ctx->img_height;
 
@@ -1446,7 +1438,7 @@ static int vidioc_s_fmt(struct file *file, void *priv, struct v4l2_format *f)
 		goto out;
 	}
 	if (f->type == V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE) {
-		/* dst_fmt is validated by call to vidioc_try_fmt */
+		 
 		ctx->dst_fmt = find_format(f, MFC_FMT_ENC);
 		ctx->state = MFCINST_INIT;
 		ctx->codec_mode = ctx->dst_fmt->codec_mode;
@@ -1456,7 +1448,7 @@ static int vidioc_s_fmt(struct file *file, void *priv, struct v4l2_format *f)
 		ctx->capture_state = QUEUE_FREE;
 		ret = s5p_mfc_open_mfc_inst(dev, ctx);
 	} else if (f->type == V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE) {
-		/* src_fmt is validated by call to vidioc_try_fmt */
+		 
 		ctx->src_fmt = find_format(f, MFC_FMT_RAW);
 		ctx->img_width = pix_fmt_mp->width;
 		ctx->img_height = pix_fmt_mp->height;
@@ -1489,7 +1481,7 @@ static int vidioc_reqbufs(struct file *file, void *priv,
 	struct s5p_mfc_ctx *ctx = fh_to_ctx(priv);
 	int ret = 0;
 
-	/* if memory is not mmp or userptr return error */
+	 
 	if ((reqbufs->memory != V4L2_MEMORY_MMAP) &&
 		(reqbufs->memory != V4L2_MEMORY_USERPTR))
 		return -EINVAL;
@@ -1538,7 +1530,7 @@ static int vidioc_reqbufs(struct file *file, void *priv,
 		}
 
 		if (IS_MFCV6_PLUS(dev)) {
-			/* Check for min encoder buffers */
+			 
 			if (ctx->pb_count &&
 				(reqbufs->count < ctx->pb_count)) {
 				reqbufs->count = ctx->pb_count;
@@ -1568,7 +1560,7 @@ static int vidioc_querybuf(struct file *file, void *priv,
 	struct s5p_mfc_ctx *ctx = fh_to_ctx(priv);
 	int ret = 0;
 
-	/* if memory is not mmp or userptr return error */
+	 
 	if ((buf->memory != V4L2_MEMORY_MMAP) &&
 		(buf->memory != V4L2_MEMORY_USERPTR))
 		return -EINVAL;
@@ -1596,7 +1588,7 @@ static int vidioc_querybuf(struct file *file, void *priv,
 	return ret;
 }
 
-/* Queue a buffer */
+ 
 static int vidioc_qbuf(struct file *file, void *priv, struct v4l2_buffer *buf)
 {
 	struct s5p_mfc_ctx *ctx = fh_to_ctx(priv);
@@ -1617,7 +1609,7 @@ static int vidioc_qbuf(struct file *file, void *priv, struct v4l2_buffer *buf)
 	return -EINVAL;
 }
 
-/* Dequeue a buffer */
+ 
 static int vidioc_dqbuf(struct file *file, void *priv, struct v4l2_buffer *buf)
 {
 	const struct v4l2_event ev = {
@@ -1644,7 +1636,7 @@ static int vidioc_dqbuf(struct file *file, void *priv, struct v4l2_buffer *buf)
 	return ret;
 }
 
-/* Export DMA buffer */
+ 
 static int vidioc_expbuf(struct file *file, void *priv,
 	struct v4l2_exportbuffer *eb)
 {
@@ -1657,7 +1649,7 @@ static int vidioc_expbuf(struct file *file, void *priv,
 	return -EINVAL;
 }
 
-/* Stream on */
+ 
 static int vidioc_streamon(struct file *file, void *priv,
 			   enum v4l2_buf_type type)
 {
@@ -1670,7 +1662,7 @@ static int vidioc_streamon(struct file *file, void *priv,
 	return -EINVAL;
 }
 
-/* Stream off, which equals to a pause */
+ 
 static int vidioc_streamoff(struct file *file, void *priv,
 			    enum v4l2_buf_type type)
 {
@@ -1686,18 +1678,18 @@ static int vidioc_streamoff(struct file *file, void *priv,
 static inline int h264_level(enum v4l2_mpeg_video_h264_level lvl)
 {
 	static unsigned int t[V4L2_MPEG_VIDEO_H264_LEVEL_4_0 + 1] = {
-		/* V4L2_MPEG_VIDEO_H264_LEVEL_1_0   */ 10,
-		/* V4L2_MPEG_VIDEO_H264_LEVEL_1B    */ 9,
-		/* V4L2_MPEG_VIDEO_H264_LEVEL_1_1   */ 11,
-		/* V4L2_MPEG_VIDEO_H264_LEVEL_1_2   */ 12,
-		/* V4L2_MPEG_VIDEO_H264_LEVEL_1_3   */ 13,
-		/* V4L2_MPEG_VIDEO_H264_LEVEL_2_0   */ 20,
-		/* V4L2_MPEG_VIDEO_H264_LEVEL_2_1   */ 21,
-		/* V4L2_MPEG_VIDEO_H264_LEVEL_2_2   */ 22,
-		/* V4L2_MPEG_VIDEO_H264_LEVEL_3_0   */ 30,
-		/* V4L2_MPEG_VIDEO_H264_LEVEL_3_1   */ 31,
-		/* V4L2_MPEG_VIDEO_H264_LEVEL_3_2   */ 32,
-		/* V4L2_MPEG_VIDEO_H264_LEVEL_4_0   */ 40,
+		  10,
+		  9,
+		  11,
+		  12,
+		  13,
+		  20,
+		  21,
+		  22,
+		  30,
+		  31,
+		  32,
+		  40,
 	};
 	return t[lvl];
 }
@@ -1705,14 +1697,14 @@ static inline int h264_level(enum v4l2_mpeg_video_h264_level lvl)
 static inline int mpeg4_level(enum v4l2_mpeg_video_mpeg4_level lvl)
 {
 	static unsigned int t[V4L2_MPEG_VIDEO_MPEG4_LEVEL_5 + 1] = {
-		/* V4L2_MPEG_VIDEO_MPEG4_LEVEL_0    */ 0,
-		/* V4L2_MPEG_VIDEO_MPEG4_LEVEL_0B   */ 9,
-		/* V4L2_MPEG_VIDEO_MPEG4_LEVEL_1    */ 1,
-		/* V4L2_MPEG_VIDEO_MPEG4_LEVEL_2    */ 2,
-		/* V4L2_MPEG_VIDEO_MPEG4_LEVEL_3    */ 3,
-		/* V4L2_MPEG_VIDEO_MPEG4_LEVEL_3B   */ 7,
-		/* V4L2_MPEG_VIDEO_MPEG4_LEVEL_4    */ 4,
-		/* V4L2_MPEG_VIDEO_MPEG4_LEVEL_5    */ 5,
+		  0,
+		  9,
+		  1,
+		  2,
+		  3,
+		  7,
+		  4,
+		  5,
 	};
 	return t[lvl];
 }
@@ -1720,19 +1712,19 @@ static inline int mpeg4_level(enum v4l2_mpeg_video_mpeg4_level lvl)
 static inline int hevc_level(enum v4l2_mpeg_video_hevc_level lvl)
 {
 	static unsigned int t[] = {
-		/* V4L2_MPEG_VIDEO_HEVC_LEVEL_1    */ 10,
-		/* V4L2_MPEG_VIDEO_HEVC_LEVEL_2    */ 20,
-		/* V4L2_MPEG_VIDEO_HEVC_LEVEL_2_1  */ 21,
-		/* V4L2_MPEG_VIDEO_HEVC_LEVEL_3    */ 30,
-		/* V4L2_MPEG_VIDEO_HEVC_LEVEL_3_1  */ 31,
-		/* V4L2_MPEG_VIDEO_HEVC_LEVEL_4    */ 40,
-		/* V4L2_MPEG_VIDEO_HEVC_LEVEL_4_1  */ 41,
-		/* V4L2_MPEG_VIDEO_HEVC_LEVEL_5    */ 50,
-		/* V4L2_MPEG_VIDEO_HEVC_LEVEL_5_1  */ 51,
-		/* V4L2_MPEG_VIDEO_HEVC_LEVEL_5_2  */ 52,
-		/* V4L2_MPEG_VIDEO_HEVC_LEVEL_6    */ 60,
-		/* V4L2_MPEG_VIDEO_HEVC_LEVEL_6_1  */ 61,
-		/* V4L2_MPEG_VIDEO_HEVC_LEVEL_6_2  */ 62,
+		  10,
+		  20,
+		  21,
+		  30,
+		  31,
+		  40,
+		  41,
+		  50,
+		  51,
+		  52,
+		  60,
+		  61,
+		  62,
 	};
 	return t[lvl];
 }
@@ -1740,32 +1732,29 @@ static inline int hevc_level(enum v4l2_mpeg_video_hevc_level lvl)
 static inline int vui_sar_idc(enum v4l2_mpeg_video_h264_vui_sar_idc sar)
 {
 	static unsigned int t[V4L2_MPEG_VIDEO_H264_VUI_SAR_IDC_EXTENDED + 1] = {
-		/* V4L2_MPEG_VIDEO_H264_VUI_SAR_IDC_UNSPECIFIED     */ 0,
-		/* V4L2_MPEG_VIDEO_H264_VUI_SAR_IDC_1x1             */ 1,
-		/* V4L2_MPEG_VIDEO_H264_VUI_SAR_IDC_12x11           */ 2,
-		/* V4L2_MPEG_VIDEO_H264_VUI_SAR_IDC_10x11           */ 3,
-		/* V4L2_MPEG_VIDEO_H264_VUI_SAR_IDC_16x11           */ 4,
-		/* V4L2_MPEG_VIDEO_H264_VUI_SAR_IDC_40x33           */ 5,
-		/* V4L2_MPEG_VIDEO_H264_VUI_SAR_IDC_24x11           */ 6,
-		/* V4L2_MPEG_VIDEO_H264_VUI_SAR_IDC_20x11           */ 7,
-		/* V4L2_MPEG_VIDEO_H264_VUI_SAR_IDC_32x11           */ 8,
-		/* V4L2_MPEG_VIDEO_H264_VUI_SAR_IDC_80x33           */ 9,
-		/* V4L2_MPEG_VIDEO_H264_VUI_SAR_IDC_18x11           */ 10,
-		/* V4L2_MPEG_VIDEO_H264_VUI_SAR_IDC_15x11           */ 11,
-		/* V4L2_MPEG_VIDEO_H264_VUI_SAR_IDC_64x33           */ 12,
-		/* V4L2_MPEG_VIDEO_H264_VUI_SAR_IDC_160x99          */ 13,
-		/* V4L2_MPEG_VIDEO_H264_VUI_SAR_IDC_4x3             */ 14,
-		/* V4L2_MPEG_VIDEO_H264_VUI_SAR_IDC_3x2             */ 15,
-		/* V4L2_MPEG_VIDEO_H264_VUI_SAR_IDC_2x1             */ 16,
-		/* V4L2_MPEG_VIDEO_H264_VUI_SAR_IDC_EXTENDED        */ 255,
+		  0,
+		  1,
+		  2,
+		  3,
+		  4,
+		  5,
+		  6,
+		  7,
+		  8,
+		  9,
+		  10,
+		  11,
+		  12,
+		  13,
+		  14,
+		  15,
+		  16,
+		  255,
 	};
 	return t[sar];
 }
 
-/*
- * Update range of all HEVC quantization parameter controls that depend on the
- * V4L2_CID_MPEG_VIDEO_HEVC_MIN_QP, V4L2_CID_MPEG_VIDEO_HEVC_MAX_QP controls.
- */
+ 
 static void __enc_update_hevc_qp_ctrls_range(struct s5p_mfc_ctx *ctx,
 					     int min, int max)
 {
@@ -2224,7 +2213,7 @@ static int s5p_mfc_enc_g_v_ctrl(struct v4l2_ctrl *ctrl)
 			v4l2_err(&dev->v4l2_dev, "Encoding not initialised\n");
 			return -EINVAL;
 		}
-		/* Should wait for the header to be produced */
+		 
 		s5p_mfc_wait_for_done_ctx(ctx,
 				S5P_MFC_R2H_CMD_SEQ_DONE_RET, 0);
 		if (ctx->state >= MFCINST_HEAD_PARSED &&
@@ -2521,7 +2510,7 @@ static int s5p_mfc_start_streaming(struct vb2_queue *q, unsigned int count)
 		}
 	}
 
-	/* If context is ready then dev = work->data;schedule it to run */
+	 
 	if (s5p_mfc_ctx_ready(ctx))
 		set_work_bit_irqsave(ctx);
 	s5p_mfc_hw_call(dev->mfc_ops, try_run, dev);
@@ -2574,7 +2563,7 @@ static void s5p_mfc_buf_queue(struct vb2_buffer *vb)
 	if (vq->type == V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE) {
 		mfc_buf = &ctx->dst_bufs[vb->index];
 		mfc_buf->flags &= ~MFC_BUF_FLAG_USED;
-		/* Mark destination as available for use by MFC */
+		 
 		spin_lock_irqsave(&dev->irqlock, flags);
 		list_add_tail(&mfc_buf->list, &ctx->dst_queue);
 		ctx->dst_queue_cnt++;

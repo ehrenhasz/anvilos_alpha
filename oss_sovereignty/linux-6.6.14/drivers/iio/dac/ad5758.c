@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * AD5758 Digital to analog converters driver
- *
- * Copyright 2018 Analog Devices Inc.
- *
- * TODO: Currently CRC is not supported in this driver
- */
+
+ 
 #include <linux/bsearch.h>
 #include <linux/delay.h>
 #include <linux/kernel.h>
@@ -18,7 +12,7 @@
 #include <linux/iio/iio.h>
 #include <linux/iio/sysfs.h>
 
-/* AD5758 registers definition */
+ 
 #define AD5758_NOP				0x00
 #define AD5758_DAC_INPUT			0x01
 #define AD5758_DAC_OUTPUT			0x02
@@ -47,7 +41,7 @@
 #define AD5758_DEVICE_ID_2			0x1B
 #define AD5758_DEVICE_ID_3			0x1C
 
-/* AD5758_DAC_CONFIG */
+ 
 #define AD5758_DAC_CONFIG_RANGE_MSK		GENMASK(3, 0)
 #define AD5758_DAC_CONFIG_RANGE_MODE(x)		(((x) & 0xF) << 0)
 #define AD5758_DAC_CONFIG_INT_EN_MSK		BIT(5)
@@ -61,29 +55,29 @@
 #define AD5758_DAC_CONFIG_SR_STEP_MSK		GENMASK(15, 13)
 #define AD5758_DAC_CONFIG_SR_STEP_MODE(x)	(((x) & 0x7) << 13)
 
-/* AD5758_KEY */
+ 
 #define AD5758_KEY_CODE_RESET_1			0x15FA
 #define AD5758_KEY_CODE_RESET_2			0xAF51
 #define AD5758_KEY_CODE_SINGLE_ADC_CONV		0x1ADC
 #define AD5758_KEY_CODE_RESET_WDT		0x0D06
 #define AD5758_KEY_CODE_CALIB_MEM_REFRESH	0xFCBA
 
-/* AD5758_DCDC_CONFIG1 */
+ 
 #define AD5758_DCDC_CONFIG1_DCDC_VPROG_MSK	GENMASK(4, 0)
 #define AD5758_DCDC_CONFIG1_DCDC_VPROG_MODE(x)	(((x) & 0x1F) << 0)
 #define AD5758_DCDC_CONFIG1_DCDC_MODE_MSK	GENMASK(6, 5)
 #define AD5758_DCDC_CONFIG1_DCDC_MODE_MODE(x)	(((x) & 0x3) << 5)
 
-/* AD5758_DCDC_CONFIG2 */
+ 
 #define AD5758_DCDC_CONFIG2_ILIMIT_MSK		GENMASK(3, 1)
 #define AD5758_DCDC_CONFIG2_ILIMIT_MODE(x)	(((x) & 0x7) << 1)
 #define AD5758_DCDC_CONFIG2_INTR_SAT_3WI_MSK	BIT(11)
 #define AD5758_DCDC_CONFIG2_BUSY_3WI_MSK	BIT(12)
 
-/* AD5758_DIGITAL_DIAG_RESULTS */
+ 
 #define AD5758_CAL_MEM_UNREFRESHED_MSK		BIT(15)
 
-/* AD5758_ADC_CONFIG */
+ 
 #define AD5758_ADC_CONFIG_PPC_BUF_EN(x)		(((x) & 0x1) << 11)
 #define AD5758_ADC_CONFIG_PPC_BUF_MSK		BIT(11)
 
@@ -97,18 +91,7 @@ struct ad5758_range {
 	int max;
 };
 
-/**
- * struct ad5758_state - driver instance specific data
- * @spi:	spi_device
- * @lock:	mutex lock
- * @gpio_reset:	gpio descriptor for the reset line
- * @out_range:	struct which stores the output range
- * @dc_dc_mode:	variable which stores the mode of operation
- * @dc_dc_ilim:	variable which stores the dc-to-dc converter current limit
- * @slew_time:	variable which stores the target slew time
- * @pwr_down:	variable which contains whether a channel is powered down or not
- * @d32:	spi transfer buffers
- */
+ 
 struct ad5758_state {
 	struct spi_device *spi;
 	struct mutex lock;
@@ -121,19 +104,7 @@ struct ad5758_state {
 	__be32 d32[3];
 };
 
-/*
- * Output ranges corresponding to bits [3:0] from DAC_CONFIG register
- * 0000: 0 V to 5 V voltage range
- * 0001: 0 V to 10 V voltage range
- * 0010: ±5 V voltage range
- * 0011: ±10 V voltage range
- * 1000: 0 mA to 20 mA current range
- * 1001: 0 mA to 24 mA current range
- * 1010: 4 mA to 20 mA current range
- * 1011: ±20 mA current range
- * 1100: ±24 mA current range
- * 1101: -1 mA to +22 mA current range
- */
+ 
 enum ad5758_output_range {
 	AD5758_RANGE_0V_5V,
 	AD5758_RANGE_0V_10V,
@@ -292,7 +263,7 @@ static int ad5758_calib_mem_refresh(struct ad5758_state *st)
 		return ret;
 	}
 
-	/* Wait to allow time for the internal calibrations to complete */
+	 
 	return ad5758_wait_for_task_complete(st, AD5758_DIGITAL_DIAG_RESULTS,
 					     AD5758_CAL_MEM_UNREFRESHED_MSK);
 }
@@ -307,7 +278,7 @@ static int ad5758_soft_reset(struct ad5758_state *st)
 
 	ret = ad5758_spi_reg_write(st, AD5758_KEY, AD5758_KEY_CODE_RESET_2);
 
-	/* Perform a software reset and wait at least 100us */
+	 
 	usleep_range(100, 1000);
 
 	return ret;
@@ -318,10 +289,7 @@ static int ad5758_set_dc_dc_conv_mode(struct ad5758_state *st,
 {
 	int ret;
 
-	/*
-	 * The ENABLE_PPC_BUFFERS bit must be set prior to enabling PPC current
-	 * mode.
-	 */
+	 
 	if (mode == AD5758_DCDC_MODE_PPC_CURRENT) {
 		ret  = ad5758_spi_write_mask(st, AD5758_ADC_CONFIG,
 				    AD5758_ADC_CONFIG_PPC_BUF_MSK,
@@ -336,10 +304,7 @@ static int ad5758_set_dc_dc_conv_mode(struct ad5758_state *st,
 	if (ret < 0)
 		return ret;
 
-	/*
-	 * Poll the BUSY_3WI bit in the DCDC_CONFIG2 register until it is 0.
-	 * This allows the 3-wire interface communication to complete.
-	 */
+	 
 	ret = ad5758_wait_for_task_complete(st, AD5758_DCDC_CONFIG2,
 					    AD5758_DCDC_CONFIG2_BUSY_3WI_MSK);
 	if (ret < 0)
@@ -359,10 +324,7 @@ static int ad5758_set_dc_dc_ilim(struct ad5758_state *st, unsigned int ilim)
 				    AD5758_DCDC_CONFIG2_ILIMIT_MODE(ilim));
 	if (ret < 0)
 		return ret;
-	/*
-	 * Poll the BUSY_3WI bit in the DCDC_CONFIG2 register until it is 0.
-	 * This allows the 3-wire interface communication to complete.
-	 */
+	 
 	return ad5758_wait_for_task_complete(st, AD5758_DCDC_CONFIG2,
 					     AD5758_DCDC_CONFIG2_BUSY_3WI_MSK);
 }
@@ -386,7 +348,7 @@ static int ad5758_slew_rate_set(struct ad5758_state *st,
 	if (ret < 0)
 		return ret;
 
-	/* Wait to allow time for the internal calibrations to complete */
+	 
 	return ad5758_wait_for_task_complete(st, AD5758_DIGITAL_DIAG_RESULTS,
 					     AD5758_CAL_MEM_UNREFRESHED_MSK);
 }
@@ -401,38 +363,21 @@ static int ad5758_slew_rate_config(struct ad5758_state *st)
 	sr_clk_idx = 0;
 	sr_step_idx = 0;
 	diff_old = S64_MAX;
-	/*
-	 * The slew time can be determined by using the formula:
-	 * Slew Time = (Full Scale Out / (Step Size x Update Clk Freq))
-	 * where Slew time is expressed in microseconds
-	 * Given the desired slew time, the following algorithm determines the
-	 * best match for the step size and the update clock frequency.
-	 */
+	 
 	for (i = 0; i < ARRAY_SIZE(ad5758_sr_clk); i++) {
-		/*
-		 * Go through each valid update clock freq and determine a raw
-		 * value for the step size by using the formula:
-		 * Step Size = Full Scale Out / (Update Clk Freq * Slew Time)
-		 */
+		 
 		sr_step = AD5758_FULL_SCALE_MICRO;
 		do_div(sr_step, ad5758_sr_clk[i]);
 		do_div(sr_step, st->slew_time);
-		/*
-		 * After a raw value for step size was determined, find the
-		 * closest valid match
-		 */
+		 
 		res = ad5758_find_closest_match(ad5758_sr_step,
 						ARRAY_SIZE(ad5758_sr_step),
 						sr_step);
-		/* Calculate the slew time */
+		 
 		calc_slew_time = AD5758_FULL_SCALE_MICRO;
 		do_div(calc_slew_time, ad5758_sr_step[res]);
 		do_div(calc_slew_time, ad5758_sr_clk[i]);
-		/*
-		 * Determine with how many microseconds the calculated slew time
-		 * is different from the desired slew time and store the diff
-		 * for the next iteration
-		 */
+		 
 		diff_new = abs(st->slew_time - calc_slew_time);
 		if (diff_new < diff_old) {
 			diff_old = diff_new;
@@ -454,7 +399,7 @@ static int ad5758_set_out_range(struct ad5758_state *st, int range)
 	if (ret < 0)
 		return ret;
 
-	/* Wait to allow time for the internal calibrations to complete */
+	 
 	return ad5758_wait_for_task_complete(st, AD5758_DIGITAL_DIAG_RESULTS,
 					     AD5758_CAL_MEM_UNREFRESHED_MSK);
 }
@@ -469,7 +414,7 @@ static int ad5758_internal_buffers_en(struct ad5758_state *st, bool enable)
 	if (ret < 0)
 		return ret;
 
-	/* Wait to allow time for the internal calibrations to complete */
+	 
 	return ad5758_wait_for_task_complete(st, AD5758_DIGITAL_DIAG_RESULTS,
 					     AD5758_CAL_MEM_UNREFRESHED_MSK);
 }
@@ -484,7 +429,7 @@ static int ad5758_reset(struct ad5758_state *st)
 
 		return 0;
 	} else {
-		/* Perform a software reset */
+		 
 		return ad5758_soft_reset(st);
 	}
 }
@@ -774,22 +719,22 @@ static int ad5758_init(struct ad5758_state *st)
 	if (IS_ERR(st->gpio_reset))
 		return PTR_ERR(st->gpio_reset);
 
-	/* Disable CRC checks */
+	 
 	ret = ad5758_crc_disable(st);
 	if (ret < 0)
 		return ret;
 
-	/* Perform a reset */
+	 
 	ret = ad5758_reset(st);
 	if (ret < 0)
 		return ret;
 
-	/* Disable CRC checks */
+	 
 	ret = ad5758_crc_disable(st);
 	if (ret < 0)
 		return ret;
 
-	/* Perform a calibration memory refresh */
+	 
 	ret = ad5758_calib_mem_refresh(st);
 	if (ret < 0)
 		return ret;
@@ -798,39 +743,39 @@ static int ad5758_init(struct ad5758_state *st)
 	if (regval < 0)
 		return regval;
 
-	/* Clear all the error flags */
+	 
 	ret = ad5758_spi_reg_write(st, AD5758_DIGITAL_DIAG_RESULTS, regval);
 	if (ret < 0)
 		return ret;
 
-	/* Set the dc-to-dc current limit */
+	 
 	ret = ad5758_set_dc_dc_ilim(st, st->dc_dc_ilim);
 	if (ret < 0)
 		return ret;
 
-	/* Configure the dc-to-dc controller mode */
+	 
 	ret = ad5758_set_dc_dc_conv_mode(st, st->dc_dc_mode);
 	if (ret < 0)
 		return ret;
 
-	/* Configure the output range */
+	 
 	ret = ad5758_set_out_range(st, st->out_range.reg);
 	if (ret < 0)
 		return ret;
 
-	/* Enable Slew Rate Control, set the slew rate clock and step */
+	 
 	if (st->slew_time) {
 		ret = ad5758_slew_rate_config(st);
 		if (ret < 0)
 			return ret;
 	}
 
-	/* Power up the DAC and internal (INT) amplifiers */
+	 
 	ret = ad5758_internal_buffers_en(st, 1);
 	if (ret < 0)
 		return ret;
 
-	/* Enable VIOUT */
+	 
 	return ad5758_spi_write_mask(st, AD5758_DAC_CONFIG,
 				     AD5758_DAC_CONFIG_OUT_EN_MSK,
 				     AD5758_DAC_CONFIG_OUT_EN_MODE(1));

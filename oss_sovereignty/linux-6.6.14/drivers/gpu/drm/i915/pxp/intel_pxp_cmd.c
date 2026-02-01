@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright(c) 2020, Intel Corporation. All rights reserved.
- */
+
+ 
 
 #include "gt/intel_context.h"
 #include "gt/intel_engine_pm.h"
@@ -15,7 +13,7 @@
 #include "intel_pxp_session.h"
 #include "intel_pxp_types.h"
 
-/* stall until prior PXP and MFX/HCP/HUC objects are cmopleted */
+ 
 #define MFX_WAIT_PXP (MFX_WAIT | \
 		      MFX_WAIT_DW0_PXP_SYNC_CONTROL_FLAG | \
 		      MFX_WAIT_DW0_MFX_SYNC_CONTROL_FLAG)
@@ -24,17 +22,17 @@ static u32 *pxp_emit_session_selection(u32 *cs, u32 idx)
 {
 	*cs++ = MFX_WAIT_PXP;
 
-	/* pxp off */
+	 
 	*cs++ = MI_FLUSH_DW;
 	*cs++ = 0;
 	*cs++ = 0;
 
-	/* select session */
+	 
 	*cs++ = MI_SET_APPID | MI_SET_APPID_SESSION_ID(idx);
 
 	*cs++ = MFX_WAIT_PXP;
 
-	/* pxp on */
+	 
 	*cs++ = MI_FLUSH_DW | MI_FLUSH_DW_PROTECTED_MEM_EN |
 		MI_FLUSH_DW_OP_STOREDW | MI_FLUSH_DW_STORE_INDEX;
 	*cs++ = I915_GEM_HWS_PXP_ADDR | MI_FLUSH_DW_USE_GTT;
@@ -47,7 +45,7 @@ static u32 *pxp_emit_session_selection(u32 *cs, u32 idx)
 
 static u32 *pxp_emit_inline_termination(u32 *cs)
 {
-	/* session inline termination */
+	 
 	*cs++ = CRYPTO_KEY_EXCHANGE;
 	*cs++ = 0;
 
@@ -64,17 +62,14 @@ static u32 *pxp_emit_session_termination(u32 *cs, u32 idx)
 
 static u32 *pxp_emit_wait(u32 *cs)
 {
-	/* wait for cmds to go through */
+	 
 	*cs++ = MFX_WAIT_PXP;
 	*cs++ = 0;
 
 	return cs;
 }
 
-/*
- * if we ever need to terminate more than one session, we can submit multiple
- * selections and terminations back-to-back with a single wait at the end
- */
+ 
 #define SELECTION_LEN 10
 #define TERMINATION_LEN 2
 #define SESSION_TERMINATION_LEN(x) ((SELECTION_LEN + TERMINATION_LEN) * (x))

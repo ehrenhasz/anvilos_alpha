@@ -1,28 +1,4 @@
-/*
- * This file is part of the MicroPython project, http://micropython.org/
- *
- * The MIT License (MIT)
- *
- * Copyright (c) 2016 Paul Sokolovsky
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
+ 
 
 #include "py/runtime.h"
 #include "py/stream.h"
@@ -30,11 +6,11 @@
 #if MICROPY_PY_BTREE
 
 #include <stdio.h>
-#include <errno.h> // for declaration of global errno variable
+#include <errno.h> 
 #include <fcntl.h>
 
-// Undefine queue macros that will be defined in berkeley-db-1.xx headers
-// below, in case they clash with system ones defined in headers above.
+
+
 #undef LIST_HEAD
 #undef LIST_ENTRY
 #undef LIST_INIT
@@ -62,7 +38,7 @@
 
 typedef struct _mp_obj_btree_t {
     mp_obj_base_t base;
-    mp_obj_t stream; // retain a reference to prevent GC from reclaiming it
+    mp_obj_t stream; 
     DB *db;
     mp_obj_t start_key;
     mp_obj_t end_key;
@@ -209,12 +185,12 @@ static mp_obj_t btree_getiter(mp_obj_t self_in, mp_obj_iter_buf_t *iter_buf) {
     (void)iter_buf;
     mp_obj_btree_t *self = MP_OBJ_TO_PTR(self_in);
     if (self->next_flags != 0) {
-        // If we're called immediately after keys(), values(), or items(),
-        // use their setup for iteration.
+        
+        
         self->flags = self->next_flags;
         self->next_flags = 0;
     } else {
-        // Otherwise, iterate over all keys.
+        
         self->flags = FLAG_ITER_KEYS;
         self->start_key = mp_const_none;
         self->end_key = mp_const_none;
@@ -282,7 +258,7 @@ static mp_obj_t btree_iternext(mp_obj_t self_in) {
 static mp_obj_t btree_subscr(mp_obj_t self_in, mp_obj_t index, mp_obj_t value) {
     mp_obj_btree_t *self = MP_OBJ_TO_PTR(self_in);
     if (value == MP_OBJ_NULL) {
-        // delete
+        
         DBT key;
         buf_to_dbt(index, &key);
         int res = __bt_delete(self->db, &key, 0);
@@ -292,7 +268,7 @@ static mp_obj_t btree_subscr(mp_obj_t self_in, mp_obj_t index, mp_obj_t value) {
         CHECK_ERROR(res);
         return mp_const_none;
     } else if (value == MP_OBJ_SENTINEL) {
-        // load
+        
         DBT key, val;
         buf_to_dbt(index, &key);
         int res = __bt_get(self->db, &key, &val, 0);
@@ -302,7 +278,7 @@ static mp_obj_t btree_subscr(mp_obj_t self_in, mp_obj_t index, mp_obj_t value) {
         CHECK_ERROR(res);
         return mp_obj_new_bytes(val.data, val.size);
     } else {
-        // store
+        
         DBT key, val;
         buf_to_dbt(index, &key);
         buf_to_dbt(value, &val);
@@ -323,7 +299,7 @@ static mp_obj_t btree_binary_op(mp_binary_op_t op, mp_obj_t lhs_in, mp_obj_t rhs
             return mp_obj_new_bool(res != RET_SPECIAL);
         }
         default:
-            // op not supported
+            
             return MP_OBJ_NULL;
     }
 }
@@ -351,7 +327,7 @@ static MP_DEFINE_CONST_OBJ_TYPE(
     btree_type,
     MP_QSTR_btree,
     MP_TYPE_FLAG_ITER_IS_CUSTOM,
-    // Save on qstr's, reuse same as for module
+    
     print, btree_print,
     iter, &btree_getiter_iternext,
     binary_op, btree_binary_op,
@@ -376,7 +352,7 @@ static mp_obj_t mod_btree_open(size_t n_args, const mp_obj_t *pos_args, mp_map_t
         { MP_QSTR_minkeypage, MP_ARG_KW_ONLY | MP_ARG_INT, {.u_int = 0} },
     };
 
-    // Make sure we got a stream object
+    
     mp_get_stream_raise(pos_args[0], MP_STREAM_OP_READ | MP_STREAM_OP_WRITE | MP_STREAM_OP_IOCTL);
 
     struct {
@@ -393,7 +369,7 @@ static mp_obj_t mod_btree_open(size_t n_args, const mp_obj_t *pos_args, mp_map_t
     openinfo.psize = args.pagesize.u_int;
     openinfo.minkeypage = args.minkeypage.u_int;
 
-    DB *db = __bt_open(MP_OBJ_TO_PTR(pos_args[0]), &btree_stream_fvtable, &openinfo, /*dflags*/ 0);
+    DB *db = __bt_open(MP_OBJ_TO_PTR(pos_args[0]), &btree_stream_fvtable, &openinfo,   0);
     if (db == NULL) {
         mp_raise_OSError(errno);
     }
@@ -418,4 +394,4 @@ const mp_obj_module_t mp_module_btree = {
 MP_REGISTER_MODULE(MP_QSTR_btree, mp_module_btree);
 #endif
 
-#endif // MICROPY_PY_BTREE
+#endif 

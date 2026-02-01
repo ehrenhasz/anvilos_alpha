@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  skl-nhlt.c - Intel SKL Platform NHLT parsing
- *
- *  Copyright (C) 2015 Intel Corp
- *  Author: Sanjiv Kumar <sanjiv.kumar@intel.com>
- *  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- *
- * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- */
+
+ 
 #include <linux/pci.h>
 #include <sound/intel-nhlt.h>
 #include "skl.h"
@@ -84,11 +76,7 @@ void skl_nhlt_remove_sysfs(struct skl_dev *skl)
 		sysfs_remove_file(&dev->kobj, &dev_attr_platform_id.attr);
 }
 
-/*
- * Queries NHLT for all the fmt configuration for a particular endpoint and
- * stores all possible rates supported in a rate table for the corresponding
- * sclk/sclkfs.
- */
+ 
 static void skl_get_ssp_clks(struct skl_dev *skl, struct skl_ssp_clk *ssp_clks,
 				struct nhlt_fmt *fmt, u8 id)
 {
@@ -122,17 +110,7 @@ static void skl_get_ssp_clks(struct skl_dev *skl, struct skl_ssp_clk *ssp_clks,
 		bps = wav_fmt->fmt.bits_per_sample;
 		fs = wav_fmt->fmt.samples_per_sec;
 
-		/*
-		 * In case of TDM configuration on a ssp, there can
-		 * be more than one blob in which channel masks are
-		 * different for each usecase for a specific rate and bps.
-		 * But the sclk rate will be generated for the total
-		 * number of channels used for that endpoint.
-		 *
-		 * So for the given fs and bps, choose blob which has
-		 * the superset of all channels for that endpoint and
-		 * derive the rate.
-		 */
+		 
 		for (j = i; j < fmt->fmt_count; j++) {
 			struct nhlt_fmt_cfg *tmp_fmt_cfg = fmt_cfg;
 
@@ -143,14 +121,14 @@ static void skl_get_ssp_clks(struct skl_dev *skl, struct skl_ssp_clk *ssp_clks,
 						wav_fmt->fmt.channels);
 				saved_fmt_cfg = tmp_fmt_cfg;
 			}
-			/* Move to the next nhlt_fmt_cfg */
+			 
 			tmp_fmt_cfg = (struct nhlt_fmt_cfg *)(tmp_fmt_cfg->config.caps +
 							      tmp_fmt_cfg->config.size);
 		}
 
 		rate = channels * bps * fs;
 
-		/* check if the rate is added already to the given SSP's sclk */
+		 
 		for (j = 0; (j < SKL_MAX_CLK_RATES) &&
 			    (sclk[id].rate_cfg[j].rate != 0); j++) {
 			if (sclk[id].rate_cfg[j].rate == rate) {
@@ -159,7 +137,7 @@ static void skl_get_ssp_clks(struct skl_dev *skl, struct skl_ssp_clk *ssp_clks,
 			}
 		}
 
-		/* Fill rate and parent for sclk/sclkfs */
+		 
 		if (!present) {
 			struct nhlt_fmt_cfg *first_fmt_cfg;
 
@@ -167,7 +145,7 @@ static void skl_get_ssp_clks(struct skl_dev *skl, struct skl_ssp_clk *ssp_clks,
 			i2s_config_ext = (struct skl_i2s_config_blob_ext *)
 						first_fmt_cfg->config.caps;
 
-			/* MCLK Divider Source Select */
+			 
 			if (is_legacy_blob(i2s_config_ext->hdr.sig)) {
 				i2s_config = ext_to_legacy_blob(i2s_config_ext);
 				clk_src = get_clk_src(i2s_config->mclk,
@@ -179,13 +157,10 @@ static void skl_get_ssp_clks(struct skl_dev *skl, struct skl_ssp_clk *ssp_clks,
 
 			parent = skl_get_parent_clk(clk_src);
 
-			/* Move to the next nhlt_fmt_cfg */
+			 
 			fmt_cfg = (struct nhlt_fmt_cfg *)(fmt_cfg->config.caps +
 							  fmt_cfg->config.size);
-			/*
-			 * Do not copy the config data if there is no parent
-			 * clock available for this clock source select
-			 */
+			 
 			if (!parent)
 				continue;
 
@@ -214,7 +189,7 @@ static void skl_get_mclk(struct skl_dev *skl, struct skl_ssp_clk *mclk,
 	fmt_cfg = (struct nhlt_fmt_cfg *)fmt->fmt_config;
 	i2s_config_ext = (struct skl_i2s_config_blob_ext *)fmt_cfg->config.caps;
 
-	/* MCLK Divider Source Select and divider */
+	 
 	if (is_legacy_blob(i2s_config_ext->hdr.sig)) {
 		i2s_config = ext_to_legacy_blob(i2s_config_ext);
 		clk_src = get_clk_src(i2s_config->mclk,
@@ -228,14 +203,14 @@ static void skl_get_mclk(struct skl_dev *skl, struct skl_ssp_clk *mclk,
 				SKL_MCLK_DIV_RATIO_MASK;
 	}
 
-	/* bypass divider */
+	 
 	div_ratio = 1;
 
 	if (clkdiv != SKL_MCLK_DIV_RATIO_MASK)
-		/* Divider is 2 + clkdiv */
+		 
 		div_ratio = clkdiv + 2;
 
-	/* Calculate MCLK rate from source using div value */
+	 
 	parent = skl_get_parent_clk(clk_src);
 	if (!parent)
 		return;

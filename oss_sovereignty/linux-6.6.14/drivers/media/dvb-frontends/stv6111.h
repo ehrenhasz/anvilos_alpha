@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Driver for the ST STV6111 tuner
- *
- * Copyright (C) 2014 Digital Devices GmbH
- */
+ 
+ 
 
 #ifndef _STV6111_H_
 #define _STV6111_H_
@@ -23,6 +19,6 @@ static inline struct dvb_frontend *stv6111_attach(struct dvb_frontend *fe,
 	return NULL;
 }
 
-#endif /* CONFIG_DVB_STV6111 */
+#endif  
 
-#endif /* _STV6111_H_ */
+#endif  

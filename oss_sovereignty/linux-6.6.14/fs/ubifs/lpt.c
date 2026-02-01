@@ -1,48 +1,14 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * This file is part of UBIFS.
- *
- * Copyright (C) 2006-2008 Nokia Corporation.
- *
- * Authors: Adrian Hunter
- *          Artem Bityutskiy (Битюцкий Артём)
- */
 
-/*
- * This file implements the LEB properties tree (LPT) area. The LPT area
- * contains the LEB properties tree, a table of LPT area eraseblocks (ltab), and
- * (for the "big" model) a table of saved LEB numbers (lsave). The LPT area sits
- * between the log and the orphan area.
- *
- * The LPT area is like a miniature self-contained file system. It is required
- * that it never runs out of space, is fast to access and update, and scales
- * logarithmically. The LEB properties tree is implemented as a wandering tree
- * much like the TNC, and the LPT area has its own garbage collection.
- *
- * The LPT has two slightly different forms called the "small model" and the
- * "big model". The small model is used when the entire LEB properties table
- * can be written into a single eraseblock. In that case, garbage collection
- * consists of just writing the whole table, which therefore makes all other
- * eraseblocks reusable. In the case of the big model, dirty eraseblocks are
- * selected for garbage collection, which consists of marking the clean nodes in
- * that LEB as dirty, and then only the dirty nodes are written out. Also, in
- * the case of the big model, a table of LEB numbers is saved so that the entire
- * LPT does not to be scanned looking for empty eraseblocks when UBIFS is first
- * mounted.
- */
+ 
+
+ 
 
 #include "ubifs.h"
 #include <linux/crc16.h>
 #include <linux/math64.h>
 #include <linux/slab.h>
 
-/**
- * do_calc_lpt_geom - calculate sizes for the LPT area.
- * @c: the UBIFS file-system description object
- *
- * Calculate the sizes of LPT bit fields, nodes, and tree, based on the
- * properties of the flash and whether LPT is "big" (c->big_lpt).
- */
+ 
 static void do_calc_lpt_geom(struct ubifs_info *c)
 {
 	int i, n, bits, per_leb_wastage, max_pnode_cnt;
@@ -95,14 +61,14 @@ static void do_calc_lpt_geom(struct ubifs_info *c)
 	       c->lnum_bits * c->lsave_cnt;
 	c->lsave_sz = (bits + 7) / 8;
 
-	/* Calculate the minimum LPT size */
+	 
 	c->lpt_sz = (long long)c->pnode_cnt * c->pnode_sz;
 	c->lpt_sz += (long long)c->nnode_cnt * c->nnode_sz;
 	c->lpt_sz += c->ltab_sz;
 	if (c->big_lpt)
 		c->lpt_sz += c->lsave_sz;
 
-	/* Add wastage */
+	 
 	sz = c->lpt_sz;
 	per_leb_wastage = max_t(int, c->pnode_sz, c->nnode_sz);
 	sz += per_leb_wastage;
@@ -116,12 +82,7 @@ static void do_calc_lpt_geom(struct ubifs_info *c)
 	c->lpt_sz += tot_wastage;
 }
 
-/**
- * ubifs_calc_lpt_geom - calculate and check sizes for the LPT area.
- * @c: the UBIFS file-system description object
- *
- * This function returns %0 on success and a negative error code on failure.
- */
+ 
 int ubifs_calc_lpt_geom(struct ubifs_info *c)
 {
 	int lebs_needed;
@@ -129,15 +90,15 @@ int ubifs_calc_lpt_geom(struct ubifs_info *c)
 
 	do_calc_lpt_geom(c);
 
-	/* Verify that lpt_lebs is big enough */
-	sz = c->lpt_sz * 2; /* Must have at least 2 times the size */
+	 
+	sz = c->lpt_sz * 2;  
 	lebs_needed = div_u64(sz + c->leb_size - 1, c->leb_size);
 	if (lebs_needed > c->lpt_lebs) {
 		ubifs_err(c, "too few LPT LEBs");
 		return -EINVAL;
 	}
 
-	/* Verify that ltab fits in a single LEB (since ltab is a single node */
+	 
 	if (c->ltab_sz > c->leb_size) {
 		ubifs_err(c, "LPT ltab too big");
 		return -EINVAL;
@@ -147,52 +108,38 @@ int ubifs_calc_lpt_geom(struct ubifs_info *c)
 	return 0;
 }
 
-/**
- * calc_dflt_lpt_geom - calculate default LPT geometry.
- * @c: the UBIFS file-system description object
- * @main_lebs: number of main area LEBs is passed and returned here
- * @big_lpt: whether the LPT area is "big" is returned here
- *
- * The size of the LPT area depends on parameters that themselves are dependent
- * on the size of the LPT area. This function, successively recalculates the LPT
- * area geometry until the parameters and resultant geometry are consistent.
- *
- * This function returns %0 on success and a negative error code on failure.
- */
+ 
 static int calc_dflt_lpt_geom(struct ubifs_info *c, int *main_lebs,
 			      int *big_lpt)
 {
 	int i, lebs_needed;
 	long long sz;
 
-	/* Start by assuming the minimum number of LPT LEBs */
+	 
 	c->lpt_lebs = UBIFS_MIN_LPT_LEBS;
 	c->main_lebs = *main_lebs - c->lpt_lebs;
 	if (c->main_lebs <= 0)
 		return -EINVAL;
 
-	/* And assume we will use the small LPT model */
+	 
 	c->big_lpt = 0;
 
-	/*
-	 * Calculate the geometry based on assumptions above and then see if it
-	 * makes sense
-	 */
+	 
 	do_calc_lpt_geom(c);
 
-	/* Small LPT model must have lpt_sz < leb_size */
+	 
 	if (c->lpt_sz > c->leb_size) {
-		/* Nope, so try again using big LPT model */
+		 
 		c->big_lpt = 1;
 		do_calc_lpt_geom(c);
 	}
 
-	/* Now check there are enough LPT LEBs */
+	 
 	for (i = 0; i < 64 ; i++) {
-		sz = c->lpt_sz * 4; /* Allow 4 times the size */
+		sz = c->lpt_sz * 4;  
 		lebs_needed = div_u64(sz + c->leb_size - 1, c->leb_size);
 		if (lebs_needed > c->lpt_lebs) {
-			/* Not enough LPT LEBs so try again with more */
+			 
 			c->lpt_lebs = lebs_needed;
 			c->main_lebs = *main_lebs - c->lpt_lebs;
 			if (c->main_lebs <= 0)
@@ -211,14 +158,7 @@ static int calc_dflt_lpt_geom(struct ubifs_info *c, int *main_lebs,
 	return -EINVAL;
 }
 
-/**
- * pack_bits - pack bit fields end-to-end.
- * @c: UBIFS file-system description object
- * @addr: address at which to pack (passed and next address returned)
- * @pos: bit position at which to pack (passed and next position returned)
- * @val: value to pack
- * @nrbits: number of bits of value to pack (1-32)
- */
+ 
 static void pack_bits(const struct ubifs_info *c, uint8_t **addr, int *pos, uint32_t val, int nrbits)
 {
 	uint8_t *p = *addr;
@@ -261,15 +201,7 @@ static void pack_bits(const struct ubifs_info *c, uint8_t **addr, int *pos, uint
 	*pos = b;
 }
 
-/**
- * ubifs_unpack_bits - unpack bit fields.
- * @c: UBIFS file-system description object
- * @addr: address at which to unpack (passed and next address returned)
- * @pos: bit position at which to unpack (passed and next position returned)
- * @nrbits: number of bits of value to unpack (1-32)
- *
- * This functions returns the value unpacked.
- */
+ 
 uint32_t ubifs_unpack_bits(const struct ubifs_info *c, uint8_t **addr, int *pos, int nrbits)
 {
 	const int k = 32 - nrbits;
@@ -331,12 +263,7 @@ uint32_t ubifs_unpack_bits(const struct ubifs_info *c, uint8_t **addr, int *pos,
 	return val;
 }
 
-/**
- * ubifs_pack_pnode - pack all the bit fields of a pnode.
- * @c: UBIFS file-system description object
- * @buf: buffer into which to pack
- * @pnode: pnode to pack
- */
+ 
 void ubifs_pack_pnode(struct ubifs_info *c, void *buf,
 		      struct ubifs_pnode *pnode)
 {
@@ -364,12 +291,7 @@ void ubifs_pack_pnode(struct ubifs_info *c, void *buf,
 	pack_bits(c, &addr, &pos, crc, UBIFS_LPT_CRC_BITS);
 }
 
-/**
- * ubifs_pack_nnode - pack all the bit fields of a nnode.
- * @c: UBIFS file-system description object
- * @buf: buffer into which to pack
- * @nnode: nnode to pack
- */
+ 
 void ubifs_pack_nnode(struct ubifs_info *c, void *buf,
 		      struct ubifs_nnode *nnode)
 {
@@ -396,12 +318,7 @@ void ubifs_pack_nnode(struct ubifs_info *c, void *buf,
 	pack_bits(c, &addr, &pos, crc, UBIFS_LPT_CRC_BITS);
 }
 
-/**
- * ubifs_pack_ltab - pack the LPT's own lprops table.
- * @c: UBIFS file-system description object
- * @buf: buffer into which to pack
- * @ltab: LPT's own lprops table to pack
- */
+ 
 void ubifs_pack_ltab(struct ubifs_info *c, void *buf,
 		     struct ubifs_lpt_lprops *ltab)
 {
@@ -421,12 +338,7 @@ void ubifs_pack_ltab(struct ubifs_info *c, void *buf,
 	pack_bits(c, &addr, &pos, crc, UBIFS_LPT_CRC_BITS);
 }
 
-/**
- * ubifs_pack_lsave - pack the LPT's save table.
- * @c: UBIFS file-system description object
- * @buf: buffer into which to pack
- * @lsave: LPT's save table to pack
- */
+ 
 void ubifs_pack_lsave(struct ubifs_info *c, void *buf, int *lsave)
 {
 	uint8_t *addr = buf + UBIFS_LPT_CRC_BYTES;
@@ -443,12 +355,7 @@ void ubifs_pack_lsave(struct ubifs_info *c, void *buf, int *lsave)
 	pack_bits(c, &addr, &pos, crc, UBIFS_LPT_CRC_BITS);
 }
 
-/**
- * ubifs_add_lpt_dirt - add dirty space to LPT LEB properties.
- * @c: UBIFS file-system description object
- * @lnum: LEB number to which to add dirty space
- * @dirty: amount of dirty space to add
- */
+ 
 void ubifs_add_lpt_dirt(struct ubifs_info *c, int lnum, int dirty)
 {
 	if (!dirty || !lnum)
@@ -459,13 +366,7 @@ void ubifs_add_lpt_dirt(struct ubifs_info *c, int lnum, int dirty)
 	c->ltab[lnum - c->lpt_first].dirty += dirty;
 }
 
-/**
- * set_ltab - set LPT LEB properties.
- * @c: UBIFS file-system description object
- * @lnum: LEB number
- * @free: amount of free space
- * @dirty: amount of dirty space
- */
+ 
 static void set_ltab(struct ubifs_info *c, int lnum, int free, int dirty)
 {
 	dbg_lp("LEB %d free %d dirty %d to %d %d",
@@ -476,11 +377,7 @@ static void set_ltab(struct ubifs_info *c, int lnum, int free, int dirty)
 	c->ltab[lnum - c->lpt_first].dirty = dirty;
 }
 
-/**
- * ubifs_add_nnode_dirt - add dirty space to LPT LEB properties.
- * @c: UBIFS file-system description object
- * @nnode: nnode for which to add dirt
- */
+ 
 void ubifs_add_nnode_dirt(struct ubifs_info *c, struct ubifs_nnode *nnode)
 {
 	struct ubifs_nnode *np = nnode->parent;
@@ -497,28 +394,14 @@ void ubifs_add_nnode_dirt(struct ubifs_info *c, struct ubifs_nnode *nnode)
 	}
 }
 
-/**
- * add_pnode_dirt - add dirty space to LPT LEB properties.
- * @c: UBIFS file-system description object
- * @pnode: pnode for which to add dirt
- */
+ 
 static void add_pnode_dirt(struct ubifs_info *c, struct ubifs_pnode *pnode)
 {
 	ubifs_add_lpt_dirt(c, pnode->parent->nbranch[pnode->iip].lnum,
 			   c->pnode_sz);
 }
 
-/**
- * calc_nnode_num - calculate nnode number.
- * @row: the row in the tree (root is zero)
- * @col: the column in the row (leftmost is zero)
- *
- * The nnode number is a number that uniquely identifies a nnode and can be used
- * easily to traverse the tree from the root to that nnode.
- *
- * This function calculates and returns the nnode number for the nnode at @row
- * and @col.
- */
+ 
 static int calc_nnode_num(int row, int col)
 {
 	int num, bits;
@@ -533,18 +416,7 @@ static int calc_nnode_num(int row, int col)
 	return num;
 }
 
-/**
- * calc_nnode_num_from_parent - calculate nnode number.
- * @c: UBIFS file-system description object
- * @parent: parent nnode
- * @iip: index in parent
- *
- * The nnode number is a number that uniquely identifies a nnode and can be used
- * easily to traverse the tree from the root to that nnode.
- *
- * This function calculates and returns the nnode number based on the parent's
- * nnode number and the index in parent.
- */
+ 
 static int calc_nnode_num_from_parent(const struct ubifs_info *c,
 				      struct ubifs_nnode *parent, int iip)
 {
@@ -558,18 +430,7 @@ static int calc_nnode_num_from_parent(const struct ubifs_info *c,
 	return num;
 }
 
-/**
- * calc_pnode_num_from_parent - calculate pnode number.
- * @c: UBIFS file-system description object
- * @parent: parent nnode
- * @iip: index in parent
- *
- * The pnode number is a number that uniquely identifies a pnode and can be used
- * easily to traverse the tree from the root to that pnode.
- *
- * This function calculates and returns the pnode number based on the parent's
- * nnode number and the index in parent.
- */
+ 
 static int calc_pnode_num_from_parent(const struct ubifs_info *c,
 				      struct ubifs_nnode *parent, int iip)
 {
@@ -585,17 +446,7 @@ static int calc_pnode_num_from_parent(const struct ubifs_info *c,
 	return num;
 }
 
-/**
- * ubifs_create_dflt_lpt - create default LPT.
- * @c: UBIFS file-system description object
- * @main_lebs: number of main area LEBs is passed and returned here
- * @lpt_first: LEB number of first LPT LEB
- * @lpt_lebs: number of LEBs for LPT is passed and returned here
- * @big_lpt: use big LPT model is passed and returned here
- * @hash: hash of the LPT is returned here
- *
- * This function returns %0 on success and a negative error code on failure.
- */
+ 
 int ubifs_create_dflt_lpt(struct ubifs_info *c, int *main_lebs, int lpt_first,
 			  int *lpt_lebs, int *big_lpt, u8 *hash)
 {
@@ -613,11 +464,11 @@ int ubifs_create_dflt_lpt(struct ubifs_info *c, int *main_lebs, int lpt_first,
 		return err;
 	*lpt_lebs = c->lpt_lebs;
 
-	/* Needed by 'ubifs_pack_nnode()' and 'set_ltab()' */
+	 
 	c->lpt_first = lpt_first;
-	/* Needed by 'set_ltab()' */
+	 
 	c->lpt_last = lpt_first + c->lpt_lebs - 1;
-	/* Needed by 'ubifs_pack_lsave()' */
+	 
 	c->main_first = c->leb_cnt - *main_lebs;
 
 	desc = ubifs_hash_get_desc(c);
@@ -636,9 +487,9 @@ int ubifs_create_dflt_lpt(struct ubifs_info *c, int *main_lebs, int lpt_first,
 	}
 
 	ubifs_assert(c, !c->ltab);
-	c->ltab = ltab; /* Needed by set_ltab */
+	c->ltab = ltab;  
 
-	/* Initialize LPT's own lprops */
+	 
 	for (i = 0; i < c->lpt_lebs; i++) {
 		ltab[i].free = c->leb_size;
 		ltab[i].dirty = 0;
@@ -648,13 +499,10 @@ int ubifs_create_dflt_lpt(struct ubifs_info *c, int *main_lebs, int lpt_first,
 
 	lnum = lpt_first;
 	p = buf;
-	/* Number of leaf nodes (pnodes) */
+	 
 	cnt = c->pnode_cnt;
 
-	/*
-	 * The first pnode contains the LEB properties for the LEBs that contain
-	 * the root inode node and the root index node of the index tree.
-	 */
+	 
 	node_sz = ALIGN(ubifs_idx_node_sz(c, 1), 8);
 	iopos = ALIGN(node_sz, c->min_io_size);
 	pnode->lprops[0].free = c->leb_size - iopos;
@@ -669,7 +517,7 @@ int ubifs_create_dflt_lpt(struct ubifs_info *c, int *main_lebs, int lpt_first,
 	for (i = 2; i < UBIFS_LPT_FANOUT; i++)
 		pnode->lprops[i].free = c->leb_size;
 
-	/* Add first pnode */
+	 
 	ubifs_pack_pnode(c, p, pnode);
 	err = ubifs_shash_update(c, desc, p, c->pnode_sz);
 	if (err)
@@ -679,7 +527,7 @@ int ubifs_create_dflt_lpt(struct ubifs_info *c, int *main_lebs, int lpt_first,
 	len = c->pnode_sz;
 	pnode->num += 1;
 
-	/* Reset pnode values for remaining pnodes */
+	 
 	pnode->lprops[0].free = c->leb_size;
 	pnode->lprops[0].dirty = 0;
 	pnode->lprops[0].flags = 0;
@@ -687,16 +535,13 @@ int ubifs_create_dflt_lpt(struct ubifs_info *c, int *main_lebs, int lpt_first,
 	pnode->lprops[1].free = c->leb_size;
 	pnode->lprops[1].dirty = 0;
 
-	/*
-	 * To calculate the internal node branches, we keep information about
-	 * the level below.
-	 */
-	blnum = lnum; /* LEB number of level below */
-	boffs = 0; /* Offset of level below */
-	bcnt = cnt; /* Number of nodes in level below */
-	bsz = c->pnode_sz; /* Size of nodes in level below */
+	 
+	blnum = lnum;  
+	boffs = 0;  
+	bcnt = cnt;  
+	bsz = c->pnode_sz;  
 
-	/* Add all remaining pnodes */
+	 
 	for (i = 1; i < cnt; i++) {
 		if (len + c->pnode_sz > c->leb_size) {
 			alen = ALIGN(len, c->min_io_size);
@@ -715,20 +560,16 @@ int ubifs_create_dflt_lpt(struct ubifs_info *c, int *main_lebs, int lpt_first,
 
 		p += c->pnode_sz;
 		len += c->pnode_sz;
-		/*
-		 * pnodes are simply numbered left to right starting at zero,
-		 * which means the pnode number can be used easily to traverse
-		 * down the tree to the corresponding pnode.
-		 */
+		 
 		pnode->num += 1;
 	}
 
 	row = 0;
 	for (i = UBIFS_LPT_FANOUT; cnt > i; i <<= UBIFS_LPT_FANOUT_SHIFT)
 		row += 1;
-	/* Add all nnodes, one level at a time */
+	 
 	while (1) {
-		/* Number of internal nodes (nnodes) at next level */
+		 
 		cnt = DIV_ROUND_UP(cnt, UBIFS_LPT_FANOUT);
 		for (i = 0; i < cnt; i++) {
 			if (len + c->nnode_sz > c->leb_size) {
@@ -742,12 +583,12 @@ int ubifs_create_dflt_lpt(struct ubifs_info *c, int *main_lebs, int lpt_first,
 				p = buf;
 				len = 0;
 			}
-			/* Only 1 nnode at this level, so it is the root */
+			 
 			if (cnt == 1) {
 				c->lpt_lnum = lnum;
 				c->lpt_offs = len;
 			}
-			/* Set branches to the level below */
+			 
 			for (j = 0; j < UBIFS_LPT_FANOUT; j++) {
 				if (bcnt) {
 					if (boffs + bsz > c->leb_size) {
@@ -768,17 +609,17 @@ int ubifs_create_dflt_lpt(struct ubifs_info *c, int *main_lebs, int lpt_first,
 			p += c->nnode_sz;
 			len += c->nnode_sz;
 		}
-		/* Only 1 nnode at this level, so it is the root */
+		 
 		if (cnt == 1)
 			break;
-		/* Update the information about the level below */
+		 
 		bcnt = cnt;
 		bsz = c->nnode_sz;
 		row -= 1;
 	}
 
 	if (*big_lpt) {
-		/* Need to add LPT's save table */
+		 
 		if (len + c->lsave_sz > c->leb_size) {
 			alen = ALIGN(len, c->min_io_size);
 			set_ltab(c, lnum, c->leb_size - alen, alen - len);
@@ -803,7 +644,7 @@ int ubifs_create_dflt_lpt(struct ubifs_info *c, int *main_lebs, int lpt_first,
 		len += c->lsave_sz;
 	}
 
-	/* Need to add LPT's own LEB properties table */
+	 
 	if (len + c->ltab_sz > c->leb_size) {
 		alen = ALIGN(len, c->min_io_size);
 		set_ltab(c, lnum, c->leb_size - alen, alen - len);
@@ -818,7 +659,7 @@ int ubifs_create_dflt_lpt(struct ubifs_info *c, int *main_lebs, int lpt_first,
 	c->ltab_lnum = lnum;
 	c->ltab_offs = len;
 
-	/* Update ltab before packing it */
+	 
 	len += c->ltab_sz;
 	alen = ALIGN(len, c->min_io_size);
 	set_ltab(c, lnum, c->leb_size - alen, alen - len);
@@ -826,7 +667,7 @@ int ubifs_create_dflt_lpt(struct ubifs_info *c, int *main_lebs, int lpt_first,
 	ubifs_pack_ltab(c, p, ltab);
 	p += c->ltab_sz;
 
-	/* Write remaining buffer */
+	 
 	memset(p, 0xff, alen - len);
 	err = ubifs_leb_change(c, lnum, buf, alen);
 	if (err)
@@ -868,14 +709,7 @@ out:
 	return err;
 }
 
-/**
- * update_cats - add LEB properties of a pnode to LEB category lists and heaps.
- * @c: UBIFS file-system description object
- * @pnode: pnode
- *
- * When a pnode is loaded into memory, the LEB properties it contains are added,
- * by this function, to the LEB category lists and heaps.
- */
+ 
 static void update_cats(struct ubifs_info *c, struct ubifs_pnode *pnode)
 {
 	int i;
@@ -890,16 +724,7 @@ static void update_cats(struct ubifs_info *c, struct ubifs_pnode *pnode)
 	}
 }
 
-/**
- * replace_cats - add LEB properties of a pnode to LEB category lists and heaps.
- * @c: UBIFS file-system description object
- * @old_pnode: pnode copied
- * @new_pnode: pnode copy
- *
- * During commit it is sometimes necessary to copy a pnode
- * (see dirty_cow_pnode).  When that happens, references in
- * category lists and heaps must be replaced.  This function does that.
- */
+ 
 static void replace_cats(struct ubifs_info *c, struct ubifs_pnode *old_pnode,
 			 struct ubifs_pnode *new_pnode)
 {
@@ -913,14 +738,7 @@ static void replace_cats(struct ubifs_info *c, struct ubifs_pnode *old_pnode,
 	}
 }
 
-/**
- * check_lpt_crc - check LPT node crc is correct.
- * @c: UBIFS file-system description object
- * @buf: buffer containing node
- * @len: length of node
- *
- * This function returns %0 on success and a negative error code on failure.
- */
+ 
 static int check_lpt_crc(const struct ubifs_info *c, void *buf, int len)
 {
 	int pos = 0;
@@ -939,15 +757,7 @@ static int check_lpt_crc(const struct ubifs_info *c, void *buf, int len)
 	return 0;
 }
 
-/**
- * check_lpt_type - check LPT node type is correct.
- * @c: UBIFS file-system description object
- * @addr: address of type bit field is passed and returned updated here
- * @pos: position of type bit field is passed and returned updated here
- * @type: expected type
- *
- * This function returns %0 on success and a negative error code on failure.
- */
+ 
 static int check_lpt_type(const struct ubifs_info *c, uint8_t **addr,
 			  int *pos, int type)
 {
@@ -963,14 +773,7 @@ static int check_lpt_type(const struct ubifs_info *c, uint8_t **addr,
 	return 0;
 }
 
-/**
- * unpack_pnode - unpack a pnode.
- * @c: UBIFS file-system description object
- * @buf: buffer containing packed pnode to unpack
- * @pnode: pnode structure to fill
- *
- * This function returns %0 on success and a negative error code on failure.
- */
+ 
 static int unpack_pnode(const struct ubifs_info *c, void *buf,
 			struct ubifs_pnode *pnode)
 {
@@ -1000,14 +803,7 @@ static int unpack_pnode(const struct ubifs_info *c, void *buf,
 	return err;
 }
 
-/**
- * ubifs_unpack_nnode - unpack a nnode.
- * @c: UBIFS file-system description object
- * @buf: buffer containing packed nnode to unpack
- * @nnode: nnode structure to fill
- *
- * This function returns %0 on success and a negative error code on failure.
- */
+ 
 int ubifs_unpack_nnode(const struct ubifs_info *c, void *buf,
 		       struct ubifs_nnode *nnode)
 {
@@ -1034,13 +830,7 @@ int ubifs_unpack_nnode(const struct ubifs_info *c, void *buf,
 	return err;
 }
 
-/**
- * unpack_ltab - unpack the LPT's own lprops table.
- * @c: UBIFS file-system description object
- * @buf: buffer from which to unpack
- *
- * This function returns %0 on success and a negative error code on failure.
- */
+ 
 static int unpack_ltab(const struct ubifs_info *c, void *buf)
 {
 	uint8_t *addr = buf + UBIFS_LPT_CRC_BYTES;
@@ -1066,13 +856,7 @@ static int unpack_ltab(const struct ubifs_info *c, void *buf)
 	return err;
 }
 
-/**
- * unpack_lsave - unpack the LPT's save table.
- * @c: UBIFS file-system description object
- * @buf: buffer from which to unpack
- *
- * This function returns %0 on success and a negative error code on failure.
- */
+ 
 static int unpack_lsave(const struct ubifs_info *c, void *buf)
 {
 	uint8_t *addr = buf + UBIFS_LPT_CRC_BYTES;
@@ -1092,15 +876,7 @@ static int unpack_lsave(const struct ubifs_info *c, void *buf)
 	return err;
 }
 
-/**
- * validate_nnode - validate a nnode.
- * @c: UBIFS file-system description object
- * @nnode: nnode to validate
- * @parent: parent nnode (or NULL for the root nnode)
- * @iip: index in parent
- *
- * This function returns %0 on success and a negative error code on failure.
- */
+ 
 static int validate_nnode(const struct ubifs_info *c, struct ubifs_nnode *nnode,
 			  struct ubifs_nnode *parent, int iip)
 {
@@ -1136,15 +912,7 @@ static int validate_nnode(const struct ubifs_info *c, struct ubifs_nnode *nnode,
 	return 0;
 }
 
-/**
- * validate_pnode - validate a pnode.
- * @c: UBIFS file-system description object
- * @pnode: pnode to validate
- * @parent: parent nnode
- * @iip: index in parent
- *
- * This function returns %0 on success and a negative error code on failure.
- */
+ 
 static int validate_pnode(const struct ubifs_info *c, struct ubifs_pnode *pnode,
 			  struct ubifs_nnode *parent, int iip)
 {
@@ -1171,14 +939,7 @@ static int validate_pnode(const struct ubifs_info *c, struct ubifs_pnode *pnode,
 	return 0;
 }
 
-/**
- * set_pnode_lnum - set LEB numbers on a pnode.
- * @c: UBIFS file-system description object
- * @pnode: pnode to update
- *
- * This function calculates the LEB numbers for the LEB properties it contains
- * based on the pnode number.
- */
+ 
 static void set_pnode_lnum(const struct ubifs_info *c,
 			   struct ubifs_pnode *pnode)
 {
@@ -1192,14 +953,7 @@ static void set_pnode_lnum(const struct ubifs_info *c,
 	}
 }
 
-/**
- * ubifs_read_nnode - read a nnode from flash and link it to the tree in memory.
- * @c: UBIFS file-system description object
- * @parent: parent nnode (or NULL for the root)
- * @iip: index in parent
- *
- * This function returns %0 on success and a negative error code on failure.
- */
+ 
 int ubifs_read_nnode(struct ubifs_info *c, struct ubifs_nnode *parent, int iip)
 {
 	struct ubifs_nbranch *branch = NULL;
@@ -1221,12 +975,7 @@ int ubifs_read_nnode(struct ubifs_info *c, struct ubifs_nnode *parent, int iip)
 		goto out;
 	}
 	if (lnum == 0) {
-		/*
-		 * This nnode was not written which just means that the LEB
-		 * properties in the subtree below it describe empty LEBs. We
-		 * make the nnode as though we had read it, which in fact means
-		 * doing almost nothing.
-		 */
+		 
 		if (c->big_lpt)
 			nnode->num = calc_nnode_num_from_parent(c, parent, iip);
 	} else {
@@ -1260,14 +1009,7 @@ out:
 	return err;
 }
 
-/**
- * read_pnode - read a pnode from flash and link it to the tree in memory.
- * @c: UBIFS file-system description object
- * @parent: parent nnode
- * @iip: index in parent
- *
- * This function returns %0 on success and a negative error code on failure.
- */
+ 
 static int read_pnode(struct ubifs_info *c, struct ubifs_nnode *parent, int iip)
 {
 	struct ubifs_nbranch *branch;
@@ -1283,11 +1025,7 @@ static int read_pnode(struct ubifs_info *c, struct ubifs_nnode *parent, int iip)
 		return -ENOMEM;
 
 	if (lnum == 0) {
-		/*
-		 * This pnode was not written which just means that the LEB
-		 * properties in it describe empty LEBs. We make the pnode as
-		 * though we had read it.
-		 */
+		 
 		int i;
 
 		if (c->big_lpt)
@@ -1327,12 +1065,7 @@ out:
 	return err;
 }
 
-/**
- * read_ltab - read LPT's own lprops table.
- * @c: UBIFS file-system description object
- *
- * This function returns %0 on success and a negative error code on failure.
- */
+ 
 static int read_ltab(struct ubifs_info *c)
 {
 	int err;
@@ -1350,12 +1083,7 @@ out:
 	return err;
 }
 
-/**
- * read_lsave - read LPT's save table.
- * @c: UBIFS file-system description object
- *
- * This function returns %0 on success and a negative error code on failure.
- */
+ 
 static int read_lsave(struct ubifs_info *c)
 {
 	int err, i;
@@ -1375,10 +1103,7 @@ static int read_lsave(struct ubifs_info *c)
 		int lnum = c->lsave[i];
 		struct ubifs_lprops *lprops;
 
-		/*
-		 * Due to automatic resizing, the values in the lsave table
-		 * could be beyond the volume size - just ignore them.
-		 */
+		 
 		if (lnum >= c->leb_cnt)
 			continue;
 		lprops = ubifs_lpt_lookup(c, lnum);
@@ -1392,15 +1117,7 @@ out:
 	return err;
 }
 
-/**
- * ubifs_get_nnode - get a nnode.
- * @c: UBIFS file-system description object
- * @parent: parent nnode (or NULL for the root)
- * @iip: index in parent
- *
- * This function returns a pointer to the nnode on success or a negative error
- * code on failure.
- */
+ 
 struct ubifs_nnode *ubifs_get_nnode(struct ubifs_info *c,
 				    struct ubifs_nnode *parent, int iip)
 {
@@ -1418,15 +1135,7 @@ struct ubifs_nnode *ubifs_get_nnode(struct ubifs_info *c,
 	return branch->nnode;
 }
 
-/**
- * ubifs_get_pnode - get a pnode.
- * @c: UBIFS file-system description object
- * @parent: parent nnode
- * @iip: index in parent
- *
- * This function returns a pointer to the pnode on success or a negative error
- * code on failure.
- */
+ 
 struct ubifs_pnode *ubifs_get_pnode(struct ubifs_info *c,
 				    struct ubifs_nnode *parent, int iip)
 {
@@ -1445,14 +1154,7 @@ struct ubifs_pnode *ubifs_get_pnode(struct ubifs_info *c,
 	return branch->pnode;
 }
 
-/**
- * ubifs_pnode_lookup - lookup a pnode in the LPT.
- * @c: UBIFS file-system description object
- * @i: pnode number (0 to (main_lebs - 1) / UBIFS_LPT_FANOUT)
- *
- * This function returns a pointer to the pnode on success or a negative
- * error code on failure.
- */
+ 
 struct ubifs_pnode *ubifs_pnode_lookup(struct ubifs_info *c, int i)
 {
 	int err, h, iip, shft;
@@ -1477,14 +1179,7 @@ struct ubifs_pnode *ubifs_pnode_lookup(struct ubifs_info *c, int i)
 	return ubifs_get_pnode(c, nnode, iip);
 }
 
-/**
- * ubifs_lpt_lookup - lookup LEB properties in the LPT.
- * @c: UBIFS file-system description object
- * @lnum: LEB number to lookup
- *
- * This function returns a pointer to the LEB properties on success or a
- * negative error code on failure.
- */
+ 
 struct ubifs_lprops *ubifs_lpt_lookup(struct ubifs_info *c, int lnum)
 {
 	int i, iip;
@@ -1501,13 +1196,7 @@ struct ubifs_lprops *ubifs_lpt_lookup(struct ubifs_info *c, int lnum)
 	return &pnode->lprops[iip];
 }
 
-/**
- * dirty_cow_nnode - ensure a nnode is not being committed.
- * @c: UBIFS file-system description object
- * @nnode: nnode to check
- *
- * Returns dirtied nnode on success or negative error code on failure.
- */
+ 
 static struct ubifs_nnode *dirty_cow_nnode(struct ubifs_info *c,
 					   struct ubifs_nnode *nnode)
 {
@@ -1515,7 +1204,7 @@ static struct ubifs_nnode *dirty_cow_nnode(struct ubifs_info *c,
 	int i;
 
 	if (!test_bit(COW_CNODE, &nnode->flags)) {
-		/* nnode is not being committed */
+		 
 		if (!test_and_set_bit(DIRTY_CNODE, &nnode->flags)) {
 			c->dirty_nn_cnt += 1;
 			ubifs_add_nnode_dirt(c, nnode);
@@ -1523,7 +1212,7 @@ static struct ubifs_nnode *dirty_cow_nnode(struct ubifs_info *c,
 		return nnode;
 	}
 
-	/* nnode is being committed, so copy it */
+	 
 	n = kmemdup(nnode, sizeof(struct ubifs_nnode), GFP_NOFS);
 	if (unlikely(!n))
 		return ERR_PTR(-ENOMEM);
@@ -1532,7 +1221,7 @@ static struct ubifs_nnode *dirty_cow_nnode(struct ubifs_info *c,
 	__set_bit(DIRTY_CNODE, &n->flags);
 	__clear_bit(COW_CNODE, &n->flags);
 
-	/* The children now have new parent */
+	 
 	for (i = 0; i < UBIFS_LPT_FANOUT; i++) {
 		struct ubifs_nbranch *branch = &n->nbranch[i];
 
@@ -1552,20 +1241,14 @@ static struct ubifs_nnode *dirty_cow_nnode(struct ubifs_info *c,
 	return n;
 }
 
-/**
- * dirty_cow_pnode - ensure a pnode is not being committed.
- * @c: UBIFS file-system description object
- * @pnode: pnode to check
- *
- * Returns dirtied pnode on success or negative error code on failure.
- */
+ 
 static struct ubifs_pnode *dirty_cow_pnode(struct ubifs_info *c,
 					   struct ubifs_pnode *pnode)
 {
 	struct ubifs_pnode *p;
 
 	if (!test_bit(COW_CNODE, &pnode->flags)) {
-		/* pnode is not being committed */
+		 
 		if (!test_and_set_bit(DIRTY_CNODE, &pnode->flags)) {
 			c->dirty_pn_cnt += 1;
 			add_pnode_dirt(c, pnode);
@@ -1573,7 +1256,7 @@ static struct ubifs_pnode *dirty_cow_pnode(struct ubifs_info *c,
 		return pnode;
 	}
 
-	/* pnode is being committed, so copy it */
+	 
 	p = kmemdup(pnode, sizeof(struct ubifs_pnode), GFP_NOFS);
 	if (unlikely(!p))
 		return ERR_PTR(-ENOMEM);
@@ -1592,14 +1275,7 @@ static struct ubifs_pnode *dirty_cow_pnode(struct ubifs_info *c,
 	return p;
 }
 
-/**
- * ubifs_lpt_lookup_dirty - lookup LEB properties in the LPT.
- * @c: UBIFS file-system description object
- * @lnum: LEB number to lookup
- *
- * This function returns a pointer to the LEB properties on success or a
- * negative error code on failure.
- */
+ 
 struct ubifs_lprops *ubifs_lpt_lookup_dirty(struct ubifs_info *c, int lnum)
 {
 	int err, i, h, iip, shft;
@@ -1642,14 +1318,7 @@ struct ubifs_lprops *ubifs_lpt_lookup_dirty(struct ubifs_info *c, int lnum)
 	return &pnode->lprops[iip];
 }
 
-/**
- * ubifs_lpt_calc_hash - Calculate hash of the LPT pnodes
- * @c: UBIFS file-system description object
- * @hash: the returned hash of the LPT pnodes
- *
- * This function iterates over the LPT pnodes and creates a hash over them.
- * Returns 0 for success or a negative error code otherwise.
- */
+ 
 int ubifs_lpt_calc_hash(struct ubifs_info *c, u8 *hash)
 {
 	struct ubifs_nnode *nnode, *nn;
@@ -1687,7 +1356,7 @@ int ubifs_lpt_calc_hash(struct ubifs_info *c, u8 *hash)
 		if (cnode->level > 1) {
 			while (iip < UBIFS_LPT_FANOUT) {
 				if (nn->nbranch[iip].lnum == 0) {
-					/* Go right */
+					 
 					iip++;
 					continue;
 				}
@@ -1698,7 +1367,7 @@ int ubifs_lpt_calc_hash(struct ubifs_info *c, u8 *hash)
 					goto out;
 				}
 
-				/* Go down */
+				 
 				iip = 0;
 				cnode = (struct ubifs_cnode *)nnode;
 				break;
@@ -1724,7 +1393,7 @@ int ubifs_lpt_calc_hash(struct ubifs_info *c, u8 *hash)
 					goto out;
 			}
 		}
-		/* Go up and to the right */
+		 
 		iip = cnode->iip + 1;
 		cnode = (struct ubifs_cnode *)nnode;
 	}
@@ -1737,14 +1406,7 @@ out:
 	return err;
 }
 
-/**
- * lpt_check_hash - check the hash of the LPT.
- * @c: UBIFS file-system description object
- *
- * This function calculates a hash over all pnodes in the LPT and compares it with
- * the hash stored in the master node. Returns %0 on success and a negative error
- * code on failure.
- */
+ 
 static int lpt_check_hash(struct ubifs_info *c)
 {
 	int err;
@@ -1767,12 +1429,7 @@ static int lpt_check_hash(struct ubifs_info *c)
 	return err;
 }
 
-/**
- * lpt_init_rd - initialize the LPT for reading.
- * @c: UBIFS file-system description object
- *
- * This function returns %0 on success and a negative error code on failure.
- */
+ 
 static int lpt_init_rd(struct ubifs_info *c)
 {
 	int err, i;
@@ -1834,14 +1491,7 @@ static int lpt_init_rd(struct ubifs_info *c)
 	return 0;
 }
 
-/**
- * lpt_init_wr - initialize the LPT for writing.
- * @c: UBIFS file-system description object
- *
- * 'lpt_init_rd()' must have been called already.
- *
- * This function returns %0 on success and a negative error code on failure.
- */
+ 
 static int lpt_init_wr(struct ubifs_info *c)
 {
 	int err, i;
@@ -1874,18 +1524,7 @@ static int lpt_init_wr(struct ubifs_info *c)
 	return 0;
 }
 
-/**
- * ubifs_lpt_init - initialize the LPT.
- * @c: UBIFS file-system description object
- * @rd: whether to initialize lpt for reading
- * @wr: whether to initialize lpt for writing
- *
- * For mounting 'rw', @rd and @wr are both true. For mounting 'ro', @rd is true
- * and @wr is false. For mounting from 'ro' to 'rw', @rd is false and @wr is
- * true.
- *
- * This function returns %0 on success and a negative error code on failure.
- */
+ 
 int ubifs_lpt_init(struct ubifs_info *c, int rd, int wr)
 {
 	int err;
@@ -1912,17 +1551,7 @@ out_err:
 	return err;
 }
 
-/**
- * struct lpt_scan_node - somewhere to put nodes while we scan LPT.
- * @nnode: where to keep a nnode
- * @pnode: where to keep a pnode
- * @cnode: where to keep a cnode
- * @in_tree: is the node in the tree in memory
- * @ptr.nnode: pointer to the nnode (if it is an nnode) which may be here or in
- * the tree
- * @ptr.pnode: ditto for pnode
- * @ptr.cnode: ditto for cnode
- */
+ 
 struct lpt_scan_node {
 	union {
 		struct ubifs_nnode nnode;
@@ -1937,16 +1566,7 @@ struct lpt_scan_node {
 	} ptr;
 };
 
-/**
- * scan_get_nnode - for the scan, get a nnode from either the tree or flash.
- * @c: the UBIFS file-system description object
- * @path: where to put the nnode
- * @parent: parent of the nnode
- * @iip: index in parent of the nnode
- *
- * This function returns a pointer to the nnode on success or a negative error
- * code on failure.
- */
+ 
 static struct ubifs_nnode *scan_get_nnode(struct ubifs_info *c,
 					  struct lpt_scan_node *path,
 					  struct ubifs_nnode *parent, int iip)
@@ -1968,12 +1588,7 @@ static struct ubifs_nnode *scan_get_nnode(struct ubifs_info *c,
 	path->ptr.nnode = nnode;
 	memset(nnode, 0, sizeof(struct ubifs_nnode));
 	if (branch->lnum == 0) {
-		/*
-		 * This nnode was not written which just means that the LEB
-		 * properties in the subtree below it describe empty LEBs. We
-		 * make the nnode as though we had read it, which in fact means
-		 * doing almost nothing.
-		 */
+		 
 		if (c->big_lpt)
 			nnode->num = calc_nnode_num_from_parent(c, parent, iip);
 	} else {
@@ -1996,16 +1611,7 @@ static struct ubifs_nnode *scan_get_nnode(struct ubifs_info *c,
 	return nnode;
 }
 
-/**
- * scan_get_pnode - for the scan, get a pnode from either the tree or flash.
- * @c: the UBIFS file-system description object
- * @path: where to put the pnode
- * @parent: parent of the pnode
- * @iip: index in parent of the pnode
- *
- * This function returns a pointer to the pnode on success or a negative error
- * code on failure.
- */
+ 
 static struct ubifs_pnode *scan_get_pnode(struct ubifs_info *c,
 					  struct lpt_scan_node *path,
 					  struct ubifs_nnode *parent, int iip)
@@ -2027,11 +1633,7 @@ static struct ubifs_pnode *scan_get_pnode(struct ubifs_info *c,
 	path->ptr.pnode = pnode;
 	memset(pnode, 0, sizeof(struct ubifs_pnode));
 	if (branch->lnum == 0) {
-		/*
-		 * This pnode was not written which just means that the LEB
-		 * properties in it describe empty LEBs. We make the pnode as
-		 * though we had read it.
-		 */
+		 
 		int i;
 
 		if (c->big_lpt)
@@ -2065,16 +1667,7 @@ static struct ubifs_pnode *scan_get_pnode(struct ubifs_info *c,
 	return pnode;
 }
 
-/**
- * ubifs_lpt_scan_nolock - scan the LPT.
- * @c: the UBIFS file-system description object
- * @start_lnum: LEB number from which to start scanning
- * @end_lnum: LEB number at which to stop scanning
- * @scan_cb: callback function called for each lprops
- * @data: data to be passed to the callback function
- *
- * This function returns %0 on success and a negative error code on failure.
- */
+ 
 int ubifs_lpt_scan_nolock(struct ubifs_info *c, int start_lnum, int end_lnum,
 			  ubifs_lpt_scan_callback scan_cb, void *data)
 {
@@ -2106,7 +1699,7 @@ int ubifs_lpt_scan_nolock(struct ubifs_info *c, int start_lnum, int end_lnum,
 	path[0].ptr.nnode = c->nroot;
 	path[0].in_tree = 1;
 again:
-	/* Descend to the pnode containing start_lnum */
+	 
 	nnode = c->nroot;
 	i = start_lnum - c->main_first;
 	shft = c->lpt_hght * UBIFS_LPT_FANOUT_SHIFT;
@@ -2127,7 +1720,7 @@ again:
 	}
 	iip = (i & (UBIFS_LPT_FANOUT - 1));
 
-	/* Loop for each lprops */
+	 
 	while (1) {
 		struct ubifs_lprops *lprops = &pnode->lprops[iip];
 		int ret, lnum = lprops->lnum;
@@ -2138,7 +1731,7 @@ again:
 			goto out;
 		}
 		if (ret & LPT_SCAN_ADD) {
-			/* Add all the nodes in path to the tree in memory */
+			 
 			for (h = 1; h < c->lpt_hght; h++) {
 				const size_t sz = sizeof(struct ubifs_nnode);
 				struct ubifs_nnode *parent;
@@ -2186,26 +1779,23 @@ again:
 			err = 0;
 			break;
 		}
-		/* Get the next lprops */
+		 
 		if (lnum == end_lnum) {
-			/*
-			 * We got to the end without finding what we were
-			 * looking for
-			 */
+			 
 			err = -ENOSPC;
 			goto out;
 		}
 		if (lnum + 1 >= c->leb_cnt) {
-			/* Wrap-around to the beginning */
+			 
 			start_lnum = c->main_first;
 			goto again;
 		}
 		if (iip + 1 < UBIFS_LPT_FANOUT) {
-			/* Next lprops is in the same pnode */
+			 
 			iip += 1;
 			continue;
 		}
-		/* We need to get the next pnode. Go up until we can go right */
+		 
 		iip = pnode->iip;
 		while (1) {
 			h -= 1;
@@ -2215,9 +1805,9 @@ again:
 				break;
 			iip = nnode->iip;
 		}
-		/* Go right */
+		 
 		iip += 1;
-		/* Descend to the pnode */
+		 
 		h += 1;
 		for (; h < c->lpt_hght; h++) {
 			nnode = scan_get_nnode(c, path + h, nnode, iip);
@@ -2239,14 +1829,7 @@ out:
 	return err;
 }
 
-/**
- * dbg_chk_pnode - check a pnode.
- * @c: the UBIFS file-system description object
- * @pnode: pnode to check
- * @col: pnode column
- *
- * This function returns %0 on success and a negative error code on failure.
- */
+ 
 static int dbg_chk_pnode(struct ubifs_info *c, struct ubifs_pnode *pnode,
 			 int col)
 {
@@ -2368,15 +1951,7 @@ static int dbg_chk_pnode(struct ubifs_info *c, struct ubifs_pnode *pnode,
 	return 0;
 }
 
-/**
- * dbg_check_lpt_nodes - check nnodes and pnodes.
- * @c: the UBIFS file-system description object
- * @cnode: next cnode (nnode or pnode) to check
- * @row: row of cnode (root is zero)
- * @col: column of cnode (leftmost is zero)
- *
- * This function returns %0 on success and a negative error code on failure.
- */
+ 
 int dbg_check_lpt_nodes(struct ubifs_info *c, struct ubifs_cnode *cnode,
 			int row, int col)
 {
@@ -2391,7 +1966,7 @@ int dbg_check_lpt_nodes(struct ubifs_info *c, struct ubifs_cnode *cnode,
 		ubifs_assert(c, row >= 0);
 		nnode = cnode->parent;
 		if (cnode->level) {
-			/* cnode is a nnode */
+			 
 			num = calc_nnode_num(row, col);
 			if (cnode->num != num) {
 				ubifs_err(c, "nnode num %d expected %d parent num %d iip %d",
@@ -2403,7 +1978,7 @@ int dbg_check_lpt_nodes(struct ubifs_info *c, struct ubifs_cnode *cnode,
 			while (iip < UBIFS_LPT_FANOUT) {
 				cn = nn->nbranch[iip].cnode;
 				if (cn) {
-					/* Go down */
+					 
 					row += 1;
 					col <<= UBIFS_LPT_FANOUT_SHIFT;
 					col += iip;
@@ -2411,7 +1986,7 @@ int dbg_check_lpt_nodes(struct ubifs_info *c, struct ubifs_cnode *cnode,
 					cnode = cn;
 					break;
 				}
-				/* Go right */
+				 
 				iip += 1;
 			}
 			if (iip < UBIFS_LPT_FANOUT)
@@ -2419,13 +1994,13 @@ int dbg_check_lpt_nodes(struct ubifs_info *c, struct ubifs_cnode *cnode,
 		} else {
 			struct ubifs_pnode *pnode;
 
-			/* cnode is a pnode */
+			 
 			pnode = (struct ubifs_pnode *)cnode;
 			err = dbg_chk_pnode(c, pnode, col);
 			if (err)
 				return err;
 		}
-		/* Go up and to the right */
+		 
 		row -= 1;
 		col >>= UBIFS_LPT_FANOUT_SHIFT;
 		iip = cnode->iip + 1;

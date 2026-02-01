@@ -1,27 +1,8 @@
-/* l10nflist.c - make localization file list. */
+ 
 
-/* Copyright (C) 1995-1999, 2000, 2001, 2002, 2005-2009 Free Software Foundation, Inc.
-   Contributed by Ulrich Drepper <drepper@gnu.ai.mit.edu>, 1995.
+ 
 
-   This file is part of GNU Bash.
-
-   Bash is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   Bash is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with Bash.  If not, see <http://www.gnu.org/licenses/>.
-*/
-
-/* Tell glibc's <string.h> to provide a prototype for stpcpy().
-   This must come before <config.h> because <config.h> may include
-   <features.h>, and once <features.h> has been included, it's too late.  */
+ 
 #ifndef _GNU_SOURCE
 # define _GNU_SOURCE	1
 #endif
@@ -41,7 +22,7 @@
 
 #include "loadinfo.h"
 
-/* On some strange systems still no definition of NULL is found.  Sigh!  */
+ 
 #ifndef NULL
 # if defined __STDC__ && __STDC__
 #  define NULL ((void *) 0)
@@ -50,12 +31,10 @@
 # endif
 #endif
 
-/* @@ end of prolog @@ */
+ 
 
 #ifdef _LIBC
-/* Rename the non ANSI C functions.  This is required by the standard
-   because some ANSI C functions will require linking with this object
-   file and the name space must not be polluted.  */
+ 
 # ifndef stpcpy
 #  define stpcpy(dest, src) __stpcpy(dest, src)
 # endif
@@ -65,28 +44,24 @@ static char *stpcpy PARAMS ((char *dest, const char *src));
 # endif
 #endif
 
-/* Pathname support.
-   ISSLASH(C)           tests whether C is a directory separator character.
-   IS_ABSOLUTE_PATH(P)  tests whether P is an absolute path.  If it is not,
-                        it may be concatenated to a directory pathname.
- */
+ 
 #if defined _WIN32 || defined __WIN32__ || defined __EMX__ || defined __DJGPP__
-  /* Win32, OS/2, DOS */
+   
 # define ISSLASH(C) ((C) == '/' || (C) == '\\')
 # define HAS_DEVICE(P) \
     ((((P)[0] >= 'A' && (P)[0] <= 'Z') || ((P)[0] >= 'a' && (P)[0] <= 'z')) \
      && (P)[1] == ':')
 # define IS_ABSOLUTE_PATH(P) (ISSLASH ((P)[0]) || HAS_DEVICE (P))
 #else
-  /* Unix */
+   
 # define ISSLASH(C) ((C) == '/')
 # define IS_ABSOLUTE_PATH(P) ISSLASH ((P)[0])
 #endif
 
-/* Define function which are usually not available.  */
+ 
 
 #if !defined _LIBC && !defined HAVE___ARGZ_COUNT
-/* Returns the number of strings in ARGZ.  */
+ 
 static size_t argz_count__ PARAMS ((const char *argz, size_t len));
 
 static size_t
@@ -110,11 +85,10 @@ argz_count__ (argz, len)
 # ifdef _LIBC
 #  define __argz_count(argz, len) INTUSE(__argz_count) (argz, len)
 # endif
-#endif	/* !_LIBC && !HAVE___ARGZ_COUNT */
+#endif	 
 
 #if !defined _LIBC && !defined HAVE___ARGZ_STRINGIFY
-/* Make '\0' separated arg vector ARGZ printable by converting all the '\0's
-   except the last into the character SEP.  */
+ 
 static void argz_stringify__ PARAMS ((char *argz, size_t len, int sep));
 
 static void
@@ -139,7 +113,7 @@ argz_stringify__ (argz, len, sep)
 #  define __argz_stringify(argz, len, sep) \
   INTUSE(__argz_stringify) (argz, len, sep)
 # endif
-#endif	/* !_LIBC && !HAVE___ARGZ_STRINGIFY */
+#endif	 
 
 #if !defined _LIBC && !defined HAVE___ARGZ_NEXT
 static char *argz_next__ PARAMS ((char *argz, size_t argz_len,
@@ -166,17 +140,17 @@ argz_next__ (argz, argz_len, entry)
 }
 # undef __argz_next
 # define __argz_next(argz, len, entry) argz_next__ (argz, len, entry)
-#endif	/* !_LIBC && !HAVE___ARGZ_NEXT */
+#endif	 
 
 
-/* Return number of bits set in X.  */
+ 
 static int pop PARAMS ((int x));
 
 static inline int
 pop (x)
      int x;
 {
-  /* We assume that no more than 16 bits are used.  */
+   
   x = ((x & ~0x5555) >> 1) + (x & 0x5555);
   x = ((x & ~0x3333) >> 2) + (x & 0x3333);
   x = ((x >> 4) + x) & 0x0f0f;
@@ -213,12 +187,11 @@ _nl_make_l10nflist (l10nfile_list, dirlist, dirlist_len, mask, language,
   size_t entries;
   int cnt;
 
-  /* If LANGUAGE contains an absolute directory specification, we ignore
-     DIRLIST.  */
+   
   if (IS_ABSOLUTE_PATH (language))
     dirlist_len = 0;
 
-  /* Allocate room for the full file name.  */
+   
   abs_filename = (char *) malloc (dirlist_len
 				  + strlen (language)
 				  + ((mask & TERRITORY) != 0
@@ -243,7 +216,7 @@ _nl_make_l10nflist (l10nfile_list, dirlist, dirlist_len, mask, language,
   if (abs_filename == NULL)
     return NULL;
 
-  /* Construct file name.  */
+   
   cp = abs_filename;
   if (dirlist_len > 0)
     {
@@ -272,8 +245,7 @@ _nl_make_l10nflist (l10nfile_list, dirlist, dirlist_len, mask, language,
     }
   if ((mask & (XPG_MODIFIER | CEN_AUDIENCE)) != 0)
     {
-      /* This component can be part of both syntaxes but has different
-	 leading characters.  For CEN we use `+', else `@'.  */
+       
       *cp++ = (mask & CEN_AUDIENCE) != 0 ? '+' : '@';
       cp = stpcpy (cp, modifier);
     }
@@ -297,19 +269,18 @@ _nl_make_l10nflist (l10nfile_list, dirlist, dirlist_len, mask, language,
   *cp++ = '/';
   stpcpy (cp, filename);
 
-  /* Look in list of already loaded domains whether it is already
-     available.  */
+   
   lastp = l10nfile_list;
   for (retval = *l10nfile_list; retval != NULL; retval = retval->next)
     if (retval->filename != NULL)
       {
 	int compare = strcmp (retval->filename, abs_filename);
 	if (compare == 0)
-	  /* We found it!  */
+	   
 	  break;
 	if (compare < 0)
 	  {
-	    /* It's not in the list.  */
+	     
 	    retval = NULL;
 	    break;
 	  }
@@ -325,7 +296,7 @@ _nl_make_l10nflist (l10nfile_list, dirlist, dirlist_len, mask, language,
 
   dirlist_count = (dirlist_len > 0 ? __argz_count (dirlist, dirlist_len) : 1);
 
-  /* Allocate a new loaded_l10nfile.  */
+   
   retval =
     (struct loaded_l10nfile *)
     malloc (sizeof (*retval)
@@ -339,10 +310,7 @@ _nl_make_l10nflist (l10nfile_list, dirlist, dirlist_len, mask, language,
 
   retval->filename = abs_filename;
 
-  /* We set retval->data to NULL here; it is filled in later.
-     Setting retval->decided to 1 here means that retval does not
-     correspond to a real file (dirlist_count > 1) or is not worth
-     looking up (if an unnormalized codeset was specified).  */
+   
   retval->decided = (dirlist_count > 1
 		     || ((mask & XPG_CODESET) != 0
 			 && (mask & XPG_NORM_CODESET) != 0));
@@ -352,18 +320,7 @@ _nl_make_l10nflist (l10nfile_list, dirlist, dirlist_len, mask, language,
   *lastp = retval;
 
   entries = 0;
-  /* Recurse to fill the inheritance list of RETVAL.
-     If the DIRLIST is a real list (i.e. DIRLIST_COUNT > 1), the RETVAL
-     entry does not correspond to a real file; retval->filename contains
-     colons.  In this case we loop across all elements of DIRLIST and
-     across all bit patterns dominated by MASK.
-     If the DIRLIST is a single directory or entirely redundant (i.e.
-     DIRLIST_COUNT == 1), we loop across all bit patterns dominated by
-     MASK, excluding MASK itself.
-     In either case, we loop down from MASK to 0.  This has the effect
-     that the extra bits in the locale name are dropped in this order:
-     first the modifier, then the territory, then the codeset, then the
-     normalized_codeset.  */
+   
   for (cnt = dirlist_count > 1 ? mask : mask - 1; cnt >= 0; --cnt)
     if ((cnt & ~mask) == 0
 	&& ((cnt & CEN_SPECIFIC) == 0 || (cnt & XPG_SPECIFIC) == 0)
@@ -371,7 +328,7 @@ _nl_make_l10nflist (l10nfile_list, dirlist, dirlist_len, mask, language,
       {
 	if (dirlist_count > 1)
 	  {
-	    /* Iterate over all elements of the DIRLIST.  */
+	     
 	    char *dir = NULL;
 
 	    while ((dir = __argz_next ((char *) dirlist, dirlist_len, dir))
@@ -394,10 +351,7 @@ _nl_make_l10nflist (l10nfile_list, dirlist, dirlist_len, mask, language,
   return retval;
 }
 
-/* Normalize codeset name.  There is no standard for the codeset
-   names.  Normalization allows the user to use any of the common
-   names.  The return value is dynamically allocated and has to be
-   freed by the caller.  */
+ 
 const char *
 _nl_normalize_codeset (codeset, name_len)
      const char *codeset;
@@ -440,12 +394,9 @@ _nl_normalize_codeset (codeset, name_len)
 }
 
 
-/* @@ begin of epilog @@ */
+ 
 
-/* We don't want libintl.a to depend on any other library.  So we
-   avoid the non-standard function stpcpy.  In GNU C Library this
-   function is available, though.  Also allow the symbol HAVE_STPCPY
-   to be defined.  */
+ 
 #if !_LIBC && !HAVE_STPCPY
 static char *
 stpcpy (dest, src)
@@ -453,7 +404,7 @@ stpcpy (dest, src)
      const char *src;
 {
   while ((*dest++ = *src++) != '\0')
-    /* Do nothing. */ ;
+      ;
   return dest - 1;
 }
 #endif

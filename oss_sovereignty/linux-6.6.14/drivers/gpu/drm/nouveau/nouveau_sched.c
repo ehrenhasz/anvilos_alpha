@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: MIT
+
 
 #include <linux/slab.h>
 #include <drm/gpu_scheduler.h>
@@ -12,17 +12,7 @@
 #include "nouveau_abi16.h"
 #include "nouveau_sched.h"
 
-/* FIXME
- *
- * We want to make sure that jobs currently executing can't be deferred by
- * other jobs competing for the hardware. Otherwise we might end up with job
- * timeouts just because of too many clients submitting too many jobs. We don't
- * want jobs to time out because of system load, but because of the job being
- * too bulky.
- *
- * For now allow for up to 16 concurrent jobs in flight until we know how many
- * rings the hardware can process in parallel.
- */
+ 
 #define NOUVEAU_SCHED_HW_SUBMISSIONS		16
 #define NOUVEAU_SCHED_JOB_TIMEOUT_MS		10000
 
@@ -142,7 +132,7 @@ sync_find_fence(struct nouveau_job *job,
 
 	ret = drm_syncobj_find_fence(job->file_priv,
 				     sync->handle, point,
-				     0 /* flags */, fence);
+				     0  , fence);
 	if (ret)
 		return ret;
 
@@ -273,14 +263,10 @@ nouveau_job_submit(struct nouveau_job *job)
 	if (ret)
 		goto err;
 
-	/* Make sure the job appears on the sched_entity's queue in the same
-	 * order as it was submitted.
-	 */
+	 
 	mutex_lock(&entity->mutex);
 
-	/* Guarantee we won't fail after the submit() callback returned
-	 * successfully.
-	 */
+	 
 	if (job->ops->submit) {
 		ret = job->ops->submit(job);
 		if (ret)
@@ -292,26 +278,7 @@ nouveau_job_submit(struct nouveau_job *job)
 	if (job->sync)
 		done_fence = dma_fence_get(job->done_fence);
 
-	/* If a sched job depends on a dma-fence from a job from the same GPU
-	 * scheduler instance, but a different scheduler entity, the GPU
-	 * scheduler does only wait for the particular job to be scheduled,
-	 * rather than for the job to fully complete. This is due to the GPU
-	 * scheduler assuming that there is a scheduler instance per ring.
-	 * However, the current implementation, in order to avoid arbitrary
-	 * amounts of kthreads, has a single scheduler instance while scheduler
-	 * entities represent rings.
-	 *
-	 * As a workaround, set the DRM_SCHED_FENCE_DONT_PIPELINE for all
-	 * out-fences in order to force the scheduler to wait for full job
-	 * completion for dependent jobs from different entities and same
-	 * scheduler instance.
-	 *
-	 * There is some work in progress [1] to address the issues of firmware
-	 * schedulers; once it is in-tree the scheduler topology in Nouveau
-	 * should be re-worked accordingly.
-	 *
-	 * [1] https://lore.kernel.org/dri-devel/20230801205103.627779-1-matthew.brost@intel.com/
-	 */
+	 
 	set_bit(DRM_SCHED_FENCE_DONT_PIPELINE, &job->done_fence->flags);
 
 	if (job->ops->armed_submit)
@@ -319,9 +286,7 @@ nouveau_job_submit(struct nouveau_job *job)
 
 	nouveau_job_fence_attach(job);
 
-	/* Set job state before pushing the job to the scheduler,
-	 * such that we do not overwrite the job state set in run().
-	 */
+	 
 	job->state = NOUVEAU_JOB_SUBMIT_SUCCESS;
 
 	drm_sched_entity_push_job(&job->base);

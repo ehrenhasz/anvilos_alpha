@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2005-2014 Brocade Communications Systems, Inc.
- * Copyright (c) 2014- QLogic Corporation.
- * All rights reserved
- * www.qlogic.com
- *
- * Linux driver for QLogic BR-series Fibre Channel Host Bus Adapter.
- */
+
+ 
 
 #include "bfad_drv.h"
 #include "bfa_modules.h"
@@ -14,9 +7,7 @@
 
 BFA_TRC_FILE(HAL, IOCFC_CT);
 
-/*
- * Dummy interrupt handler for handling spurious interrupt during chip-reinit.
- */
+ 
 static void
 bfa_hwct_msix_dummy(struct bfa_s *bfa, int vec)
 {
@@ -57,12 +48,7 @@ bfa_hwct_reqq_ack(struct bfa_s *bfa, int reqq)
 	writel(r32, bfa->iocfc.bfa_regs.cpe_q_ctrl[reqq]);
 }
 
-/*
- * Actions to respond RME Interrupt for Catapult ASIC:
- * - Write 1 to Interrupt Status register (INTx only - done in bfa_intx())
- * - Acknowledge by writing to RME Queue Control register
- * - Update CI
- */
+ 
 void
 bfa_hwct_rspq_ack(struct bfa_s *bfa, int rspq, u32 ci)
 {
@@ -75,11 +61,7 @@ bfa_hwct_rspq_ack(struct bfa_s *bfa, int rspq, u32 ci)
 	writel(ci, bfa->iocfc.bfa_regs.rme_q_ci[rspq]);
 }
 
-/*
- * Actions to respond RME Interrupt for Catapult2 ASIC:
- * - Write 1 to Interrupt Status register (INTx only - done in bfa_intx())
- * - Update CI
- */
+ 
 void
 bfa_hwct2_rspq_ack(struct bfa_s *bfa, int rspq, u32 ci)
 {
@@ -96,9 +78,7 @@ bfa_hwct_msix_getvecs(struct bfa_s *bfa, u32 *msix_vecs_bmap,
 	*num_vecs = BFI_MSIX_CT_MAX;
 }
 
-/*
- * Setup MSI-X vector for catapult
- */
+ 
 void
 bfa_hwct_msix_init(struct bfa_s *bfa, int nvecs)
 {
@@ -151,9 +131,7 @@ bfa_hwct_msix_uninstall(struct bfa_s *bfa)
 		bfa->msix.handler[i] = bfa_hwct_msix_dummy;
 }
 
-/*
- * Enable MSI-X vectors
- */
+ 
 void
 bfa_hwct_isr_mode_set(struct bfa_s *bfa, bfa_boolean_t msix)
 {

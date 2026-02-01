@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Hardware monitoring driver for ZL6100 and compatibles
- *
- * Copyright (c) 2011 Ericsson AB.
- * Copyright (c) 2012 Guenter Roeck
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/kernel.h>
@@ -22,8 +17,8 @@ enum chips { zl2004, zl2005, zl2006, zl2008, zl2105, zl2106, zl6100, zl6105,
 
 struct zl6100_data {
 	int id;
-	ktime_t access;		/* chip access time */
-	int delay;		/* Delay between chip accesses in uS */
+	ktime_t access;		 
+	int delay;		 
 	struct pmbus_driver_info info;
 };
 
@@ -50,13 +45,13 @@ struct zl6100_data {
 #define VMON_UV_FAULT			BIT(1)
 #define VMON_OV_FAULT			BIT(0)
 
-#define ZL6100_WAIT_TIME		1000	/* uS	*/
+#define ZL6100_WAIT_TIME		1000	 
 
 static ushort delay = ZL6100_WAIT_TIME;
 module_param(delay, ushort, 0644);
 MODULE_PARM_DESC(delay, "Delay between chip accesses in uS");
 
-/* Convert linear sensor value to milli-units */
+ 
 static long zl6100_l2d(s16 l)
 {
 	s16 exponent;
@@ -68,7 +63,7 @@ static long zl6100_l2d(s16 l)
 
 	val = mantissa;
 
-	/* scale result to milli-units */
+	 
 	val = val * 1000L;
 
 	if (exponent >= 0)
@@ -87,7 +82,7 @@ static u16 zl6100_d2l(long val)
 	s16 exponent = 0, mantissa;
 	bool negative = false;
 
-	/* simple case */
+	 
 	if (val == 0)
 		return 0;
 
@@ -96,33 +91,33 @@ static u16 zl6100_d2l(long val)
 		val = -val;
 	}
 
-	/* Reduce large mantissa until it fits into 10 bit */
+	 
 	while (val >= MAX_MANTISSA && exponent < 15) {
 		exponent++;
 		val >>= 1;
 	}
-	/* Increase small mantissa to improve precision */
+	 
 	while (val < MIN_MANTISSA && exponent > -15) {
 		exponent--;
 		val <<= 1;
 	}
 
-	/* Convert mantissa from milli-units to units */
+	 
 	mantissa = DIV_ROUND_CLOSEST(val, 1000);
 
-	/* Ensure that resulting number is within range */
+	 
 	if (mantissa > 0x3ff)
 		mantissa = 0x3ff;
 
-	/* restore sign */
+	 
 	if (negative)
 		mantissa = -mantissa;
 
-	/* Convert to 5 bit exponent, 11 bit mantissa */
+	 
 	return (mantissa & 0x7ff) | ((exponent << 11) & 0xf800);
 }
 
-/* Some chips need a delay between accesses */
+ 
 static inline void zl6100_wait(const struct zl6100_data *data)
 {
 	if (data->delay) {
@@ -143,10 +138,7 @@ static int zl6100_read_word_data(struct i2c_client *client, int page,
 		return -ENXIO;
 
 	if (data->id == zl2005) {
-		/*
-		 * Limit register detection is not reliable on ZL2005.
-		 * Make sure registers are not erroneously detected.
-		 */
+		 
 		switch (reg) {
 		case PMBUS_VOUT_OV_WARN_LIMIT:
 		case PMBUS_VOUT_UV_WARN_LIMIT:
@@ -358,17 +350,10 @@ static int zl6100_probe(struct i2c_client *client)
 
 	data->id = mid->driver_data;
 
-	/*
-	 * According to information from the chip vendor, all currently
-	 * supported chips are known to require a wait time between I2C
-	 * accesses.
-	 */
+	 
 	data->delay = delay;
 
-	/*
-	 * Since there was a direct I2C device access above, wait before
-	 * accessing the chip again.
-	 */
+	 
 	data->access = ktime_get();
 	zl6100_wait(data);
 
@@ -380,22 +365,12 @@ static int zl6100_probe(struct i2c_client *client)
 	  | PMBUS_HAVE_IOUT | PMBUS_HAVE_STATUS_IOUT
 	  | PMBUS_HAVE_TEMP | PMBUS_HAVE_STATUS_TEMP;
 
-	/*
-	 * ZL2004, ZL8802, ZL9101M, ZL9117M and ZLS4009 support monitoring
-	 * an extra voltage (VMON for ZL2004, ZL8802 and ZLS4009,
-	 * VDRV for ZL9101M and ZL9117M). Report it as vmon.
-	 */
+	 
 	if (data->id == zl2004 || data->id == zl8802 || data->id == zl9101 ||
 	    data->id == zl9117 || data->id == zls4009)
 		info->func[0] |= PMBUS_HAVE_VMON | PMBUS_HAVE_STATUS_VMON;
 
-	/*
-	 * ZL8802 has two outputs that can be used either independently or in
-	 * a current sharing configuration. The driver uses the DDC_CONFIG
-	 * register to check if the module is running with independent or
-	 * shared outputs. If the module is in shared output mode, only one
-	 * output voltage will be reported.
-	 */
+	 
 	if (data->id == zl8802) {
 		info->pages = 2;
 		info->func[0] |= PMBUS_HAVE_IIN;

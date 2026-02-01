@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2019 Intel Corporation
- */
+ 
+ 
 
 #ifndef __INTEL_LPE_AUDIO_H__
 #define __INTEL_LPE_AUDIO_H__
@@ -19,4 +17,4 @@ void intel_lpe_audio_notify(struct drm_i915_private *dev_priv,
 			    enum transcoder cpu_transcoder, enum port port,
 			    const void *eld, int ls_clock, bool dp_output);
 
-#endif /* __INTEL_LPE_AUDIO_H__ */
+#endif  

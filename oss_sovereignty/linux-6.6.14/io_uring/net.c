@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/kernel.h>
 #include <linux/errno.h>
 #include <linux/file.h>
@@ -61,23 +61,19 @@ struct io_sr_msg {
 	unsigned			done_io;
 	unsigned			msg_flags;
 	u16				flags;
-	/* initialised and used only by !msg send variants */
+	 
 	u16				addr_len;
 	u16				buf_group;
 	void __user			*addr;
 	void __user			*msg_control;
-	/* used only for send zerocopy */
+	 
 	struct io_kiocb 		*notif;
 };
 
 static inline bool io_check_multishot(struct io_kiocb *req,
 				      unsigned int issue_flags)
 {
-	/*
-	 * When ->locked_cq is set we only allow to post CQEs from the original
-	 * task context. Usual request completions will be handled in other
-	 * generic paths but multipoll may decide to post extra cqes.
-	 */
+	 
 	return !(issue_flags & IO_URING_F_IOWQ) ||
 		!(issue_flags & IO_URING_F_MULTISHOT) ||
 		!req->ctx->task_complete;
@@ -127,7 +123,7 @@ static void io_netmsg_recycle(struct io_kiocb *req, unsigned int issue_flags)
 	if (!req_has_async_data(req) || issue_flags & IO_URING_F_UNLOCKED)
 		return;
 
-	/* Let normal cleanup path reap it if we fail adding to the cache */
+	 
 	if (io_alloc_cache_put(&req->ctx->netmsg_cache, &hdr->cache)) {
 		req->async_data = NULL;
 		req->flags &= ~REQ_F_ASYNC_DATA;
@@ -162,7 +158,7 @@ static struct io_async_msghdr *io_msg_alloc_async(struct io_kiocb *req,
 
 static inline struct io_async_msghdr *io_msg_alloc_async_prep(struct io_kiocb *req)
 {
-	/* ->prep_async is always called from the submission context */
+	 
 	return io_msg_alloc_async(req, 0);
 }
 
@@ -187,7 +183,7 @@ static int io_setup_async_msg(struct io_kiocb *req,
 	if ((req->flags & REQ_F_BUFFER_SELECT) && !async_msg->msg.msg_iter.nr_segs)
 		return -EAGAIN;
 
-	/* if were using fast_iov, set it to the new one */
+	 
 	if (iter_is_iovec(&kmsg->msg.msg_iter) && !kmsg->free_iov) {
 		size_t fast_idx = iter_iov(&kmsg->msg.msg_iter) - kmsg->fast_iov;
 		async_msg->msg.msg_iter.__iov = &async_msg->fast_iov[fast_idx];
@@ -206,7 +202,7 @@ static int io_sendmsg_copy_hdr(struct io_kiocb *req,
 	iomsg->free_iov = iomsg->fast_iov;
 	ret = sendmsg_copy_msghdr(&iomsg->msg, sr->umsg, sr->msg_flags,
 					&iomsg->free_iov);
-	/* save msg_control as sys_sendmsg() overwrites it */
+	 
 	sr->msg_control = iomsg->msg.msg_control_user;
 	return ret;
 }
@@ -340,7 +336,7 @@ int io_sendmsg(struct io_kiocb *req, unsigned int issue_flags)
 			ret = -EINTR;
 		req_set_fail(req);
 	}
-	/* fast path, check for non-NULL to avoid function call */
+	 
 	if (kmsg->free_iov)
 		kfree(kmsg->free_iov);
 	req->flags &= ~REQ_F_NEED_CLEANUP;
@@ -595,14 +591,7 @@ int io_recvmsg_prep(struct io_kiocb *req, const struct io_uring_sqe *sqe)
 		if (req->opcode == IORING_OP_RECV && sr->len)
 			return -EINVAL;
 		req->flags |= REQ_F_APOLL_MULTISHOT;
-		/*
-		 * Store the buffer group for this multishot receive separately,
-		 * as if we end up doing an io-wq based issue that selects a
-		 * buffer, it has to be committed immediately and that will
-		 * clear ->buf_list. This means we lose the link to the buffer
-		 * list, and the eventual buffer put on completion then cannot
-		 * restore it.
-		 */
+		 
 		sr->buf_group = req->buf_index;
 	}
 
@@ -619,16 +608,11 @@ static inline void io_recv_prep_retry(struct io_kiocb *req)
 	struct io_sr_msg *sr = io_kiocb_to_cmd(req, struct io_sr_msg);
 
 	sr->done_io = 0;
-	sr->len = 0; /* get from the provided buffer */
+	sr->len = 0;  
 	req->buf_index = sr->buf_group;
 }
 
-/*
- * Finishes io_recv and io_recvmsg.
- *
- * Returns true if it is actually finished, or false if it should run
- * again (for multishot).
- */
+ 
 static inline bool io_recv_finish(struct io_kiocb *req, int *ret,
 				  struct msghdr *msg, bool mshot_finished,
 				  unsigned issue_flags)
@@ -649,7 +633,7 @@ static inline bool io_recv_finish(struct io_kiocb *req, int *ret,
 		if (io_fill_cqe_req_aux(req, issue_flags & IO_URING_F_COMPLETE_DEFER,
 					*ret, cflags | IORING_CQE_F_MORE)) {
 			io_recv_prep_retry(req);
-			/* Known not-empty or unknown state, retry */
+			 
 			if (cflags & IORING_CQE_F_SOCK_NONEMPTY ||
 			    msg->msg_inq == -1)
 				return false;
@@ -659,7 +643,7 @@ static inline bool io_recv_finish(struct io_kiocb *req, int *ret,
 				*ret = -EAGAIN;
 			return true;
 		}
-		/* Otherwise stop multishot but use the current result. */
+		 
 	}
 
 	io_req_set_res(req, *ret, cflags);
@@ -690,7 +674,7 @@ static int io_recvmsg_prep_multishot(struct io_async_msghdr *kmsg,
 		kmsg->msg.msg_controllen = kmsg->controllen;
 	}
 
-	sr->buf = *buf; /* stash for later copy */
+	sr->buf = *buf;  
 	*buf = (void __user *) (ubuf + hdr);
 	kmsg->payloadlen = *len = *len - hdr;
 	return 0;
@@ -737,13 +721,10 @@ static int io_recvmsg_multishot(struct socket *sock, struct io_sr_msg *io,
 	else
 		copy_len += kmsg->msg.msg_namelen;
 
-	/*
-	 *      "fromlen shall refer to the value before truncation.."
-	 *                      1003.1g
-	 */
+	 
 	hdr.msg.namelen = kmsg->msg.msg_namelen;
 
-	/* ensure that there is no gap between hdr and sockaddr_storage */
+	 
 	BUILD_BUG_ON(offsetof(struct io_recvmsg_multishot_hdr, addr) !=
 		     sizeof(struct io_uring_recvmsg_out));
 	if (copy_to_user(io->buf, &hdr, copy_len)) {
@@ -815,7 +796,7 @@ retry_multishot:
 		ret = io_recvmsg_multishot(sock, sr, kmsg, flags,
 					   &mshot_finished);
 	} else {
-		/* disable partial retry for recvmsg with cmsg attached */
+		 
 		if (flags & MSG_WAITALL && !kmsg->msg.msg_controllen)
 			min_ret = iov_iter_count(&kmsg->msg.msg_iter);
 
@@ -855,7 +836,7 @@ retry_multishot:
 		goto retry_multishot;
 
 	if (mshot_finished) {
-		/* fast path, check for non-NULL to avoid function call */
+		 
 		if (kmsg->free_iov)
 			kfree(kmsg->free_iov);
 		io_netmsg_recycle(req, issue_flags);
@@ -962,7 +943,7 @@ void io_send_zc_cleanup(struct io_kiocb *req)
 
 	if (req_has_async_data(req)) {
 		io = req->async_data;
-		/* might be ->fast_iov if *msg_copy_hdr failed */
+		 
 		if (io->free_iov != io->fast_iov)
 			kfree(io->free_iov);
 	}
@@ -983,7 +964,7 @@ int io_send_zc_prep(struct io_kiocb *req, const struct io_uring_sqe *sqe)
 
 	if (unlikely(READ_ONCE(sqe->__pad2[0]) || READ_ONCE(sqe->addr3)))
 		return -EINVAL;
-	/* we don't support IOSQE_CQE_SKIP_SUCCESS just yet */
+	 
 	if (req->flags & REQ_F_CQE_SKIP)
 		return -EINVAL;
 
@@ -1187,10 +1168,7 @@ int io_send_zc(struct io_kiocb *req, unsigned int issue_flags)
 	else if (zc->done_io)
 		ret = zc->done_io;
 
-	/*
-	 * If we're in io-wq we can't rely on tw ordering guarantees, defer
-	 * flushing notif to io_send_zc_cleanup()
-	 */
+	 
 	if (!(issue_flags & IO_URING_F_UNLOCKED)) {
 		io_notif_flush(zc->notif);
 		req->flags &= ~REQ_F_NEED_CLEANUP;
@@ -1251,7 +1229,7 @@ int io_sendmsg_zc(struct io_kiocb *req, unsigned int issue_flags)
 			ret = -EINTR;
 		req_set_fail(req);
 	}
-	/* fast path, check for non-NULL to avoid function call */
+	 
 	if (kmsg->free_iov) {
 		kfree(kmsg->free_iov);
 		kmsg->free_iov = NULL;
@@ -1263,10 +1241,7 @@ int io_sendmsg_zc(struct io_kiocb *req, unsigned int issue_flags)
 	else if (sr->done_io)
 		ret = sr->done_io;
 
-	/*
-	 * If we're in io-wq we can't rely on tw ordering guarantees, defer
-	 * flushing notif to io_send_zc_cleanup()
-	 */
+	 
 	if (!(issue_flags & IO_URING_F_UNLOCKED)) {
 		io_notif_flush(sr->notif);
 		req->flags &= ~REQ_F_NEED_CLEANUP;
@@ -1344,11 +1319,7 @@ retry:
 			put_unused_fd(fd);
 		ret = PTR_ERR(file);
 		if (ret == -EAGAIN && force_nonblock) {
-			/*
-			 * if it's multishot and polled, we don't need to
-			 * return EAGAIN to arm the poll infra since it
-			 * has already been done
-			 */
+			 
 			if (issue_flags & IO_URING_F_MULTISHOT)
 				ret = IOU_ISSUE_SKIP_COMPLETE;
 			return ret;
@@ -1495,12 +1466,7 @@ int io_connect(struct io_kiocb *req, unsigned int issue_flags)
 		return -EAGAIN;
 	}
 	if (connect->in_progress) {
-		/*
-		 * At least bluetooth will return -EBADFD on a re-connect
-		 * attempt, and it's (supposedly) also valid to get -EISCONN
-		 * which means the previous result is good. For both of these,
-		 * grab the sock_error() and use that for the completion.
-		 */
+		 
 		if (ret == -EBADFD || ret == -EISCONN)
 			ret = sock_error(sock_from_file(req->file)->sk);
 	}

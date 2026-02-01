@@ -1,60 +1,20 @@
-/*
- * Linux driver attachment glue for PCI based U320 controllers.
- *
- * Copyright (c) 2000-2001 Adaptec Inc.
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions, and the following disclaimer,
- *    without modification.
- * 2. Redistributions in binary form must reproduce at minimum a disclaimer
- *    substantially similar to the "NO WARRANTY" disclaimer below
- *    ("Disclaimer") and any redistribution must be conditioned upon
- *    including a substantially similar Disclaimer requirement for further
- *    binary redistribution.
- * 3. Neither the names of the above-listed copyright holders nor the names
- *    of any contributors may be used to endorse or promote products derived
- *    from this software without specific prior written permission.
- *
- * Alternatively, this software may be distributed under the terms of the
- * GNU General Public License ("GPL") version 2 as published by the Free
- * Software Foundation.
- *
- * NO WARRANTY
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTIBILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * HOLDERS OR CONTRIBUTORS BE LIABLE FOR SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
- * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
- * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
- * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGES.
- *
- * $Id: //depot/aic7xxx/linux/drivers/scsi/aic7xxx/aic79xx_osm_pci.c#25 $
- */
+ 
 
 #include "aic79xx_osm.h"
 #include "aic79xx_inline.h"
 #include "aic79xx_pci.h"
 
-/* Define the macro locally since it's different for different class of chips.
- */
+ 
 #define ID(x)		 \
 	ID2C(x),	 \
 	ID2C(IDIROC(x))
 
 static const struct pci_device_id ahd_linux_pci_id_table[] = {
-	/* aic7901 based controllers */
+	 
 	ID(ID_AHA_29320A),
 	ID(ID_AHA_29320ALP),
 	ID(ID_AHA_29320LPE),
-	/* aic7902 based controllers */
+	 
 	ID(ID_AHA_29320),
 	ID(ID_AHA_29320B),
 	ID(ID_AHA_29320LP),
@@ -65,7 +25,7 @@ static const struct pci_device_id ahd_linux_pci_id_table[] = {
 	ID(ID_AHA_39320D_HP),
 	ID(ID_AHA_39320D_B),
 	ID(ID_AHA_39320D_B_HP),
-	/* Generic chip probes for devices we don't know exactly. */
+	 
 	ID16(ID_AIC7901 & ID_9005_GENERIC_MASK),
 	ID(ID_AIC7901A & ID_DEV_VENDOR_MASK),
 	ID16(ID_AIC7902 & ID_9005_GENERIC_MASK),
@@ -149,11 +109,7 @@ ahd_linux_pci_dev_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 	if (entry == NULL)
 		return (-ENODEV);
 
-	/*
-	 * Allocate a softc for this card and
-	 * set it up for attachment by our
-	 * common detect routine.
-	 */
+	 
 	sprintf(buf, "ahd_pci:%d:%d:%d",
 		ahd_get_pci_bus(pci),
 		ahd_get_pci_slot(pci),
@@ -191,10 +147,7 @@ ahd_linux_pci_dev_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 		return (-error);
 	}
 
-	/*
-	 * Second Function PCI devices need to inherit some
-	 * * settings from function 0.
-	 */
+	 
 	if ((ahd->features & AHD_MULTI_FUNC) && PCI_FUNC(pdev->devfn) != 0)
 		ahd_linux_pci_inherit_flags(ahd);
 
@@ -233,11 +186,7 @@ ahd_linux_pci_reserve_io_regions(struct ahd_softc *ahd, resource_size_t *base,
 				 resource_size_t *base2)
 {
 	*base = pci_resource_start(ahd->dev_softc, 0);
-	/*
-	 * This is really the 3rd bar and should be at index 2,
-	 * but the Linux PCI code doesn't know how to "count" 64bit
-	 * bars.
-	 */
+	 
 	*base2 = pci_resource_start(ahd->dev_softc, 3);
 	if (*base == 0 || *base2 == 0)
 		return (ENOMEM);
@@ -294,9 +243,7 @@ ahd_pci_map_registers(struct ahd_softc *ahd)
 	uint8_t	__iomem *maddr;
 	int	 error;
 
-	/*
-	 * If its allowed, we prefer memory mapped access.
-	 */
+	 
 	command = ahd_pci_read_config(ahd->dev_softc, PCIR_COMMAND, 4);
 	command &= ~(PCIM_CMD_PORTEN|PCIM_CMD_MEMEN);
 	base = 0;

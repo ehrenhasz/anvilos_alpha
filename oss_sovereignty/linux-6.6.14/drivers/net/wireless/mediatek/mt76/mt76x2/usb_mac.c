@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: ISC
-/*
- * Copyright (C) 2018 Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>
- */
+
+ 
 
 #include "mt76x2u.h"
 #include "eeprom.h"
@@ -38,12 +36,12 @@ static void mt76x2u_mac_fixup_xtal(struct mt76x02_dev *dev)
 	mdelay(5);
 	mt76_wr(dev, 0x504, 0x0);
 
-	/* decrease SIFS from 16us to 13us */
+	 
 	mt76_rmw_field(dev, MT_XIFS_TIME_CFG,
 		       MT_XIFS_TIME_CFG_OFDM_SIFS, 0xd);
 	mt76_rmw_field(dev, MT_BKOFF_SLOT_CFG, MT_BKOFF_SLOT_CFG_CC_DELAY, 1);
 
-	/* init fce */
+	 
 	mt76_clear(dev, MT_FCE_L2_STUFF, MT_FCE_L2_STUFF_WR_MPDU_LEN_EN);
 
 	eep_val = mt76x02_eeprom_get(dev, MT_EE_NIC_CONF_2);
@@ -63,7 +61,7 @@ int mt76x2u_mac_reset(struct mt76x02_dev *dev)
 {
 	mt76_wr(dev, MT_WPDMA_GLO_CFG, BIT(4) | BIT(5));
 
-	/* init pbf regs */
+	 
 	mt76_wr(dev, MT_PBF_TX_MAX_PCNT, 0xefef3f1f);
 	mt76_wr(dev, MT_PBF_RX_MAX_PCNT, 0xfebf);
 
@@ -107,7 +105,7 @@ int mt76x2u_mac_stop(struct mt76x02_dev *dev)
 	mt76_clear(dev, MT_TXOP_CTRL_CFG, MT_TXOP_ED_CCA_EN);
 	mt76_clear(dev, MT_TXOP_HLDR_ET, MT_TXOP_HLDR_TX40M_BLK_EN);
 
-	/* wait tx dma to stop */
+	 
 	for (i = 0; i < 2000; i++) {
 		val = mt76_rr(dev, MT_VEND_ADDR(CFG, MT_USB_U3DMA_CFG));
 		if (!(val & MT_USB_DMA_CFG_TX_BUSY) && i > 10)
@@ -115,7 +113,7 @@ int mt76x2u_mac_stop(struct mt76x02_dev *dev)
 		usleep_range(50, 100);
 	}
 
-	/* page count on TxQ */
+	 
 	for (i = 0; i < 200; i++) {
 		if (!(mt76_rr(dev, 0x0438) & 0xffffffff) &&
 		    !(mt76_rr(dev, 0x0a30) & 0x000000ff) &&
@@ -124,12 +122,12 @@ int mt76x2u_mac_stop(struct mt76x02_dev *dev)
 		usleep_range(10, 20);
 	}
 
-	/* disable tx-rx */
+	 
 	mt76_clear(dev, MT_MAC_SYS_CTRL,
 		   MT_MAC_SYS_CTRL_ENABLE_RX |
 		   MT_MAC_SYS_CTRL_ENABLE_TX);
 
-	/* Wait for MAC to become idle */
+	 
 	for (i = 0; i < 1000; i++) {
 		if (!(mt76_rr(dev, MT_MAC_STATUS) & MT_MAC_STATUS_TX) &&
 		    !mt76_rr(dev, MT_BBP(IBI, 12))) {
@@ -147,7 +145,7 @@ int mt76x2u_mac_stop(struct mt76x02_dev *dev)
 		mt76_clear(dev, MT_BBP(CORE, 4), BIT(0));
 	}
 
-	/* page count on RxQ */
+	 
 	for (i = 0; i < 200; i++) {
 		if (!(mt76_rr(dev, 0x0430) & 0x00ff0000) &&
 		    !(mt76_rr(dev, 0x0a30) & 0xffffffff) &&
@@ -160,7 +158,7 @@ int mt76x2u_mac_stop(struct mt76x02_dev *dev)
 	if (!mt76_poll(dev, MT_MAC_STATUS, MT_MAC_STATUS_RX, 0, 2000))
 		dev_warn(dev->mt76.dev, "MAC RX failed to stop\n");
 
-	/* wait rx dma to stop */
+	 
 	for (i = 0; i < 2000; i++) {
 		val = mt76_rr(dev, MT_VEND_ADDR(CFG, MT_USB_U3DMA_CFG));
 		if (!(val & MT_USB_DMA_CFG_RX_BUSY) && i > 10)

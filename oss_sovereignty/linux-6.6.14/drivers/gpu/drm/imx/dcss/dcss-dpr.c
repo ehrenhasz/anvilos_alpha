@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright 2019 NXP.
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/slab.h>
@@ -184,7 +182,7 @@ void dcss_dpr_exit(struct dcss_dpr *dpr)
 {
 	int ch_no;
 
-	/* stop DPR on all channels */
+	 
 	for (ch_no = 0; ch_no < 3; ch_no++) {
 		struct dcss_dpr_ch *ch = &dpr->ch[ch_no];
 
@@ -201,10 +199,10 @@ static u32 dcss_dpr_x_pix_wide_adjust(struct dcss_dpr_ch *ch, u32 pix_wide,
 				      u32 pix_format)
 {
 	u8 pix_in_64byte_map[3][5] = {
-		/* LIN, GPU_STD, GPU_SUP, VPU_YUV420, VPU_VP9 */
-		{   64,       8,       8,          8,     16}, /* PIX_SIZE_8  */
-		{   32,       8,       8,          8,      8}, /* PIX_SIZE_16 */
-		{   16,       4,       4,          8,      8}, /* PIX_SIZE_32 */
+		 
+		{   64,       8,       8,          8,     16},  
+		{   32,       8,       8,          8,      8},  
+		{   16,       4,       4,          8,      8},  
 	};
 	u32 offset;
 	u32 div_64byte_mod, pix_in_64byte;
@@ -524,7 +522,7 @@ void dcss_dpr_format_set(struct dcss_dpr *dpr, int ch_num,
 	dcss_dpr_tile_set(ch, modifier);
 }
 
-/* This function will be called from interrupt context. */
+ 
 void dcss_dpr_write_sysctrl(struct dcss_dpr *dpr)
 {
 	int chnum;

@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * AMD MP2 1.1 descriptor interfaces
- *
- * Copyright (c) 2022, Advanced Micro Devices, Inc.
- * All Rights Reserved.
- *
- * Author: Basavaraj Natikar <Basavaraj.Natikar@amd.com>
- */
+
+ 
 
 #include <linux/hid-sensor-ids.h>
 
@@ -21,7 +14,7 @@
 #define HID_DEFAULT_MAX_VALUE						0x80
 #define HID_DEFAULT_SENSITIVITY						0x7F
 #define HID_USAGE_SENSOR_PROPERTY_CONNECTION_TYPE_PC_INTEGRATED_ENUM	0x01
-/* state enums */
+ 
 #define HID_USAGE_SENSOR_STATE_READY_ENUM				0x02
 #define HID_USAGE_SENSOR_STATE_INITIALIZING_ENUM			0x05
 #define HID_USAGE_SENSOR_EVENT_DATA_UPDATED_ENUM			0x04
@@ -29,27 +22,27 @@
 static int get_report_desc(int sensor_idx, u8 *rep_desc)
 {
 	switch (sensor_idx) {
-	case ACCEL_IDX: /* accelerometer */
+	case ACCEL_IDX:  
 		memset(rep_desc, 0, sizeof(accel3_report_descriptor));
 		memcpy(rep_desc, accel3_report_descriptor,
 		       sizeof(accel3_report_descriptor));
 		break;
-	case GYRO_IDX: /* gyroscope */
+	case GYRO_IDX:  
 		memset(rep_desc, 0, sizeof(gyro3_report_descriptor));
 		memcpy(rep_desc, gyro3_report_descriptor,
 		       sizeof(gyro3_report_descriptor));
 		break;
-	case MAG_IDX: /* magnetometer */
+	case MAG_IDX:  
 		memset(rep_desc, 0, sizeof(comp3_report_descriptor));
 		memcpy(rep_desc, comp3_report_descriptor,
 		       sizeof(comp3_report_descriptor));
 		break;
-	case ALS_IDX: /* ambient light sensor */
+	case ALS_IDX:  
 		memset(rep_desc, 0, sizeof(als_report_descriptor));
 		memcpy(rep_desc, als_report_descriptor,
 		       sizeof(als_report_descriptor));
 		break;
-	case HPD_IDX: /* HPD sensor */
+	case HPD_IDX:  
 		memset(rep_desc, 0, sizeof(hpd_report_descriptor));
 		memcpy(rep_desc, hpd_report_descriptor,
 		       sizeof(hpd_report_descriptor));
@@ -81,7 +74,7 @@ static u8 get_feature_rep(int sensor_idx, int report_id, u8 *feature_report)
 		return report_size;
 
 	switch (sensor_idx) {
-	case ACCEL_IDX: /* accelerometer */
+	case ACCEL_IDX:  
 		get_common_features(&acc_feature.common_property, report_id);
 		acc_feature.accel_change_sesnitivity = HID_DEFAULT_SENSITIVITY;
 		acc_feature.accel_sensitivity_min = HID_DEFAULT_MIN_VALUE;
@@ -89,7 +82,7 @@ static u8 get_feature_rep(int sensor_idx, int report_id, u8 *feature_report)
 		memcpy(feature_report, &acc_feature, sizeof(acc_feature));
 		report_size = sizeof(acc_feature);
 		break;
-	case GYRO_IDX: /* gyroscope */
+	case GYRO_IDX:  
 		get_common_features(&gyro_feature.common_property, report_id);
 		gyro_feature.gyro_change_sesnitivity = HID_DEFAULT_SENSITIVITY;
 		gyro_feature.gyro_sensitivity_min = HID_DEFAULT_MIN_VALUE;
@@ -97,7 +90,7 @@ static u8 get_feature_rep(int sensor_idx, int report_id, u8 *feature_report)
 		memcpy(feature_report, &gyro_feature, sizeof(gyro_feature));
 		report_size = sizeof(gyro_feature);
 		break;
-	case MAG_IDX: /* magnetometer */
+	case MAG_IDX:  
 		get_common_features(&magno_feature.common_property, report_id);
 		magno_feature.magno_headingchange_sensitivity = HID_DEFAULT_SENSITIVITY;
 		magno_feature.heading_min = HID_DEFAULT_MIN_VALUE;
@@ -108,7 +101,7 @@ static u8 get_feature_rep(int sensor_idx, int report_id, u8 *feature_report)
 		memcpy(feature_report, &magno_feature, sizeof(magno_feature));
 		report_size = sizeof(magno_feature);
 		break;
-	case ALS_IDX:  /* ambient light sensor */
+	case ALS_IDX:   
 		get_common_features(&als_feature.common_property, report_id);
 		als_feature.als_change_sesnitivity = HID_DEFAULT_SENSITIVITY;
 		als_feature.als_sensitivity_min = HID_DEFAULT_MIN_VALUE;
@@ -116,7 +109,7 @@ static u8 get_feature_rep(int sensor_idx, int report_id, u8 *feature_report)
 		memcpy(feature_report, &als_feature, sizeof(als_feature));
 		report_size = sizeof(als_feature);
 		break;
-	case HPD_IDX:  /* human presence detection sensor */
+	case HPD_IDX:   
 		get_common_features(&hpd_feature.common_property, report_id);
 		memcpy(feature_report, &hpd_feature, sizeof(hpd_feature));
 		report_size = sizeof(hpd_feature);
@@ -143,10 +136,7 @@ static int float_to_int(u32 flt32_val)
 	if (!exp && !mantissa)
 		return 0;
 
-	/*
-	 * Calculate the exponent and fraction part of floating
-	 * point representation.
-	 */
+	 
 	exp -= 127;
 	if (exp < 0) {
 		exp = -exp;
@@ -195,7 +185,7 @@ static u8 get_input_rep(u8 current_index, int sensor_idx, int report_id,
 		return report_size;
 
 	switch (sensor_idx) {
-	case ACCEL_IDX: /* accelerometer */
+	case ACCEL_IDX:  
 		sensoraddr = mp2->vsbase + (ACCEL_IDX * SENSOR_DATA_MEM_SIZE_DEFAULT) +
 			     OFFSET_SENSOR_DATA_DEFAULT;
 		memcpy_fromio(&accel_data, sensoraddr, sizeof(struct sfh_accel_data));
@@ -206,7 +196,7 @@ static u8 get_input_rep(u8 current_index, int sensor_idx, int report_id,
 		memcpy(input_report, &acc_input, sizeof(acc_input));
 		report_size = sizeof(acc_input);
 		break;
-	case GYRO_IDX: /* gyroscope */
+	case GYRO_IDX:  
 		sensoraddr = mp2->vsbase + (GYRO_IDX * SENSOR_DATA_MEM_SIZE_DEFAULT) +
 			     OFFSET_SENSOR_DATA_DEFAULT;
 		memcpy_fromio(&gyro_data, sensoraddr, sizeof(struct sfh_gyro_data));
@@ -217,7 +207,7 @@ static u8 get_input_rep(u8 current_index, int sensor_idx, int report_id,
 		memcpy(input_report, &gyro_input, sizeof(gyro_input));
 		report_size = sizeof(gyro_input);
 		break;
-	case MAG_IDX: /* magnetometer */
+	case MAG_IDX:  
 		sensoraddr = mp2->vsbase + (MAG_IDX * SENSOR_DATA_MEM_SIZE_DEFAULT) +
 			     OFFSET_SENSOR_DATA_DEFAULT;
 		memcpy_fromio(&mag_data, sensoraddr, sizeof(struct sfh_mag_data));

@@ -1,8 +1,8 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-//
-// Ingenic JZ47xx IPU - Register definitions and private API
-//
-// Copyright (C) 2020, Paul Cercueil <paul@crapouillou.net>
+ 
+
+
+
+
 
 #ifndef DRIVERS_GPU_DRM_INGENIC_INGENIC_IPU_H
 #define DRIVERS_GPU_DRM_INGENIC_INGENIC_IPU_H
@@ -106,4 +106,4 @@
 #define JZ_IPU_CSC_OFFSET_CHROMA_LSB	16
 #define JZ_IPU_CSC_OFFSET_LUMA_LSB	16
 
-#endif /* DRIVERS_GPU_DRM_INGENIC_INGENIC_IPU_H */
+#endif  

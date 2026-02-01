@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Rockchip AXI PCIe host controller driver
- *
- * Copyright (c) 2016 Rockchip, Inc.
- *
- * Author: Shawn Lin <shawn.lin@rock-chips.com>
- *         Wenrui Li <wenrui.li@rock-chips.com>
- *
- * Bits taken from Synopsys DesignWare Host controller driver and
- * ARM PCI Host generic driver.
- */
+
+ 
 
 #include <linux/bitrev.h>
 #include <linux/clk.h>
@@ -58,21 +48,17 @@ static void rockchip_pcie_update_txcredit_mui(struct rockchip_pcie *rockchip)
 {
 	u32 val;
 
-	/* Update Tx credit maximum update interval */
+	 
 	val = rockchip_pcie_read(rockchip, PCIE_CORE_TXCREDIT_CFG1);
 	val &= ~PCIE_CORE_TXCREDIT_CFG1_MUI_MASK;
-	val |= PCIE_CORE_TXCREDIT_CFG1_MUI_ENCODE(24000);	/* ns */
+	val |= PCIE_CORE_TXCREDIT_CFG1_MUI_ENCODE(24000);	 
 	rockchip_pcie_write(rockchip, val, PCIE_CORE_TXCREDIT_CFG1);
 }
 
 static int rockchip_pcie_valid_device(struct rockchip_pcie *rockchip,
 				      struct pci_bus *bus, int dev)
 {
-	/*
-	 * Access only one slot on each root port.
-	 * Do not read more than one device on the bus directly attached
-	 * to RC's downstream side.
-	 */
+	 
 	if (pci_is_root_bus(bus) || pci_is_root_bus(bus->parent))
 		return dev == 0;
 
@@ -90,7 +76,7 @@ static u8 rockchip_pcie_lane_map(struct rockchip_pcie *rockchip)
 	val = rockchip_pcie_read(rockchip, PCIE_CORE_LANE_MAP);
 	map = val & PCIE_CORE_LANE_MAP_MASK;
 
-	/* The link may be using a reverse-indexed mapping. */
+	 
 	if (val & PCIE_CORE_LANE_MAP_REVERSE)
 		map = bitrev8(map) >> 4;
 
@@ -138,11 +124,7 @@ static int rockchip_pcie_wr_own_conf(struct rockchip_pcie *rockchip,
 
 	mask = ~(((1 << (size * 8)) - 1) << ((where & 0x3) * 8));
 
-	/*
-	 * N.B. This read/modify/write isn't safe in general because it can
-	 * corrupt RW1C bits in adjacent registers.  But the hardware
-	 * doesn't support smaller writes.
-	 */
+	 
 	tmp = readl(addr) & mask;
 	tmp |= val << ((where & 0x3) * 8);
 	writel(tmp, addr);
@@ -256,19 +238,14 @@ static void rockchip_pcie_set_power_limit(struct rockchip_pcie *rockchip)
 	if (IS_ERR(rockchip->vpcie3v3))
 		return;
 
-	/*
-	 * Set RC's captured slot power limit and scale if
-	 * vpcie3v3 available. The default values are both zero
-	 * which means the software should set these two according
-	 * to the actual power supply.
-	 */
+	 
 	curr = regulator_get_current_limit(rockchip->vpcie3v3);
 	if (curr <= 0)
 		return;
 
-	scale = 3; /* 0.001x */
-	curr = curr / 1000; /* convert to mA */
-	power = (curr * 3300) / 1000; /* milliwatt */
+	scale = 3;  
+	curr = curr / 1000;  
+	power = (curr * 3300) / 1000;  
 	while (power > PCIE_RC_CONFIG_DCR_CSPL_LIMIT) {
 		if (!scale) {
 			dev_warn(rockchip->dev, "invalid power supply\n");
@@ -284,10 +261,7 @@ static void rockchip_pcie_set_power_limit(struct rockchip_pcie *rockchip)
 	rockchip_pcie_write(rockchip, status, PCIE_RC_CONFIG_DCR);
 }
 
-/**
- * rockchip_pcie_host_init_port - Initialize hardware
- * @rockchip: PCIe port information
- */
+ 
 static int rockchip_pcie_host_init_port(struct rockchip_pcie *rockchip)
 {
 	struct device *dev = rockchip->dev;
@@ -300,7 +274,7 @@ static int rockchip_pcie_host_init_port(struct rockchip_pcie *rockchip)
 	if (err)
 		return err;
 
-	/* Fix the transmitted FTS count desired to exit from L0s. */
+	 
 	status = rockchip_pcie_read(rockchip, PCIE_CORE_CTRL_PLC1);
 	status = (status & ~PCIE_CORE_CTRL_PLC1_FTS_MASK) |
 		 (PCIE_CORE_CTRL_PLC1_FTS_CNT << PCIE_CORE_CTRL_PLC1_FTS_SHIFT);
@@ -308,23 +282,23 @@ static int rockchip_pcie_host_init_port(struct rockchip_pcie *rockchip)
 
 	rockchip_pcie_set_power_limit(rockchip);
 
-	/* Set RC's clock architecture as common clock */
+	 
 	status = rockchip_pcie_read(rockchip, PCIE_RC_CONFIG_LCS);
 	status |= PCI_EXP_LNKSTA_SLC << 16;
 	rockchip_pcie_write(rockchip, status, PCIE_RC_CONFIG_LCS);
 
-	/* Set RC's RCB to 128 */
+	 
 	status = rockchip_pcie_read(rockchip, PCIE_RC_CONFIG_LCS);
 	status |= PCI_EXP_LNKCTL_RCB;
 	rockchip_pcie_write(rockchip, status, PCIE_RC_CONFIG_LCS);
 
-	/* Enable Gen1 training */
+	 
 	rockchip_pcie_write(rockchip, PCIE_CLIENT_LINK_TRAIN_ENABLE,
 			    PCIE_CLIENT_CONFIG);
 
 	gpiod_set_value_cansleep(rockchip->ep_gpio, 1);
 
-	/* 500ms timeout value should be enough for Gen1/2 training */
+	 
 	err = readl_poll_timeout(rockchip->apb_base + PCIE_CLIENT_BASIC_STATUS1,
 				 status, PCIE_LINK_UP(status), 20,
 				 500 * USEC_PER_MSEC);
@@ -334,10 +308,7 @@ static int rockchip_pcie_host_init_port(struct rockchip_pcie *rockchip)
 	}
 
 	if (rockchip->link_gen == 2) {
-		/*
-		 * Enable retrain for gen2. This should be configured only after
-		 * gen1 finished.
-		 */
+		 
 		status = rockchip_pcie_read(rockchip, PCIE_RC_CONFIG_LCS);
 		status |= PCI_EXP_LNKCTL_RL;
 		rockchip_pcie_write(rockchip, status, PCIE_RC_CONFIG_LCS);
@@ -349,13 +320,13 @@ static int rockchip_pcie_host_init_port(struct rockchip_pcie *rockchip)
 			dev_dbg(dev, "PCIe link training gen2 timeout, fall back to gen1!\n");
 	}
 
-	/* Check the final link width from negotiated lane counter from MGMT */
+	 
 	status = rockchip_pcie_read(rockchip, PCIE_CORE_CTRL);
 	status = 0x1 << ((status & PCIE_CORE_PL_CONF_LANE_MASK) >>
 			  PCIE_CORE_PL_CONF_LANE_SHIFT);
 	dev_dbg(dev, "current link width is x%d\n", status);
 
-	/* Power off unused lane(s) */
+	 
 	rockchip->lanes_map = rockchip_pcie_lane_map(rockchip);
 	for (i = 0; i < MAX_LANE_NUM; i++) {
 		if (!(rockchip->lanes_map & BIT(i))) {
@@ -370,12 +341,12 @@ static int rockchip_pcie_host_init_port(struct rockchip_pcie *rockchip)
 			    PCI_CLASS_BRIDGE_PCI_NORMAL << 8,
 			    PCIE_RC_CONFIG_RID_CCR);
 
-	/* Clear THP cap's next cap pointer to remove L1 substate cap */
+	 
 	status = rockchip_pcie_read(rockchip, PCIE_RC_CONFIG_THP_CAP);
 	status &= ~PCIE_RC_CONFIG_THP_CAP_NEXT_MASK;
 	rockchip_pcie_write(rockchip, status, PCIE_RC_CONFIG_THP_CAP);
 
-	/* Clear L0s from RC's link cap */
+	 
 	if (of_property_read_bool(dev->of_node, "aspm-no-l0s")) {
 		status = rockchip_pcie_read(rockchip, PCIE_RC_CONFIG_LINK_CAP);
 		status &= ~PCIE_RC_CONFIG_LINK_CAP_L0S;
@@ -570,12 +541,7 @@ static int rockchip_pcie_setup_irq(struct rockchip_pcie *rockchip)
 	return 0;
 }
 
-/**
- * rockchip_pcie_parse_host_dt - Parse Device Tree
- * @rockchip: PCIe port information
- *
- * Return: '0' on success and error value on failure
- */
+ 
 static int rockchip_pcie_parse_host_dt(struct rockchip_pcie *rockchip)
 {
 	struct device *dev = rockchip->dev;
@@ -813,7 +779,7 @@ static int rockchip_pcie_cfg_atu(struct rockchip_pcie *rockchip)
 	if (!entry)
 		return -ENODEV;
 
-	/* store the register number offset to program RC io outbound ATU */
+	 
 	offset = size >> 20;
 
 	size = resource_size(entry->res);
@@ -832,7 +798,7 @@ static int rockchip_pcie_cfg_atu(struct rockchip_pcie *rockchip)
 		}
 	}
 
-	/* assign message regions */
+	 
 	rockchip_pcie_prog_ob_atu(rockchip, reg_no + 1 + offset,
 				  AXI_WRAPPER_NOR_MSG,
 				  20 - 1, 0, 0);
@@ -846,10 +812,10 @@ static int rockchip_pcie_wait_l2(struct rockchip_pcie *rockchip)
 	u32 value;
 	int err;
 
-	/* send PME_TURN_OFF message */
+	 
 	writel(0x0, rockchip->msg_region + PCIE_RC_SEND_PME_OFF);
 
-	/* read LTSSM and wait for falling into L2 link state */
+	 
 	err = readl_poll_timeout(rockchip->apb_base + PCIE_CLIENT_DEBUG_OUT_0,
 				 value, PCIE_LINK_IS_L2(value), 20,
 				 jiffies_to_usecs(5 * HZ));
@@ -866,7 +832,7 @@ static int rockchip_pcie_suspend_noirq(struct device *dev)
 	struct rockchip_pcie *rockchip = dev_get_drvdata(dev);
 	int ret;
 
-	/* disable core and cli int since we don't need to ack PME_ACK */
+	 
 	rockchip_pcie_write(rockchip, (PCIE_CLIENT_INT_CLI << 16) |
 			    PCIE_CLIENT_INT_CLI, PCIE_CLIENT_INT_MASK);
 	rockchip_pcie_write(rockchip, (u32)PCIE_CORE_INT, PCIE_CORE_INT_MASK);
@@ -909,7 +875,7 @@ static int rockchip_pcie_resume_noirq(struct device *dev)
 	if (err)
 		goto err_err_deinit_port;
 
-	/* Need this to enter L1 again */
+	 
 	rockchip_pcie_update_txcredit_mui(rockchip);
 	rockchip_pcie_enable_interrupts(rockchip);
 

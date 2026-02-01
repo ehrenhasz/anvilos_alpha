@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  PWM vibrator driver
- *
- *  Copyright (C) 2017 Collabora Ltd.
- *
- *  Based on previous work from:
- *  Copyright (C) 2012 Dmitry Torokhov <dmitry.torokhov@gmail.com>
- *
- *  Based on PWM beeper driver:
- *  Copyright (C) 2010, Lars-Peter Clausen <lars@metafoo.de>
- */
+
+ 
 
 #include <linux/gpio/consumer.h>
 #include <linux/input.h>
@@ -157,7 +147,7 @@ static int pwm_vibrator_probe(struct platform_device *pdev)
 
 	INIT_WORK(&vibrator->play_work, pwm_vibrator_play_work);
 
-	/* Sync up PWM state and ensure it is off. */
+	 
 	pwm_init_state(vibrator->pwm, &state);
 	state.enabled = false;
 	err = pwm_apply_state(vibrator->pwm, &state);
@@ -171,7 +161,7 @@ static int pwm_vibrator_probe(struct platform_device *pdev)
 	err = PTR_ERR_OR_ZERO(vibrator->pwm_dir);
 	switch (err) {
 	case 0:
-		/* Sync up PWM state and ensure it is off. */
+		 
 		pwm_init_state(vibrator->pwm_dir, &state);
 		state.enabled = false;
 		err = pwm_apply_state(vibrator->pwm_dir, &state);
@@ -188,7 +178,7 @@ static int pwm_vibrator_probe(struct platform_device *pdev)
 		break;
 
 	case -ENODATA:
-		/* Direction PWM is optional */
+		 
 		vibrator->pwm_dir = NULL;
 		break;
 

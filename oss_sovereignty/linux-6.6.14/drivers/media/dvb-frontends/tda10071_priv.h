@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * NXP TDA10071 + Conexant CX24118A DVB-S/S2 demodulator + tuner driver
- *
- * Copyright (C) 2011 Antti Palosaari <crope@iki.fi>
- */
+ 
+ 
 
 #ifndef TDA10071_PRIV
 #define TDA10071_PRIV
@@ -29,7 +25,7 @@ struct tda10071_dev {
 	u32 dvbv3_ber;
 	enum fe_status fe_status;
 	enum fe_delivery_system delivery_system;
-	bool warm; /* FW running */
+	bool warm;  
 	u64 post_bit_error;
 	u64 block_error;
 };
@@ -40,7 +36,7 @@ static struct tda10071_modcod {
 	enum fe_code_rate fec;
 	u8 val;
 } TDA10071_MODCOD[] = {
-	/* NBC-QPSK */
+	 
 	{ SYS_DVBS2, QPSK,  FEC_AUTO, 0x00 },
 	{ SYS_DVBS2, QPSK,  FEC_1_2,  0x04 },
 	{ SYS_DVBS2, QPSK,  FEC_3_5,  0x05 },
@@ -50,7 +46,7 @@ static struct tda10071_modcod {
 	{ SYS_DVBS2, QPSK,  FEC_5_6,  0x09 },
 	{ SYS_DVBS2, QPSK,  FEC_8_9,  0x0a },
 	{ SYS_DVBS2, QPSK,  FEC_9_10, 0x0b },
-	/* 8PSK */
+	 
 	{ SYS_DVBS2, PSK_8, FEC_AUTO, 0x00 },
 	{ SYS_DVBS2, PSK_8, FEC_3_5,  0x0c },
 	{ SYS_DVBS2, PSK_8, FEC_2_3,  0x0d },
@@ -58,7 +54,7 @@ static struct tda10071_modcod {
 	{ SYS_DVBS2, PSK_8, FEC_5_6,  0x0f },
 	{ SYS_DVBS2, PSK_8, FEC_8_9,  0x10 },
 	{ SYS_DVBS2, PSK_8, FEC_9_10, 0x11 },
-	/* QPSK */
+	 
 	{ SYS_DVBS,  QPSK,  FEC_AUTO, 0x2d },
 	{ SYS_DVBS,  QPSK,  FEC_1_2,  0x2e },
 	{ SYS_DVBS,  QPSK,  FEC_2_3,  0x2f },
@@ -73,10 +69,10 @@ struct tda10071_reg_val_mask {
 	u8 mask;
 };
 
-/* firmware filename */
+ 
 #define TDA10071_FIRMWARE "dvb-fe-tda10071.fw"
 
-/* firmware commands */
+ 
 #define CMD_DEMOD_INIT          0x10
 #define CMD_CHANGE_CHANNEL      0x11
 #define CMD_MPEG_CONFIG         0x13
@@ -95,7 +91,7 @@ struct tda10071_reg_val_mask {
 #define CMD_BER_CONTROL         0x3e
 #define CMD_BER_UPDATE_COUNTERS 0x3f
 
-/* firmware command struct */
+ 
 #define TDA10071_ARGLEN      30
 struct tda10071_cmd {
 	u8 args[TDA10071_ARGLEN];
@@ -103,4 +99,4 @@ struct tda10071_cmd {
 };
 
 
-#endif /* TDA10071_PRIV */
+#endif  

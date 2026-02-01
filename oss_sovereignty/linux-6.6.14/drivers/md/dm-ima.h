@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2021 Microsoft Corporation
- *
- * Author: Tushar Sugandhi <tusharsu@linux.microsoft.com>
- *
- * Header file for device mapper IMA measurements.
- */
+ 
+ 
 
 #ifndef DM_IMA_H
 #define DM_IMA_H
@@ -28,28 +22,17 @@
 #ifdef CONFIG_IMA
 
 struct dm_ima_device_table_metadata {
-	/*
-	 * Contains data specific to the device which is common across
-	 * all the targets in the table (e.g. name, uuid, major, minor, etc).
-	 * The values are stored in comma separated list of key1=val1,key2=val2;
-	 * pairs delimited by a semicolon at the end of the list.
-	 */
+	 
 	char *device_metadata;
 	unsigned int device_metadata_len;
 	unsigned int num_targets;
 
-	/*
-	 * Contains the sha256 hashes of the IMA measurements of the target
-	 * attributes' key-value pairs from the active/inactive tables.
-	 */
+	 
 	char *hash;
 	unsigned int hash_len;
 };
 
-/*
- * This structure contains device metadata, and table hash for
- * active and inactive tables for ima measurements.
- */
+ 
 struct dm_ima_measurements {
 	struct dm_ima_device_table_metadata active_table;
 	struct dm_ima_device_table_metadata inactive_table;
@@ -72,6 +55,6 @@ static inline void dm_ima_measure_on_device_remove(struct mapped_device *md, boo
 static inline void dm_ima_measure_on_table_clear(struct mapped_device *md, bool new_map) {}
 static inline void dm_ima_measure_on_device_rename(struct mapped_device *md) {}
 
-#endif /* CONFIG_IMA */
+#endif  
 
-#endif /* DM_IMA_H */
+#endif  

@@ -1,27 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR MIT
-/*
- * Copyright (c) 2007-2008 Tungsten Graphics, Inc., Cedar Park, TX., USA,
- * Copyright (c) 2009 VMware, Inc., Palo Alto, CA., USA,
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sub license,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice (including the
- * next paragraph) shall be included in all copies or substantial portions
- * of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT. IN NO EVENT SHALL
- * THE COPYRIGHT HOLDERS, AUTHORS AND/OR ITS SUPPLIERS BE LIABLE FOR ANY CLAIM,
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
- * USE OR OTHER DEALINGS IN THE SOFTWARE.
- */
+
+ 
 
 #include <linux/limits.h>
 
@@ -309,7 +287,7 @@ nouveau_ttm_init(struct nouveau_drm *drm)
 		return ret;
 	}
 
-	/* VRAM init */
+	 
 	drm->gem.vram_available = drm->client.device.info.ram_user;
 
 	arch_io_reserve_memtype_wc(device->func->resource_addr(device, 1),
@@ -324,7 +302,7 @@ nouveau_ttm_init(struct nouveau_drm *drm)
 	drm->ttm.mtrr = arch_phys_wc_add(device->func->resource_addr(device, 1),
 					 device->func->resource_size(device, 1));
 
-	/* GART init */
+	 
 	if (!drm->agp.bridge) {
 		drm->gem.gart_available = drm->client.vmm.vmm.limit;
 	} else {

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *     signal quiesce handler
- *
- *  Copyright IBM Corp. 1999, 2004
- *  Author(s): Martin Schwidefsky <schwidefsky@de.ibm.com>
- *             Peter Oberparleiter <peter.oberparleiter@de.ibm.com>
- */
+
+ 
 
 #include <linux/types.h>
 #include <linux/cpumask.h>
@@ -18,7 +12,7 @@
 
 #include "sclp.h"
 
-/* Shutdown handler. Signal completion of shutdown by loading special PSW. */
+ 
 static void do_machine_quiesce(void)
 {
 	psw_t quiesce_psw;
@@ -30,7 +24,7 @@ static void do_machine_quiesce(void)
 	__load_psw(quiesce_psw);
 }
 
-/* Handler for quiesce event. Start shutdown procedure. */
+ 
 static void sclp_quiesce_handler(struct evbuf_header *evbuf)
 {
 	_machine_restart = (void *) do_machine_quiesce;
@@ -44,7 +38,7 @@ static struct sclp_register sclp_quiesce_event = {
 	.receiver_fn = sclp_quiesce_handler,
 };
 
-/* Initialize quiesce driver. */
+ 
 static int __init sclp_quiesce_init(void)
 {
 	return sclp_register(&sclp_quiesce_event);

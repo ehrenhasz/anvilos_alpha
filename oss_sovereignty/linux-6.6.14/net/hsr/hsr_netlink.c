@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright 2011-2014 Autronica Fire and Security AS
- *
- * Author(s):
- *	2011-2014 Arvid Brodin, arvid.brodin@alten.se
- *
- * Routines for handling Netlink messages for HSR and PRP.
- */
+
+ 
 
 #include "hsr_netlink.h"
 #include <linux/kernel.h>
@@ -25,9 +19,7 @@ static const struct nla_policy hsr_policy[IFLA_HSR_MAX + 1] = {
 	[IFLA_HSR_PROTOCOL]		= { .type = NLA_U8 },
 };
 
-/* Here, it seems a netdevice has already been allocated for us, and the
- * hsr_dev_setup routine has been executed. Nice!
- */
+ 
 static int hsr_newlink(struct net *src_net, struct net_device *dev,
 		       struct nlattr *tb[], struct nlattr *data[],
 		       struct netlink_ext_ack *extack)
@@ -162,7 +154,7 @@ static struct rtnl_link_ops hsr_link_ops __read_mostly = {
 	.fill_info	= hsr_fill_info,
 };
 
-/* attribute policy */
+ 
 static const struct nla_policy hsr_genl_policy[HSR_A_MAX + 1] = {
 	[HSR_A_NODE_ADDR] = { .len = ETH_ALEN },
 	[HSR_A_NODE_ADDR_B] = { .len = ETH_ALEN },
@@ -179,10 +171,7 @@ static const struct genl_multicast_group hsr_mcgrps[] = {
 	{ .name = "hsr-network", },
 };
 
-/* This is called if for some node with MAC address addr, we only get frames
- * over one of the slave interfaces. This would indicate an open network ring
- * (i.e. a link has failed somewhere).
- */
+ 
 void hsr_nl_ringerror(struct hsr_priv *hsr, unsigned char addr[ETH_ALEN],
 		      struct hsr_port *port)
 {
@@ -223,9 +212,7 @@ fail:
 	rcu_read_unlock();
 }
 
-/* This is called when we haven't heard from the node with MAC address addr for
- * some time (just before the node is removed from the node table/list).
- */
+ 
 void hsr_nl_nodedown(struct hsr_priv *hsr, unsigned char addr[ETH_ALEN])
 {
 	struct sk_buff *skb;
@@ -260,21 +247,14 @@ fail:
 	rcu_read_unlock();
 }
 
-/* HSR_C_GET_NODE_STATUS lets userspace query the internal HSR node table
- * about the status of a specific node in the network, defined by its MAC
- * address.
- *
- * Input: hsr ifindex, node mac address
- * Output: hsr ifindex, node mac address (copied from request),
- *	   age of latest frame from node over slave 1, slave 2 [ms]
- */
+ 
 static int hsr_get_node_status(struct sk_buff *skb_in, struct genl_info *info)
 {
-	/* For receiving */
+	 
 	struct nlattr *na;
 	struct net_device *hsr_dev;
 
-	/* For sending */
+	 
 	struct sk_buff *skb_out;
 	void *msg_head;
 	struct hsr_priv *hsr;
@@ -305,7 +285,7 @@ static int hsr_get_node_status(struct sk_buff *skb_in, struct genl_info *info)
 	if (!is_hsr_master(hsr_dev))
 		goto rcu_unlock;
 
-	/* Send reply */
+	 
 	skb_out = genlmsg_new(NLMSG_GOODSIZE, GFP_ATOMIC);
 	if (!skb_out) {
 		res = -ENOMEM;
@@ -395,15 +375,14 @@ invalid:
 
 nla_put_failure:
 	kfree_skb(skb_out);
-	/* Fall through */
+	 
 
 fail:
 	rcu_read_unlock();
 	return res;
 }
 
-/* Get a list of MacAddressA of all nodes known to this node (including self).
- */
+ 
 static int hsr_get_node_list(struct sk_buff *skb_in, struct genl_info *info)
 {
 	unsigned char addr[ETH_ALEN];
@@ -432,7 +411,7 @@ static int hsr_get_node_list(struct sk_buff *skb_in, struct genl_info *info)
 		goto rcu_unlock;
 
 restart:
-	/* Send reply */
+	 
 	skb_out = genlmsg_new(GENLMSG_DEFAULT_SIZE, GFP_ATOMIC);
 	if (!skb_out) {
 		res = -ENOMEM;
@@ -486,7 +465,7 @@ invalid:
 
 nla_put_failure:
 	nlmsg_free(skb_out);
-	/* Fall through */
+	 
 
 fail:
 	rcu_read_unlock();

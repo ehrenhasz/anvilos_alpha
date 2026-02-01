@@ -1,12 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2014 Google, Inc.
- *
- * Selftests for execveat(2).
- */
+
+ 
 
 #ifndef _GNU_SOURCE
-#define _GNU_SOURCE  /* to get O_PATH, AT_EMPTY_PATH */
+#define _GNU_SOURCE   
 #endif
 #include <sys/sendfile.h>
 #include <sys/stat.h>
@@ -84,13 +80,13 @@ static int check_execveat_invoked_rc(int fd, const char *path, int flags,
 		return 1;
 	}
 	if (child == 0) {
-		/* Child: do execveat(). */
+		 
 		rc = execveat_(fd, path, argv, envp, flags);
 		printf("[FAIL]: execveat() failed, rc=%d errno=%d (%s)\n",
 			rc, errno, strerror(errno));
-		exit(1);  /* should not reach here */
+		exit(1);   
 	}
-	/* Parent: wait for & check child's exit status. */
+	 
 	rc = waitpid(child, &status, 0);
 	if (rc != child) {
 		printf("[FAIL] (waitpid(%d,...) returned %d)\n", child, rc);
@@ -158,7 +154,7 @@ static int check_execveat_pathmax(int root_dfd, const char *src, int is_script)
 	int fd;
 
 	if (*longpath == '\0') {
-		/* Create a filename close to PATH_MAX in length */
+		 
 		char *cwd = getcwd(NULL, 0);
 
 		if (!cwd) {
@@ -186,11 +182,7 @@ static int check_execveat_pathmax(int root_dfd, const char *src, int is_script)
 	}
 	exe_cp(src, longpath);
 
-	/*
-	 * Execute as a pre-opened file descriptor, which works whether this is
-	 * a script or not (because the interpreter sees a filename like
-	 * "/dev/fd/20").
-	 */
+	 
 	fd = open(longpath, O_RDONLY);
 	if (fd > 0) {
 		printf("Invoke copy of '%s' via filename of length %zu:\n",
@@ -202,16 +194,7 @@ static int check_execveat_pathmax(int root_dfd, const char *src, int is_script)
 		fail++;
 	}
 
-	/*
-	 * Execute as a long pathname relative to "/".  If this is a script,
-	 * the interpreter will launch but fail to open the script because its
-	 * name ("/dev/fd/5/xxx....") is bigger than PATH_MAX.
-	 *
-	 * The failure code is usually 127 (POSIX: "If a command is not found,
-	 * the exit status shall be 127."), but some systems give 126 (POSIX:
-	 * "If the command name is found, but it is not an executable utility,
-	 * the exit status shall be 126."), so allow either.
-	 */
+	 
 	if (is_script)
 		fail += check_execveat_invoked_rc(root_dfd, longpath + 1, 0,
 						  127, 126);
@@ -248,7 +231,7 @@ static int run_tests(void)
 	int fd_cloexec = open_or_die("execveat", O_RDONLY|O_CLOEXEC);
 	int fd_script_cloexec = open_or_die("script", O_RDONLY|O_CLOEXEC);
 
-	/* Check if we have execveat at all, and bail early if not */
+	 
 	errno = 0;
 	execveat_(-1, NULL, NULL, NULL, 0);
 	if (errno == ENOSYS) {
@@ -256,119 +239,119 @@ static int run_tests(void)
 			"ENOSYS calling execveat - no kernel support?\n");
 	}
 
-	/* Change file position to confirm it doesn't affect anything */
+	 
 	lseek(fd, 10, SEEK_SET);
 
-	/* Normal executable file: */
-	/*   dfd + path */
+	 
+	 
 	fail += check_execveat(subdir_dfd, "../execveat", 0);
 	fail += check_execveat(dot_dfd, "execveat", 0);
 	fail += check_execveat(dot_dfd_path, "execveat", 0);
-	/*   absolute path */
+	 
 	fail += check_execveat(AT_FDCWD, fullname, 0);
-	/*   absolute path with nonsense dfd */
+	 
 	fail += check_execveat(99, fullname, 0);
-	/*   fd + no path */
+	 
 	fail += check_execveat(fd, "", AT_EMPTY_PATH);
-	/*   O_CLOEXEC fd + no path */
+	 
 	fail += check_execveat(fd_cloexec, "", AT_EMPTY_PATH);
-	/*   O_PATH fd */
+	 
 	fail += check_execveat(fd_path, "", AT_EMPTY_PATH);
 
-	/* Mess with executable file that's already open: */
-	/*   fd + no path to a file that's been renamed */
+	 
+	 
 	rename("execveat.ephemeral", "execveat.moved");
 	fail += check_execveat(fd_ephemeral, "", AT_EMPTY_PATH);
-	/*   fd + no path to a file that's been deleted */
-	unlink("execveat.moved"); /* remove the file now fd open */
+	 
+	unlink("execveat.moved");  
 	fail += check_execveat(fd_ephemeral, "", AT_EMPTY_PATH);
 
-	/* Mess with executable file that's already open with O_PATH */
-	/*   fd + no path to a file that's been deleted */
+	 
+	 
 	unlink("execveat.path.ephemeral");
 	fail += check_execveat(fd_ephemeral_path, "", AT_EMPTY_PATH);
 
-	/* Invalid argument failures */
+	 
 	fail += check_execveat_fail(fd, "", 0, ENOENT);
 	fail += check_execveat_fail(fd, NULL, AT_EMPTY_PATH, EFAULT);
 
-	/* Symlink to executable file: */
-	/*   dfd + path */
+	 
+	 
 	fail += check_execveat(dot_dfd, "execveat.symlink", 0);
 	fail += check_execveat(dot_dfd_path, "execveat.symlink", 0);
-	/*   absolute path */
+	 
 	fail += check_execveat(AT_FDCWD, fullname_symlink, 0);
-	/*   fd + no path, even with AT_SYMLINK_NOFOLLOW (already followed) */
+	 
 	fail += check_execveat(fd_symlink, "", AT_EMPTY_PATH);
 	fail += check_execveat(fd_symlink, "",
 			       AT_EMPTY_PATH|AT_SYMLINK_NOFOLLOW);
 
-	/* Symlink fails when AT_SYMLINK_NOFOLLOW set: */
-	/*   dfd + path */
+	 
+	 
 	fail += check_execveat_fail(dot_dfd, "execveat.symlink",
 				    AT_SYMLINK_NOFOLLOW, ELOOP);
 	fail += check_execveat_fail(dot_dfd_path, "execveat.symlink",
 				    AT_SYMLINK_NOFOLLOW, ELOOP);
-	/*   absolute path */
+	 
 	fail += check_execveat_fail(AT_FDCWD, fullname_symlink,
 				    AT_SYMLINK_NOFOLLOW, ELOOP);
 
-	/*  Non-regular file failure */
+	 
 	fail += check_execveat_fail(dot_dfd, "pipe", 0, EACCES);
 	unlink("pipe");
 
-	/* Shell script wrapping executable file: */
-	/*   dfd + path */
+	 
+	 
 	fail += check_execveat(subdir_dfd, "../script", 0);
 	fail += check_execveat(dot_dfd, "script", 0);
 	fail += check_execveat(dot_dfd_path, "script", 0);
-	/*   absolute path */
+	 
 	fail += check_execveat(AT_FDCWD, fullname_script, 0);
-	/*   fd + no path */
+	 
 	fail += check_execveat(fd_script, "", AT_EMPTY_PATH);
 	fail += check_execveat(fd_script, "",
 			       AT_EMPTY_PATH|AT_SYMLINK_NOFOLLOW);
-	/*   O_CLOEXEC fd fails for a script (as script file inaccessible) */
+	 
 	fail += check_execveat_fail(fd_script_cloexec, "", AT_EMPTY_PATH,
 				    ENOENT);
 	fail += check_execveat_fail(dot_dfd_cloexec, "script", 0, ENOENT);
 
-	/* Mess with script file that's already open: */
-	/*   fd + no path to a file that's been renamed */
+	 
+	 
 	rename("script.ephemeral", "script.moved");
 	fail += check_execveat(fd_script_ephemeral, "", AT_EMPTY_PATH);
-	/*   fd + no path to a file that's been deleted */
-	unlink("script.moved"); /* remove the file while fd open */
+	 
+	unlink("script.moved");  
 	fail += check_execveat(fd_script_ephemeral, "", AT_EMPTY_PATH);
 
-	/* Rename a subdirectory in the path: */
+	 
 	rename("subdir.ephemeral", "subdir.moved");
 	fail += check_execveat(subdir_dfd_ephemeral, "../script", 0);
 	fail += check_execveat(subdir_dfd_ephemeral, "script", 0);
-	/* Remove the subdir and its contents */
+	 
 	unlink("subdir.moved/script");
 	unlink("subdir.moved");
-	/* Shell loads via deleted subdir OK because name starts with .. */
+	 
 	fail += check_execveat(subdir_dfd_ephemeral, "../script", 0);
 	fail += check_execveat_fail(subdir_dfd_ephemeral, "script", 0, ENOENT);
 
-	/* Flag values other than AT_SYMLINK_NOFOLLOW => EINVAL */
+	 
 	fail += check_execveat_fail(dot_dfd, "execveat", 0xFFFF, EINVAL);
-	/* Invalid path => ENOENT */
+	 
 	fail += check_execveat_fail(dot_dfd, "no-such-file", 0, ENOENT);
 	fail += check_execveat_fail(dot_dfd_path, "no-such-file", 0, ENOENT);
 	fail += check_execveat_fail(AT_FDCWD, "no-such-file", 0, ENOENT);
-	/* Attempt to execute directory => EACCES */
+	 
 	fail += check_execveat_fail(dot_dfd, "", AT_EMPTY_PATH, EACCES);
-	/* Attempt to execute non-executable => EACCES */
+	 
 	fail += check_execveat_fail(dot_dfd, "Makefile", 0, EACCES);
 	fail += check_execveat_fail(fd_denatured, "", AT_EMPTY_PATH, EACCES);
 	fail += check_execveat_fail(fd_denatured_path, "", AT_EMPTY_PATH,
 				    EACCES);
-	/* Attempt to execute nonsense FD => EBADF */
+	 
 	fail += check_execveat_fail(99, "", AT_EMPTY_PATH, EBADF);
 	fail += check_execveat_fail(99, "execveat", 0, EBADF);
-	/* Attempt to execute relative to non-directory => ENOTDIR */
+	 
 	fail += check_execveat_fail(fd, "execveat", 0, ENOTDIR);
 
 	fail += check_execveat_pathmax(root_dfd, "execveat", 0);
@@ -381,7 +364,7 @@ static void prerequisites(void)
 	int fd;
 	const char *script = "#!/bin/sh\nexit $*\n";
 
-	/* Create ephemeral copies of files */
+	 
 	exe_cp("execveat", "execveat.ephemeral");
 	exe_cp("execveat", "execveat.path.ephemeral");
 	exe_cp("script", "script.ephemeral");
@@ -401,7 +384,7 @@ int main(int argc, char **argv)
 	const char *verbose = getenv("VERBOSE");
 
 	if (argc >= 2) {
-		/* If we are invoked with an argument, don't run tests. */
+		 
 		const char *in_test = getenv("IN_TEST");
 
 		if (verbose) {
@@ -411,13 +394,13 @@ int main(int argc, char **argv)
 			printf("\n");
 		}
 
-		/* Check expected environment transferred. */
+		 
 		if (!in_test || strcmp(in_test, "yes") != 0) {
 			printf("[FAIL] (no IN_TEST=yes in env)\n");
 			return 1;
 		}
 
-		/* Use the final argument as an exit code. */
+		 
 		rc = atoi(argv[argc - 1]);
 		fflush(stdout);
 	} else {

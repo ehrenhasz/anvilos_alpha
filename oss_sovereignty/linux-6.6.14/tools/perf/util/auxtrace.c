@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * auxtrace.c: AUX area trace support
- * Copyright (c) 2013-2015, Intel Corporation.
- */
+
+ 
 
 #include <inttypes.h>
 #include <sys/types.h>
@@ -61,10 +58,7 @@
 #include <internal/lib.h>
 #include "util/sample.h"
 
-/*
- * Make a group from 'leader' to 'last', requiring that the events were not
- * already grouped to a different leader.
- */
+ 
 static int evlist__regroup(struct evlist *evlist, struct evsel *leader, struct evsel *last)
 {
 	struct evsel *evsel;
@@ -315,7 +309,7 @@ static int auxtrace_queues__queue_buffer(struct auxtrace_queues *queues,
 	return 0;
 }
 
-/* Limit buffers to 32MiB on 32-bit */
+ 
 #define BUFFER_LIMIT_FOR_32_BIT (32 * 1024 * 1024)
 
 static int auxtrace_queues__split_buffer(struct auxtrace_queues *queues,
@@ -390,7 +384,7 @@ static int auxtrace_queues__add_buffer(struct auxtrace_queues *queues,
 	if (err)
 		goto out_free;
 
-	/* FIXME: Doesn't work for split buffer */
+	 
 	if (buffer_ptr)
 		*buffer_ptr = buffer;
 
@@ -629,7 +623,7 @@ int auxtrace_parse_snapshot_options(struct auxtrace_record *itr,
 	if (!str)
 		return 0;
 
-	/* PMU-agnostic options */
+	 
 	switch (*str) {
 	case 'e':
 		opts->auxtrace_snapshot_on_exit = true;
@@ -679,14 +673,10 @@ int auxtrace_record__read_finish(struct auxtrace_record *itr, int idx)
 	return -EINVAL;
 }
 
-/*
- * Event record size is 16-bit which results in a maximum size of about 64KiB.
- * Allow about 4KiB for the rest of the sample record, to give a maximum
- * AUX area sample size of 60KiB.
- */
+ 
 #define MAX_AUX_SAMPLE_SIZE (60 * 1024)
 
-/* Arbitrary default size if no other default provided */
+ 
 #define DEFAULT_AUX_SAMPLE_SIZE (4 * 1024)
 
 static int auxtrace_validate_aux_sample_size(struct evlist *evlist,
@@ -770,7 +760,7 @@ int auxtrace_parse_sample_options(struct auxtrace_record *itr,
 	if (!sz)
 		sz = DEFAULT_AUX_SAMPLE_SIZE;
 
-	/* Set aux_sample_size based on --aux-sample option */
+	 
 	evlist__for_each_entry(evlist, evsel) {
 		if (evsel__is_group_leader(evsel)) {
 			has_aux_leader = evsel__is_aux_event(evsel);
@@ -780,7 +770,7 @@ int auxtrace_parse_sample_options(struct auxtrace_record *itr,
 	}
 no_opt:
 	aux_evsel = NULL;
-	/* Override with aux_sample_size from config term */
+	 
 	evlist__for_each_entry(evlist, evsel) {
 		if (evsel__is_aux_event(evsel))
 			aux_evsel = evsel;
@@ -788,7 +778,7 @@ no_opt:
 		if (term) {
 			has_aux_sample_size = true;
 			evsel->core.attr.aux_sample_size = term->val.aux_sample_size;
-			/* If possible, group with the AUX event */
+			 
 			if (aux_evsel && evsel->core.attr.aux_sample_size)
 				evlist__regroup(evlist, aux_evsel, evsel);
 		}
@@ -814,7 +804,7 @@ void auxtrace_regroup_aux_output(struct evlist *evlist)
 		if (evsel__is_aux_event(evsel))
 			aux_evsel = evsel;
 		term = evsel__get_config_term(evsel, AUX_OUTPUT);
-		/* If possible, group with the AUX event */
+		 
 		if (term && aux_evsel)
 			evlist__regroup(evlist, aux_evsel, evsel);
 	}
@@ -1268,7 +1258,7 @@ static void unleader_evsel(struct evlist *evlist, struct evsel *leader)
 	struct evsel *new_leader = NULL;
 	struct evsel *evsel;
 
-	/* Find new leader for the group */
+	 
 	evlist__for_each_entry(evlist, evsel) {
 		if (!evsel__has_leader(evsel, leader) || evsel == leader)
 			continue;
@@ -1277,7 +1267,7 @@ static void unleader_evsel(struct evlist *evlist, struct evsel *leader)
 		evsel__set_leader(evsel, new_leader);
 	}
 
-	/* Update group information */
+	 
 	if (new_leader) {
 		zfree(&new_leader->group_name);
 		new_leader->group_name = leader->group_name;
@@ -1454,11 +1444,7 @@ static unsigned int itrace_log_on_error_size(void)
 	return sz ?: ITRACE_DFLT_LOG_ON_ERROR_SZ;
 }
 
-/*
- * Please check tools/perf/Documentation/perf-script.txt for information
- * about the options parsed here, which is introduced after this cset,
- * when support in 'perf script' for these options is introduced.
- */
+ 
 int itrace_do_parse_synth_opts(struct itrace_synth_opts *synth_opts,
 			       const char *str, int unset)
 {
@@ -1509,10 +1495,10 @@ int itrace_do_parse_synth_opts(struct itrace_synth_opts *synth_opts,
 					break;
 				case 'm':
 					synth_opts->period *= 1000;
-					/* Fall through */
+					 
 				case 'u':
 					synth_opts->period *= 1000;
-					/* Fall through */
+					 
 				case 'n':
 					if (*p++ != 's')
 						goto out_err;
@@ -1743,49 +1729,7 @@ int perf_event__process_auxtrace_error(struct perf_session *session,
 	return 0;
 }
 
-/*
- * In the compat mode kernel runs in 64-bit and perf tool runs in 32-bit mode,
- * 32-bit perf tool cannot access 64-bit value atomically, which might lead to
- * the issues caused by the below sequence on multiple CPUs: when perf tool
- * accesses either the load operation or the store operation for 64-bit value,
- * on some architectures the operation is divided into two instructions, one
- * is for accessing the low 32-bit value and another is for the high 32-bit;
- * thus these two user operations can give the kernel chances to access the
- * 64-bit value, and thus leads to the unexpected load values.
- *
- *   kernel (64-bit)                        user (32-bit)
- *
- *   if (LOAD ->aux_tail) { --,             LOAD ->aux_head_lo
- *       STORE $aux_data      |       ,--->
- *       FLUSH $aux_data      |       |     LOAD ->aux_head_hi
- *       STORE ->aux_head   --|-------`     smp_rmb()
- *   }                        |             LOAD $data
- *                            |             smp_mb()
- *                            |             STORE ->aux_tail_lo
- *                            `----------->
- *                                          STORE ->aux_tail_hi
- *
- * For this reason, it's impossible for the perf tool to work correctly when
- * the AUX head or tail is bigger than 4GB (more than 32 bits length); and we
- * can not simply limit the AUX ring buffer to less than 4GB, the reason is
- * the pointers can be increased monotonically, whatever the buffer size it is,
- * at the end the head and tail can be bigger than 4GB and carry out to the
- * high 32-bit.
- *
- * To mitigate the issues and improve the user experience, we can allow the
- * perf tool working in certain conditions and bail out with error if detect
- * any overflow cannot be handled.
- *
- * For reading the AUX head, it reads out the values for three times, and
- * compares the high 4 bytes of the values between the first time and the last
- * time, if there has no change for high 4 bytes injected by the kernel during
- * the user reading sequence, it's safe for use the second value.
- *
- * When compat_auxtrace_mmap__write_tail() detects any carrying in the high
- * 32 bits, it means there have two store operations in user space and it cannot
- * promise the atomicity for 64-bit write, so return '-1' in this case to tell
- * the caller an overflow error has happened.
- */
+ 
 u64 __weak compat_auxtrace_mmap__read_head(struct auxtrace_mmap *mm)
 {
 	struct perf_event_mmap_page *pc = mm->userpg;
@@ -1794,10 +1738,10 @@ u64 __weak compat_auxtrace_mmap__read_head(struct auxtrace_mmap *mm)
 
 	do {
 		first = READ_ONCE(pc->aux_head);
-		/* Ensure all reads are done after we read the head */
+		 
 		smp_rmb();
 		second = READ_ONCE(pc->aux_head);
-		/* Ensure all reads are done after we read the head */
+		 
 		smp_rmb();
 		last = READ_ONCE(pc->aux_head);
 	} while ((first & mask) != (last & mask));
@@ -1813,7 +1757,7 @@ int __weak compat_auxtrace_mmap__write_tail(struct auxtrace_mmap *mm, u64 tail)
 	if (tail & mask)
 		return -1;
 
-	/* Ensure all reads are done before we write the tail out */
+	 
 	smp_mb();
 	WRITE_ONCE(pc->aux_tail, tail);
 	return 0;
@@ -1865,11 +1809,7 @@ static int __auxtrace_mmap__read(struct mmap *map,
 	if (head > old || size <= head || mm->mask) {
 		offset = head - size;
 	} else {
-		/*
-		 * When the buffer size is not a power of 2, 'head' wraps at the
-		 * highest multiple of the buffer size, so we have to subtract
-		 * the remainder here.
-		 */
+		 
 		u64 rem = (0ULL - mm->len) % mm->len;
 
 		offset = head - size - rem;
@@ -1894,7 +1834,7 @@ static int __auxtrace_mmap__read(struct mmap *map,
 		size -= unwanted;
 	}
 
-	/* padding must be written by fn() e.g. record__process_auxtrace() */
+	 
 	padding = size & (PERF_AUXTRACE_RECORD_ALIGNMENT - 1);
 	if (padding)
 		padding = PERF_AUXTRACE_RECORD_ALIGNMENT - padding;
@@ -1945,16 +1885,7 @@ int auxtrace_mmap__read_snapshot(struct mmap *map,
 	return __auxtrace_mmap__read(map, itr, tool, fn, true, snapshot_size);
 }
 
-/**
- * struct auxtrace_cache - hash table to implement a cache
- * @hashtable: the hashtable
- * @sz: hashtable size (number of hlists)
- * @entry_size: size of an entry
- * @limit: limit the number of entries to this maximum, when reached the cache
- *         is dropped and caching begins again with an empty cache
- * @cnt: current number of entries
- * @bits: hashtable size (@sz = 2^@bits)
- */
+ 
 struct auxtrace_cache {
 	struct hlist_head *hashtable;
 	size_t sz;
@@ -2198,7 +2129,7 @@ static int parse_action(struct addr_filter *filt)
 	} else if (!strcmp(filt->action, "tracestop")) {
 		filt->start = false;
 		filt->range = true;
-		filt->action += 5; /* Change 'tracestop' to 'stop' */
+		filt->action += 5;  
 	} else {
 		return -EINVAL;
 	}
@@ -2344,7 +2275,7 @@ static bool kern_sym_name_match(const char *kname, const char *name)
 
 static bool kern_sym_match(struct sym_args *args, const char *name, char type)
 {
-	/* A function with the same name, and global or the n'th found or any */
+	 
 	return kallsyms__is_function(type) &&
 	       kern_sym_name_match(name, args->name) &&
 	       ((args->global && isupper(type)) ||
@@ -2458,7 +2389,7 @@ static int find_entire_kern_cb(void *arg, const char *name __maybe_unused,
 		args->started = true;
 		args->start = start;
 	}
-	/* Don't know exactly where the kernel ends, so we add a page */
+	 
 	size = round_up(start, page_size) + page_size - args->start;
 	if (size > args->size)
 		args->size = size;
@@ -2538,7 +2469,7 @@ static int addr_filter__resolve_kernel_syms(struct addr_filter *filt)
 		no_size = !size;
 	}
 
-	/* The very last symbol in kallsyms does not imply a particular size */
+	 
 	if (no_size) {
 		pr_err("Cannot determine size of symbol '%s'\n",
 		       filt->sym_to ? filt->sym_to : filt->sym_from);
@@ -2570,7 +2501,7 @@ static struct dso *load_dso(const char *name)
 static bool dso_sym_match(struct symbol *sym, const char *name, int *cnt,
 			  int idx)
 {
-	/* Same name, and global or the n'th found or any */
+	 
 	return !arch__compare_symbol_names(name, sym->name) &&
 	       ((!idx && sym->binding == STB_GLOBAL) ||
 		(idx > 0 && ++*cnt == idx) ||

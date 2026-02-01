@@ -1,26 +1,4 @@
-/*
- * Copyright 2014 Red Hat Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: Ben Skeggs <bskeggs@redhat.com>
- */
+ 
 #include "priv.h"
 
 #include <core/option.h>
@@ -182,11 +160,11 @@ nvbios_shadow(struct nvkm_bios *bios)
 	char *source;
 	int optlen;
 
-	/* handle user-specified bios source */
+	 
 	optarg = nvkm_stropt(device->cfgopt, "NvBios", &optlen);
 	source = optarg ? kstrndup(optarg, optlen, GFP_KERNEL) : NULL;
 	if (source) {
-		/* try to match one of the built-in methods */
+		 
 		for (mthd = mthds; mthd->func; mthd++) {
 			if (mthd->func->name &&
 			    !strcasecmp(source, mthd->func->name)) {
@@ -196,7 +174,7 @@ nvbios_shadow(struct nvkm_bios *bios)
 			}
 		}
 
-		/* otherwise, attempt to load as firmware */
+		 
 		if (!best && (best = mthd)) {
 			mthd->func = &shadow_fw;
 			shadow_method(bios, mthd, source);
@@ -210,7 +188,7 @@ nvbios_shadow(struct nvkm_bios *bios)
 		}
 	}
 
-	/* scan all potential bios sources, looking for best image */
+	 
 	if (!best || !best->score) {
 		for (mthd = mthds, best = mthd; mthd->func; mthd++) {
 			if (!mthd->skip || best->score < mthd->skip) {
@@ -222,7 +200,7 @@ nvbios_shadow(struct nvkm_bios *bios)
 		}
 	}
 
-	/* cleanup the ones we didn't use */
+	 
 	for (mthd = mthds; mthd->func; mthd++) {
 		if (mthd != best)
 			kfree(mthd->data);

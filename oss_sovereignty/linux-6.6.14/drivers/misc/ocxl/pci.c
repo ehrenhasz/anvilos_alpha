@@ -1,13 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0+
-// Copyright 2019 IBM Corp.
+
+
 #include <linux/module.h>
 #include "ocxl_internal.h"
 
-/*
- * Any opencapi device which wants to use this 'generic' driver should
- * use the 0x062B device ID. Vendors should define the subsystem
- * vendor/device ID to help differentiate devices.
- */
+ 
 static const struct pci_device_id ocxl_pci_tbl[] = {
 	{ PCI_DEVICE(PCI_VENDOR_ID_IBM, 0x062B), },
 	{ }
@@ -30,7 +26,7 @@ static int ocxl_probe(struct pci_dev *dev, const struct pci_device_id *id)
 	afu_list = ocxl_function_afu_list(fn);
 
 	list_for_each_entry_safe(afu, tmp, afu_list, list) {
-		// Cleanup handled within ocxl_file_register_afu()
+		
 		rc = ocxl_file_register_afu(afu);
 		if (rc) {
 			dev_err(&dev->dev, "Failed to register AFU '%s' index %d",

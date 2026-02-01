@@ -1,23 +1,23 @@
-// SPDX-License-Identifier: GPL-2.0
-// ir-sanyo-decoder.c - handle SANYO IR Pulse/Space protocol
-//
-// Copyright (C) 2011 by Mauro Carvalho Chehab
-//
-// This protocol uses the NEC protocol timings. However, data is formatted as:
-//	13 bits Custom Code
-//	13 bits NOT(Custom Code)
-//	8 bits Key data
-//	8 bits NOT(Key data)
-//
-// According with LIRC, this protocol is used on Sanyo, Aiwa and Chinon
-// Information for this protocol is available at the Sanyo LC7461 datasheet.
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 #include <linux/module.h>
 #include <linux/bitrev.h>
 #include "rc-core-priv.h"
 
 #define SANYO_NBITS		(13+13+8+8)
-#define SANYO_UNIT		563  /* us */
+#define SANYO_UNIT		563   
 #define SANYO_HEADER_PULSE	(16  * SANYO_UNIT)
 #define SANYO_HEADER_SPACE	(8   * SANYO_UNIT)
 #define SANYO_BIT_PULSE		(1   * SANYO_UNIT)
@@ -25,7 +25,7 @@
 #define SANYO_BIT_1_SPACE	(3   * SANYO_UNIT)
 #define SANYO_REPEAT_SPACE	(150 * SANYO_UNIT)
 #define	SANYO_TRAILER_PULSE	(1   * SANYO_UNIT)
-#define	SANYO_TRAILER_SPACE	(10  * SANYO_UNIT)	/* in fact, 42 */
+#define	SANYO_TRAILER_SPACE	(10  * SANYO_UNIT)	 
 
 enum sanyo_state {
 	STATE_INACTIVE,
@@ -36,13 +36,7 @@ enum sanyo_state {
 	STATE_TRAILER_SPACE,
 };
 
-/**
- * ir_sanyo_decode() - Decode one SANYO pulse or space
- * @dev:	the struct rc_dev descriptor of the device
- * @ev:		the struct ir_raw_event descriptor of the pulse/space
- *
- * This function returns -EINVAL if the pulse violates the state machine
- */
+ 
 static int ir_sanyo_decode(struct rc_dev *dev, struct ir_raw_event ev)
 {
 	struct sanyo_dec *data = &dev->raw->sanyo;
@@ -139,7 +133,7 @@ static int ir_sanyo_decode(struct rc_dev *dev, struct ir_raw_event ev)
 			break;
 
 		address     = bitrev16((data->bits >> 29) & 0x1fff) >> 3;
-		/* not_address = bitrev16((data->bits >> 16) & 0x1fff) >> 3; */
+		 
 		command	    = bitrev8((data->bits >>  8) & 0xff);
 		not_command = bitrev8((data->bits >>  0) & 0xff);
 
@@ -174,18 +168,7 @@ static const struct ir_raw_timings_pd ir_sanyo_timings = {
 	.msb_first     = 1,
 };
 
-/**
- * ir_sanyo_encode() - Encode a scancode as a stream of raw events
- *
- * @protocol:	protocol to encode
- * @scancode:	scancode to encode
- * @events:	array of raw ir events to write into
- * @max:	maximum size of @events
- *
- * Returns:	The number of events written.
- *		-ENOBUFS if there isn't enough space in the array to fit the
- *		encoding. In this case all @max events will have been written.
- */
+ 
 static int ir_sanyo_encode(enum rc_proto protocol, u32 scancode,
 			   struct ir_raw_event *events, unsigned int max)
 {

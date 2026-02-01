@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2017 Red Hat, Inc.
- * Copyright (c) 2018-2021 Christoph Hellwig.
- */
+
+ 
 #include <linux/module.h>
 #include <linux/compiler.h>
 #include <linux/fs.h>
@@ -41,7 +38,7 @@ iomap_seek_hole(struct inode *inode, loff_t pos, const struct iomap_ops *ops)
 	};
 	int ret;
 
-	/* Nothing to be found before or beyond the end of the file. */
+	 
 	if (pos < 0 || pos >= size)
 		return -ENXIO;
 
@@ -50,7 +47,7 @@ iomap_seek_hole(struct inode *inode, loff_t pos, const struct iomap_ops *ops)
 		iter.processed = iomap_seek_hole_iter(&iter, &pos);
 	if (ret < 0)
 		return ret;
-	if (iter.len) /* found hole before EOF */
+	if (iter.len)  
 		return pos;
 	return size;
 }
@@ -87,7 +84,7 @@ iomap_seek_data(struct inode *inode, loff_t pos, const struct iomap_ops *ops)
 	};
 	int ret;
 
-	/* Nothing to be found before or beyond the end of the file. */
+	 
 	if (pos < 0 || pos >= size)
 		return -ENXIO;
 
@@ -96,9 +93,9 @@ iomap_seek_data(struct inode *inode, loff_t pos, const struct iomap_ops *ops)
 		iter.processed = iomap_seek_data_iter(&iter, &pos);
 	if (ret < 0)
 		return ret;
-	if (iter.len) /* found data before EOF */
+	if (iter.len)  
 		return pos;
-	/* We've reached the end of the file without finding data */
+	 
 	return -ENXIO;
 }
 EXPORT_SYMBOL_GPL(iomap_seek_data);

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2015, 2017-2018, 2022, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/delay.h>
@@ -27,18 +25,18 @@
 #define GMEM_CLAMP_IO_MASK	BIT(0)
 #define GMEM_RESET_MASK		BIT(4)
 
-/* CFG_GDSCR */
+ 
 #define GDSC_POWER_UP_COMPLETE		BIT(16)
 #define GDSC_POWER_DOWN_COMPLETE	BIT(15)
 #define GDSC_RETAIN_FF_ENABLE		BIT(11)
 #define CFG_GDSCR_OFFSET		0x4
 
-/* Wait 2^n CXO cycles between all states. Here, n=2 (4 cycles). */
+ 
 #define EN_REST_WAIT_VAL	0x2
 #define EN_FEW_WAIT_VAL		0x8
 #define CLK_DIS_WAIT_VAL	0x2
 
-/* Transition delay shifts */
+ 
 #define EN_REST_WAIT_SHIFT	20
 #define EN_FEW_WAIT_SHIFT	16
 #define CLK_DIS_WAIT_SHIFT	12
@@ -56,7 +54,7 @@ enum gdsc_status {
 	GDSC_ON
 };
 
-/* Returns 1 if GDSC status is status, 0 if not, and < 0 on error */
+ 
 static int gdsc_check_status(struct gdsc *sc, enum gdsc_status status)
 {
 	unsigned int reg;
@@ -149,28 +147,15 @@ static int gdsc_toggle_logic(struct gdsc *sc, enum gdsc_status status,
 
 	ret = gdsc_update_collapse_bit(sc, status == GDSC_OFF);
 
-	/* If disabling votable gdscs, don't poll on status */
+	 
 	if ((sc->flags & VOTABLE) && status == GDSC_OFF && !wait) {
-		/*
-		 * Add a short delay here to ensure that an enable
-		 * right after it was disabled does not put it in an
-		 * unknown state
-		 */
+		 
 		udelay(TIMEOUT_US);
 		return 0;
 	}
 
 	if (sc->gds_hw_ctrl) {
-		/*
-		 * The gds hw controller asserts/de-asserts the status bit soon
-		 * after it receives a power on/off request from a master.
-		 * The controller then takes around 8 xo cycles to start its
-		 * internal state machine and update the status bit. During
-		 * this time, the status bit does not reflect the true status
-		 * of the core.
-		 * Add a delay of 1 us between writing to the SW_COLLAPSE bit
-		 * and polling the status bit.
-		 */
+		 
 		udelay(1);
 	}
 
@@ -283,28 +268,15 @@ static int gdsc_enable(struct generic_pm_domain *domain)
 	if (sc->pwrsts & PWRSTS_OFF)
 		gdsc_force_mem_on(sc);
 
-	/*
-	 * If clocks to this power domain were already on, they will take an
-	 * additional 4 clock cycles to re-enable after the power domain is
-	 * enabled. Delay to account for this. A delay is also needed to ensure
-	 * clocks are not enabled within 400ns of enabling power to the
-	 * memories.
-	 */
+	 
 	udelay(1);
 
-	/* Turn on HW trigger mode if supported */
+	 
 	if (sc->flags & HW_CTRL) {
 		ret = gdsc_hwctrl(sc, true);
 		if (ret)
 			return ret;
-		/*
-		 * Wait for the GDSC to go through a power down and
-		 * up cycle.  In case a firmware ends up polling status
-		 * bits for the gdsc, it might read an 'on' status before
-		 * the GDSC can finish the power cycle.
-		 * We wait 1us before returning to ensure the firmware
-		 * can't immediately poll the status bits.
-		 */
+		 
 		udelay(1);
 	}
 
@@ -322,17 +294,12 @@ static int gdsc_disable(struct generic_pm_domain *domain)
 	if (sc->pwrsts == PWRSTS_ON)
 		return gdsc_assert_reset(sc);
 
-	/* Turn off HW trigger mode if supported */
+	 
 	if (sc->flags & HW_CTRL) {
 		ret = gdsc_hwctrl(sc, false);
 		if (ret < 0)
 			return ret;
-		/*
-		 * Wait for the GDSC to go through a power down and
-		 * up cycle.  In case we end up polling status
-		 * bits for the gdsc before the power cycle is completed
-		 * it might read an 'on' status wrongly.
-		 */
+		 
 		udelay(1);
 
 		ret = gdsc_poll_status(sc, GDSC_ON);
@@ -343,13 +310,7 @@ static int gdsc_disable(struct generic_pm_domain *domain)
 	if (sc->pwrsts & PWRSTS_OFF)
 		gdsc_clear_mem_on(sc);
 
-	/*
-	 * If the GDSC supports only a Retention state, apart from ON,
-	 * leave it in ON state.
-	 * There is no SW control to transition the GDSC into
-	 * Retention state. This happens in HW when the parent
-	 * domain goes down to a Low power state
-	 */
+	 
 	if (sc->pwrsts == PWRSTS_RET_ON)
 		return 0;
 
@@ -368,11 +329,7 @@ static int gdsc_init(struct gdsc *sc)
 	u32 mask, val;
 	int on, ret;
 
-	/*
-	 * Disable HW trigger: collapse/restore occur based on registers writes.
-	 * Disable SW override: Use hardware state-machine for sequencing.
-	 * Configure wait time between states.
-	 */
+	 
 	mask = HW_CONTROL_MASK | SW_OVERRIDE_MASK |
 	       EN_REST_WAIT_MASK | EN_FEW_WAIT_MASK | CLK_DIS_WAIT_MASK;
 
@@ -391,7 +348,7 @@ static int gdsc_init(struct gdsc *sc)
 	if (ret)
 		return ret;
 
-	/* Force gdsc ON if only ON state is supported */
+	 
 	if (sc->pwrsts == PWRSTS_ON) {
 		ret = gdsc_toggle_logic(sc, GDSC_ON, false);
 		if (ret)
@@ -403,39 +360,32 @@ static int gdsc_init(struct gdsc *sc)
 		return on;
 
 	if (on) {
-		/* The regulator must be on, sync the kernel state */
+		 
 		if (sc->rsupply) {
 			ret = regulator_enable(sc->rsupply);
 			if (ret < 0)
 				return ret;
 		}
 
-		/*
-		 * Votable GDSCs can be ON due to Vote from other masters.
-		 * If a Votable GDSC is ON, make sure we have a Vote.
-		 */
+		 
 		if (sc->flags & VOTABLE) {
 			ret = gdsc_update_collapse_bit(sc, false);
 			if (ret)
 				goto err_disable_supply;
 		}
 
-		/* Turn on HW trigger mode if supported */
+		 
 		if (sc->flags & HW_CTRL) {
 			ret = gdsc_hwctrl(sc, true);
 			if (ret < 0)
 				goto err_disable_supply;
 		}
 
-		/*
-		 * Make sure the retain bit is set if the GDSC is already on,
-		 * otherwise we end up turning off the GDSC and destroying all
-		 * the register contents that we thought we were saving.
-		 */
+		 
 		if (sc->flags & RETAIN_FF_ENABLE)
 			gdsc_retain_ff_on(sc);
 	} else if (sc->flags & ALWAYS_ON) {
-		/* If ALWAYS_ON GDSCs are not ON, turn them ON */
+		 
 		gdsc_enable(&sc->pd);
 		on = true;
 	}
@@ -504,7 +454,7 @@ int gdsc_register(struct gdsc_desc *desc,
 		data->domains[i] = &scs[i]->pd;
 	}
 
-	/* Add subdomains */
+	 
 	for (i = 0; i < num; i++) {
 		if (!scs[i])
 			continue;
@@ -524,7 +474,7 @@ void gdsc_unregister(struct gdsc_desc *desc)
 	struct gdsc **scs = desc->scs;
 	size_t num = desc->num;
 
-	/* Remove subdomains */
+	 
 	for (i = 0; i < num; i++) {
 		if (!scs[i])
 			continue;
@@ -536,28 +486,10 @@ void gdsc_unregister(struct gdsc_desc *desc)
 	of_genpd_del_provider(dev->of_node);
 }
 
-/*
- * On SDM845+ the GPU GX domain is *almost* entirely controlled by the GMU
- * running in the CX domain so the CPU doesn't need to know anything about the
- * GX domain EXCEPT....
- *
- * Hardware constraints dictate that the GX be powered down before the CX. If
- * the GMU crashes it could leave the GX on. In order to successfully bring back
- * the device the CPU needs to disable the GX headswitch. There being no sane
- * way to reach in and touch that register from deep inside the GPU driver we
- * need to set up the infrastructure to be able to ensure that the GPU can
- * ensure that the GX is off during this super special case. We do this by
- * defining a GX gdsc with a dummy enable function and a "default" disable
- * function.
- *
- * This allows us to attach with genpd_dev_pm_attach_by_name() in the GPU
- * driver. During power up, nothing will happen from the CPU (and the GMU will
- * power up normally but during power down this will ensure that the GX domain
- * is *really* off - this gives us a semi standard way of doing what we need.
- */
+ 
 int gdsc_gx_do_nothing_enable(struct generic_pm_domain *domain)
 {
-	/* Do nothing but give genpd the impression that we were successful */
+	 
 	return 0;
 }
 EXPORT_SYMBOL_GPL(gdsc_gx_do_nothing_enable);

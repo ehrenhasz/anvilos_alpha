@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2014-2015 Freescale Semiconductor, Inc.
- */
+
+ 
 
 #include <dt-bindings/clock/imx7d-clock.h>
 #include <linux/bits.h>
@@ -875,10 +873,10 @@ static void __init imx7d_clocks_init(struct device_node *ccm_node)
 
 	clk_set_parent(hws[IMX7D_MIPI_CSI_ROOT_SRC]->clk, hws[IMX7D_PLL_SYS_PFD3_CLK]->clk);
 
-	/* use old gpt clk setting, gpt1 root clk must be twice as gpt counter freq */
+	 
 	clk_set_parent(hws[IMX7D_GPT1_ROOT_SRC]->clk, hws[IMX7D_OSC_24M_CLK]->clk);
 
-	/* Set clock rate for USBPHY, the USB_PLL at CCM is from USBOTG2 */
+	 
 	hws[IMX7D_USB1_MAIN_480M_CLK] = imx_clk_hw_fixed_factor("pll_usb1_main_clk", "osc", 20, 1);
 	hws[IMX7D_USB_MAIN_480M_CLK] = imx_clk_hw_fixed_factor("pll_usb_main_clk", "osc", 20, 1);
 

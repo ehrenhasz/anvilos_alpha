@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (C) 2017 Arm Ltd.
+
+
 #define pr_fmt(fmt) "sdei: " fmt
 
 #include <acpi/ghes.h>
@@ -32,21 +32,19 @@
 #include <linux/smp.h>
 #include <linux/spinlock.h>
 
-/*
- * The call to use to reach the firmware.
- */
+ 
 static asmlinkage void (*sdei_firmware_call)(unsigned long function_id,
 		      unsigned long arg0, unsigned long arg1,
 		      unsigned long arg2, unsigned long arg3,
 		      unsigned long arg4, struct arm_smccc_res *res);
 
-/* entry point from firmware to arch asm code */
+ 
 static unsigned long sdei_entry_point;
 
 static int sdei_hp_state;
 
 struct sdei_event {
-	/* These three are protected by the sdei_list_lock */
+	 
 	struct list_head	list;
 	bool			reregister;
 	bool			reenable;
@@ -55,24 +53,24 @@ struct sdei_event {
 	u8			type;
 	u8			priority;
 
-	/* This pointer is handed to firmware as the event argument. */
+	 
 	union {
-		/* Shared events */
+		 
 		struct sdei_registered_event *registered;
 
-		/* CPU private events */
+		 
 		struct sdei_registered_event __percpu *private_registered;
 	};
 };
 
-/* Take the mutex for any API call or modification. Take the mutex first. */
+ 
 static DEFINE_MUTEX(sdei_events_lock);
 
-/* and then hold this when modifying the list */
+ 
 static DEFINE_SPINLOCK(sdei_list_lock);
 static LIST_HEAD(sdei_list);
 
-/* Private events are registered/enabled via IPI passing one of these */
+ 
 struct sdei_crosscall_args {
 	struct sdei_event *event;
 	atomic_t errors;
@@ -146,12 +144,7 @@ static int invoke_sdei_fn(unsigned long function_id, unsigned long arg0,
 				   &res);
 		err = sdei_to_linux_errno(res.a0);
 	} else {
-		/*
-		 * !sdei_firmware_call means we failed to probe or called
-		 * sdei_mark_interface_broken(). -EIO is not an error returned
-		 * by sdei_to_linux_errno() and is used to suppress messages
-		 * from this driver.
-		 */
+		 
 		err = -EIO;
 		res.a0 = SDEI_NOT_SUPPORTED;
 	}
@@ -385,7 +378,7 @@ static int sdei_api_event_enable(u32 event_num)
 			      0, NULL);
 }
 
-/* Called directly by the hotplug callbacks */
+ 
 static void _local_event_enable(void *data)
 {
 	int err;
@@ -473,7 +466,7 @@ static int sdei_api_event_unregister(u32 event_num)
 			      0, 0, 0, NULL);
 }
 
-/* Called directly by the hotplug callbacks */
+ 
 static void _local_event_unregister(void *data)
 {
 	int err;
@@ -519,10 +512,7 @@ unlock:
 	return err;
 }
 
-/*
- * unregister events, but don't destroy them as they are re-registered by
- * sdei_reregister_shared().
- */
+ 
 static int sdei_unregister_shared(void)
 {
 	int err = 0;
@@ -552,7 +542,7 @@ static int sdei_api_event_register(u32 event_num, unsigned long entry_point,
 			      flags, affinity, NULL);
 }
 
-/* Called directly by the hotplug callbacks */
+ 
 static void _local_event_register(void *data)
 {
 	int err;
@@ -658,7 +648,7 @@ static int sdei_cpuhp_down(unsigned int cpu)
 	struct sdei_event *event;
 	int err;
 
-	/* un-register private events */
+	 
 	spin_lock(&sdei_list_lock);
 	list_for_each_entry(event, &sdei_list, list) {
 		if (event->type == SDEI_EVENT_TYPE_SHARED)
@@ -680,7 +670,7 @@ static int sdei_cpuhp_up(unsigned int cpu)
 	struct sdei_event *event;
 	int err;
 
-	/* re-register/enable private events */
+	 
 	spin_lock(&sdei_list_lock);
 	list_for_each_entry(event, &sdei_list, list) {
 		if (event->type == SDEI_EVENT_TYPE_SHARED)
@@ -707,7 +697,7 @@ static int sdei_cpuhp_up(unsigned int cpu)
 	return sdei_unmask_local_cpu();
 }
 
-/* When entering idle, mask/unmask events for this cpu */
+ 
 static int sdei_pm_notifier(struct notifier_block *nb, unsigned long action,
 			    void *data)
 {
@@ -751,18 +741,12 @@ static int sdei_device_resume(struct device *dev)
 	return 0;
 }
 
-/*
- * We need all events to be reregistered when we resume from hibernate.
- *
- * The sequence is freeze->thaw. Reboot. freeze->restore. We unregister
- * events during freeze, then re-register and re-enable them during thaw
- * and restore.
- */
+ 
 static int sdei_device_freeze(struct device *dev)
 {
 	int err;
 
-	/* unregister private events */
+	 
 	cpuhp_remove_state(sdei_entry_point);
 
 	err = sdei_unregister_shared();
@@ -776,7 +760,7 @@ static int sdei_device_thaw(struct device *dev)
 {
 	int err;
 
-	/* re-register shared events */
+	 
 	err = sdei_reregister_shared();
 	if (err) {
 		pr_warn("Failed to re-register shared events...\n");
@@ -814,16 +798,11 @@ static const struct dev_pm_ops sdei_pm_ops = {
 	.restore = sdei_device_restore,
 };
 
-/*
- * Mask all CPUs and unregister all events on panic, reboot or kexec.
- */
+ 
 static int sdei_reboot_notifier(struct notifier_block *nb, unsigned long action,
 				void *data)
 {
-	/*
-	 * We are going to reset the interface, after this there is no point
-	 * doing work when we take CPUs offline.
-	 */
+	 
 	cpuhp_remove_state(sdei_hp_state);
 
 	sdei_platform_reset();
@@ -866,10 +845,7 @@ int sdei_register_ghes(struct ghes *ghes, sdei_event_callback *normal_cb,
 
 	event_num = ghes->generic->notify.vector;
 	if (event_num == 0) {
-		/*
-		 * Event 0 is reserved by the specification for
-		 * SDEI_EVENT_SIGNAL.
-		 */
+		 
 		return -EINVAL;
 	}
 
@@ -901,10 +877,7 @@ int sdei_unregister_ghes(struct ghes *ghes)
 	if (!IS_ENABLED(CONFIG_ACPI_APEI_GHES))
 		return -EOPNOTSUPP;
 
-	/*
-	 * The event may be running on another CPU. Disable it
-	 * to stop new events, then try to unregister a few times.
-	 */
+	 
 	err = sdei_event_disable(event_num);
 	if (err)
 		return err;
@@ -987,7 +960,7 @@ static int sdei_probe(struct platform_device *pdev)
 
 	sdei_entry_point = sdei_arch_get_entry_point(conduit);
 	if (!sdei_entry_point) {
-		/* Not supported due to hardware or boot configuration */
+		 
 		sdei_mark_interface_broken();
 		return 0;
 	}
@@ -1098,11 +1071,7 @@ NOKPROBE_SYMBOL(sdei_event_handler);
 
 void sdei_handler_abort(void)
 {
-	/*
-	 * If the crash happened in an SDEI event handler then we need to
-	 * finish the handler with the firmware so that we can have working
-	 * interrupts in the crash kernel.
-	 */
+	 
 	if (__this_cpu_read(sdei_active_critical_event)) {
 	        pr_warn("still in SDEI critical event context, attempting to finish handler.\n");
 	        __sdei_handler_abort();

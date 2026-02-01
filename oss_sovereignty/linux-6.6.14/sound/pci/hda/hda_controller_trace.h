@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM hda_controller
 #define TRACE_INCLUDE_FILE hda_controller_trace
@@ -91,9 +91,9 @@ DEFINE_EVENT(azx_pcm, azx_pcm_prepare,
 	TP_ARGS(chip, azx_dev)
 );
 
-#endif /* _TRACE_HDA_CONTROLLER_H */
+#endif  
 
-/* This part must be outside protection */
+ 
 #undef TRACE_INCLUDE_PATH
 #define TRACE_INCLUDE_PATH .
 #include <trace/define_trace.h>

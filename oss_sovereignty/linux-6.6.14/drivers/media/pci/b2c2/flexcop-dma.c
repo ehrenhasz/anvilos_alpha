@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Linux driver for digital TV devices equipped with B2C2 FlexcopII(b)/III
- * flexcop-dma.c - configuring and controlling the DMA of the FlexCop
- * see flexcop.c for copyright information
- */
+
+ 
 #include "flexcop.h"
 
 int flexcop_dma_allocate(struct pci_dev *pdev,
@@ -68,7 +64,7 @@ int flexcop_dma_config(struct flexcop_device *fc,
 }
 EXPORT_SYMBOL(flexcop_dma_config);
 
-/* start the DMA transfers, but not the DMA IRQs */
+ 
 int flexcop_dma_xfer_control(struct flexcop_device *fc,
 		flexcop_dma_index_t dma_idx,
 		flexcop_dma_addr_index_t index,
@@ -157,7 +153,7 @@ int flexcop_dma_control_timer_irq(struct flexcop_device *fc,
 }
 EXPORT_SYMBOL(flexcop_dma_control_timer_irq);
 
-/* 1 cycles = 1.97 msec */
+ 
 int flexcop_dma_config_timer(struct flexcop_device *fc,
 		flexcop_dma_index_t dma_idx, u8 cycles)
 {

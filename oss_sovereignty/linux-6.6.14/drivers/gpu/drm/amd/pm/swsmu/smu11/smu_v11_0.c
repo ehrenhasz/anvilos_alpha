@@ -1,24 +1,4 @@
-/*
- * Copyright 2019 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- */
+ 
 
 #include <linux/firmware.h>
 #include <linux/module.h>
@@ -46,11 +26,7 @@
 #include "asic_reg/smuio/smuio_11_0_0_offset.h"
 #include "asic_reg/smuio/smuio_11_0_0_sh_mask.h"
 
-/*
- * DO NOT use these for err/warn/info/debug messages.
- * Use dev_err, dev_warn, dev_info and dev_dbg instead.
- * They are more MGPU friendly.
- */
+ 
 #undef pr_err
 #undef pr_warn
 #undef pr_info
@@ -67,7 +43,7 @@ MODULE_FIRMWARE("amdgpu/beige_goby_smc.bin");
 
 #define SMU11_VOLTAGE_SCALE 4
 
-#define SMU11_MODE1_RESET_WAIT_TIME_IN_MS 500  //500ms
+#define SMU11_MODE1_RESET_WAIT_TIME_IN_MS 500  
 
 #define smnPCIE_LC_LINK_WIDTH_CNTL		0x11140288
 #define PCIE_LC_LINK_WIDTH_CNTL__LC_LINK_WIDTH_RD_MASK 0x00000070L
@@ -251,14 +227,7 @@ int smu_v11_0_check_fw_version(struct smu_context *smu)
 		break;
 	}
 
-	/*
-	 * 1. if_version mismatch is not critical as our fw is designed
-	 * to be backward compatible.
-	 * 2. New fw usually brings some optimizations. But that's visible
-	 * only on the paired driver.
-	 * Considering above, we just leave user a verbal message instead
-	 * of halt driver loading.
-	 */
+	 
 	if (if_version != smu->smc_driver_if_version) {
 		dev_info(smu->adev->dev, "smu driver if version = 0x%08x, smu fw if version = 0x%08x, "
 			"smu fw program = %d, version = 0x%08x (%d.%d.%d)\n",
@@ -386,7 +355,7 @@ int smu_v11_0_init_smc_tables(struct smu_context *smu)
 		goto err1_out;
 	}
 
-	/* Arcturus does not support OVERDRIVE */
+	 
 	if (tables[SMU_TABLE_OVERDRIVE].size) {
 		smu_table->overdrive_table =
 			kzalloc(tables[SMU_TABLE_OVERDRIVE].size, GFP_KERNEL);
@@ -728,9 +697,7 @@ int smu_v11_0_init_display_count(struct smu_context *smu, uint32_t count)
 {
 	struct amdgpu_device *adev = smu->adev;
 
-	/* Navy_Flounder/Dimgrey_Cavefish do not support to change
-	 * display num currently
-	 */
+	 
 	if (adev->ip_versions[MP1_HWIP][0] == IP_VERSION(11, 0, 11) ||
 	    adev->ip_versions[MP1_HWIP][0] == IP_VERSION(11, 5, 0) ||
 	    adev->ip_versions[MP1_HWIP][0] == IP_VERSION(11, 0, 12) ||
@@ -816,7 +783,7 @@ smu_v11_0_get_max_sustainable_clock(struct smu_context *smu, uint32_t *clock,
 	if (*clock != 0)
 		return 0;
 
-	/* if DC limit is zero, return AC limit */
+	 
 	ret = smu_cmn_send_smc_msg_with_param(smu, SMU_MSG_GetMaxDpmFreq,
 					  clk_id << 16, clock);
 	if (ret) {
@@ -921,10 +888,7 @@ int smu_v11_0_get_current_power_limit(struct smu_context *smu,
 	if (power_src < 0)
 		return -EINVAL;
 
-	/*
-	 * BIT 24-31: ControllerId (only PPT0 is supported for now)
-	 * BIT 16-23: PowerSource
-	 */
+	 
 	ret = smu_cmn_send_smc_msg_with_param(smu,
 					  SMU_MSG_GetPptLimit,
 					  (0 << 24) | (power_src << 16),
@@ -959,11 +923,7 @@ int smu_v11_0_set_power_limit(struct smu_context *smu,
 	if (power_src < 0)
 		return -EINVAL;
 
-	/*
-	 * BIT 24-31: ControllerId (only PPT0 is supported for now)
-	 * BIT 16-23: PowerSource
-	 * BIT 0-15: PowerLimit
-	 */
+	 
 	limit_param  = (limit & 0xFFFF);
 	limit_param |= 0 << 24;
 	limit_param |= (power_src) << 16;
@@ -1012,10 +972,7 @@ int smu_v11_0_enable_thermal_alert(struct smu_context *smu)
 			return ret;
 	}
 
-	/*
-	 * After init there might have been missed interrupts triggered
-	 * before driver registers for interrupt (Ex. AC/DC).
-	 */
+	 
 	return smu_v11_0_process_pending_interrupt(smu);
 }
 
@@ -1195,23 +1152,13 @@ int smu_v11_0_set_fan_speed_rpm(struct smu_context *smu,
 				uint32_t speed)
 {
 	struct amdgpu_device *adev = smu->adev;
-	/*
-	 * crystal_clock_freq used for fan speed rpm calculation is
-	 * always 25Mhz. So, hardcode it as 2500(in 10K unit).
-	 */
+	 
 	uint32_t crystal_clock_freq = 2500;
 	uint32_t tach_period;
 
 	if (speed == 0)
 		return -EINVAL;
-	/*
-	 * To prevent from possible overheat, some ASICs may have requirement
-	 * for minimum fan speed:
-	 * - For some NV10 SKU, the fan speed cannot be set lower than
-	 *   700 RPM.
-	 * - For some Sienna Cichlid SKU, the fan speed cannot be set
-	 *   lower than 500 RPM.
-	 */
+	 
 	tach_period = 60 * crystal_clock_freq * 10000 / (8 * speed);
 	WREG32_SOC15(THM, 0, mmCG_TACH_CTRL,
 		     REG_SET_FIELD(RREG32_SOC15(THM, 0, mmCG_TACH_CTRL),
@@ -1228,11 +1175,7 @@ int smu_v11_0_get_fan_speed_pwm(struct smu_context *smu,
 	uint32_t duty100, duty;
 	uint64_t tmp64;
 
-	/*
-	 * For pre Sienna Cichlid ASICs, the 0 RPM may be not correctly
-	 * detected via register retrieving. To workaround this, we will
-	 * report the fan speed as 0 PWM if user just requested such.
-	 */
+	 
 	if ((smu->user_dpm_profile.flags & SMU_CUSTOM_FAN_SPEED_PWM)
 	     && !smu->user_dpm_profile.fan_speed_pwm) {
 		*speed = 0;
@@ -1261,11 +1204,7 @@ int smu_v11_0_get_fan_speed_rpm(struct smu_context *smu,
 	uint32_t tach_status;
 	uint64_t tmp64;
 
-	/*
-	 * For pre Sienna Cichlid ASICs, the 0 RPM may be not correctly
-	 * detected via register retrieving. To workaround this, we will
-	 * report the fan speed as 0 RPM if user just requested such.
-	 */
+	 
 	if ((smu->user_dpm_profile.flags & SMU_CUSTOM_FAN_SPEED_RPM)
 	     && !smu->user_dpm_profile.fan_speed_rpm) {
 		*speed = 0;
@@ -1336,7 +1275,7 @@ static int smu_v11_0_set_irq_state(struct amdgpu_device *adev,
 
 	switch (state) {
 	case AMDGPU_IRQ_STATE_DISABLE:
-		/* For THM irqs */
+		 
 		val = RREG32_SOC15(THM, 0, mmTHM_THERMAL_INT_CTRL);
 		val = REG_SET_FIELD(val, THM_THERMAL_INT_CTRL, THERM_INTH_MASK, 1);
 		val = REG_SET_FIELD(val, THM_THERMAL_INT_CTRL, THERM_INTL_MASK, 1);
@@ -1344,14 +1283,14 @@ static int smu_v11_0_set_irq_state(struct amdgpu_device *adev,
 
 		WREG32_SOC15(THM, 0, mmTHM_THERMAL_INT_ENA, 0);
 
-		/* For MP1 SW irqs */
+		 
 		val = RREG32_SOC15(MP1, 0, mmMP1_SMN_IH_SW_INT_CTRL);
 		val = REG_SET_FIELD(val, MP1_SMN_IH_SW_INT_CTRL, INT_MASK, 1);
 		WREG32_SOC15(MP1, 0, mmMP1_SMN_IH_SW_INT_CTRL, val);
 
 		break;
 	case AMDGPU_IRQ_STATE_ENABLE:
-		/* For THM irqs */
+		 
 		low = max(SMU_THERMAL_MINIMUM_ALERT_TEMP,
 				smu->thermal_range.min / SMU_TEMPERATURE_UNITS_PER_CENTIGRADES);
 		high = min(SMU_THERMAL_MAXIMUM_ALERT_TEMP,
@@ -1372,7 +1311,7 @@ static int smu_v11_0_set_irq_state(struct amdgpu_device *adev,
 		val |= (1 << THM_THERMAL_INT_ENA__THERM_TRIGGER_CLR__SHIFT);
 		WREG32_SOC15(THM, 0, mmTHM_THERMAL_INT_ENA, val);
 
-		/* For MP1 SW irqs */
+		 
 		val = RREG32_SOC15(MP1, 0, mmMP1_SMN_IH_SW_INT);
 		val = REG_SET_FIELD(val, MP1_SMN_IH_SW_INT, ID, 0xFE);
 		val = REG_SET_FIELD(val, MP1_SMN_IH_SW_INT, VALID, 0);
@@ -1390,8 +1329,8 @@ static int smu_v11_0_set_irq_state(struct amdgpu_device *adev,
 	return 0;
 }
 
-#define THM_11_0__SRCID__THM_DIG_THERM_L2H		0		/* ASIC_TEMP > CG_THERMAL_INT.DIG_THERM_INTH  */
-#define THM_11_0__SRCID__THM_DIG_THERM_H2L		1		/* ASIC_TEMP < CG_THERMAL_INT.DIG_THERM_INTL  */
+#define THM_11_0__SRCID__THM_DIG_THERM_L2H		0		 
+#define THM_11_0__SRCID__THM_DIG_THERM_H2L		1		 
 
 #define SMUIO_11_0__SRCID__SMUIO_GPIO19			83
 
@@ -1402,10 +1341,7 @@ static int smu_v11_0_irq_process(struct amdgpu_device *adev,
 	struct smu_context *smu = adev->powerplay.pp_handle;
 	uint32_t client_id = entry->client_id;
 	uint32_t src_id = entry->src_id;
-	/*
-	 * ctxid is used to distinguish different
-	 * events for SMCToHost interrupt.
-	 */
+	 
 	uint32_t ctxid = entry->src_data[0];
 	uint32_t data;
 
@@ -1425,14 +1361,12 @@ static int smu_v11_0_irq_process(struct amdgpu_device *adev,
 		}
 	} else if (client_id == SOC15_IH_CLIENTID_ROM_SMUIO) {
 		dev_emerg(adev->dev, "ERROR: GPU HW Critical Temperature Fault(aka CTF) detected!\n");
-		/*
-		 * HW CTF just occurred. Shutdown to prevent further damage.
-		 */
+		 
 		dev_emerg(adev->dev, "ERROR: System is going to shutdown due to GPU HW CTF!\n");
 		orderly_poweroff(true);
 	} else if (client_id == SOC15_IH_CLIENTID_MP1) {
 		if (src_id == 0xfe) {
-			/* ACK SMUToHost interrupt */
+			 
 			data = RREG32_SOC15(MP1, 0, mmMP1_SMN_IH_SW_INT_CTRL);
 			data = REG_SET_FIELD(data, MP1_SMN_IH_SW_INT_CTRL, INT_ACK, 1);
 			WREG32_SOC15(MP1, 0, mmMP1_SMN_IH_SW_INT_CTRL, data);
@@ -1447,9 +1381,7 @@ static int smu_v11_0_irq_process(struct amdgpu_device *adev,
 				schedule_work(&smu->interrupt_work);
 				break;
 			case 0x7:
-				/*
-				 * Increment the throttle interrupt counter
-				 */
+				 
 				atomic64_inc(&smu->throttle_int_counter);
 
 				if (!atomic_read(&adev->throttling_logging_enabled))
@@ -1493,7 +1425,7 @@ int smu_v11_0_register_irq_handler(struct smu_context *smu)
 	if (ret)
 		return ret;
 
-	/* Register CTF(GPIO_19) interrupt */
+	 
 	ret = amdgpu_irq_add_id(adev, SOC15_IH_CLIENTID_ROM_SMUIO,
 				SMUIO_11_0__SRCID__SMUIO_GPIO19,
 				irq_src);
@@ -1557,11 +1489,11 @@ bool smu_v11_0_baco_is_support(struct smu_context *smu)
 	if (amdgpu_sriov_vf(smu->adev) || !smu_baco->platform_support)
 		return false;
 
-	/* return true if ASIC is in BACO state already */
+	 
 	if (smu_v11_0_baco_get_state(smu) == SMU_BACO_STATE_ENTER)
 		return true;
 
-	/* Arcturus does not support this bit mask */
+	 
 	if (smu_cmn_feature_is_supported(smu, SMU_FEATURE_BACO_BIT) &&
 	   !smu_cmn_feature_is_enabled(smu, SMU_FEATURE_BACO_BIT))
 		return false;
@@ -1632,7 +1564,7 @@ int smu_v11_0_baco_set_state(struct smu_context *smu, enum smu_baco_state state)
 		if (ret)
 			return ret;
 
-		/* clear vbios scratch 6 and 7 for coming asic reinit */
+		 
 		WREG32(adev->bios_scratch_reg_offset + 6, 0);
 		WREG32(adev->bios_scratch_reg_offset + 7, 0);
 	}
@@ -1662,10 +1594,7 @@ int smu_v11_0_baco_exit(struct smu_context *smu)
 
 	ret = smu_v11_0_baco_set_state(smu, SMU_BACO_STATE_EXIT);
 	if (!ret) {
-		/*
-		 * Poll BACO exit status to ensure FW has completed
-		 * BACO exit process to avoid timing issues.
-		 */
+		 
 		smu_v11_0_poll_baco_exit(smu);
 	}
 
@@ -1718,7 +1647,7 @@ int smu_v11_0_get_dpm_ultimate_freq(struct smu_context *smu, enum smu_clk_type c
 			break;
 		}
 
-		/* clock in Mhz unit */
+		 
 		if (min)
 			*min = clock_limit / 100;
 		if (max)
@@ -1890,10 +1819,7 @@ int smu_v11_0_set_performance_level(struct smu_context *smu,
 		return -EINVAL;
 	}
 
-	/*
-	 * Separate MCLK and SOCCLK soft min/max settings are not allowed
-	 * on Arcturus.
-	 */
+	 
 	if (adev->ip_versions[MP1_HWIP][0] == IP_VERSION(11, 0, 2)) {
 		mclk_min = mclk_max = 0;
 		socclk_min = socclk_max = 0;
@@ -1975,10 +1901,7 @@ int smu_v11_0_get_dpm_freq_by_index(struct smu_context *smu,
 	if (ret)
 		return ret;
 
-	/*
-	 * BIT31:  0 - Fine grained DPM, 1 - Dicrete DPM
-	 * now, we un-support it
-	 */
+	 
 	*value = *value & 0x7fffffff;
 
 	return ret;
@@ -2044,7 +1967,7 @@ int smu_v11_0_get_dpm_level_range(struct smu_context *smu,
 		return -EINVAL;
 
 	if (min_value) {
-		/* by default, level 0 clock value as min value */
+		 
 		ret = smu_v11_0_get_dpm_freq_by_index(smu,
 						      clk_type,
 						      0,

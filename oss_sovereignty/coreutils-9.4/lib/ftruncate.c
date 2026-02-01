@@ -1,45 +1,26 @@
-/* ftruncate emulations for native Windows.
-   Copyright (C) 1992-2023 Free Software Foundation, Inc.
-
-   This program is free software; you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3, or (at your option)
-   any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License along
-   with this program; if not, see <https://www.gnu.org/licenses/>.  */
-
-#include <config.h>
-
-/* Specification.  */
+ 
 #include <unistd.h>
 
 #if HAVE__CHSIZE
-/* A native Windows platform.  */
+ 
 
 # include <errno.h>
 
 # if _GL_WINDOWS_64_BIT_OFF_T
 
-/* Large File Support: off_t is 64-bit, but _chsize() takes only a 32-bit
-   argument.  So, define a 64-bit safe SetFileSize function ourselves.  */
+ 
 
-/* Ensure that <windows.h> declares GetFileSizeEx.  */
+ 
 #  if !defined _WIN32_WINNT || (_WIN32_WINNT < _WIN32_WINNT_WIN2K)
 #   undef _WIN32_WINNT
 #   define _WIN32_WINNT _WIN32_WINNT_WIN2K
 #  endif
 
-/* Get declarations of the native Windows API functions.  */
+ 
 #  define WIN32_LEAN_AND_MEAN
 #  include <windows.h>
 
-/* Get _get_osfhandle.  */
+ 
 #  if GNULIB_MSVC_NOTHROW
 #   include "msvc-nothrow.h"
 #  else
@@ -56,22 +37,22 @@ SetFileSize (HANDLE h, LONGLONG size)
 
   if (size != old_size.QuadPart)
     {
-      /* Duplicate the handle, so we are free to modify its file position.  */
+       
       HANDLE curr_process = GetCurrentProcess ();
       HANDLE tmph;
 
-      if (!DuplicateHandle (curr_process,           /* SourceProcessHandle */
-                            h,                      /* SourceHandle */
-                            curr_process,           /* TargetProcessHandle */
-                            (PHANDLE) &tmph,        /* TargetHandle */
-                            (DWORD) 0,              /* DesiredAccess */
-                            FALSE,                  /* InheritHandle */
-                            DUPLICATE_SAME_ACCESS)) /* Options */
+      if (!DuplicateHandle (curr_process,            
+                            h,                       
+                            curr_process,            
+                            (PHANDLE) &tmph,         
+                            (DWORD) 0,               
+                            FALSE,                   
+                            DUPLICATE_SAME_ACCESS))  
         return FALSE;
 
       if (size < old_size.QuadPart)
         {
-          /* Reduce the size.  */
+           
           LONG size_hi = (LONG) (size >> 32);
           if (SetFilePointer (tmph, (LONG) size, &size_hi, FILE_BEGIN)
               == INVALID_SET_FILE_POINTER
@@ -88,7 +69,7 @@ SetFileSize (HANDLE h, LONGLONG size)
         }
       else
         {
-          /* Increase the size by adding zero bytes at the end.  */
+           
           static char zero_bytes[1024];
           LONG pos_hi = 0;
           LONG pos_lo = SetFilePointer (tmph, (LONG) 0, &pos_hi, FILE_END);
@@ -115,7 +96,7 @@ SetFileSize (HANDLE h, LONGLONG size)
               pos += (ULONGLONG) (ULONG) written;
             }
         }
-      /* Close the handle.  */
+       
       CloseHandle (tmph);
     }
   return TRUE;

@@ -1,30 +1,4 @@
-/*
- * Copyright 2008 Advanced Micro Devices, Inc.
- * Copyright 2008 Red Hat Inc.
- * Copyright 2009 Jerome Glisse.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: Dave Airlie
- *          Alex Deucher
- *          Jerome Glisse
- */
+ 
 
 #include <linux/iosys-map.h>
 #include <linux/pci.h>
@@ -101,14 +75,12 @@ int radeon_gem_object_create(struct radeon_device *rdev, unsigned long size,
 	int r;
 
 	*obj = NULL;
-	/* At least align on page size */
+	 
 	if (alignment < PAGE_SIZE) {
 		alignment = PAGE_SIZE;
 	}
 
-	/* Maximum bo size is the unpinned gtt size since we use the gtt to
-	 * handle vram to system pool migrations.
-	 */
+	 
 	max_size = rdev->mc.gtt_size - rdev->gart_pin_size;
 	if (size > max_size) {
 		DRM_DEBUG("Allocation size %ldMb bigger than %ldMb limit\n",
@@ -148,20 +120,20 @@ static int radeon_gem_set_domain(struct drm_gem_object *gobj,
 	uint32_t domain;
 	long r;
 
-	/* FIXME: reeimplement */
+	 
 	robj = gem_to_radeon_bo(gobj);
-	/* work out where to validate the buffer to */
+	 
 	domain = wdomain;
 	if (!domain) {
 		domain = rdomain;
 	}
 	if (!domain) {
-		/* Do nothings */
+		 
 		pr_warn("Set domain without domain !\n");
 		return 0;
 	}
 	if (domain == RADEON_GEM_DOMAIN_CPU) {
-		/* Asking for cpu access wait for object idle */
+		 
 		r = dma_resv_wait_timeout(robj->tbo.base.resv,
 					  DMA_RESV_USAGE_BOOKKEEP,
 					  true, 30 * HZ);
@@ -174,7 +146,7 @@ static int radeon_gem_set_domain(struct drm_gem_object *gobj,
 		}
 	}
 	if (domain == RADEON_GEM_DOMAIN_VRAM && robj->prime_shared_count) {
-		/* A BO that is associated with a dma-buf cannot be sensibly migrated to VRAM */
+		 
 		return -EINVAL;
 	}
 	return 0;
@@ -191,10 +163,7 @@ void radeon_gem_fini(struct radeon_device *rdev)
 	radeon_bo_force_delete(rdev);
 }
 
-/*
- * Call from drm_gem_handle_create which appear in both new and open ioctl
- * case.
- */
+ 
 static int radeon_gem_object_open(struct drm_gem_object *obj, struct drm_file *file_priv)
 {
 	struct radeon_bo *rbo = gem_to_radeon_bo(obj);
@@ -290,9 +259,7 @@ const struct drm_gem_object_funcs radeon_gem_object_funcs = {
 	.vm_ops = &radeon_gem_vm_ops,
 };
 
-/*
- * GEM ioctls.
- */
+ 
 int radeon_gem_info_ioctl(struct drm_device *dev, void *data,
 			  struct drm_file *filp)
 {
@@ -321,7 +288,7 @@ int radeon_gem_create_ioctl(struct drm_device *dev, void *data,
 	int r;
 
 	down_read(&rdev->exclusive_lock);
-	/* create a gem object to contain this object in */
+	 
 	args->size = roundup(args->size, PAGE_SIZE);
 	r = radeon_gem_object_create(rdev, args->size, args->alignment,
 				     args->initial_domain, args->flags,
@@ -332,7 +299,7 @@ int radeon_gem_create_ioctl(struct drm_device *dev, void *data,
 		return r;
 	}
 	r = drm_gem_handle_create(filp, gobj, &handle);
-	/* drop reference from allocate - handle holds it now */
+	 
 	drm_gem_object_put(gobj);
 	if (r) {
 		up_read(&rdev->exclusive_lock);
@@ -360,28 +327,27 @@ int radeon_gem_userptr_ioctl(struct drm_device *dev, void *data,
 	if (offset_in_page(args->addr | args->size))
 		return -EINVAL;
 
-	/* reject unknown flag values */
+	 
 	if (args->flags & ~(RADEON_GEM_USERPTR_READONLY |
 	    RADEON_GEM_USERPTR_ANONONLY | RADEON_GEM_USERPTR_VALIDATE |
 	    RADEON_GEM_USERPTR_REGISTER))
 		return -EINVAL;
 
 	if (args->flags & RADEON_GEM_USERPTR_READONLY) {
-		/* readonly pages not tested on older hardware */
+		 
 		if (rdev->family < CHIP_R600)
 			return -EINVAL;
 
 	} else if (!(args->flags & RADEON_GEM_USERPTR_ANONONLY) ||
 		   !(args->flags & RADEON_GEM_USERPTR_REGISTER)) {
 
-		/* if we want to write to it we must require anonymous
-		   memory and install a MMU notifier */
+		 
 		return -EACCES;
 	}
 
 	down_read(&rdev->exclusive_lock);
 
-	/* create a gem object to contain this object in */
+	 
 	r = radeon_gem_object_create(rdev, args->size, 0,
 				     RADEON_GEM_DOMAIN_CPU, 0,
 				     false, &gobj);
@@ -416,7 +382,7 @@ int radeon_gem_userptr_ioctl(struct drm_device *dev, void *data,
 	}
 
 	r = drm_gem_handle_create(filp, gobj, &handle);
-	/* drop reference from allocate - handle holds it now */
+	 
 	drm_gem_object_put(gobj);
 	if (r)
 		goto handle_lockup;
@@ -438,18 +404,16 @@ handle_lockup:
 int radeon_gem_set_domain_ioctl(struct drm_device *dev, void *data,
 				struct drm_file *filp)
 {
-	/* transition the BO to a domain -
-	 * just validate the BO into a certain domain */
+	 
 	struct radeon_device *rdev = dev->dev_private;
 	struct drm_radeon_gem_set_domain *args = data;
 	struct drm_gem_object *gobj;
 	int r;
 
-	/* for now if someone requests domain CPU -
-	 * just make sure the buffer is finished with */
+	 
 	down_read(&rdev->exclusive_lock);
 
-	/* just do a BO wait for now */
+	 
 	gobj = drm_gem_object_lookup(filp, args->handle);
 	if (gobj == NULL) {
 		up_read(&rdev->exclusive_lock);
@@ -544,7 +508,7 @@ int radeon_gem_wait_idle_ioctl(struct drm_device *dev, void *data,
 	else if (ret < 0)
 		r = ret;
 
-	/* Flush HDP cache via MMIO if necessary */
+	 
 	cur_placement = READ_ONCE(robj->tbo.resource->mem_type);
 	if (rdev->asic->mmio_hdp_flush &&
 	    radeon_mem_type_to_domain(cur_placement) == RADEON_GEM_DOMAIN_VRAM)
@@ -595,15 +559,7 @@ out:
 	return r;
 }
 
-/**
- * radeon_gem_va_update_vm -update the bo_va in its VM
- *
- * @rdev: radeon_device pointer
- * @bo_va: bo_va to update
- *
- * Update the bo_va directly after setting it's address. Errors are not
- * vital here, so they are not reported back to userspace.
- */
+ 
 static void radeon_gem_va_update_vm(struct radeon_device *rdev,
 				    struct radeon_bo_va *bo_va)
 {
@@ -630,8 +586,7 @@ static void radeon_gem_va_update_vm(struct radeon_device *rdev,
 
 	list_for_each_entry(entry, &list, head) {
 		domain = radeon_mem_type_to_domain(entry->bo->resource->mem_type);
-		/* if anything is swapped out don't swap it in here,
-		   just abort and wait for the next CS */
+		 
 		if (domain == RADEON_GEM_DOMAIN_CPU)
 			goto error_unreserve;
 	}
@@ -674,11 +629,7 @@ int radeon_gem_va_ioctl(struct drm_device *dev, void *data,
 		return -ENOTTY;
 	}
 
-	/* !! DONT REMOVE !!
-	 * We don't support vm_id yet, to be sure we don't have broken
-	 * userspace, reject anyone trying to use non 0 value thus moving
-	 * forward we can use those fields without breaking existant userspace
-	 */
+	 
 	if (args->vm_id) {
 		args->operation = RADEON_VA_RESULT_ERROR;
 		return -EINVAL;
@@ -693,10 +644,7 @@ int radeon_gem_va_ioctl(struct drm_device *dev, void *data,
 		return -EINVAL;
 	}
 
-	/* don't remove, we need to enforce userspace to set the snooped flag
-	 * otherwise we will endup with broken userspace and we won't be able
-	 * to enable this feature without adding new interface
-	 */
+	 
 	invalid_flags = RADEON_VM_PAGE_VALID | RADEON_VM_PAGE_SYSTEM;
 	if ((args->flags & invalid_flags)) {
 		dev_err(dev->dev, "invalid flags 0x%08X vs 0x%08X\n",
@@ -849,7 +797,7 @@ int radeon_mode_dumb_create(struct drm_file *file_priv,
 		return -ENOMEM;
 
 	r = drm_gem_handle_create(file_priv, gobj, &handle);
-	/* drop reference from allocate - handle holds it now */
+	 
 	drm_gem_object_put(gobj);
 	if (r) {
 		return r;

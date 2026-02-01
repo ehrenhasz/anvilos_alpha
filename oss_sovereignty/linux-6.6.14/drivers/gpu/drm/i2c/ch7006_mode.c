@@ -1,28 +1,4 @@
-/*
- * Copyright (C) 2009 Francisco Jerez.
- * All Rights Reserved.
- *
- * Permission is hereby granted, free of charge, to any person obtaining
- * a copy of this software and associated documentation files (the
- * "Software"), to deal in the Software without restriction, including
- * without limitation the rights to use, copy, modify, merge, publish,
- * distribute, sublicense, and/or sell copies of the Software, and to
- * permit persons to whom the Software is furnished to do so, subject to
- * the following conditions:
- *
- * The above copyright notice and this permission notice (including the
- * next paragraph) shall be included in all copies or substantial
- * portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
- * IN NO EVENT SHALL THE COPYRIGHT OWNER(S) AND/OR ITS SUPPLIERS BE
- * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
- * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
- * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 
 #include "ch7006_priv.h"
 
@@ -76,8 +52,7 @@ const struct ch7006_tv_norm_info ch7006_tv_norms[] = {
 		.voffset = 16,
 	},
 
-	/* The following modes seem to work right but they're
-	 * undocumented */
+	 
 
 	[TV_NORM_PAL_N] = {
 		PAL_LIKE_TIMINGS,
@@ -194,7 +169,7 @@ const struct ch7006_mode *ch7006_lookup_mode(struct drm_encoder *encoder,
 	return NULL;
 }
 
-/* Some common HW state calculation code */
+ 
 
 void ch7006_setup_levels(struct drm_encoder *encoder)
 {
@@ -205,8 +180,7 @@ void ch7006_setup_levels(struct drm_encoder *encoder)
 	int gain;
 	int black_level;
 
-	/* Set DAC_GAIN if the voltage drop between white and black is
-	 * high enough. */
+	 
 	if (norm->black_level < 339*fixed1/1000) {
 		gain = 76;
 
@@ -219,7 +193,7 @@ void ch7006_setup_levels(struct drm_encoder *encoder)
 
 	black_level = round_fixed(norm->black_level*26625)/gain;
 
-	/* Correct it with the specified brightness. */
+	 
 	black_level = interpolate(90, black_level, 208, priv->brightness);
 
 	regs[CH7006_BLACK_LEVEL] = bitf(CH7006_BLACK_LEVEL_0, black_level);
@@ -363,7 +337,7 @@ void ch7006_setup_properties(struct drm_encoder *encoder)
 	ch7006_dbg(client, "hpos: %d, vpos: %d\n", hpos, vpos);
 }
 
-/* HW access functions */
+ 
 
 void ch7006_write(struct i2c_client *client, uint8_t addr, uint8_t val)
 {

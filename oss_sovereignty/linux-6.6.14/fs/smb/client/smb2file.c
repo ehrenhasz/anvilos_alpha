@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: LGPL-2.1
-/*
- *
- *   Copyright (C) International Business Machines  Corp., 2002, 2011
- *   Author(s): Steve French (sfrench@us.ibm.com),
- *              Pavel Shilovsky ((pshilovsky@samba.org) 2012
- *
- */
+
+ 
 #include <linux/fs.h>
 #include <linux/filelock.h>
 #include <linux/stat.h>
@@ -141,14 +135,14 @@ int smb2_open_file(const unsigned int xid, struct cifs_open_parms *oparms, __u32
 		goto out;
 
 	if (oparms->tcon->use_resilient) {
-		/* default timeout is 0, servers pick default (120 seconds) */
+		 
 		nr_ioctl_req.Timeout =
 			cpu_to_le32(oparms->tcon->handle_timeout);
 		nr_ioctl_req.Reserved = 0;
 		rc = SMB2_ioctl(xid, oparms->tcon, fid->persistent_fid,
 			fid->volatile_fid, FSCTL_LMR_REQUEST_RESILIENCY,
 			(char *)&nr_ioctl_req, sizeof(nr_ioctl_req),
-			CIFSMaxBufSize, NULL, NULL /* no return info */);
+			CIFSMaxBufSize, NULL, NULL  );
 		if (rc == -EOPNOTSUPP) {
 			cifs_dbg(VFS,
 			     "resiliency not supported by server, disabling\n");
@@ -160,17 +154,14 @@ int smb2_open_file(const unsigned int xid, struct cifs_open_parms *oparms, __u32
 	}
 
 	if (smb2_data) {
-		/* if open response does not have IndexNumber field - get it */
+		 
 		if (smb2_data->IndexNumber == 0) {
 			rc = SMB2_get_srv_num(xid, oparms->tcon,
 				      fid->persistent_fid,
 				      fid->volatile_fid,
 				      &smb2_data->IndexNumber);
 			if (rc) {
-				/*
-				 * let get_inode_info disable server inode
-				 * numbers
-				 */
+				 
 				smb2_data->IndexNumber = 0;
 				rc = 0;
 			}
@@ -200,10 +191,7 @@ smb2_unlock_range(struct cifsFileInfo *cfile, struct file_lock *flock,
 
 	INIT_LIST_HEAD(&tmp_llist);
 
-	/*
-	 * Accessing maxBuf is racy with cifs_reconnect - need to store value
-	 * and check it before using.
-	 */
+	 
 	max_buf = tcon->ses->server->maxBuf;
 	if (max_buf < sizeof(struct smb2_lock_element))
 		return -EINVAL;
@@ -224,17 +212,11 @@ smb2_unlock_range(struct cifsFileInfo *cfile, struct file_lock *flock,
 		    (li->offset + li->length))
 			continue;
 		if (current->tgid != li->pid)
-			/*
-			 * flock and OFD lock are associated with an open
-			 * file description, not the process.
-			 */
+			 
 			if (!(flock->fl_flags & (FL_FLOCK | FL_OFDLCK)))
 				continue;
 		if (cinode->can_cache_brlcks) {
-			/*
-			 * We can cache brlock requests - simply remove a lock
-			 * from the file's list.
-			 */
+			 
 			list_del(&li->llist);
 			cifs_del_lock_waiters(li);
 			kfree(li);
@@ -243,10 +225,7 @@ smb2_unlock_range(struct cifsFileInfo *cfile, struct file_lock *flock,
 		cur->Length = cpu_to_le64(li->length);
 		cur->Offset = cpu_to_le64(li->offset);
 		cur->Flags = cpu_to_le32(SMB2_LOCKFLAG_UNLOCK);
-		/*
-		 * We need to save a lock here to let us add it again to the
-		 * file's list if the unlock range request fails on the server.
-		 */
+		 
 		list_move(&li->llist, &tmp_llist);
 		if (++num == max_num) {
 			stored_rc = smb2_lockv(xid, tcon,
@@ -254,19 +233,12 @@ smb2_unlock_range(struct cifsFileInfo *cfile, struct file_lock *flock,
 					       cfile->fid.volatile_fid,
 					       current->tgid, num, buf);
 			if (stored_rc) {
-				/*
-				 * We failed on the unlock range request - add
-				 * all locks from the tmp list to the head of
-				 * the file's list.
-				 */
+				 
 				cifs_move_llist(&tmp_llist,
 						&cfile->llist->locks);
 				rc = stored_rc;
 			} else
-				/*
-				 * The unlock range request succeed - free the
-				 * tmp list.
-				 */
+				 
 				cifs_free_llist(&tmp_llist);
 			cur = buf;
 			num = 0;
@@ -341,10 +313,7 @@ smb2_push_mandatory_locks(struct cifsFileInfo *cfile)
 
 	xid = get_xid();
 
-	/*
-	 * Accessing maxBuf is racy with cifs_reconnect - need to store value
-	 * and check it for zero before using.
-	 */
+	 
 	max_buf = tlink_tcon(cfile->tlink)->ses->server->maxBuf;
 	if (max_buf < sizeof(struct smb2_lock_element)) {
 		free_xid(xid);

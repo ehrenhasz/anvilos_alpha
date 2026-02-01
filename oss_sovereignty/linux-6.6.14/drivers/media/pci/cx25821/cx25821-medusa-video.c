@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  Driver for the Conexant CX25821 PCIe bridge
- *
- *  Copyright (C) 2009 Conexant Systems Inc.
- *  Authors  <shu.lin@conexant.com>, <hiep.huynh@conexant.com>
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -12,12 +7,7 @@
 #include "cx25821-medusa-video.h"
 #include "cx25821-biffuncs.h"
 
-/*
- * medusa_enable_bluefield_output()
- *
- * Enable the generation of blue filed output if no video
- *
- */
+ 
 static void medusa_enable_bluefield_output(struct cx25821_dev *dev, int channel,
 					   int enable)
 {
@@ -61,15 +51,15 @@ static void medusa_enable_bluefield_output(struct cx25821_dev *dev, int channel,
 	}
 
 	value = cx25821_i2c_read(&dev->i2c_bus[0], out_ctrl, &tmp);
-	value &= 0xFFFFFF7F;	/* clear BLUE_FIELD_EN */
+	value &= 0xFFFFFF7F;	 
 	if (enable)
-		value |= 0x00000080;	/* set BLUE_FIELD_EN */
+		value |= 0x00000080;	 
 	cx25821_i2c_write(&dev->i2c_bus[0], out_ctrl, value);
 
 	value = cx25821_i2c_read(&dev->i2c_bus[0], out_ctrl_ns, &tmp);
 	value &= 0xFFFFFF7F;
 	if (enable)
-		value |= 0x00000080;	/* set BLUE_FIELD_EN */
+		value |= 0x00000080;	 
 	cx25821_i2c_write(&dev->i2c_bus[0], out_ctrl_ns, value);
 }
 
@@ -81,16 +71,16 @@ static int medusa_initialize_ntsc(struct cx25821_dev *dev)
 	u32 tmp = 0;
 
 	for (i = 0; i < MAX_DECODERS; i++) {
-		/* set video format NTSC-M */
+		 
 		value = cx25821_i2c_read(&dev->i2c_bus[0],
 				MODE_CTRL + (0x200 * i), &tmp);
 		value &= 0xFFFFFFF0;
-		/* enable the fast locking mode bit[16] */
+		 
 		value |= 0x10001;
 		ret_val = cx25821_i2c_write(&dev->i2c_bus[0],
 				MODE_CTRL + (0x200 * i), value);
 
-		/* resolution NTSC 720x480 */
+		 
 		value = cx25821_i2c_read(&dev->i2c_bus[0],
 				HORIZ_TIM_CTRL + (0x200 * i), &tmp);
 		value &= 0x00C00C00;
@@ -101,15 +91,15 @@ static int medusa_initialize_ntsc(struct cx25821_dev *dev)
 		value = cx25821_i2c_read(&dev->i2c_bus[0],
 				VERT_TIM_CTRL + (0x200 * i), &tmp);
 		value &= 0x00C00C00;
-		value |= 0x1C1E001A;	/* vblank_cnt + 2 to get camera ID */
+		value |= 0x1C1E001A;	 
 		ret_val = cx25821_i2c_write(&dev->i2c_bus[0],
 				VERT_TIM_CTRL + (0x200 * i), value);
 
-		/* chroma subcarrier step size */
+		 
 		ret_val = cx25821_i2c_write(&dev->i2c_bus[0],
 				SC_STEP_SIZE + (0x200 * i), 0x43E00000);
 
-		/* enable VIP optional active */
+		 
 		value = cx25821_i2c_read(&dev->i2c_bus[0],
 				OUT_CTRL_NS + (0x200 * i), &tmp);
 		value &= 0xFFFBFFFF;
@@ -117,7 +107,7 @@ static int medusa_initialize_ntsc(struct cx25821_dev *dev)
 		ret_val = cx25821_i2c_write(&dev->i2c_bus[0],
 				OUT_CTRL_NS + (0x200 * i), value);
 
-		/* enable VIP optional active (VIP_OPT_AL) for direct output. */
+		 
 		value = cx25821_i2c_read(&dev->i2c_bus[0],
 				OUT_CTRL1 + (0x200 * i), &tmp);
 		value &= 0xFFFBFFFF;
@@ -125,31 +115,28 @@ static int medusa_initialize_ntsc(struct cx25821_dev *dev)
 		ret_val = cx25821_i2c_write(&dev->i2c_bus[0],
 				OUT_CTRL1 + (0x200 * i), value);
 
-		/*
-		 * clear VPRES_VERT_EN bit, fixes the chroma run away problem
-		 * when the input switching rate < 16 fields
-		*/
+		 
 		value = cx25821_i2c_read(&dev->i2c_bus[0],
 				MISC_TIM_CTRL + (0x200 * i), &tmp);
-		/* disable special play detection */
+		 
 		value = setBitAtPos(value, 14);
 		value = clearBitAtPos(value, 15);
 		ret_val = cx25821_i2c_write(&dev->i2c_bus[0],
 				MISC_TIM_CTRL + (0x200 * i), value);
 
-		/* set vbi_gate_en to 0 */
+		 
 		value = cx25821_i2c_read(&dev->i2c_bus[0],
 				DFE_CTRL1 + (0x200 * i), &tmp);
 		value = clearBitAtPos(value, 29);
 		ret_val = cx25821_i2c_write(&dev->i2c_bus[0],
 				DFE_CTRL1 + (0x200 * i), value);
 
-		/* Enable the generation of blue field output if no video */
+		 
 		medusa_enable_bluefield_output(dev, i, 1);
 	}
 
 	for (i = 0; i < MAX_ENCODERS; i++) {
-		/* NTSC hclock */
+		 
 		value = cx25821_i2c_read(&dev->i2c_bus[0],
 				DENC_A_REG_1 + (0x100 * i), &tmp);
 		value &= 0xF000FC00;
@@ -157,7 +144,7 @@ static int medusa_initialize_ntsc(struct cx25821_dev *dev)
 		ret_val = cx25821_i2c_write(&dev->i2c_bus[0],
 				DENC_A_REG_1 + (0x100 * i), value);
 
-		/* burst begin and burst end */
+		 
 		value = cx25821_i2c_read(&dev->i2c_bus[0],
 				DENC_A_REG_2 + (0x100 * i), &tmp);
 		value &= 0xFF000000;
@@ -172,7 +159,7 @@ static int medusa_initialize_ntsc(struct cx25821_dev *dev)
 		ret_val = cx25821_i2c_write(&dev->i2c_bus[0],
 				DENC_A_REG_3 + (0x100 * i), value);
 
-		/* set NTSC vblank, no phase alternation, 7.5 IRE pedestal */
+		 
 		value = cx25821_i2c_read(&dev->i2c_bus[0],
 				DENC_A_REG_4 + (0x100 * i), &tmp);
 		value &= 0x00FCFFFF;
@@ -190,18 +177,18 @@ static int medusa_initialize_ntsc(struct cx25821_dev *dev)
 		ret_val = cx25821_i2c_write(&dev->i2c_bus[0],
 				DENC_A_REG_6 + (0x100 * i), 0x009A89C1);
 
-		/* Subcarrier Increment */
+		 
 		ret_val = cx25821_i2c_write(&dev->i2c_bus[0],
 				DENC_A_REG_7 + (0x100 * i), 0x21F07C1F);
 	}
 
-	/* set picture resolutions */
-	/* 0 - 720 */
+	 
+	 
 	ret_val = cx25821_i2c_write(&dev->i2c_bus[0], HSCALE_CTRL, 0x0);
-	/* 0 - 480 */
+	 
 	ret_val = cx25821_i2c_write(&dev->i2c_bus[0], VSCALE_CTRL, 0x0);
 
-	/* set Bypass input format to NTSC 525 lines */
+	 
 	value = cx25821_i2c_read(&dev->i2c_bus[0], BYP_AB_CTRL, &tmp);
 	value |= 0x00080200;
 	ret_val = cx25821_i2c_write(&dev->i2c_bus[0], BYP_AB_CTRL, value);
@@ -214,7 +201,7 @@ static int medusa_PALCombInit(struct cx25821_dev *dev, int dec)
 	int ret_val = -1;
 	u32 value = 0, tmp = 0;
 
-	/* Setup for 2D threshold */
+	 
 	ret_val = cx25821_i2c_write(&dev->i2c_bus[0],
 			COMB_2D_HFS_CFG + (0x200 * dec), 0x20002861);
 	ret_val = cx25821_i2c_write(&dev->i2c_bus[0],
@@ -222,18 +209,18 @@ static int medusa_PALCombInit(struct cx25821_dev *dev, int dec)
 	ret_val = cx25821_i2c_write(&dev->i2c_bus[0],
 			COMB_2D_LF_CFG + (0x200 * dec), 0x200A1023);
 
-	/* Setup flat chroma and luma thresholds */
+	 
 	value = cx25821_i2c_read(&dev->i2c_bus[0],
 			COMB_FLAT_THRESH_CTRL + (0x200 * dec), &tmp);
 	value &= 0x06230000;
 	ret_val = cx25821_i2c_write(&dev->i2c_bus[0],
 			COMB_FLAT_THRESH_CTRL + (0x200 * dec), value);
 
-	/* set comb 2D blend */
+	 
 	ret_val = cx25821_i2c_write(&dev->i2c_bus[0],
 			COMB_2D_BLEND + (0x200 * dec), 0x210F0F0F);
 
-	/* COMB MISC CONTROL */
+	 
 	ret_val = cx25821_i2c_write(&dev->i2c_bus[0],
 			COMB_MISC_CTRL + (0x200 * dec), 0x41120A7F);
 
@@ -248,16 +235,16 @@ static int medusa_initialize_pal(struct cx25821_dev *dev)
 	u32 tmp = 0;
 
 	for (i = 0; i < MAX_DECODERS; i++) {
-		/* set video format PAL-BDGHI */
+		 
 		value = cx25821_i2c_read(&dev->i2c_bus[0],
 				MODE_CTRL + (0x200 * i), &tmp);
 		value &= 0xFFFFFFF0;
-		/* enable the fast locking mode bit[16] */
+		 
 		value |= 0x10004;
 		ret_val = cx25821_i2c_write(&dev->i2c_bus[0],
 				MODE_CTRL + (0x200 * i), value);
 
-		/* resolution PAL 720x576 */
+		 
 		value = cx25821_i2c_read(&dev->i2c_bus[0],
 				HORIZ_TIM_CTRL + (0x200 * i), &tmp);
 		value &= 0x00C00C00;
@@ -265,19 +252,19 @@ static int medusa_initialize_pal(struct cx25821_dev *dev)
 		ret_val = cx25821_i2c_write(&dev->i2c_bus[0],
 				HORIZ_TIM_CTRL + (0x200 * i), value);
 
-		/* vblank656_cnt=x26, vactive_cnt=240h, vblank_cnt=x24 */
+		 
 		value = cx25821_i2c_read(&dev->i2c_bus[0],
 				VERT_TIM_CTRL + (0x200 * i), &tmp);
 		value &= 0x00C00C00;
-		value |= 0x28240026;	/* vblank_cnt + 2 to get camera ID */
+		value |= 0x28240026;	 
 		ret_val = cx25821_i2c_write(&dev->i2c_bus[0],
 				VERT_TIM_CTRL + (0x200 * i), value);
 
-		/* chroma subcarrier step size */
+		 
 		ret_val = cx25821_i2c_write(&dev->i2c_bus[0],
 				SC_STEP_SIZE + (0x200 * i), 0x5411E2D0);
 
-		/* enable VIP optional active */
+		 
 		value = cx25821_i2c_read(&dev->i2c_bus[0],
 				OUT_CTRL_NS + (0x200 * i), &tmp);
 		value &= 0xFFFBFFFF;
@@ -285,7 +272,7 @@ static int medusa_initialize_pal(struct cx25821_dev *dev)
 		ret_val = cx25821_i2c_write(&dev->i2c_bus[0],
 				OUT_CTRL_NS + (0x200 * i), value);
 
-		/* enable VIP optional active (VIP_OPT_AL) for direct output. */
+		 
 		value = cx25821_i2c_read(&dev->i2c_bus[0],
 				OUT_CTRL1 + (0x200 * i), &tmp);
 		value &= 0xFFFBFFFF;
@@ -293,19 +280,16 @@ static int medusa_initialize_pal(struct cx25821_dev *dev)
 		ret_val = cx25821_i2c_write(&dev->i2c_bus[0],
 				OUT_CTRL1 + (0x200 * i), value);
 
-		/*
-		 * clear VPRES_VERT_EN bit, fixes the chroma run away problem
-		 * when the input switching rate < 16 fields
-		 */
+		 
 		value = cx25821_i2c_read(&dev->i2c_bus[0],
 				MISC_TIM_CTRL + (0x200 * i), &tmp);
-		/* disable special play detection */
+		 
 		value = setBitAtPos(value, 14);
 		value = clearBitAtPos(value, 15);
 		ret_val = cx25821_i2c_write(&dev->i2c_bus[0],
 				MISC_TIM_CTRL + (0x200 * i), value);
 
-		/* set vbi_gate_en to 0 */
+		 
 		value = cx25821_i2c_read(&dev->i2c_bus[0],
 				DFE_CTRL1 + (0x200 * i), &tmp);
 		value = clearBitAtPos(value, 29);
@@ -314,12 +298,12 @@ static int medusa_initialize_pal(struct cx25821_dev *dev)
 
 		medusa_PALCombInit(dev, i);
 
-		/* Enable the generation of blue field output if no video */
+		 
 		medusa_enable_bluefield_output(dev, i, 1);
 	}
 
 	for (i = 0; i < MAX_ENCODERS; i++) {
-		/* PAL hclock */
+		 
 		value = cx25821_i2c_read(&dev->i2c_bus[0],
 				DENC_A_REG_1 + (0x100 * i), &tmp);
 		value &= 0xF000FC00;
@@ -327,7 +311,7 @@ static int medusa_initialize_pal(struct cx25821_dev *dev)
 		ret_val = cx25821_i2c_write(&dev->i2c_bus[0],
 				DENC_A_REG_1 + (0x100 * i), value);
 
-		/* burst begin and burst end */
+		 
 		value = cx25821_i2c_read(&dev->i2c_bus[0],
 				DENC_A_REG_2 + (0x100 * i), &tmp);
 		value &= 0xFF000000;
@@ -335,7 +319,7 @@ static int medusa_initialize_pal(struct cx25821_dev *dev)
 		ret_val = cx25821_i2c_write(&dev->i2c_bus[0],
 				DENC_A_REG_2 + (0x100 * i), value);
 
-		/* hblank and vactive */
+		 
 		value = cx25821_i2c_read(&dev->i2c_bus[0],
 				DENC_A_REG_3 + (0x100 * i), &tmp);
 		value &= 0xFC00FE00;
@@ -343,7 +327,7 @@ static int medusa_initialize_pal(struct cx25821_dev *dev)
 		ret_val = cx25821_i2c_write(&dev->i2c_bus[0],
 				DENC_A_REG_3 + (0x100 * i), value);
 
-		/* set PAL vblank, phase alternation, 0 IRE pedestal */
+		 
 		value = cx25821_i2c_read(&dev->i2c_bus[0],
 				DENC_A_REG_4 + (0x100 * i), &tmp);
 		value &= 0x00FCFFFF;
@@ -361,18 +345,18 @@ static int medusa_initialize_pal(struct cx25821_dev *dev)
 		ret_val = cx25821_i2c_write(&dev->i2c_bus[0],
 				DENC_A_REG_6 + (0x100 * i), 0x00A493CF);
 
-		/* Subcarrier Increment */
+		 
 		ret_val = cx25821_i2c_write(&dev->i2c_bus[0],
 				DENC_A_REG_7 + (0x100 * i), 0x2A098ACB);
 	}
 
-	/* set picture resolutions */
-	/* 0 - 720 */
+	 
+	 
 	ret_val = cx25821_i2c_write(&dev->i2c_bus[0], HSCALE_CTRL, 0x0);
-	/* 0 - 576 */
+	 
 	ret_val = cx25821_i2c_write(&dev->i2c_bus[0], VSCALE_CTRL, 0x0);
 
-	/* set Bypass input format to PAL 625 lines */
+	 
 	value = cx25821_i2c_read(&dev->i2c_bus[0], BYP_AB_CTRL, &tmp);
 	value &= 0xFFF7FDFF;
 	ret_val = cx25821_i2c_write(&dev->i2c_bus[0], BYP_AB_CTRL, value);
@@ -390,12 +374,12 @@ int medusa_set_videostandard(struct cx25821_dev *dev)
 	else
 		status = medusa_initialize_ntsc(dev);
 
-	/* Enable DENC_A output */
+	 
 	value = cx25821_i2c_read(&dev->i2c_bus[0], DENC_A_REG_4, &tmp);
 	value = setBitAtPos(value, 4);
 	status = cx25821_i2c_write(&dev->i2c_bus[0], DENC_A_REG_4, value);
 
-	/* Enable DENC_B output */
+	 
 	value = cx25821_i2c_read(&dev->i2c_bus[0], DENC_B_REG_4, &tmp);
 	value = setBitAtPos(value, 4);
 	status = cx25821_i2c_write(&dev->i2c_bus[0], DENC_B_REG_4, value);
@@ -412,7 +396,7 @@ void medusa_set_resolution(struct cx25821_dev *dev, int width,
 	u32 vscale = 0x0;
 	const int MAX_WIDTH = 720;
 
-	/* validate the width */
+	 
 	if (width > MAX_WIDTH) {
 		pr_info("%s(): width %d > MAX_WIDTH %d ! resetting to MAX_WIDTH\n",
 			__func__, width, MAX_WIDTH);
@@ -448,14 +432,14 @@ void medusa_set_resolution(struct cx25821_dev *dev, int width,
 		vscale = 0x1E00;
 		break;
 
-	default:		/* 720 */
+	default:		 
 		hscale = 0x0;
 		vscale = 0x0;
 		break;
 	}
 
 	for (; decoder < decoder_count; decoder++) {
-		/* write scaling values for each decoder */
+		 
 		cx25821_i2c_write(&dev->i2c_bus[0],
 				HSCALE_CTRL + (0x200 * decoder), hscale);
 		cx25821_i2c_write(&dev->i2c_bus[0],
@@ -470,7 +454,7 @@ static void medusa_set_decoderduration(struct cx25821_dev *dev, int decoder,
 	u32 tmp = 0;
 	u32 disp_cnt_reg = DISP_AB_CNT;
 
-	/* no support */
+	 
 	if (decoder < VDEC_A || decoder > VDEC_H) {
 		return;
 	}
@@ -492,10 +476,10 @@ static void medusa_set_decoderduration(struct cx25821_dev *dev, int decoder,
 		break;
 	}
 
-	/* update hardware */
+	 
 	fld_cnt = cx25821_i2c_read(&dev->i2c_bus[0], disp_cnt_reg, &tmp);
 
-	if (!(decoder % 2)) {	/* EVEN decoder */
+	if (!(decoder % 2)) {	 
 		fld_cnt &= 0xFFFF0000;
 		fld_cnt |= duration;
 	} else {
@@ -506,7 +490,7 @@ static void medusa_set_decoderduration(struct cx25821_dev *dev, int decoder,
 	cx25821_i2c_write(&dev->i2c_bus[0], disp_cnt_reg, fld_cnt);
 }
 
-/* Map to Medusa register setting */
+ 
 static int mapM(int srcMin, int srcMax, int srcVal, int dstMin, int dstMax,
 		int *dstVal)
 {
@@ -516,13 +500,7 @@ static int mapM(int srcMin, int srcMax, int srcVal, int dstMin, int dstMax,
 
 	if ((srcMin == srcMax) || (srcVal < srcMin) || (srcVal > srcMax))
 		return -1;
-	/*
-	 * This is the overall expression used:
-	 * *dstVal =
-	 *   (srcVal - srcMin)*(dstMax - dstMin) / (srcMax - srcMin) + dstMin;
-	 * but we need to account for rounding so below we use the modulus
-	 * operator to find the remainder and increment if necessary.
-	 */
+	 
 	numerator = (srcVal - srcMin) * (dstMax - dstMin);
 	denominator = srcMax - srcMin;
 	quotient = numerator / denominator;
@@ -643,7 +621,7 @@ int medusa_set_saturation(struct cx25821_dev *dev, int saturation, int decoder)
 	return ret_val;
 }
 
-/* Program the display sequence and monitor output. */
+ 
 
 int medusa_video_init(struct cx25821_dev *dev)
 {
@@ -651,7 +629,7 @@ int medusa_video_init(struct cx25821_dev *dev)
 	int ret_val = 0;
 	int i = 0;
 
-	/* disable Auto source selection on all video decoders */
+	 
 	value = cx25821_i2c_read(&dev->i2c_bus[0], MON_A_CTRL, &tmp);
 	value &= 0xFFFFF0FF;
 	ret_val = cx25821_i2c_write(&dev->i2c_bus[0], MON_A_CTRL, value);
@@ -659,7 +637,7 @@ int medusa_video_init(struct cx25821_dev *dev)
 	if (ret_val < 0)
 		goto error;
 
-	/* Turn off Master source switch enable */
+	 
 	value = cx25821_i2c_read(&dev->i2c_bus[0], MON_A_CTRL, &tmp);
 	value &= 0xFFFFFFDF;
 	ret_val = cx25821_i2c_write(&dev->i2c_bus[0], MON_A_CTRL, value);
@@ -667,33 +645,28 @@ int medusa_video_init(struct cx25821_dev *dev)
 	if (ret_val < 0)
 		goto error;
 
-	/*
-	 * FIXME: due to a coding bug the duration was always 0. It's
-	 * likely that it really should be something else, but due to the
-	 * lack of documentation I have no idea what it should be. For
-	 * now just fill in 0 as the duration.
-	 */
+	 
 	for (i = 0; i < dev->_max_num_decoders; i++)
 		medusa_set_decoderduration(dev, i, 0);
 
-	/* Select monitor as DENC A input, power up the DAC */
+	 
 	value = cx25821_i2c_read(&dev->i2c_bus[0], DENC_AB_CTRL, &tmp);
 	value &= 0xFF70FF70;
-	value |= 0x00090008;	/* set en_active */
+	value |= 0x00090008;	 
 	ret_val = cx25821_i2c_write(&dev->i2c_bus[0], DENC_AB_CTRL, value);
 
 	if (ret_val < 0)
 		goto error;
 
-	/* enable input is VIP/656 */
+	 
 	value = cx25821_i2c_read(&dev->i2c_bus[0], BYP_AB_CTRL, &tmp);
-	value |= 0x00040100;	/* enable VIP */
+	value |= 0x00040100;	 
 	ret_val = cx25821_i2c_write(&dev->i2c_bus[0], BYP_AB_CTRL, value);
 
 	if (ret_val < 0)
 		goto error;
 
-	/* select AFE clock to output mode */
+	 
 	value = cx25821_i2c_read(&dev->i2c_bus[0], AFE_AB_DIAG_CTRL, &tmp);
 	value &= 0x83FFFFFF;
 	ret_val = cx25821_i2c_write(&dev->i2c_bus[0], AFE_AB_DIAG_CTRL,
@@ -702,19 +675,14 @@ int medusa_video_init(struct cx25821_dev *dev)
 	if (ret_val < 0)
 		goto error;
 
-	/* Turn on all of the data out and control output pins. */
+	 
 	value = cx25821_i2c_read(&dev->i2c_bus[0], PIN_OE_CTRL, &tmp);
 	value &= 0xFEF0FE00;
 	if (dev->_max_num_decoders == MAX_DECODERS) {
-		/*
-		 * Note: The octal board does not support control pins(bit16-19)
-		 * These bits are ignored in the octal board.
-		 *
-		 * disable VDEC A-C port, default to Mobilygen Interface
-		 */
+		 
 		value |= 0x010001F8;
 	} else {
-		/* disable VDEC A-C port, default to Mobilygen Interface */
+		 
 		value |= 0x010F0108;
 	}
 

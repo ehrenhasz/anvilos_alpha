@@ -1,9 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Copyright (c) 2011-2015 Samsung Electronics Co., Ltd.
-//		http://www.samsung.com/
-//
-// Exynos5250 - CPU PMU (Power Management Unit) support
+
+
+
+
+
+
 
 #include <linux/soc/samsung/exynos-regs-pmu.h>
 #include <linux/soc/samsung/exynos-pmu.h>
@@ -11,7 +11,7 @@
 #include "exynos-pmu.h"
 
 static const struct exynos_pmu_conf exynos5250_pmu_config[] = {
-	/* { .offset = offset, .val = { AFTR, LPA, SLEEP } */
+	 
 	{ EXYNOS5_ARM_CORE0_SYS_PWR_REG,		{ 0x0, 0x0, 0x2} },
 	{ EXYNOS5_DIS_IRQ_ARM_CORE0_LOCAL_SYS_PWR_REG,	{ 0x0, 0x0, 0x0} },
 	{ EXYNOS5_DIS_IRQ_ARM_CORE0_CENTRAL_SYS_PWR_REG, { 0x0, 0x0, 0x0} },
@@ -138,10 +138,7 @@ static unsigned int const exynos5_list_disable_wfi_wfe[] = {
 static void exynos5250_pmu_init(void)
 {
 	unsigned int value;
-	/*
-	 * When SYS_WDTRESET is set, watchdog timer reset request
-	 * is ignored by power management unit.
-	 */
+	 
 	value = pmu_raw_readl(EXYNOS5_AUTO_WDTRESET_DISABLE);
 	value &= ~EXYNOS5_SYS_WDTRESET;
 	pmu_raw_writel(value, EXYNOS5_AUTO_WDTRESET_DISABLE);
@@ -156,9 +153,7 @@ static void exynos5_powerdown_conf(enum sys_powerdown mode)
 	unsigned int i;
 	unsigned int tmp;
 
-	/*
-	 * Enable both SC_FEEDBACK and SC_COUNTER
-	 */
+	 
 	for (i = 0; i < ARRAY_SIZE(exynos5_list_both_cnt_feed); i++) {
 		tmp = pmu_raw_readl(exynos5_list_both_cnt_feed[i]);
 		tmp |= (EXYNOS5_USE_SC_FEEDBACK |
@@ -166,16 +161,12 @@ static void exynos5_powerdown_conf(enum sys_powerdown mode)
 		pmu_raw_writel(tmp, exynos5_list_both_cnt_feed[i]);
 	}
 
-	/*
-	 * SKIP_DEACTIVATE_ACEACP_IN_PWDN_BITFIELD Enable
-	 */
+	 
 	tmp = pmu_raw_readl(EXYNOS5_ARM_COMMON_OPTION);
 	tmp |= EXYNOS5_SKIP_DEACTIVATE_ACEACP_IN_PWDN;
 	pmu_raw_writel(tmp, EXYNOS5_ARM_COMMON_OPTION);
 
-	/*
-	 * Disable WFI/WFE on XXX_OPTION
-	 */
+	 
 	for (i = 0; i < ARRAY_SIZE(exynos5_list_disable_wfi_wfe); i++) {
 		tmp = pmu_raw_readl(exynos5_list_disable_wfi_wfe[i]);
 		tmp &= ~(EXYNOS5_OPTION_USE_STANDBYWFE |

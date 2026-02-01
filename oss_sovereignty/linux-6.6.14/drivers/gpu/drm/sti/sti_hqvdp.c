@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) STMicroelectronics SA 2014
- * Authors: Fabien Dessenne <fabien.dessenne@st.com> for STMicroelectronics.
- */
+
+ 
 
 #include <linux/component.h>
 #include <linux/delay.h>
@@ -27,42 +24,42 @@
 #include "sti_plane.h"
 #include "sti_vtg.h"
 
-/* Firmware name */
+ 
 #define HQVDP_FMW_NAME          "hqvdp-stih407.bin"
 
-/* Regs address */
-#define HQVDP_DMEM              0x00000000               /* 0x00000000 */
-#define HQVDP_PMEM              0x00040000               /* 0x00040000 */
-#define HQVDP_RD_PLUG           0x000E0000               /* 0x000E0000 */
-#define HQVDP_RD_PLUG_CONTROL   (HQVDP_RD_PLUG + 0x1000) /* 0x000E1000 */
-#define HQVDP_RD_PLUG_PAGE_SIZE (HQVDP_RD_PLUG + 0x1004) /* 0x000E1004 */
-#define HQVDP_RD_PLUG_MIN_OPC   (HQVDP_RD_PLUG + 0x1008) /* 0x000E1008 */
-#define HQVDP_RD_PLUG_MAX_OPC   (HQVDP_RD_PLUG + 0x100C) /* 0x000E100C */
-#define HQVDP_RD_PLUG_MAX_CHK   (HQVDP_RD_PLUG + 0x1010) /* 0x000E1010 */
-#define HQVDP_RD_PLUG_MAX_MSG   (HQVDP_RD_PLUG + 0x1014) /* 0x000E1014 */
-#define HQVDP_RD_PLUG_MIN_SPACE (HQVDP_RD_PLUG + 0x1018) /* 0x000E1018 */
-#define HQVDP_WR_PLUG           0x000E2000               /* 0x000E2000 */
-#define HQVDP_WR_PLUG_CONTROL   (HQVDP_WR_PLUG + 0x1000) /* 0x000E3000 */
-#define HQVDP_WR_PLUG_PAGE_SIZE (HQVDP_WR_PLUG + 0x1004) /* 0x000E3004 */
-#define HQVDP_WR_PLUG_MIN_OPC   (HQVDP_WR_PLUG + 0x1008) /* 0x000E3008 */
-#define HQVDP_WR_PLUG_MAX_OPC   (HQVDP_WR_PLUG + 0x100C) /* 0x000E300C */
-#define HQVDP_WR_PLUG_MAX_CHK   (HQVDP_WR_PLUG + 0x1010) /* 0x000E3010 */
-#define HQVDP_WR_PLUG_MAX_MSG   (HQVDP_WR_PLUG + 0x1014) /* 0x000E3014 */
-#define HQVDP_WR_PLUG_MIN_SPACE (HQVDP_WR_PLUG + 0x1018) /* 0x000E3018 */
-#define HQVDP_MBX               0x000E4000               /* 0x000E4000 */
-#define HQVDP_MBX_IRQ_TO_XP70   (HQVDP_MBX + 0x0000)     /* 0x000E4000 */
-#define HQVDP_MBX_INFO_HOST     (HQVDP_MBX + 0x0004)     /* 0x000E4004 */
-#define HQVDP_MBX_IRQ_TO_HOST   (HQVDP_MBX + 0x0008)     /* 0x000E4008 */
-#define HQVDP_MBX_INFO_XP70     (HQVDP_MBX + 0x000C)     /* 0x000E400C */
-#define HQVDP_MBX_SW_RESET_CTRL (HQVDP_MBX + 0x0010)     /* 0x000E4010 */
-#define HQVDP_MBX_STARTUP_CTRL1 (HQVDP_MBX + 0x0014)     /* 0x000E4014 */
-#define HQVDP_MBX_STARTUP_CTRL2 (HQVDP_MBX + 0x0018)     /* 0x000E4018 */
-#define HQVDP_MBX_GP_STATUS     (HQVDP_MBX + 0x001C)     /* 0x000E401C */
-#define HQVDP_MBX_NEXT_CMD      (HQVDP_MBX + 0x0020)     /* 0x000E4020 */
-#define HQVDP_MBX_CURRENT_CMD   (HQVDP_MBX + 0x0024)     /* 0x000E4024 */
-#define HQVDP_MBX_SOFT_VSYNC    (HQVDP_MBX + 0x0028)     /* 0x000E4028 */
+ 
+#define HQVDP_DMEM              0x00000000                
+#define HQVDP_PMEM              0x00040000                
+#define HQVDP_RD_PLUG           0x000E0000                
+#define HQVDP_RD_PLUG_CONTROL   (HQVDP_RD_PLUG + 0x1000)  
+#define HQVDP_RD_PLUG_PAGE_SIZE (HQVDP_RD_PLUG + 0x1004)  
+#define HQVDP_RD_PLUG_MIN_OPC   (HQVDP_RD_PLUG + 0x1008)  
+#define HQVDP_RD_PLUG_MAX_OPC   (HQVDP_RD_PLUG + 0x100C)  
+#define HQVDP_RD_PLUG_MAX_CHK   (HQVDP_RD_PLUG + 0x1010)  
+#define HQVDP_RD_PLUG_MAX_MSG   (HQVDP_RD_PLUG + 0x1014)  
+#define HQVDP_RD_PLUG_MIN_SPACE (HQVDP_RD_PLUG + 0x1018)  
+#define HQVDP_WR_PLUG           0x000E2000                
+#define HQVDP_WR_PLUG_CONTROL   (HQVDP_WR_PLUG + 0x1000)  
+#define HQVDP_WR_PLUG_PAGE_SIZE (HQVDP_WR_PLUG + 0x1004)  
+#define HQVDP_WR_PLUG_MIN_OPC   (HQVDP_WR_PLUG + 0x1008)  
+#define HQVDP_WR_PLUG_MAX_OPC   (HQVDP_WR_PLUG + 0x100C)  
+#define HQVDP_WR_PLUG_MAX_CHK   (HQVDP_WR_PLUG + 0x1010)  
+#define HQVDP_WR_PLUG_MAX_MSG   (HQVDP_WR_PLUG + 0x1014)  
+#define HQVDP_WR_PLUG_MIN_SPACE (HQVDP_WR_PLUG + 0x1018)  
+#define HQVDP_MBX               0x000E4000                
+#define HQVDP_MBX_IRQ_TO_XP70   (HQVDP_MBX + 0x0000)      
+#define HQVDP_MBX_INFO_HOST     (HQVDP_MBX + 0x0004)      
+#define HQVDP_MBX_IRQ_TO_HOST   (HQVDP_MBX + 0x0008)      
+#define HQVDP_MBX_INFO_XP70     (HQVDP_MBX + 0x000C)      
+#define HQVDP_MBX_SW_RESET_CTRL (HQVDP_MBX + 0x0010)      
+#define HQVDP_MBX_STARTUP_CTRL1 (HQVDP_MBX + 0x0014)      
+#define HQVDP_MBX_STARTUP_CTRL2 (HQVDP_MBX + 0x0018)      
+#define HQVDP_MBX_GP_STATUS     (HQVDP_MBX + 0x001C)      
+#define HQVDP_MBX_NEXT_CMD      (HQVDP_MBX + 0x0020)      
+#define HQVDP_MBX_CURRENT_CMD   (HQVDP_MBX + 0x0024)      
+#define HQVDP_MBX_SOFT_VSYNC    (HQVDP_MBX + 0x0028)      
 
-/* Plugs config */
+ 
 #define PLUG_CONTROL_ENABLE     0x00000001
 #define PLUG_PAGE_SIZE_256      0x00000002
 #define PLUG_MIN_OPC_8          0x00000003
@@ -71,28 +68,28 @@
 #define PLUG_MAX_MSG_1X         0x00000000
 #define PLUG_MIN_SPACE_1        0x00000000
 
-/* SW reset CTRL */
+ 
 #define SW_RESET_CTRL_FULL      BIT(0)
 #define SW_RESET_CTRL_CORE      BIT(1)
 
-/* Startup ctrl 1 */
+ 
 #define STARTUP_CTRL1_RST_DONE  BIT(0)
 #define STARTUP_CTRL1_AUTH_IDLE BIT(2)
 
-/* Startup ctrl 2 */
+ 
 #define STARTUP_CTRL2_FETCH_EN  BIT(1)
 
-/* Info xP70 */
+ 
 #define INFO_XP70_FW_READY      BIT(15)
 #define INFO_XP70_FW_PROCESSING BIT(14)
 #define INFO_XP70_FW_INITQUEUES BIT(13)
 
-/* SOFT_VSYNC */
+ 
 #define SOFT_VSYNC_HW           0x00000000
 #define SOFT_VSYNC_SW_CMD       0x00000001
 #define SOFT_VSYNC_SW_CTRL_IRQ  0x00000003
 
-/* Reset & boot poll config */
+ 
 #define POLL_MAX_ATTEMPT        50
 #define POLL_DELAY_MS           20
 
@@ -107,7 +104,7 @@ enum sti_hvsrc_orient {
 	HVSRC_VERT
 };
 
-/* Command structures */
+ 
 struct sti_hqvdp_top {
 	u32 config;
 	u32 mem_format;
@@ -143,17 +140,17 @@ struct sti_hqvdp_top {
 	u32 crc_reset_ctrl;
 };
 
-/* Configs for interlaced : no IT, no pass thru, 3 fields */
+ 
 #define TOP_CONFIG_INTER_BTM            0x00000000
 #define TOP_CONFIG_INTER_TOP            0x00000002
 
-/* Config for progressive : no IT, no pass thru, 3 fields */
+ 
 #define TOP_CONFIG_PROGRESSIVE          0x00000001
 
-/* Default MemFormat: in=420_raster_dual out=444_raster;opaque Mem2Tv mode */
+ 
 #define TOP_MEM_FORMAT_DFLT             0x00018060
 
-/* Min/Max size */
+ 
 #define MAX_WIDTH                       0x1FFF
 #define MAX_HEIGHT                      0x0FFF
 #define MIN_WIDTH                       0x0030
@@ -209,11 +206,11 @@ struct sti_hqvdp_csdi {
 	u32 next_right_motion;
 };
 
-/* Config for progressive: by pass */
+ 
 #define CSDI_CONFIG_PROG                0x00000000
-/* Config for directional deinterlacing without motion */
+ 
 #define CSDI_CONFIG_INTER_DIR           0x00000016
-/* Additional configs for fader, blender, motion,... deinterlace algorithms */
+ 
 #define CSDI_CONFIG2_DFLT               0x000001B3
 #define CSDI_DCDI_CONFIG_DFLT           0x00203803
 
@@ -231,7 +228,7 @@ struct sti_hqvdp_hvsrc {
 	u32 vert_shift;
 };
 
-/* Default ParamCtrl: all controls enabled */
+ 
 #define HVSRC_PARAM_CTRL_DFLT           0xFFFFFFFF
 
 struct sti_hqvdp_iqi {
@@ -253,13 +250,13 @@ struct sti_hqvdp_iqi {
 	u32 default_color;
 };
 
-/* Default Config : IQI bypassed */
+ 
 #define IQI_CONFIG_DFLT                 0x00000001
-/* Default Contrast & Brightness gain = 256 */
+ 
 #define IQI_CON_BRI_DFLT                0x00000100
-/* Default Saturation gain = 256 */
+ 
 #define IQI_SAT_GAIN_DFLT               0x00000100
-/* Default PxfConf : P2I bypassed */
+ 
 #define IQI_PXF_CONF_DFLT               0x00000001
 
 struct sti_hqvdp_top_status {
@@ -306,8 +303,7 @@ struct sti_hqvdp_iqi_status {
 	u32 v_iqi_crc;
 };
 
-/* Main commands. We use 2 commands one being processed by the firmware, one
- * ready to be fetched upon next Vsync*/
+ 
 #define NB_VDP_CMD	2
 
 struct sti_hqvdp_cmd {
@@ -324,24 +320,7 @@ struct sti_hqvdp_cmd {
 	struct sti_hqvdp_iqi_status iqi_status;
 };
 
-/*
- * STI HQVDP structure
- *
- * @dev:               driver device
- * @drm_dev:           the drm device
- * @regs:              registers
- * @plane:             plane structure for hqvdp it self
- * @clk:               IP clock
- * @clk_pix_main:      pix main clock
- * @reset:             reset control
- * @vtg_nb:            notifier to handle VTG Vsync
- * @btm_field_pending: is there any bottom field (interlaced frame) to display
- * @hqvdp_cmd:         buffer of commands
- * @hqvdp_cmd_paddr:   physical address of hqvdp_cmd
- * @vtg:               vtg for main data path
- * @xp70_initialized:  true if xp70 is already initialized
- * @vtg_registered:    true if registered to VTG
- */
+ 
 struct sti_hqvdp {
 	struct device *dev;
 	struct drm_device *drm_dev;
@@ -365,16 +344,7 @@ static const uint32_t hqvdp_supported_formats[] = {
 	DRM_FORMAT_NV12,
 };
 
-/**
- * sti_hqvdp_get_free_cmd
- * @hqvdp: hqvdp structure
- *
- * Look for a hqvdp_cmd that is not being used (or about to be used) by the FW.
- *
- * RETURNS:
- * the offset of the command to be used.
- * -1 in error cases
- */
+ 
 static int sti_hqvdp_get_free_cmd(struct sti_hqvdp *hqvdp)
 {
 	u32 curr_cmd, next_cmd;
@@ -393,16 +363,7 @@ static int sti_hqvdp_get_free_cmd(struct sti_hqvdp *hqvdp)
 	return -1;
 }
 
-/**
- * sti_hqvdp_get_curr_cmd
- * @hqvdp: hqvdp structure
- *
- * Look for the hqvdp_cmd that is being used by the FW.
- *
- * RETURNS:
- *  the offset of the command to be used.
- * -1 in error cases
- */
+ 
 static int sti_hqvdp_get_curr_cmd(struct sti_hqvdp *hqvdp)
 {
 	u32 curr_cmd;
@@ -421,16 +382,7 @@ static int sti_hqvdp_get_curr_cmd(struct sti_hqvdp *hqvdp)
 	return -1;
 }
 
-/**
- * sti_hqvdp_get_next_cmd
- * @hqvdp: hqvdp structure
- *
- * Look for the next hqvdp_cmd that will be used by the FW.
- *
- * RETURNS:
- *  the offset of the next command that will be used.
- * -1 in error cases
- */
+ 
 static int sti_hqvdp_get_next_cmd(struct sti_hqvdp *hqvdp)
 {
 	int next_cmd;
@@ -609,7 +561,7 @@ static int hqvdp_dbg_show(struct seq_file *s, void *data)
 	else
 		seq_puts(s, "\tSW Vsync ?!?!");
 
-	/* Last command */
+	 
 	cmd = readl(hqvdp->regs + HQVDP_MBX_CURRENT_CMD);
 	cmd_offset = sti_hqvdp_get_curr_cmd(hqvdp);
 	if (cmd_offset == -1) {
@@ -621,7 +573,7 @@ static int hqvdp_dbg_show(struct seq_file *s, void *data)
 		hqvdp_dbg_dump_cmd(s, (struct sti_hqvdp_cmd *)virt);
 	}
 
-	/* Next command */
+	 
 	cmd = readl(hqvdp->regs + HQVDP_MBX_NEXT_CMD);
 	cmd_offset = sti_hqvdp_get_next_cmd(hqvdp);
 	if (cmd_offset == -1) {
@@ -653,24 +605,14 @@ static void hqvdp_debugfs_init(struct sti_hqvdp *hqvdp, struct drm_minor *minor)
 				 minor->debugfs_root, minor);
 }
 
-/**
- * sti_hqvdp_update_hvsrc
- * @orient: horizontal or vertical
- * @scale:  scaling/zoom factor
- * @hvsrc:  the structure containing the LUT coef
- *
- * Update the Y and C Lut coef, as well as the shift param
- *
- * RETURNS:
- * None.
- */
+ 
 static void sti_hqvdp_update_hvsrc(enum sti_hvsrc_orient orient, int scale,
 		struct sti_hqvdp_hvsrc *hvsrc)
 {
 	const int *coef_c, *coef_y;
 	int shift_c, shift_y;
 
-	/* Get the appropriate coef tables */
+	 
 	if (scale < SCALE_MAX_FOR_LEG_LUT_F) {
 		coef_y = coef_lut_f_y_legacy;
 		coef_c = coef_lut_f_c_legacy;
@@ -710,27 +652,7 @@ static void sti_hqvdp_update_hvsrc(enum sti_hvsrc_orient orient, int scale,
 	}
 }
 
-/**
- * sti_hqvdp_check_hw_scaling
- * @hqvdp: hqvdp pointer
- * @mode: display mode with timing constraints
- * @src_w: source width
- * @src_h: source height
- * @dst_w: destination width
- * @dst_h: destination height
- *
- * Check if the HW is able to perform the scaling request
- * The firmware scaling limitation is "CEIL(1/Zy) <= FLOOR(LFW)" where:
- *   Zy = OutputHeight / InputHeight
- *   LFW = (Tx * IPClock) / (MaxNbCycles * Cp)
- *     Tx : Total video mode horizontal resolution
- *     IPClock : HQVDP IP clock (Mhz)
- *     MaxNbCycles: max(InputWidth, OutputWidth)
- *     Cp: Video mode pixel clock (Mhz)
- *
- * RETURNS:
- * True if the HW can scale.
- */
+ 
 static bool sti_hqvdp_check_hw_scaling(struct sti_hqvdp *hqvdp,
 				       struct drm_display_mode *mode,
 				       int src_w, int src_h,
@@ -747,23 +669,18 @@ static bool sti_hqvdp_check_hw_scaling(struct sti_hqvdp *hqvdp,
 	return (inv_zy <= lfw) ? true : false;
 }
 
-/**
- * sti_hqvdp_disable
- * @hqvdp: hqvdp pointer
- *
- * Disables the HQVDP plane
- */
+ 
 static void sti_hqvdp_disable(struct sti_hqvdp *hqvdp)
 {
 	int i;
 
 	DRM_DEBUG_DRIVER("%s\n", sti_plane_to_str(&hqvdp->plane));
 
-	/* Unregister VTG Vsync callback */
+	 
 	if (sti_vtg_unregister_client(hqvdp->vtg, &hqvdp->vtg_nb))
 		DRM_DEBUG_DRIVER("Warning: cannot unregister VTG notifier\n");
 
-	/* Set next cmd to NULL */
+	 
 	writel(0, hqvdp->regs + HQVDP_MBX_NEXT_CMD);
 
 	for (i = 0; i < POLL_MAX_ATTEMPT; i++) {
@@ -773,7 +690,7 @@ static void sti_hqvdp_disable(struct sti_hqvdp *hqvdp)
 		msleep(POLL_DELAY_MS);
 	}
 
-	/* VTG can stop now */
+	 
 	clk_disable_unprepare(hqvdp->clk_pix_main);
 
 	if (i == POLL_MAX_ATTEMPT)
@@ -783,17 +700,7 @@ static void sti_hqvdp_disable(struct sti_hqvdp *hqvdp)
 	hqvdp->vtg_registered = false;
 }
 
-/**
- * sti_hqvdp_vtg_cb
- * @nb: notifier block
- * @evt: event message
- * @data: private data
- *
- * Handle VTG Vsync event, display pending bottom field
- *
- * RETURNS:
- * 0 on success.
- */
+ 
 static int sti_hqvdp_vtg_cb(struct notifier_block *nb, unsigned long evt, void *data)
 {
 	struct sti_hqvdp *hqvdp = container_of(nb, struct sti_hqvdp, vtg_nb);
@@ -806,7 +713,7 @@ static int sti_hqvdp_vtg_cb(struct notifier_block *nb, unsigned long evt, void *
 	}
 
 	if (hqvdp->plane.status == STI_PLANE_FLUSHING) {
-		/* disable need to be synchronize on vsync event */
+		 
 		DRM_DEBUG_DRIVER("Vsync event received => disable %s\n",
 				 sti_plane_to_str(&hqvdp->plane));
 
@@ -814,7 +721,7 @@ static int sti_hqvdp_vtg_cb(struct notifier_block *nb, unsigned long evt, void *
 	}
 
 	if (hqvdp->btm_field_pending) {
-		/* Create the btm field command from the current one */
+		 
 		btm_cmd_offset = sti_hqvdp_get_free_cmd(hqvdp);
 		top_cmd_offest = sti_hqvdp_get_curr_cmd(hqvdp);
 		if ((btm_cmd_offset == -1) || (top_cmd_offest == -1)) {
@@ -833,7 +740,7 @@ static int sti_hqvdp_vtg_cb(struct notifier_block *nb, unsigned long evt, void *
 		btm_cmd->top.current_chroma +=
 				btm_cmd->top.chroma_src_pitch / 2;
 
-		/* Post the command to mailbox */
+		 
 		writel(hqvdp->hqvdp_cmd_paddr + btm_cmd_offset,
 				hqvdp->regs + HQVDP_MBX_NEXT_CMD);
 
@@ -855,7 +762,7 @@ static void sti_hqvdp_init(struct sti_hqvdp *hqvdp)
 
 	hqvdp->vtg_nb.notifier_call = sti_hqvdp_vtg_cb;
 
-	/* Allocate memory for the VDP commands */
+	 
 	size = NB_VDP_CMD * sizeof(struct sti_hqvdp_cmd);
 	hqvdp->hqvdp_cmd = dma_alloc_wc(hqvdp->dev, size,
 					&dma_addr,
@@ -871,7 +778,7 @@ static void sti_hqvdp_init(struct sti_hqvdp *hqvdp)
 
 static void sti_hqvdp_init_plugs(struct sti_hqvdp *hqvdp)
 {
-	/* Configure Plugs (same for RD & WR) */
+	 
 	writel(PLUG_PAGE_SIZE_256, hqvdp->regs + HQVDP_RD_PLUG_PAGE_SIZE);
 	writel(PLUG_MIN_OPC_8, hqvdp->regs + HQVDP_RD_PLUG_MIN_OPC);
 	writel(PLUG_MAX_OPC_64, hqvdp->regs + HQVDP_RD_PLUG_MAX_OPC);
@@ -889,12 +796,7 @@ static void sti_hqvdp_init_plugs(struct sti_hqvdp *hqvdp)
 	writel(PLUG_CONTROL_ENABLE, hqvdp->regs + HQVDP_WR_PLUG_CONTROL);
 }
 
-/**
- * sti_hqvdp_start_xp70
- * @hqvdp: hqvdp pointer
- *
- * Run the xP70 initialization sequence
- */
+ 
 static void sti_hqvdp_start_xp70(struct sti_hqvdp *hqvdp)
 {
 	const struct firmware *firmware;
@@ -915,13 +817,13 @@ static void sti_hqvdp_start_xp70(struct sti_hqvdp *hqvdp)
 		return;
 	}
 
-	/* Request firmware */
+	 
 	if (request_firmware(&firmware, HQVDP_FMW_NAME, hqvdp->dev)) {
 		DRM_ERROR("Can't get HQVDP firmware\n");
 		return;
 	}
 
-	/* Check firmware parts */
+	 
 	if (!firmware) {
 		DRM_ERROR("Firmware not available\n");
 		return;
@@ -951,11 +853,11 @@ static void sti_hqvdp_start_xp70(struct sti_hqvdp *hqvdp)
 	data += header->pmem_size;
 	fw_dmem = (void *)data;
 
-	/* Enable clock */
+	 
 	if (clk_prepare_enable(hqvdp->clk))
 		DRM_ERROR("Failed to prepare/enable HQVDP clk\n");
 
-	/* Reset */
+	 
 	writel(SW_RESET_CTRL_FULL, hqvdp->regs + HQVDP_MBX_SW_RESET_CTRL);
 
 	for (i = 0; i < POLL_MAX_ATTEMPT; i++) {
@@ -970,7 +872,7 @@ static void sti_hqvdp_start_xp70(struct sti_hqvdp *hqvdp)
 		goto out;
 	}
 
-	/* Init Read & Write plugs */
+	 
 	for (i = 0; i < header->rd_size / 4; i++)
 		writel(fw_rd_plug[i], hqvdp->regs + HQVDP_RD_PLUG + i * 4);
 	for (i = 0; i < header->wr_size / 4; i++)
@@ -978,23 +880,23 @@ static void sti_hqvdp_start_xp70(struct sti_hqvdp *hqvdp)
 
 	sti_hqvdp_init_plugs(hqvdp);
 
-	/* Authorize Idle Mode */
+	 
 	writel(STARTUP_CTRL1_AUTH_IDLE, hqvdp->regs + HQVDP_MBX_STARTUP_CTRL1);
 
-	/* Prevent VTG interruption during the boot */
+	 
 	writel(SOFT_VSYNC_SW_CTRL_IRQ, hqvdp->regs + HQVDP_MBX_SOFT_VSYNC);
 	writel(0, hqvdp->regs + HQVDP_MBX_NEXT_CMD);
 
-	/* Download PMEM & DMEM */
+	 
 	for (i = 0; i < header->pmem_size / 4; i++)
 		writel(fw_pmem[i], hqvdp->regs + HQVDP_PMEM + i * 4);
 	for (i = 0; i < header->dmem_size / 4; i++)
 		writel(fw_dmem[i], hqvdp->regs + HQVDP_DMEM + i * 4);
 
-	/* Enable fetch */
+	 
 	writel(STARTUP_CTRL2_FETCH_EN, hqvdp->regs + HQVDP_MBX_STARTUP_CTRL2);
 
-	/* Wait end of boot */
+	 
 	for (i = 0; i < POLL_MAX_ATTEMPT; i++) {
 		if (readl(hqvdp->regs + HQVDP_MBX_INFO_XP70)
 				& INFO_XP70_FW_READY)
@@ -1007,7 +909,7 @@ static void sti_hqvdp_start_xp70(struct sti_hqvdp *hqvdp)
 		goto out;
 	}
 
-	/* Launch Vsync */
+	 
 	writel(SOFT_VSYNC_HW, hqvdp->regs + HQVDP_MBX_SOFT_VSYNC);
 
 	DRM_INFO("HQVDP XP70 initialized\n");
@@ -1032,7 +934,7 @@ static int sti_hqvdp_atomic_check(struct drm_plane *drm_plane,
 	int dst_x, dst_y, dst_w, dst_h;
 	int src_x, src_y, src_w, src_h;
 
-	/* no need for further checks if the plane is being disabled */
+	 
 	if (!crtc || !fb)
 		return 0;
 
@@ -1042,7 +944,7 @@ static int sti_hqvdp_atomic_check(struct drm_plane *drm_plane,
 	dst_y = new_plane_state->crtc_y;
 	dst_w = clamp_val(new_plane_state->crtc_w, 0, mode->hdisplay - dst_x);
 	dst_h = clamp_val(new_plane_state->crtc_h, 0, mode->vdisplay - dst_y);
-	/* src_x are in 16.16 format */
+	 
 	src_x = new_plane_state->src_x >> 16;
 	src_y = new_plane_state->src_y >> 16;
 	src_w = new_plane_state->src_w >> 16;
@@ -1060,10 +962,7 @@ static int sti_hqvdp_atomic_check(struct drm_plane *drm_plane,
 		return -EINVAL;
 	}
 
-	/*
-	 * Input / output size
-	 * Align to upper even value
-	 */
+	 
 	dst_w = ALIGN(dst_w, 2);
 	dst_h = ALIGN(dst_h, 2);
 
@@ -1078,17 +977,17 @@ static int sti_hqvdp_atomic_check(struct drm_plane *drm_plane,
 	}
 
 	if (!hqvdp->xp70_initialized)
-		/* Start HQVDP XP70 coprocessor */
+		 
 		sti_hqvdp_start_xp70(hqvdp);
 
 	if (!hqvdp->vtg_registered) {
-		/* Prevent VTG shutdown */
+		 
 		if (clk_prepare_enable(hqvdp->clk_pix_main)) {
 			DRM_ERROR("Failed to prepare/enable pix main clk\n");
 			return -EINVAL;
 		}
 
-		/* Register VTG Vsync callback to handle bottom fields */
+		 
 		if (sti_vtg_register_client(hqvdp->vtg,
 					    &hqvdp->vtg_nb,
 					    crtc)) {
@@ -1141,7 +1040,7 @@ static void sti_hqvdp_atomic_update(struct drm_plane *drm_plane,
 	    (oldstate->src_y == newstate->src_y) &&
 	    (oldstate->src_w == newstate->src_w) &&
 	    (oldstate->src_h == newstate->src_h)) {
-		/* No change since last update, do not post cmd */
+		 
 		DRM_DEBUG_DRIVER("No change, not posting cmd\n");
 		plane->status = STI_PLANE_UPDATED;
 		return;
@@ -1152,7 +1051,7 @@ static void sti_hqvdp_atomic_update(struct drm_plane *drm_plane,
 	dst_y = newstate->crtc_y;
 	dst_w = clamp_val(newstate->crtc_w, 0, mode->hdisplay - dst_x);
 	dst_h = clamp_val(newstate->crtc_h, 0, mode->vdisplay - dst_y);
-	/* src_x are in 16.16 format */
+	 
 	src_x = newstate->src_x >> 16;
 	src_y = newstate->src_y >> 16;
 	src_w = newstate->src_w >> 16;
@@ -1165,14 +1064,13 @@ static void sti_hqvdp_atomic_update(struct drm_plane *drm_plane,
 	}
 	cmd = hqvdp->hqvdp_cmd + cmd_offset;
 
-	/* Static parameters, defaulting to progressive mode */
+	 
 	cmd->top.config = TOP_CONFIG_PROGRESSIVE;
 	cmd->top.mem_format = TOP_MEM_FORMAT_DFLT;
 	cmd->hvsrc.param_ctrl = HVSRC_PARAM_CTRL_DFLT;
 	cmd->csdi.config = CSDI_CONFIG_PROG;
 
-	/* VC1RE, FMD bypassed : keep everything set to 0
-	 * IQI/P2I bypassed */
+	 
 	cmd->iqi.config = IQI_CONFIG_DFLT;
 	cmd->iqi.con_bri = IQI_CON_BRI_DFLT;
 	cmd->iqi.sat_gain = IQI_SAT_GAIN_DFLT;
@@ -1184,18 +1082,17 @@ static void sti_hqvdp_atomic_update(struct drm_plane *drm_plane,
 			 (char *)&fb->format->format,
 			 (unsigned long) dma_obj->dma_addr);
 
-	/* Buffer planes address */
+	 
 	cmd->top.current_luma = (u32) dma_obj->dma_addr + fb->offsets[0];
 	cmd->top.current_chroma = (u32) dma_obj->dma_addr + fb->offsets[1];
 
-	/* Pitches */
+	 
 	cmd->top.luma_processed_pitch = fb->pitches[0];
 	cmd->top.luma_src_pitch = fb->pitches[0];
 	cmd->top.chroma_processed_pitch = fb->pitches[1];
 	cmd->top.chroma_src_pitch = fb->pitches[1];
 
-	/* Input / output size
-	 * Align to upper even value */
+	 
 	dst_w = ALIGN(dst_w, 2);
 	dst_h = ALIGN(dst_h, 2);
 
@@ -1204,25 +1101,25 @@ static void sti_hqvdp_atomic_update(struct drm_plane *drm_plane,
 	cmd->hvsrc.output_picture_size = dst_h << 16 | dst_w;
 	cmd->top.input_viewport_ori = src_y << 16 | src_x;
 
-	/* Handle interlaced */
+	 
 	if (fb->flags & DRM_MODE_FB_INTERLACED) {
-		/* Top field to display */
+		 
 		cmd->top.config = TOP_CONFIG_INTER_TOP;
 
-		/* Update pitches and vert size */
+		 
 		cmd->top.input_frame_size = (src_h / 2) << 16 | src_w;
 		cmd->top.luma_processed_pitch *= 2;
 		cmd->top.luma_src_pitch *= 2;
 		cmd->top.chroma_processed_pitch *= 2;
 		cmd->top.chroma_src_pitch *= 2;
 
-		/* Enable directional deinterlacing processing */
+		 
 		cmd->csdi.config = CSDI_CONFIG_INTER_DIR;
 		cmd->csdi.config2 = CSDI_CONFIG2_DFLT;
 		cmd->csdi.dcdi_config = CSDI_DCDI_CONFIG_DFLT;
 	}
 
-	/* Update hvsrc lut coef */
+	 
 	scale_h = SCALE_FACTOR * dst_w / src_w;
 	sti_hqvdp_update_hvsrc(HVSRC_HORI, scale_h, &cmd->hvsrc);
 
@@ -1232,7 +1129,7 @@ static void sti_hqvdp_atomic_update(struct drm_plane *drm_plane,
 	writel(hqvdp->hqvdp_cmd_paddr + cmd_offset,
 	       hqvdp->regs + HQVDP_MBX_NEXT_CMD);
 
-	/* Interlaced : get ready to display the bottom field at next Vsync */
+	 
 	if (fb->flags & DRM_MODE_FB_INTERLACED)
 		hqvdp->btm_field_pending = true;
 
@@ -1329,7 +1226,7 @@ static int sti_hqvdp_bind(struct device *dev, struct device *master, void *data)
 
 	hqvdp->drm_dev = drm_dev;
 
-	/* Create HQVDP plane once xp70 is initialized */
+	 
 	plane = sti_hqvdp_create(drm_dev, hqvdp->dev, STI_HQVDP_0);
 	if (!plane)
 		DRM_ERROR("Can't create HQVDP plane\n");
@@ -1340,7 +1237,7 @@ static int sti_hqvdp_bind(struct device *dev, struct device *master, void *data)
 static void sti_hqvdp_unbind(struct device *dev,
 		struct device *master, void *data)
 {
-	/* do nothing */
+	 
 }
 
 static const struct component_ops sti_hqvdp_ops = {
@@ -1365,7 +1262,7 @@ static int sti_hqvdp_probe(struct platform_device *pdev)
 
 	hqvdp->dev = dev;
 
-	/* Get Memory resources */
+	 
 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 	if (!res) {
 		DRM_ERROR("Get memory resource failed\n");
@@ -1377,7 +1274,7 @@ static int sti_hqvdp_probe(struct platform_device *pdev)
 		return -ENXIO;
 	}
 
-	/* Get clock resources */
+	 
 	hqvdp->clk = devm_clk_get(dev, "hqvdp");
 	hqvdp->clk_pix_main = devm_clk_get(dev, "pix_main");
 	if (IS_ERR(hqvdp->clk) || IS_ERR(hqvdp->clk_pix_main)) {
@@ -1385,7 +1282,7 @@ static int sti_hqvdp_probe(struct platform_device *pdev)
 		return -ENXIO;
 	}
 
-	/* Get reset resources */
+	 
 	hqvdp->reset = devm_reset_control_get(dev, "hqvdp");
 	if (!IS_ERR(hqvdp->reset))
 		reset_control_deassert(hqvdp->reset);
@@ -1407,7 +1304,7 @@ static void sti_hqvdp_remove(struct platform_device *pdev)
 
 static const struct of_device_id hqvdp_of_match[] = {
 	{ .compatible = "st,stih407-hqvdp", },
-	{ /* end node */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, hqvdp_of_match);
 

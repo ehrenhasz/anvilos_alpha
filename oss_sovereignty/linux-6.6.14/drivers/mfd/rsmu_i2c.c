@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * I2C driver for Renesas Synchronization Management Unit (SMU) devices.
- *
- * Copyright (C) 2021 Integrated Device Technology, Inc., a Renesas Company.
- */
+
+ 
 
 #include <linux/i2c.h>
 #include <linux/init.h>
@@ -17,18 +13,12 @@
 
 #include "rsmu.h"
 
-/*
- * 32-bit register address: the lower 8 bits of the register address come
- * from the offset addr byte and the upper 24 bits come from the page register.
- */
+ 
 #define	RSMU_CM_PAGE_ADDR		0xFC
 #define RSMU_CM_PAGE_MASK		0xFFFFFF00
 #define RSMU_CM_ADDRESS_MASK		0x000000FF
 
-/*
- * 15-bit register address: the lower 7 bits of the register address come
- * from the offset addr byte and the upper 8 bits come from the page register.
- */
+ 
 #define	RSMU_SABRE_PAGE_ADDR		0x7F
 #define	RSMU_SABRE_PAGE_WINDOW		128
 
@@ -87,7 +77,7 @@ static int rsmu_read_device(struct rsmu_ddata *rsmu, u8 reg, u8 *buf, u16 bytes)
 static int rsmu_write_device(struct rsmu_ddata *rsmu, u8 reg, u8 *buf, u16 bytes)
 {
 	struct i2c_client *client = to_i2c_client(rsmu->dev);
-	u8 msg[RSMU_MAX_WRITE_COUNT + 1]; /* 1 Byte added for the device register */
+	u8 msg[RSMU_MAX_WRITE_COUNT + 1];  
 	int cnt;
 
 	if (bytes > RSMU_MAX_WRITE_COUNT)
@@ -113,11 +103,11 @@ static int rsmu_write_page_register(struct rsmu_ddata *rsmu, u32 reg)
 	u8 buf[4];
 	int err;
 
-	/* Do not modify offset register for none-scsr registers */
+	 
 	if (reg < RSMU_CM_SCSR_BASE)
 		return 0;
 
-	/* Simply return if we are on the same page */
+	 
 	if (rsmu->page == page)
 		return 0;
 
@@ -130,7 +120,7 @@ static int rsmu_write_page_register(struct rsmu_ddata *rsmu, u32 reg)
 	if (err)
 		dev_err(rsmu->dev, "Failed to set page offset 0x%x\n", page);
 	else
-		/* Remember the last page */
+		 
 		rsmu->page = page;
 
 	return err;

@@ -1,26 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright 2011 bct electronic GmbH
- * Copyright 2013 Qtechnology/AS
- *
- * Author: Peter Meerwald <p.meerwald@bct-electronic.com>
- * Author: Ricardo Ribalda <ribalda@kernel.org>
- *
- * Based on leds-pca955x.c
- *
- * LED driver for the PCA9633 I2C LED driver (7-bit slave address 0x62)
- * LED driver for the PCA9634/5 I2C LED driver (7-bit slave address set by hw.)
- *
- * Note that hardware blinking violates the leds infrastructure driver
- * interface since the hardware only supports blinking all LEDs with the
- * same delay_on/delay_off rates.  That is, only the LEDs that are set to
- * blink will actually blink but all LEDs that are set to blink will blink
- * in identical fashion.  The delay_on/delay_off values of the last LED
- * that is set to blink will be used for all of the blinking LEDs.
- * Hardware blinking is disabled by default but can be enabled by setting
- * the 'blink_type' member in the platform_data struct to 'PCA963X_HW_BLINK'
- * or by adding the 'nxp,hw-blink' property to the DTS.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/delay.h>
@@ -33,15 +12,15 @@
 #include <linux/slab.h>
 #include <linux/of.h>
 
-/* LED select registers determine the source that drives LED outputs */
-#define PCA963X_LED_OFF		0x0	/* LED driver off */
-#define PCA963X_LED_ON		0x1	/* LED driver on */
-#define PCA963X_LED_PWM		0x2	/* Controlled through PWM */
-#define PCA963X_LED_GRP_PWM	0x3	/* Controlled through PWM/GRPPWM */
+ 
+#define PCA963X_LED_OFF		0x0	 
+#define PCA963X_LED_ON		0x1	 
+#define PCA963X_LED_PWM		0x2	 
+#define PCA963X_LED_GRP_PWM	0x3	 
 
-#define PCA963X_MODE2_OUTDRV	0x04	/* Open-drain or totem pole */
-#define PCA963X_MODE2_INVRT	0x10	/* Normal or inverted direction */
-#define PCA963X_MODE2_DMBLNK	0x20	/* Enable blinking */
+#define PCA963X_MODE2_OUTDRV	0x04	 
+#define PCA963X_MODE2_INVRT	0x10	 
+#define PCA963X_MODE2_DMBLNK	0x20	 
 
 #define PCA963X_MODE1		0x00
 #define PCA963X_MODE2		0x01
@@ -82,7 +61,7 @@ static struct pca963x_chipdef pca963x_chipdefs[] = {
 	},
 };
 
-/* Total blink period in milliseconds */
+ 
 #define PCA963X_BLINK_PERIOD_MIN	42
 #define PCA963X_BLINK_PERIOD_MAX	10667
 
@@ -100,7 +79,7 @@ struct pca963x;
 struct pca963x_led {
 	struct pca963x *chip;
 	struct led_classdev led_cdev;
-	int led_num; /* 0 .. 15 potentially */
+	int led_num;  
 	bool blinking;
 	u8 gdc;
 	u8 gfrq;
@@ -256,7 +235,7 @@ static int pca963x_blink_set(struct led_classdev *led_cdev,
 	time_on = *delay_on;
 	time_off = *delay_off;
 
-	/* If both zero, pick reasonable defaults of 500ms each */
+	 
 	if (!time_on && !time_off) {
 		time_on = 500;
 		time_off = 500;
@@ -264,7 +243,7 @@ static int pca963x_blink_set(struct led_classdev *led_cdev,
 
 	period = pca963x_period_scale(led, time_on + time_off);
 
-	/* If period not supported by hardware, default to someting sane. */
+	 
 	if ((period < PCA963X_BLINK_PERIOD_MIN) ||
 	    (period > PCA963X_BLINK_PERIOD_MAX)) {
 		time_on = 500;
@@ -272,18 +251,10 @@ static int pca963x_blink_set(struct led_classdev *led_cdev,
 		period = pca963x_period_scale(led, 1000);
 	}
 
-	/*
-	 * From manual: duty cycle = (GDC / 256) ->
-	 *	(time_on / period) = (GDC / 256) ->
-	 *		GDC = ((time_on * 256) / period)
-	 */
+	 
 	gdc = (pca963x_period_scale(led, time_on) * 256) / period;
 
-	/*
-	 * From manual: period = ((GFRQ + 1) / 24) in seconds.
-	 * So, period (in ms) = (((GFRQ + 1) / 24) * 1000) ->
-	 *		GFRQ = ((period * 24 / 1000) - 1)
-	 */
+	 
 	gfrq = (period * 24 / 1000) - 1;
 
 	led->gdc = gdc;
@@ -321,13 +292,13 @@ static int pca963x_register_leds(struct i2c_client *client,
 	if (mode2 < 0)
 		return mode2;
 
-	/* default to open-drain unless totem pole (push-pull) is specified */
+	 
 	if (device_property_read_bool(dev, "nxp,totem-pole"))
 		mode2 |= PCA963X_MODE2_OUTDRV;
 	else
 		mode2 &= ~PCA963X_MODE2_OUTDRV;
 
-	/* default to non-inverted output, unless inverted is specified */
+	 
 	if (device_property_read_bool(dev, "nxp,inverted-out"))
 		mode2 |= PCA963X_MODE2_INVRT;
 	else
@@ -357,7 +328,7 @@ static int pca963x_register_leds(struct i2c_client *client,
 		led->blinking = false;
 
 		init_data.fwnode = child;
-		/* for backwards compatibility */
+		 
 		init_data.devicename = "pca963x";
 		snprintf(default_label, sizeof(default_label), "%d:%.2x:%u",
 			 client->adapter->nr, client->addr, reg);
@@ -416,11 +387,11 @@ static int pca963x_probe(struct i2c_client *client)
 	chip->chipdef = chipdef;
 	chip->client = client;
 
-	/* Turn off LEDs by default*/
+	 
 	for (i = 0; i < chipdef->n_leds / 4; i++)
 		i2c_smbus_write_byte_data(client, chipdef->ledout_base + i, 0x00);
 
-	/* Disable LED all-call address, and power down initially */
+	 
 	i2c_smbus_write_byte_data(client, PCA963X_MODE1, BIT(4));
 
 	return pca963x_register_leds(client, chip);

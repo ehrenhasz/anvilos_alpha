@@ -1,27 +1,4 @@
-/*
- * Copyright 2020 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 #include "reg_helper.h"
 #include "dcn301_optc.h"
@@ -43,12 +20,7 @@
 	optc1->tg_shift->field_name, optc1->tg_mask->field_name
 
 
-/**
- * optc301_set_drr() - Program dynamic refresh rate registers m_OTGx_OTG_V_TOTAL_*.
- *
- * @optc: timing_generator instance.
- * @params: parameters used for Dynamic Refresh Rate.
- */
+ 
 void optc301_set_drr(
 	struct timing_generator *optc,
 	const struct drr_params *params)
@@ -79,7 +51,7 @@ void optc301_set_drr(
 				OTG_FORCE_LOCK_ON_EVENT, 0,
 				OTG_SET_V_TOTAL_MIN_MASK_EN, 0,
 				OTG_SET_V_TOTAL_MIN_MASK, 0);
-		// Setup manual flow control for EOF via TRIG_A
+		
 		optc->funcs->setup_manual_trigger(optc);
 
 	} else {
@@ -118,14 +90,14 @@ static struct timing_generator_funcs dcn30_tg_funcs = {
 		.program_global_sync = optc1_program_global_sync,
 		.enable_crtc = optc2_enable_crtc,
 		.disable_crtc = optc1_disable_crtc,
-		/* used by enable_timing_synchronization. Not need for FPGA */
+		 
 		.is_counter_moving = optc1_is_counter_moving,
 		.get_position = optc1_get_position,
 		.get_frame_count = optc1_get_vblank_counter,
 		.get_scanoutpos = optc1_get_crtc_scanoutpos,
 		.get_otg_active_size = optc1_get_otg_active_size,
 		.set_early_control = optc1_set_early_control,
-		/* used by enable_timing_synchronization. Not need for FPGA */
+		 
 		.wait_for_state = optc1_wait_for_state,
 		.set_blank_color = optc3_program_blank_color,
 		.did_triggered_reset_occur = optc1_did_triggered_reset_occur,

@@ -1,6 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Copyright 2018 Google LLC.
+
+
+
 
 #include <linux/completion.h>
 #include <linux/delay.h>
@@ -19,29 +19,13 @@
 #define HOST_COMMAND_MARK	1
 #define HOST_EVENT_MARK		2
 
-/**
- * struct cros_ec_rpmsg_response - rpmsg message format from from EC.
- *
- * @type:	The type of message, should be either HOST_COMMAND_MARK or
- *		HOST_EVENT_MARK, representing that the message is a response to
- *		host command, or a host event.
- * @data:	ec_host_response for host command.
- */
+ 
 struct cros_ec_rpmsg_response {
 	u8 type;
 	u8 data[] __aligned(4);
 };
 
-/**
- * struct cros_ec_rpmsg - information about a EC over rpmsg.
- *
- * @rpdev:	rpmsg device we are connected to
- * @xfer_ack:	completion for host command transfer.
- * @host_event_work:	Work struct for pending host event.
- * @ept: The rpmsg endpoint of this channel.
- * @has_pending_host_event: Boolean used to check if there is a pending event.
- * @probe_done: Flag to indicate that probe is done.
- */
+ 
 struct cros_ec_rpmsg {
 	struct rpmsg_device *rpdev;
 	struct completion xfer_ack;
@@ -51,31 +35,14 @@ struct cros_ec_rpmsg {
 	bool probe_done;
 };
 
-/**
- * cros_ec_cmd_xfer_rpmsg - Transfer a message over rpmsg and receive the reply
- *
- * @ec_dev: ChromeOS EC device
- * @ec_msg: Message to transfer
- *
- * This is only used for old EC proto version, and is not supported for this
- * driver.
- *
- * Return: -EINVAL
- */
+ 
 static int cros_ec_cmd_xfer_rpmsg(struct cros_ec_device *ec_dev,
 				  struct cros_ec_command *ec_msg)
 {
 	return -EINVAL;
 }
 
-/**
- * cros_ec_pkt_xfer_rpmsg - Transfer a packet over rpmsg and receive the reply
- *
- * @ec_dev: ChromeOS EC device
- * @ec_msg: Message to transfer
- *
- * Return: number of bytes of the reply on success or negative error code.
- */
+ 
 static int cros_ec_pkt_xfer_rpmsg(struct cros_ec_device *ec_dev,
 				  struct cros_ec_command *ec_msg)
 {
@@ -107,7 +74,7 @@ static int cros_ec_pkt_xfer_rpmsg(struct cros_ec_device *ec_dev,
 		return -EIO;
 	}
 
-	/* check response error code */
+	 
 	response = (struct ec_host_response *)ec_dev->din;
 	ec_msg->result = response->result;
 
@@ -122,7 +89,7 @@ static int cros_ec_pkt_xfer_rpmsg(struct cros_ec_device *ec_dev,
 		goto exit;
 	}
 
-	/* copy response packet payload and compute checksum */
+	 
 	memcpy(ec_msg->data, ec_dev->din + sizeof(*response),
 	       response->data_len);
 
@@ -180,10 +147,7 @@ static int cros_ec_rpmsg_callback(struct rpmsg_device *rpdev, void *data,
 		memcpy(ec_dev->din, resp->data, len);
 		complete(&ec_rpmsg->xfer_ack);
 	} else if (resp->type == HOST_EVENT_MARK) {
-		/*
-		 * If the host event is sent before cros_ec_register is
-		 * finished, queue the host event.
-		 */
+		 
 		if (ec_rpmsg->probe_done)
 			schedule_work(&ec_rpmsg->host_event_work);
 		else

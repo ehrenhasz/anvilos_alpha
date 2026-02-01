@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Texas Instruments Keystone IRQ controller IP driver
- *
- * Copyright (C) 2014 Texas Instruments, Inc.
- * Author: Sajesh Kumar Saran <sajesh@ti.com>
- *	   Grygorii Strashko <grygorii.strashko@ti.com>
- */
+
+ 
 
 #include <linux/irq.h>
 #include <linux/bitops.h>
@@ -19,7 +13,7 @@
 #include <linux/mfd/syscon.h>
 #include <linux/regmap.h>
 
-/* The source ID bits start from 4 to 31 (total 28 bits)*/
+ 
 #define BIT_OFS			4
 #define KEYSTONE_N_IRQ		(32 - BIT_OFS)
 
@@ -73,7 +67,7 @@ static void keystone_irq_unmask(struct irq_data *d)
 
 static void keystone_irq_ack(struct irq_data *d)
 {
-	/* nothing to do here */
+	 
 }
 
 static irqreturn_t keystone_irq_handler(int irq, void *keystone_irq)
@@ -182,7 +176,7 @@ static int keystone_irq_probe(struct platform_device *pdev)
 		return ret;
 	}
 
-	/* clear all source bits */
+	 
 	keystone_irq_writel(kirq, ~0x0);
 
 	dev_info(dev, "irqchip registered, nr_irqs %u\n", KEYSTONE_N_IRQ);

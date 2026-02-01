@@ -1,30 +1,4 @@
-/*
- * Copyright 2008 Advanced Micro Devices, Inc.
- * Copyright 2008 Red Hat Inc.
- * Copyright 2009 Jerome Glisse.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: Dave Airlie
- *          Alex Deucher
- *          Jerome Glisse
- */
+ 
 #include <linux/ktime.h>
 #include <linux/module.h>
 #include <linux/pagemap.h>
@@ -154,10 +128,7 @@ void amdgpu_gem_force_release(struct amdgpu_device *adev)
 	mutex_unlock(&ddev->filelist_mutex);
 }
 
-/*
- * Call from drm_gem_handle_create which appear in both new and open ioctl
- * case.
- */
+ 
 static int amdgpu_gem_object_open(struct drm_gem_object *obj,
 				  struct drm_file *file_priv)
 {
@@ -249,11 +220,7 @@ static int amdgpu_gem_object_mmap(struct drm_gem_object *obj, struct vm_area_str
 	if (bo->flags & AMDGPU_GEM_CREATE_NO_CPU_ACCESS)
 		return -EPERM;
 
-	/* Workaround for Thunk bug creating PROT_NONE,MAP_PRIVATE mappings
-	 * for debugger access to invisible VRAM. Should have used MAP_SHARED
-	 * instead. Clearing VM_MAYWRITE prevents the mapping from ever
-	 * becoming writable and makes is_cow_mapping(vm_flags) false.
-	 */
+	 
 	if (is_cow_mapping(vma->vm_flags) &&
 	    !(vma->vm_flags & VM_ACCESS_FLAGS))
 		vm_flags_clear(vma, VM_MAYWRITE);
@@ -272,9 +239,7 @@ static const struct drm_gem_object_funcs amdgpu_gem_object_funcs = {
 	.vm_ops = &amdgpu_gem_vm_ops,
 };
 
-/*
- * GEM ioctls.
- */
+ 
 int amdgpu_gem_create_ioctl(struct drm_device *dev, void *data,
 			    struct drm_file *filp)
 {
@@ -289,11 +254,11 @@ int amdgpu_gem_create_ioctl(struct drm_device *dev, void *data,
 	uint32_t handle, initial_domain;
 	int r;
 
-	/* reject DOORBELLs until userspace code to use it is available */
+	 
 	if (args->in.domains & AMDGPU_GEM_DOMAIN_DOORBELL)
 		return -EINVAL;
 
-	/* reject invalid gem flags */
+	 
 	if (flags & ~(AMDGPU_GEM_CREATE_CPU_ACCESS_REQUIRED |
 		      AMDGPU_GEM_CREATE_NO_CPU_ACCESS |
 		      AMDGPU_GEM_CREATE_CPU_GTT_USWC |
@@ -304,7 +269,7 @@ int amdgpu_gem_create_ioctl(struct drm_device *dev, void *data,
 		      AMDGPU_GEM_CREATE_DISCARDABLE))
 		return -EINVAL;
 
-	/* reject invalid gem domains */
+	 
 	if (args->in.domains & ~AMDGPU_GEM_DOMAIN_MASK)
 		return -EINVAL;
 
@@ -313,13 +278,11 @@ int amdgpu_gem_create_ioctl(struct drm_device *dev, void *data,
 		return -EINVAL;
 	}
 
-	/* create a gem object to contain this object in */
+	 
 	if (args->in.domains & (AMDGPU_GEM_DOMAIN_GDS |
 	    AMDGPU_GEM_DOMAIN_GWS | AMDGPU_GEM_DOMAIN_OA)) {
 		if (flags & AMDGPU_GEM_CREATE_VM_ALWAYS_VALID) {
-			/* if gds bo is created from user space, it must be
-			 * passed to bo list
-			 */
+			 
 			DRM_ERROR("GDS bo cannot be per-vm-bo\n");
 			return -EINVAL;
 		}
@@ -365,7 +328,7 @@ retry:
 		return r;
 
 	r = drm_gem_handle_create(filp, gobj, &handle);
-	/* drop reference from allocate - handle holds it now */
+	 
 	drm_gem_object_put(gobj);
 	if (r)
 		return r;
@@ -393,7 +356,7 @@ int amdgpu_gem_userptr_ioctl(struct drm_device *dev, void *data,
 	if (offset_in_page(args->addr | args->size))
 		return -EINVAL;
 
-	/* reject unknown flag values */
+	 
 	if (args->flags & ~(AMDGPU_GEM_USERPTR_READONLY |
 	    AMDGPU_GEM_USERPTR_ANONONLY | AMDGPU_GEM_USERPTR_VALIDATE |
 	    AMDGPU_GEM_USERPTR_REGISTER))
@@ -402,11 +365,11 @@ int amdgpu_gem_userptr_ioctl(struct drm_device *dev, void *data,
 	if (!(args->flags & AMDGPU_GEM_USERPTR_READONLY) &&
 	     !(args->flags & AMDGPU_GEM_USERPTR_REGISTER)) {
 
-		/* if we want to write to it we must install a MMU notifier */
+		 
 		return -EACCES;
 	}
 
-	/* create a gem object to contain this object in */
+	 
 	r = amdgpu_gem_object_create(adev, args->size, 0, AMDGPU_GEM_DOMAIN_CPU,
 				     0, ttm_bo_type_device, NULL, &gobj, fpriv->xcp_id + 1);
 	if (r)
@@ -488,19 +451,13 @@ int amdgpu_gem_mmap_ioctl(struct drm_device *dev, void *data,
 	return amdgpu_mode_dumb_mmap(filp, dev, handle, &args->out.addr_ptr);
 }
 
-/**
- * amdgpu_gem_timeout - calculate jiffies timeout from absolute value
- *
- * @timeout_ns: timeout in ns
- *
- * Calculate the timeout in jiffies from an absolute timeout in ns.
- */
+ 
 unsigned long amdgpu_gem_timeout(uint64_t timeout_ns)
 {
 	unsigned long timeout_jiffies;
 	ktime_t timeout;
 
-	/* clamp timeout if it's to large */
+	 
 	if (((int64_t)timeout_ns) < 0)
 		return MAX_SCHEDULE_TIMEOUT;
 
@@ -509,7 +466,7 @@ unsigned long amdgpu_gem_timeout(uint64_t timeout_ns)
 		return 0;
 
 	timeout_jiffies = nsecs_to_jiffies(ktime_to_ns(timeout));
-	/*  clamp timeout to avoid unsigned-> signed overflow */
+	 
 	if (timeout_jiffies > MAX_SCHEDULE_TIMEOUT)
 		return MAX_SCHEDULE_TIMEOUT - 1;
 
@@ -535,10 +492,7 @@ int amdgpu_gem_wait_idle_ioctl(struct drm_device *dev, void *data,
 	ret = dma_resv_wait_timeout(robj->tbo.base.resv, DMA_RESV_USAGE_READ,
 				    true, timeout);
 
-	/* ret == 0 means not signaled,
-	 * ret > 0 means signaled
-	 * ret < 0 means interrupted before timeout
-	 */
+	 
 	if (ret >= 0) {
 		memset(args, 0, sizeof(*args));
 		args->out.status = (ret == 0);
@@ -592,17 +546,7 @@ out:
 	return r;
 }
 
-/**
- * amdgpu_gem_va_update_vm -update the bo_va in its VM
- *
- * @adev: amdgpu_device pointer
- * @vm: vm to update
- * @bo_va: bo_va to update
- * @operation: map, unmap or clear
- *
- * Update the bo_va directly after setting its address. Errors are not
- * vital here, so they are not reported back to userspace.
- */
+ 
 static void amdgpu_gem_va_update_vm(struct amdgpu_device *adev,
 				    struct amdgpu_vm *vm,
 				    struct amdgpu_bo_va *bo_va,
@@ -631,14 +575,7 @@ error:
 		DRM_ERROR("Couldn't update BO_VA (%d)\n", r);
 }
 
-/**
- * amdgpu_gem_va_map_flags - map GEM UAPI flags into hardware flags
- *
- * @adev: amdgpu_device pointer
- * @flags: GEM UAPI flags
- *
- * Returns the GEM UAPI flags mapped into hardware for the ASIC.
- */
+ 
 uint64_t amdgpu_gem_va_map_flags(struct amdgpu_device *adev, uint32_t flags)
 {
 	uint64_t pte_flag = 0;
@@ -918,11 +855,7 @@ int amdgpu_mode_dumb_create(struct drm_file *file_priv,
 	u32 domain;
 	int r;
 
-	/*
-	 * The buffer returned from this function should be cleared, but
-	 * it can only be done if the ring is enabled or we'll fail to
-	 * create the buffer.
-	 */
+	 
 	if (adev->mman.buffer_funcs_enabled)
 		flags |= AMDGPU_GEM_CREATE_VRAM_CLEARED;
 
@@ -938,7 +871,7 @@ int amdgpu_mode_dumb_create(struct drm_file *file_priv,
 		return -ENOMEM;
 
 	r = drm_gem_handle_create(file_priv, gobj, &handle);
-	/* drop reference from allocate - handle holds it now */
+	 
 	drm_gem_object_put(gobj);
 	if (r)
 		return r;
@@ -965,12 +898,7 @@ static int amdgpu_debugfs_gem_info_show(struct seq_file *m, void *unused)
 		struct pid *pid;
 		int id;
 
-		/*
-		 * Although we have a valid reference on file->pid, that does
-		 * not guarantee that the task_struct who called get_pid() is
-		 * still alive (e.g. get_pid(current) => fork() => exit()).
-		 * Therefore, we need to protect this ->comm access using RCU.
-		 */
+		 
 		rcu_read_lock();
 		pid = rcu_dereference(file->pid);
 		task = pid_task(pid, PIDTYPE_TGID);

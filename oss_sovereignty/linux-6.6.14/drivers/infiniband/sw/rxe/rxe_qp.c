@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-/*
- * Copyright (c) 2016 Mellanox Technologies Ltd. All rights reserved.
- * Copyright (c) 2015 System Fabric Works, Inc. All rights reserved.
- */
+
+ 
 
 #include <linux/skbuff.h>
 #include <linux/delay.h>
@@ -206,7 +203,7 @@ static int rxe_init_sq(struct rxe_qp *qp, struct ib_qp_init_attr *init,
 		goto err_out;
 	}
 
-	/* prepare info for caller to mmap send queue if user space qp */
+	 
 	err = do_mmap_info(rxe, uresp ? &uresp->sq_mi : NULL, udata,
 			   qp->sq.queue->buf, qp->sq.queue->buf_size,
 			   &qp->sq.queue->ip);
@@ -215,9 +212,7 @@ static int rxe_init_sq(struct rxe_qp *qp, struct ib_qp_init_attr *init,
 		goto err_free;
 	}
 
-	/* return actual capabilities to caller which may be larger
-	 * than requested
-	 */
+	 
 	init->cap.max_send_wr = qp->sq.max_wr;
 	init->cap.max_send_sge = qp->sq.max_sge;
 	init->cap.max_inline_data = qp->sq.max_inline;
@@ -238,7 +233,7 @@ static int rxe_qp_init_req(struct rxe_dev *rxe, struct rxe_qp *qp,
 {
 	int err;
 
-	/* if we don't finish qp create make sure queue is valid */
+	 
 	skb_queue_head_init(&qp->req_pkts);
 
 	err = sock_create_kern(&init_net, AF_INET, SOCK_DGRAM, 0, &qp->sk);
@@ -246,13 +241,7 @@ static int rxe_qp_init_req(struct rxe_dev *rxe, struct rxe_qp *qp,
 		return err;
 	qp->sk->sk->sk_user_data = qp;
 
-	/* pick a source UDP port number for this QP based on
-	 * the source QPN. this spreads traffic for different QPs
-	 * across different NIC RX queues (while using a single
-	 * flow for a given QP to maintain packet order).
-	 * the port number must be in the Dynamic Ports range
-	 * (0xc000 - 0xffff).
-	 */
+	 
 	qp->src_port = RXE_ROCE_V2_SPORT + (hash_32(qp_num(qp), 14) & 0x3fff);
 
 	err = rxe_init_sq(qp, init, udata, uresp);
@@ -268,7 +257,7 @@ static int rxe_qp_init_req(struct rxe_dev *rxe, struct rxe_qp *qp,
 	rxe_init_task(&qp->req.task, qp, rxe_requester);
 	rxe_init_task(&qp->comp.task, qp, rxe_completer);
 
-	qp->qp_timeout_jiffies = 0; /* Can't be set for UD/UC in modify_qp */
+	qp->qp_timeout_jiffies = 0;  
 	if (init->qp_type == IB_QPT_RC) {
 		timer_setup(&qp->rnr_nak_timer, rnr_nak_timer, 0);
 		timer_setup(&qp->retrans_timer, retransmit_timer, 0);
@@ -297,7 +286,7 @@ static int rxe_init_rq(struct rxe_qp *qp, struct ib_qp_init_attr *init,
 		goto err_out;
 	}
 
-	/* prepare info for caller to mmap recv queue if user space qp */
+	 
 	err = do_mmap_info(rxe, uresp ? &uresp->rq_mi : NULL, udata,
 			   qp->rq.queue->buf, qp->rq.queue->buf_size,
 			   &qp->rq.queue->ip);
@@ -306,9 +295,7 @@ static int rxe_init_rq(struct rxe_qp *qp, struct ib_qp_init_attr *init,
 		goto err_free;
 	}
 
-	/* return actual capabilities to caller which may be larger
-	 * than requested
-	 */
+	 
 	init->cap.max_recv_wr = qp->rq.max_wr;
 
 	return 0;
@@ -328,7 +315,7 @@ static int rxe_qp_init_resp(struct rxe_dev *rxe, struct rxe_qp *qp,
 {
 	int err;
 
-	/* if we don't finish qp create make sure queue is valid */
+	 
 	skb_queue_head_init(&qp->resp_pkts);
 
 	if (!qp->srq) {
@@ -345,7 +332,7 @@ static int rxe_qp_init_resp(struct rxe_dev *rxe, struct rxe_qp *qp,
 	return 0;
 }
 
-/* called by the create qp verb */
+ 
 int rxe_qp_from_init(struct rxe_dev *rxe, struct rxe_qp *qp, struct rxe_pd *pd,
 		     struct ib_qp_init_attr *init,
 		     struct rxe_create_qp_resp __user *uresp,
@@ -410,7 +397,7 @@ err1:
 	return err;
 }
 
-/* called by the query qp verb */
+ 
 int rxe_qp_to_init(struct rxe_qp *qp, struct ib_qp_init_attr *init)
 {
 	init->event_handler		= qp->ibqp.event_handler;
@@ -510,15 +497,15 @@ err1:
 	return -EINVAL;
 }
 
-/* move the qp to the reset state */
+ 
 static void rxe_qp_reset(struct rxe_qp *qp)
 {
-	/* stop tasks from running */
+	 
 	rxe_disable_task(&qp->resp.task);
 	rxe_disable_task(&qp->comp.task);
 	rxe_disable_task(&qp->req.task);
 
-	/* drain work and packet queuesc */
+	 
 	rxe_requester(qp);
 	rxe_completer(qp);
 	rxe_responder(qp);
@@ -528,7 +515,7 @@ static void rxe_qp_reset(struct rxe_qp *qp)
 	if (qp->sq.queue)
 		rxe_queue_reset(qp->sq.queue);
 
-	/* cleanup attributes */
+	 
 	atomic_set(&qp->ssn, 0);
 	qp->req.opcode = -1;
 	qp->req.need_retry = 0;
@@ -547,13 +534,13 @@ static void rxe_qp_reset(struct rxe_qp *qp)
 
 	cleanup_rd_atomic_resources(qp);
 
-	/* reenable tasks */
+	 
 	rxe_enable_task(&qp->resp.task);
 	rxe_enable_task(&qp->comp.task);
 	rxe_enable_task(&qp->req.task);
 }
 
-/* move the qp to the error state */
+ 
 void rxe_qp_error(struct rxe_qp *qp)
 {
 	unsigned long flags;
@@ -561,7 +548,7 @@ void rxe_qp_error(struct rxe_qp *qp)
 	spin_lock_irqsave(&qp->state_lock, flags);
 	qp->attr.qp_state = IB_QPS_ERR;
 
-	/* drain work and packet queues */
+	 
 	rxe_sched_task(&qp->resp.task);
 	rxe_sched_task(&qp->comp.task);
 	rxe_sched_task(&qp->req.task);
@@ -580,7 +567,7 @@ static void rxe_qp_sqd(struct rxe_qp *qp, struct ib_qp_attr *attr,
 	spin_unlock_irqrestore(&qp->state_lock, flags);
 }
 
-/* caller should hold qp->state_lock */
+ 
 static int __qp_chk_state(struct rxe_qp *qp, struct ib_qp_attr *attr,
 			    int mask)
 {
@@ -613,7 +600,7 @@ static const char *const qps2str[] = {
 	[IB_QPS_ERR]	= "ERR",
 };
 
-/* called by the modify qp verb */
+ 
 int rxe_qp_from_attr(struct rxe_qp *qp, struct ib_qp_attr *attr, int mask,
 		     struct ib_udata *udata)
 {
@@ -708,7 +695,7 @@ int rxe_qp_from_attr(struct rxe_qp *qp, struct ib_qp_attr *attr, int mask,
 		if (attr->timeout == 0) {
 			qp->qp_timeout_jiffies = 0;
 		} else {
-			/* According to the spec, timeout = 4.096 * 2 ^ attr->timeout [us] */
+			 
 			int j = nsecs_to_jiffies(4096ULL << attr->timeout);
 
 			qp->qp_timeout_jiffies = j ? j : 1;
@@ -755,7 +742,7 @@ int rxe_qp_from_attr(struct rxe_qp *qp, struct ib_qp_attr *attr, int mask,
 	return 0;
 }
 
-/* called by the query qp verb */
+ 
 int rxe_qp_to_attr(struct rxe_qp *qp, struct ib_qp_attr *attr, int mask)
 {
 	unsigned long flags;
@@ -777,9 +764,7 @@ int rxe_qp_to_attr(struct rxe_qp *qp, struct ib_qp_attr *attr, int mask)
 	rxe_av_to_attr(&qp->pri_av, &attr->ah_attr);
 	rxe_av_to_attr(&qp->alt_av, &attr->alt_ah_attr);
 
-	/* Applications that get this state typically spin on it.
-	 * Yield the processor
-	 */
+	 
 	spin_lock_irqsave(&qp->state_lock, flags);
 	if (qp->attr.sq_draining) {
 		spin_unlock_irqrestore(&qp->state_lock, flags);
@@ -793,10 +778,7 @@ int rxe_qp_to_attr(struct rxe_qp *qp, struct ib_qp_attr *attr, int mask)
 
 int rxe_qp_chk_destroy(struct rxe_qp *qp)
 {
-	/* See IBA o10-2.2.3
-	 * An attempt to destroy a QP while attached to a mcast group
-	 * will fail immediately.
-	 */
+	 
 	if (atomic_read(&qp->mcg_num)) {
 		rxe_dbg_qp(qp, "Attempt to destroy while attached to multicast group\n");
 		return -EBUSY;
@@ -805,7 +787,7 @@ int rxe_qp_chk_destroy(struct rxe_qp *qp)
 	return 0;
 }
 
-/* called when the last reference to the qp is dropped */
+ 
 static void rxe_qp_do_cleanup(struct work_struct *work)
 {
 	struct rxe_qp *qp = container_of(work, typeof(*qp), cleanup_work.work);
@@ -830,7 +812,7 @@ static void rxe_qp_do_cleanup(struct work_struct *work)
 	if (qp->comp.task.func)
 		rxe_cleanup_task(&qp->comp.task);
 
-	/* flush out any receive wr's or pending requests */
+	 
 	rxe_requester(qp);
 	rxe_completer(qp);
 	rxe_responder(qp);
@@ -871,7 +853,7 @@ static void rxe_qp_do_cleanup(struct work_struct *work)
 	}
 }
 
-/* called when the last reference to the qp is dropped */
+ 
 void rxe_qp_cleanup(struct rxe_pool_elem *elem)
 {
 	struct rxe_qp *qp = container_of(elem, typeof(*qp), elem);

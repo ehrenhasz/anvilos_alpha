@@ -1,18 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  (c) 1999 Andreas Gal		<gal@cs.uni-magdeburg.de>
- *  (c) 2000-2001 Vojtech Pavlik	<vojtech@ucw.cz>
- *  (c) 2007-2009 Jiri Kosina
- *
- *  HID debugging support
- */
 
-/*
- *
- * Should you need to contact me, the author, you can do so either by
- * e-mail - mail your message to <vojtech@ucw.cz>, or by paper mail:
- * Vojtech Pavlik, Simunkova 1594, Prague 8, 182 00 Czech Republic
- */
+ 
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -465,20 +454,12 @@ static const struct hid_usage_entry hid_usage_table[] = {
     { 0x85, 0x8f, "iOEMInformation" },
     { 0x85, 0x8d, "CapacityGranularity1" },
     { 0x85, 0xd0, "ACPresent" },
-  /* pages 0xff00 to 0xffff are vendor-specific */
+   
   { 0xffff, 0, "Vendor-specific-FF" },
   { 0, 0, NULL }
 };
 
-/* Either output directly into simple seq_file, or (if f == NULL)
- * allocate a separate buffer that will then be passed to the 'events'
- * ringbuffer.
- *
- * This is because these functions can be called both for "one-shot"
- * "rdesc" while resolving, or for blocking "events".
- *
- * This holds both for resolv_usage_page() and hid_resolv_usage().
- */
+ 
 static char *resolv_usage_page(unsigned page, struct seq_file *f) {
 	const struct hid_usage_entry *p;
 	char *buf = NULL;
@@ -603,7 +584,7 @@ void hid_dump_field(struct hid_field *field, int n, struct seq_file *f) {
 		int sys;
                 __u32 data = field->unit;
 
-		/* First nibble tells us which system we're in. */
+		 
 		sys = data & 0xf;
 		data >>= 4;
 
@@ -623,7 +604,7 @@ void hid_dump_field(struct hid_field *field, int n, struct seq_file *f) {
 						seq_printf(f, "*");
 					seq_printf(f, "%s", units[sys][i]);
 					if(nibble != 1) {
-						/* This is a _signed_ nibble(!) */
+						 
 
 						int val = nibble & 0x7;
 						if(nibble & 0x08)
@@ -684,7 +665,7 @@ void hid_dump_device(struct hid_device *device, struct seq_file *f)
 }
 EXPORT_SYMBOL_GPL(hid_dump_device);
 
-/* enqueue string to 'events' ring buffer */
+ 
 void hid_debug_event(struct hid_device *hdev, char *buf)
 {
 	struct hid_debug_list *list;
@@ -713,7 +694,7 @@ void hid_dump_report(struct hid_device *hid, int type, u8 *data,
 
 	report_enum = hid->report_enum + type;
 
-	/* dump the report */
+	 
 	snprintf(buf, HID_DEBUG_BUFSIZE - 1,
 			"\nreport (size %u) (%snumbered) = ", size,
 			report_enum->numbered ? "" : "un");
@@ -1100,12 +1081,12 @@ static int hid_debug_rdesc_show(struct seq_file *f, void *p)
 		rsize = hdev->dev_rsize;
 	}
 
-	/* dump HID report descriptor */
+	 
 	for (i = 0; i < rsize; i++)
 		seq_printf(f, "%02x ", rdesc[i]);
 	seq_printf(f, "\n\n");
 
-	/* dump parsed data and input mappings */
+	 
 	if (down_interruptible(&hdev->driver_input_lock))
 		return 0;
 
@@ -1165,11 +1146,7 @@ static ssize_t hid_debug_events_read(struct file *file, char __user *buffer,
 				break;
 			}
 
-			/* if list->hdev is NULL we cannot remove_wait_queue().
-			 * if list->hdev->debug is 0 then hid_debug_unregister()
-			 * was already called and list->hdev is being destroyed.
-			 * if we add remove_wait_queue() here we can hit a race.
-			 */
+			 
 			if (!list->hdev || !list->hdev->debug) {
 				ret = -EIO;
 				set_current_state(TASK_RUNNING);
@@ -1181,7 +1158,7 @@ static ssize_t hid_debug_events_read(struct file *file, char __user *buffer,
 				break;
 			}
 
-			/* allow O_NONBLOCK from other threads */
+			 
 			mutex_unlock(&list->read_mutex);
 			schedule();
 			mutex_lock(&list->read_mutex);
@@ -1195,9 +1172,7 @@ static ssize_t hid_debug_events_read(struct file *file, char __user *buffer,
 			goto out;
 	}
 
-	/* pass the fifo content to userspace, locking is not needed with only
-	 * one concurrent reader and one concurrent writer
-	 */
+	 
 	ret = kfifo_to_user(&list->hid_debug_fifo, buffer, count, &copied);
 	if (ret)
 		goto out;

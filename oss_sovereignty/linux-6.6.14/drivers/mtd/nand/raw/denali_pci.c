@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * NAND Flash Controller Device Driver
- * Copyright © 2009-2010, Intel Corporation and its suppliers.
- */
+
+ 
 
 #include <linux/errno.h>
 #include <linux/io.h>
@@ -17,11 +14,11 @@
 #define INTEL_CE4100	1
 #define INTEL_MRST	2
 
-/* List of platforms this NAND controller has be integrated into */
+ 
 static const struct pci_device_id denali_pci_ids[] = {
 	{ PCI_VDEVICE(INTEL, 0x0701), INTEL_CE4100 },
 	{ PCI_VDEVICE(INTEL, 0x0809), INTEL_MRST },
-	{ /* end: all zeroes */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(pci, denali_pci_ids);
 
@@ -65,8 +62,8 @@ static int denali_pci_probe(struct pci_dev *dev, const struct pci_device_id *id)
 	denali->dev = &dev->dev;
 	denali->irq = dev->irq;
 	denali->ecc_caps = &denali_pci_ecc_caps;
-	denali->clk_rate = 50000000;		/* 50 MHz */
-	denali->clk_x_rate = 200000000;		/* 200 MHz */
+	denali->clk_rate = 50000000;		 
+	denali->clk_x_rate = 200000000;		 
 
 	ret = pci_request_regions(dev, DENALI_NAND_NAME);
 	if (ret) {

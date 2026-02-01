@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (C) 2016 Oracle.  All Rights Reserved.
- * Author: Darrick J. Wong <darrick.wong@oracle.com>
- */
+
+ 
 #include "xfs.h"
 #include "xfs_fs.h"
 #include "xfs_format.h"
@@ -44,13 +41,7 @@ xfs_bui_item_free(
 	kmem_cache_free(xfs_bui_cache, buip);
 }
 
-/*
- * Freeing the BUI requires that we remove it from the AIL if it has already
- * been placed there. However, the BUI may not yet have been placed in the AIL
- * when called by xfs_bui_release() from BUD processing due to the ordering of
- * committed vs unpin operations in bulk insert operations. Hence the reference
- * count to ensure only the last caller frees the BUI.
- */
+ 
 STATIC void
 xfs_bui_release(
 	struct xfs_bui_log_item	*buip)
@@ -76,13 +67,7 @@ xfs_bui_item_size(
 	*nbytes += xfs_bui_log_format_sizeof(buip->bui_format.bui_nextents);
 }
 
-/*
- * This is called to fill in the vector of log iovecs for the
- * given bui log item. We use only 1 iovec, and we point that
- * at the bui_log_format structure embedded in the bui item.
- * It is at this point that we assert that all of the extent
- * slots in the bui item have been filled.
- */
+ 
 STATIC void
 xfs_bui_item_format(
 	struct xfs_log_item	*lip,
@@ -101,14 +86,7 @@ xfs_bui_item_format(
 			xfs_bui_log_format_sizeof(buip->bui_format.bui_nextents));
 }
 
-/*
- * The unpin operation is the last place an BUI is manipulated in the log. It is
- * either inserted in the AIL or aborted in the event of a log I/O error. In
- * either case, the BUI transaction has been successfully committed to make it
- * this far. Therefore, we expect whoever committed the BUI to either construct
- * and commit the BUD or drop the BUD's reference in the event of error. Simply
- * drop the log's BUI reference now that the log is done with it.
- */
+ 
 STATIC void
 xfs_bui_item_unpin(
 	struct xfs_log_item	*lip,
@@ -119,11 +97,7 @@ xfs_bui_item_unpin(
 	xfs_bui_release(buip);
 }
 
-/*
- * The BUI has been either committed or aborted if the transaction has been
- * cancelled. If the transaction was cancelled, an BUD isn't going to be
- * constructed and thus we free the BUI here directly.
- */
+ 
 STATIC void
 xfs_bui_item_release(
 	struct xfs_log_item	*lip)
@@ -131,9 +105,7 @@ xfs_bui_item_release(
 	xfs_bui_release(BUI_ITEM(lip));
 }
 
-/*
- * Allocate and initialize an bui item with the given number of extents.
- */
+ 
 STATIC struct xfs_bui_log_item *
 xfs_bui_init(
 	struct xfs_mount		*mp)
@@ -167,13 +139,7 @@ xfs_bud_item_size(
 	*nbytes += sizeof(struct xfs_bud_log_format);
 }
 
-/*
- * This is called to fill in the vector of log iovecs for the
- * given bud log item. We use only 1 iovec, and we point that
- * at the bud_log_format structure embedded in the bud item.
- * It is at this point that we assert that all of the extent
- * slots in the bud item have been filled.
- */
+ 
 STATIC void
 xfs_bud_item_format(
 	struct xfs_log_item	*lip,
@@ -189,11 +155,7 @@ xfs_bud_item_format(
 			sizeof(struct xfs_bud_log_format));
 }
 
-/*
- * The BUD is either committed or aborted if the transaction is cancelled. If
- * the transaction is cancelled, drop our reference to the BUI and free the
- * BUD.
- */
+ 
 STATIC void
 xfs_bud_item_release(
 	struct xfs_log_item	*lip)
@@ -238,11 +200,7 @@ xfs_trans_get_bud(
 	return budp;
 }
 
-/*
- * Finish an bmap update and log it to the BUD. Note that the
- * transaction is marked dirty regardless of whether the bmap update
- * succeeds or fails to support the BUI/BUD lifecycle rules.
- */
+ 
 static int
 xfs_trans_log_finish_bmap_update(
 	struct xfs_trans		*tp,
@@ -253,20 +211,14 @@ xfs_trans_log_finish_bmap_update(
 
 	error = xfs_bmap_finish_one(tp, bi);
 
-	/*
-	 * Mark the transaction dirty, even on error. This ensures the
-	 * transaction is aborted, which:
-	 *
-	 * 1.) releases the BUI and frees the BUD
-	 * 2.) shuts down the filesystem
-	 */
+	 
 	tp->t_flags |= XFS_TRANS_DIRTY | XFS_TRANS_HAS_INTENT_DONE;
 	set_bit(XFS_LI_DIRTY, &budp->bud_item.li_flags);
 
 	return error;
 }
 
-/* Sort bmap intents by inode. */
+ 
 static int
 xfs_bmap_update_diff_items(
 	void				*priv,
@@ -281,7 +233,7 @@ xfs_bmap_update_diff_items(
 	return ba->bi_owner->i_ino - bb->bi_owner->i_ino;
 }
 
-/* Set the map extent flags for this mapping. */
+ 
 static void
 xfs_trans_set_bmap_flags(
 	struct xfs_map_extent		*map,
@@ -304,7 +256,7 @@ xfs_trans_set_bmap_flags(
 		map->me_flags |= XFS_BMAP_EXTENT_ATTR_FORK;
 }
 
-/* Log bmap updates in the intent item. */
+ 
 STATIC void
 xfs_bmap_update_log_item(
 	struct xfs_trans		*tp,
@@ -317,11 +269,7 @@ xfs_bmap_update_log_item(
 	tp->t_flags |= XFS_TRANS_DIRTY;
 	set_bit(XFS_LI_DIRTY, &buip->bui_item.li_flags);
 
-	/*
-	 * atomic_inc_return gives us the value after the increment;
-	 * we want to use it as an array index so we need to subtract 1 from
-	 * it.
-	 */
+	 
 	next_extent = atomic_inc_return(&buip->bui_next_extent) - 1;
 	ASSERT(next_extent < buip->bui_format.bui_nextents);
 	map = &buip->bui_format.bui_extents[next_extent];
@@ -354,7 +302,7 @@ xfs_bmap_update_create_intent(
 	return &buip->bui_item;
 }
 
-/* Get an BUD so we can process all the deferred rmap updates. */
+ 
 static struct xfs_log_item *
 xfs_bmap_update_create_done(
 	struct xfs_trans		*tp,
@@ -364,7 +312,7 @@ xfs_bmap_update_create_done(
 	return &xfs_trans_get_bud(tp, BUI_ITEM(intent))->bud_item;
 }
 
-/* Take a passive ref to the AG containing the space we're mapping. */
+ 
 void
 xfs_bmap_update_get_group(
 	struct xfs_mount	*mp,
@@ -374,17 +322,11 @@ xfs_bmap_update_get_group(
 
 	agno = XFS_FSB_TO_AGNO(mp, bi->bi_bmap.br_startblock);
 
-	/*
-	 * Bump the intent count on behalf of the deferred rmap and refcount
-	 * intent items that that we can queue when we finish this bmap work.
-	 * This new intent item will bump the intent count before the bmap
-	 * intent drops the intent count, ensuring that the intent count
-	 * remains nonzero across the transaction roll.
-	 */
+	 
 	bi->bi_pag = xfs_perag_intent_get(mp, agno);
 }
 
-/* Release a passive AG ref after finishing mapping work. */
+ 
 static inline void
 xfs_bmap_update_put_group(
 	struct xfs_bmap_intent	*bi)
@@ -392,7 +334,7 @@ xfs_bmap_update_put_group(
 	xfs_perag_intent_put(bi->bi_pag);
 }
 
-/* Process a deferred rmap update. */
+ 
 STATIC int
 xfs_bmap_update_finish_item(
 	struct xfs_trans		*tp,
@@ -416,7 +358,7 @@ xfs_bmap_update_finish_item(
 	return error;
 }
 
-/* Abort all pending BUIs. */
+ 
 STATIC void
 xfs_bmap_update_abort_intent(
 	struct xfs_log_item		*intent)
@@ -424,7 +366,7 @@ xfs_bmap_update_abort_intent(
 	xfs_bui_release(BUI_ITEM(intent));
 }
 
-/* Cancel a deferred bmap update. */
+ 
 STATIC void
 xfs_bmap_update_cancel_item(
 	struct list_head		*item)
@@ -446,7 +388,7 @@ const struct xfs_defer_op_type xfs_bmap_update_defer_type = {
 	.cancel_item	= xfs_bmap_update_cancel_item,
 };
 
-/* Is this recovered BUI ok? */
+ 
 static inline bool
 xfs_bui_validate(
 	struct xfs_mount		*mp,
@@ -454,7 +396,7 @@ xfs_bui_validate(
 {
 	struct xfs_map_extent		*map;
 
-	/* Only one mapping operation per BUI... */
+	 
 	if (buip->bui_format.bui_nextents != XFS_BUI_MAX_FAST_EXTENTS)
 		return false;
 
@@ -480,10 +422,7 @@ xfs_bui_validate(
 	return xfs_verify_fsbext(mp, map->me_startblock, map->me_len);
 }
 
-/*
- * Process a bmap update intent item that was recovered from the log.
- * We need to update some inode's bmbt.
- */
+ 
 STATIC int
 xfs_bui_item_recover(
 	struct xfs_log_item		*lip,
@@ -515,7 +454,7 @@ xfs_bui_item_recover(
 	if (error)
 		return error;
 
-	/* Allocate transaction and do the work. */
+	 
 	resv = xlog_recover_resv(&M_RES(mp)->tr_itruncate);
 	error = xfs_trans_alloc(mp, &resv,
 			XFS_EXTENTADD_SPACE_RES(mp, XFS_DATA_FORK), 0, 0, &tp);
@@ -558,10 +497,7 @@ xfs_bui_item_recover(
 		xfs_bmap_unmap_extent(tp, ip, &fake.bi_bmap);
 	}
 
-	/*
-	 * Commit transaction, which frees the transaction and saves the inode
-	 * for later replay activities.
-	 */
+	 
 	error = xfs_defer_ops_capture_and_commit(tp, capture_list);
 	if (error)
 		goto err_unlock;
@@ -587,7 +523,7 @@ xfs_bui_item_match(
 	return BUI_ITEM(lip)->bui_format.bui_id == intent_id;
 }
 
-/* Relog an intent item to push the log tail forward. */
+ 
 static struct xfs_log_item *
 xfs_bui_item_relog(
 	struct xfs_log_item		*intent,
@@ -638,13 +574,7 @@ xfs_bui_copy_format(
 				sizeof(struct xfs_map_extent));
 }
 
-/*
- * This routine is called to create an in-core extent bmap update
- * item from the bui format structure which was logged on disk.
- * It allocates an in-core bui, copies the extents from the format
- * structure into it, and adds the bui to the AIL with the given
- * LSN.
- */
+ 
 STATIC int
 xlog_recover_bui_commit_pass2(
 	struct xlog			*log,
@@ -681,10 +611,7 @@ xlog_recover_bui_commit_pass2(
 	buip = xfs_bui_init(mp);
 	xfs_bui_copy_format(&buip->bui_format, bui_formatp);
 	atomic_set(&buip->bui_next_extent, bui_formatp->bui_nextents);
-	/*
-	 * Insert the intent into the AIL directly and drop one reference so
-	 * that finishing or canceling the work will drop the other.
-	 */
+	 
 	xfs_trans_ail_insert(log->l_ailp, &buip->bui_item, lsn);
 	xfs_bui_release(buip);
 	return 0;
@@ -695,13 +622,7 @@ const struct xlog_recover_item_ops xlog_bui_item_ops = {
 	.commit_pass2		= xlog_recover_bui_commit_pass2,
 };
 
-/*
- * This routine is called when an BUD format structure is found in a committed
- * transaction in the log. Its purpose is to cancel the corresponding BUI if it
- * was still in the log. To do this it searches the AIL for the BUI with an id
- * equal to that in the BUD format structure. If we find it we drop the BUD
- * reference, which removes the BUI from the AIL and frees it.
- */
+ 
 STATIC int
 xlog_recover_bud_commit_pass2(
 	struct xlog			*log,

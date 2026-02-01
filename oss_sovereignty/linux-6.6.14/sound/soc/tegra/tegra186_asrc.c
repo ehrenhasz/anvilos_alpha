@@ -1,8 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0-only
-//
-// tegra186_asrc.c - Tegra186 ASRC driver
-//
-// Copyright (c) 2022, NVIDIA CORPORATION. All rights reserved.
+
+
+
+
+
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -94,11 +94,7 @@ static int __maybe_unused tegra186_asrc_runtime_resume(struct device *dev)
 
 	regcache_cache_only(asrc->regmap, false);
 
-	/*
-	 * Below sequence is recommended after a runtime PM cycle.
-	 * This otherwise leads to transfer failures. The cache
-	 * sync is done after this to restore other settings.
-	 */
+	 
 	regmap_write(asrc->regmap, TEGRA186_ASRC_GLOBAL_SCRATCH_ADDR,
 		     TEGRA186_ASRC_ARAM_START_ADDR);
 	regmap_write(asrc->regmap, TEGRA186_ASRC_GLOBAL_ENB,
@@ -168,7 +164,7 @@ static int tegra186_asrc_in_hw_params(struct snd_pcm_substream *substream,
 	struct tegra186_asrc *asrc = snd_soc_dai_get_drvdata(dai);
 	int ret, id = dai->id;
 
-	/* Set input threshold */
+	 
 	regmap_write(asrc->regmap,
 		     ASRC_STREAM_REG(TEGRA186_ASRC_RX_THRESHOLD, dai->id),
 		     asrc->lane[id].input_thresh);
@@ -191,7 +187,7 @@ static int tegra186_asrc_out_hw_params(struct snd_pcm_substream *substream,
 	struct tegra186_asrc *asrc = snd_soc_dai_get_drvdata(dai);
 	int ret, id = dai->id - 7;
 
-	 /* Set output threshold */
+	  
 	regmap_write(asrc->regmap,
 		     ASRC_STREAM_REG(TEGRA186_ASRC_TX_THRESHOLD, id),
 		     asrc->lane[id].output_thresh);
@@ -203,7 +199,7 @@ static int tegra186_asrc_out_hw_params(struct snd_pcm_substream *substream,
 		return ret;
 	}
 
-	/* Set ENABLE_HW_RATIO_COMP */
+	 
 	if (asrc->lane[id].hwcomp_disable) {
 		regmap_update_bits(asrc->regmap,
 			ASRC_STREAM_REG(TEGRA186_ASRC_CFG, id),
@@ -220,7 +216,7 @@ static int tegra186_asrc_out_hw_params(struct snd_pcm_substream *substream,
 			TEGRA186_ASRC_STREAM_DEFAULT_HW_COMP_BIAS_VALUE);
 	}
 
-	/* Set lock */
+	 
 	regmap_update_bits(asrc->regmap,
 			   ASRC_STREAM_REG(TEGRA186_ASRC_CFG, id),
 			   1, asrc->lane[id].ratio_source);
@@ -542,7 +538,7 @@ static const struct snd_soc_dai_ops tegra186_asrc_out_dai_ops = {
 	}
 
 static struct snd_soc_dai_driver tegra186_asrc_dais[] = {
-	/* ASRC Input */
+	 
 	IN_DAI(1),
 	IN_DAI(2),
 	IN_DAI(3),
@@ -550,7 +546,7 @@ static struct snd_soc_dai_driver tegra186_asrc_dais[] = {
 	IN_DAI(5),
 	IN_DAI(6),
 	IN_DAI(7),
-	/* ASRC Output */
+	 
 	OUT_DAI(1),
 	OUT_DAI(2),
 	OUT_DAI(3),
@@ -674,7 +670,7 @@ ASRC_SOURCE_DECL(src_select6, 5);
 }
 
 static const struct snd_kcontrol_new tegra186_asrc_controls[] = {
-	/* Controls for integer part of ratio */
+	 
 	SOC_SINGLE_EXT("Ratio1 Integer Part",
 		       ASRC_STREAM_REG(TEGRA186_ASRC_RATIO_INT_PART, 0),
 		       0, TEGRA186_ASRC_STREAM_RATIO_INT_PART_MASK, 0,
@@ -711,7 +707,7 @@ static const struct snd_kcontrol_new tegra186_asrc_controls[] = {
 		       tegra186_asrc_get_ratio_int,
 		       tegra186_asrc_put_ratio_int),
 
-	/* Controls for fractional part of ratio */
+	 
 	SOC_SINGLE_EXT_FRAC("Ratio1 Fractional Part",
 			    ASRC_STREAM_REG(TEGRA186_ASRC_RATIO_FRAC_PART, 0),
 			    TEGRA186_ASRC_STREAM_RATIO_FRAC_PART_MASK,
@@ -748,7 +744,7 @@ static const struct snd_kcontrol_new tegra186_asrc_controls[] = {
 			    tegra186_asrc_get_ratio_frac,
 			    tegra186_asrc_put_ratio_frac),
 
-	/* Source of ratio provider */
+	 
 	SOC_ENUM_EXT("Ratio1 Source", src_select1,
 		     tegra186_asrc_get_ratio_source,
 		     tegra186_asrc_put_ratio_source),
@@ -773,7 +769,7 @@ static const struct snd_kcontrol_new tegra186_asrc_controls[] = {
 		     tegra186_asrc_get_ratio_source,
 		     tegra186_asrc_put_ratio_source),
 
-	/* Disable HW managed overflow/underflow issue at input and output */
+	 
 	SOC_SINGLE_EXT("Stream1 HW Component Disable",
 		       ASRC_STREAM_REG(TEGRA186_ASRC_CFG, 0), 0, 1, 0,
 		       tegra186_asrc_get_hwcomp_disable,
@@ -804,7 +800,7 @@ static const struct snd_kcontrol_new tegra186_asrc_controls[] = {
 		       tegra186_asrc_get_hwcomp_disable,
 		       tegra186_asrc_put_hwcomp_disable),
 
-	/* Input threshold for watermark fields */
+	 
 	SOC_SINGLE_EXT("Stream1 Input Threshold",
 		       ASRC_STREAM_REG(TEGRA186_ASRC_RX_THRESHOLD, 0), 0, 3, 0,
 		       tegra186_asrc_get_input_threshold,
@@ -835,7 +831,7 @@ static const struct snd_kcontrol_new tegra186_asrc_controls[] = {
 		       tegra186_asrc_get_input_threshold,
 		       tegra186_asrc_put_input_threshold),
 
-	/* Output threshold for watermark fields */
+	 
 	SOC_SINGLE_EXT("Stream1 Output Threshold",
 		       ASRC_STREAM_REG(TEGRA186_ASRC_TX_THRESHOLD, 0), 0, 3, 0,
 		       tegra186_asrc_get_output_threshold,
@@ -991,7 +987,7 @@ static int tegra186_asrc_platform_probe(struct platform_device *pdev)
 	regmap_write(asrc->regmap, TEGRA186_ASRC_GLOBAL_CFG,
 		     TEGRA186_ASRC_GLOBAL_CFG_FRAC_32BIT_PRECISION);
 
-	/* Initialize default output srate */
+	 
 	for (i = 0; i < TEGRA186_ASRC_STREAM_MAX; i++) {
 		asrc->lane[i].ratio_source = TEGRA186_ASRC_RATIO_SOURCE_SW;
 		asrc->lane[i].int_part = 1;

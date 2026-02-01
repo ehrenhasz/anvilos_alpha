@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * irq_comm.c: Common API for in kernel interrupt controller
- * Copyright (c) 2007, Intel Corporation.
- *
- * Authors:
- *   Yaozu (Eddie) Dong <Eddie.dong@intel.com>
- *
- * Copyright 2010 Red Hat, Inc. and/or its affiliates.
- */
+
+ 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
 #include <linux/kvm_host.h>
@@ -277,10 +269,7 @@ int kvm_set_routing_entry(struct kvm *kvm,
 			  struct kvm_kernel_irq_routing_entry *e,
 			  const struct kvm_irq_routing_entry *ue)
 {
-	/* We can't check irqchip_in_kernel() here as some callers are
-	 * currently initializing the irqchip. Other callers should therefore
-	 * check kvm_arch_can_set_irq_routing() before calling this function.
-	 */
+	 
 	switch (ue->type) {
 	case KVM_IRQ_ROUTING_IRQCHIP:
 		if (irqchip_split(kvm))

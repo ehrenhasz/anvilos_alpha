@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Regulator driver for tps65090 power management chip.
- *
- * Copyright (c) 2012, NVIDIA CORPORATION.  All rights reserved.
 
- */
+ 
 
 #include <linux/module.h>
 #include <linux/delay.h>
@@ -22,22 +17,14 @@
 #define MAX_CTRL_READ_TRIES	5
 #define MAX_FET_ENABLE_TRIES	1000
 
-#define CTRL_EN_BIT		0 /* Regulator enable bit, active high */
-#define CTRL_WT_BIT		2 /* Regulator wait time 0 bit */
-#define CTRL_PG_BIT		4 /* Regulator power good bit, 1=good */
-#define CTRL_TO_BIT		7 /* Regulator timeout bit, 1=wait */
+#define CTRL_EN_BIT		0  
+#define CTRL_WT_BIT		2  
+#define CTRL_PG_BIT		4  
+#define CTRL_TO_BIT		7  
 
-#define MAX_OVERCURRENT_WAIT	3 /* Overcurrent wait must be <= this */
+#define MAX_OVERCURRENT_WAIT	3  
 
-/**
- * struct tps65090_regulator - Per-regulator data for a tps65090 regulator
- *
- * @dev: Pointer to our device.
- * @desc: The struct regulator_desc for the regulator.
- * @rdev: The struct regulator_dev for the regulator.
- * @overcurrent_wait_valid: True if overcurrent_wait is valid.
- * @overcurrent_wait: For FETs, the value to put in the WTFET bitfield.
- */
+ 
 
 struct tps65090_regulator {
 	struct device		*dev;
@@ -50,17 +37,7 @@ struct tps65090_regulator {
 static const struct regulator_ops tps65090_ext_control_ops = {
 };
 
-/**
- * tps65090_reg_set_overcurrent_wait - Setup overcurrent wait
- *
- * This will set the overcurrent wait time based on what's in the regulator
- * info.
- *
- * @ri:		Overall regulator data
- * @rdev:	Regulator device
- *
- * Return: 0 if no error, non-zero if there was an error writing the register.
- */
+ 
 static int tps65090_reg_set_overcurrent_wait(struct tps65090_regulator *ri,
 					     struct regulator_dev *rdev)
 {
@@ -77,14 +54,7 @@ static int tps65090_reg_set_overcurrent_wait(struct tps65090_regulator *ri,
 	return ret;
 }
 
-/**
- * tps65090_try_enable_fet - Try to enable a FET
- *
- * @rdev:	Regulator device
- *
- * Return: 0 if ok, -ENOTRECOVERABLE if the FET power good bit did not get
- * set, or some other -ve value if another error occurred (e.g. i2c error)
- */
+ 
 static int tps65090_try_enable_fet(struct regulator_dev *rdev)
 {
 	unsigned int control;
@@ -116,28 +86,12 @@ static int tps65090_try_enable_fet(struct regulator_dev *rdev)
 	return 0;
 }
 
-/**
- * tps65090_fet_enable - Enable a FET, trying a few times if it fails
- *
- * Some versions of the tps65090 have issues when turning on the FETs.
- * This function goes through several steps to ensure the best chance of the
- * FET going on.  Specifically:
- * - We'll make sure that we bump the "overcurrent wait" to the maximum, which
- *   increases the chances that we'll turn on properly.
- * - We'll retry turning the FET on multiple times (turning off in between).
- *
- * @rdev:	Regulator device
- *
- * Return: 0 if ok, non-zero if it fails.
- */
+ 
 static int tps65090_fet_enable(struct regulator_dev *rdev)
 {
 	int ret, tries;
 
-	/*
-	 * Try enabling multiple times until we succeed since sometimes the
-	 * first try times out.
-	 */
+	 
 	tries = 0;
 	while (true) {
 		ret = tps65090_try_enable_fet(rdev);
@@ -146,7 +100,7 @@ static int tps65090_fet_enable(struct regulator_dev *rdev)
 		if (ret != -ENOTRECOVERABLE || tries == MAX_FET_ENABLE_TRIES)
 			goto err;
 
-		/* Try turning the FET off (and then on again) */
+		 
 		ret = regmap_update_bits(rdev->regmap, rdev->desc->enable_reg,
 					 rdev->desc->enable_mask, 0);
 		if (ret)
@@ -275,10 +229,7 @@ static int tps65090_regulator_disable_ext_control(
 	struct device *parent = ri->dev->parent;
 	unsigned int reg_en_reg = ri->desc->enable_reg;
 
-	/*
-	 * First enable output for internal control if require.
-	 * And then disable external control.
-	 */
+	 
 	if (tps_pdata->reg_init_data->constraints.always_on ||
 			tps_pdata->reg_init_data->constraints.boot_on) {
 		ret =  tps65090_set_bits(parent, reg_en_reg, 0);
@@ -444,10 +395,7 @@ static int tps65090_regulator_probe(struct platform_device *pdev)
 			ri->overcurrent_wait = tps_pdata->overcurrent_wait;
 		}
 
-		/*
-		 * TPS5090 DCDC support the control from external digital input.
-		 * Configure it as per platform data.
-		 */
+		 
 		if (tps_pdata && is_dcdc(num) && tps_pdata->reg_init_data) {
 			if (tps_pdata->enable_ext_control) {
 				config.ena_gpiod = tps_pdata->gpiod;
@@ -475,10 +423,7 @@ static int tps65090_regulator_probe(struct platform_device *pdev)
 		else
 			config.of_node = NULL;
 
-		/*
-		 * Hand the GPIO descriptor management over to the regulator
-		 * core, remove it from devres management.
-		 */
+		 
 		if (config.ena_gpiod)
 			devm_gpiod_unhinge(&pdev->dev, config.ena_gpiod);
 		rdev = devm_regulator_register(&pdev->dev, ri->desc, &config);
@@ -495,7 +440,7 @@ static int tps65090_regulator_probe(struct platform_device *pdev)
 				return ret;
 		}
 
-		/* Enable external control if it is require */
+		 
 		if (tps_pdata && is_dcdc(num) && tps_pdata->reg_init_data &&
 				tps_pdata->enable_ext_control) {
 			ret = tps65090_config_ext_control(ri, true);

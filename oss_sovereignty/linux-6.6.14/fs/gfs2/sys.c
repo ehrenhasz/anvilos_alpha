@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) Sistina Software, Inc.  1997-2003 All rights reserved.
- * Copyright (C) 2004-2006 Red Hat, Inc.  All rights reserved.
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -390,9 +387,7 @@ static struct kobj_type gfs2_ktype = {
 };
 
 
-/*
- * lock_module. Originally from lock_dlm
- */
+ 
 
 static ssize_t proto_name_show(struct gfs2_sbd *sdp, char *buf)
 {
@@ -500,18 +495,12 @@ int gfs2_recover_set(struct gfs2_sbd *sdp, unsigned jid)
 	struct gfs2_jdesc *jd;
 	int rv;
 
-	/* Wait for our primary journal to be initialized */
+	 
 	wait_for_completion(&sdp->sd_journal_ready);
 
 	spin_lock(&sdp->sd_jindex_spin);
 	rv = -EBUSY;
-	/**
-	 * If we're a spectator, we use journal0, but it's not really ours.
-	 * So we need to wait for its recovery too. If we skip it we'd never
-	 * queue work to the recovery workqueue, and so its completion would
-	 * never clear the DFL_BLOCK_LOCKS flag, so all our locks would
-	 * permanently stop working.
-	 */
+	 
 	if (!sdp->sd_jdesc)
 		goto out;
 	if (sdp->sd_jdesc->jd_jid == jid && !sdp->sd_args.ar_spectator)
@@ -620,9 +609,7 @@ static struct attribute *lock_module_attrs[] = {
 	NULL,
 };
 
-/*
- * get and set struct gfs2_tune fields
- */
+ 
 
 static ssize_t quota_scale_show(struct gfs2_sbd *sdp, char *buf)
 {

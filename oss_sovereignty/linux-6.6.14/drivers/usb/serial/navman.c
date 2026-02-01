@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Navman Serial USB driver
- *
- * Copyright (C) 2006 Greg Kroah-Hartman <gregkh@suse.de>
- *
- * TODO:
- *	Add termios method that uses copy_hw but also kills all echo
- *	flags as the navman is rx only so cannot echo.
- */
+
+ 
 
 #include <linux/gfp.h>
 #include <linux/kernel.h>
@@ -18,8 +10,8 @@
 #include <linux/usb/serial.h>
 
 static const struct usb_device_id id_table[] = {
-	{ USB_DEVICE(0x0a99, 0x0001) },	/* Talon Technology device */
-	{ USB_DEVICE(0x0df7, 0x0900) },	/* Mobile Action i-gotU */
+	{ USB_DEVICE(0x0a99, 0x0001) },	 
+	{ USB_DEVICE(0x0df7, 0x0900) },	 
 	{ },
 };
 MODULE_DEVICE_TABLE(usb, id_table);
@@ -33,12 +25,12 @@ static void navman_read_int_callback(struct urb *urb)
 
 	switch (status) {
 	case 0:
-		/* success */
+		 
 		break;
 	case -ECONNRESET:
 	case -ENOENT:
 	case -ESHUTDOWN:
-		/* this urb is terminated, clean up */
+		 
 		dev_dbg(&port->dev, "%s - urb shutting down with status: %d\n",
 			__func__, status);
 		return;
@@ -87,9 +79,7 @@ static void navman_close(struct usb_serial_port *port)
 static int navman_write(struct tty_struct *tty, struct usb_serial_port *port,
 			const unsigned char *buf, int count)
 {
-	/*
-	 * This device can't write any data, only read from the device
-	 */
+	 
 	return -EOPNOTSUPP;
 }
 

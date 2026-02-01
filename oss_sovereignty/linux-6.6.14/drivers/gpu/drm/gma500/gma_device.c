@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/**************************************************************************
- * Copyright (c) 2011, Intel Corporation.
- * All Rights Reserved.
- *
- **************************************************************************/
+
+ 
 
 #include "psb_drv.h"
 #include "gma_device.h"
@@ -17,8 +13,8 @@ void gma_get_core_freq(struct drm_device *dev)
 					    0, 0);
 	struct drm_psb_private *dev_priv = to_drm_psb_private(dev);
 
-	/*pci_write_config_dword(pci_root, 0xD4, 0x00C32004);*/
-	/*pci_write_config_dword(pci_root, 0xD0, 0xE0033000);*/
+	 
+	 
 
 	pci_write_config_dword(pci_root, 0xD0, 0xD0050300);
 	pci_read_config_dword(pci_root, 0xD4, &clock);

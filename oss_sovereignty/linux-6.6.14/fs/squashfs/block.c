@@ -1,17 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Squashfs - a compressed read only filesystem for Linux
- *
- * Copyright (c) 2002, 2003, 2004, 2005, 2006, 2007, 2008
- * Phillip Lougher <phillip@squashfs.org.uk>
- *
- * block.c
- */
 
-/*
- * This file implements the low-level routines to read and decompress
- * datablocks and metadata blocks.
- */
+ 
+
+ 
 
 #include <linux/blkdev.h>
 #include <linux/fs.h>
@@ -27,9 +17,7 @@
 #include "decompressor.h"
 #include "page_actor.h"
 
-/*
- * Returns the amount of bytes copied to the page actor.
- */
+ 
 static int copy_bio_to_actor(struct bio *bio,
 			     struct squashfs_page_actor *actor,
 			     int offset, int req_length)
@@ -97,15 +85,7 @@ static int squashfs_bio_read_cached(struct bio *fullbio,
 			continue;
 		}
 
-		/*
-		 * We only use this when the device block size is the same as
-		 * the page size, so read_start and read_end cover full pages.
-		 *
-		 * Compare these to the original required index and length to
-		 * only cache pages which were requested partially, since these
-		 * are the ones which are likely to be needed when reading
-		 * adjacent blocks.
-		 */
+		 
 		if (idx == 0 && index != read_start)
 			head_to_cache = page;
 		else if (idx == page_count - 1 && index + length != read_end)
@@ -222,10 +202,7 @@ static int squashfs_bio_read(struct super_block *sb, u64 index, int length,
 			goto out_free_bio;
 		}
 
-		/*
-		 * Use the __ version to avoid merging since we need each page
-		 * to be separate when we check for and avoid cached pages.
-		 */
+		 
 		__bio_add_page(bio, page, len, offset);
 		offset = 0;
 		total_len -= len;
@@ -251,15 +228,7 @@ out_free_bio:
 	return error;
 }
 
-/*
- * Read and decompress a metadata block or datablock.  Length is non-zero
- * if a datablock is being read (the size is stored elsewhere in the
- * filesystem), otherwise the length is obtained from the first two bytes of
- * the metadata block.  A bit in the length field indicates if the block
- * is stored uncompressed in the filesystem (usually because compression
- * generated a larger block - this does occasionally happen with compression
- * algorithms).
- */
+ 
 int squashfs_read_data(struct super_block *sb, u64 index, int length,
 		       u64 *next_index, struct squashfs_page_actor *output)
 {
@@ -270,17 +239,13 @@ int squashfs_read_data(struct super_block *sb, u64 index, int length,
 	int offset;
 
 	if (length) {
-		/*
-		 * Datablock.
-		 */
+		 
 		compressed = SQUASHFS_COMPRESSED_BLOCK(length);
 		length = SQUASHFS_COMPRESSED_SIZE_BLOCK(length);
 		TRACE("Block @ 0x%llx, %scompressed size %d, src size %d\n",
 			index, compressed ? "" : "un", length, output->length);
 	} else {
-		/*
-		 * Metadata block.
-		 */
+		 
 		const u8 *data;
 		struct bvec_iter_all iter_all = {};
 		struct bio_vec *bvec = bvec_init_iter_all(&iter_all);
@@ -297,7 +262,7 @@ int squashfs_read_data(struct super_block *sb, u64 index, int length,
 			res = -EIO;
 			goto out_free_bio;
 		}
-		/* Extract the length of the metadata block */
+		 
 		data = bvec_virt(bvec);
 		length = data[offset];
 		if (offset < bvec->bv_len - 1) {

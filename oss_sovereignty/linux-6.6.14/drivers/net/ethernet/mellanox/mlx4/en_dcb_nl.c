@@ -1,35 +1,4 @@
-/*
- * Copyright (c) 2011 Mellanox Technologies. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- *
- */
+ 
 
 #include <linux/dcbnl.h>
 #include <linux/math64.h>
@@ -42,8 +11,7 @@ enum {
 	MLX4_CEE_STATE_UP     = 1,
 };
 
-/* Definitions for QCN
- */
+ 
 
 struct mlx4_congestion_control_mb_prio_802_1_qau_params {
 	__be32 modify_enable_high;
@@ -250,10 +218,7 @@ static u8 mlx4_en_dcbnl_set_state(struct net_device *dev, u8 state)
 	return 0;
 }
 
-/* On success returns a non-zero 802.1p user priority bitmap
- * otherwise returns 0 as the invalid user priority bitmap to
- * indicate an error.
- */
+ 
 static int mlx4_en_dcbnl_getapp(struct net_device *netdev, u8 idtype, u16 id)
 {
 	struct mlx4_en_priv *priv = netdev_priv(netdev);
@@ -351,7 +316,7 @@ static int mlx4_en_config_port_scheduler(struct mlx4_en_priv *priv,
 	ets = ets ?: &priv->ets;
 	ratelimit = ratelimit ?: priv->maxrate;
 
-	/* higher TC means higher priority => lower pg */
+	 
 	for (i = IEEE_8021QAZ_MAX_TCS - 1; i >= 0; i--) {
 		switch (ets->tc_tsa[i]) {
 		case IEEE_8021QAZ_TSA_VENDOR:
@@ -496,7 +461,7 @@ err:
 	return 1;
 }
 
-#define MLX4_RATELIMIT_UNITS_IN_KB 100000 /* rate-limit HW unit in Kbps */
+#define MLX4_RATELIMIT_UNITS_IN_KB 100000  
 static int mlx4_en_dcbnl_ieee_getmaxrate(struct net_device *dev,
 				   struct ieee_maxrate *maxrate)
 {
@@ -518,9 +483,7 @@ static int mlx4_en_dcbnl_ieee_setmaxrate(struct net_device *dev,
 	int i, err;
 
 	for (i = 0; i < IEEE_8021QAZ_MAX_TCS; i++) {
-		/* Convert from Kbps into HW units, rounding result up.
-		 * Setting to 0, means unlimited BW.
-		 */
+		 
 		tmp[i] = div_u64(maxrate->tc_maxrate[i] +
 				 MLX4_RATELIMIT_UNITS_IN_KB - 1,
 				 MLX4_RATELIMIT_UNITS_IN_KB);
@@ -627,9 +590,7 @@ static int mlx4_en_dcbnl_ieee_setqcn(struct net_device *dev,
 		inmod = priv->port | ((1 << i) << 8) |
 			 (MLX4_CTRL_ALGO_802_1_QAU_REACTION_POINT << 16);
 
-		/* Before updating QCN parameter,
-		 * need to set it's modify enable bit to 1
-		 */
+		 
 
 		hw_qcn->modify_enable_high = cpu_to_be32(
 						MODIFY_ENABLE_HIGH_MASK);

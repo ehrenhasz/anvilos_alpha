@@ -1,6 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause */
-/* Copyright(c) 2019-2020  Realtek Corporation
- */
+ 
+ 
 
 #ifndef __RTW89_COEX_H__
 #define __RTW89_COEX_H__
@@ -193,7 +192,7 @@ static inline u8 rtw89_btc_path_phymap(struct rtw89_dev *rtwdev,
 	return rtw89_btc_phymap(rtwdev, phy_idx, BIT(path));
 }
 
-/* return bt req len in TU */
+ 
 static inline u16 rtw89_coex_query_bt_req_len(struct rtw89_dev *rtwdev,
 					      enum rtw89_phy_idx phy_idx)
 {

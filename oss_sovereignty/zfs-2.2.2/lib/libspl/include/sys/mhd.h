@@ -1,28 +1,5 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License, Version 1.0 only
- * (the "License").  You may not use this file except in compliance
- * with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
-/*
- * Copyright 2004 Sun Microsystems, Inc.  All rights reserved.
- * Use is subject to license terms.
- */
+ 
+ 
 
 #ifndef _SYS_MHD_H
 #define	_SYS_MHD_H
@@ -31,9 +8,7 @@
 extern "C" {
 #endif
 
-/*
- * Definitions for multi-host device I/O control commands
- */
+ 
 #define	MHIOC				('M'<<8)
 #define	MHIOCENFAILFAST			(MHIOC|1)
 #define	MHIOCTKOWN			(MHIOC|2)
@@ -50,10 +25,7 @@ extern "C" {
 #define	MHIOCQRESERVE			(MHIOC|12)
 #define	MHIOCREREGISTERDEVID		(MHIOC|13)
 
-/*
- * Following is the structure to specify the delay parameters in
- * milliseconds, via the MHIOCTKOWN ioctl.
- */
+ 
 struct mhioctkown {
 	int reinstate_resv_delay;
 	int min_ownership_delay;
@@ -123,7 +95,7 @@ typedef struct mhioc_inresvs32 {
 typedef struct mhioc_register {
     mhioc_resv_key_t	oldkey;
     mhioc_resv_key_t	newkey;
-    boolean_t		aptpl;  /* True if persistent across power failures */
+    boolean_t		aptpl;   
 } mhioc_register_t;
 
 typedef struct mhioc_preemptandabort {
@@ -133,13 +105,10 @@ typedef struct mhioc_preemptandabort {
 
 typedef struct mhioc_registerandignorekey {
     mhioc_resv_key_t	newkey;
-    boolean_t		aptpl;  /* True if persistent across power failures */
+    boolean_t		aptpl;   
 } mhioc_registerandignorekey_t;
 
-/*
- * SCSI-3 PGR Reservation Type Codes.  Codes with the _OBSOLETE suffix
- * have been removed from the SCSI3 PGR standard.
- */
+ 
 #define	SCSI3_RESV_READSHARED_OBSOLETE			0
 #define	SCSI3_RESV_WRITEEXCLUSIVE			1
 #define	SCSI3_RESV_READEXCLUSIVE_OBSOLETE		2
@@ -156,4 +125,4 @@ typedef struct mhioc_registerandignorekey {
 }
 #endif
 
-#endif	/* _SYS_MHD_H */
+#endif	 

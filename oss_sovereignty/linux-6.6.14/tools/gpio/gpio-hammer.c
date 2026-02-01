@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * gpio-hammer - example swiss army knife to shake GPIO lines on a system
- *
- * Copyright (C) 2016 Linus Walleij
- *
- * Usage:
- *	gpio-hammer -n <device-name> -o <offset1> -o <offset2>
- */
+
+ 
 
 #include <unistd.h>
 #include <stdlib.h>
@@ -66,10 +59,10 @@ int hammer_device(const char *device_name, unsigned int *lines, int num_lines,
 	}
 	fprintf(stdout, "]\n");
 
-	/* Hammertime! */
+	 
 	j = 0;
 	while (1) {
-		/* Invert all lines so we blink */
+		 
 		for (i = 0; i < num_lines; i++)
 			gpiotools_change_bit(&values.bits, i);
 
@@ -77,7 +70,7 @@ int hammer_device(const char *device_name, unsigned int *lines, int num_lines,
 		if (ret < 0)
 			goto exit_close_error;
 
-		/* Re-read values to get status */
+		 
 		ret = gpiotools_get_values(fd, &values);
 		if (ret < 0)
 			goto exit_close_error;
@@ -143,11 +136,7 @@ int main(int argc, char **argv)
 			device_name = optarg;
 			break;
 		case 'o':
-			/*
-			 * Avoid overflow. Do not immediately error, we want to
-			 * be able to accurately report on the amount of times
-			 * '-o' was given to give an accurate error message
-			 */
+			 
 			if (i < GPIOHANDLES_MAX)
 				lines[i] = strtoul(optarg, NULL, 10);
 

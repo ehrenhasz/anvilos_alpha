@@ -1,6 +1,6 @@
-// SPDX-License-Identifier: (GPL-2.0 OR MIT)
-// Copyright (c) 2017 Synopsys, Inc. and/or its affiliates.
-// stmmac Support for 5.xx Ethernet QoS cores
+
+
+
 
 #include <linux/bitops.h>
 #include <linux/iopoll.h>
@@ -34,7 +34,7 @@ static void dwmac5_log_error(struct net_device *ndev, u32 value, bool corr,
 				"correctable" : "uncorrectable", module_name,
 				desc[loc].desc, desc[loc].detailed_desc);
 
-		/* Update counters */
+		 
 		ptr[loc]++;
 	}
 }
@@ -60,18 +60,18 @@ static const struct dwmac5_error_desc dwmac5_mac_errors[32]= {
 	{ true, "SLVTES", "Slave Read/Write Timeout Error" },
 	{ true, "ATITES", "Application Timeout on ATI Interface Error" },
 	{ true, "ARITES", "Application Timeout on ARI Interface Error" },
-	{ false, "UNKNOWN", "Unknown Error" }, /* 20 */
-	{ false, "UNKNOWN", "Unknown Error" }, /* 21 */
-	{ false, "UNKNOWN", "Unknown Error" }, /* 22 */
-	{ false, "UNKNOWN", "Unknown Error" }, /* 23 */
+	{ false, "UNKNOWN", "Unknown Error" },  
+	{ false, "UNKNOWN", "Unknown Error" },  
+	{ false, "UNKNOWN", "Unknown Error" },  
+	{ false, "UNKNOWN", "Unknown Error" },  
 	{ true, "FSMPES", "FSM State Parity Error" },
-	{ false, "UNKNOWN", "Unknown Error" }, /* 25 */
-	{ false, "UNKNOWN", "Unknown Error" }, /* 26 */
-	{ false, "UNKNOWN", "Unknown Error" }, /* 27 */
-	{ false, "UNKNOWN", "Unknown Error" }, /* 28 */
-	{ false, "UNKNOWN", "Unknown Error" }, /* 29 */
-	{ false, "UNKNOWN", "Unknown Error" }, /* 30 */
-	{ false, "UNKNOWN", "Unknown Error" }, /* 31 */
+	{ false, "UNKNOWN", "Unknown Error" },  
+	{ false, "UNKNOWN", "Unknown Error" },  
+	{ false, "UNKNOWN", "Unknown Error" },  
+	{ false, "UNKNOWN", "Unknown Error" },  
+	{ false, "UNKNOWN", "Unknown Error" },  
+	{ false, "UNKNOWN", "Unknown Error" },  
+	{ false, "UNKNOWN", "Unknown Error" },  
 };
 
 static void dwmac5_handle_mac_err(struct net_device *ndev,
@@ -91,35 +91,35 @@ static const struct dwmac5_error_desc dwmac5_mtl_errors[32]= {
 	{ true, "TXCES", "MTL TX Memory Error" },
 	{ true, "TXAMS", "MTL TX Memory Address Mismatch Error" },
 	{ true, "TXUES", "MTL TX Memory Error" },
-	{ false, "UNKNOWN", "Unknown Error" }, /* 3 */
+	{ false, "UNKNOWN", "Unknown Error" },  
 	{ true, "RXCES", "MTL RX Memory Error" },
 	{ true, "RXAMS", "MTL RX Memory Address Mismatch Error" },
 	{ true, "RXUES", "MTL RX Memory Error" },
-	{ false, "UNKNOWN", "Unknown Error" }, /* 7 */
+	{ false, "UNKNOWN", "Unknown Error" },  
 	{ true, "ECES", "MTL EST Memory Error" },
 	{ true, "EAMS", "MTL EST Memory Address Mismatch Error" },
 	{ true, "EUES", "MTL EST Memory Error" },
-	{ false, "UNKNOWN", "Unknown Error" }, /* 11 */
+	{ false, "UNKNOWN", "Unknown Error" },  
 	{ true, "RPCES", "MTL RX Parser Memory Error" },
 	{ true, "RPAMS", "MTL RX Parser Memory Address Mismatch Error" },
 	{ true, "RPUES", "MTL RX Parser Memory Error" },
-	{ false, "UNKNOWN", "Unknown Error" }, /* 15 */
-	{ false, "UNKNOWN", "Unknown Error" }, /* 16 */
-	{ false, "UNKNOWN", "Unknown Error" }, /* 17 */
-	{ false, "UNKNOWN", "Unknown Error" }, /* 18 */
-	{ false, "UNKNOWN", "Unknown Error" }, /* 19 */
-	{ false, "UNKNOWN", "Unknown Error" }, /* 20 */
-	{ false, "UNKNOWN", "Unknown Error" }, /* 21 */
-	{ false, "UNKNOWN", "Unknown Error" }, /* 22 */
-	{ false, "UNKNOWN", "Unknown Error" }, /* 23 */
-	{ false, "UNKNOWN", "Unknown Error" }, /* 24 */
-	{ false, "UNKNOWN", "Unknown Error" }, /* 25 */
-	{ false, "UNKNOWN", "Unknown Error" }, /* 26 */
-	{ false, "UNKNOWN", "Unknown Error" }, /* 27 */
-	{ false, "UNKNOWN", "Unknown Error" }, /* 28 */
-	{ false, "UNKNOWN", "Unknown Error" }, /* 29 */
-	{ false, "UNKNOWN", "Unknown Error" }, /* 30 */
-	{ false, "UNKNOWN", "Unknown Error" }, /* 31 */
+	{ false, "UNKNOWN", "Unknown Error" },  
+	{ false, "UNKNOWN", "Unknown Error" },  
+	{ false, "UNKNOWN", "Unknown Error" },  
+	{ false, "UNKNOWN", "Unknown Error" },  
+	{ false, "UNKNOWN", "Unknown Error" },  
+	{ false, "UNKNOWN", "Unknown Error" },  
+	{ false, "UNKNOWN", "Unknown Error" },  
+	{ false, "UNKNOWN", "Unknown Error" },  
+	{ false, "UNKNOWN", "Unknown Error" },  
+	{ false, "UNKNOWN", "Unknown Error" },  
+	{ false, "UNKNOWN", "Unknown Error" },  
+	{ false, "UNKNOWN", "Unknown Error" },  
+	{ false, "UNKNOWN", "Unknown Error" },  
+	{ false, "UNKNOWN", "Unknown Error" },  
+	{ false, "UNKNOWN", "Unknown Error" },  
+	{ false, "UNKNOWN", "Unknown Error" },  
+	{ false, "UNKNOWN", "Unknown Error" },  
 };
 
 static void dwmac5_handle_mtl_err(struct net_device *ndev,
@@ -139,35 +139,35 @@ static const struct dwmac5_error_desc dwmac5_dma_errors[32]= {
 	{ true, "TCES", "DMA TSO Memory Error" },
 	{ true, "TAMS", "DMA TSO Memory Address Mismatch Error" },
 	{ true, "TUES", "DMA TSO Memory Error" },
-	{ false, "UNKNOWN", "Unknown Error" }, /* 3 */
-	{ false, "UNKNOWN", "Unknown Error" }, /* 4 */
-	{ false, "UNKNOWN", "Unknown Error" }, /* 5 */
-	{ false, "UNKNOWN", "Unknown Error" }, /* 6 */
-	{ false, "UNKNOWN", "Unknown Error" }, /* 7 */
-	{ false, "UNKNOWN", "Unknown Error" }, /* 8 */
-	{ false, "UNKNOWN", "Unknown Error" }, /* 9 */
-	{ false, "UNKNOWN", "Unknown Error" }, /* 10 */
-	{ false, "UNKNOWN", "Unknown Error" }, /* 11 */
-	{ false, "UNKNOWN", "Unknown Error" }, /* 12 */
-	{ false, "UNKNOWN", "Unknown Error" }, /* 13 */
-	{ false, "UNKNOWN", "Unknown Error" }, /* 14 */
-	{ false, "UNKNOWN", "Unknown Error" }, /* 15 */
-	{ false, "UNKNOWN", "Unknown Error" }, /* 16 */
-	{ false, "UNKNOWN", "Unknown Error" }, /* 17 */
-	{ false, "UNKNOWN", "Unknown Error" }, /* 18 */
-	{ false, "UNKNOWN", "Unknown Error" }, /* 19 */
-	{ false, "UNKNOWN", "Unknown Error" }, /* 20 */
-	{ false, "UNKNOWN", "Unknown Error" }, /* 21 */
-	{ false, "UNKNOWN", "Unknown Error" }, /* 22 */
-	{ false, "UNKNOWN", "Unknown Error" }, /* 23 */
-	{ false, "UNKNOWN", "Unknown Error" }, /* 24 */
-	{ false, "UNKNOWN", "Unknown Error" }, /* 25 */
-	{ false, "UNKNOWN", "Unknown Error" }, /* 26 */
-	{ false, "UNKNOWN", "Unknown Error" }, /* 27 */
-	{ false, "UNKNOWN", "Unknown Error" }, /* 28 */
-	{ false, "UNKNOWN", "Unknown Error" }, /* 29 */
-	{ false, "UNKNOWN", "Unknown Error" }, /* 30 */
-	{ false, "UNKNOWN", "Unknown Error" }, /* 31 */
+	{ false, "UNKNOWN", "Unknown Error" },  
+	{ false, "UNKNOWN", "Unknown Error" },  
+	{ false, "UNKNOWN", "Unknown Error" },  
+	{ false, "UNKNOWN", "Unknown Error" },  
+	{ false, "UNKNOWN", "Unknown Error" },  
+	{ false, "UNKNOWN", "Unknown Error" },  
+	{ false, "UNKNOWN", "Unknown Error" },  
+	{ false, "UNKNOWN", "Unknown Error" },  
+	{ false, "UNKNOWN", "Unknown Error" },  
+	{ false, "UNKNOWN", "Unknown Error" },  
+	{ false, "UNKNOWN", "Unknown Error" },  
+	{ false, "UNKNOWN", "Unknown Error" },  
+	{ false, "UNKNOWN", "Unknown Error" },  
+	{ false, "UNKNOWN", "Unknown Error" },  
+	{ false, "UNKNOWN", "Unknown Error" },  
+	{ false, "UNKNOWN", "Unknown Error" },  
+	{ false, "UNKNOWN", "Unknown Error" },  
+	{ false, "UNKNOWN", "Unknown Error" },  
+	{ false, "UNKNOWN", "Unknown Error" },  
+	{ false, "UNKNOWN", "Unknown Error" },  
+	{ false, "UNKNOWN", "Unknown Error" },  
+	{ false, "UNKNOWN", "Unknown Error" },  
+	{ false, "UNKNOWN", "Unknown Error" },  
+	{ false, "UNKNOWN", "Unknown Error" },  
+	{ false, "UNKNOWN", "Unknown Error" },  
+	{ false, "UNKNOWN", "Unknown Error" },  
+	{ false, "UNKNOWN", "Unknown Error" },  
+	{ false, "UNKNOWN", "Unknown Error" },  
+	{ false, "UNKNOWN", "Unknown Error" },  
 };
 
 static void dwmac5_handle_dma_err(struct net_device *ndev,
@@ -205,56 +205,53 @@ int dwmac5_safety_feat_config(void __iomem *ioaddr, unsigned int asp,
 	if (!safety_feat_cfg)
 		safety_feat_cfg = &all_safety_feats;
 
-	/* 1. Enable Safety Features */
+	 
 	value = readl(ioaddr + MTL_ECC_CONTROL);
-	value |= MEEAO; /* MTL ECC Error Addr Status Override */
+	value |= MEEAO;  
 	if (safety_feat_cfg->tsoee)
-		value |= TSOEE; /* TSO ECC */
+		value |= TSOEE;  
 	if (safety_feat_cfg->mrxpee)
-		value |= MRXPEE; /* MTL RX Parser ECC */
+		value |= MRXPEE;  
 	if (safety_feat_cfg->mestee)
-		value |= MESTEE; /* MTL EST ECC */
+		value |= MESTEE;  
 	if (safety_feat_cfg->mrxee)
-		value |= MRXEE; /* MTL RX FIFO ECC */
+		value |= MRXEE;  
 	if (safety_feat_cfg->mtxee)
-		value |= MTXEE; /* MTL TX FIFO ECC */
+		value |= MTXEE;  
 	writel(value, ioaddr + MTL_ECC_CONTROL);
 
-	/* 2. Enable MTL Safety Interrupts */
+	 
 	value = readl(ioaddr + MTL_ECC_INT_ENABLE);
-	value |= RPCEIE; /* RX Parser Memory Correctable Error */
-	value |= ECEIE; /* EST Memory Correctable Error */
-	value |= RXCEIE; /* RX Memory Correctable Error */
-	value |= TXCEIE; /* TX Memory Correctable Error */
+	value |= RPCEIE;  
+	value |= ECEIE;  
+	value |= RXCEIE;  
+	value |= TXCEIE;  
 	writel(value, ioaddr + MTL_ECC_INT_ENABLE);
 
-	/* 3. Enable DMA Safety Interrupts */
+	 
 	value = readl(ioaddr + DMA_ECC_INT_ENABLE);
-	value |= TCEIE; /* TSO Memory Correctable Error */
+	value |= TCEIE;  
 	writel(value, ioaddr + DMA_ECC_INT_ENABLE);
 
-	/* Only ECC Protection for External Memory feature is selected */
+	 
 	if (asp <= 0x1)
 		return 0;
 
-	/* 5. Enable Parity and Timeout for FSM */
+	 
 	value = readl(ioaddr + MAC_FSM_CONTROL);
 	if (safety_feat_cfg->prtyen)
-		value |= PRTYEN; /* FSM Parity Feature */
+		value |= PRTYEN;  
 	if (safety_feat_cfg->tmouten)
-		value |= TMOUTEN; /* FSM Timeout Feature */
+		value |= TMOUTEN;  
 	writel(value, ioaddr + MAC_FSM_CONTROL);
 
-	/* 4. Enable Data Parity Protection */
+	 
 	value = readl(ioaddr + MTL_DPP_CONTROL);
 	if (safety_feat_cfg->edpp)
 		value |= EDPP;
 	writel(value, ioaddr + MTL_DPP_CONTROL);
 
-	/*
-	 * All the Automotive Safety features are selected without the "Parity
-	 * Port Enable for external interface" feature.
-	 */
+	 
 	if (asp <= 0x2)
 		return 0;
 
@@ -358,29 +355,29 @@ static int dwmac5_rxp_update_single_entry(void __iomem *ioaddr,
 		int real_pos = pos * (sizeof(entry->val) / sizeof(u32)) + i;
 		u32 val;
 
-		/* Wait for ready */
+		 
 		ret = readl_poll_timeout(ioaddr + MTL_RXP_IACC_CTRL_STATUS,
 				val, !(val & STARTBUSY), 1, 10000);
 		if (ret)
 			return ret;
 
-		/* Write data */
+		 
 		val = *((u32 *)&entry->val + i);
 		writel(val, ioaddr + MTL_RXP_IACC_DATA);
 
-		/* Write pos */
+		 
 		val = real_pos & ADDR;
 		writel(val, ioaddr + MTL_RXP_IACC_CTRL_STATUS);
 
-		/* Write OP */
+		 
 		val |= WRRDN;
 		writel(val, ioaddr + MTL_RXP_IACC_CTRL_STATUS);
 
-		/* Start Write */
+		 
 		val |= STARTBUSY;
 		writel(val, ioaddr + MTL_RXP_IACC_CTRL_STATUS);
 
-		/* Wait for done */
+		 
 		ret = readl_poll_timeout(ioaddr + MTL_RXP_IACC_CTRL_STATUS,
 				val, !(val & STARTBUSY), 1, 10000);
 		if (ret)
@@ -402,22 +399,22 @@ dwmac5_rxp_get_next_entry(struct stmmac_tc_entry *entries, unsigned int count,
 	for (i = count - 1; i >= 0; i--) {
 		entry = &entries[i];
 
-		/* Do not update unused entries */
+		 
 		if (!entry->in_use)
 			continue;
-		/* Do not update already updated entries (i.e. fragments) */
+		 
 		if (entry->in_hw)
 			continue;
-		/* Let last entry be updated last */
+		 
 		if (entry->is_last)
 			continue;
-		/* Do not return fragments */
+		 
 		if (entry->is_frag)
 			continue;
-		/* Check if we already checked this prio */
+		 
 		if (entry->prio < curr_prio)
 			continue;
-		/* Check if this is the minimum prio */
+		 
 		if (entry->prio < min_prio) {
 			min_prio = entry->prio;
 			min_prio_idx = i;
@@ -438,23 +435,23 @@ int dwmac5_rxp_config(void __iomem *ioaddr, struct stmmac_tc_entry *entries,
 	u32 curr_prio = 0;
 	u32 old_val, val;
 
-	/* Force disable RX */
+	 
 	old_val = readl(ioaddr + GMAC_CONFIG);
 	val = old_val & ~GMAC_CONFIG_RE;
 	writel(val, ioaddr + GMAC_CONFIG);
 
-	/* Disable RX Parser */
+	 
 	ret = dwmac5_rxp_disable(ioaddr);
 	if (ret)
 		goto re_enable;
 
-	/* Set all entries as NOT in HW */
+	 
 	for (i = 0; i < count; i++) {
 		entry = &entries[i];
 		entry->in_hw = false;
 	}
 
-	/* Update entries by reverse order */
+	 
 	while (1) {
 		entry = dwmac5_rxp_get_next_entry(entries, count, curr_prio);
 		if (!entry)
@@ -463,7 +460,7 @@ int dwmac5_rxp_config(void __iomem *ioaddr, struct stmmac_tc_entry *entries,
 		curr_prio = entry->prio;
 		frag = entry->frag_ptr;
 
-		/* Set special fragment requirements */
+		 
 		if (frag) {
 			entry->val.af = 0;
 			entry->val.rf = 0;
@@ -490,7 +487,7 @@ int dwmac5_rxp_config(void __iomem *ioaddr, struct stmmac_tc_entry *entries,
 	if (!nve)
 		goto re_enable;
 
-	/* Update all pass entry */
+	 
 	for (i = 0; i < count; i++) {
 		entry = &entries[i];
 		if (!entry->is_last)
@@ -503,16 +500,16 @@ int dwmac5_rxp_config(void __iomem *ioaddr, struct stmmac_tc_entry *entries,
 		entry->table_pos = nve++;
 	}
 
-	/* Assume n. of parsable entries == n. of valid entries */
+	 
 	val = (nve << 16) & NPE;
 	val |= nve & NVE;
 	writel(val, ioaddr + MTL_RXP_CONTROL_STATUS);
 
-	/* Enable RX Parser */
+	 
 	dwmac5_rxp_enable(ioaddr);
 
 re_enable:
-	/* Re-enable RX */
+	 
 	writel(old_val, ioaddr + GMAC_CONFIG);
 	return ret;
 }
@@ -567,7 +564,7 @@ int dwmac5_flex_pps_config(void __iomem *ioaddr, int index,
 
 	writel(period - 1, ioaddr + MAC_PPSx_WIDTH(index));
 
-	/* Finally, activate it */
+	 
 	val |= PPSCMDx(index, 0x2);
 	writel(val, ioaddr + MAC_PPS_CONTROL);
 	return 0;
@@ -622,7 +619,7 @@ int dwmac5_est_configure(void __iomem *ioaddr, struct stmmac_est *cfg,
 
 	writel(ctrl, ioaddr + MTL_EST_CONTROL);
 
-	/* Configure EST interrupt */
+	 
 	if (cfg->enable)
 		ctrl = (IECGCE | IEHS | IEHF | IEBE | IECC);
 	else
@@ -643,12 +640,12 @@ void dwmac5_est_irq_status(void __iomem *ioaddr, struct net_device *dev,
 
 	value = (CGCE | HLBS | HLBF | BTRE | SWLC);
 
-	/* Return if there is no error */
+	 
 	if (!(status & value))
 		return;
 
 	if (status & CGCE) {
-		/* Clear Interrupt */
+		 
 		writel(CGCE, ioaddr + MTL_EST_STATUS);
 
 		x->mtl_est_cgce++;
@@ -660,13 +657,10 @@ void dwmac5_est_irq_status(void __iomem *ioaddr, struct net_device *dev,
 
 		x->mtl_est_hlbs++;
 
-		/* Clear Interrupt */
+		 
 		writel(value, ioaddr + MTL_EST_SCH_ERR);
 
-		/* Collecting info to shows all the queues that has HLBS
-		 * issue. The only way to clear this is to clear the
-		 * statistic
-		 */
+		 
 		if (net_ratelimit())
 			netdev_err(dev, "EST: HLB(sched) Queue 0x%x\n", value);
 	}
@@ -681,7 +675,7 @@ void dwmac5_est_irq_status(void __iomem *ioaddr, struct net_device *dev,
 
 		x->mtl_est_hlbf++;
 
-		/* Clear Interrupt */
+		 
 		writel(feqn, ioaddr + MTL_EST_FRM_SZ_ERR);
 
 		if (net_ratelimit())
@@ -735,9 +729,7 @@ int dwmac5_fpe_irq_status(void __iomem *ioaddr, struct net_device *dev)
 
 	status = FPE_EVENT_UNKNOWN;
 
-	/* Reads from the MAC_FPE_CTRL_STS register should only be performed
-	 * here, since the status flags of MAC_FPE_CTRL_STS are "clear on read"
-	 */
+	 
 	value = readl(ioaddr + MAC_FPE_CTRL_STS);
 
 	if (value & TRSP) {

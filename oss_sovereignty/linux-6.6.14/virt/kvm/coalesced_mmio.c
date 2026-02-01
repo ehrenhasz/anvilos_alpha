@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * KVM coalesced MMIO
- *
- * Copyright (c) 2008 Bull S.A.S.
- * Copyright 2009 Red Hat, Inc. and/or its affiliates.
- *
- *  Author: Laurent Vivier <Laurent.Vivier@bull.net>
- *
- */
+
+ 
 
 #include <kvm/iodev.h>
 
@@ -25,10 +17,7 @@ static inline struct kvm_coalesced_mmio_dev *to_mmio(struct kvm_io_device *dev)
 static int coalesced_mmio_in_range(struct kvm_coalesced_mmio_dev *dev,
 				   gpa_t addr, int len)
 {
-	/* is it in a batchable area ?
-	 * (addr,len) is fully included in
-	 * (zone->addr, zone->size)
-	 */
+	 
 	if (len < 0)
 		return 0;
 	if (addr + len < addr)
@@ -45,16 +34,13 @@ static int coalesced_mmio_has_room(struct kvm_coalesced_mmio_dev *dev, u32 last)
 	struct kvm_coalesced_mmio_ring *ring;
 	unsigned avail;
 
-	/* Are we able to batch it ? */
+	 
 
-	/* last is the first free entry
-	 * check if we don't meet the first used entry
-	 * there is always one unused entry in the buffer
-	 */
+	 
 	ring = dev->kvm->coalesced_mmio_ring;
 	avail = (ring->first - last - 1) % KVM_COALESCED_MMIO_MAX;
 	if (avail == 0) {
-		/* full */
+		 
 		return 0;
 	}
 
@@ -81,7 +67,7 @@ static int coalesced_mmio_write(struct kvm_vcpu *vcpu,
 		return -EOPNOTSUPP;
 	}
 
-	/* copy data in first free entry of the ring */
+	 
 
 	ring->coalesced_mmio[insert].phys_addr = addr;
 	ring->coalesced_mmio[insert].len = len;
@@ -117,11 +103,7 @@ int kvm_coalesced_mmio_init(struct kvm *kvm)
 
 	kvm->coalesced_mmio_ring = page_address(page);
 
-	/*
-	 * We're using this spinlock to sync access to the coalesced ring.
-	 * The list doesn't need its own lock since device registration and
-	 * unregistration should only happen when kvm->slots_lock is held.
-	 */
+	 
 	spin_lock_init(&kvm->ring_lock);
 	INIT_LIST_HEAD(&kvm->coalesced_zones);
 
@@ -186,11 +168,7 @@ int kvm_vm_ioctl_unregister_coalesced_mmio(struct kvm *kvm,
 		    coalesced_mmio_in_range(dev, zone->addr, zone->size)) {
 			r = kvm_io_bus_unregister_dev(kvm,
 				zone->pio ? KVM_PIO_BUS : KVM_MMIO_BUS, &dev->dev);
-			/*
-			 * On failure, unregister destroys all devices on the
-			 * bus, including the target device. There's no need
-			 * to restart the walk as there aren't any zones left.
-			 */
+			 
 			if (r)
 				break;
 		}
@@ -198,9 +176,6 @@ int kvm_vm_ioctl_unregister_coalesced_mmio(struct kvm *kvm,
 
 	mutex_unlock(&kvm->slots_lock);
 
-	/*
-	 * Ignore the result of kvm_io_bus_unregister_dev(), from userspace's
-	 * perspective, the coalesced MMIO is most definitely unregistered.
-	 */
+	 
 	return 0;
 }

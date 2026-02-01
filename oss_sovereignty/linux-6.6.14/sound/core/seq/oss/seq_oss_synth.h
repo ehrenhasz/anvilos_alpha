@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * OSS compatible sequencer driver
- *
- * synth device information
- *
- * Copyright (C) 1998,99 Takashi Iwai <tiwai@suse.de>
- */
+ 
+ 
 
 #ifndef __SEQ_OSS_SYNTH_H
 #define __SEQ_OSS_SYNTH_H

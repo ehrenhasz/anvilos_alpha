@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2023 Intel Corporation
- */
+ 
+ 
 
 #ifndef __INTEL_DISPLAY_IRQ_H__
 #define __INTEL_DISPLAY_IRQ_H__
@@ -79,4 +77,4 @@ void i8xx_pipestat_irq_handler(struct drm_i915_private *i915, u16 iir, u32 pipe_
 
 void intel_display_irq_init(struct drm_i915_private *i915);
 
-#endif /* __INTEL_DISPLAY_IRQ_H__ */
+#endif  

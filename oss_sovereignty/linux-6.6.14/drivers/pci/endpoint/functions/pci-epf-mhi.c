@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * PCI EPF driver for MHI Endpoint devices
- *
- * Copyright (C) 2023 Linaro Ltd.
- * Author: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
- */
+
+ 
 
 #include <linux/dmaengine.h>
 #include <linux/mhi_ep.h>
@@ -18,7 +13,7 @@
 
 #define to_epf_mhi(cntrl) container_of(cntrl, struct pci_epf_mhi, cntrl)
 
-/* Platform specific flags */
+ 
 #define MHI_EPF_USE_DMA BIT(0)
 
 struct pci_epf_mhi_ep_info {
@@ -201,10 +196,7 @@ static void pci_epf_mhi_raise_irq(struct mhi_ep_cntrl *mhi_cntrl, u32 vector)
 	struct pci_epf *epf = epf_mhi->epf;
 	struct pci_epc *epc = epf->epc;
 
-	/*
-	 * MHI supplies 0 based MSI vectors but the API expects the vector
-	 * number to start from 1, so we need to increment the vector by 1.
-	 */
+	 
 	pci_epc_raise_irq(epc, epf->func_no, epf->vfunc_no, PCI_EPC_IRQ_MSI,
 			  vector + 1);
 }
@@ -530,7 +522,7 @@ static int pci_epf_mhi_link_up(struct pci_epf *epf)
 	mhi_cntrl->irq = epf_mhi->irq;
 	mhi_cntrl->mru = info->mru;
 
-	/* Assign the struct dev of PCI EP as MHI controller device */
+	 
 	mhi_cntrl->cntrl_dev = epc->dev.parent;
 	mhi_cntrl->raise_irq = pci_epf_mhi_raise_irq;
 	mhi_cntrl->alloc_map = pci_epf_mhi_alloc_map;
@@ -543,7 +535,7 @@ static int pci_epf_mhi_link_up(struct pci_epf *epf)
 		mhi_cntrl->write_to_host = pci_epf_mhi_iatu_write;
 	}
 
-	/* Register the MHI EP controller */
+	 
 	ret = mhi_ep_register_controller(mhi_cntrl, info->config);
 	if (ret) {
 		dev_err(dev, "Failed to register MHI EP controller: %d\n", ret);
@@ -579,10 +571,7 @@ static int pci_epf_mhi_bme(struct pci_epf *epf)
 	struct device *dev = &epf->dev;
 	int ret;
 
-	/*
-	 * Power up the MHI EP stack if link is up and stack is in power down
-	 * state.
-	 */
+	 
 	if (!mhi_cntrl->enabled && mhi_cntrl->mhi_dev) {
 		ret = mhi_ep_power_up(mhi_cntrl);
 		if (ret) {
@@ -604,7 +593,7 @@ static int pci_epf_mhi_bind(struct pci_epf *epf)
 	struct resource *res;
 	int ret;
 
-	/* Get MMIO base address from Endpoint controller */
+	 
 	res = platform_get_resource_byname(pdev, IORESOURCE_MEM, "mmio");
 	epf_mhi->mmio_phys = res->start;
 	epf_mhi->mmio_size = resource_size(res);
@@ -632,11 +621,7 @@ static void pci_epf_mhi_unbind(struct pci_epf *epf)
 	struct mhi_ep_cntrl *mhi_cntrl = &epf_mhi->mhi_cntrl;
 	struct pci_epc *epc = epf->epc;
 
-	/*
-	 * Forcefully power down the MHI EP stack. Only way to bring the MHI EP
-	 * stack back to working state after successive bind is by getting BME
-	 * from host.
-	 */
+	 
 	if (mhi_cntrl->mhi_dev) {
 		mhi_ep_power_down(mhi_cntrl);
 		if (info->flags & MHI_EPF_USE_DMA)

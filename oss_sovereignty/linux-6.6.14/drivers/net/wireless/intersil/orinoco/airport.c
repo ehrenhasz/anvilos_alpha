@@ -1,15 +1,4 @@
-/* airport.c
- *
- * A driver for "Hermes" chipset based Apple Airport wireless
- * card.
- *
- * Copyright notice & release notes in file main.c
- *
- * Note specific to airport stub:
- *
- *  0.05 : first version of the new split driver
- *  0.06 : fix possible hang on powerup, add sleep support
- */
+ 
 
 #define DRIVER_NAME "airport"
 #define PFX DRIVER_NAME ": "
@@ -23,7 +12,7 @@
 
 #include "orinoco.h"
 
-#define AIRPORT_IO_LEN	(0x1000)	/* one page */
+#define AIRPORT_IO_LEN	(0x1000)	 
 
 struct airport {
 	struct macio_dev *mdev;
@@ -117,18 +106,11 @@ airport_detach(struct macio_dev *mdev)
 
 static int airport_hard_reset(struct orinoco_private *priv)
 {
-	/* It would be nice to power cycle the Airport for a real hard
-	 * reset, but for some reason although it appears to
-	 * re-initialize properly, it falls in a screaming heap
-	 * shortly afterwards. */
+	 
 #if 0
 	struct airport *card = priv->card;
 
-	/* Vitally important.  If we don't do this it seems we get an
-	 * interrupt somewhere during the power cycle, since
-	 * hw_unavailable is already set it doesn't get ACKed, we get
-	 * into an interrupt loop and the PMU decides to turn us
-	 * off. */
+	 
 	disable_irq(card->irq);
 
 	pmac_call_feature(PMAC_FTR_AIRPORT_ENABLE,
@@ -158,7 +140,7 @@ airport_attach(struct macio_dev *mdev, const struct of_device_id *match)
 		return -ENODEV;
 	}
 
-	/* Allocate space for private device-specific data */
+	 
 	priv = alloc_orinocodev(sizeof(*card), &mdev->ofdev.dev,
 				airport_hard_reset, NULL);
 	if (!priv) {
@@ -178,9 +160,9 @@ airport_attach(struct macio_dev *mdev, const struct of_device_id *match)
 
 	macio_set_drvdata(mdev, priv);
 
-	/* Setup interrupts & base address */
+	 
 	card->irq = macio_irq(mdev, 0);
-	phys_addr = macio_resource_start(mdev, 0);  /* Physical address */
+	phys_addr = macio_resource_start(mdev, 0);   
 	printk(KERN_DEBUG PFX "Physical address %lx\n", phys_addr);
 	card->vaddr = ioremap(phys_addr, AIRPORT_IO_LEN);
 	if (!card->vaddr) {
@@ -190,12 +172,12 @@ airport_attach(struct macio_dev *mdev, const struct of_device_id *match)
 
 	hermes_struct_init(hw, card->vaddr, HERMES_16BIT_REGSPACING);
 
-	/* Power up card */
+	 
 	pmac_call_feature(PMAC_FTR_AIRPORT_ENABLE,
 			  macio_get_of_node(mdev), 0, 1);
 	ssleep(1);
 
-	/* Reset it before we get the interrupt */
+	 
 	hw->ops->init(hw);
 
 	if (request_irq(card->irq, orinoco_interrupt, 0, DRIVER_NAME, priv)) {
@@ -204,13 +186,13 @@ airport_attach(struct macio_dev *mdev, const struct of_device_id *match)
 	}
 	card->irq_requested = 1;
 
-	/* Initialise the main driver */
+	 
 	if (orinoco_init(priv) != 0) {
 		printk(KERN_ERR PFX "orinoco_init() failed\n");
 		goto failed;
 	}
 
-	/* Register an interface with the stack */
+	 
 	if (orinoco_if_add(priv, phys_addr, card->irq, NULL) != 0) {
 		printk(KERN_ERR PFX "orinoco_if_add() failed\n");
 		goto failed;
@@ -220,7 +202,7 @@ airport_attach(struct macio_dev *mdev, const struct of_device_id *match)
  failed:
 	airport_detach(mdev);
 	return -ENODEV;
-}				/* airport_attach */
+}				 
 
 
 static char version[] __initdata = DRIVER_NAME " " DRIVER_VERSION

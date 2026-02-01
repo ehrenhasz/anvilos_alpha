@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * driver for the SAA7146 based AV110 cards (like the Fujitsu-Siemens DVB)
- * av7110.c: initialization and demux stuff
- *
- * Copyright (C) 1999-2002 Ralph  Metzler
- *                       & Marcus Metzler for convergence integrated media GmbH
- *
- * originally based on code by:
- * Copyright (C) 1998,1999 Christian Theiss <mistert@rz.fh-augsburg.de>
- *
- * the project's page is at https://linuxtv.org
- */
+
+ 
 
 
 #include <linux/module.h>
@@ -119,7 +108,7 @@ static void init_av7110_av(struct av7110 *av7110)
 	int ret;
 	struct saa7146_dev *dev = av7110->dev;
 
-	/* set internal volume control to maximum */
+	 
 	av7110->adac_type = DVB_ADAC_TI;
 	ret = av7110_set_volume(av7110, av7110->mixer.volume_left, av7110->mixer.volume_right);
 	if (ret < 0)
@@ -145,12 +134,12 @@ static void init_av7110_av(struct av7110 *av7110)
 	if (ret < 0)
 		printk("dvb-ttpci:cannot set video mode:%d\n",ret);
 
-	/* handle different card types */
-	/* remaining inits according to card and frontend type */
+	 
+	 
 	av7110->analog_tuner_flags = 0;
 	av7110->current_input = 0;
 	if (dev->pci->subsystem_vendor == 0x13c2 && dev->pci->subsystem_device == 0x000a)
-		av7110_fw_cmd(av7110, COMTYPE_AUDIODAC, ADSwitch, 1, 0); // SPDIF on
+		av7110_fw_cmd(av7110, COMTYPE_AUDIODAC, ADSwitch, 1, 0); 
 	if (i2c_writereg(av7110, 0x20, 0x00, 0x00) == 1) {
 		printk ("dvb-ttpci: Crystal audio DAC @ card %d detected\n",
 			av7110->dvb_adapter.num);
@@ -160,11 +149,9 @@ static void init_av7110_av(struct av7110 *av7110)
 		i2c_writereg(av7110, 0x20, 0x03, 0x00);
 		i2c_writereg(av7110, 0x20, 0x04, 0x00);
 
-		/**
-		 * some special handling for the Siemens DVB-C cards...
-		 */
+		 
 	} else if (0 == av7110_init_analog_module(av7110)) {
-		/* done. */
+		 
 	}
 	else if (dev->pci->subsystem_vendor == 0x110a) {
 		printk("dvb-ttpci: DVB-C w/o analog module @ card %d detected\n",
@@ -178,7 +165,7 @@ static void init_av7110_av(struct av7110 *av7110)
 	}
 
 	if (av7110->adac_type == DVB_ADAC_NONE || av7110->adac_type == DVB_ADAC_MSP34x0) {
-		// switch DVB SCART on
+		
 		ret = av7110_fw_cmd(av7110, COMTYPE_AUDIODAC, MainSwitch, 1, 0);
 		if (ret < 0)
 			printk("dvb-ttpci:cannot switch on SCART(Main):%d\n",ret);
@@ -189,13 +176,13 @@ static void init_av7110_av(struct av7110 *av7110)
 		    ((av7110->dev->pci->subsystem_vendor == 0x110a) ||
 		     (av7110->dev->pci->subsystem_vendor == 0x13c2)) &&
 		     (av7110->dev->pci->subsystem_device == 0x0000)) {
-			saa7146_setgpio(dev, 1, SAA7146_GPIO_OUTHI); // RGB on, SCART pin 16
-			//saa7146_setgpio(dev, 3, SAA7146_GPIO_OUTLO); // SCARTpin 8
+			saa7146_setgpio(dev, 1, SAA7146_GPIO_OUTHI); 
+			
 		}
 	}
 
 	if (dev->pci->subsystem_vendor == 0x13c2 && dev->pci->subsystem_device == 0x000e)
-		av7110_fw_cmd(av7110, COMTYPE_AUDIODAC, SpdifSwitch, 1, 0); // SPDIF on
+		av7110_fw_cmd(av7110, COMTYPE_AUDIODAC, SpdifSwitch, 1, 0); 
 
 	ret = av7110_set_volume(av7110, av7110->mixer.volume_left, av7110->mixer.volume_right);
 	if (ret < 0)
@@ -211,7 +198,7 @@ static void recover_arm(struct av7110 *av7110)
 
 	init_av7110_av(av7110);
 
-	/* card-specific recovery */
+	 
 	if (av7110->recover)
 		av7110->recover(av7110);
 
@@ -243,7 +230,7 @@ static int arm_thread(void *data)
 			kthread_should_stop(), 5 * HZ);
 
 		if (-ERESTARTSYS == timeout || kthread_should_stop()) {
-			/* got signal or told to quit*/
+			 
 			break;
 		}
 
@@ -274,9 +261,7 @@ static int arm_thread(void *data)
 }
 
 
-/****************************************************************************
- * IRQ handling
- ****************************************************************************/
+ 
 
 static int DvbDmxFilterCallback(u8 *buffer1, size_t buffer1_len,
 				u8 *buffer2, size_t buffer2_len,
@@ -326,7 +311,7 @@ static int DvbDmxFilterCallback(u8 *buffer1, size_t buffer1_len,
 }
 
 
-//#define DEBUG_TIMING
+
 static inline void print_time(char *s)
 {
 #ifdef DEBUG_TIMING
@@ -347,10 +332,10 @@ static inline void start_debi_dma(struct av7110 *av7110, int dir,
 		return;
 	}
 
-	SAA7146_ISR_CLEAR(av7110->dev, MASK_19); /* for good measure */
+	SAA7146_ISR_CLEAR(av7110->dev, MASK_19);  
 	SAA7146_IER_ENABLE(av7110->dev, MASK_19);
 	if (len < 5)
-		len = 5; /* we want a real DEBI DMA */
+		len = 5;  
 	if (dir == DEBI_WRITE)
 		iwdebi(av7110, DEBISWAB, addr, 0, (len + 3) & ~3);
 	else
@@ -457,7 +442,7 @@ debi_done:
 	spin_unlock(&av7110->debilock);
 }
 
-/* irq from av7110 firmware writing the mailbox register in the DPRAM */
+ 
 static void gpioirq(struct tasklet_struct *t)
 {
 	struct av7110 *av7110 = from_tasklet(av7110, t, gpio_tasklet);
@@ -465,20 +450,20 @@ static void gpioirq(struct tasklet_struct *t)
 	int len;
 
 	if (av7110->debitype != -1)
-		/* we shouldn't get any irq while a debi xfer is running */
+		 
 		printk("dvb-ttpci: GPIO0 irq oops @ %ld, psr:0x%08x, ssr:0x%08x\n",
 		       jiffies, saa7146_read(av7110->dev, PSR),
 		       saa7146_read(av7110->dev, SSR));
 
 	if (saa7146_wait_for_debi_done(av7110->dev, 0)) {
 		printk(KERN_ERR "%s: saa7146_wait_for_debi_done timed out\n", __func__);
-		BUG(); /* maybe we should try resetting the debi? */
+		BUG();  
 	}
 
 	spin_lock(&av7110->debilock);
 	ARM_ClearIrq(av7110);
 
-	/* see what the av7110 wants */
+	 
 	av7110->debitype = irdebi(av7110, DEBINOSWAP, IRQ_STATE, 0, 2);
 	av7110->debilen  = irdebi(av7110, DEBINOSWAP, IRQ_STATE_EXT, 0, 2);
 	rxbuf = irdebi(av7110, DEBINOSWAP, RX_BUFF, 0, 2);
@@ -708,7 +693,7 @@ static struct dvb_device dvbdev_osd = {
 	.fops		= &dvb_osd_fops,
 	.kernel_ioctl	= dvb_osd_ioctl,
 };
-#endif /* CONFIG_DVB_AV7110_OSD */
+#endif  
 
 
 static inline int SetPIDs(struct av7110 *av7110, u16 vpid, u16 apid, u16 ttpid,
@@ -764,9 +749,7 @@ int ChangePIDs(struct av7110 *av7110, u16 vpid, u16 apid, u16 ttpid,
 }
 
 
-/******************************************************************************
- * hardware filter functions
- ******************************************************************************/
+ 
 
 static int StartHWFilter(struct dvb_demux_filter *dvbdmxfilter)
 {
@@ -775,7 +758,7 @@ static int StartHWFilter(struct dvb_demux_filter *dvbdmxfilter)
 	u16 buf[20];
 	int ret, i;
 	u16 handle;
-//	u16 mode = 0x0320;
+ 
 	u16 mode = 0xb96a;
 
 	dprintk(4, "%p\n", av7110);
@@ -923,7 +906,7 @@ static int dvb_feed_stop_pid(struct dvb_demux_feed *dvbdmxfeed)
 	npids[0] = npids[1] = npids[2] = npids[3] = npids[4] = 0xffff;
 	i = dvbdmxfeed->pes_type;
 	switch (i) {
-	case 2: //teletext
+	case 2:  
 		if (dvbdmxfeed->ts_type & TS_PACKET)
 			ret = StopHWFilter(dvbdmxfeed->filter);
 		npids[2] = 0;
@@ -1047,7 +1030,7 @@ static int av7110_stop_feed(struct dvb_demux_feed *feed)
 					rc = StopHWFilter(&demux->filter[i]);
 					if (!ret)
 						ret = rc;
-					/* keep going, stop as many filters as possible */
+					 
 				}
 			}
 		}
@@ -1071,7 +1054,7 @@ static void restart_feeds(struct av7110 *av7110)
 	av7110->playing = 0;
 	av7110->rec_mode = 0;
 
-	feeding = av7110->feeding1; /* full_ts mod */
+	feeding = av7110->feeding1;  
 
 	for (i = 0; i < dvbdmx->feednum; i++) {
 		feed = &dvbdmx->feed[i];
@@ -1090,7 +1073,7 @@ static void restart_feeds(struct av7110 *av7110)
 		}
 	}
 
-	av7110->feeding1 = feeding; /* full_ts mod */
+	av7110->feeding1 = feeding;  
 
 	if (mode)
 		av7110_av_start_play(av7110, mode);
@@ -1105,7 +1088,7 @@ static int dvb_get_stc(struct dmx_demux *demux, unsigned int num,
 	struct dvb_demux *dvbdemux;
 	struct av7110 *av7110;
 
-	/* pointer casting paranoia... */
+	 
 	if (WARN_ON(!demux))
 		return -EIO;
 	dvbdemux = demux->priv;
@@ -1136,9 +1119,7 @@ static int dvb_get_stc(struct dmx_demux *demux, unsigned int num,
 }
 
 
-/******************************************************************************
- * SEC device file operations
- ******************************************************************************/
+ 
 
 
 static int av7110_set_tone(struct dvb_frontend *fe, enum fe_sec_tone_mode tone)
@@ -1173,14 +1154,14 @@ static int av7110_diseqc_send_burst(struct dvb_frontend* fe,
 	return av7110_diseqc_send(av7110, 0, NULL, minicmd);
 }
 
-/* simplified code from budget-core.c */
+ 
 static int stop_ts_capture(struct av7110 *budget)
 {
 	dprintk(2, "budget: %p\n", budget);
 
 	if (--budget->feeding1)
 		return budget->feeding1;
-	saa7146_write(budget->dev, MC1, MASK_20);	/* DMA3 off */
+	saa7146_write(budget->dev, MC1, MASK_20);	 
 	SAA7146_IER_DISABLE(budget->dev, MASK_10);
 	SAA7146_ISR_CLEAR(budget->dev, MASK_10);
 	return 0;
@@ -1197,9 +1178,9 @@ static int start_ts_capture(struct av7110 *budget)
 	for (y = 0; y < TS_HEIGHT; y++)
 		memset(budget->grabbing + y * TS_WIDTH, 0x00, TS_WIDTH);
 	budget->ttbp = 0;
-	SAA7146_ISR_CLEAR(budget->dev, MASK_10);  /* VPE */
-	SAA7146_IER_ENABLE(budget->dev, MASK_10); /* VPE */
-	saa7146_write(budget->dev, MC1, (MASK_04 | MASK_20)); /* DMA3 on */
+	SAA7146_ISR_CLEAR(budget->dev, MASK_10);   
+	SAA7146_IER_ENABLE(budget->dev, MASK_10);  
+	saa7146_write(budget->dev, MC1, (MASK_04 | MASK_20));  
 	return ++budget->feeding1;
 }
 
@@ -1212,7 +1193,7 @@ static int budget_start_feed(struct dvb_demux_feed *feed)
 	dprintk(2, "av7110: %p\n", budget);
 
 	spin_lock(&budget->feedlock1);
-	feed->pusi_seen = false; /* have a clean section start */
+	feed->pusi_seen = false;  
 	status = start_ts_capture(budget);
 	spin_unlock(&budget->feedlock1);
 	return status;
@@ -1240,7 +1221,7 @@ static void vpeirq(struct tasklet_struct *t)
 	u32 newdma = saa7146_read(budget->dev, PCI_VDP3);
 	struct dvb_demux *demux = budget->full_ts ? &budget->demux : &budget->demux1;
 
-	/* nearest lower position divisible by 188 */
+	 
 	newdma -= newdma % 188;
 
 	if (newdma >= TS_BUFLEN)
@@ -1251,22 +1232,22 @@ static void vpeirq(struct tasklet_struct *t)
 	if (!budget->feeding1 || (newdma == olddma))
 		return;
 
-	/* Ensure streamed PCI data is synced to CPU */
+	 
 	dma_sync_sg_for_cpu(&budget->dev->pci->dev, budget->pt.slist,
 			    budget->pt.nents, DMA_FROM_DEVICE);
 
 #if 0
-	/* track rps1 activity */
+	 
 	printk("vpeirq: %02x Event Counter 1 0x%04x\n",
 	       mem[olddma],
 	       saa7146_read(budget->dev, EC1R) & 0x3fff);
 #endif
 
 	if (newdma > olddma)
-		/* no wraparound, dump olddma..newdma */
+		 
 		dvb_dmx_swfilter_packets(demux, mem + olddma, (newdma - olddma) / 188);
 	else {
-		/* wraparound, dump olddma..buflen and 0..newdma */
+		 
 		dvb_dmx_swfilter_packets(demux, mem + olddma, (TS_BUFLEN - olddma) / 188);
 		dvb_dmx_swfilter_packets(demux, mem, newdma / 188);
 	}
@@ -1337,9 +1318,7 @@ static int av7110_register(struct av7110 *av7110)
 	dvb_net_init(&av7110->dvb_adapter, &av7110->dvb_net, &dvbdemux->dmx);
 
 	if (budgetpatch) {
-		/* initialize software demux1 without its own frontend
-		 * demux1 hardware is connected to frontend0 of demux0
-		 */
+		 
 		dvbdemux1->priv = (void *) av7110;
 
 		dvbdemux1->filternum = 256;
@@ -1402,9 +1381,7 @@ static void dvb_unregister(struct av7110 *av7110)
 }
 
 
-/****************************************************************************
- * I2C client commands
- ****************************************************************************/
+ 
 
 int i2c_writereg(struct av7110 *av7110, u8 id, u8 reg, u8 val)
 {
@@ -1435,9 +1412,7 @@ u8 i2c_readreg(struct av7110 *av7110, u8 id, u8 reg)
 	return mm2[0];
 }
 
-/****************************************************************************
- * INITIALIZATION
- ****************************************************************************/
+ 
 
 
 static int check_firmware(struct av7110* av7110)
@@ -1445,7 +1420,7 @@ static int check_firmware(struct av7110* av7110)
 	u32 crc = 0, len = 0;
 	unsigned char *ptr;
 
-	/* check for firmware magic */
+	 
 	ptr = av7110->bin_fw;
 	if (ptr[0] != 'A' || ptr[1] != 'V' ||
 	    ptr[2] != 'F' || ptr[3] != 'W') {
@@ -1454,7 +1429,7 @@ static int check_firmware(struct av7110* av7110)
 	}
 	ptr += 4;
 
-	/* check dpram file */
+	 
 	crc = get_unaligned_be32(ptr);
 	ptr += 4;
 	len = get_unaligned_be32(ptr);
@@ -1471,7 +1446,7 @@ static int check_firmware(struct av7110* av7110)
 	av7110->size_dpram = len;
 	ptr += len;
 
-	/* check root file */
+	 
 	crc = get_unaligned_be32(ptr);
 	ptr += 4;
 	len = get_unaligned_be32(ptr);
@@ -1501,7 +1476,7 @@ static int get_firmware(struct av7110* av7110)
 	int ret;
 	const struct firmware *fw;
 
-	/* request the av7110 firmware, this will block until someone uploads it */
+	 
 	ret = request_firmware(&fw, "dvb-ttpci-01.fw", &av7110->dev->pci->dev);
 	if (ret) {
 		if (ret == -ENOENT) {
@@ -1520,7 +1495,7 @@ static int get_firmware(struct av7110* av7110)
 		return -EINVAL;
 	}
 
-	/* check if the firmware is available */
+	 
 	av7110->bin_fw = vmalloc(fw->size);
 	if (NULL == av7110->bin_fw) {
 		dprintk(1, "out of memory\n");
@@ -1564,8 +1539,8 @@ static int alps_bsrv2_tuner_set_params(struct dvb_frontend *fe)
 	buf[2] = ((div & 0x18000) >> 10) | 0x95;
 	buf[3] = (pwr << 6) | 0x30;
 
-	// NOTE: since we're using a prescaler of 2, we set the
-	// divisor frequency to 62.5kHz and divide by 125 above
+	 
+	
 
 	if (fe->ops.i2c_gate_ctrl)
 		fe->ops.i2c_gate_ctrl(fe, 1);
@@ -1843,7 +1818,7 @@ static int nexusca_stv0297_tuner_set_params(struct dvb_frontend *fe)
 		return -EIO;
 	}
 
-	// wait for PLL lock
+	
 	for(i = 0; i < 20; i++) {
 		if (fe->ops.i2c_gate_ctrl)
 			fe->ops.i2c_gate_ctrl(fe, 1);
@@ -1980,7 +1955,7 @@ static int av7110_fe_read_status(struct dvb_frontend *fe,
 {
 	struct av7110* av7110 = fe->dvb->priv;
 
-	/* call the real implementation */
+	 
 	int ret = av7110->fe_read_status(fe, status);
 	if (!ret)
 		if (((*status ^ av7110->fe_status) & FE_HAS_LOCK) && (*status & FE_HAS_LOCK))
@@ -2096,7 +2071,7 @@ static int frontend_init(struct av7110 *av7110)
 
 	if (av7110->dev->pci->subsystem_vendor == 0x110a) {
 		switch(av7110->dev->pci->subsystem_device) {
-		case 0x0000: // Fujitsu/Siemens DVB-Cable (ves1820/Philips CD1516(??))
+		case 0x0000: 
 			av7110->fe = dvb_attach(ves1820_attach, &philips_cd1516_config,
 						    &av7110->i2c_adap, read_pwm(av7110));
 			if (av7110->fe) {
@@ -2107,11 +2082,11 @@ static int frontend_init(struct av7110 *av7110)
 
 	} else if (av7110->dev->pci->subsystem_vendor == 0x13c2) {
 		switch(av7110->dev->pci->subsystem_device) {
-		case 0x0000: // Hauppauge/TT WinTV DVB-S rev1.X
-		case 0x0003: // Hauppauge/TT WinTV Nexus-S Rev 2.X
-		case 0x1002: // Hauppauge/TT WinTV DVB-S rev1.3SE
+		case 0x0000: 
+		case 0x0003: 
+		case 0x1002: 
 
-			// try the ALPS BSRV2 first of all
+			
 			av7110->fe = dvb_attach(ves1x93_attach, &alps_bsrv2_config, &av7110->i2c_adap);
 			if (av7110->fe) {
 				av7110->fe->ops.tuner_ops.set_params = alps_bsrv2_tuner_set_params;
@@ -2122,7 +2097,7 @@ static int frontend_init(struct av7110 *av7110)
 				break;
 			}
 
-			// try the ALPS BSRU6 now
+			
 			av7110->fe = dvb_attach(stv0299_attach, &alps_bsru6_config, &av7110->i2c_adap);
 			if (av7110->fe) {
 				av7110->fe->ops.tuner_ops.set_params = alps_bsru6_tuner_set_params;
@@ -2135,7 +2110,7 @@ static int frontend_init(struct av7110 *av7110)
 				break;
 			}
 
-			// Try the grundig 29504-451
+			
 			av7110->fe = dvb_attach(tda8083_attach, &grundig_29504_451_config, &av7110->i2c_adap);
 			if (av7110->fe) {
 				av7110->fe->ops.tuner_ops.set_params = grundig_29504_451_tuner_set_params;
@@ -2146,10 +2121,10 @@ static int frontend_init(struct av7110 *av7110)
 				break;
 			}
 
-			/* Try DVB-C cards */
+			 
 			switch(av7110->dev->pci->subsystem_device) {
 			case 0x0000:
-				/* Siemens DVB-C (full-length card) VES1820/Philips CD1516 */
+				 
 				av7110->fe = dvb_attach(ves1820_attach, &philips_cd1516_config, &av7110->i2c_adap,
 							read_pwm(av7110));
 				if (av7110->fe) {
@@ -2157,7 +2132,7 @@ static int frontend_init(struct av7110 *av7110)
 				}
 				break;
 			case 0x0003:
-				/* Hauppauge DVB-C 2.1 VES1820/ALPS TDBE2 */
+				 
 				av7110->fe = dvb_attach(ves1820_attach, &alps_tdbe2_config, &av7110->i2c_adap,
 							read_pwm(av7110));
 				if (av7110->fe) {
@@ -2167,11 +2142,11 @@ static int frontend_init(struct av7110 *av7110)
 			}
 			break;
 
-		case 0x0001: // Hauppauge/TT Nexus-T premium rev1.X
+		case 0x0001: 
 		{
 			struct dvb_frontend *fe;
 
-			// try ALPS TDLB7 first, then Grundig 29504-401
+			
 			fe = dvb_attach(sp8870_attach, &alps_tdlb7_config, &av7110->i2c_adap);
 			if (fe) {
 				fe->ops.tuner_ops.set_params = alps_tdlb7_tuner_set_params;
@@ -2181,14 +2156,14 @@ static int frontend_init(struct av7110 *av7110)
 		}
 			fallthrough;
 
-		case 0x0008: // Hauppauge/TT DVB-T
-			// Grundig 29504-401
+		case 0x0008: 
+			
 			av7110->fe = dvb_attach(l64781_attach, &grundig_29504_401_config, &av7110->i2c_adap);
 			if (av7110->fe)
 				av7110->fe->ops.tuner_ops.set_params = grundig_29504_401_tuner_set_params;
 			break;
 
-		case 0x0002: // Hauppauge/TT DVB-C premium rev2.X
+		case 0x0002: 
 
 			av7110->fe = dvb_attach(ves1820_attach, &alps_tdbe2_config, &av7110->i2c_adap, read_pwm(av7110));
 			if (av7110->fe) {
@@ -2196,8 +2171,8 @@ static int frontend_init(struct av7110 *av7110)
 			}
 			break;
 
-		case 0x0004: // Galaxis DVB-S rev1.3
-			/* ALPS BSRV2 */
+		case 0x0004: 
+			 
 			av7110->fe = dvb_attach(ves1x93_attach, &alps_bsrv2_config, &av7110->i2c_adap);
 			if (av7110->fe) {
 				av7110->fe->ops.tuner_ops.set_params = alps_bsrv2_tuner_set_params;
@@ -2208,8 +2183,8 @@ static int frontend_init(struct av7110 *av7110)
 			}
 			break;
 
-		case 0x0006: /* Fujitsu-Siemens DVB-S rev 1.6 */
-			/* Grundig 29504-451 */
+		case 0x0006:  
+			 
 			av7110->fe = dvb_attach(tda8083_attach, &grundig_29504_451_config, &av7110->i2c_adap);
 			if (av7110->fe) {
 				av7110->fe->ops.tuner_ops.set_params = grundig_29504_451_tuner_set_params;
@@ -2220,24 +2195,24 @@ static int frontend_init(struct av7110 *av7110)
 			}
 			break;
 
-		case 0x000A: // Hauppauge/TT Nexus-CA rev1.X
+		case 0x000A: 
 
 			av7110->fe = dvb_attach(stv0297_attach, &nexusca_stv0297_config, &av7110->i2c_adap);
 			if (av7110->fe) {
 				av7110->fe->ops.tuner_ops.set_params = nexusca_stv0297_tuner_set_params;
 
-				/* set TDA9819 into DVB mode */
-				saa7146_setgpio(av7110->dev, 1, SAA7146_GPIO_OUTLO); // TDA9819 pin9(STD)
-				saa7146_setgpio(av7110->dev, 3, SAA7146_GPIO_OUTLO); // TDA9819 pin30(VIF)
+				 
+				saa7146_setgpio(av7110->dev, 1, SAA7146_GPIO_OUTLO); 
+				saa7146_setgpio(av7110->dev, 3, SAA7146_GPIO_OUTLO); 
 
-				/* tuner on this needs a slower i2c bus speed */
+				 
 				av7110->dev->i2c_bitrate = SAA7146_I2C_BUS_BIT_RATE_240;
 				break;
 			}
 			break;
 
-		case 0x000E: /* Hauppauge/TT Nexus-S rev 2.3 */
-			/* ALPS BSBE1 */
+		case 0x000E:  
+			 
 			av7110->fe = dvb_attach(stv0299_attach, &alps_bsbe1_config, &av7110->i2c_adap);
 			if (av7110->fe) {
 				av7110->fe->ops.tuner_ops.set_params = alps_bsbe1_tuner_set_params;
@@ -2258,7 +2233,7 @@ static int frontend_init(struct av7110 *av7110)
 	}
 
 	if (!av7110->fe) {
-		/* FIXME: propagate the failure code from the lower layers */
+		 
 		ret = -ENOMEM;
 		printk("dvb-ttpci: A frontend driver was not found for device [%04x:%04x] subsystem [%04x:%04x]\n",
 		       av7110->dev->pci->vendor,
@@ -2286,66 +2261,7 @@ static int frontend_init(struct av7110 *av7110)
 	return ret;
 }
 
-/* Budgetpatch note:
- * Original hardware design by Roberto Deza:
- * There is a DVB_Wiki at
- * https://linuxtv.org
- *
- * New software triggering design by Emard that works on
- * original Roberto Deza's hardware:
- *
- * rps1 code for budgetpatch will copy internal HS event to GPIO3 pin.
- * GPIO3 is in budget-patch hardware connectd to port B VSYNC
- * HS is an internal event of 7146, accessible with RPS
- * and temporarily raised high every n lines
- * (n in defined in the RPS_THRESH1 counter threshold)
- * I think HS is raised high on the beginning of the n-th line
- * and remains high until this n-th line that triggered
- * it is completely received. When the reception of n-th line
- * ends, HS is lowered.
- *
- * To transmit data over DMA, 7146 needs changing state at
- * port B VSYNC pin. Any changing of port B VSYNC will
- * cause some DMA data transfer, with more or less packets loss.
- * It depends on the phase and frequency of VSYNC and
- * the way of 7146 is instructed to trigger on port B (defined
- * in DD1_INIT register, 3rd nibble from the right valid
- * numbers are 0-7, see datasheet)
- *
- * The correct triggering can minimize packet loss,
- * dvbtraffic should give this stable bandwidths:
- *   22k transponder = 33814 kbit/s
- * 27.5k transponder = 38045 kbit/s
- * by experiment it is found that the best results
- * (stable bandwidths and almost no packet loss)
- * are obtained using DD1_INIT triggering number 2
- * (Va at rising edge of VS Fa = HS x VS-failing forced toggle)
- * and a VSYNC phase that occurs in the middle of DMA transfer
- * (about byte 188*512=96256 in the DMA window).
- *
- * Phase of HS is still not clear to me how to control,
- * It just happens to be so. It can be seen if one enables
- * RPS_IRQ and print Event Counter 1 in vpeirq(). Every
- * time RPS_INTERRUPT is called, the Event Counter 1 will
- * increment. That's how the 7146 is programmed to do event
- * counting in this budget-patch.c
- * I *think* HPS setting has something to do with the phase
- * of HS but I can't be 100% sure in that.
- *
- * hardware debug note: a working budget card (including budget patch)
- * with vpeirq() interrupt setup in mode "0x90" (every 64K) will
- * generate 3 interrupts per 25-Hz DMA frame of 2*188*512 bytes
- * and that means 3*25=75 Hz of interrupt frequency, as seen by
- * watch cat /proc/interrupts
- *
- * If this frequency is 3x lower (and data received in the DMA
- * buffer don't start with 0x47, but in the middle of packets,
- * whose lengths appear to be like 188 292 188 104 etc.
- * this means VSYNC line is not connected in the hardware.
- * (check soldering pcb and pins)
- * The same behaviour of missing VSYNC can be duplicated on budget
- * cards, by setting DD1_INIT trigger mode 7 in 3rd nibble.
- */
+ 
 static int av7110_attach(struct saa7146_dev* dev,
 			 struct saa7146_pci_extension_data *pci_ext)
 {
@@ -2357,96 +2273,80 @@ static int av7110_attach(struct saa7146_dev* dev,
 
 	dprintk(4, "dev: %p\n", dev);
 
-	/* Set RPS_IRQ to 1 to track rps1 activity.
-	 * Enabling this won't send any interrupt to PC CPU.
-	 */
+	 
 #define RPS_IRQ 0
 
 	if (budgetpatch == 1) {
 		budgetpatch = 0;
-		/* autodetect the presence of budget patch
-		 * this only works if saa7146 has been recently
-		 * reset with MASK_31 to MC1
-		 *
-		 * will wait for VBI_B event (vertical blank at port B)
-		 * and will reset GPIO3 after VBI_B is detected.
-		 * (GPIO3 should be raised high by CPU to
-		 * test if GPIO3 will generate vertical blank signal
-		 * in budget patch GPIO3 is connected to VSYNC_B
-		 */
+		 
 
-		/* RESET SAA7146 */
+		 
 		saa7146_write(dev, MC1, MASK_31);
-		/* autodetection success seems to be time-dependend after reset */
+		 
 
-		/* Fix VSYNC level */
+		 
 		saa7146_setgpio(dev, 3, SAA7146_GPIO_OUTLO);
-		/* set vsync_b triggering */
+		 
 		saa7146_write(dev, DD1_STREAM_B, 0);
-		/* port B VSYNC at rising edge */
+		 
 		saa7146_write(dev, DD1_INIT, 0x00000200);
-		saa7146_write(dev, BRS_CTRL, 0x00000000);  // VBI
+		saa7146_write(dev, BRS_CTRL, 0x00000000);   
 		saa7146_write(dev, MC2,
-			      1 * (MASK_08 | MASK_24)  |   // BRS control
-			      0 * (MASK_09 | MASK_25)  |   // a
-			      1 * (MASK_10 | MASK_26)  |   // b
-			      0 * (MASK_06 | MASK_22)  |   // HPS_CTRL1
-			      0 * (MASK_05 | MASK_21)  |   // HPS_CTRL2
-			      0 * (MASK_01 | MASK_15)      // DEBI
+			      1 * (MASK_08 | MASK_24)  |    
+			      0 * (MASK_09 | MASK_25)  |    
+			      1 * (MASK_10 | MASK_26)  |    
+			      0 * (MASK_06 | MASK_22)  |    
+			      0 * (MASK_05 | MASK_21)  |    
+			      0 * (MASK_01 | MASK_15)       
 		);
 
-		/* start writing RPS1 code from beginning */
+		 
 		count = 0;
-		/* Disable RPS1 */
+		 
 		saa7146_write(dev, MC1, MASK_29);
-		/* RPS1 timeout disable */
+		 
 		saa7146_write(dev, RPS_TOV1, 0);
 		WRITE_RPS1(CMD_PAUSE | EVT_VBI_B);
 		WRITE_RPS1(CMD_WR_REG_MASK | (GPIO_CTRL>>2));
 		WRITE_RPS1(GPIO3_MSK);
 		WRITE_RPS1(SAA7146_GPIO_OUTLO<<24);
 #if RPS_IRQ
-		/* issue RPS1 interrupt to increment counter */
+		 
 		WRITE_RPS1(CMD_INTERRUPT);
 #endif
 		WRITE_RPS1(CMD_STOP);
-		/* Jump to begin of RPS program as safety measure               (p37) */
+		 
 		WRITE_RPS1(CMD_JUMP);
 		WRITE_RPS1(dev->d_rps1.dma_handle);
 
 #if RPS_IRQ
-		/* set event counter 1 source as RPS1 interrupt (0x03)          (rE4 p53)
-		 * use 0x03 to track RPS1 interrupts - increase by 1 every gpio3 is toggled
-		 * use 0x15 to track VPE  interrupts - increase by 1 every vpeirq() is called
-		 */
+		 
 		saa7146_write(dev, EC1SSR, (0x03<<2) | 3 );
-		/* set event counter 1 threshold to maximum allowed value        (rEC p55) */
+		 
 		saa7146_write(dev, ECT1R,  0x3fff );
 #endif
-		/* Set RPS1 Address register to point to RPS code               (r108 p42) */
+		 
 		saa7146_write(dev, RPS_ADDR1, dev->d_rps1.dma_handle);
-		/* Enable RPS1,                                                 (rFC p33) */
+		 
 		saa7146_write(dev, MC1, (MASK_13 | MASK_29 ));
 
 		mdelay(10);
-		/* now send VSYNC_B to rps1 by rising GPIO3 */
+		 
 		saa7146_setgpio(dev, 3, SAA7146_GPIO_OUTHI);
 		mdelay(10);
-		/* if rps1 responded by lowering the GPIO3,
-		 * then we have budgetpatch hardware
-		 */
+		 
 		if ((saa7146_read(dev, GPIO_CTRL) & 0x10000000) == 0) {
 			budgetpatch = 1;
 			printk("dvb-ttpci: BUDGET-PATCH DETECTED.\n");
 		}
-		/* Disable RPS1 */
+		 
 		saa7146_write(dev, MC1, ( MASK_29 ));
 #if RPS_IRQ
 		printk("dvb-ttpci: Event Counter 1 0x%04x\n", saa7146_read(dev, EC1R) & 0x3fff );
 #endif
 	}
 
-	/* prepare the av7110 device struct */
+	 
 	av7110 = kzalloc(sizeof(struct av7110), GFP_KERNEL);
 	if (!av7110) {
 		dprintk(1, "out of memory\n");
@@ -2466,14 +2366,13 @@ static int av7110_attach(struct saa7146_dev* dev,
 	if (ret < 0)
 		goto err_put_firmware_1;
 
-	/* the Siemens DVB needs this if you want to have the i2c chips
-	   get recognized before the main driver is fully loaded */
+	 
 	saa7146_write(dev, GPIO_CTRL, 0x500000);
 
 	strscpy(av7110->i2c_adap.name, pci_ext->ext_priv,
 		sizeof(av7110->i2c_adap.name));
 
-	saa7146_i2c_adapter_prepare(dev, &av7110->i2c_adap, SAA7146_I2C_BUS_BIT_RATE_120); /* 275 kHz */
+	saa7146_i2c_adapter_prepare(dev, &av7110->i2c_adap, SAA7146_I2C_BUS_BIT_RATE_120);  
 
 	ret = i2c_add_adapter(&av7110->i2c_adap);
 	if (ret < 0)
@@ -2483,11 +2382,11 @@ static int av7110_attach(struct saa7146_dev* dev,
 			       av7110->dvb_adapter.proposed_mac);
 	ret = -ENOMEM;
 
-	/* full-ts mod? */
+	 
 	if (full_ts)
 		av7110->full_ts = true;
 
-	/* check for full-ts flag in eeprom */
+	 
 	if (i2c_readreg(av7110, 0xaa, 0) == 0x4f && i2c_readreg(av7110, 0xaa, 1) == 0x45) {
 		u8 flags = i2c_readreg(av7110, 0xaa, 2);
 		if (flags != 0xff && (flags & 0x01))
@@ -2511,7 +2410,7 @@ static int av7110_attach(struct saa7146_dev* dev,
 		saa7146_write(dev, BRS_CTRL, 0x60000000);
 		saa7146_write(dev, MC2, MASK_08 | MASK_24);
 
-		/* dma3 */
+		 
 		saa7146_write(dev, PCI_BT_V1, 0x001c0000 | (saa7146_read(dev, PCI_BT_V1) & ~0x001f0000));
 		saa7146_write(dev, BASE_ODD3, 0);
 		saa7146_write(dev, BASE_EVEN3, 0);
@@ -2532,7 +2431,7 @@ static int av7110_attach(struct saa7146_dev* dev,
 
 		saa7146_write(dev, PCI_BT_V1, 0x1c1f101f);
 		saa7146_write(dev, BCS_CTRL, 0x80400040);
-		/* set dd1 stream a & b */
+		 
 		saa7146_write(dev, DD1_STREAM_B, 0x00000000);
 		saa7146_write(dev, DD1_INIT, 0x03000200);
 		saa7146_write(dev, MC2, (MASK_09 | MASK_25 | MASK_10 | MASK_26));
@@ -2545,74 +2444,64 @@ static int av7110_attach(struct saa7146_dev* dev,
 		saa7146_write(dev, PITCH3, TS_WIDTH);
 		saa7146_write(dev, NUM_LINE_BYTE3, (TS_HEIGHT << 16) | TS_WIDTH);
 
-		/* upload all */
+		 
 		saa7146_write(dev, MC2, 0x077c077c);
 		saa7146_write(dev, GPIO_CTRL, 0x000000);
 #if RPS_IRQ
-		/* set event counter 1 source as RPS1 interrupt (0x03)          (rE4 p53)
-		 * use 0x03 to track RPS1 interrupts - increase by 1 every gpio3 is toggled
-		 * use 0x15 to track VPE  interrupts - increase by 1 every vpeirq() is called
-		 */
+		 
 		saa7146_write(dev, EC1SSR, (0x03<<2) | 3 );
-		/* set event counter 1 threshold to maximum allowed value        (rEC p55) */
+		 
 		saa7146_write(dev, ECT1R,  0x3fff );
 #endif
-		/* Setup BUDGETPATCH MAIN RPS1 "program" (p35) */
+		 
 		count = 0;
 
-		/* Wait Source Line Counter Threshold                           (p36) */
+		 
 		WRITE_RPS1(CMD_PAUSE | EVT_HS);
-		/* Set GPIO3=1                                                  (p42) */
+		 
 		WRITE_RPS1(CMD_WR_REG_MASK | (GPIO_CTRL>>2));
 		WRITE_RPS1(GPIO3_MSK);
 		WRITE_RPS1(SAA7146_GPIO_OUTHI<<24);
 #if RPS_IRQ
-		/* issue RPS1 interrupt */
+		 
 		WRITE_RPS1(CMD_INTERRUPT);
 #endif
-		/* Wait reset Source Line Counter Threshold                     (p36) */
+		 
 		WRITE_RPS1(CMD_PAUSE | RPS_INV | EVT_HS);
-		/* Set GPIO3=0                                                  (p42) */
+		 
 		WRITE_RPS1(CMD_WR_REG_MASK | (GPIO_CTRL>>2));
 		WRITE_RPS1(GPIO3_MSK);
 		WRITE_RPS1(SAA7146_GPIO_OUTLO<<24);
 #if RPS_IRQ
-		/* issue RPS1 interrupt */
+		 
 		WRITE_RPS1(CMD_INTERRUPT);
 #endif
-		/* Jump to begin of RPS program                                 (p37) */
+		 
 		WRITE_RPS1(CMD_JUMP);
 		WRITE_RPS1(dev->d_rps1.dma_handle);
 
-		/* Fix VSYNC level */
+		 
 		saa7146_setgpio(dev, 3, SAA7146_GPIO_OUTLO);
-		/* Set RPS1 Address register to point to RPS code               (r108 p42) */
+		 
 		saa7146_write(dev, RPS_ADDR1, dev->d_rps1.dma_handle);
-		/* Set Source Line Counter Threshold, using BRS                 (rCC p43)
-		 * It generates HS event every TS_HEIGHT lines
-		 * this is related to TS_WIDTH set in register
-		 * NUM_LINE_BYTE3. If NUM_LINE_BYTE low 16 bits
-		 * are set to TS_WIDTH bytes (TS_WIDTH=2*188),
-		 * then RPS_THRESH1 should be set to trigger
-		 * every TS_HEIGHT (512) lines.
-		 */
+		 
 		saa7146_write(dev, RPS_THRESH1, (TS_HEIGHT*1) | MASK_12 );
 
-		/* Enable RPS1                                                  (rFC p33) */
+		 
 		saa7146_write(dev, MC1, (MASK_13 | MASK_29));
 
-		/* end of budgetpatch register initialization */
+		 
 		tasklet_setup(&av7110->vpe_tasklet,  vpeirq);
 	} else {
 		saa7146_write(dev, PCI_BT_V1, 0x1c00101f);
 		saa7146_write(dev, BCS_CTRL, 0x80400040);
 
-		/* set dd1 stream a & b */
+		 
 		saa7146_write(dev, DD1_STREAM_B, 0x00000000);
 		saa7146_write(dev, DD1_INIT, 0x03000000);
 		saa7146_write(dev, MC2, (MASK_09 | MASK_25 | MASK_10 | MASK_26));
 
-		/* upload all */
+		 
 		saa7146_write(dev, MC2, 0x077c077c);
 		saa7146_write(dev, GPIO_CTRL, 0x000000);
 	}
@@ -2622,24 +2511,24 @@ static int av7110_attach(struct saa7146_dev* dev,
 
 	mutex_init(&av7110->pid_mutex);
 
-	/* locks for data transfers from/to AV7110 */
+	 
 	spin_lock_init(&av7110->debilock);
 	mutex_init(&av7110->dcomlock);
 	av7110->debitype = -1;
 
-	/* default OSD window */
+	 
 	av7110->osdwin = 1;
 	mutex_init(&av7110->osd_mutex);
 
-	/* TV standard */
+	 
 	av7110->vidmode = tv_standard == 1 ? AV7110_VIDEO_MODE_NTSC
 					   : AV7110_VIDEO_MODE_PAL;
 
-	/* ARM "watchdog" */
+	 
 	init_waitqueue_head(&av7110->arm_wait);
 	av7110->arm_thread = NULL;
 
-	/* allocate and init buffers */
+	 
 	av7110->debi_virt = dma_alloc_coherent(&pdev->dev, 8192,
 					       &av7110->debi_bus, GFP_KERNEL);
 	if (!av7110->debi_virt)
@@ -2654,7 +2543,7 @@ static int av7110_attach(struct saa7146_dev* dev,
 	if (ret < 0)
 		goto err_iobuf_vfree_6;
 
-	/* init BMP buffer */
+	 
 	av7110->bmpbuf = av7110->iobuf+AVOUTLEN+AOUTLEN;
 	init_waitqueue_head(&av7110->bmpq);
 
@@ -2662,7 +2551,7 @@ static int av7110_attach(struct saa7146_dev* dev,
 	if (ret < 0)
 		goto err_av7110_av_exit_7;
 
-	/* load firmware into AV7110 cards */
+	 
 	ret = av7110_bootarm(av7110);
 	if (ret < 0)
 		goto err_av7110_ca_exit_8;
@@ -2683,7 +2572,7 @@ static int av7110_attach(struct saa7146_dev* dev,
 	}
 	av7110->arm_thread = thread;
 
-	/* set initial volume in mixer struct */
+	 
 	av7110->mixer.volume_left  = volume;
 	av7110->mixer.volume_right = volume;
 
@@ -2693,9 +2582,7 @@ static int av7110_attach(struct saa7146_dev* dev,
 
 	init_av7110_av(av7110);
 
-	/* special case DVB-C: these cards have an analog tuner
-	   plus need some special handling, so we have separate
-	   saa7146_ext_vv data for these... */
+	 
 	ret = av7110_init_v4l(av7110);
 	if (ret < 0)
 		goto err_av7110_unregister_11;
@@ -2722,7 +2609,7 @@ err_av7110_unregister_11:
 err_arm_thread_stop_10:
 	av7110_arm_sync(av7110);
 err_stop_arm_9:
-	/* Nothing to do. Rejoice. */
+	 
 err_av7110_ca_exit_8:
 	av7110_ca_exit(av7110);
 err_av7110_av_exit_7:
@@ -2756,12 +2643,12 @@ static int av7110_detach(struct saa7146_dev* saa)
 #endif
 	if (budgetpatch || av7110->full_ts) {
 		if (budgetpatch) {
-			/* Disable RPS1 */
+			 
 			saa7146_write(saa, MC1, MASK_29);
-			/* VSYNC LOW (inactive) */
+			 
 			saa7146_setgpio(saa, 3, SAA7146_GPIO_OUTLO);
 		}
-		saa7146_write(saa, MC1, MASK_20);	/* DMA3 off */
+		saa7146_write(saa, MC1, MASK_20);	 
 		SAA7146_IER_DISABLE(saa, MASK_10);
 		SAA7146_ISR_CLEAR(saa, MASK_10);
 		msleep(50);
@@ -2807,36 +2694,20 @@ static void av7110_irq(struct saa7146_dev* dev, u32 *isr)
 {
 	struct av7110 *av7110 = dev->ext_priv;
 
-	//print_time("av7110_irq");
+	 
 
-	/* Note: Don't try to handle the DEBI error irq (MASK_18), in
-	 * intel mode the timeout is asserted all the time...
-	 */
+	 
 
 	if (*isr & MASK_19) {
-		//printk("av7110_irq: DEBI\n");
-		/* Note 1: The DEBI irq is level triggered: We must enable it
-		 * only after we started a DMA xfer, and disable it here
-		 * immediately, or it will be signalled all the time while
-		 * DEBI is idle.
-		 * Note 2: You would think that an irq which is masked is
-		 * not signalled by the hardware. Not so for the SAA7146:
-		 * An irq is signalled as long as the corresponding bit
-		 * in the ISR is set, and disabling irqs just prevents the
-		 * hardware from setting the ISR bit. This means a) that we
-		 * must clear the ISR *after* disabling the irq (which is why
-		 * we must do it here even though saa7146_core did it already),
-		 * and b) that if we were to disable an edge triggered irq
-		 * (like the gpio irqs sadly are) temporarily we would likely
-		 * loose some. This sucks :-(
-		 */
+		
+		 
 		SAA7146_IER_DISABLE(av7110->dev, MASK_19);
 		SAA7146_ISR_CLEAR(av7110->dev, MASK_19);
 		tasklet_schedule(&av7110->debi_tasklet);
 	}
 
 	if (*isr & MASK_03) {
-		//printk("av7110_irq: GPIO\n");
+		
 		tasklet_schedule(&av7110->gpio_tasklet);
 	}
 
@@ -2877,8 +2748,8 @@ static const struct pci_device_id pci_tbl[] = {
 	MAKE_EXTENSION_PCI(tts_2_3,     0x13c2, 0x000e),
 	MAKE_EXTENSION_PCI(tts_1_3se,   0x13c2, 0x1002),
 
-/*	MAKE_EXTENSION_PCI(???, 0x13c2, 0x0005), UNDEFINED CARD */ // Technisat SkyStar1
-/*	MAKE_EXTENSION_PCI(???, 0x13c2, 0x0009), UNDEFINED CARD */ // TT/Hauppauge WinTV Nexus-CA v????
+  
+  
 
 	{
 		.vendor    = 0,

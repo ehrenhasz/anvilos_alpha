@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * test_fprobe.c - simple sanity test for fprobe
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/fprobe.h>
@@ -14,7 +12,7 @@ static struct kunit *current_test;
 
 static u32 rand1, entry_val, exit_val;
 
-/* Use indirect calls to avoid inlining the target functions */
+ 
 static u32 (*target)(u32 value);
 static u32 (*target2)(u32 value);
 static u32 (*target_nest)(u32 value, u32 (*nest)(u32));
@@ -43,7 +41,7 @@ static notrace int fp_entry_handler(struct fprobe *fp, unsigned long ip,
 				    struct pt_regs *regs, void *data)
 {
 	KUNIT_EXPECT_FALSE(current_test, preemptible());
-	/* This can be called on the fprobe_selftest_target and the fprobe_selftest_target2 */
+	 
 	if (ip != target_ip)
 		KUNIT_EXPECT_EQ(current_test, ip, target2_ip);
 	entry_val = (rand1 / div_factor);
@@ -95,7 +93,7 @@ static notrace void nest_exit_handler(struct fprobe *fp, unsigned long ip,
 	KUNIT_EXPECT_EQ(current_test, ip, target_nest_ip);
 }
 
-/* Test entry only (no rethook) */
+ 
 static void test_fprobe_entry(struct kunit *test)
 {
 	struct fprobe fp_entry = {
@@ -104,7 +102,7 @@ static void test_fprobe_entry(struct kunit *test)
 
 	current_test = test;
 
-	/* Before register, unregister should be failed. */
+	 
 	KUNIT_EXPECT_NE(test, 0, unregister_fprobe(&fp_entry));
 	KUNIT_EXPECT_EQ(test, 0, register_fprobe(&fp_entry, "fprobe_selftest_target*", NULL));
 
@@ -174,7 +172,7 @@ static void test_fprobe_syms(struct kunit *test)
 	KUNIT_EXPECT_EQ(test, 0, unregister_fprobe(&fp));
 }
 
-/* Test private entry_data */
+ 
 static void test_fprobe_data(struct kunit *test)
 {
 	struct fprobe fp = {
@@ -191,7 +189,7 @@ static void test_fprobe_data(struct kunit *test)
 	KUNIT_EXPECT_EQ(test, 0, unregister_fprobe(&fp));
 }
 
-/* Test nr_maxactive */
+ 
 static void test_fprobe_nest(struct kunit *test)
 {
 	static const char *syms[] = {"fprobe_selftest_target", "fprobe_selftest_nest_target"};

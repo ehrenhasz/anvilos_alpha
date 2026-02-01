@@ -1,24 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Power Management Quality of Service (PM QoS) support base.
- *
- * Copyright (C) 2020 Intel Corporation
- *
- * Authors:
- *	Mark Gross <mgross@linux.intel.com>
- *	Rafael J. Wysocki <rafael.j.wysocki@intel.com>
- *
- * Provided here is an interface for specifying PM QoS dependencies.  It allows
- * entities depending on QoS constraints to register their requests which are
- * aggregated as appropriate to produce effective constraints (target values)
- * that can be monitored by entities needing to respect them, either by polling
- * or through a built-in notification mechanism.
- *
- * In addition to the basic functionality, more specific interfaces for managing
- * global CPU latency QoS requests and frequency QoS requests are provided.
- */
 
-/*#define DEBUG*/
+ 
+
+ 
 
 #include <linux/pm_qos.h>
 #include <linux/sched.h>
@@ -39,17 +22,10 @@
 #include <linux/export.h>
 #include <trace/events/power.h>
 
-/*
- * locking rule: all changes to constraints or notifiers lists
- * or pm_qos_object list and pm_qos_objects need to happen with pm_qos_lock
- * held, taken with _irqsave.  One lock to rule them all
- */
+ 
 static DEFINE_SPINLOCK(pm_qos_lock);
 
-/**
- * pm_qos_read_value - Return the current effective constraint value.
- * @c: List of PM QoS constraint requests.
- */
+ 
 s32 pm_qos_read_value(struct pm_qos_constraints *c)
 {
 	return READ_ONCE(c->target_value);
@@ -78,23 +54,7 @@ static void pm_qos_set_value(struct pm_qos_constraints *c, s32 value)
 	WRITE_ONCE(c->target_value, value);
 }
 
-/**
- * pm_qos_update_target - Update a list of PM QoS constraint requests.
- * @c: List of PM QoS requests.
- * @node: Target list entry.
- * @action: Action to carry out (add, update or remove).
- * @value: New request value for the target list entry.
- *
- * Update the given list of PM QoS constraint requests, @c, by carrying an
- * @action involving the @node list entry and @value on it.
- *
- * The recognized values of @action are PM_QOS_ADD_REQ (store @value in @node
- * and add it to the list), PM_QOS_UPDATE_REQ (remove @node from the list, store
- * @value in it and add it to the list again), and PM_QOS_REMOVE_REQ (remove
- * @node from the list, ignore @value).
- *
- * Return: 1 if the aggregate constraint value has changed, 0  otherwise.
- */
+ 
 int pm_qos_update_target(struct pm_qos_constraints *c, struct plist_node *node,
 			 enum pm_qos_req_action action, int value)
 {
@@ -114,10 +74,7 @@ int pm_qos_update_target(struct pm_qos_constraints *c, struct plist_node *node,
 		plist_del(node, &c->list);
 		break;
 	case PM_QOS_UPDATE_REQ:
-		/*
-		 * To change the list, atomically remove, reinit with new value
-		 * and add, then see if the aggregate has changed.
-		 */
+		 
 		plist_del(node, &c->list);
 		fallthrough;
 	case PM_QOS_ADD_REQ:
@@ -125,7 +82,7 @@ int pm_qos_update_target(struct pm_qos_constraints *c, struct plist_node *node,
 		plist_add(node, &c->list);
 		break;
 	default:
-		/* no action */
+		 
 		;
 	}
 
@@ -145,11 +102,7 @@ int pm_qos_update_target(struct pm_qos_constraints *c, struct plist_node *node,
 	return 1;
 }
 
-/**
- * pm_qos_flags_remove_req - Remove device PM QoS flags request.
- * @pqf: Device PM QoS flags set to remove the request from.
- * @req: Request to remove from the set.
- */
+ 
 static void pm_qos_flags_remove_req(struct pm_qos_flags *pqf,
 				    struct pm_qos_flags_request *req)
 {
@@ -162,15 +115,7 @@ static void pm_qos_flags_remove_req(struct pm_qos_flags *pqf,
 	pqf->effective_flags = val;
 }
 
-/**
- * pm_qos_update_flags - Update a set of PM QoS flags.
- * @pqf: Set of PM QoS flags to update.
- * @req: Request to add to the set, to modify, or to remove from the set.
- * @action: Action to take on the set.
- * @val: Value of the request to add or modify.
- *
- * Return: 1 if the aggregate constraint value has changed, 0 otherwise.
- */
+ 
 bool pm_qos_update_flags(struct pm_qos_flags *pqf,
 			 struct pm_qos_flags_request *req,
 			 enum pm_qos_req_action action, s32 val)
@@ -196,7 +141,7 @@ bool pm_qos_update_flags(struct pm_qos_flags *pqf,
 		pqf->effective_flags |= val;
 		break;
 	default:
-		/* no action */
+		 
 		;
 	}
 
@@ -210,7 +155,7 @@ bool pm_qos_update_flags(struct pm_qos_flags *pqf,
 }
 
 #ifdef CONFIG_CPU_IDLE
-/* Definitions related to the CPU latency QoS. */
+ 
 
 static struct pm_qos_constraints cpu_latency_constraints = {
 	.list = PLIST_HEAD_INIT(cpu_latency_constraints.list),
@@ -225,21 +170,13 @@ static inline bool cpu_latency_qos_value_invalid(s32 value)
 	return value < 0 && value != PM_QOS_DEFAULT_VALUE;
 }
 
-/**
- * cpu_latency_qos_limit - Return current system-wide CPU latency QoS limit.
- */
+ 
 s32 cpu_latency_qos_limit(void)
 {
 	return pm_qos_read_value(&cpu_latency_constraints);
 }
 
-/**
- * cpu_latency_qos_request_active - Check the given PM QoS request.
- * @req: PM QoS request to check.
- *
- * Return: 'true' if @req has been added to the CPU latency QoS list, 'false'
- * otherwise.
- */
+ 
 bool cpu_latency_qos_request_active(struct pm_qos_request *req)
 {
 	return req->qos == &cpu_latency_constraints;
@@ -254,18 +191,7 @@ static void cpu_latency_qos_apply(struct pm_qos_request *req,
 		wake_up_all_idle_cpus();
 }
 
-/**
- * cpu_latency_qos_add_request - Add new CPU latency QoS request.
- * @req: Pointer to a preallocated handle.
- * @value: Requested constraint value.
- *
- * Use @value to initialize the request handle pointed to by @req, insert it as
- * a new entry to the CPU latency QoS list and recompute the effective QoS
- * constraint for that list.
- *
- * Callers need to save the handle for later use in updates and removal of the
- * QoS request represented by it.
- */
+ 
 void cpu_latency_qos_add_request(struct pm_qos_request *req, s32 value)
 {
 	if (!req || cpu_latency_qos_value_invalid(value))
@@ -283,15 +209,7 @@ void cpu_latency_qos_add_request(struct pm_qos_request *req, s32 value)
 }
 EXPORT_SYMBOL_GPL(cpu_latency_qos_add_request);
 
-/**
- * cpu_latency_qos_update_request - Modify existing CPU latency QoS request.
- * @req : QoS request to update.
- * @new_value: New requested constraint value.
- *
- * Use @new_value to update the QoS request represented by @req in the CPU
- * latency QoS list along with updating the effective constraint value for that
- * list.
- */
+ 
 void cpu_latency_qos_update_request(struct pm_qos_request *req, s32 new_value)
 {
 	if (!req || cpu_latency_qos_value_invalid(new_value))
@@ -311,13 +229,7 @@ void cpu_latency_qos_update_request(struct pm_qos_request *req, s32 new_value)
 }
 EXPORT_SYMBOL_GPL(cpu_latency_qos_update_request);
 
-/**
- * cpu_latency_qos_remove_request - Remove existing CPU latency QoS request.
- * @req: QoS request to remove.
- *
- * Remove the CPU latency QoS request represented by @req from the CPU latency
- * QoS list along with updating the effective constraint value for that list.
- */
+ 
 void cpu_latency_qos_remove_request(struct pm_qos_request *req)
 {
 	if (!req)
@@ -335,7 +247,7 @@ void cpu_latency_qos_remove_request(struct pm_qos_request *req)
 }
 EXPORT_SYMBOL_GPL(cpu_latency_qos_remove_request);
 
-/* User space interface to the CPU latency QoS via misc device. */
+ 
 
 static int cpu_latency_qos_open(struct inode *inode, struct file *filp)
 {
@@ -427,19 +339,16 @@ static int __init cpu_latency_qos_init(void)
 	return ret;
 }
 late_initcall(cpu_latency_qos_init);
-#endif /* CONFIG_CPU_IDLE */
+#endif  
 
-/* Definitions related to the frequency QoS below. */
+ 
 
 static inline bool freq_qos_value_invalid(s32 value)
 {
 	return value < 0 && value != PM_QOS_DEFAULT_VALUE;
 }
 
-/**
- * freq_constraints_init - Initialize frequency QoS constraints.
- * @qos: Frequency QoS constraints to initialize.
- */
+ 
 void freq_constraints_init(struct freq_constraints *qos)
 {
 	struct pm_qos_constraints *c;
@@ -463,11 +372,7 @@ void freq_constraints_init(struct freq_constraints *qos)
 	BLOCKING_INIT_NOTIFIER_HEAD(c->notifiers);
 }
 
-/**
- * freq_qos_read_value - Get frequency QoS constraint for a given list.
- * @qos: Constraints to evaluate.
- * @type: QoS request type.
- */
+ 
 s32 freq_qos_read_value(struct freq_constraints *qos,
 			enum freq_qos_req_type type)
 {
@@ -492,14 +397,7 @@ s32 freq_qos_read_value(struct freq_constraints *qos,
 	return ret;
 }
 
-/**
- * freq_qos_apply - Add/modify/remove frequency QoS request.
- * @req: Constraint request to apply.
- * @action: Action to perform (add/update/remove).
- * @value: Value to assign to the QoS request.
- *
- * This is only meant to be called from inside pm_qos, not drivers.
- */
+ 
 int freq_qos_apply(struct freq_qos_request *req,
 			  enum pm_qos_req_action action, s32 value)
 {
@@ -521,20 +419,7 @@ int freq_qos_apply(struct freq_qos_request *req,
 	return ret;
 }
 
-/**
- * freq_qos_add_request - Insert new frequency QoS request into a given list.
- * @qos: Constraints to update.
- * @req: Preallocated request object.
- * @type: Request type.
- * @value: Request value.
- *
- * Insert a new entry into the @qos list of requests, recompute the effective
- * QoS constraint value for that list and initialize the @req object.  The
- * caller needs to save that object for later use in updates and removal.
- *
- * Return 1 if the effective constraint value has changed, 0 if the effective
- * constraint value has not changed, or a negative error code on failures.
- */
+ 
 int freq_qos_add_request(struct freq_constraints *qos,
 			 struct freq_qos_request *req,
 			 enum freq_qos_req_type type, s32 value)
@@ -560,17 +445,7 @@ int freq_qos_add_request(struct freq_constraints *qos,
 }
 EXPORT_SYMBOL_GPL(freq_qos_add_request);
 
-/**
- * freq_qos_update_request - Modify existing frequency QoS request.
- * @req: Request to modify.
- * @new_value: New request value.
- *
- * Update an existing frequency QoS request along with the effective constraint
- * value for the list of requests it belongs to.
- *
- * Return 1 if the effective constraint value has changed, 0 if the effective
- * constraint value has not changed, or a negative error code on failures.
- */
+ 
 int freq_qos_update_request(struct freq_qos_request *req, s32 new_value)
 {
 	if (!req || freq_qos_value_invalid(new_value))
@@ -587,16 +462,7 @@ int freq_qos_update_request(struct freq_qos_request *req, s32 new_value)
 }
 EXPORT_SYMBOL_GPL(freq_qos_update_request);
 
-/**
- * freq_qos_remove_request - Remove frequency QoS request from its list.
- * @req: Request to remove.
- *
- * Remove the given frequency QoS request from the list of constraints it
- * belongs to and recompute the effective constraint value for that list.
- *
- * Return 1 if the effective constraint value has changed, 0 if the effective
- * constraint value has not changed, or a negative error code on failures.
- */
+ 
 int freq_qos_remove_request(struct freq_qos_request *req)
 {
 	int ret;
@@ -616,12 +482,7 @@ int freq_qos_remove_request(struct freq_qos_request *req)
 }
 EXPORT_SYMBOL_GPL(freq_qos_remove_request);
 
-/**
- * freq_qos_add_notifier - Add frequency QoS change notifier.
- * @qos: List of requests to add the notifier to.
- * @type: Request type.
- * @notifier: Notifier block to add.
- */
+ 
 int freq_qos_add_notifier(struct freq_constraints *qos,
 			  enum freq_qos_req_type type,
 			  struct notifier_block *notifier)
@@ -649,12 +510,7 @@ int freq_qos_add_notifier(struct freq_constraints *qos,
 }
 EXPORT_SYMBOL_GPL(freq_qos_add_notifier);
 
-/**
- * freq_qos_remove_notifier - Remove frequency QoS change notifier.
- * @qos: List of requests to remove the notifier from.
- * @type: Request type.
- * @notifier: Notifier block to remove.
- */
+ 
 int freq_qos_remove_notifier(struct freq_constraints *qos,
 			     enum freq_qos_req_type type,
 			     struct notifier_block *notifier)

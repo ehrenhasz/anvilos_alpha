@@ -1,29 +1,10 @@
-/* Invalid parameter handler for MSVC runtime libraries.
-   Copyright (C) 2011-2023 Free Software Foundation, Inc.
-
-   This file is free software: you can redistribute it and/or modify
-   it under the terms of the GNU Lesser General Public License as
-   published by the Free Software Foundation; either version 2.1 of the
-   License, or (at your option) any later version.
-
-   This file is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU Lesser General Public License for more details.
-
-   You should have received a copy of the GNU Lesser General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-#include <config.h>
-
-/* Specification.  */
+ 
 #include "msvc-inval.h"
 
 #if HAVE_MSVC_INVALID_PARAMETER_HANDLER \
     && !(MSVC_INVALID_PARAMETER_HANDLING == SANE_LIBRARY_HANDLING)
 
-/* Get _invalid_parameter_handler type and _set_invalid_parameter_handler
-   declaration.  */
+ 
 # include <stdlib.h>
 
 # if MSVC_INVALID_PARAMETER_HANDLING == DEFAULT_HANDLING
@@ -39,7 +20,7 @@ gl_msvc_invalid_parameter_handler (const wchar_t *expression,
 
 # else
 
-/* Get declarations of the native Windows API functions.  */
+ 
 #  define WIN32_LEAN_AND_MEAN
 #  include <windows.h>
 
@@ -57,11 +38,11 @@ gl_msvc_invalid_parameter_handler (const wchar_t *expression,
 
 #  else
 
-/* An index to thread-local storage.  */
+ 
 static DWORD tls_index;
-static int tls_initialized /* = 0 */;
+static int tls_initialized  ;
 
-/* Used as a fallback only.  */
+ 
 static struct gl_msvc_inval_per_thread not_per_thread;
 
 struct gl_msvc_inval_per_thread *
@@ -73,7 +54,7 @@ gl_msvc_inval_current (void)
       tls_initialized = 1;
     }
   if (tls_index == TLS_OUT_OF_INDEXES)
-    /* TlsAlloc had failed.  */
+     
     return &not_per_thread;
   else
     {
@@ -81,12 +62,12 @@ gl_msvc_inval_current (void)
         (struct gl_msvc_inval_per_thread *) TlsGetValue (tls_index);
       if (pointer == NULL)
         {
-          /* First call.  Allocate a new 'struct gl_msvc_inval_per_thread'.  */
+           
           pointer =
             (struct gl_msvc_inval_per_thread *)
             malloc (sizeof (struct gl_msvc_inval_per_thread));
           if (pointer == NULL)
-            /* Could not allocate memory.  Use the global storage.  */
+             
             pointer = &not_per_thread;
           TlsSetValue (tls_index, pointer);
         }
@@ -105,8 +86,7 @@ gl_msvc_invalid_parameter_handler (const wchar_t *expression,
   if (current->restart_valid)
     longjmp (current->restart, 1);
   else
-    /* An invalid parameter notification from outside the gnulib code.
-       Give the caller a chance to intervene.  */
+     
     RaiseException (STATUS_GNULIB_INVALID_PARAMETER, 0, 0, NULL);
 }
 
@@ -114,7 +94,7 @@ gl_msvc_invalid_parameter_handler (const wchar_t *expression,
 
 # endif
 
-static int gl_msvc_inval_initialized /* = 0 */;
+static int gl_msvc_inval_initialized  ;
 
 void
 gl_msvc_inval_ensure_handler (void)

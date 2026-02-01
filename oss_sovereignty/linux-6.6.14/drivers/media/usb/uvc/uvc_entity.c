@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *      uvc_entity.c  --  USB Video Class driver
- *
- *      Copyright (C) 2005-2011
- *          Laurent Pinchart (laurent.pinchart@ideasonboard.com)
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/list.h>
@@ -85,7 +80,7 @@ static int uvc_mc_init_entity(struct uvc_video_chain *chain,
 			break;
 		case UVC_VC_PROCESSING_UNIT:
 		case UVC_VC_EXTENSION_UNIT:
-			/* For lack of a better option. */
+			 
 			function = MEDIA_ENT_F_PROC_VIDEO_PIXEL_FORMATTER;
 			break;
 		case UVC_COMPOSITE_CONNECTOR:

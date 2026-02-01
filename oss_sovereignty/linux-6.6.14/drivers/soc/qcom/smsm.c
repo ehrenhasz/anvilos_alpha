@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2015, Sony Mobile Communications Inc.
- * Copyright (c) 2012-2013, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/interrupt.h>
 #include <linux/mfd/syscon.h>
@@ -14,64 +11,21 @@
 #include <linux/soc/qcom/smem.h>
 #include <linux/soc/qcom/smem_state.h>
 
-/*
- * This driver implements the Qualcomm Shared Memory State Machine, a mechanism
- * for communicating single bit state information to remote processors.
- *
- * The implementation is based on two sections of shared memory; the first
- * holding the state bits and the second holding a matrix of subscription bits.
- *
- * The state bits are structured in entries of 32 bits, each belonging to one
- * system in the SoC. The entry belonging to the local system is considered
- * read-write, while the rest should be considered read-only.
- *
- * The subscription matrix consists of N bitmaps per entry, denoting interest
- * in updates of the entry for each of the N hosts. Upon updating a state bit
- * each host's subscription bitmap should be queried and the remote system
- * should be interrupted if they request so.
- *
- * The subscription matrix is laid out in entry-major order:
- * entry0: [host0 ... hostN]
- *	.
- *	.
- * entryM: [host0 ... hostN]
- *
- * A third, optional, shared memory region might contain information regarding
- * the number of entries in the state bitmap as well as number of columns in
- * the subscription matrix.
- */
+ 
 
-/*
- * Shared memory identifiers, used to acquire handles to respective memory
- * region.
- */
+ 
 #define SMEM_SMSM_SHARED_STATE		85
 #define SMEM_SMSM_CPU_INTR_MASK		333
 #define SMEM_SMSM_SIZE_INFO		419
 
-/*
- * Default sizes, in case SMEM_SMSM_SIZE_INFO is not found.
- */
+ 
 #define SMSM_DEFAULT_NUM_ENTRIES	8
 #define SMSM_DEFAULT_NUM_HOSTS		3
 
 struct smsm_entry;
 struct smsm_host;
 
-/**
- * struct qcom_smsm - smsm driver context
- * @dev:	smsm device pointer
- * @local_host:	column in the subscription matrix representing this system
- * @num_hosts:	number of columns in the subscription matrix
- * @num_entries: number of entries in the state map and rows in the subscription
- *		matrix
- * @local_state: pointer to the local processor's state bits
- * @subscription: pointer to local processor's row in subscription matrix
- * @state:	smem state handle
- * @lock:	spinlock for read-modify-write of the outgoing state
- * @entries:	context for each of the entries
- * @hosts:	context for each of the hosts
- */
+ 
 struct qcom_smsm {
 	struct device *dev;
 
@@ -90,18 +44,7 @@ struct qcom_smsm {
 	struct smsm_host *hosts;
 };
 
-/**
- * struct smsm_entry - per remote processor entry context
- * @smsm:	back-reference to driver context
- * @domain:	IRQ domain for this entry, if representing a remote system
- * @irq_enabled: bitmap of which state bits IRQs are enabled
- * @irq_rising:	bitmap tracking if rising bits should be propagated
- * @irq_falling: bitmap tracking if falling bits should be propagated
- * @last_value:	snapshot of state bits last time the interrupts where propagated
- * @remote_state: pointer to this entry's state bits
- * @subscription: pointer to a row in the subscription matrix representing this
- *		entry
- */
+ 
 struct smsm_entry {
 	struct qcom_smsm *smsm;
 
@@ -115,27 +58,14 @@ struct smsm_entry {
 	u32 *subscription;
 };
 
-/**
- * struct smsm_host - representation of a remote host
- * @ipc_regmap:	regmap for outgoing interrupt
- * @ipc_offset:	offset in @ipc_regmap for outgoing interrupt
- * @ipc_bit:	bit in @ipc_regmap + @ipc_offset for outgoing interrupt
- */
+ 
 struct smsm_host {
 	struct regmap *ipc_regmap;
 	int ipc_offset;
 	int ipc_bit;
 };
 
-/**
- * smsm_update_bits() - change bit in outgoing entry and inform subscribers
- * @data:	smsm context pointer
- * @mask:	value mask
- * @value:	new value
- *
- * Used to set and clear the bits in the outgoing/local entry and inform
- * subscribers about the change.
- */
+ 
 static int smsm_update_bits(void *data, u32 mask, u32 value)
 {
 	struct qcom_smsm *smsm = data;
@@ -148,26 +78,26 @@ static int smsm_update_bits(void *data, u32 mask, u32 value)
 
 	spin_lock_irqsave(&smsm->lock, flags);
 
-	/* Update the entry */
+	 
 	val = orig = readl(smsm->local_state);
 	val &= ~mask;
 	val |= value;
 
-	/* Don't signal if we didn't change the value */
+	 
 	changes = val ^ orig;
 	if (!changes) {
 		spin_unlock_irqrestore(&smsm->lock, flags);
 		goto done;
 	}
 
-	/* Write out the new value */
+	 
 	writel(val, smsm->local_state);
 	spin_unlock_irqrestore(&smsm->lock, flags);
 
-	/* Make sure the value update is ordered before any kicks */
+	 
 	wmb();
 
-	/* Iterate over all hosts to check whom wants a kick */
+	 
 	for (host = 0; host < smsm->num_hosts; host++) {
 		hostp = &smsm->hosts[host];
 
@@ -187,14 +117,7 @@ static const struct qcom_smem_state_ops smsm_state_ops = {
 	.update_bits = smsm_update_bits,
 };
 
-/**
- * smsm_intr() - cascading IRQ handler for SMSM
- * @irq:	unused
- * @data:	entry related to this IRQ
- *
- * This function cascades an incoming interrupt from a remote system, based on
- * the state bits and configuration.
- */
+ 
 static irqreturn_t smsm_intr(int irq, void *data)
 {
 	struct smsm_entry *entry = data;
@@ -226,13 +149,7 @@ static irqreturn_t smsm_intr(int irq, void *data)
 	return IRQ_HANDLED;
 }
 
-/**
- * smsm_mask_irq() - un-subscribe from cascades of IRQs of a certain staus bit
- * @irqd:	IRQ handle to be masked
- *
- * This un-subscribes the local CPU from interrupts upon changes to the defines
- * status bit. The bit is also cleared from cascading.
- */
+ 
 static void smsm_mask_irq(struct irq_data *irqd)
 {
 	struct smsm_entry *entry = irq_data_get_irq_chip_data(irqd);
@@ -249,13 +166,7 @@ static void smsm_mask_irq(struct irq_data *irqd)
 	clear_bit(irq, entry->irq_enabled);
 }
 
-/**
- * smsm_unmask_irq() - subscribe to cascades of IRQs of a certain status bit
- * @irqd:	IRQ handle to be unmasked
- *
- * This subscribes the local CPU to interrupts upon changes to the defined
- * status bit. The bit is also marked for cascading.
- */
+ 
 static void smsm_unmask_irq(struct irq_data *irqd)
 {
 	struct smsm_entry *entry = irq_data_get_irq_chip_data(irqd);
@@ -263,7 +174,7 @@ static void smsm_unmask_irq(struct irq_data *irqd)
 	struct qcom_smsm *smsm = entry->smsm;
 	u32 val;
 
-	/* Make sure our last cached state is up-to-date */
+	 
 	if (readl(entry->remote_state) & BIT(irq))
 		set_bit(irq, &entry->last_value);
 	else
@@ -278,11 +189,7 @@ static void smsm_unmask_irq(struct irq_data *irqd)
 	}
 }
 
-/**
- * smsm_set_irq_type() - updates the requested IRQ type for the cascading
- * @irqd:	consumer interrupt handle
- * @type:	requested flags
- */
+ 
 static int smsm_set_irq_type(struct irq_data *irqd, unsigned int type)
 {
 	struct smsm_entry *entry = irq_data_get_irq_chip_data(irqd);
@@ -328,12 +235,7 @@ static struct irq_chip smsm_irq_chip = {
 	.irq_get_irqchip_state = smsm_get_irqchip_state,
 };
 
-/**
- * smsm_irq_map() - sets up a mapping for a cascaded IRQ
- * @d:		IRQ domain representing an entry
- * @irq:	IRQ to set up
- * @hw:		unused
- */
+ 
 static int smsm_irq_map(struct irq_domain *d,
 			unsigned int irq,
 			irq_hw_number_t hw)
@@ -352,14 +254,7 @@ static const struct irq_domain_ops smsm_irq_ops = {
 	.xlate = irq_domain_xlate_twocell,
 };
 
-/**
- * smsm_parse_ipc() - parses a qcom,ipc-%d device tree property
- * @smsm:	smsm driver context
- * @host_id:	index of the remote host to be resolved
- *
- * Parses device tree to acquire the information needed for sending the
- * outgoing interrupts to a remote host - identified by @host_id.
- */
+ 
 static int smsm_parse_ipc(struct qcom_smsm *smsm, unsigned host_id)
 {
 	struct device_node *syscon;
@@ -393,12 +288,7 @@ static int smsm_parse_ipc(struct qcom_smsm *smsm, unsigned host_id)
 	return 0;
 }
 
-/**
- * smsm_inbound_entry() - parse DT and set up an entry representing a remote system
- * @smsm:	smsm driver context
- * @entry:	entry context to be set up
- * @node:	dt node containing the entry's properties
- */
+ 
 static int smsm_inbound_entry(struct qcom_smsm *smsm,
 			      struct smsm_entry *entry,
 			      struct device_node *node)
@@ -430,17 +320,7 @@ static int smsm_inbound_entry(struct qcom_smsm *smsm,
 	return 0;
 }
 
-/**
- * smsm_get_size_info() - parse the optional memory segment for sizes
- * @smsm:	smsm driver context
- *
- * Attempt to acquire the number of hosts and entries from the optional shared
- * memory location. Not being able to find this segment should indicate that
- * we're on a older system where these values was hard coded to
- * SMSM_DEFAULT_NUM_ENTRIES and SMSM_DEFAULT_NUM_HOSTS.
- *
- * Returns 0 on success, negative errno on failure.
- */
+ 
 static int smsm_get_size_info(struct qcom_smsm *smsm)
 {
 	size_t size;
@@ -521,14 +401,14 @@ static int qcom_smsm_probe(struct platform_device *pdev)
 			     "qcom,local-host",
 			     &smsm->local_host);
 
-	/* Parse the host properties */
+	 
 	for (id = 0; id < smsm->num_hosts; id++) {
 		ret = smsm_parse_ipc(smsm, id);
 		if (ret < 0)
 			goto out_put;
 	}
 
-	/* Acquire the main SMSM state vector */
+	 
 	ret = qcom_smem_alloc(QCOM_SMEM_HOST_ANY, SMEM_SMSM_SHARED_STATE,
 			      smsm->num_entries * sizeof(u32));
 	if (ret < 0 && ret != -EEXIST) {
@@ -543,7 +423,7 @@ static int qcom_smsm_probe(struct platform_device *pdev)
 		goto out_put;
 	}
 
-	/* Acquire the list of interrupt mask vectors */
+	 
 	size = smsm->num_entries * smsm->num_hosts * sizeof(u32);
 	ret = qcom_smem_alloc(QCOM_SMEM_HOST_ANY, SMEM_SMSM_CPU_INTR_MASK, size);
 	if (ret < 0 && ret != -EEXIST) {
@@ -558,11 +438,11 @@ static int qcom_smsm_probe(struct platform_device *pdev)
 		goto out_put;
 	}
 
-	/* Setup the reference to the local state bits */
+	 
 	smsm->local_state = states + smsm->local_host;
 	smsm->subscription = intr_mask + smsm->local_host * smsm->num_hosts;
 
-	/* Register the outgoing state */
+	 
 	smsm->state = qcom_smem_state_register(local_node, &smsm_state_ops, smsm);
 	if (IS_ERR(smsm->state)) {
 		dev_err(smsm->dev, "failed to register qcom_smem_state\n");
@@ -570,7 +450,7 @@ static int qcom_smsm_probe(struct platform_device *pdev)
 		goto out_put;
 	}
 
-	/* Register handlers for remote processor entries of interest. */
+	 
 	for_each_available_child_of_node(pdev->dev.of_node, node) {
 		if (!of_property_read_bool(node, "interrupt-controller"))
 			continue;
@@ -587,7 +467,7 @@ static int qcom_smsm_probe(struct platform_device *pdev)
 		entry->smsm = smsm;
 		entry->remote_state = states + id;
 
-		/* Setup subscription pointers and unsubscribe to any kicks */
+		 
 		entry->subscription = intr_mask + id * smsm->num_hosts;
 		writel(0, entry->subscription + smsm->local_host);
 

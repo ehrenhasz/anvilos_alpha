@@ -1,18 +1,4 @@
-/*
- * Copyright (c) 2008-2011 Atheros Communications Inc.
- *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
+ 
 
 #include <asm/unaligned.h>
 #include "hw.h"
@@ -616,7 +602,7 @@ static void ath9k_hw_4k_set_txpower(struct ath_hw *ah,
 
 	ENABLE_REGWRITE_BUFFER(ah);
 
-	/* OFDM power per rate */
+	 
 	REG_WRITE(ah, AR_PHY_POWER_TX_RATE1,
 		  ATH9K_POW_SM(ratesArray[rate18mb], 24)
 		  | ATH9K_POW_SM(ratesArray[rate12mb], 16)
@@ -628,7 +614,7 @@ static void ath9k_hw_4k_set_txpower(struct ath_hw *ah,
 		  | ATH9K_POW_SM(ratesArray[rate36mb], 8)
 		  | ATH9K_POW_SM(ratesArray[rate24mb], 0));
 
-	/* CCK power per rate */
+	 
 	REG_WRITE(ah, AR_PHY_POWER_TX_RATE3,
 		  ATH9K_POW_SM(ratesArray[rate2s], 24)
 		  | ATH9K_POW_SM(ratesArray[rate2l], 16)
@@ -640,7 +626,7 @@ static void ath9k_hw_4k_set_txpower(struct ath_hw *ah,
 		  | ATH9K_POW_SM(ratesArray[rate5_5s], 8)
 		  | ATH9K_POW_SM(ratesArray[rate5_5l], 0));
 
-	/* HT20 power per rate */
+	 
 	REG_WRITE(ah, AR_PHY_POWER_TX_RATE5,
 		  ATH9K_POW_SM(ratesArray[rateHt20_3], 24)
 		  | ATH9K_POW_SM(ratesArray[rateHt20_2], 16)
@@ -652,7 +638,7 @@ static void ath9k_hw_4k_set_txpower(struct ath_hw *ah,
 		  | ATH9K_POW_SM(ratesArray[rateHt20_5], 8)
 		  | ATH9K_POW_SM(ratesArray[rateHt20_4], 0));
 
-	/* HT40 power per rate */
+	 
 	if (IS_CHAN_HT40(chan)) {
 		REG_WRITE(ah, AR_PHY_POWER_TX_RATE7,
 			  ATH9K_POW_SM(ratesArray[rateHt40_3] +
@@ -679,17 +665,17 @@ static void ath9k_hw_4k_set_txpower(struct ath_hw *ah,
 			  | ATH9K_POW_SM(ratesArray[rateDupCck], 0));
 	}
 
-	/* TPC initializations */
+	 
 	if (ah->tpc_enabled) {
 		int ht40_delta;
 
 		ht40_delta = (IS_CHAN_HT40(chan)) ? ht40PowerIncForPdadc : 0;
 		ar5008_hw_init_rate_txpower(ah, ratesArray, chan, ht40_delta);
-		/* Enable TPC */
+		 
 		REG_WRITE(ah, AR_PHY_POWER_TX_RATE_MAX,
 			MAX_RATE_POWER | AR_PHY_POWER_TX_RATE_MAX_TPC_ENABLE);
 	} else {
-		/* Disable TPC */
+		 
 		REG_WRITE(ah, AR_PHY_POWER_TX_RATE_MAX, MAX_RATE_POWER);
 	}
 
@@ -723,7 +709,7 @@ static void ath9k_hw_4k_set_gain(struct ath_hw *ah,
 		REG_RMW_FIELD(ah, AR_PHY_GAIN_2GHZ,
 			      AR_PHY_GAIN_2GHZ_XATTEN2_DB, pModal->xatten2Db[0]);
 
-		/* Set the block 1 value to block 0 value */
+		 
 		REG_RMW_FIELD(ah, AR_PHY_GAIN_2GHZ + 0x1000,
 			      AR_PHY_GAIN_2GHZ_XATTEN1_MARGIN,
 			      pModal->bswMargin[0]);
@@ -749,10 +735,7 @@ static void ath9k_hw_4k_set_gain(struct ath_hw *ah,
 	REG_RMW_BUFFER_FLUSH(ah);
 }
 
-/*
- * Read EEPROM header info and program the device for correct operation
- * given the channel value.
- */
+ 
 static void ath9k_hw_4k_set_board_values(struct ath_hw *ah,
 					 struct ath9k_channel *chan)
 {
@@ -771,10 +754,10 @@ static void ath9k_hw_4k_set_board_values(struct ath_hw *ah,
 
 	REG_WRITE(ah, AR_PHY_SWITCH_COM, le32_to_cpu(pModal->antCtrlCommon));
 
-	/* Single chain for 4K EEPROM*/
+	 
 	ath9k_hw_4k_set_gain(ah, pModal, eep, txRxAttenLocal);
 
-	/* Initialize Ant Diversity settings from EEPROM */
+	 
 	if (pModal->version >= 3) {
 		ant_div_control1 = pModal->antdiv_ctl1;
 		ant_div_control2 = pModal->antdiv_ctl2;
@@ -805,10 +788,7 @@ static void ath9k_hw_4k_set_board_values(struct ath_hw *ah,
 		regVal = REG_READ(ah, AR_PHY_CCK_DETECT);
 
 		if (pCap->hw_caps & ATH9K_HW_CAP_ANT_DIV_COMB) {
-			/*
-			 * If diversity combining is enabled,
-			 * set MAIN to LNA1 and ALT to LNA2 initially.
-			 */
+			 
 			regVal = REG_READ(ah, AR_PHY_MULTICHAIN_GAIN_CTL);
 			regVal &= (~(AR_PHY_9285_ANT_DIV_MAIN_LNACONF |
 				     AR_PHY_9285_ANT_DIV_ALT_LNACONF));

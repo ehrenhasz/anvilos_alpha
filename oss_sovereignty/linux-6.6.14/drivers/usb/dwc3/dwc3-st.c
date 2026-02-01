@@ -1,18 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * dwc3-st.c Support for dwc3 platform devices on ST Microelectronics platforms
- *
- * This is a small driver for the dwc3 to provide the glue logic
- * to configure the controller. Tested on STi platforms.
- *
- * Copyright (C) 2014 Stmicroelectronics
- *
- * Author: Giuseppe Cavallaro <peppe.cavallaro@st.com>
- * Contributors: Aymen Bouattay <aymen.bouattay@st.com>
- *               Peter Griffin <peter.griffin@linaro.org>
- *
- * Inspired by dwc3-omap.c and dwc3-exynos.c.
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/interrupt.h>
@@ -33,25 +20,16 @@
 #include "core.h"
 #include "io.h"
 
-/* glue registers */
+ 
 #define CLKRST_CTRL		0x00
 #define AUX_CLK_EN		BIT(0)
 #define SW_PIPEW_RESET_N	BIT(4)
 #define EXT_CFG_RESET_N		BIT(8)
-/*
- * 1'b0 : The host controller complies with the xHCI revision 0.96
- * 1'b1 : The host controller complies with the xHCI revision 1.0
- */
+ 
 #define XHCI_REVISION		BIT(12)
 
 #define USB2_VBUS_MNGMNT_SEL1	0x2C
-/*
- * For all fields in USB2_VBUS_MNGMNT_SEL1
- * 2’b00 : Override value from Reg 0x30 is selected
- * 2’b01 : utmiotg_<signal_name> from usb3_top is selected
- * 2’b10 : pipew_<signal_name> from PIPEW instance is selected
- * 2’b11 : value is 1'b0
- */
+ 
 #define USB2_VBUS_REG30		0x0
 #define USB2_VBUS_UTMIOTG	0x1
 #define USB2_VBUS_PIPEW		0x2
@@ -61,7 +39,7 @@
 #define SEL_OVERRIDE_POWERPRESENT(n)	(n << 4)
 #define SEL_OVERRIDE_BVALID(n)		(n << 8)
 
-/* Static DRD configuration */
+ 
 #define USB3_CONTROL_MASK		0xf77
 
 #define USB3_DEVICE_NOT_HOST		BIT(0)
@@ -74,16 +52,7 @@
 #define USB3_SEL_FORCE_DMPULLDOWN2	BIT(10)
 #define USB3_FORCE_DMPULLDOWN2		BIT(11)
 
-/**
- * struct st_dwc3 - dwc3-st driver private structure
- * @dev:		device pointer
- * @glue_base:		ioaddr for the glue registers
- * @regmap:		regmap pointer for getting syscfg
- * @syscfg_reg_off:	usb syscfg control offset
- * @dr_mode:		drd static host/device config
- * @rstc_pwrdn:		rest controller for powerdown signal
- * @rstc_rst:		reset controller for softreset signal
- */
+ 
 
 struct st_dwc3 {
 	struct device *dev;
@@ -105,13 +74,7 @@ static inline void st_dwc3_writel(void __iomem *base, u32 offset, u32 value)
 	writel_relaxed(value, base + offset);
 }
 
-/**
- * st_dwc3_drd_init: program the port
- * @dwc3_data: driver private structure
- * Description: this function is to program the port as either host or device
- * according to the static configuration passed from devicetree.
- * OTG and dual role are not yet supported!
- */
+ 
 static int st_dwc3_drd_init(struct st_dwc3 *dwc3_data)
 {
 	u32 val;
@@ -131,11 +94,7 @@ static int st_dwc3_drd_init(struct st_dwc3 *dwc3_data)
 			| USB3_SEL_FORCE_DPPULLDOWN2 | USB3_FORCE_DPPULLDOWN2
 			| USB3_SEL_FORCE_DMPULLDOWN2 | USB3_FORCE_DMPULLDOWN2);
 
-		/*
-		 * USB3_PORT2_FORCE_VBUSVALID When '1' and when
-		 * USB3_PORT2_DEVICE_NOT_HOST = 1, forces VBUSVLDEXT2 input
-		 * of the pico PHY to 1.
-		 */
+		 
 
 		val |= USB3_DEVICE_NOT_HOST | USB3_FORCE_VBUSVALID;
 		break;
@@ -147,12 +106,7 @@ static int st_dwc3_drd_init(struct st_dwc3 *dwc3_data)
 			| USB3_SEL_FORCE_DPPULLDOWN2 | USB3_FORCE_DPPULLDOWN2
 			| USB3_SEL_FORCE_DMPULLDOWN2 | USB3_FORCE_DMPULLDOWN2);
 
-		/*
-		 * USB3_DELAY_VBUSVALID is ANDed with USB_C_VBUSVALID. Thus,
-		 * when set to ‘0‘, it can delay the arrival of VBUSVALID
-		 * information to VBUSVLDEXT2 input of the pico PHY.
-		 * We don't want to do that so we set the bit to '1'.
-		 */
+		 
 
 		val |= USB3_DELAY_VBUSVALID;
 		break;
@@ -166,10 +120,7 @@ static int st_dwc3_drd_init(struct st_dwc3 *dwc3_data)
 	return regmap_write(dwc3_data->regmap, dwc3_data->syscfg_reg_off, val);
 }
 
-/**
- * st_dwc3_init: init the controller via glue logic
- * @dwc3_data: driver private structure
- */
+ 
 static void st_dwc3_init(struct st_dwc3 *dwc3_data)
 {
 	u32 reg = st_dwc3_readl(dwc3_data->glue_base, CLKRST_CTRL);
@@ -178,7 +129,7 @@ static void st_dwc3_init(struct st_dwc3 *dwc3_data)
 	reg &= ~SW_PIPEW_RESET_N;
 	st_dwc3_writel(dwc3_data->glue_base, CLKRST_CTRL, reg);
 
-	/* configure mux for vbus, powerpresent and bvalid signals */
+	 
 	reg = st_dwc3_readl(dwc3_data->glue_base, USB2_VBUS_MNGMNT_SEL1);
 
 	reg |= SEL_OVERRIDE_VBUSVALID(USB2_VBUS_UTMIOTG) |
@@ -237,7 +188,7 @@ static int st_dwc3_probe(struct platform_device *pdev)
 		goto undo_platform_dev_alloc;
 	}
 
-	/* Manage PowerDown */
+	 
 	reset_control_deassert(dwc3_data->rstc_pwrdn);
 
 	dwc3_data->rstc_rst =
@@ -248,7 +199,7 @@ static int st_dwc3_probe(struct platform_device *pdev)
 		goto undo_powerdown;
 	}
 
-	/* Manage SoftReset */
+	 
 	reset_control_deassert(dwc3_data->rstc_rst);
 
 	child = of_get_compatible_child(node, "snps,dwc3");
@@ -258,7 +209,7 @@ static int st_dwc3_probe(struct platform_device *pdev)
 		goto err_node_put;
 	}
 
-	/* Allocate and initialize the core */
+	 
 	ret = of_platform_populate(node, NULL, NULL, dev);
 	if (ret) {
 		dev_err(dev, "failed to add dwc3 core\n");
@@ -276,19 +227,14 @@ static int st_dwc3_probe(struct platform_device *pdev)
 	of_node_put(child);
 	platform_device_put(child_pdev);
 
-	/*
-	 * Configure the USB port as device or host according to the static
-	 * configuration passed from DT.
-	 * DRD is the only mode currently supported so this will be enhanced
-	 * as soon as OTG is available.
-	 */
+	 
 	ret = st_dwc3_drd_init(dwc3_data);
 	if (ret) {
 		dev_err(dev, "drd initialisation failed\n");
 		goto undo_softreset;
 	}
 
-	/* ST glue logic init */
+	 
 	st_dwc3_init(dwc3_data);
 
 	platform_set_drvdata(pdev, dwc3_data);
@@ -344,18 +290,18 @@ static int st_dwc3_resume(struct device *dev)
 		return ret;
 	}
 
-	/* ST glue logic init */
+	 
 	st_dwc3_init(dwc3_data);
 
 	return 0;
 }
-#endif /* CONFIG_PM_SLEEP */
+#endif  
 
 static SIMPLE_DEV_PM_OPS(st_dwc3_dev_pm_ops, st_dwc3_suspend, st_dwc3_resume);
 
 static const struct of_device_id st_dwc3_match[] = {
 	{ .compatible = "st,stih407-dwc3" },
-	{ /* sentinel */ },
+	{   },
 };
 
 MODULE_DEVICE_TABLE(of, st_dwc3_match);

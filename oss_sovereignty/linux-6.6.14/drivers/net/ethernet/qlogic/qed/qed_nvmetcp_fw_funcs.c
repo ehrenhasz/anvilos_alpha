@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
-/* Copyright 2021 Marvell. All rights reserved. */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -29,7 +29,7 @@ void init_scsi_sgl_context(struct scsi_sgl_params *ctx_sgl_params,
 				   NVMETCP_NUM_SGES_IN_CACHE : sgl_params->num_sges);
 	u8 sge_index;
 
-	/* sgl params */
+	 
 	ctx_sgl_params->sgl_addr.lo = cpu_to_le32(sgl_params->sgl_phys_addr.lo);
 	ctx_sgl_params->sgl_addr.hi = cpu_to_le32(sgl_params->sgl_phys_addr.hi);
 	ctx_sgl_params->sgl_total_length = cpu_to_le32(sgl_params->total_buffer_size);
@@ -124,7 +124,7 @@ static inline void init_sqe(struct nvmetcp_task_params *task_params,
 	}
 }
 
-/* The following function initializes of NVMeTCP task params */
+ 
 static inline void
 init_nvmetcp_task_params(struct e5_nvmetcp_task_context *context,
 			 struct nvmetcp_task_params *task_params,
@@ -136,7 +136,7 @@ init_nvmetcp_task_params(struct e5_nvmetcp_task_context *context,
 	context->ustorm_st_context.nvme_tcp_opaque_hi = cpu_to_le32(task_params->opq.hi);
 }
 
-/* The following function initializes default values to all tasks */
+ 
 static inline void
 init_default_nvmetcp_task(struct nvmetcp_task_params *task_params,
 			  void *pdu_header, void *nvme_cmd,
@@ -150,7 +150,7 @@ init_default_nvmetcp_task(struct nvmetcp_task_params *task_params,
 	init_nvmetcp_task_params(context, task_params,
 				 (enum nvmetcp_task_type)task_type);
 
-	/* Swapping requirements used below, will be removed in future FW versions */
+	 
 	if (task_type == NVMETCP_TASK_TYPE_HOST_WRITE ||
 	    task_type == NVMETCP_TASK_TYPE_HOST_READ) {
 		for (dw_index = 0;
@@ -172,19 +172,19 @@ init_default_nvmetcp_task(struct nvmetcp_task_params *task_params,
 				cpu_to_le32(__swab32(((u32 *)pdu_header)[dw_index]));
 	}
 
-	/* M-Storm Context: */
+	 
 	context->mstorm_ag_context.cdu_validation = val_byte;
 	context->mstorm_st_context.task_type = (u8)(task_type);
 	context->mstorm_ag_context.task_cid = cpu_to_le16(task_params->conn_icid);
 
-	/* Ustorm Context: */
+	 
 	SET_FIELD(context->ustorm_ag_context.flags1, E5_USTORM_NVMETCP_TASK_AG_CTX_R2T2RECV, 1);
 	context->ustorm_st_context.task_type = (u8)(task_type);
 	context->ustorm_st_context.cq_rss_number = task_params->cq_rss_number;
 	context->ustorm_ag_context.icid = cpu_to_le16(task_params->conn_icid);
 }
 
-/* The following function initializes the U-Storm Task Contexts */
+ 
 static inline void
 init_ustorm_task_contexts(struct ustorm_nvmetcp_task_st_ctx *ustorm_st_context,
 			  struct e5_ustorm_nvmetcp_task_ag_ctx *ustorm_ag_context,
@@ -192,7 +192,7 @@ init_ustorm_task_contexts(struct ustorm_nvmetcp_task_st_ctx *ustorm_st_context,
 			  u32 expected_data_transfer_len, u8 num_sges,
 			  bool tx_dif_conn_err_en)
 {
-	/* Remaining data to be received in bytes. Used in validations*/
+	 
 	ustorm_st_context->rem_rcv_len = cpu_to_le32(remaining_recv_len);
 	ustorm_ag_context->exp_data_acked = cpu_to_le32(expected_data_transfer_len);
 	ustorm_st_context->exp_data_transfer_len = cpu_to_le32(expected_data_transfer_len);
@@ -201,7 +201,7 @@ init_ustorm_task_contexts(struct ustorm_nvmetcp_task_st_ctx *ustorm_st_context,
 		  tx_dif_conn_err_en ? 1 : 0);
 }
 
-/* The following function initializes Local Completion Contexts: */
+ 
 static inline void
 set_local_completion_context(struct e5_nvmetcp_task_context *context)
 {
@@ -211,7 +211,7 @@ set_local_completion_context(struct e5_nvmetcp_task_context *context)
 		  USTORM_NVMETCP_TASK_ST_CTX_LOCAL_COMP, 1);
 }
 
-/* Common Fastpath task init function: */
+ 
 static inline void
 init_rw_nvmetcp_task(struct nvmetcp_task_params *task_params,
 		     enum nvmetcp_task_type task_type,
@@ -225,9 +225,9 @@ init_rw_nvmetcp_task(struct nvmetcp_task_params *task_params,
 
 	init_default_nvmetcp_task(task_params, pdu_header, nvme_cmd, task_type);
 
-	/* Tx/Rx: */
+	 
 	if (task_params->tx_io_size) {
-		/* if data to transmit: */
+		 
 		init_scsi_sgl_context(&context->ystorm_st_context.state.sgl_params,
 				      &context->ystorm_st_context.state.data_desc,
 				      sgl_task_params);
@@ -242,7 +242,7 @@ init_rw_nvmetcp_task(struct nvmetcp_task_params *task_params,
 				  YSTORM_NVMETCP_TASK_STATE_SLOW_IO, 1);
 		}
 	} else if (task_params->rx_io_size) {
-		/* if data to receive: */
+		 
 		init_scsi_sgl_context(&context->mstorm_st_context.sgl_params,
 				      &context->mstorm_st_context.data_desc,
 				      sgl_task_params);
@@ -255,18 +255,18 @@ init_rw_nvmetcp_task(struct nvmetcp_task_params *task_params,
 		context->mstorm_st_context.rem_task_size = cpu_to_le32(task_size);
 	}
 
-	/* Ustorm context: */
+	 
 	init_ustorm_task_contexts(&context->ustorm_st_context,
 				  &context->ustorm_ag_context,
-				  /* Remaining Receive length is the Task Size */
+				   
 				  task_size,
-				  /* The size of the transmitted task */
+				   
 				  task_size,
-				  /* num_sges */
+				   
 				  num_sges,
 				  false);
 
-	/* Set exp_data_acked */
+	 
 	if (task_type == NVMETCP_TASK_TYPE_HOST_WRITE) {
 		if (task_params->send_write_incapsule)
 			context->ustorm_ag_context.exp_data_acked = task_size;
@@ -329,21 +329,21 @@ init_common_login_request_task(struct nvmetcp_task_params *task_params,
 	init_default_nvmetcp_task(task_params, (void *)login_req_pdu_header, NULL,
 				  NVMETCP_TASK_TYPE_INIT_CONN_REQUEST);
 
-	/* Ustorm Context: */
+	 
 	init_ustorm_task_contexts(&context->ustorm_st_context,
 				  &context->ustorm_ag_context,
 
-				  /* Remaining Receive length is the Task Size */
+				   
 				  task_params->rx_io_size ?
 				  rx_sgl_task_params->total_buffer_size : 0,
 
-				  /* The size of the transmitted task */
+				   
 				  task_params->tx_io_size ?
 				  tx_sgl_task_params->total_buffer_size : 0,
-				  0, /* num_sges */
-				  0); /* tx_dif_conn_err_en */
+				  0,  
+				  0);  
 
-	/* SGL context: */
+	 
 	if (task_params->tx_io_size)
 		init_scsi_sgl_context(&context->ystorm_st_context.state.sgl_params,
 				      &context->ystorm_st_context.state.data_desc,
@@ -359,7 +359,7 @@ init_common_login_request_task(struct nvmetcp_task_params *task_params,
 	init_sqe(task_params, tx_sgl_task_params, NVMETCP_TASK_TYPE_INIT_CONN_REQUEST);
 }
 
-/* The following function initializes Login task in Host mode: */
+ 
 void init_nvmetcp_init_conn_req_task(struct nvmetcp_task_params *task_params,
 				     struct nvme_tcp_icreq_pdu *init_conn_req_pdu_hdr,
 				     struct storage_sgl_task_params *tx_sgl_task_params,

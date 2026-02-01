@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Actions Semi Owl SoCs Ethernet MAC driver
- *
- * Copyright (c) 2012 Actions Semi Inc.
- * Copyright (c) 2021 Cristian Ciocaltea <cristian.ciocaltea@gmail.com>
- */
+
+ 
 
 #include <linux/circ_buf.h>
 #include <linux/clk.h>
@@ -65,11 +60,7 @@ static struct device *owl_emac_get_dev(struct owl_emac_priv *priv)
 
 static void owl_emac_irq_enable(struct owl_emac_priv *priv)
 {
-	/* Enable all interrupts except TU.
-	 *
-	 * Note the NIE and AIE bits shall also be set in order to actually
-	 * enable the selected interrupts.
-	 */
+	 
 	owl_emac_reg_write(priv, OWL_EMAC_REG_MAC_CSR7,
 			   OWL_EMAC_BIT_MAC_CSR7_NIE |
 			   OWL_EMAC_BIT_MAC_CSR7_AIE |
@@ -78,13 +69,7 @@ static void owl_emac_irq_enable(struct owl_emac_priv *priv)
 
 static void owl_emac_irq_disable(struct owl_emac_priv *priv)
 {
-	/* Disable all interrupts.
-	 *
-	 * WARNING: Unset only the NIE and AIE bits in CSR7 to workaround an
-	 * unexpected side effect (MAC hardware bug?!) where some bits in the
-	 * status register (CSR5) are cleared automatically before being able
-	 * to read them via owl_emac_irq_clear().
-	 */
+	 
 	owl_emac_reg_write(priv, OWL_EMAC_REG_MAC_CSR7,
 			   OWL_EMAC_BIT_MAC_CSR7_ALL_NOT_TUE);
 }
@@ -108,7 +93,7 @@ static dma_addr_t owl_emac_dma_map_rx(struct owl_emac_priv *priv,
 {
 	struct device *dev = owl_emac_get_dev(priv);
 
-	/* Buffer pointer for the RX DMA descriptor must be word aligned. */
+	 
 	return dma_map_single(dev, skb_tail_pointer(skb),
 			      skb_tailroom(skb), DMA_FROM_DEVICE);
 }
@@ -168,7 +153,7 @@ static struct sk_buff *owl_emac_alloc_skb(struct net_device *netdev)
 	if (unlikely(!skb))
 		return NULL;
 
-	/* Ensure 4 bytes DMA alignment. */
+	 
 	offset = ((uintptr_t)skb->data) & (OWL_EMAC_SKB_ALIGN - 1);
 	if (unlikely(offset))
 		skb_reserve(skb, OWL_EMAC_SKB_ALIGN - offset);
@@ -365,7 +350,7 @@ static void owl_emac_update_link_state(struct owl_emac_priv *priv)
 		val = 0;
 	}
 
-	/* Update flow control. */
+	 
 	owl_emac_reg_write(priv, OWL_EMAC_REG_MAC_CSR20, val);
 
 	val = (priv->speed == SPEED_100) ? OWL_EMAC_VAL_MAC_CSR6_SPEED_100M :
@@ -377,15 +362,15 @@ static void owl_emac_update_link_state(struct owl_emac_priv *priv)
 
 	spin_lock_bh(&priv->lock);
 
-	/* Temporarily stop DMA TX & RX. */
+	 
 	status = owl_emac_dma_cmd_stop(priv);
 
-	/* Update operation modes. */
+	 
 	owl_emac_reg_update(priv, OWL_EMAC_REG_MAC_CSR6,
 			    OWL_EMAC_MSK_MAC_CSR6_SPEED |
 			    OWL_EMAC_BIT_MAC_CSR6_FD, val);
 
-	/* Restore DMA TX & RX status. */
+	 
 	owl_emac_dma_cmd_set(priv, status);
 
 	spin_unlock_bh(&priv->lock);
@@ -474,7 +459,7 @@ owl_emac_setup_frame_prepare(struct owl_emac_priv *priv, struct sk_buff *skb)
 	owl_emac_ether_addr_push(&frame, mac_addr);
 	owl_emac_ether_addr_push(&frame, bcast_addr);
 
-	/* Fill multicast addresses. */
+	 
 	WARN_ON(priv->mcaddr_list.count >= OWL_EMAC_MAX_MULTICAST_ADDRS);
 	for (i = 0; i < priv->mcaddr_list.count; i++) {
 		mac_addr = priv->mcaddr_list.addrs[i];
@@ -482,11 +467,7 @@ owl_emac_setup_frame_prepare(struct owl_emac_priv *priv, struct sk_buff *skb)
 	}
 }
 
-/* The setup frame is a special descriptor which is used to provide physical
- * addresses (i.e. mac, broadcast and multicast) to the MAC hardware for
- * filtering purposes. To be recognized as a setup frame, the TDES1_SET bit
- * must be set in the TX descriptor control field.
- */
+ 
 static int owl_emac_setup_frame_xmit(struct owl_emac_priv *priv)
 {
 	struct owl_emac_ring *ring = &priv->tx_ring;
@@ -517,7 +498,7 @@ static int owl_emac_setup_frame_xmit(struct owl_emac_priv *priv)
 
 	status = READ_ONCE(desc->status);
 	control = READ_ONCE(desc->control);
-	dma_rmb(); /* Ensure data has been read before used. */
+	dma_rmb();  
 
 	if (unlikely(status & OWL_EMAC_BIT_TDES0_OWN) ||
 	    !owl_emac_ring_num_unused(ring)) {
@@ -530,27 +511,27 @@ static int owl_emac_setup_frame_xmit(struct owl_emac_priv *priv)
 	ring->skbs[tx_head] = skb;
 	ring->skbs_dma[tx_head] = dma_addr;
 
-	control &= OWL_EMAC_BIT_TDES1_IC | OWL_EMAC_BIT_TDES1_TER; /* Maintain bits */
+	control &= OWL_EMAC_BIT_TDES1_IC | OWL_EMAC_BIT_TDES1_TER;  
 	control |= OWL_EMAC_BIT_TDES1_SET;
 	control |= OWL_EMAC_MSK_TDES1_TBS1 & skb->len;
 
 	WRITE_ONCE(desc->control, control);
 	WRITE_ONCE(desc->buf_addr, dma_addr);
-	dma_wmb(); /* Flush descriptor before changing ownership. */
+	dma_wmb();  
 	WRITE_ONCE(desc->status, OWL_EMAC_BIT_TDES0_OWN);
 
 	owl_emac_ring_push_head(ring);
 
-	/* Temporarily enable DMA TX. */
+	 
 	status = owl_emac_dma_cmd_start_tx(priv);
 
-	/* Trigger setup frame processing. */
+	 
 	owl_emac_dma_cmd_resume_tx(priv);
 
-	/* Restore DMA TX status. */
+	 
 	owl_emac_dma_cmd_set_tx(priv, status);
 
-	/* Stop regular TX until setup frame is processed. */
+	 
 	netif_stop_queue(netdev);
 
 	spin_unlock_bh(&priv->lock);
@@ -588,7 +569,7 @@ static netdev_tx_t owl_emac_ndo_start_xmit(struct sk_buff *skb,
 
 	status = READ_ONCE(desc->status);
 	control = READ_ONCE(desc->control);
-	dma_rmb(); /* Ensure data has been read before used. */
+	dma_rmb();  
 
 	if (!owl_emac_ring_num_unused(ring) ||
 	    unlikely(status & OWL_EMAC_BIT_TDES0_OWN)) {
@@ -605,22 +586,19 @@ static netdev_tx_t owl_emac_ndo_start_xmit(struct sk_buff *skb,
 	ring->skbs[tx_head] = skb;
 	ring->skbs_dma[tx_head] = dma_addr;
 
-	control &= OWL_EMAC_BIT_TDES1_IC | OWL_EMAC_BIT_TDES1_TER; /* Maintain bits */
+	control &= OWL_EMAC_BIT_TDES1_IC | OWL_EMAC_BIT_TDES1_TER;  
 	control |= OWL_EMAC_BIT_TDES1_FS | OWL_EMAC_BIT_TDES1_LS;
 	control |= OWL_EMAC_MSK_TDES1_TBS1 & skb->len;
 
 	WRITE_ONCE(desc->control, control);
 	WRITE_ONCE(desc->buf_addr, dma_addr);
-	dma_wmb(); /* Flush descriptor before changing ownership. */
+	dma_wmb();  
 	WRITE_ONCE(desc->status, OWL_EMAC_BIT_TDES0_OWN);
 
 	owl_emac_dma_cmd_resume_tx(priv);
 	owl_emac_ring_push_head(ring);
 
-	/* FIXME: The transmission is currently restricted to a single frame
-	 * at a time as a workaround for a MAC hardware bug that causes random
-	 * freeze of the TX queue processor.
-	 */
+	 
 	netif_stop_queue(netdev);
 
 	spin_unlock_bh(&priv->lock);
@@ -641,12 +619,12 @@ static bool owl_emac_tx_complete_tail(struct owl_emac_priv *priv)
 	desc = &ring->descs[tx_tail];
 
 	status = READ_ONCE(desc->status);
-	dma_rmb(); /* Ensure data has been read before used. */
+	dma_rmb();  
 
 	if (status & OWL_EMAC_BIT_TDES0_OWN)
 		return false;
 
-	/* Check for errors. */
+	 
 	if (status & OWL_EMAC_BIT_TDES0_ES) {
 		dev_dbg_ratelimited(&netdev->dev,
 				    "TX complete error status: 0x%08x\n",
@@ -673,7 +651,7 @@ static bool owl_emac_tx_complete_tail(struct owl_emac_priv *priv)
 		netdev->stats.tx_bytes += ring->skbs[tx_tail]->len;
 	}
 
-	/* Some collisions occurred, but pkt has been transmitted. */
+	 
 	if (status & OWL_EMAC_BIT_TDES0_DE)
 		netdev->stats.collisions++;
 
@@ -706,24 +684,13 @@ static void owl_emac_tx_complete(struct owl_emac_priv *priv)
 			break;
 	}
 
-	/* FIXME: This is a workaround for a MAC hardware bug not clearing
-	 * (sometimes) the OWN bit for a transmitted frame descriptor.
-	 *
-	 * At this point, when TX queue is full, the tail descriptor has the
-	 * OWN bit set, which normally means the frame has not been processed
-	 * or transmitted yet. But if there is at least one descriptor in the
-	 * queue having the OWN bit cleared, we can safely assume the tail
-	 * frame has been also processed by the MAC hardware.
-	 *
-	 * If that's the case, let's force the frame completion by manually
-	 * clearing the OWN bit.
-	 */
+	 
 	if (unlikely(!owl_emac_ring_num_unused(ring))) {
 		tx_next = ring->tail;
 
 		while ((tx_next = owl_emac_ring_get_next(ring, tx_next)) != ring->head) {
 			status = READ_ONCE(ring->descs[tx_next].status);
-			dma_rmb(); /* Ensure data has been read before used. */
+			dma_rmb();  
 
 			if (status & OWL_EMAC_BIT_TDES0_OWN)
 				continue;
@@ -731,7 +698,7 @@ static void owl_emac_tx_complete(struct owl_emac_priv *priv)
 			netdev_dbg(netdev, "Found uncleared TX desc OWN bit\n");
 
 			status = READ_ONCE(ring->descs[ring->tail].status);
-			dma_rmb(); /* Ensure data has been read before used. */
+			dma_rmb();  
 			status &= ~OWL_EMAC_BIT_TDES0_OWN;
 			WRITE_ONCE(ring->descs[ring->tail].status, status);
 
@@ -762,7 +729,7 @@ static int owl_emac_rx_process(struct owl_emac_priv *priv, int budget)
 		desc = &ring->descs[rx_tail];
 
 		status = READ_ONCE(desc->status);
-		dma_rmb(); /* Ensure data has been read before used. */
+		dma_rmb();  
 
 		if (status & OWL_EMAC_BIT_RDES0_OWN) {
 			spin_unlock(&priv->lock);
@@ -811,7 +778,7 @@ static int owl_emac_rx_process(struct owl_emac_priv *priv, int budget)
 			goto drop_skb;
 		}
 
-		/* Prepare new skb before receiving the current one. */
+		 
 		new_skb = owl_emac_alloc_skb(netdev);
 		if (unlikely(!new_skb))
 			goto drop_skb;
@@ -840,7 +807,7 @@ static int owl_emac_rx_process(struct owl_emac_priv *priv, int budget)
 drop_skb:
 		netdev->stats.rx_dropped++;
 		netdev->stats.rx_errors++;
-		/* Reuse the current skb. */
+		 
 		new_skb = curr_skb;
 		new_dma = curr_dma;
 
@@ -851,7 +818,7 @@ push_skb:
 		ring->skbs_dma[ring->head] = new_dma;
 
 		WRITE_ONCE(desc->buf_addr, new_dma);
-		dma_wmb(); /* Flush descriptor before changing ownership. */
+		dma_wmb();  
 		WRITE_ONCE(desc->status, OWL_EMAC_BIT_RDES0_OWN);
 
 		owl_emac_ring_push_head(ring);
@@ -875,12 +842,12 @@ static int owl_emac_poll(struct napi_struct *napi, int budget)
 	       (OWL_EMAC_BIT_MAC_CSR5_NIS | OWL_EMAC_BIT_MAC_CSR5_AIS)) {
 		recv = 0;
 
-		/* TX setup frame raises ETI instead of TI. */
+		 
 		if (status & (OWL_EMAC_BIT_MAC_CSR5_TI | OWL_EMAC_BIT_MAC_CSR5_ETI)) {
 			owl_emac_tx_complete(priv);
 			tx_err_cnt = 0;
 
-			/* Count MAC internal RX errors. */
+			 
 			proc_status = status & OWL_EMAC_MSK_MAC_CSR5_RS;
 			proc_status >>= OWL_EMAC_OFF_MAC_CSR5_RS;
 			if (proc_status == OWL_EMAC_VAL_MAC_CSR5_RS_DATA ||
@@ -893,24 +860,20 @@ static int owl_emac_poll(struct napi_struct *napi, int budget)
 			recv = owl_emac_rx_process(priv, budget - work_done);
 			rx_err_cnt = 0;
 
-			/* Count MAC internal TX errors. */
+			 
 			proc_status = status & OWL_EMAC_MSK_MAC_CSR5_TS;
 			proc_status >>= OWL_EMAC_OFF_MAC_CSR5_TS;
 			if (proc_status == OWL_EMAC_VAL_MAC_CSR5_TS_DATA ||
 			    proc_status == OWL_EMAC_VAL_MAC_CSR5_TS_CDES)
 				tx_err_cnt++;
 		} else if (status & OWL_EMAC_BIT_MAC_CSR5_RU) {
-			/* MAC AHB is in suspended state, will return to RX
-			 * descriptor processing when the host changes ownership
-			 * of the descriptor and either an RX poll demand CMD is
-			 * issued or a new frame is recognized by the MAC AHB.
-			 */
+			 
 			if (++ru_cnt == 2)
 				owl_emac_dma_cmd_resume_rx(priv);
 
 			recv = owl_emac_rx_process(priv, budget - work_done);
 
-			/* Guard against too many RU interrupts. */
+			 
 			if (ru_cnt > 3)
 				break;
 		}
@@ -925,7 +888,7 @@ static int owl_emac_poll(struct napi_struct *napi, int budget)
 		owl_emac_irq_enable(priv);
 	}
 
-	/* Reset MAC when getting too many internal TX or RX errors. */
+	 
 	if (tx_err_cnt > 10 || rx_err_cnt > 10) {
 		netdev_dbg(priv->netdev, "%s error status: 0x%08x\n",
 			   tx_err_cnt > 10 ? "TX" : "RX", status);
@@ -941,9 +904,7 @@ static void owl_emac_mdio_clock_enable(struct owl_emac_priv *priv)
 {
 	u32 val;
 
-	/* Enable MDC clock generation by adjusting CLKDIV according to
-	 * the vendor implementation of the original driver.
-	 */
+	 
 	val = owl_emac_reg_read(priv, OWL_EMAC_REG_MAC_CSR10);
 	val &= OWL_EMAC_MSK_MAC_CSR10_CLKDIV;
 	val |= OWL_EMAC_VAL_MAC_CSR10_CLKDIV_128 << OWL_EMAC_OFF_MAC_CSR10_CLKDIV;
@@ -955,7 +916,7 @@ static void owl_emac_mdio_clock_enable(struct owl_emac_priv *priv)
 
 static void owl_emac_core_hw_reset(struct owl_emac_priv *priv)
 {
-	/* Trigger hardware reset. */
+	 
 	reset_control_assert(priv->reset);
 	usleep_range(10, 20);
 	reset_control_deassert(priv->reset);
@@ -967,7 +928,7 @@ static int owl_emac_core_sw_reset(struct owl_emac_priv *priv)
 	u32 val;
 	int ret;
 
-	/* Trigger software reset. */
+	 
 	owl_emac_reg_set(priv, OWL_EMAC_REG_MAC_CSR0, OWL_EMAC_BIT_MAC_CSR0_SWR);
 	ret = readl_poll_timeout(priv->base + OWL_EMAC_REG_MAC_CSR0,
 				 val, !(val & OWL_EMAC_BIT_MAC_CSR0_SWR),
@@ -977,41 +938,39 @@ static int owl_emac_core_sw_reset(struct owl_emac_priv *priv)
 		return ret;
 
 	if (priv->phy_mode == PHY_INTERFACE_MODE_RMII) {
-		/* Enable RMII and use the 50MHz rmii clk as output to PHY. */
+		 
 		val = 0;
 	} else {
-		/* Enable SMII and use the 125MHz rmii clk as output to PHY.
-		 * Additionally set SMII SYNC delay to 4 half cycle.
-		 */
+		 
 		val = 0x04 << OWL_EMAC_OFF_MAC_CTRL_SSDC;
 		val |= OWL_EMAC_BIT_MAC_CTRL_RSIS;
 	}
 	owl_emac_reg_write(priv, OWL_EMAC_REG_MAC_CTRL, val);
 
-	/* MDC is disabled after reset. */
+	 
 	owl_emac_mdio_clock_enable(priv);
 
-	/* Set FIFO pause & restart threshold levels. */
+	 
 	val = 0x40 << OWL_EMAC_OFF_MAC_CSR19_FPTL;
 	val |= 0x10 << OWL_EMAC_OFF_MAC_CSR19_FRTL;
 	owl_emac_reg_write(priv, OWL_EMAC_REG_MAC_CSR19, val);
 
-	/* Set flow control pause quanta time to ~100 ms. */
+	 
 	val = 0x4FFF << OWL_EMAC_OFF_MAC_CSR18_PQT;
 	owl_emac_reg_write(priv, OWL_EMAC_REG_MAC_CSR18, val);
 
-	/* Setup interrupt mitigation. */
+	 
 	val = 7 << OWL_EMAC_OFF_MAC_CSR11_NRP;
 	val |= 4 << OWL_EMAC_OFF_MAC_CSR11_RT;
 	owl_emac_reg_write(priv, OWL_EMAC_REG_MAC_CSR11, val);
 
-	/* Set RX/TX rings base addresses. */
+	 
 	owl_emac_reg_write(priv, OWL_EMAC_REG_MAC_CSR3,
 			   (u32)(priv->rx_ring.descs_dma));
 	owl_emac_reg_write(priv, OWL_EMAC_REG_MAC_CSR4,
 			   (u32)(priv->tx_ring.descs_dma));
 
-	/* Setup initial operation mode. */
+	 
 	val = OWL_EMAC_VAL_MAC_CSR6_SPEED_100M << OWL_EMAC_OFF_MAC_CSR6_SPEED;
 	val |= OWL_EMAC_BIT_MAC_CSR6_FD;
 	owl_emac_reg_update(priv, OWL_EMAC_REG_MAC_CSR6,
@@ -1146,20 +1105,20 @@ static void owl_emac_ndo_set_rx_mode(struct net_device *netdev)
 
 	spin_lock_bh(&priv->lock);
 
-	/* Temporarily stop DMA TX & RX. */
+	 
 	status = owl_emac_dma_cmd_stop(priv);
 
-	/* Update operation modes. */
+	 
 	owl_emac_reg_update(priv, OWL_EMAC_REG_MAC_CSR6,
 			    OWL_EMAC_BIT_MAC_CSR6_PR | OWL_EMAC_BIT_MAC_CSR6_PM,
 			    val);
 
-	/* Restore DMA TX & RX status. */
+	 
 	owl_emac_dma_cmd_set(priv, status);
 
 	spin_unlock_bh(&priv->lock);
 
-	/* Set/reset multicast addr list. */
+	 
 	owl_emac_set_multicast(netdev, mcast_count);
 }
 
@@ -1210,9 +1169,7 @@ static void owl_emac_reset_task(struct work_struct *work)
 static struct net_device_stats *
 owl_emac_ndo_get_stats(struct net_device *netdev)
 {
-	/* FIXME: If possible, try to get stats from MAC hardware registers
-	 * instead of tracking them manually in the driver.
-	 */
+	 
 
 	return &netdev->stats;
 }
@@ -1262,7 +1219,7 @@ static int owl_emac_mdio_wait(struct owl_emac_priv *priv)
 {
 	u32 val;
 
-	/* Wait while data transfer is in progress. */
+	 
 	return readl_poll_timeout(priv->base + OWL_EMAC_REG_MAC_CSR10,
 				  val, !(val & OWL_EMAC_BIT_MAC_CSR10_SB),
 				  OWL_EMAC_POLL_DELAY_USEC,
@@ -1345,7 +1302,7 @@ static int owl_emac_mdio_init(struct net_device *netdev)
 	priv->mii->parent = dev;
 	priv->mii->read = owl_emac_mdio_read;
 	priv->mii->write = owl_emac_mdio_write;
-	priv->mii->phy_mask = ~0; /* Mask out all PHYs from auto probing. */
+	priv->mii->phy_mask = ~0;  
 	priv->mii->priv = priv;
 
 	ret = devm_of_mdiobus_register(dev, priv->mii, mdio_node);

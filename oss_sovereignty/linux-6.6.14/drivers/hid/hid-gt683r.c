@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * MSI GT683R led driver
- *
- * Copyright (c) 2014 Janne Kanniainen <janne.kanniainen@gmail.com>
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/hid.h>
@@ -15,12 +11,7 @@
 
 #define GT683R_BUFFER_SIZE			8
 
-/*
- * GT683R_LED_OFF: all LEDs are off
- * GT683R_LED_AUDIO: LEDs brightness depends on sound level
- * GT683R_LED_BREATHING: LEDs brightness varies at human breathing rate
- * GT683R_LED_NORMAL: LEDs are fully on when enabled
- */
+ 
 enum gt683r_led_mode {
 	GT683R_LED_OFF = 0,
 	GT683R_LED_AUDIO = 2,

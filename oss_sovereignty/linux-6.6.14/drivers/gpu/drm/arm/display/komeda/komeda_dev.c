@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * (C) COPYRIGHT 2018 ARM Limited. All rights reserved.
- * Author: James.Qian.Wang <james.qian.wang@arm.com>
- *
- */
+
+ 
 #include <linux/io.h>
 #include <linux/iommu.h>
 #include <linux/of.h>
@@ -121,7 +117,7 @@ static int komeda_parse_pipe_dt(struct komeda_pipeline *pipe)
 	}
 	pipe->pxlclk = clk;
 
-	/* enum ports */
+	 
 	pipe->of_output_links[0] =
 		of_graph_get_remote_node(np, KOMEDA_OF_PORT_OUTPUT, 0);
 	pipe->of_output_links[1] =
@@ -148,7 +144,7 @@ static int komeda_parse_dt(struct device *dev, struct komeda_dev *mdev)
 		return mdev->irq;
 	}
 
-	/* Get the optional framebuffer memory resource */
+	 
 	ret = of_reserved_mem_device_init(dev);
 	if (ret && ret != -ENODEV)
 		return ret;

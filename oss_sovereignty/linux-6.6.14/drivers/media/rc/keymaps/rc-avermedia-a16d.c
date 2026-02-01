@@ -1,9 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0+
-// avermedia-a16d.h - Keytable for avermedia_a16d Remote Controller
-//
-// keymap imported from ir-keymaps.c
-//
-// Copyright (c) 2010 by Mauro Carvalho Chehab
+
+
+
+
+
+
 
 #include <media/rc-map.h>
 #include <linux/module.h>
@@ -49,7 +49,7 @@ static struct rc_map_list avermedia_a16d_map = {
 	.map = {
 		.scan     = avermedia_a16d,
 		.size     = ARRAY_SIZE(avermedia_a16d),
-		.rc_proto = RC_PROTO_UNKNOWN,	/* Legacy IR type */
+		.rc_proto = RC_PROTO_UNKNOWN,	 
 		.name     = RC_MAP_AVERMEDIA_A16D,
 	}
 };

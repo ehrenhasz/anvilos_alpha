@@ -1,12 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) 2021 Broadcom. All Rights Reserved. The term
- * “Broadcom” refers to Broadcom Inc. and/or its subsidiaries.
- */
+ 
+ 
 
-/*
- * Declare driver's domain handler exported interface
- */
+ 
 
 #ifndef __EFCT_DOMAIN_H__
 #define __EFCT_DOMAIN_H__
@@ -51,4 +46,4 @@ efc_domain_dispatch_frame(void *arg, struct efc_hw_sequence *seq);
 void
 efc_node_dispatch_frame(void *arg, struct efc_hw_sequence *seq);
 
-#endif /* __EFCT_DOMAIN_H__ */
+#endif  

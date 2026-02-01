@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 
 #ifndef __AUDIOREACH_H__
 #define __AUDIOREACH_H__
@@ -8,7 +8,7 @@
 struct q6apm;
 struct q6apm_graph;
 
-/* Module IDs */
+ 
 #define MODULE_ID_WR_SHARED_MEM_EP	0x07001000
 #define MODULE_ID_RD_SHARED_MEM_EP	0x07001001
 #define MODULE_ID_GAIN			0x07001002
@@ -82,7 +82,7 @@ struct apm_cmd_rsp_shared_mem_map_regions {
 	uint32_t mem_map_handle;
 } __packed;
 
-/* APM module */
+ 
 #define APM_PARAM_ID_SUB_GRAPH_LIST		0x08001005
 
 #define APM_PARAM_ID_MODULE_LIST		0x08001002
@@ -170,7 +170,7 @@ struct apm_modules_prop_info {
 	uint32_t max_op_port;
 } __packed;
 
-/* Shared memory module */
+ 
 #define DATA_CMD_WR_SH_MEM_EP_DATA_BUFFER	0x04001000
 #define WR_SH_MEM_EP_TIMESTAMP_VALID_FLAG	BIT(31)
 #define WR_SH_MEM_EP_LAST_BUFFER_FLAG		BIT(30)
@@ -368,7 +368,7 @@ struct apm_prop_data {
 	uint32_t prop_size;
 } __packed;
 
-/* Sub-Graph Properties */
+ 
 #define APM_PARAM_ID_SUB_GRAPH_CONFIG	0x08001001
 
 struct apm_param_id_sub_graph_cfg {
@@ -406,7 +406,7 @@ struct apm_sg_prop_id_scenario_id {
 } __packed;
 
 #define APM_SG_PROP_ID_SID_SIZE			4
-/* container api */
+ 
 #define APM_PARAM_ID_CONTAINER_CONFIG		0x08001000
 
 struct apm_param_id_container_cfg {
@@ -480,7 +480,7 @@ struct param_id_i2s_intf_cfg {
 
 struct param_id_display_port_intf_cfg {
 	uint32_t channel_allocation;
-	/* Multi-Steam Transport index */
+	 
 	uint32_t mst_idx;
 	uint32_t dptx_idx;
 } __packed;
@@ -592,17 +592,9 @@ struct param_id_module_enable {
 #define PARAM_ID_CODEC_DMA_INTF_CFG		0x08001063
 
 struct param_id_codec_dma_intf_cfg {
-	/* 1 - RXTX
-	 * 2 - WSA
-	 * 3 - VA
-	 * 4 - AXI
-	 */
+	 
 	uint32_t lpaif_type;
-	/*
-	 *  RX0 | TX0 = 1
-	 *  RX1 | TX1 = 2
-	 *  RX2 | TX2 = 3... so on
-	 */
+	 
 	uint32_t intf_index;
 	uint32_t active_channels_mask;
 } __packed;
@@ -619,9 +611,9 @@ struct audio_hw_clk_rel_cfg {
 } __packed;
 
 #define PARAM_ID_HW_EP_POWER_MODE_CFG	0x8001176
-#define AR_HW_EP_POWER_MODE_0	0 /* default */
-#define AR_HW_EP_POWER_MODE_1	1 /* XO Shutdown allowed */
-#define AR_HW_EP_POWER_MODE_2	2 /* XO Shutdown not allowed */
+#define AR_HW_EP_POWER_MODE_0	0  
+#define AR_HW_EP_POWER_MODE_1	1  
+#define AR_HW_EP_POWER_MODE_2	2  
 
 struct param_id_hw_ep_power_mode_cfg {
 	uint32_t power_mode;
@@ -654,9 +646,9 @@ struct param_id_placeholder_real_module_id {
 	uint32_t real_module_id;
 } __packed;
 
-/* Graph */
+ 
 struct audioreach_connection {
-	/* Connections */
+	 
 	uint32_t src_mod_inst_id;
 	uint32_t src_mod_op_port_id;
 	uint32_t dst_mod_inst_id;
@@ -668,7 +660,7 @@ struct audioreach_graph_info {
 	int id;
 	uint32_t num_sub_graphs;
 	struct list_head sg_list;
-	/* DPCM connection from FE Graph to BE graph */
+	 
 	uint32_t src_mod_inst_id;
 	uint32_t src_mod_op_port_id;
 	uint32_t dst_mod_inst_id;
@@ -713,18 +705,18 @@ struct audioreach_module {
 	uint32_t out_port;
 
 	uint32_t num_connections;
-	/* Connections */
+	 
 	uint32_t src_mod_inst_id;
 	uint32_t src_mod_op_port_id[AR_MAX_MOD_LINKS];
 	uint32_t dst_mod_inst_id[AR_MAX_MOD_LINKS];
 	uint32_t dst_mod_ip_port_id[AR_MAX_MOD_LINKS];
 
-	/* Format specifics */
+	 
 	uint32_t ch_fmt;
 	uint32_t rate;
 	uint32_t bit_depth;
 
-	/* I2S module */
+	 
 	uint32_t hw_interface_idx;
 	uint32_t sd_line_idx;
 	uint32_t ws_src;
@@ -732,18 +724,18 @@ struct audioreach_module {
 	uint32_t data_format;
 	uint32_t hw_interface_type;
 
-	/* PCM module specific */
+	 
 	uint32_t interleave_type;
 
-	/* GAIN/Vol Control Module */
+	 
 	uint16_t gain;
 
-	/* Logging */
+	 
 	uint32_t log_code;
 	uint32_t log_tap_point_id;
 	uint32_t log_mode;
 
-	/* bookkeeping */
+	 
 	struct list_head node;
 	struct audioreach_container *container;
 	struct snd_soc_dapm_widget *widget;
@@ -766,7 +758,7 @@ struct audioreach_module_config {
 	u8 channel_map[AR_PCM_MAX_NUM_CHANNEL];
 };
 
-/* Packet Allocation routines */
+ 
 void *audioreach_alloc_apm_cmd_pkt(int pkt_size, uint32_t opcode, uint32_t
 				    token);
 void *audioreach_alloc_cmd_pkt(int payload_size, uint32_t opcode,
@@ -779,10 +771,10 @@ void *audioreach_alloc_pkt(int payload_size, uint32_t opcode,
 			   uint32_t dest_port);
 void *audioreach_alloc_graph_pkt(struct q6apm *apm, struct audioreach_graph_info
 				 *info);
-/* Topology specific */
+ 
 int audioreach_tplg_init(struct snd_soc_component *component);
 
-/* Module specific */
+ 
 void audioreach_graph_free_buf(struct q6apm_graph *graph);
 int audioreach_map_memory_regions(struct q6apm_graph *graph,
 				  unsigned int dir, size_t period_sz,
@@ -803,4 +795,4 @@ int audioreach_send_u32_param(struct q6apm_graph *graph, struct audioreach_modul
 			      uint32_t param_id, uint32_t param_val);
 int audioreach_compr_set_param(struct q6apm_graph *graph, struct audioreach_module_config *mcfg);
 
-#endif /* __AUDIOREACH_H__ */
+#endif  

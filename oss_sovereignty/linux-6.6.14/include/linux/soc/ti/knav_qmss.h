@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Keystone Navigator Queue Management Sub-System header
- *
- * Copyright (C) 2014 Texas Instruments Incorporated - https://www.ti.com
- * Author:	Sandeep Nair <sandeep_n@ti.com>
- *		Cyril Chemparathy <cyril@ti.com>
- *		Santosh Shilimkar <santosh.shilimkar@ti.com>
- */
+ 
+ 
 
 #ifndef __SOC_TI_KNAV_QMSS_H__
 #define __SOC_TI_KNAV_QMSS_H__
@@ -18,23 +11,15 @@
 #include <linux/fcntl.h>
 #include <linux/dma-mapping.h>
 
-/* queue types */
-#define KNAV_QUEUE_QPEND	((unsigned)-2) /* interruptible qpend queue */
-#define KNAV_QUEUE_ACC		((unsigned)-3) /* Accumulated queue */
-#define KNAV_QUEUE_GP		((unsigned)-4) /* General purpose queue */
+ 
+#define KNAV_QUEUE_QPEND	((unsigned)-2)  
+#define KNAV_QUEUE_ACC		((unsigned)-3)  
+#define KNAV_QUEUE_GP		((unsigned)-4)  
 
-/* queue flags */
-#define KNAV_QUEUE_SHARED	0x0001		/* Queue can be shared */
+ 
+#define KNAV_QUEUE_SHARED	0x0001		 
 
-/**
- * enum knav_queue_ctrl_cmd -	queue operations.
- * @KNAV_QUEUE_GET_ID:		Get the ID number for an open queue
- * @KNAV_QUEUE_FLUSH:		forcibly empty a queue if possible
- * @KNAV_QUEUE_SET_NOTIFIER:	Set a notifier callback to a queue handle.
- * @KNAV_QUEUE_ENABLE_NOTIFY:	Enable notifier callback for a queue handle.
- * @KNAV_QUEUE_DISABLE_NOTIFY:	Disable notifier callback for a queue handle.
- * @KNAV_QUEUE_GET_COUNT:	Get number of queues.
- */
+ 
 enum knav_queue_ctrl_cmd {
 	KNAV_QUEUE_GET_ID,
 	KNAV_QUEUE_FLUSH,
@@ -44,14 +29,10 @@ enum knav_queue_ctrl_cmd {
 	KNAV_QUEUE_GET_COUNT
 };
 
-/* Queue notifier callback prototype */
+ 
 typedef void (*knav_queue_notify_fn)(void *arg);
 
-/**
- * struct knav_queue_notify_config:	Notifier configuration
- * @fn:					Notifier function
- * @fn_arg:				Notifier function arguments
- */
+ 
 struct knav_queue_notify_config {
 	knav_queue_notify_fn fn;
 	void *fn_arg;
@@ -80,4 +61,4 @@ dma_addr_t knav_pool_desc_virt_to_dma(void *ph, void *virt);
 void *knav_pool_desc_dma_to_virt(void *ph, dma_addr_t dma);
 bool knav_qmss_device_ready(void);
 
-#endif /* __SOC_TI_KNAV_QMSS_H__ */
+#endif  

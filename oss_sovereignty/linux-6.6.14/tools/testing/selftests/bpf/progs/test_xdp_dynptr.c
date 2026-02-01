@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2022 Meta */
+
+ 
 #include <stddef.h>
 #include <string.h>
 #include <stdbool.h>
@@ -114,7 +114,7 @@ static __always_inline int handle_ipv4(struct xdp_md *xdp, struct bpf_dynptr *xd
 	payload_len = bpf_ntohs(iph->tot_len);
 
 	tnl = bpf_map_lookup_elem(&vip2tnl, &vip);
-	/* It only does v4-in-v4 */
+	 
 	if (!tnl || tnl->family != AF_INET)
 		return XDP_PASS;
 
@@ -193,7 +193,7 @@ static __always_inline int handle_ipv6(struct xdp_md *xdp, struct bpf_dynptr *xd
 	payload_len = ip6h->payload_len;
 
 	tnl = bpf_map_lookup_elem(&vip2tnl, &vip);
-	/* It only does v6-in-v6 */
+	 
 	if (!tnl || tnl->family != AF_INET6)
 		return XDP_PASS;
 

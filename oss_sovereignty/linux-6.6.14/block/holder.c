@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 #include <linux/blkdev.h>
 #include <linux/slab.h>
 
@@ -29,34 +29,7 @@ static void del_symlink(struct kobject *from, struct kobject *to)
 	sysfs_remove_link(from, kobject_name(to));
 }
 
-/**
- * bd_link_disk_holder - create symlinks between holding disk and slave bdev
- * @bdev: the claimed slave bdev
- * @disk: the holding disk
- *
- * DON'T USE THIS UNLESS YOU'RE ALREADY USING IT.
- *
- * This functions creates the following sysfs symlinks.
- *
- * - from "slaves" directory of the holder @disk to the claimed @bdev
- * - from "holders" directory of the @bdev to the holder @disk
- *
- * For example, if /dev/dm-0 maps to /dev/sda and disk for dm-0 is
- * passed to bd_link_disk_holder(), then:
- *
- *   /sys/block/dm-0/slaves/sda --> /sys/block/sda
- *   /sys/block/sda/holders/dm-0 --> /sys/block/dm-0
- *
- * The caller must have claimed @bdev before calling this function and
- * ensure that both @bdev and @disk are valid during the creation and
- * lifetime of these symlinks.
- *
- * CONTEXT:
- * Might sleep.
- *
- * RETURNS:
- * 0 on success, -errno on failure.
- */
+ 
 int bd_link_disk_holder(struct block_device *bdev, struct gendisk *disk)
 {
 	struct bd_holder_disk *holder;
@@ -68,10 +41,7 @@ int bd_link_disk_holder(struct block_device *bdev, struct gendisk *disk)
 	if (bdev->bd_disk == disk)
 		return -EINVAL;
 
-	/*
-	 * del_gendisk drops the initial reference to bd_holder_dir, so we
-	 * need to keep our own here to allow for cleanup past that point.
-	 */
+	 
 	mutex_lock(&bdev->bd_disk->open_mutex);
 	if (!disk_live(bdev->bd_disk)) {
 		mutex_unlock(&bdev->bd_disk->open_mutex);
@@ -123,16 +93,7 @@ out_unlock:
 }
 EXPORT_SYMBOL_GPL(bd_link_disk_holder);
 
-/**
- * bd_unlink_disk_holder - destroy symlinks created by bd_link_disk_holder()
- * @bdev: the calimed slave bdev
- * @disk: the holding disk
- *
- * DON'T USE THIS UNLESS YOU'RE ALREADY USING IT.
- *
- * CONTEXT:
- * Might sleep.
- */
+ 
 void bd_unlink_disk_holder(struct block_device *bdev, struct gendisk *disk)
 {
 	struct bd_holder_disk *holder;

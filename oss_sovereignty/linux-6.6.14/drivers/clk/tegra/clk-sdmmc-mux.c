@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2018 NVIDIA CORPORATION.  All rights reserved.
- *
- * based on clk-mux.c
- *
- * Copyright (C) 2011 Sascha Hauer, Pengutronix <s.hauer@pengutronix.de>
- * Copyright (C) 2011 Richard Zhao, Linaro <richard.zhao@linaro.org>
- * Copyright (C) 2011-2012 Mike Turquette, Linaro Ltd <mturquette@linaro.org>
- *
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/err.h>
@@ -254,7 +245,7 @@ struct clk *tegra_clk_register_sdmmc_mux_div(const char *name,
 	if (!sdmmc_mux)
 		return ERR_PTR(-ENOMEM);
 
-	/* Data in .init is copied by clk_register(), so stack variable OK */
+	 
 	sdmmc_mux->hw.init = &init;
 	sdmmc_mux->reg = clk_base + offset;
 	sdmmc_mux->lock = lock;

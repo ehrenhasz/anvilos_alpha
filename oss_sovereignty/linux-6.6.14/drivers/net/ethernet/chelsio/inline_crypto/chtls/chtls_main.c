@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2018 Chelsio Communications, Inc.
- *
- * Written by: Atul Gupta (atul.gupta@chelsio.com)
- */
+
+ 
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/skbuff.h>
@@ -23,10 +19,7 @@
 
 #define DRV_NAME "chtls"
 
-/*
- * chtls device management
- * maintains a list of the chtls devices
- */
+ 
 static LIST_HEAD(cdev_list);
 static DEFINE_MUTEX(cdev_mutex);
 
@@ -181,7 +174,7 @@ static inline void chtls_dev_release(struct kref *kref)
 	dev = container_of(kref, struct tls_toe_device, kref);
 	cdev = to_chtls_dev(dev);
 
-	/* Reset tls rx/tx stats */
+	 
 	adap = pci_get_drvdata(cdev->pdev);
 	atomic_set(&adap->chcr_stats.tls_pdu_tx, 0);
 	atomic_set(&adap->chcr_stats.tls_pdu_rx, 0);
@@ -342,17 +335,14 @@ static struct sk_buff *copy_gl_to_skb_pkt(const struct pkt_gl *gl,
 {
 	struct sk_buff *skb;
 
-	/* Allocate space for cpl_pass_accpet_req which will be synthesized by
-	 * driver. Once driver synthesizes cpl_pass_accpet_req the skb will go
-	 * through the regular cpl_pass_accept_req processing in TOM.
-	 */
+	 
 	skb = alloc_skb(gl->tot_len + sizeof(struct cpl_pass_accept_req)
 			- pktshift, GFP_ATOMIC);
 	if (unlikely(!skb))
 		return NULL;
 	__skb_put(skb, gl->tot_len + sizeof(struct cpl_pass_accept_req)
 		   - pktshift);
-	/* For now we will copy  cpl_rx_pkt in the skb */
+	 
 	skb_copy_to_linear_data(skb, rsp, sizeof(struct cpl_rx_pkt));
 	skb_copy_to_linear_data_offset(skb, sizeof(struct cpl_pass_accept_req)
 				       , gl->va + pktshift,
@@ -509,7 +499,7 @@ static int do_chtls_setsockopt(struct sock *sk, int optname,
 		goto out;
 	}
 
-	/* check version */
+	 
 	if (tmp_crypto_info.version != TLS_1_2_VERSION) {
 		rc = -ENOTSUPP;
 		goto out;
@@ -517,14 +507,12 @@ static int do_chtls_setsockopt(struct sock *sk, int optname,
 
 	crypto_info = (struct tls_crypto_info *)&csk->tlshws.crypto_info;
 
-	/* GCM mode of AES supports 128 and 256 bit encryption, so
-	 * copy keys from user based on GCM cipher type.
-	 */
+	 
 	switch (tmp_crypto_info.cipher_type) {
 	case TLS_CIPHER_AES_GCM_128: {
-		/* Obtain version and type from previous copy */
+		 
 		crypto_info[0] = tmp_crypto_info;
-		/* Now copy the following data */
+		 
 		rc = copy_from_sockptr_offset((char *)crypto_info +
 				sizeof(*crypto_info),
 				optval, sizeof(*crypto_info),

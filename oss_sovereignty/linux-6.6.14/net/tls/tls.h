@@ -1,36 +1,4 @@
-/*
- * Copyright (c) 2016 Tom Herbert <tom@herbertland.com>
- * Copyright (c) 2016-2017, Mellanox Technologies. All rights reserved.
- * Copyright (c) 2016-2017, Dave Watson <davejwatson@fb.com>. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 
 #ifndef _TLS_INT_H
 #define _TLS_INT_H
@@ -104,10 +72,7 @@ static inline char *crypto_info_rec_seq(struct tls_crypto_info *crypto_info,
 }
 
 
-/* TLS records are maintained in 'struct tls_rec'. It stores the memory pages
- * allocated or mapped for each TLS record. After encryption, the records are
- * stores in a linked list.
- */
+ 
 struct tls_rec {
 	struct list_head list;
 	int tx_ready;
@@ -116,9 +81,9 @@ struct tls_rec {
 	struct sk_msg msg_plaintext;
 	struct sk_msg msg_encrypted;
 
-	/* AAD | msg_plaintext.sg.data | sg_tag */
+	 
 	struct scatterlist sg_aead_in[2];
-	/* AAD | msg_encrypted.sg.data (data contains overhead for hdr & iv & tag) */
+	 
 	struct scatterlist sg_aead_out[2];
 
 	char content_type;
@@ -341,15 +306,13 @@ tls_fill_prepend(struct tls_context *ctx, char *buf, size_t plaintext_len,
 		       ctx->tx.iv + prot->salt_size, iv_size);
 	}
 
-	/* we cover nonce explicit here as well, so buf should be of
-	 * size KTLS_DTLS_HEADER_SIZE + KTLS_DTLS_NONCE_EXPLICIT_SIZE
-	 */
+	 
 	buf[0] = prot->version == TLS_1_3_VERSION ?
 		   TLS_RECORD_TYPE_DATA : record_type;
-	/* Note that VERSION must be TLS_1_2 for both TLS1.2 and TLS1.3 */
+	 
 	buf[1] = TLS_1_2_VERSION_MINOR;
 	buf[2] = TLS_1_2_VERSION_MAJOR;
-	/* we can use IV for nonce explicit according to spec */
+	 
 	buf[3] = pkt_len >> 8;
 	buf[4] = pkt_len & 0xFF;
 }

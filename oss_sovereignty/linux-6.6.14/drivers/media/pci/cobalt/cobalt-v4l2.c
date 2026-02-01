@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  cobalt V4L2 API
- *
- *  Derived from ivtv-ioctl.c and cx18-fileops.c
- *
- *  Copyright 2012-2015 Cisco Systems, Inc. and/or its affiliates.
- *  All rights reserved.
- */
+
+ 
 
 #include <linux/dma-mapping.h>
 #include <linux/delay.h>
@@ -29,7 +22,7 @@
 
 static const struct v4l2_dv_timings cea1080p60 = V4L2_DV_BT_CEA_1920X1080P60;
 
-/* vb2 DMA streaming ops */
+ 
 
 static int cobalt_queue_setup(struct vb2_queue *q,
 			unsigned int *num_buffers, unsigned int *num_planes,
@@ -128,7 +121,7 @@ static void cobalt_buf_queue(struct vb2_buffer *vb)
 	struct sg_dma_desc_info *desc = &s->dma_desc_info[vb->index];
 	unsigned long flags;
 
-	/* Prepare new buffer */
+	 
 	descriptor_list_loopback(desc);
 	descriptor_list_interrupt_disable(desc);
 
@@ -165,7 +158,7 @@ static void cobalt_enable_output(struct cobalt_stream *s)
 	sd_fmt.format.width = bt->width;
 	sd_fmt.format.height = bt->height;
 
-	/* Set up FDMA packer */
+	 
 	switch (s->pixfmt) {
 	case V4L2_PIX_FMT_YUYV:
 		sd_fmt.format.code = MEDIA_BUS_FMT_UYVY8_1X16;
@@ -177,7 +170,7 @@ static void cobalt_enable_output(struct cobalt_stream *s)
 	v4l2_subdev_call(s->sd, pad, set_fmt, NULL, &sd_fmt);
 
 	iowrite32(0, &vo->control);
-	/* 1080p60 */
+	 
 	iowrite32(bt->hsync, &vo->sync_generator_h_sync_length);
 	iowrite32(bt->hbackporch, &vo->sync_generator_h_backporch_length);
 	iowrite32(bt->width, &vo->sync_generator_h_active_length);
@@ -219,7 +212,7 @@ static void cobalt_enable_input(struct cobalt_stream *s)
 
 	packer = COBALT_CVI_PACKER(cobalt, ch);
 
-	/* Set up FDMA packer */
+	 
 	switch (s->pixfmt) {
 	case V4L2_PIX_FMT_YUYV:
 		iowrite32(M00235_CONTROL_BITMAP_ENABLE_MSK |
@@ -314,11 +307,10 @@ static int cobalt_start_streaming(struct vb2_queue *q, unsigned int count)
 	iowrite32(M00233_CONTROL_BITMAP_ENABLE_MEASURE_MSK, &vmr->control);
 	clk_freq = ioread32(&fw->clk_freq);
 	iowrite32(clk_freq / 1000000, &clkloss->ref_clk_cnt_val);
-	/* The lower bound for the clock frequency is 0.5% lower as is
-	 * allowed by the spec */
+	 
 	iowrite32(div_u64(bt->pixelclock * 995, 1000000000),
 		  &clkloss->test_clk_cnt_val);
-	/* will be enabled after the first frame has been received */
+	 
 	iowrite32(bt->width * bt->height, &fw->active_length);
 	iowrite32(div_u64((u64)clk_freq * tot_size, bt->pixelclock),
 		  &fw->total_length);
@@ -365,17 +357,17 @@ static void cobalt_dma_stop_streaming(struct cobalt_stream *s)
 		iowrite32(0, &vo->control);
 	}
 
-	/* Try to stop the DMA engine gracefully */
+	 
 	spin_lock_irqsave(&s->irqlock, flags);
 	list_for_each(p, &s->bufs) {
 		cb = list_entry(p, struct cobalt_buffer, list);
 		desc = &s->dma_desc_info[cb->vb.vb2_buf.index];
-		/* Stop DMA after this descriptor chain */
+		 
 		descriptor_list_end_of_chain(desc);
 	}
 	spin_unlock_irqrestore(&s->irqlock, flags);
 
-	/* Wait 100 millisecond for DMA to finish, abort on timeout. */
+	 
 	if (!wait_event_timeout(s->q.done_wq, is_dma_done(s),
 				msecs_to_jiffies(timeout_msec))) {
 		omni_sg_dma_abort_channel(s);
@@ -399,7 +391,7 @@ static void cobalt_stop_streaming(struct vb2_queue *q)
 
 	cobalt_dma_stop_streaming(s);
 
-	/* Return all buffers to user space */
+	 
 	spin_lock_irqsave(&s->irqlock, flags);
 	list_for_each_safe(p, safe, &s->bufs) {
 		cb = list_entry(p, struct cobalt_buffer, list);
@@ -432,7 +424,7 @@ static const struct vb2_ops cobalt_qops = {
 	.wait_finish = vb2_ops_wait_finish,
 };
 
-/* V4L2 ioctls */
+ 
 
 #ifdef CONFIG_VIDEO_ADV_DEBUG
 static int cobalt_cobaltc(struct cobalt *cobalt, unsigned int cmd, void *arg)
@@ -738,7 +730,7 @@ static int cobalt_try_fmt_vid_cap(struct file *file, void *priv_fh,
 	struct cobalt_stream *s = video_drvdata(file);
 	struct v4l2_pix_format *pix = &f->fmt.pix;
 
-	/* Check for min (QCIF) and max (Full HD) size */
+	 
 	if ((pix->width < 176) || (pix->height < 144)) {
 		pix->width = 176;
 		pix->height = 144;
@@ -749,14 +741,14 @@ static int cobalt_try_fmt_vid_cap(struct file *file, void *priv_fh,
 		pix->height = 1080;
 	}
 
-	/* Make width multiple of 4 */
+	 
 	pix->width &= ~0x3;
 
-	/* Make height multiple of 2 */
+	 
 	pix->height &= ~0x1;
 
 	if (s->input == 1) {
-		/* Generator => fixed format only */
+		 
 		pix->width = 1920;
 		pix->height = 1080;
 		pix->colorspace = V4L2_COLORSPACE_SRGB;
@@ -832,7 +824,7 @@ static int cobalt_try_fmt_vid_out(struct file *file, void *priv_fh,
 {
 	struct v4l2_pix_format *pix = &f->fmt.pix;
 
-	/* Check for min (QCIF) and max (Full HD) size */
+	 
 	if ((pix->width < 176) || (pix->height < 144)) {
 		pix->width = 176;
 		pix->height = 144;
@@ -843,10 +835,10 @@ static int cobalt_try_fmt_vid_out(struct file *file, void *priv_fh,
 		pix->height = 1080;
 	}
 
-	/* Make width multiple of 4 */
+	 
 	pix->width &= ~0x3;
 
-	/* Make height multiple of 2 */
+	 
 	pix->height &= ~0x1;
 
 	switch (pix->pixelformat) {
@@ -989,7 +981,7 @@ static int cobalt_s_input(struct file *file, void *priv_fh, unsigned int i)
 
 	cobalt_enable_input(s);
 
-	if (s->input == 1) /* Test Pattern Generator */
+	if (s->input == 1)  
 		return 0;
 
 	return v4l2_subdev_call(s->sd, video, s_routing,
@@ -1172,7 +1164,7 @@ static const struct v4l2_ioctl_ops cobalt_ioctl_empty_ops = {
 #endif
 };
 
-/* Register device nodes */
+ 
 
 static const struct v4l2_file_operations cobalt_fops = {
 	.owner = THIS_MODULE,
@@ -1216,7 +1208,7 @@ static int cobalt_node_register(struct cobalt *cobalt, int node)
 	snprintf(vdev->name, sizeof(vdev->name),
 			"%s-%d", cobalt->v4l2_dev.name, node);
 	s->width = 1920;
-	/* Audio frames are just 4 lines of 1920 bytes */
+	 
 	s->height = s->is_audio ? 4 : 1080;
 
 	if (s->is_audio) {
@@ -1291,12 +1283,12 @@ static int cobalt_node_register(struct cobalt *cobalt, int node)
 	return 0;
 }
 
-/* Initialize v4l2 variables and register v4l2 devices */
+ 
 int cobalt_nodes_register(struct cobalt *cobalt)
 {
 	int node, ret;
 
-	/* Setup V4L2 Devices */
+	 
 	for (node = 0; node < COBALT_NUM_STREAMS; node++) {
 		ret = cobalt_node_register(cobalt, node);
 		if (ret)
@@ -1305,12 +1297,12 @@ int cobalt_nodes_register(struct cobalt *cobalt)
 	return 0;
 }
 
-/* Unregister v4l2 devices */
+ 
 void cobalt_nodes_unregister(struct cobalt *cobalt)
 {
 	int node;
 
-	/* Teardown all streams */
+	 
 	for (node = 0; node < COBALT_NUM_STREAMS; node++) {
 		struct cobalt_stream *s = cobalt->streams + node;
 		struct video_device *vdev = &s->vdev;

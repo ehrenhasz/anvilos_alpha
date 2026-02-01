@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <errno.h>
 #include <regex.h>
 #include <string.h>
@@ -54,10 +54,10 @@ const struct sample_reg sample_reg_masks[] = {
 	SMPL_REG_END
 };
 
-/* %xNUM */
+ 
 #define SDT_OP_REGEX1  "^(x[1-2]?[0-9]|3[0-1])$"
 
-/* [sp], [sp, NUM] */
+ 
 #define SDT_OP_REGEX2  "^\\[sp(, )?([0-9]+)?\\]$"
 
 static regex_t sdt_op_regex1, sdt_op_regex2;
@@ -88,10 +88,7 @@ error:
 	return ret;
 }
 
-/*
- * SDT marker arguments on Arm64 uses %xREG or [sp, NUM], currently
- * support these two formats.
- */
+ 
 int arch_sdt_arg_parse_op(char *old_op, char **new_op)
 {
 	int ret, new_len;
@@ -102,8 +99,8 @@ int arch_sdt_arg_parse_op(char *old_op, char **new_op)
 		return ret;
 
 	if (!regexec(&sdt_op_regex1, old_op, 3, rm, 0)) {
-		/* Extract xNUM */
-		new_len = 2;	/* % NULL */
+		 
+		new_len = 2;	 
 		new_len += (int)(rm[1].rm_eo - rm[1].rm_so);
 
 		*new_op = zalloc(new_len);
@@ -113,10 +110,10 @@ int arch_sdt_arg_parse_op(char *old_op, char **new_op)
 		scnprintf(*new_op, new_len, "%%%.*s",
 			(int)(rm[1].rm_eo - rm[1].rm_so), old_op + rm[1].rm_so);
 	} else if (!regexec(&sdt_op_regex2, old_op, 5, rm, 0)) {
-		/* [sp], [sp, NUM] or [sp,NUM] */
-		new_len = 7;	/* + ( % s p ) NULL */
+		 
+		new_len = 7;	 
 
-		/* If the argument is [sp], need to fill offset '0' */
+		 
 		if (rm[2].rm_so == -1)
 			new_len += 1;
 		else
@@ -161,10 +158,7 @@ uint64_t arch__user_reg_mask(void)
 	if (getauxval(AT_HWCAP) & HWCAP_SVE)
 		attr.sample_regs_user |= SMPL_REG_MASK(PERF_REG_ARM64_VG);
 
-	/*
-	 * Check if the pmu supports perf extended regs, before
-	 * returning the register mask to sample.
-	 */
+	 
 	if (attr.sample_regs_user != PERF_REGS_MASK) {
 		event_attr_init(&attr);
 		fd = sys_perf_event_open(&attr, 0, -1, -1, 0);

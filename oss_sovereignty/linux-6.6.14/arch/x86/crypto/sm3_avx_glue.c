@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * SM3 Secure Hash Algorithm, AVX assembler accelerated.
- * specified in: https://datatracker.ietf.org/doc/html/draft-sca-cfrg-sm3-02
- *
- * Copyright (C) 2021 Tianjia Zhang <tianjia.zhang@linux.alibaba.com>
- */
+ 
+ 
 
 #define pr_fmt(fmt)	KBUILD_MODNAME ": " fmt
 
@@ -31,10 +26,7 @@ static int sm3_avx_update(struct shash_desc *desc, const u8 *data,
 		return 0;
 	}
 
-	/*
-	 * Make sure struct sm3_state begins directly with the SM3
-	 * 256-bit internal state, as this is what the asm functions expect.
-	 */
+	 
 	BUILD_BUG_ON(offsetof(struct sm3_state, state) != 0);
 
 	kernel_fpu_begin();

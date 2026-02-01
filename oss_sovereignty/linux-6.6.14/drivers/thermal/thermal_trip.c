@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *  Copyright (C) 2008 Intel Corp
- *  Copyright (C) 2008 Zhang Rui <rui.zhang@intel.com>
- *  Copyright (C) 2008 Sujith Thomas <sujith.thomas@intel.com>
- *  Copyright 2022 Linaro Limited
- *
- * Thermal trips handling
- */
+
+ 
 #include "thermal_core.h"
 
 int for_each_thermal_trip(struct thermal_zone_device *tz,
@@ -36,21 +29,7 @@ int thermal_zone_get_num_trips(struct thermal_zone_device *tz)
 }
 EXPORT_SYMBOL_GPL(thermal_zone_get_num_trips);
 
-/**
- * __thermal_zone_set_trips - Computes the next trip points for the driver
- * @tz: a pointer to a thermal zone device structure
- *
- * The function computes the next temperature boundaries by browsing
- * the trip points. The result is the closer low and high trip points
- * to the current temperature. These values are passed to the backend
- * driver to let it set its own notification mechanism (usually an
- * interrupt).
- *
- * This function must be called with tz->lock held. Both tz and tz->ops
- * must be valid pointers.
- *
- * It does not return a value
- */
+ 
 void __thermal_zone_set_trips(struct thermal_zone_device *tz)
 {
 	struct thermal_trip trip;
@@ -86,14 +65,11 @@ void __thermal_zone_set_trips(struct thermal_zone_device *tz)
 		}
 	}
 
-	/* No need to change trip points */
+	 
 	if (tz->prev_low_trip == low && tz->prev_high_trip == high)
 		return;
 
-	/*
-	 * If "high" and "low" are the same, skip the change unless this is the
-	 * first time.
-	 */
+	 
 	if (same_trip && (tz->prev_low_trip != -INT_MAX ||
 	    tz->prev_high_trip != INT_MAX))
 		return;
@@ -104,10 +80,7 @@ void __thermal_zone_set_trips(struct thermal_zone_device *tz)
 	dev_dbg(&tz->device,
 		"new temperature boundaries: %d < x < %d\n", low, high);
 
-	/*
-	 * Set a temperature window. When this window is left the driver
-	 * must inform the thermal core via thermal_zone_device_update.
-	 */
+	 
 	ret = tz->ops->set_trips(tz, low, high);
 	if (ret)
 		dev_err(&tz->device, "Failed to set trips: %d\n", ret);

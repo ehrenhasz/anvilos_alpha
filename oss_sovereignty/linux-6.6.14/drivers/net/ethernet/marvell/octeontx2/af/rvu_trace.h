@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Marvell RVU Admin Function driver
- *
- * Copyright (C) 2020 Marvell.
- *
- */
+ 
+ 
 
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM rvu
@@ -95,7 +91,7 @@ TRACE_EVENT(otx2_msg_process,
 		      otx2_mbox_id2name(__entry->id), __entry->err)
 );
 
-#endif /* __RVU_TRACE_H */
+#endif  
 
 #undef TRACE_INCLUDE_PATH
 #define TRACE_INCLUDE_PATH .

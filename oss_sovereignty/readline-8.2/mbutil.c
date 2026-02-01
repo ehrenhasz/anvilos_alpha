@@ -1,23 +1,6 @@
-/* mbutil.c -- readline multibyte character utility functions */
+ 
 
-/* Copyright (C) 2001-2021 Free Software Foundation, Inc.
-
-   This file is part of the GNU Readline Library (Readline), a library
-   for reading lines of text with interactive input and history editing.      
-
-   Readline is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   Readline is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with Readline.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ 
 
 #define READLINE_LIBRARY
 
@@ -30,66 +13,64 @@
 #include "posixjmp.h"
 
 #if defined (HAVE_UNISTD_H)
-#  include <unistd.h>	   /* for _POSIX_VERSION */
-#endif /* HAVE_UNISTD_H */
+#  include <unistd.h>	    
+#endif  
 
 #if defined (HAVE_STDLIB_H)
 #  include <stdlib.h>
 #else
 #  include "ansi_stdlib.h"
-#endif /* HAVE_STDLIB_H */
+#endif  
 
 #include <stdio.h>
 #include <ctype.h>
 
-/* System-specific feature definitions and include files. */
+ 
 #include "rldefs.h"
 #include "rlmbutil.h"
 
 #if defined (TIOCSTAT_IN_SYS_IOCTL)
 #  include <sys/ioctl.h>
-#endif /* TIOCSTAT_IN_SYS_IOCTL */
+#endif  
 
-/* Some standard library routines. */
+ 
 #include "readline.h"
 
 #include "rlprivate.h"
 #include "xmalloc.h"
 
-/* Declared here so it can be shared between the readline and history
-   libraries. */
+ 
 #if defined (HANDLE_MULTIBYTE)
 int rl_byte_oriented = 0;
 #else
 int rl_byte_oriented = 1;
 #endif
 
-/* Ditto */
+ 
 int _rl_utf8locale = 0;
 
-/* **************************************************************** */
-/*								    */
-/*		Multibyte Character Utility Functions		    */
-/*								    */
-/* **************************************************************** */
+ 
+ 
+ 
+ 
+ 
 
 #if defined(HANDLE_MULTIBYTE)
 
-/* **************************************************************** */
-/*								    */
-/*		UTF-8 specific Character Utility Functions	    */
-/*								    */
-/* **************************************************************** */
+ 
+ 
+ 
+ 
+ 
 
-/* Return the length in bytes of the possibly-multibyte character beginning
-   at S. Encoding is UTF-8. */
+ 
 static int
 _rl_utf8_mblen (const char *s, size_t n)
 {
   unsigned char c, c1, c2, c3;
 
   if (s == 0)
-    return (0);	/* no shift states */
+    return (0);	 
   if (n <= 0)
     return (-1);
 
@@ -143,7 +124,7 @@ _rl_utf8_mblen (const char *s, size_t n)
 	    }
 	}
     }
-  /* invalid or incomplete multibyte character */
+   
   return -1;
 }
 
@@ -164,14 +145,11 @@ _rl_find_next_mbchar_internal (char *string, int seed, int count, int find_non_z
     return seed;
 
   point = seed + _rl_adjust_point (string, seed, &ps);
-  /* if _rl_adjust_point returns -1, the character or string is invalid.
-     treat as a byte. */
-  if (point == seed - 1)	/* invalid */
+   
+  if (point == seed - 1)	 
     return seed + 1;
     
-  /* if this is true, means that seed was not pointing to a byte indicating
-     the beginning of a multibyte character.  Correct the point and consume
-     one char. */
+   
   if (seed < point)
     count--;
 
@@ -190,17 +168,17 @@ _rl_find_next_mbchar_internal (char *string, int seed, int count, int find_non_z
 	tmp = MBRTOWC (&wc, string+point, len, &ps);
       if (MB_INVALIDCH ((size_t)tmp))
 	{
-	  /* invalid bytes. assume a byte represents a character */
+	   
 	  point++;
 	  count--;
-	  /* reset states. */
+	   
 	  memset(&ps, 0, sizeof(mbstate_t));
 	}
       else if (MB_NULLWCH (tmp))
-	break;			/* found wide '\0' */
+	break;			 
       else
 	{
-	  /* valid bytes */
+	   
 	  point += tmp;
 	  if (find_non_zero)
 	    {
@@ -236,11 +214,11 @@ _rl_test_nonzero (char *string, int ind, int len)
 
   memset (&ps, 0, sizeof (mbstate_t));
   tmp = MBRTOWC (&wc, string + ind, len - ind, &ps);
-  /* treat invalid multibyte sequences as non-zero-width */
+   
   return (MB_INVALIDCH (tmp) || MB_NULLWCH (tmp) || WCWIDTH (wc) > 0);
 }
 
-/* experimental -- needs to handle zero-width characters better */
+ 
 static int
 _rl_find_prev_utf8char (char *string, int seed, int find_non_zero)
 {
@@ -261,7 +239,7 @@ _rl_find_prev_utf8char (char *string, int seed, int find_non_zero)
 
       save = prev;
 
-      /* Move back until we're not in the middle of a multibyte char */
+       
       if (UTF8_MBCHAR (b))
 	{
 	  while (prev > 0 && (b = (unsigned char)string[--prev]) && UTF8_MBCHAR (b))
@@ -274,20 +252,20 @@ _rl_find_prev_utf8char (char *string, int seed, int find_non_zero)
 	    {
 	      if (_rl_test_nonzero (string, prev, len))
 		return (prev);
-	      else		/* valid but WCWIDTH (wc) == 0 */
+	      else		 
 		prev = prev - 1;
 	    }
 	  else
 	    return (prev);
 	}
       else
-	return (save);			/* invalid utf-8 multibyte sequence */
+	return (save);			 
     }
 
   return ((prev < 0) ? 0 : prev);
 }  
 
-/*static*/ int
+  int
 _rl_find_prev_mbchar_internal (char *string, int seed, int find_non_zero)
 {
   mbstate_t ps;
@@ -319,20 +297,16 @@ _rl_find_prev_mbchar_internal (char *string, int seed, int find_non_zero)
 	tmp = MBRTOWC (&wc, string + point, length - point, &ps);
       if (MB_INVALIDCH ((size_t)tmp))
 	{
-	  /* in this case, bytes are invalid or too short to compose
-	     multibyte char, so assume that the first byte represents
-	     a single character anyway. */
+	   
 	  tmp = 1;
-	  /* clear the state of the byte sequence, because
-	     in this case effect of mbstate is undefined  */
+	   
 	  memset(&ps, 0, sizeof (mbstate_t));
 
-	  /* Since we're assuming that this byte represents a single
-	     non-zero-width character, don't forget about it. */
+	   
 	  prev = point;
 	}
       else if (MB_NULLWCH (tmp))
-	break;			/* Found '\0' char.  Can this happen? */
+	break;			 
       else
 	{
 	  if (find_non_zero)
@@ -350,18 +324,14 @@ _rl_find_prev_mbchar_internal (char *string, int seed, int find_non_zero)
   return prev;
 }
 
-/* return the number of bytes parsed from the multibyte sequence starting
-   at src, if a non-L'\0' wide character was recognized. It returns 0, 
-   if a L'\0' wide character was recognized. It  returns (size_t)(-1), 
-   if an invalid multibyte sequence was encountered. It returns (size_t)(-2) 
-   if it couldn't parse a complete  multibyte character.  */
+ 
 int
 _rl_get_char_len (char *src, mbstate_t *ps)
 {
   size_t tmp, l;
   int mb_cur_max;
 
-  /* Look at no more than MB_CUR_MAX characters */
+   
   l = (size_t)strlen (src);
   if (_rl_utf8locale && l > 0 && UTF8_SINGLEBYTE(*src))
     tmp = (*src != 0) ? 1 : 0;
@@ -372,15 +342,15 @@ _rl_get_char_len (char *src, mbstate_t *ps)
     }
   if (tmp == (size_t)(-2))
     {
-      /* too short to compose multibyte char */
+       
       if (ps)
 	memset (ps, 0, sizeof(mbstate_t));
       return -2;
     }
   else if (tmp == (size_t)(-1))
     {
-      /* invalid to compose multibyte char */
-      /* initialize the conversion state */
+       
+       
       if (ps)
 	memset (ps, 0, sizeof(mbstate_t));
       return -1;
@@ -391,8 +361,7 @@ _rl_get_char_len (char *src, mbstate_t *ps)
     return (int)tmp;
 }
 
-/* compare the specified two characters. If the characters matched,
-   return 1. Otherwise return 0. */
+ 
 int
 _rl_compare_chars (char *buf1, int pos1, mbstate_t *ps1, char *buf2, int pos2, mbstate_t *ps2)
 {
@@ -411,11 +380,7 @@ _rl_compare_chars (char *buf1, int pos1, mbstate_t *ps1, char *buf2, int pos2, m
   return 1;
 }
 
-/* adjust pointed byte and find mbstate of the point of string.
-   adjusted point will be point <= adjusted_point, and returns
-   differences of the byte(adjusted_point - point).
-   if point is invalid (point < 0 || more than string length),
-   it returns -1 */
+ 
 int
 _rl_adjust_point (char *string, int point, mbstate_t *ps)
 {
@@ -438,12 +403,9 @@ _rl_adjust_point (char *string, int point, mbstate_t *ps)
 	tmp = mbrlen (string + pos, length - pos, ps);
       if (MB_INVALIDCH ((size_t)tmp))
 	{
-	  /* in this case, bytes are invalid or too short to compose
-	     multibyte char, so assume that the first byte represents
-	     a single character anyway. */
+	   
 	  pos++;
-	  /* clear the state of the byte sequence, because
-	     in this case effect of mbstate is undefined  */
+	   
 	  if (ps)
 	    memset (ps, 0, sizeof (mbstate_t));
 	}
@@ -485,7 +447,7 @@ _rl_char_value (char *buf, int ind)
   l = strlen (buf);
   if (ind >= l - 1)
     return ((WCHAR_T) buf[ind]);
-  if (l < ind)			/* Sanity check */
+  if (l < ind)			 
     l = strlen (buf+ind);
   memset (&ps, 0, sizeof (mbstate_t));
   tmp = MBRTOWC (&wc, buf + ind, l - ind, &ps);
@@ -493,11 +455,9 @@ _rl_char_value (char *buf, int ind)
     return ((WCHAR_T) buf[ind]);
   return wc;
 }
-#endif /* HANDLE_MULTIBYTE */
+#endif  
 
-/* Find next `count' characters started byte point of the specified seed.
-   If flags is MB_FIND_NONZERO, we look for non-zero-width multibyte
-   characters. */
+ 
 #undef _rl_find_next_mbchar
 int
 _rl_find_next_mbchar (char *string, int seed, int count, int flags)
@@ -509,9 +469,7 @@ _rl_find_next_mbchar (char *string, int seed, int count, int flags)
 #endif
 }
 
-/* Find previous character started byte point of the specified seed.
-   Returned point will be point <= seed.  If flags is MB_FIND_NONZERO,
-   we look for non-zero-width multibyte characters. */
+ 
 #undef _rl_find_prev_mbchar
 int
 _rl_find_prev_mbchar (char *string, int seed, int flags)

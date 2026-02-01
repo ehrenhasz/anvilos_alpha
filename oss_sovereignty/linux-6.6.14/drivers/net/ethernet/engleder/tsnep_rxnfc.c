@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (C) 2022 Gerhard Engleder <gerhard@engleder-embedded.com> */
+
+ 
 
 #include "tsnep.h"
 
@@ -19,7 +19,7 @@ static void tsnep_enable_rule(struct tsnep_adapter *adapter,
 	       TSNEP_RX_ASSIGN_ETHER_TYPE_OFFSET * rule->location;
 	iowrite16(rule->filter.ether_type, addr);
 
-	/* enable rule after all settings are done */
+	 
 	addr = adapter->addr + TSNEP_RX_ASSIGN +
 	       TSNEP_RX_ASSIGN_OFFSET * rule->location;
 	iowrite8(rx_assign, addr);
@@ -207,7 +207,7 @@ int tsnep_rxnfc_add_rule(struct tsnep_adapter *adapter,
 	struct tsnep_rxnfc_rule *rule, *old_rule;
 	int retval;
 
-	/* only EtherType is supported */
+	 
 	if (fsp->flow_type != ETHER_FLOW ||
 	    !is_zero_ether_addr(fsp->m_u.ether_spec.h_dest) ||
 	    !is_zero_ether_addr(fsp->m_u.ether_spec.h_source) ||
@@ -293,7 +293,7 @@ int tsnep_rxnfc_init(struct tsnep_adapter *adapter)
 {
 	int i;
 
-	/* disable all rules */
+	 
 	for (i = 0; i < adapter->rxnfc_max;
 	     i += sizeof(u32) / TSNEP_RX_ASSIGN_OFFSET)
 		iowrite32(0, adapter->addr + TSNEP_RX_ASSIGN + i);

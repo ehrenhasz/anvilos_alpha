@@ -1,18 +1,4 @@
-/* Sign a module file using the given key.
- *
- * Copyright © 2014-2016 Red Hat, Inc. All Rights Reserved.
- * Copyright © 2015      Intel Corporation.
- * Copyright © 2016      Hewlett Packard Enterprise Development LP
- *
- * Authors: David Howells <dhowells@redhat.com>
- *          David Woodhouse <dwmw2@infradead.org>
- *          Juerg Haefliger <juerg.haefliger@hpe.com>
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public License
- * as published by the Free Software Foundation; either version 2.1
- * of the licence, or (at your option) any later version.
- */
+ 
 #define _GNU_SOURCE
 #include <stdio.h>
 #include <stdlib.h>
@@ -29,25 +15,10 @@
 #include <openssl/err.h>
 #include <openssl/engine.h>
 
-/*
- * OpenSSL 3.0 deprecates the OpenSSL's ENGINE API.
- *
- * Remove this if/when that API is no longer used
- */
+ 
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 
-/*
- * Use CMS if we have openssl-1.0.0 or newer available - otherwise we have to
- * assume that it's not available and its header file is missing and that we
- * should use PKCS#7 instead.  Switching to the older PKCS#7 format restricts
- * the options we have on specifying the X.509 certificate we want.
- *
- * Further, older versions of OpenSSL don't support manually adding signers to
- * the PKCS#7 message so have to accept that we get a certificate included in
- * the signature message.  Nor do such older versions of OpenSSL support
- * signing with anything other than SHA1 - so we're stuck with that if such is
- * the case.
- */
+ 
 #if defined(LIBRESSL_VERSION_NUMBER) || \
 	OPENSSL_VERSION_NUMBER < 0x10000000L || \
 	defined(OPENSSL_NO_CMS)
@@ -60,13 +31,13 @@
 #endif
 
 struct module_signature {
-	uint8_t		algo;		/* Public-key crypto algorithm [0] */
-	uint8_t		hash;		/* Digest algorithm [0] */
-	uint8_t		id_type;	/* Key identifier type [PKEY_ID_PKCS7] */
-	uint8_t		signer_len;	/* Length of signer's name [0] */
-	uint8_t		key_id_len;	/* Length of key identifier [0] */
+	uint8_t		algo;		 
+	uint8_t		hash;		 
+	uint8_t		id_type;	 
+	uint8_t		signer_len;	 
+	uint8_t		key_id_len;	 
 	uint8_t		__pad[3];
-	uint32_t	sig_len;	/* Length of signature data */
+	uint32_t	sig_len;	 
 };
 
 #define PKEY_ID_PKCS7 2
@@ -133,7 +104,7 @@ static int pem_pw_cb(char *buf, int len, int w, void *v)
 
 	strcpy(buf, key_pass);
 
-	/* If it's wrong, don't keep trying it. */
+	 
 	key_pass = NULL;
 
 	return pwlen;
@@ -184,7 +155,7 @@ static X509 *read_x509(const char *x509_name)
 	b = BIO_new_file(x509_name, "rb");
 	ERR(!b, "%s", x509_name);
 
-	/* Look at the first two bytes of the file to determine the encoding */
+	 
 	n = BIO_read(b, buf, 2);
 	if (n != 2) {
 		if (BIO_should_retry(b)) {
@@ -201,10 +172,10 @@ static X509 *read_x509(const char *x509_name)
 	ERR(BIO_reset(b) != 0, "%s", x509_name);
 
 	if (buf[0] == 0x30 && buf[1] >= 0x81 && buf[1] <= 0x84)
-		/* Assume raw DER encoded X.509 */
+		 
 		x509 = d2i_X509_bio(b, NULL);
 	else
-		/* Assume PEM encoded X.509 */
+		 
 		x509 = PEM_read_bio_X509(b, NULL, NULL, NULL);
 
 	BIO_free(b);
@@ -293,25 +264,23 @@ int main(int argc, char **argv)
 	}
 #endif
 
-	/* Open the module file */
+	 
 	bm = BIO_new_file(module_name, "rb");
 	ERR(!bm, "%s", module_name);
 
 	if (!raw_sig) {
-		/* Read the private key and the X.509 cert the PKCS#7 message
-		 * will point to.
-		 */
+		 
 		private_key = read_private_key(private_key_name);
 		x509 = read_x509(x509_name);
 
-		/* Digest the module data. */
+		 
 		OpenSSL_add_all_digests();
 		display_openssl_errors(__LINE__);
 		digest_algo = EVP_get_digestbyname(hash_algo);
 		ERR(!digest_algo, "EVP_get_digestbyname");
 
 #ifndef USE_PKCS7
-		/* Load the signature message from the digest buffer. */
+		 
 		cms = CMS_sign(NULL, NULL, NULL, NULL,
 			       CMS_NOCERTS | CMS_PARTIAL | CMS_BINARY |
 			       CMS_DETACHED | CMS_STREAM);
@@ -356,13 +325,11 @@ int main(int argc, char **argv)
 		}
 	}
 
-	/* Open the destination file now so that we can shovel the module data
-	 * across as we read it.
-	 */
+	 
 	bd = BIO_new_file(dest_name, "wb");
 	ERR(!bd, "%s", dest_name);
 
-	/* Append the marker and the PKCS#7 message to the destination file */
+	 
 	ERR(BIO_reset(bm) < 0, "%s", module_name);
 	while ((n = BIO_read(bm, buf, sizeof(buf))),
 	       n > 0) {
@@ -381,9 +348,7 @@ int main(int argc, char **argv)
 	} else {
 		BIO *b;
 
-		/* Read the raw signature file and write the data to the
-		 * destination file
-		 */
+		 
 		b = BIO_new_file(raw_sig_name, "rb");
 		ERR(!b, "%s", raw_sig_name);
 		while ((n = BIO_read(b, buf, sizeof(buf))), n > 0)
@@ -398,7 +363,7 @@ int main(int argc, char **argv)
 
 	ERR(BIO_free(bd) != 1, "%s", dest_name);
 
-	/* Finally, if we're signing in place, replace the original. */
+	 
 	if (replace_orig)
 		ERR(rename(dest_name, module_name) < 0, "%s", dest_name);
 

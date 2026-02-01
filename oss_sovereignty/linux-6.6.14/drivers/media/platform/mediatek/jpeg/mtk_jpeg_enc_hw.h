@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2019 MediaTek Inc.
- * Author: Xia Jiang <xia.jiang@mediatek.com>
- *
- */
+ 
+ 
 
 #ifndef _MTK_JPEG_ENC_HW_H
 #define _MTK_JPEG_ENC_HW_H
@@ -69,11 +65,7 @@
 #define JPEG_ENC_CODEC_SEL		0x314
 #define JPEG_ENC_ULTRA_THRES		0x318
 
-/**
- * struct mtk_jpeg_enc_qlt - JPEG encoder quality data
- * @quality_param:	quality value
- * @hardware_value:	hardware value of quality
- */
+ 
 struct mtk_jpeg_enc_qlt {
 	u8	quality_param;
 	u8	hardware_value;
@@ -88,4 +80,4 @@ void mtk_jpeg_set_enc_dst(struct mtk_jpeg_ctx *ctx, void __iomem *base,
 			  struct vb2_buffer *dst_buf);
 void mtk_jpeg_set_enc_params(struct mtk_jpeg_ctx *ctx,  void __iomem *base);
 
-#endif /* _MTK_JPEG_ENC_HW_H */
+#endif  

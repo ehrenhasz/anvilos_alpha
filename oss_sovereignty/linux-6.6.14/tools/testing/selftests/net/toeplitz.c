@@ -1,25 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Toeplitz test
- *
- * 1. Read packets and their rx_hash using PF_PACKET/TPACKET_V3
- * 2. Compute the rx_hash in software based on the packet contents
- * 3. Compare the two
- *
- * Optionally, either '-C $rx_irq_cpu_list' or '-r $rps_bitmap' may be given.
- *
- * If '-C $rx_irq_cpu_list' is given, also
- *
- * 4. Identify the cpu on which the packet arrived with PACKET_FANOUT_CPU
- * 5. Compute the rxqueue that RSS would select based on this rx_hash
- * 6. Using the $rx_irq_cpu_list map, identify the arriving cpu based on rxq irq
- * 7. Compare the cpus from 4 and 6
- *
- * Else if '-r $rps_bitmap' is given, also
- *
- * 4. Identify the cpu on which the packet arrived with PACKET_FANOUT_CPU
- * 5. Compute the cpu that RPS should select based on rx_hash and $rps_bitmap
- * 6. Compare the cpus from 4 and 5
- */
+
+ 
 
 #define _GNU_SOURCE
 
@@ -57,17 +37,17 @@
 #define TOEPLITZ_KEY_MIN_LEN	40
 #define TOEPLITZ_KEY_MAX_LEN	60
 
-#define TOEPLITZ_STR_LEN(K)	(((K) * 3) - 1)	/* hex encoded: AA:BB:CC:...:ZZ */
+#define TOEPLITZ_STR_LEN(K)	(((K) * 3) - 1)	 
 #define TOEPLITZ_STR_MIN_LEN	TOEPLITZ_STR_LEN(TOEPLITZ_KEY_MIN_LEN)
 #define TOEPLITZ_STR_MAX_LEN	TOEPLITZ_STR_LEN(TOEPLITZ_KEY_MAX_LEN)
 
 #define FOUR_TUPLE_MAX_LEN	((sizeof(struct in6_addr) * 2) + (sizeof(uint16_t) * 2))
 
-#define RSS_MAX_CPUS (1 << 16)	/* real constraint is PACKET_FANOUT_MAX */
+#define RSS_MAX_CPUS (1 << 16)	 
 
-#define RPS_MAX_CPUS 16UL	/* must be a power of 2 */
+#define RPS_MAX_CPUS 16UL	 
 
-/* configuration options (cmdline arguments) */
+ 
 static uint16_t cfg_dport =	8000;
 static int cfg_family =		AF_INET6;
 static char *cfg_ifname =	"eth0";
@@ -78,19 +58,19 @@ static int cfg_type =		SOCK_STREAM;
 static int cfg_timeout_msec =	1000;
 static bool cfg_verbose;
 
-/* global vars */
+ 
 static int num_cpus;
 static int ring_block_nr;
 static int ring_block_sz;
 
-/* stats */
+ 
 static int frames_received;
 static int frames_nohash;
 static int frames_error;
 
 #define log_verbose(args...)	do { if (cfg_verbose) fprintf(stderr, args); } while (0)
 
-/* tpacket ring */
+ 
 struct ring_state {
 	int fd;
 	char *mmap;
@@ -98,7 +78,7 @@ struct ring_state {
 	int cpu;
 };
 
-static unsigned int rx_irq_cpus[RSS_MAX_CPUS];	/* map from rxq to cpu */
+static unsigned int rx_irq_cpus[RSS_MAX_CPUS];	 
 static int rps_silo_to_cpu[RPS_MAX_CPUS];
 static unsigned char toeplitz_key[TOEPLITZ_KEY_MAX_LEN];
 static struct ring_state rings[RSS_MAX_CPUS];
@@ -126,7 +106,7 @@ static inline uint32_t toeplitz(const unsigned char *four_tuple,
 	return ret;
 }
 
-/* Compare computed cpu with arrival cpu from packet_fanout_cpu */
+ 
 static void verify_rss(uint32_t rx_hash, int cpu)
 {
 	int queue = rx_hash % cfg_num_queues;
@@ -165,7 +145,7 @@ static void log_rxhash(int cpu, uint32_t rx_hash,
 		    ntohs(ports[0]), ntohs(ports[1]));
 }
 
-/* Compare computed rxhash with rxhash received from tpacket_v3 */
+ 
 static void verify_rxhash(const char *pkt, uint32_t rx_hash, int cpu)
 {
 	unsigned char four_tuple[FOUR_TUPLE_MAX_LEN] = {0};
@@ -214,7 +194,7 @@ static char *recv_frame(const struct ring_state *ring, char *frame)
 	return frame + hdr->tp_next_offset;
 }
 
-/* A single TPACKET_V3 block can hold multiple frames */
+ 
 static bool recv_block(struct ring_state *ring)
 {
 	struct tpacket_block_desc *block;
@@ -239,7 +219,7 @@ static bool recv_block(struct ring_state *ring)
 	return true;
 }
 
-/* simple test: sleep once unconditionally and then process all rings */
+ 
 static void process_rings(void)
 {
 	int i;
@@ -304,10 +284,10 @@ static void __set_filter(int fd, int off_proto, uint8_t proto, int off_dport)
 		error(1, errno, "setsockopt filter");
 }
 
-/* filter on transport protocol and destination port */
+ 
 static void set_filter(int fd)
 {
-	const int off_dport = offsetof(struct tcphdr, dest);	/* same for udp */
+	const int off_dport = offsetof(struct tcphdr, dest);	 
 	uint8_t proto;
 
 	proto = cfg_type == SOCK_STREAM ? IPPROTO_TCP : IPPROTO_UDP;
@@ -319,7 +299,7 @@ static void set_filter(int fd)
 			     sizeof(struct ip6_hdr) + off_dport);
 }
 
-/* drop everything: used temporarily during setup */
+ 
 static void set_filter_null(int fd)
 {
 	struct sock_filter filter[] = {
@@ -352,9 +332,7 @@ static int create_ring(char **ring)
 		error(1, errno, "setsockopt PACKET_VERSION");
 	*ring = setup_ring(fd);
 
-	/* block packets until all rings are added to the fanout group:
-	 * else packets can arrive during setup and get misclassified
-	 */
+	 
 	set_filter_null(fd);
 
 	ll.sll_family = AF_PACKET;
@@ -364,13 +342,9 @@ static int create_ring(char **ring)
 	if (bind(fd, (void *)&ll, sizeof(ll)))
 		error(1, errno, "bind");
 
-	/* must come after bind: verifies all programs in group match */
+	 
 	if (setsockopt(fd, SOL_PACKET, PACKET_FANOUT, &args, sizeof(args))) {
-		/* on failure, retry using old API if that is sufficient:
-		 * it has a hard limit of 256 sockets, so only try if
-		 * (a) only testing rxhash, not RSS or (b) <= 256 cpus.
-		 * in this API, the third argument is left implicit.
-		 */
+		 
 		if (cfg_num_queues || num_cpus > 256 ||
 		    setsockopt(fd, SOL_PACKET, PACKET_FANOUT,
 			       &args, sizeof(uint32_t)))
@@ -380,7 +354,7 @@ static int create_ring(char **ring)
 	return fd;
 }
 
-/* setup inet(6) socket to blackhole the test traffic, if arg '-s' */
+ 
 static int setup_sink(void)
 {
 	int fd, val;
@@ -405,7 +379,7 @@ static void setup_rings(void)
 		rings[i].fd = create_ring(&rings[i].mmap);
 	}
 
-	/* accept packets once all rings in the fanout group are up */
+	 
 	for (i = 0; i < num_cpus; i++)
 		set_filter(rings[i].fd);
 }
@@ -430,7 +404,7 @@ static void parse_cpulist(const char *arg)
 		arg = strchr(arg, ',');
 		if (!arg)
 			break;
-		arg++;			// skip ','
+		arg++;			
 	} while (1);
 }
 

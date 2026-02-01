@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef CAIAQ_DEVICE_H
 #define CAIAQ_DEVICE_H
 
@@ -94,20 +94,20 @@ struct snd_usb_caiaqdev {
 	struct snd_pcm_substream *sub_playback[MAX_STREAMS];
 	struct snd_pcm_substream *sub_capture[MAX_STREAMS];
 
-	/* Controls */
+	 
 	unsigned char control_state[256];
 	unsigned char ep8_out_buf[2];
 
-	/* Linux input */
+	 
 #ifdef CONFIG_SND_USB_CAIAQ_INPUT
 	struct input_dev *input_dev;
-	char phys[64];			/* physical device path */
+	char phys[64];			 
 	unsigned short keycode[128];
 	struct urb *ep4_in_urb;
 	unsigned char ep4_in_buf[EP4_BUFSIZE];
 #endif
 
-	/* ALSA */
+	 
 	struct snd_pcm *pcm;
 	struct snd_pcm_hardware pcm_info;
 	struct snd_rawmidi *rmidi;
@@ -135,4 +135,4 @@ int snd_usb_caiaq_send_command_bank(struct snd_usb_caiaqdev *cdev,
 			       const unsigned char *buffer,
 			       int len);
 
-#endif /* CAIAQ_DEVICE_H */
+#endif  

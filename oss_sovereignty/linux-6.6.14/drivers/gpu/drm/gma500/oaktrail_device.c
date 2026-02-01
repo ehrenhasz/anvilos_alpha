@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/**************************************************************************
- * Copyright (c) 2011, Intel Corporation.
- * All Rights Reserved.
- *
- **************************************************************************/
+
+ 
 
 #include <linux/delay.h>
 #include <linux/dmi.h>
@@ -32,12 +28,10 @@ static int oaktrail_output_init(struct drm_device *dev)
 	return 0;
 }
 
-/*
- *	Provide the low level interfaces for the Moorestown backlight
- */
+ 
 
 #define MRST_BLC_MAX_PWM_REG_FREQ	    0xFFFF
-#define BLC_PWM_PRECISION_FACTOR 100	/* 10000000 */
+#define BLC_PWM_PRECISION_FACTOR 100	 
 #define BLC_PWM_FREQ_CALC_CONSTANT 32
 #define MHz 1000000
 #define BLC_ADJUSTMENT_MAX 100
@@ -49,23 +43,19 @@ static void oaktrail_set_brightness(struct drm_device *dev, int level)
 	u32 max_pwm_blc;
 
 	if (gma_power_begin(dev, 0)) {
-		/* Calculate and set the brightness value */
+		 
 		max_pwm_blc = REG_READ(BLC_PWM_CTL) >> 16;
 		blc_pwm_ctl = level * max_pwm_blc / 100;
 
-		/* Adjust the backlight level with the percent in
-		 * dev_priv->blc_adj1;
-		 */
+		 
 		blc_pwm_ctl = blc_pwm_ctl * dev_priv->blc_adj1;
 		blc_pwm_ctl = blc_pwm_ctl / 100;
 
-		/* Adjust the backlight level with the percent in
-		 * dev_priv->blc_adj2;
-		 */
+		 
 		blc_pwm_ctl = blc_pwm_ctl * dev_priv->blc_adj2;
 		blc_pwm_ctl = blc_pwm_ctl / 100;
 
-		/* force PWM bit on */
+		 
 		REG_WRITE(BLC_PWM_CTL2, (0x80000000 | REG_READ(BLC_PWM_CTL2)));
 		REG_WRITE(BLC_PWM_CTL, (max_pwm_blc << 16) | blc_pwm_ctl);
 		gma_power_end(dev);
@@ -83,7 +73,7 @@ static int oaktrail_backlight_init(struct drm_device *dev)
 	dev_priv->blc_adj1 = BLC_ADJUSTMENT_MAX;
 	dev_priv->blc_adj2 = BLC_ADJUSTMENT_MAX;
 	bl_max_freq = 256;
-	/* this needs to be set elsewhere */
+	 
 	blc_pwm_precision_factor = BLC_PWM_PRECISION_FACTOR;
 
 	core_clock = dev_priv->core_freq;
@@ -106,18 +96,9 @@ static int oaktrail_backlight_init(struct drm_device *dev)
 	return 0;
 }
 
-/*
- *	Provide the Moorestown specific chip logic and low level methods
- *	for power management
- */
+ 
 
-/**
- *	oaktrail_save_display_registers	-	save registers lost on suspend
- *	@dev: our DRM device
- *
- *	Save the state we need in order to be able to restore the interface
- *	upon resume from suspend
- */
+ 
 static int oaktrail_save_display_registers(struct drm_device *dev)
 {
 	struct drm_psb_private *dev_priv = to_drm_psb_private(dev);
@@ -126,7 +107,7 @@ static int oaktrail_save_display_registers(struct drm_device *dev)
 	int i;
 	u32 pp_stat;
 
-	/* Display arbitration control + watermarks */
+	 
 	regs->psb.saveDSPARB = PSB_RVDC32(DSPARB);
 	regs->psb.saveDSPFW1 = PSB_RVDC32(DSPFW1);
 	regs->psb.saveDSPFW2 = PSB_RVDC32(DSPFW2);
@@ -136,7 +117,7 @@ static int oaktrail_save_display_registers(struct drm_device *dev)
 	regs->psb.saveDSPFW6 = PSB_RVDC32(DSPFW6);
 	regs->psb.saveCHICKENBIT = PSB_RVDC32(DSPCHICKENBIT);
 
-	/* Pipe & plane A info */
+	 
 	p->conf = PSB_RVDC32(PIPEACONF);
 	p->src = PSB_RVDC32(PIPEASRC);
 	p->fp0 = PSB_RVDC32(MRST_FPA0);
@@ -156,22 +137,22 @@ static int oaktrail_save_display_registers(struct drm_device *dev)
 	p->linoff = PSB_RVDC32(DSPALINOFF);
 	p->tileoff = PSB_RVDC32(DSPATILEOFF);
 
-	/* Save cursor regs */
+	 
 	regs->psb.saveDSPACURSOR_CTRL = PSB_RVDC32(CURACNTR);
 	regs->psb.saveDSPACURSOR_BASE = PSB_RVDC32(CURABASE);
 	regs->psb.saveDSPACURSOR_POS = PSB_RVDC32(CURAPOS);
 
-	/* Save palette (gamma) */
+	 
 	for (i = 0; i < 256; i++)
 		p->palette[i] = PSB_RVDC32(PALETTE_A + (i << 2));
 
 	if (dev_priv->hdmi_priv)
 		oaktrail_hdmi_save(dev);
 
-	/* Save performance state */
+	 
 	regs->psb.savePERF_MODE = PSB_RVDC32(MRST_PERF_MODE);
 
-	/* LVDS state */
+	 
 	regs->psb.savePP_CONTROL = PSB_RVDC32(PP_CONTROL);
 	regs->psb.savePFIT_PGM_RATIOS = PSB_RVDC32(PFIT_PGM_RATIOS);
 	regs->psb.savePFIT_AUTO_RATIOS = PSB_RVDC32(PFIT_AUTO_RATIOS);
@@ -183,7 +164,7 @@ static int oaktrail_save_display_registers(struct drm_device *dev)
 	regs->psb.savePP_OFF_DELAYS = PSB_RVDC32(LVDSPP_OFF);
 	regs->psb.savePP_DIVISOR = PSB_RVDC32(PP_CYCLE);
 
-	/* HW overlay */
+	 
 	regs->psb.saveOV_OVADD = PSB_RVDC32(OV_OVADD);
 	regs->psb.saveOV_OGAMC0 = PSB_RVDC32(OV_OGAMC0);
 	regs->psb.saveOV_OGAMC1 = PSB_RVDC32(OV_OGAMC1);
@@ -192,7 +173,7 @@ static int oaktrail_save_display_registers(struct drm_device *dev)
 	regs->psb.saveOV_OGAMC4 = PSB_RVDC32(OV_OGAMC4);
 	regs->psb.saveOV_OGAMC5 = PSB_RVDC32(OV_OGAMC5);
 
-	/* DPST registers */
+	 
 	regs->psb.saveHISTOGRAM_INT_CONTROL_REG =
 					PSB_RVDC32(HISTOGRAM_INT_CONTROL);
 	regs->psb.saveHISTOGRAM_LOGIC_CONTROL_REG =
@@ -200,38 +181,33 @@ static int oaktrail_save_display_registers(struct drm_device *dev)
 	regs->psb.savePWM_CONTROL_LOGIC = PSB_RVDC32(PWM_CONTROL_LOGIC);
 
 	if (dev_priv->iLVDS_enable) {
-		/* Shut down the panel */
+		 
 		PSB_WVDC32(0, PP_CONTROL);
 
 		do {
 			pp_stat = PSB_RVDC32(PP_STATUS);
 		} while (pp_stat & 0x80000000);
 
-		/* Turn off the plane */
+		 
 		PSB_WVDC32(0x58000000, DSPACNTR);
-		/* Trigger the plane disable */
+		 
 		PSB_WVDC32(0, DSPASURF);
 
-		/* Wait ~4 ticks */
+		 
 		msleep(4);
 
-		/* Turn off pipe */
+		 
 		PSB_WVDC32(0x0, PIPEACONF);
-		/* Wait ~8 ticks */
+		 
 		msleep(8);
 
-		/* Turn off PLLs */
+		 
 		PSB_WVDC32(0, MRST_DPLL_A);
 	}
 	return 0;
 }
 
-/**
- *	oaktrail_restore_display_registers	-	restore lost register state
- *	@dev: our DRM device
- *
- *	Restore register state that was lost during suspend and resume.
- */
+ 
 static int oaktrail_restore_display_registers(struct drm_device *dev)
 {
 	struct drm_psb_private *dev_priv = to_drm_psb_private(dev);
@@ -240,7 +216,7 @@ static int oaktrail_restore_display_registers(struct drm_device *dev)
 	u32 pp_stat;
 	int i;
 
-	/* Display arbitration + watermarks */
+	 
 	PSB_WVDC32(regs->psb.saveDSPARB, DSPARB);
 	PSB_WVDC32(regs->psb.saveDSPFW1, DSPFW1);
 	PSB_WVDC32(regs->psb.saveDSPFW2, DSPFW2);
@@ -250,18 +226,18 @@ static int oaktrail_restore_display_registers(struct drm_device *dev)
 	PSB_WVDC32(regs->psb.saveDSPFW6, DSPFW6);
 	PSB_WVDC32(regs->psb.saveCHICKENBIT, DSPCHICKENBIT);
 
-	/* Make sure VGA plane is off. it initializes to on after reset!*/
+	 
 	PSB_WVDC32(0x80000000, VGACNTRL);
 
-	/* set the plls */
+	 
 	PSB_WVDC32(p->fp0, MRST_FPA0);
 	PSB_WVDC32(p->fp1, MRST_FPA1);
 
-	/* Actually enable it */
+	 
 	PSB_WVDC32(p->dpll, MRST_DPLL_A);
 	udelay(150);
 
-	/* Restore mode */
+	 
 	PSB_WVDC32(p->htotal, HTOTAL_A);
 	PSB_WVDC32(p->hblank, HBLANK_A);
 	PSB_WVDC32(p->hsync, HSYNC_A);
@@ -271,28 +247,28 @@ static int oaktrail_restore_display_registers(struct drm_device *dev)
 	PSB_WVDC32(p->src, PIPEASRC);
 	PSB_WVDC32(regs->psb.saveBCLRPAT_A, BCLRPAT_A);
 
-	/* Restore performance mode*/
+	 
 	PSB_WVDC32(regs->psb.savePERF_MODE, MRST_PERF_MODE);
 
-	/* Enable the pipe*/
+	 
 	if (dev_priv->iLVDS_enable)
 		PSB_WVDC32(p->conf, PIPEACONF);
 
-	/* Set up the plane*/
+	 
 	PSB_WVDC32(p->linoff, DSPALINOFF);
 	PSB_WVDC32(p->stride, DSPASTRIDE);
 	PSB_WVDC32(p->tileoff, DSPATILEOFF);
 
-	/* Enable the plane */
+	 
 	PSB_WVDC32(p->cntr, DSPACNTR);
 	PSB_WVDC32(p->surf, DSPASURF);
 
-	/* Enable Cursor A */
+	 
 	PSB_WVDC32(regs->psb.saveDSPACURSOR_CTRL, CURACNTR);
 	PSB_WVDC32(regs->psb.saveDSPACURSOR_POS, CURAPOS);
 	PSB_WVDC32(regs->psb.saveDSPACURSOR_BASE, CURABASE);
 
-	/* Restore palette (gamma) */
+	 
 	for (i = 0; i < 256; i++)
 		PSB_WVDC32(p->palette[i], PALETTE_A + (i << 2));
 
@@ -301,7 +277,7 @@ static int oaktrail_restore_display_registers(struct drm_device *dev)
 
 	if (dev_priv->iLVDS_enable) {
 		PSB_WVDC32(regs->saveBLC_PWM_CTL2, BLC_PWM_CTL2);
-		PSB_WVDC32(regs->psb.saveLVDS, LVDS); /*port 61180h*/
+		PSB_WVDC32(regs->psb.saveLVDS, LVDS);  
 		PSB_WVDC32(regs->psb.savePFIT_CONTROL, PFIT_CONTROL);
 		PSB_WVDC32(regs->psb.savePFIT_PGM_RATIOS, PFIT_PGM_RATIOS);
 		PSB_WVDC32(regs->psb.savePFIT_AUTO_RATIOS, PFIT_AUTO_RATIOS);
@@ -312,17 +288,17 @@ static int oaktrail_restore_display_registers(struct drm_device *dev)
 		PSB_WVDC32(regs->psb.savePP_CONTROL, PP_CONTROL);
 	}
 
-	/* Wait for cycle delay */
+	 
 	do {
 		pp_stat = PSB_RVDC32(PP_STATUS);
 	} while (pp_stat & 0x08000000);
 
-	/* Wait for panel power up */
+	 
 	do {
 		pp_stat = PSB_RVDC32(PP_STATUS);
 	} while (pp_stat & 0x10000000);
 
-	/* Restore HW overlay */
+	 
 	PSB_WVDC32(regs->psb.saveOV_OVADD, OV_OVADD);
 	PSB_WVDC32(regs->psb.saveOV_OGAMC0, OV_OGAMC0);
 	PSB_WVDC32(regs->psb.saveOV_OGAMC1, OV_OGAMC1);
@@ -331,7 +307,7 @@ static int oaktrail_restore_display_registers(struct drm_device *dev)
 	PSB_WVDC32(regs->psb.saveOV_OGAMC4, OV_OGAMC4);
 	PSB_WVDC32(regs->psb.saveOV_OGAMC5, OV_OGAMC5);
 
-	/* DPST registers */
+	 
 	PSB_WVDC32(regs->psb.saveHISTOGRAM_INT_CONTROL_REG,
 						HISTOGRAM_INT_CONTROL);
 	PSB_WVDC32(regs->psb.saveHISTOGRAM_LOGIC_CONTROL_REG,
@@ -341,12 +317,7 @@ static int oaktrail_restore_display_registers(struct drm_device *dev)
 	return 0;
 }
 
-/**
- *	oaktrail_power_down	-	power down the display island
- *	@dev: our DRM device
- *
- *	Power down the display interface of our device
- */
+ 
 static int oaktrail_power_down(struct drm_device *dev)
 {
 	struct drm_psb_private *dev_priv = to_drm_psb_private(dev);
@@ -366,11 +337,7 @@ static int oaktrail_power_down(struct drm_device *dev)
 	return 0;
 }
 
-/*
- * oaktrail_power_up
- *
- * Restore power to the specified island(s) (powergating)
- */
+ 
 static int oaktrail_power_up(struct drm_device *dev)
 {
 	struct drm_psb_private *dev_priv = to_drm_psb_private(dev);
@@ -391,7 +358,7 @@ static int oaktrail_power_up(struct drm_device *dev)
 	return 0;
 }
 
-/* Oaktrail */
+ 
 static const struct psb_offset oaktrail_regmap[2] = {
 	{
 		.fp0 = MRST_FPA0,
@@ -455,7 +422,7 @@ static int oaktrail_chip_setup(struct drm_device *dev)
 	if (ret < 0)
 		return ret;
 	if (!dev_priv->has_gct) {
-		/* Now pull the BIOS data */
+		 
 		psb_intel_opregion_init(dev);
 		psb_intel_init_bios(dev);
 	}

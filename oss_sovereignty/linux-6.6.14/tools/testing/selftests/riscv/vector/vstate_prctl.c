@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 #include <sys/prctl.h>
 #include <unistd.h>
 #include <asm/hwprobe.h>
@@ -7,11 +7,7 @@
 
 #include "../../kselftest.h"
 
-/*
- * Rather than relying on having a new enough libc to define this, just do it
- * ourselves.  This way we don't need to be coupled to a new-enough libc to
- * contain the call.
- */
+ 
 long riscv_hwprobe(struct riscv_hwprobe *pairs, size_t pair_count,
 		   size_t cpu_count, unsigned long *cpus, unsigned int flags);
 
@@ -32,7 +28,7 @@ static int launch_test(int test_inherit)
 		exec_argv[1] = test_inherit != 0 ? "x" : NULL;
 		exec_argv[2] = NULL;
 		exec_envp[0] = NULL;
-		/* launch the program again to check inherit */
+		 
 		rc = execve(NEXT_PROGRAM, exec_argv, exec_envp);
 		if (rc) {
 			perror("execve");
@@ -128,17 +124,17 @@ int main(void)
 		return -5;
 	}
 
-	/* Turn on next's vector explicitly and test */
+	 
 	flag = PR_RISCV_V_VSTATE_CTRL_ON << PR_RISCV_V_VSTATE_CTRL_NEXT_SHIFT;
 	if (test_and_compare_child(flag, PR_RISCV_V_VSTATE_CTRL_ON, 0))
 		return -6;
 
-	/* Turn off next's vector explicitly and test */
+	 
 	flag = PR_RISCV_V_VSTATE_CTRL_OFF << PR_RISCV_V_VSTATE_CTRL_NEXT_SHIFT;
 	if (test_and_compare_child(flag, PR_RISCV_V_VSTATE_CTRL_OFF, 0))
 		return -7;
 
-	/* Turn on next's vector explicitly and test inherit */
+	 
 	flag = PR_RISCV_V_VSTATE_CTRL_ON << PR_RISCV_V_VSTATE_CTRL_NEXT_SHIFT;
 	flag |= PR_RISCV_V_VSTATE_CTRL_INHERIT;
 	expected = flag | PR_RISCV_V_VSTATE_CTRL_ON;
@@ -148,7 +144,7 @@ int main(void)
 	if (test_and_compare_child(flag, expected, 1))
 		return -9;
 
-	/* Turn off next's vector explicitly and test inherit */
+	 
 	flag = PR_RISCV_V_VSTATE_CTRL_OFF << PR_RISCV_V_VSTATE_CTRL_NEXT_SHIFT;
 	flag |= PR_RISCV_V_VSTATE_CTRL_INHERIT;
 	expected = flag | PR_RISCV_V_VSTATE_CTRL_OFF;
@@ -158,7 +154,7 @@ int main(void)
 	if (test_and_compare_child(flag, expected, 1))
 		return -11;
 
-	/* arguments should fail with EINVAL */
+	 
 	rc = prctl(PR_RISCV_V_SET_CONTROL, 0xff0);
 	if (rc != -1 || errno != EINVAL) {
 		ksft_test_result_fail("Undefined control argument should return EINVAL\n");

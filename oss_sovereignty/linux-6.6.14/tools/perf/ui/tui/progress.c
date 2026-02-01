@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/kernel.h>
 #include "../progress.h"
 #include "../libslang.h"
@@ -29,10 +29,7 @@ static void tui_progress__update(struct ui_progress *p)
 {
 	char buf[100], *title = (char *) p->title;
 	int bar, y;
-	/*
-	 * FIXME: We should have a per UI backend way of showing progress,
-	 * stdio will just show a percentage as NN%, etc.
-	 */
+	 
 	if (use_browser <= 0)
 		return;
 

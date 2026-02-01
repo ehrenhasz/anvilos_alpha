@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/list.h>
 #include <linux/list_sort.h>
 #include <linux/string.h>
@@ -16,21 +16,7 @@
 #include "pmu.h"
 #include "print-events.h"
 
-/*
- * core_pmus:  A PMU belongs to core_pmus if it's name is "cpu" or it's sysfs
- *             directory contains "cpus" file. All PMUs belonging to core_pmus
- *             must have pmu->is_core=1. If there are more than one PMU in
- *             this list, perf interprets it as a heterogeneous platform.
- *             (FWIW, certain ARM platforms having heterogeneous cores uses
- *             homogeneous PMU, and thus they are treated as homogeneous
- *             platform by perf because core_pmus will have only one entry)
- * other_pmus: All other PMUs which are not part of core_pmus list. It doesn't
- *             matter whether PMU is present per SMT-thread or outside of the
- *             core in the hw. For e.g., an instance of AMD ibs_fetch// and
- *             ibs_op// PMUs is present in each hw SMT thread, however they
- *             are captured under other_pmus. PMUs belonging to other_pmus
- *             must have pmu->is_core=0 but pmu->is_uncore could be 0 or 1.
- */
+ 
 static LIST_HEAD(core_pmus);
 static LIST_HEAD(other_pmus);
 static bool read_sysfs_core_pmus;
@@ -42,14 +28,11 @@ int pmu_name_len_no_suffix(const char *str, unsigned long *num)
 
 	orig_len = len = strlen(str);
 
-	/* Non-uncore PMUs have their full length, for example, i915. */
+	 
 	if (!strstarts(str, "uncore_"))
 		return len;
 
-	/*
-	 * Count trailing digits and '_', if '_{num}' suffix isn't present use
-	 * the full length.
-	 */
+	 
 	while (len > 0 && isdigit(str[len - 1]))
 		len--;
 
@@ -103,11 +86,7 @@ struct perf_pmu *perf_pmus__find(const char *name)
 	int dirfd;
 	bool core_pmu;
 
-	/*
-	 * Once PMU is loaded it stays in the list,
-	 * so we keep us from multiple reading/parsing
-	 * the pmu format definitions.
-	 */
+	 
 	pmu = pmu_find(name);
 	if (pmu)
 		return pmu;
@@ -131,11 +110,7 @@ static struct perf_pmu *perf_pmu__find2(int dirfd, const char *name)
 	struct perf_pmu *pmu;
 	bool core_pmu;
 
-	/*
-	 * Once PMU is loaded it stays in the list,
-	 * so we keep us from multiple reading/parsing
-	 * the pmu format definitions.
-	 */
+	 
 	pmu = pmu_find(name);
 	if (pmu)
 		return pmu;
@@ -169,7 +144,7 @@ static int pmus_cmp(void *priv __maybe_unused,
 	return lhs_num < rhs_num ? -1 : (lhs_num > rhs_num ? 1 : 0);
 }
 
-/* Add all pmus in sysfs to pmu list: */
+ 
 static void pmu_read_sysfs(bool core_only)
 {
 	int fd;
@@ -194,7 +169,7 @@ static void pmu_read_sysfs(bool core_only)
 			continue;
 		if (core_only && !is_pmu_core(dent->d_name))
 			continue;
-		/* add to static LIST_HEAD(core_pmus) or LIST_HEAD(other_pmus): */
+		 
 		perf_pmu__find2(fd, dent->d_name);
 	}
 
@@ -235,21 +210,18 @@ struct perf_pmu *perf_pmus__find_by_type(unsigned int type)
 	if (pmu || read_sysfs_all_pmus)
 		return pmu;
 
-	pmu_read_sysfs(/*core_only=*/false);
+	pmu_read_sysfs( false);
 	pmu = __perf_pmus__find_by_type(type);
 	return pmu;
 }
 
-/*
- * pmu iterator: If pmu is NULL, we start at the begin, otherwise return the
- * next pmu. Returns NULL on end.
- */
+ 
 struct perf_pmu *perf_pmus__scan(struct perf_pmu *pmu)
 {
 	bool use_core_pmus = !pmu || pmu->is_core;
 
 	if (!pmu) {
-		pmu_read_sysfs(/*core_only=*/false);
+		pmu_read_sysfs( false);
 		pmu = list_prepare_entry(pmu, &core_pmus, list);
 	}
 	if (use_core_pmus) {
@@ -267,7 +239,7 @@ struct perf_pmu *perf_pmus__scan(struct perf_pmu *pmu)
 struct perf_pmu *perf_pmus__scan_core(struct perf_pmu *pmu)
 {
 	if (!pmu) {
-		pmu_read_sysfs(/*core_only=*/true);
+		pmu_read_sysfs( true);
 		pmu = list_prepare_entry(pmu, &core_pmus, list);
 	}
 	list_for_each_entry_continue(pmu, &core_pmus, list)
@@ -283,14 +255,14 @@ static struct perf_pmu *perf_pmus__scan_skip_duplicates(struct perf_pmu *pmu)
 	const char *last_pmu_name = (pmu && pmu->name) ? pmu->name : "";
 
 	if (!pmu) {
-		pmu_read_sysfs(/*core_only=*/false);
+		pmu_read_sysfs( false);
 		pmu = list_prepare_entry(pmu, &core_pmus, list);
 	} else
 		last_pmu_name_len = pmu_name_len_no_suffix(pmu->name ?: "", NULL);
 
 	if (use_core_pmus) {
 		list_for_each_entry_continue(pmu, &core_pmus, list) {
-			int pmu_name_len = pmu_name_len_no_suffix(pmu->name ?: "", /*num=*/NULL);
+			int pmu_name_len = pmu_name_len_no_suffix(pmu->name ?: "",  NULL);
 
 			if (last_pmu_name_len == pmu_name_len &&
 			    !strncmp(last_pmu_name, pmu->name ?: "", pmu_name_len))
@@ -302,7 +274,7 @@ static struct perf_pmu *perf_pmus__scan_skip_duplicates(struct perf_pmu *pmu)
 		pmu = list_prepare_entry(pmu, &other_pmus, list);
 	}
 	list_for_each_entry_continue(pmu, &other_pmus, list) {
-		int pmu_name_len = pmu_name_len_no_suffix(pmu->name ?: "", /*num=*/NULL);
+		int pmu_name_len = pmu_name_len_no_suffix(pmu->name ?: "",  NULL);
 
 		if (last_pmu_name_len == pmu_name_len &&
 		    !strncmp(last_pmu_name, pmu->name ?: "", pmu_name_len))
@@ -320,12 +292,12 @@ const struct perf_pmu *perf_pmus__pmu_for_pmu_filter(const char *str)
 	while ((pmu = perf_pmus__scan(pmu)) != NULL) {
 		if (!strcmp(pmu->name, str))
 			return pmu;
-		/* Ignore "uncore_" prefix. */
+		 
 		if (!strncmp(pmu->name, "uncore_", 7)) {
 			if (!strcmp(pmu->name + 7, str))
 				return pmu;
 		}
-		/* Ignore "cpu_" prefix on Intel hybrid PMUs. */
+		 
 		if (!strncmp(pmu->name, "cpu_", 4)) {
 			if (!strcmp(pmu->name + 4, str))
 				return pmu;
@@ -336,13 +308,13 @@ const struct perf_pmu *perf_pmus__pmu_for_pmu_filter(const char *str)
 
 int __weak perf_pmus__num_mem_pmus(void)
 {
-	/* All core PMUs are for mem events. */
+	 
 	return perf_pmus__num_core_pmus();
 }
 
-/** Struct for ordering events as output in perf list. */
+ 
 struct sevent {
-	/** PMU for event. */
+	 
 	const struct perf_pmu *pmu;
 	const char *name;
 	const char* alias;
@@ -362,39 +334,39 @@ static int cmp_sevent(const void *a, const void *b)
 	bool a_iscpu, b_iscpu;
 	int ret;
 
-	/* Put extra events last. */
+	 
 	if (!!as->desc != !!bs->desc)
 		return !!as->desc - !!bs->desc;
 
-	/* Order by topics. */
+	 
 	ret = strcmp(as->topic ?: "", bs->topic ?: "");
 	if (ret)
 		return ret;
 
-	/* Order CPU core events to be first */
+	 
 	a_iscpu = as->pmu ? as->pmu->is_core : true;
 	b_iscpu = bs->pmu ? bs->pmu->is_core : true;
 	if (a_iscpu != b_iscpu)
 		return a_iscpu ? -1 : 1;
 
-	/* Order by PMU name. */
+	 
 	if (as->pmu != bs->pmu) {
 		ret = strcmp(as->pmu_name ?: "", bs->pmu_name ?: "");
 		if (ret)
 			return ret;
 	}
 
-	/* Order by event name. */
+	 
 	return strcmp(as->name, bs->name);
 }
 
 static bool pmu_alias_is_duplicate(struct sevent *a, struct sevent *b)
 {
-	/* Different names -> never duplicates */
+	 
 	if (strcmp(a->name ?: "//", b->name ?: "//"))
 		return false;
 
-	/* Don't remove duplicates for different PMUs */
+	 
 	return strcmp(a->pmu_name, b->pmu_name) == 0;
 }
 
@@ -468,7 +440,7 @@ void perf_pmus__print_pmu_events(const struct print_callbacks *print_cb, void *p
 	}
 	qsort(aliases, len, sizeof(struct sevent), cmp_sevent);
 	for (int j = 0; j < len; j++) {
-		/* Skip duplicates */
+		 
 		if (j > 0 && pmu_alias_is_duplicate(&aliases[j], &aliases[j - 1]))
 			continue;
 

@@ -1,20 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Support Camera Imaging tracer core.
- *
- * Copyright (c) 2013 Intel Corporation. All Rights Reserved.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License version
- * 2 as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- *
- */
+ 
+ 
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM atomisp
 
@@ -124,5 +109,5 @@ TRACE_EVENT(ipu_pstate,
 #undef TRACE_INCLUDE_FILE
 #define TRACE_INCLUDE_PATH .
 #define TRACE_INCLUDE_FILE   atomisp_trace_event
-/* This part must be outside protection */
+ 
 #include <trace/define_trace.h>

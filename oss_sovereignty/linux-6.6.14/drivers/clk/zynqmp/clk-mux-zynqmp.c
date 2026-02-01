@@ -1,31 +1,13 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Zynq UltraScale+ MPSoC mux
- *
- *  Copyright (C) 2016-2018 Xilinx
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/slab.h>
 #include "clk-zynqmp.h"
 
-/*
- * DOC: basic adjustable multiplexer clock that cannot gate
- *
- * Traits of this clock:
- * prepare - clk_prepare only ensures that parents are prepared
- * enable - clk_enable only ensures that parents are enabled
- * rate - rate is only affected by parent switching.  No clk_set_rate support
- * parent - parent is adjustable through clk_set_parent
- */
+ 
 
-/**
- * struct zynqmp_clk_mux - multiplexer clock
- *
- * @hw:		handle between common and hardware-specific interfaces
- * @flags:	hardware-specific flags
- * @clk_id:	Id of clock
- */
+ 
 struct zynqmp_clk_mux {
 	struct clk_hw hw;
 	u8 flags;
@@ -34,12 +16,7 @@ struct zynqmp_clk_mux {
 
 #define to_zynqmp_clk_mux(_hw) container_of(_hw, struct zynqmp_clk_mux, hw)
 
-/**
- * zynqmp_clk_mux_get_parent() - Get parent of clock
- * @hw:		handle between common and hardware-specific interfaces
- *
- * Return: Parent index on success or number of parents in case of error
- */
+ 
 static u8 zynqmp_clk_mux_get_parent(struct clk_hw *hw)
 {
 	struct zynqmp_clk_mux *mux = to_zynqmp_clk_mux(hw);
@@ -53,23 +30,14 @@ static u8 zynqmp_clk_mux_get_parent(struct clk_hw *hw)
 	if (ret) {
 		pr_debug("%s() getparent failed for clock: %s, ret = %d\n",
 			 __func__, clk_name, ret);
-		/*
-		 * clk_core_get_parent_by_index() takes num_parents as incorrect
-		 * index which is exactly what I want to return here
-		 */
+		 
 		return clk_hw_get_num_parents(hw);
 	}
 
 	return val;
 }
 
-/**
- * zynqmp_clk_mux_set_parent() - Set parent of clock
- * @hw:		handle between common and hardware-specific interfaces
- * @index:	Parent index
- *
- * Return: 0 on success else error+reason
- */
+ 
 static int zynqmp_clk_mux_set_parent(struct clk_hw *hw, u8 index)
 {
 	struct zynqmp_clk_mux *mux = to_zynqmp_clk_mux(hw);
@@ -117,17 +85,7 @@ static inline unsigned long zynqmp_clk_map_mux_ccf_flags(
 	return ccf_flag;
 }
 
-/**
- * zynqmp_clk_register_mux() - Register a mux table with the clock
- *			       framework
- * @name:		Name of this clock
- * @clk_id:		Id of this clock
- * @parents:		Name of this clock's parents
- * @num_parents:	Number of parents
- * @nodes:		Clock topology node
- *
- * Return: clock hardware of the registered clock mux
- */
+ 
 struct clk_hw *zynqmp_clk_register_mux(const char *name, u32 clk_id,
 				       const char * const *parents,
 				       u8 num_parents,

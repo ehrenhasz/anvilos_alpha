@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2021 ARM Limited.
- */
+
+ 
 #include <errno.h>
 #include <stdbool.h>
 #include <stddef.h>
@@ -20,19 +18,12 @@
 
 #include "../../kselftest.h"
 
-/* <linux/elf.h> and <sys/auxv.h> don't like each other, so: */
+ 
 #ifndef NT_ARM_ZA
 #define NT_ARM_ZA 0x40c
 #endif
 
-/*
- * The architecture defines the maximum VQ as 16 but for extensibility
- * the kernel specifies the SVE_VQ_MAX as 512 resulting in us running
- * a *lot* more tests than are useful if we use it.  Until the
- * architecture is extended let's limit our coverage to what is
- * currently allowed, plus one extra to ensure we cover constraining
- * the VL as expected.
- */
+ 
 #define TEST_VQ_MAX 17
 
 #define EXPECTED_TESTS (((TEST_VQ_MAX - SVE_VQ_MIN) + 1) * 3)
@@ -102,7 +93,7 @@ static int set_za(pid_t pid, const struct user_za_header *za)
 	return ptrace(PTRACE_SETREGSET, pid, NT_ARM_ZA, &iov);
 }
 
-/* Validate attempting to set the specfied VL via ptrace */
+ 
 static void ptrace_set_get_vl(pid_t child, unsigned int vl, bool *supported)
 {
 	struct user_za_header za;
@@ -112,16 +103,16 @@ static void ptrace_set_get_vl(pid_t child, unsigned int vl, bool *supported)
 
 	*supported = false;
 
-	/* Check if the VL is supported in this process */
+	 
 	prctl_vl = prctl(PR_SME_SET_VL, vl);
 	if (prctl_vl == -1)
 		ksft_exit_fail_msg("prctl(PR_SME_SET_VL) failed: %s (%d)\n",
 				   strerror(errno), errno);
 
-	/* If the VL is not supported then a supported VL will be returned */
+	 
 	*supported = (prctl_vl == vl);
 
-	/* Set the VL by doing a set with no register payload */
+	 
 	memset(&za, 0, sizeof(za));
 	za.size = sizeof(za);
 	za.vl = vl;
@@ -131,10 +122,7 @@ static void ptrace_set_get_vl(pid_t child, unsigned int vl, bool *supported)
 		return;
 	}
 
-	/*
-	 * Read back the new register state and verify that we have the
-	 * same VL that we got from prctl() on ourselves.
-	 */
+	 
 	if (!get_za(child, (void **)&new_za, &new_za_size)) {
 		ksft_test_result_fail("Failed to read VL %u\n", vl);
 		return;
@@ -145,7 +133,7 @@ static void ptrace_set_get_vl(pid_t child, unsigned int vl, bool *supported)
 	free(new_za);
 }
 
-/* Validate attempting to set no ZA data and read it back */
+ 
 static void ptrace_set_no_data(pid_t child, unsigned int vl)
 {
 	void *read_buf = NULL;
@@ -154,7 +142,7 @@ static void ptrace_set_no_data(pid_t child, unsigned int vl)
 	size_t read_za_size = 0;
 	int ret;
 
-	/* Set up some data and write it out */
+	 
 	memset(&write_za, 0, sizeof(write_za));
 	write_za.size = ZA_PT_ZA_OFFSET;
 	write_za.vl = vl;
@@ -165,14 +153,14 @@ static void ptrace_set_no_data(pid_t child, unsigned int vl)
 		return;
 	}
 
-	/* Read the data back */
+	 
 	if (!get_za(child, (void **)&read_buf, &read_za_size)) {
 		ksft_test_result_fail("Failed to read VL %u no data\n", vl);
 		return;
 	}
 	read_za = read_buf;
 
-	/* We might read more data if there's extensions we don't know */
+	 
 	if (read_za->size < write_za.size) {
 		ksft_test_result_fail("VL %u wrote %d bytes, only read %d\n",
 				      vl, write_za.size, read_za->size);
@@ -186,7 +174,7 @@ out_read:
 	free(read_buf);
 }
 
-/* Validate attempting to set data and read it back */
+ 
 static void ptrace_set_get_data(pid_t child, unsigned int vl)
 {
 	void *write_buf;
@@ -207,7 +195,7 @@ static void ptrace_set_get_data(pid_t child, unsigned int vl)
 	}
 	write_za = write_buf;
 
-	/* Set up some data and write it out */
+	 
 	memset(write_za, 0, data_size);
 	write_za->size = data_size;
 	write_za->vl = vl;
@@ -220,14 +208,14 @@ static void ptrace_set_get_data(pid_t child, unsigned int vl)
 		goto out;
 	}
 
-	/* Read the data back */
+	 
 	if (!get_za(child, (void **)&read_buf, &read_za_size)) {
 		ksft_test_result_fail("Failed to read VL %u data\n", vl);
 		goto out;
 	}
 	read_za = read_buf;
 
-	/* We might read more data if there's extensions we don't know */
+	 
 	if (read_za->size < write_za->size) {
 		ksft_test_result_fail("VL %u wrote %d bytes, only read %d\n",
 				      vl, write_za->size, read_za->size);
@@ -254,7 +242,7 @@ static int do_parent(pid_t child)
 	unsigned int vq, vl;
 	bool vl_supported;
 
-	/* Attach to the child */
+	 
 	while (1) {
 		int sig;
 
@@ -264,10 +252,7 @@ static int do_parent(pid_t child)
 			goto error;
 		}
 
-		/*
-		 * This should never happen but it's hard to flag in
-		 * the framework.
-		 */
+		 
 		if (pid != child)
 			continue;
 
@@ -284,7 +269,7 @@ static int do_parent(pid_t child)
 				goto disappeared;
 
 			if (errno == EINVAL) {
-				sig = 0; /* bust group-stop */
+				sig = 0;  
 				goto cont;
 			}
 
@@ -310,14 +295,14 @@ static int do_parent(pid_t child)
 
 	ksft_print_msg("Parent is %d, child is %d\n", getpid(), child);
 
-	/* Step through every possible VQ */
+	 
 	for (vq = SVE_VQ_MIN; vq <= TEST_VQ_MAX; vq++) {
 		vl = sve_vl_from_vq(vq);
 
-		/* First, try to set this vector length */
+		 
 		ptrace_set_get_vl(child, vl, &vl_supported);
 
-		/* If the VL is supported validate data set/get */
+		 
 		if (vl_supported) {
 			ptrace_set_no_data(child, vl);
 			ptrace_set_get_data(child, vl);

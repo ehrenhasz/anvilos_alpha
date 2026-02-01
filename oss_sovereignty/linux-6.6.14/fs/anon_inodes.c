@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  fs/anon_inodes.c
- *
- *  Copyright (C) 2007  Davide Libenzi <davidel@xmailserver.org>
- *
- *  Thanks to Arnd Bergmann for code review and suggestions.
- *  More changes for Thomas Gleixner suggestions.
- *
- */
+
+ 
 
 #include <linux/cred.h>
 #include <linux/file.h>
@@ -27,9 +19,7 @@
 static struct vfsmount *anon_inode_mnt __read_mostly;
 static struct inode *anon_inode_inode;
 
-/*
- * anon_inodefs_dname() is called from d_path().
- */
+ 
 static char *anon_inodefs_dname(struct dentry *dentry, char *buffer, int buflen)
 {
 	return dynamic_dname(buffer, buflen, "anon_inode:%s",
@@ -99,10 +89,7 @@ static struct file *__anon_inode_getfile(const char *name,
 			file = ERR_PTR(-ENODEV);
 			goto err;
 		}
-		/*
-		 * We know the anon_inode inode count is always
-		 * greater than zero, so ihold() is safe.
-		 */
+		 
 		ihold(inode);
 	}
 
@@ -124,22 +111,7 @@ err:
 	return file;
 }
 
-/**
- * anon_inode_getfile - creates a new file instance by hooking it up to an
- *                      anonymous inode, and a dentry that describe the "class"
- *                      of the file
- *
- * @name:    [in]    name of the "class" of the new file
- * @fops:    [in]    file operations for the new file
- * @priv:    [in]    private data for the new file (will be file's private_data)
- * @flags:   [in]    flags
- *
- * Creates a new file by hooking it on a single inode. This is useful for files
- * that do not need to have a full-fledged inode in order to operate correctly.
- * All the files created with anon_inode_getfile() will share a single inode,
- * hence saving memory and avoiding code duplication for the file/inode/dentry
- * setup.  Returns the newly created file* or an error pointer.
- */
+ 
 struct file *anon_inode_getfile(const char *name,
 				const struct file_operations *fops,
 				void *priv, int flags)
@@ -148,26 +120,7 @@ struct file *anon_inode_getfile(const char *name,
 }
 EXPORT_SYMBOL_GPL(anon_inode_getfile);
 
-/**
- * anon_inode_getfile_secure - Like anon_inode_getfile(), but creates a new
- *                             !S_PRIVATE anon inode rather than reuse the
- *                             singleton anon inode and calls the
- *                             inode_init_security_anon() LSM hook.  This
- *                             allows for both the inode to have its own
- *                             security context and for the LSM to enforce
- *                             policy on the inode's creation.
- *
- * @name:    [in]    name of the "class" of the new file
- * @fops:    [in]    file operations for the new file
- * @priv:    [in]    private data for the new file (will be file's private_data)
- * @flags:   [in]    flags
- * @context_inode:
- *           [in]    the logical relationship with the new inode (optional)
- *
- * The LSM may use @context_inode in inode_init_security_anon(), but a
- * reference to it is not held.  Returns the newly created file* or an error
- * pointer.  See the anon_inode_getfile() documentation for more information.
- */
+ 
 struct file *anon_inode_getfile_secure(const char *name,
 				       const struct file_operations *fops,
 				       void *priv, int flags,
@@ -206,23 +159,7 @@ err_put_unused_fd:
 	return error;
 }
 
-/**
- * anon_inode_getfd - creates a new file instance by hooking it up to
- *                    an anonymous inode and a dentry that describe
- *                    the "class" of the file
- *
- * @name:    [in]    name of the "class" of the new file
- * @fops:    [in]    file operations for the new file
- * @priv:    [in]    private data for the new file (will be file's private_data)
- * @flags:   [in]    flags
- *
- * Creates a new file by hooking it on a single inode. This is
- * useful for files that do not need to have a full-fledged inode in
- * order to operate correctly.  All the files created with
- * anon_inode_getfd() will use the same singleton inode, reducing
- * memory use and avoiding code duplication for the file/inode/dentry
- * setup.  Returns a newly created file descriptor or an error code.
- */
+ 
 int anon_inode_getfd(const char *name, const struct file_operations *fops,
 		     void *priv, int flags)
 {
@@ -230,22 +167,7 @@ int anon_inode_getfd(const char *name, const struct file_operations *fops,
 }
 EXPORT_SYMBOL_GPL(anon_inode_getfd);
 
-/**
- * anon_inode_getfd_secure - Like anon_inode_getfd(), but creates a new
- * !S_PRIVATE anon inode rather than reuse the singleton anon inode, and calls
- * the inode_init_security_anon() LSM hook. This allows the inode to have its
- * own security context and for a LSM to reject creation of the inode.
- *
- * @name:    [in]    name of the "class" of the new file
- * @fops:    [in]    file operations for the new file
- * @priv:    [in]    private data for the new file (will be file's private_data)
- * @flags:   [in]    flags
- * @context_inode:
- *           [in]    the logical relationship with the new inode (optional)
- *
- * The LSM may use @context_inode in inode_init_security_anon(), but a
- * reference to it is not held.
- */
+ 
 int anon_inode_getfd_secure(const char *name, const struct file_operations *fops,
 			    void *priv, int flags,
 			    const struct inode *context_inode)

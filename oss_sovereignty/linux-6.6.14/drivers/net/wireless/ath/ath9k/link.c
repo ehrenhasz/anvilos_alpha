@@ -1,25 +1,8 @@
-/*
- * Copyright (c) 2012 Qualcomm Atheros, Inc.
- *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
+ 
 
 #include "ath9k.h"
 
-/*
- * TX polling - checks if the TX engine is stuck somewhere
- * and issues a chip reset if so.
- */
+ 
 static bool ath_tx_complete_check(struct ath_softc *sc)
 {
 	struct ath_txq *txq;
@@ -66,9 +49,7 @@ void ath_hw_check_work(struct work_struct *work)
 				     msecs_to_jiffies(ATH_HW_CHECK_POLL_INT));
 }
 
-/*
- * Checks if the BB/MAC is hung.
- */
+ 
 bool ath_hw_check(struct ath_softc *sc)
 {
 	struct ath_common *common = ath9k_hw_common(sc->sc_ah);
@@ -91,9 +72,7 @@ bool ath_hw_check(struct ath_softc *sc)
 	return is_alive;
 }
 
-/*
- * PLL-WAR for AR9485/AR9340
- */
+ 
 static bool ath_hw_pll_rx_hang_check(struct ath_softc *sc, u32 pll_sqsum)
 {
 	static int count;
@@ -120,12 +99,7 @@ void ath_hw_pll_work(struct work_struct *work)
 	struct ath_softc *sc = container_of(work, struct ath_softc,
 					    hw_pll_work.work);
 	struct ath_common *common = ath9k_hw_common(sc->sc_ah);
-	/*
-	 * ensure that the PLL WAR is executed only
-	 * after the STA is associated (or) if the
-	 * beaconing had started in interfaces that
-	 * uses beacons.
-	 */
+	 
 	if (!test_bit(ATH_OP_BEACONS, &common->op_flags))
 		return;
 
@@ -142,9 +116,7 @@ void ath_hw_pll_work(struct work_struct *work)
 				     msecs_to_jiffies(ATH_PLL_WORK_INTERVAL));
 }
 
-/*
- * PA Pre-distortion.
- */
+ 
 static void ath_paprd_activate(struct ath_softc *sc)
 {
 	struct ath_hw *ah = sc->sc_ah;
@@ -294,13 +266,7 @@ fail_paprd:
 	ath9k_ps_restore(sc);
 }
 
-/*
- *  ANI performs periodic noise floor calibration
- *  that is used to adjust and optimize the chip performance.  This
- *  takes environmental changes (location, temperature) into account.
- *  When the task is complete, it reschedules itself depending on the
- *  appropriate interval that was calculated.
- */
+ 
 void ath_ani_calibrate(struct timer_list *t)
 {
 	struct ath_common *common = from_timer(common, t, ani.timer);
@@ -321,7 +287,7 @@ void ath_ani_calibrate(struct timer_list *t)
 	short_cal_interval = (ah->opmode == NL80211_IFTYPE_AP) ?
 		ATH_AP_SHORT_CALINTERVAL : ATH_STA_SHORT_CALINTERVAL;
 
-	/* Only calibrate if awake */
+	 
 	if (sc->sc_ah->power_mode != ATH9K_PM_AWAKE) {
 		if (++ah->ani_skip_count >= ATH_ANI_MAX_SKIP_COUNT) {
 			spin_lock_irqsave(&sc->sc_pm_lock, flags);
@@ -337,13 +303,13 @@ void ath_ani_calibrate(struct timer_list *t)
 
 	ath9k_ps_wakeup(sc);
 
-	/* Long calibration runs independently of short calibration. */
+	 
 	if ((timestamp - common->ani.longcal_timer) >= long_cal_interval) {
 		longcal = true;
 		common->ani.longcal_timer = timestamp;
 	}
 
-	/* Short calibration applies only while caldone is false */
+	 
 	if (!common->ani.caldone) {
 		if ((timestamp - common->ani.shortcal_timer) >= short_cal_interval) {
 			shortcal = true;
@@ -359,13 +325,13 @@ void ath_ani_calibrate(struct timer_list *t)
 		}
 	}
 
-	/* Verify whether we must check ANI */
+	 
 	if ((timestamp - common->ani.checkani_timer) >= ah->config.ani_poll_interval) {
 		aniflag = true;
 		common->ani.checkani_timer = timestamp;
 	}
 
-	/* Call ANI routine if necessary */
+	 
 	if (aniflag) {
 		spin_lock_irqsave(&common->cc_lock, flags);
 		ath9k_hw_ani_monitor(ah, ah->curchan);
@@ -373,7 +339,7 @@ void ath_ani_calibrate(struct timer_list *t)
 		spin_unlock_irqrestore(&common->cc_lock, flags);
 	}
 
-	/* Perform calibration if necessary */
+	 
 	if (longcal || shortcal) {
 		int ret = ath9k_hw_calibrate(ah, ah->curchan, ah->rxchainmask,
 					     longcal);
@@ -395,11 +361,7 @@ void ath_ani_calibrate(struct timer_list *t)
 	ath9k_ps_restore(sc);
 
 set_timer:
-	/*
-	* Set timer interval based on previous results.
-	* The interval must be the shortest necessary to satisfy ANI,
-	* short calibration and long calibration.
-	*/
+	 
 	cal_interval = ATH_LONG_CALINTERVAL;
 	cal_interval = min(cal_interval, (u32)ah->config.ani_poll_interval);
 	if (!common->ani.caldone)
@@ -452,19 +414,13 @@ void ath_check_ani(struct ath_softc *sc)
 	struct ath_common *common = ath9k_hw_common(sc->sc_ah);
 	struct ath_beacon_config *cur_conf = &sc->cur_chan->beacon;
 
-	/*
-	 * Check for the various conditions in which ANI has to
-	 * be stopped.
-	 */
+	 
 	if (ah->opmode == NL80211_IFTYPE_ADHOC) {
 		if (!cur_conf->enable_beacon)
 			goto stop_ani;
 	} else if (ah->opmode == NL80211_IFTYPE_AP) {
 		if (!cur_conf->enable_beacon) {
-			/*
-			 * Disable ANI only when there are no
-			 * associated stations.
-			 */
+			 
 			if (!test_bit(ATH_OP_PRIM_STA_VIF, &common->op_flags))
 				goto stop_ani;
 		}
@@ -498,11 +454,7 @@ void ath_update_survey_nf(struct ath_softc *sc, int channel)
 	}
 }
 
-/*
- * Updates the survey statistics and returns the busy time since last
- * update in %, if the measurement duration was long enough for the
- * result to be useful, -1 otherwise.
- */
+ 
 int ath_update_survey_stats(struct ath_softc *sc)
 {
 	struct ath_hw *ah = sc->sc_ah;

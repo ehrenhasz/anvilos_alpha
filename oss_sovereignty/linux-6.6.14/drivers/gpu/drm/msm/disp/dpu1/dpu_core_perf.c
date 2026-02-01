@@ -1,6 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright (c) 2016-2018, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #define pr_fmt(fmt)	"[drm:%s:%d] " fmt, __func__, __LINE__
 
@@ -17,13 +16,7 @@
 #include "dpu_crtc.h"
 #include "dpu_core_perf.h"
 
-/**
- * enum dpu_perf_mode - performance tuning mode
- * @DPU_PERF_MODE_NORMAL: performance controlled by user mode client
- * @DPU_PERF_MODE_MINIMUM: performance bounded by minimum setting
- * @DPU_PERF_MODE_FIXED: performance bounded by fixed setting
- * @DPU_PERF_MODE_MAX: maximum value, used for error checking
- */
+ 
 enum dpu_perf_mode {
 	DPU_PERF_MODE_NORMAL,
 	DPU_PERF_MODE_MINIMUM,
@@ -31,12 +24,7 @@ enum dpu_perf_mode {
 	DPU_PERF_MODE_MAX
 };
 
-/**
- * _dpu_core_perf_calc_bw() - to calculate BW per crtc
- * @perf_cfg: performance configuration
- * @crtc: pointer to a crtc
- * Return: returns aggregated BW for all planes in crtc.
- */
+ 
 static u64 _dpu_core_perf_calc_bw(const struct dpu_perf_cfg *perf_cfg,
 		struct drm_crtc *crtc)
 {
@@ -62,13 +50,7 @@ static u64 _dpu_core_perf_calc_bw(const struct dpu_perf_cfg *perf_cfg,
 	return crtc_plane_bw;
 }
 
-/**
- * _dpu_core_perf_calc_clk() - to calculate clock per crtc
- * @perf_cfg: performance configuration
- * @crtc: pointer to a crtc
- * @state: pointer to a crtc state
- * Return: returns max clk for all planes in crtc.
- */
+ 
 static u64 _dpu_core_perf_calc_clk(const struct dpu_perf_cfg *perf_cfg,
 		struct drm_crtc *crtc, struct drm_crtc_state *state)
 {
@@ -157,13 +139,13 @@ int dpu_core_perf_crtc_check(struct drm_crtc *crtc,
 
 	kms = _dpu_crtc_get_kms(crtc);
 
-	/* we only need bandwidth check on real-time clients (interfaces) */
+	 
 	if (dpu_crtc_get_client_type(crtc) == NRT_CLIENT)
 		return 0;
 
 	dpu_cstate = to_dpu_crtc_state(state);
 
-	/* obtain new values */
+	 
 	_dpu_core_perf_calc_crtc(&kms->perf, crtc, state, &dpu_cstate->new_perf);
 
 	bw_sum_of_intfs = dpu_cstate->new_perf.bw_ctl;
@@ -183,7 +165,7 @@ int dpu_core_perf_crtc_check(struct drm_crtc *crtc,
 			bw_sum_of_intfs += tmp_cstate->new_perf.bw_ctl;
 		}
 
-		/* convert bandwidth to kb */
+		 
 		bw = DIV_ROUND_UP_ULL(bw_sum_of_intfs, 1000);
 		DRM_DEBUG_ATOMIC("calculated bandwidth=%uk\n", bw);
 
@@ -236,7 +218,7 @@ static int _dpu_core_perf_crtc_update_bus(struct dpu_kms *kms,
 	}
 
 	avg_bw = perf.bw_ctl;
-	do_div(avg_bw, (kms->num_paths * 1000)); /*Bps_to_icc*/
+	do_div(avg_bw, (kms->num_paths * 1000));  
 
 	for (i = 0; i < kms->num_paths; i++)
 		icc_set_bw(kms->path[i], avg_bw, perf.max_per_pipe_ib);
@@ -244,14 +226,7 @@ static int _dpu_core_perf_crtc_update_bus(struct dpu_kms *kms,
 	return ret;
 }
 
-/**
- * dpu_core_perf_crtc_release_bw() - request zero bandwidth
- * @crtc: pointer to a crtc
- *
- * Function checks a state variable for the crtc, if all pending commit
- * requests are done, meaning no more bandwidth is needed, release
- * bandwidth request.
- */
+ 
 void dpu_core_perf_crtc_release_bw(struct drm_crtc *crtc)
 {
 	struct dpu_crtc *dpu_crtc;
@@ -268,7 +243,7 @@ void dpu_core_perf_crtc_release_bw(struct drm_crtc *crtc)
 	if (atomic_dec_return(&kms->bandwidth_ref) > 0)
 		return;
 
-	/* Release the bandwidth */
+	 
 	if (kms->perf.enable_bw_release) {
 		trace_dpu_cmd_release_bw(crtc->base.id);
 		DRM_DEBUG_ATOMIC("Release BW crtc=%d\n", crtc->base.id);
@@ -329,13 +304,7 @@ int dpu_core_perf_crtc_update(struct drm_crtc *crtc,
 	new = &dpu_cstate->new_perf;
 
 	if (crtc->enabled) {
-		/*
-		 * cases for bus bandwidth update.
-		 * 1. new bandwidth vote - "ab or ib vote" is higher
-		 *    than current vote for update request.
-		 * 2. new bandwidth vote - "ab or ib vote" is lower
-		 *    than current vote at end of commit or stop.
-		 */
+		 
 		if ((params_changed && ((new->bw_ctl > old->bw_ctl) ||
 			(new->max_per_pipe_ib > old->max_per_pipe_ib)))	||
 			(!params_changed && ((new->bw_ctl < old->bw_ctl) ||
@@ -372,10 +341,7 @@ int dpu_core_perf_crtc_update(struct drm_crtc *crtc,
 		}
 	}
 
-	/*
-	 * Update the clock after bandwidth vote to ensure
-	 * bandwidth is available before clock rate is increased.
-	 */
+	 
 	if (update_clk) {
 		clk_rate = _dpu_core_perf_get_core_clk_rate(kms);
 
@@ -415,10 +381,10 @@ static ssize_t _dpu_core_perf_mode_write(struct file *file,
 	if (perf_mode == DPU_PERF_MODE_FIXED) {
 		DRM_INFO("fix performance mode\n");
 	} else if (perf_mode == DPU_PERF_MODE_MINIMUM) {
-		/* run the driver with max clk and BW vote */
+		 
 		DRM_INFO("minimum performance mode\n");
 	} else if (perf_mode == DPU_PERF_MODE_NORMAL) {
-		/* reset the perf tune params to 0 */
+		 
 		DRM_INFO("normal performance mode\n");
 	}
 	perf->perf_tune.mode = perf_mode;

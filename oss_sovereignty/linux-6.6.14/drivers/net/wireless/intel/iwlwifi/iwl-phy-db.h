@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause */
-/*
- * Copyright (C) 2005-2014 Intel Corporation
- */
+ 
+ 
 #ifndef __IWL_PHYDB_H__
 #define __IWL_PHYDB_H__
 
@@ -20,4 +18,4 @@ int iwl_phy_db_set_section(struct iwl_phy_db *phy_db,
 
 int iwl_send_phy_db_data(struct iwl_phy_db *phy_db);
 
-#endif /* __IWL_PHYDB_H__ */
+#endif  

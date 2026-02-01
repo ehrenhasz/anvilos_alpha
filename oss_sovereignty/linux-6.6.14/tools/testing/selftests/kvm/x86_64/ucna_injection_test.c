@@ -1,24 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * ucna_injection_test
- *
- * Copyright (C) 2022, Google LLC.
- *
- * This work is licensed under the terms of the GNU GPL, version 2.
- *
- * Test that user space can inject UnCorrectable No Action required (UCNA)
- * memory errors to the guest.
- *
- * The test starts one vCPU with the MCG_CMCI_P enabled. It verifies that
- * proper UCNA errors can be injected to a vCPU with MCG_CMCI_P and
- * corresponding per-bank control register (MCI_CTL2) bit enabled.
- * The test also checks that the UCNA errors get recorded in the
- * Machine Check bank registers no matter the error signal interrupts get
- * delivered into the guest or not.
- *
- */
 
-#define _GNU_SOURCE /* for program_invocation_short_name */
+ 
+
+#define _GNU_SOURCE  
 #include <pthread.h>
 #include <inttypes.h>
 #include <string.h>
@@ -37,25 +20,16 @@
 #define FIRST_UCNA_ADDR 0xdeadbeef
 #define SECOND_UCNA_ADDR 0xcafeb0ba
 
-/*
- * Vector for the CMCI interrupt.
- * Value is arbitrary. Any value in 0x20-0xFF should work:
- * https://wiki.osdev.org/Interrupt_Vector_Table
- */
+ 
 #define CMCI_VECTOR  0xa9
 
-#define UCNA_BANK  0x7	// IMC0 bank
+#define UCNA_BANK  0x7	
 
 #define MCI_CTL2_RESERVED_BIT BIT_ULL(29)
 
 static uint64_t supported_mcg_caps;
 
-/*
- * Record states about the injected UCNA.
- * The variables started with the 'i_' prefixes are recorded in interrupt
- * handler. Variables without the 'i_' prefixes are recorded in guest main
- * execution thread.
- */
+ 
 static volatile uint64_t i_ucna_rcvd;
 static volatile uint64_t i_ucna_addr;
 static volatile uint64_t ucna_addr;
@@ -83,24 +57,24 @@ static void ucna_injection_guest_code(void)
 	verify_apic_base_addr();
 	xapic_enable();
 
-	/* Sets up the interrupt vector and enables per-bank CMCI sigaling. */
+	 
 	xapic_write_reg(APIC_LVTCMCI, CMCI_VECTOR | APIC_DM_FIXED);
 	ctl2 = rdmsr(MSR_IA32_MCx_CTL2(UCNA_BANK));
 	wrmsr(MSR_IA32_MCx_CTL2(UCNA_BANK), ctl2 | MCI_CTL2_CMCI_EN);
 
-	/* Enables interrupt in guest. */
+	 
 	asm volatile("sti");
 
-	/* Let user space inject the first UCNA */
+	 
 	GUEST_SYNC(SYNC_FIRST_UCNA);
 
 	ucna_addr = rdmsr(MSR_IA32_MCx_ADDR(UCNA_BANK));
 
-	/* Disables the per-bank CMCI signaling. */
+	 
 	ctl2 = rdmsr(MSR_IA32_MCx_CTL2(UCNA_BANK));
 	wrmsr(MSR_IA32_MCx_CTL2(UCNA_BANK), ctl2 & ~MCI_CTL2_CMCI_EN);
 
-	/* Let the user space inject the second UCNA */
+	 
 	GUEST_SYNC(SYNC_SECOND_UCNA);
 
 	ucna_addr2 = rdmsr(MSR_IA32_MCx_ADDR(UCNA_BANK));
@@ -149,22 +123,13 @@ static void run_vcpu_expect_gp(struct kvm_vcpu *vcpu)
 }
 
 static void inject_ucna(struct kvm_vcpu *vcpu, uint64_t addr) {
-	/*
-	 * A UCNA error is indicated with VAL=1, UC=1, PCC=0, S=0 and AR=0 in
-	 * the IA32_MCi_STATUS register.
-	 * MSCOD=1 (BIT[16] - MscodDataRdErr).
-	 * MCACOD=0x0090 (Memory controller error format, channel 0)
-	 */
+	 
 	uint64_t status = MCI_STATUS_VAL | MCI_STATUS_UC | MCI_STATUS_EN |
 			  MCI_STATUS_MISCV | MCI_STATUS_ADDRV | 0x10090;
 	struct kvm_x86_mce mce = {};
 	mce.status = status;
 	mce.mcg_status = 0;
-	/*
-	 * MCM_ADDR_PHYS indicates the reported address is a physical address.
-	 * Lowest 6 bits is the recoverable address LSB, i.e., the injected MCE
-	 * is at 4KB granularity.
-	 */
+	 
 	mce.misc = (MCM_ADDR_PHYS << 6) | 0xc;
 	mce.addr = addr;
 	mce.bank = UCNA_BANK;

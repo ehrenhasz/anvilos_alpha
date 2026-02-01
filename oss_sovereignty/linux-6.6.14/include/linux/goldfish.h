@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef __LINUX_GOLDFISH_H
 #define __LINUX_GOLDFISH_H
 
@@ -6,7 +6,7 @@
 #include <linux/types.h>
 #include <linux/io.h>
 
-/* Helpers for Goldfish virtual platform */
+ 
 
 #ifndef gf_ioread32
 #define gf_ioread32 ioread32
@@ -37,4 +37,4 @@ static inline void gf_write_dma_addr(const dma_addr_t addr,
 }
 
 
-#endif /* __LINUX_GOLDFISH_H */
+#endif  

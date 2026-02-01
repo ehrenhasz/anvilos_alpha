@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2014 Marvell
- * Author: Gregory CLEMENT <gregory.clement@free-electrons.com>
- */
+
+ 
 
 #include <linux/io.h>
 #include <linux/mbus.h>
@@ -24,13 +21,13 @@ static void xhci_mvebu_mbus_config(void __iomem *base,
 {
 	int win;
 
-	/* Clear all existing windows */
+	 
 	for (win = 0; win < USB3_MAX_WINDOWS; win++) {
 		writel(0, base + USB3_WIN_CTRL(win));
 		writel(0, base + USB3_WIN_BASE(win));
 	}
 
-	/* Program each DRAM CS in a seperate window */
+	 
 	for (win = 0; win < dram->num_cs; win++) {
 		const struct mbus_dram_window *cs = &dram->cs[win];
 
@@ -54,10 +51,7 @@ int xhci_mvebu_mbus_init_quirk(struct usb_hcd *hcd)
 	if (!res)
 		return -ENODEV;
 
-	/*
-	 * We don't use devm_ioremap() because this mapping should
-	 * only exists for the duration of this probe function.
-	 */
+	 
 	base = ioremap(res->start, resource_size(res));
 	if (!base)
 		return -ENODEV;
@@ -65,10 +59,7 @@ int xhci_mvebu_mbus_init_quirk(struct usb_hcd *hcd)
 	dram = mv_mbus_dram_info();
 	xhci_mvebu_mbus_config(base, dram);
 
-	/*
-	 * This memory area was only needed to configure the MBus
-	 * windows, and is therefore no longer useful.
-	 */
+	 
 	iounmap(base);
 
 	return 0;
@@ -78,7 +69,7 @@ int xhci_mvebu_a3700_init_quirk(struct usb_hcd *hcd)
 {
 	struct xhci_hcd	*xhci = hcd_to_xhci(hcd);
 
-	/* Without reset on resume, the HC won't work at all */
+	 
 	xhci->quirks |= XHCI_RESET_ON_RESUME;
 
 	return 0;

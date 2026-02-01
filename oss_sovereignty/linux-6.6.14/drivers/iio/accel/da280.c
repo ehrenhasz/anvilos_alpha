@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * IIO driver for the MiraMEMS DA217 and DA280 3-axis accelerometer and
- * IIO driver for the MiraMEMS DA226 2-axis accelerometer
- *
- * Copyright (c) 2016 Hans de Goede <hdegoede@redhat.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/i2c.h>
@@ -25,10 +20,7 @@
 
 enum da280_chipset { da217, da226, da280 };
 
-/*
- * a value of + or -4096 corresponds to + or - 1G
- * scale = 9.81 / 4096 = 0.002395019
- */
+ 
 
 static const int da280_nscale = 2395019;
 
@@ -70,10 +62,7 @@ static int da280_read_raw(struct iio_dev *indio_dev,
 		ret = i2c_smbus_read_word_data(data->client, chan->address);
 		if (ret < 0)
 			return ret;
-		/*
-		 * Values are 14 bits, stored as 16 bits with the 2
-		 * least significant bits always 0.
-		 */
+		 
 		*val = (short)ret >> 2;
 		return IIO_VAL_INT;
 	case IIO_CHAN_INFO_SCALE:

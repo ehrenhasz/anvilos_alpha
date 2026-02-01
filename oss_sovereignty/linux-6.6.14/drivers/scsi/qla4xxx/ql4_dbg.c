@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * QLogic iSCSI HBA Driver
- * Copyright (c)  2003-2012 QLogic Corporation
- */
+
+ 
 
 #include "ql4_def.h"
 #include "ql4_glbl.h"

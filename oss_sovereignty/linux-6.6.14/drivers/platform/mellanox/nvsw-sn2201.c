@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Nvidia sn2201 driver
- *
- * Copyright (C) 2022 Nvidia Technologies Ltd.
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/i2c.h>
@@ -16,7 +12,7 @@
 #include <linux/platform_device.h>
 #include <linux/regmap.h>
 
-/* SN2201 CPLD register offset. */
+ 
 #define NVSW_SN2201_CPLD_LPC_I2C_BASE_ADRR          0x2000
 #define NVSW_SN2201_CPLD_LPC_IO_RANGE               0x100
 #define NVSW_SN2201_HW_VER_ID_OFFSET                0x00
@@ -67,9 +63,9 @@
 #define NVSW_SN2201_FAN_LED2_CTRL_OFFSET            0x51
 #define NVSW_SN2201_REG_MAX                         0x52
 
-/* Number of physical I2C busses. */
+ 
 #define NVSW_SN2201_PHY_I2C_BUS_NUM		2
-/* Number of main mux channels. */
+ 
 #define NVSW_SN2201_MAIN_MUX_CHNL_NUM		8
 
 #define NVSW_SN2201_MAIN_NR			0
@@ -92,9 +88,7 @@
 #define NVSW_SN2201_CPLD_NR		NVSW_SN2201_MAIN_MUX_CH0_NR
 #define NVSW_SN2201_NR_NONE		-1
 
-/* Masks for aggregation, PSU presence and power, ASIC events
- * in CPLD related registers.
- */
+ 
 #define NVSW_SN2201_CPLD_AGGR_ASIC_MASK_DEF	0xe0
 #define NVSW_SN2201_CPLD_AGGR_PSU_MASK_DEF	0x04
 #define NVSW_SN2201_CPLD_AGGR_PWR_MASK_DEF	0x02
@@ -116,23 +110,7 @@
 
 #define NVSW_SN2201_WD_DFLT_TIMEOUT		600
 
-/* nvsw_sn2201 - device private data
- * @dev: platform device;
- * @io_data: register access platform data;
- * @led_data: LED platform data;
- * @hotplug_data: hotplug platform data;
- * @i2c_data: I2C controller platform data;
- * @led: LED device;
- * @io_regs: register access device;
- * @pdev_hotplug: hotplug device;
- * @sn2201_devs: I2C devices for sn2201 devices;
- * @sn2201_devs_num: number of I2C devices for sn2201 device;
- * @main_mux_devs: I2C devices for main mux;
- * @main_mux_devs_num: number of I2C devices for main mux;
- * @cpld_devs: I2C devices for cpld;
- * @cpld_devs_num: number of I2C devices for cpld;
- * @main_mux_deferred_nr: I2C adapter number must be exist prior creating devices execution;
- */
+ 
 struct nvsw_sn2201 {
 	struct device *dev;
 	struct mlxreg_core_platform_data *io_data;
@@ -301,7 +279,7 @@ static const struct reg_default nvsw_sn2201_regmap_default[] = {
 	{ NVSW_SN2201_WD_ACT_OFFSET, 0x00 },
 };
 
-/* Configuration for the register map of a device with 1 bytes address space. */
+ 
 static const struct regmap_config nvsw_sn2201_regmap_conf = {
 	.reg_bits = 8,
 	.val_bits = 8,
@@ -314,7 +292,7 @@ static const struct regmap_config nvsw_sn2201_regmap_conf = {
 	.num_reg_defaults = ARRAY_SIZE(nvsw_sn2201_regmap_default),
 };
 
-/* Regions for LPC I2C controller and LPC base register space. */
+ 
 static const struct resource nvsw_sn2201_lpc_io_resources[] = {
 	[0] = DEFINE_RES_NAMED(NVSW_SN2201_CPLD_LPC_I2C_BASE_ADRR,
 			       NVSW_SN2201_CPLD_LPC_IO_RANGE,
@@ -329,19 +307,19 @@ static struct resource nvsw_sn2201_lpc_res[] = {
 	[0] = DEFINE_RES_IRQ_NAMED(NVSW_SN2201_LPC_SYSIRQ, "i2c-mlxcpld"),
 };
 
-/* SN2201 I2C platform data. */
+ 
 static struct mlxreg_core_hotplug_platform_data nvsw_sn2201_i2c_data = {
 	.irq = NVSW_SN2201_CPLD_SYSIRQ,
 };
 
-/* SN2201 CPLD device. */
+ 
 static struct i2c_board_info nvsw_sn2201_cpld_devices[] = {
 	{
 		I2C_BOARD_INFO("nvsw-sn2201", 0x41),
 	},
 };
 
-/* SN2201 CPLD board info. */
+ 
 static struct mlxreg_hotplug_device nvsw_sn2201_cpld_brdinfo[] = {
 	{
 		.brdinfo = &nvsw_sn2201_cpld_devices[0],
@@ -349,14 +327,14 @@ static struct mlxreg_hotplug_device nvsw_sn2201_cpld_brdinfo[] = {
 	},
 };
 
-/* SN2201 main mux device. */
+ 
 static struct i2c_board_info nvsw_sn2201_main_mux_devices[] = {
 	{
 		I2C_BOARD_INFO("pca9548", 0x70),
 	},
 };
 
-/* SN2201 main mux board info. */
+ 
 static struct mlxreg_hotplug_device nvsw_sn2201_main_mux_brdinfo[] = {
 	{
 		.brdinfo = &nvsw_sn2201_main_mux_devices[0],
@@ -364,7 +342,7 @@ static struct mlxreg_hotplug_device nvsw_sn2201_main_mux_brdinfo[] = {
 	},
 };
 
-/* SN2201 power devices. */
+ 
 static struct i2c_board_info nvsw_sn2201_pwr_devices[] = {
 	{
 		I2C_BOARD_INFO("pmbus", 0x58),
@@ -374,7 +352,7 @@ static struct i2c_board_info nvsw_sn2201_pwr_devices[] = {
 	},
 };
 
-/* SN2201 fan devices. */
+ 
 static struct i2c_board_info nvsw_sn2201_fan_devices[] = {
 	{
 		I2C_BOARD_INFO("24c02", 0x50),
@@ -390,7 +368,7 @@ static struct i2c_board_info nvsw_sn2201_fan_devices[] = {
 	},
 };
 
-/* SN2201 hotplug default data. */
+ 
 static struct mlxreg_core_data nvsw_sn2201_psu_items_data[] = {
 	{
 		.label = "psu1",
@@ -522,7 +500,7 @@ struct mlxreg_core_hotplug_platform_data nvsw_sn2201_hotplug = {
 	.mask = NVSW_SN2201_CPLD_AGGR_MASK_DEF,
 };
 
-/* SN2201 static devices. */
+ 
 static struct i2c_board_info nvsw_sn2201_static_devices[] = {
 	{
 		I2C_BOARD_INFO("24c02", 0x57),
@@ -559,7 +537,7 @@ static struct i2c_board_info nvsw_sn2201_static_devices[] = {
 	},
 };
 
-/* SN2201 default static board info. */
+ 
 static struct mlxreg_hotplug_device nvsw_sn2201_static_brdinfo[] = {
 	{
 		.brdinfo = &nvsw_sn2201_static_devices[0],
@@ -607,7 +585,7 @@ static struct mlxreg_hotplug_device nvsw_sn2201_static_brdinfo[] = {
 	},
 };
 
-/* LED default data. */
+ 
 static struct mlxreg_core_data nvsw_sn2201_led_data[] = {
 	{
 		.label = "status:green",
@@ -681,7 +659,7 @@ static struct mlxreg_core_platform_data nvsw_sn2201_led = {
 	.counter = ARRAY_SIZE(nvsw_sn2201_led_data),
 };
 
-/* Default register access data. */
+ 
 static struct mlxreg_core_data nvsw_sn2201_io_data[] = {
 	{
 		.label = "cpld1_version",
@@ -848,7 +826,7 @@ static struct mlxreg_core_platform_data nvsw_sn2201_regs_io = {
 	.counter = ARRAY_SIZE(nvsw_sn2201_io_data),
 };
 
-/* Default watchdog data. */
+ 
 static struct mlxreg_core_data nvsw_sn2201_wd_data[] = {
 	{
 		.label = "action",
@@ -897,7 +875,7 @@ nvsw_sn2201_create_static_devices(struct nvsw_sn2201 *nvsw_sn2201,
 	int ret;
 	int i;
 
-	/* Create I2C static devices. */
+	 
 	for (i = 0; i < size; i++, dev++) {
 		dev->client = i2c_new_client_device(dev->adapter, dev->brdinfo);
 		if (IS_ERR(dev->client)) {
@@ -929,7 +907,7 @@ static void nvsw_sn2201_destroy_static_devices(struct nvsw_sn2201 *nvsw_sn2201,
 	struct mlxreg_hotplug_device *dev = devs;
 	int i;
 
-	/* Destroy static I2C device for SN2201 static devices. */
+	 
 	for (i = 0; i < size; i++, dev++) {
 		if (dev->client) {
 			i2c_unregister_device(dev->client);
@@ -956,7 +934,7 @@ static int nvsw_sn2201_config_post_init(struct nvsw_sn2201 *nvsw_sn2201)
 	}
 	i2c_put_adapter(adap);
 
-	/* Update board info. */
+	 
 	sn2201_dev = nvsw_sn2201->sn2201_devs;
 	for (i = 0; i < nvsw_sn2201->sn2201_devs_num; i++, sn2201_dev++) {
 		sn2201_dev->adapter = i2c_get_adapter(sn2201_dev->nr);
@@ -983,7 +961,7 @@ static int nvsw_sn2201_config_init(struct nvsw_sn2201 *nvsw_sn2201, void *regmap
 	nvsw_sn2201->wd_data = &nvsw_sn2201_wd;
 	nvsw_sn2201->hotplug_data = &nvsw_sn2201_hotplug;
 
-	/* Register IO access driver. */
+	 
 	if (nvsw_sn2201->io_data) {
 		nvsw_sn2201->io_data->regmap = regmap;
 		nvsw_sn2201->io_regs =
@@ -996,7 +974,7 @@ static int nvsw_sn2201_config_init(struct nvsw_sn2201 *nvsw_sn2201, void *regmap
 		}
 	}
 
-	/* Register LED driver. */
+	 
 	if (nvsw_sn2201->led_data) {
 		nvsw_sn2201->led_data->regmap = regmap;
 		nvsw_sn2201->led =
@@ -1009,7 +987,7 @@ static int nvsw_sn2201_config_init(struct nvsw_sn2201 *nvsw_sn2201, void *regmap
 		}
 	}
 
-	/* Register WD driver. */
+	 
 	if (nvsw_sn2201->wd_data) {
 		nvsw_sn2201->wd_data->regmap = regmap;
 		nvsw_sn2201->wd =
@@ -1022,7 +1000,7 @@ static int nvsw_sn2201_config_init(struct nvsw_sn2201 *nvsw_sn2201, void *regmap
 		}
 	}
 
-	/* Register hotplug driver. */
+	 
 	if (nvsw_sn2201->hotplug_data) {
 		nvsw_sn2201->hotplug_data->regmap = regmap;
 		nvsw_sn2201->pdev_hotplug =
@@ -1055,35 +1033,28 @@ fail_register_io:
 
 static void nvsw_sn2201_config_exit(struct nvsw_sn2201 *nvsw_sn2201)
 {
-	/* Unregister hotplug driver. */
+	 
 	if (nvsw_sn2201->pdev_hotplug)
 		platform_device_unregister(nvsw_sn2201->pdev_hotplug);
-	/* Unregister WD driver. */
+	 
 	if (nvsw_sn2201->wd)
 		platform_device_unregister(nvsw_sn2201->wd);
-	/* Unregister LED driver. */
+	 
 	if (nvsw_sn2201->led)
 		platform_device_unregister(nvsw_sn2201->led);
-	/* Unregister IO access driver. */
+	 
 	if (nvsw_sn2201->io_regs)
 		platform_device_unregister(nvsw_sn2201->io_regs);
 }
 
-/*
- * Initialization is divided into two parts:
- * - I2C main bus init.
- * - Mux creation and attaching devices to the mux,
- *   which assumes that the main bus is already created.
- * This separation is required for synchronization between these two parts.
- * Completion notify callback is used to make this flow synchronized.
- */
+ 
 static int nvsw_sn2201_i2c_completion_notify(void *handle, int id)
 {
 	struct nvsw_sn2201 *nvsw_sn2201 = handle;
 	void *regmap;
 	int i, err;
 
-	/* Create main mux. */
+	 
 	nvsw_sn2201->main_mux_devs->adapter = i2c_get_adapter(nvsw_sn2201->main_mux_devs->nr);
 	if (!nvsw_sn2201->main_mux_devs->adapter) {
 		err = -ENODEV;
@@ -1108,7 +1079,7 @@ static int nvsw_sn2201_i2c_completion_notify(void *handle, int id)
 		goto i2c_get_adapter_fail;
 	}
 
-	/* Create CPLD device. */
+	 
 	nvsw_sn2201->cpld_devs->client = i2c_new_dummy_device(nvsw_sn2201->cpld_devs->adapter,
 							      NVSW_SN2201_CPLD_I2CADDR);
 	if (IS_ERR(nvsw_sn2201->cpld_devs->client)) {
@@ -1126,7 +1097,7 @@ static int nvsw_sn2201_i2c_completion_notify(void *handle, int id)
 		goto devm_regmap_init_i2c_fail;
 	}
 
-	/* Set default registers. */
+	 
 	for (i = 0; i < nvsw_sn2201_regmap_conf.num_reg_defaults; i++) {
 		err = regmap_write(regmap, nvsw_sn2201_regmap_default[i].reg,
 				   nvsw_sn2201_regmap_default[i].def);
@@ -1138,7 +1109,7 @@ static int nvsw_sn2201_i2c_completion_notify(void *handle, int id)
 		}
 	}
 
-	/* Sync registers with hardware. */
+	 
 	regcache_mark_dirty(regmap);
 	err = regcache_sync(regmap);
 	if (err) {
@@ -1146,7 +1117,7 @@ static int nvsw_sn2201_i2c_completion_notify(void *handle, int id)
 		goto regcache_sync_fail;
 	}
 
-	/* Configure SN2201 board. */
+	 
 	err = nvsw_sn2201_config_init(nvsw_sn2201, regmap);
 	if (err) {
 		dev_err(nvsw_sn2201->dev, "Failed to configure board\n");
@@ -1164,10 +1135,10 @@ i2c_new_dummy_fail:
 	i2c_put_adapter(nvsw_sn2201->cpld_devs->adapter);
 	nvsw_sn2201->cpld_devs->adapter = NULL;
 i2c_get_adapter_fail:
-	/* Destroy SN2201 static I2C devices. */
+	 
 	nvsw_sn2201_destroy_static_devices(nvsw_sn2201, nvsw_sn2201->sn2201_devs,
 					   nvsw_sn2201->sn2201_devs_num);
-	/* Destroy main mux device. */
+	 
 	nvsw_sn2201_destroy_static_devices(nvsw_sn2201, nvsw_sn2201->main_mux_devs,
 					   nvsw_sn2201->main_mux_devs_num);
 nvsw_sn2201_create_static_devices_fail:
@@ -1180,7 +1151,7 @@ static int nvsw_sn2201_config_pre_init(struct nvsw_sn2201 *nvsw_sn2201)
 {
 	nvsw_sn2201->i2c_data = &nvsw_sn2201_i2c_data;
 
-	/* Register I2C controller. */
+	 
 	nvsw_sn2201->i2c_data->handle = nvsw_sn2201;
 	nvsw_sn2201->i2c_data->completion_notify = nvsw_sn2201_i2c_completion_notify;
 	nvsw_sn2201->pdev_i2c = platform_device_register_resndata(nvsw_sn2201->dev, "i2c_mlxcpld",
@@ -1221,22 +1192,22 @@ static int nvsw_sn2201_remove(struct platform_device *pdev)
 {
 	struct nvsw_sn2201 *nvsw_sn2201 = platform_get_drvdata(pdev);
 
-	/* Unregister underlying drivers. */
+	 
 	nvsw_sn2201_config_exit(nvsw_sn2201);
 
-	/* Destroy SN2201 static I2C devices. */
+	 
 	nvsw_sn2201_destroy_static_devices(nvsw_sn2201,
 					   nvsw_sn2201->sn2201_devs,
 					   nvsw_sn2201->sn2201_devs_num);
 
 	i2c_put_adapter(nvsw_sn2201->cpld_devs->adapter);
 	nvsw_sn2201->cpld_devs->adapter = NULL;
-	/* Destroy main mux device. */
+	 
 	nvsw_sn2201_destroy_static_devices(nvsw_sn2201,
 					   nvsw_sn2201->main_mux_devs,
 					   nvsw_sn2201->main_mux_devs_num);
 
-	/* Unregister I2C controller. */
+	 
 	if (nvsw_sn2201->pdev_i2c)
 		platform_device_unregister(nvsw_sn2201->pdev_i2c);
 

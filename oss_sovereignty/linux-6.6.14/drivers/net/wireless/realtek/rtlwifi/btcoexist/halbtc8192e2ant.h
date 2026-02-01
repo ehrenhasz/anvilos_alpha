@@ -1,9 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright(c) 2012  Realtek Corporation.*/
+ 
+ 
 
-/*****************************************************************
- *   The following is for 8192E 2Ant BT Co-exist definition
- *****************************************************************/
+ 
 #define	BT_INFO_8192E_2ANT_B_FTP			BIT7
 #define	BT_INFO_8192E_2ANT_B_A2DP			BIT6
 #define	BT_INFO_8192E_2ANT_B_HID			BIT5
@@ -49,7 +47,7 @@ enum bt_8192e_2ant_coex_algo {
 };
 
 struct coex_dm_8192e_2ant {
-	/* fw mechanism */
+	 
 	u8 pre_dec_bt_pwr;
 	u8 cur_dec_bt_pwr;
 	u8 pre_fw_dac_swing_lvl;
@@ -67,7 +65,7 @@ struct coex_dm_8192e_2ant {
 	bool pre_bt_auto_report;
 	bool cur_bt_auto_report;
 
-	/* sw mechanism */
+	 
 	bool pre_rf_rx_lpf_shrink;
 	bool cur_rf_rx_lpf_shrink;
 	u32 bt_rf0x1e_backup;
@@ -91,12 +89,12 @@ struct coex_dm_8192e_2ant {
 	u8 cur_val0x6cc;
 	bool limited_dig;
 
-	u32 backup_arfr_cnt1;	/* Auto Rate Fallback Retry cnt */
-	u32 backup_arfr_cnt2;	/* Auto Rate Fallback Retry cnt */
+	u32 backup_arfr_cnt1;	 
+	u32 backup_arfr_cnt2;	 
 	u16 backup_retry_limit;
 	u8 backup_ampdu_maxtime;
 
-	/* algorithm related */
+	 
 	u8 pre_algorithm;
 	u8 cur_algorithm;
 	u8 bt_status;
@@ -140,9 +138,7 @@ struct coex_sta_8192e_2ant {
 	u8 bt_info_ext;
 };
 
-/****************************************************************
- *    The following is interface which will notify coex module.
- ****************************************************************/
+ 
 void ex_btc8192e2ant_init_hwconfig(struct btc_coexist *btcoexist);
 void ex_btc8192e2ant_init_coex_dm(struct btc_coexist *btcoexist);
 void ex_btc8192e2ant_ips_notify(struct btc_coexist *btcoexist, u8 type);

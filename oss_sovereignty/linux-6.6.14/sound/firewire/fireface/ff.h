@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * ff.h - a part of driver for RME Fireface series
- *
- * Copyright (c) 2015-2017 Takashi Sakamoto
- */
+ 
+ 
 
 #ifndef SOUND_FIREFACE_H_INCLUDED
 #define SOUND_FIREFACE_H_INCLUDED
@@ -72,11 +68,11 @@ struct snd_ff {
 	enum snd_ff_unit_version unit_version;
 	const struct snd_ff_spec *spec;
 
-	/* To handle MIDI tx. */
+	 
 	struct snd_rawmidi_substream *tx_midi_substreams[SND_FF_IN_MIDI_PORTS];
 	struct fw_address_handler async_handler;
 
-	/* TO handle MIDI rx. */
+	 
 	struct snd_rawmidi_substream *rx_midi_substreams[SND_FF_OUT_MIDI_PORTS];
 	bool on_sysex[SND_FF_OUT_MIDI_PORTS];
 	__le32 msg_buf[SND_FF_OUT_MIDI_PORTS][SND_FF_MAXIMIM_MIDI_QUADS];
@@ -108,7 +104,7 @@ enum snd_ff_clock_src {
 	SND_FF_CLOCK_SRC_ADAT2,
 	SND_FF_CLOCK_SRC_WORD,
 	SND_FF_CLOCK_SRC_LTC,
-	/* TODO: perhaps TCO exists. */
+	 
 };
 
 struct snd_ff_protocol {

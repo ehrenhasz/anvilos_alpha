@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * driver for the GE IP-OCTAL boards
- *
- * Copyright (C) 2009-2012 CERN (www.cern.ch)
- * Author: Nicolas Serafini, EIC2 SA
- * Author: Samuel Iglesias Gonsalvez <siglesias@igalia.com>
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/module.h>
@@ -73,10 +67,7 @@ static int ipoctal_port_activate(struct tty_port *port, struct tty_struct *tty)
 
 	channel = dev_get_drvdata(tty->dev);
 
-	/*
-	 * Enable RX. TX will be enabled when
-	 * there is something to send
-	 */
+	 
 	iowrite8(CR_ENABLE_RX, &channel->regs->w.cr);
 	channel->rx_enable = 1;
 	return 0;
@@ -165,13 +156,13 @@ static void ipoctal_irq_rx(struct ipoctal_channel *channel, u8 sr)
 	do {
 		value = ioread8(&channel->regs->r.rhr);
 		flag = TTY_NORMAL;
-		/* Error: count statistics */
+		 
 		if (sr & SR_ERROR) {
 			iowrite8(CR_CMD_RESET_ERR_STATUS, &channel->regs->w.cr);
 
 			if (sr & SR_OVERRUN_ERROR) {
 				channel->stats.overrun_err++;
-				/* Overrun doesn't affect the current character*/
+				 
 				tty_insert_flip_char(port, 0, TTY_OVERRUN);
 			}
 			if (sr & SR_PARITY_ERROR) {
@@ -189,10 +180,7 @@ static void ipoctal_irq_rx(struct ipoctal_channel *channel, u8 sr)
 		}
 		tty_insert_flip_char(port, value, flag);
 
-		/* Check if there are more characters in RX FIFO
-		 * If there are more, the isr register for this channel
-		 * has enabled the RxRDY|FFULL bit.
-		 */
+		 
 		isr = ioread8(&channel->block_regs->r.isr);
 		sr = ioread8(&channel->regs->r.sr);
 	} while (isr & channel->isr_rx_rdy_mask);
@@ -222,8 +210,7 @@ static void ipoctal_irq_channel(struct ipoctal_channel *channel)
 {
 	u8 isr, sr;
 
-	/* The HW is organized in pair of channels.  See which register we need
-	 * to read from */
+	 
 	isr = ioread8(&channel->block_regs->r.isr);
 	sr = ioread8(&channel->regs->r.sr);
 
@@ -232,8 +219,7 @@ static void ipoctal_irq_channel(struct ipoctal_channel *channel)
 
 	if ((sr & SR_TX_EMPTY) && (channel->nb_bytes == 0)) {
 		iowrite8(CR_DISABLE_TX, &channel->regs->w.cr);
-		/* In case of RS-485, change from TX to RX when finishing TX.
-		 * Half-duplex. */
+		 
 		if (channel->board_id == IPACK1_DEVICE_ID_SBS_OCTAL_485) {
 			iowrite8(CR_CMD_NEGATE_RTSN, &channel->regs->w.cr);
 			iowrite8(CR_ENABLE_RX, &channel->regs->w.cr);
@@ -241,11 +227,11 @@ static void ipoctal_irq_channel(struct ipoctal_channel *channel)
 		}
 	}
 
-	/* RX data */
+	 
 	if ((isr & channel->isr_rx_rdy_mask) && (sr & SR_RX_READY))
 		ipoctal_irq_rx(channel, sr);
 
-	/* TX of each character */
+	 
 	if ((isr & channel->isr_tx_rdy_mask) && (sr & SR_TX_READY))
 		ipoctal_irq_tx(channel);
 }
@@ -255,11 +241,11 @@ static irqreturn_t ipoctal_irq_handler(void *arg)
 	unsigned int i;
 	struct ipoctal *ipoctal = arg;
 
-	/* Clear the IPack device interrupt */
+	 
 	readw(ipoctal->int_space + ACK_INT_REQ0);
 	readw(ipoctal->int_space + ACK_INT_REQ1);
 
-	/* Check all channels */
+	 
 	for (i = 0; i < NR_CHANNELS; i++)
 		ipoctal_irq_channel(&ipoctal->channel[i]);
 
@@ -294,7 +280,7 @@ static int ipoctal_inst_slot(struct ipoctal *ipoctal, unsigned int bus_nr,
 			bus_nr, slot);
 		return -EADDRNOTAVAIL;
 	}
-	/* Save the virtual address to access the registers easily */
+	 
 	chan_regs =
 		(union scc2698_channel __iomem *) addr;
 	block_regs =
@@ -323,7 +309,7 @@ static int ipoctal_inst_slot(struct ipoctal *ipoctal, unsigned int bus_nr,
 	}
 
 
-	/* Disable RX and TX before touching anything */
+	 
 	for (i = 0; i < NR_CHANNELS ; i++) {
 		struct ipoctal_channel *channel = &ipoctal->channel[i];
 		channel->regs = chan_regs + i;
@@ -339,8 +325,8 @@ static int ipoctal_inst_slot(struct ipoctal *ipoctal, unsigned int bus_nr,
 
 		ipoctal_reset_channel(channel);
 		iowrite8(MR1_CHRL_8_BITS | MR1_ERROR_CHAR | MR1_RxINT_RxRDY,
-			 &channel->regs->w.mr); /* mr1 */
-		iowrite8(0, &channel->regs->w.mr); /* mr2 */
+			 &channel->regs->w.mr);  
+		iowrite8(0, &channel->regs->w.mr);  
 		iowrite8(TX_CLK_9600  | RX_CLK_9600, &channel->regs->w.csr);
 	}
 
@@ -353,18 +339,18 @@ static int ipoctal_inst_slot(struct ipoctal *ipoctal, unsigned int bus_nr,
 			 &block_regs[i].w.imr);
 	}
 
-	/* Dummy write */
+	 
 	iowrite8(1, ipoctal->mem8_space + 1);
 
-	/* Register the TTY device */
+	 
 
-	/* Each IP-OCTAL channel is a TTY port */
+	 
 	drv = tty_alloc_driver(NR_CHANNELS, TTY_DRIVER_REAL_RAW |
 			TTY_DRIVER_DYNAMIC_DEV);
 	if (IS_ERR(drv))
 		return PTR_ERR(drv);
 
-	/* Fill struct tty_driver with ipoctal data */
+	 
 	drv->owner = THIS_MODULE;
 	drv->driver_name = KBUILD_MODNAME;
 	drv->name = kasprintf(GFP_KERNEL, KBUILD_MODNAME ".%d.%d.", bus_nr, slot);
@@ -389,7 +375,7 @@ static int ipoctal_inst_slot(struct ipoctal *ipoctal, unsigned int bus_nr,
 		goto err_free_name;
 	}
 
-	/* Save struct tty_driver for use it when uninstalling the device */
+	 
 	ipoctal->tty_drv = drv;
 
 	for (i = 0; i < NR_CHANNELS; i++) {
@@ -418,11 +404,7 @@ static int ipoctal_inst_slot(struct ipoctal *ipoctal, unsigned int bus_nr,
 		channel->tty_registered = true;
 	}
 
-	/*
-	 * IP-OCTAL has different addresses to copy its IRQ vector.
-	 * Depending of the carrier these addresses are accesible or not.
-	 * More info in the datasheet.
-	 */
+	 
 	ipoctal->dev->bus->ops->request_irq(ipoctal->dev,
 				       ipoctal_irq_handler, ipoctal);
 
@@ -443,7 +425,7 @@ static inline int ipoctal_copy_write_buffer(struct ipoctal_channel *channel,
 	int i;
 	unsigned int *pointer_read = &channel->pointer_read;
 
-	/* Copy the bytes from the user buffer to the internal one */
+	 
 	for (i = 0; i < count; i++) {
 		if (i <= (PAGE_SIZE - channel->nb_bytes)) {
 			spin_lock_irqsave(&channel->lock, flags);
@@ -466,17 +448,14 @@ static ssize_t ipoctal_write_tty(struct tty_struct *tty, const u8 *buf,
 
 	char_copied = ipoctal_copy_write_buffer(channel, buf, count);
 
-	/* As the IP-OCTAL 485 only supports half duplex, do it manually */
+	 
 	if (channel->board_id == IPACK1_DEVICE_ID_SBS_OCTAL_485) {
 		iowrite8(CR_DISABLE_RX, &channel->regs->w.cr);
 		channel->rx_enable = 0;
 		iowrite8(CR_CMD_ASSERT_RTSN, &channel->regs->w.cr);
 	}
 
-	/*
-	 * Send a packet and then disable TX to avoid failure after several send
-	 * operations
-	 */
+	 
 	iowrite8(CR_ENABLE_TX, &channel->regs->w.cr);
 	return char_copied;
 }
@@ -507,10 +486,10 @@ static void ipoctal_set_termios(struct tty_struct *tty,
 
 	cflag = tty->termios.c_cflag;
 
-	/* Disable and reset everything before change the setup */
+	 
 	ipoctal_reset_channel(channel);
 
-	/* Set Bits per chars */
+	 
 	switch (cflag & CSIZE) {
 	case CS6:
 		mr1 |= MR1_CHRL_6_BITS;
@@ -521,12 +500,12 @@ static void ipoctal_set_termios(struct tty_struct *tty,
 	case CS8:
 	default:
 		mr1 |= MR1_CHRL_8_BITS;
-		/* By default, select CS8 */
+		 
 		tty->termios.c_cflag = (cflag & ~CSIZE) | CS8;
 		break;
 	}
 
-	/* Set Parity */
+	 
 	if (cflag & PARENB)
 		if (cflag & PARODD)
 			mr1 |= MR1_PARITY_ON | MR1_PARITY_ODD;
@@ -535,16 +514,16 @@ static void ipoctal_set_termios(struct tty_struct *tty,
 	else
 		mr1 |= MR1_PARITY_OFF;
 
-	/* Mark or space parity is not supported */
+	 
 	tty->termios.c_cflag &= ~CMSPAR;
 
-	/* Set stop bits */
+	 
 	if (cflag & CSTOPB)
 		mr2 |= MR2_STOP_BITS_LENGTH_2;
 	else
 		mr2 |= MR2_STOP_BITS_LENGTH_1;
 
-	/* Set the flow control */
+	 
 	switch (channel->board_id) {
 	case IPACK1_DEVICE_ID_SBS_OCTAL_232:
 		if (cflag & CRTSCTS) {
@@ -570,7 +549,7 @@ static void ipoctal_set_termios(struct tty_struct *tty,
 	baud = tty_get_baud_rate(tty);
 	tty_termios_encode_baud_rate(&tty->termios, baud, baud);
 
-	/* Set baud rate */
+	 
 	switch (baud) {
 	case 75:
 		csr |= TX_CLK_75 | RX_CLK_75;
@@ -611,7 +590,7 @@ static void ipoctal_set_termios(struct tty_struct *tty,
 	case 38400:
 	default:
 		csr |= TX_CLK_38400 | RX_CLK_38400;
-		/* In case of default, we establish 38400 bps */
+		 
 		tty_termios_encode_baud_rate(&tty->termios, 38400, 38400);
 		break;
 	}
@@ -619,12 +598,12 @@ static void ipoctal_set_termios(struct tty_struct *tty,
 	mr1 |= MR1_ERROR_CHAR;
 	mr1 |= MR1_RxINT_RxRDY;
 
-	/* Write the control registers */
+	 
 	iowrite8(mr1, &channel->regs->w.mr);
 	iowrite8(mr2, &channel->regs->w.mr);
 	iowrite8(csr, &channel->regs->w.csr);
 
-	/* Enable again the RX, if it was before */
+	 
 	if (channel->rx_enable)
 		iowrite8(CR_ENABLE_RX, &channel->regs->w.cr);
 }
@@ -666,7 +645,7 @@ static void ipoctal_cleanup(struct tty_struct *tty)
 	struct ipoctal_channel *channel = tty->driver_data;
 	struct ipoctal *ipoctal = chan_to_ipoctal(channel, tty->index);
 
-	/* release the carrier driver */
+	 
 	ipack_put_carrier(ipoctal->dev);
 }
 

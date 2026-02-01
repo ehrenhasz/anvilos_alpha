@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Marvell MACSEC hardware offload driver
- *
- * Copyright (C) 2022 Marvell.
- */
+
+ 
 
 #include <crypto/skcipher.h>
 #include <linux/rtnetlink.h>
@@ -37,11 +34,11 @@
 #define MCS_GCM_AES_XPN_128		2
 #define MCS_GCM_AES_XPN_256		3
 
-#define MCS_TCI_ES			0x40 /* end station */
-#define MCS_TCI_SC			0x20 /* SCI present */
-#define MCS_TCI_SCB			0x10 /* epon */
-#define MCS_TCI_E			0x08 /* encryption */
-#define MCS_TCI_C			0x04 /* changed text */
+#define MCS_TCI_ES			0x40  
+#define MCS_TCI_SC			0x20  
+#define MCS_TCI_SCB			0x10  
+#define MCS_TCI_E			0x08  
+#define MCS_TCI_C			0x04  
 
 #define CN10K_MAX_HASH_LEN		16
 #define CN10K_MAX_SAK_LEN		32
@@ -75,7 +72,7 @@ static int cn10k_ecb_aes_encrypt(struct otx2_nic *pfvf, u8 *sak,
 		goto free_req;
 	}
 
-	/* build sg list */
+	 
 	sg_init_one(&sg_src, data, CN10K_MAX_HASH_LEN);
 	sg_init_one(&sg_dst, hash, CN10K_MAX_HASH_LEN);
 
@@ -459,7 +456,7 @@ static int cn10k_mcs_write_rx_sa_plcy(struct otx2_nic *pfvf,
 	map_req->sc_id = rxsc->hw_sc_id;
 	map_req->an = assoc_num;
 
-	/* Send two messages together */
+	 
 	ret = otx2_sync_mbox_msg(mbox);
 
 fail:
@@ -507,9 +504,7 @@ static int cn10k_mcs_write_tx_secy(struct otx2_nic *pfvf,
 	u8 cipher;
 	int ret;
 
-	/* Insert SecTag after 12 bytes (DA+SA) or 16 bytes
-	 * if VLAN tag needs to be sent in clear text.
-	 */
+	 
 	tag_offset = txsc->vlan_dev ? 16 : 12;
 	sw_tx_sc = &secy->tx_sc;
 
@@ -534,7 +529,7 @@ static int cn10k_mcs_write_tx_secy(struct otx2_nic *pfvf,
 		sectag_tci |= (MCS_TCI_E | MCS_TCI_C);
 
 	policy = FIELD_PREP(MCS_TX_SECY_PLCY_MTU, secy->netdev->mtu);
-	/* Write SecTag excluding AN bits(1..0) */
+	 
 	policy |= FIELD_PREP(MCS_TX_SECY_PLCY_ST_TCI, sectag_tci >> 2);
 	policy |= FIELD_PREP(MCS_TX_SECY_PLCY_ST_OFFSET, tag_offset);
 	policy |= MCS_TX_SECY_PLCY_INS_MODE;
@@ -558,10 +553,7 @@ static int cn10k_mcs_write_tx_secy(struct otx2_nic *pfvf,
 	if (secy->protect_frames)
 		policy |= MCS_TX_SECY_PLCY_PROTECT;
 
-	/* If the encodingsa does not exist/active and protect is
-	 * not set then frames can be sent out as it is. Hence enable
-	 * the policy irrespective of secy operational when !protect.
-	 */
+	 
 	if (!secy->protect_frames || secy->operational)
 		policy |= MCS_TX_SECY_PLCY_ENA;
 
@@ -612,7 +604,7 @@ static int cn10k_mcs_write_tx_flowid(struct otx2_nic *pfvf,
 	req->sc_id = txsc->hw_sc_id;
 	req->sci = (__force u64)cpu_to_be64((__force u64)secy->sci);
 	req->dir = MCS_TX;
-	/* This can be enabled since stack xmits packets only when interface is up */
+	 
 	req->ena = 1;
 
 	ret = otx2_sync_mbox_msg(mbox);
@@ -631,7 +623,7 @@ static int cn10k_mcs_link_tx_sa2sc(struct otx2_nic *pfvf,
 	struct mbox *mbox = &pfvf->mbox;
 	int ret;
 
-	/* Link the encoding_sa only to SC out of all SAs */
+	 
 	if (txsc->encoding_sa != sa_num)
 		return 0;
 
@@ -924,7 +916,7 @@ static struct cn10k_mcs_txsc *cn10k_mcs_create_txsc(struct otx2_nic *pfvf)
 	if (ret)
 		goto fail;
 
-	/* For a SecY, one TX secy and one RX secy HW resources are needed */
+	 
 	ret = cn10k_mcs_alloc_rsrc(pfvf, MCS_TX, MCS_RSRC_TYPE_SECY,
 				   &txsc->hw_secy_id_tx);
 	if (ret)
@@ -955,8 +947,7 @@ fail:
 	return ERR_PTR(ret);
 }
 
-/* Free Tx SC and its SAs(if any) resources to AF
- */
+ 
 static void cn10k_mcs_delete_txsc(struct otx2_nic *pfvf,
 				  struct cn10k_mcs_txsc *txsc)
 {
@@ -1011,8 +1002,7 @@ fail:
 	return ERR_PTR(ret);
 }
 
-/* Free Rx SC and its SAs(if any) resources to AF
- */
+ 
 static void cn10k_mcs_delete_rxsc(struct otx2_nic *pfvf,
 				  struct cn10k_mcs_rxsc *rxsc)
 {
@@ -1048,7 +1038,7 @@ static int cn10k_mcs_secy_tx_cfg(struct otx2_nic *pfvf, struct macsec_secy *secy
 
 	cn10k_mcs_write_tx_secy(pfvf, secy, txsc);
 	cn10k_mcs_write_tx_flowid(pfvf, secy, txsc);
-	/* When updating secy, change RX secy also */
+	 
 	cn10k_mcs_write_rx_secy(pfvf, secy, txsc->hw_secy_id_rx);
 
 	return 0;
@@ -1125,12 +1115,9 @@ static void cn10k_mcs_sync_stats(struct otx2_nic *pfvf, struct macsec_secy *secy
 	struct mcs_sc_stats sc_rsp = { 0 };
 	struct cn10k_mcs_rxsc *rxsc;
 
-	/* Because of shared counters for some stats in the hardware, when
-	 * updating secy policy take a snapshot of current stats and reset them.
-	 * Below are the effected stats because of shared counters.
-	 */
+	 
 
-	/* Check if sync is really needed */
+	 
 	if (secy->validate_frames == txsc->last_validate_frames &&
 	    secy->replay_protect == txsc->last_replay_protect)
 		return;
@@ -1254,7 +1241,7 @@ static int cn10k_mdo_upd_secy(struct macsec_context *ctx)
 	if (!txsc)
 		return -ENOENT;
 
-	/* Encoding SA got changed */
+	 
 	if (txsc->encoding_sa != secy->tx_sc.encoding_sa) {
 		txsc->encoding_sa = secy->tx_sc.encoding_sa;
 		sa_num = txsc->encoding_sa;
@@ -1356,7 +1343,7 @@ static int cn10k_mdo_upd_txsa(struct macsec_context *ctx)
 		return -EOPNOTSUPP;
 
 	if (netif_running(secy->netdev)) {
-		/* Keys cannot be changed after creation */
+		 
 		if (ctx->sa.update_pn) {
 			err = cn10k_write_tx_sa_pn(pfvf, txsc, sa_num,
 						   sw_tx_sa->next_pn);
@@ -1751,7 +1738,7 @@ void cn10k_handle_mcs_event(struct otx2_nic *pfvf, struct mcs_intr_info *event)
 	if (!(event->intr_mask & MCS_CPM_TX_PACKET_XPN_EQ0_INT))
 		return;
 
-	/* Find the SecY to which the expired hardware SA is mapped */
+	 
 	list_for_each_entry(txsc, &cfg->txsc_list, entry) {
 		for (an = 0; an < CN10K_MCS_SA_PER_SC; an++)
 			if (txsc->hw_sa_id[an] == event->sa_id) {

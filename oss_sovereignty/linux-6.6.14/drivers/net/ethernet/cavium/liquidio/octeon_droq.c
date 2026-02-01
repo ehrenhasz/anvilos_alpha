@@ -1,20 +1,4 @@
-/**********************************************************************
- * Author: Cavium, Inc.
- *
- * Contact: support@cavium.com
- *          Please include "LiquidIO" in the subject.
- *
- * Copyright (c) 2003-2016 Cavium, Inc.
- *
- * This file is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, Version 2, as
- * published by the Free Software Foundation.
- *
- * This file is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty
- * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more details.
- ***********************************************************************/
+ 
 #include <linux/pci.h>
 #include <linux/netdevice.h>
 #include <linux/vmalloc.h>
@@ -41,17 +25,7 @@ struct __dispatch {
 	octeon_dispatch_fn_t disp_fn;
 };
 
-/** Get the argument that the user set when registering dispatch
- *  function for a given opcode/subcode.
- *  @param  octeon_dev - the octeon device pointer.
- *  @param  opcode     - the opcode for which the dispatch argument
- *                       is to be checked.
- *  @param  subcode    - the subcode for which the dispatch argument
- *                       is to be checked.
- *  @return  Success: void * (argument to the dispatch function)
- *  @return  Failure: NULL
- *
- */
+ 
 void *octeon_get_dispatch_arg(struct octeon_device *octeon_dev,
 			      u16 opcode, u16 subcode)
 {
@@ -87,10 +61,7 @@ void *octeon_get_dispatch_arg(struct octeon_device *octeon_dev,
 	return fn_arg;
 }
 
-/** Check for packets on Droq. This function should be called with lock held.
- *  @param  droq - Droq on which count is checked.
- *  @return Returns packet count.
- */
+ 
 u32 octeon_droq_check_hw_for_pkts(struct octeon_droq *droq)
 {
 	u32 pkt_count = 0;
@@ -101,7 +72,7 @@ u32 octeon_droq_check_hw_for_pkts(struct octeon_droq *droq)
 	last_count = pkt_count - droq->pkt_count;
 	droq->pkt_count = pkt_count;
 
-	/* we shall write to cnts  at napi irq enable or end of droq tasklet */
+	 
 	if (last_count)
 		atomic_add(last_count, &droq->pkts_pending);
 
@@ -113,11 +84,7 @@ static void octeon_droq_compute_max_packet_bufs(struct octeon_droq *droq)
 {
 	u32 count = 0;
 
-	/* max_empty_descs is the max. no. of descs that can have no buffers.
-	 * If the empty desc count goes beyond this value, we cannot safely
-	 * read in a 64K packet sent by Octeon
-	 * (64K is max pkt size from Octeon)
-	 */
+	 
 	droq->max_empty_descs = 0;
 
 	do {
@@ -302,7 +269,7 @@ int octeon_init_droq(struct octeon_device *oct,
 
 	INIT_LIST_HEAD(&droq->dispatch_list);
 
-	/* For 56xx Pass1, this function won't be called, so no checks. */
+	 
 	oct->fn_list.setup_oq_regs(oct, q_no);
 
 	oct->io_qmask.oq |= BIT_ULL(q_no);
@@ -314,23 +281,7 @@ init_droq_fail:
 	return 1;
 }
 
-/* octeon_create_recv_info
- * Parameters:
- *  octeon_dev - pointer to the octeon device structure
- *  droq       - droq in which the packet arrived.
- *  buf_cnt    - no. of buffers used by the packet.
- *  idx        - index in the descriptor for the first buffer in the packet.
- * Description:
- *  Allocates a recv_info_t and copies the buffer addresses for packet data
- *  into the recv_pkt space which starts at an 8B offset from recv_info_t.
- *  Flags the descriptors for refill later. If available descriptors go
- *  below the threshold to receive a 64K pkt, new buffers are first allocated
- *  before the recv_pkt_t is created.
- *  This routine will be called in interrupt context.
- * Returns:
- *  Success: Pointer to recv_info_t
- *  Failure: NULL.
- */
+ 
 static inline struct octeon_recv_info *octeon_create_recv_info(
 		struct octeon_device *octeon_dev,
 		struct octeon_droq *droq,
@@ -384,9 +335,7 @@ static inline struct octeon_recv_info *octeon_create_recv_info(
 	return recv_info;
 }
 
-/* If we were not able to refill all buffers, try to move around
- * the buffers that were not dispatched.
- */
+ 
 static inline u32
 octeon_droq_refill_pullup_descs(struct octeon_droq *droq,
 				struct octeon_droq_desc *desc_ring)
@@ -414,21 +363,11 @@ octeon_droq_refill_pullup_descs(struct octeon_droq *droq,
 			} while (droq->recv_buf_list[droq->refill_idx].buffer);
 		}
 		refill_index = incr_index(refill_index, 1, droq->max_count);
-	}                       /* while */
+	}                        
 	return desc_refilled;
 }
 
-/* octeon_droq_refill
- * Parameters:
- *  droq       - droq in which descriptors require new buffers.
- * Description:
- *  Called during normal DROQ processing in interrupt mode or by the poll
- *  thread to refill the descriptors from which buffers were dispatched
- *  to upper layers. Attempts to allocate new buffers. If that fails, moves
- *  up buffers (that were not dispatched) to form a contiguous ring.
- * Returns:
- *  No of descriptors refilled.
- */
+ 
 static u32
 octeon_droq_refill(struct octeon_device *octeon_dev, struct octeon_droq *droq)
 {
@@ -441,22 +380,16 @@ octeon_droq_refill(struct octeon_device *octeon_dev, struct octeon_droq *droq)
 	desc_ring = droq->desc_ring;
 
 	while (droq->refill_count && (desc_refilled < droq->max_count)) {
-		/* If a valid buffer exists (happens if there is no dispatch),
-		 * reuse the buffer, else allocate.
-		 */
+		 
 		if (!droq->recv_buf_list[droq->refill_idx].buffer) {
 			pg_info =
 				&droq->recv_buf_list[droq->refill_idx].pg_info;
-			/* Either recycle the existing pages or go for
-			 * new page alloc
-			 */
+			 
 			if (pg_info->page)
 				buf = recv_buffer_reuse(octeon_dev, pg_info);
 			else
 				buf = recv_buffer_alloc(octeon_dev, pg_info);
-			/* If a buffer could not be allocated, no point in
-			 * continuing
-			 */
+			 
 			if (!buf) {
 				droq->stats.rx_alloc_failure++;
 				break;
@@ -485,18 +418,11 @@ octeon_droq_refill(struct octeon_device *octeon_dev, struct octeon_droq *droq)
 		desc_refilled +=
 			octeon_droq_refill_pullup_descs(droq, desc_ring);
 
-	/* if droq->refill_count
-	 * The refill count would not change in pass two. We only moved buffers
-	 * to close the gap in the ring, but we would still have the same no. of
-	 * buffers to refill.
-	 */
+	 
 	return desc_refilled;
 }
 
-/** check if we can allocate packets to get out of oom.
- *  @param  droq - Droq being checked.
- *  @return 1 if fails to refill minimum
- */
+ 
 int octeon_retry_droq_refill(struct octeon_droq *droq)
 {
 	struct octeon_device *oct = droq->oct_dev;
@@ -506,10 +432,7 @@ int octeon_retry_droq_refill(struct octeon_droq *droq)
 	pkts_credit = readl(droq->pkts_credit_reg);
 	desc_refilled = octeon_droq_refill(oct, droq);
 	if (desc_refilled) {
-		/* Flush the droq descriptor data to memory to be sure
-		 * that when we update the credits the data in memory
-		 * is accurate.
-		 */
+		 
 		wmb();
 		writel(desc_refilled, droq->pkts_credit_reg);
 
@@ -622,7 +545,7 @@ octeon_droq_fast_process_packets(struct octeon_device *oct,
 			break;
 		}
 
-		/* Len of resp hdr in included in the received data len. */
+		 
 		rh = &info->rh;
 
 		info->length += OCTNET_FRM_LENGTH_SIZE;
@@ -654,9 +577,7 @@ octeon_droq_fast_process_packets(struct octeon_device *oct,
 				nicbuf = octeon_fast_packet_alloc((u32)
 								  info->length);
 				pkt_len = 0;
-				/* nicbuf allocation can fail. We'll handle it
-				 * inside the loop.
-				 */
+				 
 				while (pkt_len < info->length) {
 					int cpy_len, idx = droq->read_idx;
 
@@ -703,17 +624,14 @@ octeon_droq_fast_process_packets(struct octeon_device *oct,
 			int desc_refilled = octeon_droq_refill(oct, droq);
 
 			if (desc_refilled) {
-				/* Flush the droq descriptor data to memory to
-				 * be sure that when we update the credits the
-				 * data in memory is accurate.
-				 */
+				 
 				wmb();
 				writel(desc_refilled, droq->pkts_credit_reg);
 			}
 		}
-	}                       /* for (each packet)... */
+	}                        
 
-	/* Increment refill_count by the number of buffers processed. */
+	 
 	droq->stats.pkts_received += pkt;
 	droq->stats.bytes_received += total_len;
 
@@ -731,7 +649,7 @@ octeon_droq_fast_process_packets(struct octeon_device *oct,
 	    readl(droq->pkts_credit_reg) < CN23XX_SLI_DEF_BP) {
 		octeon_droq_check_hw_for_pkts(droq);
 
-		/* Make sure there are no pkts_pending */
+		 
 		if (!atomic_read(&droq->pkts_pending))
 			octeon_schedule_rxq_oom_work(oct, droq);
 	}
@@ -769,7 +687,7 @@ octeon_droq_process_packets(struct octeon_device *oct,
 				(u16)rdisp->rinfo->recv_pkt->rh.r.subcode));
 	}
 
-	/* If there are packets pending. schedule tasklet again */
+	 
 	if (atomic_read(&droq->pkts_pending))
 		return 1;
 
@@ -777,10 +695,7 @@ octeon_droq_process_packets(struct octeon_device *oct,
 }
 EXPORT_SYMBOL_GPL(octeon_droq_process_packets);
 
-/*
- * Utility function to poll for packets. check_hw_for_packets must be
- * called before calling this routine.
- */
+ 
 
 int
 octeon_droq_process_poll_pkts(struct octeon_device *oct,
@@ -823,7 +738,7 @@ octeon_droq_process_poll_pkts(struct octeon_device *oct,
 	return total_pkts_processed;
 }
 
-/* Enable Pkt Interrupt */
+ 
 int
 octeon_enable_irq(struct octeon_device *oct, u32 q_no)
 {
@@ -844,7 +759,7 @@ octeon_enable_irq(struct octeon_device *oct, u32 q_no)
 		value |= (1 << q_no);
 		octeon_write_csr(oct, CN6XXX_SLI_PKT_CNT_INT_ENB, value);
 
-		/* don't bother flushing the enables */
+		 
 
 		spin_unlock_irqrestore
 			(&cn6xxx->lock_for_droq_int_enb_reg, flags);
@@ -939,7 +854,7 @@ int octeon_create_droq(struct octeon_device *oct,
 		return 1;
 	}
 
-	/* Allocate the DS for the new droq. */
+	 
 	droq = vmalloc_node(sizeof(*droq), numa_node);
 	if (!droq)
 		droq = vmalloc(sizeof(*droq));
@@ -948,11 +863,11 @@ int octeon_create_droq(struct octeon_device *oct,
 
 	memset(droq, 0, sizeof(struct octeon_droq));
 
-	/*Disable the pkt o/p for this Q  */
+	 
 	octeon_set_droq_pkt_op(oct, q_no, 0);
 	oct->droq[q_no] = droq;
 
-	/* Initialize the Droq */
+	 
 	if (octeon_init_droq(oct, q_no, num_descs, desc_size, app_ctx)) {
 		vfree(oct->droq[q_no]);
 		oct->droq[q_no] = NULL;
@@ -964,10 +879,8 @@ int octeon_create_droq(struct octeon_device *oct,
 	dev_dbg(&oct->pci_dev->dev, "%s: Total number of OQ: %d\n", __func__,
 		oct->num_oqs);
 
-	/* Global Droq register settings */
+	 
 
-	/* As of now not required, as setting are done for all 32 Droqs at
-	 * the same time.
-	 */
+	 
 	return 0;
 }

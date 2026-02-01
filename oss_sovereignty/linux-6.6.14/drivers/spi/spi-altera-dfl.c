@@ -1,12 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// DFL bus driver for Altera SPI Master
-//
-// Copyright (C) 2020 Intel Corporation, Inc.
-//
-// Authors:
-//   Matthew Gerlach <matthew.gerlach@linux.intel.com>
-//
+
+
+
+
+
+
+
+
+
 
 #include <linux/types.h>
 #include <linux/kernel.h>

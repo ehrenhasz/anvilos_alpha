@@ -1,28 +1,4 @@
-/*
- * This file is part of the MicroPython project, http://micropython.org/
- *
- * The MIT License (MIT)
- *
- * Copyright (c) 2016 Paul Sokolovsky
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
+ 
 
 #include <assert.h>
 #include <string.h>
@@ -31,25 +7,25 @@
 
 #if MICROPY_PY_RANDOM
 
-// Work out if the seed will be set on import or not.
+
 #if MICROPY_MODULE_BUILTIN_INIT && defined(MICROPY_PY_RANDOM_SEED_INIT_FUNC)
 #define SEED_ON_IMPORT (1)
 #else
 #define SEED_ON_IMPORT (0)
 #endif
 
-// Yasmarang random number generator
-// by Ilya Levin
-// http://www.literatecode.com/yasmarang
-// Public Domain
+
+
+
+
 
 #if !MICROPY_ENABLE_DYNRUNTIME
 #if SEED_ON_IMPORT
-// If the state is seeded on import then keep these variables in the BSS.
+
 static uint32_t yasmarang_pad, yasmarang_n, yasmarang_d;
 static uint8_t yasmarang_dat;
 #else
-// Without seed-on-import these variables must be initialised via the data section.
+
 static uint32_t yasmarang_pad = 0xeda4baba, yasmarang_n = 69, yasmarang_d = 233;
 static uint8_t yasmarang_dat = 0;
 #endif
@@ -63,14 +39,14 @@ static uint32_t yasmarang(void) {
     yasmarang_dat ^= (char)yasmarang_pad ^ (yasmarang_d >> 8) ^ 1;
 
     return yasmarang_pad ^ (yasmarang_d << 5) ^ (yasmarang_pad >> 18) ^ (yasmarang_dat << 1);
-}  /* yasmarang */
+}   
 
-// End of Yasmarang
+
 
 #if MICROPY_PY_RANDOM_EXTRA_FUNCS
 
-// returns an unsigned integer below the given argument
-// n must not be zero
+
+
 static uint32_t yasmarang_randbelow(uint32_t n) {
     uint32_t mask = 1;
     while ((n & mask) < n) {
@@ -94,7 +70,7 @@ static mp_obj_t mod_random_getrandbits(mp_obj_t num_in) {
         return MP_OBJ_NEW_SMALL_INT(0);
     }
     uint32_t mask = ~0;
-    // Beware of C undefined behavior when shifting by >= than bit size
+    
     mask >>= (32 - n);
     return mp_obj_new_int_from_uint(yasmarang() & mask);
 }
@@ -124,7 +100,7 @@ static MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(mod_random_seed_obj, 0, 1, mod_random
 static mp_obj_t mod_random_randrange(size_t n_args, const mp_obj_t *args) {
     mp_int_t start = mp_obj_get_int(args[0]);
     if (n_args == 1) {
-        // range(stop)
+        
         if (start > 0) {
             return mp_obj_new_int(yasmarang_randbelow((uint32_t)start));
         } else {
@@ -133,14 +109,14 @@ static mp_obj_t mod_random_randrange(size_t n_args, const mp_obj_t *args) {
     } else {
         mp_int_t stop = mp_obj_get_int(args[1]);
         if (n_args == 2) {
-            // range(start, stop)
+            
             if (start < stop) {
                 return mp_obj_new_int(start + yasmarang_randbelow((uint32_t)(stop - start)));
             } else {
                 goto error;
             }
         } else {
-            // range(start, stop, step)
+            
             mp_int_t step = mp_obj_get_int(args[2]);
             mp_int_t n;
             if (step > 0) {
@@ -186,7 +162,7 @@ static MP_DEFINE_CONST_FUN_OBJ_1(mod_random_choice_obj, mod_random_choice);
 
 #if MICROPY_PY_BUILTINS_FLOAT
 
-// returns a number in the range [0..1) using Yasmarang to fill in the fraction bits
+
 static mp_float_t yasmarang_float(void) {
     mp_float_union_t u;
     u.p.sgn = 0;
@@ -213,12 +189,12 @@ static MP_DEFINE_CONST_FUN_OBJ_2(mod_random_uniform_obj, mod_random_uniform);
 
 #endif
 
-#endif // MICROPY_PY_RANDOM_EXTRA_FUNCS
+#endif 
 
 #if SEED_ON_IMPORT
 static mp_obj_t mod_random___init__(void) {
-    // This module may be imported by more than one name so need to ensure
-    // that it's only ever seeded once.
+    
+    
     static bool seeded = false;
     if (!seeded) {
         seeded = true;
@@ -258,4 +234,4 @@ const mp_obj_module_t mp_module_random = {
 MP_REGISTER_EXTENSIBLE_MODULE(MP_QSTR_random, mp_module_random);
 #endif
 
-#endif // MICROPY_PY_RANDOM
+#endif 

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2019-2021 Linaro Ltd.
- */
+
+ 
 
 #include <linux/io.h>
 #include <linux/of.h>
@@ -19,101 +17,30 @@
 #define SCMI_OPTEE_MAX_MSG_SIZE		128
 
 enum scmi_optee_pta_cmd {
-	/*
-	 * PTA_SCMI_CMD_CAPABILITIES - Get channel capabilities
-	 *
-	 * [out]    value[0].a: Capability bit mask (enum pta_scmi_caps)
-	 * [out]    value[0].b: Extended capabilities or 0
-	 */
+	 
 	PTA_SCMI_CMD_CAPABILITIES = 0,
 
-	/*
-	 * PTA_SCMI_CMD_PROCESS_SMT_CHANNEL - Process SCMI message in SMT buffer
-	 *
-	 * [in]     value[0].a: Channel handle
-	 *
-	 * Shared memory used for SCMI message/response exhange is expected
-	 * already identified and bound to channel handle in both SCMI agent
-	 * and SCMI server (OP-TEE) parts.
-	 * The memory uses SMT header to carry SCMI meta-data (protocol ID and
-	 * protocol message ID).
-	 */
+	 
 	PTA_SCMI_CMD_PROCESS_SMT_CHANNEL = 1,
 
-	/*
-	 * PTA_SCMI_CMD_PROCESS_SMT_CHANNEL_MESSAGE - Process SMT/SCMI message
-	 *
-	 * [in]     value[0].a: Channel handle
-	 * [in/out] memref[1]: Message/response buffer (SMT and SCMI payload)
-	 *
-	 * Shared memory used for SCMI message/response is a SMT buffer
-	 * referenced by param[1]. It shall be 128 bytes large to fit response
-	 * payload whatever message playload size.
-	 * The memory uses SMT header to carry SCMI meta-data (protocol ID and
-	 * protocol message ID).
-	 */
+	 
 	PTA_SCMI_CMD_PROCESS_SMT_CHANNEL_MESSAGE = 2,
 
-	/*
-	 * PTA_SCMI_CMD_GET_CHANNEL - Get channel handle
-	 *
-	 * SCMI shm information are 0 if agent expects to use OP-TEE regular SHM
-	 *
-	 * [in]     value[0].a: Channel identifier
-	 * [out]    value[0].a: Returned channel handle
-	 * [in]     value[0].b: Requested capabilities mask (enum pta_scmi_caps)
-	 */
+	 
 	PTA_SCMI_CMD_GET_CHANNEL = 3,
 
-	/*
-	 * PTA_SCMI_CMD_PROCESS_MSG_CHANNEL - Process SCMI message in a MSG
-	 * buffer pointed by memref parameters
-	 *
-	 * [in]     value[0].a: Channel handle
-	 * [in]     memref[1]: Message buffer (MSG and SCMI payload)
-	 * [out]    memref[2]: Response buffer (MSG and SCMI payload)
-	 *
-	 * Shared memories used for SCMI message/response are MSG buffers
-	 * referenced by param[1] and param[2]. MSG transport protocol
-	 * uses a 32bit header to carry SCMI meta-data (protocol ID and
-	 * protocol message ID) followed by the effective SCMI message
-	 * payload.
-	 */
+	 
 	PTA_SCMI_CMD_PROCESS_MSG_CHANNEL = 4,
 };
 
-/*
- * OP-TEE SCMI service capabilities bit flags (32bit)
- *
- * PTA_SCMI_CAPS_SMT_HEADER
- * When set, OP-TEE supports command using SMT header protocol (SCMI shmem) in
- * shared memory buffers to carry SCMI protocol synchronisation information.
- *
- * PTA_SCMI_CAPS_MSG_HEADER
- * When set, OP-TEE supports command using MSG header protocol in an OP-TEE
- * shared memory to carry SCMI protocol synchronisation information and SCMI
- * message payload.
- */
+ 
 #define PTA_SCMI_CAPS_NONE		0
 #define PTA_SCMI_CAPS_SMT_HEADER	BIT(0)
 #define PTA_SCMI_CAPS_MSG_HEADER	BIT(1)
 #define PTA_SCMI_CAPS_MASK		(PTA_SCMI_CAPS_SMT_HEADER | \
 					 PTA_SCMI_CAPS_MSG_HEADER)
 
-/**
- * struct scmi_optee_channel - Description of an OP-TEE SCMI channel
- *
- * @channel_id: OP-TEE channel ID used for this transport
- * @tee_session: TEE session identifier
- * @caps: OP-TEE SCMI channel capabilities
- * @rx_len: Response size
- * @mu: Mutex protection on channel access
- * @cinfo: SCMI channel information
- * @shmem: Virtual base address of the shared memory
- * @req: Shared memory protocol handle for SCMI request and synchronous response
- * @tee_shm: TEE shared memory handle @req or NULL if using IOMEM shmem
- * @link: Reference in agent's channel list
- */
+ 
 struct scmi_optee_channel {
 	u32 channel_id;
 	u32 tee_session;
@@ -129,15 +56,7 @@ struct scmi_optee_channel {
 	struct list_head link;
 };
 
-/**
- * struct scmi_optee_agent - OP-TEE transport private data
- *
- * @dev: Device used for communication with TEE
- * @tee_ctx: TEE context used for communication
- * @caps: Supported channel capabilities
- * @mu: Mutex for protection of @channel_list
- * @channel_list: List of all created channels for the agent
- */
+ 
 struct scmi_optee_agent {
 	struct device *dev;
 	struct tee_context *tee_ctx;
@@ -146,13 +65,13 @@ struct scmi_optee_agent {
 	struct list_head channel_list;
 };
 
-/* There can be only 1 SCMI service in OP-TEE we connect to */
+ 
 static struct scmi_optee_agent *scmi_optee_private;
 
-/* Forward reference to scmi_optee transport initialization */
+ 
 static int scmi_optee_init(void);
 
-/* Open a session toward SCMI OP-TEE service with REE_KERNEL identity */
+ 
 static int open_session(struct scmi_optee_agent *agent, u32 *tee_session)
 {
 	struct device *dev = agent->dev;
@@ -246,7 +165,7 @@ static int get_channel(struct scmi_optee_channel *channel)
 		return -EOPNOTSUPP;
 	}
 
-	/* From now on use channel identifer provided by OP-TEE SCMI service */
+	 
 	channel->channel_id = param[0].u.value.a;
 	channel->caps = caps;
 
@@ -304,7 +223,7 @@ static int invoke_process_msg_channel(struct scmi_optee_channel *channel, size_t
 		return -EIO;
 	}
 
-	/* Save response size */
+	 
 	channel->rx_len = param[2].u.memref.size;
 
 	return 0;
@@ -316,7 +235,7 @@ static int scmi_optee_link_supplier(struct device *dev)
 		if (scmi_optee_init())
 			dev_dbg(dev, "Optee bus not yet ready\n");
 
-		/* Wait for optee bus */
+		 
 		return -EPROBE_DEFER;
 	}
 
@@ -444,7 +363,7 @@ static int scmi_optee_chan_setup(struct scmi_chan_info *cinfo, struct device *de
 	if (ret)
 		goto err_close_sess;
 
-	/* Enable polling */
+	 
 	cinfo->no_completion_irq = true;
 
 	mutex_lock(&scmi_optee_private->mu);
@@ -547,7 +466,7 @@ static int scmi_optee_service_probe(struct device *dev)
 	struct tee_context *tee_ctx;
 	int ret;
 
-	/* Only one SCMI OP-TEE device allowed */
+	 
 	if (scmi_optee_private) {
 		dev_err(dev, "An SCMI OP-TEE device was already initialized: only one allowed\n");
 		return -EBUSY;
@@ -572,7 +491,7 @@ static int scmi_optee_service_probe(struct device *dev)
 	if (ret)
 		goto err;
 
-	/* Ensure agent resources are all visible before scmi_optee_private is */
+	 
 	smp_mb();
 	scmi_optee_private = agent;
 
@@ -594,7 +513,7 @@ static int scmi_optee_service_remove(struct device *dev)
 	if (!list_empty(&scmi_optee_private->channel_list))
 		return -EBUSY;
 
-	/* Ensure cleared reference is visible before resources are released */
+	 
 	smp_store_mb(scmi_optee_private, NULL);
 
 	tee_client_close_context(agent->tee_ctx);

@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
-	STV6110(A) Silicon tuner driver
-
-	Copyright (C) Manu Abraham <abraham.manu@gmail.com>
-
-	Copyright (C) ST Microelectronics
-
-*/
+ 
+ 
 
 #ifndef __STV6110x_H
 #define __STV6110x_H
@@ -14,7 +7,7 @@
 struct stv6110x_config {
 	u8	addr;
 	u32	refclk;
-	u8	clk_div; /* divisor value for the output clock */
+	u8	clk_div;  
 	struct dvb_frontend		*frontend;
 
 	struct stv6110x_devctl* (*get_devctl)(struct i2c_client *i2c);
@@ -59,6 +52,6 @@ static inline const struct stv6110x_devctl *stv6110x_attach(struct dvb_frontend 
 	return NULL;
 }
 
-#endif /* CONFIG_DVB_STV6110x */
+#endif  
 
-#endif /* __STV6110x_H */
+#endif  

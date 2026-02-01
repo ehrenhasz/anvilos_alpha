@@ -1,14 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2010-2011 EIA Electronics,
-//                         Kurt Van Dijck <kurt.van.dijck@eia.be>
-// Copyright (c) 2017-2019 Pengutronix,
-//                         Marc Kleine-Budde <kernel@pengutronix.de>
-// Copyright (c) 2017-2019 Pengutronix,
-//                         Oleksij Rempel <kernel@pengutronix.de>
 
-/* bus for j1939 remote devices
- * Since rtnetlink, no real bus is used.
- */
+
+
+
+
+
+
+
+ 
 
 #include <net/sock.h>
 
@@ -43,8 +41,8 @@ static bool j1939_ecu_is_mapped_locked(struct j1939_ecu *ecu)
 	return j1939_ecu_find_by_addr_locked(priv, ecu->addr) == ecu;
 }
 
-/* ECU device interface */
-/* map ECU to a bus address space */
+ 
+ 
 static void j1939_ecu_map_locked(struct j1939_ecu *ecu)
 {
 	struct j1939_priv *priv = ecu->priv;
@@ -68,7 +66,7 @@ static void j1939_ecu_map_locked(struct j1939_ecu *ecu)
 	ent->nusers += ecu->nusers;
 }
 
-/* unmap ECU from a bus address space */
+ 
 void j1939_ecu_unmap_locked(struct j1939_ecu *ecu)
 {
 	struct j1939_priv *priv = ecu->priv;
@@ -108,12 +106,10 @@ void j1939_ecu_unmap_all(struct j1939_priv *priv)
 
 void j1939_ecu_timer_start(struct j1939_ecu *ecu)
 {
-	/* The ECU is held here and released in the
-	 * j1939_ecu_timer_handler() or j1939_ecu_timer_cancel().
-	 */
+	 
 	j1939_ecu_get(ecu);
 
-	/* Schedule timer in 250 msec to commit address change. */
+	 
 	hrtimer_start(&ecu->ac_timer, ms_to_ktime(250),
 		      HRTIMER_MODE_REL_SOFT);
 }
@@ -131,14 +127,10 @@ static enum hrtimer_restart j1939_ecu_timer_handler(struct hrtimer *hrtimer)
 	struct j1939_priv *priv = ecu->priv;
 
 	write_lock_bh(&priv->lock);
-	/* TODO: can we test if ecu->addr is unicast before starting
-	 * the timer?
-	 */
+	 
 	j1939_ecu_map_locked(ecu);
 
-	/* The corresponding j1939_ecu_get() is in
-	 * j1939_ecu_timer_start().
-	 */
+	 
 	j1939_ecu_put(ecu);
 	write_unlock_bh(&priv->lock);
 
@@ -204,7 +196,7 @@ struct j1939_ecu *j1939_ecu_get_by_addr(struct j1939_priv *priv, u8 addr)
 	return ecu;
 }
 
-/* get pointer to ecu without increasing ref counter */
+ 
 static struct j1939_ecu *j1939_ecu_find_by_name_locked(struct j1939_priv *priv,
 						       name_t name)
 {
@@ -259,7 +251,7 @@ u8 j1939_name_to_addr(struct j1939_priv *priv, name_t name)
 	read_lock_bh(&priv->lock);
 	ecu = j1939_ecu_find_by_name_locked(priv, name);
 	if (ecu && j1939_ecu_is_mapped_locked(ecu))
-		/* ecu's SA is registered */
+		 
 		addr = ecu->addr;
 
 	read_unlock_bh(&priv->lock);
@@ -267,11 +259,7 @@ u8 j1939_name_to_addr(struct j1939_priv *priv, name_t name)
 	return addr;
 }
 
-/* TX addr/name accounting
- * Transport protocol needs to know if a SA is local or not
- * These functions originate from userspace manipulating sockets,
- * so locking is straigforward
- */
+ 
 
 int j1939_local_ecu_get(struct j1939_priv *priv, name_t name, u8 sa)
 {
@@ -294,9 +282,9 @@ int j1939_local_ecu_get(struct j1939_priv *priv, name_t name, u8 sa)
 		goto done;
 
 	ecu->nusers++;
-	/* TODO: do we care if ecu->addr != sa? */
+	 
 	if (j1939_ecu_is_mapped_locked(ecu))
-		/* ecu's sa is active already */
+		 
 		priv->ents[ecu->addr].nusers++;
 
  done:
@@ -322,9 +310,9 @@ void j1939_local_ecu_put(struct j1939_priv *priv, name_t name, u8 sa)
 		goto done;
 
 	ecu->nusers--;
-	/* TODO: do we care if ecu->addr != sa? */
+	 
 	if (j1939_ecu_is_mapped_locked(ecu))
-		/* ecu's sa is active already */
+		 
 		priv->ents[ecu->addr].nusers--;
 	j1939_ecu_put(ecu);
 

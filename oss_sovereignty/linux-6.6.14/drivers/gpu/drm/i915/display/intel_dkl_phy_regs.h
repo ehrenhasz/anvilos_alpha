@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2022 Intel Corporation
- */
+ 
+ 
 
 #ifndef __INTEL_DKL_PHY_REGS__
 #define __INTEL_DKL_PHY_REGS__
@@ -23,7 +21,7 @@ struct intel_dkl_phy_reg {
 #define DKL_REG_TC_PORT(__reg) \
 	(TC_PORT_1 + ((__reg).reg - _DKL_PHY1_BASE) / (_DKL_PHY2_BASE - _DKL_PHY1_BASE))
 
-/* DEKEL PHY MMIO Address = Phy base + (internal address & ~index_mask) */
+ 
 #define DKL_REG_MMIO(__reg)				_MMIO((__reg).reg)
 
 #define _DKL_REG_PHY_BASE(tc_port)			_PORT(tc_port, \
@@ -110,17 +108,17 @@ struct intel_dkl_phy_reg {
 #define _DKL_REFCLKIN_CTL				0x212C
 #define DKL_REFCLKIN_CTL(tc_port)			_DKL_REG(tc_port, \
 								 _DKL_REFCLKIN_CTL)
-/* Bits are the same as MG_REFCLKIN_CTL */
+ 
 
 #define _DKL_CLKTOP2_HSCLKCTL				0x20D4
 #define DKL_CLKTOP2_HSCLKCTL(rc_port)			_DKL_REG(tc_port, \
 								 _DKL_CLKTOP2_HSCLKCTL)
-/* Bits are the same as MG_CLKTOP2_HSCLKCTL */
+ 
 
 #define _DKL_CLKTOP2_CORECLKCTL1			0x20D8
 #define DKL_CLKTOP2_CORECLKCTL1(tc_port)		_DKL_REG(tc_port, \
 								 _DKL_CLKTOP2_CORECLKCTL1)
-/* Bits are the same as MG_CLKTOP2_CORECLKCTL1 */
+ 
 
 #define _DKL_TX_DPCNTL0_LN0				0x02C0
 #define _DKL_TX_DPCNTL0_LN1				0x12C0
@@ -139,7 +137,7 @@ struct intel_dkl_phy_reg {
 #define DKL_TX_DPCNTL1(tc_port, ln)			_DKL_REG_LN(tc_port, ln, \
 								    _DKL_TX_DPCNTL1_LN0, \
 								    _DKL_TX_DPCNTL1_LN1)
-/* Bits are the same as DKL_TX_DPCNTRL0 */
+ 
 
 #define _DKL_TX_DPCNTL2_LN0				0x02C8
 #define _DKL_TX_DPCNTL2_LN1				0x12C8
@@ -188,12 +186,7 @@ struct intel_dkl_phy_reg {
 								 _DKL_CMN_UC_DW27)
 #define  DKL_CMN_UC_DW27_UC_HEALTH			(0x1 << 15)
 
-/*
- * Each Dekel PHY is addressed through a 4KB aperture. Each PHY has more than
- * 4KB of register space, so a separate index is programmed in HIP_INDEX_REG0
- * or HIP_INDEX_REG1, based on the port number, to set the upper 2 address
- * bits that point the 4KB window into the full PHY register space.
- */
+ 
 #define _HIP_INDEX_REG0					0x1010A0
 #define _HIP_INDEX_REG1					0x1010A4
 #define HIP_INDEX_REG(tc_port)				_MMIO((tc_port) < 4 ? _HIP_INDEX_REG0 \
@@ -201,4 +194,4 @@ struct intel_dkl_phy_reg {
 #define _HIP_INDEX_SHIFT(tc_port)			(8 * ((tc_port) % 4))
 #define HIP_INDEX_VAL(tc_port, val)			((val) << _HIP_INDEX_SHIFT(tc_port))
 
-#endif /* __INTEL_DKL_PHY_REGS__ */
+#endif  

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Bareudp: UDP  tunnel encasulation for different Payload types like
- * MPLS, NSH, IP, etc.
- * Copyright (c) 2019 Nokia, Inc.
- * Authors:  Martin Varghese, <martin.varghese@nokia.com>
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -30,7 +26,7 @@ static bool log_ecn_error = true;
 module_param(log_ecn_error, bool, 0644);
 MODULE_PARM_DESC(log_ecn_error, "Log packets received with corrupted ECN");
 
-/* per-network namespace private data for this module */
+ 
 
 static unsigned int bareudp_net_id;
 
@@ -45,16 +41,16 @@ struct bareudp_conf {
 	bool multi_proto_mode;
 };
 
-/* Pseudo network device */
+ 
 struct bareudp_dev {
-	struct net         *net;        /* netns for packet i/o */
-	struct net_device  *dev;        /* netdev for bareudp tunnel */
+	struct net         *net;         
+	struct net_device  *dev;         
 	__be16		   ethertype;
 	__be16             port;
 	u16	           sport_min;
 	bool               multi_proto_mode;
 	struct socket      __rcu *sock;
-	struct list_head   next;        /* bareudp node  on namespace list */
+	struct list_head   next;         
 	struct gro_cells   gro_cells;
 };
 
@@ -178,7 +174,7 @@ static int bareudp_udp_encap_recv(struct sock *sk, struct sk_buff *skb)
 
 	return 0;
 drop:
-	/* Consume bad packet */
+	 
 	kfree_skb(skb);
 
 	return 0;
@@ -228,7 +224,7 @@ static struct socket *bareudp_create_sock(struct net *net, __be16 port)
 		udp_conf.family = AF_INET;
 
 	udp_conf.local_udp_port = port;
-	/* Open UDP socket */
+	 
 	err = udp_sock_create(net, &udp_conf, &sock);
 	if (err < 0)
 		return ERR_PTR(err);
@@ -237,7 +233,7 @@ static struct socket *bareudp_create_sock(struct net *net, __be16 port)
 	return sock;
 }
 
-/* Create new listen socket if needed */
+ 
 static int bareudp_socket_create(struct bareudp_dev *bareudp, __be16 port)
 {
 	struct udp_tunnel_sock_cfg tunnel_cfg;
@@ -247,7 +243,7 @@ static int bareudp_socket_create(struct bareudp_dev *bareudp, __be16 port)
 	if (IS_ERR(sock))
 		return PTR_ERR(sock);
 
-	/* Mark socket as an encapsulation socket */
+	 
 	memset(&tunnel_cfg, 0, sizeof(tunnel_cfg));
 	tunnel_cfg.sk_user_data = bareudp;
 	tunnel_cfg.encap_type = 1;
@@ -531,12 +527,12 @@ static const struct nla_policy bareudp_policy[IFLA_BAREUDP_MAX + 1] = {
 	[IFLA_BAREUDP_MULTIPROTO_MODE]     = { .type = NLA_FLAG },
 };
 
-/* Info for udev, that this is a virtual tunnel endpoint */
+ 
 static const struct device_type bareudp_type = {
 	.name = "bareudp",
 };
 
-/* Initialize the device structure. */
+ 
 static void bareudp_setup(struct net_device *dev)
 {
 	dev->netdev_ops = &bareudp_netdev_ops;
@@ -694,10 +690,10 @@ err_unconfig:
 
 static size_t bareudp_get_size(const struct net_device *dev)
 {
-	return  nla_total_size(sizeof(__be16)) +  /* IFLA_BAREUDP_PORT */
-		nla_total_size(sizeof(__be16)) +  /* IFLA_BAREUDP_ETHERTYPE */
-		nla_total_size(sizeof(__u16))  +  /* IFLA_BAREUDP_SRCPORT_MIN */
-		nla_total_size(0)              +  /* IFLA_BAREUDP_MULTIPROTO_MODE */
+	return  nla_total_size(sizeof(__be16)) +   
+		nla_total_size(sizeof(__be16)) +   
+		nla_total_size(sizeof(__u16))  +   
+		nla_total_size(0)              +   
 		0;
 }
 
@@ -760,7 +756,7 @@ static void __net_exit bareudp_exit_batch_net(struct list_head *net_list)
 	list_for_each_entry(net, net_list, exit_list)
 		bareudp_destroy_tunnels(net, &list);
 
-	/* unregister the devices gathered above */
+	 
 	unregister_netdevice_many(&list);
 	rtnl_unlock();
 }

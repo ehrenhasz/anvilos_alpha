@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Architecture specific OF callbacks.
- */
+
+ 
 #include <linux/export.h>
 #include <linux/io.h>
 #include <linux/interrupt.h>
@@ -36,9 +34,7 @@ void __init add_dtb(u64 data)
 	initial_dtb = data + offsetof(struct setup_data, data);
 }
 
-/*
- * CE4100 ids. Will be moved to machine_device_initcall() once we have it.
- */
+ 
 static struct of_device_id __initdata ce4100_ids[] = {
 	{ .compatible = "intel,ce4100-cp", },
 	{ .compatible = "isa", },
@@ -155,9 +151,9 @@ static void __init dtb_lapic_setup(void)
 		lapic_addr = r.start;
 	}
 
-	/* Did the boot loader setup the local APIC ? */
+	 
 	if (!boot_cpu_has(X86_FEATURE_APIC)) {
-		/* Try force enabling, which registers the APIC address */
+		 
 		if (!apic_force_enable(lapic_addr))
 			return;
 	} else {
@@ -168,7 +164,7 @@ static void __init dtb_lapic_setup(void)
 	pr_info("%s compatibility mode.\n", pic_mode ? "IMCR and PIC" : "Virtual Wire");
 }
 
-#endif /* CONFIG_X86_LOCAL_APIC */
+#endif  
 
 #ifdef CONFIG_X86_IO_APIC
 static unsigned int ioapic_id;

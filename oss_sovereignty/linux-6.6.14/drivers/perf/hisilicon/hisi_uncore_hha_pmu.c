@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * HiSilicon SoC HHA uncore Hardware event counters support
- *
- * Copyright (C) 2017 HiSilicon Limited
- * Author: Shaokun Zhang <zhangshaokun@hisilicon.com>
- *         Anurup M <anurup.m@huawei.com>
- *
- * This code is based on the uncore PMUs like arm-cci and arm-ccn.
- */
+
+ 
 #include <linux/acpi.h>
 #include <linux/bug.h>
 #include <linux/cpuhotplug.h>
@@ -18,7 +10,7 @@
 
 #include "hisi_uncore_pmu.h"
 
-/* HHA register definition */
+ 
 #define HHA_INT_MASK		0x0804
 #define HHA_INT_STATUS		0x0808
 #define HHA_INT_CLEAR		0x080C
@@ -28,14 +20,10 @@
 #define HHA_SRCID_CTRL		0x1E08
 #define HHA_DATSRC_CTRL		0x1BF0
 #define HHA_EVENT_TYPE0		0x1E80
-/*
- * If the HW version only supports a 48-bit counter, then
- * bits [63:48] are reserved, which are Read-As-Zero and
- * Writes-Ignored.
- */
+ 
 #define HHA_CNT0_LOWER		0x1F00
 
-/* HHA PMU v1 has 16 counters and v2 only has 8 counters */
+ 
 #define HHA_V1_NR_COUNTERS	0x10
 #define HHA_V2_NR_COUNTERS	0x8
 
@@ -156,10 +144,7 @@ static void hisi_hha_pmu_disable_filter(struct perf_event *event)
 	}
 }
 
-/*
- * Select the counter register offset using the counter index
- * each counter is 48-bits.
- */
+ 
 static u32 hisi_hha_pmu_get_counter_offset(int cntr_idx)
 {
 	return (HHA_CNT0_LOWER + (cntr_idx * 8));
@@ -168,14 +153,14 @@ static u32 hisi_hha_pmu_get_counter_offset(int cntr_idx)
 static u64 hisi_hha_pmu_read_counter(struct hisi_pmu *hha_pmu,
 				     struct hw_perf_event *hwc)
 {
-	/* Read 64 bits and like L3C, top 16 bits are RAZ */
+	 
 	return readq(hha_pmu->base + hisi_hha_pmu_get_counter_offset(hwc->idx));
 }
 
 static void hisi_hha_pmu_write_counter(struct hisi_pmu *hha_pmu,
 				       struct hw_perf_event *hwc, u64 val)
 {
-	/* Write 64 bits and like L3C, top 16 bits are WI */
+	 
 	writeq(val, hha_pmu->base + hisi_hha_pmu_get_counter_offset(hwc->idx));
 }
 
@@ -184,18 +169,12 @@ static void hisi_hha_pmu_write_evtype(struct hisi_pmu *hha_pmu, int idx,
 {
 	u32 reg, reg_idx, shift, val;
 
-	/*
-	 * Select the appropriate event select register(HHA_EVENT_TYPEx).
-	 * There are 4 event select registers for the 16 hardware counters.
-	 * Event code is 8-bits and for the first 4 hardware counters,
-	 * HHA_EVENT_TYPE0 is chosen. For the next 4 hardware counters,
-	 * HHA_EVENT_TYPE1 is chosen and so on.
-	 */
+	 
 	reg = HHA_EVENT_TYPE0 + 4 * (idx / 4);
 	reg_idx = idx % 4;
 	shift = 8 * reg_idx;
 
-	/* Write event code to HHA_EVENT_TYPEx register */
+	 
 	val = readl(hha_pmu->base + reg);
 	val &= ~(HHA_EVTYPE_NONE << shift);
 	val |= (type << shift);
@@ -206,10 +185,7 @@ static void hisi_hha_pmu_start_counters(struct hisi_pmu *hha_pmu)
 {
 	u32 val;
 
-	/*
-	 * Set perf_enable bit in HHA_PERF_CTRL to start event
-	 * counting for all enabled counters.
-	 */
+	 
 	val = readl(hha_pmu->base + HHA_PERF_CTRL);
 	val |= HHA_PERF_CTRL_EN;
 	writel(val, hha_pmu->base + HHA_PERF_CTRL);
@@ -219,10 +195,7 @@ static void hisi_hha_pmu_stop_counters(struct hisi_pmu *hha_pmu)
 {
 	u32 val;
 
-	/*
-	 * Clear perf_enable bit in HHA_PERF_CTRL to stop event
-	 * counting for all enabled counters.
-	 */
+	 
 	val = readl(hha_pmu->base + HHA_PERF_CTRL);
 	val &= ~(HHA_PERF_CTRL_EN);
 	writel(val, hha_pmu->base + HHA_PERF_CTRL);
@@ -233,7 +206,7 @@ static void hisi_hha_pmu_enable_counter(struct hisi_pmu *hha_pmu,
 {
 	u32 val;
 
-	/* Enable counter index in HHA_EVENT_CTRL register */
+	 
 	val = readl(hha_pmu->base + HHA_EVENT_CTRL);
 	val |= (1 << hwc->idx);
 	writel(val, hha_pmu->base + HHA_EVENT_CTRL);
@@ -244,7 +217,7 @@ static void hisi_hha_pmu_disable_counter(struct hisi_pmu *hha_pmu,
 {
 	u32 val;
 
-	/* Clear counter index in HHA_EVENT_CTRL register */
+	 
 	val = readl(hha_pmu->base + HHA_EVENT_CTRL);
 	val &= ~(1 << hwc->idx);
 	writel(val, hha_pmu->base + HHA_EVENT_CTRL);
@@ -255,7 +228,7 @@ static void hisi_hha_pmu_enable_counter_int(struct hisi_pmu *hha_pmu,
 {
 	u32 val;
 
-	/* Write 0 to enable interrupt */
+	 
 	val = readl(hha_pmu->base + HHA_INT_MASK);
 	val &= ~(1 << hwc->idx);
 	writel(val, hha_pmu->base + HHA_INT_MASK);
@@ -266,7 +239,7 @@ static void hisi_hha_pmu_disable_counter_int(struct hisi_pmu *hha_pmu,
 {
 	u32 val;
 
-	/* Write 1 to mask interrupt */
+	 
 	val = readl(hha_pmu->base + HHA_INT_MASK);
 	val |= (1 << hwc->idx);
 	writel(val, hha_pmu->base + HHA_INT_MASK);
@@ -295,20 +268,14 @@ static int hisi_hha_pmu_init_data(struct platform_device *pdev,
 	unsigned long long id;
 	acpi_status status;
 
-	/*
-	 * Use SCCL_ID and UID to identify the HHA PMU, while
-	 * SCCL_ID is in MPIDR[aff2].
-	 */
+	 
 	if (device_property_read_u32(&pdev->dev, "hisilicon,scl-id",
 				     &hha_pmu->sccl_id)) {
 		dev_err(&pdev->dev, "Can not read hha sccl-id!\n");
 		return -EINVAL;
 	}
 
-	/*
-	 * Early versions of BIOS support _UID by mistake, so we support
-	 * both "hisilicon, idx-id" as preference, if available.
-	 */
+	 
 	if (device_property_read_u32(&pdev->dev, "hisilicon,idx-id",
 				     &hha_pmu->index_id)) {
 		status = acpi_evaluate_integer(ACPI_HANDLE(&pdev->dev),
@@ -320,7 +287,7 @@ static int hisi_hha_pmu_init_data(struct platform_device *pdev,
 
 		hha_pmu->index_id = id;
 	}
-	/* HHA PMUs only share the same SCCL */
+	 
 	hha_pmu->ccl_id = -1;
 
 	hha_pmu->base = devm_platform_ioremap_resource(pdev, 0);

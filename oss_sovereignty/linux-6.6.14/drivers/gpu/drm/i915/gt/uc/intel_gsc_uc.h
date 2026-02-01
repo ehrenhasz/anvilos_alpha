@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2022 Intel Corporation
- */
+ 
+ 
 
 #ifndef _INTEL_GSC_UC_H_
 #define _INTEL_GSC_UC_H_
@@ -14,36 +12,23 @@ struct intel_context;
 struct i915_gsc_proxy_component;
 
 struct intel_gsc_uc {
-	/* Generic uC firmware management */
+	 
 	struct intel_uc_fw fw;
 
-	/* GSC-specific additions */
+	 
 
-	/*
-	 * The GSC has 3 version numbers:
-	 * - Release version (incremented with each build)
-	 * - Security version (incremented on security fix)
-	 * - Compatibility version (incremented on interface change)
-	 *
-	 * The one we care about to use the binary is the last one, so that's
-	 * the one we save inside the intel_uc_fw structure. The other two
-	 * versions are only used for debug/info purposes, so we save them here.
-	 *
-	 * Note that the release and security versions are available in the
-	 * binary header, while the compatibility version must be queried after
-	 * loading the binary.
-	 */
+	 
 	struct intel_uc_fw_ver release;
 	u32 security_version;
 
-	struct i915_vma *local; /* private memory for GSC usage */
-	void __iomem *local_vaddr; /* pointer to access the private memory */
-	struct intel_context *ce; /* for submission to GSC FW via GSC engine */
+	struct i915_vma *local;  
+	void __iomem *local_vaddr;  
+	struct intel_context *ce;  
 
-	/* for delayed load and proxy handling */
+	 
 	struct workqueue_struct *wq;
 	struct work_struct work;
-	u32 gsc_work_actions; /* protected by gt->irq_lock */
+	u32 gsc_work_actions;  
 #define GSC_ACTION_FW_LOAD BIT(0)
 #define GSC_ACTION_SW_PROXY BIT(1)
 
@@ -53,7 +38,7 @@ struct intel_gsc_uc {
 		struct i915_vma *vma;
 		void *to_gsc;
 		void *to_csme;
-		struct mutex mutex; /* protects the tee channel binding */
+		struct mutex mutex;  
 	} proxy;
 };
 

@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * MMU-based software IOTLB.
- *
- * Copyright (C) 2020-2021 Bytedance Inc. and/or its affiliates. All rights reserved.
- *
- * Author: Xie Yongji <xieyongji@bytedance.com>
- *
- */
+
+ 
 
 #include <linux/slab.h>
 #include <linux/file.h>
@@ -253,7 +246,7 @@ int vduse_domain_add_user_bounce_pages(struct vduse_iova_domain *domain,
 	struct vduse_bounce_map *map;
 	int i, ret;
 
-	/* Now we don't support partial mapping */
+	 
 	if (count != (domain->bounce_size >> PAGE_SHIFT))
 		return -EINVAL;
 
@@ -265,7 +258,7 @@ int vduse_domain_add_user_bounce_pages(struct vduse_iova_domain *domain,
 	for (i = 0; i < count; i++) {
 		map = &domain->bounce_maps[i];
 		if (map->bounce_page) {
-			/* Copy kernel page to user page if it's in use */
+			 
 			if (map->orig_phys != INVALID_PHYS_ADDR)
 				memcpy_to_page(pages[i], 0,
 					       page_address(map->bounce_page),
@@ -300,7 +293,7 @@ void vduse_domain_remove_user_bounce_pages(struct vduse_iova_domain *domain)
 		if (WARN_ON(!map->bounce_page))
 			continue;
 
-		/* Copy user page to kernel page if it's in use */
+		 
 		if (map->orig_phys != INVALID_PHYS_ADDR) {
 			page = alloc_page(GFP_ATOMIC | __GFP_NOFAIL);
 			memcpy_from_page(page_address(page),

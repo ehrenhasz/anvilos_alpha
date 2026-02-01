@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Asus Notebooks WMI hotkey driver
- *
- * Copyright(C) 2010 Corentin Chary <corentin.chary@gmail.com>
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -28,15 +24,7 @@ MODULE_LICENSE("GPL");
 
 MODULE_ALIAS("wmi:"ASUS_NB_WMI_EVENT_GUID);
 
-/*
- * WAPF defines the behavior of the Fn+Fx wlan key
- * The significance of values is yet to be found, but
- * most of the time:
- * Bit | Bluetooth | WLAN
- *  0  | Hardware  | Hardware
- *  1  | Hardware  | Software
- *  4  | Software  | Software
- */
+ 
 static int wapf = -1;
 module_param(wapf, uint, 0444);
 MODULE_PARM_DESC(wapf, "WAPF value");
@@ -77,10 +65,7 @@ static struct quirk_entry quirk_asus_q500a = {
 	.wmi_backlight_set_devstate = true,
 };
 
-/*
- * For those machines that need software to control bt/wifi status
- * and have duplicate events(ACPI and WMI) for display toggle
- */
+ 
 static struct quirk_entry quirk_asus_x55u = {
 	.wapf = 4,
 	.wmi_backlight_set_devstate = true,
@@ -417,7 +402,7 @@ static const struct dmi_system_id asus_quirks[] = {
 		.ident = "Asus Transformer T100TA / T100HA / T100CHI",
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "ASUSTeK COMPUTER INC."),
-			/* Match *T100* */
+			 
 			DMI_MATCH(DMI_PRODUCT_NAME, "T100"),
 		},
 		.driver_data = &quirk_asus_use_kbd_dock_devid,
@@ -445,7 +430,7 @@ static const struct dmi_system_id asus_quirks[] = {
 		.ident = "ASUS ZenBook Flip UX360",
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "ASUSTeK COMPUTER INC."),
-			/* Match UX360* */
+			 
 			DMI_MATCH(DMI_PRODUCT_NAME, "UX360"),
 		},
 		.driver_data = &quirk_asus_use_lid_flip_devid,
@@ -464,7 +449,7 @@ static const struct dmi_system_id asus_quirks[] = {
 		.ident = "ASUS ROG FLOW X13",
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "ASUSTeK COMPUTER INC."),
-			/* Match GV301** */
+			 
 			DMI_MATCH(DMI_PRODUCT_NAME, "GV301"),
 		},
 		.driver_data = &quirk_asus_tablet_mode,
@@ -507,7 +492,7 @@ static void asus_nb_wmi_quirks(struct asus_wmi_driver *driver)
 	driver->quirks = quirks;
 	driver->panel_power = FB_BLANK_UNBLANK;
 
-	/* overwrite the wapf setting if the wapf paramater is specified */
+	 
 	if (wapf != -1)
 		quirks->wapf = wapf;
 	else
@@ -521,77 +506,77 @@ static const struct key_entry asus_nb_wmi_keymap[] = {
 	{ KE_KEY, ASUS_WMI_BRN_DOWN, { KEY_BRIGHTNESSDOWN } },
 	{ KE_KEY, ASUS_WMI_BRN_UP, { KEY_BRIGHTNESSUP } },
 	{ KE_KEY, 0x2a, { KEY_SELECTIVE_SCREENSHOT } },
-	{ KE_IGNORE, 0x2b, }, /* PrintScreen (also send via PS/2) on newer models */
-	{ KE_IGNORE, 0x2c, }, /* CapsLock (also send via PS/2) on newer models */
+	{ KE_IGNORE, 0x2b, },  
+	{ KE_IGNORE, 0x2c, },  
 	{ KE_KEY, 0x30, { KEY_VOLUMEUP } },
 	{ KE_KEY, 0x31, { KEY_VOLUMEDOWN } },
 	{ KE_KEY, 0x32, { KEY_MUTE } },
 	{ KE_KEY, 0x33, { KEY_SCREENLOCK } },
 	{ KE_KEY, 0x35, { KEY_SCREENLOCK } },
-	{ KE_KEY, 0x38, { KEY_PROG3 } }, /* Armoury Crate */
+	{ KE_KEY, 0x38, { KEY_PROG3 } },  
 	{ KE_KEY, 0x40, { KEY_PREVIOUSSONG } },
 	{ KE_KEY, 0x41, { KEY_NEXTSONG } },
-	{ KE_KEY, 0x43, { KEY_STOPCD } }, /* Stop/Eject */
+	{ KE_KEY, 0x43, { KEY_STOPCD } },  
 	{ KE_KEY, 0x45, { KEY_PLAYPAUSE } },
-	{ KE_KEY, 0x4c, { KEY_MEDIA } }, /* WMP Key */
+	{ KE_KEY, 0x4c, { KEY_MEDIA } },  
 	{ KE_KEY, 0x50, { KEY_EMAIL } },
 	{ KE_KEY, 0x51, { KEY_WWW } },
 	{ KE_KEY, 0x55, { KEY_CALC } },
-	{ KE_IGNORE, 0x57, },  /* Battery mode */
-	{ KE_IGNORE, 0x58, },  /* AC mode */
-	{ KE_KEY, 0x5C, { KEY_F15 } },  /* Power Gear key */
-	{ KE_KEY, 0x5D, { KEY_WLAN } }, /* Wireless console Toggle */
-	{ KE_KEY, 0x5E, { KEY_WLAN } }, /* Wireless console Enable */
-	{ KE_KEY, 0x5F, { KEY_WLAN } }, /* Wireless console Disable */
+	{ KE_IGNORE, 0x57, },   
+	{ KE_IGNORE, 0x58, },   
+	{ KE_KEY, 0x5C, { KEY_F15 } },   
+	{ KE_KEY, 0x5D, { KEY_WLAN } },  
+	{ KE_KEY, 0x5E, { KEY_WLAN } },  
+	{ KE_KEY, 0x5F, { KEY_WLAN } },  
 	{ KE_KEY, 0x60, { KEY_TOUCHPAD_ON } },
-	{ KE_KEY, 0x61, { KEY_SWITCHVIDEOMODE } }, /* SDSP LCD only */
-	{ KE_KEY, 0x62, { KEY_SWITCHVIDEOMODE } }, /* SDSP CRT only */
-	{ KE_KEY, 0x63, { KEY_SWITCHVIDEOMODE } }, /* SDSP LCD + CRT */
-	{ KE_KEY, 0x64, { KEY_SWITCHVIDEOMODE } }, /* SDSP TV */
-	{ KE_KEY, 0x65, { KEY_SWITCHVIDEOMODE } }, /* SDSP LCD + TV */
-	{ KE_KEY, 0x66, { KEY_SWITCHVIDEOMODE } }, /* SDSP CRT + TV */
-	{ KE_KEY, 0x67, { KEY_SWITCHVIDEOMODE } }, /* SDSP LCD + CRT + TV */
+	{ KE_KEY, 0x61, { KEY_SWITCHVIDEOMODE } },  
+	{ KE_KEY, 0x62, { KEY_SWITCHVIDEOMODE } },  
+	{ KE_KEY, 0x63, { KEY_SWITCHVIDEOMODE } },  
+	{ KE_KEY, 0x64, { KEY_SWITCHVIDEOMODE } },  
+	{ KE_KEY, 0x65, { KEY_SWITCHVIDEOMODE } },  
+	{ KE_KEY, 0x66, { KEY_SWITCHVIDEOMODE } },  
+	{ KE_KEY, 0x67, { KEY_SWITCHVIDEOMODE } },  
 	{ KE_KEY, 0x6B, { KEY_TOUCHPAD_TOGGLE } },
-	{ KE_IGNORE, 0x6E, },  /* Low Battery notification */
-	{ KE_KEY, 0x71, { KEY_F13 } }, /* General-purpose button */
-	{ KE_IGNORE, 0x79, },  /* Charger type dectection notification */
-	{ KE_KEY, 0x7a, { KEY_ALS_TOGGLE } }, /* Ambient Light Sensor Toggle */
-	{ KE_IGNORE, 0x7B, }, /* Charger connect/disconnect notification */
+	{ KE_IGNORE, 0x6E, },   
+	{ KE_KEY, 0x71, { KEY_F13 } },  
+	{ KE_IGNORE, 0x79, },   
+	{ KE_KEY, 0x7a, { KEY_ALS_TOGGLE } },  
+	{ KE_IGNORE, 0x7B, },  
 	{ KE_KEY, 0x7c, { KEY_MICMUTE } },
-	{ KE_KEY, 0x7D, { KEY_BLUETOOTH } }, /* Bluetooth Enable */
-	{ KE_KEY, 0x7E, { KEY_BLUETOOTH } }, /* Bluetooth Disable */
+	{ KE_KEY, 0x7D, { KEY_BLUETOOTH } },  
+	{ KE_KEY, 0x7E, { KEY_BLUETOOTH } },  
 	{ KE_KEY, 0x82, { KEY_CAMERA } },
 	{ KE_KEY, 0x85, { KEY_CAMERA } },
-	{ KE_KEY, 0x86, { KEY_PROG1 } }, /* MyASUS Key */
-	{ KE_KEY, 0x88, { KEY_RFKILL  } }, /* Radio Toggle Key */
-	{ KE_KEY, 0x8A, { KEY_PROG1 } }, /* Color enhancement mode */
-	{ KE_KEY, 0x8C, { KEY_SWITCHVIDEOMODE } }, /* SDSP DVI only */
-	{ KE_KEY, 0x8D, { KEY_SWITCHVIDEOMODE } }, /* SDSP LCD + DVI */
-	{ KE_KEY, 0x8E, { KEY_SWITCHVIDEOMODE } }, /* SDSP CRT + DVI */
-	{ KE_KEY, 0x8F, { KEY_SWITCHVIDEOMODE } }, /* SDSP TV + DVI */
-	{ KE_KEY, 0x90, { KEY_SWITCHVIDEOMODE } }, /* SDSP LCD + CRT + DVI */
-	{ KE_KEY, 0x91, { KEY_SWITCHVIDEOMODE } }, /* SDSP LCD + TV + DVI */
-	{ KE_KEY, 0x92, { KEY_SWITCHVIDEOMODE } }, /* SDSP CRT + TV + DVI */
-	{ KE_KEY, 0x93, { KEY_SWITCHVIDEOMODE } }, /* SDSP LCD + CRT + TV + DVI */
+	{ KE_KEY, 0x86, { KEY_PROG1 } },  
+	{ KE_KEY, 0x88, { KEY_RFKILL  } },  
+	{ KE_KEY, 0x8A, { KEY_PROG1 } },  
+	{ KE_KEY, 0x8C, { KEY_SWITCHVIDEOMODE } },  
+	{ KE_KEY, 0x8D, { KEY_SWITCHVIDEOMODE } },  
+	{ KE_KEY, 0x8E, { KEY_SWITCHVIDEOMODE } },  
+	{ KE_KEY, 0x8F, { KEY_SWITCHVIDEOMODE } },  
+	{ KE_KEY, 0x90, { KEY_SWITCHVIDEOMODE } },  
+	{ KE_KEY, 0x91, { KEY_SWITCHVIDEOMODE } },  
+	{ KE_KEY, 0x92, { KEY_SWITCHVIDEOMODE } },  
+	{ KE_KEY, 0x93, { KEY_SWITCHVIDEOMODE } },  
 	{ KE_KEY, 0x95, { KEY_MEDIA } },
-	{ KE_KEY, 0x99, { KEY_PHONE } }, /* Conflicts with fan mode switch */
-	{ KE_KEY, 0xA0, { KEY_SWITCHVIDEOMODE } }, /* SDSP HDMI only */
-	{ KE_KEY, 0xA1, { KEY_SWITCHVIDEOMODE } }, /* SDSP LCD + HDMI */
-	{ KE_KEY, 0xA2, { KEY_SWITCHVIDEOMODE } }, /* SDSP CRT + HDMI */
-	{ KE_KEY, 0xA3, { KEY_SWITCHVIDEOMODE } }, /* SDSP TV + HDMI */
-	{ KE_KEY, 0xA4, { KEY_SWITCHVIDEOMODE } }, /* SDSP LCD + CRT + HDMI */
-	{ KE_KEY, 0xA5, { KEY_SWITCHVIDEOMODE } }, /* SDSP LCD + TV + HDMI */
-	{ KE_KEY, 0xA6, { KEY_SWITCHVIDEOMODE } }, /* SDSP CRT + TV + HDMI */
-	{ KE_KEY, 0xA7, { KEY_SWITCHVIDEOMODE } }, /* SDSP LCD + CRT + TV + HDMI */
-	{ KE_KEY, 0xAE, { KEY_FN_F5 } }, /* Fn+F5 fan mode on 2020+ */
-	{ KE_KEY, 0xB3, { KEY_PROG4 } }, /* AURA */
+	{ KE_KEY, 0x99, { KEY_PHONE } },  
+	{ KE_KEY, 0xA0, { KEY_SWITCHVIDEOMODE } },  
+	{ KE_KEY, 0xA1, { KEY_SWITCHVIDEOMODE } },  
+	{ KE_KEY, 0xA2, { KEY_SWITCHVIDEOMODE } },  
+	{ KE_KEY, 0xA3, { KEY_SWITCHVIDEOMODE } },  
+	{ KE_KEY, 0xA4, { KEY_SWITCHVIDEOMODE } },  
+	{ KE_KEY, 0xA5, { KEY_SWITCHVIDEOMODE } },  
+	{ KE_KEY, 0xA6, { KEY_SWITCHVIDEOMODE } },  
+	{ KE_KEY, 0xA7, { KEY_SWITCHVIDEOMODE } },  
+	{ KE_KEY, 0xAE, { KEY_FN_F5 } },  
+	{ KE_KEY, 0xB3, { KEY_PROG4 } },  
 	{ KE_KEY, 0xB5, { KEY_CALC } },
-	{ KE_IGNORE, 0xC0, }, /* External display connect/disconnect notification */
+	{ KE_IGNORE, 0xC0, },  
 	{ KE_KEY, 0xC4, { KEY_KBDILLUMUP } },
 	{ KE_KEY, 0xC5, { KEY_KBDILLUMDOWN } },
-	{ KE_IGNORE, 0xC6, },  /* Ambient Light Sensor notification */
-	{ KE_KEY, 0xFA, { KEY_PROG2 } },           /* Lid flip action */
-	{ KE_KEY, 0xBD, { KEY_PROG2 } },           /* Lid flip action on ROG xflow laptops */
+	{ KE_IGNORE, 0xC6, },   
+	{ KE_KEY, 0xFA, { KEY_PROG2 } },            
+	{ KE_KEY, 0xBD, { KEY_PROG2 } },            
 	{ KE_END, 0},
 };
 

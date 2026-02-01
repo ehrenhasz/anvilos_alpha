@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Scan related functions.
- *
- * Copyright (c) 2017-2020, Silicon Laboratories, Inc.
- * Copyright (c) 2010, ST-Ericsson
- */
+
+ 
 #include <net/mac80211.h>
 
 #include "scan.h"
@@ -84,10 +79,7 @@ static int send_scan_req(struct wfx_vif *wvif, struct cfg80211_scan_request *req
 	return ret;
 }
 
-/* It is not really necessary to run scan request asynchronously. However,
- * there is a bug in "iw scan" when ieee80211_scan_completed() is called before
- * wfx_hw_scan() return
- */
+ 
 void wfx_hw_scan_work(struct work_struct *work)
 {
 	struct wfx_vif *wvif = container_of(work, struct wfx_vif, scan_work);

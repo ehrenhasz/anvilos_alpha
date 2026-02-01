@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright 2004 James Cleverdon, IBM.
- *
- * Flat APIC subarch code.
- *
- * Hacked for x86-64 by James Cleverdon from i386 architecture code by
- * Martin Bligh, Andi Kleen, James Bottomley, John Stultz, and
- * James Cleverdon.
- */
+
+ 
 #include <linux/cpumask.h>
 #include <linux/export.h>
 #include <linux/acpi.h>
@@ -113,19 +105,11 @@ static struct apic apic_flat __ro_after_init = {
 	.safe_wait_icr_idle		= apic_mem_wait_icr_idle_timeout,
 };
 
-/*
- * Physflat mode is used when there are more than 8 CPUs on a system.
- * We cannot use logical delivery in this case because the mask
- * overflows, so use physical mode.
- */
+ 
 static int physflat_acpi_madt_oem_check(char *oem_id, char *oem_table_id)
 {
 #ifdef CONFIG_ACPI
-	/*
-	 * Quirk: some x86_64 machines can only use physical APIC mode
-	 * regardless of how many processors are present (x86_64 ES7000
-	 * is an example).
-	 */
+	 
 	if (acpi_gbl_FADT.header.revision >= FADT2_REVISION_ID &&
 		(acpi_gbl_FADT.flags & ACPI_FADT_APIC_PHYSICAL)) {
 		printk(KERN_DEBUG "system APIC only can use physical flat");
@@ -185,7 +169,5 @@ static struct apic apic_physflat __ro_after_init = {
 	.safe_wait_icr_idle		= apic_mem_wait_icr_idle_timeout,
 };
 
-/*
- * We need to check for physflat first, so this order is important.
- */
+ 
 apic_drivers(apic_physflat, apic_flat);

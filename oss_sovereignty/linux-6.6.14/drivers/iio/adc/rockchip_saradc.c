@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Rockchip Successive Approximation Register (SAR) A/D Converter
- * Copyright (C) 2014 ROCKCHIP, Inc.
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/module.h>
@@ -38,7 +35,7 @@
 #define SARADC_TIMEOUT			msecs_to_jiffies(100)
 #define SARADC_MAX_CHANNELS		8
 
-/* v2 registers */
+ 
 #define SARADC2_CONV_CON		0x000
 #define SARADC_T_PD_SOC			0x004
 #define SARADC_T_DAS_SOC		0x00c
@@ -71,7 +68,7 @@ struct rockchip_saradc {
 	struct clk		*clk;
 	struct completion	completion;
 	struct regulator	*vref;
-	/* lock to protect against multiple access to the device */
+	 
 	struct mutex		lock;
 	int			uv_vref;
 	struct reset_control	*reset;
@@ -85,9 +82,9 @@ static void rockchip_saradc_reset_controller(struct reset_control *reset);
 
 static void rockchip_saradc_start_v1(struct rockchip_saradc *info, int chn)
 {
-	/* 8 clock periods as delay between power up and start cmd */
+	 
 	writel_relaxed(8, info->regs + SARADC_DLY_PU_SOC);
-	/* Select the channel to be used and trigger conversion */
+	 
 	writel(SARADC_CTRL_POWER_CTRL | (chn & SARADC_CTRL_CHN_MASK) |
 	       SARADC_CTRL_IRQ_ENABLE, info->regs + SARADC_CTRL);
 }
@@ -125,7 +122,7 @@ static int rockchip_saradc_read_v2(struct rockchip_saradc *info)
 {
 	int offset;
 
-	/* Clear irq */
+	 
 	writel_relaxed(0x1, info->regs + SARADC2_END_INT_ST);
 
 	offset = SARADC2_DATA_BASE + info->last_chan->channel * 0x4;
@@ -197,7 +194,7 @@ static irqreturn_t rockchip_saradc_isr(int irq, void *dev_id)
 {
 	struct rockchip_saradc *info = dev_id;
 
-	/* Read value */
+	 
 	info->last_val = rockchip_saradc_read(info);
 	info->last_val &= GENMASK(info->last_chan->scan_type.realbits - 1, 0);
 
@@ -335,9 +332,7 @@ static const struct of_device_id rockchip_saradc_match[] = {
 };
 MODULE_DEVICE_TABLE(of, rockchip_saradc_match);
 
-/*
- * Reset SARADC Controller.
- */
+ 
 static void rockchip_saradc_reset_controller(struct reset_control *reset)
 {
 	reset_control_assert(reset);
@@ -357,10 +352,7 @@ static irqreturn_t rockchip_saradc_trigger_handler(int irq, void *p)
 	struct iio_poll_func *pf = p;
 	struct iio_dev *i_dev = pf->indio_dev;
 	struct rockchip_saradc *info = iio_priv(i_dev);
-	/*
-	 * @values: each channel takes an u16 value
-	 * @timestamp: will be 8-byte aligned automatically
-	 */
+	 
 	struct {
 		u16 values[SARADC_MAX_CHANNELS];
 		int64_t timestamp;
@@ -437,7 +429,7 @@ static int rockchip_saradc_probe(struct platform_device *pdev)
 
 	info->data = match_data;
 
-	/* Sanity check for possible later IP variants with more channels */
+	 
 	if (info->data->num_channels > SARADC_MAX_CHANNELS)
 		return dev_err_probe(&pdev->dev, -EINVAL,
 				     "max channels exceeded");
@@ -446,10 +438,7 @@ static int rockchip_saradc_probe(struct platform_device *pdev)
 	if (IS_ERR(info->regs))
 		return PTR_ERR(info->regs);
 
-	/*
-	 * The reset should be an optional property, as it should work
-	 * with old devicetrees as well
-	 */
+	 
 	info->reset = devm_reset_control_get_exclusive(&pdev->dev,
 						       "saradc-apb");
 	if (IS_ERR(info->reset)) {
@@ -483,10 +472,7 @@ static int rockchip_saradc_probe(struct platform_device *pdev)
 	if (info->reset)
 		rockchip_saradc_reset_controller(info->reset);
 
-	/*
-	 * Use a default value for the converter clock.
-	 * This may become user-configurable in the future.
-	 */
+	 
 	ret = clk_set_rate(info->clk, info->data->clk_rate);
 	if (ret < 0)
 		return dev_err_probe(&pdev->dev, ret,

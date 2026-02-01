@@ -1,28 +1,9 @@
-/*
- * Copyright (C) 2017  Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included
- * in all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
- * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN
- * AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- */
+ 
 #ifndef _gc_9_0_DEFAULT_HEADER
 #define _gc_9_0_DEFAULT_HEADER
 
 
-// addressBlock: gc_grbmdec
+
 #define mmGRBM_CNTL_DEFAULT                                                      0x00000018
 #define mmGRBM_SKEW_CNTL_DEFAULT                                                 0x00000020
 #define mmGRBM_STATUS2_DEFAULT                                                   0x00000000
@@ -67,7 +48,7 @@
 #define mmGRBM_SCRATCH_REG7_DEFAULT                                              0x00000000
 
 
-// addressBlock: gc_cpdec
+
 #define mmCP_CPC_STATUS_DEFAULT                                                  0x00000000
 #define mmCP_CPC_BUSY_STAT_DEFAULT                                               0x00000000
 #define mmCP_CPC_STALLED_STAT1_DEFAULT                                           0x00000000
@@ -142,7 +123,7 @@
 #define mmCP_INT_STAT_DEBUG_DEFAULT                                              0x00000000
 
 
-// addressBlock: gc_padec
+
 #define mmVGT_VTX_VECT_EJECT_REG_DEFAULT                                         0x0000007d
 #define mmVGT_DMA_DATA_FIFO_DEPTH_DEFAULT                                        0x00040180
 #define mmVGT_DMA_REQ_FIFO_DEPTH_DEFAULT                                         0x00000020
@@ -205,7 +186,7 @@
 #define mmPA_SC_TILE_STEERING_CREST_OVERRIDE_DEFAULT                             0x00000000
 
 
-// addressBlock: gc_sqdec
+
 #define mmSQ_CONFIG_DEFAULT                                                      0x01180000
 #define mmSQC_CONFIG_DEFAULT                                                     0x010a2000
 #define mmLDS_CONFIG_DEFAULT                                                     0x00000000
@@ -344,7 +325,7 @@
 #define mmSQC_DCACHE_UTCL1_STATUS_DEFAULT                                        0x00000000
 
 
-// addressBlock: gc_shsdec
+
 #define mmSX_DEBUG_BUSY_DEFAULT                                                  0x00000000
 #define mmSX_DEBUG_BUSY_2_DEFAULT                                                0x00000000
 #define mmSX_DEBUG_BUSY_3_DEFAULT                                                0x00000000
@@ -427,7 +408,7 @@
 #define mmSPI_P1_TRAP_SCREEN_GPR_MIN_DEFAULT                                     0x00000000
 
 
-// addressBlock: gc_tpdec
+
 #define mmTD_CNTL_DEFAULT                                                        0x00000000
 #define mmTD_STATUS_DEFAULT                                                      0x00000000
 #define mmTD_DSM_CNTL_DEFAULT                                                    0x00000000
@@ -440,7 +421,7 @@
 #define mmTA_SCRATCH_DEFAULT                                                     0x00000000
 
 
-// addressBlock: gc_gdsdec
+
 #define mmGDS_CONFIG_DEFAULT                                                     0x00000000
 #define mmGDS_CNTL_STATUS_DEFAULT                                                0x00000000
 #define mmGDS_ENHANCE2_DEFAULT                                                   0x00000000
@@ -456,7 +437,7 @@
 #define mmGDS_WD_GDS_CSB_DEFAULT                                                 0x00000000
 
 
-// addressBlock: gc_rbdec
+
 #define mmDB_DEBUG_DEFAULT                                                       0x00000000
 #define mmDB_DEBUG2_DEFAULT                                                      0x00000000
 #define mmDB_DEBUG3_DEFAULT                                                      0x00000000
@@ -544,7 +525,7 @@
 #define mmGC_USER_RB_BACKEND_DISABLE_DEFAULT                                     0x00000000
 
 
-// addressBlock: gc_rmi_rmidec
+
 #define mmRMI_GENERAL_CNTL_DEFAULT                                               0x00000000
 #define mmRMI_GENERAL_CNTL1_DEFAULT                                              0x00001a03
 #define mmRMI_GENERAL_STATUS_DEFAULT                                             0x00000000
@@ -575,7 +556,7 @@
 #define mmRMI_SPARE_2_DEFAULT                                                    0x00000000
 
 
-// addressBlock: gc_utcl2_atcl2dec
+
 #define mmATC_L2_CNTL_DEFAULT                                                    0x000001c9
 #define mmATC_L2_CNTL2_DEFAULT                                                   0x00000100
 #define mmATC_L2_CACHE_DATA0_DEFAULT                                             0x00000000
@@ -589,7 +570,7 @@
 #define mmATC_L2_CGTT_CLK_CTRL_DEFAULT                                           0x00000080
 
 
-// addressBlock: gc_utcl2_vml2pfdec
+
 #define mmVM_L2_CNTL_DEFAULT                                                     0x00080602
 #define mmVM_L2_CNTL2_DEFAULT                                                    0x00000000
 #define mmVM_L2_CNTL3_DEFAULT                                                    0x80100007
@@ -620,7 +601,7 @@
 #define mmVM_L2_CGTT_CLK_CTRL_DEFAULT                                            0x00000080
 
 
-// addressBlock: gc_utcl2_vml2vcdec
+
 #define mmVM_CONTEXT0_CNTL_DEFAULT                                               0x007ffe80
 #define mmVM_CONTEXT1_CNTL_DEFAULT                                               0x007ffe80
 #define mmVM_CONTEXT2_CNTL_DEFAULT                                               0x007ffe80
@@ -826,7 +807,7 @@
 #define mmVM_CONTEXT15_PAGE_TABLE_END_ADDR_HI32_DEFAULT                          0x00000000
 
 
-// addressBlock: gc_utcl2_vmsharedpfdec
+
 #define mmMC_VM_NB_MMIOBASE_DEFAULT                                              0x00000000
 #define mmMC_VM_NB_MMIOLIMIT_DEFAULT                                             0x00000000
 #define mmMC_VM_NB_PCI_CTRL_DEFAULT                                              0x00000000
@@ -848,7 +829,7 @@
 #define mmMC_VM_LOCAL_HBM_ADDRESS_LOCK_CNTL_DEFAULT                              0x00000000
 
 
-// addressBlock: gc_utcl2_vmsharedvcdec
+
 #define mmMC_VM_FB_LOCATION_BASE_DEFAULT                                         0x00000000
 #define mmMC_VM_FB_LOCATION_TOP_DEFAULT                                          0x00000000
 #define mmMC_VM_AGP_TOP_DEFAULT                                                  0x00000000
@@ -859,7 +840,7 @@
 #define mmMC_VM_MX_L1_TLB_CNTL_DEFAULT                                           0x00002501
 
 
-// addressBlock: gc_tcdec
+
 #define mmTCP_INVALIDATE_DEFAULT                                                 0x00000000
 #define mmTCP_STATUS_DEFAULT                                                     0x00000000
 #define mmTCP_CNTL_DEFAULT                                                       0x2f9c0000
@@ -903,7 +884,7 @@
 #define mmTCA_EDC_CNT_DEFAULT                                                    0x00000000
 
 
-// addressBlock: gc_shdec
+
 #define mmSPI_SHADER_PGM_RSRC3_PS_DEFAULT                                        0x0000ffff
 #define mmSPI_SHADER_PGM_LO_PS_DEFAULT                                           0x00000000
 #define mmSPI_SHADER_PGM_HI_PS_DEFAULT                                           0x00000000
@@ -1152,7 +1133,7 @@
 #define mmCOMPUTE_NOWHERE_DEFAULT                                                0x00000000
 
 
-// addressBlock: gc_cppdec
+
 #define mmCP_DFY_CNTL_DEFAULT                                                    0x00000000
 #define mmCP_DFY_STAT_DEFAULT                                                    0x00000000
 #define mmCP_DFY_ADDR_HI_DEFAULT                                                 0x00000000
@@ -1313,7 +1294,7 @@
 #define mmCP_VMID_STATUS_DEFAULT                                                 0x00000000
 
 
-// addressBlock: gc_cppdec2
+
 #define mmCP_RB_DOORBELL_CONTROL_SCH_0_DEFAULT                                   0x00000000
 #define mmCP_RB_DOORBELL_CONTROL_SCH_1_DEFAULT                                   0x00000000
 #define mmCP_RB_DOORBELL_CONTROL_SCH_2_DEFAULT                                   0x00000000
@@ -1335,7 +1316,7 @@
 #define mmCP_CPC_GFX_CNTL_DEFAULT                                                0x00000000
 
 
-// addressBlock: gc_spipdec
+
 #define mmSPI_ARB_PRIORITY_DEFAULT                                               0x00000000
 #define mmSPI_ARB_CYCLES_0_DEFAULT                                               0x00000000
 #define mmSPI_ARB_CYCLES_1_DEFAULT                                               0x00000000
@@ -1398,7 +1379,7 @@
 #define mmSPI_ARB_CNTL_0_DEFAULT                                                 0x00000000
 
 
-// addressBlock: gc_cpphqddec
+
 #define mmCP_HQD_GFX_CONTROL_DEFAULT                                             0x00000000
 #define mmCP_HQD_GFX_STATUS_DEFAULT                                              0x00000000
 #define mmCP_HPD_ROQ_OFFSETS_DEFAULT                                             0x00200604
@@ -1466,12 +1447,12 @@
 #define mmCP_HQD_PQ_WPTR_HI_DEFAULT                                              0x00000000
 
 
-// addressBlock: gc_didtdec
+
 #define mmDIDT_IND_INDEX_DEFAULT                                                 0x00000000
 #define mmDIDT_IND_DATA_DEFAULT                                                  0x00000000
 
 
-// addressBlock: gc_gccacdec
+
 #define mmGC_CAC_CTRL_1_DEFAULT                                                  0x01000000
 #define mmGC_CAC_CTRL_2_DEFAULT                                                  0x00000000
 #define mmGC_CAC_CGTT_CLK_CTRL_DEFAULT                                           0x00000100
@@ -1497,7 +1478,7 @@
 #define mmSE_CAC_IND_DATA_DEFAULT                                                0x00000000
 
 
-// addressBlock: gc_tcpdec
+
 #define mmTCP_WATCH0_ADDR_H_DEFAULT                                              0x00000000
 #define mmTCP_WATCH0_ADDR_L_DEFAULT                                              0x00000000
 #define mmTCP_WATCH0_CNTL_DEFAULT                                                0x00000000
@@ -1521,7 +1502,7 @@
 #define mmTCP_PERFCOUNTER_FILTER_EN_DEFAULT                                      0x00000000
 
 
-// addressBlock: gc_gdspdec
+
 #define mmGDS_VMID0_BASE_DEFAULT                                                 0x00000000
 #define mmGDS_VMID0_SIZE_DEFAULT                                                 0x00010000
 #define mmGDS_VMID1_BASE_DEFAULT                                                 0x00000000
@@ -1642,7 +1623,7 @@
 #define mmGDS_GS_CTXSW_CNT3_DEFAULT                                              0x00000000
 
 
-// addressBlock: gc_rasdec
+
 #define mmRAS_SIGNATURE_CONTROL_DEFAULT                                          0x00000000
 #define mmRAS_SIGNATURE_MASK_DEFAULT                                             0x00000000
 #define mmRAS_SX_SIGNATURE0_DEFAULT                                              0x00000000
@@ -1673,7 +1654,7 @@
 #define mmRAS_TA_SIGNATURE1_DEFAULT                                              0x00000000
 
 
-// addressBlock: gc_gfxdec0
+
 #define mmDB_RENDER_CONTROL_DEFAULT                                              0x00000000
 #define mmDB_COUNT_CONTROL_DEFAULT                                               0x00000000
 #define mmDB_DEPTH_VIEW_DEFAULT                                                  0x00000000
@@ -2270,7 +2251,7 @@
 #define mmCB_COLOR7_DCC_BASE_EXT_DEFAULT                                         0x00000000
 
 
-// addressBlock: gc_gfxudec
+
 #define mmCP_EOP_DONE_ADDR_LO_DEFAULT                                            0x00000000
 #define mmCP_EOP_DONE_ADDR_HI_DEFAULT                                            0x00000000
 #define mmCP_EOP_DONE_DATA_LO_DEFAULT                                            0x00000000
@@ -2577,7 +2558,7 @@
 #define mmSPI_CONFIG_CNTL_2_DEFAULT                                              0x00000011
 
 
-// addressBlock: gc_perfddec
+
 #define mmCPG_PERFCOUNTER1_LO_DEFAULT                                            0x00000000
 #define mmCPG_PERFCOUNTER1_HI_DEFAULT                                            0x00000000
 #define mmCPG_PERFCOUNTER0_LO_DEFAULT                                            0x00000000
@@ -2775,17 +2756,17 @@
 #define mmRMI_PERFCOUNTER3_HI_DEFAULT                                            0x00000000
 
 
-// addressBlock: gc_utcl2_atcl2pfcntrdec
+
 #define mmATC_L2_PERFCOUNTER_LO_DEFAULT                                          0x00000000
 #define mmATC_L2_PERFCOUNTER_HI_DEFAULT                                          0x00000000
 
 
-// addressBlock: gc_utcl2_vml2prdec
+
 #define mmMC_VM_L2_PERFCOUNTER_LO_DEFAULT                                        0x00000000
 #define mmMC_VM_L2_PERFCOUNTER_HI_DEFAULT                                        0x00000000
 
 
-// addressBlock: gc_perfsdec
+
 #define mmCPG_PERFCOUNTER1_SELECT_DEFAULT                                        0x11000401
 #define mmCPG_PERFCOUNTER0_SELECT1_DEFAULT                                       0x11000401
 #define mmCPG_PERFCOUNTER0_SELECT_DEFAULT                                        0x11000401
@@ -2973,13 +2954,13 @@
 #define mmRMI_PERF_COUNTER_CNTL_DEFAULT                                          0x00080240
 
 
-// addressBlock: gc_utcl2_atcl2pfcntldec
+
 #define mmATC_L2_PERFCOUNTER0_CFG_DEFAULT                                        0x00000000
 #define mmATC_L2_PERFCOUNTER1_CFG_DEFAULT                                        0x00000000
 #define mmATC_L2_PERFCOUNTER_RSLT_CNTL_DEFAULT                                   0x04000000
 
 
-// addressBlock: gc_utcl2_vml2pldec
+
 #define mmMC_VM_L2_PERFCOUNTER0_CFG_DEFAULT                                      0x00000000
 #define mmMC_VM_L2_PERFCOUNTER1_CFG_DEFAULT                                      0x00000000
 #define mmMC_VM_L2_PERFCOUNTER2_CFG_DEFAULT                                      0x00000000
@@ -2991,7 +2972,7 @@
 #define mmMC_VM_L2_PERFCOUNTER_RSLT_CNTL_DEFAULT                                 0x04000000
 
 
-// addressBlock: gc_rlcpdec
+
 #define mmRLC_CNTL_DEFAULT                                                       0x00000001
 #define mmRLC_STAT_DEFAULT                                                       0x00000000
 #define mmRLC_SAFE_MODE_DEFAULT                                                  0x00000000
@@ -3162,7 +3143,7 @@
 #define mmRLC_RLCV_SPARE_INT_DEFAULT                                             0x00000000
 
 
-// addressBlock: gc_pwrdec
+
 #define mmCGTS_SM_CTRL_REG_DEFAULT                                               0x00600200
 #define mmCGTS_RD_CTRL_REG_DEFAULT                                               0x00000000
 #define mmCGTS_RD_REG_DEFAULT                                                    0x00000000
@@ -3303,11 +3284,11 @@
 #define mmCGTT_TCPF_CLK_CTRL_DEFAULT                                             0x00000100
 
 
-// addressBlock: gc_ea_pwrdec
+
 #define mmGCEA_CGTT_CLK_CTRL_DEFAULT                                             0x00000100
 
 
-// addressBlock: gc_utcl2_vmsharedhvdec
+
 #define mmMC_VM_FB_SIZE_OFFSET_VF0_DEFAULT                                       0x00000000
 #define mmMC_VM_FB_SIZE_OFFSET_VF1_DEFAULT                                       0x00000000
 #define mmMC_VM_FB_SIZE_OFFSET_VF2_DEFAULT                                       0x00000000
@@ -3371,7 +3352,7 @@
 #define mmUTCL2_CGTT_CLK_CTRL_DEFAULT                                            0x00000080
 
 
-// addressBlock: gc_hypdec
+
 #define mmCP_HYP_PFP_UCODE_ADDR_DEFAULT                                          0x00000000
 #define mmCP_PFP_UCODE_ADDR_DEFAULT                                              0x00000000
 #define mmCP_HYP_PFP_UCODE_DATA_DEFAULT                                          0x00000000
@@ -3442,7 +3423,7 @@
 #define mmRLC_GPU_IOV_SDMA1_BUSY_STATUS_DEFAULT                                  0x00000000
 
 
-// addressBlock: gccacind
+
 #define ixGC_CAC_CNTL_DEFAULT                                                    0x000001fe
 #define ixGC_CAC_OVR_SEL_DEFAULT                                                 0x00000000
 #define ixGC_CAC_OVR_VAL_DEFAULT                                                 0x00000000
@@ -3675,13 +3656,13 @@
 #define ixGC_CAC_OVRD_UTCL2_WALKER_DEFAULT                                       0x00000000
 
 
-// addressBlock: secacind
+
 #define ixSE_CAC_CNTL_DEFAULT                                                    0x000001fe
 #define ixSE_CAC_OVR_SEL_DEFAULT                                                 0x00000000
 #define ixSE_CAC_OVR_VAL_DEFAULT                                                 0x00000000
 
 
-// addressBlock: sqind
+
 #define ixSQ_WAVE_MODE_DEFAULT                                                   0x00000000
 #define ixSQ_WAVE_STATUS_DEFAULT                                                 0x00000000
 #define ixSQ_WAVE_TRAPSTS_DEFAULT                                                0x00000000
@@ -3725,7 +3706,7 @@
 #define ixSQ_INTERRUPT_WORD_WAVE_LO_DEFAULT                                      0x00000000
 
 
-// addressBlock: didtind
+
 #define ixDIDT_SQ_CTRL0_DEFAULT                                                  0x0000ff00
 #define ixDIDT_SQ_CTRL1_DEFAULT                                                  0x00ff00ff
 #define ixDIDT_SQ_CTRL2_DEFAULT                                                  0x18800004

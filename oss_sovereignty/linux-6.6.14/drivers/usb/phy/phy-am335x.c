@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/module.h>
 #include <linux/platform_device.h>
 #include <linux/dma-mapping.h>
@@ -67,14 +67,7 @@ static int am335x_phy_probe(struct platform_device *pdev)
 	platform_set_drvdata(pdev, am_phy);
 	device_init_wakeup(dev, true);
 
-	/*
-	 * If we leave PHY wakeup enabled then AM33XX wakes up
-	 * immediately from DS0. To avoid this we mark dev->power.can_wakeup
-	 * to false. The same is checked in suspend routine to decide
-	 * on whether to enable PHY wakeup or not.
-	 * PHY wakeup works fine in standby mode, there by allowing us to
-	 * handle remote wakeup, wakeup on disconnect and connect.
-	 */
+	 
 
 	device_set_wakeup_enable(dev, false);
 	phy_ctrl_power(am_phy->phy_ctrl, am_phy->id, am_phy->dr_mode, false);
@@ -94,13 +87,7 @@ static int am335x_phy_suspend(struct device *dev)
 {
 	struct am335x_phy *am_phy = dev_get_drvdata(dev);
 
-	/*
-	 * Enable phy wakeup only if dev->power.can_wakeup is true.
-	 * Make sure to enable wakeup to support remote wakeup	in
-	 * standby mode ( same is not supported in OFF(DS0) mode).
-	 * Enable it by doing
-	 * echo enabled > /sys/bus/platform/devices/<usb-phy-id>/power/wakeup
-	 */
+	 
 
 	if (device_may_wakeup(dev))
 		phy_ctrl_wkup(am_phy->phy_ctrl, am_phy->id, true);

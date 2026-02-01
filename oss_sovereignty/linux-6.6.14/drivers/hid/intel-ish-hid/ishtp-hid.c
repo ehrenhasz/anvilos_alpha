@@ -1,23 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * ISHTP-HID glue driver.
- *
- * Copyright (c) 2012-2016, Intel Corporation.
- */
+
+ 
 
 #include <linux/hid.h>
 #include <linux/intel-ish-client-if.h>
 #include <uapi/linux/input.h>
 #include "ishtp-hid.h"
 
-/**
- * ishtp_hid_parse() - hid-core .parse() callback
- * @hid:	hid device instance
- *
- * This function gets called during call to hid_add_device
- *
- * Return: 0 on success and non zero on error
- */
+ 
 static int ishtp_hid_parse(struct hid_device *hid)
 {
 	struct ishtp_hid_data *hid_data =  hid->driver_data;
@@ -32,7 +21,7 @@ static int ishtp_hid_parse(struct hid_device *hid)
 	return 0;
 }
 
-/* Empty callbacks with success return code */
+ 
 static int ishtp_hid_start(struct hid_device *hid)
 {
 	return 0;
@@ -73,10 +62,7 @@ static int ishtp_raw_request(struct hid_device *hid, unsigned char reportnum,
 		hid_ishtp_get_report(hid, reportnum, rtype);
 		break;
 	case HID_REQ_SET_REPORT:
-		/*
-		 * Spare 7 bytes for 64b accesses through
-		 * get/put_unaligned_le64()
-		 */
+		 
 		ishtp_buf_len = len + header_size;
 		ishtp_buf = kzalloc(ishtp_buf_len + 7, GFP_KERNEL);
 		if (!ishtp_buf)
@@ -93,19 +79,12 @@ static int ishtp_raw_request(struct hid_device *hid, unsigned char reportnum,
 	return len;
 }
 
-/**
- * ishtp_hid_request() - hid-core .request() callback
- * @hid:	hid device instance
- * @rep:	pointer to hid_report
- * @reqtype:	type of req. [GET|SET]_REPORT
- *
- * This function is used to set/get feaure/input report.
- */
+ 
 static void ishtp_hid_request(struct hid_device *hid, struct hid_report *rep,
 	int reqtype)
 {
 	struct ishtp_hid_data *hid_data =  hid->driver_data;
-	/* the specific report length, just HID part of it */
+	 
 	unsigned int len = ((rep->size - 1) >> 3) + 1 + (rep->id > 0);
 	char *buf;
 	unsigned int header_size = sizeof(struct hostif_msg);
@@ -119,10 +98,7 @@ static void ishtp_hid_request(struct hid_device *hid, struct hid_report *rep,
 		hid_ishtp_get_report(hid, rep->id, rep->type);
 		break;
 	case HID_REQ_SET_REPORT:
-		/*
-		 * Spare 7 bytes for 64b accesses through
-		 * get/put_unaligned_le64()
-		 */
+		 
 		buf = kzalloc(len + 7, GFP_KERNEL);
 		if (!buf)
 			return;
@@ -134,14 +110,7 @@ static void ishtp_hid_request(struct hid_device *hid, struct hid_report *rep,
 	}
 }
 
-/**
- * ishtp_wait_for_response() - hid-core .wait() callback
- * @hid:	hid device instance
- *
- * This function is used to wait after get feaure/input report.
- *
- * Return: 0 on success and non zero on error
- */
+ 
 static int ishtp_wait_for_response(struct hid_device *hid)
 {
 	struct ishtp_hid_data *hid_data =  hid->driver_data;
@@ -169,12 +138,7 @@ static int ishtp_wait_for_response(struct hid_device *hid)
 	return 0;
 }
 
-/**
- * ishtp_hid_wakeup() - Wakeup caller
- * @hid:	hid device instance
- *
- * This function will wakeup caller waiting for Get/Set feature report
- */
+ 
 void ishtp_hid_wakeup(struct hid_device *hid)
 {
 	struct ishtp_hid_data *hid_data = hid->driver_data;
@@ -194,15 +158,7 @@ static const struct hid_ll_driver ishtp_hid_ll_driver = {
 	.raw_request = ishtp_raw_request
 };
 
-/**
- * ishtp_hid_probe() - hid register ll driver
- * @cur_hid_dev:	Index of hid device calling to register
- * @client_data:	Client data pointer
- *
- * This function is used to allocate and add HID device.
- *
- * Return: 0 on success, non zero on error
- */
+ 
 int ishtp_hid_probe(unsigned int cur_hid_dev,
 		    struct ishtp_cl_data *client_data)
 {
@@ -253,12 +209,7 @@ err_hid_data:
 	return rv;
 }
 
-/**
- * ishtp_hid_remove() - Remove registered hid device
- * @client_data:	client data pointer
- *
- * This function is used to destroy allocatd HID device.
- */
+ 
 void ishtp_hid_remove(struct ishtp_cl_data *client_data)
 {
 	int i;

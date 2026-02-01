@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * fs/f2fs/inline.c
- * Copyright (c) 2013, Intel Corporation
- * Authors: Huajun Li <huajun.li@intel.com>
- *          Haicheng Li <haicheng.li@intel.com>
- */
+
+ 
 
 #include <linux/fs.h>
 #include <linux/f2fs_fs.h>
@@ -41,10 +36,7 @@ bool f2fs_sanity_check_inline_data(struct inode *inode)
 	if (!support_inline_data(inode))
 		return true;
 
-	/*
-	 * used by sanity_check_inode(), when disk layout fields has not
-	 * been synchronized to inmem fields.
-	 */
+	 
 	return (S_ISREG(inode->i_mode) &&
 		(file_is_encrypt(inode) || file_is_verity(inode) ||
 		(F2FS_I(inode)->i_flags & F2FS_COMPR_FL)));
@@ -72,7 +64,7 @@ void f2fs_do_read_inline_data(struct page *page, struct page *ipage)
 
 	zero_user_segment(page, MAX_INLINE_DATA(inode), PAGE_SIZE);
 
-	/* Copy the whole inline data block */
+	 
 	memcpy_to_page(page, 0, inline_data_addr(inode, ipage),
 		       MAX_INLINE_DATA(inode));
 	if (!PageUptodate(page))
@@ -169,10 +161,10 @@ int f2fs_convert_inline_page(struct dnode_of_data *dn, struct page *page)
 	f2fs_do_read_inline_data(page, dn->inode_page);
 	set_page_dirty(page);
 
-	/* clear dirty state */
+	 
 	dirty = clear_page_dirty_for_io(page);
 
-	/* write data page to try to make data consistent */
+	 
 	set_page_writeback(page);
 	fio.old_blkaddr = dn->data_blkaddr;
 	set_inode_flag(dn->inode, FI_HOT_DATA);
@@ -183,10 +175,10 @@ int f2fs_convert_inline_page(struct dnode_of_data *dn, struct page *page)
 		f2fs_remove_dirty_inode(dn->inode);
 	}
 
-	/* this converted inline_data should be recovered. */
+	 
 	set_inode_flag(dn->inode, FI_APPEND_WRITE);
 
-	/* clear inline data and flag after data writeback */
+	 
 	f2fs_truncate_inline_inode(dn->inode, dn->inode_page, 0);
 	clear_page_private_inline(dn->inode_page);
 clear_out:
@@ -279,14 +271,7 @@ int f2fs_recover_inline_data(struct inode *inode, struct page *npage)
 	void *src_addr, *dst_addr;
 	struct page *ipage;
 
-	/*
-	 * The inline_data recovery policy is as follows.
-	 * [prev.] [next] of inline_data flag
-	 *    o       o  -> recover inline_data
-	 *    o       x  -> remove inline_data, and then recover data blocks
-	 *    x       o  -> remove data blocks, and then recover inline_data
-	 *    x       x  -> recover data blocks
-	 */
+	 
 	if (IS_INODE(npage))
 		ri = F2FS_INODE(npage);
 
@@ -377,16 +362,13 @@ int f2fs_make_empty_inline_dir(struct inode *inode, struct inode *parent,
 
 	set_page_dirty(ipage);
 
-	/* update i_size to MAX_INLINE_DATA */
+	 
 	if (i_size_read(inode) < MAX_INLINE_DATA(inode))
 		f2fs_i_size_write(inode, MAX_INLINE_DATA(inode));
 	return 0;
 }
 
-/*
- * NOTE: ipage is grabbed by caller, but if any error occurs, we should
- * release ipage in this function.
- */
+ 
 static int f2fs_move_inline_dirents(struct inode *dir, struct page *ipage,
 							void *inline_dentry)
 {
@@ -421,16 +403,13 @@ static int f2fs_move_inline_dirents(struct inode *dir, struct page *ipage,
 
 	dentry_blk = page_address(page);
 
-	/*
-	 * Start by zeroing the full block, to ensure that all unused space is
-	 * zeroed and no uninitialized memory is leaked to disk.
-	 */
+	 
 	memset(dentry_blk, 0, F2FS_BLKSIZE);
 
 	make_dentry_ptr_inline(dir, &src, inline_dentry);
 	make_dentry_ptr_block(dir, &dst, dentry_blk);
 
-	/* copy data from inline dentry block to new dentry block */
+	 
 	memcpy(dst.bitmap, src.bitmap, src.nr_bitmap);
 	memcpy(dst.dentry, src.dentry, SIZE_OF_DIR_ENTRY * src.max);
 	memcpy(dst.filename, src.filename, src.max * F2FS_SLOT_LEN);
@@ -439,16 +418,13 @@ static int f2fs_move_inline_dirents(struct inode *dir, struct page *ipage,
 		SetPageUptodate(page);
 	set_page_dirty(page);
 
-	/* clear inline dir and flag after data writeback */
+	 
 	f2fs_truncate_inline_inode(dir, ipage, 0);
 
 	stat_dec_inline_dir(dir);
 	clear_inode_flag(dir, FI_INLINE_DENTRY);
 
-	/*
-	 * should retrieve reserved space which was used to keep
-	 * inline_dentry's structure for backward compatibility.
-	 */
+	 
 	if (!f2fs_sb_has_flexible_inline_xattr(F2FS_I_SB(dir)) &&
 			!f2fs_has_inline_xattr(dir))
 		F2FS_I(dir)->i_inline_xattr_size = 0;
@@ -487,10 +463,7 @@ static int f2fs_add_inline_entries(struct inode *dir, void *inline_dentry)
 			continue;
 		}
 
-		/*
-		 * We only need the disk_name and hash to move the dentry.
-		 * We don't need the original or casefolded filenames.
-		 */
+		 
 		memset(&fname, 0, sizeof(fname));
 		fname.disk_name.name = d.filename[bit_pos];
 		fname.disk_name.len = le16_to_cpu(de->name_len);
@@ -540,10 +513,7 @@ static int f2fs_move_rehashed_dirents(struct inode *dir, struct page *ipage,
 	stat_dec_inline_dir(dir);
 	clear_inode_flag(dir, FI_INLINE_DENTRY);
 
-	/*
-	 * should retrieve reserved space which was used to keep
-	 * inline_dentry's structure for backward compatibility.
-	 */
+	 
 	if (!f2fs_sb_has_flexible_inline_xattr(F2FS_I_SB(dir)) &&
 			!f2fs_has_inline_xattr(dir))
 		F2FS_I(dir)->i_inline_xattr_size = 0;
@@ -657,11 +627,11 @@ int f2fs_add_inline_entry(struct inode *dir, const struct f2fs_filename *fname,
 
 	set_page_dirty(ipage);
 
-	/* we don't need to mark_inode_dirty now */
+	 
 	if (inode) {
 		f2fs_i_pino_write(inode, dir->i_ino);
 
-		/* synchronize inode page's data from inode cache */
+		 
 		if (is_inode_flag_set(inode, FI_NEW_INODE))
 			f2fs_update_inode(inode, page);
 
@@ -749,10 +719,7 @@ int f2fs_read_inline_dir(struct file *file, struct dir_context *ctx,
 	if (IS_ERR(ipage))
 		return PTR_ERR(ipage);
 
-	/*
-	 * f2fs_readdir was protected by inode.i_rwsem, it is safe to access
-	 * ipage without page's lock held.
-	 */
+	 
 	unlock_page(ipage);
 
 	inline_dentry = inline_data_addr(inode, ipage);

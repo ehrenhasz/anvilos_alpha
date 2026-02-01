@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0+
+
 
 #include <linux/bits.h>
 #include <linux/kernel.h>
@@ -98,10 +98,7 @@ static int rt5120_regulator_get_error_flags(struct regulator_dev *rdev,
 	unsigned int stat, hd_stat, cur_flags = 0;
 	int rid = rdev_get_id(rdev), ret;
 
-	/*
-	 * reg 0x03/0x04/0x05 to indicate PG/UV/OV
-	 * use block read to descrease I/O xfer time
-	 */
+	 
 	ret = regmap_raw_read(regmap, RT5120_REG_PGSTAT, &stat, 3);
 	if (ret)
 		return ret;
@@ -220,7 +217,7 @@ static void rt5120_fillin_regulator_desc(struct regulator_desc *desc, int rid)
 	static const char * const sname[] = {
 		"vin1", "vin2", "vin3", "vin4", "vinldo", NULL };
 
-	/* Common regulator property */
+	 
 	desc->name = name[rid];
 	desc->supply_name = sname[rid];
 	desc->owner = THIS_MODULE;
@@ -231,17 +228,17 @@ static void rt5120_fillin_regulator_desc(struct regulator_desc *desc, int rid)
 	desc->active_discharge_reg = RT5120_REG_DISCHG;
 	desc->active_discharge_mask = RT5120_RADEN_MASK(rid);
 	desc->active_discharge_on = RT5120_RADEN_MASK(rid);
-	/* Config n_voltages to 1 for all*/
+	 
 	desc->n_voltages = 1;
 
-	/* Only buck support mode change */
+	 
 	if (rid >= RT5120_REGULATOR_BUCK1 && rid <= RT5120_REGULATOR_BUCK4)
 		desc->of_map_mode = rt5120_buck_of_map_mode;
 
-	/* RID specific property init */
+	 
 	switch (rid) {
 	case RT5120_REGULATOR_BUCK1:
-		/* Only buck1 support voltage change by I2C */
+		 
 		desc->n_voltages = RT5120_BUCK1_NUM_VOLT;
 		desc->min_uV = RT5120_BUCK1_MINUV;
 		desc->uV_step = RT5120_BUCK1_STEPUV;
@@ -334,7 +331,7 @@ static int rt5120_device_property_init(struct rt5120_priv *priv)
 	bool prot_enable;
 	unsigned int prot_enable_val = 0;
 
-	/* Assign UV/OV HW protection behavior */
+	 
 	prot_enable = of_property_read_bool(np,
 					    "richtek,enable-undervolt-hiccup");
 	if (prot_enable)

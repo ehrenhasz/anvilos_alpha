@@ -1,27 +1,4 @@
-/*
- * Copyright 2020 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- *  and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 
 #include "dc_bios_types.h"
@@ -52,49 +29,35 @@ void vpg3_update_generic_info_packet(
 	struct dcn30_vpg *vpg3 = DCN30_VPG_FROM_VPG(vpg);
 	uint32_t i;
 
-	/* TODOFPGA Figure out a proper number for max_retries polling for lock
-	 * use 50 for now.
-	 */
+	 
 	uint32_t max_retries = 50;
 
 	if (packet_index > 14)
 		ASSERT(0);
 
-	/* poll dig_update_lock is not locked -> asic internal signal
-	 * assume otg master lock will unlock it
-	 */
-	/* REG_WAIT(AFMT_VBI_PACKET_CONTROL, AFMT_GENERIC_LOCK_STATUS,
-	 * 		0, 10, max_retries);
-	 */
+	 
+	 
 
-	/* TODO: Check if this is required */
-	/* check if HW reading GSP memory */
+	 
+	 
 	REG_WAIT(VPG_GENERIC_STATUS, VPG_GENERIC_CONFLICT_OCCURED,
 			0, 10, max_retries);
 
-	/* HW does is not reading GSP memory not reading too long ->
-	 * something wrong. clear GPS memory access and notify?
-	 * hw SW is writing to GSP memory
-	 */
+	 
 	REG_UPDATE(VPG_GENERIC_STATUS, VPG_GENERIC_CONFLICT_CLR, 1);
 
-	/* choose which generic packet to use */
+	 
 	REG_UPDATE(VPG_GENERIC_PACKET_ACCESS_CTRL,
 			VPG_GENERIC_DATA_INDEX, packet_index*9);
 
-	/* write generic packet header
-	 * (4th byte is for GENERIC0 only)
-	 */
+	 
 	REG_SET_4(VPG_GENERIC_PACKET_DATA, 0,
 			VPG_GENERIC_DATA_BYTE0, info_packet->hb0,
 			VPG_GENERIC_DATA_BYTE1, info_packet->hb1,
 			VPG_GENERIC_DATA_BYTE2, info_packet->hb2,
 			VPG_GENERIC_DATA_BYTE3, info_packet->hb3);
 
-	/* write generic packet contents
-	 * (we never use last 4 bytes)
-	 * there are 8 (0-7) mmDIG0_AFMT_GENERIC0_x registers
-	 */
+	 
 	{
 		const uint32_t *content =
 			(const uint32_t *) &info_packet->sb[0];
@@ -104,9 +67,7 @@ void vpg3_update_generic_info_packet(
 		}
 	}
 
-	/* atomically update double-buffered GENERIC0 registers in immediate mode
-	 * (update at next block_update when block_update_lock == 0).
-	 */
+	 
 	if (immediate_update) {
 		switch (packet_index) {
 		case 0:

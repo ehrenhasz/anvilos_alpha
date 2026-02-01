@@ -1,32 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- *  das08_isa.c
- *  comedi driver for DAS08 ISA/PC-104 boards
- *
- *  COMEDI - Linux Control and Measurement Device Interface
- *  Copyright (C) 2000 David A. Schleef <ds@schleef.org>
- *  Copyright (C) 2001,2002,2003 Frank Mori Hess <fmhess@users.sourceforge.net>
- *  Copyright (C) 2004 Salvador E. Tropea <set@users.sf.net> <set@ieee.org>
- */
 
-/*
- * Driver: das08_isa
- * Description: DAS-08 ISA/PC-104 compatible boards
- * Devices: [Keithley Metrabyte] DAS08 (isa-das08),
- *   [ComputerBoards] DAS08 (isa-das08), DAS08-PGM (das08-pgm),
- *   DAS08-PGH (das08-pgh), DAS08-PGL (das08-pgl), DAS08-AOH (das08-aoh),
- *   DAS08-AOL (das08-aol), DAS08-AOM (das08-aom), DAS08/JR-AO (das08/jr-ao),
- *   DAS08/JR-16-AO (das08jr-16-ao), PC104-DAS08 (pc104-das08),
- *   DAS08/JR/16 (das08jr/16)
- * Author: Warren Jasper, ds, Frank Hess
- * Updated: Fri, 31 Aug 2012 19:19:06 +0100
- * Status: works
- *
- * This is the ISA/PC-104-specific support split off from the das08 driver.
- *
- * Configuration Options:
- *	[0] - base io address
- */
+ 
+
+ 
 
 #include <linux/module.h>
 #include <linux/comedi/comedidev.h>
@@ -35,7 +10,7 @@
 
 static const struct das08_board_struct das08_isa_boards[] = {
 	{
-		/* cio-das08.pdf */
+		 
 		.name		= "isa-das08",
 		.ai_nbits	= 12,
 		.ai_pg		= das08_pg_none,
@@ -44,9 +19,9 @@ static const struct das08_board_struct das08_isa_boards[] = {
 		.do_nchan	= 4,
 		.i8255_offset	= 8,
 		.i8254_offset	= 4,
-		.iosize		= 16,		/* unchecked */
+		.iosize		= 16,		 
 	}, {
-		/* cio-das08pgx.pdf */
+		 
 		.name		= "das08-pgm",
 		.ai_nbits	= 12,
 		.ai_pg		= das08_pgm,
@@ -55,9 +30,9 @@ static const struct das08_board_struct das08_isa_boards[] = {
 		.do_nchan	= 4,
 		.i8255_offset	= 0,
 		.i8254_offset	= 0x04,
-		.iosize		= 16,		/* unchecked */
+		.iosize		= 16,		 
 	}, {
-		/* cio-das08pgx.pdf */
+		 
 		.name		= "das08-pgh",
 		.ai_nbits	= 12,
 		.ai_pg		= das08_pgh,
@@ -65,9 +40,9 @@ static const struct das08_board_struct das08_isa_boards[] = {
 		.di_nchan	= 3,
 		.do_nchan	= 4,
 		.i8254_offset	= 0x04,
-		.iosize		= 16,		/* unchecked */
+		.iosize		= 16,		 
 	}, {
-		/* cio-das08pgx.pdf */
+		 
 		.name		= "das08-pgl",
 		.ai_nbits	= 12,
 		.ai_pg		= das08_pgl,
@@ -75,9 +50,9 @@ static const struct das08_board_struct das08_isa_boards[] = {
 		.di_nchan	= 3,
 		.do_nchan	= 4,
 		.i8254_offset	= 0x04,
-		.iosize		= 16,		/* unchecked */
+		.iosize		= 16,		 
 	}, {
-		/* cio-das08_aox.pdf */
+		 
 		.name		= "das08-aoh",
 		.ai_nbits	= 12,
 		.ai_pg		= das08_pgh,
@@ -87,9 +62,9 @@ static const struct das08_board_struct das08_isa_boards[] = {
 		.do_nchan	= 4,
 		.i8255_offset	= 0x0c,
 		.i8254_offset	= 0x04,
-		.iosize		= 16,		/* unchecked */
+		.iosize		= 16,		 
 	}, {
-		/* cio-das08_aox.pdf */
+		 
 		.name		= "das08-aol",
 		.ai_nbits	= 12,
 		.ai_pg		= das08_pgl,
@@ -99,9 +74,9 @@ static const struct das08_board_struct das08_isa_boards[] = {
 		.do_nchan	= 4,
 		.i8255_offset	= 0x0c,
 		.i8254_offset	= 0x04,
-		.iosize		= 16,		/* unchecked */
+		.iosize		= 16,		 
 	}, {
-		/* cio-das08_aox.pdf */
+		 
 		.name		= "das08-aom",
 		.ai_nbits	= 12,
 		.ai_pg		= das08_pgm,
@@ -111,9 +86,9 @@ static const struct das08_board_struct das08_isa_boards[] = {
 		.do_nchan	= 4,
 		.i8255_offset	= 0x0c,
 		.i8254_offset	= 0x04,
-		.iosize		= 16,		/* unchecked */
+		.iosize		= 16,		 
 	}, {
-		/* cio-das08-jr-ao.pdf */
+		 
 		.name		= "das08/jr-ao",
 		.is_jr		= true,
 		.ai_nbits	= 12,
@@ -122,9 +97,9 @@ static const struct das08_board_struct das08_isa_boards[] = {
 		.ao_nbits	= 12,
 		.di_nchan	= 8,
 		.do_nchan	= 8,
-		.iosize		= 16,		/* unchecked */
+		.iosize		= 16,		 
 	}, {
-		/* cio-das08jr-16-ao.pdf */
+		 
 		.name		= "das08jr-16-ao",
 		.is_jr		= true,
 		.ai_nbits	= 16,
@@ -134,7 +109,7 @@ static const struct das08_board_struct das08_isa_boards[] = {
 		.di_nchan	= 8,
 		.do_nchan	= 8,
 		.i8254_offset	= 0x04,
-		.iosize		= 16,		/* unchecked */
+		.iosize		= 16,		 
 	}, {
 		.name		= "pc104-das08",
 		.ai_nbits	= 12,
@@ -143,7 +118,7 @@ static const struct das08_board_struct das08_isa_boards[] = {
 		.di_nchan	= 3,
 		.do_nchan	= 4,
 		.i8254_offset	= 4,
-		.iosize		= 16,		/* unchecked */
+		.iosize		= 16,		 
 	}, {
 		.name		= "das08jr/16",
 		.is_jr		= true,
@@ -152,7 +127,7 @@ static const struct das08_board_struct das08_isa_boards[] = {
 		.ai_encoding	= das08_encode16,
 		.di_nchan	= 8,
 		.do_nchan	= 8,
-		.iosize		= 16,		/* unchecked */
+		.iosize		= 16,		 
 	},
 };
 

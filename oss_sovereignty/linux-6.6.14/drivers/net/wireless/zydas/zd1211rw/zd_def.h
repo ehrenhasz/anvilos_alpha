@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/* ZD1211 USB-WLAN driver for Linux
- *
- * Copyright (C) 2005-2007 Ulrich Kunitz <kune@deine-taler.de>
- * Copyright (C) 2006-2007 Daniel Drake <dsd@gentoo.org>
- */
+ 
+ 
 
 #ifndef _ZD_DEF_H
 #define _ZD_DEF_H
@@ -33,7 +29,7 @@ typedef u16 __nocast zd_addr_t;
 #  define dev_dbg_f(dev, fmt, args...) do { (void)(dev); } while (0)
 #  define dev_dbg_f_limit(dev, fmt, args...) do { (void)(dev); } while (0)
 #  define dev_dbg_f_cond(dev, cond, fmt, args...) do { (void)(dev); } while (0)
-#endif /* DEBUG */
+#endif  
 
 #ifdef DEBUG
 #  define ZD_ASSERT(x) \
@@ -54,4 +50,4 @@ do { \
 #  define ZD_MEMCLEAR(pointer, size) do { } while (0)
 #endif
 
-#endif /* _ZD_DEF_H */
+#endif  

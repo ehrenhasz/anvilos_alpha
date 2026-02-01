@@ -1,28 +1,14 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Support for Intel Camera Imaging ISP subsystem.
- * Copyright (c) 2010-2015, Intel Corporation.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms and conditions of the GNU General Public License,
- * version 2, as published by the Free Software Foundation.
- *
- * This program is distributed in the hope it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- * more details.
- */
 
-/* The name "gdc.h is already taken" */
+ 
+
+ 
 #include "gdc_device.h"
 
 #include "device_access.h"
 
 #include "assert_support.h"
 
-/*
- * Local function declarations
- */
+ 
 static inline void gdc_reg_store(
     const gdc_ID_t		ID,
     const unsigned int	reg,
@@ -30,11 +16,9 @@ static inline void gdc_reg_store(
 
 #ifndef __INLINE_GDC__
 #include "gdc_private.h"
-#endif /* __INLINE_GDC__ */
+#endif  
 
-/*
- * Exported function implementations
- */
+ 
 void gdc_lut_store(
     const gdc_ID_t		ID,
     const int			data[4][HRT_GDC_N])
@@ -61,24 +45,7 @@ void gdc_lut_store(
 	return;
 }
 
-/*
- * Input LUT format:
- * c0[0-1023], c1[0-1023], c2[0-1023] c3[0-1023]
- *
- * Output LUT format (interleaved):
- * c0[0], c1[0], c2[0], c3[0], c0[1], c1[1], c2[1], c3[1], ....
- * c0[1023], c1[1023], c2[1023], c3[1023]
- *
- * The first format needs c0[0], c1[0] (which are 1024 words apart)
- * to program gdc LUT registers. This makes it difficult to do piecemeal
- * reads in SP side gdc_lut_store
- *
- * Interleaved format allows use of contiguous bytes to store into
- * gdc LUT registers.
- *
- * See gdc_lut_store() definition in host/gdc.c vs sp/gdc_private.h
- *
- */
+ 
 void gdc_lut_convert_to_isp_format(const int in_lut[4][HRT_GDC_N],
 				   int out_lut[4][HRT_GDC_N])
 {
@@ -102,9 +69,7 @@ int gdc_get_unity(
 	return (int)(1UL << HRT_GDC_FRAC_BITS);
 }
 
-/*
- * Local function implementations
- */
+ 
 static inline void gdc_reg_store(
     const gdc_ID_t		ID,
     const unsigned int	reg,

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: BSD-3-Clause-Clear
-/*
- * Copyright (c) 2018-2021 The Linux Foundation. All rights reserved.
- * Copyright (c) 2021-2022 Qualcomm Innovation Center, Inc. All rights reserved.
- */
+
+ 
 
 #include <linux/elf.h>
 
@@ -1902,9 +1899,7 @@ static void ath12k_host_cap_parse_mlo(struct qmi_wlanfw_host_cap_req_msg_v01 *re
 	req->mlo_group_id_valid = 1;
 	req->mlo_group_id = 0;
 	req->max_mlo_peer_valid = 1;
-	/* Max peer number generally won't change for the same device
-	 * but needs to be synced with host driver.
-	 */
+	 
 	req->max_mlo_peer = 32;
 	req->mlo_num_chips_valid = 1;
 	req->mlo_num_chips = 1;
@@ -1947,20 +1942,14 @@ static int ath12k_qmi_host_cap_send(struct ath12k_base *ab)
 		req.feature_list = ab->hw_params->qmi_cnss_feature_bitmap;
 	}
 
-	/* BRINGUP: here we are piggybacking a lot of stuff using
-	 * internal_sleep_clock, should it be split?
-	 */
+	 
 	if (ab->hw_params->internal_sleep_clock) {
 		req.nm_modem_valid = 1;
 
-		/* Notify firmware that this is non-qualcomm platform. */
+		 
 		req.nm_modem |= HOST_CSTATE_BIT;
 
-		/* Notify firmware about the sleep clock selection,
-		 * nm_modem_bit[1] is used for this purpose. Host driver on
-		 * non-qualcomm platforms should select internal sleep
-		 * clock.
-		 */
+		 
 		req.nm_modem |= SLEEP_CLOCK_SELECT_INTERNAL_BIT;
 		req.nm_modem |= PLATFORM_CAP_PCIE_GLOBAL_RESET;
 
@@ -2079,11 +2068,7 @@ static int ath12k_qmi_respond_fw_mem_request(struct ath12k_base *ab)
 
 	memset(&resp, 0, sizeof(resp));
 
-	/* Some targets by default request a block of big contiguous
-	 * DMA memory, it's hard to allocate from kernel. So host returns
-	 * failure to firmware and firmware then request multiple blocks of
-	 * small chunk size memory.
-	 */
+	 
 	if (ab->qmi.target_mem_delayed) {
 		delayed = true;
 		ath12k_dbg(ab, ATH12K_DBG_QMI, "qmi delays mem_request %d\n",
@@ -2126,9 +2111,7 @@ static int ath12k_qmi_respond_fw_mem_request(struct ath12k_base *ab)
 	}
 
 	if (resp.resp.result != QMI_RESULT_SUCCESS_V01) {
-		/* the error response is expected when
-		 * target_mem_delayed is true.
-		 */
+		 
 		if (delayed && resp.resp.error == 0)
 			goto out;
 
@@ -2167,10 +2150,7 @@ static int ath12k_qmi_alloc_target_mem_chunk(struct ath12k_base *ab)
 	for (i = 0; i < ab->qmi.mem_seg_count; i++) {
 		chunk = &ab->qmi.target_mem[i];
 
-		/* Allocate memory for the region and the functionality supported
-		 * on the host. For the non-supported memory region, host does not
-		 * allocate memory, assigns NULL and FW will handle this without crashing.
-		 */
+		 
 		switch (chunk->type) {
 		case HOST_DDR_REGION_TYPE:
 		case M3_DUMP_REGION_TYPE:
@@ -2434,7 +2414,7 @@ static int ath12k_qmi_load_bdf_qmi(struct ath12k_base *ab,
 		} else {
 			file_type = ATH12K_QMI_FILE_TYPE_CALDATA;
 
-			/* cal-<bus>-<id>.bin */
+			 
 			snprintf(filename, sizeof(filename), "cal-%s-%s.bin",
 				 ath12k_bus_str(ab->hif.bus), dev_name(dev));
 			fw_entry = ath12k_core_firmware_request(ab, filename);
@@ -2663,7 +2643,7 @@ static int ath12k_qmi_wlanfw_wlan_cfg_send(struct ath12k_base *ab)
 		sizeof(req->host_version));
 
 	req->tgt_cfg_valid = 1;
-	/* This is number of CE configs */
+	 
 	req->tgt_cfg_len = ab->qmi.ce_cfg.tgt_ce_len;
 	for (pipe_num = 0; pipe_num < req->tgt_cfg_len ; pipe_num++) {
 		req->tgt_cfg[pipe_num].pipe_num = ce_cfg[pipe_num].pipenum;
@@ -2674,7 +2654,7 @@ static int ath12k_qmi_wlanfw_wlan_cfg_send(struct ath12k_base *ab)
 	}
 
 	req->svc_cfg_valid = 1;
-	/* This is number of Service/CE configs */
+	 
 	req->svc_cfg_len = ab->qmi.ce_cfg.svc_to_ce_map_len;
 	for (pipe_num = 0; pipe_num < req->svc_cfg_len; pipe_num++) {
 		req->svc_cfg[pipe_num].service_id = svc_cfg[pipe_num].service_id;
@@ -2682,7 +2662,7 @@ static int ath12k_qmi_wlanfw_wlan_cfg_send(struct ath12k_base *ab)
 		req->svc_cfg[pipe_num].pipe_num = svc_cfg[pipe_num].pipenum;
 	}
 
-	/* set shadow v3 configuration */
+	 
 	if (ab->hw_params->supports_shadow_regs) {
 		req->shadow_reg_v3_valid = 1;
 		req->shadow_reg_v3_len = min_t(u32,

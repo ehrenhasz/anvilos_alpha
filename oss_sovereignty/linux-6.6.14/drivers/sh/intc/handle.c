@@ -1,13 +1,4 @@
-/*
- * Shared interrupt handling code for IPR and INTC2 types of IRQs.
- *
- * Copyright (C) 2007, 2008 Magnus Damm
- * Copyright (C) 2009, 2010 Paul Mundt
- *
- * This file is subject to the terms and conditions of the GNU General Public
- * License.  See the file "COPYING" in the main directory of this archive
- * for more details.
- */
+ 
 #include <linux/init.h>
 #include <linux/irq.h>
 #include <linux/spinlock.h>
@@ -234,7 +225,7 @@ void __init intc_enable_disable_enum(struct intc_desc *desc,
 {
 	unsigned int i, j, data;
 
-	/* go through and enable/disable all mask bits */
+	 
 	i = j = 0;
 	do {
 		data = _intc_mask_data(desc, d, enum_id, &i, &j);
@@ -243,7 +234,7 @@ void __init intc_enable_disable_enum(struct intc_desc *desc,
 		j++;
 	} while (data);
 
-	/* go through and enable/disable all priority fields */
+	 
 	i = j = 0;
 	do {
 		data = _intc_prio_data(desc, d, enum_id, &i, &j);
@@ -289,9 +280,7 @@ void intc_set_ack_handle(unsigned int irq, struct intc_desc *desc,
 {
 	unsigned long flags;
 
-	/*
-	 * Nothing to do for this IRQ.
-	 */
+	 
 	if (!desc->hw.ack_regs)
 		return;
 

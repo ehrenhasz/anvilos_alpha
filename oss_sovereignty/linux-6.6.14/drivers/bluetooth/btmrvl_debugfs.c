@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Marvell Bluetooth driver: debugfs related functions
- *
- * Copyright (C) 2009, Marvell International Ltd.
- **/
+
+ 
 
 #include <linux/debugfs.h>
 #include <linux/slab.h>

@@ -1,45 +1,6 @@
-/*
- * Copyright © 2016-2017 Broadcom
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- *
- * Portions of this file (derived from panel-simple.c) are:
- *
- * Copyright (C) 2013, NVIDIA Corporation.  All rights reserved.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sub license,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice (including the
- * next paragraph) shall be included in all copies or substantial portions
- * of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT. IN NO EVENT SHALL
- * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
- * DEALINGS IN THE SOFTWARE.
- */
+ 
 
-/*
- * Raspberry Pi 7" touchscreen panel driver.
- *
- * The 7" touchscreen consists of a DPI LCD panel, a Toshiba
- * TC358762XBG DSI-DPI bridge, and an I2C-connected Atmel ATTINY88-MUR
- * controlling power management, the LCD PWM, and initial register
- * setup of the Tohsiba.
- *
- * This driver controls the TC358762 and ATTINY88, presenting a DSI
- * device with a drm_panel.
- */
+ 
 
 #include <linux/delay.h>
 #include <linux/err.h>
@@ -57,10 +18,10 @@
 
 #define RPI_DSI_DRIVER_NAME "rpi-ts-dsi"
 
-/* I2C registers of the Atmel microcontroller. */
+ 
 enum REG_ADDR {
 	REG_ID = 0x80,
-	REG_PORTA, /* BIT(2) for horizontal flip, BIT(3) for vertical flip */
+	REG_PORTA,  
 	REG_PORTB,
 	REG_PORTC,
 	REG_PORTD,
@@ -80,7 +41,7 @@ enum REG_ADDR {
 	REG_ID2,
 };
 
-/* DSI D-PHY Layer Registers */
+ 
 #define D0W_DPHYCONTTX		0x0004
 #define CLW_DPHYCONTRX		0x0020
 #define D0W_DPHYCONTRX		0x0024
@@ -91,7 +52,7 @@ enum REG_ADDR {
 #define D1W_CNTRL		0x0048
 #define DFTMODE_CNTRL		0x0054
 
-/* DSI PPI Layer Registers */
+ 
 #define PPI_STARTPPI		0x0104
 #define PPI_BUSYPPI		0x0108
 #define PPI_LINEINITCNT		0x0110
@@ -115,7 +76,7 @@ enum REG_ADDR {
 #define HSTIMEOUT		0x01F0
 #define HSTIMEOUTENABLE		0x01F4
 
-/* DSI Protocol Layer Registers */
+ 
 #define DSI_STARTDSI		0x0204
 #define DSI_BUSYDSI		0x0208
 #define DSI_LANEENABLE		0x0210
@@ -137,11 +98,11 @@ enum REG_ADDR {
 #define DSI_BTASTA		0x0278
 #define DSI_BTACLR		0x027C
 
-/* DSI General Registers */
+ 
 #define DSIERRCNT		0x0300
 #define DSISIGMOD		0x0304
 
-/* DSI Application Layer Registers */
+ 
 #define APLCTRL			0x0400
 #define APLSTAT			0x0404
 #define APLERR			0x0408
@@ -150,7 +111,7 @@ enum REG_ADDR {
 #define PXLFMT			0x0414
 #define MEMWRCMD		0x0418
 
-/* LCDC/DPI Host Registers */
+ 
 #define LCDCTRL			0x0420
 #define HSR			0x0424
 #define HDISPR			0x0428
@@ -158,14 +119,14 @@ enum REG_ADDR {
 #define VDISPR			0x0430
 #define VFUEN			0x0434
 
-/* DBI-B Host Registers */
+ 
 #define DBIBCTRL		0x0440
 
-/* SPI Master Registers */
+ 
 #define SPICMR			0x0450
 #define SPITCR			0x0454
 
-/* System Controller Registers */
+ 
 #define SYSSTAT			0x0460
 #define SYSCTRL			0x0464
 #define SYSPLL1			0x0468
@@ -173,18 +134,18 @@ enum REG_ADDR {
 #define SYSPLL3			0x0470
 #define SYSPMCTRL		0x047C
 
-/* GPIO Registers */
+ 
 #define GPIOC			0x0480
 #define GPIOO			0x0484
 #define GPIOI			0x0488
 
-/* I2C Registers */
+ 
 #define I2CCLKCTRL		0x0490
 
-/* Chip/Rev Registers */
+ 
 #define IDREG			0x04A0
 
-/* Debug Registers */
+ 
 #define WCMDQUEUE		0x0500
 #define RCMDQUEUE		0x0504
 
@@ -196,9 +157,7 @@ struct rpi_touchscreen {
 
 static const struct drm_display_mode rpi_touchscreen_modes[] = {
 	{
-		/* Modeline comes from the Raspberry Pi firmware, with HFP=1
-		 * plugged in and clock re-computed from that.
-		 */
+		 
 		.clock = 25979400 / 1000,
 		.hdisplay = 800,
 		.hsync_start = 800 + 1,
@@ -270,7 +229,7 @@ static int rpi_touchscreen_prepare(struct drm_panel *panel)
 	int i;
 
 	rpi_touchscreen_i2c_write(ts, REG_POWERON, 1);
-	/* Wait for nPWRDWN to go low to indicate poweron is done. */
+	 
 	for (i = 0; i < 100; i++) {
 		if (rpi_touchscreen_i2c_read(ts, REG_PORTB) & 1)
 			break;
@@ -301,14 +260,10 @@ static int rpi_touchscreen_enable(struct drm_panel *panel)
 {
 	struct rpi_touchscreen *ts = panel_to_ts(panel);
 
-	/* Turn on the backlight. */
+	 
 	rpi_touchscreen_i2c_write(ts, REG_PWM, 255);
 
-	/* Default to the same orientation as the closed source
-	 * firmware used for the panel.  Runtime rotation
-	 * configuration will be supported using VC4's plane
-	 * orientation bits.
-	 */
+	 
 	rpi_touchscreen_i2c_write(ts, REG_PORTA, BIT(2));
 
 	return 0;
@@ -388,18 +343,18 @@ static int rpi_touchscreen_probe(struct i2c_client *i2c)
 	}
 
 	switch (ver) {
-	case 0xde: /* ver 1 */
-	case 0xc3: /* ver 2 */
+	case 0xde:  
+	case 0xc3:  
 		break;
 	default:
 		dev_err(dev, "Unknown Atmel firmware revision: 0x%02x\n", ver);
 		return -ENODEV;
 	}
 
-	/* Turn off at boot, so we can cleanly sequence powering on. */
+	 
 	rpi_touchscreen_i2c_write(ts, REG_POWERON, 0);
 
-	/* Look up the DSI host.  It needs to probe before we do. */
+	 
 	endpoint = of_graph_get_next_endpoint(dev->of_node, NULL);
 	if (!endpoint)
 		return -ENODEV;
@@ -431,9 +386,7 @@ static int rpi_touchscreen_probe(struct i2c_client *i2c)
 	drm_panel_init(&ts->base, dev, &rpi_touchscreen_funcs,
 		       DRM_MODE_CONNECTOR_DSI);
 
-	/* This appears last, as it's what will unblock the DSI host
-	 * driver's component bind function.
-	 */
+	 
 	drm_panel_add(&ts->base);
 
 	return 0;
@@ -479,7 +432,7 @@ static struct mipi_dsi_driver rpi_touchscreen_dsi_driver = {
 
 static const struct of_device_id rpi_touchscreen_of_ids[] = {
 	{ .compatible = "raspberrypi,7inch-touchscreen-panel" },
-	{ } /* sentinel */
+	{ }  
 };
 MODULE_DEVICE_TABLE(of, rpi_touchscreen_of_ids);
 

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Aspeed AST24XX, AST25XX, and AST26XX SCU Interrupt Controller
- * Copyright 2019 IBM Corporation
- *
- * Eddie James <eajames@linux.ibm.com>
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/irq.h>
@@ -56,16 +51,7 @@ static void aspeed_scu_ic_irq_handler(struct irq_desc *desc)
 
 	chained_irq_enter(chip, desc);
 
-	/*
-	 * The SCU IC has just one register to control its operation and read
-	 * status. The interrupt enable bits occupy the lower 16 bits of the
-	 * register, while the interrupt status bits occupy the upper 16 bits.
-	 * The status bit for a given interrupt is always 16 bits shifted from
-	 * the enable bit for the same interrupt.
-	 * Therefore, perform the IRQ operations in the enable bit space by
-	 * shifting the status down to get the mapping and then back up to
-	 * clear the bit.
-	 */
+	 
 	regmap_read(scu_ic->scu, scu_ic->reg, &sts);
 	enabled = sts & scu_ic->irq_enable;
 	status = (sts >> ASPEED_SCU_IC_STATUS_SHIFT) & enabled;
@@ -90,11 +76,7 @@ static void aspeed_scu_ic_irq_mask(struct irq_data *data)
 	unsigned int mask = BIT(data->hwirq + scu_ic->irq_shift) |
 		(scu_ic->irq_enable << ASPEED_SCU_IC_STATUS_SHIFT);
 
-	/*
-	 * Status bits are cleared by writing 1. In order to prevent the mask
-	 * operation from clearing the status bits, they should be under the
-	 * mask and written with 0.
-	 */
+	 
 	regmap_update_bits(scu_ic->scu, scu_ic->reg, mask, 0);
 }
 
@@ -105,11 +87,7 @@ static void aspeed_scu_ic_irq_unmask(struct irq_data *data)
 	unsigned int mask = bit |
 		(scu_ic->irq_enable << ASPEED_SCU_IC_STATUS_SHIFT);
 
-	/*
-	 * Status bits are cleared by writing 1. In order to prevent the unmask
-	 * operation from clearing the status bits, they should be under the
-	 * mask and written with 0.
-	 */
+	 
 	regmap_update_bits(scu_ic->scu, scu_ic->reg, mask, bit);
 }
 

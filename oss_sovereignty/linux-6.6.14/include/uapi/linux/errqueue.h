@@ -1,11 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
+ 
 #ifndef _UAPI_LINUX_ERRQUEUE_H
 #define _UAPI_LINUX_ERRQUEUE_H
 
 #include <linux/types.h>
 #include <linux/time_types.h>
 
-/* RFC 4884: return offset to extension struct + validation */
+ 
 struct sock_ee_data_rfc4884 {
 	__u16	len;
 	__u8	flags;
@@ -43,16 +43,7 @@ struct sock_extended_err {
 
 #define SO_EE_RFC4884_FLAG_INVALID	1
 
-/**
- *	struct scm_timestamping - timestamps exposed through cmsg
- *
- *	The timestamping interfaces SO_TIMESTAMPING, MSG_TSTAMP_*
- *	communicate network timestamps by passing this struct in a cmsg with
- *	recvmsg(). See Documentation/networking/timestamping.rst for details.
- *	User space sees a timespec definition that matches either
- *	__kernel_timespec or __kernel_old_timespec, in the kernel we
- *	require two structure definitions to provide both.
- */
+ 
 struct scm_timestamping {
 #ifdef __KERNEL__
 	struct __kernel_old_timespec ts[3];
@@ -65,14 +56,11 @@ struct scm_timestamping64 {
 	struct __kernel_timespec ts[3];
 };
 
-/* The type of scm_timestamping, passed in sock_extended_err ee_info.
- * This defines the type of ts[0]. For SCM_TSTAMP_SND only, if ts[0]
- * is zero, then this is a hardware timestamp and recorded in ts[2].
- */
+ 
 enum {
-	SCM_TSTAMP_SND,		/* driver passed skb to NIC, or HW */
-	SCM_TSTAMP_SCHED,	/* data entered the packet scheduler */
-	SCM_TSTAMP_ACK,		/* data acknowledged by peer */
+	SCM_TSTAMP_SND,		 
+	SCM_TSTAMP_SCHED,	 
+	SCM_TSTAMP_ACK,		 
 };
 
-#endif /* _UAPI_LINUX_ERRQUEUE_H */
+#endif  

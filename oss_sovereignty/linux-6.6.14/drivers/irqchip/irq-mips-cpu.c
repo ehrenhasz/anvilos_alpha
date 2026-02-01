@@ -1,27 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright 2001 MontaVista Software Inc.
- * Author: Jun Sun, jsun@mvista.com or jsun@junsun.net
- *
- * Copyright (C) 2001 Ralf Baechle
- * Copyright (C) 2005  MIPS Technologies, Inc.	All rights reserved.
- *	Author: Maciej W. Rozycki <macro@mips.com>
- *
- * This file define the irq handler for MIPS CPU interrupts.
- */
 
-/*
- * Almost all MIPS CPUs define 8 interrupt sources.  They are typically
- * level triggered (i.e., cannot be cleared from CPU; must be cleared from
- * device).
- *
- * The first two are software interrupts (i.e. not exposed as pins) which
- * may be used for IPIs in multi-threaded single-core systems.
- *
- * The last one is usually the CPU timer interrupt if the counter register
- * is present, or for old CPUs with an external FPU by convention it's the
- * FPU exception interrupt.
- */
+ 
+
+ 
 #include <linux/init.h>
 #include <linux/interrupt.h>
 #include <linux/kernel.h>
@@ -60,9 +40,7 @@ static struct irq_chip mips_cpu_irq_controller = {
 	.irq_enable	= unmask_mips_irq,
 };
 
-/*
- * Basically the same as above but taking care of all the MT stuff
- */
+ 
 
 static unsigned int mips_mt_cpu_irq_startup(struct irq_data *d)
 {
@@ -74,10 +52,7 @@ static unsigned int mips_mt_cpu_irq_startup(struct irq_data *d)
 	return 0;
 }
 
-/*
- * While we ack the interrupt interrupts are disabled and thus we don't need
- * to deal with concurrency issues.  Same for mips_cpu_irq_end.
- */
+ 
 static void mips_mt_cpu_irq_ack(struct irq_data *d)
 {
 	unsigned int vpflags = dvpe();
@@ -96,7 +71,7 @@ static void mips_mt_send_ipi(struct irq_data *d, unsigned int cpu)
 
 	local_irq_save(flags);
 
-	/* We can only send IPIs to VPEs within the local core */
+	 
 	WARN_ON(!cpus_are_siblings(smp_processor_id(), cpu));
 
 	vpflags = dvpe();
@@ -107,7 +82,7 @@ static void mips_mt_send_ipi(struct irq_data *d, unsigned int cpu)
 	local_irq_restore(flags);
 }
 
-#endif /* CONFIG_GENERIC_IRQ_IPI */
+#endif  
 
 static struct irq_chip mips_mt_cpu_irq_controller = {
 	.name		= "MIPS",
@@ -155,7 +130,7 @@ static int mips_cpu_intc_map(struct irq_domain *d, unsigned int irq,
 	struct irq_chip *chip;
 
 	if (hw < 2 && cpu_has_mipsmt) {
-		/* Software interrupts are used for MT/CMT IPI */
+		 
 		chip = &mips_mt_cpu_irq_controller;
 	} else {
 		chip = &mips_cpu_irq_controller;
@@ -248,15 +223,15 @@ static void mips_cpu_register_ipi_domain(struct device_node *of_node)
 	irq_domain_update_bus_token(ipi_domain, DOMAIN_BUS_IPI);
 }
 
-#else /* !CONFIG_GENERIC_IRQ_IPI */
+#else  
 
 static inline void mips_cpu_register_ipi_domain(struct device_node *of_node) {}
 
-#endif /* !CONFIG_GENERIC_IRQ_IPI */
+#endif  
 
 static void __init __mips_cpu_irq_init(struct device_node *of_node)
 {
-	/* Mask interrupts. */
+	 
 	clear_c0_status(ST0_IM);
 	clear_c0_cause(CAUSEF_IP);
 
@@ -266,10 +241,7 @@ static void __init __mips_cpu_irq_init(struct device_node *of_node)
 	if (!irq_domain)
 		panic("Failed to add irqdomain for MIPS CPU");
 
-	/*
-	 * Only proceed to register the software interrupt IPI implementation
-	 * for CPUs which implement the MIPS MT (multi-threading) ASE.
-	 */
+	 
 	if (cpu_has_mipsmt)
 		mips_cpu_register_ipi_domain(of_node);
 }

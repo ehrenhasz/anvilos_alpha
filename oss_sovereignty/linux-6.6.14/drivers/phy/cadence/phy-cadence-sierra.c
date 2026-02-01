@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Cadence Sierra PHY Driver
- *
- * Copyright (c) 2018 Cadence Design Systems
- * Author: Alan Douglas <adouglas@cadence.com>
- *
- */
+
+ 
 #include <linux/clk.h>
 #include <linux/clk-provider.h>
 #include <linux/delay.h>
@@ -26,7 +20,7 @@
 #define NUM_SSC_MODE		3
 #define NUM_PHY_TYPE		5
 
-/* PHY register offsets */
+ 
 #define SIERRA_COMMON_CDB_OFFSET			0x0
 #define SIERRA_MACRO_ID_REG				0x0
 #define SIERRA_CMN_PLLLC_GEN_PREG			0x42
@@ -200,25 +194,25 @@
 #define SIERRA_DEQ_TAU_CTRL1_FAST_MAINT_PREG		0x14F
 #define SIERRA_DEQ_TAU_CTRL1_SLOW_MAINT_PREG		0x150
 
-/* PHY PCS common registers */
+ 
 #define SIERRA_PHY_PCS_COMMON_OFFSET(block_offset)	\
 				     (0xc000 << (block_offset))
 #define SIERRA_PHY_PIPE_CMN_CTRL1			0x0
 #define SIERRA_PHY_PLL_CFG				0xe
 
-/* PHY PCS lane registers */
+ 
 #define SIERRA_PHY_PCS_LANE_CDB_OFFSET(ln, block_offset, reg_offset)	\
 				       ((0xD000 << (block_offset)) +	\
 				       (((ln) << 8) << (reg_offset)))
 
 #define SIERRA_PHY_ISO_LINK_CTRL			0xB
 
-/* PHY PMA common registers */
+ 
 #define SIERRA_PHY_PMA_COMMON_OFFSET(block_offset)	\
 				     (0xE000 << (block_offset))
 #define SIERRA_PHY_PMA_CMN_CTRL				0x000
 
-/* PHY PMA lane registers */
+ 
 #define SIERRA_PHY_PMA_LANE_CDB_OFFSET(ln, block_offset, reg_offset)	\
 				       ((0xF000 << (block_offset)) +	\
 				       (((ln) << 8) << (reg_offset)))
@@ -549,14 +543,14 @@ static int cdns_sierra_phy_init(struct phy *gphy)
 	u32 num_regs;
 	int i, j;
 
-	/* Initialise the PHY registers, unless auto configured */
+	 
 	if (phy->autoconf || phy->already_configured || phy->nsubnodes > 1)
 		return 0;
 
 	clk_set_rate(phy->input_clks[CMN_REFCLK_DIG_DIV], 25000000);
 	clk_set_rate(phy->input_clks[CMN_REFCLK1_DIG_DIV], 25000000);
 
-	/* PHY PCS common registers configurations */
+	 
 	pcs_cmn_vals = init_data->pcs_cmn_vals[phy_type][TYPE_NONE][ssc];
 	if (pcs_cmn_vals) {
 		reg_pairs = pcs_cmn_vals->reg_pairs;
@@ -566,7 +560,7 @@ static int cdns_sierra_phy_init(struct phy *gphy)
 			regmap_write(regmap, reg_pairs[i].off, reg_pairs[i].val);
 	}
 
-	/* PHY PMA lane registers configurations */
+	 
 	phy_pma_ln_vals = init_data->phy_pma_ln_vals[phy_type][TYPE_NONE][ssc];
 	if (phy_pma_ln_vals) {
 		reg_pairs = phy_pma_ln_vals->reg_pairs;
@@ -578,7 +572,7 @@ static int cdns_sierra_phy_init(struct phy *gphy)
 		}
 	}
 
-	/* PMA common registers configurations */
+	 
 	pma_cmn_vals = init_data->pma_cmn_vals[phy_type][TYPE_NONE][ssc];
 	if (pma_cmn_vals) {
 		reg_pairs = pma_cmn_vals->reg_pairs;
@@ -588,7 +582,7 @@ static int cdns_sierra_phy_init(struct phy *gphy)
 			regmap_write(regmap, reg_pairs[i].off, reg_pairs[i].val);
 	}
 
-	/* PMA lane registers configurations */
+	 
 	pma_ln_vals = init_data->pma_ln_vals[phy_type][TYPE_NONE][ssc];
 	if (pma_ln_vals) {
 		reg_pairs = pma_ln_vals->reg_pairs;
@@ -612,7 +606,7 @@ static int cdns_sierra_phy_on(struct phy *gphy)
 	int ret;
 
 	if (sp->nsubnodes == 1) {
-		/* Take the PHY out of reset */
+		 
 		ret = reset_control_deassert(sp->phy_rst);
 		if (ret) {
 			dev_err(dev, "Failed to take the PHY out of reset\n");
@@ -620,7 +614,7 @@ static int cdns_sierra_phy_on(struct phy *gphy)
 		}
 	}
 
-	/* Take the PHY lane group out of reset */
+	 
 	ret = reset_control_deassert(ins->lnk_rst);
 	if (ret) {
 		dev_err(dev, "Failed to take the PHY lane out of reset\n");
@@ -636,10 +630,7 @@ static int cdns_sierra_phy_on(struct phy *gphy)
 		}
 	}
 
-	/*
-	 * Wait for cmn_ready assertion
-	 * PHY_PMA_CMN_CTRL[0] == 1
-	 */
+	 
 	ret = regmap_field_read_poll_timeout(sp->pma_cmn_ready, val, val,
 					     1000, PLL_LOCK_TIME);
 	if (ret) {
@@ -820,7 +811,7 @@ static int cdns_sierra_derived_refclk_enable(struct clk_hw *hw)
 
 	regmap_field_write(derived_refclk->cmn_plllc_clk1_en_preg, 0x1);
 
-	/* Programming to get 100Mhz clock output in ref_der_clk_out 5GHz VCO/50 = 100MHz */
+	 
 	regmap_field_write(derived_refclk->cmn_plllc_clk1outdiv_preg, 0x2E);
 
 	return 0;
@@ -1255,45 +1246,23 @@ static int cdns_sierra_phy_configure_multilink(struct cdns_sierra_phy *sp)
 	struct regmap *regmap;
 	u32 num_regs;
 
-	/* Maximum 2 links (subnodes) are supported */
+	 
 	if (sp->nsubnodes != 2)
 		return -EINVAL;
 
 	clk_set_rate(sp->input_clks[CMN_REFCLK_DIG_DIV], 25000000);
 	clk_set_rate(sp->input_clks[CMN_REFCLK1_DIG_DIV], 25000000);
 
-	/* PHY configured to use both PLL LC and LC1 */
+	 
 	regmap_field_write(sp->phy_pll_cfg_1, 0x1);
 
 	phy_t1 = sp->phys[0].phy_type;
 	phy_t2 = sp->phys[1].phy_type;
 
-	/*
-	 * PHY configuration for multi-link operation is done in two steps.
-	 * e.g. Consider a case for a 4 lane PHY with PCIe using 2 lanes and QSGMII other 2 lanes.
-	 * Sierra PHY has 2 PLLs, viz. PLLLC and PLLLC1. So in this case, PLLLC is used for PCIe
-	 * and PLLLC1 is used for QSGMII. PHY is configured in two steps as described below.
-	 *
-	 * [1] For first step, phy_t1 = TYPE_PCIE and phy_t2 = TYPE_QSGMII
-	 *     So the register values are selected as [TYPE_PCIE][TYPE_QSGMII][ssc].
-	 *     This will configure PHY registers associated for PCIe (i.e. first protocol)
-	 *     involving PLLLC registers and registers for first 2 lanes of PHY.
-	 * [2] In second step, the variables phy_t1 and phy_t2 are swapped. So now,
-	 *     phy_t1 = TYPE_QSGMII and phy_t2 = TYPE_PCIE. And the register values are selected as
-	 *     [TYPE_QSGMII][TYPE_PCIE][ssc].
-	 *     This will configure PHY registers associated for QSGMII (i.e. second protocol)
-	 *     involving PLLLC1 registers and registers for other 2 lanes of PHY.
-	 *
-	 * This completes the PHY configuration for multilink operation. This approach enables
-	 * dividing the large number of PHY register configurations into protocol specific
-	 * smaller groups.
-	 */
+	 
 	for (node = 0; node < sp->nsubnodes; node++) {
 		if (node == 1) {
-			/*
-			 * If first link with phy_t1 is configured, then configure the PHY for
-			 * second link with phy_t2. Get the array values as [phy_t2][phy_t1][ssc].
-			 */
+			 
 			swap(phy_t1, phy_t2);
 		}
 
@@ -1301,7 +1270,7 @@ static int cdns_sierra_phy_configure_multilink(struct cdns_sierra_phy *sp)
 		ssc = sp->phys[node].ssc_mode;
 		num_lanes = sp->phys[node].num_lanes;
 
-		/* PHY PCS common registers configurations */
+		 
 		pcs_cmn_vals = init_data->pcs_cmn_vals[phy_t1][phy_t2][ssc];
 		if (pcs_cmn_vals) {
 			reg_pairs = pcs_cmn_vals->reg_pairs;
@@ -1311,7 +1280,7 @@ static int cdns_sierra_phy_configure_multilink(struct cdns_sierra_phy *sp)
 				regmap_write(regmap, reg_pairs[i].off, reg_pairs[i].val);
 		}
 
-		/* PHY PMA lane registers configurations */
+		 
 		phy_pma_ln_vals = init_data->phy_pma_ln_vals[phy_t1][phy_t2][ssc];
 		if (phy_pma_ln_vals) {
 			reg_pairs = phy_pma_ln_vals->reg_pairs;
@@ -1323,7 +1292,7 @@ static int cdns_sierra_phy_configure_multilink(struct cdns_sierra_phy *sp)
 			}
 		}
 
-		/* PMA common registers configurations */
+		 
 		pma_cmn_vals = init_data->pma_cmn_vals[phy_t1][phy_t2][ssc];
 		if (pma_cmn_vals) {
 			reg_pairs = pma_cmn_vals->reg_pairs;
@@ -1333,7 +1302,7 @@ static int cdns_sierra_phy_configure_multilink(struct cdns_sierra_phy *sp)
 				regmap_write(regmap, reg_pairs[i].off, reg_pairs[i].val);
 		}
 
-		/* PMA lane registers configurations */
+		 
 		pma_ln_vals = init_data->pma_ln_vals[phy_t1][phy_t2][ssc];
 		if (pma_ln_vals) {
 			reg_pairs = pma_ln_vals->reg_pairs;
@@ -1349,7 +1318,7 @@ static int cdns_sierra_phy_configure_multilink(struct cdns_sierra_phy *sp)
 			reset_control_deassert(sp->phys[node].lnk_rst);
 	}
 
-	/* Take the PHY out of reset */
+	 
 	ret = reset_control_deassert(sp->phy_rst);
 	if (ret)
 		return ret;
@@ -1371,7 +1340,7 @@ static int cdns_sierra_phy_probe(struct platform_device *pdev)
 	if (of_get_child_count(dn) == 0)
 		return -ENODEV;
 
-	/* Get init data for this PHY */
+	 
 	data = of_device_get_match_data(dev);
 	if (!data)
 		return -EINVAL;
@@ -1425,11 +1394,11 @@ static int cdns_sierra_phy_probe(struct platform_device *pdev)
 		if (ret)
 			goto clk_disable;
 
-		/* Enable APB */
+		 
 		reset_control_deassert(sp->apb_rst);
 	}
 
-	/* Check that PHY is present */
+	 
 	regmap_field_read(sp->macro_id_type, &id_value);
 	if  (sp->init_data->id_value != id_value) {
 		ret = -EINVAL;
@@ -1492,7 +1461,7 @@ static int cdns_sierra_phy_probe(struct platform_device *pdev)
 		goto put_control;
 	}
 
-	/* If more than one subnode, configure the PHY as multilink */
+	 
 	if (!sp->already_configured && !sp->autoconf && sp->nsubnodes > 1) {
 		ret = cdns_sierra_phy_configure_multilink(sp);
 		if (ret)
@@ -1531,10 +1500,7 @@ static void cdns_sierra_phy_remove(struct platform_device *pdev)
 	pm_runtime_disable(&pdev->dev);
 
 	cdns_sierra_phy_disable_clocks(phy);
-	/*
-	 * The device level resets will be put automatically.
-	 * Need to put the subnode resets here though.
-	 */
+	 
 	for (i = 0; i < phy->nsubnodes; i++) {
 		reset_control_assert(phy->phys[i].lnk_rst);
 		reset_control_put(phy->phys[i].lnk_rst);
@@ -1543,7 +1509,7 @@ static void cdns_sierra_phy_remove(struct platform_device *pdev)
 	cdns_sierra_clk_unregister(phy);
 }
 
-/* SGMII PHY PMA lane configuration */
+ 
 static struct cdns_reg_pairs sgmii_phy_pma_ln_regs[] = {
 	{0x9010, SIERRA_PHY_PMA_XCVR_CTRL}
 };
@@ -1553,7 +1519,7 @@ static struct cdns_sierra_vals sgmii_phy_pma_ln_vals = {
 	.num_regs = ARRAY_SIZE(sgmii_phy_pma_ln_regs),
 };
 
-/* SGMII refclk 100MHz, no ssc, opt3 and GE1 links using PLL LC1 */
+ 
 static const struct cdns_reg_pairs sgmii_100_no_ssc_plllc1_opt3_cmn_regs[] = {
 	{0x002D, SIERRA_CMN_PLLLC1_FBDIV_INT_PREG},
 	{0x2085, SIERRA_CMN_PLLLC1_LF_COEFF_MODE0_PREG},
@@ -1608,7 +1574,7 @@ static struct cdns_sierra_vals sgmii_100_no_ssc_plllc1_opt3_ln_vals = {
 	.num_regs = ARRAY_SIZE(sgmii_100_no_ssc_plllc1_opt3_ln_regs),
 };
 
-/* QSGMII PHY PMA lane configuration */
+ 
 static struct cdns_reg_pairs qsgmii_phy_pma_ln_regs[] = {
 	{0x9010, SIERRA_PHY_PMA_XCVR_CTRL}
 };
@@ -1618,7 +1584,7 @@ static struct cdns_sierra_vals qsgmii_phy_pma_ln_vals = {
 	.num_regs = ARRAY_SIZE(qsgmii_phy_pma_ln_regs),
 };
 
-/* QSGMII refclk 100MHz, 20b, opt1, No BW cal, no ssc, PLL LC1 */
+ 
 static const struct cdns_reg_pairs qsgmii_100_no_ssc_plllc1_cmn_regs[] = {
 	{0x2085, SIERRA_CMN_PLLLC1_LF_COEFF_MODE0_PREG},
 	{0x0000, SIERRA_CMN_PLLLC1_BWCAL_MODE0_PREG},
@@ -1674,7 +1640,7 @@ static struct cdns_sierra_vals qsgmii_100_no_ssc_plllc1_ln_vals = {
 	.num_regs = ARRAY_SIZE(qsgmii_100_no_ssc_plllc1_ln_regs),
 };
 
-/* PCIE PHY PCS common configuration */
+ 
 static struct cdns_reg_pairs pcie_phy_pcs_cmn_regs[] = {
 	{0x0430, SIERRA_PHY_PIPE_CMN_CTRL1}
 };
@@ -1684,7 +1650,7 @@ static struct cdns_sierra_vals pcie_phy_pcs_cmn_vals = {
 	.num_regs = ARRAY_SIZE(pcie_phy_pcs_cmn_regs),
 };
 
-/* refclk100MHz_32b_PCIe_cmn_pll_no_ssc, pcie_links_using_plllc, pipe_bw_3 */
+ 
 static const struct cdns_reg_pairs pcie_100_no_ssc_plllc_cmn_regs[] = {
 	{0x2105, SIERRA_CMN_PLLLC_LF_COEFF_MODE1_PREG},
 	{0x2105, SIERRA_CMN_PLLLC_LF_COEFF_MODE0_PREG},
@@ -1692,10 +1658,7 @@ static const struct cdns_reg_pairs pcie_100_no_ssc_plllc_cmn_regs[] = {
 	{0x8A06, SIERRA_CMN_PLLLC_BWCAL_MODE0_PREG}
 };
 
-/*
- * refclk100MHz_32b_PCIe_ln_no_ssc, multilink, using_plllc,
- * cmn_pllcy_anaclk0_1Ghz, xcvr_pllclk_fullrt_500mhz
- */
+ 
 static const struct cdns_reg_pairs ml_pcie_100_no_ssc_ln_regs[] = {
 	{0xFC08, SIERRA_DET_STANDEC_A_PREG},
 	{0x001D, SIERRA_PSM_A3IN_TMR_PREG},
@@ -1755,11 +1718,7 @@ static struct cdns_sierra_vals ml_pcie_100_no_ssc_ln_vals = {
 	.num_regs = ARRAY_SIZE(ml_pcie_100_no_ssc_ln_regs),
 };
 
-/*
- * TI J721E:
- * refclk100MHz_32b_PCIe_ln_no_ssc, multilink, using_plllc,
- * cmn_pllcy_anaclk0_1Ghz, xcvr_pllclk_fullrt_500mhz
- */
+ 
 static const struct cdns_reg_pairs ti_ml_pcie_100_no_ssc_ln_regs[] = {
 	{0xFC08, SIERRA_DET_STANDEC_A_PREG},
 	{0x001D, SIERRA_PSM_A3IN_TMR_PREG},
@@ -1815,7 +1774,7 @@ static struct cdns_sierra_vals ti_ml_pcie_100_no_ssc_ln_vals = {
 	.num_regs = ARRAY_SIZE(ti_ml_pcie_100_no_ssc_ln_regs),
 };
 
-/* refclk100MHz_32b_PCIe_cmn_pll_int_ssc, pcie_links_using_plllc, pipe_bw_3 */
+ 
 static const struct cdns_reg_pairs pcie_100_int_ssc_plllc_cmn_regs[] = {
 	{0x000E, SIERRA_CMN_PLLLC_MODE_PREG},
 	{0x4006, SIERRA_CMN_PLLLC_LF_COEFF_MODE1_PREG},
@@ -1830,10 +1789,7 @@ static const struct cdns_reg_pairs pcie_100_int_ssc_plllc_cmn_regs[] = {
 	{0x0060, SIERRA_CMN_PLLLC_LOCK_DELAY_CTRL_PREG}
 };
 
-/*
- * refclk100MHz_32b_PCIe_ln_int_ssc, multilink, using_plllc,
- * cmn_pllcy_anaclk0_1Ghz, xcvr_pllclk_fullrt_500mhz
- */
+ 
 static const struct cdns_reg_pairs ml_pcie_100_int_ssc_ln_regs[] = {
 	{0xFC08, SIERRA_DET_STANDEC_A_PREG},
 	{0x001D, SIERRA_PSM_A3IN_TMR_PREG},
@@ -1896,11 +1852,7 @@ static struct cdns_sierra_vals ml_pcie_100_int_ssc_ln_vals = {
 	.num_regs = ARRAY_SIZE(ml_pcie_100_int_ssc_ln_regs),
 };
 
-/*
- * TI J721E:
- * refclk100MHz_32b_PCIe_ln_int_ssc, multilink, using_plllc,
- * cmn_pllcy_anaclk0_1Ghz, xcvr_pllclk_fullrt_500mhz
- */
+ 
 static const struct cdns_reg_pairs ti_ml_pcie_100_int_ssc_ln_regs[] = {
 	{0xFC08, SIERRA_DET_STANDEC_A_PREG},
 	{0x001D, SIERRA_PSM_A3IN_TMR_PREG},
@@ -1959,7 +1911,7 @@ static struct cdns_sierra_vals ti_ml_pcie_100_int_ssc_ln_vals = {
 	.num_regs = ARRAY_SIZE(ti_ml_pcie_100_int_ssc_ln_regs),
 };
 
-/* refclk100MHz_32b_PCIe_cmn_pll_ext_ssc, pcie_links_using_plllc, pipe_bw_3 */
+ 
 static const struct cdns_reg_pairs pcie_100_ext_ssc_plllc_cmn_regs[] = {
 	{0x2106, SIERRA_CMN_PLLLC_LF_COEFF_MODE1_PREG},
 	{0x2106, SIERRA_CMN_PLLLC_LF_COEFF_MODE0_PREG},
@@ -1968,10 +1920,7 @@ static const struct cdns_reg_pairs pcie_100_ext_ssc_plllc_cmn_regs[] = {
 	{0x1B1B, SIERRA_CMN_PLLLC_SS_TIME_STEPSIZE_MODE_PREG}
 };
 
-/*
- * refclk100MHz_32b_PCIe_ln_ext_ssc, multilink, using_plllc,
- * cmn_pllcy_anaclk0_1Ghz, xcvr_pllclk_fullrt_500mhz
- */
+ 
 static const struct cdns_reg_pairs ml_pcie_100_ext_ssc_ln_regs[] = {
 	{0xFC08, SIERRA_DET_STANDEC_A_PREG},
 	{0x001D, SIERRA_PSM_A3IN_TMR_PREG},
@@ -2034,11 +1983,7 @@ static struct cdns_sierra_vals ml_pcie_100_ext_ssc_ln_vals = {
 	.num_regs = ARRAY_SIZE(ml_pcie_100_ext_ssc_ln_regs),
 };
 
-/*
- * TI J721E:
- * refclk100MHz_32b_PCIe_ln_ext_ssc, multilink, using_plllc,
- * cmn_pllcy_anaclk0_1Ghz, xcvr_pllclk_fullrt_500mhz
- */
+ 
 static const struct cdns_reg_pairs ti_ml_pcie_100_ext_ssc_ln_regs[] = {
 	{0xFC08, SIERRA_DET_STANDEC_A_PREG},
 	{0x001D, SIERRA_PSM_A3IN_TMR_PREG},
@@ -2097,7 +2042,7 @@ static struct cdns_sierra_vals ti_ml_pcie_100_ext_ssc_ln_vals = {
 	.num_regs = ARRAY_SIZE(ti_ml_pcie_100_ext_ssc_ln_regs),
 };
 
-/* refclk100MHz_32b_PCIe_cmn_pll_no_ssc */
+ 
 static const struct cdns_reg_pairs cdns_pcie_cmn_regs_no_ssc[] = {
 	{0x2105, SIERRA_CMN_PLLLC_LF_COEFF_MODE1_PREG},
 	{0x2105, SIERRA_CMN_PLLLC_LF_COEFF_MODE0_PREG},
@@ -2105,7 +2050,7 @@ static const struct cdns_reg_pairs cdns_pcie_cmn_regs_no_ssc[] = {
 	{0x8A06, SIERRA_CMN_PLLLC_BWCAL_MODE0_PREG}
 };
 
-/* refclk100MHz_32b_PCIe_ln_no_ssc */
+ 
 static const struct cdns_reg_pairs cdns_pcie_ln_regs_no_ssc[] = {
 	{0xFC08, SIERRA_DET_STANDEC_A_PREG},
 	{0x001D, SIERRA_PSM_A3IN_TMR_PREG},
@@ -2162,7 +2107,7 @@ static struct cdns_sierra_vals pcie_100_no_ssc_ln_vals = {
 	.num_regs = ARRAY_SIZE(cdns_pcie_ln_regs_no_ssc),
 };
 
-/* refclk100MHz_32b_PCIe_cmn_pll_int_ssc */
+ 
 static const struct cdns_reg_pairs cdns_pcie_cmn_regs_int_ssc[] = {
 	{0x000E, SIERRA_CMN_PLLLC_MODE_PREG},
 	{0x4006, SIERRA_CMN_PLLLC_LF_COEFF_MODE1_PREG},
@@ -2177,7 +2122,7 @@ static const struct cdns_reg_pairs cdns_pcie_cmn_regs_int_ssc[] = {
 	{0x0060, SIERRA_CMN_PLLLC_LOCK_DELAY_CTRL_PREG}
 };
 
-/* refclk100MHz_32b_PCIe_ln_int_ssc */
+ 
 static const struct cdns_reg_pairs cdns_pcie_ln_regs_int_ssc[] = {
 	{0xFC08, SIERRA_DET_STANDEC_A_PREG},
 	{0x001D, SIERRA_PSM_A3IN_TMR_PREG},
@@ -2237,7 +2182,7 @@ static struct cdns_sierra_vals pcie_100_int_ssc_ln_vals = {
 	.num_regs = ARRAY_SIZE(cdns_pcie_ln_regs_int_ssc),
 };
 
-/* refclk100MHz_32b_PCIe_cmn_pll_ext_ssc */
+ 
 static const struct cdns_reg_pairs cdns_pcie_cmn_regs_ext_ssc[] = {
 	{0x2106, SIERRA_CMN_PLLLC_LF_COEFF_MODE1_PREG},
 	{0x2106, SIERRA_CMN_PLLLC_LF_COEFF_MODE0_PREG},
@@ -2246,7 +2191,7 @@ static const struct cdns_reg_pairs cdns_pcie_cmn_regs_ext_ssc[] = {
 	{0x1B1B, SIERRA_CMN_PLLLC_SS_TIME_STEPSIZE_MODE_PREG}
 };
 
-/* refclk100MHz_32b_PCIe_ln_ext_ssc */
+ 
 static const struct cdns_reg_pairs cdns_pcie_ln_regs_ext_ssc[] = {
 	{0xFC08, SIERRA_DET_STANDEC_A_PREG},
 	{0x001D, SIERRA_PSM_A3IN_TMR_PREG},
@@ -2306,7 +2251,7 @@ static struct cdns_sierra_vals pcie_100_ext_ssc_ln_vals = {
 	.num_regs = ARRAY_SIZE(cdns_pcie_ln_regs_ext_ssc),
 };
 
-/* refclk100MHz_20b_USB_cmn_pll_ext_ssc */
+ 
 static const struct cdns_reg_pairs cdns_usb_cmn_regs_ext_ssc[] = {
 	{0x2085, SIERRA_CMN_PLLLC_LF_COEFF_MODE1_PREG},
 	{0x2085, SIERRA_CMN_PLLLC_LF_COEFF_MODE0_PREG},
@@ -2314,7 +2259,7 @@ static const struct cdns_reg_pairs cdns_usb_cmn_regs_ext_ssc[] = {
 	{0x0000, SIERRA_CMN_PLLLC_SS_TIME_STEPSIZE_MODE_PREG}
 };
 
-/* refclk100MHz_20b_USB_ln_ext_ssc */
+ 
 static const struct cdns_reg_pairs cdns_usb_ln_regs_ext_ssc[] = {
 	{0xFE0A, SIERRA_DET_STANDEC_A_PREG},
 	{0x000F, SIERRA_DET_STANDEC_B_PREG},
@@ -2423,7 +2368,7 @@ static struct cdns_sierra_vals usb_100_ext_ssc_ln_vals = {
 	.num_regs = ARRAY_SIZE(cdns_usb_ln_regs_ext_ssc),
 };
 
-/* SGMII PHY common configuration */
+ 
 static const struct cdns_reg_pairs sgmii_pma_cmn_vals[] = {
 	{0x0180, SIERRA_SDOSCCAL_CLK_CNT_PREG},
 	{0x6000, SIERRA_CMN_REFRCV_PREG},
@@ -2448,7 +2393,7 @@ static struct cdns_sierra_vals sgmii_cmn_vals = {
 	.num_regs = ARRAY_SIZE(sgmii_pma_cmn_vals),
 };
 
-/* SGMII PHY lane configuration */
+ 
 static const struct cdns_reg_pairs sgmii_ln_regs[] = {
 	{0x691E, SIERRA_DET_STANDEC_D_PREG},
 	{0x0FFE, SIERRA_PSC_RX_A0_PREG},

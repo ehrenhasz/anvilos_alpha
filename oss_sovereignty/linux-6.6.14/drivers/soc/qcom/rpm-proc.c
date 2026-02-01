@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright (c) 2021-2023, Stephan Gerhold <stephan@gerhold.net> */
+
+ 
 
 #include <linux/module.h>
 #include <linux/of.h>
@@ -47,7 +47,7 @@ static void rpm_proc_remove(struct platform_device *pdev)
 
 static const struct of_device_id rpm_proc_of_match[] = {
 	{ .compatible = "qcom,rpm-proc", },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, rpm_proc_of_match);
 

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * (C) 2015 Red Hat GmbH
- * Author: Florian Westphal <fw@strlen.de>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/static_key.h>
@@ -131,11 +128,7 @@ static int nf_trace_fill_rule_info(struct sk_buff *nlskb,
 	if (!rule || rule->is_last)
 		return 0;
 
-	/* a continue verdict with ->type == RETURN means that this is
-	 * an implicit return (end of chain reached).
-	 *
-	 * Since no rule matched, the ->rule pointer is invalid.
-	 */
+	 
 	if (info->type == NFT_TRACETYPE_RETURN &&
 	    verdict->code == NFT_CONTINUE)
 		return 0;
@@ -206,24 +199,24 @@ void nft_trace_notify(const struct nft_pktinfo *pkt,
 	size = nlmsg_total_size(sizeof(struct nfgenmsg)) +
 		nla_total_size(strlen(chain->table->name)) +
 		nla_total_size(strlen(chain->name)) +
-		nla_total_size_64bit(sizeof(__be64)) +	/* rule handle */
-		nla_total_size(sizeof(__be32)) +	/* trace type */
-		nla_total_size(0) +			/* VERDICT, nested */
-			nla_total_size(sizeof(u32)) +	/* verdict code */
-		nla_total_size(sizeof(u32)) +		/* id */
+		nla_total_size_64bit(sizeof(__be64)) +	 
+		nla_total_size(sizeof(__be32)) +	 
+		nla_total_size(0) +			 
+			nla_total_size(sizeof(u32)) +	 
+		nla_total_size(sizeof(u32)) +		 
 		nla_total_size(NFT_TRACETYPE_LL_HSIZE) +
 		nla_total_size(NFT_TRACETYPE_NETWORK_HSIZE) +
 		nla_total_size(NFT_TRACETYPE_TRANSPORT_HSIZE) +
-		nla_total_size(sizeof(u32)) +		/* iif */
-		nla_total_size(sizeof(__be16)) +	/* iiftype */
-		nla_total_size(sizeof(u32)) +		/* oif */
-		nla_total_size(sizeof(__be16)) +	/* oiftype */
-		nla_total_size(sizeof(u32)) +		/* mark */
-		nla_total_size(sizeof(u32)) +		/* nfproto */
-		nla_total_size(sizeof(u32));		/* policy */
+		nla_total_size(sizeof(u32)) +		 
+		nla_total_size(sizeof(__be16)) +	 
+		nla_total_size(sizeof(u32)) +		 
+		nla_total_size(sizeof(__be16)) +	 
+		nla_total_size(sizeof(u32)) +		 
+		nla_total_size(sizeof(u32)) +		 
+		nla_total_size(sizeof(u32));		 
 
 	if (nft_trace_have_verdict_chain(verdict, info))
-		size += nla_total_size(strlen(verdict->chain->name)); /* jump target */
+		size += nla_total_size(strlen(verdict->chain->name));  
 
 	skb = nlmsg_new(size, GFP_ATOMIC);
 	if (!skb)
@@ -262,7 +255,7 @@ void nft_trace_notify(const struct nft_pktinfo *pkt,
 		if (nft_verdict_dump(skb, NFTA_TRACE_VERDICT, verdict))
 			goto nla_put_failure;
 
-		/* pkt->skb undefined iff NF_STOLEN, disable dump */
+		 
 		if (verdict->code == NF_STOLEN)
 			info->packet_dumped = true;
 		else

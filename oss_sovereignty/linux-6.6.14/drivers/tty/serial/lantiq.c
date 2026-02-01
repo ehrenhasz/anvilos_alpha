@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *  Based on drivers/char/serial.c, by Linus Torvalds, Theodore Ts'o.
- *
- * Copyright (C) 2004 Infineon IFAP DC COM CPE
- * Copyright (C) 2007 Felix Fietkau <nbd@openwrt.org>
- * Copyright (C) 2007 John Crispin <john@phrozen.org>
- * Copyright (C) 2010 Thomas Langer, <thomas.langer@lantiq.com>
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/clk.h>
@@ -107,15 +100,15 @@ struct ltq_soc_data {
 
 struct ltq_uart_port {
 	struct uart_port	port;
-	/* clock used to derive divider */
+	 
 	struct clk		*freqclk;
-	/* clock gating of the ASC core */
+	 
 	struct clk		*clk;
 	unsigned int		tx_irq;
 	unsigned int		rx_irq;
 	unsigned int		err_irq;
 	unsigned int		common_irq;
-	spinlock_t		lock; /* exclusive access for multi core */
+	spinlock_t		lock;  
 
 	const struct ltq_soc_data	*soc;
 };
@@ -183,10 +176,7 @@ lqasc_rx_chars(struct uart_port *port)
 		tty_flip_buffer_push(tport);
 		port->icount.rx++;
 
-		/*
-		 * Note that the error handling code is
-		 * out of the main execution path
-		 */
+		 
 		if (rsr & ASCSTATE_ANY) {
 			if (rsr & ASCSTATE_PE) {
 				port->icount.parity++;
@@ -215,11 +205,7 @@ lqasc_rx_chars(struct uart_port *port)
 			tty_insert_flip_char(tport, ch, flag);
 
 		if (rsr & ASCSTATE_ROE)
-			/*
-			 * Overrun is special, since it's reported
-			 * immediately, and doesn't affect the current
-			 * character
-			 */
+			 
 			tty_insert_flip_char(tport, 0, TTY_OVERRUN);
 	}
 
@@ -252,7 +238,7 @@ lqasc_err_int(int irq, void *_port)
 
 	spin_lock_irqsave(&ltq_port->lock, flags);
 	__raw_writel(ASC_IRNCR_EIR, port->membase + LTQ_ASC_IRNCR);
-	/* clear any pending interrupts */
+	 
 	asc_update_bits(0, ASCWHBSTATE_CLRPE | ASCWHBSTATE_CLRFE |
 		ASCWHBSTATE_CLRROE, port->membase + LTQ_ASC_WHBSTATE);
 	spin_unlock_irqrestore(&ltq_port->lock, flags);
@@ -347,9 +333,7 @@ lqasc_startup(struct uart_port *port)
 		((RXFIFO_FL << ASCRXFCON_RXFITLOFF) & ASCRXFCON_RXFITLMASK)
 		| ASCRXFCON_RXFEN | ASCRXFCON_RXFFLU,
 		port->membase + LTQ_ASC_RXFCON);
-	/* make sure other settings are written to hardware before
-	 * setting enable bits
-	 */
+	 
 	wmb();
 	asc_update_bits(0, ASCCON_M_8ASYNC | ASCCON_FEN | ASCCON_TOEN |
 		ASCCON_ROEN, port->membase + LTQ_ASC_CON);
@@ -413,7 +397,7 @@ lqasc_set_termios(struct uart_port *port, struct ktermios *new,
 		break;
 	}
 
-	cflag &= ~CMSPAR; /* Mark/Space parity is not supported */
+	cflag &= ~CMSPAR;  
 
 	if (cflag & CSTOPB)
 		con |= ASCCON_STP;
@@ -434,10 +418,7 @@ lqasc_set_termios(struct uart_port *port, struct ktermios *new,
 		port->ignore_status_mask |= ASCSTATE_FE | ASCSTATE_PE;
 
 	if (iflag & IGNBRK) {
-		/*
-		 * If we're ignoring parity and break indicators,
-		 * ignore overruns too (for real raw support).
-		 */
+		 
 		if (iflag & IGNPAR)
 			port->ignore_status_mask |= ASCSTATE_ROE;
 	}
@@ -445,40 +426,40 @@ lqasc_set_termios(struct uart_port *port, struct ktermios *new,
 	if ((cflag & CREAD) == 0)
 		port->ignore_status_mask |= UART_DUMMY_UER_RX;
 
-	/* set error signals  - framing, parity  and overrun, enable receiver */
+	 
 	con |= ASCCON_FEN | ASCCON_TOEN | ASCCON_ROEN;
 
 	spin_lock_irqsave(&ltq_port->lock, flags);
 
-	/* set up CON */
+	 
 	asc_update_bits(0, con, port->membase + LTQ_ASC_CON);
 
-	/* Set baud rate - take a divider of 2 into account */
+	 
 	baud = uart_get_baud_rate(port, new, old, 0, port->uartclk / 16);
 	divisor = uart_get_divisor(port, baud);
 	divisor = divisor / 2 - 1;
 
-	/* disable the baudrate generator */
+	 
 	asc_update_bits(ASCCON_R, 0, port->membase + LTQ_ASC_CON);
 
-	/* make sure the fractional divider is off */
+	 
 	asc_update_bits(ASCCON_FDE, 0, port->membase + LTQ_ASC_CON);
 
-	/* set up to use divisor of 2 */
+	 
 	asc_update_bits(ASCCON_BRS, 0, port->membase + LTQ_ASC_CON);
 
-	/* now we can write the new baudrate into the register */
+	 
 	__raw_writel(divisor, port->membase + LTQ_ASC_BG);
 
-	/* turn the baudrate generator back on */
+	 
 	asc_update_bits(0, ASCCON_R, port->membase + LTQ_ASC_CON);
 
-	/* enable rx */
+	 
 	__raw_writel(ASCWHBSTATE_SETREN, port->membase + LTQ_ASC_WHBSTATE);
 
 	spin_unlock_irqrestore(&ltq_port->lock, flags);
 
-	/* Don't rewrite B0 */
+	 
 	if (tty_termios_baud_rate(new))
 		tty_termios_encode_baud_rate(new, baud, baud);
 
@@ -688,7 +669,7 @@ OF_EARLYCON_DECLARE(lantiq, "intel,lgm-asc", lqasc_serial_early_console_setup);
 
 #define LANTIQ_SERIAL_CONSOLE	NULL
 
-#endif /* CONFIG_SERIAL_LANTIQ_CONSOLE */
+#endif  
 
 static struct uart_driver lqasc_reg = {
 	.owner =	THIS_MODULE,
@@ -831,7 +812,7 @@ static int lqasc_probe(struct platform_device *pdev)
 	if (ret)
 		return ret;
 
-	/* get serial id */
+	 
 	line = of_alias_get_id(node, "serial");
 	if (line < 0) {
 		if (IS_ENABLED(CONFIG_LANTIQ)) {
@@ -858,7 +839,7 @@ static int lqasc_probe(struct platform_device *pdev)
 	port->type	= PORT_LTQ_ASC;
 	port->line	= line;
 	port->dev	= &pdev->dev;
-	/* unused, just to be backward-compatible */
+	 
 	port->mapbase	= mmres->start;
 
 	if (IS_ENABLED(CONFIG_LANTIQ) && !IS_ENABLED(CONFIG_COMMON_CLK))
@@ -872,7 +853,7 @@ static int lqasc_probe(struct platform_device *pdev)
 		return -ENOENT;
 	}
 
-	/* not all asc ports have clock gates, lets ignore the return code */
+	 
 	if (IS_ENABLED(CONFIG_LANTIQ) && !IS_ENABLED(CONFIG_COMMON_CLK))
 		ltq_port->clk = clk_get(&pdev->dev, NULL);
 	else

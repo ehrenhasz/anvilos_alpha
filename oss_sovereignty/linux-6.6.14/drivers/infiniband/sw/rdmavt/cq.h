@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 or BSD-3-Clause */
-/*
- * Copyright(c) 2016 - 2018 Intel Corporation.
- */
+ 
+ 
 
 #ifndef DEF_RVTCQ_H
 #define DEF_RVTCQ_H
@@ -17,4 +15,4 @@ int rvt_resize_cq(struct ib_cq *ibcq, int cqe, struct ib_udata *udata);
 int rvt_poll_cq(struct ib_cq *ibcq, int num_entries, struct ib_wc *entry);
 int rvt_driver_cq_init(void);
 void rvt_cq_exit(void);
-#endif          /* DEF_RVTCQ_H */
+#endif           

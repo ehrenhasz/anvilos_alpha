@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Common SMP CPU bringup/teardown functions
- */
+
+ 
 #include <linux/cpu.h>
 #include <linux/err.h>
 #include <linux/smp.h>
@@ -21,10 +19,7 @@
 #ifdef CONFIG_SMP
 
 #ifdef CONFIG_GENERIC_SMP_IDLE_THREAD
-/*
- * For the hotplug case we keep the task structs around and reuse
- * them.
- */
+ 
 static DEFINE_PER_CPU(struct task_struct *, idle_threads);
 
 struct task_struct *idle_thread_get(unsigned int cpu)
@@ -41,12 +36,7 @@ void __init idle_thread_set_boot_cpu(void)
 	per_cpu(idle_threads, smp_processor_id()) = current;
 }
 
-/**
- * idle_init - Initialize the idle thread for a cpu
- * @cpu:	The cpu for which the idle thread should be initialized
- *
- * Creates the thread if it does not exist.
- */
+ 
 static __always_inline void idle_init(unsigned int cpu)
 {
 	struct task_struct *tsk = per_cpu(idle_threads, cpu);
@@ -60,9 +50,7 @@ static __always_inline void idle_init(unsigned int cpu)
 	}
 }
 
-/**
- * idle_threads_init - Initialize idle threads for all cpus
- */
+ 
 void __init idle_threads_init(void)
 {
 	unsigned int cpu, boot_cpu;
@@ -76,7 +64,7 @@ void __init idle_threads_init(void)
 }
 #endif
 
-#endif /* #ifdef CONFIG_SMP */
+#endif  
 
 static LIST_HEAD(hotplug_threads);
 static DEFINE_MUTEX(smpboot_threads_lock);
@@ -93,16 +81,7 @@ enum {
 	HP_THREAD_PARKED,
 };
 
-/**
- * smpboot_thread_fn - percpu hotplug thread loop function
- * @data:	thread data pointer
- *
- * Checks for thread stop and park conditions. Calls the necessary
- * setup, cleanup, park and unpark functions for the registered
- * thread.
- *
- * Returns 1 when the thread should exit, 0 otherwise.
- */
+ 
 static int smpboot_thread_fn(void *data)
 {
 	struct smpboot_thread_data *td = data;
@@ -114,7 +93,7 @@ static int smpboot_thread_fn(void *data)
 		if (kthread_should_stop()) {
 			__set_current_state(TASK_RUNNING);
 			preempt_enable();
-			/* cleanup must mirror setup */
+			 
 			if (ht->cleanup && td->status != HP_THREAD_NONE)
 				ht->cleanup(td->cpu, cpu_online(td->cpu));
 			kfree(td);
@@ -130,13 +109,13 @@ static int smpboot_thread_fn(void *data)
 				td->status = HP_THREAD_PARKED;
 			}
 			kthread_parkme();
-			/* We might have been woken for stop */
+			 
 			continue;
 		}
 
 		BUG_ON(td->cpu != smp_processor_id());
 
-		/* Check for state change setup */
+		 
 		switch (td->status) {
 		case HP_THREAD_NONE:
 			__set_current_state(TASK_RUNNING);
@@ -188,20 +167,12 @@ __smpboot_create_thread(struct smp_hotplug_thread *ht, unsigned int cpu)
 		return PTR_ERR(tsk);
 	}
 	kthread_set_per_cpu(tsk, cpu);
-	/*
-	 * Park the thread so that it could start right on the CPU
-	 * when it is available.
-	 */
+	 
 	kthread_park(tsk);
 	get_task_struct(tsk);
 	*per_cpu_ptr(ht->store, cpu) = tsk;
 	if (ht->create) {
-		/*
-		 * Make sure that the task has actually scheduled out
-		 * into park position, before calling the create
-		 * callback. At least the migration thread callback
-		 * requires that the task is off the runqueue.
-		 */
+		 
 		if (!wait_task_inactive(tsk, TASK_PARKED))
 			WARN_ON(1);
 		else
@@ -267,7 +238,7 @@ static void smpboot_destroy_threads(struct smp_hotplug_thread *ht)
 {
 	unsigned int cpu;
 
-	/* We need to destroy also the parked threads of offline cpus */
+	 
 	for_each_possible_cpu(cpu) {
 		struct task_struct *tsk = *per_cpu_ptr(ht->store, cpu);
 
@@ -279,13 +250,7 @@ static void smpboot_destroy_threads(struct smp_hotplug_thread *ht)
 	}
 }
 
-/**
- * smpboot_register_percpu_thread - Register a per_cpu thread related
- * 					    to hotplug
- * @plug_thread:	Hotplug thread descriptor
- *
- * Creates and starts the threads on all online cpus.
- */
+ 
 int smpboot_register_percpu_thread(struct smp_hotplug_thread *plug_thread)
 {
 	unsigned int cpu;
@@ -309,12 +274,7 @@ out:
 }
 EXPORT_SYMBOL_GPL(smpboot_register_percpu_thread);
 
-/**
- * smpboot_unregister_percpu_thread - Unregister a per_cpu thread related to hotplug
- * @plug_thread:	Hotplug thread descriptor
- *
- * Stops all threads on all possible cpus.
- */
+ 
 void smpboot_unregister_percpu_thread(struct smp_hotplug_thread *plug_thread)
 {
 	cpus_read_lock();

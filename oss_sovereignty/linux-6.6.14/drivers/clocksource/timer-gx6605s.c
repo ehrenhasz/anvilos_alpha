@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (C) 2018 Hangzhou C-SKY Microsystems co.,ltd.
+
+
 
 #include <linux/init.h>
 #include <linux/interrupt.h>
@@ -39,10 +39,10 @@ static int gx6605s_timer_set_oneshot(struct clock_event_device *ce)
 {
 	void __iomem *base = timer_of_base(to_timer_of(ce));
 
-	/* reset and stop counter */
+	 
 	writel_relaxed(GX6605S_CONTRL_RST, base + TIMER_CONTRL);
 
-	/* enable with irq and start */
+	 
 	writel_relaxed(GX6605S_CONFIG_EN | GX6605S_CONFIG_IRQ_EN,
 		       base + TIMER_CONFIG);
 
@@ -54,10 +54,10 @@ static int gx6605s_timer_set_next_event(unsigned long delta,
 {
 	void __iomem *base = timer_of_base(to_timer_of(ce));
 
-	/* use reset to pause timer */
+	 
 	writel_relaxed(GX6605S_CONTRL_RST, base + TIMER_CONTRL);
 
-	/* config next timeout value */
+	 
 	writel_relaxed(ULONG_MAX - delta, base + TIMER_INI);
 	writel_relaxed(GX6605S_CONTRL_START, base + TIMER_CONTRL);
 
@@ -130,20 +130,7 @@ static int __init gx6605s_timer_init(struct device_node *np)
 {
 	int ret;
 
-	/*
-	 * The timer driver is for nationalchip gx6605s SOC and there are two
-	 * same timer in gx6605s. We use one for clkevt and another for clksrc.
-	 *
-	 * The timer is mmio map to access, so we need give mmio address in dts.
-	 *
-	 * It provides a 32bit countup timer and interrupt will be caused by
-	 * count-overflow.
-	 * So we need set-next-event by ULONG_MAX - delta in TIMER_INI reg.
-	 *
-	 * The counter at 0x0  offset is clock event.
-	 * The counter at 0x40 offset is clock source.
-	 * They are the same in hardware, just different used by driver.
-	 */
+	 
 	ret = timer_of_init(np, &to);
 	if (ret)
 		return ret;

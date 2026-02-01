@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2012 - 2018 Microchip Technology Inc., and its subsidiaries.
- * All rights reserved.
- */
+ 
+ 
 
 #ifndef WILC_WLAN_H
 #define WILC_WLAN_H
@@ -10,12 +7,8 @@
 #include <linux/types.h>
 #include <linux/bitfield.h>
 
-/********************************************
- *
- *      Mac eth header length
- *
- ********************************************/
-#define MAX_MAC_HDR_LEN			26 /* QOS_MAC_HDR_LEN */
+ 
+#define MAX_MAC_HDR_LEN			26  
 #define SUB_MSDU_HEADER_LENGTH		14
 #define SNAP_HDR_LEN			8
 #define ETHERNET_HDR_LEN		14
@@ -39,11 +32,7 @@
 #define ETH_CONFIG_PKT_HDR_OFFSET	(ETH_ETHERNET_HDR_OFFSET + \
 					 ETH_CONFIG_PKT_HDR_LEN)
 
-/********************************************
- *
- *      Register Defines
- *
- ********************************************/
+ 
 #define WILC_PERIPH_REG_BASE		0x1000
 #define WILC_CHANGING_VIR_IF		0x108c
 #define WILC_CHIPID			WILC_PERIPH_REG_BASE
@@ -110,24 +99,24 @@
 
 #define WILC_SPI_CLOCKLESS_ADDR_LIMIT	0x30
 
-/* Functions IO enables bits */
+ 
 #define WILC_SDIO_CCCR_IO_EN_FUNC1	BIT(1)
 
-/* Function/Interrupt enables bits */
+ 
 #define WILC_SDIO_CCCR_IEN_MASTER	BIT(0)
 #define WILC_SDIO_CCCR_IEN_FUNC1	BIT(1)
 
-/* Abort CCCR register bits */
+ 
 #define WILC_SDIO_CCCR_ABORT_RESET	BIT(3)
 
-/* Vendor specific CCCR registers */
+ 
 #define WILC_SDIO_WAKEUP_REG		0xf0
 #define WILC_SDIO_WAKEUP_BIT		BIT(0)
 
 #define WILC_SDIO_CLK_STATUS_REG	0xf1
 #define WILC_SDIO_CLK_STATUS_BIT	BIT(0)
 
-#define WILC_SDIO_INTERRUPT_DATA_SZ_REG	0xf2 /* Read size (2 bytes) */
+#define WILC_SDIO_INTERRUPT_DATA_SZ_REG	0xf2  
 
 #define WILC_SDIO_VMM_TBL_CTRL_REG	0xf6
 #define WILC_SDIO_IRQ_FLAG_REG		0xf7
@@ -139,8 +128,8 @@
 #define WILC_SDIO_FW_TO_HOST_REG	0xfc
 #define WILC_SDIO_FW_TO_HOST_BIT	BIT(0)
 
-/* Function 1 specific FBR register */
-#define WILC_SDIO_FBR_CSA_REG		0x10C /* CSA pointer (3 bytes) */
+ 
+#define WILC_SDIO_FBR_CSA_REG		0x10C  
 #define WILC_SDIO_FBR_DATA_REG		0x10F
 
 #define WILC_SDIO_F1_DATA_REG		0x0
@@ -170,10 +159,10 @@
 #define WILC_CORTUS_INTERRUPT_1		(WILC_CORTUS_INTERRUPT_BASE + 0x4)
 #define WILC_CORTUS_INTERRUPT_2		(WILC_CORTUS_INTERRUPT_BASE + 0x8)
 
-/* tx control register 1 to 4 for RX */
+ 
 #define WILC_REG_4_TO_1_RX		0x1e1c
 
-/* tx control register 1 to 4 for TX Bank_0 */
+ 
 #define WILC_REG_4_TO_1_TX_BANK0	0x1e9c
 
 #define WILC_CORTUS_RESET_MUX_SEL	0x1118
@@ -192,11 +181,7 @@
 
 #define WILC_CHIP_REV_FIELD		GENMASK(11, 0)
 
-/********************************************
- *
- *      Wlan Defines
- *
- ********************************************/
+ 
 #define WILC_CFG_PKT		1
 #define WILC_NET_PKT		0
 #define WILC_MGMT_PKT		2
@@ -241,20 +226,20 @@
 
 #define WILC_VMM_ENTRY_COUNT		GENMASK(8, 3)
 #define WILC_VMM_ENTRY_AVAILABLE	BIT(2)
-/*******************************************/
-/*        E0 and later Interrupt flags.    */
-/*******************************************/
-/*******************************************/
-/*        E0 and later Interrupt flags.    */
-/*           IRQ Status word               */
-/* 15:0 = DMA count in words.              */
-/* 16: INT0 flag                           */
-/* 17: INT1 flag                           */
-/* 18: INT2 flag                           */
-/* 19: INT3 flag                           */
-/* 20: INT4 flag                           */
-/* 21: INT5 flag                           */
-/*******************************************/
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 #define IRG_FLAGS_OFFSET	16
 #define IRQ_DMA_WD_CNT_MASK	GENMASK(IRG_FLAGS_OFFSET - 1, 0)
 #define INT_0			BIT(IRG_FLAGS_OFFSET)
@@ -267,19 +252,19 @@
 #define IRG_FLAGS_MASK		GENMASK(IRG_FLAGS_OFFSET + MAX_NUM_INT, \
 					IRG_FLAGS_OFFSET)
 
-/*******************************************/
-/*        E0 and later Interrupt flags.    */
-/*           IRQ Clear word                */
-/* 0: Clear INT0                           */
-/* 1: Clear INT1                           */
-/* 2: Clear INT2                           */
-/* 3: Clear INT3                           */
-/* 4: Clear INT4                           */
-/* 5: Clear INT5                           */
-/* 6: Select VMM table 1                   */
-/* 7: Select VMM table 2                   */
-/* 8: Enable VMM                           */
-/*******************************************/
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 #define CLR_INT0		BIT(0)
 #define CLR_INT1		BIT(1)
 #define CLR_INT2		BIT(2)
@@ -299,7 +284,7 @@
 
 #define ENABLE_RX_VMM		(SEL_VMM_TBL1 | EN_VMM)
 #define ENABLE_TX_VMM		(SEL_VMM_TBL0 | EN_VMM)
-/* time for expiring the completion of cfg packets */
+ 
 #define WILC_CFG_PKTS_TIMEOUT	msecs_to_jiffies(3000)
 
 #define IS_MANAGMEMENT		0x100
@@ -309,11 +294,7 @@
 
 #define WILC_WID_TYPE		GENMASK(15, 12)
 #define WILC_VMM_ENTRY_FULL_RETRY	1
-/********************************************
- *
- *      Tx/Rx Queue Structure
- *
- ********************************************/
+ 
 enum ip_pkt_priority {
 	AC_VO_Q = 0,
 	AC_VI_Q = 1,
@@ -351,11 +332,7 @@ struct rxq_entry_t {
 	int buffer_size;
 };
 
-/********************************************
- *
- *      Host IF Structure
- *
- ********************************************/
+ 
 struct wilc;
 struct wilc_hif_func {
 	int (*hif_init)(struct wilc *wilc, bool resume);

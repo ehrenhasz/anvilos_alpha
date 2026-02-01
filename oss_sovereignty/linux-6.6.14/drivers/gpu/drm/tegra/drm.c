@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2012 Avionic Design GmbH
- * Copyright (C) 2012-2016 NVIDIA CORPORATION.  All rights reserved.
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/host1x.h>
@@ -186,11 +183,11 @@ int tegra_drm_submit(struct tegra_drm_context *context,
 	user_relocs = u64_to_user_ptr(args->relocs);
 	user_syncpt = u64_to_user_ptr(args->syncpts);
 
-	/* We don't yet support other than one syncpt_incr struct per submit */
+	 
 	if (args->num_syncpts != 1)
 		return -EINVAL;
 
-	/* We don't yet support waitchks */
+	 
 	if (args->num_waitchks != 0)
 		return -EINVAL;
 
@@ -205,10 +202,7 @@ int tegra_drm_submit(struct tegra_drm_context *context,
 	job->serialize = true;
 	job->syncpt_recovery = true;
 
-	/*
-	 * Track referenced BOs so that they can be unreferenced after the
-	 * submission is complete.
-	 */
+	 
 	num_refs = num_cmdbufs + num_relocs * 2;
 
 	refs = kmalloc_array(num_refs, sizeof(*refs), GFP_KERNEL);
@@ -217,7 +211,7 @@ int tegra_drm_submit(struct tegra_drm_context *context,
 		goto put;
 	}
 
-	/* reuse as an iterator later */
+	 
 	num_refs = 0;
 
 	while (num_cmdbufs) {
@@ -231,10 +225,7 @@ int tegra_drm_submit(struct tegra_drm_context *context,
 			goto fail;
 		}
 
-		/*
-		 * The maximum number of CDMA gather fetches is 16383, a higher
-		 * value means the words count is malformed.
-		 */
+		 
 		if (cmdbuf.words > CDMA_GATHER_FETCHES_MAX_NB) {
 			err = -EINVAL;
 			goto fail;
@@ -250,11 +241,7 @@ int tegra_drm_submit(struct tegra_drm_context *context,
 		obj = host1x_to_tegra_bo(bo);
 		refs[num_refs++] = &obj->gem;
 
-		/*
-		 * Gather buffer base address must be 4-bytes aligned,
-		 * unaligned offset is malformed and cause commands stream
-		 * corruption on the buffer address relocation.
-		 */
+		 
 		if (offset & 3 || offset > obj->gem.size) {
 			err = -EINVAL;
 			goto fail;
@@ -265,7 +252,7 @@ int tegra_drm_submit(struct tegra_drm_context *context,
 		user_cmdbufs++;
 	}
 
-	/* copy and resolve relocations from submit */
+	 
 	while (num_relocs--) {
 		struct host1x_reloc *reloc;
 		struct tegra_bo *obj;
@@ -280,11 +267,7 @@ int tegra_drm_submit(struct tegra_drm_context *context,
 		obj = host1x_to_tegra_bo(reloc->cmdbuf.bo);
 		refs[num_refs++] = &obj->gem;
 
-		/*
-		 * The unaligned cmdbuf offset will cause an unaligned write
-		 * during of the relocations patching, corrupting the commands
-		 * stream.
-		 */
+		 
 		if (reloc->cmdbuf.offset & 3 ||
 		    reloc->cmdbuf.offset >= obj->gem.size) {
 			err = -EINVAL;
@@ -305,7 +288,7 @@ int tegra_drm_submit(struct tegra_drm_context *context,
 		goto fail;
 	}
 
-	/* Syncpoint ref will be dropped on job release. */
+	 
 	sp = host1x_syncpt_get_by_id(host1x, syncpt.id);
 	if (!sp) {
 		err = -ENOENT;
@@ -906,10 +889,7 @@ static const struct drm_driver tegra_drm_driver = {
 int tegra_drm_register_client(struct tegra_drm *tegra,
 			      struct tegra_drm_client *client)
 {
-	/*
-	 * When MLOCKs are implemented, change to allocate a shared channel
-	 * only when MLOCKs are disabled.
-	 */
+	 
 	client->shared_channel = host1x_channel_request(&client->base);
 	if (!client->shared_channel)
 		return -EBUSY;
@@ -955,11 +935,7 @@ int host1x_client_iommu_attach(struct host1x_client *client)
 	}
 #endif
 
-	/*
-	 * If the host1x client is already attached to an IOMMU domain that is
-	 * not the shared IOMMU domain, don't try to attach it to a different
-	 * domain. This allows using the IOMMU-backed DMA API.
-	 */
+	 
 	if (domain && domain != tegra->domain)
 		return 0;
 
@@ -991,11 +967,7 @@ void host1x_client_iommu_detach(struct host1x_client *client)
 	struct iommu_domain *domain;
 
 	if (client->group) {
-		/*
-		 * Devices that are part of the same group may no longer be
-		 * attached to a domain at this point because their group may
-		 * have been detached by an earlier client.
-		 */
+		 
 		domain = iommu_get_domain_for_dev(client->dev);
 		if (domain)
 			iommu_detach_group(tegra->domain, client->group);
@@ -1019,12 +991,7 @@ void *tegra_drm_alloc(struct tegra_drm *tegra, size_t size, dma_addr_t *dma)
 
 	gfp = GFP_KERNEL | __GFP_ZERO;
 	if (!tegra->domain) {
-		/*
-		 * Many units only support 32-bit addresses, even on 64-bit
-		 * SoCs. If there is no IOMMU to translate into a 32-bit IO
-		 * virtual address space, force allocations to be in the
-		 * lower 32-bit range.
-		 */
+		 
 		gfp |= GFP_DMA;
 	}
 
@@ -1033,10 +1000,7 @@ void *tegra_drm_alloc(struct tegra_drm *tegra, size_t size, dma_addr_t *dma)
 		return ERR_PTR(-ENOMEM);
 
 	if (!tegra->domain) {
-		/*
-		 * If IOMMU is disabled, devices address physical memory
-		 * directly.
-		 */
+		 
 		*dma = virt_to_phys(virt);
 		return virt;
 	}
@@ -1087,45 +1051,14 @@ static bool host1x_drm_wants_iommu(struct host1x_device *dev)
 	struct host1x *host1x = dev_get_drvdata(dev->dev.parent);
 	struct iommu_domain *domain;
 
-	/* Our IOMMU usage policy doesn't currently play well with GART */
+	 
 	if (of_machine_is_compatible("nvidia,tegra20"))
 		return false;
 
-	/*
-	 * If the Tegra DRM clients are backed by an IOMMU, push buffers are
-	 * likely to be allocated beyond the 32-bit boundary if sufficient
-	 * system memory is available. This is problematic on earlier Tegra
-	 * generations where host1x supports a maximum of 32 address bits in
-	 * the GATHER opcode. In this case, unless host1x is behind an IOMMU
-	 * as well it won't be able to process buffers allocated beyond the
-	 * 32-bit boundary.
-	 *
-	 * The DMA API will use bounce buffers in this case, so that could
-	 * perhaps still be made to work, even if less efficient, but there
-	 * is another catch: in order to perform cache maintenance on pages
-	 * allocated for discontiguous buffers we need to map and unmap the
-	 * SG table representing these buffers. This is fine for something
-	 * small like a push buffer, but it exhausts the bounce buffer pool
-	 * (typically on the order of a few MiB) for framebuffers (many MiB
-	 * for any modern resolution).
-	 *
-	 * Work around this by making sure that Tegra DRM clients only use
-	 * an IOMMU if the parent host1x also uses an IOMMU.
-	 *
-	 * Note that there's still a small gap here that we don't cover: if
-	 * the DMA API is backed by an IOMMU there's no way to control which
-	 * device is attached to an IOMMU and which isn't, except via wiring
-	 * up the device tree appropriately. This is considered an problem
-	 * of integration, so care must be taken for the DT to be consistent.
-	 */
+	 
 	domain = iommu_get_domain_for_dev(dev->dev.parent);
 
-	/*
-	 * Tegra20 and Tegra30 don't support addressing memory beyond the
-	 * 32-bit boundary, so the regular GATHER opcodes will always be
-	 * sufficient and whether or not the host1x is attached to an IOMMU
-	 * doesn't matter.
-	 */
+	 
 	if (!domain && host1x_get_dma_mask(host1x) <= DMA_BIT_MASK(32))
 		return true;
 
@@ -1185,11 +1118,7 @@ static int host1x_drm_probe(struct host1x_device *dev)
 	if (err < 0)
 		goto poll;
 
-	/*
-	 * Now that all display controller have been initialized, the maximum
-	 * supported resolution is known and the bitmask for horizontal and
-	 * vertical bitfields can be computed.
-	 */
+	 
 	tegra->hmask = drm->mode_config.max_width - 1;
 	tegra->vmask = drm->mode_config.max_height - 1;
 
@@ -1233,7 +1162,7 @@ static int host1x_drm_probe(struct host1x_device *dev)
 			goto device;
 	}
 
-	/* syncpoints are used for full 32-bit hardware VBLANK counters */
+	 
 	drm->max_vblank_count = 0xffffffff;
 
 	err = drm_vblank_init(drm, drm->mode_config.num_crtc);
@@ -1370,7 +1299,7 @@ static const struct of_device_id host1x_drm_subdevs[] = {
 	{ .compatible = "nvidia,tegra194-nvdec", },
 	{ .compatible = "nvidia,tegra234-vic", },
 	{ .compatible = "nvidia,tegra234-nvdec", },
-	{ /* sentinel */ }
+	{   }
 };
 
 static struct host1x_driver host1x_drm_driver = {

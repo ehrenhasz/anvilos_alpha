@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * soc-acpi-intel-byt-match.c - tables and support for BYT ACPI enumeration.
- *
- * Copyright (c) 2017, Intel Corporation.
- */
+
+ 
 
 #include <linux/dmi.h>
 #include <sound/soc-acpi.h>
@@ -56,18 +52,18 @@ static const struct dmi_system_id byt_table[] = {
 		},
 	},
 	{
-		/* Point of View mobii wintab p1006w (v1.0) */
+		 
 		.callback = byt_pov_p1006w_quirk_cb,
 		.matches = {
 			DMI_EXACT_MATCH(DMI_SYS_VENDOR, "Insyde"),
 			DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "BayTrail"),
-			/* Note 105b is Foxcon's USB/PCI vendor id */
+			 
 			DMI_EXACT_MATCH(DMI_BOARD_VENDOR, "105B"),
 			DMI_EXACT_MATCH(DMI_BOARD_NAME, "0E57"),
 		},
 	},
 	{
-		/* Aegex 10 tablet (RU2) */
+		 
 		.callback = byt_rt5672_quirk_cb,
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "AEGEX"),
@@ -75,7 +71,7 @@ static const struct dmi_system_id byt_table[] = {
 		},
 	},
 	{
-		/* Dell Venue 10 Pro 5055 */
+		 
 		.callback = byt_rt5672_quirk_cb,
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "Dell Inc."),
@@ -85,7 +81,7 @@ static const struct dmi_system_id byt_table[] = {
 	{ }
 };
 
-/* Various devices use an ACPI id of 10EC5640 while using a rt5672 codec */
+ 
 static struct snd_soc_acpi_mach byt_rt5672 = {
 	.id = "10EC5640",
 	.drv_name = "cht-bsw-rt5672",
@@ -180,7 +176,7 @@ struct snd_soc_acpi_mach  snd_soc_acpi_intel_baytrail_machines[] = {
 		.drv_name = "sof_rt5682",
 		.sof_tplg_filename = "sof-byt-rt5682.tplg",
 	},
-	/* some Baytrail platforms rely on RT5645, use CHT machine driver */
+	 
 	{
 		.comp_ids = &rt5645_comp_ids,
 		.drv_name = "cht-bsw-rt5645",
@@ -188,7 +184,7 @@ struct snd_soc_acpi_mach  snd_soc_acpi_intel_baytrail_machines[] = {
 		.board = "cht-bsw",
 		.sof_tplg_filename = "sof-byt-rt5645.tplg",
 	},
-	/* use CHT driver to Baytrail Chromebooks */
+	 
 	{
 		.id = "193C9890",
 		.drv_name = "cht-bsw-max98090",
@@ -204,10 +200,7 @@ struct snd_soc_acpi_mach  snd_soc_acpi_intel_baytrail_machines[] = {
 		.sof_tplg_filename = "sof-byt-cx2072x.tplg",
 	},
 #if IS_ENABLED(CONFIG_SND_SOC_INTEL_BYT_CHT_NOCODEC_MACH)
-	/*
-	 * This is always last in the table so that it is selected only when
-	 * enabled explicitly and there is no codec-related information in SSDT
-	 */
+	 
 	{
 		.id = "80860F28",
 		.drv_name = "bytcht_nocodec",

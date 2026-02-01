@@ -1,29 +1,4 @@
-/*
- * This file is part of the MicroPython project, http://micropython.org/
- *
- * The MIT License (MIT)
- *
- * Copyright (c) 2013, 2014 Damien P. George
- * Copyright (c) 2014-2016 Paul Sokolovsky
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
+ 
 
 #include <string.h>
 #include <assert.h>
@@ -36,11 +11,11 @@
 
 static mp_obj_t mp_obj_new_str_iterator(mp_obj_t str, mp_obj_iter_buf_t *iter_buf);
 
-/******************************************************************************/
-/* str                                                                        */
+ 
+ 
 
 static void uni_print_quoted(const mp_print_t *print, const byte *str_data, uint str_len) {
-    // this escapes characters, but it will be very slow to print (calling print many times)
+    
     bool has_single_quote = false;
     bool has_double_quote = false;
     for (const byte *s = str_data, *top = str_data + str_len; !has_double_quote && s < top; s++) {
@@ -106,30 +81,30 @@ static mp_obj_t uni_unary_op(mp_unary_op_t op, mp_obj_t self_in) {
         case MP_UNARY_OP_LEN:
             return MP_OBJ_NEW_SMALL_INT(utf8_charlen(str_data, str_len));
         default:
-            return MP_OBJ_NULL; // op not supported
+            return MP_OBJ_NULL; 
     }
 }
 
-// Convert an index into a pointer to its lead byte. Out of bounds indexing will raise IndexError or
-// be capped to the first/last character of the string, depending on is_slice.
+
+
 const byte *str_index_to_ptr(const mp_obj_type_t *type, const byte *self_data, size_t self_len,
     mp_obj_t index, bool is_slice) {
-    // All str functions also handle bytes objects, and they call str_index_to_ptr(),
-    // so it must handle bytes.
+    
+    
     if (type == &mp_type_bytes
         #if MICROPY_PY_BUILTINS_BYTEARRAY
         || type == &mp_type_bytearray
         #endif
         ) {
-        // Taken from objstr.c:str_index_to_ptr()
+        
         size_t index_val = mp_get_index(type, self_len, index, is_slice);
         return self_data + index_val;
     }
 
     mp_int_t i;
-    // Copied from mp_get_index; I don't want bounds checking, just give me
-    // the integer as-is. (I can't bounds-check without scanning the whole
-    // string; an out-of-bounds index will be caught in the loops below.)
+    
+    
+    
     if (mp_obj_is_small_int(index)) {
         i = MP_OBJ_SMALL_INT_VALUE(index);
     } else if (!mp_obj_get_int_maybe(index, &i)) {
@@ -137,7 +112,7 @@ const byte *str_index_to_ptr(const mp_obj_type_t *type, const byte *self_data, s
     }
     const byte *s, *top = self_data + self_len;
     if (i < 0) {
-        // Negative indexing is performed by counting from the end of the string.
+        
         for (s = top - 1; i; --s) {
             if (s < self_data) {
                 if (is_slice) {
@@ -151,24 +126,24 @@ const byte *str_index_to_ptr(const mp_obj_type_t *type, const byte *self_data, s
         }
         ++s;
     } else {
-        // Positive indexing, correspondingly, counts from the start of the string.
-        // It's assumed that negative indexing will generally be used with small
-        // absolute values (eg str[-1], not str[-1000000]), which means it'll be
-        // more efficient this way.
+        
+        
+        
+        
         s = self_data;
         while (1) {
-            // First check out-of-bounds
+            
             if (s >= top) {
                 if (is_slice) {
                     return top;
                 }
                 mp_raise_msg(&mp_type_IndexError, MP_ERROR_TEXT("string index out of range"));
             }
-            // Then check completion
+            
             if (i-- == 0) {
                 break;
             }
-            // Then skip UTF-8 char
+            
             ++s;
             while (UTF8_IS_CONT(*s)) {
                 ++s;
@@ -183,7 +158,7 @@ static mp_obj_t str_subscr(mp_obj_t self_in, mp_obj_t index, mp_obj_t value) {
     assert(type == &mp_type_str);
     GET_STR_DATA_LEN(self_in, self_data, self_len);
     if (value == MP_OBJ_SENTINEL) {
-        // load
+        
         #if MICROPY_PY_BUILTINS_SLICE
         if (mp_obj_is_type(index, &mp_type_slice)) {
             mp_obj_t ostart, ostop, ostep;
@@ -203,8 +178,8 @@ static mp_obj_t str_subscr(mp_obj_t self_in, mp_obj_t index, mp_obj_t value) {
                 pstart = self_data;
             }
             if (ostop != mp_const_none) {
-                // pstop will point just after the stop character. This depends on
-                // the \0 at the end of the string.
+                
+                
                 pstop = str_index_to_ptr(type, self_data, self_len, ostop, true);
             } else {
                 pstop = self_data + self_len;
@@ -218,14 +193,14 @@ static mp_obj_t str_subscr(mp_obj_t self_in, mp_obj_t index, mp_obj_t value) {
         const byte *s = str_index_to_ptr(type, self_data, self_len, index, false);
         int len = 1;
         if (UTF8_IS_NONASCII(*s)) {
-            // Count the number of 1 bits (after the first)
+            
             for (char mask = 0x40; *s & mask; mask >>= 1) {
                 ++len;
             }
         }
-        return mp_obj_new_str_via_qstr((const char *)s, len); // This will create a one-character string
+        return mp_obj_new_str_via_qstr((const char *)s, len); 
     } else {
-        return MP_OBJ_NULL; // op not supported
+        return MP_OBJ_NULL; 
     }
 }
 
@@ -243,8 +218,8 @@ MP_DEFINE_CONST_OBJ_TYPE(
     locals_dict, &mp_obj_str_locals_dict
     );
 
-/******************************************************************************/
-/* str iterator                                                               */
+ 
+ 
 
 typedef struct _mp_obj_str_it_t {
     mp_obj_base_t base;
@@ -277,4 +252,4 @@ static mp_obj_t mp_obj_new_str_iterator(mp_obj_t str, mp_obj_iter_buf_t *iter_bu
     return MP_OBJ_FROM_PTR(o);
 }
 
-#endif // MICROPY_PY_BUILTINS_STR_UNICODE
+#endif 

@@ -1,28 +1,4 @@
-/*
- * Copyright (C) 2009 Francisco Jerez.
- * All Rights Reserved.
- *
- * Permission is hereby granted, free of charge, to any person obtaining
- * a copy of this software and associated documentation files (the
- * "Software"), to deal in the Software without restriction, including
- * without limitation the rights to use, copy, modify, merge, publish,
- * distribute, sublicense, and/or sell copies of the Software, and to
- * permit persons to whom the Software is furnished to do so, subject to
- * the following conditions:
- *
- * The above copyright notice and this permission notice (including the
- * next paragraph) shall be included in all copies or substantial
- * portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
- * IN NO EVENT SHALL THE COPYRIGHT OWNER(S) AND/OR ITS SUPPLIERS BE
- * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
- * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
- * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 
 #include <linux/module.h>
 
@@ -30,7 +6,7 @@
 
 #include "ch7006_priv.h"
 
-/* DRM encoder functions */
+ 
 
 static void ch7006_encoder_set_config(struct drm_encoder *encoder,
 				      void *params)
@@ -95,8 +71,7 @@ static bool ch7006_encoder_mode_fixup(struct drm_encoder *encoder,
 {
 	struct ch7006_priv *priv = to_ch7006_priv(encoder);
 
-	/* The ch7006 is painfully picky with the input timings so no
-	 * custom modes for now... */
+	 
 
 	priv->mode = ch7006_lookup_mode(encoder, mode);
 
@@ -386,7 +361,7 @@ static const struct drm_encoder_slave_funcs ch7006_encoder_funcs = {
 };
 
 
-/* I2C driver functions */
+ 
 
 static int ch7006_probe(struct i2c_client *client)
 {
@@ -406,9 +381,7 @@ static int ch7006_probe(struct i2c_client *client)
 
 	ch7006_info(client, "Detected version ID: %x\n", val);
 
-	/* I don't know what this is for, but otherwise I get no
-	 * signal.
-	 */
+	 
 	ch7006_write(client, 0x3d, 0x0);
 
 	return 0;
@@ -512,7 +485,7 @@ static struct drm_i2c_encoder_driver ch7006_driver = {
 };
 
 
-/* Module initialization */
+ 
 
 static int __init ch7006_init(void)
 {

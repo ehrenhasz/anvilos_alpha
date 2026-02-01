@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Interconnect framework tracepoints
- * Copyright (c) 2019, Linaro Ltd.
- * Author: Georgi Djakov <georgi.djakov@linaro.org>
- */
+ 
+ 
 
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM interconnect
@@ -75,9 +71,9 @@ TRACE_EVENT(icc_set_bw_end,
 		  __entry->ret)
 );
 
-#endif /* _TRACE_INTERCONNECT_H */
+#endif  
 
-/* This part must be outside protection */
+ 
 
 #undef TRACE_INCLUDE_PATH
 #define TRACE_INCLUDE_PATH .

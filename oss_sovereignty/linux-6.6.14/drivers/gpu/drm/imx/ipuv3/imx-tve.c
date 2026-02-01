@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * i.MX drm driver - Television Encoder (TVEv2)
- *
- * Copyright (C) 2013 Philipp Zabel, Pengutronix
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/clk.h>
@@ -35,7 +31,7 @@
 #define TVE_TST_MODE_REG	0x6c
 #define TVE_MV_CONT_REG		0xdc
 
-/* TVE_COM_CONF_REG */
+ 
 #define TVE_SYNC_CH_2_EN	BIT(22)
 #define TVE_SYNC_CH_1_EN	BIT(21)
 #define TVE_SYNC_CH_0_EN	BIT(20)
@@ -69,10 +65,10 @@
 #define TVE_DAC_DIV4_RATE	(0x2 << 1)
 #define TVE_EN			BIT(0)
 
-/* TVE_TVDACx_CONT_REG */
+ 
 #define TVE_TVDAC_GAIN_MASK	(0x3f << 0)
 
-/* TVE_CD_CONT_REG */
+ 
 #define TVE_CD_CH_2_SM_EN	BIT(22)
 #define TVE_CD_CH_1_SM_EN	BIT(21)
 #define TVE_CD_CH_0_SM_EN	BIT(20)
@@ -84,13 +80,13 @@
 #define TVE_CD_CH_0_REF_LVL	BIT(8)
 #define TVE_CD_EN		BIT(0)
 
-/* TVE_INT_CONT_REG */
+ 
 #define TVE_FRAME_END_IEN	BIT(13)
 #define TVE_CD_MON_END_IEN	BIT(2)
 #define TVE_CD_SM_IEN		BIT(1)
 #define TVE_CD_LM_IEN		BIT(0)
 
-/* TVE_TST_MODE_REG */
+ 
 #define TVE_TVDAC_TEST_MODE_MASK	(0x7 << 0)
 
 #define IMX_TVE_DAC_VOLTAGE	2750000
@@ -136,10 +132,10 @@ static void tve_enable(struct imx_tve *tve)
 	clk_prepare_enable(tve->clk);
 	regmap_update_bits(tve->regmap, TVE_COM_CONF_REG, TVE_EN, TVE_EN);
 
-	/* clear interrupt status register */
+	 
 	regmap_write(tve->regmap, TVE_STAT_REG, 0xffffffff);
 
-	/* cable detection irq disabled in VGA mode, enabled in TVOUT mode */
+	 
 	if (tve->mode == TVE_MODE_VGA)
 		regmap_write(tve->regmap, TVE_INT_CONT_REG, 0);
 	else
@@ -166,7 +162,7 @@ static int tve_setup_vga(struct imx_tve *tve)
 	unsigned int val;
 	int ret;
 
-	/* set gain to (1 + 10/128) to provide 0.7V peak-to-peak amplitude */
+	 
 	ret = regmap_update_bits(tve->regmap, TVE_TVDAC0_CONT_REG,
 				 TVE_TVDAC_GAIN_MASK, 0x0a);
 	if (ret)
@@ -182,7 +178,7 @@ static int tve_setup_vga(struct imx_tve *tve)
 	if (ret)
 		return ret;
 
-	/* set configuration register */
+	 
 	mask = TVE_DATA_SOURCE_MASK | TVE_INP_VIDEO_FORM;
 	val  = TVE_DATA_SOURCE_BUS2 | TVE_INP_YCBCR_444;
 	mask |= TVE_TV_STAND_MASK       | TVE_P2I_CONV_EN;
@@ -193,7 +189,7 @@ static int tve_setup_vga(struct imx_tve *tve)
 	if (ret)
 		return ret;
 
-	/* set test mode (as documented) */
+	 
 	return regmap_update_bits(tve->regmap, TVE_TST_MODE_REG,
 				 TVE_TVDAC_TEST_MODE_MASK, 1);
 }
@@ -224,12 +220,12 @@ imx_tve_connector_mode_valid(struct drm_connector *connector,
 	struct imx_tve *tve = con_to_tve(connector);
 	unsigned long rate;
 
-	/* pixel clock with 2x oversampling */
+	 
 	rate = clk_round_rate(tve->clk, 2000UL * mode->clock) / 2000;
 	if (rate == mode->clock)
 		return MODE_OK;
 
-	/* pixel clock without oversampling */
+	 
 	rate = clk_round_rate(tve->clk, 1000UL * mode->clock) / 1000;
 	if (rate == mode->clock)
 		return MODE_OK;
@@ -250,11 +246,7 @@ static void imx_tve_encoder_mode_set(struct drm_encoder *encoder,
 	int div = 1;
 	int ret;
 
-	/*
-	 * FIXME
-	 * we should try 4k * mode->clock first,
-	 * and enable 4x oversampling for lower resolutions
-	 */
+	 
 	rate = 2000UL * mode->clock;
 	clk_set_rate(tve->clk, rate);
 	rounded_rate = clk_get_rate(tve->clk);
@@ -334,7 +326,7 @@ static irqreturn_t imx_tve_irq_handler(int irq, void *data)
 
 	regmap_read(tve->regmap, TVE_STAT_REG, &val);
 
-	/* clear interrupt status register */
+	 
 	regmap_write(tve->regmap, TVE_STAT_REG, 0xffffffff);
 
 	return IRQ_HANDLED;
@@ -612,7 +604,7 @@ static int imx_tve_probe(struct platform_device *pdev)
 		return PTR_ERR(tve->clk);
 	}
 
-	/* this is the IPU DI clock input selector, can be parented to tve_di */
+	 
 	tve->di_sel_clk = devm_clk_get(dev, "di_sel");
 	if (IS_ERR(tve->di_sel_clk)) {
 		dev_err(dev, "failed to get ipu di mux clock: %ld\n",
@@ -635,7 +627,7 @@ static int imx_tve_probe(struct platform_device *pdev)
 		return -ENODEV;
 	}
 
-	/* disable cable detection for VGA mode */
+	 
 	ret = regmap_write(tve->regmap, TVE_CD_CONT_REG, 0);
 	if (ret)
 		return ret;
@@ -653,7 +645,7 @@ static int imx_tve_remove(struct platform_device *pdev)
 
 static const struct of_device_id imx_tve_dt_ids[] = {
 	{ .compatible = "fsl,imx53-tve", },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, imx_tve_dt_ids);
 

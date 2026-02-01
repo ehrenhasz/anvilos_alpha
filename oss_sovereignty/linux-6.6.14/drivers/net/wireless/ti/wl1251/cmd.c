@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include "cmd.h"
 
 #include <linux/module.h>
@@ -11,14 +11,7 @@
 #include "ps.h"
 #include "acx.h"
 
-/**
- * wl1251_cmd_send - Send command to firmware
- *
- * @wl: wl struct
- * @id: command id
- * @buf: buffer containing the command, must work with dma
- * @len: length of the buffer
- */
+ 
 int wl1251_cmd_send(struct wl1251 *wl, u16 id, void *buf, size_t len)
 {
 	struct wl1251_cmd_header *cmd;
@@ -58,14 +51,7 @@ out:
 	return ret;
 }
 
-/**
- * wl1251_cmd_test - Send test command to firmware
- *
- * @wl: wl struct
- * @buf: buffer containing the command, with all headers, must work with dma
- * @buf_len: length of the buffer
- * @answer: is answer needed
- */
+ 
 int wl1251_cmd_test(struct wl1251 *wl, void *buf, size_t buf_len, u8 answer)
 {
 	int ret;
@@ -82,11 +68,7 @@ int wl1251_cmd_test(struct wl1251 *wl, void *buf, size_t buf_len, u8 answer)
 	if (answer) {
 		struct wl1251_command *cmd_answer;
 
-		/*
-		 * The test command got in, we can read the answer.
-		 * The answer would be a wl1251_command, where the
-		 * parameter array contains the actual answer.
-		 */
+		 
 		wl1251_mem_read(wl, wl->cmd_box_addr, buf, buf_len);
 
 		cmd_answer = buf;
@@ -99,14 +81,7 @@ int wl1251_cmd_test(struct wl1251 *wl, void *buf, size_t buf_len, u8 answer)
 	return 0;
 }
 
-/**
- * wl1251_cmd_interrogate - Read acx from firmware
- *
- * @wl: wl struct
- * @id: acx id
- * @buf: buffer for the response, including all headers, must work with dma
- * @len: length of buf
- */
+ 
 int wl1251_cmd_interrogate(struct wl1251 *wl, u16 id, void *buf, size_t len)
 {
 	struct acx_header *acx = buf;
@@ -116,7 +91,7 @@ int wl1251_cmd_interrogate(struct wl1251 *wl, u16 id, void *buf, size_t len)
 
 	acx->id = id;
 
-	/* payload length, does not include any headers */
+	 
 	acx->len = len - sizeof(*acx);
 
 	ret = wl1251_cmd_send(wl, CMD_INTERROGATE, acx, sizeof(*acx));
@@ -125,7 +100,7 @@ int wl1251_cmd_interrogate(struct wl1251 *wl, u16 id, void *buf, size_t len)
 		goto out;
 	}
 
-	/* the interrogate command got in, we can read the answer */
+	 
 	wl1251_mem_read(wl, wl->cmd_box_addr, buf, len);
 
 	acx = buf;
@@ -137,14 +112,7 @@ out:
 	return ret;
 }
 
-/**
- * wl1251_cmd_configure - Write acx value to firmware
- *
- * @wl: wl struct
- * @id: acx id
- * @buf: buffer containing acx, including all headers, must work with dma
- * @len: length of buf
- */
+ 
 int wl1251_cmd_configure(struct wl1251 *wl, u16 id, void *buf, size_t len)
 {
 	struct acx_header *acx = buf;
@@ -154,7 +122,7 @@ int wl1251_cmd_configure(struct wl1251 *wl, u16 id, void *buf, size_t len)
 
 	acx->id = id;
 
-	/* payload length, does not include any headers */
+	 
 	acx->len = len - sizeof(*acx);
 
 	ret = wl1251_cmd_send(wl, CMD_CONFIGURE, acx, len);
@@ -178,7 +146,7 @@ int wl1251_cmd_vbm(struct wl1251 *wl, u8 identity,
 	if (!vbm)
 		return -ENOMEM;
 
-	/* Count and period will be filled by the target */
+	 
 	vbm->tim.bitmap_ctrl = bitmap_control;
 	if (bitmap_len > PARTIAL_VBM_MAX) {
 		wl1251_warning("cmd vbm len is %d B, truncating to %d",
@@ -282,7 +250,7 @@ int wl1251_cmd_join(struct wl1251 *wl, u8 bss_type, u8 channel,
 		     bss_type == BSS_TYPE_IBSS ? " ibss" : "",
 		     channel, beacon_interval, dtim_interval);
 
-	/* Reverse order BSSID */
+	 
 	bssid = (u8 *) &join->bssid_lsb;
 	for (i = 0; i < ETH_ALEN; i++)
 		bssid[i] = wl->bssid[ETH_ALEN - i - 1];
@@ -325,7 +293,7 @@ int wl1251_cmd_ps_mode(struct wl1251 *wl, u8 ps_mode)
 	ps_params->send_null_data = 1;
 	ps_params->retries = 5;
 	ps_params->hang_over_period = 128;
-	ps_params->null_data_rate = 1; /* 1 Mbps */
+	ps_params->null_data_rate = 1;  
 
 	ret = wl1251_cmd_send(wl, CMD_SET_PS_MODE, ps_params,
 			      sizeof(*ps_params));
@@ -363,7 +331,7 @@ int wl1251_cmd_read_memory(struct wl1251 *wl, u32 addr, void *answer,
 		goto out;
 	}
 
-	/* the read command got in, we can now read the answer */
+	 
 	wl1251_mem_read(wl, wl->cmd_box_addr, cmd, sizeof(*cmd));
 
 	if (cmd->header.status != CMD_STATUS_SUCCESS)
@@ -430,16 +398,12 @@ int wl1251_cmd_scan(struct wl1251 *wl, u8 *ssid, size_t ssid_len,
 						    CFG_RX_MGMT_EN |
 						    CFG_RX_BCN_EN);
 	cmd->params.scan_options = 0;
-	/*
-	 * Use high priority scan when not associated to prevent fw issue
-	 * causing never-ending scans (sometimes 20+ minutes).
-	 * Note: This bug may be caused by the fw's DTIM handling.
-	 */
+	 
 	if (is_zero_ether_addr(wl->bssid))
 		cmd->params.scan_options |= cpu_to_le16(WL1251_SCAN_OPT_PRIORITY_HIGH);
 	cmd->params.num_channels = n_channels;
 	cmd->params.num_probe_requests = n_probes;
-	cmd->params.tx_rate = cpu_to_le16(1 << 1); /* 2 Mbps */
+	cmd->params.tx_rate = cpu_to_le16(1 << 1);  
 	cmd->params.tid_trigger = 0;
 
 	for (i = 0; i < n_channels; i++) {

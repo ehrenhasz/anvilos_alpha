@@ -1,31 +1,31 @@
-// SPDX-License-Identifier: GPL-2.0
-// test ir decoder
-//
-// Copyright (C) 2018 Sean Young <sean@mess.org>
 
-// A lirc chardev is a device representing a consumer IR (cir) device which
-// can receive infrared signals from remote control and/or transmit IR.
-//
-// IR is sent as a series of pulses and space somewhat like morse code. The
-// BPF program can decode this into scancodes so that rc-core can translate
-// this into input key codes using the rc keymap.
-//
-// This test works by sending IR over rc-loopback, so the IR is processed by
-// BPF and then decoded into scancodes. The lirc chardev must be the one
-// associated with rc-loopback, see the output of ir-keytable(1).
-//
-// The following CONFIG options must be enabled for the test to succeed:
-// CONFIG_RC_CORE=y
-// CONFIG_BPF_RAWIR_EVENT=y
-// CONFIG_RC_LOOPBACK=y
 
-// Steps:
-// 1. Open the /dev/lircN device for rc-loopback (given on command line)
-// 2. Attach bpf_lirc_mode2 program which decodes some IR.
-// 3. Send some IR to the same IR device; since it is loopback, this will
-//    end up in the bpf program
-// 4. bpf program should decode IR and report keycode
-// 5. We can read keycode from same /dev/lirc device
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 #include <linux/bpf.h>
 #include <linux/input.h>
@@ -72,7 +72,7 @@ int main(int argc, char **argv)
 		return 1;
 	}
 
-	/* Let's try detach it before it was ever attached */
+	 
 	ret = bpf_prog_detach2(progfd, lircfd, BPF_LIRC_MODE2);
 	if (ret != -1 || errno != ENOENT) {
 		printf("bpf_prog_detach2 not attached should fail: %m\n");
@@ -104,7 +104,7 @@ int main(int argc, char **argv)
 		return 1;
 	}
 
-	/* Write raw IR */
+	 
 	ret = write(lircfd, &testir1, sizeof(testir1));
 	if (ret != sizeof(testir1)) {
 		printf("Failed to send test IR message: %m\n");
@@ -117,7 +117,7 @@ int main(int argc, char **argv)
 	for (;;) {
 		poll(&pfd, 1, 100);
 
-		/* Read decoded IR */
+		 
 		ret = read(inputfd, &event, sizeof(event));
 		if (ret != sizeof(event)) {
 			printf("Failed to read decoded IR: %m\n");
@@ -130,7 +130,7 @@ int main(int argc, char **argv)
 		}
 	}
 
-	/* Write raw IR */
+	 
 	ret = write(lircfd, &testir2, sizeof(testir2));
 	if (ret != sizeof(testir2)) {
 		printf("Failed to send test IR message: %m\n");
@@ -140,7 +140,7 @@ int main(int argc, char **argv)
 	for (;;) {
 		poll(&pfd, 1, 100);
 
-		/* Read decoded IR */
+		 
 		ret = read(inputfd, &event, sizeof(event));
 		if (ret != sizeof(event)) {
 			printf("Failed to read decoded IR: %m\n");
@@ -166,7 +166,7 @@ int main(int argc, char **argv)
 		return 1;
 	}
 
-	/* Let's try detaching it now it is actually attached */
+	 
 	ret = bpf_prog_detach2(progfd, lircfd, BPF_LIRC_MODE2);
 	if (ret) {
 		printf("bpf_prog_detach2: returned %m\n");

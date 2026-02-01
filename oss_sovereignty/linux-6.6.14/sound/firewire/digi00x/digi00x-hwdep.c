@@ -1,18 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * digi00x-hwdep.c - a part of driver for Digidesign Digi 002/003 family
- *
- * Copyright (c) 2014-2015 Takashi Sakamoto
- */
 
-/*
- * This codes give three functionality.
- *
- * 1.get firewire node information
- * 2.get notification about starting/stopping stream
- * 3.lock/unlock stream
- * 4.get asynchronous messaging
- */
+ 
+
+ 
 
 #include "digi00x.h"
 

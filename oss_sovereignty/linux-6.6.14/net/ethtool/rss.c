@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 
 #include "netlink.h"
 #include "common.h"
@@ -58,7 +58,7 @@ rss_prepare_data(const struct ethnl_req_info *req_base,
 	if (!ops->get_rxfh)
 		return -EOPNOTSUPP;
 
-	/* Some drivers don't handle rss_context */
+	 
 	if (request->rss_context && !ops->get_rxfh_context)
 		return -EOPNOTSUPP;
 
@@ -110,9 +110,9 @@ rss_reply_size(const struct ethnl_req_info *req_base,
 	const struct rss_reply_data *data = RSS_REPDATA(reply_base);
 	int len;
 
-	len = nla_total_size(sizeof(u32)) +	/* _RSS_HFUNC */
-	      nla_total_size(sizeof(u32) * data->indir_size) + /* _RSS_INDIR */
-	      nla_total_size(data->hkey_size);	/* _RSS_HKEY */
+	len = nla_total_size(sizeof(u32)) +	 
+	      nla_total_size(sizeof(u32) * data->indir_size) +  
+	      nla_total_size(data->hkey_size);	 
 
 	return len;
 }

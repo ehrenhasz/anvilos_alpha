@@ -1,27 +1,5 @@
-/* $OpenBSD: ssh-dss.c,v 1.49 2023/03/05 05:34:09 dtucker Exp $ */
-/*
- * Copyright (c) 2000 Markus Friedl.  All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- *
- * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
- * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
- * IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
- * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
- * NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
- * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+ 
+ 
 
 #include "includes.h"
 
@@ -181,13 +159,13 @@ ssh_dss_copy_public(const struct sshkey *from, struct sshkey *to)
 		r = SSH_ERR_LIBCRYPTO_ERROR;
 		goto out;
 	}
-	dsa_p_dup = dsa_q_dup = dsa_g_dup = NULL; /* transferred */
+	dsa_p_dup = dsa_q_dup = dsa_g_dup = NULL;  
 	if (!DSA_set0_key(to->dsa, dsa_pub_key_dup, NULL)) {
 		r = SSH_ERR_LIBCRYPTO_ERROR;
 		goto out;
 	}
-	dsa_pub_key_dup = NULL; /* transferred */
-	/* success */
+	dsa_pub_key_dup = NULL;  
+	 
 	r = 0;
  out:
 	BN_clear_free(dsa_p_dup);
@@ -215,16 +193,16 @@ ssh_dss_deserialize_public(const char *ktype, struct sshbuf *b,
 		ret = SSH_ERR_LIBCRYPTO_ERROR;
 		goto out;
 	}
-	dsa_p = dsa_q = dsa_g = NULL; /* transferred */
+	dsa_p = dsa_q = dsa_g = NULL;  
 	if (!DSA_set0_key(key->dsa, dsa_pub_key, NULL)) {
 		ret = SSH_ERR_LIBCRYPTO_ERROR;
 		goto out;
 	}
-	dsa_pub_key = NULL; /* transferred */
+	dsa_pub_key = NULL;  
 #ifdef DEBUG_PK
 	DSA_print_fp(stderr, key->dsa, 8);
 #endif
-	/* success */
+	 
 	ret = 0;
  out:
 	BN_clear_free(dsa_p);
@@ -346,7 +324,7 @@ ssh_dss_verify(const struct sshkey *key,
 	if (hlen == 0)
 		return SSH_ERR_INTERNAL_ERROR;
 
-	/* fetch signature */
+	 
 	if ((b = sshbuf_from(sig, siglen)) == NULL)
 		return SSH_ERR_ALLOC_FAIL;
 	if (sshbuf_get_cstring(b, &ktype, NULL) != 0 ||
@@ -368,7 +346,7 @@ ssh_dss_verify(const struct sshkey *key,
 		goto out;
 	}
 
-	/* parse signature */
+	 
 	if ((dsig = DSA_SIG_new()) == NULL ||
 	    (sig_r = BN_new()) == NULL ||
 	    (sig_s = BN_new()) == NULL) {
@@ -384,9 +362,9 @@ ssh_dss_verify(const struct sshkey *key,
 		ret = SSH_ERR_LIBCRYPTO_ERROR;
 		goto out;
 	}
-	sig_r = sig_s = NULL; /* transferred */
+	sig_r = sig_s = NULL;  
 
-	/* sha1 the data */
+	 
 	if ((ret = ssh_digest_memory(SSH_DIGEST_SHA1, data, dlen,
 	    digest, sizeof(digest))) != 0)
 		goto out;
@@ -416,41 +394,41 @@ ssh_dss_verify(const struct sshkey *key,
 }
 
 static const struct sshkey_impl_funcs sshkey_dss_funcs = {
-	/* .size = */		ssh_dss_size,
-	/* .alloc = */		ssh_dss_alloc,
-	/* .cleanup = */	ssh_dss_cleanup,
-	/* .equal = */		ssh_dss_equal,
-	/* .ssh_serialize_public = */ ssh_dss_serialize_public,
-	/* .ssh_deserialize_public = */ ssh_dss_deserialize_public,
-	/* .ssh_serialize_private = */ ssh_dss_serialize_private,
-	/* .ssh_deserialize_private = */ ssh_dss_deserialize_private,
-	/* .generate = */	ssh_dss_generate,
-	/* .copy_public = */	ssh_dss_copy_public,
-	/* .sign = */		ssh_dss_sign,
-	/* .verify = */		ssh_dss_verify,
+	 		ssh_dss_size,
+	 		ssh_dss_alloc,
+	 	ssh_dss_cleanup,
+	 		ssh_dss_equal,
+	  ssh_dss_serialize_public,
+	  ssh_dss_deserialize_public,
+	  ssh_dss_serialize_private,
+	  ssh_dss_deserialize_private,
+	 	ssh_dss_generate,
+	 	ssh_dss_copy_public,
+	 		ssh_dss_sign,
+	 		ssh_dss_verify,
 };
 
 const struct sshkey_impl sshkey_dss_impl = {
-	/* .name = */		"ssh-dss",
-	/* .shortname = */	"DSA",
-	/* .sigalg = */		NULL,
-	/* .type = */		KEY_DSA,
-	/* .nid = */		0,
-	/* .cert = */		0,
-	/* .sigonly = */	0,
-	/* .keybits = */	0,
-	/* .funcs = */		&sshkey_dss_funcs,
+	 		"ssh-dss",
+	 	"DSA",
+	 		NULL,
+	 		KEY_DSA,
+	 		0,
+	 		0,
+	 	0,
+	 	0,
+	 		&sshkey_dss_funcs,
 };
 
 const struct sshkey_impl sshkey_dsa_cert_impl = {
-	/* .name = */		"ssh-dss-cert-v01@openssh.com",
-	/* .shortname = */	"DSA-CERT",
-	/* .sigalg = */		NULL,
-	/* .type = */		KEY_DSA_CERT,
-	/* .nid = */		0,
-	/* .cert = */		1,
-	/* .sigonly = */	0,
-	/* .keybits = */	0,
-	/* .funcs = */		&sshkey_dss_funcs,
+	 		"ssh-dss-cert-v01@openssh.com",
+	 	"DSA-CERT",
+	 		NULL,
+	 		KEY_DSA_CERT,
+	 		0,
+	 		1,
+	 	0,
+	 	0,
+	 		&sshkey_dss_funcs,
 };
-#endif /* WITH_OPENSSL */
+#endif  

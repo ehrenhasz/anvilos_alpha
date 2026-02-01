@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2012-2016, The Linux Foundation. All rights reserved.
- * Copyright (C) 2017 Linaro Ltd.
- */
+
+ 
 #include <linux/hash.h>
 #include <linux/list.h>
 #include <linux/slab.h>
@@ -171,7 +168,7 @@ event_session_error(struct venus_core *core, struct venus_inst *inst,
 		return;
 
 	switch (pkt->event_data1) {
-	/* non fatal session errors */
+	 
 	case HFI_ERR_SESSION_INVALID_SCALE_FACTOR:
 	case HFI_ERR_SESSION_UNSUPPORT_BUFFERTYPE:
 	case HFI_ERR_SESSION_UNSUPPORTED_SETTING:
@@ -235,7 +232,7 @@ static void hfi_sys_init_done(struct venus_core *core, struct venus_inst *inst,
 
 	rem_bytes = pkt->hdr.size - sizeof(*pkt);
 	if (rem_bytes <= 0) {
-		/* missing property data */
+		 
 		error = HFI_ERR_SYS_INSUFFICIENT_RESOURCES;
 		goto done;
 	}
@@ -261,7 +258,7 @@ sys_get_prop_image_version(struct venus_core *core,
 	req_bytes = pkt->hdr.size - sizeof(*pkt);
 
 	if (req_bytes < VER_STR_SZ || !pkt->data[0] || pkt->num_properties > 1)
-		/* bad packet */
+		 
 		return;
 
 	img_ver = pkt->data;
@@ -366,7 +363,7 @@ session_get_prop_profile_level(struct hfi_msg_session_property_info_pkt *pkt,
 	req_bytes = pkt->shdr.hdr.size - sizeof(*pkt);
 
 	if (!req_bytes || req_bytes % sizeof(struct hfi_profile_level))
-		/* bad packet */
+		 
 		return HFI_ERR_SESSION_INVALID_PARAMETER;
 
 	hfi = (struct hfi_profile_level *)&pkt->data[0];
@@ -387,7 +384,7 @@ session_get_prop_buf_req(struct hfi_msg_session_property_info_pkt *pkt,
 	req_bytes = pkt->shdr.hdr.size - sizeof(*pkt);
 
 	if (!req_bytes || req_bytes % sizeof(*buf_req) || !pkt->data[0])
-		/* bad packet */
+		 
 		return HFI_ERR_SESSION_INVALID_PARAMETER;
 
 	buf_req = (struct hfi_buffer_requirements *)&pkt->data[0];
@@ -802,10 +799,7 @@ u32 hfi_process_msg_packet(struct venus_core *core, struct hfi_pkt_hdr *hdr)
 				 pkt->shdr.session_id,
 				 handler ? handler->pkt : 0);
 
-		/*
-		 * Event of type HFI_EVENT_SYS_ERROR will not have any session
-		 * associated with it
-		 */
+		 
 		if (!inst && hdr->pkt_type != HFI_MSG_EVENT_NOTIFY) {
 			dev_err(dev, "got invalid session id:%x\n",
 				pkt->shdr.session_id);

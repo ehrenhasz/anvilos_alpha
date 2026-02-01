@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * BCM2835 master mode driver
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/clkdev.h>
@@ -23,15 +21,11 @@
 #define BCM2835_I2C_FIFO	0x10
 #define BCM2835_I2C_DIV		0x14
 #define BCM2835_I2C_DEL		0x18
-/*
- * 16-bit field for the number of SCL cycles to wait after rising SCL
- * before deciding the slave is not responding. 0 disables the
- * timeout detection.
- */
+ 
 #define BCM2835_I2C_CLKT	0x1c
 
 #define BCM2835_I2C_C_READ	BIT(0)
-#define BCM2835_I2C_C_CLEAR	BIT(4) /* bits 4 and 5 both clear */
+#define BCM2835_I2C_C_CLEAR	BIT(4)  
 #define BCM2835_I2C_C_ST	BIT(7)
 #define BCM2835_I2C_C_INTD	BIT(8)
 #define BCM2835_I2C_C_INTT	BIT(9)
@@ -48,7 +42,7 @@
 #define BCM2835_I2C_S_RXF	BIT(7)
 #define BCM2835_I2C_S_ERR	BIT(8)
 #define BCM2835_I2C_S_CLKT	BIT(9)
-#define BCM2835_I2C_S_LEN	BIT(10) /* Fake bit for SW error reporting */
+#define BCM2835_I2C_S_LEN	BIT(10)  
 
 #define BCM2835_I2C_FEDL_SHIFT	16
 #define BCM2835_I2C_REDL_SHIFT	0
@@ -92,11 +86,7 @@ static int clk_bcm2835_i2c_calc_divider(unsigned long rate,
 {
 	u32 divider = DIV_ROUND_UP(parent_rate, rate);
 
-	/*
-	 * Per the datasheet, the register is always interpreted as an even
-	 * number, by rounding down. In other words, the LSB is ignored. So,
-	 * if the LSB is set, increment the divider to avoid any issue.
-	 */
+	 
 	if (divider & 1)
 		divider++;
 	if ((divider < BCM2835_I2C_CDIV_MIN) ||
@@ -118,17 +108,10 @@ static int clk_bcm2835_i2c_set_rate(struct clk_hw *hw, unsigned long rate,
 
 	bcm2835_i2c_writel(div->i2c_dev, BCM2835_I2C_DIV, divider);
 
-	/*
-	 * Number of core clocks to wait after falling edge before
-	 * outputting the next data bit.  Note that both FEDL and REDL
-	 * can't be greater than CDIV/2.
-	 */
+	 
 	fedl = max(divider / 16, 1u);
 
-	/*
-	 * Number of core clocks to wait after rising edge before
-	 * sampling the next incoming data bit.
-	 */
+	 
 	redl = max(divider / 4, 1u);
 
 	bcm2835_i2c_writel(div->i2c_dev, BCM2835_I2C_DEL,
@@ -220,18 +203,7 @@ static void bcm2835_drain_rxfifo(struct bcm2835_i2c_dev *i2c_dev)
 	}
 }
 
-/*
- * Repeated Start Condition (Sr)
- * The BCM2835 ARM Peripherals datasheet mentions a way to trigger a Sr when it
- * talks about reading from a slave with 10 bit address. This is achieved by
- * issuing a write, poll the I2CS.TA flag and wait for it to be set, and then
- * issue a read.
- * A comment in https://github.com/raspberrypi/linux/issues/254 shows how the
- * firmware actually does it using polling and says that it's a workaround for
- * a problem in the state machine.
- * It turns out that it is possible to use the TXW interrupt to know when the
- * transfer is active, provided the FIFO has not been prefilled.
- */
+ 
 
 static void bcm2835_i2c_start_transfer(struct bcm2835_i2c_dev *i2c_dev)
 {
@@ -268,14 +240,7 @@ static void bcm2835_i2c_finish_transfer(struct bcm2835_i2c_dev *i2c_dev)
 	i2c_dev->msg_buf_remaining = 0;
 }
 
-/*
- * Note about I2C_C_CLEAR on error:
- * The I2C_C_CLEAR on errors will take some time to resolve -- if you were in
- * non-idle state and I2C_C_READ, it sets an abort_rx flag and runs through
- * the state machine to send a NACK and a STOP. Since we're setting CLEAR
- * without I2CEN, that NACK will be hanging around queued up for next time
- * we start the engine.
- */
+ 
 
 static irqreturn_t bcm2835_i2c_isr(int this_irq, void *data)
 {
@@ -395,11 +360,7 @@ static const struct i2c_algorithm bcm2835_i2c_algo = {
 	.functionality	= bcm2835_i2c_func,
 };
 
-/*
- * The BCM2835 was reported to have problems with clock stretching:
- * https://www.advamation.com/knowhow/raspberrypi/rpi-i2c-bug.html
- * https://www.raspberrypi.org/forums/viewtopic.php?p=146272
- */
+ 
 static const struct i2c_adapter_quirks bcm2835_i2c_quirks = {
 	.flags = I2C_AQ_NO_CLK_STRETCH,
 };
@@ -477,11 +438,7 @@ static int bcm2835_i2c_probe(struct platform_device *pdev)
 	adap->dev.of_node = pdev->dev.of_node;
 	adap->quirks = of_device_get_match_data(&pdev->dev);
 
-	/*
-	 * Disable the hardware clock stretching timeout. SMBUS
-	 * specifies a limit for how long the device can stretch the
-	 * clock, but core I2C doesn't.
-	 */
+	 
 	bcm2835_i2c_writel(i2c_dev, BCM2835_I2C_CLKT, 0);
 	bcm2835_i2c_writel(i2c_dev, BCM2835_I2C_C, 0);
 

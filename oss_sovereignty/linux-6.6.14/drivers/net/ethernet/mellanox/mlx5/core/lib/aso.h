@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB */
-/* Copyright (c) 2022, NVIDIA CORPORATION & AFFILIATES. All rights reserved. */
+ 
+ 
 
 #ifndef __MLX5_LIB_ASO_H__
 #define __MLX5_LIB_ASO_H__
@@ -18,7 +18,7 @@
 #define ASO_CTRL_READ_EN BIT(0)
 struct mlx5_wqe_aso_ctrl_seg {
 	__be32  va_h;
-	__be32  va_l; /* include read_enable */
+	__be32  va_l;  
 	__be32  l_key;
 	u8      data_mask_mode;
 	u8      condition_1_0_operand;
@@ -89,4 +89,4 @@ int mlx5_aso_poll_cq(struct mlx5_aso *aso, bool with_data);
 
 struct mlx5_aso *mlx5_aso_create(struct mlx5_core_dev *mdev, u32 pdn);
 void mlx5_aso_destroy(struct mlx5_aso *aso);
-#endif /* __MLX5_LIB_ASO_H__ */
+#endif  

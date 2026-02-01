@@ -1,18 +1,4 @@
-/* Netfilter messages via netlink socket. Allows for user space
- * protocol helpers and general trouble making from userspace.
- *
- * (C) 2001 by Jay Schulist <jschlst@samba.org>,
- * (C) 2002-2005 by Harald Welte <laforge@gnumonks.org>
- * (C) 2005-2017 by Pablo Neira Ayuso <pablo@netfilter.org>
- *
- * Initial netfilter messages via netlink development funded and
- * generally made possible by Network Robots, Inc. (www.networkrobots.com)
- *
- * Further development of this code funded by Astaro AG (http://www.astaro.com)
- *
- * This software may be used and distributed according to the terms
- * of the GNU General Public License, incorporated herein by reference.
- */
+ 
 
 #include <linux/module.h>
 #include <linux/types.h>
@@ -117,7 +103,7 @@ int nfnetlink_subsys_register(const struct nfnetlink_subsystem *n)
 {
 	u8 cb_id;
 
-	/* Sanity-check attr_count size to avoid stack buffer overflow. */
+	 
 	for (cb_id = 0; cb_id < n->cb_count; cb_id++)
 		if (WARN_ON(n->cb[cb_id].attr_count > NFNL_MAX_ATTR_COUNT))
 			return -EINVAL;
@@ -212,7 +198,7 @@ void nfnetlink_broadcast(struct net *net, struct sk_buff *skb, __u32 portid,
 }
 EXPORT_SYMBOL_GPL(nfnetlink_broadcast);
 
-/* Process one complete nfnetlink message. */
+ 
 static int nfnetlink_rcv_msg(struct sk_buff *skb, struct nlmsghdr *nlh,
 			     struct netlink_ext_ack *extack)
 {
@@ -221,7 +207,7 @@ static int nfnetlink_rcv_msg(struct sk_buff *skb, struct nlmsghdr *nlh,
 	const struct nfnetlink_subsystem *ss;
 	int type, err;
 
-	/* All the messages must at least contain nfgenmsg */
+	 
 	if (nlmsg_len(nlh) < sizeof(struct nfgenmsg))
 		return 0;
 
@@ -266,7 +252,7 @@ replay:
 			.extack	= extack,
 		};
 
-		/* Sanity-check NFNL_MAX_ATTR_COUNT */
+		 
 		if (ss->cb[cb_id].attr_count > NFNL_MAX_ATTR_COUNT) {
 			rcu_read_unlock();
 			return -ENOMEM;
@@ -449,7 +435,7 @@ replay_abort:
 			goto done;
 		}
 
-		/* Only requests are handled by the kernel */
+		 
 		if (!(nlh->nlmsg_flags & NLM_F_REQUEST)) {
 			err = -EINVAL;
 			goto ack;
@@ -457,7 +443,7 @@ replay_abort:
 
 		type = nlh->nlmsg_type;
 		if (type == NFNL_MSG_BATCH_BEGIN) {
-			/* Malformed: Batch begin twice */
+			 
 			nfnl_err_reset(&err_list);
 			status |= NFNL_BATCH_FAILURE;
 			goto done;
@@ -469,9 +455,7 @@ replay_abort:
 			goto ack;
 		}
 
-		/* We only accept a batch with messages for the same
-		 * subsystem.
-		 */
+		 
 		if (NFNL_SUBSYS_ID(type) != subsys_id) {
 			err = -EINVAL;
 			goto ack;
@@ -503,7 +487,7 @@ replay_abort:
 				.extack	= &extack,
 			};
 
-			/* Sanity-check NFTA_MAX_ATTR */
+			 
 			if (ss->cb[cb_id].attr_count > NFNL_MAX_ATTR_COUNT) {
 				err = -ENOMEM;
 				goto ack;
@@ -518,10 +502,7 @@ replay_abort:
 
 			err = nc->call(skb, &info, (const struct nlattr **)cda);
 
-			/* The lock was released to autoload some module, we
-			 * have to abort and start from scratch using the
-			 * original skb.
-			 */
+			 
 			if (err == -EAGAIN) {
 				status |= NFNL_BATCH_REPLAY;
 				goto done;
@@ -529,26 +510,17 @@ replay_abort:
 		}
 ack:
 		if (nlh->nlmsg_flags & NLM_F_ACK || err) {
-			/* Errors are delivered once the full batch has been
-			 * processed, this avoids that the same error is
-			 * reported several times when replaying the batch.
-			 */
+			 
 			if (err == -ENOMEM ||
 			    nfnl_err_add(&err_list, nlh, err, &extack) < 0) {
-				/* We failed to enqueue an error, reset the
-				 * list of errors and send OOM to userspace
-				 * pointing to the batch header.
-				 */
+				 
 				nfnl_err_reset(&err_list);
 				netlink_ack(oskb, nlmsg_hdr(oskb), -ENOMEM,
 					    NULL);
 				status |= NFNL_BATCH_FAILURE;
 				goto done;
 			}
-			/* We don't stop processing the batch on errors, thus,
-			 * userspace gets all the errors that the batch
-			 * triggers.
-			 */
+			 
 			if (err)
 				status |= NFNL_BATCH_FAILURE;
 		}
@@ -630,7 +602,7 @@ static void nfnetlink_rcv_skb_batch(struct sk_buff *skb, struct nlmsghdr *nlh)
 
 	nfgenmsg = nlmsg_data(nlh);
 	skb_pull(skb, msglen);
-	/* Work around old nft using host byte order */
+	 
 	if (nfgenmsg->res_id == (__force __be16)NFNL_SUBSYS_NFTABLES)
 		res_id = NFNL_SUBSYS_NFTABLES;
 	else
@@ -665,9 +637,7 @@ static void nfnetlink_bind_event(struct net *net, unsigned int group)
 	int type, group_bit;
 	u8 v;
 
-	/* All NFNLGRP_CONNTRACK_* group bits fit into u8.
-	 * The other groups are not relevant and can be ignored.
-	 */
+	 
 	if (group >= 8)
 		return;
 
@@ -689,7 +659,7 @@ static void nfnetlink_bind_event(struct net *net, unsigned int group)
 	if ((v & group_bit) == 0) {
 		v |= group_bit;
 
-		/* read concurrently without nfnl_grp_active_lock held. */
+		 
 		WRITE_ONCE(nf_ctnetlink_has_listener, v);
 	}
 
@@ -736,7 +706,7 @@ static void nfnetlink_unbind(struct net *net, int group)
 		return;
 	}
 
-	/* ctnetlink_has_listener is u8 */
+	 
 	if (group >= 8)
 		return;
 
@@ -748,7 +718,7 @@ static void nfnetlink_unbind(struct net *net, int group)
 
 		v &= ~group_bit;
 
-		/* read concurrently without nfnl_grp_active_lock held. */
+		 
 		WRITE_ONCE(nf_ctnetlink_has_listener, v);
 	}
 	spin_unlock(&nfnl_grp_active_lock);

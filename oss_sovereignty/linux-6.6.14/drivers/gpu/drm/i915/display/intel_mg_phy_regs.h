@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2022 Intel Corporation
- */
+ 
+ 
 
 #ifndef __INTEL_MG_PHY_REGS__
 #define __INTEL_MG_PHY_REGS__
@@ -147,7 +145,7 @@
 							   FIA2_BASE, FIA3_BASE)
 #define _MMIO_FIA(fia, off)		_MMIO(_FIA(fia) + (off))
 
-/* ICL PHY DFLEX registers */
+ 
 #define PORT_TX_DFLEXDPMLE1(fia)		_MMIO_FIA((fia),  0x008C0)
 #define   DFLEXDPMLE1_DPMLETC_MASK(idx)		(0xf << (4 * (idx)))
 #define   DFLEXDPMLE1_DPMLETC_ML0(idx)		(1 << (4 * (idx)))
@@ -279,4 +277,4 @@
 						   _MG_PLL_TDC_COLDST_BIAS_PORT1, \
 						   _MG_PLL_TDC_COLDST_BIAS_PORT2)
 
-#endif /* __INTEL_MG_PHY_REGS__ */
+#endif  

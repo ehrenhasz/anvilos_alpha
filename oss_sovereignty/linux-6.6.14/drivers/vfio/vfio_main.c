@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * VFIO core
- *
- * Copyright (C) 2012 Red Hat, Inc.  All rights reserved.
- *     Author: Alex Williamson <alex.williamson@redhat.com>
- *
- * Derived from original vfio:
- * Copyright 2010 Cisco Systems, Inc.  All rights reserved.
- * Author: Tom Lyon, pugs@cisco.com
- */
+
+ 
 
 #include <linux/cdev.h>
 #include <linux/compat.h>
@@ -66,9 +57,7 @@ int vfio_assign_device_set(struct vfio_device *device, void *set_id)
 	if (WARN_ON(!set_id))
 		return -EINVAL;
 
-	/*
-	 * Atomically acquire a singleton object in the xarray for this set_id
-	 */
+	 
 	xa_lock(&vfio_device_set_xa);
 	dev_set = xa_load(&vfio_device_set_xa, idx);
 	if (dev_set)
@@ -156,10 +145,8 @@ vfio_find_device_in_devset(struct vfio_device_set *dev_set,
 }
 EXPORT_SYMBOL_GPL(vfio_find_device_in_devset);
 
-/*
- * Device objects - create, release, get, put, search
- */
-/* Device reference always implies a group reference */
+ 
+ 
 void vfio_device_put_registration(struct vfio_device *device)
 {
 	if (refcount_dec_and_test(&device->refcount))
@@ -171,10 +158,8 @@ bool vfio_device_try_get_registration(struct vfio_device *device)
 	return refcount_inc_not_zero(&device->refcount);
 }
 
-/*
- * VFIO driver API
- */
-/* Release helper called by vfio_put_device() */
+ 
+ 
 static void vfio_device_release(struct device *dev)
 {
 	struct vfio_device *device =
@@ -192,18 +177,7 @@ static void vfio_device_release(struct device *dev)
 static int vfio_init_device(struct vfio_device *device, struct device *dev,
 			    const struct vfio_device_ops *ops);
 
-/*
- * Allocate and initialize vfio_device so it can be registered to vfio
- * core.
- *
- * Drivers should use the wrapper vfio_alloc_device() for allocation.
- * @size is the size of the structure to be allocated, including any
- * private data used by the driver.
- *
- * Driver may provide an @init callback to cover device private data.
- *
- * Use vfio_put_device() to release the structure after success return.
- */
+ 
 struct vfio_device *_vfio_alloc_device(size_t size, struct device *dev,
 				       const struct vfio_device_ops *ops)
 {
@@ -228,9 +202,7 @@ out_free:
 }
 EXPORT_SYMBOL_GPL(_vfio_alloc_device);
 
-/*
- * Initialize a vfio_device so it can be registered to vfio core.
- */
+ 
 static int vfio_init_device(struct vfio_device *device, struct device *dev,
 			    const struct vfio_device_ops *ops)
 {
@@ -277,10 +249,7 @@ static int __vfio_register_dev(struct vfio_device *device,
 		     !device->ops->detach_ioas)))
 		return -EINVAL;
 
-	/*
-	 * If the driver doesn't specify a set then the device is added to a
-	 * singleton set just for itself.
-	 */
+	 
 	if (!device->dev_set)
 		vfio_assign_device_set(device, device);
 
@@ -292,11 +261,7 @@ static int __vfio_register_dev(struct vfio_device *device,
 	if (ret)
 		return ret;
 
-	/*
-	 * VFIO always sets IOMMU_CACHE because we offer no way for userspace to
-	 * restore cache coherency. It has to be checked here because it is only
-	 * valid for cases where we are using iommu groups.
-	 */
+	 
 	if (type == VFIO_IOMMU && !vfio_device_is_noiommu(device) &&
 	    !device_iommu_capable(device->dev, IOMMU_CAP_CACHE_COHERENCY)) {
 		ret = -EINVAL;
@@ -307,7 +272,7 @@ static int __vfio_register_dev(struct vfio_device *device,
 	if (ret)
 		goto err_out;
 
-	/* Refcounting can't start until the driver calls register */
+	 
 	refcount_set(&device->refcount, 1);
 
 	vfio_device_group_register(device);
@@ -324,35 +289,24 @@ int vfio_register_group_dev(struct vfio_device *device)
 }
 EXPORT_SYMBOL_GPL(vfio_register_group_dev);
 
-/*
- * Register a virtual device without IOMMU backing.  The user of this
- * device must not be able to directly trigger unmediated DMA.
- */
+ 
 int vfio_register_emulated_iommu_dev(struct vfio_device *device)
 {
 	return __vfio_register_dev(device, VFIO_EMULATED_IOMMU);
 }
 EXPORT_SYMBOL_GPL(vfio_register_emulated_iommu_dev);
 
-/*
- * Decrement the device reference count and wait for the device to be
- * removed.  Open file descriptors for the device... */
+ 
 void vfio_unregister_group_dev(struct vfio_device *device)
 {
 	unsigned int i = 0;
 	bool interrupted = false;
 	long rc;
 
-	/*
-	 * Prevent new device opened by userspace via the
-	 * VFIO_GROUP_GET_DEVICE_FD in the group path.
-	 */
+	 
 	vfio_device_group_unregister(device);
 
-	/*
-	 * Balances vfio_device_add() in register path, also prevents
-	 * new device opened by userspace in the cdev path.
-	 */
+	 
 	vfio_device_del(device);
 
 	vfio_device_put_registration(device);
@@ -378,7 +332,7 @@ void vfio_unregister_group_dev(struct vfio_device *device)
 		}
 	}
 
-	/* Balances vfio_device_set_group in register path */
+	 
 	vfio_device_remove_group(device);
 }
 EXPORT_SYMBOL_GPL(vfio_unregister_group_dev);
@@ -435,7 +389,7 @@ clear:
 }
 #endif
 
-/* true if the vfio_device has open_device() called but not close_device() */
+ 
 static bool vfio_assert_device_open(struct vfio_device *device)
 {
 	return !WARN_ON_ONCE(!READ_ONCE(device->open_count));
@@ -514,10 +468,7 @@ int vfio_df_open(struct vfio_device_file *df)
 
 	lockdep_assert_held(&device->dev_set->lock);
 
-	/*
-	 * Only the group path allows the device to be opened multiple
-	 * times.  The device cdev path doesn't have a secure way for it.
-	 */
+	 
 	if (device->open_count != 0 && !df->group)
 		return -EINVAL;
 
@@ -543,10 +494,7 @@ void vfio_df_close(struct vfio_device_file *df)
 	device->open_count--;
 }
 
-/*
- * Wrapper around pm_runtime_resume_and_get().
- * Return error code on failure or 0 on success.
- */
+ 
 static inline int vfio_device_pm_runtime_get(struct vfio_device *device)
 {
 	struct device *dev = device->dev;
@@ -565,9 +513,7 @@ static inline int vfio_device_pm_runtime_get(struct vfio_device *device)
 	return 0;
 }
 
-/*
- * Wrapper around pm_runtime_put().
- */
+ 
 static inline void vfio_device_pm_runtime_put(struct vfio_device *device)
 {
 	struct device *dev = device->dev;
@@ -576,9 +522,7 @@ static inline void vfio_device_pm_runtime_put(struct vfio_device *device)
 		pm_runtime_put(dev);
 }
 
-/*
- * VFIO Device fd
- */
+ 
 static int vfio_device_fops_release(struct inode *inode, struct file *filep)
 {
 	struct vfio_device_file *df = filep->private_data;
@@ -596,94 +540,14 @@ static int vfio_device_fops_release(struct inode *inode, struct file *filep)
 	return 0;
 }
 
-/*
- * vfio_mig_get_next_state - Compute the next step in the FSM
- * @cur_fsm - The current state the device is in
- * @new_fsm - The target state to reach
- * @next_fsm - Pointer to the next step to get to new_fsm
- *
- * Return 0 upon success, otherwise -errno
- * Upon success the next step in the state progression between cur_fsm and
- * new_fsm will be set in next_fsm.
- *
- * This breaks down requests for combination transitions into smaller steps and
- * returns the next step to get to new_fsm. The function may need to be called
- * multiple times before reaching new_fsm.
- *
- */
+ 
 int vfio_mig_get_next_state(struct vfio_device *device,
 			    enum vfio_device_mig_state cur_fsm,
 			    enum vfio_device_mig_state new_fsm,
 			    enum vfio_device_mig_state *next_fsm)
 {
 	enum { VFIO_DEVICE_NUM_STATES = VFIO_DEVICE_STATE_PRE_COPY_P2P + 1 };
-	/*
-	 * The coding in this table requires the driver to implement the
-	 * following FSM arcs:
-	 *         RESUMING -> STOP
-	 *         STOP -> RESUMING
-	 *         STOP -> STOP_COPY
-	 *         STOP_COPY -> STOP
-	 *
-	 * If P2P is supported then the driver must also implement these FSM
-	 * arcs:
-	 *         RUNNING -> RUNNING_P2P
-	 *         RUNNING_P2P -> RUNNING
-	 *         RUNNING_P2P -> STOP
-	 *         STOP -> RUNNING_P2P
-	 *
-	 * If precopy is supported then the driver must support these additional
-	 * FSM arcs:
-	 *         RUNNING -> PRE_COPY
-	 *         PRE_COPY -> RUNNING
-	 *         PRE_COPY -> STOP_COPY
-	 * However, if precopy and P2P are supported together then the driver
-	 * must support these additional arcs beyond the P2P arcs above:
-	 *         PRE_COPY -> RUNNING
-	 *         PRE_COPY -> PRE_COPY_P2P
-	 *         PRE_COPY_P2P -> PRE_COPY
-	 *         PRE_COPY_P2P -> RUNNING_P2P
-	 *         PRE_COPY_P2P -> STOP_COPY
-	 *         RUNNING -> PRE_COPY
-	 *         RUNNING_P2P -> PRE_COPY_P2P
-	 *
-	 * Without P2P and precopy the driver must implement:
-	 *         RUNNING -> STOP
-	 *         STOP -> RUNNING
-	 *
-	 * The coding will step through multiple states for some combination
-	 * transitions; if all optional features are supported, this means the
-	 * following ones:
-	 *         PRE_COPY -> PRE_COPY_P2P -> STOP_COPY
-	 *         PRE_COPY -> RUNNING -> RUNNING_P2P
-	 *         PRE_COPY -> RUNNING -> RUNNING_P2P -> STOP
-	 *         PRE_COPY -> RUNNING -> RUNNING_P2P -> STOP -> RESUMING
-	 *         PRE_COPY_P2P -> RUNNING_P2P -> RUNNING
-	 *         PRE_COPY_P2P -> RUNNING_P2P -> STOP
-	 *         PRE_COPY_P2P -> RUNNING_P2P -> STOP -> RESUMING
-	 *         RESUMING -> STOP -> RUNNING_P2P
-	 *         RESUMING -> STOP -> RUNNING_P2P -> PRE_COPY_P2P
-	 *         RESUMING -> STOP -> RUNNING_P2P -> RUNNING
-	 *         RESUMING -> STOP -> RUNNING_P2P -> RUNNING -> PRE_COPY
-	 *         RESUMING -> STOP -> STOP_COPY
-	 *         RUNNING -> RUNNING_P2P -> PRE_COPY_P2P
-	 *         RUNNING -> RUNNING_P2P -> STOP
-	 *         RUNNING -> RUNNING_P2P -> STOP -> RESUMING
-	 *         RUNNING -> RUNNING_P2P -> STOP -> STOP_COPY
-	 *         RUNNING_P2P -> RUNNING -> PRE_COPY
-	 *         RUNNING_P2P -> STOP -> RESUMING
-	 *         RUNNING_P2P -> STOP -> STOP_COPY
-	 *         STOP -> RUNNING_P2P -> PRE_COPY_P2P
-	 *         STOP -> RUNNING_P2P -> RUNNING
-	 *         STOP -> RUNNING_P2P -> RUNNING -> PRE_COPY
-	 *         STOP_COPY -> STOP -> RESUMING
-	 *         STOP_COPY -> STOP -> RUNNING_P2P
-	 *         STOP_COPY -> STOP -> RUNNING_P2P -> RUNNING
-	 *
-	 *  The following transitions are blocked:
-	 *         STOP_COPY -> PRE_COPY
-	 *         STOP_COPY -> PRE_COPY_P2P
-	 */
+	 
 	static const u8 vfio_from_fsm_table[VFIO_DEVICE_NUM_STATES][VFIO_DEVICE_NUM_STATES] = {
 		[VFIO_DEVICE_STATE_STOP] = {
 			[VFIO_DEVICE_STATE_STOP] = VFIO_DEVICE_STATE_STOP,
@@ -792,11 +656,7 @@ int vfio_mig_get_next_state(struct vfio_device *device,
 			state_flags_table[new_fsm])
 		return -EINVAL;
 
-	/*
-	 * Arcs touching optional and unsupported states are skipped over. The
-	 * driver will instead see an arc from the original state to the next
-	 * logical state, as per the above comment.
-	 */
+	 
 	*next_fsm = vfio_from_fsm_table[cur_fsm][new_fsm];
 	while ((state_flags_table[*next_fsm] & device->migration_flags) !=
 			state_flags_table[*next_fsm])
@@ -806,9 +666,7 @@ int vfio_mig_get_next_state(struct vfio_device *device,
 }
 EXPORT_SYMBOL_GPL(vfio_mig_get_next_state);
 
-/*
- * Convert the drivers's struct file into a FD number and return it to userspace
- */
+ 
 static int vfio_ioct_mig_return_fd(struct file *filp, void __user *arg,
 				   struct vfio_device_feature_mig_state *mig)
 {
@@ -871,7 +729,7 @@ vfio_ioctl_device_feature_mig_device_state(struct vfio_device *device,
 		goto out_copy;
 	}
 
-	/* Handle the VFIO_DEVICE_FEATURE_SET */
+	 
 	filp = device->mig_ops->migration_set_state(device, mig.device_state);
 	if (IS_ERR(filp) || !filp)
 		goto out_copy;
@@ -941,7 +799,7 @@ void vfio_combine_iova_ranges(struct rb_root_cached *root, u32 cur_nodes,
 	struct interval_tree_node *prev, *curr, *comb_start, *comb_end;
 	unsigned long min_gap, curr_gap;
 
-	/* Special shortcut when a single range is required */
+	 
 	if (req_nodes == 1) {
 		unsigned long last;
 
@@ -958,7 +816,7 @@ void vfio_combine_iova_ranges(struct rb_root_cached *root, u32 cur_nodes,
 		return;
 	}
 
-	/* Combine ranges which have the smallest gap */
+	 
 	while (cur_nodes > req_nodes) {
 		prev = NULL;
 		min_gap = ULONG_MAX;
@@ -982,7 +840,7 @@ void vfio_combine_iova_ranges(struct rb_root_cached *root, u32 cur_nodes,
 }
 EXPORT_SYMBOL_GPL(vfio_combine_iova_ranges);
 
-/* Ranges should fit into a single kernel page */
+ 
 #define LOG_MAX_RANGES \
 	(PAGE_SIZE / sizeof(struct vfio_device_feature_dma_logging_range))
 
@@ -1049,7 +907,7 @@ vfio_ioctl_device_feature_logging_start(struct vfio_device *device,
 		nodes[i].last = range.iova + range.length - 1;
 		if (interval_tree_iter_first(&root, nodes[i].start,
 					     nodes[i].last)) {
-			/* Range overlapping */
+			 
 			ret = -EINVAL;
 			goto end;
 		}
@@ -1155,13 +1013,13 @@ static int vfio_ioctl_device_feature(struct vfio_device *device,
 	if (feature.argsz < minsz)
 		return -EINVAL;
 
-	/* Check unknown flags */
+	 
 	if (feature.flags &
 	    ~(VFIO_DEVICE_FEATURE_MASK | VFIO_DEVICE_FEATURE_SET |
 	      VFIO_DEVICE_FEATURE_GET | VFIO_DEVICE_FEATURE_PROBE))
 		return -EINVAL;
 
-	/* GET & SET are mutually exclusive except with PROBE */
+	 
 	if (!(feature.flags & VFIO_DEVICE_FEATURE_PROBE) &&
 	    (feature.flags & VFIO_DEVICE_FEATURE_SET) &&
 	    (feature.flags & VFIO_DEVICE_FEATURE_GET))
@@ -1212,7 +1070,7 @@ static long vfio_device_fops_unl_ioctl(struct file *filep,
 	if (cmd == VFIO_DEVICE_BIND_IOMMUFD)
 		return vfio_df_ioctl_bind_iommufd(df, uptr);
 
-	/* Paired with smp_store_release() following vfio_df_open() */
+	 
 	if (!smp_load_acquire(&df->access_granted))
 		return -EINVAL;
 
@@ -1220,7 +1078,7 @@ static long vfio_device_fops_unl_ioctl(struct file *filep,
 	if (ret)
 		return ret;
 
-	/* cdev only ioctls */
+	 
 	if (IS_ENABLED(CONFIG_VFIO_DEVICE_CDEV) && !df->group) {
 		switch (cmd) {
 		case VFIO_DEVICE_ATTACH_IOMMUFD_PT:
@@ -1256,7 +1114,7 @@ static ssize_t vfio_device_fops_read(struct file *filep, char __user *buf,
 	struct vfio_device_file *df = filep->private_data;
 	struct vfio_device *device = df->device;
 
-	/* Paired with smp_store_release() following vfio_df_open() */
+	 
 	if (!smp_load_acquire(&df->access_granted))
 		return -EINVAL;
 
@@ -1273,7 +1131,7 @@ static ssize_t vfio_device_fops_write(struct file *filep,
 	struct vfio_device_file *df = filep->private_data;
 	struct vfio_device *device = df->device;
 
-	/* Paired with smp_store_release() following vfio_df_open() */
+	 
 	if (!smp_load_acquire(&df->access_granted))
 		return -EINVAL;
 
@@ -1288,7 +1146,7 @@ static int vfio_device_fops_mmap(struct file *filep, struct vm_area_struct *vma)
 	struct vfio_device_file *df = filep->private_data;
 	struct vfio_device *device = df->device;
 
-	/* Paired with smp_store_release() following vfio_df_open() */
+	 
 	if (!smp_load_acquire(&df->access_granted))
 		return -EINVAL;
 
@@ -1318,10 +1176,7 @@ static struct vfio_device *vfio_device_from_file(struct file *file)
 	return df->device;
 }
 
-/**
- * vfio_file_is_valid - True if the file is valid vfio file
- * @file: VFIO group file or VFIO device file
- */
+ 
 bool vfio_file_is_valid(struct file *file)
 {
 	return vfio_group_from_file(file) ||
@@ -1329,15 +1184,7 @@ bool vfio_file_is_valid(struct file *file)
 }
 EXPORT_SYMBOL_GPL(vfio_file_is_valid);
 
-/**
- * vfio_file_enforced_coherent - True if the DMA associated with the VFIO file
- *        is always CPU cache coherent
- * @file: VFIO group file or VFIO device file
- *
- * Enforced coherency means that the IOMMU ignores things like the PCIe no-snoop
- * bit in DMA transactions. A return of false indicates that the user has
- * rights to access additional instructions such as wbinvd on x86.
- */
+ 
 bool vfio_file_enforced_coherent(struct file *file)
 {
 	struct vfio_device *device;
@@ -1360,24 +1207,13 @@ static void vfio_device_file_set_kvm(struct file *file, struct kvm *kvm)
 {
 	struct vfio_device_file *df = file->private_data;
 
-	/*
-	 * The kvm is first recorded in the vfio_device_file, and will
-	 * be propagated to vfio_device::kvm when the file is bound to
-	 * iommufd successfully in the vfio device cdev path.
-	 */
+	 
 	spin_lock(&df->kvm_ref_lock);
 	df->kvm = kvm;
 	spin_unlock(&df->kvm_ref_lock);
 }
 
-/**
- * vfio_file_set_kvm - Link a kvm with VFIO drivers
- * @file: VFIO group file or VFIO device file
- * @kvm: KVM to link
- *
- * When a VFIO device is first opened the KVM will be available in
- * device->kvm if one was associated with the file.
- */
+ 
 void vfio_file_set_kvm(struct file *file, struct kvm *kvm)
 {
 	struct vfio_group *group;
@@ -1391,25 +1227,15 @@ void vfio_file_set_kvm(struct file *file, struct kvm *kvm)
 }
 EXPORT_SYMBOL_GPL(vfio_file_set_kvm);
 
-/*
- * Sub-module support
- */
-/*
- * Helper for managing a buffer of info chain capabilities, allocate or
- * reallocate a buffer with additional @size, filling in @id and @version
- * of the capability.  A pointer to the new capability is returned.
- *
- * NB. The chain is based at the head of the buffer, so new entries are
- * added to the tail, vfio_info_cap_shift() should be called to fixup the
- * next offsets prior to copying to the user buffer.
- */
+ 
+ 
 struct vfio_info_cap_header *vfio_info_cap_add(struct vfio_info_cap *caps,
 					       size_t size, u16 id, u16 version)
 {
 	void *buf;
 	struct vfio_info_cap_header *header, *tmp;
 
-	/* Ensure that the next capability struct will be aligned */
+	 
 	size = ALIGN(size, sizeof(u64));
 
 	buf = krealloc(caps->buf, caps->size + size, GFP_KERNEL);
@@ -1423,15 +1249,15 @@ struct vfio_info_cap_header *vfio_info_cap_add(struct vfio_info_cap *caps,
 	caps->buf = buf;
 	header = buf + caps->size;
 
-	/* Eventually copied to user buffer, zero */
+	 
 	memset(header, 0, size);
 
 	header->id = id;
 	header->version = version;
 
-	/* Add to the end of the capability chain */
+	 
 	for (tmp = buf; tmp->next; tmp = buf + tmp->next)
-		; /* nothing */
+		;  
 
 	tmp->next = caps->size;
 	caps->size += size;
@@ -1445,7 +1271,7 @@ void vfio_info_cap_shift(struct vfio_info_cap *caps, size_t offset)
 	struct vfio_info_cap_header *tmp;
 	void *buf = (void *)caps->buf;
 
-	/* Capability structs should start with proper alignment */
+	 
 	WARN_ON(!IS_ALIGNED(offset, sizeof(u64)));
 
 	for (tmp = buf; tmp->next; tmp = buf + tmp->next - offset)
@@ -1516,24 +1342,11 @@ int vfio_set_irqs_validate_and_prepare(struct vfio_irq_set *hdr, int num_irqs,
 }
 EXPORT_SYMBOL(vfio_set_irqs_validate_and_prepare);
 
-/*
- * Pin contiguous user pages and return their associated host pages for local
- * domain only.
- * @device [in]  : device
- * @iova [in]    : starting IOVA of user pages to be pinned.
- * @npage [in]   : count of pages to be pinned.  This count should not
- *		   be greater than VFIO_PIN_PAGES_MAX_ENTRIES.
- * @prot [in]    : protection flags
- * @pages[out]   : array of host pages
- * Return error or number of pages pinned.
- *
- * A driver may only call this function if the vfio_device was created
- * by vfio_register_emulated_iommu_dev() due to vfio_device_container_pin_pages().
- */
+ 
 int vfio_pin_pages(struct vfio_device *device, dma_addr_t iova,
 		   int npage, int prot, struct page **pages)
 {
-	/* group->container cannot change while a vfio device is open */
+	 
 	if (!pages || !npage || WARN_ON(!vfio_assert_device_open(device)))
 		return -EINVAL;
 	if (!device->ops->dma_unmap)
@@ -1546,12 +1359,7 @@ int vfio_pin_pages(struct vfio_device *device, dma_addr_t iova,
 
 		if (iova > ULONG_MAX)
 			return -EINVAL;
-		/*
-		 * VFIO ignores the sub page offset, npages is from the start of
-		 * a PAGE_SIZE chunk of IOVA. The caller is expected to recover
-		 * the sub page offset by doing:
-		 *     pages[0] + (iova % PAGE_SIZE)
-		 */
+		 
 		ret = iommufd_access_pin_pages(
 			device->iommufd_access, ALIGN_DOWN(iova, PAGE_SIZE),
 			npage * PAGE_SIZE, pages,
@@ -1564,13 +1372,7 @@ int vfio_pin_pages(struct vfio_device *device, dma_addr_t iova,
 }
 EXPORT_SYMBOL(vfio_pin_pages);
 
-/*
- * Unpin contiguous host pages for local domain only.
- * @device [in]  : device
- * @iova [in]    : starting address of user pages to be unpinned.
- * @npage [in]   : count of pages to be unpinned.  This count should not
- *                 be greater than VFIO_PIN_PAGES_MAX_ENTRIES.
- */
+ 
 void vfio_unpin_pages(struct vfio_device *device, dma_addr_t iova, int npage)
 {
 	if (WARN_ON(!vfio_assert_device_open(device)))
@@ -1593,23 +1395,7 @@ void vfio_unpin_pages(struct vfio_device *device, dma_addr_t iova, int npage)
 }
 EXPORT_SYMBOL(vfio_unpin_pages);
 
-/*
- * This interface allows the CPUs to perform some sort of virtual DMA on
- * behalf of the device.
- *
- * CPUs read/write from/into a range of IOVAs pointing to user space memory
- * into/from a kernel buffer.
- *
- * As the read/write of user space memory is conducted via the CPUs and is
- * not a real device DMA, it is not necessary to pin the user space memory.
- *
- * @device [in]		: VFIO device
- * @iova [in]		: base IOVA of a user space buffer
- * @data [in]		: pointer to kernel buffer
- * @len [in]		: kernel buffer length
- * @write		: indicate read or write
- * Return error code on failure or 0 on success.
- */
+ 
 int vfio_dma_rw(struct vfio_device *device, dma_addr_t iova, void *data,
 		size_t len, bool write)
 {
@@ -1626,7 +1412,7 @@ int vfio_dma_rw(struct vfio_device *device, dma_addr_t iova, void *data,
 		if (iova > ULONG_MAX)
 			return -EINVAL;
 
-		/* VFIO historically tries to auto-detect a kthread */
+		 
 		if (!current->mm)
 			flags |= IOMMUFD_ACCESS_RW_KTHREAD;
 		if (write)
@@ -1638,9 +1424,7 @@ int vfio_dma_rw(struct vfio_device *device, dma_addr_t iova, void *data,
 }
 EXPORT_SYMBOL(vfio_dma_rw);
 
-/*
- * Module/class support
- */
+ 
 static int __init vfio_init(void)
 {
 	int ret;
@@ -1655,7 +1439,7 @@ static int __init vfio_init(void)
 	if (ret)
 		goto err_virqfd;
 
-	/* /sys/class/vfio-dev/vfioX */
+	 
 	vfio.device_class = class_create("vfio-dev");
 	if (IS_ERR(vfio.device_class)) {
 		ret = PTR_ERR(vfio.device_class);

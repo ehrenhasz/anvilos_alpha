@@ -1,36 +1,4 @@
-/*
- * This file is part of the Chelsio T4/T5/T6 Ethernet driver for Linux.
- *
- * Copyright (c) 2017 Chelsio Communications, Inc. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 
 #include <net/tc_act/tc_mirred.h>
 #include <net/tc_act/tc_pedit.h>
@@ -61,7 +29,7 @@ static struct ch_tc_pedit_fields pedits[] = {
 };
 
 static const struct cxgb4_natmode_config cxgb4_natmode_config_array[] = {
-	/* Default supported NAT modes */
+	 
 	{
 		.chip = CHELSIO_T5,
 		.flags = CXGB4_ACTION_NATMODE_NONE,
@@ -107,7 +75,7 @@ static const struct cxgb4_natmode_config cxgb4_natmode_config_array[] = {
 			 CXGB4_ACTION_NATMODE_SPORT,
 		.natmode = NAT_MODE_ALL,
 	},
-	/* T6+ can ignore L4 ports when they're disabled. */
+	 
 	{
 		.chip = CHELSIO_T6,
 		.flags = CXGB4_ACTION_NATMODE_SIP,
@@ -130,11 +98,7 @@ static void cxgb4_action_natmode_tweak(struct ch_filter_specification *fs,
 {
 	u8 i = 0;
 
-	/* Translate the enabled NAT 4-tuple fields to one of the
-	 * hardware supported NAT mode configurations. This ensures
-	 * that we pick a valid combination, where the disabled fields
-	 * do not get overwritten to 0.
-	 */
+	 
 	for (i = 0; i < ARRAY_SIZE(cxgb4_natmode_config_array); i++) {
 		if (cxgb4_natmode_config_array[i].flags == natmode_flags) {
 			fs->nat_mode = cxgb4_natmode_config_array[i].natmode;
@@ -151,7 +115,7 @@ static struct ch_tc_flower_entry *allocate_flower_entry(void)
 	return new;
 }
 
-/* Must be called with either RTNL or rcu_read_lock */
+ 
 static struct ch_tc_flower_entry *ch_flower_lookup(struct adapter *adap,
 						   unsigned long flower_cookie)
 {
@@ -208,7 +172,7 @@ static void cxgb4_process_flow_match(struct net_device *dev,
 		memcpy(&fs->mask.lip[0], &match.mask->dst, sizeof(match.mask->dst));
 		memcpy(&fs->mask.fip[0], &match.mask->src, sizeof(match.mask->src));
 
-		/* also initialize nat_lip/fip to same values */
+		 
 		memcpy(&fs->nat_lip[0], &match.key->dst, sizeof(match.key->dst));
 		memcpy(&fs->nat_fip[0], &match.key->src, sizeof(match.key->src));
 	}
@@ -227,7 +191,7 @@ static void cxgb4_process_flow_match(struct net_device *dev,
 		memcpy(&fs->mask.fip[0], match.mask->src.s6_addr,
 		       sizeof(match.mask->src));
 
-		/* also initialize nat_lip/fip to same values */
+		 
 		memcpy(&fs->nat_lip[0], match.key->dst.s6_addr,
 		       sizeof(match.key->dst));
 		memcpy(&fs->nat_fip[0], match.key->src.s6_addr,
@@ -243,7 +207,7 @@ static void cxgb4_process_flow_match(struct net_device *dev,
 		fs->val.fport = be16_to_cpu(match.key->src);
 		fs->mask.fport = be16_to_cpu(match.mask->src);
 
-		/* also initialize nat_lport/fport to same values */
+		 
 		fs->nat_lport = fs->val.lport;
 		fs->nat_fport = fs->val.fport;
 	}
@@ -283,24 +247,14 @@ static void cxgb4_process_flow_match(struct net_device *dev,
 		fs->val.ivlan_vld = 1;
 		fs->mask.ivlan_vld = 1;
 
-		/* Chelsio adapters use ivlan_vld bit to match vlan packets
-		 * as 802.1Q. Also, when vlan tag is present in packets,
-		 * ethtype match is used then to match on ethtype of inner
-		 * header ie. the header following the vlan header.
-		 * So, set the ivlan_vld based on ethtype info supplied by
-		 * TC for vlan packets if its 802.1Q. And then reset the
-		 * ethtype value else, hw will try to match the supplied
-		 * ethtype value with ethtype of inner header.
-		 */
+		 
 		if (fs->val.ethtype == ETH_P_8021Q) {
 			fs->val.ethtype = 0;
 			fs->mask.ethtype = 0;
 		}
 	}
 
-	/* Match only packets coming from the ingress port where this
-	 * filter will be created.
-	 */
+	 
 	fs->val.iport = netdev2pinfo(dev)->port_id;
 	fs->mask.iport = ~0;
 }
@@ -472,10 +426,7 @@ static int cxgb4_action_natmode_validate(struct adapter *adap, u8 natmode_flags,
 {
 	u8 i = 0;
 
-	/* Extract the NAT mode to enable based on what 4-tuple fields
-	 * are enabled to be overwritten. This ensures that the
-	 * disabled fields don't get overwritten to 0.
-	 */
+	 
 	for (i = 0; i < ARRAY_SIZE(cxgb4_natmode_config_array); i++) {
 		const struct cxgb4_natmode_config *c;
 
@@ -567,9 +518,7 @@ static bool valid_l4_mask(u32 mask)
 {
 	u16 hi, lo;
 
-	/* Either the upper 16-bits (SPORT) OR the lower
-	 * 16-bits (DPORT) can be set, but NOT BOTH.
-	 */
+	 
 	hi = (mask >> 16) & 0xFFFF;
 	lo = mask & 0xFFFF;
 
@@ -699,7 +648,7 @@ int cxgb4_validate_flow_actions(struct net_device *dev,
 		switch (act->id) {
 		case FLOW_ACTION_ACCEPT:
 		case FLOW_ACTION_DROP:
-			/* Do nothing */
+			 
 			break;
 		case FLOW_ACTION_MIRRED:
 		case FLOW_ACTION_REDIRECT: {
@@ -723,9 +672,7 @@ int cxgb4_validate_flow_actions(struct net_device *dev,
 				}
 			}
 
-			/* If interface doesn't belong to our hw, then
-			 * the provided output port is not valid
-			 */
+			 
 			if (!found) {
 				netdev_err(dev, "%s: Out port invalid\n",
 					   __func__);
@@ -768,7 +715,7 @@ int cxgb4_validate_flow_actions(struct net_device *dev,
 			}
 			break;
 		case FLOW_ACTION_QUEUE:
-			/* Do nothing. cxgb4_set_filter will validate */
+			 
 			break;
 		default:
 			netdev_err(dev, "%s: Unsupported action\n", __func__);
@@ -810,15 +757,11 @@ static void cxgb4_tc_flower_hash_prio_del(struct adapter *adap, u32 tc_prio)
 	u32 found = 0;
 
 	spin_lock_bh(&t->ftid_lock);
-	/* Bail if the current rule is not the one with the max
-	 * prio.
-	 */
+	 
 	if (t->tc_hash_tids_max_prio != tc_prio)
 		goto out_unlock;
 
-	/* Search for the next rule having the same or next lower
-	 * max prio.
-	 */
+	 
 	rhashtable_walk_enter(&adap->flower_tbl, &iter);
 	do {
 		rhashtable_walk_start(&iter);
@@ -830,10 +773,7 @@ static void cxgb4_tc_flower_hash_prio_del(struct adapter *adap, u32 tc_prio)
 				t->tc_hash_tids_max_prio = fe->fs.tc_prio;
 				found++;
 
-				/* Bail if we found another rule
-				 * having the same prio as the
-				 * current max one.
-				 */
+				 
 				if (fe->fs.tc_prio == tc_prio)
 					break;
 			}
@@ -873,10 +813,7 @@ int cxgb4_flow_rule_replace(struct net_device *dev, struct flow_rule *rule,
 	fs->hash = is_filter_exact_match(adap, fs);
 	inet_family = fs->type ? PF_INET6 : PF_INET;
 
-	/* Get a free filter entry TID, where we can insert this new
-	 * rule. Only insert rule if its prio doesn't conflict with
-	 * existing rules.
-	 */
+	 
 	fidx = cxgb4_get_free_ftid(dev, inet_family, fs->hash,
 				   tc_prio);
 	if (fidx < 0) {
@@ -890,9 +827,7 @@ int cxgb4_flow_rule_replace(struct net_device *dev, struct flow_rule *rule,
 		fs->hash = 0;
 	}
 
-	/* If the rule can be inserted into HASH region, then ignore
-	 * the index to normal FILTER region.
-	 */
+	 
 	if (fs->hash)
 		fidx = 0;
 
@@ -906,12 +841,12 @@ int cxgb4_flow_rule_replace(struct net_device *dev, struct flow_rule *rule,
 		return ret;
 	}
 
-	/* Wait for reply */
+	 
 	ret = wait_for_completion_timeout(&ctx.completion, 10 * HZ);
 	if (!ret)
 		return -ETIMEDOUT;
 
-	/* Check if hw returned error for filter creation */
+	 
 	if (ctx.result)
 		return ctx.result;
 

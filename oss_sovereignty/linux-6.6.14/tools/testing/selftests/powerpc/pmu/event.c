@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright 2013, Michael Ellerman, IBM Corp.
- */
+
+ 
 
 #define _GNU_SOURCE
 #include <unistd.h>
@@ -31,7 +29,7 @@ static void  __event_init_opts(struct event *e, u64 config,
 	e->attr.type = type;
 	e->attr.config = config;
 	e->attr.size = sizeof(e->attr);
-	/* This has to match the structure layout in the header */
+	 
 	e->attr.read_format = PERF_FORMAT_TOTAL_TIME_ENABLED | \
 				  PERF_FORMAT_TOTAL_TIME_RUNNING;
 	if (sampling) {

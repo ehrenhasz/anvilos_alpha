@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
-/*
- * MEI UUID definition
- *
- * Copyright (C) 2010, Intel Corp.
- *	Huang Ying <ying.huang@intel.com>
- */
+ 
+ 
 
 #ifndef _UAPI_LINUX_MEI_UUID_H_
 #define _UAPI_LINUX_MEI_UUID_H_
@@ -26,4 +21,4 @@ typedef struct {
 	UUID_LE(0x00000000, 0x0000, 0x0000, 0x00, 0x00, 0x00, 0x00,	\
 	     0x00, 0x00, 0x00, 0x00)
 
-#endif /* _UAPI_LINUX_MEI_UUID_H_ */
+#endif  

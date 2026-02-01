@@ -1,30 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Provide access to virtual console memory.
- * /dev/vcs: the screen as it is being viewed right now (possibly scrolled)
- * /dev/vcsN: the screen of /dev/ttyN (1 <= N <= 63)
- *            [minor: N]
- *
- * /dev/vcsaN: idem, but including attributes, and prefixed with
- *	the 4 bytes lines,columns,x,y (as screendump used to give).
- *	Attribute/character pair is in native endianity.
- *            [minor: N+128]
- *
- * /dev/vcsuN: similar to /dev/vcsaN but using 4-byte unicode values
- *	instead of 1-byte screen glyph values.
- *            [minor: N+64]
- *
- * /dev/vcsuaN: same idea as /dev/vcsaN for unicode (not yet implemented).
- *
- * This replaces screendump and part of selection, so that the system
- * administrator can control access using file system permissions.
- *
- * aeb@cwi.nl - efter Friedas begravelse - 950211
- *
- * machek@k332.feld.cvut.cz - modified not to send characters to wrong console
- *	 - fixed some fatal off-by-one bugs (0-- no longer == -1 -> looping and looping and looping...)
- *	 - making it shorter - scr_readw are macros which expand in PRETTY long code
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/major.h>
@@ -53,17 +28,7 @@
 #define HEADER_SIZE	4u
 #define CON_BUF_SIZE (CONFIG_BASE_SMALL ? 256 : PAGE_SIZE)
 
-/*
- * Our minor space:
- *
- *   0 ... 63	glyph mode without attributes
- *  64 ... 127	unicode mode without attributes
- * 128 ... 191	glyph mode with attributes
- * 192 ... 255	unused (reserved for unicode with attributes)
- *
- * This relies on MAX_NR_CONSOLES being  <= 63, meaning 63 actual consoles
- * with minors 0, 64, 128 and 192 being proxies for the foreground console.
- */
+ 
 #if MAX_NR_CONSOLES > 63
 #warning "/dev/vcs* devices may not accommodate more than 63 consoles"
 #endif
@@ -136,13 +101,7 @@ vcs_poll_data_get(struct file *file)
 	poll->cons_num = console(file_inode(file));
 	init_waitqueue_head(&poll->waitq);
 	poll->notifier.notifier_call = vcs_notifier;
-	/*
-	 * In order not to lose any update event, we must pretend one might
-	 * have occurred before we have a chance to register our notifier.
-	 * This is also how user space has come to detect which kernels
-	 * support POLLPRI on /dev/vcs* devices i.e. using poll() with
-	 * POLLPRI and a zero timeout.
-	 */
+	 
 	poll->event = VT_UPDATE;
 
 	if (register_vt_notifier(&poll->notifier) != 0) {
@@ -150,19 +109,12 @@ vcs_poll_data_get(struct file *file)
 		return NULL;
 	}
 
-	/*
-	 * This code may be called either through ->poll() or ->fasync().
-	 * If we have two threads using the same file descriptor, they could
-	 * both enter this function, both notice that the structure hasn't
-	 * been allocated yet and go ahead allocating it in parallel, but
-	 * only one of them must survive and be shared otherwise we'd leak
-	 * memory with a dangling notifier callback.
-	 */
+	 
 	spin_lock(&file->f_lock);
 	if (!file->private_data) {
 		file->private_data = poll;
 	} else {
-		/* someone else raced ahead of us */
+		 
 		kill = poll;
 		poll = file->private_data;
 	}
@@ -173,13 +125,7 @@ vcs_poll_data_get(struct file *file)
 	return poll;
 }
 
-/**
- * vcs_vc -- return VC for @inode
- * @inode: inode for which to return a VC
- * @viewed: returns whether this console is currently foreground (viewed)
- *
- * Must be called with console_lock.
- */
+ 
 static struct vc_data *vcs_vc(struct inode *inode, bool *viewed)
 {
 	unsigned int currcons = console(inode);
@@ -198,14 +144,7 @@ static struct vc_data *vcs_vc(struct inode *inode, bool *viewed)
 	return vc_cons[currcons].d;
 }
 
-/**
- * vcs_size -- return size for a VC in @vc
- * @vc: which VC
- * @attr: does it use attributes?
- * @unicode: is it unicode?
- *
- * Must be called with console_lock.
- */
+ 
 static int vcs_size(const struct vc_data *vc, bool attr, bool unicode)
 {
 	int size;
@@ -302,7 +241,7 @@ static unsigned int vcs_read_buf(const struct vc_data *vc, char *con_buf,
 	unsigned int filled = count;
 
 	if (pos < HEADER_SIZE) {
-		/* clamp header values if they don't fit */
+		 
 		con_buf[0] = min(vc->vc_rows, 0xFFu);
 		con_buf[1] = min(vc->vc_cols, 0xFFu);
 		getconsxy(vc, con_buf + 2);
@@ -314,16 +253,13 @@ static unsigned int vcs_read_buf(const struct vc_data *vc, char *con_buf,
 			filled = count - pos;
 		}
 
-		/* Advance state pointers and move on. */
+		 
 		count -= min(HEADER_SIZE, count);
 		pos = HEADER_SIZE;
 		con_buf += HEADER_SIZE;
-		/* If count >= 0, then pos is even... */
+		 
 	} else if (pos & 1) {
-		/*
-		 * Skip first byte for output if start address is odd. Update
-		 * region sizes up/down depending on free space in buffer.
-		 */
+		 
 		(*skip)++;
 		if (count < CON_BUF_SIZE)
 			count++;
@@ -341,10 +277,7 @@ static unsigned int vcs_read_buf(const struct vc_data *vc, char *con_buf,
 	org = screen_pos(vc, pos, viewed);
 	pos += maxcol - col;
 
-	/*
-	 * Buffer has even length, so we can always copy character + attribute.
-	 * We do not copy last byte to userspace if count is odd.
-	 */
+	 
 	count = (count + 1) / 2;
 	con_buf16 = (u16 *)con_buf;
 
@@ -379,9 +312,7 @@ vcs_read(struct file *file, char __user *buf, size_t count, loff_t *ppos)
 
 	pos = *ppos;
 
-	/* Select the proper current console and verify
-	 * sanity of the situation under the console lock.
-	 */
+	 
 	console_lock();
 
 	uni_mode = use_unicode(inode);
@@ -390,7 +321,7 @@ vcs_read(struct file *file, char __user *buf, size_t count, loff_t *ppos)
 	ret = -EINVAL;
 	if (pos < 0)
 		goto unlock_out;
-	/* we enforce 32-bit alignment for pos and count in unicode mode */
+	 
 	if (uni_mode && (pos | count) & 3)
 		goto unlock_out;
 
@@ -409,10 +340,7 @@ vcs_read(struct file *file, char __user *buf, size_t count, loff_t *ppos)
 			break;
 		}
 
-		/* Check whether we are above size each round,
-		 * as copy_to_user at the end of this loop
-		 * could sleep.
-		 */
+		 
 		size = vcs_size(vc, attr, uni_mode);
 		if (size < 0) {
 			ret = size;
@@ -427,10 +355,7 @@ vcs_read(struct file *file, char __user *buf, size_t count, loff_t *ppos)
 		if (this_round > CON_BUF_SIZE)
 			this_round = CON_BUF_SIZE;
 
-		/* Perform the whole read into the local con_buf.
-		 * Then we can drop the console spinlock and safely
-		 * attempt to move it to userspace.
-		 */
+		 
 
 		if (uni_mode) {
 			ret = vcs_read_buf_uni(vc, con_buf, pos, this_round,
@@ -445,12 +370,7 @@ vcs_read(struct file *file, char __user *buf, size_t count, loff_t *ppos)
 					viewed, &skip);
 		}
 
-		/* Finally, release the console semaphore while we push
-		 * all the data to userspace from our temporary buffer.
-		 *
-		 * AKPM: Even though it's a semaphore, we should drop it because
-		 * the pagefault handling code may want to call printk().
-		 */
+		 
 
 		console_unlock();
 		ret = copy_to_user(buf, con_buf + skip, this_round);
@@ -502,10 +422,7 @@ static u16 *vcs_write_buf_noattr(struct vc_data *vc, const char *con_buf,
 	return org;
 }
 
-/*
- * Compilers (gcc 10) are unable to optimize the swap in cpu_to_le16. So do it
- * the poor man way.
- */
+ 
 static inline u16 vc_compile_le16(u8 hi, u8 lo)
 {
 #ifdef __BIG_ENDIAN
@@ -522,7 +439,7 @@ static u16 *vcs_write_buf(struct vc_data *vc, const char *con_buf,
 	unsigned int col, maxcol = vc->vc_cols;
 	unsigned char c;
 
-	/* header */
+	 
 	if (pos < HEADER_SIZE) {
 		char header[HEADER_SIZE];
 
@@ -543,7 +460,7 @@ static u16 *vcs_write_buf(struct vc_data *vc, const char *con_buf,
 
 	*org0 = org = screen_pos(vc, pos/2, viewed);
 
-	/* odd pos -- the first single character */
+	 
 	if (pos & 1) {
 		count--;
 		c = *con_buf++;
@@ -560,7 +477,7 @@ static u16 *vcs_write_buf(struct vc_data *vc, const char *con_buf,
 	pos /= 2;
 	pos += maxcol - col;
 
-	/* even pos -- handle attr+character pairs */
+	 
 	while (count > 1) {
 		unsigned short w;
 
@@ -578,7 +495,7 @@ static u16 *vcs_write_buf(struct vc_data *vc, const char *con_buf,
 	if (!count)
 		return org;
 
-	/* odd pos -- the remaining character */
+	 
 	c = *con_buf++;
 	vcs_scr_writew(vc, vc_compile_le16(vcs_scr_readw(vc, org) >> 8, c),
 				org);
@@ -608,9 +525,7 @@ vcs_write(struct file *file, const char __user *buf, size_t count, loff_t *ppos)
 
 	pos = *ppos;
 
-	/* Select the proper current console and verify
-	 * sanity of the situation under the console lock.
-	 */
+	 
 	console_lock();
 
 	attr = use_attributes(inode);
@@ -636,9 +551,7 @@ vcs_write(struct file *file, const char __user *buf, size_t count, loff_t *ppos)
 		if (this_round > CON_BUF_SIZE)
 			this_round = CON_BUF_SIZE;
 
-		/* Temporarily drop the console lock so that we can read
-		 * in the write data from userspace safely.
-		 */
+		 
 		console_unlock();
 		ret = copy_from_user(con_buf, buf, this_round);
 		console_lock();
@@ -646,9 +559,7 @@ vcs_write(struct file *file, const char __user *buf, size_t count, loff_t *ppos)
 		if (ret) {
 			this_round -= ret;
 			if (!this_round) {
-				/* Abort loop if no data were copied. Otherwise
-				 * fail with -EFAULT.
-				 */
+				 
 				if (written)
 					break;
 				ret = -EFAULT;
@@ -656,10 +567,7 @@ vcs_write(struct file *file, const char __user *buf, size_t count, loff_t *ppos)
 			}
 		}
 
-		/* The vc might have been freed or vcs_size might have changed
-		 * while we slept to grab the user buffer, so recheck.
-		 * Return data written up to now on failure.
-		 */
+		 
 		vc = vcs_vc(inode, &viewed);
 		if (!vc) {
 			if (written)
@@ -679,9 +587,7 @@ vcs_write(struct file *file, const char __user *buf, size_t count, loff_t *ppos)
 		if (this_round > size - pos)
 			this_round = size - pos;
 
-		/* OK, now actually push the write to the console
-		 * under the lock using the local kernel buffer.
-		 */
+		 
 
 		if (attr)
 			org = vcs_write_buf(vc, con_buf, pos, this_round,
@@ -737,7 +643,7 @@ vcs_fasync(int fd, struct file *file, int on)
 	struct vcs_poll_data *poll = file->private_data;
 
 	if (!poll) {
-		/* don't allocate anything if all we want is disable fasync */
+		 
 		if (!on)
 			return 0;
 		poll = vcs_poll_data_get(file);
@@ -756,7 +662,7 @@ vcs_open(struct inode *inode, struct file *filp)
 	bool uni_mode = use_unicode(inode);
 	int ret = 0;
 
-	/* we currently don't support attributes in unicode mode */
+	 
 	if (attr && uni_mode)
 		return -EOPNOTSUPP;
 

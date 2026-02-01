@@ -1,9 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0-only
 
-/*
- * A simple wrapper around refcount. An allocated sched_core_cookie's
- * address is used to compute the cookie of the task.
- */
+
+ 
 struct sched_core_cookie {
 	refcount_t refcnt;
 };
@@ -40,16 +37,7 @@ static unsigned long sched_core_get_cookie(unsigned long cookie)
 	return cookie;
 }
 
-/*
- * sched_core_update_cookie - replace the cookie on a task
- * @p: the task to update
- * @cookie: the new cookie
- *
- * Effectively exchange the task cookie; caller is responsible for lifetimes on
- * both ends.
- *
- * Returns: the old cookie
- */
+ 
 static unsigned long sched_core_update_cookie(struct task_struct *p,
 					      unsigned long cookie)
 {
@@ -59,12 +47,7 @@ static unsigned long sched_core_update_cookie(struct task_struct *p,
 
 	rq = task_rq_lock(p, &rf);
 
-	/*
-	 * Since creating a cookie implies sched_core_get(), and we cannot set
-	 * a cookie until after we've created it, similarly, we cannot destroy
-	 * a cookie until after we've removed it, we must have core scheduling
-	 * enabled here.
-	 */
+	 
 	SCHED_WARN_ON((p->core_cookie || cookie) && !sched_core_enabled(rq));
 
 	if (sched_core_enqueued(p))
@@ -73,21 +56,11 @@ static unsigned long sched_core_update_cookie(struct task_struct *p,
 	old_cookie = p->core_cookie;
 	p->core_cookie = cookie;
 
-	/*
-	 * Consider the cases: !prev_cookie and !cookie.
-	 */
+	 
 	if (cookie && task_on_rq_queued(p))
 		sched_core_enqueue(rq, p);
 
-	/*
-	 * If task is currently running, it may not be compatible anymore after
-	 * the cookie change, so enter the scheduler on its CPU to schedule it
-	 * away.
-	 *
-	 * Note that it is possible that as a result of this cookie change, the
-	 * core has now entered/left forced idle state. Defer accounting to the
-	 * next scheduling edge, rather than always forcing a reschedule here.
-	 */
+	 
 	if (task_on_cpu(rq, p))
 		resched_curr(rq);
 
@@ -125,7 +98,7 @@ static void __sched_core_set(struct task_struct *p, unsigned long cookie)
 	sched_core_put_cookie(cookie);
 }
 
-/* Called from prctl interface: PR_SCHED_CORE */
+ 
 int sched_core_share_pid(unsigned int cmd, pid_t pid, enum pid_type type,
 			 unsigned long uaddr)
 {
@@ -158,10 +131,7 @@ int sched_core_share_pid(unsigned int cmd, pid_t pid, enum pid_type type,
 	get_task_struct(task);
 	rcu_read_unlock();
 
-	/*
-	 * Check if this process has the right to modify the specified
-	 * process. Use the regular "ptrace_may_access()" checks.
-	 */
+	 
 	if (!ptrace_may_access(task, PTRACE_MODE_READ_REALCREDS)) {
 		err = -EPERM;
 		goto out;
@@ -175,7 +145,7 @@ int sched_core_share_pid(unsigned int cmd, pid_t pid, enum pid_type type,
 		}
 		cookie = sched_core_clone_cookie(task);
 		if (cookie) {
-			/* XXX improve ? */
+			 
 			ptr_to_hashval((void *)cookie, &id);
 		}
 		err = put_user(id, (u64 __user *)uaddr);
@@ -236,7 +206,7 @@ out:
 
 #ifdef CONFIG_SCHEDSTATS
 
-/* REQUIRES: rq->core's clock recently updated. */
+ 
 void __sched_core_account_forceidle(struct rq *rq)
 {
 	const struct cpumask *smt_mask = cpu_smt_mask(cpu_of(rq));
@@ -259,14 +229,10 @@ void __sched_core_account_forceidle(struct rq *rq)
 	rq->core->core_forceidle_start = now;
 
 	if (WARN_ON_ONCE(!rq->core->core_forceidle_occupation)) {
-		/* can't be forced idle without a running task */
+		 
 	} else if (rq->core->core_forceidle_count > 1 ||
 		   rq->core->core_forceidle_occupation > 1) {
-		/*
-		 * For larger SMT configurations, we need to scale the charged
-		 * forced idle amount since there can be more than one forced
-		 * idle sibling and more than one running cookied task.
-		 */
+		 
 		delta *= rq->core->core_forceidle_count;
 		delta = div_u64(delta, rq->core->core_forceidle_occupation);
 	}
@@ -278,10 +244,7 @@ void __sched_core_account_forceidle(struct rq *rq)
 		if (p == rq_i->idle)
 			continue;
 
-		/*
-		 * Note: this will account forceidle to the current cpu, even
-		 * if it comes from our SMT sibling.
-		 */
+		 
 		__account_forceidle_time(p, delta);
 	}
 }
@@ -297,4 +260,4 @@ void __sched_core_tick(struct rq *rq)
 	__sched_core_account_forceidle(rq);
 }
 
-#endif /* CONFIG_SCHEDSTATS */
+#endif  

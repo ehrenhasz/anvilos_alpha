@@ -1,8 +1,4 @@
-/*
- * Copyright (c) 2017 Martin Blumenstingl <martin.blumenstingl@googlemail.com>
- *
- * SPDX-License-Identifier: GPL-2.0+
- */
+ 
 
 #include <linux/io.h>
 #include <linux/of.h>
@@ -101,7 +97,7 @@ static const char *meson_mx_socinfo_soc_id(unsigned int major_ver,
 static const struct of_device_id meson_mx_socinfo_analog_top_ids[] = {
 	{ .compatible = "amlogic,meson8-analog-top", },
 	{ .compatible = "amlogic,meson8b-analog-top", },
-	{ /* sentinel */ }
+	{   }
 };
 
 static int __init meson_mx_socinfo_init(void)

@@ -1,18 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  linux/drivers/mmc/host/pxa.c - PXA MMCI driver
- *
- *  Copyright (C) 2003 Russell King, All Rights Reserved.
- *
- *  This hardware is really sick:
- *   - No way to clear interrupts.
- *   - Have to turn off the clock whenever we touch the device.
- *   - Doesn't tell you how many data blocks were transferred.
- *  Yuck!
- *
- *	1 and 3 byte data transfers not supported
- *	max block length up to 1023
- */
+
+ 
 #include <linux/module.h>
 #include <linux/init.h>
 #include <linux/ioport.h>
@@ -83,7 +70,7 @@ static int pxamci_init_ocr(struct pxamci_host *host)
 		return ret;
 
 	if (IS_ERR(mmc->supply.vmmc)) {
-		/* fall-back to platform data */
+		 
 		mmc->ocr_avail = host->pdata ?
 			host->pdata->ocr_mask :
 			MMC_VDD_32_33 | MMC_VDD_33_34;
@@ -219,12 +206,7 @@ static void pxamci_setup_data(struct pxamci_host *host, struct mmc_data *data)
 
 	host->dma_cookie = dmaengine_submit(tx);
 
-	/*
-	 * workaround for erratum #91:
-	 * only start DMA now if we are doing a read,
-	 * otherwise we wait until CMD/RESP has finished
-	 * before starting DMA.
-	 */
+	 
 	if (!cpu_is_pxa27x() || data->flags & MMC_DATA_READ)
 		dma_async_issue_pending(chan);
 }
@@ -239,7 +221,7 @@ static void pxamci_start_cmd(struct pxamci_host *host, struct mmc_command *cmd, 
 
 #define RSP_TYPE(x)	((x) & ~(MMC_RSP_BUSY|MMC_RSP_OPCODE))
 	switch (RSP_TYPE(mmc_resp_type(cmd))) {
-	case RSP_TYPE(MMC_RSP_R1): /* r1, r1b, r6, r7 */
+	case RSP_TYPE(MMC_RSP_R1):  
 		cmdat |= CMDAT_RESP_SHORT;
 		break;
 	case RSP_TYPE(MMC_RSP_R3):
@@ -282,10 +264,7 @@ static int pxamci_cmd_done(struct pxamci_host *host, unsigned int stat)
 
 	host->cmd = NULL;
 
-	/*
-	 * Did I mention this is Sick.  We always need to
-	 * discard the upper 8 bits of the first 16-bit word.
-	 */
+	 
 	v = readl(host->base + MMC_RES) & 0xffff;
 	for (i = 0; i < 4; i++) {
 		u32 w1 = readl(host->base + MMC_RES) & 0xffff;
@@ -297,12 +276,7 @@ static int pxamci_cmd_done(struct pxamci_host *host, unsigned int stat)
 	if (stat & STAT_TIME_OUT_RESPONSE) {
 		cmd->error = -ETIMEDOUT;
 	} else if (stat & STAT_RES_CRC_ERR && cmd->flags & MMC_RSP_CRC) {
-		/*
-		 * workaround for erratum #42:
-		 * Intel PXA27x Family Processor Specification Update Rev 001
-		 * A bogus CRC error can appear if the msb of a 136 bit
-		 * response is a one.
-		 */
+		 
 		if (cpu_is_pxa27x() &&
 		    (cmd->flags & MMC_RSP_136 && cmd->resp[0] & 0x80000000))
 			pr_debug("ignoring CRC from command %d - *risky*\n", cmd->opcode);
@@ -313,10 +287,7 @@ static int pxamci_cmd_done(struct pxamci_host *host, unsigned int stat)
 	pxamci_disable_irq(host, END_CMD_RES);
 	if (host->data && !cmd->error) {
 		pxamci_enable_irq(host, DATA_TRAN_DONE);
-		/*
-		 * workaround for erratum #91, if doing write
-		 * enable DMA late
-		 */
+		 
 		if (cpu_is_pxa27x() && host->data->flags & MMC_DATA_WRITE)
 			dma_async_issue_pending(host->dma_chan_tx);
 	} else {
@@ -346,12 +317,7 @@ static int pxamci_data_done(struct pxamci_host *host, unsigned int stat)
 	else if (stat & (STAT_CRC_READ_ERROR|STAT_CRC_WRITE_ERROR))
 		data->error = -EILSEQ;
 
-	/*
-	 * There appears to be a hardware design bug here.  There seems to
-	 * be no way to find out how much data was transferred to the card.
-	 * This means that if there was an error on any block, we mark all
-	 * data blocks as being in error.
-	 */
+	 
 	if (!data->error)
 		data->bytes_xfered = data->blocks * data->blksz;
 	else
@@ -430,10 +396,7 @@ static int pxamci_get_ro(struct mmc_host *mmc)
 		return mmc_gpio_get_ro(mmc);
 	if (host->pdata && host->pdata->get_ro)
 		return !!host->pdata->get_ro(mmc_dev(mmc));
-	/*
-	 * Board doesn't support read only detection; let the mmc core
-	 * decide what to do.
-	 */
+	 
 	return -ENOSYS;
 }
 
@@ -449,26 +412,20 @@ static void pxamci_set_ios(struct mmc_host *mmc, struct mmc_ios *ios)
 			clk_prepare_enable(host->clk);
 
 		if (ios->clock == 26000000) {
-			/* to support 26MHz */
+			 
 			host->clkrt = 7;
 		} else {
-			/* to handle (19.5MHz, 26MHz) */
+			 
 			if (!clk)
 				clk = 1;
 
-			/*
-			 * clk might result in a lower divisor than we
-			 * desire.  check for that condition and adjust
-			 * as appropriate.
-			 */
+			 
 			if (rate / clk > ios->clock)
 				clk <<= 1;
 			host->clkrt = fls(clk) - 1;
 		}
 
-		/*
-		 * we write clkrt on the next command
-		 */
+		 
 	} else {
 		pxamci_stop_clock(host);
 		if (host->clkrt != CLKRT_OFF) {
@@ -485,12 +442,7 @@ static void pxamci_set_ios(struct mmc_host *mmc, struct mmc_ios *ios)
 		ret = pxamci_set_power(host, ios->power_mode, ios->vdd);
 		if (ret) {
 			dev_err(mmc_dev(mmc), "unable to set power\n");
-			/*
-			 * The .set_ios() function in the mmc_host_ops
-			 * struct return void, and failing to set the
-			 * power should be rare so we print an error and
-			 * return here.
-			 */
+			 
 			return;
 		}
 
@@ -585,7 +537,7 @@ static int pxamci_of_init(struct platform_device *pdev,
 	if (!np)
 		return 0;
 
-	/* pxa-mmc specific */
+	 
 	if (of_property_read_u32(np, "pxa-mmc,detect-delay-ms", &tmp) == 0)
 		host->detect_delay_ms = tmp;
 
@@ -623,25 +575,16 @@ static int pxamci_probe(struct platform_device *pdev)
 
 	mmc->ops = &pxamci_ops;
 
-	/*
-	 * We can do SG-DMA, but we don't because we never know how much
-	 * data we successfully wrote to the card.
-	 */
+	 
 	mmc->max_segs = NR_SG;
 
-	/*
-	 * Our hardware DMA can handle a maximum of one page per SG entry.
-	 */
+	 
 	mmc->max_seg_size = PAGE_SIZE;
 
-	/*
-	 * Block length register is only 10 bits before PXA27x.
-	 */
+	 
 	mmc->max_blk_size = cpu_is_pxa25x() ? 1023 : 2048;
 
-	/*
-	 * Block count register is 16 bits.
-	 */
+	 
 	mmc->max_blk_count = 65535;
 
 	ret = pxamci_of_init(pdev, mmc);
@@ -662,9 +605,7 @@ static int pxamci_probe(struct platform_device *pdev)
 
 	host->clkrate = clk_get_rate(host->clk);
 
-	/*
-	 * Calculate minimum clock rate, rounding up.
-	 */
+	 
 	mmc->f_min = (host->clkrate + 63) / 64;
 	mmc->f_max = (mmc_has_26MHz()) ? 26000000 : host->clkrate;
 
@@ -692,10 +633,7 @@ static int pxamci_probe(struct platform_device *pdev)
 	}
 	host->res = r;
 
-	/*
-	 * Ensure that the host controller is shut down, and setup
-	 * with our defaults.
-	 */
+	 
 	pxamci_stop_clock(host);
 	writel(0, host->base + MMC_SPI);
 	writel(64, host->base + MMC_RESTO);
@@ -734,7 +672,7 @@ static int pxamci_probe(struct platform_device *pdev)
 			goto out;
 		}
 
-		/* FIXME: should we pass detection delay to debounce? */
+		 
 		ret = mmc_gpiod_request_cd(mmc, "cd", 0, false, 0);
 		if (ret && ret != -ENOENT) {
 			dev_err(dev, "Failed requesting gpio_cd\n");

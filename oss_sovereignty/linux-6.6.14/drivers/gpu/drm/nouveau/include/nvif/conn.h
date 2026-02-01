@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: MIT */
+ 
 #ifndef __NVIF_CONN_H__
 #define __NVIF_CONN_H__
 #include <nvif/object.h>
@@ -18,7 +18,7 @@ nvif_conn_id(struct nvif_conn *conn)
 	return conn->object.handle;
 }
 
-#define NVIF_CONN_HPD_STATUS_UNSUPPORTED 0 /* negative if query fails */
+#define NVIF_CONN_HPD_STATUS_UNSUPPORTED 0  
 #define NVIF_CONN_HPD_STATUS_NOT_PRESENT 1
 #define NVIF_CONN_HPD_STATUS_PRESENT     2
 int nvif_conn_hpd_status(struct nvif_conn *);

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 
 #include <linux/kernel.h>
 #include <linux/init.h>
@@ -13,7 +13,7 @@
 #include <net/ip_fib.h>
 #include <net/route.h>
 
-/* don't try to find route from mcast/bcast/zeronet */
+ 
 static __be32 get_saddr(__be32 addr)
 {
 	if (ipv4_is_multicast(addr) || ipv4_is_lbcast(addr) ||
@@ -70,13 +70,7 @@ void nft_fib4_eval(const struct nft_expr *expr, struct nft_regs *regs,
 	const struct net_device *oif;
 	const struct net_device *found;
 
-	/*
-	 * Do not set flowi4_oif, it restricts results (for example, asking
-	 * for oif 3 will get RTN_UNICAST result even if the daddr exits
-	 * on another interface.
-	 *
-	 * Search results for the desired outinterface instead.
-	 */
+	 
 	if (priv->flags & NFTA_FIB_F_OIF)
 		oif = nft_out(pkt);
 	else if (priv->flags & NFTA_FIB_F_IIF)
@@ -132,7 +126,7 @@ void nft_fib4_eval(const struct nft_expr *expr, struct nft_regs *regs,
 	switch (res.type) {
 	case RTN_UNICAST:
 		break;
-	case RTN_LOCAL: /* Should not see RTN_LOCAL here */
+	case RTN_LOCAL:  
 		return;
 	default:
 		break;

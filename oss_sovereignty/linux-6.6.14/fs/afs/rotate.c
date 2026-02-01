@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* Handle fileserver selection and rotation.
- *
- * Copyright (C) 2017 Red Hat, Inc. All Rights Reserved.
- * Written by David Howells (dhowells@redhat.com)
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/slab.h>
@@ -14,10 +10,7 @@
 #include "internal.h"
 #include "afs_fs.h"
 
-/*
- * Begin iteration through a server list, starting with the vnode's last used
- * server if possible, or the last recorded good server if not.
- */
+ 
 static bool afs_start_fs_iteration(struct afs_operation *op,
 				   struct afs_vnode *vnode)
 {
@@ -36,7 +29,7 @@ static bool afs_start_fs_iteration(struct afs_operation *op,
 
 	cb_server = vnode->cb_server;
 	if (cb_server) {
-		/* See if the vnode's preferred record is still available */
+		 
 		for (i = 0; i < op->server_list->nr_servers; i++) {
 			server = op->server_list->servers[i].server;
 			if (server == cb_server) {
@@ -45,16 +38,13 @@ static bool afs_start_fs_iteration(struct afs_operation *op,
 			}
 		}
 
-		/* If we have a lock outstanding on a server that's no longer
-		 * serving this vnode, then we can't switch to another server
-		 * and have to return an error.
-		 */
+		 
 		if (op->flags & AFS_OPERATION_CUR_ONLY) {
 			op->error = -ESTALE;
 			return false;
 		}
 
-		/* Note that the callback promise is effectively broken */
+		 
 		write_seqlock(&vnode->cb_lock);
 		ASSERTCMP(cb_server, ==, vnode->cb_server);
 		vnode->cb_server = NULL;
@@ -67,9 +57,7 @@ found_interest:
 	return true;
 }
 
-/*
- * Post volume busy note.
- */
+ 
 static void afs_busy(struct afs_volume *volume, u32 abort_code)
 {
 	const char *m;
@@ -84,9 +72,7 @@ static void afs_busy(struct afs_volume *volume, u32 abort_code)
 	pr_notice("kAFS: Volume %llu '%s' is %s\n", volume->vid, volume->name, m);
 }
 
-/*
- * Sleep and retry the operation to the same fileserver.
- */
+ 
 static bool afs_sleep_and_retry(struct afs_operation *op)
 {
 	if (!(op->flags & AFS_OPERATION_UNINTR)) {
@@ -102,10 +88,7 @@ static bool afs_sleep_and_retry(struct afs_operation *op)
 	return true;
 }
 
-/*
- * Select the fileserver to use.  May be called multiple times to rotate
- * through the fileservers.
- */
+ 
 bool afs_select_fileserver(struct afs_operation *op)
 {
 	struct afs_addr_list *alist;
@@ -127,30 +110,24 @@ bool afs_select_fileserver(struct afs_operation *op)
 
 	op->nr_iterations++;
 
-	/* Evaluate the result of the previous operation, if there was one. */
+	 
 	switch (error) {
 	case SHRT_MAX:
 		goto start;
 
 	case 0:
 	default:
-		/* Success or local failure.  Stop. */
+		 
 		op->error = error;
 		op->flags |= AFS_OPERATION_STOP;
 		_leave(" = f [okay/local %d]", error);
 		return false;
 
 	case -ECONNABORTED:
-		/* The far side rejected the operation on some grounds.  This
-		 * might involve the server being busy or the volume having been moved.
-		 */
+		 
 		switch (op->ac.abort_code) {
 		case VNOVOL:
-			/* This fileserver doesn't know about the volume.
-			 * - May indicate that the VL is wrong - retry once and compare
-			 *   the results.
-			 * - May indicate that the fileserver couldn't attach to the vol.
-			 */
+			 
 			if (op->flags & AFS_OPERATION_VNOVOL) {
 				op->error = -EREMOTEIO;
 				goto next_server;
@@ -170,20 +147,18 @@ bool afs_select_fileserver(struct afs_operation *op)
 				goto failed;
 			}
 
-			/* If the server list didn't change, then assume that
-			 * it's the fileserver having trouble.
-			 */
+			 
 			if (rcu_access_pointer(op->volume->servers) == op->server_list) {
 				op->error = -EREMOTEIO;
 				goto next_server;
 			}
 
-			/* Try again */
+			 
 			op->flags |= AFS_OPERATION_VNOVOL;
 			_leave(" = t [vnovol]");
 			return true;
 
-		case VSALVAGE: /* TODO: Should this return an error or iterate? */
+		case VSALVAGE:  
 		case VVOLEXISTS:
 		case VNOSERVICE:
 		case VONLINE:
@@ -210,9 +185,7 @@ bool afs_select_fileserver(struct afs_operation *op)
 		case VSALVAGING:
 		case VRESTARTING:
 		case VBUSY:
-			/* Retry after going round all the servers unless we
-			 * have a file lock we need to maintain.
-			 */
+			 
 			if (op->flags & AFS_OPERATION_NO_VSLEEP) {
 				op->error = -EBUSY;
 				goto failed;
@@ -226,7 +199,7 @@ bool afs_select_fileserver(struct afs_operation *op)
 				if (!afs_sleep_and_retry(op))
 					goto failed;
 
-				 /* Retry with same server & address */
+				  
 				_leave(" = t [vbusy]");
 				return true;
 			}
@@ -235,13 +208,7 @@ bool afs_select_fileserver(struct afs_operation *op)
 			goto next_server;
 
 		case VMOVED:
-			/* The volume migrated to another server.  We consider
-			 * consider all locks and callbacks broken and request
-			 * an update from the VLDB.
-			 *
-			 * We also limit the number of VMOVED hops we will
-			 * honour, just in case someone sets up a loop.
-			 */
+			 
 			if (op->flags & AFS_OPERATION_VMOVED) {
 				op->error = -EREMOTEIO;
 				goto failed;
@@ -254,15 +221,7 @@ bool afs_select_fileserver(struct afs_operation *op)
 			if (error < 0)
 				goto failed_set_error;
 
-			/* If the server list didn't change, then the VLDB is
-			 * out of sync with the fileservers.  This is hopefully
-			 * a temporary condition, however, so we don't want to
-			 * permanently block access to the file.
-			 *
-			 * TODO: Try other fileservers if we can.
-			 *
-			 * TODO: Retry a few times with sleeps.
-			 */
+			 
 			if (rcu_access_pointer(op->volume->servers) == op->server_list) {
 				op->error = -ENOMEDIUM;
 				goto failed;
@@ -310,9 +269,7 @@ restart_from_beginning:
 	op->server_list = NULL;
 start:
 	_debug("start");
-	/* See if we need to do an update of the volume record.  Note that the
-	 * volume may have moved or even have been deleted.
-	 */
+	 
 	error = afs_check_volume_status(op->volume, op);
 	if (error < 0)
 		goto failed_set_error;
@@ -329,9 +286,7 @@ pick_server:
 	if (error < 0)
 		goto failed_set_error;
 
-	/* Pick the untried server with the lowest RTT.  If we have outstanding
-	 * callbacks, we stick with the server we're already using if we can.
-	 */
+	 
 	if (op->server) {
 		_debug("server %u", op->index);
 		if (test_bit(op->index, &op->untried))
@@ -361,10 +316,7 @@ selected_server:
 	_debug("use %d", op->index);
 	__clear_bit(op->index, &op->untried);
 
-	/* We're starting on a different fileserver from the list.  We need to
-	 * check it, create a callback intercept, find its address list and
-	 * probe its capabilities before we use it.
-	 */
+	 
 	ASSERTCMP(op->ac.alist, ==, NULL);
 	server = op->server_list->servers[op->index].server;
 
@@ -401,9 +353,7 @@ retry_server:
 
 iterate_address:
 	ASSERT(op->ac.alist);
-	/* Iterate over the current server's address list to try and find an
-	 * address on which it will respond to us.
-	 */
+	 
 	if (!afs_iterate_addresses(&op->ac))
 		goto out_of_addresses;
 
@@ -415,9 +365,7 @@ iterate_address:
 	return true;
 
 out_of_addresses:
-	/* We've now had a failure to respond on all of a server's addresses -
-	 * immediately probe them again and consider retrying the server.
-	 */
+	 
 	afs_probe_fileserver(op->net, op->server);
 	if (op->flags & AFS_OPERATION_RETRY_SERVER) {
 		alist = op->ac.alist;
@@ -441,9 +389,7 @@ next_server:
 	goto pick_server;
 
 no_more_servers:
-	/* That's all the servers poked to no good effect.  Try again if some
-	 * of them were busy.
-	 */
+	 
 	if (op->flags & AFS_OPERATION_VBUSY)
 		goto restart_from_beginning;
 
@@ -467,9 +413,7 @@ failed:
 	return false;
 }
 
-/*
- * Dump cursor state in the case of the error being EDESTADDRREQ.
- */
+ 
 void afs_dump_edestaddrreq(const struct afs_operation *op)
 {
 	static int count;

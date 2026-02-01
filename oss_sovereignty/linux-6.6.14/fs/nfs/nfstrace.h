@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2013 Trond Myklebust <Trond.Myklebust@netapp.com>
- */
+ 
+ 
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM nfs
 
@@ -1729,10 +1727,10 @@ DECLARE_EVENT_CLASS(nfs_xdr_event,
 DEFINE_NFS_XDR_EVENT(nfs_xdr_status);
 DEFINE_NFS_XDR_EVENT(nfs_xdr_bad_filehandle);
 
-#endif /* _TRACE_NFS_H */
+#endif  
 
 #undef TRACE_INCLUDE_PATH
 #define TRACE_INCLUDE_PATH .
 #define TRACE_INCLUDE_FILE nfstrace
-/* This part must be outside protection */
+ 
 #include <trace/define_trace.h>

@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2012, The Linux Foundation. All rights reserved.
- */
+ 
+ 
 
 #ifndef _LINUX_CORESIGHT_H
 #define _LINUX_CORESIGHT_H
@@ -13,7 +11,7 @@
 #include <linux/perf_event.h>
 #include <linux/sched.h>
 
-/* Peripheral id registers (0xFD0-0xFEC) */
+ 
 #define CORESIGHT_PERIPHIDR4	0xfd0
 #define CORESIGHT_PERIPHIDR5	0xfd4
 #define CORESIGHT_PERIPHIDR6	0xfd8
@@ -22,7 +20,7 @@
 #define CORESIGHT_PERIPHIDR1	0xfe4
 #define CORESIGHT_PERIPHIDR2	0xfe8
 #define CORESIGHT_PERIPHIDR3	0xfeC
-/* Component id registers (0xFF0-0xFFC) */
+ 
 #define CORESIGHT_COMPIDR0	0xff0
 #define CORESIGHT_COMPIDR1	0xff4
 #define CORESIGHT_COMPIDR2	0xff8
@@ -72,19 +70,9 @@ enum coresight_dev_subtype_helper {
 	CORESIGHT_DEV_SUBTYPE_HELPER_ECT_CTI
 };
 
-/**
- * union coresight_dev_subtype - further characterisation of a type
- * @sink_subtype:	type of sink this component is, as defined
- *			by @coresight_dev_subtype_sink.
- * @link_subtype:	type of link this component is, as defined
- *			by @coresight_dev_subtype_link.
- * @source_subtype:	type of source this component is, as defined
- *			by @coresight_dev_subtype_source.
- * @helper_subtype:	type of helper this component is, as defined
- *			by @coresight_dev_subtype_helper.
- */
+ 
 union coresight_dev_subtype {
-	/* We have some devices which acts as LINK and SINK */
+	 
 	struct {
 		enum coresight_dev_subtype_sink sink_subtype;
 		enum coresight_dev_subtype_link link_subtype;
@@ -93,18 +81,7 @@ union coresight_dev_subtype {
 	enum coresight_dev_subtype_helper helper_subtype;
 };
 
-/**
- * struct coresight_platform_data - data harvested from the firmware
- * specification.
- *
- * @nr_inconns: Number of elements for the input connections.
- * @nr_outconns: Number of elements for the output connections.
- * @out_conns: Array of nr_outconns pointers to connections from this
- *	       component.
- * @in_conns: Sparse array of pointers to input connections. Sparse
- *            because the source device owns the connection so when it's
- *            unloaded the connection leaves an empty slot.
- */
+ 
 struct coresight_platform_data {
 	int nr_inconns;
 	int nr_outconns;
@@ -112,14 +89,7 @@ struct coresight_platform_data {
 	struct coresight_connection **in_conns;
 };
 
-/**
- * struct csdev_access - Abstraction of a CoreSight device access.
- *
- * @io_mem	: True if the device has memory mapped I/O
- * @base	: When io_mem == true, base address of the component
- * @read	: Read from the given "offset" of the given instance.
- * @write	: Write "val" to the given "offset".
- */
+ 
 struct csdev_access {
 	bool io_mem;
 	union {
@@ -138,19 +108,7 @@ struct csdev_access {
 		.base		= (_addr),	\
 	})
 
-/**
- * struct coresight_desc - description of a component required from drivers
- * @type:	as defined by @coresight_dev_type.
- * @subtype:	as defined by @coresight_dev_subtype.
- * @ops:	generic operations for this component, as defined
- *		by @coresight_ops.
- * @pdata:	platform data collected from DT.
- * @dev:	The device entity associated to this component.
- * @groups:	operations specific to this component. These will end up
- *		in the component's sysfs sub-directory.
- * @name:	name for the coresight device, also shown under sysfs.
- * @access:	Describe access to the device
- */
+ 
 struct coresight_desc {
 	enum coresight_dev_type type;
 	union coresight_dev_subtype subtype;
@@ -162,35 +120,7 @@ struct coresight_desc {
 	struct csdev_access access;
 };
 
-/**
- * struct coresight_connection - representation of a single connection
- * @src_port:	a connection's output port number.
- * @dest_port:	destination's input port number @src_port is connected to.
- * @dest_fwnode: destination component's fwnode handle.
- * @dest_dev:	a @coresight_device representation of the component
-		connected to @src_port. NULL until the device is created
- * @link: Representation of the connection as a sysfs link.
- *
- * The full connection structure looks like this, where in_conns store
- * references to same connection as the source device's out_conns.
- *
- * +-----------------------------+   +-----------------------------+
- * |coresight_device             |   |coresight_connection         |
- * |-----------------------------|   |-----------------------------|
- * |                             |   |                             |
- * |                             |   |                    dest_dev*|<--
- * |pdata->out_conns[nr_outconns]|<->|src_dev*                     |   |
- * |                             |   |                             |   |
- * +-----------------------------+   +-----------------------------+   |
- *                                                                     |
- *                                   +-----------------------------+   |
- *                                   |coresight_device             |   |
- *                                   |------------------------------   |
- *                                   |                             |   |
- *                                   |  pdata->in_conns[nr_inconns]|<--
- *                                   |                             |
- *                                   +-----------------------------+
- */
+ 
 struct coresight_connection {
 	int src_port;
 	int dest_port;
@@ -202,13 +132,7 @@ struct coresight_connection {
 	atomic_t dest_refcnt;
 };
 
-/**
- * struct coresight_sysfs_link - representation of a connection in sysfs.
- * @orig:		Originating (master) coresight device for the link.
- * @orig_name:		Name to use for the link orig->target.
- * @target:		Target (slave) coresight device for the link.
- * @target_name:	Name to use for the link target->orig.
- */
+ 
 struct coresight_sysfs_link {
 	struct coresight_device *orig;
 	const char *orig_name;
@@ -216,32 +140,7 @@ struct coresight_sysfs_link {
 	const char *target_name;
 };
 
-/**
- * struct coresight_device - representation of a device as used by the framework
- * @pdata:	Platform data with device connections associated to this device.
- * @type:	as defined by @coresight_dev_type.
- * @subtype:	as defined by @coresight_dev_subtype.
- * @ops:	generic operations for this component, as defined
- *		by @coresight_ops.
- * @access:	Device i/o access abstraction for this device.
- * @dev:	The device entity associated to this component.
- * @refcnt:	keep track of what is in use.
- * @orphan:	true if the component has connections that haven't been linked.
- * @enable:	'true' if component is currently part of an active path.
- * @activated:	'true' only if a _sink_ has been activated.  A sink can be
- *		activated but not yet enabled.  Enabling for a _sink_
- *		happens when a source has been selected and a path is enabled
- *		from source to that sink.
- * @ea:		Device attribute for sink representation under PMU directory.
- * @def_sink:	cached reference to default sink found for this device.
- * @nr_links:   number of sysfs links created to other components from this
- *		device. These will appear in the "connections" group.
- * @has_conns_grp: Have added a "connections" group for sysfs links.
- * @feature_csdev_list: List of complex feature programming added to the device.
- * @config_csdev_list:  List of system configurations added to the device.
- * @cscfg_csdev_lock:	Protect the lists of configurations and features.
- * @active_cscfg_ctxt:  Context information for current active system configuration.
- */
+ 
 struct coresight_device {
 	struct coresight_platform_data *pdata;
 	enum coresight_dev_type type;
@@ -251,30 +150,22 @@ struct coresight_device {
 	struct device dev;
 	atomic_t refcnt;
 	bool orphan;
-	bool enable;	/* true only if configured as part of a path */
-	/* sink specific fields */
-	bool activated;	/* true only if a sink is part of a path */
+	bool enable;	 
+	 
+	bool activated;	 
 	struct dev_ext_attribute *ea;
 	struct coresight_device *def_sink;
-	/* sysfs links between components */
+	 
 	int nr_links;
 	bool has_conns_grp;
-	/* system configuration and feature lists */
+	 
 	struct list_head feature_csdev_list;
 	struct list_head config_csdev_list;
 	spinlock_t cscfg_csdev_lock;
 	void *active_cscfg_ctxt;
 };
 
-/*
- * coresight_dev_list - Mapping for devices to "name" index for device
- * names.
- *
- * @nr_idx:		Number of entries already allocated.
- * @pfx:		Prefix pattern for device name.
- * @fwnode_list:	Array of fwnode_handles associated with each allocated
- *			index, upto nr_idx entries.
- */
+ 
 struct coresight_dev_list {
 	int			nr_idx;
 	const char		*pfx;
@@ -302,15 +193,7 @@ enum cs_mode {
 #define helper_ops(csdev)	csdev->ops->helper_ops
 #define ect_ops(csdev)		csdev->ops->ect_ops
 
-/**
- * struct coresight_ops_sink - basic operations for a sink
- * Operations available for sinks
- * @enable:		enables the sink.
- * @disable:		disables the sink.
- * @alloc_buffer:	initialises perf's ring buffer for trace collection.
- * @free_buffer:	release memory allocated in @get_config.
- * @update_buffer:	update buffer pointers after a trace session.
- */
+ 
 struct coresight_ops_sink {
 	int (*enable)(struct coresight_device *csdev, enum cs_mode mode,
 		      void *data);
@@ -324,12 +207,7 @@ struct coresight_ops_sink {
 			      void *sink_config);
 };
 
-/**
- * struct coresight_ops_link - basic operations for a link
- * Operations available for links.
- * @enable:	enables flow between iport and oport.
- * @disable:	disables flow between iport and oport.
- */
+ 
 struct coresight_ops_link {
 	int (*enable)(struct coresight_device *csdev,
 		      struct coresight_connection *in,
@@ -339,14 +217,7 @@ struct coresight_ops_link {
 			struct coresight_connection *out);
 };
 
-/**
- * struct coresight_ops_source - basic operations for a source
- * Operations available for sources.
- * @cpu_id:	returns the value of the CPU number this component
- *		is associated to.
- * @enable:	enables tracing for a source.
- * @disable:	disables tracing for a source.
- */
+ 
 struct coresight_ops_source {
 	int (*cpu_id)(struct coresight_device *csdev);
 	int (*enable)(struct coresight_device *csdev, struct perf_event *event,
@@ -355,15 +226,7 @@ struct coresight_ops_source {
 			struct perf_event *event);
 };
 
-/**
- * struct coresight_ops_helper - Operations for a helper device.
- *
- * All operations could pass in a device specific data, which could
- * help the helper device to determine what to do.
- *
- * @enable	: Enable the device
- * @disable	: Disable the device
- */
+ 
 struct coresight_ops_helper {
 	int (*enable)(struct coresight_device *csdev, enum cs_mode mode,
 		      void *data);
@@ -407,15 +270,7 @@ static inline bool is_coresight_device(void __iomem *base)
 	return cid == CORESIGHT_CID;
 }
 
-/*
- * Attempt to find and enable "APB clock" for the given device
- *
- * Returns:
- *
- * clk   - Clock is found and enabled
- * NULL  - clock is not found
- * ERROR - Clock is found but failed to enable
- */
+ 
 static inline struct clk *coresight_get_enable_apb_pclk(struct device *dev)
 {
 	struct clk *pclk;
@@ -529,7 +384,7 @@ static inline void csdev_access_write64(struct csdev_access *csa, u64 val, u32 o
 		csa->write(val, offset, false, true);
 }
 
-#else	/* !CONFIG_64BIT */
+#else	 
 
 static inline u64 csdev_access_relaxed_read64(struct csdev_access *csa,
 					      u32 offset)
@@ -554,7 +409,7 @@ static inline void csdev_access_write64(struct csdev_access *csa, u64 val, u32 o
 {
 	WARN_ON(1);
 }
-#endif	/* CONFIG_64BIT */
+#endif	 
 
 static inline bool coresight_is_percpu_source(struct coresight_device *csdev)
 {
@@ -672,7 +527,7 @@ static inline void coresight_write64(struct coresight_device *csdev, u64 val, u3
 {
 }
 
-#endif		/* IS_ENABLED(CONFIG_CORESIGHT) */
+#endif		 
 
 extern int coresight_get_cpu(struct device *dev);
 
@@ -691,4 +546,4 @@ coresight_find_output_type(struct coresight_platform_data *pdata,
 			   enum coresight_dev_type type,
 			   union coresight_dev_subtype subtype);
 
-#endif		/* _LINUX_COREISGHT_H */
+#endif		 

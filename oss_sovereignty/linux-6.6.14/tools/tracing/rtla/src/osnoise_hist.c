@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2021 Red Hat Inc, Daniel Bristot de Oliveira <bristot@kernel.org>
- */
+
+ 
 
 #define _GNU_SOURCE
 #include <getopt.h>
@@ -63,30 +61,26 @@ struct osnoise_hist_data {
 	int			nr_cpus;
 };
 
-/*
- * osnoise_free_histogram - free runtime data
- */
+ 
 static void
 osnoise_free_histogram(struct osnoise_hist_data *data)
 {
 	int cpu;
 
-	/* one histogram for IRQ and one for thread, per CPU */
+	 
 	for (cpu = 0; cpu < data->nr_cpus; cpu++) {
 		if (data->hist[cpu].samples)
 			free(data->hist[cpu].samples);
 	}
 
-	/* one set of histograms per CPU */
+	 
 	if (data->hist)
 		free(data->hist);
 
 	free(data);
 }
 
-/*
- * osnoise_alloc_histogram - alloc runtime data
- */
+ 
 static struct osnoise_hist_data
 *osnoise_alloc_histogram(int nr_cpus, int entries, int bucket_size)
 {
@@ -111,7 +105,7 @@ static struct osnoise_hist_data
 			goto cleanup;
 	}
 
-	/* set the min to max */
+	 
 	for (cpu = 0; cpu < nr_cpus; cpu++)
 		data->hist[cpu].min_sample = ~0;
 
@@ -152,9 +146,7 @@ static void osnoise_hist_update_multiple(struct osnoise_tool *tool, int cpu,
 		hist[entries] += count;
 }
 
-/*
- * osnoise_destroy_trace_hist - disable events used to collect histogram
- */
+ 
 static void osnoise_destroy_trace_hist(struct osnoise_tool *tool)
 {
 	struct osnoise_hist_data *data = tool->data;
@@ -163,9 +155,7 @@ static void osnoise_destroy_trace_hist(struct osnoise_tool *tool)
 	tracefs_hist_destroy(tool->trace.inst, data->trace_hist);
 }
 
-/*
- * osnoise_init_trace_hist - enable events used to collect histogram
- */
+ 
 static int osnoise_init_trace_hist(struct osnoise_tool *tool)
 {
 	struct osnoise_hist_params *params = tool->params;
@@ -174,9 +164,7 @@ static int osnoise_init_trace_hist(struct osnoise_tool *tool)
 	char buff[128];
 	int retval = 0;
 
-	/*
-	 * Set the size of the bucket.
-	 */
+	 
 	bucket_size = params->output_divisor * params->bucket_size;
 	snprintf(buff, sizeof(buff), "duration.buckets=%d", bucket_size);
 
@@ -200,9 +188,7 @@ out_err:
 	return 1;
 }
 
-/*
- * osnoise_read_trace_hist - parse histogram file and file osnoise histogram
- */
+ 
 static void osnoise_read_trace_hist(struct osnoise_tool *tool)
 {
 	struct osnoise_hist_data *data = tool->data;
@@ -248,9 +234,7 @@ static void osnoise_read_trace_hist(struct osnoise_tool *tool)
 	free(content);
 }
 
-/*
- * osnoise_hist_header - print the header of the tracer to the output
- */
+ 
 static void osnoise_hist_header(struct osnoise_tool *tool)
 {
 	struct osnoise_hist_params *params = tool->params;
@@ -288,9 +272,7 @@ static void osnoise_hist_header(struct osnoise_tool *tool)
 	trace_seq_reset(s);
 }
 
-/*
- * osnoise_print_summary - print the summary of the hist data to the output
- */
+ 
 static void
 osnoise_print_summary(struct osnoise_hist_params *params,
 		       struct trace_instance *trace,
@@ -366,9 +348,7 @@ osnoise_print_summary(struct osnoise_hist_params *params,
 	trace_seq_reset(trace->seq);
 }
 
-/*
- * osnoise_print_stats - print data for all CPUs
- */
+ 
 static void
 osnoise_print_stats(struct osnoise_hist_params *params, struct osnoise_tool *tool)
 {
@@ -427,9 +407,7 @@ osnoise_print_stats(struct osnoise_hist_params *params, struct osnoise_tool *too
 	osnoise_print_summary(params, trace, data);
 }
 
-/*
- * osnoise_hist_usage - prints osnoise hist usage message
- */
+ 
 static void osnoise_hist_usage(char *usage)
 {
 	int i;
@@ -483,9 +461,7 @@ static void osnoise_hist_usage(char *usage)
 	exit(1);
 }
 
-/*
- * osnoise_hist_parse_args - allocs, parse and fill the cmd line parameters
- */
+ 
 static struct osnoise_hist_params
 *osnoise_hist_parse_args(int argc, char *argv[])
 {
@@ -498,7 +474,7 @@ static struct osnoise_hist_params
 	if (!params)
 		exit(1);
 
-	/* display data in microseconds */
+	 
 	params->output_divisor = 1000;
 	params->bucket_size = 1;
 	params->entries = 256;
@@ -531,25 +507,25 @@ static struct osnoise_hist_params
 			{0, 0, 0, 0}
 		};
 
-		/* getopt_long stores the option index here. */
+		 
 		int option_index = 0;
 
 		c = getopt_long(argc, argv, "a:c:C::b:d:e:E:DhH:p:P:r:s:S:t::T:01234:5:",
 				 long_options, &option_index);
 
-		/* detect the end of the options. */
+		 
 		if (c == -1)
 			break;
 
 		switch (c) {
 		case 'a':
-			/* set sample stop to auto_thresh */
+			 
 			params->stop_us = get_llong_from_str(optarg);
 
-			/* set sample threshold to 1 */
+			 
 			params->threshold = 1;
 
-			/* set trace */
+			 
 			params->trace_output = "osnoise_trace.txt";
 
 			break;
@@ -567,10 +543,10 @@ static struct osnoise_hist_params
 		case 'C':
 			params->cgroup = 1;
 			if (!optarg) {
-				/* will inherit this cgroup */
+				 
 				params->cgroup_name = NULL;
 			} else if (*optarg == '=') {
-				/* skip the = */
+				 
 				params->cgroup_name = ++optarg;
 			}
 			break;
@@ -638,24 +614,24 @@ static struct osnoise_hist_params
 			break;
 		case 't':
 			if (optarg)
-				/* skip = */
+				 
 				params->trace_output = &optarg[1];
 			else
 				params->trace_output = "osnoise_trace.txt";
 			break;
-		case '0': /* no header */
+		case '0':  
 			params->no_header = 1;
 			break;
-		case '1': /* no summary */
+		case '1':  
 			params->no_summary = 1;
 			break;
-		case '2': /* no index */
+		case '2':  
 			params->no_index = 1;
 			break;
-		case '3': /* with zeros */
+		case '3':  
 			params->with_zeros = 1;
 			break;
-		case '4': /* trigger */
+		case '4':  
 			if (params->events) {
 				retval = trace_event_add_trigger(params->events, optarg);
 				if (retval) {
@@ -666,7 +642,7 @@ static struct osnoise_hist_params
 				osnoise_hist_usage("--trigger requires a previous -e\n");
 			}
 			break;
-		case '5': /* filter */
+		case '5':  
 			if (params->events) {
 				retval = trace_event_add_filter(params->events, optarg);
 				if (retval) {
@@ -693,9 +669,7 @@ static struct osnoise_hist_params
 	return params;
 }
 
-/*
- * osnoise_hist_apply_config - apply the hist configs to the initialized tool
- */
+ 
 static int
 osnoise_hist_apply_config(struct osnoise_tool *tool, struct osnoise_hist_params *params)
 {
@@ -754,13 +728,7 @@ osnoise_hist_apply_config(struct osnoise_tool *tool, struct osnoise_hist_params 
 			goto out_err;
 		}
 	} else if (params->cpus) {
-		/*
-		 * Even if the user do not set a house-keeping CPU, try to
-		 * move rtla to a CPU set different to the one where the user
-		 * set the workload to run.
-		 *
-		 * No need to check results as this is an automatic attempt.
-		 */
+		 
 		auto_house_keeping(&params->monitored_cpus);
 	}
 
@@ -770,9 +738,7 @@ out_err:
 	return -1;
 }
 
-/*
- * osnoise_init_hist - initialize a osnoise hist tool with parameters
- */
+ 
 static struct osnoise_tool
 *osnoise_init_hist(struct osnoise_hist_params *params)
 {
@@ -804,9 +770,7 @@ static void stop_hist(int sig)
 	stop_tracing = 1;
 }
 
-/*
- * osnoise_hist_set_signals - handles the signal to stop the tool
- */
+ 
 static void
 osnoise_hist_set_signals(struct osnoise_hist_params *params)
 {
@@ -885,13 +849,7 @@ int osnoise_hist_main(int argc, char *argv[])
 
 	}
 
-	/*
-	 * Start the tracer here, after having set all instances.
-	 *
-	 * Let the trace instance start first for the case of hitting a stop
-	 * tracing while enabling other instances. The trace instance is the
-	 * one with most valuable information.
-	 */
+	 
 	if (params->trace_output)
 		trace_instance_start(&record->trace);
 	trace_instance_start(trace);

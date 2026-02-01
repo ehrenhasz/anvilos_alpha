@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Hardware monitoring driver for Analog Devices LT7182S
- *
- * Copyright (c) 2022 Guenter Roeck
- *
- */
+
+ 
 
 #include <linux/bits.h>
 #include <linux/err.h>
@@ -140,7 +135,7 @@ static int lt7182s_probe(struct i2c_client *client)
 	if (!info)
 		return -ENOMEM;
 
-	/* Set data format to IEEE754 if configured */
+	 
 	ret = i2c_smbus_read_word_data(client, MFR_CONFIG_ALL_LT7182S);
 	if (ret < 0)
 		return ret;
@@ -153,7 +148,7 @@ static int lt7182s_probe(struct i2c_client *client)
 		info->format[PSC_POWER] = ieee754;
 	}
 
-	/* Enable VMON output if configured */
+	 
 	ret = i2c_smbus_read_byte_data(client, MFR_ADC_CONTROL_LT7182S);
 	if (ret < 0)
 		return ret;

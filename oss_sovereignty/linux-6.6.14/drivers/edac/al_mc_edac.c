@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
- */
+
+ 
 #include <linux/bitfield.h>
 #include <linux/bitops.h>
 #include <linux/edac.h>
@@ -10,7 +8,7 @@
 #include <linux/spinlock.h>
 #include "edac_module.h"
 
-/* Registers Offset */
+ 
 #define AL_MC_ECC_CFG		0x70
 #define AL_MC_ECC_CLEAR		0x7c
 #define AL_MC_ECC_ERR_COUNT	0x80
@@ -25,7 +23,7 @@
 #define AL_MC_ECC_UE_SYND1	0xb0
 #define AL_MC_ECC_UE_SYND2	0xb4
 
-/* Registers Fields */
+ 
 #define AL_MC_ECC_CFG_SCRUB_DISABLED	BIT(4)
 
 #define AL_MC_ECC_CLEAR_UE_COUNT	BIT(3)
@@ -257,12 +255,7 @@ static int al_mc_edac_probe(struct platform_device *pdev)
 		dev_dbg(&pdev->dev,
 			"no IRQ defined for CE - falling back to polling\n");
 
-	/*
-	 * In case both interrupts (ue/ce) are to be found, use interrupt mode.
-	 * In case none of the interrupt are foud, use polling mode.
-	 * In case only one interrupt is found, use interrupt mode for it but
-	 * keep polling mode enable for the other.
-	 */
+	 
 	if (al_mc->irq_ue <= 0 || al_mc->irq_ce <= 0) {
 		edac_op_state = EDAC_OPSTATE_POLL;
 		mci->edac_check = al_mc_edac_check;

@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2016 BayLibre SAS.
- * Author: Neil Armstrong <narmstrong@baylibre.com>
- * Synchronised with arm_mhu.c from :
- * Copyright (C) 2013-2015 Fujitsu Semiconductor Ltd.
- * Copyright (C) 2015 Linaro Ltd.
- * Author: Jassi Brar <jaswinder.singh@linaro.org>
- */
+
+ 
 
 #include <linux/interrupt.h>
 #include <linux/spinlock.h>
@@ -122,7 +115,7 @@ static int platform_mhu_probe(struct platform_device *pdev)
 		MHU_SEC_OFFSET, MHU_LP_OFFSET, MHU_HP_OFFSET
 	};
 
-	/* Allocate memory for device */
+	 
 	mhu = devm_kzalloc(dev, sizeof(*mhu), GFP_KERNEL);
 	if (!mhu)
 		return -ENOMEM;
@@ -164,7 +157,7 @@ static int platform_mhu_probe(struct platform_device *pdev)
 
 static const struct of_device_id platform_mhu_dt_ids[] = {
 	{ .compatible = "amlogic,meson-gxbb-mhu", },
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, platform_mhu_dt_ids);
 

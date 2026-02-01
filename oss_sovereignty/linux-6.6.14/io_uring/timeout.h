@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 struct io_timeout_data {
 	struct io_kiocb			*req;

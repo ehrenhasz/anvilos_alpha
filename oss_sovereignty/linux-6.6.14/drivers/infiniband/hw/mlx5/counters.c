@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-/*
- * Copyright (c) 2013-2020, Mellanox Technologies inc. All rights reserved.
- */
+
+ 
 
 #include "mlx5_ib.h"
 #include <linux/mlx5/eswitch.h>
@@ -164,9 +162,7 @@ static int mlx5_ib_read_counters(struct ib_counters *counters,
 	if (ret)
 		goto err_read;
 
-	/* do the pass over the counters data array to assign according to the
-	 * descriptions and indexing pairs
-	 */
+	 
 	desc = mcounters->counters_data;
 	for (i = 0; i < mcounters->ncounters; i++)
 		read_attr->counters_buff[desc[i].index] += mread_attr.out[desc[i].description];
@@ -215,15 +211,7 @@ static const struct mlx5_ib_counters *get_counters(struct mlx5_ib_dev *dev,
 	       &dev->port[1].cnts : &dev->port[port_num - 1].cnts;
 }
 
-/**
- * mlx5_ib_get_counters_id - Returns counters id to use for device+port
- * @dev:	Pointer to mlx5 IB device
- * @port_num:	Zero based port number
- *
- * mlx5_ib_get_counters_id() Returns counters set id to use for given
- * device port combination in switchdev and non switchdev mode of the
- * parent device.
- */
+ 
 u16 mlx5_ib_get_counters_id(struct mlx5_ib_dev *dev, u32 port_num)
 {
 	const struct mlx5_ib_counters *cnts = get_counters(dev, port_num + 1);
@@ -386,7 +374,7 @@ static int do_get_hw_stats(struct ib_device *ibdev,
 	if (ret)
 		return ret;
 
-	/* We don't expose device counters over Vports */
+	 
 	if (is_mdev_switchdev_mode(dev->mdev) && port_num != 0)
 		goto done;
 
@@ -401,10 +389,7 @@ static int do_get_hw_stats(struct ib_device *ibdev,
 			port_num = 1;
 		mdev = mlx5_ib_get_native_port_mdev(dev, port_num, NULL);
 		if (!mdev) {
-			/* If port is not affiliated yet, its in down state
-			 * which doesn't have any counters yet, so it would be
-			 * zero. So no need to read from the HCA.
-			 */
+			 
 			goto done;
 		}
 		ret = mlx5_lag_query_cong_counters(dev->mdev,
@@ -799,12 +784,7 @@ static int mlx5_ib_alloc_counters(struct mlx5_ib_dev *dev)
 	MLX5_SET(alloc_q_counter_in, in, opcode, MLX5_CMD_OP_ALLOC_Q_COUNTER);
 	is_shared = MLX5_CAP_GEN(dev->mdev, log_max_uctx) != 0;
 
-	/*
-	 * In switchdev we need to allocate two ports, one that is used for
-	 * the device Q_counters and it is essentially the real Q_counters of
-	 * this device, while the other is used as a helper for PF to be able to
-	 * query all other vports.
-	 */
+	 
 	if (is_mdev_switchdev_mode(dev->mdev))
 		num_cnt_ports = min(2, num_cnt_ports);
 
@@ -848,7 +828,7 @@ static int read_flow_counters(struct ib_device *ibdev,
 			     &read_attr->out[IB_COUNTER_BYTES]);
 }
 
-/* flow counters currently expose two counters packets and bytes */
+ 
 #define FLOW_COUNTERS_NUM 2
 static int counters_set_description(
 	struct ib_counters *counters, enum mlx5_ib_counters_type counters_type,
@@ -861,12 +841,12 @@ static int counters_set_description(
 	if (counters_type != MLX5_IB_COUNTERS_FLOW)
 		return -EINVAL;
 
-	/* init the fields for the object */
+	 
 	mcounters->type = counters_type;
 	mcounters->read_counters = read_flow_counters;
 	mcounters->counters_num = FLOW_COUNTERS_NUM;
 	mcounters->ncounters = ncounters;
-	/* each counter entry have both description and index pair */
+	 
 	for (i = 0; i < ncounters; i++) {
 		if (desc_data[i].description > IB_COUNTER_BYTES)
 			return -EINVAL;
@@ -923,7 +903,7 @@ int mlx5_ib_flow_counters_set_data(struct ib_counters *ibcounters,
 	}
 
 	if (desc_data) {
-		/* counters already bound to at least one flow */
+		 
 		if (mcounters->cntrs_max_index) {
 			ret = -EINVAL;
 			goto free_hndl;
@@ -937,7 +917,7 @@ int mlx5_ib_flow_counters_set_data(struct ib_counters *ibcounters,
 			goto free_hndl;
 
 	} else if (!mcounters->cntrs_max_index) {
-		/* counters not bound yet, must have udata passed */
+		 
 		ret = -EINVAL;
 		goto free_hndl;
 	}

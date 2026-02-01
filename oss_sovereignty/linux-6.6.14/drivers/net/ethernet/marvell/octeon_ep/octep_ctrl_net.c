@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Marvell Octeon EP (EndPoint) Ethernet Driver
- *
- * Copyright (C) 2020 Marvell.
- *
- */
+
+ 
 #include <linux/string.h>
 #include <linux/types.h>
 #include <linux/etherdevice.h>
@@ -14,7 +10,7 @@
 #include "octep_main.h"
 #include "octep_ctrl_net.h"
 
-/* Control plane version */
+ 
 #define OCTEP_CP_VERSION_CURRENT	OCTEP_CP_VERSION(1, 0, 0)
 
 static const u32 req_hdr_sz = sizeof(union octep_ctrl_net_req_hdr);
@@ -24,13 +20,13 @@ static const u32 state_sz = sizeof(struct octep_ctrl_net_h2f_req_cmd_state);
 static const u32 link_info_sz = sizeof(struct octep_ctrl_net_link_info);
 static atomic_t ctrl_net_msg_id;
 
-/* Control plane version in which OCTEP_CTRL_NET_H2F_CMD was added */
+ 
 static const u32 octep_ctrl_net_h2f_cmd_versions[OCTEP_CTRL_NET_H2F_CMD_MAX] = {
 	[OCTEP_CTRL_NET_H2F_CMD_INVALID ... OCTEP_CTRL_NET_H2F_CMD_LINK_INFO] =
 	 OCTEP_CP_VERSION(1, 0, 0)
 };
 
-/* Control plane version in which OCTEP_CTRL_NET_F2H_CMD was added */
+ 
 static const u32 octep_ctrl_net_f2h_cmd_versions[OCTEP_CTRL_NET_F2H_CMD_MAX] = {
 	[OCTEP_CTRL_NET_F2H_CMD_INVALID ... OCTEP_CTRL_NET_F2H_CMD_LINK_STATUS] =
 	 OCTEP_CP_VERSION(1, 0, 0)
@@ -58,7 +54,7 @@ static int octep_send_mbox_req(struct octep_device *oct,
 {
 	int err, ret, cmd;
 
-	/* check if firmware is compatible for this request */
+	 
 	cmd = d->data.req.hdr.s.cmd;
 	if (octep_ctrl_net_h2f_cmd_versions[cmd] > oct->ctrl_mbox.max_fw_version ||
 	    octep_ctrl_net_h2f_cmd_versions[cmd] < oct->ctrl_mbox.min_fw_version)
@@ -81,12 +77,7 @@ static int octep_send_mbox_req(struct octep_device *oct,
 	if (ret == 0 || ret == 1)
 		return -EAGAIN;
 
-	/**
-	 * (ret == 0)  cond = false && timeout, return 0
-	 * (ret < 0) interrupted by signal, return 0
-	 * (ret == 1) cond = true && timeout, return 1
-	 * (ret >= 1) cond = true && !timeout, return 1
-	 */
+	 
 
 	if (d->data.resp.hdr.s.reply != OCTEP_CTRL_NET_REPLY_OK)
 		return -EAGAIN;
@@ -103,7 +94,7 @@ int octep_ctrl_net_init(struct octep_device *oct)
 	init_waitqueue_head(&oct->ctrl_req_wait_q);
 	INIT_LIST_HEAD(&oct->ctrl_req_wait_list);
 
-	/* Initialize control mbox */
+	 
 	ctrl_mbox = &oct->ctrl_mbox;
 	ctrl_mbox->version = OCTEP_CP_VERSION_CURRENT;
 	ctrl_mbox->barmem = CFG_GET_CTRL_MBOX_MEM_ADDR(oct->conf);
@@ -303,7 +294,7 @@ static int process_mbox_notify(struct octep_device *oct,
 	req = (struct octep_ctrl_net_f2h_req *)msg->sg_list[0].msg;
 	cmd = req->hdr.s.cmd;
 
-	/* check if we support this command */
+	 
 	if (octep_ctrl_net_f2h_cmd_versions[cmd] > OCTEP_CP_VERSION_CURRENT ||
 	    octep_ctrl_net_f2h_cmd_versions[cmd] < OCTEP_CP_VERSION_CURRENT)
 		return -EOPNOTSUPP;
@@ -340,7 +331,7 @@ void octep_ctrl_net_recv_fw_messages(struct octep_device *oct)
 	msg.sg_list[0].sz = msg_sz;
 	msg.sg_list[0].msg = &data;
 	while (true) {
-		/* mbox will overwrite msg.hdr.s.sz so initialize it */
+		 
 		msg.hdr.s.sz = msg_sz;
 		ret = octep_ctrl_mbox_recv(&oct->ctrl_mbox, (struct octep_ctrl_mbox_msg *)&msg);
 		if (ret < 0)

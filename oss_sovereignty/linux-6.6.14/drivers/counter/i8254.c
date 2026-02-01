@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Intel 8254 Programmable Interval Timer
- * Copyright (C) William Breathitt Gray
- */
+
+ 
 #include <linux/bitfield.h>
 #include <linux/bits.h>
 #include <linux/counter.h>
@@ -40,13 +37,7 @@
 
 #define I8254_NUM_COUNTERS 3
 
-/**
- * struct i8254 - I8254 device private data structure
- * @lock:	synchronization lock to prevent I/O race conditions
- * @preset:	array of Counter Register states
- * @out_mode:	array of mode configuration states
- * @map:	Regmap for the device
- */
+ 
 struct i8254 {
 	struct mutex lock;
 	u16 preset[I8254_NUM_COUNTERS];
@@ -117,7 +108,7 @@ static int i8254_action_read(struct counter_device *const counter,
 			return 0;
 		}
 	default:
-		/* should never reach this path */
+		 
 		return -EINVAL;
 	}
 }
@@ -131,14 +122,14 @@ static int i8254_count_ceiling_read(struct counter_device *const counter,
 
 	switch (priv->out_mode[count->id]) {
 	case I8254_MODE_RATE_GENERATOR:
-		/* Rate Generator decrements 0 by one and the counter "wraps around" */
+		 
 		*ceiling = (priv->preset[count->id] == 0) ? U16_MAX : priv->preset[count->id];
 		break;
 	case I8254_MODE_SQUARE_WAVE_MODE:
 		if (priv->preset[count->id] % 2)
 			*ceiling = priv->preset[count->id] - 1;
 		else if (priv->preset[count->id] == 0)
-			/* Square Wave Mode decrements 0 by two and the counter "wraps around" */
+			 
 			*ceiling = U16_MAX - 1;
 		else
 			*ceiling = priv->preset[count->id];
@@ -179,7 +170,7 @@ static int i8254_count_mode_read(struct counter_device *const counter,
 		*count_mode = COUNTER_COUNT_MODE_HARDWARE_TRIGGERED_STROBE;
 		return 0;
 	default:
-		/* should never reach this path */
+		 
 		return -EINVAL;
 	}
 }
@@ -212,13 +203,13 @@ static int i8254_count_mode_write(struct counter_device *const counter,
 		out_mode = I8254_MODE_HARDWARE_TRIGGERED_STROBE;
 		break;
 	default:
-		/* should never reach this path */
+		 
 		return -EINVAL;
 	}
 
 	mutex_lock(&priv->lock);
 
-	/* Counter Register is cleared when the counter is programmed */
+	 
 	priv->preset[count->id] = 0;
 	priv->out_mode[count->id] = out_mode;
 	ret = regmap_write(priv->map, I8254_CONTROL_REG,
@@ -238,11 +229,11 @@ static int i8254_count_floor_read(struct counter_device *const counter,
 
 	switch (priv->out_mode[count->id]) {
 	case I8254_MODE_RATE_GENERATOR:
-		/* counter is always reloaded after 1, but 0 is a possible reload value */
+		 
 		*floor = (priv->preset[count->id] == 0) ? 0 : 1;
 		break;
 	case I8254_MODE_SQUARE_WAVE_MODE:
-		/* counter is always reloaded after 2 for even preset values */
+		 
 		*floor = (priv->preset[count->id] % 2 || priv->preset[count->id] == 0) ? 0 : 2;
 		break;
 	default:
@@ -301,7 +292,7 @@ static int i8254_init_hw(struct regmap *const map)
 	int ret;
 
 	for (i = 0; i < I8254_NUM_COUNTERS; i++) {
-		/* Initialize each counter to Mode 0 */
+		 
 		ret = regmap_write(map, I8254_CONTROL_REG,
 				   I8254_PROGRAM_COUNTER(i, I8254_MODE_INTERRUPT_ON_TERMINAL_COUNT));
 		if (ret)
@@ -392,14 +383,7 @@ static struct counter_count i8254_counts[I8254_NUM_COUNTERS] = {
 	I8254_COUNT(0, "Counter 0"), I8254_COUNT(1, "Counter 1"), I8254_COUNT(2, "Counter 2"),
 };
 
-/**
- * devm_i8254_regmap_register - Register an i8254 Counter device
- * @dev: device that is registering this i8254 Counter device
- * @config: configuration for i8254_regmap_config
- *
- * Registers an Intel 8254 Programmable Interval Timer Counter device. Returns 0 on success and
- * negative error number on failure.
- */
+ 
 int devm_i8254_regmap_register(struct device *const dev,
 			       const struct i8254_regmap_config *const config)
 {

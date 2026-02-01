@@ -1,22 +1,6 @@
-/* timers - functions to manage shell timers */
+ 
 
-/* Copyright (C) 2021 Free Software Foundation, Inc.
-
-   This file is part of GNU Bash, the Bourne Again SHell.
-
-   Bash is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   Bash is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with Bash.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ 
 
 #include "config.h"
 
@@ -41,7 +25,7 @@
 #include <errno.h>
 #if !defined (errno)
 extern int errno;
-#endif /* !errno */
+#endif  
 
 #ifndef FREE
 #define FREE(s)  do { if (s) free (s); } while (0)
@@ -81,9 +65,7 @@ shtimer_alloc (void)
 void
 shtimer_flush (sh_timer *t)
 {
-  /* The caller can manage t->data arbitrarily as long as it frees and sets
-     t->data to 0 before calling this function. Otherwise, we do what we can
-     to avoid memleaks. */
+   
   FREE (t->data);
   shtimer_zero (t);
 }
@@ -94,7 +76,7 @@ shtimer_dispose (sh_timer *t)
   free (t);
 }
 
-/* We keep the timer as an offset into the future from the time it's set. */
+ 
 void
 shtimer_set (sh_timer *t, time_t sec, long usec)
 {
@@ -102,7 +84,7 @@ shtimer_set (sh_timer *t, time_t sec, long usec)
 
   if (t->flags & SHTIMER_ALARM)
     {
-      t->alrmflag = 0;		/* just paranoia */
+      t->alrmflag = 0;		 
       t->old_handler = set_signal_handler (SIGALRM, t->alrm_handler);
       t->flags |= SHTIMER_SIGSET;
       falarm (t->tmout.tv_sec = sec, t->tmout.tv_usec = usec);
@@ -161,11 +143,11 @@ shtimer_chktimeout (sh_timer *t)
   struct timeval now;
   int r;
 
-  /* Use the flag to avoid returning sigalrm_seen here */
+   
   if (t->flags & SHTIMER_ALARM)
     return t->alrmflag;
 
-  /* Could check a flag for this */
+   
   if (t->tmout.tv_sec == 0 && t->tmout.tv_usec == 0)
     return 0;
 
@@ -189,7 +171,7 @@ shtimer_select (sh_timer *t)
   struct timespec ts;
 #endif
 
-  /* We don't want a SIGCHLD to interrupt this */
+   
   sigemptyset (&blocked_sigs);
 #  if defined (SIGCHLD)
   sigaddset (&blocked_sigs, SIGCHLD);
@@ -203,7 +185,7 @@ shtimer_select (sh_timer *t)
 	return -1;
     }
 
-  /* If the timer has already expired, return immediately */    
+       
   if ((now.tv_sec > t->tmout.tv_sec) ||
 	(now.tv_sec == t->tmout.tv_sec && now.tv_usec >= t->tmout.tv_usec))
     {
@@ -215,7 +197,7 @@ shtimer_select (sh_timer *t)
 	return 0;
     }
 
-  /* compute timeout */
+   
   tv.tv_sec = t->tmout.tv_sec - now.tv_sec;
   tv.tv_usec = t->tmout.tv_usec - now.tv_usec;
   if (tv.tv_usec < 0)
@@ -229,7 +211,7 @@ shtimer_select (sh_timer *t)
   ts.tv_nsec = tv.tv_usec * 1000;
 #else
   sigemptyset (&prevmask);
-#endif /* !HAVE_PSELECT */
+#endif  
 
   nfd = (t->fd >= 0) ? t->fd + 1 : 0;
   FD_ZERO (&readfds);
@@ -245,7 +227,7 @@ shtimer_select (sh_timer *t)
 #endif
 
   if (r < 0)
-    return r;		/* caller will handle */
+    return r;		 
   else if (r == 0 && (t->flags & SHTIMER_LONGJMP))
     sh_longjmp (t->jmpenv, 1);
   else if (r == 0 && t->tm_handler)
@@ -253,7 +235,7 @@ shtimer_select (sh_timer *t)
   else
     return r;
 }
-#endif /* !HAVE_TIMEVAL || !HAVE_SELECT */
+#endif  
 
 int
 shtimer_alrm (sh_timer *t)

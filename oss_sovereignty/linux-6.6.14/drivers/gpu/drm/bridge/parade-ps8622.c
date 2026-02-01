@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Parade PS8622 eDP/LVDS bridge driver
- *
- * Copyright (C) 2014 Google, Inc.
- */
+
+ 
 
 #include <linux/backlight.h>
 #include <linux/delay.h>
@@ -23,10 +19,10 @@
 #include <drm/drm_print.h>
 #include <drm/drm_probe_helper.h>
 
-/* Brightness scale on the Parade chip */
+ 
 #define PS8622_MAX_BRIGHTNESS 0xff
 
-/* Timings taken from the version 1.7 datasheet for the PS8622/PS8625 */
+ 
 #define PS8622_POWER_RISE_T1_MIN_US 10
 #define PS8622_POWER_RISE_T1_MAX_US 10000
 #define PS8622_RST_HIGH_T2_MIN_US 3000
@@ -86,101 +82,98 @@ static int ps8622_send_config(struct ps8622_bridge *ps8622)
 	struct i2c_client *cl = ps8622->client;
 	int err = 0;
 
-	/* HPD low */
+	 
 	err = ps8622_set(cl, 0x02, 0xa1, 0x01);
 	if (err)
 		goto error;
 
-	/* SW setting: [1:0] SW output 1.2V voltage is lower to 96% */
+	 
 	err = ps8622_set(cl, 0x04, 0x14, 0x01);
 	if (err)
 		goto error;
 
-	/* RCO SS setting: [5:4] = b01 0.5%, b10 1%, b11 1.5% */
+	 
 	err = ps8622_set(cl, 0x04, 0xe3, 0x20);
 	if (err)
 		goto error;
 
-	/* [7] RCO SS enable */
+	 
 	err = ps8622_set(cl, 0x04, 0xe2, 0x80);
 	if (err)
 		goto error;
 
-	/* RPHY Setting
-	 * [3:2] CDR tune wait cycle before measure for fine tune
-	 * b00: 1us b01: 0.5us b10:2us, b11: 4us
-	 */
+	 
 	err = ps8622_set(cl, 0x04, 0x8a, 0x0c);
 	if (err)
 		goto error;
 
-	/* [3] RFD always on */
+	 
 	err = ps8622_set(cl, 0x04, 0x89, 0x08);
 	if (err)
 		goto error;
 
-	/* CTN lock in/out: 20000ppm/80000ppm. Lock out 2 times. */
+	 
 	err = ps8622_set(cl, 0x04, 0x71, 0x2d);
 	if (err)
 		goto error;
 
-	/* 2.7G CDR settings: NOF=40LSB for HBR CDR  setting */
+	 
 	err = ps8622_set(cl, 0x04, 0x7d, 0x07);
 	if (err)
 		goto error;
 
-	/* [1:0] Fmin=+4bands */
+	 
 	err = ps8622_set(cl, 0x04, 0x7b, 0x00);
 	if (err)
 		goto error;
 
-	/* [7:5] DCO_FTRNG=+-40% */
+	 
 	err = ps8622_set(cl, 0x04, 0x7a, 0xfd);
 	if (err)
 		goto error;
 
-	/* 1.62G CDR settings: [5:2]NOF=64LSB [1:0]DCO scale is 2/5 */
+	 
 	err = ps8622_set(cl, 0x04, 0xc0, 0x12);
 	if (err)
 		goto error;
 
-	/* Gitune=-37% */
+	 
 	err = ps8622_set(cl, 0x04, 0xc1, 0x92);
 	if (err)
 		goto error;
 
-	/* Fbstep=100% */
+	 
 	err = ps8622_set(cl, 0x04, 0xc2, 0x1c);
 	if (err)
 		goto error;
 
-	/* [7] LOS signal disable */
+	 
 	err = ps8622_set(cl, 0x04, 0x32, 0x80);
 	if (err)
 		goto error;
 
-	/* RPIO Setting: [7:4] LVDS driver bias current : 75% (250mV swing) */
+	 
 	err = ps8622_set(cl, 0x04, 0x00, 0xb0);
 	if (err)
 		goto error;
 
-	/* [7:6] Right-bar GPIO output strength is 8mA */
+	 
 	err = ps8622_set(cl, 0x04, 0x15, 0x40);
 	if (err)
 		goto error;
 
-	/* EQ Training State Machine Setting, RCO calibration start */
+	 
 	err = ps8622_set(cl, 0x04, 0x54, 0x10);
 	if (err)
 		goto error;
 
-	/* Logic, needs more than 10 I2C command */
-	/* [4:0] MAX_LANE_COUNT set to max supported lanes */
+	 
+	 
 	err = ps8622_set(cl, 0x01, 0x02, 0x80 | ps8622->max_lane_count);
 	if (err)
 		goto error;
 
-	/* [4:0] LANE_COUNT_SET set to chosen lane count */
+	 
 	err = ps8622_set(cl, 0x01, 0x21, 0x80 | ps8622->lane_count);
 	if (err)
 		goto error;
@@ -189,7 +182,7 @@ static int ps8622_send_config(struct ps8622_bridge *ps8622)
 	if (err)
 		goto error;
 
-	/* HPD CP toggle enable */
+	 
 	err = ps8622_set(cl, 0x00, 0xf1, 0x03);
 	if (err)
 		goto error;
@@ -198,122 +191,122 @@ static int ps8622_send_config(struct ps8622_bridge *ps8622)
 	if (err)
 		goto error;
 
-	/* Counter number, add 1ms counter delay */
+	 
 	err = ps8622_set(cl, 0x00, 0xf6, 0x01);
 	if (err)
 		goto error;
 
-	/* [6]PWM function control by DPCD0040f[7], default is PWM block */
+	 
 	err = ps8622_set(cl, 0x00, 0x77, 0x06);
 	if (err)
 		goto error;
 
-	/* 04h Adjust VTotal toleranceto fix the 30Hz no display issue */
+	 
 	err = ps8622_set(cl, 0x00, 0x4c, 0x04);
 	if (err)
 		goto error;
 
-	/* DPCD00400='h00, Parade OUI ='h001cf8 */
+	 
 	err = ps8622_set(cl, 0x01, 0xc0, 0x00);
 	if (err)
 		goto error;
 
-	/* DPCD00401='h1c */
+	 
 	err = ps8622_set(cl, 0x01, 0xc1, 0x1c);
 	if (err)
 		goto error;
 
-	/* DPCD00402='hf8 */
+	 
 	err = ps8622_set(cl, 0x01, 0xc2, 0xf8);
 	if (err)
 		goto error;
 
-	/* DPCD403~408 = ASCII code, D2SLV5='h4432534c5635 */
+	 
 	err = ps8622_set(cl, 0x01, 0xc3, 0x44);
 	if (err)
 		goto error;
 
-	/* DPCD404 */
+	 
 	err = ps8622_set(cl, 0x01, 0xc4, 0x32);
 	if (err)
 		goto error;
 
-	/* DPCD405 */
+	 
 	err = ps8622_set(cl, 0x01, 0xc5, 0x53);
 	if (err)
 		goto error;
 
-	/* DPCD406 */
+	 
 	err = ps8622_set(cl, 0x01, 0xc6, 0x4c);
 	if (err)
 		goto error;
 
-	/* DPCD407 */
+	 
 	err = ps8622_set(cl, 0x01, 0xc7, 0x56);
 	if (err)
 		goto error;
 
-	/* DPCD408 */
+	 
 	err = ps8622_set(cl, 0x01, 0xc8, 0x35);
 	if (err)
 		goto error;
 
-	/* DPCD40A, Initial Code major revision '01' */
+	 
 	err = ps8622_set(cl, 0x01, 0xca, 0x01);
 	if (err)
 		goto error;
 
-	/* DPCD40B, Initial Code minor revision '05' */
+	 
 	err = ps8622_set(cl, 0x01, 0xcb, 0x05);
 	if (err)
 		goto error;
 
 
 	if (ps8622->bl) {
-		/* DPCD720, internal PWM */
+		 
 		err = ps8622_set(cl, 0x01, 0xa5, 0xa0);
 		if (err)
 			goto error;
 
-		/* FFh for 100% brightness, 0h for 0% brightness */
+		 
 		err = ps8622_set(cl, 0x01, 0xa7,
 				ps8622->bl->props.brightness);
 		if (err)
 			goto error;
 	} else {
-		/* DPCD720, external PWM */
+		 
 		err = ps8622_set(cl, 0x01, 0xa5, 0x80);
 		if (err)
 			goto error;
 	}
 
-	/* Set LVDS output as 6bit-VESA mapping, single LVDS channel */
+	 
 	err = ps8622_set(cl, 0x01, 0xcc, 0x13);
 	if (err)
 		goto error;
 
-	/* Enable SSC set by register */
+	 
 	err = ps8622_set(cl, 0x02, 0xb1, 0x20);
 	if (err)
 		goto error;
 
-	/* Set SSC enabled and +/-1% central spreading */
+	 
 	err = ps8622_set(cl, 0x04, 0x10, 0x16);
 	if (err)
 		goto error;
 
-	/* Logic end */
-	/* MPU Clock source: LC => RCO */
+	 
+	 
 	err = ps8622_set(cl, 0x04, 0x59, 0x60);
 	if (err)
 		goto error;
 
-	/* LC -> RCO */
+	 
 	err = ps8622_set(cl, 0x04, 0x54, 0x14);
 	if (err)
 		goto error;
 
-	/* HPD high */
+	 
 	err = ps8622_set(cl, 0x02, 0xa1, 0x91);
 
 error:
@@ -355,22 +348,13 @@ static void ps8622_pre_enable(struct drm_bridge *bridge)
 
 	gpiod_set_value(ps8622->gpio_slp, 1);
 
-	/*
-	 * T1 is the range of time that it takes for the power to rise after we
-	 * enable the lcd/ps8622 fet. T2 is the range of time in which the
-	 * data sheet specifies we should deassert the reset pin.
-	 *
-	 * If it takes T1.max for the power to rise, we need to wait atleast
-	 * T2.min before deasserting the reset pin. If it takes T1.min for the
-	 * power to rise, we need to wait at most T2.max before deasserting the
-	 * reset pin.
-	 */
+	 
 	usleep_range(PS8622_RST_HIGH_T2_MIN_US + PS8622_POWER_RISE_T1_MAX_US,
 		     PS8622_RST_HIGH_T2_MAX_US + PS8622_POWER_RISE_T1_MIN_US);
 
 	gpiod_set_value(ps8622->gpio_rst, 1);
 
-	/* wait 20ms after RST high */
+	 
 	usleep_range(20000, 30000);
 
 	ret = ps8622_send_config(ps8622);
@@ -384,7 +368,7 @@ static void ps8622_pre_enable(struct drm_bridge *bridge)
 
 static void ps8622_disable(struct drm_bridge *bridge)
 {
-	/* Delay after panel is disabled */
+	 
 	msleep(PS8622_PWMO_END_T12_MS);
 }
 
@@ -397,20 +381,13 @@ static void ps8622_post_disable(struct drm_bridge *bridge)
 
 	ps8622->enabled = false;
 
-	/*
-	 * This doesn't matter if the regulators are turned off, but something
-	 * else might keep them on. In that case, we want to assert the slp gpio
-	 * to lower power.
-	 */
+	 
 	gpiod_set_value(ps8622->gpio_slp, 0);
 
 	if (ps8622->v12)
 		regulator_disable(ps8622->v12);
 
-	/*
-	 * Sleep for at least the amount of time that it takes the power rail to
-	 * fall to prevent asserting the rst gpio from doing anything.
-	 */
+	 
 	usleep_range(PS8622_POWER_FALL_T16_MAX_US,
 		     2 * PS8622_POWER_FALL_T16_MAX_US);
 	gpiod_set_value(ps8622->gpio_rst, 0);
@@ -473,10 +450,7 @@ static int ps8622_probe(struct i2c_client *client)
 		return ret;
 	}
 
-	/*
-	 * Assert the reset pin high to avoid the bridge being
-	 * initialized prematurely
-	 */
+	 
 	ps8622->gpio_rst = devm_gpiod_get(dev, "reset", GPIOD_OUT_HIGH);
 	if (IS_ERR(ps8622->gpio_rst)) {
 		ret = PTR_ERR(ps8622->gpio_rst);
@@ -528,7 +502,7 @@ static void ps8622_remove(struct i2c_client *client)
 }
 
 static const struct i2c_device_id ps8622_i2c_table[] = {
-	/* Device type, max_lane_count */
+	 
 	{"ps8622", 1},
 	{"ps8625", 2},
 	{},

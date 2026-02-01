@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-/* Copyright (c) 2020 NVIDIA CORPORATION. All rights reserved. */
+
+ 
 
 #include <linux/types.h>
 #include <linux/crc32.h>
@@ -247,7 +247,7 @@ static void dr_ste_v0_set_miss_addr(u8 *hw_ste_p, u64 miss_addr)
 {
 	u64 index = miss_addr >> 6;
 
-	/* Miss address for TX and RX STEs located in the same offsets */
+	 
 	MLX5_SET(ste_rx_steering_mult, hw_ste_p, miss_address_39_32, index >> 26);
 	MLX5_SET(ste_rx_steering_mult, hw_ste_p, miss_address_31_6, index);
 }
@@ -306,9 +306,7 @@ static void dr_ste_v0_init_full(u8 *hw_ste_p, u16 lu_type,
 	dr_ste_v0_set_lu_type(hw_ste_p, lu_type);
 	dr_ste_v0_set_next_lu_type(hw_ste_p, MLX5DR_STE_LU_TYPE_DONT_CARE);
 
-	/* Set GVMI once, this is the same for RX/TX
-	 * bits 63_48 of next table base / miss address encode the next GVMI
-	 */
+	 
 	MLX5_SET(ste_rx_steering_mult, hw_ste_p, gvmi, gvmi);
 	MLX5_SET(ste_rx_steering_mult, hw_ste_p, next_table_base_63_48, gvmi);
 	MLX5_SET(ste_rx_steering_mult, hw_ste_p, miss_address_63_48, gvmi);
@@ -331,7 +329,7 @@ static void dr_ste_v0_rx_set_flow_tag(u8 *hw_ste_p, u32 flow_tag)
 
 static void dr_ste_v0_set_counter_id(u8 *hw_ste_p, u32 ctr_id)
 {
-	/* This can be used for both rx_steering_mult and for sx_transmit */
+	 
 	MLX5_SET(ste_rx_steering_mult, hw_ste_p, counter_trigger_15_0, ctr_id);
 	MLX5_SET(ste_rx_steering_mult, hw_ste_p, counter_trigger_23_16, ctr_id >> 16);
 }
@@ -347,9 +345,7 @@ static void dr_ste_v0_set_tx_push_vlan(u8 *hw_ste_p, u32 vlan_hdr,
 	MLX5_SET(ste_sx_transmit, hw_ste_p, action_type,
 		 DR_STE_ACTION_TYPE_PUSH_VLAN);
 	MLX5_SET(ste_sx_transmit, hw_ste_p, encap_pointer_vlan_data, vlan_hdr);
-	/* Due to HW limitation we need to set this bit, otherwise reformat +
-	 * push vlan will not work.
-	 */
+	 
 	if (go_back)
 		dr_ste_v0_set_go_back_bit(hw_ste_p);
 }
@@ -359,7 +355,7 @@ static void dr_ste_v0_set_tx_encap(void *hw_ste_p, u32 reformat_id,
 {
 	MLX5_SET(ste_sx_transmit, hw_ste_p, action_type,
 		 encap_l3 ? DR_STE_ACTION_TYPE_ENCAP_L3 : DR_STE_ACTION_TYPE_ENCAP);
-	/* The hardware expects here size in words (2 byte) */
+	 
 	MLX5_SET(ste_sx_transmit, hw_ste_p, action_description, size / 2);
 	MLX5_SET(ste_sx_transmit, hw_ste_p, encap_pointer_vlan_data, reformat_id);
 }
@@ -416,10 +412,7 @@ dr_ste_v0_set_actions_tx(struct mlx5dr_domain *dmn,
 	bool encap = action_type_set[DR_ACTION_TYP_L2_TO_TNL_L2] ||
 		action_type_set[DR_ACTION_TYP_L2_TO_TNL_L3];
 
-	/* We want to make sure the modify header comes before L2
-	 * encapsulation. The reason for that is that we support
-	 * modify headers for outer headers only
-	 */
+	 
 	if (action_type_set[DR_ACTION_TYP_MODIFY_HDR] && attr->modify_actions) {
 		dr_ste_v0_set_entry_type(last_ste, DR_STE_TYPE_MODIFY_PKT);
 		dr_ste_v0_set_rewrite_actions(last_ste,
@@ -444,10 +437,7 @@ dr_ste_v0_set_actions_tx(struct mlx5dr_domain *dmn,
 	}
 
 	if (encap) {
-		/* Modify header and encapsulation require a different STEs.
-		 * Since modify header STE format doesn't support encapsulation
-		 * tunneling_action.
-		 */
+		 
 		if (action_type_set[DR_ACTION_TYP_MODIFY_HDR] ||
 		    action_type_set[DR_ACTION_TYP_PUSH_VLAN])
 			dr_ste_v0_arr_init_next(&last_ste,
@@ -459,11 +449,7 @@ dr_ste_v0_set_actions_tx(struct mlx5dr_domain *dmn,
 				       attr->reformat.id,
 				       attr->reformat.size,
 				       action_type_set[DR_ACTION_TYP_L2_TO_TNL_L3]);
-		/* Whenever prio_tag_required enabled, we can be sure that the
-		 * previous table (ACL) already push vlan to our packet,
-		 * And due to HW limitation we need to set this bit, otherwise
-		 * push vlan + reformat will not work.
-		 */
+		 
 		if (MLX5_CAP_GEN(dmn->mdev, prio_tag_required))
 			dr_ste_v0_set_go_back_bit(last_ste);
 	}
@@ -606,7 +592,7 @@ dr_ste_v0_set_action_decap_l3_list(void *data, u32 data_sz,
 	if (hw_action_num < required_actions)
 		return -ENOMEM;
 
-	/* dmac_47_16 */
+	 
 	MLX5_SET(dr_action_hw_set, hw_action,
 		 opcode, DR_STE_ACTION_MDFY_OP_SET);
 	MLX5_SET(dr_action_hw_set, hw_action,
@@ -620,7 +606,7 @@ dr_ste_v0_set_action_decap_l3_list(void *data, u32 data_sz,
 		 inline_data, hdr_fld_4b);
 	hw_action += MLX5_ST_SZ_BYTES(dr_action_hw_set);
 
-	/* smac_47_16 */
+	 
 	MLX5_SET(dr_action_hw_set, hw_action,
 		 opcode, DR_STE_ACTION_MDFY_OP_SET);
 	MLX5_SET(dr_action_hw_set, hw_action,
@@ -633,7 +619,7 @@ dr_ste_v0_set_action_decap_l3_list(void *data, u32 data_sz,
 	MLX5_SET(dr_action_hw_set, hw_action, inline_data, hdr_fld_4b);
 	hw_action += MLX5_ST_SZ_BYTES(dr_action_hw_set);
 
-	/* dmac_15_0 */
+	 
 	MLX5_SET(dr_action_hw_set, hw_action,
 		 opcode, DR_STE_ACTION_MDFY_OP_SET);
 	MLX5_SET(dr_action_hw_set, hw_action,
@@ -647,7 +633,7 @@ dr_ste_v0_set_action_decap_l3_list(void *data, u32 data_sz,
 		 inline_data, hdr_fld_2b);
 	hw_action += MLX5_ST_SZ_BYTES(dr_action_hw_set);
 
-	/* ethertype + (optional) vlan */
+	 
 	MLX5_SET(dr_action_hw_set, hw_action,
 		 opcode, DR_STE_ACTION_MDFY_OP_SET);
 	MLX5_SET(dr_action_hw_set, hw_action,
@@ -668,7 +654,7 @@ dr_ste_v0_set_action_decap_l3_list(void *data, u32 data_sz,
 	}
 	hw_action += MLX5_ST_SZ_BYTES(dr_action_hw_set);
 
-	/* smac_15_0 */
+	 
 	MLX5_SET(dr_action_hw_set, hw_action,
 		 opcode, DR_STE_ACTION_MDFY_OP_SET);
 	MLX5_SET(dr_action_hw_set, hw_action,
@@ -1343,9 +1329,7 @@ dr_ste_v0_build_tnl_mpls_over_udp_init(struct mlx5dr_ste_build *sb,
 				       struct mlx5dr_match_param *mask)
 {
 	dr_ste_v0_build_tnl_mpls_over_udp_tag(mask, sb, sb->bit_mask);
-	/* STEs with lookup type FLEX_PARSER_{0/1} includes
-	 * flex parsers_{0-3}/{4-7} respectively.
-	 */
+	 
 	sb->lu_type = sb->caps->flex_parser_id_mpls_over_udp > DR_STE_MAX_FLEX_0_ID ?
 		      DR_STE_V0_LU_TYPE_FLEX_PARSER_1 :
 		      DR_STE_V0_LU_TYPE_FLEX_PARSER_0;
@@ -1386,9 +1370,7 @@ dr_ste_v0_build_tnl_mpls_over_gre_init(struct mlx5dr_ste_build *sb,
 {
 	dr_ste_v0_build_tnl_mpls_over_gre_tag(mask, sb, sb->bit_mask);
 
-	/* STEs with lookup type FLEX_PARSER_{0/1} includes
-	 * flex parsers_{0-3}/{4-7} respectively.
-	 */
+	 
 	sb->lu_type = sb->caps->flex_parser_id_mpls_over_gre > DR_STE_MAX_FLEX_0_ID ?
 		      DR_STE_V0_LU_TYPE_FLEX_PARSER_1 :
 		      DR_STE_V0_LU_TYPE_FLEX_PARSER_0;
@@ -1453,9 +1435,7 @@ dr_ste_v0_build_icmp_init(struct mlx5dr_ste_build *sb,
 
 	dr_ste_v0_build_icmp_tag(mask, sb, sb->bit_mask);
 
-	/* STEs with lookup type FLEX_PARSER_{0/1} includes
-	 * flex parsers_{0-3}/{4-7} respectively.
-	 */
+	 
 	is_ipv4 = DR_MASK_IS_ICMPV4_SET(&mask->misc3);
 	parser_id = is_ipv4 ? sb->caps->flex_parser_id_icmp_dw0 :
 		    sb->caps->flex_parser_id_icmpv6_dw0;
@@ -1659,7 +1639,7 @@ dr_ste_v0_build_src_gvmi_qpn_tag(struct mlx5dr_match_param *value,
 
 	if (sb->vhca_id_valid) {
 		peer = xa_load(&dmn->peer_dmn_xa, id);
-		/* Find port GVMI based on the eswitch_owner_vhca_id */
+		 
 		if (id == dmn->info.caps.gvmi)
 			vport_dmn = dmn;
 		else if (peer && (id == peer->info.caps.gvmi))
@@ -1787,9 +1767,7 @@ dr_ste_v0_build_flex_parser_tnl_geneve_tlv_opt_init(struct mlx5dr_ste_build *sb,
 {
 	dr_ste_v0_build_flex_parser_tnl_geneve_tlv_opt_tag(mask, sb, sb->bit_mask);
 
-	/* STEs with lookup type FLEX_PARSER_{0/1} includes
-	 * flex parsers_{0-3}/{4-7} respectively.
-	 */
+	 
 	sb->lu_type = sb->caps->flex_parser_id_geneve_tlv_option_0 > 3 ?
 		DR_STE_V0_LU_TYPE_FLEX_PARSER_1 :
 		DR_STE_V0_LU_TYPE_FLEX_PARSER_0;
@@ -1903,7 +1881,7 @@ static void dr_ste_v0_build_tnl_header_0_1_init(struct mlx5dr_ste_build *sb,
 }
 
 static struct mlx5dr_ste_ctx ste_ctx_v0 = {
-	/* Builders */
+	 
 	.build_eth_l2_src_dst_init	= &dr_ste_v0_build_eth_l2_src_dst_init,
 	.build_eth_l3_ipv6_src_init	= &dr_ste_v0_build_eth_l3_ipv6_src_init,
 	.build_eth_l3_ipv6_dst_init	= &dr_ste_v0_build_eth_l3_ipv6_dst_init,
@@ -1934,7 +1912,7 @@ static struct mlx5dr_ste_ctx ste_ctx_v0 = {
 	.build_tnl_gtpu_flex_parser_0_init   = &dr_ste_v0_build_tnl_gtpu_flex_parser_0_init,
 	.build_tnl_gtpu_flex_parser_1_init   = &dr_ste_v0_build_tnl_gtpu_flex_parser_1_init,
 
-	/* Getters and Setters */
+	 
 	.ste_init			= &dr_ste_v0_init,
 	.set_next_lu_type		= &dr_ste_v0_set_next_lu_type,
 	.get_next_lu_type		= &dr_ste_v0_get_next_lu_type,
@@ -1944,7 +1922,7 @@ static struct mlx5dr_ste_ctx ste_ctx_v0 = {
 	.set_byte_mask			= &dr_ste_v0_set_byte_mask,
 	.get_byte_mask			= &dr_ste_v0_get_byte_mask,
 
-	/* Actions */
+	 
 	.actions_caps			= DR_STE_CTX_ACTION_CAP_NONE,
 	.set_actions_rx			= &dr_ste_v0_set_actions_rx,
 	.set_actions_tx			= &dr_ste_v0_set_actions_tx,

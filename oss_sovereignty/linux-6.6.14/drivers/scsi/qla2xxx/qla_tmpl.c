@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * QLogic Fibre Channel HBA Driver
- * Copyright (c)  2003-2014 QLogic Corporation
- */
+
+ 
 #include "qla_def.h"
 #include "qla_tmpl.h"
 
@@ -151,7 +148,7 @@ qla27xx_fwdt_entry_t255(struct scsi_qla_host *vha,
 	    "%s: end [%lx]\n", __func__, *len);
 	qla27xx_skip_entry(ent, buf);
 
-	/* terminate */
+	 
 	return NULL;
 }
 
@@ -513,11 +510,7 @@ qla27xx_fwdt_entry_t268(struct scsi_qla_host *vha,
 
 	case T268_BUF_TYPE_REQ_MIRROR:
 	case T268_BUF_TYPE_RSP_MIRROR:
-		/*
-		 * Mirror pointers are not implemented in the
-		 * driver, instead shadow pointers are used by
-		 * the drier. Skip these entries.
-		 */
+		 
 		qla27xx_skip_entry(ent, buf);
 		break;
 	default:
@@ -868,7 +861,7 @@ qla27xx_walk_template(struct scsi_qla_host *vha,
 		    "%s: missing end entry\n", __func__);
 
 bailout:
-	cpu_to_le32s(&tmp->count);	/* endianize residual count */
+	cpu_to_le32s(&tmp->count);	 
 }
 
 static void
@@ -1018,7 +1011,7 @@ qla27xx_mpi_fwdump(scsi_qla_host_t *vha, int hardware_locked)
 		bool walk_template_only = false;
 
 		if (vha->hw->mpi_fw_dumped) {
-			/* Use the spare area for any further dumps. */
+			 
 			buf += fwdt->dump_size;
 			walk_template_only = true;
 			ql_log(ql_log_warn, vha, 0x02f4,

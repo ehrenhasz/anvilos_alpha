@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2000-2002,2005 Silicon Graphics, Inc.
- * Copyright (c) 2010 David Chinner.
- * Copyright (c) 2011 Christoph Hellwig.
- * All Rights Reserved.
- */
+
+ 
 #ifndef __XFS_EXTENT_BUSY_H__
 #define	__XFS_EXTENT_BUSY_H__
 
@@ -13,35 +8,25 @@ struct xfs_perag;
 struct xfs_trans;
 struct xfs_alloc_arg;
 
-/*
- * Busy block/extent entry.  Indexed by a rbtree in perag to mark blocks that
- * have been freed but whose transactions aren't committed to disk yet.
- */
+ 
 struct xfs_extent_busy {
-	struct rb_node	rb_node;	/* ag by-bno indexed search tree */
-	struct list_head list;		/* transaction busy extent list */
+	struct rb_node	rb_node;	 
+	struct list_head list;		 
 	xfs_agnumber_t	agno;
 	xfs_agblock_t	bno;
 	xfs_extlen_t	length;
 	unsigned int	flags;
-#define XFS_EXTENT_BUSY_DISCARDED	0x01	/* undergoing a discard op. */
-#define XFS_EXTENT_BUSY_SKIP_DISCARD	0x02	/* do not discard */
+#define XFS_EXTENT_BUSY_DISCARDED	0x01	 
+#define XFS_EXTENT_BUSY_SKIP_DISCARD	0x02	 
 };
 
-/*
- * List used to track groups of related busy extents all the way through
- * to discard completion.
- */
+ 
 struct xfs_busy_extents {
 	struct xfs_mount	*mount;
 	struct list_head	extent_list;
 	struct work_struct	endio_work;
 
-	/*
-	 * Owner is the object containing the struct xfs_busy_extents to free
-	 * once the busy extents have been processed. If only the
-	 * xfs_busy_extents object needs freeing, then point this at itself.
-	 */
+	 
 	void			*owner;
 };
 
@@ -85,4 +70,4 @@ static inline void xfs_extent_busy_sort(struct list_head *list)
 	list_sort(NULL, list, xfs_extent_busy_ag_cmp);
 }
 
-#endif /* __XFS_EXTENT_BUSY_H__ */
+#endif  

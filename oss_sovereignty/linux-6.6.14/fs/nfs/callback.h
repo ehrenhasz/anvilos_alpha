@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * linux/fs/nfs/callback.h
- *
- * Copyright (C) 2004 Trond Myklebust
- *
- * NFSv4 callback definitions
- */
+ 
+ 
 #ifndef __LINUX_FS_NFS_CALLBACK_H
 #define __LINUX_FS_NFS_CALLBACK_H
 #include <linux/sunrpc/svc.h>
@@ -22,7 +16,7 @@ enum nfs4_callback_procnum {
 enum nfs4_callback_opnum {
 	OP_CB_GETATTR = 3,
 	OP_CB_RECALL  = 4,
-/* Callback operations new to NFSv4.1 */
+ 
 	OP_CB_LAYOUTRECALL  = 5,
 	OP_CB_NOTIFY        = 6,
 	OP_CB_PUSH_DELEG    = 7,
@@ -33,7 +27,7 @@ enum nfs4_callback_opnum {
 	OP_CB_WANTS_CANCELLED = 12,
 	OP_CB_NOTIFY_LOCK   = 13,
 	OP_CB_NOTIFY_DEVICEID = 14,
-/* Callback operations new to NFSv4.2 */
+ 
 	OP_CB_OFFLOAD = 15,
 	OP_CB_ILLEGAL = 10044,
 };
@@ -51,7 +45,7 @@ struct cb_compound_hdr_arg {
 	unsigned int taglen;
 	const char *tag;
 	unsigned int minorversion;
-	unsigned int cb_ident; /* v4.0 callback identifier */
+	unsigned int cb_ident;  
 	unsigned nops;
 };
 
@@ -185,7 +179,7 @@ struct cb_notify_lock_args {
 
 extern __be32 nfs4_callback_notify_lock(void *argp, void *resp,
 					 struct cb_process_state *cps);
-#endif /* CONFIG_NFS_V4_1 */
+#endif  
 #ifdef CONFIG_NFS_V4_2
 struct cb_offloadargs {
 	struct nfs_fh		coa_fh;
@@ -197,7 +191,7 @@ struct cb_offloadargs {
 
 extern __be32 nfs4_callback_offload(void *args, void *dummy,
 				    struct cb_process_state *cps);
-#endif /* CONFIG_NFS_V4_2 */
+#endif  
 extern int check_gss_callback_principal(struct nfs_client *, struct svc_rqst *);
 extern __be32 nfs4_callback_getattr(void *argp, void *resp,
 				    struct cb_process_state *cps);
@@ -206,12 +200,8 @@ extern __be32 nfs4_callback_recall(void *argp, void *resp,
 #if IS_ENABLED(CONFIG_NFS_V4)
 extern int nfs_callback_up(u32 minorversion, struct rpc_xprt *xprt);
 extern void nfs_callback_down(int minorversion, struct net *net);
-#endif /* CONFIG_NFS_V4 */
-/*
- * nfs41: Callbacks are expected to not cause substantial latency,
- * so we limit their concurrency to 1 by setting up the maximum number
- * of slots for the backchannel.
- */
+#endif  
+ 
 #define NFS41_BC_MIN_CALLBACKS 1
 #define NFS41_BC_MAX_CALLBACKS 1
 
@@ -220,4 +210,4 @@ extern void nfs_callback_down(int minorversion, struct net *net);
 extern unsigned int nfs_callback_set_tcpport;
 extern unsigned short nfs_callback_nr_threads;
 
-#endif /* __LINUX_FS_NFS_CALLBACK_H */
+#endif  

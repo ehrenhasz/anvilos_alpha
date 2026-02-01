@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright © 2022-2023 Intel Corporation
- */
+
+ 
 
 #include "i915_drv.h"
 #include "i915_reg.h"
@@ -10,59 +8,9 @@
 #include "intel_vblank.h"
 #include "intel_vrr.h"
 
-/*
- * This timing diagram depicts the video signal in and
- * around the vertical blanking period.
- *
- * Assumptions about the fictitious mode used in this example:
- *  vblank_start >= 3
- *  vsync_start = vblank_start + 1
- *  vsync_end = vblank_start + 2
- *  vtotal = vblank_start + 3
- *
- *           start of vblank:
- *           latch double buffered registers
- *           increment frame counter (ctg+)
- *           generate start of vblank interrupt (gen4+)
- *           |
- *           |          frame start:
- *           |          generate frame start interrupt (aka. vblank interrupt) (gmch)
- *           |          may be shifted forward 1-3 extra lines via TRANSCONF
- *           |          |
- *           |          |  start of vsync:
- *           |          |  generate vsync interrupt
- *           |          |  |
- * ___xxxx___    ___xxxx___    ___xxxx___    ___xxxx___    ___xxxx___    ___xxxx
- *       .   \hs/   .      \hs/          \hs/          \hs/   .      \hs/
- * ----va---> <-----------------vb--------------------> <--------va-------------
- *       |          |       <----vs----->                     |
- * -vbs-----> <---vbs+1---> <---vbs+2---> <-----0-----> <-----1-----> <-----2--- (scanline counter gen2)
- * -vbs-2---> <---vbs-1---> <---vbs-----> <---vbs+1---> <---vbs+2---> <-----0--- (scanline counter gen3+)
- * -vbs-2---> <---vbs-2---> <---vbs-1---> <---vbs-----> <---vbs+1---> <---vbs+2- (scanline counter hsw+ hdmi)
- *       |          |                                         |
- *       last visible pixel                                   first visible pixel
- *                  |                                         increment frame counter (gen3/4)
- *                  pixel counter = vblank_start * htotal     pixel counter = 0 (gen3/4)
- *
- * x  = horizontal active
- * _  = horizontal blanking
- * hs = horizontal sync
- * va = vertical active
- * vb = vertical blanking
- * vs = vertical sync
- * vbs = vblank_start (number)
- *
- * Summary:
- * - most events happen at the start of horizontal sync
- * - frame start happens at the start of horizontal blank, 1-4 lines
- *   (depending on TRANSCONF settings) after the start of vblank
- * - gen3/4 pixel and frame counter are synchronized with the start
- *   of horizontal active on the first line of vertical active
- */
+ 
 
-/*
- * Called from drm generic code, passed a 'crtc', which we use as a pipe index.
- */
+ 
 u32 i915_get_vblank_counter(struct drm_crtc *crtc)
 {
 	struct drm_i915_private *dev_priv = to_i915(crtc->dev);
@@ -72,17 +20,7 @@ u32 i915_get_vblank_counter(struct drm_crtc *crtc)
 	u32 pixel, vbl_start, hsync_start, htotal;
 	u64 frame;
 
-	/*
-	 * On i965gm TV output the frame counter only works up to
-	 * the point when we enable the TV encoder. After that the
-	 * frame counter ceases to work and reads zero. We need a
-	 * vblank wait before enabling the TV encoder and so we
-	 * have to enable vblank interrupts while the frame counter
-	 * is still in a working state. However the core vblank code
-	 * does not like us returning non-zero frame counter values
-	 * when we've told it that we don't have a working frame
-	 * counter. Thus we must stop non-zero values leaking out.
-	 */
+	 
 	if (!vblank->max_vblank_count)
 		return 0;
 
@@ -92,27 +30,19 @@ u32 i915_get_vblank_counter(struct drm_crtc *crtc)
 	if (mode->flags & DRM_MODE_FLAG_INTERLACE)
 		vbl_start = DIV_ROUND_UP(vbl_start, 2);
 
-	/* Convert to pixel count */
+	 
 	vbl_start *= htotal;
 
-	/* Start of vblank event occurs at start of hsync */
+	 
 	vbl_start -= htotal - hsync_start;
 
-	/*
-	 * High & low register fields aren't synchronized, so make sure
-	 * we get a low value that's stable across two reads of the high
-	 * register.
-	 */
+	 
 	frame = intel_de_read64_2x32(dev_priv, PIPEFRAMEPIXEL(pipe), PIPEFRAME(pipe));
 
 	pixel = frame & PIPE_PIXEL_MASK;
 	frame = (frame >> PIPE_FRAME_LOW_SHIFT) & 0xffffff;
 
-	/*
-	 * The frame counter increments at beginning of active.
-	 * Cook up a vblank counter by also checking the pixel
-	 * counter against vblank start.
-	 */
+	 
 	return (frame + (pixel >= vbl_start)) & 0xffffff;
 }
 
@@ -138,25 +68,13 @@ static u32 intel_crtc_scanlines_since_frame_timestamp(struct intel_crtc *crtc)
 	u32 clock = mode->crtc_clock;
 	u32 scan_prev_time, scan_curr_time, scan_post_time;
 
-	/*
-	 * To avoid the race condition where we might cross into the
-	 * next vblank just between the PIPE_FRMTMSTMP and TIMESTAMP_CTR
-	 * reads. We make sure we read PIPE_FRMTMSTMP and TIMESTAMP_CTR
-	 * during the same frame.
-	 */
+	 
 	do {
-		/*
-		 * This field provides read back of the display
-		 * pipe frame time stamp. The time stamp value
-		 * is sampled at every start of vertical blank.
-		 */
+		 
 		scan_prev_time = intel_de_read_fw(dev_priv,
 						  PIPE_FRMTMSTMP(crtc->pipe));
 
-		/*
-		 * The TIMESTAMP_CTR register has the current
-		 * time stamp value.
-		 */
+		 
 		scan_curr_time = intel_de_read_fw(dev_priv, IVB_TIMESTAMP_CTR);
 
 		scan_post_time = intel_de_read_fw(dev_priv,
@@ -167,14 +85,7 @@ static u32 intel_crtc_scanlines_since_frame_timestamp(struct intel_crtc *crtc)
 				   clock), 1000 * htotal);
 }
 
-/*
- * On certain encoders on certain platforms, pipe
- * scanline register will not work to get the scanline,
- * since the timings are driven from the PORT or issues
- * with scanline register updates.
- * This function will use Framestamp and current
- * timestamp registers to calculate the scanline.
- */
+ 
 static u32 __intel_get_crtc_scanline_from_timestamp(struct intel_crtc *crtc)
 {
 	struct drm_vblank_crtc *vblank =
@@ -191,10 +102,7 @@ static u32 __intel_get_crtc_scanline_from_timestamp(struct intel_crtc *crtc)
 	return scanline;
 }
 
-/*
- * intel_de_read_fw(), only for fast reads of display block, no need for
- * forcewake etc.
- */
+ 
 static int __intel_get_crtc_scanline(struct intel_crtc *crtc)
 {
 	struct drm_device *dev = crtc->base.dev;
@@ -219,18 +127,7 @@ static int __intel_get_crtc_scanline(struct intel_crtc *crtc)
 
 	position = intel_de_read_fw(dev_priv, PIPEDSL(pipe)) & PIPEDSL_LINE_MASK;
 
-	/*
-	 * On HSW, the DSL reg (0x70000) appears to return 0 if we
-	 * read it just before the start of vblank.  So try it again
-	 * so we don't accidentally end up spanning a vblank frame
-	 * increment, causing the pipe_update_end() code to squak at us.
-	 *
-	 * The nature of this problem means we can't simply check the ISR
-	 * bit and return the vblank start value; nor can we use the scanline
-	 * debug register in the transcoder as it appears to have the same
-	 * problem.  We may need to extend this to include other platforms,
-	 * but so far testing only shows the problem on HSW.
-	 */
+	 
 	if (HAS_DDI(dev_priv) && !position) {
 		int i, temp;
 
@@ -244,10 +141,7 @@ static int __intel_get_crtc_scanline(struct intel_crtc *crtc)
 		}
 	}
 
-	/*
-	 * See update_scanline_offset() for the details on the
-	 * scanline_offset adjustment.
-	 */
+	 
 	return (position + crtc->scanline_offset) % vtotal;
 }
 
@@ -287,16 +181,12 @@ static bool i915_get_crtc_scanoutpos(struct drm_crtc *_crtc,
 		vtotal /= 2;
 	}
 
-	/*
-	 * Lock uncore.lock, as we will do multiple timing critical raw
-	 * register reads, potentially with preemption disabled, so the
-	 * following code must not block on uncore.lock.
-	 */
+	 
 	spin_lock_irqsave(&dev_priv->uncore.lock, irqflags);
 
-	/* preempt_disable_rt() should go right here in PREEMPT_RT patchset. */
+	 
 
-	/* Get optional system timestamp before query. */
+	 
 	if (stime)
 		*stime = ktime_get();
 
@@ -305,69 +195,37 @@ static bool i915_get_crtc_scanoutpos(struct drm_crtc *_crtc,
 
 		position = __intel_get_crtc_scanline(crtc);
 
-		/*
-		 * Already exiting vblank? If so, shift our position
-		 * so it looks like we're already apporaching the full
-		 * vblank end. This should make the generated timestamp
-		 * more or less match when the active portion will start.
-		 */
+		 
 		if (position >= vbl_start && scanlines < position)
 			position = min(crtc->vmax_vblank_start + scanlines, vtotal - 1);
 	} else if (use_scanline_counter) {
-		/* No obvious pixelcount register. Only query vertical
-		 * scanout position from Display scan line register.
-		 */
+		 
 		position = __intel_get_crtc_scanline(crtc);
 	} else {
-		/*
-		 * Have access to pixelcount since start of frame.
-		 * We can split this into vertical and horizontal
-		 * scanout position.
-		 */
+		 
 		position = (intel_de_read_fw(dev_priv, PIPEFRAMEPIXEL(pipe)) & PIPE_PIXEL_MASK) >> PIPE_PIXEL_SHIFT;
 
-		/* convert to pixel counts */
+		 
 		vbl_start *= htotal;
 		vbl_end *= htotal;
 		vtotal *= htotal;
 
-		/*
-		 * In interlaced modes, the pixel counter counts all pixels,
-		 * so one field will have htotal more pixels. In order to avoid
-		 * the reported position from jumping backwards when the pixel
-		 * counter is beyond the length of the shorter field, just
-		 * clamp the position the length of the shorter field. This
-		 * matches how the scanline counter based position works since
-		 * the scanline counter doesn't count the two half lines.
-		 */
+		 
 		position = min(position, vtotal - 1);
 
-		/*
-		 * Start of vblank interrupt is triggered at start of hsync,
-		 * just prior to the first active line of vblank. However we
-		 * consider lines to start at the leading edge of horizontal
-		 * active. So, should we get here before we've crossed into
-		 * the horizontal active of the first line in vblank, we would
-		 * not set the DRM_SCANOUTPOS_INVBL flag. In order to fix that,
-		 * always add htotal-hsync_start to the current pixel position.
-		 */
+		 
 		position = (position + htotal - hsync_start) % vtotal;
 	}
 
-	/* Get optional system timestamp after query. */
+	 
 	if (etime)
 		*etime = ktime_get();
 
-	/* preempt_enable_rt() should go right here in PREEMPT_RT patchset. */
+	 
 
 	spin_unlock_irqrestore(&dev_priv->uncore.lock, irqflags);
 
-	/*
-	 * While in vblank, position will be negative
-	 * counting up towards 0 at vbl_end. And outside
-	 * vblank, position will be positive counting
-	 * up since vbl_end.
-	 */
+	 
 	if (position >= vbl_start)
 		position -= vbl_end;
 	else
@@ -423,7 +281,7 @@ static void wait_for_pipe_scanline_moving(struct intel_crtc *crtc, bool state)
 	struct drm_i915_private *dev_priv = to_i915(crtc->base.dev);
 	enum pipe pipe = crtc->pipe;
 
-	/* Wait for the display line to settle/start moving */
+	 
 	if (wait_for(pipe_scanline_is_moving(dev_priv, pipe) == state, 100))
 		drm_err(&dev_priv->drm,
 			"pipe %c scanline %s wait timed out\n",
@@ -445,33 +303,7 @@ static int intel_crtc_scanline_offset(const struct intel_crtc_state *crtc_state)
 	struct drm_i915_private *i915 = to_i915(crtc_state->uapi.crtc->dev);
 	const struct drm_display_mode *adjusted_mode = &crtc_state->hw.adjusted_mode;
 
-	/*
-	 * The scanline counter increments at the leading edge of hsync.
-	 *
-	 * On most platforms it starts counting from vtotal-1 on the
-	 * first active line. That means the scanline counter value is
-	 * always one less than what we would expect. Ie. just after
-	 * start of vblank, which also occurs at start of hsync (on the
-	 * last active line), the scanline counter will read vblank_start-1.
-	 *
-	 * On gen2 the scanline counter starts counting from 1 instead
-	 * of vtotal-1, so we have to subtract one (or rather add vtotal-1
-	 * to keep the value positive), instead of adding one.
-	 *
-	 * On HSW+ the behaviour of the scanline counter depends on the output
-	 * type. For DP ports it behaves like most other platforms, but on HDMI
-	 * there's an extra 1 line difference. So we need to add two instead of
-	 * one to the value.
-	 *
-	 * On VLV/CHV DSI the scanline counter would appear to increment
-	 * approx. 1/3 of a scanline before start of vblank. Unfortunately
-	 * that means we can't tell whether we're in vblank or not while
-	 * we're on that particular line. We must still set scanline_offset
-	 * to 1 so that the vblank timestamps come out correct when we query
-	 * the scanline counter from within the vblank interrupt handler.
-	 * However if queried just before the start of vblank we'll get an
-	 * answer that's slightly in the future.
-	 */
+	 
 	if (DISPLAY_VER(i915) == 2) {
 		int vtotal;
 
@@ -510,18 +342,7 @@ void intel_crtc_update_active_timings(const struct intel_crtc_state *crtc_state,
 		mode_flags &= ~I915_MODE_FLAG_VRR;
 	}
 
-	/*
-	 * Belts and suspenders locking to guarantee everyone sees 100%
-	 * consistent state during fastset seamless refresh rate changes.
-	 *
-	 * vblank_time_lock takes care of all drm_vblank.c stuff, and
-	 * uncore.lock takes care of __intel_get_crtc_scanline() which
-	 * may get called elsewhere as well.
-	 *
-	 * TODO maybe just protect everything (including
-	 * __intel_get_crtc_scanline()) with vblank_time_lock?
-	 * Need to audit everything to make sure it's safe.
-	 */
+	 
 	spin_lock_irqsave(&i915->drm.vblank_time_lock, irqflags);
 	spin_lock(&i915->uncore.lock);
 

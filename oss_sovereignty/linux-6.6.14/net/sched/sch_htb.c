@@ -1,26 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * net/sched/sch_htb.c	Hierarchical token bucket, feed tree version
- *
- * Authors:	Martin Devera, <devik@cdi.cz>
- *
- * Credits (in time order) for older HTB versions:
- *              Stef Coene <stef.coene@docum.org>
- *			HTB support at LARTC mailing list
- *		Ondrej Kraus, <krauso@barr.cz>
- *			found missing INIT_QDISC(htb)
- *		Vladimir Smelhaus, Aamer Akhter, Bert Hubert
- *			helped a lot to locate nasty class stall bug
- *		Andi Kleen, Jamal Hadi, Bert Hubert
- *			code review and helpful comments on shaping
- *		Tomasz Wrona, <tw@eter.tym.pl>
- *			created test case so that I was able to fix nasty bug
- *		Wilfried Weissmann
- *			spotted bug in dequeue code and helped with fix
- *		Jiri Fojtasek
- *			fixed requeue routine
- *		and many others. thanks.
- */
+
+ 
 #include <linux/module.h>
 #include <linux/moduleparam.h>
 #include <linux/types.h>
@@ -38,39 +17,28 @@
 #include <net/pkt_sched.h>
 #include <net/pkt_cls.h>
 
-/* HTB algorithm.
-    Author: devik@cdi.cz
-    ========================================================================
-    HTB is like TBF with multiple classes. It is also similar to CBQ because
-    it allows to assign priority to each class in hierarchy.
-    In fact it is another implementation of Floyd's formal sharing.
+ 
 
-    Levels:
-    Each class is assigned level. Leaf has ALWAYS level 0 and root
-    classes have level TC_HTB_MAXDEPTH-1. Interior nodes has level
-    one less than their parent.
-*/
-
-static int htb_hysteresis __read_mostly = 0; /* whether to use mode hysteresis for speedup */
-#define HTB_VER 0x30011		/* major must be matched with number supplied by TC as version */
+static int htb_hysteresis __read_mostly = 0;  
+#define HTB_VER 0x30011		 
 
 #if HTB_VER >> 16 != TC_HTB_PROTOVER
 #error "Mismatched sch_htb.c and pkt_sch.h"
 #endif
 
-/* Module parameter and sysfs export */
+ 
 module_param    (htb_hysteresis, int, 0640);
 MODULE_PARM_DESC(htb_hysteresis, "Hysteresis mode, less CPU load, less accurate");
 
-static int htb_rate_est = 0; /* htb classes have a default rate estimator */
+static int htb_rate_est = 0;  
 module_param(htb_rate_est, int, 0640);
 MODULE_PARM_DESC(htb_rate_est, "setup a default rate estimator (4sec 16sec) for htb classes");
 
-/* used internaly to keep status of single class */
+ 
 enum htb_cmode {
-	HTB_CANT_SEND,		/* class can't send and can't borrow */
-	HTB_MAY_BORROW,		/* class can't send but may borrow */
-	HTB_CAN_SEND		/* class can send */
+	HTB_CANT_SEND,		 
+	HTB_MAY_BORROW,		 
+	HTB_CAN_SEND		 
 };
 
 struct htb_prio {
@@ -79,46 +47,37 @@ struct htb_prio {
 		struct rb_root	feed;
 	};
 	struct rb_node	*ptr;
-	/* When class changes from state 1->2 and disconnects from
-	 * parent's feed then we lost ptr value and start from the
-	 * first child again. Here we store classid of the
-	 * last valid ptr (used when ptr is NULL).
-	 */
+	 
 	u32		last_ptr_id;
 };
 
-/* interior & leaf nodes; props specific to leaves are marked L:
- * To reduce false sharing, place mostly read fields at beginning,
- * and mostly written ones at the end.
- */
+ 
 struct htb_class {
 	struct Qdisc_class_common common;
 	struct psched_ratecfg	rate;
 	struct psched_ratecfg	ceil;
-	s64			buffer, cbuffer;/* token bucket depth/rate */
-	s64			mbuffer;	/* max wait time */
-	u32			prio;		/* these two are used only by leaves... */
-	int			quantum;	/* but stored for parent-to-leaf return */
+	s64			buffer, cbuffer; 
+	s64			mbuffer;	 
+	u32			prio;		 
+	int			quantum;	 
 
-	struct tcf_proto __rcu	*filter_list;	/* class attached filters */
+	struct tcf_proto __rcu	*filter_list;	 
 	struct tcf_block	*block;
 
-	int			level;		/* our level (see above) */
+	int			level;		 
 	unsigned int		children;
-	struct htb_class	*parent;	/* parent class */
+	struct htb_class	*parent;	 
 
 	struct net_rate_estimator __rcu *rate_est;
 
-	/*
-	 * Written often fields
-	 */
+	 
 	struct gnet_stats_basic_sync bstats;
 	struct gnet_stats_basic_sync bstats_bias;
-	struct tc_htb_xstats	xstats;	/* our special stats */
+	struct tc_htb_xstats	xstats;	 
 
-	/* token bucket parameters */
-	s64			tokens, ctokens;/* current number of tokens */
-	s64			t_c;		/* checkpoint time */
+	 
+	s64			tokens, ctokens; 
+	s64			t_c;		 
 
 	union {
 		struct htb_class_leaf {
@@ -132,10 +91,10 @@ struct htb_class {
 	};
 	s64			pq_key;
 
-	int			prio_activity;	/* for which prios are we active */
-	enum htb_cmode		cmode;		/* current mode of the class */
-	struct rb_node		pq_node;	/* node for event queue */
-	struct rb_node		node[TC_HTB_NUMPRIO];	/* node for self or feed tree */
+	int			prio_activity;	 
+	enum htb_cmode		cmode;		 
+	struct rb_node		pq_node;	 
+	struct rb_node		node[TC_HTB_NUMPRIO];	 
 
 	unsigned int drops ____cacheline_aligned_in_smp;
 	unsigned int		overlimits;
@@ -148,28 +107,28 @@ struct htb_level {
 
 struct htb_sched {
 	struct Qdisc_class_hash clhash;
-	int			defcls;		/* class where unclassified flows go to */
-	int			rate2quantum;	/* quant = rate / rate2quantum */
+	int			defcls;		 
+	int			rate2quantum;	 
 
-	/* filters for qdisc itself */
+	 
 	struct tcf_proto __rcu	*filter_list;
 	struct tcf_block	*block;
 
 #define HTB_WARN_TOOMANYEVENTS	0x1
-	unsigned int		warned;	/* only one warning */
+	unsigned int		warned;	 
 	int			direct_qlen;
 	struct work_struct	work;
 
-	/* non shaped skbs; let them go directly thru */
+	 
 	struct qdisc_skb_head	direct_queue;
 	u32			direct_pkts;
 	u32			overlimits;
 
 	struct qdisc_watchdog	watchdog;
 
-	s64			now;	/* cached dequeue time */
+	s64			now;	 
 
-	/* time of nearest event per level (row) */
+	 
 	s64			near_ev_cache[TC_HTB_MAXDEPTH];
 
 	int			row_mask[TC_HTB_MAXDEPTH];
@@ -182,7 +141,7 @@ struct htb_sched {
 	bool			offload;
 };
 
-/* find class in global hash table using given handle */
+ 
 static inline struct htb_class *htb_find(u32 handle, struct Qdisc *sch)
 {
 	struct htb_sched *q = qdisc_priv(sch);
@@ -201,21 +160,7 @@ static unsigned long htb_search(struct Qdisc *sch, u32 handle)
 
 #define HTB_DIRECT ((struct htb_class *)-1L)
 
-/**
- * htb_classify - classify a packet into class
- * @skb: the socket buffer
- * @sch: the active queue discipline
- * @qerr: pointer for returned status code
- *
- * It returns NULL if the packet should be dropped or -1 if the packet
- * should be passed directly thru. In all other cases leaf class is returned.
- * We allow direct class selection by classid in priority. The we examine
- * filters in qdisc and in inner nodes (if higher filter points to the inner
- * node). If we end up with classid MAJOR:0 we enqueue the skb into special
- * internal fifo (direct). These packets then go directly thru. If we still
- * have no valid leaf we try to use MAJOR:default leaf. It still unsuccessful
- * then finish and return direct queue.
- */
+ 
 static struct htb_class *htb_classify(struct sk_buff *skb, struct Qdisc *sch,
 				      int *qerr)
 {
@@ -225,17 +170,14 @@ static struct htb_class *htb_classify(struct sk_buff *skb, struct Qdisc *sch,
 	struct tcf_proto *tcf;
 	int result;
 
-	/* allow to select class by setting skb->priority to valid classid;
-	 * note that nfmark can be used too by attaching filter fw with no
-	 * rules in it
-	 */
+	 
 	if (skb->priority == sch->handle)
-		return HTB_DIRECT;	/* X:0 (direct flow) selected */
+		return HTB_DIRECT;	 
 	cl = htb_find(skb->priority, sch);
 	if (cl) {
 		if (cl->level == 0)
 			return cl;
-		/* Start with inner filter chain if a non-leaf class is selected */
+		 
 		tcf = rcu_dereference_bh(cl->filter_list);
 	} else {
 		tcf = rcu_dereference_bh(q->filter_list);
@@ -257,33 +199,25 @@ static struct htb_class *htb_classify(struct sk_buff *skb, struct Qdisc *sch,
 		cl = (void *)res.class;
 		if (!cl) {
 			if (res.classid == sch->handle)
-				return HTB_DIRECT;	/* X:0 (direct flow) */
+				return HTB_DIRECT;	 
 			cl = htb_find(res.classid, sch);
 			if (!cl)
-				break;	/* filter selected invalid classid */
+				break;	 
 		}
 		if (!cl->level)
-			return cl;	/* we hit leaf; return it */
+			return cl;	 
 
-		/* we have got inner class; apply inner filter chain */
+		 
 		tcf = rcu_dereference_bh(cl->filter_list);
 	}
-	/* classification failed; try to use default class */
+	 
 	cl = htb_find(TC_H_MAKE(TC_H_MAJ(sch->handle), q->defcls), sch);
 	if (!cl || cl->level)
-		return HTB_DIRECT;	/* bad default .. this is safe bet */
+		return HTB_DIRECT;	 
 	return cl;
 }
 
-/**
- * htb_add_to_id_tree - adds class to the round robin list
- * @root: the root of the tree
- * @cl: the class to add
- * @prio: the give prio in class
- *
- * Routine adds class to the list (actually tree) sorted by classid.
- * Make sure that class is not already on such list for given prio.
- */
+ 
 static void htb_add_to_id_tree(struct rb_root *root,
 			       struct htb_class *cl, int prio)
 {
@@ -303,16 +237,7 @@ static void htb_add_to_id_tree(struct rb_root *root,
 	rb_insert_color(&cl->node[prio], root);
 }
 
-/**
- * htb_add_to_wait_tree - adds class to the event queue with delay
- * @q: the priority event queue
- * @cl: the class to add
- * @delay: delay in microseconds
- *
- * The class is added to priority event queue to indicate that class will
- * change its mode in cl->pq_key microseconds. Make sure that class is not
- * already in the queue.
- */
+ 
 static void htb_add_to_wait_tree(struct htb_sched *q,
 				 struct htb_class *cl, s64 delay)
 {
@@ -322,7 +247,7 @@ static void htb_add_to_wait_tree(struct htb_sched *q,
 	if (cl->pq_key == q->now)
 		cl->pq_key++;
 
-	/* update the nearest event cache */
+	 
 	if (q->near_ev_cache[cl->level] > cl->pq_key)
 		q->near_ev_cache[cl->level] = cl->pq_key;
 
@@ -339,27 +264,13 @@ static void htb_add_to_wait_tree(struct htb_sched *q,
 	rb_insert_color(&cl->pq_node, &q->hlevel[cl->level].wait_pq);
 }
 
-/**
- * htb_next_rb_node - finds next node in binary tree
- * @n: the current node in binary tree
- *
- * When we are past last key we return NULL.
- * Average complexity is 2 steps per call.
- */
+ 
 static inline void htb_next_rb_node(struct rb_node **n)
 {
 	*n = rb_next(*n);
 }
 
-/**
- * htb_add_class_to_row - add class to its row
- * @q: the priority event queue
- * @cl: the class to add
- * @mask: the given priorities in class in bitmap
- *
- * The class is added to row at priorities marked in mask.
- * It does nothing if mask == 0.
- */
+ 
 static inline void htb_add_class_to_row(struct htb_sched *q,
 					struct htb_class *cl, int mask)
 {
@@ -371,7 +282,7 @@ static inline void htb_add_class_to_row(struct htb_sched *q,
 	}
 }
 
-/* If this triggers, it is a bug in this code, but it need not be fatal */
+ 
 static void htb_safe_rb_erase(struct rb_node *rb, struct rb_root *root)
 {
 	if (RB_EMPTY_NODE(rb)) {
@@ -383,15 +294,7 @@ static void htb_safe_rb_erase(struct rb_node *rb, struct rb_root *root)
 }
 
 
-/**
- * htb_remove_class_from_row - removes class from its row
- * @q: the priority event queue
- * @cl: the class to add
- * @mask: the given priorities in class in bitmap
- *
- * The class is removed from row at priorities marked in mask.
- * It does nothing if mask == 0.
- */
+ 
 static inline void htb_remove_class_from_row(struct htb_sched *q,
 						 struct htb_class *cl, int mask)
 {
@@ -413,15 +316,7 @@ static inline void htb_remove_class_from_row(struct htb_sched *q,
 	q->row_mask[cl->level] &= ~m;
 }
 
-/**
- * htb_activate_prios - creates active classe's feed chain
- * @q: the priority event queue
- * @cl: the class to activate
- *
- * The class is connected to ancestors and/or appropriate rows
- * for priorities it is participating on. cl->cmode must be new
- * (activated) mode. It does nothing if cl->prio_activity == 0.
- */
+ 
 static void htb_activate_prios(struct htb_sched *q, struct htb_class *cl)
 {
 	struct htb_class *p = cl->parent;
@@ -437,9 +332,7 @@ static void htb_activate_prios(struct htb_sched *q, struct htb_class *cl)
 			m &= ~(1 << prio);
 
 			if (p->inner.clprio[prio].feed.rb_node)
-				/* parent already has its feed in use so that
-				 * reset bit in mask as parent is already ok
-				 */
+				 
 				mask &= ~(1 << prio);
 
 			htb_add_to_id_tree(&p->inner.clprio[prio].feed, cl, prio);
@@ -453,15 +346,7 @@ static void htb_activate_prios(struct htb_sched *q, struct htb_class *cl)
 		htb_add_class_to_row(q, cl, mask);
 }
 
-/**
- * htb_deactivate_prios - remove class from feed chain
- * @q: the priority event queue
- * @cl: the class to deactivate
- *
- * cl->cmode must represent old mode (before deactivation). It does
- * nothing if cl->prio_activity == 0. Class is removed from all feed
- * chains and rows.
- */
+ 
 static void htb_deactivate_prios(struct htb_sched *q, struct htb_class *cl)
 {
 	struct htb_class *p = cl->parent;
@@ -475,10 +360,7 @@ static void htb_deactivate_prios(struct htb_sched *q, struct htb_class *cl)
 			m &= ~(1 << prio);
 
 			if (p->inner.clprio[prio].ptr == cl->node + prio) {
-				/* we are removing child which is pointed to from
-				 * parent feed - forget the pointer but remember
-				 * classid
-				 */
+				 
 				p->inner.clprio[prio].last_ptr_id = cl->common.classid;
 				p->inner.clprio[prio].ptr = NULL;
 			}
@@ -515,19 +397,7 @@ static inline s64 htb_hiwater(const struct htb_class *cl)
 }
 
 
-/**
- * htb_class_mode - computes and returns current class mode
- * @cl: the target class
- * @diff: diff time in microseconds
- *
- * It computes cl's mode at time cl->t_c+diff and returns it. If mode
- * is not HTB_CAN_SEND then cl->pq_key is updated to time difference
- * from now to time when cl will change its state.
- * Also it is worth to note that class mode doesn't change simply
- * at cl->{c,}tokens == 0 but there can rather be hysteresis of
- * 0 .. -cl->{c,}buffer range. It is meant to limit number of
- * mode transitions per time unit. The speed gain is about 1/6.
- */
+ 
 static inline enum htb_cmode
 htb_class_mode(struct htb_class *cl, s64 *diff)
 {
@@ -545,18 +415,7 @@ htb_class_mode(struct htb_class *cl, s64 *diff)
 	return HTB_MAY_BORROW;
 }
 
-/**
- * htb_change_class_mode - changes classe's mode
- * @q: the priority event queue
- * @cl: the target class
- * @diff: diff time in microseconds
- *
- * This should be the only way how to change classe's mode under normal
- * circumstances. Routine will update feed lists linkage, change mode
- * and add class to the wait event queue if appropriate. New mode should
- * be different from old one and cl->pq_key has to be valid if changing
- * to mode other than HTB_CAN_SEND (see htb_add_to_wait_tree).
- */
+ 
 static void
 htb_change_class_mode(struct htb_sched *q, struct htb_class *cl, s64 *diff)
 {
@@ -570,7 +429,7 @@ htb_change_class_mode(struct htb_sched *q, struct htb_class *cl, s64 *diff)
 		q->overlimits++;
 	}
 
-	if (cl->prio_activity) {	/* not necessary: speed optimization */
+	if (cl->prio_activity) {	 
 		if (cl->cmode != HTB_CANT_SEND)
 			htb_deactivate_prios(q, cl);
 		cl->cmode = new_mode;
@@ -580,15 +439,7 @@ htb_change_class_mode(struct htb_sched *q, struct htb_class *cl, s64 *diff)
 		cl->cmode = new_mode;
 }
 
-/**
- * htb_activate - inserts leaf cl into appropriate active feeds
- * @q: the priority event queue
- * @cl: the target class
- *
- * Routine learns (new) priority of leaf and activates feed chain
- * for the prio. It can be called on already active leaf safely.
- * It also adds leaf into droplist.
- */
+ 
 static inline void htb_activate(struct htb_sched *q, struct htb_class *cl)
 {
 	WARN_ON(cl->level || !cl->leaf.q || !cl->leaf.q->q.qlen);
@@ -599,14 +450,7 @@ static inline void htb_activate(struct htb_sched *q, struct htb_class *cl)
 	}
 }
 
-/**
- * htb_deactivate - remove leaf cl from active feeds
- * @q: the priority event queue
- * @cl: the target class
- *
- * Make sure that leaf is active. In the other words it can't be called
- * with non-active leaf. It also removes class from the drop list.
- */
+ 
 static inline void htb_deactivate(struct htb_sched *q, struct htb_class *cl)
 {
 	WARN_ON(!cl->prio_activity);
@@ -624,7 +468,7 @@ static int htb_enqueue(struct sk_buff *skb, struct Qdisc *sch,
 	struct htb_class *cl = htb_classify(skb, sch, &ret);
 
 	if (cl == HTB_DIRECT) {
-		/* enqueue to helper queue */
+		 
 		if (q->direct_queue.qlen < q->direct_qlen) {
 			__qdisc_enqueue_tail(skb, &q->direct_queue);
 			q->direct_pkts++;
@@ -680,21 +524,7 @@ static inline void htb_accnt_ctokens(struct htb_class *cl, int bytes, s64 diff)
 	cl->ctokens = toks;
 }
 
-/**
- * htb_charge_class - charges amount "bytes" to leaf and ancestors
- * @q: the priority event queue
- * @cl: the class to start iterate
- * @level: the minimum level to account
- * @skb: the socket buffer
- *
- * Routine assumes that packet "bytes" long was dequeued from leaf cl
- * borrowing from "level". It accounts bytes to ceil leaky bucket for
- * leaf and all ancestors and to rate bucket for ancestors at levels
- * "level" and higher. It also handles possible change of mode resulting
- * from the update. Note that mode can also increase here (MAY_BORROW to
- * CAN_SEND) because we can use more precise clock that event queue here.
- * In such case we remove class from event queue first.
- */
+ 
 static void htb_charge_class(struct htb_sched *q, struct htb_class *cl,
 			     int level, struct sk_buff *skb)
 {
@@ -710,7 +540,7 @@ static void htb_charge_class(struct htb_sched *q, struct htb_class *cl,
 			htb_accnt_tokens(cl, bytes, diff);
 		} else {
 			cl->xstats.borrows++;
-			cl->tokens += diff;	/* we moved t_c; update tokens */
+			cl->tokens += diff;	 
 		}
 		htb_accnt_ctokens(cl, bytes, diff);
 		cl->t_c = q->now;
@@ -725,7 +555,7 @@ static void htb_charge_class(struct htb_sched *q, struct htb_class *cl,
 				htb_add_to_wait_tree(q, cl, diff);
 		}
 
-		/* update basic stats except for leaves which are already updated */
+		 
 		if (cl->level)
 			bstats_update(&cl->bstats, skb);
 
@@ -733,23 +563,11 @@ static void htb_charge_class(struct htb_sched *q, struct htb_class *cl,
 	}
 }
 
-/**
- * htb_do_events - make mode changes to classes at the level
- * @q: the priority event queue
- * @level: which wait_pq in 'q->hlevel'
- * @start: start jiffies
- *
- * Scans event queue for pending events and applies them. Returns time of
- * next pending event (0 for no event in pq, q->now for too many events).
- * Note: Applied are events whose have cl->pq_key <= q->now.
- */
+ 
 static s64 htb_do_events(struct htb_sched *q, const int level,
 			 unsigned long start)
 {
-	/* don't run for longer than 2 jiffies; 2 is used instead of
-	 * 1 to simplify things when jiffy is going to be incremented
-	 * too soon
-	 */
+	 
 	unsigned long stop_at = start + 2;
 	struct rb_root *wait_pq = &q->hlevel[level].wait_pq;
 
@@ -772,7 +590,7 @@ static s64 htb_do_events(struct htb_sched *q, const int level,
 			htb_add_to_wait_tree(q, cl, diff);
 	}
 
-	/* too much load - let's continue after a break for scheduling */
+	 
 	if (!(q->warned & HTB_WARN_TOOMANYEVENTS)) {
 		pr_warn("htb: too many events!\n");
 		q->warned |= HTB_WARN_TOOMANYEVENTS;
@@ -781,9 +599,7 @@ static s64 htb_do_events(struct htb_sched *q, const int level,
 	return q->now;
 }
 
-/* Returns class->node+prio from id-tree where classe's id is >= id. NULL
- * is no such one exists.
- */
+ 
 static struct rb_node *htb_id_find_next_upper(int prio, struct rb_node *n,
 					      u32 id)
 {
@@ -804,13 +620,7 @@ static struct rb_node *htb_id_find_next_upper(int prio, struct rb_node *n,
 	return r;
 }
 
-/**
- * htb_lookup_leaf - returns next leaf class in DRR order
- * @hprio: the current one
- * @prio: which prio in class
- *
- * Find leaf where current feed pointers points to.
- */
+ 
 static struct htb_class *htb_lookup_leaf(struct htb_prio *hprio, const int prio)
 {
 	int i;
@@ -827,16 +637,12 @@ static struct htb_class *htb_lookup_leaf(struct htb_prio *hprio, const int prio)
 
 	for (i = 0; i < 65535; i++) {
 		if (!*sp->pptr && *sp->pid) {
-			/* ptr was invalidated but id is valid - try to recover
-			 * the original or next ptr
-			 */
+			 
 			*sp->pptr =
 			    htb_id_find_next_upper(prio, sp->root, *sp->pid);
 		}
-		*sp->pid = 0;	/* ptr is valid now so that remove this hint as it
-				 * can become out of date quickly
-				 */
-		if (!*sp->pptr) {	/* we are at right end; rewind & go up */
+		*sp->pid = 0;	 
+		if (!*sp->pptr) {	 
 			*sp->pptr = sp->root;
 			while ((*sp->pptr)->rb_left)
 				*sp->pptr = (*sp->pptr)->rb_left;
@@ -865,9 +671,7 @@ static struct htb_class *htb_lookup_leaf(struct htb_prio *hprio, const int prio)
 	return NULL;
 }
 
-/* dequeues packet at given priority and level; call only if
- * you are sure that there is active class at prio/level
- */
+ 
 static struct sk_buff *htb_dequeue_tree(struct htb_sched *q, const int prio,
 					const int level)
 {
@@ -876,7 +680,7 @@ static struct sk_buff *htb_dequeue_tree(struct htb_sched *q, const int prio,
 	struct htb_level *hlevel = &q->hlevel[level];
 	struct htb_prio *hprio = &hlevel->hprio[prio];
 
-	/* look initial class up in the row */
+	 
 	start = cl = htb_lookup_leaf(hprio, prio);
 
 	do {
@@ -884,22 +688,18 @@ next:
 		if (unlikely(!cl))
 			return NULL;
 
-		/* class can be empty - it is unlikely but can be true if leaf
-		 * qdisc drops packets in enqueue routine or if someone used
-		 * graft operation on the leaf since last dequeue;
-		 * simply deactivate and skip such class
-		 */
+		 
 		if (unlikely(cl->leaf.q->q.qlen == 0)) {
 			struct htb_class *next;
 			htb_deactivate(q, cl);
 
-			/* row/level might become empty */
+			 
 			if ((q->row_mask[level] & (1 << prio)) == 0)
 				return NULL;
 
 			next = htb_lookup_leaf(hprio, prio);
 
-			if (cl == start)	/* fix start if we just deleted it */
+			if (cl == start)	 
 				start = next;
 			cl = next;
 			goto next;
@@ -924,9 +724,7 @@ next:
 			htb_next_rb_node(level ? &cl->parent->inner.clprio[prio].ptr :
 						 &q->hlevel[0].hprio[prio].ptr);
 		}
-		/* this used to be after charge_class but this constelation
-		 * gives us slightly better performance
-		 */
+		 
 		if (!cl->leaf.q->q.qlen)
 			htb_deactivate(q, cl);
 		htb_charge_class(q, cl, level, skb);
@@ -942,7 +740,7 @@ static struct sk_buff *htb_dequeue(struct Qdisc *sch)
 	s64 next_event;
 	unsigned long start_at;
 
-	/* try to dequeue direct packets as high prio (!) to minimize cpu work */
+	 
 	skb = __qdisc_dequeue_head(&q->direct_queue);
 	if (skb != NULL) {
 ok:
@@ -960,7 +758,7 @@ ok:
 	next_event = q->now + 5LLU * NSEC_PER_SEC;
 
 	for (level = 0; level < TC_HTB_MAXDEPTH; level++) {
-		/* common case optimization - skip event handler quickly */
+		 
 		int m;
 		s64 event = q->near_ev_cache[level];
 
@@ -992,8 +790,8 @@ fin:
 	return skb;
 }
 
-/* reset all classes */
-/* always caled under BH & queue lock */
+ 
+ 
 static void htb_reset(struct Qdisc *sch)
 {
 	struct htb_sched *q = qdisc_priv(sch);
@@ -1149,9 +947,7 @@ static int htb_init(struct Qdisc *sch, struct nlattr *opt,
 	if (err)
 		return err;
 
-	/* Defer this assignment, so that htb_destroy skips offload-related
-	 * parts (especially calling ndo_setup_tc) on errors.
-	 */
+	 
 	q->offload = true;
 
 	return 0;
@@ -1186,7 +982,7 @@ static void htb_attach_software(struct Qdisc *sch)
 	struct net_device *dev = qdisc_dev(sch);
 	unsigned int ntx;
 
-	/* Resemble qdisc_graft behavior. */
+	 
 	for (ntx = 0; ntx < dev->num_tx_queues; ntx++) {
 		struct netdev_queue *dev_queue = netdev_get_tx_queue(dev, ntx);
 		struct Qdisc *old = dev_graft_qdisc(dev_queue, sch);
@@ -1219,9 +1015,7 @@ static int htb_dump(struct Qdisc *sch, struct sk_buff *skb)
 		sch->flags &= ~TCQ_F_OFFLOADED;
 
 	sch->qstats.overlimits = q->overlimits;
-	/* Its safe to not acquire qdisc lock. As we hold RTNL,
-	 * no change can happen on the qdisc parameters.
-	 */
+	 
 
 	gopt.direct_pkts = q->direct_pkts;
 	gopt.version = HTB_VER;
@@ -1253,9 +1047,7 @@ static int htb_dump_class(struct Qdisc *sch, unsigned long arg,
 	struct nlattr *nest;
 	struct tc_htb_opt opt;
 
-	/* Its safe to not acquire qdisc lock. As we hold RTNL,
-	 * no change can happen on the class parameters.
-	 */
+	 
 	tcm->tcm_parent = cl->parent ? cl->parent->common.classid : TC_H_ROOT;
 	tcm->tcm_handle = cl->common.classid;
 	if (!cl->level && cl->leaf.q)
@@ -1469,7 +1261,7 @@ static int htb_graft(struct Qdisc *sch, unsigned long arg, struct Qdisc *new,
 
 	if (q->offload) {
 		htb_set_lockdep_class_child(new);
-		/* One ref for cl->leaf.q, the other for dev_queue->qdisc. */
+		 
 		qdisc_refcount_inc(new);
 		old_q = htb_graft_helper(dev_queue, new);
 	}
@@ -1500,10 +1292,10 @@ static void htb_qlen_notify(struct Qdisc *sch, unsigned long arg)
 static inline int htb_parent_last_child(struct htb_class *cl)
 {
 	if (!cl->parent)
-		/* the root class */
+		 
 		return 0;
 	if (cl->parent->children > 1)
-		/* not the last child */
+		 
 		return 0;
 	return 1;
 }
@@ -1537,7 +1329,7 @@ static void htb_parent_to_leaf_offload(struct Qdisc *sch,
 {
 	struct Qdisc *old_q;
 
-	/* One ref for cl->leaf.q, the other for dev_queue->qdisc. */
+	 
 	if (new_q)
 		qdisc_refcount_inc(new_q);
 	old_q = htb_graft_helper(dev_queue, new_q);
@@ -1559,15 +1351,10 @@ static int htb_destroy_class_offload(struct Qdisc *sch, struct htb_class *cl,
 
 	WARN_ON(!q);
 	dev_queue = htb_offload_get_queue(cl);
-	/* When destroying, caller qdisc_graft grafts the new qdisc and invokes
-	 * qdisc_put for the qdisc being destroyed. htb_destroy_class_offload
-	 * does not need to graft or qdisc_put the qdisc being destroyed.
-	 */
+	 
 	if (!destroying) {
 		old = htb_graft_helper(dev_queue, NULL);
-		/* Last qdisc grafted should be the same as cl->leaf.q when
-		 * calling htb_delete.
-		 */
+		 
 		WARN_ON(old != q);
 	}
 
@@ -1630,11 +1417,7 @@ static void htb_destroy(struct Qdisc *sch)
 
 	cancel_work_sync(&q->work);
 	qdisc_watchdog_cancel(&q->watchdog);
-	/* This line used to be after htb_destroy_class call below
-	 * and surprisingly it worked in 2.4. But it must precede it
-	 * because filter need its target class alive to be able to call
-	 * unbind_filter on it (without Oops).
-	 */
+	 
 	tcf_block_put(q->block);
 
 	for (i = 0; i < q->clhash.hashsize; i++) {
@@ -1705,10 +1488,7 @@ static int htb_delete(struct Qdisc *sch, unsigned long arg,
 	int last_child = 0;
 	int err;
 
-	/* TODO: why don't allow to delete subtree ? references ? does
-	 * tc subsys guarantee us that in htb_destroy it holds no class
-	 * refs so that we can remove children safely there ?
-	 */
+	 
 	if (cl->children || qdisc_class_in_use(&cl->common)) {
 		NL_SET_ERR_MSG(extack, "HTB class in use");
 		return -EBUSY;
@@ -1745,7 +1525,7 @@ static int htb_delete(struct Qdisc *sch, unsigned long arg,
 	if (!cl->level)
 		qdisc_purge_queue(cl->leaf.q);
 
-	/* delete from hash and active; remainder in destroy_class */
+	 
 	qdisc_class_hash_remove(&q->clhash, &cl->common);
 	if (cl->parent)
 		cl->parent->children--;
@@ -1782,7 +1562,7 @@ static int htb_change_class(struct Qdisc *sch, u32 classid,
 	u64 rate64, ceil64;
 	int warn = 0;
 
-	/* extract all subattrs from opt attr */
+	 
 	if (!opt)
 		goto failure;
 
@@ -1802,7 +1582,7 @@ static int htb_change_class(struct Qdisc *sch, u32 classid,
 		goto failure;
 
 	if (q->offload) {
-		/* Options not supported by the offload. */
+		 
 		if (hopt->rate.overhead || hopt->ceil.overhead) {
 			NL_SET_ERR_MSG(extack, "HTB offload doesn't support the overhead parameter");
 			goto failure;
@@ -1813,7 +1593,7 @@ static int htb_change_class(struct Qdisc *sch, u32 classid,
 		}
 	}
 
-	/* Keeping backward compatible with rate_table based iproute2 tc */
+	 
 	if (hopt->rate.linklayer == TC_LINKLAYER_UNAWARE)
 		qdisc_put_rtab(qdisc_get_rtab(&hopt->rate, tb[TCA_HTB_RTAB],
 					      NULL));
@@ -1825,7 +1605,7 @@ static int htb_change_class(struct Qdisc *sch, u32 classid,
 	rate64 = tb[TCA_HTB_RATE64] ? nla_get_u64(tb[TCA_HTB_RATE64]) : 0;
 	ceil64 = tb[TCA_HTB_CEIL64] ? nla_get_u64(tb[TCA_HTB_CEIL64]) : 0;
 
-	if (!cl) {		/* new class */
+	if (!cl) {		 
 		struct net_device *dev = qdisc_dev(sch);
 		struct Qdisc *new_q, *old_q;
 		int prio;
@@ -1838,18 +1618,18 @@ static int htb_change_class(struct Qdisc *sch, u32 classid,
 				.nla_type	= TCA_RATE,
 			},
 			.opt = {
-				/* 4s interval, 16s averaging constant */
+				 
 				.interval	= 2,
 				.ewma_log	= 2,
 			},
 		};
 
-		/* check for valid classid */
+		 
 		if (!classid || TC_H_MAJ(classid ^ sch->handle) ||
 		    htb_find(classid, sch))
 			goto failure;
 
-		/* check maximal depth */
+		 
 		if (parent && parent->parent && parent->parent->level < 2) {
 			NL_SET_ERR_MSG_MOD(extack, "tree is too deep");
 			goto failure;
@@ -1885,19 +1665,14 @@ static int htb_change_class(struct Qdisc *sch, u32 classid,
 
 		cl->common.classid = classid;
 
-		/* Make sure nothing interrupts us in between of two
-		 * ndo_setup_tc calls.
-		 */
+		 
 		ASSERT_RTNL();
 
-		/* create leaf qdisc early because it uses kmalloc(GFP_KERNEL)
-		 * so that can't be used inside of sch_tree_lock
-		 * -- thanks to Karlis Peisenieks
-		 */
+		 
 		if (!q->offload) {
 			dev_queue = sch->dev_queue;
 		} else if (!(parent && !parent->level)) {
-			/* Assign a dev_queue to this classid. */
+			 
 			offload_opt = (struct tc_htb_qopt_offload) {
 				.command = TC_HTB_LEAF_ALLOC_QUEUE,
 				.classid = cl->common.classid,
@@ -1917,7 +1692,7 @@ static int htb_change_class(struct Qdisc *sch, u32 classid,
 				goto err_kill_estimator;
 			}
 			dev_queue = netdev_get_tx_queue(dev, offload_opt.qid);
-		} else { /* First child. */
+		} else {  
 			dev_queue = htb_offload_get_queue(parent);
 			old_q = htb_graft_helper(dev_queue, NULL);
 			WARN_ON(old_q != parent->leaf.q);
@@ -1949,24 +1724,22 @@ static int htb_change_class(struct Qdisc *sch, u32 classid,
 		if (q->offload) {
 			if (new_q) {
 				htb_set_lockdep_class_child(new_q);
-				/* One ref for cl->leaf.q, the other for
-				 * dev_queue->qdisc.
-				 */
+				 
 				qdisc_refcount_inc(new_q);
 			}
 			old_q = htb_graft_helper(dev_queue, new_q);
-			/* No qdisc_put needed. */
+			 
 			WARN_ON(!(old_q->flags & TCQ_F_BUILTIN));
 		}
 		sch_tree_lock(sch);
 		if (parent && !parent->level) {
-			/* turn parent into inner node */
+			 
 			qdisc_purge_queue(parent->leaf.q);
 			parent_qdisc = parent->leaf.q;
 			if (parent->prio_activity)
 				htb_deactivate(q, parent);
 
-			/* remove from evt list because of level change */
+			 
 			if (parent->cmode != HTB_CAN_SEND) {
 				htb_safe_rb_erase(&parent->pq_node, &q->hlevel[0].wait_pq);
 				parent->cmode = HTB_CAN_SEND;
@@ -1976,21 +1749,21 @@ static int htb_change_class(struct Qdisc *sch, u32 classid,
 			memset(&parent->inner, 0, sizeof(parent->inner));
 		}
 
-		/* leaf (we) needs elementary qdisc */
+		 
 		cl->leaf.q = new_q ? new_q : &noop_qdisc;
 		if (q->offload)
 			cl->leaf.offload_queue = dev_queue;
 
 		cl->parent = parent;
 
-		/* set class to be in HTB_CAN_SEND state */
+		 
 		cl->tokens = PSCHED_TICKS2NS(hopt->buffer);
 		cl->ctokens = PSCHED_TICKS2NS(hopt->cbuffer);
-		cl->mbuffer = 60ULL * NSEC_PER_SEC;	/* 1min */
+		cl->mbuffer = 60ULL * NSEC_PER_SEC;	 
 		cl->t_c = ktime_get_ns();
 		cl->cmode = HTB_CAN_SEND;
 
-		/* attach to the hash list and parent's family */
+		 
 		qdisc_class_hash_insert(&q->clhash, &cl->common);
 		if (parent)
 			parent->children++;
@@ -2021,12 +1794,7 @@ static int htb_change_class(struct Qdisc *sch, u32 classid,
 			};
 			err = htb_offload(dev, &offload_opt);
 			if (err)
-				/* Estimator was replaced, and rollback may fail
-				 * as well, so we don't try to recover it, and
-				 * the estimator won't work property with the
-				 * offload anyway, because bstats are updated
-				 * only when the stats are queried.
-				 */
+				 
 				return err;
 		}
 
@@ -2036,9 +1804,7 @@ static int htb_change_class(struct Qdisc *sch, u32 classid,
 	psched_ratecfg_precompute(&cl->rate, &hopt->rate, rate64);
 	psched_ratecfg_precompute(&cl->ceil, &hopt->ceil, ceil64);
 
-	/* it used to be a nasty bug here, we have to check that node
-	 * is really leaf before changing cl->leaf !
-	 */
+	 
 	if (!cl->level) {
 		u64 quantum = cl->rate.rate_bytes_ps;
 
@@ -2098,15 +1864,7 @@ static unsigned long htb_bind_filter(struct Qdisc *sch, unsigned long parent,
 {
 	struct htb_class *cl = htb_find(classid, sch);
 
-	/*if (cl && !cl->level) return 0;
-	 * The line above used to be there to prevent attaching filters to
-	 * leaves. But at least tc_index filter uses this just to get class
-	 * for other reasons so that we have to allow for it.
-	 * ----
-	 * 19.6.2002 As Werner explained it is ok - bind filter is just
-	 * another way to "lock" the class - unlike "get" this lock can
-	 * be broken by class during destroy IIUC.
-	 */
+	 
 	if (cl)
 		qdisc_class_get(&cl->common);
 	return (unsigned long)cl;

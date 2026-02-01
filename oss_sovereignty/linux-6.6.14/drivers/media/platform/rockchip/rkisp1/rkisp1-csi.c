@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
-/*
- * Rockchip ISP1 Driver - CSI-2 Receiver
- *
- * Copyright (C) 2019 Collabora, Ltd.
- * Copyright (C) 2022 Ideas on Board
- *
- * Based on Rockchip ISP1 driver by Rockchip Electronics Co., Ltd.
- * Copyright (C) 2017 Rockchip Electronics Co., Ltd.
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/device.h>
@@ -62,7 +54,7 @@ int rkisp1_csi_link_sensor(struct rkisp1_device *rkisp1, struct v4l2_subdev *sd,
 		return -EINVAL;
 	}
 
-	/* Create the link from the sensor to the CSI receiver. */
+	 
 	ret = media_create_pad_link(&sd->entity, source_pad,
 				    &csi->sd.entity, RKISP1_CSI_PAD_SINK,
 				    !s_asd->index ? MEDIA_LNK_FL_ENABLED : 0);
@@ -92,22 +84,19 @@ static int rkisp1_csi_config(struct rkisp1_csi *csi,
 
 	rkisp1_write(rkisp1, RKISP1_CIF_MIPI_CTRL, mipi_ctrl);
 
-	/* V12 could also use a newer csi2-host, but we don't want that yet */
+	 
 	if (rkisp1->info->isp_ver == RKISP1_V12)
 		rkisp1_write(rkisp1, RKISP1_CIF_ISP_CSI0_CTRL0, 0);
 
-	/* Configure Data Type and Virtual Channel */
+	 
 	rkisp1_write(rkisp1, RKISP1_CIF_MIPI_IMG_DATA_SEL,
 		     RKISP1_CIF_MIPI_DATA_SEL_DT(csi->sink_fmt->mipi_dt) |
 		     RKISP1_CIF_MIPI_DATA_SEL_VC(0));
 
-	/* Clear MIPI interrupts */
+	 
 	rkisp1_write(rkisp1, RKISP1_CIF_MIPI_ICR, ~0);
 
-	/*
-	 * Disable RKISP1_CIF_MIPI_ERR_DPHY interrupt here temporary for
-	 * isp bus may be dead when switch isp.
-	 */
+	 
 	rkisp1_write(rkisp1, RKISP1_CIF_MIPI_IMSC,
 		     RKISP1_CIF_MIPI_FRAME_END | RKISP1_CIF_MIPI_ERR_CSI |
 		     RKISP1_CIF_MIPI_ERR_DPHY |
@@ -141,7 +130,7 @@ static void rkisp1_csi_disable(struct rkisp1_csi *csi)
 	struct rkisp1_device *rkisp1 = csi->rkisp1;
 	u32 val;
 
-	/* Mask and clear interrupts. */
+	 
 	rkisp1_write(rkisp1, RKISP1_CIF_MIPI_IMSC, 0);
 	rkisp1_write(rkisp1, RKISP1_CIF_MIPI_ICR, ~0);
 
@@ -177,10 +166,7 @@ static int rkisp1_csi_start(struct rkisp1_csi *csi,
 
 	rkisp1_csi_enable(csi);
 
-	/*
-	 * CIF spec says to wait for sufficient time after enabling
-	 * the MIPI interface and before starting the sensor output.
-	 */
+	 
 	usleep_range(1000, 1200);
 
 	return 0;
@@ -205,12 +191,7 @@ irqreturn_t rkisp1_csi_isr(int irq, void *ctx)
 
 	rkisp1_write(rkisp1, RKISP1_CIF_MIPI_ICR, status);
 
-	/*
-	 * Disable DPHY errctrl interrupt, because this dphy
-	 * erctrl signal is asserted until the next changes
-	 * of line state. This time is may be too long and cpu
-	 * is hold in this interrupt.
-	 */
+	 
 	if (status & RKISP1_CIF_MIPI_ERR_CTRL(0x0f)) {
 		val = rkisp1_read(rkisp1, RKISP1_CIF_MIPI_IMSC);
 		rkisp1_write(rkisp1, RKISP1_CIF_MIPI_IMSC,
@@ -218,15 +199,9 @@ irqreturn_t rkisp1_csi_isr(int irq, void *ctx)
 		rkisp1->csi.is_dphy_errctrl_disabled = true;
 	}
 
-	/*
-	 * Enable DPHY errctrl interrupt again, if mipi have receive
-	 * the whole frame without any error.
-	 */
+	 
 	if (status == RKISP1_CIF_MIPI_FRAME_END) {
-		/*
-		 * Enable DPHY errctrl interrupt again, if mipi have receive
-		 * the whole frame without any error.
-		 */
+		 
 		if (rkisp1->csi.is_dphy_errctrl_disabled) {
 			val = rkisp1_read(rkisp1, RKISP1_CIF_MIPI_IMSC);
 			val |= RKISP1_CIF_MIPI_ERR_CTRL(0x0f);
@@ -240,9 +215,7 @@ irqreturn_t rkisp1_csi_isr(int irq, void *ctx)
 	return IRQ_HANDLED;
 }
 
-/* ----------------------------------------------------------------------------
- * Subdev pad operations
- */
+ 
 
 static int rkisp1_csi_enum_mbus_code(struct v4l2_subdev *sd,
 				     struct v4l2_subdev_state *sd_state,
@@ -333,7 +306,7 @@ static int rkisp1_csi_set_fmt(struct v4l2_subdev *sd,
 	const struct rkisp1_mbus_info *mbus_info;
 	struct v4l2_mbus_framefmt *sink_fmt, *src_fmt;
 
-	/* The format on the source pad always matches the sink pad. */
+	 
 	if (fmt->pad == RKISP1_CSI_PAD_SRC)
 		return rkisp1_csi_get_fmt(sd, sd_state, fmt);
 
@@ -362,7 +335,7 @@ static int rkisp1_csi_set_fmt(struct v4l2_subdev *sd,
 	if (fmt->which == V4L2_SUBDEV_FORMAT_ACTIVE)
 		csi->sink_fmt = mbus_info;
 
-	/* Propagate the format to the source pad. */
+	 
 	src_fmt = rkisp1_csi_get_pad_fmt(csi, sd_state, RKISP1_CSI_PAD_SRC,
 					 fmt->which);
 	*src_fmt = *sink_fmt;
@@ -372,9 +345,7 @@ static int rkisp1_csi_set_fmt(struct v4l2_subdev *sd,
 	return 0;
 }
 
-/* ----------------------------------------------------------------------------
- * Subdev video operations
- */
+ 
 
 static int rkisp1_csi_s_stream(struct v4l2_subdev *sd, int enable)
 {
@@ -403,7 +374,7 @@ static int rkisp1_csi_s_stream(struct v4l2_subdev *sd, int enable)
 
 	source = media_entity_to_v4l2_subdev(source_pad->entity);
 	if (!source) {
-		/* This should really not happen, so is not worth a message. */
+		 
 		return -EPIPE;
 	}
 
@@ -432,9 +403,7 @@ static int rkisp1_csi_s_stream(struct v4l2_subdev *sd, int enable)
 	return 0;
 }
 
-/* ----------------------------------------------------------------------------
- * Registration
- */
+ 
 
 static const struct media_entity_operations rkisp1_csi_media_ops = {
 	.link_validate = v4l2_subdev_link_validate,

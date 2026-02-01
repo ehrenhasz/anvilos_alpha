@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * l4f00242t03.c -- support for Epson L4F00242T03 LCD
- *
- * Copyright 2007-2009 Freescale Semiconductor, Inc. All Rights Reserved.
- *
- * Copyright (c) 2009 Alberto Panizzo <maramaopercheseimorto@gmail.com>
- *	Inspired by Marek Vasut work in l4f00242t03.c
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -36,7 +29,7 @@ static void l4f00242t03_reset(struct gpio_desc *gpiod)
 	gpiod_set_value(gpiod, 1);
 	mdelay(100);
 	gpiod_set_value(gpiod, 0);
-	mdelay(10);	/* tRES >= 100us */
+	mdelay(10);	 
 	gpiod_set_value(gpiod, 1);
 	mdelay(20);
 }
@@ -114,7 +107,7 @@ static int l4f00242t03_lcd_power_set(struct lcd_device *ld, int power)
 
 	if (power <= FB_BLANK_NORMAL) {
 		if (priv->lcd_state <= FB_BLANK_NORMAL) {
-			/* Do nothing, the LCD is running */
+			 
 		} else if (priv->lcd_state < FB_BLANK_POWERDOWN) {
 			dev_dbg(&spi->dev, "Resuming LCD\n");
 
@@ -122,31 +115,31 @@ static int l4f00242t03_lcd_power_set(struct lcd_device *ld, int power)
 			msleep(60);
 			spi_write(spi, (const u8 *)&dison, sizeof(u16));
 		} else {
-			/* priv->lcd_state == FB_BLANK_POWERDOWN */
+			 
 			l4f00242t03_lcd_init(spi);
 			priv->lcd_state = FB_BLANK_VSYNC_SUSPEND;
 			l4f00242t03_lcd_power_set(priv->ld, power);
 		}
 	} else if (power < FB_BLANK_POWERDOWN) {
 		if (priv->lcd_state <= FB_BLANK_NORMAL) {
-			/* Send the display in standby */
+			 
 			dev_dbg(&spi->dev, "Standby the LCD\n");
 
 			spi_write(spi, (const u8 *)&disoff, sizeof(u16));
 			msleep(60);
 			spi_write(spi, (const u8 *)&slpin, sizeof(u16));
 		} else if (priv->lcd_state < FB_BLANK_POWERDOWN) {
-			/* Do nothing, the LCD is already in standby */
+			 
 		} else {
-			/* priv->lcd_state == FB_BLANK_POWERDOWN */
+			 
 			l4f00242t03_lcd_init(spi);
 			priv->lcd_state = FB_BLANK_UNBLANK;
 			l4f00242t03_lcd_power_set(ld, power);
 		}
 	} else {
-		/* power == FB_BLANK_POWERDOWN */
+		 
 		if (priv->lcd_state != FB_BLANK_POWERDOWN) {
-			/* Clear the screen before shutting down */
+			 
 			spi_write(spi, (const u8 *)&disoff, sizeof(u16));
 			msleep(60);
 			l4f00242t03_lcd_powerdown(spi);
@@ -213,7 +206,7 @@ static int l4f00242t03_probe(struct spi_device *spi)
 	if (IS_ERR(priv->ld))
 		return PTR_ERR(priv->ld);
 
-	/* Init the LCD */
+	 
 	l4f00242t03_lcd_init(spi);
 	priv->lcd_state = FB_BLANK_VSYNC_SUSPEND;
 	l4f00242t03_lcd_power_set(priv->ld, FB_BLANK_UNBLANK);

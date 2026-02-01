@@ -1,26 +1,4 @@
-/*
- * Copyright 2012 Red Hat Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: Ben Skeggs
- */
+ 
 #define mcp77_clk(p) container_of((p), struct mcp77_clk, base)
 #include "gt215.h"
 #include "pll.h"
@@ -90,7 +68,7 @@ mcp77_clk_read(struct nvkm_clk *base, enum nv_clk_src src)
 	case nv_clk_src_crystal:
 		return device->crystal;
 	case nv_clk_src_href:
-		return 100000; /* PCIE reference clock */
+		return 100000;  
 	case nv_clk_src_hclkm4:
 		return nvkm_clk_read(&clk->base, nv_clk_src_href) * 4;
 	case nv_clk_src_hclkm2d3:
@@ -208,20 +186,18 @@ mcp77_clk_calc(struct nvkm_clk *base, struct nvkm_cstate *cstate)
 	int N, M, P1, P2 = 0;
 	int divs = 0;
 
-	/* cclk: find suitable source, disable PLL if we can */
+	 
 	if (core < nvkm_clk_read(&clk->base, nv_clk_src_hclkm4))
 		out = calc_P(nvkm_clk_read(&clk->base, nv_clk_src_hclkm4), core, &divs);
 
-	/* Calculate clock * 2, so shader clock can use it too */
+	 
 	clock = calc_pll(clk, 0x4028, (core << 1), &N, &M, &P1);
 
 	if (abs(core - out) <= abs(core - (clock >> 1))) {
 		clk->csrc = nv_clk_src_hclkm4;
 		clk->cctrl = divs << 16;
 	} else {
-		/* NVCTRL is actually used _after_ NVPOST, and after what we
-		 * call NVPLL. To make matters worse, NVPOST is an integer
-		 * divider instead of a right-shift number. */
+		 
 		if(P1 > 2) {
 			P2 = P1 - 2;
 			P1 = 2;
@@ -234,7 +210,7 @@ mcp77_clk_calc(struct nvkm_clk *base, struct nvkm_cstate *cstate)
 		clk->cpost = (1 << P1) << 16;
 	}
 
-	/* sclk: nvpll + divisor, href or spll */
+	 
 	out = 0;
 	if (shader == nvkm_clk_read(&clk->base, nv_clk_src_href)) {
 		clk->ssrc = nv_clk_src_href;
@@ -255,7 +231,7 @@ mcp77_clk_calc(struct nvkm_clk *base, struct nvkm_cstate *cstate)
 		}
 	}
 
-	/* vclk */
+	 
 	out = calc_P(core, vdec, &divs);
 	clock = calc_P(500000, vdec, &P1);
 	if(abs(vdec - out) <= abs(vdec - clock)) {
@@ -266,7 +242,7 @@ mcp77_clk_calc(struct nvkm_clk *base, struct nvkm_cstate *cstate)
 		clk->vdiv = P1 << 16;
 	}
 
-	/* Print strategy! */
+	 
 	nvkm_debug(subdev, "nvpll: %08x %08x %08x\n",
 		   clk->ccoef, clk->cpost, clk->cctrl);
 	nvkm_debug(subdev, " spll: %08x %08x %08x\n",
@@ -307,7 +283,7 @@ mcp77_clk_prog(struct nvkm_clk *base)
 	if (ret)
 		goto out;
 
-	/* First switch to safe clocks: href */
+	 
 	mast = nvkm_mask(device, 0xc054, 0x03400e70, 0x03400640);
 	mast &= ~0x00400e73;
 	mast |= 0x03000000;
@@ -332,7 +308,7 @@ mcp77_clk_prog(struct nvkm_clk *base)
 	switch (clk->ssrc) {
 	case nv_clk_src_href:
 		nvkm_mask(device, 0x4020, 0x00070000, 0x00000000);
-		/* mast |= 0x00000000; */
+		 
 		break;
 	case nv_clk_src_core:
 		nvkm_mask(device, 0x4020, 0x00070000, clk->sctrl);
@@ -368,7 +344,7 @@ mcp77_clk_prog(struct nvkm_clk *base)
 	nvkm_wr32(device, 0xc054, mast);
 
 resume:
-	/* Disable some PLLs and dividers when unused */
+	 
 	if (clk->csrc != nv_clk_src_core) {
 		nvkm_wr32(device, 0x4040, 0x00000000);
 		nvkm_mask(device, 0x4028, 0x80000000, 0x00000000);

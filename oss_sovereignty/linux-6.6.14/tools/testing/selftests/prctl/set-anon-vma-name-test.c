@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * This test covers the anonymous VMA naming functionality through prctl calls
- */
+
+ 
 
 #include <errno.h>
 #include <sys/prctl.h>
@@ -44,7 +42,7 @@ int was_renaming_successful(char *target_name, unsigned long ptr)
 	char target_buf[128];
 	int res = 0, sscanf_res;
 
-	// The entry name in maps will be in format [anon:<target_name>]
+	
 	sprintf(target_buf, "[anon:%s]", target_name);
 	maps_file = fopen("/proc/self/maps", "r");
 	if (!maps_file) {
@@ -52,7 +50,7 @@ int was_renaming_successful(char *target_name, unsigned long ptr)
 		return 0;
 	}
 
-	// Parse the maps file to find the entry we renamed
+	
 	while (fgets(line_buf, sizeof(line_buf), maps_file)) {
 		sscanf_res = sscanf(line_buf, "%lx-%lx %7s %lx %u:%u %u %s", &start_addr,
 					&end_addr, mode, &offset, &major_id,

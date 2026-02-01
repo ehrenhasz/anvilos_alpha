@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2020 Facebook */
+
+ 
 
 #include <stddef.h>
 #include <errno.h>
@@ -22,14 +22,14 @@ __u16 active_lport_h = 0;
 __u16 passive_lport_n = 0;
 __u16 passive_lport_h = 0;
 
-/* options received at passive side */
+ 
 unsigned int nr_pure_ack = 0;
 unsigned int nr_data = 0;
 unsigned int nr_syn = 0;
 unsigned int nr_fin = 0;
 unsigned int nr_hwtstamp = 0;
 
-/* Check the header received from the active side */
+ 
 static int __check_active_hdr_in(struct bpf_sock_ops *skops, bool check_syn)
 {
 	union {
@@ -37,7 +37,7 @@ static int __check_active_hdr_in(struct bpf_sock_ops *skops, bool check_syn)
 		struct ipv6hdr ip6;
 		struct tcp_exprm_opt exprm_opt;
 		struct tcp_opt reg_opt;
-		__u8 data[100]; /* IPv6 (40) + Max TCP hdr (60) */
+		__u8 data[100];  
 	} hdr = {};
 	__u64 load_flags = check_syn ? BPF_LOAD_HDR_OPT_TCP_SYN : 0;
 	struct tcphdr *pth;
@@ -45,12 +45,12 @@ static int __check_active_hdr_in(struct bpf_sock_ops *skops, bool check_syn)
 
 	hdr.reg_opt.kind = 0xB9;
 
-	/* The option is 4 bytes long instead of 2 bytes */
+	 
 	ret = bpf_load_hdr_opt(skops, &hdr.reg_opt, 2, load_flags);
 	if (ret != -ENOSPC)
 		RET_CG_ERR(ret);
 
-	/* Test searching magic with regular kind */
+	 
 	hdr.reg_opt.len = 4;
 	ret = bpf_load_hdr_opt(skops, &hdr.reg_opt, sizeof(hdr.reg_opt),
 			       load_flags);
@@ -64,7 +64,7 @@ static int __check_active_hdr_in(struct bpf_sock_ops *skops, bool check_syn)
 	    hdr.reg_opt.data[0] != 0xfa || hdr.reg_opt.data[1] != 0xce)
 		RET_CG_ERR(ret);
 
-	/* Test searching experimental option with invalid kind length */
+	 
 	hdr.exprm_opt.kind = TCPOPT_EXP;
 	hdr.exprm_opt.len = 5;
 	hdr.exprm_opt.magic = 0;
@@ -73,7 +73,7 @@ static int __check_active_hdr_in(struct bpf_sock_ops *skops, bool check_syn)
 	if (ret != -EINVAL)
 		RET_CG_ERR(ret);
 
-	/* Test searching experimental option with 0 magic value */
+	 
 	hdr.exprm_opt.len = 4;
 	ret = bpf_load_hdr_opt(skops, &hdr.exprm_opt, sizeof(hdr.exprm_opt),
 			       load_flags);
@@ -91,10 +91,7 @@ static int __check_active_hdr_in(struct bpf_sock_ops *skops, bool check_syn)
 	if (!check_syn)
 		return CG_OK;
 
-	/* Test loading from skops->syn_skb if sk_state == TCP_NEW_SYN_RECV
-	 *
-	 * Test loading from tp->saved_syn for other sk_state.
-	 */
+	 
 	ret = bpf_getsockopt(skops, SOL_TCP, TCP_BPF_SYN_IP, &hdr.ip6,
 			     sizeof(hdr.ip6));
 	if (ret != -ENOSPC)
@@ -157,9 +154,7 @@ static int active_opt_len(struct bpf_sock_ops *skops)
 {
 	int err;
 
-	/* Reserve more than enough to allow the -EEXIST test in
-	 * the write_active_opt().
-	 */
+	 
 	err = bpf_reserve_hdr_opt(skops, 12, 0);
 	if (err)
 		RET_CG_ERR(err);
@@ -190,7 +185,7 @@ static int write_active_opt(struct bpf_sock_ops *skops)
 	if (err)
 		RET_CG_ERR(err);
 
-	/* Store the same exprm option */
+	 
 	err = bpf_store_hdr_opt(skops, &exprm_opt, sizeof(exprm_opt), 0);
 	if (err != -EEXIST)
 		RET_CG_ERR(err);
@@ -202,7 +197,7 @@ static int write_active_opt(struct bpf_sock_ops *skops)
 	if (err != -EEXIST)
 		RET_CG_ERR(err);
 
-	/* Check the option has been written and can be searched */
+	 
 	ret = bpf_load_hdr_opt(skops, &exprm_opt, sizeof(exprm_opt), 0);
 	if (ret != 4 || exprm_opt.len != 4 || exprm_opt.kind != TCPOPT_EXP ||
 	    exprm_opt.magic != __bpf_htons(0xeB9F))
@@ -222,18 +217,14 @@ static int write_active_opt(struct bpf_sock_ops *skops)
 		active_lport_h = skops->local_port;
 		active_lport_n = th->source;
 
-		/* Search the win scale option written by kernel
-		 * in the SYN packet.
-		 */
+		 
 		ret = bpf_load_hdr_opt(skops, &win_scale_opt,
 				       sizeof(win_scale_opt), 0);
 		if (ret != 3 || win_scale_opt.len != 3 ||
 		    win_scale_opt.kind != TCPOPT_WINDOW)
 			RET_CG_ERR(ret);
 
-		/* Write the win scale option that kernel
-		 * has already written.
-		 */
+		 
 		err = bpf_store_hdr_opt(skops, &win_scale_opt,
 					sizeof(win_scale_opt), 0);
 		if (err != -EEXIST)
@@ -248,10 +239,10 @@ static int handle_hdr_opt_len(struct bpf_sock_ops *skops)
 	__u8 tcp_flags = skops_tcp_flags(skops);
 
 	if ((tcp_flags & TCPHDR_SYNACK) == TCPHDR_SYNACK)
-		/* Check the SYN from bpf_sock_ops_kern->syn_skb */
+		 
 		return check_active_syn_in(skops);
 
-	/* Passive side should have cleared the write hdr cb by now */
+	 
 	if (skops->local_port == passive_lport_h)
 		RET_CG_ERR(0);
 
@@ -268,9 +259,7 @@ static int handle_write_hdr_opt(struct bpf_sock_ops *skops)
 
 static int handle_parse_hdr(struct bpf_sock_ops *skops)
 {
-	/* Passive side is not writing any non-standard/unknown
-	 * option, so the active side should never be called.
-	 */
+	 
 	if (skops->local_port == active_lport_h)
 		RET_CG_ERR(0);
 
@@ -281,19 +270,19 @@ static int handle_passive_estab(struct bpf_sock_ops *skops)
 {
 	int err;
 
-	/* No more write hdr cb */
+	 
 	bpf_sock_ops_cb_flags_set(skops,
 				  skops->bpf_sock_ops_cb_flags &
 				  ~BPF_SOCK_OPS_WRITE_HDR_OPT_CB_FLAG);
 
-	/* Recheck the SYN but check the tp->saved_syn this time */
+	 
 	err = check_active_syn_in(skops);
 	if (err == CG_ERR)
 		return err;
 
 	nr_syn++;
 
-	/* The ack has header option written by the active side also */
+	 
 	return check_active_hdr_in(skops);
 }
 

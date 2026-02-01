@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * NVIDIA Tegra Video decoder driver
- *
- * Copyright (C) 2016-2017 Dmitry Osipenko <digetx@gmail.com>
- *
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/dma-buf.h>
@@ -200,10 +195,7 @@ static __maybe_unused int tegra_vde_runtime_resume(struct device *dev)
 			goto release_reset;
 		}
 	} else {
-		/*
-		 * tegra_powergate_sequence_power_up() leaves clocks enabled,
-		 * while GENPD not.
-		 */
+		 
 		err = clk_prepare_enable(vde->clk);
 		if (err) {
 			dev_err(dev, "Failed to enable clock: %d\n", err);
@@ -339,11 +331,7 @@ static int tegra_vde_probe(struct platform_device *pdev)
 	pm_runtime_use_autosuspend(dev);
 	pm_runtime_set_autosuspend_delay(dev, 300);
 
-	/*
-	 * VDE partition may be left ON after bootloader, hence let's
-	 * power-cycle it in order to put hardware into a predictable lower
-	 * power state.
-	 */
+	 
 	err = pm_runtime_resume_and_get(dev);
 	if (err)
 		goto err_pm_runtime;
@@ -387,19 +375,13 @@ static void tegra_vde_remove(struct platform_device *pdev)
 	tegra_vde_v4l2_deinit(vde);
 	tegra_vde_free_bo(vde->secure_bo);
 
-	/*
-	 * As it increments RPM usage_count even on errors, we don't need to
-	 * check the returned code here.
-	 */
+	 
 	pm_runtime_get_sync(dev);
 
 	pm_runtime_dont_use_autosuspend(dev);
 	pm_runtime_disable(dev);
 
-	/*
-	 * Balance RPM state, the VDE power domain is left ON and hardware
-	 * is clock-gated. It's safe to reboot machine now.
-	 */
+	 
 	pm_runtime_put_noidle(dev);
 	clk_disable_unprepare(vde->clk);
 
@@ -412,10 +394,7 @@ static void tegra_vde_remove(struct platform_device *pdev)
 
 static void tegra_vde_shutdown(struct platform_device *pdev)
 {
-	/*
-	 * On some devices bootloader isn't ready to a power-gated VDE on
-	 * a warm-reboot, machine will hang in that case.
-	 */
+	 
 	pm_runtime_get_sync(&pdev->dev);
 }
 
@@ -456,7 +435,7 @@ static const struct dev_pm_ops tegra_vde_pm_ops = {
 };
 
 static const u32 tegra124_decoded_fmts[] = {
-	/* TBD: T124 supports only a non-standard Tegra tiled format */
+	 
 };
 
 static const struct tegra_coded_fmt_desc tegra124_coded_fmts[] = {

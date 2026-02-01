@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright(c) 2018 Oracle and/or its affiliates. All rights reserved. */
+
+ 
 
 #include <crypto/aead.h>
 #include <linux/debugfs.h>
@@ -20,9 +20,7 @@ static ssize_t nsim_dbg_netdev_ops_read(struct file *filp,
 	int len;
 	int i;
 
-	/* the buffer needed is
-	 * (num SAs * 3 lines each * ~60 bytes per line) + one more line
-	 */
+	 
 	bufsize = (ipsec->count * 4 * 60) + 60;
 	buf = kzalloc(bufsize, GFP_KERNEL);
 	if (!buf)
@@ -72,7 +70,7 @@ static int nsim_ipsec_find_empty_idx(struct nsim_ipsec *ipsec)
 	if (ipsec->count == NSIM_IPSEC_MAX_SA_COUNT)
 		return -ENOSPC;
 
-	/* search sa table */
+	 
 	for (i = 0; i < NSIM_IPSEC_MAX_SA_COUNT; i++) {
 		if (!ipsec->sa[i].used)
 			return i;
@@ -111,7 +109,7 @@ static int nsim_ipsec_parse_proto_keys(struct xfrm_state *xs,
 		return -EINVAL;
 	}
 
-	/* 160 accounts for 16 byte key and 4 byte salt */
+	 
 	if (key_len > NSIM_IPSEC_AUTH_BITS) {
 		*mysalt = ((u32 *)key_data)[4];
 	} else if (key_len == NSIM_IPSEC_AUTH_BITS) {
@@ -154,7 +152,7 @@ static int nsim_ipsec_add_sa(struct xfrm_state *xs,
 		return -EINVAL;
 	}
 
-	/* find the first unused index */
+	 
 	ret = nsim_ipsec_find_empty_idx(ipsec);
 	if (ret < 0) {
 		NL_SET_ERR_MSG_MOD(extack, "No space for SA in Rx table!");
@@ -169,7 +167,7 @@ static int nsim_ipsec_add_sa(struct xfrm_state *xs,
 	if (sa.xs->id.proto & IPPROTO_ESP)
 		sa.crypt = xs->ealg || xs->aead;
 
-	/* get the key and salt */
+	 
 	ret = nsim_ipsec_parse_proto_keys(xs, sa.key, &sa.salt);
 	if (ret) {
 		NL_SET_ERR_MSG_MOD(extack, "Failed to get key data for SA table");
@@ -185,12 +183,10 @@ static int nsim_ipsec_add_sa(struct xfrm_state *xs,
 			memcpy(&sa.ipaddr[3], &xs->id.daddr.a4, 4);
 	}
 
-	/* the preparations worked, so save the info */
+	 
 	memcpy(&ipsec->sa[sa_idx], &sa, sizeof(sa));
 
-	/* the XFRM stack doesn't like offload_handle == 0,
-	 * so add a bitflag in case our array index is 0
-	 */
+	 
 	xs->xso.offload_handle = sa_idx | NSIM_IPSEC_VALID;
 	ipsec->count++;
 
@@ -238,7 +234,7 @@ bool nsim_ipsec_tx(struct netdevsim *ns, struct sk_buff *skb)
 	struct nsim_sa *tsa;
 	u32 sa_idx;
 
-	/* do we even need to check this packet? */
+	 
 	if (!sp)
 		return true;
 

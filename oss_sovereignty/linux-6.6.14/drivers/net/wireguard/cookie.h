@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) 2015-2019 Jason A. Donenfeld <Jason@zx2c4.com>. All Rights Reserved.
- */
+ 
+ 
 
 #ifndef _WG_COOKIE_H
 #define _WG_COOKIE_H
@@ -56,4 +54,4 @@ void wg_cookie_message_create(struct message_handshake_cookie *src,
 void wg_cookie_message_consume(struct message_handshake_cookie *src,
 			       struct wg_device *wg);
 
-#endif /* _WG_COOKIE_H */
+#endif  

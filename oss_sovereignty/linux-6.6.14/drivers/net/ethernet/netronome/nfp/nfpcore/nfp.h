@@ -1,10 +1,7 @@
-/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
-/* Copyright (C) 2015-2018 Netronome Systems, Inc. */
+ 
+ 
 
-/*
- * nfp.h
- * Interface for NFP device access and query functions.
- */
+ 
 
 #ifndef __NFP_H__
 #define __NFP_H__
@@ -14,7 +11,7 @@
 
 #include "nfp_cpp.h"
 
-/* Implemented in nfp_hwinfo.c */
+ 
 
 struct nfp_hwinfo;
 struct nfp_hwinfo *nfp_hwinfo_read(struct nfp_cpp *cpp);
@@ -22,7 +19,7 @@ const char *nfp_hwinfo_lookup(struct nfp_hwinfo *hwinfo, const char *lookup);
 char *nfp_hwinfo_get_packed_strings(struct nfp_hwinfo *hwinfo);
 u32 nfp_hwinfo_get_packed_str_size(struct nfp_hwinfo *hwinfo);
 
-/* Implemented in nfp_nsp.c, low level functions */
+ 
 
 struct nfp_nsp;
 
@@ -41,27 +38,27 @@ int nfp_nsp_read_identify(struct nfp_nsp *state, void *buf, unsigned int size);
 int nfp_nsp_read_sensors(struct nfp_nsp *state, unsigned int sensor_mask,
 			 void *buf, unsigned int size);
 
-/* Implemented in nfp_resource.c */
+ 
 
-/* All keys are CRC32-POSIX of the 8-byte identification string */
+ 
 
-/* ARM/PCI vNIC Interfaces 0..3 */
+ 
 #define NFP_RESOURCE_VNIC_PCI_0		"vnic.p0"
 #define NFP_RESOURCE_VNIC_PCI_1		"vnic.p1"
 #define NFP_RESOURCE_VNIC_PCI_2		"vnic.p2"
 #define NFP_RESOURCE_VNIC_PCI_3		"vnic.p3"
 
-/* NFP Hardware Info Database */
+ 
 #define NFP_RESOURCE_NFP_HWINFO		"nfp.info"
 
-/* Service Processor */
+ 
 #define NFP_RESOURCE_NSP		"nfp.sp"
 #define NFP_RESOURCE_NSP_DIAG		"arm.diag"
 
-/* Netronone Flow Firmware Table */
+ 
 #define NFP_RESOURCE_NFP_NFFW		"nfp.nffw"
 
-/* MAC Statistics Accumulator */
+ 
 #define NFP_RESOURCE_MAC_STATISTICS	"mac.stat"
 
 int nfp_resource_table_init(struct nfp_cpp *cpp);
@@ -81,4 +78,4 @@ u64 nfp_resource_address(struct nfp_resource *res);
 
 u64 nfp_resource_size(struct nfp_resource *res);
 
-#endif /* !__NFP_H__ */
+#endif  

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Arche Platform driver to enable Unipro link.
- *
- * Copyright 2014-2015 Google Inc.
- * Copyright 2014-2015 Linaro Ltd.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -35,20 +30,20 @@ static inline int usb3613_hub_mode_ctrl(bool unused)
 #define WD_COLDBOOT_PULSE_WIDTH_MS	30
 
 enum svc_wakedetect_state {
-	WD_STATE_IDLE,			/* Default state = pulled high/low */
-	WD_STATE_BOOT_INIT,		/* WD = falling edge (low) */
-	WD_STATE_COLDBOOT_TRIG,		/* WD = rising edge (high), > 30msec */
-	WD_STATE_STANDBYBOOT_TRIG,	/* As of now not used ?? */
-	WD_STATE_COLDBOOT_START,	/* Cold boot process started */
-	WD_STATE_STANDBYBOOT_START,	/* Not used */
+	WD_STATE_IDLE,			 
+	WD_STATE_BOOT_INIT,		 
+	WD_STATE_COLDBOOT_TRIG,		 
+	WD_STATE_STANDBYBOOT_TRIG,	 
+	WD_STATE_COLDBOOT_START,	 
+	WD_STATE_STANDBYBOOT_START,	 
 };
 
 struct arche_platform_drvdata {
-	/* Control GPIO signals to and from AP <=> SVC */
+	 
 	struct gpio_desc *svc_reset;
 	bool is_reset_act_hi;
 	struct gpio_desc *svc_sysboot;
-	struct gpio_desc *wake_detect; /* bi-dir,maps to WAKE_MOD & WAKE_FRAME signals */
+	struct gpio_desc *wake_detect;  
 
 	enum arche_platform_state state;
 
@@ -62,22 +57,22 @@ struct arche_platform_drvdata {
 
 	enum svc_wakedetect_state wake_detect_state;
 	int wake_detect_irq;
-	spinlock_t wake_lock;			/* Protect wake_detect_state */
-	struct mutex platform_state_mutex;	/* Protect state */
+	spinlock_t wake_lock;			 
+	struct mutex platform_state_mutex;	 
 	unsigned long wake_detect_start;
 	struct notifier_block pm_notifier;
 
 	struct device *dev;
 };
 
-/* Requires calling context to hold arche_pdata->platform_state_mutex */
+ 
 static void arche_platform_set_state(struct arche_platform_drvdata *arche_pdata,
 				     enum arche_platform_state state)
 {
 	arche_pdata->state = state;
 }
 
-/* Requires arche_pdata->wake_lock is held by calling context */
+ 
 static void arche_platform_set_wake_detect_state(struct arche_platform_drvdata *arche_pdata,
 						 enum svc_wakedetect_state state)
 {
@@ -97,7 +92,7 @@ static int apb_cold_boot(struct device *dev, void *data)
 	if (ret)
 		dev_warn(dev, "failed to coldboot\n");
 
-	/*Child nodes are independent, so do not exit coldboot operation */
+	 
 	return 0;
 }
 
@@ -105,7 +100,7 @@ static int apb_poweroff(struct device *dev, void *data)
 {
 	apb_ctrl_poweroff(dev);
 
-	/* Enable HUB3613 into HUB mode. */
+	 
 	if (usb3613_hub_mode_ctrl(false))
 		dev_warn(dev, "failed to control hub device\n");
 
@@ -114,7 +109,7 @@ static int apb_poweroff(struct device *dev, void *data)
 
 static void arche_platform_wd_irq_en(struct arche_platform_drvdata *arche_pdata)
 {
-	/* Enable interrupt here, to read event back from SVC */
+	 
 	enable_irq(arche_pdata->wake_detect_irq);
 }
 
@@ -125,7 +120,7 @@ static irqreturn_t arche_platform_wd_irq_thread(int irq, void *devid)
 
 	spin_lock_irqsave(&arche_pdata->wake_lock, flags);
 	if (arche_pdata->wake_detect_state != WD_STATE_COLDBOOT_TRIG) {
-		/* Something is wrong */
+		 
 		spin_unlock_irqrestore(&arche_pdata->wake_lock, flags);
 		return IRQ_HANDLED;
 	}
@@ -134,13 +129,13 @@ static irqreturn_t arche_platform_wd_irq_thread(int irq, void *devid)
 					     WD_STATE_COLDBOOT_START);
 	spin_unlock_irqrestore(&arche_pdata->wake_lock, flags);
 
-	/* It should complete power cycle, so first make sure it is poweroff */
+	 
 	device_for_each_child(arche_pdata->dev, NULL, apb_poweroff);
 
-	/* Bring APB out of reset: cold boot sequence */
+	 
 	device_for_each_child(arche_pdata->dev, NULL, apb_cold_boot);
 
-	/* Enable HUB3613 into HUB mode. */
+	 
 	if (usb3613_hub_mode_ctrl(true))
 		dev_warn(arche_pdata->dev, "failed to control hub device\n");
 
@@ -159,13 +154,9 @@ static irqreturn_t arche_platform_wd_irq(int irq, void *devid)
 	spin_lock_irqsave(&arche_pdata->wake_lock, flags);
 
 	if (gpiod_get_value(arche_pdata->wake_detect)) {
-		/* wake/detect rising */
+		 
 
-		/*
-		 * If wake/detect line goes high after low, within less than
-		 * 30msec, then standby boot sequence is initiated, which is not
-		 * supported/implemented as of now. So ignore it.
-		 */
+		 
 		if (arche_pdata->wake_detect_state == WD_STATE_BOOT_INIT) {
 			if (time_before(jiffies,
 					arche_pdata->wake_detect_start +
@@ -173,10 +164,7 @@ static irqreturn_t arche_platform_wd_irq(int irq, void *devid)
 				arche_platform_set_wake_detect_state(arche_pdata,
 								     WD_STATE_IDLE);
 			} else {
-				/*
-				 * Check we are not in middle of irq thread
-				 * already
-				 */
+				 
 				if (arche_pdata->wake_detect_state !=
 						WD_STATE_COLDBOOT_START) {
 					arche_platform_set_wake_detect_state(arche_pdata,
@@ -188,16 +176,10 @@ static irqreturn_t arche_platform_wd_irq(int irq, void *devid)
 			}
 		}
 	} else {
-		/* wake/detect falling */
+		 
 		if (arche_pdata->wake_detect_state == WD_STATE_IDLE) {
 			arche_pdata->wake_detect_start = jiffies;
-			/*
-			 * In the beginning, when wake/detect goes low
-			 * (first time), we assume it is meant for coldboot
-			 * and set the flag. If wake/detect line stays low
-			 * beyond 30msec, then it is coldboot else fallback
-			 * to standby boot.
-			 */
+			 
 			arche_platform_set_wake_detect_state(arche_pdata,
 							     WD_STATE_BOOT_INIT);
 		}
@@ -208,9 +190,7 @@ static irqreturn_t arche_platform_wd_irq(int irq, void *devid)
 	return IRQ_HANDLED;
 }
 
-/*
- * Requires arche_pdata->platform_state_mutex to be held
- */
+ 
 static int
 arche_platform_coldboot_seq(struct arche_platform_drvdata *arche_pdata)
 {
@@ -233,7 +213,7 @@ arche_platform_coldboot_seq(struct arche_platform_drvdata *arche_pdata)
 		return ret;
 	}
 
-	/* bring SVC out of reset */
+	 
 	svc_reset_onoff(arche_pdata->svc_reset, !arche_pdata->is_reset_act_hi);
 
 	arche_platform_set_state(arche_pdata, ARCHE_PLATFORM_STATE_ACTIVE);
@@ -241,9 +221,7 @@ arche_platform_coldboot_seq(struct arche_platform_drvdata *arche_pdata)
 	return 0;
 }
 
-/*
- * Requires arche_pdata->platform_state_mutex to be held
- */
+ 
 static int
 arche_platform_fw_flashing_seq(struct arche_platform_drvdata *arche_pdata)
 {
@@ -274,9 +252,7 @@ arche_platform_fw_flashing_seq(struct arche_platform_drvdata *arche_pdata)
 	return 0;
 }
 
-/*
- * Requires arche_pdata->platform_state_mutex to be held
- */
+ 
 static void
 arche_platform_poweroff_seq(struct arche_platform_drvdata *arche_pdata)
 {
@@ -285,7 +261,7 @@ arche_platform_poweroff_seq(struct arche_platform_drvdata *arche_pdata)
 	if (arche_pdata->state == ARCHE_PLATFORM_STATE_OFF)
 		return;
 
-	/* If in fw_flashing mode, then no need to repeate things again */
+	 
 	if (arche_pdata->state != ARCHE_PLATFORM_STATE_FW_FLASHING) {
 		disable_irq(arche_pdata->wake_detect_irq);
 
@@ -297,7 +273,7 @@ arche_platform_poweroff_seq(struct arche_platform_drvdata *arche_pdata)
 
 	clk_disable_unprepare(arche_pdata->svc_ref_clk);
 
-	/* As part of exit, put APB back in reset state */
+	 
 	svc_reset_onoff(arche_pdata->svc_reset,	arche_pdata->is_reset_act_hi);
 
 	arche_platform_set_state(arche_pdata, ARCHE_PLATFORM_STATE_OFF);
@@ -316,7 +292,7 @@ static ssize_t state_store(struct device *dev,
 		if (arche_pdata->state == ARCHE_PLATFORM_STATE_OFF)
 			goto exit;
 
-		/*  If SVC goes down, bring down APB's as well */
+		 
 		device_for_each_child(arche_pdata->dev, NULL, apb_poweroff);
 
 		arche_platform_poweroff_seq(arche_pdata);
@@ -325,9 +301,7 @@ static ssize_t state_store(struct device *dev,
 		if (arche_pdata->state == ARCHE_PLATFORM_STATE_ACTIVE)
 			goto exit;
 
-		/* First we want to make sure we power off everything
-		 * and then activate back again
-		 */
+		 
 		device_for_each_child(arche_pdata->dev, NULL, apb_poweroff);
 		arche_platform_poweroff_seq(arche_pdata);
 
@@ -345,13 +319,7 @@ static ssize_t state_store(struct device *dev,
 		if (arche_pdata->state == ARCHE_PLATFORM_STATE_FW_FLASHING)
 			goto exit;
 
-		/*
-		 * Here we only control SVC.
-		 *
-		 * In case of FW_FLASHING mode we do not want to control
-		 * APBs, as in case of V2, SPI bus is shared between both
-		 * the APBs. So let user chose which APB he wants to flash.
-		 */
+		 
 		arche_platform_poweroff_seq(arche_pdata);
 
 		ret = arche_platform_fw_flashing_seq(arche_pdata);
@@ -434,7 +402,7 @@ static int arche_platform_probe(struct platform_device *pdev)
 	if (!arche_pdata)
 		return -ENOMEM;
 
-	/* setup svc reset gpio */
+	 
 	arche_pdata->is_reset_act_hi = of_property_read_bool(np,
 							     "svc,reset-active-high");
 	if (arche_pdata->is_reset_act_hi)
@@ -458,7 +426,7 @@ static int arche_platform_probe(struct platform_device *pdev)
 		return ret;
 	}
 
-	/* setup the clock request gpio first */
+	 
 	arche_pdata->svc_refclk_req = devm_gpiod_get(dev, "svc,refclk-req",
 						     GPIOD_IN);
 	if (IS_ERR(arche_pdata->svc_refclk_req)) {
@@ -467,7 +435,7 @@ static int arche_platform_probe(struct platform_device *pdev)
 		return ret;
 	}
 
-	/* setup refclk2 to follow the pin */
+	 
 	arche_pdata->svc_ref_clk = devm_clk_get(dev, "svc_ref_clk");
 	if (IS_ERR(arche_pdata->svc_ref_clk)) {
 		ret = PTR_ERR(arche_pdata->svc_ref_clk);
@@ -529,7 +497,7 @@ static int arche_platform_probe(struct platform_device *pdev)
 		goto err_device_remove;
 	}
 
-	/* Explicitly power off if requested */
+	 
 	if (!of_property_read_bool(pdev->dev.of_node, "arche,init-off")) {
 		mutex_lock(&arche_pdata->platform_state_mutex);
 		ret = arche_platform_coldboot_seq(arche_pdata);
@@ -575,29 +543,13 @@ static void arche_platform_remove(struct platform_device *pdev)
 
 static __maybe_unused int arche_platform_suspend(struct device *dev)
 {
-	/*
-	 * If timing profile premits, we may shutdown bridge
-	 * completely
-	 *
-	 * TODO: sequence ??
-	 *
-	 * Also, need to make sure we meet precondition for unipro suspend
-	 * Precondition: Definition ???
-	 */
+	 
 	return 0;
 }
 
 static __maybe_unused int arche_platform_resume(struct device *dev)
 {
-	/*
-	 * At least for ES2 we have to meet the delay requirement between
-	 * unipro switch and AP bridge init, depending on whether bridge is in
-	 * OFF state or standby state.
-	 *
-	 * Based on whether bridge is in standby or OFF state we may have to
-	 * assert multiple signals. Please refer to WDM spec, for more info.
-	 *
-	 */
+	 
 	return 0;
 }
 
@@ -615,13 +567,13 @@ static SIMPLE_DEV_PM_OPS(arche_platform_pm_ops,
 			arche_platform_resume);
 
 static const struct of_device_id arche_platform_of_match[] = {
-	/* Use PID/VID of SVC device */
+	 
 	{ .compatible = "google,arche-platform", },
 	{ },
 };
 
 static const struct of_device_id arche_combined_id[] = {
-	/* Use PID/VID of SVC device */
+	 
 	{ .compatible = "google,arche-platform", },
 	{ .compatible = "usbffff,2", },
 	{ },

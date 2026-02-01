@@ -1,9 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0-only
-//
-// HiSilicon SPI NOR V3XX Flash Controller Driver for hi16xx chipsets
-//
-// Copyright (c) 2019 HiSilicon Technologies Co., Ltd.
-// Author: John Garry <john.garry@huawei.com>
+
+
+
+
+
+
 
 #include <linux/bitops.h>
 #include <linux/completion.h>
@@ -37,15 +37,13 @@
 #define HISI_SFC_V3XX_CMD_ADDR (0x30c)
 #define HISI_SFC_V3XX_CMD_DATABUF0 (0x400)
 
-/* Common definition of interrupt bit masks */
-#define HISI_SFC_V3XX_INT_MASK_ALL (0x1ff)	/* all the masks */
-#define HISI_SFC_V3XX_INT_MASK_CPLT BIT(0)	/* command execution complete */
-#define HISI_SFC_V3XX_INT_MASK_PP_ERR BIT(2)	/* page progrom error */
-#define HISI_SFC_V3XX_INT_MASK_IACCES BIT(5)	/* error visiting inaccessible/
-						 * protected address
-						 */
+ 
+#define HISI_SFC_V3XX_INT_MASK_ALL (0x1ff)	 
+#define HISI_SFC_V3XX_INT_MASK_CPLT BIT(0)	 
+#define HISI_SFC_V3XX_INT_MASK_PP_ERR BIT(2)	 
+#define HISI_SFC_V3XX_INT_MASK_IACCES BIT(5)	 
 
-/* IO Mode definition in HISI_SFC_V3XX_CMD_CFG */
+ 
 #define HISI_SFC_V3XX_STD (0 << 17)
 #define HISI_SFC_V3XX_DIDO (1 << 17)
 #define HISI_SFC_V3XX_DIO (2 << 17)
@@ -54,11 +52,7 @@
 #define HISI_SFC_V3XX_QIO (6 << 17)
 #define HISI_SFC_V3XX_FULL_QIO (7 << 17)
 
-/*
- * The IO modes lookup table. hisi_sfc_v3xx_io_modes[(z - 1) / 2][y / 2][x / 2]
- * stands for x-y-z mode, as described in SFDP terminology. -EIO indicates
- * an invalid mode.
- */
+ 
 static const int hisi_sfc_v3xx_io_modes[2][3][3] = {
 	{
 		{ HISI_SFC_V3XX_DIDO, HISI_SFC_V3XX_DIDO, HISI_SFC_V3XX_DIDO },
@@ -96,11 +90,7 @@ static void hisi_sfc_v3xx_clear_int(struct hisi_sfc_v3xx_host *host)
 	writel(HISI_SFC_V3XX_INT_MASK_ALL, host->regbase + HISI_SFC_V3XX_INT_CLR);
 }
 
-/*
- * The interrupt status register indicates whether an error occurs
- * after per operation. Check it, and clear the interrupts for
- * next time judgement.
- */
+ 
 static int hisi_sfc_v3xx_handle_completion(struct hisi_sfc_v3xx_host *host)
 {
 	u32 reg;
@@ -118,11 +108,7 @@ static int hisi_sfc_v3xx_handle_completion(struct hisi_sfc_v3xx_host *host)
 		return -EIO;
 	}
 
-	/*
-	 * The other bits of the interrupt registers is not currently
-	 * used and probably not be triggered in this driver. When it
-	 * happens, we regard it as an unsupported error here.
-	 */
+	 
 	if (!(reg & HISI_SFC_V3XX_INT_MASK_CPLT)) {
 		dev_err(host->dev, "unsupported error occurred, status=0x%x\n", reg);
 		return -EIO;
@@ -164,10 +150,7 @@ static int hisi_sfc_v3xx_adjust_op_size(struct spi_mem *mem,
 	return 0;
 }
 
-/*
- * The controller only supports Standard SPI mode, Dual mode and
- * Quad mode. Double sanitize the ops here to avoid OOB access.
- */
+ 
 static bool hisi_sfc_v3xx_supports_op(struct spi_mem *mem,
 				      const struct spi_mem_op *op)
 {
@@ -186,15 +169,7 @@ static bool hisi_sfc_v3xx_supports_op(struct spi_mem *mem,
 	return spi_mem_default_supports_op(mem, op);
 }
 
-/*
- * memcpy_{to,from}io doesn't gurantee 32b accesses - which we require for the
- * DATABUF registers -so use __io{read,write}32_copy when possible. For
- * trailing bytes, copy them byte-by-byte from the DATABUF register, as we
- * can't clobber outside the source/dest buffer.
- *
- * For efficient data read/write, we try to put any start 32b unaligned data
- * into a separate transaction in hisi_sfc_v3xx_adjust_op_size().
- */
+ 
 static void hisi_sfc_v3xx_read_databuf(struct hisi_sfc_v3xx_host *host,
 				       u8 *to, unsigned int len)
 {
@@ -387,10 +362,7 @@ static irqreturn_t hisi_sfc_v3xx_isr(int irq, void *data)
 
 static int hisi_sfc_v3xx_buswidth_override_bits;
 
-/*
- * ACPI FW does not allow us to currently set the device buswidth, so quirk it
- * depending on the board.
- */
+ 
 static int __init hisi_sfc_v3xx_dmi_quirk(const struct dmi_system_id *d)
 {
 	hisi_sfc_v3xx_buswidth_override_bits = SPI_RX_QUAD | SPI_TX_QUAD;
@@ -475,12 +447,7 @@ static int hisi_sfc_v3xx_probe(struct platform_device *pdev)
 	ctlr->num_chipselect = 1;
 	ctlr->mem_ops = &hisi_sfc_v3xx_mem_ops;
 
-	/*
-	 * The address mode of the controller is either 3 or 4,
-	 * which is indicated by the address mode bit in
-	 * the global config register. The register is read only
-	 * for the OS driver.
-	 */
+	 
 	glb_config = readl(host->regbase + HISI_SFC_V3XX_GLB_CFG);
 	if (glb_config & HISI_SFC_V3XX_GLB_CFG_CS0_ADDR_MODE)
 		host->address_mode = 4;

@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 
 #define IDX_INVALID		-1
 
@@ -23,4 +23,4 @@ int  cpudl_init(struct cpudl *cp);
 void cpudl_set_freecpu(struct cpudl *cp, int cpu);
 void cpudl_clear_freecpu(struct cpudl *cp, int cpu);
 void cpudl_cleanup(struct cpudl *cp);
-#endif /* CONFIG_SMP */
+#endif  

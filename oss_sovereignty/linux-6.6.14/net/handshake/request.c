@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Handshake request lifetime events
- *
- * Author: Chuck Lever <chuck.lever@oracle.com>
- *
- * Copyright (c) 2023, Oracle and/or its affiliates.
- */
+
+ 
 
 #include <linux/types.h>
 #include <linux/socket.h>
@@ -27,16 +21,7 @@
 
 #include <trace/events/handshake.h>
 
-/*
- * We need both a handshake_req -> sock mapping, and a sock ->
- * handshake_req mapping. Both are one-to-one.
- *
- * To avoid adding another pointer field to struct sock, net/handshake
- * maintains a hash table, indexed by the memory address of @sock, to
- * find the struct handshake_req outstanding for that socket. The
- * reverse direction uses a simple pointer field in the handshake_req
- * struct.
- */
+ 
 
 static struct rhashtable handshake_rhashtbl ____cacheline_aligned_in_smp;
 
@@ -99,13 +84,7 @@ static void handshake_sk_destruct(struct sock *sk)
 		sk_destruct(sk);
 }
 
-/**
- * handshake_req_alloc - Allocate a handshake request
- * @proto: security protocol
- * @flags: memory allocation flags
- *
- * Returns an initialized handshake_req or NULL.
- */
+ 
 struct handshake_req *handshake_req_alloc(const struct handshake_proto *proto,
 					  gfp_t flags)
 {
@@ -130,11 +109,7 @@ struct handshake_req *handshake_req_alloc(const struct handshake_proto *proto,
 }
 EXPORT_SYMBOL(handshake_req_alloc);
 
-/**
- * handshake_req_private - Get per-handshake private data
- * @req: handshake arguments
- *
- */
+ 
 void *handshake_req_private(struct handshake_req *req)
 {
 	return (void *)&req->hr_priv;
@@ -158,12 +133,7 @@ static void __remove_pending_locked(struct handshake_net *hn,
 	list_del_init(&req->hr_list);
 }
 
-/*
- * Returns %true if the request was found on @net's pending list,
- * otherwise %false.
- *
- * If @req was on a pending list, it has not yet been accepted.
- */
+ 
 static bool remove_pending(struct handshake_net *hn, struct handshake_req *req)
 {
 	bool ret = false;
@@ -197,29 +167,7 @@ struct handshake_req *handshake_req_next(struct handshake_net *hn, int class)
 }
 EXPORT_SYMBOL_IF_KUNIT(handshake_req_next);
 
-/**
- * handshake_req_submit - Submit a handshake request
- * @sock: open socket on which to perform the handshake
- * @req: handshake arguments
- * @flags: memory allocation flags
- *
- * Return values:
- *   %0: Request queued
- *   %-EINVAL: Invalid argument
- *   %-EBUSY: A handshake is already under way for this socket
- *   %-ESRCH: No handshake agent is available
- *   %-EAGAIN: Too many pending handshake requests
- *   %-ENOMEM: Failed to allocate memory
- *   %-EMSGSIZE: Failed to construct notification message
- *   %-EOPNOTSUPP: Handshake module not initialized
- *
- * A zero return value from handshake_req_submit() means that
- * exactly one subsequent completion callback is guaranteed.
- *
- * A negative return value from handshake_req_submit() means that
- * no completion callback will be done and that @req has been
- * destroyed.
- */
+ 
 int handshake_req_submit(struct socket *sock, struct handshake_req *req,
 			 gfp_t flags)
 {
@@ -268,7 +216,7 @@ int handshake_req_submit(struct socket *sock, struct handshake_req *req,
 			goto out_err;
 	}
 
-	/* Prevent socket release while a handshake request is pending */
+	 
 	sock_hold(req->hr_sk);
 
 	trace_handshake_submit(net, req, req->hr_sk);
@@ -293,23 +241,13 @@ void handshake_complete(struct handshake_req *req, unsigned int status,
 		trace_handshake_complete(net, req, sk, status);
 		req->hr_proto->hp_done(req, status, info);
 
-		/* Handshake request is no longer pending */
+		 
 		sock_put(sk);
 	}
 }
 EXPORT_SYMBOL_IF_KUNIT(handshake_complete);
 
-/**
- * handshake_req_cancel - Cancel an in-progress handshake
- * @sk: socket on which there is an ongoing handshake
- *
- * Request cancellation races with request completion. To determine
- * who won, callers examine the return value from this function.
- *
- * Return values:
- *   %true - Uncompleted handshake request was canceled
- *   %false - Handshake request already completed or not found
- */
+ 
 bool handshake_req_cancel(struct sock *sk)
 {
 	struct handshake_req *req;
@@ -325,11 +263,11 @@ bool handshake_req_cancel(struct sock *sk)
 
 	hn = handshake_pernet(net);
 	if (hn && remove_pending(hn, req)) {
-		/* Request hadn't been accepted */
+		 
 		goto out_true;
 	}
 	if (test_and_set_bit(HANDSHAKE_F_REQ_COMPLETED, &req->hr_flags)) {
-		/* Request already completed */
+		 
 		trace_handshake_cancel_busy(net, req, sk);
 		return false;
 	}
@@ -337,7 +275,7 @@ bool handshake_req_cancel(struct sock *sk)
 out_true:
 	trace_handshake_cancel(net, req, sk);
 
-	/* Handshake request is no longer pending */
+	 
 	sock_put(sk);
 	return true;
 }

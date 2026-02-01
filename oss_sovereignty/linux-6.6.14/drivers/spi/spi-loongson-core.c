@@ -1,6 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0+
-// Loongson SPI Support
-// Copyright (C) 2023 Loongson Technology Corporation Limited
+
+
+
 
 #include <linux/clk.h>
 #include <linux/delay.h>

@@ -1,18 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef __LINUX_OMAP_DMA_H
 #define __LINUX_OMAP_DMA_H
-/*
- *  Legacy OMAP DMA handling defines and functions
- *
- *  NOTE: Do not use these any longer.
- *
- *  Use the generic dmaengine functions as defined in
- *  include/linux/dmaengine.h.
- *
- *  Copyright (C) 2003 Nokia Corporation
- *  Author: Juha Yrjölä <juha.yrjola@nokia.com>
- *
- */
+ 
 
 #include <linux/platform_device.h>
 
@@ -64,17 +53,17 @@
 
 #define DMA_DEFAULT_FIFO_DEPTH		0x10
 #define DMA_DEFAULT_ARB_RATE		0x01
-/* Pass THREAD_RESERVE ORed with THREAD_FIFO for tparams */
-#define DMA_THREAD_RESERVE_NORM		(0x00 << 12) /* Def */
+ 
+#define DMA_THREAD_RESERVE_NORM		(0x00 << 12)  
 #define DMA_THREAD_RESERVE_ONET		(0x01 << 12)
 #define DMA_THREAD_RESERVE_TWOT		(0x02 << 12)
 #define DMA_THREAD_RESERVE_THREET	(0x03 << 12)
-#define DMA_THREAD_FIFO_NONE		(0x00 << 14) /* Def */
+#define DMA_THREAD_FIFO_NONE		(0x00 << 14)  
 #define DMA_THREAD_FIFO_75		(0x01 << 14)
 #define DMA_THREAD_FIFO_25		(0x02 << 14)
 #define DMA_THREAD_FIFO_50		(0x03 << 14)
 
-/* DMA4_OCP_SYSCONFIG bits */
+ 
 #define DMA_SYSCONFIG_MIDLEMODE_MASK		(3 << 12)
 #define DMA_SYSCONFIG_CLOCKACTIVITY_MASK	(3 << 8)
 #define DMA_SYSCONFIG_EMUFREE			(1 << 5)
@@ -89,7 +78,7 @@
 #define DMA_IDLEMODE_NO_IDLE			0x1
 #define DMA_IDLEMODE_FORCE_IDLE			0x0
 
-/* Chaining modes*/
+ 
 #ifndef CONFIG_ARCH_OMAP1
 #define OMAP_DMA_STATIC_CHAIN		0x1
 #define OMAP_DMA_DYNAMIC_CHAIN		0x2
@@ -98,9 +87,9 @@
 #endif
 
 #define DMA_CH_PRIO_HIGH		0x1
-#define DMA_CH_PRIO_LOW			0x0 /* Def */
+#define DMA_CH_PRIO_LOW			0x0  
 
-/* Errata handling */
+ 
 #define IS_DMA_ERRATA(id)		(errata & (id))
 #define SET_DMA_ERRATA(id)		(errata |= (id))
 
@@ -112,7 +101,7 @@
 #define DMA_ERRATA_3_3			BIT(0x5)
 #define DMA_ROMCODE_BUG			BIT(0x6)
 
-/* Attributes for OMAP DMA Contrller */
+ 
 #define DMA_LINKED_LCH			BIT(0x0)
 #define GLOBAL_PRIORITY			BIT(0x1)
 #define RESERVE_CHANNEL			BIT(0x2)
@@ -130,7 +119,7 @@
 #define ENABLE_16XX_MODE		BIT(0xe)
 #define HS_CHANNELS_RESERVED		BIT(0xf)
 
-/* Defines for DMA Capabilities */
+ 
 #define DMA_HAS_TRANSPARENT_CAPS	(0x1 << 18)
 #define DMA_HAS_CONSTANT_FILL_CAPS	(0x1 << 19)
 #define DMA_HAS_DESCRIPTOR_CAPS		(0x3 << 20)
@@ -146,20 +135,20 @@ IRQSTATUS_L1,	IRQSTATUS_L2,	IRQSTATUS_L3,	IRQENABLE_L0,
 IRQENABLE_L1,	IRQENABLE_L2,	IRQENABLE_L3,	SYSSTATUS,
 OCP_SYSCONFIG,
 
-/* omap1+ specific */
+ 
 CPC, CCR2, LCH_CTRL,
 
-/* Common registers for all omap's */
+ 
 CSDP,		CCR,		CICR,		CSR,
 CEN,		CFN,		CSFI,		CSEI,
 CSAC,		CDAC,		CDEI,
 CDFI,		CLNK_CTRL,
 
-/* Channel specific registers */
+ 
 CSSA,		CDSA,		COLOR,
 CCEN,		CCFN,
 
-/* omap3630 and omap4 specific */
+ 
 CDP,		CNDP,		CCDN,
 
 };
@@ -196,36 +185,33 @@ enum omap_dma_channel_mode {
 };
 
 struct omap_dma_channel_params {
-	int data_type;		/* data type 8,16,32 */
-	int elem_count;		/* number of elements in a frame */
-	int frame_count;	/* number of frames in a element */
+	int data_type;		 
+	int elem_count;		 
+	int frame_count;	 
 
-	int src_port;		/* Only on OMAP1 REVISIT: Is this needed? */
-	int src_amode;		/* constant, post increment, indexed,
-					double indexed */
-	unsigned long src_start;	/* source address : physical */
-	int src_ei;		/* source element index */
-	int src_fi;		/* source frame index */
+	int src_port;		 
+	int src_amode;		 
+	unsigned long src_start;	 
+	int src_ei;		 
+	int src_fi;		 
 
-	int dst_port;		/* Only on OMAP1 REVISIT: Is this needed? */
-	int dst_amode;		/* constant, post increment, indexed,
-					double indexed */
-	unsigned long dst_start;	/* source address : physical */
-	int dst_ei;		/* source element index */
-	int dst_fi;		/* source frame index */
+	int dst_port;		 
+	int dst_amode;		 
+	unsigned long dst_start;	 
+	int dst_ei;		 
+	int dst_fi;		 
 
-	int trigger;		/* trigger attached if the channel is
-					synchronized */
-	int sync_mode;		/* sycn on element, frame , block or packet */
-	int src_or_dst_synch;	/* source synch(1) or destination synch(0) */
+	int trigger;		 
+	int sync_mode;		 
+	int src_or_dst_synch;	 
 
-	int ie;			/* interrupt enabled */
+	int ie;			 
 
-	unsigned char read_prio;/* read priority */
-	unsigned char write_prio;/* write priority */
+	unsigned char read_prio; 
+	unsigned char write_prio; 
 
 #ifndef CONFIG_ARCH_OMAP1
-	enum omap_dma_burst_mode burst_mode; /* Burst mode 4/8/16 words */
+	enum omap_dma_burst_mode burst_mode;  
 #endif
 };
 
@@ -265,7 +251,7 @@ struct omap_dma_reg {
 #define SDMA_FILTER_PARAM(hw_req)	((int[]) { (hw_req) })
 struct dma_slave_map;
 
-/* System DMA platform data structure */
+ 
 struct omap_system_dma_plat_info {
 	const struct omap_dma_reg *reg_map;
 	unsigned channel_stride;
@@ -346,4 +332,4 @@ static inline int omap_lcd_dma_running(void)
 }
 #endif
 
-#endif /* __LINUX_OMAP_DMA_H */
+#endif  

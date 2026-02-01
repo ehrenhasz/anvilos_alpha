@@ -1,19 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * IBM Accelerator Family 'GenWQE'
- *
- * (C) Copyright IBM Corp. 2013
- *
- * Author: Frank Haverkamp <haver@linux.vnet.ibm.com>
- * Author: Joerg-Stephan Vogt <jsvogt@de.ibm.com>
- * Author: Michael Jung <mijung@gmx.net>
- * Author: Michael Ruettger <michael@ibmra.de>
- */
 
-/*
- * Character device representation of the GenWQE device. This allows
- * user-space applications to communicate with the card.
- */
+ 
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/types.h>
@@ -82,15 +70,7 @@ static int genwqe_del_pin(struct genwqe_file *cfile, struct dma_mapping *m)
 	return 0;
 }
 
-/**
- * genwqe_search_pin() - Search for the mapping for a userspace address
- * @cfile:	Descriptor of opened file
- * @u_addr:	User virtual address
- * @size:	Size of buffer
- * @virt_addr:	Virtual address to be updated
- *
- * Return: Pointer to the corresponding mapping	NULL if not found
- */
+ 
 static struct dma_mapping *genwqe_search_pin(struct genwqe_file *cfile,
 					    unsigned long u_addr,
 					    unsigned int size,
@@ -138,15 +118,7 @@ static void __genwqe_del_mapping(struct genwqe_file *cfile,
 }
 
 
-/**
- * __genwqe_search_mapping() - Search for the mapping for a userspace address
- * @cfile:	descriptor of opened file
- * @u_addr:	user virtual address
- * @size:	size of buffer
- * @dma_addr:	DMA address to be updated
- * @virt_addr:	Virtual address to be updated
- * Return: Pointer to the corresponding mapping	NULL if not found
- */
+ 
 static struct dma_mapping *__genwqe_search_mapping(struct genwqe_file *cfile,
 						   unsigned long u_addr,
 						   unsigned int size,
@@ -163,8 +135,7 @@ static struct dma_mapping *__genwqe_search_mapping(struct genwqe_file *cfile,
 		if ((((u64)m->u_vaddr) <= (u_addr)) &&
 		    (((u64)m->u_vaddr + m->size) >= (u_addr + size))) {
 
-			/* match found: current is as expected and
-			   addr is in range */
+			 
 			if (dma_addr)
 				*dma_addr = m->dma_addr +
 					(u_addr - (u64)m->u_vaddr);
@@ -199,13 +170,7 @@ static void genwqe_remove_mappings(struct genwqe_file *cfile)
 
 		list_del_init(&dma_map->card_list);
 
-		/*
-		 * This is really a bug, because those things should
-		 * have been already tidied up.
-		 *
-		 * GENWQE_MAPPING_RAW should have been removed via mmunmap().
-		 * GENWQE_MAPPING_SGL_TEMP should be removed by tidy up code.
-		 */
+		 
 		dev_err(&pci_dev->dev,
 			"[%s] %d. cleanup mapping: u_vaddr=%p u_kaddr=%016lx dma_addr=%lx\n",
 			__func__, i++, dma_map->u_vaddr,
@@ -213,13 +178,13 @@ static void genwqe_remove_mappings(struct genwqe_file *cfile)
 			(unsigned long)dma_map->dma_addr);
 
 		if (dma_map->type == GENWQE_MAPPING_RAW) {
-			/* we allocated this dynamically */
+			 
 			__genwqe_free_consistent(cd, dma_map->size,
 						dma_map->k_vaddr,
 						dma_map->dma_addr);
 			kfree(dma_map);
 		} else if (dma_map->type == GENWQE_MAPPING_SGL_TEMP) {
-			/* we use dma_map statically from the request */
+			 
 			genwqe_user_vunmap(cd, dma_map);
 		}
 	}
@@ -234,27 +199,14 @@ static void genwqe_remove_pinnings(struct genwqe_file *cfile)
 	list_for_each_safe(node, next, &cfile->pin_list) {
 		dma_map = list_entry(node, struct dma_mapping, pin_list);
 
-		/*
-		 * This is not a bug, because a killed processed might
-		 * not call the unpin ioctl, which is supposed to free
-		 * the resources.
-		 *
-		 * Pinnings are dymically allocated and need to be
-		 * deleted.
-		 */
+		 
 		list_del_init(&dma_map->pin_list);
 		genwqe_user_vunmap(cd, dma_map);
 		kfree(dma_map);
 	}
 }
 
-/**
- * genwqe_kill_fasync() - Send signal to all processes with open GenWQE files
- * @cd: GenWQE device information
- * @sig: Signal to send out
- *
- * E.g. genwqe_send_signal(cd, SIGIO);
- */
+ 
 static int genwqe_kill_fasync(struct genwqe_dev *cd, int sig)
 {
 	unsigned int files = 0;
@@ -286,16 +238,7 @@ static int genwqe_terminate(struct genwqe_dev *cd)
 	return files;
 }
 
-/**
- * genwqe_open() - file open
- * @inode:      file system information
- * @filp:	file handle
- *
- * This function is executed whenever an application calls
- * open("/dev/genwqe",..).
- *
- * Return: 0 if successful or <0 if errors
- */
+ 
 static int genwqe_open(struct inode *inode, struct file *filp)
 {
 	struct genwqe_dev *cd;
@@ -310,10 +253,10 @@ static int genwqe_open(struct inode *inode, struct file *filp)
 	cfile->filp = filp;
 	cfile->client = NULL;
 
-	spin_lock_init(&cfile->map_lock);  /* list of raw memory allocations */
+	spin_lock_init(&cfile->map_lock);   
 	INIT_LIST_HEAD(&cfile->map_list);
 
-	spin_lock_init(&cfile->pin_lock);  /* list of user pinned memory */
+	spin_lock_init(&cfile->pin_lock);   
 	INIT_LIST_HEAD(&cfile->pin_list);
 
 	filp->private_data = cfile;
@@ -322,21 +265,7 @@ static int genwqe_open(struct inode *inode, struct file *filp)
 	return 0;
 }
 
-/**
- * genwqe_fasync() - Setup process to receive SIGIO.
- * @fd:        file descriptor
- * @filp:      file handle
- * @mode:      file mode
- *
- * Sending a signal is working as following:
- *
- * if (cdev->async_queue)
- *         kill_fasync(&cdev->async_queue, SIGIO, POLL_IN);
- *
- * Some devices also implement asynchronous notification to indicate
- * when the device can be written; in this case, of course,
- * kill_fasync must be called with a mode of POLL_OUT.
- */
+ 
 static int genwqe_fasync(int fd, struct file *filp, int mode)
 {
 	struct genwqe_file *cdev = (struct genwqe_file *)filp->private_data;
@@ -345,32 +274,20 @@ static int genwqe_fasync(int fd, struct file *filp, int mode)
 }
 
 
-/**
- * genwqe_release() - file close
- * @inode:      file system information
- * @filp:       file handle
- *
- * This function is executed whenever an application calls 'close(fd_genwqe)'
- *
- * Return: always 0
- */
+ 
 static int genwqe_release(struct inode *inode, struct file *filp)
 {
 	struct genwqe_file *cfile = (struct genwqe_file *)filp->private_data;
 	struct genwqe_dev *cd = cfile->cd;
 
-	/* there must be no entries in these lists! */
+	 
 	genwqe_remove_mappings(cfile);
 	genwqe_remove_pinnings(cfile);
 
-	/* remove this filp from the asynchronously notified filp's */
+	 
 	genwqe_fasync(-1, filp, 0);
 
-	/*
-	 * For this to work we must not release cd when this cfile is
-	 * not yet released, otherwise the list entry is invalid,
-	 * because the list itself gets reinstantiated!
-	 */
+	 
 	genwqe_del_file(cd, cfile);
 	kfree(cfile);
 	return 0;
@@ -378,15 +295,10 @@ static int genwqe_release(struct inode *inode, struct file *filp)
 
 static void genwqe_vma_open(struct vm_area_struct *vma)
 {
-	/* nothing ... */
+	 
 }
 
-/**
- * genwqe_vma_close() - Called each time when vma is unmapped
- * @vma: VMA area to close
- *
- * Free memory which got allocated by GenWQE mmap().
- */
+ 
 static void genwqe_vma_close(struct vm_area_struct *vma)
 {
 	unsigned long vsize = vma->vm_end - vma->vm_start;
@@ -418,20 +330,7 @@ static const struct vm_operations_struct genwqe_vma_ops = {
 	.close  = genwqe_vma_close,
 };
 
-/**
- * genwqe_mmap() - Provide contignous buffers to userspace
- * @filp:	File pointer (unused)
- * @vma:	VMA area to map
- *
- * We use mmap() to allocate contignous buffers used for DMA
- * transfers. After the buffer is allocated we remap it to user-space
- * and remember a reference to our dma_mapping data structure, where
- * we store the associated DMA address and allocated size.
- *
- * When we receive a DDCB execution request with the ATS bits set to
- * plain buffer, we lookup our dma_mapping list to find the
- * corresponding DMA address for the associated user-space address.
- */
+ 
 static int genwqe_mmap(struct file *filp, struct vm_area_struct *vma)
 {
 	int rc;
@@ -490,15 +389,9 @@ static int genwqe_mmap(struct file *filp, struct vm_area_struct *vma)
 	return rc;
 }
 
-#define	FLASH_BLOCK	0x40000	/* we use 256k blocks */
+#define	FLASH_BLOCK	0x40000	 
 
-/**
- * do_flash_update() - Excute flash update (write image or CVPD)
- * @cfile:	Descriptor of opened file
- * @load:      details about image load
- *
- * Return: 0 if successful
- */
+ 
 static int do_flash_update(struct genwqe_file *cfile,
 			   struct genwqe_bitstream *load)
 {
@@ -521,17 +414,17 @@ static int do_flash_update(struct genwqe_file *cfile,
 	if (((unsigned long)(load->data_addr) & ~PAGE_MASK) != 0)
 		return -EINVAL;
 
-	/* FIXME Bits have changed for new service layer! */
+	 
 	switch ((char)load->partition) {
 	case '0':
 		cmdopts = 0x14;
-		break;		/* download/erase_first/part_0 */
+		break;		 
 	case '1':
 		cmdopts = 0x1C;
-		break;		/* download/erase_first/part_1 */
+		break;		 
 	case 'v':
 		cmdopts = 0x0C;
-		break;		/* download/erase_first/vpd */
+		break;		 
 	default:
 		return -EINVAL;
 	}
@@ -545,10 +438,7 @@ static int do_flash_update(struct genwqe_file *cfile,
 	while (load->size) {
 		struct genwqe_ddcb_cmd *req;
 
-		/*
-		 * We must be 4 byte aligned. Buffer must be 0 appened
-		 * to have defined values when calculating CRC.
-		 */
+		 
 		tocopy = min_t(size_t, load->size, FLASH_BLOCK);
 
 		rc = copy_from_user(xbuf, buf, tocopy);
@@ -563,7 +453,7 @@ static int do_flash_update(struct genwqe_file *cfile,
 			__func__, (unsigned long)dma_addr, crc, tocopy,
 			blocks_to_flash);
 
-		/* prepare DDCB for SLU process */
+		 
 		req = ddcb_requ_alloc();
 		if (req == NULL) {
 			rc = -ENOMEM;
@@ -573,7 +463,7 @@ static int do_flash_update(struct genwqe_file *cfile,
 		req->cmd = SLCMD_MOVE_FLASH;
 		req->cmdopts = cmdopts;
 
-		/* prepare invariant values */
+		 
 		if (genwqe_get_slu_id(cd) <= 0x2) {
 			*(__be64 *)&req->__asiv[0]  = cpu_to_be64(dma_addr);
 			*(__be64 *)&req->__asiv[8]  = cpu_to_be64(tocopy);
@@ -582,30 +472,30 @@ static int do_flash_update(struct genwqe_file *cfile,
 			req->__asiv[24]	       = load->uid;
 			*(__be32 *)&req->__asiv[28] = cpu_to_be32(crc);
 
-			/* for simulation only */
+			 
 			*(__be64 *)&req->__asiv[88] = cpu_to_be64(load->slu_id);
 			*(__be64 *)&req->__asiv[96] = cpu_to_be64(load->app_id);
-			req->asiv_length = 32; /* bytes included in crc calc */
-		} else {	/* setup DDCB for ATS architecture */
+			req->asiv_length = 32;  
+		} else {	 
 			*(__be64 *)&req->asiv[0]  = cpu_to_be64(dma_addr);
 			*(__be32 *)&req->asiv[8]  = cpu_to_be32(tocopy);
-			*(__be32 *)&req->asiv[12] = cpu_to_be32(0); /* resvd */
+			*(__be32 *)&req->asiv[12] = cpu_to_be32(0);  
 			*(__be64 *)&req->asiv[16] = cpu_to_be64(flash);
 			*(__be32 *)&req->asiv[24] = cpu_to_be32(load->uid<<24);
 			*(__be32 *)&req->asiv[28] = cpu_to_be32(crc);
 
-			/* for simulation only */
+			 
 			*(__be64 *)&req->asiv[80] = cpu_to_be64(load->slu_id);
 			*(__be64 *)&req->asiv[88] = cpu_to_be64(load->app_id);
 
-			/* Rd only */
+			 
 			req->ats = 0x4ULL << 44;
-			req->asiv_length = 40; /* bytes included in crc calc */
+			req->asiv_length = 40;  
 		}
 		req->asv_length  = 8;
 
-		/* For Genwqe5 we get back the calculated CRC */
-		*(u64 *)&req->asv[0] = 0ULL;			/* 0x80 */
+		 
+		*(u64 *)&req->asv[0] = 0ULL;			 
 
 		rc = __genwqe_execute_raw_ddcb(cd, req, filp->f_flags);
 
@@ -657,17 +547,17 @@ static int do_flash_read(struct genwqe_file *cfile,
 	if (((unsigned long)(load->data_addr) & ~PAGE_MASK) != 0)
 		return -EINVAL;
 
-	/* FIXME Bits have changed for new service layer! */
+	 
 	switch ((char)load->partition) {
 	case '0':
 		cmdopts = 0x12;
-		break;		/* upload/part_0 */
+		break;		 
 	case '1':
 		cmdopts = 0x1A;
-		break;		/* upload/part_1 */
+		break;		 
 	case 'v':
 		cmdopts = 0x0A;
-		break;		/* upload/vpd */
+		break;		 
 	default:
 		return -EINVAL;
 	}
@@ -679,10 +569,7 @@ static int do_flash_read(struct genwqe_file *cfile,
 
 	blocks_to_flash = load->size / FLASH_BLOCK;
 	while (load->size) {
-		/*
-		 * We must be 4 byte aligned. Buffer must be 0 appened
-		 * to have defined values when calculating CRC.
-		 */
+		 
 		tocopy = min_t(size_t, load->size, FLASH_BLOCK);
 
 		dev_dbg(&pci_dev->dev,
@@ -690,7 +577,7 @@ static int do_flash_read(struct genwqe_file *cfile,
 			__func__, (unsigned long)dma_addr, tocopy,
 			blocks_to_flash);
 
-		/* prepare DDCB for SLU process */
+		 
 		cmd = ddcb_requ_alloc();
 		if (cmd == NULL) {
 			rc = -ENOMEM;
@@ -699,31 +586,31 @@ static int do_flash_read(struct genwqe_file *cfile,
 		cmd->cmd = SLCMD_MOVE_FLASH;
 		cmd->cmdopts = cmdopts;
 
-		/* prepare invariant values */
+		 
 		if (genwqe_get_slu_id(cd) <= 0x2) {
 			*(__be64 *)&cmd->__asiv[0]  = cpu_to_be64(dma_addr);
 			*(__be64 *)&cmd->__asiv[8]  = cpu_to_be64(tocopy);
 			*(__be64 *)&cmd->__asiv[16] = cpu_to_be64(flash);
 			*(__be32 *)&cmd->__asiv[24] = cpu_to_be32(0);
 			cmd->__asiv[24] = load->uid;
-			*(__be32 *)&cmd->__asiv[28] = cpu_to_be32(0) /* CRC */;
-			cmd->asiv_length = 32; /* bytes included in crc calc */
-		} else {	/* setup DDCB for ATS architecture */
+			*(__be32 *)&cmd->__asiv[28] = cpu_to_be32(0)  ;
+			cmd->asiv_length = 32;  
+		} else {	 
 			*(__be64 *)&cmd->asiv[0]  = cpu_to_be64(dma_addr);
 			*(__be32 *)&cmd->asiv[8]  = cpu_to_be32(tocopy);
-			*(__be32 *)&cmd->asiv[12] = cpu_to_be32(0); /* resvd */
+			*(__be32 *)&cmd->asiv[12] = cpu_to_be32(0);  
 			*(__be64 *)&cmd->asiv[16] = cpu_to_be64(flash);
 			*(__be32 *)&cmd->asiv[24] = cpu_to_be32(load->uid<<24);
-			*(__be32 *)&cmd->asiv[28] = cpu_to_be32(0); /* CRC */
+			*(__be32 *)&cmd->asiv[28] = cpu_to_be32(0);  
 
-			/* rd/wr */
+			 
 			cmd->ats = 0x5ULL << 44;
-			cmd->asiv_length = 40; /* bytes included in crc calc */
+			cmd->asiv_length = 40;  
 		}
 		cmd->asv_length  = 8;
 
-		/* we only get back the calculated CRC */
-		*(u64 *)&cmd->asv[0] = 0ULL;	/* 0x80 */
+		 
+		*(u64 *)&cmd->asv[0] = 0ULL;	 
 
 		rc = __genwqe_execute_raw_ddcb(cd, cmd, filp->f_flags);
 
@@ -743,11 +630,11 @@ static int do_flash_read(struct genwqe_file *cfile,
 			goto free_buffer;
 		}
 
-		/* We know that we can get retc 0x104 with CRC err */
+		 
 		if (((cmd->retc == DDCB_RETC_FAULT) &&
-		     (cmd->attn != 0x02)) ||  /* Normally ignore CRC error */
+		     (cmd->attn != 0x02)) ||   
 		    ((cmd->retc == DDCB_RETC_COMPLETE) &&
-		     (cmd->attn != 0x00))) {  /* Everything was fine */
+		     (cmd->attn != 0x00))) {   
 			rc = -EIO;
 			ddcb_requ_free(cmd);
 			goto free_buffer;
@@ -823,13 +710,7 @@ static int genwqe_unpin_mem(struct genwqe_file *cfile, struct genwqe_mem *m)
 	return 0;
 }
 
-/**
- * ddcb_cmd_cleanup() - Remove dynamically created fixup entries
- * @cfile:	Descriptor of opened file
- * @req:	DDCB work request
- *
- * Only if there are any. Pinnings are not removed.
- */
+ 
 static int ddcb_cmd_cleanup(struct genwqe_file *cfile, struct ddcb_requ *req)
 {
 	unsigned int i;
@@ -849,16 +730,7 @@ static int ddcb_cmd_cleanup(struct genwqe_file *cfile, struct ddcb_requ *req)
 	return 0;
 }
 
-/**
- * ddcb_cmd_fixups() - Establish DMA fixups/sglists for user memory references
- * @cfile:	Descriptor of opened file
- * @req:	DDCB work request
- *
- * Before the DDCB gets executed we need to handle the fixups. We
- * replace the user-space addresses with DMA addresses or do
- * additional setup work e.g. generating a scatter-gather list which
- * is used to describe the memory referred to in the fixup.
- */
+ 
 static int ddcb_cmd_fixups(struct genwqe_file *cfile, struct ddcb_requ *req)
 {
 	int rc;
@@ -880,7 +752,7 @@ static int ddcb_cmd_fixups(struct genwqe_file *cfile, struct ddcb_requ *req)
 		switch (ats_flags) {
 
 		case ATS_TYPE_DATA:
-			break;	/* nothing to do here */
+			break;	 
 
 		case ATS_TYPE_FLAT_RDWR:
 		case ATS_TYPE_FLAT_RD: {
@@ -889,11 +761,7 @@ static int ddcb_cmd_fixups(struct genwqe_file *cfile, struct ddcb_requ *req)
 			u_size = be32_to_cpu(*((__be32 *)&cmd->
 					       asiv[asiv_offs + 0x08]));
 
-			/*
-			 * No data available. Ignore u_addr in this
-			 * case and set addr to 0. Hardware must not
-			 * fetch the buffer.
-			 */
+			 
 			if (u_size == 0x0) {
 				*((__be64 *)&cmd->asiv[asiv_offs]) =
 					cpu_to_be64(0x0);
@@ -921,11 +789,7 @@ static int ddcb_cmd_fixups(struct genwqe_file *cfile, struct ddcb_requ *req)
 			u_size = be32_to_cpu(*((__be32 *)
 					       &cmd->asiv[asiv_offs + 0x08]));
 
-			/*
-			 * No data available. Ignore u_addr in this
-			 * case and set addr to 0. Hardware must not
-			 * fetch the empty sgl.
-			 */
+			 
 			if (u_size == 0x0) {
 				*((__be64 *)&cmd->asiv[asiv_offs]) =
 					cpu_to_be64(0x0);
@@ -954,7 +818,7 @@ static int ddcb_cmd_fixups(struct genwqe_file *cfile, struct ddcb_requ *req)
 				page_offs = 0;
 			}
 
-			/* create genwqe style scatter gather list */
+			 
 			rc = genwqe_alloc_sync_sgl(cd, &req->sgls[i],
 						   (void __user *)u_addr,
 						   u_size, m->write);
@@ -981,15 +845,7 @@ static int ddcb_cmd_fixups(struct genwqe_file *cfile, struct ddcb_requ *req)
 	return rc;
 }
 
-/**
- * genwqe_execute_ddcb() - Execute DDCB using userspace address fixups
- * @cfile:	Descriptor of opened file
- * @cmd:        Command identifier (passed from user)
- *
- * The code will build up the translation tables or lookup the
- * contignous memory allocation table to find the right translations
- * and DMA addresses.
- */
+ 
 static int genwqe_execute_ddcb(struct genwqe_file *cfile,
 			       struct genwqe_ddcb_cmd *cmd)
 {
@@ -1029,8 +885,7 @@ static int do_execute_ddcb(struct genwqe_file *cfile,
 	else
 		rc = __genwqe_execute_raw_ddcb(cd, cmd, filp->f_flags);
 
-	/* Copy back only the modifed fields. Do not copy ASIV
-	   back since the copy got modified by the driver. */
+	 
 	if (copy_to_user((void __user *)arg, cmd,
 			 sizeof(*cmd) - DDCB_ASIV_LENGTH)) {
 		ddcb_requ_free(cmd);
@@ -1041,14 +896,7 @@ static int do_execute_ddcb(struct genwqe_file *cfile,
 	return rc;
 }
 
-/**
- * genwqe_ioctl() - IO control
- * @filp:       file handle
- * @cmd:        command identifier (passed from user)
- * @arg:        argument (passed from user)
- *
- * Return: 0 success
- */
+ 
 static long genwqe_ioctl(struct file *filp, unsigned int cmd,
 			 unsigned long arg)
 {
@@ -1060,7 +908,7 @@ static long genwqe_ioctl(struct file *filp, unsigned int cmd,
 	u64 val;
 	u32 reg_offs;
 
-	/* Return -EIO if card hit EEH */
+	 
 	if (pci_channel_offline(pci_dev))
 		return -EIO;
 
@@ -1073,7 +921,7 @@ static long genwqe_ioctl(struct file *filp, unsigned int cmd,
 		put_user(cd->card_state, (enum genwqe_card_state __user *)arg);
 		return 0;
 
-		/* Register access */
+		 
 	case GENWQE_READ_REG64: {
 		io = (struct genwqe_reg_io __user *)arg;
 
@@ -1146,7 +994,7 @@ static long genwqe_ioctl(struct file *filp, unsigned int cmd,
 		return 0;
 	}
 
-		/* Flash update/reading */
+		 
 	case GENWQE_SLU_UPDATE: {
 		struct genwqe_bitstream load;
 
@@ -1175,7 +1023,7 @@ static long genwqe_ioctl(struct file *filp, unsigned int cmd,
 			return -EPERM;
 
 		if (genwqe_flash_readback_fails(cd))
-			return -ENOSPC;	 /* known to fail for old versions */
+			return -ENOSPC;	  
 
 		if (copy_from_user(&load, (void __user *)arg, sizeof(load)))
 			return -EFAULT;
@@ -1188,7 +1036,7 @@ static long genwqe_ioctl(struct file *filp, unsigned int cmd,
 		return rc;
 	}
 
-		/* memory pinning and unpinning */
+		 
 	case GENWQE_PIN_MEM: {
 		struct genwqe_mem m;
 
@@ -1207,7 +1055,7 @@ static long genwqe_ioctl(struct file *filp, unsigned int cmd,
 		return genwqe_unpin_mem(cfile, &m);
 	}
 
-		/* launch an DDCB and wait for completion */
+		 
 	case GENWQE_EXECUTE_DDCB:
 		return do_execute_ddcb(cfile, arg, 0);
 
@@ -1241,25 +1089,13 @@ static int genwqe_device_initialized(struct genwqe_dev *cd)
 	return cd->dev != NULL;
 }
 
-/**
- * genwqe_device_create() - Create and configure genwqe char device
- * @cd:      genwqe device descriptor
- *
- * This function must be called before we create any more genwqe
- * character devices, because it is allocating the major and minor
- * number which are supposed to be used by the client drivers.
- */
+ 
 int genwqe_device_create(struct genwqe_dev *cd)
 {
 	int rc;
 	struct pci_dev *pci_dev = cd->pci_dev;
 
-	/*
-	 * Here starts the individual setup per client. It must
-	 * initialize its own cdev data structure with its own fops.
-	 * The appropriate devnum needs to be created. The ranges must
-	 * not overlap.
-	 */
+	 
 	rc = alloc_chrdev_region(&cd->devnum_genwqe, 0,
 				 GENWQE_MAX_MINOR, GENWQE_DEVNAME);
 	if (rc < 0) {
@@ -1276,10 +1112,7 @@ int genwqe_device_create(struct genwqe_dev *cd)
 		goto err_add;
 	}
 
-	/*
-	 * Finally the device in /dev/... must be created. The rule is
-	 * to use card%d_clientname for each created device.
-	 */
+	 
 	cd->dev = device_create_with_groups(cd->class_genwqe,
 					    &cd->pci_dev->dev,
 					    cd->devnum_genwqe, cd,
@@ -1317,7 +1150,7 @@ static int genwqe_inform_and_stop_processes(struct genwqe_dev *cd)
 
 	rc = genwqe_kill_fasync(cd, SIGIO);
 	if (rc > 0) {
-		/* give kill_timeout seconds to close file descriptors ... */
+		 
 		for (i = 0; (i < GENWQE_KILL_TIMEOUT) &&
 			     genwqe_open_files(cd); i++) {
 			dev_info(&pci_dev->dev, "  %d sec ...", i);
@@ -1326,7 +1159,7 @@ static int genwqe_inform_and_stop_processes(struct genwqe_dev *cd)
 			msleep(1000);
 		}
 
-		/* if no open files we can safely continue, else ... */
+		 
 		if (!genwqe_open_files(cd))
 			return 0;
 
@@ -1335,7 +1168,7 @@ static int genwqe_inform_and_stop_processes(struct genwqe_dev *cd)
 
 		rc = genwqe_terminate(cd);
 		if (rc) {
-			/* Give kill_timout more seconds to end processes */
+			 
 			for (i = 0; (i < GENWQE_KILL_TIMEOUT) &&
 				     genwqe_open_files(cd); i++) {
 				dev_warn(&pci_dev->dev, "  %d sec ...", i);
@@ -1348,16 +1181,7 @@ static int genwqe_inform_and_stop_processes(struct genwqe_dev *cd)
 	return 0;
 }
 
-/**
- * genwqe_device_remove() - Remove genwqe's char device
- * @cd: GenWQE device information
- *
- * This function must be called after the client devices are removed
- * because it will free the major/minor number range for the genwqe
- * drivers.
- *
- * This function must be robust enough to be called twice.
- */
+ 
 int genwqe_device_remove(struct genwqe_dev *cd)
 {
 	int rc;
@@ -1368,12 +1192,7 @@ int genwqe_device_remove(struct genwqe_dev *cd)
 
 	genwqe_inform_and_stop_processes(cd);
 
-	/*
-	 * We currently do wait until all filedescriptors are
-	 * closed. This leads to a problem when we abort the
-	 * application which will decrease this reference from
-	 * 1/unused to 0/illegal and not from 2/used 1/empty.
-	 */
+	 
 	rc = kref_read(&cd->cdev_genwqe.kobj.kref);
 	if (rc != 1) {
 		dev_err(&pci_dev->dev,

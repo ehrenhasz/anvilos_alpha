@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright (c) 2020 Facebook */
+
+ 
 #include <stddef.h>
 #include <linux/bpf.h>
 #include <bpf/bpf_helpers.h>
@@ -16,7 +16,7 @@ int f3(int, struct __sk_buff *skb);
 __attribute__ ((noinline))
 int f2(int val, struct __sk_buff *skb)
 {
-	return f1(skb) + f3(val, skb + 1); /* type mismatch */
+	return f1(skb) + f3(val, skb + 1);  
 }
 
 __attribute__ ((noinline))

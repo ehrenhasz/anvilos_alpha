@@ -1,17 +1,17 @@
-// SPDX-License-Identifier: GPL-2.0+
-//
-// Copyright (C) 2019 Christian Hewitt <christianshewitt@gmail.com>
+
+
+
 
 #include <media/rc-map.h>
 #include <linux/module.h>
 
-//
-// Keytable for the Tronsmart Vega S9x remote control
-//
+
+
+
 
 static struct rc_map_table vega_s9x[] = {
 	{ 0x18, KEY_POWER },
-	{ 0x17, KEY_MUTE }, // mouse
+	{ 0x17, KEY_MUTE }, 
 
 	{ 0x46, KEY_UP },
 	{ 0x47, KEY_LEFT },

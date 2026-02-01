@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-// Copyright (C) 2014 Broadcom Corporation
+
+
 
 #include <linux/kernel.h>
 #include <linux/slab.h>
@@ -74,7 +74,7 @@ static unsigned int __get_fid(struct iproc_arm_pll *pll)
 	else
 		policy = 0;
 
-	/* something is seriously wrong */
+	 
 	BUG_ON(policy > IPROC_CLK_MAX_FREQ_POLICY);
 
 	val = readl(pll->base + IPROC_CLK_POLICY_FREQ_OFFSET);
@@ -95,14 +95,7 @@ static unsigned int __get_fid(struct iproc_arm_pll *pll)
 	return fid;
 }
 
-/*
- * Determine the mdiv (post divider) based on the frequency ID being used.
- * There are 4 sources that can be used to derive the output clock rate:
- *    - 25 MHz Crystal
- *    - System clock
- *    - PLL channel 0 (slow clock)
- *    - PLL channel 1 (fast clock)
- */
+ 
 static int __get_mdiv(struct iproc_arm_pll *pll)
 {
 	unsigned int fid;
@@ -145,10 +138,7 @@ static unsigned int __get_ndiv(struct iproc_arm_pll *pll)
 
 	val = readl(pll->base + IPROC_CLK_PLLARM_OFFSET_OFFSET);
 	if (val & (1 << IPROC_CLK_PLLARM_SW_CTL_SHIFT)) {
-		/*
-		 * offset mode is active. Read the ndiv from the PLLARM OFFSET
-		 * register
-		 */
+		 
 		ndiv_int = (val >> IPROC_CLK_PLLARM_NDIV_INT_OFFSET_SHIFT) &
 			IPROC_CLK_PLLARM_NDIV_INT_OFFSET_MASK;
 		if (ndiv_int == 0)
@@ -156,7 +146,7 @@ static unsigned int __get_ndiv(struct iproc_arm_pll *pll)
 
 		ndiv_frac = val & IPROC_CLK_PLLARM_NDIV_FRAC_OFFSET_MASK;
 	} else {
-		/* offset mode not active */
+		 
 		val = readl(pll->base + IPROC_CLK_PLLARMA_OFFSET);
 		ndiv_int = (val >> IPROC_CLK_PLLARMA_NDIV_INT_SHIFT) &
 			IPROC_CLK_PLLARMA_NDIV_INT_MASK;
@@ -172,16 +162,7 @@ static unsigned int __get_ndiv(struct iproc_arm_pll *pll)
 	return ndiv;
 }
 
-/*
- * The output frequency of the ARM PLL is calculated based on the ARM PLL
- * divider values:
- *   pdiv = ARM PLL pre-divider
- *   ndiv = ARM PLL multiplier
- *   mdiv = ARM PLL post divider
- *
- * The frequency is calculated by:
- *   ((ndiv * parent clock rate) / pdiv) / mdiv
- */
+ 
 static unsigned long iproc_arm_pll_recalc_rate(struct clk_hw *hw,
 		unsigned long parent_rate)
 {
@@ -191,14 +172,14 @@ static unsigned long iproc_arm_pll_recalc_rate(struct clk_hw *hw,
 	u64 ndiv;
 	unsigned int pdiv;
 
-	/* in bypass mode, use parent rate */
+	 
 	val = readl(pll->base + IPROC_CLK_PLLARMC_OFFSET);
 	if (val & (1 << IPROC_CLK_PLLARMC_BYPCLK_EN_SHIFT)) {
 		pll->rate = parent_rate;
 		return pll->rate;
 	}
 
-	/* PLL needs to be locked */
+	 
 	val = readl(pll->base + IPROC_CLK_PLLARMA_OFFSET);
 	if (!(val & (1 << IPROC_CLK_PLLARMA_LOCK_SHIFT))) {
 		pll->rate = 0;

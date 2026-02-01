@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2015, Sony Mobile Communications AB.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/of.h>
@@ -683,34 +681,34 @@ static const char * const vsens_alarm_groups[] = {
 	"gpio127"
 };
 static const char * const ebi2cs_groups[] = {
-	"gpio39", /* CS1A */
-	"gpio40", /* CS2A */
-	"gpio123", /* CS1B */
-	"gpio124", /* CS2B */
-	"gpio131", /* CS5 */
-	"gpio132", /* CS4 */
-	"gpio133", /* CS3 */
-	"gpio134", /* CS0 */
+	"gpio39",  
+	"gpio40",  
+	"gpio123",  
+	"gpio124",  
+	"gpio131",  
+	"gpio132",  
+	"gpio133",  
+	"gpio134",  
 };
 static const char * const ebi2_groups[] = {
-	/* ADDR9 & ADDR8 */
+	 
 	"gpio37", "gpio38",
-	/* ADDR7 - ADDR 0 */
+	 
 	"gpio123", "gpio124", "gpio125", "gpio126",
 	"gpio127", "gpio128", "gpio129", "gpio130",
-	/* (muxed address+data) AD15 - AD0 */
+	 
 	"gpio135", "gpio136", "gpio137", "gpio138", "gpio139",
 	"gpio140", "gpio141", "gpio142", "gpio143", "gpio144",
 	"gpio145", "gpio146", "gpio147", "gpio148", "gpio149",
 	"gpio150",
-	"gpio151", /* OE output enable */
-	"gpio152", /* clock */
-	"gpio153", /* ADV */
-	"gpio154", /* WAIT (input) */
-	"gpio155", /* UB Upper Byte Enable */
-	"gpio156", /* LB Lower Byte Enable */
-	"gpio157", /* WE Write Enable */
-	"gpio158", /* busy */
+	"gpio151",  
+	"gpio152",  
+	"gpio153",  
+	"gpio154",  
+	"gpio155",  
+	"gpio156",  
+	"gpio157",  
+	"gpio158",  
 };
 
 static const struct pinfunction msm8660_functions[] = {
@@ -765,8 +763,8 @@ static const struct pinfunction msm8660_functions[] = {
 	MSM_PIN_FUNCTION(usb_fs2_oe_n),
 	MSM_PIN_FUNCTION(vfe),
 	MSM_PIN_FUNCTION(vsens_alarm),
-	MSM_PIN_FUNCTION(ebi2cs), /* for EBI2 chip selects */
-	MSM_PIN_FUNCTION(ebi2), /* for general EBI2 pins */
+	MSM_PIN_FUNCTION(ebi2cs),  
+	MSM_PIN_FUNCTION(ebi2),  
 };
 
 static const struct msm_pingroup msm8660_groups[] = {

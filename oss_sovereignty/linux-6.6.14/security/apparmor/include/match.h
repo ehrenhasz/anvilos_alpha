@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * AppArmor security module
- *
- * This file contains AppArmor policy dfa matching engine definitions.
- *
- * Copyright (C) 1998-2008 Novell/SUSE
- * Copyright 2009-2012 Canonical Ltd.
- */
+ 
+ 
 
 #ifndef __AA_MATCH_H
 #define __AA_MATCH_H
@@ -17,23 +10,7 @@
 #define DFA_START			1
 
 
-/**
- * The format used for transition tables is based on the GNU flex table
- * file format (--tables-file option; see Table File Format in the flex
- * info pages and the flex sources for documentation). The magic number
- * used in the header is 0x1B5E783D instead of 0xF13C57B1 though, because
- * new tables have been defined and others YY_ID_CHK (check) and YY_ID_DEF
- * (default) tables are used slightly differently (see the apparmor-parser
- * package).
- *
- *
- * The data in the packed dfa is stored in network byte order, and the tables
- * are arranged for flexibility.  We convert the table data to host native
- * byte order.
- *
- * The dfa begins with a table set header, and is followed by the actual
- * tables.
- */
+ 
 
 #define YYTH_MAGIC	0x1B5E783D
 #define YYTH_FLAG_DIFF_ENCODE	1
@@ -43,17 +20,14 @@
 #define MAX_OOB_SUPPORTED	1
 
 struct table_set_header {
-	u32 th_magic;		/* YYTH_MAGIC */
+	u32 th_magic;		 
 	u32 th_hsize;
 	u32 th_ssize;
 	u16 th_flags;
 	char th_version[];
 };
 
-/* The YYTD_ID are one less than flex table mappings.  The flex id
- * has 1 subtracted at table load time, this allows us to directly use the
- * ID's as indexes.
- */
+ 
 #define	YYTD_ID_ACCEPT	0
 #define YYTD_ID_BASE	1
 #define YYTD_ID_CHK	2
@@ -70,9 +44,7 @@ struct table_set_header {
 #define YYTD_DATA32	4
 #define YYTD_DATA64	8
 
-/* ACCEPT & ACCEPT2 tables gets 6 dedicated flags, YYTD_DATAX define the
- * first flags
- */
+ 
 #define ACCEPT1_FLAGS(X) ((X) & 0x3f)
 #define ACCEPT2_FLAGS(X) ACCEPT1_FLAGS((X) >> YYTD_ID_ACCEPT2)
 #define TO_ACCEPT1_FLAG(X) ACCEPT1_FLAGS(X)
@@ -146,7 +118,7 @@ struct match_workbuf {
 	unsigned int count;
 	unsigned int pos;
 	unsigned int len;
-	unsigned int size;	/* power of 2, same as history size */
+	unsigned int size;	 
 	unsigned int history[WB_HISTORY_SIZE];
 };
 #define DEFINE_MATCH_WB(N)		\
@@ -159,13 +131,7 @@ struct match_workbuf N = {		\
 aa_state_t aa_dfa_leftmatch(struct aa_dfa *dfa, aa_state_t start,
 			    const char *str, unsigned int *count);
 
-/**
- * aa_get_dfa - increment refcount on dfa @p
- * @dfa: dfa  (MAYBE NULL)
- *
- * Returns: pointer to @dfa if @dfa is NULL will return NULL
- * Requires: @dfa must be held with valid refcount when called
- */
+ 
 static inline struct aa_dfa *aa_get_dfa(struct aa_dfa *dfa)
 {
 	if (dfa)
@@ -174,12 +140,7 @@ static inline struct aa_dfa *aa_get_dfa(struct aa_dfa *dfa)
 	return dfa;
 }
 
-/**
- * aa_put_dfa - put a dfa refcount
- * @dfa: dfa to put refcount   (MAYBE NULL)
- *
- * Requires: if @dfa != NULL that a valid refcount be held
- */
+ 
 static inline void aa_put_dfa(struct aa_dfa *dfa)
 {
 	if (dfa)
@@ -193,4 +154,4 @@ static inline void aa_put_dfa(struct aa_dfa *dfa)
 #define MATCH_FLAGS_VALID (MATCH_FLAG_DIFF_ENCODE | MATCH_FLAG_OOB_TRANSITION)
 #define MATCH_FLAGS_INVALID (MATCH_FLAGS_MASK & ~MATCH_FLAGS_VALID)
 
-#endif /* __AA_MATCH_H */
+#endif  

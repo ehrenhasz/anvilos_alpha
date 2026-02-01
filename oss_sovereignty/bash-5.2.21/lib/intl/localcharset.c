@@ -1,30 +1,14 @@
-/* localcharset.c - Determine a canonical name for the current locale's character encoding. */
+ 
 
-/* Copyright (C) 2000-2003, 2005-2009 Free Software Foundation, Inc.
+ 
 
-   This file is part of GNU Bash.
-
-   Bash is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   Bash is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with Bash.  If not, see <http://www.gnu.org/licenses/>.
-*/
-
-/* Written by Bruno Haible <bruno@clisp.org>.  */
+ 
 
 #ifdef HAVE_CONFIG_H
 # include <config.h>
 #endif
 
-/* Specification.  */
+ 
 #include "localcharset.h"
 
 #if HAVE_STDDEF_H
@@ -42,12 +26,12 @@
 #endif
 
 #if defined _WIN32 || defined __WIN32__
-# undef WIN32   /* avoid warning on mingw32 */
+# undef WIN32    
 # define WIN32
 #endif
 
 #if defined __EMX__
-/* Assume EMX program runs on OS/2, even if compiled under DOS.  */
+ 
 # define OS2
 #endif
 
@@ -75,7 +59,7 @@
 #endif
 
 #if defined _WIN32 || defined __WIN32__ || defined __EMX__ || defined __DJGPP__
-  /* Win32, OS/2, DOS */
+   
 # define ISSLASH(C) ((C) == '/' || (C) == '\\')
 #endif
 
@@ -92,21 +76,14 @@
 # define getc getc_unlocked
 #endif
 
-/* The following static variable is declared 'volatile' to avoid a
-   possible multithread problem in the function get_charset_aliases. If we
-   are running in a threaded environment, and if two threads initialize
-   'charset_aliases' simultaneously, both will produce the same value,
-   and everything will be ok if the two assignments to 'charset_aliases'
-   are atomic. But I don't know what will happen if the two assignments mix.  */
+ 
 #if __STDC__ != 1
-# define volatile /* empty */
+# define volatile  
 #endif
-/* Pointer to the contents of the charset.alias file, if it has already been
-   read, else NULL.  Its format is:
-   ALIAS_1 '\0' CANONICAL_1 '\0' ... ALIAS_n '\0' CANONICAL_n '\0' '\0'  */
+ 
 static const char * volatile charset_aliases;
 
-/* Return a pointer to the contents of the charset.alias file.  */
+ 
 static const char *
 get_charset_aliases ()
 {
@@ -121,7 +98,7 @@ get_charset_aliases ()
       const char *base = "charset.alias";
       char *file_name;
 
-      /* Concatenate dir and base into freshly allocated file_name.  */
+       
       {
 	size_t dir_len = strlen (dir);
 	size_t base_len = strlen (base);
@@ -137,11 +114,11 @@ get_charset_aliases ()
       }
 
       if (file_name == NULL || (fp = fopen (file_name, "r")) == NULL)
-	/* Out of memory or file not found, treat it as empty.  */
+	 
 	cp = "";
       else
 	{
-	  /* Parse the file's contents.  */
+	   
 	  int c;
 	  char buf1[50+1];
 	  char buf2[50+1];
@@ -158,7 +135,7 @@ get_charset_aliases ()
 		continue;
 	      if (c == '#')
 		{
-		  /* Skip comment, to end of line.  */
+		   
 		  do
 		    c = getc (fp);
 		  while (!(c == EOF || c == '\n'));
@@ -183,7 +160,7 @@ get_charset_aliases ()
 		}
 	      if (res_ptr == NULL)
 		{
-		  /* Out of memory. */
+		   
 		  res_size = 0;
 		  break;
 		}
@@ -206,34 +183,29 @@ get_charset_aliases ()
 #else
 
 # if defined VMS
-      /* To avoid the troubles of an extra file charset.alias_vms in the
-	 sources of many GNU packages, simply inline the aliases here.  */
-      /* The list of encodings is taken from the OpenVMS 7.3-1 documentation
-	 "Compaq C Run-Time Library Reference Manual for OpenVMS systems"
-	 section 10.7 "Handling Different Character Sets".  */
+       
+       
       cp = "ISO8859-1" "\0" "ISO-8859-1" "\0"
 	   "ISO8859-2" "\0" "ISO-8859-2" "\0"
 	   "ISO8859-5" "\0" "ISO-8859-5" "\0"
 	   "ISO8859-7" "\0" "ISO-8859-7" "\0"
 	   "ISO8859-8" "\0" "ISO-8859-8" "\0"
 	   "ISO8859-9" "\0" "ISO-8859-9" "\0"
-	   /* Japanese */
+	    
 	   "eucJP" "\0" "EUC-JP" "\0"
 	   "SJIS" "\0" "SHIFT_JIS" "\0"
 	   "DECKANJI" "\0" "DEC-KANJI" "\0"
 	   "SDECKANJI" "\0" "EUC-JP" "\0"
-	   /* Chinese */
+	    
 	   "eucTW" "\0" "EUC-TW" "\0"
 	   "DECHANYU" "\0" "DEC-HANYU" "\0"
 	   "DECHANZI" "\0" "GB2312" "\0"
-	   /* Korean */
+	    
 	   "DECKOREAN" "\0" "EUC-KR" "\0";
 # endif
 
 # if defined WIN32
-      /* To avoid the troubles of installing a separate file in the same
-	 directory as the DLL and of retrieving the DLL's directory at
-	 runtime, simply inline the aliases here.  */
+       
 
       cp = "CP936" "\0" "GBK" "\0"
 	   "CP1361" "\0" "JOHAB" "\0"
@@ -259,11 +231,7 @@ get_charset_aliases ()
   return cp;
 }
 
-/* Determine the current locale's character encoding, and canonicalize it
-   into one of the canonical names listed in config.charset.
-   The result must not be freed; it is statically allocated.
-   If the canonical name cannot be determined, the result is a non-canonical
-   name.  */
+ 
 
 #ifdef STATIC
 STATIC
@@ -278,18 +246,15 @@ locale_charset ()
 
 # if HAVE_LANGINFO_CODESET
 
-  /* Most systems support nl_langinfo (CODESET) nowadays.  */
+   
   codeset = nl_langinfo (CODESET);
 
 # else
 
-  /* On old systems which lack it, use setlocale or getenv.  */
+   
   const char *locale = NULL;
 
-  /* But most old systems don't have a complete set of locales.  Some
-     (like SunOS 4 or DJGPP) have only the C locale.  Therefore we don't
-     use setlocale here; it would return "C" when it doesn't support the
-     locale name the user has set.  */
+   
 #  if HAVE_SETLOCALE && 0
   locale = setlocale (LC_CTYPE, NULL);
 #  endif
@@ -304,9 +269,7 @@ locale_charset ()
 	}
     }
 
-  /* On some old systems, one used to set locale = "iso8859_1". On others,
-     you set it to "language_COUNTRY.charset". In any case, we resolve it
-     through the charset.alias file.  */
+   
   codeset = locale;
 
 # endif
@@ -315,7 +278,7 @@ locale_charset ()
 
   static char buf[2 + 10 + 1];
 
-  /* Woe32 has a function returning the locale's codepage as a number.  */
+   
   sprintf (buf, "CP%u", GetACP ());
   codeset = buf;
 
@@ -326,8 +289,7 @@ locale_charset ()
   ULONG cp[3];
   ULONG cplen;
 
-  /* Allow user to override the codeset, as set in the operating system,
-     with standard language environment variables.  */
+   
   locale = getenv ("LC_ALL");
   if (locale == NULL || locale[0] == '\0')
     {
@@ -337,7 +299,7 @@ locale_charset ()
     }
   if (locale != NULL && locale[0] != '\0')
     {
-      /* If the locale name contains an encoding after the dot, return it.  */
+       
       const char *dot = strchr (locale, '.');
 
       if (dot != NULL)
@@ -345,7 +307,7 @@ locale_charset ()
 	  const char *modifier;
 
 	  dot++;
-	  /* Look for the possible @... trailer and remove it, if any.  */
+	   
 	  modifier = strchr (dot, '@');
 	  if (modifier == NULL)
 	    return dot;
@@ -357,12 +319,12 @@ locale_charset ()
 	    }
 	}
 
-      /* Resolve through the charset.alias file.  */
+       
       codeset = locale;
     }
   else
     {
-      /* OS/2 has a function returning the locale's codepage as a number.  */
+       
       if (DosQueryCp (sizeof (cp), cp, &cplen))
 	codeset = "";
       else
@@ -375,10 +337,10 @@ locale_charset ()
 #endif
 
   if (codeset == NULL)
-    /* The canonical name cannot be determined.  */
+     
     codeset = "";
 
-  /* Resolve alias. */
+   
   for (aliases = get_charset_aliases ();
        *aliases != '\0';
        aliases += strlen (aliases) + 1, aliases += strlen (aliases) + 1)
@@ -389,9 +351,7 @@ locale_charset ()
 	break;
       }
 
-  /* Don't return an empty string.  GNU libc and GNU libiconv interpret
-     the empty string as denoting "the locale's character encoding",
-     thus GNU libiconv would call this function a second time.  */
+   
   if (codeset[0] == '\0')
     codeset = "ASCII";
 

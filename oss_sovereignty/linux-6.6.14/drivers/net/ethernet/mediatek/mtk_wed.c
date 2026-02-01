@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright (C) 2021 Felix Fietkau <nbd@nbd.name> */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/platform_device.h>
@@ -232,7 +232,7 @@ void mtk_wed_fe_reset(void)
 		if (!dev || !dev->wlan.reset)
 			continue;
 
-		/* reset callback blocks until WLAN reset is completed */
+		 
 		err = dev->wlan.reset(dev);
 		if (err)
 			dev_err(dev->dev, "wlan reset failed: %d\n", err);
@@ -281,9 +281,9 @@ mtk_wed_assign(struct mtk_wed_device *dev)
 		if (hw->version == 1)
 			return NULL;
 
-		/* MT7986 WED devices do not have any pcie slot restrictions */
+		 
 	}
-	/* MT7986 PCIE or AXI */
+	 
 	for (i = 0; i < ARRAY_SIZE(hw_list); i++) {
 		hw = hw_list[i];
 		if (hw && !hw->wed_dev)
@@ -535,7 +535,7 @@ mtk_wed_check_wfdma_rx_fill(struct mtk_wed_device *dev, int idx)
 	int i;
 
 	if (!(dev->rx_ring[idx].flags & MTK_WED_RING_CONFIGURED))
-		return; /* queue is not configured by mt76 */
+		return;  
 
 	for (i = 0; i < 3; i++) {
 		u32 cur_idx;
@@ -700,7 +700,7 @@ mtk_wed_bus_init(struct mtk_wed_device *dev)
 		wed_w32(dev, MTK_WED_PCIE_INT_CTRL,
 			FIELD_PREP(MTK_WED_PCIE_INT_CTRL_POLL_EN, 2));
 
-		/* pcie interrupt control: pola/source selection */
+		 
 		wed_set(dev, MTK_WED_PCIE_INT_CTRL,
 			MTK_WED_PCIE_INT_CTRL_MSK_EN_POLA |
 			FIELD_PREP(MTK_WED_PCIE_INT_CTRL_SRC_SEL, 1));
@@ -709,11 +709,11 @@ mtk_wed_bus_init(struct mtk_wed_device *dev)
 		wed_w32(dev, MTK_WED_PCIE_CFG_INTM, PCIE_BASE_ADDR0 | 0x180);
 		wed_w32(dev, MTK_WED_PCIE_CFG_BASE, PCIE_BASE_ADDR0 | 0x184);
 
-		/* pcie interrupt status trigger register */
+		 
 		wed_w32(dev, MTK_WED_PCIE_INT_TRIGGER, BIT(24));
 		wed_r32(dev, MTK_WED_PCIE_INT_TRIGGER);
 
-		/* pola setting */
+		 
 		wed_set(dev, MTK_WED_PCIE_INT_CTRL,
 			MTK_WED_PCIE_INT_CTRL_MSK_EN_POLA);
 		break;
@@ -906,13 +906,13 @@ mtk_wed_route_qm_hw_init(struct mtk_wed_device *dev)
 			break;
 	}
 
-	/* configure RX_ROUTE_QM */
+	 
 	wed_clr(dev, MTK_WED_RTQM_GLO_CFG, MTK_WED_RTQM_Q_RST);
 	wed_clr(dev, MTK_WED_RTQM_GLO_CFG, MTK_WED_RTQM_TXDMAD_FPORT);
 	wed_set(dev, MTK_WED_RTQM_GLO_CFG,
 		FIELD_PREP(MTK_WED_RTQM_TXDMAD_FPORT, 0x3 + dev->hw->index));
 	wed_clr(dev, MTK_WED_RTQM_GLO_CFG, MTK_WED_RTQM_Q_RST);
-	/* enable RX_ROUTE_QM */
+	 
 	wed_set(dev, MTK_WED_CTRL, MTK_WED_CTRL_RX_ROUTE_QM_EN);
 }
 
@@ -974,7 +974,7 @@ mtk_wed_hw_init(struct mtk_wed_device *dev)
 			MTK_WED_CTRL_WED_TX_FREE_AGENT_EN);
 	} else {
 		wed_clr(dev, MTK_WED_TX_TKID_CTRL, MTK_WED_TX_TKID_CTRL_PAUSE);
-		/* rx hw init */
+		 
 		wed_w32(dev, MTK_WED_WPDMA_RX_D_RST_IDX,
 			MTK_WED_WPDMA_RX_D_RST_CRX_IDX |
 			MTK_WED_WPDMA_RX_D_RST_DRV_IDX);
@@ -1059,7 +1059,7 @@ mtk_wed_rx_reset(struct mtk_wed_device *dev)
 		wed_w32(dev, MTK_WED_WPDMA_RX_D_RST_IDX, 0);
 	}
 
-	/* reset rro qm */
+	 
 	wed_clr(dev, MTK_WED_CTRL, MTK_WED_CTRL_RX_RRO_QM_EN);
 	ret = mtk_wed_poll_busy(dev, MTK_WED_CTRL,
 				MTK_WED_CTRL_RX_RRO_QM_BUSY);
@@ -1072,7 +1072,7 @@ mtk_wed_rx_reset(struct mtk_wed_device *dev)
 		wed_w32(dev, MTK_WED_RROQM_RST_IDX, 0);
 	}
 
-	/* reset route qm */
+	 
 	wed_clr(dev, MTK_WED_CTRL, MTK_WED_CTRL_RX_ROUTE_QM_EN);
 	ret = mtk_wed_poll_busy(dev, MTK_WED_CTRL,
 				MTK_WED_CTRL_RX_ROUTE_QM_BUSY);
@@ -1082,16 +1082,16 @@ mtk_wed_rx_reset(struct mtk_wed_device *dev)
 		wed_set(dev, MTK_WED_RTQM_GLO_CFG,
 			MTK_WED_RTQM_Q_RST);
 
-	/* reset tx wdma */
+	 
 	mtk_wdma_tx_reset(dev);
 
-	/* reset tx wdma drv */
+	 
 	wed_clr(dev, MTK_WED_WDMA_GLO_CFG, MTK_WED_WDMA_GLO_CFG_TX_DRV_EN);
 	mtk_wed_poll_busy(dev, MTK_WED_CTRL,
 			  MTK_WED_CTRL_WDMA_INT_AGENT_BUSY);
 	mtk_wed_reset(dev, MTK_WED_RESET_WDMA_TX_DRV);
 
-	/* reset wed rx dma */
+	 
 	ret = mtk_wed_poll_busy(dev, MTK_WED_GLO_CFG,
 				MTK_WED_GLO_CFG_RX_DMA_BUSY);
 	wed_clr(dev, MTK_WED_GLO_CFG, MTK_WED_GLO_CFG_RX_DMA_EN);
@@ -1108,13 +1108,13 @@ mtk_wed_rx_reset(struct mtk_wed_device *dev)
 		wed_w32(dev, MTK_WED_RESET_IDX, 0);
 	}
 
-	/* reset rx bm */
+	 
 	wed_clr(dev, MTK_WED_CTRL, MTK_WED_CTRL_WED_RX_BM_EN);
 	mtk_wed_poll_busy(dev, MTK_WED_CTRL,
 			  MTK_WED_CTRL_WED_RX_BM_BUSY);
 	mtk_wed_reset(dev, MTK_WED_RESET_RX_BM);
 
-	/* wo change to enable state */
+	 
 	val = MTK_WED_WO_STATE_ENABLE;
 	ret = mtk_wed_mcu_send_msg(wo, MTK_WED_MODULE_ID_WO,
 				   MTK_WED_WO_CMD_CHANGE_STATE, &val,
@@ -1122,7 +1122,7 @@ mtk_wed_rx_reset(struct mtk_wed_device *dev)
 	if (ret)
 		return ret;
 
-	/* wed_rx_ring_reset */
+	 
 	for (i = 0; i < ARRAY_SIZE(dev->rx_ring); i++) {
 		if (!dev->rx_ring[i].desc)
 			continue;
@@ -1150,7 +1150,7 @@ mtk_wed_reset_dma(struct mtk_wed_device *dev)
 				   true);
 	}
 
-	/* 1. reset WED tx DMA */
+	 
 	wed_clr(dev, MTK_WED_GLO_CFG, MTK_WED_GLO_CFG_TX_DMA_EN);
 	busy = mtk_wed_poll_busy(dev, MTK_WED_GLO_CFG,
 				 MTK_WED_GLO_CFG_TX_DMA_BUSY);
@@ -1161,7 +1161,7 @@ mtk_wed_reset_dma(struct mtk_wed_device *dev)
 		wed_w32(dev, MTK_WED_RESET_IDX, 0);
 	}
 
-	/* 2. reset WDMA rx DMA */
+	 
 	busy = !!mtk_wdma_rx_reset(dev);
 	wed_clr(dev, MTK_WED_WDMA_GLO_CFG, MTK_WED_WDMA_GLO_CFG_RX_DRV_EN);
 	if (!busy)
@@ -1183,7 +1183,7 @@ mtk_wed_reset_dma(struct mtk_wed_device *dev)
 			MTK_WED_WDMA_GLO_CFG_RST_INIT_COMPLETE);
 	}
 
-	/* 3. reset WED WPDMA tx */
+	 
 	wed_clr(dev, MTK_WED_CTRL, MTK_WED_CTRL_WED_TX_FREE_AGENT_EN);
 
 	for (i = 0; i < 100; i++) {
@@ -1196,7 +1196,7 @@ mtk_wed_reset_dma(struct mtk_wed_device *dev)
 	wed_clr(dev, MTK_WED_CTRL, MTK_WED_CTRL_WED_TX_BM_EN);
 	mtk_wed_reset(dev, MTK_WED_RESET_TX_BM);
 
-	/* 4. reset WED WPDMA tx */
+	 
 	busy = mtk_wed_poll_busy(dev, MTK_WED_WPDMA_GLO_CFG,
 				 MTK_WED_WPDMA_GLO_CFG_TX_DRV_BUSY);
 	wed_clr(dev, MTK_WED_WPDMA_GLO_CFG,
@@ -1337,7 +1337,7 @@ mtk_wed_configure_irq(struct mtk_wed_device *dev, u32 irq_mask)
 {
 	u32 wdma_mask = FIELD_PREP(MTK_WDMA_INT_MASK_RX_DONE, GENMASK(1, 0));
 
-	/* wed control cr set */
+	 
 	wed_set(dev, MTK_WED_CTRL,
 		MTK_WED_CTRL_WDMA_INT_AGENT_EN |
 		MTK_WED_CTRL_WPDMA_INT_AGENT_EN |
@@ -1356,7 +1356,7 @@ mtk_wed_configure_irq(struct mtk_wed_device *dev, u32 irq_mask)
 	} else {
 		wdma_mask |= FIELD_PREP(MTK_WDMA_INT_MASK_TX_DONE,
 					GENMASK(1, 0));
-		/* initail tx interrupt trigger */
+		 
 		wed_w32(dev, MTK_WED_WPDMA_INT_CTRL_TX,
 			MTK_WED_WPDMA_INT_CTRL_TX0_DONE_EN |
 			MTK_WED_WPDMA_INT_CTRL_TX0_DONE_CLR |
@@ -1367,7 +1367,7 @@ mtk_wed_configure_irq(struct mtk_wed_device *dev, u32 irq_mask)
 			FIELD_PREP(MTK_WED_WPDMA_INT_CTRL_TX1_DONE_TRIG,
 				   dev->wlan.tx_tbit[1]));
 
-		/* initail txfree interrupt trigger */
+		 
 		wed_w32(dev, MTK_WED_WPDMA_INT_CTRL_TX_FREE,
 			MTK_WED_WPDMA_INT_CTRL_TX_FREE_DONE_EN |
 			MTK_WED_WPDMA_INT_CTRL_TX_FREE_DONE_CLR |
@@ -1474,7 +1474,7 @@ mtk_wed_start(struct mtk_wed_device *dev, u32 irq_mask)
 		val |= BIT(0) | (BIT(1) * !!dev->hw->index);
 		regmap_write(dev->hw->mirror, dev->hw->index * 4, val);
 	} else {
-		/* driver set mid ready and only once */
+		 
 		wed_w32(dev, MTK_WED_EXT_INT_MASK1,
 			MTK_WED_EXT_INT_STATUS_WPDMA_MID_RDY);
 		wed_w32(dev, MTK_WED_EXT_INT_MASK2,
@@ -1575,17 +1575,7 @@ mtk_wed_tx_ring_setup(struct mtk_wed_device *dev, int idx, void __iomem *regs,
 {
 	struct mtk_wed_ring *ring = &dev->tx_ring[idx];
 
-	/*
-	 * Tx ring redirection:
-	 * Instead of configuring the WLAN PDMA TX ring directly, the WLAN
-	 * driver allocated DMA ring gets configured into WED MTK_WED_RING_TX(n)
-	 * registers.
-	 *
-	 * WED driver posts its own DMA ring as WLAN PDMA TX and configures it
-	 * into MTK_WED_WPDMA_RING_TX(n) registers.
-	 * It gets filled with packets picked up from WED TX ring and from
-	 * WDMA RX.
-	 */
+	 
 
 	if (WARN_ON(idx >= ARRAY_SIZE(dev->tx_ring)))
 		return -EINVAL;
@@ -1601,7 +1591,7 @@ mtk_wed_tx_ring_setup(struct mtk_wed_device *dev, int idx, void __iomem *regs,
 	ring->reg_base = MTK_WED_RING_TX(idx);
 	ring->wpdma = regs;
 
-	/* WED -> WPDMA */
+	 
 	wpdma_tx_w32(dev, idx, MTK_WED_RING_OFS_BASE, ring->desc_phys);
 	wpdma_tx_w32(dev, idx, MTK_WED_RING_OFS_COUNT, MTK_WED_TX_RING_SIZE);
 	wpdma_tx_w32(dev, idx, MTK_WED_RING_OFS_CPU_IDX, 0);
@@ -1621,11 +1611,7 @@ mtk_wed_txfree_ring_setup(struct mtk_wed_device *dev, void __iomem *regs)
 	struct mtk_wed_ring *ring = &dev->txfree_ring;
 	int i, index = dev->hw->version == 1;
 
-	/*
-	 * For txfree event handling, the same DMA ring is shared between WED
-	 * and WLAN. The WLAN driver accesses the ring index registers through
-	 * WED
-	 */
+	 
 	ring->reg_base = MTK_WED_RING_RX(index);
 	ring->wpdma = regs;
 
@@ -1660,7 +1646,7 @@ mtk_wed_rx_ring_setup(struct mtk_wed_device *dev, int idx, void __iomem *regs,
 	ring->wpdma = regs;
 	ring->flags |= MTK_WED_RING_CONFIGURED;
 
-	/* WPDMA ->  WED */
+	 
 	wpdma_rx_w32(dev, idx, MTK_WED_RING_OFS_BASE, ring->desc_phys);
 	wpdma_rx_w32(dev, idx, MTK_WED_RING_OFS_COUNT, MTK_WED_RX_RING_SIZE);
 
@@ -1695,7 +1681,7 @@ mtk_wed_irq_get(struct mtk_wed_device *dev, u32 mask)
 
 	val = wed_r32(dev, MTK_WED_INT_STATUS);
 	val &= mask;
-	wed_w32(dev, MTK_WED_INT_STATUS, val); /* ACK */
+	wed_w32(dev, MTK_WED_INT_STATUS, val);  
 
 	return val;
 }

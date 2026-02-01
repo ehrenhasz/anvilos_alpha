@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: ISC */
-/* Copyright (C) 2019 MediaTek Inc. */
+ 
+ 
 
 #ifndef __MT7615_H
 #define __MT7615_H
@@ -61,9 +61,9 @@
 #define MT_CHFREQ_DBDC_IDX	BIT(6)
 #define MT_CHFREQ_SEQ		GENMASK(5, 0)
 
-#define MT7615_BAR_RATE_DEFAULT		0x4b /* OFDM 6M */
-#define MT7615_CFEND_RATE_DEFAULT	0x49 /* OFDM 24M */
-#define MT7615_CFEND_RATE_11B		0x03 /* 11B LP, 11M */
+#define MT7615_BAR_RATE_DEFAULT		0x4b  
+#define MT7615_CFEND_RATE_DEFAULT	0x49  
+#define MT7615_CFEND_RATE_11B		0x03  
 
 struct mt7615_vif;
 struct mt7615_sta;
@@ -121,7 +121,7 @@ struct mt7663s_intr {
 } __packed;
 
 struct mt7615_sta {
-	struct mt76_wcid wcid; /* must be first */
+	struct mt76_wcid wcid;  
 
 	struct mt7615_vif *vif;
 
@@ -139,7 +139,7 @@ struct mt7615_sta {
 };
 
 struct mt7615_vif {
-	struct mt76_vif mt76; /* must be first */
+	struct mt76_vif mt76;  
 	struct mt7615_sta sta;
 	bool sta_added;
 };
@@ -239,7 +239,7 @@ struct mt7615_mcu_ops {
 };
 
 struct mt7615_dev {
-	union { /* must be first */
+	union {  
 		struct mt76_dev mt76;
 		struct mt76_phy mphy;
 	};
@@ -435,7 +435,7 @@ static inline u8 mt7615_lmac_mapping(struct mt7615_dev *dev, u8 ac)
 	};
 
 	if (WARN_ON_ONCE(ac >= ARRAY_SIZE(lmac_queue_map)))
-		return MT_LMAC_AC01; /* BE */
+		return MT_LMAC_AC01;  
 
 	return lmac_queue_map[ac];
 }
@@ -540,7 +540,7 @@ void mt7615_coredump_work(struct work_struct *work);
 
 void mt7622_trigger_hif_int(struct mt7615_dev *dev, bool en);
 
-/* usb */
+ 
 int mt7663_usb_sdio_tx_prepare_skb(struct mt76_dev *mdev, void *txwi_ptr,
 				   enum mt76_txq_id qid, struct mt76_wcid *wcid,
 				   struct ieee80211_sta *sta,
@@ -552,7 +552,7 @@ int mt7663_usb_sdio_register_device(struct mt7615_dev *dev);
 int mt7663u_mcu_init(struct mt7615_dev *dev);
 int mt7663u_mcu_power_on(struct mt7615_dev *dev);
 
-/* sdio */
+ 
 int mt7663s_mcu_init(struct mt7615_dev *dev);
 
 #endif

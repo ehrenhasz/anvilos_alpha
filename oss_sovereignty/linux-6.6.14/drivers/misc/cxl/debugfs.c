@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright 2014 IBM Corp.
- */
+
+ 
 
 #include <linux/debugfs.h>
 #include <linux/kernel.h>
@@ -11,7 +9,7 @@
 
 static struct dentry *cxl_debugfs;
 
-/* Helpers to export CXL mmaped IO registers via debugfs */
+ 
 static int debugfs_io_u64_get(void *data, u64 *val)
 {
 	*val = in_be64((u64 __iomem *)data);

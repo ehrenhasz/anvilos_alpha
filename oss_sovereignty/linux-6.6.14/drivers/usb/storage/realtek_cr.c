@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Driver for Realtek RTS51xx USB card reader
- *
- * Copyright(c) 2009 Realtek Semiconductor Corp. All rights reserved.
- *
- * Author:
- *   wwang (wei_wang@realsil.com.cn)
- *   No. 450, Shenhu Road, Suzhou Industry Park, Suzhou, China
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/blkdev.h>
@@ -107,16 +99,16 @@ struct rts51x_chip {
 	enum RTS51X_STAT state;
 	int support_auto_delink;
 #endif
-	/* used to back up the protocol chosen in probe1 phase */
+	 
 	proto_cmnd proto_handler_backup;
 };
 
-/* flag definition */
+ 
 #define FLIDX_AUTO_DELINK		0x01
 
 #define SCSI_LUN(srb)			((srb)->device->lun)
 
-/* Bit Operation */
+ 
 #define SET_BIT(data, idx)		((data) |= 1 << (idx))
 #define CLR_BIT(data, idx)		((data) &= ~(1 << (idx)))
 #define CHK_BIT(data, idx)		((data) & (1 << (idx)))
@@ -136,7 +128,7 @@ struct rts51x_chip {
 #define STATUS_SUCCESS		0
 #define STATUS_FAIL		1
 
-/* Check card reader function */
+ 
 #define SUPPORT_DETAILED_TYPE1(chip)	\
 		CHK_BIT((chip)->status[0].function[0], 1)
 #define SUPPORT_OT(chip)		\
@@ -157,9 +149,7 @@ struct rts51x_chip {
 
 static int init_realtek_cr(struct us_data *us);
 
-/*
- * The table of devices
- */
+ 
 #define UNUSUAL_DEV(id_vendor, id_product, bcdDeviceMin, bcdDeviceMax, \
 		    vendorName, productName, useProtocol, useTransport, \
 		    initFunction, flags) \
@@ -170,16 +160,14 @@ static int init_realtek_cr(struct us_data *us);
 
 static const struct usb_device_id realtek_cr_ids[] = {
 #	include "unusual_realtek.h"
-	{}			/* Terminating entry */
+	{}			 
 };
 
 MODULE_DEVICE_TABLE(usb, realtek_cr_ids);
 
 #undef UNUSUAL_DEV
 
-/*
- * The flags table
- */
+ 
 #define UNUSUAL_DEV(idVendor, idProduct, bcdDeviceMin, bcdDeviceMax, \
 		    vendor_name, product_name, use_protocol, use_transport, \
 		    init_function, Flags) \
@@ -193,7 +181,7 @@ MODULE_DEVICE_TABLE(usb, realtek_cr_ids);
 
 static struct us_unusual_dev realtek_cr_unusual_dev_list[] = {
 #	include "unusual_realtek.h"
-	{}			/* Terminating entry */
+	{}			 
 };
 
 #undef UNUSUAL_DEV
@@ -209,7 +197,7 @@ static int rts51x_bulk_transport(struct us_data *us, u8 lun,
 	unsigned int cswlen;
 	unsigned int cbwlen = US_BULK_CB_WRAP_LEN;
 
-	/* set up the command wrapper */
+	 
 	bcb->Signature = cpu_to_le32(US_BULK_CB_SIGN);
 	bcb->DataTransferLength = cpu_to_le32(buf_len);
 	bcb->Flags = (dir == DMA_FROM_DEVICE) ? US_BULK_FLAG_IN : 0;
@@ -217,18 +205,18 @@ static int rts51x_bulk_transport(struct us_data *us, u8 lun,
 	bcb->Lun = lun;
 	bcb->Length = cmd_len;
 
-	/* copy the command payload */
+	 
 	memset(bcb->CDB, 0, sizeof(bcb->CDB));
 	memcpy(bcb->CDB, cmd, bcb->Length);
 
-	/* send it to out endpoint */
+	 
 	result = usb_stor_bulk_transfer_buf(us, us->send_bulk_pipe,
 					    bcb, cbwlen, NULL);
 	if (result != USB_STOR_XFER_GOOD)
 		return USB_STOR_TRANSPORT_ERROR;
 
-	/* DATA STAGE */
-	/* send/receive data payload, if there is any */
+	 
+	 
 
 	if (buf && buf_len) {
 		unsigned int pipe = (dir == DMA_FROM_DEVICE) ?
@@ -239,13 +227,13 @@ static int rts51x_bulk_transport(struct us_data *us, u8 lun,
 			return USB_STOR_TRANSPORT_ERROR;
 	}
 
-	/* get CSW for device status */
+	 
 	result = usb_stor_bulk_transfer_buf(us, us->recv_bulk_pipe,
 					    bcs, US_BULK_CS_WRAP_LEN, &cswlen);
 	if (result != USB_STOR_XFER_GOOD)
 		return USB_STOR_TRANSPORT_ERROR;
 
-	/* check bulk status */
+	 
 	if (bcs->Signature != cpu_to_le32(US_BULK_CS_SIGN)) {
 		usb_stor_dbg(us, "Signature mismatch: got %08X, expecting %08X\n",
 			     le32_to_cpu(bcs->Signature), US_BULK_CS_SIGN);
@@ -256,35 +244,29 @@ static int rts51x_bulk_transport(struct us_data *us, u8 lun,
 	if (bcs->Tag != us->tag)
 		return USB_STOR_TRANSPORT_ERROR;
 
-	/*
-	 * try to compute the actual residue, based on how much data
-	 * was really transferred and what the device tells us
-	 */
+	 
 	if (residue)
 		residue = residue < buf_len ? residue : buf_len;
 
 	if (act_len)
 		*act_len = buf_len - residue;
 
-	/* based on the status code, we report good or bad */
+	 
 	switch (bcs->Status) {
 	case US_BULK_STAT_OK:
-		/* command good -- note that data could be short */
+		 
 		return USB_STOR_TRANSPORT_GOOD;
 
 	case US_BULK_STAT_FAIL:
-		/* command failed */
+		 
 		return USB_STOR_TRANSPORT_FAILED;
 
 	case US_BULK_STAT_PHASE:
-		/*
-		 * phase error -- note that a transport reset will be
-		 * invoked by the invoke_transport() function
-		 */
+		 
 		return USB_STOR_TRANSPORT_ERROR;
 	}
 
-	/* we should never get here, but if we do, we're in trouble */
+	 
 	return USB_STOR_TRANSPORT_ERROR;
 }
 
@@ -298,7 +280,7 @@ static int rts51x_bulk_transport_special(struct us_data *us, u8 lun,
 	unsigned int cswlen;
 	unsigned int cbwlen = US_BULK_CB_WRAP_LEN;
 
-	/* set up the command wrapper */
+	 
 	bcb->Signature = cpu_to_le32(US_BULK_CB_SIGN);
 	bcb->DataTransferLength = cpu_to_le32(buf_len);
 	bcb->Flags = (dir == DMA_FROM_DEVICE) ? US_BULK_FLAG_IN : 0;
@@ -306,18 +288,18 @@ static int rts51x_bulk_transport_special(struct us_data *us, u8 lun,
 	bcb->Lun = lun;
 	bcb->Length = cmd_len;
 
-	/* copy the command payload */
+	 
 	memset(bcb->CDB, 0, sizeof(bcb->CDB));
 	memcpy(bcb->CDB, cmd, bcb->Length);
 
-	/* send it to out endpoint */
+	 
 	result = usb_stor_bulk_transfer_buf(us, us->send_bulk_pipe,
 				bcb, cbwlen, NULL);
 	if (result != USB_STOR_XFER_GOOD)
 		return USB_STOR_TRANSPORT_ERROR;
 
-	/* DATA STAGE */
-	/* send/receive data payload, if there is any */
+	 
+	 
 
 	if (buf && buf_len) {
 		unsigned int pipe = (dir == DMA_FROM_DEVICE) ?
@@ -328,18 +310,18 @@ static int rts51x_bulk_transport_special(struct us_data *us, u8 lun,
 			return USB_STOR_TRANSPORT_ERROR;
 	}
 
-	/* get CSW for device status */
+	 
 	result = usb_bulk_msg(us->pusb_dev, us->recv_bulk_pipe, bcs,
 			US_BULK_CS_WRAP_LEN, &cswlen, 250);
 	return result;
 }
 
-/* Determine what the maximum LUN supported is */
+ 
 static int rts51x_get_max_lun(struct us_data *us)
 {
 	int result;
 
-	/* issue the command */
+	 
 	us->iobuf[0] = 0;
 	result = usb_stor_control_msg(us, us->recv_ctrl_pipe,
 				      US_BULK_GET_MAX_LUN,
@@ -350,7 +332,7 @@ static int rts51x_get_max_lun(struct us_data *us)
 	usb_stor_dbg(us, "GetMaxLUN command result is %d, data is %d\n",
 		     result, us->iobuf[0]);
 
-	/* if we have a successful request, return the result */
+	 
 	if (result > 0)
 		return us->iobuf[0];
 
@@ -547,7 +529,7 @@ static int do_config_autodelink(struct us_data *us, int enable, int force)
 
 	usb_stor_dbg(us, "set 0xfe47 to 0x%x\n", value);
 
-	/* retval = rts51x_write_mem(us, 0xFE47, &value, 1); */
+	 
 	retval = __do_config_autodelink(us, &value, 1);
 	if (retval < 0)
 		return -EIO;
@@ -578,7 +560,7 @@ static int config_autodelink_after_power_on(struct us_data *us)
 
 		SET_BIT(value, 7);
 
-		/* retval = rts51x_write_mem(us, 0xFE47, &value, 1); */
+		 
 		retval = __do_config_autodelink(us, &value, 1);
 		if (retval < 0)
 			return -EIO;
@@ -587,7 +569,7 @@ static int config_autodelink_after_power_on(struct us_data *us)
 		if (retval == 0)
 			(void)do_config_autodelink(us, 1, 0);
 	} else {
-		/* Autodelink controlled by firmware */
+		 
 
 		SET_BIT(value, 2);
 
@@ -600,7 +582,7 @@ static int config_autodelink_after_power_on(struct us_data *us)
 			CLR_BIT(value, 7);
 		}
 
-		/* retval = rts51x_write_mem(us, 0xFE47, &value, 1); */
+		 
 		retval = __do_config_autodelink(us, &value, 1);
 		if (retval < 0)
 			return -EIO;
@@ -675,7 +657,7 @@ static int config_autodelink_before_power_down(struct us_data *us)
 			if (CHECK_ID(chip, 0x0138, 0x3882))
 				SET_BIT(value, 2);
 
-			/* retval = rts51x_write_mem(us, 0xFE47, &value, 1); */
+			 
 			retval = __do_config_autodelink(us, &value, 1);
 			if (retval < 0)
 				return -EIO;
@@ -726,7 +708,7 @@ static void fw5895_set_mmc_wp(struct us_data *us)
 	} else {
 		retval = rts51x_read_mem(us, 0xFD6F, buf, 1);
 		if (retval == STATUS_SUCCESS && (buf[0] & 0x24) == 0x24) {
-			/* SD Exist and SD WP */
+			 
 			retval = rts51x_read_mem(us, 0xD04E, buf, 1);
 			if (retval == STATUS_SUCCESS) {
 				buf[0] |= 0x04;
@@ -770,7 +752,7 @@ static void rts51x_suspend_timer_fn(struct timer_list *t)
 		if (atomic_read(&us->pusb_intf->dev.power.usage_count) > 0) {
 			usb_stor_dbg(us, "Ready to enter SS state\n");
 			rts51x_set_stat(chip, RTS51X_STAT_SS);
-			/* ignore mass storage interface's children */
+			 
 			pm_suspend_ignore_children(&us->pusb_intf->dev, true);
 			usb_autopm_put_interface_async(us->pusb_intf);
 			usb_stor_dbg(us, "RTS51X_STAT_SS 01, power.usage:%d\n",
@@ -848,7 +830,7 @@ static void rts51x_invoke_transport(struct scsi_cmnd *srb, struct us_data *us)
 		} else {
 			usb_stor_dbg(us, "NOT working scsi, not SS\n");
 			chip->proto_handler_backup(srb, us);
-			/* Check whether card is plugged in */
+			 
 			if (srb->cmnd[0] == TEST_UNIT_READY) {
 				if (srb->result == SAM_STAT_GOOD) {
 					SET_LUN_READY(chip, srb->device->lun);
@@ -906,19 +888,19 @@ static int realtek_cr_autosuspend_setup(struct us_data *us)
 		status->function[1] = buf[15];
 	}
 
-	/* back up the proto_handler in us->extra */
+	 
 	chip = (struct rts51x_chip *)(us->extra);
 	chip->proto_handler_backup = us->proto_handler;
-	/* Set the autosuspend_delay to 0 */
+	 
 	pm_runtime_set_autosuspend_delay(&us->pusb_dev->dev, 0);
-	/* override us->proto_handler setted in get_protocol() */
+	 
 	us->proto_handler = rts51x_invoke_transport;
 
 	chip->timer_expires = 0;
 	timer_setup(&chip->rts51x_suspend_timer, rts51x_suspend_timer_fn, 0);
 	fw5895_init(us);
 
-	/* enable autosuspend function of the usb device */
+	 
 	usb_enable_autosuspend(us->pusb_dev);
 
 	return 0;
@@ -946,7 +928,7 @@ static int realtek_cr_suspend(struct usb_interface *iface, pm_message_t message)
 {
 	struct us_data *us = usb_get_intfdata(iface);
 
-	/* wait until no command is running */
+	 
 	mutex_lock(&us->dev_mutex);
 
 	config_autodelink_before_power_down(us);
@@ -1054,8 +1036,8 @@ static struct usb_driver realtek_cr_driver = {
 	.name = DRV_NAME,
 	.probe = realtek_cr_probe,
 	.disconnect = usb_stor_disconnect,
-	/* .suspend =      usb_stor_suspend, */
-	/* .resume =       usb_stor_resume, */
+	 
+	 
 	.reset_resume = usb_stor_reset_resume,
 	.suspend = realtek_cr_suspend,
 	.resume = realtek_cr_resume,

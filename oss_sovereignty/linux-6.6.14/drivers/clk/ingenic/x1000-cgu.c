@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * X1000 SoC CGU driver
- * Copyright (c) 2019 周琰杰 (Zhou Yanjie) <zhouyanjie@wanyeetech.com>
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/delay.h>
@@ -15,7 +12,7 @@
 #include "cgu.h"
 #include "pm.h"
 
-/* CGU register offsets */
+ 
 #define CGU_REG_CPCCR		0x00
 #define CGU_REG_APLL		0x10
 #define CGU_REG_MPLL		0x14
@@ -41,15 +38,15 @@
 #define CGU_REG_PCMCDR1		0xe0
 #define CGU_REG_MACPHYC		0xe8
 
-/* bits within the OPCR register */
+ 
 #define OPCR_SPENDN0		BIT(7)
 #define OPCR_SPENDN1		BIT(6)
 
-/* bits within the USBPCR register */
+ 
 #define USBPCR_SIDDQ		BIT(21)
 #define USBPCR_OTG_DISABLE	BIT(20)
 
-/* bits within the USBPCR1 register */
+ 
 #define USBPCR1_REFCLKSEL_SHIFT	26
 #define USBPCR1_REFCLKSEL_MASK	(0x3 << USBPCR1_REFCLKSEL_SHIFT)
 #define USBPCR1_REFCLKSEL_CORE	(0x2 << USBPCR1_REFCLKSEL_SHIFT)
@@ -180,7 +177,7 @@ x1000_i2spll_calc_m_n_od(const struct ingenic_cgu_pll_info *pll_info,
 
 	rational_best_approximation(rate, parent_rate, m_max, n_max, &m, &n);
 
-	/* n should not be less than 2*m */
+	 
 	if (n < 2 * m)
 		n = 2 * m;
 
@@ -193,11 +190,7 @@ static void
 x1000_i2spll_set_rate_hook(const struct ingenic_cgu_pll_info *pll_info,
 			   unsigned long rate, unsigned long parent_rate)
 {
-	/*
-	 * Writing 0 causes I2SCDR1.I2SDIV_D to be automatically recalculated
-	 * based on the current value of I2SCDR.I2SDIV_N, which is needed for
-	 * the divider to function correctly.
-	 */
+	 
 	writel(0, cgu->base + CGU_REG_I2SCDR1);
 }
 
@@ -207,12 +200,12 @@ static const s8 pll_od_encoding[8] = {
 
 static const struct ingenic_cgu_clk_info x1000_cgu_clocks[] = {
 
-	/* External clocks */
+	 
 
 	[X1000_CLK_EXCLK] = { "ext", CGU_CLK_EXT },
 	[X1000_CLK_RTCLK] = { "rtc", CGU_CLK_EXT },
 
-	/* PLLs */
+	 
 
 	[X1000_CLK_APLL] = {
 		"apll", CGU_CLK_PLL,
@@ -260,7 +253,7 @@ static const struct ingenic_cgu_clk_info x1000_cgu_clocks[] = {
 		},
 	},
 
-	/* Custom (SoC-specific) OTG PHY */
+	 
 
 	[X1000_CLK_OTGPHY] = {
 		"otg_phy", CGU_CLK_CUSTOM,
@@ -268,7 +261,7 @@ static const struct ingenic_cgu_clk_info x1000_cgu_clocks[] = {
 		.custom = { &x1000_otg_phy_ops },
 	},
 
-	/* Muxes & dividers */
+	 
 
 	[X1000_CLK_SCLKA] = {
 		"sclk_a", CGU_CLK_MUX,
@@ -284,10 +277,7 @@ static const struct ingenic_cgu_clk_info x1000_cgu_clocks[] = {
 
 	[X1000_CLK_CPU] = {
 		"cpu", CGU_CLK_DIV | CGU_CLK_GATE,
-		/*
-		 * Disabling the CPU clock or any parent clocks will hang the
-		 * system; mark it critical.
-		 */
+		 
 		.flags = CLK_IS_CRITICAL,
 		.parents = { X1000_CLK_CPUMUX },
 		.div = { CGU_REG_CPCCR, 0, 1, 4, 22, -1, -1 },
@@ -296,10 +286,7 @@ static const struct ingenic_cgu_clk_info x1000_cgu_clocks[] = {
 
 	[X1000_CLK_L2CACHE] = {
 		"l2cache", CGU_CLK_DIV,
-		/*
-		 * The L2 cache clock is critical if caches are enabled and
-		 * disabling it or any parent clocks will hang the system.
-		 */
+		 
 		.flags = CLK_IS_CRITICAL,
 		.parents = { X1000_CLK_CPUMUX },
 		.div = { CGU_REG_CPCCR, 4, 1, 4, 22, -1, -1 },
@@ -333,10 +320,7 @@ static const struct ingenic_cgu_clk_info x1000_cgu_clocks[] = {
 
 	[X1000_CLK_DDR] = {
 		"ddr", CGU_CLK_MUX | CGU_CLK_DIV | CGU_CLK_GATE,
-		/*
-		 * Disabling DDR clock or its parents will render DRAM
-		 * inaccessible; mark it critical.
-		 */
+		 
 		.flags = CLK_IS_CRITICAL,
 		.parents = { -1, X1000_CLK_SCLKA, X1000_CLK_MPLL, -1 },
 		.mux = { CGU_REG_DDRCDR, 30, 2 },
@@ -376,10 +360,7 @@ static const struct ingenic_cgu_clk_info x1000_cgu_clocks[] = {
 	[X1000_CLK_I2S] = {
 		"i2s", CGU_CLK_MUX,
 		.parents = { X1000_CLK_EXCLK, -1, -1, X1000_CLK_I2SPLL },
-		/*
-		 * NOTE: the mux is at bit 30; bit 29 enables the M/N divider.
-		 * Therefore, the divider is disabled when EXCLK is selected.
-		 */
+		 
 		.mux = { CGU_REG_I2SCDR, 29, 2 },
 	},
 
@@ -451,7 +432,7 @@ static const struct ingenic_cgu_clk_info x1000_cgu_clocks[] = {
 		.gate = { CGU_REG_CLKGR, 27 },
 	},
 
-	/* Gate-only clocks */
+	 
 
 	[X1000_CLK_EMC] = {
 		"emc", CGU_CLK_GATE,
@@ -557,8 +538,5 @@ static void __init x1000_cgu_init(struct device_node *np)
 
 	ingenic_cgu_register_syscore_ops(cgu);
 }
-/*
- * CGU has some children devices, this is useful for probing children devices
- * in the case where the device node is compatible with "simple-mfd".
- */
+ 
 CLK_OF_DECLARE_DRIVER(x1000_cgu, "ingenic,x1000-cgu", x1000_cgu_init);

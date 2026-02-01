@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * CXL Flash Device Driver
- *
- * Written by: Manoj N. Kumar <manoj@linux.vnet.ibm.com>, IBM Corporation
- *             Matthew R. Ochs <mrochs@linux.vnet.ibm.com>, IBM Corporation
- *
- * Copyright (C) 2015 IBM Corporation
- */
+
+ 
 
 #include <asm/unaligned.h>
 
@@ -21,13 +14,7 @@
 #include "vlun.h"
 #include "superpipe.h"
 
-/**
- * create_local() - allocate and initialize a local LUN information structure
- * @sdev:	SCSI device associated with LUN.
- * @wwid:	World Wide Node Name for LUN.
- *
- * Return: Allocated local llun_info structure on success, NULL on failure
- */
+ 
 static struct llun_info *create_local(struct scsi_device *sdev, u8 *wwid)
 {
 	struct cxlflash_cfg *cfg = shost_priv(sdev->host);
@@ -49,13 +36,7 @@ out:
 	return lli;
 }
 
-/**
- * create_global() - allocate and initialize a global LUN information structure
- * @sdev:	SCSI device associated with LUN.
- * @wwid:	World Wide Node Name for LUN.
- *
- * Return: Allocated global glun_info structure on success, NULL on failure
- */
+ 
 static struct glun_info *create_global(struct scsi_device *sdev, u8 *wwid)
 {
 	struct cxlflash_cfg *cfg = shost_priv(sdev->host);
@@ -74,13 +55,7 @@ out:
 	return gli;
 }
 
-/**
- * lookup_local() - find a local LUN information structure by WWID
- * @cfg:	Internal structure associated with the host.
- * @wwid:	WWID associated with LUN.
- *
- * Return: Found local lun_info structure on success, NULL on failure
- */
+ 
 static struct llun_info *lookup_local(struct cxlflash_cfg *cfg, u8 *wwid)
 {
 	struct llun_info *lli, *temp;
@@ -92,12 +67,7 @@ static struct llun_info *lookup_local(struct cxlflash_cfg *cfg, u8 *wwid)
 	return NULL;
 }
 
-/**
- * lookup_global() - find a global LUN information structure by WWID
- * @wwid:	WWID associated with LUN.
- *
- * Return: Found global lun_info structure on success, NULL on failure
- */
+ 
 static struct glun_info *lookup_global(u8 *wwid)
 {
 	struct glun_info *gli, *temp;
@@ -109,26 +79,7 @@ static struct glun_info *lookup_global(u8 *wwid)
 	return NULL;
 }
 
-/**
- * find_and_create_lun() - find or create a local LUN information structure
- * @sdev:	SCSI device associated with LUN.
- * @wwid:	WWID associated with LUN.
- *
- * The LUN is kept both in a local list (per adapter) and in a global list
- * (across all adapters). Certain attributes of the LUN are local to the
- * adapter (such as index, port selection mask, etc.).
- *
- * The block allocation map is shared across all adapters (i.e. associated
- * wih the global list). Since different attributes are associated with
- * the per adapter and global entries, allocate two separate structures for each
- * LUN (one local, one global).
- *
- * Keep a pointer back from the local to the global entry.
- *
- * This routine assumes the caller holds the global mutex.
- *
- * Return: Found/Allocated local lun_info structure on success, NULL on failure
- */
+ 
 static struct llun_info *find_and_create_lun(struct scsi_device *sdev, u8 *wwid)
 {
 	struct cxlflash_cfg *cfg = shost_priv(sdev->host);
@@ -171,10 +122,7 @@ out:
 	return lli;
 }
 
-/**
- * cxlflash_term_local_luns() - Delete all entries from local LUN list, free.
- * @cfg:	Internal structure associated with the host.
- */
+ 
 void cxlflash_term_local_luns(struct cxlflash_cfg *cfg)
 {
 	struct llun_info *lli, *temp;
@@ -187,9 +135,7 @@ void cxlflash_term_local_luns(struct cxlflash_cfg *cfg)
 	mutex_unlock(&global.mutex);
 }
 
-/**
- * cxlflash_list_init() - initializes the global LUN list
- */
+ 
 void cxlflash_list_init(void)
 {
 	INIT_LIST_HEAD(&global.gluns);
@@ -197,9 +143,7 @@ void cxlflash_list_init(void)
 	global.err_page = NULL;
 }
 
-/**
- * cxlflash_term_global_luns() - frees resources associated with global LUN list
- */
+ 
 void cxlflash_term_global_luns(void)
 {
 	struct glun_info *gli, *temp;
@@ -213,17 +157,7 @@ void cxlflash_term_global_luns(void)
 	mutex_unlock(&global.mutex);
 }
 
-/**
- * cxlflash_manage_lun() - handles LUN management activities
- * @sdev:	SCSI device associated with LUN.
- * @manage:	Manage ioctl data structure.
- *
- * This routine is used to notify the driver about a LUN's WWID and associate
- * SCSI devices (sdev) with a global LUN instance. Additionally it serves to
- * change a LUN's operating mode: legacy or superpipe.
- *
- * Return: 0 on success, -errno on failure
- */
+ 
 int cxlflash_manage_lun(struct scsi_device *sdev,
 			struct dk_cxlflash_manage_lun *manage)
 {
@@ -245,11 +179,7 @@ int cxlflash_manage_lun(struct scsi_device *sdev,
 	}
 
 	if (flags & DK_CXLFLASH_MANAGE_LUN_ENABLE_SUPERPIPE) {
-		/*
-		 * Update port selection mask based upon channel, store off LUN
-		 * in unpacked, AFU-friendly format, and hang LUN reference in
-		 * the sdev.
-		 */
+		 
 		lli->port_sel |= CHAN2PORTMASK(chan);
 		lli->lun_id[chan] = lun_to_lunid(sdev->lun);
 		sdev->hostdata = lli;
@@ -257,10 +187,7 @@ int cxlflash_manage_lun(struct scsi_device *sdev,
 		if (lli->parent->mode != MODE_NONE)
 			rc = -EBUSY;
 		else {
-			/*
-			 * Clean up local LUN for this port and reset table
-			 * tracking when no more references exist.
-			 */
+			 
 			sdev->hostdata = NULL;
 			lli->port_sel &= ~CHAN2PORTMASK(chan);
 			if (lli->port_sel == 0U)

@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2022 Red Hat */
+
+ 
 #include "hid.skel.h"
 
 #include "../kselftest_harness.h"
@@ -17,69 +17,69 @@
 #define SHOW_UHID_DEBUG 0
 
 static unsigned char rdesc[] = {
-	0x06, 0x00, 0xff,	/* Usage Page (Vendor Defined Page 1) */
-	0x09, 0x21,		/* Usage (Vendor Usage 0x21) */
-	0xa1, 0x01,		/* COLLECTION (Application) */
-	0x09, 0x01,			/* Usage (Vendor Usage 0x01) */
-	0xa1, 0x00,			/* COLLECTION (Physical) */
-	0x85, 0x02,				/* REPORT_ID (2) */
-	0x19, 0x01,				/* USAGE_MINIMUM (1) */
-	0x29, 0x08,				/* USAGE_MAXIMUM (3) */
-	0x15, 0x00,				/* LOGICAL_MINIMUM (0) */
-	0x25, 0xff,				/* LOGICAL_MAXIMUM (255) */
-	0x95, 0x08,				/* REPORT_COUNT (8) */
-	0x75, 0x08,				/* REPORT_SIZE (8) */
-	0x81, 0x02,				/* INPUT (Data,Var,Abs) */
-	0xc0,				/* END_COLLECTION */
-	0x09, 0x01,			/* Usage (Vendor Usage 0x01) */
-	0xa1, 0x00,			/* COLLECTION (Physical) */
-	0x85, 0x01,				/* REPORT_ID (1) */
-	0x06, 0x00, 0xff,			/* Usage Page (Vendor Defined Page 1) */
-	0x19, 0x01,				/* USAGE_MINIMUM (1) */
-	0x29, 0x03,				/* USAGE_MAXIMUM (3) */
-	0x15, 0x00,				/* LOGICAL_MINIMUM (0) */
-	0x25, 0x01,				/* LOGICAL_MAXIMUM (1) */
-	0x95, 0x03,				/* REPORT_COUNT (3) */
-	0x75, 0x01,				/* REPORT_SIZE (1) */
-	0x81, 0x02,				/* INPUT (Data,Var,Abs) */
-	0x95, 0x01,				/* REPORT_COUNT (1) */
-	0x75, 0x05,				/* REPORT_SIZE (5) */
-	0x81, 0x01,				/* INPUT (Cnst,Var,Abs) */
-	0x05, 0x01,				/* USAGE_PAGE (Generic Desktop) */
-	0x09, 0x30,				/* USAGE (X) */
-	0x09, 0x31,				/* USAGE (Y) */
-	0x15, 0x81,				/* LOGICAL_MINIMUM (-127) */
-	0x25, 0x7f,				/* LOGICAL_MAXIMUM (127) */
-	0x75, 0x10,				/* REPORT_SIZE (16) */
-	0x95, 0x02,				/* REPORT_COUNT (2) */
-	0x81, 0x06,				/* INPUT (Data,Var,Rel) */
+	0x06, 0x00, 0xff,	 
+	0x09, 0x21,		 
+	0xa1, 0x01,		 
+	0x09, 0x01,			 
+	0xa1, 0x00,			 
+	0x85, 0x02,				 
+	0x19, 0x01,				 
+	0x29, 0x08,				 
+	0x15, 0x00,				 
+	0x25, 0xff,				 
+	0x95, 0x08,				 
+	0x75, 0x08,				 
+	0x81, 0x02,				 
+	0xc0,				 
+	0x09, 0x01,			 
+	0xa1, 0x00,			 
+	0x85, 0x01,				 
+	0x06, 0x00, 0xff,			 
+	0x19, 0x01,				 
+	0x29, 0x03,				 
+	0x15, 0x00,				 
+	0x25, 0x01,				 
+	0x95, 0x03,				 
+	0x75, 0x01,				 
+	0x81, 0x02,				 
+	0x95, 0x01,				 
+	0x75, 0x05,				 
+	0x81, 0x01,				 
+	0x05, 0x01,				 
+	0x09, 0x30,				 
+	0x09, 0x31,				 
+	0x15, 0x81,				 
+	0x25, 0x7f,				 
+	0x75, 0x10,				 
+	0x95, 0x02,				 
+	0x81, 0x06,				 
 
-	0x06, 0x00, 0xff,			/* Usage Page (Vendor Defined Page 1) */
-	0x19, 0x01,				/* USAGE_MINIMUM (1) */
-	0x29, 0x03,				/* USAGE_MAXIMUM (3) */
-	0x15, 0x00,				/* LOGICAL_MINIMUM (0) */
-	0x25, 0x01,				/* LOGICAL_MAXIMUM (1) */
-	0x95, 0x03,				/* REPORT_COUNT (3) */
-	0x75, 0x01,				/* REPORT_SIZE (1) */
-	0x91, 0x02,				/* Output (Data,Var,Abs) */
-	0x95, 0x01,				/* REPORT_COUNT (1) */
-	0x75, 0x05,				/* REPORT_SIZE (5) */
-	0x91, 0x01,				/* Output (Cnst,Var,Abs) */
+	0x06, 0x00, 0xff,			 
+	0x19, 0x01,				 
+	0x29, 0x03,				 
+	0x15, 0x00,				 
+	0x25, 0x01,				 
+	0x95, 0x03,				 
+	0x75, 0x01,				 
+	0x91, 0x02,				 
+	0x95, 0x01,				 
+	0x75, 0x05,				 
+	0x91, 0x01,				 
 
-	0x06, 0x00, 0xff,			/* Usage Page (Vendor Defined Page 1) */
-	0x19, 0x06,				/* USAGE_MINIMUM (6) */
-	0x29, 0x08,				/* USAGE_MAXIMUM (8) */
-	0x15, 0x00,				/* LOGICAL_MINIMUM (0) */
-	0x25, 0x01,				/* LOGICAL_MAXIMUM (1) */
-	0x95, 0x03,				/* REPORT_COUNT (3) */
-	0x75, 0x01,				/* REPORT_SIZE (1) */
-	0xb1, 0x02,				/* Feature (Data,Var,Abs) */
-	0x95, 0x01,				/* REPORT_COUNT (1) */
-	0x75, 0x05,				/* REPORT_SIZE (5) */
-	0x91, 0x01,				/* Output (Cnst,Var,Abs) */
+	0x06, 0x00, 0xff,			 
+	0x19, 0x06,				 
+	0x29, 0x08,				 
+	0x15, 0x00,				 
+	0x25, 0x01,				 
+	0x95, 0x03,				 
+	0x75, 0x01,				 
+	0xb1, 0x02,				 
+	0x95, 0x01,				 
+	0x75, 0x05,				 
+	0x91, 0x01,				 
 
-	0xc0,				/* END_COLLECTION */
-	0xc0,			/* END_COLLECTION */
+	0xc0,				 
+	0xc0,			 
 };
 
 static __u8 feature_data[] = { 1, 2 };
@@ -111,7 +111,7 @@ struct hid_hw_request_syscall_args {
 static pthread_mutex_t uhid_started_mtx = PTHREAD_MUTEX_INITIALIZER;
 static pthread_cond_t uhid_started = PTHREAD_COND_INITIALIZER;
 
-/* no need to protect uhid_stopped, only one thread accesses it */
+ 
 static bool uhid_stopped;
 
 static int uhid_write(struct __test_metadata *_metadata, int fd, const struct uhid_event *ev)
@@ -329,7 +329,7 @@ static bool match_sysfs_device(int dev_id, const char *workdir, struct dirent *d
 	if (fnmatch(target, dir->d_name, 0))
 		return false;
 
-	/* we found the correct VID/PID, now check for phys */
+	 
 	sprintf(uevent, "%s/%s/uevent", workdir, dir->d_name);
 
 	fd = open(uevent, O_RDONLY | O_NONBLOCK);
@@ -355,7 +355,7 @@ static int get_hid_id(int dev_id)
 	struct dirent *dir;
 	int found = -1, attempts = 3;
 
-	/* it would be nice to be able to use nftw, but the no_alu32 target doesn't support it */
+	 
 
 	while (found < 0 && attempts > 0) {
 		attempts--;
@@ -387,7 +387,7 @@ static int get_hidraw(int dev_id)
 	struct dirent *dir, *subdir;
 	int i, found = -1;
 
-	/* retry 5 times in case the system is loaded */
+	 
 	for (i = 5; i > 0; i--) {
 		usleep(10);
 		d = opendir(workdir);
@@ -432,7 +432,7 @@ static int open_hidraw(int dev_id)
 	if (hidraw_number < 0)
 		return hidraw_number;
 
-	/* open hidraw node to check the other side of the pipe */
+	 
 	sprintf(hidraw_path, "/dev/hidraw%d", hidraw_number);
 	return open(hidraw_path, O_RDWR | O_NONBLOCK);
 }
@@ -444,7 +444,7 @@ FIXTURE(hid_bpf) {
 	int hid_id;
 	pthread_t tid;
 	struct hid *skel;
-	int hid_links[3]; /* max number of programs loaded in a single test */
+	int hid_links[3];  
 };
 static void detach_bpf(FIXTURE_DATA(hid_bpf) * self)
 {
@@ -481,14 +481,14 @@ FIXTURE_SETUP(hid_bpf)
 	time_t t;
 	int err;
 
-	/* initialize random number generator */
+	 
 	srand((unsigned int)time(&t));
 
 	self->dev_id = rand() % 1024;
 
 	self->uhid_fd = setup_uhid(_metadata, self->dev_id);
 
-	/* locate the uev, self, variant);ent file of the created device */
+	 
 	self->hid_id = get_hid_id(self->dev_id);
 	ASSERT_GT(self->hid_id, 0)
 		TEARDOWN_LOG("Could not locate uhid device id: %d", self->hid_id);
@@ -523,7 +523,7 @@ static void load_programs(const struct test_program programs[],
 	ASSERT_LE(progs_count, ARRAY_SIZE(self->hid_links))
 		TH_LOG("too many programs are to be loaded");
 
-	/* open the bpf file */
+	 
 	self->skel = hid__open();
 	ASSERT_OK_PTR(self->skel) TEARDOWN_LOG("Error while calling hid__open");
 
@@ -564,20 +564,12 @@ static void load_programs(const struct test_program programs[],
 	ASSERT_GE(self->hidraw_fd, 0) TH_LOG("open_hidraw");
 }
 
-/*
- * A simple test to see if the fixture is working fine.
- * If this fails, none of the other tests will pass.
- */
+ 
 TEST_F(hid_bpf, test_create_uhid)
 {
 }
 
-/*
- * Attach hid_first_event to the given uhid device,
- * retrieve and open the matching hidraw node,
- * inject one event in the uhid device,
- * check that the program sees it and can change the data
- */
+ 
 TEST_F(hid_bpf, raw_event)
 {
 	const struct test_program progs[] = {
@@ -588,44 +580,42 @@ TEST_F(hid_bpf, raw_event)
 
 	LOAD_PROGRAMS(progs);
 
-	/* check that the program is correctly loaded */
+	 
 	ASSERT_EQ(self->skel->data->callback_check, 52) TH_LOG("callback_check1");
 	ASSERT_EQ(self->skel->data->callback2_check, 52) TH_LOG("callback2_check1");
 
-	/* inject one event */
+	 
 	buf[0] = 1;
 	buf[1] = 42;
 	uhid_send_event(_metadata, self->uhid_fd, buf, 6);
 
-	/* check that hid_first_event() was executed */
+	 
 	ASSERT_EQ(self->skel->data->callback_check, 42) TH_LOG("callback_check1");
 
-	/* read the data from hidraw */
+	 
 	memset(buf, 0, sizeof(buf));
 	err = read(self->hidraw_fd, buf, sizeof(buf));
 	ASSERT_EQ(err, 6) TH_LOG("read_hidraw");
 	ASSERT_EQ(buf[0], 1);
 	ASSERT_EQ(buf[2], 47);
 
-	/* inject another event */
+	 
 	memset(buf, 0, sizeof(buf));
 	buf[0] = 1;
 	buf[1] = 47;
 	uhid_send_event(_metadata, self->uhid_fd, buf, 6);
 
-	/* check that hid_first_event() was executed */
+	 
 	ASSERT_EQ(self->skel->data->callback_check, 47) TH_LOG("callback_check1");
 
-	/* read the data from hidraw */
+	 
 	memset(buf, 0, sizeof(buf));
 	err = read(self->hidraw_fd, buf, sizeof(buf));
 	ASSERT_EQ(err, 6) TH_LOG("read_hidraw");
 	ASSERT_EQ(buf[2], 52);
 }
 
-/*
- * Ensures that we can attach/detach programs
- */
+ 
 TEST_F(hid_bpf, test_attach_detach)
 {
 	const struct test_program progs[] = {
@@ -640,22 +630,22 @@ TEST_F(hid_bpf, test_attach_detach)
 	link = self->hid_links[0];
 	ASSERT_GT(link, 0) TH_LOG("HID-BPF link not created");
 
-	/* inject one event */
+	 
 	buf[0] = 1;
 	buf[1] = 42;
 	uhid_send_event(_metadata, self->uhid_fd, buf, 6);
 
-	/* read the data from hidraw */
+	 
 	memset(buf, 0, sizeof(buf));
 	err = read(self->hidraw_fd, buf, sizeof(buf));
 	ASSERT_EQ(err, 6) TH_LOG("read_hidraw");
 	ASSERT_EQ(buf[0], 1);
 	ASSERT_EQ(buf[2], 47);
 
-	/* make sure both programs are run */
+	 
 	ASSERT_EQ(buf[3], 52);
 
-	/* pin the first program and immediately unpin it */
+	 
 #define PIN_PATH "/sys/fs/bpf/hid_first_event"
 	err = bpf_obj_pin(link, PIN_PATH);
 	ASSERT_OK(err) TH_LOG("error while calling bpf_obj_pin");
@@ -663,19 +653,19 @@ TEST_F(hid_bpf, test_attach_detach)
 #undef PIN_PATH
 	usleep(100000);
 
-	/* detach the program */
+	 
 	detach_bpf(self);
 
 	self->hidraw_fd = open_hidraw(self->dev_id);
 	ASSERT_GE(self->hidraw_fd, 0) TH_LOG("open_hidraw");
 
-	/* inject another event */
+	 
 	memset(buf, 0, sizeof(buf));
 	buf[0] = 1;
 	buf[1] = 47;
 	uhid_send_event(_metadata, self->uhid_fd, buf, 6);
 
-	/* read the data from hidraw */
+	 
 	memset(buf, 0, sizeof(buf));
 	err = read(self->hidraw_fd, buf, sizeof(buf));
 	ASSERT_EQ(err, 6) TH_LOG("read_hidraw_no_bpf");
@@ -684,17 +674,17 @@ TEST_F(hid_bpf, test_attach_detach)
 	ASSERT_EQ(buf[2], 0);
 	ASSERT_EQ(buf[3], 0);
 
-	/* re-attach our program */
+	 
 
 	LOAD_PROGRAMS(progs);
 
-	/* inject one event */
+	 
 	memset(buf, 0, sizeof(buf));
 	buf[0] = 1;
 	buf[1] = 42;
 	uhid_send_event(_metadata, self->uhid_fd, buf, 6);
 
-	/* read the data from hidraw */
+	 
 	memset(buf, 0, sizeof(buf));
 	err = read(self->hidraw_fd, buf, sizeof(buf));
 	ASSERT_EQ(err, 6) TH_LOG("read_hidraw");
@@ -703,12 +693,7 @@ TEST_F(hid_bpf, test_attach_detach)
 	ASSERT_EQ(buf[3], 52);
 }
 
-/*
- * Attach hid_change_report_id to the given uhid device,
- * retrieve and open the matching hidraw node,
- * inject one event in the uhid device,
- * check that the program sees it and can change the data
- */
+ 
 TEST_F(hid_bpf, test_hid_change_report)
 {
 	const struct test_program progs[] = {
@@ -719,12 +704,12 @@ TEST_F(hid_bpf, test_hid_change_report)
 
 	LOAD_PROGRAMS(progs);
 
-	/* inject one event */
+	 
 	buf[0] = 1;
 	buf[1] = 42;
 	uhid_send_event(_metadata, self->uhid_fd, buf, 6);
 
-	/* read the data from hidraw */
+	 
 	memset(buf, 0, sizeof(buf));
 	err = read(self->hidraw_fd, buf, sizeof(buf));
 	ASSERT_EQ(err, 9) TH_LOG("read_hidraw");
@@ -733,11 +718,7 @@ TEST_F(hid_bpf, test_hid_change_report)
 	ASSERT_EQ(buf[2], 0) TH_LOG("leftovers_from_previous_test");
 }
 
-/*
- * Attach hid_user_raw_request to the given uhid device,
- * call the bpf program from userspace
- * check that the program is called and does the expected.
- */
+ 
 TEST_F(hid_bpf, test_hid_user_raw_request_call)
 {
 	struct hid_hw_request_syscall_args args = {
@@ -755,7 +736,7 @@ TEST_F(hid_bpf, test_hid_user_raw_request_call)
 	LOAD_BPF;
 
 	args.hid = self->hid_id;
-	args.data[0] = 1; /* report ID */
+	args.data[0] = 1;  
 
 	prog_fd = bpf_program__fd(self->skel->progs.hid_user_raw_request);
 
@@ -767,12 +748,7 @@ TEST_F(hid_bpf, test_hid_user_raw_request_call)
 	ASSERT_EQ(args.data[1], 2);
 }
 
-/*
- * Attach hid_insert{0,1,2} to the given uhid device,
- * retrieve and open the matching hidraw node,
- * inject one event in the uhid device,
- * check that the programs have been inserted in the correct order.
- */
+ 
 TEST_F(hid_bpf, test_hid_attach_flags)
 {
 	const struct test_program progs[] = {
@@ -794,11 +770,11 @@ TEST_F(hid_bpf, test_hid_attach_flags)
 
 	LOAD_PROGRAMS(progs);
 
-	/* inject one event */
+	 
 	buf[0] = 1;
 	uhid_send_event(_metadata, self->uhid_fd, buf, 6);
 
-	/* read the data from hidraw */
+	 
 	memset(buf, 0, sizeof(buf));
 	err = read(self->hidraw_fd, buf, sizeof(buf));
 	ASSERT_EQ(err, 6) TH_LOG("read_hidraw");
@@ -807,11 +783,7 @@ TEST_F(hid_bpf, test_hid_attach_flags)
 	ASSERT_EQ(buf[3], 3);
 }
 
-/*
- * Attach hid_rdesc_fixup to the given uhid device,
- * retrieve and open the matching hidraw node,
- * check that the hidraw report descriptor has been updated.
- */
+ 
 TEST_F(hid_bpf, test_rdesc_fixup)
 {
 	struct hidraw_report_descriptor rpt_desc = {0};
@@ -822,14 +794,14 @@ TEST_F(hid_bpf, test_rdesc_fixup)
 
 	LOAD_PROGRAMS(progs);
 
-	/* check that hid_rdesc_fixup() was executed */
+	 
 	ASSERT_EQ(self->skel->data->callback2_check, 0x21);
 
-	/* read the exposed report descriptor from hidraw */
+	 
 	err = ioctl(self->hidraw_fd, HIDIOCGRDESCSIZE, &desc_size);
 	ASSERT_GE(err, 0) TH_LOG("error while reading HIDIOCGRDESCSIZE: %d", err);
 
-	/* ensure the new size of the rdesc is bigger than the old one */
+	 
 	ASSERT_GT(desc_size, sizeof(rdesc));
 
 	rpt_desc.size = desc_size;
@@ -861,7 +833,7 @@ static void __attribute__((constructor)) __constructor_order_last(void)
 
 int main(int argc, char **argv)
 {
-	/* Use libbpf 1.0 API mode */
+	 
 	libbpf_set_strict_mode(LIBBPF_STRICT_ALL);
 	libbpf_set_print(libbpf_print_fn);
 

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright © 2014 Intel Corporation
- */
+
+ 
 
 #include "gen8_engine_cs.h"
 #include "i915_drv.h"
@@ -35,14 +33,11 @@ int gen8_emit_flush_rcs(struct i915_request *rq, u32 mode)
 		flags |= PIPE_CONTROL_QW_WRITE;
 		flags |= PIPE_CONTROL_STORE_DATA_INDEX;
 
-		/*
-		 * On GEN9: before VF_CACHE_INVALIDATE we need to emit a NULL
-		 * pipe control.
-		 */
+		 
 		if (GRAPHICS_VER(rq->i915) == 9)
 			vf_flush_wa = true;
 
-		/* WaForGAMHang:kbl */
+		 
 		if (IS_KABYLAKE(rq->i915) && IS_GRAPHICS_STEP(rq->i915, 0, STEP_C0))
 			dc_flush_wa = true;
 	}
@@ -86,12 +81,7 @@ int gen8_emit_flush_xcs(struct i915_request *rq, u32 mode)
 
 	cmd = MI_FLUSH_DW + 1;
 
-	/*
-	 * We always require a command barrier so that subsequent
-	 * commands, such as breadcrumb interrupts, are strictly ordered
-	 * wrt the contents of the write cache being flushed to memory
-	 * (and thus being coherent from the CPU).
-	 */
+	 
 	cmd |= MI_FLUSH_DW_STORE_INDEX | MI_FLUSH_DW_OP_STOREDW;
 
 	if (mode & EMIT_INVALIDATE) {
@@ -102,8 +92,8 @@ int gen8_emit_flush_xcs(struct i915_request *rq, u32 mode)
 
 	*cs++ = cmd;
 	*cs++ = LRC_PPHWSP_SCRATCH_ADDR;
-	*cs++ = 0; /* upper addr */
-	*cs++ = 0; /* value */
+	*cs++ = 0;  
+	*cs++ = 0;  
 	intel_ring_advance(rq, cs);
 
 	return 0;
@@ -192,10 +182,7 @@ static bool gen12_needs_ccs_aux_inv(struct intel_engine_cs *engine)
 	if (IS_PONTEVECCHIO(engine->i915))
 		return false;
 
-	/*
-	 * So far platforms supported by i915 having flat ccs do not require
-	 * AUX invalidation. Check also whether the engine requires it.
-	 */
+	 
 	return i915_mmio_reg_valid(reg) && !HAS_FLAT_CCS(engine->i915);
 }
 
@@ -225,12 +212,12 @@ u32 *gen12_emit_aux_table_inv(struct intel_engine_cs *engine, u32 *cs)
 
 static int mtl_dummy_pipe_control(struct i915_request *rq)
 {
-	/* Wa_14016712196 */
+	 
 	if (IS_MTL_GRAPHICS_STEP(rq->i915, M, STEP_A0, STEP_B0) ||
 	    IS_MTL_GRAPHICS_STEP(rq->i915, P, STEP_A0, STEP_B0)) {
 		u32 *cs;
 
-		/* dummy PIPE_CONTROL + depth flush */
+		 
 		cs = intel_ring_begin(rq, 6);
 		if (IS_ERR(cs))
 			return PTR_ERR(cs);
@@ -248,10 +235,7 @@ int gen12_emit_flush_rcs(struct i915_request *rq, u32 mode)
 {
 	struct intel_engine_cs *engine = rq->engine;
 
-	/*
-	 * On Aux CCS platforms the invalidation of the Aux
-	 * table requires quiescing memory traffic beforehand
-	 */
+	 
 	if (mode & EMIT_FLUSH || gen12_needs_ccs_aux_inv(engine)) {
 		u32 bit_group_0 = 0;
 		u32 bit_group_1 = 0;
@@ -264,27 +248,18 @@ int gen12_emit_flush_rcs(struct i915_request *rq, u32 mode)
 
 		bit_group_0 |= PIPE_CONTROL0_HDC_PIPELINE_FLUSH;
 
-		/*
-		 * When required, in MTL and beyond platforms we
-		 * need to set the CCS_FLUSH bit in the pipe control
-		 */
+		 
 		if (GRAPHICS_VER_FULL(rq->i915) >= IP_VER(12, 70))
 			bit_group_0 |= PIPE_CONTROL_CCS_FLUSH;
 
-		/*
-		 * L3 fabric flush is needed for AUX CCS invalidation
-		 * which happens as part of pipe-control so we can
-		 * ignore PIPE_CONTROL_FLUSH_L3. Also PIPE_CONTROL_FLUSH_L3
-		 * deals with Protected Memory which is not needed for
-		 * AUX CCS invalidation and lead to unwanted side effects.
-		 */
+		 
 		if (mode & EMIT_FLUSH)
 			bit_group_1 |= PIPE_CONTROL_FLUSH_L3;
 
 		bit_group_1 |= PIPE_CONTROL_TILE_CACHE_FLUSH;
 		bit_group_1 |= PIPE_CONTROL_RENDER_TARGET_CACHE_FLUSH;
 		bit_group_1 |= PIPE_CONTROL_DEPTH_CACHE_FLUSH;
-		/* Wa_1409600907:tgl,adl-p */
+		 
 		bit_group_1 |= PIPE_CONTROL_DEPTH_STALL;
 		bit_group_1 |= PIPE_CONTROL_DC_FLUSH_ENABLE;
 		bit_group_1 |= PIPE_CONTROL_FLUSH_ENABLE;
@@ -343,11 +318,7 @@ int gen12_emit_flush_rcs(struct i915_request *rq, u32 mode)
 		if (IS_ERR(cs))
 			return PTR_ERR(cs);
 
-		/*
-		 * Prevent the pre-parser from skipping past the TLB
-		 * invalidate and loading a stale page for the batch
-		 * buffer / request payload.
-		 */
+		 
 		*cs++ = preparser_disable(true);
 
 		cs = gen8_emit_pipe_control(cs, flags, LRC_PPHWSP_SCRATCH_ADDR);
@@ -382,12 +353,7 @@ int gen12_emit_flush_xcs(struct i915_request *rq, u32 mode)
 
 	cmd = MI_FLUSH_DW + 1;
 
-	/*
-	 * We always require a command barrier so that subsequent
-	 * commands, such as breadcrumb interrupts, are strictly ordered
-	 * wrt the contents of the write cache being flushed to memory
-	 * (and thus being coherent from the CPU).
-	 */
+	 
 	cmd |= MI_FLUSH_DW_STORE_INDEX | MI_FLUSH_DW_OP_STOREDW;
 
 	if (mode & EMIT_INVALIDATE) {
@@ -402,8 +368,8 @@ int gen12_emit_flush_xcs(struct i915_request *rq, u32 mode)
 
 	*cs++ = cmd;
 	*cs++ = LRC_PPHWSP_SCRATCH_ADDR;
-	*cs++ = 0; /* upper addr */
-	*cs++ = 0; /* value */
+	*cs++ = 0;  
+	*cs++ = 0;  
 
 	cs = gen12_emit_aux_table_inv(rq->engine, cs);
 
@@ -425,11 +391,11 @@ static u32 hwsp_offset(const struct i915_request *rq)
 {
 	const struct intel_timeline *tl;
 
-	/* Before the request is executed, the timeline is fixed */
+	 
 	tl = rcu_dereference_protected(rq->timeline,
 				       !i915_request_signaled(rq));
 
-	/* See the comment in i915_request_active_seqno(). */
+	 
 	return page_mask_bits(tl->hwsp_offset) + offset_in_page(rq->hwsp_seqno);
 }
 
@@ -450,29 +416,13 @@ int gen8_emit_init_breadcrumb(struct i915_request *rq)
 	*cs++ = 0;
 	*cs++ = rq->fence.seqno - 1;
 
-	/*
-	 * Check if we have been preempted before we even get started.
-	 *
-	 * After this point i915_request_started() reports true, even if
-	 * we get preempted and so are no longer running.
-	 *
-	 * i915_request_started() is used during preemption processing
-	 * to decide if the request is currently inside the user payload
-	 * or spinning on a kernel semaphore (or earlier). For no-preemption
-	 * requests, we do allow preemption on the semaphore before the user
-	 * payload, but do not allow preemption once the request is started.
-	 *
-	 * i915_request_started() is similarly used during GPU hangs to
-	 * determine if the user's payload was guilty, and if so, the
-	 * request is banned. Before the request is started, it is assumed
-	 * to be unharmed and an innocent victim of another's hang.
-	 */
+	 
 	*cs++ = MI_NOOP;
 	*cs++ = MI_ARB_CHECK;
 
 	intel_ring_advance(rq, cs);
 
-	/* Record the updated position of the request's payload */
+	 
 	rq->infix = intel_ring_offset(rq, cs);
 
 	__set_bit(I915_FENCE_FLAG_INITIAL_BREADCRUMB, &rq->fence.flags);
@@ -509,7 +459,7 @@ static int __xehp_emit_bb_start(struct i915_request *rq,
 	*cs++ = lower_32_bits(offset);
 	*cs++ = upper_32_bits(offset);
 
-	/* Fixup stray MI_SET_PREDICATE as it prevents us executing the ring */
+	 
 	*cs++ = MI_BATCH_BUFFER_START_GEN8;
 	*cs++ = wa_offset + DG2_PREDICATE_RESULT_BB;
 	*cs++ = 0;
@@ -545,22 +495,10 @@ int gen8_emit_bb_start_noarb(struct i915_request *rq,
 	if (IS_ERR(cs))
 		return PTR_ERR(cs);
 
-	/*
-	 * WaDisableCtxRestoreArbitration:bdw,chv
-	 *
-	 * We don't need to perform MI_ARB_ENABLE as often as we do (in
-	 * particular all the gen that do not need the w/a at all!), if we
-	 * took care to make sure that on every switch into this context
-	 * (both ordinary and for preemption) that arbitrartion was enabled
-	 * we would be fine.  However, for gen8 there is another w/a that
-	 * requires us to not preempt inside GPGPU execution, so we keep
-	 * arbitration disabled for gen8 batches. Arbitration will be
-	 * re-enabled before we close the request
-	 * (engine->emit_fini_breadcrumb).
-	 */
+	 
 	*cs++ = MI_ARB_ON_OFF | MI_ARB_DISABLE;
 
-	/* FIXME(BDW+): Address space and security selectors. */
+	 
 	*cs++ = MI_BATCH_BUFFER_START_GEN8 |
 		(flags & I915_DISPATCH_SECURE ? 0 : BIT(8));
 	*cs++ = lower_32_bits(offset);
@@ -603,23 +541,19 @@ static void assert_request_valid(struct i915_request *rq)
 {
 	struct intel_ring *ring __maybe_unused = rq->ring;
 
-	/* Can we unwind this request without appearing to go forwards? */
+	 
 	GEM_BUG_ON(intel_ring_direction(ring, rq->wa_tail, rq->head) <= 0);
 }
 
-/*
- * Reserve space for 2 NOOPs at the end of each request to be
- * used as a workaround for not being allowed to do lite
- * restore with HEAD==TAIL (WaIdleLiteRestore).
- */
+ 
 static u32 *gen8_emit_wa_tail(struct i915_request *rq, u32 *cs)
 {
-	/* Ensure there's always at least one preemption point per-request. */
+	 
 	*cs++ = MI_ARB_CHECK;
 	*cs++ = MI_NOOP;
 	rq->wa_tail = intel_ring_offset(rq, cs);
 
-	/* Check that entire request is less than half the ring */
+	 
 	assert_request_valid(rq);
 
 	return cs;
@@ -627,7 +561,7 @@ static u32 *gen8_emit_wa_tail(struct i915_request *rq, u32 *cs)
 
 static u32 *emit_preempt_busywait(struct i915_request *rq, u32 *cs)
 {
-	*cs++ = MI_ARB_CHECK; /* trigger IDLE->ACTIVE first */
+	*cs++ = MI_ARB_CHECK;  
 	*cs++ = MI_SEMAPHORE_WAIT |
 		MI_SEMAPHORE_GLOBAL_GTT |
 		MI_SEMAPHORE_POLL |
@@ -676,7 +610,7 @@ u32 *gen8_emit_fini_breadcrumb_rcs(struct i915_request *rq, u32 *cs)
 				    PIPE_CONTROL_DC_FLUSH_ENABLE,
 				    0);
 
-	/* XXX flush+write+CS_STALL all in one upsets gem_concurrent_blt:kbl */
+	 
 	cs = gen8_emit_ggtt_write_rcs(cs,
 				      rq->fence.seqno,
 				      hwsp_offset(rq),
@@ -697,7 +631,7 @@ u32 *gen11_emit_fini_breadcrumb_rcs(struct i915_request *rq, u32 *cs)
 				    PIPE_CONTROL_DC_FLUSH_ENABLE,
 				    0);
 
-	/*XXX: Look at gen8_emit_fini_breadcrumb_rcs */
+	 
 	cs = gen8_emit_ggtt_write_rcs(cs,
 				      rq->fence.seqno,
 				      hwsp_offset(rq),
@@ -707,28 +641,11 @@ u32 *gen11_emit_fini_breadcrumb_rcs(struct i915_request *rq, u32 *cs)
 	return gen8_emit_fini_breadcrumb_tail(rq, cs);
 }
 
-/*
- * Note that the CS instruction pre-parser will not stall on the breadcrumb
- * flush and will continue pre-fetching the instructions after it before the
- * memory sync is completed. On pre-gen12 HW, the pre-parser will stop at
- * BB_START/END instructions, so, even though we might pre-fetch the pre-amble
- * of the next request before the memory has been flushed, we're guaranteed that
- * we won't access the batch itself too early.
- * However, on gen12+ the parser can pre-fetch across the BB_START/END commands,
- * so, if the current request is modifying an instruction in the next request on
- * the same intel_context, we might pre-fetch and then execute the pre-update
- * instruction. To avoid this, the users of self-modifying code should either
- * disable the parser around the code emitting the memory writes, via a new flag
- * added to MI_ARB_CHECK, or emit the writes from a different intel_context. For
- * the in-kernel use-cases we've opted to use a separate context, see
- * reloc_gpu() as an example.
- * All the above applies only to the instructions themselves. Non-inline data
- * used by the instructions is not pre-fetched.
- */
+ 
 
 static u32 *gen12_emit_preempt_busywait(struct i915_request *rq, u32 *cs)
 {
-	*cs++ = MI_ARB_CHECK; /* trigger IDLE->ACTIVE first */
+	*cs++ = MI_ARB_CHECK;  
 	*cs++ = MI_SEMAPHORE_WAIT_TOKEN |
 		MI_SEMAPHORE_GLOBAL_GTT |
 		MI_SEMAPHORE_POLL |
@@ -741,7 +658,7 @@ static u32 *gen12_emit_preempt_busywait(struct i915_request *rq, u32 *cs)
 	return cs;
 }
 
-/* Wa_14014475959:dg2 */
+ 
 #define CCS_SEMAPHORE_PPHWSP_OFFSET	0x540
 static u32 ccs_semaphore_offset(struct i915_request *rq)
 {
@@ -749,7 +666,7 @@ static u32 ccs_semaphore_offset(struct i915_request *rq)
 		(LRC_PPHWSP_PN * PAGE_SIZE) + CCS_SEMAPHORE_PPHWSP_OFFSET;
 }
 
-/* Wa_14014475959:dg2 */
+ 
 static u32 *ccs_emit_wa_busywait(struct i915_request *rq, u32 *cs)
 {
 	int i;
@@ -760,10 +677,7 @@ static u32 *ccs_emit_wa_busywait(struct i915_request *rq, u32 *cs)
 	*cs++ = 0;
 	*cs++ = 1;
 
-	/*
-	 * When MI_ATOMIC_INLINE_DATA set this command must be 11 DW + (1 NOP)
-	 * to align. 4 DWs above + 8 filler DWs here.
-	 */
+	 
 	for (i = 0; i < 8; ++i)
 		*cs++ = 0;
 
@@ -788,7 +702,7 @@ gen12_emit_fini_breadcrumb_tail(struct i915_request *rq, u32 *cs)
 	    !intel_uc_uses_guc_submission(&rq->engine->gt->uc))
 		cs = gen12_emit_preempt_busywait(rq, cs);
 
-	/* Wa_14014475959:dg2 */
+	 
 	if (intel_engine_uses_wa_hold_ccs_switchout(rq->engine))
 		cs = ccs_emit_wa_busywait(rq, cs);
 
@@ -800,7 +714,7 @@ gen12_emit_fini_breadcrumb_tail(struct i915_request *rq, u32 *cs)
 
 u32 *gen12_emit_fini_breadcrumb_xcs(struct i915_request *rq, u32 *cs)
 {
-	/* XXX Stalling flush before seqno write; post-sync not */
+	 
 	cs = emit_xcs_breadcrumb(rq, __gen8_emit_flush_dw(cs, 0, 0, 0));
 	return gen12_emit_fini_breadcrumb_tail(rq, cs);
 }
@@ -817,15 +731,15 @@ u32 *gen12_emit_fini_breadcrumb_rcs(struct i915_request *rq, u32 *cs)
 		     PIPE_CONTROL_DC_FLUSH_ENABLE |
 		     PIPE_CONTROL_FLUSH_ENABLE);
 
-	/* Wa_14016712196 */
+	 
 	if (IS_MTL_GRAPHICS_STEP(i915, M, STEP_A0, STEP_B0) ||
 	    IS_MTL_GRAPHICS_STEP(i915, P, STEP_A0, STEP_B0))
-		/* dummy PIPE_CONTROL + depth flush */
+		 
 		cs = gen12_emit_pipe_control(cs, 0,
 					     PIPE_CONTROL_DEPTH_CACHE_FLUSH, 0);
 
 	if (GRAPHICS_VER(i915) == 12 && GRAPHICS_VER_FULL(i915) < IP_VER(12, 50))
-		/* Wa_1409600907 */
+		 
 		flags |= PIPE_CONTROL_DEPTH_STALL;
 
 	if (!HAS_3D_PIPELINE(rq->i915))
@@ -835,7 +749,7 @@ u32 *gen12_emit_fini_breadcrumb_rcs(struct i915_request *rq, u32 *cs)
 
 	cs = gen12_emit_pipe_control(cs, PIPE_CONTROL0_HDC_PIPELINE_FLUSH, flags, 0);
 
-	/*XXX: Look at gen8_emit_fini_breadcrumb_rcs */
+	 
 	cs = gen12_emit_ggtt_write_rcs(cs,
 				       rq->fence.seqno,
 				       hwsp_offset(rq),

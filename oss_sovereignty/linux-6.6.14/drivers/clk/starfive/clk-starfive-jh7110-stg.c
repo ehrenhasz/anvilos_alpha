@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * StarFive JH7110 System-Top-Group Clock Driver
- *
- * Copyright (C) 2022 Emil Renner Berthing <kernel@esmil.dk>
- * Copyright (C) 2022 StarFive Technology Co., Ltd.
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/io.h>
@@ -14,7 +9,7 @@
 
 #include "clk-starfive-jh7110.h"
 
-/* external clocks */
+ 
 #define JH7110_STGCLK_OSC			(JH7110_STGCLK_END + 0)
 #define JH7110_STGCLK_HIFI4_CORE		(JH7110_STGCLK_END + 1)
 #define JH7110_STGCLK_STG_AXIAHB		(JH7110_STGCLK_END + 2)
@@ -26,10 +21,10 @@
 #define JH7110_STGCLK_EXT_END			(JH7110_STGCLK_END + 8)
 
 static const struct jh71x0_clk_data jh7110_stgclk_data[] = {
-	/* hifi4 */
+	 
 	JH71X0_GATE(JH7110_STGCLK_HIFI4_CLK_CORE, "hifi4_clk_core", 0,
 		    JH7110_STGCLK_HIFI4_CORE),
-	/* usb */
+	 
 	JH71X0_GATE(JH7110_STGCLK_USB0_APB, "usb0_apb", 0, JH7110_STGCLK_APB_BUS),
 	JH71X0_GATE(JH7110_STGCLK_USB0_UTMI_APB, "usb0_utmi_apb", 0, JH7110_STGCLK_APB_BUS),
 	JH71X0_GATE(JH7110_STGCLK_USB0_AXI, "usb0_axi", 0, JH7110_STGCLK_STG_AXIAHB),
@@ -37,7 +32,7 @@ static const struct jh71x0_clk_data jh7110_stgclk_data[] = {
 	JH71X0_GDIV(JH7110_STGCLK_USB0_STB, "usb0_stb", 0, 4, JH7110_STGCLK_OSC),
 	JH71X0_GATE(JH7110_STGCLK_USB0_APP_125, "usb0_app_125", 0, JH7110_STGCLK_USB_125M),
 	JH71X0__DIV(JH7110_STGCLK_USB0_REFCLK, "usb0_refclk", 2, JH7110_STGCLK_OSC),
-	/* pci-e */
+	 
 	JH71X0_GATE(JH7110_STGCLK_PCIE0_AXI_MST0, "pcie0_axi_mst0", 0,
 		    JH7110_STGCLK_STG_AXIAHB),
 	JH71X0_GATE(JH7110_STGCLK_PCIE0_APB, "pcie0_apb", 0, JH7110_STGCLK_APB_BUS),
@@ -48,10 +43,10 @@ static const struct jh71x0_clk_data jh7110_stgclk_data[] = {
 	JH71X0_GATE(JH7110_STGCLK_PCIE1_TL, "pcie1_tl", 0, JH7110_STGCLK_STG_AXIAHB),
 	JH71X0_GATE(JH7110_STGCLK_PCIE_SLV_MAIN, "pcie_slv_main", CLK_IS_CRITICAL,
 		    JH7110_STGCLK_STG_AXIAHB),
-	/* security */
+	 
 	JH71X0_GATE(JH7110_STGCLK_SEC_AHB, "sec_ahb", 0, JH7110_STGCLK_STG_AXIAHB),
 	JH71X0_GATE(JH7110_STGCLK_SEC_MISC_AHB, "sec_misc_ahb", 0, JH7110_STGCLK_STG_AXIAHB),
-	/* stg mtrx */
+	 
 	JH71X0_GATE(JH7110_STGCLK_GRP0_MAIN, "mtrx_grp0_main", CLK_IS_CRITICAL,
 		    JH7110_STGCLK_CPU_BUS),
 	JH71X0_GATE(JH7110_STGCLK_GRP0_BUS, "mtrx_grp0_bus", CLK_IS_CRITICAL,
@@ -66,11 +61,11 @@ static const struct jh71x0_clk_data jh7110_stgclk_data[] = {
 		    JH7110_STGCLK_STG_AXIAHB),
 	JH71X0_GATE(JH7110_STGCLK_GRP1_HIFI, "mtrx_grp1_hifi", CLK_IS_CRITICAL,
 		    JH7110_STGCLK_HIFI4_AXI),
-	/* e24_rvpi */
+	 
 	JH71X0_GDIV(JH7110_STGCLK_E2_RTC, "e2_rtc", 0, 24, JH7110_STGCLK_OSC),
 	JH71X0_GATE(JH7110_STGCLK_E2_CORE, "e2_core", 0, JH7110_STGCLK_STG_AXIAHB),
 	JH71X0_GATE(JH7110_STGCLK_E2_DBG, "e2_dbg", 0, JH7110_STGCLK_STG_AXIAHB),
-	/* dw_sgdma1p */
+	 
 	JH71X0_GATE(JH7110_STGCLK_DMA1P_AXI, "dma1p_axi", 0, JH7110_STGCLK_STG_AXIAHB),
 	JH71X0_GATE(JH7110_STGCLK_DMA1P_AHB, "dma1p_ahb", 0, JH7110_STGCLK_STG_AXIAHB),
 };
@@ -154,7 +149,7 @@ static int jh7110_stgcrg_probe(struct platform_device *pdev)
 
 static const struct of_device_id jh7110_stgcrg_match[] = {
 	{ .compatible = "starfive,jh7110-stgcrg" },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, jh7110_stgcrg_match);
 

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * cbmem.c
- *
- * Driver for exporting cbmem entries in sysfs.
- *
- * Copyright 2022 Google LLC
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/init.h>

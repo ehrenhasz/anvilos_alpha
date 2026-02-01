@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-// Copyright 2017 IBM Corp.
+
+
 #include <linux/fs.h>
 #include <linux/poll.h>
 #include <linux/sched/signal.h>
@@ -11,7 +11,7 @@
 #include "ocxl_internal.h"
 
 
-#define OCXL_NUM_MINORS 256 /* Total to reserve */
+#define OCXL_NUM_MINORS 256  
 
 static dev_t ocxl_dev;
 static struct class *ocxl_class;
@@ -80,7 +80,7 @@ static long afu_ioctl_attach(struct ocxl_context *ctx,
 	if (copy_from_user(&arg, uarg, sizeof(arg)))
 		return -EFAULT;
 
-	/* Make sure reserved fields are not set for forward compatibility */
+	 
 	if (arg.reserved1 || arg.reserved2 || arg.reserved3)
 		return -EINVAL;
 
@@ -120,7 +120,7 @@ static long afu_ioctl_enable_p9_wait(struct ocxl_context *ctx,
 	if (cpu_has_feature(CPU_FTR_P9_TIDR)) {
 		enum ocxl_context_status status;
 
-		// Locks both status & tidr
+		
 		mutex_lock(&ctx->status_mutex);
 		if (!ctx->tidr) {
 			if (set_thread_tidr(current)) {
@@ -309,11 +309,7 @@ static bool has_xsl_error(struct ocxl_context *ctx)
 	return ret;
 }
 
-/*
- * Are there any events pending on the AFU
- * ctx: The AFU context
- * Returns: true if there are events pending
- */
+ 
 static bool afu_events_pending(struct ocxl_context *ctx)
 {
 	if (has_xsl_error(ctx))
@@ -343,14 +339,7 @@ static unsigned int afu_poll(struct file *file, struct poll_table_struct *wait)
 	return mask;
 }
 
-/*
- * Populate the supplied buffer with a single XSL error
- * ctx:	The AFU context to report the error from
- * header: the event header to populate
- * buf: The buffer to write the body into (should be at least
- *      AFU_EVENT_BODY_XSL_ERROR_SIZE)
- * Return: the amount of buffer that was populated
- */
+ 
 static ssize_t append_xsl_error(struct ocxl_context *ctx,
 				struct ocxl_kernel_event_header *header,
 				char __user *buf)
@@ -385,13 +374,7 @@ static ssize_t append_xsl_error(struct ocxl_context *ctx,
 
 #define AFU_EVENT_BODY_MAX_SIZE sizeof(struct ocxl_kernel_event_xsl_fault_error)
 
-/*
- * Reports events on the AFU
- * Format:
- *	Header (struct ocxl_kernel_event_header)
- *	Body (struct ocxl_kernel_event_*)
- *	Header...
- */
+ 
 static ssize_t afu_read(struct file *file, char __user *buf, size_t count,
 			loff_t *off)
 {
@@ -403,7 +386,7 @@ static ssize_t afu_read(struct file *file, char __user *buf, size_t count,
 
 	memset(&header, 0, sizeof(header));
 
-	/* Require offset to be 0 */
+	 
 	if (*off != 0)
 		return -EINVAL;
 
@@ -481,7 +464,7 @@ static const struct file_operations ocxl_afu_fops = {
 	.release        = afu_release,
 };
 
-// Free the info struct
+
 static void info_release(struct device *dev)
 {
 	struct ocxl_file_info *info = container_of(dev, struct ocxl_file_info, dev);
@@ -560,7 +543,7 @@ int ocxl_file_register_afu(struct ocxl_afu *afu)
 	return 0;
 
 err_unregister:
-	ocxl_sysfs_unregister_afu(info); // safe to call even if register failed
+	ocxl_sysfs_unregister_afu(info); 
 	free_minor(info);
 	device_unregister(&info->dev);
 	return rc;

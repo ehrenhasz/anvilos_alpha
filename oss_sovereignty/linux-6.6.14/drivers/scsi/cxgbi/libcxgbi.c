@@ -1,15 +1,4 @@
-/*
- * libcxgbi.c: Chelsio common library for T3/T4 iSCSI driver.
- *
- * Copyright (c) 2010-2015 Chelsio Communications, Inc.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation.
- *
- * Written by: Karen Xie (kxie@chelsio.com)
- * Written by: Rakesh Ranjan (rranjan@chelsio.com)
- */
+ 
 
 #define pr_fmt(fmt)	KBUILD_MODNAME ":%s: " fmt, __func__
 
@@ -28,7 +17,7 @@
 #include <net/ip6_route.h>
 #include <net/addrconf.h>
 
-#include <linux/inetdevice.h>	/* ip_dev_find */
+#include <linux/inetdevice.h>	 
 #include <linux/module.h>
 #include <net/tcp.h>
 
@@ -54,10 +43,7 @@ module_param(dbg_level, uint, 0644);
 MODULE_PARM_DESC(dbg_level, "libiscsi debug level (default=0)");
 
 
-/*
- * cxgbi device management
- * maintains a list of the cxgbi devices
- */
+ 
 static LIST_HEAD(cdev_list);
 static DEFINE_MUTEX(cdev_mutex);
 
@@ -393,20 +379,7 @@ err_out:
 }
 EXPORT_SYMBOL_GPL(cxgbi_hbas_add);
 
-/*
- * iSCSI offload
- *
- * - source port management
- *   To find a free source port in the port allocation map we use a very simple
- *   rotor scheme to look for the next free port.
- *
- *   If a source port has been specified make sure that it doesn't collide with
- *   our normal source port allocation map.  If it's outside the range of our
- *   allocation/deallocation scheme just let them use it.
- *
- *   If the source port is outside our allocation range, the caller is
- *   responsible for keeping track of their port usage.
- */
+ 
 
 static struct cxgbi_sock *find_sock_on_port(struct cxgbi_device *cdev,
 					    unsigned char port_id)
@@ -452,7 +425,7 @@ static int sock_get_port(struct cxgbi_sock *csk)
 
 	if (csk->csk_family == AF_INET)
 		port = &csk->saddr.sin_port;
-	else /* ipv6 */
+	else  
 		port = &csk->saddr6.sin6_port;
 
 	if (*port) {
@@ -490,7 +463,7 @@ static int sock_get_port(struct cxgbi_sock *csk)
 	} while (idx != start);
 	spin_unlock_bh(&pmap->lock);
 
-	/* should not happen */
+	 
 	pr_warn("cdev 0x%p, p#%u %s, next %u?\n",
 		cdev, csk->port_id, cdev->ports[csk->port_id]->name,
 		pmap->next);
@@ -505,7 +478,7 @@ static void sock_put_port(struct cxgbi_sock *csk)
 
 	if (csk->csk_family == AF_INET)
 		port = &csk->saddr.sin_port;
-	else /* ipv6 */
+	else  
 		port = &csk->saddr6.sin6_port;
 
 	if (*port) {
@@ -534,9 +507,7 @@ static void sock_put_port(struct cxgbi_sock *csk)
 	}
 }
 
-/*
- * iscsi tcp connection
- */
+ 
 void cxgbi_sock_free_cpl_skbs(struct cxgbi_sock *csk)
 {
 	if (csk->cpl_close) {
@@ -825,7 +796,7 @@ rel_rt:
 err_out:
 	return ERR_PTR(err);
 }
-#endif /* IS_ENABLED(CONFIG_IPV6) */
+#endif  
 
 void cxgbi_sock_established(struct cxgbi_sock *csk, unsigned int snd_isn,
 			unsigned int opt)
@@ -1148,7 +1119,7 @@ scmd_get_params(struct scsi_cmnd *sc, struct scatterlist **sgl,
 	*sgl = sdb->table.sgl;
 	*sgcnt = sdb->table.nents;
 	*dlen = sdb->length;
-	/* Caution: for protection sdb, sdb->length is invalid */
+	 
 }
 
 void cxgbi_ddp_set_one_ppod(struct cxgbi_pagepod *ppod,
@@ -1185,10 +1156,7 @@ void cxgbi_ddp_set_one_ppod(struct cxgbi_pagepod *ppod,
 		}
 	}
 
-	/*
-	 * the fifth address needs to be repeated in the next ppod, so do
-	 * not move sg
-	 */
+	 
 	if (sg_pp) {
 		*sg_pp = sg;
 		*sg_off = offset;
@@ -1206,9 +1174,7 @@ void cxgbi_ddp_set_one_ppod(struct cxgbi_pagepod *ppod,
 }
 EXPORT_SYMBOL_GPL(cxgbi_ddp_set_one_ppod);
 
-/*
- * APIs interacting with open-iscsi libraries
- */
+ 
 
 int cxgbi_ddp_ppm_setup(void **ppm_pp, struct cxgbi_device *cdev,
 			struct cxgbi_tag_format *tformat,
@@ -1285,18 +1251,14 @@ static int cxgbi_ddp_reserve(struct cxgbi_conn *cconn,
 		return -EINVAL;
 	}
 
-	/* make sure the buffer is suitable for ddp */
+	 
 	if (cxgbi_ddp_sgl_check(sgl, sgcnt) < 0)
 		return -EINVAL;
 
 	ttinfo->nr_pages = (xferlen + sgl->offset + (1 << PAGE_SHIFT) - 1) >>
 			    PAGE_SHIFT;
 
-	/*
-	 * the ddp tag will be used for the itt in the outgoing pdu,
-	 * the itt genrated by libiscsi is saved in the ppm and can be
-	 * retrieved via the ddp tag
-	 */
+	 
 	err = cxgbi_ppm_ppods_reserve(ppm, ttinfo->nr_pages, 0, &ttinfo->idx,
 				      &ttinfo->tag, (unsigned long)sw_tag);
 	if (err < 0) {
@@ -1305,7 +1267,7 @@ static int cxgbi_ddp_reserve(struct cxgbi_conn *cconn,
 	}
 	ttinfo->npods = err;
 
-	 /* setup dma from scsi command sgl */
+	  
 	sgl->offset = 0;
 	err = dma_map_sg(&ppm->pdev->dev, sgl, sgcnt, DMA_FROM_DEVICE);
 	sgl->offset = sg_offset;
@@ -1327,10 +1289,10 @@ static int cxgbi_ddp_reserve(struct cxgbi_conn *cconn,
 				xferlen, &ttinfo->hdr);
 
 	if (cdev->flags & CXGBI_FLAG_USE_PPOD_OFLDQ) {
-		/* write ppod from xmit_pdu (of iscsi_scsi_command pdu) */
+		 
 		ttinfo->flags |= CXGBI_PPOD_INFO_FLAG_VALID;
 	} else {
-		/* write ppod from control queue now */
+		 
 		err = cdev->csk_ddp_set_map(ppm, csk, ttinfo);
 		if (err < 0)
 			goto rel_ppods;
@@ -1375,7 +1337,7 @@ static void task_release_itt(struct iscsi_task *task, itt_t hdr_itt)
 
 static inline u32 cxgbi_build_sw_tag(u32 idx, u32 age)
 {
-	/* assume idx and age both are < 0x7FFF (32767) */
+	 
 	return (idx << 16) | age;
 }
 
@@ -1413,7 +1375,7 @@ static int task_reserve_itt(struct iscsi_task *task, itt_t *hdr_itt)
 		if (err < 0)
 			return err;
 	}
-	/*  the itt need to sent in big-endian order */
+	 
 	*hdr_itt = (__force itt_t)htonl(tag);
 
 	log_debug(1 << CXGBI_DBG_DDP,
@@ -1460,9 +1422,7 @@ void cxgbi_conn_tx_open(struct cxgbi_sock *csk)
 }
 EXPORT_SYMBOL_GPL(cxgbi_conn_tx_open);
 
-/*
- * pdu receive, interact with libiscsi_tcp
- */
+ 
 static inline int read_pdu_skb(struct iscsi_conn *conn,
 			       struct sk_buff *skb,
 			       unsigned int offset,
@@ -1481,15 +1441,12 @@ static inline int read_pdu_skb(struct iscsi_conn *conn,
 		log_debug(1 << CXGBI_DBG_PDU_RX,
 			"skb 0x%p, off %u, %d, TCP_SUSPEND, rc %d.\n",
 			skb, offset, offloaded, bytes_read);
-		/* no transfer - just have caller flush queue */
+		 
 		return bytes_read;
 	case ISCSI_TCP_SKB_DONE:
 		pr_info("skb 0x%p, off %u, %d, TCP_SKB_DONE.\n",
 			skb, offset, offloaded);
-		/*
-		 * pdus should always fit in the skb and we should get
-		 * segment done notifcation.
-		 */
+		 
 		iscsi_conn_printk(KERN_ERR, conn, "Invalid pdu or skb.");
 		return -EFAULT;
 	case ISCSI_TCP_SEGMENT_DONE:
@@ -1530,12 +1487,7 @@ skb_read_pdu_bhs(struct cxgbi_sock *csk, struct iscsi_conn *conn,
 
 	if (cxgbi_skcb_test_flag(skb, SKCBF_RX_ISCSI_COMPL) &&
 	    cxgbi_skcb_test_flag(skb, SKCBF_RX_DATA_DDPD)) {
-		/* If completion flag is set and data is directly
-		 * placed in to the host memory then update
-		 * task->exp_datasn to the datasn in completion
-		 * iSCSI hdr as T6 adapter generates completion only
-		 * for the last pdu of a sequence.
-		 */
+		 
 		itt_t itt = ((struct iscsi_data *)skb->data)->itt;
 		struct iscsi_task *task = iscsi_itt_to_ctask(conn, itt);
 		u32 data_sn = be32_to_cpu(((struct iscsi_data *)
@@ -1581,7 +1533,7 @@ static int skb_read_pdu_data(struct iscsi_conn *conn, struct sk_buff *lskb,
 	if (iscsi_tcp_recv_segment_is_hdr(tcp_conn))
 		return 0;
 
-	/* coalesced, add header digest length */
+	 
 	if (lskb == skb && conn->hdrdgst_en)
 		offset += ISCSI_DIGEST_SIZE;
 
@@ -1924,9 +1876,7 @@ int cxgbi_conn_alloc_pdu(struct iscsi_task *task, u8 op)
 		u32 max_pdu_size, max_num_pdu, num_pdu;
 		u32 count;
 
-		/* Preserve conn->max_xmit_dlength because it can get updated to
-		 * ISO data size.
-		 */
+		 
 		if (task->state == ISCSI_TASK_PENDING)
 			tdata->max_xmit_dlength = conn->max_xmit_dlength;
 
@@ -2040,7 +1990,7 @@ no_iso:
 	if (iso_tx_rsvd)
 		cxgbi_skcb_set_flag(tdata->skb, SKCBF_TX_ISO);
 
-	/* data_out uses scsi_cmd's itt */
+	 
 	if (op != ISCSI_OP_SCSI_DATA_OUT)
 		task_reserve_itt(task, &task->hdr->itt);
 
@@ -2201,9 +2151,7 @@ int cxgbi_conn_init_pdu(struct iscsi_task *task, unsigned int offset,
 		}
 	}
 
-	/* Restore original value of conn->max_xmit_dlength because
-	 * it can get updated to ISO data size.
-	 */
+	 
 	conn->max_xmit_dlength = tdata->max_xmit_dlength;
 
 	if (sc) {
@@ -2215,7 +2163,7 @@ int cxgbi_conn_init_pdu(struct iscsi_task *task, unsigned int offset,
 					MAX_SKB_FRAGS))) {
 			char *dst = skb->data + task->hdr_len;
 
-			/* data fits in the skb's headroom */
+			 
 			for (i = 0; i < tdata->nr_frags; i++, frag++) {
 				char *src = kmap_atomic(frag->page);
 
@@ -2397,7 +2345,7 @@ int cxgbi_conn_xmit_pdu(struct iscsi_task *task)
 	tdata->skb = NULL;
 	datalen = skb->data_len;
 
-	/* write ppod first if using ofldq to write ppod */
+	 
 	if (ttinfo->flags & CXGBI_PPOD_INFO_FLAG_VALID) {
 		struct cxgbi_ppm *ppm = csk->cdev->cdev2ppm(csk->cdev);
 
@@ -2405,7 +2353,7 @@ int cxgbi_conn_xmit_pdu(struct iscsi_task *task)
 		if (csk->cdev->csk_ddp_set_map(ppm, csk, ttinfo) < 0)
 			pr_err("task 0x%p, ppod writing using ofldq failed.\n",
 			       task);
-			/* continue. Let fl get the data */
+			 
 	}
 
 	if (!task->sc)
@@ -2442,7 +2390,7 @@ int cxgbi_conn_xmit_pdu(struct iscsi_task *task)
 		log_debug(1 << CXGBI_DBG_PDU_TX,
 			  "task 0x%p, skb 0x%p, len %u/%u, %d EAGAIN.\n",
 			  task, skb, skb->len, skb->data_len, err);
-		/* reset skb to send when we are called again */
+		 
 		tdata->skb = skb;
 
 		if (cxgbi_is_iso_config(csk) && !cxgbi_is_iso_disabled(csk) &&
@@ -2489,7 +2437,7 @@ void cxgbi_cleanup_task(struct iscsi_task *task)
 		kfree(task->hdr);
 	task->hdr = NULL;
 
-	/*  never reached the xmit task callout */
+	 
 	if (tdata->skb) {
 		__kfree_skb(tdata->skb);
 		tdata->skb = NULL;
@@ -2682,7 +2630,7 @@ int cxgbi_bind_conn(struct iscsi_cls_session *cls_session,
 	if (!ep)
 		return -EINVAL;
 
-	/*  setup ddp pagesize */
+	 
 	cep = ep->dd_data;
 	csk = cep->csk;
 
@@ -2698,7 +2646,7 @@ int cxgbi_bind_conn(struct iscsi_cls_session *cls_session,
 		goto put_ep;
 	}
 
-	/*  calculate the tag idx bits needed for this conn based on cmds_max */
+	 
 	cconn->task_idx_bits = (__ilog2_u32(conn->session->cmds_max - 1)) + 1;
 
 	write_lock_bh(&csk->callback_lock);
@@ -2714,7 +2662,7 @@ int cxgbi_bind_conn(struct iscsi_cls_session *cls_session,
 	log_debug(1 << CXGBI_DBG_ISCSI,
 		"cls 0x%p,0x%p, ep 0x%p, cconn 0x%p, csk 0x%p.\n",
 		cls_session, cls_conn, ep, cconn, csk);
-	/*  init recv engine */
+	 
 	iscsi_tcp_hdr_recv_prep(tcp_conn);
 
 put_ep:

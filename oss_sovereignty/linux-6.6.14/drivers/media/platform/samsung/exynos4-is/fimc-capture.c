@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Samsung S5P/EXYNOS4 SoC series camera interface (camera capture) driver
- *
- * Copyright (C) 2010 - 2012 Samsung Electronics Co., Ltd.
- * Sylwester Nawrocki <s.nawrocki@samsung.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -73,14 +68,7 @@ static int fimc_capture_hw_init(struct fimc_dev *fimc)
 	return ret;
 }
 
-/*
- * Reinitialize the driver so it is ready to start the streaming again.
- * Set fimc->state to indicate stream off and the hardware shut down state.
- * If not suspending (@suspend is false), return any buffers to videobuf2.
- * Otherwise put any owned buffers onto the pending buffers queue, so they
- * can be re-spun when the device is being resumed. Also perform FIMC
- * software reset and disable streaming on the whole pipeline if required.
- */
+ 
 static int fimc_capture_state_cleanup(struct fimc_dev *fimc, bool suspend)
 {
 	struct fimc_vid_cap *cap = &fimc->vid_cap;
@@ -98,12 +86,12 @@ static int fimc_capture_state_cleanup(struct fimc_dev *fimc, bool suspend)
 	else
 		fimc->state &= ~(1 << ST_CAPT_PEND | 1 << ST_CAPT_SUSPENDED);
 
-	/* Release unused buffers */
+	 
 	while (!suspend && !list_empty(&cap->pending_buf_q)) {
 		buf = fimc_pending_queue_pop(cap);
 		vb2_buffer_done(&buf->vb.vb2_buf, VB2_BUF_STATE_ERROR);
 	}
-	/* If suspending put unused buffers onto pending queue */
+	 
 	while (!list_empty(&cap->active_buf_q)) {
 		buf = fimc_active_queue_pop(cap);
 		if (suspend)
@@ -137,19 +125,12 @@ static int fimc_stop_capture(struct fimc_dev *fimc, bool suspend)
 
 	wait_event_timeout(fimc->irq_queue,
 			   !test_bit(ST_CAPT_SHUT, &fimc->state),
-			   (2*HZ/10)); /* 200 ms */
+			   (2*HZ/10));  
 
 	return fimc_capture_state_cleanup(fimc, suspend);
 }
 
-/**
- * fimc_capture_config_update - apply the camera interface configuration
- * @ctx: FIMC capture context
- *
- * To be called from within the interrupt handler with fimc.slock
- * spinlock held. It updates the camera pixel crop, rotation and
- * image flip in H/W.
- */
+ 
 static int fimc_capture_config_update(struct fimc_ctx *ctx)
 {
 	struct fimc_dev *fimc = ctx->fimc_dev;
@@ -204,7 +185,7 @@ void fimc_capture_irq_handler(struct fimc_dev *fimc, int deq_buf)
 		fimc_hw_set_output_addr(fimc, &v_buf->addr, cap->buf_index);
 		v_buf->index = cap->buf_index;
 
-		/* Move the buffer to the capture active queue */
+		 
 		fimc_active_queue_add(cap, v_buf);
 
 		dbg("next frame: %d, done frame: %d",
@@ -213,10 +194,7 @@ void fimc_capture_irq_handler(struct fimc_dev *fimc, int deq_buf)
 		if (++cap->buf_index >= FIMC_MAX_OUT_BUFS)
 			cap->buf_index = 0;
 	}
-	/*
-	 * Set up a buffer at MIPI-CSIS if current image format
-	 * requires the frame embedded data capture.
-	 */
+	 
 	if (f->fmt->mdataplanes && !list_empty(&cap->active_buf_q)) {
 		unsigned int plane = ffs(f->fmt->mdataplanes) - 1;
 		unsigned int size = f->payload[plane];
@@ -415,7 +393,7 @@ static void buffer_queue(struct vb2_buffer *vb)
 	if (!test_bit(ST_CAPT_SUSPENDED, &fimc->state) &&
 	    !test_bit(ST_CAPT_STREAM, &fimc->state) &&
 	    vid_cap->active_buf_cnt < FIMC_MAX_OUT_BUFS) {
-		/* Setup the buffer directly for processing. */
+		 
 		int buf_id = (vid_cap->reqbufs_count == 1) ? -1 :
 				vid_cap->buf_index;
 
@@ -555,9 +533,7 @@ static const struct v4l2_file_operations fimc_capture_fops = {
 	.mmap		= vb2_fop_mmap,
 };
 
-/*
- * Format and crop negotiation helpers
- */
+ 
 
 static struct fimc_fmt *fimc_capture_try_format(struct fimc_ctx *ctx,
 						u32 *width, u32 *height,
@@ -572,7 +548,7 @@ static struct fimc_fmt *fimc_capture_try_format(struct fimc_ctx *ctx,
 	u32 mask = FMT_FLAGS_CAM;
 	struct fimc_fmt *ffmt;
 
-	/* Conversion from/to JPEG or User Defined format is not supported */
+	 
 	if (code && ctx->s_frame.fmt && pad == FIMC_SD_PAD_SOURCE &&
 	    fimc_fmt_is_user_defined(ctx->s_frame.fmt->color))
 		*code = ctx->s_frame.fmt->mbus_code;
@@ -595,7 +571,7 @@ static struct fimc_fmt *fimc_capture_try_format(struct fimc_ctx *ctx,
 	if (pad != FIMC_SD_PAD_SOURCE) {
 		max_w = fimc_fmt_is_user_defined(ffmt->color) ?
 			pl->scaler_dis_w : pl->scaler_en_w;
-		/* Apply the camera input interface pixel constraints */
+		 
 		v4l_bound_align_image(width, max_t(u32, *width, 32), max_w, 4,
 				      height, max_t(u32, *height, 32),
 				      FIMC_CAMIF_MAX_HEIGHT,
@@ -604,13 +580,13 @@ static struct fimc_fmt *fimc_capture_try_format(struct fimc_ctx *ctx,
 				      0);
 		return ffmt;
 	}
-	/* Can't scale or crop in transparent (JPEG) transfer mode */
+	 
 	if (fimc_fmt_is_user_defined(ffmt->color)) {
 		*width  = ctx->s_frame.f_width;
 		*height = ctx->s_frame.f_height;
 		return ffmt;
 	}
-	/* Apply the scaler and the output DMA constraints */
+	 
 	max_w = rotation ? pl->out_rot_en_w : pl->out_rot_dis_w;
 	if (ctx->state & FIMC_COMPOSE) {
 		min_w = dst->offs_h + dst->width;
@@ -649,7 +625,7 @@ static void fimc_capture_try_selection(struct fimc_ctx *ctx,
 	u32 align_sz = 0, align_h = 4;
 	u32 max_sc_h, max_sc_v;
 
-	/* In JPEG transparent transfer mode cropping is not supported */
+	 
 	if (fimc_fmt_is_user_defined(ctx->d_frame.fmt->color)) {
 		r->width  = sink->f_width;
 		r->height = sink->f_height;
@@ -672,15 +648,7 @@ static void fimc_capture_try_selection(struct fimc_ctx *ctx,
 		min_w = min_h = min_sz;
 		max_sc_h = max_sc_v = 1;
 	}
-	/*
-	 * For the compose rectangle the following constraints must be met:
-	 * - it must fit in the sink pad format rectangle (f_width/f_height);
-	 * - maximum downscaling ratio is 64;
-	 * - maximum crop size depends if the rotator is used or not;
-	 * - the sink pad format width/height must be 4 multiple of the
-	 *   prescaler ratios determined by sink pad size and source pad crop,
-	 *   the prescaler ratio is returned by fimc_get_scaler_factor().
-	 */
+	 
 	max_w = min_t(u32,
 		      rotate ? pl->out_rot_en_w : pl->out_rot_dis_w,
 		      rotate ? sink->f_height : sink->f_width);
@@ -697,7 +665,7 @@ static void fimc_capture_try_selection(struct fimc_ctx *ctx,
 	v4l_bound_align_image(&r->width, min_w, max_w, ffs(min_sz) - 1,
 			      &r->height, min_h, max_h, align_h,
 			      align_sz);
-	/* Adjust left/top if crop/compose rectangle is out of bounds */
+	 
 	r->left = clamp_t(u32, r->left, 0, sink->f_width - r->width);
 	r->top  = clamp_t(u32, r->top, 0, sink->f_height - r->height);
 	r->left = round_down(r->left, var->hor_offs_align);
@@ -707,9 +675,7 @@ static void fimc_capture_try_selection(struct fimc_ctx *ctx,
 	    sink->f_width, sink->f_height);
 }
 
-/*
- * The video node ioctl operations
- */
+ 
 static int fimc_cap_querycap(struct file *file, void *priv,
 					struct v4l2_capability *cap)
 {
@@ -747,14 +713,7 @@ static struct media_entity *fimc_pipeline_get_head(struct media_entity *me)
 	return me;
 }
 
-/**
- * fimc_pipeline_try_format - negotiate and/or set formats at pipeline
- *                            elements
- * @ctx: FIMC capture context
- * @tfmt: media bus format to try/set on subdevs
- * @fmt_id: fimc pixel format id corresponding to returned @tfmt (output)
- * @set: true to set format on subdevs, false to try only
- */
+ 
 static int fimc_pipeline_try_format(struct fimc_ctx *ctx,
 				    struct v4l2_mbus_framefmt *tfmt,
 				    struct fimc_fmt **fmt_id,
@@ -785,15 +744,12 @@ static int fimc_pipeline_try_format(struct fimc_ctx *ctx,
 		ffmt = fimc_find_format(NULL, mf->code != 0 ? &mf->code : NULL,
 					FMT_FLAGS_CAM, i++);
 		if (ffmt == NULL) {
-			/*
-			 * Notify user-space if common pixel code for
-			 * host and sensor does not exist.
-			 */
+			 
 			return -EINVAL;
 		}
 		mf->code = tfmt->code = ffmt->mbus_code;
 
-		/* set format on all pipeline subdevs */
+		 
 		while (me != &fimc->vid_cap.subdev.entity) {
 			sd = media_entity_to_v4l2_subdev(me);
 
@@ -842,15 +798,7 @@ static int fimc_pipeline_try_format(struct fimc_ctx *ctx,
 	return 0;
 }
 
-/**
- * fimc_get_sensor_frame_desc - query the sensor for media bus frame parameters
- * @sensor: pointer to the sensor subdev
- * @plane_fmt: provides plane sizes corresponding to the frame layout entries
- * @num_planes: number of planes
- * @try: true to set the frame parameters, false to query only
- *
- * This function is used by this driver only for compressed/blob data formats.
- */
+ 
 static int fimc_get_sensor_frame_desc(struct v4l2_subdev *sensor,
 				      struct v4l2_plane_pix_format *plane_fmt,
 				      unsigned int num_planes, bool try)
@@ -896,11 +844,7 @@ static int fimc_cap_g_fmt_mplane(struct file *file, void *fh,
 	return 0;
 }
 
-/*
- * Try or set format on the fimc.X.capture video node and additionally
- * on the whole pipeline if @try is false.
- * Locking: the caller must _not_ hold the graph mutex.
- */
+ 
 static int __video_try_or_set_format(struct fimc_dev *fimc,
 				     struct v4l2_format *f, bool try,
 				     struct fimc_fmt **inp_fmt,
@@ -913,7 +857,7 @@ static int __video_try_or_set_format(struct fimc_dev *fimc,
 	unsigned int width = 0, height = 0;
 	int ret = 0;
 
-	/* Pre-configure format at the camera input interface, for JPEG only */
+	 
 	if (fimc_jpeg_fourcc(pix->pixelformat)) {
 		fimc_capture_try_format(ctx, &pix->width, &pix->height,
 					NULL, &pix->pixelformat,
@@ -927,20 +871,20 @@ static int __video_try_or_set_format(struct fimc_dev *fimc,
 		}
 	}
 
-	/* Try the format at the scaler and the DMA output */
+	 
 	*out_fmt = fimc_capture_try_format(ctx, &pix->width, &pix->height,
 					  NULL, &pix->pixelformat,
 					  FIMC_SD_PAD_SOURCE);
 	if (*out_fmt == NULL)
 		return -EINVAL;
 
-	/* Restore image width/height for JPEG (no resizing supported). */
+	 
 	if (try && fimc_jpeg_fourcc(pix->pixelformat)) {
 		pix->width = width;
 		pix->height = height;
 	}
 
-	/* Try to match format at the host and the sensor */
+	 
 	if (!vc->user_subdev_api) {
 		struct v4l2_mbus_framefmt mbus_fmt;
 		struct v4l2_mbus_framefmt *mf;
@@ -1022,7 +966,7 @@ static int __fimc_capture_set_format(struct fimc_dev *fimc,
 	if (ret < 0)
 		return ret;
 
-	/* Update RGB Alpha control state and value range */
+	 
 	fimc_alpha_ctrl_update(ctx);
 
 	for (i = 0; i < ff->fmt->memplanes; i++) {
@@ -1031,13 +975,13 @@ static int __fimc_capture_set_format(struct fimc_dev *fimc,
 	}
 
 	set_frame_bounds(ff, pix->width, pix->height);
-	/* Reset the composition rectangle if not yet configured */
+	 
 	if (!(ctx->state & FIMC_COMPOSE))
 		set_frame_crop(ff, 0, 0, pix->width, pix->height);
 
 	fimc_capture_mark_jpeg_xfer(ctx, ff->fmt->color);
 
-	/* Reset cropping and set format at the camera interface input */
+	 
 	if (!vc->user_subdev_api) {
 		ctx->s_frame.fmt = inp_fmt;
 		set_frame_bounds(&ctx->s_frame, pix->width, pix->height);
@@ -1087,13 +1031,7 @@ static int fimc_cap_g_input(struct file *file, void *priv, unsigned int *i)
 	return 0;
 }
 
-/**
- * fimc_pipeline_validate - check for formats inconsistencies
- *                          between source and sink pad of each link
- * @fimc:	the FIMC device this context applies to
- *
- * Return 0 if all formats match or -EPIPE otherwise.
- */
+ 
 static int fimc_pipeline_validate(struct fimc_dev *fimc)
 {
 	struct v4l2_subdev_format sink_fmt = {
@@ -1109,11 +1047,7 @@ static int fimc_pipeline_validate(struct fimc_dev *fimc)
 	int i, ret;
 
 	while (1) {
-		/*
-		 * Find current entity sink pad and any remote sink pad linked
-		 * to it. We stop if there is no sink pad in current entity or
-		 * it is not linked to any other remote entity.
-		 */
+		 
 		src_pad = NULL;
 
 		for (i = 0; i < sd->entity.num_pads; i++) {
@@ -1130,7 +1064,7 @@ static int fimc_pipeline_validate(struct fimc_dev *fimc)
 		if (!src_pad || !is_media_entity_v4l2_subdev(src_pad->entity))
 			break;
 
-		/* Don't call FIMC subdev operation to avoid nested locking */
+		 
 		if (sd == &vc->subdev) {
 			struct fimc_frame *ff = &vc->ctx->s_frame;
 			sink_fmt.format.width = ff->f_width;
@@ -1143,7 +1077,7 @@ static int fimc_pipeline_validate(struct fimc_dev *fimc)
 				return -EPIPE;
 		}
 
-		/* Retrieve format at the source pad */
+		 
 		sd = media_entity_to_v4l2_subdev(src_pad->entity);
 		src_fmt.pad = src_pad->index;
 		ret = v4l2_subdev_call(sd, pad, get_fmt, NULL, &src_fmt);
@@ -1199,10 +1133,7 @@ static int fimc_cap_streamon(struct file *file, void *priv,
 		ret = -EPIPE;
 		goto err_p_stop;
 	}
-	/*
-	 * Save configuration data related to currently attached image
-	 * sensor or other data source, e.g. FIMC-IS.
-	 */
+	 
 	vc->source_config = *si;
 
 	if (vc->input == GRP_ID_FIMC_IS)
@@ -1361,7 +1292,7 @@ static const struct v4l2_ioctl_ops fimc_capture_ioctl_ops = {
 	.vidioc_g_input			= fimc_cap_g_input,
 };
 
-/* Capture subdev media entity operations */
+ 
 static int fimc_link_setup(struct media_entity *entity,
 			   const struct media_pad *local,
 			   const struct media_pad *remote, u32 flags)
@@ -1394,7 +1325,7 @@ static int fimc_link_setup(struct media_entity *entity,
 	if (vc->user_subdev_api)
 		return 0;
 
-	/* Inherit V4L2 controls from the image sensor subdev. */
+	 
 	sensor = fimc_find_remote_sensor(&vc->subdev.entity);
 	if (sensor == NULL)
 		return 0;
@@ -1407,19 +1338,7 @@ static const struct media_entity_operations fimc_sd_media_ops = {
 	.link_setup = fimc_link_setup,
 };
 
-/**
- * fimc_sensor_notify - v4l2_device notification from a sensor subdev
- * @sd: pointer to a subdev generating the notification
- * @notification: the notification type, must be S5P_FIMC_TX_END_NOTIFY
- * @arg: pointer to an u32 type integer that stores the frame payload value
- *
- * The End Of Frame notification sent by sensor subdev in its still capture
- * mode. If there is only a single VSYNC generated by the sensor at the
- * beginning of a frame transmission, FIMC does not issue the LastIrq
- * (end of frame) interrupt. And this notification is used to complete the
- * frame capture and returning a buffer to user-space. Subdev drivers should
- * call this notification from their last 'End of frame capture' interrupt.
- */
+ 
 void fimc_sensor_notify(struct v4l2_subdev *sd, unsigned int notification,
 			void *arg)
 {
@@ -1491,7 +1410,7 @@ static int fimc_subdev_get_fmt(struct v4l2_subdev *sd,
 	case FIMC_SD_PAD_SOURCE:
 		if (!WARN_ON(ff->fmt == NULL))
 			mf->code = ff->fmt->mbus_code;
-		/* Sink pads crop rectangle size */
+		 
 		mf->width = ff->width;
 		mf->height = ff->height;
 		break;
@@ -1538,17 +1457,17 @@ static int fimc_subdev_set_fmt(struct v4l2_subdev *sd,
 		*mf = fmt->format;
 		return 0;
 	}
-	/* There must be a bug in the driver if this happens */
+	 
 	if (WARN_ON(ffmt == NULL))
 		return -EINVAL;
 
-	/* Update RGB Alpha control state and value range */
+	 
 	fimc_alpha_ctrl_update(ctx);
 
 	fimc_capture_mark_jpeg_xfer(ctx, ffmt->color);
 	if (fmt->pad == FIMC_SD_PAD_SOURCE) {
 		ff = &ctx->d_frame;
-		/* Sink pads crop rectangle size */
+		 
 		mf->width = ctx->s_frame.width;
 		mf->height = ctx->s_frame.height;
 	} else {
@@ -1565,7 +1484,7 @@ static int fimc_subdev_set_fmt(struct v4l2_subdev *sd,
 
 	ff->fmt = ffmt;
 
-	/* Reset the crop rectangle if required. */
+	 
 	if (!(fmt->pad == FIMC_SD_PAD_SOURCE && (ctx->state & FIMC_COMPOSE)))
 		set_frame_crop(ff, 0, 0, mf->width, mf->height);
 
@@ -1692,7 +1611,7 @@ static const struct v4l2_subdev_ops fimc_subdev_ops = {
 	.pad = &fimc_subdev_pad_ops,
 };
 
-/* Set default format at the sensor and host interface */
+ 
 static int fimc_capture_set_default_format(struct fimc_dev *fimc)
 {
 	struct v4l2_format fmt = {
@@ -1709,7 +1628,7 @@ static int fimc_capture_set_default_format(struct fimc_dev *fimc)
 	return __fimc_capture_set_format(fimc, &fmt);
 }
 
-/* fimc->lock must be already initialized */
+ 
 static int fimc_register_capture_device(struct fimc_dev *fimc,
 				 struct v4l2_device *v4l2_dev)
 {
@@ -1767,7 +1686,7 @@ static int fimc_register_capture_device(struct fimc_dev *fimc,
 	if (ret)
 		goto err_free_ctx;
 
-	/* Default format configuration */
+	 
 	fmt = fimc_find_format(NULL, NULL, FMT_FLAGS_CAM, 0);
 	vid_cap->ci_fmt.width = FIMC_DEFAULT_WIDTH;
 	vid_cap->ci_fmt.height = FIMC_DEFAULT_HEIGHT;

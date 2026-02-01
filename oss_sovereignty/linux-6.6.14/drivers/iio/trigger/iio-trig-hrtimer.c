@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * The industrial I/O periodic hrtimer trigger driver
- *
- * Copyright (C) Intuitive Aerial AB
- * Written by Marten Svanfeldt, marten@intuitiveaerial.com
- * Copyright (C) 2012, Analog Devices Inc.
- *	Author: Lars-Peter Clausen <lars@metafoo.de>
- * Copyright (C) 2015, Intel Corporation
- */
+
+ 
 #include <linux/kernel.h>
 #include <linux/slab.h>
 #include <linux/hrtimer.h>
@@ -16,10 +8,10 @@
 #include <linux/iio/trigger.h>
 #include <linux/iio/sw_trigger.h>
 
-/* Defined locally, not in time64.h yet. */
+ 
 #define PSEC_PER_SEC   1000000000000LL
 
-/* default sampling frequency - 100Hz */
+ 
 #define HRTIMER_DEFAULT_SAMPLING_FREQUENCY 100
 
 struct iio_hrtimer_info {
@@ -63,16 +55,16 @@ ssize_t iio_hrtimer_store_sampling_frequency(struct device *dev,
 	if (integer < 0 || fract < 0)
 		return -ERANGE;
 
-	val = fract + 1000ULL * integer;  /* mHz */
+	val = fract + 1000ULL * integer;   
 
 	if (!val || val > UINT_MAX)
 		return -EINVAL;
 
-	info->sampling_frequency[0] = integer;  /* Hz */
-	info->sampling_frequency[1] = fract * 1000;  /* uHz */
+	info->sampling_frequency[0] = integer;   
+	info->sampling_frequency[1] = fract * 1000;   
 	period = PSEC_PER_SEC;
 	do_div(period, val);
-	info->period = period;  /* nS */
+	info->period = period;   
 
 	return len;
 }
@@ -173,7 +165,7 @@ static int iio_trig_hrtimer_remove(struct iio_sw_trigger *swt)
 
 	iio_trigger_unregister(swt->trigger);
 
-	/* cancel the timer after unreg to make sure no one rearms it */
+	 
 	hrtimer_cancel(&trig_info->timer);
 	iio_trigger_free(swt->trigger);
 	kfree(trig_info);

@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Support for Intel Camera Imaging ISP subsystem.
- * Copyright (c) 2015, Intel Corporation.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms and conditions of the GNU General Public License,
- * version 2, as published by the Free Software Foundation.
- *
- * This program is distributed in the hope it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- * more details.
- */
+
+ 
 
 #include "ia_css_types.h"
 #include "sh_css_defs.h"
@@ -44,13 +32,8 @@ ia_css_sc_dump(
 			    "sc_gain_shift", sc->gain_shift);
 }
 
-/* ------ deprecated(bz675) : from ------ */
-/* It looks like @parameter{} (in *.pipe) is used to generate the process/get/set functions,
-   for parameters which should be used in the isp kernels.
-   However, the ia_css_shading_settings structure has a parameter which is used only in the css,
-   and does not have a parameter which is used in the isp kernels.
-   Then, I did not use @parameter{} to generate the get/set function
-   for the ia_css_shading_settings structure. (michie) */
+ 
+ 
 void
 sh_css_get_shading_settings(const struct ia_css_isp_parameters *params,
 			    struct ia_css_shading_settings *settings)
@@ -88,4 +71,4 @@ sh_css_set_shading_settings(struct ia_css_isp_parameters *params,
 			    "ia_css_set_shading_settings() leave: return_void\n");
 }
 
-/* ------ deprecated(bz675) : to ------ */
+ 

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2016 Maxime Ripard
- * Maxime Ripard <maxime.ripard@free-electrons.com>
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/io.h>
@@ -172,14 +169,14 @@ static int ccu_nm_set_rate(struct clk_hw *hw, unsigned long rate,
 	unsigned long flags;
 	u32 reg;
 
-	/* Adjust target rate according to post-dividers */
+	 
 	if (nm->common.features & CCU_FEATURE_FIXED_POSTDIV)
 		rate = rate * nm->fixed_post_div;
 
 	if (ccu_frac_helper_has_rate(&nm->common, &nm->frac, rate)) {
 		spin_lock_irqsave(nm->common.lock, flags);
 
-		/* most SoCs require M to be 0 if fractional mode is used */
+		 
 		reg = readl(nm->common.base + nm->common.reg);
 		reg &= ~GENMASK(nm->m.width + nm->m.shift - 1, nm->m.shift);
 		writel(reg, nm->common.base + nm->common.reg);
@@ -202,7 +199,7 @@ static int ccu_nm_set_rate(struct clk_hw *hw, unsigned long rate,
 	if (ccu_sdm_helper_has_rate(&nm->common, &nm->sdm, rate)) {
 		ccu_sdm_helper_enable(&nm->common, &nm->sdm, rate);
 
-		/* Sigma delta modulation requires specific N and M factors */
+		 
 		ccu_sdm_helper_get_factors(&nm->common, &nm->sdm, rate,
 					   &_nm.m, &_nm.n);
 	} else {

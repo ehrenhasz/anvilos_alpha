@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #define _GNU_SOURCE
 #include <errno.h>
 #include <fcntl.h>
@@ -15,20 +15,14 @@
 #include "log.h"
 #include "timens.h"
 
-/*
- * Test shouldn't be run for a day, so add 10 days to child
- * time and check parent's time to be in the same day.
- */
+ 
 #define DAY_IN_SEC			(60*60*24)
 #define TEN_DAYS_IN_SEC			(10*DAY_IN_SEC)
 
 struct test_clock {
 	clockid_t id;
 	char *name;
-	/*
-	 * off_id is -1 if a clock has own offset, or it contains an index
-	 * which contains a right offset of this clock.
-	 */
+	 
 	int off_id;
 	time_t offset;
 };
@@ -135,7 +129,7 @@ static int test_gettime(clockid_t clock_index, bool raw_syscall, time_t offset)
 			"Parent's %s (%s) time has changed: %lu -> %lu [%lu]\n",
 			clocks[clock_index].name, entry, parent_ts_old.tv_sec,
 			child_ts_new.tv_sec, cur_ts.tv_sec);
-		/* Let's play nice and put it closer to original */
+		 
 		clock_settime(clocks[clock_index].id, &cur_ts);
 		return -1;
 	}
@@ -160,7 +154,7 @@ int main(int argc, char *argv[])
 	if (init_namespaces())
 		return 1;
 
-	/* Offsets have to be set before tasks enter the namespace. */
+	 
 	for (i = 0; i < ARRAY_SIZE(clocks); i++) {
 		if (clocks[i].off_id != -1)
 			continue;

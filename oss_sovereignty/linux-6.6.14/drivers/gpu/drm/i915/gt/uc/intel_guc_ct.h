@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2016-2019 Intel Corporation
- */
+ 
+ 
 
 #ifndef _INTEL_GUC_CT_H_
 #define _INTEL_GUC_CT_H_
@@ -19,29 +17,9 @@ struct i915_vma;
 struct intel_guc;
 struct drm_printer;
 
-/**
- * DOC: Command Transport (CT).
- *
- * Buffer based command transport is a replacement for MMIO based mechanism.
- * It can be used to perform both host-2-guc and guc-to-host communication.
- */
+ 
 
-/** Represents single command transport buffer.
- *
- * A single command transport buffer consists of two parts, the header
- * record (command transport buffer descriptor) and the actual buffer which
- * holds the commands.
- *
- * @lock: protects access to the commands buffer and buffer descriptor
- * @desc: pointer to the buffer descriptor
- * @cmds: pointer to the commands buffer
- * @size: size of the commands buffer in dwords
- * @resv_space: reserved space in buffer in dwords
- * @head: local shadow copy of head in dwords
- * @tail: local shadow copy of tail in dwords
- * @space: local shadow copy of space in dwords
- * @broken: flag to indicate if descriptor data is broken
- */
+ 
 struct intel_guc_ct_buffer {
 	spinlock_t lock;
 	struct guc_ct_buffer_desc *desc;
@@ -54,16 +32,12 @@ struct intel_guc_ct_buffer {
 	bool broken;
 };
 
-/** Top-level structure for Command Transport related data
- *
- * Includes a pair of CT buffers for bi-directional communication and tracking
- * for the H2G and G2H requests sent and received through the buffers.
- */
+ 
 struct intel_guc_ct {
 	struct i915_vma *vma;
 	bool enabled;
 
-	/* buffers for sending and receiving commands */
+	 
 	struct {
 		struct intel_guc_ct_buffer send;
 		struct intel_guc_ct_buffer recv;
@@ -71,17 +45,17 @@ struct intel_guc_ct {
 
 	struct tasklet_struct receive_tasklet;
 
-	/** @wq: wait queue for g2h chanenl */
+	 
 	wait_queue_head_t wq;
 
 	struct {
-		u16 last_fence; /* last fence used to send request */
+		u16 last_fence;  
 
-		spinlock_t lock; /* protects pending requests list */
-		struct list_head pending; /* requests waiting for response */
+		spinlock_t lock;  
+		struct list_head pending;  
 
-		struct list_head incoming; /* incoming requests */
-		struct work_struct worker; /* handler for incoming requests */
+		struct list_head incoming;  
+		struct work_struct worker;  
 
 #if IS_ENABLED(CONFIG_DRM_I915_DEBUG_GEM)
 		struct {
@@ -94,7 +68,7 @@ struct intel_guc_ct {
 #endif
 	} requests;
 
-	/** @stall_time: time of first time a CTB submission is stalled */
+	 
 	ktime_t stall_time;
 
 #if IS_ENABLED(CONFIG_DRM_I915_DEBUG_GUC)
@@ -134,4 +108,4 @@ void intel_guc_ct_event_handler(struct intel_guc_ct *ct);
 
 void intel_guc_ct_print_info(struct intel_guc_ct *ct, struct drm_printer *p);
 
-#endif /* _INTEL_GUC_CT_H_ */
+#endif  

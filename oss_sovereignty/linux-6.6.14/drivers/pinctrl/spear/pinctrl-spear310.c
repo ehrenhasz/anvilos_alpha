@@ -1,13 +1,4 @@
-/*
- * Driver for the ST Microelectronics SPEAr310 pinmux
- *
- * Copyright (C) 2012 ST Microelectronics
- * Viresh Kumar <vireshk@kernel.org>
- *
- * This file is licensed under the terms of the GNU General Public
- * License version 2. This program is licensed "as is" without any
- * warranty of any kind, whether express or implied.
- */
+ 
 
 #include <linux/err.h>
 #include <linux/init.h>
@@ -17,10 +8,10 @@
 
 #define DRIVER_NAME "spear310-pinmux"
 
-/* addresses */
+ 
 #define PMX_CONFIG_REG			0x08
 
-/* emi_cs_0_to_5_pins */
+ 
 static const unsigned emi_cs_0_to_5_pins[] = { 45, 46, 47, 48, 49, 50 };
 static struct spear_muxreg emi_cs_0_to_5_muxreg[] = {
 	{
@@ -52,7 +43,7 @@ static struct spear_function emi_cs_0_to_5_function = {
 	.ngroups = ARRAY_SIZE(emi_cs_0_to_5_grps),
 };
 
-/* uart1_pins */
+ 
 static const unsigned uart1_pins[] = { 0, 1 };
 static struct spear_muxreg uart1_muxreg[] = {
 	{
@@ -84,7 +75,7 @@ static struct spear_function uart1_function = {
 	.ngroups = ARRAY_SIZE(uart1_grps),
 };
 
-/* uart2_pins */
+ 
 static const unsigned uart2_pins[] = { 43, 44 };
 static struct spear_muxreg uart2_muxreg[] = {
 	{
@@ -116,7 +107,7 @@ static struct spear_function uart2_function = {
 	.ngroups = ARRAY_SIZE(uart2_grps),
 };
 
-/* uart3_pins */
+ 
 static const unsigned uart3_pins[] = { 37, 38 };
 static struct spear_muxreg uart3_muxreg[] = {
 	{
@@ -148,7 +139,7 @@ static struct spear_function uart3_function = {
 	.ngroups = ARRAY_SIZE(uart3_grps),
 };
 
-/* uart4_pins */
+ 
 static const unsigned uart4_pins[] = { 39, 40 };
 static struct spear_muxreg uart4_muxreg[] = {
 	{
@@ -180,7 +171,7 @@ static struct spear_function uart4_function = {
 	.ngroups = ARRAY_SIZE(uart4_grps),
 };
 
-/* uart5_pins */
+ 
 static const unsigned uart5_pins[] = { 41, 42 };
 static struct spear_muxreg uart5_muxreg[] = {
 	{
@@ -212,7 +203,7 @@ static struct spear_function uart5_function = {
 	.ngroups = ARRAY_SIZE(uart5_grps),
 };
 
-/* fsmc_pins */
+ 
 static const unsigned fsmc_pins[] = { 34, 35, 36 };
 static struct spear_muxreg fsmc_muxreg[] = {
 	{
@@ -244,7 +235,7 @@ static struct spear_function fsmc_function = {
 	.ngroups = ARRAY_SIZE(fsmc_grps),
 };
 
-/* rs485_0_pins */
+ 
 static const unsigned rs485_0_pins[] = { 19, 20, 21, 22, 23 };
 static struct spear_muxreg rs485_0_muxreg[] = {
 	{
@@ -276,7 +267,7 @@ static struct spear_function rs485_0_function = {
 	.ngroups = ARRAY_SIZE(rs485_0_grps),
 };
 
-/* rs485_1_pins */
+ 
 static const unsigned rs485_1_pins[] = { 14, 15, 16, 17, 18 };
 static struct spear_muxreg rs485_1_muxreg[] = {
 	{
@@ -308,7 +299,7 @@ static struct spear_function rs485_1_function = {
 	.ngroups = ARRAY_SIZE(rs485_1_grps),
 };
 
-/* tdm_pins */
+ 
 static const unsigned tdm_pins[] = { 10, 11, 12, 13 };
 static struct spear_muxreg tdm_muxreg[] = {
 	{
@@ -340,7 +331,7 @@ static struct spear_function tdm_function = {
 	.ngroups = ARRAY_SIZE(tdm_grps),
 };
 
-/* pingroups */
+ 
 static struct spear_pingroup *spear310_pingroups[] = {
 	SPEAR3XX_COMMON_PINGROUPS,
 	&emi_cs_0_to_5_pingroup,
@@ -355,7 +346,7 @@ static struct spear_pingroup *spear310_pingroups[] = {
 	&tdm_pingroup,
 };
 
-/* functions */
+ 
 static struct spear_function *spear310_functions[] = {
 	SPEAR3XX_COMMON_FUNCTIONS,
 	&emi_cs_0_to_5_function,

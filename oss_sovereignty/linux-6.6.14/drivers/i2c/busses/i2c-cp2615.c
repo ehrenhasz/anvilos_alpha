@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * i2c support for Silicon Labs' CP2615 Digital Audio Bridge
- *
- * (c) 2021, Bence Csókás <bence98@sch.bme.hu>
- */
+
+ 
 
 #include <linux/errno.h>
 #include <linux/i2c.h>
@@ -12,7 +8,7 @@
 #include <linux/string.h>
 #include <linux/usb.h>
 
-/** CP2615 I/O Protocol implementation */
+ 
 
 #define CP2615_VID 0x10c4
 #define CP2615_PID 0xeac1
@@ -54,17 +50,17 @@ struct __packed cp2615_i2c_transfer {
 	u8 data[MAX_I2C_SIZE];
 };
 
-/* Possible values for struct cp2615_i2c_transfer_result.status */
+ 
 enum cp2615_i2c_status {
-	/* Writing to the internal EEPROM failed, because it is locked */
+	 
 	CP2615_CFG_LOCKED = -6,
-	/* read_len or write_len out of range */
+	 
 	CP2615_INVALID_PARAM = -4,
-	/* I2C slave did not ACK in time */
+	 
 	CP2615_TIMEOUT,
-	/* I2C bus busy */
+	 
 	CP2615_BUS_BUSY,
-	/* I2C bus error (ie. device NAK'd the request) */
+	 
 	CP2615_BUS_ERROR,
 	CP2615_SUCCESS
 };
@@ -98,7 +94,7 @@ static int cp2615_init_i2c_msg(struct cp2615_iop_msg *ret, const struct cp2615_i
 	return cp2615_init_iop_msg(ret, iop_DoI2cTransfer, data, 4 + data->write_len);
 }
 
-/* Translates status codes to Linux errno's */
+ 
 static int cp2615_check_status(enum cp2615_i2c_status status)
 {
 	switch (status) {
@@ -115,11 +111,11 @@ static int cp2615_check_status(enum cp2615_i2c_status status)
 	case CP2615_CFG_LOCKED:
 		return -EPERM;
 	}
-	/* Unknown error code */
+	 
 	return -EPROTO;
 }
 
-/** Driver code */
+ 
 
 static int
 cp2615_i2c_send(struct usb_interface *usbif, struct cp2615_i2c_transfer *i2c_w)
@@ -168,7 +164,7 @@ cp2615_i2c_recv(struct usb_interface *usbif, unsigned char tag, void *buf)
 	return res;
 }
 
-/* Checks if the IOP is functional by querying the part's ID */
+ 
 static int cp2615_check_iop(struct usb_interface *usbif)
 {
 	struct cp2615_iop_msg *msg = kzalloc(sizeof(*msg), GFP_KERNEL);
@@ -254,14 +250,7 @@ static const struct i2c_algorithm cp2615_i2c_algo = {
 	.functionality	= cp2615_i2c_func,
 };
 
-/*
- * This chip has some limitations: one is that the USB endpoint
- * can only receive 64 bytes/transfer, that leaves 54 bytes for
- * the I2C transfer. On top of that, EITHER read_len OR write_len
- * may be zero, but not both. If both are non-zero, the adapter
- * issues a write followed by a read. And the chip does not
- * support repeated START between the write and read phases.
- */
+ 
 static struct i2c_adapter_quirks cp2615_i2c_quirks = {
 	.max_write_len = MAX_I2C_SIZE,
 	.max_read_len = MAX_I2C_SIZE,

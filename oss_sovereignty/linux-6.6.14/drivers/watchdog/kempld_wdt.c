@@ -1,20 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Kontron PLD watchdog driver
- *
- * Copyright (c) 2010-2013 Kontron Europe GmbH
- * Author: Michael Brunner <michael.brunner@kontron.com>
- *
- * Note: From the PLD watchdog point of view timeout and pretimeout are
- *       defined differently than in the kernel.
- *       First the pretimeout stage runs out before the timeout stage gets
- *       active.
- *
- * Kernel/API:                     P-----| pretimeout
- *               |-----------------------T timeout
- * Watchdog:     |-----------------P       pretimeout_stage
- *                                 |-----T timeout_stage
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/moduleparam.h>
@@ -78,7 +63,7 @@ struct kempld_wdt_data {
 	u8				pm_status_store;
 };
 
-#define DEFAULT_TIMEOUT		30 /* seconds */
+#define DEFAULT_TIMEOUT		30  
 #define DEFAULT_PRETIMEOUT	0
 
 static unsigned int timeout = DEFAULT_TIMEOUT;
@@ -163,9 +148,7 @@ static int kempld_wdt_set_stage_timeout(struct kempld_wdt_data *wdt_data,
 	return 0;
 }
 
-/*
- * kempld_get_mutex must be called prior to calling this function.
- */
+ 
 static unsigned int kempld_wdt_get_timeout(struct kempld_wdt_data *wdt_data,
 						struct kempld_wdt_stage *stage)
 {
@@ -294,7 +277,7 @@ static int kempld_wdt_start(struct watchdog_device *wdd)
 	status = kempld_read8(pld, KEMPLD_WDT_CFG);
 	kempld_release_mutex(pld);
 
-	/* Check if the watchdog was enabled */
+	 
 	if (!(status & KEMPLD_WDT_CFG_ENABLE))
 		return -EACCES;
 
@@ -314,7 +297,7 @@ static int kempld_wdt_stop(struct watchdog_device *wdd)
 	status = kempld_read8(pld, KEMPLD_WDT_CFG);
 	kempld_release_mutex(pld);
 
-	/* Check if the watchdog was disabled */
+	 
 	if (status & KEMPLD_WDT_CFG_ENABLE)
 		return -EACCES;
 
@@ -380,12 +363,12 @@ static int kempld_wdt_probe_stages(struct watchdog_device *wdd)
 		mask = 0;
 
 		kempld_get_mutex(pld);
-		/* Probe each byte individually. */
+		 
 		for (j = 0; j < 4; j++) {
 			data_orig = kempld_read8(pld, index + j);
 			kempld_write8(pld, index + j, 0x00);
 			data = kempld_read8(pld, index + j);
-			/* A failed write means this byte is reserved */
+			 
 			if (data != 0x00)
 				break;
 			kempld_write8(pld, index + j, data_orig);
@@ -393,7 +376,7 @@ static int kempld_wdt_probe_stages(struct watchdog_device *wdd)
 		}
 		kempld_release_mutex(pld);
 
-		/* Assign available stages to timeout and pretimeout */
+		 
 		if (!timeout_stage->mask) {
 			timeout_stage->mask = mask;
 			timeout_stage->id = i;
@@ -452,7 +435,7 @@ static int kempld_wdt_probe(struct platform_device *pdev)
 	status = kempld_read8(pld, KEMPLD_WDT_CFG);
 	kempld_release_mutex(pld);
 
-	/* Enable nowayout if watchdog is already locked */
+	 
 	if (status & (KEMPLD_WDT_CFG_ENABLE_LOCK |
 			KEMPLD_WDT_CFG_GLOBAL_LOCK)) {
 		if (!nowayout)
@@ -474,9 +457,9 @@ static int kempld_wdt_probe(struct platform_device *pdev)
 	kempld_wdt_set_timeout(wdd, timeout);
 	kempld_wdt_set_pretimeout(wdd, pretimeout);
 
-	/* Check if watchdog is already enabled */
+	 
 	if (status & KEMPLD_WDT_CFG_ENABLE) {
-		/* Get current watchdog settings */
+		 
 		kempld_wdt_update_timeouts(wdt_data);
 		dev_info(dev, "Watchdog was already enabled\n");
 	}
@@ -493,7 +476,7 @@ static int kempld_wdt_probe(struct platform_device *pdev)
 	return 0;
 }
 
-/* Disable watchdog if it is active during suspend */
+ 
 static int kempld_wdt_suspend(struct platform_device *pdev,
 				pm_message_t message)
 {
@@ -513,16 +496,13 @@ static int kempld_wdt_suspend(struct platform_device *pdev,
 	return 0;
 }
 
-/* Enable watchdog and configure it if necessary */
+ 
 static int kempld_wdt_resume(struct platform_device *pdev)
 {
 	struct kempld_wdt_data *wdt_data = platform_get_drvdata(pdev);
 	struct watchdog_device *wdd = &wdt_data->wdd;
 
-	/*
-	 * If watchdog was stopped before suspend be sure it gets disabled
-	 * again, for the case BIOS has enabled it during resume
-	 */
+	 
 	if (wdt_data->pm_status_store & KEMPLD_WDT_CFG_ENABLE)
 		return kempld_wdt_start(wdd);
 	else

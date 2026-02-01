@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2017, Linaro Ltd
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -100,7 +98,7 @@ static int qcom_apcs_ipc_probe(struct platform_device *pdev)
 	apcs->regmap = regmap;
 	apcs->offset = apcs_data->offset;
 
-	/* Initialize channel identifiers */
+	 
 	for (i = 0; i < ARRAY_SIZE(apcs->mbox_chans); i++)
 		apcs->mbox_chans[i].con_priv = (void *)i;
 
@@ -139,7 +137,7 @@ static int qcom_apcs_ipc_remove(struct platform_device *pdev)
 	return 0;
 }
 
-/* .data is the offset of the ipc register within the global block */
+ 
 static const struct of_device_id qcom_apcs_ipc_of_match[] = {
 	{ .compatible = "qcom,ipq6018-apcs-apps-global", .data = &ipq6018_apcs_data },
 	{ .compatible = "qcom,msm8916-apcs-kpss-global", .data = &msm8916_apcs_data },
@@ -157,7 +155,7 @@ static const struct of_device_id qcom_apcs_ipc_of_match[] = {
 	{ .compatible = "qcom,sm6125-apcs-hmss-global", .data = &msm8994_apcs_data },
 	{ .compatible = "qcom,sm6115-apcs-hmss-global", .data = &msm8994_apcs_data },
 	{ .compatible = "qcom,sdx55-apcs-gcc", .data = &sdx55_apcs_data },
-	/* Do not add any more entries using existing driver data */
+	 
 	{ .compatible = "qcom,ipq5332-apcs-apps-global", .data = &ipq6018_apcs_data },
 	{ .compatible = "qcom,ipq8074-apcs-apps-global", .data = &ipq6018_apcs_data },
 	{ .compatible = "qcom,sc7180-apss-shared", .data = &apps_shared_apcs_data },

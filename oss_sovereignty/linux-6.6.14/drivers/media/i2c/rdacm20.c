@@ -1,19 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * IMI RDACM20 GMSL Camera Driver
- *
- * Copyright (C) 2017-2020 Jacopo Mondi
- * Copyright (C) 2017-2020 Kieran Bingham
- * Copyright (C) 2017-2019 Laurent Pinchart
- * Copyright (C) 2017-2019 Niklas Söderlund
- * Copyright (C) 2016 Renesas Electronics Corporation
- * Copyright (C) 2015 Cogent Embedded, Inc.
- */
 
-/*
- * The camera is made of an Omnivision OV10635 sensor connected to a Maxim
- * MAX9271 GMSL serializer.
- */
+ 
+
+ 
 
 #include <linux/delay.h>
 #include <linux/fwnode.h>
@@ -41,22 +29,12 @@
 #define OV10635_WIDTH			1280
 #define OV10635_HEIGHT			800
 
-/* VTS = PCLK / FPS / HTS / 2 (= 88MHz / 1572 / 30 / 2) */
+ 
 #define OV10635_HTS			1572
-/* FPS = 29,9998 */
+ 
 #define OV10635_VTS			933
 
-/*
- * As the drivers supports a single MEDIA_BUS_FMT_UYVY8_1X16 format we
- * can harcode the pixel rate.
- *
- * PCLK is fed through the system clock, programmed @88MHz.
- * MEDIA_BUS_FMT_UYVY8_1X16 format = 2 samples per pixel.
- *
- * Pixelrate = PCLK / 2
- * FPS = (OV10635_VTS * OV10635_HTS) / PixelRate
- *     = 29,9998
- */
+ 
 #define OV10635_PIXEL_RATE		(44000000)
 
 static const struct ov10635_reg {
@@ -126,13 +104,13 @@ static const struct ov10635_reg {
 	{ 0x5244, 0x06 }, { 0x5245, 0x0a }, { 0x5246, 0x0e }, { 0x5247, 0x12 },
 	{ 0x5248, 0x16 }, { 0x524a, 0x03 }, { 0x524c, 0x04 }, { 0x524e, 0x08 },
 	{ 0x5250, 0x0c }, { 0x5252, 0x12 }, { 0x5254, 0x18 }, { 0x5256, 0x1e },
-	/* fifo_line_length = 2*hts */
+	 
 	{ 0x4606, (2 * OV10635_HTS) >> 8 }, { 0x4607, (2 * OV10635_HTS) & 0xff },
-	/* fifo_hsync_start = 2*(hts - xres) */
+	 
 	{ 0x460a, (2 * (OV10635_HTS - OV10635_WIDTH)) >> 8 },
 	{ 0x460b, (2 * (OV10635_HTS - OV10635_WIDTH)) & 0xff },
 	{ 0x460c, 0x00 }, { 0x4620, 0x0e },
-	/* BT601: 0x08 is also acceptable as HS/VS mode */
+	 
 	{ 0x4700, 0x04 }, { 0x4701, 0x00 }, { 0x4702, 0x01 }, { 0x4004, 0x04 },
 	{ 0x4005, 0x18 }, { 0x4001, 0x06 }, { 0x4050, 0x22 }, { 0x4051, 0x24 },
 	{ 0x4052, 0x02 }, { 0x4057, 0x9c }, { 0x405a, 0x00 }, { 0x4202, 0x02 },
@@ -214,13 +192,13 @@ static const struct ov10635_reg {
 	{ 0xd155, 0x21 }, { 0xd156, 0x00 }, { 0xd157, 0x08 }, { 0x6f0e, 0x03 },
 	{ 0x6f0f, 0x00 }, { 0x460e, 0x08 }, { 0x460f, 0x01 }, { 0x4610, 0x00 },
 	{ 0x4611, 0x01 }, { 0x4612, 0x00 }, { 0x4613, 0x01 },
-	/* 8 bits */
+	 
 	{ 0x4605, 0x08 },
-	/* Swap data bits order [9:0] -> [0:9] */
+	 
 	{ 0x4709, 0x10 }, { 0x4608, 0x00 }, { 0x4609, 0x08 }, { 0x6804, 0x00 },
 	{ 0x6805, 0x06 }, { 0x6806, 0x00 }, { 0x5120, 0x00 }, { 0x3510, 0x00 },
 	{ 0x3504, 0x00 }, { 0x6800, 0x00 }, { 0x6f0d, 0x01 },
-	/* PCLK falling edge */
+	 
 	{ 0x4708, 0x01 }, { 0x5000, 0xff }, { 0x5001, 0xbf }, { 0x5002, 0x7e },
 	{ 0x503d, 0x00 }, { 0xc450, 0x01 }, { 0xc452, 0x04 }, { 0xc453, 0x00 },
 	{ 0xc454, 0x00 }, { 0xc455, 0x01 }, { 0xc456, 0x01 }, { 0xc457, 0x00 },
@@ -303,7 +281,7 @@ static const struct ov10635_reg {
 	{ 0x6f00, 0x03 }, { 0x6f00, 0x43 }, { 0x381c, 0x00 }, { 0x381d, 0x40 },
 	{ 0xc454, 0x01 }, { 0x6f00, 0xc3 }, { 0xc454, 0x00 }, { 0xc4b1, 0x02 },
 	{ 0xc4b2, 0x01 }, { 0xc4b3, 0x03 }, { 0x6f00, 0x03 }, { 0x6f00, 0x43 },
-	/* enable FSIN (FRAMESYNC input) functionality */
+	 
 	{ 0x3832, (0x0d + 2 * 0x20 + 0x15 + 38) >> 8 },
 	{ 0x3833, (0x0d + 2 * 0x20 + 0x15 + 38) & 0xff },
 	{ 0x3834, OV10635_VTS >> 8 }, { 0x3835, OV10635_VTS & 0xff },
@@ -457,15 +435,12 @@ static int rdacm20_initialize(struct rdacm20_device *dev)
 
 	max9271_wake_up(&dev->serializer);
 
-	/* Serial link disabled during config as it needs a valid pixel clock. */
+	 
 	ret = max9271_set_serial_link(&dev->serializer, false);
 	if (ret)
 		return ret;
 
-	/*
-	 *  Ensure that we have a good link configuration before attempting to
-	 *  identify the device.
-	 */
+	 
 	ret = max9271_configure_i2c(&dev->serializer,
 				    MAX9271_I2CSLVSH_469NS_234NS |
 				    MAX9271_I2CSLVTO_1024US |
@@ -473,10 +448,7 @@ static int rdacm20_initialize(struct rdacm20_device *dev)
 	if (ret)
 		return ret;
 
-	/*
-	 * Hold OV10635 in reset during max9271 configuration. The reset signal
-	 * has to be asserted for at least 200 microseconds.
-	 */
+	 
 	ret = max9271_enable_gpios(&dev->serializer, MAX9271_GPIO1OUT);
 	if (ret)
 		return ret;
@@ -499,11 +471,7 @@ static int rdacm20_initialize(struct rdacm20_device *dev)
 		return ret;
 	dev->serializer.client->addr = dev->addrs[0];
 
-	/*
-	 * Release ov10635 from reset and initialize it. The image sensor
-	 * requires at least 2048 XVCLK cycles (85 micro-seconds at 24MHz)
-	 * before being available. Stay safe and wait up to 500 micro-seconds.
-	 */
+	 
 	ret = max9271_set_gpios(&dev->serializer, MAX9271_GPIO1OUT);
 	if (ret)
 		return ret;
@@ -529,7 +497,7 @@ again:
 		return -ENXIO;
 	}
 
-	/* Change the sensor I2C address. */
+	 
 	ret = ov10635_write(dev, OV10635_SC_CMMN_SCCB_ID,
 			    (dev->addrs[1] << 1) |
 			    OV10635_SC_CMMN_SCCB_ID_SELECT);
@@ -541,7 +509,7 @@ again:
 	dev->sensor->addr = dev->addrs[1];
 	usleep_range(3500, 5000);
 
-	/* Program the 0V10635 initial configuration. */
+	 
 	ret = ov10635_set_regs(dev, ov10635_regs_wizard,
 			       ARRAY_SIZE(ov10635_regs_wizard));
 	if (ret)
@@ -549,18 +517,7 @@ again:
 
 	dev_info(dev->dev, "Identified RDACM20 camera module\n");
 
-	/*
-	 * Set reverse channel high threshold to increase noise immunity.
-	 *
-	 * This should be compensated by increasing the reverse channel
-	 * amplitude on the remote deserializer side.
-	 *
-	 * TODO Inspect the embedded MCU programming sequence to make sure
-	 * there are no conflicts with the configuration applied here.
-	 *
-	 * TODO Clarify the embedded MCU startup delay to avoid write
-	 * collisions on the I2C bus.
-	 */
+	 
 	return max9271_set_high_threshold(&dev->serializer, true);
 }
 
@@ -582,7 +539,7 @@ static int rdacm20_probe(struct i2c_client *client)
 		return -EINVAL;
 	}
 
-	/* Create the dummy I2C client for the sensor. */
+	 
 	dev->sensor = i2c_new_dummy_device(client->adapter,
 					   OV10635_I2C_ADDRESS);
 	if (IS_ERR(dev->sensor)) {
@@ -590,12 +547,12 @@ static int rdacm20_probe(struct i2c_client *client)
 		goto error;
 	}
 
-	/* Initialize the hardware. */
+	 
 	ret = rdacm20_initialize(dev);
 	if (ret < 0)
 		goto error;
 
-	/* Initialize and register the subdevice. */
+	 
 	v4l2_i2c_subdev_init(&dev->sd, client, &rdacm20_subdev_ops);
 	dev->sd.flags |= V4L2_SUBDEV_FL_HAS_DEVNODE;
 
@@ -647,7 +604,7 @@ static void rdacm20_shutdown(struct i2c_client *client)
 {
 	struct rdacm20_device *dev = i2c_to_rdacm20(client);
 
-	/* make sure stream off during shutdown (reset/reboot) */
+	 
 	rdacm20_s_stream(&dev->sd, 0);
 }
 

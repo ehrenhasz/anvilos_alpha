@@ -1,19 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
-	Copyright (C) 2010 Willow Garage <http://www.willowgarage.com>
-	Copyright (C) 2010 Ivo van Doorn <IvDoorn@gmail.com>
-	Copyright (C) 2009 Bartlomiej Zolnierkiewicz
-
- */
+ 
+ 
 
 #ifndef RT2800LIB_H
 #define RT2800LIB_H
 
-/*
- * Hardware has 255 WCID table entries. First 32 entries are reserved for
- * shared keys. Since parts of the pairwise key table might be shared with
- * the beacon frame buffers 6 & 7 we could only use the first 222 entries.
- */
+ 
 #define WCID_START	33
 #define WCID_END	222
 #define STA_IDS_SIZE	(WCID_END - WCID_START + 2)
@@ -28,7 +19,7 @@ struct rf_reg_pair {
 	u8 value;
 };
 
-/* RT2800 driver data structure */
+ 
 struct rt2800_drv_data {
 	u8 calibration_bw20;
 	u8 calibration_bw40;
@@ -270,4 +261,4 @@ void rt2800_get_txwi_rxwi_size(struct rt2x00_dev *rt2x00dev,
 			       unsigned short *rxwi_size);
 void rt2800_pre_reset_hw(struct rt2x00_dev *rt2x00dev);
 
-#endif /* RT2800LIB_H */
+#endif  

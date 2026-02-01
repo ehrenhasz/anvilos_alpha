@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright © 2023 Intel Corporation
- */
+
+ 
 
 #include <drm/drm_atomic_helper.h>
 
@@ -28,12 +26,12 @@ void intel_display_reset_prepare(struct drm_i915_private *dev_priv)
 	if (!HAS_DISPLAY(dev_priv))
 		return;
 
-	/* reset doesn't touch the display */
+	 
 	if (!dev_priv->params.force_reset_modeset_test &&
 	    !gpu_reset_clobbers_display(dev_priv))
 		return;
 
-	/* We have a modeset vs reset deadlock, defensively unbreak it. */
+	 
 	set_bit(I915_RESET_MODESET, &to_gt(dev_priv)->reset.flags);
 	smp_mb__after_atomic();
 	wake_up_bit(&to_gt(dev_priv)->reset.flags, I915_RESET_MODESET);
@@ -44,10 +42,7 @@ void intel_display_reset_prepare(struct drm_i915_private *dev_priv)
 		intel_gt_set_wedged(to_gt(dev_priv));
 	}
 
-	/*
-	 * Need mode_config.mutex so that we don't
-	 * trample ongoing ->detect() and whatnot.
-	 */
+	 
 	mutex_lock(&dev_priv->drm.mode_config.mutex);
 	drm_modeset_acquire_init(ctx, 0);
 	while (1) {
@@ -57,10 +52,7 @@ void intel_display_reset_prepare(struct drm_i915_private *dev_priv)
 
 		drm_modeset_backoff(ctx);
 	}
-	/*
-	 * Disabling the crtcs gracefully seems nicer. Also the
-	 * g33 docs say we should at least disable all the planes.
-	 */
+	 
 	state = drm_atomic_helper_duplicate_state(&dev_priv->drm, ctx);
 	if (IS_ERR(state)) {
 		ret = PTR_ERR(state);
@@ -90,7 +82,7 @@ void intel_display_reset_finish(struct drm_i915_private *i915)
 	if (!HAS_DISPLAY(i915))
 		return;
 
-	/* reset doesn't touch the display */
+	 
 	if (!test_bit(I915_RESET_MODESET, &to_gt(i915)->reset.flags))
 		return;
 
@@ -98,9 +90,9 @@ void intel_display_reset_finish(struct drm_i915_private *i915)
 	if (!state)
 		goto unlock;
 
-	/* reset doesn't touch the display */
+	 
 	if (!gpu_reset_clobbers_display(i915)) {
-		/* for testing only restore the display */
+		 
 		ret = drm_atomic_helper_commit_duplicated_state(state, ctx);
 		if (ret) {
 			drm_WARN_ON(&i915->drm, ret == -EDEADLK);
@@ -108,10 +100,7 @@ void intel_display_reset_finish(struct drm_i915_private *i915)
 				"Restoring old state failed with %i\n", ret);
 		}
 	} else {
-		/*
-		 * The display has been reset as well,
-		 * so need a full re-initialization.
-		 */
+		 
 		intel_pps_unlock_regs_wa(i915);
 		intel_display_driver_init_hw(i915);
 		intel_clock_gating_init(i915);

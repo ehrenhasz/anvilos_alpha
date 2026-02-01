@@ -1,18 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Renesas SuperH DMA Engine support
- *
- * base is drivers/dma/flsdma.c
- *
- * Copyright (C) 2011-2012 Guennadi Liakhovetski <g.liakhovetski@gmx.de>
- * Copyright (C) 2009 Nobuhiro Iwamatsu <iwamatsu.nobuhiro@renesas.com>
- * Copyright (C) 2009 Renesas Solutions, Inc. All rights reserved.
- * Copyright (C) 2007 Freescale Semiconductor, Inc. All rights reserved.
- *
- * - DMA of SuperH does not have Hardware DMA chain mode.
- * - MAX DMA size is 16MB.
- *
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/dmaengine.h>
@@ -33,37 +20,27 @@
 #include "../dmaengine.h"
 #include "shdma.h"
 
-/* DMA registers */
-#define SAR	0x00	/* Source Address Register */
-#define DAR	0x04	/* Destination Address Register */
-#define TCR	0x08	/* Transfer Count Register */
-#define CHCR	0x0C	/* Channel Control Register */
-#define DMAOR	0x40	/* DMA Operation Register */
+ 
+#define SAR	0x00	 
+#define DAR	0x04	 
+#define TCR	0x08	 
+#define CHCR	0x0C	 
+#define DMAOR	0x40	 
 
-#define TEND	0x18 /* USB-DMAC */
+#define TEND	0x18  
 
 #define SH_DMAE_DRV_NAME "sh-dma-engine"
 
-/* Default MEMCPY transfer size = 2^2 = 4 bytes */
+ 
 #define LOG2_DEFAULT_XFER_SIZE	2
 #define SH_DMA_SLAVE_NUMBER 256
 #define SH_DMA_TCR_MAX (16 * 1024 * 1024 - 1)
 
-/*
- * Used for write-side mutual exclusion for the global device list,
- * read-side synchronization by way of RCU, and per-controller data.
- */
+ 
 static DEFINE_SPINLOCK(sh_dmae_lock);
 static LIST_HEAD(sh_dmae_devices);
 
-/*
- * Different DMAC implementations provide different ways to clear DMA channels:
- * (1) none - no CHCLR registers are available
- * (2) one CHCLR register per channel - 0 has to be written to it to clear
- *     channel buffers
- * (3) one CHCLR per several channels - 1 has to be written to the bit,
- *     corresponding to the specific channel to reset it
- */
+ 
 static void channel_clear(struct sh_dmae_chan *sh_dc)
 {
 	struct sh_dmae_device *shdev = to_sh_dev(sh_dc);
@@ -118,11 +95,7 @@ static u32 chcr_read(struct sh_dmae_chan *sh_dc)
 	return __raw_readl(sh_dc->base + shdev->chcr_offset);
 }
 
-/*
- * Reset DMA controller
- *
- * SH7780 has two DMAOR register
- */
+ 
 static void sh_dmae_ctl_stop(struct sh_dmae_device *shdev)
 {
 	unsigned short dmaor;
@@ -176,9 +149,9 @@ static bool dmae_is_busy(struct sh_dmae_chan *sh_chan)
 	u32 chcr = chcr_read(sh_chan);
 
 	if ((chcr & (CHCR_DE | CHCR_TE)) == CHCR_DE)
-		return true; /* working */
+		return true;  
 
-	return false; /* waiting */
+	return false;  
 }
 
 static unsigned int calc_xmit_shift(struct sh_dmae_chan *sh_chan, u32 chcr)
@@ -232,9 +205,7 @@ static void dmae_start(struct sh_dmae_chan *sh_chan)
 
 static void dmae_init(struct sh_dmae_chan *sh_chan)
 {
-	/*
-	 * Default configuration for dual address memory-memory transfer.
-	 */
+	 
 	u32 chcr = DM_INC | SM_INC | RS_AUTO | log2size_to_chcr(sh_chan,
 						   LOG2_DEFAULT_XFER_SIZE);
 	sh_chan->xmit_shift = calc_xmit_shift(sh_chan, chcr);
@@ -243,7 +214,7 @@ static void dmae_init(struct sh_dmae_chan *sh_chan)
 
 static int dmae_set_chcr(struct sh_dmae_chan *sh_chan, u32 val)
 {
-	/* If DMA is active, cannot set CHCR. TODO: remove this superfluous check */
+	 
 	if (dmae_is_busy(sh_chan))
 		return -EBUSY;
 
@@ -267,7 +238,7 @@ static int dmae_set_dmars(struct sh_dmae_chan *sh_chan, u16 val)
 	if (pdata->no_dmars)
 		return 0;
 
-	/* in the case of a missing DMARS resource use first memory window */
+	 
 	if (!addr)
 		addr = shdev->chan_reg;
 	addr += chan_pdata->dmars;
@@ -288,7 +259,7 @@ static void sh_dmae_start_xfer(struct shdma_chan *schan,
 	dev_dbg(sh_chan->shdma_chan.dev, "Queue #%d to %d: %u@%x -> %x\n",
 		sdesc->async_tx.cookie, sh_chan->shdma_chan.id,
 		sh_desc->hw.tcr, sh_desc->hw.sar, sh_desc->hw.dar);
-	/* Get the ld start address from ld_queue */
+	 
 	dmae_set_reg(sh_chan, &sh_desc->hw);
 	dmae_start(sh_chan);
 }
@@ -317,10 +288,7 @@ static void sh_dmae_setup_xfer(struct shdma_chan *schan,
 	}
 }
 
-/*
- * Find a slave channel configuration from the contoller list by either a slave
- * ID in the non-DT case, or by a MID/RID value in the DT case
- */
+ 
 static const struct sh_dmae_slave_config *dmae_find_slave(
 	struct sh_dmae_chan *sh_chan, int match)
 {
@@ -405,7 +373,7 @@ static bool sh_dmae_chan_irq(struct shdma_chan *schan, int irq)
 	if (!(chcr_read(sh_chan) & CHCR_TE))
 		return false;
 
-	/* DMA stop */
+	 
 	dmae_halt(sh_chan);
 
 	return true;
@@ -422,15 +390,15 @@ static size_t sh_dmae_get_partial(struct shdma_chan *schan,
 		(sh_dmae_readl(sh_chan, TCR) << sh_chan->xmit_shift);
 }
 
-/* Called from error IRQ or NMI */
+ 
 static bool sh_dmae_reset(struct sh_dmae_device *shdev)
 {
 	bool ret;
 
-	/* halt the dma controller */
+	 
 	sh_dmae_ctl_stop(shdev);
 
-	/* We cannot detect, which channel caused the error, have to reset all */
+	 
 	ret = shdma_reset(&shdev->shdma_dev);
 
 	sh_dmae_rst(shdev);
@@ -467,7 +435,7 @@ static bool sh_dmae_desc_completed(struct shdma_chan *schan,
 
 static bool sh_dmae_nmi_notify(struct sh_dmae_device *shdev)
 {
-	/* Fast path out if NMIF is not asserted for this controller */
+	 
 	if ((dmaor_read(shdev) & DMAOR_NMIF) == 0)
 		return false;
 
@@ -481,22 +449,13 @@ static int sh_dmae_nmi_handler(struct notifier_block *self,
 	int ret = NOTIFY_DONE;
 	bool triggered;
 
-	/*
-	 * Only concern ourselves with NMI events.
-	 *
-	 * Normally we would check the die chain value, but as this needs
-	 * to be architecture independent, check for NMI context instead.
-	 */
+	 
 	if (!in_nmi())
 		return NOTIFY_DONE;
 
 	rcu_read_lock();
 	list_for_each_entry_rcu(shdev, &sh_dmae_devices, node) {
-		/*
-		 * Only stop if one of the controllers has NMIF asserted,
-		 * we do not want to interfere with regular address error
-		 * handling or NMI events that don't concern the DMACs.
-		 */
+		 
 		triggered = sh_dmae_nmi_notify(shdev);
 		if (triggered == true)
 			ret = NOTIFY_OK;
@@ -509,7 +468,7 @@ static int sh_dmae_nmi_handler(struct notifier_block *self,
 static struct notifier_block sh_dmae_nmi_notifier __read_mostly = {
 	.notifier_call	= sh_dmae_nmi_handler,
 
-	/* Run before NMI debug handler and KGDB */
+	 
 	.priority	= 1,
 };
 
@@ -535,7 +494,7 @@ static int sh_dmae_chan_probe(struct sh_dmae_device *shdev, int id,
 
 	sh_chan->base = shdev->chan_reg + chan_pdata->offset;
 
-	/* set up channel irq */
+	 
 	if (pdev->id >= 0)
 		snprintf(sh_chan->dev_id, sizeof(sh_chan->dev_id),
 			 "sh-dmae%d.%d", pdev->id, id);
@@ -555,7 +514,7 @@ static int sh_dmae_chan_probe(struct sh_dmae_device *shdev, int id,
 	return 0;
 
 err_no_irq:
-	/* remove from dmaengine device node */
+	 
 	shdma_chan_remove(schan);
 	return err;
 }
@@ -637,11 +596,7 @@ static dma_addr_t sh_dmae_slave_addr(struct shdma_chan *schan)
 	struct sh_dmae_chan *sh_chan = container_of(schan,
 					struct sh_dmae_chan, shdma_chan);
 
-	/*
-	 * Implicit BUG_ON(!sh_chan->config)
-	 * This is an exclusive slave DMA operation, may only be called after a
-	 * successful slave configuration.
-	 */
+	 
 	return sh_chan->slave_addr;
 }
 
@@ -684,28 +639,13 @@ static int sh_dmae_probe(struct platform_device *pdev)
 	else
 		pdata = dev_get_platdata(&pdev->dev);
 
-	/* get platform data */
+	 
 	if (!pdata || !pdata->channel_num)
 		return -ENODEV;
 
-	/* DMARS area is optional */
+	 
 	dmars = platform_get_resource(pdev, IORESOURCE_MEM, 1);
-	/*
-	 * IRQ resources:
-	 * 1. there always must be at least one IRQ IO-resource. On SH4 it is
-	 *    the error IRQ, in which case it is the only IRQ in this resource:
-	 *    start == end. If it is the only IRQ resource, all channels also
-	 *    use the same IRQ.
-	 * 2. DMA channel IRQ resources can be specified one per resource or in
-	 *    ranges (start != end)
-	 * 3. iff all events (channels and, optionally, error) on this
-	 *    controller use the same IRQ, only one IRQ resource can be
-	 *    specified, otherwise there must be one IRQ per channel, even if
-	 *    some of them are equal
-	 * 4. if all IRQs on this controller are equal or if some specific IRQs
-	 *    specify IORESOURCE_IRQ_SHAREABLE in their resources, they will be
-	 *    requested with the IRQF_SHARED flag
-	 */
+	 
 	errirq_res = platform_get_resource(pdev, IORESOURCE_IRQ, 0);
 	if (!errirq_res)
 		return -ENODEV;
@@ -736,7 +676,7 @@ static int sh_dmae_probe(struct platform_device *pdev)
 	if (pdata->slave && pdata->slave_num)
 		dma_cap_set(DMA_SLAVE, dma_dev->cap_mask);
 
-	/* Default transfer size of 32 bytes requires 32-byte alignment */
+	 
 	dma_dev->copy_align = LOG2_DEFAULT_XFER_SIZE;
 
 	shdev->shdma_dev.ops = &sh_dmae_shdma_ops;
@@ -746,7 +686,7 @@ static int sh_dmae_probe(struct platform_device *pdev)
 	if (err < 0)
 		goto eshdma;
 
-	/* platform data */
+	 
 	shdev->pdata = pdata;
 
 	if (pdata->chcr_offset)
@@ -770,7 +710,7 @@ static int sh_dmae_probe(struct platform_device *pdev)
 	list_add_tail_rcu(&shdev->node, &sh_dmae_devices);
 	spin_unlock_irq(&sh_dmae_lock);
 
-	/* reset dma controller - only needed as a test */
+	 
 	err = sh_dmae_rst(shdev);
 	if (err)
 		goto rst_err;
@@ -803,7 +743,7 @@ static int sh_dmae_probe(struct platform_device *pdev)
 
 	if (chanirq_res->start == chanirq_res->end &&
 	    !platform_get_resource(pdev, IORESOURCE_IRQ, 1)) {
-		/* Special case - all multiplexed */
+		 
 		for (; irq_cnt < pdata->channel_num; irq_cnt++) {
 			if (irq_cnt < SH_DMAE_MAX_CHANNELS) {
 				chan_irq[irq_cnt] = chanirq_res->start;
@@ -840,7 +780,7 @@ static int sh_dmae_probe(struct platform_device *pdev)
 		} while (irq_cnt < pdata->channel_num && chanirq_res);
 	}
 
-	/* Create DMA Channel */
+	 
 	for (i = 0; i < irq_cnt; i++) {
 		err = sh_dmae_chan_probe(shdev, i, chan_irq[i], chan_flag[i]);
 		if (err)
@@ -913,7 +853,7 @@ static struct platform_driver sh_dmae_driver = {
 
 static int __init sh_dmae_init(void)
 {
-	/* Wire up NMI handling */
+	 
 	int err = register_die_notifier(&sh_dmae_nmi_notifier);
 	if (err)
 		return err;

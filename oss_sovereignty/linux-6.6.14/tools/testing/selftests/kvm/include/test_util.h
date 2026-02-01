@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * tools/testing/selftests/kvm/include/test_util.h
- *
- * Copyright (C) 2018, Google LLC.
- */
+ 
+ 
 
 #ifndef SELFTEST_KVM_TEST_UTIL_H
 #define SELFTEST_KVM_TEST_UTIL_H
@@ -133,16 +129,13 @@ void backing_src_help(const char *flag);
 enum vm_mem_backing_src_type parse_backing_src_type(const char *type_name);
 long get_run_delay(void);
 
-/*
- * Whether or not the given source type is shared memory (as opposed to
- * anonymous).
- */
+ 
 static inline bool backing_src_is_shared(enum vm_mem_backing_src_type t)
 {
 	return vm_mem_backing_src_alias(t)->flag & MAP_SHARED;
 }
 
-/* Aligns x up to the next multiple of size. Size must be a power of 2. */
+ 
 static inline uint64_t align_up(uint64_t x, uint64_t size)
 {
 	uint64_t mask = size - 1;
@@ -190,4 +183,4 @@ int guest_snprintf(char *buf, int n, const char *fmt, ...);
 
 char *strdup_printf(const char *fmt, ...) __attribute__((format(printf, 1, 2), nonnull(1)));
 
-#endif /* SELFTEST_KVM_TEST_UTIL_H */
+#endif  

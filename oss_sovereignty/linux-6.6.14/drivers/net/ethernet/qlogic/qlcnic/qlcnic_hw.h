@@ -1,13 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * QLogic qlcnic NIC Driver
- * Copyright (c) 2009-2013 QLogic Corporation
- */
+ 
+ 
 
 #ifndef __QLCNIC_HW_H
 #define __QLCNIC_HW_H
 
-/* Common registers in 83xx and 82xx */
+ 
 enum qlcnic_regs {
 	QLCNIC_PEG_HALT_STATUS1 = 0,
 	QLCNIC_PEG_HALT_STATUS2,
@@ -34,19 +31,19 @@ enum qlcnic_regs {
 	QLCNIC_FLASH_UNLOCK,
 };
 
-/* Read from an address offset from BAR0, existing registers */
+ 
 #define QLC_SHARED_REG_RD32(a, addr)			\
 	readl(((a)->ahw->pci_base0) + ((a)->ahw->reg_tbl[addr]))
 
-/* Write to an address offset from BAR0, existing registers */
+ 
 #define QLC_SHARED_REG_WR32(a, addr, value)		\
 	writel(value, ((a)->ahw->pci_base0) + ((a)->ahw->reg_tbl[addr]))
 
-/* Read from a direct address offset from BAR0, additional registers */
+ 
 #define QLCRDX(ahw, addr)	\
 	readl(((ahw)->pci_base0) + ((ahw)->ext_reg_tbl[addr]))
 
-/* Write to a direct address offset from BAR0, additional registers */
+ 
 #define QLCWRX(ahw, addr, value)	\
 	writel(value, (((ahw)->pci_base0) + ((ahw)->ext_reg_tbl[addr])))
 
@@ -136,7 +133,7 @@ struct qlcnic_mailbox_metadata {
 	u32 out_args;
 };
 
-/* Mailbox ownership */
+ 
 #define QLCNIC_GET_OWNER(val)	((val) & (BIT_0 | BIT_1))
 
 #define QLCNIC_SET_OWNER        1
@@ -147,7 +144,7 @@ struct qlcnic_mailbox_metadata {
 #define QLCNIC_MBX_PORT_RSP_OK	0x1a
 #define QLCNIC_MBX_ASYNC_EVENT	BIT_15
 
-/* Set HW Tx ring limit for 82xx adapter. */
+ 
 #define QLCNIC_MAX_HW_TX_RINGS		8
 #define QLCNIC_MAX_HW_VNIC_TX_RINGS	4
 #define QLCNIC_MAX_TX_RINGS		8
@@ -222,4 +219,4 @@ void qlcnic_82xx_cache_tmpl_hdr_values(struct qlcnic_fw_dump *);
 u32 qlcnic_82xx_get_cap_size(void *, int);
 void qlcnic_82xx_set_sys_info(void *, int, u32);
 void qlcnic_82xx_store_cap_mask(void *, u32);
-#endif				/* __QLCNIC_HW_H_ */
+#endif				 

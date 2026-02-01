@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  ALSA driver for Echoaudio soundcards.
- *  Copyright (C) 2003-2004 Giuliano Pochini <pochini@shiny.it>
- */
+
+ 
 
 #define ECHO24_FAMILY
 #define ECHOCARD_GINA24
@@ -19,18 +16,18 @@
 #define ECHOCARD_HAS_ADAT	6
 #define ECHOCARD_HAS_STEREO_BIG_ENDIAN32
 
-/* Pipe indexes */
-#define PX_ANALOG_OUT	0	/* 8 */
-#define PX_DIGITAL_OUT	8	/* 8 */
-#define PX_ANALOG_IN	16	/* 2 */
-#define PX_DIGITAL_IN	18	/* 8 */
+ 
+#define PX_ANALOG_OUT	0	 
+#define PX_DIGITAL_OUT	8	 
+#define PX_ANALOG_IN	16	 
+#define PX_DIGITAL_IN	18	 
 #define PX_NUM		26
 
-/* Bus indexes */
-#define BX_ANALOG_OUT	0	/* 8 */
-#define BX_DIGITAL_OUT	8	/* 8 */
-#define BX_ANALOG_IN	16	/* 2 */
-#define BX_DIGITAL_IN	18	/* 8 */
+ 
+#define BX_ANALOG_OUT	0	 
+#define BX_DIGITAL_OUT	8	 
+#define BX_ANALOG_IN	16	 
+#define BX_DIGITAL_IN	18	 
 #define BX_NUM		26
 
 
@@ -74,10 +71,10 @@ static const struct firmware card_fw[] = {
 };
 
 static const struct pci_device_id snd_echo_ids[] = {
-	{0x1057, 0x1801, 0xECC0, 0x0050, 0, 0, 0},	/* DSP 56301 Gina24 rev.0 */
-	{0x1057, 0x1801, 0xECC0, 0x0051, 0, 0, 0},	/* DSP 56301 Gina24 rev.1 */
-	{0x1057, 0x3410, 0xECC0, 0x0050, 0, 0, 0},	/* DSP 56361 Gina24 rev.0 */
-	{0x1057, 0x3410, 0xECC0, 0x0051, 0, 0, 0},	/* DSP 56361 Gina24 rev.1 */
+	{0x1057, 0x1801, 0xECC0, 0x0050, 0, 0, 0},	 
+	{0x1057, 0x1801, 0xECC0, 0x0051, 0, 0, 0},	 
+	{0x1057, 0x3410, 0xECC0, 0x0050, 0, 0, 0},	 
+	{0x1057, 0x3410, 0xECC0, 0x0051, 0, 0, 0},	 
 	{0,}
 };
 
@@ -105,10 +102,7 @@ static const struct snd_pcm_hardware pcm_hardware_skel = {
 	.period_bytes_max = 131072,
 	.periods_min = 2,
 	.periods_max = 220,
-	/* One page (4k) contains 512 instructions. I don't know if the hw
-	supports lists longer than this. In this case periods_max=220 is a
-	safe limit to make sure the list never exceeds 512 instructions.
-	220 ~= (512 - 1 - (BUFFER_BYTES_MAX / PAGE_SIZE)) / 2 */
+	 
 };
 
 #include "gina24_dsp.c"

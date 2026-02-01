@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-// Copyright IBM Corp 2019
+
+
 
 #include <linux/bitops.h>
 #include <linux/device.h>
@@ -11,10 +11,10 @@
 
 #include "common.h"
 
-/* OCC status register */
+ 
 #define OCC_STAT_MASTER			BIT(7)
 
-/* OCC extended status register */
+ 
 #define OCC_EXT_STAT_DVFS_OT		BIT(7)
 #define OCC_EXT_STAT_DVFS_POWER		BIT(6)
 #define OCC_EXT_STAT_MEM_THROTTLE	BIT(5)
@@ -165,10 +165,7 @@ void occ_sysfs_poll_done(struct occ *occ)
 	struct occ_poll_response_header *header =
 		(struct occ_poll_response_header *)occ->resp.data;
 
-	/*
-	 * On the first poll response, we haven't yet created the sysfs
-	 * attributes, so don't make any notify calls.
-	 */
+	 
 	if (!occ->active)
 		goto done;
 
@@ -235,7 +232,7 @@ void occ_sysfs_poll_done(struct occ *occ)
 		sysfs_notify(&occ->bus_dev->kobj, NULL, name);
 	}
 
-	/* no notifications for OCC state; doesn't indicate error condition */
+	 
 
 done:
 	occ->prev_error = occ->error;

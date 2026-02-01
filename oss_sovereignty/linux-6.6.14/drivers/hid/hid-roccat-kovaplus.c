@@ -1,16 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Roccat Kova[+] driver for Linux
- *
- * Copyright (c) 2011 Stefan Achatz <erazor_de@users.sourceforge.net>
- */
 
-/*
- */
+ 
 
-/*
- * Roccat Kova[+] is a bigger version of the Pyra with two more side buttons.
- */
+ 
+
+ 
 
 #include <linux/device.h>
 #include <linux/input.h>
@@ -95,7 +88,7 @@ static int kovaplus_get_profile_buttons(struct usb_device *usb_dev,
 			buf, KOVAPLUS_SIZE_PROFILE_BUTTONS);
 }
 
-/* retval is 0-4 on success, < 0 on error */
+ 
 static int kovaplus_get_actual_profile(struct usb_device *usb_dev)
 {
 	struct kovaplus_actual_profile buf;
@@ -416,7 +409,7 @@ static int kovaplus_init_kovaplus_device_struct(struct usb_device *usb_dev,
 		struct kovaplus_device *kovaplus)
 {
 	int retval, i;
-	static uint wait = 70; /* device will freeze with just 60 */
+	static uint wait = 70;  
 
 	mutex_init(&kovaplus->kovaplus_lock);
 

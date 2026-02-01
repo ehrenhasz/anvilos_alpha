@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Designware HDMI CEC driver
- *
- * Copyright (C) 2015-2017 Russell King.
- */
+
+ 
 #include <linux/interrupt.h>
 #include <linux/io.h>
 #include <linux/module.h>
@@ -239,11 +235,7 @@ static int dw_hdmi_cec_probe(struct platform_device *pdev)
 	if (!data)
 		return -ENXIO;
 
-	/*
-	 * Our device is just a convenience - we want to link to the real
-	 * hardware device here, so that userspace can see the association
-	 * between the HDMI hardware and its associated CEC chardev.
-	 */
+	 
 	cec = devm_kzalloc(&pdev->dev, sizeof(*cec), GFP_KERNEL);
 	if (!cec)
 		return -ENOMEM;
@@ -266,7 +258,7 @@ static int dw_hdmi_cec_probe(struct platform_device *pdev)
 	if (IS_ERR(cec->adap))
 		return PTR_ERR(cec->adap);
 
-	/* override the module pointer */
+	 
 	cec->adap->owner = THIS_MODULE;
 
 	ret = devm_add_action_or_reset(&pdev->dev, dw_hdmi_cec_del, cec);
@@ -291,10 +283,7 @@ static int dw_hdmi_cec_probe(struct platform_device *pdev)
 		return ret;
 	}
 
-	/*
-	 * CEC documentation says we must not call cec_delete_adapter
-	 * after a successful call to cec_register_adapter().
-	 */
+	 
 	devm_remove_action(&pdev->dev, dw_hdmi_cec_del, cec);
 
 	return 0;
@@ -312,11 +301,11 @@ static int __maybe_unused dw_hdmi_cec_resume(struct device *dev)
 {
 	struct dw_hdmi_cec *cec = dev_get_drvdata(dev);
 
-	/* Restore logical address */
+	 
 	dw_hdmi_write(cec, cec->addresses & 255, HDMI_CEC_ADDR_L);
 	dw_hdmi_write(cec, cec->addresses >> 8, HDMI_CEC_ADDR_H);
 
-	/* Restore interrupt status/mask registers */
+	 
 	dw_hdmi_write(cec, cec->regs_polarity, HDMI_CEC_POLARITY);
 	dw_hdmi_write(cec, cec->regs_mask, HDMI_CEC_MASK);
 	dw_hdmi_write(cec, cec->regs_mute_stat0, HDMI_IH_MUTE_CEC_STAT0);
@@ -328,7 +317,7 @@ static int __maybe_unused dw_hdmi_cec_suspend(struct device *dev)
 {
 	struct dw_hdmi_cec *cec = dev_get_drvdata(dev);
 
-	/* store interrupt status/mask registers */
+	 
 	 cec->regs_polarity = dw_hdmi_read(cec, HDMI_CEC_POLARITY);
 	 cec->regs_mask = dw_hdmi_read(cec, HDMI_CEC_MASK);
 	 cec->regs_mute_stat0 = dw_hdmi_read(cec, HDMI_IH_MUTE_CEC_STAT0);

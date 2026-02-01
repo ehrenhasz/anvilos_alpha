@@ -1,20 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * I2C slave mode EEPROM simulator
- *
- * Copyright (C) 2014 by Wolfram Sang, Sang Engineering <wsa@sang-engineering.com>
- * Copyright (C) 2014 by Renesas Electronics Corporation
- *
- * Because most slave IP cores can only detect one I2C slave address anyhow,
- * this driver does not support simulating EEPROM types which take more than
- * one address.
- */
 
-/*
- * FIXME: What to do if only 8 bits of a 16 bit address are sent?
- * The ST-M24C64 sends only 0xff then. Needs verification with other
- * EEPROMs, though. We currently use the 8 bit as a valid address.
- */
+ 
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/firmware.h>
@@ -64,18 +51,14 @@ static int i2c_slave_eeprom_slave_cb(struct i2c_client *client,
 		break;
 
 	case I2C_SLAVE_READ_PROCESSED:
-		/* The previous byte made it to the bus, get next one */
+		 
 		eeprom->buffer_idx++;
 		fallthrough;
 	case I2C_SLAVE_READ_REQUESTED:
 		spin_lock(&eeprom->buffer_lock);
 		*val = eeprom->buffer[eeprom->buffer_idx & eeprom->address_mask];
 		spin_unlock(&eeprom->buffer_lock);
-		/*
-		 * Do not increment buffer_idx here, because we don't know if
-		 * this byte will be actually used. Read Linux I2C slave docs
-		 * for details.
-		 */
+		 
 		break;
 
 	case I2C_SLAVE_STOP:
@@ -134,7 +117,7 @@ static int i2c_slave_init_eeprom_data(struct eeprom_data *eeprom, struct i2c_cli
 			return ret;
 		release_firmware(fw);
 	} else {
-		/* An empty eeprom typically has all bits set to 1 */
+		 
 		memset(eeprom->buffer, 0xff, size);
 	}
 	return 0;

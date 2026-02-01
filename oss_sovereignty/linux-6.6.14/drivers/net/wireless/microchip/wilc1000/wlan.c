@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2012 - 2018 Microchip Technology Inc., and its subsidiaries.
- * All rights reserved.
- */
+
+ 
 
 #include <linux/if_ether.h>
 #include <linux/ip.h>
@@ -596,7 +593,7 @@ void chip_allow_sleep(struct wilc *wilc)
 	if (!trials)
 		pr_warn("FW not responding\n");
 
-	/* Clear bit 1 */
+	 
 	ret = hif_func->hif_read_reg(wilc, wakeup_reg, &reg);
 	if (ret)
 		return;
@@ -645,13 +642,13 @@ void chip_wakeup(struct wilc *wilc)
 		from_host_to_fw_bit = WILC_SPI_HOST_TO_FW_BIT;
 	}
 
-	/* indicate host wakeup */
+	 
 	ret = hif_func->hif_write_reg(wilc, from_host_to_fw_reg,
 				      from_host_to_fw_bit);
 	if (ret)
 		return;
 
-	/* Set wake-up bit */
+	 
 	ret = hif_func->hif_write_reg(wilc, wakeup_reg,
 				      wakeup_bit);
 	if (ret)
@@ -673,9 +670,7 @@ void chip_wakeup(struct wilc *wilc)
 		pr_err("Failed to wake-up the chip\n");
 		return;
 	}
-	/* Sometimes spi fail to read clock regs after reading
-	 * writing clockless registers
-	 */
+	 
 	if (wilc->io_type == WILC_HIF_SPI)
 		wilc->hif_func->hif_reset(wilc);
 }
@@ -857,10 +852,7 @@ int wilc_wlan_handle_txq(struct wilc *wilc, u32 *txq_count)
 		goto out_release_bus;
 
 	if (entries == 0) {
-		/*
-		 * No VMM space available in firmware so retry to transmit
-		 * the packet from tx queue.
-		 */
+		 
 		ret = WILC_VMM_ENTRY_FULL_RETRY;
 		goto out_release_bus;
 	}
@@ -1226,7 +1218,7 @@ int wilc_wlan_stop(struct wilc *wilc, struct wilc_vif *vif)
 
 	ret = 0;
 release:
-	/* host comm is disabled - we can't issue sleep command anymore: */
+	 
 	release_bus(wilc, WILC_BUS_RELEASE_ONLY);
 
 	return ret;
@@ -1458,10 +1450,10 @@ u32 wilc_get_chipid(struct wilc *wilc, bool update)
 			wilc->chipid = 0;
 			return wilc->chipid;
 		}
-		if (chipid == WILC_1000_BASE_ID_2A) { /* 0x1002A0 */
+		if (chipid == WILC_1000_BASE_ID_2A) {  
 			if (rfrevid != 0x1)
 				chipid = WILC_1000_BASE_ID_2A_REV1;
-		} else if (chipid == WILC_1000_BASE_ID_2B) { /* 0x1002B0 */
+		} else if (chipid == WILC_1000_BASE_ID_2B) {  
 			if (rfrevid == 0x4)
 				chipid = WILC_1000_BASE_ID_2B_REV1;
 			else if (rfrevid != 0x3)

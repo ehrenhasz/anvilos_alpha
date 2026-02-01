@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * xhci-debugfs.c - xHCI debugfs interface
- *
- * Copyright (C) 2017 Intel Corporation
- *
- * Author: Lu Baolu <baolu.lu@linux.intel.com>
- */
+
+ 
 
 #include <linux/slab.h>
 #include <linux/uaccess.h>
@@ -91,10 +85,7 @@ static struct xhci_regset *xhci_debugfs_alloc_regset(struct xhci_hcd *xhci)
 	if (!regset)
 		return NULL;
 
-	/*
-	 * The allocation and free of regset are executed in order.
-	 * We needn't a lock here.
-	 */
+	 
 	INIT_LIST_HEAD(&regset->list);
 	list_add_tail(&regset->list, &xhci->regset_list);
 
@@ -374,11 +365,11 @@ static ssize_t xhci_port_write(struct file *file,  const char __user *ubuf,
 		return -EFAULT;
 
 	if (!strncmp(buf, "compliance", 10)) {
-		/* If CTC is clear, compliance is enabled by default */
+		 
 		if (!HCC2_CTC(xhci->hcc_params2))
 			return count;
 		spin_lock_irqsave(&xhci->lock, flags);
-		/* compliance mode can only be enabled on ports in RxDetect */
+		 
 		portsc = readl(port->addr);
 		if ((portsc & PORT_PLS_MASK) != XDEV_RXDETECT) {
 			spin_unlock_irqrestore(&xhci->lock, flags);
@@ -508,12 +499,12 @@ static ssize_t xhci_stream_id_write(struct file *file,  const char __user *ubuf,
 	struct seq_file         *s = file->private_data;
 	struct xhci_ep_priv	*epriv = s->private;
 	int			ret;
-	u16			stream_id; /* MaxPStreams + 1 <= 16 */
+	u16			stream_id;  
 
 	if (!epriv->stream_info)
 		return -EPERM;
 
-	/* Decimal number */
+	 
 	ret = kstrtou16_from_user(ubuf, count, 10, &stream_id);
 	if (ret)
 		return ret;
@@ -578,7 +569,7 @@ void xhci_debugfs_create_stream_files(struct xhci_hcd *xhci,
 	epriv = spriv->eps[ep_index];
 	epriv->stream_info = dev->eps[ep_index].stream_info;
 
-	/* Show trb ring of stream ID 1 by default */
+	 
 	epriv->stream_id = 1;
 	epriv->show_ring = epriv->stream_info->stream_rings[1];
 	debugfs_create_file("stream_id", 0644,

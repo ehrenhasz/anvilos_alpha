@@ -1,102 +1,22 @@
-/****************************************************************************
- * Copyright 2018-2020,2021 Thomas E. Dickey                                *
- * Copyright 1998-2016,2017 Free Software Foundation, Inc.                  *
- *                                                                          *
- * Permission is hereby granted, free of charge, to any person obtaining a  *
- * copy of this software and associated documentation files (the            *
- * "Software"), to deal in the Software without restriction, including      *
- * without limitation the rights to use, copy, modify, merge, publish,      *
- * distribute, distribute with modifications, sublicense, and/or sell       *
- * copies of the Software, and to permit persons to whom the Software is    *
- * furnished to do so, subject to the following conditions:                 *
- *                                                                          *
- * The above copyright notice and this permission notice shall be included  *
- * in all copies or substantial portions of the Software.                   *
- *                                                                          *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS  *
- * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF               *
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.   *
- * IN NO EVENT SHALL THE ABOVE COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,   *
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR    *
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR    *
- * THE USE OR OTHER DEALINGS IN THE SOFTWARE.                               *
- *                                                                          *
- * Except as contained in this notice, the name(s) of the above copyright   *
- * holders shall not be used in advertising or otherwise to promote the     *
- * sale, use or other dealings in this Software without prior written       *
- * authorization.                                                           *
- ****************************************************************************/
+ 
 
-/****************************************************************************
- *   Author:  Juergen Pfeifer, 1995,1997                                    *
- ****************************************************************************/
+ 
 
 #include "form.priv.h"
 
 MODULE_ID("$Id: frm_driver.c,v 1.135 2021/09/01 23:34:01 tom Exp $")
 
-/*----------------------------------------------------------------------------
-  This is the core module of the form library. It contains the majority
-  of the driver routines as well as the form_driver function.
+ 
 
-  Essentially this module is nearly the whole library. This is because
-  all the functions in this module depends on some others in the module,
-  so it makes no sense to split them into separate files because they
-  will always be linked together. The only acceptable concern is turnaround
-  time for this module, but now we have all Pentiums or RISCs, so what!
+ 
 
-  The driver routines are grouped into nine generic categories:
+ 
 
-   a)   Page Navigation            ( all functions prefixed by PN_ )
-        The current page of the form is left and some new page is
-        entered.
-   b)   Inter-Field Navigation     ( all functions prefixed by FN_ )
-        The current field of the form is left and some new field is
-        entered.
-   c)   Intra-Field Navigation     ( all functions prefixed by IFN_ )
-        The current position in the current field is changed.
-   d)   Vertical Scrolling         ( all functions prefixed by VSC_ )
-        Essentially this is a specialization of Intra-Field navigation.
-        It has to check for a multi-line field.
-   e)   Horizontal Scrolling       ( all functions prefixed by HSC_ )
-        Essentially this is a specialization of Intra-Field navigation.
-        It has to check for a single-line field.
-   f)   Field Editing              ( all functions prefixed by FE_ )
-        The content of the current field is changed
-   g)   Edit Mode requests         ( all functions prefixed by EM_ )
-        Switching between insert and overlay mode
-   h)   Field-Validation requests  ( all functions prefixed by FV_ )
-        Perform verifications of the field.
-   i)   Choice requests            ( all functions prefixed by CR_ )
-        Requests to enumerate possible field values
-  --------------------------------------------------------------------------*/
-
-/*----------------------------------------------------------------------------
-  Some remarks on the placements of assert() macros :
-  I use them only on "strategic" places, i.e. top level entries where
-  I want to make sure that things are set correctly. Throughout subordinate
-  routines I omit them mostly.
-  --------------------------------------------------------------------------*/
-
-/*
-Some options that may effect compatibility in behavior to SVr4 forms,
-but they are here to allow a more intuitive and user friendly behavior of
-our form implementation. This doesn't affect the API, so we feel it is
-uncritical.
-
-The initial implementation tries to stay very close with the behavior
-of the original SVr4 implementation, although in some areas it is quite
-clear that this isn't the most appropriate way. As far as possible this
-sources will allow you to build a forms lib that behaves quite similar
-to SVr4, but now and in the future we will give you better options.
-Perhaps at some time we will make this configurable at runtime.
-*/
-
-/* Implement a more user-friendly previous/next word behavior */
+ 
 #define FRIENDLY_PREV_NEXT_WORD (1)
-/* Fix the wrong behavior for forms with all fields inactive */
+ 
 #define FIX_FORM_INACTIVE_BUG (1)
-/* Allow dynamic field growth also when navigating past the end */
+ 
 #define GROW_IF_NAVIGATE (1)
 
 #if USE_WIDEC_SUPPORT
@@ -111,72 +31,57 @@ Perhaps at some time we will make this configurable at runtime.
 #define myWCWIDTH(w, y, x) 1
 #endif
 
-/*----------------------------------------------------------------------------
-  Forward references to some internally used static functions
-  --------------------------------------------------------------------------*/
+ 
 static int Inter_Field_Navigation(int (*const fct) (FORM *), FORM *form);
 static int FN_Next_Field(FORM *form);
 static int FN_Previous_Field(FORM *form);
 static int FE_New_Line(FORM *);
 static int FE_Delete_Previous(FORM *);
 
-/*----------------------------------------------------------------------------
-  Macro Definitions.
+ 
 
-  Some Remarks on that: I use the convention to use UPPERCASE for constants
-  defined by Macros. If I provide a macro as a kind of inline routine to
-  provide some logic, I use my Upper_Lower case style.
-  --------------------------------------------------------------------------*/
-
-/* Calculate the position of a single row in a field buffer */
+ 
 #define Position_Of_Row_In_Buffer(field,row) ((row)*(field)->dcols)
 
-/* Calculate start address for the field's buffer# N */
+ 
 #define Address_Of_Nth_Buffer(field,N) \
   ((field)->buf + (N)*(1+Buffer_Length(field)))
 
-/* Calculate the start address of the row in the field's specified buffer# N */
+ 
 #define Address_Of_Row_In_Nth_Buffer(field,N,row) \
   (Address_Of_Nth_Buffer(field,N) + Position_Of_Row_In_Buffer(field,row))
 
-/* Calculate the start address of the row in the field's primary buffer */
+ 
 #define Address_Of_Row_In_Buffer(field,row) \
   Address_Of_Row_In_Nth_Buffer(field,0,row)
 
-/* Calculate the start address of the row in the form's current field
-   buffer# N */
+ 
 #define Address_Of_Current_Row_In_Nth_Buffer(form,N) \
    Address_Of_Row_In_Nth_Buffer((form)->current,N,(form)->currow)
 
-/* Calculate the start address of the row in the form's current field
-   primary buffer */
+ 
 #define Address_Of_Current_Row_In_Buffer(form) \
    Address_Of_Current_Row_In_Nth_Buffer(form,0)
 
-/* Calculate the address of the cursor in the form's current field
-   primary buffer */
+ 
 #define Address_Of_Current_Position_In_Nth_Buffer(form,N) \
    (Address_Of_Current_Row_In_Nth_Buffer(form,N) + (form)->curcol)
 
-/* Calculate the address of the cursor in the form's current field
-   buffer# N */
+ 
 #define Address_Of_Current_Position_In_Buffer(form) \
   Address_Of_Current_Position_In_Nth_Buffer(form,0)
 
-/* Logic to decide whether or not a field is actually a field with
-   vertical or horizontal scrolling */
+ 
 #define Is_Scroll_Field(field)          \
    (((field)->drows > (field)->rows) || \
     ((field)->dcols > (field)->cols))
 
-/* Logic to decide whether or not a field needs to have an individual window
-   instead of a derived window because it contains invisible parts.
-   This is true for non-public fields and for scrollable fields. */
+ 
 #define Has_Invisible_Parts(field)     \
   (!(Field_Has_Option(field, O_PUBLIC)) || \
    Is_Scroll_Field(field))
 
-/* Logic to decide whether or not a field needs justification */
+ 
 #define Justification_Allowed(field)        \
    (((field)->just != NO_JUSTIFICATION)  && \
     (Single_Line_Field(field))           && \
@@ -184,32 +89,29 @@ static int FE_Delete_Previous(FORM *);
      ((field)->dcols == (field)->cols))  || \
     Field_Has_Option(field, O_DYNAMIC_JUSTIFY)))
 
-/* Logic to determine whether or not a dynamic field may still grow */
+ 
 #define Growable(field) ((field)->status & _MAY_GROW)
 
-/* Macro to set the attributes for a field's window */
+ 
 #define Set_Field_Window_Attributes(field,win) \
 (  wbkgdset((win),(chtype)((chtype)((field)->pad) | (field)->back)), \
    (void) wattrset((win), (int)(field)->fore) )
 
-/* Logic to decide whether or not a field really appears on the form */
+ 
 #define Field_Really_Appears(field)         \
   ((field->form)                          &&\
    (field->form->status & _POSTED)        &&\
    (Field_Has_Option(field, O_VISIBLE))   &&\
    (field->page == field->form->curpage))
 
-/* Logic to determine whether or not we are on the first position in the
-   current field */
+ 
 #define First_Position_In_Current_Field(form) \
   (((form)->currow==0) && ((form)->curcol==0))
 
 #define Minimum(a,b) (((a)<=(b)) ? (a) : (b))
 #define Maximum(a,b) (((a)>=(b)) ? (a) : (b))
 
-/*----------------------------------------------------------------------------
-  Useful constants
-  --------------------------------------------------------------------------*/
+ 
 static FIELD_CELL myBLANK = BLANK;
 static FIELD_CELL myZEROS;
 
@@ -233,15 +135,12 @@ check_pos(FORM *form, int lineno)
 }
 #define CHECKPOS(form) check_pos(form, __LINE__)
 #else
-#define CHECKPOS(form)		/* nothing */
+#define CHECKPOS(form)		 
 #endif
 
-/*----------------------------------------------------------------------------
-  Wide-character special functions
-  --------------------------------------------------------------------------*/
+ 
 #if USE_WIDEC_SUPPORT
-/* add like waddnstr, but using cchar_t* rather than char*
- */
+ 
 static int
 wide_waddnstr(WINDOW *w, const cchar_t *s, int n)
 {
@@ -256,11 +155,7 @@ wide_waddnstr(WINDOW *w, const cchar_t *s, int n)
   return rc;
 }
 
-/* insert like winsnstr, but using cchar_t* rather than char*
- *
- * X/Open Curses has no close equivalent; inserts are done only with wchar_t
- * strings.
- */
+ 
 static int
 wide_winsnstr(WINDOW *w, const cchar_t *s, int n)
 {
@@ -279,22 +174,14 @@ wide_winsnstr(WINDOW *w, const cchar_t *s, int n)
   return code;
 }
 
-/* retrieve like winnstr, but using cchar_t*, rather than char*.
- *
- * X/Open Curses' closest equivalent, win_wchnstr(), is inconsistent with
- * winnstr(), since it returns OK rather than the number of items transferred.
- */
+ 
 static int
 wide_winnstr(WINDOW *w, cchar_t *s, int n)
 {
   int x;
 
   win_wchnstr(w, s, n);
-  /*
-   * This function is used to extract the text only from the window.
-   * Strip attributes and color from the string so they will not be added
-   * back when copying the string to the window.
-   */
+   
   for (x = 0; x < n; ++x)
     {
       RemAttr(s[x], A_ATTRIBUTES);
@@ -303,9 +190,7 @@ wide_winnstr(WINDOW *w, cchar_t *s, int n)
   return n;
 }
 
-/*
- * Returns the column of the base of the given cell.
- */
+ 
 static int
 cell_base(WINDOW *win, int y, int x)
 {
@@ -325,9 +210,7 @@ cell_base(WINDOW *win, int y, int x)
   return result;
 }
 
-/*
- * Returns the number of columns needed for the given cell in a window.
- */
+ 
 static int
 cell_width(WINDOW *win, int y, int x)
 {
@@ -339,7 +222,7 @@ cell_width(WINDOW *win, int y, int x)
 
       if (isWidecExt(CHDEREF(data)))
 	{
-	  /* recur, providing the number of columns to the next character */
+	   
 	  result = cell_width(win, y, x - 1);
 	}
       else
@@ -350,11 +233,7 @@ cell_width(WINDOW *win, int y, int x)
   return result;
 }
 
-/*
- * There is no wide-character function such as wdel_wch(), so we must find
- * all of the cells that comprise a multi-column character and delete them
- * one-by-one.
- */
+ 
 static void
 delete_char(FORM *form)
 {
@@ -374,15 +253,7 @@ delete_char(FORM *form)
 	  wdelch((form)->w)
 #endif
 
-/*---------------------------------------------------------------------------
-|   Facility      :  libnform
-|   Function      :  static char *Get_Start_Of_Data(char * buf, int blen)
-|
-|   Description   :  Return pointer to first non-blank position in buffer.
-|                    If buffer is empty return pointer to buffer itself.
-|
-|   Return Values :  Pointer to first non-blank position in buffer
-+--------------------------------------------------------------------------*/
+ 
 NCURSES_INLINE static FIELD_CELL *
 Get_Start_Of_Data(FIELD_CELL *buf, int blen)
 {
@@ -395,16 +266,7 @@ Get_Start_Of_Data(FIELD_CELL *buf, int blen)
   return ((p == end) ? buf : p);
 }
 
-/*---------------------------------------------------------------------------
-|   Facility      :  libnform
-|   Function      :  static char *After_End_Of_Data(char * buf, int blen)
-|
-|   Description   :  Return pointer after last non-blank position in buffer.
-|                    If buffer is empty, return pointer to buffer itself.
-|
-|   Return Values :  Pointer to position after last non-blank position in
-|                    buffer.
-+--------------------------------------------------------------------------*/
+ 
 NCURSES_INLINE static FIELD_CELL *
 After_End_Of_Data(FIELD_CELL *buf, int blen)
 {
@@ -416,15 +278,7 @@ After_End_Of_Data(FIELD_CELL *buf, int blen)
   return (p);
 }
 
-/*---------------------------------------------------------------------------
-|   Facility      :  libnform
-|   Function      :  static char *Get_First_Whitespace_Character(
-|                                     char * buf, int   blen)
-|
-|   Description   :  Position to the first whitespace character.
-|
-|   Return Values :  Pointer to first whitespace character in buffer.
-+--------------------------------------------------------------------------*/
+ 
 NCURSES_INLINE static FIELD_CELL *
 Get_First_Whitespace_Character(FIELD_CELL *buf, int blen)
 {
@@ -437,16 +291,7 @@ Get_First_Whitespace_Character(FIELD_CELL *buf, int blen)
   return ((p == end) ? buf : p);
 }
 
-/*---------------------------------------------------------------------------
-|   Facility      :  libnform
-|   Function      :  static char *After_Last_Whitespace_Character(
-|                                     char * buf, int blen)
-|
-|   Description   :  Get the position after the last whitespace character.
-|
-|   Return Values :  Pointer to position after last whitespace character in
-|                    buffer.
-+--------------------------------------------------------------------------*/
+ 
 NCURSES_INLINE static FIELD_CELL *
 After_Last_Whitespace_Character(FIELD_CELL *buf, int blen)
 {
@@ -458,24 +303,10 @@ After_Last_Whitespace_Character(FIELD_CELL *buf, int blen)
   return (p);
 }
 
-/* Set this to 1 to use the div_t version. This is a good idea if your
-   compiler has an intrinsic div() support. Unfortunately GNU-C has it
-   not yet.
-   N.B.: This only works if form->curcol follows immediately form->currow
-         and both are of type int.
-*/
+ 
 #define USE_DIV_T (0)
 
-/*---------------------------------------------------------------------------
-|   Facility      :  libnform
-|   Function      :  static void Adjust_Cursor_Position(
-|                                       FORM * form, const char * pos)
-|
-|   Description   :  Set current row and column of the form to values
-|                    corresponding to the buffer position.
-|
-|   Return Values :  -
-+--------------------------------------------------------------------------*/
+ 
 NCURSES_INLINE static void
 Adjust_Cursor_Position(FORM *form, const FIELD_CELL *pos)
 {
@@ -495,18 +326,7 @@ Adjust_Cursor_Position(FORM *form, const FIELD_CELL *pos)
     form->currow = 0;
 }
 
-/*---------------------------------------------------------------------------
-|   Facility      :  libnform
-|   Function      :  static void Buffer_To_Window(
-|                                      const FIELD  * field,
-|                                      WINDOW * win)
-|
-|   Description   :  Copy the buffer to the window. If it is a multi-line
-|                    field, the buffer is split to the lines of the
-|                    window without any editing.
-|
-|   Return Values :  -
-+--------------------------------------------------------------------------*/
+ 
 static void
 Buffer_To_Window(const FIELD *field, WINDOW *win)
 {
@@ -536,20 +356,7 @@ Buffer_To_Window(const FIELD *field, WINDOW *win)
   wmove(win, y, x);
 }
 
-/*---------------------------------------------------------------------------
-|   Facility      :  libnform
-|   Function      :  void _nc_get_fieldbuffer(
-|                                          WINDOW * win,
-|                                          FIELD  * field,
-|                                          FIELD_CELL * buf)
-|
-|   Description   :  Copy the content of the window into the buffer.
-|                    The multiple lines of a window are simply
-|                    concatenated into the buffer. Pad characters in
-|                    the window will be replaced by blanks in the buffer.
-|
-|   Return Values :  -
-+--------------------------------------------------------------------------*/
+ 
 FORM_EXPORT(void)
 _nc_get_fieldbuffer(FORM *form, FIELD *field, FIELD_CELL *buf)
 {
@@ -575,7 +382,7 @@ _nc_get_fieldbuffer(FORM *form, FIELD *field, FIELD_CELL *buf)
     }
   p[len] = myZEROS;
 
-  /* replace visual padding character by blanks in buffer */
+   
   if (pad != C_BLANK)
     {
       int i;
@@ -592,36 +399,14 @@ _nc_get_fieldbuffer(FORM *form, FIELD *field, FIELD_CELL *buf)
     }
 }
 
-/*---------------------------------------------------------------------------
-|   Facility      :  libnform
-|   Function      :  static void Window_To_Buffer(
-|                                          FORM   * form,
-|                                          FIELD  * field)
-|
-|   Description   :  Copy the content of the window into the buffer.
-|                    The multiple lines of a window are simply
-|                    concatenated into the buffer. Pad characters in
-|                    the window will be replaced by blanks in the buffer.
-|
-|   Return Values :  -
-+--------------------------------------------------------------------------*/
+ 
 static void
 Window_To_Buffer(FORM *form, FIELD *field)
 {
   _nc_get_fieldbuffer(form, field, field->buf);
 }
 
-/*---------------------------------------------------------------------------
-|   Facility      :  libnform
-|   Function      :  static void Synchronize_Buffer(FORM * form)
-|
-|   Description   :  If there was a change, copy the content of the
-|                    window into the buffer, so the buffer is synchronized
-|                    with the windows content. We have to indicate that the
-|                    buffer needs validation due to the change.
-|
-|   Return Values :  -
-+--------------------------------------------------------------------------*/
+ 
 NCURSES_INLINE static void
 Synchronize_Buffer(FORM *form)
 {
@@ -634,20 +419,7 @@ Synchronize_Buffer(FORM *form)
     }
 }
 
-/*---------------------------------------------------------------------------
-|   Facility      :  libnform
-|   Function      :  static bool Field_Grown( FIELD *field, int amount)
-|
-|   Description   :  This function is called for growable dynamic fields
-|                    only. It has to increase the buffers and to allocate
-|                    a new window for this field.
-|                    This function has the side effect to set a new
-|                    field-buffer pointer, the dcols and drows values
-|                    as well as a new current Window for the field.
-|
-|   Return Values :  TRUE     - field successfully increased
-|                    FALSE    - there was some error
-+--------------------------------------------------------------------------*/
+ 
 static bool
 Field_Grown(FIELD *field, int amount)
 {
@@ -690,12 +462,12 @@ Field_Grown(FIELD *field, int amount)
 	  if (field->drows == field->maxgrow)
 	    ClrStatus(field, _MAY_GROW);
 	}
-      /* drows, dcols changed, so we get really the new buffer length */
+       
       new_buflen = Buffer_Length(field);
       newbuf = (FIELD_CELL *)malloc(Total_Buffer_Size(field));
       if (!newbuf)
 	{
-	  /* restore to previous state */
+	   
 	  field->dcols = old_dcols;
 	  field->drows = old_drows;
 	  if ((single_line_field && (field->dcols != field->maxgrow)) ||
@@ -704,12 +476,10 @@ Field_Grown(FIELD *field, int amount)
 	}
       else
 	{
-	  /* Copy all the buffers.  This is the reason why we can't just use
-	   * realloc().
-	   */
+	   
 	  int i, j;
 
-	  result = TRUE;	/* allow sharing of recovery on failure */
+	  result = TRUE;	 
 
 	  T((T_CREATE("fieldcell %p"), (void *)newbuf));
 	  field->buf = newbuf;
@@ -753,7 +523,7 @@ Field_Grown(FIELD *field, int amount)
 	  if (result)
 	    {
 	      free(oldbuf);
-	      /* reflect changes in linked fields */
+	       
 	      if (field != field->link)
 		{
 		  FIELD *linked_field;
@@ -770,7 +540,7 @@ Field_Grown(FIELD *field, int amount)
 	    }
 	  else
 	    {
-	      /* restore old state */
+	       
 	      field->dcols = old_dcols;
 	      field->drows = old_drows;
 	      field->buf = oldbuf;
@@ -787,17 +557,7 @@ Field_Grown(FIELD *field, int amount)
 }
 
 #ifdef NCURSES_MOUSE_VERSION
-/*---------------------------------------------------------------------------
-|   Facility      :  libnform
-|   Function      :  int Field_encloses(FIELD *field, int ry, int rx)
-|
-|   Description   :  Check if the given coordinates lie within the given field.
-|
-|   Return Values :  E_OK              - success
-|                    E_BAD_ARGUMENT    - invalid form pointer
-|                    E_SYSTEM_ERROR    - form has no current field or
-|                                        field-window
-+--------------------------------------------------------------------------*/
+ 
 static int
 Field_encloses(FIELD *field, int ry, int rx)
 {
@@ -814,19 +574,7 @@ Field_encloses(FIELD *field, int ry, int rx)
 }
 #endif
 
-/*---------------------------------------------------------------------------
-|   Facility      :  libnform
-|   Function      :  int _nc_Position_Form_Cursor(FORM * form)
-|
-|   Description   :  Position the cursor in the window for the current
-|                    field to be in sync. with the currow and curcol
-|                    values.
-|
-|   Return Values :  E_OK              - success
-|                    E_BAD_ARGUMENT    - invalid form pointer
-|                    E_SYSTEM_ERROR    - form has no current field or
-|                                        field-window
-+--------------------------------------------------------------------------*/
+ 
 FORM_EXPORT(int)
 _nc_Position_Form_Cursor(FORM *form)
 {
@@ -845,8 +593,7 @@ _nc_Position_Form_Cursor(FORM *form)
   wmove(form->w, form->currow, form->curcol);
   if (Has_Invisible_Parts(field))
     {
-      /* in this case fieldwin isn't derived from formwin, so we have
-         to move the cursor in formwin by hand... */
+       
       wmove(formwin,
 	    field->frow + form->currow - form->toprow,
 	    field->fcol + form->curcol - form->begincol);
@@ -857,17 +604,7 @@ _nc_Position_Form_Cursor(FORM *form)
   return (E_OK);
 }
 
-/*---------------------------------------------------------------------------
-|   Facility      :  libnform
-|   Function      :  int _nc_Refresh_Current_Field(FORM * form)
-|
-|   Description   :  Propagate the changes in the field's window to the
-|                    window of the form.
-|
-|   Return Values :  E_OK              - on success
-|                    E_BAD_ARGUMENT    - invalid form pointer
-|                    E_SYSTEM_ERROR    - general error
-+--------------------------------------------------------------------------*/
+ 
 static bool move_after_insert = TRUE;
 FORM_EXPORT(int)
 _nc_Refresh_Current_Field(FORM *form)
@@ -891,11 +628,10 @@ _nc_Refresh_Current_Field(FORM *form)
 
   if (Is_Scroll_Field(field))
     {
-      /* Again, in this case the fieldwin isn't derived from formwin,
-         so we have to perform a copy operation. */
+       
       if (Single_Line_Field(field))
 	{
-	  /* horizontal scrolling */
+	   
 	  if (form->curcol < form->begincol)
 	    form->begincol = form->curcol;
 	  else
@@ -917,7 +653,7 @@ _nc_Refresh_Current_Field(FORM *form)
 	}
       else
 	{
-	  /* A multi-line, i.e. vertical scrolling field */
+	   
 	  int first_modified_row, first_unmodified_row;
 
 	  if (field->drows > field->rows)
@@ -936,15 +672,14 @@ _nc_Refresh_Current_Field(FORM *form)
 		}
 	      if (field->status & _NEWTOP)
 		{
-		  /* means we have to copy whole range */
+		   
 		  first_modified_row = form->toprow;
 		  first_unmodified_row = first_modified_row + field->rows;
 		  ClrStatus(field, _NEWTOP);
 		}
 	      else
 		{
-		  /* we try to optimize : finding the range of touched
-		     lines */
+		   
 		  first_modified_row = form->toprow;
 		  while (first_modified_row < row_after_bottom)
 		    {
@@ -982,9 +717,7 @@ _nc_Refresh_Current_Field(FORM *form)
     }
   else
     {
-      /* if the field-window is simply a derived window, i.e. contains no
-       * invisible parts, the whole thing is trivial
-       */
+       
       if (is_public)
 	wsyncup(form->w);
     }
@@ -992,16 +725,7 @@ _nc_Refresh_Current_Field(FORM *form)
   returnCode(_nc_Position_Form_Cursor(form));
 }
 
-/*---------------------------------------------------------------------------
-|   Facility      :  libnform
-|   Function      :  static void Perform_Justification(
-|                                        FIELD  * field,
-|                                        WINDOW * win)
-|
-|   Description   :  Output field with requested justification
-|
-|   Return Values :  -
-+--------------------------------------------------------------------------*/
+ 
 static void
 Perform_Justification(FIELD *field, WINDOW *win)
 {
@@ -1039,17 +763,7 @@ Perform_Justification(FIELD *field, WINDOW *win)
     }
 }
 
-/*---------------------------------------------------------------------------
-|   Facility      :  libnform
-|   Function      :  static void Undo_Justification(
-|                                     FIELD  * field,
-|                                     WINDOW * win)
-|
-|   Description   :  Display field without any justification, i.e.
-|                    left justified
-|
-|   Return Values :  -
-+--------------------------------------------------------------------------*/
+ 
 static void
 Undo_Justification(FIELD *field, WINDOW *win)
 {
@@ -1073,20 +787,7 @@ Undo_Justification(FIELD *field, WINDOW *win)
   wmove(win, y, x);
 }
 
-/*---------------------------------------------------------------------------
-|   Facility      :  libnform
-|   Function      :  static bool Check_Char(FORM  *form,
-|                                           FIELD *field,
-|                                           FIELDTYPE * typ,
-|                                           int ch,
-|                                           TypeArgument *argp)
-|
-|   Description   :  Perform a single character check for character ch
-|                    according to the fieldtype instance.
-|
-|   Return Values :  TRUE             - Character is valid
-|                    FALSE            - Character is invalid
-+--------------------------------------------------------------------------*/
+ 
 static bool
 Check_Char(FORM *form,
 	   FIELD *field,
@@ -1122,19 +823,7 @@ Check_Char(FORM *form,
   return (!iscntrl(UChar(ch)) ? TRUE : FALSE);
 }
 
-/*---------------------------------------------------------------------------
-|   Facility      :  libnform
-|   Function      :  static int Display_Or_Erase_Field(
-|                                           FIELD * field,
-|                                           bool bEraseFlag)
-|
-|   Description   :  Create a subwindow for the field and display the
-|                    buffer contents (apply justification if required)
-|                    or simply erase the field.
-|
-|   Return Values :  E_OK           - on success
-|                    E_SYSTEM_ERROR - some error (typical no memory)
-+--------------------------------------------------------------------------*/
+ 
 static int
 Display_Or_Erase_Field(FIELD *field, bool bEraseFlag)
 {
@@ -1179,21 +868,11 @@ Display_Or_Erase_Field(FIELD *field, bool bEraseFlag)
   return E_OK;
 }
 
-/* Macros to preset the bEraseFlag */
+ 
 #define Display_Field(field) Display_Or_Erase_Field(field,FALSE)
 #define Erase_Field(field)   Display_Or_Erase_Field(field,TRUE)
 
-/*---------------------------------------------------------------------------
-|   Facility      :  libnform
-|   Function      :  static int Synchronize_Field(FIELD * field)
-|
-|   Description   :  Synchronize the windows content with the value in
-|                    the buffer.
-|
-|   Return Values :  E_OK                - success
-|                    E_BAD_ARGUMENT      - invalid field pointer
-|                    E_SYSTEM_ERROR      - some severe basic error
-+--------------------------------------------------------------------------*/
+ 
 static int
 Synchronize_Field(FIELD *field)
 {
@@ -1226,18 +905,7 @@ Synchronize_Field(FIELD *field)
   return (res);
 }
 
-/*---------------------------------------------------------------------------
-|   Facility      :  libnform
-|   Function      :  static int Synchronize_Linked_Fields(FIELD * field)
-|
-|   Description   :  Propagate the Synchronize_Field function to all linked
-|                    fields. The first error that occurs in the sequence
-|                    of updates is the return value.
-|
-|   Return Values :  E_OK                - success
-|                    E_BAD_ARGUMENT      - invalid field pointer
-|                    E_SYSTEM_ERROR      - some severe basic error
-+--------------------------------------------------------------------------*/
+ 
 static int
 Synchronize_Linked_Fields(FIELD *field)
 {
@@ -1263,18 +931,7 @@ Synchronize_Linked_Fields(FIELD *field)
   return (res);
 }
 
-/*---------------------------------------------------------------------------
-|   Facility      :  libnform
-|   Function      :  int _nc_Synchronize_Attributes(FIELD * field)
-|
-|   Description   :  If a field's visual attributes have changed, this
-|                    routine is called to propagate those changes to the
-|                    screen.
-|
-|   Return Values :  E_OK             - success
-|                    E_BAD_ARGUMENT   - invalid field pointer
-|                    E_SYSTEM_ERROR   - some severe basic error
-+--------------------------------------------------------------------------*/
+ 
 FORM_EXPORT(int)
 _nc_Synchronize_Attributes(FIELD *field)
 {
@@ -1315,7 +972,7 @@ _nc_Synchronize_Attributes(FIELD *field)
 		      field->fcol + field->cols - 1, 0);
 	      wsyncup(formwin);
 	      Buffer_To_Window(field, form->w);
-	      SetStatus(field, _NEWTOP);	/* fake refresh to paint all */
+	      SetStatus(field, _NEWTOP);	 
 	      _nc_Refresh_Current_Field(form);
 	    }
 	}
@@ -1328,20 +985,7 @@ _nc_Synchronize_Attributes(FIELD *field)
   returnCode(res);
 }
 
-/*---------------------------------------------------------------------------
-|   Facility      :  libnform
-|   Function      :  int _nc_Synchronize_Options(FIELD * field,
-|                                                Field_Options newopts)
-|
-|   Description   :  If a field's options have changed, this routine is
-|                    called to propagate these changes to the screen and
-|                    to really change the behavior of the field.
-|
-|   Return Values :  E_OK                - success
-|                    E_BAD_ARGUMENT      - invalid field pointer
-|                    E_CURRENT           - field is the current one
-|                    E_SYSTEM_ERROR      - some severe basic error
-+--------------------------------------------------------------------------*/
+ 
 FORM_EXPORT(int)
 _nc_Synchronize_Options(FIELD *field, Field_Options newopts)
 {
@@ -1395,10 +1039,9 @@ _nc_Synchronize_Options(FIELD *field, Field_Options newopts)
 
       if ((unsigned)newopts & O_STATIC)
 	{
-	  /* the field becomes now static */
+	   
 	  ClrStatus(field, _MAY_GROW);
-	  /* if actually we have no hidden columns, justification may
-	     occur again */
+	   
 	  if (single_line_field &&
 	      (field->cols == field->dcols) &&
 	      (field->just != NO_JUSTIFICATION) &&
@@ -1409,14 +1052,13 @@ _nc_Synchronize_Options(FIELD *field, Field_Options newopts)
 	}
       else
 	{
-	  /* field is no longer static */
+	   
 	  if ((field->maxgrow == 0) ||
 	      (single_line_field && (field->dcols < field->maxgrow)) ||
 	      (!single_line_field && (field->drows < field->maxgrow)))
 	    {
 	      SetStatus(field, _MAY_GROW);
-	      /* a field with justification now changes its behavior,
-	         so we must redisplay it */
+	       
 	      if (single_line_field &&
 		  (field->just != NO_JUSTIFICATION) &&
 		  Field_Really_Appears(field))
@@ -1432,9 +1074,7 @@ _nc_Synchronize_Options(FIELD *field, Field_Options newopts)
   returnCode(res);
 }
 
-/*
- * Removes the focus from the current field of the form.
- */
+ 
 void
 _nc_Unset_Current_Field(FORM *form)
 {
@@ -1483,18 +1123,7 @@ _nc_Unset_Current_Field(FORM *form)
   form->current = 0;
 }
 
-/*---------------------------------------------------------------------------
-|   Facility      :  libnform
-|   Function      :  int _nc_Set_Current_Field(FORM  * form,
-|                                              FIELD * newfield)
-|
-|   Description   :  Make the newfield the new current field.
-|
-|   Return Values :  E_OK              - success
-|                    E_BAD_ARGUMENT    - invalid form or field pointer
-|                    E_SYSTEM_ERROR    - some severe basic error
-|                    E_NOT_CONNECTED   - no fields are connected to the form
-+--------------------------------------------------------------------------*/
+ 
 FORM_EXPORT(int)
 _nc_Set_Current_Field(FORM *form, FIELD *newfield)
 {
@@ -1564,20 +1193,9 @@ _nc_Set_Current_Field(FORM *form, FIELD *newfield)
   returnCode(E_OK);
 }
 
-/*----------------------------------------------------------------------------
-  Intra-Field Navigation routines
-  --------------------------------------------------------------------------*/
+ 
 
-/*---------------------------------------------------------------------------
-|   Facility      :  libnform
-|   Function      :  static int IFN_Next_Character(FORM * form)
-|
-|   Description   :  Move to the next character in the field. In a multi-line
-|                    field this wraps at the end of the line.
-|
-|   Return Values :  E_OK                - success
-|                    E_REQUEST_DENIED    - at the rightmost position
-+--------------------------------------------------------------------------*/
+ 
 static int
 IFN_Next_Character(FORM *form)
 {
@@ -1609,17 +1227,7 @@ IFN_Next_Character(FORM *form)
   returnCode(E_OK);
 }
 
-/*---------------------------------------------------------------------------
-|   Facility      :  libnform
-|   Function      :  static int IFN_Previous_Character(FORM * form)
-|
-|   Description   :  Move to the previous character in the field. In a
-|                    multi-line field this wraps and the beginning of the
-|                    line.
-|
-|   Return Values :  E_OK                - success
-|                    E_REQUEST_DENIED    - at the leftmost position
-+--------------------------------------------------------------------------*/
+ 
 static int
 IFN_Previous_Character(FORM *form)
 {
@@ -1640,15 +1248,7 @@ IFN_Previous_Character(FORM *form)
   returnCode(E_OK);
 }
 
-/*---------------------------------------------------------------------------
-|   Facility      :  libnform
-|   Function      :  static int IFN_Next_Line(FORM * form)
-|
-|   Description   :  Move to the beginning of the next line in the field
-|
-|   Return Values :  E_OK                - success
-|                    E_REQUEST_DENIED    - at the last line
-+--------------------------------------------------------------------------*/
+ 
 static int
 IFN_Next_Line(FORM *form)
 {
@@ -1668,15 +1268,7 @@ IFN_Next_Line(FORM *form)
   returnCode(E_OK);
 }
 
-/*---------------------------------------------------------------------------
-|   Facility      :  libnform
-|   Function      :  static int IFN_Previous_Line(FORM * form)
-|
-|   Description   :  Move to the beginning of the previous line in the field
-|
-|   Return Values :  E_OK                - success
-|                    E_REQUEST_DENIED    - at the first line
-+--------------------------------------------------------------------------*/
+ 
 static int
 IFN_Previous_Line(FORM *form)
 {
@@ -1690,15 +1282,7 @@ IFN_Previous_Line(FORM *form)
   returnCode(E_OK);
 }
 
-/*---------------------------------------------------------------------------
-|   Facility      :  libnform
-|   Function      :  static int IFN_Next_Word(FORM * form)
-|
-|   Description   :  Move to the beginning of the next word in the field.
-|
-|   Return Values :  E_OK             - success
-|                    E_REQUEST_DENIED - there is no next word
-+--------------------------------------------------------------------------*/
+ 
 static int
 IFN_Next_Word(FORM *form)
 {
@@ -1709,16 +1293,14 @@ IFN_Next_Word(FORM *form)
 
   T((T_CALLED("IFN_Next_Word(%p)"), (void *)form));
 
-  /* We really need access to the data, so we have to synchronize */
+   
   Synchronize_Buffer(form);
 
-  /* Go to the first whitespace after the current position (including
-     current position). This is then the starting point to look for the
-     next non-blank data */
+   
   s = Get_First_Whitespace_Character(bp, Buffer_Length(field) -
 				     (int)(bp - field->buf));
 
-  /* Find the start of the next word */
+   
   t = Get_Start_Of_Data(s, Buffer_Length(field) -
 			(int)(s - field->buf));
 #if !FRIENDLY_PREV_NEXT_WORD
@@ -1732,15 +1314,7 @@ IFN_Next_Word(FORM *form)
     }
 }
 
-/*---------------------------------------------------------------------------
-|   Facility      :  libnform
-|   Function      :  static int IFN_Previous_Word(FORM * form)
-|
-|   Description   :  Move to the beginning of the previous word in the field.
-|
-|   Return Values :  E_OK             - success
-|                    E_REQUEST_DENIED - there is no previous word
-+--------------------------------------------------------------------------*/
+ 
 static int
 IFN_Previous_Word(FORM *form)
 {
@@ -1752,21 +1326,15 @@ IFN_Previous_Word(FORM *form)
 
   T((T_CALLED("IFN_Previous_Word(%p)"), (void *)form));
 
-  /* We really need access to the data, so we have to synchronize */
+   
   Synchronize_Buffer(form);
 
   s = After_End_Of_Data(field->buf, (int)(bp - field->buf));
-  /* s points now right after the last non-blank in the buffer before bp.
-     If bp was in a word, s equals bp. In this case we must find the last
-     whitespace in the buffer before bp and repeat the game to really find
-     the previous word! */
+   
   if (s == bp)
     again = TRUE;
 
-  /* And next call now goes backward to look for the last whitespace
-     before that, pointing right after this, so it points to the begin
-     of the previous word.
-   */
+   
   t = After_Last_Whitespace_Character(field->buf, (int)(s - field->buf));
 #if !FRIENDLY_PREV_NEXT_WORD
   if (s == t)
@@ -1774,7 +1342,7 @@ IFN_Previous_Word(FORM *form)
 #endif
   if (again)
     {
-      /* and do it again, replacing bp by t */
+       
       s = After_End_Of_Data(field->buf, (int)(t - field->buf));
       t = After_Last_Whitespace_Character(field->buf, (int)(s - field->buf));
 #if !FRIENDLY_PREV_NEXT_WORD
@@ -1786,15 +1354,7 @@ IFN_Previous_Word(FORM *form)
   returnCode(E_OK);
 }
 
-/*---------------------------------------------------------------------------
-|   Facility      :  libnform
-|   Function      :  static int IFN_Beginning_Of_Field(FORM * form)
-|
-|   Description   :  Place the cursor at the first non-pad character in
-|                    the field.
-|
-|   Return Values :  E_OK             - success
-+--------------------------------------------------------------------------*/
+ 
 static int
 IFN_Beginning_Of_Field(FORM *form)
 {
@@ -1807,17 +1367,7 @@ IFN_Beginning_Of_Field(FORM *form)
   returnCode(E_OK);
 }
 
-/*---------------------------------------------------------------------------
-|   Facility      :  libnform
-|   Function      :  static int IFN_End_Of_Field(FORM * form)
-|
-|   Description   :  Place the cursor after the last non-pad character in
-|                    the field. If the field occupies the last position in
-|                    the buffer, the cursor is positioned on the last
-|                    character.
-|
-|   Return Values :  E_OK              - success
-+--------------------------------------------------------------------------*/
+ 
 static int
 IFN_End_Of_Field(FORM *form)
 {
@@ -1833,15 +1383,7 @@ IFN_End_Of_Field(FORM *form)
   returnCode(E_OK);
 }
 
-/*---------------------------------------------------------------------------
-|   Facility      :  libnform
-|   Function      :  static int IFN_Beginning_Of_Line(FORM * form)
-|
-|   Description   :  Place the cursor on the first non-pad character in
-|                    the current line of the field.
-|
-|   Return Values :  E_OK         - success
-+--------------------------------------------------------------------------*/
+ 
 static int
 IFN_Beginning_Of_Line(FORM *form)
 {
@@ -1855,17 +1397,7 @@ IFN_Beginning_Of_Line(FORM *form)
   returnCode(E_OK);
 }
 
-/*---------------------------------------------------------------------------
-|   Facility      :  libnform
-|   Function      :  static int IFN_End_Of_Line(FORM * form)
-|
-|   Description   :  Place the cursor after the last non-pad character in the
-|                    current line of the field. If the field occupies the
-|                    last column in the line, the cursor is positioned on the
-|                    last character of the line.
-|
-|   Return Values :  E_OK        - success
-+--------------------------------------------------------------------------*/
+ 
 static int
 IFN_End_Of_Line(FORM *form)
 {
@@ -1883,16 +1415,7 @@ IFN_End_Of_Line(FORM *form)
   returnCode(E_OK);
 }
 
-/*---------------------------------------------------------------------------
-|   Facility      :  libnform
-|   Function      :  static int IFN_Left_Character(FORM * form)
-|
-|   Description   :  Move one character to the left in the current line.
-|                    This doesn't cycle.
-|
-|   Return Values :  E_OK             - success
-|                    E_REQUEST_DENIED - already in first column
-+--------------------------------------------------------------------------*/
+ 
 static int
 IFN_Left_Character(FORM *form)
 {
@@ -1908,16 +1431,7 @@ IFN_Left_Character(FORM *form)
   returnCode(E_OK);
 }
 
-/*---------------------------------------------------------------------------
-|   Facility      :  libnform
-|   Function      :  static int IFN_Right_Character(FORM * form)
-|
-|   Description   :  Move one character to the right in the current line.
-|                    This doesn't cycle.
-|
-|   Return Values :  E_OK              - success
-|                    E_REQUEST_DENIED  - already in last column
-+--------------------------------------------------------------------------*/
+ 
 static int
 IFN_Right_Character(FORM *form)
 {
@@ -1939,16 +1453,7 @@ IFN_Right_Character(FORM *form)
   returnCode(E_OK);
 }
 
-/*---------------------------------------------------------------------------
-|   Facility      :  libnform
-|   Function      :  static int IFN_Up_Character(FORM * form)
-|
-|   Description   :  Move one line up. This doesn't cycle through the lines
-|                    of the field.
-|
-|   Return Values :  E_OK              - success
-|                    E_REQUEST_DENIED  - already in last column
-+--------------------------------------------------------------------------*/
+ 
 static int
 IFN_Up_Character(FORM *form)
 {
@@ -1961,16 +1466,7 @@ IFN_Up_Character(FORM *form)
   returnCode(E_OK);
 }
 
-/*---------------------------------------------------------------------------
-|   Facility      :  libnform
-|   Function      :  static int IFN_Down_Character(FORM * form)
-|
-|   Description   :  Move one line down. This doesn't cycle through the
-|                    lines of the field.
-|
-|   Return Values :  E_OK              - success
-|                    E_REQUEST_DENIED  - already in last column
-+--------------------------------------------------------------------------*/
+ 
 static int
 IFN_Down_Character(FORM *form)
 {
@@ -1988,24 +1484,11 @@ IFN_Down_Character(FORM *form)
     }
   returnCode(E_OK);
 }
-/*----------------------------------------------------------------------------
-  END of Intra-Field Navigation routines
-  --------------------------------------------------------------------------*/
+ 
 
-/*----------------------------------------------------------------------------
-  Vertical scrolling helper routines
-  --------------------------------------------------------------------------*/
+ 
 
-/*---------------------------------------------------------------------------
-|   Facility      :  libnform
-|   Function      :  static int VSC_Generic(FORM *form, int nlines)
-|
-|   Description   :  Scroll multi-line field forward (nlines>0) or
-|                    backward (nlines<0) this many lines.
-|
-|   Return Values :  E_OK              - success
-|                    E_REQUEST_DENIED  - can't scroll
-+--------------------------------------------------------------------------*/
+ 
 static int
 VSC_Generic(FORM *form, int nlines)
 {
@@ -2039,26 +1522,11 @@ VSC_Generic(FORM *form, int nlines)
     }
   return (res);
 }
-/*----------------------------------------------------------------------------
-  End of Vertical scrolling helper routines
-  --------------------------------------------------------------------------*/
+ 
 
-/*----------------------------------------------------------------------------
-  Vertical scrolling routines
-  --------------------------------------------------------------------------*/
+ 
 
-/*---------------------------------------------------------------------------
-|   Facility      :  libnform
-|   Function      :  static int Vertical_Scrolling(
-|                                           int (* const fct) (FORM *),
-|                                           FORM * form)
-|
-|   Description   :  Performs the generic vertical scrolling routines.
-|                    This has to check for a multi-line field and to set
-|                    the _NEWTOP flag if scrolling really occurred.
-|
-|   Return Values :  Propagated error code from low-level driver calls
-+--------------------------------------------------------------------------*/
+ 
 static int
 Vertical_Scrolling(int (*const fct) (FORM *), FORM *form)
 {
@@ -2073,15 +1541,7 @@ Vertical_Scrolling(int (*const fct) (FORM *), FORM *form)
   return (res);
 }
 
-/*---------------------------------------------------------------------------
-|   Facility      :  libnform
-|   Function      :  static int VSC_Scroll_Line_Forward(FORM * form)
-|
-|   Description   :  Scroll multi-line field forward a line
-|
-|   Return Values :  E_OK                - success
-|                    E_REQUEST_DENIED    - no data ahead
-+--------------------------------------------------------------------------*/
+ 
 static int
 VSC_Scroll_Line_Forward(FORM *form)
 {
@@ -2089,15 +1549,7 @@ VSC_Scroll_Line_Forward(FORM *form)
   returnCode(VSC_Generic(form, 1));
 }
 
-/*---------------------------------------------------------------------------
-|   Facility      :  libnform
-|   Function      :  static int VSC_Scroll_Line_Backward(FORM * form)
-|
-|   Description   :  Scroll multi-line field backward a line
-|
-|   Return Values :  E_OK                - success
-|                    E_REQUEST_DENIED    - no data behind
-+--------------------------------------------------------------------------*/
+ 
 static int
 VSC_Scroll_Line_Backward(FORM *form)
 {
@@ -2105,15 +1557,7 @@ VSC_Scroll_Line_Backward(FORM *form)
   returnCode(VSC_Generic(form, -1));
 }
 
-/*---------------------------------------------------------------------------
-|   Facility      :  libnform
-|   Function      :  static int VSC_Scroll_Page_Forward(FORM * form)
-|
-|   Description   :  Scroll a multi-line field forward a page
-|
-|   Return Values :  E_OK              - success
-|                    E_REQUEST_DENIED  - no data ahead
-+--------------------------------------------------------------------------*/
+ 
 static int
 VSC_Scroll_Page_Forward(FORM *form)
 {
@@ -2121,15 +1565,7 @@ VSC_Scroll_Page_Forward(FORM *form)
   returnCode(VSC_Generic(form, form->current->rows));
 }
 
-/*---------------------------------------------------------------------------
-|   Facility      :  libnform
-|   Function      :  static int VSC_Scroll_Half_Page_Forward(FORM * form)
-|
-|   Description   :  Scroll a multi-line field forward half a page
-|
-|   Return Values :  E_OK              - success
-|                    E_REQUEST_DENIED  - no data ahead
-+--------------------------------------------------------------------------*/
+ 
 static int
 VSC_Scroll_Half_Page_Forward(FORM *form)
 {
@@ -2137,15 +1573,7 @@ VSC_Scroll_Half_Page_Forward(FORM *form)
   returnCode(VSC_Generic(form, (form->current->rows + 1) / 2));
 }
 
-/*---------------------------------------------------------------------------
-|   Facility      :  libnform
-|   Function      :  static int VSC_Scroll_Page_Backward(FORM * form)
-|
-|   Description   :  Scroll a multi-line field backward a page
-|
-|   Return Values :  E_OK              - success
-|                    E_REQUEST_DENIED  - no data behind
-+--------------------------------------------------------------------------*/
+ 
 static int
 VSC_Scroll_Page_Backward(FORM *form)
 {
@@ -2153,39 +1581,18 @@ VSC_Scroll_Page_Backward(FORM *form)
   returnCode(VSC_Generic(form, -(form->current->rows)));
 }
 
-/*---------------------------------------------------------------------------
-|   Facility      :  libnform
-|   Function      :  static int VSC_Scroll_Half_Page_Backward(FORM * form)
-|
-|   Description   :  Scroll a multi-line field backward half a page
-|
-|   Return Values :  E_OK              - success
-|                    E_REQUEST_DENIED  - no data behind
-+--------------------------------------------------------------------------*/
+ 
 static int
 VSC_Scroll_Half_Page_Backward(FORM *form)
 {
   T((T_CALLED("VSC_Scroll_Half_Page_Backward(%p)"), (void *)form));
   returnCode(VSC_Generic(form, -((form->current->rows + 1) / 2)));
 }
-/*----------------------------------------------------------------------------
-  End of Vertical scrolling routines
-  --------------------------------------------------------------------------*/
+ 
 
-/*----------------------------------------------------------------------------
-  Horizontal scrolling helper routines
-  --------------------------------------------------------------------------*/
+ 
 
-/*---------------------------------------------------------------------------
-|   Facility      :  libnform
-|   Function      :  static int HSC_Generic(FORM *form, int ncolumns)
-|
-|   Description   :  Scroll single-line field forward (ncolumns>0) or
-|                    backward (ncolumns<0) this many columns.
-|
-|   Return Values :  E_OK              - success
-|                    E_REQUEST_DENIED  - can't scroll
-+--------------------------------------------------------------------------*/
+ 
 static int
 HSC_Generic(FORM *form, int ncolumns)
 {
@@ -2219,25 +1626,11 @@ HSC_Generic(FORM *form, int ncolumns)
     }
   return (res);
 }
-/*----------------------------------------------------------------------------
-  End of Horizontal scrolling helper routines
-  --------------------------------------------------------------------------*/
+ 
 
-/*----------------------------------------------------------------------------
-  Horizontal scrolling routines
-  --------------------------------------------------------------------------*/
+ 
 
-/*---------------------------------------------------------------------------
-|   Facility      :  libnform
-|   Function      :  static int Horizontal_Scrolling(
-|                                          int (* const fct) (FORM *),
-|                                          FORM * form)
-|
-|   Description   :  Performs the generic horizontal scrolling routines.
-|                    This has to check for a single-line field.
-|
-|   Return Values :  Propagated error code from low-level driver calls
-+--------------------------------------------------------------------------*/
+ 
 static int
 Horizontal_Scrolling(int (*const fct) (FORM *), FORM *form)
 {
@@ -2247,15 +1640,7 @@ Horizontal_Scrolling(int (*const fct) (FORM *), FORM *form)
     return (E_REQUEST_DENIED);
 }
 
-/*---------------------------------------------------------------------------
-|   Facility      :  libnform
-|   Function      :  static int HSC_Scroll_Char_Forward(FORM * form)
-|
-|   Description   :  Scroll single-line field forward a character
-|
-|   Return Values :  E_OK                - success
-|                    E_REQUEST_DENIED    - no data ahead
-+--------------------------------------------------------------------------*/
+ 
 static int
 HSC_Scroll_Char_Forward(FORM *form)
 {
@@ -2263,15 +1648,7 @@ HSC_Scroll_Char_Forward(FORM *form)
   returnCode(HSC_Generic(form, 1));
 }
 
-/*---------------------------------------------------------------------------
-|   Facility      :  libnform
-|   Function      :  static int HSC_Scroll_Char_Backward(FORM * form)
-|
-|   Description   :  Scroll single-line field backward a character
-|
-|   Return Values :  E_OK                - success
-|                    E_REQUEST_DENIED    - no data behind
-+--------------------------------------------------------------------------*/
+ 
 static int
 HSC_Scroll_Char_Backward(FORM *form)
 {
@@ -2279,15 +1656,7 @@ HSC_Scroll_Char_Backward(FORM *form)
   returnCode(HSC_Generic(form, -1));
 }
 
-/*---------------------------------------------------------------------------
-|   Facility      :  libnform
-|   Function      :  static int HSC_Horizontal_Line_Forward(FORM* form)
-|
-|   Description   :  Scroll single-line field forward a line
-|
-|   Return Values :  E_OK                - success
-|                    E_REQUEST_DENIED    - no data ahead
-+--------------------------------------------------------------------------*/
+ 
 static int
 HSC_Horizontal_Line_Forward(FORM *form)
 {
@@ -2295,15 +1664,7 @@ HSC_Horizontal_Line_Forward(FORM *form)
   returnCode(HSC_Generic(form, form->current->cols));
 }
 
-/*---------------------------------------------------------------------------
-|   Facility      :  libnform
-|   Function      :  static int HSC_Horizontal_Half_Line_Forward(FORM* form)
-|
-|   Description   :  Scroll single-line field forward half a line
-|
-|   Return Values :  E_OK               - success
-|                    E_REQUEST_DENIED   - no data ahead
-+--------------------------------------------------------------------------*/
+ 
 static int
 HSC_Horizontal_Half_Line_Forward(FORM *form)
 {
@@ -2311,15 +1672,7 @@ HSC_Horizontal_Half_Line_Forward(FORM *form)
   returnCode(HSC_Generic(form, (form->current->cols + 1) / 2));
 }
 
-/*---------------------------------------------------------------------------
-|   Facility      :  libnform
-|   Function      :  static int HSC_Horizontal_Line_Backward(FORM* form)
-|
-|   Description   :  Scroll single-line field backward a line
-|
-|   Return Values :  E_OK                - success
-|                    E_REQUEST_DENIED    - no data behind
-+--------------------------------------------------------------------------*/
+ 
 static int
 HSC_Horizontal_Line_Backward(FORM *form)
 {
@@ -2327,15 +1680,7 @@ HSC_Horizontal_Line_Backward(FORM *form)
   returnCode(HSC_Generic(form, -(form->current->cols)));
 }
 
-/*---------------------------------------------------------------------------
-|   Facility      :  libnform
-|   Function      :  static int HSC_Horizontal_Half_Line_Backward(FORM* form)
-|
-|   Description   :  Scroll single-line field backward half a line
-|
-|   Return Values :  E_OK                - success
-|                    E_REQUEST_DENIED    - no data behind
-+--------------------------------------------------------------------------*/
+ 
 static int
 HSC_Horizontal_Half_Line_Backward(FORM *form)
 {
@@ -2343,24 +1688,11 @@ HSC_Horizontal_Half_Line_Backward(FORM *form)
   returnCode(HSC_Generic(form, -((form->current->cols + 1) / 2)));
 }
 
-/*----------------------------------------------------------------------------
-  End of Horizontal scrolling routines
-  --------------------------------------------------------------------------*/
+ 
 
-/*----------------------------------------------------------------------------
-  Helper routines for Field Editing
-  --------------------------------------------------------------------------*/
+ 
 
-/*---------------------------------------------------------------------------
-|   Facility      :  libnform
-|   Function      :  static bool Is_There_Room_For_A_Line(FORM * form)
-|
-|   Description   :  Check whether or not there is enough room in the
-|                    buffer to enter a whole line.
-|
-|   Return Values :  TRUE   - there is enough space
-|                    FALSE  - there is not enough space
-+--------------------------------------------------------------------------*/
+ 
 NCURSES_INLINE static bool
 Is_There_Room_For_A_Line(FORM *form)
 {
@@ -2373,16 +1705,7 @@ Is_There_Room_For_A_Line(FORM *form)
   return ((s == begin_of_last_line) ? TRUE : FALSE);
 }
 
-/*---------------------------------------------------------------------------
-|   Facility      :  libnform
-|   Function      :  static bool Is_There_Room_For_A_Char_In_Line(FORM * form)
-|
-|   Description   :  Checks whether or not there is room for a new character
-|                    in the current line.
-|
-|   Return Values :  TRUE    - there is room
-|                    FALSE   - there is not enough room (line full)
-+--------------------------------------------------------------------------*/
+ 
 NCURSES_INLINE static bool
 Is_There_Room_For_A_Char_In_Line(FORM *form)
 {
@@ -2398,26 +1721,7 @@ Is_There_Room_For_A_Char_In_Line(FORM *form)
 #define There_Is_No_Room_For_A_Char_In_Line(f) \
   !Is_There_Room_For_A_Char_In_Line(f)
 
-/*---------------------------------------------------------------------------
-|   Facility      :  libnform
-|   Function      :  static int Insert_String(
-|                                             FORM * form,
-|                                             int row,
-|                                             char *txt,
-|                                             int  len )
-|
-|   Description   :  Insert the 'len' characters beginning at pointer 'txt'
-|                    into the 'row' of the 'form'. The insertion occurs
-|                    on the beginning of the row, all other characters are
-|                    moved to the right. After the text a pad character will
-|                    be inserted to separate the text from the rest. If
-|                    necessary the insertion moves characters on the next
-|                    line to make place for the requested insertion string.
-|
-|   Return Values :  E_OK              - success
-|                    E_REQUEST_DENIED  -
-|                    E_SYSTEM_ERROR    - system error
-+--------------------------------------------------------------------------*/
+ 
 static int
 Insert_String(FORM *form, int row, FIELD_CELL *txt, int len)
 {
@@ -2438,13 +1742,12 @@ Insert_String(FORM *form, int row, FIELD_CELL *txt, int len)
     }
   else
     {
-      /* we have to move characters on the next line. If we are on the
-         last line this may work, if the field is growable */
+       
       if ((row == (field->drows - 1)) && Growable(field))
 	{
 	  if (!Field_Grown(field, 1))
 	    return (E_SYSTEM_ERROR);
-	  /* !!!Side-Effect : might be changed due to growth!!! */
+	   
 	  bp = Address_Of_Row_In_Buffer(field, row);
 	}
 
@@ -2459,10 +1762,9 @@ Insert_String(FORM *form, int row, FIELD_CELL *txt, int len)
 								    - requiredlen,
 								    requiredlen)
 						  - bp));
-	  /* split points now to the first character of the portion of the
-	     line that must be moved to the next line */
-	  datalen = (int)(split - bp);	/* + freelen has to stay on this line   */
-	  freelen = field->dcols - (datalen + freelen);		/* for the next line */
+	   
+	  datalen = (int)(split - bp);	 
+	  freelen = field->dcols - (datalen + freelen);		 
 
 	  if ((result = Insert_String(form, row + 1, split, freelen)) == E_OK)
 	    {
@@ -2479,21 +1781,7 @@ Insert_String(FORM *form, int row, FIELD_CELL *txt, int len)
   return (result);
 }
 
-/*---------------------------------------------------------------------------
-|   Facility      :  libnform
-|   Function      :  static int Wrapping_Not_Necessary_Or_Wrapping_Ok(
-|                                             FORM * form)
-|
-|   Description   :  If a character has been entered into a field, it may
-|                    be that wrapping has to occur. This routine checks
-|                    whether or not wrapping is required and if so, performs
-|                    the wrapping.
-|
-|   Return Values :  E_OK              - no wrapping required or wrapping
-|                                        was successful
-|                    E_REQUEST_DENIED  -
-|                    E_SYSTEM_ERROR    - some system error
-+--------------------------------------------------------------------------*/
+ 
 static int
 Wrapping_Not_Necessary_Or_Wrapping_Ok(FORM *form)
 {
@@ -2501,10 +1789,10 @@ Wrapping_Not_Necessary_Or_Wrapping_Ok(FORM *form)
   int result = E_REQUEST_DENIED;
   bool Last_Row = ((field->drows - 1) == form->currow);
 
-  if ((Field_Has_Option(field, O_WRAP)) &&	/* wrapping wanted     */
-      (!Single_Line_Field(field)) &&	/* must be multi-line  */
-      (There_Is_No_Room_For_A_Char_In_Line(form)) &&	/* line is full        */
-      (!Last_Row || Growable(field)))	/* there are more lines */
+  if ((Field_Has_Option(field, O_WRAP)) &&	 
+      (!Single_Line_Field(field)) &&	 
+      (There_Is_No_Room_For_A_Char_In_Line(form)) &&	 
+      (!Last_Row || Growable(field)))	 
     {
       FIELD_CELL *bp;
       FIELD_CELL *split;
@@ -2513,16 +1801,14 @@ Wrapping_Not_Necessary_Or_Wrapping_Ok(FORM *form)
 
       if (Last_Row)
 	{
-	  /* the above logic already ensures, that in this case the field
-	     is growable */
+	   
 	  if (!Field_Grown(field, 1))
 	    return E_SYSTEM_ERROR;
 	}
       bp = Address_Of_Current_Row_In_Buffer(form);
       Window_To_Buffer(form, field);
       split = After_Last_Whitespace_Character(bp, field->dcols);
-      /* split points to the first character of the sequence to be brought
-         on the next line */
+       
       chars_to_remain_on_line = (int)(split - bp);
       chars_to_be_wrapped = field->dcols - chars_to_remain_on_line;
       if (chars_to_remain_on_line > 0)
@@ -2550,39 +1836,19 @@ Wrapping_Not_Necessary_Or_Wrapping_Ok(FORM *form)
 	}
     }
   else
-    result = E_OK;		/* wrapping was not necessary */
+    result = E_OK;		 
   return (result);
 }
 
-/*----------------------------------------------------------------------------
-  Field Editing routines
-  --------------------------------------------------------------------------*/
+ 
 
-/*---------------------------------------------------------------------------
-|   Facility      :  libnform
-|   Function      :  static int Field_Editing(
-|                                    int (* const fct) (FORM *),
-|                                    FORM * form)
-|
-|   Description   :  Generic routine for field editing requests. The driver
-|                    routines are only called for editable fields, the
-|                    _WINDOW_MODIFIED flag is set if editing occurred.
-|                    This is somewhat special due to the overload semantics
-|                    of the NEW_LINE and DEL_PREV requests.
-|
-|   Return Values :  Error code from low level drivers.
-+--------------------------------------------------------------------------*/
+ 
 static int
 Field_Editing(int (*const fct) (FORM *), FORM *form)
 {
   int res = E_REQUEST_DENIED;
 
-  /* We have to deal here with the specific case of the overloaded
-     behavior of New_Line and Delete_Previous requests.
-     They may end up in navigational requests if we are on the first
-     character in a field. But navigation is also allowed on non-
-     editable fields.
-   */
+   
   if ((fct == FE_Delete_Previous) &&
       ((unsigned)form->opts & O_BS_OVERLOAD) &&
       First_Position_In_Current_Field(form))
@@ -2599,12 +1865,12 @@ Field_Editing(int (*const fct) (FORM *), FORM *form)
 	      res = Inter_Field_Navigation(FN_Next_Field, form);
 	    }
 	  else
-	    /* FE_New_Line deals itself with the _WINDOW_MODIFIED flag */
+	     
 	    res = fct(form);
 	}
       else
 	{
-	  /* From now on, everything must be editable */
+	   
 	  if ((unsigned)form->current->opts & O_EDIT)
 	    {
 	      res = fct(form);
@@ -2616,19 +1882,7 @@ Field_Editing(int (*const fct) (FORM *), FORM *form)
   return res;
 }
 
-/*---------------------------------------------------------------------------
-|   Facility      :  libnform
-|   Function      :  static int FE_New_Line(FORM * form)
-|
-|   Description   :  Perform a new line request. This is rather complex
-|                    compared to other routines in this code due to the
-|                    rather difficult to understand description in the
-|                    manuals.
-|
-|   Return Values :  E_OK               - success
-|                    E_REQUEST_DENIED   - new line not allowed
-|                    E_SYSTEM_ERROR     - system error
-+--------------------------------------------------------------------------*/
+ 
 static int
 FE_New_Line(FORM *form)
 {
@@ -2646,10 +1900,7 @@ FE_New_Line(FORM *form)
 	    returnCode(E_REQUEST_DENIED);
 	  wmove(form->w, form->currow, form->curcol);
 	  wclrtoeol(form->w);
-	  /* we have to set this here, although it is also
-	     handled in the generic routine. The reason is,
-	     that FN_Next_Field may fail, but the form is
-	     definitively changed */
+	   
 	  SetStatus(form, _WINDOW_MODIFIED);
 	  returnCode(Inter_Field_Navigation(FN_Next_Field, form));
 	}
@@ -2657,9 +1908,7 @@ FE_New_Line(FORM *form)
 	{
 	  if (Last_Row && !Field_Grown(field, 1))
 	    {
-	      /* N.B.: due to the logic in the 'if', LastRow==TRUE
-	         means here that the field is growable and not
-	         a single-line field */
+	       
 	      returnCode(E_SYSTEM_ERROR);
 	    }
 	  wmove(form->w, form->currow, form->curcol);
@@ -2672,7 +1921,7 @@ FE_New_Line(FORM *form)
     }
   else
     {
-      /* Insert Mode */
+       
       if (Last_Row &&
 	  !(Growable(field) && !Single_Line_Field(field)))
 	{
@@ -2704,15 +1953,7 @@ FE_New_Line(FORM *form)
     }
 }
 
-/*---------------------------------------------------------------------------
-|   Facility      :  libnform
-|   Function      :  static int FE_Insert_Character(FORM * form)
-|
-|   Description   :  Insert blank character at the cursor position
-|
-|   Return Values :  E_OK
-|                    E_REQUEST_DENIED
-+--------------------------------------------------------------------------*/
+ 
 static int
 FE_Insert_Character(FORM *form)
 {
@@ -2740,15 +1981,7 @@ FE_Insert_Character(FORM *form)
   returnCode(result);
 }
 
-/*---------------------------------------------------------------------------
-|   Facility      :  libnform
-|   Function      :  static int FE_Insert_Line(FORM * form)
-|
-|   Description   :  Insert a blank line at the cursor position
-|
-|   Return Values :  E_OK               - success
-|                    E_REQUEST_DENIED   - line can not be inserted
-+--------------------------------------------------------------------------*/
+ 
 static int
 FE_Insert_Line(FORM *form)
 {
@@ -2778,14 +2011,7 @@ FE_Insert_Line(FORM *form)
   returnCode(result);
 }
 
-/*---------------------------------------------------------------------------
-|   Facility      :  libnform
-|   Function      :  static int FE_Delete_Character(FORM * form)
-|
-|   Description   :  Delete character at the cursor position
-|
-|   Return Values :  E_OK    - success
-+--------------------------------------------------------------------------*/
+ 
 static int
 FE_Delete_Character(FORM *form)
 {
@@ -2794,19 +2020,7 @@ FE_Delete_Character(FORM *form)
   returnCode(E_OK);
 }
 
-/*---------------------------------------------------------------------------
-|   Facility      :  libnform
-|   Function      :  static int FE_Delete_Previous(FORM * form)
-|
-|   Description   :  Delete character before cursor. Again this is a rather
-|                    difficult piece compared to others due to the overloading
-|                    semantics of backspace.
-|                    N.B.: The case of overloaded BS on first field position
-|                          is already handled in the generic routine.
-|
-|   Return Values :  E_OK                - success
-|                    E_REQUEST_DENIED    - Character can't be deleted
-+--------------------------------------------------------------------------*/
+ 
 static int
 FE_Delete_Previous(FORM *form)
 {
@@ -2836,20 +2050,7 @@ FE_Delete_Previous(FORM *form)
       wmove(form->w, form->currow, form->curcol);
       wdeleteln(form->w);
       Adjust_Cursor_Position(form, prev_end);
-      /*
-       * If we did not really move to the previous line, help the user a
-       * little.  It is however a little inconsistent.  Normally, when
-       * backspacing around the point where text wraps to a new line in a
-       * multi-line form, we absorb one keystroke for the wrapping point.  That
-       * is consistent with SVr4 forms.  However, SVr4 does not allow typing
-       * into the last column of the field, and requires the user to enter a
-       * newline to move to the next line.  Therefore it can consistently eat
-       * that keystroke.  Since ncurses allows the last column, it wraps
-       * automatically (given the proper options).  But we cannot eat the
-       * keystroke to back over the wrapping point, since that would put the
-       * cursor past the end of the form field.  In this case, just delete the
-       * character at the end of the field.
-       */
+       
       if (form->currow == this_row && this_row > 0)
 	{
 	  form->currow -= 1;
@@ -2869,14 +2070,7 @@ FE_Delete_Previous(FORM *form)
   returnCode(E_OK);
 }
 
-/*---------------------------------------------------------------------------
-|   Facility      :  libnform
-|   Function      :  static int FE_Delete_Line(FORM * form)
-|
-|   Description   :  Delete line at cursor position.
-|
-|   Return Values :  E_OK  - success
-+--------------------------------------------------------------------------*/
+ 
 static int
 FE_Delete_Line(FORM *form)
 {
@@ -2886,15 +2080,7 @@ FE_Delete_Line(FORM *form)
   returnCode(E_OK);
 }
 
-/*---------------------------------------------------------------------------
-|   Facility      :  libnform
-|   Function      :  static int FE_Delete_Word(FORM * form)
-|
-|   Description   :  Delete word at cursor position
-|
-|   Return Values :  E_OK               - success
-|                    E_REQUEST_DENIED   - failure
-+--------------------------------------------------------------------------*/
+ 
 static int
 FE_Delete_Word(FORM *form)
 {
@@ -2907,34 +2093,27 @@ FE_Delete_Word(FORM *form)
   T((T_CALLED("FE_Delete_Word(%p)"), (void *)form));
   Synchronize_Buffer(form);
   if (ISBLANK(*cp))
-    returnCode(E_REQUEST_DENIED);	/* not in word */
+    returnCode(E_REQUEST_DENIED);	 
 
-  /* move cursor to begin of word and erase to end of screen-line */
+   
   Adjust_Cursor_Position(form,
 			 After_Last_Whitespace_Character(bp, form->curcol));
   wmove(form->w, form->currow, form->curcol);
   wclrtoeol(form->w);
 
-  /* skip over word in buffer */
+   
   s = Get_First_Whitespace_Character(cp, (int)(ep - cp));
-  /* to begin of next word    */
+   
   s = Get_Start_Of_Data(s, (int)(ep - s));
   if ((s != cp) && !ISBLANK(*s))
     {
-      /* copy remaining line to window */
+       
       myADDNSTR(form->w, s, (int)(s - After_End_Of_Data(s, (int)(ep - s))));
     }
   returnCode(E_OK);
 }
 
-/*---------------------------------------------------------------------------
-|   Facility      :  libnform
-|   Function      :  static int FE_Clear_To_End_Of_Line(FORM * form)
-|
-|   Description   :  Clear to end of current line.
-|
-|   Return Values :  E_OK   - success
-+--------------------------------------------------------------------------*/
+ 
 static int
 FE_Clear_To_End_Of_Line(FORM *form)
 {
@@ -2944,14 +2123,7 @@ FE_Clear_To_End_Of_Line(FORM *form)
   returnCode(E_OK);
 }
 
-/*---------------------------------------------------------------------------
-|   Facility      :  libnform
-|   Function      :  static int FE_Clear_To_End_Of_Field(FORM * form)
-|
-|   Description   :  Clear to end of field.
-|
-|   Return Values :  E_OK   - success
-+--------------------------------------------------------------------------*/
+ 
 static int
 FE_Clear_To_End_Of_Field(FORM *form)
 {
@@ -2961,14 +2133,7 @@ FE_Clear_To_End_Of_Field(FORM *form)
   returnCode(E_OK);
 }
 
-/*---------------------------------------------------------------------------
-|   Facility      :  libnform
-|   Function      :  static int FE_Clear_Field(FORM * form)
-|
-|   Description   :  Clear entire field.
-|
-|   Return Values :  E_OK   - success
-+--------------------------------------------------------------------------*/
+ 
 static int
 FE_Clear_Field(FORM *form)
 {
@@ -2977,22 +2142,11 @@ FE_Clear_Field(FORM *form)
   werase(form->w);
   returnCode(E_OK);
 }
-/*----------------------------------------------------------------------------
-  END of Field Editing routines
-  --------------------------------------------------------------------------*/
+ 
 
-/*----------------------------------------------------------------------------
-  Edit Mode routines
-  --------------------------------------------------------------------------*/
+ 
 
-/*---------------------------------------------------------------------------
-|   Facility      :  libnform
-|   Function      :  static int EM_Overlay_Mode(FORM * form)
-|
-|   Description   :  Switch to overlay mode.
-|
-|   Return Values :  E_OK   - success
-+--------------------------------------------------------------------------*/
+ 
 static int
 EM_Overlay_Mode(FORM *form)
 {
@@ -3001,14 +2155,7 @@ EM_Overlay_Mode(FORM *form)
   returnCode(E_OK);
 }
 
-/*---------------------------------------------------------------------------
-|   Facility      :  libnform
-|   Function      :  static int EM_Insert_Mode(FORM * form)
-|
-|   Description   :  Switch to insert mode
-|
-|   Return Values :  E_OK   - success
-+--------------------------------------------------------------------------*/
+ 
 static int
 EM_Insert_Mode(FORM *form)
 {
@@ -3017,27 +2164,11 @@ EM_Insert_Mode(FORM *form)
   returnCode(E_OK);
 }
 
-/*----------------------------------------------------------------------------
-  END of Edit Mode routines
-  --------------------------------------------------------------------------*/
+ 
 
-/*----------------------------------------------------------------------------
-  Helper routines for Choice Requests
-  --------------------------------------------------------------------------*/
+ 
 
-/*---------------------------------------------------------------------------
-|   Facility      :  libnform
-|   Function      :  static bool Next_Choice(FORM * form,
-|                                            FIELDTYPE * typ,
-|                                            FIELD * field,
-|                                            TypeArgument *argp)
-|
-|   Description   :  Get the next field choice. For linked types this is
-|                    done recursively.
-|
-|   Return Values :  TRUE    - next choice successfully retrieved
-|                    FALSE   - couldn't retrieve next choice
-+--------------------------------------------------------------------------*/
+ 
 static bool
 Next_Choice(FORM *form, FIELDTYPE *typ, FIELD *field, TypeArgument *argp)
 {
@@ -3066,19 +2197,7 @@ Next_Choice(FORM *form, FIELDTYPE *typ, FIELD *field, TypeArgument *argp)
     }
 }
 
-/*---------------------------------------------------------------------------
-|   Facility      :  libnform
-|   Function      :  static bool Previous_Choice(FORM * form,
-|                                                FIELDTYPE * typ,
-|                                                FIELD * field,
-|                                                TypeArgument *argp)
-|
-|   Description   :  Get the previous field choice. For linked types this
-|                    is done recursively.
-|
-|   Return Values :  TRUE    - previous choice successfully retrieved
-|                    FALSE   - couldn't retrieve previous choice
-+--------------------------------------------------------------------------*/
+ 
 static bool
 Previous_Choice(FORM *form, FIELDTYPE *typ, FIELD *field, TypeArgument *argp)
 {
@@ -3106,23 +2225,11 @@ Previous_Choice(FORM *form, FIELDTYPE *typ, FIELD *field, TypeArgument *argp)
 #endif
     }
 }
-/*----------------------------------------------------------------------------
-  End of Helper routines for Choice Requests
-  --------------------------------------------------------------------------*/
+ 
 
-/*----------------------------------------------------------------------------
-  Routines for Choice Requests
-  --------------------------------------------------------------------------*/
+ 
 
-/*---------------------------------------------------------------------------
-|   Facility      :  libnform
-|   Function      :  static int CR_Next_Choice(FORM * form)
-|
-|   Description   :  Get the next field choice.
-|
-|   Return Values :  E_OK              - success
-|                    E_REQUEST_DENIED  - next choice couldn't be retrieved
-+--------------------------------------------------------------------------*/
+ 
 static int
 CR_Next_Choice(FORM *form)
 {
@@ -3135,15 +2242,7 @@ CR_Next_Choice(FORM *form)
 	     : E_REQUEST_DENIED);
 }
 
-/*---------------------------------------------------------------------------
-|   Facility      :  libnform
-|   Function      :  static int CR_Previous_Choice(FORM * form)
-|
-|   Description   :  Get the previous field choice.
-|
-|   Return Values :  E_OK              - success
-|                    E_REQUEST_DENIED  - prev. choice couldn't be retrieved
-+--------------------------------------------------------------------------*/
+ 
 static int
 CR_Previous_Choice(FORM *form)
 {
@@ -3155,28 +2254,11 @@ CR_Previous_Choice(FORM *form)
 	     ? E_OK
 	     : E_REQUEST_DENIED);
 }
-/*----------------------------------------------------------------------------
-  End of Routines for Choice Requests
-  --------------------------------------------------------------------------*/
+ 
 
-/*----------------------------------------------------------------------------
-  Helper routines for Field Validations.
-  --------------------------------------------------------------------------*/
+ 
 
-/*---------------------------------------------------------------------------
-|   Facility      :  libnform
-|   Function      :  static bool Check_Field(FORM* form,
-|                                            FIELDTYPE * typ,
-|                                            FIELD * field,
-|                                            TypeArgument * argp)
-|
-|   Description   :  Check the field according to its fieldtype and its
-|                    actual arguments. For linked fieldtypes this is done
-|                    recursively.
-|
-|   Return Values :  TRUE       - field is valid
-|                    FALSE      - field is invalid.
-+--------------------------------------------------------------------------*/
+ 
 static bool
 Check_Field(FORM *form, FIELDTYPE *typ, FIELD *field, TypeArgument *argp)
 {
@@ -3221,15 +2303,7 @@ Check_Field(FORM *form, FIELDTYPE *typ, FIELD *field, TypeArgument *argp)
   return TRUE;
 }
 
-/*---------------------------------------------------------------------------
-|   Facility      :  libnform
-|   Function      :  bool _nc_Internal_Validation(FORM * form )
-|
-|   Description   :  Validate the current field of the form.
-|
-|   Return Values :  TRUE  - field is valid
-|                    FALSE - field is invalid
-+--------------------------------------------------------------------------*/
+ 
 FORM_EXPORT(bool)
 _nc_Internal_Validation(FORM *form)
 {
@@ -3249,23 +2323,11 @@ _nc_Internal_Validation(FORM *form)
     }
   return TRUE;
 }
-/*----------------------------------------------------------------------------
-  End of Helper routines for Field Validations.
-  --------------------------------------------------------------------------*/
+ 
 
-/*----------------------------------------------------------------------------
-  Routines for Field Validation.
-  --------------------------------------------------------------------------*/
+ 
 
-/*---------------------------------------------------------------------------
-|   Facility      :  libnform
-|   Function      :  static int FV_Validation(FORM * form)
-|
-|   Description   :  Validate the current field of the form.
-|
-|   Return Values :  E_OK             - field valid
-|                    E_INVALID_FIELD  - field not valid
-+--------------------------------------------------------------------------*/
+ 
 static int
 FV_Validation(FORM *form)
 {
@@ -3275,25 +2337,11 @@ FV_Validation(FORM *form)
   else
     returnCode(E_INVALID_FIELD);
 }
-/*----------------------------------------------------------------------------
-  End of routines for Field Validation.
-  --------------------------------------------------------------------------*/
+ 
 
-/*----------------------------------------------------------------------------
-  Helper routines for Inter-Field Navigation
-  --------------------------------------------------------------------------*/
+ 
 
-/*---------------------------------------------------------------------------
-|   Facility      :  libnform
-|   Function      :  static FIELD *Next_Field_On_Page(FIELD * field)
-|
-|   Description   :  Get the next field after the given field on the current
-|                    page. The order of fields is the one defined by the
-|                    field's array. Only visible and active fields are
-|                    counted.
-|
-|   Return Values :  Pointer to the next field.
-+--------------------------------------------------------------------------*/
+ 
 NCURSES_INLINE static FIELD *
 Next_Field_On_Page(FIELD *field)
 {
@@ -3313,17 +2361,7 @@ Next_Field_On_Page(FIELD *field)
   return (*field_on_page);
 }
 
-/*---------------------------------------------------------------------------
-|   Facility      :  libnform
-|   Function      :  FIELD* _nc_First_Active_Field(FORM * form)
-|
-|   Description   :  Get the first active field on the current page,
-|                    if there are such. If there are none, get the first
-|                    visible field on the page. If there are also none,
-|                    we return the first field on page and hope the best.
-|
-|   Return Values :  Pointer to calculated field.
-+--------------------------------------------------------------------------*/
+ 
 FORM_EXPORT(FIELD *)
 _nc_First_Active_Field(FORM *form)
 {
@@ -3332,10 +2370,7 @@ _nc_First_Active_Field(FORM *form)
 
   if (proposed == *last_on_page)
     {
-      /* there might be the special situation, where there is no
-         active and visible field on the current page. We then select
-         the first visible field on this readonly page
-       */
+       
       if (Field_Is_Not_Selectable(proposed))
 	{
 	  FIELD **field = &form->field[proposed->index];
@@ -3354,11 +2389,7 @@ _nc_First_Active_Field(FORM *form)
 	  if ((proposed == *last_on_page) &&
 	      !((unsigned)proposed->opts & O_VISIBLE))
 	    {
-	      /* This means, there is also no visible field on the page.
-	         So we propose the first one and hope the very best...
-	         Some very clever user has designed a readonly and invisible
-	         page on this form.
-	       */
+	       
 	      proposed = *first;
 	    }
 	}
@@ -3366,17 +2397,7 @@ _nc_First_Active_Field(FORM *form)
   return (proposed);
 }
 
-/*---------------------------------------------------------------------------
-|   Facility      :  libnform
-|   Function      :  static FIELD *Previous_Field_On_Page(FIELD * field)
-|
-|   Description   :  Get the previous field before the given field on the
-|                    current page. The order of fields is the one defined by
-|                    the field's array. Only visible and active fields are
-|                    counted.
-|
-|   Return Values :  Pointer to the previous field.
-+--------------------------------------------------------------------------*/
+ 
 NCURSES_INLINE static FIELD *
 Previous_Field_On_Page(FIELD *field)
 {
@@ -3397,16 +2418,7 @@ Previous_Field_On_Page(FIELD *field)
   return (*field_on_page);
 }
 
-/*---------------------------------------------------------------------------
-|   Facility      :  libnform
-|   Function      :  static FIELD *Sorted_Next_Field(FIELD * field)
-|
-|   Description   :  Get the next field after the given field on the current
-|                    page. The order of fields is the one defined by the
-|                    (row,column) geometry, rows are major.
-|
-|   Return Values :  Pointer to the next field.
-+--------------------------------------------------------------------------*/
+ 
 NCURSES_INLINE static FIELD *
 Sorted_Next_Field(FIELD *field)
 {
@@ -3423,16 +2435,7 @@ Sorted_Next_Field(FIELD *field)
   return (field_on_page);
 }
 
-/*---------------------------------------------------------------------------
-|   Facility      :  libnform
-|   Function      :  static FIELD *Sorted_Previous_Field(FIELD * field)
-|
-|   Description   :  Get the previous field before the given field on the
-|                    current page. The order of fields is the one defined
-|                    by the (row,column) geometry, rows are major.
-|
-|   Return Values :  Pointer to the previous field.
-+--------------------------------------------------------------------------*/
+ 
 NCURSES_INLINE static FIELD *
 Sorted_Previous_Field(FIELD *field)
 {
@@ -3449,25 +2452,13 @@ Sorted_Previous_Field(FIELD *field)
   return (field_on_page);
 }
 
-/*---------------------------------------------------------------------------
-|   Facility      :  libnform
-|   Function      :  static FIELD *Left_Neighbor_Field(FIELD * field)
-|
-|   Description   :  Get the left neighbor of the field on the same line
-|                    and the same page. Cycles through the line.
-|
-|   Return Values :  Pointer to left neighbor field.
-+--------------------------------------------------------------------------*/
+ 
 NCURSES_INLINE static FIELD *
 Left_Neighbor_Field(FIELD *field)
 {
   FIELD *field_on_page = field;
 
-  /* For a field that has really a left neighbor, the while clause
-     immediately fails and the loop is left, positioned at the right
-     neighbor. Otherwise we cycle backwards through the sorted field list
-     until we enter the same line (from the right end).
-   */
+   
   do
     {
       field_on_page = Sorted_Previous_Field(field_on_page);
@@ -3477,21 +2468,13 @@ Left_Neighbor_Field(FIELD *field)
   return (field_on_page);
 }
 
-/*---------------------------------------------------------------------------
-|   Facility      :  libnform
-|   Function      :  static FIELD *Right_Neighbor_Field(FIELD * field)
-|
-|   Description   :  Get the right neighbor of the field on the same line
-|                    and the same page.
-|
-|   Return Values :  Pointer to right neighbor field.
-+--------------------------------------------------------------------------*/
+ 
 NCURSES_INLINE static FIELD *
 Right_Neighbor_Field(FIELD *field)
 {
   FIELD *field_on_page = field;
 
-  /* See the comments on Left_Neighbor_Field to understand how it works */
+   
   do
     {
       field_on_page = Sorted_Next_Field(field_on_page);
@@ -3501,19 +2484,7 @@ Right_Neighbor_Field(FIELD *field)
   return (field_on_page);
 }
 
-/*---------------------------------------------------------------------------
-|   Facility      :  libnform
-|   Function      :  static FIELD *Upper_Neighbor_Field(FIELD * field)
-|
-|   Description   :  Because of the row-major nature of sorting the fields,
-|                    it is more difficult to define what the upper neighbor
-|                    field really means. We define that it must be on a
-|                    'previous' line (cyclic order!) and is the rightmost
-|                    field lying on the left side of the given field. If
-|                    this set is empty, we take the first field on the line.
-|
-|   Return Values :  Pointer to the upper neighbor field.
-+--------------------------------------------------------------------------*/
+ 
 static FIELD *
 Upper_Neighbor_Field(FIELD *field)
 {
@@ -3521,10 +2492,7 @@ Upper_Neighbor_Field(FIELD *field)
   int frow = field->frow;
   int fcol = field->fcol;
 
-  /* Walk back to the 'previous' line. The second term in the while clause
-     just guarantees that we stop if we cycled through the line because
-     there might be no 'previous' line if the page has just one line.
-   */
+   
   do
     {
       field_on_page = Sorted_Previous_Field(field_on_page);
@@ -3533,17 +2501,14 @@ Upper_Neighbor_Field(FIELD *field)
 
   if (field_on_page->frow != frow)
     {
-      /* We really found a 'previous' line. We are positioned at the
-         rightmost field on this line */
+       
       frow = field_on_page->frow;
 
-      /* We walk to the left as long as we are really right of the
-         field. */
+       
       while (field_on_page->frow == frow && field_on_page->fcol > fcol)
 	field_on_page = Sorted_Previous_Field(field_on_page);
 
-      /* If we wrapped, just go to the right which is the first field on
-         the row */
+       
       if (field_on_page->frow != frow)
 	field_on_page = Sorted_Next_Field(field_on_page);
     }
@@ -3551,19 +2516,7 @@ Upper_Neighbor_Field(FIELD *field)
   return (field_on_page);
 }
 
-/*---------------------------------------------------------------------------
-|   Facility      :  libnform
-|   Function      :  static FIELD *Down_Neighbor_Field(FIELD * field)
-|
-|   Description   :  Because of the row-major nature of sorting the fields,
-|                    it is more difficult to define what the down neighbor
-|                    field really means. We define that it must be on a
-|                    'next' line (cyclic order!) and is the leftmost
-|                    field laying on the right side of the given field. If
-|                    this set is empty, we take the last field on the line.
-|
-|   Return Values :  Pointer to the upper neighbor field.
-+--------------------------------------------------------------------------*/
+ 
 static FIELD *
 Down_Neighbor_Field(FIELD *field)
 {
@@ -3571,10 +2524,7 @@ Down_Neighbor_Field(FIELD *field)
   int frow = field->frow;
   int fcol = field->fcol;
 
-  /* Walk forward to the 'next' line. The second term in the while clause
-     just guarantees that we stop if we cycled through the line because
-     there might be no 'next' line if the page has just one line.
-   */
+   
   do
     {
       field_on_page = Sorted_Next_Field(field_on_page);
@@ -3583,17 +2533,14 @@ Down_Neighbor_Field(FIELD *field)
 
   if (field_on_page->frow != frow)
     {
-      /* We really found a 'next' line. We are positioned at the rightmost
-         field on this line */
+       
       frow = field_on_page->frow;
 
-      /* We walk to the right as long as we are really left of the
-         field. */
+       
       while (field_on_page->frow == frow && field_on_page->fcol < fcol)
 	field_on_page = Sorted_Next_Field(field_on_page);
 
-      /* If we wrapped, just go to the left which is the last field on
-         the row */
+       
       if (field_on_page->frow != frow)
 	field_on_page = Sorted_Previous_Field(field_on_page);
     }
@@ -3601,25 +2548,9 @@ Down_Neighbor_Field(FIELD *field)
   return (field_on_page);
 }
 
-/*----------------------------------------------------------------------------
-  Inter-Field Navigation routines
-  --------------------------------------------------------------------------*/
+ 
 
-/*---------------------------------------------------------------------------
-|   Facility      :  libnform
-|   Function      :  static int Inter_Field_Navigation(
-|                                           int (* const fct) (FORM *),
-|                                           FORM * form)
-|
-|   Description   :  Generic behavior for changing the current field, the
-|                    field is left and a new field is entered. So the field
-|                    must be validated and the field init/term hooks must
-|                    be called.
-|
-|   Return Values :  E_OK                - success
-|                    E_INVALID_FIELD     - field is invalid
-|                    some other          - error from subordinate call
-+--------------------------------------------------------------------------*/
+ 
 static int
 Inter_Field_Navigation(int (*const fct) (FORM *), FORM *form)
 {
@@ -3636,15 +2567,7 @@ Inter_Field_Navigation(int (*const fct) (FORM *), FORM *form)
   return res;
 }
 
-/*---------------------------------------------------------------------------
-|   Facility      :  libnform
-|   Function      :  static int FN_Next_Field(FORM * form)
-|
-|   Description   :  Move to the next field on the current page of the form
-|
-|   Return Values :  E_OK                 - success
-|                    != E_OK              - error from subordinate call
-+--------------------------------------------------------------------------*/
+ 
 static int
 FN_Next_Field(FORM *form)
 {
@@ -3653,16 +2576,7 @@ FN_Next_Field(FORM *form)
 				   Next_Field_On_Page(form->current)));
 }
 
-/*---------------------------------------------------------------------------
-|   Facility      :  libnform
-|   Function      :  static int FN_Previous_Field(FORM * form)
-|
-|   Description   :  Move to the previous field on the current page of the
-|                    form
-|
-|   Return Values :  E_OK                 - success
-|                    != E_OK              - error from subordinate call
-+--------------------------------------------------------------------------*/
+ 
 static int
 FN_Previous_Field(FORM *form)
 {
@@ -3671,15 +2585,7 @@ FN_Previous_Field(FORM *form)
 				   Previous_Field_On_Page(form->current)));
 }
 
-/*---------------------------------------------------------------------------
-|   Facility      :  libnform
-|   Function      :  static int FN_First_Field(FORM * form)
-|
-|   Description   :  Move to the first field on the current page of the form
-|
-|   Return Values :  E_OK                 - success
-|                    != E_OK              - error from subordinate call
-+--------------------------------------------------------------------------*/
+ 
 static int
 FN_First_Field(FORM *form)
 {
@@ -3688,15 +2594,7 @@ FN_First_Field(FORM *form)
 				   Next_Field_On_Page(form->field[form->page[form->curpage].pmax])));
 }
 
-/*---------------------------------------------------------------------------
-|   Facility      :  libnform
-|   Function      :  static int FN_Last_Field(FORM * form)
-|
-|   Description   :  Move to the last field on the current page of the form
-|
-|   Return Values :  E_OK                 - success
-|                    != E_OK              - error from subordinate call
-+--------------------------------------------------------------------------*/
+ 
 static int
 FN_Last_Field(FORM *form)
 {
@@ -3706,16 +2604,7 @@ FN_Last_Field(FORM *form)
 				    Previous_Field_On_Page(form->field[form->page[form->curpage].pmin])));
 }
 
-/*---------------------------------------------------------------------------
-|   Facility      :  libnform
-|   Function      :  static int FN_Sorted_Next_Field(FORM * form)
-|
-|   Description   :  Move to the sorted next field on the current page
-|                    of the form.
-|
-|   Return Values :  E_OK            - success
-|                    != E_OK         - error from subordinate call
-+--------------------------------------------------------------------------*/
+ 
 static int
 FN_Sorted_Next_Field(FORM *form)
 {
@@ -3724,16 +2613,7 @@ FN_Sorted_Next_Field(FORM *form)
 				   Sorted_Next_Field(form->current)));
 }
 
-/*---------------------------------------------------------------------------
-|   Facility      :  libnform
-|   Function      :  static int FN_Sorted_Previous_Field(FORM * form)
-|
-|   Description   :  Move to the sorted previous field on the current page
-|                    of the form.
-|
-|   Return Values :  E_OK            - success
-|                    != E_OK         - error from subordinate call
-+--------------------------------------------------------------------------*/
+ 
 static int
 FN_Sorted_Previous_Field(FORM *form)
 {
@@ -3742,16 +2622,7 @@ FN_Sorted_Previous_Field(FORM *form)
 				   Sorted_Previous_Field(form->current)));
 }
 
-/*---------------------------------------------------------------------------
-|   Facility      :  libnform
-|   Function      :  static int FN_Sorted_First_Field(FORM * form)
-|
-|   Description   :  Move to the sorted first field on the current page
-|                    of the form.
-|
-|   Return Values :  E_OK            - success
-|                    != E_OK         - error from subordinate call
-+--------------------------------------------------------------------------*/
+ 
 static int
 FN_Sorted_First_Field(FORM *form)
 {
@@ -3760,16 +2631,7 @@ FN_Sorted_First_Field(FORM *form)
 				   Sorted_Next_Field(form->field[form->page[form->curpage].smax])));
 }
 
-/*---------------------------------------------------------------------------
-|   Facility      :  libnform
-|   Function      :  static int FN_Sorted_Last_Field(FORM * form)
-|
-|   Description   :  Move to the sorted last field on the current page
-|                    of the form.
-|
-|   Return Values :  E_OK            - success
-|                    != E_OK         - error from subordinate call
-+--------------------------------------------------------------------------*/
+ 
 static int
 FN_Sorted_Last_Field(FORM *form)
 {
@@ -3778,16 +2640,7 @@ FN_Sorted_Last_Field(FORM *form)
 				   Sorted_Previous_Field(form->field[form->page[form->curpage].smin])));
 }
 
-/*---------------------------------------------------------------------------
-|   Facility      :  libnform
-|   Function      :  static int FN_Left_Field(FORM * form)
-|
-|   Description   :  Get the field on the left of the current field on the
-|                    same line and the same page. Cycles through the line.
-|
-|   Return Values :  E_OK            - success
-|                    != E_OK         - error from subordinate call
-+--------------------------------------------------------------------------*/
+ 
 static int
 FN_Left_Field(FORM *form)
 {
@@ -3796,16 +2649,7 @@ FN_Left_Field(FORM *form)
 				   Left_Neighbor_Field(form->current)));
 }
 
-/*---------------------------------------------------------------------------
-|   Facility      :  libnform
-|   Function      :  static int FN_Right_Field(FORM * form)
-|
-|   Description   :  Get the field on the right of the current field on the
-|                    same line and the same page. Cycles through the line.
-|
-|   Return Values :  E_OK            - success
-|                    != E_OK         - error from subordinate call
-+--------------------------------------------------------------------------*/
+ 
 static int
 FN_Right_Field(FORM *form)
 {
@@ -3814,18 +2658,7 @@ FN_Right_Field(FORM *form)
 				   Right_Neighbor_Field(form->current)));
 }
 
-/*---------------------------------------------------------------------------
-|   Facility      :  libnform
-|   Function      :  static int FN_Up_Field(FORM * form)
-|
-|   Description   :  Get the upper neighbor of the current field. This
-|                    cycles through the page. See the comments of the
-|                    Upper_Neighbor_Field function to understand how
-|                    'upper' is defined.
-|
-|   Return Values :  E_OK            - success
-|                    != E_OK         - error from subordinate call
-+--------------------------------------------------------------------------*/
+ 
 static int
 FN_Up_Field(FORM *form)
 {
@@ -3834,18 +2667,7 @@ FN_Up_Field(FORM *form)
 				   Upper_Neighbor_Field(form->current)));
 }
 
-/*---------------------------------------------------------------------------
-|   Facility      :  libnform
-|   Function      :  static int FN_Down_Field(FORM * form)
-|
-|   Description   :  Get the down neighbor of the current field. This
-|                    cycles through the page. See the comments of the
-|                    Down_Neighbor_Field function to understand how
-|                    'down' is defined.
-|
-|   Return Values :  E_OK            - success
-|                    != E_OK         - error from subordinate call
-+--------------------------------------------------------------------------*/
+ 
 static int
 FN_Down_Field(FORM *form)
 {
@@ -3853,31 +2675,11 @@ FN_Down_Field(FORM *form)
   returnCode(_nc_Set_Current_Field(form,
 				   Down_Neighbor_Field(form->current)));
 }
-/*----------------------------------------------------------------------------
-  END of Field Navigation routines
-  --------------------------------------------------------------------------*/
+ 
 
-/*----------------------------------------------------------------------------
-  Helper routines for Page Navigation
-  --------------------------------------------------------------------------*/
+ 
 
-/*---------------------------------------------------------------------------
-|   Facility      :  libnform
-|   Function      :  int _nc_Set_Form_Page(FORM * form,
-|                                          int page,
-|                                          FIELD * field)
-|
-|   Description   :  Make the given page number the current page and make
-|                    the given field the current field on the page. If
-|                    for the field NULL is given, make the first field on
-|                    the page the current field. The routine acts only
-|                    if the requested page is not the current page.
-|
-|   Return Values :  E_OK                - success
-|                    != E_OK             - error from subordinate call
-|                    E_BAD_ARGUMENT      - invalid field pointer
-|                    E_SYSTEM_ERROR      - some severe basic error
-+--------------------------------------------------------------------------*/
+ 
 FORM_EXPORT(int)
 _nc_Set_Form_Page(FORM *form, int page, FIELD *field)
 {
@@ -3902,67 +2704,29 @@ _nc_Set_Form_Page(FORM *form, int page, FIELD *field)
       if (field)
 	res = _nc_Set_Current_Field(form, field);
       else
-	/* N.B.: we don't encapsulate this by Inter_Field_Navigation(),
-	   because this is already executed in a page navigation
-	   context that contains field navigation
-	 */
+	 
 	res = FN_First_Field(form);
     }
   return (res);
 }
 
-/*---------------------------------------------------------------------------
-|   Facility      :  libnform
-|   Function      :  static int Next_Page_Number(const FORM * form)
-|
-|   Description   :  Calculate the page number following the current page
-|                    number. This cycles if the highest page number is
-|                    reached.
-|
-|   Return Values :  The next page number
-+--------------------------------------------------------------------------*/
+ 
 NCURSES_INLINE static int
 Next_Page_Number(const FORM *form)
 {
   return (form->curpage + 1) % form->maxpage;
 }
 
-/*---------------------------------------------------------------------------
-|   Facility      :  libnform
-|   Function      :  static int Previous_Page_Number(const FORM * form)
-|
-|   Description   :  Calculate the page number before the current page
-|                    number. This cycles if the first page number is
-|                    reached.
-|
-|   Return Values :  The previous page number
-+--------------------------------------------------------------------------*/
+ 
 NCURSES_INLINE static int
 Previous_Page_Number(const FORM *form)
 {
   return (form->curpage != 0 ? form->curpage - 1 : form->maxpage - 1);
 }
 
-/*----------------------------------------------------------------------------
-  Page Navigation routines
-  --------------------------------------------------------------------------*/
+ 
 
-/*---------------------------------------------------------------------------
-|   Facility      :  libnform
-|   Function      :  static int Page_Navigation(
-|                                               int (* const fct) (FORM *),
-|                                               FORM * form)
-|
-|   Description   :  Generic behavior for changing a page. This means
-|                    that the field is left and a new field is entered.
-|                    So the field must be validated and the field init/term
-|                    hooks must be called. Because also the page is changed,
-|                    the form's init/term hooks must be called also.
-|
-|   Return Values :  E_OK                - success
-|                    E_INVALID_FIELD     - field is invalid
-|                    some other          - error from subordinate call
-+--------------------------------------------------------------------------*/
+ 
 static int
 Page_Navigation(int (*const fct) (FORM *), FORM *form)
 {
@@ -3981,15 +2745,7 @@ Page_Navigation(int (*const fct) (FORM *), FORM *form)
   return res;
 }
 
-/*---------------------------------------------------------------------------
-|   Facility      :  libnform
-|   Function      :  static int PN_Next_Page(FORM * form)
-|
-|   Description   :  Move to the next page of the form
-|
-|   Return Values :  E_OK                - success
-|                    != E_OK             - error from subordinate call
-+--------------------------------------------------------------------------*/
+ 
 static int
 PN_Next_Page(FORM *form)
 {
@@ -3997,15 +2753,7 @@ PN_Next_Page(FORM *form)
   returnCode(_nc_Set_Form_Page(form, Next_Page_Number(form), (FIELD *)0));
 }
 
-/*---------------------------------------------------------------------------
-|   Facility      :  libnform
-|   Function      :  static int PN_Previous_Page(FORM * form)
-|
-|   Description   :  Move to the previous page of the form
-|
-|   Return Values :  E_OK              - success
-|                    != E_OK           - error from subordinate call
-+--------------------------------------------------------------------------*/
+ 
 static int
 PN_Previous_Page(FORM *form)
 {
@@ -4013,15 +2761,7 @@ PN_Previous_Page(FORM *form)
   returnCode(_nc_Set_Form_Page(form, Previous_Page_Number(form), (FIELD *)0));
 }
 
-/*---------------------------------------------------------------------------
-|   Facility      :  libnform
-|   Function      :  static int PN_First_Page(FORM * form)
-|
-|   Description   :  Move to the first page of the form
-|
-|   Return Values :  E_OK              - success
-|                    != E_OK           - error from subordinate call
-+--------------------------------------------------------------------------*/
+ 
 static int
 PN_First_Page(FORM *form)
 {
@@ -4029,15 +2769,7 @@ PN_First_Page(FORM *form)
   returnCode(_nc_Set_Form_Page(form, 0, (FIELD *)0));
 }
 
-/*---------------------------------------------------------------------------
-|   Facility      :  libnform
-|   Function      :  static int PN_Last_Page(FORM * form)
-|
-|   Description   :  Move to the last page of the form
-|
-|   Return Values :  E_OK              - success
-|                    != E_OK           - error from subordinate call
-+--------------------------------------------------------------------------*/
+ 
 static int
 PN_Last_Page(FORM *form)
 {
@@ -4045,26 +2777,12 @@ PN_Last_Page(FORM *form)
   returnCode(_nc_Set_Form_Page(form, form->maxpage - 1, (FIELD *)0));
 }
 
-/*----------------------------------------------------------------------------
-  END of Field Navigation routines
-  --------------------------------------------------------------------------*/
+ 
 
-/*----------------------------------------------------------------------------
-  Helper routines for the core form driver.
-  --------------------------------------------------------------------------*/
+ 
 
 # if USE_WIDEC_SUPPORT
-/*---------------------------------------------------------------------------
-|   Facility      :  libnform
-|   Function      :  static int Data_Entry_w(FORM * form, wchar_t c)
-|
-|   Description   :  Enter the wide character c into at the current
-|                    position of the current field of the form.
-|
-|   Return Values :  E_OK              - success
-|                    E_REQUEST_DENIED  - driver could not process the request
-|                    E_SYSTEM_ERROR    -
-+--------------------------------------------------------------------------*/
+ 
 static int
 Data_Entry_w(FORM *form, wchar_t c)
 {
@@ -4095,7 +2813,7 @@ Data_Entry_w(FORM *form, wchar_t c)
 	  wadd_wch(form->w, &temp_ch);
 	}
       else
-	/* no _OVLMODE */
+	 
 	{
 	  bool There_Is_Room = Is_There_Room_For_A_Char_In_Line(form);
 
@@ -4123,12 +2841,7 @@ Data_Entry_w(FORM *form, wchar_t c)
 		result = E_SYSTEM_ERROR;
 	      else
 		{
-		  /*
-		   * We have just added a byte to the form field.  It may have
-		   * been part of a multibyte character.  If it was, the
-		   * addch_used field is nonzero and we should not try to move
-		   * to a new column.
-		   */
+		   
 		  if (WINDOW_EXT(form->w, addch_used) == 0)
 		    IFN_Next_Character(form);
 
@@ -4141,17 +2854,7 @@ Data_Entry_w(FORM *form, wchar_t c)
 }
 # endif
 
-/*---------------------------------------------------------------------------
-|   Facility      :  libnform
-|   Function      :  static int Data_Entry(FORM * form,int c)
-|
-|   Description   :  Enter character c into at the current position of the
-|                    current field of the form.
-|
-|   Return Values :  E_OK              - success
-|                    E_REQUEST_DENIED  - driver could not process the request
-|                    E_SYSTEM_ERROR    -
-+--------------------------------------------------------------------------*/
+ 
 static int
 Data_Entry(FORM *form, int c)
 {
@@ -4176,7 +2879,7 @@ Data_Entry(FORM *form, int c)
 	  waddch(form->w, (chtype)c);
 	}
       else
-	/* no _OVLMODE */
+	 
 	{
 	  bool There_Is_Room = Is_There_Room_For_A_Char_In_Line(form);
 
@@ -4211,12 +2914,7 @@ Data_Entry(FORM *form, int c)
 	      else
 		{
 #if USE_WIDEC_SUPPORT
-		  /*
-		   * We have just added a byte to the form field.  It may have
-		   * been part of a multibyte character.  If it was, the
-		   * addch_used field is nonzero and we should not try to move
-		   * to a new column.
-		   */
+		   
 		  if (WINDOW_EXT(form->w, addch_used) == 0)
 		    IFN_Next_Character(form);
 #else
@@ -4230,40 +2928,30 @@ Data_Entry(FORM *form, int c)
   RETURN(result);
 }
 
-/* Structure to describe the binding of a request code to a function.
-   The member keycode codes the request value as well as the generic
-   routine to use for the request. The code for the generic routine
-   is coded in the upper 16 Bits while the request code is coded in
-   the lower 16 bits.
-
-   In terms of C++ you might think of a request as a class with a
-   virtual method "perform". The different types of request are
-   derived from this base class and overload (or not) the base class
-   implementation of perform.
-*/
+ 
 typedef struct
 {
-  int keycode;			/* must be at least 32 bit: hi:mode, lo: key */
-  int (*cmd) (FORM *);		/* low level driver routine for this key     */
+  int keycode;			 
+  int (*cmd) (FORM *);		 
 }
 Binding_Info;
 
-/* You may see this is the class-id of the request type class */
-#define ID_PN    (0x00000000)	/* Page navigation           */
-#define ID_FN    (0x00010000)	/* Inter-Field navigation    */
-#define ID_IFN   (0x00020000)	/* Intra-Field navigation    */
-#define ID_VSC   (0x00030000)	/* Vertical Scrolling        */
-#define ID_HSC   (0x00040000)	/* Horizontal Scrolling      */
-#define ID_FE    (0x00050000)	/* Field Editing             */
-#define ID_EM    (0x00060000)	/* Edit Mode                 */
-#define ID_FV    (0x00070000)	/* Field Validation          */
-#define ID_CH    (0x00080000)	/* Choice                    */
+ 
+#define ID_PN    (0x00000000)	 
+#define ID_FN    (0x00010000)	 
+#define ID_IFN   (0x00020000)	 
+#define ID_VSC   (0x00030000)	 
+#define ID_HSC   (0x00040000)	 
+#define ID_FE    (0x00050000)	 
+#define ID_EM    (0x00060000)	 
+#define ID_FV    (0x00070000)	 
+#define ID_CH    (0x00080000)	 
 #define ID_Mask  (0xffff0000)
 #define Key_Mask (0x0000ffff)
 #define ID_Shft  (16)
 
-/* This array holds all the Binding Infos */
-/* *INDENT-OFF* */
+ 
+ 
 static const Binding_Info bindings[MAX_FORM_COMMAND - MIN_FORM_COMMAND + 1] =
 {
   { REQ_NEXT_PAGE    |ID_PN  ,PN_Next_Page},
@@ -4332,33 +3020,9 @@ static const Binding_Info bindings[MAX_FORM_COMMAND - MIN_FORM_COMMAND + 1] =
   { REQ_NEXT_CHOICE  |ID_CH  ,CR_Next_Choice},
   { REQ_PREV_CHOICE  |ID_CH  ,CR_Previous_Choice}
 };
-/* *INDENT-ON* */
+ 
 
-/*---------------------------------------------------------------------------
-|   Facility      :  libnform
-|   Function      :  int form_driver(FORM * form,int  c)
-|
-|   Description   :  This is the workhorse of the forms system. It checks
-|                    to determine whether the character c is a request or
-|                    data. If it is a request, the form driver executes
-|                    the request and returns the result. If it is data
-|                    (printable character), it enters the data into the
-|                    current position in the current field. If it is not
-|                    recognized, the form driver assumes it is an application
-|                    defined command and returns E_UNKNOWN_COMMAND.
-|                    Application defined command should be defined relative
-|                    to MAX_FORM_COMMAND, the maximum value of a request.
-|
-|   Return Values :  E_OK              - success
-|                    E_SYSTEM_ERROR    - system error
-|                    E_BAD_ARGUMENT    - an argument is incorrect
-|                    E_NOT_POSTED      - form is not posted
-|                    E_INVALID_FIELD   - field contents are invalid
-|                    E_BAD_STATE       - called from inside a hook routine
-|                    E_REQUEST_DENIED  - request failed
-|                    E_NOT_CONNECTED   - no fields are connected to the form
-|                    E_UNKNOWN_COMMAND - command not known
-+--------------------------------------------------------------------------*/
+ 
 FORM_EXPORT(int)
 form_driver(FORM *form, int c)
 {
@@ -4406,18 +3070,18 @@ form_driver(FORM *form, int c)
       typedef int (*Generic_Method) (int (*const) (FORM *), FORM *);
       static const Generic_Method Generic_Methods[] =
       {
-	Page_Navigation,	/* overloaded to call field&form hooks */
-	Inter_Field_Navigation,	/* overloaded to call field hooks      */
-	NULL,			/* Intra-Field is generic              */
-	Vertical_Scrolling,	/* Overloaded to check multi-line      */
-	Horizontal_Scrolling,	/* Overloaded to check single-line     */
-	Field_Editing,		/* Overloaded to mark modification     */
-	NULL,			/* Edit Mode is generic                */
-	NULL,			/* Field Validation is generic         */
-	NULL			/* Choice Request is generic           */
+	Page_Navigation,	 
+	Inter_Field_Navigation,	 
+	NULL,			 
+	Vertical_Scrolling,	 
+	Horizontal_Scrolling,	 
+	Field_Editing,		 
+	NULL,			 
+	NULL,			 
+	NULL			 
       };
       size_t nMethods = (sizeof(Generic_Methods) / sizeof(Generic_Methods[0]));
-      size_t method = (size_t)((BI->keycode >> ID_Shft) & 0xffff);	/* see ID_Mask */
+      size_t method = (size_t)((BI->keycode >> ID_Shft) & 0xffff);	 
 
       if ((method >= nMethods) || !(BI->cmd))
 	res = E_SYSTEM_ERROR;
@@ -4447,18 +3111,14 @@ form_driver(FORM *form, int c)
 			   BUTTON1_DOUBLE_CLICKED |
 			   BUTTON1_TRIPLE_CLICKED))
 	  && wenclose(win, event.y, event.x))
-	{			/* we react only if the click was in the userwin, that means
-				 * inside the form display area or at the decoration window.
-				 */
-	  int ry = event.y, rx = event.x;	/* screen coordinates */
+	{			 
+	  int ry = event.y, rx = event.x;	 
 
 	  res = E_REQUEST_DENIED;
 	  if (mouse_trafo(&ry, &rx, FALSE))
-	    {			/* rx, ry are now "curses" coordinates */
+	    {			 
 	      if (ry < sub->_begy)
-		{		/* we clicked above the display region; this is
-				 * interpreted as "scroll up" request
-				 */
+		{		 
 		  if (event.bstate & BUTTON1_CLICKED)
 		    res = form_driver(form, REQ_PREV_FIELD);
 		  else if (event.bstate & BUTTON1_DOUBLE_CLICKED)
@@ -4467,9 +3127,7 @@ form_driver(FORM *form, int c)
 		    res = form_driver(form, REQ_FIRST_FIELD);
 		}
 	      else if (ry > sub->_begy + sub->_maxy)
-		{		/* we clicked below the display region; this is
-				 * interpreted as "scroll down" request
-				 */
+		{		 
 		  if (event.bstate & BUTTON1_CLICKED)
 		    res = form_driver(form, REQ_NEXT_FIELD);
 		  else if (event.bstate & BUTTON1_DOUBLE_CLICKED)
@@ -4478,7 +3136,7 @@ form_driver(FORM *form, int c)
 		    res = form_driver(form, REQ_LAST_FIELD);
 		}
 	      else if (wenclose(sub, event.y, event.x))
-		{		/* Inside the area we try to find the hit item */
+		{		 
 		  ry = event.y;
 		  rx = event.x;
 		  if (wmouse_trafo(sub, &ry, &rx, FALSE))
@@ -4510,17 +3168,10 @@ form_driver(FORM *form, int c)
       else
 	res = E_REQUEST_DENIED;
     }
-#endif /* NCURSES_MOUSE_VERSION */
+#endif  
   else if (!(c & (~(int)MAX_REGULAR_CHARACTER)))
     {
-      /*
-       * If we're using 8-bit characters, iscntrl+isprint cover the whole set.
-       * But with multibyte characters, there is a third possibility, i.e.,
-       * parts of characters that build up into printable characters which are
-       * not considered printable.
-       *
-       * FIXME: the wide-character branch should also use Check_Char().
-       */
+       
 #if USE_WIDEC_SUPPORT
       if (!iscntrl(UChar(c)))
 #else
@@ -4535,36 +3186,7 @@ form_driver(FORM *form, int c)
 }
 
 # if USE_WIDEC_SUPPORT
-/*---------------------------------------------------------------------------
-|   Facility      :  libnform
-|   Function      :  int form_driver_w(FORM * form,int type,wchar_t  c)
-|
-|   Description   :  This is the workhorse of the forms system.
-|
-|                    Input is either a key code (request) or a wide char
-|                    returned by e.g. get_wch (). The type must be passed
-|                    as well,so that we are able to determine whether the char
-|                    is a multibyte char or a request.
-
-|                    If it is a request, the form driver executes
-|                    the request and returns the result. If it is data
-|                    (printable character), it enters the data into the
-|                    current position in the current field. If it is not
-|                    recognized, the form driver assumes it is an application
-|                    defined command and returns E_UNKNOWN_COMMAND.
-|                    Application defined command should be defined relative
-|                    to MAX_FORM_COMMAND, the maximum value of a request.
-|
-|   Return Values :  E_OK              - success
-|                    E_SYSTEM_ERROR    - system error
-|                    E_BAD_ARGUMENT    - an argument is incorrect
-|                    E_NOT_POSTED      - form is not posted
-|                    E_INVALID_FIELD   - field contents are invalid
-|                    E_BAD_STATE       - called from inside a hook routine
-|                    E_REQUEST_DENIED  - request failed
-|                    E_NOT_CONNECTED   - no fields are connected to the form
-|                    E_UNKNOWN_COMMAND - command not known
-+--------------------------------------------------------------------------*/
+ 
 FORM_EXPORT(int)
 form_driver_w(FORM *form, int type, wchar_t c)
 {
@@ -4598,7 +3220,7 @@ form_driver_w(FORM *form, int type, wchar_t c)
   if (!(form->status & _POSTED))
     RETURN(E_NOT_POSTED);
 
-  /* check if this is a keycode or a (wide) char */
+   
   if (type == KEY_CODE_YES)
     {
       if ((c >= MIN_FORM_COMMAND && c <= MAX_FORM_COMMAND) &&
@@ -4611,18 +3233,18 @@ form_driver_w(FORM *form, int type, wchar_t c)
       typedef int (*Generic_Method) (int (*const) (FORM *), FORM *);
       static const Generic_Method Generic_Methods[] =
       {
-	Page_Navigation,	/* overloaded to call field&form hooks */
-	Inter_Field_Navigation,	/* overloaded to call field hooks      */
-	NULL,			/* Intra-Field is generic              */
-	Vertical_Scrolling,	/* Overloaded to check multi-line      */
-	Horizontal_Scrolling,	/* Overloaded to check single-line     */
-	Field_Editing,		/* Overloaded to mark modification     */
-	NULL,			/* Edit Mode is generic                */
-	NULL,			/* Field Validation is generic         */
-	NULL			/* Choice Request is generic           */
+	Page_Navigation,	 
+	Inter_Field_Navigation,	 
+	NULL,			 
+	Vertical_Scrolling,	 
+	Horizontal_Scrolling,	 
+	Field_Editing,		 
+	NULL,			 
+	NULL,			 
+	NULL			 
       };
       size_t nMethods = (sizeof(Generic_Methods) / sizeof(Generic_Methods[0]));
-      size_t method = (size_t)(BI->keycode >> ID_Shft) & 0xffff;	/* see ID_Mask */
+      size_t method = (size_t)(BI->keycode >> ID_Shft) & 0xffff;	 
 
       if ((method >= nMethods) || !(BI->cmd))
 	res = E_SYSTEM_ERROR;
@@ -4648,18 +3270,14 @@ form_driver_w(FORM *form, int type, wchar_t c)
 			   BUTTON1_DOUBLE_CLICKED |
 			   BUTTON1_TRIPLE_CLICKED))
 	  && wenclose(win, event.y, event.x))
-	{			/* we react only if the click was in the userwin, that means
-				   * inside the form display area or at the decoration window.
-				 */
-	  int ry = event.y, rx = event.x;	/* screen coordinates */
+	{			 
+	  int ry = event.y, rx = event.x;	 
 
 	  res = E_REQUEST_DENIED;
 	  if (mouse_trafo(&ry, &rx, FALSE))
-	    {			/* rx, ry are now "curses" coordinates */
+	    {			 
 	      if (ry < sub->_begy)
-		{		/* we clicked above the display region; this is
-				   * interpreted as "scroll up" request
-				 */
+		{		 
 		  if (event.bstate & BUTTON1_CLICKED)
 		    res = form_driver(form, REQ_PREV_FIELD);
 		  else if (event.bstate & BUTTON1_DOUBLE_CLICKED)
@@ -4668,9 +3286,7 @@ form_driver_w(FORM *form, int type, wchar_t c)
 		    res = form_driver(form, REQ_FIRST_FIELD);
 		}
 	      else if (ry > sub->_begy + sub->_maxy)
-		{		/* we clicked below the display region; this is
-				   * interpreted as "scroll down" request
-				 */
+		{		 
 		  if (event.bstate & BUTTON1_CLICKED)
 		    res = form_driver(form, REQ_NEXT_FIELD);
 		  else if (event.bstate & BUTTON1_DOUBLE_CLICKED)
@@ -4679,7 +3295,7 @@ form_driver_w(FORM *form, int type, wchar_t c)
 		    res = form_driver(form, REQ_LAST_FIELD);
 		}
 	      else if (wenclose(sub, event.y, event.x))
-		{		/* Inside the area we try to find the hit item */
+		{		 
 		  ry = event.y;
 		  rx = event.x;
 		  if (wmouse_trafo(sub, &ry, &rx, FALSE))
@@ -4711,7 +3327,7 @@ form_driver_w(FORM *form, int type, wchar_t c)
       else
 	res = E_REQUEST_DENIED;
     }
-#endif /* NCURSES_MOUSE_VERSION */
+#endif  
   else if (type == OK)
     {
       res = Data_Entry_w(form, c);
@@ -4720,32 +3336,11 @@ form_driver_w(FORM *form, int type, wchar_t c)
   _nc_Refresh_Current_Field(form);
   RETURN(res);
 }
-# endif	/* USE_WIDEC_SUPPORT */
+# endif	 
 
-/*----------------------------------------------------------------------------
-  Field-Buffer manipulation routines.
-  The effects of setting a buffer are tightly coupled to the core of the form
-  driver logic. This is especially true in the case of growable fields.
-  So I don't separate this into a separate module.
-  --------------------------------------------------------------------------*/
+ 
 
-/*---------------------------------------------------------------------------
-|   Facility      :  libnform
-|   Function      :  int set_field_buffer(FIELD *field,
-|                                         int buffer, char *value)
-|
-|   Description   :  Set the given buffer of the field to the given value.
-|                    Buffer 0 stores the displayed content of the field.
-|                    For dynamic fields this may grow the fieldbuffers if
-|                    the length of the value exceeds the current buffer
-|                    length. For buffer 0 only printable values are allowed.
-|                    For static fields, the value must not be zero terminated.
-|                    It is copied up to the length of the buffer.
-|
-|   Return Values :  E_OK            - success
-|                    E_BAD_ARGUMENT  - invalid argument
-|                    E_SYSTEM_ERROR  - system error
-+--------------------------------------------------------------------------*/
+ 
 FORM_EXPORT(int)
 set_field_buffer(FIELD *field, int buffer, const char *value)
 {
@@ -4767,9 +3362,7 @@ set_field_buffer(FIELD *field, int buffer, const char *value)
 
   if (Growable(field))
     {
-      /* for a growable field we must assume zero terminated strings, because
-         somehow we have to detect the length of what should be copied.
-       */
+       
       int vlen = (int)strlen(value);
 
       if (vlen > len)
@@ -4788,11 +3381,7 @@ set_field_buffer(FIELD *field, int buffer, const char *value)
   p = Address_Of_Nth_Buffer(field, buffer);
 
 #if USE_WIDEC_SUPPORT
-  /*
-   * Use addstr's logic for converting a string to an array of cchar_t's.
-   * There should be a better way, but this handles nonspacing characters
-   * and other special cases that we really do not want to handle here.
-   */
+   
 #if NCURSES_EXT_FUNCS
   if (wresize(field->working, 1, Buffer_Length(field) + 1) == ERR)
 #endif
@@ -4855,14 +3444,7 @@ set_field_buffer(FIELD *field, int buffer, const char *value)
   RETURN(res);
 }
 
-/*---------------------------------------------------------------------------
-|   Facility      :  libnform
-|   Function      :  char *field_buffer(const FIELD *field,int buffer)
-|
-|   Description   :  Return the address of the buffer for the field.
-|
-|   Return Values :  Pointer to buffer or NULL if arguments were invalid.
-+--------------------------------------------------------------------------*/
+ 
 FORM_EXPORT(char *)
 field_buffer(const FIELD *field, int buffer)
 {
@@ -4878,7 +3460,7 @@ field_buffer(const FIELD *field, int buffer)
       int size = Buffer_Length(field);
       int n;
 
-      /* determine the number of bytes needed to store the expanded string */
+       
       for (n = 0; n < size; ++n)
 	{
 	  if (!isWidecExt(data[n]) && data[n].chars[0] != L'\0')
@@ -4893,19 +3475,12 @@ field_buffer(const FIELD *field, int buffer)
 	    }
 	}
 
-      /* allocate a place to store the expanded string */
+       
       if (field->expanded[buffer] != 0)
 	free(field->expanded[buffer]);
       field->expanded[buffer] = typeMalloc(char, need + 1);
 
-      /*
-       * Expand the multibyte data.
-       *
-       * It may also be multi-column data.  In that case, the data for a row
-       * may be null-padded to align to the dcols/drows layout (or it may
-       * contain embedded wide-character extensions).  Change the null-padding
-       * to blanks as needed.
-       */
+       
       if ((result = field->expanded[buffer]) != 0)
 	{
 	  wclear(field->working);
@@ -4927,10 +3502,7 @@ field_buffer(const FIELD *field, int buffer)
 
 #if USE_WIDEC_SUPPORT
 
-/*---------------------------------------------------------------------------
-| Convert a multibyte string to a wide-character string.  The result must be
-| freed by the caller.
-+--------------------------------------------------------------------------*/
+ 
 FORM_EXPORT(wchar_t *)
 _nc_Widen_String(char *source, int *lengthp)
 {
@@ -5005,4 +3577,4 @@ _nc_Widen_String(char *source, int *lengthp)
 }
 #endif
 
-/* frm_driver.c ends here */
+ 

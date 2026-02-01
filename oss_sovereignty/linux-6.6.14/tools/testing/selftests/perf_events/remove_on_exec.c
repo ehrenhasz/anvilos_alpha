@@ -1,13 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Test for remove_on_exec.
- *
- * Copyright (C) 2021, Google LLC.
- */
+
+ 
 
 #define _GNU_SOURCE
 
-/* We need the latest siginfo from the kernel repo. */
+ 
 #include <sys/types.h>
 #include <asm/siginfo.h>
 #define __have_siginfo_t 1
@@ -45,11 +41,7 @@ static struct perf_event_attr make_event_attr(void)
 		.exclude_hv	= 1,
 		.disabled	= 1,
 		.inherit	= 1,
-		/*
-		 * Children normally retain their inherited event on exec; with
-		 * remove_on_exec, we'll remove their event, but the parent and
-		 * any other non-exec'd children will keep their events.
-		 */
+		 
 		.remove_on_exec = 1,
 		.sigtrap	= 1,
 	};
@@ -79,13 +71,13 @@ FIXTURE_SETUP(remove_on_exec)
 
 	signal_count = 0;
 
-	/* Initialize sigtrap handler. */
+	 
 	action.sa_flags = SA_SIGINFO | SA_NODEFER;
 	action.sa_sigaction = sigtrap_handler;
 	sigemptyset(&action.sa_mask);
 	ASSERT_EQ(sigaction(SIGTRAP, &action, &self->oldact), 0);
 
-	/* Initialize perf event. */
+	 
 	self->fd = syscall(__NR_perf_event_open, &attr, 0, -1, -1, PERF_FLAG_FD_CLOEXEC);
 	ASSERT_NE(self->fd, -1);
 }
@@ -96,7 +88,7 @@ FIXTURE_TEARDOWN(remove_on_exec)
 	sigaction(SIGTRAP, &self->oldact, NULL);
 }
 
-/* Verify event propagates to fork'd child. */
+ 
 TEST_F(remove_on_exec, fork_only)
 {
 	int status;
@@ -109,28 +101,22 @@ TEST_F(remove_on_exec, fork_only)
 		_exit(42);
 	}
 
-	while (!signal_count); /* Child enables event. */
+	while (!signal_count);  
 	EXPECT_EQ(waitpid(pid, &status, 0), pid);
 	EXPECT_EQ(WEXITSTATUS(status), 42);
 }
 
-/*
- * Verify that event does _not_ propagate to fork+exec'd child; event enabled
- * after fork+exec.
- */
+ 
 TEST_F(remove_on_exec, fork_exec_then_enable)
 {
 	pid_t pid_exec, pid_only_fork;
 	int pipefd[2];
 	int tmp;
 
-	/*
-	 * Non-exec child, to ensure exec does not affect inherited events of
-	 * other children.
-	 */
+	 
 	pid_only_fork = fork();
 	if (pid_only_fork == 0) {
-		/* Block until parent enables event. */
+		 
 		while (!signal_count);
 		_exit(42);
 	}
@@ -145,30 +131,27 @@ TEST_F(remove_on_exec, fork_exec_then_enable)
 	}
 	close(pipefd[1]);
 
-	ASSERT_EQ(waitpid(pid_exec, &tmp, WNOHANG), 0); /* Child is running. */
-	/* Wait for exec'd child to start spinning. */
+	ASSERT_EQ(waitpid(pid_exec, &tmp, WNOHANG), 0);  
+	 
 	EXPECT_EQ(read(pipefd[0], &tmp, sizeof(int)), sizeof(int));
 	EXPECT_EQ(tmp, 42);
 	close(pipefd[0]);
-	/* Now we can enable the event, knowing the child is doing work. */
+	 
 	EXPECT_EQ(ioctl(self->fd, PERF_EVENT_IOC_ENABLE, 0), 0);
-	/* If the event propagated to the exec'd child, it will exit normally... */
-	usleep(100000); /* ... give time for event to trigger (in case of bug). */
-	EXPECT_EQ(waitpid(pid_exec, &tmp, WNOHANG), 0); /* Should still be running. */
+	 
+	usleep(100000);  
+	EXPECT_EQ(waitpid(pid_exec, &tmp, WNOHANG), 0);  
 	EXPECT_EQ(kill(pid_exec, SIGKILL), 0);
 
-	/* Verify removal from child did not affect this task's event. */
+	 
 	tmp = signal_count;
-	while (signal_count == tmp); /* Should not hang! */
-	/* Nor should it have affected the first child. */
+	while (signal_count == tmp);  
+	 
 	EXPECT_EQ(waitpid(pid_only_fork, &tmp, 0), pid_only_fork);
 	EXPECT_EQ(WEXITSTATUS(tmp), 42);
 }
 
-/*
- * Verify that event does _not_ propagate to fork+exec'd child; event enabled
- * before fork+exec.
- */
+ 
 TEST_F(remove_on_exec, enable_then_fork_exec)
 {
 	pid_t pid_exec;
@@ -182,17 +165,14 @@ TEST_F(remove_on_exec, enable_then_fork_exec)
 		_exit((perror("exec failed"), 1));
 	}
 
-	/*
-	 * The child may exit abnormally at any time if the event propagated and
-	 * a SIGTRAP is sent before the handler was set up.
-	 */
-	usleep(100000); /* ... give time for event to trigger (in case of bug). */
-	EXPECT_EQ(waitpid(pid_exec, &tmp, WNOHANG), 0); /* Should still be running. */
+	 
+	usleep(100000);  
+	EXPECT_EQ(waitpid(pid_exec, &tmp, WNOHANG), 0);  
 	EXPECT_EQ(kill(pid_exec, SIGKILL), 0);
 
-	/* Verify removal from child did not affect this task's event. */
+	 
 	tmp = signal_count;
-	while (signal_count == tmp); /* Should not hang! */
+	while (signal_count == tmp);  
 }
 
 TEST_F(remove_on_exec, exec_stress)
@@ -207,42 +187,42 @@ TEST_F(remove_on_exec, exec_stress)
 			_exit((perror("exec failed"), 1));
 		}
 
-		/* Some forked with event disabled, rest with enabled. */
+		 
 		if (i > 10)
 			EXPECT_EQ(ioctl(self->fd, PERF_EVENT_IOC_ENABLE, 0), 0);
 	}
 
-	usleep(100000); /* ... give time for event to trigger (in case of bug). */
+	usleep(100000);  
 
 	for (i = 0; i < sizeof(pids) / sizeof(pids[0]); i++) {
-		/* All children should still be running. */
+		 
 		EXPECT_EQ(waitpid(pids[i], &tmp, WNOHANG), 0);
 		EXPECT_EQ(kill(pids[i], SIGKILL), 0);
 	}
 
-	/* Verify event is still alive. */
+	 
 	tmp = signal_count;
 	while (signal_count == tmp);
 }
 
-/* For exec'd child. */
+ 
 static void exec_child(void)
 {
 	struct sigaction action = {};
 	const int val = 42;
 
-	/* Set up sigtrap handler in case we erroneously receive a trap. */
+	 
 	action.sa_flags = SA_SIGINFO | SA_NODEFER;
 	action.sa_sigaction = sigtrap_handler;
 	sigemptyset(&action.sa_mask);
 	if (sigaction(SIGTRAP, &action, NULL))
 		_exit((perror("sigaction failed"), 1));
 
-	/* Signal parent that we're starting to spin. */
+	 
 	if (write(STDOUT_FILENO, &val, sizeof(int)) == -1)
 		_exit((perror("write failed"), 1));
 
-	/* Should hang here until killed. */
+	 
 	while (!signal_count);
 }
 

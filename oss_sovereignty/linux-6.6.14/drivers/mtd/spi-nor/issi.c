@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2005, Intec Automation Inc.
- * Copyright (C) 2014, Freescale Semiconductor, Inc.
- */
+
+ 
 
 #include <linux/mtd/spi-nor.h>
 
@@ -13,11 +10,7 @@ is25lp256_post_bfpt_fixups(struct spi_nor *nor,
 			   const struct sfdp_parameter_header *bfpt_header,
 			   const struct sfdp_bfpt *bfpt)
 {
-	/*
-	 * IS25LP256 supports 4B opcodes, but the BFPT advertises
-	 * BFPT_DWORD1_ADDRESS_BYTES_3_ONLY.
-	 * Overwrite the number of address bytes advertised by the BFPT.
-	 */
+	 
 	if ((bfpt->dwords[SFDP_DWORD(1)] & BFPT_DWORD1_ADDRESS_BYTES_MASK) ==
 		BFPT_DWORD1_ADDRESS_BYTES_3_ONLY)
 		nor->params->addr_nbytes = 4;
@@ -34,7 +27,7 @@ static int pm25lv_nor_late_init(struct spi_nor *nor)
 	struct spi_nor_erase_map *map = &nor->params->erase_map;
 	int i;
 
-	/* The PM25LV series has a different 4k sector erase opcode */
+	 
 	for (i = 0; i < SNOR_ERASE_TYPE_MAX; i++)
 		if (map->erase_type[i].size == 4096)
 			map->erase_type[i].opcode = SPINOR_OP_BE_4K_PMC;
@@ -47,7 +40,7 @@ static const struct spi_nor_fixups pm25lv_nor_fixups = {
 };
 
 static const struct flash_info issi_nor_parts[] = {
-	/* ISSI */
+	 
 	{ "is25cd512",  INFO(0x7f9d20, 0, 32 * 1024,   2)
 		NO_SFDP_FLAGS(SECT_4K) },
 	{ "is25lq040b", INFO(0x9d4013, 0, 64 * 1024,   8)
@@ -78,7 +71,7 @@ static const struct flash_info issi_nor_parts[] = {
 		FLAGS(SPI_NOR_QUAD_PP)
 		.fixups = &is25lp256_fixups },
 
-	/* PMC */
+	 
 	{ "pm25lv512",   INFO(0,        0, 32 * 1024,    2)
 		NO_SFDP_FLAGS(SECT_4K)
 		.fixups = &pm25lv_nor_fixups

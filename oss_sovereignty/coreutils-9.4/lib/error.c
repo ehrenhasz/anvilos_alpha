@@ -1,21 +1,4 @@
-/* Error handler for noninteractive utilities
-   Copyright (C) 1990-1998, 2000-2007, 2009-2023 Free Software Foundation, Inc.
-   This file is part of the GNU C Library.
-
-   This file is free software: you can redistribute it and/or modify
-   it under the terms of the GNU Lesser General Public License as
-   published by the Free Software Foundation; either version 2.1 of the
-   License, or (at your option) any later version.
-
-   This file is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU Lesser General Public License for more details.
-
-   You should have received a copy of the GNU Lesser General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* Written by David MacKenzie <djm@gnu.ai.mit.edu>.  */
+ 
 
 #if !_LIBC
 # include <config.h>
@@ -53,24 +36,21 @@
 # define _(String) String
 #endif
 
-/* If NULL, error will flush stdout, then print on stderr the program
-   name, a colon and a space.  Otherwise, error will call this
-   function without parameters instead.  */
+ 
 void (*error_print_progname) (void);
 
-/* This variable is incremented each time 'error' is called.  */
+ 
 unsigned int error_message_count;
 
 #ifdef _LIBC
-/* In the GNU C library, there is a predefined variable for this.  */
+ 
 
 # define program_name program_invocation_name
 # include <errno.h>
 # include <limits.h>
 # include <libio/libioP.h>
 
-/* In GNU libc we want do not want to use the common name 'error' directly.
-   Instead make it a weak alias.  */
+ 
 extern void __error (int status, int errnum, const char *message, ...)
      __attribute__ ((__format__ (__printf__, 3, 4)));
 extern void __error_at_line (int status, int errnum, const char *file_name,
@@ -87,16 +67,16 @@ extern void __error_at_line (int status, int errnum, const char *file_name,
 
 # include <bits/libc-lock.h>
 
-#else /* not _LIBC */
+#else  
 
 # include <fcntl.h>
 # include <unistd.h>
 
 # if defined _WIN32 && ! defined __CYGWIN__
-/* Get declarations of the native Windows API functions.  */
+ 
 #  define WIN32_LEAN_AND_MEAN
 #  include <windows.h>
-/* Get _get_osfhandle.  */
+ 
 #  if GNULIB_MSVC_NOTHROW
 #   include "msvc-nothrow.h"
 #  else
@@ -104,7 +84,7 @@ extern void __error_at_line (int status, int errnum, const char *file_name,
 #  endif
 # endif
 
-/* The gnulib override of fcntl is not needed in this file.  */
+ 
 # undef fcntl
 
 # if !(GNULIB_STRERROR_R_POSIX || HAVE_DECL_STRERROR_R)
@@ -122,19 +102,16 @@ int strerror_r (int errnum, char *buf, size_t buflen);
 
 # if GNULIB_STRERROR_R_POSIX || HAVE_STRERROR_R || defined strerror_r
 #  define __strerror_r strerror_r
-# endif /* GNULIB_STRERROR_R_POSIX || HAVE_STRERROR_R || defined strerror_r */
-#endif  /* not _LIBC */
+# endif  
+#endif   
 
 #if !_LIBC
-/* Return non-zero if FD is open.  */
+ 
 static int
 is_open (int fd)
 {
 # if defined _WIN32 && ! defined __CYGWIN__
-  /* On native Windows: The initial state of unassigned standard file
-     descriptors is that they are open but point to an INVALID_HANDLE_VALUE.
-     There is no fcntl, and the gnulib replacement fcntl does not support
-     F_GETFL.  */
+   
   return (HANDLE) _get_osfhandle (fd) != INVALID_HANDLE_VALUE;
 # else
 #  ifndef F_GETFL
@@ -152,19 +129,13 @@ flush_stdout (void)
   int stdout_fd;
 
 # if GNULIB_FREOPEN_SAFER
-  /* Use of gnulib's freopen-safer module normally ensures that
-       fileno (stdout) == 1
-     whenever stdout is open.  */
+   
   stdout_fd = STDOUT_FILENO;
 # else
-  /* POSIX states that fileno (stdout) after fclose is unspecified.  But in
-     practice it is not a problem, because stdout is statically allocated and
-     the fd of a FILE stream is stored as a field in its allocated memory.  */
+   
   stdout_fd = fileno (stdout);
 # endif
-  /* POSIX states that fflush (stdout) after fclose is unspecified; it
-     is safe in glibc, but not on all other platforms.  fflush (NULL)
-     is always defined, but too draconian.  */
+   
   if (0 <= stdout_fd && is_open (stdout_fd))
 #endif
     fflush (stdout);
@@ -244,7 +215,7 @@ error_tail (int status, int errnum, const char *message, va_list args)
 
           if (__builtin_expect (len >= SIZE_MAX / sizeof (wchar_t) / 2, 0))
             {
-              /* This really should not happen if everything is fine.  */
+               
               res = (size_t) -1;
               break;
             }
@@ -254,7 +225,7 @@ error_tail (int status, int errnum, const char *message, va_list args)
 
       if (res == (size_t) -1)
         {
-          /* The string cannot be converted.  */
+           
           if (use_malloc)
             {
               free (wmessage);
@@ -286,18 +257,14 @@ error_tail (int status, int errnum, const char *message, va_list args)
 }
 
 
-/* Print the program name and error message MESSAGE, which is a printf-style
-   format string with optional args.
-   If ERRNUM is nonzero, print its corresponding system error message.
-   Exit with status STATUS if it is nonzero.  */
+ 
 void
 error (int status, int errnum, const char *message, ...)
 {
   va_list args;
 
 #if defined _LIBC && defined __libc_ptf_call
-  /* We do not want this call to be cut short by a thread
-     cancellation.  Therefore disable cancellation for now.  */
+   
   int state = PTHREAD_CANCEL_ENABLE;
   __libc_ptf_call (pthread_setcancelstate, (PTHREAD_CANCEL_DISABLE, &state),
                    0);
@@ -330,8 +297,7 @@ error (int status, int errnum, const char *message, ...)
 #endif
 }
 
-/* Sometimes we want to have at most one error per line.  This
-   variable controls whether this mode is selected or not.  */
+ 
 int error_one_per_line;
 
 void
@@ -351,7 +317,7 @@ error_at_line (int status, int errnum, const char *file_name,
                   && file_name != NULL
                   && strcmp (old_file_name, file_name) == 0)))
 
-        /* Simply return and print nothing.  */
+         
         return;
 
       old_file_name = file_name;
@@ -359,8 +325,7 @@ error_at_line (int status, int errnum, const char *file_name,
     }
 
 #if defined _LIBC && defined __libc_ptf_call
-  /* We do not want this call to be cut short by a thread
-     cancellation.  Therefore disable cancellation for now.  */
+   
   int state = PTHREAD_CANCEL_ENABLE;
   __libc_ptf_call (pthread_setcancelstate, (PTHREAD_CANCEL_DISABLE, &state),
                    0);
@@ -402,7 +367,7 @@ error_at_line (int status, int errnum, const char *file_name,
 }
 
 #ifdef _LIBC
-/* Make the weak alias.  */
+ 
 # undef error
 # undef error_at_line
 weak_alias (__error, error)

@@ -1,34 +1,4 @@
-/******************************************************************************
- * Talks to Xen Store to figure out what devices we have.
- *
- * Copyright (C) 2005 Rusty Russell, IBM Corporation
- * Copyright (C) 2005 Mike Wray, Hewlett-Packard
- * Copyright (C) 2005, 2006 XenSource Ltd
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License version 2
- * as published by the Free Software Foundation; or, when distributed
- * separately from the Linux kernel or incorporated into other
- * software packages, subject to the following license:
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this source file (the "Software"), to deal in the Software without
- * restriction, including without limitation the rights to use, copy, modify,
- * merge, publish, distribute, sublicense, and/or sell copies of the Software,
- * and to permit persons to whom the Software is furnished to do so, subject to
- * the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
- * IN THE SOFTWARE.
- */
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 #define dev_fmt pr_fmt
@@ -79,7 +49,7 @@ static unsigned long xen_store_gfn;
 
 static BLOCKING_NOTIFIER_HEAD(xenstore_chain);
 
-/* If something in array of ids matches this device, return it. */
+ 
 static const struct xenbus_device_id *
 match_device(const struct xenbus_device_id *arr, struct xenbus_device *dev)
 {
@@ -179,8 +149,7 @@ void xenbus_otherend_changed(struct xenbus_watch *watch,
 	struct xenbus_driver *drv = to_xenbus_driver(dev->dev.driver);
 	enum xenbus_state state;
 
-	/* Protect us against watches firing on old details when the otherend
-	   details change, say immediately after a resume. */
+	 
 	if (!dev->otherend ||
 	    strncmp(dev->otherend, path, strlen(dev->otherend))) {
 		dev_dbg(&dev->dev, "Ignoring watch at %s\n", path);
@@ -192,10 +161,7 @@ void xenbus_otherend_changed(struct xenbus_watch *watch,
 	dev_dbg(&dev->dev, "state is %d, (%s), %s, %s\n",
 		state, xenbus_strstate(state), dev->otherend_watch.node, path);
 
-	/*
-	 * Ignore xenbus transitions during shutdown. This prevents us doing
-	 * work that can fail e.g., when the rootfs is gone.
-	 */
+	 
 	if (system_state > SYSTEM_RUNNING) {
 		if (ignore_on_shutdown && (state == XenbusStateClosing))
 			xenbus_frontend_closed(dev);
@@ -347,12 +313,7 @@ void xenbus_dev_remove(struct device *_dev)
 
 	free_otherend_details(dev);
 
-	/*
-	 * If the toolstack has forced the device state to closing then set
-	 * the state to closed now to allow it to be cleaned up.
-	 * Similarly, if the driver does not support re-bind, set the
-	 * closed.
-	 */
+	 
 	if (!drv->allow_rebind ||
 	    xenbus_read_driver_state(dev->nodename) == XenbusStateClosing)
 		xenbus_switch_state(dev, XenbusStateClosed);
@@ -413,11 +374,11 @@ static int cleanup_dev(struct device *dev, void *data)
 
 	DPRINTK("%s", info->nodename);
 
-	/* Match the info->nodename path, or any subdirectory of that path. */
+	 
 	if (strncmp(xendev->nodename, info->nodename, len))
 		return 0;
 
-	/* If the node name is longer, ensure it really is a subdirectory. */
+	 
 	if ((strlen(xendev->nodename) > len) && (xendev->nodename[len] != '/'))
 		return 0;
 
@@ -507,8 +468,7 @@ int xenbus_probe_node(struct xen_bus_type *bus,
 	enum xenbus_state state = xenbus_read_driver_state(nodename);
 
 	if (state != XenbusStateInitialising) {
-		/* Device is not new, so ignore it.  This can happen if a
-		   device is going away after switching to Closed.  */
+		 
 		return 0;
 	}
 
@@ -519,7 +479,7 @@ int xenbus_probe_node(struct xen_bus_type *bus,
 
 	xendev->state = XenbusStateInitialising;
 
-	/* Copy the strings into the extra space. */
+	 
 
 	tmpstring = (char *)(xendev + 1);
 	strcpy(tmpstring, nodename);
@@ -540,7 +500,7 @@ int xenbus_probe_node(struct xen_bus_type *bus,
 	dev_set_name(&xendev->dev, "%s", devname);
 	sema_init(&xendev->reclaim_sem, 1);
 
-	/* Register with generic device framework. */
+	 
 	err = device_register(&xendev->dev);
 	if (err) {
 		put_device(&xendev->dev);
@@ -636,7 +596,7 @@ void xenbus_dev_changed(const char *node, struct xen_bus_type *bus)
 		return;
 	}
 
-	/* backend/<type>/... or device/<type>/... */
+	 
 	p = strchr(node, '/') + 1;
 	snprintf(type, XEN_BUS_ID_SIZE, "%.*s", (int)strcspn(p, "/"), p);
 	type[XEN_BUS_ID_SIZE-1] = '\0';
@@ -718,13 +678,13 @@ EXPORT_SYMBOL_GPL(xenbus_dev_resume);
 
 int xenbus_dev_cancel(struct device *dev)
 {
-	/* Do nothing */
+	 
 	DPRINTK("cancel");
 	return 0;
 }
 EXPORT_SYMBOL_GPL(xenbus_dev_cancel);
 
-/* A flag to determine if xenstored is 'ready' (i.e. has started) */
+ 
 int xenstored_ready;
 
 
@@ -754,34 +714,19 @@ static void xenbus_probe(void)
 	if (!xen_store_interface) {
 		xen_store_interface = memremap(xen_store_gfn << XEN_PAGE_SHIFT,
 					       XEN_PAGE_SIZE, MEMREMAP_WB);
-		/*
-		 * Now it is safe to free the IRQ used for xenstore late
-		 * initialization. No need to unbind: it is about to be
-		 * bound again from xb_init_comms. Note that calling
-		 * unbind_from_irqhandler now would result in xen_evtchn_close()
-		 * being called and the event channel not being enabled again
-		 * afterwards, resulting in missed event notifications.
-		 */
+		 
 		free_irq(xs_init_irq, &xb_waitq);
 	}
 
-	/*
-	 * In the HVM case, xenbus_init() deferred its call to
-	 * xs_init() in case callbacks were not operational yet.
-	 * So do it now.
-	 */
+	 
 	if (xen_store_domain_type == XS_HVM)
 		xs_init();
 
-	/* Notify others that xenstore is up */
+	 
 	blocking_notifier_call_chain(&xenstore_chain, 0, NULL);
 }
 
-/*
- * Returns true when XenStore init must be deferred in order to
- * allow the PCI platform device to be initialised, before we
- * can actually have event channel interrupts working.
- */
+ 
 static bool xs_hvm_defer_init_for_callback(void)
 {
 #ifdef CONFIG_XEN_PVHVM
@@ -796,10 +741,7 @@ static int xenbus_probe_thread(void *unused)
 {
 	DEFINE_WAIT(w);
 
-	/*
-	 * We actually just want to wait for *any* trigger of xb_waitq,
-	 * and run xenbus_probe() the moment it occurs.
-	 */
+	 
 	prepare_to_wait(&xb_waitq, &w, TASK_INTERRUPTIBLE);
 	schedule();
 	finish_wait(&xb_waitq, &w);
@@ -814,23 +756,14 @@ static int __init xenbus_probe_initcall(void)
 	if (!xen_domain())
 		return -ENODEV;
 
-	/*
-	 * Probe XenBus here in the XS_PV case, and also XS_HVM unless we
-	 * need to wait for the platform PCI device to come up or
-	 * xen_store_interface is not ready.
-	 */
+	 
 	if (xen_store_domain_type == XS_PV ||
 	    (xen_store_domain_type == XS_HVM &&
 	     !xs_hvm_defer_init_for_callback() &&
 	     xen_store_interface != NULL))
 		xenbus_probe();
 
-	/*
-	 * For XS_LOCAL or when xen_store_interface is not ready, spawn a
-	 * thread which will wait for xenstored or a xenstore-stubdom to be
-	 * started, then probe.  It will be triggered when communication
-	 * starts happening, by waiting on xb_waitq.
-	 */
+	 
 	if (xen_store_domain_type == XS_LOCAL || xen_store_interface == NULL) {
 		struct task_struct *probe_task;
 
@@ -856,10 +789,7 @@ int xen_set_callback_via(uint64_t via)
 	if (ret)
 		return ret;
 
-	/*
-	 * If xenbus_probe_initcall() deferred the xenbus_probe()
-	 * due to the callback not functioning yet, we can do it now.
-	 */
+	 
 	if (!xenstored_ready && xs_hvm_defer_init_for_callback())
 		xenbus_probe();
 
@@ -867,23 +797,21 @@ int xen_set_callback_via(uint64_t via)
 }
 EXPORT_SYMBOL_GPL(xen_set_callback_via);
 
-/* Set up event channel for xenstored which is run as a local process
- * (this is normally used only in dom0)
- */
+ 
 static int __init xenstored_local_init(void)
 {
 	int err = -ENOMEM;
 	unsigned long page = 0;
 	struct evtchn_alloc_unbound alloc_unbound;
 
-	/* Allocate Xenstore page */
+	 
 	page = get_zeroed_page(GFP_KERNEL);
 	if (!page)
 		goto out_err;
 
 	xen_store_gfn = virt_to_gfn((void *)page);
 
-	/* Next allocate a local port which xenstored can bind to */
+	 
 	alloc_unbound.dom        = DOMID_SELF;
 	alloc_unbound.remote_dom = DOMID_SELF;
 
@@ -984,16 +912,7 @@ static int __init xenbus_init(void)
 		err = hvm_get_parameter(HVM_PARAM_STORE_PFN, &v);
 		if (err)
 			goto out_error;
-		/*
-		 * Uninitialized hvm_params are zero and return no error.
-		 * Although it is theoretically possible to have
-		 * HVM_PARAM_STORE_PFN set to zero on purpose, in reality it is
-		 * not zero when valid. If zero, it means that Xenstore hasn't
-		 * been properly initialized. Instead of attempting to map a
-		 * wrong guest physical address return error.
-		 *
-		 * Also recognize all bits set as an invalid/uninitialized value.
-		 */
+		 
 		if (!v) {
 			err = -ENOENT;
 			goto out_error;
@@ -1001,7 +920,7 @@ static int __init xenbus_init(void)
 		if (v == ~0ULL) {
 			wait = true;
 		} else {
-			/* Avoid truncation on 32-bit. */
+			 
 #if BITS_PER_LONG == 32
 			if (v > ULONG_MAX) {
 				pr_err("%s: cannot handle HVM_PARAM_STORE_PFN=%llx > ULONG_MAX\n",
@@ -1036,11 +955,7 @@ static int __init xenbus_init(void)
 		break;
 	}
 
-	/*
-	 * HVM domains may not have a functional callback yet. In that
-	 * case let xs_init() be called from xenbus_probe(), which will
-	 * get invoked at an appropriate time.
-	 */
+	 
 	if (xen_store_domain_type != XS_HVM) {
 		err = xs_init();
 		if (err) {
@@ -1054,10 +969,7 @@ static int __init xenbus_init(void)
 		xen_resume_notifier_register(&xenbus_resume_nb);
 
 #ifdef CONFIG_XEN_COMPAT_XENFS
-	/*
-	 * Create xenfs mountpoint in /proc for compatibility with
-	 * utilities that expect to find "xenbus" under "/proc/xen".
-	 */
+	 
 	proc_create_mount_point("xen");
 #endif
 	return 0;

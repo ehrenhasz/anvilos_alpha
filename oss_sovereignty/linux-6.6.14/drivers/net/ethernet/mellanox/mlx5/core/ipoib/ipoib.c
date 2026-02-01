@@ -1,34 +1,4 @@
-/*
- * Copyright (c) 2017, Mellanox Technologies. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 
 #include <rdma/ib_verbs.h>
 #include <linux/mlx5/fs.h>
@@ -54,16 +24,16 @@ static const struct net_device_ops mlx5i_netdev_ops = {
 	.ndo_eth_ioctl            = mlx5i_ioctl,
 };
 
-/* IPoIB mlx5 netdev profile */
+ 
 static void mlx5i_build_nic_params(struct mlx5_core_dev *mdev,
 				   struct mlx5e_params *params)
 {
-	/* Override RQ params as IPoIB supports only LINKED LIST RQ for now */
+	 
 	MLX5E_SET_PFLAG(params, MLX5E_PFLAG_RX_STRIDING_RQ, false);
 	mlx5e_set_rq_type(mdev, params);
 	mlx5e_init_rq_type_params(mdev, params);
 
-	/* RQ size in ipoib by default is 512 */
+	 
 	params->log_rq_mtu_frames = is_kdump_kernel() ?
 		MLX5E_PARAMS_MINIMUM_LOG_RQ_SIZE :
 		MLX5I_PARAMS_DEFAULT_LOG_RQ_SIZE;
@@ -71,12 +41,12 @@ static void mlx5i_build_nic_params(struct mlx5_core_dev *mdev,
 	params->packet_merge.type = MLX5E_PACKET_MERGE_NONE;
 	params->hard_mtu = MLX5_IB_GRH_BYTES + MLX5_IPOIB_HARD_LEN;
 
-	/* CQE compression is not supported for IPoIB */
+	 
 	params->rx_cqe_compress_def = false;
 	MLX5E_SET_PFLAG(params, MLX5E_PFLAG_RX_CQE_COMPRESS, params->rx_cqe_compress_def);
 }
 
-/* Called directly after IPoIB netdevice was created to initialize SW structs */
+ 
 int mlx5i_init(struct mlx5_core_dev *mdev, struct net_device *netdev)
 {
 	struct mlx5e_priv *priv  = mlx5i_epriv(netdev);
@@ -90,7 +60,7 @@ int mlx5i_init(struct mlx5_core_dev *mdev, struct net_device *netdev)
 
 	mlx5e_timestamp_init(priv);
 
-	/* netdev init */
+	 
 	netdev->hw_features    |= NETIF_F_SG;
 	netdev->hw_features    |= NETIF_F_IP_CSUM;
 	netdev->hw_features    |= NETIF_F_IPV6_CSUM;
@@ -106,7 +76,7 @@ int mlx5i_init(struct mlx5_core_dev *mdev, struct net_device *netdev)
 	return 0;
 }
 
-/* Called directly before IPoIB netdevice is destroyed to cleanup SW structs */
+ 
 void mlx5i_cleanup(struct mlx5e_priv *priv)
 {
 	mlx5e_priv_cleanup(priv);
@@ -469,7 +439,7 @@ static void mlx5i_cleanup_rx(struct mlx5e_priv *priv)
 	mlx5e_fs_cleanup(priv->fs);
 }
 
-/* The stats groups order is opposite to the update_stats() order calls */
+ 
 static mlx5e_stats_grp_t mlx5i_stats_grps[] = {
 	&MLX5E_STATS_GRP(sw),
 	&MLX5E_STATS_GRP(qcnt),
@@ -498,18 +468,18 @@ static const struct mlx5e_profile mlx5i_nic_profile = {
 	.cleanup_tx	   = mlx5i_cleanup_tx,
 	.init_rx	   = mlx5i_init_rx,
 	.cleanup_rx	   = mlx5i_cleanup_rx,
-	.enable		   = NULL, /* mlx5i_enable */
-	.disable	   = NULL, /* mlx5i_disable */
+	.enable		   = NULL,  
+	.disable	   = NULL,  
 	.update_rx	   = mlx5i_update_nic_rx,
-	.update_stats	   = NULL, /* mlx5i_update_stats */
-	.update_carrier    = NULL, /* no HW update in IB link */
+	.update_stats	   = NULL,  
+	.update_carrier    = NULL,  
 	.rx_handlers       = &mlx5i_rx_handlers,
 	.max_tc		   = MLX5I_MAX_NUM_TC,
 	.stats_grps        = mlx5i_stats_grps,
 	.stats_grps_num    = mlx5i_stats_grps_num,
 };
 
-/* mlx5i netdev NDos */
+ 
 
 static int mlx5i_change_mtu(struct net_device *netdev, int new_mtu)
 {
@@ -539,13 +509,13 @@ int mlx5i_dev_init(struct net_device *dev)
 	struct mlx5i_priv    *ipriv  = priv->ppriv;
 	u8 addr_mod[3];
 
-	/* Set dev address using underlay QP */
+	 
 	addr_mod[0] = (ipriv->qpn >> 16) & 0xff;
 	addr_mod[1] = (ipriv->qpn >>  8) & 0xff;
 	addr_mod[2] = (ipriv->qpn) & 0xff;
 	dev_addr_mod(dev, 1, addr_mod, sizeof(addr_mod));
 
-	/* Add QPN to net-device mapping to HT */
+	 
 	mlx5i_pkey_add_qpn(dev, ipriv->qpn);
 
 	return 0;
@@ -572,7 +542,7 @@ void mlx5i_dev_cleanup(struct net_device *dev)
 
 	mlx5i_uninit_underlay_qp(priv);
 
-	/* Delete QPN to net-device mapping from HT */
+	 
 	mlx5i_pkey_del_qpn(dev, ipriv->qpn);
 }
 
@@ -630,9 +600,7 @@ static int mlx5i_close(struct net_device *netdev)
 	struct mlx5i_priv *ipriv = epriv->ppriv;
 	struct mlx5_core_dev *mdev = epriv->mdev;
 
-	/* May already be CLOSED in case a previous configuration operation
-	 * (e.g RX/TX queue size change) that involves close&open failed.
-	 */
+	 
 	mutex_lock(&epriv->state_lock);
 
 	if (!test_bit(MLX5E_STATE_OPENED, &epriv->state))
@@ -650,7 +618,7 @@ unlock:
 	return 0;
 }
 
-/* IPoIB RDMA netdev callbacks */
+ 
 static int mlx5i_attach_mcast(struct net_device *netdev, struct ib_device *hca,
 			      union ib_gid *gid, u16 lid, int set_qkey,
 			      u32 qkey)
@@ -777,7 +745,7 @@ static int mlx5_rdma_setup_rn(struct ib_device *ibdev, u32 port_num,
 			return err;
 		}
 
-		/* This should only be called once per mdev */
+		 
 		err = mlx5e_create_mdev_resources(mdev);
 		if (err)
 			goto destroy_ht;
@@ -797,7 +765,7 @@ static int mlx5_rdma_setup_rn(struct ib_device *ibdev, u32 port_num,
 		goto detach;
 	netif_carrier_off(netdev);
 
-	/* set rdma_netdev func pointers */
+	 
 	rn = &ipriv->rn;
 	rn->hca  = ibdev;
 	rn->send = mlx5i_xmit;

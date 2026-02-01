@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/****************************************************************************
- * Driver for Solarflare network controllers and boards
- * Copyright 2014-2015 Solarflare Communications Inc.
- */
+ 
+ 
 
 #ifndef EFX_SRIOV_H
 #define EFX_SRIOV_H
@@ -78,6 +75,6 @@ int efx_sriov_set_vf_link_state(struct net_device *net_dev, int vf_i,
 	else
 		return -EOPNOTSUPP;
 }
-#endif /* CONFIG_SFC_SIENA_SRIOV */
+#endif  
 
-#endif /* EFX_SRIOV_H */
+#endif  

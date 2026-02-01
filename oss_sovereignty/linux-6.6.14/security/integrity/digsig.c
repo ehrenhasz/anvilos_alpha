@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2011 Intel Corporation
- *
- * Author:
- * Dmitry Kasatkin <dmitry.kasatkin@intel.com>
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/sched.h>
@@ -72,11 +67,11 @@ int integrity_digsig_verify(const unsigned int id, const char *sig, int siglen,
 
 	switch (sig[1]) {
 	case 1:
-		/* v1 API expect signature without xattr type */
+		 
 		return digsig_verify(keyring, sig + 1, siglen - 1, digest,
 				     digestlen);
-	case 2: /* regular file data hash based signature */
-	case 3: /* struct ima_file_id data based signature */
+	case 2:  
+	case 3:  
 		return asymmetric_verify(keyring, sig, siglen, digest,
 					 digestlen);
 	}
@@ -150,11 +145,7 @@ int __init integrity_init_keyring(const unsigned int id)
 	else
 		restriction->check = restrict_link_to_ima;
 
-	/*
-	 * MOK keys can only be added through a read-only runtime services
-	 * UEFI variable during boot. No additional keys shall be allowed to
-	 * load into the machine keyring following init from userspace.
-	 */
+	 
 	if (id != INTEGRITY_KEYRING_MACHINE)
 		perm |= KEY_USR_WRITE;
 

@@ -1,11 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
-// Copyright (c) 2023 Cloudflare
 
-/* Test IP_LOCAL_PORT_RANGE socket option: IPv4 + IPv6, TCP + UDP.
- *
- * Tests assume that net.ipv4.ip_local_port_range is [40000, 49999].
- * Don't run these directly but with ip_local_port_range.sh script.
- */
+
+
+ 
 
 #include <fcntl.h>
 #include <netinet/ip.h>
@@ -174,19 +170,19 @@ TEST_F(ip_local_port_range, invalid_option_value)
 	fd = socket(variant->so_domain, variant->so_type, variant->so_protocol);
 	ASSERT_GE(fd, 0) TH_LOG("socket failed");
 
-	/* Too few bytes */
+	 
 	val16 = 40000;
 	err = setsockopt(fd, SOL_IP, IP_LOCAL_PORT_RANGE, &val16, sizeof(val16));
 	EXPECT_TRUE(err) TH_LOG("expected setsockopt(IP_LOCAL_PORT_RANGE) to fail");
 	EXPECT_EQ(errno, EINVAL);
 
-	/* Empty range: low port > high port */
+	 
 	val32 = pack_port_range(40222, 40111);
 	err = setsockopt(fd, SOL_IP, IP_LOCAL_PORT_RANGE, &val32, sizeof(val32));
 	EXPECT_TRUE(err) TH_LOG("expected setsockopt(IP_LOCAL_PORT_RANGE) to fail");
 	EXPECT_EQ(errno, EINVAL);
 
-	/* Too many bytes */
+	 
 	val64 = pack_port_range(40333, 40444);
 	err = setsockopt(fd, SOL_IP, IP_LOCAL_PORT_RANGE, &val64, sizeof(val64));
 	EXPECT_TRUE(err) TH_LOG("expected setsockopt(IP_LOCAL_PORT_RANGE) to fail");
@@ -202,17 +198,13 @@ TEST_F(ip_local_port_range, port_range_out_of_netns_range)
 		__u16 range_lo;
 		__u16 range_hi;
 	} tests[] = {
-		{ 30000, 39999 }, /* socket range below netns range */
-		{ 50000, 59999 }, /* socket range above netns range */
+		{ 30000, 39999 },  
+		{ 50000, 59999 },  
 	};
 	const struct test *t;
 
 	for (t = tests; t < tests + ARRAY_SIZE(tests); t++) {
-		/* Bind a couple of sockets, not just one, to check
-		 * that the range wasn't clamped to a single port from
-		 * the netns range. That is [40000, 40000] or [49999,
-		 * 49999], respectively for each test case.
-		 */
+		 
 		int fds[2], i;
 
 		TH_LOG("lo %5hu, hi %5hu", t->range_lo, t->range_hi);
@@ -231,7 +223,7 @@ TEST_F(ip_local_port_range, port_range_out_of_netns_range)
 			err = bind_to_loopback_any_port(fd);
 			ASSERT_TRUE(!err) TH_LOG("#%d: bind failed", i);
 
-			/* Check that socket port range outside of ephemeral range is ignored */
+			 
 			port = get_sock_port(fd);
 			ASSERT_GE(port, 40000) TH_LOG("#%d: expected port within netns range", i);
 			ASSERT_LE(port, 49999) TH_LOG("#%d: expected port within netns range", i);
@@ -251,11 +243,11 @@ TEST_F(ip_local_port_range, single_port_range)
 		__u16 range_hi;
 		__u16 expected;
 	} tests[] = {
-		/* single port range within ephemeral range */
+		 
 		{ 45000, 45000, 45000 },
-		/* first port in the ephemeral range (clamp from above) */
+		 
 		{ 0, 40000, 40000 },
-		/* last port in the ephemeral range (clamp from below)  */
+		 
 		{ 49999, 0, 49999 },
 	};
 	const struct test *t;
@@ -312,10 +304,10 @@ TEST_F(ip_local_port_range, exhaust_8_port_range)
 		fds[i] = fd;
 	}
 
-	/* Check that all every port from the test range is in use */
+	 
 	ASSERT_EQ(port_set, 0xff) TH_LOG("expected all ports to be busy");
 
-	/* Check that bind() fails because the whole range is busy */
+	 
 	fd = socket(variant->so_domain, variant->so_type, variant->so_protocol);
 	ASSERT_GE(fd, 0) TH_LOG("socket failed");
 
@@ -368,7 +360,7 @@ TEST_F(ip_local_port_range, late_bind)
 	port = get_sock_port(fd);
 	ASSERT_EQ(port, 0) TH_LOG("getsockname failed");
 
-	/* Invalid destination */
+	 
 	memset(&addr, 0, sizeof(addr));
 	switch (variant->so_domain) {
 	case AF_INET:
@@ -387,7 +379,7 @@ TEST_F(ip_local_port_range, late_bind)
 		ASSERT_TRUE(false) TH_LOG("unsupported socket domain");
 	}
 
-	/* connect() doesn't need to succeed for late bind to happen */
+	 
 	connect(fd, &addr.sa, addr_len);
 
 	port = get_sock_port(fd);
@@ -407,7 +399,7 @@ TEST_F(ip_local_port_range, get_port_range)
 	fd = socket(variant->so_domain, variant->so_type, variant->so_protocol);
 	ASSERT_GE(fd, 0) TH_LOG("socket failed");
 
-	/* Get range before it will be set */
+	 
 	err = get_ip_local_port_range(fd, &range);
 	ASSERT_TRUE(!err) TH_LOG("getsockopt(IP_LOCAL_PORT_RANGE) failed");
 
@@ -419,7 +411,7 @@ TEST_F(ip_local_port_range, get_port_range)
 	err = setsockopt(fd, SOL_IP, IP_LOCAL_PORT_RANGE, &range, sizeof(range));
 	ASSERT_TRUE(!err) TH_LOG("setsockopt(IP_LOCAL_PORT_RANGE) failed");
 
-	/* Get range after it has been set */
+	 
 	err = get_ip_local_port_range(fd, &range);
 	ASSERT_TRUE(!err) TH_LOG("getsockopt(IP_LOCAL_PORT_RANGE) failed");
 
@@ -427,12 +419,12 @@ TEST_F(ip_local_port_range, get_port_range)
 	ASSERT_EQ(lo, 12345) TH_LOG("unexpected low port");
 	ASSERT_EQ(hi, 54321) TH_LOG("unexpected high port");
 
-	/* Unset the port range  */
+	 
 	range = pack_port_range(0, 0);
 	err = setsockopt(fd, SOL_IP, IP_LOCAL_PORT_RANGE, &range, sizeof(range));
 	ASSERT_TRUE(!err) TH_LOG("setsockopt(IP_LOCAL_PORT_RANGE) failed");
 
-	/* Get range after it has been unset */
+	 
 	err = get_ip_local_port_range(fd, &range);
 	ASSERT_TRUE(!err) TH_LOG("getsockopt(IP_LOCAL_PORT_RANGE) failed");
 

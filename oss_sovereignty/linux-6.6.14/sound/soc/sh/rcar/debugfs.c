@@ -1,14 +1,14 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// // Renesas R-Car debugfs support
-//
-// Copyright (c) 2021 Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>
-//
-//	> mount -t debugfs none /sys/kernel/debug
-//	> cd /sys/kernel/debug/asoc/rcar-sound/ec500000.sound/rdai{N}/
-//	> cat playback/xxx
-//	> cat capture/xxx
-//
+
+
+
+
+
+
+
+
+
+
+
 #ifdef CONFIG_DEBUG_FS
 
 #include <linux/debugfs.h>
@@ -21,7 +21,7 @@ static int rsnd_debugfs_show(struct seq_file *m, void *v)
 	struct rsnd_priv *priv = rsnd_mod_to_priv(mod);
 	int i;
 
-	/* adg is out of mods */
+	 
 	rsnd_adg_clk_dbg_info(priv, m);
 
 	for_each_rsnd_mod(i, mod, io) {
@@ -72,17 +72,12 @@ int rsnd_debugfs_probe(struct snd_soc_component *component)
 	char name[64];
 	int i;
 
-	/* Gen1 is not supported */
+	 
 	if (rsnd_is_gen1(priv))
 		return 0;
 
 	for_each_rsnd_dai(rdai, priv, i) {
-		/*
-		 * created debugfs will be automatically
-		 * removed, nothing to do for _remove.
-		 * see
-		 *	soc_cleanup_component_debugfs()
-		 */
+		 
 		snprintf(name, sizeof(name), "rdai%d", i);
 		dir = debugfs_create_dir(name, component->debugfs_root);
 
@@ -93,4 +88,4 @@ int rsnd_debugfs_probe(struct snd_soc_component *component)
 	return 0;
 }
 
-#endif /* CONFIG_DEBUG_FS */
+#endif  

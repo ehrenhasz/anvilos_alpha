@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/* Copyright (c) 2015-2016 Quantenna Communications. All rights reserved. */
+
+ 
 
 #include <linux/types.h>
 #include <linux/io.h>
@@ -38,7 +38,7 @@ static void qtnf_shm_handle_new_data(struct qtnf_shm_ipc *ipc)
 	}
 
 	writel(QTNF_SHM_IPC_ACK, &shm_reg_hdr->flags);
-	readl(&shm_reg_hdr->flags); /* flush PCIe write */
+	readl(&shm_reg_hdr->flags);  
 
 	ipc->interrupt.fn(ipc->interrupt.arg);
 }
@@ -135,16 +135,16 @@ int qtnf_shm_ipc_send(struct qtnf_shm_ipc *ipc, const u8 *buf, size_t size)
 	writew(size, &shm_reg_hdr->data_len);
 	memcpy_toio(ipc->shm_region->data, buf, size);
 
-	/* sync previous writes before proceeding */
+	 
 	dma_wmb();
 
 	WRITE_ONCE(ipc->waiting_for_ack, 1);
 
-	/* sync previous memory write before announcing new data ready */
+	 
 	wmb();
 
 	writel(QTNF_SHM_IPC_NEW_DATA, &shm_reg_hdr->flags);
-	readl(&shm_reg_hdr->flags); /* flush PCIe write */
+	readl(&shm_reg_hdr->flags);  
 
 	ipc->interrupt.fn(ipc->interrupt.arg);
 
@@ -155,7 +155,7 @@ int qtnf_shm_ipc_send(struct qtnf_shm_ipc *ipc, const u8 *buf, size_t size)
 		pr_err("TX ACK timeout\n");
 	}
 
-	/* now we're not waiting for ACK even in case of timeout */
+	 
 	WRITE_ONCE(ipc->waiting_for_ack, 0);
 
 	return ret;

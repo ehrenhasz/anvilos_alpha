@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-// Copyright (c) 2016-2017 Hisilicon Limited.
+
+
 
 #include <linux/list.h>
 #include <linux/spinlock.h>
@@ -31,10 +31,7 @@ void hnae3_unregister_ae_algo_prepare(struct hnae3_ae_algo *ae_algo)
 }
 EXPORT_SYMBOL(hnae3_unregister_ae_algo_prepare);
 
-/* we are keeping things simple and using single lock for all the
- * list. This is a non-critical code so other updations, if happen
- * in parallel, can wait.
- */
+ 
 static DEFINE_MUTEX(hnae3_common_lock);
 
 static bool hnae3_client_match(enum hnae3_client_type client_type)
@@ -92,7 +89,7 @@ static int hnae3_init_client_instance(struct hnae3_client *client,
 {
 	int ret;
 
-	/* check if this client matches the type of ae_dev */
+	 
 	if (!(hnae3_client_match(client->type) &&
 	      hnae3_get_bit(ae_dev->flag, HNAE3_DEV_INITED_B))) {
 		return 0;
@@ -109,7 +106,7 @@ static int hnae3_init_client_instance(struct hnae3_client *client,
 static void hnae3_uninit_client_instance(struct hnae3_client *client,
 					 struct hnae3_ae_dev *ae_dev)
 {
-	/* check if this client matches the type of ae_dev */
+	 
 	if (!(hnae3_client_match(client->type) &&
 	      hnae3_get_bit(ae_dev->flag, HNAE3_DEV_INITED_B)))
 		return;
@@ -130,7 +127,7 @@ int hnae3_register_client(struct hnae3_client *client)
 		return -ENODEV;
 
 	mutex_lock(&hnae3_common_lock);
-	/* one system should only have one client for every type */
+	 
 	list_for_each_entry(client_tmp, &hnae3_client_list, node) {
 		if (client_tmp->type == client->type)
 			goto exit;
@@ -138,11 +135,9 @@ int hnae3_register_client(struct hnae3_client *client)
 
 	list_add_tail(&client->node, &hnae3_client_list);
 
-	/* initialize the client on every matched port */
+	 
 	list_for_each_entry(ae_dev, &hnae3_ae_dev_list, node) {
-		/* if the client could not be initialized on current port, for
-		 * any error reasons, move on to next available port
-		 */
+		 
 		int ret = hnae3_init_client_instance(client, ae_dev);
 		if (ret)
 			dev_err(&ae_dev->pdev->dev,
@@ -167,7 +162,7 @@ void hnae3_unregister_client(struct hnae3_client *client)
 		return;
 
 	mutex_lock(&hnae3_common_lock);
-	/* one system should only have one client for every type */
+	 
 	list_for_each_entry(client_tmp, &hnae3_client_list, node) {
 		if (client_tmp->type == client->type) {
 			existed = true;
@@ -181,7 +176,7 @@ void hnae3_unregister_client(struct hnae3_client *client)
 		return;
 	}
 
-	/* un-initialize the client on every matched port */
+	 
 	list_for_each_entry(ae_dev, &hnae3_ae_dev_list, node) {
 		hnae3_uninit_client_instance(client, ae_dev);
 	}
@@ -191,10 +186,7 @@ void hnae3_unregister_client(struct hnae3_client *client)
 }
 EXPORT_SYMBOL(hnae3_unregister_client);
 
-/* hnae3_register_ae_algo - register a AE algorithm to hnae3 framework
- * @ae_algo: AE algorithm
- * NOTE: the duplicated name will not be checked
- */
+ 
 void hnae3_register_ae_algo(struct hnae3_ae_algo *ae_algo)
 {
 	const struct pci_device_id *id;
@@ -209,7 +201,7 @@ void hnae3_register_ae_algo(struct hnae3_ae_algo *ae_algo)
 
 	list_add_tail(&ae_algo->node, &hnae3_ae_algo_list);
 
-	/* Check if this algo/ops matches the list of ae_devs */
+	 
 	list_for_each_entry(ae_dev, &hnae3_ae_dev_list, node) {
 		id = pci_match_id(ae_algo->pdev_id_table, ae_dev->pdev);
 		if (!id)
@@ -228,12 +220,10 @@ void hnae3_register_ae_algo(struct hnae3_ae_algo *ae_algo)
 			continue;
 		}
 
-		/* ae_dev init should set flag */
+		 
 		hnae3_set_bit(ae_dev->flag, HNAE3_DEV_INITED_B, 1);
 
-		/* check the client list for the match with this ae_dev type and
-		 * initialize the figure out client instance
-		 */
+		 
 		list_for_each_entry(client, &hnae3_client_list, node) {
 			ret = hnae3_init_client_instance(client, ae_dev);
 			if (ret)
@@ -247,9 +237,7 @@ void hnae3_register_ae_algo(struct hnae3_ae_algo *ae_algo)
 }
 EXPORT_SYMBOL(hnae3_register_ae_algo);
 
-/* hnae3_unregister_ae_algo - unregisters a AE algorithm
- * @ae_algo: the AE algorithm to unregister
- */
+ 
 void hnae3_unregister_ae_algo(struct hnae3_ae_algo *ae_algo)
 {
 	const struct pci_device_id *id;
@@ -260,7 +248,7 @@ void hnae3_unregister_ae_algo(struct hnae3_ae_algo *ae_algo)
 		return;
 
 	mutex_lock(&hnae3_common_lock);
-	/* Check if there are matched ae_dev */
+	 
 	list_for_each_entry(ae_dev, &hnae3_ae_dev_list, node) {
 		if (!hnae3_get_bit(ae_dev->flag, HNAE3_DEV_INITED_B))
 			continue;
@@ -269,9 +257,7 @@ void hnae3_unregister_ae_algo(struct hnae3_ae_algo *ae_algo)
 		if (!id)
 			continue;
 
-		/* check the client list for the match with this ae_dev type and
-		 * un-initialize the figure out client instance
-		 */
+		 
 		list_for_each_entry(client, &hnae3_client_list, node)
 			hnae3_uninit_client_instance(client, ae_dev);
 
@@ -285,10 +271,7 @@ void hnae3_unregister_ae_algo(struct hnae3_ae_algo *ae_algo)
 }
 EXPORT_SYMBOL(hnae3_unregister_ae_algo);
 
-/* hnae3_register_ae_dev - registers a AE device to hnae3 framework
- * @ae_dev: the AE device
- * NOTE: the duplicated name will not be checked
- */
+ 
 int hnae3_register_ae_dev(struct hnae3_ae_dev *ae_dev)
 {
 	const struct pci_device_id *id;
@@ -303,7 +286,7 @@ int hnae3_register_ae_dev(struct hnae3_ae_dev *ae_dev)
 
 	list_add_tail(&ae_dev->node, &hnae3_ae_dev_list);
 
-	/* Check if there are matched ae_algo */
+	 
 	list_for_each_entry(ae_algo, &hnae3_ae_algo_list, node) {
 		id = pci_match_id(ae_algo->pdev_id_table, ae_dev->pdev);
 		if (!id)
@@ -323,14 +306,12 @@ int hnae3_register_ae_dev(struct hnae3_ae_dev *ae_dev)
 			goto out_err;
 		}
 
-		/* ae_dev init should set flag */
+		 
 		hnae3_set_bit(ae_dev->flag, HNAE3_DEV_INITED_B, 1);
 		break;
 	}
 
-	/* check the client list for the match with this ae_dev type and
-	 * initialize the figure out client instance
-	 */
+	 
 	list_for_each_entry(client, &hnae3_client_list, node) {
 		ret = hnae3_init_client_instance(client, ae_dev);
 		if (ret)
@@ -351,9 +332,7 @@ out_err:
 }
 EXPORT_SYMBOL(hnae3_register_ae_dev);
 
-/* hnae3_unregister_ae_dev - unregisters a AE device
- * @ae_dev: the AE device to unregister
- */
+ 
 void hnae3_unregister_ae_dev(struct hnae3_ae_dev *ae_dev)
 {
 	const struct pci_device_id *id;
@@ -364,7 +343,7 @@ void hnae3_unregister_ae_dev(struct hnae3_ae_dev *ae_dev)
 		return;
 
 	mutex_lock(&hnae3_common_lock);
-	/* Check if there are matched ae_algo */
+	 
 	list_for_each_entry(ae_algo, &hnae3_ae_algo_list, node) {
 		if (!hnae3_get_bit(ae_dev->flag, HNAE3_DEV_INITED_B))
 			continue;

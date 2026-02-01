@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) STMicroelectronics 2017
- * Author: Gabriel Fernandez <gabriel.fernandez@st.com> for STMicroelectronics.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/clk-provider.h>
@@ -17,7 +14,7 @@
 
 #include <dt-bindings/clock/stm32h7-clks.h>
 
-/* Reset Clock Control Registers */
+ 
 #define RCC_CR		0x00
 #define RCC_CFGR	0x10
 #define RCC_D1CFGR	0x18
@@ -52,7 +49,7 @@ static DEFINE_SPINLOCK(stm32rcc_lock);
 static void __iomem *base;
 static struct clk_hw **hws;
 
-/* System clock parent */
+ 
 static const char * const sys_src[] = {
 	"hsi_ck", "csi_ck", "hse_ck", "pll1_p" };
 
@@ -75,7 +72,7 @@ static const char * const qspi_src[] = {
 static const char * const fmc_src[] = {
 	"hclk", "pll1_q", "pll2_r", "per_ck" };
 
-/* Kernel clock parent */
+ 
 static const char * const swp_src[] = {	"pclk1", "hsi_ker" };
 
 static const char * const fdcan_src[] = { "hse_ck", "pll1_q", "pll2_q" };
@@ -104,7 +101,7 @@ static const char * const cec_src[] = {"lse_ck", "lsi_ck", "csi_ker_div122" };
 
 static const char * const usbotg_src[] = {"pll1_q", "pll3_q", "rc48_ck" };
 
-/* i2c 1,2,3 src */
+ 
 static const char * const i2c_src1[] = {
 	"pclk1", "pll3_r", "hsi_ker", "csi_ker" };
 
@@ -114,11 +111,11 @@ static const char * const i2c_src2[] = {
 static const char * const rng_src[] = {
 	"rc48_ck", "pll1_q", "lse_ck", "lsi_ck" };
 
-/* usart 1,6 src */
+ 
 static const char * const usart_src1[] = {
 	"pclk2", "pll2_q", "pll3_q", "hsi_ker", "csi_ker", "lse_ck" };
 
-/* usart 2,3,4,5,7,8 src */
+ 
 static const char * const usart_src2[] = {
 	"pclk1", "pll2_q", "pll3_q", "hsi_ker", "csi_ker", "lse_ck" };
 
@@ -127,26 +124,26 @@ static const char *sai_src[5] = {
 
 static const char * const adc_src[] = { "pll2_p", "pll3_r", "per_ck" };
 
-/* lptim 2,3,4,5 src */
+ 
 static const char * const lpuart1_src[] = {
 	"pclk3", "pll2_q", "pll3_q", "csi_ker", "lse_ck" };
 
 static const char * const hrtim_src[] = { "tim2_ker", "d1cpre" };
 
-/* RTC clock parent */
+ 
 static const char * const rtc_src[] = { "off", "lse_ck", "lsi_ck", "hse_1M" };
 
-/* Micro-controller output clock parent */
+ 
 static const char * const mco_src1[] = {
 	"hsi_ck", "lse_ck", "hse_ck", "pll1_q",	"rc48_ck" };
 
 static const char * const mco_src2[] = {
 	"sys_ck", "pll2_p", "hse_ck", "pll1_p", "csi_ck", "lsi_ck" };
 
-/* LCD clock */
+ 
 static const char * const ltdc_src[] = {"pll3_r"};
 
-/* Gate clock with ready bit and backup domain management */
+ 
 struct stm32_ready_gate {
 	struct	clk_gate gate;
 	u8	bit_rdy;
@@ -169,11 +166,7 @@ static int ready_gate_clk_enable(struct clk_hw *hw)
 
 	clk_gate_ops.enable(hw);
 
-	/* We can't use readl_poll_timeout() because we can blocked if
-	 * someone enables this clock before clocksource changes.
-	 * Only jiffies counter is available. Jiffies are incremented by
-	 * interruptions and enable op does not allow to be interrupted.
-	 */
+	 
 	do {
 		bit_status = !(readl(gate->reg) & BIT(rgate->bit_rdy));
 
@@ -274,9 +267,7 @@ struct composite_clk_gcfg_t {
 	const struct clk_ops *ops;
 };
 
-/*
- * General config definition of a composite clock (only clock diviser for rate)
- */
+ 
 struct composite_clk_gcfg {
 	struct composite_clk_gcfg_t *mux;
 	struct composite_clk_gcfg_t *div;
@@ -419,7 +410,7 @@ static void get_cfg_composite_div(const struct composite_clk_gcfg *gcfg,
 	composite->gate_ops = gate_ops;
 }
 
-/* Kernel Timer */
+ 
 struct timer_ker {
 	u8 dppre_shift;
 	struct clk_hw hw;
@@ -509,7 +500,7 @@ static const struct clk_div_table ppre_div_table[] = {
 
 static void register_core_and_bus_clocks(void)
 {
-	/* CORE AND BUS */
+	 
 	hws[SYS_D1CPRE] = clk_hw_register_divider_table(NULL, "d1cpre",
 			"sys_ck", CLK_IGNORE_UNUSED, base + RCC_D1CFGR, 8, 4, 0,
 			d1cpre_div_table, &stm32rcc_lock);
@@ -518,27 +509,27 @@ static void register_core_and_bus_clocks(void)
 			CLK_IGNORE_UNUSED, base + RCC_D1CFGR, 0, 4, 0,
 			d1cpre_div_table, &stm32rcc_lock);
 
-	/* D1 DOMAIN */
-	/* * CPU Systick */
+	 
+	 
 	hws[CPU_SYSTICK] = clk_hw_register_fixed_factor(NULL, "systick",
 			"d1cpre", 0, 1, 8);
 
-	/* * APB3 peripheral */
+	 
 	hws[PCLK3] = clk_hw_register_divider_table(NULL, "pclk3", "hclk", 0,
 			base + RCC_D1CFGR, 4, 3, 0,
 			ppre_div_table, &stm32rcc_lock);
 
-	/* D2 DOMAIN */
-	/* * APB1 peripheral */
+	 
+	 
 	hws[PCLK1] = clk_hw_register_divider_table(NULL, "pclk1", "hclk", 0,
 			base + RCC_D2CFGR, 4, 3, 0,
 			ppre_div_table, &stm32rcc_lock);
 
-	/* Timers prescaler clocks */
+	 
 	clk_register_stm32_timer_ker(NULL, "tim1_ker", "pclk1", 0,
 			4, &stm32rcc_lock);
 
-	/* * APB2 peripheral */
+	 
 	hws[PCLK2] = clk_hw_register_divider_table(NULL, "pclk2", "hclk", 0,
 			base + RCC_D2CFGR, 8, 3, 0, ppre_div_table,
 			&stm32rcc_lock);
@@ -546,14 +537,14 @@ static void register_core_and_bus_clocks(void)
 	clk_register_stm32_timer_ker(NULL, "tim2_ker", "pclk2", 0, 8,
 			&stm32rcc_lock);
 
-	/* D3 DOMAIN */
-	/* * APB4 peripheral */
+	 
+	 
 	hws[PCLK4] = clk_hw_register_divider_table(NULL, "pclk4", "hclk", 0,
 			base + RCC_D3CFGR, 4, 3, 0,
 			ppre_div_table, &stm32rcc_lock);
 }
 
-/* MUX clock configuration */
+ 
 struct stm32_mux_clk {
 	const char *name;
 	const char * const *parents;
@@ -585,7 +576,7 @@ static const struct stm32_mux_clk stm32_mclk[] __initconst = {
 	M_MCLOC("tracein_ck",	tracein_src,	RCC_CFGR,	 0, 3),
 };
 
-/* Oscillary clock configuration */
+ 
 struct stm32_osc_clk {
 	const char *name;
 	const char *parent;
@@ -617,7 +608,7 @@ static const struct stm32_osc_clk stm32_oclk[] __initconst = {
 	OSC_CLKF("lsi_ck",  "clk-lsi",  RCC_CSR,  0,  1, CLK_IGNORE_UNUSED),
 };
 
-/* PLL configuration */
+ 
 struct st32h7_pll_cfg {
 	u8 bit_idx;
 	u32 offset_divr;
@@ -837,7 +828,7 @@ static struct clk_hw *clk_register_stm32_pll(struct device *dev,
 	return hw;
 }
 
-/* ODF CLOCKS */
+ 
 static unsigned long odf_divider_recalc_rate(struct clk_hw *hw,
 		unsigned long parent_rate)
 {
@@ -973,7 +964,7 @@ static const struct composite_clk_cfg stm32_odf[3][3] = {
 	}
 };
 
-/* PERIF CLOCKS */
+ 
 struct pclk_t {
 	u32 gate_offset;
 	u8 bit_idx;
@@ -1059,7 +1050,7 @@ static const struct pclk_t pclk[] = {
 	PER_CLK(RCC_APB4ENR, 1, "syscfg", "pclk4"),
 };
 
-/* KERNEL CLOCKS */
+ 
 #define KER_CLKF(_gate_offset, _bit_idx,\
 		_mux_offset, _mux_shift, _mux_width,\
 		_name, _parent_name,\
@@ -1150,14 +1141,11 @@ static struct composite_clk_gcfg kernel_clk_cfg = {
 	M_CFG_GATE(NULL, 0),
 };
 
-/* RTC clock */
-/*
- * RTC & LSE registers are protected against parasitic write access.
- * PWR_CR_DBP bit must be set to enable write access to RTC registers.
- */
-/* STM32_PWR_CR */
+ 
+ 
+ 
 #define PWR_CR				0x00
-/* STM32_PWR_CR bit field */
+ 
 #define PWR_CR_DBP			BIT(8)
 
 static struct composite_clk_gcfg rtc_clk_cfg = {
@@ -1168,7 +1156,7 @@ static struct composite_clk_gcfg rtc_clk_cfg = {
 static const struct composite_clk_cfg rtc_clk =
 	KER_CLK(RCC_BDCR, 15, RCC_BDCR, 8, 2, "rtc_ck", rtc_src);
 
-/* Micro-controller output clock */
+ 
 static struct composite_clk_gcfg mco_clk_cfg = {
 	M_CFG_MUX(NULL, 0),
 	M_CFG_DIV(NULL,	CLK_DIVIDER_ONE_BASED | CLK_DIVIDER_ALLOW_ZERO),
@@ -1212,7 +1200,7 @@ static void __init stm32h7_rcc_init(struct device_node *np)
 	for (n = 0; n < STM32H7_MAX_CLKS; n++)
 		hws[n] = ERR_PTR(-ENOENT);
 
-	/* get RCC base @ from DT */
+	 
 	base = of_iomap(np, 0);
 	if (!base) {
 		pr_err("%pOFn: unable to map resource", np);
@@ -1223,13 +1211,10 @@ static void __init stm32h7_rcc_init(struct device_node *np)
 	if (IS_ERR(pdrm))
 		pr_warn("%s: Unable to get syscfg\n", __func__);
 	else
-		/* In any case disable backup domain write protection
-		 * and will never be enabled.
-		 * Needed by LSE & RTC clocks.
-		 */
+		 
 		regmap_update_bits(pdrm, PWR_CR, PWR_CR_DBP, PWR_CR_DBP);
 
-	/* Put parent names from DT */
+	 
 	hse_clk = of_clk_get_parent_name(np, 0);
 	lse_clk = of_clk_get_parent_name(np, 1);
 	i2s_clk = of_clk_get_parent_name(np, 2);
@@ -1237,13 +1222,13 @@ static void __init stm32h7_rcc_init(struct device_node *np)
 	sai_src[3] = i2s_clk;
 	spi_src1[3] = i2s_clk;
 
-	/* Register Internal oscillators */
+	 
 	clk_hw_register_fixed_rate(NULL, "clk-hsi", NULL, 0, 64000000);
 	clk_hw_register_fixed_rate(NULL, "clk-csi", NULL, 0, 4000000);
 	clk_hw_register_fixed_rate(NULL, "clk-lsi", NULL, 0, 32000);
 	clk_hw_register_fixed_rate(NULL, "clk-rc48", NULL, 0, 48000);
 
-	/* This clock is coming from outside. Frequencies unknown */
+	 
 	hws[CK_DSI_PHY] = clk_hw_register_fixed_rate(NULL, "ck_dsi_phy", NULL,
 			0, 0);
 
@@ -1256,7 +1241,7 @@ static void __init stm32h7_rcc_init(struct device_node *np)
 			CLK_DIVIDER_ALLOW_ZERO,
 			&stm32rcc_lock);
 
-	/* Mux system clocks */
+	 
 	for (n = 0; n < ARRAY_SIZE(stm32_mclk); n++)
 		hws[MCLK_BANK + n] = clk_hw_register_mux(NULL,
 				stm32_mclk[n].name,
@@ -1271,7 +1256,7 @@ static void __init stm32h7_rcc_init(struct device_node *np)
 
 	register_core_and_bus_clocks();
 
-	/* Oscillary clocks */
+	 
 	for (n = 0; n < ARRAY_SIZE(stm32_oclk); n++)
 		hws[OSC_BANK + n] = clk_register_ready_gate(NULL,
 				stm32_oclk[n].name,
@@ -1301,17 +1286,17 @@ static void __init stm32h7_rcc_init(struct device_node *np)
 	hws[CSI_KER_DIV122 + n] = clk_hw_register_fixed_factor(NULL,
 			"csi_ker_div122", "csi_ker", 0, 1, 122);
 
-	/* PLLs */
+	 
 	for (n = 0; n < ARRAY_SIZE(stm32_pll); n++) {
 		int odf;
 
-		/* Register the VCO */
+		 
 		clk_register_stm32_pll(NULL, stm32_pll[n].name,
 				stm32_pll[n].parent_name, stm32_pll[n].flags,
 				stm32_pll[n].cfg,
 				&stm32rcc_lock);
 
-		/* Register the 3 output dividers */
+		 
 		for (odf = 0; odf < 3; odf++) {
 			int idx = n * 3 + odf;
 
@@ -1329,14 +1314,14 @@ static void __init stm32h7_rcc_init(struct device_node *np)
 		}
 	}
 
-	/* Peripheral clocks */
+	 
 	for (n = 0; n < ARRAY_SIZE(pclk); n++)
 		hws[PERIF_BANK + n] = clk_hw_register_gate(NULL, pclk[n].name,
 				pclk[n].parent,
 				pclk[n].flags, base + pclk[n].gate_offset,
 				pclk[n].bit_idx, pclk[n].flags, &stm32rcc_lock);
 
-	/* Kernel clocks */
+	 
 	for (n = 0; n < ARRAY_SIZE(kclk); n++) {
 		get_cfg_composite_div(&kernel_clk_cfg, &kclk[n], &c_cfg,
 				&stm32rcc_lock);
@@ -1351,7 +1336,7 @@ static void __init stm32h7_rcc_init(struct device_node *np)
 				kclk[n].flags);
 	}
 
-	/* RTC clock (default state is off) */
+	 
 	clk_hw_register_fixed_rate(NULL, "off", NULL, 0, 0);
 
 	get_cfg_composite_div(&rtc_clk_cfg, &rtc_clk, &c_cfg, &stm32rcc_lock);
@@ -1365,7 +1350,7 @@ static void __init stm32h7_rcc_init(struct device_node *np)
 			c_cfg.gate_hw, c_cfg.gate_ops,
 			rtc_clk.flags);
 
-	/* Micro-controller clocks */
+	 
 	for (n = 0; n < ARRAY_SIZE(mco_clk); n++) {
 		get_cfg_composite_div(&mco_clk_cfg, &mco_clk[n], &c_cfg,
 				&stm32rcc_lock);
@@ -1388,8 +1373,5 @@ err_free_clks:
 	kfree(clk_data);
 }
 
-/* The RCC node is a clock and reset controller, and these
- * functionalities are supported by different drivers that
- * matches the same compatible strings.
- */
+ 
 CLK_OF_DECLARE_DRIVER(stm32h7_rcc, "st,stm32h743-rcc", stm32h7_rcc_init);

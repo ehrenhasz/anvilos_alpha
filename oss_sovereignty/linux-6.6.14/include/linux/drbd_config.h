@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * drbd_config.h
- * DRBD's compile time configuration.
- */
+ 
+ 
 
 #ifndef DRBD_CONFIG_H
 #define DRBD_CONFIG_H

@@ -1,6 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2011-2017, The Linux Foundation. All rights reserved.
-// Copyright (c) 2018, Linaro Limited
+
+
+
 
 #include <linux/device.h>
 #include <linux/jiffies.h>
@@ -29,7 +29,7 @@
 #define TIMEOUT_MS 1000
 #define RESET_COPP_ID 99
 #define INVALID_COPP_ID 0xFF
-/* Definition for a legacy device session. */
+ 
 #define ADM_LEGACY_DEVICE_SESSION	0
 #define ADM_MATRIX_ID_AUDIO_RX		0
 #define ADM_MATRIX_ID_AUDIO_TX		1
@@ -251,7 +251,7 @@ static int q6adm_apr_send_copp_pkt(struct q6adm *adm, struct q6copp *copp,
 		goto err;
 	}
 
-	/* Wait for the callback with copp id */
+	 
 	if (rsp_opcode)
 		ret = wait_event_timeout(copp->wait,
 					 (copp->result.opcode == opcode) ||
@@ -364,22 +364,7 @@ err:
 	return ret;
 }
 
-/**
- * q6adm_open() - open adm and grab a free copp
- *
- * @dev: Pointer to adm child device.
- * @port_id: port id
- * @path: playback or capture path.
- * @rate: rate at which copp is required.
- * @channel_mode: channel mode
- * @topology: adm topology id
- * @perf_mode: performace mode.
- * @bit_width: audio sample bit width
- * @app_type: Application type.
- * @acdb_id: ACDB id
- *
- * Return: Will be an negative on error or a valid copp pointer on success.
- */
+ 
 struct q6copp *q6adm_open(struct device *dev, int port_id, int path, int rate,
 	       int channel_mode, int topology, int perf_mode,
 	       uint16_t bit_width, int app_type, int acdb_id)
@@ -430,13 +415,7 @@ struct q6copp *q6adm_open(struct device *dev, int port_id, int path, int rate,
 }
 EXPORT_SYMBOL_GPL(q6adm_open);
 
-/**
- * q6adm_get_copp_id() - get copp index
- *
- * @copp: Pointer to valid copp
- *
- * Return: Will be an negative on error or a valid copp index on success.
- **/
+ 
 int q6adm_get_copp_id(struct q6copp *copp)
 {
 	if (!copp)
@@ -446,16 +425,7 @@ int q6adm_get_copp_id(struct q6copp *copp)
 }
 EXPORT_SYMBOL_GPL(q6adm_get_copp_id);
 
-/**
- * q6adm_matrix_map() - Map asm streams and afe ports using payload
- *
- * @dev: Pointer to adm child device.
- * @path: playback or capture path.
- * @payload_map: map between session id and afe ports.
- * @perf_mode: Performace mode.
- *
- * Return: Will be an negative on error or a zero on success.
- */
+ 
 int q6adm_matrix_map(struct device *dev, int path,
 		     struct route_payload payload_map, int perf_mode)
 {
@@ -468,7 +438,7 @@ int q6adm_matrix_map(struct device *dev, int path,
 	void *matrix_map;
 	struct q6copp *copp;
 
-	/* Assumes port_ids have already been validated during adm_open */
+	 
 	pkt_size = (APR_HDR_SIZE + sizeof(*route) +  sizeof(*node) +
 		    (sizeof(uint32_t) * payload_map.num_copps));
 
@@ -557,14 +527,7 @@ fail_cmd:
 }
 EXPORT_SYMBOL_GPL(q6adm_matrix_map);
 
-/**
- * q6adm_close() - Close adm copp
- *
- * @dev: Pointer to adm child device.
- * @copp: pointer to previously opened copp
- *
- * Return: Will be an negative on error or a zero on success.
- */
+ 
 int q6adm_close(struct device *dev, struct q6copp *copp)
 {
 	struct q6adm *adm = dev_get_drvdata(dev->parent);

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * syscall_nt.c - checks syscalls with NT set
- * Copyright (c) 2014-2015 Andrew Lutomirski
- *
- * Some obscure user-space code requires the ability to make system calls
- * with FLAGS.NT set.  Make sure it works.
- */
+
+ 
 
 #include <stdio.h>
 #include <unistd.h>
@@ -62,10 +56,7 @@ int main(void)
 	printf("[RUN]\tSet NT|AC and issue a syscall\n");
 	do_it(X86_EFLAGS_NT | X86_EFLAGS_AC);
 
-	/*
-	 * Now try it again with TF set -- TF forces returns via IRET in all
-	 * cases except non-ptregs-using 64-bit full fast path syscalls.
-	 */
+	 
 
 	sethandler(SIGTRAP, sigtrap, 0);
 
@@ -81,11 +72,7 @@ int main(void)
 	printf("[RUN]\tSet NT|AC|TF and issue a syscall\n");
 	do_it(X86_EFLAGS_NT | X86_EFLAGS_AC | X86_EFLAGS_TF);
 
-	/*
-	 * Now try DF.  This is evil and it's plausible that we will crash
-	 * glibc, but glibc would have to do something rather surprising
-	 * for this to happen.
-	 */
+	 
 	printf("[RUN]\tSet DF and issue a syscall\n");
 	do_it(X86_EFLAGS_DF);
 

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Interface to Linux block layer for MTD 'translation layers'.
- *
- * Copyright © 2003-2010 David Woodhouse <dwmw2@infradead.org>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/slab.h>
@@ -136,10 +132,7 @@ static void mtd_blktrans_work(struct mtd_blktrans_dev *dev)
 				tr->background(dev);
 				mutex_unlock(&dev->lock);
 				spin_lock_irq(&dev->queue_lock);
-				/*
-				 * Do background processing just once per idle
-				 * period.
-				 */
+				 
 				background_done = !dev->bg_stop;
 				continue;
 			}
@@ -285,18 +278,18 @@ int add_mtd_blktrans_dev(struct mtd_blktrans_dev *new)
 
 	list_for_each_entry(d, &tr->devs, list) {
 		if (new->devnum == -1) {
-			/* Use first free number */
+			 
 			if (d->devnum != last_devnum+1) {
-				/* Found a free devnum. Plug it in here */
+				 
 				new->devnum = last_devnum+1;
 				list_add_tail(&new->list, &d->list);
 				goto added;
 			}
 		} else if (d->devnum == new->devnum) {
-			/* Required number taken */
+			 
 			return -EBUSY;
 		} else if (d->devnum > new->devnum) {
-			/* Required number was free */
+			 
 			list_add_tail(&new->list, &d->list);
 			goto added;
 		}
@@ -307,9 +300,7 @@ int add_mtd_blktrans_dev(struct mtd_blktrans_dev *new)
 	if (new->devnum == -1)
 		new->devnum = last_devnum+1;
 
-	/* Check that the device and any partitions will get valid
-	 * minor numbers and that the disk naming code below can cope
-	 * with this number. */
+	 
 	if (new->devnum > (MINORMASK >> tr->part_bits) ||
 	    (tr->part_bits && new->devnum >= 27 * 26))
 		return ret;
@@ -332,7 +323,7 @@ int add_mtd_blktrans_dev(struct mtd_blktrans_dev *new)
 	if (ret)
 		goto out_kfree_tag_set;
 
-	/* Create gendisk */
+	 
 	gd = blk_mq_alloc_disk(new->tag_set, new);
 	if (IS_ERR(gd)) {
 		ret = PTR_ERR(gd);
@@ -364,7 +355,7 @@ int add_mtd_blktrans_dev(struct mtd_blktrans_dev *new)
 
 	set_capacity(gd, ((u64)new->size * tr->blksize) >> 9);
 
-	/* Create the request queue */
+	 
 	spin_lock_init(&new->queue_lock);
 	INIT_LIST_HEAD(&new->rq_list);
 
@@ -418,22 +409,21 @@ int del_mtd_blktrans_dev(struct mtd_blktrans_dev *old)
 		sysfs_remove_group(&disk_to_dev(old->disk)->kobj,
 						old->disk_attributes);
 
-	/* Stop new requests to arrive */
+	 
 	del_gendisk(old->disk);
 
-	/* Kill current requests */
+	 
 	spin_lock_irqsave(&old->queue_lock, flags);
 	old->rq->queuedata = NULL;
 	spin_unlock_irqrestore(&old->queue_lock, flags);
 
-	/* freeze+quiesce queue to ensure all requests are flushed */
+	 
 	blk_mq_freeze_queue(old->rq);
 	blk_mq_quiesce_queue(old->rq);
 	blk_mq_unquiesce_queue(old->rq);
 	blk_mq_unfreeze_queue(old->rq);
 
-	/* If the device is currently open, tell trans driver to close it,
-		then put mtd device, and don't touch it again */
+	 
 	mutex_lock(&old->lock);
 	if (old->open) {
 		if (old->tr->release)
@@ -480,9 +470,7 @@ int register_mtd_blktrans(struct mtd_blktrans_ops *tr)
 	struct mtd_info *mtd;
 	int ret;
 
-	/* Register the notifier if/when the first device type is
-	   registered, to prevent the link/init ordering from fucking
-	   us over. */
+	 
 	if (!blktrans_notifier.list.next)
 		register_mtd_user(&blktrans_notifier);
 
@@ -515,7 +503,7 @@ int deregister_mtd_blktrans(struct mtd_blktrans_ops *tr)
 
 	mutex_lock(&mtd_table_mutex);
 
-	/* Remove it from the list of active majors */
+	 
 	list_del(&tr->list);
 
 	list_for_each_entry_safe(dev, next, &tr->devs, list)
@@ -530,8 +518,7 @@ int deregister_mtd_blktrans(struct mtd_blktrans_ops *tr)
 
 static void __exit mtd_blktrans_exit(void)
 {
-	/* No race here -- if someone's currently in register_mtd_blktrans
-	   we're screwed anyway. */
+	 
 	if (blktrans_notifier.list.next)
 		unregister_mtd_user(&blktrans_notifier);
 }

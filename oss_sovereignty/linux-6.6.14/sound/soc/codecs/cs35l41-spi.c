@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// cs35l41-spi.c -- CS35l41 SPI driver
-//
-// Copyright 2017-2021 Cirrus Logic, Inc.
-//
-// Author: David Rhodes	<david.rhodes@cirrus.com>
+
+
+
+
+
+
+
 
 #include <linux/acpi.h>
 #include <linux/delay.h>
@@ -73,8 +73,8 @@ MODULE_DEVICE_TABLE(of, cs35l41_of_match);
 
 #ifdef CONFIG_ACPI
 static const struct acpi_device_id cs35l41_acpi_match[] = {
-	{ "CSC3541", 0 }, /* Cirrus Logic PnP ID + part ID */
-	{ "CLSA3541", 0 }, /* Cirrus Logic PnP ID + part ID */
+	{ "CSC3541", 0 },  
+	{ "CLSA3541", 0 },  
 	{},
 };
 MODULE_DEVICE_TABLE(acpi, cs35l41_acpi_match);

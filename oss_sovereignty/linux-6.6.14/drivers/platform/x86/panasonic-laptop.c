@@ -1,123 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  Panasonic HotKey and LCD brightness control driver
- *  (C) 2004 Hiroshi Miura <miura@da-cha.org>
- *  (C) 2004 NTT DATA Intellilink Co. http://www.intellilink.co.jp/
- *  (C) YOKOTA Hiroshi <yokota (at) netlab. is. tsukuba. ac. jp>
- *  (C) 2004 David Bronaugh <dbronaugh>
- *  (C) 2006-2008 Harald Welte <laforge@gnumonks.org>
- *
- *  derived from toshiba_acpi.c, Copyright (C) 2002-2004 John Belmonte
- *
- *---------------------------------------------------------------------------
- *
- * ChangeLog:
- *	Aug.18, 2020	Kenneth Chan <kenneth.t.chan@gmail.com>
- *		-v0.98	add platform devices for firmware brightness registers
- *			add support for battery charging threshold (eco mode)
- *			resolve hotkey double trigger
- *			add write support to mute
- *			fix sticky_key init bug
- *			fix naming of platform files for consistency with other
- *			modules
- *			split MODULE_AUTHOR() by one author per macro call
- *			replace ACPI prints with pr_*() macros
- *		-v0.97	add support for cdpower hardware switch
- *		-v0.96	merge Lucina's enhancement
- *			Jan.13, 2009 Martin Lucina <mato@kotelna.sk>
- *				- add support for optical driver power in
- *				  Y and W series
- *
- *	Sep.23, 2008	Harald Welte <laforge@gnumonks.org>
- *		-v0.95	rename driver from drivers/acpi/pcc_acpi.c to
- *			drivers/misc/panasonic-laptop.c
- *
- * 	Jul.04, 2008	Harald Welte <laforge@gnumonks.org>
- * 		-v0.94	replace /proc interface with device attributes
- * 			support {set,get}keycode on th input device
- *
- *      Jun.27, 2008	Harald Welte <laforge@gnumonks.org>
- *      	-v0.92	merge with 2.6.26-rc6 input API changes
- *      		remove broken <= 2.6.15 kernel support
- *      		resolve all compiler warnings
- *      		various coding style fixes (checkpatch.pl)
- *      		add support for backlight api
- *      		major code restructuring
- *
- * 	Dac.28, 2007	Harald Welte <laforge@gnumonks.org>
- * 		-v0.91	merge with 2.6.24-rc6 ACPI changes
- *
- * 	Nov.04, 2006	Hiroshi Miura <miura@da-cha.org>
- * 		-v0.9	remove warning about section reference.
- * 			remove acpi_os_free
- * 			add /proc/acpi/pcc/brightness interface for HAL access
- * 			merge dbronaugh's enhancement
- * 			Aug.17, 2004 David Bronaugh (dbronaugh)
- *  				- Added screen brightness setting interface
- *				  Thanks to FreeBSD crew (acpi_panasonic.c)
- * 				  for the ideas I needed to accomplish it
- *
- *	May.29, 2006	Hiroshi Miura <miura@da-cha.org>
- *		-v0.8.4 follow to change keyinput structure
- *			thanks Fabian Yamaguchi <fabs@cs.tu-berlin.de>,
- *			Jacob Bower <jacob.bower@ic.ac.uk> and
- *			Hiroshi Yokota for providing solutions.
- *
- *	Oct.02, 2004	Hiroshi Miura <miura@da-cha.org>
- *		-v0.8.2	merge code of YOKOTA Hiroshi
- *					<yokota@netlab.is.tsukuba.ac.jp>.
- *			Add sticky key mode interface.
- *			Refactoring acpi_pcc_generate_keyinput().
- *
- *	Sep.15, 2004	Hiroshi Miura <miura@da-cha.org>
- *		-v0.8	Generate key input event on input subsystem.
- *			This is based on yet another driver written by
- *							Ryuta Nakanishi.
- *
- *	Sep.10, 2004	Hiroshi Miura <miura@da-cha.org>
- *		-v0.7	Change proc interface functions using seq_file
- *			facility as same as other ACPI drivers.
- *
- *	Aug.28, 2004	Hiroshi Miura <miura@da-cha.org>
- *		-v0.6.4 Fix a silly error with status checking
- *
- *	Aug.25, 2004	Hiroshi Miura <miura@da-cha.org>
- *		-v0.6.3 replace read_acpi_int by standard function
- *							acpi_evaluate_integer
- *			some clean up and make smart copyright notice.
- *			fix return value of pcc_acpi_get_key()
- *			fix checking return value of acpi_bus_register_driver()
- *
- *      Aug.22, 2004    David Bronaugh <dbronaugh@linuxboxen.org>
- *              -v0.6.2 Add check on ACPI data (num_sifr)
- *                      Coding style cleanups, better error messages/handling
- *			Fixed an off-by-one error in memory allocation
- *
- *      Aug.21, 2004    David Bronaugh <dbronaugh@linuxboxen.org>
- *              -v0.6.1 Fix a silly error with status checking
- *
- *      Aug.20, 2004    David Bronaugh <dbronaugh@linuxboxen.org>
- *              - v0.6  Correct brightness controls to reflect reality
- *                      based on information gleaned by Hiroshi Miura
- *                      and discussions with Hiroshi Miura
- *
- *	Aug.10, 2004	Hiroshi Miura <miura@da-cha.org>
- *		- v0.5  support LCD brightness control
- *			based on the disclosed information by MEI.
- *
- *	Jul.25, 2004	Hiroshi Miura <miura@da-cha.org>
- *		- v0.4  first post version
- *		        add function to retrive SIFR
- *
- *	Jul.24, 2004	Hiroshi Miura <miura@da-cha.org>
- *		- v0.3  get proper status of hotkey
- *
- *      Jul.22, 2004	Hiroshi Miura <miura@da-cha.org>
- *		- v0.2  add HotKey handler
- *
- *      Jul.17, 2004	Hiroshi Miura <miura@da-cha.org>
- *		- v0.1  start from toshiba_acpi driver written by John Belmonte
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/backlight.h>
@@ -146,8 +28,8 @@ MODULE_LICENSE("GPL");
 
 #define LOGPREFIX "pcc_acpi: "
 
-/* Define ACPI PATHs */
-/* Lets note hotkeys */
+ 
+ 
 #define METHOD_HKEY_QUERY	"HINF"
 #define METHOD_HKEY_SQTY	"SQTY"
 #define METHOD_HKEY_SINF	"SINF"
@@ -163,9 +45,7 @@ MODULE_LICENSE("GPL");
 
 #define ACPI_PCC_INPUT_PHYS	"panasonic/hkey0"
 
-/* LCD_TYPEs: 0 = Normal, 1 = Semi-transparent
-   ECO_MODEs: 0x03 = off, 0x83 = on
-*/
+ 
 enum SINF_BITS { SINF_NUM_BATTERIES = 0,
 		 SINF_LCD_TYPE,
 		 SINF_AC_MAX_BRIGHT,
@@ -180,7 +60,7 @@ enum SINF_BITS { SINF_NUM_BATTERIES = 0,
 		 SINF_CUR_BRIGHT = 0x0D,
 		 SINF_STICKY_KEY = 0x80,
 	};
-/* R1 handles SINF_AC_CUR_BRIGHT as SINF_CUR_BRIGHT, doesn't know AC state */
+ 
 
 static int acpi_pcc_hotkey_add(struct acpi_device *device);
 static void acpi_pcc_hotkey_remove(struct acpi_device *device);
@@ -221,7 +101,7 @@ static const struct key_entry panasonic_keymap[] = {
 	{ KE_KEY, 5, { KEY_VOLUMEDOWN } },
 	{ KE_KEY, 6, { KEY_VOLUMEUP } },
 	{ KE_KEY, 7, { KEY_SLEEP } },
-	{ KE_KEY, 8, { KEY_PROG1 } }, /* Change CPU boost */
+	{ KE_KEY, 8, { KEY_PROG1 } },  
 	{ KE_KEY, 9, { KEY_BATTERY } },
 	{ KE_KEY, 10, { KEY_SUSPEND } },
 	{ KE_END, 0 }
@@ -243,10 +123,7 @@ struct pcc_acpi {
 	struct platform_device	*platform;
 };
 
-/*
- * On some Panasonic models the volume up / down / mute keys send duplicate
- * keypress events over the PS/2 kbd interface, filter these out.
- */
+ 
 static bool panasonic_i8042_filter(unsigned char data, unsigned char str,
 				   struct serio *port)
 {
@@ -262,15 +139,12 @@ static bool panasonic_i8042_filter(unsigned char data, unsigned char str,
 		extended = false;
 
 		switch (data & 0x7f) {
-		case 0x20: /* e0 20 / e0 a0, Volume Mute press / release */
-		case 0x2e: /* e0 2e / e0 ae, Volume Down press / release */
-		case 0x30: /* e0 30 / e0 b0, Volume Up press / release */
+		case 0x20:  
+		case 0x2e:  
+		case 0x30:  
 			return true;
 		default:
-			/*
-			 * Report the previously filtered e0 before continuing
-			 * with the next non-filtered byte.
-			 */
+			 
 			serio_interrupt(port, 0xe0, 0);
 			return false;
 		}
@@ -279,7 +153,7 @@ static bool panasonic_i8042_filter(unsigned char data, unsigned char str,
 	return false;
 }
 
-/* method access functions */
+ 
 static int acpi_pcc_write_sset(struct pcc_acpi *pcc, int func, int val)
 {
 	union acpi_object in_objs[] = {
@@ -356,12 +230,9 @@ end:
 	return status == AE_OK;
 }
 
-/* backlight API interface functions */
+ 
 
-/* This driver currently treats AC and DC brightness identical,
- * since we don't need to invent an interface to the core ACPI
- * logic to receive events in case a power supply is plugged in
- * or removed */
+ 
 
 static int bl_get(struct backlight_device *bd)
 {
@@ -405,7 +276,7 @@ static const struct backlight_ops pcc_backlight_ops = {
 };
 
 
-/* returns ACPI_SUCCESS if methods to control optical drive are present */
+ 
 
 static acpi_status check_optd_present(void)
 {
@@ -426,7 +297,7 @@ out:
 	return status;
 }
 
-/* get optical driver power state */
+ 
 
 static int get_optd_power_state(void)
 {
@@ -441,10 +312,10 @@ static int get_optd_power_state(void)
 		goto out;
 	}
 	switch (state) {
-	case 0: /* power off */
+	case 0:  
 		result = 0;
 		break;
-	case 0x0f: /* power on */
+	case 0x0f:  
 		result = 1;
 		break;
 	default:
@@ -456,7 +327,7 @@ out:
 	return result;
 }
 
-/* set optical drive power state */
+ 
 
 static int set_optd_power_state(int new_state)
 {
@@ -470,17 +341,15 @@ static int set_optd_power_state(int new_state)
 		goto out;
 
 	switch (new_state) {
-	case 0: /* power off */
-		/* Call CDDR instead, since they both call the same method
-		 * while CDDI takes 1 arg and we are not quite sure what it is.
-		 */
+	case 0:  
+		 
 		status = acpi_evaluate_object(NULL, "\\_SB.CDDR", NULL, NULL);
 		if (ACPI_FAILURE(status)) {
 			pr_err("evaluation error _SB.CDDR\n");
 			result = -EIO;
 		}
 		break;
-	case 1: /* power on */
+	case 1:  
 		status = acpi_evaluate_object(NULL, "\\_SB.FBAY", NULL, NULL);
 		if (ACPI_FAILURE(status)) {
 			pr_err("evaluation error _SB.FBAY\n");
@@ -497,7 +366,7 @@ out:
 }
 
 
-/* sysfs user interface functions */
+ 
 
 static ssize_t numbatt_show(struct device *dev, struct device_attribute *attr,
 			    char *buf)
@@ -640,7 +509,7 @@ static ssize_t eco_mode_store(struct device *dev, struct device_attribute *attr,
 		pcc->eco_mode = 1;
 		break;
 	default:
-		/* nothing to do */
+		 
 		return count;
 	}
 
@@ -787,12 +656,12 @@ static struct attribute *pcc_sysfs_entries[] = {
 };
 
 static const struct attribute_group pcc_attr_group = {
-	.name	= NULL,		/* put in device directory */
+	.name	= NULL,		 
 	.attrs	= pcc_sysfs_entries,
 };
 
 
-/* hotkey input device driver */
+ 
 
 static int sleep_keydown_seen;
 static void acpi_pcc_generate_keyinput(struct pcc_acpi *pcc)
@@ -811,9 +680,9 @@ static void acpi_pcc_generate_keyinput(struct pcc_acpi *pcc)
 	}
 
 	key = result & 0xf;
-	updown = result & 0x80; /* 0x80 == key down; 0x00 = key up */
+	updown = result & 0x80;  
 
-	/* hack: some firmware sends no key down for sleep / hibernate */
+	 
 	if (key == 7 || key == 10) {
 		if (updown)
 			sleep_keydown_seen = 1;
@@ -822,10 +691,7 @@ static void acpi_pcc_generate_keyinput(struct pcc_acpi *pcc)
 					key, 0x80, false);
 	}
 
-	/*
-	 * Don't report brightness key-presses if they are also reported
-	 * by the ACPI video bus.
-	 */
+	 
 	if ((key == 1 || key == 2) && acpi_video_handles_brightness_key_presses())
 		return;
 
@@ -842,7 +708,7 @@ static void acpi_pcc_hotkey_notify(struct acpi_device *device, u32 event)
 		acpi_pcc_generate_keyinput(pcc);
 		break;
 	default:
-		/* nothing to do */
+		 
 		break;
 	}
 }
@@ -927,7 +793,7 @@ static int acpi_pcc_init_input(struct pcc_acpi *pcc)
 	return error;
 }
 
-/* kernel module interface */
+ 
 
 #ifdef CONFIG_PM_SLEEP
 static int acpi_pcc_hotkey_resume(struct device *dev)
@@ -1000,7 +866,7 @@ static int acpi_pcc_hotkey_add(struct acpi_device *device)
 	}
 
 	if (acpi_video_get_backlight_type() == acpi_backlight_vendor) {
-		/* initialize backlight */
+		 
 		memset(&props, 0, sizeof(struct backlight_properties));
 		props.type = BACKLIGHT_PLATFORM;
 		props.max_brightness = pcc->sinf[SINF_AC_MAX_BRIGHT];
@@ -1012,11 +878,11 @@ static int acpi_pcc_hotkey_add(struct acpi_device *device)
 			goto out_input;
 		}
 
-		/* read the initial brightness setting from the hardware */
+		 
 		pcc->backlight->props.brightness = pcc->sinf[SINF_AC_CUR_BRIGHT];
 	}
 
-	/* Reset initial sticky key mode since the hardware register state is not consistent */
+	 
 	acpi_pcc_write_sset(pcc, SINF_STICKY_KEY, 0);
 	pcc->sticky_key = 0;
 
@@ -1026,12 +892,12 @@ static int acpi_pcc_hotkey_add(struct acpi_device *device)
 	pcc->dc_brightness = pcc->sinf[SINF_DC_CUR_BRIGHT];
 	pcc->current_brightness = pcc->sinf[SINF_CUR_BRIGHT];
 
-	/* add sysfs attributes */
+	 
 	result = sysfs_create_group(&device->dev.kobj, &pcc_attr_group);
 	if (result)
 		goto out_backlight;
 
-	/* optical drive initialization */
+	 
 	if (ACPI_SUCCESS(check_optd_present())) {
 		pcc->platform = platform_device_register_simple("panasonic",
 			PLATFORM_DEVID_NONE, NULL, 0);

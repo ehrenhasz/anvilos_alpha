@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Using hardware provided CRC32 instruction to accelerate the CRC32 disposal.
- * CRC32C polynomial:0x1EDC6F41(BE)/0x82F63B78(LE)
- * CRC32 is a new instruction in Intel SSE4.2, the reference can be found at:
- * http://www.intel.com/products/processor/manuals/
- * Intel(R) 64 and IA-32 Architectures Software Developer's Manual
- * Volume 2A: Instruction Set Reference, A-M
- *
- * Copyright (C) 2008 Intel Corporation
- * Authors: Austin Zhang <austin_zhang@linux.intel.com>
- *          Kent Liu <kent.liu@intel.com>
- */
+
+ 
 #include <linux/init.h>
 #include <linux/module.h>
 #include <linux/string.h>
@@ -34,16 +23,12 @@
 #endif
 
 #ifdef CONFIG_X86_64
-/*
- * use carryless multiply version of crc32c when buffer
- * size is >= 512 to account
- * for fpu state save/restore overhead.
- */
+ 
 #define CRC32C_PCL_BREAKEVEN	512
 
 asmlinkage unsigned int crc_pcl(const u8 *buffer, int len,
 				unsigned int crc_init);
-#endif /* CONFIG_X86_64 */
+#endif  
 
 static u32 crc32c_intel_le_hw_byte(u32 crc, unsigned char const *data, size_t length)
 {
@@ -75,11 +60,7 @@ static u32 __pure crc32c_intel_le_hw(u32 crc, unsigned char const *p, size_t len
 	return crc;
 }
 
-/*
- * Setting the seed allows arbitrary accumulators and flexible XOR policy
- * If your algorithm starts with ~0, then XOR with ~0 before you set
- * the seed.
- */
+ 
 static int crc32c_intel_setkey(struct crypto_shash *hash, const u8 *key,
 			unsigned int keylen)
 {
@@ -153,10 +134,7 @@ static int crc32c_pcl_intel_update(struct shash_desc *desc, const u8 *data,
 {
 	u32 *crcp = shash_desc_ctx(desc);
 
-	/*
-	 * use faster PCL version if datasize is large enough to
-	 * overcome kernel fpu state save/restore overhead
-	 */
+	 
 	if (len >= CRC32C_PCL_BREAKEVEN && crypto_simd_usable()) {
 		kernel_fpu_begin();
 		*crcp = crc_pcl(data, len, *crcp);
@@ -191,7 +169,7 @@ static int crc32c_pcl_intel_digest(struct shash_desc *desc, const u8 *data,
 	return __crc32c_pcl_intel_finup(crypto_shash_ctx(desc->tfm), data, len,
 				    out);
 }
-#endif /* CONFIG_X86_64 */
+#endif  
 
 static struct shash_alg alg = {
 	.setkey			=	crc32c_intel_setkey,

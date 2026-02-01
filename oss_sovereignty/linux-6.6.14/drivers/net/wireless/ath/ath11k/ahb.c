@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: BSD-3-Clause-Clear
-/*
- * Copyright (c) 2018-2019 The Linux Foundation. All rights reserved.
- * Copyright (c) 2022-2023 Qualcomm Innovation Center, Inc. All rights reserved.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/platform_device.h>
@@ -21,9 +18,7 @@
 #include <linux/soc/qcom/smem_state.h>
 
 static const struct of_device_id ath11k_ahb_of_match[] = {
-	/* TODO: Should we change the compatible string to something similar
-	 * to one that ath10k uses?
-	 */
+	 
 	{ .compatible = "qcom,ipq8074-wifi",
 	  .data = (void *)ATH11K_HW_IPQ8074,
 	},
@@ -98,9 +93,7 @@ static const char *irq_name[ATH11K_IRQ_NUM_MAX] = {
 	"tcl2host-status-ring",
 };
 
-/* enum ext_irq_num - irq numbers that can be used by external modules
- * like datapath
- */
+ 
 enum ext_irq_num {
 	host2wbm_desc_feed = 16,
 	host2reo_re_injection,
@@ -151,10 +144,10 @@ ath11k_ahb_get_window_start_wcn6750(struct ath11k_base *ab, u32 offset)
 {
 	u32 window_start = 0;
 
-	/* If offset lies within DP register range, use 1st window */
+	 
 	if ((offset ^ HAL_SEQ_WCSS_UMAC_OFFSET) < ATH11K_PCI_WINDOW_RANGE_MASK)
 		window_start = ATH11K_PCI_WINDOW_START;
-	/* If offset lies within CE register range, use 2nd window */
+	 
 	else if ((offset ^ HAL_SEQ_WCSS_UMAC_CE0_SRC_REG(ab)) <
 		 ATH11K_PCI_WINDOW_RANGE_MASK)
 		window_start = 2 * ATH11K_PCI_WINDOW_START;
@@ -167,7 +160,7 @@ ath11k_ahb_window_write32_wcn6750(struct ath11k_base *ab, u32 offset, u32 value)
 {
 	u32 window_start;
 
-	/* WCN6750 uses static window based register access*/
+	 
 	window_start = ath11k_ahb_get_window_start_wcn6750(ab, offset);
 
 	iowrite32(value, ab->mem + window_start +
@@ -179,7 +172,7 @@ static u32 ath11k_ahb_window_read32_wcn6750(struct ath11k_base *ab, u32 offset)
 	u32 window_start;
 	u32 val;
 
-	/* WCN6750 uses static window based register access */
+	 
 	window_start = ath11k_ahb_get_window_start_wcn6750(ab, offset);
 
 	val = ioread32(ab->mem + window_start +
@@ -475,7 +468,7 @@ static irqreturn_t ath11k_ahb_ce_interrupt_handler(int irq, void *arg)
 {
 	struct ath11k_ce_pipe *ce_pipe = arg;
 
-	/* last interrupt received for this CE */
+	 
 	ce_pipe->timestamp = jiffies;
 
 	ath11k_ahb_ce_irq_disable(ce_pipe->ab, ce_pipe->pipe_num);
@@ -509,7 +502,7 @@ static irqreturn_t ath11k_ahb_ext_interrupt_handler(int irq, void *arg)
 {
 	struct ath11k_ext_irq_grp *irq_grp = arg;
 
-	/* last interrupt received for this group */
+	 
 	irq_grp->timestamp = jiffies;
 
 	ath11k_ahb_ext_grp_disable(irq_grp);
@@ -609,7 +602,7 @@ static int ath11k_ahb_config_irq(struct ath11k_base *ab)
 	if (ab->hw_params.hybrid_bus_type)
 		return ath11k_pcic_config_irq(ab);
 
-	/* Configure CE irqs */
+	 
 	for (i = 0; i < ab->hw_params.ce_count; i++) {
 		struct ath11k_ce_pipe *ce_pipe = &ab->ce.ce_pipe[i];
 
@@ -629,7 +622,7 @@ static int ath11k_ahb_config_irq(struct ath11k_base *ab)
 		ab->irq_num[irq_idx] = irq;
 	}
 
-	/* Configure external interrupts */
+	 
 	ret = ath11k_ahb_config_ext_irq(ab);
 
 	return ret;
@@ -958,9 +951,7 @@ static int ath11k_ahb_fw_resources_init(struct ath11k_base *ab)
 	struct device_node *node;
 	int ret;
 
-	/* Chipsets not requiring MSA need not initialize
-	 * MSA resources, return success in such cases.
-	 */
+	 
 	if (!ab->hw_params.fixed_fw_mem)
 		return 0;
 
@@ -1052,9 +1043,7 @@ static int ath11k_ahb_fw_resource_deinit(struct ath11k_base *ab)
 	struct iommu_domain *iommu;
 	size_t unmapped_size;
 
-	/* Chipsets not requiring MSA would have not initialized
-	 * MSA resources, return success in such cases.
-	 */
+	 
 	if (!ab->hw_params.fixed_fw_mem)
 		return 0;
 
@@ -1151,10 +1140,7 @@ static int ath11k_ahb_probe(struct platform_device *pdev)
 
 	if (ab->hw_params.ce_remap) {
 		const struct ce_remap *ce_remap = ab->hw_params.ce_remap;
-		/* ce register space is moved out of wcss unlike ipq8074 or ipq6018
-		 * and the space is not contiguous, hence remapping the CE registers
-		 * to a new space for accessing them.
-		 */
+		 
 		ab->mem_ce = ioremap(ce_remap->base, ce_remap->size);
 		if (!ab->mem_ce) {
 			dev_err(&pdev->dev, "ce ioremap error\n");
@@ -1281,10 +1267,7 @@ static void ath11k_ahb_shutdown(struct platform_device *pdev)
 {
 	struct ath11k_base *ab = platform_get_drvdata(pdev);
 
-	/* platform shutdown() & remove() are mutually exclusive.
-	 * remove() is invoked during rmmod & shutdown() during
-	 * system reboot/shutdown.
-	 */
+	 
 	ath11k_ahb_remove_prepare(ab);
 
 	if (!(test_bit(ATH11K_FLAG_REGISTERED, &ab->dev_flags)))

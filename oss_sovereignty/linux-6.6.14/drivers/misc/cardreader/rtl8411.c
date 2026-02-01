@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* Driver for Realtek PCI-Express card reader
- *
- * Copyright(c) 2009-2013 Realtek Semiconductor Corp. All rights reserved.
- *
- * Author:
- *   Wei WANG <wei_wang@realsil.com.cn>
- *   Roger Tseng <rogerable@realtek.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/bitops.h>
@@ -143,7 +136,7 @@ static int rtl8411_card_power_on(struct rtsx_pcr *pcr, int card)
 	if (err < 0)
 		return err;
 
-	/* To avoid too large in-rush current */
+	 
 	udelay(150);
 
 	err = rtsx_pci_write_register(pcr, CARD_PWR_CTL,
@@ -226,10 +219,10 @@ static unsigned int rtl8411_cd_deglitch(struct rtsx_pcr *pcr)
 	card_exist = rtsx_pci_readl(pcr, RTSX_BIPR);
 	card_exist &= CARD_EXIST;
 	if (!card_exist) {
-		/* Enable card CD */
+		 
 		rtsx_pci_write_register(pcr, CD_PAD_CTL,
 				CD_DISABLE_MASK, CD_ENABLE);
-		/* Enable card interrupt */
+		 
 		rtsx_pci_write_register(pcr, EFUSE_CONTENT, 0xe0, 0x00);
 		return 0;
 	}
@@ -255,12 +248,12 @@ static unsigned int rtl8411_cd_deglitch(struct rtsx_pcr *pcr)
 	}
 
 	if (card_exist & MS_EXIST) {
-		/* Disable SD interrupt */
+		 
 		rtsx_pci_write_register(pcr, EFUSE_CONTENT, 0xe0, 0x40);
 		rtsx_pci_write_register(pcr, CD_PAD_CTL,
 				CD_DISABLE_MASK, MS_CD_EN_ONLY);
 	} else if (card_exist & SD_EXIST) {
-		/* Disable MS interrupt */
+		 
 		rtsx_pci_write_register(pcr, EFUSE_CONTENT, 0xe0, 0x80);
 		rtsx_pci_write_register(pcr, CD_PAD_CTL,
 				CD_DISABLE_MASK, SD_CD_EN_ONLY);
@@ -329,13 +322,7 @@ static const struct pcr_ops rtl8411b_pcr_ops = {
 	.force_power_down = rtl8411_force_power_down,
 };
 
-/* SD Pull Control Enable:
- *     SD_DAT[3:0] ==> pull up
- *     SD_CD       ==> pull up
- *     SD_WP       ==> pull up
- *     SD_CMD      ==> pull up
- *     SD_CLK      ==> pull down
- */
+ 
 static const u32 rtl8411_sd_pull_ctl_enable_tbl[] = {
 	RTSX_REG_PAIR(CARD_PULL_CTL1, 0xAA),
 	RTSX_REG_PAIR(CARD_PULL_CTL2, 0xAA),
@@ -346,13 +333,7 @@ static const u32 rtl8411_sd_pull_ctl_enable_tbl[] = {
 	0,
 };
 
-/* SD Pull Control Disable:
- *     SD_DAT[3:0] ==> pull down
- *     SD_CD       ==> pull up
- *     SD_WP       ==> pull down
- *     SD_CMD      ==> pull down
- *     SD_CLK      ==> pull down
- */
+ 
 static const u32 rtl8411_sd_pull_ctl_disable_tbl[] = {
 	RTSX_REG_PAIR(CARD_PULL_CTL1, 0x65),
 	RTSX_REG_PAIR(CARD_PULL_CTL2, 0x55),
@@ -363,10 +344,7 @@ static const u32 rtl8411_sd_pull_ctl_disable_tbl[] = {
 	0,
 };
 
-/* MS Pull Control Enable:
- *     MS CD       ==> pull up
- *     others      ==> pull down
- */
+ 
 static const u32 rtl8411_ms_pull_ctl_enable_tbl[] = {
 	RTSX_REG_PAIR(CARD_PULL_CTL1, 0x65),
 	RTSX_REG_PAIR(CARD_PULL_CTL2, 0x55),
@@ -377,10 +355,7 @@ static const u32 rtl8411_ms_pull_ctl_enable_tbl[] = {
 	0,
 };
 
-/* MS Pull Control Disable:
- *     MS CD       ==> pull up
- *     others      ==> pull down
- */
+ 
 static const u32 rtl8411_ms_pull_ctl_disable_tbl[] = {
 	RTSX_REG_PAIR(CARD_PULL_CTL1, 0x65),
 	RTSX_REG_PAIR(CARD_PULL_CTL2, 0x55),

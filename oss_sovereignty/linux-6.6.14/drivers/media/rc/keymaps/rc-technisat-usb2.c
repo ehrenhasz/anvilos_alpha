@@ -1,29 +1,4 @@
-/* rc-technisat-usb2.c - Keytable for SkyStar HD USB
- *
- * Copyright (C) 2010 Patrick Boettcher,
- *                    Kernel Labs Inc. PO Box 745, St James, NY 11780
- *
- * Development was sponsored by Technisat Digital UK Limited, whose
- * registered office is Witan Gate House 500 - 600 Witan Gate West,
- * Milton Keynes, MK9 1SH
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation; either version 2 of the
- * License, or (at your option) any later version.
- *
- *
- * THIS PROGRAM IS PROVIDED "AS IS" AND BOTH THE COPYRIGHT HOLDER AND
- * TECHNISAT DIGITAL UK LTD DISCLAIM ALL WARRANTIES WITH REGARD TO
- * THIS PROGRAM INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY OR
- * FITNESS FOR A PARTICULAR PURPOSE.  NEITHER THE COPYRIGHT HOLDER
- * NOR TECHNISAT DIGITAL UK LIMITED SHALL BE LIABLE FOR ANY SPECIAL,
- * DIRECT, INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER
- * RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION
- * OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR
- * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS PROGRAM. See the
- * GNU General Public License for more details.
- */
+ 
 
 #include <media/rc-map.h>
 #include <linux/module.h>
@@ -37,7 +12,7 @@ static struct rc_map_table technisat_usb2[] = {
 	{0x0a04, KEY_NUMERIC_4},
 	{0x0a05, KEY_NUMERIC_5},
 	{0x0a06, KEY_NUMERIC_6},
-	{0x0a38, KEY_VIDEO}, /* EXT */
+	{0x0a38, KEY_VIDEO},  
 	{0x0a07, KEY_NUMERIC_7},
 	{0x0a08, KEY_NUMERIC_8},
 	{0x0a09, KEY_NUMERIC_9},
@@ -52,7 +27,7 @@ static struct rc_map_table technisat_usb2[] = {
 	{0x0a21, KEY_CHANNELDOWN},
 	{0x0a22, KEY_REFRESH},
 	{0x0a3c, KEY_TEXT},
-	{0x0a76, KEY_ENTER}, /* HOOK */
+	{0x0a76, KEY_ENTER},  
 	{0x0a0f, KEY_HELP},
 	{0x0a6b, KEY_RED},
 	{0x0a6c, KEY_GREEN},

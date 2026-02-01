@@ -1,29 +1,4 @@
-/* Test of filevercmp() function.
-   Copyright (C) 2008-2023 Free Software Foundation, Inc.
-
-   This program is free software; you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3, or (at your option)
-   any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program; if not, see <https://www.gnu.org/licenses/>.  */
-
-#include <config.h>
-
-#include "filevercmp.h"
-
-#include <stddef.h>
-#include <string.h>
-
-#include "macros.h"
-
-/* set of well sorted examples */
+ 
 static const char *const examples[] =
 {
   "",
@@ -101,8 +76,7 @@ static const char *const examples[] =
   NULL
 };
 
-/* Sets of examples that should all sort equally.  Each set is
-   terminated by NULL.  */
+ 
 static char const *const equals[] =
   {
     "a",
@@ -139,9 +113,7 @@ sign (int i)
   return i < 0 ? -1 : 0 < i;
 }
 
-/* Return filevercmp (A, B), checking that a similar result is gotten
-   after replacing all '\1's with '\0's and calling filenvercmp with
-   the embedded '\0's.  */
+ 
 static int
 test_filevercmp (char const *a, char const *b)
 {
@@ -168,7 +140,7 @@ main (void)
 {
   const char *const *i;
 
-  /* Following tests taken from test-strverscmp.c */
+   
   ASSERT (filevercmp ("", "") == 0);
   ASSERT (filevercmp ("a", "a") == 0);
   ASSERT (filevercmp ("a", "b") < 0);
@@ -178,7 +150,7 @@ main (void)
   ASSERT (filevercmp ("9", "10") < 0);
   ASSERT (filevercmp ("0a", "0") > 0);
 
-  /* compare each version string with each other - O(n^2) */
+   
   for (i = examples; *i; i++)
     {
       const char *const *j;

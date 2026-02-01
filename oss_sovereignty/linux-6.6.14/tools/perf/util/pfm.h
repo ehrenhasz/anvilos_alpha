@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Support for libpfm4 event encoding.
- *
- * Copyright 2020 Google LLC.
- */
+ 
+ 
 #ifndef __PERF_PFM_H
 #define __PERF_PFM_H
 
@@ -35,4 +31,4 @@ static inline void print_libpfm_events(const struct print_callbacks *print_cb __
 #endif
 
 
-#endif /* __PERF_PFM_H */
+#endif  

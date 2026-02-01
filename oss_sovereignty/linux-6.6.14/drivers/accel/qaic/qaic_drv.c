@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
 
-/* Copyright (c) 2019-2021, The Linux Foundation. All rights reserved. */
-/* Copyright (c) 2021-2023 Qualcomm Innovation Center, Inc. All rights reserved. */
+
+ 
+ 
 
 #include <linux/delay.h>
 #include <linux/dma-mapping.h>
@@ -175,7 +175,7 @@ static int qaic_create_drm_device(struct qaic_device *qdev, s32 partition_id)
 	struct device *pdev;
 	int ret;
 
-	/* Hold off implementing partitions until the uapi is determined */
+	 
 	if (partition_id != QAIC_NO_PARTITION)
 		return -EINVAL;
 
@@ -228,20 +228,7 @@ static void qaic_destroy_drm_device(struct qaic_device *qdev, s32 partition_id)
 	if (!qddev)
 		return;
 
-	/*
-	 * Existing users get unresolvable errors till they close FDs.
-	 * Need to sync carefully with users calling close(). The
-	 * list of users can be modified elsewhere when the lock isn't
-	 * held here, but the sync'ing the srcu with the mutex held
-	 * could deadlock. Grab the mutex so that the list will be
-	 * unmodified. The user we get will exist as long as the
-	 * lock is held. Signal that the qcdev is going away, and
-	 * grab a reference to the user so they don't go away for
-	 * synchronize_srcu(). Then release the mutex to avoid
-	 * deadlock and make sure the user has observed the signal.
-	 * With the lock released, we cannot maintain any state of the
-	 * user list.
-	 */
+	 
 	mutex_lock(&qddev->users_mutex);
 	while (!list_empty(&qddev->users)) {
 		usr = list_first_entry(&qddev->users, struct qaic_user, node);
@@ -269,16 +256,7 @@ static int qaic_mhi_probe(struct mhi_device *mhi_dev, const struct mhi_device_id
 	struct qaic_device *qdev;
 	int ret;
 
-	/*
-	 * Invoking this function indicates that the control channel to the
-	 * device is available. We use that as a signal to indicate that
-	 * the device side firmware has booted. The device side firmware
-	 * manages the device resources, so we need to communicate with it
-	 * via the control channel in order to utilize the device. Therefore
-	 * we wait until this signal to create the drm dev that userspace will
-	 * use to control the device, because without the device side firmware,
-	 * userspace can't do anything useful.
-	 */
+	 
 
 	qdev = pci_get_drvdata(to_pci_dev(mhi_dev->mhi_cntrl->cntrl_dev));
 
@@ -312,7 +290,7 @@ close_control:
 
 static void qaic_mhi_remove(struct mhi_device *mhi_dev)
 {
-/* This is redundant since we have already observed the device crash */
+ 
 }
 
 static void qaic_notify_reset(struct qaic_device *qdev)
@@ -320,7 +298,7 @@ static void qaic_notify_reset(struct qaic_device *qdev)
 	int i;
 
 	qdev->in_reset = true;
-	/* wake up any waiters to avoid waiting for timeouts at sync */
+	 
 	wake_all_cntl(qdev);
 	for (i = 0; i < qdev->num_dbc; ++i)
 		wakeup_dbc(qdev, i);
@@ -333,10 +311,10 @@ void qaic_dev_reset_clean_local_state(struct qaic_device *qdev, bool exit_reset)
 
 	qaic_notify_reset(qdev);
 
-	/* remove drmdevs to prevent new users from coming in */
+	 
 	qaic_destroy_drm_device(qdev, QAIC_NO_PARTITION);
 
-	/* start tearing things down */
+	 
 	for (i = 0; i < qdev->num_dbc; ++i)
 		release_dbc(qdev, i);
 
@@ -402,7 +380,7 @@ static int init_pci(struct qaic_device *qdev, struct pci_dev *pdev)
 
 	bars = pci_select_bars(pdev, IORESOURCE_MEM);
 
-	/* make sure the device has the expected BARs */
+	 
 	if (bars != (BIT(0) | BIT(2) | BIT(4))) {
 		pci_dbg(pdev, "%s: expected BARs 0, 2, and 4 not found in device. Found 0x%x\n",
 			__func__, bars);
@@ -428,7 +406,7 @@ static int init_pci(struct qaic_device *qdev, struct pci_dev *pdev)
 	if (IS_ERR(qdev->bar_2))
 		return PTR_ERR(qdev->bar_2);
 
-	/* Managed release since we use pcim_enable_device above */
+	 
 	pci_set_master(pdev);
 
 	return 0;
@@ -440,7 +418,7 @@ static int init_msi(struct qaic_device *qdev, struct pci_dev *pdev)
 	int ret;
 	int i;
 
-	/* Managed release since we use pcim_enable_device */
+	 
 	ret = pci_alloc_irq_vectors(pdev, 1, 32, PCI_IRQ_MSI);
 	if (ret < 0)
 		return ret;
@@ -523,7 +501,7 @@ static void qaic_pci_remove(struct pci_dev *pdev)
 
 static void qaic_pci_shutdown(struct pci_dev *pdev)
 {
-	/* see qaic_exit for what link_up is doing */
+	 
 	link_up = true;
 	qaic_pci_remove(pdev);
 }
@@ -612,21 +590,7 @@ free_mhi:
 
 static void __exit qaic_exit(void)
 {
-	/*
-	 * We assume that qaic_pci_remove() is called due to a hotplug event
-	 * which would mean that the link is down, and thus
-	 * qaic_mhi_free_controller() should not try to access the device during
-	 * cleanup.
-	 * We call pci_unregister_driver() below, which also triggers
-	 * qaic_pci_remove(), but since this is module exit, we expect the link
-	 * to the device to be up, in which case qaic_mhi_free_controller()
-	 * should try to access the device during cleanup to put the device in
-	 * a sane state.
-	 * For that reason, we set link_up here to let qaic_mhi_free_controller
-	 * know the expected link state. Since the module is going to be
-	 * removed at the end of this, we don't need to worry about
-	 * reinitializing the link_up state after the cleanup is done.
-	 */
+	 
 	link_up = true;
 	pci_unregister_driver(&qaic_pci_driver);
 	mhi_driver_unregister(&qaic_mhi_driver);

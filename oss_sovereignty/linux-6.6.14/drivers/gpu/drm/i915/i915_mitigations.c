@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright © 2021 Intel Corporation
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/moduleparam.h>
@@ -44,7 +42,7 @@ static int mitigations_set(const char *val, const struct kernel_param *kp)
 		bool enable = true;
 		int i;
 
-		/* Be tolerant of leading/trailing whitespace */
+		 
 		tok = strim(tok);
 
 		if (first) {

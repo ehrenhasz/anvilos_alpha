@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/* Microchip Sparx5 Switch Reset driver
- *
- * Copyright (c) 2020 Microchip Technology Inc. and its subsidiaries.
- *
- * The Sparx5 Chip Register Model can be browsed at this location:
- * https://github.com/microchip-ung/sparx-5_reginfo
- */
+
+ 
 #include <linux/mfd/syscon.h>
 #include <linux/of.h>
 #include <linux/module.h>
@@ -38,15 +32,15 @@ static int sparx5_switch_reset(struct mchp_reset_context *ctx)
 {
 	u32 val;
 
-	/* Make sure the core is PROTECTED from reset */
+	 
 	regmap_update_bits(ctx->cpu_ctrl, ctx->props->protect_reg,
 			   ctx->props->protect_bit, ctx->props->protect_bit);
 
-	/* Start soft reset */
+	 
 	regmap_write(ctx->gcb_ctrl, ctx->props->reset_reg,
 		     ctx->props->reset_bit);
 
-	/* Wait for soft reset done */
+	 
 	return regmap_read_poll_timeout(ctx->gcb_ctrl, ctx->props->reset_reg, val,
 					(val & ctx->props->reset_bit) == 0,
 					1, 100);
@@ -126,7 +120,7 @@ static int mchp_sparx5_reset_probe(struct platform_device *pdev)
 	ctx->rcdev.of_node = dn;
 	ctx->props = device_get_match_data(&pdev->dev);
 
-	/* Issue the reset very early, our actual reset callback is a noop. */
+	 
 	err = sparx5_switch_reset(ctx);
 	if (err)
 		return err;
@@ -172,10 +166,7 @@ static int __init mchp_sparx5_reset_init(void)
 	return platform_driver_register(&mchp_sparx5_reset_driver);
 }
 
-/*
- * Because this is a global reset, keep this postcore_initcall() to issue the
- * reset as early as possible during the kernel startup.
- */
+ 
 postcore_initcall(mchp_sparx5_reset_init);
 
 MODULE_DESCRIPTION("Microchip Sparx5 switch reset driver");

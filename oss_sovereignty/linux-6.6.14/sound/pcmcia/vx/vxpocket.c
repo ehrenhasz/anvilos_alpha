@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Driver for Digigram VXpocket V2/440 soundcards
- *
- * Copyright (c) 2002 by Takashi Iwai <tiwai@suse.de>
 
- */
+ 
 
 
 #include <linux/init.h>
@@ -21,9 +16,9 @@ MODULE_AUTHOR("Takashi Iwai <tiwai@suse.de>");
 MODULE_DESCRIPTION("Digigram VXPocket");
 MODULE_LICENSE("GPL");
 
-static int index[SNDRV_CARDS] = SNDRV_DEFAULT_IDX;	/* Index 0-MAX */
-static char *id[SNDRV_CARDS] = SNDRV_DEFAULT_STR;	/* ID for this card */
-static bool enable[SNDRV_CARDS] = SNDRV_DEFAULT_ENABLE_PNP;	/* Enable switches */
+static int index[SNDRV_CARDS] = SNDRV_DEFAULT_IDX;	 
+static char *id[SNDRV_CARDS] = SNDRV_DEFAULT_STR;	 
+static bool enable[SNDRV_CARDS] = SNDRV_DEFAULT_ENABLE_PNP;	 
 static int ibl[SNDRV_CARDS];
 
 module_param_array(index, int, NULL, 0444);
@@ -36,32 +31,21 @@ module_param_array(ibl, int, NULL, 0444);
 MODULE_PARM_DESC(ibl, "Capture IBL size for VXPocket soundcard.");
  
 
-/*
- */
+ 
 
 static unsigned int card_alloc;
 
 
-/*
- */
+ 
 static void vxpocket_release(struct pcmcia_device *link)
 {
 	free_irq(link->irq, link->priv);
 	pcmcia_disable_device(link);
 }
 
-/*
- * Hardware information
- */
+ 
 
-/* VX-pocket V2
- *
- * 1 DSP, 1 sync UER
- * 1 programmable clock (NIY)
- * 1 stereo analog input (line/micro)
- * 1 stereo analog output
- * Only output levels can be modified
- */
+ 
 
 static const DECLARE_TLV_DB_SCALE(db_scale_old_vol, -11350, 50, 0);
 
@@ -69,7 +53,7 @@ static const struct snd_vx_hardware vxpocket_hw = {
 	.name = "VXPocket",
 	.type = VX_TYPE_VXPOCKET,
 
-	/* hardware specs */
+	 
 	.num_codecs = 1,
 	.num_ins = 1,
 	.num_outs = 1,
@@ -77,21 +61,13 @@ static const struct snd_vx_hardware vxpocket_hw = {
 	.output_level_db_scale = db_scale_old_vol,
 };	
 
-/* VX-pocket 440
- *
- * 1 DSP, 1 sync UER, 1 sync World Clock (NIY)
- * SMPTE (NIY)
- * 2 stereo analog input (line/micro)
- * 2 stereo analog output
- * Only output levels can be modified
- * UER, but only for the first two inputs and outputs.
- */
+ 
 
 static const struct snd_vx_hardware vxp440_hw = {
 	.name = "VXPocket440",
 	.type = VX_TYPE_VXP440,
 
-	/* hardware specs */
+	 
 	.num_codecs = 2,
 	.num_ins = 2,
 	.num_outs = 2,
@@ -100,9 +76,7 @@ static const struct snd_vx_hardware vxp440_hw = {
 };	
 
 
-/*
- * create vxpocket instance
- */
+ 
 static int snd_vxpocket_new(struct snd_card *card, int ibl,
 			    struct pcmcia_device *link,
 			    struct snd_vxpocket **chip_ret)
@@ -134,17 +108,7 @@ static int snd_vxpocket_new(struct snd_card *card, int ibl,
 }
 
 
-/**
- * snd_vxpocket_assign_resources - initialize the hardware and card instance.
- * @chip: VX core instance
- * @port: i/o port for the card
- * @irq: irq number for the card
- *
- * this function assigns the specified port and irq, boot the card,
- * create pcm and control instances, and initialize the rest hardware.
- *
- * returns 0 if successful, or a negative error code.
- */
+ 
 static int snd_vxpocket_assign_resources(struct vx_core *chip, int port, int irq)
 {
 	int err;
@@ -169,9 +133,7 @@ static int snd_vxpocket_assign_resources(struct vx_core *chip, int port, int irq
 }
 
 
-/*
- * configuration callback
- */
+ 
 
 static int vxpocket_config(struct pcmcia_device *link)
 {
@@ -180,12 +142,12 @@ static int vxpocket_config(struct pcmcia_device *link)
 
 	snd_printdd(KERN_DEBUG "vxpocket_config called\n");
 
-	/* redefine hardware record according to the VERSION1 string */
+	 
 	if (!strcmp(link->prod_id[1], "VX-POCKET")) {
 		snd_printdd("VX-pocket is detected\n");
 	} else {
 		snd_printdd("VX-pocket 440 is detected\n");
-		/* overwrite the hardware information */
+		 
 		chip->hw = &vxp440_hw;
 		chip->type = vxp440_hw.type;
 		strcpy(chip->card->driver, vxp440_hw.name);
@@ -241,7 +203,7 @@ static int vxp_resume(struct pcmcia_device *link)
 
 	snd_printdd(KERN_DEBUG "RESUME\n");
 	if (pcmcia_dev_present(link)) {
-		//struct snd_vxpocket *vxp = (struct snd_vxpocket *)chip;
+		
 		if (chip) {
 			snd_printdd(KERN_DEBUG "calling snd_vx_resume\n");
 			snd_vx_resume(chip);
@@ -255,15 +217,14 @@ static int vxp_resume(struct pcmcia_device *link)
 #endif
 
 
-/*
- */
+ 
 static int vxpocket_probe(struct pcmcia_device *p_dev)
 {
 	struct snd_card *card;
 	struct snd_vxpocket *vxp;
 	int i, err;
 
-	/* find an empty slot from the card list */
+	 
 	for (i = 0; i < SNDRV_CARDS; i++) {
 		if (!(card_alloc & (1 << i)))
 			break;
@@ -273,9 +234,9 @@ static int vxpocket_probe(struct pcmcia_device *p_dev)
 		return -EINVAL;
 	}
 	if (! enable[i])
-		return -ENODEV; /* disabled explicitly */
+		return -ENODEV;  
 
-	/* ok, create a card instance */
+	 
 	err = snd_card_new(&p_dev->dev, index[i], id[i], THIS_MODULE,
 			   0, &card);
 	if (err < 0) {
@@ -310,15 +271,13 @@ static void vxpocket_detach(struct pcmcia_device *link)
 	chip = (struct vx_core *)vxp;
 	card_alloc &= ~(1 << vxp->index);
 
-	chip->chip_status |= VX_STAT_IS_STALE; /* to be sure */
+	chip->chip_status |= VX_STAT_IS_STALE;  
 	snd_card_disconnect(chip->card);
 	vxpocket_release(link);
 	snd_card_free_when_closed(chip->card);
 }
 
-/*
- * Module entry points
- */
+ 
 
 static const struct pcmcia_device_id vxp_ids[] = {
 	PCMCIA_DEVICE_MANF_CARD(0x01f1, 0x0100),

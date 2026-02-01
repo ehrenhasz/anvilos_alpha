@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Driver for the Texas Instruments DP83TD510 PHY
- * Copyright (c) 2022 Pengutronix, Oleksij Rempel <kernel@pengutronix.de>
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/kernel.h>
@@ -10,13 +8,9 @@
 
 #define DP83TD510E_PHY_ID			0x20000181
 
-/* MDIO_MMD_VEND2 registers */
+ 
 #define DP83TD510E_PHY_STS			0x10
-/* Bit 7 - mii_interrupt, active high. Clears on read.
- * Note: Clearing does not necessarily deactivate IRQ pin if interrupts pending.
- * This differs from the DP83TD510E datasheet (2020) which states this bit
- * clears on write 0.
- */
+ 
 #define DP83TD510E_STS_MII_INT			BIT(7)
 #define DP83TD510E_LINK_STATUS			BIT(0)
 
@@ -36,21 +30,16 @@
 
 #define DP83TD510_SQI_MAX	7
 
-/* Register values are converted to SNR(dB) as suggested by
- * "Application Report - DP83TD510E Cable Diagnostics Toolkit":
- * SNR(dB) = -10 * log10 (VAL/2^17) - 1.76 dB.
- * SQI ranges are implemented according to "OPEN ALLIANCE - Advanced diagnostic
- * features for 100BASE-T1 automotive Ethernet PHYs"
- */
+ 
 static const u16 dp83td510_mse_sqi_map[] = {
-	0x0569, /* < 18dB */
-	0x044c, /* 18dB =< SNR < 19dB */
-	0x0369, /* 19dB =< SNR < 20dB */
-	0x02b6, /* 20dB =< SNR < 21dB */
-	0x0227, /* 21dB =< SNR < 22dB */
-	0x01b6, /* 22dB =< SNR < 23dB */
-	0x015b, /* 23dB =< SNR < 24dB */
-	0x0000  /* 24dB =< SNR */
+	0x0569,  
+	0x044c,  
+	0x0369,  
+	0x02b6,  
+	0x0227,  
+	0x01b6,  
+	0x015b,  
+	0x0000   
 };
 
 static int dp83td510_config_intr(struct phy_device *phydev)
@@ -89,7 +78,7 @@ static irqreturn_t dp83td510_handle_interrupt(struct phy_device *phydev)
 {
 	int  ret;
 
-	/* Read the current enabled interrupts */
+	 
 	ret = phy_read_mmd(phydev, MDIO_MMD_VEND2, DP83TD510E_INTERRUPT_REG_1);
 	if (ret < 0) {
 		phy_error(phydev);
@@ -119,7 +108,7 @@ static int dp83td510_read_status(struct phy_device *phydev)
 
 	phydev->link = !!(phy_sts & DP83TD510E_LINK_STATUS);
 	if (phydev->link) {
-		/* This PHY supports only one link mode: 10BaseT1L_Full */
+		 
 		phydev->duplex = DUPLEX_FULL;
 		phydev->speed = SPEED_10;
 
@@ -200,12 +189,7 @@ static int dp83td510_get_sqi_max(struct phy_device *phydev)
 
 static int dp83td510_get_features(struct phy_device *phydev)
 {
-	/* This PHY can't respond on MDIO bus if no RMII clock is enabled.
-	 * In case RMII mode is used (most meaningful mode for this PHY) and
-	 * the PHY do not have own XTAL, and CLK providing MAC is not probed,
-	 * we won't be able to read all needed ability registers.
-	 * So provide it manually.
-	 */
+	 
 
 	linkmode_set_bit(ETHTOOL_LINK_MODE_Autoneg_BIT, phydev->supported);
 	linkmode_set_bit(ETHTOOL_LINK_MODE_Asym_Pause_BIT, phydev->supported);

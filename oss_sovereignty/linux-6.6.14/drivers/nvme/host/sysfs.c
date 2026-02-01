@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Sysfs interface for the NVMe core driver.
- *
- * Copyright (c) 2011-2014, Intel Corporation.
- */
+
+ 
 
 #include <linux/nvme-auth.h>
 
@@ -88,9 +84,7 @@ static ssize_t uuid_show(struct device *dev, struct device_attribute *attr,
 {
 	struct nvme_ns_ids *ids = &dev_to_ns_head(dev)->ids;
 
-	/* For backward compatibility expose the NGUID to userspace if
-	 * we have no UUID set
-	 */
+	 
 	if (uuid_is_null(&ids->uuid)) {
 		dev_warn_once(dev,
 			"No UUID available providing old NGUID\n");
@@ -148,7 +142,7 @@ static umode_t nvme_ns_id_attrs_are_visible(struct kobject *kobj,
 	}
 #ifdef CONFIG_NVME_MULTIPATH
 	if (a == &dev_attr_ana_grpid.attr || a == &dev_attr_ana_state.attr) {
-		if (dev_to_disk(dev)->fops != &nvme_bdev_ops) /* per-path attr */
+		if (dev_to_disk(dev)->fops != &nvme_bdev_ops)  
 			return 0;
 		if (!nvme_ctrl_use_ana(nvme_get_ns_from_dev(dev)->ctrl))
 			return 0;
@@ -458,7 +452,7 @@ static ssize_t nvme_ctrl_dhchap_secret_store(struct device *dev,
 		nvme_auth_free_key(host_key);
 	} else
 		kfree(dhchap_secret);
-	/* Start re-authentication */
+	 
 	dev_info(ctrl->device, "re-authenticating controller\n");
 	queue_work(nvme_wq, &ctrl->dhchap_auth_work);
 
@@ -516,7 +510,7 @@ static ssize_t nvme_ctrl_dhchap_ctrl_secret_store(struct device *dev,
 		nvme_auth_free_key(ctrl_key);
 	} else
 		kfree(dhchap_secret);
-	/* Start re-authentication */
+	 
 	dev_info(ctrl->device, "re-authenticating controller\n");
 	queue_work(nvme_wq, &ctrl->dhchap_auth_work);
 

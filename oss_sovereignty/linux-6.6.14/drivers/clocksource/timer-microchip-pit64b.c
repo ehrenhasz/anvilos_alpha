@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * 64-bit Periodic Interval Timer driver
- *
- * Copyright (C) 2019 Microchip Technology Inc. and its subsidiaries
- *
- * Author: Claudiu Beznea <claudiu.beznea@microchip.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/clockchips.h>
@@ -16,44 +10,38 @@
 #include <linux/sched_clock.h>
 #include <linux/slab.h>
 
-#define MCHP_PIT64B_CR			0x00	/* Control Register */
+#define MCHP_PIT64B_CR			0x00	 
 #define MCHP_PIT64B_CR_START		BIT(0)
 #define MCHP_PIT64B_CR_SWRST		BIT(8)
 
-#define MCHP_PIT64B_MR			0x04	/* Mode Register */
+#define MCHP_PIT64B_MR			0x04	 
 #define MCHP_PIT64B_MR_CONT		BIT(0)
 #define MCHP_PIT64B_MR_ONE_SHOT		(0)
 #define MCHP_PIT64B_MR_SGCLK		BIT(3)
 #define MCHP_PIT64B_MR_PRES		GENMASK(11, 8)
 
-#define MCHP_PIT64B_LSB_PR		0x08	/* LSB Period Register */
+#define MCHP_PIT64B_LSB_PR		0x08	 
 
-#define MCHP_PIT64B_MSB_PR		0x0C	/* MSB Period Register */
+#define MCHP_PIT64B_MSB_PR		0x0C	 
 
-#define MCHP_PIT64B_IER			0x10	/* Interrupt Enable Register */
+#define MCHP_PIT64B_IER			0x10	 
 #define MCHP_PIT64B_IER_PERIOD		BIT(0)
 
-#define MCHP_PIT64B_ISR			0x1C	/* Interrupt Status Register */
+#define MCHP_PIT64B_ISR			0x1C	 
 
-#define MCHP_PIT64B_TLSBR		0x20	/* Timer LSB Register */
+#define MCHP_PIT64B_TLSBR		0x20	 
 
-#define MCHP_PIT64B_TMSBR		0x24	/* Timer MSB Register */
+#define MCHP_PIT64B_TMSBR		0x24	 
 
 #define MCHP_PIT64B_PRES_MAX		0x10
 #define MCHP_PIT64B_LSBMASK		GENMASK_ULL(31, 0)
 #define MCHP_PIT64B_PRES_TO_MODE(p)	(MCHP_PIT64B_MR_PRES & ((p) << 8))
 #define MCHP_PIT64B_MODE_TO_PRES(m)	((MCHP_PIT64B_MR_PRES & (m)) >> 8)
-#define MCHP_PIT64B_DEF_FREQ		5000000UL	/* 5 MHz */
+#define MCHP_PIT64B_DEF_FREQ		5000000UL	 
 
 #define MCHP_PIT64B_NAME		"pit64b"
 
-/**
- * struct mchp_pit64b_timer - PIT64B timer data structure
- * @base: base address of PIT64B hardware block
- * @pclk: PIT64B's peripheral clock
- * @gclk: PIT64B's generic clock
- * @mode: precomputed value for mode register
- */
+ 
 struct mchp_pit64b_timer {
 	void __iomem	*base;
 	struct clk	*pclk;
@@ -61,11 +49,7 @@ struct mchp_pit64b_timer {
 	u32		mode;
 };
 
-/**
- * struct mchp_pit64b_clkevt - PIT64B clockevent data structure
- * @timer: PIT64B timer
- * @clkevt: clockevent
- */
+ 
 struct mchp_pit64b_clkevt {
 	struct mchp_pit64b_timer	timer;
 	struct clock_event_device	clkevt;
@@ -75,11 +59,7 @@ struct mchp_pit64b_clkevt {
 	((struct mchp_pit64b_timer *)container_of(x,\
 		struct mchp_pit64b_clkevt, clkevt))
 
-/**
- * struct mchp_pit64b_clksrc - PIT64B clocksource data structure
- * @timer: PIT64B timer
- * @clksrc: clocksource
- */
+ 
 struct mchp_pit64b_clksrc {
 	struct mchp_pit64b_timer	timer;
 	struct clocksource		clksrc;
@@ -89,11 +69,11 @@ struct mchp_pit64b_clksrc {
 	((struct mchp_pit64b_timer *)container_of(x,\
 		struct mchp_pit64b_clksrc, clksrc))
 
-/* Base address for clocksource timer. */
+ 
 static void __iomem *mchp_pit64b_cs_base;
-/* Default cycles for clockevent timer. */
+ 
 static u64 mchp_pit64b_ce_cycles;
-/* Delay timer. */
+ 
 static struct delay_timer mchp_pit64b_dt;
 
 static inline u64 mchp_pit64b_cnt_read(void __iomem *base)
@@ -103,11 +83,7 @@ static inline u64 mchp_pit64b_cnt_read(void __iomem *base)
 
 	raw_local_irq_save(flags);
 
-	/*
-	 * When using a 64 bit period TLSB must be read first, followed by the
-	 * read of TMSB. This sequence generates an atomic read of the 64 bit
-	 * timer value whatever the lapse of time between the accesses.
-	 */
+	 
 	low = readl_relaxed(base + MCHP_PIT64B_TLSBR);
 	high = readl_relaxed(base + MCHP_PIT64B_TMSBR);
 
@@ -228,7 +204,7 @@ static irqreturn_t mchp_pit64b_interrupt(int irq, void *dev_id)
 {
 	struct mchp_pit64b_clkevt *irq_data = dev_id;
 
-	/* Need to clear the interrupt. */
+	 
 	readl_relaxed(irq_data->timer.base + MCHP_PIT64B_ISR);
 
 	irq_data->clkevt.event_handler(&irq_data->clkevt);
@@ -247,47 +223,12 @@ static void __init mchp_pit64b_pres_compute(u32 *pres, u32 clk_rate,
 			break;
 	}
 
-	/* Use the biggest prescaler if we didn't match one. */
+	 
 	if (*pres == MCHP_PIT64B_PRES_MAX)
 		*pres = MCHP_PIT64B_PRES_MAX - 1;
 }
 
-/**
- * mchp_pit64b_init_mode() - prepare PIT64B mode register value to be used at
- *			     runtime; this includes prescaler and SGCLK bit
- * @timer: pointer to pit64b timer to init
- * @max_rate: maximum rate that timer's clock could use
- *
- * PIT64B timer may be fed by gclk or pclk. When gclk is used its rate has to
- * be at least 3 times lower that pclk's rate. pclk rate is fixed, gclk rate
- * could be changed via clock APIs. The chosen clock (pclk or gclk) could be
- * divided by the internal PIT64B's divider.
- *
- * This function, first tries to use GCLK by requesting the desired rate from
- * PMC and then using the internal PIT64B prescaler, if any, to reach the
- * requested rate. If PCLK/GCLK < 3 (condition requested by PIT64B hardware)
- * then the function falls back on using PCLK as clock source for PIT64B timer
- * choosing the highest prescaler in case it doesn't locate one to match the
- * requested frequency.
- *
- * Below is presented the PIT64B block in relation with PMC:
- *
- *                                PIT64B
- *  PMC             +------------------------------------+
- * +----+           |   +-----+                          |
- * |    |-->gclk -->|-->|     |    +---------+  +-----+  |
- * |    |           |   | MUX |--->| Divider |->|timer|  |
- * |    |-->pclk -->|-->|     |    +---------+  +-----+  |
- * +----+           |   +-----+                          |
- *                  |      ^                             |
- *                  |     sel                            |
- *                  +------------------------------------+
- *
- * Where:
- *	- gclk rate <= pclk rate/3
- *	- gclk rate could be requested from PMC
- *	- pclk rate is fixed (cannot be requested from PMC)
- */
+ 
 static int __init mchp_pit64b_init_mode(struct mchp_pit64b_timer *timer,
 					unsigned long max_rate)
 {
@@ -301,7 +242,7 @@ static int __init mchp_pit64b_init_mode(struct mchp_pit64b_timer *timer,
 
 	timer->mode = 0;
 
-	/* Try using GCLK. */
+	 
 	gclk_round = clk_round_rate(timer->gclk, max_rate);
 	if (gclk_round < 0)
 		goto pclk;
@@ -320,15 +261,15 @@ static int __init mchp_pit64b_init_mode(struct mchp_pit64b_timer *timer,
 	}
 
 pclk:
-	/* Check if requested rate could be obtained using PCLK. */
+	 
 	mchp_pit64b_pres_compute(&pres, pclk_rate, max_rate);
 	diff = abs(pclk_rate / (pres + 1) - max_rate);
 
 	if (best_diff > diff) {
-		/* Use PCLK. */
+		 
 		best_pres = pres;
 	} else {
-		/* Use GCLK. */
+		 
 		timer->mode |= MCHP_PIT64B_MR_SGCLK;
 		clk_set_rate(timer->gclk, gclk_round);
 	}
@@ -375,7 +316,7 @@ static int __init mchp_pit64b_init_clksrc(struct mchp_pit64b_timer *timer,
 	if (ret) {
 		pr_debug("clksrc: Failed to register PIT64B clocksource!\n");
 
-		/* Stop timer. */
+		 
 		mchp_pit64b_suspend(timer);
 		kfree(cs);
 
@@ -438,7 +379,7 @@ static int __init mchp_pit64b_dt_init_timer(struct device_node *node,
 	u32 irq = 0;
 	int ret;
 
-	/* Parse DT node. */
+	 
 	timer.pclk = of_clk_get_by_name(node, "pclk");
 	if (IS_ERR(timer.pclk))
 		return PTR_ERR(timer.pclk);
@@ -459,7 +400,7 @@ static int __init mchp_pit64b_dt_init_timer(struct device_node *node,
 		}
 	}
 
-	/* Initialize mode (prescaler + SGCK bit). To be used at runtime. */
+	 
 	ret = mchp_pit64b_init_mode(&timer, MCHP_PIT64B_DEF_FREQ);
 	if (ret)
 		goto irq_unmap;
@@ -494,14 +435,14 @@ static int __init mchp_pit64b_dt_init(struct device_node *node)
 
 	switch (inits++) {
 	case 0:
-		/* 1st request, register clockevent. */
+		 
 		return mchp_pit64b_dt_init_timer(node, true);
 	case 1:
-		/* 2nd request, register clocksource. */
+		 
 		return mchp_pit64b_dt_init_timer(node, false);
 	}
 
-	/* The rest, don't care. */
+	 
 	return -EINVAL;
 }
 

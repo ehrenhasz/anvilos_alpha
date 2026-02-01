@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * STMicroelectronics magnetometers driver
- *
- * Copyright 2012-2013 STMicroelectronics Inc.
- *
- * Denis Ciocca <denis.ciocca@st.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -20,12 +14,12 @@
 
 #define ST_MAGN_NUMBER_DATA_CHANNELS		3
 
-/* DEFAULT VALUE FOR SENSORS */
+ 
 #define ST_MAGN_DEFAULT_OUT_X_H_ADDR		0x03
 #define ST_MAGN_DEFAULT_OUT_Y_H_ADDR		0x07
 #define ST_MAGN_DEFAULT_OUT_Z_H_ADDR		0x05
 
-/* FULLSCALE */
+ 
 #define ST_MAGN_FS_AVL_1300MG			1300
 #define ST_MAGN_FS_AVL_1900MG			1900
 #define ST_MAGN_FS_AVL_2000MG			2000
@@ -39,17 +33,17 @@
 #define ST_MAGN_FS_AVL_15000MG			15000
 #define ST_MAGN_FS_AVL_16000MG			16000
 
-/* Special L addresses for Sensor 2 */
+ 
 #define ST_MAGN_2_OUT_X_L_ADDR			0x28
 #define ST_MAGN_2_OUT_Y_L_ADDR			0x2a
 #define ST_MAGN_2_OUT_Z_L_ADDR			0x2c
 
-/* Special L addresses for sensor 3 */
+ 
 #define ST_MAGN_3_OUT_X_L_ADDR			0x68
 #define ST_MAGN_3_OUT_Y_L_ADDR			0x6a
 #define ST_MAGN_3_OUT_Z_L_ADDR			0x6c
 
-/* Special L addresses for sensor 4 */
+ 
 #define ST_MAGN_4_OUT_X_L_ADDR			0x08
 #define ST_MAGN_4_OUT_Y_L_ADDR			0x0a
 #define ST_MAGN_4_OUT_Z_L_ADDR			0x0c
@@ -143,7 +137,7 @@ static const struct iio_chan_spec st_magn_4_16bit_channels[] = {
 
 static const struct st_sensor_settings st_magn_sensors_settings[] = {
 	{
-		.wai = 0, /* This sensor has no valid WhoAmI report 0 */
+		.wai = 0,  
 		.wai_addr = ST_SENSORS_DEFAULT_WAI_ADDRESS,
 		.sensors_supported = {
 			[0] = LSM303DLH_MAGN_DEV_NAME,
@@ -160,7 +154,7 @@ static const struct st_sensor_settings st_magn_sensors_settings[] = {
 				{ .hz = 15, .value = 0x04 },
 				{ .hz = 30, .value = 0x05 },
 				{ .hz = 75, .value = 0x06 },
-				/* 220 Hz, 0x07 reportedly exist */
+				 
 			},
 		},
 		.pw = {
@@ -359,7 +353,7 @@ static const struct st_sensor_settings st_magn_sensors_settings[] = {
 			.mask = 0x40,
 		},
 		.drdy_irq = {
-			/* drdy line is routed drdy pin */
+			 
 			.stat_drdy = {
 				.addr = ST_SENSORS_DEFAULT_STAT_ADDR,
 				.mask = 0x07,
@@ -501,7 +495,7 @@ static const struct st_sensor_settings st_magn_sensors_settings[] = {
 	},
 };
 
-/* Default magn DRDY is available on INT2 pin */
+ 
 static const struct st_sensors_platform_data default_magn_pdata = {
 	.drdy_int_pin = 2,
 };
@@ -585,12 +579,7 @@ static const struct iio_trigger_ops st_magn_trigger_ops = {
 #define ST_MAGN_TRIGGER_OPS NULL
 #endif
 
-/*
- * st_magn_get_settings() - get sensor settings from device name
- * @name: device name buffer reference.
- *
- * Return: valid reference on success, NULL otherwise.
- */
+ 
 const struct st_sensor_settings *st_magn_get_settings(const char *name)
 {
 	int index = st_sensors_get_settings_index(name,

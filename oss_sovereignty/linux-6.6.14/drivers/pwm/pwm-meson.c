@@ -1,31 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
-/*
- * PWM controller driver for Amlogic Meson SoCs.
- *
- * This PWM is only a set of Gates, Dividers and Counters:
- * PWM output is achieved by calculating a clock that permits calculating
- * two periods (low and high). The counter then has to be set to switch after
- * N cycles for the first half period.
- * The hardware has no "polarity" setting. This driver reverses the period
- * cycles (the low length is inverted with the high length) for
- * PWM_POLARITY_INVERSED. This means that .get_state cannot read the polarity
- * from the hardware.
- * Setting the duty cycle will disable and re-enable the PWM output.
- * Disabling the PWM stops the output immediately (without waiting for the
- * current period to complete first).
- *
- * The public S912 (GXM) datasheet contains some documentation for this PWM
- * controller starting on page 543:
- * https://dl.khadas.com/Hardware/VIM2/Datasheet/S912_Datasheet_V0.220170314publicversion-Wesion.pdf
- * An updated version of this IP block is found in S922X (G12B) SoCs. The
- * datasheet contains the description for this IP block revision starting at
- * page 1084:
- * https://dn.odroid.com/S922X/ODROID-N2/Datasheet/S922X_Public_Datasheet_V0.2.pdf
- *
- * Copyright (c) 2016 BayLibre, SAS.
- * Author: Neil Armstrong <narmstrong@baylibre.com>
- * Copyright (C) 2014 Amlogic, Inc.
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/bits.h>
@@ -106,10 +80,7 @@ struct meson_pwm {
 	const struct meson_pwm_data *data;
 	struct meson_pwm_channel channels[MESON_NUM_PWMS];
 	void __iomem *base;
-	/*
-	 * Protects register (write) access to the REG_MISC_AB register
-	 * that is shared between the two PWMs.
-	 */
+	 
 	spinlock_t lock;
 };
 
@@ -154,12 +125,7 @@ static int meson_pwm_calc(struct meson_pwm *meson, struct pwm_device *pwm,
 	duty = state->duty_cycle;
 	period = state->period;
 
-	/*
-	 * Note this is wrong. The result is an output wave that isn't really
-	 * inverted and so is wrongly identified by .get_state as normal.
-	 * Fixing this needs some care however as some machines might rely on
-	 * this.
-	 */
+	 
 	if (state->polarity == PWM_POLARITY_INVERSED)
 		duty = period - duty;
 
@@ -253,18 +219,7 @@ static int meson_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
 
 	if (!state->enabled) {
 		if (state->polarity == PWM_POLARITY_INVERSED) {
-			/*
-			 * This IP block revision doesn't have an "always high"
-			 * setting which we can use for "inverted disabled".
-			 * Instead we achieve this by setting mux parent with
-			 * highest rate and minimum divider value, resulting
-			 * in the shortest possible duration for one "count"
-			 * and "period == duty_cycle". This results in a signal
-			 * which is LOW for one "count", while being HIGH for
-			 * the rest of the (so the signal is HIGH for slightly
-			 * less than 100% of the period, but this is the best
-			 * we can achieve).
-			 */
+			 
 			channel->rate = ULONG_MAX;
 			channel->hi = ~0;
 			channel->lo = 0;
@@ -291,7 +246,7 @@ static u64 meson_pwm_cnt_to_ns(struct pwm_chip *chip, struct pwm_device *pwm,
 	struct meson_pwm_channel *channel;
 	unsigned long fin_freq;
 
-	/* to_meson_pwm() can only be used after .get_state() is called */
+	 
 	channel = &meson->channels[pwm->hwpwm];
 
 	fin_freq = clk_get_rate(channel->clk);
@@ -347,10 +302,7 @@ static const struct meson_pwm_data pwm_meson8b_data = {
 	.num_parents = ARRAY_SIZE(pwm_meson8b_parent_names),
 };
 
-/*
- * Only the 2 first inputs of the GXBB AO PWMs are valid
- * The last 2 are grounded
- */
+ 
 static const char * const pwm_gxbb_ao_parent_names[] = {
 	"xtal", "clk81"
 };

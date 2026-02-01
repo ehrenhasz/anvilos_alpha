@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2022. Qualcomm Innovation Center, Inc. All rights reserved.
- * Copyright (c) 2015-2018, 2020 The Linux Foundation. All rights reserved.
- * Copyright (c) 2023, Linaro Limited
- */
+ 
+ 
 
 #ifndef _DPU_6_4_SM6350_H
 #define _DPU_6_4_SM6350_H
@@ -179,7 +175,7 @@ static const struct dpu_perf_cfg sm6350_perf_data = {
 	.min_llcc_ib = 0,
 	.min_dram_ib = 1600000,
 	.min_prefill_lines = 35,
-	/* TODO: confirm danger_lut_tbl */
+	 
 	.danger_lut_tbl = {0xffff, 0xffff, 0x0},
 	.safe_lut_tbl = {0xff00, 0xff00, 0xffff},
 	.qos_lut_tbl = {

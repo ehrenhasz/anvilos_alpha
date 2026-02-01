@@ -1,28 +1,4 @@
-/*
- * This file is part of the MicroPython project, http://micropython.org/
- *
- * The MIT License (MIT)
- *
- * Copyright (c) 2013, 2014 Damien P. George
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
+ 
 
 #include <string.h>
 #include <assert.h>
@@ -36,18 +12,7 @@
 #define DIG_MSB  (MPZ_LONG_1 << (DIG_SIZE - 1))
 #define DIG_BASE (MPZ_LONG_1 << DIG_SIZE)
 
-/*
- mpz is an arbitrary precision integer type with a public API.
-
- mpn functions act on non-negative integers represented by an array of generalised
- digits (eg a word per digit).  You also need to specify separately the length of the
- array.  There is no public API for mpn.  Rather, the functions are used by mpz to
- implement its features.
-
- Integer values are stored little endian (first digit is first in memory).
-
- Definition of normalise: ?
-*/
+ 
 
 static size_t mpn_remove_trailing_zeros(mpz_dig_t *oidig, mpz_dig_t *idig) {
     for (--idig; idig >= oidig && *idig == 0; --idig) {
@@ -55,10 +20,7 @@ static size_t mpn_remove_trailing_zeros(mpz_dig_t *oidig, mpz_dig_t *idig) {
     return idig + 1 - oidig;
 }
 
-/* compares i with j
-   returns sign(i - j)
-   assumes i, j are normalised
-*/
+ 
 static int mpn_cmp(const mpz_dig_t *idig, size_t ilen, const mpz_dig_t *jdig, size_t jlen) {
     if (ilen < jlen) {
         return -1;
@@ -80,11 +42,7 @@ static int mpn_cmp(const mpz_dig_t *idig, size_t ilen, const mpz_dig_t *jdig, si
     return 0;
 }
 
-/* computes i = j << n
-   returns number of digits in i
-   assumes enough memory in i; assumes normalised j; assumes n > 0
-   can have i, j pointing to same memory
-*/
+ 
 static size_t mpn_shl(mpz_dig_t *idig, mpz_dig_t *jdig, size_t jlen, mp_uint_t n) {
     mp_uint_t n_whole = (n + DIG_SIZE - 1) / DIG_SIZE;
     mp_uint_t n_part = n % DIG_SIZE;
@@ -92,11 +50,11 @@ static size_t mpn_shl(mpz_dig_t *idig, mpz_dig_t *jdig, size_t jlen, mp_uint_t n
         n_part = DIG_SIZE;
     }
 
-    // start from the high end of the digit arrays
+    
     idig += jlen + n_whole - 1;
     jdig += jlen - 1;
 
-    // shift the digits
+    
     mpz_dbl_dig_t d = 0;
     for (size_t i = jlen; i > 0; i--, idig--, jdig--) {
         d |= *jdig;
@@ -104,26 +62,22 @@ static size_t mpn_shl(mpz_dig_t *idig, mpz_dig_t *jdig, size_t jlen, mp_uint_t n
         d <<= DIG_SIZE;
     }
 
-    // store remaining bits
+    
     *idig = (d >> (DIG_SIZE - n_part)) & DIG_MASK;
     idig -= n_whole - 1;
     memset(idig, 0, (n_whole - 1) * sizeof(mpz_dig_t));
 
-    // work out length of result
+    
     jlen += n_whole;
     while (jlen != 0 && idig[jlen - 1] == 0) {
         jlen--;
     }
 
-    // return length of result
+    
     return jlen;
 }
 
-/* computes i = j >> n
-   returns number of digits in i
-   assumes enough memory in i; assumes normalised j; assumes n > 0
-   can have i, j pointing to same memory
-*/
+ 
 static size_t mpn_shr(mpz_dig_t *idig, mpz_dig_t *jdig, size_t jlen, mp_uint_t n) {
     mp_uint_t n_whole = n / DIG_SIZE;
     mp_uint_t n_part = n % DIG_SIZE;
@@ -151,11 +105,7 @@ static size_t mpn_shr(mpz_dig_t *idig, mpz_dig_t *jdig, size_t jlen, mp_uint_t n
     return jlen;
 }
 
-/* computes i = j + k
-   returns number of digits in i
-   assumes enough memory in i; assumes normalised j, k; assumes jlen >= klen
-   can have i, j, k pointing to same memory
-*/
+ 
 static size_t mpn_add(mpz_dig_t *idig, const mpz_dig_t *jdig, size_t jlen, const mpz_dig_t *kdig, size_t klen) {
     mpz_dig_t *oidig = idig;
     mpz_dbl_dig_t carry = 0;
@@ -181,11 +131,7 @@ static size_t mpn_add(mpz_dig_t *idig, const mpz_dig_t *jdig, size_t jlen, const
     return idig - oidig;
 }
 
-/* computes i = j - k
-   returns number of digits in i
-   assumes enough memory in i; assumes normalised j, k; assumes j >= k
-   can have i, j, k pointing to same memory
-*/
+ 
 static size_t mpn_sub(mpz_dig_t *idig, const mpz_dig_t *jdig, size_t jlen, const mpz_dig_t *kdig, size_t klen) {
     mpz_dig_t *oidig = idig;
     mpz_dbl_dig_signed_t borrow = 0;
@@ -209,11 +155,7 @@ static size_t mpn_sub(mpz_dig_t *idig, const mpz_dig_t *jdig, size_t jlen, const
 
 #if MICROPY_OPT_MPZ_BITWISE
 
-/* computes i = j & k
-   returns number of digits in i
-   assumes enough memory in i; assumes normalised j, k; assumes jlen >= klen (jlen argument not needed)
-   can have i, j, k pointing to same memory
-*/
+ 
 static size_t mpn_and(mpz_dig_t *idig, const mpz_dig_t *jdig, const mpz_dig_t *kdig, size_t klen) {
     mpz_dig_t *oidig = idig;
 
@@ -226,15 +168,7 @@ static size_t mpn_and(mpz_dig_t *idig, const mpz_dig_t *jdig, const mpz_dig_t *k
 
 #endif
 
-/*  i = -((-j) & (-k))                = ~((~j + 1) & (~k + 1)) + 1
-    i =  (j & (-k)) =  (j & (~k + 1)) =  (  j      & (~k + 1))
-    i =  ((-j) & k) =  ((~j + 1) & k) =  ((~j + 1) &   k     )
-   computes general form:
-   i = (im ^ (((j ^ jm) + jc) & ((k ^ km) + kc))) + ic  where Xm = Xc == 0 ? 0 : DIG_MASK
-   returns number of digits in i
-   assumes enough memory in i; assumes normalised j, k; assumes length j >= length k
-   can have i, j, k pointing to same memory
-*/
+ 
 static size_t mpn_and_neg(mpz_dig_t *idig, const mpz_dig_t *jdig, size_t jlen, const mpz_dig_t *kdig, size_t klen,
     mpz_dbl_dig_t carryi, mpz_dbl_dig_t carryj, mpz_dbl_dig_t carryk) {
     mpz_dig_t *oidig = idig;
@@ -261,11 +195,7 @@ static size_t mpn_and_neg(mpz_dig_t *idig, const mpz_dig_t *jdig, size_t jlen, c
 
 #if MICROPY_OPT_MPZ_BITWISE
 
-/* computes i = j | k
-   returns number of digits in i
-   assumes enough memory in i; assumes normalised j, k; assumes jlen >= klen
-   can have i, j, k pointing to same memory
-*/
+ 
 static size_t mpn_or(mpz_dig_t *idig, const mpz_dig_t *jdig, size_t jlen, const mpz_dig_t *kdig, size_t klen) {
     mpz_dig_t *oidig = idig;
 
@@ -284,15 +214,7 @@ static size_t mpn_or(mpz_dig_t *idig, const mpz_dig_t *jdig, size_t jlen, const 
 
 #endif
 
-/*  i = -((-j) | (-k))                = ~((~j + 1) | (~k + 1)) + 1
-    i = -(j | (-k)) = -(j | (~k + 1)) = ~(  j      | (~k + 1)) + 1
-    i = -((-j) | k) = -((~j + 1) | k) = ~((~j + 1) |   k     ) + 1
-   computes general form:
-   i = ~(((j ^ jm) + jc) | ((k ^ km) + kc)) + 1  where Xm = Xc == 0 ? 0 : DIG_MASK
-   returns number of digits in i
-   assumes enough memory in i; assumes normalised j, k; assumes length j >= length k
-   can have i, j, k pointing to same memory
-*/
+ 
 
 #if MICROPY_OPT_MPZ_BITWISE
 
@@ -313,12 +235,12 @@ static size_t mpn_or_neg(mpz_dig_t *idig, const mpz_dig_t *jdig, size_t jlen, co
         carryi >>= DIG_SIZE;
     }
 
-    // At least one of j,k must be negative so the above for-loop runs at least
-    // once.  For carryi to be non-zero here it must be equal to 1 at the end of
-    // each iteration of the loop.  So the accumulation of carryi must overflow
-    // each time, ie carryi += 0xff..ff.  So carryj|carryk must be 0 in the
-    // DIG_MASK bits on each iteration.  But considering all cases of signs of
-    // j,k one sees that this is not possible.
+    
+    
+    
+    
+    
+    
     assert(carryi == 0);
 
     return mpn_remove_trailing_zeros(oidig, idig);
@@ -343,7 +265,7 @@ static size_t mpn_or_neg(mpz_dig_t *idig, const mpz_dig_t *jdig, size_t jlen, co
         carryi >>= DIG_SIZE;
     }
 
-    // See comment in above mpn_or_neg for why carryi must be 0.
+    
     assert(carryi == 0);
 
     return mpn_remove_trailing_zeros(oidig, idig);
@@ -353,11 +275,7 @@ static size_t mpn_or_neg(mpz_dig_t *idig, const mpz_dig_t *jdig, size_t jlen, co
 
 #if MICROPY_OPT_MPZ_BITWISE
 
-/* computes i = j ^ k
-   returns number of digits in i
-   assumes enough memory in i; assumes normalised j, k; assumes jlen >= klen
-   can have i, j, k pointing to same memory
-*/
+ 
 static size_t mpn_xor(mpz_dig_t *idig, const mpz_dig_t *jdig, size_t jlen, const mpz_dig_t *kdig, size_t klen) {
     mpz_dig_t *oidig = idig;
 
@@ -376,15 +294,7 @@ static size_t mpn_xor(mpz_dig_t *idig, const mpz_dig_t *jdig, size_t jlen, const
 
 #endif
 
-/*  i = (-j) ^ (-k) = ~(j - 1) ^ ~(k - 1)                   = (j - 1) ^ (k - 1)
-    i = -(j ^ (-k)) = -(j ^ ~(k - 1)) = ~(j ^ ~(k - 1)) + 1 = (j ^ (k - 1)) + 1
-    i = -((-j) ^ k) = -(~(j - 1) ^ k) = ~(~(j - 1) ^ k) + 1 = ((j - 1) ^ k) + 1
-   computes general form:
-   i = ((j - 1 + jc) ^ (k - 1 + kc)) + ic
-   returns number of digits in i
-   assumes enough memory in i; assumes normalised j, k; assumes length j >= length k
-   can have i, j, k pointing to same memory
-*/
+ 
 static size_t mpn_xor_neg(mpz_dig_t *idig, const mpz_dig_t *jdig, size_t jlen, const mpz_dig_t *kdig, size_t klen,
     mpz_dbl_dig_t carryi, mpz_dbl_dig_t carryj, mpz_dbl_dig_t carryk) {
     mpz_dig_t *oidig = idig;
@@ -406,16 +316,13 @@ static size_t mpn_xor_neg(mpz_dig_t *idig, const mpz_dig_t *jdig, size_t jlen, c
     return mpn_remove_trailing_zeros(oidig, idig);
 }
 
-/* computes i = i * d1 + d2
-   returns number of digits in i
-   assumes enough memory in i; assumes normalised i; assumes dmul != 0
-*/
+ 
 static size_t mpn_mul_dig_add_dig(mpz_dig_t *idig, size_t ilen, mpz_dig_t dmul, mpz_dig_t dadd) {
     mpz_dig_t *oidig = idig;
     mpz_dbl_dig_t carry = dadd;
 
     for (; ilen > 0; --ilen, ++idig) {
-        carry += (mpz_dbl_dig_t)*idig * (mpz_dbl_dig_t)dmul; // will never overflow so long as DIG_SIZE <= 8*sizeof(mpz_dbl_dig_t)/2
+        carry += (mpz_dbl_dig_t)*idig * (mpz_dbl_dig_t)dmul; 
         *idig = carry & DIG_MASK;
         carry >>= DIG_SIZE;
     }
@@ -427,11 +334,7 @@ static size_t mpn_mul_dig_add_dig(mpz_dig_t *idig, size_t ilen, mpz_dig_t dmul, 
     return idig - oidig;
 }
 
-/* computes i = j * k
-   returns number of digits in i
-   assumes enough memory in i; assumes i is zeroed; assumes normalised j, k
-   can have j, k point to same memory
-*/
+ 
 static size_t mpn_mul(mpz_dig_t *idig, mpz_dig_t *jdig, size_t jlen, mpz_dig_t *kdig, size_t klen) {
     mpz_dig_t *oidig = idig;
     size_t ilen = 0;
@@ -442,7 +345,7 @@ static size_t mpn_mul(mpz_dig_t *idig, mpz_dig_t *jdig, size_t jlen, mpz_dig_t *
 
         size_t jl = jlen;
         for (mpz_dig_t *jd = jdig; jl > 0; --jl, ++jd, ++id) {
-            carry += (mpz_dbl_dig_t)*id + (mpz_dbl_dig_t)*jd * (mpz_dbl_dig_t)*kdig; // will never overflow so long as DIG_SIZE <= 8*sizeof(mpz_dbl_dig_t)/2
+            carry += (mpz_dbl_dig_t)*id + (mpz_dbl_dig_t)*jd * (mpz_dbl_dig_t)*kdig; 
             *id = carry & DIG_MASK;
             carry >>= DIG_SIZE;
         }
@@ -457,19 +360,14 @@ static size_t mpn_mul(mpz_dig_t *idig, mpz_dig_t *jdig, size_t jlen, mpz_dig_t *
     return ilen;
 }
 
-/* natural_div - quo * den + new_num = old_num (ie num is replaced with rem)
-   assumes den != 0
-   assumes num_dig has enough memory to be extended by 1 digit
-   assumes quo_dig has enough memory (as many digits as num)
-   assumes quo_dig is filled with zeros
-*/
+ 
 static void mpn_div(mpz_dig_t *num_dig, size_t *num_len, const mpz_dig_t *den_dig, size_t den_len, mpz_dig_t *quo_dig, size_t *quo_len) {
     mpz_dig_t *orig_num_dig = num_dig;
     mpz_dig_t *orig_quo_dig = quo_dig;
     mpz_dig_t norm_shift = 0;
     mpz_dbl_dig_t lead_den_digit;
 
-    // handle simple cases
+    
     {
         int cmp = mpn_cmp(num_dig, *num_len, den_dig, den_len);
         if (cmp == 0) {
@@ -478,18 +376,18 @@ static void mpn_div(mpz_dig_t *num_dig, size_t *num_len, const mpz_dig_t *den_di
             *quo_len = 1;
             return;
         } else if (cmp < 0) {
-            // numerator remains the same
+            
             *quo_len = 0;
             return;
         }
     }
 
-    // We need to normalise the denominator (leading bit of leading digit is 1)
-    // so that the division routine works.  Since the denominator memory is
-    // read-only we do the normalisation on the fly, each time a digit of the
-    // denominator is needed.  We need to know is how many bits to shift by.
+    
+    
+    
+    
 
-    // count number of leading zeros in leading digit of denominator
+    
     {
         mpz_dig_t d = den_dig[den_len - 1];
         while ((d & DIG_MSB) == 0) {
@@ -498,8 +396,8 @@ static void mpn_div(mpz_dig_t *num_dig, size_t *num_len, const mpz_dig_t *den_di
         }
     }
 
-    // now need to shift numerator by same amount as denominator
-    // first, increase length of numerator in case we need more room to shift
+    
+    
     num_dig[*num_len] = 0;
     ++(*num_len);
     for (mpz_dig_t *num = num_dig, carry = 0; num < num_dig + *num_len; ++num) {
@@ -508,59 +406,59 @@ static void mpn_div(mpz_dig_t *num_dig, size_t *num_len, const mpz_dig_t *den_di
         carry = (mpz_dbl_dig_t)n >> (DIG_SIZE - norm_shift);
     }
 
-    // cache the leading digit of the denominator
+    
     lead_den_digit = (mpz_dbl_dig_t)den_dig[den_len - 1] << norm_shift;
     if (den_len >= 2) {
         lead_den_digit |= (mpz_dbl_dig_t)den_dig[den_len - 2] >> (DIG_SIZE - norm_shift);
     }
 
-    // point num_dig to last digit in numerator
+    
     num_dig += *num_len - 1;
 
-    // calculate number of digits in quotient
+    
     *quo_len = *num_len - den_len;
 
-    // point to last digit to store for quotient
+    
     quo_dig += *quo_len - 1;
 
-    // keep going while we have enough digits to divide
+    
     while (*num_len > den_len) {
         mpz_dbl_dig_t quo = ((mpz_dbl_dig_t)*num_dig << DIG_SIZE) | num_dig[-1];
 
-        // get approximate quotient
+        
         quo /= lead_den_digit;
 
-        // Multiply quo by den and subtract from num to get remainder.
-        // Must be careful with overflow of the borrow variable.  Both
-        // borrow and low_digs are signed values and need signed right-shift,
-        // but x is unsigned and may take a full-range value.
+        
+        
+        
+        
         const mpz_dig_t *d = den_dig;
         mpz_dbl_dig_t d_norm = 0;
         mpz_dbl_dig_signed_t borrow = 0;
         for (mpz_dig_t *n = num_dig - den_len; n < num_dig; ++n, ++d) {
-            // Get the next digit in (den).
+            
             d_norm = ((mpz_dbl_dig_t)*d << norm_shift) | (d_norm >> DIG_SIZE);
-            // Multiply the next digit in (quo * den).
+            
             mpz_dbl_dig_t x = (mpz_dbl_dig_t)quo * (d_norm & DIG_MASK);
-            // Compute the low DIG_MASK bits of the next digit in (num - quo * den)
+            
             mpz_dbl_dig_signed_t low_digs = (borrow & DIG_MASK) + *n - (x & DIG_MASK);
-            // Store the digit result for (num).
+            
             *n = low_digs & DIG_MASK;
-            // Compute the borrow, shifted right before summing to avoid overflow.
+            
             borrow = (borrow >> DIG_SIZE) - (x >> DIG_SIZE) + (low_digs >> DIG_SIZE);
         }
 
-        // At this point we have either:
-        //
-        //   1. quo was the correct value and the most-sig-digit of num is exactly
-        //      cancelled by borrow (borrow + *num_dig == 0).  In this case there is
-        //      nothing more to do.
-        //
-        //   2. quo was too large, we subtracted too many den from num, and the
-        //      most-sig-digit of num is less than needed (borrow + *num_dig < 0).
-        //      In this case we must reduce quo and add back den to num until the
-        //      carry from this operation cancels out the borrow.
-        //
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
         borrow += *num_dig;
         for (; borrow != 0; --quo) {
             d = den_dig;
@@ -575,23 +473,23 @@ static void mpn_div(mpz_dig_t *num_dig, size_t *num_len, const mpz_dig_t *den_di
             borrow += carry;
         }
 
-        // store this digit of the quotient
+        
         *quo_dig = quo & DIG_MASK;
         --quo_dig;
 
-        // move down to next digit of numerator
+        
         --num_dig;
         --(*num_len);
     }
 
-    // unnormalise numerator (remainder now)
+    
     for (mpz_dig_t *num = orig_num_dig + *num_len - 1, carry = 0; num >= orig_num_dig; --num) {
         mpz_dig_t n = *num;
         *num = ((n >> norm_shift) | carry) & DIG_MASK;
         carry = (mpz_dbl_dig_t)n << (DIG_SIZE - norm_shift);
     }
 
-    // strip trailing zeros
+    
 
     while (*quo_len > 0 && orig_quo_dig[*quo_len - 1] == 0) {
         --(*quo_len);
@@ -681,8 +579,8 @@ static void mpz_need_dig(mpz_t *z, size_t need) {
     }
 
     if (z->dig == NULL || z->alloc < need) {
-        // if z has fixed digit buffer there's not much we can do as the caller will
-        // be expecting a buffer with at least "need" bytes (but it shouldn't happen)
+        
+        
         assert(!z->fixed_dig);
         z->dig = m_renew(mpz_dig_t, z->dig, z->alloc, need);
         z->alloc = need;
@@ -701,9 +599,7 @@ static mpz_t *mpz_clone(const mpz_t *src) {
     return z;
 }
 
-/* sets dest = src
-   can have dest, src the same
-*/
+ 
 void mpz_set(mpz_t *dest, const mpz_t *src) {
     mpz_need_dig(dest, src->len);
     dest->neg = src->neg;
@@ -760,22 +656,22 @@ void mpz_set_from_float(mpz_t *z, mp_float_t src) {
     mp_float_union_t u = {src};
     z->neg = u.p.sgn;
     if (u.p.exp == 0) {
-        // value == 0 || value < 1
+        
         mpz_set_from_int(z, 0);
     } else if (u.p.exp == ((1 << MP_FLOAT_EXP_BITS) - 1)) {
-        // u.p.frc == 0 indicates inf, else NaN
-        // should be handled by caller
+        
+        
         mpz_set_from_int(z, 0);
     } else {
         const int adj_exp = (int)u.p.exp - MP_FLOAT_EXP_BIAS;
         if (adj_exp < 0) {
-            // value < 1 , truncates to 0
+            
             mpz_set_from_int(z, 0);
         } else if (adj_exp == 0) {
-            // 1 <= value < 2 , so truncates to 1
+            
             mpz_set_from_int(z, 1);
         } else {
-            // 2 <= value
+            
             const int dig_cnt = (adj_exp + 1 + (DIG_SIZE - 1)) / DIG_SIZE;
             const unsigned int rem = adj_exp % DIG_SIZE;
             int dig_ind, shft;
@@ -813,7 +709,7 @@ void mpz_set_from_float(mpz_t *z, mp_float_t src) {
 }
 #endif
 
-// returns number of bytes from str that were processed
+
 size_t mpz_set_from_str(mpz_t *z, const char *str, size_t len, bool neg, unsigned int base) {
     assert(base <= 36);
 
@@ -829,8 +725,8 @@ size_t mpz_set_from_str(mpz_t *z, const char *str, size_t len, bool neg, unsigne
     }
 
     z->len = 0;
-    for (; cur < top; ++cur) { // XXX UTF8 next char
-        // mp_uint_t v = char_to_numeric(cur#); // XXX UTF8 get char
+    for (; cur < top; ++cur) { 
+        
         mp_uint_t v = *cur;
         if ('0' <= v && v <= '9') {
             v -= '0';
@@ -871,7 +767,7 @@ void mpz_set_from_bytes(mpz_t *z, bool big_endian, size_t len, const byte *buf) 
             len--;
         }
         z->dig[z->len++] = d & DIG_MASK;
-        // Need this #if because it's C undefined behavior to do: uint32_t >> 32
+        
         #if DIG_SIZE != 8 && DIG_SIZE != 16 && DIG_SIZE != 32
         d >>= DIG_SIZE;
         #else
@@ -912,8 +808,8 @@ int mpz_cmp(const mpz_t *z1, const mpz_t *z2) {
 }
 
 #if 0
-// obsolete
-// compares mpz with an integer that fits within DIG_SIZE bits
+
+
 mp_int_t mpz_cmp_sml_int(const mpz_t *z, mp_int_t sml_int) {
     mp_int_t cmp;
     if (z->neg == 0) {
@@ -966,65 +862,51 @@ mp_int_t mpz_cmp_sml_int(const mpz_t *z, mp_int_t sml_int) {
 #if 0
 these functions are unused
 
-/* returns abs(z)
-*/
+ 
 mpz_t *mpz_abs(const mpz_t *z) {
-    // TODO: handle case of z->alloc=0
+    
     mpz_t *z2 = mpz_clone(z);
     z2->neg = 0;
     return z2;
 }
 
-/* returns -z
-*/
+ 
 mpz_t *mpz_neg(const mpz_t *z) {
-    // TODO: handle case of z->alloc=0
+    
     mpz_t *z2 = mpz_clone(z);
     z2->neg = 1 - z2->neg;
     return z2;
 }
 
-/* returns lhs + rhs
-   can have lhs, rhs the same
-*/
+ 
 mpz_t *mpz_add(const mpz_t *lhs, const mpz_t *rhs) {
     mpz_t *z = mpz_zero();
     mpz_add_inpl(z, lhs, rhs);
     return z;
 }
 
-/* returns lhs - rhs
-   can have lhs, rhs the same
-*/
+ 
 mpz_t *mpz_sub(const mpz_t *lhs, const mpz_t *rhs) {
     mpz_t *z = mpz_zero();
     mpz_sub_inpl(z, lhs, rhs);
     return z;
 }
 
-/* returns lhs * rhs
-   can have lhs, rhs the same
-*/
+ 
 mpz_t *mpz_mul(const mpz_t *lhs, const mpz_t *rhs) {
     mpz_t *z = mpz_zero();
     mpz_mul_inpl(z, lhs, rhs);
     return z;
 }
 
-/* returns lhs ** rhs
-   can have lhs, rhs the same
-*/
+ 
 mpz_t *mpz_pow(const mpz_t *lhs, const mpz_t *rhs) {
     mpz_t *z = mpz_zero();
     mpz_pow_inpl(z, lhs, rhs);
     return z;
 }
 
-/* computes new integers in quo and rem such that:
-       quo * rhs + rem = lhs
-       0 <= rem < rhs
-   can have lhs, rhs the same
-*/
+ 
 void mpz_divmod(const mpz_t *lhs, const mpz_t *rhs, mpz_t **quo, mpz_t **rem) {
     *quo = mpz_zero();
     *rem = mpz_zero();
@@ -1032,9 +914,7 @@ void mpz_divmod(const mpz_t *lhs, const mpz_t *rhs, mpz_t **quo, mpz_t **rem) {
 }
 #endif
 
-/* computes dest = abs(z)
-   can have dest, z the same
-*/
+ 
 void mpz_abs_inpl(mpz_t *dest, const mpz_t *z) {
     if (dest != z) {
         mpz_set(dest, z);
@@ -1042,9 +922,7 @@ void mpz_abs_inpl(mpz_t *dest, const mpz_t *z) {
     dest->neg = 0;
 }
 
-/* computes dest = -z
-   can have dest, z the same
-*/
+ 
 void mpz_neg_inpl(mpz_t *dest, const mpz_t *z) {
     if (dest != z) {
         mpz_set(dest, z);
@@ -1054,9 +932,7 @@ void mpz_neg_inpl(mpz_t *dest, const mpz_t *z) {
     }
 }
 
-/* computes dest = ~z (= -z - 1)
-   can have dest, z the same
-*/
+ 
 void mpz_not_inpl(mpz_t *dest, const mpz_t *z) {
     if (dest != z) {
         mpz_set(dest, z);
@@ -1078,9 +954,7 @@ void mpz_not_inpl(mpz_t *dest, const mpz_t *z) {
     }
 }
 
-/* computes dest = lhs << rhs
-   can have dest, lhs the same
-*/
+ 
 void mpz_shl_inpl(mpz_t *dest, const mpz_t *lhs, mp_uint_t rhs) {
     if (lhs->len == 0 || rhs == 0) {
         mpz_set(dest, lhs);
@@ -1091,9 +965,7 @@ void mpz_shl_inpl(mpz_t *dest, const mpz_t *lhs, mp_uint_t rhs) {
     }
 }
 
-/* computes dest = lhs >> rhs
-   can have dest, lhs the same
-*/
+ 
 void mpz_shr_inpl(mpz_t *dest, const mpz_t *lhs, mp_uint_t rhs) {
     if (lhs->len == 0 || rhs == 0) {
         mpz_set(dest, lhs);
@@ -1102,7 +974,7 @@ void mpz_shr_inpl(mpz_t *dest, const mpz_t *lhs, mp_uint_t rhs) {
         dest->len = mpn_shr(dest->dig, lhs->dig, lhs->len, rhs);
         dest->neg = lhs->neg;
         if (dest->neg) {
-            // arithmetic shift right, rounding to negative infinity
+            
             mp_uint_t n_whole = rhs / DIG_SIZE;
             mp_uint_t n_part = rhs % DIG_SIZE;
             mpz_dig_t round_up = 0;
@@ -1117,11 +989,11 @@ void mpz_shr_inpl(mpz_t *dest, const mpz_t *lhs, mp_uint_t rhs) {
             }
             if (round_up) {
                 if (dest->len == 0) {
-                    // dest == 0, so need to add 1 by hand (answer will be -1)
+                    
                     dest->dig[0] = 1;
                     dest->len = 1;
                 } else {
-                    // dest > 0, so can use mpn_add to add 1
+                    
                     dest->len = mpn_add(dest->dig, dest->dig, dest->len, &round_up, 1);
                 }
             }
@@ -1129,9 +1001,7 @@ void mpz_shr_inpl(mpz_t *dest, const mpz_t *lhs, mp_uint_t rhs) {
     }
 }
 
-/* computes dest = lhs + rhs
-   can have dest, lhs, rhs the same
-*/
+ 
 void mpz_add_inpl(mpz_t *dest, const mpz_t *lhs, const mpz_t *rhs) {
     if (mpn_cmp(lhs->dig, lhs->len, rhs->dig, rhs->len) < 0) {
         const mpz_t *temp = lhs;
@@ -1150,9 +1020,7 @@ void mpz_add_inpl(mpz_t *dest, const mpz_t *lhs, const mpz_t *rhs) {
     dest->neg = lhs->neg & !!dest->len;
 }
 
-/* computes dest = lhs - rhs
-   can have dest, lhs, rhs the same
-*/
+ 
 void mpz_sub_inpl(mpz_t *dest, const mpz_t *lhs, const mpz_t *rhs) {
     bool neg = false;
 
@@ -1180,11 +1048,9 @@ void mpz_sub_inpl(mpz_t *dest, const mpz_t *lhs, const mpz_t *rhs) {
     }
 }
 
-/* computes dest = lhs & rhs
-   can have dest, lhs, rhs the same
-*/
+ 
 void mpz_and_inpl(mpz_t *dest, const mpz_t *lhs, const mpz_t *rhs) {
-    // make sure lhs has the most digits
+    
     if (lhs->len < rhs->len) {
         const mpz_t *temp = lhs;
         lhs = rhs;
@@ -1214,11 +1080,9 @@ void mpz_and_inpl(mpz_t *dest, const mpz_t *lhs, const mpz_t *rhs) {
     #endif
 }
 
-/* computes dest = lhs | rhs
-   can have dest, lhs, rhs the same
-*/
+ 
 void mpz_or_inpl(mpz_t *dest, const mpz_t *lhs, const mpz_t *rhs) {
-    // make sure lhs has the most digits
+    
     if (lhs->len < rhs->len) {
         const mpz_t *temp = lhs;
         lhs = rhs;
@@ -1248,11 +1112,9 @@ void mpz_or_inpl(mpz_t *dest, const mpz_t *lhs, const mpz_t *rhs) {
     #endif
 }
 
-/* computes dest = lhs ^ rhs
-   can have dest, lhs, rhs the same
-*/
+ 
 void mpz_xor_inpl(mpz_t *dest, const mpz_t *lhs, const mpz_t *rhs) {
-    // make sure lhs has the most digits
+    
     if (lhs->len < rhs->len) {
         const mpz_t *temp = lhs;
         lhs = rhs;
@@ -1286,9 +1148,7 @@ void mpz_xor_inpl(mpz_t *dest, const mpz_t *lhs, const mpz_t *rhs) {
     #endif
 }
 
-/* computes dest = lhs * rhs
-   can have dest, lhs, rhs the same
-*/
+ 
 void mpz_mul_inpl(mpz_t *dest, const mpz_t *lhs, const mpz_t *rhs) {
     if (lhs->len == 0 || rhs->len == 0) {
         mpz_set_from_int(dest, 0);
@@ -1305,7 +1165,7 @@ void mpz_mul_inpl(mpz_t *dest, const mpz_t *lhs, const mpz_t *rhs) {
         rhs = temp = mpz_clone(rhs);
     }
 
-    mpz_need_dig(dest, lhs->len + rhs->len); // min mem l+r-1, max mem l+r
+    mpz_need_dig(dest, lhs->len + rhs->len); 
     memset(dest->dig, 0, dest->alloc * sizeof(mpz_dig_t));
     dest->len = mpn_mul(dest->dig, lhs->dig, lhs->len, rhs->dig, rhs->len);
 
@@ -1318,9 +1178,7 @@ void mpz_mul_inpl(mpz_t *dest, const mpz_t *lhs, const mpz_t *rhs) {
     mpz_free(temp);
 }
 
-/* computes dest = lhs ** rhs
-   can have dest, lhs, rhs the same
-*/
+ 
 void mpz_pow_inpl(mpz_t *dest, const mpz_t *lhs, const mpz_t *rhs) {
     if (lhs->len == 0 || rhs->neg != 0) {
         mpz_set_from_int(dest, 0);
@@ -1352,9 +1210,7 @@ void mpz_pow_inpl(mpz_t *dest, const mpz_t *lhs, const mpz_t *rhs) {
     mpz_free(n);
 }
 
-/* computes dest = (lhs ** rhs) % mod
-   can have dest, lhs, rhs the same; mod can't be the same as dest
-*/
+ 
 void mpz_pow3_inpl(mpz_t *dest, const mpz_t *lhs, const mpz_t *rhs, const mpz_t *mod) {
     if (lhs->len == 0 || rhs->neg != 0 || (mod->len == 1 && mod->dig[0] == 1)) {
         mpz_set_from_int(dest, 0);
@@ -1393,15 +1249,10 @@ void mpz_pow3_inpl(mpz_t *dest, const mpz_t *lhs, const mpz_t *rhs, const mpz_t 
 #if 0
 these functions are unused
 
-/* computes gcd(z1, z2)
-   based on Knuth's modified gcd algorithm (I think?)
-   gcd(z1, z2) >= 0
-   gcd(0, 0) = 0
-   gcd(z, 0) = abs(z)
-*/
+ 
 mpz_t *mpz_gcd(const mpz_t *z1, const mpz_t *z2) {
     if (z1->len == 0) {
-        // TODO: handle case of z2->alloc=0
+        
         mpz_t *a = mpz_clone(z2);
         a->neg = 0;
         return a;
@@ -1429,7 +1280,7 @@ mpz_t *mpz_gcd(const mpz_t *z1, const mpz_t *z2) {
             a = b;
             b = t;
         }
-        if (!(b->len >= 2 || (b->len == 1 && b->dig[0] > 1))) { // compute b > 0; could be mpz_cmp_small_int(b, 1) > 0
+        if (!(b->len >= 2 || (b->len == 1 && b->dig[0] > 1))) { 
             break;
         }
         mpz_set(&c, b);
@@ -1442,7 +1293,7 @@ mpz_t *mpz_gcd(const mpz_t *z1, const mpz_t *z2) {
 
     mpz_deinit(&c);
 
-    if (b->len == 1 && b->dig[0] == 1) { // compute b == 1; could be mpz_cmp_small_int(b, 1) == 0
+    if (b->len == 1 && b->dig[0] == 1) { 
         mpz_free(a);
         return b;
     } else {
@@ -1451,12 +1302,7 @@ mpz_t *mpz_gcd(const mpz_t *z1, const mpz_t *z2) {
     }
 }
 
-/* computes lcm(z1, z2)
-     = abs(z1) / gcd(z1, z2) * abs(z2)
-  lcm(z1, z1) >= 0
-  lcm(0, 0) = 0
-  lcm(z, 0) = 0
-*/
+ 
 mpz_t *mpz_lcm(const mpz_t *z1, const mpz_t *z2) {
     if (z1->len == 0 || z2->len == 0) {
         return mpz_zero();
@@ -1474,25 +1320,20 @@ mpz_t *mpz_lcm(const mpz_t *z1, const mpz_t *z2) {
 }
 #endif
 
-/* computes new integers in quo and rem such that:
-       quo * rhs + rem = lhs
-       0 <= rem < rhs
-   can have lhs, rhs the same
-   assumes rhs != 0 (undefined behaviour if it is)
-*/
+ 
 void mpz_divmod_inpl(mpz_t *dest_quo, mpz_t *dest_rem, const mpz_t *lhs, const mpz_t *rhs) {
     assert(!mpz_is_zero(rhs));
 
-    mpz_need_dig(dest_quo, lhs->len + 1); // +1 necessary?
+    mpz_need_dig(dest_quo, lhs->len + 1); 
     memset(dest_quo->dig, 0, (lhs->len + 1) * sizeof(mpz_dig_t));
     dest_quo->neg = 0;
     dest_quo->len = 0;
-    mpz_need_dig(dest_rem, lhs->len + 1); // +1 necessary?
+    mpz_need_dig(dest_rem, lhs->len + 1); 
     mpz_set(dest_rem, lhs);
     mpn_div(dest_rem->dig, &dest_rem->len, rhs->dig, rhs->len, dest_quo->dig, &dest_quo->len);
     dest_rem->neg &= !!dest_rem->len;
 
-    // check signs and do Python style modulo
+    
     if (lhs->neg != rhs->neg) {
         dest_quo->neg = !!dest_quo->len;
         if (!mpz_is_zero(dest_rem)) {
@@ -1507,9 +1348,7 @@ void mpz_divmod_inpl(mpz_t *dest_quo, mpz_t *dest_rem, const mpz_t *lhs, const m
 #if 0
 these functions are unused
 
-/* computes floor(lhs / rhs)
-   can have lhs, rhs the same
-*/
+ 
 mpz_t *mpz_div(const mpz_t *lhs, const mpz_t *rhs) {
     mpz_t *quo = mpz_zero();
     mpz_t rem;
@@ -1519,9 +1358,7 @@ mpz_t *mpz_div(const mpz_t *lhs, const mpz_t *rhs) {
     return quo;
 }
 
-/* computes lhs % rhs ( >= 0)
-   can have lhs, rhs the same
-*/
+ 
 mpz_t *mpz_mod(const mpz_t *lhs, const mpz_t *rhs) {
     mpz_t quo;
     mpz_init_zero(&quo);
@@ -1532,7 +1369,7 @@ mpz_t *mpz_mod(const mpz_t *lhs, const mpz_t *rhs) {
 }
 #endif
 
-// must return actual int value if it fits in mp_int_t
+
 mp_int_t mpz_hash(const mpz_t *z) {
     mp_uint_t val = 0;
     mpz_dig_t *d = z->dig + z->len;
@@ -1554,7 +1391,7 @@ bool mpz_as_int_checked(const mpz_t *i, mp_int_t *value) {
 
     while (d-- > i->dig) {
         if (val > (~(MP_OBJ_WORD_MSBIT_HIGH) >> DIG_SIZE)) {
-            // will overflow
+            
             return false;
         }
         val = (val << DIG_SIZE) | *d;
@@ -1570,7 +1407,7 @@ bool mpz_as_int_checked(const mpz_t *i, mp_int_t *value) {
 
 bool mpz_as_uint_checked(const mpz_t *i, mp_uint_t *value) {
     if (i->neg != 0) {
-        // can't represent signed values
+        
         return false;
     }
 
@@ -1579,7 +1416,7 @@ bool mpz_as_uint_checked(const mpz_t *i, mp_uint_t *value) {
 
     while (d-- > i->dig) {
         if (val > (~(MP_OBJ_WORD_MSBIT_HIGH) >> (DIG_SIZE - 1))) {
-            // will overflow
+            
             return false;
         }
         val = (val << DIG_SIZE) | *d;
@@ -1621,7 +1458,7 @@ void mpz_as_bytes(const mpz_t *z, bool big_endian, size_t len, byte *buf) {
         }
     }
 
-    // fill remainder of buf with zero/sign extension of the integer
+    
     if (big_endian) {
         len = b - buf;
     } else {
@@ -1657,9 +1494,9 @@ char *mpz_as_str(const mpz_t *i, unsigned int base) {
 }
 #endif
 
-// assumes enough space in str as calculated by mp_int_format_size
-// base must be between 2 and 32 inclusive
-// returns length of string, not including null byte
+
+
+
 size_t mpz_as_str_inpl(const mpz_t *i, unsigned int base, const char *prefix, char base_char, char comma, char *str) {
     assert(str != NULL);
     assert(2 <= base && base <= 32);
@@ -1678,32 +1515,32 @@ size_t mpz_as_str_inpl(const mpz_t *i, unsigned int base, const char *prefix, ch
         return s - str;
     }
 
-    // make a copy of mpz digits, so we can do the div/mod calculation
+    
     mpz_dig_t *dig = m_new(mpz_dig_t, ilen);
     memcpy(dig, i->dig, ilen * sizeof(mpz_dig_t));
 
-    // convert
+    
     char *last_comma = str;
     bool done;
     do {
         mpz_dig_t *d = dig + ilen;
         mpz_dbl_dig_t a = 0;
 
-        // compute next remainder
+        
         while (--d >= dig) {
             a = (a << DIG_SIZE) | *d;
             *d = a / base;
             a %= base;
         }
 
-        // convert to character
+        
         a += '0';
         if (a > '9') {
             a += base_char - '9' - 1;
         }
         *s++ = a;
 
-        // check if number is zero
+        
         done = true;
         for (d = dig; d < dig + ilen; ++d) {
             if (*d != 0) {
@@ -1718,7 +1555,7 @@ size_t mpz_as_str_inpl(const mpz_t *i, unsigned int base, const char *prefix, ch
     }
     while (!done);
 
-    // free the copy of the digits array
+    
     m_del(mpz_dig_t, dig, ilen);
 
     if (prefix) {
@@ -1731,16 +1568,16 @@ size_t mpz_as_str_inpl(const mpz_t *i, unsigned int base, const char *prefix, ch
         *s++ = '-';
     }
 
-    // reverse string
+    
     for (char *u = str, *v = s - 1; u < v; ++u, --v) {
         char temp = *u;
         *u = *v;
         *v = temp;
     }
 
-    *s = '\0'; // null termination
+    *s = '\0'; 
 
     return s - str;
 }
 
-#endif // MICROPY_LONGINT_IMPL == MICROPY_LONGINT_IMPL_MPZ
+#endif 

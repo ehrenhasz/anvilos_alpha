@@ -1,18 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Resource Director Technology(RDT)
- * - Cache Allocation code.
- *
- * Copyright (C) 2016 Intel Corporation
- *
- * Authors:
- *    Fenghua Yu <fenghua.yu@intel.com>
- *    Tony Luck <tony.luck@intel.com>
- *    Vikas Shivappa <vikas.shivappa@intel.com>
- *
- * More information about RDT be found in the Intel (R) x86 Architecture
- * Software Developer Manual June 2016, volume 3, section 17.17.
- */
+
+ 
 
 #define pr_fmt(fmt)	"resctrl: " fmt
 
@@ -25,27 +12,16 @@
 #include <asm/resctrl.h>
 #include "internal.h"
 
-/* Mutex to protect rdtgroup access. */
+ 
 DEFINE_MUTEX(rdtgroup_mutex);
 
-/*
- * The cached resctrl_pqr_state is strictly per CPU and can never be
- * updated from a remote CPU. Functions which modify the state
- * are called with interrupts disabled and no preemption, which
- * is sufficient for the protection.
- */
+ 
 DEFINE_PER_CPU(struct resctrl_pqr_state, pqr_state);
 
-/*
- * Used to store the max resource name width and max resource data width
- * to display the schemata in a tabular format
- */
+ 
 int max_name_width, max_data_width;
 
-/*
- * Global boolean for rdt_alloc which is true if any
- * resource allocation is enabled.
- */
+ 
 bool rdt_alloc_capable;
 
 static void
@@ -114,24 +90,7 @@ struct rdt_hw_resource rdt_resources_all[] = {
 	},
 };
 
-/*
- * cache_alloc_hsw_probe() - Have to probe for Intel haswell server CPUs
- * as they do not have CPUID enumeration support for Cache allocation.
- * The check for Vendor/Family/Model is not enough to guarantee that
- * the MSRs won't #GP fault because only the following SKUs support
- * CAT:
- *	Intel(R) Xeon(R)  CPU E5-2658  v3  @  2.20GHz
- *	Intel(R) Xeon(R)  CPU E5-2648L v3  @  1.80GHz
- *	Intel(R) Xeon(R)  CPU E5-2628L v3  @  2.00GHz
- *	Intel(R) Xeon(R)  CPU E5-2618L v3  @  2.30GHz
- *	Intel(R) Xeon(R)  CPU E5-2608L v3  @  2.00GHz
- *	Intel(R) Xeon(R)  CPU E5-2658A v3  @  2.20GHz
- *
- * Probe by trying to write the first of the L3 cache mask registers
- * and checking that the bits stick. Max CLOSids is always 4 and max cbm length
- * is always 20 on hsw server parts. The minimum cache bitmask length
- * allowed for HSW server is always 2 bits. Hardcode all of them.
- */
+ 
 static inline void cache_alloc_hsw_probe(void)
 {
 	struct rdt_hw_resource *hw_res = &rdt_resources_all[RDT_RESOURCE_L3];
@@ -143,7 +102,7 @@ static inline void cache_alloc_hsw_probe(void)
 
 	rdmsr(MSR_IA32_L3_CBM_BASE, l, h);
 
-	/* If all the bits were set in MSR, return success */
+	 
 	if (l != max_cbm)
 		return;
 
@@ -162,31 +121,17 @@ bool is_mba_sc(struct rdt_resource *r)
 	if (!r)
 		return rdt_resources_all[RDT_RESOURCE_MBA].r_resctrl.membw.mba_sc;
 
-	/*
-	 * The software controller support is only applicable to MBA resource.
-	 * Make sure to check for resource type.
-	 */
+	 
 	if (r->rid != RDT_RESOURCE_MBA)
 		return false;
 
 	return r->membw.mba_sc;
 }
 
-/*
- * rdt_get_mb_table() - get a mapping of bandwidth(b/w) percentage values
- * exposed to user interface and the h/w understandable delay values.
- *
- * The non-linear delay values have the granularity of power of two
- * and also the h/w does not guarantee a curve for configured delay
- * values vs. actual b/w enforced.
- * Hence we need a mapping that is pre calibrated so the user can
- * express the memory b/w as a percentage value.
- */
+ 
 static inline bool rdt_get_mb_table(struct rdt_resource *r)
 {
-	/*
-	 * There are no Intel SKUs as of now to support non-linear delay.
-	 */
+	 
 	pr_info("MBA b/w map not implemented for cpu:%d, model:%d",
 		boot_cpu_data.x86, boot_cpu_data.x86_model);
 
@@ -234,28 +179,22 @@ static bool __rdt_get_mem_config_amd(struct rdt_resource *r)
 	union cpuid_0x10_x_edx edx;
 	u32 ebx, ecx, subleaf;
 
-	/*
-	 * Query CPUID_Fn80000020_EDX_x01 for MBA and
-	 * CPUID_Fn80000020_EDX_x02 for SMBA
-	 */
+	 
 	subleaf = (r->rid == RDT_RESOURCE_SMBA) ? 2 :  1;
 
 	cpuid_count(0x80000020, subleaf, &eax.full, &ebx, &ecx, &edx.full);
 	hw_res->num_closid = edx.split.cos_max + 1;
 	r->default_ctrl = MAX_MBA_BW_AMD;
 
-	/* AMD does not use delay */
+	 
 	r->membw.delay_linear = false;
 	r->membw.arch_needs_linear = false;
 
-	/*
-	 * AMD does not use memory delay throttle model to control
-	 * the allocation like Intel does.
-	 */
+	 
 	r->membw.throttle_mode = THREAD_THROTTLE_UNDEFINED;
 	r->membw.min_bw = 0;
 	r->membw.bw_gran = 1;
-	/* Max value is 2048, Data width should be 4 in decimal */
+	 
 	r->data_width = 4;
 
 	r->alloc_capable = true;
@@ -281,10 +220,7 @@ static void rdt_get_cache_alloc_cfg(int idx, struct rdt_resource *r)
 
 static void rdt_get_cdp_config(int level)
 {
-	/*
-	 * By default, CDP is disabled. CDP can be enabled by mount parameter
-	 * "cdp" during resctrl file system mount time.
-	 */
+	 
 	rdt_resources_all[level].cdp_enabled = false;
 	rdt_resources_all[level].r_resctrl.cdp_capable = true;
 }
@@ -310,11 +246,7 @@ mba_wrmsr_amd(struct rdt_domain *d, struct msr_param *m, struct rdt_resource *r)
 		wrmsrl(hw_res->msr_base + i, hw_dom->ctrl_val[i]);
 }
 
-/*
- * Map the memory b/w percentage value to delay values
- * that can be written to QOS_MSRs.
- * There are currently no SKUs which support non linear delay values.
- */
+ 
 static u32 delay_bw_map(unsigned long bw, struct rdt_resource *r)
 {
 	if (r->membw.delay_linear)
@@ -332,7 +264,7 @@ mba_wrmsr_intel(struct rdt_domain *d, struct msr_param *m,
 	struct rdt_hw_domain *hw_dom = resctrl_to_arch_dom(d);
 	struct rdt_hw_resource *hw_res = resctrl_to_arch_res(r);
 
-	/*  Write the delay values for mba. */
+	 
 	for (i = m->low; i < m->high; i++)
 		wrmsrl(hw_res->msr_base + i, delay_bw_map(hw_dom->ctrl_val[i], r));
 }
@@ -353,7 +285,7 @@ struct rdt_domain *get_domain_from_cpu(int cpu, struct rdt_resource *r)
 	struct rdt_domain *d;
 
 	list_for_each_entry(d, &r->domains, list) {
-		/* Find the domain that contains this CPU */
+		 
 		if (cpumask_test_cpu(cpu, &d->cpu_mask))
 			return d;
 	}
@@ -383,14 +315,7 @@ void rdt_ctrl_update(void *arg)
 		     cpu, r->name);
 }
 
-/*
- * rdt_find_domain - Find a domain in a resource that matches input resource id
- *
- * Search resource r's domain list to find the resource id. If the resource
- * id is found in a domain, return the domain. Otherwise, if requested by
- * caller, return the first domain whose id is bigger than the input id.
- * The domain list is sorted by id in ascending order.
- */
+ 
 struct rdt_domain *rdt_find_domain(struct rdt_resource *r, int id,
 				   struct list_head **pos)
 {
@@ -402,10 +327,10 @@ struct rdt_domain *rdt_find_domain(struct rdt_resource *r, int id,
 
 	list_for_each(l, &r->domains) {
 		d = list_entry(l, struct rdt_domain, list);
-		/* When id is found, return its domain. */
+		 
 		if (id == d->id)
 			return d;
-		/* Stop searching when finding id's position in sorted list. */
+		 
 		if (id < d->id)
 			break;
 	}
@@ -421,11 +346,7 @@ static void setup_default_ctrlval(struct rdt_resource *r, u32 *dc)
 	struct rdt_hw_resource *hw_res = resctrl_to_arch_res(r);
 	int i;
 
-	/*
-	 * Initialize the Control MSRs to having no control.
-	 * For Cache Allocation: Set all bits in cbm
-	 * For Memory Allocation: Set b/w requested to 100%
-	 */
+	 
 	for (i = 0; i < hw_res->num_closid; i++, dc++)
 		*dc = r->default_ctrl;
 }
@@ -459,11 +380,7 @@ static int domain_setup_ctrlval(struct rdt_resource *r, struct rdt_domain *d)
 	return 0;
 }
 
-/**
- * arch_domain_mbm_alloc() - Allocate arch private storage for the MBM counters
- * @num_rmid:	The size of the MBM counter array
- * @hw_dom:	The domain that owns the allocated arrays
- */
+ 
 static int arch_domain_mbm_alloc(u32 num_rmid, struct rdt_hw_domain *hw_dom)
 {
 	size_t tsize;
@@ -487,19 +404,7 @@ static int arch_domain_mbm_alloc(u32 num_rmid, struct rdt_hw_domain *hw_dom)
 	return 0;
 }
 
-/*
- * domain_add_cpu - Add a cpu to a resource's domain list.
- *
- * If an existing domain in the resource r's domain list matches the cpu's
- * resource id, add the cpu in the domain.
- *
- * Otherwise, a new domain is allocated and inserted into the right position
- * in the domain list sorted by id in ascending order.
- *
- * The order in the domain list is visible to users when we print entries
- * in the schemata file and schemata input is validated to have the same order
- * as this list.
- */
+ 
 static void domain_add_cpu(int cpu, struct rdt_resource *r)
 {
 	int id = get_cpu_cacheinfo_id(cpu, r->cache_level);
@@ -568,10 +473,7 @@ static void domain_remove_cpu(int cpu, struct rdt_resource *r)
 		resctrl_offline_domain(r, d);
 		list_del(&d->list);
 
-		/*
-		 * rdt_domain "d" is going to be freed below, so clear
-		 * its pointer from pseudo_lock_region struct.
-		 */
+		 
 		if (d->plr)
 			d->plr->d = NULL;
 		domain_free(hw_dom);
@@ -610,7 +512,7 @@ static int resctrl_online_cpu(unsigned int cpu)
 	mutex_lock(&rdtgroup_mutex);
 	for_each_capable_rdt_resource(r)
 		domain_add_cpu(cpu, r);
-	/* The cpu is set in default rdtgroup after online. */
+	 
 	cpumask_set_cpu(cpu, &rdtgroup_default.cpu_mask);
 	clear_closid_rmid(cpu);
 	mutex_unlock(&rdtgroup_mutex);
@@ -649,10 +551,7 @@ static int resctrl_offline_cpu(unsigned int cpu)
 	return 0;
 }
 
-/*
- * Choose a width for the resource name and resource data based on the
- * resource that has widest name and cbm.
- */
+ 
 static __init void rdt_init_padding(void)
 {
 	struct rdt_resource *r;
@@ -795,7 +694,7 @@ static __init bool get_rdt_alloc_resources(void)
 		ret = true;
 	}
 	if (rdt_cpu_has(X86_FEATURE_CAT_L2)) {
-		/* CPUID 0x10.2 fields are same format at 0x10.1 */
+		 
 		r = &rdt_resources_all[RDT_RESOURCE_L2].r_resctrl;
 		rdt_get_cache_alloc_cfg(2, r);
 		if (rdt_cpu_has(X86_FEATURE_CDP_L2))
@@ -915,7 +814,7 @@ static __init void rdt_init_res_defs(void)
 
 static enum cpuhp_state rdt_online;
 
-/* Runs once on the BSP during boot. */
+ 
 void resctrl_cpu_detect(struct cpuinfo_x86 *c)
 {
 	if (!cpu_has(c, X86_FEATURE_CQM_LLC)) {
@@ -925,7 +824,7 @@ void resctrl_cpu_detect(struct cpuinfo_x86 *c)
 		return;
 	}
 
-	/* will be overridden if occupancy monitoring exists */
+	 
 	c->x86_cache_max_rmid = cpuid_ebx(0xf);
 
 	if (cpu_has(c, X86_FEATURE_CQM_OCCUP_LLC) ||
@@ -933,7 +832,7 @@ void resctrl_cpu_detect(struct cpuinfo_x86 *c)
 	    cpu_has(c, X86_FEATURE_CQM_MBM_LOCAL)) {
 		u32 eax, ebx, ecx, edx;
 
-		/* QoS sub-leaf, EAX=0Fh, ECX=1 */
+		 
 		cpuid_count(0xf, 1, &eax, &ebx, &ecx, &edx);
 
 		c->x86_cache_max_rmid  = ecx;
@@ -950,10 +849,7 @@ static int __init resctrl_late_init(void)
 	struct rdt_resource *r;
 	int state, ret;
 
-	/*
-	 * Initialize functions(or definitions) that are different
-	 * between vendors here.
-	 */
+	 
 	rdt_init_res_defs();
 
 	check_quirks();

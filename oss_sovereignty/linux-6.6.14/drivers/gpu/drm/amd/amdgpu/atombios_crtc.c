@@ -1,28 +1,4 @@
-/*
- * Copyright 2007-8 Advanced Micro Devices, Inc.
- * Copyright 2008 Red Hat Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: Dave Airlie
- *          Alex Deucher
- */
+ 
 
 #include <drm/amdgpu_drm.h>
 #include <drm/drm_fixed.h>
@@ -248,11 +224,7 @@ static void amdgpu_atombios_crtc_program_ss(struct amdgpu_device *adev,
 	union atom_enable_ss args;
 
 	if (enable) {
-		/* Don't mess with SS if percentage is 0 or external ss.
-		 * SS is already disabled previously, and disabling it
-		 * again can cause display problems if the pll is already
-		 * programmed.
-		 */
+		 
 		if (ss->percentage == 0)
 			return;
 		if (ss->type & ATOM_EXTERNAL_SS_MASK)
@@ -263,10 +235,7 @@ static void amdgpu_atombios_crtc_program_ss(struct amdgpu_device *adev,
 			    adev->mode_info.crtcs[i]->enabled &&
 			    i != crtc_id &&
 			    pll_id == adev->mode_info.crtcs[i]->pll_id) {
-				/* one other crtc is using this pll don't turn
-				 * off spread spectrum as it might turn off
-				 * display on active crtc
-				 */
+				 
 				return;
 			}
 		}
@@ -333,7 +302,7 @@ static u32 amdgpu_atombios_crtc_adjust_pll(struct drm_crtc *crtc,
 		}
 	}
 
-	/* use recommended ref_div for ss */
+	 
 	if (amdgpu_encoder->devices & (ATOM_DEVICE_LCD_SUPPORT)) {
 		if (amdgpu_crtc->ss_enabled) {
 			if (amdgpu_crtc->ss.refdiv) {
@@ -344,7 +313,7 @@ static u32 amdgpu_atombios_crtc_adjust_pll(struct drm_crtc *crtc,
 		}
 	}
 
-	/* DVO wants 2x pixel clock if the DVO chip is in 12 bit mode */
+	 
 	if (amdgpu_encoder->encoder_id == ENCODER_OBJECT_ID_INTERNAL_KLDSCP_DVO1)
 		adjusted_clock = mode->clock * 2;
 	if (amdgpu_encoder->active_device & (ATOM_DEVICE_TV_SUPPORT))
@@ -353,7 +322,7 @@ static u32 amdgpu_atombios_crtc_adjust_pll(struct drm_crtc *crtc,
 		amdgpu_crtc->pll_flags |= AMDGPU_PLL_IS_LCD;
 
 
-	/* adjust pll for deep color modes */
+	 
 	if (encoder_mode == ATOM_ENCODER_MODE_HDMI) {
 		switch (bpc) {
 		case 8:
@@ -371,10 +340,7 @@ static u32 amdgpu_atombios_crtc_adjust_pll(struct drm_crtc *crtc,
 		}
 	}
 
-	/* DCE3+ has an AdjustDisplayPll that will adjust the pixel clock
-	 * accordingly based on the encoder/transmitter to work around
-	 * special hw requirements.
-	 */
+	 
 	index = GetIndexIntoMasterTable(COMMAND, AdjustDisplayPll);
 	if (!amdgpu_atom_parse_cmd_header(adev->mode_info.atom_context, index, &frev,
 				   &crev))
@@ -409,7 +375,7 @@ static u32 amdgpu_atombios_crtc_adjust_pll(struct drm_crtc *crtc,
 			if (ENCODER_MODE_IS_DP(encoder_mode)) {
 				args.v3.sInput.ucDispPllConfig |=
 					DISPPLL_CONFIG_COHERENT_MODE;
-				/* 16200 or 27000 */
+				 
 				args.v3.sInput.usPixelClock = cpu_to_le16(dp_clock / 10);
 			} else if (amdgpu_encoder->devices & (ATOM_DEVICE_DFP_SUPPORT)) {
 				struct amdgpu_encoder_atom_dig *dig = amdgpu_encoder->enc_priv;
@@ -464,9 +430,7 @@ union set_pixel_clock {
 	PIXEL_CLOCK_PARAMETERS_V7 v7;
 };
 
-/* on DCE5, make sure the voltage is high enough to support the
- * required disp clk.
- */
+ 
 void amdgpu_atombios_crtc_set_disp_eng_pll(struct amdgpu_device *adev,
 					   u32 dispclk)
 {
@@ -485,17 +449,13 @@ void amdgpu_atombios_crtc_set_disp_eng_pll(struct amdgpu_device *adev,
 	case 1:
 		switch (crev) {
 		case 5:
-			/* if the default dcpll clock is specified,
-			 * SetPixelClock provides the dividers
-			 */
+			 
 			args.v5.ucCRTC = ATOM_CRTC_INVALID;
 			args.v5.usPixelClock = cpu_to_le16(dispclk);
 			args.v5.ucPpll = ATOM_DCPLL;
 			break;
 		case 6:
-			/* if the default dcpll clock is specified,
-			 * SetPixelClock provides the dividers
-			 */
+			 
 			args.v6.ulDispEngClkFreq = cpu_to_le32(dispclk);
 			if (adev->asic_type == CHIP_TAHITI ||
 			    adev->asic_type == CHIP_PITCAIRN ||
@@ -541,7 +501,7 @@ u32 amdgpu_atombios_crtc_set_dce_clock(struct amdgpu_device *adev,
 	case 2:
 		switch (crev) {
 		case 1:
-			args.v2_1.asParam.ulDCEClkFreq = cpu_to_le32(freq); /* 10kHz units */
+			args.v2_1.asParam.ulDCEClkFreq = cpu_to_le32(freq);  
 			args.v2_1.asParam.ucDCEClkType = clk_type;
 			args.v2_1.asParam.ucDCEClkSrc = clk_src;
 			amdgpu_atom_execute_table(adev->mode_info.atom_context, index, (uint32_t *)&args);
@@ -646,7 +606,7 @@ void amdgpu_atombios_crtc_program_pll(struct drm_crtc *crtc,
 			args.v5.usFbDiv = cpu_to_le16(fb_div);
 			args.v5.ulFbDivDecFrac = cpu_to_le32(frac_fb_div * 100000);
 			args.v5.ucPostDiv = post_div;
-			args.v5.ucMiscInfo = 0; /* HDMI depth, etc. */
+			args.v5.ucMiscInfo = 0;  
 			if ((ss_enabled && (ss->type & ATOM_EXTERNAL_SS_MASK)) &&
 			    (pll_id < ATOM_EXT_PLL1))
 				args.v5.ucMiscInfo |= PIXEL_CLOCK_V5_MISC_REF_DIV_SRC;
@@ -657,11 +617,11 @@ void amdgpu_atombios_crtc_program_pll(struct drm_crtc *crtc,
 					args.v5.ucMiscInfo |= PIXEL_CLOCK_V5_MISC_HDMI_24BPP;
 					break;
 				case 10:
-					/* yes this is correct, the atom define is wrong */
+					 
 					args.v5.ucMiscInfo |= PIXEL_CLOCK_V5_MISC_HDMI_32BPP;
 					break;
 				case 12:
-					/* yes this is correct, the atom define is wrong */
+					 
 					args.v5.ucMiscInfo |= PIXEL_CLOCK_V5_MISC_HDMI_30BPP;
 					break;
 				}
@@ -676,7 +636,7 @@ void amdgpu_atombios_crtc_program_pll(struct drm_crtc *crtc,
 			args.v6.usFbDiv = cpu_to_le16(fb_div);
 			args.v6.ulFbDivDecFrac = cpu_to_le32(frac_fb_div * 100000);
 			args.v6.ucPostDiv = post_div;
-			args.v6.ucMiscInfo = 0; /* HDMI depth, etc. */
+			args.v6.ucMiscInfo = 0;  
 			if ((ss_enabled && (ss->type & ATOM_EXTERNAL_SS_MASK)) &&
 			    (pll_id < ATOM_EXT_PLL1) &&
 			    !is_pixel_clock_source_from_pll(encoder_mode, pll_id))
@@ -703,7 +663,7 @@ void amdgpu_atombios_crtc_program_pll(struct drm_crtc *crtc,
 			args.v6.ucPpll = pll_id;
 			break;
 		case 7:
-			args.v7.ulPixelClock = cpu_to_le32(clock * 10); /* 100 hz units */
+			args.v7.ulPixelClock = cpu_to_le32(clock * 10);  
 			args.v7.ucMiscInfo = 0;
 			if ((encoder_mode == ATOM_ENCODER_MODE_DVI) &&
 			    (clock > 165000))
@@ -767,14 +727,14 @@ int amdgpu_atombios_crtc_prepare_pll(struct drm_crtc *crtc,
 			amdgpu_connector->con_priv;
 		int dp_clock;
 
-		/* Assign mode clock for hdmi deep color max clock limit check */
+		 
 		amdgpu_connector->pixelclock_for_modeset = mode->clock;
 		amdgpu_crtc->bpc = amdgpu_connector_get_monitor_bpc(connector);
 
 		switch (encoder_mode) {
 		case ATOM_ENCODER_MODE_DP_MST:
 		case ATOM_ENCODER_MODE_DP:
-			/* DP/eDP */
+			 
 			dp_clock = dig_connector->dp_clock / 10;
 			amdgpu_crtc->ss_enabled =
 				amdgpu_atombios_get_asic_ss_info(adev, &amdgpu_crtc->ss,
@@ -807,7 +767,7 @@ int amdgpu_atombios_crtc_prepare_pll(struct drm_crtc *crtc,
 		}
 	}
 
-	/* adjust pixel clock as needed */
+	 
 	amdgpu_crtc->adjusted_clock = amdgpu_atombios_crtc_adjust_pll(crtc, mode);
 
 	return 0;
@@ -826,7 +786,7 @@ void amdgpu_atombios_crtc_set_pll(struct drm_crtc *crtc, struct drm_display_mode
 	struct amdgpu_pll *pll;
 	int encoder_mode = amdgpu_atombios_encoder_get_encoder_mode(amdgpu_crtc->encoder);
 
-	/* pass the actual clock to amdgpu_atombios_crtc_program_pll for HDMI */
+	 
 	if ((encoder_mode == ATOM_ENCODER_MODE_HDMI) &&
 	    (amdgpu_crtc->bpc > 8))
 		clock = amdgpu_crtc->adjusted_clock;
@@ -845,7 +805,7 @@ void amdgpu_atombios_crtc_set_pll(struct drm_crtc *crtc, struct drm_display_mode
 		break;
 	}
 
-	/* update pll params */
+	 
 	pll->flags = amdgpu_crtc->pll_flags;
 	pll->reference_div = amdgpu_crtc->pll_reference_div;
 	pll->post_div = amdgpu_crtc->pll_post_div;
@@ -862,7 +822,7 @@ void amdgpu_atombios_crtc_set_pll(struct drm_crtc *crtc, struct drm_display_mode
 				  amdgpu_crtc->bpc, amdgpu_crtc->ss_enabled, &amdgpu_crtc->ss);
 
 	if (amdgpu_crtc->ss_enabled) {
-		/* calculate ss amount and step size */
+		 
 		u32 step_size;
 		u32 amount = (((fb_div * 10) + frac_fb_div) *
 			      (u32)amdgpu_crtc->ss.percentage) /

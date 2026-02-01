@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Pioctl operations for Coda.
- * Original version: (C) 1996 Peter Braam
- * Rewritten for Linux 2.1: (C) 1997 Carnegie Mellon University
- *
- * Carnegie Mellon encourages users of this code to contribute improvements
- * to the Coda project. Contact Peter Braam <coda@cs.cmu.edu>.
- */
+
+ 
 
 #include <linux/types.h>
 #include <linux/kernel.h>
@@ -23,13 +16,13 @@
 #include "coda_psdev.h"
 #include "coda_linux.h"
 
-/* pioctl ops */
+ 
 static int coda_ioctl_permission(struct mnt_idmap *idmap,
 				 struct inode *inode, int mask);
 static long coda_pioctl(struct file *filp, unsigned int cmd,
 			unsigned long user_data);
 
-/* exported from this file */
+ 
 const struct inode_operations coda_ioctl_inode_operations = {
 	.permission	= coda_ioctl_permission,
 	.setattr	= coda_setattr,
@@ -40,7 +33,7 @@ const struct file_operations coda_ioctl_operations = {
 	.llseek		= noop_llseek,
 };
 
-/* the coda pioctl inode ops */
+ 
 static int coda_ioctl_permission(struct mnt_idmap *idmap,
 				 struct inode *inode, int mask)
 {
@@ -57,14 +50,11 @@ static long coda_pioctl(struct file *filp, unsigned int cmd,
 	struct inode *target_inode = NULL;
 	struct coda_inode_info *cnp;
 
-	/* get the Pioctl data arguments from user space */
+	 
 	if (copy_from_user(&data, (void __user *)user_data, sizeof(data)))
 		return -EINVAL;
 
-	/*
-	 * Look up the pathname. Note that the pathname is in
-	 * user memory, and namei takes care of this
-	 */
+	 
 	error = user_path_at(AT_FDCWD, data.path,
 			     data.follow ? LOOKUP_FOLLOW : 0, &path);
 	if (error)
@@ -72,13 +62,13 @@ static long coda_pioctl(struct file *filp, unsigned int cmd,
 
 	target_inode = d_inode(path.dentry);
 
-	/* return if it is not a Coda inode */
+	 
 	if (target_inode->i_sb != inode->i_sb) {
 		error = -EINVAL;
 		goto out;
 	}
 
-	/* now proceed to make the upcall */
+	 
 	cnp = ITOC(target_inode);
 
 	error = venus_pioctl(inode->i_sb, &(cnp->c_fid), cmd, &data);

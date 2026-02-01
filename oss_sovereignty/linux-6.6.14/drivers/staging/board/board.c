@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2014 Magnus Damm
- * Copyright (C) 2015 Glider bvba
- */
+
+ 
 
 #define pr_fmt(fmt)	"board_staging: "  fmt
 
@@ -50,10 +47,10 @@ bool __init board_staging_dt_node_available(const struct resource *resource,
 
 		if (resource_type(r) == IORESOURCE_MEM)
 			if (find_by_address(r->start))
-				return true; /* DT node available */
+				return true;  
 	}
 
-	return false; /* Nothing found */
+	return false;  
 }
 
 int __init board_staging_gic_setup_xlate(const char *gic_match,
@@ -149,7 +146,7 @@ static int board_staging_add_dev_domain(struct platform_device *pdev,
 	pd_args.np = np;
 	pd_args.args_count = 0;
 
-	/* Initialization similar to device_pm_init_common() */
+	 
 	spin_lock_init(&dev->power.lock);
 	dev->power.early_init = true;
 

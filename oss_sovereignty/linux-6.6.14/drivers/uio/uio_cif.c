@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * UIO Hilscher CIF card driver
- *
- * (C) 2007 Hans J. Koch <hjk@hansjkoch.de>
- * Original code (C) 2005 Benedikt Spranger <b.spranger@linutronix.de>
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/module.h>
@@ -33,7 +28,7 @@ static irqreturn_t hilscher_handler(int irq, struct uio_info *dev_info)
 	    != INT1_ENABLED_AND_ACTIVE)
 		return IRQ_NONE;
 
-	/* Disable interrupt */
+	 
 	iowrite8(ioread8(plx_intscr) & ~INTSCR_INT1_ENABLE, plx_intscr);
 	return IRQ_HANDLED;
 }

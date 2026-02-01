@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *  linux/drivers/char/mem.c
- *
- *  Copyright (C) 1991, 1992  Linus Torvalds
- *
- *  Added devfs support.
- *    Jan-11-1998, C. Scott Ananian <cananian@alumni.princeton.edu>
- *  Shared /dev/zero mmapping support, Feb 2000, Kanoj Sarcar <kanoj@sgi.com>
- */
+
+ 
 
 #include <linux/mm.h>
 #include <linux/miscdevice.h>
@@ -97,10 +89,7 @@ static inline bool should_stop_iteration(void)
 	return signal_pending(current);
 }
 
-/*
- * This funcion reads the *physical* memory. The f_pos points directly to the
- * memory location.
- */
+ 
 static ssize_t read_mem(struct file *file, char __user *buf,
 			size_t count, loff_t *ppos)
 {
@@ -117,7 +106,7 @@ static ssize_t read_mem(struct file *file, char __user *buf,
 		return -EFAULT;
 	read = 0;
 #ifdef __ARCH_HAS_NO_PAGE_ZERO_MAPPED
-	/* we don't have page 0 mapped on sparc and m68k.. */
+	 
 	if (p < PAGE_SIZE) {
 		sz = size_inside_page(p, count);
 		if (sz > 0) {
@@ -148,14 +137,10 @@ static ssize_t read_mem(struct file *file, char __user *buf,
 
 		err = -EFAULT;
 		if (allowed == 2) {
-			/* Show zeros for restricted memory. */
+			 
 			remaining = clear_user(buf, sz);
 		} else {
-			/*
-			 * On ia64 if a page has been mapped somewhere as
-			 * uncached, then it must also be accessed uncached
-			 * by the kernel or data corruption may occur.
-			 */
+			 
 			ptr = xlate_dev_mem_ptr(p);
 			if (!ptr)
 				goto failed;
@@ -205,10 +190,10 @@ static ssize_t write_mem(struct file *file, const char __user *buf,
 	written = 0;
 
 #ifdef __ARCH_HAS_NO_PAGE_ZERO_MAPPED
-	/* we don't have page 0 mapped on sparc and m68k.. */
+	 
 	if (p < PAGE_SIZE) {
 		sz = size_inside_page(p, count);
-		/* Hmm. Do something? */
+		 
 		buf += sz;
 		p += sz;
 		count -= sz;
@@ -225,13 +210,9 @@ static ssize_t write_mem(struct file *file, const char __user *buf,
 		if (!allowed)
 			return -EPERM;
 
-		/* Skip actual writing when a page is marked as restricted. */
+		 
 		if (allowed == 1) {
-			/*
-			 * On ia64 if a page has been mapped somewhere as
-			 * uncached, then it must also be accessed uncached
-			 * by the kernel or data corruption may occur.
-			 */
+			 
 			ptr = xlate_dev_mem_ptr(p);
 			if (!ptr) {
 				if (written)
@@ -269,26 +250,15 @@ int __weak phys_mem_access_prot_allowed(struct file *file,
 
 #ifndef __HAVE_PHYS_MEM_ACCESS_PROT
 
-/*
- * Architectures vary in how they handle caching for addresses
- * outside of main memory.
- *
- */
+ 
 #ifdef pgprot_noncached
 static int uncached_access(struct file *file, phys_addr_t addr)
 {
 #if defined(CONFIG_IA64)
-	/*
-	 * On ia64, we ignore O_DSYNC because we cannot tolerate memory
-	 * attribute aliases.
-	 */
+	 
 	return !(efi_mem_attributes(addr) & EFI_MEMORY_WB);
 #else
-	/*
-	 * Accessing memory above the top the kernel knows about or through a
-	 * file pointer
-	 * that was marked O_DSYNC will be done non-cached.
-	 */
+	 
 	if (file->f_flags & O_DSYNC)
 		return 1;
 	return addr >= __pa(high_memory);
@@ -321,7 +291,7 @@ static unsigned long get_unmapped_area_mem(struct file *file,
 	return pgoff << PAGE_SHIFT;
 }
 
-/* permit direct mmap, for read, write or exec */
+ 
 static unsigned memory_mmap_capabilities(struct file *file)
 {
 	return NOMMU_MAP_DIRECT |
@@ -333,7 +303,7 @@ static unsigned zero_mmap_capabilities(struct file *file)
 	return NOMMU_MAP_COPY;
 }
 
-/* can't do an in-place private mapping if there's no MMU */
+ 
 static inline int private_mapping_ok(struct vm_area_struct *vma)
 {
 	return is_nommu_shared_mapping(vma->vm_flags);
@@ -357,11 +327,11 @@ static int mmap_mem(struct file *file, struct vm_area_struct *vma)
 	size_t size = vma->vm_end - vma->vm_start;
 	phys_addr_t offset = (phys_addr_t)vma->vm_pgoff << PAGE_SHIFT;
 
-	/* Does it even fit in phys_addr_t? */
+	 
 	if (offset >> PAGE_SHIFT != vma->vm_pgoff)
 		return -EINVAL;
 
-	/* It's illegal to wrap around the end of the physical address space. */
+	 
 	if (offset + (phys_addr_t)size - 1 < offset)
 		return -EINVAL;
 
@@ -384,7 +354,7 @@ static int mmap_mem(struct file *file, struct vm_area_struct *vma)
 
 	vma->vm_ops = &mmap_mem_ops;
 
-	/* Remap-pfn-range will mark the range VM_IO */
+	 
 	if (remap_pfn_range(vma,
 			    vma->vm_start,
 			    vma->vm_pgoff,
@@ -486,7 +456,7 @@ static ssize_t read_iter_zero(struct kiocb *iocb, struct iov_iter *iter)
 		size_t chunk = iov_iter_count(iter), n;
 
 		if (chunk > PAGE_SIZE)
-			chunk = PAGE_SIZE;	/* Just for latency reasons */
+			chunk = PAGE_SIZE;	 
 		n = iov_iter_zero(chunk, iter);
 		if (!n && iov_iter_count(iter))
 			return written ? written : -EFAULT;
@@ -546,16 +516,11 @@ static unsigned long get_unmapped_area_zero(struct file *file,
 {
 #ifdef CONFIG_MMU
 	if (flags & MAP_SHARED) {
-		/*
-		 * mmap_zero() will call shmem_zero_setup() to create a file,
-		 * so use shmem's get_unmapped_area in case it can be huge;
-		 * and pass NULL for file as in mmap.c's get_unmapped_area(),
-		 * so as not to confuse shmem with our handle on "/dev/zero".
-		 */
+		 
 		return shmem_get_unmapped_area(NULL, addr, len, pgoff, flags);
 	}
 
-	/* Otherwise flags & MAP_PRIVATE: with no shmem object beneath it */
+	 
 	return current->mm->get_unmapped_area(file, addr, len, pgoff, flags);
 #else
 	return -ENOSYS;
@@ -568,24 +533,13 @@ static ssize_t write_full(struct file *file, const char __user *buf,
 	return -ENOSPC;
 }
 
-/*
- * Special lseek() function for /dev/null and /dev/zero.  Most notably, you
- * can fopen() both devices with "a" now.  This was previously impossible.
- * -- SRB.
- */
+ 
 static loff_t null_lseek(struct file *file, loff_t offset, int orig)
 {
 	return file->f_pos = 0;
 }
 
-/*
- * The memory devices use the full 32/64 bits of the offset, and so we cannot
- * check against negative addresses: they are ok. The return value is weird,
- * though, in that case (0).
- *
- * also note that seeking relative to the "end of file" isn't supported:
- * it has no meaning, so it returns -EINVAL.
- */
+ 
 static loff_t memory_lseek(struct file *file, loff_t offset, int orig)
 {
 	loff_t ret;
@@ -596,7 +550,7 @@ static loff_t memory_lseek(struct file *file, loff_t offset, int orig)
 		offset += file->f_pos;
 		fallthrough;
 	case SEEK_SET:
-		/* to avoid userland mistaking f_pos=-9 as -EBADF=-9 */
+		 
 		if ((unsigned long long)offset >= -MAX_ERRNO) {
 			ret = -EOVERFLOW;
 			break;
@@ -626,11 +580,7 @@ static int open_port(struct inode *inode, struct file *filp)
 	if (iminor(inode) != DEVMEM_MINOR)
 		return 0;
 
-	/*
-	 * Use a unified address space to have a single point to manage
-	 * revocations when drivers want to take over a /dev/mem mapped
-	 * range.
-	 */
+	 
 	filp->f_mapping = iomem_get_mapping();
 
 	return 0;
@@ -767,9 +717,7 @@ static int __init chr_dev_init(void)
 		if (!devlist[minor].name)
 			continue;
 
-		/*
-		 * Create /dev/port?
-		 */
+		 
 		if ((minor == DEVPORT_MINOR) && !arch_has_dev_port())
 			continue;
 

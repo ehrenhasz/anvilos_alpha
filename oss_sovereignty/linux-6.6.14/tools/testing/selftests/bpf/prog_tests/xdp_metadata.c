@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <test_progs.h>
 #include <network_helpers.h>
 #include "xdp_metadata.skel.h"
@@ -83,16 +83,14 @@ static int open_xsk(int ifindex, struct xsk *xsk)
 	if (!ASSERT_OK(ret, "xsk_socket__create"))
 		return ret;
 
-	/* First half of umem is for TX. This way address matches 1-to-1
-	 * to the completion queue index.
-	 */
+	 
 
 	for (i = 0; i < UMEM_NUM / 2; i++) {
 		addr = i * UMEM_FRAME_SIZE;
 		printf("%p: tx_desc[%d] -> %lx\n", xsk, i, addr);
 	}
 
-	/* Second half of umem is for RX. */
+	 
 
 	ret = xsk_ring_prod__reserve(&xsk->fill, UMEM_NUM / 2, &idx);
 	if (!ASSERT_EQ(UMEM_NUM / 2, ret, "xsk_ring_prod__reserve"))
@@ -251,14 +249,14 @@ static int verify_xsk_metadata(struct xsk *xsk)
 	       xsk, idx, rx_desc->addr, addr, comp_addr);
 	data = xsk_umem__get_data(xsk->umem_area, addr);
 
-	/* Make sure we got the packet offset correctly. */
+	 
 
 	eth = data;
 	ASSERT_EQ(eth->h_proto, htons(ETH_P_IP), "eth->h_proto");
 	iph = (void *)(eth + 1);
 	ASSERT_EQ((int)iph->version, 4, "iph->version");
 
-	/* custom metadata */
+	 
 
 	meta = data - sizeof(struct xdp_meta);
 
@@ -293,7 +291,7 @@ void test_xdp_metadata(void)
 	int sock_fd;
 	int ret;
 
-	/* Setup new networking namespace, with a veth pair. */
+	 
 
 	SYS(out, "ip netns add xdp_metadata");
 	tok = open_netns("xdp_metadata");
@@ -309,7 +307,7 @@ void test_xdp_metadata(void)
 	rx_ifindex = if_nametoindex(RX_NAME);
 	tx_ifindex = if_nametoindex(TX_NAME);
 
-	/* Setup separate AF_XDP for TX and RX interfaces. */
+	 
 
 	ret = open_xsk(tx_ifindex, &tx_xsk);
 	if (!ASSERT_OK(ret, "open_xsk(TX_NAME)"))
@@ -330,7 +328,7 @@ void test_xdp_metadata(void)
 	if (!ASSERT_OK(xdp_metadata__load(bpf_obj), "load skeleton"))
 		goto out;
 
-	/* Make sure we can't add dev-bound programs to prog maps. */
+	 
 	prog_arr = bpf_object__find_map_by_name(bpf_obj->obj, "prog_arr");
 	if (!ASSERT_OK_PTR(prog_arr, "no prog_arr map"))
 		goto out;
@@ -341,7 +339,7 @@ void test_xdp_metadata(void)
 			"update prog_arr"))
 		goto out;
 
-	/* Attach BPF program to RX interface. */
+	 
 
 	ret = bpf_xdp_attach(rx_ifindex,
 			     bpf_program__fd(bpf_obj->progs.rx),
@@ -354,21 +352,19 @@ void test_xdp_metadata(void)
 	if (!ASSERT_GE(ret, 0, "bpf_map_update_elem"))
 		goto out;
 
-	/* Send packet destined to RX AF_XDP socket. */
+	 
 	if (!ASSERT_GE(generate_packet(&tx_xsk, AF_XDP_CONSUMER_PORT), 0,
 		       "generate AF_XDP_CONSUMER_PORT"))
 		goto out;
 
-	/* Verify AF_XDP RX packet has proper metadata. */
+	 
 	if (!ASSERT_GE(verify_xsk_metadata(&rx_xsk), 0,
 		       "verify_xsk_metadata"))
 		goto out;
 
 	complete_tx(&tx_xsk);
 
-	/* Make sure freplace correctly picks up original bound device
-	 * and doesn't crash.
-	 */
+	 
 
 	bpf_obj2 = xdp_metadata2__open();
 	if (!ASSERT_OK_PTR(bpf_obj2, "open skeleton"))
@@ -383,7 +379,7 @@ void test_xdp_metadata(void)
 	if (!ASSERT_OK(xdp_metadata2__attach(bpf_obj2), "attach freplace"))
 		goto out;
 
-	/* Send packet to trigger . */
+	 
 	if (!ASSERT_GE(generate_packet(&tx_xsk, AF_XDP_CONSUMER_PORT), 0,
 		       "generate freplace packet"))
 		goto out;

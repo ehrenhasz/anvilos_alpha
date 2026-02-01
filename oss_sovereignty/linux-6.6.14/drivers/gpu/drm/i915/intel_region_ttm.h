@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2021 Intel Corporation
- */
+ 
+ 
 #ifndef _INTEL_REGION_TTM_H_
 #define _INTEL_REGION_TTM_H_
 
@@ -41,4 +39,4 @@ intel_region_ttm_resource_alloc(struct intel_memory_region *mem,
 				resource_size_t size,
 				unsigned int flags);
 #endif
-#endif /* _INTEL_REGION_TTM_H_ */
+#endif  

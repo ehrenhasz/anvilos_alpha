@@ -1,9 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
 
-/*
- * Copyright 2020-2022 HabanaLabs, Ltd.
- * All Rights Reserved.
- */
+
+ 
 
 #include "../habanalabs.h"
 #include "../../include/hw_ip/mmu/mmu_general.h"
@@ -33,16 +30,7 @@ static struct pgt_info *hl_mmu_v2_hr_get_hop0_pgt_info(struct hl_ctx *ctx)
 	return &ctx->hdev->mmu_priv.hr.mmu_asid_hop0[ctx->asid];
 }
 
-/**
- * hl_mmu_v2_hr_init() - initialize the MMU module.
- * @hdev: habanalabs device structure.
- *
- * This function does the following:
- * - Create a pool of pages for pgt_infos.
- * - Create a shadow table for pgt
- *
- * Return: 0 for success, non-zero for failure.
- */
+ 
 static inline int hl_mmu_v2_hr_init(struct hl_device *hdev)
 {
 	struct asic_fixed_properties *prop = &hdev->asic_prop;
@@ -51,16 +39,7 @@ static inline int hl_mmu_v2_hr_init(struct hl_device *hdev)
 				prop->mmu_pgt_size);
 }
 
-/**
- * hl_mmu_v2_hr_fini() - release the MMU module.
- * @hdev: habanalabs device structure.
- *
- * This function does the following:
- * - Disable MMU in H/W.
- * - Free the pgt_infos pool.
- *
- * All contexts should be freed before calling this function.
- */
+ 
 static inline void hl_mmu_v2_hr_fini(struct hl_device *hdev)
 {
 	struct asic_fixed_properties *prop = &hdev->asic_prop;
@@ -68,30 +47,14 @@ static inline void hl_mmu_v2_hr_fini(struct hl_device *hdev)
 	hl_mmu_hr_fini(hdev, &hdev->mmu_priv.hr, prop->mmu_hop_table_size);
 }
 
-/**
- * hl_mmu_v2_hr_ctx_init() - initialize a context for using the MMU module.
- * @ctx: pointer to the context structure to initialize.
- *
- * Initialize a mutex to protect the concurrent mapping flow, a hash to hold all
- * page tables hops related to this context.
- * Return: 0 on success, non-zero otherwise.
- */
+ 
 static int hl_mmu_v2_hr_ctx_init(struct hl_ctx *ctx)
 {
 	hash_init(ctx->hr_mmu_phys_hash);
 	return 0;
 }
 
-/*
- * hl_mmu_v2_hr_ctx_fini - disable a ctx from using the mmu module
- *
- * @ctx: pointer to the context structure
- *
- * This function does the following:
- * - Free any pgts which were not freed yet
- * - Free the mutex
- * - Free DRAM default page mapping hops
- */
+ 
 static void hl_mmu_v2_hr_ctx_fini(struct hl_ctx *ctx)
 {
 	struct hl_device *hdev = ctx->hdev;
@@ -125,7 +88,7 @@ static int _hl_mmu_v2_hr_unmap(struct hl_ctx *ctx,
 
 	prop = &hdev->asic_prop;
 
-	/* shifts and masks are the same in PMMU and HMMU, use one of them */
+	 
 	mmu_prop = is_dram_addr ? &prop->dmmu : &prop->pmmu;
 	hop_last = mmu_prop->num_hops - 1;
 
@@ -133,7 +96,7 @@ static int _hl_mmu_v2_hr_unmap(struct hl_ctx *ctx,
 	curr_pte = 0;
 
 	for (i = 0 ; i < mmu_prop->num_hops ; i++) {
-		/* we get HOP0 differently, it doesn't need curr_pte */
+		 
 		if (i == 0)
 			hops_pgt_info[i] = hl_mmu_v2_hr_get_hop0_pgt_info(ctx);
 		else
@@ -215,13 +178,7 @@ static int _hl_mmu_v2_hr_map(struct hl_ctx *ctx,
 	struct hl_mmu_properties *mmu_prop;
 	int i, hop_last, rc = -ENOMEM;
 
-	/*
-	 * This mapping function can map a page or a huge page. For huge page
-	 * there are only 4 hops rather than 5. Currently the DRAM allocation
-	 * uses huge pages only but user memory could have been allocated with
-	 * one of the two page sizes. Since this is a common code for all the
-	 * three cases, we need this hugs page check.
-	 */
+	 
 	if (is_dram_addr)
 		mmu_prop = &prop->dmmu;
 	else if (page_size == prop->pmmu_huge.page_size)
@@ -277,11 +234,11 @@ static int _hl_mmu_v2_hr_map(struct hl_ctx *ctx,
 	curr_pte = (scrambled_phys_addr & HOP_PHYS_ADDR_MASK) | mmu_prop->last_mask
 			| PAGE_PRESENT_MASK;
 
-	/* Write the PTEs */
+	 
 	hl_mmu_hr_write_pte(ctx, hops_pgt_info[hop_last], hop_pte_phys_addr[hop_last], curr_pte,
 							ctx->hdev->asic_prop.mmu_hop_table_size);
 
-	/* for each new hop, add its address to the table of previous-hop */
+	 
 	for (i = 1 ; i <= hop_last ; i++) {
 		if (hop_new[i]) {
 			curr_pte = (hops_pgt_info[i]->phys_addr & HOP_PHYS_ADDR_MASK) |
@@ -308,23 +265,13 @@ err:
 	return rc;
 }
 
-/*
- * hl_mmu_v2_swap_out - marks all mapping of the given ctx as swapped out
- *
- * @ctx: pointer to the context structure
- *
- */
+ 
 static void hl_mmu_v2_hr_swap_out(struct hl_ctx *ctx)
 {
 
 }
 
-/*
- * hl_mmu_v2_swap_in - marks all mapping of the given ctx as swapped in
- *
- * @ctx: pointer to the context structure
- *
- */
+ 
 static void hl_mmu_v2_hr_swap_in(struct hl_ctx *ctx)
 {
 
@@ -374,12 +321,7 @@ static int hl_mmu_v2_hr_get_tlb_info(struct hl_ctx *ctx, u64 virt_addr,
 					&ctx->hdev->mmu_func[MMU_HR_PGT].hr_funcs);
 }
 
-/*
- * hl_mmu_v2_prepare - prepare mmu_if for working with mmu v2
- *
- * @hdev: pointer to the device structure
- * @mmu_if: pointer to the mmu interface structure
- */
+ 
 void hl_mmu_v2_hr_set_funcs(struct hl_device *hdev, struct hl_mmu_funcs *mmu)
 {
 	mmu->init = hl_mmu_v2_hr_init;

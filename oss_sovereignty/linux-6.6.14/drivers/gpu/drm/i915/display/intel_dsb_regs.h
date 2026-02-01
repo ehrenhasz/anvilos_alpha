@@ -1,14 +1,12 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2023 Intel Corporation
- */
+ 
+ 
 
 #ifndef __INTEL_DSB_REGS_H__
 #define __INTEL_DSB_REGS_H__
 
 #include "intel_display_reg_defs.h"
 
-/* This register controls the Display State Buffer (DSB) engines. */
+ 
 #define _DSBSL_INSTANCE_BASE		0x70B00
 #define DSBSL_INSTANCE(pipe, id)	(_DSBSL_INSTANCE_BASE + \
 					 (pipe) * 0x1000 + (id) * 0x100)
@@ -31,7 +29,7 @@
 #define DSB_POLLFUNC(pipe, id)		_MMIO(DSBSL_INSTANCE(pipe, id) + 0x10)
 #define   DSB_POLL_ENABLE		REG_BIT(31)
 #define   DSB_POLL_WAIT_MASK		REG_GENMASK(30, 23)
-#define   DSB_POLL_WAIT(x)		REG_FIELD_PREP(DSB_POLL_WAIT_MASK, (x)) /* usec */
+#define   DSB_POLL_WAIT(x)		REG_FIELD_PREP(DSB_POLL_WAIT_MASK, (x))  
 #define   DSB_POLL_COUNT_MASK		REG_GENMASK(22, 15)
 #define   DSB_POLL_COUNT(x)		REG_FIELD_PREP(DSB_POLL_COUNT_MASK, (x))
 #define DSB_DEBUG(pipe, id)		_MMIO(DSBSL_INSTANCE(pipe, id) + 0x14)
@@ -53,9 +51,9 @@
 #define   DSB_RM_CLAIM_TIMEOUT		REG_BIT(31)
 #define   DSB_RM_READY_TIMEOUT		REG_BIT(30)
 #define   DSB_RM_CLAIM_TIMEOUT_COUNT_MASK	REG_GENMASK(23, 16)
-#define   DSB_RM_CLAIM_TIMEOUT_COUNT(x)	REG_FIELD_PREP(DSB_RM_CLAIM_TIMEOUT_COUNT_MASK, (x)) /* clocks */
+#define   DSB_RM_CLAIM_TIMEOUT_COUNT(x)	REG_FIELD_PREP(DSB_RM_CLAIM_TIMEOUT_COUNT_MASK, (x))  
 #define   DSB_RM_READY_TIMEOUT_VALUE_MASK	REG_GENMASK(15, 0)
-#define   DSB_RM_READY_TIMEOUT_VALUE(x)	REG_FIELD_PREP(DSB_RM_READY_TIMEOUT_VALUE, (x)) /* usec */
+#define   DSB_RM_READY_TIMEOUT_VALUE(x)	REG_FIELD_PREP(DSB_RM_READY_TIMEOUT_VALUE, (x))  
 #define DSB_RMTIMEOUTREG_CAPTURE(pipe, id)	_MMIO(DSBSL_INSTANCE(pipe, id) + 0x34)
 #define DSB_PMCTRL(pipe, id)		_MMIO(DSBSL_INSTANCE(pipe, id) + 0x38)
 #define DSB_PMCTRL_2(pipe, id)		_MMIO(DSBSL_INSTANCE(pipe, id) + 0x3c)
@@ -64,4 +62,4 @@
 #define DSB_BUFRPT_CNT(pipe, id)	_MMIO(DSBSL_INSTANCE(pipe, id) + 0x48)
 #define DSB_CHICKEN(pipe, id)		_MMIO(DSBSL_INSTANCE(pipe, id) + 0xf0)
 
-#endif /* __INTEL_DSB_REGS_H__ */
+#endif  

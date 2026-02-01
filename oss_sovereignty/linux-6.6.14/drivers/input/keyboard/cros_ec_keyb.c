@@ -1,15 +1,15 @@
-// SPDX-License-Identifier: GPL-2.0
-// ChromeOS EC keyboard driver
-//
-// Copyright (C) 2012 Google, Inc.
-//
-// This driver uses the ChromeOS EC byte-level message-based protocol for
-// communicating the keyboard state (which keys are pressed) from a keyboard EC
-// to the AP over some bus (such as i2c, lpc, spi).  The EC does debouncing,
-// but everything else (including deghosting) is done here.  The main
-// motivation for this is to keep the EC firmware as simple as possible, since
-// it cannot be easily upgraded and EC flash/IRAM space is relatively
-// expensive.
+
+
+
+
+
+
+
+
+
+
+
+
 
 #include <linux/module.h>
 #include <linux/acpi.h>
@@ -29,23 +29,7 @@
 
 #include <asm/unaligned.h>
 
-/**
- * struct cros_ec_keyb - Structure representing EC keyboard device
- *
- * @rows: Number of rows in the keypad
- * @cols: Number of columns in the keypad
- * @row_shift: log2 or number of rows, rounded up
- * @keymap_data: Matrix keymap data used to convert to keyscan values
- * @ghost_filter: true to enable the matrix key-ghosting filter
- * @valid_keys: bitmap of existing keys for each matrix column
- * @old_kb_state: bitmap of keys pressed last scan
- * @dev: Device pointer
- * @ec: Top level ChromeOS device to use to talk to EC
- * @idev: The input device for the matrix keys.
- * @bs_idev: The input device for non-matrix buttons and switches (or NULL).
- * @notifier: interrupt event notifier for transport devices
- * @vdata: vivaldi function row data
- */
+ 
 struct cros_ec_keyb {
 	unsigned int rows;
 	unsigned int cols;
@@ -65,16 +49,7 @@ struct cros_ec_keyb {
 	struct vivaldi_data vdata;
 };
 
-/**
- * struct cros_ec_bs_map - Mapping between Linux keycodes and EC button/switch
- *	bitmap #defines
- *
- * @ev_type: The type of the input event to generate (e.g., EV_KEY).
- * @code: A linux keycode
- * @bit: A #define like EC_MKBP_POWER_BUTTON or EC_MKBP_LID_OPEN
- * @inverted: If the #define and EV_SW have opposite meanings, this is true.
- *            Only applicable to switches.
- */
+ 
 struct cros_ec_bs_map {
 	unsigned int ev_type;
 	unsigned int code;
@@ -82,9 +57,9 @@ struct cros_ec_bs_map {
 	bool inverted;
 };
 
-/* cros_ec_keyb_bs - Map EC button/switch #defines into kernel ones */
+ 
 static const struct cros_ec_bs_map cros_ec_keyb_bs[] = {
-	/* Buttons */
+	 
 	{
 		.ev_type	= EV_KEY,
 		.code		= KEY_POWER,
@@ -116,7 +91,7 @@ static const struct cros_ec_bs_map cros_ec_keyb_bs[] = {
 		.bit            = EC_MKBP_SCREEN_LOCK,
 	},
 
-	/* Switches */
+	 
 	{
 		.ev_type	= EV_SW,
 		.code		= SW_LID,
@@ -130,29 +105,14 @@ static const struct cros_ec_bs_map cros_ec_keyb_bs[] = {
 	},
 };
 
-/*
- * Returns true when there is at least one combination of pressed keys that
- * results in ghosting.
- */
+ 
 static bool cros_ec_keyb_has_ghosting(struct cros_ec_keyb *ckdev, uint8_t *buf)
 {
 	int col1, col2, buf1, buf2;
 	struct device *dev = ckdev->dev;
 	uint8_t *valid_keys = ckdev->valid_keys;
 
-	/*
-	 * Ghosting happens if for any pressed key X there are other keys
-	 * pressed both in the same row and column of X as, for instance,
-	 * in the following diagram:
-	 *
-	 * . . Y . g .
-	 * . . . . . .
-	 * . . . . . .
-	 * . . X . Z .
-	 *
-	 * In this case only X, Y, and Z are pressed, but g appears to be
-	 * pressed too (see Wikipedia).
-	 */
+	 
 	for (col1 = 0; col1 < ckdev->cols; col1++) {
 		buf1 = buf[col1] & valid_keys[col1];
 		for (col2 = col1 + 1; col2 < ckdev->cols; col2++) {
@@ -169,11 +129,7 @@ static bool cros_ec_keyb_has_ghosting(struct cros_ec_keyb *ckdev, uint8_t *buf)
 }
 
 
-/*
- * Compares the new keyboard state to the old one and produces key
- * press/release events accordingly.  The keyboard state is 13 bytes (one byte
- * per column)
- */
+ 
 static void cros_ec_keyb_process(struct cros_ec_keyb *ckdev,
 			 uint8_t *kb_state, int len)
 {
@@ -183,11 +139,7 @@ static void cros_ec_keyb_process(struct cros_ec_keyb *ckdev,
 	int old_state;
 
 	if (ckdev->ghost_filter && cros_ec_keyb_has_ghosting(ckdev, kb_state)) {
-		/*
-		 * Simple-minded solution: ignore this state. The obvious
-		 * improvement is to only ignore changes to keys involved in
-		 * the ghosting, but process the other changes.
-		 */
+		 
 		dev_dbg(ckdev->dev, "ghosting found\n");
 		return;
 	}
@@ -214,16 +166,7 @@ static void cros_ec_keyb_process(struct cros_ec_keyb *ckdev,
 	input_sync(ckdev->idev);
 }
 
-/**
- * cros_ec_keyb_report_bs - Report non-matrixed buttons or switches
- *
- * This takes a bitmap of buttons or switches from the EC and reports events,
- * syncing at the end.
- *
- * @ckdev: The keyboard device.
- * @ev_type: The input event type (e.g., EV_KEY).
- * @mask: A bitmap of buttons from the EC.
- */
+ 
 static void cros_ec_keyb_report_bs(struct cros_ec_keyb *ckdev,
 				   unsigned int ev_type, u32 mask)
 
@@ -251,11 +194,7 @@ static int cros_ec_keyb_work(struct notifier_block *nb,
 	u32 val;
 	unsigned int ev_type;
 
-	/*
-	 * If not wake enabled, discard key state changes during
-	 * suspend. Switches will be re-checked in
-	 * cros_ec_keyb_resume() to be sure nothing is lost.
-	 */
+	 
 	if (queued_during_suspend && !device_may_wakeup(ckdev->dev))
 		return NOTIFY_OK;
 
@@ -305,10 +244,7 @@ static int cros_ec_keyb_work(struct notifier_block *nb,
 	return NOTIFY_OK;
 }
 
-/*
- * Walks keycodes flipping bit in buffer COLUMNS deep where bit is ROW.  Used by
- * ghosting logic to ignore NULL or virtual keys.
- */
+ 
 static void cros_ec_keyb_compute_valid_keys(struct cros_ec_keyb *ckdev)
 {
 	int row, col;
@@ -329,23 +265,7 @@ static void cros_ec_keyb_compute_valid_keys(struct cros_ec_keyb *ckdev)
 	}
 }
 
-/**
- * cros_ec_keyb_info - Wrap the EC command EC_CMD_MKBP_INFO
- *
- * This wraps the EC_CMD_MKBP_INFO, abstracting out all of the marshalling and
- * unmarshalling and different version nonsense into something simple.
- *
- * @ec_dev: The EC device
- * @info_type: Either EC_MKBP_INFO_SUPPORTED or EC_MKBP_INFO_CURRENT.
- * @event_type: Either EC_MKBP_EVENT_BUTTON or EC_MKBP_EVENT_SWITCH.  Actually
- *              in some cases this could be EC_MKBP_EVENT_KEY_MATRIX or
- *              EC_MKBP_EVENT_HOST_EVENT too but we don't use in this driver.
- * @result: Where we'll store the result; a union
- * @result_size: The size of the result.  Expected to be the size of one of
- *               the elements in the union.
- *
- * Returns 0 if no error or -error upon error.
- */
+ 
 static int cros_ec_keyb_info(struct cros_ec_device *ec_dev,
 			     enum ec_mkbp_info_type info_type,
 			     enum ec_mkbp_event event_type,
@@ -371,7 +291,7 @@ static int cros_ec_keyb_info(struct cros_ec_device *ec_dev,
 
 	ret = cros_ec_cmd_xfer_status(ec_dev, msg);
 	if (ret == -ENOPROTOOPT) {
-		/* With older ECs we just return 0 for everything */
+		 
 		memset(result, 0, result_size);
 		ret = 0;
 	} else if (ret < 0) {
@@ -392,17 +312,7 @@ static int cros_ec_keyb_info(struct cros_ec_device *ec_dev,
 	return ret;
 }
 
-/**
- * cros_ec_keyb_query_switches - Query the state of switches and report
- *
- * This will ask the EC about the current state of switches and report to the
- * kernel.  Note that we don't query for buttons because they are more
- * transitory and we'll get an update on the next release / press.
- *
- * @ckdev: The keyboard device
- *
- * Returns 0 if no error or -error upon error.
- */
+ 
 static int cros_ec_keyb_query_switches(struct cros_ec_keyb *ckdev)
 {
 	struct cros_ec_device *ec_dev = ckdev->ec;
@@ -421,15 +331,7 @@ static int cros_ec_keyb_query_switches(struct cros_ec_keyb *ckdev)
 	return 0;
 }
 
-/**
- * cros_ec_keyb_resume - Resume the keyboard
- *
- * We use the resume notification as a chance to query the EC for switches.
- *
- * @dev: The keyboard device
- *
- * Returns 0 if no error or -error upon error.
- */
+ 
 static int cros_ec_keyb_resume(struct device *dev)
 {
 	struct cros_ec_keyb *ckdev = dev_get_drvdata(dev);
@@ -440,22 +342,7 @@ static int cros_ec_keyb_resume(struct device *dev)
 	return 0;
 }
 
-/**
- * cros_ec_keyb_register_bs - Register non-matrix buttons/switches
- *
- * Handles all the bits of the keyboard driver related to non-matrix buttons
- * and switches, including asking the EC about which are present and telling
- * the kernel to expect them.
- *
- * If this device has no support for buttons and switches we'll return no error
- * but the ckdev->bs_idev will remain NULL when this function exits.
- *
- * @ckdev: The keyboard device
- * @expect_buttons_switches: Indicates that EC must report button and/or
- *   switch events
- *
- * Returns 0 if no error or -error upon error.
- */
+ 
 static int cros_ec_keyb_register_bs(struct cros_ec_keyb *ckdev,
 				    bool expect_buttons_switches)
 {
@@ -486,11 +373,7 @@ static int cros_ec_keyb_register_bs(struct cros_ec_keyb *ckdev,
 	if (!buttons && !switches)
 		return expect_buttons_switches ? -EINVAL : 0;
 
-	/*
-	 * We call the non-matrix buttons/switches 'input1', if present.
-	 * Allocate phys before input dev, to ensure correct tear-down
-	 * ordering.
-	 */
+	 
 	phys = devm_kasprintf(dev, GFP_KERNEL, "%s/input1", ec_dev->phys_name);
 	if (!phys)
 		return -ENOMEM;
@@ -564,10 +447,7 @@ static void cros_ec_keyb_parse_vivaldi_physmap(struct cros_ec_keyb *ckdev)
 		return;
 	}
 
-	/*
-	 * Convert (in place) from row/column encoding to matrix "scancode"
-	 * used by the driver.
-	 */
+	 
 	for (i = 0; i < n_physmap; i++) {
 		row = KEY_ROW(physmap[i]);
 		col = KEY_COL(physmap[i]);
@@ -578,15 +458,7 @@ static void cros_ec_keyb_parse_vivaldi_physmap(struct cros_ec_keyb *ckdev)
 	ckdev->vdata.num_function_row_keys = n_physmap;
 }
 
-/**
- * cros_ec_keyb_register_matrix - Register matrix keys
- *
- * Handles all the bits of the keyboard driver related to matrix keys.
- *
- * @ckdev: The keyboard device
- *
- * Returns 0 if no error or -error upon error.
- */
+ 
 static int cros_ec_keyb_register_matrix(struct cros_ec_keyb *ckdev)
 {
 	struct cros_ec_device *ec_dev = ckdev->ec;
@@ -607,10 +479,7 @@ static int cros_ec_keyb_register_matrix(struct cros_ec_keyb *ckdev)
 	if (!ckdev->old_kb_state)
 		return -ENOMEM;
 
-	/*
-	 * We call the keyboard matrix 'input0'. Allocate phys before input
-	 * dev, to ensure correct tear-down ordering.
-	 */
+	 
 	phys = devm_kasprintf(dev, GFP_KERNEL, "%s/input0", ec_dev->phys_name);
 	if (!phys)
 		return -ENOMEM;
@@ -699,10 +568,7 @@ static int cros_ec_keyb_probe(struct platform_device *pdev)
 	bool buttons_switches_only = device_get_match_data(dev);
 	int err;
 
-	/*
-	 * If the parent ec device has not been probed yet, defer the probe of
-	 * this keyboard/button driver until later.
-	 */
+	 
 	ec = dev_get_drvdata(pdev->dev.parent);
 	if (!ec)
 		return -EPROBE_DEFER;

@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright (C) 2020 Marvell. */
+
+ 
 
 #include "otx2_cpt_common.h"
 #include "otx2_cptvf.h"
@@ -13,11 +13,7 @@ int otx2_cpt_mbox_bbuf_init(struct otx2_cptvf_dev *cptvf, struct pci_dev *pdev)
 	cptvf->bbuf_base = devm_kmalloc(&pdev->dev, MBOX_SIZE, GFP_KERNEL);
 	if (!cptvf->bbuf_base)
 		return -ENOMEM;
-	/*
-	 * Overwrite mbox mbase to point to bounce buffer, so that PF/VF
-	 * prepare all mbox messages in bounce buffer instead of directly
-	 * in hw mbox memory.
-	 */
+	 
 	otx2_mbox = &cptvf->pfvf_mbox;
 	mdev = &otx2_mbox->dev[0];
 	mdev->mbase = cptvf->bbuf_base;
@@ -42,7 +38,7 @@ static void otx2_cpt_sync_mbox_bbuf(struct otx2_mbox *mbox, int devid)
 	if (msg_size > mbox->rx_size - msgs_offset)
 		msg_size = mbox->rx_size - msgs_offset;
 
-	/* Copy mbox messages from mbox memory to bounce buffer */
+	 
 	memcpy(mdev->mbase + mbox->rx_start,
 	       hw_mbase + mbox->rx_start, msg_size + msgs_offset);
 }
@@ -52,14 +48,14 @@ irqreturn_t otx2_cptvf_pfvf_mbox_intr(int __always_unused irq, void *arg)
 	struct otx2_cptvf_dev *cptvf = arg;
 	u64 intr;
 
-	/* Read the interrupt bits */
+	 
 	intr = otx2_cpt_read64(cptvf->reg_base, BLKADDR_RVUM, 0,
 			       OTX2_RVU_VF_INT);
 
 	if (intr & 0x1ULL) {
-		/* Schedule work queue function to process the MBOX request */
+		 
 		queue_work(cptvf->pfvf_mbox_wq, &cptvf->pfvf_mbox_work);
-		/* Clear and ack the interrupt */
+		 
 		otx2_cpt_write64(cptvf->reg_base, BLKADDR_RVUM, 0,
 				 OTX2_RVU_VF_INT, 0x1ULL);
 	}
@@ -93,12 +89,12 @@ static void process_pfvf_mbox_mbox_msg(struct otx2_cptvf_dev *cptvf,
 				& RVU_PFVF_FUNC_MASK) - 1;
 		break;
 	case MBOX_MSG_ATTACH_RESOURCES:
-		/* Check if resources were successfully attached */
+		 
 		if (!msg->rc)
 			lfs->are_lfs_attached = 1;
 		break;
 	case MBOX_MSG_DETACH_RESOURCES:
-		/* Check if resources were successfully detached */
+		 
 		if (!msg->rc)
 			lfs->are_lfs_attached = 0;
 		break;
@@ -143,7 +139,7 @@ void otx2_cptvf_pfvf_mbox_handler(struct work_struct *work)
 	struct mbox_msghdr *msg;
 	int offset, i;
 
-	/* sync with mbox memory region */
+	 
 	smp_rmb();
 
 	cptvf = container_of(work, struct otx2_cptvf_dev, pfvf_mbox_work);

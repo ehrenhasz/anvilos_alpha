@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * amdtp-ff.c - a part of driver for RME Fireface series
- *
- * Copyright (c) 2015-2017 Takashi Sakamoto
- */
+
+ 
 
 #include <sound/pcm.h>
 #include "ff.h"

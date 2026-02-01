@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * PCM3168A codec driver
- *
- * Copyright (C) 2015 Imagination Technologies Ltd.
- *
- * Author: Damien Horsley <Damien.Horsley@imgtec.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -46,7 +40,7 @@ static const char *const pcm3168a_supply_names[] = {
 #define PCM3168A_DAI_DAC		0
 #define PCM3168A_DAI_ADC		1
 
-/* ADC/DAC side parameters */
+ 
 struct pcm3168a_io_params {
 	bool provider_mode;
 	unsigned int format;
@@ -124,10 +118,10 @@ static SOC_ENUM_SINGLE_DECL(pcm3168a_adc_att_mult, PCM3168A_ADC_ATT_OVF,
 static SOC_ENUM_SINGLE_DECL(pcm3168a_adc_ov_pol, PCM3168A_ADC_ATT_OVF,
 		PCM3168A_ADC_OVFP_SHIFT, pcm3168a_pol);
 
-/* -100db to 0db, register values 0-54 cause mute */
+ 
 static const DECLARE_TLV_DB_SCALE(pcm3168a_dac_tlv, -10050, 50, 1);
 
-/* -100db to 20db, register values 0-14 cause mute */
+ 
 static const DECLARE_TLV_DB_SCALE(pcm3168a_adc_tlv, -10050, 50, 1);
 
 static const struct snd_kcontrol_new pcm3168a_snd_controls[] = {
@@ -235,7 +229,7 @@ static const struct snd_soc_dapm_widget pcm3168a_dapm_widgets[] = {
 };
 
 static const struct snd_soc_dapm_route pcm3168a_dapm_routes[] = {
-	/* Playback */
+	 
 	{ "AOUT1L", NULL, "DAC1" },
 	{ "AOUT1R", NULL, "DAC1" },
 
@@ -248,7 +242,7 @@ static const struct snd_soc_dapm_route pcm3168a_dapm_routes[] = {
 	{ "AOUT4L", NULL, "DAC4" },
 	{ "AOUT4R", NULL, "DAC4" },
 
-	/* Capture */
+	 
 	{ "ADC1", NULL, "AIN1L" },
 	{ "ADC1", NULL, "AIN1R" },
 
@@ -281,7 +275,7 @@ static int pcm3168a_reset(struct pcm3168a_priv *pcm3168a)
 	if (ret)
 		return ret;
 
-	/* Internal reset is de-asserted after 3846 SCKI cycles */
+	 
 	msleep(DIV_ROUND_UP(3846 * 1000, pcm3168a->sysclk));
 
 	return regmap_write(pcm3168a->regmap, PCM3168A_RST_SMODE,
@@ -304,10 +298,7 @@ static int pcm3168a_set_dai_sysclk(struct snd_soc_dai *dai,
 	struct pcm3168a_priv *pcm3168a = snd_soc_component_get_drvdata(dai->component);
 	int ret;
 
-	/*
-	 * Some sound card sets 0 Hz as reset,
-	 * but it is impossible to set. Ignore it here
-	 */
+	 
 	if (freq == 0)
 		return 0;
 
@@ -332,13 +323,10 @@ static void pcm3168a_update_fixup_pcm_stream(struct snd_soc_dai *dai)
 	unsigned int channel_max = dai->id == PCM3168A_DAI_DAC ? 8 : 6;
 
 	if (io_params->format == SND_SOC_DAIFMT_RIGHT_J) {
-		/* S16_LE is only supported in RIGHT_J mode */
+		 
 		formats |= SNDRV_PCM_FMTBIT_S16_LE;
 
-		/*
-		 * If multi DIN/DOUT is not selected, RIGHT_J can only support
-		 * two channels (no TDM support)
-		 */
+		 
 		if (io_params->tdm_slots != 2)
 			channel_max = 2;
 	}
@@ -422,7 +410,7 @@ static int pcm3168a_set_tdm_slot(struct snd_soc_dai *dai, unsigned int tx_mask,
 
 	io_params->tdm_slots = slots;
 	io_params->slot_width = slot_width;
-	/* Ignore the not relevant mask for the DAI/direction */
+	 
 	if (dai->id == PCM3168A_DAI_DAC)
 		io_params->tdm_mask = tx_mask;
 	else
@@ -512,14 +500,7 @@ static int pcm3168a_hw_params(struct snd_pcm_substream *substream,
 	else
 		tdm_slots = params_channels(params);
 
-	/*
-	 * Switch the codec to TDM mode when more than 2 TDM slots are needed
-	 * for the stream.
-	 * If pcm3168a->tdm_slots is not set or set to more than 2 (8/6 usually)
-	 * then DIN1/DOUT1 is used in TDM mode.
-	 * If pcm3168a->tdm_slots is set to 2 then DIN1/2/3/4 and DOUT1/2/3 is
-	 * used in normal mode, no need to switch to TDM modes.
-	 */
+	 
 	tdm_mode = (tdm_slots > 2);
 
 	if (tdm_mode) {
@@ -564,24 +545,12 @@ static int pcm3168a_hw_params(struct snd_pcm_substream *substream,
 }
 
 static u64 pcm3168a_dai_formats[] = {
-	/*
-	 * Select below from Sound Card, not here
-	 *	SND_SOC_DAIFMT_CBC_CFC
-	 *	SND_SOC_DAIFMT_CBP_CFP
-	 */
+	 
 
-	/*
-	 * First Priority
-	 */
+	 
 	SND_SOC_POSSIBLE_DAIFMT_I2S	|
 	SND_SOC_POSSIBLE_DAIFMT_LEFT_J,
-	/*
-	 * Second Priority
-	 *
-	 * These have picky limitation.
-	 * see
-	 *	pcm3168a_hw_params()
-	 */
+	 
 	SND_SOC_POSSIBLE_DAIFMT_RIGHT_J	|
 	SND_SOC_POSSIBLE_DAIFMT_DSP_A	|
 	SND_SOC_POSSIBLE_DAIFMT_DSP_B,
@@ -729,14 +698,7 @@ int pcm3168a_probe(struct device *dev, struct regmap *regmap)
 
 	dev_set_drvdata(dev, pcm3168a);
 
-	/*
-	 * Request the reset (connected to RST pin) gpio line as non exclusive
-	 * as the same reset line might be connected to multiple pcm3168a codec
-	 *
-	 * The RST is low active, we want the GPIO line to be high initially, so
-	 * request the initial level to LOW which in practice means DEASSERTED:
-	 * The deasserted level of GPIO_ACTIVE_LOW is HIGH.
-	 */
+	 
 	pcm3168a->gpio_rst = devm_gpiod_get_optional(dev, "reset",
 						GPIOD_OUT_LOW |
 						GPIOD_FLAGS_BIT_NONEXCLUSIVE);
@@ -782,10 +744,7 @@ int pcm3168a_probe(struct device *dev, struct regmap *regmap)
 	}
 
 	if (pcm3168a->gpio_rst) {
-		/*
-		 * The device is taken out from reset via GPIO line, wait for
-		 * 3846 SCKI clock cycles for the internal reset de-assertion
-		 */
+		 
 		msleep(DIV_ROUND_UP(3846 * 1000, pcm3168a->sysclk));
 	} else {
 		ret = pcm3168a_reset(pcm3168a);
@@ -833,12 +792,7 @@ void pcm3168a_remove(struct device *dev)
 {
 	struct pcm3168a_priv *pcm3168a = dev_get_drvdata(dev);
 
-	/*
-	 * The RST is low active, we want the GPIO line to be low when the
-	 * driver is removed, so set level to 1 which in practice means
-	 * ASSERTED:
-	 * The asserted level of GPIO_ACTIVE_LOW is LOW.
-	 */
+	 
 	gpiod_set_value_cansleep(pcm3168a->gpio_rst, 1);
 	pm_runtime_disable(dev);
 #ifndef CONFIG_PM

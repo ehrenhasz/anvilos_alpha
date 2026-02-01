@@ -1,6 +1,4 @@
-/*
- * Some keys used by fuzzers
- */
+ 
 
 #define PRIV_RSA \
 "-----BEGIN OPENSSH PRIVATE KEY-----\n"\

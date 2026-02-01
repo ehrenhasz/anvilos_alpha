@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2020 Synopsys, Inc. and/or its affiliates.
- * Synopsys DesignWare xData driver
- *
- * Author: Gustavo Pimentel <gustavo.pimentel@synopsys.com>
- */
+
+ 
 
 #include <linux/miscdevice.h>
 #include <linux/bitfield.h>
@@ -39,32 +34,32 @@ static DEFINE_IDA(xdata_ida);
 #define PATTERN_VALUE			0x0
 
 struct dw_xdata_regs {
-	u32 addr_lsb;					/* 0x000 */
-	u32 addr_msb;					/* 0x004 */
-	u32 burst_cnt;					/* 0x008 */
-	u32 control;					/* 0x00c */
-	u32 pattern;					/* 0x010 */
-	u32 status;					/* 0x014 */
-	u32 RAM_addr;					/* 0x018 */
-	u32 RAM_port;					/* 0x01c */
-	u32 _reserved0[14];				/* 0x020..0x054 */
-	u32 perf_control;				/* 0x058 */
-	u32 _reserved1[41];				/* 0x05c..0x0fc */
-	u32 wr_cnt_lsb;					/* 0x100 */
-	u32 wr_cnt_msb;					/* 0x104 */
-	u32 rd_cnt_lsb;					/* 0x108 */
-	u32 rd_cnt_msb;					/* 0x10c */
+	u32 addr_lsb;					 
+	u32 addr_msb;					 
+	u32 burst_cnt;					 
+	u32 control;					 
+	u32 pattern;					 
+	u32 status;					 
+	u32 RAM_addr;					 
+	u32 RAM_port;					 
+	u32 _reserved0[14];				 
+	u32 perf_control;				 
+	u32 _reserved1[41];				 
+	u32 wr_cnt_lsb;					 
+	u32 wr_cnt_msb;					 
+	u32 rd_cnt_lsb;					 
+	u32 rd_cnt_msb;					 
 } __packed;
 
 struct dw_xdata_region {
-	phys_addr_t paddr;				/* physical address */
-	void __iomem *vaddr;				/* virtual address */
+	phys_addr_t paddr;				 
+	void __iomem *vaddr;				 
 };
 
 struct dw_xdata {
-	struct dw_xdata_region rg_region;		/* registers */
-	size_t max_wr_len;				/* max wr xfer len */
-	size_t max_rd_len;				/* max rd xfer len */
+	struct dw_xdata_region rg_region;		 
+	size_t max_wr_len;				 
+	size_t max_rd_len;				 
 	struct mutex mutex;
 	struct pci_dev *pdev;
 	struct miscdevice misc_dev;
@@ -96,21 +91,21 @@ static void dw_xdata_start(struct dw_xdata *dw, bool write)
 	struct device *dev = &dw->pdev->dev;
 	u32 control, status;
 
-	/* Stop first if xfer in progress */
+	 
 	dw_xdata_stop(dw);
 
 	mutex_lock(&dw->mutex);
 
-	/* Clear status register */
+	 
 	writel(0x0, &(__dw_regs(dw)->status));
 
-	/* Burst count register set for continuous until stopped */
+	 
 	writel(BURST_REPEAT | BURST_VALUE, &(__dw_regs(dw)->burst_cnt));
 
-	/* Pattern register */
+	 
 	writel(PATTERN_VALUE, &(__dw_regs(dw)->pattern));
 
-	/* Control register */
+	 
 	control = CONTROL_DOORBELL | CONTROL_PATTERN_INC | CONTROL_NO_ADDR_INC;
 	if (write) {
 		control |= CONTROL_IS_WRITE;
@@ -120,10 +115,7 @@ static void dw_xdata_start(struct dw_xdata *dw, bool write)
 	}
 	writel(control, &(__dw_regs(dw)->control));
 
-	/*
-	 * The xData HW block needs about 100 ms to initiate the traffic
-	 * generation according this HW block datasheet.
-	 */
+	 
 	usleep_range(100, 150);
 
 	status = readl(&(__dw_regs(dw)->status));
@@ -166,29 +158,22 @@ static void dw_xdata_perf(struct dw_xdata *dw, u64 *rate, bool write)
 
 	mutex_lock(&dw->mutex);
 
-	/* First acquisition of current count frames */
+	 
 	writel(0x0, &(__dw_regs(dw)->perf_control));
 	dw_xdata_perf_meas(dw, &data[0], write);
 	time[0] = jiffies;
 	writel((u32)XPERF_CONTROL_ENABLE, &(__dw_regs(dw)->perf_control));
 
-	/*
-	 * Wait 100ms between the 1st count frame acquisition and the 2nd
-	 * count frame acquisition, in order to calculate the speed later
-	 */
+	 
 	mdelay(100);
 
-	/* Second acquisition of current count frames */
+	 
 	writel(0x0, &(__dw_regs(dw)->perf_control));
 	dw_xdata_perf_meas(dw, &data[1], write);
 	time[1] = jiffies;
 	writel((u32)XPERF_CONTROL_ENABLE, &(__dw_regs(dw)->perf_control));
 
-	/*
-	 * Speed calculation
-	 *
-	 * rate = (2nd count frames - 1st count frames) / (time elapsed)
-	 */
+	 
 	diff = jiffies_to_nsecs(time[1] - time[0]);
 	*rate = dw_xdata_perf_diff(&data[1], &data[0], diff);
 
@@ -295,14 +280,14 @@ static int dw_xdata_pcie_probe(struct pci_dev *pdev,
 	int err;
 	int id;
 
-	/* Enable PCI device */
+	 
 	err = pcim_enable_device(pdev);
 	if (err) {
 		dev_err(dev, "enabling device failed\n");
 		return err;
 	}
 
-	/* Mapping PCI BAR regions */
+	 
 	err = pcim_iomap_regions(pdev, BIT(BAR_0), pci_name(pdev));
 	if (err) {
 		dev_err(dev, "xData BAR I/O remapping failed\n");
@@ -311,12 +296,12 @@ static int dw_xdata_pcie_probe(struct pci_dev *pdev,
 
 	pci_set_master(pdev);
 
-	/* Allocate memory */
+	 
 	dw = devm_kzalloc(dev, sizeof(*dw), GFP_KERNEL);
 	if (!dw)
 		return -ENOMEM;
 
-	/* Data structure initialization */
+	 
 	mutex_init(&dw->mutex);
 
 	dw->rg_region.vaddr = pcim_iomap_table(pdev)[BAR_0];
@@ -361,10 +346,10 @@ static int dw_xdata_pcie_probe(struct pci_dev *pdev,
 	dev_dbg(dev, "xData: wr_len = %zu, rd_len = %zu\n",
 		dw->max_wr_len * 4, dw->max_rd_len * 4);
 
-	/* Saving data structure reference */
+	 
 	pci_set_drvdata(pdev, dw);
 
-	/* Register misc device */
+	 
 	err = misc_register(&dw->misc_dev);
 	if (err) {
 		dev_err(dev, "xData: failed to register device\n");

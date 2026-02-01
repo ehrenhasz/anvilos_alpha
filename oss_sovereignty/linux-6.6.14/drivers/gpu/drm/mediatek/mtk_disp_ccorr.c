@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2021 MediaTek Inc.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/component.h>
@@ -80,21 +78,21 @@ void mtk_ccorr_stop(struct device *dev)
 	writel_relaxed(0x0, ccorr->regs + DISP_CCORR_EN);
 }
 
-/* Converts a DRM S31.32 value to the HW S1.n format. */
+ 
 static u16 mtk_ctm_s31_32_to_s1_n(u64 in, u32 n)
 {
 	u16 r;
 
-	/* Sign bit. */
+	 
 	r = in & BIT_ULL(63) ? BIT(n + 1) : 0;
 
 	if ((in & GENMASK_ULL(62, 33)) > 0) {
-		/* identity value 0x100000000 -> 0x400(mt8183), */
-		/* identity value 0x100000000 -> 0x800(mt8192), */
-		/* if bigger this, set it to max 0x7ff. */
+		 
+		 
+		 
 		r |= GENMASK(n, 0);
 	} else {
-		/* take the n+1 most important bits. */
+		 
 		r |= (in >> (32 - n)) & GENMASK(n, 0);
 	}
 

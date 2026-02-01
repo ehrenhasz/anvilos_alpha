@@ -135,7 +135,7 @@ TRACE_EVENT(br_mdb_full,
 		__field(u16, vid)
 		__array(__u8, src, 16)
 		__array(__u8, grp, 16)
-		__array(__u8, grpmac, ETH_ALEN) /* For af == 0. */
+		__array(__u8, grpmac, ETH_ALEN)  
 	),
 
 	TP_fast_assign(
@@ -181,7 +181,7 @@ TRACE_EVENT(br_mdb_full,
 		  __entry->grpmac, __entry->vid)
 );
 
-#endif /* _TRACE_BRIDGE_H */
+#endif  
 
-/* This part must be outside protection */
+ 
 #include <trace/define_trace.h>

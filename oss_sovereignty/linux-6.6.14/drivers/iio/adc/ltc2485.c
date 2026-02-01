@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * ltc2485.c - Driver for Linear Technology LTC2485 ADC
- *
- * Copyright (C) 2016 Alison Schofield <amsfield22@gmail.com>
- *
- * Datasheet: http://cds.linear.com/docs/en/datasheet/2485fd.pdf
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/i2c.h>
@@ -14,20 +8,20 @@
 #include <linux/iio/iio.h>
 #include <linux/iio/sysfs.h>
 
-/* Power-on configuration: rejects both 50/60Hz, operates at 1x speed */
+ 
 #define LTC2485_CONFIG_DEFAULT		0
 
 struct ltc2485_data {
 	struct i2c_client	*client;
-	ktime_t			time_prev;	/* last conversion */
+	ktime_t			time_prev;	 
 };
 
 static void ltc2485_wait_conv(struct ltc2485_data *data)
 {
-	const unsigned int conv_time = 147;	/* conversion time ms */
+	const unsigned int conv_time = 147;	 
 	unsigned int time_elapsed;
 
-	/* delay if conversion time not passed since last read or write */
+	 
 	time_elapsed = ktime_ms_delta(ktime_get(), data->time_prev);
 
 	if (time_elapsed < conv_time)
@@ -68,8 +62,8 @@ static int ltc2485_read_raw(struct iio_dev *indio_dev,
 		return IIO_VAL_INT;
 
 	} else if (mask == IIO_CHAN_INFO_SCALE) {
-		*val = 5000;			/* on board vref millivolts */
-		*val2 = 25;			/* 25 (24 + sign) data bits */
+		*val = 5000;			 
+		*val2 = 25;			 
 		return IIO_VAL_FRACTIONAL_LOG2;
 
 	} else {

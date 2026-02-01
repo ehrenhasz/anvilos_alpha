@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright(c) 2023 Advanced Micro Devices, Inc */
+
+ 
 
 #include <linux/dynamic_debug.h>
 
@@ -75,33 +75,28 @@ void pdsc_process_adminq(struct pdsc_qcq *qcq)
 	int aq_work = 0;
 	int credits;
 
-	/* Don't process AdminQ when shutting down */
+	 
 	if (pdsc->state & BIT_ULL(PDSC_S_STOPPING_DRIVER)) {
 		dev_err(pdsc->dev, "%s: called while PDSC_S_STOPPING_DRIVER\n",
 			__func__);
 		return;
 	}
 
-	/* Check for NotifyQ event */
+	 
 	nq_work = pdsc_process_notifyq(&pdsc->notifyqcq);
 
-	/* Check for empty queue, which can happen if the interrupt was
-	 * for a NotifyQ event and there are no new AdminQ completions.
-	 */
+	 
 	if (q->tail_idx == q->head_idx)
 		goto credits;
 
-	/* Find the first completion to clean,
-	 * run the callback in the related q_info,
-	 * and continue while we still match done color
-	 */
+	 
 	spin_lock_irqsave(&pdsc->adminq_lock, irqflags);
 	comp = cq->info[cq->tail_idx].comp;
 	while (pdsc_color_match(comp->color, cq->done_color)) {
 		q_info = &q->info[q->tail_idx];
 		q->tail_idx = (q->tail_idx + 1) & (q->num_descs - 1);
 
-		/* Copy out the completion data */
+		 
 		memcpy(q_info->dest, comp, sizeof(*comp));
 
 		complete_all(&q_info->wc->wait_completion);
@@ -118,7 +113,7 @@ void pdsc_process_adminq(struct pdsc_qcq *qcq)
 	qcq->accum_work += aq_work;
 
 credits:
-	/* Return the interrupt credits, one for each completion */
+	 
 	credits = nq_work + aq_work;
 	if (credits)
 		pds_core_intr_credits(&pdsc->intr_ctrl[qcq->intx],
@@ -138,7 +133,7 @@ irqreturn_t pdsc_adminq_isr(int irq, void *data)
 	struct pdsc_qcq *qcq = data;
 	struct pdsc *pdsc = qcq->pdsc;
 
-	/* Don't process AdminQ when shutting down */
+	 
 	if (pdsc->state & BIT_ULL(PDSC_S_STOPPING_DRIVER)) {
 		dev_err(pdsc->dev, "%s: called while PDSC_S_STOPPING_DRIVER\n",
 			__func__);
@@ -166,7 +161,7 @@ static int __pdsc_adminq_post(struct pdsc *pdsc,
 
 	spin_lock_irqsave(&pdsc->adminq_lock, irqflags);
 
-	/* Check for space in the queue */
+	 
 	avail = q->tail_idx;
 	if (q->head_idx >= avail)
 		avail += q->num_descs - q->head_idx - 1;
@@ -177,7 +172,7 @@ static int __pdsc_adminq_post(struct pdsc *pdsc,
 		goto err_out_unlock;
 	}
 
-	/* Check that the FW is running */
+	 
 	if (!pdsc_is_fw_running(pdsc)) {
 		u8 fw_status = ioread8(&pdsc->info_regs->fw_status);
 
@@ -188,7 +183,7 @@ static int __pdsc_adminq_post(struct pdsc *pdsc,
 		goto err_out_unlock;
 	}
 
-	/* Post the request */
+	 
 	index = q->head_idx;
 	q_info = &q->info[index];
 	q_info->wc = wc;
@@ -240,7 +235,7 @@ int pdsc_adminq_post(struct pdsc *pdsc,
 	time_start = jiffies;
 	time_limit = time_start + HZ * pdsc->devcmd_timeout;
 	do {
-		/* Timeslice the actual wait to catch IO errors etc early */
+		 
 		poll_jiffies = msecs_to_jiffies(poll_interval);
 		remaining = wait_for_completion_timeout(&wc.wait_completion,
 							poll_jiffies);
@@ -256,9 +251,7 @@ int pdsc_adminq_post(struct pdsc *pdsc,
 			break;
 		}
 
-		/* When fast_poll is not requested, prevent aggressive polling
-		 * on failures due to timeouts by doing exponential back off.
-		 */
+		 
 		if (!fast_poll && poll_interval < PDSC_ADMINQ_MAX_POLL_INTERVAL)
 			poll_interval <<= 1;
 	} while (time_before(jiffies, time_limit));
@@ -266,7 +259,7 @@ int pdsc_adminq_post(struct pdsc *pdsc,
 	dev_dbg(pdsc->dev, "%s: elapsed %d msecs\n",
 		__func__, jiffies_to_msecs(time_done - time_start));
 
-	/* Check the results */
+	 
 	if (time_after_eq(time_done, time_limit))
 		err = -ETIMEDOUT;
 

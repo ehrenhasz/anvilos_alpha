@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <vmlinux.h>
 #include <bpf/bpf_tracing.h>
 #include <bpf/bpf_helpers.h>
@@ -88,11 +88,11 @@ long rbtree_api_remove_unadded_node(void *ctx)
 	bpf_spin_lock(&glock);
 	bpf_rbtree_add(&groot, &n->node, less);
 
-	/* This remove should pass verifier */
+	 
 	res = bpf_rbtree_remove(&groot, &n->node);
 	n = container_of(res, struct node_data, node);
 
-	/* This remove shouldn't, m isn't in an rbtree */
+	 
 	res = bpf_rbtree_remove(&groot, &m->node);
 	m = container_of(res, struct node_data, node);
 	bpf_spin_unlock(&glock);
@@ -124,7 +124,7 @@ long rbtree_api_remove_no_drop(void *ctx)
 	}
 	bpf_spin_unlock(&glock);
 
-	/* if (res) { bpf_obj_drop(n); } is missing here */
+	 
 	return 0;
 
 unlock_err:
@@ -145,7 +145,7 @@ long rbtree_api_add_to_multiple_trees(void *ctx)
 	bpf_spin_lock(&glock);
 	bpf_rbtree_add(&groot, &n->node, less);
 
-	/* This add should fail since n already in groot's tree */
+	 
 	bpf_rbtree_add(&groot2, &n->node, less);
 	bpf_spin_unlock(&glock);
 	return 0;
@@ -167,7 +167,7 @@ long rbtree_api_use_unchecked_remove_retval(void *ctx)
 	bpf_spin_unlock(&glock);
 
 	bpf_spin_lock(&glock);
-	/* Must check res for NULL before using in rbtree_add below */
+	 
 	bpf_rbtree_add(&groot, res, less);
 	bpf_spin_unlock(&glock);
 	return 0;
@@ -192,10 +192,7 @@ long rbtree_api_add_release_unlock_escape(void *ctx)
 	bpf_spin_unlock(&glock);
 
 	bpf_spin_lock(&glock);
-	/* After add() in previous critical section, n should be
-	 * release_on_unlock and released after previous spin_unlock,
-	 * so should not be possible to use it here
-	 */
+	 
 	bpf_rbtree_remove(&groot, &n->node);
 	bpf_spin_unlock(&glock);
 	return 0;
@@ -218,10 +215,7 @@ long rbtree_api_first_release_unlock_escape(void *ctx)
 	bpf_spin_unlock(&glock);
 
 	bpf_spin_lock(&glock);
-	/* After first() in previous critical section, n should be
-	 * release_on_unlock and released after previous spin_unlock,
-	 * so should not be possible to use it here
-	 */
+	 
 	bpf_rbtree_remove(&groot, &n->node);
 	bpf_spin_unlock(&glock);
 	return 0;

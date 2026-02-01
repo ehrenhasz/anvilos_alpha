@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  ideapad-laptop.c - Lenovo IdeaPad ACPI Extras
- *
- *  Copyright © 2010 Intel Corporation
- *  Copyright © 2010 David Woodhouse <dwmw2@infradead.org>
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -45,12 +40,7 @@ enum {
 	CFG_CAP_WIFI_BIT     = 18,
 	CFG_CAP_CAM_BIT      = 19,
 
-	/*
-	 * These are OnScreenDisplay support bits that can be useful to determine
-	 * whether a hotkey exists/should show OSD. But they aren't particularly
-	 * meaningful since they were introduced later, i.e. 2010 IdeaPads
-	 * don't have these, but they still have had OSD for hotkeys.
-	 */
+	 
 	CFG_OSD_NUMLK_BIT    = 27,
 	CFG_OSD_CAPSLK_BIT   = 28,
 	CFG_OSD_MICMUTE_BIT  = 29,
@@ -86,12 +76,7 @@ enum {
 	SALS_FNLOCK_OFF       = 0xf,
 };
 
-/*
- * These correspond to the number of supported states - 1
- * Future keyboard types may need a new system, if there's a collision
- * KBD_BL_TRISTATE_AUTO has no way to report or set the auto state
- * so it effectively has 3 states, but needs to handle 4
- */
+ 
 enum {
 	KBD_BL_STANDARD      = 1,
 	KBD_BL_TRISTATE      = 2,
@@ -114,7 +99,7 @@ enum {
 struct ideapad_dytc_priv {
 	enum platform_profile_option current_profile;
 	struct platform_profile_handler pprof;
-	struct mutex mutex; /* protects the DYTC interface */
+	struct mutex mutex;  
 	struct ideapad_private *priv;
 };
 
@@ -188,9 +173,7 @@ MODULE_PARM_DESC(touchpad_ctrl_via_ec,
 	"Enable registering a 'touchpad' sysfs-attribute which can be used to manually "
 	"tell the EC to enable/disable the touchpad. This may not work on all models.");
 
-/*
- * shared data
- */
+ 
 
 static struct ideapad_private *ideapad_shared;
 static DEFINE_MUTEX(ideapad_shared_mutex);
@@ -224,9 +207,7 @@ static void ideapad_shared_exit(struct ideapad_private *priv)
 	mutex_unlock(&ideapad_shared_mutex);
 }
 
-/*
- * ACPI Helpers
- */
+ 
 
 static int eval_int(acpi_handle handle, const char *name, unsigned long *res)
 {
@@ -284,9 +265,7 @@ static int eval_dytc(acpi_handle handle, unsigned long cmd, unsigned long *res)
 	return eval_int_with_arg(handle, "DYTC", cmd, res);
 }
 
-/*
- * debugfs
- */
+ 
 static int debugfs_status_show(struct seq_file *s, void *data)
 {
 	struct ideapad_private *priv = s->private;
@@ -399,9 +378,7 @@ static void ideapad_debugfs_exit(struct ideapad_private *priv)
 	priv->debug = NULL;
 }
 
-/*
- * sysfs
- */
+ 
 static ssize_t camera_power_show(struct device *dev,
 				 struct device_attribute *attr,
 				 char *buf)
@@ -664,32 +641,30 @@ static const struct attribute_group ideapad_attribute_group = {
 	.attrs = ideapad_attributes
 };
 
-/*
- * DYTC Platform profile
- */
-#define DYTC_CMD_QUERY        0 /* To get DYTC status - enable/revision */
-#define DYTC_CMD_SET          1 /* To enable/disable IC function mode */
-#define DYTC_CMD_GET          2 /* To get current IC function and mode */
-#define DYTC_CMD_RESET    0x1ff /* To reset back to default */
+ 
+#define DYTC_CMD_QUERY        0  
+#define DYTC_CMD_SET          1  
+#define DYTC_CMD_GET          2  
+#define DYTC_CMD_RESET    0x1ff  
 
-#define DYTC_QUERY_ENABLE_BIT 8  /* Bit        8 - 0 = disabled, 1 = enabled */
-#define DYTC_QUERY_SUBREV_BIT 16 /* Bits 16 - 27 - sub revision */
-#define DYTC_QUERY_REV_BIT    28 /* Bits 28 - 31 - revision */
+#define DYTC_QUERY_ENABLE_BIT 8   
+#define DYTC_QUERY_SUBREV_BIT 16  
+#define DYTC_QUERY_REV_BIT    28  
 
-#define DYTC_GET_FUNCTION_BIT 8  /* Bits  8-11 - function setting */
-#define DYTC_GET_MODE_BIT     12 /* Bits 12-15 - mode setting */
+#define DYTC_GET_FUNCTION_BIT 8   
+#define DYTC_GET_MODE_BIT     12  
 
-#define DYTC_SET_FUNCTION_BIT 12 /* Bits 12-15 - function setting */
-#define DYTC_SET_MODE_BIT     16 /* Bits 16-19 - mode setting */
-#define DYTC_SET_VALID_BIT    20 /* Bit     20 - 1 = on, 0 = off */
+#define DYTC_SET_FUNCTION_BIT 12  
+#define DYTC_SET_MODE_BIT     16  
+#define DYTC_SET_VALID_BIT    20  
 
-#define DYTC_FUNCTION_STD     0  /* Function = 0, standard mode */
-#define DYTC_FUNCTION_CQL     1  /* Function = 1, lap mode */
-#define DYTC_FUNCTION_MMC     11 /* Function = 11, desk mode */
+#define DYTC_FUNCTION_STD     0   
+#define DYTC_FUNCTION_CQL     1   
+#define DYTC_FUNCTION_MMC     11  
 
-#define DYTC_MODE_PERFORM     2  /* High power mode aka performance */
-#define DYTC_MODE_LOW_POWER       3  /* Low power mode aka quiet */
-#define DYTC_MODE_BALANCE   0xF  /* Default mode aka balanced */
+#define DYTC_MODE_PERFORM     2   
+#define DYTC_MODE_LOW_POWER       3   
+#define DYTC_MODE_BALANCE   0xF   
 
 #define DYTC_SET_COMMAND(function, mode, on) \
 	(DYTC_CMD_SET | (function) << DYTC_SET_FUNCTION_BIT | \
@@ -712,7 +687,7 @@ static int convert_dytc_to_profile(int dytcmode, enum platform_profile_option *p
 	case DYTC_MODE_PERFORM:
 		*profile =  PLATFORM_PROFILE_PERFORMANCE;
 		break;
-	default: /* Unknown mode */
+	default:  
 		return -EINVAL;
 	}
 
@@ -731,17 +706,14 @@ static int convert_profile_to_dytc(enum platform_profile_option profile, int *pe
 	case PLATFORM_PROFILE_PERFORMANCE:
 		*perfmode = DYTC_MODE_PERFORM;
 		break;
-	default: /* Unknown profile */
+	default:  
 		return -EOPNOTSUPP;
 	}
 
 	return 0;
 }
 
-/*
- * dytc_profile_get: Function to register with platform_profile
- * handler. Returns current platform profile.
- */
+ 
 static int dytc_profile_get(struct platform_profile_handler *pprof,
 			    enum platform_profile_option *profile)
 {
@@ -751,25 +723,19 @@ static int dytc_profile_get(struct platform_profile_handler *pprof,
 	return 0;
 }
 
-/*
- * Helper function - check if we are in CQL mode and if we are
- *  - disable CQL,
- *  - run the command
- *  - enable CQL
- *  If not in CQL mode, just run the command
- */
+ 
 static int dytc_cql_command(struct ideapad_private *priv, unsigned long cmd,
 			    unsigned long *output)
 {
 	int err, cmd_err, cur_funcmode;
 
-	/* Determine if we are in CQL mode. This alters the commands we do */
+	 
 	err = eval_dytc(priv->adev->handle, DYTC_CMD_GET, output);
 	if (err)
 		return err;
 
 	cur_funcmode = (*output >> DYTC_GET_FUNCTION_BIT) & 0xF;
-	/* Check if we're OK to return immediately */
+	 
 	if (cmd == DYTC_CMD_GET && cur_funcmode != DYTC_FUNCTION_CQL)
 		return 0;
 
@@ -780,7 +746,7 @@ static int dytc_cql_command(struct ideapad_private *priv, unsigned long cmd,
 	}
 
 	cmd_err = eval_dytc(priv->adev->handle, cmd, output);
-	/* Check return condition after we've restored CQL state */
+	 
 
 	if (cur_funcmode == DYTC_FUNCTION_CQL) {
 		err = eval_dytc(priv->adev->handle, DYTC_ENABLE_CQL, NULL);
@@ -791,10 +757,7 @@ static int dytc_cql_command(struct ideapad_private *priv, unsigned long cmd,
 	return cmd_err;
 }
 
-/*
- * dytc_profile_set: Function to register with platform_profile
- * handler. Sets current platform profile.
- */
+ 
 static int dytc_profile_set(struct platform_profile_handler *pprof,
 			    enum platform_profile_option profile)
 {
@@ -808,7 +771,7 @@ static int dytc_profile_set(struct platform_profile_handler *pprof,
 		return err;
 
 	if (profile == PLATFORM_PROFILE_BALANCED) {
-		/* To get back to balanced mode we just issue a reset command */
+		 
 		err = eval_dytc(priv->adev->handle, DYTC_CMD_RESET, NULL);
 		if (err)
 			goto unlock;
@@ -819,14 +782,14 @@ static int dytc_profile_set(struct platform_profile_handler *pprof,
 		if (err)
 			goto unlock;
 
-		/* Determine if we are in CQL mode. This alters the commands we do */
+		 
 		err = dytc_cql_command(priv, DYTC_SET_COMMAND(DYTC_FUNCTION_MMC, perfmode, 1),
 				       &output);
 		if (err)
 			goto unlock;
 	}
 
-	/* Success - update current profile */
+	 
 	dytc->current_profile = profile;
 
 unlock:
@@ -860,14 +823,14 @@ static void dytc_profile_refresh(struct ideapad_private *priv)
 
 static const struct dmi_system_id ideapad_dytc_v4_allow_table[] = {
 	{
-		/* Ideapad 5 Pro 16ACH6 */
+		 
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "LENOVO"),
 			DMI_MATCH(DMI_PRODUCT_NAME, "82L5")
 		}
 	},
 	{
-		/* Ideapad 5 15ITL05 */
+		 
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "LENOVO"),
 			DMI_MATCH(DMI_PRODUCT_VERSION, "IdeaPad 5 15ITL05")
@@ -885,11 +848,11 @@ static int ideapad_dytc_profile_init(struct ideapad_private *priv)
 		return -ENODEV;
 
 	err = eval_dytc(priv->adev->handle, DYTC_CMD_QUERY, &output);
-	/* For all other errors we can flag the failure */
+	 
 	if (err)
 		return err;
 
-	/* Check DYTC is enabled and supports mode setting */
+	 
 	if (!test_bit(DYTC_QUERY_ENABLE_BIT, &output)) {
 		dev_info(&priv->platform_device->dev, "DYTC_QUERY_ENABLE_BIT returned false\n");
 		return -ENODEV;
@@ -919,17 +882,17 @@ static int ideapad_dytc_profile_init(struct ideapad_private *priv)
 	priv->dytc->pprof.profile_get = dytc_profile_get;
 	priv->dytc->pprof.profile_set = dytc_profile_set;
 
-	/* Setup supported modes */
+	 
 	set_bit(PLATFORM_PROFILE_LOW_POWER, priv->dytc->pprof.choices);
 	set_bit(PLATFORM_PROFILE_BALANCED, priv->dytc->pprof.choices);
 	set_bit(PLATFORM_PROFILE_PERFORMANCE, priv->dytc->pprof.choices);
 
-	/* Create platform_profile structure and register */
+	 
 	err = platform_profile_register(&priv->dytc->pprof);
 	if (err)
 		goto pp_reg_failed;
 
-	/* Ensure initial values are correct */
+	 
 	dytc_profile_refresh(priv);
 
 	return 0;
@@ -954,9 +917,7 @@ static void ideapad_dytc_profile_exit(struct ideapad_private *priv)
 	priv->dytc = NULL;
 }
 
-/*
- * Rfkill
- */
+ 
 struct ideapad_rfk_data {
 	char *name;
 	int cfgbit;
@@ -1004,7 +965,7 @@ static int ideapad_register_rfkill(struct ideapad_private *priv, int dev)
 	int err;
 
 	if (no_bt_rfkill && ideapad_rfk_data[dev].type == RFKILL_TYPE_BLUETOOTH) {
-		/* Force to enable bluetooth when no_bt_rfkill=1 */
+		 
 		write_ec_cmd(priv->adev->handle, ideapad_rfk_data[dev].opcode, 1);
 		return 0;
 	}
@@ -1042,9 +1003,7 @@ static void ideapad_unregister_rfkill(struct ideapad_private *priv, int dev)
 	rfkill_destroy(priv->rfk[dev]);
 }
 
-/*
- * Platform device
- */
+ 
 static int ideapad_sysfs_init(struct ideapad_private *priv)
 {
 	return device_add_group(&priv->platform_device->dev,
@@ -1057,9 +1016,7 @@ static void ideapad_sysfs_exit(struct ideapad_private *priv)
 			    &ideapad_attribute_group);
 }
 
-/*
- * input device
- */
+ 
 #define IDEAPAD_WMI_KEY 0x100
 
 static const struct key_entry ideapad_keymap[] = {
@@ -1076,30 +1033,28 @@ static const struct key_entry ideapad_keymap[] = {
 	{ KE_KEY,  67, { KEY_TOUCHPAD_ON } },
 	{ KE_KEY, 128, { KEY_ESC } },
 
-	/*
-	 * WMI keys
-	 */
+	 
 
-	/* FnLock (handled by the firmware) */
+	 
 	{ KE_IGNORE,	0x02 | IDEAPAD_WMI_KEY },
-	/* Esc (handled by the firmware) */
+	 
 	{ KE_IGNORE,	0x03 | IDEAPAD_WMI_KEY },
-	/* Customizable Lenovo Hotkey ("star" with 'S' inside) */
+	 
 	{ KE_KEY,	0x01 | IDEAPAD_WMI_KEY, { KEY_FAVORITES } },
 	{ KE_KEY,	0x04 | IDEAPAD_WMI_KEY, { KEY_SELECTIVE_SCREENSHOT } },
-	/* Lenovo Support */
+	 
 	{ KE_KEY,	0x07 | IDEAPAD_WMI_KEY, { KEY_HELP } },
 	{ KE_KEY,	0x0e | IDEAPAD_WMI_KEY, { KEY_PICKUP_PHONE } },
 	{ KE_KEY,	0x0f | IDEAPAD_WMI_KEY, { KEY_HANGUP_PHONE } },
-	/* Dark mode toggle */
+	 
 	{ KE_KEY,	0x13 | IDEAPAD_WMI_KEY, { KEY_PROG1 } },
-	/* Sound profile switch */
+	 
 	{ KE_KEY,	0x12 | IDEAPAD_WMI_KEY, { KEY_PROG2 } },
-	/* Lenovo Virtual Background application */
+	 
 	{ KE_KEY,	0x28 | IDEAPAD_WMI_KEY, { KEY_PROG3 } },
-	/* Lenovo Support */
+	 
 	{ KE_KEY,	0x27 | IDEAPAD_WMI_KEY, { KEY_HELP } },
-	/* Refresh Rate Toggle */
+	 
 	{ KE_KEY,	0x0a | IDEAPAD_WMI_KEY, { KEY_DISPLAYTOGGLE } },
 
 	{ KE_END },
@@ -1177,13 +1132,13 @@ static void ideapad_check_special_buttons(struct ideapad_private *priv)
 
 	for_each_set_bit (bit, &value, 16) {
 		switch (bit) {
-		case 6:	/* Z570 */
-		case 0:	/* Z580 */
-			/* Thermal Management button */
+		case 6:	 
+		case 0:	 
+			 
 			ideapad_input_report(priv, 65);
 			break;
 		case 1:
-			/* OneKey Theater button */
+			 
 			ideapad_input_report(priv, 64);
 			break;
 		default:
@@ -1194,9 +1149,7 @@ static void ideapad_check_special_buttons(struct ideapad_private *priv)
 	}
 }
 
-/*
- * backlight
- */
+ 
 static int ideapad_backlight_get_brightness(struct backlight_device *blightdev)
 {
 	struct ideapad_private *priv = bl_get_data(blightdev);
@@ -1302,16 +1255,14 @@ static void ideapad_backlight_notify_brightness(struct ideapad_private *priv)
 {
 	unsigned long now;
 
-	/* if we control brightness via acpi video driver */
+	 
 	if (!priv->blightdev)
 		read_ec_data(priv->adev->handle, VPCCMD_R_BL, &now);
 	else
 		backlight_force_update(priv->blightdev, BACKLIGHT_UPDATE_HOTKEY);
 }
 
-/*
- * keyboard backlight
- */
+ 
 static int ideapad_kbd_bl_check_tristate(int type)
 {
 	return (type == KBD_BL_TRISTATE) || (type == KBD_BL_TRISTATE_AUTO);
@@ -1331,18 +1282,18 @@ static int ideapad_kbd_bl_brightness_get(struct ideapad_private *priv)
 		if (err)
 			return err;
 
-		/* Convert returned value to brightness level */
+		 
 		value = FIELD_GET(KBD_BL_GET_BRIGHTNESS, value);
 
-		/* Off, low or high */
+		 
 		if (value <= priv->kbd_bl.led.max_brightness)
 			return value;
 
-		/* Auto, report as off */
+		 
 		if (value == priv->kbd_bl.led.max_brightness + 1)
 			return 0;
 
-		/* Unknown value */
+		 
 		dev_warn(&priv->platform_device->dev,
 			 "Unknown keyboard backlight value: %lu", value);
 		return -EINVAL;
@@ -1460,36 +1411,23 @@ static void ideapad_kbd_bl_exit(struct ideapad_private *priv)
 	led_classdev_unregister(&priv->kbd_bl.led);
 }
 
-/*
- * module init/exit
- */
+ 
 static void ideapad_sync_touchpad_state(struct ideapad_private *priv, bool send_events)
 {
 	unsigned long value;
 	unsigned char param;
 	int ret;
 
-	/* Without reading from EC touchpad LED doesn't switch state */
+	 
 	ret = read_ec_data(priv->adev->handle, VPCCMD_R_TOUCHPAD, &value);
 	if (ret)
 		return;
 
-	/*
-	 * Some IdeaPads don't really turn off touchpad - they only
-	 * switch the LED state. We (de)activate KBC AUX port to turn
-	 * touchpad off and on. We send KEY_TOUCHPAD_OFF and
-	 * KEY_TOUCHPAD_ON to not to get out of sync with LED
-	 */
+	 
 	if (priv->features.ctrl_ps2_aux_port)
 		i8042_command(&param, value ? I8042_CMD_AUX_ENABLE : I8042_CMD_AUX_DISABLE);
 
-	/*
-	 * On older models the EC controls the touchpad and toggles it on/off
-	 * itself, in this case we report KEY_TOUCHPAD_ON/_OFF. Some models do
-	 * an acpi-notify with VPC bit 5 set on resume, so this function get
-	 * called with send_events=true on every resume. Therefor if the EC did
-	 * not toggle, do nothing to avoid sending spurious KEY_TOUCHPAD_TOGGLE.
-	 */
+	 
 	if (send_events && value != priv->r_touchpad_val) {
 		ideapad_input_report(priv, value ? 67 : 66);
 		sysfs_notify(&priv->platform_device->dev.kobj, NULL, "touchpad");
@@ -1521,16 +1459,7 @@ static void ideapad_acpi_notify(acpi_handle handle, u32 event, void *data)
 			ideapad_input_report(priv, bit);
 			break;
 		case 10:
-			/*
-			 * This event gets send on a Yoga 300-11IBR when the EC
-			 * believes that the device has changed between laptop/
-			 * tent/stand/tablet mode. The EC relies on getting
-			 * angle info from 2 accelerometers through a special
-			 * windows service calling a DSM on the DUAL250E ACPI-
-			 * device. Linux does not do this, making the laptop/
-			 * tent/stand/tablet mode info unreliable, so we simply
-			 * ignore these events.
-			 */
+			 
 			break;
 		case 9:
 			ideapad_sync_rfk_state(priv);
@@ -1549,13 +1478,7 @@ static void ideapad_acpi_notify(acpi_handle handle, u32 event, void *data)
 			break;
 		case KBD_BL_KBLC_CHANGED_EVENT:
 		case 1:
-			/*
-			 * Some IdeaPads report event 1 every ~20
-			 * seconds while on battery power; some
-			 * report this when changing to/from tablet
-			 * mode; some report this when the keyboard
-			 * backlight has changed.
-			 */
+			 
 			ideapad_kbd_bl_notify(priv);
 			break;
 		case 0:
@@ -1568,52 +1491,18 @@ static void ideapad_acpi_notify(acpi_handle handle, u32 event, void *data)
 	}
 }
 
-/* On some models we need to call exec_sals(SALS_FNLOCK_ON/OFF) to set the LED */
+ 
 static const struct dmi_system_id set_fn_lock_led_list[] = {
 	{
-		/* https://bugzilla.kernel.org/show_bug.cgi?id=212671 */
-		.matches = {
-			DMI_MATCH(DMI_SYS_VENDOR, "LENOVO"),
-			DMI_MATCH(DMI_PRODUCT_VERSION, "Lenovo Legion R7000P2020H"),
-		}
-	},
-	{
-		.matches = {
-			DMI_MATCH(DMI_SYS_VENDOR, "LENOVO"),
-			DMI_MATCH(DMI_PRODUCT_VERSION, "Lenovo Legion 5 15ARH05"),
-		}
-	},
-	{}
-};
-
-/*
- * Some ideapads have a hardware rfkill switch, but most do not have one.
- * Reading VPCCMD_R_RF always results in 0 on models without a hardware rfkill,
- * switch causing ideapad_laptop to wrongly report all radios as hw-blocked.
- * There used to be a long list of DMI ids for models without a hw rfkill
- * switch here, but that resulted in playing whack a mole.
- * More importantly wrongly reporting the wifi radio as hw-blocked, results in
- * non working wifi. Whereas not reporting it hw-blocked, when it actually is
- * hw-blocked results in an empty SSID list, which is a much more benign
- * failure mode.
- * So the default now is the much safer option of assuming there is no
- * hardware rfkill switch. This default also actually matches most hardware,
- * since having a hw rfkill switch is quite rare on modern hardware, so this
- * also leads to a much shorter list.
- */
+		 
 static const struct dmi_system_id hw_rfkill_list[] = {
 	{}
 };
 
-/*
- * On some models the EC toggles the touchpad muted LED on touchpad toggle
- * hotkey presses, but the EC does not actually disable the touchpad itself.
- * On these models the driver needs to explicitly enable/disable the i8042
- * (PS/2) aux port.
- */
+ 
 static const struct dmi_system_id ctrl_ps2_aux_port_list[] = {
 	{
-	/* Lenovo Ideapad Z570 */
+	 
 	.matches = {
 		DMI_MATCH(DMI_SYS_VENDOR, "LENOVO"),
 		DMI_MATCH(DMI_PRODUCT_VERSION, "Ideapad Z570"),
@@ -1677,9 +1566,7 @@ static void ideapad_check_features(struct ideapad_private *priv)
 }
 
 #if IS_ENABLED(CONFIG_ACPI_WMI)
-/*
- * WMI driver
- */
+ 
 enum ideapad_wmi_event_type {
 	IDEAPAD_WMI_EVENT_ESC,
 	IDEAPAD_WMI_EVENT_FN_KEYS,
@@ -1754,9 +1641,9 @@ static const struct ideapad_wmi_private ideapad_wmi_context_fn_keys = {
 };
 
 static const struct wmi_device_id ideapad_wmi_ids[] = {
-	{ "26CAB2E5-5CF1-46AE-AAC3-4A12B6BA50E6", &ideapad_wmi_context_esc }, /* Yoga 3 */
-	{ "56322276-8493-4CE8-A783-98C991274F5E", &ideapad_wmi_context_esc }, /* Yoga 700 */
-	{ "8FC0DE0C-B4E4-43FD-B0F3-8871711C1294", &ideapad_wmi_context_fn_keys }, /* Legion 5 */
+	{ "26CAB2E5-5CF1-46AE-AAC3-4A12B6BA50E6", &ideapad_wmi_context_esc },  
+	{ "56322276-8493-4CE8-A783-98C991274F5E", &ideapad_wmi_context_esc },  
+	{ "8FC0DE0C-B4E4-43FD-B0F3-8871711C1294", &ideapad_wmi_context_fn_keys },  
 	{},
 };
 MODULE_DEVICE_TABLE(wmi, ideapad_wmi_ids);
@@ -1785,9 +1672,7 @@ static inline int ideapad_wmi_driver_register(void) { return 0; }
 static inline void ideapad_wmi_driver_unregister(void) { }
 #endif
 
-/*
- * ACPI driver
- */
+ 
 static int ideapad_acpi_add(struct platform_device *pdev)
 {
 	struct acpi_device *adev = ACPI_COMPANION(&pdev->dev);
@@ -1829,10 +1714,7 @@ static int ideapad_acpi_add(struct platform_device *pdev)
 			dev_info(&pdev->dev, "Keyboard backlight control not available\n");
 	}
 
-	/*
-	 * On some models without a hw-switch (the yoga 2 13 at least)
-	 * VPCCMD_W_RF must be explicitly set to 1 for the wifi to work.
-	 */
+	 
 	if (!priv->features.hw_rfkill_switch)
 		write_ec_cmd(priv->adev->handle, VPCCMD_W_RF, 1);
 

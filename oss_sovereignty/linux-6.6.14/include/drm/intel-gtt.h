@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Common header for intel-gtt.ko and i915.ko */
+ 
+ 
 
 #ifndef _DRM_INTEL_GTT_H
 #define	_DRM_INTEL_GTT_H
@@ -29,11 +29,11 @@ void intel_gmch_gtt_insert_sg_entries(struct sg_table *st,
 				      unsigned int flags);
 void intel_gmch_gtt_clear_range(unsigned int first_entry, unsigned int num_entries);
 
-/* Special gtt memory types */
+ 
 #define AGP_DCACHE_MEMORY	1
 #define AGP_PHYS_MEMORY		2
 
-/* flag for GFDT type */
+ 
 #define AGP_USER_CACHED_MEMORY_GFDT (1 << 3)
 
 #endif

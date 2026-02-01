@@ -1,14 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * i2c-stm32.c
- *
- * Copyright (C) M'boumba Cedric Madianga 2017
- * Author: M'boumba Cedric Madianga <cedric.madianga@gmail.com>
- */
+
+ 
 
 #include "i2c-stm32.h"
 
-/* Functions for DMA support */
+ 
 struct stm32_i2c_dma *stm32_i2c_dma_request(struct device *dev,
 					    dma_addr_t phy_addr,
 					    u32 txdr_offset,
@@ -22,7 +17,7 @@ struct stm32_i2c_dma *stm32_i2c_dma_request(struct device *dev,
 	if (!dma)
 		return ERR_PTR(-ENOMEM);
 
-	/* Request and configure I2C TX dma channel */
+	 
 	dma->chan_tx = dma_request_chan(dev, "tx");
 	if (IS_ERR(dma->chan_tx)) {
 		ret = PTR_ERR(dma->chan_tx);
@@ -43,7 +38,7 @@ struct stm32_i2c_dma *stm32_i2c_dma_request(struct device *dev,
 		goto fail_tx;
 	}
 
-	/* Request and configure I2C RX dma channel */
+	 
 	dma->chan_rx = dma_request_chan(dev, "rx");
 	if (IS_ERR(dma->chan_rx)) {
 		ret = PTR_ERR(dma->chan_rx);

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2017 MediaTek Inc.
- * Copyright (c) 2023 Collabora, Ltd.
- *               AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
- */
+
+ 
 
 #include <dt-bindings/clock/mt7622-clk.h>
 #include <linux/module.h>
@@ -53,7 +49,7 @@ static const struct mtk_clk_rst_desc clk_rst_desc = {
 
 static const struct of_device_id of_match_clk_mt7622_infracfg[] = {
 	{ .compatible = "mediatek,mt7622-infracfg" },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, of_match_clk_mt7622_infracfg);
 

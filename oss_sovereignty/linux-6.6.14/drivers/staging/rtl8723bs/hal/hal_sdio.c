@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/******************************************************************************
- *
- * Copyright(c) 2007 - 2011 Realtek Corporation. All rights reserved.
- *
- ******************************************************************************/
+
+ 
 
 #include <drv_types.h>
 #include <rtw_debug.h>
@@ -38,9 +34,9 @@ void rtw_hal_sdio_update_tx_freepage(
 	struct hal_com_data	*pHalData = GET_HAL_DATA(padapter);
 	u8 DedicatedPgNum = 0;
 	u8 RequiredPublicFreePgNum = 0;
-	/* _irqL irql; */
+	 
 
-	/* spin_lock_bh(&pHalData->SdioTxFIFOFreePageLock); */
+	 
 
 	DedicatedPgNum = pHalData->SdioTxFIFOFreePage[PageIdx];
 	if (RequiredPageNum <= DedicatedPgNum) {
@@ -51,7 +47,7 @@ void rtw_hal_sdio_update_tx_freepage(
 		pHalData->SdioTxFIFOFreePage[PUBLIC_QUEUE_IDX] -= RequiredPublicFreePgNum;
 	}
 
-	/* spin_unlock_bh(&pHalData->SdioTxFIFOFreePageLock); */
+	 
 }
 
 void rtw_hal_set_sdio_tx_max_length(

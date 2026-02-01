@@ -1,9 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
 
-/*
- * Copyright 2016-2022 HabanaLabs, Ltd.
- * All Rights Reserved.
- */
+
+ 
 
 #include "habanalabs.h"
 
@@ -280,7 +277,7 @@ static ssize_t status_show(struct device *dev, struct device_attribute *attr,
 
 	strscpy(str, hdev->status[hl_device_status(hdev)], HL_STR_MAX);
 
-	/* use uppercase for backward compatibility */
+	 
 	str[0] = 'A' + (str[0] - 'a');
 
 	return sprintf(buf, "%s\n", str);

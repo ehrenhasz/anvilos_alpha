@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * HCI based Driver for STMicroelectronics NFC Chip
- *
- * Copyright (C) 2014  STMicroelectronics SAS. All rights reserved.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/nfc.h>
@@ -15,18 +11,15 @@
 
 #define FULL_VERSION_LEN 3
 
-/* Proprietary gates, events, commands and registers */
+ 
 
-/* Commands that apply to all RF readers */
+ 
 #define ST21NFCA_RF_READER_CMD_PRESENCE_CHECK	0x30
 
 #define ST21NFCA_RF_READER_ISO15693_GATE	0x12
 #define ST21NFCA_RF_READER_ISO15693_INVENTORY	0x01
 
-/*
- * Reader gate for communication with contact-less cards using Type A
- * protocol ISO14443-3 but not compliant with ISO14443-4
- */
+ 
 #define ST21NFCA_RF_READER_14443_3_A_GATE	0x15
 #define ST21NFCA_RF_READER_14443_3_A_UID	0x02
 #define ST21NFCA_RF_READER_14443_3_A_ATQA	0x03
@@ -62,7 +55,7 @@
 #define ST21NFCA_DM_IS_PIPE_OPEN(p) \
 	((p & 0x0f) == (ST21NFCA_DM_PIPE_CREATED | ST21NFCA_DM_PIPE_OPEN))
 
-#define ST21NFCA_NFC_MODE			0x03	/* NFC_MODE parameter*/
+#define ST21NFCA_NFC_MODE			0x03	 
 
 #define ST21NFCA_EVT_HOT_PLUG			0x03
 #define ST21NFCA_EVT_HOT_PLUG_IS_INHIBITED(x) (x->data[0] & 0x80)
@@ -85,7 +78,7 @@ static const struct nfc_hci_gate st21nfca_gates[] = {
 	{ST21NFCA_RF_READER_ISO15693_GATE, NFC_HCI_INVALID_PIPE},
 	{ST21NFCA_RF_CARD_F_GATE, NFC_HCI_INVALID_PIPE},
 
-	/* Secure element pipes are created by secure element host */
+	 
 	{ST21NFCA_CONNECTIVITY_GATE, NFC_HCI_DO_NOT_CREATE_PIPE},
 	{ST21NFCA_APDU_READER_GATE, NFC_HCI_DO_NOT_CREATE_PIPE},
 };
@@ -98,7 +91,7 @@ struct st21nfca_pipe_info {
 	u8 dst_gate_id;
 } __packed;
 
-/* Largest headroom needed for outgoing custom commands */
+ 
 #define ST21NFCA_CMDS_HEADROOM  7
 
 static int st21nfca_hci_load_session(struct nfc_hci_dev *hdev)
@@ -114,37 +107,21 @@ static int st21nfca_hci_load_session(struct nfc_hci_dev *hdev)
 		NFC_HCI_TERMINAL_HOST_ID, 0
 	};
 
-	/* On ST21NFCA device pipes number are dynamics
-	 * A maximum of 16 pipes can be created at the same time
-	 * If pipes are already created, hci_dev_up will fail.
-	 * Doing a clear all pipe is a bad idea because:
-	 * - It does useless EEPROM cycling
-	 * - It might cause issue for secure elements support
-	 * (such as removing connectivity or APDU reader pipe)
-	 * A better approach on ST21NFCA is to:
-	 * - get a pipe list for each host.
-	 * (eg: NFC_HCI_HOST_CONTROLLER_ID for now).
-	 * (TODO Later on UICC HOST and eSE HOST)
-	 * - get pipe information
-	 * - match retrieved pipe list in st21nfca_gates
-	 * ST21NFCA_DEVICE_MGNT_GATE is a proprietary gate
-	 * with ST21NFCA_DEVICE_MGNT_PIPE.
-	 * Pipe can be closed and need to be open.
-	 */
+	 
 	r = nfc_hci_connect_gate(hdev, NFC_HCI_HOST_CONTROLLER_ID,
 				ST21NFCA_DEVICE_MGNT_GATE,
 				ST21NFCA_DEVICE_MGNT_PIPE);
 	if (r < 0)
 		return r;
 
-	/* Get pipe list */
+	 
 	r = nfc_hci_send_cmd(hdev, ST21NFCA_DEVICE_MGNT_GATE,
 			ST21NFCA_DM_GETINFO, pipe_list, sizeof(pipe_list),
 			&skb_pipe_list);
 	if (r < 0)
 		return r;
 
-	/* Complete the existing gate_pipe table */
+	 
 	for (i = 0; i < skb_pipe_list->len; i++) {
 		pipe_info[2] = skb_pipe_list->data[i];
 		r = nfc_hci_send_cmd(hdev, ST21NFCA_DEVICE_MGNT_GATE,
@@ -153,15 +130,7 @@ static int st21nfca_hci_load_session(struct nfc_hci_dev *hdev)
 		if (r)
 			continue;
 
-		/*
-		 * Match pipe ID and gate ID
-		 * Output format from ST21NFC_DM_GETINFO is:
-		 * - pipe state (1byte)
-		 * - source hid (1byte)
-		 * - source gid (1byte)
-		 * - destination hid (1byte)
-		 * - destination gid (1byte)
-		 */
+		 
 		info = (struct st21nfca_pipe_info *) skb_pipe_info->data;
 		if (info->dst_gate_id == ST21NFCA_APDU_READER_GATE &&
 			info->src_host_id == NFC_HCI_UICC_HOST_ID) {
@@ -190,10 +159,7 @@ static int st21nfca_hci_load_session(struct nfc_hci_dev *hdev)
 		kfree_skb(skb_pipe_info);
 	}
 
-	/*
-	 * 3 gates have a well known pipe ID. Only NFC_HCI_LINK_MGMT_GATE
-	 * is not yet open at this stage.
-	 */
+	 
 	r = nfc_hci_connect_gate(hdev, NFC_HCI_HOST_CONTROLLER_ID,
 				 NFC_HCI_LINK_MGMT_GATE,
 				 NFC_HCI_LINK_MGMT_PIPE);
@@ -263,7 +229,7 @@ static int st21nfca_hci_ready(struct nfc_hci_dev *hdev)
 			return r;
 	}
 
-	/* Set NFC_MODE in device management gate to enable */
+	 
 	r = nfc_hci_get_param(hdev, ST21NFCA_DEVICE_MGNT_GATE,
 			      ST21NFCA_NFC_MODE, &skb);
 	if (r < 0)
@@ -327,10 +293,7 @@ static int st21nfca_hci_start_poll(struct nfc_hci_dev *hdev,
 	if (r < 0)
 		return r;
 	if (im_protocols) {
-		/*
-		 * enable polling according to im_protocols & tm_protocols
-		 * - CLOSE pipe according to im_protocols & tm_protocols
-		 */
+		 
 		if ((NFC_HCI_RF_READER_B_GATE & im_protocols) == 0) {
 			r = nfc_hci_disconnect_gate(hdev,
 					NFC_HCI_RF_READER_B_GATE);
@@ -405,7 +368,7 @@ static int st21nfca_hci_start_poll(struct nfc_hci_dev *hdev,
 		if (r < 0)
 			return r;
 
-		/* Configure the maximum supported datarate to 424Kbps */
+		 
 		if (datarate_skb->len > 0 &&
 		    datarate_skb->data[0] !=
 		    ST21NFCA_RF_CARD_F_DATARATE_212_424) {
@@ -420,12 +383,7 @@ static int st21nfca_hci_start_poll(struct nfc_hci_dev *hdev,
 		}
 		kfree_skb(datarate_skb);
 
-		/*
-		 * Configure sens_res
-		 *
-		 * NFC Forum Digital Spec Table 7:
-		 * NFCID1 size: triple (10 bytes)
-		 */
+		 
 		param[0] = 0x00;
 		param[1] = 0x08;
 		r = nfc_hci_set_param(hdev, ST21NFCA_RF_CARD_F_GATE,
@@ -433,30 +391,24 @@ static int st21nfca_hci_start_poll(struct nfc_hci_dev *hdev,
 		if (r < 0)
 			return r;
 
-		/*
-		 * Configure sel_res
-		 *
-		 * NFC Forum Digistal Spec Table 17:
-		 * b3 set to 0b (value b7-b6):
-		 * - 10b: Configured for NFC-DEP Protocol
-		 */
+		 
 		param[0] = 0x40;
 		r = nfc_hci_set_param(hdev, ST21NFCA_RF_CARD_F_GATE,
 				      ST21NFCA_RF_CARD_F_SEL_RES, param, 1);
 		if (r < 0)
 			return r;
 
-		/* Configure NFCID1 Random uid */
+		 
 		r = nfc_hci_set_param(hdev, ST21NFCA_RF_CARD_F_GATE,
 				      ST21NFCA_RF_CARD_F_NFCID1, NULL, 0);
 		if (r < 0)
 			return r;
 
-		/* Configure NFCID2_LIST */
-		/* System Code */
+		 
+		 
 		param[0] = 0x00;
 		param[1] = 0x00;
-		/* NFCID2 */
+		 
 		param[2] = 0x01;
 		param[3] = 0xfe;
 		param[4] = 'S';
@@ -465,18 +417,9 @@ static int st21nfca_hci_start_poll(struct nfc_hci_dev *hdev,
 		param[7] = 'i';
 		param[8] = 'c';
 		param[9] = 'r';
-		/* 8 byte Pad bytes used for polling respone frame */
+		 
 
-		/*
-		 * Configuration byte:
-		 * - bit 0: define the default NFCID2 entry used when the
-		 * system code is equal to 'FFFF'
-		 * - bit 1: use a random value for lowest 6 bytes of
-		 * NFCID2 value
-		 * - bit 2: ignore polling request frame if request code
-		 * is equal to '01'
-		 * - Other bits are RFU
-		 */
+		 
 		param[18] = 0x01;
 		r = nfc_hci_set_param(hdev, ST21NFCA_RF_CARD_F_GATE,
 				      ST21NFCA_RF_CARD_F_NFCID2_LIST, param,
@@ -626,7 +569,7 @@ static int st21nfca_hci_target_from_gate(struct nfc_hci_dev *hdev, u8 gate,
 		target->supported_protocols = NFC_PROTO_FELICA_MASK;
 		break;
 	case ST21NFCA_RF_READER_14443_3_A_GATE:
-		/* ISO14443-3 type 1 or 2 tags */
+		 
 		r = st21nfca_get_iso14443_3_atqa(hdev, &atqa);
 		if (r < 0)
 			return r;
@@ -685,19 +628,13 @@ static int st21nfca_hci_complete_target_discovered(struct nfc_hci_dev *hdev,
 			goto exit;
 		}
 
-		/*
-		 * - After the recepton of polling response for type F frame
-		 * at 212 or 424 Kbit/s, NFCID2 registry parameters will be
-		 * updated.
-		 * - After the reception of SEL_RES with NFCIP-1 compliant bit
-		 * set for type A frame NFCID1 will be updated
-		 */
+		 
 		if (nfcid_skb->len > 0) {
-			/* P2P in type F */
+			 
 			memcpy(target->sensf_res, nfcid_skb->data,
 				nfcid_skb->len);
 			target->sensf_res_len = nfcid_skb->len;
-			/* NFC Forum Digital Protocol Table 44 */
+			 
 			if (target->sensf_res[0] == 0x01 &&
 			    target->sensf_res[1] == 0xfe)
 				target->supported_protocols =
@@ -708,7 +645,7 @@ static int st21nfca_hci_complete_target_discovered(struct nfc_hci_dev *hdev,
 		} else {
 			kfree_skb(nfcid_skb);
 			nfcid_skb = NULL;
-			/* P2P in type A */
+			 
 			r = nfc_hci_get_param(hdev, ST21NFCA_RF_READER_F_GATE,
 					ST21NFCA_RF_READER_F_NFCID1,
 					&nfcid_skb);
@@ -751,11 +688,7 @@ static void st21nfca_hci_data_exchange_cb(void *context, struct sk_buff *skb,
 	}
 }
 
-/*
- * Returns:
- * <= 0: driver handled the data exchange
- *    1: driver doesn't especially handle, please do standard processing
- */
+ 
 static int st21nfca_hci_im_transceive(struct nfc_hci_dev *hdev,
 				      struct nfc_target *target,
 				      struct sk_buff *skb,
@@ -776,7 +709,7 @@ static int st21nfca_hci_im_transceive(struct nfc_hci_dev *hdev,
 					      ST21NFCA_WR_XCHG_DATA, skb->data,
 					      skb->len, cb, cb_context);
 	case ST21NFCA_RF_READER_14443_3_A_GATE:
-		*(u8 *)skb_push(skb, 1) = 0x1a;	/* CTR, see spec:10.2.2.1 */
+		*(u8 *)skb_push(skb, 1) = 0x1a;	 
 
 		return nfc_hci_send_cmd_async(hdev, target->hci_reader_gate,
 					      ST21NFCA_WR_XCHG_DATA, skb->data,
@@ -811,13 +744,7 @@ static int st21nfca_hci_check_presence(struct nfc_hci_dev *hdev,
 	switch (target->hci_reader_gate) {
 	case NFC_HCI_RF_READER_A_GATE:
 	case NFC_HCI_RF_READER_B_GATE:
-		/*
-		 * PRESENCE_CHECK on those gates is available
-		 * However, the answer to this command is taking 3 * fwi
-		 * if the card is no present.
-		 * Instead, we send an empty I-Frame with a very short
-		 * configurable fwi ~604µs.
-		 */
+		 
 		return nfc_hci_send_cmd(hdev, target->hci_reader_gate,
 					ST21NFCA_WR_XCHG_DATA, &fwi, 1, NULL);
 	case ST21NFCA_RF_READER_14443_3_A_GATE:
@@ -881,11 +808,7 @@ static int st21nfca_admin_event_received(struct nfc_hci_dev *hdev, u8 event,
 	return 0;
 }
 
-/*
- * Returns:
- * <= 0: driver handled the event, skb consumed
- *    1: driver does not handle the event, please do standard processing
- */
+ 
 static int st21nfca_hci_event_received(struct nfc_hci_dev *hdev, u8 pipe,
 				       u8 event, struct sk_buff *skb)
 {
@@ -959,10 +882,7 @@ int st21nfca_hci_probe(void *phy_id, const struct nfc_phy_ops *phy_ops,
 
 	memcpy(init_data.gates, st21nfca_gates, sizeof(st21nfca_gates));
 
-	/*
-	 * Session id must include the driver name + i2c bus addr
-	 * persistent info to discriminate 2 identical chips
-	 */
+	 
 	dev_num = find_first_zero_bit(dev_mask, ST21NFCA_NUM_DEVICES);
 	if (dev_num >= ST21NFCA_NUM_DEVICES) {
 		r = -ENODEV;

@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Greybus bundles
- *
- * Copyright 2014 Google Inc.
- * Copyright 2014 Linaro Ltd.
- */
+ 
+ 
 
 #ifndef __BUNDLE_H
 #define __BUNDLE_H
@@ -16,7 +11,7 @@
 
 #define	BUNDLE_ID_NONE	U8_MAX
 
-/* Greybus "public" definitions" */
+ 
 struct gb_bundle {
 	struct device		dev;
 	struct gb_interface	*intf;
@@ -32,17 +27,17 @@ struct gb_bundle {
 	struct list_head	connections;
 	u8			*state;
 
-	struct list_head	links;	/* interface->bundles */
+	struct list_head	links;	 
 };
 #define to_gb_bundle(d) container_of(d, struct gb_bundle, dev)
 
-/* Greybus "private" definitions" */
+ 
 struct gb_bundle *gb_bundle_create(struct gb_interface *intf, u8 bundle_id,
 				   u8 class);
 int gb_bundle_add(struct gb_bundle *bundle);
 void gb_bundle_destroy(struct gb_bundle *bundle);
 
-/* Bundle Runtime PM wrappers */
+ 
 #ifdef CONFIG_PM
 static inline int gb_pm_runtime_get_sync(struct gb_bundle *bundle)
 {
@@ -89,4 +84,4 @@ static inline void gb_pm_runtime_get_noresume(struct gb_bundle *bundle) {}
 static inline void gb_pm_runtime_put_noidle(struct gb_bundle *bundle) {}
 #endif
 
-#endif /* __BUNDLE_H */
+#endif  

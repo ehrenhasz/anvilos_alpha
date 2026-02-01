@@ -1,28 +1,4 @@
-/*
- * This file is part of the MicroPython project, http://micropython.org/
- *
- * The MIT License (MIT)
- *
- * Copyright (c) 2014-2019 Damien P. George
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
+ 
 
 #include <stdio.h>
 
@@ -63,13 +39,13 @@ static mp_obj_t mod_json_dump_helper(size_t n_args, const mp_obj_t *pos_args, mp
     }
 
     if (mode == DUMP_MODE_TO_STRING) {
-        // dumps(obj)
+        
         vstr_t vstr;
         vstr_init_print(&vstr, 8, &print_ext.base);
         mp_obj_print_helper(&print_ext.base, pos_args[0], PRINT_JSON);
         return mp_obj_new_str_from_utf8_vstr(&vstr);
     } else {
-        // dump(obj, stream)
+        
         print_ext.base.data = MP_OBJ_TO_PTR(pos_args[1]);
         print_ext.base.print_strn = mp_stream_write_adaptor;
         mp_get_stream_raise(pos_args[1], MP_STREAM_OP_WRITE);
@@ -109,18 +85,18 @@ static MP_DEFINE_CONST_FUN_OBJ_1(mod_json_dumps_obj, mod_json_dumps);
 
 #endif
 
-// The function below implements a simple non-recursive JSON parser.
-//
-// The JSON specification is at http://www.ietf.org/rfc/rfc4627.txt
-// The parser here will parse any valid JSON and return the correct
-// corresponding Python object.  It allows through a superset of JSON, since
-// it treats commas and colons as "whitespace", and doesn't care if
-// brackets/braces are correctly paired.  It will raise a ValueError if the
-// input is outside it's specs.
-//
-// Most of the work is parsing the primitives (null, false, true, numbers,
-// strings).  It does 1 pass over the input stream.  It tries to be fast and
-// small in code size, while not using more RAM than necessary.
+
+
+
+
+
+
+
+
+
+
+
+
 
 typedef struct _json_stream_t {
     mp_obj_t stream_obj;
@@ -129,7 +105,7 @@ typedef struct _json_stream_t {
     byte cur;
 } json_stream_t;
 
-#define S_EOF (0) // null is not allowed in json stream so is ok as EOF marker
+#define S_EOF (0) 
 #define S_END(s) ((s).cur == S_EOF)
 #define S_CUR(s) ((s).cur)
 #define S_NEXT(s) (json_stream_next(&(s)))
@@ -150,7 +126,7 @@ static mp_obj_t mod_json_load(mp_obj_t stream_obj) {
     json_stream_t s = {stream_obj, stream_p->read, 0, 0};
     vstr_t vstr;
     vstr_init(&vstr, 8);
-    mp_obj_list_t stack; // we use a list as a simple stack for nested JSON
+    mp_obj_list_t stack; 
     stack.len = 0;
     stack.items = NULL;
     mp_obj_t stack_top = MP_OBJ_NULL;
@@ -263,7 +239,7 @@ static mp_obj_t mod_json_load(mp_obj_t stream_obj) {
                     if (cur == '.' || cur == 'E' || cur == 'e') {
                         flt = true;
                     } else if (cur == '+' || cur == '-' || unichar_isdigit(cur)) {
-                        // pass
+                        
                     } else {
                         break;
                     }
@@ -287,11 +263,11 @@ static mp_obj_t mod_json_load(mp_obj_t stream_obj) {
             case '}':
             case ']': {
                 if (stack_top == MP_OBJ_NULL) {
-                    // no object at all
+                    
                     goto fail;
                 }
                 if (stack.len == 0) {
-                    // finished; compound object
+                    
                     goto success;
                 }
                 stack.len -= 1;
@@ -306,11 +282,11 @@ static mp_obj_t mod_json_load(mp_obj_t stream_obj) {
             stack_top = next;
             stack_top_type = mp_obj_get_type(stack_top);
             if (!enter) {
-                // finished; single primitive only
+                
                 goto success;
             }
         } else {
-            // append to list or dict
+            
             if (stack_top_type == &mp_type_list) {
                 mp_obj_list_append(stack_top, next);
             } else {
@@ -337,16 +313,16 @@ static mp_obj_t mod_json_load(mp_obj_t stream_obj) {
         }
     }
 success:
-    // eat trailing whitespace
+    
     while (unichar_isspace(S_CUR(s))) {
         S_NEXT(s);
     }
     if (!S_END(s)) {
-        // unexpected chars
+        
         goto fail;
     }
     if (stack_top == MP_OBJ_NULL || stack.len != 0) {
-        // not exactly 1 object
+        
         goto fail;
     }
     vstr_clear(&vstr);
@@ -383,4 +359,4 @@ const mp_obj_module_t mp_module_json = {
 
 MP_REGISTER_EXTENSIBLE_MODULE(MP_QSTR_json, mp_module_json);
 
-#endif // MICROPY_PY_JSON
+#endif 

@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
-/* Copyright (c) 2017-2018 Mellanox Technologies. All rights reserved */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/slab.h>
@@ -26,9 +26,9 @@ size_t mlxsw_sp_acl_tcam_priv_size(struct mlxsw_sp *mlxsw_sp)
 	return ops->priv_size;
 }
 
-#define MLXSW_SP_ACL_TCAM_VREGION_REHASH_INTRVL_DFLT 5000 /* ms */
-#define MLXSW_SP_ACL_TCAM_VREGION_REHASH_INTRVL_MIN 3000 /* ms */
-#define MLXSW_SP_ACL_TCAM_VREGION_REHASH_CREDITS 100 /* number of entries */
+#define MLXSW_SP_ACL_TCAM_VREGION_REHASH_INTRVL_DFLT 5000  
+#define MLXSW_SP_ACL_TCAM_VREGION_REHASH_INTRVL_MIN 3000  
+#define MLXSW_SP_ACL_TCAM_VREGION_REHASH_CREDITS 100  
 
 int mlxsw_sp_acl_tcam_priority_get(struct mlxsw_sp *mlxsw_sp,
 				   struct mlxsw_sp_acl_rule_info *rulei,
@@ -44,12 +44,12 @@ int mlxsw_sp_acl_tcam_priority_get(struct mlxsw_sp *mlxsw_sp,
 	if (!MLXSW_CORE_RES_VALID(mlxsw_sp->core, KVD_SIZE))
 		return -EIO;
 
-	/* Priority range is 1..cap_kvd_size-1. */
+	 
 	max_priority = MLXSW_CORE_RES_GET(mlxsw_sp->core, KVD_SIZE) - 1;
 	if (rulei->priority >= max_priority)
 		return -EINVAL;
 
-	/* Unlike in TC, in HW, higher number means higher priority. */
+	 
 	*priority = max_priority - rulei->priority;
 	return 0;
 }
@@ -102,7 +102,7 @@ struct mlxsw_sp_acl_tcam_pattern {
 struct mlxsw_sp_acl_tcam_group {
 	struct mlxsw_sp_acl_tcam *tcam;
 	u16 id;
-	struct mutex lock; /* guards region list updates */
+	struct mutex lock;  
 	struct list_head region_list;
 	unsigned int region_count;
 };
@@ -123,30 +123,18 @@ struct mlxsw_sp_acl_tcam_vgroup {
 struct mlxsw_sp_acl_tcam_rehash_ctx {
 	void *hints_priv;
 	bool this_is_rollback;
-	struct mlxsw_sp_acl_tcam_vchunk *current_vchunk; /* vchunk being
-							  * currently migrated.
-							  */
-	struct mlxsw_sp_acl_tcam_ventry *start_ventry; /* ventry to start
-							* migration from in
-							* a vchunk being
-							* currently migrated.
-							*/
-	struct mlxsw_sp_acl_tcam_ventry *stop_ventry; /* ventry to stop
-						       * migration at
-						       * a vchunk being
-						       * currently migrated.
-						       */
+	struct mlxsw_sp_acl_tcam_vchunk *current_vchunk;  
+	struct mlxsw_sp_acl_tcam_ventry *start_ventry;  
+	struct mlxsw_sp_acl_tcam_ventry *stop_ventry;  
 };
 
 struct mlxsw_sp_acl_tcam_vregion {
-	struct mutex lock; /* Protects consistency of region, region2 pointers
-			    * and vchunk_list.
-			    */
+	struct mutex lock;  
 	struct mlxsw_sp_acl_tcam_region *region;
-	struct mlxsw_sp_acl_tcam_region *region2; /* Used during migration */
-	struct list_head list; /* Member of a TCAM group */
-	struct list_head tlist; /* Member of a TCAM */
-	struct list_head vchunk_list; /* List of vchunks under this vregion */
+	struct mlxsw_sp_acl_tcam_region *region2;  
+	struct list_head list;  
+	struct list_head tlist;  
+	struct list_head vchunk_list;  
 	struct mlxsw_afk_key_info *key_info;
 	struct mlxsw_sp_acl_tcam *tcam;
 	struct mlxsw_sp_acl_tcam_vgroup *vgroup;
@@ -164,16 +152,16 @@ struct mlxsw_sp_acl_tcam_chunk {
 	struct mlxsw_sp_acl_tcam_vchunk *vchunk;
 	struct mlxsw_sp_acl_tcam_region *region;
 	unsigned long priv[];
-	/* priv has to be always the last item */
+	 
 };
 
 struct mlxsw_sp_acl_tcam_vchunk {
 	struct mlxsw_sp_acl_tcam_chunk *chunk;
-	struct mlxsw_sp_acl_tcam_chunk *chunk2; /* Used during migration */
-	struct list_head list; /* Member of a TCAM vregion */
-	struct rhash_head ht_node; /* Member of a chunk HT */
+	struct mlxsw_sp_acl_tcam_chunk *chunk2;  
+	struct list_head list;  
+	struct rhash_head ht_node;  
 	struct list_head ventry_list;
-	unsigned int priority; /* Priority within the vregion and group */
+	unsigned int priority;  
 	struct mlxsw_sp_acl_tcam_vgroup *vgroup;
 	struct mlxsw_sp_acl_tcam_vregion *vregion;
 	unsigned int ref_count;
@@ -183,12 +171,12 @@ struct mlxsw_sp_acl_tcam_entry {
 	struct mlxsw_sp_acl_tcam_ventry *ventry;
 	struct mlxsw_sp_acl_tcam_chunk *chunk;
 	unsigned long priv[];
-	/* priv has to be always the last item */
+	 
 };
 
 struct mlxsw_sp_acl_tcam_ventry {
 	struct mlxsw_sp_acl_tcam_entry *entry;
-	struct list_head list; /* Member of a TCAM vchunk */
+	struct list_head list;  
 	struct mlxsw_sp_acl_tcam_vchunk *vchunk;
 	struct mlxsw_sp_acl_rule_info *rulei;
 };
@@ -211,7 +199,7 @@ static int mlxsw_sp_acl_tcam_group_update(struct mlxsw_sp *mlxsw_sp,
 	list_for_each_entry(region, &group->region_list, list) {
 		bool multi = false;
 
-		/* Check if the next entry in the list has the same vregion. */
+		 
 		if (region->list.next != &group->region_list &&
 		    list_next_entry(region, list)->vregion == region->vregion)
 			multi = true;
@@ -342,7 +330,7 @@ mlxsw_sp_acl_tcam_vregion_prio(struct mlxsw_sp_acl_tcam_vregion *vregion)
 
 	if (list_empty(&vregion->vchunk_list))
 		return 0;
-	/* As a priority of a vregion, return priority of the first vchunk */
+	 
 	vchunk = list_first_entry(&vregion->vchunk_list,
 				  typeof(*vchunk), list);
 	return vchunk->priority;
@@ -393,12 +381,10 @@ mlxsw_sp_acl_tcam_group_region_attach(struct mlxsw_sp *mlxsw_sp,
 	}
 
 	if (next_region) {
-		/* If the next region is defined, place the new one
-		 * before it. The next one is a sibling.
-		 */
+		 
 		pos = &next_region->list;
 	} else {
-		/* Position the region inside the list according to priority */
+		 
 		list_for_each(pos, &group->region_list) {
 			region2 = list_entry(pos, typeof(*region2), list);
 			if (mlxsw_sp_acl_tcam_vregion_prio(region2->vregion) >
@@ -447,7 +433,7 @@ mlxsw_sp_acl_tcam_vgroup_vregion_attach(struct mlxsw_sp *mlxsw_sp,
 	struct list_head *pos;
 	int err;
 
-	/* Position the vregion inside the list according to priority */
+	 
 	list_for_each(pos, &vgroup->vregion_list) {
 		vregion2 = list_entry(pos, typeof(*vregion2), list);
 		if (mlxsw_sp_acl_tcam_vregion_prio(vregion2) > priority)
@@ -492,10 +478,8 @@ mlxsw_sp_acl_tcam_vgroup_vregion_find(struct mlxsw_sp_acl_tcam_vgroup *vgroup,
 	list_for_each(pos, &vgroup->vregion_list) {
 		vregion = list_entry(pos, typeof(*vregion), list);
 
-		/* First, check if the requested priority does not rather belong
-		 * under some of the next vregions.
-		 */
-		if (pos->next != &vgroup->vregion_list) { /* not last */
+		 
+		if (pos->next != &vgroup->vregion_list) {  
 			vregion2 = list_entry(pos->next, typeof(*vregion2),
 					      list);
 			if (priority >=
@@ -506,33 +490,21 @@ mlxsw_sp_acl_tcam_vgroup_vregion_find(struct mlxsw_sp_acl_tcam_vgroup *vgroup,
 		issubset = mlxsw_afk_key_info_subset(vregion->key_info,
 						     elusage);
 
-		/* If requested element usage would not fit and the priority
-		 * is lower than the currently inspected vregion we cannot
-		 * use this region, so return NULL to indicate new vregion has
-		 * to be created.
-		 */
+		 
 		if (!issubset &&
 		    priority < mlxsw_sp_acl_tcam_vregion_prio(vregion))
 			return NULL;
 
-		/* If requested element usage would not fit and the priority
-		 * is higher than the currently inspected vregion we cannot
-		 * use this vregion. There is still some hope that the next
-		 * vregion would be the fit. So let it be processed and
-		 * eventually break at the check right above this.
-		 */
+		 
 		if (!issubset &&
 		    priority > mlxsw_sp_acl_tcam_vregion_max_prio(vregion))
 			continue;
 
-		/* Indicate if the vregion needs to be split in order to add
-		 * the requested priority. Split is needed when requested
-		 * element usage won't fit into the found vregion.
-		 */
+		 
 		*p_need_split = !issubset;
 		return vregion;
 	}
-	return NULL; /* New vregion has to be created. */
+	return NULL;  
 }
 
 static void
@@ -543,9 +515,7 @@ mlxsw_sp_acl_tcam_vgroup_use_patterns(struct mlxsw_sp_acl_tcam_vgroup *vgroup,
 	const struct mlxsw_sp_acl_tcam_pattern *pattern;
 	int i;
 
-	/* In case the template is set, we don't have to look up the pattern
-	 * and just use the template.
-	 */
+	 
 	if (vgroup->tmplt_elusage_set) {
 		memcpy(out, &vgroup->tmplt_elusage, sizeof(*out));
 		WARN_ON(!mlxsw_afk_element_usage_subset(elusage, out));
@@ -716,9 +686,7 @@ static void mlxsw_sp_acl_tcam_vregion_rehash_work(struct work_struct *work)
 
 	mlxsw_sp_acl_tcam_vregion_rehash(vregion->mlxsw_sp, vregion, &credits);
 	if (credits < 0)
-		/* Rehash gone out of credits so it was interrupted.
-		 * Schedule the work as soon as possible to continue.
-		 */
+		 
 		mlxsw_core_schedule_dw(&vregion->rehash.dw, 0);
 	else
 		mlxsw_sp_acl_tcam_vregion_rehash_work_schedule(vregion);
@@ -729,10 +697,7 @@ mlxsw_sp_acl_tcam_rehash_ctx_vchunk_changed(struct mlxsw_sp_acl_tcam_vchunk *vch
 {
 	struct mlxsw_sp_acl_tcam_vregion *vregion = vchunk->vregion;
 
-	/* If a rule was added or deleted from vchunk which is currently
-	 * under rehash migration, we have to reset the ventry pointers
-	 * to make sure all rules are properly migrated.
-	 */
+	 
 	if (vregion->rehash.ctx.current_vchunk == vchunk) {
 		vregion->rehash.ctx.start_ventry = NULL;
 		vregion->rehash.ctx.stop_ventry = NULL;
@@ -742,10 +707,7 @@ mlxsw_sp_acl_tcam_rehash_ctx_vchunk_changed(struct mlxsw_sp_acl_tcam_vchunk *vch
 static void
 mlxsw_sp_acl_tcam_rehash_ctx_vregion_changed(struct mlxsw_sp_acl_tcam_vregion *vregion)
 {
-	/* If a chunk was added or deleted from vregion we have to reset
-	 * the current chunk pointer to make sure all chunks
-	 * are properly migrated.
-	 */
+	 
 	vregion->rehash.ctx.current_vchunk = NULL;
 }
 
@@ -790,7 +752,7 @@ mlxsw_sp_acl_tcam_vregion_create(struct mlxsw_sp *mlxsw_sp,
 		goto err_vgroup_vregion_attach;
 
 	if (vgroup->vregion_rehash_enabled && ops->region_rehash_hints_get) {
-		/* Create the delayed work for vregion periodic rehash */
+		 
 		INIT_DELAYED_WORK(&vregion->rehash.dw,
 				  mlxsw_sp_acl_tcam_vregion_rehash_work);
 		mlxsw_sp_acl_tcam_vregion_rehash_work_schedule(vregion);
@@ -847,13 +809,7 @@ mlxsw_sp_acl_tcam_vregion_get(struct mlxsw_sp *mlxsw_sp,
 							elusage, &need_split);
 	if (vregion) {
 		if (need_split) {
-			/* According to priority, new vchunk should belong to
-			 * an existing vregion. However, this vchunk needs
-			 * elements that vregion does not contain. We need
-			 * to split the existing vregion into two and create
-			 * a new vregion for the new vchunk in between.
-			 * This is not supported now.
-			 */
+			 
 			return ERR_PTR(-EOPNOTSUPP);
 		}
 		vregion->ref_count++;
@@ -951,7 +907,7 @@ mlxsw_sp_acl_tcam_vchunk_create(struct mlxsw_sp *mlxsw_sp,
 
 	mlxsw_sp_acl_tcam_rehash_ctx_vregion_changed(vregion);
 
-	/* Position the vchunk inside the list according to priority */
+	 
 	list_for_each(pos, &vregion->vchunk_list) {
 		vchunk2 = list_entry(pos, typeof(*vchunk2), list);
 		if (vchunk2->priority > priority)
@@ -1165,7 +1121,7 @@ mlxsw_sp_acl_tcam_ventry_migrate(struct mlxsw_sp *mlxsw_sp,
 {
 	struct mlxsw_sp_acl_tcam_entry *new_entry;
 
-	/* First check if the entry is not already where we want it to be. */
+	 
 	if (ventry->entry->chunk == chunk)
 		return 0;
 
@@ -1225,13 +1181,11 @@ mlxsw_sp_acl_tcam_vchunk_migrate_one(struct mlxsw_sp *mlxsw_sp,
 		if (err)
 			return err;
 	} else if (!vchunk->chunk2) {
-		/* The chunk is already as it should be, nothing to do. */
+		 
 		return 0;
 	}
 
-	/* If the migration got interrupted, we have the ventry to start from
-	 * stored in context.
-	 */
+	 
 	if (ctx->start_ventry)
 		ventry = ctx->start_ventry;
 	else
@@ -1239,9 +1193,7 @@ mlxsw_sp_acl_tcam_vchunk_migrate_one(struct mlxsw_sp *mlxsw_sp,
 					  typeof(*ventry), list);
 
 	list_for_each_entry_from(ventry, &vchunk->ventry_list, list) {
-		/* During rollback, once we reach the ventry that failed
-		 * to migrate, we are done.
-		 */
+		 
 		if (ventry == ctx->stop_ventry)
 			break;
 
@@ -1249,30 +1201,18 @@ mlxsw_sp_acl_tcam_vchunk_migrate_one(struct mlxsw_sp *mlxsw_sp,
 						       vchunk->chunk, credits);
 		if (err) {
 			if (ctx->this_is_rollback) {
-				/* Save the ventry which we ended with and try
-				 * to continue later on.
-				 */
+				 
 				ctx->start_ventry = ventry;
 				return err;
 			}
-			/* Swap the chunk and chunk2 pointers so the follow-up
-			 * rollback call will see the original chunk pointer
-			 * in vchunk->chunk.
-			 */
+			 
 			swap(vchunk->chunk, vchunk->chunk2);
-			/* The rollback has to be done from beginning of the
-			 * chunk, that is why we have to null the start_ventry.
-			 * However, we know where to stop the rollback,
-			 * at the current ventry.
-			 */
+			 
 			ctx->start_ventry = NULL;
 			ctx->stop_ventry = ventry;
 			return err;
 		} else if (*credits < 0) {
-			/* We are out of credits, the rest of the ventries
-			 * will be migrated later. Save the ventry
-			 * which we ended with.
-			 */
+			 
 			ctx->start_ventry = ventry;
 			return 0;
 		}
@@ -1291,9 +1231,7 @@ mlxsw_sp_acl_tcam_vchunk_migrate_all(struct mlxsw_sp *mlxsw_sp,
 	struct mlxsw_sp_acl_tcam_vchunk *vchunk;
 	int err;
 
-	/* If the migration got interrupted, we have the vchunk
-	 * we are working on stored in context.
-	 */
+	 
 	if (ctx->current_vchunk)
 		vchunk = ctx->current_vchunk;
 	else
@@ -1323,10 +1261,7 @@ mlxsw_sp_acl_tcam_vregion_migrate(struct mlxsw_sp *mlxsw_sp,
 	err = mlxsw_sp_acl_tcam_vchunk_migrate_all(mlxsw_sp, vregion,
 						   ctx, credits);
 	if (err) {
-		/* In case migration was not successful, we need to swap
-		 * so the original region pointer is assigned again
-		 * to vregion->region.
-		 */
+		 
 		swap(vregion->region, vregion->region2);
 		ctx->current_vchunk = NULL;
 		ctx->this_is_rollback = true;
@@ -1336,7 +1271,7 @@ mlxsw_sp_acl_tcam_vregion_migrate(struct mlxsw_sp *mlxsw_sp,
 			trace_mlxsw_sp_acl_tcam_vregion_rehash_rollback_failed(mlxsw_sp,
 									       vregion);
 			dev_err(mlxsw_sp->bus_info->dev, "Failed to rollback during vregion migration fail\n");
-			/* Let the rollback to be continued later on. */
+			 
 		}
 	}
 	mutex_unlock(&vregion->lock);
@@ -1374,9 +1309,7 @@ mlxsw_sp_acl_tcam_vregion_rehash_start(struct mlxsw_sp *mlxsw_sp,
 		goto err_region_create;
 	}
 
-	/* vregion->region contains the pointer to the new region
-	 * we are going to migrate to.
-	 */
+	 
 	vregion->region2 = vregion->region;
 	vregion->region = new_region;
 	err = mlxsw_sp_acl_tcam_group_region_attach(mlxsw_sp,
@@ -1423,10 +1356,7 @@ mlxsw_sp_acl_tcam_vregion_rehash(struct mlxsw_sp *mlxsw_sp,
 	struct mlxsw_sp_acl_tcam_rehash_ctx *ctx = &vregion->rehash.ctx;
 	int err;
 
-	/* Check if the previous rehash work was interrupted
-	 * which means we have to continue it now.
-	 * If not, start a new rehash.
-	 */
+	 
 	if (!mlxsw_sp_acl_tcam_vregion_rehash_in_progress(ctx)) {
 		err = mlxsw_sp_acl_tcam_vregion_rehash_start(mlxsw_sp,
 							     vregion, ctx);
@@ -1544,7 +1474,7 @@ int mlxsw_sp_acl_tcam_init(struct mlxsw_sp *mlxsw_sp,
 					      ACL_MAX_TCAM_REGIONS);
 	max_regions = MLXSW_CORE_RES_GET(mlxsw_sp->core, ACL_MAX_REGIONS);
 
-	/* Use 1:1 mapping between ACL region and TCAM region */
+	 
 	if (max_tcam_regions < max_regions)
 		max_regions = max_tcam_regions;
 
@@ -1791,12 +1721,7 @@ mlxsw_sp_acl_tcam_mr_ruleset_add(struct mlxsw_sp *mlxsw_sp,
 	if (err)
 		return err;
 
-	/* For most of the TCAM clients it would make sense to take a tcam chunk
-	 * only when the first rule is written. This is not the case for
-	 * multicast router as it is required to bind the multicast router to a
-	 * specific ACL Group ID which must exist in HW before multicast router
-	 * is initialized.
-	 */
+	 
 	ruleset->vchunk = mlxsw_sp_acl_tcam_vchunk_get(mlxsw_sp,
 						       &ruleset->vgroup, 1,
 						       tmplt_elusage);
@@ -1826,7 +1751,7 @@ mlxsw_sp_acl_tcam_mr_ruleset_bind(struct mlxsw_sp *mlxsw_sp, void *ruleset_priv,
 				  struct mlxsw_sp_port *mlxsw_sp_port,
 				  bool ingress)
 {
-	/* Binding is done when initializing multicast router */
+	 
 	return 0;
 }
 

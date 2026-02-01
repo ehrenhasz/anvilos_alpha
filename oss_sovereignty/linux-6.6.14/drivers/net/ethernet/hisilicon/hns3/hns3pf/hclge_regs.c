@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-// Copyright (c) 2023 Hisilicon Limited.
+
+
 
 #include "hclge_cmd.h"
 #include "hclge_main.h"
@@ -62,7 +62,7 @@ static const u32 tqp_intr_reg_addr_list[] = {HCLGE_TQP_INTR_CTRL_REG,
 					     HCLGE_TQP_INTR_GL2_REG,
 					     HCLGE_TQP_INTR_RL_REG};
 
-/* Get DFX BD number offset */
+ 
 #define HCLGE_DFX_BIOS_BD_OFFSET        1
 #define HCLGE_DFX_SSU_0_BD_OFFSET       2
 #define HCLGE_DFX_SSU_1_BD_OFFSET       3
@@ -146,7 +146,7 @@ struct hclge_reg_header {
 #define HCLGE_REG_HEADER_SIZE	sizeof(struct hclge_reg_header)
 #define HCLGE_REG_TLV_SPACE	(sizeof(struct hclge_reg_tlv) / sizeof(u32))
 #define HCLGE_REG_HEADER_SPACE	(sizeof(struct hclge_reg_header) / sizeof(u32))
-#define HCLGE_REG_MAGIC_NUMBER	0x686e733372656773 /* meaning is hns3regs */
+#define HCLGE_REG_MAGIC_NUMBER	0x686e733372656773  
 
 #define HCLGE_REG_RPU_TNL_ID_0	1
 
@@ -282,14 +282,14 @@ int hclge_query_bd_num_cmd_send(struct hclge_dev *hdev, struct hclge_desc *desc)
 {
 	int i;
 
-	/* initialize command BD except the last one */
+	 
 	for (i = 0; i < HCLGE_GET_DFX_REG_TYPE_CNT - 1; i++) {
 		hclge_cmd_setup_basic_desc(&desc[i], HCLGE_OPC_DFX_BD_NUM,
 					   true);
 		desc[i].flag |= cpu_to_le16(HCLGE_COMM_CMD_FLAG_NEXT);
 	}
 
-	/* initialize the last command BD */
+	 
 	hclge_cmd_setup_basic_desc(&desc[i], HCLGE_OPC_DFX_BD_NUM, true);
 
 	return hclge_cmd_send(&hdev->hw, desc, HCLGE_GET_DFX_REG_TYPE_CNT);
@@ -345,7 +345,7 @@ static int hclge_dfx_reg_cmd_send(struct hclge_dev *hdev,
 	return ret;
 }
 
-/* tnl_id = 0 means get sum of all tnl reg's value */
+ 
 static int hclge_dfx_reg_rpu_tnl_cmd_send(struct hclge_dev *hdev, u32 tnl_id,
 					  struct hclge_desc *desc, int bd_num)
 {
@@ -410,11 +410,7 @@ static int hclge_get_dfx_reg_len(struct hclge_dev *hdev, int *len)
 	for (i = 0; i < dfx_reg_type_num; i++)
 		*len += bd_num_list[i] * data_len_per_desc + HCLGE_REG_TLV_SIZE;
 
-	/**
-	 * the num of dfx_rpu_0 is reused by each dfx_rpu_tnl
-	 * HCLGE_DFX_BD_OFFSET is starting at 1, but the array subscript is
-	 * starting at 0, so offset need '- 1'.
-	 */
+	 
 	*len += (bd_num_list[HCLGE_DFX_RPU_0_BD_OFFSET - 1] * data_len_per_desc +
 		 HCLGE_REG_TLV_SIZE) * ae_dev->dev_specs.tnl_num;
 
@@ -493,10 +489,7 @@ static int hclge_get_dfx_reg(struct hclge_dev *hdev, void *data)
 		reg += hclge_dfx_reg_fetch_data(desc_src, bd_num, reg);
 	}
 
-	/**
-	 * HCLGE_DFX_BD_OFFSET is starting at 1, but the array subscript is
-	 * starting at 0, so offset need '- 1'.
-	 */
+	 
 	bd_num = bd_num_list[HCLGE_DFX_RPU_0_BD_OFFSET - 1];
 	ret = hclge_get_dfx_rpu_tnl_reg(hdev, reg, desc_src, bd_num);
 
@@ -517,7 +510,7 @@ static int hclge_fetch_pf_reg(struct hclge_dev *hdev, void *data,
 	int data_num_sum;
 	u32 *reg = data;
 
-	/* fetching per-PF registers valus from PF PCIe register space */
+	 
 	reg_num = ARRAY_SIZE(cmdq_reg_addr_list);
 	reg += hclge_reg_get_tlv(HCLGE_REG_TAG_CMDQ, reg_num, reg);
 	for (i = 0; i < reg_num; i++)
@@ -610,7 +603,7 @@ int hclge_get_regs_len(struct hnae3_handle *handle)
 	regs_len_32_bit = HCLGE_REG_TLV_SIZE + regs_num_32_bit * sizeof(u32);
 	regs_len_64_bit = HCLGE_REG_TLV_SIZE + regs_num_64_bit * sizeof(u64);
 
-	/* return the total length of all register values */
+	 
 	return HCLGE_REG_HEADER_SIZE + cmdq_len + common_len + ring_len *
 		kinfo->num_tqps + tqp_intr_len * (hdev->num_msi_used - 1) +
 		regs_len_32_bit + regs_len_64_bit + dfx_regs_len;

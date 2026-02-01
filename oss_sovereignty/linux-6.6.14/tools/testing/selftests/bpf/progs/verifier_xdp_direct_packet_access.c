@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Converted from tools/testing/selftests/bpf/verifier/xdp_direct_packet_access.c */
+
+ 
 
 #include <linux/bpf.h>
 #include <bpf/bpf_helpers.h>

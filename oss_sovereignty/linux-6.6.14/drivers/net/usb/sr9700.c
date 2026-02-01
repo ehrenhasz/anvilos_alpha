@@ -1,14 +1,4 @@
-/*
- * CoreChip-sz SR9700 one chip USB 1.1 Ethernet Devices
- *
- * Author : Liu Junliang <liujunliang_ljl@163.com>
- *
- * Based on dm9601.c
- *
- * This file is licensed under the terms of the GNU General Public License
- * version 2.  This program is licensed "as is" without any warranty of any
- * kind, whether express or implied.
- */
+ 
 
 #include <linux/module.h>
 #include <linux/sched.h>
@@ -82,7 +72,7 @@ static int wait_phy_eeprom_ready(struct usbnet *dev, int phy)
 		if (ret < 0)
 			return ret;
 
-		/* ready */
+		 
 		if (!(tmp & EPCR_ERRE))
 			return 0;
 	}
@@ -161,7 +151,7 @@ static int sr9700_get_eeprom(struct net_device *netdev,
 	int ret = 0;
 	int i;
 
-	/* access is 16bit */
+	 
 	if ((eeprom->offset & 0x01) || (eeprom->len & 0x01))
 		return -EINVAL;
 
@@ -185,7 +175,7 @@ static int sr_mdio_read(struct net_device *netdev, int phy_id, int loc)
 		return 0;
 	}
 
-	/* Access NSR_LINKST bit for link status instead of MII_BMSR */
+	 
 	if (loc == MII_BMSR) {
 		u8 value;
 
@@ -228,7 +218,7 @@ static u32 sr9700_get_link(struct net_device *netdev)
 	u8 value = 0;
 	int rc = 0;
 
-	/* Get the Link Status directly */
+	 
 	sr_read_reg(dev, SR_NSR, &value);
 	if (value & NSR_LINKST)
 		rc = 1;
@@ -258,15 +248,13 @@ static const struct ethtool_ops sr9700_ethtool_ops = {
 static void sr9700_set_multicast(struct net_device *netdev)
 {
 	struct usbnet *dev = netdev_priv(netdev);
-	/* We use the 20 byte dev->data for our 8 byte filter buffer
-	 * to avoid allocating memory that is tricky to free later
-	 */
+	 
 	u8 *hashes = (u8 *)&dev->data;
-	/* rx_ctl setting : enable, disable_long, disable_crc */
+	 
 	u8 rx_ctl = RCR_RXEN | RCR_DIS_CRC | RCR_DIS_LONG;
 
 	memset(hashes, 0x00, SR_MCAST_SIZE);
-	/* broadcast address */
+	 
 	hashes[SR_MCAST_SIZE - 1] |= SR_MCAST_ADDR_FLAG;
 	if (netdev->flags & IFF_PROMISC) {
 		rx_ctl |= RCR_PRMSC;
@@ -333,7 +321,7 @@ static int sr9700_bind(struct usbnet *dev, struct usb_interface *intf)
 	netdev->ethtool_ops = &sr9700_ethtool_ops;
 	netdev->hard_header_len += SR_TX_OVERHEAD;
 	dev->hard_mtu = netdev->mtu + netdev->hard_header_len;
-	/* bulkin buffer is preferably not less than 3K */
+	 
 	dev->rx_urb_size = 3072;
 
 	mii = &dev->mii;
@@ -346,11 +334,7 @@ static int sr9700_bind(struct usbnet *dev, struct usb_interface *intf)
 	sr_write_reg(dev, SR_NCR, NCR_RST);
 	udelay(20);
 
-	/* read MAC
-	 * After Chip Power on, the Chip will reload the MAC from
-	 * EEPROM automatically to PAR. In case there is no EEPROM externally,
-	 * a default MAC address is stored in PAR for making chip work properly.
-	 */
+	 
 	if (sr_read(dev, SR_PAR, ETH_ALEN, addr) < 0) {
 		netdev_err(netdev, "Error reading MAC address\n");
 		ret = -ENODEV;
@@ -358,15 +342,15 @@ static int sr9700_bind(struct usbnet *dev, struct usb_interface *intf)
 	}
 	eth_hw_addr_set(netdev, addr);
 
-	/* power up and reset phy */
+	 
 	sr_write_reg(dev, SR_PRR, PRR_PHY_RST);
-	/* at least 10ms, here 20ms for safe */
+	 
 	msleep(20);
 	sr_write_reg(dev, SR_PRR, 0);
-	/* at least 1ms, here 2ms for reading right register */
+	 
 	udelay(2 * 1000);
 
-	/* receive broadcast packets */
+	 
 	sr9700_set_multicast(netdev);
 
 	sr_mdio_write(netdev, mii->phy_id, MII_BMCR, BMCR_RESET);
@@ -383,40 +367,24 @@ static int sr9700_rx_fixup(struct usbnet *dev, struct sk_buff *skb)
 	struct sk_buff *sr_skb;
 	int len;
 
-	/* skb content (packets) format :
-	 *                    p0            p1            p2    ......    pm
-	 *                 /      \
-	 *            /                \
-	 *        /                            \
-	 *  /                                        \
-	 * p0b0 p0b1 p0b2 p0b3 ...... p0b(n-4) p0b(n-3)...p0bn
-	 *
-	 * p0 : packet 0
-	 * p0b0 : packet 0 byte 0
-	 *
-	 * b0: rx status
-	 * b1: packet length (incl crc) low
-	 * b2: packet length (incl crc) high
-	 * b3..n-4: packet data
-	 * bn-3..bn: ethernet packet crc
-	 */
+	 
 	if (unlikely(skb->len < SR_RX_OVERHEAD)) {
 		netdev_err(dev->net, "unexpected tiny rx frame\n");
 		return 0;
 	}
 
-	/* one skb may contains multiple packets */
+	 
 	while (skb->len > SR_RX_OVERHEAD) {
 		if (skb->data[0] != 0x40)
 			return 0;
 
-		/* ignore the CRC length */
+		 
 		len = (skb->data[1] | (skb->data[2] << 8)) - 4;
 
 		if (len > ETH_FRAME_LEN || len > skb->len || len < 0)
 			return 0;
 
-		/* the last packet of current skb */
+		 
 		if (skb->len == (len + SR_RX_OVERHEAD))	{
 			skb_pull(skb, 3);
 			skb->len = len;
@@ -425,7 +393,7 @@ static int sr9700_rx_fixup(struct usbnet *dev, struct sk_buff *skb)
 			return 2;
 		}
 
-		/* skb_clone is used for address align */
+		 
 		sr_skb = skb_clone(skb, GFP_ATOMIC);
 		if (!sr_skb)
 			return 0;
@@ -447,16 +415,7 @@ static struct sk_buff *sr9700_tx_fixup(struct usbnet *dev, struct sk_buff *skb,
 {
 	int len;
 
-	/* SR9700 can only send out one ethernet packet at once.
-	 *
-	 * b0 b1 b2 b3 ...... b(n-4) b(n-3)...bn
-	 *
-	 * b0: rx status
-	 * b1: packet length (incl crc) low
-	 * b2: packet length (incl crc) high
-	 * b3..n-4: packet data
-	 * bn-3..bn: ethernet packet crc
-	 */
+	 
 
 	len = skb->len;
 
@@ -467,9 +426,7 @@ static struct sk_buff *sr9700_tx_fixup(struct usbnet *dev, struct sk_buff *skb,
 
 	__skb_push(skb, SR_TX_OVERHEAD);
 
-	/* usbnet adds padding if length is a multiple of packet size
-	 * if so, adjust length value in header
-	 */
+	 
 	if ((skb->len % dev->maxpacket) == 0)
 		len++;
 
@@ -484,16 +441,7 @@ static void sr9700_status(struct usbnet *dev, struct urb *urb)
 	int link;
 	u8 *buf;
 
-	/* format:
-	   b0: net status
-	   b1: tx status 1
-	   b2: tx status 2
-	   b3: rx status
-	   b4: rx overflow
-	   b5: rx count
-	   b6: tx count
-	   b7: gpr
-	*/
+	 
 
 	if (urb->actual_length < 8)
 		return;
@@ -533,10 +481,10 @@ static const struct driver_info sr9700_driver_info = {
 
 static const struct usb_device_id products[] = {
 	{
-		USB_DEVICE(0x0fe6, 0x9700),	/* SR9700 device */
+		USB_DEVICE(0x0fe6, 0x9700),	 
 		.driver_info = (unsigned long)&sr9700_driver_info,
 	},
-	{},			/* END */
+	{},			 
 };
 
 MODULE_DEVICE_TABLE(usb, products);

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) STMicroelectronics SA 2015
- * Authors: Arnaud Pouliquen <arnaud.pouliquen@st.com>
- *          for STMicroelectronics.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/pinctrl/consumer.h>
@@ -11,18 +7,13 @@
 
 #include "uniperif.h"
 
-/*
- * User frame size shall be 2, 4, 6 or 8 32-bits words length
- * (i.e. 8, 16, 24 or 32 bytes)
- * This constraint comes from allowed values for
- * UNIPERIF_I2S_FMT_NUM_CH register
- */
+ 
 #define UNIPERIF_MAX_FRAME_SZ 0x20
 #define UNIPERIF_ALLOWED_FRAME_SZ (0x08 | 0x10 | 0x18 | UNIPERIF_MAX_FRAME_SZ)
 
 struct sti_uniperiph_dev_data {
-	unsigned int id; /* Nb available player instances */
-	unsigned int version; /* player IP version */
+	unsigned int id;  
+	unsigned int version;  
 	unsigned int stream;
 	const char *dai_names;
 	enum uniperif_type type;
@@ -103,7 +94,7 @@ int  sti_uniperiph_reset(struct uniperif *uni)
 {
 	int count = 10;
 
-	/* Reset uniperipheral uni */
+	 
 	SET_UNIPERIF_SOFT_RST_SOFT_RST(uni);
 
 	if (uni->ver < SND_ST_UNIPERIF_VERSION_UNI_PLR_TOP_1_0) {
@@ -134,23 +125,23 @@ int sti_uniperiph_set_tdm_slot(struct snd_soc_dai *dai, unsigned int tx_mask,
 		return -EINVAL;
 	}
 
-	/* store info in unip context */
+	 
 	uni->tdm_slot.slots = slots;
 	uni->tdm_slot.slot_width = slot_width;
-	/* unip is unidirectionnal */
+	 
 	uni->tdm_slot.mask = (tx_mask != 0) ? tx_mask : rx_mask;
 
-	/* number of available timeslots */
+	 
 	for (i = 0, avail_slots = 0; i < uni->tdm_slot.slots; i++) {
 		if ((uni->tdm_slot.mask >> i) & 0x01)
 			avail_slots++;
 	}
 	uni->tdm_slot.avail_slots = avail_slots;
 
-	/* frame size in bytes */
+	 
 	frame_size = uni->tdm_slot.avail_slots * uni->tdm_slot.slot_width / 8;
 
-	/* check frame size is allowed */
+	 
 	if ((frame_size > UNIPERIF_MAX_FRAME_SZ) ||
 	    (frame_size & ~(int)UNIPERIF_ALLOWED_FRAME_SZ)) {
 		dev_err(uni->dev, "frame size not allowed: %d bytes\n",
@@ -198,7 +189,7 @@ int sti_uniperiph_fix_tdm_format(struct snd_pcm_hw_params *params,
 
 	maskp->bits[0] &= (u_int32_t)format;
 	maskp->bits[1] &= (u_int32_t)(format >> 32);
-	/* clear remaining indexes */
+	 
 	memset(maskp->bits + 2, 0, (SNDRV_MASK_MAX - 64) / 8);
 
 	if (!maskp->bits[0] && !maskp->bits[1])
@@ -216,14 +207,9 @@ int sti_uniperiph_get_tdm_word_pos(struct uniperif *uni,
 	int i, j, k;
 	unsigned int word16_pos[4];
 
-	/* word16_pos:
-	 * word16_pos[0] = WORDX_LSB
-	 * word16_pos[1] = WORDX_MSB,
-	 * word16_pos[2] = WORDX+1_LSB
-	 * word16_pos[3] = WORDX+1_MSB
-	 */
+	 
 
-	/* set unip word position */
+	 
 	for (i = 0, j = 0, k = 0; (i < slots_num) && (k < WORD_MAX); i++) {
 		if ((slots_mask >> i) & 0x01) {
 			word16_pos[j] = i * slot_width;
@@ -248,11 +234,7 @@ int sti_uniperiph_get_tdm_word_pos(struct uniperif *uni,
 	return 0;
 }
 
-/*
- * sti_uniperiph_dai_create_ctrl
- * This function is used to create Ctrl associated to DAI but also pcm device.
- * Request is done by front end to associate ctrl with pcm device id
- */
+ 
 static int sti_uniperiph_dai_create_ctrl(struct snd_soc_dai *dai)
 {
 	struct sti_uniperiph_data *priv = snd_soc_dai_get_drvdata(dai);
@@ -264,10 +246,7 @@ static int sti_uniperiph_dai_create_ctrl(struct snd_soc_dai *dai)
 		return 0;
 
 	for (i = 0; i < uni->num_ctrls; i++) {
-		/*
-		 * Several Control can have same name. Controls are indexed on
-		 * Uniperipheral instance ID
-		 */
+		 
 		ctrl = &uni->snd_ctrls[i];
 		ctrl->index = uni->id;
 		ctrl->device = uni->id;
@@ -276,9 +255,7 @@ static int sti_uniperiph_dai_create_ctrl(struct snd_soc_dai *dai)
 	return snd_soc_add_dai_controls(dai, uni->snd_ctrls, uni->num_ctrls);
 }
 
-/*
- * DAI
- */
+ 
 int sti_uniperiph_dai_hw_params(struct snd_pcm_substream *substream,
 				struct snd_pcm_hw_params *params,
 				struct snd_soc_dai *dai)
@@ -289,7 +266,7 @@ int sti_uniperiph_dai_hw_params(struct snd_pcm_substream *substream,
 	int transfer_size;
 
 	if (uni->type == SND_ST_UNIPERIF_TYPE_TDM)
-		/* transfer size = user frame size (in 32-bits FIFO cell) */
+		 
 		transfer_size = snd_soc_params_to_frame_size(params) / 32;
 	else
 		transfer_size = params_channels(params) * UNIPERIF_FIFO_FRAMES;
@@ -315,14 +292,14 @@ static int sti_uniperiph_suspend(struct snd_soc_component *component)
 	struct uniperif *uni = priv->dai_data.uni;
 	int ret;
 
-	/* The uniperipheral should be in stopped state */
+	 
 	if (uni->state != UNIPERIF_STATE_STOPPED) {
 		dev_err(uni->dev, "%s: invalid uni state( %d)\n",
 			__func__, (int)uni->state);
 		return -EBUSY;
 	}
 
-	/* Pinctrl: switch pinstate to sleep */
+	 
 	ret = pinctrl_pm_select_sleep_state(uni->dev);
 	if (ret)
 		dev_err(uni->dev, "%s: failed to select pinctrl state\n",
@@ -343,7 +320,7 @@ static int sti_uniperiph_resume(struct snd_soc_component *component)
 			return ret;
 	}
 
-	/* pinctrl: switch pinstate to default */
+	 
 	ret = pinctrl_pm_select_default_state(uni->dev);
 	if (ret)
 		dev_err(uni->dev, "%s: failed to select pinctrl state\n",
@@ -357,7 +334,7 @@ static int sti_uniperiph_dai_probe(struct snd_soc_dai *dai)
 	struct sti_uniperiph_data *priv = snd_soc_dai_get_drvdata(dai);
 	struct sti_uniperiph_dai *dai_data = &priv->dai_data;
 
-	/* DMA settings*/
+	 
 	if (priv->dai_data.stream == SNDRV_PCM_STREAM_PLAYBACK)
 		snd_soc_dai_init_dma_data(dai, &dai_data->dma_data, NULL);
 	else
@@ -397,7 +374,7 @@ static int sti_uniperiph_cpu_dai_of(struct device_node *node,
 	const char *mode;
 	int ret;
 
-	/* Populate data structure depending on compatibility */
+	 
 	of_id = of_match_node(snd_soc_sti_match, node);
 	if (!of_id->data) {
 		dev_err(dev, "data associated to device is missing\n");
@@ -415,7 +392,7 @@ static int sti_uniperiph_cpu_dai_of(struct device_node *node,
 	*dai = sti_uniperiph_dai_template;
 	dai->name = dev_data->dai_names;
 
-	/* Get resources and base address */
+	 
 	uni->base = devm_platform_get_and_ioremap_resource(priv->pdev, 0, &uni->mem_region);
 	if (IS_ERR(uni->base))
 		return PTR_ERR(uni->base);
@@ -429,7 +406,7 @@ static int sti_uniperiph_cpu_dai_of(struct device_node *node,
 
 	uni->type = dev_data->type;
 
-	/* check if player should be configured for tdm */
+	 
 	if (dev_data->type & SND_ST_UNIPERIF_TYPE_TDM) {
 		if (!of_property_read_string(node, "st,tdm-mode", &mode))
 			uni->type = SND_ST_UNIPERIF_TYPE_TDM;
@@ -471,7 +448,7 @@ static int sti_uniperiph_probe(struct platform_device *pdev)
 	struct device_node *node = pdev->dev.of_node;
 	int ret;
 
-	/* Allocate the private data and the CPU_DAI array */
+	 
 	priv = devm_kzalloc(&pdev->dev, sizeof(*priv), GFP_KERNEL);
 	if (!priv)
 		return -ENOMEM;

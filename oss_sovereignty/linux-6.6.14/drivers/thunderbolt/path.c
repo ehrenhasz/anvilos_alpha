@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Thunderbolt driver - path/tunnel functionality
- *
- * Copyright (c) 2014 Andreas Noever <andreas.noever@gmail.com>
- * Copyright (C) 2019, Intel Corporation
- */
+
+ 
 
 #include <linux/slab.h>
 #include <linux/errno.h>
@@ -77,27 +72,7 @@ static int tb_path_find_src_hopid(struct tb_port *src,
 	return 0;
 }
 
-/**
- * tb_path_discover() - Discover a path
- * @src: First input port of a path
- * @src_hopid: Starting HopID of a path (%-1 if don't care)
- * @dst: Expected destination port of the path (%NULL if don't care)
- * @dst_hopid: HopID to the @dst (%-1 if don't care)
- * @last: Last port is filled here if not %NULL
- * @name: Name of the path
- * @alloc_hopid: Allocate HopIDs for the ports
- *
- * Follows a path starting from @src and @src_hopid to the last output
- * port of the path. Allocates HopIDs for the visited ports (if
- * @alloc_hopid is true). Call tb_path_free() to release the path and
- * allocated HopIDs when the path is not needed anymore.
- *
- * Note function discovers also incomplete paths so caller should check
- * that the @dst port is the expected one. If it is not, the path can be
- * cleaned up by calling tb_path_deactivate() before tb_path_free().
- *
- * Return: Discovered path on success, %NULL in case of failure
- */
+ 
 struct tb_path *tb_path_discover(struct tb_port *src, int src_hopid,
 				 struct tb_port *dst, int dst_hopid,
 				 struct tb_port **last, const char *name,
@@ -112,13 +87,7 @@ struct tb_path *tb_path_discover(struct tb_port *src, int src_hopid,
 	int ret, i, h;
 
 	if (src_hopid < 0 && dst) {
-		/*
-		 * For incomplete paths the intermediate HopID can be
-		 * different from the one used by the protocol adapter
-		 * so in that case find a path that ends on @dst with
-		 * matching @dst_hopid. That should give us the correct
-		 * HopID for the @src.
-		 */
+		 
 		src_hopid = tb_path_find_src_hopid(src, dst, dst_hopid);
 		if (!src_hopid)
 			return NULL;
@@ -137,7 +106,7 @@ struct tb_path *tb_path_discover(struct tb_port *src, int src_hopid,
 			return NULL;
 		}
 
-		/* If the hop is not enabled we got an incomplete path */
+		 
 		if (!hop.enable)
 			break;
 
@@ -217,24 +186,7 @@ err:
 	return NULL;
 }
 
-/**
- * tb_path_alloc() - allocate a thunderbolt path between two ports
- * @tb: Domain pointer
- * @src: Source port of the path
- * @src_hopid: HopID used for the first ingress port in the path
- * @dst: Destination port of the path
- * @dst_hopid: HopID used for the last egress port in the path
- * @link_nr: Preferred link if there are dual links on the path
- * @name: Name of the path
- *
- * Creates path between two ports starting with given @src_hopid. Reserves
- * HopIDs for each port (they can be different from @src_hopid depending on
- * how many HopIDs each port already have reserved). If there are dual
- * links on the path, prioritizes using @link_nr but takes into account
- * that the lanes may be bonded.
- *
- * Return: Returns a tb_path on success or NULL on failure.
- */
+ 
 struct tb_path *tb_path_alloc(struct tb *tb, struct tb_port *src, int src_hopid,
 			      struct tb_port *dst, int dst_hopid, int link_nr,
 			      const char *name)
@@ -258,13 +210,13 @@ struct tb_path *tb_path_alloc(struct tb *tb, struct tb_port *src, int src_hopid,
 		i++;
 	}
 
-	/* Check that src and dst are reachable */
+	 
 	if (first_port != src || last_port != dst) {
 		kfree(path);
 		return NULL;
 	}
 
-	/* Each hop takes two ports */
+	 
 	num_hops = i / 2;
 
 	path->hops = kcalloc(num_hops, sizeof(*path->hops), GFP_KERNEL);
@@ -283,7 +235,7 @@ struct tb_path *tb_path_alloc(struct tb *tb, struct tb_port *src, int src_hopid,
 		if (!in_port)
 			goto err;
 
-		/* When lanes are bonded primary link must be used */
+		 
 		if (!in_port->bonded && in_port->dual_link_port &&
 		    in_port->link_nr != link_nr)
 			in_port = in_port->dual_link_port;
@@ -297,24 +249,15 @@ struct tb_path *tb_path_alloc(struct tb *tb, struct tb_port *src, int src_hopid,
 		if (!out_port)
 			goto err;
 
-		/*
-		 * Pick up right port when going from non-bonded to
-		 * bonded or from bonded to non-bonded.
-		 */
+		 
 		if (out_port->dual_link_port) {
 			if (!in_port->bonded && out_port->bonded &&
 			    out_port->link_nr) {
-				/*
-				 * Use primary link when going from
-				 * non-bonded to bonded.
-				 */
+				 
 				out_port = out_port->dual_link_port;
 			} else if (!out_port->bonded &&
 				   out_port->link_nr != link_nr) {
-				/*
-				 * If out port is not bonded follow
-				 * link_nr.
-				 */
+				 
 				out_port = out_port->dual_link_port;
 			}
 		}
@@ -349,12 +292,7 @@ err:
 	return NULL;
 }
 
-/**
- * tb_path_free() - free a path
- * @path: Path to free
- *
- * Frees a path. The path does not need to be deactivated.
- */
+ 
 void tb_path_free(struct tb_path *path)
 {
 	if (path->alloc_hopid) {
@@ -396,12 +334,12 @@ static int __tb_path_deactivate_hop(struct tb_port *port, int hop_index,
 	ktime_t timeout;
 	int ret;
 
-	/* Disable the path */
+	 
 	ret = tb_port_read(port, &hop, TB_CFG_HOPS, 2 * hop_index, 2);
 	if (ret)
 		return ret;
 
-	/* Already disabled */
+	 
 	if (!hop.enable)
 		return 0;
 
@@ -411,7 +349,7 @@ static int __tb_path_deactivate_hop(struct tb_port *port, int hop_index,
 	if (ret)
 		return ret;
 
-	/* Wait until it is drained */
+	 
 	timeout = ktime_add_ms(ktime_get(), 500);
 	do {
 		ret = tb_port_read(port, &hop, TB_CFG_HOPS, 2 * hop_index, 2);
@@ -420,12 +358,7 @@ static int __tb_path_deactivate_hop(struct tb_port *port, int hop_index,
 
 		if (!hop.pending) {
 			if (clear_fc) {
-				/*
-				 * Clear flow control. Protocol adapters
-				 * IFC and ISE bits are vendor defined
-				 * in the USB4 spec so we clear them
-				 * only for pre-USB4 adapters.
-				 */
+				 
 				if (!tb_switch_is_usb4(port->sw)) {
 					hop.ingress_fc = 0;
 					hop.ingress_shared_buffer = 0;
@@ -478,15 +411,7 @@ void tb_path_deactivate(struct tb_path *path)
 	path->activated = false;
 }
 
-/**
- * tb_path_activate() - activate a path
- * @path: Path to activate
- *
- * Activate a path starting with the last hop and iterating backwards. The
- * caller must fill path->hops before calling tb_path_activate().
- *
- * Return: Returns 0 on success or an error code on failure.
- */
+ 
 int tb_path_activate(struct tb_path *path)
 {
 	int i, res;
@@ -503,7 +428,7 @@ int tb_path_activate(struct tb_path *path)
 	       tb_route(path->hops[path->path_length - 1].out_port->sw),
 	       path->hops[path->path_length - 1].out_port->port);
 
-	/* Clear counters. */
+	 
 	for (i = path->path_length - 1; i >= 0; i--) {
 		if (path->hops[i].in_counter_index == -1)
 			continue;
@@ -513,7 +438,7 @@ int tb_path_activate(struct tb_path *path)
 			goto err;
 	}
 
-	/* Add non flow controlled credits. */
+	 
 	for (i = path->path_length - 1; i >= 0; i--) {
 		res = tb_port_add_nfc_credits(path->hops[i].in_port,
 					      path->hops[i].nfc_credits);
@@ -523,22 +448,22 @@ int tb_path_activate(struct tb_path *path)
 		}
 	}
 
-	/* Activate hops. */
+	 
 	for (i = path->path_length - 1; i >= 0; i--) {
 		struct tb_regs_hop hop = { 0 };
 
-		/* If it is left active deactivate it first */
+		 
 		__tb_path_deactivate_hop(path->hops[i].in_port,
 				path->hops[i].in_hop_index, path->clear_fc);
 
-		/* dword 0 */
+		 
 		hop.next_hop = path->hops[i].next_hop_index;
 		hop.out_port = path->hops[i].out_port->port;
 		hop.initial_credits = path->hops[i].initial_credits;
 		hop.unknown1 = 0;
 		hop.enable = 1;
 
-		/* dword 1 */
+		 
 		out_mask = (i == path->path_length - 1) ?
 				TB_PATH_DESTINATION : TB_PATH_INTERNAL;
 		in_mask = (i == 0) ? TB_PATH_SOURCE : TB_PATH_INTERNAL;
@@ -574,12 +499,7 @@ err:
 	return res;
 }
 
-/**
- * tb_path_is_invalid() - check whether any ports on the path are invalid
- * @path: Path to check
- *
- * Return: Returns true if the path is invalid, false otherwise.
- */
+ 
 bool tb_path_is_invalid(struct tb_path *path)
 {
 	int i = 0;
@@ -592,14 +512,7 @@ bool tb_path_is_invalid(struct tb_path *path)
 	return false;
 }
 
-/**
- * tb_path_port_on_path() - Does the path go through certain port
- * @path: Path to check
- * @port: Switch to check
- *
- * Goes over all hops on path and checks if @port is any of them.
- * Direction does not matter.
- */
+ 
 bool tb_path_port_on_path(const struct tb_path *path, const struct tb_port *port)
 {
 	int i;

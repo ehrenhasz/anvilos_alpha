@@ -1,14 +1,10 @@
-/* SPDX-License-Identifier: (GPL-2.0 OR MIT) */
-/*
- * Microsemi Ocelot Switch driver
- *
- * Copyright (c) 2017 Microsemi Corporation
- */
+ 
+ 
 
 #ifndef _MSCC_OCELOT_QS_H_
 #define _MSCC_OCELOT_QS_H_
 
-/* TODO handle BE */
+ 
 #define XTR_EOF_0          0x00000080U
 #define XTR_EOF_1          0x01000080U
 #define XTR_EOF_2          0x02000080U

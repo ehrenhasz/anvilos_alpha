@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-// Copyright (c) 2021, NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+
+
 
 #include "act.h"
 #include "en/tc/post_act.h"
@@ -44,11 +44,7 @@ static struct mlx5e_tc_act *tc_acts_nic[NUM_FLOW_ACTIONS] = {
 	[FLOW_ACTION_CT] = &mlx5e_tc_act_ct,
 };
 
-/**
- * mlx5e_tc_act_get() - Get an action parser for an action id.
- * @act_id: Flow action id.
- * @ns_type: flow namespace type.
- */
+ 
 struct mlx5e_tc_act *
 mlx5e_tc_act_get(enum flow_action_id act_id,
 		 enum mlx5_flow_namespace_type ns_type)
@@ -60,16 +56,7 @@ mlx5e_tc_act_get(enum flow_action_id act_id,
 	return tc_acts[act_id];
 }
 
-/**
- * mlx5e_tc_act_init_parse_state() - Init a new parse_state.
- * @parse_state: Parsing state.
- * @flow:        mlx5e tc flow being handled.
- * @flow_action: flow action to parse.
- * @extack:      to set an error msg.
- *
- * The same parse_state should be passed to action parsers
- * for tracking the current parsing state.
- */
+ 
 void
 mlx5e_tc_act_init_parse_state(struct mlx5e_tc_act_parse_state *parse_state,
 			      struct mlx5e_tc_flow *flow,
@@ -125,7 +112,7 @@ mlx5e_tc_act_set_next_post_act(struct mlx5e_tc_flow *flow,
 
 	mod_acts = &attr->parse_attr->mod_hdr_acts;
 
-	/* Set handle on current post act rule to next post act rule. */
+	 
 	err = mlx5e_tc_post_act_set_handle(mdev, next_attr->post_act_handle, mod_acts);
 	if (err) {
 		mlx5_core_warn(mdev, "Failed setting post action handle");

@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * helene.c
- *
- * Sony HELENE DVB-S/S2 DVB-T/T2 DVB-C/C2 ISDB-T/S tuner driver (CXD2858ER)
- *
- * Copyright 2012 Sony Corporation
- * Copyright (C) 2014 NetUP Inc.
- * Copyright (C) 2014 Abylay Ospan <aospan@netup.ru>
-  */
+
+ 
 
 #include <linux/slab.h>
 #include <linux/module.h>
@@ -49,230 +41,203 @@ struct helene_priv {
 
 enum helene_tv_system_t {
 	SONY_HELENE_TV_SYSTEM_UNKNOWN,
-	/* Terrestrial Analog */
+	 
 	SONY_HELENE_ATV_MN_EIAJ,
-	/**< System-M (Japan) (IF: Fp=5.75MHz in default) */
+	 
 	SONY_HELENE_ATV_MN_SAP,
-	/**< System-M (US)    (IF: Fp=5.75MHz in default) */
+	 
 	SONY_HELENE_ATV_MN_A2,
-	/**< System-M (Korea) (IF: Fp=5.9MHz in default) */
+	 
 	SONY_HELENE_ATV_BG,
-	/**< System-B/G       (IF: Fp=7.3MHz in default) */
+	 
 	SONY_HELENE_ATV_I,
-	/**< System-I         (IF: Fp=7.85MHz in default) */
+	 
 	SONY_HELENE_ATV_DK,
-	/**< System-D/K       (IF: Fp=7.85MHz in default) */
+	 
 	SONY_HELENE_ATV_L,
-	/**< System-L         (IF: Fp=7.85MHz in default) */
+	 
 	SONY_HELENE_ATV_L_DASH,
-	/**< System-L DASH    (IF: Fp=2.2MHz in default) */
-	/* Terrestrial/Cable Digital */
+	 
+	 
 	SONY_HELENE_DTV_8VSB,
-	/**< ATSC 8VSB        (IF: Fc=3.7MHz in default) */
+	 
 	SONY_HELENE_DTV_QAM,
-	/**< US QAM           (IF: Fc=3.7MHz in default) */
+	 
 	SONY_HELENE_DTV_ISDBT_6,
-	/**< ISDB-T 6MHzBW    (IF: Fc=3.55MHz in default) */
+	 
 	SONY_HELENE_DTV_ISDBT_7,
-	/**< ISDB-T 7MHzBW    (IF: Fc=4.15MHz in default) */
+	 
 	SONY_HELENE_DTV_ISDBT_8,
-	/**< ISDB-T 8MHzBW    (IF: Fc=4.75MHz in default) */
+	 
 	SONY_HELENE_DTV_DVBT_5,
-	/**< DVB-T 5MHzBW     (IF: Fc=3.6MHz in default) */
+	 
 	SONY_HELENE_DTV_DVBT_6,
-	/**< DVB-T 6MHzBW     (IF: Fc=3.6MHz in default) */
+	 
 	SONY_HELENE_DTV_DVBT_7,
-	/**< DVB-T 7MHzBW     (IF: Fc=4.2MHz in default) */
+	 
 	SONY_HELENE_DTV_DVBT_8,
-	/**< DVB-T 8MHzBW     (IF: Fc=4.8MHz in default) */
+	 
 	SONY_HELENE_DTV_DVBT2_1_7,
-	/**< DVB-T2 1.7MHzBW  (IF: Fc=3.5MHz in default) */
+	 
 	SONY_HELENE_DTV_DVBT2_5,
-	/**< DVB-T2 5MHzBW    (IF: Fc=3.6MHz in default) */
+	 
 	SONY_HELENE_DTV_DVBT2_6,
-	/**< DVB-T2 6MHzBW    (IF: Fc=3.6MHz in default) */
+	 
 	SONY_HELENE_DTV_DVBT2_7,
-	/**< DVB-T2 7MHzBW    (IF: Fc=4.2MHz in default) */
+	 
 	SONY_HELENE_DTV_DVBT2_8,
-	/**< DVB-T2 8MHzBW    (IF: Fc=4.8MHz in default) */
+	 
 	SONY_HELENE_DTV_DVBC_6,
-	/**< DVB-C 6MHzBW     (IF: Fc=3.7MHz in default) */
+	 
 	SONY_HELENE_DTV_DVBC_8,
-	/**< DVB-C 8MHzBW     (IF: Fc=4.9MHz in default) */
+	 
 	SONY_HELENE_DTV_DVBC2_6,
-	/**< DVB-C2 6MHzBW    (IF: Fc=3.7MHz in default) */
+	 
 	SONY_HELENE_DTV_DVBC2_8,
-	/**< DVB-C2 8MHzBW    (IF: Fc=4.9MHz in default) */
+	 
 	SONY_HELENE_DTV_DTMB,
-	/**< DTMB             (IF: Fc=5.1MHz in default) */
-	/* Satellite */
+	 
+	 
 	SONY_HELENE_STV_ISDBS,
-	/**< ISDB-S */
+	 
 	SONY_HELENE_STV_DVBS,
-	/**< DVB-S */
+	 
 	SONY_HELENE_STV_DVBS2,
-	/**< DVB-S2 */
+	 
 
 	SONY_HELENE_ATV_MIN = SONY_HELENE_ATV_MN_EIAJ,
-	/**< Minimum analog terrestrial system */
+	 
 	SONY_HELENE_ATV_MAX = SONY_HELENE_ATV_L_DASH,
-	/**< Maximum analog terrestrial system */
+	 
 	SONY_HELENE_DTV_MIN = SONY_HELENE_DTV_8VSB,
-	/**< Minimum digital terrestrial system */
+	 
 	SONY_HELENE_DTV_MAX = SONY_HELENE_DTV_DTMB,
-	/**< Maximum digital terrestrial system */
+	 
 	SONY_HELENE_TERR_TV_SYSTEM_NUM,
-	/**< Number of supported terrestrial broadcasting system */
+	 
 	SONY_HELENE_STV_MIN = SONY_HELENE_STV_ISDBS,
-	/**< Minimum satellite system */
+	 
 	SONY_HELENE_STV_MAX = SONY_HELENE_STV_DVBS2
-	/**< Maximum satellite system */
+	 
 };
 
 struct helene_terr_adjust_param_t {
-	/* < Addr:0x69 Bit[6:4] : RFVGA gain.
-	 * 0xFF means Auto. (RF_GAIN_SEL = 1)
-	 */
+	 
 	uint8_t RF_GAIN;
-	/* < Addr:0x69 Bit[3:0] : IF_BPF gain.
-	*/
+	 
 	uint8_t IF_BPF_GC;
-	/* < Addr:0x6B Bit[3:0] : RF overload
-	 * RF input detect level. (FRF <= 172MHz)
-	*/
+	 
 	uint8_t RFOVLD_DET_LV1_VL;
-	/* < Addr:0x6B Bit[3:0] : RF overload
-	 * RF input detect level. (172MHz < FRF <= 464MHz)
-	*/
+	 
 	uint8_t RFOVLD_DET_LV1_VH;
-	/* < Addr:0x6B Bit[3:0] : RF overload
-	 * RF input detect level. (FRF > 464MHz)
-	*/
+	 
 	uint8_t RFOVLD_DET_LV1_U;
-	/* < Addr:0x6C Bit[2:0] :
-	 * Internal RFAGC detect level. (FRF <= 172MHz)
-	*/
+	 
 	uint8_t IFOVLD_DET_LV_VL;
-	/* < Addr:0x6C Bit[2:0] :
-	 * Internal RFAGC detect level. (172MHz < FRF <= 464MHz)
-	*/
+	 
 	uint8_t IFOVLD_DET_LV_VH;
-	/* < Addr:0x6C Bit[2:0] :
-	 * Internal RFAGC detect level. (FRF > 464MHz)
-	*/
+	 
 	uint8_t IFOVLD_DET_LV_U;
-	/* < Addr:0x6D Bit[5:4] :
-	 * IF filter center offset.
-	*/
+	 
 	uint8_t IF_BPF_F0;
-	/* < Addr:0x6D Bit[1:0] :
-	 * 6MHzBW(0x00) or 7MHzBW(0x01)
-	 * or 8MHzBW(0x02) or 1.7MHzBW(0x03)
-	*/
+	 
 	uint8_t BW;
-	/* < Addr:0x6E Bit[4:0] :
-	 * 5bit signed. IF offset (kHz) = FIF_OFFSET x 50
-	*/
+	 
 	uint8_t FIF_OFFSET;
-	/* < Addr:0x6F Bit[4:0] :
-	 * 5bit signed. BW offset (kHz) =
-	 * BW_OFFSET x 50 (BW_OFFSET x 10 in 1.7MHzBW)
-	*/
+	 
 	uint8_t BW_OFFSET;
-	/* < Addr:0x9C Bit[0]   :
-	 * Local polarity. (0: Upper Local, 1: Lower Local)
-	*/
+	 
 	uint8_t IS_LOWERLOCAL;
 };
 
 static const struct helene_terr_adjust_param_t
 terr_params[SONY_HELENE_TERR_TV_SYSTEM_NUM] = {
-	/*< SONY_HELENE_TV_SYSTEM_UNKNOWN */
+	 
 	{HELENE_AUTO, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 		HELENE_BW_6, HELENE_OFFSET(0),  HELENE_OFFSET(0),  0x00},
-	/* Analog */
-	/**< SONY_HELENE_ATV_MN_EIAJ   (System-M (Japan)) */
+	 
+	 
 	{HELENE_AUTO, 0x05, 0x03, 0x06, 0x03, 0x01, 0x01, 0x01, 0x00,
 		HELENE_BW_6,  HELENE_OFFSET(0),  HELENE_OFFSET(1),  0x00},
-	/**< SONY_HELENE_ATV_MN_SAP    (System-M (US)) */
+	 
 	{HELENE_AUTO, 0x05, 0x03, 0x06, 0x03, 0x01, 0x01, 0x01, 0x00,
 		HELENE_BW_6,  HELENE_OFFSET(0),  HELENE_OFFSET(1),  0x00},
 	{HELENE_AUTO, 0x05, 0x03, 0x06, 0x03, 0x01, 0x01, 0x01, 0x00,
 		HELENE_BW_6,  HELENE_OFFSET(3),  HELENE_OFFSET(1),  0x00},
-	/**< SONY_HELENE_ATV_MN_A2     (System-M (Korea)) */
+	 
 	{HELENE_AUTO, 0x05, 0x03, 0x06, 0x03, 0x01, 0x01, 0x01, 0x00,
 		HELENE_BW_7,  HELENE_OFFSET(11), HELENE_OFFSET(5),  0x00},
-	/**< SONY_HELENE_ATV_BG        (System-B/G) */
+	 
 	{HELENE_AUTO, 0x05, 0x03, 0x06, 0x03, 0x01, 0x01, 0x01, 0x00,
 		HELENE_BW_8,  HELENE_OFFSET(2),  HELENE_OFFSET(-3), 0x00},
-	/**< SONY_HELENE_ATV_I         (System-I) */
+	 
 	{HELENE_AUTO, 0x05, 0x03, 0x06, 0x03, 0x01, 0x01, 0x01, 0x00,
 		HELENE_BW_8,  HELENE_OFFSET(2),  HELENE_OFFSET(-3), 0x00},
-	/**< SONY_HELENE_ATV_DK        (System-D/K) */
+	 
 	{HELENE_AUTO, 0x03, 0x04, 0x0A, 0x04, 0x04, 0x04, 0x04, 0x00,
 		HELENE_BW_8,  HELENE_OFFSET(2),  HELENE_OFFSET(-3), 0x00},
-	/**< SONY_HELENE_ATV_L         (System-L) */
+	 
 	{HELENE_AUTO, 0x03, 0x04, 0x0A, 0x04, 0x04, 0x04, 0x04, 0x00,
 		HELENE_BW_8,  HELENE_OFFSET(-1), HELENE_OFFSET(4),  0x00},
-	/**< SONY_HELENE_ATV_L_DASH    (System-L DASH) */
-	/* Digital */
+	 
+	 
 	{HELENE_AUTO, 0x09, 0x0B, 0x0B, 0x0B, 0x03, 0x03, 0x03, 0x00,
 		HELENE_BW_6,  HELENE_OFFSET(-6), HELENE_OFFSET(-3), 0x00},
-	/**< SONY_HELENE_DTV_8VSB      (ATSC 8VSB) */
+	 
 	{HELENE_AUTO, 0x09, 0x0B, 0x0B, 0x0B, 0x02, 0x02, 0x02, 0x00,
 		HELENE_BW_6,  HELENE_OFFSET(-6), HELENE_OFFSET(-3), 0x00},
-	/**< SONY_HELENE_DTV_QAM       (US QAM) */
+	 
 	{HELENE_AUTO, 0x09, 0x0B, 0x0B, 0x0B, 0x02, 0x02, 0x02, 0x00,
 		HELENE_BW_6,  HELENE_OFFSET(-9), HELENE_OFFSET(-5), 0x00},
-	/**< SONY_HELENE_DTV_ISDBT_6   (ISDB-T 6MHzBW) */
+	 
 	{HELENE_AUTO, 0x09, 0x0B, 0x0B, 0x0B, 0x02, 0x02, 0x02, 0x00,
 		HELENE_BW_7,  HELENE_OFFSET(-7), HELENE_OFFSET(-6), 0x00},
-	/**< SONY_HELENE_DTV_ISDBT_7   (ISDB-T 7MHzBW) */
+	 
 	{HELENE_AUTO, 0x09, 0x0B, 0x0B, 0x0B, 0x02, 0x02, 0x02, 0x00,
 		HELENE_BW_8,  HELENE_OFFSET(-5), HELENE_OFFSET(-7), 0x00},
-	/**< SONY_HELENE_DTV_ISDBT_8   (ISDB-T 8MHzBW) */
+	 
 	{HELENE_AUTO, 0x09, 0x0B, 0x0B, 0x0B, 0x02, 0x02, 0x02, 0x00,
 		HELENE_BW_6,  HELENE_OFFSET(-8), HELENE_OFFSET(-3), 0x00},
-	/**< SONY_HELENE_DTV_DVBT_5    (DVB-T 5MHzBW) */
+	 
 	{HELENE_AUTO, 0x09, 0x0B, 0x0B, 0x0B, 0x02, 0x02, 0x02, 0x00,
 		HELENE_BW_6,  HELENE_OFFSET(-8), HELENE_OFFSET(-3), 0x00},
-	/**< SONY_HELENE_DTV_DVBT_6    (DVB-T 6MHzBW) */
+	 
 	{HELENE_AUTO, 0x09, 0x0B, 0x0B, 0x0B, 0x02, 0x02, 0x02, 0x00,
 		HELENE_BW_7,  HELENE_OFFSET(-6), HELENE_OFFSET(-5), 0x00},
-	/**< SONY_HELENE_DTV_DVBT_7    (DVB-T 7MHzBW) */
+	 
 	{HELENE_AUTO, 0x09, 0x0B, 0x0B, 0x0B, 0x02, 0x02, 0x02, 0x00,
 		HELENE_BW_8,  HELENE_OFFSET(-4), HELENE_OFFSET(-6), 0x00},
-	/**< SONY_HELENE_DTV_DVBT_8    (DVB-T 8MHzBW) */
+	 
 	{HELENE_AUTO, 0x09, 0x0B, 0x0B, 0x0B, 0x02, 0x02, 0x02, 0x00,
 		HELENE_BW_1_7, HELENE_OFFSET(-10), HELENE_OFFSET(-10), 0x00},
-	/**< SONY_HELENE_DTV_DVBT2_1_7 (DVB-T2 1.7MHzBW) */
+	 
 	{HELENE_AUTO, 0x09, 0x0B, 0x0B, 0x0B, 0x02, 0x02, 0x02, 0x00,
 		HELENE_BW_6,  HELENE_OFFSET(-8), HELENE_OFFSET(-3), 0x00},
-	/**< SONY_HELENE_DTV_DVBT2_5   (DVB-T2 5MHzBW) */
+	 
 	{HELENE_AUTO, 0x09, 0x0B, 0x0B, 0x0B, 0x02, 0x02, 0x02, 0x00,
 		HELENE_BW_6,  HELENE_OFFSET(-8), HELENE_OFFSET(-3), 0x00},
-	/**< SONY_HELENE_DTV_DVBT2_6   (DVB-T2 6MHzBW) */
+	 
 	{HELENE_AUTO, 0x09, 0x0B, 0x0B, 0x0B, 0x02, 0x02, 0x02, 0x00,
 		HELENE_BW_7,  HELENE_OFFSET(-6), HELENE_OFFSET(-5), 0x00},
-	/**< SONY_HELENE_DTV_DVBT2_7   (DVB-T2 7MHzBW) */
+	 
 	{HELENE_AUTO, 0x09, 0x0B, 0x0B, 0x0B, 0x02, 0x02, 0x02, 0x00,
 		HELENE_BW_8,  HELENE_OFFSET(-4), HELENE_OFFSET(-6), 0x00},
-	/**< SONY_HELENE_DTV_DVBT2_8   (DVB-T2 8MHzBW) */
+	 
 	{HELENE_AUTO, 0x05, 0x02, 0x02, 0x02, 0x01, 0x01, 0x01, 0x00,
 		HELENE_BW_6,  HELENE_OFFSET(-6), HELENE_OFFSET(-4), 0x00},
-	/**< SONY_HELENE_DTV_DVBC_6    (DVB-C 6MHzBW) */
+	 
 	{HELENE_AUTO, 0x05, 0x02, 0x02, 0x02, 0x01, 0x01, 0x01, 0x00,
 		HELENE_BW_8,  HELENE_OFFSET(-2), HELENE_OFFSET(-3), 0x00},
-	/**< SONY_HELENE_DTV_DVBC_8    (DVB-C 8MHzBW) */
+	 
 	{HELENE_AUTO, 0x03, 0x09, 0x09, 0x09, 0x02, 0x02, 0x02, 0x00,
 		HELENE_BW_6,  HELENE_OFFSET(-6), HELENE_OFFSET(-2), 0x00},
-	/**< SONY_HELENE_DTV_DVBC2_6   (DVB-C2 6MHzBW) */
+	 
 	{HELENE_AUTO, 0x03, 0x09, 0x09, 0x09, 0x02, 0x02, 0x02, 0x00,
 		HELENE_BW_8,  HELENE_OFFSET(-2), HELENE_OFFSET(0),  0x00},
-	/**< SONY_HELENE_DTV_DVBC2_8   (DVB-C2 8MHzBW) */
+	 
 	{HELENE_AUTO, 0x04, 0x0B, 0x0B, 0x0B, 0x02, 0x02, 0x02, 0x00,
 		HELENE_BW_8,  HELENE_OFFSET(2),  HELENE_OFFSET(1),  0x00}
-	/**< SONY_HELENE_DTV_DTMB      (DTMB) */
+	 
 };
 
 static void helene_i2c_debug(struct helene_priv *priv,
@@ -322,7 +287,7 @@ static int helene_write_regs(struct helene_priv *priv,
 
 static int helene_write_reg(struct helene_priv *priv, u8 reg, u8 val)
 {
-	u8 tmp = val; /* see gcc.gnu.org/bugzilla/show_bug.cgi?id=81715 */
+	u8 tmp = val;  
 
 	return helene_write_regs(priv, reg, &tmp, 1);
 }
@@ -393,10 +358,10 @@ static int helene_enter_power_save(struct helene_priv *priv)
 	if (priv->state == STATE_SLEEP)
 		return 0;
 
-	/* Standby setting for CPU */
+	 
 	helene_write_reg(priv, 0x88, 0x0);
 
-	/* Standby setting for internal logic block */
+	 
 	helene_write_reg(priv, 0x87, 0xC0);
 
 	priv->state = STATE_SLEEP;
@@ -409,10 +374,10 @@ static int helene_leave_power_save(struct helene_priv *priv)
 	if (priv->state == STATE_ACTIVE)
 		return 0;
 
-	/* Standby setting for internal logic block */
+	 
 	helene_write_reg(priv, 0x87, 0xC4);
 
-	/* Standby setting for CPU */
+	 
 	helene_write_reg(priv, 0x88, 0x40);
 
 	priv->state = STATE_ACTIVE;
@@ -527,31 +492,31 @@ static int helene_set_params_s(struct dvb_frontend *fe)
 				__func__);
 		return -EINVAL;
 	}
-	/* RF switch turn to satellite */
+	 
 	if (priv->set_tuner)
 		priv->set_tuner(priv->set_tuner_data, 0);
 	frequency = roundup(p->frequency / 1000, 1);
 
-	/* Disable IF signal output */
+	 
 	helene_write_reg(priv, 0x15, 0x02);
 
-	/* RFIN matching in power save (Sat) reset */
+	 
 	helene_write_reg(priv, 0x43, 0x06);
 
-	/* Analog block setting (0x6A, 0x6B) */
+	 
 	data[0] = 0x00;
 	data[1] = 0x00;
 	helene_write_regs(priv, 0x6A, data, 2);
 	helene_write_reg(priv, 0x75, 0x99);
 	helene_write_reg(priv, 0x9D, 0x00);
 
-	/* Tuning setting for CPU (0x61) */
+	 
 	helene_write_reg(priv, 0x61, 0x07);
 
-	/* Satellite mode select (0x01) */
+	 
 	helene_write_reg(priv, 0x01, 0x01);
 
-	/* Clock enable for internal logic block, CPU wake-up (0x04, 0x05) */
+	 
 	data[0] = 0xC4;
 	data[1] = 0x40;
 
@@ -574,12 +539,10 @@ static int helene_set_params_s(struct dvb_frontend *fe)
 		return -EINVAL;
 	}
 
-	/* Setting for analog block (0x07). LOOPFILTER INTERNAL */
+	 
 	data[3] = 0x80;
 
-	/* Tuning setting for analog block
-	 * (0x08, 0x09, 0x0A, 0x0B). LOOPFILTER INTERNAL
-	*/
+	 
 	if (priv->xtal == SONY_HELENE_XTAL_20500)
 		data[4] = 0x58;
 	else
@@ -589,16 +552,16 @@ static int helene_set_params_s(struct dvb_frontend *fe)
 	data[6] = 0x02;
 	data[7] = 0x24;
 
-	/* Enable for analog block (0x0C, 0x0D, 0x0E). SAT LNA ON */
+	 
 	data[8] = 0x0F;
-	data[8] |= 0xE0; /* POWERSAVE_TERR_RF_ACTIVE */
+	data[8] |= 0xE0;  
 	data[9]  = 0x02;
 	data[10] = 0x1E;
 
-	/* Setting for LPF cutoff frequency (0x0F) */
+	 
 	switch (tv_system) {
 	case SONY_HELENE_STV_ISDBS:
-		data[11] = 0x22; /* 22MHz */
+		data[11] = 0x22;  
 		break;
 	case SONY_HELENE_STV_DVBS:
 		if (symbol_rate <= 4000)
@@ -611,7 +574,7 @@ static int helene_set_params_s(struct dvb_frontend *fe)
 						+ (40000-1)) / 40000 + 5);
 
 		if (data[11] > 36)
-			data[11] = 36; /* 5 <= lpf_cutoff <= 36 is valid */
+			data[11] = 36;  
 		break;
 	case SONY_HELENE_STV_DVBS2:
 		if (symbol_rate <= 4000)
@@ -624,7 +587,7 @@ static int helene_set_params_s(struct dvb_frontend *fe)
 						+ (5000-1)) / 5000 + 5);
 
 		if (data[11] > 36)
-			data[11] = 36; /* 5 <= lpf_cutoff <= 36 is valid */
+			data[11] = 36;  
 		break;
 	default:
 		dev_err(&priv->i2c->dev, "%s(): unknown standard %d\n",
@@ -632,20 +595,20 @@ static int helene_set_params_s(struct dvb_frontend *fe)
 		return -EINVAL;
 	}
 
-	/* RF tuning frequency setting (0x10, 0x11, 0x12) */
+	 
 	frequency4kHz = (frequencykHz + 2) / 4;
-	data[12] = (uint8_t)(frequency4kHz & 0xFF);         /* FRF_L */
-	data[13] = (uint8_t)((frequency4kHz >> 8) & 0xFF);  /* FRF_M */
-	/* FRF_H (bit[3:0]) */
+	data[12] = (uint8_t)(frequency4kHz & 0xFF);          
+	data[13] = (uint8_t)((frequency4kHz >> 8) & 0xFF);   
+	 
 	data[14] = (uint8_t)((frequency4kHz >> 16) & 0x0F);
 
-	/* Tuning command (0x13) */
+	 
 	data[15] = 0xFF;
 
-	/* Setting for IQOUT_LIMIT (0x14) 0.75Vpp */
+	 
 	data[16] = 0x00;
 
-	/* Enable IQ output (0x15) */
+	 
 	data[17] = 0x01;
 
 	helene_write_regs(priv, 0x04, data, 18);
@@ -679,16 +642,16 @@ static int helene_set_params_t(struct dvb_frontend *fe)
 		priv->set_tuner(priv->set_tuner_data, 1);
 	frequency = roundup(p->frequency / 1000, 25);
 
-	/* mode select */
+	 
 	helene_write_reg(priv, 0x01, 0x00);
 
-	/* Disable IF signal output */
+	 
 	helene_write_reg(priv, 0x74, 0x02);
 
 	if (priv->state == STATE_SLEEP)
 		helene_leave_power_save(priv);
 
-	/* Initial setting for internal analog block (0x91, 0x92) */
+	 
 	if ((tv_system == SONY_HELENE_DTV_DVBC_6) ||
 			(tv_system == SONY_HELENE_DTV_DVBC_8)) {
 		data[0] = 0x16;
@@ -699,30 +662,30 @@ static int helene_set_params_t(struct dvb_frontend *fe)
 	}
 	helene_write_regs(priv, 0x91, data, 2);
 
-	/* Setting for analog block */
+	 
 	if (TERR_INTERNAL_LOOPFILTER_AVAILABLE(tv_system))
 		data[0] = 0x90;
 	else
 		data[0] = 0x00;
 
-	/* Setting for local polarity (0x9D) */
+	 
 	data[1] = (uint8_t)(terr_params[tv_system].IS_LOWERLOCAL & 0x01);
 	helene_write_regs(priv, 0x9C, data, 2);
 
-	/* Enable for analog block */
+	 
 	data[0] = 0xEE;
 	data[1] = 0x02;
 	data[2] = 0x1E;
-	data[3] = 0x67; /* Tuning setting for CPU */
+	data[3] = 0x67;  
 
-	/* Setting for PLL reference divider for xtal=24MHz */
+	 
 	if ((tv_system == SONY_HELENE_DTV_DVBC_6) ||
 			(tv_system == SONY_HELENE_DTV_DVBC_8))
 		data[4] = 0x18;
 	else
 		data[4] = 0x03;
 
-	/* Tuning setting for analog block */
+	 
 	if (TERR_INTERNAL_LOOPFILTER_AVAILABLE(tv_system)) {
 		data[5] = 0x38;
 		data[6] = 0x1E;
@@ -742,23 +705,23 @@ static int helene_set_params_t(struct dvb_frontend *fe)
 	}
 	helene_write_regs(priv, 0x5E, data, 9);
 
-	/* LT_AMP_EN should be 0 */
+	 
 	helene_set_reg_bits(priv, 0x67, 0x0, 0x02);
 
-	/* Setting for IFOUT_LIMIT */
-	data[0] = 0x00; /* 1.5Vpp */
+	 
+	data[0] = 0x00;  
 
-	/* RF_GAIN setting */
+	 
 	if (terr_params[tv_system].RF_GAIN == HELENE_AUTO)
-		data[1] = 0x80; /* RF_GAIN_SEL = 1 */
+		data[1] = 0x80;  
 	else
 		data[1] = (uint8_t)((terr_params[tv_system].RF_GAIN
 					<< 4) & 0x70);
 
-	/* IF_BPF_GC setting */
+	 
 	data[1] |= (uint8_t)(terr_params[tv_system].IF_BPF_GC & 0x0F);
 
-	/* Setting for internal RFAGC (0x6A, 0x6B, 0x6C) */
+	 
 	data[2] = 0x00;
 	if (frequencykHz <= 172000) {
 		data[3] = (uint8_t)(terr_params[tv_system].RFOVLD_DET_LV1_VL
@@ -778,30 +741,30 @@ static int helene_set_params_t(struct dvb_frontend *fe)
 	}
 	data[4] |= 0x20;
 
-	/* Setting for IF frequency and bandwidth */
+	 
 
-	/* IF filter center frequency offset (IF_BPF_F0) (0x6D) */
+	 
 	data[5] = (uint8_t)((terr_params[tv_system].IF_BPF_F0 << 4) & 0x30);
 
-	/* IF filter band width (BW) (0x6D) */
+	 
 	data[5] |= (uint8_t)(terr_params[tv_system].BW & 0x03);
 
-	/* IF frequency offset value (FIF_OFFSET) (0x6E) */
+	 
 	data[6] = (uint8_t)(terr_params[tv_system].FIF_OFFSET & 0x1F);
 
-	/* IF band width offset value (BW_OFFSET) (0x6F) */
+	 
 	data[7] = (uint8_t)(terr_params[tv_system].BW_OFFSET & 0x1F);
 
-	/* RF tuning frequency setting (0x70, 0x71, 0x72) */
-	data[8]  = (uint8_t)(frequencykHz & 0xFF);         /* FRF_L */
-	data[9]  = (uint8_t)((frequencykHz >> 8) & 0xFF);  /* FRF_M */
+	 
+	data[8]  = (uint8_t)(frequencykHz & 0xFF);          
+	data[9]  = (uint8_t)((frequencykHz >> 8) & 0xFF);   
 	data[10] = (uint8_t)((frequencykHz >> 16)
-			& 0x0F); /* FRF_H (bit[3:0]) */
+			& 0x0F);  
 
-	/* Tuning command */
+	 
 	data[11] = 0xFF;
 
-	/* Enable IF output, AGC and IFOUT pin selection (0x74) */
+	 
 	data[12] = 0x01;
 
 	if ((tv_system == SONY_HELENE_DTV_DVBC_6) ||
@@ -889,21 +852,19 @@ static const struct dvb_tuner_ops helene_tuner_ops = {
 	.get_frequency = helene_get_frequency,
 };
 
-/* power-on tuner
- * call once after reset
- */
+ 
 static int helene_x_pon(struct helene_priv *priv)
 {
-	/* RFIN matching in power save (terrestrial) = ACTIVE */
-	/* RFIN matching in power save (satellite) = ACTIVE */
+	 
+	 
 	u8 dataT[] = { 0x06, 0x00, 0x02, 0x00 };
-	/* SAT_RF_ACTIVE = true, lnaOff = false, terrRfActive = true */
+	 
 	u8 dataS[] = { 0x05, 0x06 };
 	u8 cdata[] = {0x7A, 0x01};
 	u8 data[20];
 	u8 rdata[2];
 
-	/* mode select */
+	 
 	helene_write_reg(priv, 0x01, 0x00);
 
 	helene_write_reg(priv, 0x67, dataT[3]);
@@ -911,31 +872,31 @@ static int helene_x_pon(struct helene_priv *priv)
 	helene_write_regs(priv, 0x5E, dataT, 3);
 	helene_write_reg(priv, 0x0C, dataS[0]);
 
-	/* Initial setting for internal logic block */
+	 
 	helene_write_regs(priv, 0x99, cdata, sizeof(cdata));
 
-	/* 0x81 - 0x94 */
+	 
 	if (priv->xtal == SONY_HELENE_XTAL_16000)
-		data[0] = 0x10; /* xtal 16 MHz */
+		data[0] = 0x10;  
 	else
-		data[0] = 0x18; /* xtal 24 MHz */
-	data[1] = (uint8_t)(0x80 | (0x04 & 0x1F)); /* 4 x 25 = 100uA */
-	data[2] = (uint8_t)(0x80 | (0x26 & 0x7F)); /* 38 x 0.25 = 9.5pF */
-	data[3] = 0x80; /* REFOUT signal output 500mVpp */
-	data[4] = 0x00; /* GPIO settings */
-	data[5] = 0x00; /* GPIO settings */
-	data[6] = 0xC4; /* Clock enable for internal logic block */
-	data[7] = 0x40; /* Start CPU boot-up */
-	data[8] = 0x10; /* For burst-write */
+		data[0] = 0x18;  
+	data[1] = (uint8_t)(0x80 | (0x04 & 0x1F));  
+	data[2] = (uint8_t)(0x80 | (0x26 & 0x7F));  
+	data[3] = 0x80;  
+	data[4] = 0x00;  
+	data[5] = 0x00;  
+	data[6] = 0xC4;  
+	data[7] = 0x40;  
+	data[8] = 0x10;  
 
-	/* Setting for internal RFAGC */
+	 
 	data[9] = 0x00;
 	data[10] = 0x45;
 	data[11] = 0x75;
 
-	data[12] = 0x07; /* Setting for analog block */
+	data[12] = 0x07;  
 
-	/* Initial setting for internal analog block */
+	 
 	data[13] = 0x1C;
 	data[14] = 0x3F;
 	data[15] = 0x02;
@@ -946,12 +907,12 @@ static int helene_x_pon(struct helene_priv *priv)
 
 	helene_write_regs(priv, 0x81, data, sizeof(data));
 
-	/* Setting for internal RFAGC */
+	 
 	helene_write_reg(priv, 0x9B, 0x00);
 
 	msleep(20);
 
-	/* Check CPU_STT/CPU_ERR */
+	 
 	helene_read_regs(priv, 0x1A, rdata, sizeof(rdata));
 
 	if (rdata[0] != 0x00) {
@@ -960,7 +921,7 @@ static int helene_x_pon(struct helene_priv *priv)
 		return -EIO;
 	}
 
-	/* VCO current setting */
+	 
 	cdata[0] = 0x90;
 	cdata[1] = 0x06;
 	helene_write_regs(priv, 0x17, cdata, sizeof(cdata));
@@ -968,19 +929,19 @@ static int helene_x_pon(struct helene_priv *priv)
 	helene_read_reg(priv, 0x19, data);
 	helene_write_reg(priv, 0x95, (uint8_t)((data[0] >> 4) & 0x0F));
 
-	/* Disable IF signal output */
+	 
 	helene_write_reg(priv, 0x74, 0x02);
 
-	/* Standby setting for CPU */
+	 
 	helene_write_reg(priv, 0x88, 0x00);
 
-	/* Standby setting for internal logic block */
+	 
 	helene_write_reg(priv, 0x87, 0xC0);
 
-	/* Load capacitance control setting for crystal oscillator */
+	 
 	helene_write_reg(priv, 0x80, 0x01);
 
-	/* Satellite initial setting */
+	 
 	cdata[0] = 0x07;
 	cdata[1] = 0x00;
 	helene_write_regs(priv, 0x41, cdata, sizeof(cdata));

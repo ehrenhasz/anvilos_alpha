@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright (c) 2022 Meta Platforms, Inc. and affiliates. */
+ 
+ 
 
 #ifndef _CGRP_KFUNC_COMMON_H
 #define _CGRP_KFUNC_COMMON_H
@@ -76,4 +76,4 @@ static inline int cgrps_kfunc_map_insert(struct cgroup *cgrp)
 	return 0;
 }
 
-#endif /* _CGRP_KFUNC_COMMON_H */
+#endif  

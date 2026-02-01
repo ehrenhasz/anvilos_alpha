@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB */
-/* Copyright (c) 2022, NVIDIA CORPORATION & AFFILIATES. All rights reserved. */
+ 
+ 
 
 #ifndef __MLX5_VNET_H__
 #define __MLX5_VNET_H__
@@ -47,10 +47,7 @@ struct mlx5_vdpa_net {
 	struct mlx5_vdpa_virtqueue *vqs;
 	struct vdpa_callback *event_cbs;
 
-	/* Serialize vq resources creation and destruction. This is required
-	 * since memory map might change and we need to destroy and create
-	 * resources while driver in operational.
-	 */
+	 
 	struct rw_semaphore reslock;
 	struct mlx5_flow_table *rxft;
 	struct dentry *rx_dent;
@@ -115,4 +112,4 @@ static inline void mlx5_vdpa_remove_rx_counters(struct mlx5_vdpa_net *ndev,
 #endif
 
 
-#endif /* __MLX5_VNET_H__ */
+#endif  

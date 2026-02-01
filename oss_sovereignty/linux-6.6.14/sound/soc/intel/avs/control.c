@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0-only
-//
-// Copyright(c) 2021-2022 Intel Corporation. All rights reserved.
-//
-// Authors: Amadeusz Slawinski <amadeuszx.slawinski@linux.intel.com>
-//          Cezary Rojewski <cezary.rojewski@intel.com>
-//
+
+
+
+
+
+
+
 
 #include <sound/soc.h>
 #include "avs.h"
@@ -54,7 +54,7 @@ int avs_control_volume_get(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_va
 	size_t num_dspvols;
 	int ret = 0;
 
-	/* prevent access to modules while path is being constructed */
+	 
 	mutex_lock(&adev->path_mutex);
 
 	active_module = avs_get_volume_module(adev, ctl_data->id);
@@ -89,7 +89,7 @@ int avs_control_volume_put(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_va
 	if (ctlvol < 0 || ctlvol > mc->max)
 		return -EINVAL;
 
-	/* prevent access to modules while path is being constructed */
+	 
 	mutex_lock(&adev->path_mutex);
 
 	if (*volume != ctlvol) {

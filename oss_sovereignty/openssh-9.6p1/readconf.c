@@ -1,16 +1,5 @@
-/* $OpenBSD: readconf.c,v 1.383 2023/10/12 02:18:18 djm Exp $ */
-/*
- * Author: Tatu Ylonen <ylo@cs.hut.fi>
- * Copyright (c) 1995 Tatu Ylonen <ylo@cs.hut.fi>, Espoo, Finland
- *                    All rights reserved
- * Functions for reading the configuration files.
- *
- * As far as I am concerned, the code I have written for this software
- * can be used freely for any purpose.  Any derived versions of this
- * software must be clearly marked as such, and if the derived work is
- * incompatible with the protocol description in the RFC file, it must be
- * called by a name other than "ssh" or "Secure Shell".
- */
+ 
+ 
 
 #include "includes.h"
 
@@ -71,66 +60,7 @@
 #include "myproposal.h"
 #include "digest.h"
 
-/* Format of the configuration file:
-
-   # Configuration data is parsed as follows:
-   #  1. command line options
-   #  2. user-specific file
-   #  3. system-wide file
-   # Any configuration value is only changed the first time it is set.
-   # Thus, host-specific definitions should be at the beginning of the
-   # configuration file, and defaults at the end.
-
-   # Host-specific declarations.  These may override anything above.  A single
-   # host may match multiple declarations; these are processed in the order
-   # that they are given in.
-
-   Host *.ngs.fi ngs.fi
-     User foo
-
-   Host fake.com
-     Hostname another.host.name.real.org
-     User blaah
-     Port 34289
-     ForwardX11 no
-     ForwardAgent no
-
-   Host books.com
-     RemoteForward 9999 shadows.cs.hut.fi:9999
-     Ciphers 3des-cbc
-
-   Host fascist.blob.com
-     Port 23123
-     User tylonen
-     PasswordAuthentication no
-
-   Host puukko.hut.fi
-     User t35124p
-     ProxyCommand ssh-proxy %h %p
-
-   Host *.fr
-     PublicKeyAuthentication no
-
-   Host *.su
-     Ciphers aes128-ctr
-     PasswordAuthentication no
-
-   Host vpn.fake.com
-     Tunnel yes
-     TunnelDevice 3
-
-   # Defaults for various options
-   Host *
-     ForwardAgent no
-     ForwardX11 no
-     PasswordAuthentication yes
-     StrictHostKeyChecking yes
-     TcpKeepAlive no
-     IdentityFile ~/.ssh/identity
-     Port 22
-     EscapeChar ~
-
-*/
+ 
 
 static int read_config_file_depth(const char *filename, struct passwd *pw,
     const char *host, const char *original_host, Options *options,
@@ -140,7 +70,7 @@ static int process_config_line_depth(Options *options, struct passwd *pw,
     const char *filename, int linenum, int *activep, int flags,
     int *want_final_pass, int depth);
 
-/* Keyword tokens. */
+ 
 
 typedef enum {
 	oBadOption,
@@ -182,14 +112,14 @@ typedef enum {
 	oIgnore, oIgnoredUnknownOption, oDeprecated, oUnsupported
 } OpCodes;
 
-/* Textual representations of the tokens. */
+ 
 
 static struct {
 	const char *name;
 	OpCodes opcode;
 } keywords[] = {
-	/* Deprecated options */
-	{ "protocol", oIgnore }, /* NB. silently ignored */
+	 
+	{ "protocol", oIgnore },  
 	{ "cipher", oDeprecated },
 	{ "fallbacktorsh", oDeprecated },
 	{ "globalknownhostsfile2", oDeprecated },
@@ -199,7 +129,7 @@ static struct {
 	{ "usersh", oDeprecated },
 	{ "useprivilegedport", oDeprecated },
 
-	/* Unsupported options */
+	 
 	{ "afstokenpassing", oUnsupported },
 	{ "kerberosauthentication", oUnsupported },
 	{ "kerberostgtpassing", oUnsupported },
@@ -207,7 +137,7 @@ static struct {
 	{ "rhostsrsaauthentication", oUnsupported },
 	{ "compressionlevel", oUnsupported },
 
-	/* Sometimes-unsupported options */
+	 
 #if defined(GSSAPI)
 	{ "gssapiauthentication", oGssAuthentication },
 	{ "gssapidelegatecredentials", oGssDelegateCreds },
@@ -233,14 +163,14 @@ static struct {
 	{ "passwordauthentication", oPasswordAuthentication },
 	{ "kbdinteractiveauthentication", oKbdInteractiveAuthentication },
 	{ "kbdinteractivedevices", oKbdInteractiveDevices },
-	{ "challengeresponseauthentication", oKbdInteractiveAuthentication }, /* alias */
-	{ "skeyauthentication", oKbdInteractiveAuthentication }, /* alias */
-	{ "tisauthentication", oKbdInteractiveAuthentication },  /* alias */
+	{ "challengeresponseauthentication", oKbdInteractiveAuthentication },  
+	{ "skeyauthentication", oKbdInteractiveAuthentication },  
+	{ "tisauthentication", oKbdInteractiveAuthentication },   
 	{ "pubkeyauthentication", oPubkeyAuthentication },
-	{ "dsaauthentication", oPubkeyAuthentication },		    /* alias */
+	{ "dsaauthentication", oPubkeyAuthentication },		     
 	{ "hostbasedauthentication", oHostbasedAuthentication },
 	{ "identityfile", oIdentityFile },
-	{ "identityfile2", oIdentityFile },			/* obsolete */
+	{ "identityfile2", oIdentityFile },			 
 	{ "identitiesonly", oIdentitiesOnly },
 	{ "certificatefile", oCertificateFile },
 	{ "addkeystoagent", oAddKeysToAgent },
@@ -267,7 +197,7 @@ static struct {
 	{ "stricthostkeychecking", oStrictHostKeyChecking },
 	{ "compression", oCompression },
 	{ "tcpkeepalive", oTCPKeepAlive },
-	{ "keepalive", oTCPKeepAlive },				/* obsolete */
+	{ "keepalive", oTCPKeepAlive },				 
 	{ "numberofpasswordprompts", oNumberOfPasswordPrompts },
 	{ "syslogfacility", oLogFacility },
 	{ "loglevel", oLogLevel },
@@ -318,9 +248,9 @@ static struct {
 	{ "fingerprinthash", oFingerprintHash },
 	{ "updatehostkeys", oUpdateHostkeys },
 	{ "hostbasedacceptedalgorithms", oHostbasedAcceptedAlgorithms },
-	{ "hostbasedkeytypes", oHostbasedAcceptedAlgorithms }, /* obsolete */
+	{ "hostbasedkeytypes", oHostbasedAcceptedAlgorithms },  
 	{ "pubkeyacceptedalgorithms", oPubkeyAcceptedAlgorithms },
-	{ "pubkeyacceptedkeytypes", oPubkeyAcceptedAlgorithms }, /* obsolete */
+	{ "pubkeyacceptedkeytypes", oPubkeyAcceptedAlgorithms },  
 	{ "ignoreunknown", oIgnoreUnknown },
 	{ "proxyjump", oProxyJump },
 	{ "securitykeyprovider", oSecurityKeyProvider },
@@ -369,10 +299,7 @@ ssh_connection_hash(const char *thishost, const char *host, const char *portstr,
 	return tohex(conn_hash, ssh_digest_bytes(SSH_DIGEST_SHA1));
 }
 
-/*
- * Adds a local TCP/IP port forward to options.  Never returns if there is an
- * error.
- */
+ 
 
 void
 add_local_forward(Options *options, const struct Forward *newfwd)
@@ -380,7 +307,7 @@ add_local_forward(Options *options, const struct Forward *newfwd)
 	struct Forward *fwd;
 	int i;
 
-	/* Don't add duplicates */
+	 
 	for (i = 0; i < options->num_local_forwards; i++) {
 		if (forward_equals(newfwd, options->local_forwards + i))
 			return;
@@ -398,10 +325,7 @@ add_local_forward(Options *options, const struct Forward *newfwd)
 	fwd->connect_path = newfwd->connect_path;
 }
 
-/*
- * Adds a remote TCP/IP port forward to options.  Never returns if there is
- * an error.
- */
+ 
 
 void
 add_remote_forward(Options *options, const struct Forward *newfwd)
@@ -409,7 +333,7 @@ add_remote_forward(Options *options, const struct Forward *newfwd)
 	struct Forward *fwd;
 	int i;
 
-	/* Don't add duplicates */
+	 
 	for (i = 0; i < options->num_remote_forwards; i++) {
 		if (forward_equals(newfwd, options->remote_forwards + i))
 			return;
@@ -468,7 +392,7 @@ add_certificate_file(Options *options, const char *path, int userprovided)
 		fatal("Too many certificate files specified (max %d)",
 		    SSH_MAX_CERTIFICATE_FILES);
 
-	/* Avoid registering duplicates */
+	 
 	for (i = 0; i < options->num_certificate_files; i++) {
 		if (options->certificate_file_userprovided[i] == userprovided &&
 		    strcmp(options->certificate_files[i], path) == 0) {
@@ -494,12 +418,12 @@ add_identity_file(Options *options, const char *dir, const char *filename,
 		fatal("Too many identity files specified (max %d)",
 		    SSH_MAX_IDENTITY_FILES);
 
-	if (dir == NULL) /* no dir, filename is absolute */
+	if (dir == NULL)  
 		path = xstrdup(filename);
 	else if (xasprintf(&path, "%s%s", dir, filename) >= PATH_MAX)
 		fatal("Identity file path %s too long", path);
 
-	/* Avoid registering duplicates */
+	 
 	for (i = 0; i < options->num_identity_files; i++) {
 		if (options->identity_file_userprovided[i] == userprovided &&
 		    strcmp(options->identity_files[i], path) == 0) {
@@ -527,10 +451,7 @@ default_ssh_port(void)
 	return port;
 }
 
-/*
- * Execute a command in a shell.
- * Return its exit status or -1 on abnormal exit.
- */
+ 
 static int
 execute_in_shell(const char *cmd)
 {
@@ -548,7 +469,7 @@ execute_in_shell(const char *cmd)
 
 	debug("Executing command: '%.500s'", cmd);
 
-	/* Fork and execute the command. */
+	 
 	if ((pid = fork()) == 0) {
 		char *argv[4];
 
@@ -563,12 +484,12 @@ execute_in_shell(const char *cmd)
 
 		execv(argv[0], argv);
 		error("Unable to execute '%.100s': %s", cmd, strerror(errno));
-		/* Die with signal to make this error apparent to parent. */
+		 
 		ssh_signal(SIGTERM, SIG_DFL);
 		kill(getpid(), SIGTERM);
 		_exit(1);
 	}
-	/* Parent. */
+	 
 	if (pid == -1)
 		fatal_f("fork: %.100s", strerror(errno));
 
@@ -584,10 +505,7 @@ execute_in_shell(const char *cmd)
 	return WEXITSTATUS(status);
 }
 
-/*
- * Check whether a local network interface address appears in CIDR pattern-
- * list 'addrlist'. Returns 1 if matched or 0 otherwise.
- */
+ 
 static int
 check_match_ifaddrs(const char *addrlist)
 {
@@ -615,9 +533,9 @@ check_match_ifaddrs(const char *addrlist)
 			break;
 #ifdef AF_LINK
 		case AF_LINK:
-			/* ignore */
+			 
 			continue;
-#endif /* AF_LINK */
+#endif  
 		default:
 			debug2_f("interface %s: unsupported address family %d",
 			    ifa->ifa_name, ifa->ifa_addr->sa_family);
@@ -639,15 +557,13 @@ check_match_ifaddrs(const char *addrlist)
 	}
 	freeifaddrs(ifaddrs);
 	return found;
-#else /* HAVE_IFADDRS_H */
+#else  
 	error("match localnetwork: not supported on this platform");
 	return 0;
-#endif /* HAVE_IFADDRS_H */
+#endif  
 }
 
-/*
- * Parse and execute a Match directive.
- */
+ 
 static int
 match_cfg_line(Options *options, char **condition, struct passwd *pw,
     const char *host_arg, const char *original_host, int final_pass,
@@ -659,16 +575,13 @@ match_cfg_line(Options *options, char **condition, struct passwd *pw,
 	char thishost[NI_MAXHOST], shorthost[NI_MAXHOST], portstr[NI_MAXSERV];
 	char uidstr[32];
 
-	/*
-	 * Configuration is likely to be incomplete at this point so we
-	 * must be prepared to use default values.
-	 */
+	 
 	port = options->port <= 0 ? default_ssh_port() : options->port;
 	ruser = options->user == NULL ? pw->pw_name : options->user;
 	if (final_pass) {
 		host = xstrdup(options->hostname);
 	} else if (options->hostname != NULL) {
-		/* NB. Please keep in sync with ssh.c:main() */
+		 
 		host = percent_expand(options->hostname,
 		    "h", host_arg, (char *)NULL);
 	} else {
@@ -678,16 +591,16 @@ match_cfg_line(Options *options, char **condition, struct passwd *pw,
 	debug2("checking match for '%s' host %s originally %s",
 	    cp, host, original_host);
 	while ((oattrib = attrib = strdelim(&cp)) && *attrib != '\0') {
-		/* Terminate on comment */
+		 
 		if (*attrib == '#') {
-			cp = NULL; /* mark all arguments consumed */
+			cp = NULL;  
 			break;
 		}
 		arg = criteria = NULL;
 		this_result = 1;
 		if ((negate = (attrib[0] == '!')))
 			attrib++;
-		/* Criterion "all" has no argument and must appear alone */
+		 
 		if (strcasecmp(attrib, "all") == 0) {
 			if (attributes > 1 || ((arg = strdelim(&cp)) != NULL &&
 			    *arg != '\0' && *arg != '#')) {
@@ -698,23 +611,20 @@ match_cfg_line(Options *options, char **condition, struct passwd *pw,
 				goto out;
 			}
 			if (arg != NULL && *arg == '#')
-				cp = NULL; /* mark all arguments consumed */
+				cp = NULL;  
 			if (result)
 				result = negate ? 0 : 1;
 			goto out;
 		}
 		attributes++;
-		/* criteria "final" and "canonical" have no argument */
+		 
 		if (strcasecmp(attrib, "canonical") == 0 ||
 		    strcasecmp(attrib, "final") == 0) {
-			/*
-			 * If the config requests "Match final" then remember
-			 * this so we can perform a second pass later.
-			 */
+			 
 			if (strcasecmp(attrib, "final") == 0 &&
 			    want_final_pass != NULL)
 				*want_final_pass = 1;
-			r = !!final_pass;  /* force bitmask member to boolean */
+			r = !!final_pass;   
 			if (r == (negate ? 1 : 0))
 				this_result = result = 0;
 			debug3("%.200s line %d: %smatched '%s'",
@@ -722,7 +632,7 @@ match_cfg_line(Options *options, char **condition, struct passwd *pw,
 			    this_result ? "" : "not ", oattrib);
 			continue;
 		}
-		/* All other criteria require an argument */
+		 
 		if ((arg = strdelim(&cp)) == NULL ||
 		    *arg == '\0' || *arg == '#') {
 			error("Missing Match criteria for %s", attrib);
@@ -751,7 +661,7 @@ match_cfg_line(Options *options, char **condition, struct passwd *pw,
 				this_result = result = 0;
 		} else if (strcasecmp(attrib, "localnetwork") == 0) {
 			if (addr_match_cidr_list(NULL, arg) == -1) {
-				/* Error already printed */
+				 
 				result = -1;
 				goto out;
 			}
@@ -797,7 +707,7 @@ match_cfg_line(Options *options, char **condition, struct passwd *pw,
 			    (char *)NULL);
 			free(conn_hash_hex);
 			if (result != 1) {
-				/* skip execution if prior predicate failed */
+				 
 				debug3("%.200s line %d: skipped exec "
 				    "\"%.100s\"", filename, linenum, cmd);
 				free(cmd);
@@ -811,7 +721,7 @@ match_cfg_line(Options *options, char **condition, struct passwd *pw,
 			}
 			criteria = xstrdup(cmd);
 			free(cmd);
-			/* Force exit status to boolean */
+			 
 			r = r == 0;
 			if (r == (negate ? 1 : 0))
 				this_result = result = 0;
@@ -840,13 +750,13 @@ match_cfg_line(Options *options, char **condition, struct passwd *pw,
 	return result;
 }
 
-/* Remove environment variable by pattern */
+ 
 static void
 rm_env(Options *options, const char *arg, const char *filename, int linenum)
 {
 	u_int i, j, onum_send_env = options->num_send_env;
 
-	/* Remove an environment variable */
+	 
 	for (i = 0; i < options->num_send_env; ) {
 		if (!match_pattern(options->send_env[i], arg + 1)) {
 			i++;
@@ -861,7 +771,7 @@ rm_env(Options *options, const char *arg, const char *filename, int linenum)
 			options->send_env[j + 1] = NULL;
 		}
 		options->num_send_env--;
-		/* NB. don't increment i */
+		 
 	}
 	if (onum_send_env != options->num_send_env) {
 		options->send_env = xrecallocarray(options->send_env,
@@ -870,9 +780,7 @@ rm_env(Options *options, const char *arg, const char *filename, int linenum)
 	}
 }
 
-/*
- * Returns the number of the token pointed to by cp or oBadOption.
- */
+ 
 static OpCodes
 parse_token(const char *cp, const char *filename, int linenum,
     const char *ignored_unknown)
@@ -890,7 +798,7 @@ parse_token(const char *cp, const char *filename, int linenum,
 	return oBadOption;
 }
 
-/* Multistate option parsing */
+ 
 struct multistate {
 	char *key;
 	int value;
@@ -1011,10 +919,7 @@ parse_multistate_value(const char *arg, const char *filename, int linenum,
 	return -1;
 }
 
-/*
- * Processes a single option line as used in the configuration files. This
- * only sets those values that have not already been set.
- */
+ 
 int
 process_config_line(Options *options, struct passwd *pw, const char *host,
     const char *original_host, char *line, const char *filename,
@@ -1048,12 +953,12 @@ process_config_line_depth(Options *options, struct passwd *pw, const char *host,
 	int oac = 0, ac;
 	int ret = -1;
 
-	if (activep == NULL) { /* We are processing a command line directive */
+	if (activep == NULL) {  
 		cmdline = 1;
 		activep = &cmdline;
 	}
 
-	/* Strip trailing whitespace. Allow \f (form feed) at EOL only */
+	 
 	if ((len = strlen(line)) == 0)
 		return 0;
 	for (len--; len > 0; len--) {
@@ -1063,18 +968,18 @@ process_config_line_depth(Options *options, struct passwd *pw, const char *host,
 	}
 
 	str = line;
-	/* Get the keyword. (Each line is supposed to begin with a keyword). */
+	 
 	if ((keyword = strdelim(&str)) == NULL)
 		return 0;
-	/* Ignore leading whitespace. */
+	 
 	if (*keyword == '\0')
 		keyword = strdelim(&str);
 	if (keyword == NULL || !*keyword || *keyword == '\n' || *keyword == '#')
 		return 0;
-	/* Match lowercase keyword */
+	 
 	lowercase(keyword);
 
-	/* Prepare to parse remainder of line */
+	 
 	if (str != NULL)
 		str += strspn(str, WHITESPACE);
 	if (str == NULL || *str == '\0') {
@@ -1093,7 +998,7 @@ process_config_line_depth(Options *options, struct passwd *pw, const char *host,
 
 	switch (opcode) {
 	case oBadOption:
-		/* don't panic, but count bad options */
+		 
 		goto out;
 	case oIgnore:
 		argv_consume(&ac);
@@ -1146,7 +1051,7 @@ parse_time:
 				*intptr = value;
 			break;
 		}
-		/* ForwardAgent wasn't 'yes' or 'no', assume a path */
+		 
 		if (*activep && *intptr == -1)
 			*intptr = 1;
 
@@ -1272,9 +1177,9 @@ parse_time:
 		}
 		if (*activep && options->rekey_limit == -1)
 			options->rekey_limit = val64;
-		if (ac != 0) { /* optional rekey interval present */
+		if (ac != 0) {  
 			if (strcmp(av[0], "none") == 0) {
-				(void)argv_next(&ac, &av);	/* discard */
+				(void)argv_next(&ac, &av);	 
 				break;
 			}
 			intptr = &options->rekey_interval;
@@ -1346,14 +1251,14 @@ parse_string:
 		max_entries = SSH_MAX_HOSTS_FILES;
 parse_char_array:
 		i = 0;
-		value = *uintptr == 0; /* was array empty when we started? */
+		value = *uintptr == 0;  
 		while ((arg = argv_next(&ac, &av)) != NULL) {
 			if (*arg == '\0') {
 				error("%s line %d: keyword %s empty argument",
 				    filename, linenum, keyword);
 				goto out;
 			}
-			/* Allow "none" only in first position */
+			 
 			if (strcasecmp(arg, "none") == 0) {
 				if (i > 0 || ac > 0) {
 					error("%s line %d: keyword %s \"none\" "
@@ -1419,9 +1324,9 @@ parse_char_array:
 
 	case oProxyCommand:
 		charptr = &options->proxy_command;
-		/* Ignore ProxyCommand if ProxyJump already specified */
+		 
 		if (options->jump_host != NULL)
-			charptr = &options->jump_host; /* Skip below */
+			charptr = &options->jump_host;  
 parse_command:
 		if (str == NULL) {
 			error("%.200s line %d: Missing argument.",
@@ -1441,7 +1346,7 @@ parse_command:
 			goto out;
 		}
 		len = strspn(str, WHITESPACE "=");
-		/* XXX use argv? */
+		 
 		if (parse_jump(str + len, options, *activep) == -1) {
 			error("%.200s line %d: Invalid ProxyJump \"%s\"",
 			    filename, linenum, str + len);
@@ -1594,7 +1499,7 @@ parse_pubkey_algos:
 				    filename, linenum, keyword);
 				goto out;
 			}
-			/* Allow "none" only in first position */
+			 
 			if (strcasecmp(arg, "none") == 0) {
 				if (i > 0 || ac > 0) {
 					error("%s line %d: keyword %s \"none\" "
@@ -1636,7 +1541,7 @@ parse_pubkey_algos:
 					goto out;
 				}
 			} else {
-				/* construct a string for parse_forward */
+				 
 				snprintf(fwdarg, sizeof(fwdarg), "%s:%s", arg,
 				    arg2);
 			}
@@ -1662,11 +1567,11 @@ parse_pubkey_algos:
 	case oPermitRemoteOpen:
 		uintptr = &options->num_permitted_remote_opens;
 		cppptr = &options->permitted_remote_opens;
-		uvalue = *uintptr;	/* modified later */
+		uvalue = *uintptr;	 
 		i = 0;
 		while ((arg = argv_next(&ac, &av)) != NULL) {
 			arg2 = xstrdup(arg);
-			/* Allow any/none only in first position */
+			 
 			if (strcasecmp(arg, "none") == 0 ||
 			    strcasecmp(arg, "any") == 0) {
 				if (i > 0 || ac > 0) {
@@ -1684,10 +1589,7 @@ parse_pubkey_algos:
 					    lookup_opcode_name(opcode));
 				}
 				p = cleanhostname(p);
-				/*
-				 * don't want to use permitopen_port to avoid
-				 * dependency on channels.[ch] here.
-				 */
+				 
 				if (arg == NULL || (strcmp(arg, "*") != 0 &&
 				    a2port(arg) <= 0)) {
 					fatal("%s line %d: bad port number "
@@ -1744,7 +1646,7 @@ parse_pubkey_algos:
 					break;
 				}
 				if (!*activep)
-					arg2 = arg; /* logged below */
+					arg2 = arg;  
 				*activep = 1;
 			}
 		}
@@ -1768,10 +1670,7 @@ parse_pubkey_algos:
 			goto out;
 		}
 		*activep = (flags & SSHCONF_NEVERMATCH) ? 0 : value;
-		/*
-		 * If match_cfg_line() didn't consume all its arguments then
-		 * arrange for the extra arguments check below to fail.
-		 */
+		 
 
 		if (str == NULL || *str == '\0')
 			argv_consume(&ac);
@@ -1832,7 +1731,7 @@ parse_pubkey_algos:
 			if (!*activep)
 				continue;
 			if (*arg == '-') {
-				/* Removing an env var */
+				 
 				rm_env(options, arg, filename, linenum);
 				continue;
 			}
@@ -1874,7 +1773,7 @@ parse_pubkey_algos:
 		goto parse_multistate;
 
 	case oControlPersist:
-		/* no/false/yes/true, or a time spec */
+		 
 		intptr = &options->control_persist;
 		arg = argv_next(&ac, &av);
 		if (!arg || *arg == '\0') {
@@ -1883,7 +1782,7 @@ parse_pubkey_algos:
 			goto out;
 		}
 		value = 0;
-		value2 = 0;	/* timeout */
+		value2 = 0;	 
 		if (strcmp(arg, "no") == 0 || strcmp(arg, "false") == 0)
 			value = 0;
 		else if (strcmp(arg, "yes") == 0 || strcmp(arg, "true") == 0)
@@ -1958,13 +1857,7 @@ parse_pubkey_algos:
 				    filename, linenum, keyword);
 				goto out;
 			}
-			/*
-			 * Ensure all paths are anchored. User configuration
-			 * files may begin with '~/' but system configurations
-			 * must not. If the path is relative, then treat it
-			 * as living in ~/.ssh for user configurations or
-			 * /etc/ssh for system ones.
-			 */
+			 
 			if (*arg == '~' && (flags & SSHCONF_USERCONF) == 0) {
 				error("%.200s line %d: bad include path %s.",
 				    filename, linenum, arg);
@@ -2007,10 +1900,7 @@ parse_pubkey_algos:
 					globfree(&gl);
 					goto out;
 				}
-				/*
-				 * don't let Match in includes clobber the
-				 * containing file's Match state.
-				 */
+				 
 				*activep = oactive;
 				if (r != 1)
 					value = -1;
@@ -2077,7 +1967,7 @@ parse_pubkey_algos:
 				    filename, linenum, keyword);
 				goto out;
 			}
-			/* Allow "none" only in first position */
+			 
 			if (strcasecmp(arg, "none") == 0) {
 				if (i > 0 || ac > 0) {
 					error("%s line %d: keyword %s \"none\" "
@@ -2109,10 +1999,7 @@ parse_pubkey_algos:
 		value = options->num_permitted_cnames != 0;
 		i = 0;
 		while ((arg = argv_next(&ac, &av)) != NULL) {
-			/*
-			 * Either 'none' (only in first position), '*' for
-			 * everything or 'list:list'
-			 */
+			 
 			if (strcasecmp(arg, "none") == 0) {
 				if (i > 0 || ac > 0) {
 					error("%s line %d: keyword %s \"none\" "
@@ -2171,7 +2058,7 @@ parse_pubkey_algos:
 			    "argument.", filename, linenum);
 			goto out;
 		}
-		/* Parse mode in octal format */
+		 
 		value = strtol(arg, &endofnumber, 8);
 		if (arg == endofnumber || value < 0 || value > 0777) {
 			error("%.200s line %d: Bad mask.", filename, linenum);
@@ -2225,9 +2112,9 @@ parse_pubkey_algos:
 		arg2 = argv_next(&ac, &av);
 		value = parse_multistate_value(arg, filename, linenum,
 		    multistate_yesnoaskconfirm);
-		value2 = 0; /* unlimited lifespan by default */
+		value2 = 0;  
 		if (value == 3 && arg2 != NULL) {
-			/* allow "AddKeysToAgent confirm 5m" */
+			 
 			if ((value2 = convtime(arg2)) == -1) {
 				error("%s line %d: invalid time value.",
 				    filename, linenum);
@@ -2239,7 +2126,7 @@ parse_pubkey_algos:
 				    filename, linenum);
 				goto out;
 			}
-			value = 1; /* yes */
+			value = 1;  
 		} else if (value == -1 || arg2 != NULL) {
 			error("%s line %d: unsupported option",
 			    filename, linenum);
@@ -2260,14 +2147,14 @@ parse_pubkey_algos:
 			goto out;
 		}
   parse_agent_path:
-		/* Extra validation if the string represents an env var. */
+		 
 		if ((arg2 = dollar_expand(&r, arg)) == NULL || r) {
 			error("%.200s line %d: Invalid environment expansion "
 			    "%s.", filename, linenum, arg);
 			goto out;
 		}
 		free(arg2);
-		/* check for legacy environment format */
+		 
 		if (arg[0] == '$' && arg[1] != '{' &&
 		    !valid_env_name(arg + 1)) {
 			error("%.200s line %d: Invalid environment name %s.",
@@ -2332,7 +2219,7 @@ parse_pubkey_algos:
 		uvalue = options->num_channel_timeouts;
 		i = 0;
 		while ((arg = argv_next(&ac, &av)) != NULL) {
-			/* Allow "none" only in first position */
+			 
 			if (strcasecmp(arg, "none") == 0) {
 				if (i > 0 || ac > 0) {
 					error("%s line %d: keyword %s \"none\" "
@@ -2371,25 +2258,21 @@ parse_pubkey_algos:
 		goto out;
 	}
 
-	/* Check that there is no garbage at end of line. */
+	 
 	if (ac > 0) {
 		error("%.200s line %d: keyword %s extra arguments "
 		    "at end of line", filename, linenum, keyword);
 		goto out;
 	}
 
-	/* success */
+	 
 	ret = 0;
  out:
 	argv_free(oav, oac);
 	return ret;
 }
 
-/*
- * Reads the config file and modifies the options accordingly.  Options
- * should already be initialized before this call.  This never returns if
- * there is an error.  If the file does not exist, this returns 0.
- */
+ 
 int
 read_config_file(const char *filename, struct passwd *pw, const char *host,
     const char *original_host, Options *options, int flags,
@@ -2431,19 +2314,12 @@ read_config_file_depth(const char *filename, struct passwd *pw,
 
 	debug("Reading configuration data %.200s", filename);
 
-	/*
-	 * Mark that we are now processing the options.  This flag is turned
-	 * on/off by Host specifications.
-	 */
+	 
 	linenum = 0;
 	while (getline(&line, &linesize, f) != -1) {
-		/* Update line number counter. */
+		 
 		linenum++;
-		/*
-		 * Trim out comments and strip whitespace.
-		 * NB - preserve newlines, they are needed to reproduce
-		 * line numbers later for error messages.
-		 */
+		 
 		if (process_config_line_depth(options, pw, host, original_host,
 		    line, filename, linenum, activep, flags, want_final_pass,
 		    depth) != 0)
@@ -2457,17 +2333,14 @@ read_config_file_depth(const char *filename, struct passwd *pw,
 	return 1;
 }
 
-/* Returns 1 if a string option is unset or set to "none" or 0 otherwise. */
+ 
 int
 option_clear_or_none(const char *o)
 {
 	return o == NULL || strcasecmp(o, "none") == 0;
 }
 
-/*
- * Returns 1 if CanonicalizePermittedCNAMEs have been specified, 0 otherwise.
- * Allowed to be called on non-final configuration.
- */
+ 
 int
 config_has_permitted_cnames(Options *options)
 {
@@ -2478,12 +2351,7 @@ config_has_permitted_cnames(Options *options)
 	return options->num_permitted_cnames > 0;
 }
 
-/*
- * Initializes options to special values that indicate that they have not yet
- * been set.  Read_config_file will only set options with this value. Options
- * are processed in the following order: command line, user config file,
- * system config file.  Last, fill_default_options is called.
- */
+ 
 
 void
 initialize_options(Options * options)
@@ -2609,10 +2477,7 @@ initialize_options(Options * options)
 	options->num_channel_timeouts = 0;
 }
 
-/*
- * A petite version of fill_default_options() that just fills the options
- * needed for hostname canonicalization to proceed.
- */
+ 
 void
 fill_default_options_for_canonicalization(Options *options)
 {
@@ -2624,10 +2489,7 @@ fill_default_options_for_canonicalization(Options *options)
 		options->canonicalize_hostname = SSH_CANONICALISE_NO;
 }
 
-/*
- * Called after processing other sources of option data, this fills those
- * options for which no value has been specified with their default values.
- */
+ 
 int
 fill_default_options(Options * options)
 {
@@ -2643,10 +2505,7 @@ fill_default_options(Options * options)
 		options->forward_x11_trusted = 0;
 	if (options->forward_x11_timeout == -1)
 		options->forward_x11_timeout = 1200;
-	/*
-	 * stdio forwarding (-W) changes the default for these but we defer
-	 * setting the values so they can be overridden.
-	 */
+	 
 	if (options->exit_on_forward_failure == -1)
 		options->exit_on_forward_failure =
 		    options->stdio_forward_host != NULL ? 1 : 0;
@@ -2687,14 +2546,14 @@ fill_default_options(Options * options)
 	if (options->tcp_keep_alive == -1)
 		options->tcp_keep_alive = 1;
 	if (options->port == -1)
-		options->port = 0;	/* Filled in ssh_connect. */
+		options->port = 0;	 
 	if (options->address_family == -1)
 		options->address_family = AF_UNSPEC;
 	if (options->connection_attempts == -1)
 		options->connection_attempts = 1;
 	if (options->number_of_password_prompts == -1)
 		options->number_of_password_prompts = 3;
-	/* options->hostkeyalgorithms, default set in myproposals.h */
+	 
 	if (options->add_keys_to_agent == -1) {
 		options->add_keys_to_agent = 0;
 		options->add_keys_to_agent_lifespan = 0;
@@ -2812,13 +2671,13 @@ fill_default_options(Options * options)
 		    SSH_KEYSTROKE_DEFAULT_INTERVAL_MS;
 	}
 
-	/* Expand KEX name lists */
+	 
 	all_cipher = cipher_alg_list(',', 0);
 	all_mac = mac_alg_list(',');
 	all_kex = kex_alg_list(',');
 	all_key = sshkey_alg_list(0, 0, 1, ',');
 	all_sig = sshkey_alg_list(0, 1, 1, ',');
-	/* remove unsupported algos from default lists */
+	 
 	def_cipher = match_filter_allowlist(KEX_CLIENT_ENCRYPT, all_cipher);
 	def_mac = match_filter_allowlist(KEX_CLIENT_MAC, all_mac);
 	def_kex = match_filter_allowlist(KEX_CLIENT_KEX, all_kex);
@@ -2876,20 +2735,20 @@ fill_default_options(Options * options)
 	}
 	if (options->num_permitted_cnames == 1 &&
 	    !config_has_permitted_cnames(options)) {
-		/* clean up CanonicalizePermittedCNAMEs=none */
+		 
 		free(options->permitted_cnames[0].source_list);
 		free(options->permitted_cnames[0].target_list);
 		memset(options->permitted_cnames, '\0',
 		    sizeof(*options->permitted_cnames));
 		options->num_permitted_cnames = 0;
 	}
-	/* options->identity_agent distinguishes NULL from 'none' */
-	/* options->user will be set in the main program if appropriate */
-	/* options->hostname will be set in the main program if appropriate */
-	/* options->host_key_alias should not be set by default */
-	/* options->preferred_authentications will be set in ssh */
+	 
+	 
+	 
+	 
+	 
 
-	/* success */
+	 
 	ret = 0;
  fail:
 	free(all_cipher);
@@ -2992,13 +2851,7 @@ struct fwdarg {
 	int ispath;
 };
 
-/*
- * parse_fwd_field
- * parses the next field in a port forwarding specification.
- * sets fwd to the parsed field and advances p past the colon
- * or sets it to NULL at end of string.
- * returns 0 on success, else non-zero.
- */
+ 
 static int
 parse_fwd_field(char **p, struct fwdarg *fwd)
 {
@@ -3007,23 +2860,20 @@ parse_fwd_field(char **p, struct fwdarg *fwd)
 
 	if (*cp == '\0') {
 		*p = NULL;
-		return -1;	/* end of string */
+		return -1;	 
 	}
 
-	/*
-	 * A field escaped with square brackets is used literally.
-	 * XXX - allow ']' to be escaped via backslash?
-	 */
+	 
 	if (*cp == '[') {
-		/* find matching ']' */
+		 
 		for (ep = cp + 1; *ep != ']' && *ep != '\0'; ep++) {
 			if (*ep == '/')
 				ispath = 1;
 		}
-		/* no matching ']' or not at end of field. */
+		 
 		if (ep[0] != ']' || (ep[1] != ':' && ep[1] != '\0'))
 			return -1;
-		/* NUL terminate the field and advance p past the colon */
+		 
 		*ep++ = '\0';
 		if (*ep != '\0')
 			*ep++ = '\0';
@@ -3055,16 +2905,7 @@ done:
 	return 0;
 }
 
-/*
- * parse_forward
- * parses a string containing a port forwarding specification of the form:
- *   dynamicfwd == 0
- *	[listenhost:]listenport|listenpath:connecthost:connectport|connectpath
- *	listenpath:connectpath
- *   dynamicfwd == 1
- *	[listenhost:]listenport
- * returns number of arguments parsed or zero on error
- */
+ 
 int
 parse_forward(struct Forward *fwd, const char *fwdspec, int dynamicfwd, int remotefwd)
 {
@@ -3075,16 +2916,12 @@ parse_forward(struct Forward *fwd, const char *fwdspec, int dynamicfwd, int remo
 	memset(fwd, 0, sizeof(*fwd));
 	memset(fwdargs, 0, sizeof(fwdargs));
 
-	/*
-	 * We expand environment variables before checking if we think they're
-	 * paths so that if ${VAR} expands to a fully qualified path it is
-	 * treated as a path.
-	 */
+	 
 	cp = p = dollar_expand(&err, fwdspec);
 	if (p == NULL || err)
 		return 0;
 
-	/* skip leading spaces */
+	 
 	while (isspace((u_char)*cp))
 		cp++;
 
@@ -3093,9 +2930,9 @@ parse_forward(struct Forward *fwd, const char *fwdspec, int dynamicfwd, int remo
 			break;
 	}
 
-	/* Check for trailing garbage */
+	 
 	if (cp != NULL && *cp != '\0') {
-		i = 0;	/* failure */
+		i = 0;	 
 	}
 
 	switch (i) {
@@ -3154,7 +2991,7 @@ parse_forward(struct Forward *fwd, const char *fwdspec, int dynamicfwd, int remo
 		fwd->connect_port = a2port(fwdargs[3].arg);
 		break;
 	default:
-		i = 0; /* failure */
+		i = 0;  
 	}
 
 	free(p);
@@ -3178,10 +3015,7 @@ parse_forward(struct Forward *fwd, const char *fwdspec, int dynamicfwd, int remo
 	if (fwd->connect_host != NULL &&
 	    strlen(fwd->connect_host) >= NI_MAXHOST)
 		goto fail_free;
-	/*
-	 * XXX - if connecting to a remote socket, max sun len may not
-	 * match this host
-	 */
+	 
 	if (fwd->connect_path != NULL &&
 	    strlen(fwd->connect_path) >= PATH_MAX_SUN)
 		goto fail_free;
@@ -3217,7 +3051,7 @@ parse_jump(const char *s, Options *o, int active)
 
 	orig = sdup = xstrdup(s);
 
-	/* Remove comment and trailing whitespace */
+	 
 	if ((cp = strchr(orig, '#')) != NULL)
 		*cp = '\0';
 	rtrim(orig);
@@ -3227,26 +3061,26 @@ parse_jump(const char *s, Options *o, int active)
 		if (strcasecmp(s, "none") == 0)
 			break;
 		if ((cp = strrchr(sdup, ',')) == NULL)
-			cp = sdup; /* last */
+			cp = sdup;  
 		else
 			*cp++ = '\0';
 
 		if (first) {
-			/* First argument and configuration is active */
+			 
 			r = parse_ssh_uri(cp, &user, &host, &port);
 			if (r == -1 || (r == 1 &&
 			    parse_user_host_port(cp, &user, &host, &port) != 0))
 				goto out;
 		} else {
-			/* Subsequent argument or inactive configuration */
+			 
 			r = parse_ssh_uri(cp, NULL, NULL, NULL);
 			if (r == -1 || (r == 1 &&
 			    parse_user_host_port(cp, NULL, NULL, NULL) != 0))
 				goto out;
 		}
-		first = 0; /* only check syntax for subsequent hosts */
+		first = 0;  
 	} while (cp != sdup);
-	/* success */
+	 
 	if (active) {
 		if (strcasecmp(s, "none") == 0) {
 			o->jump_host = xstrdup("none");
@@ -3279,7 +3113,7 @@ parse_ssh_uri(const char *uri, char **userp, char **hostp, int *portp)
 
 	r = parse_uri("ssh", uri, &user, &host, &port, &path);
 	if (r == 0 && path != NULL)
-		r = -1;		/* path not allowed */
+		r = -1;		 
 	if (r == 0) {
 		if (userp != NULL) {
 			*userp = user;
@@ -3298,7 +3132,7 @@ parse_ssh_uri(const char *uri, char **userp, char **hostp, int *portp)
 	return r;
 }
 
-/* XXX the following is a near-vebatim copy from servconf.c; refactor */
+ 
 static const char *
 fmt_multistate_int(int val, const struct multistate *m)
 {
@@ -3374,7 +3208,7 @@ dump_cfg_int(OpCodes code, int val)
 			printf("%s yes\n", lookup_opcode_name(code));
 			return;
 		}
-		/* FALLTHROUGH */
+		 
 	}
 	printf("%s %d\n", lookup_opcode_name(code), val);
 }
@@ -3421,7 +3255,7 @@ dump_cfg_forwards(OpCodes code, u_int count, const struct Forward *fwds)
 	const struct Forward *fwd;
 	u_int i;
 
-	/* oDynamicForward */
+	 
 	for (i = 0; i < count; i++) {
 		fwd = &fwds[i];
 		if (code == oDynamicForward && fwd->connect_host != NULL &&
@@ -3459,25 +3293,20 @@ dump_client_config(Options *o, const char *host)
 	int i, r;
 	char buf[8], *all_key;
 
-	/*
-	 * Expand HostKeyAlgorithms name lists. This isn't handled in
-	 * fill_default_options() like the other algorithm lists because
-	 * the host key algorithms are by default dynamically chosen based
-	 * on the host's keys found in known_hosts.
-	 */
+	 
 	all_key = sshkey_alg_list(0, 0, 1, ',');
 	if ((r = kex_assemble_names(&o->hostkeyalgorithms, kex_default_pk_alg(),
 	    all_key)) != 0)
 		fatal_fr(r, "expand HostKeyAlgorithms");
 	free(all_key);
 
-	/* Most interesting options first: user, host, port */
+	 
 	dump_cfg_string(oHost, o->host_arg);
 	dump_cfg_string(oUser, o->user);
 	dump_cfg_string(oHostname, host);
 	dump_cfg_int(oPort, o->port);
 
-	/* Flag options */
+	 
 	dump_cfg_fmtint(oAddressFamily, o->address_family);
 	dump_cfg_fmtint(oBatchMode, o->batch_mode);
 	dump_cfg_fmtint(oCanonicalizeFallbackLocal, o->canonicalize_fallback_local);
@@ -3495,7 +3324,7 @@ dump_client_config(Options *o, const char *host)
 #ifdef GSSAPI
 	dump_cfg_fmtint(oGssAuthentication, o->gss_authentication);
 	dump_cfg_fmtint(oGssDelegateCreds, o->gss_deleg_creds);
-#endif /* GSSAPI */
+#endif  
 	dump_cfg_fmtint(oHashKnownHosts, o->hash_known_hosts);
 	dump_cfg_fmtint(oHostbasedAuthentication, o->hostbased_authentication);
 	dump_cfg_fmtint(oIdentitiesOnly, o->identities_only);
@@ -3518,7 +3347,7 @@ dump_client_config(Options *o, const char *host)
 	dump_cfg_fmtint(oUpdateHostkeys, o->update_hostkeys);
 	dump_cfg_fmtint(oEnableEscapeCommandline, o->enable_escape_commandline);
 
-	/* Integer options */
+	 
 	dump_cfg_int(oCanonicalizeMaxDots, o->canonicalize_max_dots);
 	dump_cfg_int(oConnectionAttempts, o->connection_attempts);
 	dump_cfg_int(oForwardX11Timeout, o->forward_x11_timeout);
@@ -3529,7 +3358,7 @@ dump_client_config(Options *o, const char *host)
 	dump_cfg_int(oObscureKeystrokeTiming,
 	    o->obscure_keystroke_timing_interval);
 
-	/* String options */
+	 
 	dump_cfg_string(oBindAddress, o->bind_address);
 	dump_cfg_string(oBindInterface, o->bind_interface);
 	dump_cfg_string(oCiphers, o->ciphers);
@@ -3557,12 +3386,12 @@ dump_client_config(Options *o, const char *host)
 	dump_cfg_string(oKnownHostsCommand, o->known_hosts_command);
 	dump_cfg_string(oTag, o->tag);
 
-	/* Forwards */
+	 
 	dump_cfg_forwards(oDynamicForward, o->num_local_forwards, o->local_forwards);
 	dump_cfg_forwards(oLocalForward, o->num_local_forwards, o->local_forwards);
 	dump_cfg_forwards(oRemoteForward, o->num_remote_forwards, o->remote_forwards);
 
-	/* String array options */
+	 
 	dump_cfg_strarray(oIdentityFile, o->num_identity_files, o->identity_files);
 	dump_cfg_strarray_oneline(oCanonicalDomains, o->num_canonical_domains, o->canonical_domains);
 	dump_cfg_strarray(oCertificateFile, o->num_certificate_files, o->certificate_files);
@@ -3575,16 +3404,16 @@ dump_client_config(Options *o, const char *host)
 	dump_cfg_strarray_oneline(oChannelTimeout,
 	    o->num_channel_timeouts, o->channel_timeouts);
 
-	/* Special cases */
+	 
 
-	/* PermitRemoteOpen */
+	 
 	if (o->num_permitted_remote_opens == 0)
 		printf("%s any\n", lookup_opcode_name(oPermitRemoteOpen));
 	else
 		dump_cfg_strarray_oneline(oPermitRemoteOpen,
 		    o->num_permitted_remote_opens, o->permitted_remote_opens);
 
-	/* AddKeysToAgent */
+	 
 	if (o->add_keys_to_agent_lifespan <= 0)
 		dump_cfg_fmtint(oAddKeysToAgent, o->add_keys_to_agent);
 	else {
@@ -3593,19 +3422,19 @@ dump_client_config(Options *o, const char *host)
 		    o->add_keys_to_agent_lifespan);
 	}
 
-	/* oForwardAgent */
+	 
 	if (o->forward_agent_sock_path == NULL)
 		dump_cfg_fmtint(oForwardAgent, o->forward_agent);
 	else
 		dump_cfg_string(oForwardAgent, o->forward_agent_sock_path);
 
-	/* oConnectTimeout */
+	 
 	if (o->connection_timeout == -1)
 		printf("connecttimeout none\n");
 	else
 		dump_cfg_int(oConnectTimeout, o->connection_timeout);
 
-	/* oTunnelDevice */
+	 
 	printf("tunneldevice");
 	if (o->tun_local == SSH_TUNID_ANY)
 		printf(" any");
@@ -3617,7 +3446,7 @@ dump_client_config(Options *o, const char *host)
 		printf(":%d", o->tun_remote);
 	printf("\n");
 
-	/* oCanonicalizePermittedCNAMEs */
+	 
 	printf("canonicalizePermittedcnames");
 	if (o->num_permitted_cnames == 0)
 		printf(" none");
@@ -3627,13 +3456,13 @@ dump_client_config(Options *o, const char *host)
 	}
 	printf("\n");
 
-	/* oControlPersist */
+	 
 	if (o->control_persist == 0 || o->control_persist_timeout == 0)
 		dump_cfg_fmtint(oControlPersist, o->control_persist);
 	else
 		dump_cfg_int(oControlPersist, o->control_persist_timeout);
 
-	/* oEscapeChar */
+	 
 	if (o->escape_char == SSH_ESCAPECHAR_NONE)
 		printf("escapechar none\n");
 	else {
@@ -3641,43 +3470,43 @@ dump_client_config(Options *o, const char *host)
 		printf("escapechar %s\n", buf);
 	}
 
-	/* oIPQoS */
+	 
 	printf("ipqos %s ", iptos2str(o->ip_qos_interactive));
 	printf("%s\n", iptos2str(o->ip_qos_bulk));
 
-	/* oRekeyLimit */
+	 
 	printf("rekeylimit %llu %d\n",
 	    (unsigned long long)o->rekey_limit, o->rekey_interval);
 
-	/* oStreamLocalBindMask */
+	 
 	printf("streamlocalbindmask 0%o\n",
 	    o->fwd_opts.streamlocal_bind_mask);
 
-	/* oLogFacility */
+	 
 	printf("syslogfacility %s\n", log_facility_name(o->log_facility));
 
-	/* oProxyCommand / oProxyJump */
+	 
 	if (o->jump_host == NULL)
 		dump_cfg_string(oProxyCommand, o->proxy_command);
 	else {
-		/* Check for numeric addresses */
+		 
 		i = strchr(o->jump_host, ':') != NULL ||
 		    strspn(o->jump_host, "1234567890.") == strlen(o->jump_host);
 		snprintf(buf, sizeof(buf), "%d", o->jump_port);
 		printf("proxyjump %s%s%s%s%s%s%s%s%s\n",
-		    /* optional additional jump spec */
+		     
 		    o->jump_extra == NULL ? "" : o->jump_extra,
 		    o->jump_extra == NULL ? "" : ",",
-		    /* optional user */
+		     
 		    o->jump_user == NULL ? "" : o->jump_user,
 		    o->jump_user == NULL ? "" : "@",
-		    /* opening [ if hostname is numeric */
+		     
 		    i ? "[" : "",
-		    /* mandatory hostname */
+		     
 		    o->jump_host,
-		    /* closing ] if hostname is numeric */
+		     
 		    i ? "]" : "",
-		    /* optional port number */
+		     
 		    o->jump_port <= 0 ? "" : ":",
 		    o->jump_port <= 0 ? "" : buf);
 	}

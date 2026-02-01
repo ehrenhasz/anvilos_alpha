@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: ISC
-/*
- * Copyright (C) 2016 Felix Fietkau <nbd@nbd.name>
- */
+
+ 
 
 #include "mt76.h"
 
@@ -99,7 +97,7 @@ __mt76_tx_status_skb_done(struct mt76_dev *dev, struct sk_buff *skb, u8 flags,
 	if ((flags & done) != done)
 		return;
 
-	/* Tx status can be unreliable. if it fails, mark the frame as ACKed */
+	 
 	if (flags & MT_TX_CB_TXS_FAILED) {
 		info->status.rates[0].count = 0;
 		info->status.rates[0].idx = -1;
@@ -179,7 +177,7 @@ mt76_tx_status_skb_get(struct mt76_dev *dev, struct mt76_wcid *wcid, int pktid,
 	if (skb)
 		goto out;
 
-	/* look for stale entries in the wcid idr queue */
+	 
 	idr_for_each_entry(&wcid->pktid, skb, id) {
 		struct mt76_tx_cb *cb = mt76_tx_skb_cb(skb);
 
@@ -192,9 +190,7 @@ mt76_tx_status_skb_get(struct mt76_dev *dev, struct mt76_wcid *wcid, int pktid,
 				continue;
 		}
 
-		/* It has been too long since DMA_DONE, time out this packet
-		 * and stop waiting for TXS callback.
-		 */
+		 
 		idr_remove(&wcid->pktid, cb->pktid);
 		__mt76_tx_status_skb_done(dev, skb, MT_TX_CB_TXS_FAILED |
 						    MT_TX_CB_TXS_DONE, list);
@@ -689,9 +685,7 @@ int mt76_skb_adjust_pad(struct sk_buff *skb, int pad)
 {
 	struct sk_buff *iter, *last = skb;
 
-	/* First packet of a A-MSDU burst keeps track of the whole burst
-	 * length, need to update length of it and the last packet.
-	 */
+	 
 	skb_walk_frags(skb, iter) {
 		last = iter;
 		if (!iter->next) {

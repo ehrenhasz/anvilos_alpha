@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright 2019-2023 NXP
- */
+
+ 
 
 #include <linux/regmap.h>
 
@@ -9,9 +7,7 @@
 
 #include "imx8-isi-core.h"
 
-/* -----------------------------------------------------------------------------
- * i.MX8MN and i.MX8MP gasket
- */
+ 
 
 #define GASKET_BASE(n)				(0x0060 + (n) * 0x30)
 
@@ -53,9 +49,7 @@ const struct mxc_gasket_ops mxc_imx8_gasket_ops = {
 	.disable = mxc_imx8_gasket_disable,
 };
 
-/* -----------------------------------------------------------------------------
- * i.MX93 gasket
- */
+ 
 
 #define DISP_MIX_CAMERA_MUX                     0x30
 #define DISP_MIX_CAMERA_MUX_DATA_TYPE(x)        (((x) & 0x3f) << 3)

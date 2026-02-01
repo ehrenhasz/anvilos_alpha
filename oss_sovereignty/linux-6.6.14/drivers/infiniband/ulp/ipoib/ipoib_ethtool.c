@@ -1,34 +1,4 @@
-/*
- * Copyright (c) 2007 Mellanox Technologies. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 
 #include <linux/kernel.h>
 #include <linux/ethtool.h>
@@ -92,10 +62,7 @@ static int ipoib_set_coalesce(struct net_device *dev,
 	struct ipoib_dev_priv *priv = ipoib_priv(dev);
 	int ret;
 
-	/*
-	 * These values are saved in the private data and returned
-	 * when ipoib_get_coalesce() is called
-	 */
+	 
 	if (coal->rx_coalesce_usecs       > 0xffff ||
 	    coal->rx_max_coalesced_frames > 0xffff)
 		return -EINVAL;
@@ -155,7 +122,7 @@ static int ipoib_get_sset_count(struct net_device __always_unused *dev,
 	return -EOPNOTSUPP;
 }
 
-/* Return lane speed in unit of 1e6 bit/sec */
+ 
 static inline int ib_speed_enum_to_int(int speed)
 {
 	switch (speed) {
@@ -202,10 +169,7 @@ static int ipoib_get_link_ksettings(struct net_device *netdev,
 	if (speed < 0 || width < 0)
 		return -EINVAL;
 
-	/* Except the following are set, the other members of
-	 * the struct ethtool_link_settings are initialized to
-	 * zero in the function __ethtool_get_link_ksettings.
-	 */
+	 
 	cmd->base.speed		 = speed * width;
 	cmd->base.duplex	 = DUPLEX_FULL;
 

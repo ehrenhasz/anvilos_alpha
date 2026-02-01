@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  FUJITSU Extended Socket Network Device driver
- *  Copyright (c) 2015 FUJITSU LIMITED
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/types.h>
@@ -134,7 +131,7 @@ static int fjes_acpi_add(struct acpi_device *device)
 	if (ACPI_FAILURE(status))
 		return -ENODEV;
 
-	/* create platform_device */
+	 
 	plat_dev = platform_device_register_simple(DRV_NAME, 0, fjes_resource,
 						   ARRAY_SIZE(fjes_resource));
 	if (IS_ERR(plat_dev))
@@ -480,7 +477,7 @@ static void fjes_free_resources(struct fjes_adapter *adapter)
 	}
 }
 
-/* fjes_open - Called when a network interface is made active */
+ 
 static int fjes_open(struct net_device *netdev)
 {
 	struct fjes_adapter *adapter = netdev_priv(netdev);
@@ -521,7 +518,7 @@ err_setup_res:
 	return result;
 }
 
-/* fjes_close - Disables a network interface */
+ 
 static int fjes_close(struct net_device *netdev)
 {
 	struct fjes_adapter *adapter = netdev_priv(netdev);
@@ -663,7 +660,7 @@ fjes_xmit_frame(struct sk_buff *skb, struct net_device *netdev)
 			ret = NETDEV_TX_OK;
 		} else if (!fjes_hw_check_epbuf_version(
 				&adapter->hw.ep_shm_info[dest_epid].rx, 0)) {
-			/* version is NOT 0 */
+			 
 			adapter->stats64.tx_carrier_errors += 1;
 			hw->ep_shm_info[dest_epid].net_stats
 						.tx_carrier_errors += 1;
@@ -891,7 +888,7 @@ static const struct net_device_ops fjes_netdev_ops = {
 	.ndo_vlan_rx_kill_vid = fjes_vlan_rx_kill_vid,
 };
 
-/* fjes_netdev_setup - netdevice initialization routine */
+ 
 static void fjes_netdev_setup(struct net_device *netdev)
 {
 	ether_setup(netdev);
@@ -1331,7 +1328,7 @@ static void fjes_irq_watch_task(struct work_struct *work)
 	}
 }
 
-/* fjes_probe - Device Initialization Routine */
+ 
 static int fjes_probe(struct platform_device *plat_dev)
 {
 	struct fjes_adapter *adapter;
@@ -1358,7 +1355,7 @@ static int fjes_probe(struct platform_device *plat_dev)
 	hw = &adapter->hw;
 	hw->back = adapter;
 
-	/* setup the private structure */
+	 
 	err = fjes_sw_init(adapter);
 	if (err)
 		goto err_free_netdev;
@@ -1406,13 +1403,13 @@ static int fjes_probe(struct platform_device *plat_dev)
 	if (err)
 		goto err_free_control_wq;
 
-	/* setup MAC address (02:00:00:00:00:[epid])*/
+	 
 	addr[0] = 2;
 	addr[1] = 0;
 	addr[2] = 0;
 	addr[3] = 0;
 	addr[4] = 0;
-	addr[5] = hw->my_epid; /* EPID */
+	addr[5] = hw->my_epid;  
 	eth_hw_addr_set(netdev, addr);
 
 	err = register_netdev(netdev);
@@ -1437,7 +1434,7 @@ err_out:
 	return err;
 }
 
-/* fjes_remove - Device Removal Routine */
+ 
 static int fjes_remove(struct platform_device *plat_dev)
 {
 	struct net_device *netdev = dev_get_drvdata(&plat_dev->dev);
@@ -1498,7 +1495,7 @@ acpi_find_extended_socket_device(acpi_handle obj_handle, u32 level,
 	return AE_CTRL_TERMINATE;
 }
 
-/* fjes_init_module - Driver Registration Routine */
+ 
 static int __init fjes_init_module(void)
 {
 	bool found = false;
@@ -1536,7 +1533,7 @@ fail_acpi_driver:
 
 module_init(fjes_init_module);
 
-/* fjes_exit_module - Driver Exit Cleanup Routine */
+ 
 static void __exit fjes_exit_module(void)
 {
 	acpi_bus_unregister_driver(&fjes_acpi_driver);

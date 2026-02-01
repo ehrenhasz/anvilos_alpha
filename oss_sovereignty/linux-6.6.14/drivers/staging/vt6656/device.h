@@ -1,15 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * Copyright (c) 1996, 2003 VIA Networking Technologies, Inc.
- * All rights reserved.
- *
- * Purpose: MAC Data structure
- *
- * Author: Tevin Chen
- *
- * Date: Mar 17, 1997
- *
- */
+ 
+ 
 
 #ifndef __DEVICE_H__
 #define __DEVICE_H__
@@ -54,9 +44,7 @@
 #define VNT_B_RATES	(BIT(RATE_1M) | BIT(RATE_2M) |\
 			BIT(RATE_5M) | BIT(RATE_11M))
 
-/*
- * device specific
- */
+ 
 
 #include "wcmd.h"
 #include "desc.h"
@@ -71,7 +59,7 @@
 
 #define DEVICE_VERSION			"mac80211"
 
-#define FIRMWARE_VERSION		0x133		/* version 1.51 */
+#define FIRMWARE_VERSION		0x133		 
 #define FIRMWARE_NAME			"vntwusb.fw"
 #define FIRMWARE_CHUNK_SIZE		0x400
 
@@ -87,7 +75,7 @@
 #define FB_RATE0                0
 #define FB_RATE1                1
 
-/* Antenna Mode */
+ 
 #define ANT_A                   0
 #define ANT_B                   1
 #define ANT_DIVERSITY           2
@@ -104,7 +92,7 @@
 
 #define EEP_MAX_CONTEXT_SIZE    256
 
-/* Contents in the EEPROM */
+ 
 #define EEP_OFS_PAR		0x0
 #define EEP_OFS_ANTENNA		0x17
 #define EEP_OFS_RADIOCTL	0x18
@@ -129,15 +117,15 @@
 #define EEP_OFS_OFDM_PWR_TBL	0x40
 #define EEP_OFS_OFDMA_PWR_TBL	0x50
 
-/* Bits in EEP_OFS_ANTENNA */
+ 
 #define EEP_ANTENNA_MAIN	BIT(0)
 #define EEP_ANTENNA_AUX		BIT(1)
 #define EEP_ANTINV		BIT(2)
 
-/* Bits in EEP_OFS_RADIOCTL */
+ 
 #define EEP_RADIOCTL_ENABLE	BIT(7)
 
-/* control commands */
+ 
 #define MESSAGE_TYPE_READ		0x1
 #define MESSAGE_TYPE_WRITE		0x0
 #define MESSAGE_TYPE_LOCK_OR		0x2
@@ -157,7 +145,7 @@
 #define MESSAGE_TYPE_DISABLE_PS		0x10
 #define MESSAGE_TYPE_WRITE_IFRF		0x11
 
-/* command read/write(index) */
+ 
 #define MESSAGE_REQUEST_MEM		0x1
 #define MESSAGE_REQUEST_BBREG		0x2
 #define MESSAGE_REQUEST_MACREG		0x3
@@ -172,14 +160,14 @@
 #define MESSAGE_REQUEST_RF_CH1		0xc
 #define MESSAGE_REQUEST_RF_CH2		0xd
 
-/* USB registers */
+ 
 #define USB_REG4			0x604
 
-#define DEVICE_INIT_COLD	0x0 /* cold init */
-#define DEVICE_INIT_RESET	0x1 /* reset init or Dx to D0 power remain */
-#define DEVICE_INIT_DXPL	0x2 /* Dx to D0 power lost init */
+#define DEVICE_INIT_COLD	0x0  
+#define DEVICE_INIT_RESET	0x1  
+#define DEVICE_INIT_DXPL	0x2  
 
-/* Device init */
+ 
 struct vnt_cmd_card_init {
 	u8 init_class;
 	u8 exist_sw_net_addr;
@@ -196,11 +184,9 @@ struct vnt_rsp_card_init {
 	u8 max_channel;
 };
 
-/* USB */
+ 
 
-/*
- * Enum of context types for SendPacket
- */
+ 
 enum {
 	CONTEXT_DATA_PACKET = 0,
 	CONTEXT_BEACON_PACKET
@@ -222,14 +208,14 @@ struct vnt_rx_tail {
 	u8 sq_3;
 } __packed;
 
-/* RCB (Receive Control Block) */
+ 
 struct vnt_rcb {
 	void *priv;
 	struct urb *urb;
 	struct sk_buff *skb;
 };
 
-/* used to track bulk out irps */
+ 
 struct vnt_usb_send_context {
 	void *priv;
 	struct sk_buff *skb;
@@ -243,23 +229,21 @@ struct vnt_usb_send_context {
 	bool in_use;
 };
 
-/*
- * Structure to keep track of USB interrupt packets
- */
+ 
 struct vnt_interrupt_buffer {
 	u8 *data_buf;
 };
 
-/* flags for options */
+ 
 #define DEVICE_FLAGS_UNPLUG		0
 #define DEVICE_FLAGS_DISCONNECTED	1
 
 struct vnt_private {
-	/* mac80211 */
+	 
 	struct ieee80211_hw *hw;
 	struct ieee80211_vif *vif;
 	u8 mac_hw;
-	/* netdev */
+	 
 	struct usb_device *usb;
 	struct usb_interface *intf;
 
@@ -268,28 +252,28 @@ struct vnt_private {
 	u32 rx_buf_sz;
 	int mc_list_count;
 
-	spinlock_t lock;		/* prepare tx USB URB */
-	struct mutex usb_lock;		/* USB control messages */
+	spinlock_t lock;		 
+	struct mutex usb_lock;		 
 
 	unsigned long flags;
 
-	/* USB */
+	 
 	struct urb *interrupt_urb;
 	u32 int_interval;
 
-	/* Variables to track resources for the BULK In Pipe */
+	 
 	struct vnt_rcb *rcb[CB_MAX_RX_DESC];
 	u32 num_rcb;
 
-	/* Variables to track resources for the BULK Out Pipe */
+	 
 	struct vnt_usb_send_context *tx_context[CB_MAX_TX_DESC];
 	struct usb_anchor tx_submitted;
 	u32 num_tx_context;
 
-	/* Variables to track resources for the Interrupt In Pipe */
+	 
 	struct vnt_interrupt_buffer int_buf;
 
-	/* Version control */
+	 
 	u16 firmware_version;
 	u8 local_id;
 	u8 rf_type;
@@ -304,34 +288,34 @@ struct vnt_private {
 
 	u64 current_tsf;
 
-	/* 802.11 MAC specific */
+	 
 	u32 current_rssi;
 
-	/* Antenna Diversity */
+	 
 	int tx_rx_ant_inv;
 	u32 rx_antenna_sel;
 	u8 rx_antenna_mode;
 	u8 tx_antenna_mode;
 	u8 radio_ctl;
 
-	/* IFS & Cw */
-	u32 sifs;  /* Current SIFS */
-	u32 difs;  /* Current DIFS */
-	u32 eifs;  /* Current EIFS */
-	u32 slot;  /* Current SlotTime */
+	 
+	u32 sifs;   
+	u32 difs;   
+	u32 eifs;   
+	u32 slot;   
 
-	/* Rate */
-	u8 bb_type; /* 0: 11A, 1:11B, 2:11G */
-	u8 packet_type; /* 0:11a 1:11b 2:11gb 3:11ga */
+	 
+	u8 bb_type;  
+	u8 packet_type;  
 	u32 basic_rates;
 	u8 top_ofdm_basic_rate;
 	u8 top_cck_basic_rate;
 
-	u8 eeprom[EEP_MAX_CONTEXT_SIZE];  /*u32 alignment */
+	u8 eeprom[EEP_MAX_CONTEXT_SIZE];   
 
 	u8 preamble_type;
 
-	/* For RF Power table */
+	 
 	u8 cck_pwr;
 	u8 ofdm_pwr_g;
 	u8 ofdm_pwr_a;
@@ -347,17 +331,17 @@ struct vnt_private {
 
 	int short_slot_time;
 
-	/* Power save */
+	 
 	u16 current_aid;
 
-	/* Beacon related */
+	 
 	u16 seq_counter;
 
 	enum vnt_cmd_state command_state;
 
 	enum vnt_cmd command;
 
-	/* 802.11 counter */
+	 
 
 	enum vnt_cmd cmd_queue[CMD_Q_SIZE];
 	u32 cmd_dequeue_idx;
@@ -369,13 +353,13 @@ struct vnt_private {
 
 	u8 auto_fb_ctrl;
 
-	/* For Update BaseBand VGA Gain Offset */
+	 
 	u8 bb_vga[BB_VGA_LEVEL];
 
 	u8 bb_pre_ed_rssi;
 	u8 bb_pre_ed_index;
 
-	/* command timer */
+	 
 	struct delayed_work run_command_work;
 
 	struct ieee80211_low_level_stats low_stats;

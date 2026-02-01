@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* NXP C45 PHY driver
- * Copyright (C) 2021 NXP
- * Author: Radu Pirea <radu-nicolae.pirea@oss.nxp.com>
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/ethtool.h>
@@ -214,11 +211,11 @@ struct nxp_c45_hwts {
 };
 
 struct nxp_c45_regmap {
-	/* PTP config regs. */
+	 
 	u16 vend1_ptp_clk_period;
 	u16 vend1_event_msg_filt;
 
-	/* LTC bits and regs. */
+	 
 	struct nxp_c45_reg_field ltc_read;
 	struct nxp_c45_reg_field ltc_write;
 	struct nxp_c45_reg_field ltc_lock_ctrl;
@@ -233,7 +230,7 @@ struct nxp_c45_regmap {
 	u16 vend1_rate_adj_subns_0;
 	u16 vend1_rate_adj_subns_1;
 
-	/* External trigger reg fields. */
+	 
 	struct nxp_c45_reg_field irq_egr_ts_en;
 	struct nxp_c45_reg_field irq_egr_ts_status;
 	struct nxp_c45_reg_field domain_number;
@@ -244,7 +241,7 @@ struct nxp_c45_regmap {
 	struct nxp_c45_reg_field nsec_15_0;
 	struct nxp_c45_reg_field nsec_29_16;
 
-	/* PPS and EXT Trigger bits and regs. */
+	 
 	struct nxp_c45_reg_field pps_enable;
 	struct nxp_c45_reg_field pps_polarity;
 	u16 vend1_ext_trg_data_0;
@@ -253,7 +250,7 @@ struct nxp_c45_regmap {
 	u16 vend1_ext_trg_data_3;
 	u16 vend1_ext_trg_ctrl;
 
-	/* Cable test reg fields. */
+	 
 	u16 cable_test;
 	struct nxp_c45_reg_field cable_test_valid;
 	struct nxp_c45_reg_field cable_test_result;
@@ -289,7 +286,7 @@ struct nxp_c45_phy {
 	struct ptp_clock_info caps;
 	struct sk_buff_head tx_queue;
 	struct sk_buff_head rx_queue;
-	/* used to access the PTP registers atomic */
+	 
 	struct mutex ptp_lock;
 	int hwts_tx;
 	int hwts_rx;
@@ -564,9 +561,7 @@ static bool tja1120_get_extts(struct nxp_c45_phy *priv,
 		if (!more_ts)
 			goto tja1120_get_extts_out;
 
-		/* Bug workaround for TJA1120 engineering samples: move the new
-		 * timestamp from the FIFO to the buffer.
-		 */
+		 
 		phy_write_mmd(phydev, MDIO_MMD_VEND1,
 			      regmap->vend1_ext_trg_ctrl, RING_DONE);
 		valid = tja1120_extts_is_valid(phydev);
@@ -646,9 +641,7 @@ static bool tja1120_get_hwtxts(struct nxp_c45_phy *priv,
 		if (!more_ts)
 			goto tja1120_get_hwtxts_out;
 
-		/* Bug workaround for TJA1120 engineering samples: move the
-		 * new timestamp from the FIFO to the buffer.
-		 */
+		 
 		phy_write_mmd(phydev, MDIO_MMD_VEND1,
 			      TJA1120_EGRESS_TS_END, TJA1120_TS_VALID);
 		valid = tja1120_egress_ts_is_valid(phydev);
@@ -715,7 +708,7 @@ static long nxp_c45_do_aux_work(struct ptp_clock_info *ptp)
 	while (!skb_queue_empty_lockless(&priv->tx_queue) && poll_txts) {
 		ts_valid = data->get_egressts(priv, &hwts);
 		if (unlikely(!ts_valid)) {
-			/* Still more skbs in the queue */
+			 
 			reschedule = true;
 			break;
 		}
@@ -784,10 +777,7 @@ static int nxp_c45_perout_enable(struct nxp_c45_phy *priv,
 		return 0;
 	}
 
-	/* The PPS signal is fixed to 1 second and is always generated when the
-	 * seconds counter is incremented. The start time is not configurable.
-	 * If the clock is adjusted, the PPS signal is automatically readjusted.
-	 */
+	 
 	if (perout->period.sec != 1 || perout->period.nsec != 0) {
 		phydev_warn(phydev, "The period can be set only to 1 second.");
 		return -EINVAL;
@@ -835,9 +825,7 @@ static void nxp_c45_set_rising_or_falling(struct phy_device *phydev,
 static void nxp_c45_set_rising_and_falling(struct phy_device *phydev,
 					   struct ptp_extts_request *extts)
 {
-	/* PTP_EXTTS_REQUEST may have only the PTP_ENABLE_FEATURE flag set. In
-	 * this case external ts will be enabled on rising edge.
-	 */
+	 
 	if (extts->flags & PTP_RISING_EDGE ||
 	    extts->flags == PTP_ENABLE_FEATURE)
 		phy_set_bits_mmd(phydev, MDIO_MMD_VEND1,
@@ -870,7 +858,7 @@ static int nxp_c45_extts_enable(struct nxp_c45_phy *priv,
 			      PTP_STRICT_FLAGS))
 		return -EOPNOTSUPP;
 
-	/* Sampling on both edges is not supported */
+	 
 	if ((extts->flags & PTP_RISING_EDGE) &&
 	    (extts->flags & PTP_FALLING_EDGE) &&
 	    !data->ext_ts_both_edges)
@@ -1230,7 +1218,7 @@ static int tja1103_config_intr(struct phy_device *phydev)
 {
 	int ret;
 
-	/* We can't disable the FUSA IRQ for TJA1103, but we can clean it up. */
+	 
 	ret = phy_write_mmd(phydev, MDIO_MMD_VEND1, VEND1_ALWAYS_ACCESSIBLE,
 			    FUSA_PASS);
 	if (ret)
@@ -1275,10 +1263,7 @@ static irqreturn_t nxp_c45_handle_interrupt(struct phy_device *phydev)
 
 	irq = nxp_c45_read_reg_field(phydev, &data->regmap->irq_egr_ts_status);
 	if (irq) {
-		/* If ack_ptp_irq is false, the IRQ bit is self-clear and will
-		 * be cleared when the EGR TS FIFO is empty. Otherwise, the
-		 * IRQ bit should be cleared before reading the timestamp,
-		 */
+		 
 		if (data->ack_ptp_irq)
 			phy_write_mmd(phydev, MDIO_MMD_VEND1,
 				      VEND1_PTP_IRQ_ACK, EGR_TS_IRQ);
@@ -1376,9 +1361,7 @@ static int nxp_c45_get_sqi(struct phy_device *phydev)
 
 static void tja1120_link_change_notify(struct phy_device *phydev)
 {
-	/* Bug workaround for TJA1120 enegineering samples: fix egress
-	 * timestamps lost after link recovery.
-	 */
+	 
 	if (phydev->state == PHY_NOLINK) {
 		phy_set_bits_mmd(phydev, MDIO_MMD_VEND1,
 				 TJA1120_EPHY_RESETS, EPHY_PCS_RESET);
@@ -1431,10 +1414,7 @@ static void nxp_c45_ptp_init(struct phy_device *phydev)
 
 static u64 nxp_c45_get_phase_shift(u64 phase_offset_raw)
 {
-	/* The delay in degree phase is 73.8 + phase_offset_raw * 0.9.
-	 * To avoid floating point operations we'll multiply by 10
-	 * and get 1 decimal point precision.
-	 */
+	 
 	phase_offset_raw *= 10;
 	phase_offset_raw -= 738;
 	return div_u64(phase_offset_raw, 9);
@@ -1597,9 +1577,7 @@ static int nxp_c45_config_init(struct phy_device *phydev)
 		return ret;
 	}
 
-	/* Bug workaround for SJA1110 rev B: enable write access
-	 * to MDIO_MMD_PMAPMD
-	 */
+	 
 	phy_write_mmd(phydev, MDIO_MMD_VEND1, 0x01F8, 1);
 	phy_write_mmd(phydev, MDIO_MMD_VEND1, 0x01F9, 2);
 
@@ -1968,7 +1946,7 @@ module_phy_driver(nxp_c45_driver);
 static struct mdio_device_id __maybe_unused nxp_c45_tbl[] = {
 	{ PHY_ID_MATCH_MODEL(PHY_ID_TJA_1103) },
 	{ PHY_ID_MATCH_MODEL(PHY_ID_TJA_1120) },
-	{ /*sentinel*/ },
+	{   },
 };
 
 MODULE_DEVICE_TABLE(mdio, nxp_c45_tbl);

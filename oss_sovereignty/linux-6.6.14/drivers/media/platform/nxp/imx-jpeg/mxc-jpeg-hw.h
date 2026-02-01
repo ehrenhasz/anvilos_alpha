@@ -1,14 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * i.MX8QXP/i.MX8QM JPEG encoder/decoder v4l2 driver
- *
- * Copyright 2018-2019 NXP
- */
+ 
+ 
 
 #ifndef _MXC_JPEG_HW_H
 #define _MXC_JPEG_HW_H
 
-/* JPEG Decoder/Encoder Wrapper Register Map */
+ 
 #define GLB_CTRL			0x0
 #define COM_STATUS			0x4
 #define BUF_BASE0			0x14
@@ -19,7 +15,7 @@
 #define IMGSIZE				0x28
 #define STM_CTRL			0x2C
 
-/* CAST JPEG-Decoder/Encoder Status Register Map (read-only)*/
+ 
 #define CAST_STATUS0			0x100
 #define CAST_STATUS1			0x104
 #define CAST_STATUS2			0x108
@@ -34,7 +30,7 @@
 #define CAST_STATUS11			0x12c
 #define CAST_STATUS12			0x130
 #define CAST_STATUS13			0x134
-/* the following are for encoder only */
+ 
 #define CAST_STATUS14		0x138
 #define CAST_STATUS15		0x13c
 #define CAST_STATUS16		0x140
@@ -42,10 +38,10 @@
 #define CAST_STATUS18		0x148
 #define CAST_STATUS19		0x14c
 
-/* CAST JPEG-Decoder Control Register Map (write-only) */
+ 
 #define CAST_CTRL			CAST_STATUS13
 
-/* CAST JPEG-Encoder Control Register Map (write-only) */
+ 
 #define CAST_MODE			CAST_STATUS0
 #define CAST_CFG_MODE			CAST_STATUS1
 #define CAST_QUALITY			CAST_STATUS2
@@ -58,7 +54,7 @@
 #define CAST_OFBSIZE_LO			CAST_STATUS18
 #define CAST_OFBSIZE_HI			CAST_STATUS19
 
-/* JPEG-Decoder Wrapper Slot Registers 0..3 */
+ 
 #define SLOT_BASE			0x10000
 #define SLOT_STATUS			0x0
 #define SLOT_IRQ_EN			0x4
@@ -67,18 +63,18 @@
 #define SLOT_NXT_DESCPT_PTR		0x10
 #define MXC_SLOT_OFFSET(slot, offset)	((SLOT_BASE * ((slot) + 1)) + (offset))
 
-/* GLB_CTRL fields */
+ 
 #define GLB_CTRL_JPG_EN					0x1
 #define GLB_CTRL_SFT_RST				(0x1 << 1)
 #define GLB_CTRL_DEC_GO					(0x1 << 2)
 #define GLB_CTRL_L_ENDIAN(le)				((le) << 3)
 #define GLB_CTRL_SLOT_EN(slot)				(0x1 << ((slot) + 4))
 
-/* COM_STAUS fields */
+ 
 #define COM_STATUS_DEC_ONGOING(r)		(((r) & (1 << 31)) >> 31)
 #define COM_STATUS_CUR_SLOT(r)			(((r) & (0x3 << 29)) >> 29)
 
-/* STM_CTRL fields */
+ 
 #define STM_CTRL_PIXEL_PRECISION		(0x1 << 2)
 #define STM_CTRL_IMAGE_FORMAT(img_fmt)		((img_fmt) << 3)
 #define STM_CTRL_IMAGE_FORMAT_MASK		(0xF << 3)
@@ -86,24 +82,24 @@
 #define STM_CTRL_AUTO_START(go)			((go) << 8)
 #define STM_CTRL_CONFIG_MOD(mod)		((mod) << 9)
 
-/* SLOT_STATUS fields for slots 0..3 */
+ 
 #define SLOT_STATUS_FRMDONE			(0x1 << 3)
 #define SLOT_STATUS_ENC_CONFIG_ERR		(0x1 << 8)
 
-/* SLOT_IRQ_EN fields TBD */
+ 
 
 #define MXC_NXT_DESCPT_EN			0x1
 #define MXC_DEC_EXIT_IDLE_MODE			0x4
 
-/* JPEG-Decoder Wrapper - STM_CTRL Register Fields */
+ 
 #define MXC_PIXEL_PRECISION(precision) ((precision) / 8 << 2)
 enum mxc_jpeg_image_format {
 	MXC_JPEG_INVALID = -1,
-	MXC_JPEG_YUV420 = 0x0, /* 2 Plannar, Y=1st plane UV=2nd plane */
-	MXC_JPEG_YUV422 = 0x1, /* 1 Plannar, YUYV sequence */
-	MXC_JPEG_BGR	= 0x2, /* BGR packed format */
-	MXC_JPEG_YUV444	= 0x3, /* 1 Plannar, YUVYUV sequence */
-	MXC_JPEG_GRAY = 0x4, /* Y8 or Y12 or Single Component */
+	MXC_JPEG_YUV420 = 0x0,  
+	MXC_JPEG_YUV422 = 0x1,  
+	MXC_JPEG_BGR	= 0x2,  
+	MXC_JPEG_YUV444	= 0x3,  
+	MXC_JPEG_GRAY = 0x4,  
 	MXC_JPEG_RESERVED = 0x5,
 	MXC_JPEG_ABGR	= 0x6,
 };

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: BSD-3-Clause-Clear
-/*
- * Copyright (c) 2018-2021 The Linux Foundation. All rights reserved.
- * Copyright (c) 2021-2022 Qualcomm Innovation Center, Inc. All rights reserved.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/slab.h>
@@ -26,9 +23,7 @@ int ath12k_core_suspend(struct ath12k_base *ab)
 	if (!ab->hw_params->supports_suspend)
 		return -EOPNOTSUPP;
 
-	/* TODO: there can frames in queues so for now add delay as a hack.
-	 * Need to implement to handle and remove this delay.
-	 */
+	 
 	msleep(500);
 
 	ret = ath12k_dp_rx_pktlog_stop(ab, true);
@@ -86,7 +81,7 @@ int ath12k_core_resume(struct ath12k_base *ab)
 static int ath12k_core_create_board_name(struct ath12k_base *ab, char *name,
 					 size_t name_len)
 {
-	/* strlen(',variant=') + strlen(ab->qmi.target.bdf_ext) */
+	 
 	char variant[9 + ATH12K_QMI_BDF_EXT_STR_LENGTH] = { 0 };
 
 	if (ab->qmi.target.bdf_ext[0] != '\0')
@@ -148,7 +143,7 @@ static int ath12k_core_parse_bd_ie_board(struct ath12k_base *ab,
 
 	name_match_found = false;
 
-	/* go through ATH12K_BD_IE_BOARD_ elements */
+	 
 	while (buf_len > sizeof(struct ath12k_fw_ie)) {
 		hdr = buf;
 		board_ie_id = le32_to_cpu(hdr->id);
@@ -184,7 +179,7 @@ static int ath12k_core_parse_bd_ie_board(struct ath12k_base *ab,
 			break;
 		case ATH12K_BD_IE_BOARD_DATA:
 			if (!name_match_found)
-				/* no match found */
+				 
 				break;
 
 			ath12k_dbg(ab, ATH12K_DBG_BOOT,
@@ -201,14 +196,14 @@ static int ath12k_core_parse_bd_ie_board(struct ath12k_base *ab,
 			break;
 		}
 
-		/* jump over the padding */
+		 
 		board_ie_len = ALIGN(board_ie_len, 4);
 
 		buf_len -= board_ie_len;
 		buf += board_ie_len;
 	}
 
-	/* no match found */
+	 
 	ret = -ENOENT;
 
 out:
@@ -240,7 +235,7 @@ static int ath12k_core_fetch_board_data_api_n(struct ath12k_base *ab,
 	ath12k_core_create_firmware_path(ab, filename,
 					 filepath, sizeof(filepath));
 
-	/* magic has extra null byte padded */
+	 
 	magic_len = strlen(ATH12K_BOARD_MAGIC) + 1;
 	if (len < magic_len) {
 		ath12k_err(ab, "failed to find magic value in %s, file too short: %zu\n",
@@ -255,7 +250,7 @@ static int ath12k_core_fetch_board_data_api_n(struct ath12k_base *ab,
 		goto err;
 	}
 
-	/* magic is padded to 4 bytes */
+	 
 	magic_len = ALIGN(magic_len, 4);
 	if (len < magic_len) {
 		ath12k_err(ab, "failed: %s too small to contain board data, len: %zu\n",
@@ -289,16 +284,16 @@ static int ath12k_core_fetch_board_data_api_n(struct ath12k_base *ab,
 							    boardname,
 							    ATH12K_BD_IE_BOARD);
 			if (ret == -ENOENT)
-				/* no match found, continue */
+				 
 				break;
 			else if (ret)
-				/* there was an error, bail out */
+				 
 				goto err;
-			/* either found or error, so stop searching */
+			 
 			goto out;
 		}
 
-		/* jump over the padding */
+		 
 		ie_len = ALIGN(ie_len, 4);
 
 		len -= ie_len;
@@ -374,7 +369,7 @@ static void ath12k_core_stop(struct ath12k_base *ab)
 	ath12k_wmi_detach(ab);
 	ath12k_dp_rx_pdev_reo_cleanup(ab);
 
-	/* De-Init of components as needed */
+	 
 }
 
 static int ath12k_core_soc_create(struct ath12k_base *ab)
@@ -522,7 +517,7 @@ static int ath12k_core_start(struct ath12k_base *ab,
 		goto err_reo_cleanup;
 	}
 
-	/* put hardware to DBS mode */
+	 
 	if (ab->hw_params->single_pdev_only) {
 		ret = ath12k_wmi_set_hw_mode(ab, WMI_HOST_HW_MODE_DBS);
 		if (ret) {
@@ -785,9 +780,7 @@ static void ath12k_core_reset(struct work_struct *work)
 		return;
 	}
 
-	/* Sometimes the recovery will fail and then the next all recovery fail,
-	 * this is to avoid infinite recovery since it can not recovery success
-	 */
+	 
 	fail_cont_count = atomic_read(&ab->fail_cont_count);
 
 	if (fail_cont_count >= ATH12K_RESET_MAX_FAIL_COUNT_FINAL)
@@ -800,10 +793,7 @@ static void ath12k_core_reset(struct work_struct *work)
 	reset_count = atomic_inc_return(&ab->reset_count);
 
 	if (reset_count > 1) {
-		/* Sometimes it happened another reset worker before the previous one
-		 * completed, then the second reset worker will destroy the previous one,
-		 * thus below is to avoid that.
-		 */
+		 
 		ath12k_warn(ab, "already resetting count %d\n", reset_count);
 
 		reinit_completion(&ab->reset_complete);
@@ -816,7 +806,7 @@ static void ath12k_core_reset(struct work_struct *work)
 		}
 
 		ab->reset_fail_timeout = jiffies + ATH12K_RESET_FAIL_TIMEOUT_HZ;
-		/* Record the continuous recovery fail count when recovery failed*/
+		 
 		fail_cont_count = atomic_inc_return(&ab->fail_cont_count);
 	}
 

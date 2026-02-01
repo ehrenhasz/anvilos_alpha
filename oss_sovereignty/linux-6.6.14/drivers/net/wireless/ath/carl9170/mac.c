@@ -1,40 +1,4 @@
-/*
- * Atheros CARL9170 driver
- *
- * MAC programming
- *
- * Copyright 2008, Johannes Berg <johannes@sipsolutions.net>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; see the file COPYING.  If not, see
- * http://www.gnu.org/licenses/.
- *
- * This file incorporates work covered by the following copyright and
- * permission notice:
- *    Copyright (c) 2007-2008 Atheros Communications, Inc.
- *
- *    Permission to use, copy, modify, and/or distribute this software for any
- *    purpose with or without fee is hereby granted, provided that the above
- *    copyright notice and this permission notice appear in all copies.
- *
- *    THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- *    WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- *    MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- *    ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- *    WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- *    ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- *    OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
+ 
 
 #include <asm/unaligned.h>
 
@@ -62,16 +26,16 @@ int carl9170_set_rts_cts_rate(struct ar9170 *ar)
 	u32 rts_rate, cts_rate;
 
 	if (conf_is_ht(&ar->hw->conf)) {
-		/* 12 mbit OFDM */
+		 
 		rts_rate = 0x1da;
 		cts_rate = 0x10a;
 	} else {
 		if (ar->hw->conf.chandef.chan->band == NL80211_BAND_2GHZ) {
-			/* 11 mbit CCK */
+			 
 			rts_rate = 033;
 			cts_rate = 003;
 		} else {
-			/* 6 mbit OFDM */
+			 
 			rts_rate = 0x1bb;
 			cts_rate = 0x10b;
 		}
@@ -121,9 +85,9 @@ int carl9170_set_mac_rates(struct ar9170 *ar)
 	rcu_read_unlock();
 
 	if (ar->hw->conf.chandef.chan->band == NL80211_BAND_5GHZ)
-		mandatory = 0xff00; /* OFDM 6/9/12/18/24/36/48/54 */
+		mandatory = 0xff00;  
 	else
-		mandatory = 0xff0f; /* OFDM (6/9../54) + CCK (1/2/5.5/11) */
+		mandatory = 0xff0f;  
 
 	carl9170_regwrite_begin(ar);
 	carl9170_regwrite(AR9170_MAC_REG_BASIC_RATE, basic);
@@ -172,7 +136,7 @@ int carl9170_init_mac(struct ar9170 *ar)
 {
 	carl9170_regwrite_begin(ar);
 
-	/* switch MAC to OTUS interface */
+	 
 	carl9170_regwrite(0x1c3600, 0x3);
 
 	carl9170_regwrite(AR9170_MAC_REG_ACK_EXTENSION, 0x40);
@@ -182,7 +146,7 @@ int carl9170_init_mac(struct ar9170 *ar)
 	carl9170_regwrite(AR9170_MAC_REG_FRAMETYPE_FILTER,
 			  AR9170_MAC_FTF_MONITOR);
 
-	/* enable MMIC */
+	 
 	carl9170_regwrite(AR9170_MAC_REG_SNIFFER,
 			AR9170_MAC_SNIFFER_DEFAULTS);
 
@@ -192,19 +156,19 @@ int carl9170_init_mac(struct ar9170 *ar)
 	carl9170_regwrite(AR9170_MAC_REG_EIFS_AND_SIFS, 0xa144000);
 	carl9170_regwrite(AR9170_MAC_REG_SLOT_TIME, 9 << 10);
 
-	/* CF-END & CF-ACK rate => 24M OFDM */
+	 
 	carl9170_regwrite(AR9170_MAC_REG_TID_CFACK_CFEND_RATE, 0x59900000);
 
-	/* NAV protects ACK only (in TXOP) */
+	 
 	carl9170_regwrite(AR9170_MAC_REG_TXOP_DURATION, 0x201);
 
-	/* Set Beacon PHY CTRL's TPC to 0x7, TA1=1 */
-	/* OTUS set AM to 0x1 */
+	 
+	 
 	carl9170_regwrite(AR9170_MAC_REG_BCN_HT1, 0x8000170);
 
 	carl9170_regwrite(AR9170_MAC_REG_BACKOFF_PROTECT, 0x105);
 
-	/* Aggregation MAX number and timeout */
+	 
 	carl9170_regwrite(AR9170_MAC_REG_AMPDU_FACTOR, 0x8000a);
 	carl9170_regwrite(AR9170_MAC_REG_AMPDU_DENSITY, 0x140a07);
 
@@ -215,37 +179,37 @@ int carl9170_init_mac(struct ar9170 *ar)
 			  AR9170_MAC_RX_CTRL_DEAGG |
 			  AR9170_MAC_RX_CTRL_SHORT_FILTER);
 
-	/* rate sets */
+	 
 	carl9170_regwrite(AR9170_MAC_REG_BASIC_RATE, 0x150f);
 	carl9170_regwrite(AR9170_MAC_REG_MANDATORY_RATE, 0x150f);
 	carl9170_regwrite(AR9170_MAC_REG_RTS_CTS_RATE, 0x0030033);
 
-	/* MIMO response control */
+	 
 	carl9170_regwrite(AR9170_MAC_REG_ACK_TPC, 0x4003c1e);
 
 	carl9170_regwrite(AR9170_MAC_REG_AMPDU_RX_THRESH, 0xffff);
 
-	/* set PHY register read timeout (??) */
+	 
 	carl9170_regwrite(AR9170_MAC_REG_MISC_680, 0xf00008);
 
-	/* Disable Rx TimeOut, workaround for BB. */
+	 
 	carl9170_regwrite(AR9170_MAC_REG_RX_TIMEOUT, 0x0);
 
-	/* Set WLAN DMA interrupt mode: generate int per packet */
+	 
 	carl9170_regwrite(AR9170_MAC_REG_TXRX_MPI, 0x110011);
 
 	carl9170_regwrite(AR9170_MAC_REG_FCS_SELECT,
 			AR9170_MAC_FCS_FIFO_PROT);
 
-	/* Disables the CF_END frame, undocumented register */
+	 
 	carl9170_regwrite(AR9170_MAC_REG_TXOP_NOT_ENOUGH_IND,
 			0x141e0f48);
 
-	/* reset group hash table */
+	 
 	carl9170_regwrite(AR9170_MAC_REG_GROUP_HASH_TBL_L, 0xffffffff);
 	carl9170_regwrite(AR9170_MAC_REG_GROUP_HASH_TBL_H, 0xffffffff);
 
-	/* disable PRETBTT interrupt */
+	 
 	carl9170_regwrite(AR9170_MAC_REG_PRETBTT, 0x0);
 	carl9170_regwrite(AR9170_MAC_REG_BCN_PERIOD, 0x0);
 
@@ -326,7 +290,7 @@ int carl9170_set_operating_mode(struct ar9170 *ar)
 		case NL80211_IFTYPE_AP:
 			cam_mode |= AR9170_MAC_CAM_AP;
 
-			/* iwlagn 802.11n STA Workaround */
+			 
 			rx_ctrl |= AR9170_MAC_RX_CTRL_PASS_TO_HOST;
 			break;
 		case NL80211_IFTYPE_STATION:
@@ -339,21 +303,7 @@ int carl9170_set_operating_mode(struct ar9170 *ar)
 			break;
 		}
 	} else {
-		/*
-		 * Enable monitor mode
-		 *
-		 * rx_ctrl |= AR9170_MAC_RX_CTRL_ACK_IN_SNIFFER;
-		 * sniffer |= AR9170_MAC_SNIFFER_ENABLE_PROMISC;
-		 *
-		 * When the hardware is in SNIFFER_PROMISC mode,
-		 * it generates spurious ACKs for every incoming
-		 * frame. This confuses every peer in the
-		 * vicinity and the network throughput will suffer
-		 * badly.
-		 *
-		 * Hence, the hardware will be put into station
-		 * mode and just the rx filters are disabled.
-		 */
+		 
 		cam_mode |= AR9170_MAC_CAM_STA;
 		rx_ctrl |= AR9170_MAC_RX_CTRL_PASS_TO_HOST;
 		mac_addr = common->macaddr;

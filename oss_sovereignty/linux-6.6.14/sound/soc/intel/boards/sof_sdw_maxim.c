@@ -1,8 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0-only
-// Copyright (c) 2020 Intel Corporation
-//
-// sof_sdw_maxim - Helpers to handle maxim codecs
-// codec devices from generic machine driver
+
+
+
+
+
 
 #include <linux/device.h>
 #include <linux/errno.h>
@@ -70,7 +70,7 @@ static int mx8373_enable_spk_pin(struct snd_pcm_substream *substream, bool enabl
 	int ret;
 	int j;
 
-	/* set spk pin by playback only */
+	 
 	if (substream->stream == SNDRV_PCM_STREAM_CAPTURE)
 		return 0;
 
@@ -99,7 +99,7 @@ static int mx8373_sdw_prepare(struct snd_pcm_substream *substream)
 {
 	int ret;
 
-	/* according to soc_pcm_prepare dai link prepare is called first */
+	 
 	ret = sdw_prepare(substream);
 	if (ret < 0)
 		return ret;
@@ -111,7 +111,7 @@ static int mx8373_sdw_hw_free(struct snd_pcm_substream *substream)
 {
 	int ret;
 
-	/* according to soc_pcm_hw_free dai link free is called first */
+	 
 	ret = sdw_hw_free(substream);
 	if (ret < 0)
 		return ret;
@@ -132,7 +132,7 @@ static int mx8373_sdw_late_probe(struct snd_soc_card *card)
 {
 	struct snd_soc_dapm_context *dapm = &card->dapm;
 
-	/* Disable Left and Right Spk pin after boot */
+	 
 	snd_soc_dapm_disable_pin(dapm, "Left Spk");
 	snd_soc_dapm_disable_pin(dapm, "Right Spk");
 	return snd_soc_dapm_sync(dapm);
@@ -151,9 +151,7 @@ int sof_sdw_maxim_init(struct snd_soc_card *card,
 	maxim_part_id = info->part_id;
 	switch (maxim_part_id) {
 	case SOF_SDW_PART_ID_MAX98363:
-		/* Default ops are set in function init_dai_link.
-		 * called as part of function create_sdw_dailink
-		 */
+		 
 		break;
 	case SOF_SDW_PART_ID_MAX98373:
 		info->codec_card_late_probe = mx8373_sdw_late_probe;

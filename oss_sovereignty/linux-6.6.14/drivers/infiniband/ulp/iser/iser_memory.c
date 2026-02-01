@@ -1,35 +1,4 @@
-/*
- * Copyright (c) 2004, 2005, 2006 Voltaire, Inc. All rights reserved.
- * Copyright (c) 2013-2014 Mellanox Technologies. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *	- Redistributions of source code must retain the above
- *	  copyright notice, this list of conditions and the following
- *	  disclaimer.
- *
- *	- Redistributions in binary form must reproduce the above
- *	  copyright notice, this list of conditions and the following
- *	  disclaimer in the documentation and/or other materials
- *	  provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 #include <linux/kernel.h>
 #include <linux/slab.h>
 #include <linux/mm.h>
@@ -126,10 +95,7 @@ static int iser_reg_dma(struct iser_device *device, struct iser_data_buf *mem,
 	struct scatterlist *sg = mem->sg;
 
 	reg->sge.lkey = device->pd->local_dma_lkey;
-	/*
-	 * FIXME: rework the registration code path to differentiate
-	 * rkey/lkey use cases
-	 */
+	 
 
 	if (device->pd->flags & IB_PD_UNSAFE_GLOBAL_RKEY)
 		reg->rkey = device->pd->unsafe_global_rkey;
@@ -156,14 +122,7 @@ void iser_unreg_mem_fastreg(struct iscsi_iser_task *iser_task,
 	if (!desc)
 		return;
 
-	/*
-	 * The signature MR cannot be invalidated and reused without checking.
-	 * libiscsi calls the check_protection transport handler only if
-	 * SCSI-Response is received. And the signature MR is not checked if
-	 * the task is completed for some other reason like a timeout or error
-	 * handling. That's why we must check the signature MR here before
-	 * putting it to the free pool.
-	 */
+	 
 	if (unlikely(desc->sig_protected)) {
 		desc->sig_protected = false;
 		ib_check_mr_status(desc->rsc.sig_mr, IB_MR_CHECK_SIG_STATUS,
@@ -179,10 +138,7 @@ static void iser_set_dif_domain(struct scsi_cmnd *sc,
 	domain->sig_type = IB_SIG_TYPE_T10_DIF;
 	domain->sig.dif.pi_interval = scsi_prot_interval(sc);
 	domain->sig.dif.ref_tag = t10_pi_ref_tag(scsi_cmd_to_rq(sc));
-	/*
-	 * At the moment we hard code those, but in the future
-	 * we will take them from sc.
-	 */
+	 
 	domain->sig.dif.apptag_check_mask = 0xffff;
 	domain->sig.dif.app_escape = true;
 	domain->sig.dif.ref_escape = true;

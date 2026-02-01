@@ -1,30 +1,4 @@
-/*
- * Copyright 2008 Advanced Micro Devices, Inc.
- * Copyright 2008 Red Hat Inc.
- * Copyright 2009 Jerome Glisse.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: Dave Airlie
- *          Alex Deucher
- *          Jerome Glisse
- */
+ 
 
 #include <linux/firmware.h>
 #include <linux/pci.h>
@@ -56,17 +30,17 @@ int rv770_set_uvd_clocks(struct radeon_device *rdev, u32 vclk, u32 dclk)
 	unsigned fb_div = 0, vclk_div = 0, dclk_div = 0;
 	int r;
 
-	/* RV740 uses evergreen uvd clk programming */
+	 
 	if (rdev->family == CHIP_RV740)
 		return evergreen_set_uvd_clocks(rdev, vclk, dclk);
 
-	/* bypass vclk and dclk with bclk */
+	 
 	WREG32_P(CG_UPLL_FUNC_CNTL_2,
 		 VCLK_SRC_SEL(1) | DCLK_SRC_SEL(1),
 		 ~(VCLK_SRC_SEL_MASK | DCLK_SRC_SEL_MASK));
 
 	if (!vclk || !dclk) {
-		/* keep the Bypass mode, put PLL to sleep */
+		 
 		WREG32_P(CG_UPLL_FUNC_CNTL, UPLL_SLEEP_MASK, ~UPLL_SLEEP_MASK);
 		return 0;
 	}
@@ -81,13 +55,13 @@ int rv770_set_uvd_clocks(struct radeon_device *rdev, u32 vclk, u32 dclk)
 	vclk_div -= 1;
 	dclk_div -= 1;
 
-	/* set UPLL_FB_DIV to 0x50000 */
+	 
 	WREG32_P(CG_UPLL_FUNC_CNTL_3, UPLL_FB_DIV(0x50000), ~UPLL_FB_DIV_MASK);
 
-	/* deassert UPLL_RESET and UPLL_SLEEP */
+	 
 	WREG32_P(CG_UPLL_FUNC_CNTL, 0, ~(UPLL_RESET_MASK | UPLL_SLEEP_MASK));
 
-	/* assert BYPASS EN and FB_DIV[0] <- ??? why? */
+	 
 	WREG32_P(CG_UPLL_FUNC_CNTL, UPLL_BYPASS_EN_MASK, ~UPLL_BYPASS_EN_MASK);
 	WREG32_P(CG_UPLL_FUNC_CNTL_3, UPLL_FB_DIV(1), ~UPLL_FB_DIV(1));
 
@@ -95,10 +69,10 @@ int rv770_set_uvd_clocks(struct radeon_device *rdev, u32 vclk, u32 dclk)
 	if (r)
 		return r;
 
-	/* assert PLL_RESET */
+	 
 	WREG32_P(CG_UPLL_FUNC_CNTL, UPLL_RESET_MASK, ~UPLL_RESET_MASK);
 
-	/* set the required FB_DIV, REF_DIV, Post divder values */
+	 
 	WREG32_P(CG_UPLL_FUNC_CNTL, UPLL_REF_DIV(1), ~UPLL_REF_DIV_MASK);
 	WREG32_P(CG_UPLL_FUNC_CNTL_2,
 		 UPLL_SW_HILEN(vclk_div >> 1) |
@@ -110,15 +84,15 @@ int rv770_set_uvd_clocks(struct radeon_device *rdev, u32 vclk, u32 dclk)
 	WREG32_P(CG_UPLL_FUNC_CNTL_3, UPLL_FB_DIV(fb_div),
 		 ~UPLL_FB_DIV_MASK);
 
-	/* give the PLL some time to settle */
+	 
 	mdelay(15);
 
-	/* deassert PLL_RESET */
+	 
 	WREG32_P(CG_UPLL_FUNC_CNTL, 0, ~UPLL_RESET_MASK);
 
 	mdelay(15);
 
-	/* deassert BYPASS EN and FB_DIV[0] <- ??? why? */
+	 
 	WREG32_P(CG_UPLL_FUNC_CNTL, 0, ~UPLL_BYPASS_EN_MASK);
 	WREG32_P(CG_UPLL_FUNC_CNTL_3, 0, ~UPLL_FB_DIV(1));
 
@@ -126,7 +100,7 @@ int rv770_set_uvd_clocks(struct radeon_device *rdev, u32 vclk, u32 dclk)
 	if (r)
 		return r;
 
-	/* switch VCLK and DCLK selection */
+	 
 	WREG32_P(CG_UPLL_FUNC_CNTL_2,
 		 VCLK_SRC_SEL(2) | DCLK_SRC_SEL(2),
 		 ~(VCLK_SRC_SEL_MASK | DCLK_SRC_SEL_MASK));
@@ -775,14 +749,7 @@ static void rv770_init_golden_registers(struct radeon_device *rdev)
 #define PCIE_BUS_CLK                10000
 #define TCLK                        (PCIE_BUS_CLK / 10)
 
-/**
- * rv770_get_xclk - get the xclk
- *
- * @rdev: radeon_device pointer
- *
- * Returns the reference clock used by the gfx engine
- * (r7xx-cayman).
- */
+ 
 u32 rv770_get_xclk(struct radeon_device *rdev)
 {
 	u32 reference_clock = rdev->clock.spll.reference_freq;
@@ -804,17 +771,17 @@ void rv770_page_flip(struct radeon_device *rdev, int crtc_id, u64 crtc_base, boo
 	u32 tmp = RREG32(AVIVO_D1GRPH_UPDATE + radeon_crtc->crtc_offset);
 	int i;
 
-	/* Lock the graphics update lock */
+	 
 	tmp |= AVIVO_D1GRPH_UPDATE_LOCK;
 	WREG32(AVIVO_D1GRPH_UPDATE + radeon_crtc->crtc_offset, tmp);
 
-	/* flip at hsync for async, default is vsync */
+	 
 	WREG32(AVIVO_D1GRPH_FLIP_CONTROL + radeon_crtc->crtc_offset,
 	       async ? AVIVO_D1GRPH_SURFACE_UPDATE_H_RETRACE_EN : 0);
-	/* update pitch */
+	 
 	WREG32(AVIVO_D1GRPH_PITCH + radeon_crtc->crtc_offset,
 	       fb->pitches[0] / fb->format->cpp[0]);
-	/* update the scanout addresses */
+	 
 	if (radeon_crtc->crtc_id) {
 		WREG32(D2GRPH_SECONDARY_SURFACE_ADDRESS_HIGH, upper_32_bits(crtc_base));
 		WREG32(D2GRPH_PRIMARY_SURFACE_ADDRESS_HIGH, upper_32_bits(crtc_base));
@@ -827,7 +794,7 @@ void rv770_page_flip(struct radeon_device *rdev, int crtc_id, u64 crtc_base, boo
 	WREG32(D1GRPH_PRIMARY_SURFACE_ADDRESS + radeon_crtc->crtc_offset,
 	       (u32)crtc_base);
 
-	/* Wait for update_pending to go high. */
+	 
 	for (i = 0; i < rdev->usec_timeout; i++) {
 		if (RREG32(AVIVO_D1GRPH_UPDATE + radeon_crtc->crtc_offset) & AVIVO_D1GRPH_SURFACE_UPDATE_PENDING)
 			break;
@@ -835,7 +802,7 @@ void rv770_page_flip(struct radeon_device *rdev, int crtc_id, u64 crtc_base, boo
 	}
 	DRM_DEBUG("Update pending now high. Unlocking vupdate_lock.\n");
 
-	/* Unlock the lock, so double-buffering can take place inside vblank */
+	 
 	tmp &= ~AVIVO_D1GRPH_UPDATE_LOCK;
 	WREG32(AVIVO_D1GRPH_UPDATE + radeon_crtc->crtc_offset, tmp);
 }
@@ -844,12 +811,12 @@ bool rv770_page_flip_pending(struct radeon_device *rdev, int crtc_id)
 {
 	struct radeon_crtc *radeon_crtc = rdev->mode_info.crtcs[crtc_id];
 
-	/* Return current update_pending status: */
+	 
 	return !!(RREG32(AVIVO_D1GRPH_UPDATE + radeon_crtc->crtc_offset) &
 		AVIVO_D1GRPH_SURFACE_UPDATE_PENDING);
 }
 
-/* get temperature in millidegrees */
+ 
 int rv770_get_temp(struct radeon_device *rdev)
 {
 	u32 temp = (RREG32(CG_MULT_THERMAL_STATUS) & ASIC_T_MASK) >>
@@ -877,7 +844,7 @@ void rv770_pm_misc(struct radeon_device *rdev)
 	struct radeon_voltage *voltage = &ps->clock_info[req_cm_idx].voltage;
 
 	if ((voltage->type == VOLTAGE_SW) && voltage->voltage) {
-		/* 0xff01 is a flag rather then an actual voltage */
+		 
 		if (voltage->voltage == 0xff01)
 			return;
 		if (voltage->voltage != rdev->pm.current_vddc) {
@@ -888,9 +855,7 @@ void rv770_pm_misc(struct radeon_device *rdev)
 	}
 }
 
-/*
- * GART
- */
+ 
 static int rv770_pcie_gart_enable(struct radeon_device *rdev)
 {
 	u32 tmp;
@@ -903,13 +868,13 @@ static int rv770_pcie_gart_enable(struct radeon_device *rdev)
 	r = radeon_gart_table_vram_pin(rdev);
 	if (r)
 		return r;
-	/* Setup L2 cache */
+	 
 	WREG32(VM_L2_CNTL, ENABLE_L2_CACHE | ENABLE_L2_FRAGMENT_PROCESSING |
 				ENABLE_L2_PTE_CACHE_LRU_UPDATE_BY_WRITE |
 				EFFECTIVE_L2_QUEUE_SIZE(7));
 	WREG32(VM_L2_CNTL2, 0);
 	WREG32(VM_L2_CNTL3, BANK_SELECT(0) | CACHE_UPDATE_MODE(2));
-	/* Setup TLB control */
+	 
 	tmp = ENABLE_L1_TLB | ENABLE_L1_FRAGMENT_PROCESSING |
 		SYSTEM_ACCESS_MODE_NOT_IN_SYS |
 		SYSTEM_APERTURE_UNMAPPED_ACCESS_PASS_THRU |
@@ -946,16 +911,16 @@ static void rv770_pcie_gart_disable(struct radeon_device *rdev)
 	u32 tmp;
 	int i;
 
-	/* Disable all tables */
+	 
 	for (i = 0; i < 7; i++)
 		WREG32(VM_CONTEXT0_CNTL + (i * 4), 0);
 
-	/* Setup L2 cache */
+	 
 	WREG32(VM_L2_CNTL, ENABLE_L2_FRAGMENT_PROCESSING |
 				EFFECTIVE_L2_QUEUE_SIZE(7));
 	WREG32(VM_L2_CNTL2, 0);
 	WREG32(VM_L2_CNTL3, BANK_SELECT(0) | CACHE_UPDATE_MODE(2));
-	/* Setup TLB control */
+	 
 	tmp = EFFECTIVE_L1_TLB_SIZE(5) | EFFECTIVE_L1_QUEUE_SIZE(5);
 	WREG32(MC_VM_MD_L1_TLB0_CNTL, tmp);
 	WREG32(MC_VM_MD_L1_TLB1_CNTL, tmp);
@@ -980,13 +945,13 @@ static void rv770_agp_enable(struct radeon_device *rdev)
 	u32 tmp;
 	int i;
 
-	/* Setup L2 cache */
+	 
 	WREG32(VM_L2_CNTL, ENABLE_L2_CACHE | ENABLE_L2_FRAGMENT_PROCESSING |
 				ENABLE_L2_PTE_CACHE_LRU_UPDATE_BY_WRITE |
 				EFFECTIVE_L2_QUEUE_SIZE(7));
 	WREG32(VM_L2_CNTL2, 0);
 	WREG32(VM_L2_CNTL3, BANK_SELECT(0) | CACHE_UPDATE_MODE(2));
-	/* Setup TLB control */
+	 
 	tmp = ENABLE_L1_TLB | ENABLE_L1_FRAGMENT_PROCESSING |
 		SYSTEM_ACCESS_MODE_NOT_IN_SYS |
 		SYSTEM_APERTURE_UNMAPPED_ACCESS_PASS_THRU |
@@ -1008,7 +973,7 @@ static void rv770_mc_program(struct radeon_device *rdev)
 	u32 tmp;
 	int i, j;
 
-	/* Initialize HDP */
+	 
 	for (i = 0, j = 0; i < 32; i++, j += 0x18) {
 		WREG32((0x2c14 + j), 0x00000000);
 		WREG32((0x2c18 + j), 0x00000000);
@@ -1016,27 +981,25 @@ static void rv770_mc_program(struct radeon_device *rdev)
 		WREG32((0x2c20 + j), 0x00000000);
 		WREG32((0x2c24 + j), 0x00000000);
 	}
-	/* r7xx hw bug.  Read from HDP_DEBUG1 rather
-	 * than writing to HDP_REG_COHERENCY_FLUSH_CNTL
-	 */
+	 
 	tmp = RREG32(HDP_DEBUG1);
 
 	rv515_mc_stop(rdev, &save);
 	if (r600_mc_wait_for_idle(rdev)) {
 		dev_warn(rdev->dev, "Wait for MC idle timedout !\n");
 	}
-	/* Lockout access through VGA aperture*/
+	 
 	WREG32(VGA_HDP_CONTROL, VGA_MEMORY_DISABLE);
-	/* Update configuration */
+	 
 	if (rdev->flags & RADEON_IS_AGP) {
 		if (rdev->mc.vram_start < rdev->mc.gtt_start) {
-			/* VRAM before AGP */
+			 
 			WREG32(MC_VM_SYSTEM_APERTURE_LOW_ADDR,
 				rdev->mc.vram_start >> 12);
 			WREG32(MC_VM_SYSTEM_APERTURE_HIGH_ADDR,
 				rdev->mc.gtt_end >> 12);
 		} else {
-			/* VRAM after AGP */
+			 
 			WREG32(MC_VM_SYSTEM_APERTURE_LOW_ADDR,
 				rdev->mc.gtt_start >> 12);
 			WREG32(MC_VM_SYSTEM_APERTURE_HIGH_ADDR,
@@ -1068,15 +1031,12 @@ static void rv770_mc_program(struct radeon_device *rdev)
 		dev_warn(rdev->dev, "Wait for MC idle timedout !\n");
 	}
 	rv515_mc_resume(rdev, &save);
-	/* we need to own VRAM, so turn off the VGA renderer here
-	 * to stop it overwriting our objects */
+	 
 	rv515_vga_render_disable(rdev);
 }
 
 
-/*
- * CP.
- */
+ 
 void r700_cp_stop(struct radeon_device *rdev)
 {
 	if (rdev->asic->copy.copy_ring_index == RADEON_RING_TYPE_GFX_INDEX)
@@ -1101,7 +1061,7 @@ static int rv770_cp_load_microcode(struct radeon_device *rdev)
 #endif
 	       RB_NO_UPDATE | RB_BLKSZ(15) | RB_BUFSZ(3));
 
-	/* Reset cp */
+	 
 	WREG32(GRBM_SOFT_RESET, SOFT_RESET_CP);
 	RREG32(GRBM_SOFT_RESET);
 	mdelay(15);
@@ -1161,9 +1121,7 @@ void rv770_set_clk_bypass_mode(struct radeon_device *rdev)
 	WREG32(MPLL_CNTL_MODE, tmp);
 }
 
-/*
- * Core functions
- */
+ 
 static void rv770_gpu_init(struct radeon_device *rdev)
 {
 	int i, j, num_qd_pipes;
@@ -1187,7 +1145,7 @@ static void rv770_gpu_init(struct radeon_device *rdev)
 	u32 disabled_rb_mask;
 	unsigned active_number;
 
-	/* setup chip specs */
+	 
 	rdev->config.rv770.tiling_group_size = 256;
 	switch (rdev->family) {
 	case CHIP_RV770:
@@ -1283,7 +1241,7 @@ static void rv770_gpu_init(struct radeon_device *rdev)
 		break;
 	}
 
-	/* Initialize HDP */
+	 
 	j = 0;
 	for (i = 0; i < 32; i++) {
 		WREG32((0x2c14 + j), 0x00000000);
@@ -1296,7 +1254,7 @@ static void rv770_gpu_init(struct radeon_device *rdev)
 
 	WREG32(GRBM_CNTL, GRBM_READ_TIMEOUT(0xff));
 
-	/* setup tiling, simd, pipe config */
+	 
 	mc_arb_ramcfg = RREG32(MC_ARB_RAMCFG);
 
 	shader_pipe_config = RREG32(CC_GC_SHADER_PIPE_CONFIG);
@@ -1339,7 +1297,7 @@ static void rv770_gpu_init(struct radeon_device *rdev)
 	tmp = 0;
 	for (i = 0; i < rdev->config.rv770.max_backends; i++)
 		tmp |= (1 << i);
-	/* if all the backends are disabled, fix it up here */
+	 
 	if ((disabled_rb_mask & tmp) == tmp) {
 		for (i = 0; i < rdev->config.rv770.max_backends; i++)
 			disabled_rb_mask &= ~(1 << i);
@@ -1394,7 +1352,7 @@ static void rv770_gpu_init(struct radeon_device *rdev)
 	WREG32(VGT_OUT_DEALLOC_CNTL, (num_qd_pipes * 4) & DEALLOC_DIST_MASK);
 	WREG32(VGT_VERTEX_REUSE_BLOCK_CNTL, ((num_qd_pipes * 4) - 2) & VTX_REUSE_DEPTH_MASK);
 
-	/* set HW defaults for 3D engine */
+	 
 	WREG32(CP_QUEUE_THRESHOLDS, (ROQ_IB1_START(0x16) |
 				     ROQ_IB2_START(0x2b)));
 
@@ -1474,9 +1432,7 @@ static void rv770_gpu_init(struct radeon_device *rdev)
 	}
 	WREG32(SQ_MS_FIFO_SIZES, sq_ms_fifo_sizes);
 
-	/* SQ_CONFIG, SQ_GPR_RESOURCE_MGMT, SQ_THREAD_RESOURCE_MGMT, SQ_STACK_RESOURCE_MGMT
-	 * should be adjusted as needed by the 2D/3D drivers.  This just sets default values
-	 */
+	 
 	sq_config = RREG32(SQ_CONFIG);
 	sq_config &= ~(PS_PRIO(3) |
 		       VS_PRIO(3) |
@@ -1490,7 +1446,7 @@ static void rv770_gpu_init(struct radeon_device *rdev)
 		      GS_PRIO(2) |
 		      ES_PRIO(3));
 	if (rdev->family == CHIP_RV710)
-		/* no vertex cache */
+		 
 		sq_config &= ~VC_ENABLE;
 
 	WREG32(SQ_CONFIG, sq_config);
@@ -1556,7 +1512,7 @@ static void rv770_gpu_init(struct radeon_device *rdev)
 
 	num_gs_verts_per_thread = rdev->config.rv770.max_pipes * 16;
 	vgt_gs_per_es = gs_prim_buffer_depth + num_gs_verts_per_thread;
-	/* Max value for this is 256 */
+	 
 	if (vgt_gs_per_es > 256)
 		vgt_gs_per_es = 256;
 
@@ -1564,7 +1520,7 @@ static void rv770_gpu_init(struct radeon_device *rdev)
 	WREG32(VGT_GS_PER_ES, vgt_gs_per_es);
 	WREG32(VGT_GS_PER_VS, 2);
 
-	/* more default values. 2D/3D driver should adjust as needed */
+	 
 	WREG32(VGT_GS_VERTEX_REUSE, 16);
 	WREG32(PA_SC_LINE_STIPPLE_STATE, 0);
 	WREG32(VGT_STRMOUT_EN, 0);
@@ -1578,7 +1534,7 @@ static void rv770_gpu_init(struct radeon_device *rdev)
 	WREG32(SPI_PS_IN_CONTROL_0, NUM_INTERP(2));
 	WREG32(CB_COLOR7_FRAG, 0);
 
-	/* clear render buffer base addresses */
+	 
 	WREG32(CB_COLOR0_BASE, 0);
 	WREG32(CB_COLOR1_BASE, 0);
 	WREG32(CB_COLOR2_BASE, 0);
@@ -1605,7 +1561,7 @@ void r700_vram_gtt_location(struct radeon_device *rdev, struct radeon_mc *mc)
 	u64 size_bf, size_af;
 
 	if (mc->mc_vram_size > 0xE0000000) {
-		/* leave room for at least 512M GTT */
+		 
 		dev_warn(rdev->dev, "limiting VRAM\n");
 		mc->real_vram_size = 0xE0000000;
 		mc->mc_vram_size = 0xE0000000;
@@ -1644,7 +1600,7 @@ static int rv770_mc_init(struct radeon_device *rdev)
 	u32 tmp;
 	int chansize, numchan;
 
-	/* Get VRAM informations */
+	 
 	rdev->mc.vram_is_ddr = true;
 	tmp = RREG32(MC_ARB_RAMCFG);
 	if (tmp & CHANSIZE_OVERRIDE) {
@@ -1671,10 +1627,10 @@ static int rv770_mc_init(struct radeon_device *rdev)
 		break;
 	}
 	rdev->mc.vram_width = numchan * chansize;
-	/* Could aper size report 0 ? */
+	 
 	rdev->mc.aper_base = pci_resource_start(rdev->pdev, 0);
 	rdev->mc.aper_size = pci_resource_len(rdev->pdev, 0);
-	/* Setup GPU memory space */
+	 
 	rdev->mc.mc_vram_size = RREG32(CONFIG_MEMSIZE);
 	rdev->mc.real_vram_size = RREG32(CONFIG_MEMSIZE);
 	rdev->mc.visible_vram_size = rdev->mc.aper_size;
@@ -1694,12 +1650,7 @@ static void rv770_uvd_init(struct radeon_device *rdev)
 	r = radeon_uvd_init(rdev);
 	if (r) {
 		dev_err(rdev->dev, "failed UVD (%d) init.\n", r);
-		/*
-		 * At this point rdev->uvd.vcpu_bo is NULL which trickles down
-		 * to early fails uvd_v2_2_resume() and thus nothing happens
-		 * there. So it is pointless to try to go through that code
-		 * hence why we disable uvd here.
-		 */
+		 
 		rdev->has_uvd = false;
 		return;
 	}
@@ -1756,10 +1707,10 @@ static int rv770_startup(struct radeon_device *rdev)
 	struct radeon_ring *ring;
 	int r;
 
-	/* enable pcie gen2 link */
+	 
 	rv770_pcie_gen2_enable(rdev);
 
-	/* scratch needs to be initialized before MC */
+	 
 	r = r600_vram_scratch_init(rdev);
 	if (r)
 		return r;
@@ -1776,7 +1727,7 @@ static int rv770_startup(struct radeon_device *rdev)
 
 	rv770_gpu_init(rdev);
 
-	/* allocate wb buffer */
+	 
 	r = radeon_wb_init(rdev);
 	if (r)
 		return r;
@@ -1795,7 +1746,7 @@ static int rv770_startup(struct radeon_device *rdev)
 
 	rv770_uvd_start(rdev);
 
-	/* Enable IRQ */
+	 
 	if (!rdev->irq.installed) {
 		r = radeon_irq_kms_init(rdev);
 		if (r)
@@ -1854,14 +1805,11 @@ int rv770_resume(struct radeon_device *rdev)
 {
 	int r;
 
-	/* Do not reset GPU before posting, on rv770 hw unlike on r500 hw,
-	 * posting will perform necessary task to bring back GPU into good
-	 * shape.
-	 */
-	/* post card */
+	 
+	 
 	atom_asic_init(rdev->mode_info.atom_context);
 
-	/* init golden registers */
+	 
 	rv770_init_golden_registers(rdev);
 
 	if (rdev->pm.pm_method == PM_METHOD_DPM)
@@ -1896,22 +1844,17 @@ int rv770_suspend(struct radeon_device *rdev)
 	return 0;
 }
 
-/* Plan is to move initialization in that function and use
- * helper function so that radeon_device_init pretty much
- * do nothing more than calling asic specific function. This
- * should also allow to remove a bunch of callback function
- * like vram_info.
- */
+ 
 int rv770_init(struct radeon_device *rdev)
 {
 	int r;
 
-	/* Read BIOS */
+	 
 	if (!radeon_get_bios(rdev)) {
 		if (ASIC_IS_AVIVO(rdev))
 			return -EINVAL;
 	}
-	/* Must be an ATOMBIOS */
+	 
 	if (!rdev->is_atom_bios) {
 		dev_err(rdev->dev, "Expecting atombios for R600 GPU\n");
 		return -EINVAL;
@@ -1919,7 +1862,7 @@ int rv770_init(struct radeon_device *rdev)
 	r = radeon_atombios_init(rdev);
 	if (r)
 		return r;
-	/* Post card if necessary */
+	 
 	if (!radeon_card_posted(rdev)) {
 		if (!rdev->bios) {
 			dev_err(rdev->dev, "Card not posted and no BIOS - ignoring\n");
@@ -1928,17 +1871,17 @@ int rv770_init(struct radeon_device *rdev)
 		DRM_INFO("GPU not posted. posting now...\n");
 		atom_asic_init(rdev->mode_info.atom_context);
 	}
-	/* init golden registers */
+	 
 	rv770_init_golden_registers(rdev);
-	/* Initialize scratch registers */
+	 
 	r600_scratch_init(rdev);
-	/* Initialize surface registers */
+	 
 	radeon_surface_init(rdev);
-	/* Initialize clocks */
+	 
 	radeon_get_clock_info(rdev->ddev);
-	/* Fence driver */
+	 
 	radeon_fence_driver_init(rdev);
-	/* initialize AGP */
+	 
 	if (rdev->flags & RADEON_IS_AGP) {
 		r = radeon_agp_init(rdev);
 		if (r)
@@ -1947,7 +1890,7 @@ int rv770_init(struct radeon_device *rdev)
 	r = rv770_mc_init(rdev);
 	if (r)
 		return r;
-	/* Memory manager */
+	 
 	r = radeon_bo_init(rdev);
 	if (r)
 		return r;
@@ -1960,7 +1903,7 @@ int rv770_init(struct radeon_device *rdev)
 		}
 	}
 
-	/* Initialize power management */
+	 
 	radeon_pm_init(rdev);
 
 	rdev->ring[RADEON_RING_TYPE_GFX_INDEX].ring_obj = NULL;
@@ -2031,7 +1974,7 @@ static void rv770_pcie_gen2_enable(struct radeon_device *rdev)
 	if (!(rdev->flags & RADEON_IS_PCIE))
 		return;
 
-	/* x2 cards have a special sequence */
+	 
 	if (ASIC_IS_X2(rdev))
 		return;
 
@@ -2041,7 +1984,7 @@ static void rv770_pcie_gen2_enable(struct radeon_device *rdev)
 
 	DRM_INFO("enabling PCIE gen 2 link speeds, disable with radeon.pcie_gen2=0\n");
 
-	/* advertise upconfig capability */
+	 
 	link_width_cntl = RREG32_PCIE_PORT(PCIE_LC_LINK_WIDTH_CNTL);
 	link_width_cntl &= ~LC_UPCONFIGURE_DIS;
 	WREG32_PCIE_PORT(PCIE_LC_LINK_WIDTH_CNTL, link_width_cntl);
@@ -2089,7 +2032,7 @@ static void rv770_pcie_gen2_enable(struct radeon_device *rdev)
 
 	} else {
 		link_width_cntl = RREG32_PCIE_PORT(PCIE_LC_LINK_WIDTH_CNTL);
-		/* XXX: only disable it if gen1 bridge vendor == 0x111d or 0x1106 */
+		 
 		if (1)
 			link_width_cntl |= LC_UPCONFIGURE_DIS;
 		else

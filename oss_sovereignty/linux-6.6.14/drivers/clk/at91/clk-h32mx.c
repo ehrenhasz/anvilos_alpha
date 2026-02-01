@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * clk-h32mx.c
- *
- *  Copyright (C) 2014 Atmel
- *
- * Alexandre Belloni <alexandre.belloni@free-electrons.com>
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/clkdev.h>

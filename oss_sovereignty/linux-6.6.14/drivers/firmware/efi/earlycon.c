@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2013 Intel Corporation; author Matt Fleming
- */
+
+ 
 
 #include <linux/console.h>
 #include <linux/efi.h>
@@ -23,16 +21,10 @@ static u64 fb_base;
 static bool fb_wb;
 static void *efi_fb;
 
-/*
- * EFI earlycon needs to use early_memremap() to map the framebuffer.
- * But early_memremap() is not usable for 'earlycon=efifb keep_bootcon',
- * memremap() should be used instead. memremap() will be available after
- * paging_init() which is earlier than initcall callbacks. Thus adding this
- * early initcall function early_efi_map_fb() to map the whole EFI framebuffer.
- */
+ 
 static int __init efi_earlycon_remap_fb(void)
 {
-	/* bail if there is no bootconsole or it was unregistered already */
+	 
 	if (!earlycon_console || !console_is_registered(earlycon_console))
 		return 0;
 
@@ -45,7 +37,7 @@ early_initcall(efi_earlycon_remap_fb);
 
 static int __init efi_earlycon_unmap_fb(void)
 {
-	/* unmap the bootconsole fb unless keep_bootcon left it registered */
+	 
 	if (efi_fb && !console_is_registered(earlycon_console))
 		memunmap(efi_fb);
 	return 0;
@@ -92,7 +84,7 @@ static void efi_earlycon_scroll_up(void)
 	u16 len;
 	u32 i, height;
 
-	/* Find the cached maximum x coordinate */
+	 
 	for (i = 0; i < max_line_y; i++) {
 		if (efi_x_array[i] > maxlen)
 			maxlen = efi_x_array[i];
@@ -245,10 +237,7 @@ static int __init efi_earlycon_setup(struct earlycon_device *device,
 	xres = si->lfb_width;
 	yres = si->lfb_height;
 
-	/*
-	 * efi_earlycon_write_char() implicitly assumes a framebuffer with
-	 * 32 bits per pixel.
-	 */
+	 
 	if (si->lfb_depth != 32)
 		return -ENODEV;
 
@@ -256,11 +245,11 @@ static int __init efi_earlycon_setup(struct earlycon_device *device,
 	if (!font)
 		return -ENODEV;
 
-	/* Fill the cache with maximum possible value of x coordinate */
+	 
 	memset32(efi_x_array, rounddown(xres, font->width), ARRAY_SIZE(efi_x_array));
 	efi_y = rounddown(yres, font->height);
 
-	/* Make sure we have cache for the x coordinate for the full screen */
+	 
 	max_line_y = efi_y / font->height + 1;
 	cur_line_y = 0;
 

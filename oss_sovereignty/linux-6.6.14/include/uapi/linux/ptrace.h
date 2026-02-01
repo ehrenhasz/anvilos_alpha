@@ -1,10 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
+ 
 #ifndef _UAPI_LINUX_PTRACE_H
 #define _UAPI_LINUX_PTRACE_H
-/* ptrace.h */
-/* structs and defines to help the user use the ptrace system call. */
+ 
+ 
 
-/* has the defines to get at the registers. */
+ 
 
 #include <linux/types.h>
 
@@ -24,29 +24,13 @@
 
 #define PTRACE_SYSCALL		  24
 
-/* 0x4200-0x4300 are reserved for architecture-independent additions.  */
+ 
 #define PTRACE_SETOPTIONS	0x4200
 #define PTRACE_GETEVENTMSG	0x4201
 #define PTRACE_GETSIGINFO	0x4202
 #define PTRACE_SETSIGINFO	0x4203
 
-/*
- * Generic ptrace interface that exports the architecture specific regsets
- * using the corresponding NT_* types (which are also used in the core dump).
- * Please note that the NT_PRSTATUS note type in a core dump contains a full
- * 'struct elf_prstatus'. But the user_regset for NT_PRSTATUS contains just the
- * elf_gregset_t that is the pr_reg field of 'struct elf_prstatus'. For all the
- * other user_regset flavors, the user_regset layout and the ELF core dump note
- * payload are exactly the same layout.
- *
- * This interface usage is as follows:
- *	struct iovec iov = { buf, len};
- *
- *	ret = ptrace(PTRACE_GETREGSET/PTRACE_SETREGSET, pid, NT_XXX_TYPE, &iov);
- *
- * On the successful completion, iov.len will be updated by the kernel,
- * specifying how much the kernel has written/read to/from the user's iov.buf.
- */
+ 
 #define PTRACE_GETREGSET	0x4204
 #define PTRACE_SETREGSET	0x4205
 
@@ -57,9 +41,9 @@
 #define PTRACE_PEEKSIGINFO	0x4209
 
 struct ptrace_peeksiginfo_args {
-	__u64 off;	/* from which siginfo to start */
+	__u64 off;	 
 	__u32 flags;
-	__s32 nr;	/* how may siginfos to take */
+	__s32 nr;	 
 };
 
 #define PTRACE_GETSIGMASK	0x420a
@@ -69,8 +53,8 @@ struct ptrace_peeksiginfo_args {
 #define PTRACE_SECCOMP_GET_METADATA	0x420d
 
 struct seccomp_metadata {
-	__u64 filter_off;	/* Input: which filter */
-	__u64 flags;		/* Output: filter's flags */
+	__u64 filter_off;	 
+	__u64 flags;		 
 };
 
 #define PTRACE_GET_SYSCALL_INFO		0x420e
@@ -80,7 +64,7 @@ struct seccomp_metadata {
 #define PTRACE_SYSCALL_INFO_SECCOMP	3
 
 struct ptrace_syscall_info {
-	__u8 op;	/* PTRACE_SYSCALL_INFO_* */
+	__u8 op;	 
 	__u8 pad[3];
 	__u32 arch;
 	__u64 instruction_pointer;
@@ -115,26 +99,7 @@ struct ptrace_rseq_configuration {
 #define PTRACE_SET_SYSCALL_USER_DISPATCH_CONFIG 0x4210
 #define PTRACE_GET_SYSCALL_USER_DISPATCH_CONFIG 0x4211
 
-/*
- * struct ptrace_sud_config - Per-task configuration for Syscall User Dispatch
- * @mode:	One of PR_SYS_DISPATCH_ON or PR_SYS_DISPATCH_OFF
- * @selector:	Tracees user virtual address of SUD selector
- * @offset:	SUD exclusion area (virtual address)
- * @len:	Length of SUD exclusion area
- *
- * Used to get/set the syscall user dispatch configuration for a tracee.
- * Selector is optional (may be NULL), and if invalid will produce
- * a SIGSEGV in the tracee upon first access.
- *
- * If mode is PR_SYS_DISPATCH_ON, syscall dispatch will be enabled. If
- * PR_SYS_DISPATCH_OFF, syscall dispatch will be disabled and all other
- * parameters must be 0.  The value in *selector (if not null), also determines
- * whether syscall dispatch will occur.
- *
- * The Syscall User Dispatch Exclusion area described by offset/len is the
- * virtual address space from which syscalls will not produce a user
- * dispatch.
- */
+ 
 struct ptrace_sud_config {
 	__u64 mode;
 	__u64 selector;
@@ -142,17 +107,14 @@ struct ptrace_sud_config {
 	__u64 len;
 };
 
-/*
- * These values are stored in task->ptrace_message
- * by ptrace_stop to describe the current syscall-stop.
- */
+ 
 #define PTRACE_EVENTMSG_SYSCALL_ENTRY	1
 #define PTRACE_EVENTMSG_SYSCALL_EXIT	2
 
-/* Read signals from a shared (process wide) queue */
+ 
 #define PTRACE_PEEKSIGINFO_SHARED	(1 << 0)
 
-/* Wait extended result codes for the above trace options.  */
+ 
 #define PTRACE_EVENT_FORK	1
 #define PTRACE_EVENT_VFORK	2
 #define PTRACE_EVENT_CLONE	3
@@ -160,10 +122,10 @@ struct ptrace_sud_config {
 #define PTRACE_EVENT_VFORK_DONE	5
 #define PTRACE_EVENT_EXIT	6
 #define PTRACE_EVENT_SECCOMP	7
-/* Extended result codes which enabled by means other than options.  */
+ 
 #define PTRACE_EVENT_STOP	128
 
-/* Options set using PTRACE_SETOPTIONS or using PTRACE_SEIZE @data param */
+ 
 #define PTRACE_O_TRACESYSGOOD	1
 #define PTRACE_O_TRACEFORK	(1 << PTRACE_EVENT_FORK)
 #define PTRACE_O_TRACEVFORK	(1 << PTRACE_EVENT_VFORK)
@@ -173,7 +135,7 @@ struct ptrace_sud_config {
 #define PTRACE_O_TRACEEXIT	(1 << PTRACE_EVENT_EXIT)
 #define PTRACE_O_TRACESECCOMP	(1 << PTRACE_EVENT_SECCOMP)
 
-/* eventless options */
+ 
 #define PTRACE_O_EXITKILL		(1 << 20)
 #define PTRACE_O_SUSPEND_SECCOMP	(1 << 21)
 
@@ -183,4 +145,4 @@ struct ptrace_sud_config {
 #include <asm/ptrace.h>
 
 
-#endif /* _UAPI_LINUX_PTRACE_H */
+#endif  

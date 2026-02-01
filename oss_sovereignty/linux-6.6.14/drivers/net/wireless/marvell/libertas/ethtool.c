@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/hardirq.h>
 #include <linux/netdevice.h>
 #include <linux/ethtool.h>
@@ -24,10 +24,7 @@ static void lbs_ethtool_get_drvinfo(struct net_device *dev,
 	strscpy(info->version, lbs_driver_version, sizeof(info->version));
 }
 
-/*
- * All 8388 parts have 16KiB EEPROM size at the time of writing.
- * In case that changes this needs fixing.
- */
+ 
 #define LBS_EEPROM_LEN 16384
 
 static int lbs_ethtool_get_eeprom_len(struct net_device *dev)

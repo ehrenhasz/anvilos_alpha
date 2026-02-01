@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * AppArmor security module
- *
- * This file contains AppArmor functions for unpacking policy loaded from
- * userspace.
- *
- * Copyright (C) 1998-2008 Novell/SUSE
- * Copyright 2009-2010 Canonical Ltd.
- *
- * AppArmor uses a serialized binary format for loading policy. To find
- * policy format documentation see Documentation/admin-guide/LSM/apparmor.rst
- * All policy is validated before it is used.
- */
+
+ 
 
 #include <asm/unaligned.h>
 #include <kunit/visibility.h>
@@ -30,7 +18,7 @@
 #include "include/policy_unpack.h"
 #include "include/policy_compat.h"
 
-/* audit callback for unpack fields */
+ 
 static void audit_cb(struct audit_buffer *ab, void *va)
 {
 	struct common_audit_data *sa = va;
@@ -48,17 +36,7 @@ static void audit_cb(struct audit_buffer *ab, void *va)
 		audit_log_format(ab, " offset=%ld", ad->iface.pos);
 }
 
-/**
- * audit_iface - do audit message for policy unpacking/load/replace/remove
- * @new: profile if it has been allocated (MAYBE NULL)
- * @ns_name: name of the ns the profile is to be loaded to (MAY BE NULL)
- * @name: name of the profile being manipulated (MAYBE NULL)
- * @info: any extra info about the failure (MAYBE NULL)
- * @e: buffer position info
- * @error: error code
- *
- * Returns: %0 or error
- */
+ 
 static int audit_iface(struct aa_profile *new, const char *ns_name,
 		       const char *name, const char *info, struct aa_ext *e,
 		       int error)
@@ -108,10 +86,7 @@ bool aa_rawdata_eq(struct aa_loaddata *l, struct aa_loaddata *r)
 	return memcmp(l->data, r->data, r->compressed_size ?: r->size) == 0;
 }
 
-/*
- * need to take the ns mutex lock which is NOT safe most places that
- * put_loaddata is called, so we have to delay freeing it
- */
+ 
 static void do_loaddata_free(struct work_struct *work)
 {
 	struct aa_loaddata *d = container_of(work, struct aa_loaddata, work);
@@ -158,20 +133,14 @@ struct aa_loaddata *aa_loaddata_alloc(size_t size)
 	return d;
 }
 
-/* test if read will be in packed data bounds */
+ 
 VISIBLE_IF_KUNIT bool aa_inbounds(struct aa_ext *e, size_t size)
 {
 	return (size <= e->end - e->pos);
 }
 EXPORT_SYMBOL_IF_KUNIT(aa_inbounds);
 
-/**
- * aa_unpack_u16_chunk - test and do bounds checking for a u16 size based chunk
- * @e: serialized data read head (NOT NULL)
- * @chunk: start address for chunk of data (NOT NULL)
- *
- * Returns: the size of chunk found with the read head at the end of the chunk.
- */
+ 
 VISIBLE_IF_KUNIT size_t aa_unpack_u16_chunk(struct aa_ext *e, char **chunk)
 {
 	size_t size = 0;
@@ -193,7 +162,7 @@ fail:
 }
 EXPORT_SYMBOL_IF_KUNIT(aa_unpack_u16_chunk);
 
-/* unpack control byte */
+ 
 VISIBLE_IF_KUNIT bool aa_unpack_X(struct aa_ext *e, enum aa_code code)
 {
 	if (!aa_inbounds(e, 1))
@@ -205,44 +174,24 @@ VISIBLE_IF_KUNIT bool aa_unpack_X(struct aa_ext *e, enum aa_code code)
 }
 EXPORT_SYMBOL_IF_KUNIT(aa_unpack_X);
 
-/**
- * aa_unpack_nameX - check is the next element is of type X with a name of @name
- * @e: serialized data extent information  (NOT NULL)
- * @code: type code
- * @name: name to match to the serialized element.  (MAYBE NULL)
- *
- * check that the next serialized data element is of type X and has a tag
- * name @name.  If @name is specified then there must be a matching
- * name element in the stream.  If @name is NULL any name element will be
- * skipped and only the typecode will be tested.
- *
- * Returns true on success (both type code and name tests match) and the read
- * head is advanced past the headers
- *
- * Returns: false if either match fails, the read head does not move
- */
+ 
 VISIBLE_IF_KUNIT bool aa_unpack_nameX(struct aa_ext *e, enum aa_code code, const char *name)
 {
-	/*
-	 * May need to reset pos if name or type doesn't match
-	 */
+	 
 	void *pos = e->pos;
-	/*
-	 * Check for presence of a tagname, and if present name size
-	 * AA_NAME tag value is a u16.
-	 */
+	 
 	if (aa_unpack_X(e, AA_NAME)) {
 		char *tag = NULL;
 		size_t size = aa_unpack_u16_chunk(e, &tag);
-		/* if a name is specified it must match. otherwise skip tag */
+		 
 		if (name && (!size || tag[size-1] != '\0' || strcmp(name, tag)))
 			goto fail;
 	} else if (name) {
-		/* if a name is specified and there is no name tag fail */
+		 
 		goto fail;
 	}
 
-	/* now check if type code matches */
+	 
 	if (aa_unpack_X(e, code))
 		return true;
 
@@ -378,7 +327,7 @@ VISIBLE_IF_KUNIT int aa_unpack_str(struct aa_ext *e, const char **string, const 
 	if (aa_unpack_nameX(e, AA_STRING, name)) {
 		size = aa_unpack_u16_chunk(e, &src_str);
 		if (size) {
-			/* strings are null terminated, length is size - 1 */
+			 
 			if (src_str[size - 1] != 0)
 				goto fail;
 			*string = src_str;
@@ -414,13 +363,7 @@ VISIBLE_IF_KUNIT int aa_unpack_strdup(struct aa_ext *e, char **string, const cha
 EXPORT_SYMBOL_IF_KUNIT(aa_unpack_strdup);
 
 
-/**
- * unpack_dfa - unpack a file rule dfa
- * @e: serialized data extent information (NOT NULL)
- * @flags: dfa flags to check
- *
- * returns dfa or ERR_PTR or NULL if no dfa
- */
+ 
 static struct aa_dfa *unpack_dfa(struct aa_ext *e, int flags)
 {
 	char *blob = NULL;
@@ -429,11 +372,7 @@ static struct aa_dfa *unpack_dfa(struct aa_ext *e, int flags)
 
 	size = aa_unpack_blob(e, &blob, "aadfa");
 	if (size) {
-		/*
-		 * The dfa is aligned with in the blob to 8 bytes
-		 * from the beginning of the stream.
-		 * alignment adjust needed by dfa unpack
-		 */
+		 
 		size_t sz = blob - (char *) e->start -
 			((e->pos - e->start) & 7);
 		size_t pad = ALIGN(sz, 8) - sz;
@@ -449,30 +388,19 @@ static struct aa_dfa *unpack_dfa(struct aa_ext *e, int flags)
 	return dfa;
 }
 
-/**
- * unpack_trans_table - unpack a profile transition table
- * @e: serialized data extent information  (NOT NULL)
- * @strs: str table to unpack to (NOT NULL)
- *
- * Returns: true if table successfully unpacked or not present
- */
+ 
 static bool unpack_trans_table(struct aa_ext *e, struct aa_str_table *strs)
 {
 	void *saved_pos = e->pos;
 	char **table = NULL;
 
-	/* exec table is optional */
+	 
 	if (aa_unpack_nameX(e, AA_STRUCT, "xtable")) {
 		u16 size;
 		int i;
 
 		if (!aa_unpack_array(e, NULL, &size))
-			/*
-			 * Note: index into trans table array is a max
-			 * of 2^24, but unpack array can only unpack
-			 * an array of 2^16 in size atm so no need
-			 * for size check here
-			 */
+			 
 			goto fail;
 		table = kcalloc(size, sizeof(char *), GFP_KERNEL);
 		if (!table)
@@ -483,17 +411,15 @@ static bool unpack_trans_table(struct aa_ext *e, struct aa_str_table *strs)
 		for (i = 0; i < size; i++) {
 			char *str;
 			int c, j, pos, size2 = aa_unpack_strdup(e, &str, NULL);
-			/* aa_unpack_strdup verifies that the last character is
-			 * null termination byte.
-			 */
+			 
 			if (!size2)
 				goto fail;
 			table[i] = str;
-			/* verify that name doesn't start with space */
+			 
 			if (isspace(*str))
 				goto fail;
 
-			/* count internal #  of internal \0 */
+			 
 			for (c = j = 0; j < size2 - 1; j++) {
 				if (!str[j]) {
 					pos = j;
@@ -501,21 +427,16 @@ static bool unpack_trans_table(struct aa_ext *e, struct aa_str_table *strs)
 				}
 			}
 			if (*str == ':') {
-				/* first character after : must be valid */
+				 
 				if (!str[1])
 					goto fail;
-				/* beginning with : requires an embedded \0,
-				 * verify that exactly 1 internal \0 exists
-				 * trailing \0 already verified by aa_unpack_strdup
-				 *
-				 * convert \0 back to : for label_parse
-				 */
+				 
 				if (c == 1)
 					str[pos] = ':';
 				else if (c > 1)
 					goto fail;
 			} else if (c)
-				/* fail - all other cases with embedded \0 */
+				 
 				goto fail;
 		}
 		if (!aa_unpack_nameX(e, AA_ARRAYEND, NULL))
@@ -612,7 +533,7 @@ static bool unpack_rlimits(struct aa_ext *e, struct aa_ruleset *rules)
 {
 	void *pos = e->pos;
 
-	/* rlimits are optional */
+	 
 	if (aa_unpack_nameX(e, AA_STRUCT, "rlimits")) {
 		u16 size;
 		int i;
@@ -670,10 +591,7 @@ static ssize_t unpack_perms_table(struct aa_ext *e, struct aa_perms **perms)
 	u16 size = 0;
 
 	AA_BUG(!perms);
-	/*
-	 * policy perms are optional, in which case perms are embedded
-	 * in the dfa accept table
-	 */
+	 
 	if (aa_unpack_nameX(e, AA_STRUCT, "perms")) {
 		int i;
 		u32 version;
@@ -723,10 +641,10 @@ static int unpack_pdb(struct aa_ext *e, struct aa_policydb *policy,
 	policy->size = size;
 
 	if (policy->perms) {
-		/* perms table present accept is index */
+		 
 		flags = TO_ACCEPT1_FLAG(YYTD_DATA32);
 	} else {
-		/* packed perms in accept1 and accept2 */
+		 
 		flags = TO_ACCEPT1_FLAG(YYTD_DATA32) |
 			TO_ACCEPT2_FLAG(YYTD_DATA32);
 	}
@@ -745,19 +663,14 @@ static int unpack_pdb(struct aa_ext *e, struct aa_policydb *policy,
 		goto out;
 	}
 
-	/*
-	 * only unpack the following if a dfa is present
-	 *
-	 * sadly start was given different names for file and policydb
-	 * but since it is optional we can try both
-	 */
+	 
 	if (!aa_unpack_u32(e, &policy->start[0], "start"))
-		/* default start state */
+		 
 		policy->start[0] = DFA_START;
 	if (!aa_unpack_u32(e, &policy->start[AA_CLASS_FILE], "dfa_start")) {
-		/* default start state for xmatch and file dfa */
+		 
 		policy->start[AA_CLASS_FILE] = DFA_START;
-	}	/* setup class index */
+	}	 
 	for (i = AA_CLASS_FILE + 1; i <= AA_CLASS_LAST; i++) {
 		policy->start[i] = aa_dfa_next(policy->dfa, policy->start[0],
 					       i);
@@ -767,8 +680,8 @@ static int unpack_pdb(struct aa_ext *e, struct aa_policydb *policy,
 		goto fail;
 	}
 
-	/* TODO: move compat mapping here, requires dfa merging first */
-	/* TODO: move verify here, it has to be done after compat mappings */
+	 
+	 
 out:
 	return 0;
 
@@ -792,13 +705,7 @@ static int datacmp(struct rhashtable_compare_arg *arg, const void *obj)
 	return strcmp(data->key, *key);
 }
 
-/**
- * unpack_profile - unpack a serialized profile
- * @e: serialized data extent information (NOT NULL)
- * @ns_name: pointer of newly allocated copy of %NULL in case of error
- *
- * NOTE: unpack profile sets audit struct if there is a failure
- */
+ 
 static struct aa_profile *unpack_profile(struct aa_ext *e, char **ns_name)
 {
 	struct aa_ruleset *rules;
@@ -815,7 +722,7 @@ static struct aa_profile *unpack_profile(struct aa_ext *e, char **ns_name)
 
 	*ns_name = NULL;
 
-	/* check that we have the right struct being passed */
+	 
 	if (!aa_unpack_nameX(e, AA_STRUCT, "profile"))
 		goto fail;
 	if (!aa_unpack_str(e, &name, NULL))
@@ -846,20 +753,20 @@ static struct aa_profile *unpack_profile(struct aa_ext *e, char **ns_name)
 	}
 	rules = list_first_entry(&profile->rules, typeof(*rules), list);
 
-	/* profile renaming is optional */
+	 
 	(void) aa_unpack_str(e, &profile->rename, "rename");
 
-	/* attachment string is optional */
+	 
 	(void) aa_unpack_str(e, &profile->attach.xmatch_str, "attach");
 
-	/* xmatch is optional and may be NULL */
+	 
 	error = unpack_pdb(e, &profile->attach.xmatch, false, false, &info);
 	if (error) {
 		info = "bad xmatch";
 		goto fail;
 	}
 
-	/* neither xmatch_len not xmatch_perms are optional if xmatch is set */
+	 
 	if (profile->attach.xmatch.dfa) {
 		if (!aa_unpack_u32(e, &tmp, NULL)) {
 			info = "missing xmatch len";
@@ -876,11 +783,11 @@ static struct aa_profile *unpack_profile(struct aa_ext *e, char **ns_name)
 		}
 	}
 
-	/* disconnected attachment string is optional */
+	 
 	(void) aa_unpack_strdup(e, &disconnected, "disconnected");
 	profile->disconnected = disconnected;
 
-	/* per profile debug flags (complain, audit) */
+	 
 	if (!aa_unpack_nameX(e, AA_STRUCT, "flags")) {
 		info = "profile missing flags";
 		goto fail;
@@ -918,12 +825,12 @@ static struct aa_profile *unpack_profile(struct aa_ext *e, char **ns_name)
 	if (!aa_unpack_nameX(e, AA_STRUCTEND, NULL))
 		goto fail;
 
-	/* path_flags is optional */
+	 
 	if (aa_unpack_u32(e, &profile->path_flags, "path_flags"))
 		profile->path_flags |= profile->label.flags &
 			PATH_MEDIATE_DELETED;
 	else
-		/* set a default value if path_flags field is not present */
+		 
 		profile->path_flags = PATH_MEDIATE_DELETED;
 
 	info = "failed to unpack profile capabilities";
@@ -938,7 +845,7 @@ static struct aa_profile *unpack_profile(struct aa_ext *e, char **ns_name)
 
 	info = "failed to unpack upper profile capabilities";
 	if (aa_unpack_nameX(e, AA_STRUCT, "caps64")) {
-		/* optional upper half of 64 bit caps */
+		 
 		if (!aa_unpack_cap_high(e, &rules->caps.allow, NULL))
 			goto fail;
 		if (!aa_unpack_cap_high(e, &rules->caps.audit, NULL))
@@ -953,7 +860,7 @@ static struct aa_profile *unpack_profile(struct aa_ext *e, char **ns_name)
 
 	info = "failed to unpack extended profile capabilities";
 	if (aa_unpack_nameX(e, AA_STRUCT, "capsx")) {
-		/* optional extended caps mediation mask */
+		 
 		if (!aa_unpack_cap_low(e, &rules->caps.extended, NULL))
 			goto fail;
 		if (!aa_unpack_cap_high(e, &rules->caps.extended, NULL))
@@ -978,13 +885,13 @@ static struct aa_profile *unpack_profile(struct aa_ext *e, char **ns_name)
 	}
 
 	if (aa_unpack_nameX(e, AA_STRUCT, "policydb")) {
-		/* generic policy dfa - optional and may be NULL */
+		 
 		info = "failed to unpack policydb";
 		error = unpack_pdb(e, &rules->policy, true, false,
 				   &info);
 		if (error)
 			goto fail;
-		/* Fixup: drop when we get rid of start array */
+		 
 		if (aa_dfa_next(rules->policy.dfa, rules->policy.start[0],
 				AA_CLASS_FILE))
 			rules->policy.start[AA_CLASS_FILE] =
@@ -1009,7 +916,7 @@ static struct aa_profile *unpack_profile(struct aa_ext *e, char **ns_name)
 			goto fail;
 		rules->policy.size = 2;
 	}
-	/* get file rules */
+	 
 	error = unpack_pdb(e, &rules->file, false, true, &info);
 	if (error) {
 		goto fail;
@@ -1103,7 +1010,7 @@ static struct aa_profile *unpack_profile(struct aa_ext *e, char **ns_name)
 
 fail:
 	if (error == 0)
-		/* default error covers most cases */
+		 
 		error = -EPROTO;
 	if (*ns_name) {
 		kfree(*ns_name);
@@ -1119,21 +1026,14 @@ fail:
 	return ERR_PTR(error);
 }
 
-/**
- * verify_header - unpack serialized stream header
- * @e: serialized data read head (NOT NULL)
- * @required: whether the header is required or optional
- * @ns: Returns - namespace if one is specified else NULL (NOT NULL)
- *
- * Returns: error or 0 if header is good
- */
+ 
 static int verify_header(struct aa_ext *e, int required, const char **ns)
 {
 	int error = -EPROTONOSUPPORT;
 	const char *name = NULL;
 	*ns = NULL;
 
-	/* get the interface version */
+	 
 	if (!aa_unpack_u32(e, &e->version, "version")) {
 		if (required) {
 			audit_iface(NULL, NULL, NULL, "invalid profile format",
@@ -1142,17 +1042,14 @@ static int verify_header(struct aa_ext *e, int required, const char **ns)
 		}
 	}
 
-	/* Check that the interface version is currently supported.
-	 * if not specified use previous version
-	 * Mask off everything that is not kernel abi version
-	 */
+	 
 	if (VERSION_LT(e->version, v5) || VERSION_GT(e->version, v9)) {
 		audit_iface(NULL, NULL, NULL, "unsupported interface version",
 			    e, error);
 		return error;
 	}
 
-	/* read the namespace if present */
+	 
 	if (aa_unpack_str(e, &name, "namespace")) {
 		if (*name == '\0') {
 			audit_iface(NULL, NULL, NULL, "invalid namespace name",
@@ -1172,11 +1069,7 @@ static int verify_header(struct aa_ext *e, int required, const char **ns)
 	return 0;
 }
 
-/**
- * verify_dfa_accept_index - verify accept indexes are in range of perms table
- * @dfa: the dfa to check accept indexes are in range
- * table_size: the permission table size the indexes should be within
- */
+ 
 static bool verify_dfa_accept_index(struct aa_dfa *dfa, int table_size)
 {
 	int i;
@@ -1189,7 +1082,7 @@ static bool verify_dfa_accept_index(struct aa_dfa *dfa, int table_size)
 
 static bool verify_perm(struct aa_perms *perm)
 {
-	/* TODO: allow option to just force the perms into a valid state */
+	 
 	if (perm->allow & perm->deny)
 		return false;
 	if (perm->subtree & ~perm->allow)
@@ -1217,7 +1110,7 @@ static bool verify_perms(struct aa_policydb *pdb)
 	for (i = 0; i < pdb->size; i++) {
 		if (!verify_perm(&pdb->perms[i]))
 			return false;
-		/* verify indexes into str table */
+		 
 		if ((pdb->perms[i].xindex & AA_X_TYPE_MASK) == AA_X_TABLE &&
 		    (pdb->perms[i].xindex & AA_X_INDEX_MASK) >= pdb->trans.size)
 			return false;
@@ -1231,14 +1124,7 @@ static bool verify_perms(struct aa_policydb *pdb)
 	return true;
 }
 
-/**
- * verify_profile - Do post unpack analysis to verify profile consistency
- * @profile: profile to verify (NOT NULL)
- *
- * Returns: 0 if passes verification else error
- *
- * This verification is post any unpack mapping or changes
- */
+ 
 static int verify_profile(struct aa_profile *profile)
 {
 	struct aa_ruleset *rules = list_first_entry(&profile->rules,
@@ -1337,11 +1223,7 @@ static int compress_zstd(const char *src, size_t slen, char **dst, size_t *dlen)
 			out = NULL;
 		}
 	} else {
-		/*
-		 * If the staging buffer was kmalloc'd, then using krealloc is
-		 * probably going to be faster. The destination buffer will
-		 * always be smaller, so it's just shrunk, avoiding a memcpy
-		 */
+		 
 		*dst = krealloc(out, out_len, GFP_KERNEL);
 	}
 
@@ -1370,10 +1252,7 @@ static int compress_loaddata(struct aa_loaddata *data)
 {
 	AA_BUG(data->compressed_size > 0);
 
-	/*
-	 * Shortcut the no compression case, else we increase the amount of
-	 * storage required by a small amount
-	 */
+	 
 	if (aa_g_rawdata_compression_level != 0) {
 		void *udata = data->data;
 		int error = compress_zstd(udata, data->size, &data->data,
@@ -1390,18 +1269,7 @@ static int compress_loaddata(struct aa_loaddata *data)
 	return 0;
 }
 
-/**
- * aa_unpack - unpack packed binary profile(s) data loaded from user space
- * @udata: user data copied to kmem  (NOT NULL)
- * @lh: list to place unpacked profiles in a aa_repl_ws
- * @ns: Returns namespace profile is in if specified else NULL (NOT NULL)
- *
- * Unpack user data and return refcounted allocated profile(s) stored in
- * @lh in order of discovery, with the list chain stored in base.list
- * or error
- *
- * Returns: profile(s) on @lh else error pointer if fails to unpack
- */
+ 
 int aa_unpack(struct aa_loaddata *udata, struct list_head *lh,
 	      const char **ns)
 {

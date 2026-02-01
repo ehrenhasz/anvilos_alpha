@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Code for looking up block devices in the early boot code before mounting the
- * root file system.
- */
+
+ 
 #include <linux/blkdev.h>
 #include <linux/ctype.h>
 
@@ -11,13 +8,7 @@ struct uuidcmp {
 	int len;
 };
 
-/**
- * match_dev_by_uuid - callback for finding a partition using its uuid
- * @dev:	device passed in by the caller
- * @data:	opaque pointer to the desired struct uuidcmp to match
- *
- * Returns 1 if the device matches, and 0 otherwise.
- */
+ 
 static int __init match_dev_by_uuid(struct device *dev, const void *data)
 {
 	struct block_device *bdev = dev_to_bdev(dev);
@@ -29,20 +20,7 @@ static int __init match_dev_by_uuid(struct device *dev, const void *data)
 	return 1;
 }
 
-/**
- * devt_from_partuuid - looks up the dev_t of a partition by its UUID
- * @uuid_str:	char array containing ascii UUID
- * @devt:	dev_t result
- *
- * The function will return the first partition which contains a matching
- * UUID value in its partition_meta_info struct.  This does not search
- * by filesystem UUIDs.
- *
- * If @uuid_str is followed by a "/PARTNROFF=%d", then the number will be
- * extracted and used as an offset from the partition identified by the UUID.
- *
- * Returns 0 on success or a negative error code on failure.
- */
+ 
 static int __init devt_from_partuuid(const char *uuid_str, dev_t *devt)
 {
 	struct uuidcmp cmp;
@@ -53,11 +31,11 @@ static int __init devt_from_partuuid(const char *uuid_str, dev_t *devt)
 	cmp.uuid = uuid_str;
 
 	slash = strchr(uuid_str, '/');
-	/* Check for optional partition number offset attributes. */
+	 
 	if (slash) {
 		char c = 0;
 
-		/* Explicitly fail on poor PARTUUID syntax. */
+		 
 		if (sscanf(slash + 1, "PARTNROFF=%d%c", &offset, &c) != 1)
 			goto out_invalid;
 		cmp.len = slash - uuid_str;
@@ -73,10 +51,7 @@ static int __init devt_from_partuuid(const char *uuid_str, dev_t *devt)
 		return -ENODEV;
 
 	if (offset) {
-		/*
-		 * Attempt to find the requested partition by adding an offset
-		 * to the partition number found by UUID.
-		 */
+		 
 		*devt = part_devt(dev_to_disk(dev),
 				  dev_to_bdev(dev)->bd_partno + offset);
 	} else {
@@ -92,13 +67,7 @@ out_invalid:
 	return -EINVAL;
 }
 
-/**
- * match_dev_by_label - callback for finding a partition using its label
- * @dev:	device passed in by the caller
- * @data:	opaque pointer to the label to match
- *
- * Returns 1 if the device matches, and 0 otherwise.
- */
+ 
 static int __init match_dev_by_label(struct device *dev, const void *data)
 {
 	struct block_device *bdev = dev_to_bdev(dev);
@@ -135,9 +104,7 @@ static dev_t __init blk_lookup_devt(const char *name, int partno)
 			continue;
 
 		if (partno < disk->minors) {
-			/* We need to return the right devno, even
-			 * if the partition doesn't exist yet.
-			 */
+			 
 			devt = MKDEV(MAJOR(dev->devt),
 				     MINOR(dev->devt) + partno);
 		} else {
@@ -168,23 +135,20 @@ static int __init devt_from_devname(const char *name, dev_t *devt)
 	if (*devt)
 		return 0;
 
-	/*
-	 * Try non-existent, but valid partition, which may only exist after
-	 * opening the device, like partitioned md devices.
-	 */
+	 
 	while (p > s && isdigit(p[-1]))
 		p--;
 	if (p == s || !*p || *p == '0')
 		return -ENODEV;
 
-	/* try disk name without <part number> */
+	 
 	part = simple_strtoul(p, NULL, 10);
 	*p = '\0';
 	*devt = blk_lookup_devt(s, part);
 	if (*devt)
 		return 0;
 
-	/* try disk name without p<part number> */
+	 
 	if (p < s + 2 || !isdigit(p[-2]) || p[-1] != 'p')
 		return -ENODEV;
 	p[-1] = '\0';
@@ -213,34 +177,7 @@ static int __init devt_from_devnum(const char *name, dev_t *devt)
 	return 0;
 }
 
-/*
- *	Convert a name into device number.  We accept the following variants:
- *
- *	1) <hex_major><hex_minor> device number in hexadecimal represents itself
- *         no leading 0x, for example b302.
- *	3) /dev/<disk_name> represents the device number of disk
- *	4) /dev/<disk_name><decimal> represents the device number
- *         of partition - device number of disk plus the partition number
- *	5) /dev/<disk_name>p<decimal> - same as the above, that form is
- *	   used when disk name of partitioned disk ends on a digit.
- *	6) PARTUUID=00112233-4455-6677-8899-AABBCCDDEEFF representing the
- *	   unique id of a partition if the partition table provides it.
- *	   The UUID may be either an EFI/GPT UUID, or refer to an MSDOS
- *	   partition using the format SSSSSSSS-PP, where SSSSSSSS is a zero-
- *	   filled hex representation of the 32-bit "NT disk signature", and PP
- *	   is a zero-filled hex representation of the 1-based partition number.
- *	7) PARTUUID=<UUID>/PARTNROFF=<int> to select a partition in relation to
- *	   a partition with a known unique id.
- *	8) <major>:<minor> major and minor number of the device separated by
- *	   a colon.
- *	9) PARTLABEL=<name> with name being the GPT partition label.
- *	   MSDOS partitions do not support labels!
- *
- *	If name doesn't have fall into the categories above, we return (0,0).
- *	block_class is used to check if something is a disk name. If the disk
- *	name contains slashes, the device name has them replaced with
- *	bangs.
- */
+ 
 int __init early_lookup_bdev(const char *name, dev_t *devt)
 {
 	if (strncmp(name, "PARTUUID=", 9) == 0)
@@ -264,11 +201,7 @@ static char __init *bdevt_str(dev_t devt, char *buf)
 	return buf;
 }
 
-/*
- * print a full list of all partitions - intended for places where the root
- * filesystem can't be mounted and thus to give the victim some idea of what
- * went wrong
- */
+ 
 void __init printk_all_partitions(void)
 {
 	struct class_dev_iter iter;
@@ -281,17 +214,11 @@ void __init printk_all_partitions(void)
 		char devt_buf[BDEVT_SIZE];
 		unsigned long idx;
 
-		/*
-		 * Don't show empty devices or things that have been
-		 * suppressed
-		 */
+		 
 		if (get_capacity(disk) == 0 || (disk->flags & GENHD_FL_HIDDEN))
 			continue;
 
-		/*
-		 * Note, unlike /proc/partitions, I am showing the numbers in
-		 * hex - the same format as the root= option takes.
-		 */
+		 
 		rcu_read_lock();
 		xa_for_each(&disk->part_tbl, idx, part) {
 			if (!bdev_nr_sectors(part))

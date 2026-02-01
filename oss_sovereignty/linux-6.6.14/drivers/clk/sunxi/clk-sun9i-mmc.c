@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright 2015 Chen-Yu Tsai
- *
- * Chen-Yu Tsai	<wens@csie.org>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/clk-provider.h>
@@ -111,7 +107,7 @@ static int sun9i_a80_mmc_config_clk_probe(struct platform_device *pdev)
 	if (IS_ERR(data->membase))
 		return PTR_ERR(data->membase);
 
-	/* one clock/reset pair per word */
+	 
 	count = DIV_ROUND_UP((resource_size(r)), SUN9I_MMC_WIDTH);
 
 	clk_data = &data->clk_data;
@@ -188,7 +184,7 @@ err_clk_register:
 
 static const struct of_device_id sun9i_a80_mmc_config_clk_dt_ids[] = {
 	{ .compatible = "allwinner,sun9i-a80-mmc-config-clk" },
-	{ /* sentinel */ }
+	{   }
 };
 
 static struct platform_driver sun9i_a80_mmc_config_clk_driver = {

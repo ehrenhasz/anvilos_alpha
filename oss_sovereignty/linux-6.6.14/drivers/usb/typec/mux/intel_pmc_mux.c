@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Driver for Intel PMC USB mux control
- *
- * Copyright (C) 2020 Intel Corporation
- * Author: Heikki Krogerus <heikki.krogerus@linux.intel.com>
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/module.h>
@@ -22,11 +17,11 @@
 
 #define PMC_USBC_CMD		0xa7
 
-/* Response status bits */
+ 
 #define PMC_USB_RESP_STATUS_FAILURE	BIT(0)
 #define PMC_USB_RESP_STATUS_FATAL	BIT(1)
 
-/* "Usage" OOB Message field values */
+ 
 enum {
 	PMC_USB_CONNECT,
 	PMC_USB_DISCONNECT,
@@ -41,7 +36,7 @@ enum {
 #define PMC_USB_MSG_ORI_HSL_SHIFT	5
 #define PMC_USB_MSG_ORI_AUX_SHIFT	6
 
-/* Alt Mode Request */
+ 
 struct altmode_req {
 	u8 usage;
 	u8 mode_type;
@@ -58,16 +53,16 @@ enum {
 	PMC_USB_MODE_TYPE_TBT,
 };
 
-/* Common Mode Data bits */
+ 
 #define PMC_USB_ALTMODE_RETIMER_CABLE	BIT(2)
 
 #define PMC_USB_ALTMODE_ORI_SHIFT	1
 #define PMC_USB_ALTMODE_UFP_SHIFT	3
 
-/* DP specific Mode Data bits */
+ 
 #define PMC_USB_ALTMODE_DP_MODE_SHIFT	8
 
-/* TBT specific Mode Data bits */
+ 
 #define PMC_USB_ALTMODE_TBT_TYPE	BIT(17)
 #define PMC_USB_ALTMODE_CABLE_TYPE	BIT(18)
 #define PMC_USB_ALTMODE_ACTIVE_LINK	BIT(20)
@@ -79,29 +74,27 @@ enum {
 #define   PMC_USB_ALTMODE_CABLE_20GPS	3
 #define PMC_USB_ALTMODE_TBT_GEN(_g_)	(((_g_) & GENMASK(1, 0)) << 28)
 
-/* Display HPD Request bits */
+ 
 #define PMC_USB_DP_HPD_LVL		BIT(4)
 #define PMC_USB_DP_HPD_IRQ		BIT(5)
 
-/*
- * Input Output Manager (IOM) PORT STATUS
- */
+ 
 #define IOM_PORT_STATUS_ACTIVITY_TYPE_MASK		GENMASK(9, 6)
 #define IOM_PORT_STATUS_ACTIVITY_TYPE_SHIFT		6
 #define IOM_PORT_STATUS_ACTIVITY_TYPE_USB		0x03
-/* activity type: Safe Mode */
+ 
 #define IOM_PORT_STATUS_ACTIVITY_TYPE_SAFE_MODE		0x04
-/* activity type: Display Port */
+ 
 #define IOM_PORT_STATUS_ACTIVITY_TYPE_DP		0x05
-/* activity type: Display Port Multi Function Device */
+ 
 #define IOM_PORT_STATUS_ACTIVITY_TYPE_DP_MFD		0x06
-/* activity type: Thunderbolt */
+ 
 #define IOM_PORT_STATUS_ACTIVITY_TYPE_TBT		0x07
 #define IOM_PORT_STATUS_ACTIVITY_TYPE_ALT_MODE_USB	0x0c
 #define IOM_PORT_STATUS_ACTIVITY_TYPE_ALT_MODE_TBT_USB	0x0d
-/* Upstream Facing Port Information */
+ 
 #define IOM_PORT_STATUS_UFP				BIT(10)
-/* Display Port Hot Plug Detect status */
+ 
 #define IOM_PORT_STATUS_DHPD_HPD_STATUS_MASK		GENMASK(13, 12)
 #define IOM_PORT_STATUS_DHPD_HPD_STATUS_SHIFT		12
 #define IOM_PORT_STATUS_DHPD_HPD_STATUS_ASSERT		0x01
@@ -118,7 +111,7 @@ enum {
 	  IOM_PORT_STATUS_DHPD_HPD_STATUS_SHIFT) &			\
 	 IOM_PORT_STATUS_DHPD_HPD_STATUS_ASSERT)
 
-/* IOM port status register */
+ 
 #define IOM_PORT_STATUS_REGS(_offset_, _size_)	((_offset_) | (_size_))
 #define IOM_PORT_STATUS_REGS_SZ_MASK		BIT(0)
 #define IOM_PORT_STATUS_REGS_SZ_4		0
@@ -167,7 +160,7 @@ static void update_port_status(struct pmc_usb_port *port)
 {
 	u8 port_num;
 
-	/* SoC expects the USB Type-C port numbers to start with 0 */
+	 
 	port_num = port->usb3_port - 1;
 
 	port->iom_status = readl(port->pmc->iom_base +
@@ -197,11 +190,7 @@ static int pmc_usb_send_command(struct intel_scu_ipc_dev *ipc, u8 *msg, u32 len)
 	u8 status_res;
 	int ret;
 
-	/*
-	 * Error bit will always be 0 with the USBC command.
-	 * Status can be checked from the response message if the
-	 * function intel_scu_ipc_dev_command succeeds.
-	 */
+	 
 	ret = intel_scu_ipc_dev_command(ipc, PMC_USBC_CMD, 0, msg,
 					len, response, sizeof(response));
 
@@ -226,9 +215,7 @@ static int pmc_usb_command(struct pmc_usb_port *port, u8 *msg, u32 len)
 	int retry_count = 3;
 	int ret;
 
-	/*
-	 * If PMC is busy then retry the command once again
-	 */
+	 
 	while (retry_count--) {
 		ret = pmc_usb_send_command(port->pmc->ipc, msg, len);
 		if (ret != -EBUSY)
@@ -247,7 +234,7 @@ pmc_usb_mux_dp_hpd(struct pmc_usb_port *port, struct typec_displayport_data *dp)
 	msg[0] = PMC_USB_DP_HPD;
 	msg[0] |= port->usb3_port << PMC_USB_MSG_USB3_PORT_SHIFT;
 
-	/* Configure HPD first if HPD,IRQ comes together */
+	 
 	if (!IOM_PORT_HPD_ASSERTED(port->iom_status) &&
 	    dp->status & DP_STATUS_IRQ_HPD &&
 	    dp->status & DP_STATUS_HPD_STATE) {
@@ -366,7 +353,7 @@ pmc_usb_mux_usb4(struct pmc_usb_port *port, struct typec_mux_state *state)
 	req.usage |= port->usb3_port << PMC_USB_MSG_USB3_PORT_SHIFT;
 	req.mode_type = PMC_USB_MODE_TYPE_TBT << PMC_USB_MODE_TYPE_SHIFT;
 
-	/* USB4 Mode */
+	 
 	req.mode_data = PMC_USB_ALTMODE_FORCE_LSR;
 
 	if (data->active_link_training)
@@ -393,9 +380,7 @@ pmc_usb_mux_usb4(struct pmc_usb_port *port, struct typec_mux_state *state)
 		else
 			req.mode_data |= PMC_USB_ALTMODE_ACTIVE_CABLE;
 
-		/* Configure data rate to rounded in the case of Active TBT3
-		 * and USB4 cables.
-		 */
+		 
 		req.mode_data |= PMC_USB_ALTMODE_TBT_GEN(1);
 		break;
 	}
@@ -438,7 +423,7 @@ static int pmc_usb_disconnect(struct pmc_usb_port *port)
 	if (!(port->iom_status & IOM_PORT_STATUS_CONNECTED))
 		return 0;
 
-	/* Clear DisplayPort HPD if it's still asserted. */
+	 
 	if (IOM_PORT_HPD_ASSERTED(port->iom_status))
 		pmc_usb_mux_dp_hpd(port, &data);
 
@@ -463,7 +448,7 @@ static int pmc_usb_connect(struct pmc_usb_port *port, enum usb_role role)
 		if (port->role == role || port->role == USB_ROLE_NONE)
 			return 0;
 
-		/* Role swap */
+		 
 		ret = pmc_usb_disconnect(port);
 		if (ret)
 			return ret;
@@ -505,7 +490,7 @@ pmc_usb_mux_set(struct typec_mux_dev *mux, struct typec_mux_state *state)
 	} else {
 		switch (state->mode) {
 		case TYPEC_MODE_USB2:
-			/* REVISIT: Try with usb3_port set to 0? */
+			 
 			break;
 		case TYPEC_MODE_USB3:
 			return pmc_usb_connect(port, port->role);
@@ -617,18 +602,18 @@ err_unregister_switch:
 	return ret;
 }
 
-/* IOM ACPI IDs and IOM_PORT_STATUS_OFFSET */
+ 
 static const struct acpi_device_id iom_acpi_ids[] = {
-	/* TigerLake */
+	 
 	{ "INTC1072", IOM_PORT_STATUS_REGS(0x560, IOM_PORT_STATUS_REGS_SZ_4) },
 
-	/* AlderLake */
+	 
 	{ "INTC1079", IOM_PORT_STATUS_REGS(0x160, IOM_PORT_STATUS_REGS_SZ_4) },
 
-	/* Meteor Lake */
+	 
 	{ "INTC107A", IOM_PORT_STATUS_REGS(0x160, IOM_PORT_STATUS_REGS_SZ_4) },
 
-	/* Lunar Lake */
+	 
 	{ "INTC10EA", IOM_PORT_STATUS_REGS(0x150, IOM_PORT_STATUS_REGS_SZ_8) },
 	{}
 };
@@ -717,7 +702,7 @@ static int pmc_usb_probe(struct platform_device *pdev)
 	device_for_each_child_node(&pdev->dev, fwnode)
 		pmc->num_ports++;
 
-	/* The IOM microcontroller has a limitation of max 4 ports. */
+	 
 	if (pmc->num_ports > 4) {
 		dev_err(&pdev->dev, "driver limited to 4 ports\n");
 		return -ERANGE;
@@ -740,10 +725,7 @@ static int pmc_usb_probe(struct platform_device *pdev)
 
 	pmc->dentry = debugfs_create_dir(dev_name(pmc->dev), pmc_mux_debugfs_root);
 
-	/*
-	 * For every physical USB connector (USB2 and USB3 combo) there is a
-	 * child ACPI device node under the PMC mux ACPI device object.
-	 */
+	 
 	for (i = 0; i < pmc->num_ports; i++) {
 		fwnode = device_get_next_child_node(pmc->dev, fwnode);
 		if (!fwnode)

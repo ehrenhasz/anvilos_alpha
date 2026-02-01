@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2014-2018 Intel Corporation
- */
+ 
+ 
 
 #ifndef _INTEL_WORKAROUNDS_H_
 #define _INTEL_WORKAROUNDS_H_

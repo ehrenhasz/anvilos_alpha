@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Expose a PWM controlled by the ChromeOS EC to the host processor.
- *
- * Copyright (C) 2016 Google, Inc.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/of.h>
@@ -15,14 +11,7 @@
 
 #include <dt-bindings/mfd/cros_ec.h>
 
-/**
- * struct cros_ec_pwm_device - Driver data for EC PWM
- *
- * @dev: Device node
- * @ec: Pointer to EC device
- * @chip: PWM controller chip
- * @use_pwm_type: Use PWM types instead of generic channels
- */
+ 
 struct cros_ec_pwm_device {
 	struct device *dev;
 	struct cros_ec_device *ec;
@@ -30,10 +19,7 @@ struct cros_ec_pwm_device {
 	bool use_pwm_type;
 };
 
-/**
- * struct cros_ec_pwm - per-PWM driver data
- * @duty_cycle: cached duty cycle
- */
+ 
 struct cros_ec_pwm {
 	u16 duty_cycle;
 };
@@ -162,17 +148,14 @@ static int cros_ec_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
 	u16 duty_cycle;
 	int ret;
 
-	/* The EC won't let us change the period */
+	 
 	if (state->period != EC_PWM_MAX_DUTY)
 		return -EINVAL;
 
 	if (state->polarity != PWM_POLARITY_NORMAL)
 		return -EINVAL;
 
-	/*
-	 * EC doesn't separate the concept of duty cycle and enabled, but
-	 * kernel does. Translate.
-	 */
+	 
 	duty_cycle = state->enabled ? state->duty_cycle : 0;
 
 	ret = cros_ec_pwm_set_duty(ec_pwm, pwm->hwpwm, duty_cycle);
@@ -201,15 +184,7 @@ static int cros_ec_pwm_get_state(struct pwm_chip *chip, struct pwm_device *pwm,
 	state->period = EC_PWM_MAX_DUTY;
 	state->polarity = PWM_POLARITY_NORMAL;
 
-	/*
-	 * Note that "disabled" and "duty cycle == 0" are treated the same. If
-	 * the cached duty cycle is not zero, used the cached duty cycle. This
-	 * ensures that the configured duty cycle is kept across a disable and
-	 * enable operation and avoids potentially confusing consumers.
-	 *
-	 * For the case of the initial hardware readout, channel->duty_cycle
-	 * will be 0 and the actual duty cycle read from the EC is used.
-	 */
+	 
 	if (ret == 0 && channel->duty_cycle > 0)
 		state->duty_cycle = channel->duty_cycle;
 	else
@@ -230,7 +205,7 @@ cros_ec_pwm_xlate(struct pwm_chip *chip, const struct of_phandle_args *args)
 	if (IS_ERR(pwm))
 		return pwm;
 
-	/* The EC won't let us change the period */
+	 
 	pwm->args.period = EC_PWM_MAX_DUTY;
 
 	return pwm;
@@ -244,28 +219,19 @@ static const struct pwm_ops cros_ec_pwm_ops = {
 	.owner		= THIS_MODULE,
 };
 
-/*
- * Determine the number of supported PWMs. The EC does not return the number
- * of PWMs it supports directly, so we have to read the pwm duty cycle for
- * subsequent channels until we get an error.
- */
+ 
 static int cros_ec_num_pwms(struct cros_ec_pwm_device *ec_pwm)
 {
 	int i, ret;
 
-	/* The index field is only 8 bits */
+	 
 	for (i = 0; i <= U8_MAX; i++) {
 		ret = cros_ec_pwm_get_duty(ec_pwm, i);
-		/*
-		 * We look for SUCCESS, INVALID_COMMAND, or INVALID_PARAM
-		 * responses; everything else is treated as an error.
-		 * The EC error codes map to -EOPNOTSUPP and -EINVAL,
-		 * so check for those.
-		 */
+		 
 		switch (ret) {
-		case -EOPNOTSUPP:	/* invalid command */
+		case -EOPNOTSUPP:	 
 			return -ENODEV;
-		case -EINVAL:		/* invalid parameter */
+		case -EINVAL:		 
 			return i;
 		default:
 			if (ret < 0)
@@ -300,7 +266,7 @@ static int cros_ec_pwm_probe(struct platform_device *pdev)
 	if (of_device_is_compatible(np, "google,cros-ec-pwm-type"))
 		ec_pwm->use_pwm_type = true;
 
-	/* PWM chip */
+	 
 	chip->dev = dev;
 	chip->ops = &cros_ec_pwm_ops;
 	chip->of_xlate = cros_ec_pwm_xlate;

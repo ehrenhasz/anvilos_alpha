@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2014 Philipp Zabel, Pengutronix
- *
- * PWM (mis)used as clock output
- */
+
+ 
 #include <linux/clk-provider.h>
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -103,10 +99,7 @@ static int clk_pwm_probe(struct platform_device *pdev)
 		return -EINVAL;
 	}
 
-	/*
-	 * FIXME: pwm_apply_args() should be removed when switching to the
-	 * atomic PWM API.
-	 */
+	 
 	pwm_apply_args(pwm);
 	ret = pwm_config(pwm, (pargs.period + 1) >> 1, pargs.period);
 	if (ret < 0)

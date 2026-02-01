@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2017, 2020, The Linux Foundation. All rights reserved.
- * Copyright (c) 2021, Linaro Ltd.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/clk-provider.h>
@@ -23,7 +20,7 @@
 
 #include "phy-qcom-qmp.h"
 
-/* EDP_PHY registers */
+ 
 #define DP_PHY_CFG                              0x0010
 #define DP_PHY_CFG_1                            0x0014
 #define DP_PHY_PD_CTL                           0x001c
@@ -48,7 +45,7 @@
 
 #define DP_PHY_STATUS                           0x00e0
 
-/* LANE_TXn registers */
+ 
 #define TXn_CLKBUF_ENABLE                       0x0000
 #define TXn_TX_EMP_POST1_LVL                    0x0004
 
@@ -71,7 +68,7 @@
 struct qcom_edp_cfg {
 	bool is_dp;
 
-	/* DP PHY swing and pre_emphasis tables */
+	 
 	const u8 (*swing_hbr_rbr)[4][4];
 	const u8 (*swing_hbr3_hbr2)[4][4];
 	const u8 (*pre_emphasis_hbr_rbr)[4][4];
@@ -189,7 +186,7 @@ static int qcom_edp_phy_init(struct phy *phy)
 	       DP_PHY_PD_CTL_PLL_PWRDN | DP_PHY_PD_CTL_DP_CLAMP_EN,
 	       edp->edp + DP_PHY_PD_CTL);
 
-	/* Turn on BIAS current for PHY/PLL */
+	 
 	writel(0x17, edp->pll + QSERDES_V4_COM_BIAS_EN_CLKBUFLR_EN);
 
 	writel(DP_PHY_PD_CTL_PSR_PWRDN, edp->edp + DP_PHY_PD_CTL);
@@ -308,7 +305,7 @@ static int qcom_edp_configure_ssc(const struct qcom_edp *edp)
 		break;
 
 	default:
-		/* Other link rates aren't supported */
+		 
 		return -EINVAL;
 	}
 
@@ -370,7 +367,7 @@ static int qcom_edp_configure_pll(const struct qcom_edp *edp)
 		break;
 
 	default:
-		/* Other link rates aren't supported */
+		 
 		return -EINVAL;
 	}
 
@@ -435,7 +432,7 @@ static int qcom_edp_set_vco_div(const struct qcom_edp *edp, unsigned long *pixel
 		break;
 
 	default:
-		/* Other link rates aren't supported */
+		 
 		return -EINVAL;
 	}
 
@@ -485,18 +482,18 @@ static int qcom_edp_phy_power_on(struct phy *phy)
 	if (ret)
 		return ret;
 
-	/* TX Lane configuration */
+	 
 	writel(0x05, edp->edp + DP_PHY_TX0_TX1_LANE_CTL);
 	writel(0x05, edp->edp + DP_PHY_TX2_TX3_LANE_CTL);
 
-	/* TX-0 register configuration */
+	 
 	writel(0x03, edp->tx0 + TXn_TRANSCEIVER_BIAS_EN);
 	writel(0x0f, edp->tx0 + TXn_CLKBUF_ENABLE);
 	writel(0x03, edp->tx0 + TXn_RESET_TSYNC_EN);
 	writel(0x01, edp->tx0 + TXn_TRAN_DRVR_EMP_EN);
 	writel(0x04, edp->tx0 + TXn_TX_BAND);
 
-	/* TX-1 register configuration */
+	 
 	writel(0x03, edp->tx1 + TXn_TRANSCEIVER_BIAS_EN);
 	writel(0x0f, edp->tx1 + TXn_CLKBUF_ENABLE);
 	writel(0x03, edp->tx1 + TXn_RESET_TSYNC_EN);
@@ -608,62 +605,14 @@ static const struct phy_ops qcom_edp_ops = {
 	.owner		= THIS_MODULE,
 };
 
-/*
- * Embedded Display Port PLL driver block diagram for branch clocks
- *
- *              +------------------------------+
- *              |        EDP_VCO_CLK           |
- *              |                              |
- *              |    +-------------------+     |
- *              |    |  (EDP PLL/VCO)    |     |
- *              |    +---------+---------+     |
- *              |              v               |
- *              |   +----------+-----------+   |
- *              |   | hsclk_divsel_clk_src |   |
- *              |   +----------+-----------+   |
- *              +------------------------------+
- *                              |
- *          +---------<---------v------------>----------+
- *          |                                           |
- * +--------v----------------+                          |
- * |   edp_phy_pll_link_clk  |                          |
- * |     link_clk            |                          |
- * +--------+----------------+                          |
- *          |                                           |
- *          |                                           |
- *          v                                           v
- * Input to DISPCC block                                |
- * for link clk, crypto clk                             |
- * and interface clock                                  |
- *                                                      |
- *                                                      |
- *      +--------<------------+-----------------+---<---+
- *      |                     |                 |
- * +----v---------+  +--------v-----+  +--------v------+
- * | vco_divided  |  | vco_divided  |  | vco_divided   |
- * |    _clk_src  |  |    _clk_src  |  |    _clk_src   |
- * |              |  |              |  |               |
- * |divsel_six    |  |  divsel_two  |  |  divsel_four  |
- * +-------+------+  +-----+--------+  +--------+------+
- *         |                 |                  |
- *         v---->----------v-------------<------v
- *                         |
- *              +----------+-----------------+
- *              |   edp_phy_pll_vco_div_clk  |
- *              +---------+------------------+
- *                        |
- *                        v
- *              Input to DISPCC block
- *              for EDP pixel clock
- *
- */
+ 
 static int qcom_edp_dp_pixel_clk_determine_rate(struct clk_hw *hw,
 						struct clk_rate_request *req)
 {
 	switch (req->rate) {
 	case 1620000000UL / 2:
 	case 2700000000UL / 2:
-	/* 5.4 and 8.1 GHz are same link rate as 2.7GHz, i.e. div 4 and div 6 */
+	 
 		return 0;
 
 	default:
@@ -810,13 +759,13 @@ static int qcom_edp_phy_probe(struct platform_device *pdev)
 	if (ret)
 		return ret;
 
-	ret = regulator_set_load(edp->supplies[0].consumer, 21800); /* 1.2 V vdda-phy */
+	ret = regulator_set_load(edp->supplies[0].consumer, 21800);  
 	if (ret) {
 		dev_err(dev, "failed to set load at %s\n", edp->supplies[0].supply);
 		return ret;
 	}
 
-	ret = regulator_set_load(edp->supplies[1].consumer, 36000); /* 0.9 V vdda-pll */
+	ret = regulator_set_load(edp->supplies[1].consumer, 36000);  
 	if (ret) {
 		dev_err(dev, "failed to set load at %s\n", edp->supplies[1].supply);
 		return ret;

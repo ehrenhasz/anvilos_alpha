@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
-    bt878.h - Bt878 audio module (register offsets)
-
-    Copyright (C) 2002 Peter Hettkamp <peter.hettkamp@htp-tel.de>
-
-*/
+ 
+ 
 
 #ifndef _BT878_H_
 #define _BT878_H_
@@ -65,10 +60,10 @@
 
 #define BT878_ARISC_PC		0x120
 
-/* BT878 FUNCTION 0 REGISTERS */
+ 
 #define BT878_GPIO_DMA_CTL	0x10c
 
-/* Interrupt register */
+ 
 #define BT878_INT_STAT		0x100
 #define BT878_INT_MASK		0x104
 #define BT878_I2CRACK		(1<<25)
@@ -102,7 +97,7 @@ struct bt878 {
 	unsigned char revision;
 	unsigned int irq;
 	unsigned long bt878_adr;
-	volatile void __iomem *bt878_mem; /* function 1 */
+	volatile void __iomem *bt878_mem;  
 
 	volatile u32 finished_block;
 	volatile u32 last_block;

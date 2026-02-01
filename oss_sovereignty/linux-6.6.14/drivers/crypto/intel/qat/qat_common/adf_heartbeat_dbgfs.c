@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright(c) 2023 Intel Corporation */
+
+ 
 
 #include <linux/debugfs.h>
 #include <linux/errno.h>
@@ -102,7 +102,7 @@ static ssize_t adf_hb_cfg_write(struct file *file, const char __user *user_buf,
 	accel_dev = file->private_data;
 	timer_ms = ADF_CFG_HB_TIMER_DEFAULT_MS;
 
-	/* last byte left as string termination */
+	 
 	if (count > sizeof(input_str) - 1)
 		return -EINVAL;
 
@@ -122,10 +122,7 @@ static ssize_t adf_hb_cfg_write(struct file *file, const char __user *user_buf,
 			return -EINVAL;
 		}
 
-		/*
-		 * On 4xxx devices adf_timer is responsible for HB updates and
-		 * its period is fixed to 200ms
-		 */
+		 
 		if (accel_dev->timer)
 			timer_ms = ADF_CFG_HB_TIMER_MIN_MS;
 

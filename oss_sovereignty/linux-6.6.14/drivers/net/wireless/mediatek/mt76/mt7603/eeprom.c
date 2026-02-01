@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: ISC
+
 
 #include <linux/of.h>
 #include "mt7603.h"
@@ -95,7 +95,7 @@ mt7603_apply_cal_free_data(struct mt7603_dev *dev, u8 *efuse)
 		MT_EE_CP_FT_VERSION,
 		MT_EE_XTAL_FREQ_OFFSET,
 		MT_EE_XTAL_WF_RFCAL,
-		/* Skip for MT7628 */
+		 
 		MT_EE_TX_POWER_0_START_2G,
 		MT_EE_TX_POWER_0_START_2G + 1,
 		MT_EE_TX_POWER_1_START_2G,
@@ -174,7 +174,7 @@ int mt7603_eeprom_init(struct mt7603_dev *dev)
 	dev->mphy.cap.has_2ghz = true;
 	memcpy(dev->mphy.macaddr, eeprom + MT_EE_MAC_ADDR, ETH_ALEN);
 
-	/* Check for 1SS devices */
+	 
 	dev->mphy.antenna_mask = 3;
 	if (FIELD_GET(MT_EE_NIC_CONF_0_RX_PATH, eeprom[MT_EE_NIC_CONF_0]) == 1 ||
 	    FIELD_GET(MT_EE_NIC_CONF_0_TX_PATH, eeprom[MT_EE_NIC_CONF_0]) == 1 ||

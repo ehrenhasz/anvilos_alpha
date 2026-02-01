@@ -1,16 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Driver for the Analog Devices digital potentiometers (SPI bus)
- *
- * Copyright (C) 2010-2011 Michael Hennerich, Analog Devices Inc.
- */
+
+ 
 
 #include <linux/spi/spi.h>
 #include <linux/module.h>
 
 #include "ad525x_dpot.h"
 
-/* SPI bus functions */
+ 
 static int write8(void *client, u8 val)
 {
 	u8 data = val;

@@ -1,6 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/* Copyright (c) 2016 Facebook
- */
+ 
+ 
 #ifndef _SAMPLES_BPF_XDP_TX_IPTNL_COMMON_H
 #define _SAMPLES_BPF_XDP_TX_IPTNL_COMMON_H
 

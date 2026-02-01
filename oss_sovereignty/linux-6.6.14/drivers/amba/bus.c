@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  linux/arch/arm/common/amba.c
- *
- *  Copyright (C) 2003 Deep Blue Solutions Ltd, All Rights Reserved.
- */
+
+ 
 #include <linux/module.h>
 #include <linux/init.h>
 #include <linux/device.h>
@@ -27,7 +23,7 @@
 
 #define to_amba_driver(d)	container_of(d, struct amba_driver, drv)
 
-/* called on periphid match and class 0x9 coresight device. */
+ 
 static int
 amba_cs_uci_id_match(const struct amba_id *table, struct amba_device *dev)
 {
@@ -36,11 +32,11 @@ amba_cs_uci_id_match(const struct amba_id *table, struct amba_device *dev)
 
 	uci = table->data;
 
-	/* no table data or zero mask - return match on periphid */
+	 
 	if (!uci || (uci->devarch_mask == 0))
 		return 1;
 
-	/* test against read devtype and masked devarch value */
+	 
 	ret = (dev->uci.devtype == uci->devtype) &&
 		((dev->uci.devarch & uci->devarch_mask) == uci->devarch);
 	return ret;
@@ -149,9 +145,7 @@ static int amba_read_periphid(struct amba_device *dev)
 		goto err_pm;
 	}
 
-	/*
-	 * Find reset control(s) of the amba bus and de-assert them.
-	 */
+	 
 	rstc = of_reset_control_array_get_optional_shared(dev->dev.of_node);
 	if (IS_ERR(rstc)) {
 		ret = PTR_ERR(rstc);
@@ -169,17 +163,14 @@ static int amba_read_periphid(struct amba_device *dev)
 		goto err_clk;
 	}
 
-	/*
-	 * Read pid and cid based on size of resource
-	 * they are located at end of region
-	 */
+	 
 	for (pid = 0, i = 0; i < 4; i++)
 		pid |= (readl(tmp + size - 0x20 + 4 * i) & 255) << (i * 8);
 	for (cid = 0, i = 0; i < 4; i++)
 		cid |= (readl(tmp + size - 0x10 + 4 * i) & 255) << (i * 8);
 
 	if (cid == CORESIGHT_CID) {
-		/* set the base to the start of the last 4k block */
+		 
 		void __iomem *csbase = tmp + size - 4096;
 
 		dev->uci.devarch = readl(csbase + UCI_REG_DEVARCH_OFFSET);
@@ -213,12 +204,7 @@ static int amba_match(struct device *dev, struct device_driver *drv)
 	if (!pcdev->periphid) {
 		int ret = amba_read_periphid(pcdev);
 
-		/*
-		 * Returning any error other than -EPROBE_DEFER from bus match
-		 * can cause driver registration failure. So, if there's a
-		 * permanent failure in reading pid and cid, simply map it to
-		 * -EPROBE_DEFER.
-		 */
+		 
 		if (ret) {
 			mutex_unlock(&pcdev->periphid_lock);
 			return -EPROBE_DEFER;
@@ -228,7 +214,7 @@ static int amba_match(struct device *dev, struct device_driver *drv)
 	}
 	mutex_unlock(&pcdev->periphid_lock);
 
-	/* When driver_override is set, only bind to the matching driver */
+	 
 	if (pcdev->driver_override)
 		return !strcmp(pcdev->driver_override, drv->name);
 
@@ -254,7 +240,7 @@ static int of_amba_device_decode_irq(struct amba_device *dev)
 	int i, irq = 0;
 
 	if (IS_ENABLED(CONFIG_OF_IRQ) && node) {
-		/* Decode the IRQs and address ranges */
+		 
 		for (i = 0; i < AMBA_NR_IRQS; i++) {
 			irq = of_irq_get(node, i);
 			if (irq < 0) {
@@ -270,10 +256,7 @@ static int of_amba_device_decode_irq(struct amba_device *dev)
 	return 0;
 }
 
-/*
- * These are the device model conversion veneers; they convert the
- * device model structures to our more specific structures.
- */
+ 
 static int amba_probe(struct device *dev)
 {
 	struct amba_device *pcdev = to_amba_device(dev);
@@ -329,7 +312,7 @@ static void amba_remove(struct device *dev)
 		drv->remove(pcdev);
 	pm_runtime_put_noidle(dev);
 
-	/* Undo the runtime PM settings in amba_probe() */
+	 
 	pm_runtime_disable(dev);
 	pm_runtime_set_suspended(dev);
 	pm_runtime_put_noidle(dev);
@@ -381,11 +364,7 @@ static void amba_dma_cleanup(struct device *dev)
 }
 
 #ifdef CONFIG_PM
-/*
- * Hooks to provide runtime PM of the pclk (bus clock).  It is safe to
- * enable/disable the bus clock at runtime PM suspend/resume as this
- * does not result in loss of context.
- */
+ 
 static int amba_pm_runtime_suspend(struct device *dev)
 {
 	struct amba_device *pcdev = to_amba_device(dev);
@@ -411,14 +390,14 @@ static int amba_pm_runtime_resume(struct device *dev)
 			ret = clk_enable(pcdev->pclk);
 		else
 			ret = clk_prepare_enable(pcdev->pclk);
-		/* Failure is probably fatal to the system, but... */
+		 
 		if (ret)
 			return ret;
 	}
 
 	return pm_generic_runtime_resume(dev);
 }
-#endif /* CONFIG_PM */
+#endif  
 
 static const struct dev_pm_ops amba_pm = {
 	SET_RUNTIME_PM_OPS(
@@ -428,12 +407,7 @@ static const struct dev_pm_ops amba_pm = {
 	)
 };
 
-/*
- * Primecells are part of the Advanced Microcontroller Bus Architecture,
- * so we call the bus "amba".
- * DMA configuration for platform and AMBA bus is same. So here we reuse
- * platform's DMA config routine.
- */
+ 
 struct bus_type amba_bustype = {
 	.name		= "amba",
 	.dev_groups	= amba_dev_groups,
@@ -479,26 +453,12 @@ static int __init amba_stub_drv_init(void)
 	if (!IS_ENABLED(CONFIG_MODULES))
 		return 0;
 
-	/*
-	 * The amba_match() function will get called only if there is at least
-	 * one amba driver registered. If all amba drivers are modules and are
-	 * only loaded based on uevents, then we'll hit a chicken-and-egg
-	 * situation where amba_match() is waiting on drivers and drivers are
-	 * waiting on amba_match(). So, register a stub driver to make sure
-	 * amba_match() is called even if no amba driver has been registered.
-	 */
+	 
 	return amba_driver_register(&amba_proxy_drv);
 }
 late_initcall_sync(amba_stub_drv_init);
 
-/**
- *	amba_driver_register - register an AMBA device driver
- *	@drv: amba device driver structure
- *
- *	Register an AMBA device driver with the Linux device model
- *	core.  If devices pre-exist, the drivers probe function will
- *	be called.
- */
+ 
 int amba_driver_register(struct amba_driver *drv)
 {
 	if (!drv->probe)
@@ -510,14 +470,7 @@ int amba_driver_register(struct amba_driver *drv)
 }
 EXPORT_SYMBOL(amba_driver_register);
 
-/**
- *	amba_driver_unregister - remove an AMBA device driver
- *	@drv: AMBA device driver structure to remove
- *
- *	Unregister an AMBA device driver from the Linux device
- *	model.  The device model will call the drivers remove function
- *	for each device the device driver is currently handling.
- */
+ 
 void amba_driver_unregister(struct amba_driver *drv)
 {
 	driver_unregister(&drv->drv);
@@ -535,15 +488,7 @@ static void amba_device_release(struct device *dev)
 	kfree(d);
 }
 
-/**
- *	amba_device_add - add a previously allocated AMBA device structure
- *	@dev: AMBA device allocated by amba_device_alloc
- *	@parent: resource parent for this devices resources
- *
- *	Claim the resource, and read the device cell ID if not already
- *	initialized.  Register the AMBA device with the Linux device
- *	manager.
- */
+ 
 int amba_device_add(struct amba_device *dev, struct resource *parent)
 {
 	int ret;
@@ -552,16 +497,9 @@ int amba_device_add(struct amba_device *dev, struct resource *parent)
 	if (ret)
 		return ret;
 
-	/* If primecell ID isn't hard-coded, figure it out */
+	 
 	if (!dev->periphid) {
-		/*
-		 * AMBA device uevents require reading its pid and cid
-		 * registers.  To do this, the device must be on, clocked and
-		 * out of reset.  However in some cases those resources might
-		 * not yet be available.  If that's the case, we suppress the
-		 * generation of uevents until we can read the pid and cid
-		 * registers.  See also amba_match().
-		 */
+		 
 		if (amba_read_periphid(dev))
 			dev_set_uevent_suppress(&dev->dev, true);
 	}
@@ -587,15 +525,7 @@ static void amba_device_initialize(struct amba_device *dev, const char *name)
 	mutex_init(&dev->periphid_lock);
 }
 
-/**
- *	amba_device_alloc - allocate an AMBA device
- *	@name: sysfs name of the AMBA device
- *	@base: base of AMBA device
- *	@size: size of AMBA device
- *
- *	Allocate and initialize an AMBA device structure.  Returns %NULL
- *	on failure.
- */
+ 
 struct amba_device *amba_device_alloc(const char *name, resource_size_t base,
 	size_t size)
 {
@@ -613,15 +543,7 @@ struct amba_device *amba_device_alloc(const char *name, resource_size_t base,
 }
 EXPORT_SYMBOL_GPL(amba_device_alloc);
 
-/**
- *	amba_device_register - register an AMBA device
- *	@dev: AMBA device to register
- *	@parent: parent memory resource
- *
- *	Setup the AMBA device, reading the cell ID if present.
- *	Claim the resource, and register the AMBA device with
- *	the Linux device manager.
- */
+ 
 int amba_device_register(struct amba_device *dev, struct resource *parent)
 {
 	amba_device_initialize(dev, dev->dev.init_name);
@@ -631,38 +553,21 @@ int amba_device_register(struct amba_device *dev, struct resource *parent)
 }
 EXPORT_SYMBOL(amba_device_register);
 
-/**
- *	amba_device_put - put an AMBA device
- *	@dev: AMBA device to put
- */
+ 
 void amba_device_put(struct amba_device *dev)
 {
 	put_device(&dev->dev);
 }
 EXPORT_SYMBOL_GPL(amba_device_put);
 
-/**
- *	amba_device_unregister - unregister an AMBA device
- *	@dev: AMBA device to remove
- *
- *	Remove the specified AMBA device from the Linux device
- *	manager.  All files associated with this object will be
- *	destroyed, and device drivers notified that the device has
- *	been removed.  The AMBA device's resources including
- *	the amba_device structure will be freed once all
- *	references to it have been dropped.
- */
+ 
 void amba_device_unregister(struct amba_device *dev)
 {
 	device_unregister(&dev->dev);
 }
 EXPORT_SYMBOL(amba_device_unregister);
 
-/**
- *	amba_request_regions - request all mem regions associated with device
- *	@dev: amba_device structure for device
- *	@name: name, or NULL to use driver name
- */
+ 
 int amba_request_regions(struct amba_device *dev, const char *name)
 {
 	int ret = 0;
@@ -680,12 +585,7 @@ int amba_request_regions(struct amba_device *dev, const char *name)
 }
 EXPORT_SYMBOL(amba_request_regions);
 
-/**
- *	amba_release_regions - release mem regions associated with device
- *	@dev: amba_device structure for device
- *
- *	Release regions claimed by a successful call to amba_request_regions.
- */
+ 
 void amba_release_regions(struct amba_device *dev)
 {
 	u32 size;

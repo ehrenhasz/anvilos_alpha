@@ -1,38 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
 
-/*
- * This driver adds support for perf events to use the Performance
- * Monitor Counter Groups (PMCG) associated with an SMMUv3 node
- * to monitor that node.
- *
- * SMMUv3 PMCG devices are named as smmuv3_pmcg_<phys_addr_page> where
- * <phys_addr_page> is the physical page address of the SMMU PMCG wrapped
- * to 4K boundary. For example, the PMCG at 0xff88840000 is named
- * smmuv3_pmcg_ff88840
- *
- * Filtering by stream id is done by specifying filtering parameters
- * with the event. options are:
- *   filter_enable    - 0 = no filtering, 1 = filtering enabled
- *   filter_span      - 0 = exact match, 1 = pattern match
- *   filter_stream_id - pattern to filter against
- *
- * To match a partial StreamID where the X most-significant bits must match
- * but the Y least-significant bits might differ, STREAMID is programmed
- * with a value that contains:
- *  STREAMID[Y - 1] == 0.
- *  STREAMID[Y - 2:0] == 1 (where Y > 1).
- * The remainder of implemented bits of STREAMID (X bits, from bit Y upwards)
- * contain a value to match from the corresponding bits of event StreamID.
- *
- * Example: perf stat -e smmuv3_pmcg_ff88840/transaction,filter_enable=1,
- *                    filter_span=1,filter_stream_id=0x42/ -a netperf
- * Applies filter pattern 0x42 to transaction events, which means events
- * matching stream ids 0x42 and 0x43 are counted. Further filtering
- * information is available in the SMMU documentation.
- *
- * SMMU events are not attributable to a CPU, so task mode and sampling
- * are not supported.
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/acpi_iort.h>
@@ -88,7 +56,7 @@
 #define SMMU_PMCG_IRQ_CFG1              0xE60
 #define SMMU_PMCG_IRQ_CFG2              0xE64
 
-/* IMP-DEF ID registers */
+ 
 #define SMMU_PMCG_PIDR0                 0xFE0
 #define SMMU_PMCG_PIDR0_PART_0          GENMASK(7, 0)
 #define SMMU_PMCG_PIDR1                 0xFE4
@@ -102,7 +70,7 @@
 #define SMMU_PMCG_PIDR4                 0xFD0
 #define SMMU_PMCG_PIDR4_DES_2           GENMASK(3, 0)
 
-/* MSI config fields */
+ 
 #define MSI_CFG0_ADDR_MASK              GENMASK_ULL(51, 2)
 #define MSI_CFG2_MEMATTR_DEVICE_nGnRE   0x1
 
@@ -187,11 +155,7 @@ static inline void smmu_pmu_disable_quirk_hip08_09(struct pmu *pmu)
 	struct smmu_pmu *smmu_pmu = to_smmu_pmu(pmu);
 	unsigned int idx;
 
-	/*
-	 * The global disable of PMU sometimes fail to stop the counting.
-	 * Harden this by writing an invalid event type to each used counter
-	 * to forcibly stop counting.
-	 */
+	 
 	for_each_set_bit(idx, smmu_pmu->used_counters, smmu_pmu->num_counters)
 		writel(0xffff, smmu_pmu->reg_base + SMMU_PMCG_EVTYPER(idx));
 
@@ -263,7 +227,7 @@ static void smmu_pmu_event_update(struct perf_event *event)
 		now = smmu_pmu_counter_get_value(smmu_pmu, idx);
 	} while (local64_cmpxchg(&hwc->prev_count, prev, now) != prev);
 
-	/* handle overflow. */
+	 
 	delta = now - prev;
 	delta &= smmu_pmu->counter_mask;
 
@@ -277,21 +241,10 @@ static void smmu_pmu_set_period(struct smmu_pmu *smmu_pmu,
 	u64 new;
 
 	if (smmu_pmu->options & SMMU_PMCG_EVCNTR_RDONLY) {
-		/*
-		 * On platforms that require this quirk, if the counter starts
-		 * at < half_counter value and wraps, the current logic of
-		 * handling the overflow may not work. It is expected that,
-		 * those platforms will have full 64 counter bits implemented
-		 * so that such a possibility is remote(eg: HiSilicon HIP08).
-		 */
+		 
 		new = smmu_pmu_counter_get_value(smmu_pmu, idx);
 	} else {
-		/*
-		 * We limit the max period to half the max counter value
-		 * of the counter size, so that even in the case of extreme
-		 * interrupt latency the counter will (hopefully) not wrap
-		 * past its initial value.
-		 */
+		 
 		new = smmu_pmu->counter_mask >> 1;
 		smmu_pmu_counter_set_value(smmu_pmu, idx, new);
 	}
@@ -336,16 +289,13 @@ static int smmu_pmu_apply_event_filter(struct smmu_pmu *smmu_pmu,
 			   SMMU_PMCG_DEFAULT_FILTER_SID;
 
 	cur_idx = find_first_bit(smmu_pmu->used_counters, num_ctrs);
-	/*
-	 * Per-counter filtering, or scheduling the first globally-filtered
-	 * event into an empty PMU so idx == 0 and it works out equivalent.
-	 */
+	 
 	if (!smmu_pmu->global_filter || cur_idx == num_ctrs) {
 		smmu_pmu_set_event_filter(event, idx, span, sid);
 		return 0;
 	}
 
-	/* Otherwise, must match whatever's currently scheduled */
+	 
 	if (smmu_pmu_check_global_filter(smmu_pmu->events[cur_idx], event)) {
 		smmu_pmu_set_evtyper(smmu_pmu, idx, get_event(event));
 		return 0;
@@ -362,7 +312,7 @@ static int smmu_pmu_get_event_idx(struct smmu_pmu *smmu_pmu,
 
 	idx = find_first_zero_bit(smmu_pmu->used_counters, num_ctrs);
 	if (idx == num_ctrs)
-		/* The counters are all in use. */
+		 
 		return -EAGAIN;
 
 	err = smmu_pmu_apply_event_filter(smmu_pmu, event, idx);
@@ -387,10 +337,7 @@ static bool smmu_pmu_events_compatible(struct perf_event *curr,
 	return true;
 }
 
-/*
- * Implementation of abstract pmu functionality required by
- * the core perf events code.
- */
+ 
 
 static int smmu_pmu_event_init(struct perf_event *event)
 {
@@ -414,7 +361,7 @@ static int smmu_pmu_event_init(struct perf_event *event)
 		return -EOPNOTSUPP;
 	}
 
-	/* Verify specified event is supported on this PMU */
+	 
 	event_id = get_event(event);
 	if (event_id < SMMU_PMCG_ARCH_MAX_EVENTS &&
 	    (!test_bit(event_id, smmu_pmu->supported_events))) {
@@ -422,7 +369,7 @@ static int smmu_pmu_event_init(struct perf_event *event)
 		return -EINVAL;
 	}
 
-	/* Don't allow groups with mixed PMUs, except for s/w events */
+	 
 	if (!is_software_event(event->group_leader)) {
 		if (!smmu_pmu_events_compatible(event->group_leader, event))
 			return -EINVAL;
@@ -444,10 +391,7 @@ static int smmu_pmu_event_init(struct perf_event *event)
 
 	hwc->idx = -1;
 
-	/*
-	 * Ensure all events are on the same cpu so all events are in the
-	 * same cpu context, to avoid races on pmu_enable etc.
-	 */
+	 
 	event->cpu = smmu_pmu->on_cpu;
 
 	return 0;
@@ -476,7 +420,7 @@ static void smmu_pmu_event_stop(struct perf_event *event, int flags)
 		return;
 
 	smmu_pmu_counter_disable(smmu_pmu, idx);
-	/* As the counter gets updated on _start, ignore PERF_EF_UPDATE */
+	 
 	smmu_pmu_event_update(event);
 	hwc->state |= PERF_HES_STOPPED | PERF_HES_UPTODATE;
 }
@@ -501,7 +445,7 @@ static int smmu_pmu_event_add(struct perf_event *event, int flags)
 	if (flags & PERF_EF_START)
 		smmu_pmu_event_start(event, flags);
 
-	/* Propagate changes to the userspace mapping. */
+	 
 	perf_event_update_userpage(event);
 
 	return 0;
@@ -526,7 +470,7 @@ static void smmu_pmu_event_read(struct perf_event *event)
 	smmu_pmu_event_update(event);
 }
 
-/* cpumask */
+ 
 
 static ssize_t smmu_pmu_cpumask_show(struct device *dev,
 				     struct device_attribute *attr,
@@ -549,7 +493,7 @@ static const struct attribute_group smmu_pmu_cpumask_group = {
 	.attrs = smmu_pmu_cpumask_attrs,
 };
 
-/* Events */
+ 
 
 static ssize_t smmu_pmu_event_show(struct device *dev,
 				   struct device_attribute *attr, char *page)
@@ -631,7 +575,7 @@ static const struct attribute_group smmu_pmu_identifier_group = {
 	.is_visible = smmu_pmu_identifier_attr_visible,
 };
 
-/* Formats */
+ 
 PMU_FORMAT_ATTR(event,		   "config:0-15");
 PMU_FORMAT_ATTR(filter_stream_id,  "config1:0-31");
 PMU_FORMAT_ATTR(filter_span,	   "config1:32");
@@ -658,9 +602,7 @@ static const struct attribute_group *smmu_pmu_attr_grps[] = {
 	NULL
 };
 
-/*
- * Generic device handlers
- */
+ 
 
 static int smmu_pmu_offline_cpu(unsigned int cpu, struct hlist_node *node)
 {
@@ -739,10 +681,10 @@ static void smmu_pmu_setup_msi(struct smmu_pmu *pmu)
 	struct device *dev = pmu->dev;
 	int ret;
 
-	/* Clear MSI address reg */
+	 
 	writeq_relaxed(0, pmu->reg_base + SMMU_PMCG_IRQ_CFG0);
 
-	/* MSI supported or not */
+	 
 	if (!(readl(pmu->reg_base + SMMU_PMCG_CFGR) & SMMU_PMCG_CFGR_MSI))
 		return;
 
@@ -754,7 +696,7 @@ static void smmu_pmu_setup_msi(struct smmu_pmu *pmu)
 
 	pmu->irq = msi_get_virq(dev, 0);
 
-	/* Add callback to free MSIs on teardown */
+	 
 	devm_add_action(dev, smmu_pmu_free_msis, dev);
 }
 
@@ -778,7 +720,7 @@ static void smmu_pmu_reset(struct smmu_pmu *smmu_pmu)
 
 	smmu_pmu_disable(&smmu_pmu->pmu);
 
-	/* Disable counter and interrupt */
+	 
 	writeq_relaxed(counter_present_mask,
 		       smmu_pmu->reg_base + SMMU_PMCG_CNTENCLR0);
 	writeq_relaxed(counter_present_mask,
@@ -795,7 +737,7 @@ static void smmu_pmu_get_acpi_options(struct smmu_pmu *smmu_pmu)
 
 	switch (model) {
 	case IORT_SMMU_V3_PMCG_HISI_HIP08:
-		/* HiSilicon Erratum 162001800 */
+		 
 		smmu_pmu->options |= SMMU_PMCG_EVCNTR_RDONLY | SMMU_PMCG_HARDEN_DISABLE;
 		break;
 	case IORT_SMMU_V3_PMCG_HISI_HIP09:
@@ -879,7 +821,7 @@ static int smmu_pmu_probe(struct platform_device *pdev)
 
 	cfgr = readl_relaxed(smmu_pmu->reg_base + SMMU_PMCG_CFGR);
 
-	/* Determine if page 1 is present */
+	 
 	if (cfgr & SMMU_PMCG_CFGR_RELOC_CTRS) {
 		smmu_pmu->reloc_base = devm_platform_ioremap_resource(pdev, 1);
 		if (IS_ERR(smmu_pmu->reloc_base))
@@ -924,17 +866,13 @@ static int smmu_pmu_probe(struct platform_device *pdev)
 	if (!dev->of_node)
 		smmu_pmu_get_acpi_options(smmu_pmu);
 
-	/*
-	 * For platforms suffer this quirk, the PMU disable sometimes fails to
-	 * stop the counters. This will leads to inaccurate or error counting.
-	 * Forcibly disable the counters with these quirk handler.
-	 */
+	 
 	if (smmu_pmu->options & SMMU_PMCG_HARDEN_DISABLE) {
 		smmu_pmu->pmu.pmu_enable = smmu_pmu_enable_quirk_hip08_09;
 		smmu_pmu->pmu.pmu_disable = smmu_pmu_disable_quirk_hip08_09;
 	}
 
-	/* Pick one CPU to be the preferred one to use */
+	 
 	smmu_pmu->on_cpu = raw_smp_processor_id();
 	WARN_ON(irq_set_affinity(smmu_pmu->irq, cpumask_of(smmu_pmu->on_cpu)));
 

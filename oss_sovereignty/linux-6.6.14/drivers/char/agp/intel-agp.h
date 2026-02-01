@@ -1,18 +1,16 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Common Intel AGPGART and GTT definitions.
- */
+ 
+ 
 #ifndef _INTEL_AGP_H
 #define _INTEL_AGP_H
 
-/* Intel registers */
+ 
 #define INTEL_APSIZE	0xb4
 #define INTEL_ATTBASE	0xb8
 #define INTEL_AGPCTRL	0xb0
 #define INTEL_NBXCFG	0x50
 #define INTEL_ERRSTS	0x91
 
-/* Intel i830 registers */
+ 
 #define I830_GMCH_CTRL			0x52
 #define I830_GMCH_ENABLED		0x4
 #define I830_GMCH_MEM_MASK		0x1
@@ -28,10 +26,10 @@
 #define I830_RDRAM_ND(x)		(((x) & 0x20) >> 5)
 #define I830_RDRAM_DDT(x)		(((x) & 0x18) >> 3)
 
-/* This one is for I830MP w. an external graphic card */
+ 
 #define INTEL_I830_ERRSTS	0x92
 
-/* Intel 855GM/852GM registers */
+ 
 #define I855_GMCH_GMS_MASK		0xF0
 #define I855_GMCH_GMS_STOLEN_0M		0x0
 #define I855_GMCH_GMS_STOLEN_1M		(0x1 << 4)
@@ -47,15 +45,15 @@
 #define I852_GME			0x2
 #define I852_GM				0x5
 
-/* Intel i845 registers */
+ 
 #define INTEL_I845_AGPM		0x51
 #define INTEL_I845_ERRSTS	0xc8
 
-/* Intel i860 registers */
+ 
 #define INTEL_I860_MCHCFG	0x50
 #define INTEL_I860_ERRSTS	0xc8
 
-/* Intel i810 registers */
+ 
 #define I810_GMADR_BAR		0
 #define I810_MMADR_BAR		1
 #define I810_PTE_BASE		0x10000
@@ -71,7 +69,7 @@
 #define I810_GMS_DISABLE	0x00000000
 #define I810_PGETBL_CTL		0x2020
 #define I810_PGETBL_ENABLED	0x00000001
-/* Note: PGETBL_CTL2 has a different offset on G33. */
+ 
 #define I965_PGETBL_CTL2	0x20c4
 #define I965_PGETBL_SIZE_MASK	0x0000000e
 #define I965_PGETBL_SIZE_512KB	(0 << 1)
@@ -91,29 +89,29 @@
 #define G4x_GMCH_SIZE_VT_1_5M	((0x2 << 8) | G4x_GMCH_SIZE_VT_EN)
 #define G4x_GMCH_SIZE_VT_2M	(G4x_GMCH_SIZE_2M | G4x_GMCH_SIZE_VT_EN)
 
-#define GFX_FLSH_CNTL		0x2170 /* 915+ */
+#define GFX_FLSH_CNTL		0x2170  
 
 #define I810_DRAM_CTL		0x3000
 #define I810_DRAM_ROW_0		0x00000001
 #define I810_DRAM_ROW_0_SDRAM	0x00000001
 
-/* Intel 815 register */
+ 
 #define INTEL_815_APCONT	0x51
 #define INTEL_815_ATTBASE_MASK	~0x1FFFFFFF
 
-/* Intel i820 registers */
+ 
 #define INTEL_I820_RDCR		0x51
 #define INTEL_I820_ERRSTS	0xc8
 
-/* Intel i840 registers */
+ 
 #define INTEL_I840_MCHCFG	0x50
 #define INTEL_I840_ERRSTS	0xc8
 
-/* Intel i850 registers */
+ 
 #define INTEL_I850_MCHCFG	0x50
 #define INTEL_I850_ERRSTS	0xc8
 
-/* intel 915G registers */
+ 
 #define I915_GMADR_BAR	2
 #define I915_MMADR_BAR	0
 #define I915_PTE_BAR	3
@@ -129,11 +127,11 @@
 #define I915_IFPADDR    0x60
 #define I830_HIC        0x70
 
-/* Intel 965G registers */
+ 
 #define I965_MSAC 0x62
 #define I965_IFPADDR    0x70
 
-/* Intel 7505 registers */
+ 
 #define INTEL_I7505_APSIZE	0x74
 #define INTEL_I7505_NCAPID	0x60
 #define INTEL_I7505_NISTAT	0x6c
@@ -142,7 +140,7 @@
 #define INTEL_I7505_AGPCTRL	0x70
 #define INTEL_I7505_MCHCFG	0x50
 
-/* pci devices ids */
+ 
 #define PCI_DEVICE_ID_INTEL_E7221_HB	0x2588
 #define PCI_DEVICE_ID_INTEL_E7221_IG	0x258a
 #define PCI_DEVICE_ID_INTEL_82946GZ_HB      0x2970

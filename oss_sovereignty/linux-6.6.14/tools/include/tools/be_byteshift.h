@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _TOOLS_BE_BYTESHIFT_H
 #define _TOOLS_BE_BYTESHIFT_H
 
@@ -68,4 +68,4 @@ static inline void put_unaligned_be64(uint64_t val, void *p)
 	__put_unaligned_be64(val, p);
 }
 
-#endif /* _TOOLS_BE_BYTESHIFT_H */
+#endif  

@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Parts of this driver are based on the following:
- *  - Kvaser linux mhydra driver (version 5.24)
- *  - CAN driver for esd CAN-USB/2
- *
- * Copyright (C) 2018 KVASER AB, Sweden. All rights reserved.
- * Copyright (C) 2010 Matthias Fuchs <matthias.fuchs@esd.eu>, esd gmbh
- *
- * Known issues:
- *  - Transition from CAN_STATE_ERROR_WARNING to CAN_STATE_ERROR_ACTIVE is only
- *    reported after a call to do_get_berr_counter(), since firmware does not
- *    distinguish between ERROR_WARNING and ERROR_ACTIVE.
- *  - Hardware timestamps are not set for CAN Tx frames.
- */
+
+ 
 
 #include <linux/completion.h>
 #include <linux/device.h>
@@ -32,7 +20,7 @@
 
 #include "kvaser_usb.h"
 
-/* Forward declarations */
+ 
 static const struct kvaser_usb_dev_cfg kvaser_usb_hydra_dev_cfg_kcan;
 static const struct kvaser_usb_dev_cfg kvaser_usb_hydra_dev_cfg_flexc;
 static const struct kvaser_usb_dev_cfg kvaser_usb_hydra_dev_cfg_rt;
@@ -43,7 +31,7 @@ static const struct kvaser_usb_dev_cfg kvaser_usb_hydra_dev_cfg_rt;
 #define KVASER_USB_HYDRA_MAX_TRANSID		0xff
 #define KVASER_USB_HYDRA_MIN_TRANSID		0x01
 
-/* Minihydra command IDs */
+ 
 #define CMD_SET_BUSPARAMS_REQ			16
 #define CMD_GET_BUSPARAMS_REQ			17
 #define CMD_GET_BUSPARAMS_RESP			18
@@ -75,20 +63,14 @@ static const struct kvaser_usb_dev_cfg kvaser_usb_hydra_dev_cfg_rt;
 #define CMD_GET_SOFTWARE_DETAILS_RESP		203
 #define CMD_EXTENDED				255
 
-/* Minihydra extended command IDs */
+ 
 #define CMD_TX_CAN_MESSAGE_FD			224
 #define CMD_TX_ACKNOWLEDGE_FD			225
 #define CMD_RX_MESSAGE_FD			226
 
-/* Hydra commands are handled by different threads in firmware.
- * The threads are denoted hydra entity (HE). Each HE got a unique 6-bit
- * address. The address is used in hydra commands to get/set source and
- * destination HE. There are two predefined HE addresses, the remaining
- * addresses are different between devices and firmware versions. Hence, we need
- * to enumerate the addresses (see kvaser_usb_hydra_map_channel()).
- */
+ 
 
-/* Well-known HE addresses */
+ 
 #define KVASER_USB_HYDRA_HE_ADDRESS_ROUTER	0x00
 #define KVASER_USB_HYDRA_HE_ADDRESS_ILLEGAL	0x3e
 
@@ -131,7 +113,7 @@ struct kvaser_cmd_sw_detail_req {
 	u8 reserved[27];
 } __packed;
 
-/* Software detail flags */
+ 
 #define KVASER_USB_HYDRA_SW_FLAG_FW_BETA	BIT(2)
 #define KVASER_USB_HYDRA_SW_FLAG_FW_BAD		BIT(4)
 #define KVASER_USB_HYDRA_SW_FLAG_FREQ_80M	BIT(5)
@@ -149,7 +131,7 @@ struct kvaser_cmd_sw_detail_res {
 	u8 reserved[4];
 } __packed;
 
-/* Sub commands for cap_req and cap_res */
+ 
 #define KVASER_USB_HYDRA_CAP_CMD_LISTEN_MODE	0x02
 #define KVASER_USB_HYDRA_CAP_CMD_ERR_REPORT	0x05
 #define KVASER_USB_HYDRA_CAP_CMD_ONE_SHOT	0x06
@@ -158,7 +140,7 @@ struct kvaser_cmd_cap_req {
 	u8 reserved[26];
 } __packed;
 
-/* Status codes for cap_res */
+ 
 #define KVASER_USB_HYDRA_CAP_STAT_OK		0x00
 #define KVASER_USB_HYDRA_CAP_STAT_NOT_IMPL	0x01
 #define KVASER_USB_HYDRA_CAP_STAT_UNAVAIL	0x02
@@ -170,7 +152,7 @@ struct kvaser_cmd_cap_res {
 	u8 reserved[16];
 } __packed;
 
-/* CMD_ERROR_EVENT error codes */
+ 
 #define KVASER_USB_HYDRA_ERROR_EVENT_CAN	0x01
 #define KVASER_USB_HYDRA_ERROR_EVENT_PARAM	0x09
 struct kvaser_cmd_error_event {
@@ -181,7 +163,7 @@ struct kvaser_cmd_error_event {
 	__le16 info2;
 } __packed;
 
-/* Chip state status flags. Used for chip_state_event and err_frame_data. */
+ 
 #define KVASER_USB_HYDRA_BUS_ERR_ACT		0x00
 #define KVASER_USB_HYDRA_BUS_ERR_PASS		BIT(5)
 #define KVASER_USB_HYDRA_BUS_BUS_OFF		BIT(6)
@@ -193,7 +175,7 @@ struct kvaser_cmd_chip_state_event {
 	u8 reserved[19];
 } __packed;
 
-/* Busparam modes */
+ 
 #define KVASER_USB_HYDRA_BUS_MODE_CAN		0x00
 #define KVASER_USB_HYDRA_BUS_MODE_CANFD_ISO	0x01
 #define KVASER_USB_HYDRA_BUS_MODE_NONISO	0x02
@@ -205,7 +187,7 @@ struct kvaser_cmd_set_busparams {
 	u8 reserved1[7];
 } __packed;
 
-/* Busparam type */
+ 
 #define KVASER_USB_HYDRA_BUSPARAM_TYPE_CAN	0x00
 #define KVASER_USB_HYDRA_BUSPARAM_TYPE_CANFD	0x01
 struct kvaser_cmd_get_busparams_req {
@@ -218,7 +200,7 @@ struct kvaser_cmd_get_busparams_res {
 	u8 reserved[20];
 } __packed;
 
-/* Ctrl modes */
+ 
 #define KVASER_USB_HYDRA_CTRLMODE_NORMAL	0x01
 #define KVASER_USB_HYDRA_CTRLMODE_LISTEN	0x02
 struct kvaser_cmd_set_ctrlmode {
@@ -249,7 +231,7 @@ struct kvaser_cmd_rx_can {
 	};
 } __packed;
 
-/* Extended CAN ID flag. Used in rx_can and tx_can */
+ 
 #define KVASER_USB_HYDRA_EXTENDED_FRAME_ID	BIT(31)
 struct kvaser_cmd_tx_can {
 	__le32 id;
@@ -263,10 +245,7 @@ struct kvaser_cmd_tx_can {
 
 struct kvaser_cmd_header {
 	u8 cmd_no;
-	/* The destination HE address is stored in 0..5 of he_addr.
-	 * The upper part of source HE address is stored in 6..7 of he_addr, and
-	 * the lower part is stored in 12..15 of transid.
-	 */
+	 
 	u8 he_addr;
 	__le16 transid;
 } __packed;
@@ -300,20 +279,20 @@ struct kvaser_cmd {
 	} __packed;
 } __packed;
 
-/* CAN frame flags. Used in rx_can, ext_rx_can, tx_can and ext_tx_can */
+ 
 #define KVASER_USB_HYDRA_CF_FLAG_ERROR_FRAME	BIT(0)
 #define KVASER_USB_HYDRA_CF_FLAG_OVERRUN	BIT(1)
 #define KVASER_USB_HYDRA_CF_FLAG_REMOTE_FRAME	BIT(4)
 #define KVASER_USB_HYDRA_CF_FLAG_EXTENDED_ID	BIT(5)
 #define KVASER_USB_HYDRA_CF_FLAG_TX_ACK		BIT(6)
-/* CAN frame flags. Used in ext_rx_can and ext_tx_can */
+ 
 #define KVASER_USB_HYDRA_CF_FLAG_OSM_NACK	BIT(12)
 #define KVASER_USB_HYDRA_CF_FLAG_ABL		BIT(13)
 #define KVASER_USB_HYDRA_CF_FLAG_FDF		BIT(16)
 #define KVASER_USB_HYDRA_CF_FLAG_BRS		BIT(17)
 #define KVASER_USB_HYDRA_CF_FLAG_ESI		BIT(18)
 
-/* KCAN packet header macros. Used in ext_rx_can and ext_tx_can */
+ 
 #define KVASER_USB_KCAN_DATA_DLC_BITS		4
 #define KVASER_USB_KCAN_DATA_DLC_SHIFT		8
 #define KVASER_USB_KCAN_DATA_DLC_MASK \
@@ -358,7 +337,7 @@ struct kvaser_cmd_ext_tx_ack {
 	u8 reserved1[8];
 } __packed;
 
-/* struct for extended commands (CMD_EXTENDED) */
+ 
 struct kvaser_cmd_ext {
 	struct kvaser_cmd_header header;
 	__le16 len;
@@ -608,11 +587,7 @@ kvaser_usb_hydra_send_simple_cmd_async(struct kvaser_usb_net_priv *priv,
 	return err;
 }
 
-/* This function is used for synchronously waiting on hydra control commands.
- * Note: Compared to kvaser_usb_hydra_read_bulk_callback(), we never need to
- *       handle partial hydra commands. Since hydra control commands are always
- *       non-extended commands.
- */
+ 
 static int kvaser_usb_hydra_wait_cmd(const struct kvaser_usb *dev, u8 cmd_no,
 				     struct kvaser_cmd *cmd)
 {
@@ -932,10 +907,7 @@ static void kvaser_usb_hydra_update_state(struct kvaser_usb_net_priv *priv,
 	if (new_state == old_state)
 		return;
 
-	/* Ignore state change if previous state was STOPPED and the new state
-	 * is BUS_OFF. Firmware always report this as BUS_OFF, since firmware
-	 * does not distinguish between BUS_OFF and STOPPED.
-	 */
+	 
 	if (old_state == CAN_STATE_STOPPED && new_state == CAN_STATE_BUS_OFF)
 		return;
 
@@ -1000,7 +972,7 @@ static void kvaser_usb_hydra_state_event(const struct kvaser_usb *dev,
 static void kvaser_usb_hydra_error_event_parameter(const struct kvaser_usb *dev,
 						   const struct kvaser_cmd *cmd)
 {
-	/* info1 will contain the offending cmd_no */
+	 
 	switch (le16_to_cpu(cmd->error_event.info1)) {
 	case CMD_START_CHIP_REQ:
 		dev_warn(&dev->intf->dev,
@@ -1044,9 +1016,7 @@ static void kvaser_usb_hydra_error_event(const struct kvaser_usb *dev,
 		break;
 
 	case KVASER_USB_HYDRA_ERROR_EVENT_CAN:
-		/* Wrong channel mapping?! This should never happen!
-		 * info1 will contain the offending cmd_no
-		 */
+		 
 		dev_err(&dev->intf->dev,
 			"Received CAN error event for cmd_no (%u)\n",
 			le16_to_cpu(cmd->error_event.info1));
@@ -1393,7 +1363,7 @@ static void kvaser_usb_hydra_handle_cmd_std(const struct kvaser_usb *dev,
 		kvaser_usb_hydra_rx_msg_std(dev, cmd);
 		break;
 
-	/* Ignored commands */
+	 
 	case CMD_SET_BUSPARAMS_RESP:
 	case CMD_SET_BUSPARAMS_FD_RESP:
 		break;
@@ -1573,7 +1543,7 @@ static int kvaser_usb_hydra_set_mode(struct net_device *netdev,
 
 	switch (mode) {
 	case CAN_MODE_START:
-		/* CAN controller automatically recovers from BUS_OFF */
+		 
 		break;
 	default:
 		err = -EOPNOTSUPP;
@@ -2012,9 +1982,7 @@ static int kvaser_usb_hydra_stop_chip(struct kvaser_usb_net_priv *priv)
 
 	reinit_completion(&priv->stop_comp);
 
-	/* Make sure we do not report invalid BUS_OFF from CMD_CHIP_STATE_EVENT
-	 * see comment in kvaser_usb_hydra_update_state()
-	 */
+	 
 	priv->can.state = CAN_STATE_STOPPED;
 
 	err = kvaser_usb_hydra_send_simple_cmd(priv->dev, CMD_STOP_CHIP_REQ,
@@ -2047,9 +2015,7 @@ static int kvaser_usb_hydra_flush_queue(struct kvaser_usb_net_priv *priv)
 	return 0;
 }
 
-/* A single extended hydra command can be transmitted in multiple transfers
- * We have to buffer partial hydra commands, and handle them on next callback.
- */
+ 
 static void kvaser_usb_hydra_read_bulk_callback(struct kvaser_usb *dev,
 						void *buf, int len)
 {
@@ -2073,7 +2039,7 @@ static void kvaser_usb_hydra_read_bulk_callback(struct kvaser_usb *dev,
 
 		remaining_bytes = min_t(unsigned int, len,
 					cmd_len - usb_rx_leftover_len);
-		/* Make sure we do not overflow usb_rx_leftover */
+		 
 		if (remaining_bytes + usb_rx_leftover_len >
 						KVASER_USB_HYDRA_MAX_CMD_LEN) {
 			dev_err(&dev->intf->dev, "Format error\n");
@@ -2089,7 +2055,7 @@ static void kvaser_usb_hydra_read_bulk_callback(struct kvaser_usb *dev,
 			kvaser_usb_hydra_handle_cmd(dev, cmd);
 			usb_rx_leftover_len = 0;
 		} else {
-			/* Command still not complete */
+			 
 			usb_rx_leftover_len += remaining_bytes;
 		}
 		card_data->usb_rx_leftover_len = usb_rx_leftover_len;
@@ -2102,11 +2068,11 @@ static void kvaser_usb_hydra_read_bulk_callback(struct kvaser_usb *dev,
 		cmd_len = kvaser_usb_hydra_cmd_size(cmd);
 
 		if (pos + cmd_len > len) {
-			/* We got first part of a command */
+			 
 			int leftover_bytes;
 
 			leftover_bytes = len - pos;
-			/* Make sure we do not overflow usb_rx_leftover */
+			 
 			if (leftover_bytes > KVASER_USB_HYDRA_MAX_CMD_LEN) {
 				dev_err(&dev->intf->dev, "Format error\n");
 				return;
@@ -2166,7 +2132,7 @@ const struct kvaser_usb_dev_ops kvaser_usb_hydra_dev_ops = {
 
 static const struct kvaser_usb_dev_cfg kvaser_usb_hydra_dev_cfg_kcan = {
 	.clock = {
-		.freq = 80 * MEGA /* Hz */,
+		.freq = 80 * MEGA  ,
 	},
 	.timestamp_freq = 80,
 	.bittiming_const = &kvaser_usb_hydra_kcan_bittiming_c,
@@ -2175,7 +2141,7 @@ static const struct kvaser_usb_dev_cfg kvaser_usb_hydra_dev_cfg_kcan = {
 
 static const struct kvaser_usb_dev_cfg kvaser_usb_hydra_dev_cfg_flexc = {
 	.clock = {
-		.freq = 24 * MEGA /* Hz */,
+		.freq = 24 * MEGA  ,
 	},
 	.timestamp_freq = 1,
 	.bittiming_const = &kvaser_usb_flexc_bittiming_const,
@@ -2183,7 +2149,7 @@ static const struct kvaser_usb_dev_cfg kvaser_usb_hydra_dev_cfg_flexc = {
 
 static const struct kvaser_usb_dev_cfg kvaser_usb_hydra_dev_cfg_rt = {
 	.clock = {
-		.freq = 80 * MEGA /* Hz */,
+		.freq = 80 * MEGA  ,
 	},
 	.timestamp_freq = 24,
 	.bittiming_const = &kvaser_usb_hydra_rt_bittiming_c,

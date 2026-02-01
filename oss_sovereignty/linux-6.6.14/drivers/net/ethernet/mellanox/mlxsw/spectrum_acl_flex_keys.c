@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
-/* Copyright (c) 2017-2018 Mellanox Technologies. All rights reserved */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -48,7 +48,7 @@ static struct mlxsw_afk_element_inst mlxsw_sp_afk_element_info_ipv4[] = {
 	MLXSW_AFK_ELEMENT_INST_U32(IP_ECN, 0x04, 4, 2),
 	MLXSW_AFK_ELEMENT_INST_U32(IP_TTL_, 0x04, 24, 8),
 	MLXSW_AFK_ELEMENT_INST_U32(IP_DSCP, 0x08, 0, 6),
-	MLXSW_AFK_ELEMENT_INST_U32(TCP_FLAGS, 0x08, 8, 9), /* TCP_CONTROL+TCP_ECN */
+	MLXSW_AFK_ELEMENT_INST_U32(TCP_FLAGS, 0x08, 8, 9),  
 };
 
 static struct mlxsw_afk_element_inst mlxsw_sp_afk_element_info_ipv4_ex[] = {
@@ -153,7 +153,7 @@ static struct mlxsw_afk_element_inst mlxsw_sp_afk_element_info_mac_4[] = {
 
 static struct mlxsw_afk_element_inst mlxsw_sp_afk_element_info_mac_5[] = {
 	MLXSW_AFK_ELEMENT_INST_U32(VID, 0x04, 16, 12),
-	MLXSW_AFK_ELEMENT_INST_EXT_U32(SRC_SYS_PORT, 0x04, 0, 8, -1, true), /* RX_ACL_SYSTEM_PORT */
+	MLXSW_AFK_ELEMENT_INST_EXT_U32(SRC_SYS_PORT, 0x04, 0, 8, -1, true),  
 };
 
 static struct mlxsw_afk_element_inst mlxsw_sp_afk_element_info_ipv4_0[] = {
@@ -206,7 +206,7 @@ static struct mlxsw_afk_element_inst mlxsw_sp_afk_element_info_l4_0[] = {
 };
 
 static struct mlxsw_afk_element_inst mlxsw_sp_afk_element_info_l4_2[] = {
-	MLXSW_AFK_ELEMENT_INST_U32(TCP_FLAGS, 0x04, 16, 9), /* TCP_CONTROL + TCP_ECN */
+	MLXSW_AFK_ELEMENT_INST_U32(TCP_FLAGS, 0x04, 16, 9),  
 	MLXSW_AFK_ELEMENT_INST_U32(L4_PORT_RANGE, 0x04, 0, 16),
 };
 
@@ -233,25 +233,10 @@ static const struct mlxsw_afk_block mlxsw_sp2_afk_blocks[] = {
 
 #define MLXSW_SP2_AFK_BITS_PER_BLOCK 36
 
-/* A block in Spectrum-2 is of the following form:
- *
- * +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
- * |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |35|34|33|32|
- * +-----------------------------------------------------------------------------------------------+
- * |31|30|29|28|27|26|25|24|23|22|21|20|19|18|17|16|15|14|13|12|11|10| 9| 8| 7| 6| 5| 4| 3| 2| 1| 0|
- * +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
- */
+ 
 MLXSW_ITEM64(sp2_afk, block, value, 0x00, 0, MLXSW_SP2_AFK_BITS_PER_BLOCK);
 
-/* The key / mask block layout in Spectrum-2 is of the following form:
- *
- * +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
- * |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |                block11_high                   |
- * +-----------------------------------------------------------------------------------------------+
- * |                    block11_low                               |         block10_high           |
- * +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
- * ...
- */
+ 
 
 struct mlxsw_sp2_afk_block_layout {
 	unsigned short offset;
@@ -319,7 +304,7 @@ const struct mlxsw_afk_ops mlxsw_sp2_afk_ops = {
 
 static struct mlxsw_afk_element_inst mlxsw_sp_afk_element_info_mac_5b[] = {
 	MLXSW_AFK_ELEMENT_INST_U32(VID, 0x04, 18, 12),
-	MLXSW_AFK_ELEMENT_INST_EXT_U32(SRC_SYS_PORT, 0x04, 0, 9, -1, true), /* RX_ACL_SYSTEM_PORT */
+	MLXSW_AFK_ELEMENT_INST_EXT_U32(SRC_SYS_PORT, 0x04, 0, 9, -1, true),  
 };
 
 static struct mlxsw_afk_element_inst mlxsw_sp_afk_element_info_ipv4_4b[] = {

@@ -1,6 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2017-2018 HiSilicon Limited.
-// Copyright (c) 2017-2018 Linaro Limited.
+
+
+
 
 #include <linux/bitops.h>
 #include <linux/delay.h>
@@ -44,31 +44,13 @@
 
 #define MBOX_MSG_LEN			8
 
-/**
- * struct hi3660_chan_info - Hi3660 mailbox channel information
- * @dst_irq:	Interrupt vector for remote processor
- * @ack_irq:	Interrupt vector for local processor
- *
- * A channel can be used for TX or RX, it can trigger remote
- * processor interrupt to notify remote processor and can receive
- * interrupt if it has an incoming message.
- */
+ 
 struct hi3660_chan_info {
 	unsigned int dst_irq;
 	unsigned int ack_irq;
 };
 
-/**
- * struct hi3660_mbox - Hi3660 mailbox controller data
- * @dev:	Device to which it is attached
- * @base:	Base address of the register mapping region
- * @chan:	Representation of channels in mailbox controller
- * @mchan:	Representation of channel info
- * @controller:	Representation of a communication channel controller
- *
- * Mailbox controller includes 32 channels and can allocate
- * channel for message transferring.
- */
+ 
 struct hi3660_mbox {
 	struct device *dev;
 	void __iomem *base;
@@ -91,11 +73,11 @@ static int hi3660_mbox_check_state(struct mbox_chan *chan)
 	unsigned long val;
 	unsigned int ret;
 
-	/* Mailbox is ready to use */
+	 
 	if (readl(base + MBOX_MODE_REG) & MBOX_STATE_READY)
 		return 0;
 
-	/* Wait for acknowledge from remote */
+	 
 	ret = readx_poll_timeout_atomic(readl, base + MBOX_MODE_REG,
 			val, (val & MBOX_STATE_ACK), 1000, 300000);
 	if (ret) {
@@ -103,7 +85,7 @@ static int hi3660_mbox_check_state(struct mbox_chan *chan)
 		return ret;
 	}
 
-	/* clear ack state, mailbox will get back to ready state */
+	 
 	writel(BIT(mchan->ack_irq), base + MBOX_ICLR_REG);
 
 	return 0;
@@ -139,11 +121,11 @@ static int hi3660_mbox_acquire_channel(struct mbox_chan *chan)
 	unsigned int val, retry;
 
 	for (retry = 10; retry; retry--) {
-		/* Check if channel is in idle state */
+		 
 		if (readl(base + MBOX_MODE_REG) & MBOX_STATE_IDLE) {
 			writel(BIT(mchan->ack_irq), base + MBOX_SRC_REG);
 
-			/* Check ack bit has been set successfully */
+			 
 			val = readl(base + MBOX_SRC_REG);
 			if (val & BIT(mchan->ack_irq))
 				break;
@@ -185,20 +167,20 @@ static int hi3660_mbox_send_data(struct mbox_chan *chan, void *msg)
 	if (ret)
 		return ret;
 
-	/* Clear mask for destination interrupt */
+	 
 	writel_relaxed(~BIT(mchan->dst_irq), base + MBOX_IMASK_REG);
 
-	/* Config destination for interrupt vector */
+	 
 	writel_relaxed(BIT(mchan->dst_irq), base + MBOX_DST_REG);
 
-	/* Automatic acknowledge mode */
+	 
 	writel_relaxed(MBOX_AUTOMATIC_ACK, base + MBOX_MODE_REG);
 
-	/* Fill message data */
+	 
 	for (i = 0; i < MBOX_MSG_LEN; i++)
 		writel_relaxed(buf[i], base + MBOX_DATA_REG + i * 4);
 
-	/* Trigger data transferring */
+	 
 	writel(BIT(mchan->ack_irq), base + MBOX_SEND_REG);
 	return 0;
 }
@@ -257,7 +239,7 @@ static int hi3660_mbox_probe(struct platform_device *pdev)
 	mbox->controller.ops = &hi3660_mbox_ops;
 	mbox->controller.of_xlate = hi3660_mbox_xlate;
 
-	/* Initialize mailbox channel data */
+	 
 	chan = mbox->chan;
 	for (ch = 0; ch < MBOX_CHAN_MAX; ch++)
 		chan[ch].con_priv = (void *)ch;

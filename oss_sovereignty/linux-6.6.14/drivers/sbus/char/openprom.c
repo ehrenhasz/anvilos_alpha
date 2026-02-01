@@ -1,19 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Linux/SPARC PROM Configuration Driver
- * Copyright (C) 1996 Thomas K. Dyas (tdyas@noc.rutgers.edu)
- * Copyright (C) 1996 Eddie C. Dost  (ecd@skynet.be)
- *
- * This character device driver allows user programs to access the
- * PROM device tree. It is compatible with the SunOS /dev/openprom
- * driver and the NetBSD /dev/openprom driver. The SunOS eeprom
- * utility works without any modifications.
- *
- * The driver uses a minor number under the misc device major. The
- * file read/write mode determines the type of access to the PROM.
- * Interrupts are disabled whenever the driver calls into the PROM for
- * sanity's sake.
- */
+
+ 
 
 
 #include <linux/module.h>
@@ -39,24 +25,18 @@ MODULE_LICENSE("GPL");
 MODULE_VERSION("1.0");
 MODULE_ALIAS_MISCDEV(SUN_OPENPROM_MINOR);
 
-/* Private data kept by the driver for each descriptor. */
+ 
 typedef struct openprom_private_data
 {
-	struct device_node *current_node; /* Current node for SunOS ioctls. */
-	struct device_node *lastnode; /* Last valid node used by BSD ioctls. */
+	struct device_node *current_node;  
+	struct device_node *lastnode;  
 } DATA;
 
-/* ID of the PROM node containing all of the EEPROM options. */
+ 
 static DEFINE_MUTEX(openprom_mutex);
 static struct device_node *options_node;
 
-/*
- * Copy an openpromio structure into kernel space from user space.
- * This routine does error checking to make sure that all memory
- * accesses are within bounds. A pointer to the allocated openpromio
- * structure will be placed in "*opp_p". Return value is the length
- * of the user supplied buffer.
- */
+ 
 static int copyin(struct openpromio __user *info, struct openpromio **opp_p)
 {
 	unsigned int bufsize;
@@ -70,9 +50,7 @@ static int copyin(struct openpromio __user *info, struct openpromio **opp_p)
 	if (bufsize == 0)
 		return -EINVAL;
 
-	/* If the bufsize is too large, just limit it.
-	 * Fix from Jason Rappleye.
-	 */
+	 
 	if (bufsize > OPROMMAXPARAM)
 		bufsize = OPROMMAXPARAM;
 
@@ -117,9 +95,7 @@ static int getstrings(struct openpromio __user *info, struct openpromio **opp_p)
 	return bufsize;
 }
 
-/*
- * Copy an openpromio structure in kernel space back to user space.
- */
+ 
 static int copyout(void __user *info, struct openpromio *opp, int len)
 {
 	if (copy_to_user(info, opp, len))
@@ -211,7 +187,7 @@ static int opromnext(void __user *argp, unsigned int cmd, struct device_node *dp
 			break;
 		}
 	} else {
-		/* Sibling of node zero is the root node.  */
+		 
 		if (cmd != OPROMNEXT)
 			return -EINVAL;
 
@@ -283,9 +259,7 @@ static int opromgetbootargs(void __user *argp, struct openpromio *op, int bufsiz
 	return copyout(argp, op, bufsize + sizeof(int));
 }
 
-/*
- *	SunOS and Solaris /dev/openprom ioctl calls.
- */
+ 
 static long openprom_sunos_ioctl(struct file * file,
 				 unsigned int cmd, unsigned long arg,
 				 struct device_node *dp)
@@ -370,7 +344,7 @@ static struct device_node *get_node(phandle n, DATA *data)
 	return dp;
 }
 
-/* Copy in a whole string from userspace into kernelspace. */
+ 
 static char * copyin_string(char __user *user, size_t len)
 {
 	if ((ssize_t)len < 0 || (ssize_t)(len + 1) < 0)
@@ -379,9 +353,7 @@ static char * copyin_string(char __user *user, size_t len)
 	return memdup_user_nul(user, len);
 }
 
-/*
- *	NetBSD /dev/openprom ioctl calls.
- */
+ 
 static int opiocget(void __user *argp, DATA *data)
 {
 	struct opiocdesc op;
@@ -568,9 +540,7 @@ static int openprom_bsd_ioctl(struct file * file,
 }
 
 
-/*
- *	Handoff control to the correct ioctl handler.
- */
+ 
 static long openprom_ioctl(struct file * file,
 			   unsigned int cmd, unsigned long arg)
 {
@@ -635,10 +605,7 @@ static long openprom_compat_ioctl(struct file *file, unsigned int cmd,
 {
 	long rval = -ENOTTY;
 
-	/*
-	 * SunOS/Solaris only, the NetBSD one's have embedded pointers in
-	 * the arg which we'd need to clean up...
-	 */
+	 
 	switch (cmd) {
 	case OPROMGETOPT:
 	case OPROMSETOPT:

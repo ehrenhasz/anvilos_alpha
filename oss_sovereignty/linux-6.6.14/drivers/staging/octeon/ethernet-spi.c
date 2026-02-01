@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * This file is based on code from OCTEON SDK by Cavium Networks.
- *
- * Copyright (c) 2003-2007 Cavium Networks
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/netdevice.h>
@@ -108,12 +104,12 @@ static irqreturn_t cvm_oct_spi_rml_interrupt(int cpl, void *dev_id)
 	irqreturn_t return_status = IRQ_NONE;
 	union cvmx_npi_rsl_int_blocks rsl_int_blocks;
 
-	/* Check and see if this interrupt was caused by the GMX block */
+	 
 	rsl_int_blocks.u64 = cvmx_read_csr(CVMX_NPI_RSL_INT_BLOCKS);
-	if (rsl_int_blocks.s.spx1) /* 19 - SPX1_INT_REG & STX1_INT_REG */
+	if (rsl_int_blocks.s.spx1)  
 		return_status = cvm_oct_spi_spx_int(1);
 
-	if (rsl_int_blocks.s.spx0) /* 18 - SPX0_INT_REG & STX0_INT_REG */
+	if (rsl_int_blocks.s.spx0)  
 		return_status = cvm_oct_spi_spx_int(0);
 
 	return return_status;
@@ -164,24 +160,11 @@ static void cvm_oct_spi_poll(struct net_device *dev)
 			}
 		}
 
-		/*
-		 * The SPI4000 TWSI interface is very slow. In order
-		 * not to bring the system to a crawl, we only poll a
-		 * single port every second. This means negotiation
-		 * speed changes take up to 10 seconds, but at least
-		 * we don't waste absurd amounts of time waiting for
-		 * TWSI.
-		 */
+		 
 		if (priv->port == spi4000_port) {
-			/*
-			 * This function does nothing if it is called on an
-			 * interface without a SPI4000.
-			 */
+			 
 			cvmx_spi4000_check_speed(interface, priv->port);
-			/*
-			 * Normal ordering increments. By decrementing
-			 * we only match once per iteration.
-			 */
+			 
 			spi4000_port--;
 			if (spi4000_port < 0)
 				spi4000_port = 10;

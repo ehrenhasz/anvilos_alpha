@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (C) 2019-2022 Bootlin
- * Author: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
- */
+
+ 
 
 #include <linux/of.h>
 #include <linux/types.h>
@@ -37,10 +34,7 @@ static uint32_t logicvc_layer_formats_rgb24[] = {
 	DRM_FORMAT_INVALID,
 };
 
-/*
- * What we call depth in this driver only counts color components, not alpha.
- * This allows us to stay compatible with the LogiCVC bistream definitions.
- */
+ 
 static uint32_t logicvc_layer_formats_rgb24_alpha[] = {
 	DRM_FORMAT_ARGB8888,
 	DRM_FORMAT_ABGR8888,
@@ -149,7 +143,7 @@ static void logicvc_plane_atomic_update(struct drm_plane *drm_plane,
 	u32 index = layer->index;
 	u32 reg;
 
-	/* Layer dimensions */
+	 
 
 	regmap_write(logicvc->regmap, LOGICVC_LAYER_WIDTH_REG(index),
 		     new_state->crtc_w - 1);
@@ -162,12 +156,12 @@ static void logicvc_plane_atomic_update(struct drm_plane *drm_plane,
 		regmap_write(logicvc->regmap, LOGICVC_LAYER_ADDRESS_REG(index),
 			     fb_addr);
 	} else {
-		/* Rely on offsets to configure the address. */
+		 
 
 		logicvc_layer_buffer_find_setup(logicvc, layer, new_state,
 						&setup);
 
-		/* Layer memory offsets */
+		 
 
 		regmap_write(logicvc->regmap, LOGICVC_BUFFER_SEL_REG,
 			     LOGICVC_BUFFER_SEL_VALUE(index, setup.buffer_sel));
@@ -177,16 +171,16 @@ static void logicvc_plane_atomic_update(struct drm_plane *drm_plane,
 			     setup.voffset);
 	}
 
-	/* Layer position */
+	 
 
 	regmap_write(logicvc->regmap, LOGICVC_LAYER_HPOSITION_REG(index),
 		     mode->hdisplay - 1 - new_state->crtc_x);
 
-	/* Vertical position must be set last to sync layer register changes. */
+	 
 	regmap_write(logicvc->regmap, LOGICVC_LAYER_VPOSITION_REG(index),
 		     mode->vdisplay - 1 - new_state->crtc_y);
 
-	/* Layer alpha */
+	 
 
 	if (layer->config.alpha_mode == LOGICVC_LAYER_ALPHA_LAYER) {
 		u32 alpha_bits;
@@ -219,7 +213,7 @@ static void logicvc_plane_atomic_update(struct drm_plane *drm_plane,
 			     alpha);
 	}
 
-	/* Layer control */
+	 
 
 	reg = LOGICVC_LAYER_CTRL_ENABLE;
 
@@ -263,7 +257,7 @@ int logicvc_layer_buffer_find_setup(struct logicvc_drm *logicvc,
 {
 	struct drm_device *drm_dev = &logicvc->drm_dev;
 	struct drm_framebuffer *fb = state->fb;
-	/* All the supported formats have a single data plane. */
+	 
 	u32 layer_bytespp = fb->format->cpp[0];
 	u32 layer_stride = layer_bytespp * logicvc->config.row_stride;
 	u32 base_offset = layer->config.base_offset * layer_stride;
@@ -297,7 +291,7 @@ int logicvc_layer_buffer_find_setup(struct logicvc_drm *logicvc,
 
 	gap = fb_offset - base_offset;
 
-	/* Use the possible video buffers selection. */
+	 
 	if (gap && buffer_offset) {
 		buffer_sel = gap / buffer_offset;
 		if (buffer_sel > LOGICVC_BUFFER_SEL_MAX)
@@ -306,7 +300,7 @@ int logicvc_layer_buffer_find_setup(struct logicvc_drm *logicvc,
 		gap -= buffer_sel * buffer_offset;
 	}
 
-	/* Use the vertical offset. */
+	 
 	if (gap && layer_stride && logicvc->config.layers_configurable) {
 		voffset = gap / layer_stride;
 		if (voffset > LOGICVC_LAYER_VOFFSET_MAX)
@@ -315,7 +309,7 @@ int logicvc_layer_buffer_find_setup(struct logicvc_drm *logicvc,
 		gap -= voffset * layer_stride;
 	}
 
-	/* Use the horizontal offset. */
+	 
 	if (gap && layer_bytespp && logicvc->config.layers_configurable) {
 		hoffset = gap / layer_bytespp;
 		if (hoffset > LOGICVC_DIMENSIONS_MAX)
@@ -408,9 +402,7 @@ static int logicvc_layer_config_parse(struct logicvc_drm *logicvc,
 	if (ret)
 		return ret;
 
-	/*
-	 * Memory offset is only relevant without layer address configuration.
-	 */
+	 
 	if (logicvc->caps->layer_address)
 		return 0;
 
@@ -496,13 +488,10 @@ static int logicvc_layer_init(struct logicvc_drm *logicvc,
 
 	formats_count = logicvc_layer_formats_count(formats);
 
-	/* The final layer can be configured as a background layer. */
+	 
 	if (logicvc->config.background_layer &&
 	    index == (logicvc->config.layers_count - 1)) {
-		/*
-		 * A zero value for black is only valid for RGB, not for YUV,
-		 * so this will need to take the format in account for YUV.
-		 */
+		 
 		u32 background = 0;
 
 		drm_dbg_kms(drm_dev, "Using layer #%d as background layer\n",

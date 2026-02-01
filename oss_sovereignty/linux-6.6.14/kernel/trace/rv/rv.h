@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #include <linux/mutex.h>
 
 struct rv_interface {
@@ -26,7 +26,7 @@ extern struct mutex rv_interface_lock;
 struct rv_reactor_def {
 	struct list_head	list;
 	struct rv_reactor	*reactor;
-	/* protected by the monitor interface lock */
+	 
 	int			counter;
 };
 #endif

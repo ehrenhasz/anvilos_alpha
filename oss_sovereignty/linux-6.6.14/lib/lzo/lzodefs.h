@@ -1,22 +1,8 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- *  lzodefs.h -- architecture, OS and compiler specific defines
- *
- *  Copyright (C) 1996-2012 Markus F.X.J. Oberhumer <markus@oberhumer.com>
- *
- *  The full LZO package can be found at:
- *  http://www.oberhumer.com/opensource/lzo/
- *
- *  Changed for Linux kernel use by:
- *  Nitin Gupta <nitingupta910@gmail.com>
- *  Richard Purdie <rpurdie@openedhand.com>
- */
+ 
+ 
 
 
-/* Version
- * 0: original lzo version
- * 1: lzo with support for RLE
- */
+ 
 #define LZO_VERSION 1
 
 #define COPY4(dst, src)	\

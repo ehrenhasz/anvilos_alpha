@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * QLogic Fibre Channel HBA Driver
- * Copyright (c)  2003-2014 QLogic Corporation
- */
+
+ 
 #include "qla_def.h"
 #include "qla_gbl.h"
 
@@ -18,9 +15,7 @@
 
 #include "qla_target.h"
 
-/*
-*  QLogic ISP2x00 Hardware Support Function Prototypes.
-*/
+ 
 static int qla2x00_isp_firmware(scsi_qla_host_t *);
 static int qla2x00_setup_chip(scsi_qla_host_t *);
 static int qla2x00_fw_ready(scsi_qla_host_t *);
@@ -40,7 +35,7 @@ static void qla24xx_handle_prli_done_event(struct scsi_qla_host *,
     struct event_arg *);
 static void __qla24xx_handle_gpdb_event(scsi_qla_host_t *, struct event_arg *);
 
-/* SRB Extensions ---------------------------------------------------------- */
+ 
 
 void
 qla2x00_sp_timeout(struct timer_list *t)
@@ -53,7 +48,7 @@ qla2x00_sp_timeout(struct timer_list *t)
 	iocb = &sp->u.iocb_cmd;
 	iocb->timeout(sp);
 
-	/* ref: TMR */
+	 
 	kref_put(&sp->cmd_kref, qla2x00_sp_release);
 
 	if (vha && qla2x00_isp_reg_stat(vha->hw)) {
@@ -81,7 +76,7 @@ void qla2xxx_rel_free_warning(srb_t *sp)
 	WARN_ONCE(1, "Calling free() of an already freed srb %p object\n", sp);
 }
 
-/* Asynchronous Login/Logout Routines -------------------------------------- */
+ 
 
 unsigned long
 qla2x00_get_async_timeout(struct scsi_qla_host *vha)
@@ -89,15 +84,12 @@ qla2x00_get_async_timeout(struct scsi_qla_host *vha)
 	unsigned long tmo;
 	struct qla_hw_data *ha = vha->hw;
 
-	/* Firmware should use switch negotiated r_a_tov for timeout. */
+	 
 	tmo = ha->r_a_tov / 10 * 2;
 	if (IS_QLAFX00(ha)) {
 		tmo = FX00_DEF_RATOV * 2;
 	} else if (!IS_FWI2_CAPABLE(ha)) {
-		/*
-		 * Except for earlier ISPs where the timeout is seeded from the
-		 * initialization control block.
-		 */
+		 
 		tmo = ha->login_timeout;
 	}
 	return tmo;
@@ -131,7 +123,7 @@ static void qla24xx_abort_iocb_timeout(void *data)
 			qla_put_fw_resources(qpair, &sp->cmd_sp->iores);
 		}
 
-		/* removing the abort */
+		 
 		if (qpair->req->outstanding_cmds[handle] == sp) {
 			qpair->req->outstanding_cmds[handle] = NULL;
 			sp_found = 1;
@@ -142,10 +134,7 @@ static void qla24xx_abort_iocb_timeout(void *data)
 	spin_unlock_irqrestore(qpair->qp_lock_ptr, flags);
 
 	if (cmdsp_found && sp->cmd_sp) {
-		/*
-		 * This done function should take care of
-		 * original command ref: INIT
-		 */
+		 
 		sp->cmd_sp->done(sp->cmd_sp, QLA_OS_TIMER_EXPIRED);
 	}
 
@@ -166,7 +155,7 @@ static void qla24xx_abort_sp_done(srb_t *sp, int res)
 	if (sp->flags & SRB_WAKEUP_ON_COMP)
 		complete(&abt->u.abt.comp);
 	else
-		/* ref: INIT */
+		 
 		kref_put(&sp->cmd_kref, qla2x00_sp_release);
 }
 
@@ -177,7 +166,7 @@ int qla24xx_async_abort_cmd(srb_t *cmd_sp, bool wait)
 	srb_t *sp;
 	int rval = QLA_FUNCTION_FAILED;
 
-	/* ref: INIT for ABTS command */
+	 
 	sp = qla2xxx_get_qpair_sp(cmd_sp->vha, cmd_sp->qpair, cmd_sp->fcport,
 				  GFP_ATOMIC);
 	if (!sp)
@@ -193,7 +182,7 @@ int qla24xx_async_abort_cmd(srb_t *cmd_sp, bool wait)
 		sp->flags = SRB_WAKEUP_ON_COMP;
 
 	init_completion(&abt_iocb->u.abt.comp);
-	/* FW can send 2 x ABTS's timeout/20s */
+	 
 	qla2x00_init_async_sp(sp, 42, qla24xx_abort_sp_done);
 	sp->u.iocb_cmd.timeout = qla24xx_abort_iocb_timeout;
 
@@ -206,7 +195,7 @@ int qla24xx_async_abort_cmd(srb_t *cmd_sp, bool wait)
 
 	rval = qla2x00_start_sp(sp);
 	if (rval != QLA_SUCCESS) {
-		/* ref: INIT */
+		 
 		kref_put(&sp->cmd_kref, qla2x00_sp_release);
 		return rval;
 	}
@@ -215,7 +204,7 @@ int qla24xx_async_abort_cmd(srb_t *cmd_sp, bool wait)
 		wait_for_completion(&abt_iocb->u.abt.comp);
 		rval = abt_iocb->u.abt.comp_status == CS_COMPLETE ?
 			QLA_SUCCESS : QLA_ERR_FROM_FW;
-		/* ref: INIT */
+		 
 		kref_put(&sp->cmd_kref, qla2x00_sp_release);
 	}
 
@@ -246,7 +235,7 @@ qla2x00_async_iocb_timeout(void *data)
 	case SRB_LOGIN_CMD:
 		rc = qla24xx_async_abort_cmd(sp, false);
 		if (rc) {
-			/* Retry as needed. */
+			 
 			lio->u.logio.data[0] = MBS_COMMAND_ERROR;
 			lio->u.logio.data[1] =
 				lio->u.logio.flags & SRB_LOGIN_RETRIED ?
@@ -316,7 +305,7 @@ static void qla2x00_async_login_sp_done(srb_t *sp, int res)
 		qla24xx_handle_plogi_done_event(vha, &ea);
 	}
 
-	/* ref: INIT */
+	 
 	kref_put(&sp->cmd_kref, qla2x00_sp_release);
 }
 
@@ -336,7 +325,7 @@ qla2x00_async_login(struct scsi_qla_host *vha, fc_port_t *fcport,
 		return rval;
 	}
 
-	/* ref: INIT */
+	 
 	sp = qla2x00_get_sp(vha, fcport, GFP_KERNEL);
 	if (!sp)
 		goto done;
@@ -385,16 +374,13 @@ qla2x00_async_login(struct scsi_qla_host *vha, fc_port_t *fcport,
 	return rval;
 
 done_free_sp:
-	/* ref: INIT */
+	 
 	kref_put(&sp->cmd_kref, qla2x00_sp_release);
 	fcport->flags &= ~FCF_ASYNC_SENT;
 done:
 	fcport->flags &= ~FCF_ASYNC_ACTIVE;
 
-	/*
-	 * async login failed. Could be due to iocb/exchange resource
-	 * being low. Set state DELETED for re-login process to start again.
-	 */
+	 
 	qla2x00_set_fcport_disc_state(fcport, DSC_DELETED);
 	return rval;
 }
@@ -404,7 +390,7 @@ static void qla2x00_async_logout_sp_done(srb_t *sp, int res)
 	sp->fcport->flags &= ~(FCF_ASYNC_SENT | FCF_ASYNC_ACTIVE);
 	sp->fcport->login_gen++;
 	qlt_logo_completion_handler(sp->fcport, sp->u.iocb_cmd.u.logio.data[0]);
-	/* ref: INIT */
+	 
 	kref_put(&sp->cmd_kref, qla2x00_sp_release);
 }
 
@@ -415,7 +401,7 @@ qla2x00_async_logout(struct scsi_qla_host *vha, fc_port_t *fcport)
 	int rval = QLA_FUNCTION_FAILED;
 
 	fcport->flags |= FCF_ASYNC_SENT;
-	/* ref: INIT */
+	 
 	sp = qla2x00_get_sp(vha, fcport, GFP_KERNEL);
 	if (!sp)
 		goto done;
@@ -437,7 +423,7 @@ qla2x00_async_logout(struct scsi_qla_host *vha, fc_port_t *fcport)
 	return rval;
 
 done_free_sp:
-	/* ref: INIT */
+	 
 	kref_put(&sp->cmd_kref, qla2x00_sp_release);
 done:
 	fcport->flags &= ~(FCF_ASYNC_SENT | FCF_ASYNC_ACTIVE);
@@ -449,7 +435,7 @@ qla2x00_async_prlo_done(struct scsi_qla_host *vha, fc_port_t *fcport,
     uint16_t *data)
 {
 	fcport->flags &= ~FCF_ASYNC_ACTIVE;
-	/* Don't re-login in target mode */
+	 
 	if (!fcport->tgt_session)
 		qla2x00_mark_device_lost(vha, fcport, 1);
 	qlt_logo_completion_handler(fcport, data[0]);
@@ -464,7 +450,7 @@ static void qla2x00_async_prlo_sp_done(srb_t *sp, int res)
 	if (!test_bit(UNLOADING, &vha->dpc_flags))
 		qla2x00_post_async_prlo_done_work(sp->fcport->vha, sp->fcport,
 		    lio->u.logio.data);
-	/* ref: INIT */
+	 
 	kref_put(&sp->cmd_kref, qla2x00_sp_release);
 }
 
@@ -475,7 +461,7 @@ qla2x00_async_prlo(struct scsi_qla_host *vha, fc_port_t *fcport)
 	int rval;
 
 	rval = QLA_FUNCTION_FAILED;
-	/* ref: INIT */
+	 
 	sp = qla2x00_get_sp(vha, fcport, GFP_KERNEL);
 	if (!sp)
 		goto done;
@@ -497,7 +483,7 @@ qla2x00_async_prlo(struct scsi_qla_host *vha, fc_port_t *fcport)
 	return rval;
 
 done_free_sp:
-	/* ref: INIT */
+	 
 	kref_put(&sp->cmd_kref, qla2x00_sp_release);
 done:
 	fcport->flags &= ~FCF_ASYNC_ACTIVE;
@@ -525,7 +511,7 @@ void qla24xx_handle_adisc_event(scsi_qla_host_t *vha, struct event_arg *ea)
 		    __func__, ea->fcport->port_name);
 
 		spin_lock_irqsave(&vha->work_lock, flags);
-		/* deleted = 0 & logout_on_delete = force fw cleanup */
+		 
 		if (fcport->deleted == QLA_SESS_DELETED)
 			fcport->deleted = 0;
 
@@ -540,7 +526,7 @@ void qla24xx_handle_adisc_event(scsi_qla_host_t *vha, struct event_arg *ea)
 		return;
 
 	if (ea->sp->gen2 != ea->fcport->login_gen) {
-		/* target side must have changed it. */
+		 
 		ql_dbg(ql_dbg_disc, vha, 0x20d3,
 		    "%s %8phC generation changed\n",
 		    __func__, ea->fcport->port_name);
@@ -592,7 +578,7 @@ static void qla2x00_async_adisc_sp_done(srb_t *sp, int res)
 		ea.data[0] = MBS_COMMAND_ERROR;
 
 	qla24xx_handle_adisc_event(vha, &ea);
-	/* ref: INIT */
+	 
 	kref_put(&sp->cmd_kref, qla2x00_sp_release);
 }
 
@@ -616,7 +602,7 @@ qla2x00_async_adisc(struct scsi_qla_host *vha, fc_port_t *fcport,
 		return rval;
 
 	fcport->flags |= FCF_ASYNC_SENT;
-	/* ref: INIT */
+	 
 	sp = qla2x00_get_sp(vha, fcport, GFP_KERNEL);
 	if (!sp)
 		goto done;
@@ -644,7 +630,7 @@ qla2x00_async_adisc(struct scsi_qla_host *vha, fc_port_t *fcport,
 	return rval;
 
 done_free_sp:
-	/* ref: INIT */
+	 
 	kref_put(&sp->cmd_kref, qla2x00_sp_release);
 done:
 	fcport->flags &= ~(FCF_ASYNC_SENT | FCF_ASYNC_ACTIVE);
@@ -663,17 +649,7 @@ static bool qla2x00_is_reserved_id(scsi_qla_host_t *vha, uint16_t loop_id)
 		loop_id == MANAGEMENT_SERVER || loop_id == BROADCAST;
 }
 
-/**
- * qla2x00_find_new_loop_id - scan through our port list and find a new usable loop ID
- * @vha: adapter state pointer.
- * @dev: port structure pointer.
- *
- * Returns:
- *	qla2x00 local function return status code.
- *
- * Context:
- *	Kernel context.
- */
+ 
 static int qla2x00_find_new_loop_id(scsi_qla_host_t *vha, fc_port_t *dev)
 {
 	int	rval;
@@ -740,7 +716,7 @@ static void qla24xx_handle_gnl_done_event(scsi_qla_host_t *vha,
 	if (fcport->disc_state == DSC_DELETE_PEND)
 		return;
 
-	if (ea->rc) { /* rval */
+	if (ea->rc) {  
 		if (fcport->login_retry == 0) {
 			ql_dbg(ql_dbg_disc, vha, 0x20de,
 			    "GNL failed Port login retry %8phN, retry cnt=%d.\n",
@@ -836,11 +812,7 @@ static void qla24xx_handle_gnl_done_event(scsi_qla_host_t *vha,
 			id, loop_id, &conflict_fcport);
 
 		if (conflict_fcport) {
-			/*
-			 * Another share fcport share the same loop_id &
-			 * nport id. Conflict fcport needs to finish
-			 * cleanup before this fcport can proceed to login.
-			 */
+			 
 			conflict_fcport->conflict = fcport;
 			fcport->login_pause = 1;
 		}
@@ -863,7 +835,7 @@ static void qla24xx_handle_gnl_done_event(scsi_qla_host_t *vha,
 				break;
 			case DSC_LS_PLOGI_COMP:
 				if (vha->hw->flags.edif_enabled) {
-					/* check to see if App support Secure */
+					 
 					qla24xx_post_gpdb_work(vha, fcport, 0);
 					break;
 				}
@@ -887,12 +859,7 @@ static void qla24xx_handle_gnl_done_event(scsi_qla_host_t *vha,
 			fcport->d_id = id;
 			switch (current_login_state) {
 			case DSC_LS_PRLI_PEND:
-				/*
-				 * In the middle of PRLI. Let it finish.
-				 * Allow relogin code to recheck state again
-				 * with GNL. Push disc_state back to DELETED
-				 * so GNL can go out again
-				 */
+				 
 				qla2x00_set_fcport_disc_state(fcport,
 				    DSC_DELETED);
 				set_bit(RELOGIN_NEEDED, &vha->dpc_flags);
@@ -910,12 +877,12 @@ static void qla24xx_handle_gnl_done_event(scsi_qla_host_t *vha,
 			case DSC_LS_PLOGI_COMP:
 				if (vha->hw->flags.edif_enabled &&
 				    DBELL_ACTIVE(vha)) {
-					/* check to see if App support secure or not */
+					 
 					qla24xx_post_gpdb_work(vha, fcport, 0);
 					break;
 				}
 				if (fcport_is_bigger(fcport)) {
-					/* local adapter is smaller */
+					 
 					if (fcport->loop_id != FC_NO_LOOP_ID)
 						qla2x00_clear_loop_id(fcport);
 
@@ -927,7 +894,7 @@ static void qla24xx_handle_gnl_done_event(scsi_qla_host_t *vha,
 				fallthrough;
 			default:
 				if (fcport_is_smaller(fcport)) {
-					/* local adapter is bigger */
+					 
 					if (fcport->loop_id != FC_NO_LOOP_ID)
 						qla2x00_clear_loop_id(fcport);
 
@@ -938,7 +905,7 @@ static void qla24xx_handle_gnl_done_event(scsi_qla_host_t *vha,
 				break;
 			}
 			break;
-		} /* switch (ha->current_topology) */
+		}  
 	}
 
 	if (!found) {
@@ -967,10 +934,7 @@ static void qla24xx_handle_gnl_done_event(scsi_qla_host_t *vha,
 							(conflict_fcport);
 					}
 				}
-				/*
-				 * FW already picked this loop id for
-				 * another fcport
-				 */
+				 
 				if (fcport->loop_id == loop_id)
 					fcport->loop_id = FC_NO_LOOP_ID;
 			}
@@ -981,11 +945,7 @@ static void qla24xx_handle_gnl_done_event(scsi_qla_host_t *vha,
 			if (time_after_eq(jiffies, fcport->dm_login_expire)) {
 				if (fcport->n2n_link_reset_cnt < 2) {
 					fcport->n2n_link_reset_cnt++;
-					/*
-					 * remote port is not sending PLOGI.
-					 * Reset link to kick start his state
-					 * machine
-					 */
+					 
 					set_bit(N2N_LINK_RESET,
 					    &vha->dpc_flags);
 				} else {
@@ -1004,10 +964,7 @@ static void qla24xx_handle_gnl_done_event(scsi_qla_host_t *vha,
 				}
 				qla2xxx_wake_dpc(vha);
 			} else {
-				/*
-				 * report port suppose to do PLOGI. Give him
-				 * more time. FW will catch it.
-				 */
+				 
 				set_bit(RELOGIN_NEEDED, &vha->dpc_flags);
 			}
 			break;
@@ -1018,7 +975,7 @@ static void qla24xx_handle_gnl_done_event(scsi_qla_host_t *vha,
 			break;
 		}
 	}
-} /* gnl_event */
+}  
 
 static void qla24xx_async_gnl_sp_done(srb_t *sp, int res)
 {
@@ -1047,13 +1004,13 @@ static void qla24xx_async_gnl_sp_done(srb_t *sp, int res)
 	    sizeof(struct get_name_list_extended)) {
 		n = sp->u.iocb_cmd.u.mbx.in_mb[1] /
 		    sizeof(struct get_name_list_extended);
-		ea.data[0] = sp->u.iocb_cmd.u.mbx.in_mb[1]; /* amnt xfered */
+		ea.data[0] = sp->u.iocb_cmd.u.mbx.in_mb[1];  
 	}
 
 	for (i = 0; i < n; i++) {
 		e = &vha->gnl.l[i];
 		loop_id = le16_to_cpu(e->nport_handle);
-		/* mask out reserve bit */
+		 
 		loop_id = (loop_id & 0x7fff);
 		set_bit(loop_id, vha->hw->loop_id_map);
 		wwn = wwn_to_u64(e->port_name);
@@ -1083,7 +1040,7 @@ static void qla24xx_async_gnl_sp_done(srb_t *sp, int res)
 		qla24xx_handle_gnl_done_event(vha, &ea);
 	}
 
-	/* create new fcport if fw has knowledge of new sessions */
+	 
 	for (i = 0; i < n; i++) {
 		port_id_t id;
 		u64 wwnn;
@@ -1118,7 +1075,7 @@ static void qla24xx_async_gnl_sp_done(srb_t *sp, int res)
 	spin_lock_irqsave(&vha->hw->tgt.sess_lock, flags);
 	vha->gnl.sent = 0;
 	if (!list_empty(&vha->gnl.fcports)) {
-		/* retrigger gnl */
+		 
 		list_for_each_entry_safe(fcport, tf, &vha->gnl.fcports,
 		    gnl_entry) {
 			list_del_init(&fcport->gnl_entry);
@@ -1129,7 +1086,7 @@ static void qla24xx_async_gnl_sp_done(srb_t *sp, int res)
 	}
 	spin_unlock_irqrestore(&vha->hw->tgt.sess_lock, flags);
 
-	/* ref: INIT */
+	 
 	kref_put(&sp->cmd_kref, qla2x00_sp_release);
 }
 
@@ -1160,7 +1117,7 @@ int qla24xx_async_gnl(struct scsi_qla_host *vha, fc_port_t *fcport)
 	vha->gnl.sent = 1;
 	spin_unlock_irqrestore(&vha->hw->tgt.sess_lock, flags);
 
-	/* ref: INIT */
+	 
 	sp = qla2x00_get_sp(vha, fcport, GFP_KERNEL);
 	if (!sp)
 		goto done;
@@ -1193,7 +1150,7 @@ int qla24xx_async_gnl(struct scsi_qla_host *vha, fc_port_t *fcport)
 	return rval;
 
 done_free_sp:
-	/* ref: INIT */
+	 
 	kref_put(&sp->cmd_kref, qla2x00_sp_release);
 	fcport->flags &= ~(FCF_ASYNC_SENT);
 done:
@@ -1346,7 +1303,7 @@ qla24xx_async_prli(struct scsi_qla_host *vha, fc_port_t *fcport)
 	return rval;
 
 done_free_sp:
-	/* ref: INIT */
+	 
 	kref_put(&sp->cmd_kref, qla2x00_sp_release);
 	fcport->flags &= ~FCF_ASYNC_SENT;
 	return rval;
@@ -1464,11 +1421,7 @@ void __qla24xx_handle_gpdb_event(scsi_qla_host_t *vha, struct event_arg *ea)
 		qla24xx_sched_upd_fcport(ea->fcport);
 		spin_lock_irqsave(&vha->hw->tgt.sess_lock, flags);
 	} else if (ea->fcport->login_succ) {
-		/*
-		 * We have an existing session. A late RSCN delivery
-		 * must have triggered the session to be re-validate.
-		 * Session is still valid.
-		 */
+		 
 		ql_dbg(ql_dbg_disc, vha, 0x20d6,
 		    "%s %d %8phC session revalidate success\n",
 		    __func__, __LINE__, ea->fcport->port_name);
@@ -1496,7 +1449,7 @@ static int	qla_chk_secure_login(scsi_qla_host_t	*vha, fc_port_t *fcport,
 	if (vha->hw->flags.edif_enabled) {
 		if (fcport->flags & FCF_FCSP_DEVICE) {
 			qla2x00_set_fcport_disc_state(fcport, DSC_LOGIN_AUTH_PEND);
-			/* Start edif prli timer & ring doorbell for app */
+			 
 			fcport->edif.rx_sa_set = 0;
 			fcport->edif.tx_sa_set = 0;
 			fcport->edif.rx_sa_pending = 0;
@@ -1556,7 +1509,7 @@ void qla24xx_handle_gpdb_event(scsi_qla_host_t *vha, struct event_arg *ea)
 		ls = pd->current_login_state & 0xf;
 
 	if (ea->sp->gen2 != fcport->login_gen) {
-		/* target side must have changed it. */
+		 
 
 		ql_dbg(ql_dbg_disc, vha, 0x20d3,
 		    "%s %8phC generation changed\n",
@@ -1584,7 +1537,7 @@ void qla24xx_handle_gpdb_event(scsi_qla_host_t *vha, struct event_arg *ea)
 	case PDS_PLOGI_PENDING:
 	case PDS_PRLI_PENDING:
 	case PDS_PRLI2_PENDING:
-		/* Set discovery state back to GNL to Relogin attempt */
+		 
 		if (qla_dual_mode_enabled(vha) ||
 		    qla_ini_mode_enabled(vha)) {
 			qla2x00_set_fcport_disc_state(fcport, DSC_GNL);
@@ -1602,7 +1555,7 @@ void qla24xx_handle_gpdb_event(scsi_qla_host_t *vha, struct event_arg *ea)
 		return;
 	}
 	__qla24xx_handle_gpdb_event(vha, ea);
-} /* gpdb event */
+}  
 
 static void qla_chk_n2n_b4_login(struct scsi_qla_host *vha, fc_port_t *fcport)
 {
@@ -1633,7 +1586,7 @@ static void qla_chk_n2n_b4_login(struct scsi_qla_host *vha, fc_port_t *fcport)
 			login = 1;
 		}
 	} else {
-		/* initiator mode */
+		 
 		login = 1;
 	}
 
@@ -1689,7 +1642,7 @@ int qla24xx_fcport_handle_login(struct scsi_qla_host *vha, fc_port_t *fcport)
 		}
 	}
 
-	/* Target won't initiate port login if fabric is present */
+	 
 	if (vha->host->active_mode == MODE_TARGET && !N2N_TOPO(vha->hw))
 		return 0;
 
@@ -1703,7 +1656,7 @@ int qla24xx_fcport_handle_login(struct scsi_qla_host *vha, fc_port_t *fcport)
 		switch (vha->hw->current_topology) {
 		case ISP_CFG_N:
 			if (fcport_is_smaller(fcport)) {
-				/* this adapter is bigger */
+				 
 				if (fcport->login_retry) {
 					if (fcport->loop_id == FC_NO_LOOP_ID) {
 						qla2x00_find_new_loop_id(vha,
@@ -1778,7 +1731,7 @@ int qla24xx_fcport_handle_login(struct scsi_qla_host *vha, fc_port_t *fcport)
 		break;
 
 	case DSC_LOGIN_COMPLETE:
-		/* recheck login state */
+		 
 		data[0] = data[1] = 0;
 		qla2x00_post_async_adisc_work(vha, fcport, data);
 		break;
@@ -1857,19 +1810,9 @@ void qla2x00_handle_rscn(scsi_qla_host_t *vha, struct event_arg *ea)
 			}
 
 			if (vha->hw->flags.edif_enabled && DBELL_ACTIVE(vha)) {
-				/*
-				 * On ipsec start by remote port, Target port
-				 * may use RSCN to trigger initiator to
-				 * relogin. If driver is already in the
-				 * process of a relogin, then ignore the RSCN
-				 * and allow the current relogin to continue.
-				 * This reduces thrashing of the connection.
-				 */
+				 
 				if (atomic_read(&fcport->state) == FCS_ONLINE) {
-					/*
-					 * If state = online, then set scan_needed=1 to do relogin.
-					 * Otherwise we're already in the middle of a relogin
-					 */
+					 
 					fcport->scan_needed = 1;
 					fcport->rscn_gen++;
 				}
@@ -1957,12 +1900,12 @@ void qla_handle_els_plogi_done(scsi_qla_host_t *vha,
 {
 	if (N2N_TOPO(vha->hw) && fcport_is_smaller(ea->fcport) &&
 	    vha->hw->flags.edif_enabled) {
-		/* check to see if App support Secure */
+		 
 		qla24xx_post_gpdb_work(vha, ea->fcport, 0);
 		return;
 	}
 
-	/* for pure Target Mode, PRLI will not be initiated */
+	 
 	if (vha->host->active_mode == MODE_TARGET)
 		return;
 
@@ -1972,10 +1915,7 @@ void qla_handle_els_plogi_done(scsi_qla_host_t *vha,
 	qla24xx_post_prli_work(vha, ea->fcport);
 }
 
-/*
- * RSCN(s) came in for this fcport, but the RSCN(s) was not able
- * to be consumed by the fcport
- */
+ 
 void qla_rscn_replay(fc_port_t *fcport)
 {
 	struct event_arg ea;
@@ -2055,11 +1995,7 @@ static void qla_marker_sp_done(srb_t *sp, int res)
 	} while (cnt); \
 }
 
-/**
- * qla26xx_marker: send marker IOCB and wait for the completion of it.
- * @arg: pointer to argument list.
- *    It is assume caller will provide an fcport pointer and modifier
- */
+ 
 static int
 qla26xx_marker(struct tmf_arg *arg)
 {
@@ -2081,7 +2017,7 @@ qla26xx_marker(struct tmf_arg *arg)
 	chip_gen = vha->hw->chip_reset;
 	login_gen = fcport->login_gen;
 
-	/* ref: INIT */
+	 
 	sp = qla2xxx_get_qpair_sp(vha, arg->qpair, fcport, GFP_KERNEL);
 	if (!sp)
 		goto done;
@@ -2122,7 +2058,7 @@ qla26xx_marker(struct tmf_arg *arg)
 	}
 
 done_free_sp:
-	/* ref: INIT */
+	 
 	kref_put(&sp->cmd_kref, qla2x00_sp_release);
 done:
 	return rval;
@@ -2139,7 +2075,7 @@ static void qla2x00_tmf_sp_done(srb_t *sp, int res)
 
 static int qla_tmf_wait(struct tmf_arg *arg)
 {
-	/* there are only 2 types of error handling that reaches here, lun or target reset */
+	 
 	if (arg->flags & (TCF_LUN_RESET | TCF_ABORT_TASK_SET | TCF_CLEAR_TASK_SET))
 		return qla2x00_eh_wait_for_pending_commands(arg->vha,
 		    arg->fcport->d_id.b24, arg->lun, WAIT_LUN);
@@ -2170,7 +2106,7 @@ __qla2x00_async_tm_cmd(struct tmf_arg *arg)
 	chip_gen = vha->hw->chip_reset;
 	login_gen = fcport->login_gen;
 
-	/* ref: INIT */
+	 
 	sp = qla2xxx_get_qpair_sp(vha, arg->qpair, fcport, GFP_KERNEL);
 	if (!sp)
 		goto done;
@@ -2227,7 +2163,7 @@ __qla2x00_async_tm_cmd(struct tmf_arg *arg)
 		rval = tm_iocb->u.tmf.data;
 
 done_free_sp:
-	/* ref: INIT */
+	 
 	kref_put(&sp->cmd_kref, qla2x00_sp_release);
 done:
 	return rval;
@@ -2258,7 +2194,7 @@ int qla_get_tmf(struct tmf_arg *arg)
 	spin_lock_irqsave(&ha->tgt.sess_lock, flags);
 	list_for_each_entry(t, &ha->tmf_active, tmf_elem) {
 		if (t->fcport == arg->fcport && t->lun == arg->lun) {
-			/* reject duplicate TMF */
+			 
 			ql_log(ql_log_warn, vha, 0x802c,
 			       "found duplicate TMF.  Nexus=%ld:%06x:%llu.\n",
 			       vha->host_no, fcport->d_id.b24, arg->lun);
@@ -2349,7 +2285,7 @@ qla24xx_async_abort_command(srb_t *sp)
 	spin_unlock_irqrestore(qpair->qp_lock_ptr, flags);
 
 	if (handle == req->num_outstanding_cmds) {
-		/* Command not found. */
+		 
 		return QLA_ERR_NOT_FOUND;
 	}
 	if (sp->type == SRB_FXIOCB_DCMD)
@@ -2405,7 +2341,7 @@ qla24xx_handle_prli_done_event(struct scsi_qla_host *vha, struct event_arg *ea)
 			if (ea->fcport->n2n_link_reset_cnt ==
 			    vha->hw->login_retry_count &&
 			    ea->fcport->flags & FCF_FCSP_DEVICE) {
-				/* remote authentication app just started */
+				 
 				ea->fcport->n2n_link_reset_cnt = 0;
 			}
 
@@ -2413,10 +2349,7 @@ qla24xx_handle_prli_done_event(struct scsi_qla_host *vha, struct event_arg *ea)
 			    vha->hw->login_retry_count) {
 				ea->fcport->n2n_link_reset_cnt++;
 				vha->relogin_jif = jiffies + 2 * HZ;
-				/*
-				 * PRLI failed. Reset link to kick start
-				 * state machine
-				 */
+				 
 				set_bit(N2N_LINK_RESET, &vha->dpc_flags);
 				qla2xxx_wake_dpc(vha);
 			} else {
@@ -2426,10 +2359,7 @@ qla24xx_handle_prli_done_event(struct scsi_qla_host *vha, struct event_arg *ea)
 				       ea->fcport->port_name);
 			}
 		} else {
-			/*
-			 * switch connect. login failed. Take connection down
-			 * and allow relogin to retrigger
-			 */
+			 
 			ea->fcport->flags &= ~FCF_ASYNC_SENT;
 			ea->fcport->keep_nport_handle = 0;
 			ea->fcport->logout_on_delete = 1;
@@ -2442,7 +2372,7 @@ qla24xx_handle_prli_done_event(struct scsi_qla_host *vha, struct event_arg *ea)
 void
 qla24xx_handle_plogi_done_event(struct scsi_qla_host *vha, struct event_arg *ea)
 {
-	port_id_t cid;	/* conflict Nport id */
+	port_id_t cid;	 
 	u16 lid;
 	struct fc_port *conflict_fcport;
 	unsigned long flags;
@@ -2470,7 +2400,7 @@ qla24xx_handle_plogi_done_event(struct scsi_qla_host *vha, struct event_arg *ea)
 	}
 
 	if (ea->sp->gen2 != fcport->login_gen) {
-		/* target side must have changed it. */
+		 
 		ql_dbg(ql_dbg_disc, vha, 0x20d3,
 		    "%s %8phC generation changed\n",
 		    __func__, fcport->port_name);
@@ -2490,11 +2420,7 @@ qla24xx_handle_plogi_done_event(struct scsi_qla_host *vha, struct event_arg *ea)
 
 	switch (ea->data[0]) {
 	case MBS_COMMAND_COMPLETE:
-		/*
-		 * Driver must validate login state - If PRLI not complete,
-		 * force a relogin attempt via implicit LOGO, PLOGI, and PRLI
-		 * requests.
-		 */
+		 
 		if (vha->hw->flags.edif_enabled) {
 			set_bit(ea->fcport->loop_id, vha->hw->loop_id_map);
 			spin_lock_irqsave(&vha->hw->tgt.sess_lock, flags);
@@ -2536,7 +2462,7 @@ qla24xx_handle_plogi_done_event(struct scsi_qla_host *vha, struct event_arg *ea)
 		qlt_schedule_sess_for_deletion(ea->fcport);
 		break;
 	case MBS_LOOP_ID_USED:
-		/* data[1] = IO PARAM 1 = nport ID  */
+		 
 		cid.b.domain = (ea->iop[1] >> 16) & 0xff;
 		cid.b.area   = (ea->iop[1] >>  8) & 0xff;
 		cid.b.al_pa  = ea->iop[1] & 0xff;
@@ -2558,11 +2484,7 @@ qla24xx_handle_plogi_done_event(struct scsi_qla_host *vha, struct event_arg *ea)
 		    ea->fcport->d_id, lid, &conflict_fcport);
 
 		if (conflict_fcport) {
-			/*
-			 * Another fcport share the same loop_id/nport id.
-			 * Conflict fcport needs to finish cleanup before this
-			 * fcport can proceed to login.
-			 */
+			 
 			conflict_fcport->conflict = ea->fcport;
 			ea->fcport->login_pause = 1;
 
@@ -2588,9 +2510,9 @@ qla24xx_handle_plogi_done_event(struct scsi_qla_host *vha, struct event_arg *ea)
 	return;
 }
 
-/****************************************************************************/
-/*                QLogic ISP2x00 Hardware Support Functions.                */
-/****************************************************************************/
+ 
+ 
+ 
 
 static int
 qla83xx_nic_core_fw_load(scsi_qla_host_t *vha)
@@ -2602,13 +2524,11 @@ qla83xx_nic_core_fw_load(scsi_qla_host_t *vha)
 
 	qla83xx_idc_lock(vha, 0);
 
-	/* SV: TODO: Assign initialization timeout from
-	 * flash-info / other param
-	 */
+	 
 	ha->fcoe_dev_init_timeout = QLA83XX_IDC_INITIALIZATION_TIMEOUT;
 	ha->fcoe_reset_timeout = QLA83XX_IDC_RESET_ACK_TIMEOUT;
 
-	/* Set our fcoe function presence */
+	 
 	if (__qla83xx_set_drv_presence(vha) != QLA_SUCCESS) {
 		ql_dbg(ql_dbg_p3p, vha, 0xb077,
 		    "Error while setting DRV-Presence.\n");
@@ -2616,28 +2536,20 @@ qla83xx_nic_core_fw_load(scsi_qla_host_t *vha)
 		goto exit;
 	}
 
-	/* Decide the reset ownership */
+	 
 	qla83xx_reset_ownership(vha);
 
-	/*
-	 * On first protocol driver load:
-	 * Init-Owner: Set IDC-Major-Version and Clear IDC-Lock-Recovery
-	 * register.
-	 * Others: Check compatibility with current IDC Major version.
-	 */
+	 
 	qla83xx_rd_reg(vha, QLA83XX_IDC_MAJOR_VERSION, &idc_major_ver);
 	if (ha->flags.nic_core_reset_owner) {
-		/* Set IDC Major version */
+		 
 		idc_major_ver = QLA83XX_SUPP_IDC_MAJOR_VERSION;
 		qla83xx_wr_reg(vha, QLA83XX_IDC_MAJOR_VERSION, idc_major_ver);
 
-		/* Clearing IDC-Lock-Recovery register */
+		 
 		qla83xx_wr_reg(vha, QLA83XX_IDC_LOCK_RECOVERY, 0);
 	} else if (idc_major_ver != QLA83XX_SUPP_IDC_MAJOR_VERSION) {
-		/*
-		 * Clear further IDC participation if we are not compatible with
-		 * the current IDC Major Version.
-		 */
+		 
 		ql_log(ql_log_warn, vha, 0xb07d,
 		    "Failing load, idc_major_ver=%d, expected_major_ver=%d.\n",
 		    idc_major_ver, QLA83XX_SUPP_IDC_MAJOR_VERSION);
@@ -2645,7 +2557,7 @@ qla83xx_nic_core_fw_load(scsi_qla_host_t *vha)
 		rval = QLA_FUNCTION_FAILED;
 		goto exit;
 	}
-	/* Each function sets its supported Minor version. */
+	 
 	qla83xx_rd_reg(vha, QLA83XX_IDC_MINOR_VERSION, &idc_minor_ver);
 	idc_minor_ver |= (QLA83XX_SUPP_IDC_MINOR_VERSION << (ha->portnum * 2));
 	qla83xx_wr_reg(vha, QLA83XX_IDC_MINOR_VERSION, idc_minor_ver);
@@ -2665,16 +2577,7 @@ exit:
 	return rval;
 }
 
-/*
-* qla2x00_initialize_adapter
-*      Initialize board.
-*
-* Input:
-*      ha = adapter block pointer.
-*
-* Returns:
-*      0 = success
-*/
+ 
 int
 qla2x00_initialize_adapter(scsi_qla_host_t *vha)
 {
@@ -2686,7 +2589,7 @@ qla2x00_initialize_adapter(scsi_qla_host_t *vha)
 	memset(&vha->qla_stats, 0, sizeof(vha->qla_stats));
 	memset(&vha->fc_host_stat, 0, sizeof(vha->fc_host_stat));
 
-	/* Clear adapter flags. */
+	 
 	vha->flags.online = 0;
 	ha->flags.chip_reset_done = 0;
 	vha->flags.reset_active = 0;
@@ -2716,7 +2619,7 @@ qla2x00_initialize_adapter(scsi_qla_host_t *vha)
 
 	ha->isp_ops->reset_chip(vha);
 
-	/* Check for secure flash support */
+	 
 	if (IS_QLA28XX(ha)) {
 		if (rd_reg_word(&reg->mailbox12) & BIT_0)
 			ha->flags.secure_adapter = 1;
@@ -2735,10 +2638,7 @@ qla2x00_initialize_adapter(scsi_qla_host_t *vha)
 	if (IS_QLA8044(ha)) {
 		qla8044_read_reset_template(vha);
 
-		/* NOTE: If ql2xdontresethba==1, set IDC_CTRL DONTRESET_BIT0.
-		 * If DONRESET_BIT0 is set, drivers should not set dev_state
-		 * to NEED_RESET. But if NEED_RESET is set, drivers should
-		 * should honor the reset. */
+		 
 		if (ql2xdontresethba == 1)
 			qla8044_set_idc_dontreset(vha);
 	}
@@ -2747,7 +2647,7 @@ qla2x00_initialize_adapter(scsi_qla_host_t *vha)
 	ql_dbg(ql_dbg_init, vha, 0x0061,
 	    "Configure NVRAM parameters...\n");
 
-	/* Let priority default to FCP, can be overridden by nvram_config */
+	 
 	ha->fc4_type_priority = FC4_PRIORITY_FCP;
 
 	ha->isp_ops->nvram_config(vha);
@@ -2760,7 +2660,7 @@ qla2x00_initialize_adapter(scsi_qla_host_t *vha)
 	       ha->fc4_type_priority == FC4_PRIORITY_FCP ? "FCP" : "NVMe");
 
 	if (ha->flags.disable_serdes) {
-		/* Mask HBA via NVRAM settings? */
+		 
 		ql_log(ql_log_info, vha, 0x0077,
 		    "Masking HBA WWPN %8phN (via NVRAM).\n", vha->port_name);
 		return QLA_FUNCTION_FAILED;
@@ -2769,7 +2669,7 @@ qla2x00_initialize_adapter(scsi_qla_host_t *vha)
 	ql_dbg(ql_dbg_init, vha, 0x0078,
 	    "Verifying loaded RISC code...\n");
 
-	/* If smartsan enabled then require fdmi and rdp enabled */
+	 
 	if (ql2xsmartsan) {
 		ql2xfdmienable = 1;
 		ql2xrdpenable = 1;
@@ -2796,14 +2696,14 @@ qla2x00_initialize_adapter(scsi_qla_host_t *vha)
 	if (qla_ini_mode_enabled(vha) || qla_dual_mode_enabled(vha))
 		rval = qla2x00_init_rings(vha);
 
-	/* No point in continuing if firmware initialization failed. */
+	 
 	if (rval != QLA_SUCCESS)
 		return rval;
 
 	ha->flags.chip_reset_done = 1;
 
 	if (rval == QLA_SUCCESS && IS_QLA84XX(ha)) {
-		/* Issue verify 84xx FW IOCB to complete 84xx initialization */
+		 
 		rval = qla84xx_init_chip(vha);
 		if (rval != QLA_SUCCESS) {
 			ql_log(ql_log_warn, vha, 0x00d4,
@@ -2812,7 +2712,7 @@ qla2x00_initialize_adapter(scsi_qla_host_t *vha)
 		}
 	}
 
-	/* Load the NIC Core f/w if we are the first protocol driver. */
+	 
 	if (IS_QLA8031(ha)) {
 		rval = qla83xx_nic_core_fw_load(vha);
 		if (rval)
@@ -2831,12 +2731,7 @@ qla2x00_initialize_adapter(scsi_qla_host_t *vha)
 	return (rval);
 }
 
-/**
- * qla2100_pci_config() - Setup ISP21xx PCI configuration registers.
- * @vha: HA context
- *
- * Returns 0 on success.
- */
+ 
 int
 qla2100_pci_config(scsi_qla_host_t *vha)
 {
@@ -2854,7 +2749,7 @@ qla2100_pci_config(scsi_qla_host_t *vha)
 
 	pci_disable_rom(ha->pdev);
 
-	/* Get PCI bus information. */
+	 
 	spin_lock_irqsave(&ha->hardware_lock, flags);
 	ha->pci_attr = rd_reg_word(&reg->ctrl_status);
 	spin_unlock_irqrestore(&ha->hardware_lock, flags);
@@ -2862,12 +2757,7 @@ qla2100_pci_config(scsi_qla_host_t *vha)
 	return QLA_SUCCESS;
 }
 
-/**
- * qla2300_pci_config() - Setup ISP23xx PCI configuration registers.
- * @vha: HA context
- *
- * Returns 0 on success.
- */
+ 
 int
 qla2300_pci_config(scsi_qla_host_t *vha)
 {
@@ -2887,17 +2777,11 @@ qla2300_pci_config(scsi_qla_host_t *vha)
 		w &= ~PCI_COMMAND_INTX_DISABLE;
 	pci_write_config_word(ha->pdev, PCI_COMMAND, w);
 
-	/*
-	 * If this is a 2300 card and not 2312, reset the
-	 * COMMAND_INVALIDATE due to a bug in the 2300. Unfortunately,
-	 * the 2310 also reports itself as a 2300 so we need to get the
-	 * fb revision level -- a 6 indicates it really is a 2300 and
-	 * not a 2310.
-	 */
+	 
 	if (IS_QLA2300(ha)) {
 		spin_lock_irqsave(&ha->hardware_lock, flags);
 
-		/* Pause RISC. */
+		 
 		wrt_reg_word(&reg->hccr, HCCR_PAUSE_RISC);
 		for (cnt = 0; cnt < 30000; cnt++) {
 			if ((rd_reg_word(&reg->hccr) & HCCR_RISC_PAUSE) != 0)
@@ -2906,21 +2790,21 @@ qla2300_pci_config(scsi_qla_host_t *vha)
 			udelay(10);
 		}
 
-		/* Select FPM registers. */
+		 
 		wrt_reg_word(&reg->ctrl_status, 0x20);
 		rd_reg_word(&reg->ctrl_status);
 
-		/* Get the fb rev level */
+		 
 		ha->fb_rev = RD_FB_CMD_REG(ha, reg);
 
 		if (ha->fb_rev == FPM_2300)
 			pci_clear_mwi(ha->pdev);
 
-		/* Deselect FPM registers. */
+		 
 		wrt_reg_word(&reg->ctrl_status, 0x0);
 		rd_reg_word(&reg->ctrl_status);
 
-		/* Release RISC module. */
+		 
 		wrt_reg_word(&reg->hccr, HCCR_RELEASE_RISC);
 		for (cnt = 0; cnt < 30000; cnt++) {
 			if ((rd_reg_word(&reg->hccr) & HCCR_RISC_PAUSE) == 0)
@@ -2936,7 +2820,7 @@ qla2300_pci_config(scsi_qla_host_t *vha)
 
 	pci_disable_rom(ha->pdev);
 
-	/* Get PCI bus information. */
+	 
 	spin_lock_irqsave(&ha->hardware_lock, flags);
 	ha->pci_attr = rd_reg_word(&reg->ctrl_status);
 	spin_unlock_irqrestore(&ha->hardware_lock, flags);
@@ -2944,12 +2828,7 @@ qla2300_pci_config(scsi_qla_host_t *vha)
 	return QLA_SUCCESS;
 }
 
-/**
- * qla24xx_pci_config() - Setup ISP24xx PCI configuration registers.
- * @vha: HA context
- *
- * Returns 0 on success.
- */
+ 
 int
 qla24xx_pci_config(scsi_qla_host_t *vha)
 {
@@ -2968,11 +2847,11 @@ qla24xx_pci_config(scsi_qla_host_t *vha)
 
 	pci_write_config_byte(ha->pdev, PCI_LATENCY_TIMER, 0x80);
 
-	/* PCI-X -- adjust Maximum Memory Read Byte Count (2048). */
+	 
 	if (pci_find_capability(ha->pdev, PCI_CAP_ID_PCIX))
 		pcix_set_mmrbc(ha->pdev, 2048);
 
-	/* PCIe -- adjust Maximum Read Request Size (2048). */
+	 
 	if (pci_is_pcie(ha->pdev))
 		pcie_set_readrq(ha->pdev, 4096);
 
@@ -2980,7 +2859,7 @@ qla24xx_pci_config(scsi_qla_host_t *vha)
 
 	ha->chip_revision = ha->pdev->revision;
 
-	/* Get PCI bus information. */
+	 
 	spin_lock_irqsave(&ha->hardware_lock, flags);
 	ha->pci_attr = rd_reg_dword(&reg->ctrl_status);
 	spin_unlock_irqrestore(&ha->hardware_lock, flags);
@@ -2988,12 +2867,7 @@ qla24xx_pci_config(scsi_qla_host_t *vha)
 	return QLA_SUCCESS;
 }
 
-/**
- * qla25xx_pci_config() - Setup ISP25xx PCI configuration registers.
- * @vha: HA context
- *
- * Returns 0 on success.
- */
+ 
 int
 qla25xx_pci_config(scsi_qla_host_t *vha)
 {
@@ -3008,7 +2882,7 @@ qla25xx_pci_config(scsi_qla_host_t *vha)
 	w &= ~PCI_COMMAND_INTX_DISABLE;
 	pci_write_config_word(ha->pdev, PCI_COMMAND, w);
 
-	/* PCIe -- adjust Maximum Read Request Size (2048). */
+	 
 	if (pci_is_pcie(ha->pdev))
 		pcie_set_readrq(ha->pdev, 4096);
 
@@ -3019,12 +2893,7 @@ qla25xx_pci_config(scsi_qla_host_t *vha)
 	return QLA_SUCCESS;
 }
 
-/**
- * qla2x00_isp_firmware() - Choose firmware image.
- * @vha: HA context
- *
- * Returns 0 on success.
- */
+ 
 static int
 qla2x00_isp_firmware(scsi_qla_host_t *vha)
 {
@@ -3033,16 +2902,16 @@ qla2x00_isp_firmware(scsi_qla_host_t *vha)
 	uint8_t domain, area, al_pa;
 	struct qla_hw_data *ha = vha->hw;
 
-	/* Assume loading risc code */
+	 
 	rval = QLA_FUNCTION_FAILED;
 
 	if (ha->flags.disable_risc_code_load) {
 		ql_log(ql_log_info, vha, 0x0079, "RISC CODE NOT loaded.\n");
 
-		/* Verify checksum of loaded RISC code. */
+		 
 		rval = qla2x00_verify_checksum(vha, ha->fw_srisc_address);
 		if (rval == QLA_SUCCESS) {
-			/* And, verify we are not in ROM code. */
+			 
 			rval = qla2x00_get_adapter_id(vha, &loop_id, &al_pa,
 			    &area, &domain, &topo, &sw_cap);
 		}
@@ -3055,12 +2924,7 @@ qla2x00_isp_firmware(scsi_qla_host_t *vha)
 	return (rval);
 }
 
-/**
- * qla2x00_reset_chip() - Reset ISP chip.
- * @vha: HA context
- *
- * Returns 0 on success.
- */
+ 
 int
 qla2x00_reset_chip(scsi_qla_host_t *vha)
 {
@@ -3078,14 +2942,14 @@ qla2x00_reset_chip(scsi_qla_host_t *vha)
 
 	spin_lock_irqsave(&ha->hardware_lock, flags);
 
-	/* Turn off master enable */
+	 
 	cmd = 0;
 	pci_read_config_word(ha->pdev, PCI_COMMAND, &cmd);
 	cmd &= ~PCI_COMMAND_MASTER;
 	pci_write_config_word(ha->pdev, PCI_COMMAND, cmd);
 
 	if (!IS_QLA2100(ha)) {
-		/* Pause RISC. */
+		 
 		wrt_reg_word(&reg->hccr, HCCR_PAUSE_RISC);
 		if (IS_QLA2200(ha) || IS_QLA2300(ha)) {
 			for (cnt = 0; cnt < 30000; cnt++) {
@@ -3095,36 +2959,36 @@ qla2x00_reset_chip(scsi_qla_host_t *vha)
 				udelay(100);
 			}
 		} else {
-			rd_reg_word(&reg->hccr);	/* PCI Posting. */
+			rd_reg_word(&reg->hccr);	 
 			udelay(10);
 		}
 
-		/* Select FPM registers. */
+		 
 		wrt_reg_word(&reg->ctrl_status, 0x20);
-		rd_reg_word(&reg->ctrl_status);		/* PCI Posting. */
+		rd_reg_word(&reg->ctrl_status);		 
 
-		/* FPM Soft Reset. */
+		 
 		wrt_reg_word(&reg->fpm_diag_config, 0x100);
-		rd_reg_word(&reg->fpm_diag_config);	/* PCI Posting. */
+		rd_reg_word(&reg->fpm_diag_config);	 
 
-		/* Toggle Fpm Reset. */
+		 
 		if (!IS_QLA2200(ha)) {
 			wrt_reg_word(&reg->fpm_diag_config, 0x0);
-			rd_reg_word(&reg->fpm_diag_config); /* PCI Posting. */
+			rd_reg_word(&reg->fpm_diag_config);  
 		}
 
-		/* Select frame buffer registers. */
+		 
 		wrt_reg_word(&reg->ctrl_status, 0x10);
-		rd_reg_word(&reg->ctrl_status);		/* PCI Posting. */
+		rd_reg_word(&reg->ctrl_status);		 
 
-		/* Reset frame buffer FIFOs. */
+		 
 		if (IS_QLA2200(ha)) {
 			WRT_FB_CMD_REG(ha, reg, 0xa000);
-			RD_FB_CMD_REG(ha, reg);		/* PCI Posting. */
+			RD_FB_CMD_REG(ha, reg);		 
 		} else {
 			WRT_FB_CMD_REG(ha, reg, 0x00fc);
 
-			/* Read back fb_cmd until zero or 3 seconds max */
+			 
 			for (cnt = 0; cnt < 3000; cnt++) {
 				if ((RD_FB_CMD_REG(ha, reg) & 0xff) == 0)
 					break;
@@ -3132,32 +2996,28 @@ qla2x00_reset_chip(scsi_qla_host_t *vha)
 			}
 		}
 
-		/* Select RISC module registers. */
+		 
 		wrt_reg_word(&reg->ctrl_status, 0);
-		rd_reg_word(&reg->ctrl_status);		/* PCI Posting. */
+		rd_reg_word(&reg->ctrl_status);		 
 
-		/* Reset RISC processor. */
+		 
 		wrt_reg_word(&reg->hccr, HCCR_RESET_RISC);
-		rd_reg_word(&reg->hccr);		/* PCI Posting. */
+		rd_reg_word(&reg->hccr);		 
 
-		/* Release RISC processor. */
+		 
 		wrt_reg_word(&reg->hccr, HCCR_RELEASE_RISC);
-		rd_reg_word(&reg->hccr);		/* PCI Posting. */
+		rd_reg_word(&reg->hccr);		 
 	}
 
 	wrt_reg_word(&reg->hccr, HCCR_CLR_RISC_INT);
 	wrt_reg_word(&reg->hccr, HCCR_CLR_HOST_INT);
 
-	/* Reset ISP chip. */
+	 
 	wrt_reg_word(&reg->ctrl_status, CSR_ISP_SOFT_RESET);
 
-	/* Wait for RISC to recover from reset. */
+	 
 	if (IS_QLA2100(ha) || IS_QLA2200(ha) || IS_QLA2300(ha)) {
-		/*
-		 * It is necessary to for a delay here since the card doesn't
-		 * respond to PCI reads during a reset. On some architectures
-		 * this will result in an MCA.
-		 */
+		 
 		udelay(20);
 		for (cnt = 30000; cnt; cnt--) {
 			if ((rd_reg_word(&reg->ctrl_status) &
@@ -3168,14 +3028,14 @@ qla2x00_reset_chip(scsi_qla_host_t *vha)
 	} else
 		udelay(10);
 
-	/* Reset RISC processor. */
+	 
 	wrt_reg_word(&reg->hccr, HCCR_RESET_RISC);
 
 	wrt_reg_word(&reg->semaphore, 0);
 
-	/* Release RISC processor. */
+	 
 	wrt_reg_word(&reg->hccr, HCCR_RELEASE_RISC);
-	rd_reg_word(&reg->hccr);			/* PCI Posting. */
+	rd_reg_word(&reg->hccr);			 
 
 	if (IS_QLA2100(ha) || IS_QLA2200(ha) || IS_QLA2300(ha)) {
 		for (cnt = 0; cnt < 30000; cnt++) {
@@ -3187,14 +3047,14 @@ qla2x00_reset_chip(scsi_qla_host_t *vha)
 	} else
 		udelay(100);
 
-	/* Turn on master enable */
+	 
 	cmd |= PCI_COMMAND_MASTER;
 	pci_write_config_word(ha->pdev, PCI_COMMAND, cmd);
 
-	/* Disable RISC pause on FPM parity error. */
+	 
 	if (!IS_QLA2100(ha)) {
 		wrt_reg_word(&reg->hccr, HCCR_DISABLE_PARITY_PAUSE);
-		rd_reg_word(&reg->hccr);		/* PCI Posting. */
+		rd_reg_word(&reg->hccr);		 
 	}
 
 	spin_unlock_irqrestore(&ha->hardware_lock, flags);
@@ -3202,12 +3062,7 @@ qla2x00_reset_chip(scsi_qla_host_t *vha)
 	return QLA_SUCCESS;
 }
 
-/**
- * qla81xx_reset_mpi() - Reset's MPI FW via Write MPI Register MBC.
- * @vha: HA context
- *
- * Returns 0 on success.
- */
+ 
 static int
 qla81xx_reset_mpi(scsi_qla_host_t *vha)
 {
@@ -3232,7 +3087,7 @@ qla_chk_risc_recovery(scsi_qla_host_t *vha)
 	if (!IS_QLA27XX(ha) && !IS_QLA28XX(ha))
 		return rc;
 
-	/* this check is only valid after RISC reset */
+	 
 	mb[0] = rd_reg_word(mbptr);
 	mbptr++;
 	if (mb[0] == 0xf) {
@@ -3262,12 +3117,7 @@ qla_chk_risc_recovery(scsi_qla_host_t *vha)
 	return rc;
 }
 
-/**
- * qla24xx_reset_risc() - Perform full reset of ISP24xx RISC.
- * @vha: HA context
- *
- * Returns 0 on success.
- */
+ 
 static inline int
 qla24xx_reset_risc(scsi_qla_host_t *vha)
 {
@@ -3276,13 +3126,13 @@ qla24xx_reset_risc(scsi_qla_host_t *vha)
 	struct device_reg_24xx __iomem *reg = &ha->iobase->isp24;
 	uint32_t cnt;
 	uint16_t wd;
-	static int abts_cnt; /* ISP abort retry counts */
+	static int abts_cnt;  
 	int rval = QLA_SUCCESS;
 	int print = 1;
 
 	spin_lock_irqsave(&ha->hardware_lock, flags);
 
-	/* Reset RISC. */
+	 
 	wrt_reg_dword(&reg->ctrl_status, CSRX_DMA_SHUTDOWN|MWB_4096_BYTES);
 	for (cnt = 0; cnt < 30000; cnt++) {
 		if ((rd_reg_dword(&reg->ctrl_status) & CSRX_DMA_ACTIVE) == 0)
@@ -3306,7 +3156,7 @@ qla24xx_reset_risc(scsi_qla_host_t *vha)
 
 	udelay(100);
 
-	/* Wait for firmware to complete NVRAM accesses. */
+	 
 	rd_reg_word(&reg->mailbox0);
 	for (cnt = 10000; rd_reg_word(&reg->mailbox0) != 0 &&
 	    rval == QLA_SUCCESS; cnt--) {
@@ -3325,7 +3175,7 @@ qla24xx_reset_risc(scsi_qla_host_t *vha)
 	    rd_reg_dword(&reg->hccr),
 	    rd_reg_word(&reg->mailbox0));
 
-	/* Wait for soft-reset to complete. */
+	 
 	rd_reg_dword(&reg->ctrl_status);
 	for (cnt = 0; cnt < 60; cnt++) {
 		barrier();
@@ -3343,17 +3193,14 @@ qla24xx_reset_risc(scsi_qla_host_t *vha)
 	    rd_reg_dword(&reg->hccr),
 	    rd_reg_dword(&reg->ctrl_status));
 
-	/* If required, do an MPI FW reset now */
+	 
 	if (test_and_clear_bit(MPI_RESET_NEEDED, &vha->dpc_flags)) {
 		if (qla81xx_reset_mpi(vha) != QLA_SUCCESS) {
 			if (++abts_cnt < 5) {
 				set_bit(ISP_ABORT_NEEDED, &vha->dpc_flags);
 				set_bit(MPI_RESET_NEEDED, &vha->dpc_flags);
 			} else {
-				/*
-				 * We exhausted the ISP abort retries. We have to
-				 * set the board offline.
-				 */
+				 
 				abts_cnt = 0;
 				vha->flags.online = 0;
 			}
@@ -3486,12 +3333,7 @@ acquired:
 	return;
 }
 
-/**
- * qla24xx_reset_chip() - Reset ISP24xx chip.
- * @vha: HA context
- *
- * Returns 0 on success.
- */
+ 
 int
 qla24xx_reset_chip(scsi_qla_host_t *vha)
 {
@@ -3507,18 +3349,13 @@ qla24xx_reset_chip(scsi_qla_host_t *vha)
 
 	qla25xx_manipulate_risc_semaphore(vha);
 
-	/* Perform RISC reset. */
+	 
 	rval = qla24xx_reset_risc(vha);
 
 	return rval;
 }
 
-/**
- * qla2x00_chip_diag() - Test chip for proper operation.
- * @vha: HA context
- *
- * Returns 0 on success.
- */
+ 
 int
 qla2x00_chip_diag(scsi_qla_host_t *vha)
 {
@@ -3531,7 +3368,7 @@ qla2x00_chip_diag(scsi_qla_host_t *vha)
 	uint16_t	mb[5];
 	struct req_que *req = ha->req_q_map[0];
 
-	/* Assume a failed state */
+	 
 	rval = QLA_FUNCTION_FAILED;
 
 	ql_dbg(ql_dbg_init, vha, 0x007b, "Testing device at %p.\n",
@@ -3539,13 +3376,10 @@ qla2x00_chip_diag(scsi_qla_host_t *vha)
 
 	spin_lock_irqsave(&ha->hardware_lock, flags);
 
-	/* Reset ISP chip. */
+	 
 	wrt_reg_word(&reg->ctrl_status, CSR_ISP_SOFT_RESET);
 
-	/*
-	 * We need to have a delay here since the card will not respond while
-	 * in reset causing an MCA on some architectures.
-	 */
+	 
 	udelay(20);
 	data = qla2x00_debounce_register(&reg->ctrl_status);
 	for (cnt = 6000000 ; cnt && (data & CSR_ISP_SOFT_RESET); cnt--) {
@@ -3560,11 +3394,11 @@ qla2x00_chip_diag(scsi_qla_host_t *vha)
 	ql_dbg(ql_dbg_init, vha, 0x007c,
 	    "Reset register cleared by chip reset.\n");
 
-	/* Reset RISC processor. */
+	 
 	wrt_reg_word(&reg->hccr, HCCR_RESET_RISC);
 	wrt_reg_word(&reg->hccr, HCCR_RELEASE_RISC);
 
-	/* Workaround for QLA2312 PCI parity error */
+	 
 	if (IS_QLA2100(ha) || IS_QLA2200(ha) || IS_QLA2300(ha)) {
 		data = qla2x00_debounce_register(MAILBOX_REG(ha, reg, 0));
 		for (cnt = 6000000; cnt && (data == MBS_BUSY); cnt--) {
@@ -3578,7 +3412,7 @@ qla2x00_chip_diag(scsi_qla_host_t *vha)
 	if (!cnt)
 		goto chip_diag_failed;
 
-	/* Check product ID of chip */
+	 
 	ql_dbg(ql_dbg_init, vha, 0x007d, "Checking product ID of chip.\n");
 
 	mb[1] = RD_MAILBOX_REG(ha, reg, 1);
@@ -3598,7 +3432,7 @@ qla2x00_chip_diag(scsi_qla_host_t *vha)
 	ha->product_id[2] = mb[3];
 	ha->product_id[3] = mb[4];
 
-	/* Adjust fw RISC transfer size */
+	 
 	if (req->length > 1024)
 		ha->fw_transfer_size = REQUEST_ENTRY_SIZE * 1024;
 	else
@@ -3607,14 +3441,14 @@ qla2x00_chip_diag(scsi_qla_host_t *vha)
 
 	if (IS_QLA2200(ha) &&
 	    RD_MAILBOX_REG(ha, reg, 7) == QLA2200A_RISC_ROM_VER) {
-		/* Limit firmware transfer size with a 2200A */
+		 
 		ql_dbg(ql_dbg_init, vha, 0x007e, "Found QLA2200A Chip.\n");
 
 		ha->device_type |= DT_ISP2200A;
 		ha->fw_transfer_size = 128;
 	}
 
-	/* Wrap Incoming Mailboxes Test. */
+	 
 	spin_unlock_irqrestore(&ha->hardware_lock, flags);
 
 	ql_dbg(ql_dbg_init, vha, 0x007f, "Checking mailboxes.\n");
@@ -3623,7 +3457,7 @@ qla2x00_chip_diag(scsi_qla_host_t *vha)
 		ql_log(ql_log_warn, vha, 0x0080,
 		    "Failed mailbox send register test.\n");
 	else
-		/* Flag a successful rval */
+		 
 		rval = QLA_SUCCESS;
 	spin_lock_irqsave(&ha->hardware_lock, flags);
 
@@ -3637,12 +3471,7 @@ chip_diag_failed:
 	return (rval);
 }
 
-/**
- * qla24xx_chip_diag() - Test ISP24xx for proper operation.
- * @vha: HA context
- *
- * Returns 0 on success.
- */
+ 
 int
 qla24xx_chip_diag(scsi_qla_host_t *vha)
 {
@@ -3660,7 +3489,7 @@ qla24xx_chip_diag(scsi_qla_host_t *vha)
 		ql_log(ql_log_warn, vha, 0x0082,
 		    "Failed mailbox send register test.\n");
 	} else {
-		/* Flag a successful rval */
+		 
 		rval = QLA_SUCCESS;
 	}
 
@@ -3689,7 +3518,7 @@ qla2x00_init_fce_trace(scsi_qla_host_t *vha)
 		return;
 	}
 
-	/* Allocate memory for Fibre Channel Event Buffer. */
+	 
 	tc = dma_alloc_coherent(&ha->pdev->dev, FCE_SIZE, &tc_dma,
 				GFP_KERNEL);
 	if (!tc) {
@@ -3734,7 +3563,7 @@ qla2x00_init_eft_trace(scsi_qla_host_t *vha)
 		return;
 	}
 
-	/* Allocate memory for Extended Trace Buffer. */
+	 
 	tc = dma_alloc_coherent(&ha->pdev->dev, EFT_SIZE, &tc_dma,
 				GFP_KERNEL);
 	if (!tc) {
@@ -3808,10 +3637,7 @@ qla2x00_alloc_fw_dump(scsi_qla_host_t *vha)
 		if (ha->mqenable) {
 			if (!IS_QLA83XX(ha))
 				mq_size = sizeof(struct qla2xxx_mq_chain);
-			/*
-			 * Allocate maximum buffer size for all queues - Q0.
-			 * Resizing must be done at end-of-dump processing.
-			 */
+			 
 			mq_size += (ha->max_req_queues - 1) *
 			    (req->length * sizeof(request_t));
 			mq_size += (ha->max_rsp_queues - 1) *
@@ -3847,7 +3673,7 @@ qla2x00_alloc_fw_dump(scsi_qla_host_t *vha)
 			    j, fwdt->dump_size);
 			dump_size += fwdt->dump_size;
 		}
-		/* Add space for spare MPI fw dump. */
+		 
 		dump_size += ha->fwdt[1].dump_size;
 	} else {
 		req_q_size = req->length * sizeof(request_t);
@@ -3980,7 +3806,7 @@ done:
 int
 qla2x00_alloc_outstanding_cmds(struct qla_hw_data *ha, struct req_que *req)
 {
-	/* Don't try to reallocate the array */
+	 
 	if (req->outstanding_cmds)
 		return QLA_SUCCESS;
 
@@ -3998,10 +3824,7 @@ qla2x00_alloc_outstanding_cmds(struct qla_hw_data *ha, struct req_que *req)
 					GFP_KERNEL);
 
 	if (!req->outstanding_cmds) {
-		/*
-		 * Try to allocate a minimal size just so we can get through
-		 * initialization.
-		 */
+		 
 		req->num_outstanding_cmds = MIN_OUTSTANDING_COMMANDS;
 		req->outstanding_cmds = kcalloc(req->num_outstanding_cmds,
 						sizeof(srb_t *),
@@ -4050,7 +3873,7 @@ static void qla2xxx_print_sfp_info(struct scsi_qla_host *vha)
 	ql_dbg(ql_dbg_init, vha, 0x015c,
 	    "SFP Part Name: %s\n", str);
 
-	/* media */
+	 
 	memset(str, 0, STR_LEN);
 	ptr = str;
 	leftover = STR_LEN;
@@ -4065,7 +3888,7 @@ static void qla2xxx_print_sfp_info(struct scsi_qla_host *vha)
 	ql_dbg(ql_dbg_init, vha, 0x0160,
 	    "SFP Media: %s\n", str);
 
-	/* link length */
+	 
 	memset(str, 0, STR_LEN);
 	ptr = str;
 	leftover = STR_LEN;
@@ -4111,20 +3934,7 @@ static void qla2xxx_print_sfp_info(struct scsi_qla_host *vha)
 }
 
 
-/**
- * qla24xx_detect_sfp()
- *
- * @vha: adapter state pointer.
- *
- * @return
- *	0 -- Configure firmware to use short-range settings -- normal
- *	     buffer-to-buffer credits.
- *
- *	1 -- Configure firmware to use long-range settings -- extra
- *	     buffer-to-buffer credits should be allocated with
- *	     ha->lr_distance containing distance settings from NVRAM or SFP
- *	     (if supported).
- */
+ 
 int
 qla24xx_detect_sfp(scsi_qla_host_t *vha)
 {
@@ -4137,7 +3947,7 @@ qla24xx_detect_sfp(scsi_qla_host_t *vha)
 	static const char * const lengths[] = { "(10km)", "(5km)", "" };
 	u8 ll = 0;
 
-	/* Seed with NVRAM settings. */
+	 
 	used_nvram = 0;
 	ha->flags.lr_detected = 0;
 	if (IS_BPM_RANGE_CAPABLE(ha) &&
@@ -4151,7 +3961,7 @@ qla24xx_detect_sfp(scsi_qla_host_t *vha)
 
 	if (!IS_BPM_ENABLED(vha))
 		goto out;
-	/* Determine SR/LR capabilities of SFP/Transceiver. */
+	 
 	rc = qla2x00_read_sfp_dev(vha, NULL, 0);
 	if (rc)
 		goto out;
@@ -4163,7 +3973,7 @@ qla24xx_detect_sfp(scsi_qla_host_t *vha)
 	ha->flags.lr_detected = 0;
 	ll = a->fc_ll_cc7;
 	if (ll & FC_LL_VL || ll & FC_LL_L) {
-		/* Long range, track length. */
+		 
 		ha->flags.lr_detected = 1;
 
 		if (a->length_km > 5 || a->length_100m > 50)
@@ -4239,12 +4049,7 @@ void qla_adjust_iocb_limit(scsi_qla_host_t *vha)
 	}
 }
 
-/**
- * qla2x00_setup_chip() - Load and start RISC firmware.
- * @vha: HA context
- *
- * Returns 0 on success.
- */
+ 
 static int
 qla2x00_setup_chip(scsi_qla_host_t *vha)
 {
@@ -4266,7 +4071,7 @@ qla2x00_setup_chip(scsi_qla_host_t *vha)
 	}
 
 	if (!IS_FWI2_CAPABLE(ha) && !IS_QLA2100(ha) && !IS_QLA2200(ha)) {
-		/* Disable SRAM, Instruction RAM and GP RAM parity.  */
+		 
 		spin_lock_irqsave(&ha->hardware_lock, flags);
 		wrt_reg_word(&reg->hccr, (HCCR_ENABLE_PARITY + 0x0));
 		rd_reg_word(&reg->hccr);
@@ -4276,7 +4081,7 @@ qla2x00_setup_chip(scsi_qla_host_t *vha)
 	qla81xx_mpi_sync(vha);
 
 execute_fw_with_lr:
-	/* Load firmware sequences */
+	 
 	rval = ha->isp_ops->load_risc(vha, &srisc_address);
 	if (rval == QLA_SUCCESS) {
 		ql_dbg(ql_dbg_init, vha, 0x00c9,
@@ -4284,7 +4089,7 @@ execute_fw_with_lr:
 
 		rval = qla2x00_verify_checksum(vha, srisc_address);
 		if (rval == QLA_SUCCESS) {
-			/* Start firmware execution. */
+			 
 			ql_dbg(ql_dbg_init, vha, 0x00ca,
 			    "Starting firmware.\n");
 
@@ -4295,13 +4100,13 @@ execute_fw_with_lr:
 				ha->flags.exchoffld_enabled = 1;
 
 			rval = qla2x00_execute_fw(vha, srisc_address);
-			/* Retrieve firmware information. */
+			 
 			if (rval == QLA_SUCCESS) {
-				/* Enable BPM support? */
+				 
 				if (!done_once++ && qla24xx_detect_sfp(vha)) {
 					ql_dbg(ql_dbg_init, vha, 0x00ca,
 					    "Re-starting firmware -- BPM.\n");
-					/* Best-effort - re-init. */
+					 
 					ha->isp_ops->reset_chip(vha);
 					ha->isp_ops->chip_diag(vha);
 					goto execute_fw_with_lr;
@@ -4340,10 +4145,7 @@ enable_82xx_npiv:
 				qla2x00_get_resource_cnts(vha);
 				qla_init_iocb_limit(vha);
 
-				/*
-				 * Allocate the array of outstanding commands
-				 * now that we know the firmware resources.
-				 */
+				 
 				rval = qla2x00_alloc_outstanding_cmds(ha,
 				    vha->req);
 				if (rval != QLA_SUCCESS)
@@ -4364,7 +4166,7 @@ enable_82xx_npiv:
 			goto failed;
 		}
 
-		/* Enable PUREX PASSTHRU */
+		 
 		if (ql2xrdpenable || ha->flags.scm_supported_f ||
 		    ha->flags.edif_enabled)
 			qla25xx_set_els_cmds_supported(vha);
@@ -4372,13 +4174,13 @@ enable_82xx_npiv:
 		goto failed;
 
 	if (!IS_FWI2_CAPABLE(ha) && !IS_QLA2100(ha) && !IS_QLA2200(ha)) {
-		/* Enable proper parity. */
+		 
 		spin_lock_irqsave(&ha->hardware_lock, flags);
 		if (IS_QLA2300(ha))
-			/* SRAM parity */
+			 
 			wrt_reg_word(&reg->hccr, HCCR_ENABLE_PARITY + 0x1);
 		else
-			/* SRAM, Instruction RAM and GP RAM parity */
+			 
 			wrt_reg_word(&reg->hccr, HCCR_ENABLE_PARITY + 0x7);
 		rd_reg_word(&reg->hccr);
 		spin_unlock_irqrestore(&ha->hardware_lock, flags);
@@ -4414,15 +4216,7 @@ failed:
 	return (rval);
 }
 
-/**
- * qla2x00_init_response_q_entries() - Initializes response queue entries.
- * @rsp: response queue
- *
- * Beginning of request ring has initialization control block already built
- * by nvram config routine.
- *
- * Returns 0 on success.
- */
+ 
 void
 qla2x00_init_response_q_entries(struct rsp_que *rsp)
 {
@@ -4439,12 +4233,7 @@ qla2x00_init_response_q_entries(struct rsp_que *rsp)
 	}
 }
 
-/**
- * qla2x00_update_fw_options() - Read and process firmware options.
- * @vha: HA context
- *
- * Returns 0 on success.
- */
+ 
 void
 qla2x00_update_fw_options(scsi_qla_host_t *vha)
 {
@@ -4457,7 +4246,7 @@ qla2x00_update_fw_options(scsi_qla_host_t *vha)
 	if (IS_QLA2100(ha) || IS_QLA2200(ha))
 		return;
 
-	/* Serial Link options. */
+	 
 	ql_dbg(ql_dbg_init + ql_dbg_buffer, vha, 0x0115,
 	    "Serial link options.\n");
 	ql_dump_buffer(ql_dbg_init + ql_dbg_buffer, vha, 0x0109,
@@ -4467,7 +4256,7 @@ qla2x00_update_fw_options(scsi_qla_host_t *vha)
 	if (ha->fw_seriallink_options[3] & BIT_2) {
 		ha->fw_options[1] |= FO1_SET_EMPHASIS_SWING;
 
-		/*  1G settings */
+		 
 		swing = ha->fw_seriallink_options[2] & (BIT_2 | BIT_1 | BIT_0);
 		emphasis = (ha->fw_seriallink_options[2] &
 		    (BIT_4 | BIT_3)) >> 3;
@@ -4485,7 +4274,7 @@ qla2x00_update_fw_options(scsi_qla_host_t *vha)
 			    ((rx_sens & (BIT_1 | BIT_0)) << 2) |
 			    (tx_sens & (BIT_1 | BIT_0));
 
-		/*  2G settings */
+		 
 		swing = (ha->fw_seriallink_options[2] &
 		    (BIT_7 | BIT_6 | BIT_5)) >> 5;
 		emphasis = ha->fw_seriallink_options[3] & (BIT_1 | BIT_0);
@@ -4504,19 +4293,19 @@ qla2x00_update_fw_options(scsi_qla_host_t *vha)
 			    (tx_sens & (BIT_1 | BIT_0));
 	}
 
-	/* FCP2 options. */
-	/*  Return command IOCBs without waiting for an ABTS to complete. */
+	 
+	 
 	ha->fw_options[3] |= BIT_13;
 
-	/* LED scheme. */
+	 
 	if (ha->flags.enable_led_scheme)
 		ha->fw_options[2] |= BIT_12;
 
-	/* Detect ISP6312. */
+	 
 	if (IS_QLA6312(ha))
 		ha->fw_options[2] |= BIT_13;
 
-	/* Set Retry FLOGI in case of P2P connection */
+	 
 	if (ha->operating_mode == P2P) {
 		ha->fw_options[2] |= BIT_3;
 		ql_dbg(ql_dbg_disc, vha, 0x2100,
@@ -4524,7 +4313,7 @@ qla2x00_update_fw_options(scsi_qla_host_t *vha)
 			__func__, ha->fw_options[2]);
 	}
 
-	/* Update firmware options. */
+	 
 	qla2x00_set_fw_options(vha, ha->fw_options);
 }
 
@@ -4537,11 +4326,11 @@ qla24xx_update_fw_options(scsi_qla_host_t *vha)
 	if (IS_P3P_TYPE(ha))
 		return;
 
-	/*  Hold status IOCBs until ABTS response received. */
+	 
 	if (ql2xfwholdabts)
 		ha->fw_options[3] |= BIT_12;
 
-	/* Set Retry FLOGI in case of P2P connection */
+	 
 	if (ha->operating_mode == P2P) {
 		ha->fw_options[2] |= BIT_3;
 		ql_dbg(ql_dbg_disc, vha, 0x2101,
@@ -4549,7 +4338,7 @@ qla24xx_update_fw_options(scsi_qla_host_t *vha)
 			__func__, ha->fw_options[2]);
 	}
 
-	/* Move PUREX, ABTS RX & RIDA to ATIOQ */
+	 
 	if (ql2xmvasynctoatio && !ha->flags.edif_enabled &&
 	    (IS_QLA83XX(ha) || IS_QLA27XX(ha) || IS_QLA28XX(ha))) {
 		if (qla_tgt_mode_enabled(vha) ||
@@ -4561,26 +4350,20 @@ qla24xx_update_fw_options(scsi_qla_host_t *vha)
 
 	if (IS_QLA25XX(ha) || IS_QLA83XX(ha) || IS_QLA27XX(ha) ||
 	    IS_QLA28XX(ha)) {
-		/*
-		 * Tell FW to track each exchange to prevent
-		 * driver from using stale exchange.
-		 */
+		 
 		if (qla_tgt_mode_enabled(vha) ||
 		    qla_dual_mode_enabled(vha))
 			ha->fw_options[2] |= BIT_4;
 		else
 			ha->fw_options[2] &= ~(BIT_4);
 
-		/* Reserve 1/2 of emergency exchanges for ELS.*/
+		 
 		if (qla2xuseresexchforels)
 			ha->fw_options[2] |= BIT_8;
 		else
 			ha->fw_options[2] &= ~BIT_8;
 
-		/*
-		 * N2N: set Secure=1 for PLOGI ACC and
-		 * fw shal not send PRLI after PLOGI Acc
-		 */
+		 
 		if (ha->flags.edif_enabled &&
 		    DBELL_ACTIVE(vha)) {
 			ha->fw_options[3] |= BIT_15;
@@ -4595,7 +4378,7 @@ qla24xx_update_fw_options(scsi_qla_host_t *vha)
 	    ha->flags.edif_enabled)
 		ha->fw_options[1] |= ADD_FO1_ENABLE_PUREX_IOCB;
 
-	/* Enable Async 8130/8131 events -- transceiver insertion/removal */
+	 
 	if (IS_BPM_RANGE_CAPABLE(ha))
 		ha->fw_options[3] |= BIT_10;
 
@@ -4607,7 +4390,7 @@ qla24xx_update_fw_options(scsi_qla_host_t *vha)
 	if (ha->fw_options[1] || ha->fw_options[2] || ha->fw_options[3])
 		qla2x00_set_fw_options(vha, ha->fw_options);
 
-	/* Update Serial Link options. */
+	 
 	if ((le16_to_cpu(ha->fw_seriallink_options24[0]) & BIT_0) == 0)
 		return;
 
@@ -4629,7 +4412,7 @@ qla2x00_config_rings(struct scsi_qla_host *vha)
 	struct req_que *req = ha->req_q_map[0];
 	struct rsp_que *rsp = ha->rsp_q_map[0];
 
-	/* Setup ring parameters in initialization control block. */
+	 
 	ha->init_cb->request_q_outpointer = cpu_to_le16(0);
 	ha->init_cb->response_q_inpointer = cpu_to_le16(0);
 	ha->init_cb->request_q_length = cpu_to_le16(req->length);
@@ -4641,7 +4424,7 @@ qla2x00_config_rings(struct scsi_qla_host *vha)
 	wrt_reg_word(ISP_REQ_Q_OUT(ha, reg), 0);
 	wrt_reg_word(ISP_RSP_Q_IN(ha, reg), 0);
 	wrt_reg_word(ISP_RSP_Q_OUT(ha, reg), 0);
-	rd_reg_word(ISP_RSP_Q_OUT(ha, reg));		/* PCI Posting. */
+	rd_reg_word(ISP_RSP_Q_OUT(ha, reg));		 
 }
 
 void
@@ -4656,7 +4439,7 @@ qla24xx_config_rings(struct scsi_qla_host *vha)
 	struct req_que *req = ha->req_q_map[0];
 	struct rsp_que *rsp = ha->rsp_q_map[0];
 
-	/* Setup ring parameters in initialization control block. */
+	 
 	icb = (struct init_cb_24xx *)ha->init_cb;
 	icb->request_q_outpointer = cpu_to_le16(0);
 	icb->response_q_inpointer = cpu_to_le16(0);
@@ -4665,7 +4448,7 @@ qla24xx_config_rings(struct scsi_qla_host *vha)
 	put_unaligned_le64(req->dma, &icb->request_q_address);
 	put_unaligned_le64(rsp->dma, &icb->response_q_address);
 
-	/* Setup ATIO queue dma pointers for target mode */
+	 
 	icb->atio_q_inpointer = cpu_to_le16(0);
 	icb->atio_q_length = cpu_to_le16(ha->tgt.atio_q_length);
 	put_unaligned_le64(ha->tgt.atio_dma, &icb->atio_q_address);
@@ -4684,14 +4467,14 @@ qla24xx_config_rings(struct scsi_qla_host *vha)
 			    msix->entry);
 			icb->msix = cpu_to_le16(msix->entry);
 		}
-		/* Use alternate PCI bus number */
+		 
 		if (MSB(rid))
 			icb->firmware_options_2 |= cpu_to_le32(BIT_19);
-		/* Use alternate PCI devfn */
+		 
 		if (LSB(rid))
 			icb->firmware_options_2 |= cpu_to_le32(BIT_18);
 
-		/* Use Disable MSIX Handshake mode for capable adapters */
+		 
 		if ((ha->fw_attributes & BIT_6) && (IS_MSIX_NACK_CAPABLE(ha)) &&
 		    (ha->flags.msix_enabled)) {
 			icb->firmware_options_2 &= cpu_to_le32(~BIT_22);
@@ -4716,7 +4499,7 @@ qla24xx_config_rings(struct scsi_qla_host *vha)
 
 	qlt_24xx_config_rings(vha);
 
-	/* If the user has configured the speed, set it here */
+	 
 	if (ha->set_data_rate) {
 		ql_dbg(ql_dbg_init, vha, 0x00fd,
 		    "Speed set by user : %s Gbps \n",
@@ -4724,19 +4507,11 @@ qla24xx_config_rings(struct scsi_qla_host *vha)
 		icb->firmware_options_3 = cpu_to_le32(ha->set_data_rate << 13);
 	}
 
-	/* PCI posting */
+	 
 	rd_reg_word(&ioreg->hccr);
 }
 
-/**
- * qla2x00_init_rings() - Initializes firmware.
- * @vha: HA context
- *
- * Beginning of request ring has initialization control block already built
- * by nvram config routine.
- *
- * Returns 0 on success.
- */
+ 
 int
 qla2x00_init_rings(scsi_qla_host_t *vha)
 {
@@ -4751,7 +4526,7 @@ qla2x00_init_rings(scsi_qla_host_t *vha)
 
 	spin_lock_irqsave(&ha->hardware_lock, flags);
 
-	/* Clear outstanding commands array. */
+	 
 	for (que = 0; que < ha->max_req_queues; que++) {
 		req = ha->req_q_map[que];
 		if (!req || !test_bit(que, ha->req_qid_map))
@@ -4763,7 +4538,7 @@ qla2x00_init_rings(scsi_qla_host_t *vha)
 
 		req->current_outstanding_cmd = 1;
 
-		/* Initialize firmware. */
+		 
 		req->ring_ptr  = req->ring;
 		req->ring_index    = 0;
 		req->cnt      = req->length;
@@ -4775,7 +4550,7 @@ qla2x00_init_rings(scsi_qla_host_t *vha)
 			continue;
 		rsp->in_ptr = (uint16_t *)(rsp->ring + rsp->length);
 		*rsp->in_ptr = 0;
-		/* Initialize response queue entries */
+		 
 		if (IS_QLAFX00(ha))
 			qlafx00_init_response_q_entries(rsp);
 		else
@@ -4784,7 +4559,7 @@ qla2x00_init_rings(scsi_qla_host_t *vha)
 
 	ha->tgt.atio_ring_ptr = ha->tgt.atio_ring;
 	ha->tgt.atio_ring_index = 0;
-	/* Initialize ATIO queue entries */
+	 
 	qlt_init_atio_q_entries(vha);
 
 	ha->isp_ops->config_rings(vha);
@@ -4796,7 +4571,7 @@ qla2x00_init_rings(scsi_qla_host_t *vha)
 		goto next_check;
 	}
 
-	/* Update any ISP specific firmware options before initialization. */
+	 
 	ha->isp_ops->update_fw_options(vha);
 
 	ql_dbg(ql_dbg_init, vha, 0x00d1,
@@ -4820,17 +4595,17 @@ qla2x00_init_rings(scsi_qla_host_t *vha)
 			 BIT_7) != 0;
 		ql_dbg(ql_dbg_init, vha, 0x0191, "DPORT Support: %s.\n",
 		    (ha->flags.dport_enabled) ? "enabled" : "disabled");
-		/* FA-WWPN Status */
+		 
 		ha->flags.fawwpn_enabled =
 			(le32_to_cpu(mid_init_cb->init_cb.firmware_options_1) &
 			 BIT_6) != 0;
 		ql_dbg(ql_dbg_init, vha, 0x00bc, "FA-WWPN Support: %s.\n",
 		    (ha->flags.fawwpn_enabled) ? "enabled" : "disabled");
-		/* Init_cb will be reused for other command(s).  Save a backup copy of port_name */
+		 
 		memcpy(ha->port_name, ha->init_cb->port_name, WWN_SIZE);
 	}
 
-	/* ELS pass through payload is limit by frame size. */
+	 
 	if (ha->flags.edif_enabled)
 		mid_init_cb->init_cb.frame_payload_size = cpu_to_le16(ELS_MAX_PAYLOAD);
 
@@ -4850,46 +4625,38 @@ next_check:
 	return (rval);
 }
 
-/**
- * qla2x00_fw_ready() - Waits for firmware ready.
- * @vha: HA context
- *
- * Returns 0 on success.
- */
+ 
 static int
 qla2x00_fw_ready(scsi_qla_host_t *vha)
 {
 	int		rval;
 	unsigned long	wtime, mtime, cs84xx_time;
-	uint16_t	min_wait;	/* Minimum wait time if loop is down */
-	uint16_t	wait_time;	/* Wait time if loop is coming ready */
+	uint16_t	min_wait;	 
+	uint16_t	wait_time;	 
 	uint16_t	state[6];
 	struct qla_hw_data *ha = vha->hw;
 
 	if (IS_QLAFX00(vha->hw))
 		return qlafx00_fw_ready(vha);
 
-	/* Time to wait for loop down */
+	 
 	if (IS_P3P_TYPE(ha))
 		min_wait = 30;
 	else
 		min_wait = 20;
 
-	/*
-	 * Firmware should take at most one RATOV to login, plus 5 seconds for
-	 * our own processing.
-	 */
+	 
 	if ((wait_time = (ha->retry_count*ha->login_timeout) + 5) < min_wait) {
 		wait_time = min_wait;
 	}
 
-	/* Min wait time if loop down */
+	 
 	mtime = jiffies + (min_wait * HZ);
 
-	/* wait time before firmware ready */
+	 
 	wtime = jiffies + (wait_time * HZ);
 
-	/* Wait for ISP to finish LIP */
+	 
 	if (!vha->flags.init_done)
 		ql_log(ql_log_info, vha, 0x801e,
 		    "Waiting for LIP to complete.\n");
@@ -4919,7 +4686,7 @@ qla2x00_fw_ready(scsi_qla_host_t *vha)
 						break;
 					}
 
-					/* Add time taken to initialize. */
+					 
 					cs84xx_time = jiffies - cs84xx_time;
 					wtime += cs84xx_time;
 					mtime += cs84xx_time;
@@ -4943,9 +4710,7 @@ qla2x00_fw_ready(scsi_qla_host_t *vha)
 
 			if (atomic_read(&vha->loop_down_timer) &&
 			    state[0] != FSTATE_READY) {
-				/* Loop down. Timeout on min_wait for states
-				 * other than Wait for Login.
-				 */
+				 
 				if (time_after_eq(jiffies, mtime)) {
 					ql_log(ql_log_info, vha, 0x8038,
 					    "Cable is unplugged...\n");
@@ -4955,7 +4720,7 @@ qla2x00_fw_ready(scsi_qla_host_t *vha)
 				}
 			}
 		} else {
-			/* Mailbox cmd failed. Timeout on min_wait. */
+			 
 			if (time_after_eq(jiffies, mtime) ||
 				ha->flags.isp82xx_fw_hung)
 				break;
@@ -4964,7 +4729,7 @@ qla2x00_fw_ready(scsi_qla_host_t *vha)
 		if (time_after_eq(jiffies, wtime))
 			break;
 
-		/* Delay for a while */
+		 
 		msleep(500);
 	} while (1);
 
@@ -4980,19 +4745,7 @@ qla2x00_fw_ready(scsi_qla_host_t *vha)
 	return (rval);
 }
 
-/*
-*  qla2x00_configure_hba
-*      Setup adapter context.
-*
-* Input:
-*      ha = adapter state pointer.
-*
-* Returns:
-*      0 = success
-*
-* Context:
-*      Kernel context.
-*/
+ 
 static int
 qla2x00_configure_hba(scsi_qla_host_t *vha)
 {
@@ -5009,7 +4762,7 @@ qla2x00_configure_hba(scsi_qla_host_t *vha)
 	port_id_t id;
 	unsigned long flags;
 
-	/* Get host addresses. */
+	 
 	rval = qla2x00_get_adapter_id(vha,
 	    &loop_id, &al_pa, &area, &domain, &topo, &sw_cap);
 	if (rval != QLA_SUCCESS) {
@@ -5041,7 +4794,7 @@ qla2x00_configure_hba(scsi_qla_host_t *vha)
 
 	vha->loop_id = loop_id;
 
-	/* initialize */
+	 
 	ha->min_external_loopid = SNS_FIRST_LOOP_ID;
 	ha->operating_mode = LOOP;
 
@@ -5085,8 +4838,8 @@ qla2x00_configure_hba(scsi_qla_host_t *vha)
 		break;
 	}
 
-	/* Save Host port and loop ID. */
-	/* byte order - Big Endian */
+	 
+	 
 	id.b.domain = domain;
 	id.b.area = area;
 	id.b.al_pa = al_pa;
@@ -5158,9 +4911,7 @@ qla2x00_set_model_info(scsi_qla_host_t *vha, uint8_t *model, size_t len,
 		    sizeof(ha->model_desc));
 }
 
-/* On sparc systems, obtain port and node WWN from firmware
- * properties.
- */
+ 
 static void qla2xxx_nvram_wwn_from_ofw(scsi_qla_host_t *vha, nvram_t *nv)
 {
 #ifdef CONFIG_SPARC
@@ -5180,19 +4931,7 @@ static void qla2xxx_nvram_wwn_from_ofw(scsi_qla_host_t *vha, nvram_t *nv)
 #endif
 }
 
-/*
-* NVRAM configuration for ISP 2xxx
-*
-* Input:
-*      ha                = adapter block pointer.
-*
-* Output:
-*      initialization control block in response_ring
-*      host adapters parameters in host adapter block
-*
-* Returns:
-*      0 = success.
-*/
+ 
 int
 qla2x00_nvram_config(scsi_qla_host_t *vha)
 {
@@ -5208,14 +4947,14 @@ qla2x00_nvram_config(scsi_qla_host_t *vha)
 
 	rval = QLA_SUCCESS;
 
-	/* Determine NVRAM starting address. */
+	 
 	ha->nvram_size = sizeof(*nv);
 	ha->nvram_base = 0;
 	if (!IS_QLA2100(ha) && !IS_QLA2200(ha) && !IS_QLA2300(ha))
 		if ((rd_reg_word(&reg->ctrl_status) >> 14) == 1)
 			ha->nvram_base = 0x80;
 
-	/* Get NVRAM data and calculate checksum. */
+	 
 	ha->isp_ops->read_nvram(vha, ptr, ha->nvram_base, ha->nvram_size);
 	for (cnt = 0, chksum = 0; cnt < ha->nvram_size; cnt++)
 		chksum += *ptr++;
@@ -5225,10 +4964,10 @@ qla2x00_nvram_config(scsi_qla_host_t *vha)
 	ql_dump_buffer(ql_dbg_init + ql_dbg_buffer, vha, 0x0110,
 	    nv, ha->nvram_size);
 
-	/* Bad NVRAM data, set defaults parameters. */
+	 
 	if (chksum || memcmp("ISP ", nv->id, sizeof(nv->id)) ||
 	    nv->nvram_version < 1) {
-		/* Reset NVRAM data. */
+		 
 		ql_log(ql_log_warn, vha, 0x0064,
 		    "Inconsistent NVRAM detected: checksum=%#x id=%.4s version=%#x.\n",
 		    chksum, nv->id, nv->nvram_version);
@@ -5236,9 +4975,7 @@ qla2x00_nvram_config(scsi_qla_host_t *vha)
 		    "Falling back to "
 		    "functioning (yet invalid -- WWPN) defaults.\n");
 
-		/*
-		 * Set default initialization control block.
-		 */
+		 
 		memset(nv, 0, ha->nvram_size);
 		nv->parameter_block_version = ICB_VERSION;
 
@@ -5274,9 +5011,7 @@ qla2x00_nvram_config(scsi_qla_host_t *vha)
 
 		nv->login_timeout = 4;
 
-		/*
-		 * Set default host adapter parameters
-		 */
+		 
 		nv->host_p[1] = BIT_2;
 		nv->reset_delay = 5;
 		nv->port_down_retry_count = 8;
@@ -5286,12 +5021,10 @@ qla2x00_nvram_config(scsi_qla_host_t *vha)
 		rval = 1;
 	}
 
-	/* Reset Initialization control block */
+	 
 	memset(icb, 0, ha->init_cb_size);
 
-	/*
-	 * Setup driver NVRAM options.
-	 */
+	 
 	nv->firmware_options[0] |= (BIT_6 | BIT_1);
 	nv->firmware_options[0] &= ~(BIT_5 | BIT_4);
 	nv->firmware_options[1] |= (BIT_5 | BIT_0);
@@ -5315,64 +5048,51 @@ qla2x00_nvram_config(scsi_qla_host_t *vha)
 		}
 	} else if (IS_QLA2200(ha)) {
 		nv->firmware_options[0] |= BIT_2;
-		/*
-		 * 'Point-to-point preferred, else loop' is not a safe
-		 * connection mode setting.
-		 */
+		 
 		if ((nv->add_firmware_options[0] & (BIT_6 | BIT_5 | BIT_4)) ==
 		    (BIT_5 | BIT_4)) {
-			/* Force 'loop preferred, else point-to-point'. */
+			 
 			nv->add_firmware_options[0] &= ~(BIT_6 | BIT_5 | BIT_4);
 			nv->add_firmware_options[0] |= BIT_5;
 		}
 		strcpy(ha->model_number, "QLA22xx");
-	} else /*if (IS_QLA2100(ha))*/ {
+	} else   {
 		strcpy(ha->model_number, "QLA2100");
 	}
 
-	/*
-	 * Copy over NVRAM RISC parameter block to initialization control block.
-	 */
+	 
 	dptr1 = (uint8_t *)icb;
 	dptr2 = (uint8_t *)&nv->parameter_block_version;
 	cnt = (uint8_t *)&icb->request_q_outpointer - (uint8_t *)&icb->version;
 	while (cnt--)
 		*dptr1++ = *dptr2++;
 
-	/* Copy 2nd half. */
+	 
 	dptr1 = (uint8_t *)icb->add_firmware_options;
 	cnt = (uint8_t *)icb->reserved_3 - (uint8_t *)icb->add_firmware_options;
 	while (cnt--)
 		*dptr1++ = *dptr2++;
 	ha->frame_payload_size = le16_to_cpu(icb->frame_payload_size);
-	/* Use alternate WWN? */
+	 
 	if (nv->host_p[1] & BIT_7) {
 		memcpy(icb->node_name, nv->alternate_node_name, WWN_SIZE);
 		memcpy(icb->port_name, nv->alternate_port_name, WWN_SIZE);
 	}
 
-	/* Prepare nodename */
+	 
 	if ((icb->firmware_options[1] & BIT_6) == 0) {
-		/*
-		 * Firmware will apply the following mask if the nodename was
-		 * not provided.
-		 */
+		 
 		memcpy(icb->node_name, icb->port_name, WWN_SIZE);
 		icb->node_name[0] &= 0xF0;
 	}
 
-	/*
-	 * Set host adapter parameters.
-	 */
+	 
 
-	/*
-	 * BIT_7 in the host-parameters section allows for modification to
-	 * internal driver logging.
-	 */
+	 
 	if (nv->host_p[0] & BIT_7)
 		ql2xextended_error_logging = QL_DBG_DEFAULT1_MASK;
 	ha->flags.disable_risc_code_load = ((nv->host_p[0] & BIT_4) ? 1 : 0);
-	/* Always load RISC code on non ISP2[12]00 chips. */
+	 
 	if (!IS_QLA2100(ha) && !IS_QLA2200(ha))
 		ha->flags.disable_risc_code_load = 0;
 	ha->flags.enable_lip_reset = ((nv->host_p[1] & BIT_1) ? 1 : 0);
@@ -5387,7 +5107,7 @@ qla2x00_nvram_config(scsi_qla_host_t *vha)
 	memcpy(ha->fw_seriallink_options, nv->seriallink_options,
 	    sizeof(ha->fw_seriallink_options));
 
-	/* save HBA serial number */
+	 
 	ha->serial0 = icb->port_name[5];
 	ha->serial1 = icb->port_name[6];
 	ha->serial2 = icb->port_name[7];
@@ -5398,28 +5118,19 @@ qla2x00_nvram_config(scsi_qla_host_t *vha)
 
 	ha->retry_count = nv->retry_count;
 
-	/* Set minimum login_timeout to 4 seconds. */
+	 
 	if (nv->login_timeout != ql2xlogintimeout)
 		nv->login_timeout = ql2xlogintimeout;
 	if (nv->login_timeout < 4)
 		nv->login_timeout = 4;
 	ha->login_timeout = nv->login_timeout;
 
-	/* Set minimum RATOV to 100 tenths of a second. */
+	 
 	ha->r_a_tov = 100;
 
 	ha->loop_reset_delay = nv->reset_delay;
 
-	/* Link Down Timeout = 0:
-	 *
-	 * 	When Port Down timer expires we will start returning
-	 *	I/O's to OS with "DID_NO_CONNECT".
-	 *
-	 * Link Down Timeout != 0:
-	 *
-	 *	 The driver waits for the link to come up after link down
-	 *	 before returning I/Os to OS with "DID_NO_CONNECT".
-	 */
+	 
 	if (nv->link_down_timeout == 0) {
 		ha->loop_down_abort_time =
 		    (LOOP_DOWN_TIME - LOOP_DOWN_TIMEOUT);
@@ -5429,13 +5140,11 @@ qla2x00_nvram_config(scsi_qla_host_t *vha)
 		    (LOOP_DOWN_TIME - ha->link_down_timeout);
 	}
 
-	/*
-	 * Need enough time to try and get the port back.
-	 */
+	 
 	ha->port_down_retry_count = nv->port_down_retry_count;
 	if (qlport_down_retry)
 		ha->port_down_retry_count = qlport_down_retry;
-	/* Set login_retry_count */
+	 
 	ha->login_retry_count  = nv->retry_count;
 	if (ha->port_down_retry_count == nv->port_down_retry_count &&
 	    ha->port_down_retry_count > 3)
@@ -5451,7 +5160,7 @@ qla2x00_nvram_config(scsi_qla_host_t *vha)
 	icb->timeout = cpu_to_le16(0);
 
 	if (IS_QLA2100(ha) || IS_QLA2200(ha)) {
-		/* Enable RIO */
+		 
 		icb->firmware_options[0] &= ~BIT_3;
 		icb->add_firmware_options[0] &=
 		    ~(BIT_3 | BIT_2 | BIT_1 | BIT_0);
@@ -5461,7 +5170,7 @@ qla2x00_nvram_config(scsi_qla_host_t *vha)
 
 		vha->flags.process_response_queue = 1;
 	} else {
-		/* Enable ZIO. */
+		 
 		if (!vha->flags.init_done) {
 			ha->zio_mode = icb->add_firmware_options[0] &
 			    (BIT_3 | BIT_2 | BIT_1 | BIT_0);
@@ -5498,7 +5207,7 @@ void qla2x00_set_fcport_state(fc_port_t *fcport, int state)
 	old_state = atomic_read(&fcport->state);
 	atomic_set(&fcport->state, state);
 
-	/* Don't print state transitions during initial allocation of fcport */
+	 
 	if (old_state && old_state != state) {
 		ql_dbg(ql_dbg_disc, fcport->vha, 0x207d,
 		       "FCPort %8phC state transitioned from %s to %s - portid=%02x%02x%02x.\n",
@@ -5508,13 +5217,7 @@ void qla2x00_set_fcport_state(fc_port_t *fcport, int state)
 	}
 }
 
-/**
- * qla2x00_alloc_fcport() - Allocate a generic fcport.
- * @vha: HA context
- * @flags: allocation flags
- *
- * Returns a pointer to the allocated fcport, or NULL, if none available.
- */
+ 
 fc_port_t *
 qla2x00_alloc_fcport(scsi_qla_host_t *vha, gfp_t flags)
 {
@@ -5534,7 +5237,7 @@ qla2x00_alloc_fcport(scsi_qla_host_t *vha, gfp_t flags)
 		return NULL;
 	}
 
-	/* Setup fcport template structure. */
+	 
 	fcport->vha = vha;
 	fcport->port_type = FCT_UNKNOWN;
 	fcport->loop_id = FC_NO_LOOP_ID;
@@ -5622,18 +5325,7 @@ static void qla_get_login_template(scsi_qla_host_t *vha)
 	ha->flags.plogi_template_valid = 1;
 }
 
-/*
- * qla2x00_configure_loop
- *      Updates Fibre Channel Device Database with what is actually on loop.
- *
- * Input:
- *      ha                = adapter block pointer.
- *
- * Returns:
- *      0 = success.
- *      1 = error.
- *      2 = database was full and device was not configured.
- */
+ 
 static int
 qla2x00_configure_loop(scsi_qla_host_t *vha)
 {
@@ -5643,7 +5335,7 @@ qla2x00_configure_loop(scsi_qla_host_t *vha)
 
 	rval = QLA_SUCCESS;
 
-	/* Get Initiator ID */
+	 
 	if (test_bit(LOCAL_LOOP_UPDATE, &vha->dpc_flags)) {
 		rval = qla2x00_configure_hba(vha);
 		if (rval != QLA_SUCCESS) {
@@ -5657,17 +5349,14 @@ qla2x00_configure_loop(scsi_qla_host_t *vha)
 	ql_dbg(ql_dbg_disc, vha, 0x2014,
 	    "Configure loop -- dpc flags = 0x%lx.\n", flags);
 
-	/*
-	 * If we have both an RSCN and PORT UPDATE pending then handle them
-	 * both at the same time.
-	 */
+	 
 	clear_bit(LOCAL_LOOP_UPDATE, &vha->dpc_flags);
 	clear_bit(RSCN_UPDATE, &vha->dpc_flags);
 
 	qla2x00_get_data_rate(vha);
 	qla_get_login_template(vha);
 
-	/* Determine what we need to do */
+	 
 	if ((ha->current_topology == ISP_CFG_FL ||
 	    ha->current_topology == ISP_CFG_F) &&
 	    (test_bit(LOCAL_LOOP_UPDATE, &flags))) {
@@ -5714,18 +5403,12 @@ qla2x00_configure_loop(scsi_qla_host_t *vha)
 			    "LOOP READY.\n");
 			ha->flags.fw_init_done = 1;
 
-			/*
-			 * use link up to wake up app to get ready for
-			 * authentication.
-			 */
+			 
 			if (ha->flags.edif_enabled && DBELL_INACTIVE(vha))
 				qla2x00_post_aen_work(vha, FCH_EVT_LINKUP,
 						      ha->link_data_rate);
 
-			/*
-			 * Process any ATIO queue entries that came in
-			 * while we weren't online.
-			 */
+			 
 			if (qla_tgt_mode_enabled(vha) ||
 			    qla_dual_mode_enabled(vha)) {
 				spin_lock_irqsave(&ha->tgt.atio_lock, flags);
@@ -5745,7 +5428,7 @@ qla2x00_configure_loop(scsi_qla_host_t *vha)
 		    __func__, vha->port_name, vha->d_id.b24);
 	}
 
-	/* Restore state if a resync event occurred during processing */
+	 
 	if (test_bit(LOOP_RESYNC_NEEDED, &vha->dpc_flags)) {
 		if (test_bit(LOCAL_LOOP_UPDATE, &save_flags))
 			set_bit(LOCAL_LOOP_UPDATE, &vha->dpc_flags);
@@ -5801,16 +5484,7 @@ qla_reinitialize_link(scsi_qla_host_t *vha)
 	}
 }
 
-/*
- * qla2x00_configure_local_loop
- *	Updates Fibre Channel Device Database with local loop devices.
- *
- * Input:
- *	ha = adapter block pointer.
- *
- * Returns:
- *	0 = success.
- */
+ 
 static int
 qla2x00_configure_local_loop(scsi_qla_host_t *vha)
 {
@@ -5825,14 +5499,14 @@ qla2x00_configure_local_loop(scsi_qla_host_t *vha)
 	struct qla_hw_data *ha = vha->hw;
 	unsigned long flags;
 
-	/* Inititae N2N login. */
+	 
 	if (N2N_TOPO(ha))
 		return qla2x00_configure_n2n_loop(vha);
 
 	new_fcport = NULL;
 	entries = MAX_FIBRE_DEVICES_LOOP;
 
-	/* Get list of logged in devices. */
+	 
 	memset(ha->gid_list, 0, qla2x00_gid_list_size(ha));
 	rval = qla2x00_get_id_list(vha, ha->gid_list, ha->gid_list_dma,
 	    &entries);
@@ -5856,10 +5530,7 @@ qla2x00_configure_local_loop(scsi_qla_host_t *vha)
 			rc = qla2x00_get_fcal_position_map(vha, NULL,
 						&loop_map_entries);
 			if (rc == QLA_SUCCESS && loop_map_entries > 1) {
-				/*
-				 * There are devices that are still not logged
-				 * in. Reinitialize to give them a chance.
-				 */
+				 
 				qla_reinitialize_link(vha);
 				return QLA_FUNCTION_FAILED;
 			}
@@ -5874,7 +5545,7 @@ qla2x00_configure_local_loop(scsi_qla_host_t *vha)
 		fcport->scan_state = QLA_FCPORT_SCAN;
 	}
 
-	/* Allocate temporary fcport for any new fcports discovered. */
+	 
 	new_fcport = qla2x00_alloc_fcport(vha, GFP_KERNEL);
 	if (new_fcport == NULL) {
 		ql_log(ql_log_warn, vha, 0x2012,
@@ -5884,7 +5555,7 @@ qla2x00_configure_local_loop(scsi_qla_host_t *vha)
 	}
 	new_fcport->flags &= ~FCF_FABRIC_DEVICE;
 
-	/* Add devices to port list. */
+	 
 	gid = ha->gid_list;
 	for (index = 0; index < entries; index++) {
 		domain = gid->domain;
@@ -5896,24 +5567,24 @@ qla2x00_configure_local_loop(scsi_qla_host_t *vha)
 			loop_id = le16_to_cpu(gid->loop_id);
 		gid = (void *)gid + ha->gid_list_info_size;
 
-		/* Bypass reserved domain fields. */
+		 
 		if ((domain & 0xf0) == 0xf0)
 			continue;
 
-		/* Bypass if not same domain and area of adapter. */
+		 
 		if (area && domain && ((area != vha->d_id.b.area) ||
 		    (domain != vha->d_id.b.domain)) &&
 		    (ha->current_topology == ISP_CFG_NL))
 			continue;
 
 
-		/* Bypass invalid local loop ID. */
+		 
 		if (loop_id > LAST_LOCAL_LOOP_ID)
 			continue;
 
 		memset(new_fcport->port_name, 0, WWN_SIZE);
 
-		/* Fill in member data. */
+		 
 		new_fcport->d_id.b.domain = domain;
 		new_fcport->d_id.b.area = area;
 		new_fcport->d_id.b.al_pa = al_pa;
@@ -5926,7 +5597,7 @@ qla2x00_configure_local_loop(scsi_qla_host_t *vha)
 			    "Failed to retrieve fcport information "
 			    "-- get_port_database=%x, loop_id=0x%04x.\n",
 			    rval2, new_fcport->loop_id);
-			/* Skip retry if N2N */
+			 
 			if (ha->current_topology != ISP_CFG_N) {
 				ql_dbg(ql_dbg_disc, vha, 0x2105,
 				    "Scheduling resync.\n");
@@ -5936,7 +5607,7 @@ qla2x00_configure_local_loop(scsi_qla_host_t *vha)
 		}
 
 		spin_lock_irqsave(&vha->hw->tgt.sess_lock, flags);
-		/* Check for matching device in port list. */
+		 
 		found = 0;
 		fcport = NULL;
 		list_for_each_entry(fcport, &vha->vp_fcports, list) {
@@ -5963,10 +5634,10 @@ qla2x00_configure_local_loop(scsi_qla_host_t *vha)
 		}
 
 		if (!found) {
-			/* New device, add to fcports list. */
+			 
 			list_add_tail(&new_fcport->list, &vha->vp_fcports);
 
-			/* Allocate a new replacement fcport. */
+			 
 			fcport = new_fcport;
 
 			spin_unlock_irqrestore(&vha->hw->tgt.sess_lock, flags);
@@ -5985,7 +5656,7 @@ qla2x00_configure_local_loop(scsi_qla_host_t *vha)
 
 		spin_unlock_irqrestore(&vha->hw->tgt.sess_lock, flags);
 
-		/* Base iIDMA settings on HBA port speed. */
+		 
 		fcport->fp_speed = ha->link_data_rate;
 	}
 
@@ -6078,7 +5749,7 @@ int qla_post_iidma_work(struct scsi_qla_host *vha, fc_port_t *fcport)
 	return qla2x00_post_work(vha, e);
 }
 
-/* qla2x00_reg_remote_port is reserved for Initiator Mode only.*/
+ 
 static void
 qla2x00_reg_remote_port(scsi_qla_host_t *vha, fc_port_t *fcport)
 {
@@ -6130,21 +5801,7 @@ qla2x00_reg_remote_port(scsi_qla_host_t *vha, fc_port_t *fcport)
 	    ((fcport->port_type & FCT_NVME) ? "nvme" : "ini"));
 }
 
-/*
- * qla2x00_update_fcport
- *	Updates device on list.
- *
- * Input:
- *	ha = adapter block pointer.
- *	fcport = port structure pointer.
- *
- * Return:
- *	0  - Success
- *  BIT_0 - error
- *
- * Context:
- *	Kernel context.
- */
+ 
 void
 qla2x00_update_fcport(scsi_qla_host_t *vha, fc_port_t *fcport)
 {
@@ -6250,7 +5907,7 @@ void qla_register_fcport_fn(struct work_struct *work)
 	       rscn_gen, fcport->rscn_gen, fcport->next_disc_state);
 
 	if (rscn_gen != fcport->rscn_gen) {
-		/* RSCN(s) came in while registration */
+		 
 		switch (fcport->next_disc_state) {
 		case DSC_DELETE_PEND:
 			qlt_schedule_sess_for_deletion(fcport);
@@ -6266,17 +5923,7 @@ void qla_register_fcport_fn(struct work_struct *work)
 	}
 }
 
-/*
- * qla2x00_configure_fabric
- *      Setup SNS devices with loop ID's.
- *
- * Input:
- *      ha = adapter block pointer.
- *
- * Returns:
- *      0 = success.
- *      BIT_0 = error
- */
+ 
 static int
 qla2x00_configure_fabric(scsi_qla_host_t *vha)
 {
@@ -6287,7 +5934,7 @@ qla2x00_configure_fabric(scsi_qla_host_t *vha)
 	struct qla_hw_data *ha = vha->hw;
 	int		discovery_gen;
 
-	/* If FL port exists, then SNS is present */
+	 
 	if (IS_FWI2_CAPABLE(ha))
 		loop_id = NPH_F_PORT;
 	else
@@ -6318,7 +5965,7 @@ qla2x00_configure_fabric(scsi_qla_host_t *vha)
 	do {
 		qla2x00_mgmt_svr_login(vha);
 
-		/* Ensure we are logged into the SNS. */
+		 
 		loop_id = NPH_SNS_LID(ha);
 		rval = ha->isp_ops->fabric_login(vha, loop_id, 0xff, 0xff,
 		    0xfc, mb, BIT_1|BIT_0);
@@ -6330,14 +5977,14 @@ qla2x00_configure_fabric(scsi_qla_host_t *vha)
 			return rval;
 		}
 
-		/* FDMI support. */
+		 
 		if (ql2xfdmienable &&
 		    test_and_clear_bit(REGISTER_FDMI_NEEDED, &vha->dpc_flags))
 			qla2x00_fdmi_register(vha);
 
 		if (test_and_clear_bit(REGISTER_FC4_NEEDED, &vha->dpc_flags)) {
 			if (qla2x00_rft_id(vha)) {
-				/* EMPTY */
+				 
 				ql_dbg(ql_dbg_disc, vha, 0x20a2,
 				    "Register FC-4 TYPE failed.\n");
 				if (test_bit(LOOP_RESYNC_NEEDED,
@@ -6345,7 +5992,7 @@ qla2x00_configure_fabric(scsi_qla_host_t *vha)
 					break;
 			}
 			if (qla2x00_rff_id(vha, FC4_TYPE_FCP_SCSI)) {
-				/* EMPTY */
+				 
 				ql_dbg(ql_dbg_disc, vha, 0x209a,
 				    "Register FC-4 Features failed.\n");
 				if (test_bit(LOOP_RESYNC_NEEDED,
@@ -6359,14 +6006,14 @@ qla2x00_configure_fabric(scsi_qla_host_t *vha)
 				}
 			}
 			if (qla2x00_rnn_id(vha)) {
-				/* EMPTY */
+				 
 				ql_dbg(ql_dbg_disc, vha, 0x2104,
 				    "Register Node Name failed.\n");
 				if (test_bit(LOOP_RESYNC_NEEDED,
 				    &vha->dpc_flags))
 					break;
 			} else if (qla2x00_rsnn_nn(vha)) {
-				/* EMPTY */
+				 
 				ql_dbg(ql_dbg_disc, vha, 0x209b,
 				    "Register Symbolic Node Name failed.\n");
 				if (test_bit(LOOP_RESYNC_NEEDED, &vha->dpc_flags))
@@ -6375,12 +6022,7 @@ qla2x00_configure_fabric(scsi_qla_host_t *vha)
 		}
 
 
-		/* Mark the time right before querying FW for connected ports.
-		 * This process is long, asynchronous and by the time it's done,
-		 * collected information might not be accurate anymore. E.g.
-		 * disconnected port might have re-connected and a brand new
-		 * session has been created. In this case session's generation
-		 * will be newer than discovery_gen. */
+		 
 		qlt_do_generation_tick(vha, &discovery_gen);
 
 		if (USE_ASYNC_SCAN(ha)) {
@@ -6408,19 +6050,7 @@ qla2x00_configure_fabric(scsi_qla_host_t *vha)
 	return (rval);
 }
 
-/*
- * qla2x00_find_all_fabric_devs
- *
- * Input:
- *	ha = adapter block pointer.
- *	dev = database device entry pointer.
- *
- * Returns:
- *	0 = success.
- *
- * Context:
- *	Kernel context.
- */
+ 
 static int
 qla2x00_find_all_fabric_devs(scsi_qla_host_t *vha)
 {
@@ -6439,13 +6069,13 @@ qla2x00_find_all_fabric_devs(scsi_qla_host_t *vha)
 
 	rval = QLA_SUCCESS;
 
-	/* Try GID_PT to get device list, else GAN. */
+	 
 	if (!ha->swl)
 		ha->swl = kcalloc(ha->max_fibre_devices, sizeof(sw_info_t),
 		    GFP_KERNEL);
 	swl = ha->swl;
 	if (!swl) {
-		/*EMPTY*/
+		 
 		ql_dbg(ql_dbg_disc, vha, 0x209c,
 		    "GID_PT allocations failed, fallback on GA_NXT.\n");
 	} else {
@@ -6468,7 +6098,7 @@ qla2x00_find_all_fabric_devs(scsi_qla_host_t *vha)
 				return rval;
 		}
 
-		/* If other queries succeeded probe for FC-4 type */
+		 
 		if (swl) {
 			qla2x00_gff_id(vha, swl);
 			if (test_bit(LOOP_RESYNC_NEEDED, &vha->dpc_flags))
@@ -6477,7 +6107,7 @@ qla2x00_find_all_fabric_devs(scsi_qla_host_t *vha)
 	}
 	swl_idx = 0;
 
-	/* Allocate temporary fcport for any new fcports discovered. */
+	 
 	new_fcport = qla2x00_alloc_fcport(vha, GFP_KERNEL);
 	if (new_fcport == NULL) {
 		ql_log(ql_log_warn, vha, 0x209d,
@@ -6485,11 +6115,11 @@ qla2x00_find_all_fabric_devs(scsi_qla_host_t *vha)
 		return (QLA_MEMORY_ALLOC_FAILED);
 	}
 	new_fcport->flags |= (FCF_FABRIC_DEVICE | FCF_LOGIN_NEEDED);
-	/* Set start port ID scan at adapter ID. */
+	 
 	first_dev = 1;
 	last_dev = 0;
 
-	/* Starting free loop ID. */
+	 
 	loop_id = ha->min_external_loopid;
 	for (; loop_id <= ha->max_loop_id; loop_id++) {
 		if (qla2x00_is_reserved_id(vha, loop_id))
@@ -6532,7 +6162,7 @@ qla2x00_find_all_fabric_devs(scsi_qla_host_t *vha)
 				swl_idx++;
 			}
 		} else {
-			/* Send GA_NXT to the switch */
+			 
 			rval = qla2x00_ga_nxt(vha, new_fcport);
 			if (rval != QLA_SUCCESS) {
 				ql_log(ql_log_warn, vha, 0x209e,
@@ -6543,7 +6173,7 @@ qla2x00_find_all_fabric_devs(scsi_qla_host_t *vha)
 			}
 		}
 
-		/* If wrap on switch device list, exit. */
+		 
 		if (first_dev) {
 			wrap.b24 = new_fcport->d_id.b24;
 			first_dev = 0;
@@ -6556,25 +6186,25 @@ qla2x00_find_all_fabric_devs(scsi_qla_host_t *vha)
 			break;
 		}
 
-		/* Bypass if same physical adapter. */
+		 
 		if (new_fcport->d_id.b24 == base_vha->d_id.b24)
 			continue;
 
-		/* Bypass virtual ports of the same host. */
+		 
 		if (qla2x00_is_a_vp_did(vha, new_fcport->d_id.b24))
 			continue;
 
-		/* Bypass if same domain and area of adapter. */
+		 
 		if (((new_fcport->d_id.b24 & 0xffff00) ==
 		    (vha->d_id.b24 & 0xffff00)) && ha->current_topology ==
 			ISP_CFG_FL)
 			    continue;
 
-		/* Bypass reserved domain fields. */
+		 
 		if ((new_fcport->d_id.b.domain & 0xf0) == 0xf0)
 			continue;
 
-		/* Bypass ports whose FCP-4 type is not FCP_SCSI */
+		 
 		if (ql2xgffidenable &&
 		    (!(new_fcport->fc4_type & FS_FC4TYPE_FCP) &&
 		    new_fcport->fc4_type != 0))
@@ -6582,7 +6212,7 @@ qla2x00_find_all_fabric_devs(scsi_qla_host_t *vha)
 
 		spin_lock_irqsave(&vha->hw->tgt.sess_lock, flags);
 
-		/* Locate matching device in database. */
+		 
 		found = 0;
 		list_for_each_entry(fcport, &vha->vp_fcports, list) {
 			if (memcmp(new_fcport->port_name, fcport->port_name,
@@ -6593,15 +6223,12 @@ qla2x00_find_all_fabric_devs(scsi_qla_host_t *vha)
 
 			found++;
 
-			/* Update port state. */
+			 
 			memcpy(fcport->fabric_port_name,
 			    new_fcport->fabric_port_name, WWN_SIZE);
 			fcport->fp_speed = new_fcport->fp_speed;
 
-			/*
-			 * If address the same and state FCS_ONLINE
-			 * (or in target mode), nothing changed.
-			 */
+			 
 			if (fcport->d_id.b24 == new_fcport->d_id.b24 &&
 			    (atomic_read(&fcport->state) == FCS_ONLINE ||
 			     (vha->host->active_mode == MODE_TARGET))) {
@@ -6611,9 +6238,7 @@ qla2x00_find_all_fabric_devs(scsi_qla_host_t *vha)
 			if (fcport->login_retry == 0)
 				fcport->login_retry =
 					vha->hw->login_retry_count;
-			/*
-			 * If device was not a fabric device before.
-			 */
+			 
 			if ((fcport->flags & FCF_FABRIC_DEVICE) == 0) {
 				fcport->d_id.b24 = new_fcport->d_id.b24;
 				qla2x00_clear_loop_id(fcport);
@@ -6622,11 +6247,7 @@ qla2x00_find_all_fabric_devs(scsi_qla_host_t *vha)
 				break;
 			}
 
-			/*
-			 * Port ID changed or device was marked to be updated;
-			 * Log it out if still logged in and mark it for
-			 * relogin later.
-			 */
+			 
 			if (qla_tgt_mode_enabled(base_vha)) {
 				ql_dbg(ql_dbg_tgt_mgt, vha, 0xf080,
 					 "port changed FC ID, %8phC"
@@ -6660,14 +6281,14 @@ qla2x00_find_all_fabric_devs(scsi_qla_host_t *vha)
 			spin_unlock_irqrestore(&vha->hw->tgt.sess_lock, flags);
 			continue;
 		}
-		/* If device was not in our fcports list, then add it. */
+		 
 		new_fcport->scan_state = QLA_FCPORT_FOUND;
 		list_add_tail(&new_fcport->list, &vha->vp_fcports);
 
 		spin_unlock_irqrestore(&vha->hw->tgt.sess_lock, flags);
 
 
-		/* Allocate a new replacement fcport. */
+		 
 		nxt_d_id.b24 = new_fcport->d_id.b24;
 		new_fcport = qla2x00_alloc_fcport(vha, GFP_KERNEL);
 		if (new_fcport == NULL) {
@@ -6681,9 +6302,7 @@ qla2x00_find_all_fabric_devs(scsi_qla_host_t *vha)
 
 	qla2x00_free_fcport(new_fcport);
 
-	/*
-	 * Logout all previous fabric dev marked lost, except FCP2 devices.
-	 */
+	 
 	list_for_each_entry(fcport, &vha->vp_fcports, list) {
 		if (test_bit(LOOP_RESYNC_NEEDED, &vha->dpc_flags))
 			break;
@@ -6718,7 +6337,7 @@ qla2x00_find_all_fabric_devs(scsi_qla_host_t *vha)
 	return (rval);
 }
 
-/* FW does not set aside Loop id for MGMT Server/FFFFFAh */
+ 
 int
 qla2x00_reserve_mgmt_server_loop_id(scsi_qla_host_t *vha)
 {
@@ -6732,7 +6351,7 @@ qla2x00_reserve_mgmt_server_loop_id(scsi_qla_host_t *vha)
 		return NPH_MGMT_SERVER;
 	}
 
-	/* pick id from high and work down to low */
+	 
 	spin_lock_irqsave(&ha->vport_slock, flags);
 	for (; lid > 0; lid--) {
 		if (!test_bit(lid, vha->hw->loop_id_map)) {
@@ -6746,20 +6365,7 @@ qla2x00_reserve_mgmt_server_loop_id(scsi_qla_host_t *vha)
 	return loop_id;
 }
 
-/*
- * qla2x00_fabric_login
- *	Issue fabric login command.
- *
- * Input:
- *	ha = adapter block pointer.
- *	device = pointer to FC device type structure.
- *
- * Returns:
- *      0 - Login successfully
- *      1 - Login failed
- *      2 - Initiator device
- *      3 - Fatal error
- */
+ 
 int
 qla2x00_fabric_login(scsi_qla_host_t *vha, fc_port_t *fcport,
     uint16_t *next_loopid)
@@ -6780,7 +6386,7 @@ qla2x00_fabric_login(scsi_qla_host_t *vha, fc_port_t *fcport,
 		    fcport->loop_id, fcport->d_id.b.domain,
 		    fcport->d_id.b.area, fcport->d_id.b.al_pa);
 
-		/* Login fcport on switch. */
+		 
 		rval = ha->isp_ops->fabric_login(vha, fcport->loop_id,
 		    fcport->d_id.b.domain, fcport->d_id.b.area,
 		    fcport->d_id.b.al_pa, mb, BIT_0);
@@ -6788,13 +6394,7 @@ qla2x00_fabric_login(scsi_qla_host_t *vha, fc_port_t *fcport,
 			return rval;
 		}
 		if (mb[0] == MBS_PORT_ID_USED) {
-			/*
-			 * Device has another loop ID.  The firmware team
-			 * recommends the driver perform an implicit login with
-			 * the specified ID again. The ID we just used is save
-			 * here so we return with an ID that can be tried by
-			 * the next login.
-			 */
+			 
 			retry++;
 			tmp_loopid = fcport->loop_id;
 			fcport->loop_id = mb[1];
@@ -6806,17 +6406,12 @@ qla2x00_fabric_login(scsi_qla_host_t *vha, fc_port_t *fcport,
 			    fcport->d_id.b.area, fcport->d_id.b.al_pa);
 
 		} else if (mb[0] == MBS_COMMAND_COMPLETE) {
-			/*
-			 * Login succeeded.
-			 */
+			 
 			if (retry) {
-				/* A retry occurred before. */
+				 
 				*next_loopid = tmp_loopid;
 			} else {
-				/*
-				 * No retry occurred before. Just increment the
-				 * ID value for next login.
-				 */
+				 
 				*next_loopid = (fcport->loop_id + 1);
 			}
 
@@ -6843,21 +6438,15 @@ qla2x00_fabric_login(scsi_qla_host_t *vha, fc_port_t *fcport,
 			rval = QLA_SUCCESS;
 			break;
 		} else if (mb[0] == MBS_LOOP_ID_USED) {
-			/*
-			 * Loop ID already used, try next loop ID.
-			 */
+			 
 			fcport->loop_id++;
 			rval = qla2x00_find_new_loop_id(vha, fcport);
 			if (rval != QLA_SUCCESS) {
-				/* Ran out of loop IDs to use */
+				 
 				break;
 			}
 		} else if (mb[0] == MBS_COMMAND_ERROR) {
-			/*
-			 * Firmware possibly timed out during login. If NO
-			 * retries are left to do then the device is declared
-			 * dead.
-			 */
+			 
 			*next_loopid = fcport->loop_id;
 			ha->isp_ops->fabric_logout(vha, fcport->loop_id,
 			    fcport->d_id.b.domain, fcport->d_id.b.area,
@@ -6867,9 +6456,7 @@ qla2x00_fabric_login(scsi_qla_host_t *vha, fc_port_t *fcport,
 			rval = 1;
 			break;
 		} else {
-			/*
-			 * unrecoverable / not handled error
-			 */
+			 
 			ql_dbg(ql_dbg_disc, vha, 0x2002,
 			    "Failed=%x port_id=%02x%02x%02x loop_id=%x "
 			    "jiffies=%lx.\n", mb[0], fcport->d_id.b.domain,
@@ -6891,19 +6478,7 @@ qla2x00_fabric_login(scsi_qla_host_t *vha, fc_port_t *fcport,
 	return (rval);
 }
 
-/*
- * qla2x00_local_device_login
- *	Issue local device login command.
- *
- * Input:
- *	ha = adapter block pointer.
- *	loop_id = loop id of device to login to.
- *
- * Returns (Where's the #define!!!!):
- *      0 - Login successfully
- *      1 - Login failed
- *      3 - Fatal error
- */
+ 
 int
 qla2x00_local_device_login(scsi_qla_host_t *vha, fc_port_t *fcport)
 {
@@ -6913,27 +6488,18 @@ qla2x00_local_device_login(scsi_qla_host_t *vha, fc_port_t *fcport)
 	memset(mb, 0, sizeof(mb));
 	rval = qla2x00_login_local_device(vha, fcport, mb, BIT_0);
 	if (rval == QLA_SUCCESS) {
-		/* Interrogate mailbox registers for any errors */
+		 
 		if (mb[0] == MBS_COMMAND_ERROR)
 			rval = 1;
 		else if (mb[0] == MBS_COMMAND_PARAMETER_ERROR)
-			/* device not in PCB table */
+			 
 			rval = 3;
 	}
 
 	return (rval);
 }
 
-/*
- *  qla2x00_loop_resync
- *      Resync with fibre channel devices.
- *
- * Input:
- *      ha = adapter block pointer.
- *
- * Returns:
- *      0 = success
- */
+ 
 int
 qla2x00_loop_resync(scsi_qla_host_t *vha)
 {
@@ -6943,20 +6509,17 @@ qla2x00_loop_resync(scsi_qla_host_t *vha)
 	clear_bit(ISP_ABORT_RETRY, &vha->dpc_flags);
 	if (vha->flags.online) {
 		if (!(rval = qla2x00_fw_ready(vha))) {
-			/* Wait at most MAX_TARGET RSCNs for a stable link. */
+			 
 			wait_time = 256;
 			do {
 				if (!IS_QLAFX00(vha->hw)) {
-					/*
-					 * Issue a marker after FW becomes
-					 * ready.
-					 */
+					 
 					qla2x00_marker(vha, vha->hw->base_qpair,
 					    0, 0, MK_SYNC_ALL);
 					vha->marker_needed = 0;
 				}
 
-				/* Remap devices on Loop. */
+				 
 				clear_bit(LOOP_RESYNC_NEEDED, &vha->dpc_flags);
 
 				if (IS_QLAFX00(vha->hw))
@@ -6982,20 +6545,14 @@ qla2x00_loop_resync(scsi_qla_host_t *vha)
 	return (rval);
 }
 
-/*
-* qla2x00_perform_loop_resync
-* Description: This function will set the appropriate flags and call
-*              qla2x00_loop_resync. If successful loop will be resynced
-* Arguments : scsi_qla_host_t pointer
-* returm    : Success or Failure
-*/
+ 
 
 int qla2x00_perform_loop_resync(scsi_qla_host_t *ha)
 {
 	int32_t rval = 0;
 
 	if (!test_and_set_bit(LOOP_RESYNC_ACTIVE, &ha->dpc_flags)) {
-		/*Configure the flags so that resync happens properly*/
+		 
 		atomic_set(&ha->loop_down_timer, 0);
 		if (!(ha->device_flags & DFLG_NO_CABLE)) {
 			atomic_set(&ha->loop_state, LOOP_UP);
@@ -7013,7 +6570,7 @@ int qla2x00_perform_loop_resync(scsi_qla_host_t *ha)
 	return rval;
 }
 
-/* Assumes idc_lock always held on entry */
+ 
 void
 qla83xx_reset_ownership(scsi_qla_host_t *vha)
 {
@@ -7054,17 +6611,12 @@ qla83xx_reset_ownership(scsi_qla_host_t *vha)
 			}
 		}
 	}
-	/*
-	 * Prepare drv-presence mask based on fcoe functions present.
-	 * However consider only valid physical fcoe function numbers (0-15).
-	 */
+	 
 	drv_presence_mask = ~((1 << (ha->portnum)) |
 			((fcoe_other_function == 0xffff) ?
 			 0 : (1 << (fcoe_other_function))));
 
-	/* We are the reset owner iff:
-	 *    - No other protocol drivers present.
-	 *    - This is the lowest among fcoe functions. */
+	 
 	if (!(drv_presence & drv_presence_mask) &&
 			(ha->portnum < fcoe_other_function)) {
 		ql_dbg(ql_dbg_p3p, vha, 0xb07f,
@@ -7105,7 +6657,7 @@ __qla83xx_clear_drv_ack(scsi_qla_host_t *vha)
 	return rval;
 }
 
-/* Assumes idc-lock always held on entry */
+ 
 void
 qla83xx_idc_audit(scsi_qla_host_t *vha, int audit_type)
 {
@@ -7135,7 +6687,7 @@ qla83xx_idc_audit(scsi_qla_host_t *vha, int audit_type)
 	}
 }
 
-/* Assumes idc_lock always held on entry */
+ 
 static int
 qla83xx_initiating_reset(scsi_qla_host_t *vha)
 {
@@ -7150,7 +6702,7 @@ qla83xx_initiating_reset(scsi_qla_host_t *vha)
 		return QLA_FUNCTION_FAILED;
 	}
 
-	/* Set NEED-RESET iff in READY state and we are the reset-owner */
+	 
 	qla83xx_rd_reg(vha, QLA83XX_IDC_DEV_STATE, &dev_state);
 	if (ha->flags.nic_core_reset_owner && dev_state == QLA8XXX_DEV_READY) {
 		qla83xx_wr_reg(vha, QLA83XX_IDC_DEV_STATE,
@@ -7161,8 +6713,8 @@ qla83xx_initiating_reset(scsi_qla_host_t *vha)
 		ql_log(ql_log_info, vha, 0xb057, "HW State: %s.\n",
 				qdev_state(dev_state));
 
-		/* SV: XXX: Is timeout required here? */
-		/* Wait for IDC state change READY -> NEED_RESET */
+		 
+		 
 		while (dev_state == QLA8XXX_DEV_READY) {
 			qla83xx_idc_unlock(vha, 0);
 			msleep(200);
@@ -7171,7 +6723,7 @@ qla83xx_initiating_reset(scsi_qla_host_t *vha)
 		}
 	}
 
-	/* Send IDC ack by writing to drv-ack register */
+	 
 	__qla83xx_set_drv_ack(vha);
 
 	return QLA_SUCCESS;
@@ -7231,10 +6783,7 @@ qla83xx_nic_core_reset(scsi_qla_host_t *vha)
 
 	rval = qla83xx_initiating_reset(vha);
 
-	/*
-	 * Perform reset if we are the reset-owner,
-	 * else wait till IDC state changes to READY/FAILED.
-	 */
+	 
 	if (rval == QLA_SUCCESS) {
 		rval = qla83xx_idc_state_handler(vha);
 
@@ -7258,7 +6807,7 @@ qla2xxx_mctp_dump(scsi_qla_host_t *vha)
 	int rval = QLA_FUNCTION_FAILED;
 
 	if (!IS_MCTP_CAPABLE(ha)) {
-		/* This message can be removed from the final version */
+		 
 		ql_log(ql_log_info, vha, 0x506d,
 		    "This board is not MCTP capable\n");
 		return rval;
@@ -7292,7 +6841,7 @@ qla2xxx_mctp_dump(scsi_qla_host_t *vha)
 		ha->flags.nic_core_reset_hdlr_active = 1;
 		rval = qla83xx_restart_nic_firmware(vha);
 		if (rval)
-			/* NIC Core reset failed. */
+			 
 			ql_log(ql_log_warn, vha, 0x5071,
 			    "Failed to restart nic firmware\n");
 		else
@@ -7305,14 +6854,7 @@ qla2xxx_mctp_dump(scsi_qla_host_t *vha)
 
 }
 
-/*
-* qla2x00_quiesce_io
-* Description: This function will block the new I/Os
-*              Its not aborting any I/Os as context
-*              is not destroyed during quiescence
-* Arguments: scsi_qla_host_t
-* return   : void
-*/
+ 
 void
 qla2x00_quiesce_io(scsi_qla_host_t *vha)
 {
@@ -7344,7 +6886,7 @@ qla2x00_quiesce_io(scsi_qla_host_t *vha)
 			atomic_set(&vha->loop_down_timer,
 					LOOP_DOWN_TIME);
 	}
-	/* Wait for pending cmds to complete */
+	 
 	WARN_ON_ONCE(qla2x00_eh_wait_for_pending_commands(vha, 0, 0, WAIT_HOST)
 		     != QLA_SUCCESS);
 }
@@ -7358,9 +6900,7 @@ qla2x00_abort_isp_cleanup(scsi_qla_host_t *vha)
 	fc_port_t *fcport;
 	u16 i;
 
-	/* For ISP82XX, driver waits for completion of the commands.
-	 * online flag should be set.
-	 */
+	 
 	if (!(IS_P3P_TYPE(ha)))
 		vha->flags.online = 0;
 	ha->flags.chip_reset_done = 0;
@@ -7371,10 +6911,7 @@ qla2x00_abort_isp_cleanup(scsi_qla_host_t *vha)
 	    "Performing ISP error recovery - ha=%p.\n", ha);
 
 	ha->flags.purge_mbox = 1;
-	/* For ISP82XX, reset_chip is just disabling interrupts.
-	 * Driver waits for the completion of the commands.
-	 * the interrupts need to be enabled.
-	 */
+	 
 	if (!(IS_P3P_TYPE(ha)))
 		ha->isp_ops->reset_chip(vha);
 
@@ -7400,7 +6937,7 @@ qla2x00_abort_isp_cleanup(scsi_qla_host_t *vha)
 		}
 	}
 
-	/* purge MBox commands */
+	 
 	spin_lock_irqsave(&ha->hardware_lock, flags);
 	if (test_bit(MBX_INTR_WAIT, &ha->mbx_cmd_flags)) {
 		clear_bit(MBX_INTR_WAIT, &ha->mbx_cmd_flags);
@@ -7440,7 +6977,7 @@ qla2x00_abort_isp_cleanup(scsi_qla_host_t *vha)
 			    LOOP_DOWN_TIME);
 	}
 
-	/* Clear all async request states across all VPs. */
+	 
 	list_for_each_entry(fcport, &vha->vp_fcports, list) {
 		fcport->flags &= ~(FCF_LOGIN_NEEDED | FCF_ASYNC_SENT);
 		fcport->scan_state = 0;
@@ -7458,32 +6995,23 @@ qla2x00_abort_isp_cleanup(scsi_qla_host_t *vha)
 	}
 	spin_unlock_irqrestore(&ha->vport_slock, flags);
 
-	/* Make sure for ISP 82XX IO DMA is complete */
+	 
 	if (IS_P3P_TYPE(ha)) {
 		qla82xx_chip_reset_cleanup(vha);
 		ql_log(ql_log_info, vha, 0x00b4,
 		       "Done chip reset cleanup.\n");
 
-		/* Done waiting for pending commands. Reset online flag */
+		 
 		vha->flags.online = 0;
 	}
 
-	/* Requeue all commands in outstanding command list. */
+	 
 	qla2x00_abort_all_cmds(vha, DID_RESET << 16);
-	/* memory barrier */
+	 
 	wmb();
 }
 
-/*
-*  qla2x00_abort_isp
-*      Resets ISP and aborts all outstanding commands.
-*
-* Input:
-*      ha           = adapter block pointer.
-*
-* Returns:
-*      0 = success
-*/
+ 
 int
 qla2x00_abort_isp(scsi_qla_host_t *vha)
 {
@@ -7565,10 +7093,7 @@ qla2x00_abort_isp(scsi_qla_host_t *vha)
 			clear_bit(RESET_MARKER_NEEDED, &vha->dpc_flags);
 
 			if (!atomic_read(&vha->loop_down_timer)) {
-				/*
-				 * Issue marker command only when we are going
-				 * to start the I/O .
-				 */
+				 
 				vha->marker_needed = 1;
 			}
 
@@ -7606,23 +7131,20 @@ qla2x00_abort_isp(scsi_qla_host_t *vha)
 					    "(%d).\n", rval);
 				}
 			}
-		} else {	/* failed the ISP abort */
+		} else {	 
 			vha->flags.online = 1;
 			if (test_bit(ISP_ABORT_RETRY, &vha->dpc_flags)) {
 				if (ha->isp_abort_cnt == 0) {
 					ql_log(ql_log_fatal, vha, 0x8035,
 					    "ISP error recover failed - "
 					    "board disabled.\n");
-					/*
-					 * The next call disables the board
-					 * completely.
-					 */
+					 
 					qla2x00_abort_isp_cleanup(vha);
 					vha->flags.online = 0;
 					clear_bit(ISP_ABORT_RETRY,
 					    &vha->dpc_flags);
 					status = 0;
-				} else { /* schedule another ISP abort */
+				} else {  
 					ha->isp_abort_cnt--;
 					ql_dbg(ql_dbg_taskm, vha, 0x8020,
 					    "ISP abort - retry remaining %d.\n",
@@ -7678,23 +7200,14 @@ qla2x00_abort_isp(scsi_qla_host_t *vha)
 	return(status);
 }
 
-/*
-*  qla2x00_restart_isp
-*      restarts the ISP after a reset
-*
-* Input:
-*      ha = adapter block pointer.
-*
-* Returns:
-*      0 = success
-*/
+ 
 static int
 qla2x00_restart_isp(scsi_qla_host_t *vha)
 {
 	int status;
 	struct qla_hw_data *ha = vha->hw;
 
-	/* If firmware needs to be loaded */
+	 
 	if (qla2x00_isp_firmware(vha)) {
 		vha->flags.online = 0;
 		status = ha->isp_ops->chip_diag(vha);
@@ -7712,16 +7225,16 @@ qla2x00_restart_isp(scsi_qla_host_t *vha)
 	clear_bit(RESET_MARKER_NEEDED, &vha->dpc_flags);
 	ha->flags.chip_reset_done = 1;
 
-	/* Initialize the queues in use */
+	 
 	qla25xx_init_queues(ha);
 
 	status = qla2x00_fw_ready(vha);
 	if (status) {
-		/* if no cable then assume it's good */
+		 
 		return vha->device_flags & DFLG_NO_CABLE ? 0 : status;
 	}
 
-	/* Issue a marker after FW becomes ready. */
+	 
 	qla2x00_marker(vha, ha->base_qpair, 0, 0, MK_SYNC_ALL);
 	set_bit(LOOP_RESYNC_NEEDED, &vha->dpc_flags);
 
@@ -7755,7 +7268,7 @@ qla25xx_init_queues(struct qla_hw_data *ha)
 	for (i = 1; i < ha->max_req_queues; i++) {
 		req = ha->req_q_map[i];
 		if (req && test_bit(i, ha->req_qid_map)) {
-			/* Clear outstanding commands array. */
+			 
 			req->options &= ~BIT_0;
 			ret = qla25xx_init_req_que(base_vha, req);
 			if (ret != QLA_SUCCESS)
@@ -7771,13 +7284,7 @@ qla25xx_init_queues(struct qla_hw_data *ha)
 	return ret;
 }
 
-/*
-* qla2x00_reset_adapter
-*      Reset adapter.
-*
-* Input:
-*      ha = adapter block pointer.
-*/
+ 
 int
 qla2x00_reset_adapter(scsi_qla_host_t *vha)
 {
@@ -7790,9 +7297,9 @@ qla2x00_reset_adapter(scsi_qla_host_t *vha)
 
 	spin_lock_irqsave(&ha->hardware_lock, flags);
 	wrt_reg_word(&reg->hccr, HCCR_RESET_RISC);
-	rd_reg_word(&reg->hccr);			/* PCI Posting. */
+	rd_reg_word(&reg->hccr);			 
 	wrt_reg_word(&reg->hccr, HCCR_RELEASE_RISC);
-	rd_reg_word(&reg->hccr);			/* PCI Posting. */
+	rd_reg_word(&reg->hccr);			 
 	spin_unlock_irqrestore(&ha->hardware_lock, flags);
 
 	return QLA_SUCCESS;
@@ -7824,9 +7331,7 @@ qla24xx_reset_adapter(scsi_qla_host_t *vha)
 	return QLA_SUCCESS;
 }
 
-/* On sparc systems, obtain port and node WWN from firmware
- * properties.
- */
+ 
 static void qla24xx_nvram_wwn_from_ofw(scsi_qla_host_t *vha,
 	struct nvram_24xx *nv)
 {
@@ -7863,7 +7368,7 @@ qla24xx_nvram_config(scsi_qla_host_t *vha)
 	icb = (struct init_cb_24xx *)ha->init_cb;
 	nv = ha->nvram;
 
-	/* Determine NVRAM starting address. */
+	 
 	if (ha->port_no == 0) {
 		ha->nvram_base = FA_NVRAM_FUNC0_ADDR;
 		ha->vpd_base = FA_NVRAM_VPD0_ADDR;
@@ -7875,12 +7380,12 @@ qla24xx_nvram_config(scsi_qla_host_t *vha)
 	ha->nvram_size = sizeof(*nv);
 	ha->vpd_size = FA_NVRAM_VPD_SIZE;
 
-	/* Get VPD data into cache */
+	 
 	ha->vpd = ha->nvram + VPD_OFFSET;
 	ha->isp_ops->read_nvram(vha, ha->vpd,
 	    ha->nvram_base - FA_NVRAM_FUNC0_ADDR, FA_NVRAM_VPD_SIZE * 4);
 
-	/* Get NVRAM data into cache and calculate checksum. */
+	 
 	dptr = (__force __le32 *)nv;
 	ha->isp_ops->read_nvram(vha, dptr, ha->nvram_base, ha->nvram_size);
 	for (cnt = 0, chksum = 0; cnt < ha->nvram_size >> 2; cnt++, dptr++)
@@ -7891,10 +7396,10 @@ qla24xx_nvram_config(scsi_qla_host_t *vha)
 	ql_dump_buffer(ql_dbg_init + ql_dbg_buffer, vha, 0x010d,
 	    nv, ha->nvram_size);
 
-	/* Bad NVRAM data, set defaults parameters. */
+	 
 	if (chksum || memcmp("ISP ", nv->id, sizeof(nv->id)) ||
 	    le16_to_cpu(nv->nvram_version) < ICB_VERSION) {
-		/* Reset NVRAM data. */
+		 
 		ql_log(ql_log_warn, vha, 0x006b,
 		    "Inconsistent NVRAM checksum=%#x id=%.4s version=%#x.\n",
 		    chksum, nv->id, nv->nvram_version);
@@ -7903,9 +7408,7 @@ qla24xx_nvram_config(scsi_qla_host_t *vha)
 		    "Falling back to functioning (yet invalid -- WWPN) "
 		    "defaults.\n");
 
-		/*
-		 * Set default initialization control block.
-		 */
+		 
 		memset(nv, 0, ha->nvram_size);
 		nv->nvram_version = cpu_to_le16(ICB_VERSION);
 		nv->version = cpu_to_le16(ICB_VERSION);
@@ -7949,18 +7452,18 @@ qla24xx_nvram_config(scsi_qla_host_t *vha)
 	}
 
 	if (qla_tgt_mode_enabled(vha)) {
-		/* Don't enable full login after initial LIP */
+		 
 		nv->firmware_options_1 &= cpu_to_le32(~BIT_13);
-		/* Don't enable LIP full login for initiator */
+		 
 		nv->host_p &= cpu_to_le32(~BIT_10);
 	}
 
 	qlt_24xx_config_nvram_stage1(vha, nv);
 
-	/* Reset Initialization control block */
+	 
 	memset(icb, 0, ha->init_cb_size);
 
-	/* Copy 1st segment. */
+	 
 	dptr1 = (uint8_t *)icb;
 	dptr2 = (uint8_t *)&nv->version;
 	cnt = (uint8_t *)&icb->response_q_inpointer - (uint8_t *)&icb->version;
@@ -7970,7 +7473,7 @@ qla24xx_nvram_config(scsi_qla_host_t *vha)
 	icb->login_retry_count = nv->login_retry_count;
 	icb->link_down_on_nos = nv->link_down_on_nos;
 
-	/* Copy 2nd segment. */
+	 
 	dptr1 = (uint8_t *)&icb->interrupt_delay_timer;
 	dptr2 = (uint8_t *)&nv->interrupt_delay_timer;
 	cnt = (uint8_t *)&icb->reserved_3 -
@@ -7978,31 +7481,26 @@ qla24xx_nvram_config(scsi_qla_host_t *vha)
 	while (cnt--)
 		*dptr1++ = *dptr2++;
 	ha->frame_payload_size = le16_to_cpu(icb->frame_payload_size);
-	/*
-	 * Setup driver NVRAM options.
-	 */
+	 
 	qla2x00_set_model_info(vha, nv->model_name, sizeof(nv->model_name),
 	    "QLA2462");
 
 	qlt_24xx_config_nvram_stage2(vha, icb);
 
 	if (nv->host_p & cpu_to_le32(BIT_15)) {
-		/* Use alternate WWN? */
+		 
 		memcpy(icb->node_name, nv->alternate_node_name, WWN_SIZE);
 		memcpy(icb->port_name, nv->alternate_port_name, WWN_SIZE);
 	}
 
-	/* Prepare nodename */
+	 
 	if ((icb->firmware_options_1 & cpu_to_le32(BIT_14)) == 0) {
-		/*
-		 * Firmware will apply the following mask if the nodename was
-		 * not provided.
-		 */
+		 
 		memcpy(icb->node_name, icb->port_name, WWN_SIZE);
 		icb->node_name[0] &= 0xF0;
 	}
 
-	/* Set host adapter parameters. */
+	 
 	ha->flags.disable_risc_code_load = 0;
 	ha->flags.enable_lip_reset = 0;
 	ha->flags.enable_lip_full_login =
@@ -8018,7 +7516,7 @@ qla24xx_nvram_config(scsi_qla_host_t *vha)
 	memcpy(ha->fw_seriallink_options24, nv->seriallink_options,
 	    sizeof(ha->fw_seriallink_options24));
 
-	/* save HBA serial number */
+	 
 	ha->serial0 = icb->port_name[5];
 	ha->serial1 = icb->port_name[6];
 	ha->serial2 = icb->port_name[7];
@@ -8029,28 +7527,19 @@ qla24xx_nvram_config(scsi_qla_host_t *vha)
 
 	ha->retry_count = le16_to_cpu(nv->login_retry_count);
 
-	/* Set minimum login_timeout to 4 seconds. */
+	 
 	if (le16_to_cpu(nv->login_timeout) < ql2xlogintimeout)
 		nv->login_timeout = cpu_to_le16(ql2xlogintimeout);
 	if (le16_to_cpu(nv->login_timeout) < 4)
 		nv->login_timeout = cpu_to_le16(4);
 	ha->login_timeout = le16_to_cpu(nv->login_timeout);
 
-	/* Set minimum RATOV to 100 tenths of a second. */
+	 
 	ha->r_a_tov = 100;
 
 	ha->loop_reset_delay = nv->reset_delay;
 
-	/* Link Down Timeout = 0:
-	 *
-	 * 	When Port Down timer expires we will start returning
-	 *	I/O's to OS with "DID_NO_CONNECT".
-	 *
-	 * Link Down Timeout != 0:
-	 *
-	 *	 The driver waits for the link to come up after link down
-	 *	 before returning I/Os to OS with "DID_NO_CONNECT".
-	 */
+	 
 	if (le16_to_cpu(nv->link_down_timeout) == 0) {
 		ha->loop_down_abort_time =
 		    (LOOP_DOWN_TIME - LOOP_DOWN_TIMEOUT);
@@ -8060,12 +7549,12 @@ qla24xx_nvram_config(scsi_qla_host_t *vha)
 		    (LOOP_DOWN_TIME - ha->link_down_timeout);
 	}
 
-	/* Need enough time to try and get the port back. */
+	 
 	ha->port_down_retry_count = le16_to_cpu(nv->port_down_retry_count);
 	if (qlport_down_retry)
 		ha->port_down_retry_count = qlport_down_retry;
 
-	/* Set login_retry_count */
+	 
 	ha->login_retry_count  = le16_to_cpu(nv->login_retry_count);
 	if (ha->port_down_retry_count ==
 	    le16_to_cpu(nv->port_down_retry_count) &&
@@ -8076,10 +7565,10 @@ qla24xx_nvram_config(scsi_qla_host_t *vha)
 	if (ql2xloginretrycount)
 		ha->login_retry_count = ql2xloginretrycount;
 
-	/* N2N: driver will initiate Login instead of FW */
+	 
 	icb->firmware_options_3 |= cpu_to_le32(BIT_8);
 
-	/* Enable ZIO. */
+	 
 	if (!vha->flags.init_done) {
 		ha->zio_mode = le32_to_cpu(icb->firmware_options_2) &
 		    (BIT_3 | BIT_2 | BIT_1 | BIT_0);
@@ -8187,7 +7676,7 @@ qla27xx_compare_image_generation(
     struct qla27xx_image_status *pri_image_status,
     struct qla27xx_image_status *sec_image_status)
 {
-	/* calculate generation delta as uint16 (this accounts for wrap) */
+	 
 	int16_t delta =
 	    le16_to_cpu(pri_image_status->generation) -
 	    le16_to_cpu(sec_image_status->generation);
@@ -8492,7 +7981,7 @@ qla24xx_load_risc_flash(scsi_qla_host_t *vha, uint32_t *srisc_addr,
 			goto failed;
 		}
 
-		/* skip header and ignore checksum */
+		 
 		faddr += 7;
 		risc_size -= 8;
 
@@ -8557,7 +8046,7 @@ qla2x00_load_risc(scsi_qla_host_t *vha, uint32_t *srisc_addr)
 	struct qla_hw_data *ha = vha->hw;
 	struct req_que *req = ha->req_q_map[0];
 
-	/* Load firmware blob. */
+	 
 	blob = qla2x00_request_firmware(vha);
 	if (!blob) {
 		ql_log(ql_log_info, vha, 0x0083,
@@ -8574,7 +8063,7 @@ qla2x00_load_risc(scsi_qla_host_t *vha, uint32_t *srisc_addr)
 	fwcode = (__force __be16 *)blob->fw->data;
 	fwclen = 0;
 
-	/* Validate firmware image by checking version. */
+	 
 	if (blob->fw->size < 8 * sizeof(uint16_t)) {
 		ql_log(ql_log_fatal, vha, 0x0085,
 		    "Unable to verify integrity of firmware image (%zd).\n",
@@ -8600,7 +8089,7 @@ qla2x00_load_risc(scsi_qla_host_t *vha, uint32_t *srisc_addr)
 		*srisc_addr = *srisc_addr == 0 ? *seg : *srisc_addr;
 		risc_size = be16_to_cpu(fwcode[3]);
 
-		/* Validate firmware image size. */
+		 
 		fwclen += risc_size * sizeof(uint16_t);
 		if (blob->fw->size < fwclen) {
 			ql_log(ql_log_fatal, vha, 0x0088,
@@ -8636,7 +8125,7 @@ qla2x00_load_risc(scsi_qla_host_t *vha, uint32_t *srisc_addr)
 			fragment++;
 		}
 
-		/* Next segment. */
+		 
 		seg++;
 	}
 	return rval;
@@ -8747,7 +8236,7 @@ qla24xx_load_risc_blob(scsi_qla_host_t *vha, uint32_t *srisc_addr)
 			goto failed;
 		}
 
-		/* skip header and ignore checksum */
+		 
 		fwcode += 7;
 		risc_size -= 8;
 
@@ -8807,11 +8296,7 @@ qla24xx_load_risc(scsi_qla_host_t *vha, uint32_t *srisc_addr)
 	if (ql2xfwloadbin == 1)
 		return qla81xx_load_risc(vha, srisc_addr);
 
-	/*
-	 * FW Load priority:
-	 * 1) Firmware via request-firmware interface (.bin file).
-	 * 2) Firmware residing in flash.
-	 */
+	 
 	rval = qla24xx_load_risc_blob(vha, srisc_addr);
 	if (rval == QLA_SUCCESS)
 		return rval;
@@ -8830,11 +8315,7 @@ qla81xx_load_risc(scsi_qla_host_t *vha, uint32_t *srisc_addr)
 	if (ql2xfwloadbin == 2)
 		goto try_blob_fw;
 
-	/* FW Load priority:
-	 * 1) Firmware residing in flash.
-	 * 2) Firmware via request-firmware interface (.bin file).
-	 * 3) Golden-Firmware residing in flash -- (limited operation).
-	 */
+	 
 
 	if (!IS_QLA27XX(ha) && !IS_QLA28XX(ha))
 		goto try_primary_fw;
@@ -8926,7 +8407,7 @@ qla24xx_configure_vhba(scsi_qla_host_t *vha)
 
 	vha->flags.management_server_logged_in = 0;
 
-	/* Login to SNS first */
+	 
 	rval2 = ha->isp_ops->fabric_login(vha, NPH_SNS, 0xff, 0xff, 0xfc, mb,
 	    BIT_1);
 	if (rval2 != QLA_SUCCESS || mb[0] != MBS_COMMAND_COMPLETE) {
@@ -8951,7 +8432,7 @@ qla24xx_configure_vhba(scsi_qla_host_t *vha)
 	return rval;
 }
 
-/* 84XX Support **************************************************************/
+ 
 
 static LIST_HEAD(qla_cs84xx_list);
 static DEFINE_MUTEX(qla_cs84xx_mutex);
@@ -8964,7 +8445,7 @@ qla84xx_get_chip(struct scsi_qla_host *vha)
 
 	mutex_lock(&qla_cs84xx_mutex);
 
-	/* Find any shared 84xx chip. */
+	 
 	list_for_each_entry(cs84xx, &qla_cs84xx_list, list) {
 		if (cs84xx->bus == ha->pdev->bus) {
 			kref_get(&cs84xx->kref);
@@ -9025,7 +8506,7 @@ qla84xx_init_chip(scsi_qla_host_t *vha)
 	    QLA_SUCCESS;
 }
 
-/* 81XX Support **************************************************************/
+ 
 
 int
 qla81xx_nvram_config(scsi_qla_host_t *vha)
@@ -9045,7 +8526,7 @@ qla81xx_nvram_config(scsi_qla_host_t *vha)
 	icb = (struct init_cb_81xx *)ha->init_cb;
 	nv = ha->nvram;
 
-	/* Determine NVRAM starting address. */
+	 
 	ha->nvram_size = sizeof(*nv);
 	ha->vpd_size = FA_NVRAM_VPD_SIZE;
 	if (IS_P3P_TYPE(ha) || IS_QLA8031(ha))
@@ -9054,7 +8535,7 @@ qla81xx_nvram_config(scsi_qla_host_t *vha)
 	if (IS_QLA28XX(ha) || IS_QLA27XX(ha))
 		qla28xx_get_aux_images(vha, &active_regions);
 
-	/* Get VPD data into cache */
+	 
 	ha->vpd = ha->nvram + VPD_OFFSET;
 
 	faddr = ha->flt_region_vpd;
@@ -9068,7 +8549,7 @@ qla81xx_nvram_config(scsi_qla_host_t *vha)
 	}
 	ha->isp_ops->read_optrom(vha, ha->vpd, faddr << 2, ha->vpd_size);
 
-	/* Get NVRAM data into cache and calculate checksum. */
+	 
 	faddr = ha->flt_region_nvram;
 	if (IS_QLA28XX(ha)) {
 		if (active_regions.aux.vpd_nvram == QLA27XX_SECONDARY_IMAGE)
@@ -9089,10 +8570,10 @@ qla81xx_nvram_config(scsi_qla_host_t *vha)
 	ql_dump_buffer(ql_dbg_init + ql_dbg_buffer, vha, 0x0112,
 	    nv, ha->nvram_size);
 
-	/* Bad NVRAM data, set defaults parameters. */
+	 
 	if (chksum || memcmp("ISP ", nv->id, sizeof(nv->id)) ||
 	    le16_to_cpu(nv->nvram_version) < ICB_VERSION) {
-		/* Reset NVRAM data. */
+		 
 		ql_log(ql_log_info, vha, 0x0073,
 		    "Inconsistent NVRAM checksum=%#x id=%.4s version=%#x.\n",
 		    chksum, nv->id, le16_to_cpu(nv->nvram_version));
@@ -9101,9 +8582,7 @@ qla81xx_nvram_config(scsi_qla_host_t *vha)
 		    "Falling back to functioning (yet invalid -- WWPN) "
 		    "defaults.\n");
 
-		/*
-		 * Set default initialization control block.
-		 */
+		 
 		memset(nv, 0, ha->nvram_size);
 		nv->nvram_version = cpu_to_le16(ICB_VERSION);
 		nv->version = cpu_to_le16(ICB_VERSION);
@@ -9155,10 +8634,10 @@ qla81xx_nvram_config(scsi_qla_host_t *vha)
 
 	qlt_81xx_config_nvram_stage1(vha, nv);
 
-	/* Reset Initialization control block */
+	 
 	memset(icb, 0, ha->init_cb_size);
 
-	/* Copy 1st segment. */
+	 
 	dptr1 = (uint8_t *)icb;
 	dptr2 = (uint8_t *)&nv->version;
 	cnt = (uint8_t *)&icb->response_q_inpointer - (uint8_t *)&icb->version;
@@ -9167,7 +8646,7 @@ qla81xx_nvram_config(scsi_qla_host_t *vha)
 
 	icb->login_retry_count = nv->login_retry_count;
 
-	/* Copy 2nd segment. */
+	 
 	dptr1 = (uint8_t *)&icb->interrupt_delay_timer;
 	dptr2 = (uint8_t *)&nv->interrupt_delay_timer;
 	cnt = (uint8_t *)&icb->reserved_5 -
@@ -9176,7 +8655,7 @@ qla81xx_nvram_config(scsi_qla_host_t *vha)
 		*dptr1++ = *dptr2++;
 
 	memcpy(icb->enode_mac, nv->enode_mac, sizeof(icb->enode_mac));
-	/* Some boards (with valid NVRAMs) still have NULL enode_mac!! */
+	 
 	if (!memcmp(icb->enode_mac, "\0\0\0\0\0\0", sizeof(icb->enode_mac))) {
 		icb->enode_mac[0] = 0x00;
 		icb->enode_mac[1] = 0xC0;
@@ -9186,29 +8665,24 @@ qla81xx_nvram_config(scsi_qla_host_t *vha)
 		icb->enode_mac[5] = 0x06 + ha->port_no + 1;
 	}
 
-	/* Use extended-initialization control block. */
+	 
 	memcpy(ha->ex_init_cb, &nv->ex_version, sizeof(*ha->ex_init_cb));
 	ha->frame_payload_size = le16_to_cpu(icb->frame_payload_size);
-	/*
-	 * Setup driver NVRAM options.
-	 */
+	 
 	qla2x00_set_model_info(vha, nv->model_name, sizeof(nv->model_name),
 	    "QLE8XXX");
 
 	qlt_81xx_config_nvram_stage2(vha, icb);
 
-	/* Use alternate WWN? */
+	 
 	if (nv->host_p & cpu_to_le32(BIT_15)) {
 		memcpy(icb->node_name, nv->alternate_node_name, WWN_SIZE);
 		memcpy(icb->port_name, nv->alternate_port_name, WWN_SIZE);
 	}
 
-	/* Prepare nodename */
+	 
 	if ((icb->firmware_options_1 & cpu_to_le32(BIT_14)) == 0) {
-		/*
-		 * Firmware will apply the following mask if the nodename was
-		 * not provided.
-		 */
+		 
 		memcpy(icb->node_name, icb->port_name, WWN_SIZE);
 		icb->node_name[0] &= 0xF0;
 	}
@@ -9218,7 +8692,7 @@ qla81xx_nvram_config(scsi_qla_host_t *vha)
 			ha->flags.scm_supported_a = 1;
 	}
 
-	/* Set host adapter parameters. */
+	 
 	ha->flags.disable_risc_code_load = 0;
 	ha->flags.enable_lip_reset = 0;
 	ha->flags.enable_lip_full_login =
@@ -9231,7 +8705,7 @@ qla81xx_nvram_config(scsi_qla_host_t *vha)
 	ha->operating_mode = (le32_to_cpu(icb->firmware_options_2) &
 	    (BIT_6 | BIT_5 | BIT_4)) >> 4;
 
-	/* save HBA serial number */
+	 
 	ha->serial0 = icb->port_name[5];
 	ha->serial1 = icb->port_name[6];
 	ha->serial2 = icb->port_name[7];
@@ -9242,28 +8716,19 @@ qla81xx_nvram_config(scsi_qla_host_t *vha)
 
 	ha->retry_count = le16_to_cpu(nv->login_retry_count);
 
-	/* Set minimum login_timeout to 4 seconds. */
+	 
 	if (le16_to_cpu(nv->login_timeout) < ql2xlogintimeout)
 		nv->login_timeout = cpu_to_le16(ql2xlogintimeout);
 	if (le16_to_cpu(nv->login_timeout) < 4)
 		nv->login_timeout = cpu_to_le16(4);
 	ha->login_timeout = le16_to_cpu(nv->login_timeout);
 
-	/* Set minimum RATOV to 100 tenths of a second. */
+	 
 	ha->r_a_tov = 100;
 
 	ha->loop_reset_delay = nv->reset_delay;
 
-	/* Link Down Timeout = 0:
-	 *
-	 *	When Port Down timer expires we will start returning
-	 *	I/O's to OS with "DID_NO_CONNECT".
-	 *
-	 * Link Down Timeout != 0:
-	 *
-	 *	 The driver waits for the link to come up after link down
-	 *	 before returning I/Os to OS with "DID_NO_CONNECT".
-	 */
+	 
 	if (le16_to_cpu(nv->link_down_timeout) == 0) {
 		ha->loop_down_abort_time =
 		    (LOOP_DOWN_TIME - LOOP_DOWN_TIMEOUT);
@@ -9273,12 +8738,12 @@ qla81xx_nvram_config(scsi_qla_host_t *vha)
 		    (LOOP_DOWN_TIME - ha->link_down_timeout);
 	}
 
-	/* Need enough time to try and get the port back. */
+	 
 	ha->port_down_retry_count = le16_to_cpu(nv->port_down_retry_count);
 	if (qlport_down_retry)
 		ha->port_down_retry_count = qlport_down_retry;
 
-	/* Set login_retry_count */
+	 
 	ha->login_retry_count  = le16_to_cpu(nv->login_retry_count);
 	if (ha->port_down_retry_count ==
 	    le16_to_cpu(nv->port_down_retry_count) &&
@@ -9289,12 +8754,12 @@ qla81xx_nvram_config(scsi_qla_host_t *vha)
 	if (ql2xloginretrycount)
 		ha->login_retry_count = ql2xloginretrycount;
 
-	/* if not running MSI-X we need handshaking on interrupts */
+	 
 	if (!vha->hw->flags.msix_enabled &&
 	    (IS_QLA83XX(ha) || IS_QLA27XX(ha) || IS_QLA28XX(ha)))
 		icb->firmware_options_2 |= cpu_to_le32(BIT_22);
 
-	/* Enable ZIO. */
+	 
 	if (!vha->flags.init_done) {
 		ha->zio_mode = le32_to_cpu(icb->firmware_options_2) &
 		    (BIT_3 | BIT_2 | BIT_1 | BIT_0);
@@ -9318,13 +8783,13 @@ qla81xx_nvram_config(scsi_qla_host_t *vha)
 		vha->flags.process_response_queue = 1;
 	}
 
-	 /* enable RIDA Format2 */
+	  
 	icb->firmware_options_3 |= cpu_to_le32(BIT_0);
 
-	/* N2N: driver will initiate Login instead of FW */
+	 
 	icb->firmware_options_3 |= cpu_to_le32(BIT_8);
 
-	/* Determine NVMe/FCP priority for target ports */
+	 
 	ha->fc4_type_priority = qla2xxx_get_fc4_priority(vha);
 
 	if (rval) {
@@ -9349,13 +8814,13 @@ qla82xx_restart_isp(scsi_qla_host_t *vha)
 
 		status = qla2x00_fw_ready(vha);
 		if (!status) {
-			/* Issue a marker after FW becomes ready. */
+			 
 			qla2x00_marker(vha, ha->base_qpair, 0, 0, MK_SYNC_ALL);
 			vha->flags.online = 1;
 			set_bit(LOOP_RESYNC_NEEDED, &vha->dpc_flags);
 		}
 
-		/* if no cable then assume it's good */
+		 
 		if ((vha->device_flags & DFLG_NO_CABLE))
 			status = 0;
 	}
@@ -9364,10 +8829,7 @@ qla82xx_restart_isp(scsi_qla_host_t *vha)
 		clear_bit(RESET_MARKER_NEEDED, &vha->dpc_flags);
 
 		if (!atomic_read(&vha->loop_down_timer)) {
-			/*
-			 * Issue marker command only when we are going
-			 * to start the I/O .
-			 */
+			 
 			vha->marker_needed = 1;
 		}
 
@@ -9376,7 +8838,7 @@ qla82xx_restart_isp(scsi_qla_host_t *vha)
 		ha->isp_abort_cnt = 0;
 		clear_bit(ISP_ABORT_RETRY, &vha->dpc_flags);
 
-		/* Update the firmware version */
+		 
 		status = qla82xx_check_md_needed(vha);
 
 		if (ha->fce) {
@@ -9432,24 +8894,7 @@ qla82xx_restart_isp(scsi_qla_host_t *vha)
 	return status;
 }
 
-/*
- * qla24xx_get_fcp_prio
- *	Gets the fcp cmd priority value for the logged in port.
- *	Looks for a match of the port descriptors within
- *	each of the fcp prio config entries. If a match is found,
- *	the tag (priority) value is returned.
- *
- * Input:
- *	vha = scsi host structure pointer.
- *	fcport = port structure pointer.
- *
- * Return:
- *	non-zero (if found)
- *	-1 (if not found)
- *
- * Context:
- * 	Kernel context
- */
+ 
 static int
 qla24xx_get_fcp_prio(scsi_qla_host_t *vha, fc_port_t *fcport)
 {
@@ -9476,7 +8921,7 @@ qla24xx_get_fcp_prio(scsi_qla_host_t *vha, fc_port_t *fcport)
 			continue;
 		}
 
-		/* check source pid for a match */
+		 
 		if (pri_entry->flags & FCP_PRIO_ENTRY_SPID_VALID) {
 			pid1 = pri_entry->src_pid & INVALID_PORT_ID;
 			pid2 = vha->d_id.b24 & INVALID_PORT_ID;
@@ -9486,7 +8931,7 @@ qla24xx_get_fcp_prio(scsi_qla_host_t *vha, fc_port_t *fcport)
 				pid_match++;
 		}
 
-		/* check destination pid for a match */
+		 
 		if (pri_entry->flags & FCP_PRIO_ENTRY_DPID_VALID) {
 			pid1 = pri_entry->dst_pid & INVALID_PORT_ID;
 			pid2 = fcport->d_id.b24 & INVALID_PORT_ID;
@@ -9496,7 +8941,7 @@ qla24xx_get_fcp_prio(scsi_qla_host_t *vha, fc_port_t *fcport)
 				pid_match++;
 		}
 
-		/* check source WWN for a match */
+		 
 		if (pri_entry->flags & FCP_PRIO_ENTRY_SWWN_VALID) {
 			wwn1 = wwn_to_u64(vha->port_name);
 			wwn2 = wwn_to_u64(pri_entry->src_wwpn);
@@ -9506,7 +8951,7 @@ qla24xx_get_fcp_prio(scsi_qla_host_t *vha, fc_port_t *fcport)
 				wwn_match++;
 		}
 
-		/* check destination WWN for a match */
+		 
 		if (pri_entry->flags & FCP_PRIO_ENTRY_DWWN_VALID) {
 			wwn1 = wwn_to_u64(fcport->port_name);
 			wwn2 = wwn_to_u64(pri_entry->dst_wwpn);
@@ -9517,7 +8962,7 @@ qla24xx_get_fcp_prio(scsi_qla_host_t *vha, fc_port_t *fcport)
 		}
 
 		if (pid_match == 2 || wwn_match == 2) {
-			/* Found a matching entry */
+			 
 			if (pri_entry->flags & FCP_PRIO_ENTRY_TAG_VALID)
 				priority = pri_entry->tag;
 			break;
@@ -9529,20 +8974,7 @@ qla24xx_get_fcp_prio(scsi_qla_host_t *vha, fc_port_t *fcport)
 	return priority;
 }
 
-/*
- * qla24xx_update_fcport_fcp_prio
- *	Activates fcp priority for the logged in fc port
- *
- * Input:
- *	vha = scsi host structure pointer.
- *	fcp = port structure pointer.
- *
- * Return:
- *	QLA_SUCCESS or QLA_FUNCTION_FAILED
- *
- * Context:
- *	Kernel context.
- */
+ 
 int
 qla24xx_update_fcport_fcp_prio(scsi_qla_host_t *vha, fc_port_t *fcport)
 {
@@ -9581,19 +9013,7 @@ qla24xx_update_fcport_fcp_prio(scsi_qla_host_t *vha, fc_port_t *fcport)
 	return  ret;
 }
 
-/*
- * qla24xx_update_all_fcp_prio
- *	Activates fcp priority for all the logged in ports
- *
- * Input:
- *	ha = adapter block pointer.
- *
- * Return:
- *	QLA_SUCCESS or QLA_FUNCTION_FAILED
- *
- * Context:
- *	Kernel context.
- */
+ 
 int
 qla24xx_update_all_fcp_prio(scsi_qla_host_t *vha)
 {
@@ -9601,7 +9021,7 @@ qla24xx_update_all_fcp_prio(scsi_qla_host_t *vha)
 	fc_port_t *fcport;
 
 	ret = QLA_FUNCTION_FAILED;
-	/* We need to set priority for all logged in ports */
+	 
 	list_for_each_entry(fcport, &vha->vp_fcports, list)
 		ret = qla24xx_update_fcport_fcp_prio(vha, fcport);
 
@@ -9639,7 +9059,7 @@ struct qla_qpair *qla2xxx_create_qpair(struct scsi_qla_host *vha, int qos,
 		spin_lock_init(&qpair->qp_lock);
 		qpair->use_shadow_reg = IS_SHADOW_REG_CAPABLE(ha) ? 1 : 0;
 
-		/* Assign available que pair id */
+		 
 		mutex_lock(&ha->mq_lock);
 		qpair_id = find_first_zero_bit(ha->qpair_qid_map, ha->max_qpairs);
 		if (ha->num_qpairs >= ha->max_qpairs) {
@@ -9684,7 +9104,7 @@ struct qla_qpair *qla2xxx_create_qpair(struct scsi_qla_host *vha, int qos,
 
 		mutex_unlock(&ha->mq_lock);
 
-		/* Create response queue first */
+		 
 		rsp_id = qla25xx_create_rsp_que(ha, 0, 0, 0, qpair, startqp);
 		if (!rsp_id) {
 			ql_log(ql_log_warn, vha, 0x0185,
@@ -9694,7 +9114,7 @@ struct qla_qpair *qla2xxx_create_qpair(struct scsi_qla_host *vha, int qos,
 
 		qpair->rsp = ha->rsp_q_map[rsp_id];
 
-		/* Create request queue */
+		 
 		req_id = qla25xx_create_req_que(ha, 0, vp_idx, 0, rsp_id, qos,
 		    startqp);
 		if (!req_id) {
@@ -9730,7 +9150,7 @@ struct qla_qpair *qla2xxx_create_qpair(struct scsi_qla_host *vha, int qos,
 			goto fail_bufpool;
 		}
 
-		/* Mark as online */
+		 
 		qpair->online = 1;
 
 		if (!vha->flags.qpairs_available)
@@ -9787,7 +9207,7 @@ int qla2xxx_delete_qpair(struct scsi_qla_host *vha, struct qla_qpair *qpair)
 	if (!list_empty(&qpair->dsd_list)) {
 		struct dsd_dma *dsd_ptr, *tdsd_ptr;
 
-		/* clean up allocated prev pool */
+		 
 		list_for_each_entry_safe(dsd_ptr, tdsd_ptr,
 					 &qpair->dsd_list, list) {
 			dma_pool_free(ha->dl_dma_pool, dsd_ptr->dsd_addr,
@@ -9819,7 +9239,7 @@ fail:
 uint64_t
 qla2x00_count_set_bits(uint32_t num)
 {
-	/* Brian Kernighan's Algorithm */
+	 
 	u64 count = 0;
 
 	while (num) {
@@ -9898,12 +9318,12 @@ int qla2xxx_get_ini_stats(struct Scsi_Host *host, u32 flags,
 	fc_port_t *fcport = NULL;
 	unsigned long int_flags;
 
-	/* Copy stat type to work on it */
+	 
 	tmp_stat_type = flags;
 
 	if (tmp_stat_type & BIT_17) {
 		num_tgt = qla2x00_get_num_tgts(vha);
-		/* unset BIT_17 */
+		 
 		tmp_stat_type &= ~(1 << 17);
 	}
 	ini_entry_count = qla2x00_count_set_bits(tmp_stat_type);
@@ -9948,9 +9368,7 @@ int qla2xxx_get_ini_stats(struct Scsi_Host *host, u32 flags,
 		i++;
 	}
 
-	/* i will continue from previous loop, as target
-	 * entries are after initiator
-	 */
+	 
 	if (flags & QLA2XX_TGT_SHT_LNK_DOWN) {
 		spin_lock_irqsave(&vha->hw->tgt.sess_lock, int_flags);
 		list_for_each_entry(fcport, &vha->vp_fcports, list) {
@@ -10020,7 +9438,7 @@ int qla2xxx_enable_port(struct Scsi_Host *host)
 	}
 
 	vha->hw->flags.port_isolated = 0;
-	/* Set the flag to 1, so that isp_abort can proceed */
+	 
 	vha->flags.online = 1;
 	set_bit(ISP_ABORT_NEEDED, &vha->dpc_flags);
 	qla2xxx_wake_dpc(vha);

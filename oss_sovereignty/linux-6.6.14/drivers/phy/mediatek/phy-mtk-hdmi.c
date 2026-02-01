@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2018 MediaTek Inc.
- * Author: Jie Qiu <jie.qiu@mediatek.com>
- */
+
+ 
 
 #include "phy-mtk-hdmi.h"
 

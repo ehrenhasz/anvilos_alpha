@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/* Copyright(c) 2023 Advanced Micro Devices, Inc */
+ 
+ 
 
 #ifndef _VDPA_DEV_H_
 #define _VDPA_DEV_H_
@@ -35,11 +35,11 @@ struct pds_vdpa_device {
 	struct pds_vdpa_aux *vdpa_aux;
 
 	struct pds_vdpa_vq_info vqs[PDS_VDPA_MAX_QUEUES];
-	u64 supported_features;		/* supported device features */
-	u64 negotiated_features;	/* negotiated features */
-	u8 vdpa_index;			/* rsvd for future subdevice use */
-	u8 num_vqs;			/* num vqs in use */
-	u8 mac[ETH_ALEN];		/* mac selected when the device was added */
+	u64 supported_features;		 
+	u64 negotiated_features;	 
+	u8 vdpa_index;			 
+	u8 num_vqs;			 
+	u8 mac[ETH_ALEN];		 
 	struct vdpa_callback config_cb;
 	struct notifier_block nb;
 };
@@ -47,4 +47,4 @@ struct pds_vdpa_device {
 #define PDS_VDPA_PACKED_INVERT_IDX	0x8000
 
 int pds_vdpa_get_mgmt_info(struct pds_vdpa_aux *vdpa_aux);
-#endif /* _VDPA_DEV_H_ */
+#endif  

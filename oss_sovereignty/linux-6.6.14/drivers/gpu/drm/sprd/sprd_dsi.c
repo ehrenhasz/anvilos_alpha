@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2020 Unisoc Inc.
- */
+
+ 
 
 #include <linux/component.h>
 #include <linux/module.h>
@@ -353,7 +351,7 @@ static u16 round_video_size(int coding, u16 video_size)
 	case COLOR_CODE_24BIT_YCC422:
 	case COLOR_CODE_20BIT_YCC422_LOOSELY:
 	case COLOR_CODE_12BIT_YCC420:
-		/* round up active H pixels to a multiple of 2 */
+		 
 		if ((video_size % 2) != 0)
 			video_size += 1;
 		break;
@@ -428,9 +426,7 @@ static void sprd_dsi_init(struct dsi_context *ctx)
 	writel(1, ctx->base + SOFT_RESET);
 }
 
-/*
- * Free up resources and shutdown host controller and PHY
- */
+ 
 static void sprd_dsi_fini(struct dsi_context *ctx)
 {
 	writel(0xffffffff, ctx->base + MASK_PROTOCOL_INT);
@@ -438,12 +434,7 @@ static void sprd_dsi_fini(struct dsi_context *ctx)
 	writel(0, ctx->base + SOFT_RESET);
 }
 
-/*
- * If not in burst mode, it will compute the video and null packet sizes
- * according to necessity.
- * Configure timers for data lanes and/or clock lane to return to LP when
- * bandwidth is not filled by data.
- */
+ 
 static int sprd_dsi_dpi_video(struct dsi_context *ctx)
 {
 	struct sprd_dsi *dsi = container_of(ctx, struct sprd_dsi, ctx);
@@ -509,17 +500,17 @@ static int sprd_dsi_dpi_video(struct dsi_context *ctx)
 		writel(0, ctx->base + VIDEO_NULLPKT_SIZE);
 		dsi_reg_up(ctx, VIDEO_PKT_CONFIG, VIDEO_LINE_CHUNK_NUM, 0);
 	} else {
-		/* non burst transmission */
+		 
 		null_pkt_size = 0;
 
-		/* bytes to be sent - first as one chunk */
+		 
 		bytes_per_chunk = vm->hactive * bpp_x100 / 100 + pkt_header;
 
-		/* hline total bytes from the DPI interface */
+		 
 		total_bytes = (vm->hactive + vm->hfront_porch) *
 				ratio_x1000 / dsi->slave->lanes / 1000;
 
-		/* check if the pixels actually fit on the DSI link */
+		 
 		if (total_bytes < bytes_per_chunk) {
 			drm_err(dsi->drm, "current resolution can not be set\n");
 			return -EINVAL;
@@ -527,9 +518,9 @@ static int sprd_dsi_dpi_video(struct dsi_context *ctx)
 
 		chunk_overhead = total_bytes - bytes_per_chunk;
 
-		/* overhead higher than 1 -> enable multi packets */
+		 
 		if (chunk_overhead > 1) {
-			/* multi packets */
+			 
 			for (video_size = video_size_step;
 			     video_size < vm->hactive;
 			     video_size += video_size_step) {
@@ -546,20 +537,20 @@ static int sprd_dsi_dpi_video(struct dsi_context *ctx)
 				}
 			}
 
-			/* prevent overflow (unsigned - unsigned) */
+			 
 			if (bytes_left > (pkt_header * chunks)) {
 				null_pkt_size = (bytes_left -
 						pkt_header * chunks) / chunks;
-				/* avoid register overflow */
+				 
 				if (null_pkt_size > 1023)
 					null_pkt_size = 1023;
 			}
 
 		} else {
-			/* single packet */
+			 
 			chunks = 1;
 
-			/* must be a multiple of 4 except 18 loosely */
+			 
 			for (video_size = vm->hactive;
 			    (video_size % video_size_step) != 0;
 			     video_size++)
@@ -606,16 +597,7 @@ static void sprd_dsi_edpi_video(struct dsi_context *ctx)
 	writel(1, ctx->base + SOFT_RESET);
 }
 
-/*
- * Send a packet on the generic interface,
- * this function has an active delay to wait for the buffer to clear.
- * The delay is limited to:
- * (param_length / 4) x DSIH_FIFO_ACTIVE_WAIT x register access time
- * the controller restricts the sending of.
- *
- * This function will not be able to send Null and Blanking packets due to
- * controller restriction
- */
+ 
 static int sprd_dsi_wr_pkt(struct dsi_context *ctx, u8 vc, u8 type,
 			   const u8 *param, u16 len)
 {
@@ -627,7 +609,7 @@ static int sprd_dsi_wr_pkt(struct dsi_context *ctx, u8 vc, u8 type,
 	if (vc > 3)
 		return -EINVAL;
 
-	/* 1st: for long packet, must config payload first */
+	 
 	ret = dsi_wait_tx_payload_fifo_empty(ctx);
 	if (ret) {
 		drm_err(dsi->drm, "tx payload fifo is not empty\n");
@@ -649,7 +631,7 @@ static int sprd_dsi_wr_pkt(struct dsi_context *ctx, u8 vc, u8 type,
 		wc_msbyte = (len > 1) ? param[1] : 0;
 	}
 
-	/* 2nd: then set packet header */
+	 
 	ret = dsi_wait_tx_cmd_fifo_empty(ctx);
 	if (ret) {
 		drm_err(dsi->drm, "tx cmd fifo is not empty\n");
@@ -662,15 +644,7 @@ static int sprd_dsi_wr_pkt(struct dsi_context *ctx, u8 vc, u8 type,
 	return 0;
 }
 
-/*
- * Send READ packet to peripheral using the generic interface,
- * this will force command mode and stop video mode (because of BTA).
- *
- * This function has an active delay to wait for the buffer to clear,
- * the delay is limited to 2 x DSIH_FIFO_ACTIVE_WAIT
- * (waiting for command buffer, and waiting for receiving)
- * @note this function will enable BTA
- */
+ 
 static int sprd_dsi_rd_pkt(struct dsi_context *ctx, u8 vc, u8 type,
 			   u8 msb_byte, u8 lsb_byte,
 			   u8 *buffer, u8 bytes_to_read)
@@ -683,7 +657,7 @@ static int sprd_dsi_rd_pkt(struct dsi_context *ctx, u8 vc, u8 type,
 	if (vc > 3)
 		return -EINVAL;
 
-	/* 1st: send read command to peripheral */
+	 
 	ret = dsi_reg_rd(ctx, CMD_MODE_STATUS, GEN_CMD_CMD_FIFO_EMPTY, 5);
 	if (!ret)
 		return -EIO;
@@ -691,14 +665,14 @@ static int sprd_dsi_rd_pkt(struct dsi_context *ctx, u8 vc, u8 type,
 	writel(type | (vc << 6) | (lsb_byte << 8) | (msb_byte << 16),
 	       ctx->base + GEN_HDR);
 
-	/* 2nd: wait peripheral response completed */
+	 
 	ret = dsi_wait_rd_resp_completed(ctx);
 	if (ret) {
 		drm_err(dsi->drm, "wait read response time out\n");
 		return ret;
 	}
 
-	/* 3rd: get data from rx payload fifo */
+	 
 	ret = dsi_reg_rd(ctx, CMD_MODE_STATUS, GEN_CMD_RDATA_FIFO_EMPTY, 1);
 	if (ret) {
 		drm_err(dsi->drm, "rx payload fifo empty\n");
@@ -1031,7 +1005,7 @@ static const struct mipi_dsi_host_ops sprd_dsi_host_ops = {
 
 static const struct of_device_id dsi_match_table[] = {
 	{ .compatible = "sprd,sharkl3-dsi-host" },
-	{ /* sentinel */ },
+	{   },
 };
 
 static int sprd_dsi_probe(struct platform_device *pdev)

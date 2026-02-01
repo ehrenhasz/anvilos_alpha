@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: (GPL-2.0+ OR BSD-3-Clause) */
-/*
- * hw.h - DesignWare HS OTG Controller hardware definitions
- *
- * Copyright 2004-2013 Synopsys, Inc.
- */
+ 
+ 
 
 #ifndef __DWC2_HW_H__
 #define __DWC2_HW_H__
@@ -174,7 +170,7 @@
 #define GRXFSIZ_DEPTH_SHIFT		0
 
 #define GNPTXFSIZ			HSOTG_REG(0x028)
-/* Use FIFOSIZE_* constants to access this register */
+ 
 
 #define GNPTXSTS			HSOTG_REG(0x02C)
 #define GNPTXSTS_NP_TXQ_TOP_MASK		(0x7f << 24)
@@ -401,19 +397,19 @@
 #define GINTSTS2_WKUP_ALERT_INT		BIT(0)
 
 #define HPTXFSIZ			HSOTG_REG(0x100)
-/* Use FIFOSIZE_* constants to access this register */
+ 
 
 #define DPTXFSIZN(_a)			HSOTG_REG(0x104 + (((_a) - 1) * 4))
-/* Use FIFOSIZE_* constants to access this register */
+ 
 
-/* These apply to the GNPTXFSIZ, HPTXFSIZ and DPTXFSIZN registers */
+ 
 #define FIFOSIZE_DEPTH_MASK		(0xffff << 16)
 #define FIFOSIZE_DEPTH_SHIFT		16
 #define FIFOSIZE_STARTADDR_MASK		(0xffff << 0)
 #define FIFOSIZE_STARTADDR_SHIFT	0
 #define FIFOSIZE_DEPTH_GET(_x)		(((_x) >> 16) & 0xffff)
 
-/* Device mode registers */
+ 
 
 #define DCFG				HSOTG_REG(0x800)
 #define DCFG_DESCDMA_EN			BIT(23)
@@ -510,11 +506,7 @@
 #define DOEPCTL0			HSOTG_REG(0xB00)
 #define DOEPCTL(_a)			HSOTG_REG(0xB00 + ((_a) * 0x20))
 
-/* EP0 specialness:
- * bits[29..28] - reserved (no SetD0PID, SetD1PID)
- * bits[25..22] - should always be zero, this isn't a periodic endpoint
- * bits[10..0]  - MPS setting different for EP0
- */
+ 
 #define D0EPCTL_MPS_MASK		(0x3 << 0)
 #define D0EPCTL_MPS_SHIFT		0
 #define D0EPCTL_MPS_64			0
@@ -653,7 +645,7 @@
 
 #define EPFIFO(_a)			HSOTG_REG(0x1000 + ((_a) * 0x1000))
 
-/* Host Mode Registers */
+ 
 
 #define HCFG				HSOTG_REG(0x0400)
 #define HCFG_MODECHTIMEN		BIT(31)
@@ -801,22 +793,13 @@
 
 #define HCFIFO(_ch)			HSOTG_REG(0x1000 + 0x1000 * (_ch))
 
-/**
- * struct dwc2_dma_desc - DMA descriptor structure,
- * used for both host and gadget modes
- *
- * @status: DMA descriptor status quadlet
- * @buf:    DMA descriptor data buffer pointer
- *
- * DMA Descriptor structure contains two quadlets:
- * Status quadlet and Data buffer pointer.
- */
+ 
 struct dwc2_dma_desc {
 	u32 status;
 	u32 buf;
 } __packed;
 
-/* Host Mode DMA descriptor status quadlet */
+ 
 
 #define HOST_DMA_A			BIT(31)
 #define HOST_DMA_STS_MASK		(0x3 << 28)
@@ -834,7 +817,7 @@ struct dwc2_dma_desc {
 #define HOST_DMA_NBYTES_SHIFT		0
 #define HOST_DMA_NBYTES_LIMIT		131071
 
-/* Device Mode DMA descriptor status quadlet */
+ 
 
 #define DEV_DMA_BUFF_STS_MASK		(0x3 << 30)
 #define DEV_DMA_BUFF_STS_SHIFT		30
@@ -872,4 +855,4 @@ struct dwc2_dma_desc {
 #define MAX_DMA_DESC_NUM_GENERIC	64
 #define MAX_DMA_DESC_NUM_HS_ISOC	256
 
-#endif /* __DWC2_HW_H__ */
+#endif  

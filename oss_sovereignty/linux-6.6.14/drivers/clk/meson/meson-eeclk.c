@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2019 BayLibre, SAS.
- * Author: Jerome Brunet <jbrunet@baylibre.com>
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/of.h>
@@ -26,7 +23,7 @@ int meson_eeclkc_probe(struct platform_device *pdev)
 	if (!data)
 		return -EINVAL;
 
-	/* Get the hhi system controller node */
+	 
 	np = of_get_parent(dev->of_node);
 	map = syscon_node_to_regmap(np);
 	of_node_put(np);
@@ -39,12 +36,12 @@ int meson_eeclkc_probe(struct platform_device *pdev)
 	if (data->init_count)
 		regmap_multi_reg_write(map, data->init_regs, data->init_count);
 
-	/* Populate regmap for the regmap backed clocks */
+	 
 	for (i = 0; i < data->regmap_clk_num; i++)
 		data->regmap_clks[i]->map = map;
 
 	for (i = 0; i < data->hw_clks.num; i++) {
-		/* array might be sparse */
+		 
 		if (!data->hw_clks.hws[i])
 			continue;
 

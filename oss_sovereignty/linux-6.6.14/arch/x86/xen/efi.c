@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2014 Oracle Co., Daniel Kiper
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/efi.h>
@@ -23,25 +21,25 @@ static efi_char16_t vendor[100] __initdata;
 static efi_system_table_t efi_systab_xen __initdata = {
 	.hdr = {
 		.signature	= EFI_SYSTEM_TABLE_SIGNATURE,
-		.revision	= 0, /* Initialized later. */
-		.headersize	= 0, /* Ignored by Linux Kernel. */
-		.crc32		= 0, /* Ignored by Linux Kernel. */
+		.revision	= 0,  
+		.headersize	= 0,  
+		.crc32		= 0,  
 		.reserved	= 0
 	},
-	.fw_vendor	= EFI_INVALID_TABLE_ADDR, /* Initialized later. */
-	.fw_revision	= 0,			  /* Initialized later. */
-	.con_in_handle	= EFI_INVALID_TABLE_ADDR, /* Not used under Xen. */
-	.con_in		= NULL,			  /* Not used under Xen. */
-	.con_out_handle	= EFI_INVALID_TABLE_ADDR, /* Not used under Xen. */
-	.con_out	= NULL, 		  /* Not used under Xen. */
-	.stderr_handle	= EFI_INVALID_TABLE_ADDR, /* Not used under Xen. */
-	.stderr		= EFI_INVALID_TABLE_ADDR, /* Not used under Xen. */
+	.fw_vendor	= EFI_INVALID_TABLE_ADDR,  
+	.fw_revision	= 0,			   
+	.con_in_handle	= EFI_INVALID_TABLE_ADDR,  
+	.con_in		= NULL,			   
+	.con_out_handle	= EFI_INVALID_TABLE_ADDR,  
+	.con_out	= NULL, 		   
+	.stderr_handle	= EFI_INVALID_TABLE_ADDR,  
+	.stderr		= EFI_INVALID_TABLE_ADDR,  
 	.runtime	= (efi_runtime_services_t *)EFI_INVALID_TABLE_ADDR,
-						  /* Not used under Xen. */
+						   
 	.boottime	= (efi_boot_services_t *)EFI_INVALID_TABLE_ADDR,
-						  /* Not used under Xen. */
-	.nr_tables	= 0,			  /* Initialized later. */
-	.tables		= EFI_INVALID_TABLE_ADDR  /* Initialized later. */
+						   
+	.nr_tables	= 0,			   
+	.tables		= EFI_INVALID_TABLE_ADDR   
 };
 
 static efi_system_table_t __init *xen_efi_probe(void)
@@ -58,7 +56,7 @@ static efi_system_table_t __init *xen_efi_probe(void)
 	if (!xen_initial_domain() || HYPERVISOR_platform_op(&op) < 0)
 		return NULL;
 
-	/* Here we know that Xen runs on EFI platform. */
+	 
 	xen_efi_runtime_setup();
 
 	efi_systab_xen.tables = info->cfg.addr;
@@ -93,9 +91,7 @@ static efi_system_table_t __init *xen_efi_probe(void)
 	return &efi_systab_xen;
 }
 
-/*
- * Determine whether we're in secure boot mode.
- */
+ 
 static enum efi_secureboot_mode xen_efi_get_secureboot(void)
 {
 	static efi_guid_t shim_guid = EFI_SHIM_LOCK_GUID;
@@ -112,12 +108,12 @@ static enum efi_secureboot_mode xen_efi_get_secureboot(void)
 	if (mode != efi_secureboot_mode_enabled)
 		return mode;
 
-	/* See if a user has put the shim into insecure mode. */
+	 
 	size = sizeof(moksbstate);
 	status = efi.get_variable(L"MokSBStateRT", &shim_guid,
 				  NULL, &size, &moksbstate);
 
-	/* If it fails, we don't care why. Default to secure. */
+	 
 	if (status != EFI_SUCCESS)
 		goto secure_boot_enabled;
 

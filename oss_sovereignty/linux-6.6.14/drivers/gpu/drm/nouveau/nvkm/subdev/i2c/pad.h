@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: MIT */
+ 
 #ifndef __NVKM_I2C_PAD_H__
 #define __NVKM_I2C_PAD_H__
 #include "priv.h"
@@ -6,9 +6,9 @@
 struct nvkm_i2c_pad {
 	const struct nvkm_i2c_pad_func *func;
 	struct nvkm_i2c *i2c;
-#define NVKM_I2C_PAD_HYBRID(n) /* 'n' is hw pad index */                     (n)
-#define NVKM_I2C_PAD_CCB(n) /* 'n' is ccb index */                 ((n) + 0x100)
-#define NVKM_I2C_PAD_EXT(n) /* 'n' is dcb external encoder type */ ((n) + 0x200)
+#define NVKM_I2C_PAD_HYBRID(n)                       (n)
+#define NVKM_I2C_PAD_CCB(n)                   ((n) + 0x100)
+#define NVKM_I2C_PAD_EXT(n)   ((n) + 0x200)
 	int id;
 
 	enum nvkm_i2c_pad_mode {

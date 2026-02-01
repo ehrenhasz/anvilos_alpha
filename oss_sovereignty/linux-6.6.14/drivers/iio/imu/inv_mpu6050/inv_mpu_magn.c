@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2019 TDK-InvenSense, Inc.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/device.h>
@@ -11,11 +9,7 @@
 #include "inv_mpu_iio.h"
 #include "inv_mpu_magn.h"
 
-/*
- * MPU9xxx magnetometer are AKM chips on I2C aux bus
- * MPU9150 is AK8975
- * MPU9250 is AK8963
- */
+ 
 #define INV_MPU_MAGN_I2C_ADDR		0x0C
 
 #define INV_MPU_MAGN_REG_WIA		0x00
@@ -56,7 +50,7 @@ static bool inv_magn_supported(const struct inv_mpu6050_state *st)
 	}
 }
 
-/* init magnetometer chip */
+ 
 static int inv_magn_init(struct inv_mpu6050_state *st)
 {
 	uint8_t val;
@@ -64,7 +58,7 @@ static int inv_magn_init(struct inv_mpu6050_state *st)
 	int32_t sensitivity;
 	int ret;
 
-	/* check whoami */
+	 
 	ret = inv_mpu_aux_read(st, INV_MPU_MAGN_I2C_ADDR, INV_MPU_MAGN_REG_WIA,
 			       &val, sizeof(val));
 	if (ret)
@@ -72,7 +66,7 @@ static int inv_magn_init(struct inv_mpu6050_state *st)
 	if (val != INV_MPU_MAGN_BITS_WIA)
 		return -ENODEV;
 
-	/* software reset for MPU925x only */
+	 
 	switch (st->chip_type) {
 	case INV_MPU9250:
 	case INV_MPU9255:
@@ -86,7 +80,7 @@ static int inv_magn_init(struct inv_mpu6050_state *st)
 		break;
 	}
 
-	/* read fuse ROM data */
+	 
 	ret = inv_mpu_aux_write(st, INV_MPU_MAGN_I2C_ADDR,
 				INV_MPU_MAGN_REG_CNTL1,
 				INV_MPU_MAGN_BITS_MODE_FUSE);
@@ -98,41 +92,29 @@ static int inv_magn_init(struct inv_mpu6050_state *st)
 	if (ret)
 		return ret;
 
-	/* switch back to power-down */
+	 
 	ret = inv_mpu_aux_write(st, INV_MPU_MAGN_I2C_ADDR,
 				INV_MPU_MAGN_REG_CNTL1,
 				INV_MPU_MAGN_BITS_MODE_PWDN);
 	if (ret)
 		return ret;
 
-	/*
-	 * Sensor sentivity
-	 * 1 uT = 0.01 G and value is in micron (1e6)
-	 * sensitvity = x uT * 0.01 * 1e6
-	 */
+	 
 	switch (st->chip_type) {
 	case INV_MPU9150:
-		/* sensor sensitivity is 0.3 uT */
+		 
 		sensitivity = 3000;
 		break;
 	case INV_MPU9250:
 	case INV_MPU9255:
-		/* sensor sensitivity in 16 bits mode: 0.15 uT */
+		 
 		sensitivity = 1500;
 		break;
 	default:
 		return -EINVAL;
 	}
 
-	/*
-	 * Sensitivity adjustement and scale to Gauss
-	 *
-	 * Hadj = H * (((ASA - 128) * 0.5 / 128) + 1)
-	 * Factor simplification:
-	 * Hadj = H * ((ASA + 128) / 256)
-	 *
-	 * raw_to_gauss = Hadj * sensitivity
-	 */
+	 
 	st->magn_raw_to_gauss[0] = (((int32_t)asa[0] + 128) * sensitivity) / 256;
 	st->magn_raw_to_gauss[1] = (((int32_t)asa[1] + 128) * sensitivity) / 256;
 	st->magn_raw_to_gauss[2] = (((int32_t)asa[2] + 128) * sensitivity) / 256;
@@ -140,39 +122,27 @@ static int inv_magn_init(struct inv_mpu6050_state *st)
 	return 0;
 }
 
-/**
- * inv_mpu_magn_probe() - probe and setup magnetometer chip
- * @st: driver internal state
- *
- * Returns 0 on success, a negative error code otherwise
- *
- * It is probing the chip and setting up all needed i2c transfers.
- * Noop if there is no magnetometer in the chip.
- */
+ 
 int inv_mpu_magn_probe(struct inv_mpu6050_state *st)
 {
 	uint8_t val;
 	int ret;
 
-	/* quit if chip is not supported */
+	 
 	if (!inv_magn_supported(st))
 		return 0;
 
-	/* configure i2c master aux port */
+	 
 	ret = inv_mpu_aux_init(st);
 	if (ret)
 		return ret;
 
-	/* check and init mag chip */
+	 
 	ret = inv_magn_init(st);
 	if (ret)
 		return ret;
 
-	/*
-	 * configure mpu i2c master accesses
-	 * i2c SLV0: read sensor data, 7 bytes data(6)-ST2
-	 * Byte swap data to store them in big-endian in impair address groups
-	 */
+	 
 	ret = regmap_write(st->map, INV_MPU6050_REG_I2C_SLV_ADDR(0),
 			   INV_MPU6050_BIT_I2C_SLV_RNW | INV_MPU_MAGN_I2C_ADDR);
 	if (ret)
@@ -191,7 +161,7 @@ int inv_mpu_magn_probe(struct inv_mpu6050_state *st)
 	if (ret)
 		return ret;
 
-	/* i2c SLV1: launch single measurement */
+	 
 	ret = regmap_write(st->map, INV_MPU6050_REG_I2C_SLV_ADDR(1),
 			   INV_MPU_MAGN_I2C_ADDR);
 	if (ret)
@@ -202,7 +172,7 @@ int inv_mpu_magn_probe(struct inv_mpu6050_state *st)
 	if (ret)
 		return ret;
 
-	/* add 16 bits mode for MPU925x */
+	 
 	val = INV_MPU_MAGN_BITS_MODE_SINGLE;
 	switch (st->chip_type) {
 	case INV_MPU9250:
@@ -220,29 +190,16 @@ int inv_mpu_magn_probe(struct inv_mpu6050_state *st)
 			    INV_MPU6050_BIT_SLV_EN | 1);
 }
 
-/**
- * inv_mpu_magn_set_rate() - set magnetometer sampling rate
- * @st: driver internal state
- * @fifo_rate: mpu set fifo rate
- *
- * Returns 0 on success, a negative error code otherwise
- *
- * Limit sampling frequency to the maximum value supported by the
- * magnetometer chip. Resulting in duplicated data for higher frequencies.
- * Noop if there is no magnetometer in the chip.
- */
+ 
 int inv_mpu_magn_set_rate(const struct inv_mpu6050_state *st, int fifo_rate)
 {
 	uint8_t d;
 
-	/* quit if chip is not supported */
+	 
 	if (!inv_magn_supported(st))
 		return 0;
 
-	/*
-	 * update i2c master delay to limit mag sampling to max frequency
-	 * compute fifo_rate divider d: rate = fifo_rate / (d + 1)
-	 */
+	 
 	if (fifo_rate > INV_MPU_MAGN_FREQ_HZ_MAX)
 		d = fifo_rate / INV_MPU_MAGN_FREQ_HZ_MAX - 1;
 	else
@@ -251,14 +208,7 @@ int inv_mpu_magn_set_rate(const struct inv_mpu6050_state *st, int fifo_rate)
 	return regmap_write(st->map, INV_MPU6050_REG_I2C_SLV4_CTRL, d);
 }
 
-/**
- * inv_mpu_magn_set_orient() - fill magnetometer mounting matrix
- * @st: driver internal state
- *
- * Returns 0 on success, a negative error code otherwise
- *
- * Fill magnetometer mounting matrix using the provided chip matrix.
- */
+ 
 int inv_mpu_magn_set_orient(struct inv_mpu6050_state *st)
 {
 	struct device *dev = regmap_get_device(st->map);
@@ -266,31 +216,24 @@ int inv_mpu_magn_set_orient(struct inv_mpu6050_state *st)
 	char *str;
 	int i;
 
-	/* fill magnetometer orientation */
+	 
 	switch (st->chip_type) {
 	case INV_MPU9150:
 	case INV_MPU9250:
 	case INV_MPU9255:
-		/* x <- y */
+		 
 		st->magn_orient.rotation[0] = st->orientation.rotation[3];
 		st->magn_orient.rotation[1] = st->orientation.rotation[4];
 		st->magn_orient.rotation[2] = st->orientation.rotation[5];
-		/* y <- x */
+		 
 		st->magn_orient.rotation[3] = st->orientation.rotation[0];
 		st->magn_orient.rotation[4] = st->orientation.rotation[1];
 		st->magn_orient.rotation[5] = st->orientation.rotation[2];
-		/* z <- -z */
+		 
 		for (i = 6; i < 9; ++i) {
 			orient = st->orientation.rotation[i];
 
-			/*
-			 * The value is negated according to one of the following
-			 * rules:
-			 *
-			 * 1) Drop leading minus.
-			 * 2) Leave 0 as is.
-			 * 3) Add leading minus.
-			 */
+			 
 			if (orient[0] == '-')
 				str = devm_kstrdup(dev, orient + 1, GFP_KERNEL);
 			else if (!strcmp(orient, "0"))
@@ -311,14 +254,7 @@ int inv_mpu_magn_set_orient(struct inv_mpu6050_state *st)
 	return 0;
 }
 
-/**
- * inv_mpu_magn_read() - read magnetometer data
- * @st: driver internal state
- * @axis: IIO modifier axis value
- * @val: store corresponding axis value
- *
- * Returns 0 on success, a negative error code otherwise
- */
+ 
 int inv_mpu_magn_read(struct inv_mpu6050_state *st, int axis, int *val)
 {
 	unsigned int status;
@@ -326,11 +262,11 @@ int inv_mpu_magn_read(struct inv_mpu6050_state *st, int axis, int *val)
 	uint8_t addr;
 	int ret;
 
-	/* quit if chip is not supported */
+	 
 	if (!inv_magn_supported(st))
 		return -ENODEV;
 
-	/* Mag data: XH,XL,YH,YL,ZH,ZL */
+	 
 	switch (axis) {
 	case IIO_MOD_X:
 		addr = 0;
@@ -346,7 +282,7 @@ int inv_mpu_magn_read(struct inv_mpu6050_state *st, int axis, int *val)
 	}
 	addr += INV_MPU6050_REG_EXT_SENS_DATA;
 
-	/* check i2c status and read raw data */
+	 
 	ret = regmap_read(st->map, INV_MPU6050_REG_I2C_MST_STATUS, &status);
 	if (ret)
 		return ret;

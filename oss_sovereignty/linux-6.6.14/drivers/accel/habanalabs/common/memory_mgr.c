@@ -1,22 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0
 
-/*
- * Copyright 2022 HabanaLabs, Ltd.
- * All Rights Reserved.
- */
+
+ 
 
 #include "habanalabs.h"
 
-/**
- * hl_mmap_mem_buf_get - increase the buffer refcount and return a pointer to
- *                        the buffer descriptor.
- *
- * @mmg: parent unified memory manager
- * @handle: requested buffer handle
- *
- * Find the buffer in the store and return a pointer to its descriptor.
- * Increase buffer refcount. If not found - return NULL.
- */
+ 
 struct hl_mmap_mem_buf *hl_mmap_mem_buf_get(struct hl_mem_mgr *mmg, u64 handle)
 {
 	struct hl_mmap_mem_buf *buf;
@@ -33,15 +21,7 @@ struct hl_mmap_mem_buf *hl_mmap_mem_buf_get(struct hl_mem_mgr *mmg, u64 handle)
 	return buf;
 }
 
-/**
- * hl_mmap_mem_buf_destroy - destroy the unused buffer
- *
- * @buf: memory manager buffer descriptor
- *
- * Internal function, used as a final step of buffer release. Shall be invoked
- * only when the buffer is no longer in use (removed from idr). Will call the
- * release callback (if applicable), and free the memory.
- */
+ 
 static void hl_mmap_mem_buf_destroy(struct hl_mmap_mem_buf *buf)
 {
 	if (buf->behavior->release)
@@ -50,14 +30,7 @@ static void hl_mmap_mem_buf_destroy(struct hl_mmap_mem_buf *buf)
 	kfree(buf);
 }
 
-/**
- * hl_mmap_mem_buf_release - release buffer
- *
- * @kref: kref that reached 0.
- *
- * Internal function, used as a kref release callback, when the last user of
- * the buffer is released. Shall be called from an interrupt context.
- */
+ 
 static void hl_mmap_mem_buf_release(struct kref *kref)
 {
 	struct hl_mmap_mem_buf *buf =
@@ -70,14 +43,7 @@ static void hl_mmap_mem_buf_release(struct kref *kref)
 	hl_mmap_mem_buf_destroy(buf);
 }
 
-/**
- * hl_mmap_mem_buf_remove_idr_locked - remove handle from idr
- *
- * @kref: kref that reached 0.
- *
- * Internal function, used for kref put by handle. Assumes mmg lock is taken.
- * Will remove the buffer from idr, without destroying it.
- */
+ 
 static void hl_mmap_mem_buf_remove_idr_locked(struct kref *kref)
 {
 	struct hl_mmap_mem_buf *buf =
@@ -86,30 +52,13 @@ static void hl_mmap_mem_buf_remove_idr_locked(struct kref *kref)
 	idr_remove(&buf->mmg->handles, lower_32_bits(buf->handle >> PAGE_SHIFT));
 }
 
-/**
- * hl_mmap_mem_buf_put - decrease the reference to the buffer
- *
- * @buf: memory manager buffer descriptor
- *
- * Decrease the reference to the buffer, and release it if it was the last one.
- * Shall be called from an interrupt context.
- */
+ 
 int hl_mmap_mem_buf_put(struct hl_mmap_mem_buf *buf)
 {
 	return kref_put(&buf->refcount, hl_mmap_mem_buf_release);
 }
 
-/**
- * hl_mmap_mem_buf_put_handle - decrease the reference to the buffer with the
- *                              given handle.
- *
- * @mmg: parent unified memory manager
- * @handle: requested buffer handle
- *
- * Decrease the reference to the buffer, and release it if it was the last one.
- * Shall not be called from an interrupt context. Return -EINVAL if handle was
- * not found, else return the put outcome (0 or 1).
- */
+ 
 int hl_mmap_mem_buf_put_handle(struct hl_mem_mgr *mmg, u64 handle)
 {
 	struct hl_mmap_mem_buf *buf;
@@ -133,17 +82,7 @@ int hl_mmap_mem_buf_put_handle(struct hl_mem_mgr *mmg, u64 handle)
 	return 0;
 }
 
-/**
- * hl_mmap_mem_buf_alloc - allocate a new mappable buffer
- *
- * @mmg: parent unified memory manager
- * @behavior: behavior object describing this buffer polymorphic behavior
- * @gfp: gfp flags to use for the memory allocations
- * @args: additional args passed to behavior->alloc
- *
- * Allocate and register a new memory buffer inside the give memory manager.
- * Return the pointer to the new buffer on success or NULL on failure.
- */
+ 
 struct hl_mmap_mem_buf *
 hl_mmap_mem_buf_alloc(struct hl_mem_mgr *mmg,
 		      struct hl_mmap_mem_buf_behavior *behavior, gfp_t gfp,
@@ -189,13 +128,7 @@ free_buf:
 	return NULL;
 }
 
-/**
- * hl_mmap_mem_buf_vm_close - handle mmap close
- *
- * @vma: the vma object for which mmap was closed.
- *
- * Put the memory buffer if it is no longer mapped.
- */
+ 
 static void hl_mmap_mem_buf_vm_close(struct vm_area_struct *vma)
 {
 	struct hl_mmap_mem_buf *buf =
@@ -218,15 +151,7 @@ static const struct vm_operations_struct hl_mmap_mem_buf_vm_ops = {
 	.close = hl_mmap_mem_buf_vm_close
 };
 
-/**
- * hl_mem_mgr_mmap - map the given buffer to the user
- *
- * @mmg: unified memory manager
- * @vma: the vma object for which mmap was closed.
- * @args: additional args passed to behavior->mmap
- *
- * Map the buffer specified by the vma->vm_pgoff to the given vma.
- */
+ 
 int hl_mem_mgr_mmap(struct hl_mem_mgr *mmg, struct vm_area_struct *vma,
 		    void *args)
 {
@@ -235,13 +160,11 @@ int hl_mem_mgr_mmap(struct hl_mem_mgr *mmg, struct vm_area_struct *vma,
 	u64 handle;
 	int rc;
 
-	/* We use the page offset to hold the idr and thus we need to clear
-	 * it before doing the mmap itself
-	 */
+	 
 	handle = vma->vm_pgoff << PAGE_SHIFT;
 	vma->vm_pgoff = 0;
 
-	/* Reference was taken here */
+	 
 	buf = hl_mmap_mem_buf_get(mmg, handle);
 	if (!buf) {
 		dev_err(mmg->dev,
@@ -249,7 +172,7 @@ int hl_mem_mgr_mmap(struct hl_mem_mgr *mmg, struct vm_area_struct *vma,
 		return -EINVAL;
 	}
 
-	/* Validation check */
+	 
 	user_mem_size = vma->vm_end - vma->vm_start;
 	if (user_mem_size != ALIGN(buf->mappable_size, PAGE_SIZE)) {
 		dev_err(mmg->dev,
@@ -283,7 +206,7 @@ int hl_mem_mgr_mmap(struct hl_mem_mgr *mmg, struct vm_area_struct *vma,
 
 	vma->vm_ops = &hl_mmap_mem_buf_vm_ops;
 
-	/* Note: We're transferring the memory reference to vma->vm_private_data here. */
+	 
 
 	vma->vm_private_data = buf;
 
@@ -303,14 +226,7 @@ put_mem:
 	return rc;
 }
 
-/**
- * hl_mem_mgr_init - initialize unified memory manager
- *
- * @dev: owner device pointer
- * @mmg: structure to initialize
- *
- * Initialize an instance of unified memory manager
- */
+ 
 void hl_mem_mgr_init(struct device *dev, struct hl_mem_mgr *mmg)
 {
 	mmg->dev = dev;
@@ -318,13 +234,7 @@ void hl_mem_mgr_init(struct device *dev, struct hl_mem_mgr *mmg)
 	idr_init(&mmg->handles);
 }
 
-/**
- * hl_mem_mgr_fini - release unified memory manager
- *
- * @mmg: parent unified memory manager
- *
- * Release the unified memory manager. Shall be called from an interrupt context.
- */
+ 
 void hl_mem_mgr_fini(struct hl_mem_mgr *mmg)
 {
 	struct hl_mmap_mem_buf *buf;
@@ -343,13 +253,7 @@ void hl_mem_mgr_fini(struct hl_mem_mgr *mmg)
 	}
 }
 
-/**
- * hl_mem_mgr_idr_destroy() - destroy memory manager IDR.
- * @mmg: parent unified memory manager
- *
- * Destroy the memory manager IDR.
- * Shall be called when IDR is empty and no memory buffers are in use.
- */
+ 
 void hl_mem_mgr_idr_destroy(struct hl_mem_mgr *mmg)
 {
 	if (!idr_is_empty(&mmg->handles))

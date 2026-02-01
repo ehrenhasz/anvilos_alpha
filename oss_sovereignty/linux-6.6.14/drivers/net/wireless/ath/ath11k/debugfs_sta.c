@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: BSD-3-Clause-Clear
-/*
- * Copyright (c) 2018-2019 The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/vmalloc.h>
 
@@ -431,7 +429,7 @@ static ssize_t ath11k_dbg_sta_write_peer_pktlog(struct file *file,
 	ar->debug.pktlog_peer_valid = enable;
 	memcpy(ar->debug.pktlog_peer_addr, sta->addr, ETH_ALEN);
 
-	/* Send peer based pktlog enable/disable */
+	 
 	ret = ath11k_wmi_pdev_peer_pktlog_filter(ar, sta->addr, enable);
 	if (ret) {
 		ath11k_warn(ar->ab, "failed to set peer pktlog filter %pM: %d\n",
@@ -495,7 +493,7 @@ static ssize_t ath11k_dbg_sta_write_delba(struct file *file,
 	if (ret != 3)
 		return -EINVAL;
 
-	/* Valid TID values are 0 through 15 */
+	 
 	if (tid > HAL_DESC_REO_NON_QOS_TID - 1)
 		return -EINVAL;
 
@@ -546,7 +544,7 @@ static ssize_t ath11k_dbg_sta_write_addba_resp(struct file *file,
 	if (ret != 2)
 		return -EINVAL;
 
-	/* Valid TID values are 0 through 15 */
+	 
 	if (tid > HAL_DESC_REO_NON_QOS_TID - 1)
 		return -EINVAL;
 
@@ -596,7 +594,7 @@ static ssize_t ath11k_dbg_sta_write_addba(struct file *file,
 	if (ret != 2)
 		return -EINVAL;
 
-	/* Valid TID values are 0 through 15 */
+	 
 	if (tid > HAL_DESC_REO_NON_QOS_TID - 1)
 		return -EINVAL;
 

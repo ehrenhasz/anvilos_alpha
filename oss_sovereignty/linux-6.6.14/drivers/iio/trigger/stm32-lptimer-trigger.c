@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * STM32 Low-Power Timer Trigger driver
- *
- * Copyright (C) STMicroelectronics 2017
- *
- * Author: Fabrice Gasnier <fabrice.gasnier@st.com>.
- *
- * Inspired by Benjamin Gaignard's stm32-timer-trigger driver
- */
+
+ 
 
 #include <linux/iio/timer/stm32-lptim-trigger.h>
 #include <linux/mfd/stm32-lptimer.h>
@@ -16,7 +8,7 @@
 #include <linux/platform_device.h>
 #include <linux/property.h>
 
-/* List Low-Power Timer triggers */
+ 
 static const char * const stm32_lptim_triggers[] = {
 	LPTIM1_OUT,
 	LPTIM2_OUT,
@@ -41,13 +33,7 @@ static const struct iio_trigger_ops stm32_lptim_trigger_ops = {
 	.validate_device = stm32_lptim_validate_device,
 };
 
-/**
- * is_stm32_lptim_trigger
- * @trig: trigger to be checked
- *
- * return true if the trigger is a valid STM32 IIO Low-Power Timer Trigger
- * either return false
- */
+ 
 bool is_stm32_lptim_trigger(struct iio_trigger *trig)
 {
 	return (trig->ops == &stm32_lptim_trigger_ops);

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/ceph/ceph_debug.h>
 
 #include <linux/crc32c.h>
@@ -14,7 +14,7 @@
 #include <linux/string.h>
 #ifdef	CONFIG_BLOCK
 #include <linux/bio.h>
-#endif	/* CONFIG_BLOCK */
+#endif	 
 #include <linux/dns_resolver.h>
 #include <net/tcp.h>
 #include <trace/events/sock.h>
@@ -26,62 +26,15 @@
 #include <linux/ceph/pagelist.h>
 #include <linux/export.h>
 
-/*
- * Ceph uses the messenger to exchange ceph_msg messages with other
- * hosts in the system.  The messenger provides ordered and reliable
- * delivery.  We tolerate TCP disconnects by reconnecting (with
- * exponential backoff) in the case of a fault (disconnection, bad
- * crc, protocol error).  Acks allow sent messages to be discarded by
- * the sender.
- */
+ 
 
-/*
- * We track the state of the socket on a given connection using
- * values defined below.  The transition to a new socket state is
- * handled by a function which verifies we aren't coming from an
- * unexpected state.
- *
- *      --------
- *      | NEW* |  transient initial state
- *      --------
- *          | con_sock_state_init()
- *          v
- *      ----------
- *      | CLOSED |  initialized, but no socket (and no
- *      ----------  TCP connection)
- *       ^      \
- *       |       \ con_sock_state_connecting()
- *       |        ----------------------
- *       |                              \
- *       + con_sock_state_closed()       \
- *       |+---------------------------    \
- *       | \                          \    \
- *       |  -----------                \    \
- *       |  | CLOSING |  socket event;  \    \
- *       |  -----------  await close     \    \
- *       |       ^                        \   |
- *       |       |                         \  |
- *       |       + con_sock_state_closing() \ |
- *       |      / \                         | |
- *       |     /   ---------------          | |
- *       |    /                   \         v v
- *       |   /                    --------------
- *       |  /    -----------------| CONNECTING |  socket created, TCP
- *       |  |   /                 --------------  connect initiated
- *       |  |   | con_sock_state_connected()
- *       |  |   v
- *      -------------
- *      | CONNECTED |  TCP connection established
- *      -------------
- *
- * State values for ceph_connection->sock_state; NEW is assumed to be 0.
- */
+ 
 
-#define CON_SOCK_STATE_NEW		0	/* -> CLOSED */
-#define CON_SOCK_STATE_CLOSED		1	/* -> CONNECTING */
-#define CON_SOCK_STATE_CONNECTING	2	/* -> CONNECTED or -> CLOSING */
-#define CON_SOCK_STATE_CONNECTED	3	/* -> CLOSING or -> CLOSED */
-#define CON_SOCK_STATE_CLOSING		4	/* -> CLOSED */
+#define CON_SOCK_STATE_NEW		0	 
+#define CON_SOCK_STATE_CLOSED		1	 
+#define CON_SOCK_STATE_CONNECTING	2	 
+#define CON_SOCK_STATE_CONNECTED	3	 
+#define CON_SOCK_STATE_CLOSING		4	 
 
 static bool con_flag_valid(unsigned long con_flag)
 {
@@ -134,7 +87,7 @@ bool ceph_con_flag_test_and_set(struct ceph_connection *con,
 	return test_and_set_bit(con_flag, &con->flags);
 }
 
-/* Slab caches for frequently-allocated structures */
+ 
 
 static struct kmem_cache	*ceph_msg_cache;
 
@@ -147,25 +100,22 @@ static void cancel_con(struct ceph_connection *con);
 static void ceph_con_workfn(struct work_struct *);
 static void con_fault(struct ceph_connection *con);
 
-/*
- * Nicely render a sockaddr as a string.  An array of formatted
- * strings is used, to approximate reentrancy.
- */
-#define ADDR_STR_COUNT_LOG	5	/* log2(# address strings in array) */
+ 
+#define ADDR_STR_COUNT_LOG	5	 
 #define ADDR_STR_COUNT		(1 << ADDR_STR_COUNT_LOG)
 #define ADDR_STR_COUNT_MASK	(ADDR_STR_COUNT - 1)
-#define MAX_ADDR_STR_LEN	64	/* 54 is enough */
+#define MAX_ADDR_STR_LEN	64	 
 
 static char addr_str[ADDR_STR_COUNT][MAX_ADDR_STR_LEN];
 static atomic_t addr_str_seq = ATOMIC_INIT(0);
 
-struct page *ceph_zero_page;		/* used in certain error cases */
+struct page *ceph_zero_page;		 
 
 const char *ceph_pr_addr(const struct ceph_entity_addr *addr)
 {
 	int i;
 	char *s;
-	struct sockaddr_storage ss = addr->in_addr; /* align */
+	struct sockaddr_storage ss = addr->in_addr;  
 	struct sockaddr_in *in4 = (struct sockaddr_in *)&ss;
 	struct sockaddr_in6 *in6 = (struct sockaddr_in6 *)&ss;
 
@@ -203,9 +153,7 @@ void ceph_encode_my_addr(struct ceph_messenger *msgr)
 	}
 }
 
-/*
- * work queue for all reading and writing to/from the socket.
- */
+ 
 static struct workqueue_struct *ceph_msgr_wq;
 
 static int ceph_msgr_slab_init(void)
@@ -248,10 +196,7 @@ int __init ceph_msgr_init(void)
 	ceph_zero_page = ZERO_PAGE(0);
 	get_page(ceph_zero_page);
 
-	/*
-	 * The number of active work items is limited by the number of
-	 * connections, so leave @max_active at default.
-	 */
+	 
 	ceph_msgr_wq = alloc_workqueue("ceph-msgr", WQ_MEM_RECLAIM, 0);
 	if (ceph_msgr_wq)
 		return 0;
@@ -275,7 +220,7 @@ void ceph_msgr_flush(void)
 }
 EXPORT_SYMBOL(ceph_msgr_flush);
 
-/* Connection socket state transition functions */
+ 
 
 static void con_sock_state_init(struct ceph_connection *con)
 {
@@ -337,11 +282,9 @@ static void con_sock_state_closed(struct ceph_connection *con)
 	     CON_SOCK_STATE_CLOSED);
 }
 
-/*
- * socket callback functions
- */
+ 
 
-/* data available on socket, or listen socket received a connect */
+ 
 static void ceph_sock_data_ready(struct sock *sk)
 {
 	struct ceph_connection *con = sk->sk_user_data;
@@ -359,18 +302,12 @@ static void ceph_sock_data_ready(struct sock *sk)
 	}
 }
 
-/* socket has buffer space for writing */
+ 
 static void ceph_sock_write_space(struct sock *sk)
 {
 	struct ceph_connection *con = sk->sk_user_data;
 
-	/* only queue to workqueue if there is data we want to write,
-	 * and there is sufficient space in the socket buffer to accept
-	 * more data.  clear SOCK_NOSPACE so that ceph_sock_write_space()
-	 * doesn't get called again until try_write() fills the socket
-	 * buffer. See net/ipv4/tcp_input.c:tcp_check_space()
-	 * and net/core/stream.c:sk_stream_write_space().
-	 */
+	 
 	if (ceph_con_flag_test(con, CEPH_CON_F_WRITE_PENDING)) {
 		if (sk_stream_is_writeable(sk)) {
 			dout("%s %p queueing write work\n", __func__, con);
@@ -382,7 +319,7 @@ static void ceph_sock_write_space(struct sock *sk)
 	}
 }
 
-/* socket's state has changed */
+ 
 static void ceph_sock_state_change(struct sock *sk)
 {
 	struct ceph_connection *con = sk->sk_user_data;
@@ -405,14 +342,12 @@ static void ceph_sock_state_change(struct sock *sk)
 		con_sock_state_connected(con);
 		queue_con(con);
 		break;
-	default:	/* Everything else is uninteresting */
+	default:	 
 		break;
 	}
 }
 
-/*
- * set up socket callbacks
- */
+ 
 static void set_sock_callbacks(struct socket *sock,
 			       struct ceph_connection *con)
 {
@@ -424,16 +359,12 @@ static void set_sock_callbacks(struct socket *sock,
 }
 
 
-/*
- * socket helpers
- */
+ 
 
-/*
- * initiate connection to a remote socket.
- */
+ 
 int ceph_tcp_connect(struct ceph_connection *con)
 {
-	struct sockaddr_storage ss = con->peer_addr.in_addr; /* align */
+	struct sockaddr_storage ss = con->peer_addr.in_addr;  
 	struct socket *sock;
 	unsigned int noio_flag;
 	int ret;
@@ -442,7 +373,7 @@ int ceph_tcp_connect(struct ceph_connection *con)
 	     ceph_pr_addr(&con->peer_addr));
 	BUG_ON(con->sock);
 
-	/* sock_create_kern() allocates with GFP_KERNEL */
+	 
 	noio_flag = memalloc_noio_save();
 	ret = sock_create_kern(read_pnet(&con->msgr->net), ss.ss_family,
 			       SOCK_STREAM, IPPROTO_TCP, &sock);
@@ -479,9 +410,7 @@ int ceph_tcp_connect(struct ceph_connection *con)
 	return 0;
 }
 
-/*
- * Shutdown/close the socket for the given connection.
- */
+ 
 int ceph_con_close_socket(struct ceph_connection *con)
 {
 	int rc = 0;
@@ -493,12 +422,7 @@ int ceph_con_close_socket(struct ceph_connection *con)
 		con->sock = NULL;
 	}
 
-	/*
-	 * Forcibly clear the SOCK_CLOSED flag.  It gets set
-	 * independent of the connection mutex, and we could have
-	 * received a socket close event before we had the chance to
-	 * shut the socket down.
-	 */
+	 
 	ceph_con_flag_clear(con, CEPH_CON_F_SOCK_CLOSED);
 
 	con_sock_state_closed(con);
@@ -531,10 +455,7 @@ static void ceph_con_reset_protocol(struct ceph_connection *con)
 		ceph_con_v1_reset_protocol(con);
 }
 
-/*
- * Reset a connection.  Discard all incoming and outgoing messages
- * and clear *_seq state.
- */
+ 
 static void ceph_msg_remove(struct ceph_msg *msg)
 {
 	list_del_init(&msg->list_head);
@@ -569,17 +490,14 @@ void ceph_con_reset_session(struct ceph_connection *con)
 		ceph_con_v1_reset_session(con);
 }
 
-/*
- * mark a peer down.  drop any open connections.
- */
+ 
 void ceph_con_close(struct ceph_connection *con)
 {
 	mutex_lock(&con->mutex);
 	dout("con_close %p peer %s\n", con, ceph_pr_addr(&con->peer_addr));
 	con->state = CEPH_CON_S_CLOSED;
 
-	ceph_con_flag_clear(con, CEPH_CON_F_LOSSYTX);  /* so we retry next
-							  connect */
+	ceph_con_flag_clear(con, CEPH_CON_F_LOSSYTX);   
 	ceph_con_flag_clear(con, CEPH_CON_F_KEEPALIVE_PENDING);
 	ceph_con_flag_clear(con, CEPH_CON_F_WRITE_PENDING);
 	ceph_con_flag_clear(con, CEPH_CON_F_BACKOFF);
@@ -591,9 +509,7 @@ void ceph_con_close(struct ceph_connection *con)
 }
 EXPORT_SYMBOL(ceph_con_close);
 
-/*
- * Reopen a closed connection, with a new peer address.
- */
+ 
 void ceph_con_open(struct ceph_connection *con,
 		   __u8 entity_type, __u64 entity_num,
 		   struct ceph_entity_addr *addr)
@@ -608,15 +524,13 @@ void ceph_con_open(struct ceph_connection *con,
 	con->peer_name.num = cpu_to_le64(entity_num);
 
 	memcpy(&con->peer_addr, addr, sizeof(*addr));
-	con->delay = 0;      /* reset backoff memory */
+	con->delay = 0;       
 	mutex_unlock(&con->mutex);
 	queue_con(con);
 }
 EXPORT_SYMBOL(ceph_con_open);
 
-/*
- * return true if this connection ever successfully opened
- */
+ 
 bool ceph_con_opened(struct ceph_connection *con)
 {
 	if (ceph_msgr2(from_msgr(con->msgr)))
@@ -625,9 +539,7 @@ bool ceph_con_opened(struct ceph_connection *con)
 	return ceph_con_v1_opened(con);
 }
 
-/*
- * initialize a new connection.
- */
+ 
 void ceph_con_init(struct ceph_connection *con, void *private,
 	const struct ceph_connection_operations *ops,
 	struct ceph_messenger *msgr)
@@ -649,10 +561,7 @@ void ceph_con_init(struct ceph_connection *con, void *private,
 }
 EXPORT_SYMBOL(ceph_con_init);
 
-/*
- * We maintain a global counter to order connection attempts.  Get
- * a unique seq greater than @gt.
- */
+ 
 u32 ceph_get_global_seq(struct ceph_messenger *msgr, u32 gt)
 {
 	u32 ret;
@@ -665,9 +574,7 @@ u32 ceph_get_global_seq(struct ceph_messenger *msgr, u32 gt)
 	return ret;
 }
 
-/*
- * Discard messages that have been acked by the server.
- */
+ 
 void ceph_con_discard_sent(struct ceph_connection *con, u64 ack_seq)
 {
 	struct ceph_msg *msg;
@@ -688,11 +595,7 @@ void ceph_con_discard_sent(struct ceph_connection *con, u64 ack_seq)
 	}
 }
 
-/*
- * Discard messages that have been requeued in con_fault(), up to
- * reconnect_seq.  This avoids gratuitously resending messages that
- * the server had received and handled prior to reconnect.
- */
+ 
 void ceph_con_discard_requeued(struct ceph_connection *con, u64 reconnect_seq)
 {
 	struct ceph_msg *msg;
@@ -716,11 +619,7 @@ void ceph_con_discard_requeued(struct ceph_connection *con, u64 reconnect_seq)
 
 #ifdef CONFIG_BLOCK
 
-/*
- * For a bio data item, a piece is whatever remains of the next
- * entry in the current bio iovec, or the first entry in the next
- * bio in the list.
- */
+ 
 static void ceph_msg_data_bio_cursor_init(struct ceph_msg_data_cursor *cursor,
 					size_t length)
 {
@@ -759,11 +658,11 @@ static bool ceph_msg_data_bio_advance(struct ceph_msg_data_cursor *cursor,
 	bio_advance_iter(it->bio, &it->iter, bytes);
 
 	if (!cursor->resid)
-		return false;   /* no more data */
+		return false;    
 
 	if (!bytes || (it->iter.bi_size && it->iter.bi_bvec_done &&
 		       page == bio_iter_page(it->bio, it->iter)))
-		return false;	/* more bytes to process in this segment */
+		return false;	 
 
 	if (!it->iter.bi_size) {
 		it->bio = it->bio->bi_next;
@@ -775,7 +674,7 @@ static bool ceph_msg_data_bio_advance(struct ceph_msg_data_cursor *cursor,
 	BUG_ON(cursor->resid < bio_iter_len(it->bio, it->iter));
 	return true;
 }
-#endif /* CONFIG_BLOCK */
+#endif  
 
 static void ceph_msg_data_bvecs_cursor_init(struct ceph_msg_data_cursor *cursor,
 					size_t length)
@@ -814,20 +713,17 @@ static bool ceph_msg_data_bvecs_advance(struct ceph_msg_data_cursor *cursor,
 	bvec_iter_advance(bvecs, &cursor->bvec_iter, bytes);
 
 	if (!cursor->resid)
-		return false;   /* no more data */
+		return false;    
 
 	if (!bytes || (cursor->bvec_iter.bi_bvec_done &&
 		       page == bvec_iter_page(bvecs, cursor->bvec_iter)))
-		return false;	/* more bytes to process in this segment */
+		return false;	 
 
 	BUG_ON(cursor->resid < bvec_iter_len(bvecs, cursor->bvec_iter));
 	return true;
 }
 
-/*
- * For a page array, a piece comes from the first page in the array
- * that has not already been fully consumed.
- */
+ 
 static void ceph_msg_data_pages_cursor_init(struct ceph_msg_data_cursor *cursor,
 					size_t length)
 {
@@ -871,27 +767,24 @@ static bool ceph_msg_data_pages_advance(struct ceph_msg_data_cursor *cursor,
 
 	BUG_ON(cursor->page_offset + bytes > PAGE_SIZE);
 
-	/* Advance the cursor page offset */
+	 
 
 	cursor->resid -= bytes;
 	cursor->page_offset = (cursor->page_offset + bytes) & ~PAGE_MASK;
 	if (!bytes || cursor->page_offset)
-		return false;	/* more bytes to process in the current page */
+		return false;	 
 
 	if (!cursor->resid)
-		return false;   /* no more data */
+		return false;    
 
-	/* Move on to the next page; offset is already at 0 */
+	 
 
 	BUG_ON(cursor->page_index >= cursor->page_count);
 	cursor->page_index++;
 	return true;
 }
 
-/*
- * For a pagelist, a piece is whatever remains to be consumed in the
- * first page in the list, or the front of the next page.
- */
+ 
 static void
 ceph_msg_data_pagelist_cursor_init(struct ceph_msg_data_cursor *cursor,
 					size_t length)
@@ -906,7 +799,7 @@ ceph_msg_data_pagelist_cursor_init(struct ceph_msg_data_cursor *cursor,
 	BUG_ON(!pagelist);
 
 	if (!length)
-		return;		/* pagelist can be assigned but empty */
+		return;		 
 
 	BUG_ON(list_empty(&pagelist->head));
 	page = list_first_entry(&pagelist->head, struct page, lru);
@@ -931,7 +824,7 @@ ceph_msg_data_pagelist_next(struct ceph_msg_data_cursor *cursor,
 	BUG_ON(!cursor->page);
 	BUG_ON(cursor->offset + cursor->resid != pagelist->length);
 
-	/* offset of first page in pagelist is always 0 */
+	 
 	*page_offset = cursor->offset & ~PAGE_MASK;
 	*length = min_t(size_t, cursor->resid, PAGE_SIZE - *page_offset);
 	return cursor->page;
@@ -951,18 +844,18 @@ static bool ceph_msg_data_pagelist_advance(struct ceph_msg_data_cursor *cursor,
 	BUG_ON(cursor->offset + cursor->resid != pagelist->length);
 	BUG_ON((cursor->offset & ~PAGE_MASK) + bytes > PAGE_SIZE);
 
-	/* Advance the cursor offset */
+	 
 
 	cursor->resid -= bytes;
 	cursor->offset += bytes;
-	/* offset of first page in pagelist is always 0 */
+	 
 	if (!bytes || cursor->offset & ~PAGE_MASK)
-		return false;	/* more bytes to process in the current page */
+		return false;	 
 
 	if (!cursor->resid)
-		return false;   /* no more data */
+		return false;    
 
-	/* Move on to the next page */
+	 
 
 	BUG_ON(list_is_last(&cursor->page->lru, &pagelist->head));
 	cursor->page = list_next_entry(cursor->page, lru);
@@ -995,13 +888,7 @@ static struct page *ceph_msg_data_iter_next(struct ceph_msg_data_cursor *cursor,
 
 	cursor->lastlen = len;
 
-	/*
-	 * FIXME: The assumption is that the pages represented by the iov_iter
-	 *	  are pinned, with the references held by the upper-level
-	 *	  callers, or by virtue of being under writeback. Eventually,
-	 *	  we'll get an iov_iter_get_pages2 variant that doesn't take
-	 *	  page refs. Until then, just put the page ref.
-	 */
+	 
 	VM_BUG_ON_PAGE(!PageWriteback(page) && page_count(page) < 2, page);
 	put_page(page);
 
@@ -1025,14 +912,7 @@ static bool ceph_msg_data_iter_advance(struct ceph_msg_data_cursor *cursor,
 	return cursor->resid;
 }
 
-/*
- * Message data is handled (sent or received) in pieces, where each
- * piece resides on a single page.  The network layer might not
- * consume an entire piece at once.  A data item's cursor keeps
- * track of which piece is next to process and how much remains to
- * be processed in that piece.  It also tracks whether the current
- * piece is the last one in the data item.
- */
+ 
 static void __ceph_msg_data_cursor_init(struct ceph_msg_data_cursor *cursor)
 {
 	size_t length = cursor->total_resid;
@@ -1048,7 +928,7 @@ static void __ceph_msg_data_cursor_init(struct ceph_msg_data_cursor *cursor)
 	case CEPH_MSG_DATA_BIO:
 		ceph_msg_data_bio_cursor_init(cursor, length);
 		break;
-#endif /* CONFIG_BLOCK */
+#endif  
 	case CEPH_MSG_DATA_BVECS:
 		ceph_msg_data_bvecs_cursor_init(cursor, length);
 		break;
@@ -1057,7 +937,7 @@ static void __ceph_msg_data_cursor_init(struct ceph_msg_data_cursor *cursor)
 		break;
 	case CEPH_MSG_DATA_NONE:
 	default:
-		/* BUG(); */
+		 
 		break;
 	}
 	cursor->need_crc = true;
@@ -1077,11 +957,7 @@ void ceph_msg_data_cursor_init(struct ceph_msg_data_cursor *cursor,
 	__ceph_msg_data_cursor_init(cursor);
 }
 
-/*
- * Return the page containing the next piece to process for a given
- * data item, and supply the page offset and length of that piece.
- * Indicate whether this is the last piece in this data item.
- */
+ 
 struct page *ceph_msg_data_next(struct ceph_msg_data_cursor *cursor,
 				size_t *page_offset, size_t *length)
 {
@@ -1098,7 +974,7 @@ struct page *ceph_msg_data_next(struct ceph_msg_data_cursor *cursor,
 	case CEPH_MSG_DATA_BIO:
 		page = ceph_msg_data_bio_next(cursor, page_offset, length);
 		break;
-#endif /* CONFIG_BLOCK */
+#endif  
 	case CEPH_MSG_DATA_BVECS:
 		page = ceph_msg_data_bvecs_next(cursor, page_offset, length);
 		break;
@@ -1119,10 +995,7 @@ struct page *ceph_msg_data_next(struct ceph_msg_data_cursor *cursor,
 	return page;
 }
 
-/*
- * Returns true if the result moves the cursor on to the next piece
- * of the data item.
- */
+ 
 void ceph_msg_data_advance(struct ceph_msg_data_cursor *cursor, size_t bytes)
 {
 	bool new_piece;
@@ -1139,7 +1012,7 @@ void ceph_msg_data_advance(struct ceph_msg_data_cursor *cursor, size_t bytes)
 	case CEPH_MSG_DATA_BIO:
 		new_piece = ceph_msg_data_bio_advance(cursor, bytes);
 		break;
-#endif /* CONFIG_BLOCK */
+#endif  
 	case CEPH_MSG_DATA_BVECS:
 		new_piece = ceph_msg_data_bvecs_advance(cursor, bytes);
 		break;
@@ -1176,7 +1049,7 @@ u32 ceph_crc32c_page(u32 crc, struct page *page, unsigned int page_offset,
 
 bool ceph_addr_is_blank(const struct ceph_entity_addr *addr)
 {
-	struct sockaddr_storage ss = addr->in_addr; /* align */
+	struct sockaddr_storage ss = addr->in_addr;  
 	struct in_addr *addr4 = &((struct sockaddr_in *)&ss)->sin_addr;
 	struct in6_addr *addr6 = &((struct sockaddr_in6 *)&ss)->sin6_addr;
 
@@ -1214,9 +1087,7 @@ void ceph_addr_set_port(struct ceph_entity_addr *addr, int p)
 	}
 }
 
-/*
- * Unlike other *_pton function semantics, zero indicates success.
- */
+ 
 static int ceph_pton(const char *str, size_t len, struct ceph_entity_addr *addr,
 		char delim, const char **ipend)
 {
@@ -1235,9 +1106,7 @@ static int ceph_pton(const char *str, size_t len, struct ceph_entity_addr *addr,
 	return -EINVAL;
 }
 
-/*
- * Extract hostname string and resolve using kernel DNS facility.
- */
+ 
 #ifdef CONFIG_CEPH_LIB_USE_DNS_RESOLVER
 static int ceph_dns_resolve_name(const char *name, size_t namelen,
 		struct ceph_entity_addr *addr, char delim, const char **ipend)
@@ -1246,10 +1115,7 @@ static int ceph_dns_resolve_name(const char *name, size_t namelen,
 	char *colon_p, *ip_addr = NULL;
 	int ip_len, ret;
 
-	/*
-	 * The end of the hostname occurs immediately preceding the delimiter or
-	 * the port marker (':') where the delimiter takes precedence.
-	 */
+	 
 	delim_p = memchr(name, delim, namelen);
 	colon_p = memchr(name, ':', namelen);
 
@@ -1259,14 +1125,14 @@ static int ceph_dns_resolve_name(const char *name, size_t namelen,
 		end = colon_p;
 	else {
 		end = delim_p;
-		if (!end) /* case: hostname:/ */
+		if (!end)  
 			end = name + namelen;
 	}
 
 	if (end <= name)
 		return -EINVAL;
 
-	/* do dns_resolve upcall */
+	 
 	ip_len = dns_query(current->nsproxy->net_ns,
 			   NULL, name, end - name, NULL, &ip_addr, NULL, false);
 	if (ip_len > 0)
@@ -1291,10 +1157,7 @@ static inline int ceph_dns_resolve_name(const char *name, size_t namelen,
 }
 #endif
 
-/*
- * Parse a server name (IP or hostname). If a valid IP address is not found
- * then try to extract a hostname to resolve using userspace DNS upcall.
- */
+ 
 static int ceph_parse_server_name(const char *name, size_t namelen,
 		struct ceph_entity_addr *addr, char delim, const char **ipend)
 {
@@ -1307,10 +1170,7 @@ static int ceph_parse_server_name(const char *name, size_t namelen,
 	return ret;
 }
 
-/*
- * Parse an ip[:port] list into an addr array.  Use the default
- * monitor port if a port isn't specified.
- */
+ 
 int ceph_parse_ips(const char *c, const char *end,
 		   struct ceph_entity_addr *addr,
 		   int max_count, int *count, char delim)
@@ -1345,7 +1205,7 @@ int ceph_parse_ips(const char *c, const char *end,
 			p++;
 		}
 
-		/* port? */
+		 
 		if (p < end && *p == ':') {
 			port = 0;
 			p++;
@@ -1362,14 +1222,7 @@ int ceph_parse_ips(const char *c, const char *end,
 		}
 
 		ceph_addr_set_port(&addr[i], port);
-		/*
-		 * We want the type to be set according to ms_mode
-		 * option, but options are normally parsed after mon
-		 * addresses.  Rather than complicating parsing, set
-		 * to LEGACY and override in build_initial_monmap()
-		 * for mon addresses and ceph_messenger_init() for
-		 * ip option.
-		 */
+		 
 		addr[i].type = CEPH_ENTITY_ADDR_TYPE_LEGACY;
 		addr[i].nonce = 0;
 
@@ -1393,11 +1246,7 @@ bad:
 	return ret;
 }
 
-/*
- * Process message.  This happens in the worker thread.  The callback should
- * be careful not to do anything that waits on other incoming messages or it
- * may deadlock.
- */
+ 
 void ceph_con_process_message(struct ceph_connection *con)
 {
 	struct ceph_msg *msg = con->in_msg;
@@ -1405,7 +1254,7 @@ void ceph_con_process_message(struct ceph_connection *con)
 	BUG_ON(con->in_msg->con != con);
 	con->in_msg = NULL;
 
-	/* if first message, set peer_name */
+	 
 	if (con->peer_name.type == 0)
 		con->peer_name = msg->hdr.src;
 
@@ -1426,11 +1275,7 @@ void ceph_con_process_message(struct ceph_connection *con)
 	mutex_lock(&con->mutex);
 }
 
-/*
- * Atomically queue work on a connection after the specified delay.
- * Bump @con reference to avoid races with connection teardown.
- * Returns 0 if work was queued, or an error code otherwise.
- */
+ 
 static int queue_con_delay(struct ceph_connection *con, unsigned long delay)
 {
 	if (!con->ops->get(con)) {
@@ -1514,16 +1359,13 @@ static bool con_backoff(struct ceph_connection *con)
 	return true;
 }
 
-/* Finish fault handling; con->mutex must *not* be held here */
+ 
 
 static void con_fault_finish(struct ceph_connection *con)
 {
 	dout("%s %p\n", __func__, con);
 
-	/*
-	 * in case we faulted due to authentication, invalidate our
-	 * current tickets so that we can get new ones.
-	 */
+	 
 	if (con->v1.auth_retry) {
 		dout("auth_retry %d, invalidating\n", con->v1.auth_retry);
 		if (con->ops->invalidate_authorizer)
@@ -1535,9 +1377,7 @@ static void con_fault_finish(struct ceph_connection *con)
 		con->ops->fault(con);
 }
 
-/*
- * Do some work on a connection.  Drop a connection ref when we're done.
- */
+ 
 static void ceph_con_workfn(struct work_struct *work)
 {
 	struct ceph_connection *con = container_of(work, struct ceph_connection,
@@ -1595,7 +1435,7 @@ static void ceph_con_workfn(struct work_struct *work)
 			fault = true;
 		}
 
-		break;	/* If we make it to here, we're done */
+		break;	 
 	}
 	if (fault)
 		con_fault(con);
@@ -1607,10 +1447,7 @@ static void ceph_con_workfn(struct work_struct *work)
 	con->ops->put(con);
 }
 
-/*
- * Generic error/fault handler.  A retry mechanism is used with
- * exponential backoff
- */
+ 
 static void con_fault(struct ceph_connection *con)
 {
 	dout("fault %p state %d to peer %s\n",
@@ -1631,18 +1468,17 @@ static void con_fault(struct ceph_connection *con)
 		return;
 	}
 
-	/* Requeue anything that hasn't been acked */
+	 
 	list_splice_init(&con->out_sent, &con->out_queue);
 
-	/* If there are no messages queued or keepalive pending, place
-	 * the connection in a STANDBY state */
+	 
 	if (list_empty(&con->out_queue) &&
 	    !ceph_con_flag_test(con, CEPH_CON_F_KEEPALIVE_PENDING)) {
 		dout("fault %p setting STANDBY clearing WRITE_PENDING\n", con);
 		ceph_con_flag_clear(con, CEPH_CON_F_WRITE_PENDING);
 		con->state = CEPH_CON_S_STANDBY;
 	} else {
-		/* retry after a delay. */
+		 
 		con->state = CEPH_CON_S_PREOPEN;
 		if (!con->delay) {
 			con->delay = BASE_DELAY_INTERVAL;
@@ -1663,9 +1499,7 @@ void ceph_messenger_reset_nonce(struct ceph_messenger *msgr)
 	ceph_encode_my_addr(msgr);
 }
 
-/*
- * initialize a new messenger instance
- */
+ 
 void ceph_messenger_init(struct ceph_messenger *msgr,
 			 struct ceph_entity_addr *myaddr)
 {
@@ -1677,13 +1511,10 @@ void ceph_messenger_init(struct ceph_messenger *msgr,
 		ceph_addr_set_port(&msgr->inst.addr, 0);
 	}
 
-	/*
-	 * Since nautilus, clients are identified using type ANY.
-	 * For msgr1, ceph_encode_banner_addr() munges it to NONE.
-	 */
+	 
 	msgr->inst.addr.type = CEPH_ENTITY_ADDR_TYPE_ANY;
 
-	/* generate a random non-zero nonce */
+	 
 	do {
 		get_random_bytes(&msgr->inst.addr.nonce,
 				 sizeof(msgr->inst.addr.nonce));
@@ -1712,7 +1543,7 @@ static void msg_con_set(struct ceph_msg *msg, struct ceph_connection *con)
 
 static void clear_standby(struct ceph_connection *con)
 {
-	/* come back from STANDBY? */
+	 
 	if (con->state == CEPH_CON_S_STANDBY) {
 		dout("clear_standby %p and ++connect_seq\n", con);
 		con->state = CEPH_CON_S_PREOPEN;
@@ -1722,14 +1553,10 @@ static void clear_standby(struct ceph_connection *con)
 	}
 }
 
-/*
- * Queue up an outgoing message on the given connection.
- *
- * Consumes a ref on @msg.
- */
+ 
 void ceph_con_send(struct ceph_connection *con, struct ceph_msg *msg)
 {
-	/* set src+dst */
+	 
 	msg->hdr.src = con->msgr->inst.name;
 	BUG_ON(msg->front.iov_len != le32_to_cpu(msg->hdr.front_len));
 	msg->needs_out_seq = true;
@@ -1757,23 +1584,20 @@ void ceph_con_send(struct ceph_connection *con, struct ceph_msg *msg)
 	clear_standby(con);
 	mutex_unlock(&con->mutex);
 
-	/* if there wasn't anything waiting to send before, queue
-	 * new work */
+	 
 	if (!ceph_con_flag_test_and_set(con, CEPH_CON_F_WRITE_PENDING))
 		queue_con(con);
 }
 EXPORT_SYMBOL(ceph_con_send);
 
-/*
- * Revoke a message that was previously queued for send
- */
+ 
 void ceph_msg_revoke(struct ceph_msg *msg)
 {
 	struct ceph_connection *con = msg->con;
 
 	if (!con) {
 		dout("%s msg %p null con\n", __func__, msg);
-		return;		/* Message not in our possession */
+		return;		 
 	}
 
 	mutex_lock(&con->mutex);
@@ -1804,16 +1628,14 @@ void ceph_msg_revoke(struct ceph_msg *msg)
 	mutex_unlock(&con->mutex);
 }
 
-/*
- * Revoke a message that we may be reading data into
- */
+ 
 void ceph_msg_revoke_incoming(struct ceph_msg *msg)
 {
 	struct ceph_connection *con = msg->con;
 
 	if (!con) {
 		dout("%s msg %p null con\n", __func__, msg);
-		return;		/* Message not in our possession */
+		return;		 
 	}
 
 	mutex_lock(&con->mutex);
@@ -1833,9 +1655,7 @@ void ceph_msg_revoke_incoming(struct ceph_msg *msg)
 	mutex_unlock(&con->mutex);
 }
 
-/*
- * Queue a keepalive byte to ensure the tcp connection is alive.
- */
+ 
 void ceph_con_keepalive(struct ceph_connection *con)
 {
 	dout("con_keepalive %p\n", con);
@@ -1930,7 +1750,7 @@ void ceph_msg_data_add_bio(struct ceph_msg *msg, struct ceph_bio_iter *bio_pos,
 	msg->data_length += length;
 }
 EXPORT_SYMBOL(ceph_msg_data_add_bio);
-#endif	/* CONFIG_BLOCK */
+#endif	 
 
 void ceph_msg_data_add_bvecs(struct ceph_msg *msg,
 			     struct ceph_bvec_iter *bvec_pos)
@@ -1957,10 +1777,7 @@ void ceph_msg_data_add_iter(struct ceph_msg *msg,
 	msg->data_length += iov_iter_count(&data->iter);
 }
 
-/*
- * construct a new message with given type, size
- * the new msg has a ref count of 1.
- */
+ 
 struct ceph_msg *ceph_msg_new2(int type, int front_len, int max_data_items,
 			       gfp_t flags, bool can_fail)
 {
@@ -1977,7 +1794,7 @@ struct ceph_msg *ceph_msg_new2(int type, int front_len, int max_data_items,
 	INIT_LIST_HEAD(&m->list_head);
 	kref_init(&m->kref);
 
-	/* front */
+	 
 	if (front_len) {
 		m->front.iov_base = kvmalloc(front_len, flags);
 		if (m->front.iov_base == NULL) {
@@ -2024,13 +1841,7 @@ struct ceph_msg *ceph_msg_new(int type, int front_len, gfp_t flags,
 }
 EXPORT_SYMBOL(ceph_msg_new);
 
-/*
- * Allocate "middle" portion of a message, if it is needed and wasn't
- * allocated by alloc_msg.  This allows us to read a small fixed-size
- * per-type header in the front and then gracefully fail (i.e.,
- * propagate the error to the caller based on info in the front) when
- * the middle is too large.
- */
+ 
 static int ceph_alloc_middle(struct ceph_connection *con, struct ceph_msg *msg)
 {
 	int type = le16_to_cpu(msg->hdr.type);
@@ -2047,21 +1858,7 @@ static int ceph_alloc_middle(struct ceph_connection *con, struct ceph_msg *msg)
 	return 0;
 }
 
-/*
- * Allocate a message for receiving an incoming message on a
- * connection, and save the result in con->in_msg.  Uses the
- * connection's private alloc_msg op if available.
- *
- * Returns 0 on success, or a negative error code.
- *
- * On success, if we set *skip = 1:
- *  - the next message should be skipped and ignored.
- *  - con->in_msg == NULL
- * or if we set *skip = 0:
- *  - con->in_msg is non-null.
- * On error (ENOMEM, EAGAIN, ...),
- *  - con->in_msg == NULL
- */
+ 
 int ceph_con_in_msg_alloc(struct ceph_connection *con,
 			  struct ceph_msg_header *hdr, int *skip)
 {
@@ -2085,11 +1882,7 @@ int ceph_con_in_msg_alloc(struct ceph_connection *con,
 		msg_con_set(msg, con);
 		con->in_msg = msg;
 	} else {
-		/*
-		 * Null message pointer means either we should skip
-		 * this message or we couldn't allocate memory.  The
-		 * former is not an error.
-		 */
+		 
 		if (*skip)
 			return 0;
 
@@ -2117,16 +1910,10 @@ void ceph_con_get_out_msg(struct ceph_connection *con)
 	msg = list_first_entry(&con->out_queue, struct ceph_msg, list_head);
 	WARN_ON(msg->con != con);
 
-	/*
-	 * Put the message on "sent" list using a ref from ceph_con_send().
-	 * It is put when the message is acked or revoked.
-	 */
+	 
 	list_move_tail(&msg->list_head, &con->out_sent);
 
-	/*
-	 * Only assign outgoing seq # if we haven't sent this message
-	 * yet.  If it is requeued, resend with it's original seq.
-	 */
+	 
 	if (msg->needs_out_seq) {
 		msg->hdr.seq = cpu_to_le64(++con->out_seq);
 		msg->needs_out_seq = false;
@@ -2135,17 +1922,12 @@ void ceph_con_get_out_msg(struct ceph_connection *con)
 			con->ops->reencode_message(msg);
 	}
 
-	/*
-	 * Get a ref for out_msg.  It is put when we are done sending the
-	 * message or in case of a fault.
-	 */
+	 
 	WARN_ON(con->out_msg);
 	con->out_msg = ceph_msg_get(msg);
 }
 
-/*
- * Free a generically kmalloc'd message.
- */
+ 
 static void ceph_msg_free(struct ceph_msg *m)
 {
 	dout("%s %p\n", __func__, m);
@@ -2164,7 +1946,7 @@ static void ceph_msg_release(struct kref *kref)
 
 	msg_con_set(m, NULL);
 
-	/* drop middle, data, if any */
+	 
 	if (m->middle) {
 		ceph_buffer_put(m->middle);
 		m->middle = NULL;

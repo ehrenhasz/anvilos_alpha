@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM csd
 
@@ -34,9 +34,7 @@ TRACE_EVENT(csd_queue_cpu,
 		__entry->cpu, __entry->callsite, __entry->func, __entry->csd)
 	);
 
-/*
- * Tracepoints for a function which is called as an effect of smp_call_function.*
- */
+ 
 DECLARE_EVENT_CLASS(csd_function,
 
 	TP_PROTO(smp_call_func_t func, struct __call_single_data *csd),
@@ -66,7 +64,7 @@ DEFINE_EVENT(csd_function, csd_function_exit,
 	TP_ARGS(func, csd)
 );
 
-#endif /* _TRACE_CSD_H */
+#endif  
 
-/* This part must be outside protection */
+ 
 #include <trace/define_trace.h>

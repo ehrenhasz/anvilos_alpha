@@ -1,36 +1,4 @@
-/*
- * drivers/leds/leds-mlxcpld.c
- * Copyright (c) 2016 Mellanox Technologies. All rights reserved.
- * Copyright (c) 2016 Vadim Pasternak <vadimp@mellanox.com>
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- * 3. Neither the names of the copyright holders nor the names of its
- *    contributors may be used to endorse or promote products derived from
- *    this software without specific prior written permission.
- *
- * Alternatively, this software may be distributed under the terms of the
- * GNU General Public License ("GPL") version 2 as published by the Free
- * Software Foundation.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGE.
- */
+ 
 
 #include <linux/acpi.h>
 #include <linux/device.h>
@@ -44,42 +12,33 @@
 #include <linux/platform_device.h>
 #include <linux/slab.h>
 
-#define MLXPLAT_CPLD_LPC_REG_BASE_ADRR     0x2500 /* LPC bus access */
+#define MLXPLAT_CPLD_LPC_REG_BASE_ADRR     0x2500  
 
-/* Color codes for LEDs */
-#define MLXCPLD_LED_OFFSET_HALF		0x01 /* Offset from solid: 3Hz blink */
-#define MLXCPLD_LED_OFFSET_FULL		0x02 /* Offset from solid: 6Hz blink */
-#define MLXCPLD_LED_IS_OFF		0x00 /* Off */
-#define MLXCPLD_LED_RED_STATIC_ON	0x05 /* Solid red */
+ 
+#define MLXCPLD_LED_OFFSET_HALF		0x01  
+#define MLXCPLD_LED_OFFSET_FULL		0x02  
+#define MLXCPLD_LED_IS_OFF		0x00  
+#define MLXCPLD_LED_RED_STATIC_ON	0x05  
 #define MLXCPLD_LED_RED_BLINK_HALF	(MLXCPLD_LED_RED_STATIC_ON + \
 					 MLXCPLD_LED_OFFSET_HALF)
 #define MLXCPLD_LED_RED_BLINK_FULL	(MLXCPLD_LED_RED_STATIC_ON + \
 					 MLXCPLD_LED_OFFSET_FULL)
-#define MLXCPLD_LED_GREEN_STATIC_ON	0x0D /* Solid green */
+#define MLXCPLD_LED_GREEN_STATIC_ON	0x0D  
 #define MLXCPLD_LED_GREEN_BLINK_HALF	(MLXCPLD_LED_GREEN_STATIC_ON + \
 					 MLXCPLD_LED_OFFSET_HALF)
 #define MLXCPLD_LED_GREEN_BLINK_FULL	(MLXCPLD_LED_GREEN_STATIC_ON + \
 					 MLXCPLD_LED_OFFSET_FULL)
-#define MLXCPLD_LED_BLINK_3HZ		167 /* ~167 msec off/on */
-#define MLXCPLD_LED_BLINK_6HZ		83 /* ~83 msec off/on */
+#define MLXCPLD_LED_BLINK_3HZ		167  
+#define MLXCPLD_LED_BLINK_6HZ		83  
 
-/**
- * struct mlxcpld_param - LED access parameters:
- * @offset: offset for LED access in CPLD device
- * @mask: mask for LED access in CPLD device
- * @base_color: base color code for LED
-**/
+ 
 struct mlxcpld_param {
 	u8 offset;
 	u8 mask;
 	u8 base_color;
 };
 
-/**
- * struct mlxcpld_led_priv - LED private data:
- * @cled: LED class device instance
- * @param: LED CPLD access parameters
-**/
+ 
 struct mlxcpld_led_priv {
 	struct led_classdev cdev;
 	struct mlxcpld_param param;
@@ -87,14 +46,7 @@ struct mlxcpld_led_priv {
 
 #define cdev_to_priv(c)		container_of(c, struct mlxcpld_led_priv, cdev)
 
-/**
- * struct mlxcpld_led_profile - system LED profile (defined per system class):
- * @offset: offset for LED access in CPLD device
- * @mask: mask for LED access in CPLD device
- * @base_color: base color code
- * @brightness: default brightness setting (on/off)
- * @name: LED name
-**/
+ 
 struct mlxcpld_led_profile {
 	u8 offset;
 	u8 mask;
@@ -103,14 +55,7 @@ struct mlxcpld_led_profile {
 	const char *name;
 };
 
-/**
- * struct mlxcpld_led_pdata - system LED private data
- * @pdev: platform device pointer
- * @pled: LED class device instance
- * @profile: system configuration profile
- * @num_led_instances: number of LED instances
- * @lock: device access lock
-**/
+ 
 struct mlxcpld_led_pdata {
 	struct platform_device *pdev;
 	struct mlxcpld_led_priv *pled;
@@ -121,10 +66,7 @@ struct mlxcpld_led_pdata {
 
 static struct mlxcpld_led_pdata *mlxcpld_led;
 
-/* Default profile fit the next Mellanox systems:
- * "msx6710", "msx6720", "msb7700", "msn2700", "msx1410",
- * "msn2410", "msb7800", "msn2740"
- */
+ 
 static struct mlxcpld_led_profile mlxcpld_led_default_profile[] = {
 	{
 		0x21, 0xf0, MLXCPLD_LED_GREEN_STATIC_ON, 1,
@@ -176,7 +118,7 @@ static struct mlxcpld_led_profile mlxcpld_led_default_profile[] = {
 	},
 };
 
-/* Profile fit the Mellanox systems based on "msn2100" */
+ 
 static struct mlxcpld_led_profile mlxcpld_led_msn2100_profile[] = {
 	{
 		0x21, 0xf0, MLXCPLD_LED_GREEN_STATIC_ON, 1,
@@ -259,16 +201,7 @@ static void mlxcpld_led_store_hw(u8 mask, u8 off, u8 vset)
 {
 	u8 nib, val;
 
-	/*
-	 * Each LED is controlled through low or high nibble of the relevant
-	 * CPLD register. Register offset is specified by off parameter.
-	 * Parameter vset provides color code: 0x0 for off, 0x5 for solid red,
-	 * 0x6 for 3Hz blink red, 0xd for solid green, 0xe for 3Hz blink
-	 * green.
-	 * Parameter mask specifies which nibble is used for specific LED: mask
-	 * 0xf0 - lower nibble is to be used (bits from 0 to 3), mask 0x0f -
-	 * higher nibble (bits from 4 to 7).
-	 */
+	 
 	spin_lock(&mlxcpld_led->lock);
 	mlxcpld_led_bus_access_func(MLXPLAT_CPLD_LPC_REG_BASE_ADRR, off, 1,
 				    &val);
@@ -300,10 +233,7 @@ static int mlxcpld_led_blink_set(struct led_classdev *led,
 {
 	struct mlxcpld_led_priv *pled = cdev_to_priv(led);
 
-	/*
-	 * HW supports two types of blinking: full (6Hz) and half (3Hz).
-	 * For delay on/off zero default setting 3Hz is used.
-	 */
+	 
 	if (!(*delay_on == 0 && *delay_off == 0) &&
 	    !(*delay_on == MLXCPLD_LED_BLINK_3HZ &&
 	      *delay_off == MLXCPLD_LED_BLINK_3HZ) &&

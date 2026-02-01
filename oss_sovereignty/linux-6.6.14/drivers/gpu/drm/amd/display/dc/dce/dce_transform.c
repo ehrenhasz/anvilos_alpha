@@ -1,27 +1,4 @@
-/*
- * Copyright 2012-16 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 #include "dce_transform.h"
 #include "reg_helper.h"
@@ -60,7 +37,7 @@ enum dcp_out_trunc_round_depth {
 	DCP_OUT_TRUNC_ROUND_DEPTH_8BIT
 };
 
-/*  defines the various methods of bit reduction available for use */
+ 
 enum dcp_bit_depth_reduction_mode {
 	DCP_BIT_DEPTH_REDUCTION_MODE_DITHER,
 	DCP_BIT_DEPTH_REDUCTION_MODE_ROUND,
@@ -83,11 +60,11 @@ enum dcp_spatial_dither_depth {
 };
 
 enum csc_color_mode {
-	/* 00 - BITS2:0 Bypass */
+	 
 	CSC_COLOR_MODE_GRAPHICS_BYPASS,
-	/* 01 - hard coded coefficient TV RGB */
+	 
 	CSC_COLOR_MODE_GRAPHICS_PREDEFINED,
-	/* 04 - programmable OUTPUT CSC coefficient */
+	 
 	CSC_COLOR_MODE_GRAPHICS_OUTPUT_CSC,
 };
 
@@ -106,7 +83,7 @@ static const struct out_csc_color_matrix global_color_matrix[] = {
 		0xF6B9, 0xE00, 0x1000} },
 { COLOR_SPACE_YCBCR709, { 0xE00, 0xF349, 0xFEB7, 0x1000, 0x5D2, 0x1394, 0x1FA,
 	0x200, 0xFCCB, 0xF535, 0xE00, 0x1000} },
-/* TODO: correct values below */
+ 
 { COLOR_SPACE_YCBCR601_LIMITED, { 0xE00, 0xF447, 0xFDB9, 0x1000, 0x991,
 	0x12C9, 0x3A6, 0x200, 0xFB47, 0xF6B9, 0xE00, 0x1000} },
 { COLOR_SPACE_YCBCR709_LIMITED, { 0xE00, 0xF349, 0xFEB7, 0x1000, 0x6CE, 0x16E3,
@@ -120,7 +97,7 @@ static bool setup_scaling_configuration(
 	REG_SET(SCL_BYPASS_CONTROL, 0, SCL_BYPASS_MODE, 0);
 
 	if (data->taps.h_taps + data->taps.v_taps <= 2) {
-		/* Set bypass */
+		 
 		if (xfm_dce->xfm_mask->SCL_PSCL_EN != 0)
 			REG_UPDATE_2(SCL_MODE, SCL_MODE, 0, SCL_PSCL_EN, 0);
 		else
@@ -140,7 +117,7 @@ static bool setup_scaling_configuration(
 	if (xfm_dce->xfm_mask->SCL_PSCL_EN != 0)
 		REG_UPDATE(SCL_MODE, SCL_PSCL_EN, 1);
 
-	/* 1 - Replace out of bound pixels with edge */
+	 
 	REG_SET(SCL_CONTROL, 0, SCL_BOUNDARY_MODE, 1);
 
 	return true;
@@ -154,9 +131,9 @@ static bool dce60_setup_scaling_configuration(
 	REG_SET(SCL_BYPASS_CONTROL, 0, SCL_BYPASS_MODE, 0);
 
 	if (data->taps.h_taps + data->taps.v_taps <= 2) {
-		/* Set bypass */
+		 
 
-		/* DCE6 has no SCL_MODE register, skip scale mode programming */
+		 
 
 		return false;
 	}
@@ -165,9 +142,9 @@ static bool dce60_setup_scaling_configuration(
 			SCL_H_NUM_OF_TAPS, data->taps.h_taps - 1,
 			SCL_V_NUM_OF_TAPS, data->taps.v_taps - 1);
 
-	/* DCE6 has no SCL_MODE register, skip scale mode programming */
+	 
 
-	/* DCE6 has no SCL_BOUNDARY_MODE bit, skip replace out of bound pixels */
+	 
 
 	return true;
 }
@@ -220,7 +197,7 @@ static void program_multi_taps_filter(
 	if (!coeffs)
 		return;
 
-	/*We need to disable power gating on coeff memory to do programming*/
+	 
 	if (REG(DCFE_MEM_PWR_CTRL)) {
 		power_ctl = REG_READ(DCFE_MEM_PWR_CTRL);
 		REG_SET(DCFE_MEM_PWR_CTRL, power_ctl, SCL_COEFF_MEM_PWR_DIS, 1);
@@ -228,8 +205,7 @@ static void program_multi_taps_filter(
 		REG_WAIT(DCFE_MEM_PWR_STATUS, SCL_COEFF_MEM_PWR_STATE, 0, 1, 10);
 	}
 	for (phase = 0; phase < phases_to_program; phase++) {
-		/*we always program N/2 + 1 phases, total phases N, but N/2-1 are just mirror
-		phase 0 is unique and phase N/2 is unique if N is even*/
+		 
 		for (pair = 0; pair < taps_pairs; pair++) {
 			uint16_t odd_coeff = 0;
 			uint16_t even_coeff = coeffs[array_idx];
@@ -254,7 +230,7 @@ static void program_multi_taps_filter(
 		}
 	}
 
-	/*We need to restore power gating on coeff memory to initial state*/
+	 
 	if (REG(DCFE_MEM_PWR_CTRL))
 		REG_WRITE(DCFE_MEM_PWR_CTRL, power_ctl);
 }
@@ -271,7 +247,7 @@ static void program_viewport(
 			VIEWPORT_HEIGHT, view_port->height,
 			VIEWPORT_WIDTH, view_port->width);
 
-	/* TODO: add stereo support */
+	 
 }
 
 static void calculate_inits(
@@ -319,10 +295,10 @@ static void dce60_calculate_inits(
 	inits->v_int_scale_ratio =
 		dc_fixpt_u2d19(data->ratios.vert) << 5;
 
-	/* DCE6 h_init_luma setting inspired by DCE110 */
+	 
 	inits->h_init_luma.integer = 1;
 
-	/* DCE6 h_init_chroma setting inspired by DCE110 */
+	 
 	inits->h_init_chroma.integer = 1;
 
 	v_init =
@@ -370,12 +346,12 @@ static void dce60_program_scl_ratios_inits(
 	REG_SET(SCL_VERT_FILTER_SCALE_RATIO, 0,
 			SCL_V_SCALE_RATIO, inits->v_int_scale_ratio);
 
-	/* DCE6 has SCL_HORZ_FILTER_INIT_RGB_LUMA register */
+	 
 	REG_SET_2(SCL_HORZ_FILTER_INIT_RGB_LUMA, 0,
 			SCL_H_INIT_INT_RGB_Y, inits->h_init_luma.integer,
 			SCL_H_INIT_FRAC_RGB_Y, inits->h_init_luma.fraction);
 
-	/* DCE6 has SCL_HORZ_FILTER_INIT_CHROMA register */
+	 
 	REG_SET_2(SCL_HORZ_FILTER_INIT_CHROMA, 0,
 			SCL_H_INIT_INT_CBCR, inits->h_init_chroma.integer,
 			SCL_H_INIT_FRAC_CBCR, inits->h_init_chroma.fraction);
@@ -399,7 +375,7 @@ static const uint16_t *get_filter_coeffs_16p(int taps, struct fixed31_32 ratio)
 	else if (taps == 1)
 		return NULL;
 	else {
-		/* should never happen, bug */
+		 
 		BREAK_TO_DEBUGGER();
 		return NULL;
 	}
@@ -414,22 +390,22 @@ static void dce_transform_set_scaler(
 	bool filter_updated = false;
 	const uint16_t *coeffs_v, *coeffs_h;
 
-	/*Use all three pieces of memory always*/
+	 
 	REG_SET_2(LB_MEMORY_CTRL, 0,
 			LB_MEMORY_CONFIG, 0,
 			LB_MEMORY_SIZE, xfm_dce->lb_memory_size);
 
-	/* Clear SCL_F_SHARP_CONTROL value to 0 */
+	 
 	REG_WRITE(SCL_F_SHARP_CONTROL, 0);
 
-	/* 1. Program overscan */
+	 
 	program_overscan(xfm_dce, data);
 
-	/* 2. Program taps and configuration */
+	 
 	is_scaling_required = setup_scaling_configuration(xfm_dce, data);
 
 	if (is_scaling_required) {
-		/* 3. Calculate and program ratio, filter initialization */
+		 
 		struct scl_ratios_inits inits = { 0 };
 
 		calculate_inits(xfm_dce, data, &inits);
@@ -440,7 +416,7 @@ static void dce_transform_set_scaler(
 		coeffs_h = get_filter_coeffs_16p(data->taps.h_taps, data->ratios.horz);
 
 		if (coeffs_v != xfm_dce->filter_v || coeffs_h != xfm_dce->filter_h) {
-			/* 4. Program vertical filters */
+			 
 			if (xfm_dce->filter_v == NULL)
 				REG_SET(SCL_VERT_FILTER_CONTROL, 0,
 						SCL_V_2TAP_HARDCODE_COEF_EN, 0);
@@ -455,7 +431,7 @@ static void dce_transform_set_scaler(
 					coeffs_v,
 					FILTER_TYPE_ALPHA_VERTICAL);
 
-			/* 5. Program horizontal filters */
+			 
 			if (xfm_dce->filter_h == NULL)
 				REG_SET(SCL_HORZ_FILTER_CONTROL, 0,
 						SCL_H_2TAP_HARDCODE_COEF_EN, 0);
@@ -476,10 +452,10 @@ static void dce_transform_set_scaler(
 		}
 	}
 
-	/* 6. Program the viewport */
+	 
 	program_viewport(xfm_dce, &data->viewport);
 
-	/* 7. Set bit to flip to new coefficient memory */
+	 
 	if (filter_updated)
 		REG_UPDATE(SCL_UPDATE, SCL_COEF_UPDATE_COMPLETE, 1);
 
@@ -495,37 +471,37 @@ static void dce60_transform_set_scaler(
 	bool is_scaling_required;
 	const uint16_t *coeffs_v, *coeffs_h;
 
-	/*Use whole line buffer memory always*/
+	 
 	REG_SET(DC_LB_MEMORY_SPLIT, 0,
 		DC_LB_MEMORY_CONFIG, 0);
 
 	REG_SET(DC_LB_MEM_SIZE, 0,
 		DC_LB_MEM_SIZE, xfm_dce->lb_memory_size);
 
-	/* Clear SCL_F_SHARP_CONTROL value to 0 */
+	 
 	REG_WRITE(SCL_F_SHARP_CONTROL, 0);
 
-	/* 1. Program overscan */
+	 
 	program_overscan(xfm_dce, data);
 
-	/* 2. Program taps and configuration */
+	 
 	is_scaling_required = dce60_setup_scaling_configuration(xfm_dce, data);
 
 	if (is_scaling_required) {
-		/* 3. Calculate and program ratio, DCE6 filter initialization */
+		 
 		struct sclh_ratios_inits inits = { 0 };
 
-		/* DCE6 has specific calculate_inits() function */
+		 
 		dce60_calculate_inits(xfm_dce, data, &inits);
 
-		/* DCE6 has specific program_scl_ratios_inits() function */
+		 
 		dce60_program_scl_ratios_inits(xfm_dce, &inits);
 
 		coeffs_v = get_filter_coeffs_16p(data->taps.v_taps, data->ratios.vert);
 		coeffs_h = get_filter_coeffs_16p(data->taps.h_taps, data->ratios.horz);
 
 		if (coeffs_v != xfm_dce->filter_v || coeffs_h != xfm_dce->filter_h) {
-			/* 4. Program vertical filters */
+			 
 			if (xfm_dce->filter_v == NULL)
 				REG_SET(SCL_VERT_FILTER_CONTROL, 0,
 						SCL_V_2TAP_HARDCODE_COEF_EN, 0);
@@ -540,7 +516,7 @@ static void dce60_transform_set_scaler(
 					coeffs_v,
 					FILTER_TYPE_ALPHA_VERTICAL);
 
-			/* 5. Program horizontal filters */
+			 
 			if (xfm_dce->filter_h == NULL)
 				REG_SET(SCL_HORZ_FILTER_CONTROL, 0,
 						SCL_H_2TAP_HARDCODE_COEF_EN, 0);
@@ -560,55 +536,43 @@ static void dce60_transform_set_scaler(
 		}
 	}
 
-	/* 6. Program the viewport */
+	 
 	program_viewport(xfm_dce, &data->viewport);
 
-	/* DCE6 has no SCL_COEF_UPDATE_COMPLETE bit to flip to new coefficient memory */
+	 
 
-	/* DCE6 DATA_FORMAT register does not support ALPHA_EN */
+	 
 }
 #endif
 
-/*****************************************************************************
- * set_clamp
- *
- * @param depth : bit depth to set the clamp to (should match denorm)
- *
- * @brief
- *     Programs clamp according to panel bit depth.
- *
- *******************************************************************************/
+ 
 static void set_clamp(
 	struct dce_transform *xfm_dce,
 	enum dc_color_depth depth)
 {
 	int clamp_max = 0;
 
-	/* At the clamp block the data will be MSB aligned, so we set the max
-	 * clamp accordingly.
-	 * For example, the max value for 6 bits MSB aligned (14 bit bus) would
-	 * be "11 1111 0000 0000" in binary, so 0x3F00.
-	 */
+	 
 	switch (depth) {
 	case COLOR_DEPTH_666:
-		/* 6bit MSB aligned on 14 bit bus '11 1111 0000 0000' */
+		 
 		clamp_max = 0x3F00;
 		break;
 	case COLOR_DEPTH_888:
-		/* 8bit MSB aligned on 14 bit bus '11 1111 1100 0000' */
+		 
 		clamp_max = 0x3FC0;
 		break;
 	case COLOR_DEPTH_101010:
-		/* 10bit MSB aligned on 14 bit bus '11 1111 1111 0000' */
+		 
 		clamp_max = 0x3FF0;
 		break;
 	case COLOR_DEPTH_121212:
-		/* 12bit MSB aligned on 14 bit bus '11 1111 1111 1100' */
+		 
 		clamp_max = 0x3FFC;
 		break;
 	default:
 		clamp_max = 0x3FC0;
-		BREAK_TO_DEBUGGER(); /* Invalid clamp bit depth */
+		BREAK_TO_DEBUGGER();  
 	}
 	REG_SET_2(OUT_CLAMP_CONTROL_B_CB, 0,
 			OUT_CLAMP_MIN_B_CB, 0,
@@ -623,38 +587,7 @@ static void set_clamp(
 			OUT_CLAMP_MAX_R_CR, clamp_max);
 }
 
-/*******************************************************************************
- * set_round
- *
- * @brief
- *     Programs Round/Truncate
- *
- * @param [in] mode  :round or truncate
- * @param [in] depth :bit depth to round/truncate to
- OUT_ROUND_TRUNC_MODE 3:0 0xA Output data round or truncate mode
- POSSIBLE VALUES:
-      00 - truncate to u0.12
-      01 - truncate to u0.11
-      02 - truncate to u0.10
-      03 - truncate to u0.9
-      04 - truncate to u0.8
-      05 - reserved
-      06 - truncate to u0.14
-      07 - truncate to u0.13		set_reg_field_value(
-			value,
-			clamp_max,
-			OUT_CLAMP_CONTROL_R_CR,
-			OUT_CLAMP_MAX_R_CR);
-      08 - round to u0.12
-      09 - round to u0.11
-      10 - round to u0.10
-      11 - round to u0.9
-      12 - round to u0.8
-      13 - reserved
-      14 - round to u0.14
-      15 - round to u0.13
-
- ******************************************************************************/
+ 
 static void set_round(
 	struct dce_transform *xfm_dce,
 	enum dcp_out_trunc_round_mode mode,
@@ -663,7 +596,7 @@ static void set_round(
 	int depth_bits = 0;
 	int mode_bit = 0;
 
-	/*  set up bit depth */
+	 
 	switch (depth) {
 	case DCP_OUT_TRUNC_ROUND_DEPTH_14BIT:
 		depth_bits = 6;
@@ -688,10 +621,10 @@ static void set_round(
 		break;
 	default:
 		depth_bits = 4;
-		BREAK_TO_DEBUGGER(); /* Invalid dcp_out_trunc_round_depth */
+		BREAK_TO_DEBUGGER();  
 	}
 
-	/*  set up round or truncate */
+	 
 	switch (mode) {
 	case DCP_OUT_TRUNC_ROUND_MODE_TRUNCATE:
 		mode_bit = 0;
@@ -700,7 +633,7 @@ static void set_round(
 		mode_bit = 1;
 		break;
 	default:
-		BREAK_TO_DEBUGGER(); /* Invalid dcp_out_trunc_round_mode */
+		BREAK_TO_DEBUGGER();  
 	}
 
 	depth_bits |= mode_bit << 3;
@@ -708,20 +641,7 @@ static void set_round(
 	REG_SET(OUT_ROUND_CONTROL, 0, OUT_ROUND_TRUNC_MODE, depth_bits);
 }
 
-/*****************************************************************************
- * set_dither
- *
- * @brief
- *     Programs Dither
- *
- * @param [in] dither_enable        : enable dither
- * @param [in] dither_mode           : dither mode to set
- * @param [in] dither_depth          : bit depth to dither to
- * @param [in] frame_random_enable    : enable frame random
- * @param [in] rgb_random_enable      : enable rgb random
- * @param [in] highpass_random_enable : enable highpass random
- *
- ******************************************************************************/
+ 
 
 static void set_dither(
 	struct dce_transform *xfm_dce,
@@ -749,7 +669,7 @@ static void set_dither(
 		dither_mode_bits = 3;
 		break;
 	default:
-		/* Invalid dcp_spatial_dither_mode */
+		 
 		BREAK_TO_DEBUGGER();
 	}
 
@@ -761,11 +681,11 @@ static void set_dither(
 		dither_depth_bits = 1;
 		break;
 	default:
-		/* Invalid dcp_spatial_dither_depth */
+		 
 		BREAK_TO_DEBUGGER();
 	}
 
-	/*  write the register */
+	 
 	REG_SET_6(DCP_SPATIAL_DITHER_CNTL, 0,
 			DCP_SPATIAL_DITHER_EN, dither_enable,
 			DCP_SPATIAL_DITHER_MODE, dither_mode_bits,
@@ -775,16 +695,7 @@ static void set_dither(
 			DCP_HIGHPASS_RANDOM_ENABLE, highpass_random_enable);
 }
 
-/*****************************************************************************
- * dce_transform_bit_depth_reduction_program
- *
- * @brief
- *     Programs the DCP bit depth reduction registers (Clamp, Round/Truncate,
- *      Dither) for dce
- *
- * @param depth : bit depth to set the clamp to (should match denorm)
- *
- ******************************************************************************/
+ 
 static void program_bit_depth_reduction(
 	struct dce_transform *xfm_dce,
 	enum dc_color_depth depth,
@@ -794,15 +705,15 @@ static void program_bit_depth_reduction(
 	enum dcp_out_trunc_round_mode trunc_mode;
 	bool spatial_dither_enable;
 
-	ASSERT(depth <= COLOR_DEPTH_121212); /* Invalid clamp bit depth */
+	ASSERT(depth <= COLOR_DEPTH_121212);  
 
 	spatial_dither_enable = bit_depth_params->flags.SPATIAL_DITHER_ENABLED;
-	/* Default to 12 bit truncation without rounding */
+	 
 	trunc_round_depth = DCP_OUT_TRUNC_ROUND_DEPTH_12BIT;
 	trunc_mode = DCP_OUT_TRUNC_ROUND_MODE_TRUNCATE;
 
 	if (bit_depth_params->flags.TRUNCATE_ENABLED) {
-		/* Don't enable dithering if truncation is enabled */
+		 
 		spatial_dither_enable = false;
 		trunc_mode = bit_depth_params->flags.TRUNCATE_MODE ?
 			     DCP_OUT_TRUNC_ROUND_MODE_ROUND :
@@ -814,10 +725,7 @@ static void program_bit_depth_reduction(
 		else if (bit_depth_params->flags.TRUNCATE_DEPTH == 2)
 			trunc_round_depth = DCP_OUT_TRUNC_ROUND_DEPTH_10BIT;
 		else {
-			/*
-			 * Invalid truncate/round depth. Setting here to 12bit
-			 * to prevent use-before-initialize errors.
-			 */
+			 
 			trunc_round_depth = DCP_OUT_TRUNC_ROUND_DEPTH_12BIT;
 			BREAK_TO_DEBUGGER();
 		}
@@ -835,16 +743,7 @@ static void program_bit_depth_reduction(
 }
 
 #if defined(CONFIG_DRM_AMD_DC_SI)
-/*****************************************************************************
- * dce60_transform_bit_depth_reduction program
- *
- * @brief
- *     Programs the DCP bit depth reduction registers (Clamp, Round/Truncate,
- *      Dither) for dce
- *
- * @param depth : bit depth to set the clamp to (should match denorm)
- *
- ******************************************************************************/
+ 
 static void dce60_program_bit_depth_reduction(
 	struct dce_transform *xfm_dce,
 	enum dc_color_depth depth,
@@ -854,15 +753,15 @@ static void dce60_program_bit_depth_reduction(
 	enum dcp_out_trunc_round_mode trunc_mode;
 	bool spatial_dither_enable;
 
-	ASSERT(depth <= COLOR_DEPTH_121212); /* Invalid clamp bit depth */
+	ASSERT(depth <= COLOR_DEPTH_121212);  
 
 	spatial_dither_enable = bit_depth_params->flags.SPATIAL_DITHER_ENABLED;
-	/* Default to 12 bit truncation without rounding */
+	 
 	trunc_round_depth = DCP_OUT_TRUNC_ROUND_DEPTH_12BIT;
 	trunc_mode = DCP_OUT_TRUNC_ROUND_MODE_TRUNCATE;
 
 	if (bit_depth_params->flags.TRUNCATE_ENABLED) {
-		/* Don't enable dithering if truncation is enabled */
+		 
 		spatial_dither_enable = false;
 		trunc_mode = bit_depth_params->flags.TRUNCATE_MODE ?
 			     DCP_OUT_TRUNC_ROUND_MODE_ROUND :
@@ -874,16 +773,13 @@ static void dce60_program_bit_depth_reduction(
 		else if (bit_depth_params->flags.TRUNCATE_DEPTH == 2)
 			trunc_round_depth = DCP_OUT_TRUNC_ROUND_DEPTH_10BIT;
 		else {
-			/*
-			 * Invalid truncate/round depth. Setting here to 12bit
-			 * to prevent use-before-initialize errors.
-			 */
+			 
 			trunc_round_depth = DCP_OUT_TRUNC_ROUND_DEPTH_12BIT;
 			BREAK_TO_DEBUGGER();
 		}
 	}
 
-	/* DCE6 has no OUT_CLAMP_CONTROL_* registers - set_clamp() is skipped */
+	 
 	set_round(xfm_dce, trunc_mode, trunc_round_depth);
 	set_dither(xfm_dce,
 		   spatial_dither_enable,
@@ -905,9 +801,7 @@ static int dce_transform_get_max_num_of_supported_lines(
 
 	ASSERT(pixel_width);
 
-	/* Find number of pixels that can fit into a single LB entry and
-	 * take floor of the value since we cannot store a single pixel
-	 * across multiple entries. */
+	 
 	switch (depth) {
 	case LB_PIXEL_DEPTH_18BPP:
 		pixels_per_entries = xfm_dce->lb_bits_per_entry / 18;
@@ -949,26 +843,25 @@ static void set_denormalization(
 
 	switch (depth) {
 	case COLOR_DEPTH_666:
-		/* 63/64 for 6 bit output color depth */
+		 
 		denorm_mode = 1;
 		break;
 	case COLOR_DEPTH_888:
-		/* Unity for 8 bit output color depth
-		 * because prescale is disabled by default */
+		 
 		denorm_mode = 0;
 		break;
 	case COLOR_DEPTH_101010:
-		/* 1023/1024 for 10 bit output color depth */
+		 
 		denorm_mode = 3;
 		break;
 	case COLOR_DEPTH_121212:
-		/* 4095/4096 for 12 bit output color depth */
+		 
 		denorm_mode = 5;
 		break;
 	case COLOR_DEPTH_141414:
 	case COLOR_DEPTH_161616:
 	default:
-		/* not valid used case! */
+		 
 		break;
 	}
 
@@ -1021,8 +914,7 @@ static void dce_transform_set_pixel_storage_depth(
 			PIXEL_EXPAN_MODE, expan_mode);
 
 	if (!(xfm_dce->lb_pixel_depth_supported & depth)) {
-		/*we should use unsupported capabilities
-		 *  unless it is required by w/a*/
+		 
 		DC_LOG_DC("%s: Capability not supported", __func__);
 	}
 }
@@ -1058,11 +950,10 @@ static void dce60_transform_set_pixel_storage_depth(
 	set_denormalization(xfm_dce, color_depth);
 	dce60_program_bit_depth_reduction(xfm_dce, color_depth, bit_depth_params);
 
-	/* DATA_FORMAT in DCE6 does not have PIXEL_DEPTH and PIXEL_EXPAN_MODE masks */
+	 
 
 	if (!(xfm_dce->lb_pixel_depth_supported & depth)) {
-		/*we should use unsupported capabilities
-		 *  unless it is required by w/a*/
+		 
 		DC_LOG_WARNING("%s: Capability not supported",
 			__func__);
 	}
@@ -1099,21 +990,7 @@ static void program_gamut_remap(
 
 }
 
-/*
- *****************************************************************************
- *  Function: dal_transform_wide_gamut_set_gamut_remap
- *
- *  @param [in] const struct xfm_grph_csc_adjustment *adjust
- *
- *  @return
- *     void
- *
- *  @note calculate and apply color temperature adjustment to in Rgb color space
- *
- *  @see
- *
- *****************************************************************************
- */
+ 
 static void dce_transform_set_gamut_remap(
 	struct transform *xfm,
 	const struct xfm_grph_csc_adjustment *adjust)
@@ -1122,7 +999,7 @@ static void dce_transform_set_gamut_remap(
 	int i = 0;
 
 	if (adjust->gamut_adjust_type != GRAPHICS_GAMUT_ADJUST_TYPE_SW)
-		/* Bypass if type is bypass or hw */
+		 
 		program_gamut_remap(xfm_dce, NULL);
 	else {
 		struct fixed31_32 arr_matrix[GAMUT_MATRIX_SIZE];
@@ -1178,26 +1055,18 @@ bool dce_transform_get_optimal_number_of_taps(
 		scl_data->lb_params.depth,
 		pixel_width);
 
-	/* Fail if in_taps are impossible */
+	 
 	if (in_taps->v_taps >= max_num_of_lines)
 		return false;
 
-	/*
-	 * Set taps according to this policy (in this order)
-	 * - Use 1 for no scaling
-	 * - Use input taps
-	 * - Use 4 and reduce as required by line buffer size
-	 * - Decide chroma taps if chroma is scaled
-	 *
-	 * Ignore input chroma taps. Decide based on non-chroma
-	 */
+	 
 	scl_data->taps.h_taps = decide_taps(scl_data->ratios.horz, in_taps->h_taps, false);
 	scl_data->taps.v_taps = decide_taps(scl_data->ratios.vert, in_taps->v_taps, false);
 	scl_data->taps.h_taps_c = decide_taps(scl_data->ratios.horz_c, in_taps->h_taps, true);
 	scl_data->taps.v_taps_c = decide_taps(scl_data->ratios.vert_c, in_taps->v_taps, true);
 
 	if (!IDENTITY_RATIO(scl_data->ratios.vert)) {
-		/* reduce v_taps if needed but ensure we have at least two */
+		 
 		if (in_taps->v_taps == 0
 				&& max_num_of_lines <= scl_data->taps.v_taps
 				&& scl_data->taps.v_taps > 1) {
@@ -1209,7 +1078,7 @@ bool dce_transform_get_optimal_number_of_taps(
 	}
 
 	if (!IDENTITY_RATIO(scl_data->ratios.vert_c)) {
-		/* reduce chroma v_taps if needed but ensure we have at least two */
+		 
 		if (max_num_of_lines <= scl_data->taps.v_taps_c && scl_data->taps.v_taps_c > 1) {
 			scl_data->taps.v_taps_c = max_num_of_lines - 1;
 		}
@@ -1218,7 +1087,7 @@ bool dce_transform_get_optimal_number_of_taps(
 			return false;
 	}
 
-	/* we've got valid taps */
+	 
 	return true;
 }
 
@@ -1284,24 +1153,24 @@ static bool configure_graphics_mode(
 
 			switch (color_space) {
 			case COLOR_SPACE_SRGB:
-				/* by pass */
+				 
 				REG_SET(OUTPUT_CSC_CONTROL, 0,
 					OUTPUT_CSC_GRPH_MODE, 0);
 				break;
 			case COLOR_SPACE_SRGB_LIMITED:
-				/* TV RGB */
+				 
 				REG_SET(OUTPUT_CSC_CONTROL, 0,
 					OUTPUT_CSC_GRPH_MODE, 1);
 				break;
 			case COLOR_SPACE_YCBCR601:
 			case COLOR_SPACE_YCBCR601_LIMITED:
-				/* YCbCr601 */
+				 
 				REG_SET(OUTPUT_CSC_CONTROL, 0,
 					OUTPUT_CSC_GRPH_MODE, 2);
 				break;
 			case COLOR_SPACE_YCBCR709:
 			case COLOR_SPACE_YCBCR709_LIMITED:
-				/* YCbCr709 */
+				 
 				REG_SET(OUTPUT_CSC_CONTROL, 0,
 					OUTPUT_CSC_GRPH_MODE, 3);
 				break;
@@ -1312,24 +1181,24 @@ static bool configure_graphics_mode(
 	} else if (csc_adjust_type == GRAPHICS_CSC_ADJUST_TYPE_HW) {
 		switch (color_space) {
 		case COLOR_SPACE_SRGB:
-			/* by pass */
+			 
 			REG_SET(OUTPUT_CSC_CONTROL, 0,
 				OUTPUT_CSC_GRPH_MODE, 0);
 			break;
 		case COLOR_SPACE_SRGB_LIMITED:
-			/* TV RGB */
+			 
 			REG_SET(OUTPUT_CSC_CONTROL, 0,
 				OUTPUT_CSC_GRPH_MODE, 1);
 			break;
 		case COLOR_SPACE_YCBCR601:
 		case COLOR_SPACE_YCBCR601_LIMITED:
-			/* YCbCr601 */
+			 
 			REG_SET(OUTPUT_CSC_CONTROL, 0,
 				OUTPUT_CSC_GRPH_MODE, 2);
 			break;
 		case COLOR_SPACE_YCBCR709:
 		case COLOR_SPACE_YCBCR709_LIMITED:
-			 /* YCbCr709 */
+			  
 			REG_SET(OUTPUT_CSC_CONTROL, 0,
 				OUTPUT_CSC_GRPH_MODE, 3);
 			break;
@@ -1338,7 +1207,7 @@ static bool configure_graphics_mode(
 		}
 
 	} else
-		/* by pass */
+		 
 		REG_SET(OUTPUT_CSC_CONTROL, 0,
 			OUTPUT_CSC_GRPH_MODE, 0);
 
@@ -1356,7 +1225,7 @@ void dce110_opp_set_csc_adjustment(
 	program_color_matrix(
 			xfm_dce, tbl_entry, GRPH_COLOR_MATRIX_SW);
 
-	/*  We did everything ,now program DxOUTPUT_CSC_CONTROL */
+	 
 	configure_graphics_mode(xfm_dce, config, GRAPHICS_CSC_ADJUST_TYPE_SW,
 			tbl_entry->color_space);
 }
@@ -1371,34 +1240,25 @@ void dce110_opp_set_csc_default(
 
 	if (default_adjust->force_hw_default == false) {
 		const struct out_csc_color_matrix *elm;
-		/* currently parameter not in use */
+		 
 		enum grph_color_adjust_option option =
 			GRPH_COLOR_MATRIX_HW_DEFAULT;
 		uint32_t i;
-		/*
-		 * HW default false we program locally defined matrix
-		 * HW default true  we use predefined hw matrix and we
-		 * do not need to program matrix
-		 * OEM wants the HW default via runtime parameter.
-		 */
+		 
 		option = GRPH_COLOR_MATRIX_SW;
 
 		for (i = 0; i < ARRAY_SIZE(global_color_matrix); ++i) {
 			elm = &global_color_matrix[i];
 			if (elm->color_space != default_adjust->out_color_space)
 				continue;
-			/* program the matrix with default values from this
-			 * file */
+			 
 			program_color_matrix(xfm_dce, elm, option);
 			config = CSC_COLOR_MODE_GRAPHICS_OUTPUT_CSC;
 			break;
 		}
 	}
 
-	/* configure the what we programmed :
-	 * 1. Default values from this file
-	 * 2. Use hardware default from ROM_A and we do not need to program
-	 * matrix */
+	 
 
 	configure_graphics_mode(xfm_dce, config,
 		default_adjust->csc_adjust_type,
@@ -1414,7 +1274,7 @@ static void program_pwl(struct dce_transform *xfm_dce,
 	uint32_t i = 0;
 	const struct pwl_result_data *rgb = params->rgb_resulted;
 
-	/* Power on LUT memory */
+	 
 	if (REG(DCFE_MEM_PWR_CTRL))
 		REG_UPDATE(DCFE_MEM_PWR_CTRL,
 			   DCP_REGAMMA_MEM_PWR_DIS, 1);
@@ -1454,7 +1314,7 @@ static void program_pwl(struct dce_transform *xfm_dce,
 
 	REG_WRITE(REGAMMA_LUT_INDEX, 0);
 
-	/* Program REGAMMA_LUT_DATA */
+	 
 	while (i != params->hw_points_num) {
 
 		REG_WRITE(REGAMMA_LUT_DATA, rgb->red_reg);
@@ -1468,7 +1328,7 @@ static void program_pwl(struct dce_transform *xfm_dce,
 		++i;
 	}
 
-	/*  we are done with DCP LUT memory; re-enable low power mode */
+	 
 	if (REG(DCFE_MEM_PWR_CTRL))
 		REG_UPDATE(DCFE_MEM_PWR_CTRL,
 			   DCP_REGAMMA_MEM_PWR_DIS, 0);
@@ -1561,10 +1421,10 @@ void dce110_opp_program_regamma_pwl(struct transform *xfm,
 {
 	struct dce_transform *xfm_dce = TO_DCE_TRANSFORM(xfm);
 
-	/* Setup regions */
+	 
 	regamma_config_regions_and_segments(xfm_dce, params);
 
-	/* Program PWL */
+	 
 	program_pwl(xfm_dce, params);
 }
 
@@ -1621,9 +1481,9 @@ static const struct transform_funcs dce60_transform_funcs = {
 };
 #endif
 
-/*****************************************/
-/* Constructor, Destructor               */
-/*****************************************/
+ 
+ 
+ 
 
 void dce_transform_construct(
 	struct dce_transform *xfm_dce,
@@ -1650,7 +1510,7 @@ void dce_transform_construct(
 			LB_PIXEL_DEPTH_36BPP;
 
 	xfm_dce->lb_bits_per_entry = LB_BITS_PER_ENTRY;
-	xfm_dce->lb_memory_size = LB_TOTAL_NUMBER_OF_ENTRIES; /*0x6B0*/
+	xfm_dce->lb_memory_size = LB_TOTAL_NUMBER_OF_ENTRIES;  
 }
 
 #if defined(CONFIG_DRM_AMD_DC_SI)
@@ -1679,6 +1539,6 @@ void dce60_transform_construct(
 			LB_PIXEL_DEPTH_36BPP;
 
 	xfm_dce->lb_bits_per_entry = LB_BITS_PER_ENTRY;
-	xfm_dce->lb_memory_size = LB_TOTAL_NUMBER_OF_ENTRIES; /*0x6B0*/
+	xfm_dce->lb_memory_size = LB_TOTAL_NUMBER_OF_ENTRIES;  
 }
 #endif

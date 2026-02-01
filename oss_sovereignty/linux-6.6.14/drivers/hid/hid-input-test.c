@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- *  HID to Linux Input mapping
- *
- *  Copyright (c) 2022 José Expósito <jose.exposito89@gmail.com>
- */
+
+ 
 
 #include <kunit/test.h>
 

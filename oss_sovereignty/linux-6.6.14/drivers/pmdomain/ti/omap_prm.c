@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * OMAP2+ PRM driver
- *
- * Copyright (C) 2019 Texas Instruments Incorporated - http://www.ti.com/
- *	Tero Kristo <t-kristo@ti.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/clk.h>
@@ -29,9 +24,9 @@ enum omap_prm_domain_mode {
 };
 
 struct omap_prm_domain_map {
-	unsigned int usable_modes;	/* Mask of hardware supported modes */
-	unsigned long statechange:1;	/* Optional low-power state change */
-	unsigned long logicretstate:1;	/* Optional logic off mode */
+	unsigned int usable_modes;	 
+	unsigned long statechange:1;	 
+	unsigned long logicretstate:1;	 
 };
 
 struct omap_prm_domain {
@@ -540,7 +535,7 @@ static int omap_prm_domain_power_on(struct generic_pm_domain *domain)
 	writel_relaxed((v & ~PRM_POWERSTATE_MASK) | mode,
 		       prmd->prm->base + prmd->pwrstctrl);
 
-	/* wait for the transition bit to get cleared */
+	 
 	ret = readl_relaxed_poll_timeout(prmd->prm->base + prmd->pwrstst,
 					 v, !(v & PRM_ST_INTRANSITION), 1,
 					 PRM_STATE_MAX_WAIT);
@@ -553,7 +548,7 @@ static int omap_prm_domain_power_on(struct generic_pm_domain *domain)
 	return ret;
 }
 
-/* No need to check for holes in the mask for the lowest mode */
+ 
 static int omap_prm_domain_find_lowest(struct omap_prm_domain *prmd)
 {
 	return __ffs(prmd->cap->usable_modes);
@@ -586,7 +581,7 @@ static int omap_prm_domain_power_off(struct generic_pm_domain *domain)
 
 	writel_relaxed(v, prmd->prm->base + prmd->pwrstctrl);
 
-	/* wait for the transition bit to get cleared */
+	 
 	ret = readl_relaxed_poll_timeout(prmd->prm->base + prmd->pwrstst,
 					 v, !(v & PRM_ST_INTRANSITION), 1,
 					 PRM_STATE_MAX_WAIT);
@@ -599,11 +594,7 @@ static int omap_prm_domain_power_off(struct generic_pm_domain *domain)
 	return 0;
 }
 
-/*
- * Note that ti-sysc already manages the module clocks separately so
- * no need to manage those. Interconnect instances need clocks managed
- * for simple-pm-bus.
- */
+ 
 static int omap_prm_domain_attach_clock(struct device *dev,
 					struct omap_prm_domain *prmd)
 {
@@ -751,19 +742,16 @@ static int omap_reset_status(struct reset_controller_dev *rcdev,
 	bool has_rstst = reset->prm->data->rstst ||
 		(reset->prm->data->flags & OMAP_PRM_HAS_RSTST);
 
-	/* Check if we have rstst */
+	 
 	if (!has_rstst)
 		return -ENOTSUPP;
 
-	/* Check if hw reset line is asserted */
+	 
 	v = readl_relaxed(reset->prm->base + reset->prm->data->rstctrl);
 	if (v & BIT(id))
 		return 1;
 
-	/*
-	 * Check reset status, high value means reset sequence has been
-	 * completed successfully so we can return 0 here (reset deasserted)
-	 */
+	 
 	v = readl_relaxed(reset->prm->base + reset->prm->data->rstst);
 	v >>= st_bit;
 	v &= 1;
@@ -778,7 +766,7 @@ static int omap_reset_assert(struct reset_controller_dev *rcdev,
 	u32 v;
 	unsigned long flags;
 
-	/* assert the reset control line */
+	 
 	spin_lock_irqsave(&reset->lock, flags);
 	v = readl_relaxed(reset->prm->base + reset->prm->data->rstctrl);
 	v |= 1 << id;
@@ -799,7 +787,7 @@ static int omap_reset_deassert(struct reset_controller_dev *rcdev,
 	struct ti_prm_platform_data *pdata = dev_get_platdata(reset->dev);
 	int ret = 0;
 
-	/* Nothing to do if the reset is already deasserted */
+	 
 	if (!omap_reset_status(rcdev, id))
 		return 0;
 
@@ -809,7 +797,7 @@ static int omap_reset_deassert(struct reset_controller_dev *rcdev,
 	if (has_rstst) {
 		st_bit = omap_reset_get_st_bit(reset, id);
 
-		/* Clear the reset status by writing 1 to the status bit */
+		 
 		v = 1 << st_bit;
 		writel_relaxed(v, reset->prm->base + reset->prm->data->rstst);
 	}
@@ -817,14 +805,14 @@ static int omap_reset_deassert(struct reset_controller_dev *rcdev,
 	if (reset->clkdm)
 		pdata->clkdm_deny_idle(reset->clkdm);
 
-	/* de-assert the reset control line */
+	 
 	spin_lock_irqsave(&reset->lock, flags);
 	v = readl_relaxed(reset->prm->base + reset->prm->data->rstctrl);
 	v &= ~(1 << id);
 	writel_relaxed(v, reset->prm->base + reset->prm->data->rstctrl);
 	spin_unlock_irqrestore(&reset->lock, flags);
 
-	/* wait for the reset bit to clear */
+	 
 	ret = readl_relaxed_poll_timeout_atomic(reset->prm->base +
 						reset->prm->data->rstctrl,
 						v, !(v & BIT(id)), 1,
@@ -833,7 +821,7 @@ static int omap_reset_deassert(struct reset_controller_dev *rcdev,
 		pr_err("%s: timedout waiting for %s:%lu\n", __func__,
 		       reset->prm->data->name, id);
 
-	/* wait for the status to be set */
+	 
 	if (has_rstst) {
 		ret = readl_relaxed_poll_timeout_atomic(reset->prm->base +
 						 reset->prm->data->rstst,
@@ -876,15 +864,11 @@ static int omap_prm_reset_init(struct platform_device *pdev,
 	char buf[32];
 	u32 v;
 
-	/*
-	 * Check if we have controllable resets. If either rstctrl is non-zero
-	 * or OMAP_PRM_HAS_RSTCTRL flag is set, we have reset control register
-	 * for the domain.
-	 */
+	 
 	if (!prm->data->rstctrl && !(prm->data->flags & OMAP_PRM_HAS_RSTCTRL))
 		return 0;
 
-	/* Check if we have the pdata callbacks in place */
+	 
 	if (!pdata || !pdata->clkdm_lookup || !pdata->clkdm_deny_idle ||
 	    !pdata->clkdm_allow_idle)
 		return -EINVAL;
@@ -922,7 +906,7 @@ static int omap_prm_reset_init(struct platform_device *pdev,
 		map++;
 	}
 
-	/* Quirk handling to assert rst_map_012 bits on reset and avoid errors */
+	 
 	if (prm->data->rstmap == rst_map_012) {
 		v = readl_relaxed(reset->prm->base + reset->prm->data->rstctrl);
 		if ((v & reset->mask) != reset->mask) {

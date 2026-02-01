@@ -1,28 +1,4 @@
-/*
- * This file is part of the MicroPython project, http://micropython.org/
- *
- * The MIT License (MIT)
- *
- * Copyright (c) 2013, 2014 Damien P. George
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
+ 
 
 #include <stdio.h>
 #include <assert.h>
@@ -40,46 +16,46 @@
 #endif
 
 #if MICROPY_PY_IO
-extern struct _mp_dummy_t mp_sys_stdout_obj; // type is irrelevant, just need pointer
+extern struct _mp_dummy_t mp_sys_stdout_obj; 
 #endif
 
-// args[0] is function from class body
-// args[1] is class name
-// args[2:] are base objects
+
+
+
 static mp_obj_t mp_builtin___build_class__(size_t n_args, const mp_obj_t *args) {
     assert(2 <= n_args);
 
-    // set the new classes __locals__ object
+    
     mp_obj_dict_t *old_locals = mp_locals_get();
     mp_obj_t class_locals = mp_obj_new_dict(0);
     mp_locals_set(MP_OBJ_TO_PTR(class_locals));
 
-    // call the class code
+    
     mp_obj_t cell = mp_call_function_0(args[0]);
 
-    // restore old __locals__ object
+    
     mp_locals_set(old_locals);
 
-    // get the class type (meta object) from the base objects
+    
     mp_obj_t meta;
     if (n_args == 2) {
-        // no explicit bases, so use 'type'
+        
         meta = MP_OBJ_FROM_PTR(&mp_type_type);
     } else {
-        // use type of first base object
+        
         meta = MP_OBJ_FROM_PTR(mp_obj_get_type(args[2]));
     }
 
-    // TODO do proper metaclass resolution for multiple base objects
+    
 
-    // create the new class using a call to the meta object
+    
     mp_obj_t meta_args[3];
-    meta_args[0] = args[1]; // class name
-    meta_args[1] = mp_obj_new_tuple(n_args - 2, args + 2); // tuple of bases
-    meta_args[2] = class_locals; // dict of members
+    meta_args[0] = args[1]; 
+    meta_args[1] = mp_obj_new_tuple(n_args - 2, args + 2); 
+    meta_args[2] = class_locals; 
     mp_obj_t new_class = mp_call_function_n_kw(meta, 3, 0, meta_args);
 
-    // store into cell if needed
+    
     if (cell != mp_const_none) {
         mp_obj_cell_set(cell, new_class);
     }
@@ -158,24 +134,24 @@ MP_DEFINE_CONST_FUN_OBJ_1(mp_builtin_chr_obj, mp_builtin_chr);
 static mp_obj_t mp_builtin_dir(size_t n_args, const mp_obj_t *args) {
     mp_obj_t dir = mp_obj_new_list(0, NULL);
     if (n_args == 0) {
-        // Make a list of names in the local namespace
+        
         mp_obj_dict_t *dict = mp_locals_get();
         for (size_t i = 0; i < dict->map.alloc; i++) {
             if (mp_map_slot_is_filled(&dict->map, i)) {
                 mp_obj_list_append(dir, dict->map.table[i].key);
             }
         }
-    } else { // n_args == 1
-        // Make a list of names in the given object
-        // Implemented by probing all possible qstrs with mp_load_method_maybe
+    } else { 
+        
+        
         size_t nqstr = QSTR_TOTAL();
         for (size_t i = MP_QSTR_ + 1; i < nqstr; ++i) {
             mp_obj_t dest[2];
             mp_load_method_protected(args[0], i, dest, false);
             if (dest[0] != MP_OBJ_NULL) {
                 #if MICROPY_PY_ALL_SPECIAL_METHODS
-                // Support for __dir__: see if we can dispatch to this special method
-                // This relies on MP_QSTR__dir__ being first after MP_QSTR_
+                
+                
                 if (i == MP_QSTR___dir__ && dest[1] != MP_OBJ_NULL) {
                     return mp_call_method_n_kw(0, 0, dest);
                 }
@@ -194,7 +170,7 @@ static mp_obj_t mp_builtin_divmod(mp_obj_t o1_in, mp_obj_t o2_in) {
 MP_DEFINE_CONST_FUN_OBJ_2(mp_builtin_divmod_obj, mp_builtin_divmod);
 
 static mp_obj_t mp_builtin_hash(mp_obj_t o_in) {
-    // result is guaranteed to be a (small) int
+    
     return mp_unary_op(MP_UNARY_OP_HASH, o_in);
 }
 MP_DEFINE_CONST_FUN_OBJ_1(mp_builtin_hash_obj, mp_builtin_hash);
@@ -214,7 +190,7 @@ MP_DEFINE_CONST_FUN_OBJ_1(mp_builtin_hex_obj, mp_builtin_hex);
 #include "py/mphal.h"
 #include "shared/readline/readline.h"
 
-// A port can define mp_hal_readline if they want to use a custom function here
+
 #ifndef mp_hal_readline
 #define mp_hal_readline readline
 #endif
@@ -250,7 +226,7 @@ static mp_obj_t mp_builtin_min_max(size_t n_args, const mp_obj_t *args, mp_map_t
     mp_map_elem_t *default_elem;
     mp_obj_t key_fn = key_elem == NULL ? MP_OBJ_NULL : key_elem->value;
     if (n_args == 1) {
-        // given an iterable
+        
         mp_obj_iter_buf_t iter_buf;
         mp_obj_t iterable = mp_getiter(args[0], &iter_buf);
         mp_obj_t best_key = MP_OBJ_NULL;
@@ -273,7 +249,7 @@ static mp_obj_t mp_builtin_min_max(size_t n_args, const mp_obj_t *args, mp_map_t
         }
         return best_obj;
     } else {
-        // given many args
+        
         mp_obj_t best_key = MP_OBJ_NULL;
         mp_obj_t best_obj = MP_OBJ_NULL;
         for (size_t i = 0; i < n_args; i++) {
@@ -348,7 +324,7 @@ static mp_obj_t mp_builtin_ord(mp_obj_t o_in) {
     } else
     #endif
     {
-        // a bytes object, or a str without unicode support (don't sign extend the char)
+        
         if (len == 1) {
             return MP_OBJ_NEW_SMALL_INT(str[0]);
         }
@@ -389,7 +365,7 @@ static mp_obj_t mp_builtin_print(size_t n_args, const mp_obj_t *pos_args, mp_map
         #endif
     };
 
-    // parse args (a union is used to reduce the amount of C stack that is needed)
+    
     union {
         mp_arg_val_t args[MP_ARRAY_SIZE(allowed_args)];
         size_t len[2];
@@ -401,7 +377,7 @@ static mp_obj_t mp_builtin_print(size_t n_args, const mp_obj_t *pos_args, mp_map
     mp_print_t print = {MP_OBJ_TO_PTR(u.args[ARG_file].u_obj), mp_stream_write_adaptor};
     #endif
 
-    // extract the objects first because we are going to use the other part of the union
+    
     mp_obj_t sep = u.args[ARG_sep].u_obj;
     mp_obj_t end = u.args[ARG_end].u_obj;
     const char *sep_data = mp_obj_str_get_data(sep, &u.len[0]);
@@ -435,7 +411,7 @@ static mp_obj_t mp_builtin___repl_print__(mp_obj_t o) {
         mp_obj_print_helper(MP_PYTHON_PRINTER, o, PRINT_REPR);
         mp_print_str(MP_PYTHON_PRINTER, "\n");
         #if MICROPY_CAN_OVERRIDE_BUILTINS
-        // Set "_" special variable
+        
         mp_obj_t dest[2] = {MP_OBJ_SENTINEL, o};
         MP_OBJ_TYPE_GET_SLOT(&mp_type_module, attr)(MP_OBJ_FROM_PTR(&mp_module_builtins), MP_QSTR__, dest);
         #endif
@@ -477,7 +453,7 @@ static mp_obj_t mp_builtin_round(size_t n_args, const mp_obj_t *args) {
         } else if (mp_obj_is_true(mp_binary_op(MP_BINARY_OP_MORE, modulo, half_mult))) {
             return mp_binary_op(MP_BINARY_OP_ADD, rounded, mult);
         } else {
-            // round to even number
+            
             mp_obj_t floor = mp_binary_op(MP_BINARY_OP_FLOOR_DIVIDE, o_in, mult);
             if (mp_obj_is_true(mp_binary_op(MP_BINARY_OP_AND, floor, MP_OBJ_NEW_SMALL_INT(1)))) {
                 return mp_binary_op(MP_BINARY_OP_ADD, rounded, mult);
@@ -492,7 +468,7 @@ static mp_obj_t mp_builtin_round(size_t n_args, const mp_obj_t *args) {
     if (n_args > 1) {
         mp_int_t num_dig = mp_obj_get_int(args[1]);
         mp_float_t mult = MICROPY_FLOAT_C_FUN(pow)(10, (mp_float_t)num_dig);
-        // TODO may lead to overflow
+        
         mp_float_t rounded = MICROPY_FLOAT_C_FUN(nearbyint)(val * mult) / mult;
         return mp_obj_new_float(rounded);
     }
@@ -536,10 +512,10 @@ static mp_obj_t mp_builtin_sorted(size_t n_args, const mp_obj_t *args, mp_map_t 
 }
 MP_DEFINE_CONST_FUN_OBJ_KW(mp_builtin_sorted_obj, 1, mp_builtin_sorted);
 
-// See mp_load_attr() if making any changes
+
 static inline mp_obj_t mp_load_attr_default(mp_obj_t base, qstr attr, mp_obj_t defval) {
     mp_obj_t dest[2];
-    // use load_method, raising or not raising exception
+    
     if (defval == MP_OBJ_NULL) {
         mp_load_method(base, attr, dest);
     } else {
@@ -548,10 +524,10 @@ static inline mp_obj_t mp_load_attr_default(mp_obj_t base, qstr attr, mp_obj_t d
     if (dest[0] == MP_OBJ_NULL) {
         return defval;
     } else if (dest[1] == MP_OBJ_NULL) {
-        // load_method returned just a normal attribute
+        
         return dest[0];
     } else {
-        // load_method returned a method, so build a bound method object
+        
         return mp_obj_new_bound_meth(dest[0], dest[1]);
     }
 }
@@ -596,19 +572,19 @@ static mp_obj_t mp_builtin_locals(void) {
 }
 MP_DEFINE_CONST_FUN_OBJ_0(mp_builtin_locals_obj, mp_builtin_locals);
 
-// These are defined in terms of MicroPython API functions right away
+
 MP_DEFINE_CONST_FUN_OBJ_1(mp_builtin_id_obj, mp_obj_id);
 MP_DEFINE_CONST_FUN_OBJ_1(mp_builtin_len_obj, mp_obj_len);
 
 static const mp_rom_map_elem_t mp_module_builtins_globals_table[] = {
     { MP_ROM_QSTR(MP_QSTR___name__), MP_ROM_QSTR(MP_QSTR_builtins) },
 
-    // built-in core functions
+    
     { MP_ROM_QSTR(MP_QSTR___build_class__), MP_ROM_PTR(&mp_builtin___build_class___obj) },
     { MP_ROM_QSTR(MP_QSTR___import__), MP_ROM_PTR(&mp_builtin___import___obj) },
     { MP_ROM_QSTR(MP_QSTR___repl_print__), MP_ROM_PTR(&mp_builtin___repl_print___obj) },
 
-    // built-in types
+    
     { MP_ROM_QSTR(MP_QSTR_bool), MP_ROM_PTR(&mp_type_bool) },
     { MP_ROM_QSTR(MP_QSTR_bytes), MP_ROM_PTR(&mp_type_bytes) },
     #if MICROPY_PY_BUILTINS_BYTEARRAY
@@ -659,13 +635,13 @@ static const mp_rom_map_elem_t mp_module_builtins_globals_table[] = {
     { MP_ROM_QSTR(MP_QSTR_classmethod), MP_ROM_PTR(&mp_type_classmethod) },
     { MP_ROM_QSTR(MP_QSTR_staticmethod), MP_ROM_PTR(&mp_type_staticmethod) },
 
-    // built-in objects
+    
     { MP_ROM_QSTR(MP_QSTR_Ellipsis), MP_ROM_PTR(&mp_const_ellipsis_obj) },
     #if MICROPY_PY_BUILTINS_NOTIMPLEMENTED
     { MP_ROM_QSTR(MP_QSTR_NotImplemented), MP_ROM_PTR(&mp_const_notimplemented_obj) },
     #endif
 
-    // built-in user functions
+    
     { MP_ROM_QSTR(MP_QSTR_abs), MP_ROM_PTR(&mp_builtin_abs_obj) },
     { MP_ROM_QSTR(MP_QSTR_all), MP_ROM_PTR(&mp_builtin_all_obj) },
     { MP_ROM_QSTR(MP_QSTR_any), MP_ROM_PTR(&mp_builtin_any_obj) },
@@ -722,7 +698,7 @@ static const mp_rom_map_elem_t mp_module_builtins_globals_table[] = {
     { MP_ROM_QSTR(MP_QSTR_sorted), MP_ROM_PTR(&mp_builtin_sorted_obj) },
     { MP_ROM_QSTR(MP_QSTR_sum), MP_ROM_PTR(&mp_builtin_sum_obj) },
 
-    // built-in exceptions
+    
     { MP_ROM_QSTR(MP_QSTR_BaseException), MP_ROM_PTR(&mp_type_BaseException) },
     { MP_ROM_QSTR(MP_QSTR_ArithmeticError), MP_ROM_PTR(&mp_type_ArithmeticError) },
     { MP_ROM_QSTR(MP_QSTR_AssertionError), MP_ROM_PTR(&mp_type_AssertionError) },
@@ -758,7 +734,7 @@ static const mp_rom_map_elem_t mp_module_builtins_globals_table[] = {
     #endif
     { MP_ROM_QSTR(MP_QSTR_ZeroDivisionError), MP_ROM_PTR(&mp_type_ZeroDivisionError) },
 
-    // Extra builtins as defined by a port
+    
     MICROPY_PORT_BUILTINS
     MICROPY_PORT_EXTRA_BUILTINS
 };

@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright(c) 2014 - 2022 Intel Corporation */
+
+ 
 #include <linux/device.h>
 #include <linux/dma-mapping.h>
 #include <linux/pci.h>
@@ -122,7 +122,7 @@ static int __qat_bl_sgl_to_bufl(struct adf_accel_dev *accel_dev,
 	buf->bl = bufl;
 	buf->blp = blp;
 	buf->sz = sz;
-	/* Handle out of place operation */
+	 
 	if (sgl != sglout) {
 		struct qat_alg_buf *buffers;
 		int extra_buff = extra_dst_buff ? 1 : 0;
@@ -185,7 +185,7 @@ static int __qat_bl_sgl_to_bufl(struct adf_accel_dev *accel_dev,
 		buf->bloutp = bloutp;
 		buf->sz_out = sz_out;
 	} else {
-		/* Otherwise set the src and dst to the same address */
+		 
 		buf->bloutp = buf->blp;
 		buf->sz_out = 0;
 	}
@@ -380,15 +380,15 @@ int qat_bl_realloc_map_new_dst(struct adf_accel_dev *accel_dev,
 
 	new_bl_size = struct_size(new_bl, buffers, new_bl->num_bufs);
 
-	/* Map new firmware SGL descriptor */
+	 
 	new_blp = dma_map_single(dev, new_bl, new_bl_size, DMA_TO_DEVICE);
 	if (unlikely(dma_mapping_error(dev, new_blp)))
 		goto err;
 
-	/* Unmap old firmware SGL descriptor */
+	 
 	dma_unmap_single(dev, qat_bufs->bloutp, qat_bufs->sz_out, DMA_TO_DEVICE);
 
-	/* Free and unmap old scatterlist */
+	 
 	qat_bl_sgl_free_unmap(accel_dev, *sg, qat_bufs->blout,
 			      !qat_bufs->sgl_dst_valid);
 

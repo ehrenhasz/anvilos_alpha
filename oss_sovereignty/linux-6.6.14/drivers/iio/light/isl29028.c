@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * IIO driver for the light sensor ISL29028.
- * ISL29028 is Concurrent Ambient Light and Proximity Sensor
- *
- * Copyright (c) 2012, NVIDIA CORPORATION.  All rights reserved.
- * Copyright (c) 2016-2017 Brian Masney <masneyb@onstation.org>
- *
- * Datasheets:
- *  - http://www.intersil.com/content/dam/Intersil/documents/isl2/isl29028.pdf
- *  - http://www.intersil.com/content/dam/Intersil/documents/isl2/isl29030.pdf
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/i2c.h>
@@ -70,10 +60,7 @@ static const struct isl29028_prox_data isl29028_prox_data[] = {
 	{  10,      0, 100 },
 	{  13, 300000,  75 },
 	{  20,      0,  50 },
-	{  80,      0,  13 }, /*
-			       * Note: Data sheet lists 12.5 ms sleep time.
-			       * Round up a half millisecond for msleep().
-			       */
+	{  80,      0,  13 },  
 	{ 100,  0,   0 }
 };
 
@@ -148,7 +135,7 @@ static int isl29028_enable_proximity(struct isl29028_chip *chip)
 	if (ret < 0)
 		return ret;
 
-	/* Wait for conversion to be complete for first sample */
+	 
 	prox_index = isl29028_find_prox_sleep_index(chip->prox_sampling_int,
 						    chip->prox_sampling_frac);
 	if (prox_index < 0)
@@ -217,14 +204,14 @@ static int isl29028_set_als_ir_mode(struct isl29028_chip *chip,
 	if (ret < 0)
 		return ret;
 
-	/* Enable the ALS/IR */
+	 
 	ret = regmap_update_bits(chip->regmap, ISL29028_REG_CONFIGURE,
 				 ISL29028_CONF_ALS_EN_MASK,
 				 ISL29028_CONF_ALS_EN);
 	if (ret < 0)
 		return ret;
 
-	/* Need to wait for conversion time if ALS/IR mode enabled */
+	 
 	msleep(ISL29028_CONV_TIME_MS);
 
 	chip->als_ir_mode = mode;
@@ -303,11 +290,7 @@ static int isl29028_als_get(struct isl29028_chip *chip, int *als_data)
 	if (ret < 0)
 		return ret;
 
-	/*
-	 * convert als data count to lux.
-	 * if lux_scale = 125,  lux = count * 0.031
-	 * if lux_scale = 2000, lux = count * 0.49
-	 */
+	 
 	if (chip->lux_scale == 125)
 		als_ir_data = (als_ir_data * 31) / 1000;
 	else
@@ -348,7 +331,7 @@ static int isl29028_set_pm_runtime_busy(struct isl29028_chip *chip, bool on)
 	return ret;
 }
 
-/* Channel IO */
+ 
 static int isl29028_write_raw(struct iio_dev *indio_dev,
 			      struct iio_chan_spec const *chan,
 			      int val, int val2, long mask)
@@ -479,11 +462,7 @@ static int isl29028_read_raw(struct iio_dev *indio_dev,
 	if (ret < 0)
 		return ret;
 
-	/**
-	 * Preserve the ret variable if the call to
-	 * isl29028_set_pm_runtime_busy() is successful so the reading
-	 * (if applicable) is returned to user space.
-	 */
+	 
 	pm_ret = isl29028_set_pm_runtime_busy(chip, false);
 	if (pm_ret < 0)
 		return pm_ret;
@@ -666,11 +645,7 @@ static int isl29028_suspend(struct device *dev)
 
 static int isl29028_resume(struct device *dev)
 {
-	/**
-	 * The specific component (ALS/IR or proximity) will enable itself as
-	 * needed the next time that the user requests a reading. This is done
-	 * above in isl29028_set_als_ir_mode() and isl29028_enable_proximity().
-	 */
+	 
 	return 0;
 }
 
@@ -685,7 +660,7 @@ static const struct i2c_device_id isl29028_id[] = {
 MODULE_DEVICE_TABLE(i2c, isl29028_id);
 
 static const struct of_device_id isl29028_of_match[] = {
-	{ .compatible = "isl,isl29028", }, /* for backward compat., don't use */
+	{ .compatible = "isl,isl29028", },  
 	{ .compatible = "isil,isl29028", },
 	{ .compatible = "isil,isl29030", },
 	{ },

@@ -1,16 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * TI OMAP4 ISS V4L2 Driver - Register defines
- *
- * Copyright (C) 2012 Texas Instruments.
- *
- * Author: Sergio Aguirre <sergio.a.aguirre@gmail.com>
- */
+ 
+ 
 
 #ifndef _OMAP4_ISS_REGS_H_
 #define _OMAP4_ISS_REGS_H_
 
-/* ISS */
+ 
 #define ISS_HL_REVISION					0x0
 
 #define ISS_HL_SYSCONFIG				0x10
@@ -104,7 +98,7 @@
 #define CSI2_IRQSTATUS					0x18
 #define CSI2_IRQENABLE					0x1c
 
-/* Shared bits across CSI2_IRQENABLE and IRQSTATUS */
+ 
 
 #define CSI2_IRQ_OCP_ERR				BIT(14)
 #define CSI2_IRQ_SHORT_PACKET				BIT(13)
@@ -159,7 +153,7 @@
 
 #define CSI2_COMPLEXIO_IRQENABLE			0x60
 
-/* Shared bits across CSI2_COMPLEXIO_IRQENABLE and IRQSTATUS */
+ 
 #define CSI2_COMPLEXIO_IRQ_STATEALLULPMEXIT		BIT(26)
 #define CSI2_COMPLEXIO_IRQ_STATEALLULPMENTER		BIT(25)
 #define CSI2_COMPLEXIO_IRQ_STATEULPM5			BIT(24)
@@ -239,7 +233,7 @@
 #define CSI2_CTX_CTRL3_ALPHA_MASK			\
 		(0x3fff << CSI2_CTX_CTRL3_ALPHA_SHIFT)
 
-/* Shared bits across CSI2_CTX_IRQENABLE and IRQSTATUS */
+ 
 #define CSI2_CTX_IRQ_ECC_CORRECTION			BIT(8)
 #define CSI2_CTX_IRQ_LINE_NUMBER			BIT(7)
 #define CSI2_CTX_IRQ_FRAME_NUMBER			BIT(6)
@@ -249,12 +243,12 @@
 #define CSI2_CTX_IRQ_FE					BIT(1)
 #define CSI2_CTX_IRQ_FS					BIT(0)
 
-/* ISS BTE */
+ 
 #define BTE_CTRL					(0x0030)
 #define BTE_CTRL_BW_LIMITER_MASK			(0x3ff << 22)
 #define BTE_CTRL_BW_LIMITER_SHIFT			22
 
-/* ISS ISP_SYS1 */
+ 
 #define ISP5_REVISION					(0x0000)
 #define ISP5_SYSCONFIG					(0x0010)
 #define ISP5_SYSCONFIG_STANDBYMODE_MASK			(3 << 4)
@@ -267,7 +261,7 @@
 #define ISP5_IRQENABLE_SET(i)				(0x002c + (0x10 * (i)))
 #define ISP5_IRQENABLE_CLR(i)				(0x0030 + (0x10 * (i)))
 
-/* Bits shared for ISP5_IRQ* registers */
+ 
 #define ISP5_IRQ_OCP_ERR				BIT(31)
 #define ISP5_IRQ_IPIPE_INT_DPC_RNEW1			BIT(29)
 #define ISP5_IRQ_IPIPE_INT_DPC_RNEW0			BIT(28)
@@ -307,7 +301,7 @@
 #define ISP5_CTRL_SYNC_ENABLE				BIT(9)
 #define ISP5_CTRL_PSYNC_CLK_SEL				BIT(8)
 
-/* ISS ISP ISIF register offsets */
+ 
 #define ISIF_SYNCEN					(0x0000)
 #define ISIF_SYNCEN_DWEN				BIT(1)
 #define ISIF_SYNCEN_SYEN				BIT(0)
@@ -371,7 +365,7 @@
 #define ISIF_CCDCFG					(0x0088)
 #define ISIF_CCDCFG_Y8POS				BIT(11)
 
-/* ISS ISP IPIPEIF register offsets */
+ 
 #define IPIPEIF_ENABLE					(0x0000)
 
 #define IPIPEIF_CFG1					(0x0004)
@@ -396,7 +390,7 @@
 
 #define IPIPEIF_CLKDIV					(0x0040)
 
-/* ISS ISP IPIPE register offsets */
+ 
 #define IPIPE_SRC_EN					(0x0000)
 #define IPIPE_SRC_EN_EN					BIT(0)
 
@@ -732,7 +726,7 @@
 
 #define IPIPE_BSC_EN					(0x0400)
 
-/* ISS ISP Resizer register offsets */
+ 
 #define RSZ_REVISION					(0x0000)
 #define RSZ_SYSCONFIG					(0x0004)
 #define RSZ_SYSCONFIG_RSZB_CLK_EN			BIT(9)
@@ -854,7 +848,7 @@
 #define RZB_SDR_C_PTR_S					(0x0190)
 #define RZB_SDR_C_PTR_E					(0x0194)
 
-/* Shared Bitmasks between RZA & RZB */
+ 
 #define RSZ_EN_EN					BIT(0)
 
 #define RSZ_420_CEN					BIT(1)
@@ -896,4 +890,4 @@
 
 #define RSZ_DWN_EN_DWN_EN				BIT(0)
 
-#endif /* _OMAP4_ISS_REGS_H_ */
+#endif  

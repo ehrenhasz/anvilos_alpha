@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Poly1305 authenticator algorithm, RFC7539
- *
- * Copyright (C) 2015 Martin Willi
- *
- * Based on public domain code by Andrew Moon and Daniel J. Bernstein.
- */
+
+ 
 
 #include <crypto/internal/poly1305.h>
 #include <linux/kernel.h>

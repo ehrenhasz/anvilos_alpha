@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 
 #define pr_fmt(fmt) "callthunks: " fmt
 
@@ -127,10 +127,10 @@ static bool skip_addr(void *dest)
 		return true;
 	if (dest == xen_error_entry)
 		return true;
-	/* Does FILL_RSB... */
+	 
 	if (dest == __switch_to_asm)
 		return true;
-	/* Accounts directly */
+	 
 	if (dest == ret_from_fork)
 		return true;
 #if defined(CONFIG_HOTPLUG_CPU) && defined(CONFIG_AMD_MEM_ENCRYPT)
@@ -164,7 +164,7 @@ static __init_or_module void *call_get_dest(void *addr)
 	if (ret)
 		return ERR_PTR(ret);
 
-	/* Patched out call? */
+	 
 	if (insn.opcode.bytes[0] != CALL_INSN_OPCODE)
 		return NULL;
 
@@ -186,11 +186,11 @@ static void *patch_dest(void *dest, bool direct)
 	unsigned int tsize = SKL_TMPL_SIZE;
 	u8 *pad = dest - tsize;
 
-	/* Already patched? */
+	 
 	if (!bcmp(pad, skl_call_thunk_template, tsize))
 		return pad;
 
-	/* Ensure there are nops */
+	 
 	if (bcmp(pad, nops, tsize)) {
 		pr_warn_once("Invalid padding area for %pS\n", dest);
 		return NULL;
@@ -314,7 +314,7 @@ int x86_call_depth_emit_accounting(u8 **pprog, void *func)
 	if (!thunks_initialized)
 		return 0;
 
-	/* Is function call target a thunk? */
+	 
 	if (func && is_callthunk(func))
 		return 0;
 
@@ -341,7 +341,7 @@ void noinline callthunks_patch_module_calls(struct callthunk_sites *cs,
 	callthunks_setup(cs, &ct);
 	mutex_unlock(&text_mutex);
 }
-#endif /* CONFIG_MODULES */
+#endif  
 
 #if defined(CONFIG_CALL_THUNKS_DEBUG) && defined(CONFIG_DEBUG_FS)
 static int callthunks_debug_show(struct seq_file *m, void *p)

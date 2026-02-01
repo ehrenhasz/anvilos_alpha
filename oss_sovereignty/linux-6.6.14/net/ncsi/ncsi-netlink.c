@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright Samuel Mendoza-Jonas, IBM Corporation 2018.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -241,7 +239,7 @@ static int ncsi_pkg_info_all_nl(struct sk_buff *skb,
 			package = np;
 
 	if (!package)
-		return 0; /* done */
+		return 0;  
 
 	hdr = genlmsg_put(skb, NETLINK_CB(cb->skb).portid, cb->nlh->nlmsg_seq,
 			  &ncsi_genl_family, NLM_F_MULTI,  NCSI_CMD_PKG_INFO);
@@ -301,7 +299,7 @@ static int ncsi_set_interface_nl(struct sk_buff *msg, struct genl_info *info)
 		if (np->id == package_id)
 			package = np;
 	if (!package) {
-		/* The user has set a package that does not exist */
+		 
 		return -ERANGE;
 	}
 
@@ -332,7 +330,7 @@ static int ncsi_set_interface_nl(struct sk_buff *msg, struct genl_info *info)
 		package->channel_whitelist = 0x1 << channel->id;
 		package->preferred_channel = channel;
 	} else {
-		/* Allow any channel */
+		 
 		package->channel_whitelist = UINT_MAX;
 		package->preferred_channel = NULL;
 	}
@@ -346,7 +344,7 @@ static int ncsi_set_interface_nl(struct sk_buff *msg, struct genl_info *info)
 		netdev_info(ndp->ndev.dev, "Set package 0x%x as preferred\n",
 			    package_id);
 
-	/* Update channel configuration */
+	 
 	if (!(ndp->flags & NCSI_DEV_RESET))
 		ncsi_reset_dev(&ndp->ndev);
 
@@ -370,7 +368,7 @@ static int ncsi_clear_interface_nl(struct sk_buff *msg, struct genl_info *info)
 	if (!ndp)
 		return -ENODEV;
 
-	/* Reset any whitelists and disable multi mode */
+	 
 	spin_lock_irqsave(&ndp->lock, flags);
 	ndp->package_whitelist = UINT_MAX;
 	ndp->multi_package = false;
@@ -385,7 +383,7 @@ static int ncsi_clear_interface_nl(struct sk_buff *msg, struct genl_info *info)
 	}
 	netdev_info(ndp->ndev.dev, "NCSI: Cleared preferred package/channel\n");
 
-	/* Update channel configuration */
+	 
 	if (!(ndp->flags & NCSI_DEV_RESET))
 		ncsi_reset_dev(&ndp->ndev);
 
@@ -630,7 +628,7 @@ static int ncsi_set_package_mask_nl(struct sk_buff *msg,
 	spin_unlock_irqrestore(&ndp->lock, flags);
 
 	if (!rc) {
-		/* Update channel configuration */
+		 
 		if (!(ndp->flags & NCSI_DEV_RESET))
 			ncsi_reset_dev(&ndp->ndev);
 	}
@@ -713,7 +711,7 @@ static int ncsi_set_channel_mask_nl(struct sk_buff *msg,
 
 	spin_unlock_irqrestore(&package->lock, flags);
 
-	/* Update channel configuration */
+	 
 	if (!(ndp->flags & NCSI_DEV_RESET))
 		ncsi_reset_dev(&ndp->ndev);
 

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2016 Cavium, Inc.
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/firmware.h>
@@ -16,13 +14,11 @@
 #define DRV_NAME	"thunder-cpt"
 #define DRV_VERSION	"1.0"
 
-static u32 num_vfs = 4; /* Default 4 VF enabled */
+static u32 num_vfs = 4;  
 module_param(num_vfs, uint, 0444);
 MODULE_PARM_DESC(num_vfs, "Number of VFs to enable(1-16)");
 
-/*
- * Disable cores specified by coremask
- */
+ 
 static void cpt_disable_cores(struct cpt_device *cpt, u64 coremask,
 			      u8 type, u8 grp)
 {
@@ -34,7 +30,7 @@ static void cpt_disable_cores(struct cpt_device *cpt, u64 coremask,
 	if (type == AE_TYPES)
 		coremask = (coremask << cpt->max_se_cores);
 
-	/* Disengage the cores from groups */
+	 
 	grpmask = cpt_read_csr64(cpt->reg_base, CPTX_PF_GX_EN(0, grp));
 	cpt_write_csr64(cpt->reg_base, CPTX_PF_GX_EN(0, grp),
 			(grpmask & ~coremask));
@@ -50,16 +46,14 @@ static void cpt_disable_cores(struct cpt_device *cpt, u64 coremask,
 		udelay(CSR_DELAY);
 	}
 
-	/* Disable the cores */
+	 
 	pf_exe_ctl = cpt_read_csr64(cpt->reg_base, CPTX_PF_EXE_CTL(0));
 	cpt_write_csr64(cpt->reg_base, CPTX_PF_EXE_CTL(0),
 			(pf_exe_ctl & ~coremask));
 	udelay(CSR_DELAY);
 }
 
-/*
- * Enable cores specified by coremask
- */
+ 
 static void cpt_enable_cores(struct cpt_device *cpt, u64 coremask,
 			     u8 type)
 {
@@ -90,19 +84,19 @@ static void cpt_configure_group(struct cpt_device *cpt, u8 grp,
 
 static void cpt_disable_mbox_interrupts(struct cpt_device *cpt)
 {
-	/* Clear mbox(0) interupts for all vfs */
+	 
 	cpt_write_csr64(cpt->reg_base, CPTX_PF_MBOX_ENA_W1CX(0, 0), ~0ull);
 }
 
 static void cpt_disable_ecc_interrupts(struct cpt_device *cpt)
 {
-	/* Clear ecc(0) interupts for all vfs */
+	 
 	cpt_write_csr64(cpt->reg_base, CPTX_PF_ECC0_ENA_W1C(0), ~0ull);
 }
 
 static void cpt_disable_exec_interrupts(struct cpt_device *cpt)
 {
-	/* Clear exec interupts for all vfs */
+	 
 	cpt_write_csr64(cpt->reg_base, CPTX_PF_EXEC_ENA_W1C(0), ~0ull);
 }
 
@@ -115,7 +109,7 @@ static void cpt_disable_all_interrupts(struct cpt_device *cpt)
 
 static void cpt_enable_mbox_interrupts(struct cpt_device *cpt)
 {
-	/* Set mbox(0) interupts for all vfs */
+	 
 	cpt_write_csr64(cpt->reg_base, CPTX_PF_MBOX_ENA_W1SX(0, 0), ~0ull);
 }
 
@@ -135,18 +129,16 @@ static int cpt_load_microcode(struct cpt_device *cpt, struct microcode *mcode)
 		return -EINVAL;
 	}
 
-	/* Assumes 0-9 are SE cores for UCODE_BASE registers and
-	 * AE core bases follow
-	 */
+	 
 	if (mcode->is_ae) {
-		core = CPT_MAX_SE_CORES; /* start couting from 10 */
-		total_cores = CPT_MAX_TOTAL_CORES; /* upto 15 */
+		core = CPT_MAX_SE_CORES;  
+		total_cores = CPT_MAX_TOTAL_CORES;  
 	} else {
-		core = 0; /* start couting from 0 */
-		total_cores = CPT_MAX_SE_CORES; /* upto 9 */
+		core = 0;  
+		total_cores = CPT_MAX_SE_CORES;  
 	}
 
-	/* Point to microcode for each core of the group */
+	 
 	for (; core < total_cores ; core++, shift++) {
 		if (mcode->core_mask & (1 << shift)) {
 			cpt_write_csr64(cpt->reg_base,
@@ -162,11 +154,11 @@ static int do_cpt_init(struct cpt_device *cpt, struct microcode *mcode)
 	int ret = 0;
 	struct device *dev = &cpt->pdev->dev;
 
-	/* Make device not ready */
+	 
 	cpt->flags &= ~CPT_FLAG_DEVICE_READY;
-	/* Disable All PF interrupts */
+	 
 	cpt_disable_all_interrupts(cpt);
-	/* Calculate mcode group and coremasks */
+	 
 	if (mcode->is_ae) {
 		if (mcode->num_cores > cpt->max_ae_cores) {
 			dev_err(dev, "Requested for more cores than available AE cores\n");
@@ -180,11 +172,11 @@ static int do_cpt_init(struct cpt_device *cpt, struct microcode *mcode)
 		}
 
 		mcode->group = cpt->next_group;
-		/* Convert requested cores to mask */
+		 
 		mcode->core_mask = GENMASK(mcode->num_cores, 0);
 		cpt_disable_cores(cpt, mcode->core_mask, AE_TYPES,
 				  mcode->group);
-		/* Load microcode for AE engines */
+		 
 		ret = cpt_load_microcode(cpt, mcode);
 		if (ret) {
 			dev_err(dev, "Microcode load Failed for %s\n",
@@ -192,10 +184,10 @@ static int do_cpt_init(struct cpt_device *cpt, struct microcode *mcode)
 			goto cpt_init_fail;
 		}
 		cpt->next_group++;
-		/* Configure group mask for the mcode */
+		 
 		cpt_configure_group(cpt, mcode->group, mcode->core_mask,
 				    AE_TYPES);
-		/* Enable AE cores for the group mask */
+		 
 		cpt_enable_cores(cpt, mcode->core_mask, AE_TYPES);
 	} else {
 		if (mcode->num_cores > cpt->max_se_cores) {
@@ -209,11 +201,11 @@ static int do_cpt_init(struct cpt_device *cpt, struct microcode *mcode)
 		}
 
 		mcode->group = cpt->next_group;
-		/* Covert requested cores to mask */
+		 
 		mcode->core_mask = GENMASK(mcode->num_cores, 0);
 		cpt_disable_cores(cpt, mcode->core_mask, SE_TYPES,
 				  mcode->group);
-		/* Load microcode for SE engines */
+		 
 		ret = cpt_load_microcode(cpt, mcode);
 		if (ret) {
 			dev_err(dev, "Microcode load Failed for %s\n",
@@ -221,21 +213,21 @@ static int do_cpt_init(struct cpt_device *cpt, struct microcode *mcode)
 			goto cpt_init_fail;
 		}
 		cpt->next_group++;
-		/* Configure group mask for the mcode */
+		 
 		cpt_configure_group(cpt, mcode->group, mcode->core_mask,
 				    SE_TYPES);
-		/* Enable SE cores for the group mask */
+		 
 		cpt_enable_cores(cpt, mcode->core_mask, SE_TYPES);
 	}
 
-	/* Enabled PF mailbox interrupts */
+	 
 	cpt_enable_mbox_interrupts(cpt);
 	cpt->flags |= CPT_FLAG_DEVICE_READY;
 
 	return ret;
 
 cpt_init_fail:
-	/* Enabled PF mailbox interrupts */
+	 
 	cpt_enable_mbox_interrupts(cpt);
 
 	return ret;
@@ -275,7 +267,7 @@ static int cpt_ucode_load_fw(struct cpt_device *cpt, const u8 *fw, bool is_ae)
 	mcode->core_mask = 0ULL;
 	mcode->num_cores = is_ae ? 6 : 10;
 
-	/*  Allocate DMAable space */
+	 
 	mcode->code = dma_alloc_coherent(&cpt->pdev->dev, mcode->code_size,
 					 &mcode->phys_base, GFP_KERNEL);
 	if (!mcode->code) {
@@ -287,10 +279,10 @@ static int cpt_ucode_load_fw(struct cpt_device *cpt, const u8 *fw, bool is_ae)
 	memcpy((void *)mcode->code, (void *)(fw_entry->data + sizeof(*ucode)),
 	       mcode->code_size);
 
-	/* Byte swap 64-bit */
+	 
 	for (j = 0; j < (mcode->code_size / 8); j++)
 		((__be64 *)mcode->code)[j] = cpu_to_be64(((u64 *)mcode->code)[j]);
-	/*  MC needs 16-bit swap */
+	 
 	for (j = 0; j < (mcode->code_size / 2); j++)
 		((__be16 *)mcode->code)[j] = cpu_to_be16(((u16 *)mcode->code)[j]);
 
@@ -383,7 +375,7 @@ static void cpt_disable_all_cores(struct cpt_device *cpt)
 	u32 grp, timeout = 100;
 	struct device *dev = &cpt->pdev->dev;
 
-	/* Disengage the cores from groups */
+	 
 	for (grp = 0; grp < CPT_MAX_CORE_GROUPS; grp++) {
 		cpt_write_csr64(cpt->reg_base, CPTX_PF_GX_EN(0, grp), 0);
 		udelay(CSR_DELAY);
@@ -399,20 +391,16 @@ static void cpt_disable_all_cores(struct cpt_device *cpt)
 
 		udelay(CSR_DELAY);
 	}
-	/* Disable the cores */
+	 
 	cpt_write_csr64(cpt->reg_base, CPTX_PF_EXE_CTL(0), 0);
 }
 
-/*
- * Ensure all cores are disengaged from all groups by
- * calling cpt_disable_all_cores() before calling this
- * function.
- */
+ 
 static void cpt_unload_microcode(struct cpt_device *cpt)
 {
 	u32 grp = 0, core;
 
-	/* Free microcode bases and reset group masks */
+	 
 	for (grp = 0; grp < CPT_MAX_CORE_GROUPS; grp++) {
 		struct microcode *mcode = &cpt->mcode[grp];
 
@@ -421,7 +409,7 @@ static void cpt_unload_microcode(struct cpt_device *cpt)
 					  mcode->code, mcode->phys_base);
 		mcode->code = NULL;
 	}
-	/* Clear UCODE_BASE registers for all engines */
+	 
 	for (core = 0; core < CPT_MAX_TOTAL_CORES; core++)
 		cpt_write_csr64(cpt->reg_base,
 				CPTX_PF_ENGX_UCODE_BASE(0, core), 0ull);
@@ -432,11 +420,11 @@ static int cpt_device_init(struct cpt_device *cpt)
 	u64 bist;
 	struct device *dev = &cpt->pdev->dev;
 
-	/* Reset the PF when probed first */
+	 
 	cpt_reset(cpt);
 	msleep(100);
 
-	/*Check BIST status*/
+	 
 	bist = (u64)cpt_check_bist_status(cpt);
 	if (bist) {
 		dev_err(dev, "RAM BIST failed with code 0x%llx", bist);
@@ -449,15 +437,15 @@ static int cpt_device_init(struct cpt_device *cpt)
 		return -ENODEV;
 	}
 
-	/*Get CLK frequency*/
-	/*Get max enabled cores */
+	 
+	 
 	cpt_find_max_enabled_cores(cpt);
-	/*Disable all cores*/
+	 
 	cpt_disable_all_cores(cpt);
-	/*Reset device parameters*/
+	 
 	cpt->next_mc_idx   = 0;
 	cpt->next_group = 0;
-	/* PF is ready */
+	 
 	cpt->flags |= CPT_FLAG_DEVICE_READY;
 
 	return 0;
@@ -468,7 +456,7 @@ static int cpt_register_interrupts(struct cpt_device *cpt)
 	int ret;
 	struct device *dev = &cpt->pdev->dev;
 
-	/* Enable MSI-X */
+	 
 	ret = pci_alloc_irq_vectors(cpt->pdev, CPT_PF_MSIX_VECTORS,
 			CPT_PF_MSIX_VECTORS, PCI_IRQ_MSIX);
 	if (ret < 0) {
@@ -477,13 +465,13 @@ static int cpt_register_interrupts(struct cpt_device *cpt)
 		return ret;
 	}
 
-	/* Register mailbox interrupt handlers */
+	 
 	ret = request_irq(pci_irq_vector(cpt->pdev, CPT_PF_INT_VEC_E_MBOXX(0)),
 			  cpt_mbx0_intr_handler, 0, "CPT Mbox0", cpt);
 	if (ret)
 		goto fail;
 
-	/* Enable mailbox interrupt */
+	 
 	cpt_enable_mbox_interrupts(cpt);
 	return 0;
 
@@ -512,7 +500,7 @@ static int cpt_sriov_init(struct cpt_device *cpt, int num_vfs)
 		return -ENODEV;
 	}
 
-	cpt->num_vf_en = num_vfs; /* User requested VFs */
+	cpt->num_vf_en = num_vfs;  
 	pci_read_config_word(pdev, (pos + PCI_SRIOV_TOTAL_VF), &total_vf_cnt);
 	if (total_vf_cnt < cpt->num_vf_en)
 		cpt->num_vf_en = total_vf_cnt;
@@ -520,7 +508,7 @@ static int cpt_sriov_init(struct cpt_device *cpt, int num_vfs)
 	if (!total_vf_cnt)
 		return 0;
 
-	/*Enabled the available VFs */
+	 
 	err = pci_enable_sriov(pdev, cpt->num_vf_en);
 	if (err) {
 		dev_err(&pdev->dev, "SRIOV enable failed, num VF is %d\n",
@@ -529,7 +517,7 @@ static int cpt_sriov_init(struct cpt_device *cpt, int num_vfs)
 		return err;
 	}
 
-	/* TODO: Optionally enable static VQ priorities feature */
+	 
 
 	dev_info(&pdev->dev, "SRIOV enabled, number of VF available %d\n",
 		 cpt->num_vf_en);
@@ -576,7 +564,7 @@ static int cpt_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 		goto cpt_err_release_regions;
 	}
 
-	/* MAP PF's configuration registers */
+	 
 	cpt->reg_base = pcim_iomap(pdev, 0, 0);
 	if (!cpt->reg_base) {
 		dev_err(dev, "Cannot map config register space, aborting\n");
@@ -584,10 +572,10 @@ static int cpt_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 		goto cpt_err_release_regions;
 	}
 
-	/* CPT device HW initialization */
+	 
 	cpt_device_init(cpt);
 
-	/* Register interrupts */
+	 
 	err = cpt_register_interrupts(cpt);
 	if (err)
 		goto cpt_err_release_regions;
@@ -596,7 +584,7 @@ static int cpt_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 	if (err)
 		goto cpt_err_unregister_interrupts;
 
-	/* Configure SRIOV */
+	 
 	err = cpt_sriov_init(cpt, num_vfs);
 	if (err)
 		goto cpt_err_unregister_interrupts;
@@ -617,9 +605,9 @@ static void cpt_remove(struct pci_dev *pdev)
 {
 	struct cpt_device *cpt = pci_get_drvdata(pdev);
 
-	/* Disengage SE and AE cores from all groups*/
+	 
 	cpt_disable_all_cores(cpt);
-	/* Unload microcodes */
+	 
 	cpt_unload_microcode(cpt);
 	cpt_unregister_interrupts(cpt);
 	pci_disable_sriov(pdev);
@@ -644,10 +632,10 @@ static void cpt_shutdown(struct pci_dev *pdev)
 	pci_set_drvdata(pdev, NULL);
 }
 
-/* Supported devices */
+ 
 static const struct pci_device_id cpt_id_table[] = {
 	{ PCI_DEVICE(PCI_VENDOR_ID_CAVIUM, CPT_81XX_PCI_PF_DEVICE_ID) },
-	{ 0, }  /* end of table */
+	{ 0, }   
 };
 
 static struct pci_driver cpt_pci_driver = {

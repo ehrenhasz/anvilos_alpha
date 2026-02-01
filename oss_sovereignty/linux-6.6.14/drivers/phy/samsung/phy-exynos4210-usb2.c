@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Samsung SoC USB 1.1/2.0 PHY driver - Exynos 4210 support
- *
- * Copyright (C) 2013 Samsung Electronics Co., Ltd.
- * Author: Kamil Debski <k.debski@samsung.com>
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/io.h>
@@ -12,9 +7,9 @@
 #include <linux/regmap.h>
 #include "phy-samsung-usb2.h"
 
-/* Exynos USB PHY registers */
+ 
 
-/* PHY power control */
+ 
 #define EXYNOS_4210_UPHYPWR			0x0
 
 #define EXYNOS_4210_UPHYPWR_PHY0_SUSPEND	BIT(0)
@@ -47,7 +42,7 @@
 	EXYNOS_4210_UPHYPWR_HSIC1_SUSPEND | \
 	EXYNOS_4210_UPHYPWR_HSIC1_SLEEP)
 
-/* PHY clock control */
+ 
 #define EXYNOS_4210_UPHYCLK			0x4
 
 #define EXYNOS_4210_UPHYCLK_PHYFSEL_MASK	(0x3 << 0)
@@ -60,7 +55,7 @@
 #define EXYNOS_4210_UPHYCLK_PHY0_COMMON_ON	BIT(4)
 #define EXYNOS_4210_UPHYCLK_PHY1_COMMON_ON	BIT(7)
 
-/* PHY reset control */
+ 
 #define EXYNOS_4210_UPHYRST			0x8
 
 #define EXYNOS_4210_URSTCON_PHY0		BIT(0)
@@ -74,17 +69,17 @@
 #define EXYNOS_4210_URSTCON_HOST_LINK_P1	BIT(8)
 #define EXYNOS_4210_URSTCON_HOST_LINK_P2	BIT(9)
 
-/* Isolation, configured in the power management unit */
+ 
 #define EXYNOS_4210_USB_ISOL_DEVICE_OFFSET	0x704
 #define EXYNOS_4210_USB_ISOL_DEVICE		BIT(0)
 #define EXYNOS_4210_USB_ISOL_HOST_OFFSET	0x708
 #define EXYNOS_4210_USB_ISOL_HOST		BIT(0)
 
-/* USBYPHY1 Floating prevention */
+ 
 #define EXYNOS_4210_UPHY1CON			0x34
 #define EXYNOS_4210_UPHY1CON_FLOAT_PREVENTION	0x1
 
-/* Mode switching SUB Device <-> Host */
+ 
 #define EXYNOS_4210_MODE_SWITCH_OFFSET		0x21c
 #define EXYNOS_4210_MODE_SWITCH_MASK		1
 #define EXYNOS_4210_MODE_SWITCH_DEVICE		0
@@ -98,10 +93,7 @@ enum exynos4210_phy_id {
 	EXYNOS4210_NUM_PHYS,
 };
 
-/*
- * exynos4210_rate_to_clk() converts the supplied clock rate to the value that
- * can be written to the phy register.
- */
+ 
 static int exynos4210_rate_to_clk(unsigned long rate, u32 *reg)
 {
 	switch (rate) {
@@ -194,8 +186,7 @@ static void exynos4210_phy_pwr(struct samsung_usb2_phy_instance *inst, bool on)
 		udelay(10);
 		rst &= ~rstbits;
 		writel(rst, drv->reg_phy + EXYNOS_4210_UPHYRST);
-		/* The following delay is necessary for the reset sequence to be
-		 * completed */
+		 
 		udelay(80);
 	} else {
 		pwr = readl(drv->reg_phy + EXYNOS_4210_UPHYPWR);
@@ -206,7 +197,7 @@ static void exynos4210_phy_pwr(struct samsung_usb2_phy_instance *inst, bool on)
 
 static int exynos4210_power_on(struct samsung_usb2_phy_instance *inst)
 {
-	/* Order of initialisation is important - first power then isolation */
+	 
 	exynos4210_phy_pwr(inst, 1);
 	exynos4210_isol(inst, 0);
 

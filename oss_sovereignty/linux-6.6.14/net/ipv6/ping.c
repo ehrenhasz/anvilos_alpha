@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * INET		An implementation of the TCP/IP protocol suite for the LINUX
- *		operating system.  INET is implemented using the  BSD Socket
- *		interface as the means of communication with the user level.
- *
- *		"Ping" sockets
- *
- * Based on ipv4/ping.c code.
- *
- * Authors:	Lorenzo Colitti (IPv6 support)
- *		Vasiliy Kulikov / Openwall (IPv4 implementation, for Linux 2.6),
- *		Pavel Kankovsky (IPv4 implementation, for Linux 2.4.32)
- */
+
+ 
 
 #include <net/addrconf.h>
 #include <net/ipv6.h>
@@ -23,7 +11,7 @@
 #include <linux/bpf-cgroup.h>
 #include <net/ping.h>
 
-/* Compatibility glue so we can support IPv6 when it's compiled as a module */
+ 
 static int dummy_ipv6_recv_error(struct sock *sk, struct msghdr *msg, int len,
 				 int *addr_len)
 {
@@ -48,10 +36,7 @@ static int dummy_ipv6_chk_addr(struct net *net, const struct in6_addr *addr,
 static int ping_v6_pre_connect(struct sock *sk, struct sockaddr *uaddr,
 			       int addr_len)
 {
-	/* This check is replicated from __ip6_datagram_connect() and
-	 * intended to prevent BPF program called below from accessing
-	 * bytes that are out of the bound specified by user in addr_len.
-	 */
+	 
 
 	if (addr_len < SIN6_LEN_RFC2133)
 		return -EINVAL;
@@ -134,9 +119,7 @@ static int ping_v6_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
 		if (err < 0)
 			return err;
 
-		/* Changes to txoptions and flow info are not implemented, yet.
-		 * Drop the options.
-		 */
+		 
 		ipc6.opt = NULL;
 	}
 
@@ -290,9 +273,7 @@ int __init pingv6_init(void)
 	return inet6_register_protosw(&pingv6_protosw);
 }
 
-/* This never gets called because it's not possible to unload the ipv6 module,
- * but just in case.
- */
+ 
 void pingv6_exit(void)
 {
 	pingv6_ops.ipv6_recv_error = dummy_ipv6_recv_error;

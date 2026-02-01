@@ -1,34 +1,4 @@
-/*
- * Copyright © 2011 Intel Corporation
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice (including the next
- * paragraph) shall be included in all copies or substantial portions of the
- * Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- *
- * Authors:
- *   Jesse Barnes <jbarnes@virtuousgeek.org>
- *
- * New plane/sprite handling.
- *
- * The older chips had a separate interface for programming plane related
- * registers; newer ones are much simpler and we can use the new DRM plane
- * support.
- */
+ 
 
 #include <linux/string_helpers.h>
 
@@ -49,7 +19,7 @@
 
 static void i9xx_plane_linear_gamma(u16 gamma[8])
 {
-	/* The points are not evenly spaced. */
+	 
 	static const u8 in[8] = { 0, 1, 2, 4, 8, 16, 24, 32 };
 	int i;
 
@@ -64,24 +34,15 @@ chv_sprite_update_csc(const struct intel_plane_state *plane_state)
 	struct drm_i915_private *dev_priv = to_i915(plane->base.dev);
 	const struct drm_framebuffer *fb = plane_state->hw.fb;
 	enum plane_id plane_id = plane->id;
-	/*
-	 * |r|   | c0 c1 c2 |   |cr|
-	 * |g| = | c3 c4 c5 | x |y |
-	 * |b|   | c6 c7 c8 |   |cb|
-	 *
-	 * Coefficients are s3.12.
-	 *
-	 * Cb and Cr apparently come in as signed already, and
-	 * we always get full range data in on account of CLRC0/1.
-	 */
+	 
 	static const s16 csc_matrix[][9] = {
-		/* BT.601 full range YCbCr -> full range RGB */
+		 
 		[DRM_COLOR_YCBCR_BT601] = {
 			 5743, 4096,     0,
 			-2925, 4096, -1410,
 			    0, 4096,  7258,
 		},
-		/* BT.709 full range YCbCr -> full range RGB */
+		 
 		[DRM_COLOR_YCBCR_BT709] = {
 			 6450, 4096,     0,
 			-1917, 4096,  -767,
@@ -90,7 +51,7 @@ chv_sprite_update_csc(const struct intel_plane_state *plane_state)
 	};
 	const s16 *csc = csc_matrix[plane_state->hw.color_encoding];
 
-	/* Seems RGB data bypasses the CSC always */
+	 
 	if (!fb->format->is_yuv)
 		return;
 
@@ -141,19 +102,14 @@ vlv_sprite_update_clrc(const struct intel_plane_state *plane_state)
 
 	if (fb->format->is_yuv &&
 	    plane_state->hw.color_range == DRM_COLOR_YCBCR_LIMITED_RANGE) {
-		/*
-		 * Expand limited range to full range:
-		 * Contrast is applied first and is used to expand Y range.
-		 * Brightness is applied second and is used to remove the
-		 * offset from Y. Saturation/hue is used to expand CbCr range.
-		 */
+		 
 		contrast = DIV_ROUND_CLOSEST(255 << 6, 235 - 16);
 		brightness = -DIV_ROUND_CLOSEST(16 * 255, 235 - 16);
 		sh_scale = DIV_ROUND_CLOSEST(128 << 7, 240 - 128);
 		sh_sin = SIN_0 * sh_scale;
 		sh_cos = COS_0 * sh_scale;
 	} else {
-		/* Pass-through everything. */
+		 
 		contrast = 1 << 6;
 		brightness = 0;
 		sh_scale = 1 << 7;
@@ -161,7 +117,7 @@ vlv_sprite_update_clrc(const struct intel_plane_state *plane_state)
 		sh_cos = COS_0 * sh_scale;
 	}
 
-	/* FIXME these register are single buffered :( */
+	 
 	intel_de_write_fw(dev_priv, SPCLRC0(pipe, plane_id),
 			  SP_CONTRAST(contrast) | SP_BRIGHTNESS(brightness));
 	intel_de_write_fw(dev_priv, SPCLRC1(pipe, plane_id),
@@ -177,12 +133,7 @@ vlv_plane_ratio(const struct intel_crtc_state *crtc_state,
 	const struct drm_framebuffer *fb = plane_state->hw.fb;
 	unsigned int cpp = fb->format->cpp[0];
 
-	/*
-	 * VLV bspec only considers cases where all three planes are
-	 * enabled, and cases where the primary and one sprite is enabled.
-	 * Let's assume the case with just two sprites enabled also
-	 * maps to the latter case.
-	 */
+	 
 	if (hweight8(active_planes) == 3) {
 		switch (cpp) {
 		case 8:
@@ -233,13 +184,7 @@ int vlv_plane_min_cdclk(const struct intel_crtc_state *crtc_state,
 	unsigned int pixel_rate;
 	unsigned int num, den;
 
-	/*
-	 * Note that crtc_state->pixel_rate accounts for both
-	 * horizontal and vertical panel fitter downscaling factors.
-	 * Pre-HSW bspec tells us to only consider the horizontal
-	 * downscaling factor here. We ignore that and just consider
-	 * both for simplicity.
-	 */
+	 
 	pixel_rate = crtc_state->pixel_rate;
 
 	vlv_plane_ratio(crtc_state, plane_state, &num, &den);
@@ -343,14 +288,14 @@ static void vlv_sprite_update_gamma(const struct intel_plane_state *plane_state)
 	u16 gamma[8];
 	int i;
 
-	/* Seems RGB data bypasses the gamma always */
+	 
 	if (!fb->format->is_yuv)
 		return;
 
 	i9xx_plane_linear_gamma(gamma);
 
-	/* FIXME these register are single buffered :( */
-	/* The two end points are implicit (0.0 and 1.0) */
+	 
+	 
 	for (i = 1; i < 8 - 1; i++)
 		intel_de_write_fw(dev_priv, SPGAMC(pipe, plane_id, i - 1),
 				  gamma[i] << 16 | gamma[i] << 8 | gamma[i]);
@@ -413,11 +358,7 @@ vlv_sprite_update_arm(struct intel_plane *plane,
 	intel_de_write_fw(dev_priv, SPTILEOFF(pipe, plane_id),
 			  SP_OFFSET_Y(y) | SP_OFFSET_X(x));
 
-	/*
-	 * The control register self-arms if the plane was previously
-	 * disabled. Try to make the plane enable atomic by writing
-	 * the control register just before the surface register.
-	 */
+	 
 	intel_de_write_fw(dev_priv, SPCNTR(pipe, plane_id), sprctl);
 	intel_de_write_fw(dev_priv, SPSURF(pipe, plane_id),
 			  intel_plane_ggtt_offset(plane_state) + sprsurf_offset);
@@ -532,13 +473,7 @@ int ivb_plane_min_cdclk(const struct intel_crtc_state *crtc_state,
 	unsigned int pixel_rate;
 	unsigned int num, den;
 
-	/*
-	 * Note that crtc_state->pixel_rate accounts for both
-	 * horizontal and vertical panel fitter downscaling factors.
-	 * Pre-HSW bspec tells us to only consider the horizontal
-	 * downscaling factor here. We ignore that and just consider
-	 * both for simplicity.
-	 */
+	 
 	pixel_rate = crtc_state->pixel_rate;
 
 	ivb_plane_ratio(crtc_state, plane_state, &num, &den);
@@ -552,13 +487,7 @@ static int ivb_sprite_min_cdclk(const struct intel_crtc_state *crtc_state,
 	unsigned int src_w, dst_w, pixel_rate;
 	unsigned int num, den;
 
-	/*
-	 * Note that crtc_state->pixel_rate accounts for both
-	 * horizontal and vertical panel fitter downscaling factors.
-	 * Pre-HSW bspec tells us to only consider the horizontal
-	 * downscaling factor here. We ignore that and just consider
-	 * both for simplicity.
-	 */
+	 
 	pixel_rate = crtc_state->pixel_rate;
 
 	src_w = drm_rect_width(&plane_state->uapi.src) >> 16;
@@ -569,7 +498,7 @@ static int ivb_sprite_min_cdclk(const struct intel_crtc_state *crtc_state,
 	else
 		ivb_plane_ratio(crtc_state, plane_state, &num, &den);
 
-	/* Horizontal downscaling limits the maximum pixel rate */
+	 
 	dst_w = min(src_w, dst_w);
 
 	return DIV_ROUND_UP_ULL(mul_u32_u32(pixel_rate, num * src_w),
@@ -722,14 +651,7 @@ static void ivb_sprite_linear_gamma(const struct intel_plane_state *plane_state,
 {
 	int scale, i;
 
-	/*
-	 * WaFP16GammaEnabling:ivb,hsw
-	 * "Workaround : When using the 64-bit format, the sprite output
-	 *  on each color channel has one quarter amplitude. It can be
-	 *  brought up to full amplitude by using sprite internal gamma
-	 *  correction, pipe gamma correction, or pipe color space
-	 *  conversion to multiply the sprite output by four."
-	 */
+	 
 	scale = 4;
 
 	for (i = 0; i < 16; i++)
@@ -755,7 +677,7 @@ static void ivb_sprite_update_gamma(const struct intel_plane_state *plane_state)
 
 	ivb_sprite_linear_gamma(plane_state, gamma);
 
-	/* FIXME these register are single buffered :( */
+	 
 	for (i = 0; i < 16; i++)
 		intel_de_write_fw(dev_priv, SPRGAMC(pipe, i),
 				  gamma[i] << 20 | gamma[i] << 10 | gamma[i]);
@@ -825,8 +747,7 @@ ivb_sprite_update_arm(struct intel_plane *plane,
 		intel_de_write_fw(dev_priv, SPRKEYMAX(pipe), key->max_value);
 	}
 
-	/* HSW consolidates SPRTILEOFF and SPRLINOFF into a single SPROFFSET
-	 * register */
+	 
 	if (IS_HASWELL(dev_priv) || IS_BROADWELL(dev_priv)) {
 		intel_de_write_fw(dev_priv, SPROFFSET(pipe),
 				  SPRITE_OFFSET_Y(y) | SPRITE_OFFSET_X(x));
@@ -836,11 +757,7 @@ ivb_sprite_update_arm(struct intel_plane *plane,
 				  SPRITE_OFFSET_Y(y) | SPRITE_OFFSET_X(x));
 	}
 
-	/*
-	 * The control register self-arms if the plane was previously
-	 * disabled. Try to make the plane enable atomic by writing
-	 * the control register just before the surface register.
-	 */
+	 
 	intel_de_write_fw(dev_priv, SPRCTL(pipe), sprctl);
 	intel_de_write_fw(dev_priv, SPRSURF(pipe),
 			  intel_plane_ggtt_offset(plane_state) + sprsurf_offset);
@@ -856,7 +773,7 @@ ivb_sprite_disable_arm(struct intel_plane *plane,
 	enum pipe pipe = plane->pipe;
 
 	intel_de_write_fw(dev_priv, SPRCTL(pipe), 0);
-	/* Disable the scaler */
+	 
 	if (IS_IVYBRIDGE(dev_priv))
 		intel_de_write_fw(dev_priv, SPRSCALE(pipe), 0);
 	intel_de_write_fw(dev_priv, SPRSURF(pipe), 0);
@@ -892,40 +809,30 @@ static int g4x_sprite_min_cdclk(const struct intel_crtc_state *crtc_state,
 	unsigned int hscale, pixel_rate;
 	unsigned int limit, decimate;
 
-	/*
-	 * Note that crtc_state->pixel_rate accounts for both
-	 * horizontal and vertical panel fitter downscaling factors.
-	 * Pre-HSW bspec tells us to only consider the horizontal
-	 * downscaling factor here. We ignore that and just consider
-	 * both for simplicity.
-	 */
+	 
 	pixel_rate = crtc_state->pixel_rate;
 
-	/* Horizontal downscaling limits the maximum pixel rate */
+	 
 	hscale = drm_rect_calc_hscale(&plane_state->uapi.src,
 				      &plane_state->uapi.dst,
 				      0, INT_MAX);
 	hscale = max(hscale, 0x10000u);
 
-	/* Decimation steps at 2x,4x,8x,16x */
+	 
 	decimate = ilog2(hscale >> 16);
 	hscale >>= decimate;
 
-	/* Starting limit is 90% of cdclk */
+	 
 	limit = 9;
 
-	/* -10% per decimation step */
+	 
 	limit -= decimate;
 
-	/* -10% for RGB */
+	 
 	if (!fb->format->is_yuv)
 		limit--;
 
-	/*
-	 * We should also do -10% if sprite scaling is enabled
-	 * on the other pipe, but we can't really check for that,
-	 * so we ignore it.
-	 */
+	 
 
 	return DIV_ROUND_UP_ULL(mul_u32_u32(pixel_rate, 10 * hscale),
 				limit << 16);
@@ -939,7 +846,7 @@ g4x_sprite_max_stride(struct intel_plane *plane,
 	const struct drm_format_info *info = drm_format_info(pixel_format);
 	int cpp = info->cpp[0];
 
-	/* Limit to 4k pixels to guarantee TILEOFF.x doesn't get too big. */
+	 
 	if (modifier == I915_FORMAT_MOD_X_TILED)
 		return min(4096 * cpp, 16 * 1024);
 	else
@@ -954,7 +861,7 @@ hsw_sprite_max_stride(struct intel_plane *plane,
 	const struct drm_format_info *info = drm_format_info(pixel_format);
 	int cpp = info->cpp[0];
 
-	/* Limit to 8k pixels to guarantee OFFSET.x doesn't get too big. */
+	 
 	return min(8192 * cpp, 16 * 1024);
 }
 
@@ -1051,14 +958,14 @@ static void g4x_sprite_update_gamma(const struct intel_plane_state *plane_state)
 	u16 gamma[8];
 	int i;
 
-	/* Seems RGB data bypasses the gamma always */
+	 
 	if (!fb->format->is_yuv)
 		return;
 
 	i9xx_plane_linear_gamma(gamma);
 
-	/* FIXME these register are single buffered :( */
-	/* The two end points are implicit (0.0 and 1.0) */
+	 
+	 
 	for (i = 1; i < 8 - 1; i++)
 		intel_de_write_fw(dev_priv, DVSGAMC_G4X(pipe, i - 1),
 				  gamma[i] << 16 | gamma[i] << 8 | gamma[i]);
@@ -1081,13 +988,13 @@ static void ilk_sprite_update_gamma(const struct intel_plane_state *plane_state)
 	u16 gamma[17];
 	int i;
 
-	/* Seems RGB data bypasses the gamma always */
+	 
 	if (!fb->format->is_yuv)
 		return;
 
 	ilk_sprite_linear_gamma(gamma);
 
-	/* FIXME these register are single buffered :( */
+	 
 	for (i = 0; i < 16; i++)
 		intel_de_write_fw(dev_priv, DVSGAMC_ILK(pipe, i),
 				  gamma[i] << 20 | gamma[i] << 10 | gamma[i]);
@@ -1155,11 +1062,7 @@ g4x_sprite_update_arm(struct intel_plane *plane,
 	intel_de_write_fw(dev_priv, DVSTILEOFF(pipe),
 			  DVS_OFFSET_Y(y) | DVS_OFFSET_X(x));
 
-	/*
-	 * The control register self-arms if the plane was previously
-	 * disabled. Try to make the plane enable atomic by writing
-	 * the control register just before the surface register.
-	 */
+	 
 	intel_de_write_fw(dev_priv, DVSCNTR(pipe), dvscntr);
 	intel_de_write_fw(dev_priv, DVSSURF(pipe),
 			  intel_plane_ggtt_offset(plane_state) + dvssurf_offset);
@@ -1178,7 +1081,7 @@ g4x_sprite_disable_arm(struct intel_plane *plane,
 	enum pipe pipe = plane->pipe;
 
 	intel_de_write_fw(dev_priv, DVSCNTR(pipe), 0);
-	/* Disable the scaler */
+	 
 	intel_de_write_fw(dev_priv, DVSSCALE(pipe), 0);
 	intel_de_write_fw(dev_priv, DVSSURF(pipe), 0);
 }
@@ -1339,7 +1242,7 @@ int chv_plane_check_rotation(const struct intel_plane_state *plane_state)
 	struct drm_i915_private *dev_priv = to_i915(plane->base.dev);
 	unsigned int rotation = plane_state->hw.rotation;
 
-	/* CHV ignores the mirror bit when the rotate bit is set :( */
+	 
 	if (IS_CHERRYVIEW(dev_priv) &&
 	    rotation & DRM_MODE_ROTATE_180 &&
 	    rotation & DRM_MODE_REFLECT_X) {

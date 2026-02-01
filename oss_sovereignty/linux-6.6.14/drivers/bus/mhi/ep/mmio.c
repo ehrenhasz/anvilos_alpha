@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2022 Linaro Ltd.
- * Author: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/io.h>
@@ -63,7 +60,7 @@ static void mhi_ep_mmio_set_chdb(struct mhi_ep_cntrl *mhi_cntrl, u32 ch_id, bool
 
 	mhi_ep_mmio_masked_write(mhi_cntrl, MHI_CHDB_INT_MASK_n(chdb_idx), chid_mask, val);
 
-	/* Update the local copy of the channel mask */
+	 
 	mhi_cntrl->chdb[chdb_idx].mask &= ~chid_mask;
 	mhi_cntrl->chdb[chdb_idx].mask |= val << chid_shift;
 }
@@ -111,7 +108,7 @@ bool mhi_ep_mmio_read_chdb_status_interrupts(struct mhi_ep_cntrl *mhi_cntrl)
 			chdb = true;
 	}
 
-	/* Return whether a channel doorbell interrupt occurred or not */
+	 
 	return chdb;
 }
 

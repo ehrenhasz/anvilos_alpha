@@ -1,25 +1,4 @@
-/*
- * Copyright 2015 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 #include "pp_debug.h"
 #include <linux/types.h>
 #include <linux/kernel.h>
@@ -177,14 +156,14 @@ static int smu8_initialize_dpm_defaults(struct pp_hwmgr *hwmgr)
 	struct amdgpu_device *adev = hwmgr->adev;
 
 	data->gfx_ramp_step = 256*25/100;
-	data->gfx_ramp_delay = 1; /* by default, we delay 1us */
+	data->gfx_ramp_delay = 1;  
 
 	data->mgcg_cgtt_local0 = 0x00000000;
 	data->mgcg_cgtt_local1 = 0x00000000;
 	data->clock_slow_down_freq = 25000;
 	data->skip_clock_slow_down = 1;
-	data->enable_nb_ps_policy = 1; /* disable until UNB is ready, Enabled */
-	data->voltage_drop_in_dce_power_gating = 0; /* disable until fully verified */
+	data->enable_nb_ps_policy = 1;  
+	data->voltage_drop_in_dce_power_gating = 0;  
 	data->voting_rights_clients = 0x00C00033;
 	data->static_screen_threshold = 8;
 	data->ddi_power_gating_disabled = 0;
@@ -246,7 +225,7 @@ static int smu8_initialize_dpm_defaults(struct pp_hwmgr *hwmgr)
 	return 0;
 }
 
-/* convert form 8bit vid to real voltage in mV*4 */
+ 
 static uint32_t smu8_convert_8Bit_index_to_voltage(
 			struct pp_hwmgr *hwmgr, uint16_t voltage)
 {
@@ -374,7 +353,7 @@ static int smu8_get_system_info_data(struct pp_hwmgr *hwmgr)
 					le32_to_cpu(info->sDispClkVoltageMapping[i].ulMaximumSupportedCLK);
 	}
 
-	/* Here use 4 levels, make sure not exceed */
+	 
 	for (i = 0; i < SMU8_NUM_NBPSTATES; i++) {
 		data->sys_info.nbp_voltage_index[i] =
 			     le16_to_cpu(info->usNBPStateVoltage[i]);
@@ -461,7 +440,7 @@ static int smu8_upload_pptable_to_smu(struct pp_hwmgr *hwmgr)
 
 	clock_table = (struct SMU8_Fusion_ClkTable *)table;
 
-	/* patch clock table */
+	 
 	PP_ASSERT_WITH_CODE((vddc_table->count <= SMU8_MAX_HARDWARE_POWERLEVELS),
 			    "Dependency table entry exceeds max limit!", return -EINVAL;);
 	PP_ASSERT_WITH_CODE((vdd_gfx_table->count <= SMU8_MAX_HARDWARE_POWERLEVELS),
@@ -475,7 +454,7 @@ static int smu8_upload_pptable_to_smu(struct pp_hwmgr *hwmgr)
 
 	for (i = 0; i < SMU8_MAX_HARDWARE_POWERLEVELS; i++) {
 
-		/* vddc_sclk */
+		 
 		clock_table->SclkBreakdownTable.ClkLevel[i].GnbVid =
 			(i < vddc_table->count) ? (uint8_t)vddc_table->entries[i].v : 0;
 		clock_table->SclkBreakdownTable.ClkLevel[i].Frequency =
@@ -488,11 +467,11 @@ static int smu8_upload_pptable_to_smu(struct pp_hwmgr *hwmgr)
 		clock_table->SclkBreakdownTable.ClkLevel[i].DfsDid =
 			(uint8_t)dividers.pll_post_divider;
 
-		/* vddgfx_sclk */
+		 
 		clock_table->SclkBreakdownTable.ClkLevel[i].GfxVid =
 			(i < vdd_gfx_table->count) ? (uint8_t)vdd_gfx_table->entries[i].v : 0;
 
-		/* acp breakdown */
+		 
 		clock_table->AclkBreakdownTable.ClkLevel[i].GfxVid =
 			(i < acp_table->count) ? (uint8_t)acp_table->entries[i].v : 0;
 		clock_table->AclkBreakdownTable.ClkLevel[i].Frequency =
@@ -506,7 +485,7 @@ static int smu8_upload_pptable_to_smu(struct pp_hwmgr *hwmgr)
 			(uint8_t)dividers.pll_post_divider;
 
 
-		/* uvd breakdown */
+		 
 		clock_table->VclkBreakdownTable.ClkLevel[i].GfxVid =
 			(i < uvd_table->count) ? (uint8_t)uvd_table->entries[i].v : 0;
 		clock_table->VclkBreakdownTable.ClkLevel[i].Frequency =
@@ -531,7 +510,7 @@ static int smu8_upload_pptable_to_smu(struct pp_hwmgr *hwmgr)
 		clock_table->DclkBreakdownTable.ClkLevel[i].DfsDid =
 			(uint8_t)dividers.pll_post_divider;
 
-		/* vce breakdown */
+		 
 		clock_table->EclkBreakdownTable.ClkLevel[i].GfxVid =
 			(i < vce_table->count) ? (uint8_t)vce_table->entries[i].v : 0;
 		clock_table->EclkBreakdownTable.ClkLevel[i].Frequency =
@@ -716,11 +695,11 @@ static int smu8_update_sclk_limit(struct pp_hwmgr *hwmgr)
 
 	clock = data->sclk_dpm.soft_min_clk;
 
-	/* update minimum clocks for Stable P-State feature */
+	 
 	if (phm_cap_enabled(hwmgr->platform_descriptor.platformCaps,
 				     PHM_PlatformCaps_StablePState)) {
 		percentage = 75;
-		/*Sclk - calculate sclk value based on percentage and find FLOOR sclk from VddcDependencyOnSCLK table  */
+		 
 		stable_pstate_sclk = (hwmgr->dyn_state.max_clock_voltage_on_ac.mclk *
 					percentage) / 100;
 
@@ -1283,7 +1262,7 @@ static int  smu8_dpm_update_vce_dpm(struct pp_hwmgr *hwmgr)
 	struct phm_vce_clock_voltage_dependency_table *ptable =
 		hwmgr->dyn_state.vce_clock_voltage_dependency_table;
 
-	/* Stable Pstate is enabled and we need to set the VCE DPM to highest level */
+	 
 	if (PP_CAP(PHM_PlatformCaps_StablePState) ||
 	    hwmgr->en_umd_pstate) {
 		data->vce_dpm.hard_min_clk =
@@ -1301,8 +1280,7 @@ static int  smu8_dpm_update_vce_dpm(struct pp_hwmgr *hwmgr)
 					PPSMC_MSG_SetEclkHardMin,
 					0,
 					NULL);
-		/* disable ECLK DPM 0. Otherwise VCE could hang if
-		 * switching SCLK from DPM 0 to 6/7 */
+		 
 		smum_send_msg_to_smc_with_parameter(hwmgr,
 					PPSMC_MSG_SetEclkSoftMin,
 					1,
@@ -1736,7 +1714,7 @@ static int smu8_read_sensor(struct pp_hwmgr *hwmgr, int idx,
 	uint16_t vddnb, vddgfx;
 	int result;
 
-	/* size must be at least 4 bytes for all sensors */
+	 
 	if (*size < 4)
 		return -EINVAL;
 	*size = 4;
@@ -1898,7 +1876,7 @@ static int smu8_dpm_update_uvd_dpm(struct pp_hwmgr *hwmgr, bool bgate)
 		hwmgr->dyn_state.uvd_clock_voltage_dependency_table;
 
 	if (!bgate) {
-		/* Stable Pstate is enabled and we need to set the UVD DPM to highest level */
+		 
 		if (PP_CAP(PHM_PlatformCaps_StablePState) ||
 		    hwmgr->en_umd_pstate) {
 			data->uvd_dpm.hard_min_clk =
@@ -1991,7 +1969,7 @@ static void smu8_dpm_powergate_uvd(struct pp_hwmgr *hwmgr, bool bgate)
 		smu8_dpm_update_uvd_dpm(hwmgr, false);
 	}
 
-	/* enable/disable Low Memory PState for UVD (4k videos) */
+	 
 	if (adev->asic_type == CHIP_STONEY &&
 	    adev->uvd.decode_image_width >= WIDTH_4K)
 		smu8_nbdpm_pstate_enable_disable(hwmgr,

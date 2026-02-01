@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2006-2007 PA Semi, Inc
- *
- * Author: Egor Martovetsky <egor@pasemi.com>
- * Maintained by: Olof Johansson <olof@lixom.net>
- *
- * Driver for the PWRficient onchip memory controllers
- */
+
+ 
 
 
 #include <linux/module.h>
@@ -95,7 +88,7 @@ static void pasemi_edac_process_error_info(struct mem_ctl_info *mci, u32 errsta)
 	cs = (errlog1a & MCDEBUG_ERRLOG1A_MERR_CS_M) >>
 		MCDEBUG_ERRLOG1A_MERR_CS_S;
 
-	/* uncorrectable/multi-bit errors */
+	 
 	if (errsta & (MCDEBUG_ERRSTA_MBE_STATUS |
 		      MCDEBUG_ERRSTA_RFL_STATUS)) {
 		edac_mc_handle_error(HW_EVENT_ERR_UNCORRECTED, mci, 1,
@@ -103,7 +96,7 @@ static void pasemi_edac_process_error_info(struct mem_ctl_info *mci, u32 errsta)
 				     cs, 0, -1, mci->ctl_name, "");
 	}
 
-	/* correctable/single-bit errors */
+	 
 	if (errsta & MCDEBUG_ERRSTA_SBE_STATUS)
 		edac_mc_handle_error(HW_EVENT_ERR_CORRECTED, mci, 1,
 				     mci->csrows[cs]->first_page, 0, 0,
@@ -187,9 +180,7 @@ static int pasemi_edac_probe(struct pci_dev *pdev,
 	if (!(mcen & MCCFG_MCEN_MMC_EN))
 		return -ENODEV;
 
-	/*
-	 * We should think about enabling other error detection later on
-	 */
+	 
 
 	pci_read_config_dword(pdev, MCDEBUG_ERRCTL1, &errctl1);
 	errctl1 |= MCDEBUG_ERRCTL1_SBE_LOG_EN |
@@ -238,15 +229,13 @@ static int pasemi_edac_probe(struct pci_dev *pdev,
 				     EDAC_EC : EDAC_NONE)))
 		goto fail;
 
-	/*
-	 * Clear status
-	 */
+	 
 	pasemi_edac_get_error_info(mci);
 
 	if (edac_mc_add_mc(mci))
 		goto fail;
 
-	/* get this far and it's successful */
+	 
 	return 0;
 
 fail:
@@ -281,7 +270,7 @@ static struct pci_driver pasemi_edac_driver = {
 
 static int __init pasemi_edac_init(void)
 {
-       /* Ensure that the OPSTATE is set correctly for POLL or NMI */
+        
        opstate_init();
 
 	return pci_register_driver(&pasemi_edac_driver);

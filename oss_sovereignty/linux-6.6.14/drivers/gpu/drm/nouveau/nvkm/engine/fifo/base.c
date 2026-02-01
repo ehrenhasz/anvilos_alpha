@@ -1,26 +1,4 @@
-/*
- * Copyright 2012 Red Hat Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: Ben Skeggs
- */
+ 
 #include "priv.h"
 #include "chan.h"
 #include "chid.h"
@@ -98,7 +76,7 @@ nvkm_fifo_class_get(struct nvkm_oclass *oclass, int index, const struct nvkm_dev
 	const struct nvkm_fifo_func_chan *chan = &fifo->func->chan;
 	int c = 0;
 
-	/* *_CHANNEL_GROUP_* */
+	 
 	if (cgrp->user.oclass) {
 		if (c++ == index) {
 			oclass->base = cgrp->user;
@@ -108,7 +86,7 @@ nvkm_fifo_class_get(struct nvkm_oclass *oclass, int index, const struct nvkm_dev
 		}
 	}
 
-	/* *_CHANNEL_DMA, *_CHANNEL_GPFIFO_* */
+	 
 	if (chan->user.oclass) {
 		if (c++ == index) {
 			oclass->base = chan->user;
@@ -245,14 +223,14 @@ nvkm_fifo_oneinit(struct nvkm_engine *engine)
 	struct nvkm_engn *engn;
 	int ret, nr, i;
 
-	/* Initialise CHID/CGID allocator(s) on GPUs where they aren't per-runlist. */
+	 
 	if (fifo->func->chid_nr) {
 		ret = fifo->func->chid_ctor(fifo, fifo->func->chid_nr(fifo));
 		if (ret)
 			return ret;
 	}
 
-	/* Create runqueues for each PBDMA. */
+	 
 	if (fifo->func->runq_nr) {
 		for (nr = fifo->func->runq_nr(fifo), i = 0; i < nr; i++) {
 			if (!nvkm_runq_new(fifo, i))
@@ -260,7 +238,7 @@ nvkm_fifo_oneinit(struct nvkm_engine *engine)
 		}
 	}
 
-	/* Create runlists. */
+	 
 	ret = fifo->func->runl_ctor(fifo);
 	if (ret)
 		return ret;
@@ -272,7 +250,7 @@ nvkm_fifo_oneinit(struct nvkm_engine *engine)
 		}
 	}
 
-	/* Register interrupt handler. */
+	 
 	if (fifo->func->intr) {
 		ret = nvkm_inth_add(&device->mc->intr, NVKM_INTR_SUBDEV, NVKM_INTR_PRIO_NORMAL,
 				    subdev, fifo->func->intr, &subdev->inth);
@@ -282,7 +260,7 @@ nvkm_fifo_oneinit(struct nvkm_engine *engine)
 		}
 	}
 
-	/* Initialise non-stall intr handling. */
+	 
 	if (fifo->func->nonstall) {
 		if (fifo->func->nonstall_ctor) {
 			ret = fifo->func->nonstall_ctor(fifo);
@@ -300,7 +278,7 @@ nvkm_fifo_oneinit(struct nvkm_engine *engine)
 			return ret;
 	}
 
-	/* Allocate USERD + BAR1 polling area. */
+	 
 	if (fifo->func->chan.func->userd->bar == 1) {
 		struct nvkm_vmm *bar1 = nvkm_bar_bar1_vmm(device);
 
@@ -375,10 +353,7 @@ nvkm_fifo_new_(const struct nvkm_fifo_func *func, struct nvkm_device *device,
 	fifo->func = func;
 	INIT_LIST_HEAD(&fifo->runqs);
 	INIT_LIST_HEAD(&fifo->runls);
-	/*TODO: Needs to be >CTXSW_TIMEOUT, so RC can recover before this is hit.
-	 *      CTXSW_TIMEOUT HW default seems to differ between GPUs, so just a
-	 *      large number for now until we support changing it.
-	 */
+	 
 	fifo->timeout.chan_msec = 10000;
 	spin_lock_init(&fifo->lock);
 	mutex_init(&fifo->mutex);

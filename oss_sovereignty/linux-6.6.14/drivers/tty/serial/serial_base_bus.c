@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Serial base bus layer for controllers
- *
- * Copyright (C) 2023 Texas Instruments Incorporated - https://www.ti.com/
- * Author: Tony Lindgren <tony@atomide.com>
- *
- * The serial core bus manages the serial core controller instances.
- */
+
+ 
 
 #include <linux/container_of.h>
 #include <linux/device.h>
@@ -145,14 +138,14 @@ struct serial_port_device *serial_base_port_add(struct uart_port *port,
 						struct serial_ctrl_device *ctrl_dev)
 {
 	struct serial_port_device *port_dev;
-	int min = 0, max = -1;	/* Use -1 for max to apply IDA defaults */
+	int min = 0, max = -1;	 
 	int err;
 
 	port_dev = kzalloc(sizeof(*port_dev), GFP_KERNEL);
 	if (!port_dev)
 		return ERR_PTR(-ENOMEM);
 
-	/* Device driver specified port_id vs automatic assignment? */
+	 
 	if (port->port_id) {
 		min = port->port_id;
 		max = port->port_id;

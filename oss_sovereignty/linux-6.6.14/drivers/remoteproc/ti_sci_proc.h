@@ -1,25 +1,12 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Texas Instruments TI-SCI Processor Controller Helper Functions
- *
- * Copyright (C) 2018-2020 Texas Instruments Incorporated - https://www.ti.com/
- *	Suman Anna <s-anna@ti.com>
- */
+ 
+ 
 
 #ifndef REMOTEPROC_TI_SCI_PROC_H
 #define REMOTEPROC_TI_SCI_PROC_H
 
 #include <linux/soc/ti/ti_sci_protocol.h>
 
-/**
- * struct ti_sci_proc - structure representing a processor control client
- * @sci: cached TI-SCI protocol handle
- * @ops: cached TI-SCI proc ops
- * @dev: cached client device pointer
- * @proc_id: processor id for the consumer remoteproc device
- * @host_id: host id to pass the control over for this consumer remoteproc
- *	     device
- */
+ 
 struct ti_sci_proc {
 	const struct ti_sci_handle *sci;
 	const struct ti_sci_proc_ops *ops;
@@ -101,4 +88,4 @@ static inline int ti_sci_proc_get_status(struct ti_sci_proc *tsp,
 	return ret;
 }
 
-#endif /* REMOTEPROC_TI_SCI_PROC_H */
+#endif  

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 #include <linux/slab.h>
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -28,10 +28,7 @@ static inline int __iio_allocate_kfifo(struct iio_kfifo *buf,
 	if ((length == 0) || (bytes_per_datum == 0))
 		return -EINVAL;
 
-	/*
-	 * Make sure we don't overflow an unsigned int after kfifo rounds up to
-	 * the next power of 2.
-	 */
+	 
 	if (roundup_pow_of_two(length) > UINT_MAX / bytes_per_datum)
 		return -EINVAL;
 
@@ -77,7 +74,7 @@ static int iio_set_bytes_per_datum_kfifo(struct iio_buffer *r, size_t bpd)
 
 static int iio_set_length_kfifo(struct iio_buffer *r, unsigned int length)
 {
-	/* Avoid an invalid state */
+	 
 	if (length < 2)
 		length = 2;
 	if (r->length != length) {
@@ -229,13 +226,7 @@ static void devm_iio_kfifo_release(struct device *dev, void *res)
 	iio_kfifo_free(*(struct iio_buffer **)res);
 }
 
-/**
- * devm_iio_kfifo_allocate - Resource-managed iio_kfifo_allocate()
- * @dev:		Device to allocate kfifo buffer for
- *
- * RETURNS:
- * Pointer to allocated iio_buffer on success, NULL on failure.
- */
+ 
 static struct iio_buffer *devm_iio_kfifo_allocate(struct device *dev)
 {
 	struct iio_buffer **ptr, *r;
@@ -255,18 +246,7 @@ static struct iio_buffer *devm_iio_kfifo_allocate(struct device *dev)
 	return r;
 }
 
-/**
- * devm_iio_kfifo_buffer_setup_ext - Allocate a kfifo buffer & attach it to an IIO device
- * @dev: Device object to which to attach the life-time of this kfifo buffer
- * @indio_dev: The device the buffer should be attached to
- * @setup_ops: The setup_ops required to configure the HW part of the buffer (optional)
- * @buffer_attrs: Extra sysfs buffer attributes for this IIO buffer
- *
- * This function allocates a kfifo buffer via devm_iio_kfifo_allocate() and
- * attaches it to the IIO device via iio_device_attach_buffer().
- * This is meant to be a bit of a short-hand/helper function as there are a few
- * drivers that seem to do this.
- */
+ 
 int devm_iio_kfifo_buffer_setup_ext(struct device *dev,
 				    struct iio_dev *indio_dev,
 				    const struct iio_buffer_setup_ops *setup_ops,

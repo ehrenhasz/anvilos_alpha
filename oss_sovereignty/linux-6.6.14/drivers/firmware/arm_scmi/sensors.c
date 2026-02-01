@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * System Control and Management Interface (SCMI) Sensor Protocol
- *
- * Copyright (C) 2018-2022 ARM Ltd.
- */
+
+ 
 
 #define pr_fmt(fmt) "SCMI Notifications SENSOR - " fmt
 
@@ -40,21 +36,21 @@ struct scmi_msg_resp_sensor_attributes {
 	__le32 reg_size;
 };
 
-/* v3 attributes_low macros */
+ 
 #define SUPPORTS_UPDATE_NOTIFY(x)	FIELD_GET(BIT(30), (x))
 #define SENSOR_TSTAMP_EXP(x)		FIELD_GET(GENMASK(14, 10), (x))
 #define SUPPORTS_TIMESTAMP(x)		FIELD_GET(BIT(9), (x))
 #define SUPPORTS_EXTEND_ATTRS(x)	FIELD_GET(BIT(8), (x))
 
-/* v2 attributes_high macros */
+ 
 #define SENSOR_UPDATE_BASE(x)		FIELD_GET(GENMASK(31, 27), (x))
 #define SENSOR_UPDATE_SCALE(x)		FIELD_GET(GENMASK(26, 22), (x))
 
-/* v3 attributes_high macros */
+ 
 #define SENSOR_AXIS_NUMBER(x)		FIELD_GET(GENMASK(21, 16), (x))
 #define SUPPORTS_AXIS(x)		FIELD_GET(BIT(8), (x))
 
-/* v3 resolution macros */
+ 
 #define SENSOR_RES(x)			FIELD_GET(GENMASK(26, 0), (x))
 #define SENSOR_RES_EXP(x)		FIELD_GET(GENMASK(31, 27), (x))
 
@@ -75,28 +71,28 @@ struct scmi_msg_resp_sensor_description {
 	struct scmi_sensor_descriptor {
 		__le32 id;
 		__le32 attributes_low;
-/* Common attributes_low macros */
+ 
 #define SUPPORTS_ASYNC_READ(x)		FIELD_GET(BIT(31), (x))
 #define SUPPORTS_EXTENDED_NAMES(x)	FIELD_GET(BIT(29), (x))
 #define NUM_TRIP_POINTS(x)		FIELD_GET(GENMASK(7, 0), (x))
 		__le32 attributes_high;
-/* Common attributes_high macros */
+ 
 #define SENSOR_SCALE(x)			FIELD_GET(GENMASK(15, 11), (x))
 #define SENSOR_SCALE_SIGN		BIT(4)
 #define SENSOR_SCALE_EXTEND		GENMASK(31, 5)
 #define SENSOR_TYPE(x)			FIELD_GET(GENMASK(7, 0), (x))
 		u8 name[SCMI_SHORT_NAME_MAX_SIZE];
-		/* only for version > 2.0 */
+		 
 		__le32 power;
 		__le32 resolution;
 		struct scmi_msg_resp_attrs scalar_attrs;
 	} desc[];
 };
 
-/* Base scmi_sensor_descriptor size excluding extended attrs after name */
+ 
 #define SCMI_MSG_RESP_SENS_DESCR_BASE_SZ	28
 
-/* Sign extend to a full s32 */
+ 
 #define	S32_EXT(v)							\
 	({								\
 		int __v = (v);						\
@@ -134,7 +130,7 @@ struct scmi_msg_resp_sensor_axis_names_description {
 	} desc[];
 };
 
-/* Base scmi_axis_descriptor size excluding extended attrs after name */
+ 
 #define SCMI_MSG_RESP_AXIS_DESCR_BASE_SZ	28
 
 struct scmi_msg_sensor_list_update_intervals {
@@ -266,7 +262,7 @@ static void iter_intervals_prepare_message(void *message,
 	const struct scmi_sensor_info *s;
 
 	s = ((const struct scmi_sens_ipriv *)p)->priv;
-	/* Set the number of sensors to be skipped/already read */
+	 
 	msg->id = cpu_to_le32(s->id);
 	msg->index = cpu_to_le32(desc_index);
 }
@@ -283,14 +279,11 @@ static int iter_intervals_update_state(struct scmi_iterator_state *st,
 	st->num_returned = NUM_INTERVALS_RETURNED(flags);
 	st->num_remaining = NUM_INTERVALS_REMAINING(flags);
 
-	/*
-	 * Max intervals is not declared previously anywhere so we
-	 * assume it's returned+remaining on first call.
-	 */
+	 
 	if (!st->max_resources) {
 		s->intervals.segmented = SEGMENTED_INTVL_FORMAT(flags);
 		s->intervals.count = st->num_returned + st->num_remaining;
-		/* segmented intervals are reported in one triplet */
+		 
 		if (s->intervals.segmented &&
 		    (st->num_remaining || st->num_returned != 3)) {
 			dev_err(dev,
@@ -300,7 +293,7 @@ static int iter_intervals_update_state(struct scmi_iterator_state *st,
 			s->intervals.count = 0;
 			return -EINVAL;
 		}
-		/* Direct allocation when exceeding pre-allocated */
+		 
 		if (s->intervals.count >= SCMI_MAX_PREALLOC_POOL) {
 			s->intervals.desc =
 				devm_kcalloc(dev,
@@ -370,7 +363,7 @@ static void iter_axes_desc_prepare_message(void *message,
 	struct scmi_msg_sensor_axis_description_get *msg = message;
 	const struct scmi_apriv *apriv = priv;
 
-	/* Set the number of sensors to be skipped/already read */
+	 
 	msg->id = cpu_to_le32(apriv->s->id);
 	msg->axis_desc_index = cpu_to_le32(desc_index);
 }
@@ -458,11 +451,7 @@ iter_axes_extended_name_process_response(const struct scmi_protocol_handle *ph,
 	if (axis_id >= st->max_resources)
 		return -EPROTO;
 
-	/*
-	 * Pick the corresponding descriptor based on the axis_id embedded
-	 * in the reply since the list of axes supporting extended names
-	 * can be a subset of all the axes.
-	 */
+	 
 	a = &apriv->s->axis[axis_id];
 	strscpy(a->name, adesc->name, SCMI_MAX_STR_SIZE);
 	st->priv = ++adesc;
@@ -493,10 +482,7 @@ scmi_sensor_axis_extended_names_get(const struct scmi_protocol_handle *ph,
 	if (IS_ERR(iter))
 		return PTR_ERR(iter);
 
-	/*
-	 * Do not cause whole protocol initialization failure when failing to
-	 * get extended names for axes.
-	 */
+	 
 	ret = ph->hops->iter_response_run(iter);
 	if (ret)
 		dev_warn(ph->dev,
@@ -583,14 +569,10 @@ iter_sens_descr_process_response(const struct scmi_protocol_handle *ph,
 	s->id = le32_to_cpu(sdesc->id);
 
 	attrl = le32_to_cpu(sdesc->attributes_low);
-	/* common bitfields parsing */
+	 
 	s->async = SUPPORTS_ASYNC_READ(attrl);
 	s->num_trip_points = NUM_TRIP_POINTS(attrl);
-	/**
-	 * only SCMIv3.0 specific bitfield below.
-	 * Such bitfields are assumed to be zeroed on non
-	 * relevant fw versions...assuming fw not buggy !
-	 */
+	 
 	s->update = SUPPORTS_UPDATE_NOTIFY(attrl);
 	s->timestamped = SUPPORTS_TIMESTAMP(attrl);
 	if (s->timestamped)
@@ -598,49 +580,32 @@ iter_sens_descr_process_response(const struct scmi_protocol_handle *ph,
 	s->extended_scalar_attrs = SUPPORTS_EXTEND_ATTRS(attrl);
 
 	attrh = le32_to_cpu(sdesc->attributes_high);
-	/* common bitfields parsing */
+	 
 	s->scale = S32_EXT(SENSOR_SCALE(attrh));
 	s->type = SENSOR_TYPE(attrh);
-	/* Use pre-allocated pool wherever possible */
+	 
 	s->intervals.desc = s->intervals.prealloc_pool;
 	if (si->version == SCMIv2_SENSOR_PROTOCOL) {
 		s->intervals.segmented = false;
 		s->intervals.count = 1;
-		/*
-		 * Convert SCMIv2.0 update interval format to
-		 * SCMIv3.0 to be used as the common exposed
-		 * descriptor, accessible via common macros.
-		 */
+		 
 		s->intervals.desc[0] = (SENSOR_UPDATE_BASE(attrh) << 5) |
 					SENSOR_UPDATE_SCALE(attrh);
 	} else {
-		/*
-		 * From SCMIv3.0 update intervals are retrieved
-		 * via a dedicated (optional) command.
-		 * Since the command is optional, on error carry
-		 * on without any update interval.
-		 */
+		 
 		if (scmi_sensor_update_intervals(ph, s))
 			dev_dbg(ph->dev,
 				"Update Intervals not available for sensor ID:%d\n",
 				s->id);
 	}
-	/**
-	 * only > SCMIv2.0 specific bitfield below.
-	 * Such bitfields are assumed to be zeroed on non
-	 * relevant fw versions...assuming fw not buggy !
-	 */
+	 
 	s->num_axis = min_t(unsigned int,
 			    SUPPORTS_AXIS(attrh) ?
 			    SENSOR_AXIS_NUMBER(attrh) : 0,
 			    SCMI_MAX_NUM_SENSOR_AXIS);
 	strscpy(s->name, sdesc->name, SCMI_SHORT_NAME_MAX_SIZE);
 
-	/*
-	 * If supported overwrite short name with the extended
-	 * one; on error just carry on and use already provided
-	 * short name.
-	 */
+	 
 	if (PROTOCOL_REV_MAJOR(si->version) >= 0x3 &&
 	    SUPPORTS_EXTENDED_NAMES(attrl))
 		ph->hops->extended_name_get(ph, SENSOR_NAME_GET, s->id,
@@ -650,7 +615,7 @@ iter_sens_descr_process_response(const struct scmi_protocol_handle *ph,
 		s->sensor_power = le32_to_cpu(sdesc->power);
 		dsize += sizeof(sdesc->power);
 
-		/* Only for sensors reporting scalar values */
+		 
 		if (s->num_axis == 0) {
 			unsigned int sres = le32_to_cpu(sdesc->resolution);
 
@@ -816,21 +781,7 @@ static int scmi_sensor_config_set(const struct scmi_protocol_handle *ph,
 	return ret;
 }
 
-/**
- * scmi_sensor_reading_get  - Read scalar sensor value
- * @ph: Protocol handle
- * @sensor_id: Sensor ID
- * @value: The 64bit value sensor reading
- *
- * This function returns a single 64 bit reading value representing the sensor
- * value; if the platform SCMI Protocol implementation and the sensor support
- * multiple axis and timestamped-reads, this just returns the first axis while
- * dropping the timestamp value.
- * Use instead the @scmi_sensor_reading_get_timestamped to retrieve the array of
- * timestamped multi-axis values.
- *
- * Return: 0 on Success
- */
+ 
 static int scmi_sensor_reading_get(const struct scmi_protocol_handle *ph,
 				   u32 sensor_id, u64 *value)
 {
@@ -883,20 +834,7 @@ scmi_parse_sensor_readings(struct scmi_sensor_reading *out,
 	out->timestamp = get_unaligned_le64((void *)&in->timestamp_low);
 }
 
-/**
- * scmi_sensor_reading_get_timestamped  - Read multiple-axis timestamped values
- * @ph: Protocol handle
- * @sensor_id: Sensor ID
- * @count: The length of the provided @readings array
- * @readings: An array of elements each representing a timestamped per-axis
- *	      reading of type @struct scmi_sensor_reading.
- *	      Returned readings are ordered as the @axis descriptors array
- *	      included in @struct scmi_sensor_info and the max number of
- *	      returned elements is min(@count, @num_axis); ideally the provided
- *	      array should be of length @count equal to @num_axis.
- *
- * Return: 0 on Success
- */
+ 
 static int
 scmi_sensor_reading_get_timestamped(const struct scmi_protocol_handle *ph,
 				    u32 sensor_id, u8 count,
@@ -931,7 +869,7 @@ scmi_sensor_reading_get_timestamped(const struct scmi_protocol_handle *ph,
 			struct scmi_resp_sensor_reading_complete_v3 *resp;
 
 			resp = t->rx.buf;
-			/* Retrieve only the number of requested axis anyway */
+			 
 			if (le32_to_cpu(resp->id) == sensor_id)
 				for (i = 0; i < count; i++)
 					scmi_parse_sensor_readings(&readings[i],
@@ -1042,19 +980,14 @@ scmi_sensor_fill_custom_report(const struct scmi_protocol_handle *ph,
 		struct scmi_sensor_update_report *r = report;
 		struct sensors_info *sinfo = ph->get_priv(ph);
 
-		/* payld_sz is variable for this event */
+		 
 		r->sensor_id = le32_to_cpu(p->sensor_id);
 		if (r->sensor_id >= sinfo->num_sensors)
 			break;
 		r->timestamp = timestamp;
 		r->agent_id = le32_to_cpu(p->agent_id);
 		s = &sinfo->sensors[r->sensor_id];
-		/*
-		 * The generated report r (@struct scmi_sensor_update_report)
-		 * was pre-allocated to contain up to SCMI_MAX_NUM_SENSOR_AXIS
-		 * readings: here it is filled with the effective @num_axis
-		 * readings defined for this sensor or 1 for scalar sensors.
-		 */
+		 
 		r->readings_count = s->num_axis ?: 1;
 		for (i = 0; i < r->readings_count; i++)
 			scmi_parse_sensor_readings(&r->readings[i],

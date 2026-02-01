@@ -1,18 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/******************************************************************************
- * rtl871x_mp_ioctl.c
- *
- * Copyright(c) 2007 - 2010 Realtek Corporation. All rights reserved.
- * Linux device driver for RTL8192SU
- *
- * Modifications for inclusion into the Linux staging tree are
- * Copyright(c) 2010 Larry Finger. All rights reserved.
- *
- * Contact information:
- * WLAN FAE <wlanfae@realtek.com>
- * Larry Finger <Larry.Finger@lwfinger.net>
- *
- ******************************************************************************/
+
+ 
 
 #include <linux/rndis.h>
 #include "osdep_service.h"
@@ -66,7 +53,7 @@ uint oid_rt_pro_write_bb_reg_hdl(struct oid_par_priv *poid_par_priv)
 	if (poid_par_priv->information_buf_len < sizeof(struct bb_reg_param))
 		return RNDIS_STATUS_INVALID_LENGTH;
 	pbbreg = (struct bb_reg_param *)(poid_par_priv->information_buf);
-	offset = (u16)(pbbreg->offset) & 0xFFF; /*0ffset :0x800~0xfff*/
+	offset = (u16)(pbbreg->offset) & 0xFFF;  
 	if (offset < BB_REG_BASE_ADDR)
 		offset |= BB_REG_BASE_ADDR;
 	value = pbbreg->value;
@@ -87,7 +74,7 @@ uint oid_rt_pro_read_bb_reg_hdl(struct oid_par_priv *poid_par_priv)
 	if (poid_par_priv->information_buf_len < sizeof(struct bb_reg_param))
 		return RNDIS_STATUS_INVALID_LENGTH;
 	pbbreg = (struct bb_reg_param *)(poid_par_priv->information_buf);
-	offset = (u16)(pbbreg->offset) & 0xFFF; /*0ffset :0x800~0xfff*/
+	offset = (u16)(pbbreg->offset) & 0xFFF;  
 	if (offset < BB_REG_BASE_ADDR)
 		offset |= BB_REG_BASE_ADDR;
 	value = r8712_bb_reg_read(Adapter, offset);
@@ -134,7 +121,7 @@ uint oid_rt_pro_read_rf_reg_hdl(struct oid_par_priv *poid_par_priv)
 		return RNDIS_STATUS_INVALID_LENGTH;
 	pbbreg = (struct rf_reg_param *)(poid_par_priv->information_buf);
 	path = (u8)pbbreg->path;
-	if (path > RF_PATH_B) /* 1T2R  path_a /path_b */
+	if (path > RF_PATH_B)  
 		return RNDIS_STATUS_NOT_ACCEPTED;
 	offset = (u8)pbbreg->offset;
 	value = r8712_rf_reg_read(Adapter, path, offset);
@@ -143,7 +130,7 @@ uint oid_rt_pro_read_rf_reg_hdl(struct oid_par_priv *poid_par_priv)
 	return RNDIS_STATUS_SUCCESS;
 }
 
-/*This function initializes the DUT to the MP test mode*/
+ 
 static int mp_start_test(struct _adapter *padapter)
 {
 	struct mp_priv *pmppriv = &padapter->mppriv;
@@ -159,7 +146,7 @@ static int mp_start_test(struct _adapter *padapter)
 	if (!bssid)
 		return -ENOMEM;
 
-	/* 3 1. initialize a new struct wlan_bssid_ex */
+	 
 	memcpy(bssid->MacAddress, pmppriv->network_macaddr, ETH_ALEN);
 	bssid->Ssid.SsidLength = 16;
 	memcpy(bssid->Ssid.Ssid, (unsigned char *)"mp_pseudo_adhoc",
@@ -169,7 +156,7 @@ static int mp_start_test(struct _adapter *padapter)
 	bssid->IELength = 0;
 	length = r8712_get_wlan_bssid_ex_sz(bssid);
 	if (length % 4) {
-		/*round up to multiple of 4 bytes.*/
+		 
 		bssid->Length = ((length >> 2) + 1) << 2;
 	} else {
 		bssid->Length = length;
@@ -177,14 +164,14 @@ static int mp_start_test(struct _adapter *padapter)
 	spin_lock_irqsave(&pmlmepriv->lock, irqL);
 	if (check_fwstate(pmlmepriv, WIFI_MP_STATE))
 		goto end_of_mp_start_test;
-	/*init mp_start_test status*/
+	 
 	pmppriv->prev_fw_state = get_fwstate(pmlmepriv);
 	pmlmepriv->fw_state = WIFI_MP_STATE;
 	if (pmppriv->mode == _LOOPBOOK_MODE_)
-		set_fwstate(pmlmepriv, WIFI_MP_LPBK_STATE); /*append txdesc*/
+		set_fwstate(pmlmepriv, WIFI_MP_LPBK_STATE);  
 	set_fwstate(pmlmepriv, _FW_UNDER_LINKING);
-	/* 3 2. create a new psta for mp driver */
-	/* clear psta in the cur_network, if any */
+	 
+	 
 	psta = r8712_get_stainfo(&padapter->stapriv,
 				 tgt_network->network.MacAddress);
 	if (psta)
@@ -194,13 +181,13 @@ static int mp_start_test(struct _adapter *padapter)
 		res = -ENOMEM;
 		goto end_of_mp_start_test;
 	}
-	/* 3 3. join pseudo AdHoc */
+	 
 	tgt_network->join_res = 1;
 	tgt_network->aid = psta->aid = 1;
 	memcpy(&tgt_network->network, bssid, length);
 	_clr_fwstate_(pmlmepriv, _FW_UNDER_LINKING);
 	r8712_os_indicate_connect(padapter);
-	/* Set to LINKED STATE for MP TRX Testing */
+	 
 	set_fwstate(pmlmepriv, _FW_LINKED);
 end_of_mp_start_test:
 	spin_unlock_irqrestore(&pmlmepriv->lock, irqL);
@@ -208,7 +195,7 @@ end_of_mp_start_test:
 	return res;
 }
 
-/*This function change the DUT from the MP test mode into normal mode */
+ 
 static int mp_stop_test(struct _adapter *padapter)
 {
 	struct mp_priv *pmppriv = &padapter->mppriv;
@@ -220,16 +207,16 @@ static int mp_stop_test(struct _adapter *padapter)
 	spin_lock_irqsave(&pmlmepriv->lock, irqL);
 	if (!check_fwstate(pmlmepriv, WIFI_MP_STATE))
 		goto end_of_mp_stop_test;
-	/* 3 1. disconnect pseudo AdHoc */
+	 
 	r8712_os_indicate_disconnect(padapter);
-	/* 3 2. clear psta used in mp test mode. */
+	 
 	psta = r8712_get_stainfo(&padapter->stapriv,
 				 tgt_network->network.MacAddress);
 	if (psta)
 		r8712_free_stainfo(padapter, psta);
-	/* 3 3. return to normal state (default:station mode) */
-	pmlmepriv->fw_state = pmppriv->prev_fw_state; /* WIFI_STATION_STATE;*/
-	/*flush the cur_network*/
+	 
+	pmlmepriv->fw_state = pmppriv->prev_fw_state;  
+	 
 	memset(tgt_network, 0, sizeof(struct wlan_network));
 end_of_mp_stop_test:
 	spin_unlock_irqrestore(&pmlmepriv->lock, irqL);
@@ -265,17 +252,17 @@ uint oid_rt_pro_start_test_hdl(struct oid_par_priv *poid_par_priv)
 	if (poid_par_priv->type_of_oid != SET_OID)
 		return  RNDIS_STATUS_NOT_ACCEPTED;
 	mode = *((u32 *)poid_par_priv->information_buf);
-	Adapter->mppriv.mode = mode;/* 1 for loopback*/
+	Adapter->mppriv.mode = mode; 
 	if (mp_start_test(Adapter))
 		status = RNDIS_STATUS_NOT_ACCEPTED;
-	r8712_write8(Adapter, MSR, 1); /* Link in ad hoc network, 0x1025004C */
-	r8712_write8(Adapter, RCR, 0); /* RCR : disable all pkt, 0x10250048 */
-	/* RCR disable Check BSSID, 0x1025004a */
+	r8712_write8(Adapter, MSR, 1);  
+	r8712_write8(Adapter, RCR, 0);  
+	 
 	r8712_write8(Adapter, RCR + 2, 0x57);
-	/* disable RX filter map , mgt frames will put in RX FIFO 0 */
+	 
 	r8712_write16(Adapter, RXFLTMAP0, 0x0);
 	val8 = r8712_read8(Adapter, EE_9346CR);
-	if (!(val8 & _9356SEL)) { /*boot from EFUSE*/
+	if (!(val8 & _9356SEL)) {  
 		r8712_efuse_reg_init(Adapter);
 		r8712_efuse_change_max_size(Adapter);
 		r8712_efuse_reg_uninit(Adapter);
@@ -547,8 +534,8 @@ uint oid_rt_pro_read_register_hdl(struct oid_par_priv *poid_par_priv)
 	RegRWStruct = (struct mp_rw_reg *)poid_par_priv->information_buf;
 	if ((RegRWStruct->offset >= 0x10250800) &&
 	    (RegRWStruct->offset <= 0x10250FFF)) {
-		/*baseband register*/
-		/*0ffset :0x800~0xfff*/
+		 
+		 
 		offset = (u16)(RegRWStruct->offset) & 0xFFF;
 		RegRWStruct->value = r8712_bb_reg_read(Adapter, offset);
 	} else {
@@ -589,7 +576,7 @@ uint oid_rt_pro_write_register_hdl(struct oid_par_priv *poid_par_priv)
 	RegRWStruct = (struct mp_rw_reg *)poid_par_priv->information_buf;
 	if ((RegRWStruct->offset >= 0x10250800) &&
 	    (RegRWStruct->offset <= 0x10250FFF)) {
-		/*baseband register*/
+		 
 		offset = (u16)(RegRWStruct->offset) & 0xFFF;
 		value = RegRWStruct->value;
 		switch (RegRWStruct->width) {
@@ -642,7 +629,7 @@ uint oid_rt_get_thermal_meter_hdl(struct oid_par_priv *poid_par_priv)
 
 	if (poid_par_priv->information_buf_len < sizeof(u8))
 		return RNDIS_STATUS_INVALID_LENGTH;
-	/*init workparam*/
+	 
 	Adapter->mppriv.act_in_progress = true;
 	Adapter->mppriv.workparam.bcompleted = false;
 	Adapter->mppriv.workparam.act_type = MPT_GET_THERMAL_METER;
@@ -687,7 +674,7 @@ uint oid_rt_pro_read_efuse_hdl(struct oid_par_priv *poid_par_priv)
 	return status;
 }
 
-/*------------------------------------------------------------------------*/
+ 
 uint oid_rt_pro_write_efuse_hdl(struct oid_par_priv *poid_par_priv)
 {
 	struct _adapter *Adapter = (struct _adapter *)
@@ -715,7 +702,7 @@ uint oid_rt_pro_write_efuse_hdl(struct oid_par_priv *poid_par_priv)
 	return status;
 }
 
-/*----------------------------------------------------------------------*/
+ 
 
 uint oid_rt_get_efuse_current_size_hdl(struct oid_par_priv *poid_par_priv)
 {
@@ -777,7 +764,7 @@ uint oid_rt_pro_efuse_map_hdl(struct oid_par_priv *poid_par_priv)
 		else
 			status = RNDIS_STATUS_FAILURE;
 	} else {
-		/* SET_OID */
+		 
 		if (r8712_efuse_reg_init(Adapter)) {
 			if (r8712_efuse_map_write(Adapter, 0,
 			    EFUSE_MAP_MAX_SIZE, data))
@@ -802,7 +789,7 @@ uint oid_rt_set_bandwidth_hdl(struct oid_par_priv *poid_par_priv)
 		return RNDIS_STATUS_NOT_ACCEPTED;
 	if (poid_par_priv->information_buf_len < sizeof(u32))
 		return RNDIS_STATUS_INVALID_LENGTH;
-	bandwidth = *((u32 *)poid_par_priv->information_buf);/*4*/
+	bandwidth = *((u32 *)poid_par_priv->information_buf); 
 	if (bandwidth != HT_CHANNEL_WIDTH_20)
 		bandwidth = HT_CHANNEL_WIDTH_40;
 	Adapter->mppriv.curr_bandwidth = (u8)bandwidth;
@@ -821,8 +808,8 @@ uint oid_rt_set_rx_packet_type_hdl(struct oid_par_priv *poid_par_priv)
 		return RNDIS_STATUS_NOT_ACCEPTED;
 	if (poid_par_priv->information_buf_len < sizeof(u8))
 		return RNDIS_STATUS_INVALID_LENGTH;
-	rx_pkt_type = *((u8 *)poid_par_priv->information_buf);/*4*/
-	rcr_val32 = r8712_read32(Adapter, RCR);/*RCR = 0x10250048*/
+	rx_pkt_type = *((u8 *)poid_par_priv->information_buf); 
+	rcr_val32 = r8712_read32(Adapter, RCR); 
 	rcr_val32 &= ~(RCR_CBSSID | RCR_AB | RCR_AM | RCR_APM | RCR_AAP);
 	switch (rx_pkt_type) {
 	case RX_PKT_BROADCAST:
@@ -850,23 +837,23 @@ uint oid_rt_set_rx_packet_type_hdl(struct oid_par_priv *poid_par_priv)
 	return RNDIS_STATUS_SUCCESS;
 }
 
-/*--------------------------------------------------------------------------*/
-/*Linux*/
+ 
+ 
 unsigned int mp_ioctl_xmit_packet_hdl(struct oid_par_priv *poid_par_priv)
 {
 	return _SUCCESS;
 }
 
-/*-------------------------------------------------------------------------*/
+ 
 uint oid_rt_set_power_down_hdl(struct oid_par_priv *poid_par_priv)
 {
 	if (poid_par_priv->type_of_oid != SET_OID)
 		return RNDIS_STATUS_NOT_ACCEPTED;
-	/*CALL  the power_down function*/
+	 
 	return RNDIS_STATUS_SUCCESS;
 }
 
-/*-------------------------------------------------------------------------- */
+ 
 uint oid_rt_get_power_mode_hdl(struct oid_par_priv *poid_par_priv)
 {
 	struct _adapter *Adapter = (struct _adapter *)

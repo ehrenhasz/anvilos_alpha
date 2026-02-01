@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2015 MediaTek Inc.
- * Author: Hongzhou.Yang <hongzhou.yang@mediatek.com>
- *         Yingjoe Chen <yingjoe.chen@mediatek.com>
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/platform_device.h>
@@ -16,11 +12,11 @@
 #include "pinctrl-mtk-mt8127.h"
 
 static const struct mtk_drv_group_desc mt8127_drv_grp[] =  {
-	/* 0E4E8SR 4/8/12/16 */
+	 
 	MTK_DRV_GRP(4, 16, 1, 2, 4),
-	/* 0E2E4SR  2/4/6/8 */
+	 
 	MTK_DRV_GRP(2, 8, 1, 2, 2),
-	/* E8E4E2  2/4/6/8/10/12/14/16 */
+	 
 	MTK_DRV_GRP(2, 16, 0, 2, 2)
 };
 
@@ -135,40 +131,40 @@ static const struct mtk_pin_drv_grp mt8127_pin_drv[] = {
 };
 
 static const struct mtk_pin_spec_pupd_set_samereg mt8127_spec_pupd[] = {
-	MTK_PIN_PUPD_SPEC_SR(33,  0xd90, 2, 0, 1),	/* KPROW0 */
-	MTK_PIN_PUPD_SPEC_SR(34,  0xd90, 6, 4, 5),	/* KPROW1 */
-	MTK_PIN_PUPD_SPEC_SR(35,  0xd90, 10, 8, 9),	/* KPROW2 */
-	MTK_PIN_PUPD_SPEC_SR(36,  0xda0, 2, 0, 1),	/* KPCOL0 */
-	MTK_PIN_PUPD_SPEC_SR(37,  0xda0, 6, 4, 5),	/* KPCOL1 */
-	MTK_PIN_PUPD_SPEC_SR(38,  0xda0, 10, 8, 9),	/* KPCOL2 */
-	MTK_PIN_PUPD_SPEC_SR(46,  0xdb0, 2, 0, 1),	/* EINT14 */
-	MTK_PIN_PUPD_SPEC_SR(47,  0xdb0, 6, 4, 5),	/* EINT15 */
-	MTK_PIN_PUPD_SPEC_SR(48,  0xdb0, 10, 8, 9),	/* EINT16 */
-	MTK_PIN_PUPD_SPEC_SR(49,  0xdb0, 14, 12, 13),	/* EINT17 */
-	MTK_PIN_PUPD_SPEC_SR(85,  0xce0, 8, 10, 9),	/* MSDC2_CMD */
-	MTK_PIN_PUPD_SPEC_SR(86,  0xcd0, 8, 10, 9),	/* MSDC2_CLK */
-	MTK_PIN_PUPD_SPEC_SR(87,  0xd00, 0, 2, 1),	/* MSDC2_DAT0 */
-	MTK_PIN_PUPD_SPEC_SR(88,  0xd00, 4, 6, 5),	/* MSDC2_DAT1 */
-	MTK_PIN_PUPD_SPEC_SR(89,  0xd00, 8, 10, 9),	/* MSDC2_DAT2 */
-	MTK_PIN_PUPD_SPEC_SR(90,  0xd00, 12, 14, 13),	/* MSDC2_DAT3 */
-	MTK_PIN_PUPD_SPEC_SR(121, 0xc80, 8, 10, 9),	/* MSDC1_CMD */
-	MTK_PIN_PUPD_SPEC_SR(122, 0xc70, 8, 10, 9),	/* MSDC1_CLK */
-	MTK_PIN_PUPD_SPEC_SR(123, 0xca0, 0, 2, 1),	/* MSDC1_DAT0 */
-	MTK_PIN_PUPD_SPEC_SR(124, 0xca0, 4, 6, 5),	/* MSDC1_DAT1 */
-	MTK_PIN_PUPD_SPEC_SR(125, 0xca0, 8, 10, 9),	/* MSDC1_DAT2 */
-	MTK_PIN_PUPD_SPEC_SR(126, 0xca0, 12, 14, 13),	/* MSDC1_DAT3 */
-	MTK_PIN_PUPD_SPEC_SR(127, 0xc40, 12, 14, 13),	/* MSDC0_DAT7 */
-	MTK_PIN_PUPD_SPEC_SR(128, 0xc40, 8, 10, 9),	/* MSDC0_DAT6 */
-	MTK_PIN_PUPD_SPEC_SR(129, 0xc40, 4, 6, 5),	/* MSDC0_DAT5 */
-	MTK_PIN_PUPD_SPEC_SR(130, 0xc40, 0, 2, 1),	/* MSDC0_DAT4 */
-	MTK_PIN_PUPD_SPEC_SR(131, 0xc50, 0, 2, 1),	/* MSDC0_RSTB */
-	MTK_PIN_PUPD_SPEC_SR(132, 0xc10, 8, 10, 9),	/* MSDC0_CMD */
-	MTK_PIN_PUPD_SPEC_SR(133, 0xc00, 8, 10, 9),	/* MSDC0_CLK */
-	MTK_PIN_PUPD_SPEC_SR(134, 0xc30, 12, 14, 13),	/* MSDC0_DAT3 */
-	MTK_PIN_PUPD_SPEC_SR(135, 0xc30, 8, 10, 9),	/* MSDC0_DAT2 */
-	MTK_PIN_PUPD_SPEC_SR(136, 0xc30, 4, 6, 5),	/* MSDC0_DAT1 */
-	MTK_PIN_PUPD_SPEC_SR(137, 0xc30, 0, 2, 1),	/* MSDC0_DAT0 */
-	MTK_PIN_PUPD_SPEC_SR(142, 0xdc0, 2, 0, 1),	/* EINT21 */
+	MTK_PIN_PUPD_SPEC_SR(33,  0xd90, 2, 0, 1),	 
+	MTK_PIN_PUPD_SPEC_SR(34,  0xd90, 6, 4, 5),	 
+	MTK_PIN_PUPD_SPEC_SR(35,  0xd90, 10, 8, 9),	 
+	MTK_PIN_PUPD_SPEC_SR(36,  0xda0, 2, 0, 1),	 
+	MTK_PIN_PUPD_SPEC_SR(37,  0xda0, 6, 4, 5),	 
+	MTK_PIN_PUPD_SPEC_SR(38,  0xda0, 10, 8, 9),	 
+	MTK_PIN_PUPD_SPEC_SR(46,  0xdb0, 2, 0, 1),	 
+	MTK_PIN_PUPD_SPEC_SR(47,  0xdb0, 6, 4, 5),	 
+	MTK_PIN_PUPD_SPEC_SR(48,  0xdb0, 10, 8, 9),	 
+	MTK_PIN_PUPD_SPEC_SR(49,  0xdb0, 14, 12, 13),	 
+	MTK_PIN_PUPD_SPEC_SR(85,  0xce0, 8, 10, 9),	 
+	MTK_PIN_PUPD_SPEC_SR(86,  0xcd0, 8, 10, 9),	 
+	MTK_PIN_PUPD_SPEC_SR(87,  0xd00, 0, 2, 1),	 
+	MTK_PIN_PUPD_SPEC_SR(88,  0xd00, 4, 6, 5),	 
+	MTK_PIN_PUPD_SPEC_SR(89,  0xd00, 8, 10, 9),	 
+	MTK_PIN_PUPD_SPEC_SR(90,  0xd00, 12, 14, 13),	 
+	MTK_PIN_PUPD_SPEC_SR(121, 0xc80, 8, 10, 9),	 
+	MTK_PIN_PUPD_SPEC_SR(122, 0xc70, 8, 10, 9),	 
+	MTK_PIN_PUPD_SPEC_SR(123, 0xca0, 0, 2, 1),	 
+	MTK_PIN_PUPD_SPEC_SR(124, 0xca0, 4, 6, 5),	 
+	MTK_PIN_PUPD_SPEC_SR(125, 0xca0, 8, 10, 9),	 
+	MTK_PIN_PUPD_SPEC_SR(126, 0xca0, 12, 14, 13),	 
+	MTK_PIN_PUPD_SPEC_SR(127, 0xc40, 12, 14, 13),	 
+	MTK_PIN_PUPD_SPEC_SR(128, 0xc40, 8, 10, 9),	 
+	MTK_PIN_PUPD_SPEC_SR(129, 0xc40, 4, 6, 5),	 
+	MTK_PIN_PUPD_SPEC_SR(130, 0xc40, 0, 2, 1),	 
+	MTK_PIN_PUPD_SPEC_SR(131, 0xc50, 0, 2, 1),	 
+	MTK_PIN_PUPD_SPEC_SR(132, 0xc10, 8, 10, 9),	 
+	MTK_PIN_PUPD_SPEC_SR(133, 0xc00, 8, 10, 9),	 
+	MTK_PIN_PUPD_SPEC_SR(134, 0xc30, 12, 14, 13),	 
+	MTK_PIN_PUPD_SPEC_SR(135, 0xc30, 8, 10, 9),	 
+	MTK_PIN_PUPD_SPEC_SR(136, 0xc30, 4, 6, 5),	 
+	MTK_PIN_PUPD_SPEC_SR(137, 0xc30, 0, 2, 1),	 
+	MTK_PIN_PUPD_SPEC_SR(142, 0xdc0, 2, 0, 1),	 
 };
 
 static const struct mtk_pin_ies_smt_set mt8127_ies_set[] = {

@@ -1,9 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// CS42L43 CODEC driver jack handling
-//
-// Copyright (C) 2022-2023 Cirrus Logic, Inc. and
-//                         Cirrus Logic International Semiconductor Ltd.
+
+
+
+
+
+
 
 #include <linux/build_bug.h>
 #include <linux/delay.h>
@@ -66,7 +66,7 @@ int cs42l43_set_jack(struct snd_soc_component *component,
 {
 	struct cs42l43_codec *priv = snd_soc_component_get_drvdata(component);
 	struct cs42l43 *cs42l43 = priv->core;
-	/* This tip sense invert is always set, HW wants an inverted signal */
+	 
 	unsigned int tip_deb = CS42L43_TIPSENSE_INV_MASK;
 	unsigned int hs2 = 0x2 << CS42L43_HSDET_MODE_SHIFT;
 	unsigned int autocontrol = 0, pdncntl = 0;
@@ -146,7 +146,7 @@ int cs42l43_set_jack(struct snd_soc_component *component,
 		goto error;
 	}
 
-	/* This tip sense invert is set normally, as TIPSENSE_INV already inverted */
+	 
 	if (device_property_read_bool(cs42l43->dev, "cirrus,tip-invert"))
 		autocontrol |= 0x1 << CS42L43_JACKDET_INV_SHIFT;
 
@@ -176,7 +176,7 @@ int cs42l43_set_jack(struct snd_soc_component *component,
 
 		priv->use_ring_sense = true;
 
-		/* HW wants an inverted signal, so invert the invert */
+		 
 		if (!device_property_read_bool(cs42l43->dev, "cirrus,ring-invert"))
 			ring_deb |= CS42L43_RINGSENSE_INV_MASK;
 
@@ -377,7 +377,7 @@ void cs42l43_button_press_work(struct work_struct *work)
 
 	regmap_read(cs42l43->regmap, CS42L43_DETECT_STATUS_1, &val);
 
-	/* Bail if jack removed, the button is irrelevant and likely invalid */
+	 
 	if (!cs42l43_jack_present(priv)) {
 		dev_dbg(priv->dev, "Button ignored due to removal\n");
 		goto error;
@@ -419,7 +419,7 @@ irqreturn_t cs42l43_button_press(int irq, void *data)
 {
 	struct cs42l43_codec *priv = data;
 
-	// Wait for 2 full cycles of comb filter to ensure good reading
+	
 	queue_delayed_work(system_wq, &priv->button_press_work,
 			   msecs_to_jiffies(10));
 
@@ -610,7 +610,7 @@ static int cs42l43_run_load_detect(struct cs42l43_codec *priv, bool mic)
 
 	dev_dbg(priv->dev, "Headphone load detect: 0x%x\n", val);
 
-	/* Bail if jack removed, the load is irrelevant and likely invalid */
+	 
 	if (!cs42l43_jack_present(priv))
 		return -ENODEV;
 
@@ -622,11 +622,11 @@ static int cs42l43_run_load_detect(struct cs42l43_codec *priv, bool mic)
 	}
 
 	switch (val & CS42L43_AMP3_RES_DET_MASK) {
-	case 0x0: // low impedance
-	case 0x1: // high impedance
+	case 0x0: 
+	case 0x1: 
 		return CS42L43_JACK_HEADPHONE;
-	case 0x2: // lineout
-	case 0x3: // Open circuit
+	case 0x2: 
+	case 0x3: 
 		return CS42L43_JACK_LINEOUT;
 	default:
 		return -EINVAL;
@@ -660,17 +660,17 @@ static int cs42l43_run_type_detect(struct cs42l43_codec *priv)
 
 	dev_dbg(priv->dev, "Type detect: 0x%x\n", type);
 
-	/* Bail if jack removed, the type is irrelevant and likely invalid */
+	 
 	if (!cs42l43_jack_present(priv))
 		return -ENODEV;
 
 	switch (type & CS42L43_HSDET_TYPE_STS_MASK) {
-	case 0x0: // CTIA
-	case 0x1: // OMTP
+	case 0x0: 
+	case 0x1: 
 		return cs42l43_run_load_detect(priv, true);
-	case 0x2: // 3-pole
+	case 0x2: 
 		return cs42l43_run_load_detect(priv, false);
-	case 0x3: // Open-circuit
+	case 0x3: 
 		return CS42L43_JACK_EXTENSION;
 	default:
 		return -EINVAL;

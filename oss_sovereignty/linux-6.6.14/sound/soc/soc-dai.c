@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// soc-dai.c
-//
-// Copyright (C) 2019 Renesas Electronics Corp.
-// Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>
-//
+
+
+
+
+
+
+
 
 #include <sound/soc.h>
 #include <sound/soc-dai.h>
@@ -14,11 +14,11 @@
 static inline int _soc_dai_ret(struct snd_soc_dai *dai,
 			       const char *func, int ret)
 {
-	/* Positive, Zero values are not errors */
+	 
 	if (ret >= 0)
 		return ret;
 
-	/* Negative values might be errors */
+	 
 	switch (ret) {
 	case -EPROBE_DEFER:
 	case -ENOTSUPP:
@@ -32,23 +32,12 @@ static inline int _soc_dai_ret(struct snd_soc_dai *dai,
 	return ret;
 }
 
-/*
- * We might want to check substream by using list.
- * In such case, we can update these macros.
- */
+ 
 #define soc_dai_mark_push(dai, substream, tgt)	((dai)->mark_##tgt = substream)
 #define soc_dai_mark_pop(dai, substream, tgt)	((dai)->mark_##tgt = NULL)
 #define soc_dai_mark_match(dai, substream, tgt)	((dai)->mark_##tgt == substream)
 
-/**
- * snd_soc_dai_set_sysclk - configure DAI system or master clock.
- * @dai: DAI
- * @clk_id: DAI specific clock ID
- * @freq: new clock frequency in Hz
- * @dir: new clock direction - input/output.
- *
- * Configures the DAI master (MCLK) or system (SYSCLK) clocking.
- */
+ 
 int snd_soc_dai_set_sysclk(struct snd_soc_dai *dai, int clk_id,
 			   unsigned int freq, int dir)
 {
@@ -65,16 +54,7 @@ int snd_soc_dai_set_sysclk(struct snd_soc_dai *dai, int clk_id,
 }
 EXPORT_SYMBOL_GPL(snd_soc_dai_set_sysclk);
 
-/**
- * snd_soc_dai_set_clkdiv - configure DAI clock dividers.
- * @dai: DAI
- * @div_id: DAI specific clock divider ID
- * @div: new clock divisor.
- *
- * Configures the clock dividers. This is used to derive the best DAI bit and
- * frame clocks from the system or master clock. It's best to set the DAI bit
- * and frame clocks as low as possible to save system power.
- */
+ 
 int snd_soc_dai_set_clkdiv(struct snd_soc_dai *dai,
 			   int div_id, int div)
 {
@@ -88,16 +68,7 @@ int snd_soc_dai_set_clkdiv(struct snd_soc_dai *dai,
 }
 EXPORT_SYMBOL_GPL(snd_soc_dai_set_clkdiv);
 
-/**
- * snd_soc_dai_set_pll - configure DAI PLL.
- * @dai: DAI
- * @pll_id: DAI specific PLL ID
- * @source: DAI specific source for the PLL
- * @freq_in: PLL input clock frequency in Hz
- * @freq_out: requested PLL output clock frequency in Hz
- *
- * Configures and enables PLL to generate output clock based on input clock.
- */
+ 
 int snd_soc_dai_set_pll(struct snd_soc_dai *dai, int pll_id, int source,
 			unsigned int freq_in, unsigned int freq_out)
 {
@@ -115,13 +86,7 @@ int snd_soc_dai_set_pll(struct snd_soc_dai *dai, int pll_id, int source,
 }
 EXPORT_SYMBOL_GPL(snd_soc_dai_set_pll);
 
-/**
- * snd_soc_dai_set_bclk_ratio - configure BCLK to sample rate ratio.
- * @dai: DAI
- * @ratio: Ratio of BCLK to Sample rate.
- *
- * Configures the DAI for a preset BCLK to sample rate ratio.
- */
+ 
 int snd_soc_dai_set_bclk_ratio(struct snd_soc_dai *dai, unsigned int ratio)
 {
 	int ret = -ENOTSUPP;
@@ -139,9 +104,7 @@ int snd_soc_dai_get_fmt_max_priority(struct snd_soc_pcm_runtime *rtd)
 	struct snd_soc_dai *dai;
 	int i, max = 0;
 
-	/*
-	 * return max num if *ALL* DAIs have .auto_selectable_formats
-	 */
+	 
 	for_each_rtd_dais(rtd, i, dai) {
 		if (dai->driver->ops &&
 		    dai->driver->ops->num_auto_selectable_formats)
@@ -153,38 +116,14 @@ int snd_soc_dai_get_fmt_max_priority(struct snd_soc_pcm_runtime *rtd)
 	return max;
 }
 
-/**
- * snd_soc_dai_get_fmt - get supported audio format.
- * @dai: DAI
- * @priority: priority level of supported audio format.
- *
- * This should return only formats implemented with high
- * quality by the DAI so that the core can configure a
- * format which will work well with other devices.
- * For example devices which don't support both edges of the
- * LRCLK signal in I2S style formats should only list DSP
- * modes.  This will mean that sometimes fewer formats
- * are reported here than are supported by set_fmt().
- */
+ 
 u64 snd_soc_dai_get_fmt(struct snd_soc_dai *dai, int priority)
 {
 	const struct snd_soc_dai_ops *ops = dai->driver->ops;
 	u64 fmt = 0;
 	int i, max = 0, until = priority;
 
-	/*
-	 * Collect auto_selectable_formats until priority
-	 *
-	 * ex)
-	 *	auto_selectable_formats[] = { A, B, C };
-	 *	(A, B, C = SND_SOC_POSSIBLE_DAIFMT_xxx)
-	 *
-	 * priority = 1 :	A
-	 * priority = 2 :	A | B
-	 * priority = 3 :	A | B | C
-	 * priority = 4 :	A | B | C
-	 * ...
-	 */
+	 
 	if (ops)
 		max = ops->num_auto_selectable_formats;
 
@@ -197,13 +136,7 @@ u64 snd_soc_dai_get_fmt(struct snd_soc_dai *dai, int priority)
 	return fmt;
 }
 
-/**
- * snd_soc_dai_set_fmt - configure DAI hardware audio format.
- * @dai: DAI
- * @fmt: SND_SOC_DAIFMT_* format value.
- *
- * Configures the DAI hardware format and clocking.
- */
+ 
 int snd_soc_dai_set_fmt(struct snd_soc_dai *dai, unsigned int fmt)
 {
 	int ret = -ENOTSUPP;
@@ -215,14 +148,7 @@ int snd_soc_dai_set_fmt(struct snd_soc_dai *dai, unsigned int fmt)
 }
 EXPORT_SYMBOL_GPL(snd_soc_dai_set_fmt);
 
-/**
- * snd_soc_xlate_tdm_slot_mask - generate tx/rx slot mask.
- * @slots: Number of slots in use.
- * @tx_mask: bitmask representing active TX slots.
- * @rx_mask: bitmask representing active RX slots.
- *
- * Generates the TDM tx and rx slot default masks for DAI.
- */
+ 
 static int snd_soc_xlate_tdm_slot_mask(unsigned int slots,
 				       unsigned int *tx_mask,
 				       unsigned int *rx_mask)
@@ -239,29 +165,7 @@ static int snd_soc_xlate_tdm_slot_mask(unsigned int slots,
 	return 0;
 }
 
-/**
- * snd_soc_dai_set_tdm_slot() - Configures a DAI for TDM operation
- * @dai: The DAI to configure
- * @tx_mask: bitmask representing active TX slots.
- * @rx_mask: bitmask representing active RX slots.
- * @slots: Number of slots in use.
- * @slot_width: Width in bits for each slot.
- *
- * This function configures the specified DAI for TDM operation. @slot contains
- * the total number of slots of the TDM stream and @slot_with the width of each
- * slot in bit clock cycles. @tx_mask and @rx_mask are bitmasks specifying the
- * active slots of the TDM stream for the specified DAI, i.e. which slots the
- * DAI should write to or read from. If a bit is set the corresponding slot is
- * active, if a bit is cleared the corresponding slot is inactive. Bit 0 maps to
- * the first slot, bit 1 to the second slot and so on. The first active slot
- * maps to the first channel of the DAI, the second active slot to the second
- * channel and so on.
- *
- * TDM mode can be disabled by passing 0 for @slots. In this case @tx_mask,
- * @rx_mask and @slot_width will be ignored.
- *
- * Returns 0 on success, a negative error code otherwise.
- */
+ 
 int snd_soc_dai_set_tdm_slot(struct snd_soc_dai *dai,
 			     unsigned int tx_mask, unsigned int rx_mask,
 			     int slots, int slot_width)
@@ -291,18 +195,7 @@ int snd_soc_dai_set_tdm_slot(struct snd_soc_dai *dai,
 }
 EXPORT_SYMBOL_GPL(snd_soc_dai_set_tdm_slot);
 
-/**
- * snd_soc_dai_set_channel_map - configure DAI audio channel map
- * @dai: DAI
- * @tx_num: how many TX channels
- * @tx_slot: pointer to an array which imply the TX slot number channel
- *           0~num-1 uses
- * @rx_num: how many RX channels
- * @rx_slot: pointer to an array which imply the RX slot number channel
- *           0~num-1 uses
- *
- * configure the relationship between channel number and TDM slot number.
- */
+ 
 int snd_soc_dai_set_channel_map(struct snd_soc_dai *dai,
 				unsigned int tx_num, unsigned int *tx_slot,
 				unsigned int rx_num, unsigned int *rx_slot)
@@ -317,16 +210,7 @@ int snd_soc_dai_set_channel_map(struct snd_soc_dai *dai,
 }
 EXPORT_SYMBOL_GPL(snd_soc_dai_set_channel_map);
 
-/**
- * snd_soc_dai_get_channel_map - Get DAI audio channel map
- * @dai: DAI
- * @tx_num: how many TX channels
- * @tx_slot: pointer to an array which imply the TX slot number channel
- *           0~num-1 uses
- * @rx_num: how many RX channels
- * @rx_slot: pointer to an array which imply the RX slot number channel
- *           0~num-1 uses
- */
+ 
 int snd_soc_dai_get_channel_map(struct snd_soc_dai *dai,
 				unsigned int *tx_num, unsigned int *tx_slot,
 				unsigned int *rx_num, unsigned int *rx_slot)
@@ -341,13 +225,7 @@ int snd_soc_dai_get_channel_map(struct snd_soc_dai *dai,
 }
 EXPORT_SYMBOL_GPL(snd_soc_dai_get_channel_map);
 
-/**
- * snd_soc_dai_set_tristate - configure DAI system or master clock.
- * @dai: DAI
- * @tristate: tristate enable
- *
- * Tristates the DAI so that others can use it.
- */
+ 
 int snd_soc_dai_set_tristate(struct snd_soc_dai *dai, int tristate)
 {
 	int ret = -EINVAL;
@@ -360,23 +238,13 @@ int snd_soc_dai_set_tristate(struct snd_soc_dai *dai, int tristate)
 }
 EXPORT_SYMBOL_GPL(snd_soc_dai_set_tristate);
 
-/**
- * snd_soc_dai_digital_mute - configure DAI system or master clock.
- * @dai: DAI
- * @mute: mute enable
- * @direction: stream to mute
- *
- * Mutes the DAI DAC.
- */
+ 
 int snd_soc_dai_digital_mute(struct snd_soc_dai *dai, int mute,
 			     int direction)
 {
 	int ret = -ENOTSUPP;
 
-	/*
-	 * ignore if direction was CAPTURE
-	 * and it had .no_capture_mute flag
-	 */
+	 
 	if (dai->driver->ops &&
 	    dai->driver->ops->mute_stream &&
 	    (direction == SNDRV_PCM_STREAM_PLAYBACK ||
@@ -397,7 +265,7 @@ int snd_soc_dai_hw_params(struct snd_soc_dai *dai,
 	    dai->driver->ops->hw_params)
 		ret = dai->driver->ops->hw_params(substream, params, dai);
 
-	/* mark substream if succeeded */
+	 
 	if (ret == 0)
 		soc_dai_mark_push(dai, substream, hw_params);
 
@@ -415,7 +283,7 @@ void snd_soc_dai_hw_free(struct snd_soc_dai *dai,
 	    dai->driver->ops->hw_free)
 		dai->driver->ops->hw_free(substream, dai);
 
-	/* remove marked substream */
+	 
 	soc_dai_mark_pop(dai, substream, hw_params);
 }
 
@@ -431,7 +299,7 @@ int snd_soc_dai_startup(struct snd_soc_dai *dai,
 	    dai->driver->ops->startup)
 		ret = dai->driver->ops->startup(substream, dai);
 
-	/* mark substream if succeeded */
+	 
 	if (ret == 0)
 		soc_dai_mark_push(dai, substream, startup);
 
@@ -452,7 +320,7 @@ void snd_soc_dai_shutdown(struct snd_soc_dai *dai,
 	    dai->driver->ops->shutdown)
 		dai->driver->ops->shutdown(substream, dai);
 
-	/* remove marked substream */
+	 
 	soc_dai_mark_pop(dai, substream, startup);
 }
 
@@ -466,22 +334,16 @@ int snd_soc_dai_compress_new(struct snd_soc_dai *dai,
 	return soc_dai_ret(dai, ret);
 }
 
-/*
- * snd_soc_dai_stream_valid() - check if a DAI supports the given stream
- *
- * Returns true if the DAI supports the indicated stream type.
- */
+ 
 bool snd_soc_dai_stream_valid(struct snd_soc_dai *dai, int dir)
 {
 	struct snd_soc_pcm_stream *stream = snd_soc_dai_get_pcm_stream(dai, dir);
 
-	/* If the codec specifies any channels at all, it supports the stream */
+	 
 	return stream->channels_min;
 }
 
-/*
- * snd_soc_dai_link_set_capabilities() - set dai_link properties based on its DAIs
- */
+ 
 void snd_soc_dai_link_set_capabilities(struct snd_soc_dai_link *dai_link)
 {
 	bool supported[SNDRV_PCM_STREAM_LAST + 1];
@@ -520,10 +382,10 @@ EXPORT_SYMBOL_GPL(snd_soc_dai_link_set_capabilities);
 void snd_soc_dai_action(struct snd_soc_dai *dai,
 			int stream, int action)
 {
-	/* see snd_soc_dai_stream_active() */
+	 
 	dai->stream[stream].active	+= action;
 
-	/* see snd_soc_component_active() */
+	 
 	dai->component->active		+= action;
 }
 EXPORT_SYMBOL_GPL(snd_soc_dai_action);
@@ -582,7 +444,7 @@ int snd_soc_pcm_dai_remove(struct snd_soc_pcm_runtime *rtd, int order)
 			if (dai->driver->ops->remove) {
 				r = dai->driver->ops->remove(dai);
 				if (r < 0)
-					ret = r; /* use last error */
+					ret = r;  
 			}
 		}
 		dai->probed = 0;
@@ -677,7 +539,7 @@ int snd_soc_pcm_dai_trigger(struct snd_pcm_substream *substream,
 
 			r = soc_dai_trigger(dai, substream, cmd);
 			if (r < 0)
-				ret = r; /* use last ret */
+				ret = r;  
 			soc_dai_mark_pop(dai, substream, trigger);
 		}
 	}
@@ -713,20 +575,15 @@ void snd_soc_pcm_dai_delay(struct snd_pcm_substream *substream,
 	struct snd_soc_dai *dai;
 	int i;
 
-	/*
-	 * We're looking for the delay through the full audio path so it needs to
-	 * be the maximum of the DAIs doing transmit and the maximum of the DAIs
-	 * doing receive (ie, all CPUs and all CODECs) rather than just the maximum
-	 * of all DAIs.
-	 */
+	 
 
-	/* for CPU */
+	 
 	for_each_rtd_cpu_dais(rtd, i, dai)
 		if (dai->driver->ops &&
 		    dai->driver->ops->delay)
 			*cpu_delay = max(*cpu_delay, dai->driver->ops->delay(substream, dai));
 
-	/* for Codec */
+	 
 	for_each_rtd_codec_dais(rtd, i, dai)
 		if (dai->driver->ops &&
 		    dai->driver->ops->delay)
@@ -742,7 +599,7 @@ int snd_soc_dai_compr_startup(struct snd_soc_dai *dai,
 	    dai->driver->cops->startup)
 		ret = dai->driver->cops->startup(cstream, dai);
 
-	/* mark cstream if succeeded */
+	 
 	if (ret == 0)
 		soc_dai_mark_push(dai, cstream, compr_startup);
 
@@ -761,7 +618,7 @@ void snd_soc_dai_compr_shutdown(struct snd_soc_dai *dai,
 	    dai->driver->cops->shutdown)
 		dai->driver->cops->shutdown(cstream, dai);
 
-	/* remove marked cstream */
+	 
 	soc_dai_mark_pop(dai, cstream, compr_startup);
 }
 EXPORT_SYMBOL_GPL(snd_soc_dai_compr_shutdown);

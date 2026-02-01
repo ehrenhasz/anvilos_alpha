@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * StarFive JH7110 Video-Output Clock Driver
- *
- * Copyright (C) 2022-2023 StarFive Technology Co., Ltd.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/clk-provider.h>
@@ -16,7 +12,7 @@
 
 #include "clk-starfive-jh7110.h"
 
-/* external clocks */
+ 
 #define JH7110_VOUTCLK_VOUT_SRC			(JH7110_VOUTCLK_END + 0)
 #define JH7110_VOUTCLK_VOUT_TOP_AHB		(JH7110_VOUTCLK_END + 1)
 #define JH7110_VOUTCLK_VOUT_TOP_AXI		(JH7110_VOUTCLK_END + 2)
@@ -31,12 +27,12 @@ static struct clk_bulk_data jh7110_vout_top_clks[] = {
 };
 
 static const struct jh71x0_clk_data jh7110_voutclk_data[] = {
-	/* divider */
+	 
 	JH71X0__DIV(JH7110_VOUTCLK_APB, "apb", 8, JH7110_VOUTCLK_VOUT_TOP_AHB),
 	JH71X0__DIV(JH7110_VOUTCLK_DC8200_PIX, "dc8200_pix", 63, JH7110_VOUTCLK_VOUT_SRC),
 	JH71X0__DIV(JH7110_VOUTCLK_DSI_SYS, "dsi_sys", 31, JH7110_VOUTCLK_VOUT_SRC),
 	JH71X0__DIV(JH7110_VOUTCLK_TX_ESC, "tx_esc", 31, JH7110_VOUTCLK_VOUT_TOP_AHB),
-	/* dc8200 */
+	 
 	JH71X0_GATE(JH7110_VOUTCLK_DC8200_AXI, "dc8200_axi", 0, JH7110_VOUTCLK_VOUT_TOP_AXI),
 	JH71X0_GATE(JH7110_VOUTCLK_DC8200_CORE, "dc8200_core", 0, JH7110_VOUTCLK_VOUT_TOP_AXI),
 	JH71X0_GATE(JH7110_VOUTCLK_DC8200_AHB, "dc8200_ahb", 0, JH7110_VOUTCLK_VOUT_TOP_AHB),
@@ -46,21 +42,21 @@ static const struct jh71x0_clk_data jh7110_voutclk_data[] = {
 	JH71X0_GMUX(JH7110_VOUTCLK_DC8200_PIX1, "dc8200_pix1", 0, 2,
 		    JH7110_VOUTCLK_DC8200_PIX,
 		    JH7110_VOUTCLK_HDMITX0_PIXELCLK),
-	/* LCD */
+	 
 	JH71X0_GMUX(JH7110_VOUTCLK_DOM_VOUT_TOP_LCD, "dom_vout_top_lcd", 0, 2,
 		    JH7110_VOUTCLK_DC8200_PIX0,
 		    JH7110_VOUTCLK_DC8200_PIX1),
-	/* dsiTx */
+	 
 	JH71X0_GATE(JH7110_VOUTCLK_DSITX_APB, "dsiTx_apb", 0, JH7110_VOUTCLK_DSI_SYS),
 	JH71X0_GATE(JH7110_VOUTCLK_DSITX_SYS, "dsiTx_sys", 0, JH7110_VOUTCLK_DSI_SYS),
 	JH71X0_GMUX(JH7110_VOUTCLK_DSITX_DPI, "dsiTx_dpi", 0, 2,
 		    JH7110_VOUTCLK_DC8200_PIX,
 		    JH7110_VOUTCLK_HDMITX0_PIXELCLK),
 	JH71X0_GATE(JH7110_VOUTCLK_DSITX_TXESC, "dsiTx_txesc", 0, JH7110_VOUTCLK_TX_ESC),
-	/* mipitx DPHY */
+	 
 	JH71X0_GATE(JH7110_VOUTCLK_MIPITX_DPHY_TXESC, "mipitx_dphy_txesc", 0,
 		    JH7110_VOUTCLK_TX_ESC),
-	/* hdmi */
+	 
 	JH71X0_GATE(JH7110_VOUTCLK_HDMI_TX_MCLK, "hdmi_tx_mclk", 0,
 		    JH7110_VOUTCLK_VOUT_TOP_HDMITX0_MCLK),
 	JH71X0_GATE(JH7110_VOUTCLK_HDMI_TX_BCLK, "hdmi_tx_bclk", 0,
@@ -72,7 +68,7 @@ static int jh7110_vout_top_rst_init(struct jh71x0_clk_priv *priv)
 {
 	struct reset_control *top_rst;
 
-	/* The reset should be shared and other Vout modules will use its. */
+	 
 	top_rst = devm_reset_control_get_shared(priv->dev, NULL);
 	if (IS_ERR(top_rst))
 		return dev_err_probe(priv->dev, PTR_ERR(top_rst), "failed to get top reset\n");
@@ -143,7 +139,7 @@ static int jh7110_voutcrg_probe(struct platform_device *pdev)
 		return dev_err_probe(priv->dev, ret, "failed to get top clocks\n");
 	dev_set_drvdata(priv->dev, top);
 
-	/* enable power domain and clocks */
+	 
 	pm_runtime_enable(priv->dev);
 	ret = pm_runtime_get_sync(priv->dev);
 	if (ret < 0)
@@ -219,7 +215,7 @@ static int jh7110_voutcrg_remove(struct platform_device *pdev)
 
 static const struct of_device_id jh7110_voutcrg_match[] = {
 	{ .compatible = "starfive,jh7110-voutcrg" },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, jh7110_voutcrg_match);
 

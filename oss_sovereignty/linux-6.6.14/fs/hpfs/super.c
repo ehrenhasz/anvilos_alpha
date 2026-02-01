@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  linux/fs/hpfs/super.c
- *
- *  Mikulas Patocka (mikulas@artax.karlin.mff.cuni.cz), 1998-1999
- *
- *  mounting, unmounting, error handling
- */
+
+ 
 
 #include "hpfs_fn.h"
 #include <linux/module.h>
@@ -18,7 +12,7 @@
 #include <linux/slab.h>
 #include <linux/seq_file.h>
 
-/* Mark the filesystem dirty, so that chkdsk checks it when os/2 booted */
+ 
 
 static void mark_dirty(struct super_block *s, int remount)
 {
@@ -35,8 +29,7 @@ static void mark_dirty(struct super_block *s, int remount)
 	}
 }
 
-/* Mark the filesystem clean (mark it dirty for chkdsk if chkdsk==2 or if there
-   were errors) */
+ 
 
 static void unmark_dirty(struct super_block *s)
 {
@@ -53,7 +46,7 @@ static void unmark_dirty(struct super_block *s)
 	}
 }
 
-/* Filesystem error... */
+ 
 void hpfs_error(struct super_block *s, const char *fmt, ...)
 {
 	struct va_format vaf;
@@ -90,13 +83,7 @@ void hpfs_error(struct super_block *s, const char *fmt, ...)
 	hpfs_sb(s)->sb_was_error = 1;
 }
 
-/* 
- * A little trick to detect cycles in many hpfs structures and don't let the
- * kernel crash on corrupted filesystem. When first called, set c2 to 0.
- *
- * BTW. chkdsk doesn't detect cycles correctly. When I had 2 lost directories
- * nested each in other, chkdsk locked up happilly.
- */
+ 
 
 int hpfs_stop_cycles(struct super_block *s, int key, int *c1, int *c2,
 		char *msg)
@@ -264,19 +251,12 @@ static int init_inodecache(void)
 
 static void destroy_inodecache(void)
 {
-	/*
-	 * Make sure all delayed rcu free inodes are flushed before we
-	 * destroy cache.
-	 */
+	 
 	rcu_barrier();
 	kmem_cache_destroy(hpfs_inode_cachep);
 }
 
-/*
- * A tiny parser for option strings, stolen from dosfs.
- * Stolen again from read-only hpfs.
- * And updated for table-driven option parsing.
- */
+ 
 
 enum {
 	Opt_help, Opt_uid, Opt_gid, Opt_umask, Opt_case_lower, Opt_case_asis,
@@ -320,7 +300,7 @@ static int parse_opts(char *opts, kuid_t *uid, kgid_t *gid, umode_t *umask,
 	if (!opts)
 		return 1;
 
-	/*pr_info("Parsing opts: '%s'\n",opts);*/
+	 
 
 	while ((p = strsep(&opts, ",")) != NULL) {
 		substring_t args[MAX_OPT_ARGS];

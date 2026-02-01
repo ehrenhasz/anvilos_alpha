@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright(c) 2020 Pensando Systems, Inc */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/types.h>
@@ -11,15 +11,11 @@
 #include "ionic_lif.h"
 #include "ionic_devlink.h"
 
-/* The worst case wait for the install activity is about 25 minutes when
- * installing a new CPLD, which is very seldom.  Normal is about 30-35
- * seconds.  Since the driver can't tell if a CPLD update will happen we
- * set the timeout for the ugly case.
- */
+ 
 #define IONIC_FW_INSTALL_TIMEOUT	(25 * 60)
 #define IONIC_FW_SELECT_TIMEOUT		30
 
-/* Number of periodic log updates during fw file download */
+ 
 #define IONIC_FW_INTERVAL_FRACTION	32
 
 static void ionic_dev_cmd_firmware_download(struct ionic_dev *idev, u64 addr,

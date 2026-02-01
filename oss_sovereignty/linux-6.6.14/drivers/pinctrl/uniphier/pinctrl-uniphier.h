@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * Copyright (C) 2015-2017 Socionext Inc.
- *   Author: Masahiro Yamada <yamada.masahiro@socionext.com>
- */
+ 
+ 
 
 #ifndef __PINCTRL_UNIPHIER_H__
 #define __PINCTRL_UNIPHIER_H__
@@ -14,34 +11,34 @@
 
 struct platform_device;
 
-/* input enable control register bit */
+ 
 #define UNIPHIER_PIN_IECTRL_SHIFT	0
 #define UNIPHIER_PIN_IECTRL_BITS	3
 #define UNIPHIER_PIN_IECTRL_MASK	((1UL << (UNIPHIER_PIN_IECTRL_BITS)) \
 					 - 1)
 
-/* drive strength control register number */
+ 
 #define UNIPHIER_PIN_DRVCTRL_SHIFT	((UNIPHIER_PIN_IECTRL_SHIFT) + \
 					(UNIPHIER_PIN_IECTRL_BITS))
 #define UNIPHIER_PIN_DRVCTRL_BITS	9
 #define UNIPHIER_PIN_DRVCTRL_MASK	((1UL << (UNIPHIER_PIN_DRVCTRL_BITS)) \
 					 - 1)
 
-/* drive control type */
+ 
 #define UNIPHIER_PIN_DRV_TYPE_SHIFT	((UNIPHIER_PIN_DRVCTRL_SHIFT) + \
 					 (UNIPHIER_PIN_DRVCTRL_BITS))
 #define UNIPHIER_PIN_DRV_TYPE_BITS	3
 #define UNIPHIER_PIN_DRV_TYPE_MASK	((1UL << (UNIPHIER_PIN_DRV_TYPE_BITS)) \
 					 - 1)
 
-/* pull-up / pull-down register number */
+ 
 #define UNIPHIER_PIN_PUPDCTRL_SHIFT	((UNIPHIER_PIN_DRV_TYPE_SHIFT) + \
 					 (UNIPHIER_PIN_DRV_TYPE_BITS))
 #define UNIPHIER_PIN_PUPDCTRL_BITS	9
 #define UNIPHIER_PIN_PUPDCTRL_MASK	((1UL << (UNIPHIER_PIN_PUPDCTRL_BITS))\
 					 - 1)
 
-/* direction of pull register */
+ 
 #define UNIPHIER_PIN_PULL_DIR_SHIFT	((UNIPHIER_PIN_PUPDCTRL_SHIFT) + \
 					 (UNIPHIER_PIN_PUPDCTRL_BITS))
 #define UNIPHIER_PIN_PULL_DIR_BITS	3
@@ -55,24 +52,24 @@ struct platform_device;
 #define UNIPHIER_PIN_IECTRL_NONE	(UNIPHIER_PIN_IECTRL_MASK)
 #define UNIPHIER_PIN_IECTRL_EXIST	0
 
-/* drive control type */
+ 
 enum uniphier_pin_drv_type {
-	UNIPHIER_PIN_DRV_1BIT,		/* 2 level control: 4/8 mA */
-	UNIPHIER_PIN_DRV_2BIT,		/* 4 level control: 8/12/16/20 mA */
-	UNIPHIER_PIN_DRV_3BIT,		/* 8 level control: 4/5/7/9/11/12/14/16 mA */
-	UNIPHIER_PIN_DRV_FIXED4,	/* fixed to 4mA */
-	UNIPHIER_PIN_DRV_FIXED5,	/* fixed to 5mA */
-	UNIPHIER_PIN_DRV_FIXED8,	/* fixed to 8mA */
-	UNIPHIER_PIN_DRV_NONE,		/* no support (input only pin) */
+	UNIPHIER_PIN_DRV_1BIT,		 
+	UNIPHIER_PIN_DRV_2BIT,		 
+	UNIPHIER_PIN_DRV_3BIT,		 
+	UNIPHIER_PIN_DRV_FIXED4,	 
+	UNIPHIER_PIN_DRV_FIXED5,	 
+	UNIPHIER_PIN_DRV_FIXED8,	 
+	UNIPHIER_PIN_DRV_NONE,		 
 };
 
-/* direction of pull register (no pin supports bi-directional pull biasing) */
+ 
 enum uniphier_pin_pull_dir {
-	UNIPHIER_PIN_PULL_UP,		/* pull-up or disabled */
-	UNIPHIER_PIN_PULL_DOWN,		/* pull-down or disabled */
-	UNIPHIER_PIN_PULL_UP_FIXED,	/* always pull-up */
-	UNIPHIER_PIN_PULL_DOWN_FIXED,	/* always pull-down */
-	UNIPHIER_PIN_PULL_NONE,		/* no pull register */
+	UNIPHIER_PIN_PULL_UP,		 
+	UNIPHIER_PIN_PULL_DOWN,		 
+	UNIPHIER_PIN_PULL_UP_FIXED,	 
+	UNIPHIER_PIN_PULL_DOWN_FIXED,	 
+	UNIPHIER_PIN_PULL_NONE,		 
 };
 
 #define UNIPHIER_PIN_IECTRL(x) \
@@ -185,4 +182,4 @@ int uniphier_pinctrl_probe(struct platform_device *pdev,
 
 extern const struct dev_pm_ops uniphier_pinctrl_pm_ops;
 
-#endif /* __PINCTRL_UNIPHIER_H__ */
+#endif  

@@ -1,14 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/* Generic I/O port emulation.
- *
- * Copyright (C) 2007 Red Hat, Inc. All Rights Reserved.
- * Written by David Howells (dhowells@redhat.com)
- */
+ 
+ 
 #ifndef __ASM_GENERIC_IO_H
 #define __ASM_GENERIC_IO_H
 
-#include <asm/page.h> /* I/O is all done through memory accesses */
-#include <linux/string.h> /* for memset() and memcpy() */
+#include <asm/page.h>  
+#include <linux/string.h>  
 #include <linux/types.h>
 #include <linux/instruction_pointer.h>
 
@@ -23,7 +19,7 @@
 #define __io_br()      barrier()
 #endif
 
-/* prevent prefetching of coherent DMA data ahead of a dma-complete */
+ 
 #ifndef __io_ar
 #ifdef rmb
 #define __io_ar(v)      rmb()
@@ -32,7 +28,7 @@
 #endif
 #endif
 
-/* flush writes to coherent DMA data before possibly triggering a DMA read */
+ 
 #ifndef __io_bw
 #ifdef wmb
 #define __io_bw()      wmb()
@@ -41,7 +37,7 @@
 #endif
 #endif
 
-/* serialize device access against a spin_unlock, usually handled there. */
+ 
 #ifndef __io_aw
 #define __io_aw()      mmiowb_set_pending()
 #endif
@@ -62,15 +58,7 @@
 #define __io_par(v)     __io_ar(v)
 #endif
 
-/*
- * "__DISABLE_TRACE_MMIO__" flag can be used to disable MMIO tracing for
- * specific kernel drivers in case of excessive/unwanted logging.
- *
- * Usage: Add a #define flag at the beginning of the driver file.
- * Ex: #define __DISABLE_TRACE_MMIO__
- *     #include <...>
- *     ...
- */
+ 
 #if IS_ENABLED(CONFIG_TRACE_MMIO_ACCESS) && !(defined(__DISABLE_TRACE_MMIO__))
 #include <linux/tracepoint-defs.h>
 
@@ -99,15 +87,9 @@ static inline void log_read_mmio(u8 width, const volatile void __iomem *addr,
 static inline void log_post_read_mmio(u64 val, u8 width, const volatile void __iomem *addr,
 				      unsigned long caller_addr, unsigned long caller_addr0) {}
 
-#endif /* CONFIG_TRACE_MMIO_ACCESS */
+#endif  
 
-/*
- * __raw_{read,write}{b,w,l,q}() access memory in native endianness.
- *
- * On some architectures memory mapped IO needs to be accessed differently.
- * On the simple architectures, we just read/write the memory location
- * directly.
- */
+ 
 
 #ifndef __raw_readb
 #define __raw_readb __raw_readb
@@ -141,7 +123,7 @@ static inline u64 __raw_readq(const volatile void __iomem *addr)
 	return *(const volatile u64 __force *)addr;
 }
 #endif
-#endif /* CONFIG_64BIT */
+#endif  
 
 #ifndef __raw_writeb
 #define __raw_writeb __raw_writeb
@@ -175,12 +157,9 @@ static inline void __raw_writeq(u64 value, volatile void __iomem *addr)
 	*(volatile u64 __force *)addr = value;
 }
 #endif
-#endif /* CONFIG_64BIT */
+#endif  
 
-/*
- * {read,write}{b,w,l,q}() access little endian memory and return result in
- * native endianness.
- */
+ 
 
 #ifndef readb
 #define readb readb
@@ -242,7 +221,7 @@ static inline u64 readq(const volatile void __iomem *addr)
 	return val;
 }
 #endif
-#endif /* CONFIG_64BIT */
+#endif  
 
 #ifndef writeb
 #define writeb writeb
@@ -292,13 +271,9 @@ static inline void writeq(u64 value, volatile void __iomem *addr)
 	log_post_write_mmio(value, 64, addr, _THIS_IP_, _RET_IP_);
 }
 #endif
-#endif /* CONFIG_64BIT */
+#endif  
 
-/*
- * {read,write}{b,w,l,q}_relaxed() are like the regular version, but
- * are not guaranteed to provide ordering against spinlocks or memory
- * accesses.
- */
+ 
 #ifndef readb_relaxed
 #define readb_relaxed readb_relaxed
 static inline u8 readb_relaxed(const volatile void __iomem *addr)
@@ -391,10 +366,7 @@ static inline void writeq_relaxed(u64 value, volatile void __iomem *addr)
 }
 #endif
 
-/*
- * {read,write}s{b,w,l,q}() repeatedly access the same memory address in
- * native endianness in 8-, 16-, 32- or 64-bit chunks (@count times).
- */
+ 
 #ifndef readsb
 #define readsb readsb
 static inline void readsb(const volatile void __iomem *addr, void *buffer,
@@ -459,7 +431,7 @@ static inline void readsq(const volatile void __iomem *addr, void *buffer,
 	}
 }
 #endif
-#endif /* CONFIG_64BIT */
+#endif  
 
 #ifndef writesb
 #define writesb writesb
@@ -521,7 +493,7 @@ static inline void writesq(volatile void __iomem *addr, const void *buffer,
 	}
 }
 #endif
-#endif /* CONFIG_64BIT */
+#endif  
 
 #ifndef PCI_IOBASE
 #define PCI_IOBASE ((void __iomem *)0)
@@ -531,11 +503,7 @@ static inline void writesq(volatile void __iomem *addr, const void *buffer,
 #define IO_SPACE_LIMIT 0xffff
 #endif
 
-/*
- * {in,out}{b,w,l}() access little endian I/O. {in,out}{b,w,l}_p() can be
- * implemented on hardware that needs an additional delay for I/O accesses to
- * take effect.
- */
+ 
 
 #if !defined(inb) && !defined(_inb)
 #define _inb _inb
@@ -680,10 +648,7 @@ static inline void outl_p(u32 value, unsigned long addr)
 }
 #endif
 
-/*
- * {in,out}s{b,w,l}{,_p}() are variants of the above that repeatedly access a
- * single I/O port multiple times.
- */
+ 
 
 #ifndef insb
 #define insb insb
@@ -820,7 +785,7 @@ static inline u64 ioread64(const volatile void __iomem *addr)
 	return readq(addr);
 }
 #endif
-#endif /* CONFIG_64BIT */
+#endif  
 
 #ifndef iowrite8
 #define iowrite8 iowrite8
@@ -854,7 +819,7 @@ static inline void iowrite64(u64 value, volatile void __iomem *addr)
 	writeq(value, addr);
 }
 #endif
-#endif /* CONFIG_64BIT */
+#endif  
 
 #ifndef ioread16be
 #define ioread16be ioread16be
@@ -880,7 +845,7 @@ static inline u64 ioread64be(const volatile void __iomem *addr)
 	return swab64(readq(addr));
 }
 #endif
-#endif /* CONFIG_64BIT */
+#endif  
 
 #ifndef iowrite16be
 #define iowrite16be iowrite16be
@@ -906,7 +871,7 @@ static inline void iowrite64be(u64 value, volatile void __iomem *addr)
 	writeq(swab64(value), addr);
 }
 #endif
-#endif /* CONFIG_64BIT */
+#endif  
 
 #ifndef ioread8_rep
 #define ioread8_rep ioread8_rep
@@ -944,7 +909,7 @@ static inline void ioread64_rep(const volatile void __iomem *addr,
 	readsq(addr, buffer, count);
 }
 #endif
-#endif /* CONFIG_64BIT */
+#endif  
 
 #ifndef iowrite8_rep
 #define iowrite8_rep iowrite8_rep
@@ -986,18 +951,15 @@ static inline void iowrite64_rep(volatile void __iomem *addr,
 	writesq(addr, buffer, count);
 }
 #endif
-#endif /* CONFIG_64BIT */
-#endif /* CONFIG_GENERIC_IOMAP */
+#endif  
+#endif  
 
 #ifdef __KERNEL__
 
 #include <linux/vmalloc.h>
 #define __io_virt(x) ((void __force *)(x))
 
-/*
- * Change virtual addresses to physical addresses and vv.
- * These are pretty trivial
- */
+ 
 #ifndef virt_to_phys
 #define virt_to_phys virt_to_phys
 static inline unsigned long virt_to_phys(volatile void *address)
@@ -1014,21 +976,7 @@ static inline void *phys_to_virt(unsigned long address)
 }
 #endif
 
-/**
- * DOC: ioremap() and ioremap_*() variants
- *
- * Architectures with an MMU are expected to provide ioremap() and iounmap()
- * themselves or rely on GENERIC_IOREMAP.  For NOMMU architectures we provide
- * a default nop-op implementation that expect that the physical address used
- * for MMIO are already marked as uncached, and can be used as kernel virtual
- * addresses.
- *
- * ioremap_wc() and ioremap_wt() can provide more relaxed caching attributes
- * for specific drivers if the architecture choses to implement them.  If they
- * are not implemented we fall back to plain ioremap. Conversely, ioremap_np()
- * can provide stricter non-posted write semantics if the architecture
- * implements them.
- */
+ 
 #ifndef CONFIG_MMU
 #ifndef ioremap
 #define ioremap ioremap
@@ -1059,11 +1007,11 @@ void generic_iounmap(volatile void __iomem *addr);
 #define ioremap ioremap
 static inline void __iomem *ioremap(phys_addr_t addr, size_t size)
 {
-	/* _PAGE_IOREMAP needs to be supplied by the architecture */
+	 
 	return ioremap_prot(addr, size, _PAGE_IOREMAP);
 }
 #endif
-#endif /* !CONFIG_MMU || CONFIG_GENERIC_IOREMAP */
+#endif  
 
 #ifndef ioremap_wc
 #define ioremap_wc ioremap
@@ -1073,13 +1021,7 @@ static inline void __iomem *ioremap(phys_addr_t addr, size_t size)
 #define ioremap_wt ioremap
 #endif
 
-/*
- * ioremap_uc is special in that we do require an explicit architecture
- * implementation.  In general you do not want to use this function in a
- * driver and use plain ioremap, which is uncached by default.  Similarly
- * architectures should not implement it unless they have a very good
- * reason.
- */
+ 
 #ifndef ioremap_uc
 #define ioremap_uc ioremap_uc
 static inline void __iomem *ioremap_uc(phys_addr_t offset, size_t size)
@@ -1088,15 +1030,7 @@ static inline void __iomem *ioremap_uc(phys_addr_t offset, size_t size)
 }
 #endif
 
-/*
- * ioremap_np needs an explicit architecture implementation, as it
- * requests stronger semantics than regular ioremap(). Portable drivers
- * should instead use one of the higher-level abstractions, like
- * devm_ioremap_resource(), to choose the correct variant for any given
- * device and bus. Portable drivers with a good reason to want non-posted
- * write semantics should always provide an ioremap() fallback in case
- * ioremap_np() is not available.
- */
+ 
 #ifndef ioremap_np
 #define ioremap_np ioremap_np
 static inline void __iomem *ioremap_np(phys_addr_t offset, size_t size)
@@ -1123,11 +1057,11 @@ static inline void ioport_unmap(void __iomem *p)
 {
 }
 #endif
-#else /* CONFIG_GENERIC_IOMAP */
+#else  
 extern void __iomem *ioport_map(unsigned long port, unsigned int nr);
 extern void ioport_unmap(void __iomem *p);
-#endif /* CONFIG_GENERIC_IOMAP */
-#endif /* CONFIG_HAS_IOPORT_MAP */
+#endif  
+#endif  
 
 #ifndef CONFIG_GENERIC_IOMAP
 #ifndef pci_iounmap
@@ -1152,14 +1086,7 @@ static inline void unxlate_dev_mem_ptr(phys_addr_t phys, void *addr)
 
 #ifndef memset_io
 #define memset_io memset_io
-/**
- * memset_io	Set a range of I/O memory to a constant value
- * @addr:	The beginning of the I/O-memory range to set
- * @val:	The value to set the memory to
- * @count:	The number of bytes to set
- *
- * Set a range of I/O memory to a given value.
- */
+ 
 static inline void memset_io(volatile void __iomem *addr, int value,
 			     size_t size)
 {
@@ -1169,14 +1096,7 @@ static inline void memset_io(volatile void __iomem *addr, int value,
 
 #ifndef memcpy_fromio
 #define memcpy_fromio memcpy_fromio
-/**
- * memcpy_fromio	Copy a block of data from I/O memory
- * @dst:		The (RAM) destination for the copy
- * @src:		The (I/O memory) source for the data
- * @count:		The number of bytes to copy
- *
- * Copy a block of data from I/O memory.
- */
+ 
 static inline void memcpy_fromio(void *buffer,
 				 const volatile void __iomem *addr,
 				 size_t size)
@@ -1187,14 +1107,7 @@ static inline void memcpy_fromio(void *buffer,
 
 #ifndef memcpy_toio
 #define memcpy_toio memcpy_toio
-/**
- * memcpy_toio		Copy a block of data into I/O memory
- * @dst:		The (I/O memory) destination for the copy
- * @src:		The (RAM) source for the data
- * @count:		The number of bytes to copy
- *
- * Copy a block of data to I/O memory.
- */
+ 
 static inline void memcpy_toio(volatile void __iomem *addr, const void *buffer,
 			       size_t size)
 {
@@ -1204,6 +1117,6 @@ static inline void memcpy_toio(volatile void __iomem *addr, const void *buffer,
 
 extern int devmem_is_allowed(unsigned long pfn);
 
-#endif /* __KERNEL__ */
+#endif  
 
-#endif /* __ASM_GENERIC_IO_H */
+#endif  

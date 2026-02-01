@@ -1,24 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * sorttable.c: Sort the kernel's table
- *
- * Added ORC unwind tables sort support and other updates:
- * Copyright (C) 1999-2019 Alibaba Group Holding Limited. by:
- * Shile Zhang <shile.zhang@linux.alibaba.com>
- *
- * Copyright 2011 - 2012 Cavium, Inc.
- *
- * Based on code taken from recortmcount.c which is:
- *
- * Copyright 2009 John F. Reiser <jreiser@BitWagon.com>.  All rights reserved.
- *
- * Restructured to fit Linux format, as well as other updates:
- * Copyright 2010 Steven Rostedt <srostedt@redhat.com>, Red Hat Inc.
- */
 
-/*
- * Strategy: alter the vmlinux file in-place.
- */
+ 
+
+ 
 
 #include <sys/types.h>
 #include <sys/mman.h>
@@ -72,12 +55,7 @@ static void (*w2)(uint16_t, uint16_t *);
 static void (*w8)(uint64_t, uint64_t *);
 typedef void (*table_sort_t)(char *, int);
 
-/*
- * Get the whole file as a programming convenience in order to avoid
- * malloc+lseek+read+free of many pieces.  If successful, then mmap
- * avoids copying unused pieces; else just read the whole file.
- * Open for both read and write.
- */
+ 
 static void *mmap_file(char const *fname, size_t *size)
 {
 	int fd;
@@ -171,11 +149,7 @@ static void w8le(uint64_t val, uint64_t *x)
 	put_unaligned_le64(val, x);
 }
 
-/*
- * Move reserved section indices SHN_LORESERVE..SHN_HIRESERVE out of
- * the way to -256..-1, to avoid conflicting with real section
- * indices.
- */
+ 
 #define SPECIAL(i) ((i) - (SHN_HIRESERVE + 1))
 
 static inline int is_shndx_special(unsigned int i)
@@ -183,7 +157,7 @@ static inline int is_shndx_special(unsigned int i)
 	return i != SHN_XINDEX && i >= SHN_LORESERVE && i <= SHN_HIRESERVE;
 }
 
-/* Accessor for sym->st_shndx, hides ugliness of "64k sections" */
+ 
 static inline unsigned int get_secindex(unsigned int shndx,
 					unsigned int sym_offs,
 					const Elf32_Word *symtab_shndx_start)
@@ -195,7 +169,7 @@ static inline unsigned int get_secindex(unsigned int shndx,
 	return r(&symtab_shndx_start[sym_offs]);
 }
 
-/* 32 bit and 64 bit are very similar */
+ 
 #include "sorttable.h"
 #define SORTTABLE_64
 #include "sorttable.h"
@@ -216,10 +190,7 @@ static void sort_relative_table(char *extab_image, int image_size)
 {
 	int i = 0;
 
-	/*
-	 * Do the same thing the runtime sort does, first normalize to
-	 * being relative to the start of the section.
-	 */
+	 
 	while (i < image_size) {
 		uint32_t *loc = (uint32_t *)(extab_image + i);
 		w(r(loc) + i, loc);
@@ -228,7 +199,7 @@ static void sort_relative_table(char *extab_image, int image_size)
 
 	qsort(extab_image, image_size / 8, 8, compare_relative_table);
 
-	/* Now denormalize. */
+	 
 	i = 0;
 	while (i < image_size) {
 		uint32_t *loc = (uint32_t *)(extab_image + i);
@@ -246,7 +217,7 @@ static void sort_relative_table_with_data(char *extab_image, int image_size)
 
 		w(r(loc) + i, loc);
 		w(r(loc + 1) + i + 4, loc + 1);
-		/* Don't touch the fixup type or data */
+		 
 
 		i += sizeof(uint32_t) * 3;
 	}
@@ -259,7 +230,7 @@ static void sort_relative_table_with_data(char *extab_image, int image_size)
 
 		w(r(loc) - i, loc);
 		w(r(loc + 1) - (i + 4), loc + 1);
-		/* Don't touch the fixup type or data */
+		 
 
 		i += sizeof(uint32_t) * 3;
 	}
@@ -362,7 +333,7 @@ static int do_file(char const *const fname, void *addr)
 
 int main(int argc, char *argv[])
 {
-	int i, n_error = 0;  /* gcc-4.3.0 false positive complaint */
+	int i, n_error = 0;   
 	size_t size = 0;
 	void *addr = NULL;
 
@@ -371,7 +342,7 @@ int main(int argc, char *argv[])
 		return 0;
 	}
 
-	/* Process each file in turn, allowing deep failure. */
+	 
 	for (i = 1; i < argc; i++) {
 		addr = mmap_file(argv[i], &size);
 		if (!addr) {

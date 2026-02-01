@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0-only
-//
-// rt1316-sdw.c -- rt1316 SDCA ALSA SoC amplifier audio driver
-//
-// Copyright(c) 2021 Realtek Semiconductor Corp.
-//
-//
+
+
+
+
+
+
+
 #include <linux/delay.h>
 #include <linux/device.h>
 #include <linux/pm_runtime.h>
@@ -121,7 +121,7 @@ static const struct reg_sequence rt1316_blind_write[] = {
 
 	{ SDW_SDCA_CTL(FUNC_NUM_SMART_AMP, RT1316_SDCA_ENT_XU24, RT1316_SDCA_CTL_BYPASS, 0), 0x00 },
 
-	/* for IV sense */
+	 
 	{ 0x2232, 0x80 },
 	{ 0xc0b0, 0x77 },
 	{ 0xc011, 0x00 },
@@ -207,9 +207,9 @@ static int rt1316_read_prop(struct sdw_slave *slave)
 
 	prop->paging_support = true;
 
-	/* first we need to allocate memory for set bits in port lists */
-	prop->source_ports = 0x04; /* BITMAP: 00000100 */
-	prop->sink_ports = 0x2; /* BITMAP:  00000010 */
+	 
+	prop->source_ports = 0x04;  
+	prop->sink_ports = 0x2;  
 
 	nval = hweight32(prop->source_ports);
 	prop->src_dpn_prop = devm_kcalloc(&slave->dev, nval,
@@ -228,7 +228,7 @@ static int rt1316_read_prop(struct sdw_slave *slave)
 		i++;
 	}
 
-	/* do this again for sink now */
+	 
 	nval = hweight32(prop->sink_ports);
 	prop->sink_dpn_prop = devm_kcalloc(&slave->dev, nval,
 		sizeof(*prop->sink_dpn_prop), GFP_KERNEL);
@@ -246,7 +246,7 @@ static int rt1316_read_prop(struct sdw_slave *slave)
 		j++;
 	}
 
-	/* set the timeout values */
+	 
 	prop->clk_stop_timeout = 20;
 
 	dev_dbg(&slave->dev, "%s\n", __func__);
@@ -276,20 +276,18 @@ static int rt1316_io_init(struct device *dev, struct sdw_slave *slave)
 	if (rt1316->first_hw_init) {
 		regcache_cache_bypass(rt1316->regmap, true);
 	} else {
-		/*
-		 *  PM runtime status is marked as 'active' only when a Slave reports as Attached
-		 */
+		 
 
-		/* update count of parent 'active' children */
+		 
 		pm_runtime_set_active(&slave->dev);
 	}
 
 	pm_runtime_get_noresume(&slave->dev);
 
-	/* sw reset */
+	 
 	regmap_write(rt1316->regmap, 0xc000, 0x02);
 
-	/* initial settings - blind write */
+	 
 	regmap_multi_reg_write(rt1316->regmap, rt1316_blind_write,
 		ARRAY_SIZE(rt1316_blind_write));
 
@@ -299,7 +297,7 @@ static int rt1316_io_init(struct device *dev, struct sdw_slave *slave)
 	} else
 		rt1316->first_hw_init = true;
 
-	/* Mark Slave initialization complete */
+	 
 	rt1316->hw_init = true;
 
 	pm_runtime_mark_last_busy(&slave->dev);
@@ -317,14 +315,11 @@ static int rt1316_update_status(struct sdw_slave *slave,
 	if (status == SDW_SLAVE_UNATTACHED)
 		rt1316->hw_init = false;
 
-	/*
-	 * Perform initialization only if slave status is present and
-	 * hw_init flag is false
-	 */
+	 
 	if (rt1316->hw_init || status != SDW_SLAVE_ATTACHED)
 		return 0;
 
-	/* perform I/O transfers required for Slave initialization */
+	 
 	return rt1316_io_init(&slave->dev, slave);
 }
 
@@ -426,24 +421,24 @@ static SOC_ENUM_SINGLE_DECL(rt1316_dac_vol_ctl_enum,
 
 static const struct snd_kcontrol_new rt1316_snd_controls[] = {
 
-	/* I2S Data Channel Selection */
+	 
 	SOC_ENUM("RX Channel Select", rt1316_rx_data_ch_enum),
 
-	/* XU24 Bypass Control */
+	 
 	SOC_SINGLE("XU24 Bypass Switch",
 		SDW_SDCA_CTL(FUNC_NUM_SMART_AMP, RT1316_SDCA_ENT_XU24, RT1316_SDCA_CTL_BYPASS, 0), 0, 1, 0),
 
-	/* Left/Right IV tag */
+	 
 	SOC_SINGLE("Left V Tag Select", 0x3004, 0, 7, 0),
 	SOC_SINGLE("Left I Tag Select", 0x3004, 4, 7, 0),
 	SOC_SINGLE("Right V Tag Select", 0x3005, 0, 7, 0),
 	SOC_SINGLE("Right I Tag Select", 0x3005, 4, 7, 0),
 
-	/* IV mixer Control */
+	 
 	SOC_DOUBLE("Isense Mixer Switch", 0xc605, 2, 0, 1, 1),
 	SOC_DOUBLE("Vsense Mixer Switch", 0xc605, 3, 1, 1, 1),
 
-	/* DAC Output Volume Control */
+	 
 	SOC_ENUM("DAC Output Vol Control", rt1316_dac_vol_ctl_enum),
 };
 
@@ -454,14 +449,14 @@ static const struct snd_kcontrol_new rt1316_sto_dac =
 		0, 1, 1);
 
 static const struct snd_soc_dapm_widget rt1316_dapm_widgets[] = {
-	/* Audio Interface */
+	 
 	SND_SOC_DAPM_AIF_IN("DP1RX", "DP1 Playback", 0, SND_SOC_NOPM, 0, 0),
 	SND_SOC_DAPM_AIF_OUT("DP2TX", "DP2 Capture", 0, SND_SOC_NOPM, 0, 0),
 
-	/* Digital Interface */
+	 
 	SND_SOC_DAPM_SWITCH("DAC", SND_SOC_NOPM, 0, 0, &rt1316_sto_dac),
 
-	/* Output Lines */
+	 
 	SND_SOC_DAPM_PGA_E("CLASS D", SND_SOC_NOPM, 0, 0, NULL, 0,
 		rt1316_classd_event,
 		SND_SOC_DAPM_PRE_PMD | SND_SOC_DAPM_POST_PMU),
@@ -525,10 +520,10 @@ static int rt1316_sdw_hw_params(struct snd_pcm_substream *substream,
 	if (!rt1316->sdw_slave)
 		return -EINVAL;
 
-	/* SoundWire specific configuration */
+	 
 	snd_sdw_params_to_config(substream, params, &stream_config, &port_config);
 
-	/* port 1 for playback */
+	 
 	if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK)
 		port_config.num = 1;
 	else
@@ -560,10 +555,7 @@ static int rt1316_sdw_pcm_hw_free(struct snd_pcm_substream *substream,
 	return 0;
 }
 
-/*
- * slave_ops: callbacks for get_clock_stop_mode, clock_stop and
- * port_prep are not defined for now
- */
+ 
 static const struct sdw_slave_ops rt1316_slave_ops = {
 	.read_prop = rt1316_read_prop,
 	.update_status = rt1316_update_status,
@@ -605,7 +597,7 @@ static int rt1316_sdw_component_probe(struct snd_soc_component *component)
 	if (ret < 0 && ret != -EACCES)
 		return ret;
 
-	/* apply BQ params */
+	 
 	rt1316_apply_bq_params(rt1316);
 
 	return 0;
@@ -670,10 +662,7 @@ static int rt1316_sdw_init(struct device *dev, struct regmap *regmap,
 
 	regcache_cache_only(rt1316->regmap, true);
 
-	/*
-	 * Mark hw_init to false
-	 * HW init will be performed when device reports present
-	 */
+	 
 	rt1316->hw_init = false;
 	rt1316->first_hw_init = false;
 
@@ -684,20 +673,16 @@ static int rt1316_sdw_init(struct device *dev, struct regmap *regmap,
 	if (ret < 0)
 		return ret;
 
-	/* set autosuspend parameters */
+	 
 	pm_runtime_set_autosuspend_delay(dev, 3000);
 	pm_runtime_use_autosuspend(dev);
 
-	/* make sure the device does not suspend immediately */
+	 
 	pm_runtime_mark_last_busy(dev);
 
 	pm_runtime_enable(dev);
 
-	/* important note: the device is NOT tagged as 'active' and will remain
-	 * 'suspended' until the hardware is enumerated/initialized. This is required
-	 * to make sure the ASoC framework use of pm_runtime_get_sync() does not silently
-	 * fail with -EACCESS because of race conditions between card creation and enumeration
-	 */
+	 
 
 	dev_dbg(dev, "%s\n", __func__);
 
@@ -709,7 +694,7 @@ static int rt1316_sdw_probe(struct sdw_slave *slave,
 {
 	struct regmap *regmap;
 
-	/* Regmap Initialization */
+	 
 	regmap = devm_regmap_init_sdw(slave, &rt1316_sdw_regmap);
 	if (IS_ERR(regmap))
 		return PTR_ERR(regmap);

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* Instantiate a public key crypto key from an X.509 Certificate
- *
- * Copyright (C) 2012 Red Hat, Inc. All Rights Reserved.
- * Written by David Howells (dhowells@redhat.com)
- */
+
+ 
 
 #define pr_fmt(fmt) "X.509: "fmt
 #include <crypto/hash.h>
@@ -18,10 +14,7 @@
 #include "asymmetric_keys.h"
 #include "x509_parser.h"
 
-/*
- * Set up the signature parameters in an X.509 certificate.  This involves
- * digesting the signed data and extracting the signature.
- */
+ 
 int x509_get_sig_params(struct x509_certificate *cert)
 {
 	struct public_key_signature *sig = cert->sig;
@@ -38,9 +31,7 @@ int x509_get_sig_params(struct x509_certificate *cert)
 
 	sig->s_size = cert->raw_sig_size;
 
-	/* Allocate the hashing algorithm we're going to need and find out how
-	 * big the hash operational data will be.
-	 */
+	 
 	tfm = crypto_alloc_shash(sig->hash_algo, 0, 0);
 	if (IS_ERR(tfm)) {
 		if (PTR_ERR(tfm) == -ENOENT) {
@@ -99,10 +90,7 @@ error:
 	return ret;
 }
 
-/*
- * Check for self-signedness in an X.509 cert and if found, check the signature
- * immediately if we can.
- */
+ 
 int x509_check_for_self_signed(struct x509_certificate *cert)
 {
 	int ret = 0;
@@ -115,9 +103,7 @@ int x509_check_for_self_signed(struct x509_certificate *cert)
 		goto not_self_signed;
 
 	if (cert->sig->auth_ids[0] || cert->sig->auth_ids[1]) {
-		/* If the AKID is present it may have one or two parts.  If
-		 * both are supplied, both must match.
-		 */
+		 
 		bool a = asymmetric_key_id_same(cert->skid, cert->sig->auth_ids[1]);
 		bool b = asymmetric_key_id_same(cert->id, cert->sig->auth_ids[0]);
 
@@ -156,9 +142,7 @@ not_self_signed:
 	return 0;
 }
 
-/*
- * Attempt to parse a data blob for a key as an X509 certificate.
- */
+ 
 static int x509_key_preparse(struct key_preparsed_payload *prep)
 {
 	struct asymmetric_key_ids *kids;
@@ -187,12 +171,12 @@ static int x509_key_preparse(struct key_preparsed_payload *prep)
 			 cert->sig->pkey_algo, cert->sig->hash_algo);
 	}
 
-	/* Don't permit addition of blacklisted keys */
+	 
 	ret = -EKEYREJECTED;
 	if (cert->blacklisted)
 		goto error_free_cert;
 
-	/* Propose a description */
+	 
 	sulen = strlen(cert->subject);
 	if (cert->raw_skid) {
 		srlen = cert->raw_skid_size;
@@ -226,7 +210,7 @@ static int x509_key_preparse(struct key_preparsed_payload *prep)
 		goto error_free_kids;
 	}
 
-	/* We're pinning the module by being linked against it */
+	 
 	__module_get(public_key_subtype.owner);
 	prep->payload.data[asym_subtype] = &public_key_subtype;
 	prep->payload.data[asym_key_ids] = kids;
@@ -235,7 +219,7 @@ static int x509_key_preparse(struct key_preparsed_payload *prep)
 	prep->description = desc;
 	prep->quotalen = 100;
 
-	/* We've finished with the certificate */
+	 
 	cert->pub = NULL;
 	cert->id = NULL;
 	cert->skid = NULL;
@@ -259,9 +243,7 @@ static struct asymmetric_key_parser x509_key_parser = {
 	.parse	= x509_key_preparse,
 };
 
-/*
- * Module stuff
- */
+ 
 static int __init x509_key_init(void)
 {
 	return register_asymmetric_key_parser(&x509_key_parser);

@@ -1,17 +1,4 @@
-/* bnx2fc_hwi.c: QLogic Linux FCoE offload driver.
- * This file contains the code that low level functions that interact
- * with 57712 FCoE firmware.
- *
- * Copyright (c) 2008-2013 Broadcom Corporation
- * Copyright (c) 2014-2016 QLogic Corporation
- * Copyright (c) 2016-2017 Cavium Inc.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation.
- *
- * Written by: Bhanu Prakash Gollapudi (bprakash@broadcom.com)
- */
+ 
 
 #include "bnx2fc.h"
 
@@ -50,15 +37,7 @@ int bnx2fc_send_stat_req(struct bnx2fc_hba *hba)
 	return rc;
 }
 
-/**
- * bnx2fc_send_fw_fcoe_init_msg - initiates initial handshake with FCoE f/w
- *
- * @hba:	adapter structure pointer
- *
- * Send down FCoE firmware init KWQEs which initiates the initial handshake
- *	with the f/w.
- *
- */
+ 
 int bnx2fc_send_fw_fcoe_init_msg(struct bnx2fc_hba *hba)
 {
 	struct fcoe_kwqe_init1 fcoe_init1;
@@ -73,7 +52,7 @@ int bnx2fc_send_fw_fcoe_init_msg(struct bnx2fc_hba *hba)
 		return -ENODEV;
 	}
 
-	/* fill init1 KWQE */
+	 
 	memset(&fcoe_init1, 0x00, sizeof(struct fcoe_kwqe_init1));
 	fcoe_init1.hdr.op_code = FCOE_KWQE_OPCODE_INIT1;
 	fcoe_init1.hdr.flags = (FCOE_KWQE_LAYER_CODE <<
@@ -96,7 +75,7 @@ int bnx2fc_send_fw_fcoe_init_msg(struct bnx2fc_hba *hba)
 
 	fcoe_init1.num_sessions_log = BNX2FC_NUM_MAX_SESS_LOG;
 
-	/* fill init2 KWQE */
+	 
 	memset(&fcoe_init2, 0x00, sizeof(struct fcoe_kwqe_init2));
 	fcoe_init2.hdr.op_code = FCOE_KWQE_OPCODE_INIT2;
 	fcoe_init2.hdr.flags = (FCOE_KWQE_LAYER_CODE <<
@@ -120,7 +99,7 @@ int bnx2fc_send_fw_fcoe_init_msg(struct bnx2fc_hba *hba)
 
 	fcoe_init2.free_list_count = BNX2FC_NUM_MAX_SESS;
 
-	/* fill init3 KWQE */
+	 
 	memset(&fcoe_init3, 0x00, sizeof(struct fcoe_kwqe_init3));
 	fcoe_init3.hdr.op_code = FCOE_KWQE_OPCODE_INIT3;
 	fcoe_init3.hdr.flags = (FCOE_KWQE_LAYER_CODE <<
@@ -128,10 +107,7 @@ int bnx2fc_send_fw_fcoe_init_msg(struct bnx2fc_hba *hba)
 	fcoe_init3.error_bit_map_lo = 0xffffffff;
 	fcoe_init3.error_bit_map_hi = 0xffffffff;
 
-	/*
-	 * enable both cached connection and cached tasks
-	 * 0 = none, 1 = cached connection, 2 = cached tasks, 3 = both
-	 */
+	 
 	fcoe_init3.perf_config = 3;
 
 	kwqe_arr[0] = (struct kwqe *) &fcoe_init1;
@@ -150,7 +126,7 @@ int bnx2fc_send_fw_fcoe_destroy_msg(struct bnx2fc_hba *hba)
 	int num_kwqes = 1;
 	int rc = -1;
 
-	/* fill destroy KWQE */
+	 
 	memset(&fcoe_destroy, 0x00, sizeof(struct fcoe_kwqe_destroy));
 	fcoe_destroy.hdr.op_code = FCOE_KWQE_OPCODE_DESTROY;
 	fcoe_destroy.hdr.flags = (FCOE_KWQE_LAYER_CODE <<
@@ -162,12 +138,7 @@ int bnx2fc_send_fw_fcoe_destroy_msg(struct bnx2fc_hba *hba)
 	return rc;
 }
 
-/**
- * bnx2fc_send_session_ofld_req - initiates FCoE Session offload process
- *
- * @port:		port structure pointer
- * @tgt:		bnx2fc_rport structure pointer
- */
+ 
 int bnx2fc_send_session_ofld_req(struct fcoe_port *port,
 					struct bnx2fc_rport *tgt)
 {
@@ -187,7 +158,7 @@ int bnx2fc_send_session_ofld_req(struct fcoe_port *port,
 	int rc = 0;
 	u16 conn_id;
 
-	/* Initialize offload request 1 structure */
+	 
 	memset(&ofld_req1, 0x00, sizeof(struct fcoe_kwqe_conn_offload1));
 
 	ofld_req1.hdr.op_code = FCOE_KWQE_OPCODE_OFFLOAD_CONN1;
@@ -211,7 +182,7 @@ int bnx2fc_send_session_ofld_req(struct fcoe_port *port,
 
 	ofld_req1.rq_prod = 0x8000;
 
-	/* Initialize offload request 2 structure */
+	 
 	memset(&ofld_req2, 0x00, sizeof(struct fcoe_kwqe_conn_offload2));
 
 	ofld_req2.hdr.op_code = FCOE_KWQE_OPCODE_OFFLOAD_CONN2;
@@ -229,7 +200,7 @@ int bnx2fc_send_session_ofld_req(struct fcoe_port *port,
 	ofld_req2.conn_db_addr_lo = (u32)tgt->conn_db_dma;
 	ofld_req2.conn_db_addr_hi = (u32)((u64)tgt->conn_db_dma >> 32);
 
-	/* Initialize offload request 3 structure */
+	 
 	memset(&ofld_req3, 0x00, sizeof(struct fcoe_kwqe_conn_offload3));
 
 	ofld_req3.hdr.op_code = FCOE_KWQE_OPCODE_OFFLOAD_CONN3;
@@ -246,11 +217,7 @@ int bnx2fc_send_session_ofld_req(struct fcoe_port *port,
 		return -EINVAL;
 	}
 
-	/*
-	 * Store s_id of the initiator for further reference. This will
-	 * be used during disable/destroy during linkdown processing as
-	 * when the lport is reset, the port_id also is reset to 0
-	 */
+	 
 	tgt->sid = port_id;
 	ofld_req3.s_id[0] = (port_id & 0x000000FF);
 	ofld_req3.s_id[1] = (port_id & 0x0000FF00) >> 8;
@@ -273,23 +240,17 @@ int bnx2fc_send_session_ofld_req(struct fcoe_port *port,
 	ofld_req3.confq_first_pbe_addr_lo = tgt->confq_dma;
 	ofld_req3.confq_first_pbe_addr_hi = (u32)((u64) tgt->confq_dma >> 32);
 
-	/* set mul_n_port_ids supported flag to 0, until it is supported */
+	 
 	ofld_req3.flags = 0;
-	/*
-	ofld_req3.flags |= (((lport->send_sp_features & FC_SP_FT_MNA) ? 1:0) <<
-			    FCOE_KWQE_CONN_OFFLOAD3_B_MUL_N_PORT_IDS_SHIFT);
-	*/
-	/* Info from PLOGI response */
+	 
+	 
 	ofld_req3.flags |= (((rdata->sp_features & FC_SP_FT_EDTR) ? 1 : 0) <<
 			     FCOE_KWQE_CONN_OFFLOAD3_B_E_D_TOV_RES_SHIFT);
 
 	ofld_req3.flags |= (((rdata->sp_features & FC_SP_FT_SEQC) ? 1 : 0) <<
 			     FCOE_KWQE_CONN_OFFLOAD3_B_CONT_INCR_SEQ_CNT_SHIFT);
 
-	/*
-	 * Info from PRLI response, this info is used for sequence level error
-	 * recovery support
-	 */
+	 
 	if (tgt->dev_type == TYPE_TAPE) {
 		ofld_req3.flags |= 1 <<
 				    FCOE_KWQE_CONN_OFFLOAD3_B_CONF_REQ_SHIFT;
@@ -298,14 +259,14 @@ int bnx2fc_send_session_ofld_req(struct fcoe_port *port,
 				    FCOE_KWQE_CONN_OFFLOAD3_B_REC_VALID_SHIFT);
 	}
 
-	/* vlan flag */
+	 
 	ofld_req3.flags |= (interface->vlan_enabled <<
 			    FCOE_KWQE_CONN_OFFLOAD3_B_VLAN_FLAG_SHIFT);
 
-	/* C2_VALID and ACK flags are not set as they are not supported */
+	 
 
 
-	/* Initialize offload request 4 structure */
+	 
 	memset(&ofld_req4, 0x00, sizeof(struct fcoe_kwqe_conn_offload4));
 	ofld_req4.hdr.op_code = FCOE_KWQE_OPCODE_OFFLOAD_CONN4;
 	ofld_req4.hdr.flags =
@@ -315,14 +276,14 @@ int bnx2fc_send_session_ofld_req(struct fcoe_port *port,
 
 
 	ofld_req4.src_mac_addr_lo[0] =  port->data_src_addr[5];
-							/* local mac */
+							 
 	ofld_req4.src_mac_addr_lo[1] =  port->data_src_addr[4];
 	ofld_req4.src_mac_addr_mid[0] =  port->data_src_addr[3];
 	ofld_req4.src_mac_addr_mid[1] =  port->data_src_addr[2];
 	ofld_req4.src_mac_addr_hi[0] =  port->data_src_addr[1];
 	ofld_req4.src_mac_addr_hi[1] =  port->data_src_addr[0];
 	ofld_req4.dst_mac_addr_lo[0] =  ctlr->dest_addr[5];
-							/* fcf mac */
+							 
 	ofld_req4.dst_mac_addr_lo[1] = ctlr->dest_addr[4];
 	ofld_req4.dst_mac_addr_mid[0] = ctlr->dest_addr[3];
 	ofld_req4.dst_mac_addr_mid[1] = ctlr->dest_addr[2];
@@ -347,12 +308,7 @@ int bnx2fc_send_session_ofld_req(struct fcoe_port *port,
 	return rc;
 }
 
-/**
- * bnx2fc_send_session_enable_req - initiates FCoE Session enablement
- *
- * @port:		port structure pointer
- * @tgt:		bnx2fc_rport structure pointer
- */
+ 
 int bnx2fc_send_session_enable_req(struct fcoe_port *port,
 					struct bnx2fc_rport *tgt)
 {
@@ -374,7 +330,7 @@ int bnx2fc_send_session_enable_req(struct fcoe_port *port,
 		(FCOE_KWQE_LAYER_CODE << FCOE_KWQE_HEADER_LAYER_CODE_SHIFT);
 
 	enbl_req.src_mac_addr_lo[0] =  port->data_src_addr[5];
-							/* local mac */
+							 
 	enbl_req.src_mac_addr_lo[1] =  port->data_src_addr[4];
 	enbl_req.src_mac_addr_mid[0] =  port->data_src_addr[3];
 	enbl_req.src_mac_addr_mid[1] =  port->data_src_addr[2];
@@ -417,12 +373,7 @@ int bnx2fc_send_session_enable_req(struct fcoe_port *port,
 	return rc;
 }
 
-/**
- * bnx2fc_send_session_disable_req - initiates FCoE Session disable
- *
- * @port:		port structure pointer
- * @tgt:		bnx2fc_rport structure pointer
- */
+ 
 int bnx2fc_send_session_disable_req(struct fcoe_port *port,
 				    struct bnx2fc_rport *tgt)
 {
@@ -482,12 +433,7 @@ int bnx2fc_send_session_disable_req(struct fcoe_port *port,
 	return rc;
 }
 
-/**
- * bnx2fc_send_session_destroy_req - initiates FCoE Session destroy
- *
- * @hba:		adapter structure pointer
- * @tgt:		bnx2fc_rport structure pointer
- */
+ 
 int bnx2fc_send_session_destroy_req(struct bnx2fc_hba *hba,
 					struct bnx2fc_rport *tgt)
 {
@@ -580,7 +526,7 @@ void bnx2fc_process_l2_frame_compl(struct bnx2fc_rport *tgt,
 	}
 
 	fh = (struct fc_frame_header *) fc_frame_header_get(fp);
-	/* Copy FC Frame header and payload into the frame */
+	 
 	memcpy(fh, buf, frame_len);
 
 	if (l2_oxid != FC_XID_UNKNOWN)
@@ -595,10 +541,7 @@ void bnx2fc_process_l2_frame_compl(struct bnx2fc_rport *tgt,
 			op = fc_frame_payload_op(fp);
 			if ((op == ELS_TEST) ||	(op == ELS_ESTC) ||
 			    (op == ELS_FAN) || (op == ELS_CSU)) {
-				/*
-				 * No need to reply for these
-				 * ELS requests
-				 */
+				 
 				printk(KERN_ERR PFX "dropping ELS 0x%x\n", op);
 				kfree_skb(skb);
 				kfree(unsol_els);
@@ -684,10 +627,7 @@ static void bnx2fc_process_unsol_compl(struct bnx2fc_rport *tgt, u16 wqe)
 		break;
 
 	case FCOE_ERROR_DETECTION_CQE_TYPE:
-		/*
-		 * In case of error reporting CQE a single RQ entry
-		 * is consumed.
-		 */
+		 
 		spin_lock_bh(&tgt->tgt_lock);
 		num_rq = 1;
 		err_entry = (struct fcoe_err_report_entry *)
@@ -733,13 +673,7 @@ static void bnx2fc_process_unsol_compl(struct bnx2fc_rport *tgt, u16 wqe)
 			}
 		}
 
-		/*
-		 * If ABTS is already in progress, and FW error is
-		 * received after that, do not cancel the timeout_work
-		 * and let the error recovery continue by explicitly
-		 * logging out the target, when the ABTS eventually
-		 * times out.
-		 */
+		 
 		if (test_bit(BNX2FC_FLAG_ISSUE_ABTS, &io_req->req_flags)) {
 			printk(KERN_ERR PFX "err_warn: io_req (0x%x) already "
 					    "in ABTS processing\n", xid);
@@ -776,10 +710,7 @@ static void bnx2fc_process_unsol_compl(struct bnx2fc_rport *tgt, u16 wqe)
 
 skip_rec:
 		set_bit(BNX2FC_FLAG_ISSUE_ABTS, &io_req->req_flags);
-		/*
-		 * Cancel the timeout_work, as we received IO
-		 * completion with FW error.
-		 */
+		 
 		if (cancel_delayed_work(&io_req->timeout_work))
 			kref_put(&io_req->refcount, bnx2fc_cmd_release);
 
@@ -796,10 +727,7 @@ ret_err_rqe:
 		break;
 
 	case FCOE_WARNING_DETECTION_CQE_TYPE:
-		/*
-		 *In case of warning reporting CQE a single RQ entry
-		 * is consumes.
-		 */
+		 
 		spin_lock_bh(&tgt->tgt_lock);
 		num_rq = 1;
 		err_entry = (struct fcoe_err_report_entry *)
@@ -841,7 +769,7 @@ ret_err_rqe:
 		       sizeof(struct fcoe_err_report_entry));
 
 		if (err_warn == FCOE_ERROR_CODE_REC_TOV_TIMER_EXPIRATION)
-			/* REC_TOV is not a warning code */
+			 
 			BUG_ON(1);
 		else
 			BNX2FC_TGT_DBG(tgt, "Unsolicited warning\n");
@@ -880,14 +808,14 @@ void bnx2fc_process_cq_compl(struct bnx2fc_rport *tgt, u16 wqe,
 		return;
 	}
 
-	/* Timestamp IO completion time */
+	 
 	cmd_type = io_req->cmd_type;
 
 	rx_state = ((task->rxwr_txrd.var_ctx.rx_flags &
 		    FCOE_TCE_RX_WR_TX_RD_VAR_RX_STATE) >>
 		    FCOE_TCE_RX_WR_TX_RD_VAR_RX_STATE_SHIFT);
 
-	/* Process other IO completion types */
+	 
 	switch (cmd_type) {
 	case BNX2FC_SCSI_CMD:
 		if (rx_state == FCOE_TASK_RX_STATE_COMPLETED) {
@@ -913,11 +841,7 @@ void bnx2fc_process_cq_compl(struct bnx2fc_rport *tgt, u16 wqe,
 		break;
 
 	case BNX2FC_ABTS:
-		/*
-		 * ABTS request received by firmware. ABTS response
-		 * will be delivered to the task belonging to the IO
-		 * that was aborted
-		 */
+		 
 		BNX2FC_IO_DBG(io_req, "cq_compl- ABTS sent out by fw\n");
 		kref_put(&io_req->refcount, bnx2fc_cmd_release);
 		break;
@@ -987,7 +911,7 @@ static struct bnx2fc_work *bnx2fc_alloc_work(struct bnx2fc_rport *tgt, u16 wqe,
 	return work;
 }
 
-/* Pending work request completion */
+ 
 static bool bnx2fc_pending_work(struct bnx2fc_rport *tgt, unsigned int wqe)
 {
 	unsigned int cpu = wqe % num_possible_cpus();
@@ -1028,7 +952,7 @@ static bool bnx2fc_pending_work(struct bnx2fc_rport *tgt, unsigned int wqe)
 	rq_data = bnx2fc_get_next_rqe(tgt, 1);
 
 	if (num_rq > 1) {
-		/* We do not need extra sense data */
+		 
 		for (i = 1; i < num_rq; i++)
 			bnx2fc_get_next_rqe(tgt, 1);
 	}
@@ -1036,7 +960,7 @@ static bool bnx2fc_pending_work(struct bnx2fc_rport *tgt, unsigned int wqe)
 	if (rq_data)
 		memcpy(rq_data_buff, rq_data, BNX2FC_RQ_BUF_SZ);
 
-	/* return RQ entries */
+	 
 	for (i = 0; i < num_rq; i++)
 		bnx2fc_return_rqe(tgt, 1);
 
@@ -1070,11 +994,7 @@ int bnx2fc_process_new_cqes(struct bnx2fc_rport *tgt)
 	u32 num_cqes = 0;
 	u16 wqe;
 
-	/*
-	 * cq_lock is a low contention lock used to protect
-	 * the CQ data structure from being freed up during
-	 * the upload operation
-	 */
+	 
 	spin_lock_bh(&tgt->cq_lock);
 
 	if (!tgt->cq) {
@@ -1090,9 +1010,9 @@ int bnx2fc_process_new_cqes(struct bnx2fc_rport *tgt)
 	       (tgt->cq_curr_toggle_bit <<
 	       FCOE_CQE_TOGGLE_BIT_SHIFT)) {
 
-		/* new entry on the cq */
+		 
 		if (wqe & FCOE_CQE_CQE_TYPE) {
-			/* Unsolicited event notification */
+			 
 			bnx2fc_process_unsol_compl(tgt, wqe);
 		} else {
 			if (bnx2fc_pending_work(tgt, wqe))
@@ -1110,7 +1030,7 @@ int bnx2fc_process_new_cqes(struct bnx2fc_rport *tgt)
 		}
 	}
 	if (num_cqes) {
-		/* Arm CQ only if doorbell is mapped */
+		 
 		if (tgt->ctx_base)
 			bnx2fc_arm_cq(tgt);
 		atomic_add(num_free_sqes, &tgt->free_sqes);
@@ -1119,14 +1039,7 @@ int bnx2fc_process_new_cqes(struct bnx2fc_rport *tgt)
 	return 0;
 }
 
-/**
- * bnx2fc_fastpath_notification - process global event queue (KCQ)
- *
- * @hba:		adapter structure pointer
- * @new_cqe_kcqe:	pointer to newly DMA'd KCQ entry
- *
- * Fast path event notification handler
- */
+ 
 static void bnx2fc_fastpath_notification(struct bnx2fc_hba *hba,
 					struct fcoe_kcqe *new_cqe_kcqe)
 {
@@ -1141,15 +1054,7 @@ static void bnx2fc_fastpath_notification(struct bnx2fc_hba *hba,
 	bnx2fc_process_new_cqes(tgt);
 }
 
-/**
- * bnx2fc_process_ofld_cmpl - process FCoE session offload completion
- *
- * @hba:	adapter structure pointer
- * @ofld_kcqe:	connection offload kcqe pointer
- *
- * handle session offload completion, enable the session if offload is
- * successful.
- */
+ 
 static void bnx2fc_process_ofld_cmpl(struct bnx2fc_hba *hba,
 					struct fcoe_kcqe *ofld_kcqe)
 {
@@ -1172,10 +1077,7 @@ static void bnx2fc_process_ofld_cmpl(struct bnx2fc_hba *hba,
 		printk(KERN_ERR PFX "ERROR:ofld_cmpl: HBA mismatch\n");
 		goto ofld_cmpl_err;
 	}
-	/*
-	 * cnic has allocated a context_id for this session; use this
-	 * while enabling the session.
-	 */
+	 
 	tgt->context_id = context_id;
 	if (ofld_kcqe->completion_status) {
 		if (ofld_kcqe->completion_status ==
@@ -1185,7 +1087,7 @@ static void bnx2fc_process_ofld_cmpl(struct bnx2fc_hba *hba,
 			set_bit(BNX2FC_FLAG_CTX_ALLOC_FAILURE, &tgt->flags);
 		}
 	} else {
-		/* FW offload request successfully completed */
+		 
 		set_bit(BNX2FC_FLAG_OFFLOADED, &tgt->flags);
 	}
 ofld_cmpl_err:
@@ -1193,14 +1095,7 @@ ofld_cmpl_err:
 	wake_up_interruptible(&tgt->ofld_wait);
 }
 
-/**
- * bnx2fc_process_enable_conn_cmpl - process FCoE session enable completion
- *
- * @hba:	adapter structure pointer
- * @ofld_kcqe:	connection offload kcqe pointer
- *
- * handle session enable completion, mark the rport as ready
- */
+ 
 
 static void bnx2fc_process_enable_conn_cmpl(struct bnx2fc_hba *hba,
 						struct fcoe_kcqe *ofld_kcqe)
@@ -1221,10 +1116,7 @@ static void bnx2fc_process_enable_conn_cmpl(struct bnx2fc_hba *hba,
 	BNX2FC_TGT_DBG(tgt, "Enable compl - context_id = 0x%x\n",
 		ofld_kcqe->fcoe_conn_context_id);
 
-	/*
-	 * context_id should be the same for this target during offload
-	 * and enable
-	 */
+	 
 	if (tgt->context_id != context_id) {
 		printk(KERN_ERR PFX "context id mismatch\n");
 		return;
@@ -1235,7 +1127,7 @@ static void bnx2fc_process_enable_conn_cmpl(struct bnx2fc_hba *hba,
 		goto enbl_cmpl_err;
 	}
 	if (!ofld_kcqe->completion_status)
-		/* enable successful - rport ready for issuing IOs */
+		 
 		set_bit(BNX2FC_FLAG_ENABLED, &tgt->flags);
 
 enbl_cmpl_err:
@@ -1266,7 +1158,7 @@ static void bnx2fc_process_conn_disable_cmpl(struct bnx2fc_hba *hba,
 		set_bit(BNX2FC_FLAG_UPLD_REQ_COMPL, &tgt->flags);
 		wake_up_interruptible(&tgt->upld_wait);
 	} else {
-		/* disable successful */
+		 
 		BNX2FC_TGT_DBG(tgt, "disable successful\n");
 		clear_bit(BNX2FC_FLAG_OFFLOADED, &tgt->flags);
 		clear_bit(BNX2FC_FLAG_ENABLED, &tgt->flags);
@@ -1296,7 +1188,7 @@ static void bnx2fc_process_conn_destroy_cmpl(struct bnx2fc_hba *hba,
 			destroy_kcqe->completion_status);
 		return;
 	} else {
-		/* destroy successful */
+		 
 		BNX2FC_TGT_DBG(tgt, "upload successful\n");
 		clear_bit(BNX2FC_FLAG_DISABLED, &tgt->flags);
 		set_bit(BNX2FC_FLAG_DESTROYED, &tgt->flags);
@@ -1330,15 +1222,7 @@ static void bnx2fc_init_failure(struct bnx2fc_hba *hba, u32 err_code)
 	}
 }
 
-/**
- * bnx2fc_indicate_kcqe() - process KCQE
- *
- * @context:	adapter structure pointer
- * @kcq:	kcqe pointer
- * @num_cqe:	Number of completion queue elements
- *
- * Generic KCQ event handler
- */
+ 
 void bnx2fc_indicate_kcqe(void *context, struct kcqe *kcq[],
 					u32 num_cqe)
 {
@@ -1416,11 +1300,11 @@ void bnx2fc_add_2_sq(struct bnx2fc_rport *tgt, u16 xid)
 
 	sqe = &tgt->sq[tgt->sq_prod_idx];
 
-	/* Fill SQ WQE */
+	 
 	sqe->wqe = xid << FCOE_SQE_TASK_ID_SHIFT;
 	sqe->wqe |= tgt->sq_curr_toggle_bit << FCOE_SQE_TOGGLE_BIT_SHIFT;
 
-	/* Advance SQ Prod Idx */
+	 
 	if (++tgt->sq_prod_idx == BNX2FC_SQ_WQES_MAX) {
 		tgt->sq_prod_idx = 0;
 		tgt->sq_curr_toggle_bit = 1 - tgt->sq_curr_toggle_bit;
@@ -1475,10 +1359,10 @@ char *bnx2fc_get_next_rqe(struct bnx2fc_rport *tgt, u8 num_items)
 
 void bnx2fc_return_rqe(struct bnx2fc_rport *tgt, u8 num_items)
 {
-	/* return the rq buffer */
+	 
 	u32 next_prod_idx = tgt->rq_prod_idx + num_items;
 	if ((next_prod_idx & 0x7fff) == BNX2FC_RQ_WQES_MAX) {
-		/* Wrap around RQ */
+		 
 		next_prod_idx += 0x8000 - BNX2FC_RQ_WQES_MAX;
 	}
 	tgt->rq_prod_idx = next_prod_idx;
@@ -1510,11 +1394,11 @@ void bnx2fc_init_seq_cleanup_task(struct bnx2fc_cmd *seq_clnp_req,
 	else
 		orig_task_type = FCOE_TASK_TYPE_READ;
 
-	/* Tx flags */
+	 
 	task->txwr_rxrd.const_ctx.tx_flags =
 				FCOE_TASK_TX_STATE_SEQUENCE_CLEANUP <<
 				FCOE_TCE_TX_WR_RX_RD_CONST_TX_STATE_SHIFT;
-	/* init flags */
+	 
 	task->txwr_rxrd.const_ctx.init_flags = task_type <<
 				FCOE_TCE_TX_WR_RX_RD_CONST_TASK_TYPE_SHIFT;
 	task->txwr_rxrd.const_ctx.init_flags |= FCOE_TASK_CLASS_TYPE_3 <<
@@ -1531,7 +1415,7 @@ void bnx2fc_init_seq_cleanup_task(struct bnx2fc_cmd *seq_clnp_req,
 
 	bd_count = orig_io_req->bd_tbl->bd_valid;
 
-	/* obtain the appropriate bd entry from relative offset */
+	 
 	for (i = 0; i < bd_count; i++) {
 		if (offset < bd[i].buf_len)
 			break;
@@ -1547,16 +1431,16 @@ void bnx2fc_init_seq_cleanup_task(struct bnx2fc_cmd *seq_clnp_req,
 		task->txwr_only.sgl_ctx.sgl.mul_sgl.sgl_size =
 				bd_count;
 		task->txwr_only.sgl_ctx.sgl.mul_sgl.cur_sge_off =
-				offset; /* adjusted offset */
+				offset;  
 		task->txwr_only.sgl_ctx.sgl.mul_sgl.cur_sge_idx = i;
 	} else {
 
-		/* Multiple SGEs were used for this IO */
+		 
 		sgl = &task->rxwr_only.union_ctx.read_info.sgl_ctx.sgl;
 		sgl->mul_sgl.cur_sge_addr.lo = (u32)phys_addr;
 		sgl->mul_sgl.cur_sge_addr.hi = (u32)((u64)phys_addr >> 32);
 		sgl->mul_sgl.sgl_size = bd_count;
-		sgl->mul_sgl.cur_sge_off = offset; /*adjusted offset */
+		sgl->mul_sgl.cur_sge_off = offset;  
 		sgl->mul_sgl.cur_sge_idx = i;
 
 		memset(&task->rxwr_only.rx_seq_ctx, 0,
@@ -1575,8 +1459,8 @@ void bnx2fc_init_cleanup_task(struct bnx2fc_cmd *io_req,
 
 	memset(task, 0, sizeof(struct fcoe_task_ctx_entry));
 
-	/* Tx Write Rx Read */
-	/* init flags */
+	 
+	 
 	task->txwr_rxrd.const_ctx.init_flags = task_type <<
 				FCOE_TCE_TX_WR_RX_RD_CONST_TASK_TYPE_SHIFT;
 	task->txwr_rxrd.const_ctx.init_flags |= FCOE_TASK_CLASS_TYPE_3 <<
@@ -1591,12 +1475,12 @@ void bnx2fc_init_cleanup_task(struct bnx2fc_cmd *io_req,
 				FCOE_TCE_TX_WR_RX_RD_CONST_DEV_TYPE_SHIFT;
 	task->txwr_rxrd.union_ctx.cleanup.ctx.cleaned_task_id = orig_xid;
 
-	/* Tx flags */
+	 
 	task->txwr_rxrd.const_ctx.tx_flags =
 				FCOE_TASK_TX_STATE_EXCHANGE_CLEANUP <<
 				FCOE_TCE_TX_WR_RX_RD_CONST_TX_STATE_SHIFT;
 
-	/* Rx Read Tx Write */
+	 
 	task->rxwr_txrd.const_ctx.init_flags = context_id <<
 				FCOE_TCE_RX_WR_TX_RD_CONST_CID_SHIFT;
 	task->rxwr_txrd.var_ctx.rx_flags |= 1 <<
@@ -1616,7 +1500,7 @@ void bnx2fc_init_mp_task(struct bnx2fc_cmd *io_req,
 	u32 context_id;
 
 
-	/* Obtain task_type */
+	 
 	if ((io_req->cmd_type == BNX2FC_TASK_MGMT_CMD) ||
 	    (io_req->cmd_type == BNX2FC_ELS)) {
 		task_type = FCOE_TASK_TYPE_MIDPATH;
@@ -1626,13 +1510,13 @@ void bnx2fc_init_mp_task(struct bnx2fc_cmd *io_req,
 
 	memset(task, 0, sizeof(struct fcoe_task_ctx_entry));
 
-	/* Setup the task from io_req for easy reference */
+	 
 	io_req->task = task;
 
 	BNX2FC_IO_DBG(io_req, "Init MP task for cmd_type = %d task_type = %d\n",
 		io_req->cmd_type, task_type);
 
-	/* Tx only */
+	 
 	if ((task_type == FCOE_TASK_TYPE_MIDPATH) ||
 	    (task_type == FCOE_TASK_TYPE_UNSOLICITED)) {
 		task->txwr_only.sgl_ctx.sgl.mul_sgl.cur_sge_addr.lo =
@@ -1642,8 +1526,8 @@ void bnx2fc_init_mp_task(struct bnx2fc_cmd *io_req,
 		task->txwr_only.sgl_ctx.sgl.mul_sgl.sgl_size = 1;
 	}
 
-	/* Tx Write Rx Read */
-	/* init flags */
+	 
+	 
 	task->txwr_rxrd.const_ctx.init_flags = task_type <<
 				FCOE_TCE_TX_WR_RX_RD_CONST_TASK_TYPE_SHIFT;
 	if (tgt->dev_type == TYPE_TAPE)
@@ -1657,14 +1541,14 @@ void bnx2fc_init_mp_task(struct bnx2fc_cmd *io_req,
 	task->txwr_rxrd.const_ctx.init_flags |= FCOE_TASK_CLASS_TYPE_3 <<
 				FCOE_TCE_TX_WR_RX_RD_CONST_CLASS_TYPE_SHIFT;
 
-	/* tx flags */
+	 
 	task->txwr_rxrd.const_ctx.tx_flags = FCOE_TASK_TX_STATE_INIT <<
 				FCOE_TCE_TX_WR_RX_RD_CONST_TX_STATE_SHIFT;
 
-	/* Rx Write Tx Read */
+	 
 	task->rxwr_txrd.const_ctx.data_2_trns = io_req->data_xfer_len;
 
-	/* rx flags */
+	 
 	task->rxwr_txrd.var_ctx.rx_flags |= 1 <<
 				FCOE_TCE_RX_WR_TX_RD_VAR_EXP_FIRST_FRAME_SHIFT;
 
@@ -1681,14 +1565,14 @@ void bnx2fc_init_mp_task(struct bnx2fc_cmd *io_req,
 		fc_hdr->fh_rx_id = cpu_to_be16(io_req->xid);
 	}
 
-	/* Fill FC Header into middle path buffer */
+	 
 	hdr = (u64 *) &task->txwr_rxrd.union_ctx.tx_frame.fc_hdr;
 	memcpy(temp_hdr, fc_hdr, sizeof(temp_hdr));
 	hdr[0] = cpu_to_be64(temp_hdr[0]);
 	hdr[1] = cpu_to_be64(temp_hdr[1]);
 	hdr[2] = cpu_to_be64(temp_hdr[2]);
 
-	/* Rx Only */
+	 
 	if (task_type == FCOE_TASK_TYPE_MIDPATH) {
 		sgl = &task->rxwr_only.union_ctx.read_info.sgl_ctx.sgl;
 
@@ -1717,7 +1601,7 @@ void bnx2fc_init_task(struct bnx2fc_cmd *io_req,
 
 	memset(task, 0, sizeof(struct fcoe_task_ctx_entry));
 
-	/* Setup the task from io_req for easy reference */
+	 
 	io_req->task = task;
 
 	if (sc_cmd->sc_data_direction == DMA_TO_DEVICE)
@@ -1725,7 +1609,7 @@ void bnx2fc_init_task(struct bnx2fc_cmd *io_req,
 	else
 		task_type = FCOE_TASK_TYPE_READ;
 
-	/* Tx only */
+	 
 	bd_count = bd_tbl->bd_valid;
 	cached_sge = &task->rxwr_only.union_ctx.read_info.sgl_ctx.cached_sge;
 	if (task_type == FCOE_TASK_TYPE_WRITE) {
@@ -1754,8 +1638,8 @@ void bnx2fc_init_task(struct bnx2fc_cmd *io_req,
 		}
 	}
 
-	/*Tx Write Rx Read */
-	/* Init state to NORMAL */
+	 
+	 
 	task->txwr_rxrd.const_ctx.init_flags |= task_type <<
 				FCOE_TCE_TX_WR_RX_RD_CONST_TASK_TYPE_SHIFT;
 	if (dev_type == TYPE_TAPE) {
@@ -1770,19 +1654,19 @@ void bnx2fc_init_task(struct bnx2fc_cmd *io_req,
 				FCOE_TCE_TX_WR_RX_RD_CONST_DEV_TYPE_SHIFT;
 	task->txwr_rxrd.const_ctx.init_flags |= FCOE_TASK_CLASS_TYPE_3 <<
 				FCOE_TCE_TX_WR_RX_RD_CONST_CLASS_TYPE_SHIFT;
-	/* tx flags */
+	 
 	task->txwr_rxrd.const_ctx.tx_flags = FCOE_TASK_TX_STATE_NORMAL <<
 				FCOE_TCE_TX_WR_RX_RD_CONST_TX_STATE_SHIFT;
 
-	/* Set initial seq counter */
+	 
 	task->txwr_rxrd.union_ctx.tx_seq.ctx.seq_cnt = 1;
 
-	/* Fill FCP_CMND IU */
+	 
 	fcp_cmnd = (u64 *)
 		    task->txwr_rxrd.union_ctx.fcp_cmd.opaque;
 	bnx2fc_build_fcp_cmnd(io_req, (struct fcp_cmnd *)&tmp_fcp_cmnd);
 
-	/* swap fcp_cmnd */
+	 
 	cnt = sizeof(struct fcp_cmnd) / sizeof(u64);
 
 	for (i = 0; i < cnt; i++) {
@@ -1790,21 +1674,21 @@ void bnx2fc_init_task(struct bnx2fc_cmd *io_req,
 		fcp_cmnd++;
 	}
 
-	/* Rx Write Tx Read */
+	 
 	task->rxwr_txrd.const_ctx.data_2_trns = io_req->data_xfer_len;
 
 	context_id = tgt->context_id;
 	task->rxwr_txrd.const_ctx.init_flags = context_id <<
 				FCOE_TCE_RX_WR_TX_RD_CONST_CID_SHIFT;
 
-	/* rx flags */
-	/* Set state to "waiting for the first packet" */
+	 
+	 
 	task->rxwr_txrd.var_ctx.rx_flags |= 1 <<
 				FCOE_TCE_RX_WR_TX_RD_VAR_EXP_FIRST_FRAME_SHIFT;
 
 	task->rxwr_txrd.var_ctx.rx_id = 0xffff;
 
-	/* Rx Only */
+	 
 	if (task_type != FCOE_TASK_TYPE_READ)
 		return;
 
@@ -1851,15 +1735,7 @@ void bnx2fc_init_task(struct bnx2fc_cmd *io_req,
 	}
 }
 
-/**
- * bnx2fc_setup_task_ctx - allocate and map task context
- *
- * @hba:	pointer to adapter structure
- *
- * allocate memory for task context, and associated BD table to be used
- * by firmware
- *
- */
+ 
 int bnx2fc_setup_task_ctx(struct bnx2fc_hba *hba)
 {
 	int rc = 0;
@@ -1868,12 +1744,7 @@ int bnx2fc_setup_task_ctx(struct bnx2fc_hba *hba)
 	int task_ctx_arr_sz;
 	int i;
 
-	/*
-	 * Allocate task context bd table. A page size of bd table
-	 * can map 256 buffers. Each buffer contains 32 task context
-	 * entries. Hence the limit with one page is 8192 task context
-	 * entries.
-	 */
+	 
 	hba->task_ctx_bd_tbl = dma_alloc_coherent(&hba->pcidev->dev,
 						  PAGE_SIZE,
 						  &hba->task_ctx_bd_dma,
@@ -1884,10 +1755,7 @@ int bnx2fc_setup_task_ctx(struct bnx2fc_hba *hba)
 		goto out;
 	}
 
-	/*
-	 * Allocate task_ctx which is an array of pointers pointing to
-	 * a page containing 32 task contexts
-	 */
+	 
 	task_ctx_arr_sz = (hba->max_tasks / BNX2FC_TASKS_PER_PAGE);
 	hba->task_ctx = kzalloc((task_ctx_arr_sz * sizeof(void *)),
 				 GFP_KERNEL);
@@ -1897,9 +1765,7 @@ int bnx2fc_setup_task_ctx(struct bnx2fc_hba *hba)
 		goto out1;
 	}
 
-	/*
-	 * Allocate task_ctx_dma which is an array of dma addresses
-	 */
+	 
 	hba->task_ctx_dma = kmalloc((task_ctx_arr_sz *
 					sizeof(dma_addr_t)), GFP_KERNEL);
 	if (!hba->task_ctx_dma) {
@@ -2101,12 +1967,7 @@ cleanup_ht:
 	return -ENOMEM;
 }
 
-/**
- * bnx2fc_setup_fw_resc - Allocate and map hash table and dummy buffer
- *
- * @hba:	Pointer to adapter structure
- *
- */
+ 
 int bnx2fc_setup_fw_resc(struct bnx2fc_hba *hba)
 {
 	u64 addr;

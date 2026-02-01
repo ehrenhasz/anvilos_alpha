@@ -1,19 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Driver for FPGA Management Engine Error Management
- *
- * Copyright 2019 Intel Corporation, Inc.
- *
- * Authors:
- *   Kang Luwei <luwei.kang@intel.com>
- *   Xiao Guangrong <guangrong.xiao@linux.intel.com>
- *   Wu Hao <hao.wu@intel.com>
- *   Joseph Grecco <joe.grecco@intel.com>
- *   Enno Luebbers <enno.luebbers@intel.com>
- *   Tim Whisonant <tim.whisonant@intel.com>
- *   Ananda Ravuri <ananda.ravuri@intel.com>
- *   Mitchel, Henry <henry.mitchel@intel.com>
- */
+
+ 
 
 #include <linux/fpga-dfl.h>
 #include <linux/uaccess.h>
@@ -237,7 +223,7 @@ static ssize_t fme_errors_store(struct device *dev,
 	else
 		ret = -EINVAL;
 
-	/* Workaround: disable MBP_ERROR if feature revision is 0 */
+	 
 	writeq(dfl_feature_revision(base) ? 0ULL : MBP_ERROR,
 	       base + FME_ERROR_MASK);
 	mutex_unlock(&pdata->lock);
@@ -296,10 +282,7 @@ static umode_t fme_global_err_attrs_visible(struct kobject *kobj,
 {
 	struct device *dev = kobj_to_dev(kobj);
 
-	/*
-	 * sysfs entries are visible only if related private feature is
-	 * enumerated.
-	 */
+	 
 	if (!dfl_get_feature_by_id(dev, FME_FEATURE_ID_GLOBAL_ERR))
 		return 0;
 
@@ -321,7 +304,7 @@ static void fme_err_mask(struct device *dev, bool mask)
 
 	mutex_lock(&pdata->lock);
 
-	/* Workaround: keep MBP_ERROR always masked if revision is 0 */
+	 
 	if (dfl_feature_revision(base))
 		writeq(mask ? ERROR_MASK : 0, base + FME_ERROR_MASK);
 	else

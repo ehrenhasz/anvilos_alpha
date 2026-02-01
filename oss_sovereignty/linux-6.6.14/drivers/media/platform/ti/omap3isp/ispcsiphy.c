@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * ispcsiphy.c
- *
- * TI OMAP3 ISP - CSI PHY module
- *
- * Copyright (C) 2010 Nokia Corporation
- * Copyright (C) 2009 Texas Instruments, Inc.
- *
- * Contacts: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
- *	     Sakari Ailus <sakari.ailus@iki.fi>
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/device.h>
@@ -31,7 +21,7 @@ static void csiphy_routing_cfg_3630(struct isp_csiphy *phy,
 
 	switch (iface) {
 	default:
-		/* Should not happen in practice, but let's keep the compiler happy. */
+		 
 		return;
 	case ISP_INTERFACE_CCP2B_PHY1:
 		reg &= ~OMAP3630_CONTROL_CAMERA_PHY_CTRL_CSI1_RX_SEL_PHY2;
@@ -51,7 +41,7 @@ static void csiphy_routing_cfg_3630(struct isp_csiphy *phy,
 		break;
 	}
 
-	/* Select data/clock or data/strobe mode for CCP2 */
+	 
 	if (iface == ISP_INTERFACE_CCP2B_PHY1 ||
 	    iface == ISP_INTERFACE_CCP2B_PHY2) {
 		if (ccp2_strobe)
@@ -72,7 +62,7 @@ static void csiphy_routing_cfg_3430(struct isp_csiphy *phy, u32 iface, bool on,
 	u32 csirxfe = OMAP343X_CONTROL_CSIRXFE_PWRDNZ
 		| OMAP343X_CONTROL_CSIRXFE_RESET;
 
-	/* Only the CCP2B on PHY1 is configurable. */
+	 
 	if (iface != ISP_INTERFACE_CCP2B_PHY1)
 		return;
 
@@ -87,18 +77,7 @@ static void csiphy_routing_cfg_3430(struct isp_csiphy *phy, u32 iface, bool on,
 	regmap_write(phy->isp->syscon, phy->isp->syscon_offset, csirxfe);
 }
 
-/*
- * Configure OMAP 3 CSI PHY routing.
- * @phy: relevant phy device
- * @iface: ISP_INTERFACE_*
- * @on: power on or off
- * @ccp2_strobe: false: data/clock, true: data/strobe
- *
- * Note that the underlying routing configuration registers are part of the
- * control (SCM) register space and part of the CORE power domain on both 3430
- * and 3630, so they will not hold their contents in off-mode. This isn't an
- * issue since the MPU power domain is forced on whilst the ISP is in use.
- */
+ 
 static void csiphy_routing_cfg(struct isp_csiphy *phy,
 			       enum isp_interface_type iface, bool on,
 			       bool ccp2_strobe)
@@ -109,10 +88,7 @@ static void csiphy_routing_cfg(struct isp_csiphy *phy,
 		return csiphy_routing_cfg_3430(phy, iface, on, ccp2_strobe);
 }
 
-/*
- * csiphy_power_autoswitch_enable
- * @enable: Sets or clears the autoswitch function enable flag.
- */
+ 
 static void csiphy_power_autoswitch_enable(struct isp_csiphy *phy, bool enable)
 {
 	isp_reg_clr_set(phy->isp, phy->cfg_regs, ISPCSI2_PHY_CFG,
@@ -120,12 +96,7 @@ static void csiphy_power_autoswitch_enable(struct isp_csiphy *phy, bool enable)
 			enable ? ISPCSI2_PHY_CFG_PWR_AUTO : 0);
 }
 
-/*
- * csiphy_set_power
- * @power: Power state to be set.
- *
- * Returns 0 if successful, or -EBUSY if the retry count is exceeded.
- */
+ 
 static int csiphy_set_power(struct isp_csiphy *phy, u32 power)
 {
 	u32 reg;
@@ -153,9 +124,7 @@ static int csiphy_set_power(struct isp_csiphy *phy, u32 power)
 	return 0;
 }
 
-/*
- * TCLK values are OK at their reset values
- */
+ 
 #define TCLK_TERM	0
 #define TCLK_MISS	1
 #define TCLK_SETTLE	14
@@ -186,7 +155,7 @@ static int omap3isp_csiphy_config(struct isp_csiphy *phy)
 	if (num_data_lanes > phy->num_data_lanes)
 		return -EINVAL;
 
-	/* Clock and data lanes verification */
+	 
 	for (i = 0; i < num_data_lanes; i++) {
 		if (lanes->data[i].pol > 1 || lanes->data[i].pos > 3)
 			return -EINVAL;
@@ -203,16 +172,12 @@ static int omap3isp_csiphy_config(struct isp_csiphy *phy)
 	if (lanes->clk.pos == 0 || used_lanes & (1 << lanes->clk.pos))
 		return -EINVAL;
 
-	/*
-	 * The PHY configuration is lost in off mode, that's not an
-	 * issue since the MPU power domain is forced on whilst the
-	 * ISP is in use.
-	 */
+	 
 	csiphy_routing_cfg(phy, buscfg->interface, true,
 			   buscfg->bus.ccp2.phy_layer);
 
-	/* DPHY timing configuration */
-	/* CSI-2 is DDR and we only count used lanes. */
+	 
+	 
 	csi2_ddrclk_khz = pipe->external_rate / 1000
 		/ (2 * hweight32(used_lanes)) * pipe->external_width;
 
@@ -220,10 +185,10 @@ static int omap3isp_csiphy_config(struct isp_csiphy *phy)
 
 	reg &= ~(ISPCSIPHY_REG0_THS_TERM_MASK |
 		 ISPCSIPHY_REG0_THS_SETTLE_MASK);
-	/* THS_TERM: Programmed value = ceil(12.5 ns/DDRClk period) - 1. */
+	 
 	reg |= (DIV_ROUND_UP(25 * csi2_ddrclk_khz, 2000000) - 1)
 		<< ISPCSIPHY_REG0_THS_TERM_SHIFT;
-	/* THS_SETTLE: Programmed value = ceil(90 ns/DDRClk period) + 3. */
+	 
 	reg |= (DIV_ROUND_UP(90 * csi2_ddrclk_khz, 1000000) + 3)
 		<< ISPCSIPHY_REG0_THS_SETTLE_SHIFT;
 
@@ -240,7 +205,7 @@ static int omap3isp_csiphy_config(struct isp_csiphy *phy)
 
 	isp_reg_writel(phy->isp, reg, phy->phy_regs, ISPCSIPHY_REG1);
 
-	/* DPHY lane configuration */
+	 
 	reg = isp_reg_readl(phy->isp, phy->cfg_regs, ISPCSI2_PHY_CFG);
 
 	for (i = 0; i < num_data_lanes; i++) {
@@ -330,9 +295,7 @@ void omap3isp_csiphy_release(struct isp_csiphy *phy)
 	mutex_unlock(&phy->mutex);
 }
 
-/*
- * omap3isp_csiphy_init - Initialize the CSI PHY frontends
- */
+ 
 int omap3isp_csiphy_init(struct isp_device *isp)
 {
 	struct isp_csiphy *phy1 = &isp->isp_csiphy1;

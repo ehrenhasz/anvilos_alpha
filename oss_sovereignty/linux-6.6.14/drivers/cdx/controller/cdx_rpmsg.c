@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Platform driver for CDX bus.
- *
- * Copyright (C) 2022-2023, Advanced Micro Devices, Inc.
- */
+
+ 
 
 #include <linux/rpmsg.h>
 #include <linux/remoteproc.h>
@@ -68,7 +64,7 @@ static int cdx_attach_to_rproc(struct platform_device *pdev)
 		goto pdev_err;
 	}
 
-	/* Attach to remote processor */
+	 
 	ret = rproc_boot(rp);
 	if (ret) {
 		dev_err(&pdev->dev, "Failed to attach to remote processor\n");
@@ -173,7 +169,7 @@ int cdx_setup_rpmsg(struct platform_device *pdev)
 	struct cdx_mcdi *cdx_mcdi;
 	int ret;
 
-	/* Attach to remote processor */
+	 
 	ret = cdx_attach_to_rproc(pdev);
 	if (ret)
 		return ret;
@@ -181,7 +177,7 @@ int cdx_setup_rpmsg(struct platform_device *pdev)
 	cdx_c = platform_get_drvdata(pdev);
 	cdx_mcdi = cdx_c->priv;
 
-	/* Register RPMsg driver */
+	 
 	cdx_rpmsg_id_table[0].driver_data = (kernel_ulong_t)cdx_c;
 
 	INIT_WORK(&cdx_mcdi->work, cdx_rpmsg_post_probe_work);

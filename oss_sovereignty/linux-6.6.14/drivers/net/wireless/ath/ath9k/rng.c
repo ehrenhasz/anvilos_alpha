@@ -1,18 +1,4 @@
-/*
- * Copyright (c) 2015 Qualcomm Atheros, Inc.
- *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
+ 
 
 #include <linux/hw_random.h>
 #include <linux/kthread.h>
@@ -37,7 +23,7 @@ static int ath9k_rng_data_read(struct ath_softc *sc, u32 *buf, u32 buf_size)
 		v1 = REG_READ(ah, AR_PHY_TST_ADC) & 0xffff;
 		v2 = REG_READ(ah, AR_PHY_TST_ADC) & 0xffff;
 
-		/* wait for data ready */
+		 
 		if (v1 && v2 && rng_last != v1 && v1 != v2 && v1 != 0xffff &&
 		    v2 != 0xffff)
 			buf[j++] = (v1 << 16) | v2;

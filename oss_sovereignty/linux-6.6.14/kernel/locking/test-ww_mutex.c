@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Module-based API test facility for ww_mutexes
- */
+
+ 
 
 #include <linux/kernel.h>
 
@@ -516,7 +514,7 @@ static void stress_reorder_work(struct work_struct *work)
 			}
 
 			ww_mutex_lock_slow(ll->lock, &ctx);
-			list_move(&ll->link, &locks); /* restarts iteration */
+			list_move(&ll->link, &locks);  
 		}
 
 		dummy_load(stress);

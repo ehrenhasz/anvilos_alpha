@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright(c) 2023 Advanced Micro Devices, Inc */
+
+ 
 
 #include <linux/pci.h>
 #include <linux/vmalloc.h>
@@ -55,7 +55,7 @@ int pdsc_intr_alloc(struct pdsc *pdsc, char *name,
 	unsigned int index;
 	int err;
 
-	/* Find the first available interrupt */
+	 
 	for (index = 0; index < pdsc->nintrs; index++)
 		if (!pdsc->intr_info[index].vector)
 			break;
@@ -74,7 +74,7 @@ int pdsc_intr_alloc(struct pdsc *pdsc, char *name,
 	intr_info->data = data;
 	strscpy(intr_info->name, name, sizeof(intr_info->name));
 
-	/* Get the OS vector number for the interrupt */
+	 
 	err = pci_irq_vector(pdsc->pdev, index);
 	if (err < 0) {
 		dev_err(pdsc->dev, "failed to get intr vector index %d: %pe\n",
@@ -83,12 +83,12 @@ int pdsc_intr_alloc(struct pdsc *pdsc, char *name,
 	}
 	intr_info->vector = err;
 
-	/* Init the device's intr mask */
+	 
 	pds_core_intr_clean(&pdsc->intr_ctrl[index]);
 	pds_core_intr_mask_assert(&pdsc->intr_ctrl[index], 1);
 	pds_core_intr_mask(&pdsc->intr_ctrl[index], PDS_CORE_INTR_MASK_SET);
 
-	/* Register the isr with a name */
+	 
 	err = request_irq(intr_info->vector, handler, 0, intr_info->name, data);
 	if (err) {
 		dev_err(pdsc->dev, "failed to get intr irq vector %d: %pe\n",
@@ -232,7 +232,7 @@ int pdsc_qcq_alloc(struct pdsc *pdsc, unsigned int type, unsigned int index,
 	qcq->cq.done_color = 1;
 
 	if (flags & PDS_CORE_QCQ_F_NOTIFYQ) {
-		/* q & cq need to be contiguous in case of notifyq */
+		 
 		qcq->q_size = PDS_PAGE_SIZE +
 			      ALIGN(num_descs * desc_size, PDS_PAGE_SIZE) +
 			      ALIGN(num_descs * cq_desc_size, PDS_PAGE_SIZE);
@@ -256,7 +256,7 @@ int pdsc_qcq_alloc(struct pdsc *pdsc, unsigned int type, unsigned int index,
 				   PDS_PAGE_SIZE);
 
 	} else {
-		/* q DMA descriptors */
+		 
 		qcq->q_size = PDS_PAGE_SIZE + (num_descs * desc_size);
 		qcq->q_base = dma_alloc_coherent(dev, qcq->q_size,
 						 &qcq->q_base_pa,
@@ -269,7 +269,7 @@ int pdsc_qcq_alloc(struct pdsc *pdsc, unsigned int type, unsigned int index,
 		q_base_pa = ALIGN(qcq->q_base_pa, PDS_PAGE_SIZE);
 		pdsc_q_map(&qcq->q, q_base, q_base_pa);
 
-		/* cq DMA descriptors */
+		 
 		qcq->cq_size = PDS_PAGE_SIZE + (num_descs * cq_desc_size);
 		qcq->cq_base = dma_alloc_coherent(dev, qcq->cq_size,
 						  &qcq->cq_base_pa,
@@ -387,10 +387,10 @@ static int pdsc_viftypes_init(struct pdsc *pdsc)
 		if (!pdsc_viftype_defaults[vt].name)
 			continue;
 
-		/* Grab the defaults */
+		 
 		pdsc->viftype_status[vt] = pdsc_viftype_defaults[vt];
 
-		/* See what the Core device has for support */
+		 
 		vt_support = !!le16_to_cpu(pdsc->dev_ident.vif_types[vt]);
 		dev_dbg(pdsc->dev, "VIF %s is %ssupported\n",
 			pdsc->viftype_status[vt].name,
@@ -414,7 +414,7 @@ int pdsc_setup(struct pdsc *pdsc, bool init)
 	if (err)
 		return err;
 
-	/* Scale the descriptor ring length based on number of CPUs and VFs */
+	 
 	numdescs = max_t(int, PDSC_ADMINQ_MIN_LENGTH, num_online_cpus());
 	numdescs += 2 * pci_sriov_get_totalvfs(pdsc->pdev);
 	numdescs = roundup_pow_of_two(numdescs);
@@ -436,15 +436,15 @@ int pdsc_setup(struct pdsc *pdsc, bool init)
 	if (err)
 		goto err_out_teardown;
 
-	/* NotifyQ rides on the AdminQ interrupt */
+	 
 	pdsc->notifyqcq.intx = pdsc->adminqcq.intx;
 
-	/* Set up the Core with the AdminQ and NotifyQ info */
+	 
 	err = pdsc_core_init(pdsc);
 	if (err)
 		goto err_out_teardown;
 
-	/* Set up the VIFs */
+	 
 	err = pdsc_viftypes_init(pdsc);
 	if (err)
 		goto err_out_teardown;
@@ -505,7 +505,7 @@ void pdsc_stop(struct pdsc *pdsc)
 	if (!pdsc->intr_info)
 		return;
 
-	/* Mask interrupts that are in use */
+	 
 	for (i = 0; i < pdsc->nintrs; i++)
 		if (pdsc->intr_info[i].vector)
 			pds_core_intr_mask(&pdsc->intr_ctrl[i],
@@ -524,7 +524,7 @@ static void pdsc_fw_down(struct pdsc *pdsc)
 		return;
 	}
 
-	/* Notify clients of fw_down */
+	 
 	if (pdsc->fw_reporter)
 		devlink_health_report(pdsc->fw_reporter, "FW down reported", pdsc);
 	pdsc_notify(PDS_EVENT_RESET, &reset_event);
@@ -554,7 +554,7 @@ static void pdsc_fw_up(struct pdsc *pdsc)
 	if (err)
 		goto err_out;
 
-	/* Notify clients of fw_up */
+	 
 	pdsc->fw_recoveries++;
 	if (pdsc->fw_reporter)
 		devlink_health_reporter_state_update(pdsc->fw_reporter,
@@ -575,7 +575,7 @@ void pdsc_health_thread(struct work_struct *work)
 
 	mutex_lock(&pdsc->config_lock);
 
-	/* Don't do a check when in a transition state */
+	 
 	mask = BIT_ULL(PDSC_S_INITING_DRIVER) |
 	       BIT_ULL(PDSC_S_STOPPING_DRIVER);
 	if (pdsc->state & mask)

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * soc-acpi-intel-lnl-match.c - tables and support for LNL ACPI enumeration.
- *
- * Copyright (c) 2023, Intel Corporation. All rights reserved.
- *
- */
+
+ 
 
 #include <sound/soc-acpi.h>
 #include <sound/soc-acpi-intel-match.h>
@@ -40,9 +35,9 @@ static const struct snd_soc_acpi_link_adr lnl_rvp[] = {
 	{}
 };
 
-/* this table is used when there is no I2S codec present */
+ 
 struct snd_soc_acpi_mach snd_soc_acpi_intel_lnl_sdw_machines[] = {
-	/* mockup tests need to be first */
+	 
 	{
 		.link_mask = GENMASK(3, 0),
 		.links = sdw_mockup_headset_2amps_mic,

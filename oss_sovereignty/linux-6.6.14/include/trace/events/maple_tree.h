@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM maple_tree
 
@@ -117,7 +117,7 @@ TRACE_EVENT(ma_write,
 		  (void *) __entry->val
 	)
 )
-#endif /* _TRACE_MM_H */
+#endif  
 
-/* This part must be outside protection */
+ 
 #include <trace/define_trace.h>

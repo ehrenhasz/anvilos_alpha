@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* Applied Micro X-Gene SoC Ethernet Driver
- *
- * Copyright (c) 2014, Applied Micro Circuits Corporation
- * Authors: Iyappan Subramanian <isubramanian@apm.com>
- *	    Ravi Patel <rapatel@apm.com>
- *	    Keyur Chudgar <kchudgar@apm.com>
- */
+
+ 
 
 #include <linux/gpio.h>
 #include "xgene_enet_main.h"
@@ -28,7 +22,7 @@ static void xgene_enet_init_bufpool(struct xgene_enet_desc_ring *buf_pool)
 	for (i = 0; i < buf_pool->slots; i++) {
 		raw_desc = &buf_pool->raw_desc16[i];
 
-		/* Hardware expects descriptor in little endian format */
+		 
 		raw_desc->m0 = cpu_to_le64(i |
 				SET_VAL(FPQNUM, buf_pool->dst_ring_num) |
 				SET_VAL(STASH, 3));
@@ -178,7 +172,7 @@ static void xgene_enet_delete_bufpool(struct xgene_enet_desc_ring *buf_pool)
 	dma_addr_t dma_addr;
 	int i;
 
-	/* Free up the buffers held by hardware */
+	 
 	for (i = 0; i < buf_pool->slots; i++) {
 		if (buf_pool->rx_skb[i]) {
 			dev_kfree_skb_any(buf_pool->rx_skb[i]);
@@ -198,7 +192,7 @@ static void xgene_enet_delete_pagepool(struct xgene_enet_desc_ring *buf_pool)
 	struct page *page;
 	int i;
 
-	/* Free up the buffers held by hardware */
+	 
 	for (i = 0; i < buf_pool->slots; i++) {
 		page = buf_pool->frag_page[i];
 		if (page) {
@@ -257,7 +251,7 @@ static int xgene_enet_tx_completion(struct xgene_enet_desc_ring *cp_ring,
 		spin_unlock(&pdata->mss_lock);
 	}
 
-	/* Checking for error */
+	 
 	status = GET_VAL(LERR, le64_to_cpu(raw_desc->m0));
 	if (unlikely(status > 2)) {
 		cp_ring->tx_dropped++;
@@ -281,7 +275,7 @@ static int xgene_enet_setup_mss(struct net_device *ndev, u32 mss)
 
 	spin_lock(&pdata->mss_lock);
 
-	/* Reuse the slot if MSS matches */
+	 
 	for (i = 0; mss_index < 0 && i < NUM_MSS_REG; i++) {
 		if (pdata->mss[i] == mss) {
 			pdata->mss_refcnt[i]++;
@@ -289,7 +283,7 @@ static int xgene_enet_setup_mss(struct net_device *ndev, u32 mss)
 		}
 	}
 
-	/* Overwrite the slot with ref_count = 0 */
+	 
 	for (i = 0; mss_index < 0 && i < NUM_MSS_REG; i++) {
 		if (!pdata->mss_refcnt[i]) {
 			pdata->mss_refcnt[i]++;
@@ -343,7 +337,7 @@ static int xgene_enet_work_msg(struct sk_buff *skb, u64 *hopinfo)
 					len += skb_frag_size(
 						&skb_shinfo(skb)->frags[i]);
 
-				/* HW requires header must reside in 3 buffer */
+				 
 				if (unlikely(hdr_len > len)) {
 					if (skb_linearize(skb))
 						return 0;
@@ -441,7 +435,7 @@ static int xgene_enet_setup_tx_desc(struct xgene_enet_desc_ring *tx_ring,
 		return -EINVAL;
 	}
 
-	/* Hardware expects descriptor in little endian format */
+	 
 	raw_desc->m1 = cpu_to_le64(SET_VAL(DATAADDR, dma_addr) |
 				   SET_VAL(BUFDATALEN, hw_len) |
 				   SET_BIT(COHERENT));
@@ -449,7 +443,7 @@ static int xgene_enet_setup_tx_desc(struct xgene_enet_desc_ring *tx_ring,
 	if (!skb_is_nonlinear(skb))
 		goto out;
 
-	/* scatter gather */
+	 
 	nv = 1;
 	exp_desc = (void *)&tx_ring->raw_desc[tail];
 	tail = (tail + 1) & (tx_ring->slots - 1);
@@ -642,7 +636,7 @@ static void xgene_enet_free_pagepool(struct xgene_enet_desc_ring *buf_pool,
 	buf_pool->head = head;
 }
 
-/* Errata 10GE_10 and ENET_15 - Fix duplicated HW statistic counters */
+ 
 static bool xgene_enet_errata_10GE_10(struct sk_buff *skb, u32 len, u8 status)
 {
 	if (status == INGRESS_CRC &&
@@ -654,7 +648,7 @@ static bool xgene_enet_errata_10GE_10(struct sk_buff *skb, u32 len, u8 status)
 	return false;
 }
 
-/* Errata 10GE_8 and ENET_11 - allow packet with length <=64B */
+ 
 static bool xgene_enet_errata_10GE_8(struct sk_buff *skb, u32 len, u8 status)
 {
 	if (status == INGRESS_PKT_LEN && len == ETHER_MIN_PACKET) {
@@ -697,7 +691,7 @@ static int xgene_enet_rx_frame(struct xgene_enet_desc_ring *rx_ring,
 
 	datalen = xgene_enet_get_data_len(le64_to_cpu(raw_desc->m1));
 
-	/* strip off CRC as HW isn't doing this */
+	 
 	nv = GET_VAL(NV, le64_to_cpu(raw_desc->m0));
 	if (!nv)
 		datalen -= 4;
@@ -706,7 +700,7 @@ static int xgene_enet_rx_frame(struct xgene_enet_desc_ring *rx_ring,
 	prefetch(skb->data - NET_IP_ALIGN);
 	skb->protocol = eth_type_trans(skb, ndev);
 
-	/* checking for error */
+	 
 	status = (GET_VAL(ELERR, le64_to_cpu(raw_desc->m0)) << LERR_LEN) |
 		  GET_VAL(LERR, le64_to_cpu(raw_desc->m0));
 	if (unlikely(status)) {
@@ -799,7 +793,7 @@ static int xgene_enet_process_ring(struct xgene_enet_desc_ring *ring,
 		if (unlikely(xgene_enet_is_desc_slot_empty(raw_desc)))
 			break;
 
-		/* read fpqnum field after dataaddr field */
+		 
 		dma_rmb();
 		if (GET_BIT(NV, le64_to_cpu(raw_desc->m0))) {
 			head = (head + 1) & slots;
@@ -1322,7 +1316,7 @@ static int xgene_enet_create_desc_rings(struct net_device *ndev)
 	cpu_bufnum = xgene_start_cpu_bufnum(pdata);
 
 	for (i = 0; i < pdata->rxq_cnt; i++) {
-		/* allocate rx descriptor ring */
+		 
 		owner = xgene_derive_ring_owner(pdata);
 		ring_id = xgene_enet_get_ring_id(RING_OWNER_CPU, cpu_bufnum++);
 		rx_ring = xgene_enet_create_desc_ring(ndev, ring_num++,
@@ -1333,7 +1327,7 @@ static int xgene_enet_create_desc_rings(struct net_device *ndev)
 			goto err;
 		}
 
-		/* allocate buffer pool for receiving packets */
+		 
 		owner = xgene_derive_ring_owner(pdata);
 		ring_id = xgene_enet_get_ring_id(owner, bp_bufnum++);
 		buf_pool = xgene_enet_create_desc_ring(ndev, ring_num++,
@@ -1364,7 +1358,7 @@ static int xgene_enet_create_desc_rings(struct net_device *ndev)
 			break;
 		}
 
-		/* allocate next buffer pool for jumbo packets */
+		 
 		owner = xgene_derive_ring_owner(pdata);
 		ring_id = xgene_enet_get_ring_id(owner, bp_bufnum++);
 		page_pool = xgene_enet_create_desc_ring(ndev, ring_num++,
@@ -1397,7 +1391,7 @@ static int xgene_enet_create_desc_rings(struct net_device *ndev)
 	}
 
 	for (i = 0; i < pdata->txq_cnt; i++) {
-		/* allocate tx descriptor ring */
+		 
 		owner = xgene_derive_ring_owner(pdata);
 		ring_id = xgene_enet_get_ring_id(owner, eth_bufnum++);
 		tx_ring = xgene_enet_create_desc_ring(ndev, ring_num++,
@@ -1422,7 +1416,7 @@ static int xgene_enet_create_desc_rings(struct net_device *ndev)
 		if (!pdata->cq_cnt) {
 			cp_ring = pdata->rx_ring[i];
 		} else {
-			/* allocate tx completion descriptor ring */
+			 
 			ring_id = xgene_enet_get_ring_id(RING_OWNER_CPU,
 							 cpu_bufnum++);
 			cp_ring = xgene_enet_create_desc_ring(ndev, ring_num++,
@@ -1769,13 +1763,10 @@ static int xgene_enet_get_resources(struct xgene_enet_pdata *pdata)
 	pdata->clk = devm_clk_get(&pdev->dev, NULL);
 	if (IS_ERR(pdata->clk)) {
 		if (pdata->phy_mode != PHY_INTERFACE_MODE_SGMII) {
-			/* Abort if the clock is defined but couldn't be
-			 * retrived. Always abort if the clock is missing on
-			 * DT system as the driver can't cope with this case.
-			 */
+			 
 			if (PTR_ERR(pdata->clk) != -ENOENT || dev->of_node)
 				return PTR_ERR(pdata->clk);
-			/* Firmware may have set up the clock already. */
+			 
 			dev_info(dev, "clocks have been setup already\n");
 		}
 	}
@@ -1828,7 +1819,7 @@ static int xgene_enet_init_hw(struct xgene_enet_pdata *pdata)
 		return ret;
 	}
 
-	/* setup buffer pool */
+	 
 	for (i = 0; i < pdata->rxq_cnt; i++) {
 		buf_pool = pdata->rx_ring[i]->buf_pool;
 		xgene_enet_init_bufpool(buf_pool);
@@ -1849,7 +1840,7 @@ static int xgene_enet_init_hw(struct xgene_enet_pdata *pdata)
 	dst_ring_num = xgene_enet_dst_ring_num(pdata->rx_ring[0]);
 	buf_pool = pdata->rx_ring[0]->buf_pool;
 	if (pdata->phy_mode == PHY_INTERFACE_MODE_XGMII) {
-		/* Initialize and Enable  PreClassifier Tree */
+		 
 		enet_cle->max_nodes = 512;
 		enet_cle->max_dbptrs = 1024;
 		enet_cle->parsers = 3;
@@ -2110,10 +2101,7 @@ static int xgene_enet_probe(struct platform_device *pdev)
 	return 0;
 
 err1:
-	/*
-	 * If necessary, free_netdev() will call netif_napi_del() and undo
-	 * the effects of xgene_enet_napi_add()'s calls to netif_napi_add().
-	 */
+	 
 
 	xgene_enet_delete_desc_rings(pdata);
 

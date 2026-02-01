@@ -1,21 +1,4 @@
-/* touch -- change modification and access times of files
-   Copyright (C) 1987-2023 Free Software Foundation, Inc.
-
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* Written by Paul Rubin, Arnold Robbins, Jim Kingdon, David MacKenzie,
-   and Randy Smith. */
+ 
 
 #include <config.h>
 #include <stdio.h>
@@ -33,7 +16,7 @@
 #include "stat-time.h"
 #include "utimens.h"
 
-/* The official name of this program (e.g., no 'g' prefix).  */
+ 
 #define PROGRAM_NAME "touch"
 
 #define AUTHORS \
@@ -43,37 +26,32 @@
   proper_name ("David MacKenzie"), \
   proper_name ("Randy Smith")
 
-/* Bitmasks for 'change_times'. */
+ 
 #define CH_ATIME 1
 #define CH_MTIME 2
 
-/* Which timestamps to change. */
+ 
 static int change_times;
 
-/* (-c) If true, don't create if not already there.  */
+ 
 static bool no_create;
 
-/* (-r) If true, use times from a reference file.  */
+ 
 static bool use_ref;
 
-/* (-h) If true, change the times of an existing symlink, if possible.  */
+ 
 static bool no_dereference;
 
-/* If true, the only thing we have to do is change both the
-   modification and access time to the current time, so we don't
-   have to own the file, just be able to read and write it.
-   On some systems, we can do this if we own the file, even though
-   we have neither read nor write access to it.  */
+ 
 static bool amtime_now;
 
-/* New access and modification times to use when setting time.  */
+ 
 static struct timespec newtime[2];
 
-/* File to use for -r. */
+ 
 static char *ref_file;
 
-/* For long options that have no equivalent short option, use a
-   non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
+ 
 enum
 {
   TIME_OPTION = CHAR_MAX + 1
@@ -91,19 +69,19 @@ static struct option const longopts[] =
   {nullptr, 0, nullptr, 0}
 };
 
-/* Valid arguments to the '--time' option. */
+ 
 static char const *const time_args[] =
 {
   "atime", "access", "use", "mtime", "modify", nullptr
 };
 
-/* The bits in 'change_times' that those arguments set. */
+ 
 static int const time_masks[] =
 {
   CH_ATIME, CH_ATIME, CH_ATIME, CH_MTIME, CH_MTIME
 };
 
-/* The interpretation of FLEX_DATE as a date, relative to NOW.  */
+ 
 
 static struct timespec
 date_relative (char const *flex_date, struct timespec now)
@@ -114,8 +92,7 @@ date_relative (char const *flex_date, struct timespec now)
   return result;
 }
 
-/* Update the time of file FILE according to the options given.
-   Return true if successful.  */
+ 
 
 static bool
 touch (char const *file)
@@ -128,7 +105,7 @@ touch (char const *file)
     fd = STDOUT_FILENO;
   else if (! (no_create || no_dereference))
     {
-      /* Try to open FILE, creating it if necessary.  */
+       
       fd = fd_reopen (STDIN_FILENO, file,
                       O_WRONLY | O_CREAT | O_NONBLOCK | O_NOCTTY, MODE_RW_UGO);
       if (fd < 0)
@@ -137,7 +114,7 @@ touch (char const *file)
 
   if (change_times != (CH_ATIME | CH_MTIME))
     {
-      /* We're setting only one of the time values.  */
+       
       if (change_times == CH_MTIME)
         newtime[0].tv_nsec = UTIME_OMIT;
       else
@@ -149,8 +126,7 @@ touch (char const *file)
 
   if (amtime_now)
     {
-      /* Pass nullptr to futimens so it will not fail if we have
-         write access to the file, but don't own it.  */
+       
       t = nullptr;
     }
 
@@ -169,28 +145,21 @@ touch (char const *file)
     }
   else if (fd == STDOUT_FILENO)
     {
-      /* Do not diagnose "touch -c - >&-".  */
+       
       if (utime_errno == EBADF && no_create)
         return true;
     }
 
   if (utime_errno != 0)
     {
-      /* Don't diagnose with open_errno if FILE is a directory, as that
-         would give a bogus diagnostic for e.g., 'touch /' (assuming we
-         don't own / or have write access).  On Solaris 10 and probably
-         other systems, opening a directory like "." fails with EINVAL.
-         (On SunOS 4 it was EPERM but that's obsolete.)  */
+       
       struct stat st;
       if (open_errno
           && ! (open_errno == EISDIR
                 || (open_errno == EINVAL
                     && stat (file, &st) == 0 && S_ISDIR (st.st_mode))))
         {
-          /* The wording of this diagnostic should cover at least two cases:
-             - the file does not exist, but the parent directory is unwritable
-             - the file exists, but it isn't writable
-             I think it's not worth trying to distinguish them.  */
+           
           error (0, open_errno, _("cannot touch %s"), quoteaf (file));
         }
       else

@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2016 InforceComputing
- * Author: Vinay Simha BN <simhavcs@gmail.com>
- *
- * Copyright (C) 2016 Linaro Ltd
- * Author: Sumit Semwal <sumit.semwal@linaro.org>
- *
- * From internet archives, the panel for Nexus 7 2nd Gen, 2013 model is a
- * JDI model LT070ME05000, and its data sheet is at:
- * http://panelone.net/en/7-0-inch/JDI_LT070ME05000_7.0_inch-datasheet
- */
+
+ 
 
 #include <linux/backlight.h>
 #include <linux/delay.h>
@@ -84,12 +74,7 @@ static int jdi_panel_init(struct jdi_panel *jdi)
 		return ret;
 	}
 
-	/*
-	 * BIT(5) BCTRL = 1 Backlight Control Block On, Brightness registers
-	 *                  are active
-	 * BIT(3) BL = 1    Backlight Control On
-	 * BIT(2) DD = 0    Display Dimming is Off
-	 */
+	 
 	ret = mipi_dsi_dcs_write(dsi, MIPI_DCS_WRITE_CONTROL_DISPLAY,
 				 (u8[]){ 0x24 }, 1);
 	if (ret < 0) {
@@ -97,7 +82,7 @@ static int jdi_panel_init(struct jdi_panel *jdi)
 		return ret;
 	}
 
-	/* CABC off */
+	 
 	ret = mipi_dsi_dcs_write(dsi, MIPI_DCS_WRITE_POWER_SAVE,
 				 (u8[]){ 0x00 }, 1);
 	if (ret < 0) {
@@ -121,7 +106,7 @@ static int jdi_panel_init(struct jdi_panel *jdi)
 
 	mdelay(10);
 
-	/* Interface setting, video mode */
+	 
 	ret = mipi_dsi_generic_write(dsi, (u8[])
 				     {0xB3, 0x26, 0x08, 0x00, 0x20, 0x00}, 6);
 	if (ret < 0) {

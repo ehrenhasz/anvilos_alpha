@@ -1,10 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _USB_VIDEO_H_
 #define _USB_VIDEO_H_
 
 #ifndef __KERNEL__
 #error "The uvcvideo.h header is deprecated, use linux/uvcvideo.h instead."
-#endif /* __KERNEL__ */
+#endif  
 
 #include <linux/atomic.h>
 #include <linux/kernel.h>
@@ -20,9 +20,7 @@
 #include <media/v4l2-fh.h>
 #include <media/videobuf2-v4l2.h>
 
-/* --------------------------------------------------------------------------
- * UVC constants
- */
+ 
 
 #define UVC_TERM_INPUT			0x0000
 #define UVC_TERM_OUTPUT			0x8000
@@ -41,25 +39,23 @@
 #define UVC_EXT_GPIO_UNIT		0x7ffe
 #define UVC_EXT_GPIO_UNIT_ID		0x100
 
-/* ------------------------------------------------------------------------
- * Driver specific constants.
- */
+ 
 
 #define DRIVER_VERSION		"1.1.1"
 
-/* Number of isochronous URBs. */
+ 
 #define UVC_URBS		5
-/* Maximum number of packets per URB. */
+ 
 #define UVC_MAX_PACKETS		32
 
 #define UVC_CTRL_CONTROL_TIMEOUT	5000
 #define UVC_CTRL_STREAMING_TIMEOUT	5000
 
-/* Maximum allowed number of control mappings per device */
+ 
 #define UVC_MAX_CONTROL_MAPPINGS	1024
 #define UVC_MAX_CONTROL_MENU_ENTRIES	32
 
-/* Devices quirks */
+ 
 #define UVC_QUIRK_STATUS_INTERVAL	0x00000001
 #define UVC_QUIRK_PROBE_MINMAX		0x00000002
 #define UVC_QUIRK_PROBE_EXTRAFIELDS	0x00000004
@@ -74,27 +70,22 @@
 #define UVC_QUIRK_FORCE_BPP		0x00001000
 #define UVC_QUIRK_WAKE_AUTOSUSPEND	0x00002000
 
-/* Format flags */
+ 
 #define UVC_FMT_FLAG_COMPRESSED		0x00000001
 #define UVC_FMT_FLAG_STREAM		0x00000002
 
-/* ------------------------------------------------------------------------
- * Structures.
- */
+ 
 
 struct gpio_desc;
 struct sg_table;
 struct uvc_device;
 
-/*
- * TODO: Put the most frequently accessed fields at the beginning of
- * structures to maximize cache efficiency.
- */
+ 
 struct uvc_control_info {
 	struct list_head mappings;
 
 	u8 entity[16];
-	u8 index;	/* Bit index in bmControls */
+	u8 index;	 
 	u8 selector;
 
 	u16 size;
@@ -133,7 +124,7 @@ struct uvc_control {
 	struct uvc_entity *entity;
 	struct uvc_control_info info;
 
-	u8 index;	/* Used to match the uvc_control entry with a uvc_control_info. */
+	u8 index;	 
 	u8 dirty:1,
 	   loaded:1,
 	   modified:1,
@@ -142,43 +133,25 @@ struct uvc_control {
 
 	u8 *uvc_data;
 
-	struct uvc_fh *handle;	/* File handle that last changed the control. */
+	struct uvc_fh *handle;	 
 };
 
-/*
- * The term 'entity' refers to both UVC units and UVC terminals.
- *
- * The type field is either the terminal type (wTerminalType in the terminal
- * descriptor), or the unit type (bDescriptorSubtype in the unit descriptor).
- * As the bDescriptorSubtype field is one byte long, the type value will
- * always have a null MSB for units. All terminal types defined by the UVC
- * specification have a non-null MSB, so it is safe to use the MSB to
- * differentiate between units and terminals as long as the descriptor parsing
- * code makes sure terminal types have a non-null MSB.
- *
- * For terminals, the type's most significant bit stores the terminal
- * direction (either UVC_TERM_INPUT or UVC_TERM_OUTPUT). The type field should
- * always be accessed with the UVC_ENTITY_* macros and never directly.
- */
+ 
 
 #define UVC_ENTITY_FLAG_DEFAULT		(1 << 0)
 
 struct uvc_entity {
-	struct list_head list;		/* Entity as part of a UVC device. */
-	struct list_head chain;		/* Entity as part of a video device chain. */
+	struct list_head list;		 
+	struct list_head chain;		 
 	unsigned int flags;
 
-	/*
-	 * Entities exposed by the UVC device use IDs 0-255, extra entities
-	 * implemented by the driver (such as the GPIO entity) use IDs 256 and
-	 * up.
-	 */
+	 
 	u16 id;
 	u16 type;
 	char name[64];
 	u8 guid[16];
 
-	/* Media controller-related fields. */
+	 
 	struct video_device *vdev;
 	struct v4l2_subdev subdev;
 	unsigned int num_pads;
@@ -274,7 +247,7 @@ struct uvc_streaming_header {
 	u8 bTerminalLink;
 	u8 bControlSize;
 	u8 *bmaControls;
-	/* The following fields are used by input headers only. */
+	 
 	u8 bmInfo;
 	u8 bStillCaptureMethod;
 	u8 bTriggerSupport;
@@ -303,7 +276,7 @@ struct uvc_buffer {
 
 	u32 pts;
 
-	/* Asynchronous buffer handling. */
+	 
 	struct kref ref;
 };
 
@@ -312,12 +285,12 @@ struct uvc_buffer {
 
 struct uvc_video_queue {
 	struct vb2_queue queue;
-	struct mutex mutex;			/* Protects queue */
+	struct mutex mutex;			 
 
 	unsigned int flags;
 	unsigned int buf_used;
 
-	spinlock_t irqlock;			/* Protects irqqueue */
+	spinlock_t irqlock;			 
 	struct list_head irqqueue;
 };
 
@@ -325,72 +298,65 @@ struct uvc_video_chain {
 	struct uvc_device *dev;
 	struct list_head list;
 
-	struct list_head entities;		/* All entities */
-	struct uvc_entity *processing;		/* Processing unit */
-	struct uvc_entity *selector;		/* Selector unit */
+	struct list_head entities;		 
+	struct uvc_entity *processing;		 
+	struct uvc_entity *selector;		 
 
-	struct mutex ctrl_mutex;		/* Protects ctrl.info */
+	struct mutex ctrl_mutex;		 
 
-	struct v4l2_prio_state prio;		/* V4L2 priority state */
-	u32 caps;				/* V4L2 chain-wide caps */
-	u8 ctrl_class_bitmap;			/* Bitmap of valid classes */
+	struct v4l2_prio_state prio;		 
+	u32 caps;				 
+	u8 ctrl_class_bitmap;			 
 };
 
 struct uvc_stats_frame {
-	unsigned int size;		/* Number of bytes captured */
-	unsigned int first_data;	/* Index of the first non-empty packet */
+	unsigned int size;		 
+	unsigned int first_data;	 
 
-	unsigned int nb_packets;	/* Number of packets */
-	unsigned int nb_empty;		/* Number of empty packets */
-	unsigned int nb_invalid;	/* Number of packets with an invalid header */
-	unsigned int nb_errors;		/* Number of packets with the error bit set */
+	unsigned int nb_packets;	 
+	unsigned int nb_empty;		 
+	unsigned int nb_invalid;	 
+	unsigned int nb_errors;		 
 
-	unsigned int nb_pts;		/* Number of packets with a PTS timestamp */
-	unsigned int nb_pts_diffs;	/* Number of PTS differences inside a frame */
-	unsigned int last_pts_diff;	/* Index of the last PTS difference */
-	bool has_initial_pts;		/* Whether the first non-empty packet has a PTS */
-	bool has_early_pts;		/* Whether a PTS is present before the first non-empty packet */
-	u32 pts;			/* PTS of the last packet */
+	unsigned int nb_pts;		 
+	unsigned int nb_pts_diffs;	 
+	unsigned int last_pts_diff;	 
+	bool has_initial_pts;		 
+	bool has_early_pts;		 
+	u32 pts;			 
 
-	unsigned int nb_scr;		/* Number of packets with a SCR timestamp */
-	unsigned int nb_scr_diffs;	/* Number of SCR.STC differences inside a frame */
-	u16 scr_sof;			/* SCR.SOF of the last packet */
-	u32 scr_stc;			/* SCR.STC of the last packet */
+	unsigned int nb_scr;		 
+	unsigned int nb_scr_diffs;	 
+	u16 scr_sof;			 
+	u32 scr_stc;			 
 };
 
 struct uvc_stats_stream {
-	ktime_t start_ts;		/* Stream start timestamp */
-	ktime_t stop_ts;		/* Stream stop timestamp */
+	ktime_t start_ts;		 
+	ktime_t stop_ts;		 
 
-	unsigned int nb_frames;		/* Number of frames */
+	unsigned int nb_frames;		 
 
-	unsigned int nb_packets;	/* Number of packets */
-	unsigned int nb_empty;		/* Number of empty packets */
-	unsigned int nb_invalid;	/* Number of packets with an invalid header */
-	unsigned int nb_errors;		/* Number of packets with the error bit set */
+	unsigned int nb_packets;	 
+	unsigned int nb_empty;		 
+	unsigned int nb_invalid;	 
+	unsigned int nb_errors;		 
 
-	unsigned int nb_pts_constant;	/* Number of frames with constant PTS */
-	unsigned int nb_pts_early;	/* Number of frames with early PTS */
-	unsigned int nb_pts_initial;	/* Number of frames with initial PTS */
+	unsigned int nb_pts_constant;	 
+	unsigned int nb_pts_early;	 
+	unsigned int nb_pts_initial;	 
 
-	unsigned int nb_scr_count_ok;	/* Number of frames with at least one SCR per non empty packet */
-	unsigned int nb_scr_diffs_ok;	/* Number of frames with varying SCR.STC */
-	unsigned int scr_sof_count;	/* STC.SOF counter accumulated since stream start */
-	unsigned int scr_sof;		/* STC.SOF of the last packet */
-	unsigned int min_sof;		/* Minimum STC.SOF value */
-	unsigned int max_sof;		/* Maximum STC.SOF value */
+	unsigned int nb_scr_count_ok;	 
+	unsigned int nb_scr_diffs_ok;	 
+	unsigned int scr_sof_count;	 
+	unsigned int scr_sof;		 
+	unsigned int min_sof;		 
+	unsigned int max_sof;		 
 };
 
 #define UVC_METADATA_BUF_SIZE 10240
 
-/**
- * struct uvc_copy_op: Context structure to schedule asynchronous memcpy
- *
- * @buf: active buf object for this operation
- * @dst: copy destination address
- * @src: copy source address
- * @len: copy length
- */
+ 
 struct uvc_copy_op {
 	struct uvc_buffer *buf;
 	void *dst;
@@ -398,18 +364,7 @@ struct uvc_copy_op {
 	size_t len;
 };
 
-/**
- * struct uvc_urb - URB context management structure
- *
- * @urb: the URB described by this context structure
- * @stream: UVC streaming context
- * @buffer: memory storage for the URB
- * @dma: Allocated DMA handle
- * @sgt: sgt_table with the urb locations in memory
- * @async_operations: counter to indicate the number of copy operations
- * @copy_operations: work descriptors for asynchronous copy operations
- * @work: work queue entry for asynchronous decode
- */
+ 
 struct uvc_urb {
 	struct urb *urb;
 	struct uvc_streaming *stream;
@@ -445,13 +400,10 @@ struct uvc_streaming {
 	const struct uvc_format *cur_format;
 	const struct uvc_frame *cur_frame;
 
-	/*
-	 * Protect access to ctrl, cur_format, cur_frame and hardware video
-	 * probe control.
-	 */
+	 
 	struct mutex mutex;
 
-	/* Buffers queue. */
+	 
 	unsigned int frozen : 1;
 	struct uvc_video_queue queue;
 	struct workqueue_struct *async_wq;
@@ -464,7 +416,7 @@ struct uvc_streaming {
 		u32 format;
 	} meta;
 
-	/* Context data used by the bulk completion handler. */
+	 
 	struct {
 		u8 header[256];
 		unsigned int header_size;
@@ -479,14 +431,14 @@ struct uvc_streaming {
 	u32 sequence;
 	u8 last_fid;
 
-	/* debugfs */
+	 
 	struct dentry *debugfs_dir;
 	struct {
 		struct uvc_stats_frame frame;
 		struct uvc_stats_stream stream;
 	} stats;
 
-	/* Timestamps support. */
+	 
 	struct uvc_clock {
 		struct uvc_clock_sample {
 			u32 dev_stc;
@@ -555,11 +507,11 @@ struct uvc_device {
 
 	const struct uvc_device_info *info;
 
-	struct mutex lock;		/* Protects users */
+	struct mutex lock;		 
 	unsigned int users;
 	atomic_t nmappings;
 
-	/* Video control interface */
+	 
 #ifdef CONFIG_MEDIA_CONTROLLER
 	struct media_device mdev;
 #endif
@@ -570,11 +522,11 @@ struct uvc_device {
 	struct list_head entities;
 	struct list_head chains;
 
-	/* Video Streaming interfaces */
+	 
 	struct list_head streams;
 	struct kref ref;
 
-	/* Status Interrupt Endpoint */
+	 
 	struct usb_host_endpoint *int_ep;
 	struct urb *int_urb;
 	struct uvc_status *status;
@@ -610,9 +562,7 @@ struct uvc_driver {
 	struct usb_driver driver;
 };
 
-/* ------------------------------------------------------------------------
- * Debugging, printing and logging
- */
+ 
 
 #define UVC_DBG_PROBE		(1 << 0)
 #define UVC_DBG_DESCR		(1 << 1)
@@ -656,16 +606,14 @@ do {									\
 		dev_info(&(_dev)->udev->dev, fmt, ##__VA_ARGS__);	\
 } while (0)
 
-/* --------------------------------------------------------------------------
- * Internal functions.
- */
+ 
 
-/* Core driver */
+ 
 extern struct uvc_driver uvc_driver;
 
 struct uvc_entity *uvc_entity_by_id(struct uvc_device *dev, int id);
 
-/* Video buffers queue management. */
+ 
 int uvc_queue_init(struct uvc_video_queue *queue, enum v4l2_buf_type type,
 		   int drop_corrupted);
 void uvc_queue_release(struct uvc_video_queue *queue);
@@ -709,15 +657,15 @@ uvc_queue_to_stream(struct uvc_video_queue *queue)
 	return container_of(queue, struct uvc_streaming, queue);
 }
 
-/* V4L2 interface */
+ 
 extern const struct v4l2_ioctl_ops uvc_ioctl_ops;
 extern const struct v4l2_file_operations uvc_fops;
 
-/* Media controller */
+ 
 int uvc_mc_register_entities(struct uvc_video_chain *chain);
 void uvc_mc_cleanup_entity(struct uvc_entity *entity);
 
-/* Video */
+ 
 int uvc_video_init(struct uvc_streaming *stream);
 int uvc_video_suspend(struct uvc_streaming *stream);
 int uvc_video_resume(struct uvc_streaming *stream, int reset);
@@ -740,14 +688,14 @@ int uvc_register_video_device(struct uvc_device *dev,
 			      const struct v4l2_file_operations *fops,
 			      const struct v4l2_ioctl_ops *ioctl_ops);
 
-/* Status */
+ 
 int uvc_status_init(struct uvc_device *dev);
 void uvc_status_unregister(struct uvc_device *dev);
 void uvc_status_cleanup(struct uvc_device *dev);
 int uvc_status_start(struct uvc_device *dev, gfp_t flags);
 void uvc_status_stop(struct uvc_device *dev);
 
-/* Controls */
+ 
 extern const struct uvc_control_mapping uvc_ctrl_power_line_mapping_limited;
 extern const struct uvc_control_mapping uvc_ctrl_power_line_mapping_uvc11;
 extern const struct v4l2_subscribed_event_ops uvc_ctrl_sub_ev_ops;
@@ -789,17 +737,17 @@ int uvc_ctrl_is_accessible(struct uvc_video_chain *chain, u32 v4l2_id,
 int uvc_xu_ctrl_query(struct uvc_video_chain *chain,
 		      struct uvc_xu_control_query *xqry);
 
-/* Utility functions */
+ 
 struct usb_host_endpoint *uvc_find_endpoint(struct usb_host_interface *alts,
 					    u8 epaddr);
 u16 uvc_endpoint_max_bpi(struct usb_device *dev, struct usb_host_endpoint *ep);
 
-/* Quirks support */
+ 
 void uvc_video_decode_isight(struct uvc_urb *uvc_urb,
 			     struct uvc_buffer *buf,
 			     struct uvc_buffer *meta_buf);
 
-/* debugfs and statistics */
+ 
 void uvc_debugfs_init(void);
 void uvc_debugfs_cleanup(void);
 void uvc_debugfs_init_stream(struct uvc_streaming *stream);

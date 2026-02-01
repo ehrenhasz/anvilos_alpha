@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2017 Samsung Electronics Co.Ltd
- * Author:
- *	Andrzej Pietrasiewicz <andrzejtp2010@gmail.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/component.h>
@@ -304,12 +300,12 @@ static inline void scaler_set_csc(struct scaler_context *scaler,
 	const struct drm_format_info *fmt)
 {
 	static const u32 csc_mtx[2][3][3] = {
-		{ /* YCbCr to RGB */
+		{  
 			{0x254, 0x000, 0x331},
 			{0x254, 0xf38, 0xe60},
 			{0x254, 0x409, 0x000},
 		},
-		{ /* RGB to YCbCr */
+		{  
 			{0x084, 0x102, 0x032},
 			{0xfb4, 0xf6b, 0x0e1},
 			{0x0e1, 0xf44, 0xfdc},
@@ -617,79 +613,79 @@ static const struct drm_exynos_ipp_limit scaler_5420_tile_limits[] = {
 	IPP_SRCDST_MFORMAT(f, DRM_FORMAT_MOD_SAMSUNG_16_16_TILE, (l))
 
 static const struct exynos_drm_ipp_formats exynos5420_formats[] = {
-	/* SCALER_YUV420_2P_UV */
+	 
 	{ IPP_SRCDST_FORMAT(NV21, scaler_5420_two_pixel_hv_limits) },
 
-	/* SCALER_YUV420_2P_VU */
+	 
 	{ IPP_SRCDST_FORMAT(NV12, scaler_5420_two_pixel_hv_limits) },
 
-	/* SCALER_YUV420_3P */
+	 
 	{ IPP_SRCDST_FORMAT(YUV420, scaler_5420_two_pixel_hv_limits) },
 
-	/* SCALER_YUV422_1P_YUYV */
+	 
 	{ IPP_SRCDST_FORMAT(YUYV, scaler_5420_two_pixel_h_limits) },
 
-	/* SCALER_YUV422_1P_UYVY */
+	 
 	{ IPP_SRCDST_FORMAT(UYVY, scaler_5420_two_pixel_h_limits) },
 
-	/* SCALER_YUV422_1P_YVYU */
+	 
 	{ IPP_SRCDST_FORMAT(YVYU, scaler_5420_two_pixel_h_limits) },
 
-	/* SCALER_YUV422_2P_UV */
+	 
 	{ IPP_SRCDST_FORMAT(NV61, scaler_5420_two_pixel_h_limits) },
 
-	/* SCALER_YUV422_2P_VU */
+	 
 	{ IPP_SRCDST_FORMAT(NV16, scaler_5420_two_pixel_h_limits) },
 
-	/* SCALER_YUV422_3P */
+	 
 	{ IPP_SRCDST_FORMAT(YUV422, scaler_5420_two_pixel_h_limits) },
 
-	/* SCALER_YUV444_2P_UV */
+	 
 	{ IPP_SRCDST_FORMAT(NV42, scaler_5420_one_pixel_limits) },
 
-	/* SCALER_YUV444_2P_VU */
+	 
 	{ IPP_SRCDST_FORMAT(NV24, scaler_5420_one_pixel_limits) },
 
-	/* SCALER_YUV444_3P */
+	 
 	{ IPP_SRCDST_FORMAT(YUV444, scaler_5420_one_pixel_limits) },
 
-	/* SCALER_RGB_565 */
+	 
 	{ IPP_SRCDST_FORMAT(RGB565, scaler_5420_one_pixel_limits) },
 
-	/* SCALER_ARGB1555 */
+	 
 	{ IPP_SRCDST_FORMAT(XRGB1555, scaler_5420_one_pixel_limits) },
 
-	/* SCALER_ARGB1555 */
+	 
 	{ IPP_SRCDST_FORMAT(ARGB1555, scaler_5420_one_pixel_limits) },
 
-	/* SCALER_ARGB4444 */
+	 
 	{ IPP_SRCDST_FORMAT(XRGB4444, scaler_5420_one_pixel_limits) },
 
-	/* SCALER_ARGB4444 */
+	 
 	{ IPP_SRCDST_FORMAT(ARGB4444, scaler_5420_one_pixel_limits) },
 
-	/* SCALER_ARGB8888 */
+	 
 	{ IPP_SRCDST_FORMAT(XRGB8888, scaler_5420_one_pixel_limits) },
 
-	/* SCALER_ARGB8888 */
+	 
 	{ IPP_SRCDST_FORMAT(ARGB8888, scaler_5420_one_pixel_limits) },
 
-	/* SCALER_RGBA8888 */
+	 
 	{ IPP_SRCDST_FORMAT(RGBX8888, scaler_5420_one_pixel_limits) },
 
-	/* SCALER_RGBA8888 */
+	 
 	{ IPP_SRCDST_FORMAT(RGBA8888, scaler_5420_one_pixel_limits) },
 
-	/* SCALER_YUV420_2P_UV TILE */
+	 
 	{ IPP_SRCDST_TILE_FORMAT(NV21, scaler_5420_tile_limits) },
 
-	/* SCALER_YUV420_2P_VU TILE */
+	 
 	{ IPP_SRCDST_TILE_FORMAT(NV12, scaler_5420_tile_limits) },
 
-	/* SCALER_YUV420_3P TILE */
+	 
 	{ IPP_SRCDST_TILE_FORMAT(YUV420, scaler_5420_tile_limits) },
 
-	/* SCALER_YUV422_1P_YUYV TILE */
+	 
 	{ IPP_SRCDST_TILE_FORMAT(YUYV, scaler_5420_tile_limits) },
 };
 
@@ -703,7 +699,7 @@ static const struct scaler_data exynos5420_data = {
 static const struct scaler_data exynos5433_data = {
 	.clk_name	= {"pclk", "aclk", "aclk_xiu"},
 	.num_clk	= 3,
-	.formats	= exynos5420_formats, /* intentional */
+	.formats	= exynos5420_formats,  
 	.num_formats	= ARRAY_SIZE(exynos5420_formats),
 };
 

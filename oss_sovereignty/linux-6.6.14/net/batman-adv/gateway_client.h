@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright (C) B.A.T.M.A.N. contributors:
- *
- * Marek Lindner
- */
+ 
+ 
 
 #ifndef _NET_BATMAN_ADV_GATEWAY_CLIENT_H_
 #define _NET_BATMAN_ADV_GATEWAY_CLIENT_H_
@@ -39,11 +36,7 @@ batadv_gw_dhcp_recipient_get(struct sk_buff *skb, unsigned int *header_len,
 struct batadv_gw_node *batadv_gw_node_get(struct batadv_priv *bat_priv,
 					  struct batadv_orig_node *orig_node);
 
-/**
- * batadv_gw_node_put() - decrement the gw_node refcounter and possibly release
- *  it
- * @gw_node: gateway node to free
- */
+ 
 static inline void batadv_gw_node_put(struct batadv_gw_node *gw_node)
 {
 	if (!gw_node)
@@ -52,4 +45,4 @@ static inline void batadv_gw_node_put(struct batadv_gw_node *gw_node)
 	kref_put(&gw_node->refcount, batadv_gw_node_release);
 }
 
-#endif /* _NET_BATMAN_ADV_GATEWAY_CLIENT_H_ */
+#endif  

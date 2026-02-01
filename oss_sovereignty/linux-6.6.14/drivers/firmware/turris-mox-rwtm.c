@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Turris Mox rWTM firmware driver
- *
- * Copyright (C) 2019 Marek Behún <kabel@kernel.org>
- */
+
+ 
 
 #include <linux/armada-37xx-rwtm-mailbox.h>
 #include <linux/completion.h>
@@ -19,11 +15,7 @@
 
 #define DRIVER_NAME		"turris-mox-rwtm"
 
-/*
- * The macros and constants below come from Turris Mox's rWTM firmware code.
- * This firmware is open source and it's sources can be found at
- * https://gitlab.labs.nic.cz/turris/mox-boot-builder/tree/master/wtmi.
- */
+ 
 
 #define MBOX_STS_SUCCESS	(0 << 30)
 #define MBOX_STS_FAIL		(1 << 30)
@@ -61,23 +53,18 @@ struct mox_rwtm {
 	struct mutex busy;
 	struct completion cmd_done;
 
-	/* board information */
+	 
 	int has_board_info;
 	u64 serial_number;
 	int board_version, ram_size;
 	u8 mac_address1[6], mac_address2[6];
 
-	/* public key burned in eFuse */
+	 
 	int has_pubkey;
 	u8 pubkey[135];
 
 #ifdef CONFIG_DEBUG_FS
-	/*
-	 * Signature process. This is currently done via debugfs, because it
-	 * does not conform to the sysfs standard "one file per attribute".
-	 * It should be rewritten via crypto API once akcipher API is available
-	 * from userspace.
-	 */
+	 
 	struct dentry *debugfs_root;
 	u32 last_sig[34];
 	int last_sig_done;
@@ -336,7 +323,7 @@ static ssize_t do_sign_read(struct file *file, char __user *buf, size_t len,
 	struct mox_rwtm *rwtm = file->private_data;
 	ssize_t ret;
 
-	/* only allow one read, of 136 bytes, from position 0 */
+	 
 	if (*ppos != 0)
 		return 0;
 
@@ -346,7 +333,7 @@ static ssize_t do_sign_read(struct file *file, char __user *buf, size_t len,
 	if (!rwtm->last_sig_done)
 		return -ENODATA;
 
-	/* 2 arrays of 17 32-bit words are 136 bytes */
+	 
 	ret = simple_read_from_buffer(buf, len, ppos, rwtm->last_sig, 136);
 	rwtm->last_sig_done = 0;
 
@@ -362,28 +349,18 @@ static ssize_t do_sign_write(struct file *file, const char __user *buf,
 	loff_t dummy = 0;
 	ssize_t ret;
 
-	/* the input is a SHA-512 hash, so exactly 64 bytes have to be read */
+	 
 	if (len != 64)
 		return -EINVAL;
 
-	/* if last result is not zero user has not read that information yet */
+	 
 	if (rwtm->last_sig_done)
 		return -EBUSY;
 
 	if (!mutex_trylock(&rwtm->busy))
 		return -EBUSY;
 
-	/*
-	 * Here we have to send:
-	 *   1. Address of the input to sign.
-	 *      The input is an array of 17 32-bit words, the first (most
-	 *      significat) is 0, the rest 16 words are copied from the SHA-512
-	 *      hash given by the user and converted from BE to LE.
-	 *   2. Address of the buffer where ECDSA signature value R shall be
-	 *      stored by the rWTM firmware.
-	 *   3. Address of the buffer where ECDSA signature value S shall be
-	 *      stored by the rWTM firmware.
-	 */
+	 
 	memset(rwtm->buf, 0, 4);
 	ret = simple_write_to_buffer(rwtm->buf + 4, 64, &dummy, buf, len);
 	if (ret < 0)
@@ -407,11 +384,7 @@ static ssize_t do_sign_write(struct file *file, const char __user *buf,
 	if (MBOX_STS_ERROR(reply->retval) != MBOX_STS_SUCCESS)
 		goto unlock_mutex;
 
-	/*
-	 * Here we read the R and S values of the ECDSA signature
-	 * computed by the rWTM firmware and convert their words from
-	 * LE to BE.
-	 */
+	 
 	memcpy(rwtm->last_sig, rwtm->buf + 68, 136);
 	cpu_to_be32_array(rwtm->last_sig, rwtm->last_sig, 34);
 	rwtm->last_sig_done = 1;

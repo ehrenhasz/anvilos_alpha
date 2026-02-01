@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Landlock test helpers
- *
- * Copyright © 2017-2020 Mickaël Salaün <mic@digikod.net>
- * Copyright © 2019-2020 ANSSI
- * Copyright © 2021 Microsoft Corporation
- */
+ 
+ 
 
 #include <errno.h>
 #include <linux/landlock.h>
@@ -22,15 +16,8 @@
 #define __maybe_unused __attribute__((__unused__))
 #endif
 
-/*
- * TEST_F_FORK() is useful when a test drop privileges but the corresponding
- * FIXTURE_TEARDOWN() requires them (e.g. to remove files from a directory
- * where write actions are denied).  For convenience, FIXTURE_TEARDOWN() is
- * also called when the test failed, but not when FIXTURE_SETUP() failed.  For
- * this to be possible, we must not call abort() but instead exit smoothly
- * (hence the step print).
- */
-/* clang-format off */
+ 
+ 
 #define TEST_F_FORK(fixture_name, test_name) \
 	static void fixture_name##_##test_name##_child( \
 		struct __test_metadata *_metadata, \
@@ -77,7 +64,7 @@
 		FIXTURE_DATA(fixture_name) __attribute__((unused)) *self, \
 		const FIXTURE_VARIANT(fixture_name) \
 			__attribute__((unused)) *variant)
-/* clang-format on */
+ 
 
 #ifndef landlock_create_ruleset
 static inline int
@@ -110,7 +97,7 @@ static inline int landlock_restrict_self(const int ruleset_fd,
 static void _init_caps(struct __test_metadata *const _metadata, bool drop_all)
 {
 	cap_t cap_p;
-	/* Only these three capabilities are useful for the tests. */
+	 
 	const cap_value_t caps[] = {
 		CAP_DAC_OVERRIDE,
 		CAP_MKNOD,
@@ -144,7 +131,7 @@ static void _init_caps(struct __test_metadata *const _metadata, bool drop_all)
 	}
 }
 
-/* We cannot put such helpers in a library because of kselftest_harness.h . */
+ 
 static void __maybe_unused disable_caps(struct __test_metadata *const _metadata)
 {
 	_init_caps(_metadata, false);
@@ -191,12 +178,12 @@ static void __maybe_unused clear_cap(struct __test_metadata *const _metadata,
 	_effective_cap(_metadata, caps, CAP_CLEAR);
 }
 
-/* Receives an FD from a UNIX socket. Returns the received FD, or -errno. */
+ 
 static int __maybe_unused recv_fd(int usock)
 {
 	int fd_rx;
 	union {
-		/* Aligned ancillary data buffer. */
+		 
 		char buf[CMSG_SPACE(sizeof(fd_rx))];
 		struct cmsghdr _align;
 	} cmsg_rx = {};
@@ -226,11 +213,11 @@ static int __maybe_unused recv_fd(int usock)
 	return fd_rx;
 }
 
-/* Sends an FD on a UNIX socket. Returns 0 on success or -errno. */
+ 
 static int __maybe_unused send_fd(int usock, int fd_tx)
 {
 	union {
-		/* Aligned ancillary data buffer. */
+		 
 		char buf[CMSG_SPACE(sizeof(fd_tx))];
 		struct cmsghdr _align;
 	} cmsg_tx = {};

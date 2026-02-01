@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * vSMPowered(tm) systems specific initialization
- * Copyright (C) 2005 ScaleMP Inc.
- *
- * Ravikiran Thirumalai <kiran@scalemp.com>,
- * Shai Fultheim <shai@scalemp.com>
- * Paravirt ops integration: Glauber de Oliveira Costa <gcosta@redhat.com>,
- *			     Ravikiran Thirumalai <kiran@scalemp.com>
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/pci_ids.h>
@@ -29,7 +21,7 @@ static void __init set_vsmp_ctl(void)
 	void __iomem *address;
 	unsigned int cap, ctl, cfg;
 
-	/* set vSMP magic bits to indicate vSMP capable kernel */
+	 
 	cfg = read_pci_config(0, 0x1f, 0, PCI_BASE_ADDRESS_0);
 	address = early_ioremap(cfg, 8);
 	cap = readl(address);
@@ -37,13 +29,13 @@ static void __init set_vsmp_ctl(void)
 	printk(KERN_INFO "vSMP CTL: capabilities:0x%08x  control:0x%08x\n",
 	       cap, ctl);
 
-	/* If possible, let the vSMP foundation route the interrupt optimally */
+	 
 #ifdef CONFIG_SMP
 	if (cap & ctl & BIT(8)) {
 		ctl &= ~BIT(8);
 
 #ifdef CONFIG_PROC_FS
-		/* Don't let users change irq affinity via procfs */
+		 
 		no_irq_affinity = 1;
 #endif
 	}
@@ -64,7 +56,7 @@ static void __init detect_vsmp_box(void)
 	if (!early_pci_allowed())
 		return;
 
-	/* Check if we are running on a ScaleMP vSMPowered box */
+	 
 	if (read_pci_config(0, 0x1f, 0, PCI_VENDOR_ID) ==
 	     (PCI_VENDOR_ID_SCALEMP | (PCI_DEVICE_ID_SCALEMP_VSMP_CTL << 16)))
 		is_vsmp = 1;
@@ -99,15 +91,11 @@ static void __init vsmp_cap_cpus(void)
 	void __iomem *address;
 	unsigned int cfg, topology, node_shift, maxcpus;
 
-	/*
-	 * CONFIG_X86_VSMP is not configured, so limit the number CPUs to the
-	 * ones present in the first board, unless explicitly overridden by
-	 * setup_max_cpus
-	 */
+	 
 	if (setup_max_cpus != NR_CPUS)
 		return;
 
-	/* Read the vSMP Foundation topology register */
+	 
 	cfg = read_pci_config(0, 0x1f, 0, PCI_BASE_ADDRESS_0);
 	address = early_ioremap(cfg + TOPOLOGY_REGISTER_OFFSET, 4);
 	if (WARN_ON(!address))
@@ -116,7 +104,7 @@ static void __init vsmp_cap_cpus(void)
 	topology = readl(address);
 	node_shift = (topology >> 16) & 0x7;
 	if (!node_shift)
-		/* The value 0 should be decoded as 8 */
+		 
 		node_shift = 8;
 	maxcpus = (topology & ((1 << node_shift) - 1)) + 1;
 
@@ -134,7 +122,7 @@ static int apicid_phys_pkg_id(int initial_apic_id, int index_msb)
 
 static void vsmp_apic_post_init(void)
 {
-	/* need to update phys_pkg_id */
+	 
 	apic->phys_pkg_id = apicid_phys_pkg_id;
 }
 

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2005-2007 Takahiro Hirofuchi
- */
+
+ 
 
 #include <libudev.h>
 #include "usbip_common.h"
@@ -151,15 +149,7 @@ int read_attr_value(struct udev_device *dev, const char *name,
 		goto err;
 	}
 
-	/* The client chooses the device configuration
-	 * when attaching it so right after being bound
-	 * to usbip-host on the server the device will
-	 * have no configuration.
-	 * Therefore, attributes such as bConfigurationValue
-	 * and bNumInterfaces will not exist and sscanf will
-	 * fail. Check for these cases and don't treat them
-	 * as errors.
-	 */
+	 
 
 	ret = sscanf(attr, format, &num);
 	if (ret < 1) {

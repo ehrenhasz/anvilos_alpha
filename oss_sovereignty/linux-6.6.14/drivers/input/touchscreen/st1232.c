@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * ST1232 Touchscreen Controller Driver
- *
- * Copyright (C) 2010 Renesas Solutions Corp.
- *	Tony SIM <chinyeow.sim.xt@renesas.com>
- *
- * Using code from:
- *  - android.git.kernel.org: projects/kernel/common.git: synaptics_i2c_rmi.c
- *	Copyright (C) 2007 Google, Inc.
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/gpio/consumer.h>
@@ -26,7 +17,7 @@
 #define ST1232_TS_NAME	"st1232-ts"
 #define ST1633_TS_NAME	"st1633-ts"
 
-#define REG_STATUS		0x01	/* Device Status | Error Code */
+#define REG_STATUS		0x01	 
 
 #define STATUS_NORMAL		0x00
 #define STATUS_INIT		0x01
@@ -114,7 +105,7 @@ static int st1232_ts_read_resolution(struct st1232_ts_data *ts, u16 *max_x,
 	u8 *buf;
 	int error;
 
-	/* select resolution register */
+	 
 	error = st1232_ts_read_data(ts, REG_XY_RESOLUTION, 3);
 	if (error)
 		return error;
@@ -146,7 +137,7 @@ static int st1232_ts_parse_and_report(struct st1232_ts_data *ts)
 			touchscreen_set_mt_pos(&pos[n_contacts],
 					       &ts->prop, x, y);
 
-			/* st1232 includes a z-axis / touch strength */
+			 
 			if (ts->chip_info->have_z)
 				z[n_contacts] = ts->read_buf[i + 6];
 
@@ -187,7 +178,7 @@ static irqreturn_t st1232_ts_irq_handler(int irq, void *dev_id)
 			ts->low_latency_req.dev = NULL;
 		}
 	} else if (!ts->low_latency_req.dev) {
-		/* First contact, request 100 us latency. */
+		 
 		dev_pm_qos_add_ancestor_request(&ts->client->dev,
 						&ts->low_latency_req,
 						DEV_PM_QOS_RESUME_LATENCY, 100);
@@ -253,7 +244,7 @@ static int st1232_ts_probe(struct i2c_client *client)
 
 	ts->chip_info = match;
 
-	/* allocate a buffer according to the number of registers to read */
+	 
 	ts->read_buf_len = ts->chip_info->max_fingers * 4;
 	ts->read_buf = devm_kzalloc(&client->dev, ts->read_buf_len, GFP_KERNEL);
 	if (!ts->read_buf)
@@ -287,12 +278,12 @@ static int st1232_ts_probe(struct i2c_client *client)
 	input_dev->name = "st1232-touchscreen";
 	input_dev->id.bustype = BUS_I2C;
 
-	/* Wait until device is ready */
+	 
 	error = st1232_ts_wait_ready(ts);
 	if (error)
 		return error;
 
-	/* Read resolution from the chip */
+	 
 	error = st1232_ts_read_resolution(ts, &max_x, &max_y);
 	if (error) {
 		dev_err(&client->dev,

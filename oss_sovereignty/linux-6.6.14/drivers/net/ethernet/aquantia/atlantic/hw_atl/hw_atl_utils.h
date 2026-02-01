@@ -1,27 +1,21 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/* Atlantic Network Driver
- *
- * Copyright (C) 2014-2019 aQuantia Corporation
- * Copyright (C) 2019-2020 Marvell International Ltd.
- */
+ 
+ 
 
-/* File hw_atl_utils.h: Declaration of common functions for Atlantic hardware
- * abstraction layer.
- */
+ 
 
 #ifndef HW_ATL_UTILS_H
 #define HW_ATL_UTILS_H
 
 #define HW_ATL_FLUSH() { (void)aq_hw_read_reg(self, 0x10); }
 
-/* Hardware tx descriptor */
+ 
 struct __packed hw_atl_txd_s {
 	u64 buf_addr;
 	u32 ctl;
-	u32 ctl2; /* 63..46 - payload length, 45 - ctx enable, 44 - ctx index */
+	u32 ctl2;  
 };
 
-/* Hardware tx context descriptor */
+ 
 struct __packed hw_atl_txc_s {
 	u32 rsvd;
 	u32 len;
@@ -29,13 +23,13 @@ struct __packed hw_atl_txc_s {
 	u32 len2;
 };
 
-/* Hardware rx descriptor */
+ 
 struct __packed hw_atl_rxd_s {
 	u64 buf_addr;
 	u64 hdr_addr;
 };
 
-/* Hardware rx descriptor writeback */
+ 
 struct __packed hw_atl_rxd_wb_s {
 	u32 type;
 	u32 rss_hash;
@@ -45,7 +39,7 @@ struct __packed hw_atl_rxd_wb_s {
 	__le16 vlan;
 };
 
-/* Hardware rx HW TIMESTAMP writeback */
+ 
 struct __packed hw_atl_rxd_hwts_wb_s {
 	u32 sec_hw;
 	u32 ns;
@@ -233,16 +227,16 @@ struct __packed hw_atl_utils_fw_rpc {
 	u32 msg_id;
 
 	union {
-		/* fw1x structures */
+		 
 		struct drv_msg_wol_add msg_wol_add;
 		struct drv_msg_wol_remove msg_wol_remove;
 		struct drv_msg_enable_wakeup msg_enable_wakeup;
-		/* fw2x structures */
+		 
 		struct offload_info fw2x_offloads;
 	};
 };
 
-/* Mailbox FW Request interface */
+ 
 struct __packed hw_fw_request_ptp_gpio_ctrl {
 	u32 index;
 	u32 period;
@@ -271,7 +265,7 @@ struct __packed hw_fw_request_ptp_adj_clock {
 struct __packed hw_fw_request_iface {
 	u32 msg_id;
 	union {
-		/* PTP FW Request */
+		 
 		struct hw_fw_request_ptp_gpio_ctrl ptp_gpio_ctrl;
 		struct hw_fw_request_ptp_adj_freq ptp_adj_freq;
 		struct hw_fw_request_ptp_adj_clock ptp_adj_clock;
@@ -337,7 +331,7 @@ struct __packed macsec_cfg_request {
 };
 
 struct __packed macsec_msg_fw_request {
-	u32 msg_id; /* not used */
+	u32 msg_id;  
 	u32 msg_type;
 	struct macsec_cfg_request cfg;
 };
@@ -439,9 +433,7 @@ enum hw_atl_fw2x_rate {
 	FW2X_RATE_10G     = 0x800,
 };
 
-/* 0x370
- * Link capabilities resolution register
- */
+ 
 enum hw_atl_fw2x_caps_lo {
 	CAPS_LO_10BASET_HD        = 0,
 	CAPS_LO_10BASET_FD,
@@ -466,9 +458,7 @@ enum hw_atl_fw2x_caps_lo {
 	CAPS_LO_GLOBAL_FAULT      = 31
 };
 
-/* 0x374
- * Status register
- */
+ 
 enum hw_atl_fw2x_caps_hi {
 	CAPS_HI_TPO2EN            = 0,
 	CAPS_HI_10BASET_EEE,
@@ -504,9 +494,7 @@ enum hw_atl_fw2x_caps_hi {
 	CAPS_HI_TRANSACTION_ID,
 };
 
-/* 0x36C
- * Control register
- */
+ 
 enum hw_atl_fw2x_ctrl {
 	CTRL_RESERVED1            = 0,
 	CTRL_RESERVED2,
@@ -640,4 +628,4 @@ bool hw_atl_utils_ver_match(u32 ver_expected, u32 ver_actual);
 extern const struct aq_fw_ops aq_fw_1x_ops;
 extern const struct aq_fw_ops aq_fw_2x_ops;
 
-#endif /* HW_ATL_UTILS_H */
+#endif  

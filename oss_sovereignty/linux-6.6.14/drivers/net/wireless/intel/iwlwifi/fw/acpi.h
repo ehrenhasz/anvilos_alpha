@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause */
-/*
- * Copyright (C) 2017 Intel Deutschland GmbH
- * Copyright (C) 2018-2023 Intel Corporation
- */
+ 
+ 
 #ifndef __iwl_fw_acpi__
 #define __iwl_fw_acpi__
 
@@ -56,9 +53,9 @@
 #define ACPI_EWRD_WIFI_DATA_SIZE_REV2	((ACPI_SAR_PROFILE_NUM - 1) * \
 					 ACPI_SAR_NUM_CHAINS_REV2 * \
 					 ACPI_SAR_NUM_SUB_BANDS_REV2 + 3)
-#define ACPI_WPFC_WIFI_DATA_SIZE	4 /* 4 filter config words */
+#define ACPI_WPFC_WIFI_DATA_SIZE	4  
 
-/* revision 0 and 1 are identical, except for the semantics in the FW */
+ 
 #define ACPI_GEO_NUM_BANDS_REV0		2
 #define ACPI_GEO_NUM_BANDS_REV2		3
 #define ACPI_GEO_NUM_CHAINS		2
@@ -67,12 +64,7 @@
 #define ACPI_SPLC_WIFI_DATA_SIZE	2
 #define ACPI_ECKV_WIFI_DATA_SIZE	2
 
-/*
- * TAS size: 1 elelment for type,
- *	     1 element for enabled field,
- *	     1 element for block list size,
- *	     16 elements for block list array
- */
+ 
 #define APCI_WTAS_BLACK_LIST_MAX	16
 #define ACPI_WTAS_WIFI_DATA_SIZE	(3 + APCI_WTAS_BLACK_LIST_MAX)
 #define ACPI_WTAS_ENABLED_MSK		0x1
@@ -89,7 +81,7 @@
 #define ACPI_PPAG_WIFI_DATA_SIZE_V2	((IWL_NUM_CHAIN_LIMITS * \
 					  IWL_NUM_SUB_BANDS_V2) + 2)
 
-/* PPAG gain value bounds in 1/8 dBm */
+ 
 #define ACPI_PPAG_MIN_LB -16
 #define ACPI_PPAG_MAX_LB 24
 #define ACPI_PPAG_MIN_HB -16
@@ -100,11 +92,7 @@
 #define IWL_SAR_ENABLE_MSK		BIT(0)
 #define IWL_REDUCE_POWER_FLAGS_POS	1
 
-/*
- * The profile for revision 2 is a superset of revision 1, which is in
- * turn a superset of revision 0.  So we can store all revisions
- * inside revision 2, which is what we represent here.
- */
+ 
 struct iwl_sar_profile_chain {
 	u8 subbands[ACPI_SAR_NUM_SUB_BANDS_REV2];
 };
@@ -114,7 +102,7 @@ struct iwl_sar_profile {
 	struct iwl_sar_profile_chain chains[ACPI_SAR_NUM_CHAINS_REV2];
 };
 
-/* Same thing as with SAR, all revisions fit in revision 2 */
+ 
 struct iwl_geo_profile_band {
 	u8 max;
 	u8 chains[ACPI_GEO_NUM_CHAINS];
@@ -124,7 +112,7 @@ struct iwl_geo_profile {
 	struct iwl_geo_profile_band bands[ACPI_GEO_NUM_BANDS_REV2];
 };
 
-/* Same thing as with SAR, all revisions fit in revision 2 */
+ 
 struct iwl_ppag_chain {
 	s8 subbands[ACPI_SAR_NUM_SUB_BANDS_REV2];
 };
@@ -154,7 +142,7 @@ enum iwl_dsm_values_indonesia {
 	DSM_VALUE_INDONESIA_MAX
 };
 
-/* DSM RFI uses a different GUID, so need separate definitions */
+ 
 
 #define DSM_RFI_FUNC_ENABLE 3
 
@@ -177,27 +165,12 @@ int iwl_acpi_get_dsm_u8(struct device *dev, int rev, int func,
 int iwl_acpi_get_dsm_u32(struct device *dev, int rev, int func,
 			 const guid_t *guid, u32 *value);
 
-/**
- * iwl_acpi_get_mcc - read MCC from ACPI, if available
- *
- * @dev: the struct device
- * @mcc: output buffer (3 bytes) that will get the MCC
- *
- * This function tries to read the current MCC from ACPI if available.
- */
+ 
 int iwl_acpi_get_mcc(struct device *dev, char *mcc);
 
 u64 iwl_acpi_get_pwr_limit(struct device *dev);
 
-/*
- * iwl_acpi_get_eckv - read external clock validation from ACPI, if available
- *
- * @dev: the struct device
- * @extl_clk: output var (2 bytes) that will get the clk indication.
- *
- * This function tries to read the external clock indication
- * from ACPI if available.
- */
+ 
 int iwl_acpi_get_eckv(struct device *dev, u32 *extl_clk);
 
 int iwl_sar_select_profile(struct iwl_fw_runtime *fwrt,
@@ -231,7 +204,7 @@ bool iwl_acpi_is_ppag_approved(struct iwl_fw_runtime *fwrt);
 void iwl_acpi_get_phy_filters(struct iwl_fw_runtime *fwrt,
 			      struct iwl_phy_specific_cfg *filters);
 
-#else /* CONFIG_ACPI */
+#else  
 
 static inline void *iwl_acpi_get_dsm_object(struct device *dev, int rev,
 					    int func, union acpi_object *args)
@@ -325,6 +298,6 @@ static inline void iwl_acpi_get_phy_filters(struct iwl_fw_runtime *fwrt,
 {
 }
 
-#endif /* CONFIG_ACPI */
+#endif  
 
-#endif /* __iwl_fw_acpi__ */
+#endif  

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Freescale QorIQ AHCI SATA platform driver
- *
- * Copyright 2015 Freescale, Inc.
- *   Tang Yuantian <Yuantian.Tang@freescale.com>
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/kernel.h>
@@ -19,7 +14,7 @@
 
 #define DRV_NAME "ahci-qoriq"
 
-/* port register definition */
+ 
 #define PORT_PHY1	0xA8
 #define PORT_PHY2	0xAC
 #define PORT_PHY3	0xB0
@@ -28,14 +23,14 @@
 #define PORT_AXICC	0xBC
 #define PORT_TRANS	0xC8
 
-/* port register default value */
+ 
 #define AHCI_PORT_PHY_1_CFG	0xa003fffe
 #define AHCI_PORT_PHY2_CFG	0x28184d1f
 #define AHCI_PORT_PHY3_CFG	0x0e081509
 #define AHCI_PORT_TRANS_CFG	0x08000029
 #define AHCI_PORT_AXICC_CFG	0x3fffffff
 
-/* for ls1021a */
+ 
 #define LS1021A_PORT_PHY2	0x28183414
 #define LS1021A_PORT_PHY3	0x0e080e06
 #define LS1021A_PORT_PHY4	0x064a080b
@@ -75,7 +70,7 @@ static const struct of_device_id ahci_qoriq_of_match[] = {
 	{ .compatible = "fsl,ls1088a-ahci", .data = (void *)AHCI_LS1088A},
 	{ .compatible = "fsl,ls2088a-ahci", .data = (void *)AHCI_LS2088A},
 	{ .compatible = "fsl,lx2160a-ahci", .data = (void *)AHCI_LX2160A},
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, ahci_qoriq_of_match);
 
@@ -103,23 +98,13 @@ static int ahci_qoriq_hardreset(struct ata_link *link, unsigned int *class,
 
 	hpriv->stop_engine(ap);
 
-	/*
-	 * There is a errata on ls1021a Rev1.0 and Rev2.0 which is:
-	 * A-009042: The device detection initialization sequence
-	 * mistakenly resets some registers.
-	 *
-	 * Workaround for this is:
-	 * The software should read and store PxCMD and PxIS values
-	 * before issuing the device detection initialization sequence.
-	 * After the sequence is complete, software should restore the
-	 * PxCMD and PxIS with the stored values.
-	 */
+	 
 	if (ls1021a_workaround) {
 		px_cmd = readl(port_mmio + PORT_CMD);
 		px_is = readl(port_mmio + PORT_IRQ_STAT);
 	}
 
-	/* clear D2H reception area to properly wait for D2H FIS */
+	 
 	ata_tf_init(link->device, &tf);
 	tf.status = ATA_BUSY;
 	ata_tf_to_fis(&tf, 0, 0, d2h_fis);
@@ -127,7 +112,7 @@ static int ahci_qoriq_hardreset(struct ata_link *link, unsigned int *class,
 	rc = sata_link_hardreset(link, timing, deadline, &online,
 				 ahci_check_ready);
 
-	/* restore the PxCMD and PxIS on ls1021 */
+	 
 	if (ls1021a_workaround) {
 		px_val = readl(port_mmio + PORT_CMD);
 		if (px_val != px_cmd)
@@ -338,7 +323,7 @@ static int ahci_qoriq_resume(struct device *dev)
 	if (rc)
 		goto disable_resources;
 
-	/* We resumed so update PM runtime state */
+	 
 	pm_runtime_disable(dev);
 	pm_runtime_set_active(dev);
 	pm_runtime_enable(dev);

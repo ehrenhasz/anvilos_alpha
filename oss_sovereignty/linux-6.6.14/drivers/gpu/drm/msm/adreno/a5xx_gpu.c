@@ -1,6 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright (c) 2016-2017 The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/types.h>
@@ -38,27 +37,24 @@ void a5xx_flush(struct msm_gpu *gpu, struct msm_ringbuffer *ring,
 	uint32_t wptr;
 	unsigned long flags;
 
-	/*
-	 * Most flush operations need to issue a WHERE_AM_I opcode to sync up
-	 * the rptr shadow
-	 */
+	 
 	if (sync)
 		update_shadow_rptr(gpu, ring);
 
 	spin_lock_irqsave(&ring->preempt_lock, flags);
 
-	/* Copy the shadow to the actual register */
+	 
 	ring->cur = ring->next;
 
-	/* Make sure to wrap wptr if we need to */
+	 
 	wptr = get_wptr(ring);
 
 	spin_unlock_irqrestore(&ring->preempt_lock, flags);
 
-	/* Make sure everything is posted before making a decision */
+	 
 	mb();
 
-	/* Update HW if this is the current ring and we are not in preempt */
+	 
 	if (a5xx_gpu->cur_ring == ring && !a5xx_in_preempt(a5xx_gpu))
 		gpu_write(gpu, REG_A5XX_CP_RB_WPTR, wptr);
 }
@@ -79,26 +75,18 @@ static void a5xx_submit_in_rb(struct msm_gpu *gpu, struct msm_gem_submit *submit
 				break;
 			fallthrough;
 		case MSM_SUBMIT_CMD_BUF:
-			/* copy commands into RB: */
+			 
 			obj = submit->bos[submit->cmd[i].idx].obj;
 			dwords = submit->cmd[i].size;
 
 			ptr = msm_gem_get_vaddr(obj);
 
-			/* _get_vaddr() shouldn't fail at this point,
-			 * since we've already mapped it once in
-			 * submit_reloc()
-			 */
+			 
 			if (WARN_ON(IS_ERR_OR_NULL(ptr)))
 				return;
 
 			for (i = 0; i < dwords; i++) {
-				/* normally the OUT_PKTn() would wait
-				 * for space for the packet.  But since
-				 * we just OUT_RING() the whole thing,
-				 * need to call adreno_wait_ring()
-				 * ourself:
-				 */
+				 
 				adreno_wait_ring(ring, 1);
 				OUT_RING(ring, ptr[i]);
 			}
@@ -112,10 +100,7 @@ static void a5xx_submit_in_rb(struct msm_gpu *gpu, struct msm_gem_submit *submit
 	a5xx_flush(gpu, ring, true);
 	a5xx_preempt_trigger(gpu);
 
-	/* we might not necessarily have a cmd from userspace to
-	 * trigger an event to know that submit has completed, so
-	 * do this manually:
-	 */
+	 
 	a5xx_idle(gpu, ring);
 	ring->memptrs->fence = submit->seqno;
 	msm_gpu_retire(gpu);
@@ -137,28 +122,28 @@ static void a5xx_submit(struct msm_gpu *gpu, struct msm_gem_submit *submit)
 	OUT_PKT7(ring, CP_PREEMPT_ENABLE_GLOBAL, 1);
 	OUT_RING(ring, 0x02);
 
-	/* Turn off protected mode to write to special registers */
+	 
 	OUT_PKT7(ring, CP_SET_PROTECTED_MODE, 1);
 	OUT_RING(ring, 0);
 
-	/* Set the save preemption record for the ring/command */
+	 
 	OUT_PKT4(ring, REG_A5XX_CP_CONTEXT_SWITCH_SAVE_ADDR_LO, 2);
 	OUT_RING(ring, lower_32_bits(a5xx_gpu->preempt_iova[submit->ring->id]));
 	OUT_RING(ring, upper_32_bits(a5xx_gpu->preempt_iova[submit->ring->id]));
 
-	/* Turn back on protected mode */
+	 
 	OUT_PKT7(ring, CP_SET_PROTECTED_MODE, 1);
 	OUT_RING(ring, 1);
 
-	/* Enable local preemption for finegrain preemption */
+	 
 	OUT_PKT7(ring, CP_PREEMPT_ENABLE_LOCAL, 1);
 	OUT_RING(ring, 0x1);
 
-	/* Allow CP_CONTEXT_SWITCH_YIELD packets in the IB2 */
+	 
 	OUT_PKT7(ring, CP_YIELD_ENABLE, 1);
 	OUT_RING(ring, 0x02);
 
-	/* Submit the commands */
+	 
 	for (i = 0; i < submit->nr_cmds; i++) {
 		switch (submit->cmd[i].type) {
 		case MSM_SUBMIT_CMD_IB_TARGET_BUF:
@@ -176,22 +161,12 @@ static void a5xx_submit(struct msm_gpu *gpu, struct msm_gem_submit *submit)
 			break;
 		}
 
-		/*
-		 * Periodically update shadow-wptr if needed, so that we
-		 * can see partial progress of submits with large # of
-		 * cmds.. otherwise we could needlessly stall waiting for
-		 * ringbuffer state, simply due to looking at a shadow
-		 * rptr value that has not been updated
-		 */
+		 
 		if ((ibs % 32) == 0)
 			update_shadow_rptr(gpu, ring);
 	}
 
-	/*
-	 * Write the render mode to NULL (0) to indicate to the CP that the IBs
-	 * are done rendering - otherwise a lucky preemption would start
-	 * replaying from the last checkpoint
-	 */
+	 
 	OUT_PKT7(ring, CP_SET_RENDER_MODE, 5);
 	OUT_RING(ring, 0);
 	OUT_RING(ring, 0);
@@ -199,18 +174,15 @@ static void a5xx_submit(struct msm_gpu *gpu, struct msm_gem_submit *submit)
 	OUT_RING(ring, 0);
 	OUT_RING(ring, 0);
 
-	/* Turn off IB level preemptions */
+	 
 	OUT_PKT7(ring, CP_YIELD_ENABLE, 1);
 	OUT_RING(ring, 0x01);
 
-	/* Write the fence to the scratch register */
+	 
 	OUT_PKT4(ring, REG_A5XX_CP_SCRATCH_REG(2), 1);
 	OUT_RING(ring, submit->seqno);
 
-	/*
-	 * Execute a CACHE_FLUSH_TS event. This will ensure that the
-	 * timestamp is written to the memory and then triggers the interrupt
-	 */
+	 
 	OUT_PKT7(ring, CP_EVENT_WRITE, 4);
 	OUT_RING(ring, CP_EVENT_WRITE_0_EVENT(CACHE_FLUSH_TS) |
 		CP_EVENT_WRITE_0_IRQ);
@@ -218,24 +190,20 @@ static void a5xx_submit(struct msm_gpu *gpu, struct msm_gem_submit *submit)
 	OUT_RING(ring, upper_32_bits(rbmemptr(ring, fence)));
 	OUT_RING(ring, submit->seqno);
 
-	/* Yield the floor on command completion */
+	 
 	OUT_PKT7(ring, CP_CONTEXT_SWITCH_YIELD, 4);
-	/*
-	 * If dword[2:1] are non zero, they specify an address for the CP to
-	 * write the value of dword[3] to on preemption complete. Write 0 to
-	 * skip the write
-	 */
+	 
 	OUT_RING(ring, 0x00);
 	OUT_RING(ring, 0x00);
-	/* Data value - not used if the address above is 0 */
+	 
 	OUT_RING(ring, 0x01);
-	/* Set bit 0 to trigger an interrupt on preempt complete */
+	 
 	OUT_RING(ring, 0x01);
 
-	/* A WHERE_AM_I packet is not needed after a YIELD */
+	 
 	a5xx_flush(gpu, ring, false);
 
-	/* Check to see if we need to start preemption */
+	 
 	a5xx_preempt_trigger(gpu);
 }
 
@@ -472,28 +440,25 @@ static int a5xx_me_init(struct msm_gpu *gpu)
 
 	OUT_RING(ring, 0x0000002F);
 
-	/* Enable multiple hardware contexts */
+	 
 	OUT_RING(ring, 0x00000003);
 
-	/* Enable error detection */
+	 
 	OUT_RING(ring, 0x20000000);
 
-	/* Don't enable header dump */
+	 
 	OUT_RING(ring, 0x00000000);
 	OUT_RING(ring, 0x00000000);
 
-	/* Specify workarounds for various microcode issues */
+	 
 	if (adreno_is_a506(adreno_gpu) || adreno_is_a530(adreno_gpu)) {
-		/* Workaround for token end syncs
-		 * Force a WFI after every direct-render 3D mode draw and every
-		 * 2D mode 3 draw
-		 */
+		 
 		OUT_RING(ring, 0x0000000B);
 	} else if (adreno_is_a510(adreno_gpu)) {
-		/* Workaround for token and syncs */
+		 
 		OUT_RING(ring, 0x00000001);
 	} else {
-		/* No workarounds enabled */
+		 
 		OUT_RING(ring, 0x00000000);
 	}
 
@@ -513,16 +478,16 @@ static int a5xx_preempt_start(struct msm_gpu *gpu)
 	if (gpu->nr_rings == 1)
 		return 0;
 
-	/* Turn off protected mode to write to special registers */
+	 
 	OUT_PKT7(ring, CP_SET_PROTECTED_MODE, 1);
 	OUT_RING(ring, 0);
 
-	/* Set the save preemption record for the ring/command */
+	 
 	OUT_PKT4(ring, REG_A5XX_CP_CONTEXT_SWITCH_SAVE_ADDR_LO, 2);
 	OUT_RING(ring, lower_32_bits(a5xx_gpu->preempt_iova[ring->id]));
 	OUT_RING(ring, upper_32_bits(a5xx_gpu->preempt_iova[ring->id]));
 
-	/* Turn back on protected mode */
+	 
 	OUT_PKT7(ring, CP_SET_PROTECTED_MODE, 1);
 	OUT_RING(ring, 1);
 
@@ -535,14 +500,14 @@ static int a5xx_preempt_start(struct msm_gpu *gpu)
 	OUT_PKT7(ring, CP_YIELD_ENABLE, 1);
 	OUT_RING(ring, 0x01);
 
-	/* Yield the floor on command completion */
+	 
 	OUT_PKT7(ring, CP_CONTEXT_SWITCH_YIELD, 4);
 	OUT_RING(ring, 0x00);
 	OUT_RING(ring, 0x00);
 	OUT_RING(ring, 0x01);
 	OUT_RING(ring, 0x01);
 
-	/* The WHERE_AMI_I packet is not needed after a YIELD is issued */
+	 
 	a5xx_flush(gpu, ring, false);
 
 	return a5xx_idle(gpu, ring) ? 0 : -EINVAL;
@@ -556,11 +521,7 @@ static void a5xx_ucode_check_version(struct a5xx_gpu *a5xx_gpu,
 	if (IS_ERR(buf))
 		return;
 
-	/*
-	 * If the lowest nibble is 0xa that is an indication that this microcode
-	 * has been patched. The actual version is in dword [3] but we only care
-	 * about the patchlevel which is the lowest nibble of dword [3]
-	 */
+	 
 	if (((buf[0] & 0xf) == 0xa) && (buf[2] & 0xf) >= 1)
 		a5xx_gpu->has_whereami = true;
 
@@ -619,7 +580,7 @@ static int a5xx_ucode_load(struct msm_gpu *gpu)
 			msm_gem_object_set_name(a5xx_gpu->shadow_bo, "shadow");
 		}
 	} else if (gpu->nr_rings > 1) {
-		/* Disable preemption if WHERE_AM_I isn't available */
+		 
 		a5xx_preempt_fini(gpu);
 		gpu->nr_rings = 1;
 	}
@@ -634,10 +595,7 @@ static int a5xx_zap_shader_resume(struct msm_gpu *gpu)
 	struct adreno_gpu *adreno_gpu = to_adreno_gpu(gpu);
 	int ret;
 
-	/*
-	 * Adreno 506 have CPZ Retention feature and doesn't require
-	 * to resume zap shader
-	 */
+	 
 	if (adreno_is_a506(adreno_gpu))
 		return 0;
 
@@ -654,10 +612,7 @@ static int a5xx_zap_shader_init(struct msm_gpu *gpu)
 	static bool loaded;
 	int ret;
 
-	/*
-	 * If the zap shader is already loaded into memory we just need to kick
-	 * the remote processor to reinitialize it
-	 */
+	 
 	if (loaded)
 		return a5xx_zap_shader_resume(gpu);
 
@@ -693,17 +648,14 @@ static int a5xx_hw_init(struct msm_gpu *gpu)
 	    adreno_is_a540(adreno_gpu))
 		gpu_write(gpu, REG_A5XX_VBIF_GATE_OFF_WRREQ_EN, 0x00000009);
 
-	/* Make all blocks contribute to the GPU BUSY perf counter */
+	 
 	gpu_write(gpu, REG_A5XX_RBBM_PERFCTR_GPU_BUSY_MASKED, 0xFFFFFFFF);
 
-	/* Enable RBBM error reporting bits */
+	 
 	gpu_write(gpu, REG_A5XX_RBBM_AHB_CNTL0, 0x00000001);
 
 	if (adreno_gpu->info->quirks & ADRENO_QUIRK_FAULT_DETECT_MASK) {
-		/*
-		 * Mask out the activity signals from RB1-3 to avoid false
-		 * positives
-		 */
+		 
 
 		gpu_write(gpu, REG_A5XX_RBBM_INTERFACE_HANG_MASK_CNTL11,
 			0xF0000000);
@@ -723,29 +675,29 @@ static int a5xx_hw_init(struct msm_gpu *gpu)
 			0xFFFFFFFF);
 	}
 
-	/* Enable fault detection */
+	 
 	gpu_write(gpu, REG_A5XX_RBBM_INTERFACE_HANG_INT_CNTL,
 		(1 << 30) | 0xFFFF);
 
-	/* Turn on performance counters */
+	 
 	gpu_write(gpu, REG_A5XX_RBBM_PERFCTR_CNTL, 0x01);
 
-	/* Select CP0 to always count cycles */
+	 
 	gpu_write(gpu, REG_A5XX_CP_PERFCTR_CP_SEL_0, PERF_CP_ALWAYS_COUNT);
 
-	/* Select RBBM0 to countable 6 to get the busy status for devfreq */
+	 
 	gpu_write(gpu, REG_A5XX_RBBM_PERFCTR_RBBM_SEL_0, 6);
 
-	/* Increase VFD cache access so LRZ and other data gets evicted less */
+	 
 	gpu_write(gpu, REG_A5XX_UCHE_CACHE_WAYS, 0x02);
 
-	/* Disable L2 bypass in the UCHE */
+	 
 	gpu_write(gpu, REG_A5XX_UCHE_TRAP_BASE_LO, 0xFFFF0000);
 	gpu_write(gpu, REG_A5XX_UCHE_TRAP_BASE_HI, 0x0001FFFF);
 	gpu_write(gpu, REG_A5XX_UCHE_WRITE_THRU_BASE_LO, 0xFFFF0000);
 	gpu_write(gpu, REG_A5XX_UCHE_WRITE_THRU_BASE_HI, 0x0001FFFF);
 
-	/* Set the GMEM VA range (0 to gpu->gmem) */
+	 
 	gpu_write(gpu, REG_A5XX_UCHE_GMEM_RANGE_MIN_LO, 0x00100000);
 	gpu_write(gpu, REG_A5XX_UCHE_GMEM_RANGE_MIN_HI, 0x00000000);
 	gpu_write(gpu, REG_A5XX_UCHE_GMEM_RANGE_MAX_LO,
@@ -785,42 +737,30 @@ static int a5xx_hw_init(struct msm_gpu *gpu)
 	if (adreno_gpu->info->quirks & ADRENO_QUIRK_TWO_PASS_USE_WFI)
 		gpu_rmw(gpu, REG_A5XX_PC_DBG_ECO_CNTL, 0, (1 << 8));
 
-	/*
-	 * Disable the RB sampler datapath DP2 clock gating optimization
-	 * for 1-SP GPUs, as it is enabled by default.
-	 */
+	 
 	if (adreno_is_a506(adreno_gpu) || adreno_is_a508(adreno_gpu) ||
 	    adreno_is_a509(adreno_gpu) || adreno_is_a512(adreno_gpu))
 		gpu_rmw(gpu, REG_A5XX_RB_DBG_ECO_CNTL, 0, (1 << 9));
 
-	/* Disable UCHE global filter as SP can invalidate/flush independently */
+	 
 	gpu_write(gpu, REG_A5XX_UCHE_MODE_CNTL, BIT(29));
 
-	/* Enable USE_RETENTION_FLOPS */
+	 
 	gpu_write(gpu, REG_A5XX_CP_CHICKEN_DBG, 0x02000000);
 
-	/* Enable ME/PFP split notification */
+	 
 	gpu_write(gpu, REG_A5XX_RBBM_AHB_CNTL1, 0xA6FFFFFF);
 
-	/*
-	 *  In A5x, CCU can send context_done event of a particular context to
-	 *  UCHE which ultimately reaches CP even when there is valid
-	 *  transaction of that context inside CCU. This can let CP to program
-	 *  config registers, which will make the "valid transaction" inside
-	 *  CCU to be interpreted differently. This can cause gpu fault. This
-	 *  bug is fixed in latest A510 revision. To enable this bug fix -
-	 *  bit[11] of RB_DBG_ECO_CNTL need to be set to 0, default is 1
-	 *  (disable). For older A510 version this bit is unused.
-	 */
+	 
 	if (adreno_is_a510(adreno_gpu))
 		gpu_rmw(gpu, REG_A5XX_RB_DBG_ECO_CNTL, (1 << 11), 0);
 
-	/* Enable HWCG */
+	 
 	a5xx_set_hwcg(gpu, true);
 
 	gpu_write(gpu, REG_A5XX_RBBM_AHB_CNTL2, 0x0000003F);
 
-	/* Set the highest bank bit */
+	 
 	if (adreno_is_a540(adreno_gpu) || adreno_is_a530(adreno_gpu))
 		regbit = 2;
 	else
@@ -833,13 +773,13 @@ static int a5xx_hw_init(struct msm_gpu *gpu)
 	    adreno_is_a540(adreno_gpu))
 		gpu_write(gpu, REG_A5XX_UCHE_DBG_ECO_CNTL_2, regbit);
 
-	/* Disable All flat shading optimization (ALLFLATOPTDIS) */
+	 
 	gpu_rmw(gpu, REG_A5XX_VPC_DBG_ECO_CNTL, 0, (1 << 10));
 
-	/* Protect registers from the CP */
+	 
 	gpu_write(gpu, REG_A5XX_CP_PROTECT_CNTL, 0x00000007);
 
-	/* RBBM */
+	 
 	gpu_write(gpu, REG_A5XX_CP_PROTECT(0), ADRENO_PROTECT_RW(0x04, 4));
 	gpu_write(gpu, REG_A5XX_CP_PROTECT(1), ADRENO_PROTECT_RW(0x08, 8));
 	gpu_write(gpu, REG_A5XX_CP_PROTECT(2), ADRENO_PROTECT_RW(0x10, 16));
@@ -847,44 +787,40 @@ static int a5xx_hw_init(struct msm_gpu *gpu)
 	gpu_write(gpu, REG_A5XX_CP_PROTECT(4), ADRENO_PROTECT_RW(0x40, 64));
 	gpu_write(gpu, REG_A5XX_CP_PROTECT(5), ADRENO_PROTECT_RW(0x80, 64));
 
-	/* Content protect */
+	 
 	gpu_write(gpu, REG_A5XX_CP_PROTECT(6),
 		ADRENO_PROTECT_RW(REG_A5XX_RBBM_SECVID_TSB_TRUSTED_BASE_LO,
 			16));
 	gpu_write(gpu, REG_A5XX_CP_PROTECT(7),
 		ADRENO_PROTECT_RW(REG_A5XX_RBBM_SECVID_TRUST_CNTL, 2));
 
-	/* CP */
+	 
 	gpu_write(gpu, REG_A5XX_CP_PROTECT(8), ADRENO_PROTECT_RW(0x800, 64));
 	gpu_write(gpu, REG_A5XX_CP_PROTECT(9), ADRENO_PROTECT_RW(0x840, 8));
 	gpu_write(gpu, REG_A5XX_CP_PROTECT(10), ADRENO_PROTECT_RW(0x880, 32));
 	gpu_write(gpu, REG_A5XX_CP_PROTECT(11), ADRENO_PROTECT_RW(0xAA0, 1));
 
-	/* RB */
+	 
 	gpu_write(gpu, REG_A5XX_CP_PROTECT(12), ADRENO_PROTECT_RW(0xCC0, 1));
 	gpu_write(gpu, REG_A5XX_CP_PROTECT(13), ADRENO_PROTECT_RW(0xCF0, 2));
 
-	/* VPC */
+	 
 	gpu_write(gpu, REG_A5XX_CP_PROTECT(14), ADRENO_PROTECT_RW(0xE68, 8));
 	gpu_write(gpu, REG_A5XX_CP_PROTECT(15), ADRENO_PROTECT_RW(0xE70, 16));
 
-	/* UCHE */
+	 
 	gpu_write(gpu, REG_A5XX_CP_PROTECT(16), ADRENO_PROTECT_RW(0xE80, 16));
 
-	/* SMMU */
+	 
 	gpu_write(gpu, REG_A5XX_CP_PROTECT(17),
 			ADRENO_PROTECT_RW(0x10000, 0x8000));
 
 	gpu_write(gpu, REG_A5XX_RBBM_SECVID_TSB_CNTL, 0);
-	/*
-	 * Disable the trusted memory range - we don't actually supported secure
-	 * memory rendering at this point in time and we don't want to block off
-	 * part of the virtual memory space.
-	 */
+	 
 	gpu_write64(gpu, REG_A5XX_RBBM_SECVID_TSB_TRUSTED_BASE_LO, 0x00000000);
 	gpu_write(gpu, REG_A5XX_RBBM_SECVID_TSB_TRUSTED_SIZE, 0x00000000);
 
-	/* Put the GPU into 64 bit by default */
+	 
 	gpu_write(gpu, REG_A5XX_CP_ADDR_MODE_CNTL, 0x1);
 	gpu_write(gpu, REG_A5XX_VSC_ADDR_MODE_CNTL, 0x1);
 	gpu_write(gpu, REG_A5XX_GRAS_ADDR_MODE_CNTL, 0x1);
@@ -898,11 +834,7 @@ static int a5xx_hw_init(struct msm_gpu *gpu)
 	gpu_write(gpu, REG_A5XX_TPL1_ADDR_MODE_CNTL, 0x1);
 	gpu_write(gpu, REG_A5XX_RBBM_SECVID_TSB_ADDR_MODE_CNTL, 0x1);
 
-	/*
-	 * VPC corner case with local memory load kill leads to corrupt
-	 * internal state. Normal Disable does not work for all a5x chips.
-	 * So do the following setting to disable it.
-	 */
+	 
 	if (adreno_gpu->info->quirks & ADRENO_QUIRK_LMLOADKILL_DISABLE) {
 		gpu_rmw(gpu, REG_A5XX_VPC_DBG_ECO_CNTL, 0, BIT(23));
 		gpu_rmw(gpu, REG_A5XX_HLSQ_DBG_ECO_CNTL, BIT(18), 0);
@@ -918,19 +850,14 @@ static int a5xx_hw_init(struct msm_gpu *gpu)
 	gpu_write64(gpu, REG_A5XX_CP_ME_INSTR_BASE_LO, a5xx_gpu->pm4_iova);
 	gpu_write64(gpu, REG_A5XX_CP_PFP_INSTR_BASE_LO, a5xx_gpu->pfp_iova);
 
-	/* Set the ringbuffer address */
+	 
 	gpu_write64(gpu, REG_A5XX_CP_RB_BASE, gpu->rb[0]->iova);
 
-	/*
-	 * If the microcode supports the WHERE_AM_I opcode then we can use that
-	 * in lieu of the RPTR shadow and enable preemption. Otherwise, we
-	 * can't safely use the RPTR shadow or preemption. In either case, the
-	 * RPTR shadow should be disabled in hardware.
-	 */
+	 
 	gpu_write(gpu, REG_A5XX_CP_RB_CNTL,
 		MSM_GPU_RB_CNTL_DEFAULT | AXXX_CP_RB_CNTL_NO_UPDATE);
 
-	/* Configure the RPTR shadow if needed: */
+	 
 	if (a5xx_gpu->shadow_bo) {
 		gpu_write64(gpu, REG_A5XX_CP_RB_RPTR_ADDR,
 			    shadowptr(a5xx_gpu, gpu->rb[0]));
@@ -938,10 +865,10 @@ static int a5xx_hw_init(struct msm_gpu *gpu)
 
 	a5xx_preempt_hw_init(gpu);
 
-	/* Disable the interrupts through the initial bringup stage */
+	 
 	gpu_write(gpu, REG_A5XX_RBBM_INT_0_MASK, A5XX_INT_MASK);
 
-	/* Clear ME_HALT to start the micro engine */
+	 
 	gpu_write(gpu, REG_A5XX_CP_PFP_ME_CNTL, 0);
 	ret = a5xx_me_init(gpu);
 	if (ret)
@@ -951,10 +878,7 @@ static int a5xx_hw_init(struct msm_gpu *gpu)
 	if (ret)
 		return ret;
 
-	/*
-	 * Send a pipeline event stat to get misbehaving counters to start
-	 * ticking correctly
-	 */
+	 
 	if (adreno_is_a530(adreno_gpu)) {
 		OUT_PKT7(gpu->rb[0], CP_EVENT_WRITE, 1);
 		OUT_RING(gpu->rb[0], CP_EVENT_WRITE_0_EVENT(STAT_EVENT));
@@ -964,14 +888,7 @@ static int a5xx_hw_init(struct msm_gpu *gpu)
 			return -EINVAL;
 	}
 
-	/*
-	 * If the chip that we are using does support loading one, then
-	 * try to load a zap shader into the secure world. If successful
-	 * we can use the CP to switch out of secure mode. If not then we
-	 * have no resource but to try to switch ourselves out manually. If we
-	 * guessed wrong then access to the RBBM_SECVID_TRUST_CNTL register will
-	 * be blocked and a permissions violation will soon follow.
-	 */
+	 
 	ret = a5xx_zap_shader_init(gpu);
 	if (!ret) {
 		OUT_PKT7(gpu->rb[0], CP_SET_SECURE_MODE, 1);
@@ -981,12 +898,7 @@ static int a5xx_hw_init(struct msm_gpu *gpu)
 		if (!a5xx_idle(gpu, gpu->rb[0]))
 			return -EINVAL;
 	} else if (ret == -ENODEV) {
-		/*
-		 * This device does not use zap shader (but print a warning
-		 * just in case someone got their dt wrong.. hopefully they
-		 * have a debug UART to realize the error of their ways...
-		 * if you mess this up you are about to crash horribly)
-		 */
+		 
 		dev_warn_once(gpu->dev->dev,
 			"Zap shader not enabled - using SECVID_TRUST_CNTL instead\n");
 		gpu_write(gpu, REG_A5XX_RBBM_SECVID_TRUST_CNTL, 0x0);
@@ -994,7 +906,7 @@ static int a5xx_hw_init(struct msm_gpu *gpu)
 		return ret;
 	}
 
-	/* Last step - yield the ringbuffer */
+	 
 	a5xx_preempt_start(gpu);
 
 	return 0;
@@ -1058,10 +970,7 @@ static inline bool _a5xx_check_idle(struct msm_gpu *gpu)
 	if (gpu_read(gpu, REG_A5XX_RBBM_STATUS) & ~A5XX_RBBM_STATUS_HI_BUSY)
 		return false;
 
-	/*
-	 * Nearly every abnormality ends up pausing the GPU and triggering a
-	 * fault so we can safely just watch for this one interrupt to fire
-	 */
+	 
 	return !(gpu_read(gpu, REG_A5XX_RBBM_INT_0_STATUS) &
 		A5XX_RBBM_INT_0_MASK_MISC_HANG_DETECT);
 }
@@ -1076,7 +985,7 @@ bool a5xx_idle(struct msm_gpu *gpu, struct msm_ringbuffer *ring)
 		return false;
 	}
 
-	/* wait for CP to drain ringbuffer: */
+	 
 	if (!adreno_idle(gpu, ring))
 		return false;
 
@@ -1120,10 +1029,7 @@ static void a5xx_cp_err_irq(struct msm_gpu *gpu)
 
 		gpu_write(gpu, REG_A5XX_CP_PFP_STAT_ADDR, 0);
 
-		/*
-		 * REG_A5XX_CP_PFP_STAT_DATA is indexed, and we want index 1 so
-		 * read it twice
-		 */
+		 
 
 		gpu_read(gpu, REG_A5XX_CP_PFP_STAT_DATA);
 		val = gpu_read(gpu, REG_A5XX_CP_PFP_STAT_DATA);
@@ -1173,10 +1079,10 @@ static void a5xx_rbbm_err_irq(struct msm_gpu *gpu, u32 status)
 			(val & 0xFFFFF) >> 2, (val >> 20) & 0x3,
 			(val >> 24) & 0xF);
 
-		/* Clear the error */
+		 
 		gpu_write(gpu, REG_A5XX_RBBM_AHB_CMD, (1 << 4));
 
-		/* Clear the interrupt */
+		 
 		gpu_write(gpu, REG_A5XX_RBBM_INT_CLEAR_CMD,
 			A5XX_RBBM_INT_0_MASK_RBBM_AHB_ERROR);
 	}
@@ -1223,12 +1129,7 @@ static void a5xx_fault_detect_irq(struct msm_gpu *gpu)
 	struct drm_device *dev = gpu->dev;
 	struct msm_ringbuffer *ring = gpu->funcs->active_ring(gpu);
 
-	/*
-	 * If stalled on SMMU fault, we could trip the GPU's hang detection,
-	 * but the fault handler will trigger the devcore dump, and we want
-	 * to otherwise resume normally rather than killing the submit, so
-	 * just bail.
-	 */
+	 
 	if (gpu_read(gpu, REG_A5XX_RBBM_STATUS3) & BIT(24))
 		return;
 
@@ -1242,7 +1143,7 @@ static void a5xx_fault_detect_irq(struct msm_gpu *gpu)
 		gpu_read64(gpu, REG_A5XX_CP_IB2_BASE),
 		gpu_read(gpu, REG_A5XX_CP_IB2_BUFSZ));
 
-	/* Turn off the hangcheck timer to keep it from bothering us */
+	 
 	del_timer(&gpu->hangcheck_timer);
 
 	kthread_queue_work(gpu->worker, &gpu->recover_work);
@@ -1261,10 +1162,7 @@ static irqreturn_t a5xx_irq(struct msm_gpu *gpu)
 	struct msm_drm_private *priv = gpu->dev->dev_private;
 	u32 status = gpu_read(gpu, REG_A5XX_RBBM_INT_0_STATUS);
 
-	/*
-	 * Clear all the interrupts except RBBM_AHB_ERROR - if we clear it
-	 * before the source is cleared the interrupt will storm.
-	 */
+	 
 	gpu_write(gpu, REG_A5XX_RBBM_INT_CLEAR_CMD,
 		status & ~A5XX_RBBM_INT_0_MASK_RBBM_AHB_ERROR);
 
@@ -1273,7 +1171,7 @@ static irqreturn_t a5xx_irq(struct msm_gpu *gpu)
 			  A5XX_RBBM_INT_0_MASK_CP_SW;
 	}
 
-	/* Pass status to a5xx_rbbm_err_irq because we've already cleared it */
+	 
 	if (status & RBBM_ERROR_MASK)
 		a5xx_rbbm_err_irq(gpu, status);
 
@@ -1343,25 +1241,25 @@ static int a5xx_pm_resume(struct msm_gpu *gpu)
 	struct adreno_gpu *adreno_gpu = to_adreno_gpu(gpu);
 	int ret;
 
-	/* Turn on the core power */
+	 
 	ret = msm_gpu_pm_resume(gpu);
 	if (ret)
 		return ret;
 
-	/* Adreno 506, 508, 509, 510, 512 needs manual RBBM sus/res control */
+	 
 	if (!(adreno_is_a530(adreno_gpu) || adreno_is_a540(adreno_gpu))) {
-		/* Halt the sp_input_clk at HM level */
+		 
 		gpu_write(gpu, REG_A5XX_RBBM_CLOCK_CNTL, 0x00000055);
 		a5xx_set_hwcg(gpu, true);
-		/* Turn on sp_input_clk at HM level */
+		 
 		gpu_rmw(gpu, REG_A5XX_RBBM_CLOCK_CNTL, 0xff, 0);
 		return 0;
 	}
 
-	/* Turn the RBCCU domain first to limit the chances of voltage droop */
+	 
 	gpu_write(gpu, REG_A5XX_GPMU_RBCCU_POWER_CNTL, 0x778000);
 
-	/* Wait 3 usecs before polling */
+	 
 	udelay(3);
 
 	ret = spin_usecs(gpu, 20, REG_A5XX_GPMU_RBCCU_PWR_CLK_STATUS,
@@ -1373,7 +1271,7 @@ static int a5xx_pm_resume(struct msm_gpu *gpu)
 		return ret;
 	}
 
-	/* Turn on the SP domain */
+	 
 	gpu_write(gpu, REG_A5XX_GPMU_SP_POWER_CNTL, 0x778000);
 	ret = spin_usecs(gpu, 20, REG_A5XX_GPMU_SP_PWR_CLK_STATUS,
 		(1 << 20), (1 << 20));
@@ -1391,22 +1289,19 @@ static int a5xx_pm_suspend(struct msm_gpu *gpu)
 	u32 mask = 0xf;
 	int i, ret;
 
-	/* A506, A508, A510 have 3 XIN ports in VBIF */
+	 
 	if (adreno_is_a506(adreno_gpu) || adreno_is_a508(adreno_gpu) ||
 	    adreno_is_a510(adreno_gpu))
 		mask = 0x7;
 
-	/* Clear the VBIF pipe before shutting down */
+	 
 	gpu_write(gpu, REG_A5XX_VBIF_XIN_HALT_CTRL0, mask);
 	spin_until((gpu_read(gpu, REG_A5XX_VBIF_XIN_HALT_CTRL1) &
 				mask) == mask);
 
 	gpu_write(gpu, REG_A5XX_VBIF_XIN_HALT_CTRL0, 0);
 
-	/*
-	 * Reset the VBIF before power collapse to avoid issue with FIFO
-	 * entries on Adreno A510 and A530 (the others will tend to lock up)
-	 */
+	 
 	if (adreno_is_a510(adreno_gpu) || adreno_is_a530(adreno_gpu)) {
 		gpu_write(gpu, REG_A5XX_RBBM_BLOCK_SW_RESET_CMD, 0x003C0000);
 		gpu_write(gpu, REG_A5XX_RBBM_BLOCK_SW_RESET_CMD, 0x00000000);
@@ -1470,31 +1365,27 @@ static int a5xx_crashdumper_run(struct msm_gpu *gpu,
 		val & 0x04, 100, 10000);
 }
 
-/*
- * These are a list of the registers that need to be read through the HLSQ
- * aperture through the crashdumper.  These are not nominally accessible from
- * the CPU on a secure platform.
- */
+ 
 static const struct {
 	u32 type;
 	u32 regoffset;
 	u32 count;
 } a5xx_hlsq_aperture_regs[] = {
-	{ 0x35, 0xe00, 0x32 },   /* HSLQ non-context */
-	{ 0x31, 0x2080, 0x1 },   /* HLSQ 2D context 0 */
-	{ 0x33, 0x2480, 0x1 },   /* HLSQ 2D context 1 */
-	{ 0x32, 0xe780, 0x62 },  /* HLSQ 3D context 0 */
-	{ 0x34, 0xef80, 0x62 },  /* HLSQ 3D context 1 */
-	{ 0x3f, 0x0ec0, 0x40 },  /* SP non-context */
-	{ 0x3d, 0x2040, 0x1 },   /* SP 2D context 0 */
-	{ 0x3b, 0x2440, 0x1 },   /* SP 2D context 1 */
-	{ 0x3e, 0xe580, 0x170 }, /* SP 3D context 0 */
-	{ 0x3c, 0xed80, 0x170 }, /* SP 3D context 1 */
-	{ 0x3a, 0x0f00, 0x1c },  /* TP non-context */
-	{ 0x38, 0x2000, 0xa },   /* TP 2D context 0 */
-	{ 0x36, 0x2400, 0xa },   /* TP 2D context 1 */
-	{ 0x39, 0xe700, 0x80 },  /* TP 3D context 0 */
-	{ 0x37, 0xef00, 0x80 },  /* TP 3D context 1 */
+	{ 0x35, 0xe00, 0x32 },    
+	{ 0x31, 0x2080, 0x1 },    
+	{ 0x33, 0x2480, 0x1 },    
+	{ 0x32, 0xe780, 0x62 },   
+	{ 0x34, 0xef80, 0x62 },   
+	{ 0x3f, 0x0ec0, 0x40 },   
+	{ 0x3d, 0x2040, 0x1 },    
+	{ 0x3b, 0x2440, 0x1 },    
+	{ 0x3e, 0xe580, 0x170 },  
+	{ 0x3c, 0xed80, 0x170 },  
+	{ 0x3a, 0x0f00, 0x1c },   
+	{ 0x38, 0x2000, 0xa },    
+	{ 0x36, 0x2400, 0xa },    
+	{ 0x39, 0xe700, 0x80 },   
+	{ 0x37, 0xef00, 0x80 },   
 };
 
 static void a5xx_gpu_state_get_hlsq_regs(struct msm_gpu *gpu,
@@ -1508,13 +1399,13 @@ static void a5xx_gpu_state_get_hlsq_regs(struct msm_gpu *gpu,
 	if (a5xx_crashdumper_init(gpu, &dumper))
 		return;
 
-	/* The script will be written at offset 0 */
+	 
 	ptr = dumper.ptr;
 
-	/* Start writing the data at offset 256k */
+	 
 	offset = dumper.iova + (256 * SZ_1K);
 
-	/* Count how many additional registers to get from the HLSQ aperture */
+	 
 	for (i = 0; i < ARRAY_SIZE(a5xx_hlsq_aperture_regs); i++)
 		count += a5xx_hlsq_aperture_regs[i].count;
 
@@ -1522,12 +1413,12 @@ static void a5xx_gpu_state_get_hlsq_regs(struct msm_gpu *gpu,
 	if (!a5xx_state->hlsqregs)
 		return;
 
-	/* Build the crashdump script */
+	 
 	for (i = 0; i < ARRAY_SIZE(a5xx_hlsq_aperture_regs); i++) {
 		u32 type = a5xx_hlsq_aperture_regs[i].type;
 		u32 c = a5xx_hlsq_aperture_regs[i].count;
 
-		/* Write the register to select the desired bank */
+		 
 		*ptr++ = ((u64) type << 8);
 		*ptr++ = (((u64) REG_A5XX_HLSQ_DBG_READ_SEL) << 44) |
 			(1 << 21) | 1;
@@ -1539,7 +1430,7 @@ static void a5xx_gpu_state_get_hlsq_regs(struct msm_gpu *gpu,
 		offset += c * sizeof(u32);
 	}
 
-	/* Write two zeros to close off the script */
+	 
 	*ptr++ = 0;
 	*ptr++ = 0;
 
@@ -1549,7 +1440,7 @@ static void a5xx_gpu_state_get_hlsq_regs(struct msm_gpu *gpu,
 		return;
 	}
 
-	/* Copy the data from the crashdumper to the state */
+	 
 	memcpy(a5xx_state->hlsqregs, dumper.ptr + (256 * SZ_1K),
 		count * sizeof(u32));
 
@@ -1565,19 +1456,15 @@ static struct msm_gpu_state *a5xx_gpu_state_get(struct msm_gpu *gpu)
 	if (!a5xx_state)
 		return ERR_PTR(-ENOMEM);
 
-	/* Temporarily disable hardware clock gating before reading the hw */
+	 
 	a5xx_set_hwcg(gpu, false);
 
-	/* First get the generic state from the adreno core */
+	 
 	adreno_gpu_state_get(gpu, &(a5xx_state->base));
 
 	a5xx_state->base.rbbm_status = gpu_read(gpu, REG_A5XX_RBBM_STATUS);
 
-	/*
-	 * Get the HLSQ regs with the help of the crashdumper, but only if
-	 * we are not stalled in an iommu fault (in which case the crashdumper
-	 * would not have access to memory)
-	 */
+	 
 	if (!stalled)
 		a5xx_gpu_state_get_hlsq_regs(gpu, a5xx_state);
 
@@ -1622,7 +1509,7 @@ static void a5xx_show(struct msm_gpu *gpu, struct msm_gpu_state *state,
 
 	adreno_show(gpu, state, p);
 
-	/* Dump the additional a5xx HLSQ registers */
+	 
 	if (!a5xx_state->hlsqregs)
 		return;
 
@@ -1633,13 +1520,7 @@ static void a5xx_show(struct msm_gpu *gpu, struct msm_gpu_state *state,
 		u32 c = a5xx_hlsq_aperture_regs[i].count;
 
 		for (j = 0; j < c; j++, pos++, o++) {
-			/*
-			 * To keep the crashdump simple we pull the entire range
-			 * for each register type but not all of the registers
-			 * in the range are valid. Fortunately invalid registers
-			 * stick out like a sore thumb with a value of
-			 * 0xdeadbeef
-			 */
+			 
 			if (a5xx_state->hlsqregs[pos] == 0xdeadbeef)
 				continue;
 
@@ -1712,13 +1593,7 @@ static void check_speed_bin(struct device *dev)
 	struct nvmem_cell *cell;
 	u32 val;
 
-	/*
-	 * If the OPP table specifies a opp-supported-hw property then we have
-	 * to set something with dev_pm_opp_set_supported_hw() or the table
-	 * doesn't get populated so pick an arbitrary value that should
-	 * ensure the default frequencies are selected but not conflict with any
-	 * actual bins
-	 */
+	 
 	val = 0x80;
 
 	cell = nvmem_cell_get(dev, "speed_bin");
@@ -1782,7 +1657,7 @@ struct msm_gpu *a5xx_gpu_init(struct drm_device *dev)
 	if (gpu->aspace)
 		msm_mmu_set_fault_handler(gpu->aspace->mmu, gpu, a5xx_fault_handler);
 
-	/* Set up the preemption specific bits and pieces for each ringbuffer */
+	 
 	a5xx_preempt_init(gpu);
 
 	return gpu;

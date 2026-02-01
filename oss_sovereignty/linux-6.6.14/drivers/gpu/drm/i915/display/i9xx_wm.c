@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright © 2023 Intel Corporation
- */
+
+ 
 
 #include "i915_drv.h"
 #include "i915_reg.h"
@@ -14,7 +12,7 @@
 #include "skl_watermark.h"
 #include "vlv_sideband.h"
 
-/* used in computing the new watermarks state */
+ 
 struct intel_wm_config {
 	unsigned int num_pipes_active;
 	bool sprites_enabled;
@@ -33,41 +31,41 @@ struct cxsr_latency {
 };
 
 static const struct cxsr_latency cxsr_latency_table[] = {
-	{1, 0, 800, 400, 3382, 33382, 3983, 33983},    /* DDR2-400 SC */
-	{1, 0, 800, 667, 3354, 33354, 3807, 33807},    /* DDR2-667 SC */
-	{1, 0, 800, 800, 3347, 33347, 3763, 33763},    /* DDR2-800 SC */
-	{1, 1, 800, 667, 6420, 36420, 6873, 36873},    /* DDR3-667 SC */
-	{1, 1, 800, 800, 5902, 35902, 6318, 36318},    /* DDR3-800 SC */
+	{1, 0, 800, 400, 3382, 33382, 3983, 33983},     
+	{1, 0, 800, 667, 3354, 33354, 3807, 33807},     
+	{1, 0, 800, 800, 3347, 33347, 3763, 33763},     
+	{1, 1, 800, 667, 6420, 36420, 6873, 36873},     
+	{1, 1, 800, 800, 5902, 35902, 6318, 36318},     
 
-	{1, 0, 667, 400, 3400, 33400, 4021, 34021},    /* DDR2-400 SC */
-	{1, 0, 667, 667, 3372, 33372, 3845, 33845},    /* DDR2-667 SC */
-	{1, 0, 667, 800, 3386, 33386, 3822, 33822},    /* DDR2-800 SC */
-	{1, 1, 667, 667, 6438, 36438, 6911, 36911},    /* DDR3-667 SC */
-	{1, 1, 667, 800, 5941, 35941, 6377, 36377},    /* DDR3-800 SC */
+	{1, 0, 667, 400, 3400, 33400, 4021, 34021},     
+	{1, 0, 667, 667, 3372, 33372, 3845, 33845},     
+	{1, 0, 667, 800, 3386, 33386, 3822, 33822},     
+	{1, 1, 667, 667, 6438, 36438, 6911, 36911},     
+	{1, 1, 667, 800, 5941, 35941, 6377, 36377},     
 
-	{1, 0, 400, 400, 3472, 33472, 4173, 34173},    /* DDR2-400 SC */
-	{1, 0, 400, 667, 3443, 33443, 3996, 33996},    /* DDR2-667 SC */
-	{1, 0, 400, 800, 3430, 33430, 3946, 33946},    /* DDR2-800 SC */
-	{1, 1, 400, 667, 6509, 36509, 7062, 37062},    /* DDR3-667 SC */
-	{1, 1, 400, 800, 5985, 35985, 6501, 36501},    /* DDR3-800 SC */
+	{1, 0, 400, 400, 3472, 33472, 4173, 34173},     
+	{1, 0, 400, 667, 3443, 33443, 3996, 33996},     
+	{1, 0, 400, 800, 3430, 33430, 3946, 33946},     
+	{1, 1, 400, 667, 6509, 36509, 7062, 37062},     
+	{1, 1, 400, 800, 5985, 35985, 6501, 36501},     
 
-	{0, 0, 800, 400, 3438, 33438, 4065, 34065},    /* DDR2-400 SC */
-	{0, 0, 800, 667, 3410, 33410, 3889, 33889},    /* DDR2-667 SC */
-	{0, 0, 800, 800, 3403, 33403, 3845, 33845},    /* DDR2-800 SC */
-	{0, 1, 800, 667, 6476, 36476, 6955, 36955},    /* DDR3-667 SC */
-	{0, 1, 800, 800, 5958, 35958, 6400, 36400},    /* DDR3-800 SC */
+	{0, 0, 800, 400, 3438, 33438, 4065, 34065},     
+	{0, 0, 800, 667, 3410, 33410, 3889, 33889},     
+	{0, 0, 800, 800, 3403, 33403, 3845, 33845},     
+	{0, 1, 800, 667, 6476, 36476, 6955, 36955},     
+	{0, 1, 800, 800, 5958, 35958, 6400, 36400},     
 
-	{0, 0, 667, 400, 3456, 33456, 4103, 34106},    /* DDR2-400 SC */
-	{0, 0, 667, 667, 3428, 33428, 3927, 33927},    /* DDR2-667 SC */
-	{0, 0, 667, 800, 3443, 33443, 3905, 33905},    /* DDR2-800 SC */
-	{0, 1, 667, 667, 6494, 36494, 6993, 36993},    /* DDR3-667 SC */
-	{0, 1, 667, 800, 5998, 35998, 6460, 36460},    /* DDR3-800 SC */
+	{0, 0, 667, 400, 3456, 33456, 4103, 34106},     
+	{0, 0, 667, 667, 3428, 33428, 3927, 33927},     
+	{0, 0, 667, 800, 3443, 33443, 3905, 33905},     
+	{0, 1, 667, 667, 6494, 36494, 6993, 36993},     
+	{0, 1, 667, 800, 5998, 35998, 6460, 36460},     
 
-	{0, 0, 400, 400, 3528, 33528, 4255, 34255},    /* DDR2-400 SC */
-	{0, 0, 400, 667, 3500, 33500, 4079, 34079},    /* DDR2-667 SC */
-	{0, 0, 400, 800, 3487, 33487, 4029, 34029},    /* DDR2-800 SC */
-	{0, 1, 400, 667, 6566, 36566, 7145, 37145},    /* DDR3-667 SC */
-	{0, 1, 400, 800, 6042, 36042, 6584, 36584},    /* DDR3-800 SC */
+	{0, 0, 400, 400, 3528, 33528, 4255, 34255},     
+	{0, 0, 400, 667, 3500, 33500, 4079, 34079},     
+	{0, 0, 400, 800, 3487, 33487, 4029, 34029},     
+	{0, 1, 400, 667, 6566, 36566, 7145, 37145},     
+	{0, 1, 400, 800, 6042, 36042, 6584, 36584},     
 };
 
 static const struct cxsr_latency *intel_get_cxsr_latency(bool is_desktop,
@@ -165,11 +163,7 @@ static bool _intel_set_memory_cxsr(struct drm_i915_private *dev_priv, bool enabl
 		intel_uncore_write(&dev_priv->uncore, FW_BLC_SELF, val);
 		intel_uncore_posting_read(&dev_priv->uncore, FW_BLC_SELF);
 	} else if (IS_I915GM(dev_priv)) {
-		/*
-		 * FIXME can't find a bit like this for 915G, and
-		 * yet it does have the related watermark in
-		 * FW_BLC_SELF. What's going on?
-		 */
+		 
 		was_enabled = intel_uncore_read(&dev_priv->uncore, INSTPM) & INSTPM_SELF_EN;
 		val = enable ? _MASKED_BIT_ENABLE(INSTPM_SELF_EN) :
 			       _MASKED_BIT_DISABLE(INSTPM_SELF_EN);
@@ -188,43 +182,7 @@ static bool _intel_set_memory_cxsr(struct drm_i915_private *dev_priv, bool enabl
 	return was_enabled;
 }
 
-/**
- * intel_set_memory_cxsr - Configure CxSR state
- * @dev_priv: i915 device
- * @enable: Allow vs. disallow CxSR
- *
- * Allow or disallow the system to enter a special CxSR
- * (C-state self refresh) state. What typically happens in CxSR mode
- * is that several display FIFOs may get combined into a single larger
- * FIFO for a particular plane (so called max FIFO mode) to allow the
- * system to defer memory fetches longer, and the memory will enter
- * self refresh.
- *
- * Note that enabling CxSR does not guarantee that the system enter
- * this special mode, nor does it guarantee that the system stays
- * in that mode once entered. So this just allows/disallows the system
- * to autonomously utilize the CxSR mode. Other factors such as core
- * C-states will affect when/if the system actually enters/exits the
- * CxSR mode.
- *
- * Note that on VLV/CHV this actually only controls the max FIFO mode,
- * and the system is free to enter/exit memory self refresh at any time
- * even when the use of CxSR has been disallowed.
- *
- * While the system is actually in the CxSR/max FIFO mode, some plane
- * control registers will not get latched on vblank. Thus in order to
- * guarantee the system will respond to changes in the plane registers
- * we must always disallow CxSR prior to making changes to those registers.
- * Unfortunately the system will re-evaluate the CxSR conditions at
- * frame start which happens after vblank start (which is when the plane
- * registers would get latched), so we can't proceed with the plane update
- * during the same frame where we disallowed CxSR.
- *
- * Certain platforms also have a deeper HPLL SR mode. Fortunately the
- * HPLL SR mode depends on CxSR itself, so we don't have to hand hold
- * the hardware w.r.t. HPLL SR when writing to plane registers.
- * Disallowing just CxSR is sufficient.
- */
+ 
 bool intel_set_memory_cxsr(struct drm_i915_private *dev_priv, bool enable)
 {
 	bool ret;
@@ -240,20 +198,7 @@ bool intel_set_memory_cxsr(struct drm_i915_private *dev_priv, bool enable)
 	return ret;
 }
 
-/*
- * Latency for FIFO fetches is dependent on several factors:
- *   - memory configuration (speed, channels)
- *   - chipset
- *   - current MCH state
- * It can be fairly high in some situations, so here we assume a fairly
- * pessimal value.  It's a tradeoff between extra memory fetches (if we
- * set this value too high, the FIFO will fetch frequently to stay full)
- * and power consumption (set it too low to save power and we might see
- * FIFO underruns and display "flicker").
- *
- * A value of 5us seems to be a good balance; safe for very low end
- * platforms but not overly aggressive on lower latency configs.
- */
+ 
 static const int pessimal_latency_ns = 5000;
 
 #define VLV_FIFO_START(dsparb, dsparb2, lo_shift, hi_shift) \
@@ -323,7 +268,7 @@ static int i830_get_fifo_size(struct drm_i915_private *dev_priv,
 	size = dsparb & 0x1ff;
 	if (i9xx_plane == PLANE_B)
 		size = ((dsparb >> DSPARB_BEND_SHIFT) & 0x1ff) - size;
-	size >>= 1; /* Convert to cachelines */
+	size >>= 1;  
 
 	drm_dbg_kms(&dev_priv->drm, "FIFO size - (0x%08x) %c: %d\n",
 		    dsparb, plane_name(i9xx_plane), size);
@@ -338,7 +283,7 @@ static int i845_get_fifo_size(struct drm_i915_private *dev_priv,
 	int size;
 
 	size = dsparb & 0x7f;
-	size >>= 2; /* Convert to cachelines */
+	size >>= 2;  
 
 	drm_dbg_kms(&dev_priv->drm, "FIFO size - (0x%08x) %c: %d\n",
 		    dsparb, plane_name(i9xx_plane), size);
@@ -346,7 +291,7 @@ static int i845_get_fifo_size(struct drm_i915_private *dev_priv,
 	return size;
 }
 
-/* Pineview has different values for various configs */
+ 
 static const struct intel_watermark_params pnv_display_wm = {
 	.fifo_size = PINEVIEW_DISPLAY_FIFO,
 	.max_wm = PINEVIEW_MAX_WM,
@@ -427,39 +372,7 @@ static const struct intel_watermark_params i845_wm_info = {
 	.cacheline_size = I830_FIFO_LINE_SIZE,
 };
 
-/**
- * intel_wm_method1 - Method 1 / "small buffer" watermark formula
- * @pixel_rate: Pipe pixel rate in kHz
- * @cpp: Plane bytes per pixel
- * @latency: Memory wakeup latency in 0.1us units
- *
- * Compute the watermark using the method 1 or "small buffer"
- * formula. The caller may additonally add extra cachelines
- * to account for TLB misses and clock crossings.
- *
- * This method is concerned with the short term drain rate
- * of the FIFO, ie. it does not account for blanking periods
- * which would effectively reduce the average drain rate across
- * a longer period. The name "small" refers to the fact the
- * FIFO is relatively small compared to the amount of data
- * fetched.
- *
- * The FIFO level vs. time graph might look something like:
- *
- *   |\   |\
- *   | \  | \
- * __---__---__ (- plane active, _ blanking)
- * -> time
- *
- * or perhaps like this:
- *
- *   |\|\  |\|\
- * __----__----__ (- plane active, _ blanking)
- * -> time
- *
- * Returns:
- * The watermark in bytes
- */
+ 
 static unsigned int intel_wm_method1(unsigned int pixel_rate,
 				     unsigned int cpp,
 				     unsigned int latency)
@@ -472,36 +385,7 @@ static unsigned int intel_wm_method1(unsigned int pixel_rate,
 	return ret;
 }
 
-/**
- * intel_wm_method2 - Method 2 / "large buffer" watermark formula
- * @pixel_rate: Pipe pixel rate in kHz
- * @htotal: Pipe horizontal total
- * @width: Plane width in pixels
- * @cpp: Plane bytes per pixel
- * @latency: Memory wakeup latency in 0.1us units
- *
- * Compute the watermark using the method 2 or "large buffer"
- * formula. The caller may additonally add extra cachelines
- * to account for TLB misses and clock crossings.
- *
- * This method is concerned with the long term drain rate
- * of the FIFO, ie. it does account for blanking periods
- * which effectively reduce the average drain rate across
- * a longer period. The name "large" refers to the fact the
- * FIFO is relatively large compared to the amount of data
- * fetched.
- *
- * The FIFO level vs. time graph might look something like:
- *
- *    |\___       |\___
- *    |    \___   |    \___
- *    |        \  |        \
- * __ --__--__--__--__--__--__ (- plane active, _ blanking)
- * -> time
- *
- * Returns:
- * The watermark in bytes
- */
+ 
 static unsigned int intel_wm_method2(unsigned int pixel_rate,
 				     unsigned int htotal,
 				     unsigned int width,
@@ -510,10 +394,7 @@ static unsigned int intel_wm_method2(unsigned int pixel_rate,
 {
 	unsigned int ret;
 
-	/*
-	 * FIXME remove once all users are computing
-	 * watermarks in the correct place.
-	 */
+	 
 	if (WARN_ON_ONCE(htotal == 0))
 		htotal = 1;
 
@@ -523,25 +404,7 @@ static unsigned int intel_wm_method2(unsigned int pixel_rate,
 	return ret;
 }
 
-/**
- * intel_calculate_wm - calculate watermark level
- * @pixel_rate: pixel clock
- * @wm: chip FIFO params
- * @fifo_size: size of the FIFO buffer
- * @cpp: bytes per pixel
- * @latency_ns: memory latency for the platform
- *
- * Calculate the watermark level (the level at which the display plane will
- * start fetching from memory again).  Each chip has a different display
- * FIFO size and allocation, so the caller needs to figure that out and pass
- * in the correct intel_watermark_params structure.
- *
- * As the pixel clock runs, the FIFO will be drained at a rate that depends
- * on the pixel size.  When it reaches the watermark level, it'll start
- * fetching FIFO line sized based chunks from memory until the FIFO fills
- * past the watermark point.  If the FIFO drains completely, a FIFO underrun
- * will occur, and a display engine hang could result.
- */
+ 
 static unsigned int intel_calculate_wm(int pixel_rate,
 				       const struct intel_watermark_params *wm,
 				       int fifo_size, int cpp,
@@ -549,12 +412,7 @@ static unsigned int intel_calculate_wm(int pixel_rate,
 {
 	int entries, wm_size;
 
-	/*
-	 * Note: we need to make sure we don't overflow for various clock &
-	 * latency values.
-	 * clocks go from a few thousand to several hundred thousand.
-	 * latency is usually a few thousand
-	 */
+	 
 	entries = intel_wm_method1(pixel_rate, cpp,
 				   latency_ns / 100);
 	entries = DIV_ROUND_UP(entries, wm->cacheline_size) +
@@ -564,19 +422,13 @@ static unsigned int intel_calculate_wm(int pixel_rate,
 	wm_size = fifo_size - entries;
 	DRM_DEBUG_KMS("FIFO watermark level: %d\n", wm_size);
 
-	/* Don't promote wm_size to unsigned... */
+	 
 	if (wm_size > wm->max_wm)
 		wm_size = wm->max_wm;
 	if (wm_size <= 0)
 		wm_size = wm->default_wm;
 
-	/*
-	 * Bspec seems to indicate that the value shouldn't be lower than
-	 * 'burst size + 1'. Certainly 830 is quite unhappy with low values.
-	 * Lets go for 8 which is the burst size since certain platforms
-	 * already use a hardcoded 8 (which is what the spec says should be
-	 * done).
-	 */
+	 
 	if (wm_size <= 8)
 		wm_size = 8;
 
@@ -595,19 +447,7 @@ static bool is_enabling(int old, int new, int threshold)
 
 static bool intel_crtc_active(struct intel_crtc *crtc)
 {
-	/* Be paranoid as we can arrive here with only partial
-	 * state retrieved from the hardware during setup.
-	 *
-	 * We can ditch the adjusted_mode.crtc_clock check as soon
-	 * as Haswell has gained clock readout/fastboot support.
-	 *
-	 * We can ditch the crtc->primary->state->fb check as soon as we can
-	 * properly reconstruct framebuffers.
-	 *
-	 * FIXME: The intel_crtc->active here should be switched to
-	 * crtc->state->active once we have proper CRTC states wired up
-	 * for atomic.
-	 */
+	 
 	return crtc && crtc->active && crtc->base.primary->state->fb &&
 		crtc->config->hw.adjusted_mode.crtc_clock;
 }
@@ -652,7 +492,7 @@ static void pnv_update_wm(struct drm_i915_private *dev_priv)
 		int pixel_rate = crtc->config->pixel_rate;
 		int cpp = fb->format->cpp[0];
 
-		/* Display SR */
+		 
 		wm = intel_calculate_wm(pixel_rate, &pnv_display_wm,
 					pnv_display_wm.fifo_size,
 					cpp, latency->display_sr);
@@ -662,20 +502,20 @@ static void pnv_update_wm(struct drm_i915_private *dev_priv)
 		intel_uncore_write(&dev_priv->uncore, DSPFW1, reg);
 		drm_dbg_kms(&dev_priv->drm, "DSPFW1 register is %x\n", reg);
 
-		/* cursor SR */
+		 
 		wm = intel_calculate_wm(pixel_rate, &pnv_cursor_wm,
 					pnv_display_wm.fifo_size,
 					4, latency->cursor_sr);
 		intel_uncore_rmw(&dev_priv->uncore, DSPFW3, DSPFW_CURSOR_SR_MASK,
 				 FW_WM(wm, CURSOR_SR));
 
-		/* Display HPLL off SR */
+		 
 		wm = intel_calculate_wm(pixel_rate, &pnv_display_hplloff_wm,
 					pnv_display_hplloff_wm.fifo_size,
 					cpp, latency->display_hpll_disable);
 		intel_uncore_rmw(&dev_priv->uncore, DSPFW3, DSPFW_HPLL_SR_MASK, FW_WM(wm, HPLL_SR));
 
-		/* cursor HPLL off SR */
+		 
 		wm = intel_calculate_wm(pixel_rate, &pnv_cursor_hplloff_wm,
 					pnv_display_hplloff_wm.fifo_size,
 					4, latency->cursor_hpll_disable);
@@ -691,16 +531,7 @@ static void pnv_update_wm(struct drm_i915_private *dev_priv)
 	}
 }
 
-/*
- * Documentation says:
- * "If the line size is small, the TLB fetches can get in the way of the
- *  data fetches, causing some lag in the pixel data return which is not
- *  accounted for in the above formulas. The following adjustment only
- *  needs to be applied if eight whole lines fit in the buffer at once.
- *  The WM is adjusted upwards by the difference between the FIFO size
- *  and the size of 8 whole lines. This adjustment is always performed
- *  in the actual pixel depth regardless of whether FBC is enabled or not."
- */
+ 
 static unsigned int g4x_tlb_miss_wa(int fifo_size, int width, int cpp)
 {
 	int tlb_miss = fifo_size * 64 - width * cpp * 8;
@@ -755,11 +586,7 @@ static void vlv_write_wm_values(struct drm_i915_private *dev_priv,
 				   (wm->ddl[pipe].plane[PLANE_PRIMARY] << DDL_PLANE_SHIFT));
 	}
 
-	/*
-	 * Zero the (unused) WM1 watermarks, and also clear all the
-	 * high order bits so that there are no out of bounds values
-	 * present in the registers during the reprogramming.
-	 */
+	 
 	intel_uncore_write(&dev_priv->uncore, DSPHOWM, 0);
 	intel_uncore_write(&dev_priv->uncore, DSPHOWM1, 0);
 	intel_uncore_write(&dev_priv->uncore, DSPFW4, 0);
@@ -820,7 +647,7 @@ static void vlv_write_wm_values(struct drm_i915_private *dev_priv,
 
 static void g4x_setup_wm_latency(struct drm_i915_private *dev_priv)
 {
-	/* all latencies in usec */
+	 
 	dev_priv->display.wm.pri_latency[G4X_WM_LEVEL_NORMAL] = 5;
 	dev_priv->display.wm.pri_latency[G4X_WM_LEVEL_SR] = 12;
 	dev_priv->display.wm.pri_latency[G4X_WM_LEVEL_HPLL] = 35;
@@ -830,20 +657,7 @@ static void g4x_setup_wm_latency(struct drm_i915_private *dev_priv)
 
 static int g4x_plane_fifo_size(enum plane_id plane_id, int level)
 {
-	/*
-	 * DSPCNTR[13] supposedly controls whether the
-	 * primary plane can use the FIFO space otherwise
-	 * reserved for the sprite plane. It's not 100% clear
-	 * what the actual FIFO size is, but it looks like we
-	 * can happily set both primary and sprite watermarks
-	 * up to 127 cachelines. So that would seem to mean
-	 * that either DSPCNTR[13] doesn't do anything, or that
-	 * the total FIFO is >= 256 cachelines in size. Either
-	 * way, we don't seem to have to worry about this
-	 * repartitioning as the maximum watermark value the
-	 * register can hold for each plane is lower than the
-	 * minimum FIFO size.
-	 */
+	 
 	switch (plane_id) {
 	case PLANE_CURSOR:
 		return 63;
@@ -889,13 +703,7 @@ static u16 g4x_compute_wm(const struct intel_crtc_state *crtc_state,
 
 	cpp = plane_state->hw.fb->format->cpp[0];
 
-	/*
-	 * WaUse32BppForSRWM:ctg,elk
-	 *
-	 * The spec fails to list this restriction for the
-	 * HPLL watermark, which seems a little strange.
-	 * Let's use 32bpp for the HPLL watermark as well.
-	 */
+	 
 	if (plane->id == PLANE_PRIMARY &&
 	    level != G4X_WM_LEVEL_NORMAL)
 		cpp = max(cpp, 4u);
@@ -948,7 +756,7 @@ static bool g4x_raw_fbc_wm_set(struct intel_crtc_state *crtc_state,
 	struct drm_i915_private *dev_priv = to_i915(crtc_state->uapi.crtc->dev);
 	bool dirty = false;
 
-	/* NORMAL level doesn't have an FBC watermark */
+	 
 	level = max(level, G4X_WM_LEVEL_SR);
 
 	for (; level < dev_priv->display.wm.num_levels; level++) {
@@ -1002,10 +810,7 @@ static bool g4x_raw_plane_wm_compute(struct intel_crtc_state *crtc_state,
 					raw->plane[plane_id]);
 		max_wm = g4x_fbc_fifo_size(level);
 
-		/*
-		 * FBC wm is not mandatory as we
-		 * can always just disable its use.
-		 */
+		 
 		if (wm > max_wm)
 			wm = USHRT_MAX;
 
@@ -1013,7 +818,7 @@ static bool g4x_raw_plane_wm_compute(struct intel_crtc_state *crtc_state,
 		raw->fbc = wm;
 	}
 
-	/* mark watermarks as invalid */
+	 
 	dirty |= g4x_raw_plane_wm_set(crtc_state, level, plane_id, USHRT_MAX);
 
 	if (plane_id == PLANE_PRIMARY)
@@ -1059,7 +864,7 @@ static bool g4x_raw_crtc_wm_is_valid(const struct intel_crtc_state *crtc_state,
 		g4x_raw_plane_wm_is_valid(crtc_state, PLANE_CURSOR, level);
 }
 
-/* mark all levels starting from 'level' as invalid */
+ 
 static void g4x_invalidate_wms(struct intel_crtc *crtc,
 			       struct g4x_wm_state *wm_state, int level)
 {
@@ -1147,16 +952,10 @@ static int _g4x_compute_pipe_wm(struct intel_crtc_state *crtc_state)
 	if (level == G4X_WM_LEVEL_NORMAL)
 		return -EINVAL;
 
-	/* invalidate the higher levels */
+	 
 	g4x_invalidate_wms(crtc, wm_state, level);
 
-	/*
-	 * Determine if the FBC watermark(s) can be used. IF
-	 * this isn't the case we prefer to disable the FBC
-	 * watermark(s) rather than disable the SR/HPLL
-	 * level(s) entirely. 'level-1' is the highest valid
-	 * level here.
-	 */
+	 
 	wm_state->fbc_en = g4x_compute_fbc_en(wm_state, level - 1);
 
 	return 0;
@@ -1262,10 +1061,7 @@ static int g4x_compute_intermediate_wm(struct intel_atomic_state *state,
 		    intermediate->fbc_en && intermediate->hpll_en);
 
 out:
-	/*
-	 * If our intermediate WM are identical to the final WM, then we can
-	 * omit the post-vblank programming; only update if it's different.
-	 */
+	 
 	if (memcmp(intermediate, optimal, sizeof(*intermediate)) != 0)
 		new_crtc_state->wm.need_postvbl_update = true;
 
@@ -1366,7 +1162,7 @@ static void g4x_optimize_watermarks(struct intel_atomic_state *state,
 	mutex_unlock(&dev_priv->display.wm.wm_mutex);
 }
 
-/* latency must be in 0.1us units. */
+ 
 static unsigned int vlv_wm_method2(unsigned int pixel_rate,
 				   unsigned int htotal,
 				   unsigned int width,
@@ -1384,7 +1180,7 @@ static unsigned int vlv_wm_method2(unsigned int pixel_rate,
 
 static void vlv_setup_wm_latency(struct drm_i915_private *dev_priv)
 {
-	/* all latencies in usec */
+	 
 	dev_priv->display.wm.pri_latency[VLV_WM_LEVEL_PM2] = 3;
 
 	dev_priv->display.wm.num_levels = VLV_WM_LEVEL_PM2 + 1;
@@ -1419,12 +1215,7 @@ static u16 vlv_compute_wm_level(const struct intel_crtc_state *crtc_state,
 	width = drm_rect_width(&plane_state->uapi.src) >> 16;
 
 	if (plane->id == PLANE_CURSOR) {
-		/*
-		 * FIXME the formula gives values that are
-		 * too big for the cursor FIFO, and hence we
-		 * would never be able to use cursors. For
-		 * now just hardcode the watermark.
-		 */
+		 
 		wm = 63;
 	} else {
 		wm = vlv_wm_method2(pixel_rate, htotal, width, cpp,
@@ -1455,14 +1246,7 @@ static int vlv_compute_fifo(struct intel_crtc_state *crtc_state)
 	unsigned int total_rate;
 	enum plane_id plane_id;
 
-	/*
-	 * When enabling sprite0 after sprite1 has already been enabled
-	 * we tend to get an underrun unless sprite0 already has some
-	 * FIFO space allcoated. Hence we always allocate at least one
-	 * cacheline for sprite0 whenever sprite1 is enabled.
-	 *
-	 * All other plane enable sequences appear immune to this problem.
-	 */
+	 
 	if (vlv_need_sprite0_fifo_workaround(active_planes))
 		sprite0_fifo_extra = 1;
 
@@ -1497,7 +1281,7 @@ static int vlv_compute_fifo(struct intel_crtc_state *crtc_state)
 
 	fifo_extra = DIV_ROUND_UP(fifo_left, num_active_planes ?: 1);
 
-	/* spread the remainder evenly */
+	 
 	for_each_plane_id_on_crtc(crtc, plane_id) {
 		int plane_extra;
 
@@ -1514,7 +1298,7 @@ static int vlv_compute_fifo(struct intel_crtc_state *crtc_state)
 
 	drm_WARN_ON(&dev_priv->drm, active_planes != 0 && fifo_left != 0);
 
-	/* give it all to the first plane if none are active */
+	 
 	if (active_planes == 0) {
 		drm_WARN_ON(&dev_priv->drm, fifo_left != fifo_size);
 		fifo_state->plane[PLANE_PRIMARY] = fifo_left;
@@ -1523,7 +1307,7 @@ static int vlv_compute_fifo(struct intel_crtc_state *crtc_state)
 	return 0;
 }
 
-/* mark all levels starting from 'level' as invalid */
+ 
 static void vlv_invalidate_wms(struct intel_crtc *crtc,
 			       struct vlv_wm_state *wm_state, int level)
 {
@@ -1548,10 +1332,7 @@ static u16 vlv_invert_wm_value(u16 wm, u16 fifo_size)
 		return fifo_size - wm;
 }
 
-/*
- * Starting from 'level' set all higher
- * levels to 'value' in the "raw" watermarks.
- */
+ 
 static bool vlv_raw_plane_wm_set(struct intel_crtc_state *crtc_state,
 				 int level, enum plane_id plane_id, u16 value)
 {
@@ -1594,7 +1375,7 @@ static bool vlv_raw_plane_wm_compute(struct intel_crtc_state *crtc_state,
 		raw->plane[plane_id] = wm;
 	}
 
-	/* mark all higher levels as invalid */
+	 
 	dirty |= vlv_raw_plane_wm_set(crtc_state, level, plane_id, USHRT_MAX);
 
 out:
@@ -1640,13 +1421,9 @@ static int _vlv_compute_pipe_wm(struct intel_crtc_state *crtc_state)
 	enum plane_id plane_id;
 	int level;
 
-	/* initially allow all levels */
+	 
 	wm_state->num_levels = dev_priv->display.wm.num_levels;
-	/*
-	 * Note that enabling cxsr with no primary/sprite planes
-	 * enabled can wedge the pipe. Hence we only allow cxsr
-	 * with exactly one enabled primary/sprite plane.
-	 */
+	 
 	wm_state->cxsr = crtc->pipe != PIPE_C && num_active_planes == 1;
 
 	for (level = 0; level < wm_state->num_levels; level++) {
@@ -1676,10 +1453,10 @@ static int _vlv_compute_pipe_wm(struct intel_crtc_state *crtc_state)
 	if (level == 0)
 		return -EINVAL;
 
-	/* limit to only levels we can actually handle */
+	 
 	wm_state->num_levels = level;
 
-	/* invalidate the higher levels */
+	 
 	vlv_invalidate_wms(crtc, wm_state, level);
 
 	return 0;
@@ -1707,22 +1484,14 @@ static int vlv_compute_pipe_wm(struct intel_atomic_state *state,
 			dirty |= BIT(plane->id);
 	}
 
-	/*
-	 * DSPARB registers may have been reset due to the
-	 * power well being turned off. Make sure we restore
-	 * them to a consistent state even if no primary/sprite
-	 * planes are initially active. We also force a FIFO
-	 * recomputation so that we are sure to sanitize the
-	 * FIFO setting we took over from the BIOS even if there
-	 * are no active planes on the crtc.
-	 */
+	 
 	if (intel_crtc_needs_modeset(crtc_state))
 		dirty = ~0;
 
 	if (!dirty)
 		return 0;
 
-	/* cursor changes don't warrant a FIFO recompute */
+	 
 	if (dirty & ~BIT(PLANE_CURSOR)) {
 		const struct intel_crtc_state *old_crtc_state =
 			intel_atomic_get_old_crtc_state(state, crtc);
@@ -1772,15 +1541,7 @@ static void vlv_atomic_update_fifo(struct intel_atomic_state *state,
 
 	trace_vlv_fifo_size(crtc, sprite0_start, sprite1_start, fifo_size);
 
-	/*
-	 * uncore.lock serves a double purpose here. It allows us to
-	 * use the less expensive I915_{READ,WRITE}_FW() functions, and
-	 * it protects the DSPARB registers from getting clobbered by
-	 * parallel updates from multiple pipes.
-	 *
-	 * intel_pipe_update_start() has already disabled interrupts
-	 * for us, so a plain spin_lock() is sufficient here.
-	 */
+	 
 	spin_lock(&uncore->lock);
 
 	switch (crtc->pipe) {
@@ -1888,10 +1649,7 @@ static int vlv_compute_intermediate_wm(struct intel_atomic_state *state,
 	vlv_invalidate_wms(crtc, intermediate, level);
 
 out:
-	/*
-	 * If our intermediate WM are identical to the final WM, then we can
-	 * omit the post-vblank programming; only update if it's different.
-	 */
+	 
 	if (memcmp(intermediate, optimal, sizeof(*intermediate)) != 0)
 		new_crtc_state->wm.need_postvbl_update = true;
 
@@ -2010,10 +1768,10 @@ static void i965_update_wm(struct drm_i915_private *dev_priv)
 	int cursor_sr = 16;
 	bool cxsr_enabled;
 
-	/* Calc sr entries for one plane configs */
+	 
 	crtc = single_enabled_crtc(dev_priv);
 	if (crtc) {
-		/* self-refresh has much higher latency */
+		 
 		static const int sr_latency_ns = 12000;
 		const struct drm_display_mode *pipe_mode =
 			&crtc->config->hw.pipe_mode;
@@ -2054,7 +1812,7 @@ static void i965_update_wm(struct drm_i915_private *dev_priv)
 		cxsr_enabled = true;
 	} else {
 		cxsr_enabled = false;
-		/* Turn off self refresh if both pipes are enabled */
+		 
 		intel_set_memory_cxsr(dev_priv, false);
 	}
 
@@ -2062,14 +1820,14 @@ static void i965_update_wm(struct drm_i915_private *dev_priv)
 		    "Setting FIFO watermarks - A: 8, B: 8, C: 8, SR %d\n",
 		    srwm);
 
-	/* 965 has limitations... */
+	 
 	intel_uncore_write(&dev_priv->uncore, DSPFW1, FW_WM(srwm, SR) |
 		   FW_WM(8, CURSORB) |
 		   FW_WM(8, PLANEB) |
 		   FW_WM(8, PLANEA));
 	intel_uncore_write(&dev_priv->uncore, DSPFW2, FW_WM(8, CURSORA) |
 		   FW_WM(8, PLANEC_OLD));
-	/* update cursor SR watermark */
+	 
 	intel_uncore_write(&dev_priv->uncore, DSPFW3, FW_WM(cursor_sr, CURSOR_SR));
 
 	if (cxsr_enabled)
@@ -2169,22 +1927,20 @@ static void i9xx_update_wm(struct drm_i915_private *dev_priv)
 
 		obj = intel_fb_obj(crtc->base.primary->state->fb);
 
-		/* self-refresh seems busted with untiled */
+		 
 		if (!i915_gem_object_is_tiled(obj))
 			crtc = NULL;
 	}
 
-	/*
-	 * Overlay gets an aggressive default since video jitter is bad.
-	 */
+	 
 	cwm = 2;
 
-	/* Play safe and disable self-refresh before adjusting watermarks. */
+	 
 	intel_set_memory_cxsr(dev_priv, false);
 
-	/* Calc sr entries for one plane configs */
+	 
 	if (HAS_FW_BLC(dev_priv) && crtc) {
-		/* self-refresh has much higher latency */
+		 
 		static const int sr_latency_ns = 6000;
 		const struct drm_display_mode *pipe_mode =
 			&crtc->config->hw.pipe_mode;
@@ -2224,7 +1980,7 @@ static void i9xx_update_wm(struct drm_i915_private *dev_priv)
 	fwater_lo = ((planeb_wm & 0x3f) << 16) | (planea_wm & 0x3f);
 	fwater_hi = (cwm & 0x1f);
 
-	/* Set request length to 8 cachelines per fetch */
+	 
 	fwater_lo = fwater_lo | (1 << 24) | (1 << 8);
 	fwater_hi = fwater_hi | (1 << 8);
 
@@ -2258,7 +2014,7 @@ static void i845_update_wm(struct drm_i915_private *dev_priv)
 	intel_uncore_write(&dev_priv->uncore, FW_BLC, fwater_lo);
 }
 
-/* latency must be in 0.1us units. */
+ 
 static unsigned int ilk_wm_method1(unsigned int pixel_rate,
 				   unsigned int cpp,
 				   unsigned int latency)
@@ -2271,7 +2027,7 @@ static unsigned int ilk_wm_method1(unsigned int pixel_rate,
 	return ret;
 }
 
-/* latency must be in 0.1us units. */
+ 
 static unsigned int ilk_wm_method2(unsigned int pixel_rate,
 				   unsigned int htotal,
 				   unsigned int width,
@@ -2289,12 +2045,7 @@ static unsigned int ilk_wm_method2(unsigned int pixel_rate,
 
 static u32 ilk_wm_fbc(u32 pri_val, u32 horiz_pixels, u8 cpp)
 {
-	/*
-	 * Neither of these should be possible since this function shouldn't be
-	 * called if the CRTC is off or the plane is invisible.  But let's be
-	 * extra paranoid to avoid a potential divide-by-zero if we screw up
-	 * elsewhere in the driver.
-	 */
+	 
 	if (WARN_ON(!cpp))
 		return 0;
 	if (WARN_ON(!horiz_pixels))
@@ -2310,10 +2061,7 @@ struct ilk_wm_maximums {
 	u16 fbc;
 };
 
-/*
- * For both WM_PIPE and WM_LP.
- * mem_value must be in 0.1us units.
- */
+ 
 static u32 ilk_compute_pri_wm(const struct intel_crtc_state *crtc_state,
 			      const struct intel_plane_state *plane_state,
 			      u32 mem_value, bool is_lp)
@@ -2342,10 +2090,7 @@ static u32 ilk_compute_pri_wm(const struct intel_crtc_state *crtc_state,
 	return min(method1, method2);
 }
 
-/*
- * For both WM_PIPE and WM_LP.
- * mem_value must be in 0.1us units.
- */
+ 
 static u32 ilk_compute_spr_wm(const struct intel_crtc_state *crtc_state,
 			      const struct intel_plane_state *plane_state,
 			      u32 mem_value)
@@ -2369,10 +2114,7 @@ static u32 ilk_compute_spr_wm(const struct intel_crtc_state *crtc_state,
 	return min(method1, method2);
 }
 
-/*
- * For both WM_PIPE and WM_LP.
- * mem_value must be in 0.1us units.
- */
+ 
 static u32 ilk_compute_cur_wm(const struct intel_crtc_state *crtc_state,
 			      const struct intel_plane_state *plane_state,
 			      u32 mem_value)
@@ -2393,7 +2135,7 @@ static u32 ilk_compute_cur_wm(const struct intel_crtc_state *crtc_state,
 			      cpp, mem_value);
 }
 
-/* Only for WM_LP. */
+ 
 static u32 ilk_compute_fbc_wm(const struct intel_crtc_state *crtc_state,
 			      const struct intel_plane_state *plane_state,
 			      u32 pri_val)
@@ -2425,16 +2167,16 @@ ilk_plane_wm_reg_max(const struct drm_i915_private *dev_priv,
 		     int level, bool is_sprite)
 {
 	if (DISPLAY_VER(dev_priv) >= 8)
-		/* BDW primary/sprite plane watermarks */
+		 
 		return level == 0 ? 255 : 2047;
 	else if (DISPLAY_VER(dev_priv) >= 7)
-		/* IVB/HSW primary/sprite plane watermarks */
+		 
 		return level == 0 ? 127 : 1023;
 	else if (!is_sprite)
-		/* ILK/SNB primary plane watermarks */
+		 
 		return level == 0 ? 127 : 511;
 	else
-		/* ILK/SNB sprite plane watermarks */
+		 
 		return level == 0 ? 63 : 255;
 }
 
@@ -2455,7 +2197,7 @@ static unsigned int ilk_fbc_wm_reg_max(const struct drm_i915_private *dev_priv)
 		return 15;
 }
 
-/* Calculate the maximum primary/sprite plane watermark */
+ 
 static unsigned int ilk_plane_wm_max(const struct drm_i915_private *dev_priv,
 				     int level,
 				     const struct intel_wm_config *config,
@@ -2464,25 +2206,21 @@ static unsigned int ilk_plane_wm_max(const struct drm_i915_private *dev_priv,
 {
 	unsigned int fifo_size = ilk_display_fifo_size(dev_priv);
 
-	/* if sprites aren't enabled, sprites get nothing */
+	 
 	if (is_sprite && !config->sprites_enabled)
 		return 0;
 
-	/* HSW allows LP1+ watermarks even with multiple pipes */
+	 
 	if (level == 0 || config->num_pipes_active > 1) {
 		fifo_size /= INTEL_NUM_PIPES(dev_priv);
 
-		/*
-		 * For some reason the non self refresh
-		 * FIFO size is only half of the self
-		 * refresh FIFO size on ILK/SNB.
-		 */
+		 
 		if (DISPLAY_VER(dev_priv) <= 6)
 			fifo_size /= 2;
 	}
 
 	if (config->sprites_enabled) {
-		/* level 0 is always calculated with 1:1 split */
+		 
 		if (level > 0 && ddb_partitioning == INTEL_DDB_PART_5_6) {
 			if (is_sprite)
 				fifo_size *= 5;
@@ -2492,20 +2230,20 @@ static unsigned int ilk_plane_wm_max(const struct drm_i915_private *dev_priv,
 		}
 	}
 
-	/* clamp to max that the registers can hold */
+	 
 	return min(fifo_size, ilk_plane_wm_reg_max(dev_priv, level, is_sprite));
 }
 
-/* Calculate the maximum cursor plane watermark */
+ 
 static unsigned int ilk_cursor_wm_max(const struct drm_i915_private *dev_priv,
 				      int level,
 				      const struct intel_wm_config *config)
 {
-	/* HSW LP1+ watermarks w/ multiple pipes */
+	 
 	if (level > 0 && config->num_pipes_active > 1)
 		return 64;
 
-	/* otherwise just report max that registers can hold */
+	 
 	return ilk_cursor_wm_reg_max(dev_priv, level);
 }
 
@@ -2537,7 +2275,7 @@ static bool ilk_validate_wm_level(int level,
 {
 	bool ret;
 
-	/* already determined to be invalid? */
+	 
 	if (!result->enable)
 		return false;
 
@@ -2547,11 +2285,7 @@ static bool ilk_validate_wm_level(int level,
 
 	ret = result->enable;
 
-	/*
-	 * HACK until we can pre-compute everything,
-	 * and thus fail gracefully if LP0 watermarks
-	 * are exceeded...
-	 */
+	 
 	if (level == 0 && !result->enable) {
 		if (result->pri_val > max->pri)
 			DRM_DEBUG_KMS("Primary WM%d too large %u (max %u)\n",
@@ -2585,7 +2319,7 @@ static void ilk_compute_wm_level(const struct drm_i915_private *dev_priv,
 	u16 spr_latency = dev_priv->display.wm.spr_latency[level];
 	u16 cur_latency = dev_priv->display.wm.cur_latency[level];
 
-	/* WM1+ latency values stored in 0.5us units */
+	 
 	if (level > 0) {
 		pri_latency *= 5;
 		spr_latency *= 5;
@@ -2646,7 +2380,7 @@ static void ilk_read_wm_latency(struct drm_i915_private *i915, u16 wm[])
 
 	mltr = intel_uncore_read(&i915->uncore, MLTR_ILK);
 
-	/* ILK primary LP0 latency is 700 ns */
+	 
 	wm[0] = 7;
 	wm[1] = REG_FIELD_GET(MLTR_WM1_MASK, mltr);
 	wm[2] = REG_FIELD_GET(MLTR_WM2_MASK, mltr);
@@ -2655,7 +2389,7 @@ static void ilk_read_wm_latency(struct drm_i915_private *i915, u16 wm[])
 static void intel_fixup_spr_wm_latency(struct drm_i915_private *dev_priv,
 				       u16 wm[5])
 {
-	/* ILK sprite LP0 latency is 1300 ns */
+	 
 	if (DISPLAY_VER(dev_priv) == 5)
 		wm[0] = 13;
 }
@@ -2663,7 +2397,7 @@ static void intel_fixup_spr_wm_latency(struct drm_i915_private *dev_priv,
 static void intel_fixup_cur_wm_latency(struct drm_i915_private *dev_priv,
 				       u16 wm[5])
 {
-	/* ILK cursor LP0 latency is 1300 ns */
+	 
 	if (DISPLAY_VER(dev_priv) == 5)
 		wm[0] = 13;
 }
@@ -2687,10 +2421,7 @@ static void snb_wm_latency_quirk(struct drm_i915_private *dev_priv)
 {
 	bool changed;
 
-	/*
-	 * The BIOS provided WM memory latency values are often
-	 * inadequate for high resolution displays. Adjust them.
-	 */
+	 
 	changed = ilk_increase_wm_latency(dev_priv, dev_priv->display.wm.pri_latency, 12);
 	changed |= ilk_increase_wm_latency(dev_priv, dev_priv->display.wm.spr_latency, 12);
 	changed |= ilk_increase_wm_latency(dev_priv, dev_priv->display.wm.cur_latency, 12);
@@ -2707,17 +2438,7 @@ static void snb_wm_latency_quirk(struct drm_i915_private *dev_priv)
 
 static void snb_wm_lp3_irq_quirk(struct drm_i915_private *dev_priv)
 {
-	/*
-	 * On some SNB machines (Thinkpad X220 Tablet at least)
-	 * LP3 usage can cause vblank interrupts to be lost.
-	 * The DEIIR bit will go high but it looks like the CPU
-	 * never gets interrupted.
-	 *
-	 * It's not clear whether other interrupt source could
-	 * be affected or if this is somehow limited to vblank
-	 * interrupts only. To play it safe we disable LP3
-	 * watermarks entirely.
-	 */
+	 
 	if (dev_priv->display.wm.pri_latency[3] == 0 &&
 	    dev_priv->display.wm.spr_latency[3] == 0 &&
 	    dev_priv->display.wm.cur_latency[3] == 0)
@@ -2764,7 +2485,7 @@ static void ilk_setup_wm_latency(struct drm_i915_private *dev_priv)
 static bool ilk_validate_pipe_wm(const struct drm_i915_private *dev_priv,
 				 struct intel_pipe_wm *pipe_wm)
 {
-	/* LP0 watermark maximums depend on this pipe alone */
+	 
 	const struct intel_wm_config config = {
 		.num_pipes_active = 1,
 		.sprites_enabled = pipe_wm->sprites_enabled,
@@ -2772,10 +2493,10 @@ static bool ilk_validate_pipe_wm(const struct drm_i915_private *dev_priv,
 	};
 	struct ilk_wm_maximums max;
 
-	/* LP0 watermarks always use 1/2 DDB partitioning */
+	 
 	ilk_compute_wm_maximums(dev_priv, 0, &config, INTEL_DDB_PART_1_2, &max);
 
-	/* At least LP0 must be valid */
+	 
 	if (!ilk_validate_wm_level(0, &max, &pipe_wm->wm[0])) {
 		drm_dbg_kms(&dev_priv->drm, "LP0 watermark invalid\n");
 		return false;
@@ -2784,7 +2505,7 @@ static bool ilk_validate_pipe_wm(const struct drm_i915_private *dev_priv,
 	return true;
 }
 
-/* Compute new watermarks for the pipe */
+ 
 static int ilk_compute_pipe_wm(struct intel_atomic_state *state,
 			       struct intel_crtc *crtc)
 {
@@ -2817,11 +2538,11 @@ static int ilk_compute_pipe_wm(struct intel_atomic_state *state,
 
 	usable_level = dev_priv->display.wm.num_levels - 1;
 
-	/* ILK/SNB: LP2+ watermarks only w/o sprites */
+	 
 	if (DISPLAY_VER(dev_priv) <= 6 && pipe_wm->sprites_enabled)
 		usable_level = 1;
 
-	/* ILK/SNB/IVB: LP1+ watermarks only w/o scaling */
+	 
 	if (pipe_wm->sprites_scaled)
 		usable_level = 0;
 
@@ -2840,11 +2561,7 @@ static int ilk_compute_pipe_wm(struct intel_atomic_state *state,
 		ilk_compute_wm_level(dev_priv, crtc, level, crtc_state,
 				     pristate, sprstate, curstate, wm);
 
-		/*
-		 * Disable any watermark level that exceeds the
-		 * register maximums since such watermarks are
-		 * always invalid.
-		 */
+		 
 		if (!ilk_validate_wm_level(level, &max, wm)) {
 			memset(wm, 0, sizeof(*wm));
 			break;
@@ -2854,11 +2571,7 @@ static int ilk_compute_pipe_wm(struct intel_atomic_state *state,
 	return 0;
 }
 
-/*
- * Build a set of 'intermediate' watermark values that satisfy both the old
- * state and the new state.  These can be programmed to the hardware
- * immediately.
- */
+ 
 static int ilk_compute_intermediate_wm(struct intel_atomic_state *state,
 				       struct intel_crtc *crtc)
 {
@@ -2871,11 +2584,7 @@ static int ilk_compute_intermediate_wm(struct intel_atomic_state *state,
 	const struct intel_pipe_wm *b = &old_crtc_state->wm.ilk.optimal;
 	int level;
 
-	/*
-	 * Start with the final, target watermarks, then combine with the
-	 * currently active watermarks to get values that are safe both before
-	 * and after the vblank.
-	 */
+	 
 	*a = new_crtc_state->wm.ilk.optimal;
 	if (!new_crtc_state->hw.active ||
 	    intel_crtc_needs_modeset(new_crtc_state) ||
@@ -2897,28 +2606,18 @@ static int ilk_compute_intermediate_wm(struct intel_atomic_state *state,
 		a_wm->fbc_val = max(a_wm->fbc_val, b_wm->fbc_val);
 	}
 
-	/*
-	 * We need to make sure that these merged watermark values are
-	 * actually a valid configuration themselves.  If they're not,
-	 * there's no safe way to transition from the old state to
-	 * the new state, so we need to fail the atomic transaction.
-	 */
+	 
 	if (!ilk_validate_pipe_wm(dev_priv, a))
 		return -EINVAL;
 
-	/*
-	 * If our intermediate WM are identical to the final WM, then we can
-	 * omit the post-vblank programming; only update if it's different.
-	 */
+	 
 	if (memcmp(a, &new_crtc_state->wm.ilk.optimal, sizeof(*a)) != 0)
 		new_crtc_state->wm.need_postvbl_update = true;
 
 	return 0;
 }
 
-/*
- * Merge the watermarks from all active pipes for a specific level.
- */
+ 
 static void ilk_merge_wm_level(struct drm_i915_private *dev_priv,
 			       int level,
 			       struct intel_wm_level *ret_wm)
@@ -2934,11 +2633,7 @@ static void ilk_merge_wm_level(struct drm_i915_private *dev_priv,
 		if (!active->pipe_enabled)
 			continue;
 
-		/*
-		 * The watermark values may have been used in the past,
-		 * so we must maintain them in the registers for some
-		 * time even if the level is now disabled.
-		 */
+		 
 		if (!wm->enable)
 			ret_wm->enable = false;
 
@@ -2949,9 +2644,7 @@ static void ilk_merge_wm_level(struct drm_i915_private *dev_priv,
 	}
 }
 
-/*
- * Merge all low power watermarks for all active pipes.
- */
+ 
 static void ilk_wm_merge(struct drm_i915_private *dev_priv,
 			 const struct intel_wm_config *config,
 			 const struct ilk_wm_maximums *max,
@@ -2960,15 +2653,15 @@ static void ilk_wm_merge(struct drm_i915_private *dev_priv,
 	int level, num_levels = dev_priv->display.wm.num_levels;
 	int last_enabled_level = num_levels - 1;
 
-	/* ILK/SNB/IVB: LP1+ watermarks only w/ single pipe */
+	 
 	if ((DISPLAY_VER(dev_priv) <= 6 || IS_IVYBRIDGE(dev_priv)) &&
 	    config->num_pipes_active > 1)
 		last_enabled_level = 0;
 
-	/* ILK: FBC WM must be disabled always */
+	 
 	merged->fbc_wm_enabled = DISPLAY_VER(dev_priv) >= 6;
 
-	/* merge each WM1+ level */
+	 
 	for (level = 1; level < num_levels; level++) {
 		struct intel_wm_level *wm = &merged->wm[level];
 
@@ -2977,13 +2670,10 @@ static void ilk_wm_merge(struct drm_i915_private *dev_priv,
 		if (level > last_enabled_level)
 			wm->enable = false;
 		else if (!ilk_validate_wm_level(level, max, wm))
-			/* make sure all following levels get disabled */
+			 
 			last_enabled_level = level - 1;
 
-		/*
-		 * The spec says it is preferred to disable
-		 * FBC WMs instead of disabling a WM level.
-		 */
+		 
 		if (wm->fbc_val > max->fbc) {
 			if (wm->enable)
 				merged->fbc_wm_enabled = false;
@@ -2991,7 +2681,7 @@ static void ilk_wm_merge(struct drm_i915_private *dev_priv,
 		}
 	}
 
-	/* ILK: LP2+ must be disabled when FBC WM is disabled but FBC enabled */
+	 
 	if (DISPLAY_VER(dev_priv) == 5 && HAS_FBC(dev_priv) &&
 	    dev_priv->params.enable_fbc && !merged->fbc_wm_enabled) {
 		for (level = 2; level < num_levels; level++) {
@@ -3004,11 +2694,11 @@ static void ilk_wm_merge(struct drm_i915_private *dev_priv,
 
 static int ilk_wm_lp_to_level(int wm_lp, const struct intel_pipe_wm *pipe_wm)
 {
-	/* LP1,LP2,LP3 levels are either 1,2,3 or 1,3,4 */
+	 
 	return wm_lp + (wm_lp >= 2 && pipe_wm->wm[4].enable);
 }
 
-/* The value we need to program into the WM_LPx latency field */
+ 
 static unsigned int ilk_wm_lp_latency(struct drm_i915_private *dev_priv,
 				      int level)
 {
@@ -3029,7 +2719,7 @@ static void ilk_compute_wm_results(struct drm_i915_private *dev_priv,
 	results->enable_fbc_wm = merged->fbc_wm_enabled;
 	results->partitioning = partitioning;
 
-	/* LP1+ register values */
+	 
 	for (wm_lp = 1; wm_lp <= 3; wm_lp++) {
 		const struct intel_wm_level *r;
 
@@ -3037,10 +2727,7 @@ static void ilk_compute_wm_results(struct drm_i915_private *dev_priv,
 
 		r = &merged->wm[level];
 
-		/*
-		 * Maintain the watermark values even if the level is
-		 * disabled. Doing otherwise could cause underruns.
-		 */
+		 
 		results->wm_lp[wm_lp - 1] =
 			WM_LP_LATENCY(ilk_wm_lp_latency(dev_priv, level)) |
 			WM_LP_PRIMARY(r->pri_val) |
@@ -3056,17 +2743,14 @@ static void ilk_compute_wm_results(struct drm_i915_private *dev_priv,
 
 		results->wm_lp_spr[wm_lp - 1] = WM_LP_SPRITE(r->spr_val);
 
-		/*
-		 * Always set WM_LP_SPRITE_EN when spr_val != 0, even if the
-		 * level is disabled. Doing otherwise could cause underruns.
-		 */
+		 
 		if (DISPLAY_VER(dev_priv) <= 6 && r->spr_val) {
 			drm_WARN_ON(&dev_priv->drm, wm_lp != 1);
 			results->wm_lp_spr[wm_lp - 1] |= WM_LP_SPRITE_ENABLE;
 		}
 	}
 
-	/* LP0 register values */
+	 
 	for_each_intel_crtc(&dev_priv->drm, crtc) {
 		enum pipe pipe = crtc->pipe;
 		const struct intel_pipe_wm *pipe_wm = &crtc->wm.active.ilk;
@@ -3082,10 +2766,7 @@ static void ilk_compute_wm_results(struct drm_i915_private *dev_priv,
 	}
 }
 
-/*
- * Find the result with the highest level enabled. Check for enable_fbc_wm in
- * case both are at the same level. Prefer r1 in case they're the same.
- */
+ 
 static struct intel_pipe_wm *
 ilk_find_best_result(struct drm_i915_private *dev_priv,
 		     struct intel_pipe_wm *r1,
@@ -3112,7 +2793,7 @@ ilk_find_best_result(struct drm_i915_private *dev_priv,
 	}
 }
 
-/* dirty bits used to track which watermarks need changes */
+ 
 #define WM_DIRTY_PIPE(pipe) (1 << (pipe))
 #define WM_DIRTY_LP(wm_lp) (1 << (15 + (wm_lp)))
 #define WM_DIRTY_LP_ALL (WM_DIRTY_LP(1) | WM_DIRTY_LP(2) | WM_DIRTY_LP(3))
@@ -3130,35 +2811,35 @@ static unsigned int ilk_compute_wm_dirty(struct drm_i915_private *dev_priv,
 	for_each_pipe(dev_priv, pipe) {
 		if (old->wm_pipe[pipe] != new->wm_pipe[pipe]) {
 			dirty |= WM_DIRTY_PIPE(pipe);
-			/* Must disable LP1+ watermarks too */
+			 
 			dirty |= WM_DIRTY_LP_ALL;
 		}
 	}
 
 	if (old->enable_fbc_wm != new->enable_fbc_wm) {
 		dirty |= WM_DIRTY_FBC;
-		/* Must disable LP1+ watermarks too */
+		 
 		dirty |= WM_DIRTY_LP_ALL;
 	}
 
 	if (old->partitioning != new->partitioning) {
 		dirty |= WM_DIRTY_DDB;
-		/* Must disable LP1+ watermarks too */
+		 
 		dirty |= WM_DIRTY_LP_ALL;
 	}
 
-	/* LP1+ watermarks already deemed dirty, no need to continue */
+	 
 	if (dirty & WM_DIRTY_LP_ALL)
 		return dirty;
 
-	/* Find the lowest numbered LP1+ watermark in need of an update... */
+	 
 	for (wm_lp = 1; wm_lp <= 3; wm_lp++) {
 		if (old->wm_lp[wm_lp - 1] != new->wm_lp[wm_lp - 1] ||
 		    old->wm_lp_spr[wm_lp - 1] != new->wm_lp_spr[wm_lp - 1])
 			break;
 	}
 
-	/* ...and mark it and all higher numbered LP1+ watermarks as dirty */
+	 
 	for (; wm_lp <= 3; wm_lp++)
 		dirty |= WM_DIRTY_LP(wm_lp);
 
@@ -3187,18 +2868,12 @@ static bool _ilk_disable_lp_wm(struct drm_i915_private *dev_priv,
 		changed = true;
 	}
 
-	/*
-	 * Don't touch WM_LP_SPRITE_ENABLE here.
-	 * Doing so could cause underruns.
-	 */
+	 
 
 	return changed;
 }
 
-/*
- * The spec says we shouldn't write when we don't need, because every write
- * causes WMs to be re-evaluated, expending some power.
- */
+ 
 static void ilk_write_wm_values(struct drm_i915_private *dev_priv,
 				struct ilk_wm_values *results)
 {
@@ -3264,7 +2939,7 @@ static void ilk_compute_wm_config(struct drm_i915_private *dev_priv,
 {
 	struct intel_crtc *crtc;
 
-	/* Compute the currently _active_ config */
+	 
 	for_each_intel_crtc(&dev_priv->drm, crtc) {
 		const struct intel_pipe_wm *wm = &crtc->wm.active.ilk;
 
@@ -3290,7 +2965,7 @@ static void ilk_program_watermarks(struct drm_i915_private *dev_priv)
 	ilk_compute_wm_maximums(dev_priv, 1, &config, INTEL_DDB_PART_1_2, &max);
 	ilk_wm_merge(dev_priv, &config, &max, &lp_wm_1_2);
 
-	/* 5/6 split only in single pipe config on IVB+ */
+	 
 	if (DISPLAY_VER(dev_priv) >= 7 &&
 	    config.num_pipes_active == 1 && config.sprites_enabled) {
 		ilk_compute_wm_maximums(dev_priv, 1, &config, INTEL_DDB_PART_5_6, &max);
@@ -3356,12 +3031,7 @@ static void ilk_pipe_wm_get_hw_state(struct intel_crtc *crtc)
 	if (active->pipe_enabled) {
 		u32 tmp = hw->wm_pipe[pipe];
 
-		/*
-		 * For active pipes LP0 watermark is marked as
-		 * enabled, and LP1+ watermaks as disabled since
-		 * we can't really reverse compute them in case
-		 * multiple pipes are active.
-		 */
+		 
 		active->wm[0].enable = true;
 		active->wm[0].pri_val = REG_FIELD_GET(WM0_PIPE_PRIMARY_MASK, tmp);
 		active->wm[0].spr_val = REG_FIELD_GET(WM0_PIPE_SPRITE_MASK, tmp);
@@ -3369,11 +3039,7 @@ static void ilk_pipe_wm_get_hw_state(struct intel_crtc *crtc)
 	} else {
 		int level;
 
-		/*
-		 * For inactive pipes, all watermark levels
-		 * should be marked as enabled but zeroed,
-		 * which is what we'd compute them to.
-		 */
+		 
 		for (level = 0; level < dev_priv->display.wm.num_levels; level++)
 			active->wm[level].enable = true;
 	}
@@ -3394,10 +3060,7 @@ static int ilk_sanitize_watermarks_add_affected(struct drm_atomic_state *state)
 			return PTR_ERR(crtc_state);
 
 		if (crtc_state->hw.active) {
-			/*
-			 * Preserve the inherited flag to avoid
-			 * taking the full modeset path.
-			 */
+			 
 			crtc_state->inherited = true;
 		}
 	}
@@ -3413,16 +3076,7 @@ static int ilk_sanitize_watermarks_add_affected(struct drm_atomic_state *state)
 	return 0;
 }
 
-/*
- * Calculate what we think the watermarks should be for the state we've read
- * out of the hardware and then immediately program those watermarks so that
- * we ensure the hardware settings match our internal state.
- *
- * We can calculate what we think WM's should be by creating a duplicate of the
- * current state (which was constructed during hardware readout) and running it
- * through the atomic check code to calculate new watermark values in the
- * state object.
- */
+ 
 void ilk_wm_sanitize(struct drm_i915_private *dev_priv)
 {
 	struct drm_atomic_state *state;
@@ -3433,7 +3087,7 @@ void ilk_wm_sanitize(struct drm_i915_private *dev_priv)
 	int ret;
 	int i;
 
-	/* Only supported on platforms that use atomic watermark design */
+	 
 	if (!dev_priv->display.funcs.wm->optimize_watermarks)
 		return;
 
@@ -3452,11 +3106,7 @@ void ilk_wm_sanitize(struct drm_i915_private *dev_priv)
 	to_intel_atomic_state(state)->internal = true;
 
 retry:
-	/*
-	 * Hardware readout is the only time we don't want to calculate
-	 * intermediate watermarks (since we don't trust the current
-	 * watermarks).
-	 */
+	 
 	if (!HAS_GMCH(dev_priv))
 		intel_state->skip_intermediate_wm = true;
 
@@ -3468,7 +3118,7 @@ retry:
 	if (ret)
 		goto fail;
 
-	/* Write calculated watermark values back */
+	 
 	for_each_new_intel_crtc_in_state(intel_state, crtc, crtc_state, i) {
 		crtc_state->wm.need_postvbl_update = true;
 		intel_optimize_watermarks(intel_state, crtc);
@@ -3483,17 +3133,7 @@ fail:
 		goto retry;
 	}
 
-	/*
-	 * If we fail here, it means that the hardware appears to be
-	 * programmed in a way that shouldn't be possible, given our
-	 * understanding of watermark requirements.  This might mean a
-	 * mistake in the hardware readout code or a mistake in the
-	 * watermark calculations for a given platform.  Raise a WARN
-	 * so that this is noticeable.
-	 *
-	 * If this actually happens, we'll have to just leave the
-	 * BIOS-programmed watermarks untouched and hope for the best.
-	 */
+	 
 	drm_WARN(&dev_priv->drm, ret,
 		 "Could not determine valid watermarks for inherited state\n");
 
@@ -3776,15 +3416,7 @@ static void vlv_wm_get_hw_state(struct drm_i915_private *dev_priv)
 		if (val & DSP_MAXFIFO_PM5_ENABLE)
 			wm->level = VLV_WM_LEVEL_PM5;
 
-		/*
-		 * If DDR DVFS is disabled in the BIOS, Punit
-		 * will never ack the request. So if that happens
-		 * assume we don't have to enable/disable DDR DVFS
-		 * dynamically. To test that just set the REQ_ACK
-		 * bit to poke the Punit, but don't change the
-		 * HIGH/LOW bits so that we don't actually change
-		 * the current state.
-		 */
+		 
 		val = vlv_punit_read(dev_priv, PUNIT_REG_DDR_SETUP2);
 		val |= FORCE_DDR_FREQ_REQ_ACK;
 		vlv_punit_write(dev_priv, PUNIT_REG_DDR_SETUP2, val);
@@ -3910,20 +3542,14 @@ static void vlv_wm_get_hw_state_and_sanitize(struct drm_i915_private *i915)
 	vlv_wm_sanitize(i915);
 }
 
-/*
- * FIXME should probably kill this and improve
- * the real watermark readout/sanitation instead
- */
+ 
 static void ilk_init_lp_watermarks(struct drm_i915_private *dev_priv)
 {
 	intel_uncore_rmw(&dev_priv->uncore, WM3_LP_ILK, WM_LP_ENABLE, 0);
 	intel_uncore_rmw(&dev_priv->uncore, WM2_LP_ILK, WM_LP_ENABLE, 0);
 	intel_uncore_rmw(&dev_priv->uncore, WM1_LP_ILK, WM_LP_ENABLE, 0);
 
-	/*
-	 * Don't touch WM_LP_SPRITE_ENABLE here.
-	 * Doing so could cause underruns.
-	 */
+	 
 }
 
 static void ilk_wm_get_hw_state(struct drm_i915_private *dev_priv)
@@ -4005,7 +3631,7 @@ static const struct intel_wm_funcs nop_funcs = {
 
 void i9xx_wm_init(struct drm_i915_private *dev_priv)
 {
-	/* For FIFO watermark updates */
+	 
 	if (HAS_PCH_SPLIT(dev_priv)) {
 		ilk_setup_wm_latency(dev_priv);
 		dev_priv->display.funcs.wm = &ilk_wm_funcs;
@@ -4026,7 +3652,7 @@ void i9xx_wm_init(struct drm_i915_private *dev_priv)
 				 "disabling CxSR\n",
 				 (dev_priv->is_ddr3 == 1) ? "3" : "2",
 				 dev_priv->fsb_freq, dev_priv->mem_freq);
-			/* Disable CxSR and never update its watermark again */
+			 
 			intel_set_memory_cxsr(dev_priv, false);
 			dev_priv->display.funcs.wm = &nop_funcs;
 		} else {

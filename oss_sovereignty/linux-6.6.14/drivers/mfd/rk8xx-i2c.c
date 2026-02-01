@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Rockchip RK808/RK818 Core (I2C) driver
- *
- * Copyright (c) 2014, Fuzhou Rockchip Electronics Co., Ltd
- * Copyright (C) 2016 PHYTEC Messtechnik GmbH
- *
- * Author: Chris Zhong <zyw@rock-chips.com>
- * Author: Zhang Qing <zhangqing@rock-chips.com>
- * Author: Wadim Egorov <w.egorov@phytec.de>
- */
+
+ 
 
 #include <linux/i2c.h>
 #include <linux/mfd/rk808.h>
@@ -23,13 +14,7 @@ struct rk8xx_i2c_platform_data {
 
 static bool rk808_is_volatile_reg(struct device *dev, unsigned int reg)
 {
-	/*
-	 * Notes:
-	 * - Technically the ROUND_30s bit makes RTC_CTRL_REG volatile, but
-	 *   we don't use that feature.  It's better to cache.
-	 * - It's unlikely we care that RK808_DEVCTRL_REG is volatile since
-	 *   bits are cleared in case when we shutoff anyway, but better safe.
-	 */
+	 
 
 	switch (reg) {
 	case RK808_SECONDS_REG ... RK808_WEEKS_REG:
@@ -51,11 +36,7 @@ static bool rk808_is_volatile_reg(struct device *dev, unsigned int reg)
 
 static bool rk817_is_volatile_reg(struct device *dev, unsigned int reg)
 {
-	/*
-	 * Notes:
-	 * - Technically the ROUND_30s bit makes RTC_CTRL_REG volatile, but
-	 *   we don't use that feature.  It's better to cache.
-	 */
+	 
 
 	switch (reg) {
 	case RK817_SECONDS_REG ... RK817_WEEKS_REG:

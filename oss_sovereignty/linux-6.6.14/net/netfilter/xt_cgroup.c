@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Xtables module to match the process control group.
- *
- * Might be used to implement individual "per-application" firewall
- * policies in contrast to global policies based on control groups.
- * Matching is based upon processes tagged to net_cls' classid marker.
- *
- * (C) 2013 Daniel Borkmann <dborkman@redhat.com>
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 

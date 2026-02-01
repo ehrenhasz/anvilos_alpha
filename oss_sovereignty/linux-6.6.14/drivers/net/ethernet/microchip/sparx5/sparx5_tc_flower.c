@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/* Microchip VCAP API
- *
- * Copyright (c) 2022 Microchip Technology Inc. and its subsidiaries.
- */
+
+ 
 
 #include <net/tc_act/tc_gate.h>
 #include <net/tcp.h>
@@ -14,9 +11,9 @@
 #include "sparx5_main.h"
 #include "sparx5_vcap_impl.h"
 
-#define SPX5_MAX_RULE_SIZE 13 /* allows X1, X2, X4, X6 and X12 rules */
+#define SPX5_MAX_RULE_SIZE 13  
 
-/* Collect keysets and type ids for multiple rules per size */
+ 
 struct sparx5_wildcard_rule {
 	bool selected;
 	u8 value;
@@ -29,11 +26,11 @@ struct sparx5_multiple_rules {
 };
 
 struct sparx5_tc_flower_template {
-	struct list_head list; /* for insertion in the list of templates */
-	int cid; /* chain id */
-	enum vcap_keyfield_set orig; /* keyset used before the template */
-	enum vcap_keyfield_set keyset; /* new keyset used by template */
-	u16 l3_proto; /* protocol specified in the template */
+	struct list_head list;  
+	int cid;  
+	enum vcap_keyfield_set orig;  
+	enum vcap_keyfield_set keyset;  
+	u16 l3_proto;  
 };
 
 static int
@@ -147,23 +144,23 @@ sparx5_tc_flower_handler_control_usage(struct vcap_tc_flower_parse_usage *st)
 	if (mt.mask->flags) {
 		if (mt.mask->flags & FLOW_DIS_FIRST_FRAG) {
 			if (mt.key->flags & FLOW_DIS_FIRST_FRAG) {
-				value = 1; /* initial fragment */
+				value = 1;  
 				mask = 0x3;
 			} else {
 				if (mt.mask->flags & FLOW_DIS_IS_FRAGMENT) {
-					value = 3; /* follow up fragment */
+					value = 3;  
 					mask = 0x3;
 				} else {
-					value = 0; /* no fragment */
+					value = 0;  
 					mask = 0x3;
 				}
 			}
 		} else {
 			if (mt.mask->flags & FLOW_DIS_IS_FRAGMENT) {
-				value = 3; /* follow up fragment */
+				value = 3;  
 				mask = 0x3;
 			} else {
-				value = 0; /* no fragment */
+				value = 0;  
 				mask = 0x3;
 			}
 		}
@@ -283,14 +280,12 @@ static int sparx5_tc_flower_action_check(struct vcap_control *vctrl,
 			return -EINVAL;
 		}
 		action_mask |= BIT(actent->id);
-		last_actent = actent; /* Save last action for later check */
+		last_actent = actent;  
 	}
 
-	/* Check if last action is a goto
-	 * The last chain/lookup does not need to have a goto action
-	 */
+	 
 	if (last_actent->id == FLOW_ACTION_GOTO) {
-		/* Check if the destination chain is in one of the VCAPs */
+		 
 		if (!vcap_is_next_lookup(vctrl, fco->common.chain_index,
 					 last_actent->chain_index)) {
 			NL_SET_ERR_MSG_MOD(fco->common.extack,
@@ -304,7 +299,7 @@ static int sparx5_tc_flower_action_check(struct vcap_control *vctrl,
 		return -EINVAL;
 	}
 
-	/* Catch unsupported combinations of actions */
+	 
 	if (action_mask & BIT(FLOW_ACTION_TRAP) &&
 	    action_mask & BIT(FLOW_ACTION_ACCEPT)) {
 		NL_SET_ERR_MSG_MOD(fco->common.extack,
@@ -336,7 +331,7 @@ static int sparx5_tc_flower_action_check(struct vcap_control *vctrl,
 	return 0;
 }
 
-/* Add a rule counter action */
+ 
 static int sparx5_tc_add_rule_counter(struct vcap_admin *admin,
 				      struct vcap_rule *vrule)
 {
@@ -368,7 +363,7 @@ static int sparx5_tc_add_rule_counter(struct vcap_admin *admin,
 	return 0;
 }
 
-/* Collect all port keysets and apply the first of them, possibly wildcarded */
+ 
 static int sparx5_tc_select_protocol_keyset(struct net_device *ndev,
 					    struct vcap_rule *vrule,
 					    struct vcap_admin *admin,
@@ -387,13 +382,13 @@ static int sparx5_tc_select_protocol_keyset(struct net_device *ndev,
 
 	vctrl = port->sparx5->vcap_ctrl;
 
-	/* Find the keysets that the rule can use */
+	 
 	matches.keysets = keysets;
 	matches.max = ARRAY_SIZE(keysets);
 	if (!vcap_rule_find_keysets(vrule, &matches))
 		return -EINVAL;
 
-	/* Find the keysets that the port configuration supports */
+	 
 	portkeysetlist.max = ARRAY_SIZE(portkeysets);
 	portkeysetlist.keysets = portkeysets;
 	err = sparx5_vcap_get_port_keyset(ndev,
@@ -403,16 +398,14 @@ static int sparx5_tc_select_protocol_keyset(struct net_device *ndev,
 	if (err)
 		return err;
 
-	/* Find the intersection of the two sets of keyset */
+	 
 	for (idx = 0; idx < portkeysetlist.cnt; ++idx) {
 		kinfo = vcap_keyfieldset(vctrl, admin->vtype,
 					 portkeysetlist.keysets[idx]);
 		if (!kinfo)
 			continue;
 
-		/* Find a port keyset that matches the required keys
-		 * If there are multiple keysets then compose a type id mask
-		 */
+		 
 		for (jdx = 0; jdx < matches.cnt; ++jdx) {
 			if (portkeysetlist.keysets[idx] != matches.keysets[jdx])
 				continue;
@@ -439,13 +432,11 @@ static int sparx5_tc_select_protocol_keyset(struct net_device *ndev,
 		if (!mru->selected)
 			continue;
 
-		/* Align the mask to the combined value */
+		 
 		mru->mask ^= mru->value;
 	}
 
-	/* Set the chosen keyset on the rule and set a wildcarded type if there
-	 * are more than one keyset
-	 */
+	 
 	for (idx = 0; idx < SPX5_MAX_RULE_SIZE; ++idx) {
 		mru = &multi->rule[idx];
 		if (!mru->selected)
@@ -453,12 +444,12 @@ static int sparx5_tc_select_protocol_keyset(struct net_device *ndev,
 
 		vcap_set_rule_set_keyset(vrule, mru->keyset);
 		if (count > 1)
-			/* Some keysets do not have a type field */
+			 
 			vcap_rule_mod_key_u32(vrule, VCAP_KF_TYPE,
 					      mru->value,
 					      ~mru->mask);
-		mru->selected = false; /* mark as done */
-		break; /* Stop here and add more rules later */
+		mru->selected = false;  
+		break;  
 	}
 	return err;
 }
@@ -479,13 +470,13 @@ static int sparx5_tc_add_rule_copy(struct vcap_control *vctrl,
 	struct vcap_rule *vrule;
 	int err;
 
-	/* Add an extra rule with a special user and the new keyset */
+	 
 	erule->user = VCAP_USER_TC_EXTRA;
 	vrule = vcap_copy_rule(erule);
 	if (IS_ERR(vrule))
 		return PTR_ERR(vrule);
 
-	/* Link the new rule to the existing rule with the cookie */
+	 
 	vrule->cookie = erule->cookie;
 	vcap_filter_rule_keys(vrule, keylist, ARRAY_SIZE(keylist), true);
 	err = vcap_set_rule_set_keyset(vrule, rule->keyset);
@@ -497,7 +488,7 @@ static int sparx5_tc_add_rule_copy(struct vcap_control *vctrl,
 		goto out;
 	}
 
-	/* Some keysets do not have a type field, so ignore return value */
+	 
 	vcap_rule_mod_key_u32(vrule, VCAP_KF_TYPE, rule->value, ~rule->mask);
 
 	err = vcap_set_rule_set_actionset(vrule, erule->actionset);
@@ -546,7 +537,7 @@ static int sparx5_tc_add_remaining_rules(struct vcap_control *vctrl,
 	return err;
 }
 
-/* Add the actionset that is the default for the VCAP type */
+ 
 static int sparx5_tc_set_actionset(struct vcap_admin *admin,
 				   struct vcap_rule *vrule)
 {
@@ -570,13 +561,13 @@ static int sparx5_tc_set_actionset(struct vcap_admin *admin,
 		pr_err("%s:%d: %s\n", __func__, __LINE__, "Invalid VCAP type");
 		return -EINVAL;
 	}
-	/* Do not overwrite any current actionset */
+	 
 	if (vrule->actionset == VCAP_AFS_NO_VALUE)
 		err = vcap_set_rule_set_actionset(vrule, aset);
 	return err;
 }
 
-/* Add the VCAP key to match on for a rule target value */
+ 
 static int sparx5_tc_add_rule_link_target(struct vcap_admin *admin,
 					  struct vcap_rule *vrule,
 					  int target_cid)
@@ -589,23 +580,23 @@ static int sparx5_tc_add_rule_link_target(struct vcap_admin *admin,
 
 	switch (admin->vtype) {
 	case VCAP_TYPE_IS0:
-		/* Add NXT_IDX key for chaining rules between IS0 instances */
+		 
 		err = vcap_rule_add_key_u32(vrule, VCAP_KF_LOOKUP_GEN_IDX_SEL,
-					    1, /* enable */
+					    1,  
 					    ~0);
 		if (err)
 			return err;
 		return vcap_rule_add_key_u32(vrule, VCAP_KF_LOOKUP_GEN_IDX,
-					     link_val, /* target */
+					     link_val,  
 					     ~0);
 	case VCAP_TYPE_IS2:
-		/* Add PAG key for chaining rules from IS0 */
+		 
 		return vcap_rule_add_key_u32(vrule, VCAP_KF_LOOKUP_PAG,
-					     link_val, /* target */
+					     link_val,  
 					     ~0);
 	case VCAP_TYPE_ES0:
 	case VCAP_TYPE_ES2:
-		/* Add ISDX key for chaining rules from IS0 */
+		 
 		return vcap_rule_add_key_u32(vrule, VCAP_KF_ISDX_CLS, link_val,
 					     ~0);
 	default:
@@ -614,7 +605,7 @@ static int sparx5_tc_add_rule_link_target(struct vcap_admin *admin,
 	return 0;
 }
 
-/* Add the VCAP action that adds a target value to a rule */
+ 
 static int sparx5_tc_add_rule_link(struct vcap_control *vctrl,
 				   struct vcap_admin *admin,
 				   struct vcap_rule *vrule,
@@ -635,17 +626,17 @@ static int sparx5_tc_add_rule_link(struct vcap_control *vctrl,
 
 	if (admin->vtype == VCAP_TYPE_IS0 &&
 	    to_admin->vtype == VCAP_TYPE_IS0) {
-		/* Between IS0 instances the G_IDX value is used */
+		 
 		err = vcap_rule_add_action_u32(vrule, VCAP_AF_NXT_IDX, diff);
 		if (err)
 			goto out;
 		err = vcap_rule_add_action_u32(vrule, VCAP_AF_NXT_IDX_CTRL,
-					       1); /* Replace */
+					       1);  
 		if (err)
 			goto out;
 	} else if (admin->vtype == VCAP_TYPE_IS0 &&
 		   to_admin->vtype == VCAP_TYPE_IS2) {
-		/* Between IS0 and IS2 the PAG value is used */
+		 
 		err = vcap_rule_add_action_u32(vrule, VCAP_AF_PAG_VAL, diff);
 		if (err)
 			goto out;
@@ -657,7 +648,7 @@ static int sparx5_tc_add_rule_link(struct vcap_control *vctrl,
 	} else if (admin->vtype == VCAP_TYPE_IS0 &&
 		   (to_admin->vtype == VCAP_TYPE_ES0 ||
 		    to_admin->vtype == VCAP_TYPE_ES2)) {
-		/* Between IS0 and ES0/ES2 the ISDX value is used */
+		 
 		err = vcap_rule_add_action_u32(vrule, VCAP_AF_ISDX_VAL,
 					       diff);
 		if (err)
@@ -728,7 +719,7 @@ static int sparx5_tc_flower_parse_act_police(struct sparx5_policer *pol,
 	pol->burst = act->police.burst;
 	pol->idx = act->hw_index;
 
-	/* rate is now in kbit */
+	 
 	if (pol->rate > DIV_ROUND_UP(SPX5_SDLB_GROUP_RATE_MAX, 1000)) {
 		NL_SET_ERR_MSG_MOD(extack, "Maximum rate exceeded");
 		return -EINVAL;
@@ -757,21 +748,18 @@ static int sparx5_tc_flower_psfp_setup(struct sparx5 *sparx5,
 	u32 psfp_sfid = 0, psfp_fmid = 0, psfp_sgid = 0;
 	int ret;
 
-	/* Must always have a stream gate - max sdu (filter option) is evaluated
-	 * after frames have passed the gate, so in case of only a policer, we
-	 * allocate a stream gate that is always open.
-	 */
+	 
 	if (sg_idx < 0) {
 		sg_idx = sparx5_pool_idx_to_id(SPX5_PSFP_SG_OPEN);
-		sg->ipv = 0; /* Disabled */
+		sg->ipv = 0;  
 		sg->cycletime = SPX5_PSFP_SG_CYCLE_TIME_DEFAULT;
 		sg->num_entries = 1;
-		sg->gate_state = 1; /* Open */
+		sg->gate_state = 1;  
 		sg->gate_enabled = 1;
 		sg->gce[0].gate_state = 1;
 		sg->gce[0].interval = SPX5_PSFP_SG_CYCLE_TIME_DEFAULT;
 		sg->gce[0].ipv = 0;
-		sg->gce[0].maxoctets = 0; /* Disabled */
+		sg->gce[0].maxoctets = 0;  
 	}
 
 	ret = sparx5_psfp_sg_add(sparx5, sg_idx, sg, &psfp_sgid);
@@ -779,21 +767,21 @@ static int sparx5_tc_flower_psfp_setup(struct sparx5 *sparx5,
 		return ret;
 
 	if (pol_idx >= 0) {
-		/* Add new flow-meter */
+		 
 		ret = sparx5_psfp_fm_add(sparx5, pol_idx, fm, &psfp_fmid);
 		if (ret < 0)
 			return ret;
 	}
 
-	/* Map stream filter to stream gate */
+	 
 	sf->sgid = psfp_sgid;
 
-	/* Add new stream-filter and map it to a steam gate */
+	 
 	ret = sparx5_psfp_sf_add(sparx5, sf, &psfp_sfid);
 	if (ret < 0)
 		return ret;
 
-	/* Streams are classified by ISDX - map ISDX 1:1 to sfid for now. */
+	 
 	sparx5_isdx_conf_set(sparx5, psfp_sfid, psfp_sfid, psfp_fmid);
 
 	ret = vcap_rule_add_action_bit(vrule, VCAP_AF_ISDX_ADD_REPLACE_SEL,
@@ -808,7 +796,7 @@ static int sparx5_tc_flower_psfp_setup(struct sparx5 *sparx5,
 	return 0;
 }
 
-/* Handle the action trap for a VCAP rule */
+ 
 static int sparx5_tc_action_trap(struct vcap_admin *admin,
 				 struct vcap_rule *vrule,
 				 struct flow_cls_offload *fco)
@@ -986,7 +974,7 @@ static int sparx5_tc_action_vlan_push(struct vcap_admin *admin,
 	case ETH_P_8021Q:
 		break;
 	case ETH_P_8021AD:
-		/* Push classified tag as inner tag */
+		 
 		err = vcap_rule_add_action_u32(vrule,
 					       VCAP_AF_PUSH_INNER_TAG,
 					       SPX5_ITAG_PUSH_B_TAG);
@@ -1004,7 +992,7 @@ static int sparx5_tc_action_vlan_push(struct vcap_admin *admin,
 	return err;
 }
 
-/* Remove rule keys that may prevent templates from matching a keyset */
+ 
 static void sparx5_tc_flower_simplify_rule(struct vcap_admin *admin,
 					   struct vcap_rule *vrule,
 					   u16 l3_proto)
@@ -1189,7 +1177,7 @@ static int sparx5_tc_flower_replace(struct net_device *ndev,
 		}
 	}
 
-	/* Setup PSFP */
+	 
 	if (tc_sg_idx >= 0 || tc_pol_idx >= 0) {
 		err = sparx5_tc_flower_psfp_setup(sparx5, vrule, tc_sg_idx,
 						  tc_pol_idx, &sg, &fm, &sf);
@@ -1207,7 +1195,7 @@ static int sparx5_tc_flower_replace(struct net_device *ndev,
 		}
 	}
 
-	/* provide the l3 protocol to guide the keyset selection */
+	 
 	err = vcap_val_rule(vrule, state.l3_proto);
 	if (err) {
 		vcap_set_tc_exterr(fco, vrule);
@@ -1233,9 +1221,7 @@ static void sparx5_tc_free_psfp_resources(struct sparx5 *sparx5,
 	struct vcap_client_actionfield *afield;
 	u32 isdx, sfid, sgid, fmid;
 
-	/* Check if VCAP_AF_ISDX_VAL action is set for this rule - and if
-	 * it is used for stream and/or flow-meter classification.
-	 */
+	 
 	afield = vcap_find_actionfield(vrule, VCAP_AF_ISDX_VAL);
 	if (!afield)
 		return;
@@ -1297,10 +1283,7 @@ static int sparx5_tc_flower_destroy(struct net_device *ndev,
 		if (rule_id <= 0)
 			break;
 		if (count == 0) {
-			/* Resources are attached to the first rule of
-			 * a set of rules. Only works if the rules are
-			 * in the correct order.
-			 */
+			 
 			err = sparx5_tc_free_rule_resources(ndev, vctrl,
 							    rule_id);
 			if (err)
@@ -1394,7 +1377,7 @@ static int sparx5_tc_flower_template_create(struct net_device *ndev,
 
 	sparx5_tc_flower_simplify_rule(admin, vrule, state.l3_proto);
 
-	/* Find the keysets that the rule can use */
+	 
 	kslist.keysets = keysets;
 	kslist.max = ARRAY_SIZE(keysets);
 	if (!vcap_rule_find_keysets(vrule, &kslist)) {
@@ -1414,7 +1397,7 @@ static int sparx5_tc_flower_template_create(struct net_device *ndev,
 	if (kslist.cnt > 0)
 		ftp->orig = kslist.keysets[0];
 
-	/* Store new template */
+	 
 	list_add_tail(&ftp->list, &port->tc_templates);
 	vcap_free_rule(vrule);
 	return 0;
@@ -1434,7 +1417,7 @@ static int sparx5_tc_flower_template_destroy(struct net_device *ndev,
 	struct sparx5_tc_flower_template *ftp, *tmp;
 	int err = -ENOENT;
 
-	/* Rules using the template are removed by the tc framework */
+	 
 	list_for_each_entry_safe(ftp, tmp, &port->tc_templates, list) {
 		if (ftp->cid != fco->common.chain_index)
 			continue;
@@ -1458,7 +1441,7 @@ int sparx5_tc_flower(struct net_device *ndev, struct flow_cls_offload *fco,
 	struct vcap_admin *admin;
 	int err = -EINVAL;
 
-	/* Get vcap instance from the chain id */
+	 
 	vctrl = port->sparx5->vcap_ctrl;
 	admin = vcap_find_admin(vctrl, fco->common.chain_index);
 	if (!admin) {

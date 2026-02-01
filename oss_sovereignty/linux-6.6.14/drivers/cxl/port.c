@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright(c) 2022 Intel Corporation. All rights reserved. */
+
+ 
 #include <linux/device.h>
 #include <linux/module.h>
 #include <linux/slab.h>
@@ -7,23 +7,7 @@
 #include "cxlmem.h"
 #include "cxlpci.h"
 
-/**
- * DOC: cxl port
- *
- * The port driver enumerates dport via PCI and scans for HDM
- * (Host-managed-Device-Memory) decoder resources via the
- * @component_reg_phys value passed in by the agent that registered the
- * port. All descendant ports of a CXL root port (described by platform
- * firmware) are managed in this drivers context. Each driver instance
- * is responsible for tearing down the driver context of immediate
- * descendant ports. The locking for this is validated by
- * CONFIG_PROVE_CXL_LOCKING.
- *
- * The primary service this driver provides is presenting APIs to other
- * drivers to utilize the decoders, and indicating to userspace (via bind
- * status) the connectivity of the CXL.mem protocol throughout the
- * PCIe topology.
- */
+ 
 
 static void schedule_detach(void *cxlmd)
 {
@@ -45,10 +29,7 @@ static int discover_region(struct device *dev, void *root)
 	if (cxled->state != CXL_DECODER_STATE_AUTO)
 		return 0;
 
-	/*
-	 * Region enumeration is opportunistic, if this add-event fails,
-	 * continue to the next endpoint decoder.
-	 */
+	 
 	rc = cxl_add_to_region(root, cxled);
 	if (rc)
 		dev_dbg(dev, "failed to add to region: %#llx-%#llx\n",
@@ -104,7 +85,7 @@ static int cxl_endpoint_port_probe(struct cxl_port *port)
 		return PTR_ERR(cxlhdm);
 	}
 
-	/* Cache the data early to ensure is_visible() works */
+	 
 	read_cdat_data(port);
 
 	get_device(&cxlmd->dev);
@@ -120,16 +101,10 @@ static int cxl_endpoint_port_probe(struct cxl_port *port)
 	if (rc)
 		return rc;
 
-	/*
-	 * This can't fail in practice as CXL root exit unregisters all
-	 * descendant ports and that in turn synchronizes with cxl_port_probe()
-	 */
+	 
 	root = find_cxl_root(port);
 
-	/*
-	 * Now that all endpoint decoders are successfully enumerated, try to
-	 * assemble regions from committed decoders
-	 */
+	 
 	device_for_each_child(&port->dev, root, discover_region);
 	put_device(&root->dev);
 

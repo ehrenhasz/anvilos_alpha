@@ -1,49 +1,35 @@
-// SPDX-License-Identifier: GPL-2.0 or BSD-3-Clause
-/*
- * Copyright(c) 2015, 2016 Intel Corporation.
- */
+
+ 
 
 #include <linux/delay.h>
 #include "hfi.h"
 #include "common.h"
 #include "eprom.h"
 
-/*
- * The EPROM is logically divided into three partitions:
- *	partition 0: the first 128K, visible from PCI ROM BAR
- *	partition 1: 4K config file (sector size)
- *	partition 2: the rest
- */
+ 
 #define P0_SIZE (128 * 1024)
 #define P1_SIZE   (4 * 1024)
 #define P1_START P0_SIZE
 #define P2_START (P0_SIZE + P1_SIZE)
 
-/* controller page size, in bytes */
+ 
 #define EP_PAGE_SIZE 256
 #define EP_PAGE_MASK (EP_PAGE_SIZE - 1)
 #define EP_PAGE_DWORDS (EP_PAGE_SIZE / sizeof(u32))
 
-/* controller commands */
+ 
 #define CMD_SHIFT 24
 #define CMD_NOP			    (0)
 #define CMD_READ_DATA(addr)	    ((0x03 << CMD_SHIFT) | addr)
 #define CMD_RELEASE_POWERDOWN_NOID  ((0xab << CMD_SHIFT))
 
-/* controller interface speeds */
-#define EP_SPEED_FULL 0x2	/* full speed */
+ 
+#define EP_SPEED_FULL 0x2	 
 
-/*
- * How long to wait for the EPROM to become available, in ms.
- * The spec 32 Mb EPROM takes around 40s to erase then write.
- * Double it for safety.
- */
-#define EPROM_TIMEOUT 80000 /* ms */
+ 
+#define EPROM_TIMEOUT 80000  
 
-/*
- * Read a 256 byte (64 dword) EPROM page.
- * All callers have verified the offset is at a page boundary.
- */
+ 
 static void read_page(struct hfi1_devdata *dd, u32 offset, u32 *result)
 {
 	int i;
@@ -51,12 +37,10 @@ static void read_page(struct hfi1_devdata *dd, u32 offset, u32 *result)
 	write_csr(dd, ASIC_EEP_ADDR_CMD, CMD_READ_DATA(offset));
 	for (i = 0; i < EP_PAGE_DWORDS; i++)
 		result[i] = (u32)read_csr(dd, ASIC_EEP_DATA);
-	write_csr(dd, ASIC_EEP_ADDR_CMD, CMD_NOP); /* close open page */
+	write_csr(dd, ASIC_EEP_ADDR_CMD, CMD_NOP);  
 }
 
-/*
- * Read length bytes starting at offset from the start of the EPROM.
- */
+ 
 static int read_length(struct hfi1_devdata *dd, u32 start, u32 len, void *dest)
 {
 	u32 buffer[EP_PAGE_DWORDS];
@@ -70,28 +54,24 @@ static int read_length(struct hfi1_devdata *dd, u32 start, u32 len, void *dest)
 
 	end = start + len;
 
-	/*
-	 * Make sure the read range is not outside of the controller read
-	 * command address range.  Note that '>' is correct below - the end
-	 * of the range is OK if it stops at the limit, but no higher.
-	 */
+	 
 	if (end > (1 << CMD_SHIFT))
 		return -EINVAL;
 
-	/* read the first partial page */
+	 
 	start_offset = start & EP_PAGE_MASK;
 	if (start_offset) {
-		/* partial starting page */
+		 
 
-		/* align and read the page that contains the start */
+		 
 		read_start = start & ~EP_PAGE_MASK;
 		read_page(dd, read_start, buffer);
 
-		/* the rest of the page is available data */
+		 
 		bytes = EP_PAGE_SIZE - start_offset;
 
 		if (len <= bytes) {
-			/* end is within this page */
+			 
 			memcpy(dest, (u8 *)buffer + start_offset, len);
 			return 0;
 		}
@@ -102,9 +82,9 @@ static int read_length(struct hfi1_devdata *dd, u32 start, u32 len, void *dest)
 		len -= bytes;
 		dest += bytes;
 	}
-	/* start is now page aligned */
+	 
 
-	/* read whole pages */
+	 
 	while (len >= EP_PAGE_SIZE) {
 		read_page(dd, start, buffer);
 		memcpy(dest, buffer, EP_PAGE_SIZE);
@@ -114,7 +94,7 @@ static int read_length(struct hfi1_devdata *dd, u32 start, u32 len, void *dest)
 		dest += EP_PAGE_SIZE;
 	}
 
-	/* read the last partial page */
+	 
 	if (len) {
 		read_page(dd, start, buffer);
 		memcpy(dest, buffer, len);
@@ -123,21 +103,16 @@ static int read_length(struct hfi1_devdata *dd, u32 start, u32 len, void *dest)
 	return 0;
 }
 
-/*
- * Initialize the EPROM handler.
- */
+ 
 int eprom_init(struct hfi1_devdata *dd)
 {
 	int ret = 0;
 
-	/* only the discrete chip has an EPROM */
+	 
 	if (dd->pcidev->device != PCI_DEVICE_ID_INTEL0)
 		return 0;
 
-	/*
-	 * It is OK if both HFIs reset the EPROM as long as they don't
-	 * do it at the same time.
-	 */
+	 
 	ret = acquire_chip_resource(dd, CR_EPROM, EPROM_TIMEOUT);
 	if (ret) {
 		dd_dev_err(dd,
@@ -146,15 +121,15 @@ int eprom_init(struct hfi1_devdata *dd)
 		goto done_asic;
 	}
 
-	/* reset EPROM to be sure it is in a good state */
+	 
 
-	/* set reset */
+	 
 	write_csr(dd, ASIC_EEP_CTL_STAT, ASIC_EEP_CTL_STAT_EP_RESET_SMASK);
-	/* clear reset, set speed */
+	 
 	write_csr(dd, ASIC_EEP_CTL_STAT,
 		  EP_SPEED_FULL << ASIC_EEP_CTL_STAT_RATE_SPI_SHIFT);
 
-	/* wake the device with command "release powerdown NoID" */
+	 
 	write_csr(dd, ASIC_EEP_ADDR_CMD, CMD_RELEASE_POWERDOWN_NOID);
 
 	dd->eprom_available = true;
@@ -163,35 +138,32 @@ done_asic:
 	return ret;
 }
 
-/* magic character sequence that begins an image */
+ 
 #define IMAGE_START_MAGIC "APO="
 
-/* magic character sequence that might trail an image */
+ 
 #define IMAGE_TRAIL_MAGIC "egamiAPO"
 
-/* EPROM file types */
+ 
 #define HFI1_EFT_PLATFORM_CONFIG 2
 
-/* segment size - 128 KiB */
+ 
 #define SEG_SIZE (128 * 1024)
 
 struct hfi1_eprom_footer {
-	u32 oprom_size;		/* size of the oprom, in bytes */
+	u32 oprom_size;		 
 	u16 num_table_entries;
-	u16 version;		/* version of this footer */
-	u32 magic;		/* must be last */
+	u16 version;		 
+	u32 magic;		 
 };
 
 struct hfi1_eprom_table_entry {
-	u32 type;		/* file type */
-	u32 offset;		/* file offset from start of EPROM */
-	u32 size;		/* file size, in bytes */
+	u32 type;		 
+	u32 offset;		 
+	u32 size;		 
 };
 
-/*
- * Calculate the max number of table entries that will fit within a directory
- * buffer of size 'dir_size'.
- */
+ 
 #define MAX_TABLE_ENTRIES(dir_size) \
 	(((dir_size) - sizeof(struct hfi1_eprom_footer)) / \
 		sizeof(struct hfi1_eprom_table_entry))
@@ -203,10 +175,7 @@ struct hfi1_eprom_table_entry {
 #define FOOTER_MAGIC MAGIC4('e', 'p', 'r', 'm')
 #define FOOTER_VERSION 1
 
-/*
- * Read all of partition 1.  The actual file is at the front.  Adjust
- * the returned size if a trailing image magic is found.
- */
+ 
 static int read_partition_platform_config(struct hfi1_devdata *dd, void **data,
 					  u32 *size)
 {
@@ -225,13 +194,13 @@ static int read_partition_platform_config(struct hfi1_devdata *dd, void **data,
 		return ret;
 	}
 
-	/* config partition is valid only if it starts with IMAGE_START_MAGIC */
+	 
 	if (memcmp(buffer, IMAGE_START_MAGIC, strlen(IMAGE_START_MAGIC))) {
 		kfree(buffer);
 		return -ENOENT;
 	}
 
-	/* scan for image magic that may trail the actual data */
+	 
 	p = strnstr(buffer, IMAGE_TRAIL_MAGIC, P1_SIZE);
 	if (p)
 		length = p - buffer;
@@ -243,12 +212,7 @@ static int read_partition_platform_config(struct hfi1_devdata *dd, void **data,
 	return 0;
 }
 
-/*
- * The segment magic has been checked.  There is a footer and table of
- * contents present.
- *
- * directory is a u32 aligned buffer of size EP_PAGE_SIZE.
- */
+ 
 static int read_segment_platform_config(struct hfi1_devdata *dd,
 					void *directory, void **data, u32 *size)
 {
@@ -262,31 +226,31 @@ static int read_segment_platform_config(struct hfi1_devdata *dd,
 	u32 seg_base, seg_offset;
 	u32 bytes_available, ncopied, to_copy;
 
-	/* the footer is at the end of the directory */
+	 
 	footer = (struct hfi1_eprom_footer *)
 			(directory + EP_PAGE_SIZE - sizeof(*footer));
 
-	/* make sure the structure version is supported */
+	 
 	if (footer->version != FOOTER_VERSION)
 		return -EINVAL;
 
-	/* oprom size cannot be larger than a segment */
+	 
 	if (footer->oprom_size >= SEG_SIZE)
 		return -EINVAL;
 
-	/* the file table must fit in a segment with the oprom */
+	 
 	if (footer->num_table_entries >
 			MAX_TABLE_ENTRIES(SEG_SIZE - footer->oprom_size))
 		return -EINVAL;
 
-	/* find the file table start, which precedes the footer */
+	 
 	directory_size = DIRECTORY_SIZE(footer->num_table_entries);
 	if (directory_size <= EP_PAGE_SIZE) {
-		/* the file table fits into the directory buffer handed in */
+		 
 		table = (struct hfi1_eprom_table_entry *)
 				(directory + EP_PAGE_SIZE - directory_size);
 	} else {
-		/* need to allocate and read more */
+		 
 		table_buffer = kmalloc(directory_size, GFP_KERNEL);
 		if (!table_buffer)
 			return -ENOMEM;
@@ -297,7 +261,7 @@ static int read_segment_platform_config(struct hfi1_devdata *dd,
 		table = table_buffer;
 	}
 
-	/* look for the platform configuration file in the table */
+	 
 	for (entry = NULL, i = 0; i < footer->num_table_entries; i++) {
 		if (table[i].type == HFI1_EFT_PLATFORM_CONFIG) {
 			entry = &table[i];
@@ -309,10 +273,7 @@ static int read_segment_platform_config(struct hfi1_devdata *dd,
 		goto done;
 	}
 
-	/*
-	 * Sanity check on the configuration file size - it should never
-	 * be larger than 4 KiB.
-	 */
+	 
 	if (entry->size > (4 * 1024)) {
 		dd_dev_err(dd, "Bad configuration file size 0x%x\n",
 			   entry->size);
@@ -320,7 +281,7 @@ static int read_segment_platform_config(struct hfi1_devdata *dd,
 		goto done;
 	}
 
-	/* check for bogus offset and size that wrap when added together */
+	 
 	if (entry->offset + entry->size < entry->offset) {
 		dd_dev_err(dd,
 			   "Bad configuration file start + size 0x%x+0x%x\n",
@@ -329,30 +290,25 @@ static int read_segment_platform_config(struct hfi1_devdata *dd,
 		goto done;
 	}
 
-	/* allocate the buffer to return */
+	 
 	buffer = kmalloc(entry->size, GFP_KERNEL);
 	if (!buffer) {
 		ret = -ENOMEM;
 		goto done;
 	}
 
-	/*
-	 * Extract the file by looping over segments until it is fully read.
-	 */
+	 
 	seg_offset = entry->offset % SEG_SIZE;
 	seg_base = entry->offset - seg_offset;
 	ncopied = 0;
 	while (ncopied < entry->size) {
-		/* calculate data bytes available in this segment */
+		 
 
-		/* start with the bytes from the current offset to the end */
+		 
 		bytes_available = SEG_SIZE - seg_offset;
-		/* subtract off footer and table from segment 0 */
+		 
 		if (seg_base == 0) {
-			/*
-			 * Sanity check: should not have a starting point
-			 * at or within the directory.
-			 */
+			 
 			if (bytes_available <= directory_size) {
 				dd_dev_err(dd,
 					   "Bad configuration file - offset 0x%x within footer+table\n",
@@ -363,23 +319,14 @@ static int read_segment_platform_config(struct hfi1_devdata *dd,
 			bytes_available -= directory_size;
 		}
 
-		/* calculate bytes wanted */
+		 
 		to_copy = entry->size - ncopied;
 
-		/* max out at the available bytes in this segment */
+		 
 		if (to_copy > bytes_available)
 			to_copy = bytes_available;
 
-		/*
-		 * Read from the EPROM.
-		 *
-		 * The sanity check for entry->offset is done in read_length().
-		 * The EPROM offset is validated against what the hardware
-		 * addressing supports.  In addition, if the offset is larger
-		 * than the actual EPROM, it silently wraps.  It will work
-		 * fine, though the reader may not get what they expected
-		 * from the EPROM.
-		 */
+		 
 		ret = read_length(dd, seg_base + seg_offset, to_copy,
 				  buffer + ncopied);
 		if (ret)
@@ -387,12 +334,12 @@ static int read_segment_platform_config(struct hfi1_devdata *dd,
 
 		ncopied += to_copy;
 
-		/* set up for next segment */
+		 
 		seg_offset = footer->oprom_size;
 		seg_base += SEG_SIZE;
 	}
 
-	/* success */
+	 
 	ret = 0;
 	*data = buffer;
 	*size = entry->size;
@@ -404,23 +351,10 @@ done:
 	return ret;
 }
 
-/*
- * Read the platform configuration file from the EPROM.
- *
- * On success, an allocated buffer containing the data and its size are
- * returned.  It is up to the caller to free this buffer.
- *
- * Return value:
- *   0	      - success
- *   -ENXIO   - no EPROM is available
- *   -EBUSY   - not able to acquire access to the EPROM
- *   -ENOENT  - no recognizable file written
- *   -ENOMEM  - buffer could not be allocated
- *   -EINVAL  - invalid EPROM contentents found
- */
+ 
 int eprom_read_platform_config(struct hfi1_devdata *dd, void **data, u32 *size)
 {
-	u32 directory[EP_PAGE_DWORDS]; /* aligned buffer */
+	u32 directory[EP_PAGE_DWORDS];  
 	int ret;
 
 	if (!dd->eprom_available)
@@ -430,17 +364,17 @@ int eprom_read_platform_config(struct hfi1_devdata *dd, void **data, u32 *size)
 	if (ret)
 		return -EBUSY;
 
-	/* read the last page of the segment for the EPROM format magic */
+	 
 	ret = read_length(dd, SEG_SIZE - EP_PAGE_SIZE, EP_PAGE_SIZE, directory);
 	if (ret)
 		goto done;
 
-	/* last dword of the segment contains a magic value */
+	 
 	if (directory[EP_PAGE_DWORDS - 1] == FOOTER_MAGIC) {
-		/* segment format */
+		 
 		ret = read_segment_platform_config(dd, directory, data, size);
 	} else {
-		/* partition format */
+		 
 		ret = read_partition_platform_config(dd, data, size);
 	}
 

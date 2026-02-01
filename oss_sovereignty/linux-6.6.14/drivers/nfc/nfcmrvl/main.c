@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Marvell NFC driver: major functions
- *
- * Copyright (C) 2014-2015 Marvell International Ltd.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/gpio.h>
@@ -22,7 +18,7 @@ static int nfcmrvl_nci_open(struct nci_dev *ndev)
 	if (test_and_set_bit(NFCMRVL_NCI_RUNNING, &priv->flags))
 		return 0;
 
-	/* Reset possible fault of previous session */
+	 
 	clear_bit(NFCMRVL_PHY_ERROR, &priv->flags);
 
 	err = priv->if_ops->nci_open(priv);
@@ -161,7 +157,7 @@ struct nfcmrvl_private *nfcmrvl_nci_register_dev(enum nfcmrvl_phy phy,
 		goto error_fw_dnld_deinit;
 	}
 
-	/* Ensure that controller is powered off */
+	 
 	nfcmrvl_chip_halt(priv);
 
 	nfc_info(dev, "registered with nci successfully\n");
@@ -202,10 +198,10 @@ int nfcmrvl_nci_recv_frame(struct nfcmrvl_private *priv, struct sk_buff *skb)
 	if (priv->config.hci_muxed) {
 		if (skb->data[0] == NFCMRVL_HCI_EVENT_CODE &&
 		    skb->data[1] == NFCMRVL_HCI_NFC_EVENT_CODE) {
-			/* Data packet, let's extract NCI payload */
+			 
 			skb_pull(skb, NFCMRVL_HCI_EVENT_HEADER_SIZE);
 		} else {
-			/* Skip this packet */
+			 
 			kfree_skb(skb);
 			return 0;
 		}
@@ -219,7 +215,7 @@ int nfcmrvl_nci_recv_frame(struct nfcmrvl_private *priv, struct sk_buff *skb)
 	if (test_bit(NFCMRVL_NCI_RUNNING, &priv->flags))
 		nci_recv_frame(priv->ndev, skb);
 	else {
-		/* Drop this packet since nobody wants it */
+		 
 		kfree_skb(skb);
 		return 0;
 	}
@@ -230,7 +226,7 @@ EXPORT_SYMBOL_GPL(nfcmrvl_nci_recv_frame);
 
 void nfcmrvl_chip_reset(struct nfcmrvl_private *priv)
 {
-	/* Reset possible fault of previous session */
+	 
 	clear_bit(NFCMRVL_PHY_ERROR, &priv->flags);
 
 	if (gpio_is_valid(priv->config.reset_n_io)) {

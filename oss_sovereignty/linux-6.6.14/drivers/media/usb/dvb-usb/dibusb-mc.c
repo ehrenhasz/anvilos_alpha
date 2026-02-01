@@ -1,19 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* DVB USB compliant linux driver for mobile DVB-T USB devices based on
- * reference designs made by DiBcom (http://www.dibcom.fr/) (DiB3000M-C/P)
- *
- * Copyright (C) 2004-5 Patrick Boettcher (patrick.boettcher@posteo.de)
- *
- * based on GPL code from DiBcom, which has
- * Copyright (C) 2004 Amaury Demol for DiBcom
- *
- * see Documentation/driver-api/media/drivers/dvb-usb.rst for more information
- */
+
+ 
 #include "dibusb.h"
 
 DVB_DEFINE_MOD_OPT_ADAPTER_NR(adapter_nr);
 
-/* USB Driver stuff */
+ 
 static struct dvb_usb_device_properties dibusb_mc_properties;
 
 static int dibusb_mc_probe(struct usb_interface *intf,
@@ -23,7 +14,7 @@ static int dibusb_mc_probe(struct usb_interface *intf,
 				   NULL, adapter_nr);
 }
 
-/* do not change the order of the ID table */
+ 
 enum {
 	DIBCOM_MOD3001_COLD,
 	DIBCOM_MOD3001_WARM,
@@ -84,7 +75,7 @@ static struct dvb_usb_device_properties dibusb_mc_properties = {
 			.frontend_attach  = dibusb_dib3000mc_frontend_attach,
 			.tuner_attach     = dibusb_dib3000mc_tuner_attach,
 
-	/* parameter for the MPEG2-data transfer */
+	 
 			.stream = {
 				.type = USB_BULK,
 				.count = 8,
@@ -104,7 +95,7 @@ static struct dvb_usb_device_properties dibusb_mc_properties = {
 	.rc.legacy = {
 		.rc_interval      = DEFAULT_RC_INTERVAL,
 		.rc_map_table     = rc_map_dibusb_table,
-		.rc_map_size      = 111, /* FIXME */
+		.rc_map_size      = 111,  
 		.rc_query         = dibusb_rc_query,
 	},
 
@@ -123,7 +114,7 @@ static struct dvb_usb_device_properties dibusb_mc_properties = {
 			{ &dibusb_dib3000mc_table[ULTIMA_TVBOX_USB2_WARM], NULL },
 		},
 		{   "LITE-ON USB2.0 DVB-T Tuner",
-		    /* Also rebranded as Intuix S800, Toshiba */
+		     
 			{ &dibusb_dib3000mc_table[LITEON_DVB_T_COLD], NULL },
 			{ &dibusb_dib3000mc_table[LITEON_DVB_T_WARM], NULL },
 		},

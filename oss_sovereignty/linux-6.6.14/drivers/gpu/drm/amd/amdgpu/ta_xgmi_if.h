@@ -1,30 +1,9 @@
-/*
- * Copyright 2018 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 
 #ifndef _TA_XGMI_IF_H
 #define _TA_XGMI_IF_H
 
-/* Responses have bit 31 set */
+ 
 #define RSP_ID_MASK (1U << 31)
 #define RSP_ID(cmdId) (((uint32_t)(cmdId)) | RSP_ID_MASK)
 
@@ -37,8 +16,8 @@ enum ta_command_xgmi {
 	TA_COMMAND_XGMI__GET_PEER_LINKS			= 0x0B
 };
 
-/* XGMI related enumerations */
-/**********************************************************/;
+ 
+ ;
 enum ta_xgmi_connected_nodes {
 	TA_XGMI__MAX_CONNECTED_NODES			= 64
 };
@@ -67,8 +46,8 @@ enum ta_xgmi_assigned_sdma_engine {
 	TA_XGMI_ASSIGNED_SDMA_ENGINE__SDMA5		= 5
 };
 
-/* input/output structures for XGMI commands */
-/**********************************************************/
+ 
+ 
 struct ta_xgmi_node_info {
 	uint64_t				node_id;
 	uint8_t					num_hops;
@@ -113,14 +92,14 @@ struct ta_xgmi_cmd_set_topology_info_input {
 	struct ta_xgmi_node_info	nodes[TA_XGMI__MAX_CONNECTED_NODES];
 };
 
-/**********************************************************/
-/* Common input structure for XGMI callbacks */
+ 
+ 
 union ta_xgmi_cmd_input {
 	struct ta_xgmi_cmd_get_topology_info_input	get_topology_info;
 	struct ta_xgmi_cmd_set_topology_info_input	set_topology_info;
 };
 
-/* Common output structure for XGMI callbacks */
+ 
 union ta_xgmi_cmd_output {
 	struct ta_xgmi_cmd_initialize_output		initialize;
 	struct ta_xgmi_cmd_get_node_id_output		get_node_id;
@@ -128,7 +107,7 @@ union ta_xgmi_cmd_output {
 	struct ta_xgmi_cmd_get_topology_info_output	get_topology_info;
 	struct ta_xgmi_cmd_get_peer_link_info_output	get_link_info;
 };
-/**********************************************************/
+ 
 
 struct ta_xgmi_shared_memory {
 	uint32_t			cmd_id;
@@ -140,4 +119,4 @@ struct ta_xgmi_shared_memory {
 	union ta_xgmi_cmd_output	xgmi_out_message;
 };
 
-#endif   //_TA_XGMI_IF_H
+#endif   

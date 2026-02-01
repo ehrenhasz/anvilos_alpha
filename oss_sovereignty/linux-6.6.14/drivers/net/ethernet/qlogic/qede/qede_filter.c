@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
-/* QLogic qede NIC Driver
- * Copyright (c) 2015-2017  QLogic Corporation
- * Copyright (c) 2019-2020 Marvell International Ltd.
- */
+
+ 
 
 #include <linux/netdevice.h>
 #include <linux/etherdevice.h>
@@ -28,16 +25,16 @@ struct qede_arfs_tuple {
 	__be16  eth_proto;
 	u8      ip_proto;
 
-	/* Describe filtering mode needed for this kind of filter */
+	 
 	enum qed_filter_config_mode mode;
 
-	/* Used to compare new/old filters. Return true if IPs match */
+	 
 	bool (*ip_comp)(struct qede_arfs_tuple *a, struct qede_arfs_tuple *b);
 
-	/* Given an address into ethhdr build a header from tuple info */
+	 
 	void (*build_hdr)(struct qede_arfs_tuple *t, void *header);
 
-	/* Stringify the tuple for a print into the provided buffer */
+	 
 	void (*stringify)(struct qede_arfs_tuple *t, void *buffer);
 };
 
@@ -45,16 +42,16 @@ struct qede_arfs_fltr_node {
 #define QEDE_FLTR_VALID	 0
 	unsigned long state;
 
-	/* pointer to aRFS packet buffer */
+	 
 	void *data;
 
-	/* dma map address of aRFS packet buffer */
+	 
 	dma_addr_t mapping;
 
-	/* length of aRFS packet buffer */
+	 
 	int buf_len;
 
-	/* tuples to hold from aRFS packet buffer */
+	 
 	struct qede_arfs_tuple tuple;
 
 	u32 flow_id;
@@ -76,12 +73,12 @@ struct qede_arfs {
 #define QEDE_RFS_FLW_MASK	((1 << QEDE_RFS_FLW_BITSHIFT) - 1)
 	struct hlist_head	arfs_hl_head[1 << QEDE_RFS_FLW_BITSHIFT];
 
-	/* lock for filter list access */
+	 
 	spinlock_t		arfs_list_lock;
 	unsigned long		*arfs_fltr_bmap;
 	int			filter_count;
 
-	/* Currently configured filtering mode */
+	 
 	enum qed_filter_config_mode mode;
 };
 
@@ -227,7 +224,7 @@ void qede_arfs_filter_op(void *dev, void *filter, u8 fw_rc)
 	spin_unlock_bh(&edev->arfs->arfs_list_lock);
 }
 
-/* Should be called while qede_lock is held */
+ 
 void qede_process_arfs_filters(struct qede_dev *edev, bool free_fltr)
 {
 	int i;
@@ -282,9 +279,7 @@ void qede_process_arfs_filters(struct qede_dev *edev, bool free_fltr)
 #endif
 }
 
-/* This function waits until all aRFS filters get deleted and freed.
- * On timeout it frees all filters forcefully.
- */
+ 
 void qede_poll_for_freeing_arfs_filters(struct qede_dev *edev)
 {
 	int count = QEDE_ARFS_POLL_COUNT;
@@ -302,7 +297,7 @@ void qede_poll_for_freeing_arfs_filters(struct qede_dev *edev)
 	if (!count) {
 		DP_NOTICE(edev, "Timeout in polling for arfs filter free\n");
 
-		/* Something is terribly wrong, free forcefully */
+		 
 		qede_process_arfs_filters(edev, true);
 	}
 }
@@ -465,7 +460,7 @@ int qede_rx_flow_steer(struct net_device *dev, const struct sk_buff *skb,
 	n = qede_arfs_htbl_key_search(QEDE_ARFS_BUCKET_HEAD(edev, tbl_idx),
 				      skb, ports[0], ports[1], ip_proto);
 	if (n) {
-		/* Filter match */
+		 
 		n->next_rxq_id = rxq_index;
 
 		if (test_bit(QEDE_FLTR_VALID, &n->state)) {
@@ -573,7 +568,7 @@ void qede_fill_rss_params(struct qede_dev *edev,
 		return;
 	}
 
-	/* Need to validate current RSS config uses valid entries */
+	 
 	for (i = 0; i < QED_RSS_IND_TABLE_SIZE; i++) {
 		if (edev->rss_ind_table[i] >= QEDE_RSS_COUNT(edev)) {
 			need_reset = true;
@@ -592,7 +587,7 @@ void qede_fill_rss_params(struct qede_dev *edev,
 		edev->rss_params_inited |= QEDE_RSS_INDIR_INITED;
 	}
 
-	/* Now that we have the queue-indirection, prepare the handles */
+	 
 	for (i = 0; i < QED_RSS_IND_TABLE_SIZE; i++) {
 		u16 idx = QEDE_RX_QUEUE_IDX(edev, edev->rss_ind_table[i]);
 
@@ -648,7 +643,7 @@ static int qede_config_accept_any_vlan(struct qede_dev *edev, bool action)
 	struct qed_update_vport_params *params;
 	int rc;
 
-	/* Proceed only if action actually needs to be performed */
+	 
 	if (edev->accept_any_vlan == action)
 		return 0;
 
@@ -691,7 +686,7 @@ int qede_vlan_rx_add_vid(struct net_device *dev, __be16 proto, u16 vid)
 	vlan->vid = vid;
 	vlan->configured = false;
 
-	/* Verify vlan isn't already configured */
+	 
 	list_for_each_entry(tmp, &edev->vlan_list, list) {
 		if (tmp->vid == vlan->vid) {
 			DP_VERBOSE(edev, (NETIF_MSG_IFUP | NETIF_MSG_IFDOWN),
@@ -701,7 +696,7 @@ int qede_vlan_rx_add_vid(struct net_device *dev, __be16 proto, u16 vid)
 		}
 	}
 
-	/* If interface is down, cache this VLAN ID and return */
+	 
 	__qede_lock(edev);
 	if (edev->state != QEDE_STATE_OPEN) {
 		DP_VERBOSE(edev, NETIF_MSG_IFDOWN,
@@ -713,10 +708,7 @@ int qede_vlan_rx_add_vid(struct net_device *dev, __be16 proto, u16 vid)
 		goto out;
 	}
 
-	/* Check for the filter limit.
-	 * Note - vlan0 has a reserved filter and can be added without
-	 * worrying about quota
-	 */
+	 
 	if ((edev->configured_vlans < edev->dev_info.num_vlan_filters) ||
 	    (vlan->vid == 0)) {
 		rc = qede_set_ucast_rx_vlan(edev,
@@ -730,11 +722,11 @@ int qede_vlan_rx_add_vid(struct net_device *dev, __be16 proto, u16 vid)
 		}
 		vlan->configured = true;
 
-		/* vlan0 filter isn't consuming out of our quota */
+		 
 		if (vlan->vid != 0)
 			edev->configured_vlans++;
 	} else {
-		/* Out of quota; Activate accept-any-VLAN mode */
+		 
 		if (!edev->non_configured_vlans) {
 			rc = qede_config_accept_any_vlan(edev, true);
 			if (rc) {
@@ -756,7 +748,7 @@ out:
 static void qede_del_vlan_from_list(struct qede_dev *edev,
 				    struct qede_vlan *vlan)
 {
-	/* vlan0 filter isn't consuming out of our quota */
+	 
 	if (vlan->vid != 0) {
 		if (vlan->configured)
 			edev->configured_vlans--;
@@ -779,12 +771,12 @@ int qede_configure_vlan_filters(struct qede_dev *edev)
 
 	dev_info = &edev->dev_info;
 
-	/* Configure non-configured vlans */
+	 
 	list_for_each_entry(vlan, &edev->vlan_list, list) {
 		if (vlan->configured)
 			continue;
 
-		/* We have used all our credits, now enable accept_any_vlan */
+		 
 		if ((vlan->vid != 0) &&
 		    (edev->configured_vlans == dev_info->num_vlan_filters)) {
 			accept_any_vlan = 1;
@@ -803,17 +795,14 @@ int qede_configure_vlan_filters(struct qede_dev *edev)
 		}
 
 		vlan->configured = true;
-		/* vlan0 filter doesn't consume our VLAN filter's quota */
+		 
 		if (vlan->vid != 0) {
 			edev->non_configured_vlans--;
 			edev->configured_vlans++;
 		}
 	}
 
-	/* enable accept_any_vlan mode if we have more VLANs than credits,
-	 * or remove accept_any_vlan mode if we've actually removed
-	 * a non-configured vlan, and all remaining vlans are truly configured.
-	 */
+	 
 
 	if (accept_any_vlan)
 		rc = qede_config_accept_any_vlan(edev, true);
@@ -834,7 +823,7 @@ int qede_vlan_rx_kill_vid(struct net_device *dev, __be16 proto, u16 vid)
 
 	DP_VERBOSE(edev, NETIF_MSG_IFDOWN, "Removing vlan 0x%04x\n", vid);
 
-	/* Find whether entry exists */
+	 
 	__qede_lock(edev);
 	list_for_each_entry(vlan, &edev->vlan_list, list)
 		if (vlan->vid == vid)
@@ -847,16 +836,14 @@ int qede_vlan_rx_kill_vid(struct net_device *dev, __be16 proto, u16 vid)
 	}
 
 	if (edev->state != QEDE_STATE_OPEN) {
-		/* As interface is already down, we don't have a VPORT
-		 * instance to remove vlan filter. So just update vlan list
-		 */
+		 
 		DP_VERBOSE(edev, NETIF_MSG_IFDOWN,
 			   "Interface is down, removing VLAN from list only\n");
 		qede_del_vlan_from_list(edev, vlan);
 		goto out;
 	}
 
-	/* Remove vlan */
+	 
 	if (vlan->configured) {
 		rc = qede_set_ucast_rx_vlan(edev, QED_FILTER_XCAST_TYPE_DEL,
 					    vid);
@@ -868,9 +855,7 @@ int qede_vlan_rx_kill_vid(struct net_device *dev, __be16 proto, u16 vid)
 
 	qede_del_vlan_from_list(edev, vlan);
 
-	/* We have removed a VLAN - try to see if we can
-	 * configure non-configured VLAN from the list.
-	 */
+	 
 	rc = qede_configure_vlan_filters(edev);
 
 out:
@@ -891,7 +876,7 @@ void qede_vlan_mark_nonconfigured(struct qede_dev *edev)
 
 		vlan->configured = false;
 
-		/* vlan0 filter isn't consuming out of our quota */
+		 
 		if (vlan->vid != 0) {
 			edev->non_configured_vlans++;
 			edev->configured_vlans--;
@@ -937,10 +922,7 @@ int qede_set_features(struct net_device *dev, netdev_features_t features)
 		args.u.features = features;
 		args.func = &qede_set_features_reload;
 
-		/* Make sure that we definitely need to reload.
-		 * In case of an eBPF attached program, there will be no FW
-		 * aggregations, so no need to actually reload.
-		 */
+		 
 		__qede_lock(edev);
 		if (edev->xdp_prog)
 			args.func(edev, &args);
@@ -1031,7 +1013,7 @@ static int qede_xdp_set(struct qede_dev *edev, struct bpf_prog *prog)
 {
 	struct qede_reload_args args;
 
-	/* If we're called, there was already a bpf reference increment */
+	 
 	args.func = &qede_xdp_reload_func;
 	args.u.new_prog = prog;
 	qede_reload(edev, &args, false);
@@ -1074,10 +1056,7 @@ int qede_set_mac_addr(struct net_device *ndev, void *p)
 	struct sockaddr *addr = p;
 	int rc = 0;
 
-	/* Make sure the state doesn't transition while changing the MAC.
-	 * Also, all flows accessing the dev_addr field are doing that under
-	 * this lock.
-	 */
+	 
 	__qede_lock(edev);
 
 	if (!is_valid_ether_addr(addr->sa_data)) {
@@ -1094,7 +1073,7 @@ int qede_set_mac_addr(struct net_device *ndev, void *p)
 	}
 
 	if (edev->state == QEDE_STATE_OPEN) {
-		/* Remove the previous primary mac */
+		 
 		rc = qede_set_ucast_rx_mac(edev, QED_FILTER_XCAST_TYPE_DEL,
 					   ndev->dev_addr);
 		if (rc)
@@ -1107,7 +1086,7 @@ int qede_set_mac_addr(struct net_device *ndev, void *p)
 	if (edev->state != QEDE_STATE_OPEN) {
 		DP_VERBOSE(edev, NETIF_MSG_IFDOWN,
 			   "The device is currently down\n");
-		/* Ask PF to explicitly update a copy in bulletin board */
+		 
 		if (IS_VF(edev) && edev->ops->req_bulletin_update_mac)
 			edev->ops->req_bulletin_update_mac(edev->cdev,
 							   ndev->dev_addr);
@@ -1145,7 +1124,7 @@ qede_configure_mcast_filtering(struct net_device *ndev,
 
 	temp = mc_macs;
 
-	/* Remove all previously configured MAC filters */
+	 
 	rc = qede_set_mcast_rx_mac(edev, QED_FILTER_XCAST_TYPE_DEL,
 				   mc_macs, 1);
 	if (rc)
@@ -1163,12 +1142,12 @@ qede_configure_mcast_filtering(struct net_device *ndev,
 
 	netif_addr_unlock_bh(ndev);
 
-	/* Check for all multicast @@@TBD resource allocation */
+	 
 	if ((ndev->flags & IFF_ALLMULTI) || (mc_count > 64)) {
 		if (*accept_flags == QED_FILTER_RX_MODE_TYPE_REGULAR)
 			*accept_flags = QED_FILTER_RX_MODE_TYPE_MULTI_PROMISC;
 	} else {
-		/* Add all multicast MAC filters */
+		 
 		rc = qede_set_mcast_rx_mac(edev, QED_FILTER_XCAST_TYPE_ADD,
 					   mc_macs, mc_count);
 	}
@@ -1186,7 +1165,7 @@ void qede_set_rx_mode(struct net_device *ndev)
 	schedule_delayed_work(&edev->sp_task, 0);
 }
 
-/* Must be called with qede_lock held */
+ 
 void qede_config_rx_mode(struct net_device *ndev)
 {
 	enum qed_filter_rx_mode_type accept_flags;
@@ -1216,21 +1195,19 @@ void qede_config_rx_mode(struct net_device *ndev)
 
 	netif_addr_unlock_bh(ndev);
 
-	/* Remove all previous unicast secondary macs and multicast macs
-	 * (configure / leave the primary mac)
-	 */
+	 
 	rc = qede_set_ucast_rx_mac(edev, QED_FILTER_XCAST_TYPE_REPLACE,
 				   edev->ndev->dev_addr);
 	if (rc)
 		goto out;
 
-	/* Check for promiscuous */
+	 
 	if (ndev->flags & IFF_PROMISC)
 		accept_flags = QED_FILTER_RX_MODE_TYPE_PROMISC;
 	else
 		accept_flags = QED_FILTER_RX_MODE_TYPE_REGULAR;
 
-	/* Configure all filters regardless, in case promisc is rejected */
+	 
 	if (uc_count < edev->dev_info.num_mac_filters) {
 		int i;
 
@@ -1252,14 +1229,11 @@ void qede_config_rx_mode(struct net_device *ndev)
 	if (rc)
 		goto out;
 
-	/* take care of VLAN mode */
+	 
 	if (ndev->flags & IFF_PROMISC) {
 		qede_config_accept_any_vlan(edev, true);
 	} else if (!edev->non_configured_vlans) {
-		/* It's possible that accept_any_vlan mode is set due to a
-		 * previous setting of IFF_PROMISC. If vlan credits are
-		 * sufficient, disable accept_any_vlan.
-		 */
+		 
 		qede_config_accept_any_vlan(edev, false);
 	}
 
@@ -1439,7 +1413,7 @@ static void qede_flow_build_ipv4_hdr(struct qede_arfs_tuple *t,
 	ip->protocol = t->ip_proto;
 	ip->tot_len = cpu_to_be16(qede_flow_get_min_header_size(t) - ETH_HLEN);
 
-	/* ports is weakly typed to suit both TCP and UDP ports */
+	 
 	ports[0] = t->src_port;
 	ports[1] = t->dst_port;
 }
@@ -1491,12 +1465,12 @@ static void qede_flow_build_ipv6_hdr(struct qede_arfs_tuple *t,
 		ip6->payload_len = cpu_to_be16(sizeof(struct udphdr));
 	}
 
-	/* ports is weakly typed to suit both TCP and UDP ports */
+	 
 	ports[0] = t->src_port;
 	ports[1] = t->dst_port;
 }
 
-/* Validate fields which are set and not accepted by the driver */
+ 
 static int qede_flow_spec_validate_unused(struct qede_dev *edev,
 					  struct ethtool_rx_flow_spec *fs)
 {
@@ -1523,9 +1497,7 @@ static int qede_flow_spec_validate_unused(struct qede_dev *edev,
 static int qede_set_v4_tuple_to_profile(struct qede_dev *edev,
 					struct qede_arfs_tuple *t)
 {
-	/* We must have Only 4-tuples/l4 port/src ip/dst ip
-	 * as an input.
-	 */
+	 
 	if (t->src_port && t->dst_port && t->src_ipv4 && t->dst_ipv4) {
 		t->mode = QED_FILTER_CONFIG_MODE_5_TUPLE;
 	} else if (!t->src_port && t->dst_port &&
@@ -1553,9 +1525,7 @@ static int qede_set_v6_tuple_to_profile(struct qede_dev *edev,
 					struct qede_arfs_tuple *t,
 					struct in6_addr *zaddr)
 {
-	/* We must have Only 4-tuples/l4 port/src ip/dst ip
-	 * as an input.
-	 */
+	 
 	if (t->src_port && t->dst_port &&
 	    memcmp(&t->src_ipv6, zaddr, sizeof(struct in6_addr)) &&
 	    memcmp(&t->dst_ipv6, zaddr, sizeof(struct in6_addr))) {
@@ -1583,7 +1553,7 @@ static int qede_set_v6_tuple_to_profile(struct qede_dev *edev,
 	return 0;
 }
 
-/* Must be called while qede lock is held */
+ 
 static struct qede_arfs_fltr_node *
 qede_flow_find_fltr(struct qede_dev *edev, struct qede_arfs_tuple *t)
 {
@@ -1878,11 +1848,11 @@ int qede_add_tc_flower_fltr(struct qede_dev *edev, __be16 proto,
 		goto unlock;
 	}
 
-	/* parse flower attribute and prepare filter */
+	 
 	if (qede_parse_flow_attr(edev, proto, f->rule, &t))
 		goto unlock;
 
-	/* Validate profile mode and number of filters */
+	 
 	if ((edev->arfs->filter_count && edev->arfs->mode != t.mode) ||
 	    edev->arfs->filter_count == QEDE_RFS_MAX_FLTR) {
 		DP_NOTICE(edev,
@@ -1891,7 +1861,7 @@ int qede_add_tc_flower_fltr(struct qede_dev *edev, __be16 proto,
 		goto unlock;
 	}
 
-	/* parse tc actions and get the vf_id */
+	 
 	if (qede_parse_actions(edev, &f->rule->action, f->common.extack))
 		goto unlock;
 
@@ -1945,13 +1915,13 @@ static int qede_flow_spec_validate(struct qede_dev *edev,
 		return -EINVAL;
 	}
 
-	/* Check location isn't already in use */
+	 
 	if (test_bit(location, edev->arfs->arfs_fltr_bmap)) {
 		DP_INFO(edev, "Location already in use\n");
 		return -EINVAL;
 	}
 
-	/* Check if the filtering-mode could support the filter */
+	 
 	if (edev->arfs->filter_count &&
 	    edev->arfs->mode != t->mode) {
 		DP_INFO(edev,
@@ -2003,7 +1973,7 @@ static int qede_flow_spec_to_rule(struct qede_dev *edev,
 		goto err_out;
 	}
 
-	/* Make sure location is valid and filter isn't already set */
+	 
 	err = qede_flow_spec_validate(edev, &flow->rule->action, t,
 				      fs->location);
 err_out:
@@ -2026,7 +1996,7 @@ int qede_add_cls_rule(struct qede_dev *edev, struct ethtool_rxnfc *info)
 		goto unlock;
 	}
 
-	/* Translate the flow specification into something fittign our DB */
+	 
 	rc = qede_flow_spec_to_rule(edev, &t, fsp);
 	if (rc)
 		goto unlock;
@@ -2058,7 +2028,7 @@ int qede_add_cls_rule(struct qede_dev *edev, struct ethtool_rxnfc *info)
 
 	qede_flow_set_destination(edev, n, fsp);
 
-	/* Build a minimal header according to the flow */
+	 
 	n->tuple.build_hdr(&n->tuple, n->data);
 
 	rc = qede_enqueue_fltr_and_config_searcher(edev, n, 0);

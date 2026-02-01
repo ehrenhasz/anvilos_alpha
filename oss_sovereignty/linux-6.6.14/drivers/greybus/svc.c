@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * SVC Greybus driver.
- *
- * Copyright 2015 Google Inc.
- * Copyright 2015 Linaro Ltd.
- */
+
+ 
 
 #include <linux/debugfs.h>
 #include <linux/kstrtox.h>
@@ -40,11 +35,11 @@ static ssize_t ap_intf_id_show(struct device *dev,
 }
 static DEVICE_ATTR_RO(ap_intf_id);
 
-// FIXME
-// This is a hack, we need to do this "right" and clean the interface up
-// properly, not just forcibly yank the thing out of the system and hope for the
-// best.  But for now, people want their modules to come out without having to
-// throw the thing to the ground or get out a screwdriver.
+
+
+
+
+
 static ssize_t intf_eject_store(struct device *dev,
 				struct device_attribute *attr, const char *buf,
 				size_t len)
@@ -273,10 +268,7 @@ int gb_svc_intf_eject(struct gb_svc *svc, u8 intf_id)
 
 	request.intf_id = intf_id;
 
-	/*
-	 * The pulse width for module release in svc is long so we need to
-	 * increase the timeout so the operation will not return to soon.
-	 */
+	 
 	ret = gb_operation_sync_timeout(svc->connection,
 					GB_SVC_TYPE_INTF_EJECT, &request,
 					sizeof(request), NULL, 0,
@@ -489,7 +481,7 @@ int gb_svc_connection_create(struct gb_svc *svc,
 	request.cport1_id = cpu_to_le16(cport1_id);
 	request.intf2_id = intf2_id;
 	request.cport2_id = cpu_to_le16(cport2_id);
-	request.tc = 0;		/* TC0 */
+	request.tc = 0;		 
 	request.flags = cport_flags;
 
 	return gb_operation_sync(svc->connection, GB_SVC_TYPE_CONN_CREATE,
@@ -516,7 +508,7 @@ void gb_svc_connection_destroy(struct gb_svc *svc, u8 intf1_id, u16 cport1_id,
 	}
 }
 
-/* Creates bi-directional routes between the devices */
+ 
 int gb_svc_route_create(struct gb_svc *svc, u8 intf1_id, u8 dev1_id,
 			u8 intf2_id, u8 dev2_id)
 {
@@ -531,7 +523,7 @@ int gb_svc_route_create(struct gb_svc *svc, u8 intf1_id, u8 dev1_id,
 				 &request, sizeof(request), NULL, 0);
 }
 
-/* Destroys bi-directional routes between the devices */
+ 
 void gb_svc_route_destroy(struct gb_svc *svc, u8 intf1_id, u8 intf2_id)
 {
 	struct gb_svc_route_destroy_request request;
@@ -865,10 +857,7 @@ static int gb_svc_hello(struct gb_operation *op)
 		goto err_deregister_svc;
 	}
 
-	/*
-	 * FIXME: This is a temporary hack to reconfigure the link at HELLO
-	 * (which abuses the deferred request processing mechanism).
-	 */
+	 
 	ret = gb_svc_queue_deferred_request(op);
 	if (ret)
 		goto err_destroy_watchdog;
@@ -925,15 +914,7 @@ static void gb_svc_process_hello_deferred(struct gb_operation *operation)
 	struct gb_svc *svc = gb_connection_get_data(connection);
 	int ret;
 
-	/*
-	 * XXX This is a hack/work-around to reconfigure the APBridgeA-Switch
-	 * link to PWM G2, 1 Lane, Slow Auto, so that it has sufficient
-	 * bandwidth for 3 audio streams plus boot-over-UniPro of a hot-plugged
-	 * module.
-	 *
-	 * The code should be removed once SW-2217, Heuristic for UniPro
-	 * Power Mode Changes is resolved.
-	 */
+	 
 	ret = gb_svc_intf_set_power_mode(svc, svc->ap_intf_id,
 					 GB_SVC_UNIPRO_HS_SERIES_A,
 					 GB_SVC_UNIPRO_SLOW_AUTO_MODE,
@@ -963,7 +944,7 @@ static void gb_svc_process_module_inserted(struct gb_operation *operation)
 	u16 flags;
 	int ret;
 
-	/* The request message size has already been verified. */
+	 
 	request = operation->request->payload;
 	module_id = request->primary_intf_id;
 	num_interfaces = request->intf_count;
@@ -1007,7 +988,7 @@ static void gb_svc_process_module_removed(struct gb_operation *operation)
 	struct gb_module *module;
 	u8 module_id;
 
-	/* The request message size has already been verified. */
+	 
 	request = operation->request->payload;
 	module_id = request->primary_intf_id;
 
@@ -1036,7 +1017,7 @@ static void gb_svc_process_intf_oops(struct gb_operation *operation)
 	u8 intf_id;
 	u8 reason;
 
-	/* The request message size has already been verified. */
+	 
 	request = operation->request->payload;
 	intf_id = request->intf_id;
 	reason = request->reason;
@@ -1068,7 +1049,7 @@ static void gb_svc_process_intf_mailbox_event(struct gb_operation *operation)
 	u16 result_code;
 	u32 mailbox;
 
-	/* The request message size has already been verified. */
+	 
 	request = operation->request->payload;
 	intf_id = request->intf_id;
 	result_code = le16_to_cpu(request->result_code);
@@ -1154,7 +1135,7 @@ static int gb_svc_intf_reset_recv(struct gb_operation *op)
 	}
 	reset = request->payload;
 
-	/* FIXME Reset the interface here */
+	 
 
 	return 0;
 }
@@ -1236,16 +1217,7 @@ static int gb_svc_request_handler(struct gb_operation *op)
 	u8 type = op->type;
 	int ret = 0;
 
-	/*
-	 * SVC requests need to follow a specific order (at least initially) and
-	 * below code takes care of enforcing that. The expected order is:
-	 * - PROTOCOL_VERSION
-	 * - SVC_HELLO
-	 * - Any other request, but the earlier two.
-	 *
-	 * Incoming requests are guaranteed to be serialized and so we don't
-	 * need to protect 'state' for any races.
-	 */
+	 
 	switch (type) {
 	case GB_SVC_TYPE_PROTOCOL_VERSION:
 		if (svc->state != GB_SVC_STATE_RESET)
@@ -1358,11 +1330,7 @@ int gb_svc_add(struct gb_svc *svc)
 {
 	int ret;
 
-	/*
-	 * The SVC protocol is currently driven by the SVC, so the SVC device
-	 * is added from the connection request handler when enough
-	 * information has been received.
-	 */
+	 
 	ret = gb_connection_enable(svc->connection);
 	if (ret)
 		return ret;
@@ -1386,9 +1354,7 @@ void gb_svc_del(struct gb_svc *svc)
 {
 	gb_connection_disable_rx(svc->connection);
 
-	/*
-	 * The SVC device may have been registered from the request handler.
-	 */
+	 
 	if (device_is_registered(&svc->dev)) {
 		gb_svc_debugfs_exit(svc);
 		gb_svc_watchdog_destroy(svc);

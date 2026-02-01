@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * AEAD: Authenticated Encryption with Associated Data
- *
- * This file provides API support for AEAD algorithms.
- *
- * Copyright (c) 2007-2015 Herbert Xu <herbert@gondor.apana.org.au>
- */
+
+ 
 
 #include <crypto/internal/aead.h>
 #include <linux/cryptouser.h>

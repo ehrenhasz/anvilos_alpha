@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*	Sysfs attributes of bond slaves
- *
- *      Copyright (c) 2014 Scott Feldman <sfeldma@cumulusnetworks.com>
- */
+
+ 
 
 #include <linux/capability.h>
 #include <linux/kernel.h>

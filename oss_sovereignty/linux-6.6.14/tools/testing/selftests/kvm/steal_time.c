@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * steal/stolen time test
- *
- * Copyright (C) 2020, Red Hat, Inc.
- */
+
+ 
 #define _GNU_SOURCE
 #include <stdio.h>
 #include <time.h>
@@ -25,7 +21,7 @@ static uint64_t guest_stolen_time[NR_VCPUS];
 
 #if defined(__x86_64__)
 
-/* steal_time must have 64-byte alignment */
+ 
 #define STEAL_TIME_SIZE		((sizeof(struct kvm_steal_time) + 63) & ~63)
 
 static void check_status(struct kvm_steal_time *st)
@@ -67,7 +63,7 @@ static void steal_time_init(struct kvm_vcpu *vcpu, uint32_t i)
 {
 	int ret;
 
-	/* ST_GPA_BASE is identity mapped */
+	 
 	st_gva[i] = (void *)(ST_GPA_BASE + i * STEAL_TIME_SIZE);
 	sync_global_to_guest(vcpu->vm, st_gva[i]);
 
@@ -99,7 +95,7 @@ static void steal_time_dump(struct kvm_vm *vm, uint32_t vcpu_idx)
 
 #elif defined(__aarch64__)
 
-/* PV_TIME_ST must have 64-byte alignment */
+ 
 #define STEAL_TIME_SIZE		((sizeof(struct st_time) + 63) & ~63)
 
 #define SMCCC_ARCH_FEATURES	0x80000001
@@ -178,7 +174,7 @@ static void steal_time_init(struct kvm_vcpu *vcpu, uint32_t i)
 
 	vcpu_ioctl(vcpu, KVM_HAS_DEVICE_ATTR, &dev);
 
-	/* ST_GPA_BASE is identity mapped */
+	 
 	st_gva[i] = (void *)(ST_GPA_BASE + i * STEAL_TIME_SIZE);
 	sync_global_to_guest(vm, st_gva[i]);
 
@@ -254,14 +250,14 @@ int main(int ac, char **av)
 
 	verbose = ac > 1 && (!strncmp(av[1], "-v", 3) || !strncmp(av[1], "--verbose", 10));
 
-	/* Set CPU affinity so we can force preemption of the VCPU */
+	 
 	CPU_ZERO(&cpuset);
 	CPU_SET(0, &cpuset);
 	pthread_attr_init(&attr);
 	pthread_attr_setaffinity_np(&attr, sizeof(cpu_set_t), &cpuset);
 	pthread_setaffinity_np(pthread_self(), sizeof(cpu_set_t), &cpuset);
 
-	/* Create a VM and an identity mapped memslot for the steal time structure */
+	 
 	vm = vm_create_with_vcpus(NR_VCPUS, guest_code, vcpus);
 	gpages = vm_calc_num_guest_pages(VM_MODE_DEFAULT, STEAL_TIME_SIZE * NR_VCPUS);
 	vm_userspace_mem_region_add(vm, VM_MEM_SRC_ANONYMOUS, ST_GPA_BASE, 1, gpages, 0);
@@ -269,16 +265,16 @@ int main(int ac, char **av)
 
 	TEST_REQUIRE(is_steal_time_supported(vcpus[0]));
 
-	/* Run test on each VCPU */
+	 
 	for (i = 0; i < NR_VCPUS; ++i) {
 		steal_time_init(vcpus[i], i);
 
 		vcpu_args_set(vcpus[i], 1, i);
 
-		/* First VCPU run initializes steal-time */
+		 
 		run_vcpu(vcpus[i]);
 
-		/* Second VCPU run, expect guest stolen time to be <= run_delay */
+		 
 		run_vcpu(vcpus[i]);
 		sync_global_from_guest(vm, guest_stolen_time[i]);
 		stolen_time = guest_stolen_time[i];
@@ -287,7 +283,7 @@ int main(int ac, char **av)
 			    "Expected stolen time <= %ld, got %ld",
 			    run_delay, stolen_time);
 
-		/* Steal time from the VCPU. The steal time thread has the same CPU affinity as the VCPUs. */
+		 
 		run_delay = get_run_delay();
 		pthread_create(&thread, &attr, do_steal_time, NULL);
 		do
@@ -299,7 +295,7 @@ int main(int ac, char **av)
 			    "Expected run_delay >= %ld, got %ld",
 			    MIN_RUN_DELAY_NS, run_delay);
 
-		/* Run VCPU again to confirm stolen time is consistent with run_delay */
+		 
 		run_vcpu(vcpus[i]);
 		sync_global_from_guest(vm, guest_stolen_time[i]);
 		stolen_time = guest_stolen_time[i] - stolen_time;

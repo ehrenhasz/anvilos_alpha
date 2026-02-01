@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #define CONFIG_CAVIUM_OCTEON_CVMSEG_SIZE	512
 
 #ifndef XKPHYS_TO_PHYS
@@ -127,14 +127,14 @@ union cvmx_pip_wqe_word0 {
 		__wsum hw_chksum;
 	} cn38xx;
 	struct {
-		uint64_t pknd:6;        /* 0..5 */
-		uint64_t unused2:2;     /* 6..7 */
-		uint64_t bpid:6;        /* 8..13 */
-		uint64_t unused1:18;    /* 14..31 */
-		uint64_t l2ptr:8;       /* 32..39 */
-		uint64_t l3ptr:8;       /* 40..47 */
-		uint64_t unused0:8;     /* 48..55 */
-		uint64_t l4ptr:8;       /* 56..63 */
+		uint64_t pknd:6;         
+		uint64_t unused2:2;      
+		uint64_t bpid:6;         
+		uint64_t unused1:18;     
+		uint64_t l2ptr:8;        
+		uint64_t l3ptr:8;        
+		uint64_t unused0:8;      
+		uint64_t l4ptr:8;        
 	} cn68xx;
 };
 
@@ -196,9 +196,9 @@ union cvmx_helper_link_info {
 	uint64_t u64;
 	struct {
 		uint64_t reserved_20_63:44;
-		uint64_t link_up:1;	    /**< Is the physical link up? */
-		uint64_t full_duplex:1;	    /**< 1 if the link is full duplex */
-		uint64_t speed:18;	    /**< Speed of the link in Mbps */
+		uint64_t link_up:1;	     
+		uint64_t full_duplex:1;	     
+		uint64_t speed:18;	     
 	} s;
 };
 

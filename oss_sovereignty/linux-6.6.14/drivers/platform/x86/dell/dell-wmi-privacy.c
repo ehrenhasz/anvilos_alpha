@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Dell privacy notification driver
- *
- * Copyright (C) 2021 Dell Inc. All Rights Reserved.
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -25,9 +21,7 @@
 #define DELL_PRIVACY_CAMERA_EVENT 0x2
 #define led_to_priv(c)       container_of(c, struct privacy_wmi_data, cdev)
 
-/*
- * The wmi_list is used to store the privacy_priv struct with mutex protecting
- */
+ 
 static LIST_HEAD(wmi_list);
 static DEFINE_MUTEX(list_mutex);
 
@@ -40,7 +34,7 @@ struct privacy_wmi_data {
 	u32 last_status;
 };
 
-/* DELL Privacy Type */
+ 
 enum dell_hardware_privacy_type {
 	DELL_PRIVACY_TYPE_AUDIO = 0,
 	DELL_PRIVACY_TYPE_CAMERA,
@@ -54,13 +48,11 @@ static const char * const privacy_types[DELL_PRIVACY_TYPE_MAX] = {
 	[DELL_PRIVACY_TYPE_SCREEN] = "ePrivacy Screen",
 };
 
-/*
- * Keymap for WMI privacy events of type 0x0012
- */
+ 
 static const struct key_entry dell_wmi_keymap_type_0012[] = {
-	/* privacy mic mute */
+	 
 	{ KE_KEY, 0x0001, { KEY_MICMUTE } },
-	/* privacy camera mute */
+	 
 	{ KE_VSW, 0x0002, { SW_CAMERA_LENS_COVER } },
 	{ KE_END, 0},
 };
@@ -79,19 +71,7 @@ bool dell_privacy_has_mic_mute(void)
 }
 EXPORT_SYMBOL_GPL(dell_privacy_has_mic_mute);
 
-/*
- * The flow of privacy event:
- * 1) User presses key. HW does stuff with this key (timeout is started)
- * 2) WMI event is emitted from BIOS
- * 3) WMI event is received by dell-privacy
- * 4) KEY_MICMUTE emitted from dell-privacy
- * 5) Userland picks up key and modifies kcontrol for SW mute
- * 6) Codec kernel driver catches and calls ledtrig_audio_set which will call
- *    led_set_brightness() on the LED registered by dell_privacy_leds_setup()
- * 7) dell-privacy notifies EC, the timeout is cancelled and the HW mute activates.
- *    If the EC is not notified then the HW mic mute will activate when the timeout
- *    triggers, just a bit later than with the active ack.
- */
+ 
 bool dell_privacy_process_event(int type, int code, int status)
 {
 	struct privacy_wmi_data *priv;
@@ -114,12 +94,12 @@ bool dell_privacy_process_event(int type, int code, int status)
 	dev_dbg(&priv->wdev->dev, "Key with type 0x%04x and code 0x%04x pressed\n", type, code);
 
 	switch (code) {
-	case DELL_PRIVACY_AUDIO_EVENT: /* Mic mute */
+	case DELL_PRIVACY_AUDIO_EVENT:  
 		priv->last_status = status;
 		sparse_keymap_report_entry(priv->input_dev, key, 1, true);
 		ret = true;
 		break;
-	case DELL_PRIVACY_CAMERA_EVENT: /* Camera mute */
+	case DELL_PRIVACY_CAMERA_EVENT:  
 		priv->last_status = status;
 		sparse_keymap_report_entry(priv->input_dev, key, !(status & CAMERA_STATUS), false);
 		ret = true;
@@ -185,21 +165,7 @@ static struct attribute *privacy_attrs[] = {
 };
 ATTRIBUTE_GROUPS(privacy);
 
-/*
- * Describes the Device State class exposed by BIOS which can be consumed by
- * various applications interested in knowing the Privacy feature capabilities.
- * class DeviceState
- * {
- *  [key, read] string InstanceName;
- *  [read] boolean ReadOnly;
- *
- *  [WmiDataId(1), read] uint32 DevicesSupported;
- *   0 - None; 0x1 - Microphone; 0x2 - Camera; 0x4 - ePrivacy  Screen
- *
- *  [WmiDataId(2), read] uint32 CurrentState;
- *   0 - Off; 1 - On; Bit0 - Microphone; Bit1 - Camera; Bit2 - ePrivacyScreen
- * };
- */
+ 
 static int get_current_status(struct wmi_device *wdev)
 {
 	struct privacy_wmi_data *priv = dev_get_drvdata(&wdev->dev);
@@ -211,7 +177,7 @@ static int get_current_status(struct wmi_device *wdev)
 		dev_err(&wdev->dev, "dell privacy priv is NULL\n");
 		return -EINVAL;
 	}
-	/* check privacy support features and device states */
+	 
 	obj_present = wmidev_block_query(wdev, 0);
 	if (!obj_present) {
 		dev_err(&wdev->dev, "failed to read Binary MOF\n");
@@ -223,9 +189,7 @@ static int get_current_status(struct wmi_device *wdev)
 		ret = -EIO;
 		goto obj_free;
 	}
-	/*  Although it's not technically a failure, this would lead to
-	 *  unexpected behavior
-	 */
+	 
 	if (obj_present->buffer.length != 8) {
 		dev_err(&wdev->dev, "Dell privacy buffer has unexpected length (%d)!\n",
 				obj_present->buffer.length);
@@ -266,20 +230,7 @@ static int dell_privacy_micmute_led_set(struct led_classdev *led_cdev,
 	return 0;
 }
 
-/*
- * Pressing the mute key activates a time delayed circuit to physically cut
- * off the mute. The LED is in the same circuit, so it reflects the true
- * state of the HW mute.  The reason for the EC "ack" is so that software
- * can first invoke a SW mute before the HW circuit is cut off.  Without SW
- * cutting this off first does not affect the time delayed muting or status
- * of the LED but there is a possibility of a "popping" noise.
- *
- * If the EC receives the SW ack, the circuit will be activated before the
- * delay completed.
- *
- * Exposing as an LED device allows the codec drivers notification path to
- * EC ACK to work
- */
+ 
 static int dell_privacy_leds_setup(struct device *dev)
 {
 	struct privacy_wmi_data *priv = dev_get_drvdata(dev);
@@ -313,26 +264,20 @@ static int dell_privacy_wmi_probe(struct wmi_device *wdev, const void *context)
 	if (ret)
 		return ret;
 
-	/* create evdev passing interface */
+	 
 	priv->input_dev = devm_input_allocate_device(&wdev->dev);
 	if (!priv->input_dev)
 		return -ENOMEM;
 
-	/* remap the wmi keymap event to new keymap */
+	 
 	keymap = kcalloc(ARRAY_SIZE(dell_wmi_keymap_type_0012),
 			sizeof(struct key_entry), GFP_KERNEL);
 	if (!keymap)
 		return -ENOMEM;
 
-	/* remap the keymap code with Dell privacy key type 0x12 as prefix
-	 * KEY_MICMUTE scancode will be reported as 0x120001
-	 */
+	 
 	for (i = 0, j = 0; i < ARRAY_SIZE(dell_wmi_keymap_type_0012); i++) {
-		/*
-		 * Unlike keys where only presses matter, userspace may act
-		 * on switches in both of their positions. Only register
-		 * SW_CAMERA_LENS_COVER if it is actually there.
-		 */
+		 
 		if (dell_wmi_keymap_type_0012[i].type == KE_VSW &&
 		    dell_wmi_keymap_type_0012[i].sw.code == SW_CAMERA_LENS_COVER &&
 		    !(priv->features_present & BIT(DELL_PRIVACY_TYPE_CAMERA)))
@@ -351,7 +296,7 @@ static int dell_privacy_wmi_probe(struct wmi_device *wdev, const void *context)
 	priv->input_dev->name = "Dell Privacy Driver";
 	priv->input_dev->id.bustype = BUS_HOST;
 
-	/* Report initial camera-cover status */
+	 
 	if (priv->features_present & BIT(DELL_PRIVACY_TYPE_CAMERA))
 		input_report_switch(priv->input_dev, SW_CAMERA_LENS_COVER,
 				    !(priv->last_status & CAMERA_STATUS));

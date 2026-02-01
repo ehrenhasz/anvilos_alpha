@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2015-2018 Etnaviv Project
- */
+
+ 
 
 #include <drm/drm_prime.h>
 #include <linux/dma-mapping.h>
@@ -22,10 +20,7 @@ static void etnaviv_gem_scatter_map(struct etnaviv_gem_object *etnaviv_obj)
 	struct drm_device *dev = etnaviv_obj->base.dev;
 	struct sg_table *sgt = etnaviv_obj->sgt;
 
-	/*
-	 * For non-cached buffers, ensure the new pages are clean
-	 * because display controller, GPU, etc. are not coherent.
-	 */
+	 
 	if (etnaviv_obj->flags & ETNA_BO_CACHE_MASK)
 		dma_map_sgtable(dev->dev, sgt, DMA_BIDIRECTIONAL, 0);
 }
@@ -35,26 +30,12 @@ static void etnaviv_gem_scatterlist_unmap(struct etnaviv_gem_object *etnaviv_obj
 	struct drm_device *dev = etnaviv_obj->base.dev;
 	struct sg_table *sgt = etnaviv_obj->sgt;
 
-	/*
-	 * For non-cached buffers, ensure the new pages are clean
-	 * because display controller, GPU, etc. are not coherent:
-	 *
-	 * WARNING: The DMA API does not support concurrent CPU
-	 * and device access to the memory area.  With BIDIRECTIONAL,
-	 * we will clean the cache lines which overlap the region,
-	 * and invalidate all cache lines (partially) contained in
-	 * the region.
-	 *
-	 * If you have dirty data in the overlapping cache lines,
-	 * that will corrupt the GPU-written data.  If you have
-	 * written into the remainder of the region, this can
-	 * discard those writes.
-	 */
+	 
 	if (etnaviv_obj->flags & ETNA_BO_CACHE_MASK)
 		dma_unmap_sgtable(dev->dev, sgt, DMA_BIDIRECTIONAL, 0);
 }
 
-/* called with etnaviv_obj->lock held */
+ 
 static int etnaviv_gem_shmem_get_pages(struct etnaviv_gem_object *etnaviv_obj)
 {
 	struct drm_device *dev = etnaviv_obj->base.dev;
@@ -122,7 +103,7 @@ struct page **etnaviv_gem_get_pages(struct etnaviv_gem_object *etnaviv_obj)
 void etnaviv_gem_put_pages(struct etnaviv_gem_object *etnaviv_obj)
 {
 	lockdep_assert_held(&etnaviv_obj->lock);
-	/* when we start tracking the pin count, then do something here */
+	 
 }
 
 static int etnaviv_gem_mmap_obj(struct etnaviv_gem_object *etnaviv_obj,
@@ -139,11 +120,7 @@ static int etnaviv_gem_mmap_obj(struct etnaviv_gem_object *etnaviv_obj,
 	} else if (etnaviv_obj->flags & ETNA_BO_UNCACHED) {
 		vma->vm_page_prot = pgprot_noncached(vm_page_prot);
 	} else {
-		/*
-		 * Shunt off cached objs to shmem file so they have their own
-		 * address_space (so unmap_mapping_range does what we want,
-		 * in particular in the case of mmap'd dmabufs)
-		 */
+		 
 		vma->vm_pgoff = 0;
 		vma_set_file(vma, etnaviv_obj->base.filp);
 
@@ -170,15 +147,11 @@ static vm_fault_t etnaviv_gem_fault(struct vm_fault *vmf)
 	pgoff_t pgoff;
 	int err;
 
-	/*
-	 * Make sure we don't parallel update on a fault, nor move or remove
-	 * something from beneath our feet.  Note that vmf_insert_page() is
-	 * specifically coded to take care of this, so we don't have to.
-	 */
+	 
 	err = mutex_lock_interruptible(&etnaviv_obj->lock);
 	if (err)
 		return VM_FAULT_NOPAGE;
-	/* make sure we have pages attached now */
+	 
 	pages = etnaviv_gem_get_pages(etnaviv_obj);
 	mutex_unlock(&etnaviv_obj->lock);
 
@@ -187,7 +160,7 @@ static vm_fault_t etnaviv_gem_fault(struct vm_fault *vmf)
 		return vmf_error(err);
 	}
 
-	/* We don't use vmf->pgoff since that has the fake offset: */
+	 
 	pgoff = (vmf->address - vma->vm_start) >> PAGE_SHIFT;
 
 	pfn = page_to_pfn(pages[pgoff]);
@@ -202,7 +175,7 @@ int etnaviv_gem_mmap_offset(struct drm_gem_object *obj, u64 *offset)
 {
 	int ret;
 
-	/* Make it mmapable */
+	 
 	ret = drm_gem_create_mmap_offset(obj);
 	if (ret)
 		dev_err(obj->dev->dev, "could not allocate mmap offset\n");
@@ -250,12 +223,7 @@ struct etnaviv_vram_mapping *etnaviv_gem_mapping_get(
 	mutex_lock(&etnaviv_obj->lock);
 	mapping = etnaviv_gem_get_vram_mapping(etnaviv_obj, mmu_context);
 	if (mapping) {
-		/*
-		 * Holding the object lock prevents the use count changing
-		 * beneath us.  If the use count is zero, the MMU might be
-		 * reaping this object, so take the lock and re-check that
-		 * the MMU owns this mapping to close this race.
-		 */
+		 
 		if (mapping->use == 0) {
 			mutex_lock(&mmu_context->lock);
 			if (mapping->context == mmu_context)
@@ -282,10 +250,7 @@ struct etnaviv_vram_mapping *etnaviv_gem_mapping_get(
 		goto out;
 	}
 
-	/*
-	 * See if we have a reaped vram mapping we can re-use before
-	 * allocating a fresh mapping.
-	 */
+	 
 	mapping = etnaviv_gem_get_vram_mapping(etnaviv_obj, NULL);
 	if (!mapping) {
 		mapping = kzalloc(sizeof(*mapping), GFP_KERNEL);
@@ -316,7 +281,7 @@ out:
 	if (ret)
 		return ERR_PTR(ret);
 
-	/* Take a reference on the object */
+	 
 	drm_gem_object_get(obj);
 	return mapping;
 }
@@ -329,10 +294,7 @@ void *etnaviv_gem_vmap(struct drm_gem_object *obj)
 		return etnaviv_obj->vaddr;
 
 	mutex_lock(&etnaviv_obj->lock);
-	/*
-	 * Need to check again, as we might have raced with another thread
-	 * while waiting for the mutex.
-	 */
+	 
 	if (!etnaviv_obj->vaddr)
 		etnaviv_obj->vaddr = etnaviv_obj->ops->vmap(etnaviv_obj);
 	mutex_unlock(&etnaviv_obj->lock);
@@ -410,7 +372,7 @@ int etnaviv_gem_cpu_fini(struct drm_gem_object *obj)
 	struct etnaviv_gem_object *etnaviv_obj = to_etnaviv_bo(obj);
 
 	if (etnaviv_obj->flags & ETNA_BO_CACHED) {
-		/* fini without a prep is almost certainly a userspace error */
+		 
 		WARN_ON(etnaviv_obj->last_cpu_prep_op == 0);
 		dma_sync_sgtable_for_device(dev->dev, etnaviv_obj->sgt,
 			etnaviv_op_to_dma_dir(etnaviv_obj->last_cpu_prep_op));
@@ -490,7 +452,7 @@ void etnaviv_gem_free_object(struct drm_gem_object *obj)
 	struct etnaviv_drm_private *priv = obj->dev->dev_private;
 	struct etnaviv_vram_mapping *mapping, *tmp;
 
-	/* object should not be active */
+	 
 	WARN_ON(is_active(etnaviv_obj));
 
 	mutex_lock(&priv->gem_lock);
@@ -549,7 +511,7 @@ static int etnaviv_gem_new_impl(struct drm_device *dev, u32 size, u32 flags,
 	unsigned sz = sizeof(*etnaviv_obj);
 	bool valid = true;
 
-	/* validate flags */
+	 
 	switch (flags & ETNA_BO_CACHE_MASK) {
 	case ETNA_BO_UNCACHED:
 	case ETNA_BO_CACHED:
@@ -581,7 +543,7 @@ static int etnaviv_gem_new_impl(struct drm_device *dev, u32 size, u32 flags,
 	return 0;
 }
 
-/* convenience method to construct a GEM buffer object, and userspace handle */
+ 
 int etnaviv_gem_new_handle(struct drm_device *dev, struct drm_file *file,
 	u32 size, u32 flags, u32 *handle)
 {
@@ -602,19 +564,14 @@ int etnaviv_gem_new_handle(struct drm_device *dev, struct drm_file *file,
 	if (ret)
 		goto fail;
 
-	/*
-	 * Our buffers are kept pinned, so allocating them from the MOVABLE
-	 * zone is a really bad idea, and conflicts with CMA. See comments
-	 * above new_inode() why this is required _and_ expected if you're
-	 * going to pin these pages.
-	 */
+	 
 	mapping_set_gfp_mask(obj->filp->f_mapping, priv->shm_gfp_mask);
 
 	etnaviv_gem_obj_add(dev, obj);
 
 	ret = drm_gem_handle_create(file, obj, handle);
 
-	/* drop reference from allocate - handle holds it now */
+	 
 fail:
 	drm_gem_object_put(obj);
 
@@ -727,7 +684,7 @@ int etnaviv_gem_new_userptr(struct drm_device *dev, struct drm_file *file,
 
 	ret = drm_gem_handle_create(file, &etnaviv_obj->base, handle);
 
-	/* drop reference from allocate - handle holds it now */
+	 
 	drm_gem_object_put(&etnaviv_obj->base);
 	return ret;
 }

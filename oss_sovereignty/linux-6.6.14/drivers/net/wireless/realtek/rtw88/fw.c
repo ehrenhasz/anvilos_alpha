@@ -1,6 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
-/* Copyright(c) 2018-2019  Realtek Corporation
- */
+
+ 
 
 #include <linux/iopoll.h>
 
@@ -43,23 +42,23 @@ static void rtw_fw_c2h_cmd_handle_ext(struct rtw_dev *rtwdev,
 
 static u16 get_max_amsdu_len(u32 bit_rate)
 {
-	/* lower than ofdm, do not aggregate */
+	 
 	if (bit_rate < 550)
 		return 1;
 
-	/* lower than 20M 2ss mcs8, make it small */
+	 
 	if (bit_rate < 1800)
 		return 1200;
 
-	/* lower than 40M 2ss mcs9, make it medium */
+	 
 	if (bit_rate < 4000)
 		return 2600;
 
-	/* not yet 80M 2ss mcs8/9, make it twice regular packet size */
+	 
 	if (bit_rate < 7000)
 		return 3500;
 
-	/* unlimited */
+	 
 	return 0;
 }
 
@@ -290,7 +289,7 @@ void rtw_fw_c2h_cmd_rx_irqsafe(struct rtw_dev *rtwdev, u32 pkt_offset,
 		dev_kfree_skb_any(skb);
 		break;
 	default:
-		/* pass offset for further operation */
+		 
 		*((u32 *)skb->cb) = pkt_offset;
 		skb_queue_tail(&rtwdev->c2h_queue, skb);
 		ieee80211_queue_work(rtwdev->hw, &rtwdev->c2h_work);
@@ -526,7 +525,7 @@ void rtw_fw_default_port(struct rtw_dev *rtwdev, struct rtw_vif *rtwvif)
 	if (rtwvif->net_type != RTW_NET_MGD_LINKED)
 		return;
 
-	/* Leave LPS before default port H2C so FW timer is correct */
+	 
 	rtw_leave_lps(rtwdev);
 
 	h2c.w0 = u32_encode_bits(H2C_CMD_DEFAULT_PORT, RTW_H2C_W0_CMDID) |
@@ -1003,7 +1002,7 @@ static struct sk_buff *rtw_nlo_info_get(struct ieee80211_hw *hw)
 	nlo_hdr->nlo_count = pno_req->match_set_cnt;
 	nlo_hdr->hidden_ap_count = pno_req->match_set_cnt;
 
-	/* pattern check for firmware */
+	 
 	memset(nlo_hdr->pattern_check, 0xA5, FW_NLO_INFO_CHECK_SIZE);
 
 	for (i = 0; i < pno_req->match_set_cnt; i++)
@@ -1291,7 +1290,7 @@ void rtw_remove_rsvd_page(struct rtw_dev *rtwdev,
 
 	lockdep_assert_held(&rtwdev->mutex);
 
-	/* remove all of the rsvd pages for vif */
+	 
 	list_for_each_entry_safe(rsvd_pkt, tmp, &rtwvif->rsvd_page_list,
 				 vif_list) {
 		list_del(&rsvd_pkt->vif_list);
@@ -1446,9 +1445,7 @@ static void __rtw_build_rsvd_page_reset(struct rtw_dev *rtwdev)
 				 build_list) {
 		list_del_init(&rsvd_pkt->build_list);
 
-		/* Don't free except for the dummy rsvd page,
-		 * others will be freed when removing vif
-		 */
+		 
 		if (rsvd_pkt->type == RSVD_DUMMY)
 			kfree(rsvd_pkt);
 	}
@@ -1461,7 +1458,7 @@ static void rtw_build_rsvd_page_iter(void *data, u8 *mac,
 	struct rtw_vif *rtwvif = (struct rtw_vif *)vif->drv_priv;
 	struct rtw_rsvd_page *rsvd_pkt;
 
-	/* AP not yet started, don't gather its rsvd pages */
+	 
 	if (vif->type == NL80211_IFTYPE_AP && !rtwdev->ap_active)
 		return;
 
@@ -1481,7 +1478,7 @@ static int  __rtw_build_rsvd_page_from_vifs(struct rtw_dev *rtwdev)
 
 	__rtw_build_rsvd_page_reset(rtwdev);
 
-	/* gather rsvd page from vifs */
+	 
 	rtw_iterate_vifs_atomic(rtwdev, rtw_build_rsvd_page_iter, rtwdev);
 
 	rsvd_pkt = list_first_entry_or_null(&rtwdev->rsvd_page_list,
@@ -1491,7 +1488,7 @@ static int  __rtw_build_rsvd_page_from_vifs(struct rtw_dev *rtwdev)
 		return -EINVAL;
 	}
 
-	/* the first rsvd should be beacon, otherwise add a dummy one */
+	 
 	if (rsvd_pkt->type != RSVD_BEACON) {
 		struct rtw_rsvd_page *dummy_pkt;
 
@@ -1537,23 +1534,14 @@ static u8 *rtw_build_rsvd_page(struct rtw_dev *rtwdev, u32 *size)
 			goto release_skb;
 		}
 
-		/* Fill the tx_desc for the rsvd pkt that requires one.
-		 * And iter->len will be added with size of tx_desc_sz.
-		 */
+		 
 		if (rsvd_pkt->add_txdesc)
 			rtw_fill_rsvd_page_desc(rtwdev, iter, rsvd_pkt->type);
 
 		rsvd_pkt->skb = iter;
 		rsvd_pkt->page = total_page;
 
-		/* Reserved page is downloaded via TX path, and TX path will
-		 * generate a tx_desc at the header to describe length of
-		 * the buffer. If we are not counting page numbers with the
-		 * size of tx_desc added at the first rsvd_pkt (usually a
-		 * beacon, firmware default refer to the first page as the
-		 * content of beacon), we could generate a buffer which size
-		 * is smaller than the actual size of the whole rsvd_page
-		 */
+		 
 		if (total_page == 0) {
 			if (rsvd_pkt->type != RSVD_BEACON &&
 			    rsvd_pkt->type != RSVD_DUMMY) {
@@ -1577,13 +1565,7 @@ static u8 *rtw_build_rsvd_page(struct rtw_dev *rtwdev, u32 *size)
 	if (!buf)
 		goto release_skb;
 
-	/* Copy the content of each rsvd_pkt to the buf, and they should
-	 * be aligned to the pages.
-	 *
-	 * Note that the first rsvd_pkt is a beacon no matter what vif->type.
-	 * And that rsvd_pkt does not require tx_desc because when it goes
-	 * through TX path, the TX path will generate one for it.
-	 */
+	 
 	list_for_each_entry(rsvd_pkt, &rtwdev->rsvd_page_list, build_list) {
 		rtw_rsvd_page_list_to_buf(rtwdev, page_size, page_margin,
 					  page, buf, rsvd_pkt);
@@ -1662,11 +1644,7 @@ int rtw_fw_download_rsvd_page(struct rtw_dev *rtwdev)
 		goto free;
 	}
 
-	/* The last thing is to download the *ONLY* beacon again, because
-	 * the previous tx_desc is to describe the total rsvd page. Download
-	 * the beacon again to replace the TX desc header, and we will get
-	 * a correct tx_desc for the beacon in the rsvd page.
-	 */
+	 
 	ret = rtw_download_beacon(rtwdev);
 	if (ret) {
 		rtw_err(rtwdev, "failed to download beacon\n");
@@ -1698,7 +1676,7 @@ static void rtw_fw_read_fifo_page(struct rtw_dev *rtwdev, u32 offset, u32 size,
 	u16 ctl;
 
 	ctl = rtw_read16(rtwdev, REG_PKTBUF_DBG_CTRL) & 0xf000;
-	/* disable rx clock gate */
+	 
 	rtw_write32_set(rtwdev, REG_RCR, BIT_DISGCLK);
 
 	do {
@@ -1718,7 +1696,7 @@ static void rtw_fw_read_fifo_page(struct rtw_dev *rtwdev, u32 offset, u32 size,
 
 out:
 	rtw_write16(rtwdev, REG_PKTBUF_DBG_CTRL, ctl);
-	/* restore rx clock gate */
+	 
 	rtw_write32_clr(rtwdev, REG_RCR, BIT_DISGCLK);
 }
 
@@ -1794,7 +1772,7 @@ static void __rtw_fw_update_pkt(struct rtw_dev *rtwdev, u8 pkt_id, u16 size,
 	UPDATE_PKT_SET_PKT_ID(h2c_pkt, pkt_id);
 	UPDATE_PKT_SET_LOCATION(h2c_pkt, location);
 
-	/* include txdesc size */
+	 
 	size += chip->tx_pkt_desc_sz;
 	UPDATE_PKT_SET_SIZE(h2c_pkt, size);
 
@@ -2060,7 +2038,7 @@ static int rtw_add_chan_list(struct rtw_dev *rtwdev, struct rtw_vif *rtwvif,
 		if (channel->flags & (IEEE80211_CHAN_RADAR | IEEE80211_CHAN_NO_IR)) {
 			ch_info.action_id = RTW_CHANNEL_RADAR;
 			ch_info.extra_info = 1;
-			/* Overwrite duration for passive scans if necessary */
+			 
 			ch_info.timeout = ch_info.timeout > RTW_PASS_CHAN_TIME ?
 					  ch_info.timeout : RTW_PASS_CHAN_TIME;
 		} else {
@@ -2093,7 +2071,7 @@ static void rtw_fw_set_scan_offload(struct rtw_dev *rtwdev,
 	struct rtw_hw_scan_info *scan_info = &rtwdev->scan_info;
 	struct cfg80211_scan_request *req = rtwvif->scan_req;
 	struct rtw_fifo_conf *fifo = &rtwdev->fifo;
-	/* reserve one dummy page at the beginning for tx descriptor */
+	 
 	u8 pkt_loc = fifo->rsvd_h2c_info_addr - fifo->rsvd_boundary + 1;
 	bool random_seq = req->flags & NL80211_SCAN_FLAG_RANDOM_SN;
 	u8 h2c_pkt[H2C_PKT_SIZE] = {0};
@@ -2339,10 +2317,7 @@ void rtw_hw_scan_chan_switch(struct rtw_dev *rtwdev, struct sk_buff *skb)
 				chan_type = COEX_SWITCH_TO_24G_NOFORSCAN;
 			rtw_coex_switchband_notify(rtwdev, chan_type);
 		}
-		/* The channel of C2H RTW_SCAN_NOTIFY_ID_PRESWITCH is next
-		 * channel that hardware will switch. We need to stop queue
-		 * if next channel is non-op channel.
-		 */
+		 
 		if (!rtw_is_op_chan(rtwdev, chan) &&
 		    rtw_is_op_chan(rtwdev, hal->current_channel)) {
 			rtw_core_enable_beacon(rtwdev, false);

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (c) 2011-2018 Magewell Electronics Co., Ltd. (Nanjing)
- * Author: Yong Deng <yong.deng@magewell.com>
- * Copyright 2021-2022 Bootlin
- * Author: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
- */
+
+ 
 
 #include <linux/of.h>
 #include <linux/regmap.h>
@@ -20,7 +15,7 @@
 #include "sun6i_csi_capture.h"
 #include "sun6i_csi_reg.h"
 
-/* Helpers */
+ 
 
 void sun6i_csi_capture_dimensions(struct sun6i_csi_device *csi_dev,
 				  unsigned int *width, unsigned int *height)
@@ -41,10 +36,10 @@ void sun6i_csi_capture_format(struct sun6i_csi_device *csi_dev,
 		*field = csi_dev->capture.format.fmt.pix.field;
 }
 
-/* Format */
+ 
 
 static const struct sun6i_csi_capture_format sun6i_csi_capture_formats[] = {
-	/* Bayer */
+	 
 	{
 		.pixelformat		= V4L2_PIX_FMT_SBGGR8,
 		.output_format_frame	= SUN6I_CSI_OUTPUT_FMT_FRAME_RAW_8,
@@ -105,7 +100,7 @@ static const struct sun6i_csi_capture_format sun6i_csi_capture_formats[] = {
 		.output_format_frame	= SUN6I_CSI_OUTPUT_FMT_FRAME_RAW_12,
 		.output_format_field	= SUN6I_CSI_OUTPUT_FMT_FIELD_RAW_12,
 	},
-	/* RGB */
+	 
 	{
 		.pixelformat		= V4L2_PIX_FMT_RGB565,
 		.output_format_frame	= SUN6I_CSI_OUTPUT_FMT_FRAME_RGB565,
@@ -116,7 +111,7 @@ static const struct sun6i_csi_capture_format sun6i_csi_capture_formats[] = {
 		.output_format_frame	= SUN6I_CSI_OUTPUT_FMT_FRAME_RGB565,
 		.output_format_field	= SUN6I_CSI_OUTPUT_FMT_FIELD_RGB565,
 	},
-	/* YUV422 */
+	 
 	{
 		.pixelformat		= V4L2_PIX_FMT_YUYV,
 		.output_format_frame	= SUN6I_CSI_OUTPUT_FMT_FRAME_RAW_8,
@@ -161,7 +156,7 @@ static const struct sun6i_csi_capture_format sun6i_csi_capture_formats[] = {
 		.output_format_frame	= SUN6I_CSI_OUTPUT_FMT_FRAME_YUV422P,
 		.output_format_field	= SUN6I_CSI_OUTPUT_FMT_FIELD_YUV422P,
 	},
-	/* YUV420 */
+	 
 	{
 		.pixelformat		= V4L2_PIX_FMT_NV12_16L16,
 		.output_format_frame	= SUN6I_CSI_OUTPUT_FMT_FRAME_YUV420MB,
@@ -190,7 +185,7 @@ static const struct sun6i_csi_capture_format sun6i_csi_capture_formats[] = {
 		.output_format_field	= SUN6I_CSI_OUTPUT_FMT_FIELD_YUV420P,
 		.input_yuv_seq_invert	= true,
 	},
-	/* Compressed */
+	 
 	{
 		.pixelformat		= V4L2_PIX_FMT_JPEG,
 		.output_format_frame	= SUN6I_CSI_OUTPUT_FMT_FRAME_RAW_8,
@@ -210,10 +205,10 @@ struct sun6i_csi_capture_format *sun6i_csi_capture_format_find(u32 pixelformat)
 	return NULL;
 }
 
-/* RAW formats need an exact match between pixel and mbus formats. */
+ 
 static const
 struct sun6i_csi_capture_format_match sun6i_csi_capture_format_matches[] = {
-	/* YUV420 */
+	 
 	{
 		.pixelformat	= V4L2_PIX_FMT_YUYV,
 		.mbus_code	= MEDIA_BUS_FMT_YUYV8_2X8,
@@ -246,7 +241,7 @@ struct sun6i_csi_capture_format_match sun6i_csi_capture_format_matches[] = {
 		.pixelformat	= V4L2_PIX_FMT_VYUY,
 		.mbus_code	= MEDIA_BUS_FMT_VYUY8_1X16,
 	},
-	/* RGB */
+	 
 	{
 		.pixelformat	= V4L2_PIX_FMT_RGB565,
 		.mbus_code	= MEDIA_BUS_FMT_RGB565_2X8_LE,
@@ -255,7 +250,7 @@ struct sun6i_csi_capture_format_match sun6i_csi_capture_format_matches[] = {
 		.pixelformat	= V4L2_PIX_FMT_RGB565X,
 		.mbus_code	= MEDIA_BUS_FMT_RGB565_2X8_BE,
 	},
-	/* Bayer */
+	 
 	{
 		.pixelformat	= V4L2_PIX_FMT_SBGGR8,
 		.mbus_code	= MEDIA_BUS_FMT_SBGGR8_1X8,
@@ -304,7 +299,7 @@ struct sun6i_csi_capture_format_match sun6i_csi_capture_format_matches[] = {
 		.pixelformat	= V4L2_PIX_FMT_SRGGB12,
 		.mbus_code	= MEDIA_BUS_FMT_SRGGB12_1X12,
 	},
-	/* Compressed */
+	 
 	{
 		.pixelformat	= V4L2_PIX_FMT_JPEG,
 		.mbus_code	= MEDIA_BUS_FMT_JPEG_1X8,
@@ -327,7 +322,7 @@ static bool sun6i_csi_capture_format_match(u32 pixelformat, u32 mbus_code)
 	return false;
 }
 
-/* Capture */
+ 
 
 static void
 sun6i_csi_capture_buffer_configure(struct sun6i_csi_device *csi_dev,
@@ -350,7 +345,7 @@ sun6i_csi_capture_buffer_configure(struct sun6i_csi_device *csi_dev,
 	sun6i_csi_capture_format(csi_dev, &pixelformat, NULL);
 
 	info = v4l2_format_info(pixelformat);
-	/* Unsupported formats are single-plane, so we can stop here. */
+	 
 	if (!info)
 		return;
 
@@ -390,10 +385,7 @@ void sun6i_csi_capture_configure(struct sun6i_csi_device *csi_dev)
 	hsize_len = width;
 	vsize_len = height;
 
-	/*
-	 * When using 8-bit raw input/output (for packed YUV), we need to adapt
-	 * the width to account for the difference in bpp when it's not 8-bit.
-	 */
+	 
 	if (format->hsize_len_factor)
 		hsize_len *= format->hsize_len_factor;
 
@@ -433,7 +425,7 @@ void sun6i_csi_capture_configure(struct sun6i_csi_device *csi_dev)
 		     SUN6I_CSI_CH_BUF_LEN_LUMA_LINE(luma_line));
 }
 
-/* State */
+ 
 
 static void sun6i_csi_capture_state_cleanup(struct sun6i_csi_device *csi_dev,
 					    bool error)
@@ -546,7 +538,7 @@ void sun6i_csi_capture_sync(struct sun6i_csi_device *csi_dev)
 	sun6i_csi_capture_state_update(csi_dev);
 }
 
-/* Queue */
+ 
 
 static int sun6i_csi_capture_queue_setup(struct vb2_queue *queue,
 					 unsigned int *buffers_count,
@@ -661,7 +653,7 @@ static const struct vb2_ops sun6i_csi_capture_queue_ops = {
 	.wait_finish		= vb2_ops_wait_finish,
 };
 
-/* V4L2 Device */
+ 
 
 static void sun6i_csi_capture_format_prepare(struct v4l2_format *format)
 {
@@ -826,7 +818,7 @@ static const struct v4l2_ioctl_ops sun6i_csi_capture_ioctl_ops = {
 	.vidioc_streamoff		= vb2_ioctl_streamoff,
 };
 
-/* V4L2 File */
+ 
 
 static int sun6i_csi_capture_open(struct file *file)
 {
@@ -882,7 +874,7 @@ static const struct v4l2_file_operations sun6i_csi_capture_fops = {
 	.poll		= vb2_fop_poll
 };
 
-/* Media Entity */
+ 
 
 static int sun6i_csi_capture_link_validate(struct media_link *link)
 {
@@ -913,7 +905,7 @@ static int sun6i_csi_capture_link_validate(struct media_link *link)
 	if (WARN_ON(!bridge_format))
 		return -EINVAL;
 
-	/* No cropping/scaling is supported. */
+	 
 	if (capture_width != bridge_width || capture_height != bridge_height) {
 		v4l2_err(v4l2_dev,
 			 "invalid input/output dimensions: %ux%u/%ux%u\n",
@@ -923,7 +915,7 @@ static int sun6i_csi_capture_link_validate(struct media_link *link)
 	}
 
 	format_info = v4l2_format_info(pixelformat);
-	/* Some formats are not listed. */
+	 
 	if (!format_info)
 		return 0;
 
@@ -940,13 +932,13 @@ static int sun6i_csi_capture_link_validate(struct media_link *link)
 		    bridge_format->input_format != SUN6I_CSI_INPUT_FMT_YUV422)
 			goto invalid;
 
-		/* YUV420 input can't produce YUV422 output. */
+		 
 		if (bridge_format->input_format == SUN6I_CSI_INPUT_FMT_YUV420 &&
 		    format_info->vdiv == 1)
 			goto invalid;
 	}
 
-	/* With raw input mode, we need a 1:1 match between input and output. */
+	 
 	if (bridge_format->input_format == SUN6I_CSI_INPUT_FMT_RAW ||
 	    capture_format->input_format_raw) {
 		match = sun6i_csi_capture_format_match(pixelformat, mbus_code);
@@ -965,7 +957,7 @@ static const struct media_entity_operations sun6i_csi_capture_media_ops = {
 	.link_validate = sun6i_csi_capture_link_validate
 };
 
-/* Capture */
+ 
 
 int sun6i_csi_capture_setup(struct sun6i_csi_device *csi_dev)
 {
@@ -980,20 +972,20 @@ int sun6i_csi_capture_setup(struct sun6i_csi_device *csi_dev)
 	struct v4l2_pix_format *pix_format = &format->fmt.pix;
 	int ret;
 
-	/* This may happen with multiple bridge notifier bound calls. */
+	 
 	if (state->setup)
 		return 0;
 
-	/* State */
+	 
 
 	INIT_LIST_HEAD(&state->queue);
 	spin_lock_init(&state->lock);
 
-	/* Media Entity */
+	 
 
 	video_dev->entity.ops = &sun6i_csi_capture_media_ops;
 
-	/* Media Pad */
+	 
 
 	pad->flags = MEDIA_PAD_FL_SINK | MEDIA_PAD_FL_MUST_CONNECT;
 
@@ -1001,7 +993,7 @@ int sun6i_csi_capture_setup(struct sun6i_csi_device *csi_dev)
 	if (ret < 0)
 		return ret;
 
-	/* Queue */
+	 
 
 	mutex_init(&capture->lock);
 
@@ -1022,7 +1014,7 @@ int sun6i_csi_capture_setup(struct sun6i_csi_device *csi_dev)
 		goto error_media_entity;
 	}
 
-	/* V4L2 Format */
+	 
 
 	format->type = queue->type;
 	pix_format->pixelformat = sun6i_csi_capture_formats[0].pixelformat;
@@ -1032,7 +1024,7 @@ int sun6i_csi_capture_setup(struct sun6i_csi_device *csi_dev)
 
 	sun6i_csi_capture_format_prepare(format);
 
-	/* Video Device */
+	 
 
 	strscpy(video_dev->name, SUN6I_CSI_CAPTURE_NAME,
 		sizeof(video_dev->name));
@@ -1054,7 +1046,7 @@ int sun6i_csi_capture_setup(struct sun6i_csi_device *csi_dev)
 		goto error_media_entity;
 	}
 
-	/* Media Pad Link */
+	 
 
 	ret = media_create_pad_link(&bridge_subdev->entity,
 				    SUN6I_CSI_BRIDGE_PAD_SOURCE,
@@ -1090,7 +1082,7 @@ void sun6i_csi_capture_cleanup(struct sun6i_csi_device *csi_dev)
 	struct sun6i_csi_capture *capture = &csi_dev->capture;
 	struct video_device *video_dev = &capture->video_dev;
 
-	/* This may happen if async registration failed to complete. */
+	 
 	if (!capture->state.setup)
 		return;
 

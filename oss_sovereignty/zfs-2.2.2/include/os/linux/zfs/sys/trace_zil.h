@@ -1,23 +1,4 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
+ 
 
 #if defined(_KERNEL)
 #if defined(HAVE_DECLARE_EVENT_CLASS)
@@ -145,19 +126,13 @@
 #define	ZCW_TP_PRINTK_ARGS						    \
 	    __entry->zcw_lwb, __entry->zcw_done, __entry->zcw_zio_error
 
-/*
- * Generic support for two argument tracepoints of the form:
- *
- * DTRACE_PROBE2(...,
- *     zilog_t *, ...,
- *     itx_t *, ...);
- */
+ 
 
 #if defined(__clang__)
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wordered-compare-function-pointers"
 #endif
-/* BEGIN CSTYLED */
+ 
 DECLARE_EVENT_CLASS(zfs_zil_process_itx_class,
 	TP_PROTO(zilog_t *zilog, itx_t *itx),
 	TP_ARGS(zilog, itx),
@@ -173,7 +148,7 @@ DECLARE_EVENT_CLASS(zfs_zil_process_itx_class,
 	    ZILOG_TP_PRINTK_FMT " " ITX_TP_PRINTK_FMT,
 	    ZILOG_TP_PRINTK_ARGS, ITX_TP_PRINTK_ARGS)
 );
-/* END CSTYLED */
+ 
 #if defined(__clang__)
 #pragma clang diagnostic pop
 #endif
@@ -185,14 +160,8 @@ DEFINE_EVENT(zfs_zil_process_itx_class, name, \
 DEFINE_ZIL_PROCESS_ITX_EVENT(zfs_zil__process__commit__itx);
 DEFINE_ZIL_PROCESS_ITX_EVENT(zfs_zil__process__normal__itx);
 
-/*
- * Generic support for two argument tracepoints of the form:
- *
- * DTRACE_PROBE2(...,
- *     zilog_t *, ...,
- *     zil_commit_waiter_t *, ...);
- */
-/* BEGIN CSTYLED */
+ 
+ 
 DECLARE_EVENT_CLASS(zfs_zil_commit_io_error_class,
 	TP_PROTO(zilog_t *zilog, zil_commit_waiter_t *zcw),
 	TP_ARGS(zilog, zcw),
@@ -215,15 +184,8 @@ DEFINE_EVENT(zfs_zil_commit_io_error_class, name, \
     TP_ARGS(zilog, zcw))
 DEFINE_ZIL_COMMIT_IO_ERROR_EVENT(zfs_zil__commit__io__error);
 
-/*
- * Generic support for three argument tracepoints of the form:
- *
- * DTRACE_PROBE3(...,
- *     zilog_t *, ...,
- *     uint64_t, ...,
- *     uint64_t, ...);
- */
-/* BEGIN CSTYLED */
+ 
+ 
 DECLARE_EVENT_CLASS(zfs_zil_block_size_class,
 	TP_PROTO(zilog_t *zilog, uint64_t res, uint64_t s1),
 	TP_ARGS(zilog, res, s1),
@@ -248,7 +210,7 @@ DEFINE_EVENT(zfs_zil_block_size_class, name, \
     TP_ARGS(zilog, res, s1))
 DEFINE_ZIL_BLOCK_SIZE_EVENT(zfs_zil__block__size);
 
-#endif /* _TRACE_ZIL_H */
+#endif  
 
 #undef TRACE_INCLUDE_PATH
 #undef TRACE_INCLUDE_FILE
@@ -263,5 +225,5 @@ DEFINE_DTRACE_PROBE2(zil__process__normal__itx);
 DEFINE_DTRACE_PROBE2(zil__commit__io__error);
 DEFINE_DTRACE_PROBE3(zil__block__size);
 
-#endif /* HAVE_DECLARE_EVENT_CLASS */
-#endif /* _KERNEL */
+#endif  
+#endif  

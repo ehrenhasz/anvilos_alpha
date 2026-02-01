@@ -1,32 +1,6 @@
-/*
- * Copyright 2017 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
-/**
- * Bandwidth and Watermark calculations interface.
- * (Refer to "DCEx_mode_support.xlsm" from Perforce.)
- */
+ 
 #ifndef __DCN_CALCS_H__
 #define __DCN_CALCS_H__
 
@@ -37,9 +11,7 @@
 struct dc;
 struct dc_state;
 
-/*******************************************************************************
- * DCN data structures.
- ******************************************************************************/
+ 
 
 #define number_of_planes   6
 #define number_of_planes_minus_one   5
@@ -95,10 +67,10 @@ enum dcn_bw_defs {
 	dcn_bw_encoder_16bpc,
 };
 
-/*bounding box parameters*/
-/*mode parameters*/
-/*system configuration*/
-/* display configuration*/
+ 
+ 
+ 
+ 
 struct dcn_bw_internal_vars {
 	float voltage[number_of_states_plus_one + 1];
 	float max_dispclk[number_of_states_plus_one + 1];
@@ -177,7 +149,7 @@ struct dcn_bw_internal_vars {
 	float vtotal[number_of_planes_minus_one + 1];
 	float v_sync_plus_back_porch[number_of_planes_minus_one + 1];
 	float vactive[number_of_planes_minus_one + 1];
-	float pixel_clock[number_of_planes_minus_one + 1]; /*MHz*/
+	float pixel_clock[number_of_planes_minus_one + 1];  
 	float viewport_height[number_of_planes_minus_one + 1];
 	enum dcn_bw_defs dcc_enable[number_of_planes_minus_one + 1];
 	float dcc_rate[number_of_planes_minus_one + 1];
@@ -543,41 +515,41 @@ struct dcn_bw_internal_vars {
 };
 
 struct dcn_soc_bounding_box {
-	float sr_exit_time; /*us*/
-	float sr_enter_plus_exit_time; /*us*/
-	float urgent_latency; /*us*/
-	float write_back_latency; /*us*/
-	float percent_of_ideal_drambw_received_after_urg_latency; /*%*/
-	int max_request_size; /*bytes*/
-	float dcfclkv_max0p9; /*MHz*/
-	float dcfclkv_nom0p8; /*MHz*/
-	float dcfclkv_mid0p72; /*MHz*/
-	float dcfclkv_min0p65; /*MHz*/
-	float max_dispclk_vmax0p9; /*MHz*/
-	float max_dispclk_vmid0p72; /*MHz*/
-	float max_dispclk_vnom0p8; /*MHz*/
-	float max_dispclk_vmin0p65; /*MHz*/
-	float max_dppclk_vmax0p9; /*MHz*/
-	float max_dppclk_vnom0p8; /*MHz*/
-	float max_dppclk_vmid0p72; /*MHz*/
-	float max_dppclk_vmin0p65; /*MHz*/
-	float socclk; /*MHz*/
-	float fabric_and_dram_bandwidth_vmax0p9; /*GB/s*/
-	float fabric_and_dram_bandwidth_vnom0p8; /*GB/s*/
-	float fabric_and_dram_bandwidth_vmid0p72; /*GB/s*/
-	float fabric_and_dram_bandwidth_vmin0p65; /*GB/s*/
-	float phyclkv_max0p9; /*MHz*/
-	float phyclkv_nom0p8; /*MHz*/
-	float phyclkv_mid0p72; /*MHz*/
-	float phyclkv_min0p65; /*MHz*/
-	float downspreading; /*%*/
-	int round_trip_ping_latency_cycles; /*DCFCLK Cycles*/
-	int urgent_out_of_order_return_per_channel; /*bytes*/
+	float sr_exit_time;  
+	float sr_enter_plus_exit_time;  
+	float urgent_latency;  
+	float write_back_latency;  
+	float percent_of_ideal_drambw_received_after_urg_latency;  
+	int max_request_size;  
+	float dcfclkv_max0p9;  
+	float dcfclkv_nom0p8;  
+	float dcfclkv_mid0p72;  
+	float dcfclkv_min0p65;  
+	float max_dispclk_vmax0p9;  
+	float max_dispclk_vmid0p72;  
+	float max_dispclk_vnom0p8;  
+	float max_dispclk_vmin0p65;  
+	float max_dppclk_vmax0p9;  
+	float max_dppclk_vnom0p8;  
+	float max_dppclk_vmid0p72;  
+	float max_dppclk_vmin0p65;  
+	float socclk;  
+	float fabric_and_dram_bandwidth_vmax0p9;  
+	float fabric_and_dram_bandwidth_vnom0p8;  
+	float fabric_and_dram_bandwidth_vmid0p72;  
+	float fabric_and_dram_bandwidth_vmin0p65;  
+	float phyclkv_max0p9;  
+	float phyclkv_nom0p8;  
+	float phyclkv_mid0p72;  
+	float phyclkv_min0p65;  
+	float downspreading;  
+	int round_trip_ping_latency_cycles;  
+	int urgent_out_of_order_return_per_channel;  
 	int number_of_channels;
-	int vmm_page_size; /*bytes*/
-	float dram_clock_change_latency; /*us*/
-	int return_bus_width; /*bytes*/
-	float percent_disp_bw_limit; /*%*/
+	int vmm_page_size;  
+	float dram_clock_change_latency;  
+	int return_bus_width;  
+	float percent_disp_bw_limit;  
 };
 extern const struct dcn_soc_bounding_box dcn10_soc_defaults;
 
@@ -588,29 +560,29 @@ struct dcn_ip_params {
 	float opp_output_buffer_lines;
 	float pixel_chunk_size_in_kbyte;
 	enum dcn_bw_defs pte_enable;
-	int pte_chunk_size; /*kbytes*/
-	int meta_chunk_size; /*kbytes*/
-	int writeback_chunk_size; /*kbytes*/
+	int pte_chunk_size;  
+	int meta_chunk_size;  
+	int writeback_chunk_size;  
 	enum dcn_bw_defs odm_capability;
 	enum dcn_bw_defs dsc_capability;
-	int line_buffer_size; /*bit*/
+	int line_buffer_size;  
 	int max_line_buffer_lines;
 	enum dcn_bw_defs is_line_buffer_bpp_fixed;
 	int line_buffer_fixed_bpp;
-	int writeback_luma_buffer_size; /*kbytes*/
-	int writeback_chroma_buffer_size; /*kbytes*/
+	int writeback_luma_buffer_size;  
+	int writeback_chroma_buffer_size;  
 	int max_num_dpp;
 	int max_num_writeback;
-	int max_dchub_topscl_throughput; /*pixels/dppclk*/
-	int max_pscl_tolb_throughput; /*pixels/dppclk*/
-	int max_lb_tovscl_throughput; /*pixels/dppclk*/
-	int max_vscl_tohscl_throughput; /*pixels/dppclk*/
+	int max_dchub_topscl_throughput;  
+	int max_pscl_tolb_throughput;  
+	int max_lb_tovscl_throughput;  
+	int max_vscl_tohscl_throughput;  
 	float max_hscl_ratio;
 	float max_vscl_ratio;
 	int max_hscl_taps;
 	int max_vscl_taps;
 	int pte_buffer_size_in_requests;
-	float dispclk_ramping_margin; /*%*/
+	float dispclk_ramping_margin;  
 	float under_scan_factor;
 	int max_inter_dcn_tile_repeaters;
 	enum dcn_bw_defs can_vstartup_lines_exceed_vsync_plus_back_porch_lines_minus_one;
@@ -649,5 +621,5 @@ void dcn_bw_sync_calcs_and_dml(struct dc *dc);
 
 enum source_macro_tile_size swizzle_mode_to_macro_tile_size(enum swizzle_mode_values sw_mode);
 
-#endif /* __DCN_CALCS_H__ */
+#endif  
 

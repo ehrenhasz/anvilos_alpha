@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Kunit test for clk gate basic type
- */
+
+ 
 #include <linux/clk.h>
 #include <linux/clk-provider.h>
 #include <linux/platform_device.h>
@@ -131,7 +129,7 @@ struct clk_gate_test_context {
 	void __iomem *fake_mem;
 	struct clk_hw *hw;
 	struct clk_hw *parent;
-	u32 fake_reg; /* Keep at end, KASAN can detect out of bounds */
+	u32 fake_reg;  
 };
 
 static struct clk_gate_test_context *clk_gate_test_alloc_ctx(struct kunit *test)
@@ -290,7 +288,7 @@ static int clk_gate_test_invert_init(struct kunit *test)
 					    2000000);
 	KUNIT_ASSERT_NOT_ERR_OR_NULL(test, parent);
 
-	ctx->fake_reg = BIT(15); /* Default to off */
+	ctx->fake_reg = BIT(15);  
 	hw = clk_hw_register_gate_parent_hw(NULL, "test_gate", parent, 0,
 					    ctx->fake_mem, 15,
 					    CLK_GATE_SET_TO_DISABLE, NULL);

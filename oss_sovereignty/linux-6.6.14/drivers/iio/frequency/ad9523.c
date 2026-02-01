@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * AD9523 SPI Low Jitter Clock Generator
- *
- * Copyright 2012 Analog Devices Inc.
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/kernel.h>
@@ -72,15 +68,15 @@
 #define AD9523_EEPROM_CTRL1			(AD9523_R1B | 0xB02)
 #define AD9523_EEPROM_CTRL2			(AD9523_R1B | 0xB03)
 
-/* AD9523_SERIAL_PORT_CONFIG */
+ 
 
 #define AD9523_SER_CONF_SDO_ACTIVE		(1 << 7)
 #define AD9523_SER_CONF_SOFT_RESET		(1 << 5)
 
-/* AD9523_READBACK_CTRL */
+ 
 #define AD9523_READBACK_CTRL_READ_BUFFERED	(1 << 0)
 
-/* AD9523_PLL1_CHARGE_PUMP_CTRL */
+ 
 #define AD9523_PLL1_CHARGE_PUMP_CURRENT_nA(x)	(((x) / 500) & 0x7F)
 #define AD9523_PLL1_CHARGE_PUMP_TRISTATE	(1 << 7)
 #define AD9523_PLL1_CHARGE_PUMP_MODE_NORMAL	(3 << 8)
@@ -92,7 +88,7 @@
 #define AD9523_PLL1_BACKLASH_PW_HIGH		(2 << 10)
 #define AD9523_PLL1_BACKLASH_PW_MAX		(3 << 10)
 
-/* AD9523_PLL1_INPUT_RECEIVERS_CTRL */
+ 
 #define AD9523_PLL1_REF_TEST_RCV_EN		(1 << 7)
 #define AD9523_PLL1_REFB_DIFF_RCV_EN		(1 << 6)
 #define AD9523_PLL1_REFA_DIFF_RCV_EN		(1 << 5)
@@ -102,7 +98,7 @@
 #define AD9523_PLL1_OSC_IN_CMOS_NEG_INP_EN	(1 << 1)
 #define AD9523_PLL1_OSC_IN_DIFF_EN		(1 << 0)
 
-/* AD9523_PLL1_REF_CTRL */
+ 
 #define AD9523_PLL1_BYPASS_REF_TEST_DIV_EN	(1 << 7)
 #define AD9523_PLL1_BYPASS_FEEDBACK_DIV_EN	(1 << 6)
 #define AD9523_PLL1_ZERO_DELAY_MODE_INT		(1 << 5)
@@ -113,25 +109,25 @@
 #define AD9523_PLL1_REFB_CMOS_NEG_INP_EN	(1 << 1)
 #define AD9523_PLL1_REFA_CMOS_NEG_INP_EN	(1 << 0)
 
-/* AD9523_PLL1_MISC_CTRL */
+ 
 #define AD9523_PLL1_REFB_INDEP_DIV_CTRL_EN	(1 << 7)
 #define AD9523_PLL1_OSC_CTRL_FAIL_VCC_BY2_EN	(1 << 6)
 #define AD9523_PLL1_REF_MODE(x)			((x) << 2)
 #define AD9523_PLL1_BYPASS_REFB_DIV		(1 << 1)
 #define AD9523_PLL1_BYPASS_REFA_DIV		(1 << 0)
 
-/* AD9523_PLL1_LOOP_FILTER_CTRL */
+ 
 #define AD9523_PLL1_LOOP_FILTER_RZERO(x)	((x) & 0xF)
 
-/* AD9523_PLL2_CHARGE_PUMP */
+ 
 #define AD9523_PLL2_CHARGE_PUMP_CURRENT_nA(x)	((x) / 3500)
 
-/* AD9523_PLL2_FEEDBACK_DIVIDER_AB */
+ 
 #define AD9523_PLL2_FB_NDIV_A_CNT(x)		(((x) & 0x3) << 6)
 #define AD9523_PLL2_FB_NDIV_B_CNT(x)		(((x) & 0x3F) << 0)
 #define AD9523_PLL2_FB_NDIV(a, b)		(4 * (b) + (a))
 
-/* AD9523_PLL2_CTRL */
+ 
 #define AD9523_PLL2_CHARGE_PUMP_MODE_NORMAL	(3 << 0)
 #define AD9523_PLL2_CHARGE_PUMP_MODE_PUMP_DOWN	(2 << 0)
 #define AD9523_PLL2_CHARGE_PUMP_MODE_PUMP_UP	(1 << 0)
@@ -144,28 +140,28 @@
 #define AD9523_PLL2_FREQ_DOUBLER_EN		(1 << 5)
 #define AD9523_PLL2_LOCK_DETECT_PWR_DOWN_EN	(1 << 7)
 
-/* AD9523_PLL2_VCO_CTRL */
+ 
 #define AD9523_PLL2_VCO_CALIBRATE		(1 << 1)
 #define AD9523_PLL2_FORCE_VCO_MIDSCALE		(1 << 2)
 #define AD9523_PLL2_FORCE_REFERENCE_VALID	(1 << 3)
 #define AD9523_PLL2_FORCE_RELEASE_SYNC		(1 << 4)
 
-/* AD9523_PLL2_VCO_DIVIDER */
+ 
 #define AD9523_PLL2_VCO_DIV_M1(x)		((((x) - 3) & 0x3) << 0)
 #define AD9523_PLL2_VCO_DIV_M2(x)		((((x) - 3) & 0x3) << 4)
 #define AD9523_PLL2_VCO_DIV_M1_PWR_DOWN_EN	(1 << 2)
 #define AD9523_PLL2_VCO_DIV_M2_PWR_DOWN_EN	(1 << 6)
 
-/* AD9523_PLL2_LOOP_FILTER_CTRL */
+ 
 #define AD9523_PLL2_LOOP_FILTER_CPOLE1(x)	(((x) & 0x7) << 0)
 #define AD9523_PLL2_LOOP_FILTER_RZERO(x)	(((x) & 0x7) << 3)
 #define AD9523_PLL2_LOOP_FILTER_RPOLE2(x)	(((x) & 0x7) << 6)
 #define AD9523_PLL2_LOOP_FILTER_RZERO_BYPASS_EN	(1 << 8)
 
-/* AD9523_PLL2_R2_DIVIDER */
+ 
 #define AD9523_PLL2_R2_DIVIDER_VAL(x)		(((x) & 0x1F) << 0)
 
-/* AD9523_CHANNEL_CLOCK_DIST */
+ 
 #define AD9523_CLK_DIST_DIV_PHASE(x)		(((x) & 0x3F) << 18)
 #define AD9523_CLK_DIST_DIV_PHASE_REV(x)	((ret >> 18) & 0x3F)
 #define AD9523_CLK_DIST_DIV(x)			((((x) - 1) & 0x3FF) << 8)
@@ -176,7 +172,7 @@
 #define AD9523_CLK_DIST_LOW_PWR_MODE_EN		(1 << 4)
 #define AD9523_CLK_DIST_DRIVER_MODE(x)		(((x) & 0xF) << 0)
 
-/* AD9523_PLL1_OUTPUT_CTRL */
+ 
 #define AD9523_PLL1_OUTP_CTRL_VCO_DIV_SEL_CH6_M2	(1 << 7)
 #define AD9523_PLL1_OUTP_CTRL_VCO_DIV_SEL_CH5_M2	(1 << 6)
 #define AD9523_PLL1_OUTP_CTRL_VCO_DIV_SEL_CH4_M2	(1 << 5)
@@ -187,7 +183,7 @@
 #define AD9523_PLL1_OUTP_CTRL_OUTPUT_DIV_8		(4 << 0)
 #define AD9523_PLL1_OUTP_CTRL_OUTPUT_DIV_16		(8 << 0)
 
-/* AD9523_PLL1_OUTPUT_CHANNEL_CTRL */
+ 
 #define AD9523_PLL1_OUTP_CH_CTRL_OUTPUT_PWR_DOWN_EN	(1 << 7)
 #define AD9523_PLL1_OUTP_CH_CTRL_VCO_DIV_SEL_CH9_M2	(1 << 6)
 #define AD9523_PLL1_OUTP_CH_CTRL_VCO_DIV_SEL_CH8_M2	(1 << 5)
@@ -197,7 +193,7 @@
 #define AD9523_PLL1_OUTP_CH_CTRL_VCXO_SRC_SEL_CH1	(1 << 1)
 #define AD9523_PLL1_OUTP_CH_CTRL_VCXO_SRC_SEL_CH0	(1 << 0)
 
-/* AD9523_READBACK_0 */
+ 
 #define AD9523_READBACK_0_STAT_PLL2_REF_CLK		(1 << 7)
 #define AD9523_READBACK_0_STAT_PLL2_FB_CLK		(1 << 6)
 #define AD9523_READBACK_0_STAT_VCXO			(1 << 5)
@@ -207,39 +203,39 @@
 #define AD9523_READBACK_0_STAT_PLL2_LD			(1 << 1)
 #define AD9523_READBACK_0_STAT_PLL1_LD			(1 << 0)
 
-/* AD9523_READBACK_1 */
+ 
 #define AD9523_READBACK_1_HOLDOVER_ACTIVE		(1 << 3)
 #define AD9523_READBACK_1_AUTOMODE_SEL_REFB		(1 << 2)
 #define AD9523_READBACK_1_VCO_CALIB_IN_PROGRESS		(1 << 0)
 
-/* AD9523_STATUS_SIGNALS */
+ 
 #define AD9523_STATUS_SIGNALS_SYNC_MAN_CTRL		(1 << 16)
 #define AD9523_STATUS_MONITOR_01_PLL12_LOCKED		(0x302)
-/* AD9523_POWER_DOWN_CTRL */
+ 
 #define AD9523_POWER_DOWN_CTRL_PLL1_PWR_DOWN		(1 << 2)
 #define AD9523_POWER_DOWN_CTRL_PLL2_PWR_DOWN		(1 << 1)
 #define AD9523_POWER_DOWN_CTRL_DIST_PWR_DOWN		(1 << 0)
 
-/* AD9523_IO_UPDATE */
+ 
 #define AD9523_IO_UPDATE_EN				(1 << 0)
 
-/* AD9523_EEPROM_DATA_XFER_STATUS */
+ 
 #define AD9523_EEPROM_DATA_XFER_IN_PROGRESS		(1 << 0)
 
-/* AD9523_EEPROM_ERROR_READBACK */
+ 
 #define AD9523_EEPROM_ERROR_READBACK_FAIL		(1 << 0)
 
-/* AD9523_EEPROM_CTRL1 */
+ 
 #define AD9523_EEPROM_CTRL1_SOFT_EEPROM			(1 << 1)
 #define AD9523_EEPROM_CTRL1_EEPROM_WRITE_PROT_DIS	(1 << 0)
 
-/* AD9523_EEPROM_CTRL2 */
+ 
 #define AD9523_EEPROM_CTRL2_REG2EEPROM			(1 << 0)
 
 #define AD9523_NUM_CHAN					14
 #define AD9523_NUM_CHAN_ALT_CLK_SRC			10
 
-/* Helpers to avoid excess line breaks */
+ 
 #define AD_IFE(_pde, _a, _b) ((pdata->_pde) ? _a : _b)
 #define AD_IF(_pde, _a) AD_IFE(_pde, _a, 0)
 
@@ -276,19 +272,10 @@ struct ad9523_state {
 	unsigned long		vco_out_freq[AD9523_NUM_CLK_SRC];
 	unsigned char		vco_out_map[AD9523_NUM_CHAN_ALT_CLK_SRC];
 
-	/*
-	 * Lock for accessing device registers. Some operations require
-	 * multiple consecutive R/W operations, during which the device
-	 * shouldn't be interrupted.  The buffers are also shared across
-	 * all operations so need to be protected on stand alone reads and
-	 * writes.
-	 */
+	 
 	struct mutex		lock;
 
-	/*
-	 * DMA (thus cache coherency maintenance) may require that
-	 * transfer buffers live in their own cache lines.
-	 */
+	 
 	union {
 		__be32 d32;
 		u8 d8[4];
@@ -300,10 +287,7 @@ static int ad9523_read(struct iio_dev *indio_dev, unsigned int addr)
 	struct ad9523_state *st = iio_priv(indio_dev);
 	int ret;
 
-	/* We encode the register size 1..3 bytes into the register address.
-	 * On transfer we get the size from the register datum, and make sure
-	 * the result is properly aligned.
-	 */
+	 
 
 	struct spi_transfer t[] = {
 		{
@@ -435,7 +419,7 @@ static int ad9523_set_clock_provider(struct iio_dev *indio_dev,
 		use_alt_clk_src = (abs(tmp1 - freq) > abs(tmp2 - freq));
 		break;
 	default:
-		/* Ch 10..14: No action required, return success */
+		 
 		return 0;
 	}
 
@@ -778,9 +762,7 @@ static int ad9523_setup(struct iio_dev *indio_dev)
 	if (ret < 0)
 		return ret;
 
-	/*
-	 * PLL1 Setup
-	 */
+	 
 	ret = ad9523_write(indio_dev, AD9523_PLL1_REF_A_DIVIDER,
 		pdata->refa_r_div);
 	if (ret < 0)
@@ -837,9 +819,7 @@ static int ad9523_setup(struct iio_dev *indio_dev)
 		AD9523_PLL1_LOOP_FILTER_RZERO(pdata->pll1_loop_filter_rzero));
 	if (ret < 0)
 		return ret;
-	/*
-	 * PLL2 Setup
-	 */
+	 
 
 	ret = ad9523_write(indio_dev, AD9523_PLL2_CHARGE_PUMP,
 		AD9523_PLL2_CHARGE_PUMP_CURRENT_nA(pdata->

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * HWMON Driver for Dialog DA9055
- *
- * Copyright(c) 2012 Dialog Semiconductor Ltd.
- *
- * Author: David Dajun Chen <dchen@diasemi.com>
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/err.h>
@@ -66,14 +60,14 @@ static int da9055_adc_manual_read(struct da9055_hwmon *hwmon,
 
 	mutex_lock(&hwmon->irq_lock);
 
-	/* Selects desired MUX for manual conversion */
+	 
 	mux_sel = chan_mux[channel] | DA9055_ADC_MAN_CONV;
 
 	ret = da9055_reg_write(da9055, DA9055_REG_ADC_MAN, mux_sel);
 	if (ret < 0)
 		goto err;
 
-	/* Wait for an interrupt */
+	 
 	if (!wait_for_completion_timeout(&hwmon->done,
 					msecs_to_jiffies(500))) {
 		dev_err(da9055->dev,
@@ -112,7 +106,7 @@ static irqreturn_t da9055_auxadc_irq(int irq, void *irq_data)
 	return IRQ_HANDLED;
 }
 
-/* Conversion function for VSYS and ADCINx */
+ 
 static inline int volt_reg_to_mv(int value, int channel)
 {
 	if (channel == DA9055_ADC_VSYS)
@@ -187,10 +181,7 @@ static ssize_t da9055_tjunc_show(struct device *dev,
 	if (toffset < 0)
 		return toffset;
 
-	/*
-	 * Degrees celsius = -0.4084 * (ADC_RES - T_OFFSET) + 307.6332
-	 * T_OFFSET is a trim value used to improve accuracy of the result
-	 */
+	 
 	return sprintf(buf, "%d\n", DIV_ROUND_CLOSEST(-4084 * (tjunc - toffset)
 							+ 3076332, 10000));
 }

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Xilinx ZynqMP OCM ECC Driver
- *
- * Copyright (C) 2022 Advanced Micro Devices, Inc.
- */
+
+ 
 
 #include <linux/edac.h>
 #include <linux/interrupt.h>
@@ -18,17 +14,17 @@
 
 #define ZYNQMP_OCM_EDAC_STRING	"zynqmp_ocm"
 
-/* Error/Interrupt registers */
+ 
 #define ERR_CTRL_OFST		0x0
 #define OCM_ISR_OFST		0x04
 #define OCM_IMR_OFST		0x08
 #define OCM_IEN_OFST		0x0C
 #define OCM_IDS_OFST		0x10
 
-/* ECC control register */
+ 
 #define ECC_CTRL_OFST		0x14
 
-/* Correctable error info registers */
+ 
 #define CE_FFA_OFST		0x1C
 #define CE_FFD0_OFST		0x20
 #define CE_FFD1_OFST		0x24
@@ -36,7 +32,7 @@
 #define CE_FFD3_OFST		0x2C
 #define CE_FFE_OFST		0x30
 
-/* Uncorrectable error info registers */
+ 
 #define UE_FFA_OFST		0x34
 #define UE_FFD0_OFST		0x38
 #define UE_FFD1_OFST		0x3C
@@ -44,11 +40,11 @@
 #define UE_FFD3_OFST		0x44
 #define UE_FFE_OFST		0x48
 
-/* ECC control register bit field definitions */
+ 
 #define ECC_CTRL_CLR_CE_ERR	0x40
 #define ECC_CTRL_CLR_UE_ERR	0x80
 
-/* Fault injection data and count registers */
+ 
 #define OCM_FID0_OFST		0x4C
 #define OCM_FID1_OFST		0x50
 #define OCM_FID2_OFST		0x54
@@ -59,7 +55,7 @@
 #define UE_MIN_BITPOS_UPPER	32
 #define UE_MAX_BITPOS_UPPER	63
 
-/* Interrupt masks */
+ 
 #define OCM_CEINTR_MASK		BIT(6)
 #define OCM_UEINTR_MASK		BIT(7)
 #define OCM_ECC_ENABLE_MASK	BIT(0)
@@ -69,25 +65,14 @@
 #define OCM_BASEVAL		0xFFFC0000
 #define EDAC_DEVICE		"ZynqMP-OCM"
 
-/**
- * struct ecc_error_info - ECC error log information
- * @addr:	Fault generated at this address
- * @fault_lo:	Generated fault data (lower 32-bit)
- * @fault_hi:	Generated fault data (upper 32-bit)
- */
+ 
 struct ecc_error_info {
 	u32 addr;
 	u32 fault_lo;
 	u32 fault_hi;
 };
 
-/**
- * struct ecc_status - ECC status information to report
- * @ce_cnt:	Correctable error count
- * @ue_cnt:	Uncorrectable error count
- * @ceinfo:	Correctable error log information
- * @ueinfo:	Uncorrectable error log information
- */
+ 
 struct ecc_status {
 	u32 ce_cnt;
 	u32 ue_cnt;
@@ -95,18 +80,7 @@ struct ecc_status {
 	struct ecc_error_info ueinfo;
 };
 
-/**
- * struct edac_priv - OCM private instance data
- * @baseaddr:	Base address of the OCM
- * @message:	Buffer for framing the event specific info
- * @stat:	ECC status information
- * @ce_cnt:	Correctable Error count
- * @ue_cnt:	Uncorrectable Error count
- * @debugfs_dir:	Directory entry for debugfs
- * @ce_bitpos:	Bit position for Correctable Error
- * @ue_bitpos:	Array to store UnCorrectable Error bit positions
- * @fault_injection_cnt: Fault Injection Counter value
- */
+ 
 struct edac_priv {
 	void __iomem *baseaddr;
 	char message[ZYNQMP_OCM_EDAC_MSG_SIZE];
@@ -121,15 +95,7 @@ struct edac_priv {
 #endif
 };
 
-/**
- * get_error_info - Get the current ECC error info
- * @base:	Pointer to the base address of the OCM
- * @p:		Pointer to the OCM ECC status structure
- * @mask:	Status register mask value
- *
- * Determines there is any ECC error or not
- *
- */
+ 
 static void get_error_info(void __iomem *base, struct ecc_status *p, int mask)
 {
 	if (mask & OCM_CEINTR_MASK) {
@@ -147,13 +113,7 @@ static void get_error_info(void __iomem *base, struct ecc_status *p, int mask)
 	}
 }
 
-/**
- * handle_error - Handle error types CE and UE
- * @dci:	Pointer to the EDAC device instance
- * @p:		Pointer to the OCM ECC status structure
- *
- * Handles correctable and uncorrectable errors.
- */
+ 
 static void handle_error(struct edac_device_ctl_info *dci, struct ecc_status *p)
 {
 	struct edac_priv *priv = dci->pvt_info;
@@ -178,13 +138,7 @@ static void handle_error(struct edac_device_ctl_info *dci, struct ecc_status *p)
 	memset(p, 0, sizeof(*p));
 }
 
-/**
- * intr_handler - ISR routine
- * @irq:        irq number
- * @dev_id:     device id pointer
- *
- * Return: IRQ_NONE, if CE/UE interrupt not set or IRQ_HANDLED otherwise
- */
+ 
 static irqreturn_t intr_handler(int irq, void *dev_id)
 {
 	struct edac_device_ctl_info *dci = dev_id;
@@ -206,27 +160,14 @@ static irqreturn_t intr_handler(int irq, void *dev_id)
 	return IRQ_HANDLED;
 }
 
-/**
- * get_eccstate - Return the ECC status
- * @base:	Pointer to the OCM base address
- *
- * Get the ECC enable/disable status
- *
- * Return: ECC status 0/1.
- */
+ 
 static bool get_eccstate(void __iomem *base)
 {
 	return readl(base + ECC_CTRL_OFST) & OCM_ECC_ENABLE_MASK;
 }
 
 #ifdef CONFIG_EDAC_DEBUG
-/**
- * write_fault_count - write fault injection count
- * @priv:	Pointer to the EDAC private struct
- *
- * Update the fault injection count register, once the counter reaches
- * zero, it injects errors
- */
+ 
 static void write_fault_count(struct edac_priv *priv)
 {
 	u32 ficount = priv->fault_injection_cnt;
@@ -240,13 +181,7 @@ static void write_fault_count(struct edac_priv *priv)
 	writel(ficount, priv->baseaddr + OCM_FIC_OFST);
 }
 
-/*
- * To get the Correctable Error injected, the following steps are needed:
- * - Setup the optional Fault Injection Count:
- *	echo <fault_count val> > /sys/kernel/debug/edac/ocm/inject_fault_count
- * - Write the Correctable Error bit position value:
- *	echo <bit_pos val> > /sys/kernel/debug/edac/ocm/inject_ce_bitpos
- */
+ 
 static ssize_t inject_ce_write(struct file *file, const char __user *data,
 			       size_t count, loff_t *ppos)
 {
@@ -284,13 +219,7 @@ static const struct file_operations inject_ce_fops = {
 	.llseek = generic_file_llseek,
 };
 
-/*
- * To get the Uncorrectable Error injected, the following steps are needed:
- * - Setup the optional Fault Injection Count:
- *      echo <fault_count val> > /sys/kernel/debug/edac/ocm/inject_fault_count
- * - Write the Uncorrectable Error bit position values:
- *      echo <bit_pos0 val>,<bit_pos1 val> > /sys/kernel/debug/edac/ocm/inject_ue_bitpos
- */
+ 
 static ssize_t inject_ue_write(struct file *file, const char __user *data,
 			       size_t count, loff_t *ppos)
 {
@@ -407,7 +336,7 @@ static int edac_probe(struct platform_device *pdev)
 		goto free_dev_ctl;
 	}
 
-	/* Enable UE, CE interrupts */
+	 
 	writel((OCM_CEINTR_MASK | OCM_UEINTR_MASK), priv->baseaddr + OCM_IEN_OFST);
 
 #ifdef CONFIG_EDAC_DEBUG
@@ -431,7 +360,7 @@ static int edac_remove(struct platform_device *pdev)
 	struct edac_device_ctl_info *dci = platform_get_drvdata(pdev);
 	struct edac_priv *priv = dci->pvt_info;
 
-	/* Disable UE, CE interrupts */
+	 
 	writel((OCM_CEINTR_MASK | OCM_UEINTR_MASK), priv->baseaddr + OCM_IDS_OFST);
 
 #ifdef CONFIG_EDAC_DEBUG
@@ -446,7 +375,7 @@ static int edac_remove(struct platform_device *pdev)
 
 static const struct of_device_id zynqmp_ocm_edac_match[] = {
 	{ .compatible = "xlnx,zynqmp-ocmc-1.0"},
-	{ /* end of table */ }
+	{   }
 };
 
 MODULE_DEVICE_TABLE(of, zynqmp_ocm_edac_match);

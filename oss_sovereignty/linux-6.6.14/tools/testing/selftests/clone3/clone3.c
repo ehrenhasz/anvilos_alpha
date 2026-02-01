@@ -1,6 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
 
-/* Based on Christian Brauner's clone3() example */
+
+ 
 
 #define _GNU_SOURCE
 #include <errno.h>
@@ -53,10 +53,7 @@ static int call_clone3(uint64_t flags, size_t size, enum test_mode test_mode)
 
 	switch (test_mode) {
 	case CLONE3_ARGS_NO_TEST:
-		/*
-		 * Uses default 'flags' and 'SIGCHLD'
-		 * assignment.
-		 */
+		 
 		break;
 	case CLONE3_ARGS_ALL_0:
 		args.flags = 0;
@@ -132,34 +129,34 @@ int main(int argc, char *argv[])
 	ksft_set_plan(19);
 	test_clone3_supported();
 
-	/* Just a simple clone3() should return 0.*/
+	 
 	test_clone3(0, 0, 0, CLONE3_ARGS_NO_TEST);
 
-	/* Do a clone3() in a new PID NS.*/
+	 
 	if (uid == 0)
 		test_clone3(CLONE_NEWPID, 0, 0, CLONE3_ARGS_NO_TEST);
 	else
 		ksft_test_result_skip("Skipping clone3() with CLONE_NEWPID\n");
 
-	/* Do a clone3() with CLONE_ARGS_SIZE_VER0. */
+	 
 	test_clone3(0, CLONE_ARGS_SIZE_VER0, 0, CLONE3_ARGS_NO_TEST);
 
-	/* Do a clone3() with CLONE_ARGS_SIZE_VER0 - 8 */
+	 
 	test_clone3(0, CLONE_ARGS_SIZE_VER0 - 8, -EINVAL, CLONE3_ARGS_NO_TEST);
 
-	/* Do a clone3() with sizeof(struct clone_args) + 8 */
+	 
 	test_clone3(0, sizeof(struct __clone_args) + 8, 0, CLONE3_ARGS_NO_TEST);
 
-	/* Do a clone3() with exit_signal having highest 32 bits non-zero */
+	 
 	test_clone3(0, 0, -EINVAL, CLONE3_ARGS_INVAL_EXIT_SIGNAL_BIG);
 
-	/* Do a clone3() with negative 32-bit exit_signal */
+	 
 	test_clone3(0, 0, -EINVAL, CLONE3_ARGS_INVAL_EXIT_SIGNAL_NEG);
 
-	/* Do a clone3() with exit_signal not fitting into CSIGNAL mask */
+	 
 	test_clone3(0, 0, -EINVAL, CLONE3_ARGS_INVAL_EXIT_SIGNAL_CSIG);
 
-	/* Do a clone3() with NSIG < exit_signal < CSIG */
+	 
 	test_clone3(0, 0, -EINVAL, CLONE3_ARGS_INVAL_EXIT_SIGNAL_NSIG);
 
 	test_clone3(0, sizeof(struct __clone_args) + 8, 0, CLONE3_ARGS_ALL_0);
@@ -170,32 +167,32 @@ int main(int argc, char *argv[])
 	test_clone3(0, sizeof(struct __clone_args) * 2, -E2BIG,
 			CLONE3_ARGS_ALL_0);
 
-	/* Do a clone3() with > page size */
+	 
 	test_clone3(0, getpagesize() + 8, -E2BIG, CLONE3_ARGS_NO_TEST);
 
-	/* Do a clone3() with CLONE_ARGS_SIZE_VER0 in a new PID NS. */
+	 
 	if (uid == 0)
 		test_clone3(CLONE_NEWPID, CLONE_ARGS_SIZE_VER0, 0,
 				CLONE3_ARGS_NO_TEST);
 	else
 		ksft_test_result_skip("Skipping clone3() with CLONE_NEWPID\n");
 
-	/* Do a clone3() with CLONE_ARGS_SIZE_VER0 - 8 in a new PID NS */
+	 
 	test_clone3(CLONE_NEWPID, CLONE_ARGS_SIZE_VER0 - 8, -EINVAL,
 			CLONE3_ARGS_NO_TEST);
 
-	/* Do a clone3() with sizeof(struct clone_args) + 8 in a new PID NS */
+	 
 	if (uid == 0)
 		test_clone3(CLONE_NEWPID, sizeof(struct __clone_args) + 8, 0,
 				CLONE3_ARGS_NO_TEST);
 	else
 		ksft_test_result_skip("Skipping clone3() with CLONE_NEWPID\n");
 
-	/* Do a clone3() with > page size in a new PID NS */
+	 
 	test_clone3(CLONE_NEWPID, getpagesize() + 8, -E2BIG,
 			CLONE3_ARGS_NO_TEST);
 
-	/* Do a clone3() in a new time namespace */
+	 
 	if (access("/proc/self/ns/time", F_OK) == 0) {
 		test_clone3(CLONE_NEWTIME, 0, 0, CLONE3_ARGS_NO_TEST);
 	} else {
@@ -203,7 +200,7 @@ int main(int argc, char *argv[])
 		ksft_test_result_skip("Skipping clone3() with CLONE_NEWTIME\n");
 	}
 
-	/* Do a clone3() with exit signal (SIGCHLD) in flags */
+	 
 	test_clone3(SIGCHLD, 0, -EINVAL, CLONE3_ARGS_NO_TEST);
 
 	ksft_finished();

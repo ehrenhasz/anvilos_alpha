@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Cryptographic API
- *
- * ARC4 Cipher Algorithm
- *
- * Jon Oberheide <jon@oberheide.org>
- */
+
+ 
 
 #include <crypto/algapi.h>
 #include <crypto/arc4.h>
@@ -50,10 +44,7 @@ static int crypto_arc4_init(struct crypto_skcipher *tfm)
 }
 
 static struct skcipher_alg arc4_alg = {
-	/*
-	 * For legacy reasons, this is named "ecb(arc4)", not "arc4".
-	 * Nevertheless it's actually a stream cipher, not a block cipher.
-	 */
+	 
 	.base.cra_name		=	"ecb(arc4)",
 	.base.cra_driver_name	=	"ecb(arc4)-generic",
 	.base.cra_priority	=	100,

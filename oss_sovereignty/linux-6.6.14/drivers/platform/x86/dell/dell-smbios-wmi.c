@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  WMI methods for use with dell-smbios
- *
- *  Copyright (c) 2017 Dell Inc.
- */
+
+ 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
 #include <linux/dmi.h>
@@ -162,11 +158,11 @@ static int dell_smbios_wmi_probe(struct wmi_device *wdev, const void *context)
 	if (!priv)
 		return -ENOMEM;
 
-	/* WMI buffer size will be either 4k or 32k depending on machine */
+	 
 	if (!dell_wmi_get_size(&priv->req_buf_size))
 		return -EPROBE_DEFER;
 
-	/* some SMBIOS calls fail unless BIOS contains hotfix */
+	 
 	if (!dell_wmi_get_hotfix(&hotfix))
 		return -EPROBE_DEFER;
 	if (!hotfix) {
@@ -176,7 +172,7 @@ static int dell_smbios_wmi_probe(struct wmi_device *wdev, const void *context)
 		wdriver->filter_callback = NULL;
 	}
 
-	/* add in the length object we will use internally with ioctl */
+	 
 	priv->req_buf_size += sizeof(u64);
 	ret = set_required_buffer_size(wdev, priv->req_buf_size);
 	if (ret)
@@ -187,7 +183,7 @@ static int dell_smbios_wmi_probe(struct wmi_device *wdev, const void *context)
 	if (!priv->buf)
 		return -ENOMEM;
 
-	/* ID is used by dell-smbios to set priority of drivers */
+	 
 	wdev->dev.id = 1;
 	ret = dell_smbios_register_device(&wdev->dev, &dell_smbios_wmi_call);
 	if (ret)
@@ -231,7 +227,7 @@ static void parse_b1_table(const struct dmi_header *dm)
 	struct misc_bios_flags_structure *flags =
 	container_of(dm, struct misc_bios_flags_structure, header);
 
-	/* 4 bytes header, 8 bytes flags */
+	 
 	if (dm->length < 12)
 		return;
 	if (dm->handle != 0xb100)
@@ -243,7 +239,7 @@ static void parse_b1_table(const struct dmi_header *dm)
 static void find_b1(const struct dmi_header *dm, void *dummy)
 {
 	switch (dm->type) {
-	case 0xb1: /* misc bios flags */
+	case 0xb1:  
 		parse_b1_table(dm);
 		break;
 	}

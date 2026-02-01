@@ -1,10 +1,4 @@
-/*
- * Copyright (c) 2003-2015 Broadcom Corporation
- *
- * This file is licensed under the terms of the GNU General Public
- * License version 2. This program is licensed "as is" without any
- * warranty of any kind, whether express or implied.
- */
+ 
 
 #include <linux/acpi.h>
 #include <linux/clk.h>
@@ -131,9 +125,7 @@ static void xlp9xx_i2c_update_rx_fifo_thres(struct xlp9xx_i2c_dev *priv)
 	u32 thres;
 
 	if (priv->len_recv)
-		/* interrupt after the first read to examine
-		 * the length byte before proceeding further
-		 */
+		 
 		thres = 1;
 	else if (priv->msg_buf_remaining > XLP9XX_I2C_FIFO_SIZE)
 		thres = XLP9XX_I2C_FIFO_SIZE;
@@ -160,12 +152,7 @@ static void xlp9xx_i2c_update_rlen(struct xlp9xx_i2c_dev *priv)
 {
 	u32 val, len;
 
-	/*
-	 * Update receive length. Re-read len to get the latest value,
-	 * and then add 4 to have a minimum value that can be safely
-	 * written. This is to account for the byte read above, the
-	 * transfer in progress and any delays in the register I/O
-	 */
+	 
 	val = xlp9xx_read_i2c_reg(priv, XLP9XX_I2C_CTRL);
 	len = xlp9xx_read_i2c_reg(priv, XLP9XX_I2C_FIFOWCNT) &
 				  XLP9XX_I2C_FIFO_WCNT_MASK;
@@ -187,24 +174,14 @@ static void xlp9xx_i2c_drain_rx_fifo(struct xlp9xx_i2c_dev *priv)
 	if (!len)
 		return;
 	if (priv->len_recv) {
-		/* read length byte */
+		 
 		rlen = xlp9xx_read_i2c_reg(priv, XLP9XX_I2C_MRXFIFO);
 
-		/*
-		 * We expect at least 2 interrupts for I2C_M_RECV_LEN
-		 * transactions. The length is updated during the first
-		 * interrupt, and the buffer contents are only copied
-		 * during subsequent interrupts. If in case the interrupts
-		 * get merged we would complete the transaction without
-		 * copying out the bytes from RX fifo. To avoid this now we
-		 * drain the fifo as and when data is available.
-		 * We drained the rlen byte already, decrement total length
-		 * by one.
-		 */
+		 
 
 		len--;
 		if (rlen > I2C_SMBUS_BLOCK_MAX || rlen == 0) {
-			rlen = 0;	/*abort transfer */
+			rlen = 0;	 
 			priv->msg_buf_remaining = 0;
 			priv->msg_len = 0;
 			xlp9xx_i2c_update_rlen(priv);
@@ -213,8 +190,8 @@ static void xlp9xx_i2c_drain_rx_fifo(struct xlp9xx_i2c_dev *priv)
 
 		*buf++ = rlen;
 		if (priv->client_pec)
-			++rlen; /* account for error check byte */
-		/* update remaining bytes and message length */
+			++rlen;  
+		 
 		priv->msg_buf_remaining = rlen;
 		priv->msg_len = rlen + 1;
 		xlp9xx_i2c_update_rlen(priv);
@@ -247,13 +224,13 @@ static irqreturn_t xlp9xx_i2c_isr(int irq, void *dev_id)
 		goto xfer_done;
 	}
 
-	/* SADDR ACK for SMBUS_QUICK */
+	 
 	if ((status & XLP9XX_I2C_INTEN_SADDR) && (priv->msg_len == 0))
 		goto xfer_done;
 
 	if (!priv->msg_read) {
 		if (status & XLP9XX_I2C_INTEN_MFIFOEMTY) {
-			/* TX FIFO got empty, fill it up again */
+			 
 			if (priv->msg_buf_remaining)
 				xlp9xx_i2c_fill_tx_fifo(priv);
 			else
@@ -263,13 +240,13 @@ static irqreturn_t xlp9xx_i2c_isr(int irq, void *dev_id)
 	} else {
 		if (status & (XLP9XX_I2C_INTEN_DATADONE |
 			      XLP9XX_I2C_INTEN_MFIFOHI)) {
-			/* data is in FIFO, read it */
+			 
 			if (priv->msg_buf_remaining)
 				xlp9xx_i2c_drain_rx_fifo(priv);
 		}
 	}
 
-	/* Transfer complete */
+	 
 	if (status & XLP9XX_I2C_INTEN_DATADONE)
 		goto xfer_done;
 
@@ -305,10 +282,7 @@ static int xlp9xx_i2c_init(struct xlp9xx_i2c_dev *priv)
 {
 	u32 prescale;
 
-	/*
-	 * The controller uses 5 * SCL clock internally.
-	 * So prescale value should be divided by 5.
-	 */
+	 
 	prescale = DIV_ROUND_UP(priv->ip_clk_hz, priv->clk_hz);
 	prescale = ((prescale - 8) / 5) - 1;
 	xlp9xx_write_i2c_reg(priv, XLP9XX_I2C_CTRL, XLP9XX_I2C_CTRL_RST);
@@ -332,24 +306,24 @@ static int xlp9xx_i2c_xfer_msg(struct xlp9xx_i2c_dev *priv, struct i2c_msg *msg,
 	priv->msg_read = (msg->flags & I2C_M_RD);
 	reinit_completion(&priv->msg_complete);
 
-	/* Reset FIFO */
+	 
 	xlp9xx_write_i2c_reg(priv, XLP9XX_I2C_MFIFOCTRL,
 			     XLP9XX_I2C_MFIFOCTRL_RST);
 
-	/* set slave addr */
+	 
 	xlp9xx_write_i2c_reg(priv, XLP9XX_I2C_SLAVEADDR,
 			     (msg->addr << XLP9XX_I2C_SLAVEADDR_ADDR_SHIFT) |
 			     (priv->msg_read ? XLP9XX_I2C_SLAVEADDR_RW : 0));
 
-	/* Build control word for transfer */
+	 
 	val = xlp9xx_read_i2c_reg(priv, XLP9XX_I2C_CTRL);
 	if (!priv->msg_read)
 		val &= ~XLP9XX_I2C_CTRL_FIFORD;
 	else
-		val |= XLP9XX_I2C_CTRL_FIFORD;	/* read */
+		val |= XLP9XX_I2C_CTRL_FIFORD;	 
 
 	if (msg->flags & I2C_M_TEN)
-		val |= XLP9XX_I2C_CTRL_ADDMODE;	/* 10-bit address mode*/
+		val |= XLP9XX_I2C_CTRL_ADDMODE;	 
 	else
 		val &= ~XLP9XX_I2C_CTRL_ADDMODE;
 
@@ -357,20 +331,20 @@ static int xlp9xx_i2c_xfer_msg(struct xlp9xx_i2c_dev *priv, struct i2c_msg *msg,
 	len = priv->len_recv ? I2C_SMBUS_BLOCK_MAX + 2 : msg->len;
 	priv->client_pec = msg->flags & I2C_CLIENT_PEC;
 
-	/* set FIFO threshold if reading */
+	 
 	if (priv->msg_read)
 		xlp9xx_i2c_update_rx_fifo_thres(priv);
 
-	/* set data length to be transferred */
+	 
 	val = (val & ~XLP9XX_I2C_CTRL_MCTLEN_MASK) |
 	      (len << XLP9XX_I2C_CTRL_MCTLEN_SHIFT);
 	xlp9xx_write_i2c_reg(priv, XLP9XX_I2C_CTRL, val);
 
-	/* fill fifo during tx */
+	 
 	if (!priv->msg_read)
 		xlp9xx_i2c_fill_tx_fifo(priv);
 
-	/* set interrupt mask */
+	 
 	intr_mask = (XLP9XX_I2C_INTEN_ARLOST | XLP9XX_I2C_INTEN_BUSERR |
 		     XLP9XX_I2C_INTEN_NACKADDR | XLP9XX_I2C_INTEN_DATADONE);
 
@@ -386,7 +360,7 @@ static int xlp9xx_i2c_xfer_msg(struct xlp9xx_i2c_dev *priv, struct i2c_msg *msg,
 	}
 	xlp9xx_i2c_unmask_irq(priv, intr_mask);
 
-	/* set cmd reg */
+	 
 	cmd = XLP9XX_I2C_CMD_START;
 	if (msg->len)
 		cmd |= (priv->msg_read ?
@@ -413,7 +387,7 @@ static int xlp9xx_i2c_xfer_msg(struct xlp9xx_i2c_dev *priv, struct i2c_msg *msg,
 		return -ETIMEDOUT;
 	}
 
-	/* update msg->len with actual received length */
+	 
 	if (msg->flags & I2C_M_RECV_LEN) {
 		if (!priv->msg_len)
 			return -EPROTO;
@@ -519,7 +493,7 @@ static int xlp9xx_i2c_probe(struct platform_device *pdev)
 	priv->irq = platform_get_irq(pdev, 0);
 	if (priv->irq < 0)
 		return priv->irq;
-	/* SMBAlert irq */
+	 
 	priv->alert_data.irq = platform_get_irq(pdev, 1);
 	if (priv->alert_data.irq <= 0)
 		priv->alert_data.irq = 0;

@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * POWER Data Stream Control Register (DSCR) sysfs thread test
- *
- * This test updates the system wide DSCR default value through
- * sysfs interface which should then update all the CPU specific
- * DSCR default values which must also be then visible to threads
- * executing on individual CPUs on the system.
- *
- * Copyright 2015, Anshuman Khandual, IBM Corporation.
- */
+
+ 
 #define _GNU_SOURCE
 #include "dscr.h"
 

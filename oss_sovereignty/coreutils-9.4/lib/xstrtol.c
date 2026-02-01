@@ -1,22 +1,4 @@
-/* A more useful interface to strtol.
-
-   Copyright (C) 1995-1996, 1998-2001, 2003-2007, 2009-2023 Free Software
-   Foundation, Inc.
-
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* Written by Jim Meyering. */
+ 
 
 #ifndef __strtol
 # define __strtol strtol
@@ -30,8 +12,7 @@
 
 #include "xstrtol.h"
 
-/* Some pre-ANSI implementations (e.g. SunOS 4)
-   need stderr defined if assertion checking is enabled.  */
+ 
 #include <stdio.h>
 
 #include <ctype.h>
@@ -72,7 +53,7 @@ bkm_scale_by_power (__strtol_t *x, int base, int power)
   return err;
 }
 
-/* FIXME: comment.  */
+ 
 
 strtol_error
 __xstrtol (const char *s, char **ptr, int strtol_base,
@@ -103,8 +84,7 @@ __xstrtol (const char *s, char **ptr, int strtol_base,
 
   if (*p == s)
     {
-      /* If there is no number but there is a valid suffix, assume the
-         number is 1.  The string is invalid otherwise.  */
+       
       if (valid_suffixes && **p && strchr (valid_suffixes, **p))
         tmp = 1;
       else
@@ -117,9 +97,8 @@ __xstrtol (const char *s, char **ptr, int strtol_base,
       err = LONGINT_OVERFLOW;
     }
 
-  /* Let valid_suffixes == NULL mean "allow any suffix".  */
-  /* FIXME: update all callers except the ones that allow suffixes
-     after the number, changing last parameter NULL to "".  */
+   
+   
   if (!valid_suffixes)
     {
       *val = tmp;
@@ -143,12 +122,7 @@ __xstrtol (const char *s, char **ptr, int strtol_base,
         case 'E': case 'G': case 'g': case 'k': case 'K': case 'M': case 'm':
         case 'P': case 'Q': case 'R': case 'T': case 't': case 'Y': case 'Z':
 
-          /* The "valid suffix" '0' is a special flag meaning that
-             an optional second suffix is allowed, which can change
-             the base.  A suffix "B" (e.g. "100MB") stands for a power
-             of 1000, whereas a suffix "iB" (e.g. "100MiB") stands for
-             a power of 1024.  If no suffix (e.g. "100M"), assume
-             power-of-1024.  */
+           
 
           if (strchr (valid_suffixes, '0'))
             switch (p[0][1])
@@ -159,7 +133,7 @@ __xstrtol (const char *s, char **ptr, int strtol_base,
                 break;
 
               case 'B':
-              case 'D': /* 'D' is obsolescent */
+              case 'D':  
                 base = 1000;
                 suffixes++;
                 break;
@@ -173,9 +147,7 @@ __xstrtol (const char *s, char **ptr, int strtol_base,
           break;
 
         case 'B':
-          /* This obsolescent first suffix is distinct from the 'B'
-             second suffix above.  E.g., 'tar -L 1000B' means change
-             the tape after writing 1000 KiB of data.  */
+           
           overflow = bkm_scale (&tmp, 1024);
           break;
 
@@ -183,39 +155,39 @@ __xstrtol (const char *s, char **ptr, int strtol_base,
           overflow = LONGINT_OK;
           break;
 
-        case 'E': /* exa or exbi */
+        case 'E':  
           overflow = bkm_scale_by_power (&tmp, base, 6);
           break;
 
-        case 'G': /* giga or gibi */
-        case 'g': /* 'g' is undocumented; for compatibility only */
+        case 'G':  
+        case 'g':  
           overflow = bkm_scale_by_power (&tmp, base, 3);
           break;
 
-        case 'k': /* kilo */
-        case 'K': /* kibi */
+        case 'k':  
+        case 'K':  
           overflow = bkm_scale_by_power (&tmp, base, 1);
           break;
 
-        case 'M': /* mega or mebi */
-        case 'm': /* 'm' is undocumented; for compatibility only */
+        case 'M':  
+        case 'm':  
           overflow = bkm_scale_by_power (&tmp, base, 2);
           break;
 
-        case 'P': /* peta or pebi */
+        case 'P':  
           overflow = bkm_scale_by_power (&tmp, base, 5);
           break;
 
-        case 'Q': /* quetta or 2**100 */
+        case 'Q':  
           overflow = bkm_scale_by_power (&tmp, base, 10);
           break;
 
-        case 'R': /* ronna or 2**90 */
+        case 'R':  
           overflow = bkm_scale_by_power (&tmp, base, 9);
           break;
 
-        case 'T': /* tera or tebi */
-        case 't': /* 't' is undocumented; for compatibility only */
+        case 'T':  
+        case 't':  
           overflow = bkm_scale_by_power (&tmp, base, 4);
           break;
 
@@ -223,11 +195,11 @@ __xstrtol (const char *s, char **ptr, int strtol_base,
           overflow = bkm_scale (&tmp, 2);
           break;
 
-        case 'Y': /* yotta or 2**80 */
+        case 'Y':  
           overflow = bkm_scale_by_power (&tmp, base, 8);
           break;
 
-        case 'Z': /* zetta or 2**70 */
+        case 'Z':  
           overflow = bkm_scale_by_power (&tmp, base, 7);
           break;
 

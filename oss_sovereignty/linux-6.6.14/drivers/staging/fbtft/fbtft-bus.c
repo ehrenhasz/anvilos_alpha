@@ -1,15 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/export.h>
 #include <linux/errno.h>
 #include <linux/gpio/consumer.h>
 #include <linux/spi/spi.h>
 #include "fbtft.h"
 
-/*****************************************************************************
- *
- *   void (*write_reg)(struct fbtft_par *par, int len, ...);
- *
- *****************************************************************************/
+ 
 
 #define define_fbtft_write_reg(func, buffer_type, data_type, modifier)        \
 void func(struct fbtft_par *par, int len, ...)                                \
@@ -86,9 +82,7 @@ void fbtft_write_reg8_bus9(struct fbtft_par *par, int len, ...)
 		return;
 
 	if (par->spi && (par->spi->bits_per_word == 8)) {
-		/* we're emulating 9-bit, pad start of buffer with no-ops
-		 * (assuming here that zero is a no-op)
-		 */
+		 
 		pad = (len % 4) ? 4 - (len % 4) : 0;
 		for (i = 0; i < pad; i++)
 			*buf++ = 0x000;
@@ -99,7 +93,7 @@ void fbtft_write_reg8_bus9(struct fbtft_par *par, int len, ...)
 	i = len - 1;
 	while (i--) {
 		*buf = (u8)va_arg(args, unsigned int);
-		*buf++ |= 0x100; /* dc=1 */
+		*buf++ |= 0x100;  
 	}
 	va_end(args);
 	ret = par->fbtftops.write(par, par->buf, (len + pad) * sizeof(u16));
@@ -111,13 +105,9 @@ void fbtft_write_reg8_bus9(struct fbtft_par *par, int len, ...)
 }
 EXPORT_SYMBOL(fbtft_write_reg8_bus9);
 
-/*****************************************************************************
- *
- *   int (*write_vmem)(struct fbtft_par *par);
- *
- *****************************************************************************/
+ 
 
-/* 16 bit pixel over 8-bit databus */
+ 
 int fbtft_write_vmem16_bus8(struct fbtft_par *par, size_t offset, size_t len)
 {
 	u16 *vmem16;
@@ -137,11 +127,11 @@ int fbtft_write_vmem16_bus8(struct fbtft_par *par, size_t offset, size_t len)
 
 	gpiod_set_value(par->gpio.dc, 1);
 
-	/* non buffered write */
+	 
 	if (!par->txbuf.buf)
 		return par->fbtftops.write(par, vmem16, len);
 
-	/* buffered write */
+	 
 	tx_array_size = par->txbuf.len / 2;
 
 	if (par->startbyte) {
@@ -171,7 +161,7 @@ int fbtft_write_vmem16_bus8(struct fbtft_par *par, size_t offset, size_t len)
 }
 EXPORT_SYMBOL(fbtft_write_vmem16_bus8);
 
-/* 16 bit pixel over 9-bit SPI bus: dc + high byte, dc + low byte */
+ 
 int fbtft_write_vmem16_bus9(struct fbtft_par *par, size_t offset, size_t len)
 {
 	u8 *vmem8;
@@ -227,7 +217,7 @@ int fbtft_write_vmem8_bus8(struct fbtft_par *par, size_t offset, size_t len)
 }
 EXPORT_SYMBOL(fbtft_write_vmem8_bus8);
 
-/* 16 bit pixel over 16-bit databus */
+ 
 int fbtft_write_vmem16_bus16(struct fbtft_par *par, size_t offset, size_t len)
 {
 	u16 *vmem16;
@@ -237,7 +227,7 @@ int fbtft_write_vmem16_bus16(struct fbtft_par *par, size_t offset, size_t len)
 
 	vmem16 = (u16 *)(par->info->screen_buffer + offset);
 
-	/* no need for buffered write with 16-bit bus */
+	 
 	return fbtft_write_buf_dc(par, vmem16, len, 1);
 }
 EXPORT_SYMBOL(fbtft_write_vmem16_bus16);

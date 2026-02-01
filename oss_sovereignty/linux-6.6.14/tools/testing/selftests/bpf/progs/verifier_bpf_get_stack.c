@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Converted from tools/testing/selftests/bpf/verifier/bpf_get_stack.c */
+
+ 
 
 #include <linux/bpf.h>
 #include <bpf/bpf_helpers.h>
@@ -84,9 +84,9 @@ __naked void return_r0_range_is_refined(void)
 {
 	asm volatile ("					\
 	r6 = *(u64*)(r1 + 0);				\
-	r6 = *(u64*)(r6 + 0);		/* ctx->meta->seq */\
-	r7 = *(u64*)(r1 + 8);		/* ctx->task */\
-	r1 = %[map_array_48b] ll;	/* fixup_map_array_48b */\
+	r6 = *(u64*)(r6 + 0);		 \
+	r7 = *(u64*)(r1 + 8);		 \
+	r1 = %[map_array_48b] ll;	 \
 	r2 = 0;						\
 	*(u64*)(r10 - 8) = r2;				\
 	r2 = r10;					\
@@ -100,7 +100,7 @@ l0_%=:	if r7 != 0 goto l1_%=;				\
 	exit;						\
 l1_%=:	r1 = r7;					\
 	r2 = r0;					\
-	r9 = r0;			/* keep buf for seq_write */\
+	r9 = r0;			 \
 	r3 = 48;					\
 	r4 = 0;						\
 	call %[bpf_get_task_stack];			\

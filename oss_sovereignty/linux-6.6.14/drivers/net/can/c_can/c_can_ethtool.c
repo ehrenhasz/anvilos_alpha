@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright 2021, Dario Binacchi <dariobin@libero.it>
- */
+
+ 
 
 #include <linux/ethtool.h>
 #include <linux/kernel.h>

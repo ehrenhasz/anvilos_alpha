@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2022 Amlogic, Inc. All rights reserved.
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/io.h>
@@ -20,7 +18,7 @@
 
 #define DMC_QOS_IRQ		BIT(30)
 
-/* DMC bandwidth monitor register address offset */
+ 
 #define DMC_MON_G12_CTRL0		(0x0  << 2)
 #define DMC_MON_G12_CTRL1		(0x1  << 2)
 #define DMC_MON_G12_CTRL2		(0x2  << 2)
@@ -39,7 +37,7 @@
 #define DMC_MON_G12_FOR_GRANT_CNT	(0xe  << 2)
 #define DMC_MON_G12_TIMER		(0xf  << 2)
 
-/* Each bit represent a axi line */
+ 
 PMU_FORMAT_ATTR(event, "config:0-7");
 PMU_FORMAT_ATTR(arm, "config1:0");
 PMU_FORMAT_ATTR(gpu, "config1:1");
@@ -74,10 +72,10 @@ PMU_FORMAT_ATTR(spicc2, "config1:44");
 PMU_FORMAT_ATTR(ethernet, "config1:45");
 PMU_FORMAT_ATTR(sana, "config1:46");
 
-/* for sm1 and g12b */
+ 
 PMU_FORMAT_ATTR(nna, "config1:10");
 
-/* for g12b only */
+ 
 PMU_FORMAT_ATTR(gdc, "config1:11");
 PMU_FORMAT_ATTR(mipi_isp, "config1:12");
 PMU_FORMAT_ATTR(arm1, "config1:13");
@@ -124,7 +122,7 @@ static struct attribute *g12_pmu_format_attrs[] = {
 	NULL,
 };
 
-/* calculate ddr clock */
+ 
 static unsigned long dmc_g12_get_freq_quick(struct dmc_info *info)
 {
 	unsigned int val;
@@ -162,7 +160,7 @@ static unsigned long dmc_g12_get_freq_quick(struct dmc_info *info)
 	m = val & 0x1ff;
 	n = ((val >> 10) & 0x1f);
 	od1 = (((val >> 19) & 0x1)) == 1 ? 2 : 1;
-	freq = DEFAULT_XTAL_FREQ / 1000;        /* avoid overflow */
+	freq = DEFAULT_XTAL_FREQ / 1000;         
 	if (n)
 		freq = ((((freq * m) / n) >> od1) / od_div) * 1000;
 
@@ -199,16 +197,16 @@ static void g12_dump_reg(struct dmc_info *db)
 static void dmc_g12_counter_enable(struct dmc_info *info)
 {
 	unsigned int val;
-	unsigned long clock_count = dmc_g12_get_freq_quick(info) / 10; /* 100ms */
+	unsigned long clock_count = dmc_g12_get_freq_quick(info) / 10;  
 
 	writel(clock_count, info->ddr_reg[0] + DMC_MON_G12_TIMER);
 
 	val = readl(info->ddr_reg[0] + DMC_MON_G12_CTRL0);
 
-	/* enable all channel */
-	val =  BIT(31) |	/* enable bit */
-	       BIT(20) |	/* use timer  */
-	       0x0f;		/* 4 channels */
+	 
+	val =  BIT(31) |	 
+	       BIT(20) |	 
+	       0x0f;		 
 
 	writel(val, info->ddr_reg[0] + DMC_MON_G12_CTRL0);
 
@@ -227,7 +225,7 @@ static void dmc_g12_config_fiter(struct dmc_info *info,
 					DMC_MON_G12_CTRL6, DMC_MON_G12_CTRL8};
 	int subport = -1;
 
-	/* clear all port mask */
+	 
 	if (port < 0) {
 		writel(0, info->ddr_reg[0] + rp[channel]);
 		writel(0, info->ddr_reg[0] + rs[channel]);
@@ -244,7 +242,7 @@ static void dmc_g12_config_fiter(struct dmc_info *info,
 		val = 0xffff;
 		writel(val, info->ddr_reg[0] + rs[channel]);
 	} else {
-		val = BIT(23);		/* select device */
+		val = BIT(23);		 
 		writel(val, info->ddr_reg[0] + rp[channel]);
 		val = readl(info->ddr_reg[0] + rs[channel]);
 		val |= (1 << subport);
@@ -264,7 +262,7 @@ static void dmc_g12_counter_disable(struct dmc_info *info)
 {
 	int i;
 
-	/* clear timer */
+	 
 	writel(0, info->ddr_reg[0] + DMC_MON_G12_CTRL0);
 	writel(0, info->ddr_reg[0] + DMC_MON_G12_TIMER);
 
@@ -275,7 +273,7 @@ static void dmc_g12_counter_disable(struct dmc_info *info)
 	writel(0, info->ddr_reg[0] + DMC_MON_G12_THD_GRANT_CNT);
 	writel(0, info->ddr_reg[0] + DMC_MON_G12_FOR_GRANT_CNT);
 
-	/* clear port channel mapping */
+	 
 	for (i = 0; i < info->hw_info->chann_nr; i++)
 		dmc_g12_config_fiter(info, -1, i);
 }
@@ -304,7 +302,7 @@ static int dmc_g12_irq_handler(struct dmc_info *info,
 	val = readl(info->ddr_reg[0] + DMC_MON_G12_CTRL0);
 	if (val & DMC_QOS_IRQ) {
 		dmc_g12_get_counters(info, counter);
-		/* clear irq flags */
+		 
 		writel(val, info->ddr_reg[0] + DMC_MON_G12_CTRL0);
 		ret = 0;
 	}

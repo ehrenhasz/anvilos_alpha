@@ -1,13 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * c8sectpfe-core.h - C8SECTPFE STi DVB driver
- *
- * Copyright (c) STMicroelectronics 2015
- *
- *   Author:Peter Bennett <peter.bennett@st.com>
- *	    Peter Griffin <peter.griffin@linaro.org>
- *
- */
+ 
+ 
 #ifndef _C8SECTPFE_CORE_H_
 #define _C8SECTPFE_CORE_H_
 
@@ -88,7 +80,7 @@ struct c8sectpfei {
 
 	struct mutex lock;
 
-	struct timer_list timer;	/* timer interrupts for outputs */
+	struct timer_list timer;	 
 
 	void __iomem *io;
 	void __iomem *sram;
@@ -107,7 +99,7 @@ struct c8sectpfei {
 	int global_feed_count;
 };
 
-/* C8SECTPFE SYS Regs list */
+ 
 
 #define SYS_INPUT_ERR_STATUS	0x0
 #define SYS_OTHER_ERR_STATUS	0x8
@@ -129,7 +121,7 @@ struct c8sectpfei {
 #define SYS_CFG_NUM_RAM		0x214
 #define SYS_CFG_NUM_TP		0x218
 
-/* Input Block Regs */
+ 
 
 #define C8SECTPFE_INPUTBLK_OFFSET	0x1000
 #define C8SECTPFE_CHANNEL_OFFSET(x)	((x*0x40) + C8SECTPFE_INPUTBLK_OFFSET)
@@ -194,20 +186,12 @@ struct c8sectpfei {
 #define C8SECTPFE_SYS_RESET              BIT(1)
 #define C8SECTPFE_SYS_ENABLE             BIT(0)
 
-/*
- * Pointer record data structure required for each input block
- * see Table 82 on page 167 of functional specification.
- */
+ 
 
-#define DMA_PRDS_MEMBASE	0x0 /* Internal sram base address */
-#define DMA_PRDS_MEMTOP		0x4 /* Internal sram top address */
+#define DMA_PRDS_MEMBASE	0x0  
+#define DMA_PRDS_MEMTOP		0x4  
 
-/*
- * TS packet size, including tag bytes added by input block,
- * rounded up to the next multiple of 8 bytes. The packet size,
- * including any tagging bytes and rounded up to the nearest
- * multiple of 8 bytes must be less than 255 bytes.
- */
+ 
 #define DMA_PRDS_PKTSIZE	0x8
 #define DMA_PRDS_TPENABLE	0xc
 
@@ -228,16 +212,16 @@ struct c8sectpfei {
 #define DMA_MEMDMA_DMEM (DMA_MEMDMA_OFFSET + DMA_DMEM_OFFSET)
 #define DMA_MEMDMA_IMEM (DMA_MEMDMA_OFFSET + DMA_IMEM_OFFSET)
 
-/* XP70 Slim core regs */
+ 
 #define DMA_CPU_ID	(DMA_MEMDMA_OFFSET + DMA_CPU + 0x0)
 #define DMA_CPU_VCR	(DMA_MEMDMA_OFFSET + DMA_CPU + 0x4)
 #define DMA_CPU_RUN	(DMA_MEMDMA_OFFSET + DMA_CPU + 0x8)
 #define DMA_CPU_CLOCKGATE	(DMA_MEMDMA_OFFSET + DMA_CPU + 0xc)
 #define DMA_CPU_PC	(DMA_MEMDMA_OFFSET + DMA_CPU + 0x20)
 
-/* Enable Interrupt for a IB */
+ 
 #define DMA_PER_TPn_DREQ_MASK	(DMA_MEMDMA_OFFSET + DMA_PER_OFFSET + 0xd00)
-/* Ack interrupt by setting corresponding bit */
+ 
 #define DMA_PER_TPn_DACK_SET	(DMA_MEMDMA_OFFSET + DMA_PER_OFFSET + 0xd80)
 #define DMA_PER_TPn_DREQ	(DMA_MEMDMA_OFFSET + DMA_PER_OFFSET + 0xe00)
 #define DMA_PER_TPn_DACK	(DMA_MEMDMA_OFFSET + DMA_PER_OFFSET + 0xe80)
@@ -262,9 +246,9 @@ struct c8sectpfei {
 #define DMA_PER_PAT_PTR		(DMA_MEMDMA_OFFSET + DMA_PER_OFFSET + 0xff4)
 #define DMA_PER_SLEEP_MASK	(DMA_MEMDMA_OFFSET + DMA_PER_OFFSET + 0xff8)
 #define DMA_PER_SLEEP_COUNTER	(DMA_MEMDMA_OFFSET + DMA_PER_OFFSET + 0xffc)
-/* #define DMA_RF_CPUREGn	DMA_RFBASEADDR n=0 to 15) slim regsa */
+ 
 
-/* The following are from DMA_DMEM_BaseAddress */
+ 
 #define DMA_FIRMWARE_VERSION	(DMA_MEMDMA_OFFSET + DMA_DMEM_OFFSET + 0x0)
 #define DMA_PTRREC_BASE		(DMA_MEMDMA_OFFSET + DMA_DMEM_OFFSET + 0x4)
 #define DMA_PTRREC_INPUT_OFFSET	(DMA_MEMDMA_OFFSET + DMA_DMEM_OFFSET + 0x8)
@@ -275,7 +259,7 @@ struct c8sectpfei {
 
 #define DMA_FIRMWARE_CONFIG	(DMA_MEMDMA_OFFSET + DMA_DMEM_OFFSET + 0x14)
 
-/* Regs for PID Filter */
+ 
 
 #define PIDF_OFFSET		0x2800
 #define PIDF_BASE(n)		((n*4) + PIDF_OFFSET)
@@ -284,4 +268,4 @@ struct c8sectpfei {
 #define PIDF_LEAK_COUNT_RESET	(PIDF_OFFSET + 0x110)
 #define PIDF_LEAK_COUNTER	(PIDF_OFFSET + 0x114)
 
-#endif /* _C8SECTPFE_CORE_H_ */
+#endif  

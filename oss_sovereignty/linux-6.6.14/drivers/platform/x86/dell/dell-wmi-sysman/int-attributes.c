@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Functions corresponding to integer type attributes under BIOS Integer GUID for use with
- * dell-wmi-sysman
- *
- *  Copyright (c) 2020 Dell Inc.
- */
+
+ 
 
 #include "dell-wmi-sysman.h"
 
@@ -21,7 +16,7 @@ static ssize_t current_value_show(struct kobject *kobj, struct kobj_attribute *a
 	if (instance_id < 0)
 		return instance_id;
 
-	/* need to use specific instance_id and guid combination to get right data */
+	 
 	obj = get_wmiobj_pointer(instance_id, DELL_WMI_BIOS_INTEGER_ATTRIBUTE_GUID);
 	if (!obj)
 		return -EIO;
@@ -34,11 +29,7 @@ static ssize_t current_value_show(struct kobject *kobj, struct kobj_attribute *a
 	return ret;
 }
 
-/**
- * validate_integer_input() - Validate input of current_value against lower and upper bound
- * @instance_id: The instance on which input is validated
- * @buf: Input value
- */
+ 
 static int validate_integer_input(int instance_id, char *buf)
 {
 	int in_val;
@@ -51,9 +42,7 @@ static int validate_integer_input(int instance_id, char *buf)
 			in_val > wmi_priv.integer_data[instance_id].max_value)
 		return -EINVAL;
 
-	/* workaround for BIOS error.
-	 * validate input to avoid setting 0 when integer input passed with + sign
-	 */
+	 
 	if (*buf == '+')
 		memmove(buf, (buf + 1), strlen(buf + 1) + 1);
 
@@ -131,12 +120,7 @@ int alloc_int_data(void)
 	return ret;
 }
 
-/**
- * populate_int_data() - Populate all properties of an instance under integer attribute
- * @integer_obj: ACPI object with integer data
- * @instance_id: The instance to enumerate
- * @attr_name_kobj: The parent kernel object
- */
+ 
 int populate_int_data(union acpi_object *integer_obj, int instance_id,
 			struct kobject *attr_name_kobj)
 {
@@ -177,11 +161,7 @@ int populate_int_data(union acpi_object *integer_obj, int instance_id,
 	return sysfs_create_group(attr_name_kobj, &integer_attr_group);
 }
 
-/**
- * exit_int_attributes() - Clear all attribute data
- *
- * Clears all data allocated for this group of attributes
- */
+ 
 void exit_int_attributes(void)
 {
 	int instance_id;

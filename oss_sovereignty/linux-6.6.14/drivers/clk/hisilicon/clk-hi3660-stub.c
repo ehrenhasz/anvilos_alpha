@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Hisilicon clock driver
- *
- * Copyright (c) 2013-2017 Hisilicon Limited.
- * Copyright (c) 2017 Linaro Limited.
- *
- * Author: Kai Zhao <zhaokai1@hisilicon.com>
- *	    Tao Wang <kevin.wangtao@hisilicon.com>
- *	    Leo Yan <leo.yan@linaro.org>
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/device.h>
@@ -59,10 +50,7 @@ static unsigned long hi3660_stub_clk_recalc_rate(struct clk_hw *hw,
 {
 	struct hi3660_stub_clk *stub_clk = to_stub_clk(hw);
 
-	/*
-	 * LPM3 writes back the CPU frequency in shared SRAM so read
-	 * back the frequency.
-	 */
+	 
 	stub_clk->rate = readl(freq_reg + (stub_clk->id << 2)) * MHZ;
 	return stub_clk->rate;
 }
@@ -70,10 +58,7 @@ static unsigned long hi3660_stub_clk_recalc_rate(struct clk_hw *hw,
 static long hi3660_stub_clk_round_rate(struct clk_hw *hw, unsigned long rate,
 				       unsigned long *prate)
 {
-	/*
-	 * LPM3 handles rate rounding so just return whatever
-	 * rate is requested.
-	 */
+	 
 	return rate;
 }
 
@@ -128,13 +113,13 @@ static int hi3660_stub_clk_probe(struct platform_device *pdev)
 	unsigned int i;
 	int ret;
 
-	/* Use mailbox client without blocking */
+	 
 	stub_clk_chan.cl.dev = dev;
 	stub_clk_chan.cl.tx_done = NULL;
 	stub_clk_chan.cl.tx_block = false;
 	stub_clk_chan.cl.knows_txdone = false;
 
-	/* Allocate mailbox channel */
+	 
 	stub_clk_chan.mbox = mbox_request_channel(&stub_clk_chan.cl, 0);
 	if (IS_ERR(stub_clk_chan.mbox))
 		return PTR_ERR(stub_clk_chan.mbox);

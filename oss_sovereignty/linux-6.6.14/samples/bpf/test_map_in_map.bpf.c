@@ -1,10 +1,4 @@
-/*
- * Copyright (c) 2017 Facebook
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of version 2 of the GNU General Public
- * License as published by the Free Software Foundation.
- */
+ 
 #define KBUILD_MODNAME "foo"
 #include "vmlinux.h"
 #include <linux/version.h>
@@ -17,7 +11,7 @@
 #define EINVAL 22
 #define ENOENT 2
 
-/* map #0 */
+ 
 struct inner_a {
 	__uint(type, BPF_MAP_TYPE_ARRAY);
 	__type(key, u32);
@@ -25,7 +19,7 @@ struct inner_a {
 	__uint(max_entries, MAX_NR_PORTS);
 } port_a SEC(".maps");
 
-/* map #1 */
+ 
 struct inner_h {
 	__uint(type, BPF_MAP_TYPE_HASH);
 	__type(key, u32);
@@ -33,7 +27,7 @@ struct inner_h {
 	__uint(max_entries, 1);
 } port_h SEC(".maps");
 
-/* map #2 */
+ 
 struct {
 	__uint(type, BPF_MAP_TYPE_HASH);
 	__type(key, u32);
@@ -41,7 +35,7 @@ struct {
 	__uint(max_entries, 1);
 } reg_result_h SEC(".maps");
 
-/* map #3 */
+ 
 struct {
 	__uint(type, BPF_MAP_TYPE_HASH);
 	__type(key, u32);
@@ -49,28 +43,28 @@ struct {
 	__uint(max_entries, 1);
 } inline_result_h SEC(".maps");
 
-/* map #4 */ /* Test case #0 */
+   
 struct {
 	__uint(type, BPF_MAP_TYPE_ARRAY_OF_MAPS);
 	__uint(max_entries, MAX_NR_PORTS);
 	__uint(key_size, sizeof(u32));
-	__array(values, struct inner_a); /* use inner_a as inner map */
+	__array(values, struct inner_a);  
 } a_of_port_a SEC(".maps");
 
-/* map #5 */ /* Test case #1 */
+   
 struct {
 	__uint(type, BPF_MAP_TYPE_HASH_OF_MAPS);
 	__uint(max_entries, 1);
 	__uint(key_size, sizeof(u32));
-	__array(values, struct inner_a); /* use inner_a as inner map */
+	__array(values, struct inner_a);  
 } h_of_port_a SEC(".maps");
 
-/* map #6 */ /* Test case #2 */
+   
 struct {
 	__uint(type, BPF_MAP_TYPE_HASH_OF_MAPS);
 	__uint(max_entries, 1);
 	__uint(key_size, sizeof(u32));
-	__array(values, struct inner_h); /* use inner_h as inner map */
+	__array(values, struct inner_h);  
 } h_of_port_h SEC(".maps");
 
 static __always_inline int do_reg_lookup(void *inner_map, u32 port)

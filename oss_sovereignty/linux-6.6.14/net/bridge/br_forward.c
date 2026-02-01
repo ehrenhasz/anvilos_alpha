@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *	Forwarding decision
- *	Linux ethernet bridge
- *
- *	Authors:
- *	Lennert Buytenhek		<buytenh@gnu.org>
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/slab.h>
@@ -17,7 +11,7 @@
 #include <linux/netfilter_bridge.h>
 #include "br_private.h"
 
-/* Don't forward packets to originating port or forwarding disabled */
+ 
 static inline int should_deliver(const struct net_bridge_port *p,
 				 const struct sk_buff *skb)
 {
@@ -78,9 +72,7 @@ static void __br_forward(const struct net_bridge_port *to,
 	struct net *net;
 	int br_hook;
 
-	/* Mark the skb for forwarding offload early so that br_handle_vlan()
-	 * can know whether to pop the VLAN header on egress or keep it.
-	 */
+	 
 	nbp_switchdev_frame_mark_tx_fwd_offload(to, skb);
 
 	vg = nbp_vlan_group_rcu(to);
@@ -132,22 +124,14 @@ static int deliver_clone(const struct net_bridge_port *prev,
 	return 0;
 }
 
-/**
- * br_forward - forward a packet to a specific port
- * @to: destination port
- * @skb: packet being forwarded
- * @local_rcv: packet will be received locally after forwarding
- * @local_orig: packet is locally originated
- *
- * Should be called with rcu_read_lock.
- */
+ 
 void br_forward(const struct net_bridge_port *to,
 		struct sk_buff *skb, bool local_rcv, bool local_orig)
 {
 	if (unlikely(!to))
 		goto out;
 
-	/* redirect to backup link if the destination port is down */
+	 
 	if (rcu_access_pointer(to->backup_port) && !netif_carrier_ok(to->dev)) {
 		struct net_bridge_port *backup_port;
 
@@ -196,7 +180,7 @@ out:
 	return p;
 }
 
-/* called under rcu_read_lock */
+ 
 void br_flood(struct net_bridge *br, struct sk_buff *skb,
 	      enum br_pkt_type pkt_type, bool local_rcv, bool local_orig,
 	      u16 vid)
@@ -207,9 +191,7 @@ void br_flood(struct net_bridge *br, struct sk_buff *skb,
 	br_tc_skb_miss_set(skb, pkt_type != BR_PKT_BROADCAST);
 
 	list_for_each_entry_rcu(p, &br->port_list, list) {
-		/* Do not flood unicast traffic to ports that turn it off, nor
-		 * other traffic if flood off, except for traffic we originate
-		 */
+		 
 		switch (pkt_type) {
 		case BR_PKT_UNICAST:
 			if (!(p->flags & BR_FLOOD))
@@ -225,7 +207,7 @@ void br_flood(struct net_bridge *br, struct sk_buff *skb,
 			break;
 		}
 
-		/* Do not flood to ports that enable proxy ARP */
+		 
 		if (p->flags & BR_PROXYARP)
 			continue;
 		if (BR_INPUT_SKB_CB(skb)->proxyarp_replied &&
@@ -262,7 +244,7 @@ static void maybe_deliver_addr(struct net_bridge_port *p, struct sk_buff *skb,
 	if (!should_deliver(p, skb))
 		return;
 
-	/* Even with hairpin, no soliloquies - prevent breaking IPv6 DAD */
+	 
 	if (skb->dev == p->dev && ether_addr_equal(src, addr))
 		return;
 
@@ -278,7 +260,7 @@ static void maybe_deliver_addr(struct net_bridge_port *p, struct sk_buff *skb,
 	__br_forward(p, skb, local_orig);
 }
 
-/* called with rcu_read_lock */
+ 
 void br_multicast_flood(struct net_bridge_mdb_entry *mdst,
 			struct sk_buff *skb,
 			struct net_bridge_mcast *brmctx,

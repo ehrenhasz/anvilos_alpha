@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright (C) 2011-2013 Jozsef Kadlecsik <kadlec@netfilter.org> */
 
-/* Kernel module implementing an IP set type: the hash:net,iface type */
+ 
+
+ 
 
 #include <linux/jhash.h>
 #include <linux/module.h>
@@ -20,21 +20,21 @@
 #include <linux/netfilter/ipset/ip_set_hash.h>
 
 #define IPSET_TYPE_REV_MIN	0
-/*				1    nomatch flag support added */
-/*				2    /0 support added */
-/*				3    Counters support added */
-/*				4    Comments support added */
-/*				5    Forceadd support added */
-/*				6    skbinfo support added */
-/*				7    interface wildcard support added */
-#define IPSET_TYPE_REV_MAX	8 /* bucketsize, initval support added */
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+#define IPSET_TYPE_REV_MAX	8  
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Jozsef Kadlecsik <kadlec@netfilter.org>");
 IP_SET_MODULE_DESC("hash:net,iface", IPSET_TYPE_REV_MIN, IPSET_TYPE_REV_MAX);
 MODULE_ALIAS("ip_set_hash:net,iface");
 
-/* Type specific function prefix */
+ 
 #define HTYPE		hash_netiface
 #define IP_SET_HASH_WITH_NETS
 #define IP_SET_HASH_WITH_MULTI
@@ -42,7 +42,7 @@ MODULE_ALIAS("ip_set_hash:net,iface");
 
 #define STRSCPY(a, b)	strscpy(a, b, IFNAMSIZ)
 
-/* IPv4 variant */
+ 
 
 struct hash_netiface4_elem_hashed {
 	__be32 ip;
@@ -52,7 +52,7 @@ struct hash_netiface4_elem_hashed {
 	u8 elem;
 };
 
-/* Member elements */
+ 
 struct hash_netiface4_elem {
 	__be32 ip;
 	u8 physdev;
@@ -63,7 +63,7 @@ struct hash_netiface4_elem {
 	char iface[IFNAMSIZ];
 };
 
-/* Common functions */
+ 
 
 static bool
 hash_netiface4_data_equal(const struct hash_netiface4_elem *ip1,
@@ -277,7 +277,7 @@ hash_netiface4_uadt(struct ip_set *set, struct nlattr *tb[],
 	return ret;
 }
 
-/* IPv6 variant */
+ 
 
 struct hash_netiface6_elem_hashed {
 	union nf_inet_addr ip;
@@ -297,7 +297,7 @@ struct hash_netiface6_elem {
 	char iface[IFNAMSIZ];
 };
 
-/* Common functions */
+ 
 
 static bool
 hash_netiface6_data_equal(const struct hash_netiface6_elem *ip1,

@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * c8sectpfe-common.c - C8SECTPFE STi DVB driver
- *
- * Copyright (c) STMicroelectronics 2015
- *
- *   Author: Peter Griffin <peter.griffin@linaro.org>
- *
- */
+
+ 
 #include <linux/completion.h>
 #include <linux/delay.h>
 #include <linux/device.h>
@@ -163,7 +156,7 @@ static struct c8sectpfe *c8sectpfe_create(struct c8sectpfei *fei,
 				"register_dvb feed=%d failed (errno = %d)\n",
 				result, i);
 
-			/* we take a all or nothing approach */
+			 
 			for (j = 0; j < i; j++)
 				unregister_dvb(&c8sectpfe->demux[j]);
 			goto err3;

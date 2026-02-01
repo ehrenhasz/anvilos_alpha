@@ -1,25 +1,4 @@
-/*
- * Copyright 2021 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 
 #define SWSMU_CODE_LAYER_L2
 
@@ -33,25 +12,21 @@
 #include "smu_cmn.h"
 #include "soc15_common.h"
 
-/*
- * DO NOT use these for err/warn/info/debug messages.
- * Use dev_err, dev_warn, dev_info and dev_dbg instead.
- * They are more MGPU friendly.
- */
+ 
 
 #undef pr_err
 #undef pr_warn
 #undef pr_info
 #undef pr_debug
 
-/* unit: MHz */
+ 
 #define CYAN_SKILLFISH_SCLK_MIN			1000
 #define CYAN_SKILLFISH_SCLK_MAX			2000
 
-/* unit: mV */
+ 
 #define CYAN_SKILLFISH_VDDC_MIN			700
 #define CYAN_SKILLFISH_VDDC_MAX			1129
-#define CYAN_SKILLFISH_VDDC_MAGIC			5118 // 0x13fe
+#define CYAN_SKILLFISH_VDDC_MAGIC			5118 
 
 static struct gfx_user_settings {
 	uint32_t sclk;
@@ -362,7 +337,7 @@ static bool cyan_skillfish_is_dpm_running(struct smu_context *smu)
 	int ret = 0;
 	uint64_t feature_enabled;
 
-	/* we need to re-init after suspend so return false */
+	 
 	if (adev->in_suspend)
 		return false;
 
@@ -370,9 +345,7 @@ static bool cyan_skillfish_is_dpm_running(struct smu_context *smu)
 	if (ret)
 		return false;
 
-	/*
-	 * cyan_skillfish specific, query default sclk inseted of hard code.
-	 */
+	 
 	if (!cyan_skillfish_sclk_default)
 		cyan_skillfish_get_smu_metrics_data(smu, METRICS_CURR_GFXCLK,
 			&cyan_skillfish_sclk_default);
@@ -512,10 +485,7 @@ static int cyan_skillfish_od_edit_dpm_table(struct smu_context *smu,
 				return ret;
 			}
 		} else {
-			/*
-			 * PMFW accepts SVI2 VID code, convert voltage to VID:
-			 * vid = (uint32_t)((1.55 - voltage) * 160.0 + 0.00001)
-			 */
+			 
 			vid = (1550 - cyan_skillfish_user_settings.vddc) * 160 / 1000;
 			ret = smu_cmn_send_smc_msg_with_param(smu, SMU_MSG_ForceGfxVid, vid, NULL);
 			if (ret) {

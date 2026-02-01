@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2016 Red Hat
- * Author: Rob Clark <robdclark@gmail.com>
- */
+
+ 
 
 #include <linux/vmalloc.h>
 #include <linux/sched/mm.h>
@@ -12,9 +9,7 @@
 #include "msm_gpu.h"
 #include "msm_gpu_trace.h"
 
-/* Default disabled for now until it has some more testing on the different
- * iommu combinations that can be paired with the driver:
- */
+ 
 static bool enable_eviction = true;
 MODULE_PARM_DESC(enable_eviction, "Enable swappable GEM buffers");
 module_param(enable_eviction, bool, 0600);
@@ -109,7 +104,7 @@ msm_gem_shrinker_scan(struct shrinker *shrinker, struct shrink_control *sc)
 		unsigned long freed;
 		unsigned long remaining;
 	} stages[] = {
-		/* Stages of progressively more aggressive/expensive reclaim: */
+		 
 		{ &priv->lru.dontneed, purge,        true },
 		{ &priv->lru.willneed, evict,        can_swap() },
 		{ &priv->lru.dontneed, active_purge, can_block(sc) },
@@ -158,10 +153,7 @@ msm_gem_shrinker_shrink(struct drm_device *dev, unsigned long nr_to_scan)
 }
 #endif
 
-/* since we don't know any better, lets bail after a few
- * and if necessary the shrinker will be invoked again.
- * Seems better than unmapping *everything*
- */
+ 
 static const int vmap_shrink_limit = 15;
 
 static bool
@@ -204,12 +196,7 @@ msm_gem_shrinker_vmap(struct notifier_block *nb, unsigned long event, void *ptr)
 	return NOTIFY_DONE;
 }
 
-/**
- * msm_gem_shrinker_init - Initialize msm shrinker
- * @dev: drm device
- *
- * This function registers and sets up the msm shrinker.
- */
+ 
 void msm_gem_shrinker_init(struct drm_device *dev)
 {
 	struct msm_drm_private *priv = dev->dev_private;
@@ -222,12 +209,7 @@ void msm_gem_shrinker_init(struct drm_device *dev)
 	WARN_ON(register_vmap_purge_notifier(&priv->vmap_notifier));
 }
 
-/**
- * msm_gem_shrinker_cleanup - Clean up msm shrinker
- * @dev: drm device
- *
- * This function unregisters the msm shrinker.
- */
+ 
 void msm_gem_shrinker_cleanup(struct drm_device *dev)
 {
 	struct msm_drm_private *priv = dev->dev_private;

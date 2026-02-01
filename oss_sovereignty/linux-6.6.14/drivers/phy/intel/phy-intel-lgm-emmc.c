@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Intel eMMC PHY driver
- * Copyright (C) 2019 Intel, Corp.
- */
+
+ 
 
 #include <linux/bits.h>
 #include <linux/clk.h>
@@ -15,7 +12,7 @@
 #include <linux/platform_device.h>
 #include <linux/regmap.h>
 
-/* eMMC phy register definitions */
+ 
 #define EMMC_PHYCTRL0_REG	0xa8
 #define DR_TY_MASK		GENMASK(30, 28)
 #define DR_TY_SHIFT(x)		(((x) << 28) & DR_TY_MASK)
@@ -57,10 +54,7 @@ static int intel_emmc_phy_power(struct phy *phy, bool on_off)
 	unsigned long rate;
 	int ret, quot;
 
-	/*
-	 * Keep phyctrl_pdb and phyctrl_endll low to allow
-	 * initialization of CALIO state M/C DFFs
-	 */
+	 
 	ret = regmap_update_bits(priv->syscfg, EMMC_PHYCTRL1_REG, PDB_MASK,
 				 PDB_SHIFT(0));
 	if (ret) {
@@ -68,7 +62,7 @@ static int intel_emmc_phy_power(struct phy *phy, bool on_off)
 		return ret;
 	}
 
-	/* Already finish power_off above */
+	 
 	if (!on_off)
 		return 0;
 
@@ -78,11 +72,7 @@ static int intel_emmc_phy_power(struct phy *phy, bool on_off)
 		dev_warn(&phy->dev, "Unsupported rate: %lu\n", rate);
 	freqsel = clamp_t(int, quot, FRQSEL_25M, FRQSEL_150M);
 
-	/*
-	 * According to the user manual, calpad calibration
-	 * cycle takes more than 2us without the minimal recommended
-	 * value, so we may need a little margin here
-	 */
+	 
 	udelay(5);
 
 	ret = regmap_update_bits(priv->syscfg, EMMC_PHYCTRL1_REG, PDB_MASK,
@@ -92,13 +82,7 @@ static int intel_emmc_phy_power(struct phy *phy, bool on_off)
 		return ret;
 	}
 
-	/*
-	 * According to the user manual, it asks driver to wait 5us for
-	 * calpad busy trimming. However it is documented that this value is
-	 * PVT(A.K.A process,voltage and temperature) relevant, so some
-	 * failure cases are found which indicates we should be more tolerant
-	 * to calpad busy trimming.
-	 */
+	 
 	ret = regmap_read_poll_timeout(priv->syscfg, EMMC_PHYSTAT_REG,
 				       caldone, IS_CALDONE(caldone),
 				       0, 50);
@@ -107,7 +91,7 @@ static int intel_emmc_phy_power(struct phy *phy, bool on_off)
 		return ret;
 	}
 
-	/* Set the frequency of the DLL operation */
+	 
 	ret = regmap_update_bits(priv->syscfg, EMMC_PHYCTRL2_REG, FRQSEL_MASK,
 				 FRQSEL_SHIFT(freqsel));
 	if (ret) {
@@ -115,7 +99,7 @@ static int intel_emmc_phy_power(struct phy *phy, bool on_off)
 		return ret;
 	}
 
-	/* Turn on the DLL */
+	 
 	ret = regmap_update_bits(priv->syscfg, EMMC_PHYCTRL1_REG, ENDLL_MASK,
 				 ENDLL_SHIFT(1));
 	if (ret) {
@@ -123,20 +107,7 @@ static int intel_emmc_phy_power(struct phy *phy, bool on_off)
 		return ret;
 	}
 
-	/*
-	 * After enabling analog DLL circuits docs say that we need 10.2 us if
-	 * our source clock is at 50 MHz and that lock time scales linearly
-	 * with clock speed.  If we are powering on the PHY and the card clock
-	 * is super slow (like 100 kHZ) this could take as long as 5.1 ms as
-	 * per the math: 10.2 us * (50000000 Hz / 100000 Hz) => 5.1 ms
-	 * Hopefully we won't be running at 100 kHz, but we should still make
-	 * sure we wait long enough.
-	 *
-	 * NOTE: There appear to be corner cases where the DLL seems to take
-	 * extra long to lock for reasons that aren't understood.  In some
-	 * extreme cases we've seen it take up to over 10ms (!).  We'll be
-	 * generous and give it 50ms.
-	 */
+	 
 	ret = regmap_read_poll_timeout(priv->syscfg,
 				       EMMC_PHYSTAT_REG,
 				       dllrdy, IS_DLLRDY(dllrdy),
@@ -153,19 +124,7 @@ static int intel_emmc_phy_init(struct phy *phy)
 {
 	struct intel_emmc_phy *priv = phy_get_drvdata(phy);
 
-	/*
-	 * We purposely get the clock here and not in probe to avoid the
-	 * circular dependency problem. We expect:
-	 * - PHY driver to probe
-	 * - SDHCI driver to start probe
-	 * - SDHCI driver to register it's clock
-	 * - SDHCI driver to get the PHY
-	 * - SDHCI driver to init the PHY
-	 *
-	 * The clock is optional, so upon any error just return it like
-	 * any other error to user.
-	 *
-	 */
+	 
 	priv->emmcclk = clk_get_optional(&phy->dev, "emmcclk");
 	if (IS_ERR(priv->emmcclk)) {
 		dev_err(&phy->dev, "ERROR: getting emmcclk\n");
@@ -189,7 +148,7 @@ static int intel_emmc_phy_power_on(struct phy *phy)
 	struct intel_emmc_phy *priv = phy_get_drvdata(phy);
 	int ret;
 
-	/* Drive impedance: 50 Ohm */
+	 
 	ret = regmap_update_bits(priv->syscfg, EMMC_PHYCTRL0_REG, DR_TY_MASK,
 				 DR_TY_SHIFT(6));
 	if (ret) {
@@ -197,7 +156,7 @@ static int intel_emmc_phy_power_on(struct phy *phy)
 		return ret;
 	}
 
-	/* Output tap delay: disable */
+	 
 	ret = regmap_update_bits(priv->syscfg, EMMC_PHYCTRL0_REG, OTAPDLYENA,
 				 0);
 	if (ret) {
@@ -205,7 +164,7 @@ static int intel_emmc_phy_power_on(struct phy *phy)
 		return ret;
 	}
 
-	/* Output tap delay */
+	 
 	ret = regmap_update_bits(priv->syscfg, EMMC_PHYCTRL0_REG,
 				 OTAPDLYSEL_MASK, OTAPDLYSEL_SHIFT(4));
 	if (ret) {
@@ -213,13 +172,13 @@ static int intel_emmc_phy_power_on(struct phy *phy)
 		return ret;
 	}
 
-	/* Power up eMMC phy analog blocks */
+	 
 	return intel_emmc_phy_power(phy, true);
 }
 
 static int intel_emmc_phy_power_off(struct phy *phy)
 {
-	/* Power down eMMC phy analog blocks */
+	 
 	return intel_emmc_phy_power(phy, false);
 }
 
@@ -243,7 +202,7 @@ static int intel_emmc_phy_probe(struct platform_device *pdev)
 	if (!priv)
 		return -ENOMEM;
 
-	/* Get eMMC phy (accessed via chiptop) regmap */
+	 
 	priv->syscfg = syscon_regmap_lookup_by_phandle(np, "intel,syscon");
 	if (IS_ERR(priv->syscfg)) {
 		dev_err(dev, "failed to find syscon\n");

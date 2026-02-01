@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2019 NVIDIA Corporation. All rights reserved.
- *
- * NVIDIA USB Type-C Alt Mode Driver
- */
+
+ 
 #include <linux/module.h>
 #include <linux/usb/typec_altmode.h>
 #include <linux/usb/typec_dp.h>

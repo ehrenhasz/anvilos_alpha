@@ -1,25 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Historical Service Time
- *
- *  Keeps a time-weighted exponential moving average of the historical
- *  service time. Estimates future service time based on the historical
- *  service time and the number of outstanding requests.
- *
- *  Marks paths stale if they have not finished within hst *
- *  num_paths. If a path is stale and unused, we will send a single
- *  request to probe in case the path has improved. This situation
- *  generally arises if the path is so much worse than others that it
- *  will never have the best estimated service time, or if the entire
- *  multipath device is unused. If a path is stale and in use, limit the
- *  number of requests it can receive with the assumption that the path
- *  has become degraded.
- *
- *  To avoid repeatedly calculating exponents for time weighting, times
- *  are split into HST_WEIGHT_COUNT buckets each (1 >> HST_BUCKET_SHIFT)
- *  ns, and the weighting is pre-calculated.
- *
- */
+
+ 
 
 #include "dm.h"
 #include "dm-path-selector.h"
@@ -33,12 +13,12 @@
 #define HST_MIN_IO 1
 #define HST_VERSION "0.1.1"
 
-#define HST_FIXED_SHIFT 10  /* 10 bits of decimal precision */
+#define HST_FIXED_SHIFT 10   
 #define HST_FIXED_MAX (ULLONG_MAX >> HST_FIXED_SHIFT)
 #define HST_FIXED_1 (1 << HST_FIXED_SHIFT)
 #define HST_FIXED_95 972
 #define HST_MAX_INFLIGHT HST_FIXED_1
-#define HST_BUCKET_SHIFT 24 /* Buckets are ~ 16ms */
+#define HST_BUCKET_SHIFT 24  
 #define HST_WEIGHT_COUNT 64ULL
 
 struct selector {
@@ -58,7 +38,7 @@ struct path_info {
 
 	spinlock_t lock;
 
-	u64 historical_service_time; /* Fixed point */
+	u64 historical_service_time;  
 
 	u64 stale_after;
 	u64 last_finish;
@@ -66,23 +46,7 @@ struct path_info {
 	u64 outstanding;
 };
 
-/**
- * fixed_power - compute: x^n, in O(log n) time
- *
- * @x:         base of the power
- * @frac_bits: fractional bits of @x
- * @n:         power to raise @x to.
- *
- * By exploiting the relation between the definition of the natural power
- * function: x^n := x*x*...*x (x multiplied by itself for n times), and
- * the binary encoding of numbers used by computers: n := \Sum n_i * 2^i,
- * (where: n_i \elem {0, 1}, the binary vector representing n),
- * we find: x^n := x^(\Sum n_i * 2^i) := \Prod x^(n_i * 2^i), which is
- * of course trivially computable in O(log_2 n), the length of our binary
- * vector.
- *
- * (see: kernel/sched/loadavg.c)
- */
+ 
 static u64 fixed_power(u64 x, unsigned int frac_bits, unsigned int n)
 {
 	unsigned long result = 1UL << frac_bits;
@@ -106,19 +70,7 @@ static u64 fixed_power(u64 x, unsigned int frac_bits, unsigned int n)
 	return result;
 }
 
-/*
- * Calculate the next value of an exponential moving average
- * a_1 = a_0 * e + a * (1 - e)
- *
- * @last: [0, ULLONG_MAX >> HST_FIXED_SHIFT]
- * @next: [0, ULLONG_MAX >> HST_FIXED_SHIFT]
- * @weight: [0, HST_FIXED_1]
- *
- * Note:
- *   To account for multiple periods in the same calculation,
- *   a_n = a_0 * e^n + a * (1 - e^n),
- *   so call fixed_ema(last, next, pow(weight, N))
- */
+ 
 static u64 fixed_ema(u64 last, u64 next, u64 weight)
 {
 	last *= weight;
@@ -141,9 +93,7 @@ static struct selector *alloc_selector(void)
 	return s;
 }
 
-/*
- * Get the weight for a given time span.
- */
+ 
 static u64 hst_weight(struct path_selector *ps, u64 delta)
 {
 	struct selector *s = ps->context;
@@ -153,12 +103,7 @@ static u64 hst_weight(struct path_selector *ps, u64 delta)
 	return s->weights[bucket];
 }
 
-/*
- * Set up the weights array.
- *
- * weights[len-1] = 0
- * weights[n] = base ^ (n + 1)
- */
+ 
 static void hst_set_weights(struct path_selector *ps, unsigned int base)
 {
 	struct selector *s = ps->context;
@@ -179,17 +124,7 @@ static int hst_create(struct path_selector *ps, unsigned int argc, char **argv)
 	unsigned int threshold_multiplier = 0;
 	char dummy;
 
-	/*
-	 * Arguments: [<base_weight> [<threshold_multiplier>]]
-	 *   <base_weight>: Base weight for ema [0, 1024) 10-bit fixed point. A
-	 *                  value of 0 will completely ignore any history.
-	 *                  If not given, default (HST_FIXED_95) is used.
-	 *   <threshold_multiplier>: Minimum threshold multiplier for paths to
-	 *                  be considered different. That is, a path is
-	 *                  considered different iff (p1 > N * p2) where p1
-	 *                  is the path with higher service time. A threshold
-	 *                  of 1 or 0 has no effect. Defaults to 0.
-	 */
+	 
 	if (argc > 2)
 		return -EINVAL;
 
@@ -273,11 +208,7 @@ static int hst_add_path(struct path_selector *ps, struct dm_path *path,
 	char dummy;
 	unsigned long flags;
 
-	/*
-	 * Arguments: [<repeat_count>]
-	 *   <repeat_count>: The number of I/Os before switching path.
-	 *                   If not given, default (HST_MIN_IO) is used.
-	 */
+	 
 	if (argc > 1) {
 		*error = "historical-service-time ps: incorrect number of arguments";
 		return -EINVAL;
@@ -288,7 +219,7 @@ static int hst_add_path(struct path_selector *ps, struct dm_path *path,
 		return -EINVAL;
 	}
 
-	/* allocate the path */
+	 
 	pi = kmalloc(sizeof(*pi), GFP_KERNEL);
 	if (!pi) {
 		*error = "historical-service-time ps: Error allocating path context";
@@ -354,16 +285,7 @@ static void hst_fill_compare(struct path_info *pi, u64 *hst,
 	spin_unlock_irqrestore(&pi->lock, flags);
 }
 
-/*
- * Compare the estimated service time of 2 paths, pi1 and pi2,
- * for the incoming I/O.
- *
- * Returns:
- * < 0 : pi1 is better
- * 0   : no difference between pi1 and pi2
- * > 0 : pi2 is better
- *
- */
+ 
 static long long hst_compare(struct path_info *pi1, struct path_info *pi2,
 			     u64 time_now, struct path_selector *ps)
 {
@@ -375,11 +297,7 @@ static long long hst_compare(struct path_info *pi1, struct path_info *pi2,
 	hst_fill_compare(pi1, &hst1, &out1, &stale1);
 	hst_fill_compare(pi2, &hst2, &out2, &stale2);
 
-	/* Check here if estimated latency for two paths are too similar.
-	 * If this is the case, we skip extra calculation and just compare
-	 * outstanding requests. In this case, any unloaded paths will
-	 * be preferred.
-	 */
+	 
 	if (hst1 > hst2)
 		over_threshold = hst1 > (s->threshold_multiplier * hst2);
 	else
@@ -388,35 +306,26 @@ static long long hst_compare(struct path_info *pi1, struct path_info *pi2,
 	if (!over_threshold)
 		return out1 - out2;
 
-	/*
-	 * If an unloaded path is stale, choose it. If both paths are unloaded,
-	 * choose path that is the most stale.
-	 * (If one path is loaded, choose the other)
-	 */
+	 
 	if ((!out1 && stale1 < time_now) || (!out2 && stale2 < time_now) ||
 	    (!out1 && !out2))
 		return (!out2 * stale1) - (!out1 * stale2);
 
-	/* Compare estimated service time. If outstanding is the same, we
-	 * don't need to multiply
-	 */
+	 
 	if (out1 == out2) {
 		pi2_better = hst1 > hst2;
 	} else {
-		/* Potential overflow with out >= 1024 */
+		 
 		if (unlikely(out1 >= HST_MAX_INFLIGHT ||
 			     out2 >= HST_MAX_INFLIGHT)) {
-			/* If over 1023 in-flights, we may overflow if hst
-			 * is at max. (With this shift we still overflow at
-			 * 1048576 in-flights, which is high enough).
-			 */
+			 
 			hst1 >>= HST_FIXED_SHIFT;
 			hst2 >>= HST_FIXED_SHIFT;
 		}
 		pi2_better = (1 + out1) * hst1 > (1 + out2) * hst2;
 	}
 
-	/* In the case that the 'winner' is stale, limit to equal usage. */
+	 
 	if (pi2_better) {
 		if (stale2 < time_now)
 			return out1 - out2;
@@ -448,7 +357,7 @@ static struct dm_path *hst_select_path(struct path_selector *ps,
 	if (!best)
 		goto out;
 
-	/* Move last used path to end (least preferred in case of ties) */
+	 
 	list_move_tail(&best->list, &s->valid_paths);
 
 	ret = best->path;
@@ -475,10 +384,7 @@ static u64 path_service_time(struct path_info *pi, u64 start_time)
 {
 	u64 now = ktime_get_ns();
 
-	/* if a previous disk request has finished after this IO was
-	 * sent to the hardware, pretend the submission happened
-	 * serially.
-	 */
+	 
 	if (time_after64(pi->last_finish, start_time))
 		start_time = pi->last_finish;
 
@@ -506,12 +412,7 @@ static int hst_end_io(struct path_selector *ps, struct dm_path *path,
 			  min(st * HST_FIXED_1, HST_FIXED_MAX),
 			  hst_weight(ps, st));
 
-	/*
-	 * On request end, mark path as fresh. If a path hasn't
-	 * finished any requests within the fresh period, the estimated
-	 * service time is considered too optimistic and we limit the
-	 * maximum requests on that path.
-	 */
+	 
 	pi->stale_after = pi->last_finish +
 		(s->valid_count * (pi->historical_service_time >> HST_FIXED_SHIFT));
 

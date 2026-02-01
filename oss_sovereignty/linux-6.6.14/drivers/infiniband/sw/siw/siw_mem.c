@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0 or BSD-3-Clause
 
-/* Authors: Bernard Metzler <bmt@zurich.ibm.com> */
-/* Copyright (c) 2008-2019, IBM Corporation */
+
+ 
+ 
 
 #include <linux/gfp.h>
 #include <rdma/ib_verbs.h>
@@ -13,11 +13,7 @@
 #include "siw.h"
 #include "siw_mem.h"
 
-/*
- * Stag lookup is based on its index part only (24 bits).
- * The code avoids special Stag of zero and tries to randomize
- * STag values between 1 and SIW_STAG_MAX_INDEX.
- */
+ 
 int siw_mem_add(struct siw_device *sdev, struct siw_mem *m)
 {
 	struct xa_limit limit = XA_LIMIT(1, 0x00ffffff);
@@ -30,7 +26,7 @@ int siw_mem_add(struct siw_device *sdev, struct siw_mem *m)
 	    GFP_KERNEL) < 0)
 		return -ENOMEM;
 
-	/* Set the STag index part */
+	 
 	m->stag = id << 8;
 
 	siw_dbg_mem(m, "new MEM object\n");
@@ -38,13 +34,7 @@ int siw_mem_add(struct siw_device *sdev, struct siw_mem *m)
 	return 0;
 }
 
-/*
- * siw_mem_id2obj()
- *
- * resolves memory from stag given by id. might be called from:
- * o process context before sending out of sgl, or
- * o in softirq when resolving target memory
- */
+ 
 struct siw_mem *siw_mem_id2obj(struct siw_device *sdev, int stag_index)
 {
 	struct siw_mem *mem;
@@ -116,7 +106,7 @@ int siw_mr_add_mem(struct siw_mr *mr, struct ib_pd *pd, void *mem_obj,
 	}
 
 	mr->mem = mem;
-	/* Set the STag index part */
+	 
 	mem->stag = id << 8;
 	mr->base_mr.lkey = mr->base_mr.rkey = mem->stag;
 
@@ -129,7 +119,7 @@ void siw_mr_drop_mem(struct siw_mr *mr)
 
 	mem->stag_valid = 0;
 
-	/* make STag invalid visible asap */
+	 
 	smp_mb();
 
 	found = xa_erase(&mem->sdev->mem_xa, mem->stag >> 8);
@@ -152,19 +142,7 @@ void siw_free_mem(struct kref *ref)
 	kfree(mem);
 }
 
-/*
- * siw_check_mem()
- *
- * Check protection domain, STAG state, access permissions and
- * address range for memory object.
- *
- * @pd:		Protection Domain memory should belong to
- * @mem:	memory to be checked
- * @addr:	starting addr of mem
- * @perms:	requested access permissions
- * @len:	len of memory interval to be checked
- *
- */
+ 
 int siw_check_mem(struct ib_pd *pd, struct siw_mem *mem, u64 addr,
 		  enum ib_access_flags perms, int len)
 {
@@ -176,17 +154,13 @@ int siw_check_mem(struct ib_pd *pd, struct siw_mem *mem, u64 addr,
 		siw_dbg_pd(pd, "STag 0x%08x: PD mismatch\n", mem->stag);
 		return -E_PD_MISMATCH;
 	}
-	/*
-	 * check access permissions
-	 */
+	 
 	if ((mem->perms & perms) < perms) {
 		siw_dbg_pd(pd, "permissions 0x%08x < 0x%08x\n",
 			   mem->perms, perms);
 		return -E_ACCESS_PERM;
 	}
-	/*
-	 * Check if access falls into valid memory interval.
-	 */
+	 
 	if (addr < mem->va || addr + len > mem->va + mem->len) {
 		siw_dbg_pd(pd, "MEM interval len %d\n", len);
 		siw_dbg_pd(pd, "[0x%pK, 0x%pK] out of bounds\n",
@@ -202,23 +176,7 @@ int siw_check_mem(struct ib_pd *pd, struct siw_mem *mem, u64 addr,
 	return E_ACCESS_OK;
 }
 
-/*
- * siw_check_sge()
- *
- * Check SGE for access rights in given interval
- *
- * @pd:		Protection Domain memory should belong to
- * @sge:	SGE to be checked
- * @mem:	location of memory reference within array
- * @perms:	requested access permissions
- * @off:	starting offset in SGE
- * @len:	len of memory interval to be checked
- *
- * NOTE: Function references SGE's memory object (mem->obj)
- * if not yet done. New reference is kept if check went ok and
- * released if check failed. If mem->obj is already valid, no new
- * lookup is being done and mem is not released it check fails.
- */
+ 
 int siw_check_sge(struct ib_pd *pd, struct siw_sge *sge, struct siw_mem *mem[],
 		  enum ib_access_flags perms, u32 off, int len)
 {
@@ -239,7 +197,7 @@ int siw_check_sge(struct ib_pd *pd, struct siw_sge *sge, struct siw_mem *mem[],
 		}
 		*mem = new;
 	}
-	/* Check if user re-registered with different STag key */
+	 
 	if (unlikely((*mem)->stag != sge->lkey)) {
 		siw_dbg_mem((*mem), "STag mismatch: 0x%08x\n", sge->lkey);
 		rv = -E_STAG_INVALID;
@@ -281,10 +239,7 @@ void siw_wqe_put_mem(struct siw_wqe *wqe, enum siw_opcode op)
 		break;
 
 	default:
-		/*
-		 * SIW_OP_INVAL_STAG and SIW_OP_REG_MR
-		 * do not hold memory references
-		 */
+		 
 		break;
 	}
 }
@@ -304,10 +259,7 @@ int siw_invalidate_stag(struct ib_pd *pd, u32 stag)
 		rv = -EACCES;
 		goto out;
 	}
-	/*
-	 * Per RDMA verbs definition, an STag may already be in invalid
-	 * state if invalidation is requested. So no state check here.
-	 */
+	 
 	mem->stag_valid = 0;
 
 	siw_dbg_pd(pd, "STag 0x%08x now invalid\n", stag);
@@ -316,12 +268,7 @@ out:
 	return rv;
 }
 
-/*
- * Gets physical address backed by PBL element. Address is referenced
- * by linear byte offset into list of variably sized PB elements.
- * Optionally, provides remaining len within current element, and
- * current PBL index for later resume at same element.
- */
+ 
 dma_addr_t siw_pbl_get_buffer(struct siw_pbl *pbl, u64 off, int *len, int *idx)
 {
 	int i = idx ? *idx : 0;
@@ -439,7 +386,7 @@ out_sem_up:
 	if (rv > 0)
 		return umem;
 
-	/* Adjust accounting for pages not pinned */
+	 
 	if (num_pages)
 		atomic64_sub(num_pages, &mm_s->pinned_vm);
 

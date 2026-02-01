@@ -1,19 +1,5 @@
-/*	$OpenBSD: sshbuf-getput-basic.c,v 1.13 2022/05/25 06:03:44 djm Exp $	*/
-/*
- * Copyright (c) 2011 Damien Miller
- *
- * Permission to use, copy, modify, and distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
+ 
+ 
 
 #define SSHBUF_INTERNAL
 #include "includes.h"
@@ -99,7 +85,7 @@ sshbuf_get_u8(struct sshbuf *buf, u_char *valp)
 static int
 check_offset(const struct sshbuf *buf, int wr, size_t offset, size_t len)
 {
-	if (sshbuf_ptr(buf) == NULL) /* calls sshbuf_check_sanity() */
+	if (sshbuf_ptr(buf) == NULL)  
 		return SSH_ERR_INTERNAL_ERROR;
 	if (offset >= SIZE_MAX - len)
 		return SSH_ERR_INVALID_ARGUMENT;
@@ -228,7 +214,7 @@ sshbuf_get_string_direct(struct sshbuf *buf, const u_char **valp, size_t *lenp)
 	if (lenp != NULL)
 		*lenp = len;
 	if (sshbuf_consume(buf, len + 4) != 0) {
-		/* Shouldn't happen */
+		 
 		SSHBUF_DBG(("SSH_ERR_INTERNAL_ERROR"));
 		SSHBUF_ABORT();
 		return SSH_ERR_INTERNAL_ERROR;
@@ -280,7 +266,7 @@ sshbuf_get_cstring(struct sshbuf *buf, char **valp, size_t *lenp)
 		*lenp = 0;
 	if ((r = sshbuf_peek_string_direct(buf, &p, &len)) != 0)
 		return r;
-	/* Allow a \0 only at the end of the string */
+	 
 	if (len > 0 &&
 	    (z = memchr(p , '\0', len)) != NULL && z < p + len - 1) {
 		SSHBUF_DBG(("SSH_ERR_INVALID_FORMAT"));
@@ -309,11 +295,7 @@ sshbuf_get_stringb(struct sshbuf *buf, struct sshbuf *v)
 	u_char *p;
 	int r;
 
-	/*
-	 * Use sshbuf_peek_string_direct() to figure out if there is
-	 * a complete string in 'buf' and copy the string directly
-	 * into 'v'.
-	 */
+	 
 	if ((r = sshbuf_peek_string_direct(buf, NULL, NULL)) != 0 ||
 	    (r = sshbuf_get_u32(buf, &len)) != 0 ||
 	    (r = sshbuf_reserve(v, len, &p)) != 0 ||
@@ -369,7 +351,7 @@ sshbuf_putfv(struct sshbuf *buf, const char *fmt, va_list ap)
 	}
 	if (len == 0) {
 		r = 0;
-		goto out; /* Nothing to do */
+		goto out;  
 	}
 	va_end(ap2);
 	VA_COPY(ap2, ap);
@@ -377,9 +359,9 @@ sshbuf_putfv(struct sshbuf *buf, const char *fmt, va_list ap)
 		goto out;
 	if ((r = vsnprintf((char *)p, len + 1, fmt, ap2)) != len) {
 		r = SSH_ERR_INTERNAL_ERROR;
-		goto out; /* Shouldn't happen */
+		goto out;  
 	}
-	/* Consume terminating \0 */
+	 
 	if ((r = sshbuf_consume_end(buf, 1)) != 0)
 		goto out;
 	r = 0;
@@ -558,7 +540,7 @@ sshbuf_froms(struct sshbuf *buf, struct sshbuf **bufp)
 		return r;
 	if ((ret = sshbuf_from(p, len)) == NULL)
 		return SSH_ERR_ALLOC_FAIL;
-	if ((r = sshbuf_consume(buf, len + 4)) != 0 ||  /* Shouldn't happen */
+	if ((r = sshbuf_consume(buf, len + 4)) != 0 ||   
 	    (r = sshbuf_set_parent(ret, buf)) != 0) {
 		sshbuf_free(ret);
 		return r;
@@ -578,13 +560,10 @@ sshbuf_put_bignum2_bytes(struct sshbuf *buf, const void *v, size_t len)
 		SSHBUF_DBG(("SSH_ERR_NO_BUFFER_SPACE"));
 		return SSH_ERR_NO_BUFFER_SPACE;
 	}
-	/* Skip leading zero bytes */
+	 
 	for (; len > 0 && *s == 0; len--, s++)
 		;
-	/*
-	 * If most significant bit is set then prepend a zero byte to
-	 * avoid interpretation as a negative number.
-	 */
+	 
 	prepend = len > 0 && (s[0] & 0x80) != 0;
 	if ((r = sshbuf_reserve(buf, len + 4 + prepend, &d)) < 0)
 		return r;
@@ -607,14 +586,14 @@ sshbuf_get_bignum2_bytes_direct(struct sshbuf *buf,
 	if ((r = sshbuf_peek_string_direct(buf, &d, &olen)) < 0)
 		return r;
 	len = olen;
-	/* Refuse negative (MSB set) bignums */
+	 
 	if ((len != 0 && (*d & 0x80) != 0))
 		return SSH_ERR_BIGNUM_IS_NEGATIVE;
-	/* Refuse overlong bignums, allow prepended \0 to avoid MSB set */
+	 
 	if (len > SSHBUF_MAX_BIGNUM + 1 ||
 	    (len == SSHBUF_MAX_BIGNUM + 1 && *d != 0))
 		return SSH_ERR_BIGNUM_TOO_LARGE;
-	/* Trim leading zeros */
+	 
 	while (len > 0 && *d == 0x00) {
 		d++;
 		len--;
@@ -624,7 +603,7 @@ sshbuf_get_bignum2_bytes_direct(struct sshbuf *buf,
 	if (lenp != NULL)
 		*lenp = len;
 	if (sshbuf_consume(buf, olen + 4) != 0) {
-		/* Shouldn't happen */
+		 
 		SSHBUF_DBG(("SSH_ERR_INTERNAL_ERROR"));
 		SSHBUF_ABORT();
 		return SSH_ERR_INTERNAL_ERROR;

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #define _GNU_SOURCE
 #include <stdlib.h>
@@ -193,12 +193,7 @@ test_hugetlb_read_hwpoison(int fd, size_t len, size_t wr_chunk_size,
 	setup_filemap(filemap, len, wr_chunk_size);
 	status = TEST_FAILED;
 
-	/*
-	 * Poisoned hugetlb page layout (assume hugepagesize=2MB):
-	 * |<---------------------- 1MB ---------------------->|
-	 * |<---- healthy page ---->|<---- HWPOISON page ----->|
-	 * |<------------------- (1MB - 8KB) ----------------->|
-	 */
+	 
 	hwp_addr = filemap + len / 2 + pagesize;
 	if (madvise(hwp_addr, pagesize, MADV_HWPOISON) < 0) {
 		perror(PREFIX ERROR_PREFIX "MADV_HWPOISON failed");
@@ -206,18 +201,12 @@ test_hugetlb_read_hwpoison(int fd, size_t len, size_t wr_chunk_size,
 	}
 
 	if (!skip_hwpoison_page) {
-		/*
-		 * Userspace should be able to read (1MB + 1 page) from
-		 * the beginning of the HWPOISONed hugepage.
-		 */
+		 
 		if (read_hugepage_filemap(fd, len, wr_chunk_size,
 					  len / 2 + pagesize))
 			status = TEST_PASSED;
 	} else {
-		/*
-		 * Userspace should be able to read (1MB - 2 pages) from
-		 * HWPOISONed hugepage.
-		 */
+		 
 		if (seek_read_hugepage_filemap(fd, len, wr_chunk_size,
 					       len / 2 + MAX(2 * pagesize, wr_chunk_size),
 					       len / 2 - MAX(2 * pagesize, wr_chunk_size)))
@@ -266,7 +255,7 @@ int main(void)
 	int fd;
 	struct statfs file_stat;
 	enum test_status status;
-	/* Test read() in different granularity. */
+	 
 	size_t wr_chunk_sizes[] = {
 		getpagesize() / 2, getpagesize(),
 		getpagesize() * 2, getpagesize() * 4

@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * POWER Data Stream Control Register (DSCR) sysfs interface test
- *
- * This test updates to system wide DSCR default through the sysfs interface
- * and then verifies that all the CPU specific DSCR defaults are updated as
- * well verified from their sysfs interfaces.
- *
- * Copyright 2015, Anshuman Khandual, IBM Corporation.
- */
+
+ 
 #include "dscr.h"
 
 static int check_cpu_dscr_default(char *file, unsigned long val)

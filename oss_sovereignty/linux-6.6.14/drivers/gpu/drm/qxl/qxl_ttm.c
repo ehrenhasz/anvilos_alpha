@@ -1,27 +1,4 @@
-/*
- * Copyright 2013 Red Hat Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: Dave Airlie
- *          Alon Levy
- */
+ 
 
 #include <linux/delay.h>
 
@@ -77,7 +54,7 @@ int qxl_ttm_io_mem_reserve(struct ttm_device *bdev,
 
 	switch (mem->mem_type) {
 	case TTM_PL_SYSTEM:
-		/* system memory */
+		 
 		return 0;
 	case TTM_PL_VRAM:
 		mem->bus.is_iomem = true;
@@ -96,9 +73,7 @@ int qxl_ttm_io_mem_reserve(struct ttm_device *bdev,
 	return 0;
 }
 
-/*
- * TTM backend functions.
- */
+ 
 static void qxl_ttm_backend_destroy(struct ttm_device *bdev, struct ttm_tt *ttm)
 {
 	ttm_tt_fini(ttm);
@@ -192,9 +167,9 @@ static int qxl_ttm_init_mem_type(struct qxl_device *qdev,
 int qxl_ttm_init(struct qxl_device *qdev)
 {
 	int r;
-	int num_io_pages; /* != rom->num_io_pages, we include surface0 */
+	int num_io_pages;  
 
-	/* No others user of address space so set it to 0 */
+	 
 	r = ttm_device_init(&qdev->mman.bdev, &qxl_bo_driver, NULL,
 			    qdev->ddev.anon_inode->i_mapping,
 			    qdev->ddev.vma_offset_manager,
@@ -203,7 +178,7 @@ int qxl_ttm_init(struct qxl_device *qdev)
 		DRM_ERROR("failed initializing buffer object driver(%d).\n", r);
 		return r;
 	}
-	/* NOTE: this includes the framebuffer (aka surface 0) */
+	 
 	num_io_pages = qdev->rom->ram_header_offset / PAGE_SIZE;
 	r = qxl_ttm_init_mem_type(qdev, TTM_PL_VRAM, num_io_pages);
 	if (r) {

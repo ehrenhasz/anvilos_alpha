@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * NVM Express device driver tracepoints
- * Copyright (c) 2018 Johannes Thumshirn, SUSE Linux GmbH
- */
+ 
+ 
 
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM nvme
@@ -161,12 +158,12 @@ TRACE_EVENT(nvme_sq,
 	)
 );
 
-#endif /* _TRACE_NVME_H */
+#endif  
 
 #undef TRACE_INCLUDE_PATH
 #define TRACE_INCLUDE_PATH .
 #undef TRACE_INCLUDE_FILE
 #define TRACE_INCLUDE_FILE trace
 
-/* This part must be outside protection */
+ 
 #include <trace/define_trace.h>

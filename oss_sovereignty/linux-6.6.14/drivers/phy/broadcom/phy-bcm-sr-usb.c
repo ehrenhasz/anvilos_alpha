@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2016-2018 Broadcom
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/io.h>
@@ -22,7 +20,7 @@ enum bcm_usb_phy_reg {
 	PHY_PLL_CTRL,
 };
 
-/* USB PHY registers */
+ 
 
 static const u8 bcm_usb_combo_phy_ss[] = {
 	[PLL_CTRL]		= 0x18,
@@ -130,7 +128,7 @@ static int bcm_usb_ss_phy_init(struct bcm_usb_phy_cfg *phy_cfg)
 
 	offset = phy_cfg->offset;
 
-	/* Set pctl with mode and soft reset */
+	 
 	rd_data = readl(regs + offset[PHY_CTRL]);
 	rd_data &= ~(PHY_PCTL_MASK << u3phy_ctrl[PHY_PCTL]);
 	rd_data |= (SSPHY_PCTL_VAL << u3phy_ctrl[PHY_PCTL]);
@@ -143,7 +141,7 @@ static int bcm_usb_ss_phy_init(struct bcm_usb_phy_cfg *phy_cfg)
 	bcm_usb_reg32_setbits(regs + offset[PLL_CTRL],
 			      BIT(u3pll_ctrl[PLL_RESETB]));
 
-	/* Maximum timeout for PLL reset done */
+	 
 	msleep(30);
 
 	ret = bcm_usb_pll_lock_check(regs + offset[PLL_CTRL],
@@ -291,7 +289,7 @@ static const struct of_device_id bcm_usb_phy_of_match[] = {
 		.compatible = "brcm,sr-usb-hs-phy",
 		.data = (void *)BCM_SR_USB_HS_PHY,
 	},
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, bcm_usb_phy_of_match);
 

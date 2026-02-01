@@ -1,6 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Copyright (c) 2021 MediaTek Inc.
+
+
+
 
 #include <linux/clk.h>
 #include <linux/iopoll.h>
@@ -215,7 +215,7 @@ enum spmi_regs {
 	SPMI_REC4,
 	SPMI_MST_DBG,
 
-	/* MT8195 spmi regs */
+	 
 	SPMI_MST_RCS_CTRL,
 	SPMI_SLV_3_0_EINT,
 	SPMI_SLV_7_4_EINT,
@@ -292,7 +292,7 @@ static int pmif_arb_cmd(struct spmi_controller *ctrl, u8 opc, u8 sid)
 	u32 rdata, cmd;
 	int ret;
 
-	/* Check the opcode */
+	 
 	if (opc < SPMI_CMD_RESET || opc > SPMI_CMD_WAKEUP)
 		return -EINVAL;
 
@@ -317,7 +317,7 @@ static int pmif_spmi_read_cmd(struct spmi_controller *ctrl, u8 opc, u8 sid,
 	u32 data, cmd;
 	unsigned long flags;
 
-	/* Check for argument validation. */
+	 
 	if (sid & ~0xf) {
 		dev_err(&ctrl->dev, "exceed the max slv id\n");
 		return -EINVAL;
@@ -337,13 +337,13 @@ static int pmif_spmi_read_cmd(struct spmi_controller *ctrl, u8 opc, u8 sid,
 		return -EINVAL;
 
 	raw_spin_lock_irqsave(&arb->lock, flags);
-	/* Wait for Software Interface FSM state to be IDLE. */
+	 
 	inf_reg = &arb->chan;
 	ret = readl_poll_timeout_atomic(arb->base + arb->data->regs[inf_reg->ch_sta],
 					data, GET_SWINF(data) == SWINF_IDLE,
 					PMIF_DELAY_US, PMIF_TIMEOUT_US);
 	if (ret < 0) {
-		/* set channel ready if the data has transferred */
+		 
 		if (pmif_is_fsm_vldclr(arb))
 			pmif_writel(arb, 1, inf_reg->ch_rdy);
 		raw_spin_unlock_irqrestore(&arb->lock, flags);
@@ -351,15 +351,12 @@ static int pmif_spmi_read_cmd(struct spmi_controller *ctrl, u8 opc, u8 sid,
 		return ret;
 	}
 
-	/* Send the command. */
+	 
 	cmd = (opc << 30) | (sid << 24) | ((len - 1) << 16) | addr;
 	pmif_writel(arb, cmd, inf_reg->ch_send);
 	raw_spin_unlock_irqrestore(&arb->lock, flags);
 
-	/*
-	 * Wait for Software Interface FSM state to be WFVLDCLR,
-	 * read the data and clear the valid flag.
-	 */
+	 
 	ret = readl_poll_timeout_atomic(arb->base + arb->data->regs[inf_reg->ch_sta],
 					data, GET_SWINF(data) == SWINF_WFVLDCLR,
 					PMIF_DELAY_US, PMIF_TIMEOUT_US);
@@ -390,7 +387,7 @@ static int pmif_spmi_write_cmd(struct spmi_controller *ctrl, u8 opc, u8 sid,
 		return -EINVAL;
 	}
 
-	/* Check the opcode */
+	 
 	if (opc >= 0x40 && opc <= 0x5F)
 		opc = PMIF_CMD_REG;
 	else if ((opc <= 0xF) || (opc >= 0x30 && opc <= 0x37))
@@ -400,17 +397,17 @@ static int pmif_spmi_write_cmd(struct spmi_controller *ctrl, u8 opc, u8 sid,
 	else
 		return -EINVAL;
 
-	/* Set the write data. */
+	 
 	memcpy(&wdata, buf, len);
 
 	raw_spin_lock_irqsave(&arb->lock, flags);
-	/* Wait for Software Interface FSM state to be IDLE. */
+	 
 	inf_reg = &arb->chan;
 	ret = readl_poll_timeout_atomic(arb->base + arb->data->regs[inf_reg->ch_sta],
 					data, GET_SWINF(data) == SWINF_IDLE,
 					PMIF_DELAY_US, PMIF_TIMEOUT_US);
 	if (ret < 0) {
-		/* set channel ready if the data has transferred */
+		 
 		if (pmif_is_fsm_vldclr(arb))
 			pmif_writel(arb, 1, inf_reg->ch_rdy);
 		raw_spin_unlock_irqrestore(&arb->lock, flags);
@@ -420,7 +417,7 @@ static int pmif_spmi_write_cmd(struct spmi_controller *ctrl, u8 opc, u8 sid,
 
 	pmif_writel(arb, wdata, inf_reg->wdata);
 
-	/* Send the command. */
+	 
 	cmd = (opc << 30) | BIT(29) | (sid << 24) | ((len - 1) << 16) | addr;
 	pmif_writel(arb, cmd, inf_reg->ch_send);
 	raw_spin_unlock_irqrestore(&arb->lock, flags);
@@ -533,7 +530,7 @@ static const struct of_device_id mtk_spmi_match_table[] = {
 		.compatible = "mediatek,mt8195-spmi",
 		.data = &mt8195_pmif_arb,
 	}, {
-		/* sentinel */
+		 
 	},
 };
 MODULE_DEVICE_TABLE(of, mtk_spmi_match_table);

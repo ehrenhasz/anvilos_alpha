@@ -1,20 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Post mortem Dwarf CFI based unwinding on top of regs and stack dumps.
- *
- * Lots of this code have been borrowed or heavily inspired from parts of
- * the libunwind 0.99 code which are (amongst other contributors I may have
- * forgotten):
- *
- * Copyright (C) 2002-2007 Hewlett-Packard Co
- *	Contributed by David Mosberger-Tang <davidm@hpl.hp.com>
- *
- * And the bugs have been added by:
- *
- * Copyright (C) 2010, Frederic Weisbecker <fweisbec@gmail.com>
- * Copyright (C) 2012, Jiri Olsa <jolsa@redhat.com>
- *
- */
+
+ 
 
 #include <elf.h>
 #include <errno.h>
@@ -59,38 +44,26 @@ UNW_OBJ(dwarf_find_debug_frame) (int found, unw_dyn_info_t *di_debug,
 
 #define dwarf_find_debug_frame UNW_OBJ(dwarf_find_debug_frame)
 
-#define DW_EH_PE_FORMAT_MASK	0x0f	/* format of the encoded value */
-#define DW_EH_PE_APPL_MASK	0x70	/* how the value is to be applied */
+#define DW_EH_PE_FORMAT_MASK	0x0f	 
+#define DW_EH_PE_APPL_MASK	0x70	 
 
-/* Pointer-encoding formats: */
+ 
 #define DW_EH_PE_omit		0xff
-#define DW_EH_PE_ptr		0x00	/* pointer-sized unsigned value */
-#define DW_EH_PE_udata4		0x03	/* unsigned 32-bit value */
-#define DW_EH_PE_udata8		0x04	/* unsigned 64-bit value */
-#define DW_EH_PE_sdata4		0x0b	/* signed 32-bit value */
-#define DW_EH_PE_sdata8		0x0c	/* signed 64-bit value */
+#define DW_EH_PE_ptr		0x00	 
+#define DW_EH_PE_udata4		0x03	 
+#define DW_EH_PE_udata8		0x04	 
+#define DW_EH_PE_sdata4		0x0b	 
+#define DW_EH_PE_sdata8		0x0c	 
 
-/* Pointer-encoding application: */
-#define DW_EH_PE_absptr		0x00	/* absolute value */
-#define DW_EH_PE_pcrel		0x10	/* rel. to addr. of encoded value */
+ 
+#define DW_EH_PE_absptr		0x00	 
+#define DW_EH_PE_pcrel		0x10	 
 
-/*
- * The following are not documented by LSB v1.3, yet they are used by
- * GCC, presumably they aren't documented by LSB since they aren't
- * used on Linux:
- */
-#define DW_EH_PE_funcrel	0x40	/* start-of-procedure-relative */
-#define DW_EH_PE_aligned	0x50	/* aligned pointer */
+ 
+#define DW_EH_PE_funcrel	0x40	 
+#define DW_EH_PE_aligned	0x50	 
 
-/* Flags intentionally not handled, since they're not needed:
- * #define DW_EH_PE_indirect      0x80
- * #define DW_EH_PE_uleb128       0x01
- * #define DW_EH_PE_udata2        0x02
- * #define DW_EH_PE_sleb128       0x09
- * #define DW_EH_PE_sdata2        0x0a
- * #define DW_EH_PE_textrel       0x20
- * #define DW_EH_PE_datarel       0x30
- */
+ 
 
 struct unwind_info {
 	struct perf_sample	*sample;
@@ -216,7 +189,7 @@ static u64 elf_base_address(int fd)
 	if (elf == NULL)
 		return 0;
 	(void)elf_getphdrnum(elf, &phdrnum);
-	/* PT_LOAD segments are sorted by p_vaddr, so the first has the minimum p_vaddr. */
+	 
 	for (i = 0; i < phdrnum; i++) {
 		if (gelf_getphdr(elf, i, &phdr) && phdr.p_type == PT_LOAD) {
 			retval = phdr.p_vaddr & -getpagesize();
@@ -261,23 +234,12 @@ struct eh_frame_hdr {
 	unsigned char fde_count_enc;
 	unsigned char table_enc;
 
-	/*
-	 * The rest of the header is variable-length and consists of the
-	 * following members:
-	 *
-	 *	encoded_t eh_frame_ptr;
-	 *	encoded_t fde_count;
-	 */
+	 
 
-	/* A single encoded pointer should not be more than 8 bytes. */
+	 
 	u64 enc[2];
 
-	/*
-	 * struct {
-	 *    encoded_t start_ip;
-	 *    encoded_t fde_addr;
-	 * } binary_search_table[fde_count];
-	 */
+	 
 	char data[];
 } __packed;
 
@@ -294,7 +256,7 @@ static int unwind_spec_ehframe(struct dso *dso, struct machine *machine,
 	if (r != sizeof(hdr))
 		return -EINVAL;
 
-	/* We dont need eh_frame_ptr, just skip it. */
+	 
 	dw_read_encoded_value(enc, end, hdr.eh_frame_ptr_enc);
 
 	*fde_count  = dw_read_encoded_value(enc, end, hdr.fde_count_enc);
@@ -315,7 +277,7 @@ static int read_unwind_spec_eh_frame(struct dso *dso, struct unwind_info *ui,
 		if (fd < 0)
 			return -EINVAL;
 
-		/* Check the .eh_frame section for unwinding info */
+		 
 		ret = elf_section_address_and_offset(fd, ".eh_frame_hdr",
 						     &dso->data.eh_frame_hdr_addr,
 						     &dso->data.eh_frame_hdr_offset);
@@ -333,13 +295,13 @@ static int read_unwind_spec_eh_frame(struct dso *dso, struct unwind_info *ui,
 			base_addr = start;
 	}
 	base_addr -= dso->data.elf_base_addr;
-	/* Address of .eh_frame_hdr */
+	 
 	*segbase = base_addr + dso->data.eh_frame_hdr_addr;
 	ret = unwind_spec_ehframe(dso, ui->machine, dso->data.eh_frame_hdr_offset,
 				   table_data, fde_count);
 	if (ret)
 		return ret;
-	/* binary_search_table offset plus .eh_frame_hdr address */
+	 
 	*table_data += *segbase;
 	return 0;
 }
@@ -351,12 +313,7 @@ static int read_unwind_spec_debug_frame(struct dso *dso,
 	int fd;
 	u64 ofs = dso->data.debug_frame_offset;
 
-	/* debug_frame can reside in:
-	 *  - dso
-	 *  - debug pointed by symsrc_filename
-	 *  - gnu_debuglink, which doesn't necessary
-	 *    has to be pointed by symsrc_filename
-	 */
+	 
 	if (ofs == 0) {
 		fd = dso__data_get_fd(dso, machine);
 		if (fd >= 0) {
@@ -448,7 +405,7 @@ find_proc_info(unw_addr_space_t as, unw_word_t ip, unw_proc_info_t *pi,
 
 	pr_debug("unwind: find_proc_info dso %s\n", dso->name);
 
-	/* Check the .eh_frame section for unwinding info */
+	 
 	if (!read_unwind_spec_eh_frame(dso, ui, &table_data, &segbase, &fde_count)) {
 		memset(&di, 0, sizeof(di));
 		di.format   = UNW_INFO_FORMAT_REMOTE_TABLE;
@@ -463,7 +420,7 @@ find_proc_info(unw_addr_space_t as, unw_word_t ip, unw_proc_info_t *pi,
 	}
 
 #ifndef NO_LIBUNWIND_DEBUG_FRAME
-	/* Check the .debug_frame section for unwinding info */
+	 
 	if (ret < 0 &&
 	    !read_unwind_spec_debug_frame(dso, ui->machine, &segbase)) {
 		int fd = dso__data_get_fd(dso, ui->machine);
@@ -559,7 +516,7 @@ static int access_mem(unw_addr_space_t __maybe_unused as,
 	int offset;
 	int ret;
 
-	/* Don't support write, probably not needed. */
+	 
 	if (__write || !stack || !ui->sample->user_regs.regs) {
 		*valp = 0;
 		return 0;
@@ -572,7 +529,7 @@ static int access_mem(unw_addr_space_t __maybe_unused as,
 
 	end = start + stack->size;
 
-	/* Check overflow. */
+	 
 	if (addr + sizeof(unw_word_t) < addr)
 		return -EINVAL;
 
@@ -603,7 +560,7 @@ static int access_reg(unw_addr_space_t __maybe_unused as,
 	int id, ret;
 	u64 val;
 
-	/* Don't support write, I suspect we don't need it. */
+	 
 	if (__write) {
 		pr_err("unwind: access_reg w %d\n", regnum);
 		return 0;
@@ -729,10 +686,7 @@ static int get_entries(struct unwind_info *ui, unwind_entry_cb_t cb,
 
 	ips[i++] = (unw_word_t) val;
 
-	/*
-	 * If we need more than one entry, do the DWARF
-	 * unwind itself.
-	 */
+	 
 	if (max_stack - 1 > 0) {
 		WARN_ONCE(!ui->thread, "WARNING: ui->thread is NULL");
 		addr_space = maps__addr_space(thread__maps(ui->thread));
@@ -747,13 +701,7 @@ static int get_entries(struct unwind_info *ui, unwind_entry_cb_t cb,
 		while (!ret && (unw_step(&c) > 0) && i < max_stack) {
 			unw_get_reg(&c, UNW_REG_IP, &ips[i]);
 
-			/*
-			 * Decrement the IP for any non-activation frames.
-			 * this is required to properly find the srcline
-			 * for caller frames.
-			 * See also the documentation for dwfl_frame_pc(),
-			 * which this code tries to replicate.
-			 */
+			 
 			if (unw_is_signal_frame(&c) <= 0)
 				--ips[i];
 
@@ -763,9 +711,7 @@ static int get_entries(struct unwind_info *ui, unwind_entry_cb_t cb,
 		max_stack = i;
 	}
 
-	/*
-	 * Display what we got based on the order setup.
-	 */
+	 
 	for (i = 0; i < max_stack && !ret; i++) {
 		int j = i;
 

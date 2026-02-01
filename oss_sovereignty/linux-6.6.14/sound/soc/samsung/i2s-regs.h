@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * Copyright (c) 2011 Samsung Electronics Co., Ltd.
- *		http://www.samsung.com
- *
- * Samsung I2S driver's register header
- */
+ 
+ 
 
 #ifndef __SND_SOC_SAMSUNG_I2S_REGS_H
 #define __SND_SOC_SAMSUNG_I2S_REGS_H
@@ -65,7 +60,7 @@
 #define MOD_OPCLK_BCLK_OUT	(2 << MOD_OPCLK_SHIFT)
 #define MOD_OPCLK_PCLK		(3 << MOD_OPCLK_SHIFT)
 #define MOD_OPCLK_MASK		(3 << MOD_OPCLK_SHIFT)
-#define MOD_TXS_IDMA		(1 << 28) /* Sec_TXFIFO use I-DMA */
+#define MOD_TXS_IDMA		(1 << 28)  
 
 #define MOD_BLCS_SHIFT		26
 #define MOD_BLCS_16BIT		(0 << MOD_BLCS_SHIFT)
@@ -78,8 +73,8 @@
 #define MOD_BLCP_24BIT		(2 << MOD_BLCP_SHIFT)
 #define MOD_BLCP_MASK		(3 << MOD_BLCP_SHIFT)
 
-#define MOD_C2DD_HHALF		(1 << 21) /* Discard Higher-half */
-#define MOD_C2DD_LHALF		(1 << 20) /* Discard Lower-half */
+#define MOD_C2DD_HHALF		(1 << 21)  
+#define MOD_C2DD_LHALF		(1 << 20)  
 #define MOD_C1DD_HHALF		(1 << 19)
 #define MOD_C1DD_LHALF		(1 << 18)
 #define MOD_DC2_EN		(1 << 17)
@@ -155,4 +150,4 @@
 #define I2SSIZE_TRNMSK		(0xffff)
 #define I2SSIZE_SHIFT		(16)
 
-#endif /* __SND_SOC_SAMSUNG_I2S_REGS_H */
+#endif  

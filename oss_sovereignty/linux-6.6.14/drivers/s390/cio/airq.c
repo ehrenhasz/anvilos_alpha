@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *    Support for adapter interruptions
- *
- *    Copyright IBM Corp. 1999, 2007
- *    Author(s): Ingo Adlung <adlung@de.ibm.com>
- *		 Cornelia Huck <cornelia.huck@de.ibm.com>
- *		 Arnd Bergmann <arndb@de.ibm.com>
- *		 Peter Oberparleiter <peter.oberparleiter@de.ibm.com>
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/irq.h>
@@ -31,12 +23,7 @@ static struct hlist_head airq_lists[MAX_ISC+1];
 
 static struct dma_pool *airq_iv_cache;
 
-/**
- * register_adapter_interrupt() - register adapter interrupt handler
- * @airq: pointer to adapter interrupt descriptor
- *
- * Returns 0 on success, or -EINVAL.
- */
+ 
 int register_adapter_interrupt(struct airq_struct *airq)
 {
 	char dbf_txt[32];
@@ -59,10 +46,7 @@ int register_adapter_interrupt(struct airq_struct *airq)
 }
 EXPORT_SYMBOL(register_adapter_interrupt);
 
-/**
- * unregister_adapter_interrupt - unregister adapter interrupt handler
- * @airq: pointer to adapter interrupt descriptor
- */
+ 
 void unregister_adapter_interrupt(struct airq_struct *airq)
 {
 	char dbf_txt[32];
@@ -116,14 +100,7 @@ static inline unsigned long iv_size(unsigned long bits)
 	return BITS_TO_LONGS(bits) * sizeof(unsigned long);
 }
 
-/**
- * airq_iv_create - create an interrupt vector
- * @bits: number of bits in the interrupt vector
- * @flags: allocation flags
- * @vec: pointer to pinned guest memory if AIRQ_IV_GUESTVEC
- *
- * Returns a pointer to an interrupt vector structure
- */
+ 
 struct airq_iv *airq_iv_create(unsigned long bits, unsigned long flags,
 			       unsigned long *vec)
 {
@@ -195,10 +172,7 @@ out:
 }
 EXPORT_SYMBOL(airq_iv_create);
 
-/**
- * airq_iv_release - release an interrupt vector
- * @iv: pointer to interrupt vector structure
- */
+ 
 void airq_iv_release(struct airq_iv *iv)
 {
 	kfree(iv->data);
@@ -213,15 +187,7 @@ void airq_iv_release(struct airq_iv *iv)
 }
 EXPORT_SYMBOL(airq_iv_release);
 
-/**
- * airq_iv_alloc - allocate irq bits from an interrupt vector
- * @iv: pointer to an interrupt vector structure
- * @num: number of consecutive irq bits to allocate
- *
- * Returns the bit number of the first irq in the allocated block of irqs,
- * or -1UL if no bit is available or the AIRQ_IV_ALLOC flag has not been
- * specified
- */
+ 
 unsigned long airq_iv_alloc(struct airq_iv *iv, unsigned long num)
 {
 	unsigned long bit, i, flags;
@@ -235,7 +201,7 @@ unsigned long airq_iv_alloc(struct airq_iv *iv, unsigned long num)
 			if (!test_bit_inv(bit + i, iv->avail))
 				break;
 		if (i >= num) {
-			/* Found a suitable block of irqs */
+			 
 			for (i = 0; i < num; i++)
 				clear_bit_inv(bit + i, iv->avail);
 			if (bit + num >= iv->end)
@@ -251,12 +217,7 @@ unsigned long airq_iv_alloc(struct airq_iv *iv, unsigned long num)
 }
 EXPORT_SYMBOL(airq_iv_alloc);
 
-/**
- * airq_iv_free - free irq bits of an interrupt vector
- * @iv: pointer to interrupt vector structure
- * @bit: number of the first irq bit to free
- * @num: number of consecutive irq bits to free
- */
+ 
 void airq_iv_free(struct airq_iv *iv, unsigned long bit, unsigned long num)
 {
 	unsigned long i, flags;
@@ -265,13 +226,13 @@ void airq_iv_free(struct airq_iv *iv, unsigned long bit, unsigned long num)
 		return;
 	spin_lock_irqsave(&iv->lock, flags);
 	for (i = 0; i < num; i++) {
-		/* Clear (possibly left over) interrupt bit */
+		 
 		clear_bit_inv(bit + i, iv->vector);
-		/* Make the bit positions available again */
+		 
 		set_bit_inv(bit + i, iv->avail);
 	}
 	if (bit + num >= iv->end) {
-		/* Find new end of bit-field */
+		 
 		while (iv->end > 0 && !test_bit_inv(iv->end - 1, iv->avail))
 			iv->end--;
 	}
@@ -279,21 +240,13 @@ void airq_iv_free(struct airq_iv *iv, unsigned long bit, unsigned long num)
 }
 EXPORT_SYMBOL(airq_iv_free);
 
-/**
- * airq_iv_scan - scan interrupt vector for non-zero bits
- * @iv: pointer to interrupt vector structure
- * @start: bit number to start the search
- * @end: bit number to end the search
- *
- * Returns the bit number of the next non-zero interrupt bit, or
- * -1UL if the scan completed without finding any more any non-zero bits.
- */
+ 
 unsigned long airq_iv_scan(struct airq_iv *iv, unsigned long start,
 			   unsigned long end)
 {
 	unsigned long bit;
 
-	/* Find non-zero bit starting from 'ivs->next'. */
+	 
 	bit = find_next_bit_inv(iv->vector, end, start);
 	if (bit >= end)
 		return -1UL;

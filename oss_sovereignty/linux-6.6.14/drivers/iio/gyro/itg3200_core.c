@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * itg3200_core.c -- support InvenSense ITG3200
- *                   Digital 3-Axis Gyroscope driver
- *
- * Copyright (c) 2011 Christian Strobel <christian.strobel@iis.fraunhofer.de>
- * Copyright (c) 2011 Manuel Stahl <manuel.stahl@iis.fraunhofer.de>
- * Copyright (c) 2012 Thorsten Nowak <thorsten.nowak@iis.fraunhofer.de>
- *
- * TODO:
- * - Support digital low pass filter
- * - Support power management
- */
+
+ 
 
 #include <linux/interrupt.h>
 #include <linux/irq.h>
@@ -99,10 +88,10 @@ static int itg3200_read_raw(struct iio_dev *indio_dev,
 		if (chan->type == IIO_TEMP)
 			*val2 = 1000000000/280;
 		else
-			*val2 = 1214142; /* (1 / 14,375) * (PI / 180) */
+			*val2 = 1214142;  
 		return IIO_VAL_INT_PLUS_NANO;
 	case IIO_CHAN_INFO_OFFSET:
-		/* Only the temperature channel has an offset */
+		 
 		*val = 23000;
 		return IIO_VAL_INT;
 	case IIO_CHAN_INFO_SAMP_FREQ:
@@ -162,10 +151,7 @@ static int itg3200_write_raw(struct iio_dev *indio_dev,
 	}
 }
 
-/*
- * Reset device and internal registers to the power-up-default settings
- * Use the gyro clock as reference, as suggested by the datasheet
- */
+ 
 static int itg3200_reset(struct iio_dev *indio_dev)
 {
 	struct itg3200 *st = iio_priv(indio_dev);
@@ -181,7 +167,7 @@ static int itg3200_reset(struct iio_dev *indio_dev)
 		goto error_ret;
 	}
 
-	/* Wait for PLL (1ms according to datasheet) */
+	 
 	udelay(1500);
 
 	ret = itg3200_write_reg_8(indio_dev,
@@ -198,7 +184,7 @@ error_ret:
 	return ret;
 }
 
-/* itg3200_enable_full_scale() - Disables the digital low pass filter */
+ 
 static int itg3200_enable_full_scale(struct iio_dev *indio_dev)
 {
 	u8 val;

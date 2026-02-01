@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Touchscreen driver for Marvell 88PM860x
- *
- * Copyright (C) 2009 Marvell International Ltd.
- * 	Haojian Zhuang <haojian.zhuang@marvell.com>
- */
+
+ 
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/of.h>
@@ -18,7 +13,7 @@
 #define MEAS_LEN		(8)
 #define ACCURATE_BIT		(12)
 
-/* touch register */
+ 
 #define MEAS_EN3		(0x52)
 
 #define MEAS_TSIX_1		(0x8D)
@@ -30,7 +25,7 @@
 #define MEAS_TSIZ2_1		(0x93)
 #define MEAS_TSIZ2_2		(0x94)
 
-/* bit definitions of touch */
+ 
 #define MEAS_PD_EN		(1 << 3)
 #define MEAS_TSIX_EN		(1 << 4)
 #define MEAS_TSIY_EN		(1 << 5)
@@ -42,7 +37,7 @@ struct pm860x_touch {
 	struct i2c_client *i2c;
 	struct pm860x_chip *chip;
 	int irq;
-	int res_x;		/* resistor of Xplate */
+	int res_x;		 
 };
 
 static irqreturn_t pm860x_touch_handler(int irq, void *data)
@@ -128,7 +123,7 @@ static int pm860x_touch_dt_init(struct platform_device *pdev,
 		dev_err(&pdev->dev, "Can't find touch node\n");
 		return -EINVAL;
 	}
-	/* set GPADC MISC1 register */
+	 
 	data = 0;
 	if (!of_property_read_u32(np, "marvell,88pm860x-gpadc-prebias", &n))
 		data |= (n << 1) & PM8607_GPADC_PREBIAS_MASK;
@@ -143,13 +138,13 @@ static int pm860x_touch_dt_init(struct platform_device *pdev,
 		if (ret < 0)
 			goto err_put_node;
 	}
-	/* set tsi prebias time */
+	 
 	if (!of_property_read_u32(np, "marvell,88pm860x-tsi-prebias", &data)) {
 		ret = pm860x_reg_write(i2c, PM8607_TSI_PREBIAS, data);
 		if (ret < 0)
 			goto err_put_node;
 	}
-	/* set prebias & prechg time of pen detect */
+	 
 	data = 0;
 	if (!of_property_read_u32(np, "marvell,88pm860x-pen-prebias", &n))
 		data |= n & PM8607_PD_PREBIAS_MASK;
@@ -190,7 +185,7 @@ static int pm860x_touch_probe(struct platform_device *pdev)
 
 	if (pm860x_touch_dt_init(pdev, chip, &res_x)) {
 		if (pdata) {
-			/* set GPADC MISC1 register */
+			 
 			data = 0;
 			data |= (pdata->gpadc_prebias << 1)
 				& PM8607_GPADC_PREBIAS_MASK;
@@ -206,7 +201,7 @@ static int pm860x_touch_probe(struct platform_device *pdev)
 				if (ret < 0)
 					return -EINVAL;
 			}
-			/* set tsi prebias time */
+			 
 			if (pdata->tsi_prebias) {
 				data = pdata->tsi_prebias;
 				ret = pm860x_reg_write(i2c,
@@ -214,7 +209,7 @@ static int pm860x_touch_probe(struct platform_device *pdev)
 				if (ret < 0)
 					return -EINVAL;
 			}
-			/* set prebias & prechg time of pen detect */
+			 
 			data = 0;
 			data |= pdata->pen_prebias
 				& PM8607_PD_PREBIAS_MASK;
@@ -232,7 +227,7 @@ static int pm860x_touch_probe(struct platform_device *pdev)
 			return -EINVAL;
 		}
 	}
-	/* enable GPADC */
+	 
 	ret = pm860x_set_bits(i2c, PM8607_GPADC_MISC1, PM8607_GPADC_EN,
 			      PM8607_GPADC_EN);
 	if (ret)

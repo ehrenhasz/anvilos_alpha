@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * motu-midi.h - a part of driver for MOTU FireWire series
- *
- * Copyright (c) 2015-2017 Takashi Sakamoto <o-takashi@sakamocchi.jp>
- */
+
+ 
 #include "motu.h"
 
 static int midi_open(struct snd_rawmidi_substream *substream)
@@ -109,7 +105,7 @@ int snd_motu_create_midi_devices(struct snd_motu *motu)
 	struct snd_rawmidi_str *str;
 	int err;
 
-	/* create midi ports */
+	 
 	err = snd_rawmidi_new(motu->card, motu->card->driver, 0, 1, 1, &rmidi);
 	if (err < 0)
 		return err;

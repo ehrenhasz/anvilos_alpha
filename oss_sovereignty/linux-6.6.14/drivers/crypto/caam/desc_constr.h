@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * caam descriptor construction helper functions
- *
- * Copyright 2008-2012 Freescale Semiconductor, Inc.
- * Copyright 2019 NXP
- */
+ 
+ 
 
 #ifndef DESC_CONSTR_H
 #define DESC_CONSTR_H
@@ -23,31 +18,7 @@
 #define DESC_JOB_IO_LEN_MAX __DESC_JOB_IO_LEN(CAAM_PTR_SZ_MAX)
 #define DESC_JOB_IO_LEN_MIN __DESC_JOB_IO_LEN(CAAM_PTR_SZ_MIN)
 
-/*
- * The CAAM QI hardware constructs a job descriptor which points
- * to shared descriptor (as pointed by context_a of FQ to CAAM).
- * When the job descriptor is executed by deco, the whole job
- * descriptor together with shared descriptor gets loaded in
- * deco buffer which is 64 words long (each 32-bit).
- *
- * The job descriptor constructed by QI hardware has layout:
- *
- *	HEADER		(1 word)
- *	Shdesc ptr	(1 or 2 words)
- *	SEQ_OUT_PTR	(1 word)
- *	Out ptr		(1 or 2 words)
- *	Out length	(1 word)
- *	SEQ_IN_PTR	(1 word)
- *	In ptr		(1 or 2 words)
- *	In length	(1 word)
- *
- * The shdesc ptr is used to fetch shared descriptor contents
- * into deco buffer.
- *
- * Apart from shdesc contents, the total number of words that
- * get loaded in deco buffer are '8' or '11'. The remaining words
- * in deco buffer can be used for storing shared descriptor.
- */
+ 
 #define MAX_SDLEN	((CAAM_DESC_BYTES_MAX - DESC_JOB_IO_LEN_MIN) / CAAM_CMD_SZ)
 
 #ifdef DEBUG
@@ -71,11 +42,7 @@
 extern bool caam_little_end;
 extern size_t caam_ptr_sz;
 
-/*
- * HW fetches 4 S/G table entries at a time, irrespective of how many entries
- * are in the table. It's SW's responsibility to make sure these accesses
- * do not have side effects.
- */
+ 
 static inline int pad_sg_nents(int sg_nents)
 {
 	return ALIGN(sg_nents, 4);
@@ -163,7 +130,7 @@ static inline void append_data(u32 * const desc, const void *data, int len)
 {
 	u32 *offset = desc_end(desc);
 
-	/* Avoid gcc warning: memcpy with data == NULL */
+	 
 	if (!IS_ENABLED(CONFIG_CRYPTO_DEV_FSL_CAAM_DEBUG) || data)
 		memcpy(offset, data, len);
 
@@ -186,7 +153,7 @@ static inline void append_u64(u32 * const desc, u64 data)
 {
 	u32 *offset = desc_end(desc);
 
-	/* Only 32-bit alignment is guaranteed in descriptor buffer */
+	 
 	if (caam_little_end) {
 		*offset = cpu_to_caam32(lower_32_bits(data));
 		*(++offset) = cpu_to_caam32(upper_32_bits(data));
@@ -198,7 +165,7 @@ static inline void append_u64(u32 * const desc, u64 data)
 	(*desc) = cpu_to_caam32(caam32_to_cpu(*desc) + 2);
 }
 
-/* Write command without affecting header, and return pointer to next word */
+ 
 static inline u32 *write_cmd(u32 * const desc, u32 command)
 {
 	*desc = cpu_to_caam32(command);
@@ -213,7 +180,7 @@ static inline void append_cmd_ptr(u32 * const desc, dma_addr_t ptr, int len,
 	append_ptr(desc, ptr);
 }
 
-/* Write length after pointer, rather than inside command */
+ 
 static inline void append_cmd_ptr_extlen(u32 * const desc, dma_addr_t ptr,
 					 unsigned int len, u32 command)
 {
@@ -299,7 +266,7 @@ static inline void append_store(u32 * const desc, dma_addr_t ptr,
 
 	append_cmd(desc, CMD_STORE | options | len);
 
-	/* The following options do not require pointer */
+	 
 	if (!(cmd_src == LDST_SRCDST_WORD_DESCBUF_SHARED ||
 	      cmd_src == LDST_SRCDST_WORD_DESCBUF_JOB    ||
 	      cmd_src == LDST_SRCDST_WORD_DESCBUF_JOB_WE ||
@@ -342,10 +309,7 @@ static inline void append_##cmd##_extlen(u32 * const desc, dma_addr_t ptr, \
 APPEND_CMD_PTR_EXTLEN(seq_in_ptr, SEQ_IN_PTR)
 APPEND_CMD_PTR_EXTLEN(seq_out_ptr, SEQ_OUT_PTR)
 
-/*
- * Determine whether to store length internally or externally depending on
- * the size of its type
- */
+ 
 #define APPEND_CMD_PTR_LEN(cmd, op, type) \
 static inline void append_##cmd(u32 * const desc, dma_addr_t ptr, \
 				type len, u32 options) \
@@ -359,10 +323,7 @@ static inline void append_##cmd(u32 * const desc, dma_addr_t ptr, \
 APPEND_CMD_PTR_LEN(seq_in_ptr, SEQ_IN_PTR, u32)
 APPEND_CMD_PTR_LEN(seq_out_ptr, SEQ_OUT_PTR, u32)
 
-/*
- * 2nd variant for commands whose specified immediate length differs
- * from length of immediate data provided, e.g., split keys
- */
+ 
 #define APPEND_CMD_PTR_TO_IMM2(cmd, op) \
 static inline void append_##cmd##_as_imm(u32 * const desc, const void *data, \
 					 unsigned int data_len, \
@@ -388,10 +349,7 @@ static inline void append_##cmd##_imm_##type(u32 * const desc, type immediate, \
 }
 APPEND_CMD_RAW_IMM(load, LOAD, u32);
 
-/*
- * ee - endianness
- * size - size of immediate type in bytes
- */
+ 
 #define APPEND_CMD_RAW_IMM2(cmd, op, ee, size) \
 static inline void append_##cmd##_imm_##ee##size(u32 *desc, \
 						   u##size immediate, \
@@ -405,10 +363,7 @@ static inline void append_##cmd##_imm_##ee##size(u32 *desc, \
 
 APPEND_CMD_RAW_IMM2(load, LOAD, be, 32);
 
-/*
- * Append math command. Only the last part of destination and source need to
- * be specified
- */
+ 
 #define APPEND_MATH(op, desc, dest, src_0, src_1, len) \
 append_cmd(desc, CMD_MATH | MATH_FUN_##op | MATH_DEST_##dest | \
 	MATH_SRC0_##src_0 | MATH_SRC1_##src_1 | (u32)len);
@@ -434,7 +389,7 @@ append_cmd(desc, CMD_MATH | MATH_FUN_##op | MATH_DEST_##dest | \
 #define append_math_ldshift(desc, dest, src0, src1, len) \
 	APPEND_MATH(SHLD, desc, dest, src0, src1, len)
 
-/* Exactly one source is IMM. Data is passed in as u32 value */
+ 
 #define APPEND_MATH_IMM_u32(op, desc, dest, src_0, src_1, data) \
 do { \
 	APPEND_MATH(op, desc, dest, src_0, src_1, CAAM_CMD_SZ); \
@@ -460,7 +415,7 @@ do { \
 #define append_math_rshift_imm_u32(desc, dest, src0, src1, data) \
 	APPEND_MATH_IMM_u32(RSHIFT, desc, dest, src0, src1, data)
 
-/* Exactly one source is IMM. Data is passed in as u64 value */
+ 
 #define APPEND_MATH_IMM_u64(op, desc, dest, src_0, src_1, data) \
 do { \
 	u32 upper = (data >> 16) >> 16; \
@@ -491,17 +446,7 @@ do { \
 #define append_math_rshift_imm_u64(desc, dest, src0, src1, data) \
 	APPEND_MATH_IMM_u64(RSHIFT, desc, dest, src0, src1, data)
 
-/**
- * struct alginfo - Container for algorithm details
- * @algtype: algorithm selector; for valid values, see documentation of the
- *           functions where it is used.
- * @keylen: length of the provided algorithm key, in bytes
- * @keylen_pad: padded length of the provided algorithm key, in bytes
- * @key_dma: dma (bus) address where algorithm key resides
- * @key_virt: virtual address where algorithm key resides
- * @key_inline: true - key can be inlined in the descriptor; false - key is
- *              referenced by the descriptor
- */
+ 
 struct alginfo {
 	u32 algtype;
 	unsigned int keylen;
@@ -511,24 +456,7 @@ struct alginfo {
 	bool key_inline;
 };
 
-/**
- * desc_inline_query() - Provide indications on which data items can be inlined
- *                       and which shall be referenced in a shared descriptor.
- * @sd_base_len: Shared descriptor base length - bytes consumed by the commands,
- *               excluding the data items to be inlined (or corresponding
- *               pointer if an item is not inlined). Each cnstr_* function that
- *               generates descriptors should have a define mentioning
- *               corresponding length.
- * @jd_len: Maximum length of the job descriptor(s) that will be used
- *          together with the shared descriptor.
- * @data_len: Array of lengths of the data items trying to be inlined
- * @inl_mask: 32bit mask with bit x = 1 if data item x can be inlined, 0
- *            otherwise.
- * @count: Number of data items (size of @data_len array); must be <= 32
- *
- * Return: 0 if data can be inlined / referenced, negative value if not. If 0,
- *         check @inl_mask for details.
- */
+ 
 static inline int desc_inline_query(unsigned int sd_base_len,
 				    unsigned int jd_len, unsigned int *data_len,
 				    u32 *inl_mask, unsigned int count)
@@ -550,23 +478,12 @@ static inline int desc_inline_query(unsigned int sd_base_len,
 	return (rem_bytes >= 0) ? 0 : -1;
 }
 
-/**
- * append_proto_dkp - Derived Key Protocol (DKP): key -> split key
- * @desc: pointer to buffer used for descriptor construction
- * @adata: pointer to authentication transform definitions.
- *         keylen should be the length of initial key, while keylen_pad
- *         the length of the derived (split) key.
- *         Valid algorithm values - one of OP_ALG_ALGSEL_{MD5, SHA1, SHA224,
- *         SHA256, SHA384, SHA512}.
- */
+ 
 static inline void append_proto_dkp(u32 * const desc, struct alginfo *adata)
 {
 	u32 protid;
 
-	/*
-	 * Quick & dirty translation from OP_ALG_ALGSEL_{MD5, SHA*}
-	 * to OP_PCLID_DKP_{MD5, SHA*}
-	 */
+	 
 	protid = (adata->algtype & OP_ALG_ALGSEL_SUBMASK) |
 		 (0x20 << OP_ALG_ALGSEL_SHIFT);
 
@@ -592,7 +509,7 @@ static inline void append_proto_dkp(u32 * const desc, struct alginfo *adata)
 				CAAM_CMD_SZ;
 		}
 
-		/* Reserve space in descriptor buffer for the derived key */
+		 
 		if (words)
 			(*desc) = cpu_to_caam32(caam32_to_cpu(*desc) + words);
 	} else {
@@ -603,4 +520,4 @@ static inline void append_proto_dkp(u32 * const desc, struct alginfo *adata)
 	}
 }
 
-#endif /* DESC_CONSTR_H */
+#endif  

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Broadcom GENET (Gigabit Ethernet) Wake-on-LAN support
- *
- * Copyright (c) 2014-2020 Broadcom
- */
+
+ 
 
 #define pr_fmt(fmt)				"bcmgenet_wol: " fmt
 
@@ -34,9 +30,7 @@
 
 #include "bcmgenet.h"
 
-/* ethtool function - get WOL (Wake on LAN) settings, Only Magic Packet
- * Detection is supported through ethtool
- */
+ 
 void bcmgenet_get_wol(struct net_device *dev, struct ethtool_wolinfo *wol)
 {
 	struct bcmgenet_priv *priv = netdev_priv(dev);
@@ -62,16 +56,14 @@ void bcmgenet_get_wol(struct net_device *dev, struct ethtool_wolinfo *wol)
 		memcpy(wol->sopass, priv->sopass, sizeof(priv->sopass));
 }
 
-/* ethtool function - set WOL (Wake on LAN) settings.
- * Only for magic packet detection mode.
- */
+ 
 int bcmgenet_set_wol(struct net_device *dev, struct ethtool_wolinfo *wol)
 {
 	struct bcmgenet_priv *priv = netdev_priv(dev);
 	struct device *kdev = &priv->pdev->dev;
 	int ret;
 
-	/* Try Wake-on-LAN from the PHY first */
+	 
 	if (dev->phydev) {
 		ret = phy_ethtool_set_wol(dev->phydev, wol);
 		if (ret != -EOPNOTSUPP)
@@ -87,10 +79,10 @@ int bcmgenet_set_wol(struct net_device *dev, struct ethtool_wolinfo *wol)
 	if (wol->wolopts & WAKE_MAGICSECURE)
 		memcpy(priv->sopass, wol->sopass, sizeof(priv->sopass));
 
-	/* Flag the device and relevant IRQ as wakeup capable */
+	 
 	if (wol->wolopts) {
 		device_set_wakeup_enable(kdev, 1);
-		/* Avoid unbalanced enable_irq_wake calls */
+		 
 		if (priv->wol_irq_disabled) {
 			enable_irq_wake(priv->wol_irq);
 			enable_irq_wake(priv->irq0);
@@ -98,7 +90,7 @@ int bcmgenet_set_wol(struct net_device *dev, struct ethtool_wolinfo *wol)
 		priv->wol_irq_disabled = false;
 	} else {
 		device_set_wakeup_enable(kdev, 0);
-		/* Avoid unbalanced disable_irq_wake calls */
+		 
 		if (!priv->wol_irq_disabled) {
 			disable_irq_wake(priv->wol_irq);
 			disable_irq_wake(priv->irq0);
@@ -150,12 +142,12 @@ int bcmgenet_wol_power_down_cfg(struct bcmgenet_priv *priv,
 		return -EINVAL;
 	}
 
-	/* Can't suspend with WoL if MAC is still in reset */
+	 
 	reg = bcmgenet_umac_readl(priv, UMAC_CMD);
 	if (reg & CMD_SW_RESET)
 		reg &= ~CMD_SW_RESET;
 
-	/* disable RX */
+	 
 	reg &= ~CMD_RX_EN;
 	bcmgenet_umac_writel(priv, reg, UMAC_CMD);
 	mdelay(10);
@@ -179,7 +171,7 @@ int bcmgenet_wol_power_down_cfg(struct bcmgenet_priv *priv,
 		bcmgenet_hfb_reg_writel(priv, reg, HFB_CTRL);
 	}
 
-	/* Do not leave UniMAC in MPD mode only */
+	 
 	retries = bcmgenet_poll_wol_status(priv);
 	if (retries < 0) {
 		reg = bcmgenet_umac_readl(priv, UMAC_MPD_CTRL);
@@ -202,12 +194,12 @@ int bcmgenet_wol_power_down_cfg(struct bcmgenet_priv *priv,
 		bcmgenet_hfb_reg_writel(priv, hfb_ctrl_reg, HFB_CTRL);
 	}
 
-	/* Enable CRC forward */
+	 
 	reg = bcmgenet_umac_readl(priv, UMAC_CMD);
 	priv->crc_fwd_en = 1;
 	reg |= CMD_CRC_FWD;
 
-	/* Receiver must be enabled for WOL MP detection */
+	 
 	reg |= CMD_RX_EN;
 	bcmgenet_umac_writel(priv, reg, UMAC_CMD);
 
@@ -231,31 +223,31 @@ void bcmgenet_wol_power_up_cfg(struct bcmgenet_priv *priv,
 	}
 
 	if (!priv->wol_active)
-		return;	/* failed to suspend so skip the rest */
+		return;	 
 
 	priv->wol_active = 0;
 	clk_disable_unprepare(priv->clk_wol);
 	priv->crc_fwd_en = 0;
 
-	/* Disable Magic Packet Detection */
+	 
 	if (priv->wolopts & (WAKE_MAGIC | WAKE_MAGICSECURE)) {
 		reg = bcmgenet_umac_readl(priv, UMAC_MPD_CTRL);
 		if (!(reg & MPD_EN))
-			return;	/* already reset so skip the rest */
+			return;	 
 		reg &= ~(MPD_EN | MPD_PW_EN);
 		bcmgenet_umac_writel(priv, reg, UMAC_MPD_CTRL);
 	}
 
-	/* Disable WAKE_FILTER Detection */
+	 
 	if (priv->wolopts & WAKE_FILTER) {
 		reg = bcmgenet_hfb_reg_readl(priv, HFB_CTRL);
 		if (!(reg & RBUF_ACPI_EN))
-			return;	/* already reset so skip the rest */
+			return;	 
 		reg &= ~(RBUF_HFB_EN | RBUF_ACPI_EN);
 		bcmgenet_hfb_reg_writel(priv, reg, HFB_CTRL);
 	}
 
-	/* Disable CRC Forward */
+	 
 	reg = bcmgenet_umac_readl(priv, UMAC_CMD);
 	reg &= ~CMD_CRC_FWD;
 	bcmgenet_umac_writel(priv, reg, UMAC_CMD);

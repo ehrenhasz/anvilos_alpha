@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-/* Copyright (c) 2022, NVIDIA CORPORATION & AFFILIATES. */
+
+ 
 
 #include "macsec.h"
 #include <linux/mlx5/macsec.h>
@@ -272,7 +272,7 @@ int mlx5r_add_gid_macsec_operations(const struct ib_gid_attr *attr)
 		mgids->physical_gid = physical_gid;
 	}
 
-	/* Proceed with adding steering rules, regardless if there was gid ambiguity or not.*/
+	 
 	rdma_gid2ip((struct sockaddr *)&addr, &attr->gid);
 	ret = mlx5_macsec_add_roce_rule(ndev, (struct sockaddr *)&addr, attr->index,
 					&macsec_device->tx_rules_list,
@@ -316,7 +316,7 @@ void mlx5r_del_gid_macsec_operations(const struct ib_gid_attr *attr)
 	}
 
 	mgids = &dev->port[attr->port_num - 1].reserved_gids[attr->index];
-	if (mgids->macsec_index != -1) { /* Checking if physical gid has ambiguous IP */
+	if (mgids->macsec_index != -1) {  
 		rdma_put_gid_attr(mgids->physical_gid);
 		mgids->macsec_index = -1;
 		return;
@@ -338,7 +338,7 @@ void mlx5r_del_gid_macsec_operations(const struct ib_gid_attr *attr)
 
 	mutex_lock(&dev->macsec.lock);
 	max_gids = MLX5_CAP_ROCE(dev->mdev, roce_address_table_size);
-	for (i = 0; i < max_gids; i++) { /* Checking if macsec gid has ambiguous IP */
+	for (i = 0; i < max_gids; i++) {  
 		mgids = &dev->port[attr->port_num - 1].reserved_gids[i];
 		if (mgids->macsec_index == attr->index) {
 			const struct ib_gid_attr *physical_gid = mgids->physical_gid;

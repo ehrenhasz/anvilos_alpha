@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Mediatek GNSS receiver driver
- *
- * Copyright (C) 2018 Johan Hovold <johan@kernel.org>
- */
+
+ 
 
 #include <linux/errno.h>
 #include <linux/gnss.h>

@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/* Copyright (C) 2006-2016 Oracle Corporation */
+ 
+ 
 
 #ifndef __VBOXVIDEO_GUEST_H__
 #define __VBOXVIDEO_GUEST_H__
@@ -7,23 +7,17 @@
 #include <linux/genalloc.h>
 #include "vboxvideo.h"
 
-/*
- * Structure grouping the context needed for sending graphics acceleration
- * information to the host via VBVA.  Each screen has its own VBVA buffer.
- */
+ 
 struct vbva_buf_ctx {
-	/* Offset of the buffer in the VRAM section for the screen */
+	 
 	u32 buffer_offset;
-	/* Length of the buffer in bytes */
+	 
 	u32 buffer_length;
-	/* Set if we wrote to the buffer faster than the host could read it */
+	 
 	bool buffer_overflow;
-	/* VBVA record that we are currently preparing for the host, or NULL */
+	 
 	struct vbva_record *record;
-	/*
-	 * Pointer to the VBVA buffer mapped into the current address space.
-	 * Will be NULL if VBVA is not enabled.
-	 */
+	 
 	struct vbva_buffer *vbva;
 };
 

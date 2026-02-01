@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * sl28cpld hardware monitoring driver
- *
- * Copyright 2020 Kontron Europe GmbH
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/hwmon.h>
@@ -44,18 +40,11 @@ static int sl28cpld_hwmon_read(struct device *dev,
 				  &value);
 		if (ret)
 			return ret;
-		/*
-		 * The register has a 7 bit value and 1 bit which indicates the
-		 * scale. If the MSB is set, then the lower 7 bit has to be
-		 * multiplied by 8, to get the correct reading.
-		 */
+		 
 		if (value & FAN_SCALE_X8)
 			value = FIELD_GET(FAN_VALUE_MASK, value) << 3;
 
-		/*
-		 * The counter period is 1000ms and the sysfs specification
-		 * says we should assume 2 pulses per revolution.
-		 */
+		 
 		value *= 60 / 2;
 
 		break;

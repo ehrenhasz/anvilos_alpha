@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include "ext2.h"
 #include <linux/uio.h>
 

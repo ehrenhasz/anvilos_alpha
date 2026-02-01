@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * omap-usb2.c - USB PHY, talking to USB controller on TI SoCs.
- *
- * Copyright (C) 2012-2020 Texas Instruments Incorporated - http://www.ti.com
- * Author: Kishon Vijay Abraham I <kishon@ti.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -31,7 +26,7 @@
 #define USB2PHY_CHRG_DET_USE_CHG_DET_REG	BIT(29)
 #define USB2PHY_CHRG_DET_DIS_CHG_DET		BIT(28)
 
-/* SoC Specific USB2_OTG register definitions */
+ 
 #define AM654_USB2_OTG_PD		BIT(8)
 #define AM654_USB2_VBUS_DET_EN		BIT(5)
 #define AM654_USB2_VBUSVALID_DET_EN	BIT(4)
@@ -44,7 +39,7 @@
 #define AM437X_USB2_OTGVDET_EN		BIT(19)
 #define AM437X_USB2_OTGSESSEND_EN	BIT(20)
 
-/* Driver Flags */
+ 
 #define OMAP_USB2_HAS_START_SRP			BIT(0)
 #define OMAP_USB2_HAS_SET_VBUS			BIT(1)
 #define OMAP_USB2_CALIBRATE_FALSE_DISCONNECT	BIT(2)
@@ -60,8 +55,8 @@ struct omap_usb {
 	struct clk		*wkupclk;
 	struct clk		*optclk;
 	u8			flags;
-	struct regmap		*syscon_phy_power; /* ctrl. reg. acces */
-	unsigned int		power_reg; /* power reg. index within syscon */
+	struct regmap		*syscon_phy_power;  
+	unsigned int		power_reg;  
 	u32			mask;
 	u32			power_on;
 	u32			power_off;
@@ -88,16 +83,7 @@ static inline void omap_usb_writel(void __iomem *addr, unsigned int offset,
 	__raw_writel(data, addr + offset);
 }
 
-/**
- * omap_usb2_set_comparator() - links the comparator present in the system with this phy
- *
- * @comparator:  the companion phy(comparator) for this phy
- *
- * The phy companion driver should call this API passing the phy_companion
- * filled with set_vbus and start_srp to be used by usb phy.
- *
- * For use by phy companion driver
- */
+ 
 int omap_usb2_set_comparator(struct phy_companion *comparator)
 {
 	struct omap_usb	*phy;
@@ -229,14 +215,7 @@ static int omap_usb_init(struct phy *x)
 	omap_usb2_enable_clocks(phy);
 
 	if (phy->flags & OMAP_USB2_CALIBRATE_FALSE_DISCONNECT) {
-		/*
-		 *
-		 * Reduce the sensitivity of internal PHY by enabling the
-		 * DISCON_BYP_LATCH of the USB2PHY_ANA_CONFIG1 register. This
-		 * resolves issues with certain devices which can otherwise
-		 * be prone to false disconnects.
-		 *
-		 */
+		 
 		val = omap_usb_readl(phy->phy_base, USB2PHY_ANA_CONFIG1);
 		val |= USB2PHY_DISCON_BYP_LATCH;
 		omap_usb_writel(phy->phy_base, USB2PHY_ANA_CONFIG1, val);
@@ -346,18 +325,10 @@ static void omap_usb2_init_errata(struct omap_usb *phy)
 {
 	static const struct soc_device_attribute am65x_sr10_soc_devices[] = {
 		{ .family = "AM65X", .revision = "SR1.0" },
-		{ /* sentinel */ }
+		{   }
 	};
 
-	/*
-	 * Errata i2075: USB2PHY: USB2PHY Charger Detect is Enabled by
-	 * Default Without VBUS Presence.
-	 *
-	 * AM654x SR1.0 has a silicon bug due to which D+ is pulled high after
-	 * POR, which could cause enumeration failure with some USB hubs.
-	 * Disabling the USB2_PHY Charger Detect function will put D+
-	 * into the normal state.
-	 */
+	 
 	if (soc_device_match(am65x_sr10_soc_devices))
 		phy->flags |= OMAP_USB2_DISABLE_CHRG_DET;
 }

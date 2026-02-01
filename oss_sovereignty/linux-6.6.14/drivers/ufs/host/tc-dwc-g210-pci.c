@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Synopsys G210 Test Chip driver
- *
- * Copyright (C) 2015-2016 Synopsys, Inc. (www.synopsys.com)
- *
- * Authors: Joao Pinto <jpinto@synopsys.com>
- */
+
+ 
 
 #include <ufs/ufshcd.h>
 #include "ufshcd-dwc.h"
@@ -15,7 +9,7 @@
 #include <linux/pci.h>
 #include <linux/pm_runtime.h>
 
-/* Test Chip type expected values */
+ 
 #define TC_G210_20BIT 20
 #define TC_G210_40BIT 40
 #define TC_G210_INV 0
@@ -24,19 +18,13 @@ static int tc_type = TC_G210_INV;
 module_param(tc_type, int, 0);
 MODULE_PARM_DESC(tc_type, "Test Chip Type (20 = 20-bit, 40 = 40-bit)");
 
-/*
- * struct ufs_hba_dwc_vops - UFS DWC specific variant operations
- */
+ 
 static struct ufs_hba_variant_ops tc_dwc_g210_pci_hba_vops = {
 	.name                   = "tc-dwc-g210-pci",
 	.link_startup_notify	= ufshcd_dwc_link_startup_notify,
 };
 
-/**
- * tc_dwc_g210_pci_remove - de-allocate PCI/SCSI host and host memory space
- *		data structure memory
- * @pdev: pointer to PCI handle
- */
+ 
 static void tc_dwc_g210_pci_remove(struct pci_dev *pdev)
 {
 	struct ufs_hba *hba = pci_get_drvdata(pdev);
@@ -46,13 +34,7 @@ static void tc_dwc_g210_pci_remove(struct pci_dev *pdev)
 	ufshcd_remove(hba);
 }
 
-/**
- * tc_dwc_g210_pci_probe - probe routine of the driver
- * @pdev: pointer to PCI device handle
- * @id: PCI device id
- *
- * Return: 0 on success, non-zero value on failure.
- */
+ 
 static int
 tc_dwc_g210_pci_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 {
@@ -60,7 +42,7 @@ tc_dwc_g210_pci_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 	void __iomem *mmio_base;
 	int err;
 
-	/* Check Test Chip type and set the specific setup routine */
+	 
 	if (tc_type == TC_G210_20BIT) {
 		tc_dwc_g210_pci_hba_vops.phy_initialization =
 						tc_dwc_g210_config_20_bit;
@@ -118,7 +100,7 @@ static const struct dev_pm_ops tc_dwc_g210_pci_pm_ops = {
 static const struct pci_device_id tc_dwc_g210_pci_tbl[] = {
 	{ PCI_VENDOR_ID_SYNOPSYS, 0xB101, PCI_ANY_ID, PCI_ANY_ID, 0, 0, 0 },
 	{ PCI_VENDOR_ID_SYNOPSYS, 0xB102, PCI_ANY_ID, PCI_ANY_ID, 0, 0, 0 },
-	{ }	/* terminate list */
+	{ }	 
 };
 
 MODULE_DEVICE_TABLE(pci, tc_dwc_g210_pci_tbl);

@@ -1,11 +1,5 @@
-/* $OpenBSD: ssh-keyscan.c,v 1.153 2023/06/21 05:06:04 djm Exp $ */
-/*
- * Copyright 1995, 1996 by David Mazieres <dm@lcs.mit.edu>.
- *
- * Modification and redistribution in source and binary forms is
- * permitted provided that due credit is given to the author and the
- * OpenBSD project by leaving this copyright notice intact.
- */
+ 
+ 
 
 #include "includes.h"
  
@@ -56,8 +50,7 @@
 #include "dns.h"
 #include "addr.h"
 
-/* Flag indicating whether IPv4 or IPv6.  This can be set on the command line.
-   Default value is AF_UNSPEC means both IPv4 and IPv6. */
+ 
 int IPv4or6 = AF_UNSPEC;
 
 int ssh_port = SSH_DEFAULT_PORT;
@@ -76,17 +69,17 @@ int ssh_port = SSH_DEFAULT_PORT;
 int get_cert = 0;
 int get_keytypes = KT_RSA|KT_ECDSA|KT_ED25519|KT_ECDSA_SK|KT_ED25519_SK;
 
-int hash_hosts = 0;		/* Hash hostname on output */
+int hash_hosts = 0;		 
 
-int print_sshfp = 0;		/* Print SSHFP records instead of known_hosts */
+int print_sshfp = 0;		 
 
-int found_one = 0;		/* Successfully found a key */
+int found_one = 0;		 
 
-int hashalg = -1;		/* Hash for SSHFP records or -1 for all */
+int hashalg = -1;		 
 
 #define MAXMAXFD 256
 
-/* The number of seconds after which to give up on a TCP connection */
+ 
 int timeout = 5;
 
 int maxfd;
@@ -96,33 +89,30 @@ extern char *__progname;
 struct pollfd *read_wait;
 int ncon;
 
-/*
- * Keep a connection structure for each file descriptor.  The state
- * associated with file descriptor n is held in fdcon[n].
- */
+ 
 typedef struct Connection {
-	u_char c_status;	/* State of connection on this file desc. */
-#define CS_UNUSED 0		/* File descriptor unused */
-#define CS_CON 1		/* Waiting to connect/read greeting */
-#define CS_SIZE 2		/* Waiting to read initial packet size */
-#define CS_KEYS 3		/* Waiting to read public key packet */
-	int c_fd;		/* Quick lookup: c->c_fd == c - fdcon */
-	int c_plen;		/* Packet length field for ssh packet */
-	int c_len;		/* Total bytes which must be read. */
-	int c_off;		/* Length of data read so far. */
-	int c_keytype;		/* Only one of KT_* */
-	sig_atomic_t c_done;	/* SSH2 done */
-	char *c_namebase;	/* Address to free for c_name and c_namelist */
-	char *c_name;		/* Hostname of connection for errors */
-	char *c_namelist;	/* Pointer to other possible addresses */
-	char *c_output_name;	/* Hostname of connection for output */
-	char *c_data;		/* Data read from this fd */
-	struct ssh *c_ssh;	/* SSH-connection */
-	struct timespec c_ts;	/* Time at which connection gets aborted */
-	TAILQ_ENTRY(Connection) c_link;	/* List of connections in timeout order. */
+	u_char c_status;	 
+#define CS_UNUSED 0		 
+#define CS_CON 1		 
+#define CS_SIZE 2		 
+#define CS_KEYS 3		 
+	int c_fd;		 
+	int c_plen;		 
+	int c_len;		 
+	int c_off;		 
+	int c_keytype;		 
+	sig_atomic_t c_done;	 
+	char *c_namebase;	 
+	char *c_name;		 
+	char *c_namelist;	 
+	char *c_output_name;	 
+	char *c_data;		 
+	struct ssh *c_ssh;	 
+	struct timespec c_ts;	 
+	TAILQ_ENTRY(Connection) c_link;	 
 } con;
 
-TAILQ_HEAD(conlist, Connection) tq;	/* Timeout Queue */
+TAILQ_HEAD(conlist, Connection) tq;	 
 con *fdcon;
 
 static void keyprint(con *c, struct sshkey *key);
@@ -171,11 +161,7 @@ fdlim_set(int lim)
 	return (0);
 }
 
-/*
- * This is an strsep function that returns a null field for adjacent
- * separators.  This is the same as the 4.4BSD strsep, but different from the
- * one in the GNU libc.
- */
+ 
 static char *
 xstrsep(char **str, const char *delim)
 {
@@ -194,10 +180,7 @@ xstrsep(char **str, const char *delim)
 	return (s);
 }
 
-/*
- * Get the next non-null token (like GNU strsep).  Strsep() will return a
- * null token for two adjacent separators, so we may have to loop.
- */
+ 
 static char *
 strnnsep(char **stringp, char *delim)
 {
@@ -217,7 +200,7 @@ key_print_wrapper(struct sshkey *hostkey, struct ssh *ssh)
 
 	if ((c = ssh_get_app_data(ssh)) != NULL)
 		keyprint(c, hostkey);
-	/* always abort key exchange */
+	 
 	return -1;
 }
 
@@ -308,10 +291,7 @@ keygrab_ssh2(con *c)
 	c->c_ssh->kex->kex[KEX_C25519_SHA256] = kex_gen_client;
 	c->c_ssh->kex->kex[KEX_KEM_SNTRUP761X25519_SHA512] = kex_gen_client;
 	ssh_set_verify_host_key_callback(c->c_ssh, key_print_wrapper);
-	/*
-	 * do the key-exchange until an error occurs or until
-	 * the key_print_wrapper() callback sets c_done.
-	 */
+	 
 	ssh_dispatch_run(c->c_ssh, DISPATCH_BLOCK, &c->c_done);
 }
 
@@ -488,7 +468,7 @@ congreet(int s)
 	size_t bufsiz;
 	con *c = &fdcon[s];
 
-	/* send client banner */
+	 
 	n = snprintf(buf, sizeof buf, "SSH-%d.%d-OpenSSH-keyscan\r\n",
 	    PROTOCOL_MAJOR_2, PROTOCOL_MINOR_2);
 	if (n < 0 || (size_t)n >= sizeof(buf)) {
@@ -502,15 +482,7 @@ congreet(int s)
 		return;
 	}
 
-	/*
-	 * Read the server banner as per RFC4253 section 4.2.  The "SSH-"
-	 * protocol identification string may be preceeded by an arbitrarily
-	 * large banner which we must read and ignore.  Loop while reading
-	 * newline-terminated lines until we have one starting with "SSH-".
-	 * The ID string cannot be longer than 255 characters although the
-	 * preceeding banner lines may (in which case they'll be discarded
-	 * in multiple iterations of the outer loop).
-	 */
+	 
 	for (;;) {
 		memset(buf, '\0', sizeof(buf));
 		bufsiz = sizeof(buf);
@@ -552,7 +524,7 @@ congreet(int s)
 	if ((c->c_ssh = ssh_packet_set_connection(NULL, s, s)) == NULL)
 		fatal("ssh_packet_set_connection failed");
 	ssh_packet_set_timeout(c->c_ssh, timeout, 1);
-	ssh_set_app_data(c->c_ssh, c);	/* back link */
+	ssh_set_app_data(c->c_ssh, c);	 
 	c->c_ssh->compat = 0;
 	if (sscanf(buf, "SSH-%d.%d-%[^\n]\n",
 	    &remote_major, &remote_minor, remote_version) == 3)
@@ -667,17 +639,15 @@ do_host(char *host)
 	if (host == NULL)
 		return;
 	if (addr_pton_cidr(host, &addr, &masklen) != 0) {
-		/* Assume argument is a hostname */
+		 
 		do_one_host(host);
 	} else {
-		/* Argument is a CIDR range */
+		 
 		debug("CIDR range %s", host);
 		end_addr = addr;
 		if (addr_host_to_all1s(&end_addr, masklen) != 0)
 			goto badaddr;
-		/*
-		 * Note: we deliberately include the all-zero/ones addresses.
-		 */
+		 
 		for (;;) {
 			if (addr_ntop(&addr, daddr, sizeof(daddr)) != 0) {
  badaddr:
@@ -730,7 +700,7 @@ main(int argc, char **argv)
 	seed_rng();
 	TAILQ_INIT(&tq);
 
-	/* Ensure that fds 0, 1 and 2 are open or directed to /dev/null */
+	 
 	sanitise_stdfd();
 
 	if (argc <= 1)
@@ -777,7 +747,7 @@ main(int argc, char **argv)
 			argv[fopt_count++] = optarg;
 			break;
 		case 'O':
-			/* Maybe other misc options in the future too */
+			 
 			if (strncmp(optarg, "hashalg=", 8) != 0)
 				fatal("Unsupported -O option");
 			if ((hashalg = ssh_digest_alg_by_name(
@@ -855,7 +825,7 @@ main(int argc, char **argv)
 			fatal("%s: %s: %s", __progname, argv[j], strerror(errno));
 
 		while (getline(&line, &linesize, fp) != -1) {
-			/* Chomp off trailing whitespace and comments */
+			 
 			if ((cp = strchr(line, '#')) == NULL)
 				cp = line + strlen(line) - 1;
 			while (cp >= line) {
@@ -866,7 +836,7 @@ main(int argc, char **argv)
 					break;
 			}
 
-			/* Skip empty lines */
+			 
 			if (*line == '\0')
 				continue;
 

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  Based on documentation provided by Dave Jones. Thanks!
- *
- *  BIG FAT DISCLAIMER: Work in progress code. Possibly *dangerous*
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -42,7 +38,7 @@ struct eps_cpu_data {
 
 static struct eps_cpu_data *eps_cpu[NR_CPUS];
 
-/* Module parameters */
+ 
 static int freq_failsafe_off;
 static int voltage_failsafe_off;
 static int set_max_voltage;
@@ -52,7 +48,7 @@ static int ignore_acpi_limit;
 
 static struct acpi_processor_performance *eps_acpi_cpu_perf;
 
-/* Minimum necessary to get acpi_processor_get_bios_limit() working */
+ 
 static int eps_acpi_init(void)
 {
 	eps_acpi_cpu_perf = kzalloc(sizeof(*eps_acpi_cpu_perf),
@@ -99,7 +95,7 @@ static unsigned int eps_get(unsigned int cpu)
 	if (centaur == NULL)
 		return 0;
 
-	/* Return current frequency */
+	 
 	rdmsr(MSR_IA32_PERF_STATUS, lo, hi);
 	return centaur->fsb * ((lo >> 8) & 0xff);
 }
@@ -111,7 +107,7 @@ static int eps_set_state(struct eps_cpu_data *centaur,
 	u32 lo, hi;
 	int i;
 
-	/* Wait while CPU is busy */
+	 
 	rdmsr(MSR_IA32_PERF_STATUS, lo, hi);
 	i = 0;
 	while (lo & ((1 << 16) | (1 << 17))) {
@@ -122,9 +118,9 @@ static int eps_set_state(struct eps_cpu_data *centaur,
 			return -ENODEV;
 		}
 	}
-	/* Set new multiplier and voltage */
+	 
 	wrmsr(MSR_IA32_PERF_CTL, dest_state & 0xffff, 0);
-	/* Wait until transition end */
+	 
 	i = 0;
 	do {
 		udelay(16);
@@ -139,7 +135,7 @@ static int eps_set_state(struct eps_cpu_data *centaur,
 	{
 	u8 current_multiplier, current_voltage;
 
-	/* Print voltage and multiplier */
+	 
 	rdmsr(MSR_IA32_PERF_STATUS, lo, hi);
 	current_voltage = lo & 0xff;
 	pr_info("Current voltage = %dmV\n", current_voltage * 16 + 700);
@@ -161,7 +157,7 @@ static int eps_target(struct cpufreq_policy *policy, unsigned int index)
 		return -ENODEV;
 	centaur = eps_cpu[cpu];
 
-	/* Make frequency transition */
+	 
 	dest_state = centaur->freq_table[index].driver_data & 0xffff;
 	ret = eps_set_state(centaur, policy, dest_state);
 	if (ret)
@@ -191,7 +187,7 @@ static int eps_cpu_init(struct cpufreq_policy *policy)
 	if (policy->cpu != 0)
 		return -ENODEV;
 
-	/* Check brand */
+	 
 	pr_info("Detected VIA ");
 
 	switch (c->x86_model) {
@@ -224,12 +220,12 @@ static int eps_cpu_init(struct cpufreq_policy *policy)
 		pr_cont("C3\n");
 		return -ENODEV;
 	}
-	/* Enable Enhanced PowerSaver */
+	 
 	rdmsrl(MSR_IA32_MISC_ENABLE, val);
 	if (!(val & MSR_IA32_MISC_ENABLE_ENHANCED_SPEEDSTEP)) {
 		val |= MSR_IA32_MISC_ENABLE_ENHANCED_SPEEDSTEP;
 		wrmsrl(MSR_IA32_MISC_ENABLE, val);
-		/* Can be locked at 0 */
+		 
 		rdmsrl(MSR_IA32_MISC_ENABLE, val);
 		if (!(val & MSR_IA32_MISC_ENABLE_ENHANCED_SPEEDSTEP)) {
 			pr_info("Can't enable Enhanced PowerSaver\n");
@@ -237,14 +233,14 @@ static int eps_cpu_init(struct cpufreq_policy *policy)
 		}
 	}
 
-	/* Print voltage and multiplier */
+	 
 	rdmsr(MSR_IA32_PERF_STATUS, lo, hi);
 	current_voltage = lo & 0xff;
 	pr_info("Current voltage = %dmV\n", current_voltage * 16 + 700);
 	current_multiplier = (lo >> 8) & 0xff;
 	pr_info("Current multiplier = %d\n", current_multiplier);
 
-	/* Print limits */
+	 
 	max_voltage = hi & 0xff;
 	pr_info("Highest voltage = %dmV\n", max_voltage * 16 + 700);
 	max_multiplier = (hi >> 8) & 0xff;
@@ -254,7 +250,7 @@ static int eps_cpu_init(struct cpufreq_policy *policy)
 	min_multiplier = (hi >> 24) & 0xff;
 	pr_info("Lowest multiplier = %d\n", min_multiplier);
 
-	/* Sanity checks */
+	 
 	if (current_multiplier == 0 || max_multiplier == 0
 	    || min_multiplier == 0)
 		return -EINVAL;
@@ -268,7 +264,7 @@ static int eps_cpu_init(struct cpufreq_policy *policy)
 	    || current_voltage > max_voltage)
 		return -EINVAL;
 
-	/* Check for systems using underclocked CPU */
+	 
 	if (!freq_failsafe_off && max_multiplier != current_multiplier) {
 		pr_info("Your processor is running at different frequency then its maximum. Aborting.\n");
 		pr_info("You can use freq_failsafe_off option to disable this check.\n");
@@ -280,18 +276,18 @@ static int eps_cpu_init(struct cpufreq_policy *policy)
 		return -EINVAL;
 	}
 
-	/* Calc FSB speed */
+	 
 	fsb = cpu_khz / current_multiplier;
 
 #if IS_ENABLED(CONFIG_ACPI_PROCESSOR)
-	/* Check for ACPI processor speed limit */
+	 
 	if (!ignore_acpi_limit && !eps_acpi_init()) {
 		if (!acpi_processor_get_bios_limit(policy->cpu, &limit)) {
 			pr_info("ACPI limit %u.%uGHz\n",
 				limit/1000000,
 				(limit%1000000)/10000);
 			eps_acpi_exit(policy);
-			/* Check if max_multiplier is in BIOS limits */
+			 
 			if (limit && max_multiplier * fsb > limit) {
 				pr_info("Aborting\n");
 				return -EINVAL;
@@ -300,40 +296,39 @@ static int eps_cpu_init(struct cpufreq_policy *policy)
 	}
 #endif
 
-	/* Allow user to set lower maximum voltage then that reported
-	 * by processor */
+	 
 	if (brand == EPS_BRAND_C7M && set_max_voltage) {
 		u32 v;
 
-		/* Change mV to something hardware can use */
+		 
 		v = (set_max_voltage - 700) / 16;
-		/* Check if voltage is within limits */
+		 
 		if (v >= min_voltage && v <= max_voltage) {
 			pr_info("Setting %dmV as maximum\n", v * 16 + 700);
 			max_voltage = v;
 		}
 	}
 
-	/* Calc number of p-states supported */
+	 
 	if (brand == EPS_BRAND_C7M)
 		states = max_multiplier - min_multiplier + 1;
 	else
 		states = 2;
 
-	/* Allocate private data and frequency table for current cpu */
+	 
 	centaur = kzalloc(struct_size(centaur, freq_table, states + 1),
 			  GFP_KERNEL);
 	if (!centaur)
 		return -ENOMEM;
 	eps_cpu[0] = centaur;
 
-	/* Copy basic values */
+	 
 	centaur->fsb = fsb;
 #if IS_ENABLED(CONFIG_ACPI_PROCESSOR)
 	centaur->bios_limit = limit;
 #endif
 
-	/* Fill frequency and MSR value table */
+	 
 	f_table = &centaur->freq_table[0];
 	if (brand != EPS_BRAND_C7M) {
 		f_table[0].frequency = fsb * min_multiplier;
@@ -354,7 +349,7 @@ static int eps_cpu_init(struct cpufreq_policy *policy)
 		f_table[k].frequency = CPUFREQ_TABLE_END;
 	}
 
-	policy->cpuinfo.transition_latency = 140000; /* 844mV -> 700mV in ns */
+	policy->cpuinfo.transition_latency = 140000;  
 	policy->freq_table = &centaur->freq_table[0];
 
 	return 0;
@@ -364,7 +359,7 @@ static int eps_cpu_exit(struct cpufreq_policy *policy)
 {
 	unsigned int cpu = policy->cpu;
 
-	/* Bye */
+	 
 	kfree(eps_cpu[cpu]);
 	eps_cpu[cpu] = NULL;
 	return 0;
@@ -381,8 +376,7 @@ static struct cpufreq_driver eps_driver = {
 };
 
 
-/* This driver will work only on Centaur C7 processors with
- * Enhanced SpeedStep/PowerSaver registers */
+ 
 static const struct x86_cpu_id eps_cpu_id[] = {
 	X86_MATCH_VENDOR_FAM_FEATURE(CENTAUR, 6, X86_FEATURE_EST, NULL),
 	{}
@@ -403,8 +397,7 @@ static void __exit eps_exit(void)
 	cpufreq_unregister_driver(&eps_driver);
 }
 
-/* Allow user to overclock his machine or to change frequency to higher after
- * unloading module */
+ 
 module_param(freq_failsafe_off, int, 0644);
 MODULE_PARM_DESC(freq_failsafe_off, "Disable current vs max frequency check");
 module_param(voltage_failsafe_off, int, 0644);

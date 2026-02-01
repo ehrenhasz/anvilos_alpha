@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: MIT */
+ 
 #ifndef __NVKM_SEC2_H__
 #define __NVKM_SEC2_H__
 #define nvkm_sec2(p) container_of((p), struct nvkm_sec2, engine)

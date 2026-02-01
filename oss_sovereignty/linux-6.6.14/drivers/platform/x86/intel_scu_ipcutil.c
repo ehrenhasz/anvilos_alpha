@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Driver for the Intel SCU IPC mechanism
- *
- * (C) Copyright 2008-2010 Intel Corporation
- * Author: Sreedhara DS (sreedhara.ds@intel.com)
- *
- * This driver provides IOCTL interfaces to call Intel SCU IPC driver API.
- */
+
+ 
 
 #include <linux/errno.h>
 #include <linux/fcntl.h>
@@ -25,26 +18,19 @@ static int major;
 struct intel_scu_ipc_dev *scu;
 static DEFINE_MUTEX(scu_lock);
 
-/* IOCTL commands */
+ 
 #define	INTE_SCU_IPC_REGISTER_READ	0
 #define INTE_SCU_IPC_REGISTER_WRITE	1
 #define INTE_SCU_IPC_REGISTER_UPDATE	2
 
 struct scu_ipc_data {
-	u32     count;  /* No. of registers */
-	u16     addr[5]; /* Register addresses */
-	u8      data[5]; /* Register data */
-	u8      mask; /* Valid for read-modify-write */
+	u32     count;   
+	u16     addr[5];  
+	u8      data[5];  
+	u8      mask;  
 };
 
-/**
- *	scu_reg_access		-	implement register access ioctls
- *	@cmd: command we are doing (read/write/update)
- *	@data: kernel copy of ioctl data
- *
- *	Allow the user to perform register accesses on the SCU via the
- *	kernel interface
- */
+ 
 
 static int scu_reg_access(u32 cmd, struct scu_ipc_data  *data)
 {
@@ -66,14 +52,7 @@ static int scu_reg_access(u32 cmd, struct scu_ipc_data  *data)
 	}
 }
 
-/**
- *	scu_ipc_ioctl		-	control ioctls for the SCU
- *	@fp: file handle of the SCU device
- *	@cmd: ioctl coce
- *	@arg: pointer to user passed structure
- *
- *	Support the I/O and firmware flashing interfaces of the SCU
- */
+ 
 static long scu_ipc_ioctl(struct file *fp, unsigned int cmd,
 							unsigned long arg)
 {
@@ -98,7 +77,7 @@ static int scu_ipc_open(struct inode *inode, struct file *file)
 {
 	int ret = 0;
 
-	/* Only single open at the time */
+	 
 	mutex_lock(&scu_lock);
 	if (scu) {
 		ret = -EBUSY;

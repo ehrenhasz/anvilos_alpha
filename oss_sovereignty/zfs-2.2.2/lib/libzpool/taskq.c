@@ -1,32 +1,6 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
-/*
- * Copyright 2010 Sun Microsystems, Inc.  All rights reserved.
- * Use is subject to license terms.
- */
-/*
- * Copyright 2011 Nexenta Systems, Inc. All rights reserved.
- * Copyright 2012 Garrett D'Amore <garrett@damore.org>.  All rights reserved.
- * Copyright (c) 2014 by Delphix. All rights reserved.
- */
+ 
+ 
+ 
 
 #include <sys/zfs_context.h>
 
@@ -52,22 +26,13 @@ again:	if ((t = tq->tq_freelist) != NULL && tq->tq_nalloc >= tq->tq_minalloc) {
 			if (!(tqflags & KM_SLEEP))
 				return (NULL);
 
-			/*
-			 * We don't want to exceed tq_maxalloc, but we can't
-			 * wait for other tasks to complete (and thus free up
-			 * task structures) without risking deadlock with
-			 * the caller.  So, we just delay for one second
-			 * to throttle the allocation rate. If we have tasks
-			 * complete before one second timeout expires then
-			 * taskq_ent_free will signal us and we will
-			 * immediately retry the allocation.
-			 */
+			 
 			tq->tq_maxalloc_wait++;
 			rv = cv_timedwait(&tq->tq_maxalloc_cv,
 			    &tq->tq_lock, ddi_get_lbolt() + hz);
 			tq->tq_maxalloc_wait--;
 			if (rv > 0)
-				goto again;		/* signaled */
+				goto again;		 
 		}
 		mutex_exit(&tq->tq_lock);
 
@@ -75,7 +40,7 @@ again:	if ((t = tq->tq_freelist) != NULL && tq->tq_nalloc >= tq->tq_minalloc) {
 
 		mutex_enter(&tq->tq_lock);
 		if (t != NULL) {
-			/* Make sure we start without any flags */
+			 
 			t->tqent_flags = 0;
 			tq->tq_nalloc++;
 		}
@@ -163,14 +128,9 @@ taskq_dispatch_ent(taskq_t *tq, task_func_t func, void *arg, uint_t flags,
 {
 	ASSERT(func != NULL);
 
-	/*
-	 * Mark it as a prealloc'd task.  This is important
-	 * to ensure that we don't free it later.
-	 */
+	 
 	t->tqent_flags |= TQENT_FLAG_PREALLOC;
-	/*
-	 * Enqueue the task to the underlying queue.
-	 */
+	 
 	mutex_enter(&tq->tq_lock);
 
 	if (flags & TQ_FRONT) {
@@ -266,7 +226,7 @@ taskq_create(const char *name, int nthreads, pri_t pri,
 		pct = MAX(pct, 0);
 
 		nthreads = (sysconf(_SC_NPROCESSORS_ONLN) * pct) / 100;
-		nthreads = MAX(nthreads, 1);	/* need at least 1 thread */
+		nthreads = MAX(nthreads, 1);	 
 	} else {
 		ASSERT3S(nthreads, >=, 1);
 	}
@@ -379,7 +339,7 @@ void
 system_taskq_fini(void)
 {
 	taskq_destroy(system_taskq);
-	system_taskq = NULL; /* defensive */
+	system_taskq = NULL;  
 	taskq_destroy(system_delay_taskq);
 	system_delay_taskq = NULL;
 	VERIFY0(pthread_key_delete(taskq_tsd));

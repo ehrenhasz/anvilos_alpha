@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
+ 
 
 #ifndef _NET_ETHTOOL_BITSET_H
 #define _NET_ETHTOOL_BITSET_H
@@ -31,4 +31,4 @@ int ethnl_parse_bitset(unsigned long *val, unsigned long *mask,
 		       ethnl_string_array_t names,
 		       struct netlink_ext_ack *extack);
 
-#endif /* _NET_ETHTOOL_BITSET_H */
+#endif  

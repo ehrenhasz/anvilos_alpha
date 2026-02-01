@@ -1,28 +1,4 @@
-/*
- * This file is part of the MicroPython project, http://micropython.org/
- *
- * The MIT License (MIT)
- *
- * Copyright (c) 2013-2015 Damien P. George
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
+ 
 
 #include <assert.h>
 #include <stdarg.h>
@@ -73,8 +49,8 @@ int mp_print_strn(const mp_print_t *print, const char *str, size_t len, int flag
         pad_chars = pad_zeroes;
         pad_size = sizeof(pad_zeroes) - 1;
     } else {
-        // Other pad characters are fairly unusual, so we'll take the hit
-        // and output them 1 at a time.
+        
+        
         pad_chars = &fill;
         pad_size = 1;
     }
@@ -117,16 +93,16 @@ int mp_print_strn(const mp_print_t *print, const char *str, size_t len, int flag
     return total_chars_printed;
 }
 
-// 32-bits is 10 digits, add 3 for commas, 1 for sign, 1 for terminating null
-// We can use 16 characters for 32-bit and 32 characters for 64-bit
+
+
 #define INT_BUF_SIZE (sizeof(mp_int_t) * 4)
 
-// Our mp_vprintf function below does not support the '#' format modifier to
-// print the prefix of a non-base-10 number, so we don't need code for this.
+
+
 #define SUPPORT_INT_BASE_PREFIX (0)
 
-// This function is used exclusively by mp_vprintf to format ints.
-// It needs to be a separate function to mp_print_mp_int, since converting to a mp_int looses the MSB.
+
+
 static int mp_print_int(const mp_print_t *print, mp_uint_t x, int sgn, int base, int base_char, int flags, char fill, int width) {
     char sign = 0;
     if (sgn) {
@@ -202,14 +178,14 @@ static int mp_print_int(const mp_print_t *print, mp_uint_t x, int sgn, int base,
 }
 
 int mp_print_mp_int(const mp_print_t *print, mp_obj_t x, int base, int base_char, int flags, char fill, int width, int prec) {
-    // These are the only values for "base" that are required to be supported by this
-    // function, since Python only allows the user to format integers in these bases.
-    // If needed this function could be generalised to handle other values.
+    
+    
+    
     assert(base == 2 || base == 8 || base == 10 || base == 16);
 
     if (!mp_obj_is_int(x)) {
-        // This will convert booleans to int, or raise an error for
-        // non-integer types.
+        
+        
         x = MP_OBJ_NEW_SMALL_INT(mp_obj_get_int(x));
     }
 
@@ -253,8 +229,8 @@ int mp_print_mp_int(const mp_print_t *print, mp_obj_t x, int base, int base_char
         comma = ',';
     }
 
-    // The size of this buffer is rather arbitrary. If it's not large
-    // enough, a dynamic one will be allocated.
+    
+    
     char stack_buf[sizeof(mp_int_t) * 4];
     char *buf = stack_buf;
     size_t buf_size = sizeof(stack_buf);
@@ -266,8 +242,8 @@ int mp_print_mp_int(const mp_print_t *print, mp_obj_t x, int base, int base_char
     }
     char sign = '\0';
     if (flags & PF_FLAG_PAD_AFTER_SIGN) {
-        // We add the pad in this function, so since the pad goes after
-        // the sign & prefix, we format without a prefix
+        
+        
         str = mp_obj_int_formatted(&buf, &buf_size, &fmt_size,
             x, base, NULL, base_char, comma);
         if (*str == '-') {
@@ -283,11 +259,11 @@ int mp_print_mp_int(const mp_print_t *print, mp_obj_t x, int base, int base_char
     int spaces_after = 0;
 
     if (prec > 1) {
-        // If prec was specified, then prec specifies the width to zero-pad the
-        // the number to. This zero-padded number then gets left or right
-        // aligned in width characters.
+        
+        
+        
 
-        int prec_width = fmt_size;  // The digits
+        int prec_width = fmt_size;  
         if (prec_width < prec) {
             prec_width = prec;
         }
@@ -313,7 +289,7 @@ int mp_print_mp_int(const mp_print_t *print, mp_obj_t x, int base, int base_char
         len += mp_print_strn(print, "", 0, 0, ' ', spaces_before);
     }
     if (flags & PF_FLAG_PAD_AFTER_SIGN) {
-        // pad after sign implies pad after prefix as well.
+        
         if (sign) {
             len += mp_print_strn(print, &sign, 1, 0, 0, 1);
             width--;
@@ -361,9 +337,9 @@ int mp_print_float(const mp_print_t *print, mp_float_t f, char fmt, int flags, c
         buf[len] = '\0';
     }
 
-    // buf[0] < '0' returns true if the first character is space, + or -
+    
     if ((flags & PF_FLAG_PAD_AFTER_SIGN) && buf[0] < '0') {
-        // We have a sign character
+        
         s++;
         chrs += mp_print_strn(print, &buf[0], 1, 0, 0, 1);
         width--;
@@ -390,7 +366,7 @@ int mp_vprintf(const mp_print_t *print, const char *fmt, va_list args) {
         {
             const char *f = fmt;
             while (*f != '\0' && *f != '%') {
-                ++f; // XXX UTF8 advance char
+                ++f; 
             }
             if (f > fmt) {
                 print->print_strn(print->data, fmt, f - fmt);
@@ -403,10 +379,10 @@ int mp_vprintf(const mp_print_t *print, const char *fmt, va_list args) {
             break;
         }
 
-        // move past % character
+        
         ++fmt;
 
-        // parse flags, if they exist
+        
         int flags = 0;
         char fill = ' ';
         while (*fmt != '\0') {
@@ -427,13 +403,13 @@ int mp_vprintf(const mp_print_t *print, const char *fmt, va_list args) {
             ++fmt;
         }
 
-        // parse width, if it exists
+        
         int width = 0;
         for (; '0' <= *fmt && *fmt <= '9'; ++fmt) {
             width = width * 10 + *fmt - '0';
         }
 
-        // parse precision, if it exists
+        
         int prec = -1;
         if (*fmt == '.') {
             ++fmt;
@@ -451,7 +427,7 @@ int mp_vprintf(const mp_print_t *print, const char *fmt, va_list args) {
             }
         }
 
-        // parse long specifiers (only for LP64 model where they make a difference)
+        
         #ifndef __LP64__
         const
         #endif
@@ -493,7 +469,7 @@ int mp_vprintf(const mp_print_t *print, const char *fmt, va_list args) {
             case 's': {
                 const char *str = va_arg(args, const char *);
                 #ifndef NDEBUG
-                // With debugging enabled, catch printing of null string pointers
+                
                 if (prec != 0 && str == NULL) {
                     chrs += mp_print_strn(print, "(null)", 6, flags, fill, width);
                     break;
@@ -519,8 +495,8 @@ int mp_vprintf(const mp_print_t *print, const char *fmt, va_list args) {
             case 'u':
             case 'x':
             case 'X': {
-                int base = 16 - ((*fmt + 1) & 6); // maps char u/x/X to base 10/16/16
-                char fmt_c = (*fmt & 0xf0) - 'P' + 'A'; // maps char u/x/X to char a/a/A
+                int base = 16 - ((*fmt + 1) & 6); 
+                char fmt_c = (*fmt & 0xf0) - 'P' + 'A'; 
                 mp_uint_t val;
                 if (long_arg) {
                     val = va_arg(args, unsigned long int);
@@ -531,8 +507,8 @@ int mp_vprintf(const mp_print_t *print, const char *fmt, va_list args) {
                 break;
             }
             case 'p':
-            case 'P': // don't bother to handle upcase for 'P'
-                // Use unsigned long int to work on both ILP32 and LP64 systems
+            case 'P': 
+                
                 chrs += mp_print_int(print, va_arg(args, unsigned long int), 0, 16, 'a', flags, fill, width);
                 break;
             #if MICROPY_PY_BUILTINS_FLOAT
@@ -551,9 +527,9 @@ int mp_vprintf(const mp_print_t *print, const char *fmt, va_list args) {
                 break;
             }
             #endif
-                // Because 'l' is eaten above, another 'l' means %ll.  We need to support
-                // this length specifier for OBJ_REPR_D (64-bit NaN boxing).
-                // TODO Either enable this unconditionally, or provide a specific config var.
+                
+                
+                
             #if (MICROPY_OBJ_REPR == MICROPY_OBJ_REPR_D) || defined(_WIN64)
             case 'l': {
                 unsigned long long int arg_value = va_arg(args, unsigned long long int);
@@ -564,7 +540,7 @@ int mp_vprintf(const mp_print_t *print, const char *fmt, va_list args) {
             }
             #endif
             default:
-                // if it's not %% then it's an unsupported format character
+                
                 assert(*fmt == '%' || !"unsupported fmt char");
                 print->print_strn(print->data, fmt, 1);
                 chrs += 1;

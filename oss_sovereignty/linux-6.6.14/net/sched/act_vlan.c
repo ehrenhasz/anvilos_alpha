@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (c) 2014 Jiri Pirko <jiri@resnulli.us>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -32,9 +30,7 @@ TC_INDIRECT_SCOPE int tcf_vlan_act(struct sk_buff *skb,
 	tcf_lastuse_update(&v->tcf_tm);
 	tcf_action_update_bstats(&v->common, skb);
 
-	/* Ensure 'data' points at mac_header prior calling vlan manipulating
-	 * functions.
-	 */
+	 
 	if (skb_at_tc_ingress(skb))
 		skb_push_rcsum(skb, skb->mac_len);
 
@@ -55,27 +51,27 @@ TC_INDIRECT_SCOPE int tcf_vlan_act(struct sk_buff *skb,
 			goto drop;
 		break;
 	case TCA_VLAN_ACT_MODIFY:
-		/* No-op if no vlan tag (either hw-accel or in-payload) */
+		 
 		if (!skb_vlan_tagged(skb))
 			goto out;
-		/* extract existing tag (and guarantee no hw-accel tag) */
+		 
 		if (skb_vlan_tag_present(skb)) {
 			tci = skb_vlan_tag_get(skb);
 			__vlan_hwaccel_clear_tag(skb);
 		} else {
-			/* in-payload vlan tag, pop it */
+			 
 			err = __skb_vlan_pop(skb, &tci);
 			if (err)
 				goto drop;
 		}
-		/* replace the vid */
+		 
 		tci = (tci & ~VLAN_VID_MASK) | p->tcfv_push_vid;
-		/* replace prio bits, if tcfv_push_prio specified */
+		 
 		if (p->tcfv_push_prio_exists) {
 			tci &= ~VLAN_PRIO_MASK;
 			tci |= p->tcfv_push_prio << VLAN_PRIO_SHIFT;
 		}
-		/* put updated tci as hwaccel tag */
+		 
 		__vlan_hwaccel_put_tag(skb, p->tcfv_push_proto, tci);
 		break;
 	case TCA_VLAN_ACT_POP_ETH:
@@ -347,9 +343,9 @@ static void tcf_vlan_stats_update(struct tc_action *a, u64 bytes, u64 packets,
 static size_t tcf_vlan_get_fill_size(const struct tc_action *act)
 {
 	return nla_total_size(sizeof(struct tc_vlan))
-		+ nla_total_size(sizeof(u16)) /* TCA_VLAN_PUSH_VLAN_ID */
-		+ nla_total_size(sizeof(u16)) /* TCA_VLAN_PUSH_VLAN_PROTOCOL */
-		+ nla_total_size(sizeof(u8)); /* TCA_VLAN_PUSH_VLAN_PRIORITY */
+		+ nla_total_size(sizeof(u16))  
+		+ nla_total_size(sizeof(u16))  
+		+ nla_total_size(sizeof(u8));  
 }
 
 static int tcf_vlan_offload_act_setup(struct tc_action *act, void *entry_data,

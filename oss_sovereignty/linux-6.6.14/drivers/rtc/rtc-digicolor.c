@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Real Time Clock driver for Conexant Digicolor
- *
- * Copyright (C) 2015 Paradox Innovation Ltd.
- *
- * Author: Baruch Siach <baruch@tkos.co.il>
- */
+
+ 
 
 #include <linux/io.h>
 #include <linux/iopoll.h>
@@ -68,7 +62,7 @@ static int dc_rtc_read(struct dc_rtc *rtc, unsigned long *val)
 
 	reference = readl_relaxed(rtc->regs + DC_RTC_REFERENCE);
 	time1 = readl_relaxed(rtc->regs + DC_RTC_TIME);
-	/* Read twice to ensure consistency */
+	 
 	while (1) {
 		time2 = readl_relaxed(rtc->regs + DC_RTC_TIME);
 		if (time1 == time2)
@@ -207,7 +201,7 @@ static int __init dc_rtc_probe(struct platform_device *pdev)
 
 static const __maybe_unused struct of_device_id dc_dt_ids[] = {
 	{ .compatible = "cnxt,cx92755-rtc" },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, dc_dt_ids);
 

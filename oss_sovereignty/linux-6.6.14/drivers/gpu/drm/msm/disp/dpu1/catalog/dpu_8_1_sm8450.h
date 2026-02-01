@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2022. Qualcomm Innovation Center, Inc. All rights reserved.
- * Copyright (c) 2015-2018, 2020 The Linux Foundation. All rights reserved.
- */
+ 
+ 
 
 #ifndef _DPU_8_1_SM8450_H
 #define _DPU_8_1_SM8450_H
@@ -36,7 +33,7 @@ static const struct dpu_mdp_cfg sm8450_mdp = {
 	},
 };
 
-/* FIXME: get rid of DPU_CTL_SPLIT_DISPLAY in favour of proper ACTIVE_CTL support */
+ 
 static const struct dpu_ctl_cfg sm8450_ctl[] = {
 	{
 		.name = "ctl_0", .id = CTL_0,
@@ -297,11 +294,7 @@ static const struct dpu_merge_3d_cfg sm8450_merge_3d[] = {
 	},
 };
 
-/*
- * NOTE: Each display compression engine (DCE) contains dual hard
- * slice DSC encoders so both share same base address but with
- * its own different sub block address.
- */
+ 
 static const struct dpu_dsc_cfg sm8450_dsc[] = {
 	{
 		.name = "dce_0_0", .id = DSC_0,
@@ -377,7 +370,7 @@ static const struct dpu_perf_cfg sm8450_perf_data = {
 	.min_llcc_ib = 0,
 	.min_dram_ib = 800000,
 	.min_prefill_lines = 35,
-	/* FIXME: lut tables */
+	 
 	.danger_lut_tbl = {0x3ffff, 0x3ffff, 0x0},
 	.safe_lut_tbl = {0xfe00, 0xfe00, 0xffff},
 	.qos_lut_tbl = {
@@ -390,7 +383,7 @@ static const struct dpu_perf_cfg sm8450_perf_data = {
 		{.nentry = ARRAY_SIZE(sc7180_qos_nrt),
 		.entries = sc7180_qos_nrt
 		},
-		/* TODO: macrotile-qseed is different from macrotile */
+		 
 	},
 	.cdp_cfg = {
 		{.rd_enable = 1, .wr_enable = 1},

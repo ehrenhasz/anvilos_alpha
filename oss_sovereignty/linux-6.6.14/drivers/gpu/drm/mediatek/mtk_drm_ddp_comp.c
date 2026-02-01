@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2015 MediaTek Inc.
- * Authors:
- *	YT Shen <yt.shen@mediatek.com>
- *	CK Hu <ck.hu@mediatek.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/of.h>
@@ -129,7 +124,7 @@ void mtk_dither_set_common(void __iomem *regs, struct cmdq_client_reg *cmdq_reg,
 			   unsigned int bpc, unsigned int cfg,
 			   unsigned int dither_en, struct cmdq_pkt *cmdq_pkt)
 {
-	/* If bpc equal to 0, the dithering function didn't be enabled */
+	 
 	if (bpc == 0)
 		return;
 
@@ -193,7 +188,7 @@ static void mtk_dsc_config(struct device *dev, unsigned int w,
 {
 	struct mtk_ddp_comp_dev *priv = dev_get_drvdata(dev);
 
-	/* dsc bypass mode */
+	 
 	mtk_ddp_write_mask(cmdq_pkt, DSC_BYPASS, &priv->cmdq_reg, priv->regs,
 			   DISP_REG_DSC_CON, DSC_BYPASS);
 	mtk_ddp_write_mask(cmdq_pkt, DSC_UFOE_SEL, &priv->cmdq_reg, priv->regs,
@@ -206,7 +201,7 @@ static void mtk_dsc_start(struct device *dev)
 {
 	struct mtk_ddp_comp_dev *priv = dev_get_drvdata(dev);
 
-	/* write with mask to reserve the value set in mtk_dsc_config */
+	 
 	mtk_ddp_write_mask(NULL, DSC_EN, &priv->cmdq_reg, priv->regs, DISP_REG_DSC_CON, DSC_EN);
 }
 
@@ -560,9 +555,7 @@ int mtk_ddp_comp_init(struct device_node *node, struct mtk_ddp_comp *comp,
 
 	comp->id = comp_id;
 	comp->funcs = mtk_ddp_matches[comp_id].funcs;
-	/* Not all drm components have a DTS device node, such as ovl_adaptor,
-	 * which is the drm bring up sub driver
-	 */
+	 
 	if (!node)
 		return 0;
 

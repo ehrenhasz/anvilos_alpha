@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * userspace-consumer.c
- *
- * Copyright 2009 CompuLab, Ltd.
- *
- * Author: Mike Rapoport <mike@compulab.co.il>
- *
- * Based of virtual consumer driver:
- *   Copyright 2008 Wolfson Microelectronics PLC.
- *   Author: Mark Brown <broonie@opensource.wolfsonmicro.com>
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/mutex.h>
@@ -57,10 +47,7 @@ static ssize_t state_store(struct device *dev, struct device_attribute *attr,
 	bool enabled;
 	int ret;
 
-	/*
-	 * sysfs_streq() doesn't need the \n's, but we add them so the strings
-	 * will be shared with show_state(), above.
-	 */
+	 
 	if (sysfs_streq(buf, "enabled\n") || sysfs_streq(buf, "1"))
 		enabled = true;
 	else if (sysfs_streq(buf, "disabled\n") || sysfs_streq(buf, "0"))
@@ -103,7 +90,7 @@ static umode_t attr_visible(struct kobject *kobj, struct attribute *attr, int id
 	struct device *dev = kobj_to_dev(kobj);
 	struct userspace_consumer_data *data = dev_get_drvdata(dev);
 
-	/* If a name hasn't been set, don't bother with the attribute */
+	 
 	if (attr == &dev_attr_name.attr && !data->name)
 		return 0;
 

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2021 pureLiFi
- */
+
+ 
 
 #include <linux/netdevice.h>
 #include <linux/etherdevice.h>
@@ -135,11 +133,9 @@ int plfxlc_restore_settings(struct plfxlc_mac *mac)
 	if (mac->vif) {
 		beacon = ieee80211_beacon_get(mac->hw, mac->vif, 0);
 		if (beacon) {
-			/*beacon is hardcoded in firmware */
+			 
 			kfree_skb(beacon);
-			/* Returned skb is used only once and lowlevel
-			 * driver is responsible for freeing it.
-			 */
+			 
 		}
 	}
 
@@ -193,7 +189,7 @@ void plfxlc_mac_tx_to_dev(struct sk_buff *skb, int error)
 	q = &mac->ack_wait_queue;
 
 	skb_queue_tail(q, skb);
-	while (skb_queue_len(q)/* > PURELIFI_MAC_MAX_ACK_WAITERS*/) {
+	while (skb_queue_len(q) ) {
 		plfxlc_mac_tx_status(hw, skb_dequeue(q),
 				     mac->ack_pending ?
 				     mac->ack_signal : 0,
@@ -221,17 +217,8 @@ static int plfxlc_fill_ctrlset(struct plfxlc_mac *mac, struct sk_buff *skb)
 		  sizeof(struct plfxlc_ctrlset) -
 		  sizeof(cs->id) - sizeof(cs->len);
 
-	/* Data packet lengths must be multiple of four bytes and must
-	 * not be a multiple of 512 bytes. First, it is attempted to
-	 * append the data packet in the tailroom of the skb. In rare
-	 * occasions, the tailroom is too small. In this case, the
-	 * content of the packet is shifted into the headroom of the skb
-	 * by memcpy. Headroom is allocated at startup (below in this
-	 * file). Therefore, there will be always enough headroom. The
-	 * call skb_headroom is an additional safety which might be
-	 * dropped.
-	 */
-	/* check if 32 bit aligned and align data */
+	 
+	 
 	tmp = skb->len & 3;
 	if (tmp) {
 		if (skb_tailroom(skb) < (3 - tmp)) {
@@ -253,7 +240,7 @@ static int plfxlc_fill_ctrlset(struct plfxlc_mac *mac, struct sk_buff *skb)
 		temp_len += 4 - tmp;
 	}
 
-	/* check if not multiple of 512 and align data */
+	 
 	tmp = skb->len & 0x1ff;
 	if (!tmp) {
 		if (skb_tailroom(skb) < 4) {
@@ -264,9 +251,7 @@ static int plfxlc_fill_ctrlset(struct plfxlc_mac *mac, struct sk_buff *skb)
 
 				memmove(dest_pt, src_pt, len);
 			} else {
-				/* should never happen because
-				 * sufficient headroom was reserved
-				 */
+				 
 				return -ENOBUFS;
 			}
 		} else {
@@ -314,15 +299,15 @@ static void plfxlc_op_tx(struct ieee80211_hw *hw,
 			break;
 		}
 
-		/* Default to broadcast address for unknown MACs */
+		 
 		if (!found)
 			sidx = STA_BROADCAST_INDEX;
 
-		/* Stop OS from sending packets, if the queue is half full */
+		 
 		if (skb_queue_len(&tx->station[sidx].data_list) > 60)
 			ieee80211_stop_queues(plfxlc_usb_to_hw(usb));
 
-		/* Schedule packet for transmission if queue is not full */
+		 
 		if (skb_queue_len(&tx->station[sidx].data_list) > 256)
 			goto fail;
 		skb_queue_tail(&tx->station[sidx].data_list, skb);
@@ -357,7 +342,7 @@ static int plfxlc_filter_ack(struct ieee80211_hw *hw, struct ieee80211_hdr *rx_h
 
 	dev_dbg(plfxlc_mac_dev(mac), "ACK Received\n");
 
-	/* code based on zy driver, this logic may need fix */
+	 
 	q = &mac->ack_wait_queue;
 	spin_lock_irqsave(&q->lock, flags);
 
@@ -410,7 +395,7 @@ int plfxlc_mac_rx(struct ieee80211_hw *hw, const u8 *buffer,
 	__le16 fc;
 	int sidx;
 
-	/* Packet blockade during disabled interface. */
+	 
 	if (!mac->vif)
 		return 0;
 
@@ -432,7 +417,7 @@ int plfxlc_mac_rx(struct ieee80211_hw *hw, const u8 *buffer,
 
 	mac->crc_errors = be64_to_cpu(status->crc_error_count);
 
-	/* TODO bad frame check for CRC error*/
+	 
 	if (plfxlc_filter_ack(hw, (struct ieee80211_hdr *)buffer, &stats) &&
 	    !mac->pass_ctrl)
 		return 0;
@@ -491,7 +476,7 @@ int plfxlc_mac_rx(struct ieee80211_hw *hw, const u8 *buffer,
 		return -ENOMEM;
 
 	if (need_padding)
-		/* Make sure that the payload data is 4 byte aligned. */
+		 
 		skb_reserve(skb, 2);
 
 	skb_put_data(skb, buffer, payload_length);
@@ -553,16 +538,10 @@ static void plfxlc_op_configure_filter(struct ieee80211_hw *hw,
 	struct plfxlc_mac *mac = plfxlc_hw_mac(hw);
 	unsigned long flags;
 
-	/* Only deal with supported flags */
+	 
 	*new_flags &= SUPPORTED_FIF_FLAGS;
 
-	/* If multicast parameter
-	 * (as returned by plfxlc_op_prepare_multicast)
-	 * has changed, no bit in changed_flags is set. To handle this
-	 * situation, we do not return if changed_flags is 0. If we do so,
-	 * we will have some issue with IPv6 which uses multicast for link
-	 * layer address resolution.
-	 */
+	 
 	if (*new_flags & (FIF_ALLMULTI))
 		plfxlc_mc_add_all(&hash);
 
@@ -572,16 +551,8 @@ static void plfxlc_op_configure_filter(struct ieee80211_hw *hw,
 	mac->multicast_hash = hash;
 	spin_unlock_irqrestore(&mac->lock, flags);
 
-	/* no handling required for FIF_OTHER_BSS as we don't currently
-	 * do BSSID filtering
-	 */
-	/* FIXME: in future it would be nice to enable the probe response
-	 * filter (so that the driver doesn't see them) until
-	 * FIF_BCN_PRBRESP_PROMISC is set. however due to atomicity here, we'd
-	 * have to schedule work to enable prbresp reception, which might
-	 * happen too late. For now we'll just listen and forward them all the
-	 * time.
-	 */
+	 
+	 
 }
 
 static void plfxlc_op_bss_info_changed(struct ieee80211_hw *hw,
@@ -594,22 +565,19 @@ static void plfxlc_op_bss_info_changed(struct ieee80211_hw *hw,
 
 	dev_dbg(plfxlc_mac_dev(mac), "changes: %llx\n", changes);
 
-	if (mac->type != NL80211_IFTYPE_ADHOC) { /* for STATION */
+	if (mac->type != NL80211_IFTYPE_ADHOC) {  
 		associated = is_valid_ether_addr(bss_conf->bssid);
 		goto exit_all;
 	}
-	/* for ADHOC */
+	 
 	associated = true;
 	if (changes & BSS_CHANGED_BEACON) {
 		struct sk_buff *beacon = ieee80211_beacon_get(hw, vif, 0);
 
 		if (beacon) {
-			/*beacon is hardcoded in firmware */
+			 
 			kfree_skb(beacon);
-			/*Returned skb is used only once and
-			 * low-level driver is
-			 * responsible for freeing it.
-			 */
+			 
 		}
 	}
 
@@ -739,11 +707,11 @@ struct ieee80211_hw *plfxlc_mac_alloc_hw(struct usb_interface *intf)
 		BIT(NL80211_IFTYPE_ADHOC);
 	hw->max_signal = 100;
 	hw->queues = 1;
-	/* 4 for 32 bit alignment if no tailroom */
+	 
 	hw->extra_tx_headroom = sizeof(struct plfxlc_ctrlset) + 4;
-	/* Tell mac80211 that we support multi rate retries */
+	 
 	hw->max_rates = IEEE80211_TX_MAX_RATES;
-	hw->max_rate_tries = 18;   /* 9 rates * 2 retries/rate */
+	hw->max_rate_tries = 18;    
 
 	skb_queue_head_init(&mac->ack_wait_queue);
 	mac->ack_pending = 0;

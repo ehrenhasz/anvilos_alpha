@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * OSS compatible sequencer driver
- * read fifo queue
- *
- * Copyright (C) 1998,99 Takashi Iwai <tiwai@suse.de>
- */
+ 
+ 
 
 #ifndef __SEQ_OSS_READQ_H
 #define __SEQ_OSS_READQ_H
@@ -12,9 +7,7 @@
 #include "seq_oss_device.h"
 
 
-/*
- * definition of read queue
- */
+ 
 struct seq_oss_readq {
 	union evrec *q;
 	int qlen;

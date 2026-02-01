@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  Copyright (C) 2015 - Ben Herrenschmidt, IBM Corp.
- *
- *  Driver for Aspeed "new" VIC as found in SoC generation 3 and later
- *
- *  Based on irq-vic.c:
- *
- *  Copyright (C) 1999 - 2003 ARM Limited
- *  Copyright (C) 2000 Deep Blue Solutions Ltd
- */
+
+ 
 
 #include <linux/export.h>
 #include <linux/init.h>
@@ -28,10 +19,7 @@
 #include <asm/exception.h>
 #include <asm/irq.h>
 
-/* These definitions correspond to the "new mapping" of the
- * register set that interleaves "high" and "low". The offsets
- * below are for the "low" register, add 4 to get to the high one
- */
+ 
 #define AVIC_IRQ_STATUS		0x00
 #define AVIC_FIQ_STATUS		0x08
 #define AVIC_RAW_STATUS		0x10
@@ -59,28 +47,25 @@ static void vic_init_hw(struct aspeed_vic *vic)
 {
 	u32 sense;
 
-	/* Disable all interrupts */
+	 
 	writel(0xffffffff, vic->base + AVIC_INT_ENABLE_CLR);
 	writel(0xffffffff, vic->base + AVIC_INT_ENABLE_CLR + 4);
 
-	/* Make sure no soft trigger is on */
+	 
 	writel(0xffffffff, vic->base + AVIC_INT_TRIGGER_CLR);
 	writel(0xffffffff, vic->base + AVIC_INT_TRIGGER_CLR + 4);
 
-	/* Set everything to be IRQ */
+	 
 	writel(0, vic->base + AVIC_INT_SELECT);
 	writel(0, vic->base + AVIC_INT_SELECT + 4);
 
-	/* Some interrupts have a programmable high/low level trigger
-	 * (4 GPIO direct inputs), for now we assume this was configured
-	 * by firmware. We read which ones are edge now.
-	 */
+	 
 	sense = readl(vic->base + AVIC_INT_SENSE);
 	vic->edge_sources[0] = ~sense;
 	sense = readl(vic->base + AVIC_INT_SENSE + 4);
 	vic->edge_sources[1] = ~sense;
 
-	/* Clear edge detection latches */
+	 
 	writel(0xffffffff, vic->base + AVIC_EDGE_CLR);
 	writel(0xffffffff, vic->base + AVIC_EDGE_CLR + 4);
 }
@@ -110,7 +95,7 @@ static void avic_ack_irq(struct irq_data *d)
 	unsigned int sidx = d->hwirq >> 5;
 	unsigned int sbit = 1u << (d->hwirq & 0x1f);
 
-	/* Clear edge latch for edge interrupts, nop for level */
+	 
 	if (vic->edge_sources[sidx] & sbit)
 		writel(sbit, vic->base + AVIC_EDGE_CLR + sidx * 4);
 }
@@ -133,17 +118,17 @@ static void avic_unmask_irq(struct irq_data *d)
 	writel(sbit, vic->base + AVIC_INT_ENABLE + sidx * 4);
 }
 
-/* For level irq, faster than going through a nop "ack" and mask */
+ 
 static void avic_mask_ack_irq(struct irq_data *d)
 {
 	struct aspeed_vic *vic = irq_data_get_irq_chip_data(d);
 	unsigned int sidx = d->hwirq >> 5;
 	unsigned int sbit = 1u << (d->hwirq & 0x1f);
 
-	/* First mask */
+	 
 	writel(sbit, vic->base + AVIC_INT_ENABLE_CLR + sidx * 4);
 
-	/* Then clear edge latch for edge interrupts */
+	 
 	if (vic->edge_sources[sidx] & sbit)
 		writel(sbit, vic->base + AVIC_EDGE_CLR + sidx * 4);
 }
@@ -163,7 +148,7 @@ static int avic_map(struct irq_domain *d, unsigned int irq,
 	unsigned int sidx = hwirq >> 5;
 	unsigned int sbit = 1u << (hwirq & 0x1f);
 
-	/* Check if interrupt exists */
+	 
 	if (sidx > 1)
 		return -EPERM;
 
@@ -203,14 +188,14 @@ static int __init avic_of_init(struct device_node *node,
 	}
 	vic->base = regs;
 
-	/* Initialize sources, all masked */
+	 
 	vic_init_hw(vic);
 
-	/* Ready to receive interrupts */
+	 
 	system_avic = vic;
 	set_handle_irq(avic_handle_irq);
 
-	/* Register our domain */
+	 
 	vic->dom = irq_domain_add_simple(node, NUM_IRQS, 0,
 					 &avic_dom_ops, vic);
 

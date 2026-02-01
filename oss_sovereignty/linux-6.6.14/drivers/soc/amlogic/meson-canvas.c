@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (C) 2018 BayLibre, SAS
- * Copyright (C) 2015 Amlogic, Inc. All rights reserved.
- * Copyright (C) 2014 Endless Mobile
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/mfd/syscon.h>
@@ -17,7 +13,7 @@
 
 #define NUM_CANVAS 256
 
-/* DMC Registers */
+ 
 #define DMC_CAV_LUT_DATAL	0x00
 	#define CANVAS_WIDTH_LBIT	29
 	#define CANVAS_WIDTH_LWID	3
@@ -34,7 +30,7 @@
 struct meson_canvas {
 	struct device *dev;
 	void __iomem *reg_base;
-	spinlock_t lock; /* canvas device lock */
+	spinlock_t lock;  
 	u8 used[NUM_CANVAS];
 	bool supports_endianness;
 };
@@ -67,11 +63,7 @@ struct meson_canvas *meson_canvas_get(struct device *dev)
 
 	of_node_put(canvas_node);
 
-	/*
-	 * If priv is NULL, it's probably because the canvas hasn't
-	 * properly initialized. Bail out with -EINVAL because, in the
-	 * current state, this driver probe cannot return -EPROBE_DEFER
-	 */
+	 
 	canvas = dev_get_drvdata(&canvas_pdev->dev);
 	if (!canvas) {
 		put_device(&canvas_pdev->dev);
@@ -120,7 +112,7 @@ int meson_canvas_config(struct meson_canvas *canvas, u8 canvas_index,
 	canvas_write(canvas, DMC_CAV_LUT_ADDR,
 		     CANVAS_LUT_WR_EN | canvas_index);
 
-	/* Force a read-back to make sure everything is flushed. */
+	 
 	canvas_read(canvas, DMC_CAV_LUT_DATAH);
 	spin_unlock_irqrestore(&canvas->lock, flags);
 

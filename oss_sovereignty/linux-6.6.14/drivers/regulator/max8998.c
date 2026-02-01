@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0+
-//
-// max8998.c - Voltage regulator driver for the Maxim 8998
-//
-//  Copyright (C) 2009-2010 Samsung Electronics
-//  Kyungmin Park <kyungmin.park@samsung.com>
-//  Marek Szyprowski <m.szyprowski@samsung.com>
+
+
+
+
+
+
+
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -26,10 +26,10 @@ struct max8998_data {
 	struct device		*dev;
 	struct max8998_dev	*iodev;
 	int			num_regulators;
-	u8                      buck1_vol[4]; /* voltages for selection */
+	u8                      buck1_vol[4];  
 	u8                      buck2_vol[2];
-	unsigned int		buck1_idx; /* index to last changed voltage */
-					   /* value in a set */
+	unsigned int		buck1_idx;  
+					    
 	unsigned int		buck2_idx;
 };
 
@@ -263,8 +263,8 @@ static int max8998_set_voltage_buck_sel(struct regulator_dev *rdev,
 		if (gpio_is_valid(pdata->buck1_set1) &&
 		    gpio_is_valid(pdata->buck1_set2)) {
 
-			/* check if requested voltage */
-			/* value is already defined */
+			 
+			 
 			for (j = 0; j < ARRAY_SIZE(max8998->buck1_vol); j++) {
 				if (max8998->buck1_vol[j] == selector) {
 					max8998->buck1_idx = j;
@@ -277,7 +277,7 @@ static int max8998_set_voltage_buck_sel(struct regulator_dev *rdev,
 			if (pdata->buck_voltage_lock)
 				return -EINVAL;
 
-			/* no predefine regulator found */
+			 
 			max8998->buck1_idx = (buck1_last_val % 2) + 2;
 			dev_dbg(max8998->dev, "max8998->buck1_idx:%d\n",
 				max8998->buck1_idx);
@@ -305,8 +305,8 @@ buck1_exit:
 			selector, max8998->buck2_vol[0], max8998->buck2_vol[1]);
 		if (gpio_is_valid(pdata->buck2_set3)) {
 
-			/* check if requested voltage */
-			/* value is already defined */
+			 
+			 
 			for (j = 0; j < ARRAY_SIZE(max8998->buck2_vol); j++) {
 				if (max8998->buck2_vol[j] == selector) {
 					max8998->buck2_idx = j;
@@ -354,13 +354,13 @@ static int max8998_set_voltage_buck_time_sel(struct regulator_dev *rdev,
 	if (buck < MAX8998_BUCK1 || buck > MAX8998_BUCK4)
 		return -EINVAL;
 
-	/* Voltage stabilization */
+	 
 	ret = max8998_read_reg(i2c, MAX8998_REG_ONOFF4, &val);
 	if (ret)
 		return ret;
 
-	/* lp3974 hasn't got ENRAMP bit - ramp is assumed as true */
-	/* MAX8998 has ENRAMP bit implemented, so test it*/
+	 
+	 
 	if (max8998->iodev->type == TYPE_MAX8998 && !(val & MAX8998_ENRAMP))
 		return 0;
 
@@ -386,7 +386,7 @@ static int max8998_set_current_limit(struct regulator_dev *rdev,
 		const unsigned int *curr_table = rdev->desc->curr_table;
 		bool ascend = curr_table[n_currents - 1] > curr_table[0];
 
-		/* search for closest to maximum */
+		 
 		if (ascend) {
 			for (i = n_currents - 1; i >= 0; i--) {
 				if (min_uA <= curr_table[i] &&
@@ -464,7 +464,7 @@ static const struct regulator_ops max8998_charger_ops = {
 	.set_current_limit	= max8998_set_current_limit,
 	.get_current_limit	= max8998_get_current_limit,
 	.is_enabled		= max8998_ldo_is_enabled_inverted,
-	/* Swapped as register is inverted */
+	 
 	.enable			= max8998_ldo_disable,
 	.disable		= max8998_ldo_enable,
 };
@@ -584,7 +584,7 @@ static int max8998_pmic_dt_parse_pdata(struct max8998_dev *iodev,
 		return -EINVAL;
 	}
 
-	/* count the number of regulators to be supported in pmic */
+	 
 	pdata->num_regulators = of_get_child_count(regulators_np);
 
 	rdata = devm_kcalloc(iodev->dev,
@@ -693,21 +693,21 @@ static int max8998_pmic_probe(struct platform_device *pdev)
 	max8998->buck1_idx = pdata->buck1_default_idx;
 	max8998->buck2_idx = pdata->buck2_default_idx;
 
-	/* NOTE: */
-	/* For unused GPIO NOT marked as -1 (thereof equal to 0)  WARN_ON */
-	/* will be displayed */
+	 
+	 
+	 
 
-	/* Check if MAX8998 voltage selection GPIOs are defined */
+	 
 	if (gpio_is_valid(pdata->buck1_set1) &&
 	    gpio_is_valid(pdata->buck1_set2)) {
-		/* Check if SET1 is not equal to 0 */
+		 
 		if (!pdata->buck1_set1) {
 			dev_err(&pdev->dev,
 				"MAX8998 SET1 GPIO defined as 0 !\n");
 			WARN_ON(!pdata->buck1_set1);
 			return -EIO;
 		}
-		/* Check if SET2 is not equal to 0 */
+		 
 		if (!pdata->buck1_set2) {
 			dev_err(&pdev->dev,
 				"MAX8998 SET2 GPIO defined as 0 !\n");
@@ -724,7 +724,7 @@ static int max8998_pmic_probe(struct platform_device *pdev)
 		gpio_direction_output(pdata->buck1_set2,
 				      (max8998->buck1_idx >> 1) & 0x1);
 
-		/* Set predefined values for BUCK1 registers */
+		 
 		for (v = 0; v < ARRAY_SIZE(pdata->buck1_voltage); ++v) {
 			int index = MAX8998_BUCK1 - MAX8998_LDO2;
 
@@ -743,7 +743,7 @@ static int max8998_pmic_probe(struct platform_device *pdev)
 	}
 
 	if (gpio_is_valid(pdata->buck2_set3)) {
-		/* Check if SET3 is not equal to 0 */
+		 
 		if (!pdata->buck2_set3) {
 			dev_err(&pdev->dev,
 				"MAX8998 SET3 GPIO defined as 0 !\n");
@@ -754,7 +754,7 @@ static int max8998_pmic_probe(struct platform_device *pdev)
 		gpio_direction_output(pdata->buck2_set3,
 				      max8998->buck2_idx & 0x1);
 
-		/* Set predefined values for BUCK2 registers */
+		 
 		for (v = 0; v < ARRAY_SIZE(pdata->buck2_voltage); ++v) {
 			int index = MAX8998_BUCK2 - MAX8998_LDO2;
 

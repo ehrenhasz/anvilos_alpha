@@ -1,21 +1,4 @@
-/**********************************************************************
- * Author: Cavium, Inc.
- *
- * Contact: support@cavium.com
- *          Please include "LiquidIO" in the subject.
- *
- * Copyright (c) 2003-2016 Cavium, Inc.
- *
- * This file is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, Version 2, as
- * published by the Free Software Foundation.
- *
- * This file is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty
- * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more
- * details.
- **********************************************************************/
+ 
 #include <linux/pci.h>
 #include <linux/netdevice.h>
 #include "liquidio_common.h"
@@ -43,27 +26,25 @@ octeon_alloc_soft_command_resp(struct octeon_device    *oct,
 	if (!sc)
 		return NULL;
 
-	/* Copy existing command structure into the soft command */
+	 
 	memcpy(&sc->cmd, cmd, sizeof(union octeon_instr_64B));
 
-	/* Add in the response related fields. Opcode and Param are already
-	 * there.
-	 */
+	 
 	if (OCTEON_CN23XX_PF(oct) || OCTEON_CN23XX_VF(oct)) {
 		ih3      = (struct octeon_instr_ih3 *)&sc->cmd.cmd3.ih3;
 		rdp     = (struct octeon_instr_rdp *)&sc->cmd.cmd3.rdp;
 		irh     = (struct octeon_instr_irh *)&sc->cmd.cmd3.irh;
-		/*pkiih3 + irh + ossp[0] + ossp[1] + rdp + rptr = 40 bytes */
+		 
 		ih3->fsz = LIO_SOFTCMDRESP_IH3;
 	} else {
 		ih2      = (struct octeon_instr_ih2 *)&sc->cmd.cmd2.ih2;
 		rdp     = (struct octeon_instr_rdp *)&sc->cmd.cmd2.rdp;
 		irh     = (struct octeon_instr_irh *)&sc->cmd.cmd2.irh;
-		/* irh + ossp[0] + ossp[1] + rdp + rptr = 40 bytes */
+		 
 		ih2->fsz = LIO_SOFTCMDRESP_IH2;
 	}
 
-	irh->rflag = 1; /* a response is required */
+	irh->rflag = 1;  
 
 	rdp->pcie_port = oct->pcie_port;
 	rdp->rlen      = rdatasize;
@@ -120,7 +101,7 @@ static inline struct octeon_soft_command
 	octeon_swap_8B_data((u64 *)data, (OCTNET_CMD_SIZE >> 3));
 
 	if (uddsize) {
-		/* Endian-Swap for UDD should have been done by caller. */
+		 
 		memcpy(data + OCTNET_CMD_SIZE, nctrl->udd, uddsize);
 	}
 
@@ -143,9 +124,7 @@ octnet_send_nic_ctrl_pkt(struct octeon_device *oct,
 	struct octeon_soft_command *sc = NULL;
 
 	spin_lock_bh(&oct->cmd_resp_wqlock);
-	/* Allow only rx ctrl command to stop traffic on the chip
-	 * during offline operations
-	 */
+	 
 	if ((oct->cmd_resp_state == OCT_DRV_OFFLINE) &&
 	    (nctrl->ncmd.s.cmd != OCTNET_CMD_RX_CTL)) {
 		spin_unlock_bh(&oct->cmd_resp_wqlock);
@@ -176,7 +155,7 @@ octnet_send_nic_ctrl_pkt(struct octeon_device *oct,
 
 	if (nctrl->ncmd.s.cmdgroup == 0) {
 		switch (nctrl->ncmd.s.cmd) {
-			/* caller holds lock, can not sleep */
+			 
 		case OCTNET_CMD_CHANGE_DEVFLAGS:
 		case OCTNET_CMD_SET_MULTI_LIST:
 		case OCTNET_CMD_SET_UC_LIST:

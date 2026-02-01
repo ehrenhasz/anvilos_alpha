@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright 2020-2021 NXP
- */
+ 
+ 
 
 #ifndef _AMPHION_VPU_H
 #define _AMPHION_VPU_H
@@ -60,7 +58,7 @@ struct vpu_dev {
 	void __iomem *base;
 	struct platform_device *pdev;
 	struct device *dev;
-	struct mutex lock; /* protect vpu device */
+	struct mutex lock;  
 	const struct vpu_resources *res;
 	struct list_head cores;
 
@@ -132,8 +130,8 @@ struct vpu_core {
 	struct device *parent;
 	struct device *pd;
 	struct device_link *pd_link;
-	struct mutex lock;     /* protect vpu core */
-	struct mutex cmd_lock; /* Lock vpu command */
+	struct mutex lock;      
+	struct mutex cmd_lock;  
 	struct list_head list;
 	enum vpu_core_type type;
 	int id;
@@ -228,7 +226,7 @@ struct vpu_inst_ops {
 
 struct vpu_inst {
 	struct list_head list;
-	struct mutex lock; /* v4l2 and videobuf2 lock */
+	struct mutex lock;  
 	struct vpu_dev *vpu;
 	struct vpu_core *core;
 	struct device *dev;

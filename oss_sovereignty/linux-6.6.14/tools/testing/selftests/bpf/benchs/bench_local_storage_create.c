@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2023 Meta Platforms, Inc. and affiliates. */
+
+ 
 
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -245,7 +245,7 @@ static void report_final(struct bench_res res[], int res_cnt)
 		       skel->bss->create_errs);
 }
 
-/* Benchmark performance of creating bpf local storage  */
+ 
 const struct bench bench_local_storage_create = {
 	.name = "local-storage-create",
 	.argp = &bench_local_storage_create_argp,

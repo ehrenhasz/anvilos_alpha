@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * dice_proc.c - a part of driver for Dice based devices
- *
- * Copyright (c) Clemens Ladisch
- * Copyright (c) 2014 Takashi Sakamoto
- */
+
+ 
 
 #include "dice.h"
 
@@ -292,10 +287,7 @@ void snd_dice_create_proc(struct snd_dice *dice)
 {
 	struct snd_info_entry *root;
 
-	/*
-	 * All nodes are automatically removed at snd_card_disconnect(),
-	 * by following to link list.
-	 */
+	 
 	root = snd_info_create_card_entry(dice->card, "firewire",
 					  dice->card->proc_root);
 	if (!root)

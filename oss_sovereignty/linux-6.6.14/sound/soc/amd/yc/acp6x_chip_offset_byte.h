@@ -1,14 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * AMD ACP 6.x Register Documentation
- *
- * Copyright 2021 Advanced Micro Devices, Inc.
- */
+ 
+ 
 
 #ifndef _acp6x_OFFSET_HEADER
 #define _acp6x_OFFSET_HEADER
 
-/* Registers from ACP_DMA block */
+ 
 #define ACP_DMA_CNTL_0                                0x1240000
 #define ACP_DMA_CNTL_1                                0x1240004
 #define ACP_DMA_CNTL_2                                0x1240008
@@ -71,7 +67,7 @@
 #define ACP_DMA_CH_GROUP                              0x12400EC
 #define ACP_DMA_CH_RST_STS                            0x12400F0
 
-/* Registers from ACP_AXI2AXIATU block */
+ 
 #define ACPAXI2AXI_ATU_PAGE_SIZE_GRP_1                0x1240C00
 #define ACPAXI2AXI_ATU_BASE_ADDR_GRP_1                0x1240C04
 #define ACPAXI2AXI_ATU_PAGE_SIZE_GRP_2                0x1240C08
@@ -106,7 +102,7 @@
 #define ACPAXI2AXI_ATU_PAGE_SIZE_GRP_16               0x1240C7C
 #define ACPAXI2AXI_ATU_BASE_ADDR_GRP_16               0x1240C80
 
-/* Registers from ACP_CLKRST block */
+ 
 #define ACP_SOFT_RESET                                0x1241000
 #define ACP_CONTROL                                   0x1241004
 #define ACP_STATUS                                    0x1241008
@@ -117,7 +113,7 @@
 #define ACP_PGFSM_STATUS                              0x1241028
 #define ACP_CLKMUX_SEL                                0x124102C
 
-/* Registers from ACP_AON block */
+ 
 #define ACP_PME_EN                                    0x1241400
 #define ACP_DEVICE_STATE                              0x1241404
 #define AZ_DEVICE_STATE                               0x1241408
@@ -131,7 +127,7 @@
 #define ACP_I2S_WAKE_EN                               0x124145C
 #define ACP_SW1_WAKE_EN                               0x1241460
 
-/* Registers from ACP_P1_MISC block */
+ 
 #define ACP_EXTERNAL_INTR_ENB                         0x1241A00
 #define ACP_EXTERNAL_INTR_CNTL                        0x1241A04
 #define ACP_EXTERNAL_INTR_CNTL1                       0x1241A08
@@ -155,7 +151,7 @@
 #define ACP_P1_SW_POS_TRACK_HS_RX_CTRL                0x1241AA0
 #define ACP_P1_SW_HS_RX_DMA_POS                       0x1241AA4
 
-/* Registers from ACP_AUDIO_BUFFERS block */
+ 
 #define ACP_I2S_RX_RINGBUFADDR                        0x1242000
 #define ACP_I2S_RX_RINGBUFSIZE                        0x1242004
 #define ACP_I2S_RX_LINKPOSITIONCNTR                   0x1242008
@@ -211,7 +207,7 @@
 #define ACP_HS_TX_LINEARPOSITIONCNTR_LOW              0x12420D0
 #define ACP_HS_TX_INTR_WATERMARK_SIZE                 0x12420D4
 
-/* Registers from ACP_I2S_TDM block */
+ 
 #define ACP_I2STDM_IER                                0x1242400
 #define ACP_I2STDM_IRER                               0x1242404
 #define ACP_I2STDM_RXFRMT                             0x1242408
@@ -222,7 +218,7 @@
 #define ACP_I2STDM2_MSTRCLKGEN                        0x124241C
 #define ACP_I2STDM_REFCLKGEN                          0x1242420
 
-/* Registers from ACP_BT_TDM block */
+ 
 #define ACP_BTTDM_IER                                 0x1242800
 #define ACP_BTTDM_IRER                                0x1242804
 #define ACP_BTTDM_RXFRMT                              0x1242808
@@ -234,7 +230,7 @@
 #define ACP_HSTDM_ITER                                0x1242820
 #define ACP_HSTDM_TXFRMT                              0x1242824
 
-/* Registers from ACP_WOV block */
+ 
 #define ACP_WOV_PDM_ENABLE                            0x1242C04
 #define ACP_WOV_PDM_DMA_ENABLE                        0x1242C08
 #define ACP_WOV_RX_RINGBUFADDR                        0x1242C0C
@@ -255,7 +251,7 @@
 #define ACP_WOV_ERROR_STATUS_REGISTER                 0x1242C68
 #define ACP_PDM_CLKDIV                                0x1242C6C
 
-/* Registers from ACP_P1_AUDIO_BUFFERS block */
+ 
 #define ACP_P1_I2S_RX_RINGBUFADDR                     0x1243A00
 #define ACP_P1_I2S_RX_RINGBUFSIZE                     0x1243A04
 #define ACP_P1_I2S_RX_LINKPOSITIONCNTR                0x1243A08
@@ -311,7 +307,7 @@
 #define ACP_P1_HS_TX_LINEARPOSITIONCNTR_LOW           0x1243AD0
 #define ACP_P1_HS_TX_INTR_WATERMARK_SIZE              0x1243AD4
 
-/* Registers from ACP_SCRATCH block */
+ 
 #define ACP_SCRATCH_REG_0                             0x1250000
 #define ACP_SCRATCH_REG_1                             0x1250004
 #define ACP_SCRATCH_REG_2                             0x1250008

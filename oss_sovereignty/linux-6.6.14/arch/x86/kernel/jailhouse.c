@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Jailhouse paravirt_ops implementation
- *
- * Copyright (c) Siemens AG, 2015-2017
- *
- * Authors:
- *  Jan Kiszka <jan.kiszka@siemens.com>
- */
+
+ 
 
 #include <linux/acpi_pmtmr.h>
 #include <linux/kernel.h>
@@ -76,15 +69,9 @@ static void __init jailhouse_x2apic_init(void)
 #ifdef CONFIG_X86_X2APIC
 	if (!x2apic_enabled())
 		return;
-	/*
-	 * We do not have access to IR inside Jailhouse non-root cells.  So
-	 * we have to run in physical mode.
-	 */
+	 
 	x2apic_phys = 1;
-	/*
-	 * This will trigger the switch to apic_x2apic_phys.  Empty OEM IDs
-	 * ensure that only this APIC driver picks up the call.
-	 */
+	 
 	default_acpi_madt_oem_check("", "");
 #endif
 }
@@ -111,7 +98,7 @@ static void __init jailhouse_get_smp_config(unsigned int early)
 
 		if (IS_ENABLED(CONFIG_SERIAL_8250) &&
 		    setup_data.hdr.version < 2) {
-			/* Register 1:1 mapping for legacy UART IRQs 3 and 4 */
+			 
 			jailhouse_setup_irq(3);
 			jailhouse_setup_irq(4);
 		}
@@ -128,11 +115,7 @@ static int __init jailhouse_pci_arch_init(void)
 {
 	pci_direct_init(1);
 
-	/*
-	 * There are no bridges on the virtual PCI root bus under Jailhouse,
-	 * thus no other way to discover all devices than a full scan.
-	 * Respect any overrides via the command line, though.
-	 */
+	 
 	if (pcibios_last_bus < 0)
 		pcibios_last_bus = 0xff;
 
@@ -168,7 +151,7 @@ static void jailhouse_serial_fixup(int port, struct uart_port *up,
 				up->iobase);
 			jailhouse_setup_irq(up->irq);
 		} else {
-			/* Deactivate UART if access isn't allowed */
+			 
 			up->iobase = 0;
 		}
 		break;
@@ -177,22 +160,15 @@ static void jailhouse_serial_fixup(int port, struct uart_port *up,
 
 static void __init jailhouse_serial_workaround(void)
 {
-	/*
-	 * There are flags inside setup_data that indicate availability of
-	 * platform UARTs since setup data version 2.
-	 *
-	 * In case of version 1, we don't know which UARTs belong Linux. In
-	 * this case, unconditionally register 1:1 mapping for legacy UART IRQs
-	 * 3 and 4.
-	 */
+	 
 	if (setup_data.hdr.version > 1)
 		serial8250_set_isa_configurator(jailhouse_serial_fixup);
 }
-#else /* !CONFIG_SERIAL_8250 */
+#else  
 static inline void jailhouse_serial_workaround(void)
 {
 }
-#endif /* CONFIG_SERIAL_8250 */
+#endif  
 
 static void __init jailhouse_init_platform(void)
 {
@@ -231,7 +207,7 @@ static void __init jailhouse_init_platform(void)
 	if (!pa_data)
 		panic("Jailhouse: No valid setup data found");
 
-	/* setup data must at least contain the header */
+	 
 	if (header.len < sizeof(setup_data.hdr))
 		goto unsupported;
 
@@ -257,10 +233,7 @@ static void __init jailhouse_init_platform(void)
 
 	pci_probe = 0;
 
-	/*
-	 * Avoid that the kernel complains about missing ACPI tables - there
-	 * are none in a non-root cell.
-	 */
+	 
 	disable_acpi();
 
 	jailhouse_serial_workaround();
@@ -277,10 +250,7 @@ bool jailhouse_paravirt(void)
 
 static bool __init jailhouse_x2apic_available(void)
 {
-	/*
-	 * The x2APIC is only available if the root cell enabled it. Jailhouse
-	 * does not support switching between xAPIC and x2APIC.
-	 */
+	 
 	return x2apic_enabled();
 }
 

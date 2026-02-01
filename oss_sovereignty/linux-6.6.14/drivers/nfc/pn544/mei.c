@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2013  Intel Corporation. All rights reserved.
- *
- * HCI based Driver for NXP pn544 NFC Chip
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/mod_devicetable.h>
@@ -50,7 +46,7 @@ static void pn544_mei_remove(struct mei_cl_device *cldev)
 static struct mei_cl_device_id pn544_mei_tbl[] = {
 	{ PN544_DRIVER_NAME, MEI_NFC_UUID, MEI_CL_VERSION_ANY},
 
-	/* required last entry */
+	 
 	{ }
 };
 MODULE_DEVICE_TABLE(mei, pn544_mei_tbl);

@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Generic C implementation of atomic counter operations. Do not include in
- * machine independent code.
- *
- * Copyright (C) 2007 Red Hat, Inc. All Rights Reserved.
- * Written by David Howells (dhowells@redhat.com)
- */
+ 
+ 
 #ifndef __ASM_GENERIC_ATOMIC_H
 #define __ASM_GENERIC_ATOMIC_H
 
@@ -14,7 +8,7 @@
 
 #ifdef CONFIG_SMP
 
-/* we can build all atomic primitives from cmpxchg */
+ 
 
 #define ATOMIC_OP(op, c_op)						\
 static inline void generic_atomic_##op(int i, atomic_t *v)		\
@@ -91,7 +85,7 @@ static inline int generic_atomic_fetch_##op(int i, atomic_t *v)		\
 	return ret;							\
 }
 
-#endif /* CONFIG_SMP */
+#endif  
 
 ATOMIC_OP_RETURN(add, +)
 ATOMIC_OP_RETURN(sub, -)
@@ -130,4 +124,4 @@ ATOMIC_OP(xor, ^)
 #define arch_atomic_read(v)			READ_ONCE((v)->counter)
 #define arch_atomic_set(v, i)			WRITE_ONCE(((v)->counter), (i))
 
-#endif /* __ASM_GENERIC_ATOMIC_H */
+#endif  

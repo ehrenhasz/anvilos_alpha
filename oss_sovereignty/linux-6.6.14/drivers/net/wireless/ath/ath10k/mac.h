@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: ISC */
-/*
- * Copyright (c) 2005-2011 Atheros Communications Inc.
- * Copyright (c) 2011-2017 Qualcomm Atheros, Inc.
- */
+ 
+ 
 
 #ifndef _MAC_H_
 #define _MAC_H_
@@ -92,4 +89,4 @@ static inline void ath10k_tx_h_seq_no(struct ieee80211_vif *vif,
 	}
 }
 
-#endif /* _MAC_H_ */
+#endif  

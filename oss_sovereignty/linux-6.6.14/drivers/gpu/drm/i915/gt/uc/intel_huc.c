@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright © 2016-2019 Intel Corporation
- */
+
+ 
 
 #include <linux/types.h>
 
@@ -16,59 +14,11 @@
 #include <linux/device/bus.h>
 #include <linux/mei_aux.h>
 
-/**
- * DOC: HuC
- *
- * The HuC is a dedicated microcontroller for usage in media HEVC (High
- * Efficiency Video Coding) operations. Userspace can directly use the firmware
- * capabilities by adding HuC specific commands to batch buffers.
- *
- * The kernel driver is only responsible for loading the HuC firmware and
- * triggering its security authentication. This is done differently depending
- * on the platform:
- *
- * - older platforms (from Gen9 to most Gen12s): the load is performed via DMA
- *   and the authentication via GuC
- * - DG2: load and authentication are both performed via GSC.
- * - MTL and newer platforms: the load is performed via DMA (same as with
- *   not-DG2 older platforms), while the authentication is done in 2-steps,
- *   a first auth for clear-media workloads via GuC and a second one for all
- *   workloads via GSC.
- *
- * On platforms where the GuC does the authentication, to correctly do so the
- * HuC binary must be loaded before the GuC one.
- * Loading the HuC is optional; however, not using the HuC might negatively
- * impact power usage and/or performance of media workloads, depending on the
- * use-cases.
- * HuC must be reloaded on events that cause the WOPCM to lose its contents
- * (S3/S4, FLR); on older platforms the HuC must also be reloaded on GuC/GT
- * reset, while on newer ones it will survive that.
- *
- * See https://github.com/intel/media-driver for the latest details on HuC
- * functionality.
- */
+ 
 
-/**
- * DOC: HuC Memory Management
- *
- * Similarly to the GuC, the HuC can't do any memory allocations on its own,
- * with the difference being that the allocations for HuC usage are handled by
- * the userspace driver instead of the kernel one. The HuC accesses the memory
- * via the PPGTT belonging to the context loaded on the VCS executing the
- * HuC-specific commands.
- */
+ 
 
-/*
- * MEI-GSC load is an async process. The probing of the exposed aux device
- * (see intel_gsc.c) usually happens a few seconds after i915 probe, depending
- * on when the kernel schedules it. Unless something goes terribly wrong, we're
- * guaranteed for this to happen during boot, so the big timeout is a safety net
- * that we never expect to need.
- * MEI-PXP + HuC load usually takes ~300ms, but if the GSC needs to be resumed
- * and/or reset, this can take longer. Note that the kernel might schedule
- * other work between the i915 init/resume and the MEI one, which can add to
- * the delay.
- */
+ 
 #define GSC_INIT_TIMEOUT_MS 10000
 #define PXP_INIT_TIMEOUT_MS 5000
 
@@ -106,7 +56,7 @@ static void gsc_init_done(struct intel_huc *huc)
 {
 	hrtimer_cancel(&huc->delayed_load.timer);
 
-	/* MEI-GSC init is done, now we wait for MEI-PXP to bind */
+	 
 	huc->delayed_load.status = INTEL_HUC_WAITING_ON_PXP;
 	if (!i915_sw_fence_done(&huc->delayed_load.fence))
 		hrtimer_start(&huc->delayed_load.timer,
@@ -138,10 +88,7 @@ static void huc_delayed_load_start(struct intel_huc *huc)
 
 	GEM_BUG_ON(intel_huc_is_authenticated(huc, INTEL_HUC_AUTH_BY_GSC));
 
-	/*
-	 * On resume we don't have to wait for MEI-GSC to be re-probed, but we
-	 * do need to wait for MEI-PXP to reset & re-bind
-	 */
+	 
 	switch (huc->delayed_load.status) {
 	case INTEL_HUC_WAITING_ON_GSC:
 		delay = ms_to_ktime(GSC_INIT_TIMEOUT_MS);
@@ -154,12 +101,7 @@ static void huc_delayed_load_start(struct intel_huc *huc)
 		return;
 	}
 
-	/*
-	 * This fence is always complete unless we're waiting for the
-	 * GSC device to come up to load the HuC. We arm the fence here
-	 * and complete it when we confirm that the HuC is loaded from
-	 * the PXP bind callback.
-	 */
+	 
 	GEM_BUG_ON(!i915_sw_fence_done(&huc->delayed_load.fence));
 	i915_sw_fence_fini(&huc->delayed_load.fence);
 	i915_sw_fence_reinit(&huc->delayed_load.fence);
@@ -179,12 +121,12 @@ static int gsc_notifier(struct notifier_block *nb, unsigned long action, void *d
 		return 0;
 
 	switch (action) {
-	case BUS_NOTIFY_BOUND_DRIVER: /* mei driver bound to aux device */
+	case BUS_NOTIFY_BOUND_DRIVER:  
 		gsc_init_done(huc);
 		break;
 
-	case BUS_NOTIFY_DRIVER_NOT_BOUND: /* mei driver fails to be bound */
-	case BUS_NOTIFY_UNBIND_DRIVER: /* mei driver about to be unbound */
+	case BUS_NOTIFY_DRIVER_NOT_BOUND:  
+	case BUS_NOTIFY_UNBIND_DRIVER:  
 		huc_info(huc, "MEI driver not bound, disabling load\n");
 		gsc_init_error(huc);
 		break;
@@ -222,10 +164,7 @@ void intel_huc_unregister_gsc_notifier(struct intel_huc *huc, const struct bus_t
 
 static void delayed_huc_load_init(struct intel_huc *huc)
 {
-	/*
-	 * Initialize fence to be complete as this is expected to be complete
-	 * unless there is a delayed HuC load in progress.
-	 */
+	 
 	i915_sw_fence_init(&huc->delayed_load.fence,
 			   sw_fence_dummy_notify);
 	i915_sw_fence_commit(&huc->delayed_load.fence);
@@ -236,10 +175,7 @@ static void delayed_huc_load_init(struct intel_huc *huc)
 
 static void delayed_huc_load_fini(struct intel_huc *huc)
 {
-	/*
-	 * the fence is initialized in init_early, so we need to clean it up
-	 * even if HuC loading is off.
-	 */
+	 
 	delayed_huc_load_complete(huc);
 	i915_sw_fence_fini(&huc->delayed_load.fence);
 }
@@ -255,15 +191,7 @@ static bool vcs_supported(struct intel_gt *gt)
 {
 	intel_engine_mask_t mask = gt->info.engine_mask;
 
-	/*
-	 * We reach here from i915_driver_early_probe for the primary GT before
-	 * its engine mask is set, so we use the device info engine mask for it;
-	 * this means we're not taking VCS fusing into account, but if the
-	 * primary GT supports VCS engines we expect at least one of them to
-	 * remain unfused so we're fine.
-	 * For other GTs we expect the GT-specific mask to be set before we
-	 * call this function.
-	 */
+	 
 	GEM_BUG_ON(!gt_is_root(gt) && !gt->info.engine_mask);
 
 	if (gt_is_root(gt))
@@ -281,13 +209,7 @@ void intel_huc_init_early(struct intel_huc *huc)
 
 	intel_uc_fw_init_early(&huc->fw, INTEL_UC_FW_TYPE_HUC, true);
 
-	/*
-	 * we always init the fence as already completed, even if HuC is not
-	 * supported. This way we don't have to distinguish between HuC not
-	 * supported/disabled or already loaded, and can focus on if the load
-	 * is currently in progress (fence not complete) or not, which is what
-	 * we care about for stalling userspace submissions.
-	 */
+	 
 	delayed_huc_load_init(huc);
 
 	if (!vcs_supported(gt)) {
@@ -322,10 +244,7 @@ static int check_huc_loading_mode(struct intel_huc *huc)
 	struct intel_gt *gt = huc_to_gt(huc);
 	bool gsc_enabled = huc->fw.has_gsc_headers;
 
-	/*
-	 * The fuse for HuC load via GSC is only valid on platforms that have
-	 * GuC deprivilege.
-	 */
+	 
 	if (HAS_GUC_DEPRIVILEGE(gt->i915))
 		huc->loaded_via_gsc = intel_uncore_read(gt->uncore, GUC_SHIM_CONTROL2) &
 				      GSC_LOADS_HUC;
@@ -335,23 +254,13 @@ static int check_huc_loading_mode(struct intel_huc *huc)
 		return -ENOEXEC;
 	}
 
-	/*
-	 * On newer platforms we have GSC-enabled binaries but we load the HuC
-	 * via DMA. To do so we need to find the location of the legacy-style
-	 * binary inside the GSC-enabled one, which we do at fetch time. Make
-	 * sure that we were able to do so if the fuse says we need to load via
-	 * DMA and the binary is GSC-enabled.
-	 */
+	 
 	if (!huc->loaded_via_gsc && gsc_enabled && !huc->fw.dma_start_offset) {
 		huc_err(huc, "HW in DMA mode, but we have an incompatible GSC-enabled blob\n");
 		return -ENOEXEC;
 	}
 
-	/*
-	 * If the HuC is loaded via GSC, we need to be able to access the GSC.
-	 * On DG2 this is done via the mei components, while on newer platforms
-	 * it is done via the GSCCS,
-	 */
+	 
 	if (huc->loaded_via_gsc) {
 		if (IS_DG2(gt->i915)) {
 			if (!IS_ENABLED(CONFIG_INTEL_MEI_PXP) ||
@@ -413,10 +322,7 @@ out:
 
 void intel_huc_fini(struct intel_huc *huc)
 {
-	/*
-	 * the fence is initialized in init_early, so we need to clean it up
-	 * even if HuC loading is off.
-	 */
+	 
 	delayed_huc_load_fini(huc);
 
 	if (huc->heci_pkt)
@@ -431,11 +337,7 @@ void intel_huc_suspend(struct intel_huc *huc)
 	if (!intel_uc_fw_is_loadable(&huc->fw))
 		return;
 
-	/*
-	 * in the unlikely case that we're suspending before the GSC has
-	 * completed its loading sequence, just stop waiting. We'll restart
-	 * on resume.
-	 */
+	 
 	delayed_huc_load_complete(huc);
 }
 
@@ -459,7 +361,7 @@ int intel_huc_wait_for_auth_complete(struct intel_huc *huc,
 					huc->status[type].value,
 					2, 50, NULL);
 
-	/* mark the load process as complete even if the wait failed */
+	 
 	delayed_huc_load_complete(huc);
 
 	if (ret) {
@@ -474,17 +376,7 @@ int intel_huc_wait_for_auth_complete(struct intel_huc *huc,
 	return 0;
 }
 
-/**
- * intel_huc_auth() - Authenticate HuC uCode
- * @huc: intel_huc structure
- * @type: authentication type (via GuC or via GSC)
- *
- * Called after HuC and GuC firmware loading during intel_uc_init_hw().
- *
- * This function invokes the GuC action to authenticate the HuC firmware,
- * passing the offset of the RSA signature to intel_guc_auth_huc(). It then
- * waits for up to 50ms for firmware verification ACK.
- */
+ 
 int intel_huc_auth(struct intel_huc *huc, enum intel_huc_authentication_type type)
 {
 	struct intel_gt *gt = huc_to_gt(huc);
@@ -494,7 +386,7 @@ int intel_huc_auth(struct intel_huc *huc, enum intel_huc_authentication_type typ
 	if (!intel_uc_fw_is_loaded(&huc->fw))
 		return -ENOEXEC;
 
-	/* GSC will do the auth with the load */
+	 
 	if (intel_huc_is_loaded_by_gsc(huc))
 		return -ENODEV;
 
@@ -519,7 +411,7 @@ int intel_huc_auth(struct intel_huc *huc, enum intel_huc_authentication_type typ
 	if (ret)
 		goto fail;
 
-	/* Check authentication status, it should be done by now */
+	 
 	ret = intel_huc_wait_for_auth_complete(huc, type);
 	if (ret)
 		goto fail;
@@ -557,16 +449,7 @@ static bool huc_is_fully_authenticated(struct intel_huc *huc)
 		return false;
 }
 
-/**
- * intel_huc_check_status() - check HuC status
- * @huc: intel_huc structure
- *
- * This function reads status register to verify if HuC
- * firmware was successfully loaded.
- *
- * The return values match what is expected for the I915_PARAM_HUC_STATUS
- * getparam.
- */
+ 
 int intel_huc_check_status(struct intel_huc *huc)
 {
 	struct intel_uc_fw *huc_fw = &huc->fw;
@@ -588,15 +471,12 @@ int intel_huc_check_status(struct intel_huc *huc)
 		break;
 	}
 
-	/*
-	 * GSC-enabled binaries loaded via DMA are first partially
-	 * authenticated by GuC and then fully authenticated by GSC
-	 */
+	 
 	if (huc_is_fully_authenticated(huc))
-		return 1; /* full auth */
+		return 1;  
 	else if (huc_fw->has_gsc_headers && !intel_huc_is_loaded_by_gsc(huc) &&
 		 intel_huc_is_authenticated(huc, INTEL_HUC_AUTH_BY_GUC))
-		return 2; /* clear media only */
+		return 2;  
 	else
 		return 0;
 }
@@ -622,13 +502,7 @@ void intel_huc_update_auth_status(struct intel_huc *huc)
 		huc_delayed_load_start(huc);
 }
 
-/**
- * intel_huc_load_status - dump information about HuC load status
- * @huc: the HuC
- * @p: the &drm_printer
- *
- * Pretty printer for HuC load status.
- */
+ 
 void intel_huc_load_status(struct intel_huc *huc, struct drm_printer *p)
 {
 	struct intel_gt *gt = huc_to_gt(huc);

@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB */
-/* Copyright (c) 2021, NVIDIA CORPORATION & AFFILIATES. */
+ 
+ 
 
 #ifndef __MLX5_EN_RSS_H__
 #define __MLX5_EN_RSS_H__
@@ -47,4 +47,4 @@ u8 mlx5e_rss_get_hash_fields(struct mlx5e_rss *rss, enum mlx5_traffic_types tt);
 int mlx5e_rss_set_hash_fields(struct mlx5e_rss *rss, enum mlx5_traffic_types tt,
 			      u8 rx_hash_fields);
 void mlx5e_rss_set_indir_uniform(struct mlx5e_rss *rss, unsigned int nch);
-#endif /* __MLX5_EN_RSS_H__ */
+#endif  

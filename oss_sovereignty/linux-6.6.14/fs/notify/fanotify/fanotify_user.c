@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/fanotify.h>
 #include <linux/fcntl.h>
 #include <linux/fdtable.h>
@@ -32,24 +32,14 @@
 #define FANOTIFY_DEFAULT_MAX_GROUPS	128
 #define FANOTIFY_DEFAULT_FEE_POOL_SIZE	32
 
-/*
- * Legacy fanotify marks limits (8192) is per group and we introduced a tunable
- * limit of marks per user, similar to inotify.  Effectively, the legacy limit
- * of fanotify marks per user is <max marks per group> * <max groups per user>.
- * This default limit (1M) also happens to match the increased limit of inotify
- * max_user_watches since v5.10.
- */
+ 
 #define FANOTIFY_DEFAULT_MAX_USER_MARKS	\
 	(FANOTIFY_OLD_DEFAULT_MAX_MARKS * FANOTIFY_DEFAULT_MAX_GROUPS)
 
-/*
- * Most of the memory cost of adding an inode mark is pinning the marked inode.
- * The size of the filesystem inode struct is not uniform across filesystems,
- * so double the size of a VFS inode is used as a conservative approximation.
- */
+ 
 #define INODE_MARK_COST	(2 * sizeof(struct inode))
 
-/* configurable via /proc/sys/fs/fanotify/ */
+ 
 static int fanotify_max_queued_events __read_mostly;
 
 #ifdef CONFIG_SYSCTL
@@ -95,16 +85,9 @@ static void __init fanotify_sysctls_init(void)
 }
 #else
 #define fanotify_sysctls_init() do { } while (0)
-#endif /* CONFIG_SYSCTL */
+#endif  
 
-/*
- * All flags that may be specified in parameter event_f_flags of fanotify_init.
- *
- * Internal and external open flags are stored together in field f_flags of
- * struct file. Only external open flags shall be allowed in event_f_flags.
- * Internal flags like FMODE_NONOTIFY, FMODE_EXEC, FMODE_NOCMTIME shall be
- * excluded.
- */
+ 
 #define	FANOTIFY_INIT_ALL_EVENT_F_BITS				( \
 		O_ACCMODE	| O_APPEND	| O_NONBLOCK	| \
 		__O_SYNC	| O_DSYNC	| O_CLOEXEC     | \
@@ -136,7 +119,7 @@ static int fanotify_fid_info_len(int fh_len, int name_len)
 		       FANOTIFY_EVENT_ALIGN);
 }
 
-/* FAN_RENAME may have one or two dir+name info records */
+ 
 static int fanotify_dir_name_info_len(struct fanotify_event *event)
 {
 	struct fanotify_info *info = fanotify_event_info(event);
@@ -171,10 +154,7 @@ static size_t fanotify_event_len(unsigned int info_mode,
 		event_len += fanotify_dir_name_info_len(event);
 	} else if ((info_mode & FAN_REPORT_NAME) &&
 		   (event->mask & FAN_ONDIR)) {
-		/*
-		 * With group flag FAN_REPORT_NAME, if name was not recorded in
-		 * event on a directory, we will report the name ".".
-		 */
+		 
 		dot_len = 1;
 	}
 
@@ -189,9 +169,7 @@ static size_t fanotify_event_len(unsigned int info_mode,
 	return event_len;
 }
 
-/*
- * Remove an hashed event from merge hash table.
- */
+ 
 static void fanotify_unhash_event(struct fsnotify_group *group,
 				  struct fanotify_event *event)
 {
@@ -206,12 +184,7 @@ static void fanotify_unhash_event(struct fsnotify_group *group,
 	hlist_del_init(&event->merge_list);
 }
 
-/*
- * Get an fanotify notification event if one exists and is small
- * enough to fit in "count". Return an error pointer if the count
- * is not large enough. When permission event is dequeued, its state is
- * updated accordingly.
- */
+ 
 static struct fanotify_event *get_one_event(struct fsnotify_group *group,
 					    size_t count)
 {
@@ -235,10 +208,7 @@ static struct fanotify_event *get_one_event(struct fsnotify_group *group,
 		goto out;
 	}
 
-	/*
-	 * Held the notification_lock the whole time, so this is the
-	 * same event we peeked above.
-	 */
+	 
 	fsnotify_remove_first_event(group);
 	if (fanotify_is_perm_event(event->mask))
 		FANOTIFY_PERM(event)->state = FAN_EVENT_REPORTED;
@@ -259,21 +229,12 @@ static int create_fd(struct fsnotify_group *group, const struct path *path,
 	if (client_fd < 0)
 		return client_fd;
 
-	/*
-	 * we need a new file handle for the userspace program so it can read even if it was
-	 * originally opened O_WRONLY.
-	 */
+	 
 	new_file = dentry_open(path,
 			       group->fanotify_data.f_flags | __FMODE_NONOTIFY,
 			       current_cred());
 	if (IS_ERR(new_file)) {
-		/*
-		 * we still send an event even if we can't open the file.  this
-		 * can happen when say tasks are gone and we try to open their
-		 * /proc files or we try to open a WRONLY file like in sysfs
-		 * we just send the errno to userspace since there isn't much
-		 * else we can do.
-		 */
+		 
 		put_unused_fd(client_fd);
 		client_fd = PTR_ERR(new_file);
 	} else {
@@ -303,10 +264,7 @@ static int process_access_response_info(const char __user *info,
 	return info_len;
 }
 
-/*
- * Finish processing of permission event by setting it to ANSWERED state and
- * drop group->notification_lock.
- */
+ 
 static void finish_permission_event(struct fsnotify_group *group,
 				    struct fanotify_perm_event *event, u32 response,
 				    struct fanotify_response_info_audit_rule *friar)
@@ -341,11 +299,7 @@ static int process_access_response(struct fsnotify_group *group,
 
 	pr_debug("%s: group=%p fd=%d response=%u buf=%p size=%zu\n", __func__,
 		 group, fd, response, info, info_len);
-	/*
-	 * make sure the response is valid, if invalid we do nothing and either
-	 * userspace can send a valid response or we will clean it up after the
-	 * timeout
-	 */
+	 
 	if (response & ~FANOTIFY_RESPONSE_VALID_MASK)
 		return -EINVAL;
 
@@ -428,10 +382,7 @@ static int copy_fid_info_to_user(__kernel_fsid_t *fsid, struct fanotify_fh *fh,
 	if (WARN_ON_ONCE(len < sizeof(info) || len > count))
 		return -EFAULT;
 
-	/*
-	 * Copy event info fid header followed by variable sized file handle
-	 * and optionally followed by variable sized filename.
-	 */
+	 
 	switch (info_type) {
 	case FAN_EVENT_INFO_TYPE_FID:
 	case FAN_EVENT_INFO_TYPE_DFID:
@@ -462,7 +413,7 @@ static int copy_fid_info_to_user(__kernel_fsid_t *fsid, struct fanotify_fh *fh,
 	handle.handle_type = fh->type;
 	handle.handle_bytes = fh_len;
 
-	/* Mangle handle_type for bad file_handle */
+	 
 	if (!fh_len)
 		handle.handle_type = FILEID_INVALID;
 
@@ -474,10 +425,7 @@ static int copy_fid_info_to_user(__kernel_fsid_t *fsid, struct fanotify_fh *fh,
 	if (WARN_ON_ONCE(len < fh_len))
 		return -EFAULT;
 
-	/*
-	 * For an inline fh and inline file name, copy through stack to exclude
-	 * the copy from usercopy hardening protections.
-	 */
+	 
 	fh_buf = fanotify_fh_buf(fh);
 	if (fh_len <= FANOTIFY_INLINE_FH_LEN) {
 		memcpy(bounce, fh_buf, fh_len);
@@ -490,7 +438,7 @@ static int copy_fid_info_to_user(__kernel_fsid_t *fsid, struct fanotify_fh *fh,
 	len -= fh_len;
 
 	if (name_len) {
-		/* Copy the filename with terminating null */
+		 
 		name_len++;
 		if (WARN_ON_ONCE(len < name_len))
 			return -EFAULT;
@@ -502,7 +450,7 @@ static int copy_fid_info_to_user(__kernel_fsid_t *fsid, struct fanotify_fh *fh,
 		len -= name_len;
 	}
 
-	/* Pad with 0's */
+	 
 	WARN_ON_ONCE(len < 0 || len >= FANOTIFY_EVENT_ALIGN);
 	if (len > 0 && clear_user(buf, len))
 		return -EFAULT;
@@ -539,17 +487,12 @@ static int copy_info_records_to_user(struct fanotify_event *event,
 	unsigned int fid_mode = info_mode & FANOTIFY_FID_BITS;
 	unsigned int pidfd_mode = info_mode & FAN_REPORT_PIDFD;
 
-	/*
-	 * Event info records order is as follows:
-	 * 1. dir fid + name
-	 * 2. (optional) new dir fid + new name
-	 * 3. (optional) child fid
-	 */
+	 
 	if (fanotify_event_has_dir_fh(event)) {
 		info_type = info->name_len ? FAN_EVENT_INFO_TYPE_DFID_NAME :
 					     FAN_EVENT_INFO_TYPE_DFID;
 
-		/* FAN_RENAME uses special info types */
+		 
 		if (event->mask & FAN_RENAME)
 			info_type = FAN_EVENT_INFO_TYPE_OLD_DFID_NAME;
 
@@ -566,7 +509,7 @@ static int copy_info_records_to_user(struct fanotify_event *event,
 		total_bytes += ret;
 	}
 
-	/* New dir fid+name may be reported in addition to old dir fid+name */
+	 
 	if (fanotify_event_has_dir2_fh(event)) {
 		info_type = FAN_EVENT_INFO_TYPE_NEW_DFID_NAME;
 		ret = copy_fid_info_to_user(fanotify_event_fsid(event),
@@ -587,36 +530,20 @@ static int copy_info_records_to_user(struct fanotify_event *event,
 		int dot_len = 0;
 
 		if (fid_mode == FAN_REPORT_FID || info_type) {
-			/*
-			 * With only group flag FAN_REPORT_FID only type FID is
-			 * reported. Second info record type is always FID.
-			 */
+			 
 			info_type = FAN_EVENT_INFO_TYPE_FID;
 		} else if ((fid_mode & FAN_REPORT_NAME) &&
 			   (event->mask & FAN_ONDIR)) {
-			/*
-			 * With group flag FAN_REPORT_NAME, if name was not
-			 * recorded in an event on a directory, report the name
-			 * "." with info type DFID_NAME.
-			 */
+			 
 			info_type = FAN_EVENT_INFO_TYPE_DFID_NAME;
 			dot = ".";
 			dot_len = 1;
 		} else if ((event->mask & ALL_FSNOTIFY_DIRENT_EVENTS) ||
 			   (event->mask & FAN_ONDIR)) {
-			/*
-			 * With group flag FAN_REPORT_DIR_FID, a single info
-			 * record has type DFID for directory entry modification
-			 * event and for event on a directory.
-			 */
+			 
 			info_type = FAN_EVENT_INFO_TYPE_DFID;
 		} else {
-			/*
-			 * With group flags FAN_REPORT_DIR_FID|FAN_REPORT_FID,
-			 * a single info record has type FID for event on a
-			 * non-directory, when there is no directory to report.
-			 * For example, on FAN_DELETE_SELF event.
-			 */
+			 
 			info_type = FAN_EVENT_INFO_TYPE_FID;
 		}
 
@@ -674,21 +601,12 @@ static ssize_t copy_event_to_user(struct fsnotify_group *group,
 	metadata.reserved = 0;
 	metadata.mask = event->mask & FANOTIFY_OUTGOING_EVENTS;
 	metadata.pid = pid_vnr(event->pid);
-	/*
-	 * For an unprivileged listener, event->pid can be used to identify the
-	 * events generated by the listener process itself, without disclosing
-	 * the pids of other processes.
-	 */
+	 
 	if (FAN_GROUP_FLAG(group, FANOTIFY_UNPRIV) &&
 	    task_tgid(current) != event->pid)
 		metadata.pid = 0;
 
-	/*
-	 * For now, fid mode is required for an unprivileged listener and
-	 * fid mode does not report fd in events.  Keep this check anyway
-	 * for safety in case fid mode requirement is relaxed in the future
-	 * to allow unprivileged listener to get events with no fd and no fid.
-	 */
+	 
 	if (!FAN_GROUP_FLAG(group, FANOTIFY_UNPRIV) &&
 	    path && path->mnt && path->dentry) {
 		fd = create_fd(group, path, &f);
@@ -698,22 +616,10 @@ static ssize_t copy_event_to_user(struct fsnotify_group *group,
 	metadata.fd = fd;
 
 	if (pidfd_mode) {
-		/*
-		 * Complain if the FAN_REPORT_PIDFD and FAN_REPORT_TID mutual
-		 * exclusion is ever lifted. At the time of incoporating pidfd
-		 * support within fanotify, the pidfd API only supported the
-		 * creation of pidfds for thread-group leaders.
-		 */
+		 
 		WARN_ON_ONCE(FAN_GROUP_FLAG(group, FAN_REPORT_TID));
 
-		/*
-		 * The PIDTYPE_TGID check for an event->pid is performed
-		 * preemptively in an attempt to catch out cases where the event
-		 * listener reads events after the event generating process has
-		 * already terminated. Report FAN_NOPIDFD to the event listener
-		 * in those cases, with all other pidfd creation errors being
-		 * reported as FAN_EPIDFD.
-		 */
+		 
 		if (metadata.pid == 0 ||
 		    !pid_has_task(event->pid, PIDTYPE_TGID)) {
 			pidfd = FAN_NOPIDFD;
@@ -725,10 +631,7 @@ static ssize_t copy_event_to_user(struct fsnotify_group *group,
 	}
 
 	ret = -EFAULT;
-	/*
-	 * Sanity check copy size in case get_one_event() and
-	 * event_len sizes ever get out of sync.
-	 */
+	 
 	if (WARN_ON_ONCE(metadata.event_len > count))
 		goto out_close_fd;
 
@@ -770,7 +673,7 @@ out_close_fd:
 	return ret;
 }
 
-/* intofiy userspace file descriptor functions */
+ 
 static __poll_t fanotify_poll(struct file *file, poll_table *wait)
 {
 	struct fsnotify_group *group = file->private_data;
@@ -801,10 +704,7 @@ static ssize_t fanotify_read(struct file *file, char __user *buf,
 
 	add_wait_queue(&group->notification_waitq, &wait);
 	while (1) {
-		/*
-		 * User can supply arbitrarily large buffer. Avoid softlockups
-		 * in case there are lots of available events.
-		 */
+		 
 		cond_resched();
 		event = get_one_event(group, count);
 		if (IS_ERR(event)) {
@@ -830,19 +730,11 @@ static ssize_t fanotify_read(struct file *file, char __user *buf,
 
 		ret = copy_event_to_user(group, event, buf, count);
 		if (unlikely(ret == -EOPENSTALE)) {
-			/*
-			 * We cannot report events with stale fd so drop it.
-			 * Setting ret to 0 will continue the event loop and
-			 * do the right thing if there are no more events to
-			 * read (i.e. return bytes read, -EAGAIN or wait).
-			 */
+			 
 			ret = 0;
 		}
 
-		/*
-		 * Permission events get queued to wait for response.  Other
-		 * events can be destroyed now.
-		 */
+		 
 		if (!fanotify_is_perm_event(event->mask)) {
 			fsnotify_destroy_event(group, &event->fse);
 		} else {
@@ -907,17 +799,10 @@ static int fanotify_release(struct inode *ignored, struct file *file)
 	struct fsnotify_group *group = file->private_data;
 	struct fsnotify_event *fsn_event;
 
-	/*
-	 * Stop new events from arriving in the notification queue. since
-	 * userspace cannot use fanotify fd anymore, no event can enter or
-	 * leave access_list by now either.
-	 */
+	 
 	fsnotify_group_stop_queueing(group);
 
-	/*
-	 * Process all permission events on access_list and notification queue
-	 * and simulate reply from userspace.
-	 */
+	 
 	spin_lock(&group->notification_lock);
 	while (!list_empty(&group->fanotify_data.access_list)) {
 		struct fanotify_perm_event *event;
@@ -929,11 +814,7 @@ static int fanotify_release(struct inode *ignored, struct file *file)
 		spin_lock(&group->notification_lock);
 	}
 
-	/*
-	 * Destroy all non-permission events. For permission events just
-	 * dequeue them and set the response. They will be freed once the
-	 * response is consumed and fanotify_get_response() returns.
-	 */
+	 
 	while ((fsn_event = fsnotify_remove_first_event(group))) {
 		struct fanotify_event *event = FANOTIFY_E(fsn_event);
 
@@ -948,10 +829,10 @@ static int fanotify_release(struct inode *ignored, struct file *file)
 	}
 	spin_unlock(&group->notification_lock);
 
-	/* Response for all permission events it set, wakeup waiters */
+	 
 	wake_up(&group->fanotify_data.access_waitq);
 
-	/* matches the fanotify_init->fsnotify_alloc_group */
+	 
 	fsnotify_destroy_group(group);
 
 	return 0;
@@ -1033,7 +914,7 @@ static int fanotify_find_path(int dfd, const char __user *filename,
 			goto out;
 	}
 
-	/* you can only watch an inode if you have read permissions on it */
+	 
 	ret = path_permission(path, MAY_READ);
 	if (ret) {
 		path_put(path);
@@ -1054,7 +935,7 @@ static __u32 fanotify_mark_remove_from_mask(struct fsnotify_mark *fsn_mark,
 {
 	__u32 oldmask, newmask;
 
-	/* umask bits cannot be removed by user */
+	 
 	mask &= ~umask;
 	spin_lock(&fsn_mark->lock);
 	oldmask = fsnotify_calc_mask(fsn_mark);
@@ -1064,12 +945,7 @@ static __u32 fanotify_mark_remove_from_mask(struct fsnotify_mark *fsn_mark,
 		fsn_mark->ignore_mask &= ~mask;
 	}
 	newmask = fsnotify_calc_mask(fsn_mark);
-	/*
-	 * We need to keep the mark around even if remaining mask cannot
-	 * result in any events (e.g. mask == FAN_ONDIR) to support incremenal
-	 * changes to the mask.
-	 * Destroy mark when only umask bits remain.
-	 */
+	 
 	*destroy = !((fsn_mark->mask | fsn_mark->ignore_mask) & ~umask);
 	spin_unlock(&fsn_mark->lock);
 
@@ -1101,7 +977,7 @@ static int fanotify_remove_mark(struct fsnotify_group *group,
 	if (destroy_mark)
 		fsnotify_free_mark(fsn_mark);
 
-	/* matches the fsnotify_find_mark() */
+	 
 	fsnotify_put_mark(fsn_mark);
 	return 0;
 }
@@ -1137,20 +1013,11 @@ static bool fanotify_mark_update_flags(struct fsnotify_mark *fsn_mark,
 	unsigned int ignore = fan_flags & FANOTIFY_MARK_IGNORE_BITS;
 	bool recalc = false;
 
-	/*
-	 * When using FAN_MARK_IGNORE for the first time, mark starts using
-	 * independent event flags in ignore mask.  After that, trying to
-	 * update the ignore mask with the old FAN_MARK_IGNORED_MASK API
-	 * will result in EEXIST error.
-	 */
+	 
 	if (ignore == FAN_MARK_IGNORE)
 		fsn_mark->flags |= FSNOTIFY_MARK_FLAG_HAS_IGNORE_FLAGS;
 
-	/*
-	 * Setting FAN_MARK_IGNORED_SURV_MODIFY for the first time may lead to
-	 * the removal of the FS_MODIFY bit in calculated mask if it was set
-	 * because of an ignore mask that is now going to survive FS_MODIFY.
-	 */
+	 
 	if (ignore && (fan_flags & FAN_MARK_IGNORED_SURV_MODIFY) &&
 	    !(fsn_mark->flags & FSNOTIFY_MARK_FLAG_IGNORED_SURV_MODIFY)) {
 		fsn_mark->flags |= FSNOTIFY_MARK_FLAG_IGNORED_SURV_MODIFY;
@@ -1162,10 +1029,7 @@ static bool fanotify_mark_update_flags(struct fsnotify_mark *fsn_mark,
 	    want_iref == !(fsn_mark->flags & FSNOTIFY_MARK_FLAG_NO_IREF))
 		return recalc;
 
-	/*
-	 * NO_IREF may be removed from a mark, but not added.
-	 * When removed, fsnotify_recalc_mask() will take the inode ref.
-	 */
+	 
 	WARN_ON_ONCE(!want_iref);
 	fsn_mark->flags &= ~FSNOTIFY_MARK_FLAG_NO_IREF;
 
@@ -1202,11 +1066,7 @@ static struct fsnotify_mark *fanotify_add_new_mark(struct fsnotify_group *group,
 	struct fsnotify_mark *mark;
 	int ret;
 
-	/*
-	 * Enforce per user marks limits per user in all containing user ns.
-	 * A group with FAN_UNLIMITED_MARKS does not contribute to mark count
-	 * in the limited groups account.
-	 */
+	 
 	if (!FAN_GROUP_FLAG(group, FAN_UNLIMITED_MARKS) &&
 	    !inc_ucount(ucounts->ns, ucounts->uid, UCOUNT_FANOTIFY_MARKS))
 		return ERR_PTR(-ENOSPC);
@@ -1248,26 +1108,17 @@ static int fanotify_group_init_error_pool(struct fsnotify_group *group)
 static int fanotify_may_update_existing_mark(struct fsnotify_mark *fsn_mark,
 					      unsigned int fan_flags)
 {
-	/*
-	 * Non evictable mark cannot be downgraded to evictable mark.
-	 */
+	 
 	if (fan_flags & FAN_MARK_EVICTABLE &&
 	    !(fsn_mark->flags & FSNOTIFY_MARK_FLAG_NO_IREF))
 		return -EEXIST;
 
-	/*
-	 * New ignore mask semantics cannot be downgraded to old semantics.
-	 */
+	 
 	if (fan_flags & FAN_MARK_IGNORED_MASK &&
 	    fsn_mark->flags & FSNOTIFY_MARK_FLAG_HAS_IGNORE_FLAGS)
 		return -EEXIST;
 
-	/*
-	 * An ignore mask that survives modify could never be downgraded to not
-	 * survive modify.  With new FAN_MARK_IGNORE semantics we make that rule
-	 * explicit and return an error when trying to update the ignore mask
-	 * without the original FAN_MARK_IGNORED_SURV_MODIFY value.
-	 */
+	 
 	if (fan_flags & FAN_MARK_IGNORE &&
 	    !(fan_flags & FAN_MARK_IGNORED_SURV_MODIFY) &&
 	    fsn_mark->flags & FSNOTIFY_MARK_FLAG_IGNORED_SURV_MODIFY)
@@ -1296,17 +1147,12 @@ static int fanotify_add_mark(struct fsnotify_group *group,
 		}
 	}
 
-	/*
-	 * Check if requested mark flags conflict with an existing mark flags.
-	 */
+	 
 	ret = fanotify_may_update_existing_mark(fsn_mark, fan_flags);
 	if (ret)
 		goto out;
 
-	/*
-	 * Error events are pre-allocated per group, only if strictly
-	 * needed (i.e. FAN_FS_ERROR was requested).
-	 */
+	 
 	if (!(fan_flags & FANOTIFY_MARK_IGNORE_BITS) &&
 	    (mask & FAN_FS_ERROR)) {
 		ret = fanotify_group_init_error_pool(group);
@@ -1347,11 +1193,7 @@ static int fanotify_add_inode_mark(struct fsnotify_group *group,
 {
 	pr_debug("%s: group=%p inode=%p\n", __func__, group, inode);
 
-	/*
-	 * If some other task has this inode open for write we should not add
-	 * an ignore mask, unless that ignore mask is supposed to survive
-	 * modification changes anyway.
-	 */
+	 
 	if ((flags & FANOTIFY_MARK_IGNORE_BITS) &&
 	    !(flags & FAN_MARK_IGNORED_SURV_MODIFY) &&
 	    inode_is_open_for_write(inode))
@@ -1389,7 +1231,7 @@ static struct hlist_head *fanotify_alloc_merge_hash(void)
 	return hash;
 }
 
-/* fanotify syscalls */
+ 
 SYSCALL_DEFINE2(fanotify_init, unsigned int, flags, unsigned int, event_f_flags)
 {
 	struct fsnotify_group *group;
@@ -1402,20 +1244,11 @@ SYSCALL_DEFINE2(fanotify_init, unsigned int, flags, unsigned int, event_f_flags)
 		 __func__, flags, event_f_flags);
 
 	if (!capable(CAP_SYS_ADMIN)) {
-		/*
-		 * An unprivileged user can setup an fanotify group with
-		 * limited functionality - an unprivileged group is limited to
-		 * notification events with file handles and it cannot use
-		 * unlimited queue/marks.
-		 */
+		 
 		if ((flags & FANOTIFY_ADMIN_INIT_FLAGS) || !fid_mode)
 			return -EPERM;
 
-		/*
-		 * Setting the internal flag FANOTIFY_UNPRIV on the group
-		 * prevents setting mount/filesystem marks on this group and
-		 * prevents reporting pid and open fd in events.
-		 */
+		 
 		internal_flags |= FANOTIFY_UNPRIV;
 	}
 
@@ -1426,11 +1259,7 @@ SYSCALL_DEFINE2(fanotify_init, unsigned int, flags, unsigned int, event_f_flags)
 #endif
 		return -EINVAL;
 
-	/*
-	 * A pidfd can only be returned for a thread-group leader; thus
-	 * FAN_REPORT_PIDFD and FAN_REPORT_TID need to remain mutually
-	 * exclusive.
-	 */
+	 
 	if ((flags & FAN_REPORT_PIDFD) && (flags & FAN_REPORT_TID))
 		return -EINVAL;
 
@@ -1449,18 +1278,11 @@ SYSCALL_DEFINE2(fanotify_init, unsigned int, flags, unsigned int, event_f_flags)
 	if (fid_mode && class != FAN_CLASS_NOTIF)
 		return -EINVAL;
 
-	/*
-	 * Child name is reported with parent fid so requires dir fid.
-	 * We can report both child fid and dir fid with or without name.
-	 */
+	 
 	if ((fid_mode & FAN_REPORT_NAME) && !(fid_mode & FAN_REPORT_DIR_FID))
 		return -EINVAL;
 
-	/*
-	 * FAN_REPORT_TARGET_FID requires FAN_REPORT_NAME and FAN_REPORT_FID
-	 * and is used as an indication to report both dir and child fid on all
-	 * dirent events.
-	 */
+	 
 	if ((fid_mode & FAN_REPORT_TARGET_FID) &&
 	    (!(fid_mode & FAN_REPORT_NAME) || !(fid_mode & FAN_REPORT_FID)))
 		return -EINVAL;
@@ -1471,14 +1293,14 @@ SYSCALL_DEFINE2(fanotify_init, unsigned int, flags, unsigned int, event_f_flags)
 	if (flags & FAN_NONBLOCK)
 		f_flags |= O_NONBLOCK;
 
-	/* fsnotify_alloc_group takes a ref.  Dropped in fanotify_release */
+	 
 	group = fsnotify_alloc_group(&fanotify_fsnotify_ops,
 				     FSNOTIFY_GROUP_USER | FSNOTIFY_GROUP_NOFS);
 	if (IS_ERR(group)) {
 		return PTR_ERR(group);
 	}
 
-	/* Enforce groups limits per user in all containing user ns */
+	 
 	group->fanotify_data.ucounts = inc_ucount(current_user_ns(),
 						  current_euid(),
 						  UCOUNT_FANOTIFY_GROUPS);
@@ -1559,9 +1381,7 @@ static int fanotify_test_fsid(struct dentry *dentry, __kernel_fsid_t *fsid)
 	__kernel_fsid_t root_fsid;
 	int err;
 
-	/*
-	 * Make sure dentry is not of a filesystem with zero fsid (e.g. fuse).
-	 */
+	 
 	err = vfs_get_fsid(dentry, fsid);
 	if (err)
 		return err;
@@ -1569,10 +1389,7 @@ static int fanotify_test_fsid(struct dentry *dentry, __kernel_fsid_t *fsid)
 	if (!fsid->val[0] && !fsid->val[1])
 		return -ENODEV;
 
-	/*
-	 * Make sure dentry is not of a filesystem subvolume (e.g. btrfs)
-	 * which uses a different fsid than sb root.
-	 */
+	 
 	err = vfs_get_fsid(dentry->d_sb->s_root, &root_fsid);
 	if (err)
 		return err;
@@ -1584,25 +1401,17 @@ static int fanotify_test_fsid(struct dentry *dentry, __kernel_fsid_t *fsid)
 	return 0;
 }
 
-/* Check if filesystem can encode a unique fid */
+ 
 static int fanotify_test_fid(struct dentry *dentry, unsigned int flags)
 {
 	unsigned int mark_type = flags & FANOTIFY_MARK_TYPE_BITS;
 	const struct export_operations *nop = dentry->d_sb->s_export_op;
 
-	/*
-	 * We need to make sure that the filesystem supports encoding of
-	 * file handles so user can use name_to_handle_at() to compare fids
-	 * reported with events to the file handle of watched objects.
-	 */
+	 
 	if (!nop)
 		return -EOPNOTSUPP;
 
-	/*
-	 * For sb/mount mark, we also need to make sure that the filesystem
-	 * supports decoding file handles, so user has a way to map back the
-	 * reported fids to filesystem objects.
-	 */
+	 
 	if (mark_type != FAN_MARK_INODE && !nop->fh_to_dentry)
 		return -EOPNOTSUPP;
 
@@ -1614,42 +1423,22 @@ static int fanotify_events_supported(struct fsnotify_group *group,
 				     unsigned int flags)
 {
 	unsigned int mark_type = flags & FANOTIFY_MARK_TYPE_BITS;
-	/* Strict validation of events in non-dir inode mask with v5.17+ APIs */
+	 
 	bool strict_dir_events = FAN_GROUP_FLAG(group, FAN_REPORT_TARGET_FID) ||
 				 (mask & FAN_RENAME) ||
 				 (flags & FAN_MARK_IGNORE);
 
-	/*
-	 * Some filesystems such as 'proc' acquire unusual locks when opening
-	 * files. For them fanotify permission events have high chances of
-	 * deadlocking the system - open done when reporting fanotify event
-	 * blocks on this "unusual" lock while another process holding the lock
-	 * waits for fanotify permission event to be answered. Just disallow
-	 * permission events for such filesystems.
-	 */
+	 
 	if (mask & FANOTIFY_PERM_EVENTS &&
 	    path->mnt->mnt_sb->s_type->fs_flags & FS_DISALLOW_NOTIFY_PERM)
 		return -EINVAL;
 
-	/*
-	 * mount and sb marks are not allowed on kernel internal pseudo fs,
-	 * like pipe_mnt, because that would subscribe to events on all the
-	 * anonynous pipes in the system.
-	 *
-	 * SB_NOUSER covers all of the internal pseudo fs whose objects are not
-	 * exposed to user's mount namespace, but there are other SB_KERNMOUNT
-	 * fs, like nsfs, debugfs, for which the value of allowing sb and mount
-	 * mark is questionable. For now we leave them alone.
-	 */
+	 
 	if (mark_type != FAN_MARK_INODE &&
 	    path->mnt->mnt_sb->s_flags & SB_NOUSER)
 		return -EINVAL;
 
-	/*
-	 * We shouldn't have allowed setting dirent events and the directory
-	 * flags FAN_ONDIR and FAN_EVENT_ON_CHILD in mask of non-dir inode,
-	 * but because we always allowed it, error only when using new APIs.
-	 */
+	 
 	if (strict_dir_events && mark_type == FAN_MARK_INODE &&
 	    !d_is_dir(path->dentry) && (mask & FANOTIFY_DIRONLY_EVENT_BITS))
 		return -ENOTDIR;
@@ -1677,7 +1466,7 @@ static int do_fanotify_mark(int fanotify_fd, unsigned int flags, __u64 mask,
 	pr_debug("%s: fanotify_fd=%d flags=%x dfd=%d pathname=%p mask=%llx\n",
 		 __func__, fanotify_fd, flags, dfd, pathname, mask);
 
-	/* we only use the lower 32 bits as of right now. */
+	 
 	if (upper_32_bits(mask))
 		return -EINVAL;
 
@@ -1719,14 +1508,11 @@ static int do_fanotify_mark(int fanotify_fd, unsigned int flags, __u64 mask,
 		return -EINVAL;
 
 
-	/* We don't allow FAN_MARK_IGNORE & FAN_MARK_IGNORED_MASK together */
+	 
 	if (ignore == (FAN_MARK_IGNORE | FAN_MARK_IGNORED_MASK))
 		return -EINVAL;
 
-	/*
-	 * Event flags (FAN_ONDIR, FAN_EVENT_ON_CHILD) have no effect with
-	 * FAN_MARK_IGNORED_MASK.
-	 */
+	 
 	if (ignore == FAN_MARK_IGNORED_MASK) {
 		mask &= ~FANOTIFY_EVENT_FLAGS;
 		umask = FANOTIFY_EVENT_FLAGS;
@@ -1736,27 +1522,20 @@ static int do_fanotify_mark(int fanotify_fd, unsigned int flags, __u64 mask,
 	if (unlikely(!f.file))
 		return -EBADF;
 
-	/* verify that this is indeed an fanotify instance */
+	 
 	ret = -EINVAL;
 	if (unlikely(f.file->f_op != &fanotify_fops))
 		goto fput_and_out;
 	group = f.file->private_data;
 
-	/*
-	 * An unprivileged user is not allowed to setup mount nor filesystem
-	 * marks.  This also includes setting up such marks by a group that
-	 * was initialized by an unprivileged user.
-	 */
+	 
 	ret = -EPERM;
 	if ((!capable(CAP_SYS_ADMIN) ||
 	     FAN_GROUP_FLAG(group, FANOTIFY_UNPRIV)) &&
 	    mark_type != FAN_MARK_INODE)
 		goto fput_and_out;
 
-	/*
-	 * group->priority == FS_PRIO_0 == FAN_CLASS_NOTIF.  These are not
-	 * allowed to set permissions events.
-	 */
+	 
 	ret = -EINVAL;
 	if (mask & FANOTIFY_PERM_EVENTS &&
 	    group->priority == FS_PRIO_0)
@@ -1766,31 +1545,18 @@ static int do_fanotify_mark(int fanotify_fd, unsigned int flags, __u64 mask,
 	    mark_type != FAN_MARK_FILESYSTEM)
 		goto fput_and_out;
 
-	/*
-	 * Evictable is only relevant for inode marks, because only inode object
-	 * can be evicted on memory pressure.
-	 */
+	 
 	if (flags & FAN_MARK_EVICTABLE &&
 	     mark_type != FAN_MARK_INODE)
 		goto fput_and_out;
 
-	/*
-	 * Events that do not carry enough information to report
-	 * event->fd require a group that supports reporting fid.  Those
-	 * events are not supported on a mount mark, because they do not
-	 * carry enough information (i.e. path) to be filtered by mount
-	 * point.
-	 */
+	 
 	fid_mode = FAN_GROUP_FLAG(group, FANOTIFY_FID_BITS);
 	if (mask & ~(FANOTIFY_FD_EVENTS|FANOTIFY_EVENT_FLAGS) &&
 	    (!fid_mode || mark_type == FAN_MARK_MOUNT))
 		goto fput_and_out;
 
-	/*
-	 * FAN_RENAME uses special info type records to report the old and
-	 * new parent+name.  Reporting only old and new parent id is less
-	 * useful and was not implemented.
-	 */
+	 
 	if (mask & FAN_RENAME && !(fid_mode & FAN_REPORT_NAME))
 		goto fput_and_out;
 
@@ -1828,33 +1594,30 @@ static int do_fanotify_mark(int fanotify_fd, unsigned int flags, __u64 mask,
 		fsid = &__fsid;
 	}
 
-	/* inode held in place by reference to path; group by fget on fd */
+	 
 	if (mark_type == FAN_MARK_INODE)
 		inode = path.dentry->d_inode;
 	else
 		mnt = path.mnt;
 
 	ret = mnt ? -EINVAL : -EISDIR;
-	/* FAN_MARK_IGNORE requires SURV_MODIFY for sb/mount/dir marks */
+	 
 	if (mark_cmd == FAN_MARK_ADD && ignore == FAN_MARK_IGNORE &&
 	    (mnt || S_ISDIR(inode->i_mode)) &&
 	    !(flags & FAN_MARK_IGNORED_SURV_MODIFY))
 		goto path_put_and_out;
 
-	/* Mask out FAN_EVENT_ON_CHILD flag for sb/mount/non-dir marks */
+	 
 	if (mnt || !S_ISDIR(inode->i_mode)) {
 		mask &= ~FAN_EVENT_ON_CHILD;
 		umask = FAN_EVENT_ON_CHILD;
-		/*
-		 * If group needs to report parent fid, register for getting
-		 * events with parent/name info for non-directory.
-		 */
+		 
 		if ((fid_mode & FAN_REPORT_DIR_FID) &&
 		    (flags & FAN_MARK_ADD) && !ignore)
 			mask |= FAN_EVENT_ON_CHILD;
 	}
 
-	/* create/update an inode mark */
+	 
 	switch (mark_cmd) {
 	case FAN_MARK_ADD:
 		if (mark_type == FAN_MARK_MOUNT)
@@ -1909,23 +1672,14 @@ SYSCALL32_DEFINE6(fanotify_mark,
 }
 #endif
 
-/*
- * fanotify_user_setup - Our initialization function.  Note that we cannot return
- * error because we have compiled-in VFS hooks.  So an (unlikely) failure here
- * must result in panic().
- */
+ 
 static int __init fanotify_user_setup(void)
 {
 	struct sysinfo si;
 	int max_marks;
 
 	si_meminfo(&si);
-	/*
-	 * Allow up to 1% of addressable memory to be accounted for per user
-	 * marks limited to the range [8192, 1048576]. mount and sb marks are
-	 * a lot cheaper than inode marks, but there is no reason for a user
-	 * to have many of those, so calculate by the cost of inode marks.
-	 */
+	 
 	max_marks = (((si.totalram - si.totalhigh) / 100) << PAGE_SHIFT) /
 		    INODE_MARK_COST;
 	max_marks = clamp(max_marks, FANOTIFY_OLD_DEFAULT_MAX_MARKS,

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * IPv6 raw table, a port of the IPv4 raw table to IPv6
- *
- * Copyright (C) 2003 Jozsef Kadlecsik <kadlec@netfilter.org>
- */
+
+ 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 #include <linux/module.h>
 #include <linux/netfilter_ipv6/ip6_tables.h>
@@ -79,7 +75,7 @@ static int __init ip6table_raw_init(void)
 	if (ret < 0)
 		return ret;
 
-	/* Register hooks */
+	 
 	rawtable_ops = xt_hook_ops_alloc(table, ip6t_do_table);
 	if (IS_ERR(rawtable_ops)) {
 		xt_unregister_template(table);

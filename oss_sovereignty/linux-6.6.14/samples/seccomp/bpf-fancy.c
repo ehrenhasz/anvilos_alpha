@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Seccomp BPF example using a macro-based generator.
- *
- * Copyright (c) 2012 The Chromium OS Authors <chromium-os-dev@chromium.org>
- * Author: Will Drewry <wad@chromium.org>
- *
- * The code may be used by anyone for any purpose,
- * and can serve as a starting point for developing
- * applications using prctl(PR_ATTACH_SECCOMP_FILTER).
- */
+
+ 
 
 #include <linux/filter.h>
 #include <linux/seccomp.h>
@@ -33,13 +24,13 @@ int main(int argc, char **argv)
 	static const char msg2[] = "You typed: ";
 	char buf[256];
 	struct sock_filter filter[] = {
-		/* TODO: LOAD_SYSCALL_NR(arch) and enforce an arch */
+		 
 		LOAD_SYSCALL_NR,
 		SYSCALL(__NR_exit, ALLOW),
 		SYSCALL(__NR_exit_group, ALLOW),
 		SYSCALL(__NR_write, JUMP(&l, write_fd)),
 		SYSCALL(__NR_read, JUMP(&l, read)),
-		DENY,  /* Don't passthrough into a label */
+		DENY,   
 
 		LABEL(&l, read),
 		ARG(0),
@@ -99,7 +90,7 @@ int main(int argc, char **argv)
 	bytes = (bytes > 0 ? bytes : 0);
 	syscall(__NR_write, STDERR_FILENO, msg2, strlen(msg2));
 	syscall(__NR_write, STDERR_FILENO, buf, bytes);
-	/* Now get killed */
+	 
 	syscall(__NR_write, STDERR_FILENO, msg2, strlen(msg2)+2);
 	return 0;
 }

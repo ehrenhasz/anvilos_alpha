@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Broadcom BCM63xx SPI controller support
- *
- * Copyright (C) 2009-2012 Florian Fainelli <florian@openwrt.org>
- * Copyright (C) 2010 Tanguy Bouzeloc <tanguy.bouzeloc@efixo.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/clk.h>
@@ -20,9 +15,9 @@
 #include <linux/of.h>
 #include <linux/reset.h>
 
-/* BCM 6338/6348 SPI core */
+ 
 #define SPI_6348_RSET_SIZE		64
-#define SPI_6348_CMD			0x00	/* 16-bits register */
+#define SPI_6348_CMD			0x00	 
 #define SPI_6348_INT_STATUS		0x02
 #define SPI_6348_INT_MASK_ST		0x03
 #define SPI_6348_INT_MASK		0x04
@@ -31,22 +26,22 @@
 #define SPI_6348_FILL_BYTE		0x07
 #define SPI_6348_MSG_TAIL		0x09
 #define SPI_6348_RX_TAIL		0x0b
-#define SPI_6348_MSG_CTL		0x40	/* 8-bits register */
+#define SPI_6348_MSG_CTL		0x40	 
 #define SPI_6348_MSG_CTL_WIDTH		8
 #define SPI_6348_MSG_DATA		0x41
 #define SPI_6348_MSG_DATA_SIZE		0x3f
 #define SPI_6348_RX_DATA		0x80
 #define SPI_6348_RX_DATA_SIZE		0x3f
 
-/* BCM 3368/6358/6262/6368 SPI core */
+ 
 #define SPI_6358_RSET_SIZE		1804
-#define SPI_6358_MSG_CTL		0x00	/* 16-bits register */
+#define SPI_6358_MSG_CTL		0x00	 
 #define SPI_6358_MSG_CTL_WIDTH		16
 #define SPI_6358_MSG_DATA		0x02
 #define SPI_6358_MSG_DATA_SIZE		0x21e
 #define SPI_6358_RX_DATA		0x400
 #define SPI_6358_RX_DATA_SIZE		0x220
-#define SPI_6358_CMD			0x700	/* 16-bits register */
+#define SPI_6358_CMD			0x700	 
 #define SPI_6358_INT_STATUS		0x702
 #define SPI_6358_INT_MASK_ST		0x703
 #define SPI_6358_INT_MASK		0x704
@@ -56,9 +51,9 @@
 #define SPI_6358_MSG_TAIL		0x709
 #define SPI_6358_RX_TAIL		0x70B
 
-/* Shared SPI definitions */
+ 
 
-/* Message configuration */
+ 
 #define SPI_FD_RW			0x00
 #define SPI_HD_W			0x01
 #define SPI_HD_R			0x02
@@ -66,7 +61,7 @@
 #define SPI_6348_MSG_TYPE_SHIFT		6
 #define SPI_6358_MSG_TYPE_SHIFT		14
 
-/* Command */
+ 
 #define SPI_CMD_NOOP			0x00
 #define SPI_CMD_SOFT_RESET		0x01
 #define SPI_CMD_HARD_RESET		0x02
@@ -82,7 +77,7 @@
 #define SPI_DEV_ID_2			2
 #define SPI_DEV_ID_3			3
 
-/* Interrupt mask */
+ 
 #define SPI_INTR_CMD_DONE		0x01
 #define SPI_INTR_RX_OVERFLOW		0x02
 #define SPI_INTR_TX_UNDERFLOW		0x04
@@ -90,15 +85,15 @@
 #define SPI_INTR_RX_UNDERFLOW		0x10
 #define SPI_INTR_CLEAR_ALL		0x1f
 
-/* Status */
+ 
 #define SPI_RX_EMPTY			0x02
 #define SPI_CMD_BUSY			0x04
 #define SPI_SERIAL_BUSY			0x08
 
-/* Clock configuration */
+ 
 #define SPI_CLK_20MHZ			0x00
 #define SPI_CLK_0_391MHZ		0x01
-#define SPI_CLK_0_781MHZ		0x02	/* default */
+#define SPI_CLK_0_781MHZ		0x02	 
 #define SPI_CLK_1_563MHZ		0x03
 #define SPI_CLK_3_125MHZ		0x04
 #define SPI_CLK_6_250MHZ		0x05
@@ -137,13 +132,13 @@ struct bcm63xx_spi {
 	void __iomem		*regs;
 	int			irq;
 
-	/* Platform data */
+	 
 	const unsigned long	*reg_offsets;
 	unsigned int		fifo_size;
 	unsigned int		msg_type_shift;
 	unsigned int		msg_ctl_width;
 
-	/* data iomem */
+	 
 	u8 __iomem		*tx_io;
 	const u8 __iomem	*rx_io;
 
@@ -190,10 +185,10 @@ static void bcm63xx_spi_setup_transfer(struct spi_device *spi,
 	u8 clk_cfg, reg;
 	int i;
 
-	/* Default to lowest clock configuration */
+	 
 	clk_cfg = SPI_CLK_0_391MHZ;
 
-	/* Find the closest clock configuration */
+	 
 	for (i = 0; i < SPI_CLK_MASK; i++) {
 		if (t->speed_hz >= bcm63xx_spi_freq_table[i][0]) {
 			clk_cfg = bcm63xx_spi_freq_table[i][1];
@@ -201,7 +196,7 @@ static void bcm63xx_spi_setup_transfer(struct spi_device *spi,
 		}
 	}
 
-	/* clear existing clock configuration bits of the register */
+	 
 	reg = bcm_spi_readb(bs, SPI_CLK_CFG);
 	reg &= ~SPI_CLK_MASK;
 	reg |= clk_cfg;
@@ -211,7 +206,7 @@ static void bcm63xx_spi_setup_transfer(struct spi_device *spi,
 		clk_cfg, t->speed_hz);
 }
 
-/* the spi->mode bits understood by this driver: */
+ 
 #define MODEBITS (SPI_CPOL | SPI_CPHA)
 
 static int bcm63xx_txrx_bufs(struct spi_device *spi, struct spi_transfer *first,
@@ -225,7 +220,7 @@ static int bcm63xx_txrx_bufs(struct spi_device *spi, struct spi_transfer *first,
 	bool do_rx = false;
 	bool do_tx = false;
 
-	/* Disable the CMD_DONE interrupt */
+	 
 	bcm_spi_writeb(bs, 0, SPI_INT_MASK);
 
 	dev_dbg(&spi->dev, "txrx: tx %p, rx %p, len %d\n",
@@ -234,20 +229,20 @@ static int bcm63xx_txrx_bufs(struct spi_device *spi, struct spi_transfer *first,
 	if (num_transfers > 1 && t->tx_buf && t->len <= BCM63XX_SPI_MAX_PREPEND)
 		prepend_len = t->len;
 
-	/* prepare the buffer */
+	 
 	for (i = 0; i < num_transfers; i++) {
 		if (t->tx_buf) {
 			do_tx = true;
 			memcpy_toio(bs->tx_io + len, t->tx_buf, t->len);
 
-			/* don't prepend more than one tx */
+			 
 			if (t != first)
 				prepend_len = 0;
 		}
 
 		if (t->rx_buf) {
 			do_rx = true;
-			/* prepend is half-duplex write only */
+			 
 			if (t == first)
 				prepend_len = 0;
 		}
@@ -260,7 +255,7 @@ static int bcm63xx_txrx_bufs(struct spi_device *spi, struct spi_transfer *first,
 
 	reinit_completion(&bs->done);
 
-	/* Fill in the Message control register */
+	 
 	msg_ctl = (len << SPI_BYTE_CNT_SHIFT);
 
 	if (do_rx && do_tx && prepend_len == 0)
@@ -279,13 +274,13 @@ static int bcm63xx_txrx_bufs(struct spi_device *spi, struct spi_transfer *first,
 		break;
 	}
 
-	/* Issue the transfer */
+	 
 	cmd = SPI_CMD_START_IMMEDIATE;
 	cmd |= (prepend_len << SPI_CMD_PREPEND_BYTE_CNT_SHIFT);
 	cmd |= (spi_get_chipselect(spi, 0) << SPI_CMD_DEVICE_ID_SHIFT);
 	bcm_spi_writew(bs, cmd, SPI_CMD);
 
-	/* Enable the CMD_DONE interrupt */
+	 
 	bcm_spi_writeb(bs, SPI_INTR_CMD_DONE, SPI_INT_MASK);
 
 	timeout = wait_for_completion_timeout(&bs->done, HZ);
@@ -297,7 +292,7 @@ static int bcm63xx_txrx_bufs(struct spi_device *spi, struct spi_transfer *first,
 
 	len = 0;
 	t = first;
-	/* Read out all the data */
+	 
 	for (i = 0; i < num_transfers; i++) {
 		if (t->rx_buf)
 			memcpy_fromio(t->rx_buf, bs->rx_io + len, t->len);
@@ -322,12 +317,7 @@ static int bcm63xx_spi_transfer_one(struct spi_controller *host,
 	unsigned int n_transfers = 0, total_len = 0;
 	bool can_use_prepend = false;
 
-	/*
-	 * This SPI controller does not support keeping CS active after a
-	 * transfer.
-	 * Work around this by merging as many transfers we can into one big
-	 * full-duplex transfers.
-	 */
+	 
 	list_for_each_entry(t, &m->transfers, transfer_list) {
 		if (!first)
 			first = t;
@@ -341,7 +331,7 @@ static int bcm63xx_spi_transfer_one(struct spi_controller *host,
 		else if (can_use_prepend && t->tx_buf)
 			can_use_prepend = false;
 
-		/* we can only transfer one fifo worth of data */
+		 
 		if ((can_use_prepend &&
 		     total_len > (bs->fifo_size + BCM63XX_SPI_MAX_PREPEND)) ||
 		    (!can_use_prepend && total_len > bs->fifo_size)) {
@@ -351,14 +341,14 @@ static int bcm63xx_spi_transfer_one(struct spi_controller *host,
 			goto exit;
 		}
 
-		/* all combined transfers have to have the same speed */
+		 
 		if (t->speed_hz != first->speed_hz) {
 			dev_err(&spi->dev, "unable to change speed between transfers\n");
 			status = -EINVAL;
 			goto exit;
 		}
 
-		/* CS will be deasserted directly after transfer */
+		 
 		if (t->delay.value) {
 			dev_err(&spi->dev, "unable to keep CS asserted after transfer\n");
 			status = -EINVAL;
@@ -367,10 +357,10 @@ static int bcm63xx_spi_transfer_one(struct spi_controller *host,
 
 		if (t->cs_change ||
 		    list_is_last(&t->transfer_list, &m->transfers)) {
-			/* configure adapter for a new transfer */
+			 
 			bcm63xx_spi_setup_transfer(spi, first);
 
-			/* send the data */
+			 
 			status = bcm63xx_txrx_bufs(spi, first, n_transfers);
 			if (status)
 				goto exit;
@@ -390,21 +380,19 @@ exit:
 	return 0;
 }
 
-/* This driver supports single host mode only. Hence
- * CMD_DONE is the only interrupt we care about
- */
+ 
 static irqreturn_t bcm63xx_spi_interrupt(int irq, void *dev_id)
 {
 	struct spi_controller *host = (struct spi_controller *)dev_id;
 	struct bcm63xx_spi *bs = spi_controller_get_devdata(host);
 	u8 intr;
 
-	/* Read interupts and clear them immediately */
+	 
 	intr = bcm_spi_readb(bs, SPI_INT_STATUS);
 	bcm_spi_writeb(bs, SPI_INTR_CLEAR_ALL, SPI_INT_STATUS);
 	bcm_spi_writeb(bs, 0, SPI_INT_MASK);
 
-	/* A transfer completed */
+	 
 	if (intr & SPI_INTR_CMD_DONE)
 		complete(&bs->done);
 
@@ -569,7 +557,7 @@ static int bcm63xx_spi_probe(struct platform_device *pdev)
 	bs->tx_io = (u8 *)(bs->regs + bs->reg_offsets[SPI_MSG_DATA]);
 	bs->rx_io = (const u8 *)(bs->regs + bs->reg_offsets[SPI_RX_DATA]);
 
-	/* Initialize hardware */
+	 
 	ret = clk_prepare_enable(bs->clk);
 	if (ret)
 		goto out_err;
@@ -584,7 +572,7 @@ static int bcm63xx_spi_probe(struct platform_device *pdev)
 
 	pm_runtime_enable(&pdev->dev);
 
-	/* register and we are done */
+	 
 	ret = devm_spi_register_controller(dev, host);
 	if (ret) {
 		dev_err(dev, "spi register failed\n");
@@ -610,10 +598,10 @@ static void bcm63xx_spi_remove(struct platform_device *pdev)
 	struct spi_controller *host = platform_get_drvdata(pdev);
 	struct bcm63xx_spi *bs = spi_controller_get_devdata(host);
 
-	/* reset spi block */
+	 
 	bcm_spi_writeb(bs, 0, SPI_INT_MASK);
 
-	/* HW shutdown */
+	 
 	clk_disable_unprepare(bs->clk);
 }
 

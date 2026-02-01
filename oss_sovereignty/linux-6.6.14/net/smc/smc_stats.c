@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Shared Memory Communications over RDMA (SMC-R) and RoCE
- *
- * SMC statistics netlink routines
- *
- * Copyright IBM Corp. 2021
- *
- * Author(s):  Guvenc Gulce
- */
+
+ 
 #include <linux/init.h>
 #include <linux/mutex.h>
 #include <linux/percpu.h>

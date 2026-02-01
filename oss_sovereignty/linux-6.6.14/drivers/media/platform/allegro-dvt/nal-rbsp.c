@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2019-2020 Pengutronix, Michael Tretter <kernel@pengutronix.de>
- *
- * Helper functions to generate a raw byte sequence payload from values.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/types.h>
@@ -37,12 +33,7 @@ void rbsp_unsupported(struct rbsp *rbsp)
 static int rbsp_read_bits(struct rbsp *rbsp, int n, unsigned int *value);
 static int rbsp_write_bits(struct rbsp *rbsp, int n, unsigned int value);
 
-/*
- * When reading or writing, the emulation_prevention_three_byte is detected
- * only when the 2 one bits need to be inserted. Therefore, we are not
- * actually adding the 0x3 byte, but the 2 one bits and the six 0 bits of the
- * next byte.
- */
+ 
 #define EMULATION_PREVENTION_THREE_BYTE (0x3 << 6)
 
 static int add_emulation_prevention_three_byte(struct rbsp *rbsp)

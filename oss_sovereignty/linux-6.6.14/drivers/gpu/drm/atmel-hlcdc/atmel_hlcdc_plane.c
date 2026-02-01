@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2014 Free Electrons
- * Copyright (C) 2014 Atmel
- *
- * Author: Boris BREZILLON <boris.brezillon@free-electrons.com>
- */
+
+ 
 
 #include <linux/dmapool.h>
 #include <linux/mfd/atmel-hlcdc.h>
@@ -19,30 +14,7 @@
 
 #include "atmel_hlcdc_dc.h"
 
-/**
- * struct atmel_hlcdc_plane_state - Atmel HLCDC Plane state structure.
- *
- * @base: DRM plane state
- * @crtc_x: x position of the plane relative to the CRTC
- * @crtc_y: y position of the plane relative to the CRTC
- * @crtc_w: visible width of the plane
- * @crtc_h: visible height of the plane
- * @src_x: x buffer position
- * @src_y: y buffer position
- * @src_w: buffer width
- * @src_h: buffer height
- * @disc_x: x discard position
- * @disc_y: y discard position
- * @disc_w: discard width
- * @disc_h: discard height
- * @ahb_id: AHB identification number
- * @bpp: bytes per pixel deduced from pixel_format
- * @offsets: offsets to apply to the GEM buffers
- * @xstride: value to add to the pixel pointer between each line
- * @pstride: value to add to the pixel pointer between each pixel
- * @nplanes: number of planes (deduced from pixel_format)
- * @dscrs: DMA descriptors
- */
+ 
 struct atmel_hlcdc_plane_state {
 	struct drm_plane_state base;
 	int crtc_x;
@@ -61,14 +33,14 @@ struct atmel_hlcdc_plane_state {
 
 	int ahb_id;
 
-	/* These fields are private and should not be touched */
+	 
 	int bpp[ATMEL_HLCDC_LAYER_MAX_PLANES];
 	unsigned int offsets[ATMEL_HLCDC_LAYER_MAX_PLANES];
 	int xstride[ATMEL_HLCDC_LAYER_MAX_PLANES];
 	int pstride[ATMEL_HLCDC_LAYER_MAX_PLANES];
 	int nplanes;
 
-	/* DMA descriptors. */
+	 
 	struct atmel_hlcdc_dma_channel_dscr *dscrs[ATMEL_HLCDC_LAYER_MAX_PLANES];
 };
 
@@ -363,10 +335,7 @@ atmel_hlcdc_plane_update_general_settings(struct atmel_hlcdc_plane *plane,
 	const struct atmel_hlcdc_layer_desc *desc = plane->layer.desc;
 	const struct drm_format_info *format = state->base.fb->format;
 
-	/*
-	 * Rotation optimization is not working on RGB888 (rotation is still
-	 * working but without any optimization).
-	 */
+	 
 	if (format->format == DRM_FORMAT_RGB888)
 		cfg |= ATMEL_HLCDC_LAYER_DMA_ROTDIS;
 
@@ -556,7 +525,7 @@ atmel_hlcdc_plane_prepare_disc_area(struct drm_crtc_state *c_state)
 		    ovl_s->alpha != DRM_BLEND_ALPHA_OPAQUE)
 			continue;
 
-		/* TODO: implement a smarter hidden area detection */
+		 
 		if (ovl_state->crtc_h * ovl_state->crtc_w < disc_h * disc_w)
 			continue;
 
@@ -692,9 +661,7 @@ static int atmel_hlcdc_plane_atomic_check(struct drm_plane *p,
 		hstate->offsets[i] = offset + fb->offsets[i];
 	}
 
-	/*
-	 * Swap width and size in case of 90 or 270 degrees rotation
-	 */
+	 
 	if (drm_rotation_90_or_270(hstate->base.rotation)) {
 		swap(hstate->src_w, hstate->src_h);
 	}
@@ -717,17 +684,17 @@ static void atmel_hlcdc_plane_atomic_disable(struct drm_plane *p,
 {
 	struct atmel_hlcdc_plane *plane = drm_plane_to_atmel_hlcdc_plane(p);
 
-	/* Disable interrupts */
+	 
 	atmel_hlcdc_layer_write_reg(&plane->layer, ATMEL_HLCDC_LAYER_IDR,
 				    0xffffffff);
 
-	/* Disable the layer */
+	 
 	atmel_hlcdc_layer_write_reg(&plane->layer, ATMEL_HLCDC_LAYER_CHDR,
 				    ATMEL_HLCDC_LAYER_RST |
 				    ATMEL_HLCDC_LAYER_A2Q |
 				    ATMEL_HLCDC_LAYER_UPDATE);
 
-	/* Clear all pending interrupts */
+	 
 	atmel_hlcdc_layer_read_reg(&plane->layer, ATMEL_HLCDC_LAYER_ISR);
 }
 
@@ -756,13 +723,13 @@ static void atmel_hlcdc_plane_atomic_update(struct drm_plane *p,
 	atmel_hlcdc_plane_update_buffers(plane, hstate);
 	atmel_hlcdc_plane_update_disc_area(plane, hstate);
 
-	/* Enable the overrun interrupts. */
+	 
 	atmel_hlcdc_layer_write_reg(&plane->layer, ATMEL_HLCDC_LAYER_IER,
 				    ATMEL_HLCDC_LAYER_OVR_IRQ(0) |
 				    ATMEL_HLCDC_LAYER_OVR_IRQ(1) |
 				    ATMEL_HLCDC_LAYER_OVR_IRQ(2));
 
-	/* Apply the new config at the next SOF event. */
+	 
 	sr = atmel_hlcdc_layer_read_reg(&plane->layer, ATMEL_HLCDC_LAYER_CHSR);
 	atmel_hlcdc_layer_write_reg(&plane->layer, ATMEL_HLCDC_LAYER_CHER,
 			ATMEL_HLCDC_LAYER_UPDATE |
@@ -797,10 +764,7 @@ static int atmel_hlcdc_plane_init_properties(struct atmel_hlcdc_plane *plane)
 	}
 
 	if (desc->layout.csc) {
-		/*
-		 * TODO: decare a "yuv-to-rgb-conv-factors" property to let
-		 * userspace modify these factors (using a BLOB property ?).
-		 */
+		 
 		atmel_hlcdc_layer_write_cfg(&plane->layer,
 					    desc->layout.csc,
 					    0x4c900091);
@@ -822,11 +786,7 @@ void atmel_hlcdc_plane_irq(struct atmel_hlcdc_plane *plane)
 
 	isr = atmel_hlcdc_layer_read_reg(&plane->layer, ATMEL_HLCDC_LAYER_ISR);
 
-	/*
-	 * There's not much we can do in case of overrun except informing
-	 * the user. However, we are in interrupt context here, hence the
-	 * use of dev_dbg().
-	 */
+	 
 	if (isr &
 	    (ATMEL_HLCDC_LAYER_OVR_IRQ(0) | ATMEL_HLCDC_LAYER_OVR_IRQ(1) |
 	     ATMEL_HLCDC_LAYER_OVR_IRQ(2)))
@@ -981,7 +941,7 @@ static int atmel_hlcdc_plane_create(struct drm_device *dev,
 	drm_plane_helper_add(&plane->base,
 			     &atmel_hlcdc_layer_plane_helper_funcs);
 
-	/* Set default property values*/
+	 
 	ret = atmel_hlcdc_plane_init_properties(plane);
 	if (ret)
 		return ret;

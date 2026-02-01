@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copyright (C) 2022 Marek Vasut <marex@denx.de>
- *
- * i.MX8MP/i.MXRT LCDIF LCD controller driver.
- */
+ 
+ 
 
 #ifndef __LCDIF_REGS_H__
 #define __LCDIF_REGS_H__
@@ -11,7 +7,7 @@
 #define REG_SET	4
 #define REG_CLR	8
 
-/* V8 register set */
+ 
 #define LCDC_V8_CTRL			0x00
 #define LCDC_V8_DISP_PARA		0x10
 #define LCDC_V8_DISP_SIZE		0x14
@@ -98,8 +94,8 @@
 #define SET_VERT_WAIT_CNT(x)		((x) & 0xffff)
 #define GET_VERT_WAIT_CNT(x)		((x) & 0xffff)
 
-#define VDCTRL4_SET_DOTCLK_DLY(x)	(((x) & 0x7) << 29) /* v4 only */
-#define VDCTRL4_GET_DOTCLK_DLY(x)	(((x) >> 29) & 0x7) /* v4 only */
+#define VDCTRL4_SET_DOTCLK_DLY(x)	(((x) & 0x7) << 29)  
+#define VDCTRL4_GET_DOTCLK_DLY(x)	(((x) >> 29) & 0x7)  
 #define VDCTRL4_SYNC_SIGNALS_ON		BIT(18)
 #define SET_DOTCLK_H_VALID_DATA_CNT(x)	((x) & 0x3ffff)
 
@@ -123,7 +119,7 @@
 #define AS_CTRL_ALPHA_CTRL_EMBEDDED	(0 << 1)
 #define AS_CTRL_AS_ENABLE		BIT(0)
 
-/* V8 register set */
+ 
 #define CTRL_SW_RESET			BIT(31)
 #define CTRL_FETCH_START_OPTION_FPV	0
 #define CTRL_FETCH_START_OPTION_PWV	BIT(8)
@@ -262,4 +258,4 @@
 #define LCDIF_MAX_XRES			0xffff
 #define LCDIF_MAX_YRES			0xffff
 
-#endif /* __LCDIF_REGS_H__ */
+#endif  

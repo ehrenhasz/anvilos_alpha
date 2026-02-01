@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-// Copyright (c) 2016-2017 Hisilicon Limited.
+ 
+
 
 #ifndef __HNS3_ENET_H
 #define __HNS3_ENET_H
@@ -65,7 +65,7 @@ enum hns3_nic_state {
 #define HNS3_RING_MAX_PENDING			32760
 #define HNS3_RING_MIN_PENDING			72
 #define HNS3_RING_BD_MULTIPLE			8
-/* max frame size of mac */
+ 
 #define HNS3_MAX_MTU(max_frm_size) \
 	((max_frm_size) - (ETH_HLEN + ETH_FCS_LEN + 2 * VLAN_HLEN))
 
@@ -249,7 +249,7 @@ enum hns3_pkt_tun_type {
 	HNS3_TUN_OTHER
 };
 
-/* hardware spec ring buffer format */
+ 
 struct __packed hns3_desc {
 	union {
 		__le64 addr;
@@ -324,23 +324,23 @@ enum hns3_desc_type {
 };
 
 struct hns3_desc_cb {
-	dma_addr_t dma; /* dma address of this desc */
-	void *buf;      /* cpu addr for a desc */
+	dma_addr_t dma;  
+	void *buf;       
 
-	/* priv data for the desc, e.g. skb when use with ip stack */
+	 
 	void *priv;
 
 	union {
-		u32 page_offset;	/* for rx */
-		u32 send_bytes;		/* for tx */
+		u32 page_offset;	 
+		u32 send_bytes;		 
 	};
 
-	u32 length;     /* length of the buffer */
+	u32 length;      
 
 	u16 reuse_flag;
 	u16 refill;
 
-	/* desc type, used by the ring user to mark the type of the priv data */
+	 
 	u16 type;
 	u16 pagecnt_bias;
 };
@@ -355,15 +355,15 @@ enum hns3_pkt_l3type {
 	HNS3_L3_TYPE_LLDP,
 	HNS3_L3_TYPE_BPDU,
 	HNS3_L3_TYPE_MAC_PAUSE,
-	HNS3_L3_TYPE_PFC_PAUSE, /* 0x9 */
+	HNS3_L3_TYPE_PFC_PAUSE,  
 
-	/* reserved for 0xA~0xB */
+	 
 
 	HNS3_L3_TYPE_CNM = 0xc,
 
-	/* reserved for 0xD~0xE */
+	 
 
-	HNS3_L3_TYPE_PARSE_FAIL	= 0xf /* must be last */
+	HNS3_L3_TYPE_PARSE_FAIL	= 0xf  
 };
 
 enum hns3_pkt_l4type {
@@ -374,21 +374,21 @@ enum hns3_pkt_l4type {
 	HNS3_L4_TYPE_IGMP,
 	HNS3_L4_TYPE_ICMP,
 
-	/* reserved for 0x6~0xE */
+	 
 
-	HNS3_L4_TYPE_PARSE_FAIL	= 0xf /* must be last */
+	HNS3_L4_TYPE_PARSE_FAIL	= 0xf  
 };
 
 enum hns3_pkt_ol3type {
 	HNS3_OL3_TYPE_IPV4 = 0,
 	HNS3_OL3_TYPE_IPV6,
-	/* reserved for 0x2~0x3 */
+	 
 	HNS3_OL3_TYPE_IPV4_OPT = 4,
 	HNS3_OL3_TYPE_IPV6_EXT,
 
-	/* reserved for 0x6~0xE */
+	 
 
-	HNS3_OL3_TYPE_PARSE_FAIL = 0xf	/* must be last */
+	HNS3_OL3_TYPE_PARSE_FAIL = 0xf	 
 };
 
 enum hns3_pkt_ol4type {
@@ -462,46 +462,44 @@ struct hns3_tx_spare {
 };
 
 struct hns3_enet_ring {
-	struct hns3_desc *desc; /* dma map address space */
+	struct hns3_desc *desc;  
 	struct hns3_desc_cb *desc_cb;
 	struct hns3_enet_ring *next;
 	struct hns3_enet_tqp_vector *tqp_vector;
 	struct hnae3_queue *tqp;
 	int queue_index;
-	struct device *dev; /* will be used for DMA mapping of descriptors */
+	struct device *dev;  
 	struct page_pool *page_pool;
 
-	/* statistic */
+	 
 	struct ring_stats stats;
 	struct u64_stats_sync syncp;
 
 	dma_addr_t desc_dma_addr;
-	u32 buf_size;       /* size for hnae_desc->addr, preset by AE */
-	u16 desc_num;       /* total number of desc */
-	int next_to_use;    /* idx of next spare desc */
+	u32 buf_size;        
+	u16 desc_num;        
+	int next_to_use;     
 
-	/* idx of lastest sent desc, the ring is empty when equal to
-	 * next_to_use
-	 */
+	 
 	int next_to_clean;
-	u32 flag;          /* ring attribute */
+	u32 flag;           
 
 	int pending_buf;
 	union {
-		/* for Tx ring */
+		 
 		struct {
 			u32 fd_qb_tx_sample;
-			int last_to_use;        /* last idx used by xmit */
+			int last_to_use;         
 			u32 tx_copybreak;
 			struct hns3_tx_spare *tx_spare;
 		};
 
-		/* for Rx ring */
+		 
 		struct {
-			u32 pull_len;   /* memcpy len for current rx packet */
+			u32 pull_len;    
 			u32 rx_copybreak;
 			u32 frag_num;
-			/* first buffer address for current packet */
+			 
 			unsigned char *va;
 			struct sk_buff *skb;
 			struct sk_buff *tail_skb;
@@ -539,10 +537,10 @@ struct hns3_enet_coalesce {
 };
 
 struct hns3_enet_ring_group {
-	/* array of pointers to rings */
+	 
 	struct hns3_enet_ring *ring;
-	u64 total_bytes;	/* total bytes processed this group */
-	u64 total_packets;	/* total packets processed this group */
+	u64 total_bytes;	 
+	u64 total_packets;	 
 	u16 count;
 	struct hns3_enet_coalesce coal;
 	struct dim dim;
@@ -554,7 +552,7 @@ struct hns3_enet_tqp_vector {
 	int vector_irq;
 	int irq_init_flag;
 
-	u16 idx;		/* index in the TQP vector array per handle. */
+	u16 idx;		 
 
 	struct napi_struct napi;
 
@@ -562,7 +560,7 @@ struct hns3_enet_tqp_vector {
 	struct hns3_enet_ring_group tx_group;
 
 	cpumask_t affinity_mask;
-	u16 num_tqps;	/* total number of tqps in TQP vector */
+	u16 num_tqps;	 
 	struct irq_affinity_notify affinity_notify;
 
 	char name[HNAE3_INT_NAME_LEN];
@@ -575,10 +573,7 @@ struct hns3_nic_priv {
 	struct net_device *netdev;
 	struct device *dev;
 
-	/**
-	 * the cb for nic to manage the ring buffer, the first half of the
-	 * array is for tx_ring and vice versa for the second half
-	 */
+	 
 	struct hns3_enet_ring *ring;
 	struct hns3_enet_tqp_vector *tqp_vector;
 	u16 vector_num;
@@ -621,9 +616,7 @@ struct hns3_reset_type_map {
 
 static inline int ring_space(struct hns3_enet_ring *ring)
 {
-	/* This smp_load_acquire() pairs with smp_store_release() in
-	 * hns3_nic_reclaim_one_desc called by hns3_clean_tx_ring.
-	 */
+	 
 	int begin = smp_load_acquire(&ring->next_to_clean);
 	int end = READ_ONCE(ring->next_to_use);
 
@@ -688,7 +681,7 @@ static inline unsigned int hns3_page_order(struct hns3_enet_ring *ring)
 
 #define hns3_page_size(_ring) (PAGE_SIZE << hns3_page_order(_ring))
 
-/* iterator for handling rings in ring group */
+ 
 #define hns3_for_each_ring(pos, head) \
 	for (pos = (head).ring; (pos); pos = (pos)->next)
 

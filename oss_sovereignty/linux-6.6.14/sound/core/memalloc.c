@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  Copyright (c) by Jaroslav Kysela <perex@perex.cz>
- *                   Takashi Iwai <tiwai@suse.de>
- * 
- *  Generic memory allocators
- */
+
+ 
 
 #include <linux/slab.h>
 #include <linux/mm.h>
@@ -21,8 +16,8 @@
 
 #define DEFAULT_GFP \
 	(GFP_KERNEL | \
-	 __GFP_RETRY_MAYFAIL | /* don't trigger OOM-killer */ \
-	 __GFP_NOWARN)   /* no stack trace print - this call is non-critical */
+	 __GFP_RETRY_MAYFAIL |   \
+	 __GFP_NOWARN)    
 
 static const struct snd_malloc_ops *snd_dma_get_ops(struct snd_dma_buffer *dmab);
 
@@ -39,21 +34,7 @@ static void *__snd_dma_alloc_pages(struct snd_dma_buffer *dmab, size_t size)
 	return ops->alloc(dmab, size);
 }
 
-/**
- * snd_dma_alloc_dir_pages - allocate the buffer area according to the given
- *	type and direction
- * @type: the DMA buffer type
- * @device: the device pointer
- * @dir: DMA direction
- * @size: the buffer size to allocate
- * @dmab: buffer allocation record to store the allocated data
- *
- * Calls the memory-allocator function for the corresponding
- * buffer type.
- *
- * Return: Zero if the buffer with the given size is allocated successfully,
- * otherwise a negative value on error.
- */
+ 
 int snd_dma_alloc_dir_pages(int type, struct device *device,
 			    enum dma_data_direction dir, size_t size,
 			    struct snd_dma_buffer *dmab)
@@ -78,21 +59,7 @@ int snd_dma_alloc_dir_pages(int type, struct device *device,
 }
 EXPORT_SYMBOL(snd_dma_alloc_dir_pages);
 
-/**
- * snd_dma_alloc_pages_fallback - allocate the buffer area according to the given type with fallback
- * @type: the DMA buffer type
- * @device: the device pointer
- * @size: the buffer size to allocate
- * @dmab: buffer allocation record to store the allocated data
- *
- * Calls the memory-allocator function for the corresponding
- * buffer type.  When no space is left, this function reduces the size and
- * tries to allocate again.  The size actually allocated is stored in
- * res_size argument.
- *
- * Return: Zero if the buffer with the given size is allocated successfully,
- * otherwise a negative value on error.
- */
+ 
 int snd_dma_alloc_pages_fallback(int type, struct device *device, size_t size,
 				 struct snd_dma_buffer *dmab)
 {
@@ -112,12 +79,7 @@ int snd_dma_alloc_pages_fallback(int type, struct device *device, size_t size,
 }
 EXPORT_SYMBOL(snd_dma_alloc_pages_fallback);
 
-/**
- * snd_dma_free_pages - release the allocated buffer
- * @dmab: the buffer allocation record to release
- *
- * Releases the allocated buffer via snd_dma_alloc_pages().
- */
+ 
 void snd_dma_free_pages(struct snd_dma_buffer *dmab)
 {
 	const struct snd_malloc_ops *ops = snd_dma_get_ops(dmab);
@@ -127,28 +89,13 @@ void snd_dma_free_pages(struct snd_dma_buffer *dmab)
 }
 EXPORT_SYMBOL(snd_dma_free_pages);
 
-/* called by devres */
+ 
 static void __snd_release_pages(struct device *dev, void *res)
 {
 	snd_dma_free_pages(res);
 }
 
-/**
- * snd_devm_alloc_dir_pages - allocate the buffer and manage with devres
- * @dev: the device pointer
- * @type: the DMA buffer type
- * @dir: DMA direction
- * @size: the buffer size to allocate
- *
- * Allocate buffer pages depending on the given type and manage using devres.
- * The pages will be released automatically at the device removal.
- *
- * Unlike snd_dma_alloc_pages(), this function requires the real device pointer,
- * hence it can't work with SNDRV_DMA_TYPE_CONTINUOUS or
- * SNDRV_DMA_TYPE_VMALLOC type.
- *
- * Return: the snd_dma_buffer object at success, or NULL if failed
- */
+ 
 struct snd_dma_buffer *
 snd_devm_alloc_dir_pages(struct device *dev, int type,
 			 enum dma_data_direction dir, size_t size)
@@ -175,13 +122,7 @@ snd_devm_alloc_dir_pages(struct device *dev, int type,
 }
 EXPORT_SYMBOL_GPL(snd_devm_alloc_dir_pages);
 
-/**
- * snd_dma_buffer_mmap - perform mmap of the given DMA buffer
- * @dmab: buffer allocation information
- * @area: VM area information
- *
- * Return: zero if successful, or a negative error code
- */
+ 
 int snd_dma_buffer_mmap(struct snd_dma_buffer *dmab,
 			struct vm_area_struct *area)
 {
@@ -198,11 +139,7 @@ int snd_dma_buffer_mmap(struct snd_dma_buffer *dmab,
 EXPORT_SYMBOL(snd_dma_buffer_mmap);
 
 #ifdef CONFIG_HAS_DMA
-/**
- * snd_dma_buffer_sync - sync DMA buffer between CPU and device
- * @dmab: buffer allocation information
- * @mode: sync mode
- */
+ 
 void snd_dma_buffer_sync(struct snd_dma_buffer *dmab,
 			 enum snd_dma_sync_mode mode)
 {
@@ -215,15 +152,9 @@ void snd_dma_buffer_sync(struct snd_dma_buffer *dmab,
 		ops->sync(dmab, mode);
 }
 EXPORT_SYMBOL_GPL(snd_dma_buffer_sync);
-#endif /* CONFIG_HAS_DMA */
+#endif  
 
-/**
- * snd_sgbuf_get_addr - return the physical address at the corresponding offset
- * @dmab: buffer allocation information
- * @offset: offset in the ring buffer
- *
- * Return: the physical address
- */
+ 
 dma_addr_t snd_sgbuf_get_addr(struct snd_dma_buffer *dmab, size_t offset)
 {
 	const struct snd_malloc_ops *ops = snd_dma_get_ops(dmab);
@@ -235,13 +166,7 @@ dma_addr_t snd_sgbuf_get_addr(struct snd_dma_buffer *dmab, size_t offset)
 }
 EXPORT_SYMBOL(snd_sgbuf_get_addr);
 
-/**
- * snd_sgbuf_get_page - return the physical page at the corresponding offset
- * @dmab: buffer allocation information
- * @offset: offset in the ring buffer
- *
- * Return: the page pointer
- */
+ 
 struct page *snd_sgbuf_get_page(struct snd_dma_buffer *dmab, size_t offset)
 {
 	const struct snd_malloc_ops *ops = snd_dma_get_ops(dmab);
@@ -253,15 +178,7 @@ struct page *snd_sgbuf_get_page(struct snd_dma_buffer *dmab, size_t offset)
 }
 EXPORT_SYMBOL(snd_sgbuf_get_page);
 
-/**
- * snd_sgbuf_get_chunk_size - compute the max chunk size with continuous pages
- *	on sg-buffer
- * @dmab: buffer allocation information
- * @ofs: offset in the ring buffer
- * @size: the requested size
- *
- * Return: the chunk size
- */
+ 
 unsigned int snd_sgbuf_get_chunk_size(struct snd_dma_buffer *dmab,
 				      unsigned int ofs, unsigned int size)
 {
@@ -274,9 +191,7 @@ unsigned int snd_sgbuf_get_chunk_size(struct snd_dma_buffer *dmab,
 }
 EXPORT_SYMBOL(snd_sgbuf_get_chunk_size);
 
-/*
- * Continuous pages allocator
- */
+ 
 static void *do_alloc_pages(struct device *dev, size_t size, dma_addr_t *addr,
 			    bool wc)
 {
@@ -342,9 +257,7 @@ static const struct snd_malloc_ops snd_dma_continuous_ops = {
 	.mmap = snd_dma_continuous_mmap,
 };
 
-/*
- * VMALLOC allocator
- */
+ 
 static void *snd_dma_vmalloc_alloc(struct snd_dma_buffer *dmab, size_t size)
 {
 	return vmalloc(size);
@@ -384,8 +297,8 @@ snd_dma_vmalloc_get_chunk_size(struct snd_dma_buffer *dmab,
 	unsigned long addr;
 
 	start = ALIGN_DOWN(ofs, PAGE_SIZE);
-	end = ofs + size - 1; /* the last byte address */
-	/* check page continuity */
+	end = ofs + size - 1;  
+	 
 	addr = get_vmalloc_page_addr(dmab, start);
 	for (;;) {
 		start += PAGE_SIZE;
@@ -395,7 +308,7 @@ snd_dma_vmalloc_get_chunk_size(struct snd_dma_buffer *dmab,
 		if (get_vmalloc_page_addr(dmab, start) != addr)
 			return start - ofs;
 	}
-	/* ok, all on continuous pages */
+	 
 	return size;
 }
 
@@ -409,9 +322,7 @@ static const struct snd_malloc_ops snd_dma_vmalloc_ops = {
 };
 
 #ifdef CONFIG_HAS_DMA
-/*
- * IRAM allocator
- */
+ 
 #ifdef CONFIG_GENERIC_ALLOCATOR
 static void *snd_dma_iram_alloc(struct snd_dma_buffer *dmab, size_t size)
 {
@@ -421,7 +332,7 @@ static void *snd_dma_iram_alloc(struct snd_dma_buffer *dmab, size_t size)
 
 	if (dev->of_node) {
 		pool = of_gen_pool_get(dev->of_node, "iram", 0);
-		/* Assign the pool into private_data field */
+		 
 		dmab->private_data = pool;
 
 		p = gen_pool_dma_alloc_align(pool, size, &dmab->addr, PAGE_SIZE);
@@ -429,9 +340,7 @@ static void *snd_dma_iram_alloc(struct snd_dma_buffer *dmab, size_t size)
 			return p;
 	}
 
-	/* Internal memory might have limited size and no enough space,
-	 * so if we fail to malloc, try to fetch memory traditionally.
-	 */
+	 
 	dmab->dev.type = SNDRV_DMA_TYPE_DEV;
 	return __snd_dma_alloc_pages(dmab, size);
 }
@@ -459,11 +368,9 @@ static const struct snd_malloc_ops snd_dma_iram_ops = {
 	.free = snd_dma_iram_free,
 	.mmap = snd_dma_iram_mmap,
 };
-#endif /* CONFIG_GENERIC_ALLOCATOR */
+#endif  
 
-/*
- * Coherent device pages allocator
- */
+ 
 static void *snd_dma_dev_alloc(struct snd_dma_buffer *dmab, size_t size)
 {
 	return dma_alloc_coherent(dmab->dev.dev, size, &dmab->addr, DEFAULT_GFP);
@@ -487,10 +394,8 @@ static const struct snd_malloc_ops snd_dma_dev_ops = {
 	.mmap = snd_dma_dev_mmap,
 };
 
-/*
- * Write-combined pages
- */
-/* x86-specific allocations */
+ 
+ 
 #ifdef CONFIG_SND_DMA_SGBUF
 static void *snd_dma_wc_alloc(struct snd_dma_buffer *dmab, size_t size)
 {
@@ -525,7 +430,7 @@ static int snd_dma_wc_mmap(struct snd_dma_buffer *dmab,
 	return dma_mmap_wc(dmab->dev.dev, area,
 			   dmab->area, dmab->addr, dmab->bytes);
 }
-#endif /* CONFIG_SND_DMA_SGBUF */
+#endif  
 
 static const struct snd_malloc_ops snd_dma_wc_ops = {
 	.alloc = snd_dma_wc_alloc,
@@ -533,9 +438,7 @@ static const struct snd_malloc_ops snd_dma_wc_ops = {
 	.mmap = snd_dma_wc_mmap,
 };
 
-/*
- * Non-contiguous pages allocator
- */
+ 
 static void *snd_dma_noncontig_alloc(struct snd_dma_buffer *dmab, size_t size)
 {
 	struct sg_table *sgt;
@@ -559,7 +462,7 @@ static void *snd_dma_noncontig_alloc(struct snd_dma_buffer *dmab, size_t size)
 	p = dma_vmap_noncontiguous(dmab->dev.dev, size, sgt);
 	if (p) {
 		dmab->private_data = sgt;
-		/* store the first page address for convenience */
+		 
 		dmab->addr = snd_sgbuf_get_addr(dmab, 0);
 	} else {
 		dma_free_noncontiguous(dmab->dev.dev, size, sgt, dmab->dev.dir);
@@ -638,11 +541,11 @@ snd_dma_noncontig_get_chunk_size(struct snd_dma_buffer *dmab,
 	unsigned long addr;
 
 	start = ALIGN_DOWN(ofs, PAGE_SIZE);
-	end = ofs + size - 1; /* the last byte address */
+	end = ofs + size - 1;  
 	snd_dma_noncontig_iter_set(dmab, &iter.base, start);
 	if (!__sg_page_iter_dma_next(&iter))
 		return 0;
-	/* check page continuity */
+	 
 	addr = sg_page_iter_dma_address(&iter);
 	for (;;) {
 		start += PAGE_SIZE;
@@ -653,7 +556,7 @@ snd_dma_noncontig_get_chunk_size(struct snd_dma_buffer *dmab,
 		    sg_page_iter_dma_address(&iter) != addr)
 			return start - ofs;
 	}
-	/* ok, all on continuous pages */
+	 
 	return size;
 }
 
@@ -667,7 +570,7 @@ static const struct snd_malloc_ops snd_dma_noncontig_ops = {
 	.get_chunk_size = snd_dma_noncontig_get_chunk_size,
 };
 
-/* x86-specific SG-buffer with WC pages */
+ 
 #ifdef CONFIG_SND_DMA_SGBUF
 #define sg_wc_address(it) ((unsigned long)page_address(sg_page_iter_page(it)))
 
@@ -714,12 +617,12 @@ static const struct snd_malloc_ops snd_dma_sg_wc_ops = {
 	.get_chunk_size = snd_dma_noncontig_get_chunk_size,
 };
 
-/* Fallback SG-buffer allocations for x86 */
+ 
 struct snd_dma_sg_fallback {
 	bool use_dma_alloc_coherent;
 	size_t count;
 	struct page **pages;
-	/* DMA address array; the first page contains #pages in ~PAGE_MASK */
+	 
 	dma_addr_t *addrs;
 };
 
@@ -760,7 +663,7 @@ static void *snd_dma_sg_fallback_alloc(struct snd_dma_buffer *dmab, size_t size)
 	dma_addr_t addr;
 	void *p;
 
-	/* correct the type */
+	 
 	if (dmab->dev.type == SNDRV_DMA_TYPE_DEV_SG)
 		dmab->dev.type = SNDRV_DMA_TYPE_DEV_SG_FALLBACK;
 	else if (dmab->dev.type == SNDRV_DMA_TYPE_DEV_WC_SG)
@@ -779,7 +682,7 @@ static void *snd_dma_sg_fallback_alloc(struct snd_dma_buffer *dmab, size_t size)
 
 	pagep = sgbuf->pages;
 	addrp = sgbuf->addrs;
-	chunk = (PAGE_SIZE - 1) << PAGE_SHIFT; /* to fit in low bits in addrs */
+	chunk = (PAGE_SIZE - 1) << PAGE_SHIFT;  
 	while (size > 0) {
 		chunk = min(size, chunk);
 		if (sgbuf->use_dma_alloc_coherent)
@@ -795,9 +698,9 @@ static void *snd_dma_sg_fallback_alloc(struct snd_dma_buffer *dmab, size_t size)
 		}
 
 		size -= chunk;
-		/* fill pages */
+		 
 		npages = chunk >> PAGE_SHIFT;
-		*addrp = npages; /* store in lower bits */
+		*addrp = npages;  
 		curp = virt_to_page(p);
 		while (npages--) {
 			*pagep++ = curp++;
@@ -814,7 +717,7 @@ static void *snd_dma_sg_fallback_alloc(struct snd_dma_buffer *dmab, size_t size)
 		set_pages_array_wc(sgbuf->pages, sgbuf->count);
 
 	dmab->private_data = sgbuf;
-	/* store the first page address for convenience */
+	 
 	dmab->addr = sgbuf->addrs[0] & PAGE_MASK;
 	return p;
 
@@ -857,15 +760,13 @@ static const struct snd_malloc_ops snd_dma_sg_fallback_ops = {
 	.free = snd_dma_sg_fallback_free,
 	.mmap = snd_dma_sg_fallback_mmap,
 	.get_addr = snd_dma_sg_fallback_get_addr,
-	/* reuse vmalloc helpers */
+	 
 	.get_page = snd_dma_vmalloc_get_page,
 	.get_chunk_size = snd_dma_vmalloc_get_chunk_size,
 };
-#endif /* CONFIG_SND_DMA_SGBUF */
+#endif  
 
-/*
- * Non-coherent pages allocator
- */
+ 
 static void *snd_dma_noncoherent_alloc(struct snd_dma_buffer *dmab, size_t size)
 {
 	void *p;
@@ -913,11 +814,9 @@ static const struct snd_malloc_ops snd_dma_noncoherent_ops = {
 	.sync = snd_dma_noncoherent_sync,
 };
 
-#endif /* CONFIG_HAS_DMA */
+#endif  
 
-/*
- * Entry points
- */
+ 
 static const struct snd_malloc_ops *snd_dma_ops[] = {
 	[SNDRV_DMA_TYPE_CONTINUOUS] = &snd_dma_continuous_ops,
 	[SNDRV_DMA_TYPE_VMALLOC] = &snd_dma_vmalloc_ops,
@@ -931,12 +830,12 @@ static const struct snd_malloc_ops *snd_dma_ops[] = {
 #endif
 #ifdef CONFIG_GENERIC_ALLOCATOR
 	[SNDRV_DMA_TYPE_DEV_IRAM] = &snd_dma_iram_ops,
-#endif /* CONFIG_GENERIC_ALLOCATOR */
+#endif  
 #ifdef CONFIG_SND_DMA_SGBUF
 	[SNDRV_DMA_TYPE_DEV_SG_FALLBACK] = &snd_dma_sg_fallback_ops,
 	[SNDRV_DMA_TYPE_DEV_WC_SG_FALLBACK] = &snd_dma_sg_fallback_ops,
 #endif
-#endif /* CONFIG_HAS_DMA */
+#endif  
 };
 
 static const struct snd_malloc_ops *snd_dma_get_ops(struct snd_dma_buffer *dmab)

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *
- * device driver for philips saa7134 based TV cards
- * video4linux video interface
- *
- * (c) 2001,02 Gerd Knorr <kraxel@bytesex.org> [SuSE Labs]
- */
+
+ 
 
 #include "saa7134.h"
 #include "saa7134-reg.h"
@@ -16,7 +10,7 @@
 #include <linux/kernel.h>
 #include <linux/delay.h>
 
-/* ------------------------------------------------------------------ */
+ 
 
 static unsigned int ts_debug;
 module_param(ts_debug, int, 0644);
@@ -27,7 +21,7 @@ MODULE_PARM_DESC(ts_debug,"enable debug messages [ts]");
 		printk(KERN_DEBUG pr_fmt("ts: " fmt), ## arg); \
 	} while (0)
 
-/* ------------------------------------------------------------------ */
+ 
 static int buffer_activate(struct saa7134_dev *dev,
 			   struct saa7134_buf *buf,
 			   struct saa7134_buf *next)
@@ -53,7 +47,7 @@ static int buffer_activate(struct saa7134_dev *dev,
 		dev->ts_field = V4L2_FIELD_TOP;
 	}
 
-	/* start DMA */
+	 
 	saa7134_set_dmabits(dev);
 
 	mod_timer(&dev->ts_q.timeout, jiffies+TS_BUFFER_TIMEOUT);
@@ -127,10 +121,7 @@ int saa7134_ts_start_streaming(struct vb2_queue *vq, unsigned int count)
 	struct saa7134_dmaqueue *dmaq = vq->drv_priv;
 	struct saa7134_dev *dev = dmaq->dev;
 
-	/*
-	 * Planar video capture and TS share the same DMA channel,
-	 * so only one can be active at a time.
-	 */
+	 
 	if (vb2_is_busy(&dev->video_vbq) && dev->fmt->planar) {
 		struct saa7134_buf *buf, *tmp;
 
@@ -172,8 +163,8 @@ struct vb2_ops saa7134_ts_qops = {
 };
 EXPORT_SYMBOL_GPL(saa7134_ts_qops);
 
-/* ----------------------------------------------------------- */
-/* exported stuff                                              */
+ 
+ 
 
 static unsigned int tsbufs = 8;
 module_param(tsbufs, int, 0444);
@@ -185,14 +176,14 @@ MODULE_PARM_DESC(ts_nr_packets,"size of a ts buffers (in ts packets)");
 
 int saa7134_ts_init_hw(struct saa7134_dev *dev)
 {
-	/* deactivate TS softreset */
+	 
 	saa_writeb(SAA7134_TS_SERIAL1, 0x00);
-	/* TSSOP high active, TSVAL high active, TSLOCK ignored */
+	 
 	saa_writeb(SAA7134_TS_PARALLEL, 0x6c);
 	saa_writeb(SAA7134_TS_PARALLEL_SERIAL, (TS_PACKET_SIZE-1));
 	saa_writeb(SAA7134_TS_DMA0, ((dev->ts.nr_packets-1)&0xff));
 	saa_writeb(SAA7134_TS_DMA1, (((dev->ts.nr_packets-1)>>8)&0xff));
-	/* TSNOPIT=0, TSCOLAP=0 */
+	 
 	saa_writeb(SAA7134_TS_DMA2,
 		((((dev->ts.nr_packets-1)>>16)&0x3f) | 0x00));
 
@@ -201,7 +192,7 @@ int saa7134_ts_init_hw(struct saa7134_dev *dev)
 
 int saa7134_ts_init1(struct saa7134_dev *dev)
 {
-	/* sanitycheck insmod options */
+	 
 	if (tsbufs < 2)
 		tsbufs = 2;
 	if (tsbufs > VIDEO_MAX_FRAME)
@@ -220,13 +211,13 @@ int saa7134_ts_init1(struct saa7134_dev *dev)
 	dev->ts_started            = 0;
 	saa7134_pgtable_alloc(dev->pci, &dev->ts_q.pt);
 
-	/* init TS hw */
+	 
 	saa7134_ts_init_hw(dev);
 
 	return 0;
 }
 
-/* Function for stop TS */
+ 
 int saa7134_ts_stop(struct saa7134_dev *dev)
 {
 	ts_dbg("TS stop\n");
@@ -234,7 +225,7 @@ int saa7134_ts_stop(struct saa7134_dev *dev)
 	if (!dev->ts_started)
 		return 0;
 
-	/* Stop TS stream */
+	 
 	switch (saa7134_boards[dev->board].ts_type) {
 	case SAA7134_MPEG_TS_PARALLEL:
 		saa_writeb(SAA7134_TS_PARALLEL, 0x6c);
@@ -248,7 +239,7 @@ int saa7134_ts_stop(struct saa7134_dev *dev)
 	return 0;
 }
 
-/* Function for start TS */
+ 
 int saa7134_ts_start(struct saa7134_dev *dev)
 {
 	ts_dbg("TS start\n");
@@ -256,11 +247,11 @@ int saa7134_ts_start(struct saa7134_dev *dev)
 	if (WARN_ON(dev->ts_started))
 		return 0;
 
-	/* dma: setup channel 5 (= TS) */
+	 
 	saa_writeb(SAA7134_TS_DMA0, (dev->ts.nr_packets - 1) & 0xff);
 	saa_writeb(SAA7134_TS_DMA1,
 		((dev->ts.nr_packets - 1) >> 8) & 0xff);
-	/* TSNOPIT=0, TSCOLAP=0 */
+	 
 	saa_writeb(SAA7134_TS_DMA2,
 		(((dev->ts.nr_packets - 1) >> 16) & 0x3f) | 0x00);
 	saa_writel(SAA7134_RS_PITCH(5), TS_PACKET_SIZE);
@@ -268,16 +259,16 @@ int saa7134_ts_start(struct saa7134_dev *dev)
 					  SAA7134_RS_CONTROL_ME |
 					  (dev->ts_q.pt.dma >> 12));
 
-	/* reset hardware TS buffers */
+	 
 	saa_writeb(SAA7134_TS_SERIAL1, 0x00);
 	saa_writeb(SAA7134_TS_SERIAL1, 0x03);
 	saa_writeb(SAA7134_TS_SERIAL1, 0x00);
 	saa_writeb(SAA7134_TS_SERIAL1, 0x01);
 
-	/* TS clock non-inverted */
+	 
 	saa_writeb(SAA7134_TS_SERIAL1, 0x00);
 
-	/* Start TS stream */
+	 
 	switch (saa7134_boards[dev->board].ts_type) {
 	case SAA7134_MPEG_TS_PARALLEL:
 		saa_writeb(SAA7134_TS_SERIAL0, 0x40);

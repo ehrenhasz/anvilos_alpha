@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0 OR MIT)
-/* Google virtual Ethernet (gve) driver
- *
- * Copyright (C) 2015-2021 Google, Inc.
- */
+
+ 
 
 #include "gve.h"
 #include "gve_adminq.h"
@@ -28,13 +25,7 @@ void gve_xdp_tx_flush(struct gve_priv *priv, u32 xdp_qid)
 	gve_tx_put_doorbell(priv, tx->q_resources, tx->req);
 }
 
-/* gvnic can only transmit from a Registered Segment.
- * We copy skb payloads into the registered segment before writing Tx
- * descriptors and ringing the Tx doorbell.
- *
- * gve_tx_fifo_* manages the Registered Segment as a FIFO - clients must
- * free allocations in the order they were allocated.
- */
+ 
 
 static int gve_tx_fifo_init(struct gve_priv *priv, struct gve_tx_fifo *fifo)
 {
@@ -71,16 +62,7 @@ static bool gve_tx_fifo_can_alloc(struct gve_tx_fifo *fifo, size_t bytes)
 	return (atomic_read(&fifo->available) <= bytes) ? false : true;
 }
 
-/* gve_tx_alloc_fifo - Allocate fragment(s) from Tx FIFO
- * @fifo: FIFO to allocate from
- * @bytes: Allocation size
- * @iov: Scatter-gather elements to fill with allocation fragment base/len
- *
- * Returns number of valid elements in iov[] or negative on error.
- *
- * Allocations from a given FIFO must be externally synchronized but concurrent
- * allocation and frees are allowed.
- */
+ 
 static int gve_tx_alloc_fifo(struct gve_tx_fifo *fifo, size_t bytes,
 			     struct gve_tx_iovec iov[2])
 {
@@ -91,12 +73,7 @@ static int gve_tx_alloc_fifo(struct gve_tx_fifo *fifo, size_t bytes,
 	if (!bytes)
 		return 0;
 
-	/* This check happens before we know how much padding is needed to
-	 * align to a cacheline boundary for the payload, but that is fine,
-	 * because the FIFO head always start aligned, and the FIFO's boundaries
-	 * are aligned, so if there is space for the data, there is space for
-	 * the padding to the next alignment.
-	 */
+	 
 	WARN(!gve_tx_fifo_can_alloc(fifo, bytes),
 	     "Reached %s when there's not enough space in the fifo", __func__);
 
@@ -107,19 +84,17 @@ static int gve_tx_alloc_fifo(struct gve_tx_fifo *fifo, size_t bytes,
 	fifo->head += bytes;
 
 	if (fifo->head > fifo->size) {
-		/* If the allocation did not fit in the tail fragment of the
-		 * FIFO, also use the head fragment.
-		 */
+		 
 		nfrags++;
 		overflow = fifo->head - fifo->size;
 		iov[0].iov_len -= overflow;
-		iov[1].iov_offset = 0;	/* Start of fifo*/
+		iov[1].iov_offset = 0;	 
 		iov[1].iov_len = overflow;
 
 		fifo->head = overflow;
 	}
 
-	/* Re-align to a cacheline boundary */
+	 
 	aligned_head = L1_CACHE_ALIGN(fifo->head);
 	padding = aligned_head - fifo->head;
 	iov[nfrags - 1].iov_padding = padding;
@@ -132,10 +107,7 @@ static int gve_tx_alloc_fifo(struct gve_tx_fifo *fifo, size_t bytes,
 	return nfrags;
 }
 
-/* gve_tx_free_fifo - Return space to Tx FIFO
- * @fifo: FIFO to return fragments to
- * @bytes: Bytes to free
- */
+ 
 static void gve_tx_free_fifo(struct gve_tx_fifo *fifo, size_t bytes)
 {
 	atomic_add(bytes, &fifo->available);
@@ -239,7 +211,7 @@ static int gve_tx_alloc_ring(struct gve_priv *priv, int idx)
 	u32 slots = priv->tx_desc_cnt;
 	size_t bytes;
 
-	/* Make sure everything is zeroed to start */
+	 
 	memset(tx, 0, sizeof(*tx));
 	spin_lock_init(&tx->clean_lock);
 	spin_lock_init(&tx->xdp_lock);
@@ -247,12 +219,12 @@ static int gve_tx_alloc_ring(struct gve_priv *priv, int idx)
 
 	tx->mask = slots - 1;
 
-	/* alloc metadata */
+	 
 	tx->info = vcalloc(slots, sizeof(*tx->info));
 	if (!tx->info)
 		return -ENOMEM;
 
-	/* alloc tx queue */
+	 
 	bytes = sizeof(*tx->desc) * slots;
 	tx->desc = dma_alloc_coherent(hdev, bytes, &tx->bus, GFP_KERNEL);
 	if (!tx->desc)
@@ -264,7 +236,7 @@ static int gve_tx_alloc_ring(struct gve_priv *priv, int idx)
 		tx->tx_fifo.qpl = gve_assign_tx_qpl(priv, idx);
 		if (!tx->tx_fifo.qpl)
 			goto abort_with_desc;
-		/* map Tx FIFO */
+		 
 		if (gve_tx_fifo_init(priv, &tx->tx_fifo))
 			goto abort_with_qpl;
 	}
@@ -314,7 +286,7 @@ int gve_tx_alloc_rings(struct gve_priv *priv, int start_id, int num_rings)
 			break;
 		}
 	}
-	/* Unallocate if there was an error */
+	 
 	if (err) {
 		int j;
 
@@ -332,13 +304,7 @@ void gve_tx_free_rings_gqi(struct gve_priv *priv, int start_id, int num_rings)
 		gve_tx_free_ring(priv, i);
 }
 
-/* gve_tx_avail - Calculates the number of slots available in the ring
- * @tx: tx ring to check
- *
- * Returns the number of slots available
- *
- * The capacity of the queue is mask + 1. We don't need to reserve an entry.
- **/
+ 
 static inline u32 gve_tx_avail(struct gve_tx_ring *tx)
 {
 	return tx->mask + 1 - (tx->req - tx->done);
@@ -356,20 +322,14 @@ static inline int gve_skb_fifo_bytes_required(struct gve_tx_ring *tx,
 
 	pad_bytes = gve_tx_fifo_pad_alloc_one_frag(&tx->tx_fifo,
 						   hlen);
-	/* We need to take into account the header alignment padding. */
+	 
 	align_hdr_pad = L1_CACHE_ALIGN(hlen) - hlen;
 	bytes = align_hdr_pad + pad_bytes + skb->len;
 
 	return bytes;
 }
 
-/* The most descriptors we could need is MAX_SKB_FRAGS + 4 :
- * 1 for each skb frag
- * 1 for the skb linear portion
- * 1 for when tcp hdr needs to be in separate descriptor
- * 1 if the payload wraps to the beginning of the FIFO
- * 1 for metadata descriptor
- */
+ 
 #define MAX_TX_DESC_NEEDED	(MAX_SKB_FRAGS + 4)
 static void gve_tx_unmap_buf(struct device *dev, struct gve_tx_buffer_state *info)
 {
@@ -386,9 +346,7 @@ static void gve_tx_unmap_buf(struct device *dev, struct gve_tx_buffer_state *inf
 	}
 }
 
-/* Check if sufficient resources (descriptor ring space, FIFO space) are
- * available to transmit the given number of bytes.
- */
+ 
 static inline bool gve_can_tx(struct gve_tx_ring *tx, int bytes_required)
 {
 	bool can_alloc = true;
@@ -401,7 +359,7 @@ static inline bool gve_can_tx(struct gve_tx_ring *tx, int bytes_required)
 
 static_assert(NAPI_POLL_WEIGHT >= MAX_TX_DESC_NEEDED);
 
-/* Stops the queue if the skb cannot be transmitted. */
+ 
 static int gve_maybe_stop_tx(struct gve_priv *priv, struct gve_tx_ring *tx,
 			     struct sk_buff *skb)
 {
@@ -421,7 +379,7 @@ static int gve_maybe_stop_tx(struct gve_priv *priv, struct gve_tx_ring *tx,
 	nic_done = gve_tx_load_event_counter(priv, tx);
 	to_do = nic_done - tx->done;
 
-	/* Only try to clean if there is hope for TX */
+	 
 	if (to_do + gve_tx_avail(tx) >= MAX_TX_DESC_NEEDED) {
 		if (to_do > 0) {
 			to_do = min_t(u32, to_do, NAPI_POLL_WEIGHT);
@@ -431,7 +389,7 @@ static int gve_maybe_stop_tx(struct gve_priv *priv, struct gve_tx_ring *tx,
 			ret = 0;
 	}
 	if (ret) {
-		/* No space, so stop the queue */
+		 
 		tx->stop_queue++;
 		netif_tx_stop_queue(tx->netdev_txq);
 	}
@@ -445,7 +403,7 @@ static void gve_tx_fill_pkt_desc(union gve_tx_desc *pkt_desc,
 				 int l4_hdr_offset, u32 desc_cnt,
 				 u16 hlen, u64 addr, u16 pkt_len)
 {
-	/* l4_hdr_offset and csum_offset are in units of 16-bit words */
+	 
 	if (is_gso) {
 		pkt_desc->pkt.type_flags = GVE_TXD_TSO | GVE_TXF_L4CSUM;
 		pkt_desc->pkt.l4_csum_offset = csum_offset >> 1;
@@ -522,16 +480,12 @@ static int gve_tx_add_skb_copy(struct gve_priv *priv, struct gve_tx_ring *tx, st
 	pkt_desc = &tx->desc[idx];
 
 	l4_hdr_offset = skb_checksum_start_offset(skb);
-	/* If the skb is gso, then we want the tcp header alone in the first segment
-	 * otherwise we want the minimum required by the gVNIC spec.
-	 */
+	 
 	hlen = is_gso ? l4_hdr_offset + tcp_hdrlen(skb) :
 			min_t(int, GVE_GQ_TX_MIN_PKT_DESC_BYTES, skb->len);
 
 	info->skb =  skb;
-	/* We don't want to split the header, so if necessary, pad to the end
-	 * of the fifo and then put the header at the beginning of the fifo.
-	 */
+	 
 	pad_bytes = gve_tx_fifo_pad_alloc_one_frag(&tx->tx_fifo, hlen);
 	hdr_nfrags = gve_tx_alloc_fifo(&tx->tx_fifo, hlen + pad_bytes,
 				       &info->iov[0]);
@@ -597,11 +551,7 @@ static int gve_tx_add_skb_no_copy(struct gve_priv *priv, struct gve_tx_ring *tx,
 	pkt_desc = &tx->desc[idx];
 
 	l4_hdr_offset = skb_checksum_start_offset(skb);
-	/* If the skb is gso, then we want only up to the tcp header in the first segment
-	 * to efficiently replicate on each segment otherwise we want the linear portion
-	 * of the skb (which will contain the checksum because skb->csum_start and
-	 * skb->csum_offset are given relative to skb->head) in the first segment.
-	 */
+	 
 	hlen = is_gso ? l4_hdr_offset + tcp_hdrlen(skb) : skb_headlen(skb);
 	len = skb_headlen(skb);
 
@@ -632,9 +582,7 @@ static int gve_tx_add_skb_no_copy(struct gve_priv *priv, struct gve_tx_ring *tx,
 	}
 
 	if (hlen < len) {
-		/* For gso the rest of the linear portion of the skb needs to
-		 * be in its own descriptor.
-		 */
+		 
 		len -= hlen;
 		addr += hlen;
 		idx = (idx + 1) & tx->mask;
@@ -669,7 +617,7 @@ static int gve_tx_add_skb_no_copy(struct gve_priv *priv, struct gve_tx_ring *tx,
 unmap_drop:
 	i += num_descriptors - shinfo->nr_frags;
 	while (i--) {
-		/* Skip metadata descriptor, if set */
+		 
 		if (i == 1 && mtd_desc_nr == 1)
 			continue;
 		idx--;
@@ -690,10 +638,7 @@ netdev_tx_t gve_tx(struct sk_buff *skb, struct net_device *dev)
 	     "skb queue index out of range");
 	tx = &priv->tx[skb_get_queue_mapping(skb)];
 	if (unlikely(gve_maybe_stop_tx(priv, tx, skb))) {
-		/* We need to ring the txq doorbell -- we have stopped the Tx
-		 * queue for want of resources, but prior calls to gve_tx()
-		 * may have added descriptors without ringing the doorbell.
-		 */
+		 
 
 		gve_tx_put_doorbell(priv, tx->q_resources, tx->req);
 		return NETDEV_TX_BUSY;
@@ -703,7 +648,7 @@ netdev_tx_t gve_tx(struct sk_buff *skb, struct net_device *dev)
 	else
 		nsegs = gve_tx_add_skb_copy(priv, tx, skb);
 
-	/* If the packet is getting sent, we need to update the skb */
+	 
 	if (nsegs) {
 		netdev_tx_sent_queue(tx->netdev_txq, skb->len);
 		skb_tx_timestamp(skb);
@@ -715,9 +660,7 @@ netdev_tx_t gve_tx(struct sk_buff *skb, struct net_device *dev)
 	if (!netif_xmit_stopped(tx->netdev_txq) && netdev_xmit_more())
 		return NETDEV_TX_OK;
 
-	/* Give packets to NIC. Even if this packet failed to send the doorbell
-	 * might need to be rung because of xmit_more.
-	 */
+	 
 	gve_tx_put_doorbell(priv, tx->q_resources, tx->req);
 	return NETDEV_TX_OK;
 }
@@ -839,11 +782,11 @@ static int gve_clean_tx_done(struct gve_priv *priv, struct gve_tx_ring *tx,
 		info = &tx->info[idx];
 		skb = info->skb;
 
-		/* Unmap the buffer */
+		 
 		if (tx->raw_addressing)
 			gve_tx_unmap_buf(tx->dev, info);
 		tx->done++;
-		/* Mark as free */
+		 
 		if (skb) {
 			info->skb = NULL;
 			bytes += skb->len;
@@ -863,9 +806,9 @@ static int gve_clean_tx_done(struct gve_priv *priv, struct gve_tx_ring *tx,
 	u64_stats_update_end(&tx->statss);
 	netdev_tx_completed_queue(tx->netdev_txq, pkts, bytes);
 
-	/* start the queue if we've stopped it */
+	 
 #ifndef CONFIG_BQL
-	/* Make sure that the doorbells are synced */
+	 
 	smp_mb();
 #endif
 	if (try_to_wake && netif_tx_queue_stopped(tx->netdev_txq) &&
@@ -925,7 +868,7 @@ bool gve_xdp_poll(struct gve_notify_block *block, int budget)
 	bool repoll;
 	u32 to_do;
 
-	/* Find out how much work there is to be done */
+	 
 	nic_done = gve_tx_load_event_counter(priv, tx);
 	to_do = min_t(u32, (nic_done - tx->done), budget);
 	gve_clean_xdp_done(priv, tx, to_do);
@@ -942,7 +885,7 @@ bool gve_xdp_poll(struct gve_notify_block *block, int budget)
 			xsk_set_tx_need_wakeup(tx->xsk_pool);
 	}
 
-	/* If we still have work we want to repoll */
+	 
 	return repoll;
 }
 
@@ -953,21 +896,18 @@ bool gve_tx_poll(struct gve_notify_block *block, int budget)
 	u32 nic_done;
 	u32 to_do;
 
-	/* If budget is 0, do all the work */
+	 
 	if (budget == 0)
 		budget = INT_MAX;
 
-	/* In TX path, it may try to clean completed pkts in order to xmit,
-	 * to avoid cleaning conflict, use spin_lock(), it yields better
-	 * concurrency between xmit/clean than netif's lock.
-	 */
+	 
 	spin_lock(&tx->clean_lock);
-	/* Find out how much work there is to be done */
+	 
 	nic_done = gve_tx_load_event_counter(priv, tx);
 	to_do = min_t(u32, (nic_done - tx->done), budget);
 	gve_clean_tx_done(priv, tx, to_do, true);
 	spin_unlock(&tx->clean_lock);
-	/* If we still have work we want to repoll */
+	 
 	return nic_done != tx->done;
 }
 

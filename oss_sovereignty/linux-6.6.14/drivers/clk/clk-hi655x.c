@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Clock driver for Hi655x
- *
- * Copyright (c) 2017, Linaro Ltd.
- *
- * Author: Daniel Lezcano <daniel.lezcano@linaro.org>
- */
+
+ 
 #include <linux/clk-provider.h>
 #include <linux/module.h>
 #include <linux/platform_device.h>

@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * ispvideo.c
- *
- * TI OMAP3 ISP - Generic video node
- *
- * Copyright (C) 2009-2010 Nokia Corporation
- *
- * Contacts: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
- *	     Sakari Ailus <sakari.ailus@iki.fi>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/mm.h>
@@ -28,14 +19,9 @@
 #include "isp.h"
 
 
-/* -----------------------------------------------------------------------------
- * Helper functions
- */
+ 
 
-/*
- * NOTE: When adding new media bus codes, always remember to add
- * corresponding in-memory formats to the table below!!!
- */
+ 
 static struct isp_format_info formats[] = {
 	{ MEDIA_BUS_FMT_Y8_1X8, MEDIA_BUS_FMT_Y8_1X8,
 	  MEDIA_BUS_FMT_Y8_1X8, MEDIA_BUS_FMT_Y8_1X8,
@@ -106,9 +92,7 @@ static struct isp_format_info formats[] = {
 	{ MEDIA_BUS_FMT_YUYV8_2X8, MEDIA_BUS_FMT_YUYV8_2X8,
 	  MEDIA_BUS_FMT_YUYV8_2X8, 0,
 	  V4L2_PIX_FMT_YUYV, 8, 2, },
-	/* Empty entry to catch the unsupported pixel code (0) used by the CCDC
-	 * module and avoid NULL pointer dereferences.
-	 */
+	 
 	{ 0, }
 };
 
@@ -124,18 +108,7 @@ const struct isp_format_info *omap3isp_video_format_info(u32 code)
 	return NULL;
 }
 
-/*
- * isp_video_mbus_to_pix - Convert v4l2_mbus_framefmt to v4l2_pix_format
- * @video: ISP video instance
- * @mbus: v4l2_mbus_framefmt format (input)
- * @pix: v4l2_pix_format format (output)
- *
- * Fill the output pix structure with information from the input mbus format.
- * The bytesperline and sizeimage fields are computed from the requested bytes
- * per line value in the pix format and information from the video instance.
- *
- * Return the number of padding bytes at end of line.
- */
+ 
 static unsigned int isp_video_mbus_to_pix(const struct isp_video *video,
 					  const struct v4l2_mbus_framefmt *mbus,
 					  struct v4l2_pix_format *pix)
@@ -158,10 +131,7 @@ static unsigned int isp_video_mbus_to_pix(const struct isp_video *video,
 
 	min_bpl = pix->width * formats[i].bpp;
 
-	/* Clamp the requested bytes per line value. If the maximum bytes per
-	 * line value is zero, the module doesn't support user configurable line
-	 * sizes. Override the requested value with the minimum in that case.
-	 */
+	 
 	if (video->bpl_max)
 		bpl = clamp(bpl, min_bpl, video->bpl_max);
 	else
@@ -188,9 +158,7 @@ static void isp_video_pix_to_mbus(const struct v4l2_pix_format *pix,
 	mbus->width = pix->width;
 	mbus->height = pix->height;
 
-	/* Skip the last format in the loop so that it will be selected if no
-	 * match is found.
-	 */
+	 
 	for (i = 0; i < ARRAY_SIZE(formats) - 1; ++i) {
 		if (formats[i].pixelformat == pix->pixelformat)
 			break;
@@ -217,7 +185,7 @@ isp_video_remote_subdev(struct isp_video *video, u32 *pad)
 	return media_entity_to_v4l2_subdev(remote->entity);
 }
 
-/* Return a pointer to the ISP video instance at the far end of the pipeline. */
+ 
 static int isp_video_get_graph_data(struct isp_video *video,
 				    struct isp_pipeline *pipe)
 {
@@ -314,9 +282,7 @@ isp_video_check_format(struct isp_video *video, struct isp_video_fh *vfh)
 	return 0;
 }
 
-/* -----------------------------------------------------------------------------
- * Video queue operations
- */
+ 
 
 static int isp_video_queue_setup(struct vb2_queue *queue,
 				 unsigned int *count, unsigned int *num_planes,
@@ -344,12 +310,7 @@ static int isp_video_buffer_prepare(struct vb2_buffer *buf)
 	struct isp_video *video = vfh->video;
 	dma_addr_t addr;
 
-	/* Refuse to prepare the buffer is the video node has registered an
-	 * error. We don't need to take any lock here as the operation is
-	 * inherently racy. The authoritative check will be performed in the
-	 * queue handler, which can't return an error, this check is just a best
-	 * effort to notify userspace as early as possible.
-	 */
+	 
 	if (unlikely(video->error))
 		return -EIO;
 
@@ -367,15 +328,7 @@ static int isp_video_buffer_prepare(struct vb2_buffer *buf)
 	return 0;
 }
 
-/*
- * isp_video_buffer_queue - Add buffer to streaming queue
- * @buf: Video buffer
- *
- * In memory-to-memory mode, start streaming on the pipeline if buffers are
- * queued on both the input and the output, if the pipeline isn't already busy.
- * If the pipeline is busy, it will be restarted in the output module interrupt
- * handler.
- */
+ 
 static void isp_video_buffer_queue(struct vb2_buffer *buf)
 {
 	struct vb2_v4l2_buffer *vbuf = to_vb2_v4l2_buffer(buf);
@@ -423,17 +376,7 @@ static void isp_video_buffer_queue(struct vb2_buffer *buf)
 	}
 }
 
-/*
- * omap3isp_video_return_buffers - Return all queued buffers to videobuf2
- * @video: ISP video object
- * @state: new state for the returned buffers
- *
- * Return all buffers queued on the video node to videobuf2 in the given state.
- * The buffer state should be VB2_BUF_STATE_QUEUED if called due to an error
- * when starting the stream, or VB2_BUF_STATE_ERROR otherwise.
- *
- * The function must be called with the video irqlock held.
- */
+ 
 static void omap3isp_video_return_buffers(struct isp_video *video,
 					  enum vb2_buffer_state state)
 {
@@ -456,10 +399,7 @@ static int isp_video_start_streaming(struct vb2_queue *queue,
 	unsigned long flags;
 	int ret;
 
-	/* In sensor-to-memory mode, the stream can be started synchronously
-	 * to the stream on command. In memory-to-memory mode, it will be
-	 * started when buffers are queued on both the input and output.
-	 */
+	 
 	if (pipe->input)
 		return 0;
 
@@ -487,22 +427,7 @@ static const struct vb2_ops isp_video_queue_ops = {
 	.start_streaming = isp_video_start_streaming,
 };
 
-/*
- * omap3isp_video_buffer_next - Complete the current buffer and return the next
- * @video: ISP video object
- *
- * Remove the current video buffer from the DMA queue and fill its timestamp and
- * field count before handing it back to videobuf2.
- *
- * For capture video nodes the buffer state is set to VB2_BUF_STATE_DONE if no
- * error has been flagged in the pipeline, or to VB2_BUF_STATE_ERROR otherwise.
- * For video output nodes the buffer state is always set to VB2_BUF_STATE_DONE.
- *
- * The DMA queue is expected to contain at least one buffer.
- *
- * Return a pointer to the next buffer in the DMA queue, or NULL if the queue is
- * empty.
- */
+ 
 struct isp_buffer *omap3isp_video_buffer_next(struct isp_video *video)
 {
 	struct isp_pipeline *pipe = to_isp_pipeline(&video->video.entity);
@@ -523,12 +448,7 @@ struct isp_buffer *omap3isp_video_buffer_next(struct isp_video *video)
 
 	buf->vb.vb2_buf.timestamp = ktime_get_ns();
 
-	/* Do frame number propagation only if this is the output video node.
-	 * Frame number either comes from the CSI receivers or it gets
-	 * incremented here if H3A is not active.
-	 * Note: There is no guarantee that the output buffer will finish
-	 * first, so the input number might lag behind by 1 in some cases.
-	 */
+	 
 	if (video == pipe->output && !pipe->do_propagation)
 		buf->vb.sequence =
 			atomic_inc_return(&pipe->frame_number);
@@ -540,7 +460,7 @@ struct isp_buffer *omap3isp_video_buffer_next(struct isp_video *video)
 
 	buf->vb.field = pipe->field;
 
-	/* Report pipeline errors to userspace on the capture device side. */
+	 
 	if (video->type == V4L2_BUF_TYPE_VIDEO_CAPTURE && pipe->error) {
 		vb_state = VB2_BUF_STATE_ERROR;
 		pipe->error = false;
@@ -586,13 +506,7 @@ struct isp_buffer *omap3isp_video_buffer_next(struct isp_video *video)
 	return buf;
 }
 
-/*
- * omap3isp_video_cancel_stream - Cancel stream on a video node
- * @video: ISP video object
- *
- * Cancelling a stream returns all buffers queued on the video node to videobuf2
- * in the erroneous state and makes sure no new buffer can be queued.
- */
+ 
 void omap3isp_video_cancel_stream(struct isp_video *video)
 {
 	unsigned long flags;
@@ -603,16 +517,7 @@ void omap3isp_video_cancel_stream(struct isp_video *video)
 	spin_unlock_irqrestore(&video->irqlock, flags);
 }
 
-/*
- * omap3isp_video_resume - Perform resume operation on the buffers
- * @video: ISP video object
- * @continuous: Pipeline is in single shot mode if 0 or continuous mode otherwise
- *
- * This function is intended to be used on suspend/resume scenario. It
- * requests video queue layer to discard buffers marked as DONE if it's in
- * continuous mode and requests ISP modules to queue again the ACTIVE buffer
- * if there's any.
- */
+ 
 void omap3isp_video_resume(struct isp_video *video, int continuous)
 {
 	struct isp_buffer *buf = NULL;
@@ -634,9 +539,7 @@ void omap3isp_video_resume(struct isp_video *video, int continuous)
 	}
 }
 
-/* -----------------------------------------------------------------------------
- * V4L2 ioctls
- */
+ 
 
 static int
 isp_video_querycap(struct file *file, void *fh, struct v4l2_capability *cap)
@@ -680,26 +583,23 @@ isp_video_set_format(struct file *file, void *fh, struct v4l2_format *format)
 	if (format->type != video->type)
 		return -EINVAL;
 
-	/* Replace unsupported field orders with sane defaults. */
+	 
 	switch (format->fmt.pix.field) {
 	case V4L2_FIELD_NONE:
-		/* Progressive is supported everywhere. */
+		 
 		break;
 	case V4L2_FIELD_ALTERNATE:
-		/* ALTERNATE is not supported on output nodes. */
+		 
 		if (video->type == V4L2_BUF_TYPE_VIDEO_OUTPUT)
 			format->fmt.pix.field = V4L2_FIELD_NONE;
 		break;
 	case V4L2_FIELD_INTERLACED:
-		/* The ISP has no concept of video standard, select the
-		 * top-bottom order when the unqualified interlaced order is
-		 * requested.
-		 */
+		 
 		format->fmt.pix.field = V4L2_FIELD_INTERLACED_TB;
 		fallthrough;
 	case V4L2_FIELD_INTERLACED_TB:
 	case V4L2_FIELD_INTERLACED_BT:
-		/* Interlaced orders are only supported at the CCDC output. */
+		 
 		if (video != &video->isp->isp_ccdc.video_out)
 			format->fmt.pix.field = V4L2_FIELD_NONE;
 		break;
@@ -708,16 +608,12 @@ isp_video_set_format(struct file *file, void *fh, struct v4l2_format *format)
 	case V4L2_FIELD_SEQ_TB:
 	case V4L2_FIELD_SEQ_BT:
 	default:
-		/* All other field orders are currently unsupported, default to
-		 * progressive.
-		 */
+		 
 		format->fmt.pix.field = V4L2_FIELD_NONE;
 		break;
 	}
 
-	/* Fill the bytesperline and sizeimage fields by converting to media bus
-	 * format and back to pixel format.
-	 */
+	 
 	isp_video_pix_to_mbus(&format->fmt.pix, &fmt);
 	isp_video_mbus_to_pix(video, &fmt, &format->fmt.pix);
 
@@ -792,9 +688,7 @@ isp_video_get_selection(struct file *file, void *fh, struct v4l2_selection *sel)
 	if (subdev == NULL)
 		return -EINVAL;
 
-	/* Try the get selection operation first and fallback to get format if not
-	 * implemented.
-	 */
+	 
 	sdsel.pad = pad;
 	ret = v4l2_subdev_call(subdev, pad, get_selection, NULL, &sdsel);
 	if (!ret)
@@ -968,16 +862,16 @@ static int isp_video_check_external_subdevs(struct isp_video *video,
 	unsigned int i;
 	int ret;
 
-	/* Memory-to-memory pipelines have no external subdev. */
+	 
 	if (pipe->input != NULL)
 		return 0;
 
 	for (i = 0; i < ARRAY_SIZE(ents); i++) {
-		/* Is the entity part of the pipeline? */
+		 
 		if (!media_entity_enum_test(&pipe->ent_enum, ents[i]))
 			continue;
 
-		/* ISP entities have always sink pad == 0. Find source. */
+		 
 		source_pad = media_pad_remote_pad_first(&ents[i]->pads[0]);
 		if (source_pad == NULL)
 			continue;
@@ -1028,10 +922,7 @@ static int isp_video_check_external_subdevs(struct isp_video *video,
 	if (media_entity_enum_test(&pipe->ent_enum,
 				   &isp->isp_ccdc.subdev.entity)) {
 		unsigned int rate = UINT_MAX;
-		/*
-		 * Check that maximum allowed CCDC pixel rate isn't
-		 * exceeded by the pixel rate.
-		 */
+		 
 		omap3isp_ccdc_max_rate(&isp->isp_ccdc, &rate);
 		if (pipe->external_rate > rate)
 			return -ENOSPC;
@@ -1040,37 +931,7 @@ static int isp_video_check_external_subdevs(struct isp_video *video,
 	return 0;
 }
 
-/*
- * Stream management
- *
- * Every ISP pipeline has a single input and a single output. The input can be
- * either a sensor or a video node. The output is always a video node.
- *
- * As every pipeline has an output video node, the ISP video objects at the
- * pipeline output stores the pipeline state. It tracks the streaming state of
- * both the input and output, as well as the availability of buffers.
- *
- * In sensor-to-memory mode, frames are always available at the pipeline input.
- * Starting the sensor usually requires I2C transfers and must be done in
- * interruptible context. The pipeline is started and stopped synchronously
- * to the stream on/off commands. All modules in the pipeline will get their
- * subdev set stream handler called. The module at the end of the pipeline must
- * delay starting the hardware until buffers are available at its output.
- *
- * In memory-to-memory mode, starting/stopping the stream requires
- * synchronization between the input and output. ISP modules can't be stopped
- * in the middle of a frame, and at least some of the modules seem to become
- * busy as soon as they're started, even if they don't receive a frame start
- * event. For that reason frames need to be processed in single-shot mode. The
- * driver needs to wait until a frame is completely processed and written to
- * memory before restarting the pipeline for the next frame. Pipelined
- * processing might be possible but requires more testing.
- *
- * Stream start must be delayed until buffers are available at both the input
- * and output. The pipeline must be started in the vb2 queue callback with
- * the buffers queue spinlock held. The modules subdev set stream operation must
- * not sleep.
- */
+ 
 static int
 isp_video_streamon(struct file *file, void *fh, enum v4l2_buf_type type)
 {
@@ -1086,16 +947,14 @@ isp_video_streamon(struct file *file, void *fh, enum v4l2_buf_type type)
 
 	mutex_lock(&video->stream_lock);
 
-	/* Start streaming on the pipeline. No link touching an entity in the
-	 * pipeline can be activated or deactivated once streaming is started.
-	 */
+	 
 	pipe = to_isp_pipeline(&video->video.entity) ? : &video->pipe;
 
 	ret = media_entity_enum_init(&pipe->ent_enum, &video->isp->media_dev);
 	if (ret)
 		goto err_enum_init;
 
-	/* TODO: Implement PM QoS */
+	 
 	pipe->l3_ick = clk_get_rate(video->isp->clock[ISP_CLK_L3_ICK]);
 	pipe->max_rate = pipe->l3_ick;
 
@@ -1103,9 +962,7 @@ isp_video_streamon(struct file *file, void *fh, enum v4l2_buf_type type)
 	if (ret < 0)
 		goto err_pipeline_start;
 
-	/* Verify that the currently configured format matches the output of
-	 * the connected subdev.
-	 */
+	 
 	ret = isp_video_check_format(video, vfh);
 	if (ret < 0)
 		goto err_check_format;
@@ -1133,10 +990,7 @@ isp_video_streamon(struct file *file, void *fh, enum v4l2_buf_type type)
 	pipe->state |= state;
 	spin_unlock_irqrestore(&pipe->lock, flags);
 
-	/* Set the maximum time per frame as the value requested by userspace.
-	 * This is a soft limit that can be overridden if the hardware doesn't
-	 * support the request limit.
-	 */
+	 
 	if (video->type == V4L2_BUF_TYPE_VIDEO_OUTPUT)
 		pipe->max_timeperframe = vfh->timeperframe;
 
@@ -1158,14 +1012,8 @@ isp_video_streamon(struct file *file, void *fh, enum v4l2_buf_type type)
 err_check_format:
 	video_device_pipeline_stop(&video->video);
 err_pipeline_start:
-	/* TODO: Implement PM QoS */
-	/* The DMA queue must be emptied here, otherwise CCDC interrupts that
-	 * will get triggered the next time the CCDC is powered up will try to
-	 * access buffers that might have been freed but still present in the
-	 * DMA queue. This can easily get triggered if the above
-	 * omap3isp_pipeline_set_stream() call fails on a system with a
-	 * free-running sensor.
-	 */
+	 
+	 
 	INIT_LIST_HEAD(&video->dmaqueue);
 	video->queue = NULL;
 
@@ -1192,7 +1040,7 @@ isp_video_streamoff(struct file *file, void *fh, enum v4l2_buf_type type)
 
 	mutex_lock(&video->stream_lock);
 
-	/* Make sure we're not streaming yet. */
+	 
 	mutex_lock(&video->queue_lock);
 	streaming = vb2_is_streaming(&vfh->queue);
 	mutex_unlock(&video->queue_lock);
@@ -1200,7 +1048,7 @@ isp_video_streamoff(struct file *file, void *fh, enum v4l2_buf_type type)
 	if (!streaming)
 		goto done;
 
-	/* Update the pipeline state. */
+	 
 	if (video->type == V4L2_BUF_TYPE_VIDEO_CAPTURE)
 		state = ISP_PIPELINE_STREAM_OUTPUT
 		      | ISP_PIPELINE_QUEUE_OUTPUT;
@@ -1212,7 +1060,7 @@ isp_video_streamoff(struct file *file, void *fh, enum v4l2_buf_type type)
 	pipe->state &= ~state;
 	spin_unlock_irqrestore(&pipe->lock, flags);
 
-	/* Stop the stream. */
+	 
 	omap3isp_pipeline_set_stream(pipe, ISP_PIPELINE_STREAM_STOPPED);
 	omap3isp_video_cancel_stream(video);
 
@@ -1222,7 +1070,7 @@ isp_video_streamoff(struct file *file, void *fh, enum v4l2_buf_type type)
 	video->queue = NULL;
 	video->error = false;
 
-	/* TODO: Implement PM QoS */
+	 
 	video_device_pipeline_stop(&video->video);
 
 	media_entity_enum_cleanup(&pipe->ent_enum);
@@ -1281,9 +1129,7 @@ static const struct v4l2_ioctl_ops isp_video_ioctl_ops = {
 	.vidioc_s_input			= isp_video_s_input,
 };
 
-/* -----------------------------------------------------------------------------
- * V4L2 file operations
- */
+ 
 
 static int isp_video_open(struct file *file)
 {
@@ -1299,7 +1145,7 @@ static int isp_video_open(struct file *file)
 	v4l2_fh_init(&handle->vfh, &video->video);
 	v4l2_fh_add(&handle->vfh);
 
-	/* If this is the first user, initialise the pipeline. */
+	 
 	if (omap3isp_get(video->isp) == NULL) {
 		ret = -EBUSY;
 		goto done;
@@ -1350,7 +1196,7 @@ static int isp_video_release(struct file *file)
 	struct v4l2_fh *vfh = file->private_data;
 	struct isp_video_fh *handle = to_isp_video_fh(vfh);
 
-	/* Disable streaming and free the buffers queue resources. */
+	 
 	isp_video_streamoff(file, vfh, video->type);
 
 	mutex_lock(&video->queue_lock);
@@ -1359,7 +1205,7 @@ static int isp_video_release(struct file *file)
 
 	v4l2_pipeline_pm_put(&video->video.entity);
 
-	/* Release the file handle. */
+	 
 	v4l2_fh_del(vfh);
 	v4l2_fh_exit(vfh);
 	kfree(handle);
@@ -1399,9 +1245,7 @@ static const struct v4l2_file_operations isp_video_fops = {
 	.mmap = isp_video_mmap,
 };
 
-/* -----------------------------------------------------------------------------
- * ISP video core
- */
+ 
 
 static const struct isp_video_operations isp_video_dummy_ops = {
 };
@@ -1440,7 +1284,7 @@ int omap3isp_video_init(struct isp_video *video, const char *name)
 	mutex_init(&video->queue_lock);
 	spin_lock_init(&video->irqlock);
 
-	/* Initialize the video device. */
+	 
 	if (video->ops == NULL)
 		video->ops = &isp_video_dummy_ops;
 

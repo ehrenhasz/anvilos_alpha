@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2012 Samsung Electronics Co.Ltd
- * Authors:
- *	Eunchul Kim <chulspro.kim@samsung.com>
- *	Jinyoung Jeon <jy0.jeon@samsung.com>
- *	Sangmin Lee <lsmin.lee@samsung.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/component.h>
@@ -25,13 +19,7 @@
 #include "exynos_drm_ipp.h"
 #include "regs-fimc.h"
 
-/*
- * FIMC stands for Fully Interactive Mobile Camera and
- * supports image scaler/rotator and input/output DMA operations.
- * input DMA reads image data from the memory.
- * output DMA writes image data to memory.
- * FIMC supports image rotation and image effect functions.
- */
+ 
 
 #define FIMC_MAX_DEVS	4
 #define FIMC_MAX_SRC	2
@@ -63,16 +51,7 @@ static const char * const fimc_clock_names[] = {
 	[FIMC_CLK_WB_B]   = "pxl_async1",
 };
 
-/*
- * A structure of scaler.
- *
- * @range: narrow, wide.
- * @bypass: unused scaler path.
- * @up_h: horizontal scale up.
- * @up_v: vertical scale up.
- * @hratio: horizontal ratio.
- * @vratio: vertical ratio.
- */
+ 
 struct fimc_scaler {
 	bool range;
 	bool bypass;
@@ -82,17 +61,7 @@ struct fimc_scaler {
 	u32 vratio;
 };
 
-/*
- * A structure of fimc context.
- *
- * @regs: memory mapped io registers.
- * @lock: locking of operations.
- * @clocks: fimc clocks.
- * @sc: scaler infomations.
- * @pol: porarity of writeback.
- * @id: fimc id.
- * @irq: irq number.
- */
+ 
 struct fimc_context {
 	struct exynos_drm_ipp ipp;
 	struct drm_device *drm_dev;
@@ -138,24 +107,24 @@ static void fimc_sw_reset(struct fimc_context *ctx)
 {
 	u32 cfg;
 
-	/* stop dma operation */
+	 
 	cfg = fimc_read(ctx, EXYNOS_CISTATUS);
 	if (EXYNOS_CISTATUS_GET_ENVID_STATUS(cfg))
 		fimc_clear_bits(ctx, EXYNOS_MSCTRL, EXYNOS_MSCTRL_ENVID);
 
 	fimc_set_bits(ctx, EXYNOS_CISRCFMT, EXYNOS_CISRCFMT_ITU601_8BIT);
 
-	/* disable image capture */
+	 
 	fimc_clear_bits(ctx, EXYNOS_CIIMGCPT,
 		EXYNOS_CIIMGCPT_IMGCPTEN_SC | EXYNOS_CIIMGCPT_IMGCPTEN);
 
-	/* s/w reset */
+	 
 	fimc_set_bits(ctx, EXYNOS_CIGCTRL, EXYNOS_CIGCTRL_SWRST);
 
-	/* s/w reset complete */
+	 
 	fimc_clear_bits(ctx, EXYNOS_CIGCTRL, EXYNOS_CIGCTRL_SWRST);
 
-	/* reset sequence */
+	 
 	fimc_write(ctx, 0x0, EXYNOS_CIFCNTSEQ);
 }
 
@@ -302,7 +271,7 @@ static void fimc_src_set_fmt_order(struct fimc_context *ctx, u32 fmt)
 
 	DRM_DEV_DEBUG_KMS(ctx->dev, "fmt[0x%x]\n", fmt);
 
-	/* RGB */
+	 
 	cfg = fimc_read(ctx, EXYNOS_CISCCTRL);
 	cfg &= ~EXYNOS_CISCCTRL_INRGB_FMT_RGB_MASK;
 
@@ -317,11 +286,11 @@ static void fimc_src_set_fmt_order(struct fimc_context *ctx, u32 fmt)
 		fimc_write(ctx, cfg, EXYNOS_CISCCTRL);
 		return;
 	default:
-		/* bypass */
+		 
 		break;
 	}
 
-	/* YUV */
+	 
 	cfg = fimc_read(ctx, EXYNOS_MSCTRL);
 	cfg &= ~(EXYNOS_MSCTRL_ORDER2P_SHIFT_MASK |
 		EXYNOS_MSCTRL_C_INT_IN_2PLANE |
@@ -470,7 +439,7 @@ static void fimc_set_window(struct fimc_context *ctx,
 	unsigned int real_width = buf->buf.pitch[0] / buf->format->cpp[0];
 	u32 cfg, h1, h2, v1, v2;
 
-	/* cropped image */
+	 
 	h1 = buf->rect.x;
 	h2 = real_width - buf->rect.w - buf->rect.x;
 	v1 = buf->rect.y;
@@ -482,10 +451,7 @@ static void fimc_set_window(struct fimc_context *ctx,
 	DRM_DEV_DEBUG_KMS(ctx->dev, "h1[%d]h2[%d]v1[%d]v2[%d]\n", h1, h2, v1,
 			  v2);
 
-	/*
-	 * set window offset 1, 2 size
-	 * check figure 43-21 in user manual
-	 */
+	 
 	cfg = fimc_read(ctx, EXYNOS_CIWDOFST);
 	cfg &= ~(EXYNOS_CIWDOFST_WINHOROFST_MASK |
 		EXYNOS_CIWDOFST_WINVEROFST_MASK);
@@ -508,7 +474,7 @@ static void fimc_src_set_size(struct fimc_context *ctx,
 	DRM_DEV_DEBUG_KMS(ctx->dev, "hsize[%d]vsize[%d]\n", real_width,
 			  buf->buf.height);
 
-	/* original size */
+	 
 	cfg = (EXYNOS_ORGISIZE_HORIZONTAL(real_width) |
 		EXYNOS_ORGISIZE_VERTICAL(buf->buf.height));
 
@@ -517,7 +483,7 @@ static void fimc_src_set_size(struct fimc_context *ctx,
 	DRM_DEV_DEBUG_KMS(ctx->dev, "x[%d]y[%d]w[%d]h[%d]\n", buf->rect.x,
 			  buf->rect.y, buf->rect.w, buf->rect.h);
 
-	/* set input DMA image size */
+	 
 	cfg = fimc_read(ctx, EXYNOS_CIREAL_ISIZE);
 	cfg &= ~(EXYNOS_CIREAL_ISIZE_HEIGHT_MASK |
 		EXYNOS_CIREAL_ISIZE_WIDTH_MASK);
@@ -525,16 +491,13 @@ static void fimc_src_set_size(struct fimc_context *ctx,
 		EXYNOS_CIREAL_ISIZE_HEIGHT(buf->rect.h));
 	fimc_write(ctx, cfg, EXYNOS_CIREAL_ISIZE);
 
-	/*
-	 * set input FIFO image size
-	 * for now, we support only ITU601 8 bit mode
-	 */
+	 
 	cfg = (EXYNOS_CISRCFMT_ITU601_8BIT |
 		EXYNOS_CISRCFMT_SOURCEHSIZE(real_width) |
 		EXYNOS_CISRCFMT_SOURCEVSIZE(buf->buf.height));
 	fimc_write(ctx, cfg, EXYNOS_CISRCFMT);
 
-	/* offset Y(RGB), Cb, Cr */
+	 
 	cfg = (EXYNOS_CIIYOFF_HORIZONTAL(buf->rect.x) |
 		EXYNOS_CIIYOFF_VERTICAL(buf->rect.y));
 	fimc_write(ctx, cfg, EXYNOS_CIIYOFF);
@@ -562,7 +525,7 @@ static void fimc_dst_set_fmt_order(struct fimc_context *ctx, u32 fmt)
 
 	DRM_DEV_DEBUG_KMS(ctx->dev, "fmt[0x%x]\n", fmt);
 
-	/* RGB */
+	 
 	cfg = fimc_read(ctx, EXYNOS_CISCCTRL);
 	cfg &= ~EXYNOS_CISCCTRL_OUTRGB_FMT_RGB_MASK;
 
@@ -581,11 +544,11 @@ static void fimc_dst_set_fmt_order(struct fimc_context *ctx, u32 fmt)
 		fimc_write(ctx, cfg, EXYNOS_CISCCTRL);
 		break;
 	default:
-		/* bypass */
+		 
 		break;
 	}
 
-	/* YUV */
+	 
 	cfg = fimc_read(ctx, EXYNOS_CIOCTRL);
 	cfg &= ~(EXYNOS_CIOCTRL_ORDER2P_MASK |
 		EXYNOS_CIOCTRL_ORDER422_MASK |
@@ -760,7 +723,7 @@ static int fimc_set_prescaler(struct fimc_context *ctx, struct fimc_scaler *sc,
 		dst_h = dst->h;
 	}
 
-	/* fimc_ippdrv_check_property assures that dividers are not null */
+	 
 	hfactor = fls(src_w / dst_w / 2);
 	if (hfactor > FIMC_SHFACTOR / 2) {
 		dev_err(ctx->dev, "failed to get ratio horizontal.\n");
@@ -850,7 +813,7 @@ static void fimc_dst_set_size(struct fimc_context *ctx,
 	DRM_DEV_DEBUG_KMS(ctx->dev, "hsize[%d]vsize[%d]\n", real_width,
 			  buf->buf.height);
 
-	/* original size */
+	 
 	cfg = (EXYNOS_ORGOSIZE_HORIZONTAL(real_width) |
 		EXYNOS_ORGOSIZE_VERTICAL(buf->buf.height));
 
@@ -860,7 +823,7 @@ static void fimc_dst_set_size(struct fimc_context *ctx,
 			  buf->rect.y,
 			  buf->rect.w, buf->rect.h);
 
-	/* CSC ITU */
+	 
 	cfg = fimc_read(ctx, EXYNOS_CIGCTRL);
 	cfg &= ~EXYNOS_CIGCTRL_CSC_MASK;
 
@@ -873,7 +836,7 @@ static void fimc_dst_set_size(struct fimc_context *ctx,
 
 	cfg_ext = fimc_read(ctx, EXYNOS_CITRGFMT);
 
-	/* target image size */
+	 
 	cfg = fimc_read(ctx, EXYNOS_CITRGFMT);
 	cfg &= ~(EXYNOS_CITRGFMT_TARGETH_MASK |
 		EXYNOS_CITRGFMT_TARGETV_MASK);
@@ -885,11 +848,11 @@ static void fimc_dst_set_size(struct fimc_context *ctx,
 			EXYNOS_CITRGFMT_TARGETVSIZE(buf->rect.h));
 	fimc_write(ctx, cfg, EXYNOS_CITRGFMT);
 
-	/* target area */
+	 
 	cfg = EXYNOS_CITAREA_TARGET_AREA(buf->rect.w * buf->rect.h);
 	fimc_write(ctx, cfg, EXYNOS_CITAREA);
 
-	/* offset Y(RGB), Cb, Cr */
+	 
 	cfg = (EXYNOS_CIOYOFF_HORIZONTAL(buf->rect.x) |
 		EXYNOS_CIOYOFF_VERTICAL(buf->rect.y));
 	fimc_write(ctx, cfg, EXYNOS_CIOYOFF);
@@ -997,10 +960,10 @@ static void fimc_clear_addr(struct fimc_context *ctx)
 
 static void fimc_reset(struct fimc_context *ctx)
 {
-	/* reset h/w block */
+	 
 	fimc_sw_reset(ctx);
 
-	/* reset scaler capability */
+	 
 	memset(&ctx->sc, 0x0, sizeof(ctx->sc));
 
 	fimc_clear_addr(ctx);
@@ -1012,27 +975,27 @@ static void fimc_start(struct fimc_context *ctx)
 
 	fimc_mask_irq(ctx, true);
 
-	/* If set true, we can save jpeg about screen */
+	 
 	fimc_handle_jpeg(ctx, false);
 	fimc_set_scaler(ctx, &ctx->sc);
 
 	fimc_set_type_ctrl(ctx);
 	fimc_handle_lastend(ctx, false);
 
-	/* setup dma */
+	 
 	cfg0 = fimc_read(ctx, EXYNOS_MSCTRL);
 	cfg0 &= ~EXYNOS_MSCTRL_INPUT_MASK;
 	cfg0 |= EXYNOS_MSCTRL_INPUT_MEMORY;
 	fimc_write(ctx, cfg0, EXYNOS_MSCTRL);
 
-	/* Reset status */
+	 
 	fimc_write(ctx, 0x0, EXYNOS_CISTATUS);
 
 	cfg0 = fimc_read(ctx, EXYNOS_CIIMGCPT);
 	cfg0 &= ~EXYNOS_CIIMGCPT_IMGCPTEN_SC;
 	cfg0 |= EXYNOS_CIIMGCPT_IMGCPTEN_SC;
 
-	/* Scaler */
+	 
 	cfg1 = fimc_read(ctx, EXYNOS_CISCCTRL);
 	cfg1 &= ~EXYNOS_CISCCTRL_SCAN_MASK;
 	cfg1 |= (EXYNOS_CISCCTRL_PROGRESSIVE |
@@ -1040,11 +1003,11 @@ static void fimc_start(struct fimc_context *ctx)
 
 	fimc_write(ctx, cfg1, EXYNOS_CISCCTRL);
 
-	/* Enable image capture*/
+	 
 	cfg0 |= EXYNOS_CIIMGCPT_IMGCPTEN;
 	fimc_write(ctx, cfg0, EXYNOS_CIIMGCPT);
 
-	/* Disable frame end irq */
+	 
 	fimc_clear_bits(ctx, EXYNOS_CIGCTRL, EXYNOS_CIGCTRL_IRQ_END_DISABLE);
 
 	fimc_clear_bits(ctx, EXYNOS_CIOCTRL, EXYNOS_CIOCTRL_WEAVE_MASK);
@@ -1056,7 +1019,7 @@ static void fimc_stop(struct fimc_context *ctx)
 {
 	u32 cfg;
 
-	/* Source clear */
+	 
 	cfg = fimc_read(ctx, EXYNOS_MSCTRL);
 	cfg &= ~EXYNOS_MSCTRL_INPUT_MASK;
 	cfg &= ~EXYNOS_MSCTRL_ENVID;
@@ -1064,17 +1027,17 @@ static void fimc_stop(struct fimc_context *ctx)
 
 	fimc_mask_irq(ctx, false);
 
-	/* reset sequence */
+	 
 	fimc_write(ctx, 0x0, EXYNOS_CIFCNTSEQ);
 
-	/* Scaler disable */
+	 
 	fimc_clear_bits(ctx, EXYNOS_CISCCTRL, EXYNOS_CISCCTRL_SCALERSTART);
 
-	/* Disable image capture */
+	 
 	fimc_clear_bits(ctx, EXYNOS_CIIMGCPT,
 		EXYNOS_CIIMGCPT_IMGCPTEN_SC | EXYNOS_CIIMGCPT_IMGCPTEN);
 
-	/* Enable frame end irq */
+	 
 	fimc_set_bits(ctx, EXYNOS_CIGCTRL, EXYNOS_CIGCTRL_IRQ_END_DISABLE);
 }
 
@@ -1280,14 +1243,14 @@ static int fimc_probe(struct platform_device *pdev)
 	ctx->dev = dev;
 	ctx->id = of_alias_get_id(dev->of_node, "fimc");
 
-	/* construct formats/limits array */
+	 
 	num_formats = ARRAY_SIZE(fimc_formats) + ARRAY_SIZE(fimc_tiled_formats);
 	formats = devm_kcalloc(dev, num_formats, sizeof(*formats),
 			       GFP_KERNEL);
 	if (!formats)
 		return -ENOMEM;
 
-	/* linear formats */
+	 
 	if (ctx->id < 3) {
 		limits = fimc_4210_limits_v1;
 		num_limits = ARRAY_SIZE(fimc_4210_limits_v1);
@@ -1303,7 +1266,7 @@ static int fimc_probe(struct platform_device *pdev)
 		formats[i].num_limits = num_limits;
 	}
 
-	/* tiled formats */
+	 
 	if (ctx->id < 3) {
 		limits = fimc_4210_limits_tiled_v1;
 		num_limits = ARRAY_SIZE(fimc_4210_limits_tiled_v1);
@@ -1323,12 +1286,12 @@ static int fimc_probe(struct platform_device *pdev)
 	ctx->formats = formats;
 	ctx->num_formats = num_formats;
 
-	/* resource memory */
+	 
 	ctx->regs = devm_platform_ioremap_resource(pdev, 0);
 	if (IS_ERR(ctx->regs))
 		return PTR_ERR(ctx->regs);
 
-	/* resource irq */
+	 
 	ret = platform_get_irq(pdev, 0);
 	if (ret < 0)
 		return ret;

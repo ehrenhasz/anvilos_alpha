@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * mb1232.c - Support for MaxBotix I2CXL-MaxSonar-EZ series ultrasonic
- *   ranger with i2c interface
- * actually tested with mb1232 type
- *
- * Copyright (c) 2019 Andreas Klinger <ak@it-klinger.de>
- *
- * For details about the device see:
- * https://www.maxbotix.com/documents/I2CXL-MaxSonar-EZ_Datasheet.pdf
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/err.h>
@@ -24,25 +15,20 @@
 #include <linux/iio/trigger_consumer.h>
 #include <linux/iio/triggered_buffer.h>
 
-/* registers of MaxSonar device */
-#define MB1232_RANGE_COMMAND	0x51	/* Command for reading range */
-#define MB1232_ADDR_UNLOCK_1	0xAA	/* Command 1 for changing address */
-#define MB1232_ADDR_UNLOCK_2	0xA5	/* Command 2 for changing address */
+ 
+#define MB1232_RANGE_COMMAND	0x51	 
+#define MB1232_ADDR_UNLOCK_1	0xAA	 
+#define MB1232_ADDR_UNLOCK_2	0xA5	 
 
 struct mb1232_data {
 	struct i2c_client	*client;
 
 	struct mutex		lock;
 
-	/*
-	 * optionally a gpio can be used to announce when ranging has
-	 * finished
-	 * since we are just using the falling trigger of it we request
-	 * only the interrupt for announcing when data is ready to be read
-	 */
+	 
 	struct completion	ranging;
 	int			irqnr;
-	/* Ensure correct alignment of data to push to IIO buffer */
+	 
 	struct {
 		s16 distance;
 		s64 ts __aligned(8);
@@ -77,7 +63,7 @@ static s16 mb1232_read_distance(struct mb1232_data *data)
 	}
 
 	if (data->irqnr > 0) {
-		/* it cannot take more than 100 ms */
+		 
 		ret = wait_for_completion_killable_timeout(&data->ranging,
 									HZ/10);
 		if (ret < 0)
@@ -87,7 +73,7 @@ static s16 mb1232_read_distance(struct mb1232_data *data)
 			goto error_unlock;
 		}
 	} else {
-		/* use simple sleep if announce irq is not connected */
+		 
 		msleep(15);
 	}
 
@@ -98,7 +84,7 @@ static s16 mb1232_read_distance(struct mb1232_data *data)
 	}
 
 	distance = __be16_to_cpu(buf);
-	/* check for not returning misleading error codes */
+	 
 	if (distance < 0) {
 		dev_err(&client->dev, "distance=%d\n", distance);
 		ret = -EINVAL;
@@ -151,7 +137,7 @@ static int mb1232_read_raw(struct iio_dev *indio_dev,
 		*val = ret;
 		return IIO_VAL_INT;
 	case IIO_CHAN_INFO_SCALE:
-		/* 1 LSB is 1 cm */
+		 
 		*val = 0;
 		*val2 = 10000;
 		return IIO_VAL_INT_PLUS_MICRO;

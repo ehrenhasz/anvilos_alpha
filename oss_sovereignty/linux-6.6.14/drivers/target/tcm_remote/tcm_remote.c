@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
+
 
 #include <linux/module.h>
 #include <linux/moduleparam.h>
@@ -24,18 +24,13 @@ static inline struct tcm_remote_tpg *remote_tpg(struct se_portal_group *se_tpg)
 
 static char *tcm_remote_get_endpoint_wwn(struct se_portal_group *se_tpg)
 {
-	/*
-	 * Return the passed NAA identifier for the Target Port
-	 */
+	 
 	return &remote_tpg(se_tpg)->remote_hba->remote_wwn_address[0];
 }
 
 static u16 tcm_remote_get_tag(struct se_portal_group *se_tpg)
 {
-	/*
-	 * This Tag is used when forming SCSI Name identifier in EVPD=1 0x83
-	 * to represent the SCSI Target Port.
-	 */
+	 
 	return remote_tpg(se_tpg)->remote_tpgt;
 }
 
@@ -109,9 +104,7 @@ static struct se_portal_group *tcm_remote_make_tpg(
 	remote_tpg = &remote_hba->remote_hba_tpgs[tpgt];
 	remote_tpg->remote_hba = remote_hba;
 	remote_tpg->remote_tpgt = tpgt;
-	/*
-	 * Register the remote_tpg as a emulated TCM Target Endpoint
-	 */
+	 
 	ret = core_tpg_register(wwn, &remote_tpg->remote_se_tpg,
 				remote_hba->remote_proto_id);
 	if (ret < 0)
@@ -134,9 +127,7 @@ static void tcm_remote_drop_tpg(struct se_portal_group *se_tpg)
 	remote_hba = remote_tpg->remote_hba;
 	tpgt = remote_tpg->remote_tpgt;
 
-	/*
-	 * Deregister the remote_tpg as a emulated TCM Target Endpoint
-	 */
+	 
 	core_tpg_deregister(se_tpg);
 
 	remote_tpg->remote_hba = NULL;
@@ -160,10 +151,7 @@ static struct se_wwn *tcm_remote_make_wwn(
 	if (!remote_hba)
 		return ERR_PTR(-ENOMEM);
 
-	/*
-	 * Determine the emulated Protocol Identifier and Target Port Name
-	 * based on the incoming configfs directory name.
-	 */
+	 
 	ptr = strstr(name, "naa.");
 	if (ptr) {
 		remote_hba->remote_proto_id = SCSI_PROTOCOL_SAS;
@@ -172,13 +160,13 @@ static struct se_wwn *tcm_remote_make_wwn(
 	ptr = strstr(name, "fc.");
 	if (ptr) {
 		remote_hba->remote_proto_id = SCSI_PROTOCOL_FCP;
-		off = 3; /* Skip over "fc." */
+		off = 3;  
 		goto check_len;
 	}
 	ptr = strstr(name, "0x");
 	if (ptr) {
 		remote_hba->remote_proto_id = SCSI_PROTOCOL_SRP;
-		off = 2; /* Skip over "0x" */
+		off = 2;  
 		goto check_len;
 	}
 	ptr = strstr(name, "iqn.");

@@ -1,25 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * JZ4780 EFUSE Memory Support driver
- *
- * Copyright (c) 2017 PrasannaKumar Muralidharan <prasannatsmkumar@gmail.com>
- * Copyright (c) 2020 H. Nikolaus Schaller <hns@goldelico.com>
- */
 
-/*
- * Currently supports JZ4780 efuse which has 8K programmable bit.
- * Efuse is separated into seven segments as below:
- *
- * -----------------------------------------------------------------------
- * | 64 bit | 128 bit | 128 bit | 3520 bit | 8 bit | 2296 bit | 2048 bit |
- * -----------------------------------------------------------------------
- *
- * The rom itself is accessed using a 9 bit address line and an 8 word wide bus
- * which reads/writes based on strobes. The strobe is configured in the config
- * register and is based on number of cycles of the bus clock.
- *
- * Driver supports read only as the writes are done in the Factory.
- */
+ 
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/clk.h>
@@ -30,12 +12,12 @@
 #include <linux/regmap.h>
 #include <linux/timer.h>
 
-#define JZ_EFUCTRL		(0x0)	/* Control Register */
-#define JZ_EFUCFG		(0x4)	/* Configure Register*/
-#define JZ_EFUSTATE		(0x8)	/* Status Register */
+#define JZ_EFUCTRL		(0x0)	 
+#define JZ_EFUCFG		(0x4)	 
+#define JZ_EFUSTATE		(0x8)	 
 #define JZ_EFUDATA(n)		(0xC + (n) * 4)
 
-/* We read 32 byte chunks to avoid complexity in the driver. */
+ 
 #define JZ_EFU_READ_SIZE 32
 
 #define EFUCTRL_ADDR_MASK	0x3FF
@@ -65,7 +47,7 @@ struct jz4780_efuse {
 	struct clk *clk;
 };
 
-/* main entry point */
+ 
 static int jz4780_efuse_read(void *context, unsigned int offset,
 			     void *val, size_t bytes)
 {
@@ -179,17 +161,7 @@ static int jz4780_efuse_probe(struct platform_device *pdev)
 
 	efuse->dev = dev;
 
-	/*
-	 * rd_adj and rd_strobe are 4 bit values
-	 * conditions:
-	 *   bus clk_period * (rd_adj + 1) > 6.5ns
-	 *   bus clk_period * (rd_adj + 5 + rd_strobe) > 35ns
-	 *   i.e. rd_adj >= 6.5ns / clk_period
-	 *   i.e. rd_strobe >= 35 ns / clk_period - 5 - rd_adj + 1
-	 * constants:
-	 *   1 / 6.5ns == 153846154 Hz
-	 *   1 / 35ns == 28571429 Hz
-	 */
+	 
 
 	rd_adj = clk_rate / 153846154;
 	rd_strobe = clk_rate / 28571429 - 5 - rd_adj + 1;
@@ -217,7 +189,7 @@ static int jz4780_efuse_probe(struct platform_device *pdev)
 
 static const struct of_device_id jz4780_efuse_match[] = {
 	{ .compatible = "ingenic,jz4780-efuse" },
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, jz4780_efuse_match);
 

@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * vivid-core.h - core datastructures
- *
- * Copyright 2014 Cisco Systems, Inc. and/or its affiliates. All rights reserved.
- */
+ 
+ 
 
 #ifndef _VIVID_CORE_H_
 #define _VIVID_CORE_H_
@@ -22,31 +18,31 @@
 #define dprintk(dev, level, fmt, arg...) \
 	v4l2_dbg(level, vivid_debug, &dev->v4l2_dev, fmt, ## arg)
 
-/* The maximum number of inputs */
+ 
 #define MAX_INPUTS 16
-/* The maximum number of outputs */
+ 
 #define MAX_OUTPUTS 16
-/* The maximum up or down scaling factor is 4 */
+ 
 #define MAX_ZOOM  4
-/* The maximum image width/height are set to 4K DMT */
+ 
 #define MAX_WIDTH  4096
 #define MAX_HEIGHT 2160
-/* The minimum image width/height */
+ 
 #define MIN_WIDTH  16
 #define MIN_HEIGHT MIN_WIDTH
-/* Pixel Array control divider */
+ 
 #define PIXEL_ARRAY_DIV MIN_WIDTH
-/* The data_offset of plane 0 for the multiplanar formats */
+ 
 #define PLANE0_DATA_OFFSET 128
 
-/* The supported TV frequency range in MHz */
+ 
 #define MIN_TV_FREQ (44U * 16U)
 #define MAX_TV_FREQ (958U * 16U)
 
-/* The number of samples returned in every SDR buffer */
+ 
 #define SDR_CAP_SAMPLES_PER_BUF 0x4000
 
-/* used by the threads to know when to resync internal counters */
+ 
 #define JIFFIES_PER_DAY (3600U * 24U * HZ)
 #define JIFFIES_RESYNC (JIFFIES_PER_DAY * (0xf0000000U / JIFFIES_PER_DAY))
 
@@ -55,7 +51,7 @@ extern const struct v4l2_rect vivid_max_rect;
 extern unsigned vivid_debug;
 
 struct vivid_fmt {
-	u32	fourcc;          /* v4l2 format id */
+	u32	fourcc;           
 	enum	tgp_color_enc color_enc;
 	bool	can_do_overlay;
 	u8	vdownsampling[TPG_MAX_PLANES];
@@ -68,9 +64,9 @@ struct vivid_fmt {
 
 extern struct vivid_fmt vivid_formats[];
 
-/* buffer for one video frame */
+ 
 struct vivid_buffer {
-	/* common v4l buffer stuff -- must be first */
+	 
 	struct vb2_v4l2_buffer vb;
 	struct list_head	list;
 };
@@ -162,7 +158,7 @@ struct vivid_dev {
 	spinlock_t			slock;
 	struct mutex			mutex;
 
-	/* capabilities */
+	 
 	u32				vid_cap_caps;
 	u32				vid_out_caps;
 	u32				vbi_cap_caps;
@@ -174,7 +170,7 @@ struct vivid_dev {
 	u32				meta_out_caps;
 	u32				touch_cap_caps;
 
-	/* supported features */
+	 
 	bool				multiplanar;
 	unsigned			num_inputs;
 	unsigned int			num_hdmi_inputs;
@@ -205,13 +201,13 @@ struct vivid_dev {
 
 	bool				can_loop_video;
 
-	/* controls */
+	 
 	struct v4l2_ctrl		*brightness;
 	struct v4l2_ctrl		*contrast;
 	struct v4l2_ctrl		*saturation;
 	struct v4l2_ctrl		*hue;
 	struct {
-		/* autogain/gain cluster */
+		 
 		struct v4l2_ctrl	*autogain;
 		struct v4l2_ctrl	*gain;
 	};
@@ -233,12 +229,12 @@ struct vivid_dev {
 	struct v4l2_ctrl		*rgb_range_cap;
 	struct v4l2_ctrl		*real_rgb_range_cap;
 	struct {
-		/* std_signal_mode/standard cluster */
+		 
 		struct v4l2_ctrl	*ctrl_std_signal_mode;
 		struct v4l2_ctrl	*ctrl_standard;
 	};
 	struct {
-		/* dv_timings_signal_mode/timings cluster */
+		 
 		struct v4l2_ctrl	*ctrl_dv_timings_signal_mode;
 		struct v4l2_ctrl	*ctrl_dv_timings;
 	};
@@ -287,7 +283,7 @@ struct vivid_dev {
 	bool				loop_video;
 	bool				reduced_fps;
 
-	/* Framebuffer */
+	 
 	unsigned long			video_pbase;
 	void				*video_vbase;
 	u32				video_buffer_size;
@@ -300,7 +296,7 @@ struct vivid_dev {
 	struct fb_var_screeninfo	fb_defined;
 	struct fb_fix_screeninfo	fb_fix;
 
-	/* Error injection */
+	 
 	bool				disconnect_error;
 	bool				queue_setup_error;
 	bool				buf_prepare_error;
@@ -324,7 +320,7 @@ struct vivid_dev {
 	unsigned int			query_dv_timings[MAX_INPUTS];
 	enum tpg_video_aspect		dv_timings_aspect_ratio[MAX_INPUTS];
 
-	/* Input */
+	 
 	unsigned			input;
 	v4l2_std_id			std_cap[MAX_INPUTS];
 	struct v4l2_dv_timings		dv_timings_cap[MAX_INPUTS];
@@ -343,7 +339,7 @@ struct vivid_dev {
 
 	u32				power_present;
 
-	/* Output */
+	 
 	unsigned			output;
 	v4l2_std_id			std_out;
 	struct v4l2_dv_timings		dv_timings_out;
@@ -366,7 +362,7 @@ struct vivid_dev {
 	unsigned			cur_scaled_line;
 	bool				display_present[MAX_OUTPUTS];
 
-	/* Output Overlay */
+	 
 	void				*fb_vbase_out;
 	bool				overlay_out_enabled;
 	int				overlay_out_top, overlay_out_left;
@@ -374,7 +370,7 @@ struct vivid_dev {
 	u32				chromakey_out;
 	u8				global_alpha_out;
 
-	/* video capture */
+	 
 	struct tpg_data			tpg;
 	unsigned			ms_vid_cap;
 	bool				must_blank[VIDEO_MAX_FRAME];
@@ -396,7 +392,7 @@ struct vivid_dev {
 	struct vb2_queue		vb_touch_cap_q;
 	struct list_head		touch_cap_active;
 
-	/* thread for generating video capture stream */
+	 
 	struct task_struct		*kthread_vid_cap;
 	unsigned long			jiffies_vid_cap;
 	u64				cap_stream_start;
@@ -415,7 +411,7 @@ struct vivid_dev {
 	u32				meta_cap_seq_count;
 	bool				meta_cap_streaming;
 
-	/* Touch capture */
+	 
 	struct task_struct		*kthread_touch_cap;
 	unsigned long			jiffies_touch_cap;
 	u64				touch_cap_stream_start;
@@ -429,7 +425,7 @@ struct vivid_dev {
 	struct v4l2_pix_format		tch_format;
 	int				tch_pat_random;
 
-	/* video output */
+	 
 	const struct vivid_fmt		*fmt_out;
 	struct v4l2_fract		timeperframe_vid_out;
 	enum v4l2_field			field_out;
@@ -445,33 +441,22 @@ struct vivid_dev {
 	struct vb2_queue		vb_meta_out_q;
 	struct list_head		meta_out_active;
 
-	/* video loop precalculated rectangles */
+	 
 
-	/*
-	 * Intersection between what the output side composes and the capture side
-	 * crops. I.e., what actually needs to be copied from the output buffer to
-	 * the capture buffer.
-	 */
+	 
 	struct v4l2_rect		loop_vid_copy;
-	/* The part of the output buffer that (after scaling) corresponds to loop_vid_copy. */
+	 
 	struct v4l2_rect		loop_vid_out;
-	/* The part of the capture buffer that (after scaling) corresponds to loop_vid_copy. */
+	 
 	struct v4l2_rect		loop_vid_cap;
-	/*
-	 * The intersection of the framebuffer, the overlay output window and
-	 * loop_vid_copy. I.e., the part of the framebuffer that actually should be
-	 * blended with the compose_out rectangle. This uses the framebuffer origin.
-	 */
+	 
 	struct v4l2_rect		loop_fb_copy;
-	/* The same as loop_fb_copy but with compose_out origin. */
+	 
 	struct v4l2_rect		loop_vid_overlay;
-	/*
-	 * The part of the capture buffer that (after scaling) corresponds
-	 * to loop_vid_overlay.
-	 */
+	 
 	struct v4l2_rect		loop_vid_overlay_cap;
 
-	/* thread for generating video output stream */
+	 
 	struct task_struct		*kthread_vid_out;
 	unsigned long			jiffies_vid_out;
 	u32				out_seq_offset;
@@ -488,10 +473,10 @@ struct vivid_dev {
 	u32				meta_out_seq_count;
 	bool				meta_out_streaming;
 
-	/* SDR capture */
+	 
 	struct vb2_queue		vb_sdr_cap_q;
 	struct list_head		sdr_cap_active;
-	u32				sdr_pixelformat; /* v4l2 format id */
+	u32				sdr_pixelformat;  
 	unsigned			sdr_buffersize;
 	unsigned			sdr_adc_freq;
 	unsigned			sdr_fm_freq;
@@ -507,7 +492,7 @@ struct vivid_dev {
 	bool				has_compose_out;
 	bool				has_scaler_out;
 
-	/* thread for generating SDR stream */
+	 
 	struct task_struct		*kthread_sdr_cap;
 	unsigned long			jiffies_sdr_cap;
 	u32				sdr_cap_seq_offset;
@@ -516,10 +501,10 @@ struct vivid_dev {
 	u32				sdr_cap_with_seq_wrap_count;
 	bool				sdr_cap_seq_resync;
 
-	/* RDS generator */
+	 
 	struct vivid_rds_gen		rds_gen;
 
-	/* Radio receiver */
+	 
 	unsigned			radio_rx_freq;
 	unsigned			radio_rx_audmode;
 	int				radio_rx_sig_qual;
@@ -531,29 +516,29 @@ struct vivid_dev {
 	unsigned			radio_rx_rds_last_block;
 	struct v4l2_fh			*radio_rx_rds_owner;
 
-	/* Radio transmitter */
+	 
 	unsigned			radio_tx_freq;
 	unsigned			radio_tx_subchans;
 	bool				radio_tx_rds_controls;
 	unsigned			radio_tx_rds_last_block;
 	struct v4l2_fh			*radio_tx_rds_owner;
 
-	/* Shared between radio receiver and transmitter */
+	 
 	bool				radio_rds_loop;
 	ktime_t				radio_rds_init_time;
 
-	/* CEC */
+	 
 	struct cec_adapter		*cec_rx_adap;
 	struct cec_adapter		*cec_tx_adap[MAX_OUTPUTS];
 	u8				cec_output2bus_map[MAX_OUTPUTS];
 	struct task_struct		*kthread_cec;
 	wait_queue_head_t		kthread_waitq_cec;
 	struct vivid_cec_xfer	xfers[MAX_OUTPUTS];
-	spinlock_t			cec_xfers_slock; /* read and write cec messages */
-	u32				cec_sft; /* bus signal free time, in bit periods */
+	spinlock_t			cec_xfers_slock;  
+	u32				cec_sft;  
 	u8				last_initiator;
 
-	/* CEC OSD String */
+	 
 	char				osd[14];
 	unsigned long			osd_jiffies;
 

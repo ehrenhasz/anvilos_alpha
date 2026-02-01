@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  Copyright (c) 2016 Masaki Ota <masaki.ota@jp.alps.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/hid.h>
@@ -11,7 +9,7 @@
 #include <asm/unaligned.h>
 #include "hid-ids.h"
 
-/* ALPS Device Product ID */
+ 
 #define HID_PRODUCT_ID_T3_BTNLESS	0xD0C0
 #define HID_PRODUCT_ID_COSMO		0x1202
 #define HID_PRODUCT_ID_U1_PTP_1		0x1207
@@ -23,18 +21,18 @@
 #define DEV_SINGLEPOINT				0x01
 #define DEV_DUALPOINT				0x02
 
-#define U1_MOUSE_REPORT_ID			0x01 /* Mouse data ReportID */
-#define U1_ABSOLUTE_REPORT_ID		0x03 /* Absolute data ReportID */
-#define U1_ABSOLUTE_REPORT_ID_SECD  0x02 /* FW-PTP Absolute data ReportID */
-#define U1_FEATURE_REPORT_ID		0x05 /* Feature ReportID */
-#define U1_SP_ABSOLUTE_REPORT_ID	0x06 /* Feature ReportID */
+#define U1_MOUSE_REPORT_ID			0x01  
+#define U1_ABSOLUTE_REPORT_ID		0x03  
+#define U1_ABSOLUTE_REPORT_ID_SECD  0x02  
+#define U1_FEATURE_REPORT_ID		0x05  
+#define U1_SP_ABSOLUTE_REPORT_ID	0x06  
 
-#define U1_FEATURE_REPORT_LEN		0x08 /* Feature Report Length */
+#define U1_FEATURE_REPORT_LEN		0x08  
 #define U1_FEATURE_REPORT_LEN_ALL	0x0A
 #define U1_CMD_REGISTER_READ		0xD1
 #define U1_CMD_REGISTER_WRITE		0xD2
 
-#define	U1_DEVTYPE_SP_SUPPORT		0x10 /* SP Support */
+#define	U1_DEVTYPE_SP_SUPPORT		0x10  
 #define	U1_DISABLE_DEV				0x01
 #define U1_TP_ABS_MODE				0x02
 #define	U1_SP_ABS_MODE				0x80
@@ -73,26 +71,7 @@ enum dev_num {
 	T4,
 	UNKNOWN,
 };
-/**
- * struct alps_dev
- *
- * @input: pointer to the kernel input device
- * @input2: pointer to the kernel input2 device
- * @hdev: pointer to the struct hid_device
- *
- * @dev_type: device type
- * @max_fingers: total number of fingers
- * @has_sp: boolean of sp existense
- * @sp_btn_info: button information
- * @x_active_len_mm: active area length of X (mm)
- * @y_active_len_mm: active area length of Y (mm)
- * @x_max: maximum x coordinate value
- * @y_max: maximum y coordinate value
- * @x_min: minimum x coordinate value
- * @y_min: minimum y coordinate value
- * @btn_cnt: number of buttons
- * @sp_btn_cnt: number of stick buttons
- */
+ 
 struct alps_dev {
 	struct input_dev *input;
 	struct input_dev *input2;
@@ -186,7 +165,7 @@ static int t4_read_write_register(struct hid_device *hdev, u32 address,
 	input[6] = 1;
 	input[7] = 0;
 
-	/* Calculate the checksum */
+	 
 	check_sum = t4_calc_check_sum(input, 1, 8);
 	input[9] = (u8)check_sum;
 	input[10] = (u8)(check_sum >> 8);
@@ -272,7 +251,7 @@ static int u1_read_write_register(struct hid_device *hdev, u32 address,
 
 	put_unaligned_le32(address, input + 2);
 
-	/* Calculate the checksum */
+	 
 	check_sum = U1_FEATURE_REPORT_LEN_ALL;
 	for (i = 0; i < U1_FEATURE_REPORT_LEN - 1; i++)
 		check_sum += input[i];
@@ -500,7 +479,7 @@ static int u1_init(struct hid_device *hdev, struct alps_dev *pri_data)
 	u8 tmp, dev_ctrl, sen_line_num_x, sen_line_num_y;
 	u8 pitch_x, pitch_y, resolution;
 
-	/* Device initialization */
+	 
 	ret = u1_read_write_register(hdev, ADDRESS_U1_DEV_CTRL_1,
 			&dev_ctrl, 0, true);
 	if (ret < 0) {
@@ -572,12 +551,12 @@ static int u1_init(struct hid_device *hdev, struct alps_dev *pri_data)
 	if ((tmp & 0x0F) == (tmp & 0xF0) >> 4) {
 		pri_data->btn_cnt = (tmp & 0x0F);
 	} else {
-		/* Button pad */
+		 
 		pri_data->btn_cnt = 1;
 	}
 
 	pri_data->has_sp = 0;
-	/* Check StickPointer device */
+	 
 	ret = u1_read_write_register(hdev, ADDRESS_U1_DEVICE_TYP,
 			&tmp, 0, true);
 	if (ret < 0) {
@@ -685,7 +664,7 @@ static int alps_input_configured(struct hid_device *hdev, struct hid_input *hi)
 	if (ret)
 		return ret;
 
-	/* Allow incoming hid reports */
+	 
 	hid_device_io_start(hdev);
 	switch (data->dev_type) {
 	case T4:
@@ -727,7 +706,7 @@ static int alps_input_configured(struct hid_device *hdev, struct hid_input *hi)
 	for (i = 0; i < data->btn_cnt; i++)
 		__set_bit(BTN_LEFT + i, input->keybit);
 
-	/* Stick device initialization */
+	 
 	if (data->has_sp) {
 		input2 = input_allocate_device();
 		if (!input2) {

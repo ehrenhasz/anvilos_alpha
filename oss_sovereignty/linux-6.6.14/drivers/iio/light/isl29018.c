@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * A iio driver for the light sensor ISL 29018/29023/29035.
- *
- * IIO driver for monitoring ambient light intensity in luxi, proximity
- * sensing and infrared sensing.
- *
- * Copyright (c) 2010, NVIDIA Corporation.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/i2c.h>
@@ -113,7 +106,7 @@ static int isl29018_set_integration_time(struct isl29018_chip *chip,
 	if (ret < 0)
 		return ret;
 
-	/* Keep the same range when integration time changes */
+	 
 	int_time = chip->int_time;
 	for (i = 0; i < ARRAY_SIZE(isl29018_scales[int_time]); ++i) {
 		if (chip->scale.scale == isl29018_scales[int_time][i].scale &&
@@ -162,7 +155,7 @@ static int isl29018_read_sensor_input(struct isl29018_chip *chip, int mode)
 	unsigned int msb;
 	struct device *dev = regmap_get_device(chip->regmap);
 
-	/* Set mode */
+	 
 	status = regmap_write(chip->regmap, ISL29018_REG_ADD_COMMAND1,
 			      mode << ISL29018_CMD1_OPMODE_SHIFT);
 	if (status) {
@@ -229,7 +222,7 @@ static int isl29018_read_proximity_ir(struct isl29018_chip *chip, int scheme,
 	int ir_data = -1;
 	struct device *dev = regmap_get_device(chip->regmap);
 
-	/* Do proximity sensing with required scheme */
+	 
 	status = regmap_update_bits(chip->regmap, ISL29018_REG_ADD_COMMAND2,
 				    ISL29018_CMD2_SCHEME_MASK,
 				    scheme << ISL29018_CMD2_SCHEME_SHIFT);
@@ -300,24 +293,7 @@ static ssize_t in_illuminance_integration_time_available_show
 	return len;
 }
 
-/*
- * From ISL29018 Data Sheet (FN6619.4, Oct 8, 2012) regarding the
- * infrared suppression:
- *
- *   Proximity Sensing Scheme: Bit 7. This bit programs the function
- * of the proximity detection. Logic 0 of this bit, Scheme 0, makes
- * full n (4, 8, 12, 16) bits (unsigned) proximity detection. The range
- * of Scheme 0 proximity count is from 0 to 2^n. Logic 1 of this bit,
- * Scheme 1, makes n-1 (3, 7, 11, 15) bits (2's complementary)
- * proximity_less_ambient detection. The range of Scheme 1
- * proximity count is from -2^(n-1) to 2^(n-1) . The sign bit is extended
- * for resolutions less than 16. While Scheme 0 has wider dynamic
- * range, Scheme 1 proximity detection is less affected by the
- * ambient IR noise variation.
- *
- * 0 Sensing IR from LED and ambient
- * 1 Sensing IR from LED with ambient IR rejection
- */
+ 
 static ssize_t proximity_on_chip_ambient_infrared_suppression_show
 			(struct device *dev, struct device_attribute *attr,
 			 char *buf)
@@ -325,10 +301,7 @@ static ssize_t proximity_on_chip_ambient_infrared_suppression_show
 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
 	struct isl29018_chip *chip = iio_priv(indio_dev);
 
-	/*
-	 * Return the "proximity scheme" i.e. if the chip does on chip
-	 * infrared suppression (1 means perform on chip suppression)
-	 */
+	 
 	return sprintf(buf, "%d\n", chip->prox_scheme);
 }
 
@@ -345,10 +318,7 @@ static ssize_t proximity_on_chip_ambient_infrared_suppression_store
 	if (!(val == 0 || val == 1))
 		return -EINVAL;
 
-	/*
-	 * Get the "proximity scheme" i.e. if the chip does on chip
-	 * infrared suppression (1 means perform on chip suppression)
-	 */
+	 
 	mutex_lock(&chip->lock);
 	chip->prox_scheme = val;
 	mutex_unlock(&chip->lock);
@@ -549,7 +519,7 @@ static int isl29018_chip_init(struct isl29018_chip *chip)
 		if (id != ISL29035_DEVICE_ID)
 			return -ENODEV;
 
-		/* Clear brownout bit */
+		 
 		status = regmap_update_bits(chip->regmap,
 					    ISL29035_REG_DEVICE_ID,
 					    ISL29035_BOUT_MASK, 0);
@@ -557,27 +527,7 @@ static int isl29018_chip_init(struct isl29018_chip *chip)
 			return status;
 	}
 
-	/*
-	 * Code added per Intersil Application Note 1534:
-	 *     When VDD sinks to approximately 1.8V or below, some of
-	 * the part's registers may change their state. When VDD
-	 * recovers to 2.25V (or greater), the part may thus be in an
-	 * unknown mode of operation. The user can return the part to
-	 * a known mode of operation either by (a) setting VDD = 0V for
-	 * 1 second or more and then powering back up with a slew rate
-	 * of 0.5V/ms or greater, or (b) via I2C disable all ALS/PROX
-	 * conversions, clear the test registers, and then rewrite all
-	 * registers to the desired values.
-	 * ...
-	 * For ISL29011, ISL29018, ISL29021, ISL29023
-	 * 1. Write 0x00 to register 0x08 (TEST)
-	 * 2. Write 0x00 to register 0x00 (CMD1)
-	 * 3. Rewrite all registers to the desired values
-	 *
-	 * ISL29018 Data Sheet (FN6619.1, Feb 11, 2010) essentially says
-	 * the same thing EXCEPT the data sheet asks for a 1ms delay after
-	 * writing the CMD1 register.
-	 */
+	 
 	status = regmap_write(chip->regmap, ISL29018_REG_TEST, 0x0);
 	if (status < 0) {
 		dev_err(dev, "Failed to clear isl29018 TEST reg.(%d)\n",
@@ -585,11 +535,7 @@ static int isl29018_chip_init(struct isl29018_chip *chip)
 		return status;
 	}
 
-	/*
-	 * See Intersil AN1534 comments above.
-	 * "Operating Mode" (COMMAND1) register is reprogrammed when
-	 * data is read from the device.
-	 */
+	 
 	status = regmap_write(chip->regmap, ISL29018_REG_ADD_COMMAND1, 0);
 	if (status < 0) {
 		dev_err(dev, "Failed to clear isl29018 CMD1 reg.(%d)\n",
@@ -597,9 +543,9 @@ static int isl29018_chip_init(struct isl29018_chip *chip)
 		return status;
 	}
 
-	usleep_range(1000, 2000);	/* per data sheet, page 10 */
+	usleep_range(1000, 2000);	 
 
-	/* Set defaults */
+	 
 	status = isl29018_set_scale(chip, chip->scale.scale,
 				    chip->scale.uscale);
 	if (status < 0) {
@@ -791,11 +737,7 @@ static int isl29018_suspend(struct device *dev)
 
 	mutex_lock(&chip->lock);
 
-	/*
-	 * Since this driver uses only polling commands, we are by default in
-	 * auto shutdown (ie, power-down) mode.
-	 * So we do not have much to do here.
-	 */
+	 
 	chip->suspended = true;
 	ret = regulator_disable(chip->vcc_reg);
 	if (ret)

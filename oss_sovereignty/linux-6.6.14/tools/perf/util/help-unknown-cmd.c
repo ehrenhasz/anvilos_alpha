@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include "cache.h"
 #include "config.h"
 #include <poll.h>
@@ -35,7 +35,7 @@ static int add_cmd_list(struct cmdnames *cmds, struct cmdnames *old)
 	void *tmp;
 
 	if (nr > cmds->alloc) {
-		/* Choose bigger one to alloc */
+		 
 		if (alloc_nr(cmds->alloc) < nr)
 			cmds->alloc = nr;
 		else
@@ -73,7 +73,7 @@ const char *help_unknown_cmd(const char *cmd)
 	uniq(&main_cmds);
 
 	if (main_cmds.cnt) {
-		/* This reuses cmdname->len for similarity index */
+		 
 		for (i = 0; i < main_cmds.cnt; ++i)
 			main_cmds.names[i]->len =
 				levenshtein(cmd, main_cmds.names[i]->name, 0, 2, 1, 4);

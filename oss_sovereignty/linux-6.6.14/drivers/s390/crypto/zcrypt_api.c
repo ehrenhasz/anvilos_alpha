@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- *  Copyright IBM Corp. 2001, 2018
- *  Author(s): Robert Burroughs
- *	       Eric Rossman (edrossma@us.ibm.com)
- *	       Cornelia Huck <cornelia.huck@de.ibm.com>
- *
- *  Hotplug & misc device support: Jochen Roehrig (roehrig@de.ibm.com)
- *  Major cleanup & driver split: Martin Schwidefsky <schwidefsky@de.ibm.com>
- *				  Ralph Wuerthner <rwuerthn@de.ibm.com>
- *  MSGTYPE restruct:		  Holger Dengler <hd@linux.vnet.ibm.com>
- *  Multiple device nodes: Harald Freudenberger <freude@linux.ibm.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -39,17 +28,13 @@
 #include "zcrypt_ccamisc.h"
 #include "zcrypt_ep11misc.h"
 
-/*
- * Module description.
- */
+ 
 MODULE_AUTHOR("IBM Corporation");
 MODULE_DESCRIPTION("Cryptographic Coprocessor interface, " \
 		   "Copyright IBM Corp. 2001, 2012");
 MODULE_LICENSE("GPL");
 
-/*
- * zcrypt tracepoint functions
- */
+ 
 EXPORT_TRACEPOINT_SYMBOL(s390_zcrypt_req);
 EXPORT_TRACEPOINT_SYMBOL(s390_zcrypt_rep);
 
@@ -64,14 +49,10 @@ EXPORT_SYMBOL(zcrypt_rescan_req);
 
 static LIST_HEAD(zcrypt_ops_list);
 
-/* Zcrypt related debug feature stuff. */
+ 
 debug_info_t *zcrypt_dbf_info;
 
-/*
- * Process a rescan of the transport layer.
- *
- * Returns 1, if the rescan has been processed, otherwise 0.
- */
+ 
 static inline int zcrypt_process_rescan(void)
 {
 	if (atomic_read(&zcrypt_rescan_req)) {
@@ -107,9 +88,7 @@ struct zcrypt_ops *zcrypt_msgtype(unsigned char *name, int variant)
 }
 EXPORT_SYMBOL(zcrypt_msgtype);
 
-/*
- * Multi device nodes extension functions.
- */
+ 
 
 struct zcdn_device;
 
@@ -129,11 +108,7 @@ struct zcdn_device {
 static int zcdn_create(const char *name);
 static int zcdn_destroy(const char *name);
 
-/*
- * Find zcdn device by name.
- * Returns reference to the zcdn device which needs to be released
- * with put_device() after use.
- */
+ 
 static inline struct zcdn_device *find_zcdndev_by_name(const char *name)
 {
 	struct device *dev = class_find_device_by_name(zcrypt_class, name);
@@ -141,11 +116,7 @@ static inline struct zcdn_device *find_zcdndev_by_name(const char *name)
 	return dev ? to_zcdn_dev(dev) : NULL;
 }
 
-/*
- * Find zcdn device by devt value.
- * Returns reference to the zcdn device which needs to be released
- * with put_device() after use.
- */
+ 
 static inline struct zcdn_device *find_zcdndev_by_devt(dev_t devt)
 {
 	struct device *dev = class_find_device_by_devt(zcrypt_class, devt);
@@ -371,7 +342,7 @@ static int zcdn_create(const char *name)
 	if (mutex_lock_interruptible(&ap_perms_mutex))
 		return -ERESTARTSYS;
 
-	/* check if device node with this name already exists */
+	 
 	if (name[0]) {
 		zcdndev = find_zcdndev_by_name(name);
 		if (zcdndev) {
@@ -381,7 +352,7 @@ static int zcdn_create(const char *name)
 		}
 	}
 
-	/* find an unused minor number */
+	 
 	for (i = 0; i < ZCRYPT_MAX_MINOR_NODES; i++) {
 		devt = MKDEV(MAJOR(zcrypt_devt), MINOR(zcrypt_devt) + i);
 		zcdndev = find_zcdndev_by_devt(devt);
@@ -395,7 +366,7 @@ static int zcdn_create(const char *name)
 		goto unlockout;
 	}
 
-	/* alloc and prepare a new zcdn device */
+	 
 	zcdndev = kzalloc(sizeof(*zcdndev), GFP_KERNEL);
 	if (!zcdndev) {
 		rc = -ENOMEM;
@@ -435,17 +406,14 @@ static int zcdn_destroy(const char *name)
 	if (mutex_lock_interruptible(&ap_perms_mutex))
 		return -ERESTARTSYS;
 
-	/* try to find this zcdn device */
+	 
 	zcdndev = find_zcdndev_by_name(name);
 	if (!zcdndev) {
 		rc = -ENOENT;
 		goto unlockout;
 	}
 
-	/*
-	 * The zcdn device is not hard destroyed. It is subject to
-	 * reference counting and thus just needs to be unregistered.
-	 */
+	 
 	put_device(&zcdndev->device);
 	device_unregister(&zcdndev->device);
 
@@ -472,33 +440,21 @@ static void zcdn_destroy_all(void)
 	mutex_unlock(&ap_perms_mutex);
 }
 
-/*
- * zcrypt_read (): Not supported beyond zcrypt 1.3.1.
- *
- * This function is not supported beyond zcrypt 1.3.1.
- */
+ 
 static ssize_t zcrypt_read(struct file *filp, char __user *buf,
 			   size_t count, loff_t *f_pos)
 {
 	return -EPERM;
 }
 
-/*
- * zcrypt_write(): Not allowed.
- *
- * Write is not allowed
- */
+ 
 static ssize_t zcrypt_write(struct file *filp, const char __user *buf,
 			    size_t count, loff_t *f_pos)
 {
 	return -EPERM;
 }
 
-/*
- * zcrypt_open(): Count number of users.
- *
- * Device open function to count number of users.
- */
+ 
 static int zcrypt_open(struct inode *inode, struct file *filp)
 {
 	struct ap_perms *perms = &ap_perms;
@@ -509,7 +465,7 @@ static int zcrypt_open(struct inode *inode, struct file *filp)
 		if (mutex_lock_interruptible(&ap_perms_mutex))
 			return -ERESTARTSYS;
 		zcdndev = find_zcdndev_by_devt(filp->f_inode->i_rdev);
-		/* find returns a reference, no get_device() needed */
+		 
 		mutex_unlock(&ap_perms_mutex);
 		if (zcdndev)
 			perms = &zcdndev->perms;
@@ -520,11 +476,7 @@ static int zcrypt_open(struct inode *inode, struct file *filp)
 	return stream_open(inode, filp);
 }
 
-/*
- * zcrypt_release(): Count number of users.
- *
- * Device close function to count number of users.
- */
+ 
 static int zcrypt_release(struct inode *inode, struct file *filp)
 {
 	if (filp->f_inode->i_cdev == &zcrypt_cdev) {
@@ -534,7 +486,7 @@ static int zcrypt_release(struct inode *inode, struct file *filp)
 		zcdndev = find_zcdndev_by_devt(filp->f_inode->i_rdev);
 		mutex_unlock(&ap_perms_mutex);
 		if (zcdndev) {
-			/* 2 puts here: one for find, one for open */
+			 
 			put_device(&zcdndev->device);
 			put_device(&zcdndev->device);
 		}
@@ -631,9 +583,7 @@ static inline bool zcrypt_queue_compare(struct zcrypt_queue *zq,
 	return weight < pref_weight;
 }
 
-/*
- * zcrypt ioctls.
- */
+ 
 static long zcrypt_rsa_modexpo(struct ap_perms *perms,
 			       struct zcrypt_track *tr,
 			       struct ica_rsa_modexpo *mex)
@@ -656,11 +606,7 @@ static long zcrypt_rsa_modexpo(struct ap_perms *perms,
 		goto out;
 	}
 
-	/*
-	 * As long as outputdatalength is big enough, we can set the
-	 * outputdatalength equal to the inputdatalength, since that is the
-	 * number of bytes we will copy in any case
-	 */
+	 
 	mex->outputdatalength = mex->inputdatalength;
 
 	rc = get_rsa_modex_fc(mex, &func_code);
@@ -671,35 +617,35 @@ static long zcrypt_rsa_modexpo(struct ap_perms *perms,
 	pref_zq = NULL;
 	spin_lock(&zcrypt_list_lock);
 	for_each_zcrypt_card(zc) {
-		/* Check for usable accelerator or CCA card */
+		 
 		if (!zc->online || !zc->card->config || zc->card->chkstop ||
 		    !(zc->card->functions & 0x18000000))
 			continue;
-		/* Check for size limits */
+		 
 		if (zc->min_mod_size > mex->inputdatalength ||
 		    zc->max_mod_size < mex->inputdatalength)
 			continue;
-		/* check if device node has admission for this card */
+		 
 		if (!zcrypt_check_card(perms, zc->card->id))
 			continue;
-		/* get weight index of the card device	*/
+		 
 		wgt = zc->speed_rating[func_code];
-		/* penalty if this msg was previously sent via this card */
+		 
 		cpen = (tr && tr->again_counter && tr->last_qid &&
 			AP_QID_CARD(tr->last_qid) == zc->card->id) ?
 			TRACK_AGAIN_CARD_WEIGHT_PENALTY : 0;
 		if (!zcrypt_card_compare(zc, pref_zc, wgt + cpen, pref_wgt))
 			continue;
 		for_each_zcrypt_queue(zq, zc) {
-			/* check if device is usable and eligible */
+			 
 			if (!zq->online || !zq->ops->rsa_modexpo ||
 			    !zq->queue->config || zq->queue->chkstop)
 				continue;
-			/* check if device node has admission for this queue */
+			 
 			if (!zcrypt_check_queue(perms,
 						AP_QID_QUEUE(zq->queue->qid)))
 				continue;
-			/* penalty if the msg was previously sent at this qid */
+			 
 			qpen = (tr && tr->again_counter && tr->last_qid &&
 				tr->last_qid == zq->queue->qid) ?
 				TRACK_AGAIN_QUEUE_WEIGHT_PENALTY : 0;
@@ -761,11 +707,7 @@ static long zcrypt_rsa_crt(struct ap_perms *perms,
 		goto out;
 	}
 
-	/*
-	 * As long as outputdatalength is big enough, we can set the
-	 * outputdatalength equal to the inputdatalength, since that is the
-	 * number of bytes we will copy in any case
-	 */
+	 
 	crt->outputdatalength = crt->inputdatalength;
 
 	rc = get_rsa_crt_fc(crt, &func_code);
@@ -776,35 +718,35 @@ static long zcrypt_rsa_crt(struct ap_perms *perms,
 	pref_zq = NULL;
 	spin_lock(&zcrypt_list_lock);
 	for_each_zcrypt_card(zc) {
-		/* Check for usable accelerator or CCA card */
+		 
 		if (!zc->online || !zc->card->config || zc->card->chkstop ||
 		    !(zc->card->functions & 0x18000000))
 			continue;
-		/* Check for size limits */
+		 
 		if (zc->min_mod_size > crt->inputdatalength ||
 		    zc->max_mod_size < crt->inputdatalength)
 			continue;
-		/* check if device node has admission for this card */
+		 
 		if (!zcrypt_check_card(perms, zc->card->id))
 			continue;
-		/* get weight index of the card device	*/
+		 
 		wgt = zc->speed_rating[func_code];
-		/* penalty if this msg was previously sent via this card */
+		 
 		cpen = (tr && tr->again_counter && tr->last_qid &&
 			AP_QID_CARD(tr->last_qid) == zc->card->id) ?
 			TRACK_AGAIN_CARD_WEIGHT_PENALTY : 0;
 		if (!zcrypt_card_compare(zc, pref_zc, wgt + cpen, pref_wgt))
 			continue;
 		for_each_zcrypt_queue(zq, zc) {
-			/* check if device is usable and eligible */
+			 
 			if (!zq->online || !zq->ops->rsa_modexpo_crt ||
 			    !zq->queue->config || zq->queue->chkstop)
 				continue;
-			/* check if device node has admission for this queue */
+			 
 			if (!zcrypt_check_queue(perms,
 						AP_QID_QUEUE(zq->queue->qid)))
 				continue;
-			/* penalty if the msg was previously sent at this qid */
+			 
 			qpen = (tr && tr->again_counter && tr->last_qid &&
 				tr->last_qid == zq->queue->qid) ?
 				TRACK_AGAIN_QUEUE_WEIGHT_PENALTY : 0;
@@ -878,10 +820,7 @@ static long _zcrypt_send_cprb(bool userspace, struct ap_perms *perms,
 			goto out;
 		}
 	}
-	/*
-	 * If a valid target domain is set and this domain is NOT a usage
-	 * domain but a control only domain, autoselect target domain.
-	 */
+	 
 	if (tdom < AP_DOMAINS &&
 	    !ap_test_config_usage_domain(tdom) &&
 	    ap_test_config_ctrl_domain(tdom))
@@ -891,40 +830,40 @@ static long _zcrypt_send_cprb(bool userspace, struct ap_perms *perms,
 	pref_zq = NULL;
 	spin_lock(&zcrypt_list_lock);
 	for_each_zcrypt_card(zc) {
-		/* Check for usable CCA card */
+		 
 		if (!zc->online || !zc->card->config || zc->card->chkstop ||
 		    !(zc->card->functions & 0x10000000))
 			continue;
-		/* Check for user selected CCA card */
+		 
 		if (xcrb->user_defined != AUTOSELECT &&
 		    xcrb->user_defined != zc->card->id)
 			continue;
-		/* check if request size exceeds card max msg size */
+		 
 		if (ap_msg.len > zc->card->maxmsgsize)
 			continue;
-		/* check if device node has admission for this card */
+		 
 		if (!zcrypt_check_card(perms, zc->card->id))
 			continue;
-		/* get weight index of the card device	*/
+		 
 		wgt = speed_idx_cca(func_code) * zc->speed_rating[SECKEY];
-		/* penalty if this msg was previously sent via this card */
+		 
 		cpen = (tr && tr->again_counter && tr->last_qid &&
 			AP_QID_CARD(tr->last_qid) == zc->card->id) ?
 			TRACK_AGAIN_CARD_WEIGHT_PENALTY : 0;
 		if (!zcrypt_card_compare(zc, pref_zc, wgt + cpen, pref_wgt))
 			continue;
 		for_each_zcrypt_queue(zq, zc) {
-			/* check for device usable and eligible */
+			 
 			if (!zq->online || !zq->ops->send_cprb ||
 			    !zq->queue->config || zq->queue->chkstop ||
 			    (tdom != AUTOSEL_DOM &&
 			     tdom != AP_QID_QUEUE(zq->queue->qid)))
 				continue;
-			/* check if device node has admission for this queue */
+			 
 			if (!zcrypt_check_queue(perms,
 						AP_QID_QUEUE(zq->queue->qid)))
 				continue;
-			/* penalty if the msg was previously sent at this qid */
+			 
 			qpen = (tr && tr->again_counter && tr->last_qid &&
 				tr->last_qid == zq->queue->qid) ?
 				TRACK_AGAIN_QUEUE_WEIGHT_PENALTY : 0;
@@ -946,7 +885,7 @@ static long _zcrypt_send_cprb(bool userspace, struct ap_perms *perms,
 		goto out;
 	}
 
-	/* in case of auto select, provide the correct domain */
+	 
 	qid = pref_zq->queue->qid;
 	if (*domain == AUTOSEL_DOM)
 		*domain = AP_QID_QUEUE(qid);
@@ -1021,7 +960,7 @@ static long _zcrypt_send_ep11_cprb(bool userspace, struct ap_perms *perms,
 
 	target_num = (unsigned short)xcrb->targets_num;
 
-	/* empty list indicates autoselect (all available targets) */
+	 
 	targets = NULL;
 	if (target_num != 0) {
 		struct ep11_target_dev __user *uptr;
@@ -1062,41 +1001,41 @@ static long _zcrypt_send_ep11_cprb(bool userspace, struct ap_perms *perms,
 	pref_zq = NULL;
 	spin_lock(&zcrypt_list_lock);
 	for_each_zcrypt_card(zc) {
-		/* Check for usable EP11 card */
+		 
 		if (!zc->online || !zc->card->config || zc->card->chkstop ||
 		    !(zc->card->functions & 0x04000000))
 			continue;
-		/* Check for user selected EP11 card */
+		 
 		if (targets &&
 		    !is_desired_ep11_card(zc->card->id, target_num, targets))
 			continue;
-		/* check if request size exceeds card max msg size */
+		 
 		if (ap_msg.len > zc->card->maxmsgsize)
 			continue;
-		/* check if device node has admission for this card */
+		 
 		if (!zcrypt_check_card(perms, zc->card->id))
 			continue;
-		/* get weight index of the card device	*/
+		 
 		wgt = speed_idx_ep11(func_code) * zc->speed_rating[SECKEY];
-		/* penalty if this msg was previously sent via this card */
+		 
 		cpen = (tr && tr->again_counter && tr->last_qid &&
 			AP_QID_CARD(tr->last_qid) == zc->card->id) ?
 			TRACK_AGAIN_CARD_WEIGHT_PENALTY : 0;
 		if (!zcrypt_card_compare(zc, pref_zc, wgt + cpen, pref_wgt))
 			continue;
 		for_each_zcrypt_queue(zq, zc) {
-			/* check if device is usable and eligible */
+			 
 			if (!zq->online || !zq->ops->send_ep11_cprb ||
 			    !zq->queue->config || zq->queue->chkstop ||
 			    (targets &&
 			     !is_desired_ep11_queue(zq->queue->qid,
 						    target_num, targets)))
 				continue;
-			/* check if device node has admission for this queue */
+			 
 			if (!zcrypt_check_queue(perms,
 						AP_QID_QUEUE(zq->queue->qid)))
 				continue;
-			/* penalty if the msg was previously sent at this qid */
+			 
 			qpen = (tr && tr->again_counter && tr->last_qid &&
 				tr->last_qid == zq->queue->qid) ?
 				TRACK_AGAIN_QUEUE_WEIGHT_PENALTY : 0;
@@ -1175,16 +1114,16 @@ static long zcrypt_rng(char *buffer)
 	pref_zq = NULL;
 	spin_lock(&zcrypt_list_lock);
 	for_each_zcrypt_card(zc) {
-		/* Check for usable CCA card */
+		 
 		if (!zc->online || !zc->card->config || zc->card->chkstop ||
 		    !(zc->card->functions & 0x10000000))
 			continue;
-		/* get weight index of the card device	*/
+		 
 		wgt = zc->speed_rating[func_code];
 		if (!zcrypt_card_compare(zc, pref_zc, wgt, pref_wgt))
 			continue;
 		for_each_zcrypt_queue(zq, zc) {
-			/* check if device is usable and eligible */
+			 
 			if (!zq->online || !zq->ops->rng ||
 			    !zq->queue->config || zq->queue->chkstop)
 				continue;
@@ -1434,7 +1373,7 @@ static int icarsamodexpo_ioctl(struct ap_perms *perms, unsigned long arg)
 		if (rc == -EAGAIN)
 			tr.again_counter++;
 	} while (rc == -EAGAIN && tr.again_counter < TRACK_AGAIN_MAX);
-	/* on failure: retry once again after a requested rescan */
+	 
 	if ((rc == -ENODEV) && (zcrypt_process_rescan()))
 		do {
 			rc = zcrypt_rsa_modexpo(perms, &tr, &mex);
@@ -1466,7 +1405,7 @@ static int icarsacrt_ioctl(struct ap_perms *perms, unsigned long arg)
 		if (rc == -EAGAIN)
 			tr.again_counter++;
 	} while (rc == -EAGAIN && tr.again_counter < TRACK_AGAIN_MAX);
-	/* on failure: retry once again after a requested rescan */
+	 
 	if ((rc == -ENODEV) && (zcrypt_process_rescan()))
 		do {
 			rc = zcrypt_rsa_crt(perms, &tr, &crt);
@@ -1498,7 +1437,7 @@ static int zsecsendcprb_ioctl(struct ap_perms *perms, unsigned long arg)
 		if (rc == -EAGAIN)
 			tr.again_counter++;
 	} while (rc == -EAGAIN && tr.again_counter < TRACK_AGAIN_MAX);
-	/* on failure: retry once again after a requested rescan */
+	 
 	if ((rc == -ENODEV) && (zcrypt_process_rescan()))
 		do {
 			rc = _zcrypt_send_cprb(true, perms, &tr, &xcrb);
@@ -1531,7 +1470,7 @@ static int zsendep11cprb_ioctl(struct ap_perms *perms, unsigned long arg)
 		if (rc == -EAGAIN)
 			tr.again_counter++;
 	} while (rc == -EAGAIN && tr.again_counter < TRACK_AGAIN_MAX);
-	/* on failure: retry once again after a requested rescan */
+	 
 	if ((rc == -ENODEV) && (zcrypt_process_rescan()))
 		do {
 			rc = _zcrypt_send_ep11_cprb(true, perms, &tr, &xcrb);
@@ -1622,11 +1561,9 @@ static long zcrypt_unlocked_ioctl(struct file *filp, unsigned int cmd,
 				(int __user *)arg);
 	case Z90STAT_DOMAIN_INDEX:
 		return put_user(ap_domain_index, (int __user *)arg);
-	/*
-	 * Deprecated ioctls
-	 */
+	 
 	case ZDEVICESTATUS: {
-		/* the old ioctl supports only 64 adapters */
+		 
 		struct zcrypt_device_status *device_status;
 		size_t total_size = MAX_ZDEV_ENTRIES
 			* sizeof(struct zcrypt_device_status);
@@ -1642,7 +1579,7 @@ static long zcrypt_unlocked_ioctl(struct file *filp, unsigned int cmd,
 		return rc;
 	}
 	case Z90STAT_STATUS_MASK: {
-		/* the old ioctl supports only 64 adapters */
+		 
 		char status[MAX_ZDEV_CARDIDS];
 
 		zcrypt_status_mask(status, MAX_ZDEV_CARDIDS);
@@ -1651,7 +1588,7 @@ static long zcrypt_unlocked_ioctl(struct file *filp, unsigned int cmd,
 		return 0;
 	}
 	case Z90STAT_QDEPTH_MASK: {
-		/* the old ioctl supports only 64 adapters */
+		 
 		char qdepth[MAX_ZDEV_CARDIDS];
 
 		zcrypt_qdepth_mask(qdepth, MAX_ZDEV_CARDIDS);
@@ -1660,7 +1597,7 @@ static long zcrypt_unlocked_ioctl(struct file *filp, unsigned int cmd,
 		return 0;
 	}
 	case Z90STAT_PERDEV_REQCNT: {
-		/* the old ioctl supports only 64 adapters */
+		 
 		u32 reqcnt[MAX_ZDEV_CARDIDS];
 
 		zcrypt_perdev_reqcnt(reqcnt, MAX_ZDEV_CARDIDS);
@@ -1668,7 +1605,7 @@ static long zcrypt_unlocked_ioctl(struct file *filp, unsigned int cmd,
 			return -EFAULT;
 		return 0;
 	}
-	/* unknown ioctl number */
+	 
 	default:
 		ZCRYPT_DBF_DBG("unknown ioctl 0x%08x\n", cmd);
 		return -ENOIOCTLCMD;
@@ -1676,9 +1613,7 @@ static long zcrypt_unlocked_ioctl(struct file *filp, unsigned int cmd,
 }
 
 #ifdef CONFIG_COMPAT
-/*
- * ioctl32 conversion routines
- */
+ 
 struct compat_ica_rsa_modexpo {
 	compat_uptr_t	inputdata;
 	unsigned int	inputdatalength;
@@ -1711,7 +1646,7 @@ static long trans_modexpo32(struct ap_perms *perms, struct file *filp,
 		if (rc == -EAGAIN)
 			tr.again_counter++;
 	} while (rc == -EAGAIN && tr.again_counter < TRACK_AGAIN_MAX);
-	/* on failure: retry once again after a requested rescan */
+	 
 	if ((rc == -ENODEV) && (zcrypt_process_rescan()))
 		do {
 			rc = zcrypt_rsa_modexpo(perms, &tr, &mex64);
@@ -1764,7 +1699,7 @@ static long trans_modexpo_crt32(struct ap_perms *perms, struct file *filp,
 		if (rc == -EAGAIN)
 			tr.again_counter++;
 	} while (rc == -EAGAIN && tr.again_counter < TRACK_AGAIN_MAX);
-	/* on failure: retry once again after a requested rescan */
+	 
 	if ((rc == -ENODEV) && (zcrypt_process_rescan()))
 		do {
 			rc = zcrypt_rsa_crt(perms, &tr, &crt64);
@@ -1836,7 +1771,7 @@ static long trans_xcrb32(struct ap_perms *perms, struct file *filp,
 		if (rc == -EAGAIN)
 			tr.again_counter++;
 	} while (rc == -EAGAIN && tr.again_counter < TRACK_AGAIN_MAX);
-	/* on failure: retry once again after a requested rescan */
+	 
 	if ((rc == -ENODEV) && (zcrypt_process_rescan()))
 		do {
 			rc = _zcrypt_send_cprb(true, perms, &tr, &xcrb64);
@@ -1874,9 +1809,7 @@ static long zcrypt_compat_ioctl(struct file *filp, unsigned int cmd,
 }
 #endif
 
-/*
- * Misc device file operations.
- */
+ 
 static const struct file_operations zcrypt_fops = {
 	.owner		= THIS_MODULE,
 	.read		= zcrypt_read,
@@ -1890,9 +1823,7 @@ static const struct file_operations zcrypt_fops = {
 	.llseek		= no_llseek,
 };
 
-/*
- * Misc device.
- */
+ 
 static struct miscdevice zcrypt_misc_device = {
 	.minor	    = MISC_DYNAMIC_MINOR,
 	.name	    = "z90crypt",
@@ -1908,13 +1839,10 @@ static int zcrypt_rng_data_read(struct hwrng *rng, u32 *data)
 {
 	int rc;
 
-	/*
-	 * We don't need locking here because the RNG API guarantees serialized
-	 * read method calls.
-	 */
+	 
 	if (zcrypt_rng_buffer_index == 0) {
 		rc = zcrypt_rng((char *)zcrypt_rng_buffer);
-		/* on failure: retry once again after a requested rescan */
+		 
 		if ((rc == -ENODEV) && (zcrypt_process_rescan()))
 			rc = zcrypt_rng((char *)zcrypt_rng_buffer);
 		if (rc < 0)
@@ -1971,18 +1899,7 @@ void zcrypt_rng_device_remove(void)
 	mutex_unlock(&zcrypt_rng_mutex);
 }
 
-/*
- * Wait until the zcrypt api is operational.
- * The AP bus scan and the binding of ap devices to device drivers is
- * an asynchronous job. This function waits until these initial jobs
- * are done and so the zcrypt api should be ready to serve crypto
- * requests - if there are resources available. The function uses an
- * internal timeout of 60s. The very first caller will either wait for
- * ap bus bindings complete or the timeout happens. This state will be
- * remembered for further callers which will only be blocked until a
- * decision is made (timeout or bindings complete).
- * On timeout -ETIME is returned, on success the return value is 0.
- */
+ 
 int zcrypt_wait_api_operational(void)
 {
 	static DEFINE_MUTEX(zcrypt_wait_api_lock);
@@ -1995,36 +1912,36 @@ int zcrypt_wait_api_operational(void)
 
 	switch (zcrypt_wait_api_state) {
 	case 0:
-		/* initial state, invoke wait for the ap bus complete */
+		 
 		rc = ap_wait_init_apqn_bindings_complete(
 			msecs_to_jiffies(60 * 1000));
 		switch (rc) {
 		case 0:
-			/* ap bus bindings are complete */
+			 
 			zcrypt_wait_api_state = 1;
 			break;
 		case -EINTR:
-			/* interrupted, go back to caller */
+			 
 			break;
 		case -ETIME:
-			/* timeout */
+			 
 			ZCRYPT_DBF_WARN("%s ap_wait_init_apqn_bindings_complete()=ETIME\n",
 					__func__);
 			zcrypt_wait_api_state = -ETIME;
 			break;
 		default:
-			/* other failure */
+			 
 			ZCRYPT_DBF_DBG("%s ap_wait_init_apqn_bindings_complete()=%d\n",
 				       __func__, rc);
 			break;
 		}
 		break;
 	case 1:
-		/* a previous caller already found ap bus bindings complete */
+		 
 		rc = 0;
 		break;
 	default:
-		/* a previous caller had timeout or other failure */
+		 
 		rc = zcrypt_wait_api_state;
 		break;
 	}
@@ -2054,7 +1971,7 @@ static int __init zcdn_init(void)
 {
 	int rc;
 
-	/* create a new class 'zcrypt' */
+	 
 	zcrypt_class = class_create(ZCRYPT_NAME);
 	if (IS_ERR(zcrypt_class)) {
 		rc = PTR_ERR(zcrypt_class);
@@ -2062,7 +1979,7 @@ static int __init zcdn_init(void)
 	}
 	zcrypt_class->dev_release = zcdn_device_release;
 
-	/* alloc device minor range */
+	 
 	rc = alloc_chrdev_region(&zcrypt_devt,
 				 0, ZCRYPT_MAX_MINOR_NODES,
 				 ZCRYPT_NAME);
@@ -2075,7 +1992,7 @@ static int __init zcdn_init(void)
 	if (rc)
 		goto out_cdev_add_failed;
 
-	/* need some class specific sysfs attributes */
+	 
 	rc = class_create_file(zcrypt_class, &class_attr_zcdn_create);
 	if (rc)
 		goto out_class_create_file_1_failed;
@@ -2107,11 +2024,7 @@ static void zcdn_exit(void)
 	class_destroy(zcrypt_class);
 }
 
-/*
- * zcrypt_api_init(): Module initialization.
- *
- * The module initialization code.
- */
+ 
 int __init zcrypt_api_init(void)
 {
 	int rc;
@@ -2124,7 +2037,7 @@ int __init zcrypt_api_init(void)
 	if (rc)
 		goto out;
 
-	/* Register the request sprayer. */
+	 
 	rc = misc_register(&zcrypt_misc_device);
 	if (rc < 0)
 		goto out_misc_register_failed;
@@ -2141,11 +2054,7 @@ out:
 	return rc;
 }
 
-/*
- * zcrypt_api_exit(): Module termination.
- *
- * The module termination code.
- */
+ 
 void __exit zcrypt_api_exit(void)
 {
 	zcdn_exit();

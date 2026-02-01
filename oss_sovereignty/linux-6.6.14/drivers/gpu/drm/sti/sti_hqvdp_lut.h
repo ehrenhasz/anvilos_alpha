@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) STMicroelectronics SA 2014
- * Authors: Fabien Dessenne <fabien.dessenne@st.com> for STMicroelectronics.
- */
+ 
+ 
 
 #ifndef _STI_HQVDP_LUT_H_
 #define _STI_HQVDP_LUT_H_

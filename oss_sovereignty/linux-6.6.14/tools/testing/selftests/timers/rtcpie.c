@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Real Time Clock Periodic Interrupt test program
- *
- * Since commit 6610e0893b8bc ("RTC: Rework RTC code to use timerqueue for
- * events"), PIE are completely handled using hrtimers, without actually using
- * any underlying hardware RTC.
- *
- */
+
+ 
 
 #include <stdio.h>
 #include <linux/rtc.h>
@@ -20,11 +13,7 @@
 
 #include "../kselftest.h"
 
-/*
- * This expects the new RTC class driver framework, working with
- * clocks that will often not be clones of what the PC-AT had.
- * Use the command line to specify another RTC if you need one.
- */
+ 
 static const char default_rtc[] = "/dev/rtc0";
 
 int main(int argc, char **argv)
@@ -58,10 +47,10 @@ int main(int argc, char **argv)
 		exit(errno);
 	}
 
-	/* Read periodic IRQ rate */
+	 
 	retval = ioctl(fd, RTC_IRQP_READ, &old_pie_rate);
 	if (retval == -1) {
-		/* not all RTCs support periodic IRQs */
+		 
 		if (errno == EINVAL) {
 			fprintf(stderr, "\nNo periodic IRQ support\n");
 			goto done;
@@ -74,12 +63,12 @@ int main(int argc, char **argv)
 	fprintf(stderr, "Counting 20 interrupts at:");
 	fflush(stderr);
 
-	/* The frequencies 128Hz, 256Hz, ... 8192Hz are only allowed for root. */
+	 
 	for (tmp=2; tmp<=64; tmp*=2) {
 
 		retval = ioctl(fd, RTC_IRQP_SET, tmp);
 		if (retval == -1) {
-			/* not all RTCs can change their periodic IRQ rate */
+			 
 			if (errno == EINVAL) {
 				fprintf(stderr,
 					"\n...Periodic IRQ rate is fixed\n");
@@ -92,7 +81,7 @@ int main(int argc, char **argv)
 		fprintf(stderr, "\n%ldHz:\t", tmp);
 		fflush(stderr);
 
-		/* Enable periodic interrupts */
+		 
 		retval = ioctl(fd, RTC_PIE_ON, 0);
 		if (retval == -1) {
 			perror("RTC_PIE_ON ioctl");
@@ -101,7 +90,7 @@ int main(int argc, char **argv)
 
 		for (i=1; i<21; i++) {
 			gettimeofday(&start, NULL);
-			/* This blocks */
+			 
 			retval = read(fd, &data, sizeof(unsigned long));
 			if (retval == -1) {
 				perror("read");
@@ -123,7 +112,7 @@ int main(int argc, char **argv)
 			irqcount++;
 		}
 
-		/* Disable periodic interrupts */
+		 
 		retval = ioctl(fd, RTC_PIE_OFF, 0);
 		if (retval == -1) {
 			perror("RTC_PIE_OFF ioctl");

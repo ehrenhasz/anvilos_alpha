@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *  linux/fs/affs/file.c
- *
- *  (c) 1996  Hans-Joachim Widmaier - Rewritten
- *
- *  (C) 1993  Ray Burr - Modified for Amiga FFS filesystem.
- *
- *  (C) 1992  Eric Youngdale Modified for ISO 9660 filesystem.
- *
- *  (C) 1991  Linus Torvalds - minix filesystem
- *
- *  affs regular file handling primitives
- */
+
+ 
 
 #include <linux/uio.h>
 #include <linux/blkdev.h>
@@ -67,18 +55,18 @@ affs_grow_extcache(struct inode *inode, u32 lc_idx)
 	if (AFFS_I(inode)->i_extcnt > lc_max) {
 		u32 lc_shift, lc_mask, tmp, off;
 
-		/* need to recalculate linear cache, start from old size */
+		 
 		lc_shift = AFFS_I(inode)->i_lc_shift;
 		tmp = (AFFS_I(inode)->i_extcnt / AFFS_LC_SIZE) >> lc_shift;
 		for (; tmp; tmp >>= 1)
 			lc_shift++;
 		lc_mask = (1 << lc_shift) - 1;
 
-		/* fix idx and old size to new shift */
+		 
 		lc_idx >>= (lc_shift - AFFS_I(inode)->i_lc_shift);
 		AFFS_I(inode)->i_lc_size >>= (lc_shift - AFFS_I(inode)->i_lc_shift);
 
-		/* first shrink old cache to make more space */
+		 
 		off = 1 << (lc_shift - AFFS_I(inode)->i_lc_shift);
 		for (i = 1, j = off; j < AFFS_LC_SIZE; i++, j += off)
 			AFFS_I(inode)->i_ac[i] = AFFS_I(inode)->i_ac[j];
@@ -87,7 +75,7 @@ affs_grow_extcache(struct inode *inode, u32 lc_idx)
 		AFFS_I(inode)->i_lc_mask = lc_mask;
 	}
 
-	/* fill cache to the needed index */
+	 
 	i = AFFS_I(inode)->i_lc_size;
 	AFFS_I(inode)->i_lc_size = lc_idx + 1;
 	for (; i <= lc_idx; i++) {
@@ -97,7 +85,7 @@ affs_grow_extcache(struct inode *inode, u32 lc_idx)
 		}
 		key = AFFS_I(inode)->i_lc[i - 1];
 		j = AFFS_I(inode)->i_lc_mask + 1;
-		// unlock cache
+		
 		for (; j > 0; j--) {
 			bh = affs_bread(sb, key);
 			if (!bh)
@@ -105,14 +93,14 @@ affs_grow_extcache(struct inode *inode, u32 lc_idx)
 			key = be32_to_cpu(AFFS_TAIL(sb, bh)->extension);
 			affs_brelse(bh);
 		}
-		// lock cache
+		
 		AFFS_I(inode)->i_lc[i] = key;
 	}
 
 	return 0;
 
 err:
-	// lock cache
+	
 	return -EIO;
 }
 
@@ -157,12 +145,12 @@ affs_alloc_extblock(struct inode *inode, struct buffer_head *bh, u32 ext)
 static inline struct buffer_head *
 affs_get_extblock(struct inode *inode, u32 ext)
 {
-	/* inline the simplest case: same extended block as last time */
+	 
 	struct buffer_head *bh = AFFS_I(inode)->i_ext_bh;
 	if (ext == AFFS_I(inode)->i_ext_last)
 		get_bh(bh);
 	else
-		/* we have to do more (not inlined) */
+		 
 		bh = affs_get_extblock_slow(inode, ext);
 
 	return bh;
@@ -178,7 +166,7 @@ affs_get_extblock_slow(struct inode *inode, u32 ext)
 	u32 tmp, idx;
 
 	if (ext == AFFS_I(inode)->i_ext_last + 1) {
-		/* read the next extended block from the current one */
+		 
 		bh = AFFS_I(inode)->i_ext_bh;
 		ext_key = be32_to_cpu(AFFS_TAIL(sb, bh)->extension);
 		if (ext < AFFS_I(inode)->i_extcnt)
@@ -191,7 +179,7 @@ affs_get_extblock_slow(struct inode *inode, u32 ext)
 	}
 
 	if (ext == 0) {
-		/* we seek back to the file header block */
+		 
 		ext_key = inode->i_ino;
 		goto read_ext;
 	}
@@ -199,10 +187,10 @@ affs_get_extblock_slow(struct inode *inode, u32 ext)
 	if (ext >= AFFS_I(inode)->i_extcnt) {
 		struct buffer_head *prev_bh;
 
-		/* allocate a new extended block */
+		 
 		BUG_ON(ext > AFFS_I(inode)->i_extcnt);
 
-		/* get previous extended block */
+		 
 		prev_bh = affs_get_extblock(inode, ext - 1);
 		if (IS_ERR(prev_bh))
 			return prev_bh;
@@ -214,7 +202,7 @@ affs_get_extblock_slow(struct inode *inode, u32 ext)
 	}
 
 again:
-	/* check if there is an extended cache and whether it's large enough */
+	 
 	lc_idx = ext >> AFFS_I(inode)->i_lc_shift;
 	lc_off = ext & AFFS_I(inode)->i_lc_mask;
 
@@ -227,20 +215,20 @@ again:
 		goto again;
 	}
 
-	/* every n'th key we find in the linear cache */
+	 
 	if (!lc_off) {
 		ext_key = AFFS_I(inode)->i_lc[lc_idx];
 		goto read_ext;
 	}
 
-	/* maybe it's still in the associative cache */
+	 
 	ac_idx = (ext - lc_idx - 1) & AFFS_AC_MASK;
 	if (AFFS_I(inode)->i_ac[ac_idx].ext == ext) {
 		ext_key = AFFS_I(inode)->i_ac[ac_idx].key;
 		goto read_ext;
 	}
 
-	/* try to find one of the previous extended blocks */
+	 
 	tmp = ext;
 	idx = ac_idx;
 	while (--tmp, --lc_off > 0) {
@@ -251,11 +239,11 @@ again:
 		}
 	}
 
-	/* fall back to the linear cache */
+	 
 	ext_key = AFFS_I(inode)->i_lc[lc_idx];
 find_ext:
-	/* read all extended blocks until we find the one we need */
-	//unlock cache
+	 
+	 
 	do {
 		bh = affs_bread(sb, ext_key);
 		if (!bh)
@@ -264,23 +252,23 @@ find_ext:
 		affs_brelse(bh);
 		tmp++;
 	} while (tmp < ext);
-	//lock cache
+	 
 
-	/* store it in the associative cache */
-	// recalculate ac_idx?
+	 
+	 
 	AFFS_I(inode)->i_ac[ac_idx].ext = ext;
 	AFFS_I(inode)->i_ac[ac_idx].key = ext_key;
 
 read_ext:
-	/* finally read the right extended block */
-	//unlock cache
+	 
+	 
 	bh = affs_bread(sb, ext_key);
 	if (!bh)
 		goto err_bread;
-	//lock cache
+	 
 
 store_ext:
-	/* release old cached extended block and store the new one */
+	 
 	affs_brelse(AFFS_I(inode)->i_ext_bh);
 	AFFS_I(inode)->i_ext_last = ext;
 	AFFS_I(inode)->i_ext_bh = bh;
@@ -311,7 +299,7 @@ affs_get_block(struct inode *inode, sector_t block, struct buffer_head *bh_resul
 	} else
 		create = 0;
 
-	//lock cache
+	 
 	affs_lock_ext(inode);
 
 	ext = (u32)block / AFFS_SB(sb)->s_hashsize;
@@ -329,7 +317,7 @@ affs_get_block(struct inode *inode, sector_t block, struct buffer_head *bh_resul
 		AFFS_I(inode)->mmu_private += AFFS_SB(sb)->s_data_blksize;
 		AFFS_I(inode)->i_blkcnt++;
 
-		/* store new block */
+		 
 		if (bh_result->b_blocknr)
 			affs_warning(sb, "get_block",
 				     "block already set (%llx)",
@@ -340,7 +328,7 @@ affs_get_block(struct inode *inode, sector_t block, struct buffer_head *bh_resul
 		bh_result->b_blocknr = blocknr;
 
 		if (!block) {
-			/* insert first block into header block */
+			 
 			u32 tmp = be32_to_cpu(AFFS_HEAD(ext_bh)->first_data);
 			if (tmp)
 				affs_warning(sb, "get_block", "first block already set (%d)", tmp);
@@ -350,7 +338,7 @@ affs_get_block(struct inode *inode, sector_t block, struct buffer_head *bh_resul
 	}
 
 	affs_brelse(ext_bh);
-	//unlock cache
+	 
 	affs_unlock_ext(inode);
 	return 0;
 
@@ -359,14 +347,14 @@ err_big:
 		   (unsigned long long)block);
 	return -EIO;
 err_ext:
-	// unlock cache
+	 
 	affs_unlock_ext(inode);
 	return PTR_ERR(ext_bh);
 err_alloc:
 	brelse(ext_bh);
 	clear_buffer_mapped(bh_result);
 	bh_result->b_bdev = NULL;
-	// unlock cache
+	 
 	affs_unlock_ext(inode);
 	return -ENOSPC;
 }
@@ -440,7 +428,7 @@ static int affs_write_end(struct file *file, struct address_space *mapping,
 
 	ret = generic_write_end(file, mapping, pos, len, copied, page, fsdata);
 
-	/* Clear Archived bit on file writes, as AmigaOS would do */
+	 
 	if (AFFS_I(inode)->i_protect & FIBF_ARCHIVED) {
 		AFFS_I(inode)->i_protect &= ~FIBF_ARCHIVED;
 		mark_inode_dirty(inode);
@@ -658,9 +646,7 @@ static int affs_write_begin_ofs(struct file *file, struct address_space *mapping
 	pr_debug("%s(%lu, %llu, %llu)\n", __func__, inode->i_ino, pos,
 		 pos + len);
 	if (pos > AFFS_I(inode)->mmu_private) {
-		/* XXX: this probably leaves a too-big i_size in case of
-		 * failure. Should really be updating i_size at write_end time
-		 */
+		 
 		err = affs_extent_file_ofs(inode, pos);
 		if (err)
 			return err;
@@ -676,7 +662,7 @@ static int affs_write_begin_ofs(struct file *file, struct address_space *mapping
 	if (folio_test_uptodate(folio))
 		return 0;
 
-	/* XXX: inefficient but safe in the face of short writes */
+	 
 	err = affs_do_read_folio_ofs(folio, folio_size(folio), 1);
 	if (err) {
 		folio_unlock(folio);
@@ -701,11 +687,7 @@ static int affs_write_end_ofs(struct file *file, struct address_space *mapping,
 
 	from = pos & (PAGE_SIZE - 1);
 	to = from + len;
-	/*
-	 * XXX: not sure if this can handle short copies (len < copied), but
-	 * we don't have to, because the folio should always be uptodate here,
-	 * due to write_begin.
-	 */
+	 
 
 	pr_debug("%s(%lu, %llu, %llu)\n", __func__, inode->i_ino, pos,
 		 pos + len);
@@ -814,7 +796,7 @@ done:
 	if (tmp > inode->i_size)
 		inode->i_size = AFFS_I(inode)->mmu_private = tmp;
 
-	/* Clear Archived bit on file writes, as AmigaOS would do */
+	 
 	if (AFFS_I(inode)->i_protect & FIBF_ARCHIVED) {
 		AFFS_I(inode)->i_protect &= ~FIBF_ARCHIVED;
 		mark_inode_dirty(inode);
@@ -837,13 +819,13 @@ const struct address_space_operations affs_aops_ofs = {
 	.dirty_folio	= block_dirty_folio,
 	.invalidate_folio = block_invalidate_folio,
 	.read_folio = affs_read_folio_ofs,
-	//.writepages = affs_writepages_ofs,
+	
 	.write_begin = affs_write_begin_ofs,
 	.write_end = affs_write_end_ofs,
 	.migrate_folio = filemap_migrate_folio,
 };
 
-/* Free any preallocated blocks. */
+ 
 
 void
 affs_free_prealloc(struct inode *inode)
@@ -858,7 +840,7 @@ affs_free_prealloc(struct inode *inode)
 	}
 }
 
-/* Truncate (or enlarge) a file to the requested size. */
+ 
 
 void
 affs_truncate(struct inode *inode)
@@ -897,7 +879,7 @@ affs_truncate(struct inode *inode)
 	} else if (inode->i_size == AFFS_I(inode)->mmu_private)
 		return;
 
-	// lock cache
+	
 	ext_bh = affs_get_extblock(inode, ext);
 	if (IS_ERR(ext_bh)) {
 		affs_warning(sb, "truncate",
@@ -906,14 +888,14 @@ affs_truncate(struct inode *inode)
 		return;
 	}
 	if (AFFS_I(inode)->i_lc) {
-		/* clear linear cache */
+		 
 		i = (ext + 1) >> AFFS_I(inode)->i_lc_shift;
 		if (AFFS_I(inode)->i_lc_size > i) {
 			AFFS_I(inode)->i_lc_size = i;
 			for (; i < AFFS_LC_SIZE; i++)
 				AFFS_I(inode)->i_lc[i] = 0;
 		}
-		/* clear associative cache */
+		 
 		for (i = 0; i < AFFS_AC_SIZE; i++)
 			if (AFFS_I(inode)->i_ac[i].ext >= ext)
 				AFFS_I(inode)->i_ac[i].ext = 0;
@@ -963,7 +945,7 @@ affs_truncate(struct inode *inode)
 		AFFS_I(inode)->i_extcnt = 1;
 	}
 	AFFS_I(inode)->mmu_private = inode->i_size;
-	// unlock cache
+	
 
 	while (ext_key) {
 		ext_bh = affs_bread(sb, ext_key);

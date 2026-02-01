@@ -1,45 +1,8 @@
-/****************************************************************************
- * Copyright 2020,2021 Thomas E. Dickey                                     *
- * Copyright 1998-2010,2017 Free Software Foundation, Inc.                  *
- *                                                                          *
- * Permission is hereby granted, free of charge, to any person obtaining a  *
- * copy of this software and associated documentation files (the            *
- * "Software"), to deal in the Software without restriction, including      *
- * without limitation the rights to use, copy, modify, merge, publish,      *
- * distribute, distribute with modifications, sublicense, and/or sell       *
- * copies of the Software, and to permit persons to whom the Software is    *
- * furnished to do so, subject to the following conditions:                 *
- *                                                                          *
- * The above copyright notice and this permission notice shall be included  *
- * in all copies or substantial portions of the Software.                   *
- *                                                                          *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS  *
- * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF               *
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.   *
- * IN NO EVENT SHALL THE ABOVE COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,   *
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR    *
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR    *
- * THE USE OR OTHER DEALINGS IN THE SOFTWARE.                               *
- *                                                                          *
- * Except as contained in this notice, the name(s) of the above copyright   *
- * holders shall not be used in advertising or otherwise to promote the     *
- * sale, use or other dealings in this Software without prior written       *
- * authorization.                                                           *
- ****************************************************************************/
+ 
 
-/****************************************************************************
- *  Author: Zeyd M. Ben-Halim <zmbenhal@netcom.com> 1992,1995               *
- *     and: Eric S. Raymond <esr@snark.thyrsus.com>                         *
- *     and: Thomas E. Dickey                        1996-on                 *
- *     and: Juergen Pfeifer                         2009                    *
- ****************************************************************************/
+ 
 
-/*
- * lib_pad.c
- * newpad	-- create a new pad
- * pnoutrefresh -- refresh a pad, no update
- * pechochar	-- add a char to a pad and refresh
- */
+ 
 
 #include <curses.priv.h>
 
@@ -135,7 +98,7 @@ pnoutrefresh(WINDOW *win,
     SCREEN *sp;
 
 #if USE_SCROLL_HINTS
-    const int my_len = 2;	/* parameterize the threshold for hardscroll */
+    const int my_len = 2;	 
     NCURSES_SIZE_T displaced;
     bool wide;
 #endif
@@ -151,7 +114,7 @@ pnoutrefresh(WINDOW *win,
 
     sp = _nc_screen_of(win);
 
-    /* negative values are interpreted as zero */
+     
     if (pminrow < 0)
 	pminrow = 0;
     if (pmincol < 0)
@@ -169,9 +132,7 @@ pnoutrefresh(WINDOW *win,
     T((" pmincol + smaxcol - smincol %ld, win->_maxx %ld",
        (long) pmaxcol, (long) win->_maxx));
 
-    /*
-     * Trim the caller's screen size back to the actual limits.
-     */
+     
     if (pmaxrow > win->_maxy) {
 	smaxrow -= (pmaxrow - win->_maxy);
 	pmaxrow = pminrow + smaxrow - sminrow;
@@ -194,7 +155,7 @@ pnoutrefresh(WINDOW *win,
 	_tracedump("...pad", win);
 	_nc_unlock_global(tracef);
     }
-#endif /* TRACE */
+#endif  
 #if USE_SCROLL_HINTS
     if (win->_pad._pad_y >= 0) {
 	displaced = pminrow - win->_pad._pad_y
@@ -204,20 +165,7 @@ pnoutrefresh(WINDOW *win,
 	displaced = 0;
 #endif
 
-    /*
-     * For pure efficiency, we'd want to transfer scrolling information
-     * from the pad to newscr whenever the window is wide enough that
-     * its update will dominate the cost of the update for the horizontal
-     * band of newscr that it occupies.  Unfortunately, this threshold
-     * tends to be complex to estimate, and in any case scrolling the
-     * whole band and rewriting the parts outside win's image would look
-     * really ugly.  So.  What we do is consider the pad "wide" if it
-     * either (a) occupies the whole width of newscr, or (b) occupies
-     * all but at most one column on either vertical edge of the screen
-     * (this caters to fussy people who put boxes around full-screen
-     * windows).  Note that changing this formula will not break any code,
-     * merely change the costs of various update cases.
-     */
+     
 #if USE_SCROLL_HINTS
     wide = (smincol < my_len && smaxcol > (NewScreen(sp)->_maxx - my_len));
 #endif
@@ -230,10 +178,7 @@ pnoutrefresh(WINDOW *win,
 	for (j = pmincol, n = smincol; j <= pmaxcol; j++, n++) {
 	    NCURSES_CH_T ch = oline->text[j];
 #if USE_WIDEC_SUPPORT
-	    /*
-	     * Special case for leftmost character of the displayed area.
-	     * Only half of a double-width character may be visible.
-	     */
+	     
 	    if (j == pmincol
 		&& j > 0
 		&& isWidecExt(ch)) {
@@ -267,17 +212,12 @@ pnoutrefresh(WINDOW *win,
 
 	    nline->oldindex = nind;
 	}
-#endif /* USE_SCROLL_HINTS */
+#endif  
 	oline->firstchar = oline->lastchar = _NOCHANGE;
 	if_USE_SCROLL_HINTS(oline->oldindex = i);
     }
 
-    /*
-     * Clean up debris from scrolling or resizing the pad, so we do not
-     * accidentally pick up the index value during the next call to this
-     * procedure.  The only rows that should have an index value are those
-     * that are displayed during this cycle.
-     */
+     
 #if USE_SCROLL_HINTS
     for (i = pminrow - 1; (i >= 0) && (win->_line[i].oldindex >= 0); i--)
 	win->_line[i].oldindex = _NEWINDEX;
@@ -294,10 +234,7 @@ pnoutrefresh(WINDOW *win,
 	NewScreen(sp)->_clear = TRUE;
     }
 
-    /*
-     * Use the pad's current position, if it will be visible.
-     * If not, don't do anything; it is not an error.
-     */
+     
     if (win->_leaveok == FALSE
 	&& win->_cury >= pminrow
 	&& win->_curx >= pmincol
@@ -311,11 +248,7 @@ pnoutrefresh(WINDOW *win,
     NewScreen(sp)->_leaveok = win->_leaveok;
     win->_flags &= ~_HASMOVED;
 
-    /*
-     * Update our cache of the line-numbers that we displayed from the pad.
-     * We will use this on subsequent calls to this function to derive
-     * values to stuff into 'oldindex[]' -- for scrolling optimization.
-     */
+     
     win->_pad._pad_y = (NCURSES_SIZE_T) pminrow;
     win->_pad._pad_x = (NCURSES_SIZE_T) pmincol;
     win->_pad._pad_top = (NCURSES_SIZE_T) sminrow;

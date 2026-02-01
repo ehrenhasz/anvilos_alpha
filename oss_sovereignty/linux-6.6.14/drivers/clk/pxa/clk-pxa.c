@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Marvell PXA family clocks
- *
- * Copyright (C) 2014 Robert Jarzmik
- *
- * Common clock code for PXA clocks ("CKEN" type clocks + DT)
- */
+
+ 
 #include <linux/clk.h>
 #include <linux/clk-provider.h>
 #include <linux/clkdev.h>
@@ -19,20 +13,20 @@
 #define KHz 1000
 #define MHz (1000 * 1000)
 
-#define MDREFR_K0DB4	(1 << 29)	/* SDCLK0 Divide by 4 Control/Status */
-#define MDREFR_K2FREE	(1 << 25)	/* SDRAM Free-Running Control */
-#define MDREFR_K1FREE	(1 << 24)	/* SDRAM Free-Running Control */
-#define MDREFR_K0FREE	(1 << 23)	/* SDRAM Free-Running Control */
-#define MDREFR_SLFRSH	(1 << 22)	/* SDRAM Self-Refresh Control/Status */
-#define MDREFR_APD	(1 << 20)	/* SDRAM/SSRAM Auto-Power-Down Enable */
-#define MDREFR_K2DB2	(1 << 19)	/* SDCLK2 Divide by 2 Control/Status */
-#define MDREFR_K2RUN	(1 << 18)	/* SDCLK2 Run Control/Status */
-#define MDREFR_K1DB2	(1 << 17)	/* SDCLK1 Divide by 2 Control/Status */
-#define MDREFR_K1RUN	(1 << 16)	/* SDCLK1 Run Control/Status */
-#define MDREFR_E1PIN	(1 << 15)	/* SDCKE1 Level Control/Status */
-#define MDREFR_K0DB2	(1 << 14)	/* SDCLK0 Divide by 2 Control/Status */
-#define MDREFR_K0RUN	(1 << 13)	/* SDCLK0 Run Control/Status */
-#define MDREFR_E0PIN	(1 << 12)	/* SDCKE0 Level Control/Status */
+#define MDREFR_K0DB4	(1 << 29)	 
+#define MDREFR_K2FREE	(1 << 25)	 
+#define MDREFR_K1FREE	(1 << 24)	 
+#define MDREFR_K0FREE	(1 << 23)	 
+#define MDREFR_SLFRSH	(1 << 22)	 
+#define MDREFR_APD	(1 << 20)	 
+#define MDREFR_K2DB2	(1 << 19)	 
+#define MDREFR_K2RUN	(1 << 18)	 
+#define MDREFR_K1DB2	(1 << 17)	 
+#define MDREFR_K1RUN	(1 << 16)	 
+#define MDREFR_E1PIN	(1 << 15)	 
+#define MDREFR_K0DB2	(1 << 14)	 
+#define MDREFR_K0RUN	(1 << 13)	 
+#define MDREFR_E0PIN	(1 << 12)	 
 #define MDREFR_DB2_MASK	(MDREFR_K2DB2 | MDREFR_K1DB2)
 #define MDREFR_DRI_MASK	0xFFF
 
@@ -166,10 +160,7 @@ void pxa2xx_cpll_change(struct pxa2xx_freq *freq,
 
 	local_irq_save(flags);
 
-	/* Calculate the next MDREFR.  If we're slowing down the SDRAM clock
-	 * we need to preset the smaller DRI before the change.	 If we're
-	 * speeding up we need to set the larger DRI value after the change.
-	 */
+	 
 	preset_mdrefr = postset_mdrefr = readl(mdrefr);
 	if ((preset_mdrefr & MDREFR_DRI_MASK) > mdrefr_dri(freq->membus_khz)) {
 		preset_mdrefr = (preset_mdrefr & ~MDREFR_DRI_MASK);
@@ -179,10 +170,7 @@ void pxa2xx_cpll_change(struct pxa2xx_freq *freq,
 		(postset_mdrefr & ~MDREFR_DRI_MASK) |
 		mdrefr_dri(freq->membus_khz);
 
-	/* If we're dividing the memory clock by two for the SDRAM clock, this
-	 * must be set prior to the change.  Clearing the divide must be done
-	 * after the change.
-	 */
+	 
 	if (freq->div2) {
 		preset_mdrefr  |= MDREFR_DB2_MASK;
 		postset_mdrefr |= MDREFR_DB2_MASK;
@@ -190,7 +178,7 @@ void pxa2xx_cpll_change(struct pxa2xx_freq *freq,
 		postset_mdrefr &= ~MDREFR_DB2_MASK;
 	}
 
-	/* Set new the CCCR and prepare CLKCFG */
+	 
 	writel(freq->cccr, cccr);
 
 	asm volatile(

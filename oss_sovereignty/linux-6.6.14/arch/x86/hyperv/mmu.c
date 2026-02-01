@@ -14,15 +14,13 @@
 #define CREATE_TRACE_POINTS
 #include <asm/trace/hyperv.h>
 
-/* Each gva in gva_list encodes up to 4096 pages to flush */
+ 
 #define HV_TLB_FLUSH_UNIT (4096 * PAGE_SIZE)
 
 static u64 hyperv_flush_tlb_others_ex(const struct cpumask *cpus,
 				      const struct flush_tlb_info *info);
 
-/*
- * Fills in gva_list starting from offset. Returns the number of items added.
- */
+ 
 static inline int fill_gva_list(u64 gva_list[], int offset,
 				unsigned long start, unsigned long end)
 {
@@ -33,10 +31,7 @@ static inline int fill_gva_list(u64 gva_list[], int offset,
 		diff = end > cur ? end - cur : 0;
 
 		gva_list[gva_n] = cur & PAGE_MASK;
-		/*
-		 * Lower 12 bits encode the number of additional
-		 * pages to flush (in addition to the 'cur' page).
-		 */
+		 
 		if (diff >= HV_TLB_FLUSH_UNIT) {
 			gva_list[gva_n] |= ~PAGE_MASK;
 			cur += HV_TLB_FLUSH_UNIT;
@@ -81,10 +76,7 @@ static void hyperv_flush_tlb_multi(const struct cpumask *cpus,
 	}
 
 	if (info->mm) {
-		/*
-		 * AddressSpace argument must match the CR3 with PCID bits
-		 * stripped out.
-		 */
+		 
 		flush->address_space = virt_to_phys(info->mm->pgd);
 		flush->address_space &= CR3_ADDR_MASK;
 		flush->flags = 0;
@@ -97,17 +89,7 @@ static void hyperv_flush_tlb_multi(const struct cpumask *cpus,
 	if (cpumask_equal(cpus, cpu_present_mask)) {
 		flush->flags |= HV_FLUSH_ALL_PROCESSORS;
 	} else {
-		/*
-		 * From the supplied CPU set we need to figure out if we can get
-		 * away with cheaper HVCALL_FLUSH_VIRTUAL_ADDRESS_{LIST,SPACE}
-		 * hypercalls. This is possible when the highest VP number in
-		 * the set is < 64. As VP numbers are usually in ascending order
-		 * and match Linux CPU ids, here is an optimization: we check
-		 * the VP number for the highest bit in the supplied set first
-		 * so we can quickly find out if using *_EX hypercalls is a
-		 * must. We will also check all VP numbers when walking the
-		 * supplied CPU set to remain correct in all cases.
-		 */
+		 
 		cpu = cpumask_last(cpus);
 
 		if (cpu < nr_cpumask_bits && hv_cpu_number_to_vp_number(cpu) >= 64)
@@ -129,17 +111,14 @@ static void hyperv_flush_tlb_multi(const struct cpumask *cpus,
 				  &flush->processor_mask);
 		}
 
-		/* nothing to flush if 'processor_mask' ends up being empty */
+		 
 		if (!flush->processor_mask) {
 			local_irq_restore(flags);
 			return;
 		}
 	}
 
-	/*
-	 * We can flush not more than max_gvas with one hypercall. Flush the
-	 * whole address space if we were asked to do more.
-	 */
+	 
 	max_gvas = (PAGE_SIZE - sizeof(*flush)) / sizeof(flush->gva_list[0]);
 
 	if (info->end == TLB_FLUSH_ALL) {
@@ -183,10 +162,7 @@ static u64 hyperv_flush_tlb_others_ex(const struct cpumask *cpus,
 	flush = *this_cpu_ptr(hyperv_pcpu_input_arg);
 
 	if (info->mm) {
-		/*
-		 * AddressSpace argument must match the CR3 with PCID bits
-		 * stripped out.
-		 */
+		 
 		flush->address_space = virt_to_phys(info->mm->pgd);
 		flush->address_space &= CR3_ADDR_MASK;
 		flush->flags = 0;
@@ -203,10 +179,7 @@ static u64 hyperv_flush_tlb_others_ex(const struct cpumask *cpus,
 	if (nr_bank < 0)
 		return HV_STATUS_INVALID_PARAMETER;
 
-	/*
-	 * We can flush not more than max_gvas with one hypercall. Flush the
-	 * whole address space if we were asked to do more.
-	 */
+	 
 	max_gvas =
 		(PAGE_SIZE - sizeof(*flush) - nr_bank *
 		 sizeof(flush->hv_vp_set.bank_contents[0])) /

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Voltage regulators coupler for NVIDIA Tegra30
- * Copyright (C) 2019 GRATE-DRIVER project
- *
- * Voltage constraints borrowed from downstream kernel sources
- * Copyright (C) 2010-2011 NVIDIA Corporation
- */
+
+ 
 
 #define pr_fmt(fmt)	"tegra voltage-coupler: " fmt
 
@@ -48,16 +42,7 @@ static int tegra30_core_limit(struct tegra_regulator_coupler *tegra,
 	int core_cur_uV;
 	int err;
 
-	/*
-	 * Tegra30 SoC has critical DVFS-capable devices that are
-	 * permanently-active or active at a boot time, like EMC
-	 * (DRAM controller) or Display controller for example.
-	 *
-	 * The voltage of a CORE SoC power domain shall not be dropped below
-	 * a minimum level, which is determined by device's clock rate.
-	 * This means that we can't fully allow CORE voltage scaling until
-	 * the state of all DVFS-critical CORE devices is synced.
-	 */
+	 
 	if (tegra_pmc_core_domain_state_synced() && !tegra->sys_reboot_mode) {
 		pr_info_once("voltage state synced\n");
 		return 0;
@@ -76,11 +61,7 @@ static int tegra30_core_limit(struct tegra_regulator_coupler *tegra,
 	if (err)
 		return err;
 
-	/*
-	 * Limit minimum CORE voltage to a value left from bootloader or,
-	 * if it's unreasonably low value, to the most common 1.2v or to
-	 * whatever maximum value defined via board's device-tree.
-	 */
+	 
 	tegra->core_min_uV = core_max_uV;
 
 	pr_info("core voltage initialized to %duV\n", tegra->core_min_uV);
@@ -180,11 +161,7 @@ static int tegra30_voltage_update(struct tegra_regulator_coupler *tegra,
 	int cpu_uV;
 	int err;
 
-	/*
-	 * CPU voltage should not got lower than 300mV from the CORE.
-	 * CPU voltage should stay below the CORE by 100mV+, depending
-	 * by the CORE voltage. This applies to all Tegra30 SoC's.
-	 */
+	 
 	max_spread = cpu_rdev->constraints->max_spread[0];
 	cpu_max_step = cpu_rdev->constraints->max_uV_step;
 	core_max_step = core_rdev->constraints->max_uV_step;
@@ -204,11 +181,7 @@ static int tegra30_voltage_update(struct tegra_regulator_coupler *tegra,
 		core_max_step = 150000;
 	}
 
-	/*
-	 * The CORE voltage scaling is currently not hooked up in drivers,
-	 * hence we will limit the minimum CORE voltage to a reasonable value.
-	 * This should be good enough for the time being.
-	 */
+	 
 	core_min_uV = tegra30_core_limit(tegra, core_rdev);
 	if (core_min_uV < 0)
 		return core_min_uV;
@@ -218,7 +191,7 @@ static int tegra30_voltage_update(struct tegra_regulator_coupler *tegra,
 	if (err)
 		return err;
 
-	/* prepare voltage level for suspend */
+	 
 	if (tegra->sys_suspend_mode)
 		core_min_uV = clamp(tegra30_core_nominal_uV(),
 				    core_min_uV, core_max_uV);
@@ -247,23 +220,15 @@ static int tegra30_voltage_update(struct tegra_regulator_coupler *tegra,
 	if (cpu_uV < 0)
 		return cpu_uV;
 
-	/* store boot voltage level */
+	 
 	if (!tegra->cpu_min_uV)
 		tegra->cpu_min_uV = cpu_uV;
 
-	/*
-	 * CPU's regulator may not have any consumers, hence the voltage
-	 * must not be changed in that case because CPU simply won't
-	 * survive the voltage drop if it's running on a higher frequency.
-	 */
+	 
 	if (!cpu_min_uV_consumers)
 		cpu_min_uV = max(cpu_uV, cpu_min_uV);
 
-	/*
-	 * Bootloader shall set up voltages correctly, but if it
-	 * happens that there is a violation, then try to fix it
-	 * at first.
-	 */
+	 
 	core_min_limited_uV = tegra30_core_cpu_limit(cpu_uV);
 	if (core_min_limited_uV < 0)
 		return core_min_limited_uV;
@@ -274,11 +239,11 @@ static int tegra30_voltage_update(struct tegra_regulator_coupler *tegra,
 	if (err)
 		return err;
 
-	/* restore boot voltage level */
+	 
 	if (tegra->sys_reboot_mode)
 		cpu_min_uV = max(cpu_min_uV, tegra->cpu_min_uV);
 
-	/* prepare voltage level for suspend */
+	 
 	if (tegra->sys_suspend_mode)
 		cpu_min_uV = clamp(tegra30_cpu_nominal_uV(),
 				   cpu_min_uV, cpu_max_uV);
@@ -365,12 +330,7 @@ static int tegra30_regulator_prepare_suspend(struct tegra_regulator_coupler *teg
 	if (!tegra->core_rdev || !tegra->cpu_rdev)
 		return 0;
 
-	/*
-	 * All power domains are enabled early during resume from suspend
-	 * by GENPD core.  Domains like VENC may require a higher voltage
-	 * when enabled during resume from suspend.  This also prepares
-	 * hardware for resuming from LP0.
-	 */
+	 
 
 	WRITE_ONCE(tegra->sys_suspend_mode_req, sys_suspend_mode);
 
@@ -424,11 +384,7 @@ static int tegra30_regulator_prepare_reboot(struct tegra_regulator_coupler *tegr
 
 	WRITE_ONCE(tegra->sys_reboot_mode_req, true);
 
-	/*
-	 * Some devices use CPU soft-reboot method and in this case we
-	 * should ensure that voltages are sane for the reboot by restoring
-	 * the minimum boot levels.
-	 */
+	 
 	err = regulator_sync_voltage_rdev(tegra->cpu_rdev);
 	if (err)
 		return err;
@@ -485,11 +441,7 @@ static int tegra30_regulator_detach(struct regulator_coupler *coupler,
 {
 	struct tegra_regulator_coupler *tegra = to_tegra_coupler(coupler);
 
-	/*
-	 * We don't expect regulators to be decoupled during reboot,
-	 * this may race with the reboot handler and shouldn't ever
-	 * happen in practice.
-	 */
+	 
 	if (WARN_ON_ONCE(system_state > SYSTEM_RUNNING))
 		return -EPERM;
 

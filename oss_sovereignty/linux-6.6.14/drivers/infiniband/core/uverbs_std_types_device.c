@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-/*
- * Copyright (c) 2018, Mellanox Technologies inc.  All rights reserved.
- */
+
+ 
 
 #include <linux/overflow.h>
 #include <rdma/uverbs_std_types.h>
@@ -11,12 +9,7 @@
 #include <rdma/opa_addr.h>
 #include <rdma/ib_cache.h>
 
-/*
- * This ioctl method allows calling any defined write or write_ex
- * handler. This essentially replaces the hdr/ex_hdr system with the ioctl
- * marshalling, and brings the non-ex path into the same marshalling as the ex
- * path.
- */
+ 
 static int UVERBS_HANDLER(UVERBS_METHOD_INVOKE_WRITE)(
 	struct uverbs_attr_bundle *attrs)
 {
@@ -72,9 +65,7 @@ gather_objects_handle(struct ib_uverbs_file *ufile,
 	u64 count = 0;
 	u32 *handles;
 
-	/* Allocated memory that cannot page out where we gather
-	 * all object ids under a spin_lock.
-	 */
+	 
 	handles = uverbs_zalloc(attrs, out_len);
 	if (IS_ERR(handles))
 		return handles;
@@ -167,7 +158,7 @@ void copy_port_attr_to_resp(struct ib_port_attr *attr,
 	resp->subnet_timeout = attr->subnet_timeout;
 	resp->init_type_reply = attr->init_type_reply;
 	resp->active_width = attr->active_width;
-	/* This ABI needs to be extended to provide any speed more than IB_SPEED_NDR */
+	 
 	resp->active_speed = min_t(u16, attr->active_speed, IB_SPEED_NDR);
 	resp->phys_state = attr->phys_state;
 	resp->link_layer = rdma_port_get_link_layer(ib_dev, port_num);
@@ -188,7 +179,7 @@ static int UVERBS_HANDLER(UVERBS_METHOD_QUERY_PORT)(
 		return PTR_ERR(ucontext);
 	ib_dev = ucontext->device;
 
-	/* FIXME: Extend the UAPI_DEF_OBJ_NEEDS_FN stuff.. */
+	 
 	if (!ib_dev->ops.query_port)
 		return -EOPNOTSUPP;
 
@@ -447,7 +438,7 @@ DECLARE_UVERBS_NAMED_METHOD(
 
 DECLARE_UVERBS_NAMED_METHOD(
 	UVERBS_METHOD_INFO_HANDLES,
-	/* Also includes any device specific object ids */
+	 
 	UVERBS_ATTR_CONST_IN(UVERBS_ATTR_INFO_OBJECT_ID,
 			     enum uverbs_default_objects, UA_MANDATORY),
 	UVERBS_ATTR_PTR_OUT(UVERBS_ATTR_INFO_TOTAL_HANDLES,

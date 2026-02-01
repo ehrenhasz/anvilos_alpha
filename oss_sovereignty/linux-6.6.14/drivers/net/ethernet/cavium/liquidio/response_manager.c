@@ -1,21 +1,4 @@
-/**********************************************************************
- * Author: Cavium, Inc.
- *
- * Contact: support@cavium.com
- *          Please include "LiquidIO" in the subject.
- *
- * Copyright (c) 2003-2016 Cavium, Inc.
- *
- * This file is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, Version 2, as
- * published by the Free Software Foundation.
- *
- * This file is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty
- * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more
- * details.
- **********************************************************************/
+ 
 #include <linux/pci.h>
 #include <linux/netdevice.h>
 #include "liquidio_common.h"
@@ -88,29 +71,21 @@ int lio_process_ordered_list(struct octeon_device *octeon_dev,
 
 		status = OCTEON_REQUEST_PENDING;
 
-		/* check if octeon has finished DMA'ing a response
-		 * to where rptr is pointing to
-		 */
+		 
 		status64 = *sc->status_word;
 
 		if (status64 != COMPLETION_WORD_INIT) {
-			/* This logic ensures that all 64b have been written.
-			 * 1. check byte 0 for non-FF
-			 * 2. if non-FF, then swap result from BE to host order
-			 * 3. check byte 7 (swapped to 0) for non-FF
-			 * 4. if non-FF, use the low 32-bit status code
-			 * 5. if either byte 0 or byte 7 is FF, don't use status
-			 */
+			 
 			if ((status64 & 0xff) != 0xff) {
 				octeon_swap_8B_data(&status64, 1);
 				if (((status64 & 0xff) != 0xff)) {
-					/* retrieve 16-bit firmware status */
+					 
 					status = (u32)(status64 & 0xffffULL);
 					if (status) {
 						status =
 						  FIRMWARE_STATUS_CODE(status);
 					} else {
-						/* i.e. no error */
+						 
 						status = OCTEON_REQUEST_DONE;
 					}
 				}
@@ -134,8 +109,8 @@ int lio_process_ordered_list(struct octeon_device *octeon_dev,
 		if (status != OCTEON_REQUEST_PENDING) {
 			sc->sc_status = status;
 
-			/* we have received a response or we have timed out */
-			/* remove node from linked list */
+			 
+			 
 			list_del(&sc->node);
 			atomic_dec(&octeon_dev->response_list
 				   [OCTEON_ORDERED_SC_LIST].
@@ -150,9 +125,7 @@ int lio_process_ordered_list(struct octeon_device *octeon_dev,
 					      [OCTEON_DONE_SC_LIST].head);
 
 				if (unlikely(READ_ONCE(sc->caller_is_done))) {
-					/* caller does not wait for response
-					 * from firmware
-					 */
+					 
 					if (status != OCTEON_REQUEST_DONE) {
 						struct octeon_instr_irh *irh;
 
@@ -180,7 +153,7 @@ int lio_process_ordered_list(struct octeon_device *octeon_dev,
 
 				spin_unlock_bh(&ordered_sc_list->lock);
 			} else {
-				/* sc with callback function */
+				 
 				if (status == OCTEON_REQUEST_TIMEOUT) {
 					atomic_inc(&octeon_dev->response_list
 						   [OCTEON_ZOMBIE_SC_LIST].
@@ -195,26 +168,19 @@ int lio_process_ordered_list(struct octeon_device *octeon_dev,
 
 				sc->callback(octeon_dev, status,
 					     sc->callback_arg);
-				/* sc is freed by caller */
+				 
 			}
 
 			request_complete++;
 
 		} else {
-			/* no response yet */
+			 
 			request_complete = 0;
 			spin_unlock_bh
 			    (&ordered_sc_list->lock);
 		}
 
-		/* If we hit the Max Ordered requests to process every loop,
-		 * we quit
-		 * and let this function be invoked the next time the poll
-		 * thread runs
-		 * to process the remaining requests. This function can take up
-		 * the entire CPU if there is no upper limit to the requests
-		 * processed.
-		 */
+		 
 		if (request_complete >= resp_to_process)
 			break;
 	} while (request_complete);

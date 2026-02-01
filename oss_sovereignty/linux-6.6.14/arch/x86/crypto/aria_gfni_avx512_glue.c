@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Glue Code for the AVX512/GFNI assembler implementation of the ARIA Cipher
- *
- * Copyright (c) 2022 Taehee Yoo <ap420073@gmail.com>
- */
+ 
+ 
 
 #include <crypto/algapi.h>
 #include <crypto/internal/simd.h>

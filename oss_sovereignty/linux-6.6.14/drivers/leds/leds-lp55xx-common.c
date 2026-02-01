@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * LP5521/LP5523/LP55231/LP5562 Common Driver
- *
- * Copyright 2012 Texas Instruments
- *
- * Author: Milo(Woogyom) Kim <milo.kim@ti.com>
- *
- * Derived from leds-lp5521.c, leds-lp5523.c
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -22,7 +14,7 @@
 
 #include "leds-lp55xx-common.h"
 
-/* External clock rate */
+ 
 #define LP55XX_CLK_32K			32768
 
 static struct lp55xx_led *cdev_to_lp55xx_led(struct led_classdev *cdev)
@@ -46,7 +38,7 @@ static void lp55xx_reset_device(struct lp55xx_chip *chip)
 	u8 addr = cfg->reset.addr;
 	u8 val  = cfg->reset.val;
 
-	/* no error checking here because no ACK from the device after reset */
+	 
 	lp55xx_write(chip, addr, val);
 }
 
@@ -245,7 +237,7 @@ static void lp55xx_firmware_loaded(const struct firmware *fw, void *context)
 		return;
 	}
 
-	/* handling firmware data is chip dependent */
+	 
 	mutex_lock(&chip->lock);
 
 	chip->engines[idx - 1].mode = LP55XX_ENGINE_LOAD;
@@ -255,7 +247,7 @@ static void lp55xx_firmware_loaded(const struct firmware *fw, void *context)
 
 	mutex_unlock(&chip->lock);
 
-	/* firmware should be released for other channel use */
+	 
 	release_firmware(chip->fw);
 	chip->fw = NULL;
 }
@@ -291,7 +283,7 @@ static ssize_t select_engine_store(struct device *dev,
 	if (kstrtoul(buf, 0, &val))
 		return -EINVAL;
 
-	/* select the engine to be run */
+	 
 
 	switch (val) {
 	case LP55XX_ENGINE_1:
@@ -332,7 +324,7 @@ static ssize_t run_engine_store(struct device *dev,
 	if (kstrtoul(buf, 0, &val))
 		return -EINVAL;
 
-	/* run or stop the selected engine */
+	 
 
 	if (val <= 0) {
 		lp55xx_run_engine(chip, false);
@@ -443,17 +435,14 @@ int lp55xx_init_device(struct lp55xx_chip *chip)
 
 		gpiod_set_consumer_name(pdata->enable_gpiod, "LP55xx enable");
 		gpiod_set_value(pdata->enable_gpiod, 0);
-		usleep_range(1000, 2000); /* Keep enable down at least 1ms */
+		usleep_range(1000, 2000);  
 		gpiod_set_value(pdata->enable_gpiod, 1);
-		usleep_range(1000, 2000); /* 500us abs min. */
+		usleep_range(1000, 2000);  
 	}
 
 	lp55xx_reset_device(chip);
 
-	/*
-	 * Exact value is not available. 10 - 20ms
-	 * appears to be enough for reset.
-	 */
+	 
 	usleep_range(10000, 20000);
 
 	ret = lp55xx_detect_device(chip);
@@ -462,7 +451,7 @@ int lp55xx_init_device(struct lp55xx_chip *chip)
 		goto err;
 	}
 
-	/* chip specific initialization */
+	 
 	ret = lp55xx_post_init_device(chip);
 	if (ret) {
 		dev_err(dev, "post init device err: %d\n", ret);
@@ -507,7 +496,7 @@ int lp55xx_register_leds(struct lp55xx_led *led, struct lp55xx_chip *chip)
 
 	for (i = 0; i < num_channels; i++) {
 
-		/* do not initialize channels that are not connected */
+		 
 		if (pdata->led_config[i].led_current == 0)
 			continue;
 
@@ -520,7 +509,7 @@ int lp55xx_register_leds(struct lp55xx_led *led, struct lp55xx_chip *chip)
 		chip->num_leds++;
 		each->chip = chip;
 
-		/* setting led current at each channel */
+		 
 		if (cfg->set_led_current)
 			cfg->set_led_current(each, led_current);
 	}
@@ -708,7 +697,7 @@ struct lp55xx_platform_data *lp55xx_of_populate_pdata(struct device *dev,
 	if (IS_ERR(pdata->enable_gpiod))
 		return ERR_CAST(pdata->enable_gpiod);
 
-	/* LP8501 specific */
+	 
 	of_property_read_u8(np, "pwr-sel", (u8 *)&pdata->pwr_sel);
 
 	return pdata;

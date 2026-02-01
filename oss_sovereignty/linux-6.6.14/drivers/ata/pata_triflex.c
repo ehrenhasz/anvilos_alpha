@@ -1,25 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * pata_triflex.c 	- Compaq PATA for new ATA layer
- *			  (C) 2005 Red Hat Inc
- *			  Alan Cox <alan@lxorguk.ukuu.org.uk>
- *
- * based upon
- *
- * triflex.c
- *
- * IDE Chipset driver for the Compaq TriFlex IDE controller.
- *
- * Known to work with the Compaq Workstation 5x00 series.
- *
- * Copyright (C) 2002 Hewlett-Packard Development Group, L.P.
- * Author: Torben Mathiasen <torben.mathiasen@hp.com>
- *
- * Loosely based on the piix & svwks drivers.
- *
- * Documentation:
- *	Not publicly available.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -32,13 +12,7 @@
 #define DRV_NAME "pata_triflex"
 #define DRV_VERSION "0.2.8"
 
-/**
- *	triflex_prereset		-	probe begin
- *	@link: ATA link
- *	@deadline: deadline jiffies for the operation
- *
- *	Set up cable type and use generic probe init
- */
+ 
 
 static int triflex_prereset(struct ata_link *link, unsigned long deadline)
 {
@@ -58,17 +32,7 @@ static int triflex_prereset(struct ata_link *link, unsigned long deadline)
 
 
 
-/**
- *	triflex_load_timing		-	timing configuration
- *	@ap: ATA interface
- *	@adev: Device on the bus
- *	@speed: speed to configure
- *
- *	The Triflex has one set of timings per device per channel. This
- *	means we must do some switching. As the PIO and DMA timings don't
- *	match we have to do some reloading unlike PIIX devices where tuning
- *	tricks can avoid it.
- */
+ 
 
 static void triflex_load_timing(struct ata_port *ap, struct ata_device *adev, int speed)
 {
@@ -114,30 +78,13 @@ static void triflex_load_timing(struct ata_port *ap, struct ata_device *adev, in
 		pci_write_config_dword(pdev, channel_offset, triflex_timing);
 }
 
-/**
- *	triflex_set_piomode	-	set initial PIO mode data
- *	@ap: ATA interface
- *	@adev: ATA device
- *
- *	Use the timing loader to set up the PIO mode. We have to do this
- *	because DMA start/stop will only be called once DMA occurs. If there
- *	has been no DMA then the PIO timings are still needed.
- */
+ 
 static void triflex_set_piomode(struct ata_port *ap, struct ata_device *adev)
 {
 	triflex_load_timing(ap, adev, adev->pio_mode);
 }
 
-/**
- *	triflex_bmdma_start	-	DMA start callback
- *	@qc: Command in progress
- *
- *	Usually drivers set the DMA timing at the point the set_dmamode call
- *	is made. Triflex however requires we load new timings on the
- *	transition or keep matching PIO/DMA pairs (ie MWDMA2/PIO4 etc).
- *	We load the DMA timings just before starting DMA and then restore
- *	the PIO timing when the DMA is finished.
- */
+ 
 
 static void triflex_bmdma_start(struct ata_queued_cmd *qc)
 {
@@ -145,14 +92,7 @@ static void triflex_bmdma_start(struct ata_queued_cmd *qc)
 	ata_bmdma_start(qc);
 }
 
-/**
- *	triflex_bmdma_stop	-	DMA stop callback
- *	@qc: ATA command
- *
- *	We loaded new timings in dma_start, as a result we need to restore
- *	the PIO timings in dma_stop so that the next command issue gets the
- *	right clock values.
- */
+ 
 
 static void triflex_bmdma_stop(struct ata_queued_cmd *qc)
 {
@@ -201,10 +141,7 @@ static int triflex_ata_pci_device_suspend(struct pci_dev *pdev, pm_message_t mes
 
 	ata_host_suspend(host, mesg);
 
-	/*
-	 * We must not disable or powerdown the device.
-	 * APM bios refuses to suspend if IDE is not accessible.
-	 */
+	 
 	pci_save_state(pdev);
 
 	return 0;

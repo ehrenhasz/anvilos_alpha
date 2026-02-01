@@ -1,31 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Shared crypto simd helpers
- *
- * Copyright (c) 2012 Jussi Kivilinna <jussi.kivilinna@mbnet.fi>
- * Copyright (c) 2016 Herbert Xu <herbert@gondor.apana.org.au>
- * Copyright (c) 2019 Google LLC
- *
- * Based on aesni-intel_glue.c by:
- *  Copyright (C) 2008, Intel Corp.
- *    Author: Huang Ying <ying.huang@intel.com>
- */
 
-/*
- * Shared crypto SIMD helpers.  These functions dynamically create and register
- * an skcipher or AEAD algorithm that wraps another, internal algorithm.  The
- * wrapper ensures that the internal algorithm is only executed in a context
- * where SIMD instructions are usable, i.e. where may_use_simd() returns true.
- * If SIMD is already usable, the wrapper directly calls the internal algorithm.
- * Otherwise it defers execution to a workqueue via cryptd.
- *
- * This is an alternative to the internal algorithm implementing a fallback for
- * the !may_use_simd() case itself.
- *
- * Note that the wrapper algorithm is asynchronous, i.e. it has the
- * CRYPTO_ALG_ASYNC flag set.  Therefore it won't be found by users who
- * explicitly allocate a synchronous algorithm.
- */
+ 
+
+ 
 
 #include <crypto/cryptd.h>
 #include <crypto/internal/aead.h>
@@ -36,7 +12,7 @@
 #include <linux/preempt.h>
 #include <asm/simd.h>
 
-/* skcipher support */
+ 
 
 struct simd_skcipher_alg {
 	const char *ialg_name;
@@ -276,7 +252,7 @@ void simd_unregister_skciphers(struct skcipher_alg *algs, int count,
 }
 EXPORT_SYMBOL_GPL(simd_unregister_skciphers);
 
-/* AEAD support */
+ 
 
 struct simd_aead_alg {
 	const char *ialg_name;

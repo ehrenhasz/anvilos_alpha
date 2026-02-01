@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *	Bridge per vlan tunnel port dst_metadata handling code
- *
- *	Authors:
- *	Roopa Prabhu		<roopa@cumulusnetworks.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/netdevice.h>
@@ -91,9 +86,7 @@ out:
 	return err;
 }
 
-/* Must be protected by RTNL.
- * Must be called with vid in range from 1 to 4094 inclusive.
- */
+ 
 int nbp_vlan_tunnel_info_add(const struct net_bridge_port *port, u16 vid,
 			     u32 tun_id)
 {
@@ -110,9 +103,7 @@ int nbp_vlan_tunnel_info_add(const struct net_bridge_port *port, u16 vid,
 	return __vlan_tunnel_info_add(vg, vlan, tun_id);
 }
 
-/* Must be protected by RTNL.
- * Must be called with vid in range from 1 to 4094 inclusive.
- */
+ 
 int nbp_vlan_tunnel_info_delete(const struct net_bridge_port *port, u16 vid)
 {
 	struct net_bridge_vlan_group *vg;
@@ -168,11 +159,11 @@ void br_handle_ingress_vlan_tunnel(struct sk_buff *skb,
 	if (!vg || !tinfo)
 		return;
 
-	/* if already tagged, ignore */
+	 
 	if (skb_vlan_tagged(skb))
 		return;
 
-	/* lookup vid, given tunnel id */
+	 
 	vlan = br_vlan_tunnel_lookup(&vg->tunnel_hash, tinfo->key.tun_id);
 	if (!vlan)
 		return;

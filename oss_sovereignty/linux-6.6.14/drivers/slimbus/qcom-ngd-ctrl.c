@@ -1,6 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2011-2017, The Linux Foundation. All rights reserved.
-// Copyright (c) 2018, Linaro Limited
+
+
+
 
 #include <linux/irq.h>
 #include <linux/kernel.h>
@@ -23,7 +23,7 @@
 #include <net/sock.h>
 #include "slimbus.h"
 
-/* NGD (Non-ported Generic Device) registers */
+ 
 #define	NGD_CFG			0x0
 #define	NGD_CFG_ENABLE		BIT(0)
 #define	NGD_CFG_RX_MSGQ_EN	BIT(1)
@@ -47,7 +47,7 @@
 				NGD_INT_DEV_ERR | NGD_INT_TX_MSG_SENT | \
 				NGD_INT_RX_MSG_RCVD)
 
-/* Slimbus QMI service */
+ 
 #define SLIMBUS_QMI_SVC_ID	0x0301
 #define SLIMBUS_QMI_SVC_V1	1
 #define SLIMBUS_QMI_INS_ID	0
@@ -62,10 +62,10 @@
 #define SLIMBUS_QMI_SELECT_INSTANCE_REQ_MAX_MSG_LEN	14
 #define SLIMBUS_QMI_SELECT_INSTANCE_RESP_MAX_MSG_LEN	7
 #define SLIMBUS_QMI_CHECK_FRAMER_STAT_RESP_MAX_MSG_LEN	7
-/* QMI response timeout of 500ms */
+ 
 #define SLIMBUS_QMI_RESP_TOUT	1000
 
-/* User defined commands */
+ 
 #define SLIM_USR_MC_GENERIC_ACK	0x25
 #define SLIM_USR_MC_MASTER_CAPABILITY	0x0
 #define SLIM_USR_MC_REPORT_SATELLITE	0x1
@@ -88,7 +88,7 @@
 #define SLIM_ROOT_FREQ	24576000
 #define LADDR_RETRY	5
 
-/* Per spec.max 40 bytes per received message */
+ 
 #define SLIM_MSGQ_BUF_LEN	40
 #define QCOM_SLIM_NGD_DESC_NUM	32
 
@@ -179,7 +179,7 @@ struct qcom_slim_ngd_ctrl {
 };
 
 enum slimbus_mode_enum_type_v01 {
-	/* To force a 32 bit signed enum. Do not change or use*/
+	 
 	SLIMBUS_MODE_ENUM_TYPE_MIN_ENUM_VAL_V01 = INT_MIN,
 	SLIMBUS_MODE_SATELLITE_V01 = 1,
 	SLIMBUS_MODE_MASTER_V01 = 2,
@@ -187,7 +187,7 @@ enum slimbus_mode_enum_type_v01 {
 };
 
 enum slimbus_pm_enum_type_v01 {
-	/* To force a 32 bit signed enum. Do not change or use*/
+	 
 	SLIMBUS_PM_ENUM_TYPE_MIN_ENUM_VAL_V01 = INT_MIN,
 	SLIMBUS_PM_INACTIVE_V01 = 1,
 	SLIMBUS_PM_ACTIVE_V01 = 2,
@@ -374,7 +374,7 @@ static int qcom_slim_qmi_send_select_inst_req(struct qcom_slim_ngd_ctrl *ctrl,
 		dev_err(ctrl->dev, "QMI TXN wait fail: %d\n", rc);
 		return rc;
 	}
-	/* Check the response */
+	 
 	if (resp.resp.result != QMI_RESULT_SUCCESS_V01) {
 		dev_err(ctrl->dev, "QMI request failed 0x%x\n",
 			resp.resp.result);
@@ -424,7 +424,7 @@ static int qcom_slim_qmi_send_power_request(struct qcom_slim_ngd_ctrl *ctrl,
 		return rc;
 	}
 
-	/* Check the response */
+	 
 	if (resp.resp.result != QMI_RESULT_SUCCESS_V01) {
 		dev_err(ctrl->dev, "QMI request failed 0x%x\n",
 			resp.resp.result);
@@ -471,11 +471,11 @@ static int qcom_slim_qmi_init(struct qcom_slim_ngd_ctrl *ctrl,
 		goto qmi_connect_to_service_failed;
 	}
 
-	/* Instance is 0 based */
+	 
 	req.instance = (ctrl->ngd->id >> 1);
 	req.mode_valid = 1;
 
-	/* Mode indicates the role of the ADSP */
+	 
 	if (apps_is_master)
 		req.mode = SLIMBUS_MODE_SATELLITE_V01;
 	else
@@ -628,7 +628,7 @@ static void qcom_slim_ngd_rx_msgq_cb(void *args)
 	struct qcom_slim_ngd_ctrl *ctrl = desc->ctrl;
 
 	qcom_slim_ngd_rx(ctrl, (u8 *)desc->base);
-	/* Add descriptor back to the queue */
+	 
 	desc->desc = dmaengine_prep_slave_single(ctrl->dma_rx_channel,
 					desc->phys, SLIM_MSGQ_BUF_LEN,
 					DMA_DEV_TO_MEM,
@@ -859,7 +859,7 @@ static int qcom_slim_ngd_xfer_msg(struct slim_controller *sctrl,
 		txn->rl = txn->msg->num_bytes + 4;
 	}
 
-	/* HW expects length field to be excluded */
+	 
 	txn->rl--;
 	puc = (u8 *)pbuf;
 	*pbuf = 0;
@@ -955,13 +955,7 @@ static int qcom_slim_calc_coef(struct slim_stream_runtime *rt, int *exp)
 	coef = rt->ratem;
 	*exp = 0;
 
-	/*
-	 * CRM = Cx(2^E) is the formula we are using.
-	 * Here C is the coffecient and E is the exponent.
-	 * CRM is the Channel Rate Multiplier.
-	 * Coefficeint should be either 1 or 3 and exponenet
-	 * should be an integer between 0 to 9, inclusive.
-	 */
+	 
 	while (1) {
 		while ((coef & 0x1) != 0x1) {
 			coef >>= 1;
@@ -974,11 +968,7 @@ static int qcom_slim_calc_coef(struct slim_stream_runtime *rt, int *exp)
 		coef++;
 	}
 
-	/*
-	 * we rely on the coef value (1 or 3) to set a bit
-	 * in the slimbus message packet. This bit is
-	 * BIT(5) which is the segment rate coefficient.
-	 */
+	 
 	if (coef == 1) {
 		if (*exp > 9)
 			return -EIO;
@@ -1021,7 +1011,7 @@ static int qcom_slim_ngd_enable_stream(struct slim_stream_runtime *rt)
 			wbuf[txn.msg->num_bytes] = rt->bps >> 2 |
 						   (port->ch.aux_fmt << 6);
 
-			/* calculate coef dynamically */
+			 
 			coef = qcom_slim_calc_coef(rt, &exp);
 			if (coef < 0) {
 				dev_err(&sdev->dev,
@@ -1153,11 +1143,11 @@ static void qcom_slim_ngd_setup(struct qcom_slim_ngd_ctrl *ctrl)
 		ctrl->state == QCOM_SLIM_NGD_CTRL_ASLEEP)
 		qcom_slim_ngd_init_dma(ctrl);
 
-	/* By default enable message queues */
+	 
 	cfg |= NGD_CFG_RX_MSGQ_EN;
 	cfg |= NGD_CFG_TX_MSGQ_EN;
 
-	/* Enable NGD if it's not already enabled*/
+	 
 	if (!(cfg & NGD_CFG_ENABLE))
 		cfg |= NGD_CFG_ENABLE;
 
@@ -1188,15 +1178,12 @@ static int qcom_slim_ngd_power_up(struct qcom_slim_ngd_ctrl *ctrl)
 	}
 
 	ctrl->ver = readl_relaxed(ctrl->base);
-	/* Version info in 16 MSbits */
+	 
 	ctrl->ver >>= 16;
 
 	laddr = readl_relaxed(ngd->base + NGD_STATUS);
 	if (laddr & NGD_LADDR) {
-		/*
-		 * external MDM restart case where ADSP itself was active framer
-		 * For example, modem restarted when playback was active
-		 */
+		 
 		if (cur_state == QCOM_SLIM_NGD_CTRL_AWAKE) {
 			dev_info(ctrl->dev, "Subsys restart: ADSP active framer\n");
 			return 0;
@@ -1205,10 +1192,7 @@ static int qcom_slim_ngd_power_up(struct qcom_slim_ngd_ctrl *ctrl)
 		return 0;
 	}
 
-	/*
-	 * Reinitialize only when registers are not retained or when enumeration
-	 * is lost for ngd.
-	 */
+	 
 	reinit_completion(&ctrl->reconf);
 
 	writel_relaxed(DEF_NGD_INT_MASK, ngd->base + NGD_INT_EN);
@@ -1310,7 +1294,7 @@ static int qcom_slim_ngd_runtime_resume(struct device *dev)
 	if (ctrl->state >= QCOM_SLIM_NGD_CTRL_ASLEEP)
 		ret = qcom_slim_ngd_power_up(ctrl);
 	if (ret) {
-		/* Did SSR cause this power up failure */
+		 
 		if (ctrl->state != QCOM_SLIM_NGD_CTRL_DOWN)
 			ctrl->state = QCOM_SLIM_NGD_CTRL_ASLEEP;
 		else
@@ -1332,7 +1316,7 @@ static int qcom_slim_ngd_enable(struct qcom_slim_ngd_ctrl *ctrl, bool enable)
 				ret, ctrl->state);
 			return ret;
 		}
-		/* controller state should be in sync with framework state */
+		 
 		complete(&ctrl->qmi.qmi_comp);
 		if (!pm_runtime_enabled(ctrl->ctrl.dev) ||
 			 !pm_runtime_suspended(ctrl->ctrl.dev))
@@ -1450,7 +1434,7 @@ static void qcom_slim_ngd_up_worker(struct work_struct *work)
 
 	ctrl = container_of(work, struct qcom_slim_ngd_ctrl, ngd_up_work);
 
-	/* Make sure qmi service is up before continuing */
+	 
 	wait_for_completion_interruptible(&ctrl->qmi_up);
 
 	mutex_lock(&ctrl->ssr_lock);
@@ -1464,7 +1448,7 @@ static int qcom_slim_ngd_ssr_pdr_notify(struct qcom_slim_ngd_ctrl *ctrl,
 	switch (action) {
 	case QCOM_SSR_BEFORE_SHUTDOWN:
 	case SERVREG_SERVICE_STATE_DOWN:
-		/* Make sure the last dma xfer is finished */
+		 
 		mutex_lock(&ctrl->tx_lock);
 		if (ctrl->state != QCOM_SLIM_NGD_CTRL_DOWN) {
 			pm_runtime_get_noresume(ctrl->ctrl.dev);

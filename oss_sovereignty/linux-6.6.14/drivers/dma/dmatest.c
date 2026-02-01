@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * DMA Engine test module
- *
- * Copyright (C) 2007 Atmel Corporation
- * Copyright (C) 2013 Intel Corporation
- */
+
+ 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
 #include <linux/err.h>
@@ -88,23 +83,7 @@ static bool polled;
 module_param(polled, bool, 0644);
 MODULE_PARM_DESC(polled, "Use polling for completion instead of interrupts");
 
-/**
- * struct dmatest_params - test parameters.
- * @buf_size:		size of the memcpy test buffer
- * @channel:		bus ID of the channel to test
- * @device:		bus ID of the DMA Engine to test
- * @threads_per_chan:	number of threads to start per channel
- * @max_channels:	maximum number of channels to use
- * @iterations:		iterations before stopping test
- * @xor_sources:	number of xor source buffers
- * @pq_sources:		number of p+q source buffers
- * @timeout:		transfer timeout in msec, -1 for infinite timeout
- * @noverify:		disable data verification
- * @norandom:		disable random offset setup
- * @alignment:		custom data address alignment taken as 2^alignment
- * @transfer_size:	custom transfer size in bytes
- * @polled:		use polling for completion instead of interrupts
- */
+ 
 struct dmatest_params {
 	unsigned int	buf_size;
 	char		channel[20];
@@ -122,20 +101,12 @@ struct dmatest_params {
 	bool		polled;
 };
 
-/**
- * struct dmatest_info - test information.
- * @params:		test parameters
- * @channels:		channels under test
- * @nr_channels:	number of channels under test
- * @lock:		access protection to the fields of this structure
- * @did_init:		module has been initialized completely
- * @last_error:		test has faced configuration issues
- */
+ 
 static struct dmatest_info {
-	/* Test parameters */
+	 
 	struct dmatest_params	params;
 
-	/* Internal state */
+	 
 	struct list_head	channels;
 	unsigned int		nr_channels;
 	int			last_error;
@@ -178,20 +149,10 @@ static const struct kernel_param_ops test_list_ops = {
 module_param_cb(test_list, &test_list_ops, NULL, 0444);
 MODULE_PARM_DESC(test_list, "Print current test list");
 
-/* Maximum amount of mismatched bytes in buffer to print */
+ 
 #define MAX_ERROR_COUNT		32
 
-/*
- * Initialization patterns. All bytes in the source buffer has bit 7
- * set, all bytes in the destination buffer has bit 7 cleared.
- *
- * Bit 6 is set for all bytes which are to be copied by the DMA
- * engine. Bit 5 is set for all bytes which are to be overwritten by
- * the DMA engine.
- *
- * The remaining bits are the inverse of a counter which increments by
- * one for each byte address.
- */
+ 
 #define PATTERN_SRC		0x80
 #define PATTERN_DST		0x00
 #define PATTERN_COPY		0x40
@@ -199,14 +160,14 @@ MODULE_PARM_DESC(test_list, "Print current test list");
 #define PATTERN_COUNT_MASK	0x1f
 #define PATTERN_MEMSET_IDX	0x01
 
-/* Fixed point arithmetic ops */
+ 
 #define FIXPT_SHIFT		8
 #define FIXPNT_MASK		0xFF
 #define FIXPT_TO_INT(a)	((a) >> FIXPT_SHIFT)
 #define INT_TO_FIXPT(a)	((a) << FIXPT_SHIFT)
 #define FIXPT_GET_FRAC(a)	((((a) & FIXPNT_MASK) * 100) >> FIXPT_SHIFT)
 
-/* poor man's completion - we want to use wait_event_freezable() on it */
+ 
 struct dmatest_done {
 	bool			done;
 	wait_queue_head_t	*wait;
@@ -433,13 +394,7 @@ static void dmatest_callback(void *arg)
 		done->done = true;
 		wake_up_all(done->wait);
 	} else {
-		/*
-		 * If thread->done, it means that this callback occurred
-		 * after the parent thread has cleaned up. This can
-		 * happen in the case that driver doesn't implement
-		 * the terminate_all() functionality and a dma operation
-		 * did not occur within the timeout period
-		 */
+		 
 		WARN(1, "dmatest: Kernel memory may be corrupted!!\n");
 	}
 }
@@ -485,7 +440,7 @@ static unsigned long long dmatest_persec(s64 runtime, unsigned int val)
 	if (runtime <= 0)
 		return 0;
 
-	/* drop precision until runtime is 32-bits */
+	 
 	while (runtime > UINT_MAX) {
 		runtime >>= 1;
 		per_sec <<= 1;
@@ -537,7 +492,7 @@ static int dmatest_alloc_test_data(struct dmatest_data *d,
 		if (!d->raw[i])
 			goto err;
 
-		/* align to alignment restriction */
+		 
 		if (align)
 			d->aligned[i] = PTR_ALIGN(d->raw[i], align);
 		else
@@ -550,20 +505,7 @@ err:
 	return -ENOMEM;
 }
 
-/*
- * This function repeatedly tests DMA transfers of various lengths and
- * offsets for a given operation type until it is told to exit by
- * kthread_stop(). There may be multiple threads running this function
- * in parallel for a single channel, and there may be multiple channels
- * being tested in parallel.
- *
- * Before each test, the source and destination buffer is initialized
- * with a known pattern. This pattern is different depending on
- * whether it's in an area which is supposed to be copied or
- * overwritten, and different in the source and destination buffers.
- * So if the DMA engine doesn't copy exactly what we tell it to copy,
- * we'll notice.
- */
+ 
 static int dmatest_func(void *data)
 {
 	struct dmatest_thread	*thread = data;
@@ -620,13 +562,13 @@ static int dmatest_func(void *data)
 		src->cnt = dst->cnt = 1;
 		is_memset = true;
 	} else if (thread->type == DMA_XOR) {
-		/* force odd to ensure dst = src */
+		 
 		src->cnt = min_odd(params->xor_sources | 1, dev->max_xor);
 		dst->cnt = 1;
 		align = params->alignment < 0 ? dev->xor_align :
 						params->alignment;
 	} else if (thread->type == DMA_PQ) {
-		/* force odd to ensure dst = src */
+		 
 		src->cnt = min_odd(params->pq_sources | 1, dma_maxpq(dev, 0));
 		dst->cnt = 2;
 		align = params->alignment < 0 ? dev->pq_align :
@@ -641,7 +583,7 @@ static int dmatest_func(void *data)
 	} else
 		goto err_thread_type;
 
-	/* Check if buffer count fits into map count variable (u8) */
+	 
 	if ((src->cnt + dst->cnt) >= 255) {
 		pr_err("too many buffers (%d of 255 supported)\n",
 		       src->cnt + dst->cnt);
@@ -671,9 +613,7 @@ static int dmatest_func(void *data)
 	if (!dma_pq)
 		goto err_srcs_array;
 
-	/*
-	 * src and dst buffers are freed by ourselves below
-	 */
+	 
 	if (params->polled)
 		flags = DMA_CTRL_ACK;
 	else
@@ -702,7 +642,7 @@ static int dmatest_func(void *data)
 			len = dmatest_random() % buf_size + 1;
 		}
 
-		/* Do not alter transfer size explicitly defined by user */
+		 
 		if (!params->transfer_size) {
 			len = (len >> align) << align;
 			if (!len)
@@ -758,7 +698,7 @@ static int dmatest_func(void *data)
 			}
 			um->to_cnt++;
 		}
-		/* map with DMA_BIDIRECTIONAL to force writeback/invalidate */
+		 
 		dsts = &um->addr[src->cnt];
 		for (i = 0; i < dst->cnt; i++) {
 			void *buf = dst->aligned[i];
@@ -921,7 +861,7 @@ err_thread_type:
 		FIXPT_TO_INT(iops), FIXPT_GET_FRAC(iops),
 		dmatest_KBs(runtime, total_len), ret);
 
-	/* terminate all transfers on specified channels */
+	 
 	if (ret || failed_tests)
 		dmaengine_terminate_sync(chan);
 
@@ -946,7 +886,7 @@ static void dmatest_cleanup_channel(struct dmatest_chan *dtc)
 		kfree(thread);
 	}
 
-	/* terminate all transfers on specified channels */
+	 
 	dmaengine_terminate_sync(dtc->chan);
 
 	kfree(dtc);
@@ -994,7 +934,7 @@ static int dmatest_add_threads(struct dmatest_info *info,
 			break;
 		}
 
-		/* srcbuf and dstbuf are allocated by the thread itself */
+		 
 		get_task_struct(thread->task);
 		list_add_tail(&thread->node, &dtc->threads);
 		thread->pending = true;
@@ -1078,13 +1018,13 @@ static void request_channels(struct dmatest_info *info,
 		if (chan) {
 			if (dmatest_add_channel(info, chan)) {
 				dma_release_channel(chan);
-				break; /* add_channel failed, punt */
+				break;  
 			}
 		} else
-			break; /* no more channels available */
+			break;  
 		if (params->max_channels &&
 		    info->nr_channels >= params->max_channels)
-			break; /* we have all we need */
+			break;  
 	}
 }
 
@@ -1092,7 +1032,7 @@ static void add_threaded_test(struct dmatest_info *info)
 {
 	struct dmatest_params *params = &info->params;
 
-	/* Copy test parameters */
+	 
 	params->buf_size = test_buf_size;
 	strscpy(params->channel, strim(test_channel), sizeof(params->channel));
 	strscpy(params->device, strim(test_device), sizeof(params->device));
@@ -1150,9 +1090,7 @@ static void stop_threaded_test(struct dmatest_info *info)
 
 static void start_threaded_tests(struct dmatest_info *info)
 {
-	/* we might be called early to set run=, defer running until all
-	 * parameters have been evaluated
-	 */
+	 
 	if (!info->did_init)
 		return;
 
@@ -1188,17 +1126,15 @@ static int dmatest_run_set(const char *val, const struct kernel_param *kp)
 		return ret;
 	} else if (dmatest_run) {
 		if (!is_threaded_test_pending(info)) {
-			/*
-			 * We have nothing to run. This can be due to:
-			 */
+			 
 			ret = info->last_error;
 			if (ret) {
-				/* 1) Misconfiguration */
+				 
 				pr_err("Channel misconfigured, can't continue\n");
 				mutex_unlock(&info->lock);
 				return ret;
 			} else {
-				/* 2) We rely on defaults */
+				 
 				pr_info("No channels configured, continue with any\n");
 				if (!is_threaded_test_run(info))
 					stop_threaded_test(info);
@@ -1228,10 +1164,10 @@ static int dmatest_chan_set(const char *val, const struct kernel_param *kp)
 		mutex_unlock(&info->lock);
 		return ret;
 	}
-	/*Clear any previously run threads */
+	 
 	if (!is_threaded_test_run(info) && !is_threaded_test_pending(info))
 		stop_threaded_test(info);
-	/* Reject channels that are already registered */
+	 
 	if (is_threaded_test_pending(info)) {
 		list_for_each_entry(dtc, &info->channels, node) {
 			if (strcmp(dma_chan_name(dtc->chan),
@@ -1250,14 +1186,9 @@ static int dmatest_chan_set(const char *val, const struct kernel_param *kp)
 
 	add_threaded_test(info);
 
-	/* Check if channel was added successfully */
+	 
 	if (!list_empty(&info->channels)) {
-		/*
-		 * if new channel was not successfully added, revert the
-		 * "test_channel" string to the name of the last successfully
-		 * added channel. exception for when users issues empty string
-		 * to channel parameter.
-		 */
+		 
 		dtc = list_last_entry(&info->channels, struct dmatest_chan, node);
 		if ((strcmp(dma_chan_name(dtc->chan), strim(test_channel)) != 0)
 		    && (strcmp("", strim(test_channel)) != 0)) {
@@ -1268,7 +1199,7 @@ static int dmatest_chan_set(const char *val, const struct kernel_param *kp)
 		}
 
 	} else {
-		/* Clear test_channel if no channels were added successfully */
+		 
 		strscpy(chan_reset_val, "", sizeof(chan_reset_val));
 		ret = -EBUSY;
 		goto add_chan_err;
@@ -1336,14 +1267,12 @@ static int __init dmatest_init(void)
 	if (params->iterations && wait)
 		wait_event(thread_wait, !is_threaded_test_run(info));
 
-	/* module parameters are stable, inittime tests are started,
-	 * let userspace take over 'run' control
-	 */
+	 
 	info->did_init = true;
 
 	return 0;
 }
-/* when compiled-in wait for drivers to load first */
+ 
 late_initcall(dmatest_init);
 
 static void __exit dmatest_exit(void)

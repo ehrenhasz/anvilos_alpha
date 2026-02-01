@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Synopsys DesignWare I2C adapter driver.
- *
- * Based on the TI DAVINCI I2C adapter driver.
- *
- * Copyright (C) 2006 Texas Instruments.
- * Copyright (C) 2007 MontaVista Software Inc.
- * Copyright (C) 2009 Provigent Ltd.
- */
+
+ 
 #include <linux/acpi.h>
 #include <linux/clk-provider.h>
 #include <linux/clk.h>
@@ -75,10 +67,7 @@ static int bt1_i2c_read(void *context, unsigned int reg, unsigned int *val)
 	struct dw_i2c_dev *dev = context;
 	int ret;
 
-	/*
-	 * Note these methods shouldn't ever fail because the system controller
-	 * registers are memory mapped. We check the return value just in case.
-	 */
+	 
 	ret = regmap_write(dev->sysmap, BT1_I2C_CTL,
 			   BT1_I2C_CTL_GO | (reg & BT1_I2C_CTL_ADDR_MASK));
 	if (ret)
@@ -214,7 +203,7 @@ static const struct dmi_system_id dw_i2c_hwmon_class_dmi[] = {
 			DMI_MATCH(DMI_PRODUCT_NAME, "QT5222"),
 		},
 	},
-	{ } /* terminate list */
+	{ }  
 };
 
 static const struct i2c_dw_semaphore_callbacks i2c_dw_semaphore_cb_table[] = {
@@ -244,11 +233,7 @@ static int i2c_dw_probe_lock_support(struct dw_i2c_dev *dev)
 	while (ptr->probe) {
 		ret = ptr->probe(dev);
 		if (ret) {
-			/*
-			 * If there is no semaphore device attached to this
-			 * controller, we shouldn't abort general i2c_controller
-			 * probe.
-			 */
+			 
 			if (ret != -ENODEV)
 				return ret;
 
@@ -327,7 +312,7 @@ static int dw_i2c_plat_probe(struct platform_device *pdev)
 
 	i2c_dw_configure(dev);
 
-	/* Optional interface clock */
+	 
 	dev->pclk = devm_clk_get_optional(&pdev->dev, "pclk");
 	if (IS_ERR(dev->pclk)) {
 		ret = PTR_ERR(dev->pclk);
@@ -374,7 +359,7 @@ static int dw_i2c_plat_probe(struct platform_device *pdev)
 
 	device_enable_async_suspend(&pdev->dev);
 
-	/* The code below assumes runtime PM to be disabled. */
+	 
 	WARN_ON(pm_runtime_enabled(&pdev->dev));
 
 	pm_runtime_set_autosuspend_delay(&pdev->dev, 1000);
@@ -420,12 +405,7 @@ static void dw_i2c_plat_remove(struct platform_device *pdev)
 
 static int dw_i2c_plat_prepare(struct device *dev)
 {
-	/*
-	 * If the ACPI companion device object is present for this device, it
-	 * may be accessed during suspend and resume of other devices via I2C
-	 * operation regions, so tell the PM core and middle layers to avoid
-	 * skipping system suspend/resume callbacks for it in that case.
-	 */
+	 
 	return !has_acpi_companion(dev);
 }
 
@@ -479,7 +459,7 @@ static const struct dev_pm_ops dw_i2c_dev_pm_ops = {
 	RUNTIME_PM_OPS(dw_i2c_plat_runtime_suspend, dw_i2c_plat_runtime_resume, NULL)
 };
 
-/* Work with hotplug and coldplug */
+ 
 MODULE_ALIAS("platform:i2c_designware");
 
 static struct platform_driver dw_i2c_driver = {

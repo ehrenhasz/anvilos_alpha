@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2010-2012 Broadcom. All rights reserved.
- * Copyright (c) 2013 Lubomir Rintel
- */
+
+ 
 
 #include <linux/hw_random.h>
 #include <linux/io.h>
@@ -19,10 +16,10 @@
 #define RNG_DATA	0x8
 #define RNG_INT_MASK	0x10
 
-/* enable rng */
+ 
 #define RNG_RBGEN	0x1
 
-/* the initial numbers generated are "less random" so will be discarded */
+ 
 #define RNG_WARMUP_COUNT 0x40000
 
 #define RNG_INT_OFF	0x1
@@ -42,9 +39,7 @@ static inline struct bcm2835_rng_priv *to_rng_priv(struct hwrng *rng)
 
 static inline u32 rng_readl(struct bcm2835_rng_priv *priv, u32 offset)
 {
-	/* MIPS chips strapped for BE will automagically configure the
-	 * peripheral registers for CPU-native byte order.
-	 */
+	 
 	if (IS_ENABLED(CONFIG_MIPS) && IS_ENABLED(CONFIG_CPU_BIG_ENDIAN))
 		return __raw_readl(priv->base + offset);
 	else
@@ -98,13 +93,13 @@ static int bcm2835_rng_init(struct hwrng *rng)
 		return ret;
 
 	if (priv->mask_interrupts) {
-		/* mask the interrupt */
+		 
 		val = rng_readl(priv, RNG_INT_MASK);
 		val |= RNG_INT_OFF;
 		rng_writel(priv, val, RNG_INT_MASK);
 	}
 
-	/* set warm-up count & enable */
+	 
 	rng_writel(priv, RNG_WARMUP_COUNT, RNG_STATUS);
 	rng_writel(priv, RNG_RBGEN, RNG_CTRL);
 
@@ -115,7 +110,7 @@ static void bcm2835_rng_cleanup(struct hwrng *rng)
 {
 	struct bcm2835_rng_priv *priv = to_rng_priv(rng);
 
-	/* disable rng hardware */
+	 
 	rng_writel(priv, 0, RNG_CTRL);
 
 	clk_disable_unprepare(priv->clk);
@@ -151,12 +146,12 @@ static int bcm2835_rng_probe(struct platform_device *pdev)
 
 	platform_set_drvdata(pdev, priv);
 
-	/* map peripheral */
+	 
 	priv->base = devm_platform_ioremap_resource(pdev, 0);
 	if (IS_ERR(priv->base))
 		return PTR_ERR(priv->base);
 
-	/* Clock is optional on most platforms */
+	 
 	priv->clk = devm_clk_get_optional(dev, NULL);
 	if (IS_ERR(priv->clk))
 		return PTR_ERR(priv->clk);
@@ -175,13 +170,13 @@ static int bcm2835_rng_probe(struct platform_device *pdev)
 		if (!rng_id)
 			return -EINVAL;
 
-		/* Check for rng init function, execute it */
+		 
 		of_data = rng_id->data;
 		if (of_data)
 			priv->mask_interrupts = of_data->mask_interrupts;
 	}
 
-	/* register driver */
+	 
 	err = devm_hwrng_register(dev, &priv->rng);
 	if (err)
 		dev_err(dev, "hwrng registration failed\n");
@@ -196,7 +191,7 @@ MODULE_DEVICE_TABLE(of, bcm2835_rng_of_match);
 static const struct platform_device_id bcm2835_rng_devtype[] = {
 	{ .name = "bcm2835-rng" },
 	{ .name = "bcm63xx-rng" },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(platform, bcm2835_rng_devtype);
 

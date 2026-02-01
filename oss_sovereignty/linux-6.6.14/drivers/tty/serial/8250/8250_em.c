@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Renesas Emma Mobile 8250 driver
- *
- *  Copyright (C) 2012 Magnus Damm
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/io.h>
@@ -20,14 +16,11 @@
 #define UART_DLM_EM 10
 #define UART_HCR0_EM 11
 
-/*
- * A high value for UART_FCR_EM avoids overlapping with existing UART_*
- * register defines. UART_FCR_EM_HW is the real HW register offset.
- */
+ 
 #define UART_FCR_EM 0x10003
 #define UART_FCR_EM_HW 3
 
-#define UART_HCR0_EM_SW_RESET	BIT(7) /* SW Reset */
+#define UART_HCR0_EM_SW_RESET	BIT(7)  
 
 struct serial8250_em_priv {
 	int line;
@@ -37,23 +30,23 @@ static void serial8250_em_serial_out_helper(struct uart_port *p, int offset,
 					    int value)
 {
 	switch (offset) {
-	case UART_TX: /* TX @ 0x00 */
+	case UART_TX:  
 		writeb(value, p->membase);
 		break;
-	case UART_LCR: /* LCR @ 0x10 (+1) */
-	case UART_MCR: /* MCR @ 0x14 (+1) */
-	case UART_SCR: /* SCR @ 0x20 (+1) */
+	case UART_LCR:  
+	case UART_MCR:  
+	case UART_SCR:  
 		writel(value, p->membase + ((offset + 1) << 2));
 		break;
 	case UART_FCR_EM:
 		writel(value, p->membase + (UART_FCR_EM_HW << 2));
 		break;
-	case UART_IER: /* IER @ 0x04 */
-		value &= 0x0f; /* only 4 valid bits - not Xscale */
+	case UART_IER:  
+		value &= 0x0f;  
 		fallthrough;
-	case UART_DLL_EM: /* DLL @ 0x24 (+9) */
-	case UART_DLM_EM: /* DLM @ 0x28 (+9) */
-	case UART_HCR0_EM: /* HCR0 @ 0x2c */
+	case UART_DLL_EM:  
+	case UART_DLM_EM:  
+	case UART_HCR0_EM:  
 		writel(value, p->membase + (offset << 2));
 		break;
 	}
@@ -62,21 +55,21 @@ static void serial8250_em_serial_out_helper(struct uart_port *p, int offset,
 static unsigned int serial8250_em_serial_in(struct uart_port *p, int offset)
 {
 	switch (offset) {
-	case UART_RX: /* RX @ 0x00 */
+	case UART_RX:  
 		return readb(p->membase);
-	case UART_LCR: /* LCR @ 0x10 (+1) */
-	case UART_MCR: /* MCR @ 0x14 (+1) */
-	case UART_LSR: /* LSR @ 0x18 (+1) */
-	case UART_MSR: /* MSR @ 0x1c (+1) */
-	case UART_SCR: /* SCR @ 0x20 (+1) */
+	case UART_LCR:  
+	case UART_MCR:  
+	case UART_LSR:  
+	case UART_MSR:  
+	case UART_SCR:  
 		return readl(p->membase + ((offset + 1) << 2));
 	case UART_FCR_EM:
 		return readl(p->membase + (UART_FCR_EM_HW << 2));
-	case UART_IER: /* IER @ 0x04 */
-	case UART_IIR: /* IIR @ 0x08 */
-	case UART_DLL_EM: /* DLL @ 0x24 (+9) */
-	case UART_DLM_EM: /* DLM @ 0x28 (+9) */
-	case UART_HCR0_EM: /* HCR0 @ 0x2c */
+	case UART_IER:  
+	case UART_IIR:  
+	case UART_DLL_EM:  
+	case UART_DLM_EM:  
+	case UART_HCR0_EM:  
 		return readl(p->membase + (offset << 2));
 	}
 	return 0;

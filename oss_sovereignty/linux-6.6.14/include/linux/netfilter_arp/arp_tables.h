@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * 	Format of an ARP firewall descriptor
- *
- * 	src, tgt, src_mask, tgt_mask, arpop, arpop_mask are always stored in
- *	network byte order.
- * 	flags are stored in host byte order (of course).
- */
+ 
+ 
 #ifndef _ARPTABLES_H
 #define _ARPTABLES_H
 
@@ -15,7 +9,7 @@
 #include <linux/skbuff.h>
 #include <uapi/linux/netfilter_arp/arp_tables.h>
 
-/* Standard entry. */
+ 
 struct arpt_standard {
 	struct arpt_entry entry;
 	struct xt_standard_target target;
@@ -75,5 +69,5 @@ compat_arpt_get_target(struct compat_arpt_entry *e)
 	return (void *)e + e->target_offset;
 }
 
-#endif /* CONFIG_COMPAT */
-#endif /* _ARPTABLES_H */
+#endif  
+#endif  

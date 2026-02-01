@@ -1,16 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  QLogic FCoE Offload Driver
- *  Copyright (c) 2016-2018 Cavium Inc.
- */
+
+ 
 #include <linux/if_ether.h>
 #include <linux/if_vlan.h>
 #include "qedf.h"
 
 extern const struct qed_fcoe_ops *qed_ops;
-/*
- * FIP VLAN functions that will eventually move to libfcoe.
- */
+ 
 
 void qedf_fcoe_send_vlan_req(struct qedf_ctx *qedf)
 {
@@ -112,7 +107,7 @@ static void qedf_fcoe_process_vlan_resp(struct qedf_ctx *qedf,
 	if (vid > 0 && qedf->vlan_id != vid) {
 		qedf_set_vlan_id(qedf, vid);
 
-		/* Inform waiter that it's ok to call fcoe_ctlr_link up() */
+		 
 		if (!completion_done(&qedf->fipvlan_compl))
 			complete(&qedf->fipvlan_compl);
 	}
@@ -138,13 +133,10 @@ void qedf_fip_send(struct fcoe_ctlr *fip, struct sk_buff *skb)
 	op = ntohs(fiph->fip_op);
 	sub = fiph->fip_subcode;
 
-	/*
-	 * Add VLAN tag to non-offload FIP frame based on current stored VLAN
-	 * for FIP/FCoE traffic.
-	 */
+	 
 	__vlan_hwaccel_put_tag(skb, htons(ETH_P_8021Q), qedf->vlan_id);
 
-	/* Get VLAN ID from skb for printing purposes */
+	 
 	__vlan_hwaccel_get_tag(skb, &vlan_tci);
 
 	QEDF_INFO(&(qedf->dbg_ctx), QEDF_LOG_LL2, "FIP frame send: "
@@ -164,7 +156,7 @@ void qedf_fip_send(struct fcoe_ctlr *fip, struct sk_buff *skb)
 
 static u8 fcoe_all_enode[ETH_ALEN] = FIP_ALL_ENODE_MACS;
 
-/* Process incoming FIP frames. */
+ 
 void qedf_fip_recv(struct qedf_ctx *qedf, struct sk_buff *skb)
 {
 	struct ethhdr *eth_hdr;
@@ -177,7 +169,7 @@ void qedf_fip_recv(struct qedf_ctx *qedf, struct sk_buff *skb)
 	u16 op;
 	u8 sub;
 	bool fcf_valid = false;
-	/* Default is to handle CVL regardless of fabric id descriptor */
+	 
 	bool fabric_id_valid = true;
 	bool fc_wwpn_valid = false;
 	u64 switch_name;
@@ -207,7 +199,7 @@ void qedf_fip_recv(struct qedf_ctx *qedf, struct sk_buff *skb)
 		return;
 	}
 
-	/* Handle FIP VLAN resp in the driver */
+	 
 	if (op == FIP_OP_VLAN && sub == FIP_SC_VL_NOTE) {
 		qedf_fcoe_process_vlan_resp(qedf, skb);
 		kfree_skb(skb);
@@ -215,7 +207,7 @@ void qedf_fip_recv(struct qedf_ctx *qedf, struct sk_buff *skb)
 		QEDF_INFO(&(qedf->dbg_ctx), QEDF_LOG_DISC, "Clear virtual "
 			   "link received.\n");
 
-		/* Check that an FCF has been selected by fcoe */
+		 
 		if (qedf->ctlr.sel_fcf == NULL) {
 			QEDF_INFO(&(qedf->dbg_ctx), QEDF_LOG_DISC,
 			    "Dropping CVL since FCF has not been selected "
@@ -224,10 +216,7 @@ void qedf_fip_recv(struct qedf_ctx *qedf, struct sk_buff *skb)
 			return;
 		}
 
-		/*
-		 * We need to loop through the CVL descriptors to determine
-		 * if we want to reset the fcoe link
-		 */
+		 
 		rlen = ntohs(fiph->fip_dl_len) * FIP_BPW;
 		desc = (struct fip_desc *)(fiph + 1);
 		while (rlen >= sizeof(*desc)) {
@@ -260,9 +249,7 @@ void qedf_fip_recv(struct qedf_ctx *qedf, struct sk_buff *skb)
 					 "CVL vx_port fd_fc_id=0x%x fd_mac=%pM fd_wwpn=%016llx.\n",
 					 ntoh24(vp->fd_fc_id), vp->fd_mac,
 					 get_unaligned_be64(&vp->fd_wwpn));
-				/* Check for vx_port wwpn OR Check vx_port
-				 * fabric ID OR Check vx_port MAC
-				 */
+				 
 				if ((get_unaligned_be64(&vp->fd_wwpn) ==
 					qedf->wwpn) ||
 				   (ntoh24(vp->fd_fc_id) ==
@@ -273,7 +260,7 @@ void qedf_fip_recv(struct qedf_ctx *qedf, struct sk_buff *skb)
 				}
 				break;
 			default:
-				/* Ignore anything else */
+				 
 				break;
 			}
 			desc = (struct fip_desc *)((char *)desc + dlen);
@@ -287,7 +274,7 @@ void qedf_fip_recv(struct qedf_ctx *qedf, struct sk_buff *skb)
 			qedf_ctx_soft_reset(qedf->lport);
 		kfree_skb(skb);
 	} else {
-		/* Everything else is handled by libfcoe */
+		 
 		__skb_pull(skb, ETH_HLEN);
 		fcoe_ctlr_recv(&qedf->ctlr, skb);
 	}

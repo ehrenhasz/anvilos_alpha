@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright(c) 2022 Intel Corporation. All rights reserved. */
+
+ 
 #include <linux/memregion.h>
 #include <linux/genalloc.h>
 #include <linux/device.h>
@@ -12,21 +12,7 @@
 #include <cxl.h>
 #include "core.h"
 
-/**
- * DOC: cxl core region
- *
- * CXL Regions represent mapped memory capacity in system physical address
- * space. Whereas the CXL Root Decoders identify the bounds of potential CXL
- * Memory ranges, Regions represent the active mapped capacity by the HDM
- * Decoder Capability structures throughout the Host Bridges, Switches, and
- * Endpoints in the topology.
- *
- * Region configuration has ordering constraints. UUID may be set at any time
- * but is only visible for persistent regions.
- * 1. Interleave granularity
- * 2. Interleave size
- * 3. Decoder targets
- */
+ 
 
 static struct cxl_region *to_cxl_region(struct device *dev);
 
@@ -143,11 +129,7 @@ static int cxl_region_decode_reset(struct cxl_region *cxlr, int count)
 	struct cxl_region_params *p = &cxlr->params;
 	int i, rc = 0;
 
-	/*
-	 * Before region teardown attempt to flush, and if the flush
-	 * fails cancel the region teardown for data consistency
-	 * concerns
-	 */
+	 
 	rc = cxl_region_invalidate_memregion(cxlr);
 	if (rc)
 		return rc;
@@ -186,7 +168,7 @@ endpoint_reset:
 		set_bit(CXL_REGION_F_NEEDS_RESET, &cxlr->flags);
 	}
 
-	/* all decoders associated with this region have been torn down */
+	 
 	clear_bit(CXL_REGION_F_NEEDS_RESET, &cxlr->flags);
 
 	return 0;
@@ -221,7 +203,7 @@ static int cxl_region_decode_commit(struct cxl_region *cxlr)
 		struct cxl_port *iter;
 		struct cxl_ep *ep;
 
-		/* commit bottom up */
+		 
 		for (iter = cxled_to_port(cxled); !is_cxl_root(iter);
 		     iter = to_cxl_port(iter->dev.parent)) {
 			cxl_rr = cxl_rr_load(iter, cxlr);
@@ -232,7 +214,7 @@ static int cxl_region_decode_commit(struct cxl_region *cxlr)
 		}
 
 		if (rc) {
-			/* programming @iter failed, teardown */
+			 
 			for (ep = cxl_ep_load(iter, cxlmd); ep && iter;
 			     iter = ep->next, ep = cxl_ep_load(iter, cxlmd)) {
 				cxl_rr = cxl_rr_load(iter, cxlr);
@@ -249,7 +231,7 @@ static int cxl_region_decode_commit(struct cxl_region *cxlr)
 	return 0;
 
 err:
-	/* undo the targets that were successfully committed */
+	 
 	cxl_region_decode_reset(cxlr, i);
 	return rc;
 }
@@ -270,22 +252,19 @@ static ssize_t commit_store(struct device *dev, struct device_attribute *attr,
 	if (rc)
 		return rc;
 
-	/* Already in the requested state? */
+	 
 	if (commit && p->state >= CXL_CONFIG_COMMIT)
 		goto out;
 	if (!commit && p->state < CXL_CONFIG_COMMIT)
 		goto out;
 
-	/* Not ready to commit? */
+	 
 	if (commit && p->state < CXL_CONFIG_ACTIVE) {
 		rc = -ENXIO;
 		goto out;
 	}
 
-	/*
-	 * Invalidate caches before region setup to drop any speculative
-	 * consumption of this address space
-	 */
+	 
 	rc = cxl_region_invalidate_memregion(cxlr);
 	if (rc)
 		goto out;
@@ -300,17 +279,10 @@ static ssize_t commit_store(struct device *dev, struct device_attribute *attr,
 		device_release_driver(&cxlr->dev);
 		down_write(&cxl_region_rwsem);
 
-		/*
-		 * The lock was dropped, so need to revalidate that the reset is
-		 * still pending.
-		 */
+		 
 		if (p->state == CXL_CONFIG_RESET_PENDING) {
 			rc = cxl_region_decode_reset(cxlr, p->interleave_ways);
-			/*
-			 * Revert to committed since there may still be active
-			 * decoders associated with this region, or move forward
-			 * to active to mark the reset successful
-			 */
+			 
 			if (rc)
 				p->state = CXL_CONFIG_COMMIT;
 			else
@@ -349,10 +321,7 @@ static umode_t cxl_region_visible(struct kobject *kobj, struct attribute *a,
 	struct device *dev = kobj_to_dev(kobj);
 	struct cxl_region *cxlr = to_cxl_region(dev);
 
-	/*
-	 * Support tooling that expects to find a 'uuid' attribute for all
-	 * regions regardless of mode.
-	 */
+	 
 	if (a == &dev_attr_uuid.attr && cxlr->mode != CXL_DECODER_PMEM)
 		return 0444;
 	return a->mode;
@@ -396,10 +365,7 @@ static ssize_t interleave_ways_store(struct device *dev,
 	if (rc)
 		return rc;
 
-	/*
-	 * Even for x3, x6, and x12 interleaves the region interleave must be a
-	 * power of 2 multiple of the host bridge interleave.
-	 */
+	 
 	if (!is_power_of_2(val / cxld->interleave_ways) ||
 	    (val % cxld->interleave_ways)) {
 		dev_dbg(&cxlr->dev, "invalid interleave: %d\n", val);
@@ -463,14 +429,7 @@ static ssize_t interleave_granularity_store(struct device *dev,
 	if (rc)
 		return rc;
 
-	/*
-	 * When the host-bridge is interleaved, disallow region granularity !=
-	 * root granularity. Regions with a granularity less than the root
-	 * interleave result in needing multiple endpoints to support a single
-	 * slot in the interleave (possible to support in the future). Regions
-	 * with a granularity greater than the root interleave result in invalid
-	 * DPA translations (invalid to support).
-	 */
+	 
 	if (cxld->interleave_ways > 1 && val != cxld->interleave_granularity)
 		return -EINVAL;
 
@@ -529,18 +488,18 @@ static int alloc_hpa(struct cxl_region *cxlr, resource_size_t size)
 
 	lockdep_assert_held_write(&cxl_region_rwsem);
 
-	/* Nothing to do... */
+	 
 	if (p->res && resource_size(p->res) == size)
 		return 0;
 
-	/* To change size the old size must be freed first */
+	 
 	if (p->res)
 		return -EBUSY;
 
 	if (p->state >= CXL_CONFIG_INTERLEAVE_ACTIVE)
 		return -EBUSY;
 
-	/* ways, granularity and uuid (if PMEM) need to be set before HPA */
+	 
 	if (!p->interleave_ways || !p->interleave_granularity ||
 	    (cxlr->mode == CXL_DECODER_PMEM && uuid_is_null(&p->uuid)))
 		return -ENXIO;
@@ -570,10 +529,7 @@ static void cxl_region_iomem_release(struct cxl_region *cxlr)
 	if (device_is_registered(&cxlr->dev))
 		lockdep_assert_held_write(&cxl_region_rwsem);
 	if (p->res) {
-		/*
-		 * Autodiscovered regions may not have been able to insert their
-		 * resource.
-		 */
+		 
 		if (p->res->parent)
 			remove_resource(p->res);
 		kfree(p->res);
@@ -699,7 +655,7 @@ static int match_free_decoder(struct device *dev, void *data)
 
 	cxld = to_cxl_decoder(dev);
 
-	/* enforce ordered allocation */
+	 
 	if (cxld->id != *id)
 		return 0;
 
@@ -742,12 +698,7 @@ static struct cxl_decoder *cxl_region_find_decoder(struct cxl_port *port,
 		dev = device_find_child(&port->dev, &id, match_free_decoder);
 	if (!dev)
 		return NULL;
-	/*
-	 * This decoder is pinned registered as long as the endpoint decoder is
-	 * registered, and endpoint decoder unregistration holds the
-	 * cxl_region_rwsem over unregister events, so no need to hold on to
-	 * this extra reference.
-	 */
+	 
 	put_device(dev);
 	return to_cxl_decoder(dev);
 }
@@ -869,11 +820,7 @@ static int cxl_rr_alloc_decoder(struct cxl_port *port, struct cxl_region *cxlr,
 		return -EBUSY;
 	}
 
-	/*
-	 * Endpoints should already match the region type, but backstop that
-	 * assumption with an assertion. Switch-decoders change mapping-type
-	 * based on what is mapped when they are assigned to a region.
-	 */
+	 
 	dev_WARN_ONCE(&cxlr->dev,
 		      port == cxled_to_port(cxled) &&
 			      cxld->target_type != cxlr->type,
@@ -885,30 +832,7 @@ static int cxl_rr_alloc_decoder(struct cxl_port *port, struct cxl_region *cxlr,
 	return 0;
 }
 
-/**
- * cxl_port_attach_region() - track a region's interest in a port by endpoint
- * @port: port to add a new region reference 'struct cxl_region_ref'
- * @cxlr: region to attach to @port
- * @cxled: endpoint decoder used to create or further pin a region reference
- * @pos: interleave position of @cxled in @cxlr
- *
- * The attach event is an opportunity to validate CXL decode setup
- * constraints and record metadata needed for programming HDM decoders,
- * in particular decoder target lists.
- *
- * The steps are:
- *
- * - validate that there are no other regions with a higher HPA already
- *   associated with @port
- * - establish a region reference if one is not already present
- *
- *   - additionally allocate a decoder instance that will host @cxlr on
- *     @port
- *
- * - pin the region reference by the endpoint
- * - account for how many entries in @port's target list are needed to
- *   cover all of the added endpoints.
- */
+ 
 static int cxl_port_attach_region(struct cxl_port *port,
 				  struct cxl_region *cxlr,
 				  struct cxl_endpoint_decoder *cxled, int pos)
@@ -928,12 +852,7 @@ static int cxl_port_attach_region(struct cxl_port *port,
 		struct cxl_ep *ep_iter;
 		int found = 0;
 
-		/*
-		 * Walk the existing endpoints that have been attached to
-		 * @cxlr at @port and see if they share the same 'next' port
-		 * in the downstream direction. I.e. endpoints that share common
-		 * upstream switch.
-		 */
+		 
 		xa_for_each(&cxl_rr->endpoints, index, ep_iter) {
 			if (ep_iter == ep)
 				continue;
@@ -943,10 +862,7 @@ static int cxl_port_attach_region(struct cxl_port *port,
 			}
 		}
 
-		/*
-		 * New target port, or @port is an endpoint port that always
-		 * accounts its own local decode as a target.
-		 */
+		 
 		if (!found || !ep->next) {
 			cxl_rr->nr_targets++;
 			nr_targets_inc = true;
@@ -1008,10 +924,7 @@ static void cxl_port_detach_region(struct cxl_port *port,
 	if (!cxl_rr)
 		return;
 
-	/*
-	 * Endpoint ports do not carry cxl_ep references, and they
-	 * never target more than one endpoint by definition
-	 */
+	 
 	if (cxl_rr->decoder == &cxled->cxld)
 		cxl_rr->nr_eps--;
 	else
@@ -1049,11 +962,7 @@ static int check_last_peer(struct cxl_endpoint_decoder *cxled,
 	struct cxl_ep *ep_peer;
 	int pos = cxled->pos;
 
-	/*
-	 * If this position wants to share a dport with the last endpoint mapped
-	 * then that endpoint, at index 'position - distance', must also be
-	 * mapped by this dport.
-	 */
+	 
 	if (pos < distance) {
 		dev_dbg(&cxlr->dev, "%s:%s: cannot host %s:%s at %d\n",
 			dev_name(port->uport_dev), dev_name(&port->dev),
@@ -1092,10 +1001,7 @@ static int cxl_port_setup_targets(struct cxl_port *port,
 	u16 eig, peig;
 	u8 eiw, peiw;
 
-	/*
-	 * While root level decoders support x3, x6, x12, switch level
-	 * decoders only support powers of 2 up to x16.
-	 */
+	 
 	if (!is_power_of_2(cxl_rr->nr_targets)) {
 		dev_dbg(&cxlr->dev, "%s:%s: invalid target count %d\n",
 			dev_name(port->uport_dev), dev_name(&port->dev),
@@ -1107,10 +1013,7 @@ static int cxl_port_setup_targets(struct cxl_port *port,
 	if (cxl_rr->nr_targets_set) {
 		int i, distance;
 
-		/*
-		 * Passthrough decoders impose no distance requirements between
-		 * peers
-		 */
+		 
 		if (cxl_rr->nr_targets == 1)
 			distance = 0;
 		else
@@ -1127,19 +1030,10 @@ static int cxl_port_setup_targets(struct cxl_port *port,
 	}
 
 	if (is_cxl_root(parent_port)) {
-		/*
-		 * Root decoder IG is always set to value in CFMWS which
-		 * may be different than this region's IG.  We can use the
-		 * region's IG here since interleave_granularity_store()
-		 * does not allow interleaved host-bridges with
-		 * root IG != region IG.
-		 */
+		 
 		parent_ig = p->interleave_granularity;
 		parent_iw = cxlrd->cxlsd.cxld.interleave_ways;
-		/*
-		 * For purposes of address bit routing, use power-of-2 math for
-		 * switch ports.
-		 */
+		 
 		if (!is_power_of_2(parent_iw))
 			parent_iw /= 3;
 	} else {
@@ -1176,10 +1070,7 @@ static int cxl_port_setup_targets(struct cxl_port *port,
 		return rc;
 	}
 
-	/*
-	 * Interleave granularity is a multiple of @parent_port granularity.
-	 * Multiplier is the parent port interleave ways.
-	 */
+	 
 	rc = granularity_to_eig(parent_ig * parent_iw, &eig);
 	if (rc) {
 		dev_dbg(&cxlr->dev,
@@ -1271,10 +1162,7 @@ static void cxl_port_reset_targets(struct cxl_port *port,
 	struct cxl_region_ref *cxl_rr = cxl_rr_load(port, cxlr);
 	struct cxl_decoder *cxld;
 
-	/*
-	 * After the last endpoint has been detached the entire cxl_rr may now
-	 * be gone.
-	 */
+	 
 	if (!cxl_rr)
 		return;
 	cxl_rr->nr_targets_set = 0;
@@ -1296,10 +1184,7 @@ static void cxl_region_teardown_targets(struct cxl_region *cxlr)
 	struct cxl_ep *ep;
 	int i;
 
-	/*
-	 * In the auto-discovery case skip automatic teardown since the
-	 * address space is already active
-	 */
+	 
 	if (test_bit(CXL_REGION_F_AUTO, &cxlr->flags))
 		return;
 
@@ -1336,7 +1221,7 @@ static int cxl_region_setup_targets(struct cxl_region *cxlr)
 		cxlmd = cxled_to_memdev(cxled);
 		cxlds = cxlmd->cxlds;
 
-		/* validate that all targets agree on topology */
+		 
 		if (!cxlds->rcd) {
 			vh++;
 		} else {
@@ -1348,10 +1233,7 @@ static int cxl_region_setup_targets(struct cxl_region *cxlr)
 		while (!is_cxl_root(to_cxl_port(iter->dev.parent)))
 			iter = to_cxl_port(iter->dev.parent);
 
-		/*
-		 * Descend the topology tree programming / validating
-		 * targets while looking for conflicts.
-		 */
+		 
 		for (ep = cxl_ep_load(iter, cxlmd); iter;
 		     iter = ep->next, ep = cxl_ep_load(iter, cxlmd)) {
 			rc = cxl_port_setup_targets(iter, cxlr, cxled);
@@ -1475,12 +1357,7 @@ static int cxl_region_attach_auto(struct cxl_region *cxlr,
 		return -ENXIO;
 	}
 
-	/*
-	 * Temporarily record the endpoint decoder into the target array. Yes,
-	 * this means that userspace can view devices in the wrong position
-	 * before the region activates, and must be careful to understand when
-	 * it might be racing region autodiscovery.
-	 */
+	 
 	pos = p->nr_targets;
 	p->targets[pos] = cxled;
 	cxled->pos = pos;
@@ -1555,21 +1432,7 @@ static int find_pos_and_ways(struct cxl_port *port, struct range *range,
 	return rc;
 }
 
-/**
- * cxl_calc_interleave_pos() - calculate an endpoint position in a region
- * @cxled: endpoint decoder member of given region
- *
- * The endpoint position is calculated by traversing the topology from
- * the endpoint to the root decoder and iteratively applying this
- * calculation:
- *
- *    position = position * parent_ways + parent_pos;
- *
- * ...where @position is inferred from switch and root decoder target lists.
- *
- * Return: position >= 0 on success
- *	   -ENXIO on failure
- */
+ 
 static int cxl_calc_interleave_pos(struct cxl_endpoint_decoder *cxled)
 {
 	struct cxl_port *iter, *port = cxled_to_port(cxled);
@@ -1578,36 +1441,9 @@ static int cxl_calc_interleave_pos(struct cxl_endpoint_decoder *cxled)
 	int parent_ways = 0, parent_pos = 0, pos = 0;
 	int rc;
 
-	/*
-	 * Example: the expected interleave order of the 4-way region shown
-	 * below is: mem0, mem2, mem1, mem3
-	 *
-	 *		  root_port
-	 *                 /      \
-	 *      host_bridge_0    host_bridge_1
-	 *        |    |           |    |
-	 *       mem0 mem1        mem2 mem3
-	 *
-	 * In the example the calculator will iterate twice. The first iteration
-	 * uses the mem position in the host-bridge and the ways of the host-
-	 * bridge to generate the first, or local, position. The second
-	 * iteration uses the host-bridge position in the root_port and the ways
-	 * of the root_port to refine the position.
-	 *
-	 * A trace of the calculation per endpoint looks like this:
-	 * mem0: pos = 0 * 2 + 0    mem2: pos = 0 * 2 + 0
-	 *       pos = 0 * 2 + 0          pos = 0 * 2 + 1
-	 *       pos: 0                   pos: 1
-	 *
-	 * mem1: pos = 0 * 2 + 1    mem3: pos = 0 * 2 + 1
-	 *       pos = 1 * 2 + 0          pos = 1 * 2 + 1
-	 *       pos: 2                   pos = 3
-	 *
-	 * Note that while this example is simple, the method applies to more
-	 * complex topologies, including those with switches.
-	 */
+	 
 
-	/* Iterate from endpoint to root_port refining the position */
+	 
 	for (iter = port; iter; iter = next_port(iter)) {
 		if (is_cxl_root(iter))
 			break;
@@ -1636,15 +1472,11 @@ static int cxl_region_sort_targets(struct cxl_region *cxlr)
 		struct cxl_endpoint_decoder *cxled = p->targets[i];
 
 		cxled->pos = cxl_calc_interleave_pos(cxled);
-		/*
-		 * Record that sorting failed, but still continue to calc
-		 * cxled->pos so that follow-on code paths can reliably
-		 * do p->targets[cxled->pos] to self-reference their entry.
-		 */
+		 
 		if (cxled->pos < 0)
 			rc = -ENXIO;
 	}
-	/* Keep the cxlr target list in interleave position order */
+	 
 	sort(p->targets, p->nr_targets, sizeof(p->targets[0]),
 	     cmp_interleave_pos, NULL);
 
@@ -1673,7 +1505,7 @@ static int cxl_region_attach(struct cxl_region *cxlr,
 		return -ENODEV;
 	}
 
-	/* all full of members, or interleave config not established? */
+	 
 	if (p->state > CXL_CONFIG_INTERLEAVE_ACTIVE) {
 		dev_dbg(&cxlr->dev, "region already active\n");
 		return -EBUSY;
@@ -1728,15 +1560,11 @@ static int cxl_region_attach(struct cxl_region *cxlr,
 		if (rc)
 			return rc;
 
-		/* await more targets to arrive... */
+		 
 		if (p->nr_targets < p->interleave_ways)
 			return 0;
 
-		/*
-		 * All targets are here, which implies all PCI enumeration that
-		 * affects this region has been completed. Walk the topology to
-		 * sort the devices into their relative region decode position.
-		 */
+		 
 		rc = cxl_region_sort_targets(cxlr);
 		if (rc)
 			return rc;
@@ -1756,10 +1584,7 @@ static int cxl_region_attach(struct cxl_region *cxlr,
 		if (rc)
 			return rc;
 
-		/*
-		 * If target setup succeeds in the autodiscovery case
-		 * then the region is already committed.
-		 */
+		 
 		p->state = CXL_CONFIG_COMMIT;
 
 		return 0;
@@ -1794,12 +1619,7 @@ static int cxl_region_attach(struct cxl_region *cxlr,
 	if (p->nr_targets != p->interleave_ways)
 		return 0;
 
-	/*
-	 * Test the auto-discovery position calculator function
-	 * against this successfully created user-defined region.
-	 * A fail message here means that this interleave config
-	 * will fail when presented as CXL_REGION_F_AUTO.
-	 */
+	 
 	for (int i = 0; i < p->nr_targets; i++) {
 		struct cxl_endpoint_decoder *cxled = p->targets[i];
 		int test_pos;
@@ -1830,10 +1650,7 @@ static int cxl_region_detach(struct cxl_endpoint_decoder *cxled)
 	get_device(&cxlr->dev);
 
 	if (p->state > CXL_CONFIG_ACTIVE) {
-		/*
-		 * TODO: tear down all impacted regions if a device is
-		 * removed out of order
-		 */
+		 
 		rc = cxl_region_decode_reset(cxlr, p->interleave_ways);
 		if (rc)
 			goto out;
@@ -1865,7 +1682,7 @@ static int cxl_region_detach(struct cxl_endpoint_decoder *cxled)
 		.end = -1,
 	};
 
-	/* notify the region driver that one of its targets has departed */
+	 
 	up_write(&cxl_region_rwsem);
 	device_release_driver(&cxlr->dev);
 	down_write(&cxl_region_rwsem);
@@ -2045,11 +1862,7 @@ static void cxl_region_release(struct device *dev)
 	struct cxl_region *cxlr = to_cxl_region(dev);
 	int id = atomic_read(&cxlrd->region_id);
 
-	/*
-	 * Try to reuse the recently idled id rather than the cached
-	 * next id to prevent the region id space from increasing
-	 * unnecessarily.
-	 */
+	 
 	if (cxlr->id < id)
 		if (atomic_try_cmpxchg(&cxlrd->region_id, &id, cxlr->id)) {
 			memregion_free(id);
@@ -2091,11 +1904,7 @@ static void unregister_region(void *dev)
 
 	device_del(dev);
 
-	/*
-	 * Now that region sysfs is shutdown, the parameter block is now
-	 * read-only, so no need to hold the region rwsem to access the
-	 * region parameters.
-	 */
+	 
 	for (i = 0; i < p->interleave_ways; i++)
 		detach_target(cxlr, i);
 
@@ -2120,10 +1929,7 @@ static struct cxl_region *cxl_region_alloc(struct cxl_root_decoder *cxlrd, int i
 	device_initialize(dev);
 	lockdep_set_class(&dev->mutex, &cxl_region_key);
 	dev->parent = &cxlrd->cxlsd.cxld.dev;
-	/*
-	 * Keep root decoder pinned through cxl_region_release to fixup
-	 * region id allocations
-	 */
+	 
 	get_device(dev->parent);
 	device_set_pm_not_required(dev);
 	dev->bus = &cxl_bus_type;
@@ -2133,19 +1939,7 @@ static struct cxl_region *cxl_region_alloc(struct cxl_root_decoder *cxlrd, int i
 	return cxlr;
 }
 
-/**
- * devm_cxl_add_region - Adds a region to a decoder
- * @cxlrd: root decoder
- * @id: memregion id to create, or memregion_free() on failure
- * @mode: mode for the endpoint decoders of this region
- * @type: select whether this is an expander or accelerator (type-2 or type-3)
- *
- * This is the second step of region initialization. Regions exist within an
- * address space which is mapped by a @cxlrd.
- *
- * Return: 0 if the region was added to the @cxlrd, else returns negative error
- * code. The region will be named "regionZ" where Z is the unique region number.
- */
+ 
 static struct cxl_region *devm_cxl_add_region(struct cxl_root_decoder *cxlrd,
 					      int id,
 					      enum cxl_decoder_mode mode,
@@ -2372,15 +2166,7 @@ static int cxl_get_poison_unmapped(struct cxl_memdev *cxlmd,
 	u64 offset, length;
 	int rc = 0;
 
-	/*
-	 * Collect poison for the remaining unmapped resources
-	 * after poison is collected by committed endpoints.
-	 *
-	 * Knowing that PMEM must always follow RAM, get poison
-	 * for unmapped resources based on the last decoder's mode:
-	 *	ram: scan remains of ram range, then any pmem range
-	 *	pmem: scan remains of pmem range
-	 */
+	 
 
 	if (ctx->mode == CXL_DECODER_RAM) {
 		offset = ctx->offset;
@@ -2421,13 +2207,7 @@ static int poison_by_decoder(struct device *dev, void *arg)
 	if (!cxled->dpa_res || !resource_size(cxled->dpa_res))
 		return rc;
 
-	/*
-	 * Regions are only created with single mode decoders: pmem or ram.
-	 * Linux does not support mixed mode decoders. This means that
-	 * reading poison per endpoint decoder adheres to the requirement
-	 * that poison reads of pmem and ram must be separated.
-	 * CXL 3.0 Spec 8.2.9.8.4.1
-	 */
+	 
 	if (cxled->mode == CXL_DECODER_MIXED) {
 		dev_dbg(dev, "poison list read unsupported in mixed mode\n");
 		return rc;
@@ -2452,7 +2232,7 @@ static int poison_by_decoder(struct device *dev, void *arg)
 	if (rc)
 		return rc;
 
-	/* Iterate until commit_end is reached */
+	 
 	if (cxled->cxld.id == ctx->port->commit_end) {
 		ctx->offset = cxled->dpa_res->end + 1;
 		ctx->mode = cxled->mode;
@@ -2505,17 +2285,14 @@ static struct cxl_pmem_region *cxl_pmem_region_alloc(struct cxl_region *cxlr)
 	cxlr_pmem->hpa_range.start = p->res->start;
 	cxlr_pmem->hpa_range.end = p->res->end;
 
-	/* Snapshot the region configuration underneath the cxl_region_rwsem */
+	 
 	cxlr_pmem->nr_mappings = p->nr_targets;
 	for (i = 0; i < p->nr_targets; i++) {
 		struct cxl_endpoint_decoder *cxled = p->targets[i];
 		struct cxl_memdev *cxlmd = cxled_to_memdev(cxled);
 		struct cxl_pmem_region_mapping *m = &cxlr_pmem->mapping[i];
 
-		/*
-		 * Regions never span CXL root devices, so by definition the
-		 * bridge for one device is the same for all.
-		 */
+		 
 		if (i == 0) {
 			cxl_nvb = cxl_find_nvdimm_bridge(cxlmd);
 			if (!cxl_nvb) {
@@ -2621,12 +2398,7 @@ static void cxlr_pmem_unregister(void *_cxlr_pmem)
 	struct cxl_region *cxlr = cxlr_pmem->cxlr;
 	struct cxl_nvdimm_bridge *cxl_nvb = cxlr->cxl_nvb;
 
-	/*
-	 * Either the bridge is in ->remove() context under the device_lock(),
-	 * or cxlr_release_nvdimm() is cancelling the bridge's release action
-	 * for @cxlr_pmem and doing it itself (while manually holding the bridge
-	 * lock).
-	 */
+	 
 	device_lock_assert(&cxl_nvb->dev);
 	cxlr->cxlr_pmem = NULL;
 	cxlr_pmem->cxlr = NULL;
@@ -2647,12 +2419,7 @@ static void cxlr_release_nvdimm(void *_cxlr)
 	put_device(&cxl_nvb->dev);
 }
 
-/**
- * devm_cxl_add_pmem_region() - add a cxl_region-to-nd_region bridge
- * @cxlr: parent CXL region for this pmem region bridge device
- *
- * Return: 0 on success negative error code on failure.
- */
+ 
 static int devm_cxl_add_pmem_region(struct cxl_region *cxlr)
 {
 	struct cxl_pmem_region *cxlr_pmem;
@@ -2688,7 +2455,7 @@ static int devm_cxl_add_pmem_region(struct cxl_region *cxlr)
 	if (rc)
 		goto err_bridge;
 
-	/* @cxlr carries a reference on @cxl_nvb until cxlr_release_nvdimm */
+	 
 	return devm_add_action_or_reset(&cxlr->dev, cxlr_release_nvdimm, cxlr);
 
 err:
@@ -2769,7 +2536,7 @@ static int match_region_by_range(struct device *dev, void *data)
 	return rc;
 }
 
-/* Establish an empty region covering the given HPA range */
+ 
 static struct cxl_region *construct_region(struct cxl_root_decoder *cxlrd,
 					   struct cxl_endpoint_decoder *cxled)
 {
@@ -2817,10 +2584,7 @@ static struct cxl_region *construct_region(struct cxl_root_decoder *cxlrd,
 				    dev_name(&cxlr->dev));
 	rc = insert_resource(cxlrd->res, res);
 	if (rc) {
-		/*
-		 * Platform-firmware may not have split resources like "System
-		 * RAM" on CXL window boundaries see cxl_region_iomem_release()
-		 */
+		 
 		dev_warn(cxlmd->dev.parent,
 			 "%s:%s: %s %s cannot insert resource\n",
 			 dev_name(&cxlmd->dev), dev_name(&cxled->cxld.dev),
@@ -2841,7 +2605,7 @@ static struct cxl_region *construct_region(struct cxl_root_decoder *cxlrd,
 		dev_name(&cxlr->dev), p->res, p->interleave_ways,
 		p->interleave_granularity);
 
-	/* ...to match put_device() in cxl_add_to_region() */
+	 
 	get_device(&cxlr->dev);
 	up_write(&cxl_region_rwsem);
 
@@ -2877,10 +2641,7 @@ int cxl_add_to_region(struct cxl_port *root, struct cxl_endpoint_decoder *cxled)
 
 	cxlrd = to_cxl_root_decoder(cxlrd_dev);
 
-	/*
-	 * Ensure that if multiple threads race to construct_region() for @hpa
-	 * one does the construction and the others add to that.
-	 */
+	 
 	mutex_lock(&cxlrd->range_lock);
 	region_dev = device_find_child(&cxlrd->cxlsd.cxld.dev, hpa,
 				       match_region_by_range);
@@ -2903,11 +2664,7 @@ int cxl_add_to_region(struct cxl_port *root, struct cxl_endpoint_decoder *cxled)
 	up_read(&cxl_region_rwsem);
 
 	if (attach) {
-		/*
-		 * If device_attach() fails the range may still be active via
-		 * the platform-firmware memory map, otherwise the driver for
-		 * regions is local to this file, so driver matching can't fail.
-		 */
+		 
 		if (device_attach(&cxlr->dev) < 0)
 			dev_err(&cxlr->dev, "failed to enable, range: %pr\n",
 				p->res);
@@ -2954,10 +2711,7 @@ static int cxl_region_probe(struct device *dev)
 		goto out;
 	}
 
-	/*
-	 * From this point on any path that changes the region's state away from
-	 * CXL_CONFIG_COMMIT is also responsible for releasing the driver.
-	 */
+	 
 out:
 	up_read(&cxl_region_rwsem);
 
@@ -2968,10 +2722,7 @@ out:
 	case CXL_DECODER_PMEM:
 		return devm_cxl_add_pmem_region(cxlr);
 	case CXL_DECODER_RAM:
-		/*
-		 * The region can not be manged by CXL if any portion of
-		 * it is already online as 'System RAM'
-		 */
+		 
 		if (walk_iomem_res_desc(IORES_DESC_NONE,
 					IORESOURCE_SYSTEM_RAM | IORESOURCE_BUSY,
 					p->res->start, p->res->end, cxlr,

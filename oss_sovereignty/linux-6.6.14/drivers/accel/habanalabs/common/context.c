@@ -1,9 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
 
-/*
- * Copyright 2016-2021 HabanaLabs, Ltd.
- * All Rights Reserved.
- */
+
+ 
 
 #include "habanalabs.h"
 
@@ -65,9 +62,7 @@ static void hl_encaps_sig_mgr_fini(struct hl_device *hdev, struct hl_encaps_sign
 
 	idp = &mgr->handles;
 
-	/* The IDR is expected to be empty at this stage, because any left signal should have been
-	 * released as part of CS roll-back.
-	 */
+	 
 	if (!idr_is_empty(idp)) {
 		dev_warn(hdev->dev,
 			"device released while some encaps signals handles are still allocated\n");
@@ -83,18 +78,10 @@ static void hl_ctx_fini(struct hl_ctx *ctx)
 	struct hl_device *hdev = ctx->hdev;
 	int i;
 
-	/* Release all allocated HW block mapped list entries and destroy
-	 * the mutex.
-	 */
+	 
 	hl_hw_block_mem_fini(ctx);
 
-	/*
-	 * If we arrived here, there are no jobs waiting for this context
-	 * on its queues so we can safely remove it.
-	 * This is because for each CS, we increment the ref count and for
-	 * every CS that was finished we decrement it and we won't arrive
-	 * to this function unless the ref count is 0
-	 */
+	 
 
 	for (i = 0 ; i < hdev->asic_prop.max_pending_cs ; i++)
 		hl_fence_put(ctx->cs_pending[i]);
@@ -104,10 +91,7 @@ static void hl_ctx_fini(struct hl_ctx *ctx)
 	if (ctx->asid != HL_KERNEL_ASID_ID) {
 		dev_dbg(hdev->dev, "closing user context %d\n", ctx->asid);
 
-		/* The engines are stopped as there is no executing CS, but the
-		 * Coresight might be still working by accessing addresses
-		 * related to the stopped engines. Hence stop it explicitly.
-		 */
+		 
 		if (hdev->in_debug)
 			hl_device_set_debug_mode(hdev, ctx, false);
 
@@ -178,10 +162,10 @@ int hl_ctx_create(struct hl_device *hdev, struct hl_fpriv *hpriv)
 	hl_hpriv_get(hpriv);
 	ctx->hpriv = hpriv;
 
-	/* TODO: remove for multiple contexts per process */
+	 
 	hpriv->ctx = ctx;
 
-	/* TODO: remove the following line for multiple process support */
+	 
 	hdev->is_compute_ctx_active = true;
 
 	return 0;
@@ -224,7 +208,7 @@ int hl_ctx_init(struct hl_device *hdev, struct hl_ctx *ctx, bool is_kernel_ctx)
 	hl_hw_block_mem_init(ctx);
 
 	if (is_kernel_ctx) {
-		ctx->asid = HL_KERNEL_ASID_ID; /* Kernel driver gets ASID 0 */
+		ctx->asid = HL_KERNEL_ASID_ID;  
 		rc = hl_vm_ctx_init(ctx);
 		if (rc) {
 			dev_err(hdev->dev, "Failed to init mem ctx module\n");
@@ -315,9 +299,7 @@ struct hl_ctx *hl_get_compute_ctx(struct hl_device *hdev)
 			ctx = NULL;
 		mutex_unlock(&hpriv->ctx_lock);
 
-		/* There can only be a single user which has opened the compute device, so exit
-		 * immediately once we find its context or if we see that it has been released
-		 */
+		 
 		break;
 	}
 
@@ -326,17 +308,7 @@ struct hl_ctx *hl_get_compute_ctx(struct hl_device *hdev)
 	return ctx;
 }
 
-/*
- * hl_ctx_get_fence_locked - get CS fence under CS lock
- *
- * @ctx: pointer to the context structure.
- * @seq: CS sequences number
- *
- * @return valid fence pointer on success, NULL if fence is gone, otherwise
- *         error pointer.
- *
- * NOTE: this function shall be called with cs_lock locked
- */
+ 
 static struct hl_fence *hl_ctx_get_fence_locked(struct hl_ctx *ctx, u64 seq)
 {
 	struct asic_fixed_properties *asic_prop = &ctx->hdev->asic_prop;
@@ -366,16 +338,7 @@ struct hl_fence *hl_ctx_get_fence(struct hl_ctx *ctx, u64 seq)
 	return fence;
 }
 
-/*
- * hl_ctx_get_fences - get multiple CS fences under the same CS lock
- *
- * @ctx: pointer to the context structure.
- * @seq_arr: array of CS sequences to wait for
- * @fence: fence array to store the CS fences
- * @arr_len: length of seq_arr and fence_arr
- *
- * @return 0 on success, otherwise non 0 error code
- */
+ 
 int hl_ctx_get_fences(struct hl_ctx *ctx, u64 *seq_arr,
 				struct hl_fence **fence, u32 arr_len)
 {
@@ -406,29 +369,14 @@ int hl_ctx_get_fences(struct hl_ctx *ctx, u64 *seq_arr,
 	return rc;
 }
 
-/*
- * hl_ctx_mgr_init - initialize the context manager
- *
- * @ctx_mgr: pointer to context manager structure
- *
- * This manager is an object inside the hpriv object of the user process.
- * The function is called when a user process opens the FD.
- */
+ 
 void hl_ctx_mgr_init(struct hl_ctx_mgr *ctx_mgr)
 {
 	mutex_init(&ctx_mgr->lock);
 	idr_init(&ctx_mgr->handles);
 }
 
-/*
- * hl_ctx_mgr_fini - finalize the context manager
- *
- * @hdev: pointer to device structure
- * @ctx_mgr: pointer to context manager structure
- *
- * This function goes over all the contexts in the manager and frees them.
- * It is called when a process closes the FD.
- */
+ 
 void hl_ctx_mgr_fini(struct hl_device *hdev, struct hl_ctx_mgr *ctx_mgr)
 {
 	struct hl_ctx *ctx;

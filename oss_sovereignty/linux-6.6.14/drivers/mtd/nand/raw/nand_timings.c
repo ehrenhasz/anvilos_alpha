@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  Copyright (C) 2014 Free Electrons
- *
- *  Author: Boris BREZILLON <boris.brezillon@free-electrons.com>
- */
+
+ 
 #include <linux/kernel.h>
 #include <linux/err.h>
 #include <linux/export.h>
@@ -12,15 +8,9 @@
 
 #define ONFI_DYN_TIMING_MAX U16_MAX
 
-/*
- * For non-ONFI chips we use the highest possible value for tPROG and tBERS.
- * tR and tCCS will take the default values precised in the ONFI specification
- * for timing mode 0, respectively 200us and 500ns.
- *
- * These four values are tweaked to be more accurate in the case of ONFI chips.
- */
+ 
 static const struct nand_interface_config onfi_sdr_timings[] = {
-	/* Mode 0 */
+	 
 	{
 		.type = NAND_SDR_IFACE,
 		.timings.mode = 0,
@@ -65,7 +55,7 @@ static const struct nand_interface_config onfi_sdr_timings[] = {
 			.tWW_min = 100000,
 		},
 	},
-	/* Mode 1 */
+	 
 	{
 		.type = NAND_SDR_IFACE,
 		.timings.mode = 1,
@@ -110,7 +100,7 @@ static const struct nand_interface_config onfi_sdr_timings[] = {
 			.tWW_min = 100000,
 		},
 	},
-	/* Mode 2 */
+	 
 	{
 		.type = NAND_SDR_IFACE,
 		.timings.mode = 2,
@@ -155,7 +145,7 @@ static const struct nand_interface_config onfi_sdr_timings[] = {
 			.tWW_min = 100000,
 		},
 	},
-	/* Mode 3 */
+	 
 	{
 		.type = NAND_SDR_IFACE,
 		.timings.mode = 3,
@@ -200,7 +190,7 @@ static const struct nand_interface_config onfi_sdr_timings[] = {
 			.tWW_min = 100000,
 		},
 	},
-	/* Mode 4 */
+	 
 	{
 		.type = NAND_SDR_IFACE,
 		.timings.mode = 4,
@@ -245,7 +235,7 @@ static const struct nand_interface_config onfi_sdr_timings[] = {
 			.tWW_min = 100000,
 		},
 	},
-	/* Mode 5 */
+	 
 	{
 		.type = NAND_SDR_IFACE,
 		.timings.mode = 5,
@@ -293,7 +283,7 @@ static const struct nand_interface_config onfi_sdr_timings[] = {
 };
 
 static const struct nand_interface_config onfi_nvddr_timings[] = {
-	/* Mode 0 */
+	 
 	{
 		.type = NAND_NVDDR_IFACE,
 		.timings.mode = 0,
@@ -335,7 +325,7 @@ static const struct nand_interface_config onfi_nvddr_timings[] = {
 			.tWW_min = 100000,
 		},
 	},
-	/* Mode 1 */
+	 
 	{
 		.type = NAND_NVDDR_IFACE,
 		.timings.mode = 1,
@@ -377,7 +367,7 @@ static const struct nand_interface_config onfi_nvddr_timings[] = {
 			.tWW_min = 100000,
 		},
 	},
-	/* Mode 2 */
+	 
 	{
 		.type = NAND_NVDDR_IFACE,
 		.timings.mode = 2,
@@ -419,7 +409,7 @@ static const struct nand_interface_config onfi_nvddr_timings[] = {
 			.tWW_min = 100000,
 		},
 	},
-	/* Mode 3 */
+	 
 	{
 		.type = NAND_NVDDR_IFACE,
 		.timings.mode = 3,
@@ -461,7 +451,7 @@ static const struct nand_interface_config onfi_nvddr_timings[] = {
 			.tWW_min = 100000,
 		},
 	},
-	/* Mode 4 */
+	 
 	{
 		.type = NAND_NVDDR_IFACE,
 		.timings.mode = 4,
@@ -503,7 +493,7 @@ static const struct nand_interface_config onfi_nvddr_timings[] = {
 			.tWW_min = 100000,
 		},
 	},
-	/* Mode 5 */
+	 
 	{
 		.type = NAND_NVDDR_IFACE,
 		.timings.mode = 5,
@@ -547,17 +537,13 @@ static const struct nand_interface_config onfi_nvddr_timings[] = {
 	},
 };
 
-/* All NAND chips share the same reset data interface: SDR mode 0 */
+ 
 const struct nand_interface_config *nand_get_reset_interface_config(void)
 {
 	return &onfi_sdr_timings[0];
 }
 
-/**
- * onfi_find_closest_sdr_mode - Derive the closest ONFI SDR timing mode given a
- *                              set of timings
- * @spec_timings: the timings to challenge
- */
+ 
 unsigned int
 onfi_find_closest_sdr_mode(const struct nand_sdr_timings *spec_timings)
 {
@@ -600,11 +586,7 @@ onfi_find_closest_sdr_mode(const struct nand_sdr_timings *spec_timings)
 	return 0;
 }
 
-/**
- * onfi_find_closest_nvddr_mode - Derive the closest ONFI NVDDR timing mode
- *                                given a set of timings
- * @spec_timings: the timings to challenge
- */
+ 
 unsigned int
 onfi_find_closest_nvddr_mode(const struct nand_nvddr_timings *spec_timings)
 {
@@ -642,13 +624,7 @@ onfi_find_closest_nvddr_mode(const struct nand_nvddr_timings *spec_timings)
 	return 0;
 }
 
-/*
- * onfi_fill_sdr_interface_config - Initialize a SDR interface config from a
- *                                  given ONFI mode
- * @chip: The NAND chip
- * @iface: The interface configuration to fill
- * @timing_mode: The ONFI timing mode
- */
+ 
 static void onfi_fill_sdr_interface_config(struct nand_chip *chip,
 					   struct nand_interface_config *iface,
 					   unsigned int timing_mode)
@@ -660,31 +636,21 @@ static void onfi_fill_sdr_interface_config(struct nand_chip *chip,
 
 	*iface = onfi_sdr_timings[timing_mode];
 
-	/*
-	 * Initialize timings that cannot be deduced from timing mode:
-	 * tPROG, tBERS, tR and tCCS.
-	 * These information are part of the ONFI parameter page.
-	 */
+	 
 	if (onfi) {
 		struct nand_sdr_timings *timings = &iface->timings.sdr;
 
-		/* microseconds -> picoseconds */
+		 
 		timings->tPROG_max = 1000000ULL * onfi->tPROG;
 		timings->tBERS_max = 1000000ULL * onfi->tBERS;
 		timings->tR_max = 1000000ULL * onfi->tR;
 
-		/* nanoseconds -> picoseconds */
+		 
 		timings->tCCS_min = 1000UL * onfi->tCCS;
 	}
 }
 
-/**
- * onfi_fill_nvddr_interface_config - Initialize a NVDDR interface config from a
- *                                    given ONFI mode
- * @chip: The NAND chip
- * @iface: The interface configuration to fill
- * @timing_mode: The ONFI timing mode
- */
+ 
 static void onfi_fill_nvddr_interface_config(struct nand_chip *chip,
 					     struct nand_interface_config *iface,
 					     unsigned int timing_mode)
@@ -696,20 +662,16 @@ static void onfi_fill_nvddr_interface_config(struct nand_chip *chip,
 
 	*iface = onfi_nvddr_timings[timing_mode];
 
-	/*
-	 * Initialize timings that cannot be deduced from timing mode:
-	 * tPROG, tBERS, tR, tCCS and tCAD.
-	 * These information are part of the ONFI parameter page.
-	 */
+	 
 	if (onfi) {
 		struct nand_nvddr_timings *timings = &iface->timings.nvddr;
 
-		/* microseconds -> picoseconds */
+		 
 		timings->tPROG_max = 1000000ULL * onfi->tPROG;
 		timings->tBERS_max = 1000000ULL * onfi->tBERS;
 		timings->tR_max = 1000000ULL * onfi->tR;
 
-		/* nanoseconds -> picoseconds */
+		 
 		timings->tCCS_min = 1000UL * onfi->tCCS;
 
 		if (onfi->fast_tCAD)
@@ -717,14 +679,7 @@ static void onfi_fill_nvddr_interface_config(struct nand_chip *chip,
 	}
 }
 
-/**
- * onfi_fill_interface_config - Initialize an interface config from a given
- *                              ONFI mode
- * @chip: The NAND chip
- * @iface: The interface configuration to fill
- * @type: The interface type
- * @timing_mode: The ONFI timing mode
- */
+ 
 void onfi_fill_interface_config(struct nand_chip *chip,
 				struct nand_interface_config *iface,
 				enum nand_interface_type type,

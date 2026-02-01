@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Freescale MMA9551L Intelligent Motion-Sensing Platform driver
- * Copyright (c) 2014, Intel Corporation.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/i2c.h>
@@ -21,7 +18,7 @@
 #define MMA9551_IRQ_NAME		"mma9551_event"
 #define MMA9551_GPIO_COUNT		4
 
-/* Tilt application (inclination in IIO terms). */
+ 
 #define MMA9551_TILT_XZ_ANG_REG		0x00
 #define MMA9551_TILT_YZ_ANG_REG		0x01
 #define MMA9551_TILT_XY_ANG_REG		0x02
@@ -33,9 +30,9 @@
 #define MMA9551_TILT_CFG_REG		0x01
 #define MMA9551_TILT_ANG_THRESH_MASK	GENMASK(3, 0)
 
-#define MMA9551_DEFAULT_SAMPLE_RATE	122	/* Hz */
+#define MMA9551_DEFAULT_SAMPLE_RATE	122	 
 
-/* Tilt events are mapped to the first three GPIO pins. */
+ 
 enum mma9551_tilt_axis {
 	mma9551_x = 0,
 	mma9551_y,
@@ -153,7 +150,7 @@ static int mma9551_read_event_config(struct iio_dev *indio_dev,
 
 	switch (chan->type) {
 	case IIO_INCLI:
-		/* IIO counts axes from 1, because IIO_NO_MOD is 0. */
+		 
 		return data->event_enabled[chan->channel2 - 1];
 	default:
 		return -EINVAL;
@@ -168,7 +165,7 @@ static int mma9551_config_incli_event(struct iio_dev *indio_dev,
 	enum mma9551_tilt_axis mma_axis;
 	int ret;
 
-	/* IIO counts axes from 1, because IIO_NO_MOD is 0. */
+	 
 	mma_axis = axis - 1;
 
 	if (data->event_enabled[mma_axis] == state)
@@ -187,7 +184,7 @@ static int mma9551_config_incli_event(struct iio_dev *indio_dev,
 	} else {
 		int bitnum;
 
-		/* Bit 7 of each angle register holds the angle flag. */
+		 
 		switch (axis) {
 		case IIO_MOD_X:
 			bitnum = 7 + 8 * MMA9551_TILT_YZ_ANG_REG;
@@ -348,7 +345,7 @@ static irqreturn_t mma9551_event_handler(int irq, void *private)
 		}
 
 	if (mma_axis == -1) {
-		/* IRQ was triggered on 4th line, which we don't use. */
+		 
 		dev_warn(&data->client->dev,
 			 "irq triggered on unused line %d\n", data->irqs[3]);
 		goto out;
@@ -366,10 +363,7 @@ static irqreturn_t mma9551_event_handler(int irq, void *private)
 		break;
 	}
 
-	/*
-	 * Read the angle even though we don't use it, otherwise we
-	 * won't get any further interrupts.
-	 */
+	 
 	ret = mma9551_read_status_byte(data->client, MMA9551_APPID_TILT,
 				       reg, &val);
 	if (ret < 0) {

@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * CIMaX SP2/HF CI driver
- *
- * Copyright (C) 2014 Olli Salonen <olli.salonen@iki.fi>
- */
+ 
+ 
 
 #ifndef SP2_PRIV_H
 #define SP2_PRIV_H
@@ -11,7 +7,7 @@
 #include "sp2.h"
 #include <media/dvb_frontend.h>
 
-/* state struct */
+ 
 struct sp2 {
 	int status;
 	struct i2c_client *client;
@@ -28,7 +24,7 @@ struct sp2 {
 #define SP2_CI_WR		0
 #define SP2_CI_RD		1
 
-/* Module control register (0x00 module A, 0x09 module B) bits */
+ 
 #define SP2_MOD_CTL_DET		0x01
 #define SP2_MOD_CTL_AUTO	0x02
 #define SP2_MOD_CTL_ACS0	0x04

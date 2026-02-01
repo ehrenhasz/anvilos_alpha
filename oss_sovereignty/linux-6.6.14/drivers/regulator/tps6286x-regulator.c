@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-// Copyright Axis Communications AB
+
+
 
 #include <linux/err.h>
 #include <linux/i2c.h>
@@ -98,7 +98,7 @@ static const struct regulator_desc tps6286x_reg = {
 	.enable_reg = TPS6286X_CONTROL,
 	.enable_mask = TPS6286X_CONTROL_SWEN,
 	.ramp_delay = 1000,
-	/* tDelay + tRamp, rounded up */
+	 
 	.enable_time = 3000,
 };
 

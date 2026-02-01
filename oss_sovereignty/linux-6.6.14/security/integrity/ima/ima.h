@@ -1,14 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2005,2006,2007,2008 IBM Corporation
- *
- * Authors:
- * Reiner Sailer <sailer@watson.ibm.com>
- * Mimi Zohar <zohar@us.ibm.com>
- *
- * File: ima.h
- *	internal Integrity Measurement Architecture (IMA) definitions
- */
+ 
+ 
 
 #ifndef __LINUX_IMA_H
 #define __LINUX_IMA_H
@@ -28,7 +19,7 @@ enum ima_show_type { IMA_SHOW_BINARY, IMA_SHOW_BINARY_NO_FIELD_LEN,
 		     IMA_SHOW_BINARY_OLD_STRING_FMT, IMA_SHOW_ASCII };
 enum tpm_pcrs { TPM_PCR0 = 0, TPM_PCR8 = 8, TPM_PCR10 = 10 };
 
-/* digest size for IMA, fits SHA1 or MD5 */
+ 
 #define IMA_DIGEST_SIZE		SHA1_DIGEST_SIZE
 #define IMA_EVENT_NAME_LEN_MAX	255
 
@@ -43,13 +34,13 @@ enum tpm_pcrs { TPM_PCR0 = 0, TPM_PCR8 = 8, TPM_PCR10 = 10 };
 
 #define NR_BANKS(chip) ((chip != NULL) ? chip->nr_allocated_banks : 0)
 
-/* current content of the policy */
+ 
 extern int ima_policy_flag;
 
-/* bitset of digests algorithms allowed in the setxattr hook */
+ 
 extern atomic_t ima_setxattr_allowed_hash_algorithms;
 
-/* set during initialization */
+ 
 extern int ima_hash_algo __ro_after_init;
 extern int ima_sha1_idx __ro_after_init;
 extern int ima_hash_algo_idx __ro_after_init;
@@ -58,7 +49,7 @@ extern int ima_appraise;
 extern struct tpm_chip *ima_tpm_chip;
 extern const char boot_aggregate_name[];
 
-/* IMA event related data */
+ 
 struct ima_event_data {
 	struct integrity_iint_cache *iint;
 	struct file *file;
@@ -71,13 +62,13 @@ struct ima_event_data {
 	int buf_len;
 };
 
-/* IMA template field data definition */
+ 
 struct ima_field_data {
 	u8 *data;
 	u32 len;
 };
 
-/* IMA template field definition */
+ 
 struct ima_template_field {
 	const char field_id[IMA_TEMPLATE_FIELD_ID_MAX_LEN];
 	int (*field_init)(struct ima_event_data *event_data,
@@ -86,7 +77,7 @@ struct ima_template_field {
 			   struct ima_field_data *field_data);
 };
 
-/* IMA template descriptor definition */
+ 
 struct ima_template_desc {
 	struct list_head list;
 	char *name;
@@ -98,19 +89,19 @@ struct ima_template_desc {
 struct ima_template_entry {
 	int pcr;
 	struct tpm_digest *digests;
-	struct ima_template_desc *template_desc; /* template descriptor */
+	struct ima_template_desc *template_desc;  
 	u32 template_data_len;
-	struct ima_field_data template_data[];	/* template related data */
+	struct ima_field_data template_data[];	 
 };
 
 struct ima_queue_entry {
-	struct hlist_node hnext;	/* place in hash collision list */
-	struct list_head later;		/* place in ima_measurements list */
+	struct hlist_node hnext;	 
+	struct list_head later;		 
 	struct ima_template_entry *entry;
 };
-extern struct list_head ima_measurements;	/* list of all measurements */
+extern struct list_head ima_measurements;	 
 
-/* Some details preceding the binary serialized measurement list */
+ 
 struct ima_kexec_hdr {
 	u16 version;
 	u16 _reserved0;
@@ -125,15 +116,12 @@ extern const int read_idmap[];
 void ima_load_kexec_buffer(void);
 #else
 static inline void ima_load_kexec_buffer(void) {}
-#endif /* CONFIG_HAVE_IMA_KEXEC */
+#endif  
 
-/*
- * The default binary_runtime_measurements list format is defined as the
- * platform native format.  The canonical format is defined as little-endian.
- */
+ 
 extern bool ima_canonical_fmt;
 
-/* Internal IMA function definitions */
+ 
 int ima_init(void);
 int ima_fs_init(void);
 int ima_add_template_entry(struct ima_template_entry *entry, int violation,
@@ -168,13 +156,11 @@ int __init ima_init_digests(void);
 int ima_lsm_policy_change(struct notifier_block *nb, unsigned long event,
 			  void *lsm_data);
 
-/*
- * used to protect h_table and sha_table
- */
+ 
 extern spinlock_t ima_queue_lock;
 
 struct ima_h_table {
-	atomic_long_t len;	/* number of stored measurements in the list */
+	atomic_long_t len;	 
 	atomic_long_t violations;
 	struct hlist_head queue[IMA_MEASURE_HTABLE_SIZE];
 };
@@ -182,7 +168,7 @@ extern struct ima_h_table ima_htable;
 
 static inline unsigned int ima_hash_key(u8 *digest)
 {
-	/* there is no point in taking a hash of part of a digest */
+	 
 	return (digest[0] | digest[1] << 8) % IMA_MEASURE_HTABLE_SIZE;
 }
 
@@ -231,9 +217,7 @@ extern const char *const func_tokens[];
 struct modsig;
 
 #ifdef CONFIG_IMA_QUEUE_EARLY_BOOT_KEYS
-/*
- * To track keys that need to be measured.
- */
+ 
 struct ima_key_entry {
 	struct list_head list;
 	void *payload;
@@ -252,9 +236,9 @@ static inline bool ima_queue_key(struct key *keyring,
 				 const void *payload,
 				 size_t payload_len) { return false; }
 static inline void ima_process_queued_keys(void) {}
-#endif /* CONFIG_IMA_QUEUE_EARLY_BOOT_KEYS */
+#endif  
 
-/* LIM API function definitions */
+ 
 int ima_get_action(struct mnt_idmap *idmap, struct inode *inode,
 		   const struct cred *cred, u32 secid, int mask,
 		   enum ima_hooks func, int *pcr,
@@ -285,7 +269,7 @@ int ima_store_template(struct ima_template_entry *entry, int violation,
 void ima_free_template_entry(struct ima_template_entry *entry);
 const char *ima_d_path(const struct path *path, char **pathbuf, char *filename);
 
-/* IMA policy related functions */
+ 
 int ima_match_policy(struct mnt_idmap *idmap, struct inode *inode,
 		     const struct cred *cred, u32 secid, enum ima_hooks func,
 		     int mask, int flags, int *pcr,
@@ -302,7 +286,7 @@ void *ima_policy_next(struct seq_file *m, void *v, loff_t *pos);
 void ima_policy_stop(struct seq_file *m, void *v);
 int ima_policy_show(struct seq_file *m, void *v);
 
-/* Appraise integrity measurements */
+ 
 #define IMA_APPRAISE_ENFORCE	0x01
 #define IMA_APPRAISE_FIX	0x02
 #define IMA_APPRAISE_LOG	0x04
@@ -379,7 +363,7 @@ static inline int ima_read_xattr(struct dentry *dentry,
 	return 0;
 }
 
-#endif /* CONFIG_IMA_APPRAISE */
+#endif  
 
 #ifdef CONFIG_IMA_APPRAISE_MODSIG
 int ima_read_modsig(enum ima_hooks func, const void *buf, loff_t buf_len,
@@ -418,9 +402,9 @@ static inline int ima_get_raw_modsig(const struct modsig *modsig,
 static inline void ima_free_modsig(struct modsig *modsig)
 {
 }
-#endif /* CONFIG_IMA_APPRAISE_MODSIG */
+#endif  
 
-/* LSM based policy rules require audit */
+ 
 #ifdef CONFIG_IMA_LSM_RULES
 
 #define ima_filter_rule_init security_audit_rule_init
@@ -444,12 +428,12 @@ static inline int ima_filter_rule_match(u32 secid, u32 field, u32 op,
 {
 	return -EINVAL;
 }
-#endif /* CONFIG_IMA_LSM_RULES */
+#endif  
 
 #ifdef	CONFIG_IMA_READ_POLICY
 #define	POLICY_FILE_FLAGS	(S_IWUSR | S_IRUSR)
 #else
 #define	POLICY_FILE_FLAGS	S_IWUSR
-#endif /* CONFIG_IMA_READ_POLICY */
+#endif  
 
-#endif /* __LINUX_IMA_H */
+#endif  

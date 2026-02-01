@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2014, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/bitops.h>
@@ -447,11 +445,11 @@ static int lcc_ipq806x_probe(struct platform_device *pdev)
 	if (IS_ERR(regmap))
 		return PTR_ERR(regmap);
 
-	/* Configure the rate of PLL4 if the bootloader hasn't already */
+	 
 	regmap_read(regmap, 0x0, &val);
 	if (!val)
 		clk_pll_configure_sr(&pll4, regmap, &pll4_config, true);
-	/* Enable PLL4 source on the LPASS Primary PLL Mux */
+	 
 	regmap_write(regmap, 0xc4, 0x1);
 
 	return qcom_cc_really_probe(pdev, &lcc_ipq806x_desc, regmap);

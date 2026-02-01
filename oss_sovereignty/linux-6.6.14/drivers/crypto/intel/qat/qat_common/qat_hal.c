@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: (BSD-3-Clause OR GPL-2.0-only)
-/* Copyright(c) 2014 - 2020 Intel Corporation */
+
+ 
 #include <linux/slab.h>
 #include <linux/delay.h>
 #include <linux/pci_ids.h>
@@ -139,7 +139,7 @@ static int qat_hal_wait_cycles(struct icp_qat_fw_loader_handle *handle,
 		if (elapsed_cycles < 0)
 			elapsed_cycles += 0x10000;
 
-		/* ensure at least 8 time cycles elapsed in wait_cycles */
+		 
 		if (elapsed_cycles >= 8 && !(csr & (1 << ACS_ABO_BITPOS)))
 			return 0;
 	}
@@ -163,7 +163,7 @@ int qat_hal_set_ae_ctx_mode(struct icp_qat_fw_loader_handle *handle,
 		return -EINVAL;
 	}
 
-	/* Sets the accelaration engine context mode to either four or eight */
+	 
 	csr = qat_hal_rd_ae_csr(handle, ae, CTX_ENABLES);
 	csr = IGNORE_W1C_MASK & csr;
 	new_csr = (mode == 4) ?
@@ -421,7 +421,7 @@ static void qat_hal_reset_timestamp(struct icp_qat_fw_loader_handle *handle)
 	unsigned char ae;
 
 	misc_ctl_csr = handle->chip_info->misc_ctl_csr;
-	/* stop the timestamp timers */
+	 
 	misc_ctl = GET_CAP_CSR(handle, misc_ctl_csr);
 	if (misc_ctl & MC_TIMESTAMP_ENABLE)
 		SET_CAP_CSR(handle, misc_ctl_csr, misc_ctl &
@@ -431,7 +431,7 @@ static void qat_hal_reset_timestamp(struct icp_qat_fw_loader_handle *handle)
 		qat_hal_wr_ae_csr(handle, ae, TIMESTAMP_LOW, 0);
 		qat_hal_wr_ae_csr(handle, ae, TIMESTAMP_HIGH, 0);
 	}
-	/* start timestamp timers */
+	 
 	SET_CAP_CSR(handle, misc_ctl_csr, misc_ctl | MC_TIMESTAMP_ENABLE);
 }
 
@@ -480,7 +480,7 @@ int qat_hal_clr_reset(struct icp_qat_fw_loader_handle *handle)
 	unsigned int times = 100;
 	unsigned int csr_val;
 
-	/* write to the reset csr */
+	 
 	csr_val = GET_CAP_CSR(handle, reset_csr);
 	csr_val &= ~reset_mask;
 	do {
@@ -490,14 +490,14 @@ int qat_hal_clr_reset(struct icp_qat_fw_loader_handle *handle)
 		csr_val = GET_CAP_CSR(handle, reset_csr);
 		csr_val &= reset_mask;
 	} while (csr_val);
-	/* enable clock */
+	 
 	csr_val = GET_CAP_CSR(handle, clk_csr);
 	csr_val |= reset_mask;
 	SET_CAP_CSR(handle, clk_csr, csr_val);
 	if (qat_hal_check_ae_alive(handle))
 		goto out_err;
 
-	/* Set undefined power-up/reset states to reasonable default values */
+	 
 	for_each_set_bit(ae, &ae_mask, handle->hal_handle->ae_max_num) {
 		qat_hal_wr_ae_csr(handle, ae, CTX_ENABLES,
 				  INIT_CTX_ENABLE_VALUE);
@@ -555,7 +555,7 @@ static u64 qat_hal_set_uword_ecc(u64 uword)
 		bit4_mask = 0xaf5b2c93244ULL, bit5_mask = 0xf56d5525488ULL,
 		bit6_mask = 0xdaf69a46910ULL;
 
-	/* clear the ecc bits */
+	 
 	uword &= ~(0x7fULL << 0x2C);
 	uword |= qat_hal_parity_64bit(bit0_mask & uword) << 0x2C;
 	uword |= qat_hal_parity_64bit(bit1_mask & uword) << 0x2D;
@@ -652,7 +652,7 @@ static int qat_hal_clear_gpr(struct icp_qat_fw_loader_handle *handle)
 		qat_hal_enable_ctx(handle, ae, ctx_mask);
 	}
 	for_each_set_bit(ae, &ae_mask, handle->hal_handle->ae_max_num) {
-		/* wait for AE to finish */
+		 
 		do {
 			ret = qat_hal_wait_cycles(handle, ae, 20, 1);
 		} while (ret && times--);
@@ -793,7 +793,7 @@ static int qat_hal_chip_init(struct icp_qat_fw_loader_handle *handle,
 	handle->hal_handle->admin_ae_mask = hw_data->admin_ae_mask;
 	handle->hal_handle->slice_mask = hw_data->accel_mask;
 	handle->cfg_ae_mask = ALL_AE_MASK;
-	/* create AE objects */
+	 
 	handle->hal_handle->upc_mask = 0x1ffff;
 	handle->hal_handle->max_ustore = 0x4000;
 
@@ -810,7 +810,7 @@ static int qat_hal_chip_init(struct icp_qat_fw_loader_handle *handle,
 	}
 	handle->hal_handle->ae_max_num = max_en_ae_id + 1;
 
-	/* Set SIGNATURE_ENABLE[0] to 0x1 in order to enable ALU_OUT csr */
+	 
 	for_each_set_bit(ae, &ae_mask, handle->hal_handle->ae_max_num) {
 		csr_val = qat_hal_rd_ae_csr(handle, ae, SIGNATURE_ENABLE);
 		csr_val |= 0x1;
@@ -847,7 +847,7 @@ int qat_hal_init(struct adf_accel_dev *accel_dev)
 		goto out_err;
 	}
 
-	/* take all AEs out of reset */
+	 
 	ret = qat_hal_clr_reset(handle);
 	if (ret) {
 		dev_err(&GET_DEV(accel_dev), "qat_hal_clr_reset error\n");
@@ -1002,7 +1002,7 @@ static int qat_hal_exec_micro_inst(struct icp_qat_fw_loader_handle *handle,
 		pr_err("QAT: invalid instruction num %d\n", inst_num);
 		return -EINVAL;
 	}
-	/* save current context */
+	 
 	ind_lm_addr0 = qat_hal_rd_indr_csr(handle, ae, ctx, LM_ADDR_0_INDIRECT);
 	ind_lm_addr1 = qat_hal_rd_indr_csr(handle, ae, ctx, LM_ADDR_1_INDIRECT);
 	ind_lm_addr_byte0 = qat_hal_rd_indr_csr(handle, ae, ctx,
@@ -1038,7 +1038,7 @@ static int qat_hal_exec_micro_inst(struct icp_qat_fw_loader_handle *handle,
 	ind_sig = qat_hal_rd_indr_csr(handle, ae, ctx,
 				      CTX_SIG_EVENTS_INDIRECT);
 	act_sig = qat_hal_rd_ae_csr(handle, ae, CTX_SIG_EVENTS_ACTIVE);
-	/* execute micro codes */
+	 
 	qat_hal_wr_ae_csr(handle, ae, CTX_ENABLES, ctx_enables);
 	qat_hal_wr_uwords(handle, ae, 0, inst_num, micro_inst);
 	qat_hal_wr_indr_csr(handle, ae, (1 << ctx), CTX_STS_INDIRECT, 0);
@@ -1049,7 +1049,7 @@ static int qat_hal_exec_micro_inst(struct icp_qat_fw_loader_handle *handle,
 	qat_hal_wr_indr_csr(handle, ae, (1 << ctx), CTX_SIG_EVENTS_INDIRECT, 0);
 	qat_hal_wr_ae_csr(handle, ae, CTX_SIG_EVENTS_ACTIVE, 0);
 	qat_hal_enable_ctx(handle, ae, (1 << ctx));
-	/* wait for micro codes to finish */
+	 
 	if (qat_hal_wait_cycles(handle, ae, max_cycle, 1) != 0)
 		return -EFAULT;
 	if (endpc) {
@@ -1059,7 +1059,7 @@ static int qat_hal_exec_micro_inst(struct icp_qat_fw_loader_handle *handle,
 						 CTX_STS_INDIRECT);
 		*endpc = ctx_status & handle->hal_handle->upc_mask;
 	}
-	/* retore to saved context */
+	 
 	qat_hal_disable_ctx(handle, ae, (1 << ctx));
 	if (inst_num <= MAX_EXEC_INST)
 		qat_hal_wr_uwords(handle, ae, 0, inst_num, savuwords);
@@ -1149,13 +1149,9 @@ static int qat_hal_rd_rel_reg(struct icp_qat_fw_loader_handle *handle,
 	qat_hal_wr_ae_csr(handle, ae, USTORE_DATA_LOWER, uwrd_lo);
 	qat_hal_wr_ae_csr(handle, ae, USTORE_DATA_UPPER, uwrd_hi);
 	qat_hal_wr_ae_csr(handle, ae, USTORE_ADDRESS, uaddr);
-	/* delay for at least 8 cycles */
+	 
 	qat_hal_wait_cycles(handle, ae, 0x8, 0);
-	/*
-	 * read ALU output
-	 * the instruction should have been executed
-	 * prior to clearing the ECS in putUwords
-	 */
+	 
 	*data = qat_hal_rd_ae_csr(handle, ae, ALU_OUT);
 	qat_hal_wr_ae_csr(handle, ae, USTORE_ADDRESS, ustore_addr);
 	qat_hal_wr_uwords(handle, ae, 0, 1, &savuword);
@@ -1311,7 +1307,7 @@ int qat_hal_batch_wr_lm(struct icp_qat_fw_loader_handle *handle,
 							    size, addr, value);
 		plm_init = plm_init->next;
 	}
-	/* exec micro codes */
+	 
 	if (micro_inst_arry && micro_inst_num > 0) {
 		micro_inst_arry[micro_inst_num++] = 0x0E000010000ull;
 		stat = qat_hal_exec_micro_init_lm(handle, ae, 0, &first_exec,
@@ -1450,11 +1446,11 @@ static int qat_hal_convert_abs_to_rel(struct icp_qat_fw_loader_handle
 
 	ctx_enables = qat_hal_rd_ae_csr(handle, ae, CTX_ENABLES);
 	if (ctx_enables & CE_INUSE_CONTEXTS) {
-		/* 4-ctx mode */
+		 
 		*relreg = absreg_num & 0x1F;
 		*ctx = (absreg_num >> 0x4) & 0x6;
 	} else {
-		/* 8-ctx mode */
+		 
 		*relreg = absreg_num & 0x0F;
 		*ctx = (absreg_num >> 0x4) & 0x7;
 	}

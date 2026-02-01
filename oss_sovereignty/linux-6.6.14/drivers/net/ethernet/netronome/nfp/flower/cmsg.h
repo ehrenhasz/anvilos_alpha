@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
-/* Copyright (C) 2017-2018 Netronome Systems, Inc. */
+ 
+ 
 
 #ifndef NFP_FLOWER_CMSG_H
 #define NFP_FLOWER_CMSG_H
@@ -41,10 +41,10 @@
 #define NFP_FL_IP_FRAG_FIRST		BIT(7)
 #define NFP_FL_IP_FRAGMENTED		BIT(6)
 
-/* GRE Tunnel flags */
+ 
 #define NFP_FL_GRE_FLAG_KEY		BIT(2)
 
-/* Compressed HW representation of TCP Flags */
+ 
 #define NFP_FL_TCP_FLAG_URG		BIT(4)
 #define NFP_FL_TCP_FLAG_PSH		BIT(3)
 #define NFP_FL_TCP_FLAG_RST		BIT(2)
@@ -56,18 +56,17 @@
 #define NFP_FL_SC_ACT_POPV		0x6A000000
 #define NFP_FL_SC_ACT_NULL		0x00000000
 
-/* The maximum action list size (in bytes) supported by the NFP.
- */
+ 
 #define NFP_FL_MAX_A_SIZ		1216
 #define NFP_FL_LW_SIZ			2
 
-/* Maximum allowed geneve options */
+ 
 #define NFP_FL_MAX_GENEVE_OPT_ACT	32
 #define NFP_FL_MAX_GENEVE_OPT_CNT	64
 #define NFP_FL_MAX_GENEVE_OPT_KEY	32
 #define NFP_FL_MAX_GENEVE_OPT_KEY_V6	8
 
-/* Action opcodes */
+ 
 #define NFP_FL_ACTION_OPCODE_OUTPUT		0
 #define NFP_FL_ACTION_OPCODE_PUSH_VLAN		1
 #define NFP_FL_ACTION_OPCODE_POP_VLAN		2
@@ -96,17 +95,17 @@
 #define NFP_FL_PUSH_VLAN_PRIO		GENMASK(15, 13)
 #define NFP_FL_PUSH_VLAN_VID		GENMASK(11, 0)
 
-/* LAG ports */
+ 
 #define NFP_FL_LAG_OUT			0xC0DE0000
 
-/* Tunnel ports */
+ 
 #define NFP_FL_PORT_TYPE_TUN		0x50000000
 #define NFP_FL_TUNNEL_TYPE		GENMASK(7, 4)
 #define NFP_FL_PRE_TUN_INDEX		GENMASK(2, 0)
 
 #define NFP_FLOWER_WORKQ_MAX_SKBS	30000
 
-/* Cmesg reply (empirical) timeout*/
+ 
 #define NFP_FL_REPLY_TIMEOUT		msecs_to_jiffies(40)
 
 #define nfp_flower_cmsg_warn(app, fmt, args...)                         \
@@ -265,75 +264,31 @@ struct nfp_fl_meter {
 	__be32 meter_id;
 };
 
-/* Metadata with L2 (1W/4B)
- * ----------------------------------------------------------------
- *    3                   2                   1
- *  1 0 9 8 7 6 5 4 3 2 1 0 9 8 7 6 5 4 3 2 1 0 9 8 7 6 5 4 3 2 1 0
- * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- * |    key_type   |    mask_id    | PCP |p|   vlan outermost VID  |
- * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- *                                 ^                               ^
- *                           NOTE: |             TCI               |
- *                                 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- */
+ 
 struct nfp_flower_meta_tci {
 	u8 nfp_flow_key_layer;
 	u8 mask_id;
 	__be16 tci;
 };
 
-/* Extended metadata for additional key_layers (1W/4B)
- * ----------------------------------------------------------------
- *    3                   2                   1
- *  1 0 9 8 7 6 5 4 3 2 1 0 9 8 7 6 5 4 3 2 1 0 9 8 7 6 5 4 3 2 1 0
- * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- * |                      nfp_flow_key_layer2                      |
- * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- */
+ 
 struct nfp_flower_ext_meta {
 	__be32 nfp_flow_key_layer2;
 };
 
-/* Port details (1W/4B)
- * ----------------------------------------------------------------
- *    3                   2                   1
- *  1 0 9 8 7 6 5 4 3 2 1 0 9 8 7 6 5 4 3 2 1 0 9 8 7 6 5 4 3 2 1 0
- * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- * |                         port_ingress                          |
- * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- */
+ 
 struct nfp_flower_in_port {
 	__be32 in_port;
 };
 
-/* L2 details (4W/16B)
- *    3                   2                   1
- *  1 0 9 8 7 6 5 4 3 2 1 0 9 8 7 6 5 4 3 2 1 0 9 8 7 6 5 4 3 2 1 0
- * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- * |                     mac_addr_dst, 31 - 0                      |
- * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- * |      mac_addr_dst, 47 - 32    |     mac_addr_src, 15 - 0      |
- * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- * |                     mac_addr_src, 47 - 16                     |
- * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- * |       mpls outermost label            |  TC |B|   reserved  |q|
- * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- */
+ 
 struct nfp_flower_mac_mpls {
 	u8 mac_dst[6];
 	u8 mac_src[6];
 	__be32 mpls_lse;
 };
 
-/* VLAN details (2W/8B)
- *    3                   2                   1
- *  1 0 9 8 7 6 5 4 3 2 1 0 9 8 7 6 5 4 3 2 1 0 9 8 7 6 5 4 3 2 1 0
- * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- * |           outer_tpid          |           outer_tci           |
- * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- * |           inner_tpid          |           inner_tci           |
- * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- */
+ 
 struct nfp_flower_vlan {
 	__be16 outer_tpid;
 	__be16 outer_tci;
@@ -341,13 +296,7 @@ struct nfp_flower_vlan {
 	__be16 inner_tci;
 };
 
-/* L4 ports (for UDP, TCP, SCTP) (1W/4B)
- *    3                   2                   1
- *  1 0 9 8 7 6 5 4 3 2 1 0 9 8 7 6 5 4 3 2 1 0 9 8 7 6 5 4 3 2 1 0
- * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- * |            port_src           |           port_dst            |
- * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- */
+ 
 struct nfp_flower_tp_ports {
 	__be16 port_src;
 	__be16 port_dst;
@@ -360,48 +309,14 @@ struct nfp_flower_ip_ext {
 	u8 flags;
 };
 
-/* L3 IPv4 details (3W/12B)
- *    3                   2                   1
- *  1 0 9 8 7 6 5 4 3 2 1 0 9 8 7 6 5 4 3 2 1 0 9 8 7 6 5 4 3 2 1 0
- * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- * |    DSCP   |ECN|   protocol    |      ttl      |     flags     |
- * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- * |                        ipv4_addr_src                          |
- * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- * |                        ipv4_addr_dst                          |
- * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- */
+ 
 struct nfp_flower_ipv4 {
 	struct nfp_flower_ip_ext ip_ext;
 	__be32 ipv4_src;
 	__be32 ipv4_dst;
 };
 
-/* L3 IPv6 details (10W/40B)
- *    3                   2                   1
- *  1 0 9 8 7 6 5 4 3 2 1 0 9 8 7 6 5 4 3 2 1 0 9 8 7 6 5 4 3 2 1 0
- * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- * |    DSCP   |ECN|   protocol    |      ttl      |     flags     |
- * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- * |   ipv6_exthdr   | res |            ipv6_flow_label            |
- * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- * |                  ipv6_addr_src,   31 - 0                      |
- * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- * |                  ipv6_addr_src,  63 - 32                      |
- * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- * |                  ipv6_addr_src,  95 - 64                      |
- * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- * |                  ipv6_addr_src, 127 - 96                      |
- * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- * |                  ipv6_addr_dst,   31 - 0                      |
- * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- * |                  ipv6_addr_dst,  63 - 32                      |
- * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- * |                  ipv6_addr_dst,  95 - 64                      |
- * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- * |                  ipv6_addr_dst, 127 - 96                      |
- * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- */
+ 
 struct nfp_flower_ipv6 {
 	struct nfp_flower_ip_ext ip_ext;
 	__be32 ipv6_flow_label_exthdr;
@@ -424,22 +339,7 @@ struct nfp_flower_tun_ip_ext {
 	u8 ttl;
 };
 
-/* Flow Frame IPv4 UDP TUNNEL --> Tunnel details (4W/16B)
- * -----------------------------------------------------------------
- *    3                   2                   1
- *  1 0 9 8 7 6 5 4 3 2 1 0 9 8 7 6 5 4 3 2 1 0 9 8 7 6 5 4 3 2 1 0
- * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- * |                         ipv4_addr_src                         |
- * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- * |                         ipv4_addr_dst                         |
- * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- * |           Reserved            |      tos      |      ttl      |
- * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- * |                            Reserved                           |
- * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- * |                     VNI                       |   Reserved    |
- * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- */
+ 
 struct nfp_flower_ipv4_udp_tun {
 	struct nfp_flower_tun_ipv4 ipv4;
 	__be16 reserved1;
@@ -448,34 +348,7 @@ struct nfp_flower_ipv4_udp_tun {
 	__be32 tun_id;
 };
 
-/* Flow Frame IPv6 UDP TUNNEL --> Tunnel details (11W/44B)
- * -----------------------------------------------------------------
- *    3                   2                   1
- *  1 0 9 8 7 6 5 4 3 2 1 0 9 8 7 6 5 4 3 2 1 0 9 8 7 6 5 4 3 2 1 0
- * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- * |                  ipv6_addr_src,   31 - 0                      |
- * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- * |                  ipv6_addr_src,  63 - 32                      |
- * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- * |                  ipv6_addr_src,  95 - 64                      |
- * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- * |                  ipv6_addr_src, 127 - 96                      |
- * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- * |                  ipv6_addr_dst,   31 - 0                      |
- * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- * |                  ipv6_addr_dst,  63 - 32                      |
- * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- * |                  ipv6_addr_dst,  95 - 64                      |
- * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- * |                  ipv6_addr_dst, 127 - 96                      |
- * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- * |           Reserved            |      tos      |      ttl      |
- * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- * |                            Reserved                           |
- * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- * |                     VNI                       |   Reserved    |
- * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- */
+ 
 struct nfp_flower_ipv6_udp_tun {
 	struct nfp_flower_tun_ipv6 ipv6;
 	__be16 reserved1;
@@ -484,24 +357,7 @@ struct nfp_flower_ipv6_udp_tun {
 	__be32 tun_id;
 };
 
-/* Flow Frame GRE TUNNEL --> Tunnel details (6W/24B)
- * -----------------------------------------------------------------
- *    3                   2                   1
- *  1 0 9 8 7 6 5 4 3 2 1 0 9 8 7 6 5 4 3 2 1 0 9 8 7 6 5 4 3 2 1 0
- * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- * |                         ipv4_addr_src                         |
- * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- * |                         ipv4_addr_dst                         |
- * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- * |           tun_flags           |       tos     |       ttl     |
- * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- * |            Reserved           |           Ethertype           |
- * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- * |                              Key                              |
- * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- * |                           Reserved                            |
- * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- */
+ 
 
 struct nfp_flower_ipv4_gre_tun {
 	struct nfp_flower_tun_ipv4 ipv4;
@@ -513,36 +369,7 @@ struct nfp_flower_ipv4_gre_tun {
 	__be32 reserved2;
 };
 
-/* Flow Frame GRE TUNNEL V6 --> Tunnel details (12W/48B)
- * -----------------------------------------------------------------
- *    3                   2                   1
- *  1 0 9 8 7 6 5 4 3 2 1 0 9 8 7 6 5 4 3 2 1 0 9 8 7 6 5 4 3 2 1 0
- * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- * |                  ipv6_addr_src,   31 - 0                      |
- * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- * |                  ipv6_addr_src,  63 - 32                      |
- * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- * |                  ipv6_addr_src,  95 - 64                      |
- * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- * |                  ipv6_addr_src, 127 - 96                      |
- * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- * |                  ipv6_addr_dst,   31 - 0                      |
- * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- * |                  ipv6_addr_dst,  63 - 32                      |
- * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- * |                  ipv6_addr_dst,  95 - 64                      |
- * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- * |                  ipv6_addr_dst, 127 - 96                      |
- * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- * |           tun_flags           |       tos     |       ttl     |
- * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- * |            Reserved           |           Ethertype           |
- * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- * |                              Key                              |
- * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- * |                           Reserved                            |
- * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- */
+ 
 struct nfp_flower_ipv6_gre_tun {
 	struct nfp_flower_tun_ipv6 ipv6;
 	__be16 tun_flags;
@@ -559,10 +386,7 @@ struct nfp_flower_geneve_options {
 
 #define NFP_FL_TUN_VNI_OFFSET 8
 
-/* The base header for a control message packet.
- * Defines an 8-bit version, and an 8-bit type, padded
- * to a 32-bit word. Rest of the packet is type-specific.
- */
+ 
 struct nfp_flower_cmsg_hdr {
 	__be16 pad;
 	u8 type;
@@ -572,7 +396,7 @@ struct nfp_flower_cmsg_hdr {
 #define NFP_FLOWER_CMSG_HLEN		sizeof(struct nfp_flower_cmsg_hdr)
 #define NFP_FLOWER_CMSG_VER1		1
 
-/* Types defined for port related control messages  */
+ 
 enum nfp_flower_cmsg_type_port {
 	NFP_FLOWER_CMSG_TYPE_FLOW_ADD =		0,
 	NFP_FLOWER_CMSG_TYPE_FLOW_MOD =		1,
@@ -600,7 +424,7 @@ enum nfp_flower_cmsg_type_port {
 	NFP_FLOWER_CMSG_TYPE_MAX =		32,
 };
 
-/* NFP_FLOWER_CMSG_TYPE_MAC_REPR */
+ 
 struct nfp_flower_cmsg_mac_repr {
 	u8 reserved[3];
 	u8 num_ports;
@@ -614,7 +438,7 @@ struct nfp_flower_cmsg_mac_repr {
 
 #define NFP_FLOWER_CMSG_MAC_REPR_NBI		GENMASK(1, 0)
 
-/* NFP_FLOWER_CMSG_TYPE_PORT_MOD */
+ 
 struct nfp_flower_cmsg_portmod {
 	__be32 portnum;
 	u8 reserved;
@@ -625,7 +449,7 @@ struct nfp_flower_cmsg_portmod {
 #define NFP_FLOWER_CMSG_PORTMOD_INFO_LINK	BIT(0)
 #define NFP_FLOWER_CMSG_PORTMOD_MTU_CHANGE_ONLY	BIT(1)
 
-/* NFP_FLOWER_CMSG_TYPE_PORT_REIFY */
+ 
 struct nfp_flower_cmsg_portreify {
 	__be32 portnum;
 	u16 reserved;
@@ -634,7 +458,7 @@ struct nfp_flower_cmsg_portreify {
 
 #define NFP_FLOWER_CMSG_PORTREIFY_INFO_EXIST	BIT(0)
 
-/* NFP_FLOWER_CMSG_TYPE_FLOW_MERGE_HINT */
+ 
 struct nfp_flower_cmsg_merge_hint {
 	u8 reserved[3];
 	u8 count;

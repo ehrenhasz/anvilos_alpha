@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2021, NVIDIA Corporation.
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/kref.h>
@@ -15,7 +13,7 @@
 
 static void host1x_memory_context_release(struct device *dev)
 {
-	/* context device is freed in host1x_memory_context_list_free() */
+	 
 }
 
 int host1x_memory_context_list_init(struct host1x *host1x)
@@ -46,10 +44,7 @@ int host1x_memory_context_list_init(struct host1x *host1x)
 
 		device_initialize(&ctx->dev);
 
-		/*
-		 * Due to an issue with T194 NVENC, only 38 bits can be used.
-		 * Anyway, 256GiB of IOVA ought to be enough for anyone.
-		 */
+		 
 		ctx->dma_mask = DMA_BIT_MASK(38);
 		ctx->dev.dma_mask = &ctx->dma_mask;
 		ctx->dev.coherent_dma_mask = ctx->dma_mask;
@@ -80,11 +75,7 @@ int host1x_memory_context_list_init(struct host1x *host1x)
 			dev_err(host1x->dev, "Context device %d has no IOMMU!\n", i);
 			device_unregister(&ctx->dev);
 
-			/*
-			 * This means that if IOMMU is disabled but context devices
-			 * are defined in the device tree, Host1x will fail to probe.
-			 * That's probably OK in this time and age.
-			 */
+			 
 			err = -EINVAL;
 
 			goto unreg_devices;

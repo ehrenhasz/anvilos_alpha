@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 #ifndef __LINUX_SPINLOCK_RT_H
 #define __LINUX_SPINLOCK_RT_H
 
@@ -62,11 +62,7 @@ static __always_inline void spin_lock(spinlock_t *lock)
 	} while (0)
 
 #else
- /*
-  * Always evaluate the 'subclass' argument to avoid that the compiler
-  * warns about set-but-not-used variables when building with
-  * CONFIG_DEBUG_LOCK_ALLOC=n and with W=1.
-  */
+  
 # define __spin_lock_nested(lock, subclass)	spin_lock(((void)(subclass), (lock)))
 # define __spin_lock_nest_lock(lock, subclass)	spin_lock(((void)(subclass), (lock)))
 # define __spin_lock_irqsave_nested(lock, flags, subclass)	\
@@ -84,7 +80,7 @@ static __always_inline void spin_lock(spinlock_t *lock)
 
 static __always_inline void spin_lock_bh(spinlock_t *lock)
 {
-	/* Investigate: Drop bh when blocking ? */
+	 
 	local_bh_disable();
 	rt_spin_lock(lock);
 }

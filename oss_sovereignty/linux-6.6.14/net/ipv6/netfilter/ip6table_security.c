@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * "security" table for IPv6
- *
- * This is for use by Mandatory Access Control (MAC) security models,
- * which need to be able to manage security policy in separate context
- * to DAC.
- *
- * Based on iptable_mangle.c
- *
- * Copyright (C) 1999 Paul `Rusty' Russell & Michael J. Neuling
- * Copyright (C) 2000-2004 Netfilter Core Team <coreteam <at> netfilter.org>
- * Copyright (C) 2008 Red Hat, Inc., James Morris <jmorris <at> redhat.com>
- */
+
+ 
 #include <linux/module.h>
 #include <linux/netfilter_ipv6/ip6_tables.h>
 #include <linux/slab.h>

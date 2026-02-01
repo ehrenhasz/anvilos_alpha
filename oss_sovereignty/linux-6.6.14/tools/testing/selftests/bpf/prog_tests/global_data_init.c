@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <test_progs.h>
 
 void test_global_data_init(void)
@@ -26,7 +26,7 @@ void test_global_data_init(void)
 		goto out;
 
 	memset(newval, 0, sz);
-	/* wrong size, should fail */
+	 
 	err = bpf_map__set_initial_value(map, newval, sz - 1);
 	if (CHECK(!err, "reject set initial value wrong size", "err %d\n", err))
 		goto out;
@@ -52,7 +52,7 @@ void test_global_data_init(void)
 		goto out;
 
 	memset(newval, 1, sz);
-	/* object loaded - should fail */
+	 
 	err = bpf_map__set_initial_value(map, newval, sz);
 	CHECK(!err, "reject set initial value after load", "err %d\n", err);
 out:

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* Aquantia Corp. Aquantia AQtion USB to 5GbE Controller
- * Copyright (C) 2003-2005 David Hollis <dhollis@davehollis.com>
- * Copyright (C) 2005 Phil Chang <pchang23@sbcglobal.net>
- * Copyright (C) 2002-2003 TiVo Inc.
- * Copyright (C) 2017-2018 ASIX
- * Copyright (C) 2018 Aquantia Corp.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/netdevice.h>
@@ -199,7 +193,7 @@ static void aqc111_get_drvinfo(struct net_device *net,
 	struct usbnet *dev = netdev_priv(net);
 	struct aqc111_data *aqc111_data = dev->driver_priv;
 
-	/* Inherit standard device info */
+	 
 	usbnet_get_drvinfo(net, info);
 	strscpy(info->driver, DRIVER_NAME, sizeof(info->driver));
 	snprintf(info->fw_version, sizeof(info->fw_version), "%u.%u.%u",
@@ -287,7 +281,7 @@ static int aqc111_get_link_ksettings(struct net_device *net,
 	elk->base.port = PORT_TP;
 	elk->base.transceiver = XCVR_INTERNAL;
 
-	elk->base.mdio_support = 0x00; /*Not supported*/
+	elk->base.mdio_support = 0x00;  
 
 	if (aqc111_data->autoneg)
 		linkmode_copy(elk->link_modes.advertising,
@@ -342,7 +336,7 @@ static void aqc111_set_phy_speed(struct usbnet *dev, u8 autoneg, u16 speed)
 			fallthrough;
 		case SPEED_100:
 			aqc111_data->phy_cfg |= AQ_ADV_100M;
-			/* fall-through */
+			 
 		}
 	} else {
 		switch (speed) {
@@ -439,12 +433,12 @@ static int aqc111_change_mtu(struct net_device *net, int new_mtu)
 
 	if (dev->net->mtu > 12500) {
 		memcpy(buf, &AQC111_BULKIN_SIZE[2], 5);
-		/* RX bulk configuration */
+		 
 		aqc111_write_cmd(dev, AQ_ACCESS_MAC, SFR_RX_BULKIN_QCTRL,
 				 5, 5, buf);
 	}
 
-	/* Set high low water level */
+	 
 	if (dev->net->mtu <= 4500)
 		reg16 = 0x0810;
 	else if (dev->net->mtu <= 9500)
@@ -469,7 +463,7 @@ static int aqc111_set_mac_addr(struct net_device *net, void *p)
 	if (ret < 0)
 		return ret;
 
-	/* Set the MAC address */
+	 
 	return aqc111_write_cmd(dev, AQ_ACCESS_MAC, SFR_NODE_ID, ETH_ALEN,
 				ETH_ALEN, net->dev_addr);
 }
@@ -485,10 +479,10 @@ static int aqc111_vlan_rx_kill_vid(struct net_device *net,
 	aqc111_read_cmd(dev, AQ_ACCESS_MAC, SFR_VLAN_ID_CONTROL, 1, 1, &reg8);
 	vlan_ctrl = reg8;
 
-	/* Address */
+	 
 	reg8 = (vid / 16);
 	aqc111_write_cmd(dev, AQ_ACCESS_MAC, SFR_VLAN_ID_ADDRESS, 1, 1, &reg8);
-	/* Data */
+	 
 	reg8 = vlan_ctrl | SFR_VLAN_CONTROL_RD;
 	aqc111_write_cmd(dev, AQ_ACCESS_MAC, SFR_VLAN_ID_CONTROL, 1, 1, &reg8);
 	aqc111_read16_cmd(dev, AQ_ACCESS_MAC, SFR_VLAN_ID_DATA0, 2, &reg16);
@@ -510,10 +504,10 @@ static int aqc111_vlan_rx_add_vid(struct net_device *net, __be16 proto, u16 vid)
 	aqc111_read_cmd(dev, AQ_ACCESS_MAC, SFR_VLAN_ID_CONTROL, 1, 1, &reg8);
 	vlan_ctrl = reg8;
 
-	/* Address */
+	 
 	reg8 = (vid / 16);
 	aqc111_write_cmd(dev, AQ_ACCESS_MAC, SFR_VLAN_ID_ADDRESS, 1, 1, &reg8);
-	/* Data */
+	 
 	reg8 = vlan_ctrl | SFR_VLAN_CONTROL_RD;
 	aqc111_write_cmd(dev, AQ_ACCESS_MAC, SFR_VLAN_ID_CONTROL, 1, 1, &reg8);
 	aqc111_read16_cmd(dev, AQ_ACCESS_MAC, SFR_VLAN_ID_DATA0, 2, &reg16);
@@ -605,12 +599,12 @@ static int aqc111_set_features(struct net_device *net,
 			u16 i = 0;
 
 			for (i = 0; i < 256; i++) {
-				/* Address */
+				 
 				reg8 = i;
 				aqc111_write_cmd(dev, AQ_ACCESS_MAC,
 						 SFR_VLAN_ID_ADDRESS,
 						 1, 1, &reg8);
-				/* Data */
+				 
 				aqc111_write16_cmd(dev, AQ_ACCESS_MAC,
 						   SFR_VLAN_ID_DATA0,
 						   2, &reg16);
@@ -688,7 +682,7 @@ static int aqc111_bind(struct usbnet *dev, struct usb_interface *intf)
 	struct aqc111_data *aqc111_data;
 	int ret;
 
-	/* Check if vendor configuration */
+	 
 	if (udev->actconfig->desc.bConfigurationValue != 1) {
 		usb_driver_set_configuration(udev, 1);
 		return -ENODEV;
@@ -706,20 +700,20 @@ static int aqc111_bind(struct usbnet *dev, struct usb_interface *intf)
 	if (!aqc111_data)
 		return -ENOMEM;
 
-	/* store aqc111_data pointer in device data field */
+	 
 	dev->driver_priv = aqc111_data;
 
-	/* Init the MAC address */
+	 
 	ret = aqc111_read_perm_mac(dev);
 	if (ret)
 		goto out;
 
 	eth_hw_addr_set(dev->net, dev->net->perm_addr);
 
-	/* Set Rx urb size */
+	 
 	dev->rx_urb_size = URB_SIZE;
 
-	/* Set TX needed headroom & tailroom */
+	 
 	dev->net->needed_headroom += sizeof(u64);
 	dev->net->needed_tailroom += sizeof(u64);
 
@@ -754,7 +748,7 @@ static void aqc111_unbind(struct usbnet *dev, struct usb_interface *intf)
 	struct aqc111_data *aqc111_data = dev->driver_priv;
 	u16 reg16;
 
-	/* Force bz */
+	 
 	reg16 = SFR_PHYPWR_RSTCTL_BZ;
 	aqc111_write16_cmd_nopm(dev, AQ_ACCESS_MAC, SFR_PHYPWR_RSTCTL,
 				2, &reg16);
@@ -762,7 +756,7 @@ static void aqc111_unbind(struct usbnet *dev, struct usb_interface *intf)
 	aqc111_write16_cmd_nopm(dev, AQ_ACCESS_MAC, SFR_PHYPWR_RSTCTL,
 				2, &reg16);
 
-	/* Power down ethernet PHY */
+	 
 	aqc111_data->phy_cfg &= ~AQ_ADV_MASK;
 	aqc111_data->phy_cfg |= AQ_LOW_POWER;
 	aqc111_data->phy_cfg &= ~AQ_PHY_POWER_EN;
@@ -856,13 +850,13 @@ static void aqc111_configure_rx(struct usbnet *dev,
 	}
 
 	if (dev->net->mtu > 12500 && dev->net->mtu <= 16334)
-		queue_num = 2; /* For Jumbo packet 16KB */
+		queue_num = 2;  
 
 	memcpy(buf, &AQC111_BULKIN_SIZE[queue_num], 5);
-	/* RX bulk configuration */
+	 
 	aqc111_write_cmd(dev, AQ_ACCESS_MAC, SFR_RX_BULKIN_QCTRL, 5, 5, buf);
 
-	/* Set high low water level */
+	 
 	if (dev->net->mtu <= 4500)
 		reg16 = 0x0810;
 	else if (dev->net->mtu <= 9500)
@@ -903,10 +897,10 @@ static int aqc111_link_reset(struct usbnet *dev)
 	u16 reg16 = 0;
 	u8 reg8 = 0;
 
-	if (aqc111_data->link == 1) { /* Link up */
+	if (aqc111_data->link == 1) {  
 		aqc111_configure_rx(dev, aqc111_data);
 
-		/* Vlan Tag Filter */
+		 
 		reg8 = SFR_VLAN_CONTROL_VSO;
 		if (dev->net->features & NETIF_F_HW_VLAN_CTAG_FILTER)
 			reg8 |= SFR_VLAN_CONTROL_VFE;
@@ -1000,12 +994,12 @@ static int aqc111_reset(struct usbnet *dev)
 	dev->net->features |= AQ_SUPPORT_FEATURE;
 	dev->net->vlan_features |= AQ_SUPPORT_VLAN_FEATURE;
 
-	/* Power up ethernet PHY */
+	 
 	aqc111_data->phy_cfg = AQ_PHY_POWER_EN;
 	aqc111_write32_cmd(dev, AQ_PHY_OPS, 0, 0,
 			   &aqc111_data->phy_cfg);
 
-	/* Set the MAC address */
+	 
 	aqc111_write_cmd(dev, AQ_ACCESS_MAC, SFR_NODE_ID, ETH_ALEN,
 			 ETH_ALEN, dev->net->dev_addr);
 
@@ -1023,7 +1017,7 @@ static int aqc111_reset(struct usbnet *dev)
 
 	netif_carrier_off(dev->net);
 
-	/* Phy advertise */
+	 
 	aqc111_set_phy_speed(dev, aqc111_data->autoneg,
 			     aqc111_data->advertised_speed);
 
@@ -1043,7 +1037,7 @@ static int aqc111_stop(struct usbnet *dev)
 	reg16 = 0;
 	aqc111_write16_cmd(dev, AQ_ACCESS_MAC, SFR_RX_CTL, 2, &reg16);
 
-	/* Put PHY to low power*/
+	 
 	aqc111_data->phy_cfg |= AQ_LOW_POWER;
 	aqc111_write32_cmd(dev, AQ_PHY_OPS, 0, 0,
 			   &aqc111_data->phy_cfg);
@@ -1058,12 +1052,12 @@ static void aqc111_rx_checksum(struct sk_buff *skb, u64 pkt_desc)
 	u32 pkt_type = 0;
 
 	skb->ip_summed = CHECKSUM_NONE;
-	/* checksum error bit is set */
+	 
 	if (pkt_desc & AQ_RX_PD_L4_ERR || pkt_desc & AQ_RX_PD_L3_ERR)
 		return;
 
 	pkt_type = pkt_desc & AQ_RX_PD_L4_TYPE_MASK;
-	/* It must be a TCP or UDP packet with a valid checksum */
+	 
 	if (pkt_type == AQ_RX_PD_L4_TCP || pkt_type == AQ_RX_PD_L4_UDP)
 		skb->ip_summed = CHECKSUM_UNNECESSARY;
 }
@@ -1075,7 +1069,7 @@ static int aqc111_rx_fixup(struct usbnet *dev, struct sk_buff *skb)
 	u32 pkt_total_offset = 0;
 	u64 *pkt_desc_ptr = NULL;
 	u32 start_of_descs = 0;
-	u32 desc_offset = 0; /*RX Header Offset*/
+	u32 desc_offset = 0;  
 	u16 pkt_count = 0;
 	u64 desc_hdr = 0;
 	u16 vlan_tag = 0;
@@ -1088,33 +1082,31 @@ static int aqc111_rx_fixup(struct usbnet *dev, struct sk_buff *skb)
 	if (skb_len < sizeof(desc_hdr))
 		goto err;
 
-	/* RX Descriptor Header */
+	 
 	skb_trim(skb, skb_len - sizeof(desc_hdr));
 	desc_hdr = le64_to_cpup((u64 *)skb_tail_pointer(skb));
 
-	/* Check these packets */
+	 
 	desc_offset = (desc_hdr & AQ_RX_DH_DESC_OFFSET_MASK) >>
 		      AQ_RX_DH_DESC_OFFSET_SHIFT;
 	pkt_count = desc_hdr & AQ_RX_DH_PKT_CNT_MASK;
 	start_of_descs = skb_len - ((pkt_count + 1) *  sizeof(desc_hdr));
 
-	/* self check descs position */
+	 
 	if (start_of_descs != desc_offset)
 		goto err;
 
-	/* self check desc_offset from header and make sure that the
-	 * bounds of the metadata array are inside the SKB
-	 */
+	 
 	if (pkt_count * 2 + desc_offset >= skb_len)
 		goto err;
 
-	/* Packets must not overlap the metadata array */
+	 
 	skb_trim(skb, desc_offset);
 
 	if (pkt_count == 0)
 		goto err;
 
-	/* Get the first RX packet descriptor */
+	 
 	pkt_desc_ptr = (u64 *)(skb->data + desc_offset);
 
 	while (pkt_count--) {
@@ -1136,12 +1128,12 @@ static int aqc111_rx_fixup(struct usbnet *dev, struct sk_buff *skb)
 		    !(pkt_desc & AQ_RX_PD_RX_OK) ||
 		    pkt_len > (dev->hard_mtu + AQ_RX_HW_PAD)) {
 			skb_pull(skb, pkt_len_with_padd);
-			/* Next RX Packet Descriptor */
+			 
 			pkt_desc_ptr++;
 			continue;
 		}
 
-		/* Clone SKB */
+		 
 		new_skb = skb_clone(skb, GFP_ATOMIC);
 
 		if (!new_skb)
@@ -1167,7 +1159,7 @@ static int aqc111_rx_fixup(struct usbnet *dev, struct sk_buff *skb)
 
 		skb_pull(skb, pkt_len_with_padd);
 
-		/* Next RX Packet Header */
+		 
 		pkt_desc_ptr++;
 
 		new_skb = NULL;
@@ -1191,10 +1183,10 @@ static struct sk_buff *aqc111_tx_fixup(struct usbnet *dev, struct sk_buff *skb,
 	u64 tx_desc = 0;
 	u16 tci = 0;
 
-	/*Length of actual data*/
+	 
 	tx_desc |= skb->len & AQ_TX_DESC_LEN_MASK;
 
-	/* TSO MSS */
+	 
 	tx_desc |= ((u64)(skb_shinfo(skb)->gso_size & AQ_TX_DESC_MSS_MASK)) <<
 		   AQ_TX_DESC_MSS_SHIFT;
 
@@ -1207,7 +1199,7 @@ static struct sk_buff *aqc111_tx_fixup(struct usbnet *dev, struct sk_buff *skb,
 		tx_desc |= AQ_TX_DESC_DROP_PADD;
 	}
 
-	/* Vlan Tag */
+	 
 	if (vlan_get_tag(skb, &tci) >= 0) {
 		tx_desc |= AQ_TX_DESC_VLAN;
 		tx_desc |= ((u64)tci & AQ_TX_DESC_VLAN_MASK) <<
@@ -1231,7 +1223,7 @@ static struct sk_buff *aqc111_tx_fixup(struct usbnet *dev, struct sk_buff *skb,
 	}
 	if (padding_size != 0)
 		skb_put_zero(skb, padding_size);
-	/* Copy TX header */
+	 
 	tx_desc_ptr = skb_push(skb, sizeof(tx_desc));
 	*tx_desc_ptr = cpu_to_le64(tx_desc);
 
@@ -1332,10 +1324,10 @@ static int aqc111_suspend(struct usb_interface *intf, pm_message_t message)
 
 	aqc111_read16_cmd_nopm(dev, AQ_ACCESS_MAC, SFR_RX_CTL, 2, &reg16);
 	temp_rx_ctrl = reg16;
-	/* Stop RX operations*/
+	 
 	reg16 &= ~SFR_RX_CTL_START;
 	aqc111_write16_cmd_nopm(dev, AQ_ACCESS_MAC, SFR_RX_CTL, 2, &reg16);
-	/* Force bz */
+	 
 	aqc111_read16_cmd_nopm(dev, AQ_ACCESS_MAC, SFR_PHYPWR_RSTCTL,
 			       2, &reg16);
 	reg16 |= SFR_PHYPWR_RSTCTL_BZ;
@@ -1405,7 +1397,7 @@ static int aqc111_suspend(struct usb_interface *intf, pm_message_t message)
 		aqc111_write32_cmd(dev, AQ_PHY_OPS, 0, 0,
 				   &aqc111_data->phy_cfg);
 
-		/* Disable RX path */
+		 
 		aqc111_read16_cmd_nopm(dev, AQ_ACCESS_MAC,
 				       SFR_MEDIUM_STATUS_MODE, 2, &reg16);
 		reg16 &= ~SFR_MEDIUM_RECEIVE_EN;
@@ -1425,7 +1417,7 @@ static int aqc111_resume(struct usb_interface *intf)
 
 	netif_carrier_off(dev->net);
 
-	/* Power up ethernet PHY */
+	 
 	aqc111_data->phy_cfg |= AQ_PHY_POWER_EN;
 	aqc111_data->phy_cfg &= ~AQ_LOW_POWER;
 	aqc111_data->phy_cfg &= ~AQ_WOL;
@@ -1433,7 +1425,7 @@ static int aqc111_resume(struct usb_interface *intf)
 	reg8 = 0xFF;
 	aqc111_write_cmd_nopm(dev, AQ_ACCESS_MAC, SFR_BM_INT_MASK,
 			      1, 1, &reg8);
-	/* Configure RX control register => start operation */
+	 
 	reg16 = aqc111_data->rxctl;
 	reg16 &= ~SFR_RX_CTL_START;
 	aqc111_write16_cmd_nopm(dev, AQ_ACCESS_MAC, SFR_RX_CTL, 2, &reg16);
@@ -1475,7 +1467,7 @@ static const struct usb_device_id products[] = {
 	{AQC111_USB_ETH_DEV(0x0b95, 0x2791, asix112_info)},
 	{AQC111_USB_ETH_DEV(0x20f4, 0xe05a, trendnet_info)},
 	{AQC111_USB_ETH_DEV(0x1c04, 0x0015, qnap_info)},
-	{ },/* END */
+	{ }, 
 };
 MODULE_DEVICE_TABLE(usb, products);
 

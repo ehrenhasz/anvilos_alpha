@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright(c) 2020 Intel Corporation. All rights rsvd. */
+
+ 
 
 #include <linux/sched/task.h>
 #include <linux/io-64-nonatomic-lo-hi.h>
@@ -13,11 +13,7 @@ static cpumask_t		perfmon_dsa_cpu_mask;
 static bool			cpuhp_set_up;
 static enum cpuhp_state		cpuhp_slot;
 
-/*
- * perf userspace reads this attribute to determine which cpus to open
- * counters on.  It's connected to perfmon_dsa_cpu_mask, which is
- * maintained by the cpu hotplug handlers.
- */
+ 
 static DEVICE_ATTR_RO(cpumask);
 
 static struct attribute *perfmon_cpumask_attrs[] = {
@@ -29,17 +25,11 @@ static struct attribute_group cpumask_attr_group = {
 	.attrs = perfmon_cpumask_attrs,
 };
 
-/*
- * These attributes specify the bits in the config word that the perf
- * syscall uses to pass the event ids and categories to perfmon.
- */
+ 
 DEFINE_PERFMON_FORMAT_ATTR(event_category, "config:0-3");
 DEFINE_PERFMON_FORMAT_ATTR(event, "config:4-31");
 
-/*
- * These attributes specify the bits in the config1 word that the perf
- * syscall uses to pass filter data to perfmon.
- */
+ 
 DEFINE_PERFMON_FORMAT_ATTR(filter_wq, "config1:0-31");
 DEFINE_PERFMON_FORMAT_ATTR(filter_tc, "config1:32-39");
 DEFINE_PERFMON_FORMAT_ATTR(filter_pgsz, "config1:40-43");
@@ -143,14 +133,7 @@ static int perfmon_assign_event(struct idxd_pmu *idxd_pmu,
 	return -EINVAL;
 }
 
-/*
- * Check whether there are enough counters to satisfy that all the
- * events in the group can actually be scheduled at the same time.
- *
- * To do this, create a fake idxd_pmu object so the event collection
- * and assignment functions can be used without affecting the internal
- * state of the real idxd_pmu object.
- */
+ 
 static int perfmon_validate_group(struct idxd_pmu *pmu,
 				  struct perf_event *event)
 {
@@ -206,7 +189,7 @@ static int perfmon_pmu_event_init(struct perf_event *event)
 	if (event->attr.type != event->pmu->type)
 		return -ENOENT;
 
-	/* sampling not supported */
+	 
 	if (event->attr.sample_period)
 		return -EINVAL;
 
@@ -221,7 +204,7 @@ static int perfmon_pmu_event_init(struct perf_event *event)
 	event->hw.config = event->attr.config;
 
 	if (event->group_leader != event)
-		 /* non-group events have themselves as leader */
+		  
 		ret = perfmon_validate_group(idxd->idxd_pmu, event);
 
 	return ret;
@@ -268,23 +251,16 @@ void perfmon_counter_overflow(struct idxd_device *idxd)
 
 	ovfstatus = ioread32(OVFSTATUS_REG(idxd));
 
-	/*
-	 * While updating overflowed counters, other counters behind
-	 * them could overflow and be missed in a given pass.
-	 * Normally this could happen at most n_counters times, but in
-	 * theory a tiny counter width could result in continual
-	 * overflows and endless looping.  max_loop provides a
-	 * failsafe in that highly unlikely case.
-	 */
+	 
 	while (ovfstatus && max_loop--) {
-		/* Figure out which counter(s) overflowed */
+		 
 		for_each_set_bit(i, &ovfstatus, n_counters) {
 			unsigned long ovfstatus_clear = 0;
 
-			/* Update event->count for overflowed counter */
+			 
 			event = idxd->idxd_pmu->event_list[i];
 			perfmon_pmu_event_update(event);
-			/* Writing 1 to OVFSTATUS bit clears it */
+			 
 			set_bit(i, &ovfstatus_clear);
 			iowrite32(ovfstatus_clear, OVFSTATUS_REG(idxd));
 		}
@@ -292,10 +268,7 @@ void perfmon_counter_overflow(struct idxd_device *idxd)
 		ovfstatus = ioread32(OVFSTATUS_REG(idxd));
 	}
 
-	/*
-	 * Should never happen.  If so, it means a counter(s) looped
-	 * around twice while this handler was running.
-	 */
+	 
 	WARN_ON_ONCE(ovfstatus);
 }
 
@@ -332,13 +305,13 @@ static void perfmon_pmu_event_start(struct perf_event *event, int mode)
 	event->hw.idx = hwc->idx;
 	cntr = hwc->idx;
 
-	/* Obtain event category and event value from user space */
+	 
 	event_cfg.val = event->attr.config;
 	flt_cfg.val = event->attr.config1;
 	event_cat = event_cfg.event_cat;
 	event_enc = event_cfg.event_enc;
 
-	/* Obtain filter configuration from user space */
+	 
 	flt_wq = flt_cfg.wq;
 	flt_tc = flt_cfg.tc;
 	flt_pg_sz = flt_cfg.pg_sz;
@@ -356,14 +329,14 @@ static void perfmon_pmu_event_start(struct perf_event *event, int mode)
 	if (flt_eng && test_bit(FLT_ENG, &idxd->idxd_pmu->supported_filters))
 		iowrite32(flt_eng, FLTCFG_REG(idxd, cntr, FLT_ENG));
 
-	/* Read the start value */
+	 
 	cntrdata = ioread64(CNTRDATA_REG(idxd, cntr));
 	local64_set(&event->hw.prev_count, cntrdata);
 
-	/* Set counter to event/category */
+	 
 	cntr_cfg = event_cat << CNTRCFG_CATEGORY_SHIFT;
 	cntr_cfg |= event_enc << CNTRCFG_EVENT_SHIFT;
-	/* Set interrupt on overflow and counter enable bits */
+	 
 	cntr_cfg |= (CNTRCFG_IRQ_OVERFLOW | CNTRCFG_ENABLE);
 
 	iowrite64(cntr_cfg, CNTRCFG_REG(idxd, cntr));
@@ -378,7 +351,7 @@ static void perfmon_pmu_event_stop(struct perf_event *event, int mode)
 
 	idxd = event_to_idxd(event);
 
-	/* remove this event from event list */
+	 
 	for (i = 0; i < idxd->idxd_pmu->n_events; i++) {
 		if (event != idxd->idxd_pmu->event_list[i])
 			continue;
@@ -508,7 +481,7 @@ static int perf_event_cpu_online(unsigned int cpu, struct hlist_node *node)
 
 	idxd_pmu = hlist_entry_safe(node, typeof(*idxd_pmu), cpuhp_node);
 
-	/* select the first online CPU as the designated reader */
+	 
 	if (cpumask_empty(&perfmon_dsa_cpu_mask)) {
 		cpumask_set_cpu(cpu, &perfmon_dsa_cpu_mask);
 		idxd_pmu->cpu = cpu;
@@ -529,7 +502,7 @@ static int perf_event_cpu_offline(unsigned int cpu, struct hlist_node *node)
 
 	target = cpumask_any_but(cpu_online_mask, cpu);
 
-	/* migrate events if there is a valid target */
+	 
 	if (target < nr_cpu_ids)
 		cpumask_set_cpu(target, &perfmon_dsa_cpu_mask);
 	else
@@ -546,16 +519,11 @@ int perfmon_pmu_init(struct idxd_device *idxd)
 	struct idxd_pmu *idxd_pmu;
 	int rc = -ENODEV;
 
-	/*
-	 * perfmon module initialization failed, nothing to do
-	 */
+	 
 	if (!cpuhp_set_up)
 		return -ENODEV;
 
-	/*
-	 * If perfmon_offset or num_counters is 0, it means perfmon is
-	 * not supported on this hardware.
-	 */
+	 
 	if (idxd->perfmon_offset == 0)
 		return -ENODEV;
 
@@ -582,29 +550,23 @@ int perfmon_pmu_init(struct idxd_device *idxd)
 
 	perfcap.bits = ioread64(PERFCAP_REG(idxd));
 
-	/*
-	 * If total perf counter is 0, stop further registration.
-	 * This is necessary in order to support driver running on
-	 * guest which does not have pmon support.
-	 */
+	 
 	if (perfcap.num_perf_counter == 0)
 		goto free;
 
-	/* A counter width of 0 means it can't count */
+	 
 	if (perfcap.counter_width == 0)
 		goto free;
 
-	/* Overflow interrupt and counter freeze support must be available */
+	 
 	if (!perfcap.overflow_interrupt || !perfcap.counter_freeze)
 		goto free;
 
-	/* Number of event categories cannot be 0 */
+	 
 	if (perfcap.num_event_category == 0)
 		goto free;
 
-	/*
-	 * We don't support per-counter capabilities for now.
-	 */
+	 
 	if (perfcap.cap_per_counter)
 		goto free;
 
@@ -612,12 +574,12 @@ int perfmon_pmu_init(struct idxd_device *idxd)
 	idxd_pmu->supported_event_categories = perfcap.global_event_category;
 	idxd_pmu->per_counter_caps_supported = perfcap.cap_per_counter;
 
-	/* check filter capability.  If 0, then filters are not supported */
+	 
 	idxd_pmu->supported_filters = perfcap.filter;
 	if (perfcap.filter)
 		idxd_pmu->n_filters = hweight8(perfcap.filter);
 
-	/* Store the total number of counters categories, and counter width */
+	 
 	idxd_pmu->n_counters = perfcap.num_perf_counter;
 	idxd_pmu->counter_width = perfcap.counter_width;
 

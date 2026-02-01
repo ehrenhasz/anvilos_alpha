@@ -1,9 +1,4 @@
-/*
- * Sonics Silicon Backplane
- * ChipCommon serial flash interface
- *
- * Licensed under the GNU/GPL. See COPYING for details.
- */
+ 
 
 #include "ssb_private.h"
 
@@ -83,7 +78,7 @@ static void ssb_sflash_cmd(struct ssb_chipcommon *cc, u32 opcode)
 	dev_err(cc->dev->dev, "SFLASH control command failed (timeout)!\n");
 }
 
-/* Initialize serial flash access */
+ 
 int ssb_sflash_init(struct ssb_chipcommon *cc)
 {
 	struct ssb_sflash *sflash = &cc->dev->bus->mipscore.sflash;
@@ -154,8 +149,7 @@ int ssb_sflash_init(struct ssb_chipcommon *cc)
 	pr_info("Found %s serial flash (size: %dKiB, blocksize: 0x%X, blocks: %d)\n",
 		e->name, sflash->size / 1024, e->blocksize, e->numblocks);
 
-	/* Prepare platform device, but don't register it yet. It's too early,
-	 * malloc (required by device_private_init) is not available yet. */
+	 
 	ssb_sflash_dev.resource[0].end = ssb_sflash_dev.resource[0].start +
 					 sflash->size;
 	ssb_sflash_dev.dev.platform_data = sflash;

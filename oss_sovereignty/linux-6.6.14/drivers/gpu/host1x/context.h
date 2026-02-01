@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Host1x context devices
- *
- * Copyright (c) 2020, NVIDIA Corporation.
- */
+ 
+ 
 
 #ifndef __HOST1X_CONTEXT_H
 #define __HOST1X_CONTEXT_H

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
-    Auvitek AU8522 QAM/8VSB demodulator driver
 
-    Copyright (C) 2008 Steven Toth <stoth@linuxtv.org>
-
-
-*/
+ 
 
 #include <linux/kernel.h>
 #include <linux/init.h>
@@ -17,7 +11,7 @@
 #include "au8522_priv.h"
 
 static int debug;
-static int zv_mode = 1; /* default to on */
+static int zv_mode = 1;  
 
 #define dprintk(arg...)\
 	do { if (debug)\
@@ -29,7 +23,7 @@ struct mse2snr_tab {
 	u16 data;
 };
 
-/* VSB SNR lookup table */
+ 
 static struct mse2snr_tab vsb_mse2snr_tab[] = {
 	{   0, 270 },
 	{   2, 250 },
@@ -63,7 +57,7 @@ static struct mse2snr_tab vsb_mse2snr_tab[] = {
 	{ 256, 115 },
 };
 
-/* QAM64 SNR lookup table */
+ 
 static struct mse2snr_tab qam64_mse2snr_tab[] = {
 	{  15,   0 },
 	{  16, 290 },
@@ -144,7 +138,7 @@ static struct mse2snr_tab qam64_mse2snr_tab[] = {
 	{ 256, 190 },
 };
 
-/* QAM256 SNR lookup table */
+ 
 static struct mse2snr_tab qam256_mse2snr_tab[] = {
 	{  15,   0 },
 	{  16, 400 },
@@ -266,7 +260,7 @@ static int au8522_set_if(struct dvb_frontend *fe, enum au8522_if_freq if_freq)
 	return 0;
 }
 
-/* VSB Modulation table */
+ 
 static struct {
 	u16 reg;
 	u16 data;
@@ -299,7 +293,7 @@ static struct {
 	{ 0x0231, 0x13 },
 };
 
-/* QAM64 Modulation table */
+ 
 static struct {
 	u16 reg;
 	u16 data;
@@ -378,7 +372,7 @@ static struct {
 	{ 0x0526, 0x01 },
 };
 
-/* QAM256 Modulation table */
+ 
 static struct {
 	u16 reg;
 	u16 data;
@@ -592,7 +586,7 @@ static int au8522_enable_modulation(struct dvb_frontend *fe,
 	return 0;
 }
 
-/* Talk to the demod, set the FEC, GUARD, QAM settings etc */
+ 
 static int au8522_set_frontend(struct dvb_frontend *fe)
 {
 	struct dtv_frontend_properties *c = &fe->dtv_property_cache;
@@ -616,7 +610,7 @@ static int au8522_set_frontend(struct dvb_frontend *fe)
 	if (ret < 0)
 		return ret;
 
-	/* Allow the tuner to settle */
+	 
 	if (zv_mode) {
 		dprintk("%s() increase tuner settling time for zv_mode\n",
 			__func__);
@@ -660,7 +654,7 @@ static int au8522_read_status(struct dvb_frontend *fe, enum fe_status *status)
 			*status |= FE_HAS_CARRIER | FE_HAS_SIGNAL;
 		break;
 	case AU8522_TUNERLOCKING:
-		/* Get the tuner status */
+		 
 		dprintk("%s() TUNERLOCKING\n", __func__);
 		if (fe->ops.tuner_ops.get_status) {
 			if (fe->ops.i2c_gate_ctrl)
@@ -678,10 +672,10 @@ static int au8522_read_status(struct dvb_frontend *fe, enum fe_status *status)
 	state->fe_status = *status;
 
 	if (*status & FE_HAS_LOCK)
-		/* turn on LED, if it isn't on already */
+		 
 		au8522_led_ctrl(state, -1);
 	else
-		/* turn off LED */
+		 
 		au8522_led_ctrl(state, 0);
 
 	dprintk("%s() status 0x%08x\n", __func__, *status);
@@ -695,7 +689,7 @@ static int au8522_led_status(struct au8522_state *state, const u16 *snr)
 	int led;
 	u16 strong;
 
-	/* bail out if we can't control an LED */
+	 
 	if (!led_config)
 		return 0;
 
@@ -705,7 +699,7 @@ static int au8522_led_status(struct au8522_state *state, const u16 *snr)
 		strong = led_config->qam256_strong;
 	else if (state->current_modulation == QAM_64)
 		strong = led_config->qam64_strong;
-	else /* (state->current_modulation == VSB_8) */
+	else  
 		strong = led_config->vsb8_strong;
 
 	if (*snr >= strong)
@@ -715,8 +709,7 @@ static int au8522_led_status(struct au8522_state *state, const u16 *snr)
 
 	if ((state->led_state) &&
 	    (((strong < *snr) ? (*snr - strong) : (strong - *snr)) <= 10))
-		/* snr didn't change enough to bother
-		 * changing the color of the led */
+		 
 		return 0;
 
 	return au8522_led_ctrl(state, led);
@@ -739,7 +732,7 @@ static int au8522_read_snr(struct dvb_frontend *fe, u16 *snr)
 					    ARRAY_SIZE(qam64_mse2snr_tab),
 					    au8522_readreg(state, 0x0522),
 					    snr);
-	else /* VSB_8 */
+	else  
 		ret = au8522_mse2snr_lookup(vsb_mse2snr_tab,
 					    ARRAY_SIZE(vsb_mse2snr_tab),
 					    au8522_readreg(state, 0x0311),
@@ -754,13 +747,7 @@ static int au8522_read_snr(struct dvb_frontend *fe, u16 *snr)
 static int au8522_read_signal_strength(struct dvb_frontend *fe,
 				       u16 *signal_strength)
 {
-	/* borrowed from lgdt330x.c
-	 *
-	 * Calculate strength from SNR up to 35dB
-	 * Even though the SNR can go higher than 35dB,
-	 * there is some comfort factor in having a range of
-	 * strong signals that can show at 100%
-	 */
+	 
 	u16 snr;
 	u32 tmp;
 	int ret = au8522_read_snr(fe, &snr);
@@ -768,15 +755,12 @@ static int au8522_read_signal_strength(struct dvb_frontend *fe,
 	*signal_strength = 0;
 
 	if (0 == ret) {
-		/* The following calculation method was chosen
-		 * purely for the sake of code re-use from the
-		 * other demod drivers that use this method */
+		 
 
-		/* Convert from SNR in dB * 10 to 8.24 fixed-point */
+		 
 		tmp = (snr * ((1 << 24) / 10));
 
-		/* Convert from 8.24 fixed-point to
-		 * scale the range 0 - 35*2^24 into 0 - 65535*/
+		 
 		if (tmp >= 8960 * 0x10000)
 			*signal_strength = 0xffff;
 		else
@@ -836,28 +820,28 @@ struct dvb_frontend *au8522_attach(const struct au8522_config *config,
 	struct au8522_state *state = NULL;
 	int instance;
 
-	/* allocate memory for the internal state */
+	 
 	instance = au8522_get_state(&state, i2c, config->demod_address);
 	switch (instance) {
 	case 0:
 		dprintk("%s state allocation failed\n", __func__);
 		break;
 	case 1:
-		/* new demod instance */
+		 
 		dprintk("%s using new instance\n", __func__);
 		break;
 	default:
-		/* existing demod instance */
+		 
 		dprintk("%s using existing instance\n", __func__);
 		break;
 	}
 
-	/* setup the state */
+	 
 	state->config = *config;
 	state->i2c = i2c;
 	state->operational_mode = AU8522_DIGITAL_MODE;
 
-	/* create dvb_frontend */
+	 
 	memcpy(&state->frontend.ops, &au8522_ops,
 	       sizeof(struct dvb_frontend_ops));
 	state->frontend.demodulator_priv = state;
@@ -870,7 +854,7 @@ struct dvb_frontend *au8522_attach(const struct au8522_config *config,
 		goto error;
 	}
 
-	/* Note: Leaving the I2C gate open here. */
+	 
 	au8522_i2c_gate_ctrl(&state->frontend, 1);
 
 	return &state->frontend;

@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2023 Meta Platforms, Inc. and affiliates. */
+
+ 
 
 #include <vmlinux.h>
 #include <bpf/bpf_helpers.h>
@@ -22,14 +22,7 @@ struct node_data2 {
 	long key[4];
 };
 
-/* This is necessary so that LLVM generates BTF for node_data struct
- * If it's not included, a fwd reference for node_data will be generated but
- * no struct. Example BTF of "node" field in map_value when not included:
- *
- * [10] PTR '(anon)' type_id=35
- * [34] FWD 'node_data' fwd_kind=struct
- * [35] TYPE_TAG 'kptr_ref' type_id=34
- */
+ 
 struct node_data *just_here_because_btf_bug;
 
 struct {
@@ -77,7 +70,7 @@ long drop_rb_node_off(void *ctx)
 	res = bpf_obj_new(typeof(*res));
 	if (!res)
 		return 1;
-	/* Try releasing with graph node offset */
+	 
 	bpf_obj_drop(&res->node);
 	return 0;
 }

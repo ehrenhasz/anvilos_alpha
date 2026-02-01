@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
-/*
- * Copyright (C) 2012-2014, 2018, 2021-2022 Intel Corporation
- * Copyright (C) 2013-2014 Intel Mobile Communications GmbH
- * Copyright (C) 2016-2017 Intel Deutschland GmbH
- */
+
+ 
 #include <net/mac80211.h>
 #include "fw-api.h"
 #include "mvm.h"
@@ -29,17 +25,17 @@ static void iwl_mvm_quota_iterator(void *_data, u8 *mac,
 	struct iwl_mvm_vif *mvmvif = iwl_mvm_vif_from_mac80211(vif);
 	u16 id;
 
-	/* skip disabled interfaces here immediately */
+	 
 	if (vif == data->disabled_vif)
 		return;
 
 	if (!mvmvif->deflink.phy_ctxt)
 		return;
 
-	/* currently, PHY ID == binding ID */
+	 
 	id = mvmvif->deflink.phy_ctxt->id;
 
-	/* need at least one binding per PHY */
+	 
 	BUILD_BUG_ON(NUM_PHY_CTX > MAX_BINDINGS);
 
 	if (WARN_ON_ONCE(id >= MAX_BINDINGS))
@@ -146,22 +142,18 @@ int iwl_mvm_update_quotas(struct iwl_mvm *mvm,
 			IWL_UCODE_TLV_CAPA_DYNAMIC_QUOTA))
 		return 0;
 
-	/* update all upon completion */
+	 
 	if (test_bit(IWL_MVM_STATUS_IN_HW_RESTART, &mvm->status))
 		return 0;
 
-	/* iterator data above must match */
+	 
 	BUILD_BUG_ON(MAX_BINDINGS != 4);
 
 	ieee80211_iterate_active_interfaces_atomic(
 		mvm->hw, IEEE80211_IFACE_ITER_NORMAL,
 		iwl_mvm_quota_iterator, &data);
 
-	/*
-	 * The FW's scheduling session consists of
-	 * IWL_MVM_MAX_QUOTA fragments. Divide these fragments
-	 * equally between all the bindings that require quota
-	 */
+	 
 	num_active_macs = 0;
 	for (i = 0; i < MAX_BINDINGS; i++) {
 		qdata = iwl_mvm_quota_cmd_get_quota(mvm, &cmd, i);
@@ -181,12 +173,7 @@ int iwl_mvm_update_quotas(struct iwl_mvm *mvm,
 	}
 
 	if (data.n_low_latency_bindings == 1 && n_non_lowlat) {
-		/*
-		 * Reserve quota for the low latency binding in case that
-		 * there are several data bindings but only a single
-		 * low latency one. Split the rest of the quota equally
-		 * between the other data interfaces.
-		 */
+		 
 		quota = (QUOTA_100 - QUOTA_LOWLAT_MIN) / n_non_lowlat;
 		quota_rem = QUOTA_100 - n_non_lowlat * quota -
 			    QUOTA_LOWLAT_MIN;
@@ -194,18 +181,14 @@ int iwl_mvm_update_quotas(struct iwl_mvm *mvm,
 				"quota: low-latency binding active, remaining quota per other binding: %d\n",
 				quota);
 	} else if (num_active_macs) {
-		/*
-		 * There are 0 or more than 1 low latency bindings, or all the
-		 * data interfaces belong to the single low latency binding.
-		 * Split the quota equally between the data interfaces.
-		 */
+		 
 		quota = QUOTA_100 / num_active_macs;
 		quota_rem = QUOTA_100 % num_active_macs;
 		IWL_DEBUG_QUOTA(mvm,
 				"quota: splitting evenly per binding: %d\n",
 				quota);
 	} else {
-		/* values don't really matter - won't be used */
+		 
 		quota = 0;
 		quota_rem = 0;
 	}
@@ -228,12 +211,7 @@ int iwl_mvm_update_quotas(struct iwl_mvm *mvm,
 #endif
 		else if (data.n_low_latency_bindings == 1 && n_non_lowlat &&
 			 data.low_latency[i])
-			/*
-			 * There is more than one binding, but only one of the
-			 * bindings is in low latency. For this case, allocate
-			 * the minimal required quota for the low latency
-			 * binding.
-			 */
+			 
 			qdata->quota = cpu_to_le32(QUOTA_LOWLAT_MIN);
 		else
 			qdata->quota =
@@ -248,7 +226,7 @@ int iwl_mvm_update_quotas(struct iwl_mvm *mvm,
 		idx++;
 	}
 
-	/* Give the remainder of the session to the first data binding */
+	 
 	for (i = 0; i < MAX_BINDINGS; i++) {
 		qdata = iwl_mvm_quota_cmd_get_quota(mvm, &cmd, i);
 		if (le32_to_cpu(qdata->quota) != 0) {
@@ -262,7 +240,7 @@ int iwl_mvm_update_quotas(struct iwl_mvm *mvm,
 
 	iwl_mvm_adjust_quota_for_noa(mvm, &cmd);
 
-	/* check that we have non-zero quota for all valid bindings */
+	 
 	for (i = 0; i < MAX_BINDINGS; i++) {
 		qdata = iwl_mvm_quota_cmd_get_quota(mvm, &cmd, i);
 		last_data = iwl_mvm_quota_cmd_get_quota(mvm, last, i);
@@ -281,10 +259,7 @@ int iwl_mvm_update_quotas(struct iwl_mvm *mvm,
 	}
 
 	if (!send && !force_update) {
-		/* don't send a practically unchanged command, the firmware has
-		 * to re-initialize a lot of state and that can have an adverse
-		 * impact on it
-		 */
+		 
 		return 0;
 	}
 

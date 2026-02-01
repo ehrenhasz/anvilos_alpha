@@ -1,24 +1,10 @@
-/*
- * Copyright (c) 2008-2011 Atheros Communications Inc.
- *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
+ 
 
 #include "ath9k.h"
 
-/********************************/
-/*	 LED functions		*/
-/********************************/
+ 
+ 
+ 
 
 #ifdef CONFIG_MAC80211_LEDS
 
@@ -26,7 +12,7 @@ static void ath_fill_led_pin(struct ath_softc *sc)
 {
 	struct ath_hw *ah = sc->sc_ah;
 
-	/* Set default led pin if invalid */
+	 
 	if (ah->led_pin < 0) {
 		if (AR_SREV_9287(ah))
 			ah->led_pin = ATH_LED_PIN_9287;
@@ -40,11 +26,11 @@ static void ath_fill_led_pin(struct ath_softc *sc)
 			ah->led_pin = ATH_LED_PIN_DEF;
 	}
 
-	/* Configure gpio for output */
+	 
 	ath9k_hw_gpio_request_out(ah, ah->led_pin, "ath9k-led",
 				  AR_GPIO_OUTPUT_MUX_AS_OUTPUT);
 
-	/* LED off, active low */
+	 
 	ath9k_hw_set_gpio(ah, ah->led_pin, ah->config.led_active_high ? 0 : 1);
 }
 
@@ -97,9 +83,9 @@ void ath_init_leds(struct ath_softc *sc)
 }
 #endif
 
-/*******************/
-/*	Rfkill	   */
-/*******************/
+ 
+ 
+ 
 
 static bool ath_is_rfkill_set(struct ath_softc *sc)
 {
@@ -132,13 +118,11 @@ void ath_start_rfkill_poll(struct ath_softc *sc)
 
 #ifdef CONFIG_ATH9K_BTCOEX_SUPPORT
 
-/******************/
-/*     BTCOEX     */
-/******************/
+ 
+ 
+ 
 
-/*
- * Detects if there is any priority bt traffic
- */
+ 
 static void ath_detect_bt_priority(struct ath_softc *sc)
 {
 	struct ath_btcoex *btcoex = &sc->btcoex;
@@ -151,7 +135,7 @@ static void ath_detect_bt_priority(struct ath_softc *sc)
 			msecs_to_jiffies(ATH_BT_PRIORITY_TIME_THRESHOLD))) {
 		clear_bit(BT_OP_PRIORITY_DETECTED, &btcoex->op_flags);
 		clear_bit(BT_OP_SCAN, &btcoex->op_flags);
-		/* Detect if colocated bt started scanning */
+		 
 		if (btcoex->bt_priority_cnt >= ATH_BT_CNT_SCAN_THRESHOLD) {
 			ath_dbg(ath9k_hw_common(sc->sc_ah), BTCOEX,
 				"BT scan detected\n");
@@ -186,11 +170,7 @@ static void ath_mci_ftp_adjust(struct ath_softc *sc)
 	}
 }
 
-/*
- * This is the master bt coex timer which runs for every
- * 45ms, bt traffic will be given priority during 55% of this
- * period while wlan gets remaining 45%
- */
+ 
 static void ath_btcoex_period_timer(struct timer_list *t)
 {
 	struct ath_softc *sc = from_timer(sc, t, btcoex.period_timer);
@@ -248,10 +228,7 @@ skip_hw_wakeup:
 		  jiffies + msecs_to_jiffies(btcoex->btcoex_period));
 }
 
-/*
- * Generic tsf based hw timer which configures weight
- * registers to time slice between wlan and bt traffic
- */
+ 
 static void ath_btcoex_no_stomp_timer(struct timer_list *t)
 {
 	struct ath_softc *sc = from_timer(sc, t, btcoex.no_stomp_timer);
@@ -290,9 +267,7 @@ static void ath_init_btcoex_timer(struct ath_softc *sc)
 	spin_lock_init(&btcoex->btcoex_lock);
 }
 
-/*
- * (Re)start btcoex timers
- */
+ 
 void ath9k_btcoex_timer_resume(struct ath_softc *sc)
 {
 	struct ath_btcoex *btcoex = &sc->btcoex;
@@ -304,7 +279,7 @@ void ath9k_btcoex_timer_resume(struct ath_softc *sc)
 
 	ath_dbg(ath9k_hw_common(ah), BTCOEX, "Starting btcoex timers\n");
 
-	/* make sure duty cycle timer is also stopped when resuming */
+	 
 	del_timer_sync(&btcoex->no_stomp_timer);
 
 	btcoex->bt_priority_cnt = 0;
@@ -315,9 +290,7 @@ void ath9k_btcoex_timer_resume(struct ath_softc *sc)
 	mod_timer(&btcoex->period_timer, jiffies);
 }
 
-/*
- * Pause btcoex timer and bt duty cycle timer
- */
+ 
 void ath9k_btcoex_timer_pause(struct ath_softc *sc)
 {
 	struct ath_btcoex *btcoex = &sc->btcoex;
@@ -516,4 +489,4 @@ int ath9k_dump_btcoex(struct ath_softc *sc, u8 *buf, u32 size)
 		return ath9k_dump_legacy_btcoex(sc, buf, size);
 }
 
-#endif /* CONFIG_ATH9K_BTCOEX_SUPPORT */
+#endif  

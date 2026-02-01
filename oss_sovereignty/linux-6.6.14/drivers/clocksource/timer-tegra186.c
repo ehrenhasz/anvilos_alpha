@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2019-2020 NVIDIA Corporation. All rights reserved.
- */
+
+ 
 
 #include <linux/clocksource.h>
 #include <linux/module.h>
@@ -12,7 +10,7 @@
 #include <linux/pm.h>
 #include <linux/watchdog.h>
 
-/* shared registers */
+ 
 #define TKETSC0 0x000
 #define TKETSC1 0x004
 #define TKEUSEC 0x008
@@ -21,7 +19,7 @@
 #define TKEIE(x) (0x100 + ((x) * 4))
 #define  TKEIE_WDT_MASK(x, y) ((y) << (16 + 4 * (x)))
 
-/* timer registers */
+ 
 #define TMRCR 0x000
 #define  TMRCR_ENABLE BIT(31)
 #define  TMRCR_PERIODIC BIT(30)
@@ -33,7 +31,7 @@
 #define TMRCSSR 0x008
 #define  TMRCSSR_SRC_USEC (0 << 0)
 
-/* watchdog registers */
+ 
 #define WDTCR 0x000
 #define  WDTCR_SYSTEM_POR_RESET_ENABLE BIT(16)
 #define  WDTCR_SYSTEM_DEBUG_RESET_ENABLE BIT(15)
@@ -130,11 +128,11 @@ static const struct watchdog_info tegra186_wdt_info = {
 
 static void tegra186_wdt_disable(struct tegra186_wdt *wdt)
 {
-	/* unlock and disable the watchdog */
+	 
 	wdt_writel(wdt, WDTUR_UNLOCK_PATTERN, WDTUR);
 	wdt_writel(wdt, WDTCMDR_DISABLE_COUNTER, WDTCMDR);
 
-	/* disable timer */
+	 
 	tmr_writel(wdt->tmr, 0, TMRCR);
 }
 
@@ -143,17 +141,17 @@ static void tegra186_wdt_enable(struct tegra186_wdt *wdt)
 	struct tegra186_timer *tegra = wdt->tmr->parent;
 	u32 value;
 
-	/* unmask hardware IRQ, this may have been lost across powergate */
+	 
 	value = TKEIE_WDT_MASK(wdt->index, 1);
 	writel(value, tegra->regs + TKEIE(wdt->tmr->hwirq));
 
-	/* clear interrupt */
+	 
 	tmr_writel(wdt->tmr, TMRSR_INTR_CLR, TMRSR);
 
-	/* select microsecond source */
+	 
 	tmr_writel(wdt->tmr, TMRCSSR_SRC_USEC, TMRCSSR);
 
-	/* configure timer (system reset happens on the fifth expiration) */
+	 
 	value = TMRCR_PTV(wdt->base.timeout * USEC_PER_SEC / 5) |
 		TMRCR_PERIODIC | TMRCR_ENABLE;
 	tmr_writel(wdt->tmr, value, TMRCR);
@@ -161,27 +159,27 @@ static void tegra186_wdt_enable(struct tegra186_wdt *wdt)
 	if (!wdt->locked) {
 		value = wdt_readl(wdt, WDTCR);
 
-		/* select the proper timer source */
+		 
 		value &= ~WDTCR_TIMER_SOURCE_MASK;
 		value |= WDTCR_TIMER_SOURCE(wdt->tmr->index);
 
-		/* single timer period since that's already configured */
+		 
 		value &= ~WDTCR_PERIOD_MASK;
 		value |= WDTCR_PERIOD(1);
 
-		/* enable local interrupt for WDT petting */
+		 
 		value |= WDTCR_LOCAL_INT_ENABLE;
 
-		/* enable local FIQ and remote interrupt for debug dump */
+		 
 		if (0)
 			value |= WDTCR_REMOTE_INT_ENABLE |
 				 WDTCR_LOCAL_FIQ_ENABLE;
 
-		/* enable system debug reset (doesn't properly reboot) */
+		 
 		if (0)
 			value |= WDTCR_SYSTEM_DEBUG_RESET_ENABLE;
 
-		/* enable system POR reset */
+		 
 		value |= WDTCR_SYSTEM_POR_RESET_ENABLE;
 
 		wdt_writel(wdt, value, WDTCR);
@@ -259,7 +257,7 @@ static struct tegra186_wdt *tegra186_wdt_create(struct tegra186_timer *tegra,
 	wdt->regs = tegra->regs + offset;
 	wdt->index = index;
 
-	/* read the watchdog configuration since it might be locked down */
+	 
 	value = wdt_readl(wdt, WDTCR);
 
 	if (value & WDTCR_LOCAL_INT_ENABLE)
@@ -300,13 +298,9 @@ static u64 tegra186_timer_tsc_read(struct clocksource *cs)
 
 	hi = readl_relaxed(tegra->regs + TKETSC1);
 
-	/*
-	 * The 56-bit value of the TSC is spread across two registers that are
-	 * not synchronized. In order to read them atomically, ensure that the
-	 * high 24 bits match before and after reading the low 32 bits.
-	 */
+	 
 	do {
-		/* snapshot the high 24 bits */
+		 
 		ss = hi;
 
 		lo = readl_relaxed(tegra->regs + TKETSC0);
@@ -402,7 +396,7 @@ static int tegra186_timer_probe(struct platform_device *pdev)
 
 	irq = err;
 
-	/* create a watchdog using a preconfigured timer */
+	 
 	tegra->wdt = tegra186_wdt_create(tegra, 0);
 	if (IS_ERR(tegra->wdt)) {
 		err = PTR_ERR(tegra->wdt);

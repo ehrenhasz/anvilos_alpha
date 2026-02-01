@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (c) 2016 Mellanox Technologies. All rights reserved.
- * Copyright (c) 2016 Jiri Pirko <jiri@mellanox.com>
- */
+
+ 
 
 #include "devl_internal.h"
 
@@ -195,9 +192,9 @@ size_t devlink_nl_port_handle_size(struct devlink_port *devlink_port)
 {
 	struct devlink *devlink = devlink_port->devlink;
 
-	return nla_total_size(strlen(devlink->dev->bus->name) + 1) /* DEVLINK_ATTR_BUS_NAME */
-	     + nla_total_size(strlen(dev_name(devlink->dev)) + 1) /* DEVLINK_ATTR_DEV_NAME */
-	     + nla_total_size(4); /* DEVLINK_ATTR_PORT_INDEX */
+	return nla_total_size(strlen(devlink->dev->bus->name) + 1)  
+	     + nla_total_size(strlen(dev_name(devlink->dev)) + 1)  
+	     + nla_total_size(4);  
 }
 
 static int devlink_nl_port_attrs_put(struct sk_buff *msg,
@@ -752,10 +749,7 @@ static int devlink_port_function_set(struct devlink_port *port,
 			return err;
 	}
 
-	/* Keep this as the last function attribute set, so that when
-	 * multiple port function attributes are set along with state,
-	 * Those can be applied first before activating the state.
-	 */
+	 
 	attr = tb[DEVLINK_PORT_FN_ATTR_STATE];
 	if (attr)
 		err = devlink_port_fn_state_set(port, attr, extack);
@@ -805,7 +799,7 @@ int devlink_nl_cmd_port_split_doit(struct sk_buff *skb, struct genl_info *info)
 	count = nla_get_u32(info->attrs[DEVLINK_ATTR_PORT_SPLIT_COUNT]);
 
 	if (!devlink_port->attrs.splittable) {
-		/* Split ports cannot be split. */
+		 
 		if (devlink_port->attrs.split)
 			NL_SET_ERR_MSG(info->extack, "Port cannot be split further");
 		else
@@ -855,7 +849,7 @@ int devlink_nl_cmd_port_new_doit(struct sk_buff *skb, struct genl_info *info)
 		nla_get_u16(info->attrs[DEVLINK_ATTR_PORT_PCI_PF_NUMBER]);
 
 	if (info->attrs[DEVLINK_ATTR_PORT_INDEX]) {
-		/* Port index of the new port being created by driver. */
+		 
 		new_attrs.port_index =
 			nla_get_u32(info->attrs[DEVLINK_ATTR_PORT_INDEX]);
 		new_attrs.port_index_valid = true;
@@ -919,7 +913,7 @@ static void devlink_port_type_warn(struct work_struct *work)
 
 static bool devlink_port_type_should_warn(struct devlink_port *devlink_port)
 {
-	/* Ignore CPU and DSA flavours. */
+	 
 	return devlink_port->attrs.flavour != DEVLINK_PORT_FLAVOUR_CPU &&
 	       devlink_port->attrs.flavour != DEVLINK_PORT_FLAVOUR_DSA &&
 	       devlink_port->attrs.flavour != DEVLINK_PORT_FLAVOUR_UNUSED;
@@ -931,9 +925,7 @@ static void devlink_port_type_warn_schedule(struct devlink_port *devlink_port)
 {
 	if (!devlink_port_type_should_warn(devlink_port))
 		return;
-	/* Schedule a work to WARN in case driver does not set port
-	 * type within timeout.
-	 */
+	 
 	schedule_delayed_work(&devlink_port->type_warn_dw,
 			      DEVLINK_PORT_TYPE_WARN_TIMEOUT);
 }
@@ -945,17 +937,7 @@ static void devlink_port_type_warn_cancel(struct devlink_port *devlink_port)
 	cancel_delayed_work_sync(&devlink_port->type_warn_dw);
 }
 
-/**
- * devlink_port_init() - Init devlink port
- *
- * @devlink: devlink
- * @devlink_port: devlink port
- *
- * Initialize essential stuff that is needed for functions
- * that may be called before devlink port registration.
- * Call to this function is optional and not needed
- * in case the driver does not use such functions.
- */
+ 
 void devlink_port_init(struct devlink *devlink,
 		       struct devlink_port *devlink_port)
 {
@@ -967,16 +949,7 @@ void devlink_port_init(struct devlink *devlink,
 }
 EXPORT_SYMBOL_GPL(devlink_port_init);
 
-/**
- * devlink_port_fini() - Deinitialize devlink port
- *
- * @devlink_port: devlink port
- *
- * Deinitialize essential stuff that is in use for functions
- * that may be called after devlink port unregistration.
- * Call to this function is optional and not needed
- * in case the driver does not use such functions.
- */
+ 
 void devlink_port_fini(struct devlink_port *devlink_port)
 {
 	WARN_ON(!list_empty(&devlink_port->region_list));
@@ -985,20 +958,7 @@ EXPORT_SYMBOL_GPL(devlink_port_fini);
 
 static const struct devlink_port_ops devlink_port_dummy_ops = {};
 
-/**
- * devl_port_register_with_ops() - Register devlink port
- *
- * @devlink: devlink
- * @devlink_port: devlink port
- * @port_index: driver-specific numerical identifier of the port
- * @ops: port ops
- *
- * Register devlink port with provided port index. User can use
- * any indexing, even hw-related one. devlink_port structure
- * is convenient to be embedded inside user driver private structure.
- * Note that the caller should take care of zeroing the devlink_port
- * structure.
- */
+ 
 int devl_port_register_with_ops(struct devlink *devlink,
 				struct devlink_port *devlink_port,
 				unsigned int port_index,
@@ -1029,22 +989,7 @@ int devl_port_register_with_ops(struct devlink *devlink,
 }
 EXPORT_SYMBOL_GPL(devl_port_register_with_ops);
 
-/**
- *	devlink_port_register_with_ops - Register devlink port
- *
- *	@devlink: devlink
- *	@devlink_port: devlink port
- *	@port_index: driver-specific numerical identifier of the port
- *	@ops: port ops
- *
- *	Register devlink port with provided port index. User can use
- *	any indexing, even hw-related one. devlink_port structure
- *	is convenient to be embedded inside user driver private structure.
- *	Note that the caller should take care of zeroing the devlink_port
- *	structure.
- *
- *	Context: Takes and release devlink->lock <mutex>.
- */
+ 
 int devlink_port_register_with_ops(struct devlink *devlink,
 				   struct devlink_port *devlink_port,
 				   unsigned int port_index,
@@ -1060,11 +1005,7 @@ int devlink_port_register_with_ops(struct devlink *devlink,
 }
 EXPORT_SYMBOL_GPL(devlink_port_register_with_ops);
 
-/**
- * devl_port_unregister() - Unregister devlink port
- *
- * @devlink_port: devlink port
- */
+ 
 void devl_port_unregister(struct devlink_port *devlink_port)
 {
 	lockdep_assert_held(&devlink_port->devlink->lock);
@@ -1078,13 +1019,7 @@ void devl_port_unregister(struct devlink_port *devlink_port)
 }
 EXPORT_SYMBOL_GPL(devl_port_unregister);
 
-/**
- *	devlink_port_unregister - Unregister devlink port
- *
- *	@devlink_port: devlink port
- *
- *	Context: Takes and release devlink->lock <mutex>.
- */
+ 
 void devlink_port_unregister(struct devlink_port *devlink_port)
 {
 	struct devlink *devlink = devlink_port->devlink;
@@ -1100,17 +1035,9 @@ static void devlink_port_type_netdev_checks(struct devlink_port *devlink_port,
 {
 	const struct net_device_ops *ops = netdev->netdev_ops;
 
-	/* If driver registers devlink port, it should set devlink port
-	 * attributes accordingly so the compat functions are called
-	 * and the original ops are not used.
-	 */
+	 
 	if (ops->ndo_get_phys_port_name) {
-		/* Some drivers use the same set of ndos for netdevs
-		 * that have devlink_port registered and also for
-		 * those who don't. Make sure that ndo_get_phys_port_name
-		 * returns -EOPNOTSUPP here in case it is defined.
-		 * Warn if not.
-		 */
+		 
 		char name[IFNAMSIZ];
 		int err;
 
@@ -1118,12 +1045,7 @@ static void devlink_port_type_netdev_checks(struct devlink_port *devlink_port,
 		WARN_ON(err != -EOPNOTSUPP);
 	}
 	if (ops->ndo_get_port_parent_id) {
-		/* Some drivers use the same set of ndos for netdevs
-		 * that have devlink_port registered and also for
-		 * those who don't. Make sure that ndo_get_port_parent_id
-		 * returns -EOPNOTSUPP here in case it is defined.
-		 * Warn if not.
-		 */
+		 
 		struct netdev_phys_item_id ppid;
 		int err;
 
@@ -1171,13 +1093,7 @@ static void __devlink_port_type_set(struct devlink_port *devlink_port,
 	devlink_port_notify(devlink_port, DEVLINK_CMD_PORT_NEW);
 }
 
-/**
- *	devlink_port_type_eth_set - Set port type to Ethernet
- *
- *	@devlink_port: devlink port
- *
- *	If driver is calling this, most likely it is doing something wrong.
- */
+ 
 void devlink_port_type_eth_set(struct devlink_port *devlink_port)
 {
 	dev_warn(devlink_port->devlink->dev,
@@ -1187,12 +1103,7 @@ void devlink_port_type_eth_set(struct devlink_port *devlink_port)
 }
 EXPORT_SYMBOL_GPL(devlink_port_type_eth_set);
 
-/**
- *	devlink_port_type_ib_set - Set port type to InfiniBand
- *
- *	@devlink_port: devlink port
- *	@ibdev: related IB device
- */
+ 
 void devlink_port_type_ib_set(struct devlink_port *devlink_port,
 			      struct ib_device *ibdev)
 {
@@ -1200,14 +1111,7 @@ void devlink_port_type_ib_set(struct devlink_port *devlink_port,
 }
 EXPORT_SYMBOL_GPL(devlink_port_type_ib_set);
 
-/**
- *	devlink_port_type_clear - Clear port type
- *
- *	@devlink_port: devlink port
- *
- *	If driver is calling this for clearing Ethernet type, most likely
- *	it is doing something wrong.
- */
+ 
 void devlink_port_type_clear(struct devlink_port *devlink_port)
 {
 	if (devlink_port->type == DEVLINK_PORT_TYPE_ETH)
@@ -1231,10 +1135,7 @@ int devlink_port_netdevice_event(struct notifier_block *nb,
 
 	switch (event) {
 	case NETDEV_POST_INIT:
-		/* Set the type but not netdev pointer. It is going to be set
-		 * later on by NETDEV_REGISTER event. Happens once during
-		 * netdevice register
-		 */
+		 
 		__devlink_port_type_set(devlink_port, DEVLINK_PORT_TYPE_ETH,
 					NULL);
 		break;
@@ -1242,28 +1143,19 @@ int devlink_port_netdevice_event(struct notifier_block *nb,
 	case NETDEV_CHANGENAME:
 		if (devlink_net(devlink) != dev_net(netdev))
 			return NOTIFY_OK;
-		/* Set the netdev on top of previously set type. Note this
-		 * event happens also during net namespace change so here
-		 * we take into account netdev pointer appearing in this
-		 * namespace.
-		 */
+		 
 		__devlink_port_type_set(devlink_port, devlink_port->type,
 					netdev);
 		break;
 	case NETDEV_UNREGISTER:
 		if (devlink_net(devlink) != dev_net(netdev))
 			return NOTIFY_OK;
-		/* Clear netdev pointer, but not the type. This event happens
-		 * also during net namespace change so we need to clear
-		 * pointer to netdev that is going to another net namespace.
-		 */
+		 
 		__devlink_port_type_set(devlink_port, devlink_port->type,
 					NULL);
 		break;
 	case NETDEV_PRE_UNINIT:
-		/* Clear the type and the netdev pointer. Happens one during
-		 * netdevice unregister.
-		 */
+		 
 		__devlink_port_type_set(devlink_port, DEVLINK_PORT_TYPE_NOTSET,
 					NULL);
 		break;
@@ -1289,12 +1181,7 @@ static int __devlink_port_attrs_set(struct devlink_port *devlink_port,
 	return 0;
 }
 
-/**
- *	devlink_port_attrs_set - Set port attributes
- *
- *	@devlink_port: devlink port
- *	@attrs: devlink port attrs
- */
+ 
 void devlink_port_attrs_set(struct devlink_port *devlink_port,
 			    struct devlink_port_attrs *attrs)
 {
@@ -1310,14 +1197,7 @@ void devlink_port_attrs_set(struct devlink_port *devlink_port,
 }
 EXPORT_SYMBOL_GPL(devlink_port_attrs_set);
 
-/**
- *	devlink_port_attrs_pci_pf_set - Set PCI PF port attributes
- *
- *	@devlink_port: devlink port
- *	@controller: associated controller number for the devlink port instance
- *	@pf: associated PF for the devlink port instance
- *	@external: indicates if the port is for an external controller
- */
+ 
 void devlink_port_attrs_pci_pf_set(struct devlink_port *devlink_port, u32 controller,
 				   u16 pf, bool external)
 {
@@ -1336,15 +1216,7 @@ void devlink_port_attrs_pci_pf_set(struct devlink_port *devlink_port, u32 contro
 }
 EXPORT_SYMBOL_GPL(devlink_port_attrs_pci_pf_set);
 
-/**
- *	devlink_port_attrs_pci_vf_set - Set PCI VF port attributes
- *
- *	@devlink_port: devlink port
- *	@controller: associated controller number for the devlink port instance
- *	@pf: associated PF for the devlink port instance
- *	@vf: associated VF of a PF for the devlink port instance
- *	@external: indicates if the port is for an external controller
- */
+ 
 void devlink_port_attrs_pci_vf_set(struct devlink_port *devlink_port, u32 controller,
 				   u16 pf, u16 vf, bool external)
 {
@@ -1364,15 +1236,7 @@ void devlink_port_attrs_pci_vf_set(struct devlink_port *devlink_port, u32 contro
 }
 EXPORT_SYMBOL_GPL(devlink_port_attrs_pci_vf_set);
 
-/**
- *	devlink_port_attrs_pci_sf_set - Set PCI SF port attributes
- *
- *	@devlink_port: devlink port
- *	@controller: associated controller number for the devlink port instance
- *	@pf: associated PF for the devlink port instance
- *	@sf: associated SF of a PF for the devlink port instance
- *	@external: indicates if the port is for an external controller
- */
+ 
 void devlink_port_attrs_pci_sf_set(struct devlink_port *devlink_port, u32 controller,
 				   u16 pf, u32 sf, bool external)
 {
@@ -1392,12 +1256,7 @@ void devlink_port_attrs_pci_sf_set(struct devlink_port *devlink_port, u32 contro
 }
 EXPORT_SYMBOL_GPL(devlink_port_attrs_pci_sf_set);
 
-/**
- *	devlink_port_linecard_set - Link port with a linecard
- *
- *	@devlink_port: devlink port
- *	@linecard: devlink linecard
- */
+ 
 void devlink_port_linecard_set(struct devlink_port *devlink_port,
 			       struct devlink_linecard *linecard)
 {
@@ -1431,9 +1290,7 @@ static int __devlink_port_phys_port_name_get(struct devlink_port *devlink_port,
 	case DEVLINK_PORT_FLAVOUR_CPU:
 	case DEVLINK_PORT_FLAVOUR_DSA:
 	case DEVLINK_PORT_FLAVOUR_UNUSED:
-		/* As CPU and DSA ports do not have a netdevice associated
-		 * case should not ever happen.
-		 */
+		 
 		WARN_ON(1);
 		return -EINVAL;
 	case DEVLINK_PORT_FLAVOUR_PCI_PF:
@@ -1483,10 +1340,7 @@ int devlink_compat_phys_port_name_get(struct net_device *dev,
 {
 	struct devlink_port *devlink_port;
 
-	/* RTNL mutex is held here which ensures that devlink_port
-	 * instance cannot disappear in the middle. No need to take
-	 * any devlink lock as only permanent values are accessed.
-	 */
+	 
 	ASSERT_RTNL();
 
 	devlink_port = dev->devlink_port;
@@ -1501,10 +1355,7 @@ int devlink_compat_switch_id_get(struct net_device *dev,
 {
 	struct devlink_port *devlink_port;
 
-	/* Caller must hold RTNL mutex or reference to dev, which ensures that
-	 * devlink_port instance cannot disappear in the middle. No need to take
-	 * any devlink lock as only permanent values are accessed.
-	 */
+	 
 	devlink_port = dev->devlink_port;
 	if (!devlink_port || !devlink_port->switch_port)
 		return -EOPNOTSUPP;

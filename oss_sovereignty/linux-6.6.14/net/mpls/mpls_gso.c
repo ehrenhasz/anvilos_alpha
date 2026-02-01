@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *	MPLS GSO Support
- *
- *	Authors: Simon Horman (horms@verge.net.au)
- *
- *	Based on: GSO portions of net/ipv4/gre.c
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -34,7 +28,7 @@ static struct sk_buff *mpls_gso_segment(struct sk_buff *skb,
 	if (unlikely(!pskb_may_pull(skb, mpls_hlen)))
 		goto out;
 
-	/* Setup inner SKB. */
+	 
 	mpls_protocol = skb->protocol;
 	skb->protocol = skb->inner_protocol;
 
@@ -43,7 +37,7 @@ static struct sk_buff *mpls_gso_segment(struct sk_buff *skb,
 	skb->mac_len = 0;
 	skb_reset_mac_header(skb);
 
-	/* Segment inner packet. */
+	 
 	mpls_features = skb->dev->mpls_features & features;
 	segs = skb_mac_gso_segment(skb, mpls_features);
 	if (IS_ERR_OR_NULL(segs)) {

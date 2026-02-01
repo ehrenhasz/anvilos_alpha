@@ -1,9 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-// Copyright (c) 2020 Intel Corporation
 
-/*
- *  sof_sdw_dmic - Helpers to handle dmic from generic machine driver
- */
+
+
+ 
 
 #include <sound/soc.h>
 #include <sound/soc-acpi.h>
@@ -15,7 +13,7 @@ static const struct snd_soc_dapm_widget dmic_widgets[] = {
 };
 
 static const struct snd_soc_dapm_route dmic_map[] = {
-	/* digital mics */
+	 
 	{"DMic", NULL, "SoC DMIC"},
 };
 
@@ -28,7 +26,7 @@ int sof_sdw_dmic_init(struct snd_soc_pcm_runtime *rtd)
 					ARRAY_SIZE(dmic_widgets));
 	if (ret) {
 		dev_err(card->dev, "DMic widget addition failed: %d\n", ret);
-		/* Don't need to add routes if widget addition failed */
+		 
 		return ret;
 	}
 

@@ -1,8 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Nehalem-EX/Westmere-EX uncore support */
+
+ 
 #include "uncore.h"
 
-/* NHM-EX event control */
+ 
 #define NHMEX_PMON_CTL_EV_SEL_MASK	0x000000ff
 #define NHMEX_PMON_CTL_UMASK_MASK	0x0000ff00
 #define NHMEX_PMON_CTL_EN_BIT0		(1 << 0)
@@ -17,7 +17,7 @@
 					 NHMEX_PMON_CTL_INVERT | \
 					 NHMEX_PMON_CTL_TRESH_MASK)
 
-/* NHM-EX Ubox */
+ 
 #define NHMEX_U_MSR_PMON_GLOBAL_CTL		0xc00
 #define NHMEX_U_MSR_PMON_CTR			0xc11
 #define NHMEX_U_MSR_PMON_EV_SEL			0xc10
@@ -32,13 +32,13 @@
 		(NHMEX_PMON_CTL_EV_SEL_MASK |	\
 		 NHMEX_PMON_CTL_EDGE_DET)
 
-/* NHM-EX Cbox */
+ 
 #define NHMEX_C0_MSR_PMON_GLOBAL_CTL		0xd00
 #define NHMEX_C0_MSR_PMON_CTR0			0xd11
 #define NHMEX_C0_MSR_PMON_EV_SEL0		0xd10
 #define NHMEX_C_MSR_OFFSET			0x20
 
-/* NHM-EX Bbox */
+ 
 #define NHMEX_B0_MSR_PMON_GLOBAL_CTL		0xc20
 #define NHMEX_B0_MSR_PMON_CTR0			0xc31
 #define NHMEX_B0_MSR_PMON_CTL0			0xc30
@@ -59,7 +59,7 @@
 		(NHMEX_B_PMON_CTL_EV_SEL_MASK | \
 		 NHMEX_B_PMON_CTR_MASK)
 
-/* NHM-EX Sbox */
+ 
 #define NHMEX_S0_MSR_PMON_GLOBAL_CTL		0xc40
 #define NHMEX_S0_MSR_PMON_CTR0			0xc51
 #define NHMEX_S0_MSR_PMON_CTL0			0xc50
@@ -74,7 +74,7 @@
 #define NHMEX_S_PMON_MM_CFG_EN			(0x1ULL << 63)
 #define NHMEX_S_EVENT_TO_R_PROG_EV		0
 
-/* NHM-EX Mbox */
+ 
 #define NHMEX_M0_MSR_GLOBAL_CTL			0xca0
 #define NHMEX_M0_MSR_PMU_DSP			0xca5
 #define NHMEX_M0_MSR_PMU_ISS			0xca6
@@ -124,10 +124,7 @@
 #define WSMEX_M_PMON_ZDP_CTL_FVC_MASK		(((1 << 12) - 1) | (1 << 24))
 #define WSMEX_M_PMON_ZDP_CTL_FVC_EVENT_MASK(n)	(0x7ULL << (12 + 3 * (n)))
 
-/*
- * use the 9~13 bits to select event If the 7th bit is not set,
- * otherwise use the 19~21 bits to select event.
- */
+ 
 #define MBOX_INC_SEL(x) ((x) << NHMEX_M_PMON_CTL_INC_SEL_SHIFT)
 #define MBOX_SET_FLAG_SEL(x) (((x) << NHMEX_M_PMON_CTL_SET_FLAG_SEL_SHIFT) | \
 				NHMEX_M_PMON_CTL_FLAG_MODE)
@@ -143,7 +140,7 @@
 				MBOX_SET_FLAG_SEL_MASK, \
 				(u64)-1, NHMEX_M_##r)
 
-/* NHM-EX Rbox */
+ 
 #define NHMEX_R_MSR_GLOBAL_CTL			0xe00
 #define NHMEX_R_MSR_PMON_CTL0			0xe10
 #define NHMEX_R_MSR_PMON_CNT0			0xe11
@@ -175,7 +172,7 @@
 #define NHMEX_R_PMON_CTL_PMI_EN			(1 << 6)
 #define NHMEX_R_PMON_RAW_EVENT_MASK		NHMEX_R_PMON_CTL_EV_SEL_MASK
 
-/* NHM-EX Wbox */
+ 
 #define NHMEX_W_MSR_GLOBAL_CTL			0xc80
 #define NHMEX_W_MSR_PMON_CNT0			0xc90
 #define NHMEX_W_MSR_PMON_EVT_SEL0		0xc91
@@ -215,7 +212,7 @@ static void nhmex_uncore_msr_disable_box(struct intel_uncore_box *box)
 	if (msr) {
 		rdmsrl(msr, config);
 		config &= ~((1ULL << uncore_num_counters(box)) - 1);
-		/* WBox has a fixed counter */
+		 
 		if (uncore_msr_fixed_ctl(box))
 			config &= ~NHMEX_W_PMON_GLOBAL_FIXED_EN;
 		wrmsrl(msr, config);
@@ -230,7 +227,7 @@ static void nhmex_uncore_msr_enable_box(struct intel_uncore_box *box)
 	if (msr) {
 		rdmsrl(msr, config);
 		config |= (1ULL << uncore_num_counters(box)) - 1;
-		/* WBox has a fixed counter */
+		 
 		if (uncore_msr_fixed_ctl(box))
 			config |= NHMEX_W_PMON_GLOBAL_FIXED_EN;
 		wrmsrl(msr, config);
@@ -305,7 +302,7 @@ static const struct attribute_group nhmex_uncore_cbox_format_group = {
 	.attrs = nhmex_uncore_cbox_formats_attr,
 };
 
-/* msr offset for each instance of cbox */
+ 
 static unsigned nhmex_cbox_msr_offsets[] = {
 	0x0, 0x80, 0x40, 0xc0, 0x20, 0xa0, 0x60, 0xe0, 0x240, 0x2c0,
 };
@@ -327,7 +324,7 @@ static struct intel_uncore_type nhmex_uncore_cbox = {
 
 static struct uncore_event_desc nhmex_uncore_wbox_events[] = {
 	INTEL_UNCORE_EVENT_DESC(clockticks, "event=0xff,umask=0"),
-	{ /* end: all zeroes */ },
+	{   },
 };
 
 static struct intel_uncore_type nhmex_uncore_wbox = {
@@ -359,7 +356,7 @@ static int nhmex_bbox_hw_config(struct intel_uncore_box *box, struct perf_event 
 	ev_sel = (hwc->config & NHMEX_B_PMON_CTL_EV_SEL_MASK) >>
 		  NHMEX_B_PMON_CTL_EV_SEL_SHIFT;
 
-	/* events that do not use the match/mask registers */
+	 
 	if ((ctr == 0 && ev_sel > 0x3) || (ctr == 1 && ev_sel > 0x6) ||
 	    (ctr == 2 && ev_sel != 0x4) || ctr == 3)
 		return 0;
@@ -388,10 +385,7 @@ static void nhmex_bbox_msr_enable_event(struct intel_uncore_box *box, struct per
 		(hwc->config & NHMEX_B_PMON_CTL_EV_SEL_MASK));
 }
 
-/*
- * The Bbox has 4 counters, but each counter monitors different events.
- * Use bits 6-7 in the event config to select counter.
- */
+ 
 static struct event_constraint nhmex_uncore_bbox_constraints[] = {
 	EVENT_CONSTRAINT(0 , 1, 0xc0),
 	EVENT_CONSTRAINT(0x40, 2, 0xc0),
@@ -444,7 +438,7 @@ static int nhmex_sbox_hw_config(struct intel_uncore_box *box, struct perf_event 
 	struct hw_perf_event_extra *reg1 = &hwc->extra_reg;
 	struct hw_perf_event_extra *reg2 = &hwc->branch_reg;
 
-	/* only TO_R_PROG_EV event uses the match/mask register */
+	 
 	if ((hwc->config & NHMEX_PMON_CTL_EV_SEL_MASK) !=
 	    NHMEX_S_EVENT_TO_R_PROG_EV)
 		return 0;
@@ -530,11 +524,11 @@ static struct extra_reg nhmex_uncore_mbox_extra_regs[] = {
 	MBOX_INC_SEL_EXTAR_REG(0x4, MSC_THR),
 	MBOX_INC_SEL_EXTAR_REG(0x5, MSC_THR),
 	MBOX_INC_SEL_EXTAR_REG(0x9, ISS),
-	/* event 0xa uses two extra registers */
+	 
 	MBOX_INC_SEL_EXTAR_REG(0xa, ISS),
 	MBOX_INC_SEL_EXTAR_REG(0xa, PLD),
 	MBOX_INC_SEL_EXTAR_REG(0xb, PLD),
-	/* events 0xd ~ 0x10 use the same extra register */
+	 
 	MBOX_INC_SEL_EXTAR_REG(0xd, ZDP_CTL_FVC),
 	MBOX_INC_SEL_EXTAR_REG(0xe, ZDP_CTL_FVC),
 	MBOX_INC_SEL_EXTAR_REG(0xf, ZDP_CTL_FVC),
@@ -547,7 +541,7 @@ static struct extra_reg nhmex_uncore_mbox_extra_regs[] = {
 	EVENT_EXTRA_END
 };
 
-/* Nehalem-EX or Westmere-EX ? */
+ 
 static bool uncore_nhmex;
 
 static bool nhmex_mbox_get_shared_reg(struct intel_uncore_box *box, int idx, u64 config)
@@ -569,16 +563,12 @@ static bool nhmex_mbox_get_shared_reg(struct intel_uncore_box *box, int idx, u64
 
 		return ret;
 	}
-	/*
-	 * The ZDP_CTL_FVC MSR has 4 fields which are used to control
-	 * events 0xd ~ 0x10. Besides these 4 fields, there are additional
-	 * fields which are shared.
-	 */
+	 
 	idx -= EXTRA_REG_NHMEX_M_ZDP_CTL_FVC;
 	if (WARN_ON_ONCE(idx >= 4))
 		return false;
 
-	/* mask of the shared fields */
+	 
 	if (uncore_nhmex)
 		mask = NHMEX_M_PMON_ZDP_CTL_FVC_MASK;
 	else
@@ -586,7 +576,7 @@ static bool nhmex_mbox_get_shared_reg(struct intel_uncore_box *box, int idx, u64
 	er = &box->shared_regs[EXTRA_REG_NHMEX_M_ZDP_CTL_FVC];
 
 	raw_spin_lock_irqsave(&er->lock, flags);
-	/* add mask of the non-shared field if it's in use */
+	 
 	if (__BITS_VALUE(atomic_read(&er->ref), idx, 8)) {
 		if (uncore_nhmex)
 			mask |= NHMEX_M_PMON_ZDP_CTL_FVC_EVENT_MASK(idx);
@@ -633,7 +623,7 @@ static u64 nhmex_mbox_alter_er(struct perf_event *event, int new_idx, bool modif
 	u64 idx, orig_idx = __BITS_VALUE(reg1->idx, 0, 8);
 	u64 config = reg1->config;
 
-	/* get the non-shared control bits and shift them */
+	 
 	idx = orig_idx - EXTRA_REG_NHMEX_M_ZDP_CTL_FVC;
 	if (uncore_nhmex)
 		config &= NHMEX_M_PMON_ZDP_CTL_FVC_EVENT_MASK(idx);
@@ -647,14 +637,14 @@ static u64 nhmex_mbox_alter_er(struct perf_event *event, int new_idx, bool modif
 		config >>= 3 * idx;
 	}
 
-	/* add the shared control bits back */
+	 
 	if (uncore_nhmex)
 		config |= NHMEX_M_PMON_ZDP_CTL_FVC_MASK & reg1->config;
 	else
 		config |= WSMEX_M_PMON_ZDP_CTL_FVC_MASK & reg1->config;
 	config |= NHMEX_M_PMON_ZDP_CTL_FVC_MASK & reg1->config;
 	if (modify) {
-		/* adjust the main event selector */
+		 
 		if (new_idx > orig_idx)
 			hwc->config += idx << NHMEX_M_PMON_CTL_INC_SEL_SHIFT;
 		else
@@ -689,18 +679,13 @@ again:
 		alloc |= (0x1 << i);
 	}
 
-	/* for the match/mask registers */
+	 
 	if (reg2->idx != EXTRA_REG_NONE &&
 	    (uncore_box_is_fake(box) || !reg2->alloc) &&
 	    !nhmex_mbox_get_shared_reg(box, reg2->idx, reg2->config))
 		goto fail;
 
-	/*
-	 * If it's a fake box -- as per validate_{group,event}() we
-	 * shouldn't touch event state and we can avoid doing so
-	 * since both will only call get_event_constraints() once
-	 * on each event, this avoids the need for reg->alloc.
-	 */
+	 
 	if (!uncore_box_is_fake(box)) {
 		if (idx[0] != 0xff && idx[0] != __BITS_VALUE(reg1->idx, 0, 8))
 			nhmex_mbox_alter_er(event, idx[0], true);
@@ -712,12 +697,7 @@ again:
 fail:
 	if (idx[0] != 0xff && !(alloc & 0x1) &&
 	    idx[0] >= EXTRA_REG_NHMEX_M_ZDP_CTL_FVC) {
-		/*
-		 * events 0xd ~ 0x10 are functional identical, but are
-		 * controlled by different fields in the ZDP_CTL_FVC
-		 * register. If we failed to take one field, try the
-		 * rest 3 choices.
-		 */
+		 
 		BUG_ON(__BITS_VALUE(reg1->idx, 1, 8) != 0xff);
 		idx[0] -= EXTRA_REG_NHMEX_M_ZDP_CTL_FVC;
 		idx[0] = (idx[0] + 1) % 4;
@@ -770,11 +750,7 @@ static int nhmex_mbox_hw_config(struct intel_uncore_box *box, struct perf_event 
 	struct extra_reg *er;
 	unsigned msr;
 	int reg_idx = 0;
-	/*
-	 * The mbox events may require 2 extra MSRs at the most. But only
-	 * the lower 32 bits in these MSRs are significant, so we can use
-	 * config1 to pass two MSRs' config.
-	 */
+	 
 	for (er = nhmex_uncore_mbox_extra_regs; er->msr; er++) {
 		if (er->event != (event->hw.config & er->config_mask))
 			continue;
@@ -785,7 +761,7 @@ static int nhmex_mbox_hw_config(struct intel_uncore_box *box, struct perf_event 
 		if (WARN_ON_ONCE(msr >= 0xffff || er->idx >= 0xff))
 			return -EINVAL;
 
-		/* always use the 32~63 bits to pass the PLD config */
+		 
 		if (er->idx == EXTRA_REG_NHMEX_M_PLD)
 			reg_idx = 1;
 		else if (WARN_ON_ONCE(reg_idx > 0))
@@ -798,10 +774,7 @@ static int nhmex_mbox_hw_config(struct intel_uncore_box *box, struct perf_event 
 		reg1->config = event->attr.config1;
 		reg_idx++;
 	}
-	/*
-	 * The mbox only provides ability to perform address matching
-	 * for the PLD events.
-	 */
+	 
 	if (reg_idx == 2) {
 		reg2->idx = EXTRA_REG_NHMEX_M_FILTER;
 		if (event->attr.config2 & NHMEX_M_PMON_MM_CFG_EN)
@@ -907,13 +880,13 @@ static const struct attribute_group nhmex_uncore_mbox_format_group = {
 static struct uncore_event_desc nhmex_uncore_mbox_events[] = {
 	INTEL_UNCORE_EVENT_DESC(bbox_cmds_read, "inc_sel=0xd,fvc=0x2800"),
 	INTEL_UNCORE_EVENT_DESC(bbox_cmds_write, "inc_sel=0xd,fvc=0x2820"),
-	{ /* end: all zeroes */ },
+	{   },
 };
 
 static struct uncore_event_desc wsmex_uncore_mbox_events[] = {
 	INTEL_UNCORE_EVENT_DESC(bbox_cmds_read, "inc_sel=0xd,fvc=0x5000"),
 	INTEL_UNCORE_EVENT_DESC(bbox_cmds_write, "inc_sel=0xd,fvc=0x5040"),
-	{ /* end: all zeroes */ },
+	{   },
 };
 
 static struct intel_uncore_ops nhmex_uncore_mbox_ops = {
@@ -946,7 +919,7 @@ static void nhmex_rbox_alter_er(struct intel_uncore_box *box, struct perf_event 
 	struct hw_perf_event *hwc = &event->hw;
 	struct hw_perf_event_extra *reg1 = &hwc->extra_reg;
 
-	/* adjust the main event selector and extra register index */
+	 
 	if (reg1->idx % 2) {
 		reg1->idx--;
 		hwc->config -= 1 << NHMEX_R_PMON_CTL_EV_SEL_SHIFT;
@@ -955,25 +928,20 @@ static void nhmex_rbox_alter_er(struct intel_uncore_box *box, struct perf_event 
 		hwc->config += 1 << NHMEX_R_PMON_CTL_EV_SEL_SHIFT;
 	}
 
-	/* adjust extra register config */
+	 
 	switch (reg1->idx % 6) {
 	case 2:
-		/* shift the 8~15 bits to the 0~7 bits */
+		 
 		reg1->config >>= 8;
 		break;
 	case 3:
-		/* shift the 0~7 bits to the 8~15 bits */
+		 
 		reg1->config <<= 8;
 		break;
 	}
 }
 
-/*
- * Each rbox has 4 event set which monitor PQI port 0~3 or 4~7.
- * An event set consists of 6 events, the 3rd and 4th events in
- * an event set use the same extra register. So an event set uses
- * 5 extra registers.
- */
+ 
 static struct event_constraint *
 nhmex_rbox_get_constraint(struct intel_uncore_box *box, struct perf_event *event)
 {
@@ -993,7 +961,7 @@ nhmex_rbox_get_constraint(struct intel_uncore_box *box, struct perf_event *event
 	config1 = reg1->config;
 again:
 	er_idx = idx;
-	/* the 3rd and 4th events use the same extra register */
+	 
 	if (er_idx > 2)
 		er_idx--;
 	er_idx += (reg1->idx / 6) * 5;
@@ -1007,10 +975,7 @@ again:
 			ok = true;
 		}
 	} else if (idx == 2 || idx == 3) {
-		/*
-		 * these two events use different fields in a extra register,
-		 * the 0~7 bits and the 8~15 bits respectively.
-		 */
+		 
 		u64 mask = 0xff << ((idx - 2) * 8);
 		if (!__BITS_VALUE(atomic_read(&er->ref), idx - 2, 8) ||
 				!((er->config ^ config1) & mask)) {
@@ -1034,12 +999,7 @@ again:
 	raw_spin_unlock_irqrestore(&er->lock, flags);
 
 	if (!ok) {
-		/*
-		 * The Rbox events are always in pairs. The paired
-		 * events are functional identical, but use different
-		 * extra registers. If we failed to take an extra
-		 * register, try the alternative.
-		 */
+		 
 		idx ^= 1;
 		if (idx != reg1->idx % 6) {
 			if (idx == 2)
@@ -1176,7 +1136,7 @@ static struct uncore_event_desc nhmex_uncore_rbox_events[] = {
 	INTEL_UNCORE_EVENT_DESC(qpi1_idle_filt,		"event=0x6,iperf_cfg=0x40000000"),
 	INTEL_UNCORE_EVENT_DESC(qpi0_date_response,	"event=0x0,iperf_cfg=0xc4"),
 	INTEL_UNCORE_EVENT_DESC(qpi1_date_response,	"event=0x6,iperf_cfg=0xc4"),
-	{ /* end: all zeroes */ },
+	{   },
 };
 
 static struct intel_uncore_ops nhmex_uncore_rbox_ops = {
@@ -1225,4 +1185,4 @@ void nhmex_uncore_cpu_init(void)
 		nhmex_uncore_cbox.num_boxes = boot_cpu_data.x86_max_cores;
 	uncore_msr_uncores = nhmex_msr_uncores;
 }
-/* end of Nehalem-EX uncore support */
+ 

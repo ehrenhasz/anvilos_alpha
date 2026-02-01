@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * SM2 asymmetric public-key algorithm
- * as specified by OSCCA GM/T 0003.1-2012 -- 0003.5-2012 SM2 and
- * described at https://tools.ietf.org/html/draft-shen-sm2-ecdsa-02
- *
- * Copyright (c) 2020, Alibaba Group.
- * Authors: Tianjia Zhang <tianjia.zhang@linux.alibaba.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/mpi.h>
@@ -17,35 +10,28 @@
 #include <crypto/sm2.h>
 #include "sm2signature.asn1.h"
 
-/* The default user id as specified in GM/T 0009-2012 */
+ 
 #define SM2_DEFAULT_USERID "1234567812345678"
 #define SM2_DEFAULT_USERID_LEN 16
 
 #define MPI_NBYTES(m)   ((mpi_get_nbits(m) + 7) / 8)
 
 struct ecc_domain_parms {
-	const char *desc;           /* Description of the curve.  */
-	unsigned int nbits;         /* Number of bits.  */
-	unsigned int fips:1; /* True if this is a FIPS140-2 approved curve */
+	const char *desc;            
+	unsigned int nbits;          
+	unsigned int fips:1;  
 
-	/* The model describing this curve.  This is mainly used to select
-	 * the group equation.
-	 */
+	 
 	enum gcry_mpi_ec_models model;
 
-	/* The actual ECC dialect used.  This is used for curve specific
-	 * optimizations and to select encodings etc.
-	 */
+	 
 	enum ecc_dialects dialect;
 
-	const char *p;              /* The prime defining the field.  */
-	const char *a, *b;          /* The coefficients.  For Twisted Edwards
-				     * Curves b is used for d.  For Montgomery
-				     * Curves (a,b) has ((A-2)/4,B^-1).
-				     */
-	const char *n;              /* The order of the base point.  */
-	const char *g_x, *g_y;      /* Base point.  */
-	unsigned int h;             /* Cofactor.  */
+	const char *p;               
+	const char *a, *b;           
+	const char *n;               
+	const char *g_x, *g_y;       
+	unsigned int h;              
 };
 
 static const struct ecc_domain_parms sm2_ecp = {
@@ -90,7 +76,7 @@ static int sm2_ec_ctx_init(struct mpi_ec_ctx *ec)
 	if (!ec->Q)
 		goto free;
 
-	/* mpi_ec_setup_elliptic_curve */
+	 
 	ec->G = mpi_point_new(0);
 	if (!ec->G) {
 		mpi_point_release(ec->Q);
@@ -133,9 +119,7 @@ static void sm2_ec_ctx_deinit(struct mpi_ec_ctx *ec)
 	memset(ec, 0, sizeof(*ec));
 }
 
-/* RESULT must have been initialized and is set on success to the
- * point given by VALUE.
- */
+ 
 static int sm2_ecc_os2ec(MPI_POINT result, MPI value)
 {
 	int rc;
@@ -155,7 +139,7 @@ static int sm2_ecc_os2ec(MPI_POINT result, MPI value)
 	rc = -EINVAL;
 	if (n < 1 || ((n - 1) % 2))
 		goto err_freebuf;
-	/* No support for point compression */
+	 
 	if (*buf != 0x4)
 		goto err_freebuf;
 
@@ -232,11 +216,11 @@ static int sm2_z_digest_update(struct shash_desc *desc,
 		return -EINVAL;
 
 	if (inlen < pbytes) {
-		/* padding with zero */
+		 
 		err = crypto_shash_update(desc, zero, pbytes - inlen) ?:
 		      crypto_shash_update(desc, in, inlen);
 	} else if (inlen > pbytes) {
-		/* skip the starting zero */
+		 
 		err = crypto_shash_update(desc, in + inlen - pbytes, pbytes);
 	} else {
 		err = crypto_shash_update(desc, in, inlen);
@@ -292,7 +276,7 @@ int sm2_compute_z_digest(struct shash_desc *desc,
 
 	pbytes = MPI_NBYTES(ec->p);
 
-	/* ZA = H256(ENTLA | IDA | a | b | xG | yG | xA | yA) */
+	 
 	err = crypto_shash_init(desc);
 	if (err)
 		goto out_deinit_ec;
@@ -336,18 +320,18 @@ static int _sm2_verify(struct mpi_ec_ctx *ec, MPI hash, MPI sig_r, MPI sig_s)
 	y1 = mpi_new(0);
 	t = mpi_new(0);
 
-	/* r, s in [1, n-1] */
+	 
 	if (mpi_cmp_ui(sig_r, 1) < 0 || mpi_cmp(sig_r, ec->n) > 0 ||
 		mpi_cmp_ui(sig_s, 1) < 0 || mpi_cmp(sig_s, ec->n) > 0) {
 		goto leave;
 	}
 
-	/* t = (r + s) % n, t == 0 */
+	 
 	mpi_addm(t, sig_r, sig_s, ec->n);
 	if (mpi_cmp_ui(t, 0) == 0)
 		goto leave;
 
-	/* sG + tP = (x1, y1) */
+	 
 	rc = -EBADMSG;
 	mpi_ec_mul_point(&sG, sig_s, ec->G, ec);
 	mpi_ec_mul_point(&tP, t, ec->Q, ec);
@@ -355,10 +339,10 @@ static int _sm2_verify(struct mpi_ec_ctx *ec, MPI hash, MPI sig_r, MPI sig_s)
 	if (mpi_ec_get_affine(x1, y1, &sG, ec))
 		goto leave;
 
-	/* R = (e + x1) % n */
+	 
 	mpi_addm(t, hash, x1, ec->n);
 
-	/* check R == r */
+	 
 	rc = -EKEYREJECTED;
 	if (mpi_cmp(t, sig_r))
 		goto leave;
@@ -432,7 +416,7 @@ static int __sm2_set_pub_key(struct mpi_ec_ctx *ec,
 	MPI a;
 	int rc;
 
-	/* include the uncompressed flag '0x04' */
+	 
 	a = mpi_read_raw_data(key, keylen);
 	if (!a)
 		return -ENOMEM;
@@ -446,7 +430,7 @@ static int __sm2_set_pub_key(struct mpi_ec_ctx *ec,
 
 static unsigned int sm2_max_size(struct crypto_akcipher *tfm)
 {
-	/* Unlimited max size */
+	 
 	return PAGE_SIZE;
 }
 

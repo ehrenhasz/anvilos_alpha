@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2011, 2012 Patrick McHardy <kaber@trash.net>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/skbuff.h>
@@ -21,7 +19,7 @@ static int ip6t_npt_checkentry(const struct xt_tgchk_param *par)
 	if (npt->src_pfx_len > 64 || npt->dst_pfx_len > 64)
 		return -EINVAL;
 
-	/* Ensure that LSB of prefix is zero */
+	 
 	ipv6_addr_prefix(&pfx, &npt->src_pfx.in6, npt->src_pfx_len);
 	if (!ipv6_addr_equal(&pfx, &npt->src_pfx.in6))
 		return -EINVAL;
@@ -106,7 +104,7 @@ ip6t_snpt_tg(struct sk_buff *skb, const struct xt_action_param *par)
 		return NF_DROP;
 	}
 
-	/* rewrite dst addr of bounced packet which was sent to dst range */
+	 
 	bounced_hdr = icmpv6_bounced_ipv6hdr(skb, &_bounced_hdr);
 	if (bounced_hdr) {
 		ipv6_addr_prefix(&bounced_pfx, &bounced_hdr->daddr, npt->src_pfx_len);
@@ -131,7 +129,7 @@ ip6t_dnpt_tg(struct sk_buff *skb, const struct xt_action_param *par)
 		return NF_DROP;
 	}
 
-	/* rewrite src addr of bounced packet which was sent from dst range */
+	 
 	bounced_hdr = icmpv6_bounced_ipv6hdr(skb, &_bounced_hdr);
 	if (bounced_hdr) {
 		ipv6_addr_prefix(&bounced_pfx, &bounced_hdr->saddr, npt->src_pfx_len);

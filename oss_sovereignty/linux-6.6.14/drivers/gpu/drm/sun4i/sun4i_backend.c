@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2015 Free Electrons
- * Copyright (C) 2015 NextThing Co
- *
- * Maxime Ripard <maxime.ripard@free-electrons.com>
- */
+
+ 
 
 #include <linux/component.h>
 #include <linux/list.h>
@@ -32,10 +27,10 @@
 #include "sunxi_engine.h"
 
 struct sun4i_backend_quirks {
-	/* backend <-> TCON muxing selection done in backend */
+	 
 	bool needs_output_muxing;
 
-	/* alpha at the lowest z position is not always supported */
+	 
 	bool supports_lowest_plane_alpha;
 };
 
@@ -51,7 +46,7 @@ static void sun4i_backend_apply_color_correction(struct sunxi_engine *engine)
 
 	DRM_DEBUG_DRIVER("Applying RGB to YUV color correction\n");
 
-	/* Set color correction */
+	 
 	regmap_write(engine->regs, SUN4I_BACKEND_OCCTL_REG,
 		     SUN4I_BACKEND_OCCTL_ENABLE);
 
@@ -64,7 +59,7 @@ static void sun4i_backend_disable_color_correction(struct sunxi_engine *engine)
 {
 	DRM_DEBUG_DRIVER("Disabling color correction\n");
 
-	/* Disable color correction */
+	 
 	regmap_update_bits(engine->regs, SUN4I_BACKEND_OCCTL_REG,
 			   SUN4I_BACKEND_OCCTL_ENABLE, 0);
 }
@@ -173,14 +168,14 @@ int sun4i_backend_update_layer_coord(struct sun4i_backend *backend,
 
 	DRM_DEBUG_DRIVER("Updating layer %d\n", layer);
 
-	/* Set height and width */
+	 
 	DRM_DEBUG_DRIVER("Layer size W: %u H: %u\n",
 			 state->crtc_w, state->crtc_h);
 	regmap_write(backend->engine.regs, SUN4I_BACKEND_LAYSIZE_REG(layer),
 		     SUN4I_BACKEND_LAYSIZE(state->crtc_w,
 					   state->crtc_h));
 
-	/* Set base coordinates */
+	 
 	DRM_DEBUG_DRIVER("Layer coordinates X: %d Y: %d\n",
 			 state->crtc_x, state->crtc_y);
 	regmap_write(backend->engine.regs, SUN4I_BACKEND_LAYCOOR_REG(layer),
@@ -205,25 +200,19 @@ static int sun4i_backend_update_yuv_format(struct sun4i_backend *backend,
 			     SUN4I_BACKEND_YGCOEF_REG(i),
 			     sunxi_bt601_yuv2rgb_coef[i]);
 
-	/*
-	 * We should do that only for a single plane, but the
-	 * framebuffer's atomic_check has our back on this.
-	 */
+	 
 	regmap_update_bits(backend->engine.regs, SUN4I_BACKEND_ATTCTL_REG0(layer),
 			   SUN4I_BACKEND_ATTCTL_REG0_LAY_YUVEN,
 			   SUN4I_BACKEND_ATTCTL_REG0_LAY_YUVEN);
 
-	/* TODO: Add support for the multi-planar YUV formats */
+	 
 	if (drm_format_info_is_yuv_packed(format) &&
 	    drm_format_info_is_yuv_sampling_422(format))
 		val |= SUN4I_BACKEND_IYUVCTL_FBFMT_PACKED_YUV422;
 	else
 		DRM_DEBUG_DRIVER("Unsupported YUV format (0x%x)\n", fmt);
 
-	/*
-	 * Allwinner seems to list the pixel sequence from right to left, while
-	 * DRM lists it from left to right.
-	 */
+	 
 	switch (fmt) {
 	case DRM_FORMAT_YUYV:
 		val |= SUN4I_BACKEND_IYUVCTL_FBPS_VYUY;
@@ -255,7 +244,7 @@ int sun4i_backend_update_layer_formats(struct sun4i_backend *backend,
 	u32 val;
 	int ret;
 
-	/* Clear the YUV mode */
+	 
 	regmap_update_bits(backend->engine.regs, SUN4I_BACKEND_ATTCTL_REG0(layer),
 			   SUN4I_BACKEND_ATTCTL_REG0_LAY_YUVEN, 0);
 
@@ -312,7 +301,7 @@ static int sun4i_backend_update_yuv_buffer(struct sun4i_backend *backend,
 					   struct drm_framebuffer *fb,
 					   dma_addr_t paddr)
 {
-	/* TODO: Add support for the multi-planar YUV formats */
+	 
 	DRM_DEBUG_DRIVER("Setting packed YUV buffer address to %pad\n", &paddr);
 	regmap_write(backend->engine.regs, SUN4I_BACKEND_IYUVADD_REG(0), paddr);
 
@@ -331,27 +320,27 @@ int sun4i_backend_update_layer_buffer(struct sun4i_backend *backend,
 	u32 lo_paddr, hi_paddr;
 	dma_addr_t dma_addr;
 
-	/* Set the line width */
+	 
 	DRM_DEBUG_DRIVER("Layer line width: %d bits\n", fb->pitches[0] * 8);
 	regmap_write(backend->engine.regs,
 		     SUN4I_BACKEND_LAYLINEWIDTH_REG(layer),
 		     fb->pitches[0] * 8);
 
-	/* Get the start of the displayed memory */
+	 
 	dma_addr = drm_fb_dma_get_gem_addr(fb, state, 0);
 	DRM_DEBUG_DRIVER("Setting buffer address to %pad\n", &dma_addr);
 
 	if (fb->format->is_yuv)
 		return sun4i_backend_update_yuv_buffer(backend, fb, dma_addr);
 
-	/* Write the 32 lower bits of the address (in bits) */
+	 
 	lo_paddr = dma_addr << 3;
 	DRM_DEBUG_DRIVER("Setting address lower bits to 0x%x\n", lo_paddr);
 	regmap_write(backend->engine.regs,
 		     SUN4I_BACKEND_LAYFB_L32ADD_REG(layer),
 		     lo_paddr);
 
-	/* And the upper bits */
+	 
 	hi_paddr = dma_addr >> 29;
 	DRM_DEBUG_DRIVER("Setting address high bits to 0x%x\n", hi_paddr);
 	regmap_update_bits(backend->engine.regs, SUN4I_BACKEND_LAYFB_H4ADD_REG,
@@ -419,20 +408,12 @@ static bool sun4i_backend_plane_uses_frontend(struct drm_plane_state *state)
 	if (!sun4i_backend_format_is_supported(format, modifier))
 		return true;
 
-	/*
-	 * TODO: The backend alone allows 2x and 4x integer scaling, including
-	 * support for an alpha component (which the frontend doesn't support).
-	 * Use the backend directly instead of the frontend in this case, with
-	 * another test to return false.
-	 */
+	 
 
 	if (sun4i_backend_plane_uses_scaler(state))
 		return true;
 
-	/*
-	 * Here the format is supported by both the frontend and the backend
-	 * and no frontend scaling is required, so use the backend directly.
-	 */
+	 
 	return false;
 }
 
@@ -446,7 +427,7 @@ static bool sun4i_backend_plane_is_supported(struct drm_plane_state *state,
 
 	*uses_frontend = false;
 
-	/* Scaling is not supported without the frontend. */
+	 
 	if (sun4i_backend_plane_uses_scaler(state))
 		return false;
 
@@ -515,50 +496,19 @@ static int sun4i_backend_atomic_check(struct sunxi_engine *engine,
 		DRM_DEBUG_DRIVER("Plane zpos is %d\n",
 				 plane_state->normalized_zpos);
 
-		/* Sort our planes by Zpos */
+		 
 		plane_states[plane_state->normalized_zpos] = plane_state;
 
 		num_planes++;
 	}
 
-	/* All our planes were disabled, bail out */
+	 
 	if (!num_planes)
 		return 0;
 
-	/*
-	 * The hardware is a bit unusual here.
-	 *
-	 * Even though it supports 4 layers, it does the composition
-	 * in two separate steps.
-	 *
-	 * The first one is assigning a layer to one of its two
-	 * pipes. If more that 1 layer is assigned to the same pipe,
-	 * and if pixels overlaps, the pipe will take the pixel from
-	 * the layer with the highest priority.
-	 *
-	 * The second step is the actual alpha blending, that takes
-	 * the two pipes as input, and uses the potential alpha
-	 * component to do the transparency between the two.
-	 *
-	 * This two-step scenario makes us unable to guarantee a
-	 * robust alpha blending between the 4 layers in all
-	 * situations, since this means that we need to have one layer
-	 * with alpha at the lowest position of our two pipes.
-	 *
-	 * However, we cannot even do that on every platform, since
-	 * the hardware has a bug where the lowest plane of the lowest
-	 * pipe (pipe 0, priority 0), if it has any alpha, will
-	 * discard the pixel data entirely and just display the pixels
-	 * in the background color (black by default).
-	 *
-	 * This means that on the affected platforms, we effectively
-	 * have only three valid configurations with alpha, all of
-	 * them with the alpha being on pipe1 with the lowest
-	 * position, which can be 1, 2 or 3 depending on the number of
-	 * planes and their zpos.
-	 */
+	 
 
-	/* For platforms that are not affected by the issue described above. */
+	 
 	if (backend->quirks->supports_lowest_plane_alpha)
 		num_alpha_planes_max++;
 
@@ -567,7 +517,7 @@ static int sun4i_backend_atomic_check(struct sunxi_engine *engine,
 		return -EINVAL;
 	}
 
-	/* We can't have an alpha plane at the lowest position */
+	 
 	if (!backend->quirks->supports_lowest_plane_alpha &&
 	    (plane_states[0]->alpha != DRM_BLEND_ALPHA_OPAQUE))
 		return -EINVAL;
@@ -577,17 +527,14 @@ static int sun4i_backend_atomic_check(struct sunxi_engine *engine,
 		struct drm_framebuffer *fb = p_state->fb;
 		struct sun4i_layer_state *s_state = state_to_sun4i_layer_state(p_state);
 
-		/*
-		 * The only alpha position is the lowest plane of the
-		 * second pipe.
-		 */
+		 
 		if (fb->format->has_alpha || (p_state->alpha != DRM_BLEND_ALPHA_OPAQUE))
 			current_pipe++;
 
 		s_state->pipe = current_pipe;
 	}
 
-	/* We can only have a single YUV plane at a time */
+	 
 	if (num_yuv_planes > SUN4I_BACKEND_NUM_YUV_PLANES) {
 		DRM_DEBUG_DRIVER("Too many planes with YUV, rejecting...\n");
 		return -EINVAL;
@@ -613,20 +560,7 @@ static void sun4i_backend_vblank_quirk(struct sunxi_engine *engine)
 	if (!frontend)
 		return;
 
-	/*
-	 * In a teardown scenario with the frontend involved, we have
-	 * to keep the frontend enabled until the next vblank, and
-	 * only then disable it.
-	 *
-	 * This is due to the fact that the backend will not take into
-	 * account the new configuration (with the plane that used to
-	 * be fed by the frontend now disabled) until we write to the
-	 * commit bit and the hardware fetches the new configuration
-	 * during the next vblank.
-	 *
-	 * So we keep the frontend around in order to prevent any
-	 * visual artifacts.
-	 */
+	 
 	spin_lock(&backend->frontend_lock);
 	if (backend->frontend_teardown) {
 		sun4i_frontend_exit(frontend);
@@ -699,20 +633,13 @@ static int sun4i_backend_free_sat(struct device *dev) {
 	return 0;
 }
 
-/*
- * The display backend can take video output from the display frontend, or
- * the display enhancement unit on the A80, as input for one it its layers.
- * This relationship within the display pipeline is encoded in the device
- * tree with of_graph, and we use it here to figure out which backend, if
- * there are 2 or more, we are currently probing. The number would be in
- * the "reg" property of the upstream output port endpoint.
- */
+ 
 static int sun4i_backend_of_get_id(struct device_node *node)
 {
 	struct device_node *ep, *remote;
 	struct of_endpoint of_ep;
 
-	/* Input port is 0, and we want the first endpoint. */
+	 
 	ep = of_graph_get_endpoint_by_regs(node, 0, -1);
 	if (!ep)
 		return -EINVAL;
@@ -727,7 +654,7 @@ static int sun4i_backend_of_get_id(struct device_node *node)
 	return of_ep.id;
 }
 
-/* TODO: This needs to take multiple pipelines into account */
+ 
 static struct sun4i_frontend *sun4i_backend_find_frontend(struct sun4i_drv *drv,
 							  struct device_node *node)
 {
@@ -744,7 +671,7 @@ static struct sun4i_frontend *sun4i_backend_find_frontend(struct sun4i_drv *drv,
 			continue;
 		of_node_put(remote);
 
-		/* does this node match any registered engines? */
+		 
 		list_for_each_entry(frontend, &drv->frontend_list, list) {
 			if (remote == frontend->node) {
 				of_node_put(port);
@@ -793,13 +720,7 @@ static int sun4i_backend_bind(struct device *dev, struct device *master,
 	spin_lock_init(&backend->frontend_lock);
 
 	if (of_property_present(dev->of_node, "interconnects")) {
-		/*
-		 * This assume we have the same DMA constraints for all our the
-		 * devices in our pipeline (all the backends, but also the
-		 * frontends). This sounds bad, but it has always been the case
-		 * for us, and DRM doesn't do per-device allocation either, so
-		 * we would need to fix DRM first...
-		 */
+		 
 		ret = of_dma_configure(drm->dev, dev->of_node, true);
 		if (ret)
 			return ret;
@@ -880,39 +801,23 @@ static int sun4i_backend_bind(struct device *dev, struct device *master,
 
 	list_add_tail(&backend->engine.list, &drv->engine_list);
 
-	/*
-	 * Many of the backend's layer configuration registers have
-	 * undefined default values. This poses a risk as we use
-	 * regmap_update_bits in some places, and don't overwrite
-	 * the whole register.
-	 *
-	 * Clear the registers here to have something predictable.
-	 */
+	 
 	for (i = 0x800; i < 0x1000; i += 4)
 		regmap_write(backend->engine.regs, i, 0);
 
-	/* Disable registers autoloading */
+	 
 	regmap_write(backend->engine.regs, SUN4I_BACKEND_REGBUFFCTL_REG,
 		     SUN4I_BACKEND_REGBUFFCTL_AUTOLOAD_DIS);
 
-	/* Enable the backend */
+	 
 	regmap_write(backend->engine.regs, SUN4I_BACKEND_MODCTL_REG,
 		     SUN4I_BACKEND_MODCTL_DEBE_EN |
 		     SUN4I_BACKEND_MODCTL_START_CTL);
 
-	/* Set output selection if needed */
+	 
 	quirks = of_device_get_match_data(dev);
 	if (quirks->needs_output_muxing) {
-		/*
-		 * We assume there is no dynamic muxing of backends
-		 * and TCONs, so we select the backend with same ID.
-		 *
-		 * While dynamic selection might be interesting, since
-		 * the CRTC is tied to the TCON, while the layers are
-		 * tied to the backends, this means, we will need to
-		 * switch between groups of layers. There might not be
-		 * a way to represent this constraint in DRM.
-		 */
+		 
 		regmap_update_bits(backend->engine.regs,
 				   SUN4I_BACKEND_MODCTL_REG,
 				   SUN4I_BACKEND_MODCTL_OUT_SEL,

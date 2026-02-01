@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (C) 2017 Free Electrons
- * Maxime Ripard <maxime.ripard@free-electrons.com>
- */
+
+ 
 
 #include <linux/clk.h>
 
@@ -122,7 +119,7 @@ int sun4i_lvds_init(struct drm_device *drm, struct sun4i_tcon *tcon)
 		goto err_out;
 	}
 
-	/* The LVDS encoder can only work with the TCON channel 0 */
+	 
 	lvds->encoder.possible_crtcs = drm_crtc_mask(&tcon->crtc->crtc);
 
 	if (lvds->panel) {

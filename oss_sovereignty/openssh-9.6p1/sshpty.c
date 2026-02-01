@@ -1,16 +1,5 @@
-/* $OpenBSD: sshpty.c,v 1.34 2019/07/04 16:20:10 deraadt Exp $ */
-/*
- * Author: Tatu Ylonen <ylo@cs.hut.fi>
- * Copyright (c) 1995 Tatu Ylonen <ylo@cs.hut.fi>, Espoo, Finland
- *                    All rights reserved
- * Allocating a pseudo-terminal, and making it the controlling tty.
- *
- * As far as I am concerned, the code I have written for this software
- * can be used freely for any purpose.  Any derived versions of this
- * software must be clearly marked as such, and if the derived work is
- * incompatible with the protocol description in the RFC file, it must be
- * called by a name other than "ssh" or "Secure Shell".
- */
+ 
+ 
 
 #include "includes.h"
 
@@ -54,17 +43,12 @@
 # endif
 #endif
 
-/*
- * Allocates and opens a pty.  Returns 0 if no pty could be allocated, or
- * nonzero if a pty was successfully allocated.  On success, open file
- * descriptors for the pty and tty sides and the name of the tty side are
- * returned (the buffer must be able to hold at least 64 characters).
- */
+ 
 
 int
 pty_allocate(int *ptyfd, int *ttyfd, char *namebuf, size_t namebuflen)
 {
-	/* openpty(3) exists in OSF/1 and some other os'es */
+	 
 	char *name;
 	int i;
 
@@ -77,11 +61,11 @@ pty_allocate(int *ptyfd, int *ttyfd, char *namebuf, size_t namebuflen)
 	if (!name)
 		fatal("openpty returns device for which ttyname fails.");
 
-	strlcpy(namebuf, name, namebuflen);	/* possible truncation */
+	strlcpy(namebuf, name, namebuflen);	 
 	return 1;
 }
 
-/* Releases the tty.  Its ownership is returned to root, and permissions to 0666. */
+ 
 
 void
 pty_release(const char *tty)
@@ -91,53 +75,50 @@ pty_release(const char *tty)
 		error("chown %.100s 0 0 failed: %.100s", tty, strerror(errno));
 	if (chmod(tty, (mode_t) 0666) == -1)
 		error("chmod %.100s 0666 failed: %.100s", tty, strerror(errno));
-#endif /* !__APPLE_PRIVPTY__ && !HAVE_OPENPTY */
+#endif  
 }
 
-/* Makes the tty the process's controlling tty and sets it to sane modes. */
+ 
 
 void
 pty_make_controlling_tty(int *ttyfd, const char *tty)
 {
 	int fd;
 
-	/* First disconnect from the old controlling tty. */
+	 
 #ifdef TIOCNOTTY
 	fd = open(_PATH_TTY, O_RDWR | O_NOCTTY);
 	if (fd >= 0) {
 		(void) ioctl(fd, TIOCNOTTY, NULL);
 		close(fd);
 	}
-#endif /* TIOCNOTTY */
+#endif  
 	if (setsid() == -1)
 		error("setsid: %.100s", strerror(errno));
 
-	/*
-	 * Verify that we are successfully disconnected from the controlling
-	 * tty.
-	 */
+	 
 	fd = open(_PATH_TTY, O_RDWR | O_NOCTTY);
 	if (fd >= 0) {
 		error("Failed to disconnect from controlling tty.");
 		close(fd);
 	}
-	/* Make it our controlling tty. */
+	 
 #ifdef TIOCSCTTY
 	debug("Setting controlling tty using TIOCSCTTY.");
 	if (ioctl(*ttyfd, TIOCSCTTY, NULL) < 0)
 		error("ioctl(TIOCSCTTY): %.100s", strerror(errno));
-#endif /* TIOCSCTTY */
+#endif  
 #ifdef NEED_SETPGRP
 	if (setpgrp(0,0) < 0)
 		error("SETPGRP %s",strerror(errno));
-#endif /* NEED_SETPGRP */
+#endif  
 	fd = open(tty, O_RDWR);
 	if (fd == -1)
 		error("%.100s: %.100s", tty, strerror(errno));
 	else
 		close(fd);
 
-	/* Verify that we now have a controlling tty. */
+	 
 	fd = open(_PATH_TTY, O_WRONLY);
 	if (fd == -1)
 		error("open /dev/tty failed - could not set controlling tty: %.100s",
@@ -146,7 +127,7 @@ pty_make_controlling_tty(int *ttyfd, const char *tty)
 		close(fd);
 }
 
-/* Changes the window size associated with the pty. */
+ 
 
 void
 pty_change_window_size(int ptyfd, u_int row, u_int col,
@@ -154,7 +135,7 @@ pty_change_window_size(int ptyfd, u_int row, u_int col,
 {
 	struct winsize w;
 
-	/* may truncate u_int -> u_short */
+	 
 	w.ws_row = row;
 	w.ws_col = col;
 	w.ws_xpixel = xpixel;
@@ -170,18 +151,14 @@ pty_setowner(struct passwd *pw, const char *tty)
 	mode_t mode;
 	struct stat st;
 
-	/* Determine the group to make the owner of the tty. */
+	 
 	grp = getgrnam("tty");
 	if (grp == NULL)
 		debug("%s: no tty group", __func__);
 	gid = (grp != NULL) ? grp->gr_gid : pw->pw_gid;
 	mode = (grp != NULL) ? 0620 : 0600;
 
-	/*
-	 * Change owner and mode of the tty as required.
-	 * Warn but continue if filesystem is read-only and the uids match/
-	 * tty is owned by root.
-	 */
+	 
 	if (stat(tty, &st) == -1)
 		fatal("stat(%.100s) failed: %.100s", tty,
 		    strerror(errno));
@@ -217,7 +194,7 @@ pty_setowner(struct passwd *pw, const char *tty)
 	}
 }
 
-/* Disconnect from the controlling tty. */
+ 
 void
 disconnect_controlling_tty(void)
 {
@@ -228,5 +205,5 @@ disconnect_controlling_tty(void)
 		(void) ioctl(fd, TIOCNOTTY, NULL);
 		close(fd);
 	}
-#endif /* TIOCNOTTY */
+#endif  
 }

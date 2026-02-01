@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2016 Chelsio Communications, Inc.
- */
+
+ 
 
 #include "cxgbit.h"
 
@@ -40,10 +38,7 @@ cxgbit_set_one_ppod(struct cxgbi_pagepod *ppod,
 		}
 	}
 
-	/*
-	 * the fifth address needs to be repeated in the next ppod, so do
-	 * not move sg
-	 */
+	 
 	if (sg_pp) {
 		*sg_pp = sg;
 		*sg_off = offset;
@@ -191,9 +186,7 @@ cxgbit_ddp_reserve(struct cxgbit_sock *csk, struct cxgbi_task_tag_info *ttinfo,
 	ttinfo->nr_pages = (xferlen + sgl->offset +
 			    (1 << PAGE_SHIFT) - 1) >> PAGE_SHIFT;
 
-	/*
-	 * the ddp tag will be used for the ttt in the outgoing r2t pdu
-	 */
+	 
 	ret = cxgbi_ppm_ppods_reserve(ppm, ttinfo->nr_pages, 0, &ttinfo->idx,
 				      &ttinfo->tag, 0);
 	if (ret < 0)
@@ -273,10 +266,7 @@ void cxgbit_unmap_cmd(struct iscsit_conn *conn, struct iscsit_cmd *cmd)
 			struct cxgbi_ppm *ppm = cdev2ppm(cdev);
 			struct cxgbi_task_tag_info *ttinfo = &ccmd->ttinfo;
 
-			/* Abort the TCP conn if DDP is not complete to
-			 * avoid any possibility of DDP after freeing
-			 * the cmd.
-			 */
+			 
 			if (unlikely(cmd->write_data_done !=
 				     cmd->se_cmd.data_length))
 				cxgbit_abort_conn(csk);

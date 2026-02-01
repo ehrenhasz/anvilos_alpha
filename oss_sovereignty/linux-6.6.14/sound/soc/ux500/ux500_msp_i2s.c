@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) ST-Ericsson SA 2012
- *
- * Author: Ola Lilja <ola.o.lilja@stericsson.com>,
- *         Roger Nilsson <roger.xr.nilsson@stericsson.com>,
- *         Sandeep Kaushik <sandeep.kaushik@st.com>
- *         for ST-Ericsson.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/platform_device.h>
@@ -19,9 +12,9 @@
 
 #include "ux500_msp_i2s.h"
 
- /* Protocol desciptors */
+  
 static const struct msp_protdesc prot_descs[] = {
-	{ /* I2S */
+	{  
 		MSP_SINGLE_PHASE,
 		MSP_SINGLE_PHASE,
 		MSP_PHASE2_START_MODE_IMEDIATE,
@@ -50,7 +43,7 @@ static const struct msp_protdesc prot_descs[] = {
 		31,
 		15,
 		32,
-	}, { /* PCM */
+	}, {  
 		MSP_DUAL_PHASE,
 		MSP_DUAL_PHASE,
 		MSP_PHASE2_START_MODE_FSYNC,
@@ -79,7 +72,7 @@ static const struct msp_protdesc prot_descs[] = {
 		255,
 		0,
 		256,
-	}, { /* Companded PCM */
+	}, {  
 		MSP_SINGLE_PHASE,
 		MSP_SINGLE_PHASE,
 		MSP_PHASE2_START_MODE_FSYNC,
@@ -199,7 +192,7 @@ static int configure_protocol(struct ux500_msp *msp,
 	if (config->direction & MSP_DIR_RX)
 		set_prot_desc_rx(msp, protdesc, data_size);
 
-	/* The code below should not be separated. */
+	 
 	temp_reg = readl(msp->registers + MSP_GCR) & ~TX_CLK_POL_RISING;
 	temp_reg |= MSP_TX_CLKPOL_BIT(~protdesc->tx_clk_pol);
 	writel(temp_reg, msp->registers + MSP_GCR);
@@ -256,7 +249,7 @@ static int setup_bitclk(struct ux500_msp *msp, struct ux500_msp_config *config)
 
 	msp->f_bitclk = (config->f_inputclk)/(sck_div + 1);
 
-	/* Enable bit-clock */
+	 
 	udelay(100);
 	reg_val_GCR = readl(msp->registers + MSP_GCR);
 	writel(reg_val_GCR | SRG_ENABLE, msp->registers + MSP_GCR);
@@ -349,7 +342,7 @@ static int enable_msp(struct ux500_msp *msp, struct ux500_msp_config *config)
 	int status = 0;
 	u32 reg_val_DMACR, reg_val_GCR;
 
-	/* Configure msp with protocol dependent settings */
+	 
 	configure_protocol(msp, config);
 	setup_bitclk(msp, config);
 	if (config->multichannel_configured == 1) {
@@ -369,7 +362,7 @@ static int enable_msp(struct ux500_msp *msp, struct ux500_msp_config *config)
 
 	writel(config->iodelay, msp->registers + MSP_IODLY);
 
-	/* Enable frame generation logic */
+	 
 	reg_val_GCR = readl(msp->registers + MSP_GCR);
 	writel(reg_val_GCR | FRAME_GEN_ENABLE, msp->registers + MSP_GCR);
 
@@ -446,7 +439,7 @@ int ux500_msp_i2s_open(struct ux500_msp *msp,
 
 	msp->dir_busy |= (tx_sel ? MSP_DIR_TX : 0) | (rx_sel ? MSP_DIR_RX : 0);
 
-	/* First do the global config register */
+	 
 	mask = RX_CLK_SEL_MASK | TX_CLK_SEL_MASK | RX_FSYNC_MASK |
 	    TX_FSYNC_MASK | RX_SYNC_SEL_MASK | TX_SYNC_SEL_MASK |
 	    RX_FIFO_ENABLE_MASK | TX_FIFO_ENABLE_MASK | SRG_CLK_SEL_MASK |
@@ -473,7 +466,7 @@ int ux500_msp_i2s_open(struct ux500_msp *msp,
 	if (config->loopback_enable & 0x80)
 		msp->loopback_enable = 1;
 
-	/* Flush FIFOs */
+	 
 	flush_fifo_tx(msp);
 	flush_fifo_rx(msp);
 
@@ -526,17 +519,17 @@ static int disable_msp(struct ux500_msp *msp, unsigned int dir)
 		writel(reg_val_GCR | LOOPBACK_MASK,
 				msp->registers + MSP_GCR);
 
-		/* Flush TX-FIFO */
+		 
 		flush_fifo_tx(msp);
 
-		/* Disable TX-channel */
+		 
 		writel((readl(msp->registers + MSP_GCR) &
 			       (~TX_ENABLE)), msp->registers + MSP_GCR);
 
-		/* Flush RX-FIFO */
+		 
 		flush_fifo_rx(msp);
 
-		/* Disable Loopback and Receive channel */
+		 
 		writel((readl(msp->registers + MSP_GCR) &
 				(~(RX_ENABLE | LOOPBACK_MASK))),
 				msp->registers + MSP_GCR);
@@ -596,7 +589,7 @@ int ux500_msp_i2s_close(struct ux500_msp *msp, unsigned int dir)
 
 	status = disable_msp(msp, dir);
 	if (msp->dir_busy == 0) {
-		/* disable sample rate and frame generators */
+		 
 		msp->msp_state = MSP_STATE_IDLE;
 		writel((readl(msp->registers + MSP_GCR) &
 			       (~(FRAME_GEN_ENABLE | SRG_ENABLE))),

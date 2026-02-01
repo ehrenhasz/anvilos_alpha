@@ -1,23 +1,4 @@
-/*
- * HID over I2C ACPI Subclass
- *
- * Copyright (c) 2012 Benjamin Tissoires <benjamin.tissoires@gmail.com>
- * Copyright (c) 2012 Ecole Nationale de l'Aviation Civile, France
- * Copyright (c) 2012 Red Hat, Inc
- *
- * This code was forked out of the core code, which was partly based on
- * "USB HID support for Linux":
- *
- *  Copyright (c) 1999 Andreas Gal
- *  Copyright (c) 2000-2005 Vojtech Pavlik <vojtech@suse.cz>
- *  Copyright (c) 2005 Michael Haboustak <mike-@cinci.rr.com> for Concept2, Inc
- *  Copyright (c) 2007-2008 Oliver Neukum
- *  Copyright (c) 2006-2010 Jiri Kosina
- *
- * This file is subject to the terms and conditions of the GNU General Public
- * License.  See the file COPYING in the main directory of this archive for
- * more details.
- */
+ 
 
 #include <linux/acpi.h>
 #include <linux/device.h>
@@ -35,20 +16,14 @@ struct i2c_hid_acpi {
 };
 
 static const struct acpi_device_id i2c_hid_acpi_blacklist[] = {
-	/*
-	 * The CHPN0001 ACPI device, which is used to describe the Chipone
-	 * ICN8505 controller, has a _CID of PNP0C50 but is not HID compatible.
-	 */
+	 
 	{ "CHPN0001" },
-	/*
-	 * The IDEA5002 ACPI device causes high interrupt usage and spurious
-	 * wakeups from suspend.
-	 */
+	 
 	{ "IDEA5002" },
 	{ }
 };
 
-/* HID I²C Device: 3cdff6f7-4267-4555-ad05-b30a3d8938de */
+ 
 static guid_t i2c_hid_guid =
 	GUID_INIT(0x3CDFF6F7, 0x4267, 0x4555,
 		  0xAD, 0x05, 0xB3, 0x0A, 0x3D, 0x89, 0x38, 0xDE);

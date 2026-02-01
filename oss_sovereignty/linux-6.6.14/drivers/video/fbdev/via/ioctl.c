@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright 1998-2008 VIA Technologies, Inc. All Rights Reserved.
- * Copyright 2001-2008 S3 Graphics, Inc. All Rights Reserved.
 
- */
+ 
 
 #include "global.h"
 
@@ -63,7 +59,7 @@ int viafb_ioctl_get_viafb_info(u_long arg)
 	return 0;
 }
 
-/* Hot-Plug Priority: DVI > CRT*/
+ 
 int viafb_ioctl_hotplug(int hres, int vres, int bpp)
 {
 	int DVIsense, status = 0;

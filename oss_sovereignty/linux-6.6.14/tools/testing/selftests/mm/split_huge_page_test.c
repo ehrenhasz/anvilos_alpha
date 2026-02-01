@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * A test of splitting PMD THPs and PTE-mapped THPs from a specified virtual
- * address range in a process via <debugfs>/split_huge_pages interface.
- */
+
+ 
 
 #define _GNU_SOURCE
 #include <stdio.h>
@@ -111,7 +108,7 @@ void split_pmd_thp(void)
 		exit(EXIT_FAILURE);
 	}
 
-	/* split all THPs */
+	 
 	write_debugfs(PID_FMT, getpid(), (uint64_t)one_page,
 		(uint64_t)one_page + len);
 
@@ -174,10 +171,10 @@ void split_pte_mapped_thp(void)
 		exit(EXIT_FAILURE);
 	}
 
-	/* remap the first pagesize of first THP */
+	 
 	pte_mapped = mremap(one_page, pagesize, pagesize, MREMAP_MAYMOVE);
 
-	/* remap the Nth pagesize of Nth THP */
+	 
 	for (i = 1; i < 4; i++) {
 		pte_mapped2 = mremap(one_page + pmd_pagesize * i + pagesize * i,
 				     pagesize, pagesize,
@@ -189,7 +186,7 @@ void split_pte_mapped_thp(void)
 		}
 	}
 
-	/* smap does not show THPs after mremap, use kpageflags instead */
+	 
 	thp_size = 0;
 	for (i = 0; i < pagesize * 4; i++)
 		if (i % pagesize == 0 &&
@@ -201,11 +198,11 @@ void split_pte_mapped_thp(void)
 		exit(EXIT_FAILURE);
 	}
 
-	/* split all remapped THPs */
+	 
 	write_debugfs(PID_FMT, getpid(), (uint64_t)pte_mapped,
 		      (uint64_t)pte_mapped + pagesize * 4);
 
-	/* smap does not show THPs after mremap, use kpageflags instead */
+	 
 	thp_size = 0;
 	for (i = 0; i < pagesize * 4; i++) {
 		if (pte_mapped[i] != (char)i) {
@@ -259,7 +256,7 @@ void split_file_backed_thp(void)
 		goto cleanup;
 	}
 
-	/* write something to the file, so a file-backed THP can be allocated */
+	 
 	num_written = write(fd, tmpfs_loc, strlen(tmpfs_loc) + 1);
 	close(fd);
 
@@ -268,7 +265,7 @@ void split_file_backed_thp(void)
 		goto cleanup;
 	}
 
-	/* split the file-backed THP */
+	 
 	write_debugfs(PATH_FMT, testfile, pgoff_start, pgoff_end);
 
 	status = unlink(testfile);

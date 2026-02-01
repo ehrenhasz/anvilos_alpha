@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <dlfcn.h>
 #include <signal.h>
 #include <unistd.h>
@@ -80,7 +80,7 @@ void setup_browser(bool fallback_to_pager)
 	if (use_browser < 2 && (!isatty(1) || dump_trace))
 		use_browser = 0;
 
-	/* default to TUI */
+	 
 	if (use_browser < 0)
 		use_browser = 1;
 
@@ -92,11 +92,11 @@ void setup_browser(bool fallback_to_pager)
 		       PERF_GTK_DSO);
 		sleep(1);
 		use_browser = 1;
-		/* fall through */
+		 
 	case 1:
 		if (ui__init() == 0)
 			break;
-		/* fall through */
+		 
 	default:
 		use_browser = 0;
 		if (fallback_to_pager)

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Abilis Systems Single DVB-T Receiver
- * Copyright (C) 2008 Pierrick Hascoet <pierrick.hascoet@abilis.com>
- * Copyright (C) 2010 Devin Heitmueller <dheitmueller@kernellabs.com>
- */
+
+ 
 
 #include <media/dvb_frontend.h>
 
@@ -17,9 +13,9 @@ struct as102_state {
 	void *priv;
 	uint8_t elna_cfg;
 
-	/* signal strength */
+	 
 	uint16_t signal_strength;
-	/* bit error rate */
+	 
 	uint32_t ber;
 };
 
@@ -57,10 +53,10 @@ static int as102_fe_set_frontend(struct dvb_frontend *fe)
 	struct dtv_frontend_properties *c = &fe->dtv_property_cache;
 	struct as10x_tune_args tune_args = { 0 };
 
-	/* set frequency */
+	 
 	tune_args.freq = c->frequency / 1000;
 
-	/* fix interleaving_mode */
+	 
 	tune_args.interleaving_mode = INTLV_NATIVE;
 
 	switch (c->bandwidth_hz) {
@@ -145,10 +141,7 @@ static int as102_fe_set_frontend(struct dvb_frontend *fe)
 			tune_args.bandwidth,
 			tune_args.guard_interval);
 
-	/*
-	 * Detect a hierarchy selection
-	 * if HP/LP are both set to FEC_NONE, HP will be selected.
-	 */
+	 
 	if ((tune_args.hierarchy != HIER_NONE) &&
 		       ((c->code_rate_LP == FEC_NONE) ||
 			(c->code_rate_HP == FEC_NONE))) {
@@ -177,7 +170,7 @@ static int as102_fe_set_frontend(struct dvb_frontend *fe)
 			as102_fe_get_code_rate(c->code_rate_HP);
 	}
 
-	/* Set frontend arguments */
+	 
 	return state->ops->set_tune(state->priv, &tune_args);
 }
 
@@ -188,12 +181,12 @@ static int as102_fe_get_frontend(struct dvb_frontend *fe,
 	int ret = 0;
 	struct as10x_tps tps = { 0 };
 
-	/* send abilis command: GET_TPS */
+	 
 	ret = state->ops->get_tps(state->priv, &tps);
 	if (ret < 0)
 		return ret;
 
-	/* extract constellation */
+	 
 	switch (tps.modulation) {
 	case CONST_QPSK:
 		c->modulation = QPSK;
@@ -206,7 +199,7 @@ static int as102_fe_get_frontend(struct dvb_frontend *fe,
 		break;
 	}
 
-	/* extract hierarchy */
+	 
 	switch (tps.hierarchy) {
 	case HIER_NONE:
 		c->hierarchy = HIERARCHY_NONE;
@@ -222,7 +215,7 @@ static int as102_fe_get_frontend(struct dvb_frontend *fe,
 		break;
 	}
 
-	/* extract code rate HP */
+	 
 	switch (tps.code_rate_HP) {
 	case CODE_RATE_1_2:
 		c->code_rate_HP = FEC_1_2;
@@ -241,7 +234,7 @@ static int as102_fe_get_frontend(struct dvb_frontend *fe,
 		break;
 	}
 
-	/* extract code rate LP */
+	 
 	switch (tps.code_rate_LP) {
 	case CODE_RATE_1_2:
 		c->code_rate_LP = FEC_1_2;
@@ -260,7 +253,7 @@ static int as102_fe_get_frontend(struct dvb_frontend *fe,
 		break;
 	}
 
-	/* extract guard interval */
+	 
 	switch (tps.guard_interval) {
 	case GUARD_INT_1_32:
 		c->guard_interval = GUARD_INTERVAL_1_32;
@@ -276,7 +269,7 @@ static int as102_fe_get_frontend(struct dvb_frontend *fe,
 		break;
 	}
 
-	/* extract transmission mode */
+	 
 	switch (tps.transmission_mode) {
 	case TRANS_MODE_2K:
 		c->transmission_mode = TRANSMISSION_MODE_2K;
@@ -304,7 +297,7 @@ static int as102_fe_read_status(struct dvb_frontend *fe, enum fe_status *status)
 	struct as102_state *state = fe->demodulator_priv;
 	struct as10x_tune_status tstate = { 0 };
 
-	/* send abilis command: GET_TUNE_STATUS */
+	 
 	ret = state->ops->get_status(state->priv, &tstate);
 	if (ret < 0)
 		return ret;
@@ -344,13 +337,7 @@ static int as102_fe_read_status(struct dvb_frontend *fe, enum fe_status *status)
 	return ret;
 }
 
-/*
- * Note:
- * - in AS102 SNR=MER
- *   - the SNR will be returned in linear terms, i.e. not in dB
- *   - the accuracy equals ±2dB for a SNR range from 4dB to 30dB
- *   - the accuracy is >2dB for SNR values outside this range
- */
+ 
 static int as102_fe_read_snr(struct dvb_frontend *fe, u16 *snr)
 {
 	struct as102_state *state = fe->demodulator_priv;
@@ -457,7 +444,7 @@ struct dvb_frontend *as102_attach(const char *name,
 	state->priv = priv;
 	state->elna_cfg = elna_cfg;
 
-	/* init frontend callback ops */
+	 
 	memcpy(&fe->ops, &as102_fe_ops, sizeof(struct dvb_frontend_ops));
 	strscpy(fe->ops.info.name, name, sizeof(fe->ops.info.name));
 

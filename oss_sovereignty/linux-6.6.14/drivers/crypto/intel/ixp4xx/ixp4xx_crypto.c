@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Intel IXP4xx NPE-C crypto driver
- *
- * Copyright (C) 2008 Christian Hohnstaedt <chohnstaedt@innominate.com>
- */
+
+ 
 
 #include <linux/platform_device.h>
 #include <linux/dma-mapping.h>
@@ -31,12 +27,12 @@
 #include <linux/soc/ixp4xx/npe.h>
 #include <linux/soc/ixp4xx/qmgr.h>
 
-/* Intermittent includes, delete this after v5.14-rc1 */
+ 
 #include <linux/soc/ixp4xx/cpu.h>
 
 #define MAX_KEYLEN 32
 
-/* hash: cfgword + 2 * digestlen; crypt: keylen + cfgword */
+ 
 #define NPE_CTX_LEN 80
 #define AES_BLOCK128 16
 
@@ -76,8 +72,7 @@
 
 #define MAX_IVLEN   16
 #define NPE_QLEN    16
-/* Space for registering when the first
- * NPE_QLEN crypt_ctl are busy */
+ 
 #define NPE_QLEN_TOTAL 64
 
 #define CTL_FLAG_UNUSED		0x0000
@@ -109,33 +104,33 @@ struct buffer_desc {
 
 struct crypt_ctl {
 #ifdef __ARMEB__
-	u8 mode;		/* NPE_OP_*  operation mode */
+	u8 mode;		 
 	u8 init_len;
 	u16 reserved;
 #else
 	u16 reserved;
 	u8 init_len;
-	u8 mode;		/* NPE_OP_*  operation mode */
+	u8 mode;		 
 #endif
-	u8 iv[MAX_IVLEN];	/* IV for CBC mode or CTR IV for CTR mode */
-	u32 icv_rev_aes;	/* icv or rev aes */
+	u8 iv[MAX_IVLEN];	 
+	u32 icv_rev_aes;	 
 	u32 src_buf;
 	u32 dst_buf;
 #ifdef __ARMEB__
-	u16 auth_offs;		/* Authentication start offset */
-	u16 auth_len;		/* Authentication data length */
-	u16 crypt_offs;		/* Cryption start offset */
-	u16 crypt_len;		/* Cryption data length */
+	u16 auth_offs;		 
+	u16 auth_len;		 
+	u16 crypt_offs;		 
+	u16 crypt_len;		 
 #else
-	u16 auth_len;		/* Authentication data length */
-	u16 auth_offs;		/* Authentication start offset */
-	u16 crypt_len;		/* Cryption data length */
-	u16 crypt_offs;		/* Cryption start offset */
+	u16 auth_len;		 
+	u16 auth_offs;		 
+	u16 crypt_len;		 
+	u16 crypt_offs;		 
 #endif
-	u32 aadAddr;		/* Additional Auth Data Addr for CCM mode */
-	u32 crypto_ctx;		/* NPE Crypto Param structure address */
+	u32 aadAddr;		 
+	u32 crypto_ctx;		 
 
-	/* Used by Host: 4*4 bytes*/
+	 
 	unsigned int ctl_flags;
 	union {
 		struct skcipher_request *ablk_req;
@@ -151,14 +146,14 @@ struct ablk_ctx {
 	struct buffer_desc *dst;
 	u8 iv[MAX_IVLEN];
 	bool encrypt;
-	struct skcipher_request fallback_req;   // keep at the end
+	struct skcipher_request fallback_req;   
 };
 
 struct aead_ctx {
 	struct buffer_desc *src;
 	struct buffer_desc *dst;
 	struct scatterlist ivlist;
-	/* used when the hmac is not on one sg entry */
+	 
 	u8 *hmac_virt;
 	int encrypt;
 };
@@ -459,7 +454,7 @@ static int init_ixp_crypto(struct device *dev)
 
 	dev_info(dev, "probing...\n");
 
-	/* Locate the NPE and queue manager to use from device tree */
+	 
 	if (IS_ENABLED(CONFIG_OF) && np) {
 		struct of_phandle_args queue_spec;
 		struct of_phandle_args npe_spec;
@@ -488,10 +483,7 @@ static int init_ixp_crypto(struct device *dev)
 		}
 		send_qid = queue_spec.args[0];
 	} else {
-		/*
-		 * Hardcoded engine when using platform data, this goes away
-		 * when we switch to using DT only.
-		 */
+		 
 		npe_id = 2;
 		send_qid = 29;
 		recv_qid = 30;
@@ -529,9 +521,7 @@ static int init_ixp_crypto(struct device *dev)
 		ret = -ENODEV;
 		goto npe_release;
 	}
-	/* buffer_pool will also be used to sometimes store the hmac,
-	 * so assure it is large enough
-	 */
+	 
 	BUILD_BUG_ON(SHA1_DIGEST_SIZE > sizeof(struct buffer_desc));
 	buffer_pool = dma_pool_create("buffer", dev, sizeof(struct buffer_desc),
 				      32, 0);
@@ -748,15 +738,15 @@ static int setup_auth(struct crypto_tfm *tfm, int encrypt, unsigned int authsize
 	cinfo = dir->npe_ctx + dir->npe_ctx_idx;
 	algo = ix_hash(tfm);
 
-	/* write cfg word to cryptinfo */
-	cfgword = algo->cfgword | (authsize << 6); /* (authsize/4) << 8 */
+	 
+	cfgword = algo->cfgword | (authsize << 6);  
 #ifndef __ARMEB__
-	cfgword ^= 0xAA000000; /* change the "byte swap" flags */
+	cfgword ^= 0xAA000000;  
 #endif
 	*(__be32 *)cinfo = cpu_to_be32(cfgword);
 	cinfo += sizeof(cfgword);
 
-	/* write ICV to cryptinfo */
+	 
 	memcpy(cinfo, algo->icv, digest_len);
 	cinfo += digest_len;
 
@@ -847,13 +837,13 @@ static int setup_cipher(struct crypto_tfm *tfm, int encrypt, const u8 *key,
 		if (err)
 			return err;
 	}
-	/* write cfg word to cryptinfo */
+	 
 	*(__be32 *)cinfo = cpu_to_be32(cipher_cfg);
 	cinfo += sizeof(cipher_cfg);
 
-	/* write cipher key to cryptinfo */
+	 
 	memcpy(cinfo, key, key_len);
-	/* NPE wants keylen set to DES3_EDE_KEY_SIZE even for single DES */
+	 
 	if (key_len < DES3_EDE_KEY_SIZE && !(cipher_cfg & MOD_AES)) {
 		memset(cinfo + key_len, 0, DES3_EDE_KEY_SIZE - key_len);
 		key_len = DES3_EDE_KEY_SIZE;
@@ -940,7 +930,7 @@ static int ablk_rfc3686_setkey(struct crypto_skcipher *tfm, const u8 *key,
 {
 	struct ixp_ctx *ctx = crypto_skcipher_ctx(tfm);
 
-	/* the nonce is stored in bytes at end of key */
+	 
 	if (key_len < CTR_RFC3686_NONCE_SIZE)
 		return -EINVAL;
 
@@ -1019,8 +1009,7 @@ static int ablk_perform(struct skcipher_request *req, int encrypt)
 		struct buffer_desc dst_hook;
 
 		crypt->mode |= NPE_OP_NOT_IN_PLACE;
-		/* This was never tested by Intel
-		 * for more than one dst buffer, I think. */
+		 
 		req_ctx->dst = NULL;
 		if (!chainup_buffers(dev, req->dst, nbytes, &dst_hook,
 				     flags, DMA_FROM_DEVICE))
@@ -1071,11 +1060,11 @@ static int ablk_rfc3686_crypt(struct skcipher_request *req)
 	u8 *info = req->iv;
 	int ret;
 
-	/* set up counter block */
+	 
 	memcpy(iv, ctx->nonce, CTR_RFC3686_NONCE_SIZE);
 	memcpy(iv + CTR_RFC3686_NONCE_SIZE, info, CTR_RFC3686_IV_SIZE);
 
-	/* initialize counter portion of counter block */
+	 
 	*(__be32 *)(iv + CTR_RFC3686_NONCE_SIZE + CTR_RFC3686_IV_SIZE) =
 		cpu_to_be32(1);
 
@@ -1113,7 +1102,7 @@ static int aead_perform(struct aead_request *req, int encrypt,
 		cryptlen = req->cryptlen;
 	} else {
 		dir = &ctx->decrypt;
-		/* req->cryptlen includes the authsize when decrypting */
+		 
 		cryptlen = req->cryptlen - authsize;
 		eff_cryptlen -= authsize;
 	}
@@ -1172,8 +1161,7 @@ static int aead_perform(struct aead_request *req, int encrypt,
 
 	if (unlikely(lastlen < authsize)) {
 		dma_addr_t dma;
-		/* The 12 hmac bytes are scattered,
-		 * we need to copy them into a safe buffer */
+		 
 		req_ctx->hmac_virt = dma_pool_alloc(buffer_pool, flags, &dma);
 		if (unlikely(!req_ctx->hmac_virt))
 			goto free_buf_dst;
@@ -1503,7 +1491,7 @@ static int ixp_crypto_probe(struct platform_device *_pdev)
 		if (!support_aes && (ixp4xx_algos[i].cfg_enc & MOD_AES))
 			continue;
 
-		/* block ciphers */
+		 
 		cra->base.cra_flags = CRYPTO_ALG_KERN_DRIVER_ONLY |
 				      CRYPTO_ALG_ASYNC |
 				      CRYPTO_ALG_ALLOCATES_MEMORY |
@@ -1538,7 +1526,7 @@ static int ixp_crypto_probe(struct platform_device *_pdev)
 		if (!support_aes && (ixp4xx_algos[i].cfg_enc & MOD_AES))
 			continue;
 
-		/* authenc */
+		 
 		cra->base.cra_flags = CRYPTO_ALG_KERN_DRIVER_ONLY |
 				      CRYPTO_ALG_ASYNC |
 				      CRYPTO_ALG_ALLOCATES_MEMORY;

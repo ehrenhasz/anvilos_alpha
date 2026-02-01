@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * acpi_pad.c ACPI Processor Aggregator Driver
- *
- * Copyright (c) 2009, Intel Corporation.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/cpumask.h>
@@ -67,15 +63,12 @@ static void power_saving_mwait_init(void)
 	case X86_VENDOR_INTEL:
 	case X86_VENDOR_ZHAOXIN:
 	case X86_VENDOR_CENTAUR:
-		/*
-		 * AMD Fam10h TSC will tick in all
-		 * C/P/S0/S1 states when this bit is set.
-		 */
+		 
 		if (!boot_cpu_has(X86_FEATURE_NONSTOP_TSC))
 			tsc_detected_unstable = 1;
 		break;
 	default:
-		/* TSC could halt in idle */
+		 
 		tsc_detected_unstable = 1;
 	}
 #endif
@@ -100,7 +93,7 @@ static void round_robin_cpu(unsigned int tsk_index)
 	for_each_cpu(cpu, pad_busy_cpus)
 		cpumask_or(tmp, tmp, topology_sibling_cpumask(cpu));
 	cpumask_andnot(tmp, cpu_online_mask, tmp);
-	/* avoid HT sibilings if possible */
+	 
 	if (cpumask_empty(tmp))
 		cpumask_andnot(tmp, cpu_online_mask, pad_busy_cpus);
 	if (cpumask_empty(tmp)) {
@@ -135,8 +128,8 @@ static void exit_round_robin(unsigned int tsk_index)
 	tsk_in_cpu[tsk_index] = -1;
 }
 
-static unsigned int idle_pct = 5; /* percentage */
-static unsigned int round_robin_time = 1; /* second */
+static unsigned int idle_pct = 5;  
+static unsigned int round_robin_time = 1;  
 static int power_saving_thread(void *data)
 {
 	int do_sleep;
@@ -148,7 +141,7 @@ static int power_saving_thread(void *data)
 	while (!kthread_should_stop()) {
 		unsigned long expire_time;
 
-		/* round robin to cpus */
+		 
 		expire_time = last_jiffies + round_robin_time * HZ;
 		if (time_before(expire_time, jiffies)) {
 			last_jiffies = jiffies;
@@ -161,7 +154,7 @@ static int power_saving_thread(void *data)
 
 		while (!need_resched()) {
 			if (tsc_detected_unstable && !tsc_marked_unstable) {
-				/* TSC could halt in idle, so notify users */
+				 
 				mark_tsc_unstable("TSC halts in idle");
 				tsc_marked_unstable = 1;
 			}
@@ -188,22 +181,11 @@ static int power_saving_thread(void *data)
 			}
 		}
 
-		/*
-		 * current sched_rt has threshold for rt task running time.
-		 * When a rt task uses 95% CPU time, the rt thread will be
-		 * scheduled out for 5% CPU time to not starve other tasks. But
-		 * the mechanism only works when all CPUs have RT task running,
-		 * as if one CPU hasn't RT task, RT task from other CPUs will
-		 * borrow CPU time from this CPU and cause RT task use > 95%
-		 * CPU time. To make 'avoid starvation' work, takes a nap here.
-		 */
+		 
 		if (unlikely(do_sleep))
 			schedule_timeout_killable(HZ * idle_pct / 100);
 
-		/* If an external event has set the need_resched flag, then
-		 * we need to deal with it, or this loop will continue to
-		 * spin without calling __mwait().
-		 */
+		 
 		if (unlikely(need_resched()))
 			schedule();
 	}
@@ -364,10 +346,7 @@ static void acpi_pad_remove_sysfs(struct acpi_device *device)
 	device_remove_file(&device->dev, &dev_attr_rrtime);
 }
 
-/*
- * Query firmware how many CPUs should be idle
- * return -1 on failure
- */
+ 
 static int acpi_pad_pur(acpi_handle handle)
 {
 	struct acpi_buffer buffer = {ACPI_ALLOCATE_BUFFER, NULL};
@@ -384,7 +363,7 @@ static int acpi_pad_pur(acpi_handle handle)
 
 	if (package->type == ACPI_TYPE_PACKAGE &&
 		package->package.count == 2 &&
-		package->package.elements[0].integer.value == 1) /* rev 1 */
+		package->package.elements[0].integer.value == 1)  
 
 		num = package->package.elements[1].integer.value;
 
@@ -479,7 +458,7 @@ static struct acpi_driver acpi_pad_driver = {
 
 static int __init acpi_pad_init(void)
 {
-	/* Xen ACPI PAD is used when running as Xen Dom0. */
+	 
 	if (xen_initial_domain())
 		return -ENODEV;
 

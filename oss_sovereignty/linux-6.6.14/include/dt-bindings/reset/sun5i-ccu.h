@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copyright 2016 Maxime Ripard
- *
- * Maxime Ripard <maxime.ripard@free-electrons.com>
- */
+ 
+ 
 
 #ifndef _RST_SUN5I_H_
 #define _RST_SUN5I_H_
@@ -20,4 +16,4 @@
 #define RST_GPU		9
 #define RST_IEP		10
 
-#endif /* _RST_SUN5I_H_ */
+#endif  

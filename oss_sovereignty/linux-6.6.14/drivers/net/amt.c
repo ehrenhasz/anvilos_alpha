@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* Copyright (c) 2021 Taehee Yoo <ap420073@gmail.com> */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -33,7 +33,7 @@
 static struct workqueue_struct *amt_wq;
 
 static HLIST_HEAD(source_gc_list);
-/* Lock for source_gc_list */
+ 
 static spinlock_t source_gc_lock;
 static struct delayed_work source_gc_wq;
 static char *status_str[] = {
@@ -51,7 +51,7 @@ static char *status_str[] = {
 };
 
 static char *type_str[] = {
-	"", /* Type 0 is not defined */
+	"",  
 	"AMT_MSG_DISCOVERY",
 	"AMT_MSG_ADVERTISEMENT",
 	"AMT_MSG_REQUEST",
@@ -273,17 +273,11 @@ static void amt_del_group(struct amt_dev *amt, struct amt_group_node *gnode)
 		hlist_for_each_entry_safe(snode, t, &gnode->sources[i], node)
 			amt_destroy_source(snode);
 
-	/* tunnel->lock was acquired outside of amt_del_group()
-	 * But rcu_read_lock() was acquired too so It's safe.
-	 */
+	 
 	kfree_rcu(gnode, rcu);
 }
 
-/* If a source timer expires with a router filter-mode for the group of
- * INCLUDE, the router concludes that traffic from this particular
- * source is no longer desired on the attached network, and deletes the
- * associated source record.
- */
+ 
 static void amt_source_work(struct work_struct *work)
 {
 	struct amt_source_node *snode = container_of(to_delayed_work(work),
@@ -301,9 +295,7 @@ static void amt_source_work(struct work_struct *work)
 		if (!gnode->nr_sources)
 			amt_del_group(amt, gnode);
 	} else {
-		/* When a router filter-mode for a group is EXCLUDE,
-		 * source records are only deleted when the group timer expires
-		 */
+		 
 		snode->status = AMT_SOURCE_STATUS_D_FWD;
 	}
 	rcu_read_unlock();
@@ -380,31 +372,7 @@ static struct amt_source_node *amt_alloc_snode(struct amt_group_node *gnode,
 	return snode;
 }
 
-/* RFC 3810 - 7.2.2.  Definition of Filter Timers
- *
- *  Router Mode          Filter Timer         Actions/Comments
- *  -----------       -----------------       ----------------
- *
- *    INCLUDE             Not Used            All listeners in
- *                                            INCLUDE mode.
- *
- *    EXCLUDE             Timer > 0           At least one listener
- *                                            in EXCLUDE mode.
- *
- *    EXCLUDE             Timer == 0          No more listeners in
- *                                            EXCLUDE mode for the
- *                                            multicast address.
- *                                            If the Requested List
- *                                            is empty, delete
- *                                            Multicast Address
- *                                            Record.  If not, switch
- *                                            to INCLUDE filter mode;
- *                                            the sources in the
- *                                            Requested List are
- *                                            moved to the Include
- *                                            List, and the Exclude
- *                                            List is deleted.
- */
+ 
 static void amt_group_work(struct work_struct *work)
 {
 	struct amt_group_node *gnode = container_of(to_delayed_work(work),
@@ -421,7 +389,7 @@ static void amt_group_work(struct work_struct *work)
 
 	spin_lock_bh(&tunnel->lock);
 	if (gnode->filter_mode == MCAST_INCLUDE) {
-		/* Not Used */
+		 
 		spin_unlock_bh(&tunnel->lock);
 		goto out;
 	}
@@ -449,17 +417,7 @@ out:
 	dev_put(amt->dev);
 }
 
-/* Non-existent group is created as INCLUDE {empty}:
- *
- * RFC 3376 - 5.1. Action on Change of Interface State
- *
- * If no interface state existed for that multicast address before
- * the change (i.e., the change consisted of creating a new
- * per-interface record), or if no state exists after the change
- * (i.e., the change consisted of deleting a per-interface record),
- * then the "non-existent" state is considered to have a filter mode
- * of INCLUDE and an empty source list.
- */
+ 
 static struct amt_group_node *amt_add_group(struct amt_dev *amt,
 					    struct amt_tunnel_list *tunnel,
 					    union amt_addr *group,
@@ -1243,7 +1201,7 @@ static netdev_tx_t amt_dev_xmit(struct sk_buff *skb, struct net_device *dev)
 	skb_pull(skb, sizeof(struct ethhdr));
 
 	if (amt->mode == AMT_MODE_GATEWAY) {
-		/* Gateway only passes IGMP/MLD packets */
+		 
 		if (!report)
 			goto free;
 		if ((!v6 && !READ_ONCE(amt->ready4)) ||
@@ -1260,7 +1218,7 @@ static netdev_tx_t amt_dev_xmit(struct sk_buff *skb, struct net_device *dev)
 				goto free;
 			}
 
-			/* Do not forward unexpected query */
+			 
 			if (amt_send_membership_query(amt, skb, tunnel, v6))
 				goto free;
 			goto unlock;
@@ -1357,7 +1315,7 @@ static void amt_cleanup_srcs(struct amt_dev *amt,
 	struct hlist_node *t;
 	int i;
 
-	/* Delete old sources */
+	 
 	for (i = 0; i < amt->hash_buckets; i++) {
 		hlist_for_each_entry_safe(snode, t, &gnode->sources[i], node) {
 			if (snode->flags == AMT_SOURCE_OLD)
@@ -1365,7 +1323,7 @@ static void amt_cleanup_srcs(struct amt_dev *amt,
 		}
 	}
 
-	/* switch from new to old */
+	 
 	for (i = 0; i < amt->hash_buckets; i++)  {
 		hlist_for_each_entry_rcu(snode, &gnode->sources[i], node) {
 			snode->flags = AMT_SOURCE_OLD;
@@ -1446,25 +1404,7 @@ static void amt_add_srcs(struct amt_dev *amt, struct amt_tunnel_list *tunnel,
 	}
 }
 
-/* Router State   Report Rec'd New Router State
- * ------------   ------------ ----------------
- * EXCLUDE (X,Y)  IS_IN (A)    EXCLUDE (X+A,Y-A)
- *
- * -----------+-----------+-----------+
- *            |    OLD    |    NEW    |
- * -----------+-----------+-----------+
- *    FWD     |     X     |    X+A    |
- * -----------+-----------+-----------+
- *    D_FWD   |     Y     |    Y-A    |
- * -----------+-----------+-----------+
- *    NONE    |           |     A     |
- * -----------+-----------+-----------+
- *
- * a) Received sources are NONE/NEW
- * b) All NONE will be deleted by amt_cleanup_srcs().
- * c) All OLD will be deleted by amt_cleanup_srcs().
- * d) After delete, NEW source will be switched to OLD.
- */
+ 
 static void amt_lookup_act_srcs(struct amt_tunnel_list *tunnel,
 				struct amt_group_node *gnode,
 				void *grec,
@@ -1499,7 +1439,7 @@ static void amt_lookup_act_srcs(struct amt_tunnel_list *tunnel,
 	memset(&src, 0, sizeof(union amt_addr));
 	switch (ops) {
 	case AMT_OPS_INT:
-		/* A*B */
+		 
 		for (i = 0; i < nsrcs; i++) {
 			if (!v6)
 				src.ip4 = igmp_grec->grec_src[i];
@@ -1515,7 +1455,7 @@ static void amt_lookup_act_srcs(struct amt_tunnel_list *tunnel,
 		}
 		break;
 	case AMT_OPS_UNI:
-		/* A+B */
+		 
 		for (i = 0; i < amt->hash_buckets; i++) {
 			hlist_for_each_entry_safe(snode, t, &gnode->sources[i],
 						  node) {
@@ -1538,7 +1478,7 @@ static void amt_lookup_act_srcs(struct amt_tunnel_list *tunnel,
 		}
 		break;
 	case AMT_OPS_SUB:
-		/* A-B */
+		 
 		for (i = 0; i < amt->hash_buckets; i++) {
 			hlist_for_each_entry_safe(snode, t, &gnode->sources[i],
 						  node) {
@@ -1564,7 +1504,7 @@ out_sub:;
 		}
 		break;
 	case AMT_OPS_SUB_REV:
-		/* B-A */
+		 
 		for (i = 0; i < nsrcs; i++) {
 			if (!v6)
 				src.ip4 = igmp_grec->grec_src[i];
@@ -1595,46 +1535,40 @@ static void amt_mcast_is_in_handler(struct amt_dev *amt,
 				    void *grec, void *zero_grec, bool v6)
 {
 	if (gnode->filter_mode == MCAST_INCLUDE) {
-/* Router State   Report Rec'd New Router State        Actions
- * ------------   ------------ ----------------        -------
- * INCLUDE (A)    IS_IN (B)    INCLUDE (A+B)           (B)=GMI
- */
-		/* Update IS_IN (B) as FWD/NEW */
+ 
+		 
 		amt_lookup_act_srcs(tunnel, gnode, grec, AMT_OPS_UNI,
 				    AMT_FILTER_NONE_NEW,
 				    AMT_ACT_STATUS_FWD_NEW,
 				    v6);
-		/* Update INCLUDE (A) as NEW */
+		 
 		amt_lookup_act_srcs(tunnel, gnode, grec, AMT_OPS_UNI,
 				    AMT_FILTER_FWD,
 				    AMT_ACT_STATUS_FWD_NEW,
 				    v6);
-		/* (B)=GMI */
+		 
 		amt_lookup_act_srcs(tunnel, gnode, grec, AMT_OPS_INT,
 				    AMT_FILTER_FWD_NEW,
 				    AMT_ACT_GMI,
 				    v6);
 	} else {
-/* State        Actions
- * ------------   ------------ ----------------        -------
- * EXCLUDE (X,Y)  IS_IN (A)    EXCLUDE (X+A,Y-A)       (A)=GMI
- */
-		/* Update (A) in (X, Y) as NONE/NEW */
+ 
+		 
 		amt_lookup_act_srcs(tunnel, gnode, grec, AMT_OPS_INT,
 				    AMT_FILTER_BOTH,
 				    AMT_ACT_STATUS_NONE_NEW,
 				    v6);
-		/* Update FWD/OLD as FWD/NEW */
+		 
 		amt_lookup_act_srcs(tunnel, gnode, zero_grec, AMT_OPS_UNI,
 				    AMT_FILTER_FWD,
 				    AMT_ACT_STATUS_FWD_NEW,
 				    v6);
-		/* Update IS_IN (A) as FWD/NEW */
+		 
 		amt_lookup_act_srcs(tunnel, gnode, grec, AMT_OPS_INT,
 				    AMT_FILTER_NONE_NEW,
 				    AMT_ACT_STATUS_FWD_NEW,
 				    v6);
-		/* Update EXCLUDE (, Y-A) as D_FWD_NEW */
+		 
 		amt_lookup_act_srcs(tunnel, gnode, grec, AMT_OPS_SUB,
 				    AMT_FILTER_D_FWD,
 				    AMT_ACT_STATUS_D_FWD_NEW,
@@ -1648,61 +1582,50 @@ static void amt_mcast_is_ex_handler(struct amt_dev *amt,
 				    void *grec, void *zero_grec, bool v6)
 {
 	if (gnode->filter_mode == MCAST_INCLUDE) {
-/* Router State   Report Rec'd  New Router State         Actions
- * ------------   ------------  ----------------         -------
- * INCLUDE (A)    IS_EX (B)     EXCLUDE (A*B,B-A)        (B-A)=0
- *                                                       Delete (A-B)
- *                                                       Group Timer=GMI
- */
-		/* EXCLUDE(A*B, ) */
+ 
+		 
 		amt_lookup_act_srcs(tunnel, gnode, grec, AMT_OPS_INT,
 				    AMT_FILTER_FWD,
 				    AMT_ACT_STATUS_FWD_NEW,
 				    v6);
-		/* EXCLUDE(, B-A) */
+		 
 		amt_lookup_act_srcs(tunnel, gnode, grec, AMT_OPS_SUB_REV,
 				    AMT_FILTER_FWD,
 				    AMT_ACT_STATUS_D_FWD_NEW,
 				    v6);
-		/* (B-A)=0 */
+		 
 		amt_lookup_act_srcs(tunnel, gnode, zero_grec, AMT_OPS_UNI,
 				    AMT_FILTER_D_FWD_NEW,
 				    AMT_ACT_GMI_ZERO,
 				    v6);
-		/* Group Timer=GMI */
+		 
 		if (!mod_delayed_work(amt_wq, &gnode->group_timer,
 				      msecs_to_jiffies(amt_gmi(amt))))
 			dev_hold(amt->dev);
 		gnode->filter_mode = MCAST_EXCLUDE;
-		/* Delete (A-B) will be worked by amt_cleanup_srcs(). */
+		 
 	} else {
-/* Router State   Report Rec'd  New Router State	Actions
- * ------------   ------------  ----------------	-------
- * EXCLUDE (X,Y)  IS_EX (A)     EXCLUDE (A-Y,Y*A)	(A-X-Y)=GMI
- *							Delete (X-A)
- *							Delete (Y-A)
- *							Group Timer=GMI
- */
-		/* EXCLUDE (A-Y, ) */
+ 
+		 
 		amt_lookup_act_srcs(tunnel, gnode, grec, AMT_OPS_SUB_REV,
 				    AMT_FILTER_D_FWD,
 				    AMT_ACT_STATUS_FWD_NEW,
 				    v6);
-		/* EXCLUDE (, Y*A ) */
+		 
 		amt_lookup_act_srcs(tunnel, gnode, grec, AMT_OPS_INT,
 				    AMT_FILTER_D_FWD,
 				    AMT_ACT_STATUS_D_FWD_NEW,
 				    v6);
-		/* (A-X-Y)=GMI */
+		 
 		amt_lookup_act_srcs(tunnel, gnode, grec, AMT_OPS_SUB_REV,
 				    AMT_FILTER_BOTH_NEW,
 				    AMT_ACT_GMI,
 				    v6);
-		/* Group Timer=GMI */
+		 
 		if (!mod_delayed_work(amt_wq, &gnode->group_timer,
 				      msecs_to_jiffies(amt_gmi(amt))))
 			dev_hold(amt->dev);
-		/* Delete (X-A), (Y-A) will be worked by amt_cleanup_srcs(). */
+		 
 	}
 }
 
@@ -1712,54 +1635,40 @@ static void amt_mcast_to_in_handler(struct amt_dev *amt,
 				    void *grec, void *zero_grec, bool v6)
 {
 	if (gnode->filter_mode == MCAST_INCLUDE) {
-/* Router State   Report Rec'd New Router State        Actions
- * ------------   ------------ ----------------        -------
- * INCLUDE (A)    TO_IN (B)    INCLUDE (A+B)           (B)=GMI
- *						       Send Q(G,A-B)
- */
-		/* Update TO_IN (B) sources as FWD/NEW */
+ 
+		 
 		amt_lookup_act_srcs(tunnel, gnode, grec, AMT_OPS_UNI,
 				    AMT_FILTER_NONE_NEW,
 				    AMT_ACT_STATUS_FWD_NEW,
 				    v6);
-		/* Update INCLUDE (A) sources as NEW */
+		 
 		amt_lookup_act_srcs(tunnel, gnode, grec, AMT_OPS_UNI,
 				    AMT_FILTER_FWD,
 				    AMT_ACT_STATUS_FWD_NEW,
 				    v6);
-		/* (B)=GMI */
+		 
 		amt_lookup_act_srcs(tunnel, gnode, grec, AMT_OPS_INT,
 				    AMT_FILTER_FWD_NEW,
 				    AMT_ACT_GMI,
 				    v6);
 	} else {
-/* Router State   Report Rec'd New Router State        Actions
- * ------------   ------------ ----------------        -------
- * EXCLUDE (X,Y)  TO_IN (A)    EXCLUDE (X+A,Y-A)       (A)=GMI
- *						       Send Q(G,X-A)
- *						       Send Q(G)
- */
-		/* Update TO_IN (A) sources as FWD/NEW */
+ 
+		 
 		amt_lookup_act_srcs(tunnel, gnode, grec, AMT_OPS_UNI,
 				    AMT_FILTER_NONE_NEW,
 				    AMT_ACT_STATUS_FWD_NEW,
 				    v6);
-		/* Update EXCLUDE(X,) sources as FWD/NEW */
+		 
 		amt_lookup_act_srcs(tunnel, gnode, grec, AMT_OPS_UNI,
 				    AMT_FILTER_FWD,
 				    AMT_ACT_STATUS_FWD_NEW,
 				    v6);
-		/* EXCLUDE (, Y-A)
-		 * (A) are already switched to FWD_NEW.
-		 * So, D_FWD/OLD -> D_FWD/NEW is okay.
-		 */
+		 
 		amt_lookup_act_srcs(tunnel, gnode, zero_grec, AMT_OPS_UNI,
 				    AMT_FILTER_D_FWD,
 				    AMT_ACT_STATUS_D_FWD_NEW,
 				    v6);
-		/* (A)=GMI
-		 * Only FWD_NEW will have (A) sources.
-		 */
+		 
 		amt_lookup_act_srcs(tunnel, gnode, grec, AMT_OPS_INT,
 				    AMT_FILTER_FWD_NEW,
 				    AMT_ACT_GMI,
@@ -1773,63 +1682,50 @@ static void amt_mcast_to_ex_handler(struct amt_dev *amt,
 				    void *grec, void *zero_grec, bool v6)
 {
 	if (gnode->filter_mode == MCAST_INCLUDE) {
-/* Router State   Report Rec'd New Router State        Actions
- * ------------   ------------ ----------------        -------
- * INCLUDE (A)    TO_EX (B)    EXCLUDE (A*B,B-A)       (B-A)=0
- *						       Delete (A-B)
- *						       Send Q(G,A*B)
- *						       Group Timer=GMI
- */
-		/* EXCLUDE (A*B, ) */
+ 
+		 
 		amt_lookup_act_srcs(tunnel, gnode, grec, AMT_OPS_INT,
 				    AMT_FILTER_FWD,
 				    AMT_ACT_STATUS_FWD_NEW,
 				    v6);
-		/* EXCLUDE (, B-A) */
+		 
 		amt_lookup_act_srcs(tunnel, gnode, grec, AMT_OPS_SUB_REV,
 				    AMT_FILTER_FWD,
 				    AMT_ACT_STATUS_D_FWD_NEW,
 				    v6);
-		/* (B-A)=0 */
+		 
 		amt_lookup_act_srcs(tunnel, gnode, zero_grec, AMT_OPS_UNI,
 				    AMT_FILTER_D_FWD_NEW,
 				    AMT_ACT_GMI_ZERO,
 				    v6);
-		/* Group Timer=GMI */
+		 
 		if (!mod_delayed_work(amt_wq, &gnode->group_timer,
 				      msecs_to_jiffies(amt_gmi(amt))))
 			dev_hold(amt->dev);
 		gnode->filter_mode = MCAST_EXCLUDE;
-		/* Delete (A-B) will be worked by amt_cleanup_srcs(). */
+		 
 	} else {
-/* Router State   Report Rec'd New Router State        Actions
- * ------------   ------------ ----------------        -------
- * EXCLUDE (X,Y)  TO_EX (A)    EXCLUDE (A-Y,Y*A)       (A-X-Y)=Group Timer
- *						       Delete (X-A)
- *						       Delete (Y-A)
- *						       Send Q(G,A-Y)
- *						       Group Timer=GMI
- */
-		/* Update (A-X-Y) as NONE/OLD */
+ 
+		 
 		amt_lookup_act_srcs(tunnel, gnode, grec, AMT_OPS_SUB_REV,
 				    AMT_FILTER_BOTH,
 				    AMT_ACT_GT,
 				    v6);
-		/* EXCLUDE (A-Y, ) */
+		 
 		amt_lookup_act_srcs(tunnel, gnode, grec, AMT_OPS_SUB_REV,
 				    AMT_FILTER_D_FWD,
 				    AMT_ACT_STATUS_FWD_NEW,
 				    v6);
-		/* EXCLUDE (, Y*A) */
+		 
 		amt_lookup_act_srcs(tunnel, gnode, grec, AMT_OPS_INT,
 				    AMT_FILTER_D_FWD,
 				    AMT_ACT_STATUS_D_FWD_NEW,
 				    v6);
-		/* Group Timer=GMI */
+		 
 		if (!mod_delayed_work(amt_wq, &gnode->group_timer,
 				      msecs_to_jiffies(amt_gmi(amt))))
 			dev_hold(amt->dev);
-		/* Delete (X-A), (Y-A) will be worked by amt_cleanup_srcs(). */
+		 
 	}
 }
 
@@ -1839,38 +1735,30 @@ static void amt_mcast_allow_handler(struct amt_dev *amt,
 				    void *grec, void *zero_grec, bool v6)
 {
 	if (gnode->filter_mode == MCAST_INCLUDE) {
-/* Router State   Report Rec'd New Router State        Actions
- * ------------   ------------ ----------------        -------
- * INCLUDE (A)    ALLOW (B)    INCLUDE (A+B)	       (B)=GMI
- */
-		/* INCLUDE (A+B) */
+ 
+		 
 		amt_lookup_act_srcs(tunnel, gnode, grec, AMT_OPS_UNI,
 				    AMT_FILTER_FWD,
 				    AMT_ACT_STATUS_FWD_NEW,
 				    v6);
-		/* (B)=GMI */
+		 
 		amt_lookup_act_srcs(tunnel, gnode, grec, AMT_OPS_INT,
 				    AMT_FILTER_FWD_NEW,
 				    AMT_ACT_GMI,
 				    v6);
 	} else {
-/* Router State   Report Rec'd New Router State        Actions
- * ------------   ------------ ----------------        -------
- * EXCLUDE (X,Y)  ALLOW (A)    EXCLUDE (X+A,Y-A)       (A)=GMI
- */
-		/* EXCLUDE (X+A, ) */
+ 
+		 
 		amt_lookup_act_srcs(tunnel, gnode, grec, AMT_OPS_UNI,
 				    AMT_FILTER_FWD,
 				    AMT_ACT_STATUS_FWD_NEW,
 				    v6);
-		/* EXCLUDE (, Y-A) */
+		 
 		amt_lookup_act_srcs(tunnel, gnode, grec, AMT_OPS_SUB,
 				    AMT_FILTER_D_FWD,
 				    AMT_ACT_STATUS_D_FWD_NEW,
 				    v6);
-		/* (A)=GMI
-		 * All (A) source are now FWD/NEW status.
-		 */
+		 
 		amt_lookup_act_srcs(tunnel, gnode, grec, AMT_OPS_INT,
 				    AMT_FILTER_FWD_NEW,
 				    AMT_ACT_GMI,
@@ -1884,37 +1772,30 @@ static void amt_mcast_block_handler(struct amt_dev *amt,
 				    void *grec, void *zero_grec, bool v6)
 {
 	if (gnode->filter_mode == MCAST_INCLUDE) {
-/* Router State   Report Rec'd New Router State        Actions
- * ------------   ------------ ----------------        -------
- * INCLUDE (A)    BLOCK (B)    INCLUDE (A)             Send Q(G,A*B)
- */
-		/* INCLUDE (A) */
+ 
+		 
 		amt_lookup_act_srcs(tunnel, gnode, zero_grec, AMT_OPS_UNI,
 				    AMT_FILTER_FWD,
 				    AMT_ACT_STATUS_FWD_NEW,
 				    v6);
 	} else {
-/* Router State   Report Rec'd New Router State        Actions
- * ------------   ------------ ----------------        -------
- * EXCLUDE (X,Y)  BLOCK (A)    EXCLUDE (X+(A-Y),Y)     (A-X-Y)=Group Timer
- *						       Send Q(G,A-Y)
- */
-		/* (A-X-Y)=Group Timer */
+ 
+		 
 		amt_lookup_act_srcs(tunnel, gnode, grec, AMT_OPS_SUB_REV,
 				    AMT_FILTER_BOTH,
 				    AMT_ACT_GT,
 				    v6);
-		/* EXCLUDE (X, ) */
+		 
 		amt_lookup_act_srcs(tunnel, gnode, grec, AMT_OPS_UNI,
 				    AMT_FILTER_FWD,
 				    AMT_ACT_STATUS_FWD_NEW,
 				    v6);
-		/* EXCLUDE (X+(A-Y) */
+		 
 		amt_lookup_act_srcs(tunnel, gnode, grec, AMT_OPS_SUB_REV,
 				    AMT_FILTER_D_FWD,
 				    AMT_ACT_STATUS_FWD_NEW,
 				    v6);
-		/* EXCLUDE (, Y) */
+		 
 		amt_lookup_act_srcs(tunnel, gnode, grec, AMT_OPS_UNI,
 				    AMT_FILTER_D_FWD,
 				    AMT_ACT_STATUS_D_FWD_NEW,
@@ -1922,18 +1803,7 @@ static void amt_mcast_block_handler(struct amt_dev *amt,
 	}
 }
 
-/* RFC 3376
- * 7.3.2. In the Presence of Older Version Group Members
- *
- * When Group Compatibility Mode is IGMPv2, a router internally
- * translates the following IGMPv2 messages for that group to their
- * IGMPv3 equivalents:
- *
- * IGMPv2 Message                IGMPv3 Equivalent
- * --------------                -----------------
- * Report                        IS_EX( {} )
- * Leave                         TO_IN( {} )
- */
+ 
 static void amt_igmpv2_report_handler(struct amt_dev *amt, struct sk_buff *skb,
 				      struct amt_tunnel_list *tunnel)
 {
@@ -1959,18 +1829,7 @@ static void amt_igmpv2_report_handler(struct amt_dev *amt, struct sk_buff *skb,
 	}
 }
 
-/* RFC 3376
- * 7.3.2. In the Presence of Older Version Group Members
- *
- * When Group Compatibility Mode is IGMPv2, a router internally
- * translates the following IGMPv2 messages for that group to their
- * IGMPv3 equivalents:
- *
- * IGMPv2 Message                IGMPv3 Equivalent
- * --------------                -----------------
- * Report                        IS_EX( {} )
- * Leave                         TO_IN( {} )
- */
+ 
 static void amt_igmpv2_leave_handler(struct amt_dev *amt, struct sk_buff *skb,
 				     struct amt_tunnel_list *tunnel)
 {
@@ -2059,7 +1918,7 @@ static void amt_igmpv3_report_handler(struct amt_dev *amt, struct sk_buff *skb,
 	}
 }
 
-/* caller held tunnel->lock */
+ 
 static void amt_igmp_report_handler(struct amt_dev *amt, struct sk_buff *skb,
 				    struct amt_tunnel_list *tunnel)
 {
@@ -2081,20 +1940,7 @@ static void amt_igmp_report_handler(struct amt_dev *amt, struct sk_buff *skb,
 }
 
 #if IS_ENABLED(CONFIG_IPV6)
-/* RFC 3810
- * 8.3.2. In the Presence of MLDv1 Multicast Address Listeners
- *
- * When Multicast Address Compatibility Mode is MLDv2, a router acts
- * using the MLDv2 protocol for that multicast address.  When Multicast
- * Address Compatibility Mode is MLDv1, a router internally translates
- * the following MLDv1 messages for that multicast address to their
- * MLDv2 equivalents:
- *
- * MLDv1 Message                 MLDv2 Equivalent
- * --------------                -----------------
- * Report                        IS_EX( {} )
- * Done                          TO_IN( {} )
- */
+ 
 static void amt_mldv1_report_handler(struct amt_dev *amt, struct sk_buff *skb,
 				     struct amt_tunnel_list *tunnel)
 {
@@ -2118,20 +1964,7 @@ static void amt_mldv1_report_handler(struct amt_dev *amt, struct sk_buff *skb,
 	}
 }
 
-/* RFC 3810
- * 8.3.2. In the Presence of MLDv1 Multicast Address Listeners
- *
- * When Multicast Address Compatibility Mode is MLDv2, a router acts
- * using the MLDv2 protocol for that multicast address.  When Multicast
- * Address Compatibility Mode is MLDv1, a router internally translates
- * the following MLDv1 messages for that multicast address to their
- * MLDv2 equivalents:
- *
- * MLDv1 Message                 MLDv2 Equivalent
- * --------------                -----------------
- * Report                        IS_EX( {} )
- * Done                          TO_IN( {} )
- */
+ 
 static void amt_mldv1_leave_handler(struct amt_dev *amt, struct sk_buff *skb,
 				    struct amt_tunnel_list *tunnel)
 {
@@ -2221,7 +2054,7 @@ static void amt_mldv2_report_handler(struct amt_dev *amt, struct sk_buff *skb,
 	}
 }
 
-/* caller held tunnel->lock */
+ 
 static void amt_mld_report_handler(struct amt_dev *amt, struct sk_buff *skb,
 				   struct amt_tunnel_list *tunnel)
 {
@@ -2967,7 +2800,7 @@ static int amt_socket_create(struct amt_dev *amt)
 	if (IS_ERR(sock))
 		return PTR_ERR(sock);
 
-	/* Mark socket as an encapsulation socket */
+	 
 	memset(&tunnel_cfg, 0, sizeof(tunnel_cfg));
 	tunnel_cfg.sk_user_data = amt;
 	tunnel_cfg.encap_type = 1;
@@ -3022,7 +2855,7 @@ static int amt_dev_stop(struct net_device *dev)
 	cancel_delayed_work_sync(&amt->discovery_wq);
 	cancel_delayed_work_sync(&amt->secret_wq);
 
-	/* shutdown */
+	 
 	sock = rtnl_dereference(amt->sock);
 	RCU_INIT_POINTER(amt->sock, NULL);
 	synchronize_net();
@@ -3298,14 +3131,14 @@ static void amt_dellink(struct net_device *dev, struct list_head *head)
 
 static size_t amt_get_size(const struct net_device *dev)
 {
-	return nla_total_size(sizeof(__u32)) + /* IFLA_AMT_MODE */
-	       nla_total_size(sizeof(__u16)) + /* IFLA_AMT_RELAY_PORT */
-	       nla_total_size(sizeof(__u16)) + /* IFLA_AMT_GATEWAY_PORT */
-	       nla_total_size(sizeof(__u32)) + /* IFLA_AMT_LINK */
-	       nla_total_size(sizeof(__u32)) + /* IFLA_MAX_TUNNELS */
-	       nla_total_size(sizeof(struct iphdr)) + /* IFLA_AMT_DISCOVERY_IP */
-	       nla_total_size(sizeof(struct iphdr)) + /* IFLA_AMT_REMOTE_IP */
-	       nla_total_size(sizeof(struct iphdr)); /* IFLA_AMT_LOCAL_IP */
+	return nla_total_size(sizeof(__u32)) +  
+	       nla_total_size(sizeof(__u16)) +  
+	       nla_total_size(sizeof(__u16)) +  
+	       nla_total_size(sizeof(__u32)) +  
+	       nla_total_size(sizeof(__u32)) +  
+	       nla_total_size(sizeof(struct iphdr)) +  
+	       nla_total_size(sizeof(struct iphdr)) +  
+	       nla_total_size(sizeof(struct iphdr));  
 }
 
 static int amt_fill_info(struct sk_buff *skb, const struct net_device *dev)

@@ -1,8 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// JZ4725B CODEC driver
-//
-// Copyright (C) 2019, Paul Cercueil <paul@crapouillou.net>
+
+
+
+
+
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -25,7 +25,7 @@
 #define ICDC_RGADW_OFFSET		0x00
 #define ICDC_RGDATA_OFFSET		0x04
 
-/* ICDC internal register access control register(RGADW) */
+ 
 #define ICDC_RGADW_RGWR			BIT(16)
 
 #define ICDC_RGADW_RGADDR_OFFSET	8
@@ -34,13 +34,13 @@
 #define ICDC_RGADW_RGDIN_OFFSET		0
 #define	ICDC_RGADW_RGDIN_MASK		GENMASK(7, ICDC_RGADW_RGDIN_OFFSET)
 
-/* ICDC internal register data output register (RGDATA)*/
+ 
 #define ICDC_RGDATA_IRQ			BIT(8)
 
 #define ICDC_RGDATA_RGDOUT_OFFSET	0
 #define ICDC_RGDATA_RGDOUT_MASK		GENMASK(7, ICDC_RGDATA_RGDOUT_OFFSET)
 
-/* JZ internal register space */
+ 
 enum {
 	JZ4725B_CODEC_REG_AICR,
 	JZ4725B_CODEC_REG_CR1,
@@ -289,18 +289,18 @@ static int jz4725b_out_stage_enable(struct snd_soc_dapm_widget *w,
 }
 
 static const struct snd_soc_dapm_widget jz4725b_codec_dapm_widgets[] = {
-	/* DAC */
+	 
 	SND_SOC_DAPM_DAC("DAC", "Playback",
 			 JZ4725B_CODEC_REG_PMR1, REG_PMR1_SB_DAC_OFFSET, 1),
 
-	/* ADC */
+	 
 	SND_SOC_DAPM_ADC("ADC", "Capture",
 			 JZ4725B_CODEC_REG_PMR1, REG_PMR1_SB_ADC_OFFSET, 1),
 
 	SND_SOC_DAPM_MUX("ADC Source Capture Route", SND_SOC_NOPM, 0, 0,
 			 &jz4725b_codec_adc_src_ctrl),
 
-	/* Mixer */
+	 
 	SND_SOC_DAPM_MIXER("Mixer", JZ4725B_CODEC_REG_PMR1,
 			   REG_PMR1_SB_MIX_OFFSET, 1,
 			   jz4725b_codec_mixer_controls,
@@ -329,7 +329,7 @@ static const struct snd_soc_dapm_widget jz4725b_codec_dapm_widgets[] = {
 	SND_SOC_DAPM_SUPPLY("Mic Bias", JZ4725B_CODEC_REG_CR1,
 			    REG_CR1_SB_MICBIAS_OFFSET, 1, NULL, 0),
 
-	/* Pins */
+	 
 	SND_SOC_DAPM_INPUT("MIC1P"),
 	SND_SOC_DAPM_INPUT("MIC1N"),
 	SND_SOC_DAPM_INPUT("MIC2P"),
@@ -382,7 +382,7 @@ static int jz4725b_codec_set_bias_level(struct snd_soc_component *component,
 				  BIT(REG_PMR2_SB_SLEEP_OFFSET));
 		break;
 	case SND_SOC_BIAS_PREPARE:
-		/* Enable sound hardware */
+		 
 		regmap_clear_bits(map, JZ4725B_CODEC_REG_PMR2,
 				  BIT(REG_PMR2_SB_OFFSET));
 		msleep(224);
@@ -407,9 +407,7 @@ static int jz4725b_codec_dev_probe(struct snd_soc_component *component)
 
 	clk_prepare_enable(icdc->clk);
 
-	/* Write CONFIGn (n=1 to 8) bits.
-	 * The value 0x0f is specified in the datasheet as a requirement.
-	 */
+	 
 	regmap_write(map, JZ4725B_CODEC_REG_AICR,
 		     0xf << REG_AICR_CONFIG1_OFFSET);
 	regmap_write(map, JZ4725B_CODEC_REG_CCR1,
@@ -562,7 +560,7 @@ static int jz4725b_codec_reg_read(void *context, unsigned int reg,
 	    | (reg << ICDC_RGADW_RGADDR_OFFSET);
 	writel(tmp, icdc->base + ICDC_RGADW_OFFSET);
 
-	/* wait 6+ cycles */
+	 
 	for (i = 0; i < 6; i++)
 		*val = readl(icdc->base + ICDC_RGDATA_OFFSET) &
 			ICDC_RGDATA_RGDOUT_MASK;

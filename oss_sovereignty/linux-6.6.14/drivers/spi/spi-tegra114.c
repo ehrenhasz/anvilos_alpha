@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * SPI driver for NVIDIA's Tegra114 SPI Controller.
- *
- * Copyright (c) 2013, NVIDIA CORPORATION.  All rights reserved.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/completion.h>
@@ -40,8 +36,8 @@
 #define SPI_IDLE_SDA_MASK			(3 << 18)
 #define SPI_CS_SW_VAL				(1 << 20)
 #define SPI_CS_SW_HW				(1 << 21)
-/* SPI_CS_POL_INACTIVE bits are default high */
-						/* n from 0 to 3 */
+ 
+						 
 #define SPI_CS_POL_INACTIVE(n)			(1 << (22 + (n)))
 #define SPI_CS_POL_INACTIVE_MASK		(0xF << 22)
 
@@ -234,7 +230,7 @@ static inline void tegra_spi_writel(struct tegra_spi_data *tspi,
 {
 	writel(val, tspi->base + reg);
 
-	/* Read back register to make sure that register writes completed */
+	 
 	if (reg != SPI_TX_FIFO)
 		readl(tspi->base + SPI_COMMAND1);
 }
@@ -243,11 +239,11 @@ static void tegra_spi_clear_status(struct tegra_spi_data *tspi)
 {
 	u32 val;
 
-	/* Write 1 to clear status register */
+	 
 	val = tegra_spi_readl(tspi, SPI_TRANS_STATUS);
 	tegra_spi_writel(tspi, val, SPI_TRANS_STATUS);
 
-	/* Clear fifo status error if any */
+	 
 	val = tegra_spi_readl(tspi, SPI_FIFO_STATUS);
 	if (val & SPI_ERR)
 		tegra_spi_writel(tspi, SPI_ERR | SPI_FIFO_ERROR,
@@ -387,7 +383,7 @@ static unsigned int tegra_spi_read_rx_fifo_to_client_rxbuf(
 static void tegra_spi_copy_client_txbuf_to_spi_txbuf(
 		struct tegra_spi_data *tspi, struct spi_transfer *t)
 {
-	/* Make the dma buffer to read by cpu */
+	 
 	dma_sync_single_for_cpu(tspi->dev, tspi->tx_dma_phys,
 				tspi->dma_buf_size, DMA_TO_DEVICE);
 
@@ -418,7 +414,7 @@ static void tegra_spi_copy_client_txbuf_to_spi_txbuf(
 		tspi->cur_tx_pos += write_bytes;
 	}
 
-	/* Make the dma buffer to read by dma */
+	 
 	dma_sync_single_for_device(tspi->dev, tspi->tx_dma_phys,
 				tspi->dma_buf_size, DMA_TO_DEVICE);
 }
@@ -426,7 +422,7 @@ static void tegra_spi_copy_client_txbuf_to_spi_txbuf(
 static void tegra_spi_copy_spi_rxbuf_to_client_rxbuf(
 		struct tegra_spi_data *tspi, struct spi_transfer *t)
 {
-	/* Make the dma buffer to read by cpu */
+	 
 	dma_sync_single_for_cpu(tspi->dev, tspi->rx_dma_phys,
 		tspi->dma_buf_size, DMA_FROM_DEVICE);
 
@@ -457,7 +453,7 @@ static void tegra_spi_copy_spi_rxbuf_to_client_rxbuf(
 		tspi->cur_rx_pos += read_bytes;
 	}
 
-	/* Make the dma buffer to read by dma */
+	 
 	dma_sync_single_for_device(tspi->dev, tspi->rx_dma_phys,
 		tspi->dma_buf_size, DMA_FROM_DEVICE);
 }
@@ -549,7 +545,7 @@ static int tegra_spi_start_dma_based_transfer(
 	else
 		len = tspi->curr_dma_words * 4;
 
-	/* Set attention level based on length of transfer */
+	 
 	if (len & 0xF) {
 		val |= SPI_TX_TRIG_1 | SPI_RX_TRIG_1;
 		dma_burst = 1;
@@ -604,7 +600,7 @@ static int tegra_spi_start_dma_based_transfer(
 			return ret;
 		}
 
-		/* Make the dma buffer to read by dma */
+		 
 		dma_sync_single_for_device(tspi->dev, tspi->rx_dma_phys,
 				tspi->dma_buf_size, DMA_FROM_DEVICE);
 
@@ -825,7 +821,7 @@ static u32 tegra_spi_setup_transfer_one(struct spi_device *spi,
 		} else
 			tegra_spi_writel(tspi, command1, SPI_COMMAND1);
 
-		/* GPIO based chip select control */
+		 
 		if (spi_get_csgpiod(spi, 0))
 			gpiod_set_value(spi_get_csgpiod(spi, 0), 1);
 
@@ -974,7 +970,7 @@ static int tegra_spi_setup(struct spi_device *spi)
 	}
 
 	spin_lock_irqsave(&tspi->lock, flags);
-	/* GPIO based chip select control */
+	 
 	if (spi_get_csgpiod(spi, 0))
 		gpiod_set_value(spi_get_csgpiod(spi, 0), 0);
 
@@ -996,7 +992,7 @@ static void tegra_spi_transfer_end(struct spi_device *spi)
 	struct tegra_spi_data *tspi = spi_master_get_devdata(spi->master);
 	int cs_val = (spi->mode & SPI_CS_HIGH) ? 0 : 1;
 
-	/* GPIO based chip select control */
+	 
 	if (spi_get_csgpiod(spi, 0))
 		gpiod_set_value(spi_get_csgpiod(spi, 0), 0);
 
@@ -1165,7 +1161,7 @@ static irqreturn_t handle_dma_based_xfer(struct tegra_spi_data *tspi)
 	unsigned total_fifo_words;
 	unsigned long flags;
 
-	/* Abort dmas if any error */
+	 
 	if (tspi->cur_direction & DATA_DIR_TX) {
 		if (tspi->tx_status) {
 			dmaengine_terminate_all(tspi->tx_dma_chan);
@@ -1225,7 +1221,7 @@ static irqreturn_t handle_dma_based_xfer(struct tegra_spi_data *tspi)
 		goto exit;
 	}
 
-	/* Continue transfer in current message */
+	 
 	total_fifo_words = tegra_spi_calculate_curr_xfer_param(tspi->cur_spi,
 							tspi, t);
 	if (total_fifo_words > SPI_FIFO_DEPTH)
@@ -1309,9 +1305,9 @@ static int tegra_spi_probe(struct platform_device *pdev)
 
 	if (of_property_read_u32(pdev->dev.of_node, "spi-max-frequency",
 				 &master->max_speed_hz))
-		master->max_speed_hz = 25000000; /* 25MHz */
+		master->max_speed_hz = 25000000;  
 
-	/* the spi->mode bits understood by this driver: */
+	 
 	master->use_gpio_descriptors = true;
 	master->mode_bits = SPI_CPOL | SPI_CPHA | SPI_CS_HIGH | SPI_LSB_FIRST |
 			    SPI_TX_DUAL | SPI_RX_DUAL | SPI_3WIRE;
@@ -1485,7 +1481,7 @@ static int tegra_spi_runtime_suspend(struct device *dev)
 	struct spi_master *master = dev_get_drvdata(dev);
 	struct tegra_spi_data *tspi = spi_master_get_devdata(master);
 
-	/* Flush all write which are in PPSB queue by reading back */
+	 
 	tegra_spi_readl(tspi, SPI_COMMAND1);
 
 	clk_disable_unprepare(tspi->clk);

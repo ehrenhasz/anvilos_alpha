@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * KMSAN runtime library.
- *
- * Copyright (C) 2017-2022 Google LLC
- * Author: Alexander Potapenko <glider@google.com>
- *
- */
+
+ 
 
 #include <asm/page.h>
 #include <linux/compiler.h>
@@ -31,10 +25,7 @@
 
 bool kmsan_enabled __read_mostly;
 
-/*
- * Per-CPU KMSAN context to be used in interrupts, where current->kmsan is
- * unavaliable.
- */
+ 
 DEFINE_PER_CPU(struct kmsan_ctx, kmsan_percpu_ctx);
 
 void kmsan_internal_task_create(struct task_struct *task)
@@ -51,7 +42,7 @@ void kmsan_internal_poison_memory(void *address, size_t size, gfp_t flags,
 				  unsigned int poison_flags)
 {
 	u32 extra_bits =
-		kmsan_extra_bits(/*depth*/ 0, poison_flags & KMSAN_POISON_FREE);
+		kmsan_extra_bits(  0, poison_flags & KMSAN_POISON_FREE);
 	bool checked = poison_flags & KMSAN_POISON_CHECK;
 	depot_stack_handle_t handle;
 
@@ -73,14 +64,14 @@ depot_stack_handle_t kmsan_save_stack_with_flags(gfp_t flags,
 
 	nr_entries = stack_trace_save(entries, KMSAN_STACK_DEPTH, 0);
 
-	/* Don't sleep. */
+	 
 	flags &= ~(__GFP_DIRECT_RECLAIM | __GFP_KSWAPD_RECLAIM);
 
 	handle = __stack_depot_save(entries, nr_entries, flags, true);
 	return stack_depot_set_extra_bits(handle, extra);
 }
 
-/* Copy the metadata following the memmove() behavior. */
+ 
 void kmsan_internal_memmove_metadata(void *dst, void *src, size_t n)
 {
 	depot_stack_handle_t old_origin = 0, new_origin = 0;
@@ -97,10 +88,7 @@ void kmsan_internal_memmove_metadata(void *dst, void *src, size_t n)
 
 	shadow_src = kmsan_get_metadata(src, KMSAN_META_SHADOW);
 	if (!shadow_src) {
-		/*
-		 * @src is untracked: zero out destination shadow, ignore the
-		 * origins, we're done.
-		 */
+		 
 		__memset(shadow_dst, 0, n);
 		return;
 	}
@@ -131,36 +119,20 @@ void kmsan_internal_memmove_metadata(void *dst, void *src, size_t n)
 		KMSAN_WARN_ON(i < 0);
 		shadow = align_shadow_src[i];
 		if (i == 0) {
-			/*
-			 * If @src isn't aligned on KMSAN_ORIGIN_SIZE, don't
-			 * look at the first @src % KMSAN_ORIGIN_SIZE bytes
-			 * of the first shadow slot.
-			 */
+			 
 			skip_bits = ((u64)src % KMSAN_ORIGIN_SIZE) * 8;
 			shadow = (shadow >> skip_bits) << skip_bits;
 		}
 		if (i == src_slots - 1) {
-			/*
-			 * If @src + n isn't aligned on
-			 * KMSAN_ORIGIN_SIZE, don't look at the last
-			 * (@src + n) % KMSAN_ORIGIN_SIZE bytes of the
-			 * last shadow slot.
-			 */
+			 
 			skip_bits = (((u64)src + n) % KMSAN_ORIGIN_SIZE) * 8;
 			shadow = (shadow << skip_bits) >> skip_bits;
 		}
-		/*
-		 * Overwrite the origin only if the corresponding
-		 * shadow is nonempty.
-		 */
+		 
 		if (origin_src[i] && (origin_src[i] != old_origin) && shadow) {
 			old_origin = origin_src[i];
 			new_origin = kmsan_internal_chain_origin(old_origin);
-			/*
-			 * kmsan_internal_chain_origin() may return
-			 * NULL, but we don't want to lose the previous
-			 * origin value.
-			 */
+			 
 			if (!new_origin)
 				new_origin = old_origin;
 		}
@@ -169,36 +141,14 @@ void kmsan_internal_memmove_metadata(void *dst, void *src, size_t n)
 		else
 			origin_dst[i] = 0;
 	}
-	/*
-	 * If dst_slots is greater than src_slots (i.e.
-	 * dst_slots == src_slots + 1), there is an extra origin slot at the
-	 * beginning or end of the destination buffer, for which we take the
-	 * origin from the previous slot.
-	 * This is only done if the part of the source shadow corresponding to
-	 * slot is non-zero.
-	 *
-	 * E.g. if we copy 8 aligned bytes that are marked as uninitialized
-	 * and have origins o111 and o222, to an unaligned buffer with offset 1,
-	 * these two origins are copied to three origin slots, so one of then
-	 * needs to be duplicated, depending on the copy direction (@backwards)
-	 *
-	 *   src shadow: |uuuu|uuuu|....|
-	 *   src origin: |o111|o222|....|
-	 *
-	 * backwards = 0:
-	 *   dst shadow: |.uuu|uuuu|u...|
-	 *   dst origin: |....|o111|o222| - fill the empty slot with o111
-	 * backwards = 1:
-	 *   dst shadow: |.uuu|uuuu|u...|
-	 *   dst origin: |o111|o222|....| - fill the empty slot with o222
-	 */
+	 
 	if (src_slots < dst_slots) {
 		if (backwards) {
 			shadow = align_shadow_src[src_slots - 1];
 			skip_bits = (((u64)dst + n) % KMSAN_ORIGIN_SIZE) * 8;
 			shadow = (shadow << skip_bits) >> skip_bits;
 			if (shadow)
-				/* src_slots > 0, therefore dst_slots is at least 2 */
+				 
 				origin_dst[dst_slots - 1] =
 					origin_dst[dst_slots - 2];
 		} else {
@@ -221,10 +171,7 @@ depot_stack_handle_t kmsan_internal_chain_origin(depot_stack_handle_t id)
 
 	if (!id)
 		return id;
-	/*
-	 * Make sure we have enough spare bits in @id to hold the UAF bit and
-	 * the chain depth.
-	 */
+	 
 	BUILD_BUG_ON(
 		(1 << STACK_DEPOT_EXTRA_BITS) <= (KMSAN_MAX_ORIGIN_DEPTH << 1));
 
@@ -232,12 +179,7 @@ depot_stack_handle_t kmsan_internal_chain_origin(depot_stack_handle_t id)
 	depth = kmsan_depth_from_eb(extra_bits);
 	uaf = kmsan_uaf_from_eb(extra_bits);
 
-	/*
-	 * Stop chaining origins once the depth reached KMSAN_MAX_ORIGIN_DEPTH.
-	 * This mostly happens in the case structures with uninitialized padding
-	 * are copied around many times. Origin chains for such structures are
-	 * usually periodic, and it does not make sense to fully store them.
-	 */
+	 
 	if (depth == KMSAN_MAX_ORIGIN_DEPTH)
 		return id;
 
@@ -247,11 +189,7 @@ depot_stack_handle_t kmsan_internal_chain_origin(depot_stack_handle_t id)
 	entries[0] = KMSAN_CHAIN_MAGIC_ORIGIN;
 	entries[1] = kmsan_save_stack_with_flags(__GFP_HIGH, 0);
 	entries[2] = id;
-	/*
-	 * @entries is a local var in non-instrumented code, so KMSAN does not
-	 * know it is initialized. Explicitly unpoison it to avoid false
-	 * positives when __stack_depot_save() passes it to instrumented code.
-	 */
+	 
 	kmsan_internal_unpoison_memory(entries, sizeof(entries), false);
 	handle = __stack_depot_save(entries, ARRAY_SIZE(entries), __GFP_HIGH,
 				    true);
@@ -269,10 +207,7 @@ void kmsan_internal_set_shadow_origin(void *addr, size_t size, int b,
 	KMSAN_WARN_ON(!kmsan_metadata_is_contiguous(addr, size));
 	shadow_start = kmsan_get_metadata(addr, KMSAN_META_SHADOW);
 	if (!shadow_start) {
-		/*
-		 * kmsan_metadata_is_contiguous() is true, so either all shadow
-		 * and origin pages are NULL, or all are non-NULL.
-		 */
+		 
 		if (checked) {
 			pr_err("%s: not memsetting %ld bytes starting at %px, because the shadow is NULL\n",
 			       __func__, size, addr);
@@ -329,10 +264,7 @@ void kmsan_internal_check_memory(void *addr, size_t size, const void *user_addr,
 		shadow = kmsan_get_metadata((void *)(addr64 + pos),
 					    KMSAN_META_SHADOW);
 		if (!shadow) {
-			/*
-			 * This page is untracked. If there were uninitialized
-			 * bytes before, report them.
-			 */
+			 
 			if (cur_origin) {
 				kmsan_enter_runtime();
 				kmsan_report(cur_origin, addr, size,
@@ -347,10 +279,7 @@ void kmsan_internal_check_memory(void *addr, size_t size, const void *user_addr,
 		}
 		for (int i = 0; i < chunk_size; i++) {
 			if (!shadow[i]) {
-				/*
-				 * This byte is unpoisoned. If there were
-				 * poisoned bytes before, report them.
-				 */
+				 
 				if (cur_origin) {
 					kmsan_enter_runtime();
 					kmsan_report(cur_origin, addr, size,
@@ -366,10 +295,7 @@ void kmsan_internal_check_memory(void *addr, size_t size, const void *user_addr,
 						    KMSAN_META_ORIGIN);
 			KMSAN_WARN_ON(!origin);
 			new_origin = *origin;
-			/*
-			 * Encountered new origin - report the previous
-			 * uninitialized range.
-			 */
+			 
 			if (cur_origin != new_origin) {
 				if (cur_origin) {
 					kmsan_enter_runtime();
@@ -404,15 +330,15 @@ bool kmsan_metadata_is_contiguous(void *addr, size_t size)
 	if (!size)
 		return true;
 
-	/* The whole range belongs to the same page. */
+	 
 	if (ALIGN_DOWN(cur_addr + size - 1, PAGE_SIZE) ==
 	    ALIGN_DOWN(cur_addr, PAGE_SIZE))
 		return true;
 
-	cur_shadow = kmsan_get_metadata((void *)cur_addr, /*is_origin*/ false);
+	cur_shadow = kmsan_get_metadata((void *)cur_addr,   false);
 	if (!cur_shadow)
 		all_untracked = true;
-	cur_origin = kmsan_get_metadata((void *)cur_addr, /*is_origin*/ true);
+	cur_origin = kmsan_get_metadata((void *)cur_addr,   true);
 	if (all_untracked && cur_origin)
 		goto report;
 

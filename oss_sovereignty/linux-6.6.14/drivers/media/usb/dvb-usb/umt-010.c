@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* DVB USB framework compliant Linux driver for the HanfTek UMT-010 USB2.0
- * DVB-T receiver.
- *
- * Copyright (C) 2004-5 Patrick Boettcher (patrick.boettcher@posteo.de)
- *
- * see Documentation/driver-api/media/drivers/dvb-usb.rst for more information
- */
+
+ 
 #include "dibusb.h"
 
 #include "mt352.h"
@@ -68,7 +62,7 @@ static int umt_tuner_attach (struct dvb_usb_adapter *adap)
 	return 0;
 }
 
-/* USB Driver stuff */
+ 
 static struct dvb_usb_device_properties umt_properties;
 
 static int umt_probe(struct usb_interface *intf,
@@ -80,7 +74,7 @@ static int umt_probe(struct usb_interface *intf,
 	return -EINVAL;
 }
 
-/* do not change the order of the ID table */
+ 
 enum {
 	HANFTEK_UMT_010_COLD,
 	HANFTEK_UMT_010_WARM,
@@ -109,7 +103,7 @@ static struct dvb_usb_device_properties umt_properties = {
 			.frontend_attach  = umt_mt352_frontend_attach,
 			.tuner_attach     = umt_tuner_attach,
 
-			/* parameter for the MPEG2-data transfer */
+			 
 			.stream = {
 				.type = USB_BULK,
 				.count = MAX_NO_URBS_FOR_DATA_STREAM,

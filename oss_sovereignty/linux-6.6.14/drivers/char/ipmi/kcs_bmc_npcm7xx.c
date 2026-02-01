@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2018, Nuvoton Corporation.
- * Copyright (c) 2018, Intel Corporation.
- */
+
+ 
 
 #define pr_fmt(fmt) "nuvoton-kcs-bmc: " fmt
 
@@ -46,17 +43,7 @@
 #define    KCS_IE_IRQE          BIT(0)
 #define    KCS_IE_HIRQE         BIT(3)
 
-/*
- * 7.2.4 Core KCS Registers
- * Registers in this module are 8 bits. An 8-bit register must be accessed
- * by an 8-bit read or write.
- *
- * sts: KCS Channel n Status Register (KCSnST).
- * dob: KCS Channel n Data Out Buffer Register (KCSnDO).
- * dib: KCS Channel n Data In Buffer Register (KCSnDI).
- * ctl: KCS Channel n Control Register (KCSnCTL).
- * ie : KCS Channel n  Interrupt Enable Register (KCSnIE).
- */
+ 
 struct npcm7xx_kcs_reg {
 	u32 sts;
 	u32 dob;

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #include <kunit/test.h>
 
@@ -28,7 +28,7 @@ static void get_desc(const struct rational_test_param *param, char *desc)
 	strscpy(desc, param->name, KUNIT_PARAM_DESC_SIZE);
 }
 
-/* Creates function rational_gen_params */
+ 
 KUNIT_ARRAY_PARAM(rational, test_parameters, get_desc);
 
 static void rational_test(struct kunit *test)

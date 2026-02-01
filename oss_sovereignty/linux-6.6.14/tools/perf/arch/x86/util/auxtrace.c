@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * auxtrace.c: AUX area tracing support
- * Copyright (c) 2013-2014, Intel Corporation.
- */
+
+ 
 
 #include <errno.h>
 #include <stdbool.h>

@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * TI TRF7970a RFID/NFC Transceiver Driver
- *
- * Copyright (C) 2013 Texas Instruments Incorporated - http://www.ti.com
- *
- * Author: Erick Macias <emacias@ti.com>
- * Author: Felipe Balbi <balbi@ti.com>
- * Author: Mark A. Greer <mgreer@animalcreek.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/device.h>
@@ -25,101 +17,14 @@
 #include <net/nfc/nfc.h>
 #include <net/nfc/digital.h>
 
-/* There are 3 ways the host can communicate with the trf7970a:
- * parallel mode, SPI with Slave Select (SS) mode, and SPI without
- * SS mode.  The driver only supports the two SPI modes.
- *
- * The trf7970a is very timing sensitive and the VIN, EN2, and EN
- * pins must asserted in that order and with specific delays in between.
- * The delays used in the driver were provided by TI and have been
- * confirmed to work with this driver.  There is a bug with the current
- * version of the trf7970a that requires that EN2 remain low no matter
- * what.  If it goes high, it will generate an RF field even when in
- * passive target mode.  TI has indicated that the chip will work okay
- * when EN2 is left low.  The 'en2-rf-quirk' device tree property
- * indicates that trf7970a currently being used has the erratum and
- * that EN2 must be kept low.
- *
- * Timeouts are implemented using the delayed workqueue kernel facility.
- * Timeouts are required so things don't hang when there is no response
- * from the trf7970a (or tag).  Using this mechanism creates a race with
- * interrupts, however.  That is, an interrupt and a timeout could occur
- * closely enough together that one is blocked by the mutex while the other
- * executes.  When the timeout handler executes first and blocks the
- * interrupt handler, it will eventually set the state to IDLE so the
- * interrupt handler will check the state and exit with no harm done.
- * When the interrupt handler executes first and blocks the timeout handler,
- * the cancel_delayed_work() call will know that it didn't cancel the
- * work item (i.e., timeout) and will return zero.  That return code is
- * used by the timer handler to indicate that it should ignore the timeout
- * once its unblocked.
- *
- * Aborting an active command isn't as simple as it seems because the only
- * way to abort a command that's already been sent to the tag is so turn
- * off power to the tag.  If we do that, though, we'd have to go through
- * the entire anticollision procedure again but the digital layer doesn't
- * support that.  So, if an abort is received before trf7970a_send_cmd()
- * has sent the command to the tag, it simply returns -ECANCELED.  If the
- * command has already been sent to the tag, then the driver continues
- * normally and recieves the response data (or error) but just before
- * sending the data upstream, it frees the rx_skb and sends -ECANCELED
- * upstream instead.  If the command failed, that error will be sent
- * upstream.
- *
- * When recieving data from a tag and the interrupt status register has
- * only the SRX bit set, it means that all of the data has been received
- * (once what's in the fifo has been read).  However, depending on timing
- * an interrupt status with only the SRX bit set may not be recived.  In
- * those cases, the timeout mechanism is used to wait 20 ms in case more
- * data arrives.  After 20 ms, it is assumed that all of the data has been
- * received and the accumulated rx data is sent upstream.  The
- * 'TRF7970A_ST_WAIT_FOR_RX_DATA_CONT' state is used for this purpose
- * (i.e., it indicates that some data has been received but we're not sure
- * if there is more coming so a timeout in this state means all data has
- * been received and there isn't an error).  The delay is 20 ms since delays
- * of ~16 ms have been observed during testing.
- *
- * When transmitting a frame larger than the FIFO size (127 bytes), the
- * driver will wait 20 ms for the FIFO to drain past the low-watermark
- * and generate an interrupt.  The low-watermark set to 32 bytes so the
- * interrupt should fire after 127 - 32 = 95 bytes have been sent.  At
- * the lowest possible bit rate (6.62 kbps for 15693), it will take up
- * to ~14.35 ms so 20 ms is used for the timeout.
- *
- * Type 2 write and sector select commands respond with a 4-bit ACK or NACK.
- * Having only 4 bits in the FIFO won't normally generate an interrupt so
- * driver enables the '4_bit_RX' bit of the Special Functions register 1
- * to cause an interrupt in that case.  Leaving that bit for a read command
- * messes up the data returned so it is only enabled when the framing is
- * 'NFC_DIGITAL_FRAMING_NFCA_T2T' and the command is not a read command.
- * Unfortunately, that means that the driver has to peek into tx frames
- * when the framing is 'NFC_DIGITAL_FRAMING_NFCA_T2T'.  This is done by
- * the trf7970a_per_cmd_config() routine.
- *
- * ISO/IEC 15693 frames specify whether to use single or double sub-carrier
- * frequencies and whether to use low or high data rates in the flags byte
- * of the frame.  This means that the driver has to peek at all 15693 frames
- * to determine what speed to set the communication to.  In addition, write
- * and lock commands use the OPTION flag to indicate that an EOF must be
- * sent to the tag before it will send its response.  So the driver has to
- * examine all frames for that reason too.
- *
- * It is unclear how long to wait before sending the EOF.  According to the
- * Note under Table 1-1 in section 1.6 of
- * http://www.ti.com/lit/ug/scbu011/scbu011.pdf, that wait should be at least
- * 10 ms for TI Tag-it HF-I tags; however testing has shown that is not long
- * enough so 20 ms is used.  So the timer is set to 40 ms - 20 ms to drain
- * up to 127 bytes in the FIFO at the lowest bit rate plus another 20 ms to
- * ensure the wait is long enough before sending the EOF.  This seems to work
- * reliably.
- */
+ 
 
 #define TRF7970A_SUPPORTED_PROTOCOLS \
 		(NFC_PROTO_MIFARE_MASK | NFC_PROTO_ISO14443_MASK |	\
 		 NFC_PROTO_ISO14443_B_MASK | NFC_PROTO_FELICA_MASK | \
 		 NFC_PROTO_ISO15693_MASK | NFC_PROTO_NFC_DEP_MASK)
 
-#define TRF7970A_AUTOSUSPEND_DELAY		30000	/* 30 seconds */
+#define TRF7970A_AUTOSUSPEND_DELAY		30000	 
 #define TRF7970A_13MHZ_CLOCK_FREQUENCY		13560000
 #define TRF7970A_27MHZ_CLOCK_FREQUENCY		27120000
 
@@ -127,7 +32,7 @@
 
 #define TRF7970A_FIFO_SIZE			127
 
-/* TX length is 3 nibbles long ==> 4KB - 1 bytes max */
+ 
 #define TRF7970A_TX_MAX				(4096 - 1)
 
 #define TRF7970A_WAIT_FOR_TX_IRQ		20
@@ -135,20 +40,18 @@
 #define TRF7970A_WAIT_FOR_FIFO_DRAIN_TIMEOUT	20
 #define TRF7970A_WAIT_TO_ISSUE_ISO15693_EOF	40
 
-/* Guard times for various RF technologies (in us) */
+ 
 #define TRF7970A_GUARD_TIME_NFCA		5000
 #define TRF7970A_GUARD_TIME_NFCB		5000
 #define TRF7970A_GUARD_TIME_NFCF		20000
 #define TRF7970A_GUARD_TIME_15693		1000
 
-/* Quirks */
-/* Erratum: When reading IRQ Status register on trf7970a, we must issue a
- * read continuous command for IRQ Status and Collision Position registers.
- */
+ 
+ 
 #define TRF7970A_QUIRK_IRQ_STATUS_READ		BIT(0)
 #define TRF7970A_QUIRK_EN2_MUST_STAY_LOW	BIT(1)
 
-/* Direct commands */
+ 
 #define TRF7970A_CMD_IDLE			0x00
 #define TRF7970A_CMD_SOFT_INIT			0x03
 #define TRF7970A_CMD_RF_COLLISION		0x04
@@ -167,16 +70,13 @@
 #define TRF7970A_CMD_TEST_EXT_RF		0x19
 #define TRF7970A_CMD_RX_GAIN_ADJUST		0x1a
 
-/* Bits determining whether its a direct command or register R/W,
- * whether to use a continuous SPI transaction or not, and the actual
- * direct cmd opcode or register address.
- */
+ 
 #define TRF7970A_CMD_BIT_CTRL			BIT(7)
 #define TRF7970A_CMD_BIT_RW			BIT(6)
 #define TRF7970A_CMD_BIT_CONTINUOUS		BIT(5)
 #define TRF7970A_CMD_BIT_OPCODE(opcode)		((opcode) & 0x1f)
 
-/* Registers addresses */
+ 
 #define TRF7970A_CHIP_STATUS_CTRL		0x00
 #define TRF7970A_ISO_CTRL			0x01
 #define TRF7970A_ISO14443B_TX_OPTIONS		0x02
@@ -209,7 +109,7 @@
 #define TRF7970A_TX_LENGTH_BYTE2		0x1e
 #define TRF7970A_FIFO_IO_REGISTER		0x1f
 
-/* Chip Status Control Register Bits */
+ 
 #define TRF7970A_CHIP_STATUS_VRS5_3		BIT(0)
 #define TRF7970A_CHIP_STATUS_REC_ON		BIT(1)
 #define TRF7970A_CHIP_STATUS_AGC_ON		BIT(2)
@@ -219,7 +119,7 @@
 #define TRF7970A_CHIP_STATUS_DIRECT		BIT(6)
 #define TRF7970A_CHIP_STATUS_STBY		BIT(7)
 
-/* ISO Control Register Bits */
+ 
 #define TRF7970A_ISO_CTRL_15693_SGL_1OF4_662	0x00
 #define TRF7970A_ISO_CTRL_15693_SGL_1OF256_662	0x01
 #define TRF7970A_ISO_CTRL_15693_SGL_1OF4_2648	0x02
@@ -249,11 +149,11 @@
 #define TRF7970A_ISO_CTRL_NFC_NFC_CE_MODE	BIT(5)
 #define TRF7970A_ISO_CTRL_RFID			BIT(5)
 #define TRF7970A_ISO_CTRL_DIR_MODE		BIT(6)
-#define TRF7970A_ISO_CTRL_RX_CRC_N		BIT(7)	/* true == No CRC */
+#define TRF7970A_ISO_CTRL_RX_CRC_N		BIT(7)	 
 
 #define TRF7970A_ISO_CTRL_RFID_SPEED_MASK	0x1f
 
-/* Modulator and SYS_CLK Control Register Bits */
+ 
 #define TRF7970A_MODULATOR_DEPTH(n)		((n) & 0x7)
 #define TRF7970A_MODULATOR_DEPTH_ASK10		(TRF7970A_MODULATOR_DEPTH(0))
 #define TRF7970A_MODULATOR_DEPTH_OOK		(TRF7970A_MODULATOR_DEPTH(1))
@@ -288,8 +188,8 @@
 #define TRF7970A_REG_IO_CTRL_EN_EXT_PA		BIT(6)
 #define TRF7970A_REG_IO_CTRL_AUTO_REG		BIT(7)
 
-/* IRQ Status Register Bits */
-#define TRF7970A_IRQ_STATUS_NORESP		BIT(0)	/* ISO15693 only */
+ 
+#define TRF7970A_IRQ_STATUS_NORESP		BIT(0)	 
 #define TRF7970A_IRQ_STATUS_NFC_COL_ERROR	BIT(0)
 #define TRF7970A_IRQ_STATUS_COL			BIT(1)
 #define TRF7970A_IRQ_STATUS_FRAMING_EOF_ERROR	BIT(2)
@@ -373,10 +273,10 @@
 
 #define TRF7970A_FIFO_STATUS_OVERFLOW		BIT(7)
 
-/* NFC (ISO/IEC 14443A) Type 2 Tag commands */
+ 
 #define NFC_T2T_CMD_READ			0x30
 
-/* ISO 15693 commands codes */
+ 
 #define ISO15693_CMD_INVENTORY			0x01
 #define ISO15693_CMD_READ_SINGLE_BLOCK		0x20
 #define ISO15693_CMD_WRITE_SINGLE_BLOCK		0x21
@@ -392,7 +292,7 @@
 #define ISO15693_CMD_GET_SYSTEM_INFO		0x2b
 #define ISO15693_CMD_GET_MULTIPLE_BLOCK_SECURITY_STATUS	0x2c
 
-/* ISO 15693 request and response flags */
+ 
 #define ISO15693_REQ_FLAG_SUB_CARRIER		BIT(0)
 #define ISO15693_REQ_FLAG_DATA_RATE		BIT(1)
 #define ISO15693_REQ_FLAG_INVENTORY		BIT(2)
@@ -718,7 +618,7 @@ static void trf7970a_fill_fifo(struct trf7970a *trf)
 
 	fifo_bytes &= ~TRF7970A_FIFO_STATUS_OVERFLOW;
 
-	/* Calculate how much more data can be written to the fifo */
+	 
 	len = TRF7970A_FIFO_SIZE - fifo_bytes;
 	if (!len) {
 		schedule_delayed_work(&trf->timeout_work,
@@ -780,7 +680,7 @@ static void trf7970a_drain_fifo(struct trf7970a *trf, u8 status)
 		return;
 	}
 
-	/* If received Type 2 ACK/NACK, shift right 4 bits and pass up */
+	 
 	if ((trf->framing == NFC_DIGITAL_FRAMING_NFCA_T2T) && (skb->len == 1) &&
 	    (trf->special_fcn_reg1 == TRF7970A_SPECIAL_FCN_REG1_4_BIT_RX)) {
 		skb->data[0] >>= 4;
@@ -796,16 +696,13 @@ static void trf7970a_drain_fifo(struct trf7970a *trf, u8 status)
 
 		fifo_bytes &= ~TRF7970A_FIFO_STATUS_OVERFLOW;
 
-		/* If there are bytes in the FIFO, set status to '0' so
-		 * the if stmt below doesn't fire and the driver will wait
-		 * for the trf7970a to generate another RX interrupt.
-		 */
+		 
 		if (fifo_bytes)
 			status = 0;
 	}
 
 no_rx_data:
-	if (status == TRF7970A_IRQ_STATUS_SRX) {	/* Receive complete */
+	if (status == TRF7970A_IRQ_STATUS_SRX) {	 
 		trf7970a_send_upstream(trf);
 		return;
 	}
@@ -847,11 +744,7 @@ static irqreturn_t trf7970a_irq(int irq, void *dev_id)
 	switch (trf->state) {
 	case TRF7970A_ST_IDLE:
 	case TRF7970A_ST_IDLE_RX_BLOCKED:
-		/* If initiator and getting interrupts caused by RF noise,
-		 * turn off the receiver to avoid unnecessary interrupts.
-		 * It will be turned back on in trf7970a_send_cmd() when
-		 * the next command is issued.
-		 */
+		 
 		if (trf->is_initiator && (status & TRF7970A_IRQ_STATUS_ERROR)) {
 			trf7970a_cmd(trf, TRF7970A_CMD_BLOCK_RX);
 			trf->state = TRF7970A_ST_IDLE_RX_BLOCKED;
@@ -907,12 +800,12 @@ static irqreturn_t trf7970a_irq(int irq, void *dev_id)
 			case NFC_DIGITAL_FRAMING_NFCA_STANDARD:
 				trf->tx_cmd = TRF7970A_CMD_TRANSMIT_NO_CRC;
 				iso_ctrl |= TRF7970A_ISO_CTRL_RX_CRC_N;
-				trf->iso_ctrl = 0xff; /* Force ISO_CTRL write */
+				trf->iso_ctrl = 0xff;  
 				break;
 			case NFC_DIGITAL_FRAMING_NFCA_STANDARD_WITH_CRC_A:
 				trf->tx_cmd = TRF7970A_CMD_TRANSMIT;
 				iso_ctrl &= ~TRF7970A_ISO_CTRL_RX_CRC_N;
-				trf->iso_ctrl = 0xff; /* Force ISO_CTRL write */
+				trf->iso_ctrl = 0xff;  
 				break;
 			case NFC_DIGITAL_FRAMING_NFCA_ANTICOL_COMPLETE:
 				ret = trf7970a_write(trf,
@@ -1103,7 +996,7 @@ static int trf7970a_switch_rf_on(struct trf7970a *trf)
 
 	pm_runtime_get_sync(trf->dev);
 
-	if (trf->state != TRF7970A_ST_RF_OFF) {	/* Power on, RF off */
+	if (trf->state != TRF7970A_ST_RF_OFF) {	 
 		dev_err(trf->dev, "%s - Incorrect state: %d\n", __func__,
 			trf->state);
 		return -EINVAL;
@@ -1215,11 +1108,7 @@ static int trf7970a_in_config_rf_tech(struct trf7970a *trf, int tech)
 
 	trf->technology = tech;
 
-	/* If in initiator mode and not changing the RF tech due to a
-	 * PSL sequence (indicated by 'trf->iso_ctrl == 0xff' from
-	 * trf7970a_init()), clear the NFC Target Detection Level register
-	 * due to erratum.
-	 */
+	 
 	if (trf->iso_ctrl == 0xff)
 		ret = trf7970a_write(trf, TRF7970A_NFC_TARGET_LEVEL, 0);
 
@@ -1396,15 +1285,7 @@ static int trf7970a_per_cmd_config(struct trf7970a *trf,
 
 	trf->issue_eof = false;
 
-	/* When issuing Type 2 read command, make sure the '4_bit_RX' bit in
-	 * special functions register 1 is cleared; otherwise, its a write or
-	 * sector select command and '4_bit_RX' must be set.
-	 *
-	 * When issuing an ISO 15693 command, inspect the flags byte to see
-	 * what speed to use.  Also, remember if the OPTION flag is set on
-	 * a Type 5 write or lock command so the driver will know that it
-	 * has to send an EOF in order to get a response.
-	 */
+	 
 	if ((trf->technology == NFC_DIGITAL_RF_TECH_106A) &&
 	    (trf->framing == NFC_DIGITAL_FRAMING_NFCA_T2T)) {
 		if (req[0] == NFC_T2T_CMD_READ)
@@ -1522,11 +1403,7 @@ static int trf7970a_send_cmd(struct nfc_digital_dev *ddev,
 
 	len = skb->len;
 
-	/* TX data must be prefixed with a FIFO reset cmd, a cmd that depends
-	 * on what the current framing is, the address of the TX length byte 1
-	 * register (0x1d), and the 2 byte length of the data to be transmitted.
-	 * That totals 5 bytes.
-	 */
+	 
 	prefix[0] = TRF7970A_CMD_BIT_CTRL |
 	    TRF7970A_CMD_BIT_OPCODE(TRF7970A_CMD_FIFO_RESET);
 	prefix[1] = TRF7970A_CMD_BIT_CTRL |
@@ -1535,7 +1412,7 @@ static int trf7970a_send_cmd(struct nfc_digital_dev *ddev,
 
 	if (trf->framing == NFC_DIGITAL_FRAMING_NFCA_SHORT) {
 		prefix[3] = 0x00;
-		prefix[4] = 0x0f;	/* 7 bits */
+		prefix[4] = 0x0f;	 
 	} else {
 		prefix[3] = (len & 0xf00) >> 4;
 		prefix[3] |= ((len & 0xf0) >> 4);
@@ -1544,7 +1421,7 @@ static int trf7970a_send_cmd(struct nfc_digital_dev *ddev,
 
 	len = min_t(int, skb->len, TRF7970A_FIFO_SIZE);
 
-	/* Clear possible spurious interrupt */
+	 
 	ret = trf7970a_read_irqstatus(trf, &status);
 	if (ret)
 		goto out_err;
@@ -1595,13 +1472,7 @@ static int trf7970a_tg_config_rf_tech(struct trf7970a *trf, int tech)
 
 	trf->technology = tech;
 
-	/* Normally we write the ISO_CTRL register in
-	 * trf7970a_tg_config_framing() because the framing can change
-	 * the value written.  However, when sending a PSL RES,
-	 * digital_tg_send_psl_res_complete() doesn't call
-	 * trf7970a_tg_config_framing() so we must write the register
-	 * here.
-	 */
+	 
 	if ((trf->framing == NFC_DIGITAL_FRAMING_NFC_DEP_ACTIVATED) &&
 	    (trf->iso_ctrl_tech != trf->iso_ctrl)) {
 		ret = trf7970a_write(trf, TRF7970A_ISO_CTRL,
@@ -1613,12 +1484,7 @@ static int trf7970a_tg_config_rf_tech(struct trf7970a *trf, int tech)
 	return ret;
 }
 
-/* Since this is a target routine, several of the framing calls are
- * made between receiving the request and sending the response so they
- * should take effect until after the response is sent.  This is accomplished
- * by skipping the ISO_CTRL register write here and doing it in the interrupt
- * handler.
- */
+ 
 static int trf7970a_tg_config_framing(struct trf7970a *trf, int framing)
 {
 	u8 iso_ctrl = trf->iso_ctrl_tech;
@@ -1634,8 +1500,8 @@ static int trf7970a_tg_config_framing(struct trf7970a *trf, int framing)
 	case NFC_DIGITAL_FRAMING_NFCA_STANDARD:
 	case NFC_DIGITAL_FRAMING_NFCA_STANDARD_WITH_CRC_A:
 	case NFC_DIGITAL_FRAMING_NFCA_ANTICOL_COMPLETE:
-		/* These ones are applied in the interrupt handler */
-		iso_ctrl = trf->iso_ctrl; /* Don't write to ISO_CTRL yet */
+		 
+		iso_ctrl = trf->iso_ctrl;  
 		break;
 	case NFC_DIGITAL_FRAMING_NFCF_NFC_DEP:
 		trf->tx_cmd = TRF7970A_CMD_TRANSMIT;
@@ -2018,7 +1884,7 @@ static int trf7970a_probe(struct spi_device *spi)
 	if (of_property_read_bool(np, "irq-status-read-quirk"))
 		trf->quirks |= TRF7970A_QUIRK_IRQ_STATUS_READ;
 
-	/* There are two enable pins - only EN must be present in the DT */
+	 
 	trf->en_gpiod = devm_gpiod_get_index(trf->dev, "ti,enable", 0,
 					     GPIOD_OUT_LOW);
 	if (IS_ERR(trf->en_gpiod)) {

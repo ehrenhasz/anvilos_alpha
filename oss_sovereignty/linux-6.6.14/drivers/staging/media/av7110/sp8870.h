@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
-    Driver for Spase SP8870 demodulator
-
-    Copyright (C) 1999 Juergen Peitz
-
-
-*/
+ 
+ 
 
 #ifndef SP8870_H
 #define SP8870_H
@@ -15,10 +9,10 @@
 
 struct sp8870_config
 {
-	/* the demodulator's i2c address */
+	 
 	u8 demod_address;
 
-	/* request firmware for device */
+	 
 	int (*request_firmware)(struct dvb_frontend* fe, const struct firmware **fw, char* name);
 };
 
@@ -32,6 +26,6 @@ static inline struct dvb_frontend* sp8870_attach(const struct sp8870_config* con
 	printk(KERN_WARNING "%s: driver disabled by Kconfig\n", __func__);
 	return NULL;
 }
-#endif // CONFIG_DVB_SP8870
+#endif 
 
-#endif // SP8870_H
+#endif 

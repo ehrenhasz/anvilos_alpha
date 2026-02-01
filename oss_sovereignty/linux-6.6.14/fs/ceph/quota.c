@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * quota.c - CephFS quota
- *
- * Copyright (C) 2017-2018 SUSE
- */
+
+ 
 
 #include <linux/statfs.h>
 
@@ -27,13 +23,13 @@ static inline bool ceph_has_realms_with_quotas(struct inode *inode)
 
 	if (atomic64_read(&mdsc->quotarealms_count) > 0)
 		return true;
-	/* if root is the real CephFS root, we don't have quota realms */
+	 
 	if (root && ceph_ino(root) == CEPH_INO_ROOT)
 		return false;
-	/* MDS stray dirs have no quota realms */
+	 
 	if (ceph_vino_is_reserved(ceph_inode(inode)->i_vino))
 		return false;
-	/* otherwise, we can't know for sure */
+	 
 	return true;
 }
 
@@ -57,7 +53,7 @@ void ceph_handle_quota(struct ceph_mds_client *mdsc,
 		goto out;
 	}
 
-	/* lookup inode */
+	 
 	vino.ino = le64_to_cpu(h->ino);
 	vino.snap = CEPH_NOSNAP;
 	inode = ceph_find_inode(sb, vino);
@@ -100,7 +96,7 @@ find_quotarealm_inode(struct ceph_mds_client *mdsc, u64 ino)
 			break;
 	}
 	if (!qri || (qri->ino != ino)) {
-		/* Not found, create a new one and insert it */
+		 
 		qri = kmalloc(sizeof(*qri), GFP_KERNEL);
 		if (qri) {
 			qri->ino = ino;
@@ -117,14 +113,7 @@ find_quotarealm_inode(struct ceph_mds_client *mdsc, u64 ino)
 	return qri;
 }
 
-/*
- * This function will try to lookup a realm inode which isn't visible in the
- * filesystem mountpoint.  A list of these kind of inodes (not visible) is
- * maintained in the mdsc and freed only when the filesystem is umounted.
- *
- * Note that these inodes are kept in this list even if the lookup fails, which
- * allows to prevent useless lookup requests.
- */
+ 
 static struct inode *lookup_quotarealm_inode(struct ceph_mds_client *mdsc,
 					     struct super_block *sb,
 					     struct ceph_snap_realm *realm)
@@ -138,18 +127,18 @@ static struct inode *lookup_quotarealm_inode(struct ceph_mds_client *mdsc,
 
 	mutex_lock(&qri->mutex);
 	if (qri->inode && ceph_is_any_caps(qri->inode)) {
-		/* A request has already returned the inode */
+		 
 		mutex_unlock(&qri->mutex);
 		return qri->inode;
 	}
-	/* Check if this inode lookup has failed recently */
+	 
 	if (qri->timeout &&
 	    time_before_eq(jiffies, qri->timeout)) {
 		mutex_unlock(&qri->mutex);
 		return NULL;
 	}
 	if (qri->inode) {
-		/* get caps */
+		 
 		int ret = __ceph_do_getattr(qri->inode, NULL,
 					    CEPH_STAT_CAP_INODE, true);
 		if (ret >= 0)
@@ -163,7 +152,7 @@ static struct inode *lookup_quotarealm_inode(struct ceph_mds_client *mdsc,
 	if (IS_ERR(in)) {
 		dout("Can't lookup inode %llx (err: %ld)\n",
 		     realm->ino, PTR_ERR(in));
-		qri->timeout = jiffies + msecs_to_jiffies(60 * 1000); /* XXX */
+		qri->timeout = jiffies + msecs_to_jiffies(60 * 1000);  
 	} else {
 		qri->timeout = 0;
 		qri->inode = in;
@@ -178,10 +167,7 @@ void ceph_cleanup_quotarealms_inodes(struct ceph_mds_client *mdsc)
 	struct ceph_quotarealm_inode *qri;
 	struct rb_node *node;
 
-	/*
-	 * It should now be safe to clean quotarealms_inode tree without holding
-	 * mdsc->quotarealms_inodes_mutex...
-	 */
+	 
 	mutex_lock(&mdsc->quotarealms_inodes_mutex);
 	while (!RB_EMPTY_ROOT(&mdsc->quotarealms_inodes)) {
 		node = rb_first(&mdsc->quotarealms_inodes);
@@ -193,21 +179,7 @@ void ceph_cleanup_quotarealms_inodes(struct ceph_mds_client *mdsc)
 	mutex_unlock(&mdsc->quotarealms_inodes_mutex);
 }
 
-/*
- * This function walks through the snaprealm for an inode and returns the
- * ceph_snap_realm for the first snaprealm that has quotas set (max_files,
- * max_bytes, or any, depending on the 'which_quota' argument).  If the root is
- * reached, return the root ceph_snap_realm instead.
- *
- * Note that the caller is responsible for calling ceph_put_snap_realm() on the
- * returned realm.
- *
- * Callers of this function need to hold mdsc->snap_rwsem.  However, if there's
- * a need to do an inode lookup, this rwsem will be temporarily dropped.  Hence
- * the 'retry' argument: if rwsem needs to be dropped and 'retry' is 'false'
- * this function will return -EAGAIN; otherwise, the snaprealms walk-through
- * will be restarted.
- */
+ 
 static struct ceph_snap_realm *get_quota_realm(struct ceph_mds_client *mdsc,
 					       struct inode *inode,
 					       enum quota_get_realm which_quota,
@@ -274,12 +246,7 @@ bool ceph_quota_is_same_realm(struct inode *old, struct inode *new)
 	bool is_same;
 
 restart:
-	/*
-	 * We need to lookup 2 quota realms atomically, i.e. with snap_rwsem.
-	 * However, get_quota_realm may drop it temporarily.  By setting the
-	 * 'retry' parameter to 'false', we'll get -EAGAIN if the rwsem was
-	 * dropped and we can then restart the whole operation.
-	 */
+	 
 	down_read(&mdsc->snap_rwsem);
 	old_realm = get_quota_realm(mdsc, old, QUOTA_GET_ANY, true);
 	new_realm = get_quota_realm(mdsc, new, QUOTA_GET_ANY, false);
@@ -301,18 +268,12 @@ restart:
 }
 
 enum quota_check_op {
-	QUOTA_CHECK_MAX_FILES_OP,	/* check quota max_files limit */
-	QUOTA_CHECK_MAX_BYTES_OP,	/* check quota max_files limit */
-	QUOTA_CHECK_MAX_BYTES_APPROACHING_OP	/* check if quota max_files
-						   limit is approaching */
+	QUOTA_CHECK_MAX_FILES_OP,	 
+	QUOTA_CHECK_MAX_BYTES_OP,	 
+	QUOTA_CHECK_MAX_BYTES_APPROACHING_OP	 
 };
 
-/*
- * check_quota_exceeded() will walk up the snaprealm hierarchy and, for each
- * realm, it will execute quota check operation defined by the 'op' parameter.
- * The snaprealm walk is interrupted if the quota check detects that the quota
- * is exceeded or if the root inode is reached.
- */
+ 
 static bool check_quota_exceeded(struct inode *inode, enum quota_check_op op,
 				 loff_t delta)
 {
@@ -372,19 +333,16 @@ restart:
 				if (rvalue >= max)
 					exceeded = true;
 				else {
-					/*
-					 * when we're writing more that 1/16th
-					 * of the available space
-					 */
+					 
 					exceeded =
 						(((max - rvalue) >> 4) < delta);
 				}
 			}
 			break;
 		default:
-			/* Shouldn't happen */
+			 
 			pr_warn("Invalid quota check op (%d)\n", op);
-			exceeded = true; /* Just break the loop */
+			exceeded = true;  
 		}
 		iput(in);
 
@@ -402,14 +360,7 @@ restart:
 	return exceeded;
 }
 
-/*
- * ceph_quota_is_max_files_exceeded - check if we can create a new file
- * @inode:	directory where a new file is being created
- *
- * This functions returns true is max_files quota allows a new file to be
- * created.  It is necessary to walk through the snaprealm hierarchy (until the
- * FS root) to check all realms with quotas set.
- */
+ 
 bool ceph_quota_is_max_files_exceeded(struct inode *inode)
 {
 	if (!ceph_has_realms_with_quotas(inode))
@@ -420,14 +371,7 @@ bool ceph_quota_is_max_files_exceeded(struct inode *inode)
 	return check_quota_exceeded(inode, QUOTA_CHECK_MAX_FILES_OP, 1);
 }
 
-/*
- * ceph_quota_is_max_bytes_exceeded - check if we can write to a file
- * @inode:	inode being written
- * @newsize:	new size if write succeeds
- *
- * This functions returns true is max_bytes quota allows a file size to reach
- * @newsize; it returns false otherwise.
- */
+ 
 bool ceph_quota_is_max_bytes_exceeded(struct inode *inode, loff_t newsize)
 {
 	loff_t size = i_size_read(inode);
@@ -435,21 +379,14 @@ bool ceph_quota_is_max_bytes_exceeded(struct inode *inode, loff_t newsize)
 	if (!ceph_has_realms_with_quotas(inode))
 		return false;
 
-	/* return immediately if we're decreasing file size */
+	 
 	if (newsize <= size)
 		return false;
 
 	return check_quota_exceeded(inode, QUOTA_CHECK_MAX_BYTES_OP, (newsize - size));
 }
 
-/*
- * ceph_quota_is_max_bytes_approaching - check if we're reaching max_bytes
- * @inode:	inode being written
- * @newsize:	new size if write succeeds
- *
- * This function returns true if the new file size @newsize will be consuming
- * more than 1/16th of the available quota space; it returns false otherwise.
- */
+ 
 bool ceph_quota_is_max_bytes_approaching(struct inode *inode, loff_t newsize)
 {
 	loff_t size = ceph_inode(inode)->i_reported_size;
@@ -457,7 +394,7 @@ bool ceph_quota_is_max_bytes_approaching(struct inode *inode, loff_t newsize)
 	if (!ceph_has_realms_with_quotas(inode))
 		return false;
 
-	/* return immediately if we're decreasing file size */
+	 
 	if (newsize <= size)
 		return false;
 
@@ -465,16 +402,7 @@ bool ceph_quota_is_max_bytes_approaching(struct inode *inode, loff_t newsize)
 				    (newsize - size));
 }
 
-/*
- * ceph_quota_update_statfs - if root has quota update statfs with quota status
- * @fsc:	filesystem client instance
- * @buf:	statfs to update
- *
- * If the mounted filesystem root has max_bytes quota set, update the filesystem
- * statistics with the quota status.
- *
- * This function returns true if the stats have been updated, false otherwise.
- */
+ 
 bool ceph_quota_update_statfs(struct ceph_fs_client *fsc, struct kstatfs *buf)
 {
 	struct ceph_mds_client *mdsc = fsc->mdsc;
@@ -500,19 +428,15 @@ bool ceph_quota_update_statfs(struct ceph_fs_client *fsc, struct kstatfs *buf)
 		if (ci->i_max_bytes) {
 			total = ci->i_max_bytes >> CEPH_BLOCK_SHIFT;
 			used = ci->i_rbytes >> CEPH_BLOCK_SHIFT;
-			/* For quota size less than 4MB, use 4KB block size */
+			 
 			if (!total) {
 				total = ci->i_max_bytes >> CEPH_4K_BLOCK_SHIFT;
 				used = ci->i_rbytes >> CEPH_4K_BLOCK_SHIFT;
 	                        buf->f_frsize = 1 << CEPH_4K_BLOCK_SHIFT;
 			}
-			/* It is possible for a quota to be exceeded.
-			 * Report 'zero' in that case
-			 */
+			 
 			free = total > used ? total - used : 0;
-			/* For quota size less than 4KB, report the
-			 * total=used=4KB,free=0 when quota is full
-			 * and total=free=4KB, used=0 otherwise */
+			 
 			if (!total) {
 				total = 1;
 				free = ci->i_max_bytes > ci->i_rbytes ? 1 : 0;

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) Fuzhou Rockchip Electronics Co.Ltd
- * Author:Mark Yao <mark.yao@rock-chips.com>
- */
+
+ 
 
 #include <linux/dma-buf.h>
 #include <linux/iommu.h>
@@ -94,13 +91,7 @@ static int rockchip_gem_get_pages(struct rockchip_gem_object *rk_obj)
 		goto err_put_pages;
 	}
 
-	/*
-	 * Fake up the SG table so that dma_sync_sg_for_device() can be used
-	 * to flush the pages associated with it.
-	 *
-	 * TODO: Replace this by drm_clflush_sg() once it can be implemented
-	 * without relying on symbols that are not exported.
-	 */
+	 
 	for_each_sgtable_sg(rk_obj->sgt, s, i)
 		sg_dma_address(s) = sg_phys(s);
 
@@ -241,16 +232,10 @@ static int rockchip_drm_gem_object_mmap(struct drm_gem_object *obj,
 	int ret;
 	struct rockchip_gem_object *rk_obj = to_rockchip_obj(obj);
 
-	/*
-	 * Set vm_pgoff (used as a fake buffer offset by DRM) to 0 and map the
-	 * whole buffer from the start.
-	 */
+	 
 	vma->vm_pgoff = 0;
 
-	/*
-	 * We allocated a struct page table for rk_obj, so clear
-	 * VM_PFNMAP flag that was set by drm_gem_mmap_obj()/drm_gem_mmap().
-	 */
+	 
 	vm_flags_mod(vma, VM_IO | VM_DONTEXPAND | VM_DONTDUMP, VM_PFNMAP);
 
 	vma->vm_page_prot = pgprot_writecombine(vm_get_page_prot(vma->vm_flags));
@@ -322,10 +307,7 @@ err_free_rk_obj:
 	return ERR_PTR(ret);
 }
 
-/*
- * rockchip_gem_free_object - (struct drm_gem_object_funcs)->free
- * callback function
- */
+ 
 void rockchip_gem_free_object(struct drm_gem_object *obj)
 {
 	struct drm_device *drm = obj->dev;
@@ -347,13 +329,7 @@ void rockchip_gem_free_object(struct drm_gem_object *obj)
 	rockchip_gem_release_object(rk_obj);
 }
 
-/*
- * rockchip_gem_create_with_handle - allocate an object with the given
- * size and create a gem handle on it
- *
- * returns a struct rockchip_gem_object* on success or ERR_PTR values
- * on failure.
- */
+ 
 static struct rockchip_gem_object *
 rockchip_gem_create_with_handle(struct drm_file *file_priv,
 				struct drm_device *drm, unsigned int size,
@@ -372,15 +348,12 @@ rockchip_gem_create_with_handle(struct drm_file *file_priv,
 
 	obj = &rk_obj->base;
 
-	/*
-	 * allocate a id of idr table where the obj is registered
-	 * and handle has the id what user can see.
-	 */
+	 
 	ret = drm_gem_handle_create(file_priv, obj, handle);
 	if (ret)
 		goto err_handle_create;
 
-	/* drop reference from allocate - handle holds it now. */
+	 
 	drm_gem_object_put(obj);
 
 	return rk_obj;
@@ -391,13 +364,7 @@ err_handle_create:
 	return ERR_PTR(ret);
 }
 
-/*
- * rockchip_gem_dumb_create - (struct drm_driver)->dumb_create callback
- * function
- *
- * This aligns the pitch and size arguments to the minimum required. wrap
- * this into your own function if you need bigger alignment.
- */
+ 
 int rockchip_gem_dumb_create(struct drm_file *file_priv,
 			     struct drm_device *dev,
 			     struct drm_mode_create_dumb *args)
@@ -405,9 +372,7 @@ int rockchip_gem_dumb_create(struct drm_file *file_priv,
 	struct rockchip_gem_object *rk_obj;
 	int min_pitch = DIV_ROUND_UP(args->width * args->bpp, 8);
 
-	/*
-	 * align to 64 bytes since Mali requires it.
-	 */
+	 
 	args->pitch = ALIGN(min_pitch, 64);
 	args->size = args->pitch * args->height;
 
@@ -417,12 +382,7 @@ int rockchip_gem_dumb_create(struct drm_file *file_priv,
 	return PTR_ERR_OR_ZERO(rk_obj);
 }
 
-/*
- * Allocate a sg_table for this GEM object.
- * Note: Both the table's contents, and the sg_table itself must be freed by
- *       the caller.
- * Returns a pointer to the newly allocated sg_table, or an ERR_PTR() error.
- */
+ 
 struct sg_table *rockchip_gem_prime_get_sg_table(struct drm_gem_object *obj)
 {
 	struct rockchip_gem_object *rk_obj = to_rockchip_obj(obj);
@@ -547,5 +507,5 @@ void rockchip_gem_prime_vunmap(struct drm_gem_object *obj,
 		return;
 	}
 
-	/* Nothing to do if allocated by DMA mapping API. */
+	 
 }

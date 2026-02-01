@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *  Probe module for 8250/16550-type MCHP PCI serial ports.
- *
- *  Based on drivers/tty/serial/8250/8250_pci.c,
- *
- *  Copyright (C) 2022 Microchip Technology Inc., All Rights Reserved.
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/bitops.h>
@@ -86,22 +80,22 @@
 #define PORT_OFFSET				0x100
 
 static const int logical_to_physical_port_idx[][MAX_PORTS] = {
-	{0,  1,  2,  3}, /* PCI12000, PCI11010, PCI11101, PCI11400, PCI11414 */
-	{0,  1,  2,  3}, /* PCI4p */
-	{0,  1,  2, -1}, /* PCI3p012 */
-	{0,  1,  3, -1}, /* PCI3p013 */
-	{0,  2,  3, -1}, /* PCI3p023 */
-	{1,  2,  3, -1}, /* PCI3p123 */
-	{0,  1, -1, -1}, /* PCI2p01 */
-	{0,  2, -1, -1}, /* PCI2p02 */
-	{0,  3, -1, -1}, /* PCI2p03 */
-	{1,  2, -1, -1}, /* PCI2p12 */
-	{1,  3, -1, -1}, /* PCI2p13 */
-	{2,  3, -1, -1}, /* PCI2p23 */
-	{0, -1, -1, -1}, /* PCI1p0 */
-	{1, -1, -1, -1}, /* PCI1p1 */
-	{2, -1, -1, -1}, /* PCI1p2 */
-	{3, -1, -1, -1}, /* PCI1p3 */
+	{0,  1,  2,  3},  
+	{0,  1,  2,  3},  
+	{0,  1,  2, -1},  
+	{0,  1,  3, -1},  
+	{0,  2,  3, -1},  
+	{1,  2,  3, -1},  
+	{0,  1, -1, -1},  
+	{0,  2, -1, -1},  
+	{0,  3, -1, -1},  
+	{1,  2, -1, -1},  
+	{1,  3, -1, -1},  
+	{2,  3, -1, -1},  
+	{0, -1, -1, -1},  
+	{1, -1, -1, -1},  
+	{2, -1, -1, -1},  
+	{3, -1, -1, -1},  
 };
 
 struct pci1xxxx_8250 {
@@ -146,10 +140,7 @@ static unsigned int pci1xxxx_get_divisor(struct uart_port *port,
 {
 	unsigned int quot;
 
-	/*
-	 * Calculate baud rate sampling period in nanoseconds.
-	 * Fractional part x denotes x/255 parts of a nanosecond.
-	 */
+	 
 	quot = NSEC_PER_SEC / (baud * UART_BIT_SAMPLE_CNT);
 	*frac = (NSEC_PER_SEC - quot * baud * UART_BIT_SAMPLE_CNT) *
 		  255 / UART_BIT_SAMPLE_CNT / baud;
@@ -173,10 +164,7 @@ static int pci1xxxx_rs485_config(struct uart_port *port,
 	u32 mode_cfg = 0;
 	u32 clock_div;
 
-	/*
-	 * pci1xxxx's uart hardware supports only RTS delay after
-	 * Tx and in units of bit times to a maximum of 15
-	 */
+	 
 	if (rs485->flags & SER_RS485_ENABLED) {
 		mode_cfg = ADCL_CFG_EN | ADCL_CFG_PIN_SEL;
 
@@ -209,7 +197,7 @@ static const struct serial_rs485 pci1xxxx_rs485_supported = {
 	.flags = SER_RS485_ENABLED | SER_RS485_RTS_ON_SEND |
 		 SER_RS485_RTS_AFTER_SEND,
 	.delay_rts_after_send = 1,
-	/* Delay RTS before send is not supported */
+	 
 };
 
 static bool pci1xxxx_port_suspend(int line)

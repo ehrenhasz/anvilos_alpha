@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0+
-//
-// Torture test for smp_call_function() and friends.
-//
-// Copyright (C) Facebook, 2020.
-//
-// Author: Paul E. McKenney <paulmck@kernel.org>
+
+
+
+
+
+
+
 
 #define pr_fmt(fmt) fmt
 
@@ -46,7 +46,7 @@
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Paul E. McKenney <paulmck@kernel.org>");
 
-// Wait until there are multiple CPUs before starting test.
+
 torture_param(int, holdoff, IS_BUILTIN(CONFIG_SCF_TORTURE_TEST) ? 10 : 0,
 	      "Holdoff time before test start (s)");
 torture_param(int, longwait, 0, "Include ridiculously long waits? (seconds)");
@@ -97,15 +97,15 @@ static struct scf_statistics *scf_stats_p;
 static struct task_struct *scf_torture_stats_task;
 static DEFINE_PER_CPU(long long, scf_invoked_count);
 
-// Data for random primitive selection
+
 #define SCF_PRIM_RESCHED	0
 #define SCF_PRIM_SINGLE		1
 #define SCF_PRIM_SINGLE_RPC	2
 #define SCF_PRIM_MANY		3
 #define SCF_PRIM_ALL		4
-#define SCF_NPRIMS		8 // Need wait and no-wait versions of each,
-				  //  except for SCF_PRIM_RESCHED and
-				  //  SCF_PRIM_SINGLE_RPC.
+#define SCF_NPRIMS		8 
+				  
+				  
 
 static char *scf_prim_name[] = {
 	"resched_cpu",
@@ -124,17 +124,17 @@ static struct scf_selector scf_sel_array[SCF_NPRIMS];
 static int scf_sel_array_len;
 static unsigned long scf_sel_totweight;
 
-// Communicate between caller and handler.
+
 struct scf_check {
 	bool scfc_in;
 	bool scfc_out;
-	int scfc_cpu; // -1 for not _single().
+	int scfc_cpu; 
 	bool scfc_wait;
 	bool scfc_rpc;
 	struct completion scfc_completion;
 };
 
-// Use to wait for all threads to start.
+
 static atomic_t n_started;
 static atomic_t n_errs;
 static atomic_t n_mb_in_errs;
@@ -145,9 +145,9 @@ static char *bangstr = "";
 
 static DEFINE_TORTURE_RANDOM_PERCPU(scf_torture_rand);
 
-extern void resched_cpu(int cpu); // An alternative IPI vector.
+extern void resched_cpu(int cpu); 
 
-// Print torture statistics.  Caller must ensure serialization.
+
 static void scf_torture_stats_print(void)
 {
 	int cpu;
@@ -185,8 +185,8 @@ static void scf_torture_stats_print(void)
 		atomic_read(&n_alloc_errs));
 }
 
-// Periodically prints torture statistics, if periodic statistics printing
-// was specified via the stat_interval module parameter.
+
+
 static int
 scf_torture_stats(void *arg)
 {
@@ -200,14 +200,14 @@ scf_torture_stats(void *arg)
 	return 0;
 }
 
-// Add a primitive to the scf_sel_array[].
+
 static void scf_sel_add(unsigned long weight, int prim, bool wait)
 {
 	struct scf_selector *scfsp = &scf_sel_array[scf_sel_array_len];
 
-	// If no weight, if array would overflow, if computing three-place
-	// percentages would overflow, or if the scf_prim_name[] array would
-	// overflow, don't bother.  In the last three two cases, complain.
+	
+	
+	
 	if (!weight ||
 	    WARN_ON_ONCE(scf_sel_array_len >= ARRAY_SIZE(scf_sel_array)) ||
 	    WARN_ON_ONCE(0 - 100000 * weight <= 100000 * scf_sel_totweight) ||
@@ -220,7 +220,7 @@ static void scf_sel_add(unsigned long weight, int prim, bool wait)
 	scf_sel_array_len++;
 }
 
-// Dump out weighting percentages for scf_prim_name[] array.
+
 static void scf_sel_dump(void)
 {
 	int i;
@@ -238,7 +238,7 @@ static void scf_sel_dump(void)
 	}
 }
 
-// Randomly pick a primitive and wait/nowait, based on weightings.
+
 static struct scf_selector *scf_sel_rand(struct torture_random_state *trsp)
 {
 	int i;
@@ -251,9 +251,9 @@ static struct scf_selector *scf_sel_rand(struct torture_random_state *trsp)
 	return &scf_sel_array[0];
 }
 
-// Update statistics and occasionally burn up mass quantities of CPU time,
-// if told to do so via scftorture.longwait.  Otherwise, occasionally burn
-// a little bit.
+
+
+
 static void scf_handler(void *scfc_in)
 {
 	int i;
@@ -262,7 +262,7 @@ static void scf_handler(void *scfc_in)
 	struct scf_check *scfcp = scfc_in;
 
 	if (likely(scfcp)) {
-		WRITE_ONCE(scfcp->scfc_out, false); // For multiple receivers.
+		WRITE_ONCE(scfcp->scfc_out, false); 
 		if (WARN_ON_ONCE(unlikely(!READ_ONCE(scfcp->scfc_in))))
 			atomic_inc(&n_mb_in_errs);
 	}
@@ -299,7 +299,7 @@ out:
 	}
 }
 
-// As above, but check for correct CPU.
+
 static void scf_handler_1(void *scfc_in)
 {
 	struct scf_check *scfcp = scfc_in;
@@ -310,7 +310,7 @@ static void scf_handler_1(void *scfc_in)
 	scf_handler(scfcp);
 }
 
-// Randomly do an smp_call_function*() invocation.
+
 static void scftorture_invoke_one(struct scf_statistics *scfp, struct torture_random_state *trsp)
 {
 	bool allocfail = false;
@@ -353,7 +353,7 @@ static void scftorture_invoke_one(struct scf_statistics *scfp, struct torture_ra
 			scfp->n_single++;
 		if (scfcp) {
 			scfcp->scfc_cpu = cpu;
-			barrier(); // Prevent race-reduction compiler optimizations.
+			barrier(); 
 			scfcp->scfc_in = true;
 		}
 		ret = smp_call_function_single(cpu, scf_handler_1, (void *)scfcp, scfsp->scfs_wait);
@@ -375,7 +375,7 @@ static void scftorture_invoke_one(struct scf_statistics *scfp, struct torture_ra
 		scfcp->scfc_wait = true;
 		init_completion(&scfcp->scfc_completion);
 		scfcp->scfc_rpc = true;
-		barrier(); // Prevent race-reduction compiler optimizations.
+		barrier(); 
 		scfcp->scfc_in = true;
 		ret = smp_call_function_single(cpu, scf_handler_1, (void *)scfcp, 0);
 		if (!ret) {
@@ -400,7 +400,7 @@ static void scftorture_invoke_one(struct scf_statistics *scfp, struct torture_ra
 		else
 			scfp->n_many++;
 		if (scfcp) {
-			barrier(); // Prevent race-reduction compiler optimizations.
+			barrier(); 
 			scfcp->scfc_in = true;
 		}
 		smp_call_function_many(cpu_online_mask, scf_handler, scfcp, scfsp->scfs_wait);
@@ -411,7 +411,7 @@ static void scftorture_invoke_one(struct scf_statistics *scfp, struct torture_ra
 		else
 			scfp->n_all++;
 		if (scfcp) {
-			barrier(); // Prevent race-reduction compiler optimizations.
+			barrier(); 
 			scfcp->scfc_in = true;
 		}
 		smp_call_function(scf_handler, scfcp, scfsp->scfs_wait);
@@ -425,24 +425,24 @@ static void scftorture_invoke_one(struct scf_statistics *scfp, struct torture_ra
 		if (WARN_ON_ONCE((num_online_cpus() > 1 || scfsp->scfs_prim == SCF_PRIM_SINGLE) &&
 				 !scfcp->scfc_out)) {
 			pr_warn("%s: Memory-ordering failure, scfs_prim: %d.\n", __func__, scfsp->scfs_prim);
-			atomic_inc(&n_mb_out_errs); // Leak rather than trash!
+			atomic_inc(&n_mb_out_errs); 
 		} else {
 			kfree(scfcp);
 		}
-		barrier(); // Prevent race-reduction compiler optimizations.
+		barrier(); 
 	}
 	if (use_cpus_read_lock)
 		cpus_read_unlock();
 	else
 		preempt_enable();
 	if (allocfail)
-		schedule_timeout_idle((1 + longwait) * HZ);  // Let no-wait handlers complete.
+		schedule_timeout_idle((1 + longwait) * HZ);  
 	else if (!(torture_random(trsp) & 0xfff))
 		schedule_timeout_uninterruptible(1);
 }
 
-// SCF test kthread.  Repeatedly does calls to members of the
-// smp_call_function() family of functions.
+
+
 static int scftorture_invoker(void *arg)
 {
 	int cpu;
@@ -460,7 +460,7 @@ static int scftorture_invoker(void *arg)
 
 	VERBOSE_SCFTORTOUT("scftorture_invoker %d: Waiting for all SCF torturers from cpu %d", scfp->cpu, raw_smp_processor_id());
 
-	// Make sure that the CPU is affinitized appropriately during testing.
+	
 	curcpu = raw_smp_processor_id();
 	WARN_ONCE(curcpu != scfp->cpu % nr_cpu_ids,
 		  "%s: Wanted CPU %d, running on %d, nr_cpu_ids = %d\n",
@@ -524,8 +524,8 @@ static void scf_torture_cleanup(void)
 		goto end;
 	smp_call_function(scf_cleanup_handler, NULL, 0);
 	torture_stop_kthread(scf_torture_stats, scf_torture_stats_task);
-	scf_torture_stats_print();  // -After- the stats thread is stopped!
-	kfree(scf_stats_p);  // -After- the last stats print has completed!
+	scf_torture_stats_print();  
+	kfree(scf_stats_p);  
 	scf_stats_p = NULL;
 
 	if (atomic_read(&n_errs) || atomic_read(&n_mb_in_errs) || atomic_read(&n_mb_out_errs))
@@ -623,7 +623,7 @@ static int __init scf_torture_init(void)
 			goto unwind;
 	}
 
-	// Worker tasks invoking smp_call_function().
+	
 	if (nthreads < 0)
 		nthreads = num_online_cpus();
 	scf_stats_p = kcalloc(nthreads, sizeof(scf_stats_p[0]), GFP_KERNEL);

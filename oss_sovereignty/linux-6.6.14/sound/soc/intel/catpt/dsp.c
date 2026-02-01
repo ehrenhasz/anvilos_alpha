@@ -1,9 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0-only
-//
-// Copyright(c) 2020 Intel Corporation. All rights reserved.
-//
-// Author: Cezary Rojewski <cezary.rojewski@intel.com>
-//
+
+
+
+
+
+
 
 #include <linux/devcoredump.h>
 #include <linux/dma-mapping.h>
@@ -19,10 +19,7 @@ static bool catpt_dma_filter(struct dma_chan *chan, void *param)
 	return param == chan->device->dev;
 }
 
-/*
- * Either engine 0 or 1 can be used for image loading.
- * Align with Windows driver equivalent and stick to engine 1.
- */
+ 
 #define CATPT_DMA_DEVID		1
 #define CATPT_DMA_DSP_ADDR_MASK	GENMASK(31, 20)
 
@@ -74,7 +71,7 @@ static int catpt_dma_memcpy(struct catpt_dev *cdev, struct dma_chan *chan,
 		return -EIO;
 	}
 
-	/* enable demand mode for dma channel */
+	 
 	catpt_updatel_shim(cdev, HMDC,
 			   CATPT_HMDC_HDDA(CATPT_DMA_DEVID, chan->chan_id),
 			   CATPT_HMDC_HDDA(CATPT_DMA_DEVID, chan->chan_id));
@@ -89,7 +86,7 @@ static int catpt_dma_memcpy(struct catpt_dev *cdev, struct dma_chan *chan,
 	ret = (status == DMA_COMPLETE) ? 0 : -EPROTO;
 
 clear_hdda:
-	/* regardless of status, disable access to HOST memory in demand mode */
+	 
 	catpt_updatel_shim(cdev, HMDC,
 			   CATPT_HMDC_HDDA(CATPT_DMA_DEVID, chan->chan_id), 0);
 
@@ -128,10 +125,7 @@ int catpt_dmac_probe(struct catpt_dev *cdev)
 	ret = dma_coerce_mask_and_coherent(cdev->dev, DMA_BIT_MASK(31));
 	if (ret)
 		return ret;
-	/*
-	 * Caller is responsible for putting device in D0 to allow
-	 * for I/O and memory access before probing DW.
-	 */
+	 
 	ret = dw_dma_probe(dmac);
 	if (ret)
 		return ret;
@@ -142,12 +136,7 @@ int catpt_dmac_probe(struct catpt_dev *cdev)
 
 void catpt_dmac_remove(struct catpt_dev *cdev)
 {
-	/*
-	 * As do_dma_remove() juggles with pm_runtime_get_xxx() and
-	 * pm_runtime_put_xxx() while both ADSP and DW 'devices' are part of
-	 * the same module, caller makes sure pm_runtime_disable() is invoked
-	 * before removing DW to prevent postmortem resume and suspend.
-	 */
+	 
 	dw_dma_remove(cdev->dmac);
 }
 
@@ -166,17 +155,14 @@ static void catpt_dsp_set_srampge(struct catpt_dev *cdev, struct resource *sram,
 		return;
 
 	catpt_updatel_pci(cdev, VDRTCTL0, mask, new);
-	/* wait for SRAM power gating to propagate */
+	 
 	udelay(60);
 
-	/*
-	 * Dummy read as the very first access after block enable
-	 * to prevent byte loss in future operations.
-	 */
+	 
 	for_each_clear_bit_from(b, &new, fls_long(mask)) {
 		u8 buf[4];
 
-		/* newly enabled: new bit=0 while old bit=1 */
+		 
 		if (test_bit(b, &old)) {
 			dev_dbg(cdev->dev, "sanitize block %ld: off 0x%08x\n",
 				b - __ffs(mask), off);
@@ -192,7 +178,7 @@ void catpt_dsp_update_srampge(struct catpt_dev *cdev, struct resource *sram,
 	struct resource *res;
 	unsigned long new = 0;
 
-	/* flag all busy blocks */
+	 
 	for (res = sram->child; res; res = res->sibling) {
 		u32 h, l;
 
@@ -201,15 +187,15 @@ void catpt_dsp_update_srampge(struct catpt_dev *cdev, struct resource *sram,
 		new |= GENMASK(h, l);
 	}
 
-	/* offset value given mask's start and invert it as ON=b0 */
+	 
 	new = ~(new << __ffs(mask)) & mask;
 
-	/* disable core clock gating */
+	 
 	catpt_updatel_pci(cdev, VDRTCTL2, CATPT_VDRTCTL2_DCLCGE, 0);
 
 	catpt_dsp_set_srampge(cdev, sram, mask, new);
 
-	/* enable core clock gating */
+	 
 	catpt_updatel_pci(cdev, VDRTCTL2, CATPT_VDRTCTL2_DCLCGE,
 			  CATPT_VDRTCTL2_DCLCGE);
 }
@@ -272,13 +258,13 @@ static int catpt_dsp_select_lpclock(struct catpt_dev *cdev, bool lp, bool waiti)
 	}
 
 	if (waiti) {
-		/* wait for DSP to signal WAIT state */
+		 
 		ret = catpt_readl_poll_shim(cdev, ISD,
 					    reg, (reg & CATPT_ISD_DCPWM),
 					    500, 10000);
 		if (ret) {
 			dev_warn(cdev->dev, "await WAITI timeout\n");
-			/* no signal - only high clock selection allowed */
+			 
 			if (lp) {
 				mutex_unlock(&cdev->clk_mutex);
 				return 0;
@@ -292,7 +278,7 @@ static int catpt_dsp_select_lpclock(struct catpt_dev *cdev, bool lp, bool waiti)
 	if (ret)
 		dev_warn(cdev->dev, "clock change still in progress\n");
 
-	/* default to DSP core & audio fabric high clock */
+	 
 	val |= CATPT_CS_DCS_HIGH;
 	mask = CATPT_CS_LPCS | CATPT_CS_DCS;
 	catpt_updatel_shim(cdev, CS1, mask, val);
@@ -303,7 +289,7 @@ static int catpt_dsp_select_lpclock(struct catpt_dev *cdev, bool lp, bool waiti)
 	if (ret)
 		dev_warn(cdev->dev, "clock change still in progress\n");
 
-	/* update PLL accordingly */
+	 
 	cdev->spec->pll_shutdown(cdev, lp);
 
 	mutex_unlock(&cdev->clk_mutex);
@@ -321,7 +307,7 @@ int catpt_dsp_update_lpclock(struct catpt_dev *cdev)
 	return catpt_dsp_select_lpclock(cdev, true, true);
 }
 
-/* bring registers to their defaults as HW won't reset itself */
+ 
 static void catpt_dsp_set_regs_defaults(struct catpt_dev *cdev)
 {
 	int i;
@@ -358,28 +344,28 @@ int catpt_dsp_power_down(struct catpt_dev *cdev)
 {
 	u32 mask, val;
 
-	/* disable core clock gating */
+	 
 	catpt_updatel_pci(cdev, VDRTCTL2, CATPT_VDRTCTL2_DCLCGE, 0);
 
 	catpt_dsp_reset(cdev, true);
-	/* set 24Mhz clock for both SSPs */
+	 
 	catpt_updatel_shim(cdev, CS1, CATPT_CS_SBCS(0) | CATPT_CS_SBCS(1),
 			   CATPT_CS_SBCS(0) | CATPT_CS_SBCS(1));
 	catpt_dsp_select_lpclock(cdev, true, false);
-	/* disable MCLK */
+	 
 	catpt_updatel_shim(cdev, CLKCTL, CATPT_CLKCTL_SMOS, 0);
 
 	catpt_dsp_set_regs_defaults(cdev);
 
-	/* switch clock gating */
+	 
 	mask = CATPT_VDRTCTL2_CGEALL & (~CATPT_VDRTCTL2_DCLCGE);
 	val = mask & (~CATPT_VDRTCTL2_DTCGE);
 	catpt_updatel_pci(cdev, VDRTCTL2, mask, val);
-	/* enable DTCGE separatelly */
+	 
 	catpt_updatel_pci(cdev, VDRTCTL2, CATPT_VDRTCTL2_DTCGE,
 			  CATPT_VDRTCTL2_DTCGE);
 
-	/* SRAM power gating all */
+	 
 	catpt_dsp_set_srampge(cdev, &cdev->dram, cdev->spec->dram_mask,
 			      cdev->spec->dram_mask);
 	catpt_dsp_set_srampge(cdev, &cdev->iram, cdev->spec->iram_mask,
@@ -388,10 +374,10 @@ int catpt_dsp_power_down(struct catpt_dev *cdev)
 	catpt_updatel_pci(cdev, VDRTCTL0, mask, cdev->spec->d3pgd_bit);
 
 	catpt_updatel_pci(cdev, PMCS, PCI_PM_CTRL_STATE_MASK, PCI_D3hot);
-	/* give hw time to drop off */
+	 
 	udelay(50);
 
-	/* enable core clock gating */
+	 
 	catpt_updatel_pci(cdev, VDRTCTL2, CATPT_VDRTCTL2_DCLCGE,
 			  CATPT_VDRTCTL2_DCLCGE);
 	udelay(50);
@@ -403,17 +389,17 @@ int catpt_dsp_power_up(struct catpt_dev *cdev)
 {
 	u32 mask, val;
 
-	/* disable core clock gating */
+	 
 	catpt_updatel_pci(cdev, VDRTCTL2, CATPT_VDRTCTL2_DCLCGE, 0);
 
-	/* switch clock gating */
+	 
 	mask = CATPT_VDRTCTL2_CGEALL & (~CATPT_VDRTCTL2_DCLCGE);
 	val = mask & (~CATPT_VDRTCTL2_DTCGE);
 	catpt_updatel_pci(cdev, VDRTCTL2, mask, val);
 
 	catpt_updatel_pci(cdev, PMCS, PCI_PM_CTRL_STATE_MASK, PCI_D0);
 
-	/* SRAM power gating none */
+	 
 	mask = cdev->spec->d3srampgd_bit | cdev->spec->d3pgd_bit;
 	catpt_updatel_pci(cdev, VDRTCTL0, mask, mask);
 	catpt_dsp_set_srampge(cdev, &cdev->dram, cdev->spec->dram_mask, 0);
@@ -421,19 +407,19 @@ int catpt_dsp_power_up(struct catpt_dev *cdev)
 
 	catpt_dsp_set_regs_defaults(cdev);
 
-	/* restore MCLK */
+	 
 	catpt_updatel_shim(cdev, CLKCTL, CATPT_CLKCTL_SMOS, CATPT_CLKCTL_SMOS);
 	catpt_dsp_select_lpclock(cdev, false, false);
-	/* set 24Mhz clock for both SSPs */
+	 
 	catpt_updatel_shim(cdev, CS1, CATPT_CS_SBCS(0) | CATPT_CS_SBCS(1),
 			   CATPT_CS_SBCS(0) | CATPT_CS_SBCS(1));
 	catpt_dsp_reset(cdev, false);
 
-	/* enable core clock gating */
+	 
 	catpt_updatel_pci(cdev, VDRTCTL2, CATPT_VDRTCTL2_DCLCGE,
 			  CATPT_VDRTCTL2_DCLCGE);
 
-	/* generate int deassert msg to fix inversed int logic */
+	 
 	catpt_updatel_shim(cdev, IMC, CATPT_IMC_IPCDB | CATPT_IMC_IPCCD, 0);
 
 	return 0;
@@ -468,7 +454,7 @@ int catpt_coredump(struct catpt_dev *cdev)
 	dump_size = resource_size(&cdev->dram);
 	dump_size += resource_size(&cdev->iram);
 	dump_size += regs_size;
-	/* account for header of each section and hash chunk */
+	 
 	dump_size += 4 * sizeof(*hdr) + CATPT_DUMP_HASH_SIZE;
 
 	dump = vzalloc(dump_size);
@@ -486,9 +472,9 @@ int catpt_coredump(struct catpt_dev *cdev)
 
 	info = cdev->ipc.config.fw_info;
 	eof = info + FW_INFO_SIZE_MAX;
-	/* navigate to fifth info segment (fw hash) */
+	 
 	for (i = 0; i < 4 && info < eof; i++, info++) {
-		/* info segments are separated by space each */
+		 
 		info = strnchr(info, eof - info, ' ');
 		if (!info)
 			break;

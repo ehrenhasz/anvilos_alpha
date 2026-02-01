@@ -1,10 +1,10 @@
-/* SPDX-License-Identifier: MIT */
-/* Copyright (C) 2006-2016 Oracle Corporation */
+ 
+ 
 
 #ifndef __VBOXVIDEO_VBE_H__
 #define __VBOXVIDEO_VBE_H__
 
-/* GUEST <-> HOST Communication API */
+ 
 
 #define VBE_DISPI_BANK_ADDRESS          0xA0000
 #define VBE_DISPI_BANK_SIZE_KB          64
@@ -39,7 +39,7 @@
 #define VBE_DISPI_ID4                   0xB0C4
 
 #define VBE_DISPI_ID_VBOX_VIDEO         0xBE00
-/* The VBOX interface id. Indicates support for VBVA shared memory interface. */
+ 
 #define VBE_DISPI_ID_HGSMI              0xBE01
 #define VBE_DISPI_ID_ANYX               0xBE02
 

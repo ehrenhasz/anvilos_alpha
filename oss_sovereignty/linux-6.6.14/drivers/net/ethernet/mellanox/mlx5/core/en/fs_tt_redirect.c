@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-/* Copyright (c) 2021, Mellanox Technologies inc. All rights reserved. */
+
+ 
 
 #include "en/fs_tt_redirect.h"
 #include "fs_core.h"
@@ -28,7 +28,7 @@ static char *fs_udp_type2str(enum fs_udp_type i)
 	switch (i) {
 	case FS_IPV4_UDP:
 		return "UDP v4";
-	default: /* FS_IPV6_UDP */
+	default:  
 		return "UDP v6";
 	}
 }
@@ -38,7 +38,7 @@ static enum mlx5_traffic_types fs_udp2tt(enum fs_udp_type i)
 	switch (i) {
 	case FS_IPV4_UDP:
 		return MLX5_TT_IPV4_UDP;
-	default: /* FS_IPV6_UDP */
+	default:  
 		return MLX5_TT_IPV6_UDP;
 	}
 }
@@ -173,7 +173,7 @@ static int fs_udp_create_groups(struct mlx5e_flow_table *ft, enum fs_udp_type ty
 		err = -EINVAL;
 		goto out;
 	}
-	/* Match on udp protocol, Ipv4/6 and dport */
+	 
 	MLX5_SET_CFG(in, match_criteria_enable, MLX5_MATCH_OUTER_HEADERS);
 	MLX5_SET_CFG(in, start_flow_index, ix);
 	ix += MLX5E_FS_UDP_GROUP1_SIZE;
@@ -183,7 +183,7 @@ static int fs_udp_create_groups(struct mlx5e_flow_table *ft, enum fs_udp_type ty
 		goto err;
 	ft->num_groups++;
 
-	/* Default Flow Group */
+	 
 	memset(in, 0, inlen);
 	MLX5_SET_CFG(in, start_flow_index, ix);
 	ix += MLX5E_FS_UDP_GROUP2_SIZE;
@@ -261,7 +261,7 @@ static int fs_udp_disable(struct mlx5e_flow_steering *fs)
 	int err, i;
 
 	for (i = 0; i < FS_UDP_NUM_TYPES; i++) {
-		/* Modify ttc rules destination to point back to the indir TIRs */
+		 
 		err = mlx5_ttc_fwd_default_dest(ttc, fs_udp2tt(i));
 		if (err) {
 			fs_err(fs, "%s: modify ttc[%d] default destination failed, err(%d)\n",
@@ -284,7 +284,7 @@ static int fs_udp_enable(struct mlx5e_flow_steering *fs)
 	for (i = 0; i < FS_UDP_NUM_TYPES; i++) {
 		dest.ft = udp->tables[i].t;
 
-		/* Modify ttc rules destination to point on the accel_fs FTs */
+		 
 		err = mlx5_ttc_fwd_dest(ttc, fs_udp2tt(i), &dest);
 		if (err) {
 			fs_err(fs, "%s: modify ttc[%d] destination to accel failed, err(%d)\n",
@@ -440,7 +440,7 @@ static int fs_any_create_groups(struct mlx5e_flow_table *ft)
 		return -ENOMEM;
 	}
 
-	/* Match on ethertype */
+	 
 	mc = MLX5_ADDR_OF(create_flow_group_in, in, match_criteria);
 	outer_headers_c = MLX5_ADDR_OF(fte_match_param, mc, outer_headers);
 	MLX5_SET_TO_ONES(fte_match_set_lyr_2_4, outer_headers_c, ethertype);
@@ -453,7 +453,7 @@ static int fs_any_create_groups(struct mlx5e_flow_table *ft)
 		goto err;
 	ft->num_groups++;
 
-	/* Default Flow Group */
+	 
 	memset(in, 0, inlen);
 	MLX5_SET_CFG(in, start_flow_index, ix);
 	ix += MLX5E_FS_ANY_GROUP2_SIZE;
@@ -518,7 +518,7 @@ static int fs_any_disable(struct mlx5e_flow_steering *fs)
 	struct mlx5_ttc_table *ttc = mlx5e_fs_get_ttc(fs, false);
 	int err;
 
-	/* Modify ttc rules destination to point back to the indir TIRs */
+	 
 	err = mlx5_ttc_fwd_default_dest(ttc, MLX5_TT_ANY);
 	if (err) {
 		fs_err(fs,
@@ -539,7 +539,7 @@ static int fs_any_enable(struct mlx5e_flow_steering *fs)
 	dest.type = MLX5_FLOW_DESTINATION_TYPE_FLOW_TABLE;
 	dest.ft = any->table.t;
 
-	/* Modify ttc rules destination to point on the accel_fs FTs */
+	 
 	err = mlx5_ttc_fwd_dest(ttc, MLX5_TT_ANY, &dest);
 	if (err) {
 		fs_err(fs,

@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  linux/fs/proc/net.c
- *
- *  Copyright (C) 2007
- *
- *  Author: Eric Biederman <ebiederm@xmission.com>
- *
- *  proc net directory handling functions
- */
+
+ 
 #include <linux/errno.h>
 #include <linux/time.h>
 #include <linux/proc_fs.h>
@@ -128,31 +120,7 @@ struct proc_dir_entry *proc_create_net_data(const char *name, umode_t mode,
 }
 EXPORT_SYMBOL_GPL(proc_create_net_data);
 
-/**
- * proc_create_net_data_write - Create a writable net_ns-specific proc file
- * @name: The name of the file.
- * @mode: The file's access mode.
- * @parent: The parent directory in which to create.
- * @ops: The seq_file ops with which to read the file.
- * @write: The write method with which to 'modify' the file.
- * @data: Data for retrieval by pde_data().
- *
- * Create a network namespaced proc file in the @parent directory with the
- * specified @name and @mode that allows reading of a file that displays a
- * series of elements and also provides for the file accepting writes that have
- * some arbitrary effect.
- *
- * The functions in the @ops table are used to iterate over items to be
- * presented and extract the readable content using the seq_file interface.
- *
- * The @write function is called with the data copied into a kernel space
- * scratch buffer and has a NUL appended for convenience.  The buffer may be
- * modified by the @write function.  @write should return 0 on success.
- *
- * The @data value is accessible from the @show and @write functions by calling
- * pde_data() on the file inode.  The network namespace must be accessed by
- * calling seq_file_net() on the seq_file struct.
- */
+ 
 struct proc_dir_entry *proc_create_net_data_write(const char *name, umode_t mode,
 						  struct proc_dir_entry *parent,
 						  const struct seq_operations *ops,
@@ -220,31 +188,7 @@ struct proc_dir_entry *proc_create_net_single(const char *name, umode_t mode,
 }
 EXPORT_SYMBOL_GPL(proc_create_net_single);
 
-/**
- * proc_create_net_single_write - Create a writable net_ns-specific proc file
- * @name: The name of the file.
- * @mode: The file's access mode.
- * @parent: The parent directory in which to create.
- * @show: The seqfile show method with which to read the file.
- * @write: The write method with which to 'modify' the file.
- * @data: Data for retrieval by pde_data().
- *
- * Create a network-namespaced proc file in the @parent directory with the
- * specified @name and @mode that allows reading of a file that displays a
- * single element rather than a series and also provides for the file accepting
- * writes that have some arbitrary effect.
- *
- * The @show function is called to extract the readable content via the
- * seq_file interface.
- *
- * The @write function is called with the data copied into a kernel space
- * scratch buffer and has a NUL appended for convenience.  The buffer may be
- * modified by the @write function.  @write should return 0 on success.
- *
- * The @data value is accessible from the @show and @write functions by calling
- * pde_data() on the file inode.  The network namespace must be accessed by
- * calling seq_file_single_net() on the seq_file struct.
- */
+ 
 struct proc_dir_entry *proc_create_net_single_write(const char *name, umode_t mode,
 						    struct proc_dir_entry *parent,
 						    int (*show)(struct seq_file *, void *),
@@ -351,12 +295,7 @@ static __net_init int proc_net_ns_init(struct net *net)
 	kgid_t gid;
 	int err;
 
-	/*
-	 * This PDE acts only as an anchor for /proc/${pid}/net hierarchy.
-	 * Corresponding inode (PDE(inode) == net->proc_net) is never
-	 * instantiated therefore blanket zeroing is fine.
-	 * net->proc_net_stat inode is instantiated normally.
-	 */
+	 
 	err = -ENOMEM;
 	netd = kmem_cache_zalloc(proc_dir_entry_cache, GFP_KERNEL);
 	if (!netd)
@@ -380,7 +319,7 @@ static __net_init int proc_net_ns_init(struct net *net)
 
 	proc_set_user(netd, uid, gid);
 
-	/* Seed dentry revalidation for /proc/${pid}/net */
+	 
 	pde_force_lookup(netd);
 
 	err = -EEXIST;

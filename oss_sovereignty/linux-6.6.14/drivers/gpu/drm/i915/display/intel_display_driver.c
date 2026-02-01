@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright © 2022-2023 Intel Corporation
- *
- * High level display driver entry points. This is a layer between top level
- * driver code and low level display functionality; no low level display code or
- * details here.
- */
+
+ 
 
 #include <linux/vga_switcheroo.h>
 #include <acpi/video.h>
@@ -59,14 +53,11 @@ bool intel_display_driver_probe_defer(struct pci_dev *pdev)
 {
 	struct drm_privacy_screen *privacy_screen;
 
-	/*
-	 * apple-gmux is needed on dual GPU MacBook Pro
-	 * to probe the panel if we're the inactive GPU.
-	 */
+	 
 	if (vga_switcheroo_client_probe_defer(pdev))
 		return true;
 
-	/* If the LCD panel has a privacy-screen, wait for it */
+	 
 	privacy_screen = drm_privacy_screen_get(&pdev->dev, NULL);
 	if (IS_ERR(privacy_screen) && PTR_ERR(privacy_screen) == -EPROBE_DEFER)
 		return true;
@@ -124,10 +115,7 @@ static void intel_mode_config_init(struct drm_i915_private *i915)
 
 	mode_config->async_page_flip = HAS_ASYNC_FLIPS(i915);
 
-	/*
-	 * Maximum framebuffer dimensions, chosen to match
-	 * the maximum render engine surface size on gen4+.
-	 */
+	 
 	if (DISPLAY_VER(i915) >= 7) {
 		mode_config->max_width = 16384;
 		mode_config->max_height = 16384;
@@ -188,7 +176,7 @@ void intel_display_driver_early_probe(struct drm_i915_private *i915)
 	intel_fdi_init_hook(i915);
 }
 
-/* part #1: call before irq install */
+ 
 int intel_display_driver_probe_noirq(struct drm_i915_private *i915)
 {
 	int ret;
@@ -209,7 +197,7 @@ int intel_display_driver_probe_noirq(struct drm_i915_private *i915)
 	if (ret)
 		goto cleanup_bios;
 
-	/* FIXME: completely on the wrong abstraction layer */
+	 
 	ret = intel_power_domains_init(i915);
 	if (ret < 0)
 		goto cleanup_vga;
@@ -270,7 +258,7 @@ cleanup_bios:
 	return ret;
 }
 
-/* part #2: call after irq install, but before gem init */
+ 
 int intel_display_driver_probe_nogem(struct drm_i915_private *i915)
 {
 	struct drm_device *dev = &i915->drm;
@@ -316,7 +304,7 @@ int intel_display_driver_probe_nogem(struct drm_i915_private *i915)
 
 	intel_hti_init(i915);
 
-	/* Just disable it once at startup */
+	 
 	intel_vga_disable(i915);
 	intel_setup_outputs(i915);
 
@@ -331,18 +319,14 @@ int intel_display_driver_probe_nogem(struct drm_i915_private *i915)
 		intel_crtc_initial_plane_config(crtc);
 	}
 
-	/*
-	 * Make sure hardware watermarks really match the state we read out.
-	 * Note that we need to do this after reconstructing the BIOS fb's
-	 * since the watermark calculation done here will use pstate->fb.
-	 */
+	 
 	if (!HAS_GMCH(i915))
 		ilk_wm_sanitize(i915);
 
 	return 0;
 }
 
-/* part #3: call after gem init */
+ 
 int intel_display_driver_probe(struct drm_i915_private *i915)
 {
 	int ret;
@@ -350,12 +334,7 @@ int intel_display_driver_probe(struct drm_i915_private *i915)
 	if (!HAS_DISPLAY(i915))
 		return 0;
 
-	/*
-	 * Force all active planes to recompute their states. So that on
-	 * mode_setcrtc after probe, all the intel_plane_state variables
-	 * are already calculated and there is no assert_plane warnings
-	 * during bootup.
-	 */
+	 
 	ret = intel_initial_commit(&i915->drm);
 	if (ret)
 		drm_dbg_kms(&i915->drm, "Initial modeset failed, %d\n", ret);
@@ -366,7 +345,7 @@ int intel_display_driver_probe(struct drm_i915_private *i915)
 	if (ret)
 		return ret;
 
-	/* Only enable hotplug handling once the fbdev is fully set up. */
+	 
 	intel_hpd_init(i915);
 	intel_hpd_poll_disable(i915);
 
@@ -380,7 +359,7 @@ void intel_display_driver_register(struct drm_i915_private *i915)
 	if (!HAS_DISPLAY(i915))
 		return;
 
-	/* Must be done after probing outputs */
+	 
 	intel_opregion_register(i915);
 	intel_acpi_video_register(i915);
 
@@ -388,25 +367,14 @@ void intel_display_driver_register(struct drm_i915_private *i915)
 
 	intel_display_debugfs_register(i915);
 
-	/*
-	 * Some ports require correctly set-up hpd registers for
-	 * detection to work properly (leading to ghost connected
-	 * connector status), e.g. VGA on gm45.  Hence we can only set
-	 * up the initial fbdev config after hpd irqs are fully
-	 * enabled. We do it last so that the async config cannot run
-	 * before the connectors are registered.
-	 */
+	 
 	intel_fbdev_initial_config_async(i915);
 
-	/*
-	 * We need to coordinate the hotplugs with the asynchronous
-	 * fbdev configuration, for which we use the
-	 * fbdev->async_cookie.
-	 */
+	 
 	drm_kms_helper_poll_init(&i915->drm);
 }
 
-/* part #1: call before irq uninstall */
+ 
 void intel_display_driver_remove(struct drm_i915_private *i915)
 {
 	if (!HAS_DISPLAY(i915))
@@ -418,32 +386,25 @@ void intel_display_driver_remove(struct drm_i915_private *i915)
 	flush_work(&i915->display.atomic_helper.free_work);
 	drm_WARN_ON(&i915->drm, !llist_empty(&i915->display.atomic_helper.free_list));
 
-	/*
-	 * MST topology needs to be suspended so we don't have any calls to
-	 * fbdev after it's finalized. MST will be destroyed later as part of
-	 * drm_mode_config_cleanup()
-	 */
+	 
 	intel_dp_mst_suspend(i915);
 }
 
-/* part #2: call after irq uninstall */
+ 
 void intel_display_driver_remove_noirq(struct drm_i915_private *i915)
 {
 	if (!HAS_DISPLAY(i915))
 		return;
 
-	/*
-	 * Due to the hpd irq storm handling the hotplug work can re-arm the
-	 * poll handlers. Hence disable polling after hpd handling is shut down.
-	 */
+	 
 	intel_hpd_poll_fini(i915);
 
-	/* poll work can call into fbdev, hence clean that up afterwards */
+	 
 	intel_fbdev_fini(i915);
 
 	intel_unregister_dsm_handler();
 
-	/* flush any delayed tasks or pending work */
+	 
 	flush_workqueue(i915->unordered_wq);
 
 	intel_hdcp_component_fini(i915);
@@ -460,7 +421,7 @@ void intel_display_driver_remove_noirq(struct drm_i915_private *i915)
 	intel_fbc_cleanup(i915);
 }
 
-/* part #3: call after gem init */
+ 
 void intel_display_driver_remove_nogem(struct drm_i915_private *i915)
 {
 	intel_dmc_fini(i915);
@@ -480,11 +441,7 @@ void intel_display_driver_unregister(struct drm_i915_private *i915)
 	intel_fbdev_unregister(i915);
 	intel_audio_deinit(i915);
 
-	/*
-	 * After flushing the fbdev (incl. a late async config which
-	 * will have delayed queuing of a hotplug event), then flush
-	 * the hotplug events.
-	 */
+	 
 	drm_kms_helper_poll_fini(&i915->drm);
 	drm_atomic_helper_shutdown(&i915->drm);
 
@@ -492,10 +449,7 @@ void intel_display_driver_unregister(struct drm_i915_private *i915)
 	intel_opregion_unregister(i915);
 }
 
-/*
- * turn all crtc's off, but do not adjust state
- * This has to be paired with a call to intel_modeset_setup_hw_state.
- */
+ 
 int intel_display_driver_suspend(struct drm_i915_private *i915)
 {
 	struct drm_atomic_state *state;
@@ -529,21 +483,13 @@ __intel_display_driver_resume(struct drm_i915_private *i915,
 	if (!state)
 		return 0;
 
-	/*
-	 * We've duplicated the state, pointers to the old state are invalid.
-	 *
-	 * Don't attempt to use the old state until we commit the duplicated state.
-	 */
+	 
 	for_each_new_crtc_in_state(state, crtc, crtc_state, i) {
-		/*
-		 * Force recalculation even if we restore
-		 * current state. With fast modeset this may not result
-		 * in a modeset when the state is compatible.
-		 */
+		 
 		crtc_state->mode_changed = true;
 	}
 
-	/* ignore any reset values/BIOS leftovers in the WM registers */
+	 
 	if (!HAS_GMCH(i915))
 		to_intel_atomic_state(state)->skip_intermediate_wm = true;
 

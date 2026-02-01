@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 
 #include "netlink.h"
 #include "common.h"
@@ -63,7 +63,7 @@ static int debug_fill_reply(struct sk_buff *skb,
 				  netif_msg_class_names, compact);
 }
 
-/* DEBUG_SET */
+ 
 
 const struct nla_policy ethnl_debug_set_policy[] = {
 	[ETHTOOL_A_DEBUG_HEADER]	=

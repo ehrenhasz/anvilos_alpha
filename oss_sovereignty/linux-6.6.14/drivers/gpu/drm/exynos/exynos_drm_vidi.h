@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/* exynos_drm_vidi.h
- *
- * Copyright (c) 2012 Samsung Electronics Co., Ltd.
- * Author: Inki Dae <inki.dae@samsung.com>
- */
+ 
+ 
 
 #ifndef _EXYNOS_DRM_VIDI_H_
 #define _EXYNOS_DRM_VIDI_H_

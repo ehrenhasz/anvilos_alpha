@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: ISC */
-/*
- * Copyright (C) 2018 Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>
- */
+ 
+ 
 
 #if !defined(__MT76_USB_TRACE_H) || defined(TRACE_HEADER_MULTI_READ)
 #define __MT76_USB_TRACE_H

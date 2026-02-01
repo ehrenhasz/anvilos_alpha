@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2020 Synopsys, Inc. and/or its affiliates.
- * Synopsys DesignWare XPCS helpers
- *
- * Author: Jose Abreu <Jose.Abreu@synopsys.com>
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/pcs/pcs-xpcs.h>
@@ -263,7 +258,7 @@ static int xpcs_dev_flag(struct dw_xpcs *xpcs)
 
 static int xpcs_poll_reset(struct dw_xpcs *xpcs, int dev)
 {
-	/* Poll until the reset bit clears (50ms per retry == 0.6 sec) */
+	 
 	unsigned int retries = 12;
 	int ret;
 
@@ -381,7 +376,7 @@ static void xpcs_config_usxgmii(struct dw_xpcs *xpcs, int speed)
 		speed_sel = DW_USXGMII_10000;
 		break;
 	default:
-		/* Nothing to do here */
+		 
 		return;
 	}
 
@@ -423,24 +418,20 @@ static int _xpcs_config_aneg_c73(struct dw_xpcs *xpcs,
 {
 	int ret, adv;
 
-	/* By default, in USXGMII mode XPCS operates at 10G baud and
-	 * replicates data to achieve lower speeds. Hereby, in this
-	 * default configuration we need to advertise all supported
-	 * modes and not only the ones we want to use.
-	 */
+	 
 
-	/* SR_AN_ADV3 */
+	 
 	adv = 0;
 	if (xpcs_linkmode_supported(compat, 2500baseX_Full))
 		adv |= DW_C73_2500KX;
 
-	/* TODO: 5000baseKR */
+	 
 
 	ret = xpcs_write(xpcs, MDIO_MMD_AN, DW_SR_AN_ADV3, adv);
 	if (ret < 0)
 		return ret;
 
-	/* SR_AN_ADV2 */
+	 
 	adv = 0;
 	if (xpcs_linkmode_supported(compat, 1000baseKX_Full))
 		adv |= DW_C73_1000KX;
@@ -453,7 +444,7 @@ static int _xpcs_config_aneg_c73(struct dw_xpcs *xpcs,
 	if (ret < 0)
 		return ret;
 
-	/* SR_AN_ADV1 */
+	 
 	adv = DW_C73_AN_ADV_SF;
 	if (xpcs_linkmode_supported(compat, Pause))
 		adv |= DW_C73_PAUSE;
@@ -492,7 +483,7 @@ static int xpcs_aneg_done_c73(struct dw_xpcs *xpcs,
 		if (ret < 0)
 			return ret;
 
-		/* Check if Aneg outcome is valid */
+		 
 		if (!(ret & DW_C73_AN_ADV_SF)) {
 			xpcs_config_aneg_c73(xpcs, compat);
 			return 0;
@@ -517,7 +508,7 @@ static int xpcs_read_lpa_c73(struct dw_xpcs *xpcs,
 
 	phylink_set(state->lp_advertising, Autoneg);
 
-	/* Read Clause 73 link partner advertisement */
+	 
 	for (i = ARRAY_SIZE(lpa); --i >= 0; ) {
 		ret = xpcs_read(xpcs, MDIO_MMD_AN, MDIO_AN_LPA + i);
 		if (ret < 0)
@@ -615,10 +606,7 @@ static int xpcs_validate(struct phylink_pcs *pcs, unsigned long *supported,
 	xpcs = phylink_pcs_to_xpcs(pcs);
 	compat = xpcs_find_compat(xpcs->id, state->interface);
 
-	/* Populate the supported link modes for this PHY interface type.
-	 * FIXME: what about the port modes and autoneg bit? This masks
-	 * all those away.
-	 */
+	 
 	if (compat)
 		for (i = 0; compat->supported[i] != __ETHTOOL_LINK_MODE_MASK_NBITS; i++)
 			set_bit(compat->supported[i], xpcs_supported);
@@ -651,7 +639,7 @@ int xpcs_config_eee(struct dw_xpcs *xpcs, int mult_fact_100ns, int enable)
 		return ret;
 
 	if (enable) {
-	/* Enable EEE */
+	 
 		ret = DW_VR_MII_EEE_LTX_EN | DW_VR_MII_EEE_LRX_EN |
 		      DW_VR_MII_EEE_TX_QUIET_EN | DW_VR_MII_EEE_RX_QUIET_EN |
 		      DW_VR_MII_EEE_TX_EN_CTRL | DW_VR_MII_EEE_RX_EN_CTRL |
@@ -688,22 +676,7 @@ static int xpcs_config_aneg_c37_sgmii(struct dw_xpcs *xpcs,
 	if (xpcs->dev_flag == DW_DEV_TXGBE)
 		xpcs_write_vpcs(xpcs, DW_VR_XS_PCS_DIG_CTRL1, DW_CL37_BP | DW_EN_VSMMD1);
 
-	/* For AN for C37 SGMII mode, the settings are :-
-	 * 1) VR_MII_MMD_CTRL Bit(12) [AN_ENABLE] = 0b (Disable SGMII AN in case
-	      it is already enabled)
-	 * 2) VR_MII_AN_CTRL Bit(2:1)[PCS_MODE] = 10b (SGMII AN)
-	 * 3) VR_MII_AN_CTRL Bit(3) [TX_CONFIG] = 0b (MAC side SGMII)
-	 *    DW xPCS used with DW EQoS MAC is always MAC side SGMII.
-	 * 4) VR_MII_DIG_CTRL1 Bit(9) [MAC_AUTO_SW] = 1b (Automatic
-	 *    speed/duplex mode change by HW after SGMII AN complete)
-	 * 5) VR_MII_MMD_CTRL Bit(12) [AN_ENABLE] = 1b (Enable SGMII AN)
-	 *
-	 * Note: Since it is MAC side SGMII, there is no need to set
-	 *	 SR_MII_AN_ADV. MAC side SGMII receives AN Tx Config from
-	 *	 PHY about the link state change after C28 AN is completed
-	 *	 between PHY and Link Partner. There is also no need to
-	 *	 trigger AN restart for MAC-side SGMII.
-	 */
+	 
 	mdio_ctrl = xpcs_read(xpcs, MDIO_MMD_VEND2, DW_VR_MII_MMD_CTRL);
 	if (mdio_ctrl < 0)
 		return mdio_ctrl;
@@ -725,7 +698,7 @@ static int xpcs_config_aneg_c37_sgmii(struct dw_xpcs *xpcs,
 		DW_VR_MII_PCS_MODE_MASK);
 	if (xpcs->dev_flag == DW_DEV_TXGBE) {
 		ret |= DW_VR_MII_AN_CTRL_8BIT;
-		/* Hardware requires it to be PHY side SGMII */
+		 
 		tx_conf = DW_VR_MII_TX_CONFIG_PHY_SIDE_SGMII;
 	} else {
 		tx_conf = DW_VR_MII_TX_CONFIG_MAC_SIDE_SGMII;
@@ -770,11 +743,7 @@ static int xpcs_config_aneg_c37_1000basex(struct dw_xpcs *xpcs,
 	if (xpcs->dev_flag == DW_DEV_TXGBE)
 		xpcs_write_vpcs(xpcs, DW_VR_XS_PCS_DIG_CTRL1, DW_CL37_BP | DW_EN_VSMMD1);
 
-	/* According to Chap 7.12, to set 1000BASE-X C37 AN, AN must
-	 * be disabled first:-
-	 * 1) VR_MII_MMD_CTRL Bit(12)[AN_ENABLE] = 0b
-	 * 2) VR_MII_AN_CTRL Bit(2:1)[PCS_MODE] = 00b (1000BASE-X C37)
-	 */
+	 
 	mdio_ctrl = xpcs_read(xpcs, MDIO_MMD_VEND2, DW_VR_MII_MMD_CTRL);
 	if (mdio_ctrl < 0)
 		return mdio_ctrl;
@@ -797,9 +766,7 @@ static int xpcs_config_aneg_c37_1000basex(struct dw_xpcs *xpcs,
 	if (ret < 0)
 		return ret;
 
-	/* Check for advertising changes and update the C45 MII ADV
-	 * register accordingly.
-	 */
+	 
 	adv = phylink_mii_c22_pcs_encode_advertisement(interface,
 						       advertising);
 	if (adv >= 0) {
@@ -811,7 +778,7 @@ static int xpcs_config_aneg_c37_1000basex(struct dw_xpcs *xpcs,
 		changed = ret;
 	}
 
-	/* Clear CL37 AN complete status */
+	 
 	ret = xpcs_write(xpcs, MDIO_MMD_VEND2, DW_VR_MII_AN_INTR_STS, 0);
 	if (ret < 0)
 		return ret;
@@ -923,20 +890,17 @@ static int xpcs_get_state_c73(struct dw_xpcs *xpcs,
 	int an_stat1;
 	int ret;
 
-	/* The link status bit is latching-low, so it is important to
-	 * avoid unnecessary re-reads of this register to avoid missing
-	 * a link-down event.
-	 */
+	 
 	pcs_stat1 = xpcs_read(xpcs, MDIO_MMD_PCS, MDIO_STAT1);
 	if (pcs_stat1 < 0) {
 		state->link = false;
 		return pcs_stat1;
 	}
 
-	/* Link needs to be read first ... */
+	 
 	state->link = !!(pcs_stat1 & MDIO_STAT1_LSTATUS);
 
-	/* ... and then we check the faults. */
+	 
 	ret = xpcs_read_fault_c73(xpcs, state, pcs_stat1);
 	if (ret) {
 		ret = xpcs_soft_reset(xpcs, compat);
@@ -949,17 +913,14 @@ static int xpcs_get_state_c73(struct dw_xpcs *xpcs,
 				      PHYLINK_PCS_NEG_INBAND_ENABLED);
 	}
 
-	/* There is no point doing anything else if the link is down. */
+	 
 	if (!state->link)
 		return 0;
 
 	an_enabled = linkmode_test_bit(ETHTOOL_LINK_MODE_Autoneg_BIT,
 				       state->advertising);
 	if (an_enabled) {
-		/* The link status bit is latching-low, so it is important to
-		 * avoid unnecessary re-reads of this register to avoid missing
-		 * a link-down event.
-		 */
+		 
 		an_stat1 = xpcs_read(xpcs, MDIO_MMD_AN, MDIO_STAT1);
 		if (an_stat1 < 0) {
 			state->link = false;
@@ -992,15 +953,13 @@ static int xpcs_get_state_c37_sgmii(struct dw_xpcs *xpcs,
 {
 	int ret;
 
-	/* Reset link_state */
+	 
 	state->link = false;
 	state->speed = SPEED_UNKNOWN;
 	state->duplex = DUPLEX_UNKNOWN;
 	state->pause = 0;
 
-	/* For C37 SGMII mode, we check DW_VR_MII_AN_INTR_STS for link
-	 * status, speed and duplex.
-	 */
+	 
 	ret = xpcs_read(xpcs, MDIO_MMD_VEND2, DW_VR_MII_AN_INTR_STS);
 	if (ret < 0)
 		return ret;
@@ -1062,7 +1021,7 @@ static int xpcs_get_state_c37_1000basex(struct dw_xpcs *xpcs,
 
 	if (linkmode_test_bit(ETHTOOL_LINK_MODE_Autoneg_BIT,
 			      state->advertising)) {
-		/* Reset link state */
+		 
 		state->link = false;
 
 		lpa = xpcs_read(xpcs, MDIO_MMD_VEND2, MII_LPA);
@@ -1073,7 +1032,7 @@ static int xpcs_get_state_c37_1000basex(struct dw_xpcs *xpcs,
 		if (bmsr < 0)
 			return bmsr;
 
-		/* Clear AN complete interrupt */
+		 
 		if (!xpcs->pcs.poll) {
 			int an_intr;
 
@@ -1206,7 +1165,7 @@ static u32 xpcs_get_id(struct dw_xpcs *xpcs)
 	int ret;
 	u32 id;
 
-	/* First, search C73 PCS using PCS MMD */
+	 
 	ret = xpcs_read(xpcs, MDIO_MMD_PCS, MII_PHYSID1);
 	if (ret < 0)
 		return 0xffffffff;
@@ -1217,13 +1176,11 @@ static u32 xpcs_get_id(struct dw_xpcs *xpcs)
 	if (ret < 0)
 		return 0xffffffff;
 
-	/* If Device IDs are not all zeros or all ones,
-	 * we found C73 AN-type device
-	 */
+	 
 	if ((id | ret) && (id | ret) != 0xffffffff)
 		return id | ret;
 
-	/* Next, search C37 PCS using Vendor-Specific MII MMD */
+	 
 	ret = xpcs_read(xpcs, MDIO_MMD_VEND2, MII_PHYSID1);
 	if (ret < 0)
 		return 0xffffffff;
@@ -1234,7 +1191,7 @@ static u32 xpcs_get_id(struct dw_xpcs *xpcs)
 	if (ret < 0)
 		return 0xffffffff;
 
-	/* If Device IDs are not all zeros, we found C37 AN-type device */
+	 
 	if (id | ret)
 		return id | ret;
 
@@ -1415,12 +1372,7 @@ struct dw_xpcs *xpcs_create_mdiodev(struct mii_bus *bus, int addr,
 
 	xpcs = xpcs_create(mdiodev, interface);
 
-	/* xpcs_create() has taken a refcount on the mdiodev if it was
-	 * successful. If xpcs_create() fails, this will free the mdio
-	 * device here. In any case, we don't need to hold our reference
-	 * anymore, and putting it here will allow mdio_device_put() in
-	 * xpcs_destroy() to automatically free the mdio device.
-	 */
+	 
 	mdio_device_put(mdiodev);
 
 	return xpcs;

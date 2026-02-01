@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * mdio.c: Generic support for MDIO-compatible transceivers
- * Copyright 2006-2009 Solarflare Communications Inc.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/capability.h>
@@ -15,28 +12,20 @@ MODULE_DESCRIPTION("Generic support for MDIO-compatible transceivers");
 MODULE_AUTHOR("Copyright 2006-2009 Solarflare Communications Inc.");
 MODULE_LICENSE("GPL");
 
-/**
- * mdio45_probe - probe for an MDIO (clause 45) device
- * @mdio: MDIO interface
- * @prtad: Expected PHY address
- *
- * This sets @prtad and @mmds in the MDIO interface if successful.
- * Returns 0 on success, negative on error.
- */
+ 
 int mdio45_probe(struct mdio_if_info *mdio, int prtad)
 {
 	int mmd, stat2, devs1, devs2;
 
-	/* Assume PHY must have at least one of PMA/PMD, WIS, PCS, PHY
-	 * XS or DTE XS; give up if none is present. */
+	 
 	for (mmd = 1; mmd <= 5; mmd++) {
-		/* Is this MMD present? */
+		 
 		stat2 = mdio->mdio_read(mdio->dev, prtad, mmd, MDIO_STAT2);
 		if (stat2 < 0 ||
 		    (stat2 & MDIO_STAT2_DEVPRST) != MDIO_STAT2_DEVPRST_VAL)
 			continue;
 
-		/* It should tell us about all the other MMDs */
+		 
 		devs1 = mdio->mdio_read(mdio->dev, prtad, mmd, MDIO_DEVS1);
 		devs2 = mdio->mdio_read(mdio->dev, prtad, mmd, MDIO_DEVS2);
 		if (devs1 < 0 || devs2 < 0)
@@ -51,18 +40,7 @@ int mdio45_probe(struct mdio_if_info *mdio, int prtad)
 }
 EXPORT_SYMBOL(mdio45_probe);
 
-/**
- * mdio_set_flag - set or clear flag in an MDIO register
- * @mdio: MDIO interface
- * @prtad: PHY address
- * @devad: MMD address
- * @addr: Register address
- * @mask: Mask for flag (single bit set)
- * @sense: New value of flag
- *
- * This debounces changes: it does not write the register if the flag
- * already has the proper value.  Returns 0 on success, negative on error.
- */
+ 
 int mdio_set_flag(const struct mdio_if_info *mdio,
 		  int prtad, int devad, u16 addr, int mask,
 		  bool sense)
@@ -82,21 +60,13 @@ int mdio_set_flag(const struct mdio_if_info *mdio,
 }
 EXPORT_SYMBOL(mdio_set_flag);
 
-/**
- * mdio45_links_ok - is link status up/OK
- * @mdio: MDIO interface
- * @mmd_mask: Mask for MMDs to check
- *
- * Returns 1 if the PHY reports link status up/OK, 0 otherwise.
- * @mmd_mask is normally @mdio->mmds, but if loopback is enabled
- * the MMDs being bypassed should be excluded from the mask.
- */
+ 
 int mdio45_links_ok(const struct mdio_if_info *mdio, u32 mmd_mask)
 {
 	int devad, reg;
 
 	if (!mmd_mask) {
-		/* Use absence of XGMII faults in lieu of link state */
+		 
 		reg = mdio->mdio_read(mdio->dev, mdio->prtad,
 				      MDIO_MMD_PHYXS, MDIO_STAT2);
 		return reg >= 0 && !(reg & MDIO_STAT2_RXFAULT);
@@ -106,7 +76,7 @@ int mdio45_links_ok(const struct mdio_if_info *mdio, u32 mmd_mask)
 		if (mmd_mask & (1 << devad)) {
 			mmd_mask &= ~(1 << devad);
 
-			/* Reset the latched status and fault flags */
+			 
 			mdio->mdio_read(mdio->dev, mdio->prtad,
 					devad, MDIO_STAT1);
 			if (devad == MDIO_MMD_PMAPMD || devad == MDIO_MMD_PCS ||
@@ -114,7 +84,7 @@ int mdio45_links_ok(const struct mdio_if_info *mdio, u32 mmd_mask)
 				mdio->mdio_read(mdio->dev, mdio->prtad,
 						devad, MDIO_STAT2);
 
-			/* Check the current status and fault flags */
+			 
 			reg = mdio->mdio_read(mdio->dev, mdio->prtad,
 					      devad, MDIO_STAT1);
 			if (reg < 0 ||
@@ -128,12 +98,7 @@ int mdio45_links_ok(const struct mdio_if_info *mdio, u32 mmd_mask)
 }
 EXPORT_SYMBOL(mdio45_links_ok);
 
-/**
- * mdio45_nway_restart - restart auto-negotiation for this interface
- * @mdio: MDIO interface
- *
- * Returns 0 on success, negative on error.
- */
+ 
 int mdio45_nway_restart(const struct mdio_if_info *mdio)
 {
 	if (!(mdio->mmds & MDIO_DEVS_AN))
@@ -166,20 +131,7 @@ static u32 mdio45_get_an(const struct mdio_if_info *mdio, u16 addr)
 	return result;
 }
 
-/**
- * mdio45_ethtool_gset_npage - get settings for ETHTOOL_GSET
- * @mdio: MDIO interface
- * @ecmd: Ethtool request structure
- * @npage_adv: Modes currently advertised on next pages
- * @npage_lpa: Modes advertised by link partner on next pages
- *
- * The @ecmd parameter is expected to have been cleared before calling
- * mdio45_ethtool_gset_npage().
- *
- * Since the CSRs for auto-negotiation using next pages are not fully
- * standardised, this function does not attempt to decode them.  The
- * caller must pass them in.
- */
+ 
 void mdio45_ethtool_gset_npage(const struct mdio_if_info *mdio,
 			       struct ethtool_cmd *ecmd,
 			       u32 npage_adv, u32 npage_lpa)
@@ -246,7 +198,7 @@ void mdio45_ethtool_gset_npage(const struct mdio_if_info *mdio,
 		ecmd->advertising = ADVERTISED_Backplane;
 		break;
 
-	/* All the other defined modes are flavours of optical */
+	 
 	default:
 		ecmd->port = PORT_FIBRE;
 		ecmd->supported = SUPPORTED_FIBRE;
@@ -276,8 +228,7 @@ void mdio45_ethtool_gset_npage(const struct mdio_if_info *mdio,
 		int an_stat = mdio->mdio_read(mdio->dev, mdio->prtad,
 					      MDIO_MMD_AN, MDIO_STAT1);
 
-		/* If AN is complete and successful, report best common
-		 * mode, otherwise report best advertised mode. */
+		 
 		if (an_stat & MDIO_AN_STAT1_COMPLETE) {
 			ecmd->lp_advertising =
 				mdio45_get_an(mdio, MDIO_AN_LPA) | npage_lpa;
@@ -307,7 +258,7 @@ void mdio45_ethtool_gset_npage(const struct mdio_if_info *mdio,
 			ecmd->duplex = !!(modes & ADVERTISED_10baseT_Full);
 		}
 	} else {
-		/* Report forced settings */
+		 
 		reg = mdio->mdio_read(mdio->dev, mdio->prtad, MDIO_MMD_PMAPMD,
 				      MDIO_CTRL1);
 		speed = (((reg & MDIO_PMA_CTRL1_SPEED1000) ? 100 : 1)
@@ -318,7 +269,7 @@ void mdio45_ethtool_gset_npage(const struct mdio_if_info *mdio,
 
 	ethtool_cmd_speed_set(ecmd, speed);
 
-	/* 10GBASE-T MDI/MDI-X */
+	 
 	if (ecmd->port == PORT_TP
 	    && (ethtool_cmd_speed(ecmd) == SPEED_10000)) {
 		switch (mdio->mdio_read(mdio->dev, mdio->prtad, MDIO_MMD_PMAPMD,
@@ -330,7 +281,7 @@ void mdio45_ethtool_gset_npage(const struct mdio_if_info *mdio,
 			ecmd->eth_tp_mdix = ETH_TP_MDI_X;
 			break;
 		default:
-			/* It's complicated... */
+			 
 			ecmd->eth_tp_mdix = ETH_TP_MDI_INVALID;
 			break;
 		}
@@ -338,20 +289,7 @@ void mdio45_ethtool_gset_npage(const struct mdio_if_info *mdio,
 }
 EXPORT_SYMBOL(mdio45_ethtool_gset_npage);
 
-/**
- * mdio45_ethtool_ksettings_get_npage - get settings for ETHTOOL_GLINKSETTINGS
- * @mdio: MDIO interface
- * @cmd: Ethtool request structure
- * @npage_adv: Modes currently advertised on next pages
- * @npage_lpa: Modes advertised by link partner on next pages
- *
- * The @cmd parameter is expected to have been cleared before calling
- * mdio45_ethtool_ksettings_get_npage().
- *
- * Since the CSRs for auto-negotiation using next pages are not fully
- * standardised, this function does not attempt to decode them.  The
- * caller must pass them in.
- */
+ 
 void mdio45_ethtool_ksettings_get_npage(const struct mdio_if_info *mdio,
 					struct ethtool_link_ksettings *cmd,
 					u32 npage_adv, u32 npage_lpa)
@@ -417,7 +355,7 @@ void mdio45_ethtool_ksettings_get_npage(const struct mdio_if_info *mdio,
 		advertising = ADVERTISED_Backplane;
 		break;
 
-	/* All the other defined modes are flavours of optical */
+	 
 	default:
 		cmd->base.port = PORT_FIBRE;
 		supported = SUPPORTED_FIBRE;
@@ -447,9 +385,7 @@ void mdio45_ethtool_ksettings_get_npage(const struct mdio_if_info *mdio,
 		int an_stat = mdio->mdio_read(mdio->dev, mdio->prtad,
 					      MDIO_MMD_AN, MDIO_STAT1);
 
-		/* If AN is complete and successful, report best common
-		 * mode, otherwise report best advertised mode.
-		 */
+		 
 		if (an_stat & MDIO_AN_STAT1_COMPLETE) {
 			lp_advertising =
 				mdio45_get_an(mdio, MDIO_AN_LPA) | npage_lpa;
@@ -479,7 +415,7 @@ void mdio45_ethtool_ksettings_get_npage(const struct mdio_if_info *mdio,
 			cmd->base.duplex = !!(modes & ADVERTISED_10baseT_Full);
 		}
 	} else {
-		/* Report forced settings */
+		 
 		reg = mdio->mdio_read(mdio->dev, mdio->prtad, MDIO_MMD_PMAPMD,
 				      MDIO_CTRL1);
 		speed = (((reg & MDIO_PMA_CTRL1_SPEED1000) ? 100 : 1)
@@ -497,7 +433,7 @@ void mdio45_ethtool_ksettings_get_npage(const struct mdio_if_info *mdio,
 	ethtool_convert_legacy_u32_to_link_mode(cmd->link_modes.lp_advertising,
 						lp_advertising);
 
-	/* 10GBASE-T MDI/MDI-X */
+	 
 	if (cmd->base.port == PORT_TP && (cmd->base.speed == SPEED_10000)) {
 		switch (mdio->mdio_read(mdio->dev, mdio->prtad, MDIO_MMD_PMAPMD,
 					MDIO_PMA_10GBT_SWAPPOL)) {
@@ -508,7 +444,7 @@ void mdio45_ethtool_ksettings_get_npage(const struct mdio_if_info *mdio,
 			cmd->base.eth_tp_mdix = ETH_TP_MDI_X;
 			break;
 		default:
-			/* It's complicated... */
+			 
 			cmd->base.eth_tp_mdix = ETH_TP_MDI_INVALID;
 			break;
 		}
@@ -516,21 +452,14 @@ void mdio45_ethtool_ksettings_get_npage(const struct mdio_if_info *mdio,
 }
 EXPORT_SYMBOL(mdio45_ethtool_ksettings_get_npage);
 
-/**
- * mdio_mii_ioctl - MII ioctl interface for MDIO (clause 22 or 45) PHYs
- * @mdio: MDIO interface
- * @mii_data: MII ioctl data structure
- * @cmd: MII ioctl command
- *
- * Returns 0 on success, negative on error.
- */
+ 
 int mdio_mii_ioctl(const struct mdio_if_info *mdio,
 		   struct mii_ioctl_data *mii_data, int cmd)
 {
 	int prtad, devad;
 	u16 addr = mii_data->reg_num;
 
-	/* Validate/convert cmd to one of SIOC{G,S}MIIREG */
+	 
 	switch (cmd) {
 	case SIOCGMIIPHY:
 		if (mdio->prtad == MDIO_PRTAD_NONE)
@@ -545,7 +474,7 @@ int mdio_mii_ioctl(const struct mdio_if_info *mdio,
 		return -EOPNOTSUPP;
 	}
 
-	/* Validate/convert phy_id */
+	 
 	if ((mdio->mode_support & MDIO_SUPPORTS_C45) &&
 	    mdio_phy_id_is_c45(mii_data->phy_id)) {
 		prtad = mdio_phy_id_prtad(mii_data->phy_id);
@@ -558,7 +487,7 @@ int mdio_mii_ioctl(const struct mdio_if_info *mdio,
 	} else if ((mdio->mode_support & MDIO_EMULATE_C22) &&
 		   mdio->prtad != MDIO_PRTAD_NONE &&
 		   mii_data->phy_id == mdio->prtad) {
-		/* Remap commonly-used MII registers. */
+		 
 		prtad = mdio->prtad;
 		switch (addr) {
 		case MII_BMCR:

@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * vdso_full_test.c: Sample code to test all the timers.
- * Copyright (c) 2019 Arm Ltd.
- *
- * Compile with:
- * gcc -std=gnu99 vdso_full_test.c parse_vdso.c
- *
- */
+
+ 
 
 #include <stdint.h>
 #include <elf.h>
@@ -39,7 +32,7 @@ typedef time_t (*vdso_time_t)(time_t *t);
 
 static void vdso_test_gettimeofday(void)
 {
-	/* Find gettimeofday. */
+	 
 	vdso_gettimeofday_t vdso_gettimeofday =
 		(vdso_gettimeofday_t)vdso_sym(version, name[0]);
 
@@ -62,7 +55,7 @@ static void vdso_test_gettimeofday(void)
 
 static void vdso_test_clock_gettime(clockid_t clk_id)
 {
-	/* Find clock_gettime. */
+	 
 	vdso_clock_gettime_t vdso_clock_gettime =
 		(vdso_clock_gettime_t)vdso_sym(version, name[1]);
 
@@ -85,7 +78,7 @@ static void vdso_test_clock_gettime(clockid_t clk_id)
 
 static void vdso_test_time(void)
 {
-	/* Find time. */
+	 
 	vdso_time_t vdso_time =
 		(vdso_time_t)vdso_sym(version, name[2]);
 
@@ -109,7 +102,7 @@ static void vdso_test_clock_getres(clockid_t clk_id)
 {
 	int clock_getres_fail = 0;
 
-	/* Find clock_getres. */
+	 
 	vdso_clock_getres_t vdso_clock_getres =
 		(vdso_clock_getres_t)vdso_sym(version, name[3]);
 
@@ -158,10 +151,7 @@ const char *vdso_clock_name[12] = {
 	"CLOCK_TAI",
 };
 
-/*
- * This function calls vdso_test_clock_gettime and vdso_test_clock_getres
- * with different values for clock_id.
- */
+ 
 static inline void vdso_test_clock(clockid_t clock_id)
 {
 	ksft_print_msg("\nclock_id: %s\n", vdso_clock_name[clock_id]);

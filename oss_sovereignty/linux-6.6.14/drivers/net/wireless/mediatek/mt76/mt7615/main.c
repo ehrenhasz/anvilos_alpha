@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: ISC
-/* Copyright (C) 2019 MediaTek Inc.
- *
- * Author: Roy Luo <royluo@google.com>
- *         Ryder Lee <ryder.lee@mediatek.com>
- *         Felix Fietkau <nbd@nbd.name>
- *         Lorenzo Bianconi <lorenzo@kernel.org>
- */
+
+ 
 
 #include <linux/etherdevice.h>
 #include <linux/module.h>
@@ -136,12 +130,12 @@ static int get_omac_idx(enum nl80211_iftype type, u64 mask)
 
 	switch (type) {
 	case NL80211_IFTYPE_STATION:
-		/* prefer hw bssid slot 1-3 */
+		 
 		i = get_free_idx(mask, HW_BSSID_1, HW_BSSID_3);
 		if (i)
 			return i - 1;
 
-		/* next, try to find a free repeater entry for the sta */
+		 
 		i = get_free_idx(mask >> REPEATER_BSSID_START, 0,
 				 REPEATER_BSSID_MAX - REPEATER_BSSID_START);
 		if (i)
@@ -159,7 +153,7 @@ static int get_omac_idx(enum nl80211_iftype type, u64 mask)
 	case NL80211_IFTYPE_MESH_POINT:
 	case NL80211_IFTYPE_MONITOR:
 	case NL80211_IFTYPE_AP:
-		/* ap uses hw bssid 0 and ext bssid */
+		 
 		if (~mask & BIT(HW_BSSID_0))
 			return HW_BSSID_0;
 
@@ -353,9 +347,7 @@ static int mt7615_set_key(struct ieee80211_hw *hw, enum set_key_cmd cmd,
 	int idx = key->keyidx, err = 0;
 	u8 *wcid_keyidx = &wcid->hw_key_idx;
 
-	/* The hardware does not support per-STA RX GTK, fallback
-	 * to software mode for these.
-	 */
+	 
 	if ((vif->type == NL80211_IFTYPE_ADHOC ||
 	     vif->type == NL80211_IFTYPE_MESH_POINT) &&
 	    (key->cipher == WLAN_CIPHER_SUITE_TKIP ||
@@ -363,7 +355,7 @@ static int mt7615_set_key(struct ieee80211_hw *hw, enum set_key_cmd cmd,
 	    !(key->flags & IEEE80211_KEY_FLAG_PAIRWISE))
 		return -EOPNOTSUPP;
 
-	/* fall back to sw encryption for unsupported ciphers */
+	 
 	switch (key->cipher) {
 	case WLAN_CIPHER_SUITE_AES_CMAC:
 		wcid_keyidx = &wcid->hw_key_idx2;
@@ -923,7 +915,7 @@ mt7615_get_tsf(struct ieee80211_hw *hw, struct ieee80211_vif *vif)
 
 	mt7615_mutex_acquire(dev);
 
-	/* TSF read */
+	 
 	mt76_rmw(dev, reg, MT_LPON_TCR_MODE, MT_LPON_TCR_READ);
 	tsf.t32[0] = mt76_rr(dev, MT_LPON_UTTR0);
 	tsf.t32[1] = mt76_rr(dev, MT_LPON_UTTR1);
@@ -953,7 +945,7 @@ mt7615_set_tsf(struct ieee80211_hw *hw, struct ieee80211_vif *vif,
 
 	mt76_wr(dev, MT_LPON_UTTR0, tsf.t32[0]);
 	mt76_wr(dev, MT_LPON_UTTR1, tsf.t32[1]);
-	/* TSF software overwrite */
+	 
 	mt76_rmw(dev, reg, MT_LPON_TCR_MODE, MT_LPON_TCR_WRITE);
 
 	mt7615_mutex_release(dev);
@@ -979,7 +971,7 @@ mt7615_offset_tsf(struct ieee80211_hw *hw, struct ieee80211_vif *vif,
 
 	mt76_wr(dev, MT_LPON_UTTR0, tsf.t32[0]);
 	mt76_wr(dev, MT_LPON_UTTR1, tsf.t32[1]);
-	/* TSF software adjust*/
+	 
 	mt76_rmw(dev, reg, MT_LPON_TCR_MODE, MT_LPON_TCR_ADJUST);
 
 	mt7615_mutex_release(dev);
@@ -1103,7 +1095,7 @@ mt7615_hw_scan(struct ieee80211_hw *hw, struct ieee80211_vif *vif,
 	struct mt76_phy *mphy = hw->priv;
 	int err;
 
-	/* fall-back to sw-scan */
+	 
 	if (!mt7615_firmware_offload(dev))
 		return 1;
 
@@ -1323,7 +1315,7 @@ static void mt7615_set_rekey_data(struct ieee80211_hw *hw,
 	mt76_connac_mcu_update_gtk_rekey(hw, vif, data);
 	mt7615_mutex_release(dev);
 }
-#endif /* CONFIG_PM */
+#endif  
 
 const struct ieee80211_ops mt7615_ops = {
 	.tx = mt7615_tx,
@@ -1370,7 +1362,7 @@ const struct ieee80211_ops mt7615_ops = {
 	.resume = mt7615_resume,
 	.set_wakeup = mt7615_set_wakeup,
 	.set_rekey_data = mt7615_set_rekey_data,
-#endif /* CONFIG_PM */
+#endif  
 	.set_sar_specs = mt7615_set_sar_specs,
 };
 EXPORT_SYMBOL_GPL(mt7615_ops);

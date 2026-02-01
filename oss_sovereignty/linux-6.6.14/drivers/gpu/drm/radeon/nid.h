@@ -1,26 +1,4 @@
-/*
- * Copyright 2010 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: Alex Deucher
- */
+ 
 #ifndef NI_H
 #define NI_H
 
@@ -46,14 +24,14 @@
 
 #define DMIF_ADDR_CONFIG  				0xBD4
 
-/* fusion vce clocks */
+ 
 #define CG_ECLK_CNTL                                    0x620
 #       define ECLK_DIVIDER_MASK                        0x7f
 #       define ECLK_DIR_CNTL_EN                         (1 << 8)
 #define CG_ECLK_STATUS                                  0x624
 #       define ECLK_STATUS                              (1 << 0)
 
-/* DCE6 only */
+ 
 #define DMIF_ADDR_CALC  				0xC00
 
 #define	SRBM_GFX_CNTL				        0x0E44
@@ -108,12 +86,7 @@
 #define		ENABLE_L2_PDE0_CACHE_LRU_UPDATE_BY_WRITE	(1 << 10)
 #define		EFFECTIVE_L2_QUEUE_SIZE(x)			(((x) & 7) << 14)
 #define		CONTEXT1_IDENTITY_ACCESS_MODE(x)		(((x) & 3) << 18)
-/* CONTEXT1_IDENTITY_ACCESS_MODE
- * 0 physical = logical
- * 1 logical via context1 page table
- * 2 inside identity aperture use translation, outside physical = logical
- * 3 inside identity aperture physical = logical, outside use translation
- */
+ 
 #define VM_L2_CNTL2					0x1404
 #define		INVALIDATE_ALL_L1_TLBS				(1 << 0)
 #define		INVALIDATE_L2_CACHE				(1 << 1)
@@ -149,12 +122,7 @@
 #define	VM_CONTEXT1_PROTECTION_FAULT_STATUS		0x14DC
 #define		PROTECTIONS_MASK			(0xf << 0)
 #define		PROTECTIONS_SHIFT			0
-		/* bit 0: range
-		 * bit 2: pde0
-		 * bit 3: valid
-		 * bit 4: read
-		 * bit 5: write
-		 */
+		 
 #define		MEMORY_CLIENT_ID_MASK			(0xff << 12)
 #define		MEMORY_CLIENT_ID_SHIFT			12
 #define		MEMORY_CLIENT_RW_MASK			(1 << 24)
@@ -517,10 +485,10 @@
 #       define CACHE_FLUSH_AND_INV_EVENT_TS                     (0x14 << 0)
 #       define CACHE_FLUSH_AND_INV_EVENT                        (0x16 << 0)
 
-/* TN SMU registers */
+ 
 #define	TN_CURRENT_GNB_TEMP				0x1F390
 
-/* pm registers */
+ 
 #define	SMC_MSG						0x20c
 #define		HOST_SMC_MSG(x)				((x) << 0)
 #define		HOST_SMC_MSG_MASK			(0xff << 0)
@@ -699,7 +667,7 @@
 
 #define	CG_IND_ADDR					0x8f8
 #define	CG_IND_DATA					0x8fc
-/* CGIND regs */
+ 
 #define	CG_CGTT_LOCAL_0					0x00
 #define	CG_CGTT_LOCAL_1					0x01
 
@@ -906,7 +874,7 @@
 #define		LTI_RATIO_MASK				(0xf << 27)
 #define		LTI_RATIO_SHIFT				27
 
-/* CG indirect registers */
+ 
 #define CG_CAC_REGION_1_WEIGHT_0                        0x83
 #define		WEIGHT_TCP_SIG0(x)			((x) << 0)
 #define		WEIGHT_TCP_SIG0_MASK			(0x3f << 0)
@@ -1087,9 +1055,9 @@
 #define		WEIGHT_SQ_LDS_MASK			(0x3fff << 14)
 #define		WEIGHT_SQ_LDS_SHIFT			14
 
-/* PCIE link stuff */
-#define PCIE_LC_TRAINING_CNTL                             0xa1 /* PCIE_P */
-#define PCIE_LC_LINK_WIDTH_CNTL                           0xa2 /* PCIE_P */
+ 
+#define PCIE_LC_TRAINING_CNTL                             0xa1  
+#define PCIE_LC_LINK_WIDTH_CNTL                           0xa2  
 #       define LC_LINK_WIDTH_SHIFT                        0
 #       define LC_LINK_WIDTH_MASK                         0x7
 #       define LC_LINK_WIDTH_X0                           0
@@ -1107,7 +1075,7 @@
 #       define LC_SHORT_RECONFIG_EN                       (1 << 11)
 #       define LC_UPCONFIGURE_SUPPORT                     (1 << 12)
 #       define LC_UPCONFIGURE_DIS                         (1 << 13)
-#define PCIE_LC_SPEED_CNTL                                0xa4 /* PCIE_P */
+#define PCIE_LC_SPEED_CNTL                                0xa4  
 #       define LC_GEN2_EN_STRAP                           (1 << 0)
 #       define LC_TARGET_LINK_SPEED_OVERRIDE_EN           (1 << 1)
 #       define LC_FORCE_EN_HW_SPEED_CHANGE                (1 << 5)
@@ -1124,13 +1092,11 @@
 #       define LC_OTHER_SIDE_SUPPORTS_GEN2                (1 << 24)
 #define MM_CFGREGS_CNTL                                   0x544c
 #       define MM_WR_TO_CFG_EN                            (1 << 3)
-#define LINK_CNTL2                                        0x88 /* F0 */
+#define LINK_CNTL2                                        0x88  
 #       define TARGET_LINK_SPEED_MASK                     (0xf << 0)
 #       define SELECTABLE_DEEMPHASIS                      (1 << 6)
 
-/*
- * UVD
- */
+ 
 #define UVD_SEMA_ADDR_LOW				0xEF00
 #define UVD_SEMA_ADDR_HIGH				0xEF04
 #define UVD_SEMA_CMD					0xEF08
@@ -1142,9 +1108,7 @@
 #define UVD_RBC_RB_WPTR					0xF694
 #define UVD_STATUS					0xf6bc
 
-/*
- * PM4
- */
+ 
 #define PACKET0(reg, n)	((RADEON_PACKET_TYPE0 << 30) |			\
 			 (((reg) >> 2) & 0xFFFF) |			\
 			 ((n) & 0x3FFF) << 16)
@@ -1158,7 +1122,7 @@
 			 (((op) & 0xFF) << 8) |				\
 			 ((n) & 0x3FFF) << 16)
 
-/* Packet 3 types */
+ 
 #define	PACKET3_NOP					0x10
 #define	PACKET3_SET_BASE				0x11
 #define	PACKET3_CLEAR_STATE				0x12
@@ -1193,22 +1157,11 @@
 #define	PACKET3_MPEG_INDEX				0x3A
 #define	PACKET3_WAIT_REG_MEM				0x3C
 #define		WAIT_REG_MEM_FUNCTION(x)                ((x) << 0)
-                /* 0 - always
-		 * 1 - <
-		 * 2 - <=
-		 * 3 - ==
-		 * 4 - !=
-		 * 5 - >=
-		 * 6 - >
-		 */
+                 
 #define		WAIT_REG_MEM_MEM_SPACE(x)               ((x) << 4)
-                /* 0 - reg
-		 * 1 - mem
-		 */
+                 
 #define		WAIT_REG_MEM_ENGINE(x)                  ((x) << 8)
-                /* 0 - me
-		 * 1 - pfp
-		 */
+                 
 #define	PACKET3_MEM_WRITE				0x3D
 #define	PACKET3_PFP_SYNC_ME				0x42
 #define	PACKET3_SURFACE_SYNC				0x43
@@ -1238,25 +1191,12 @@
 #define	PACKET3_EVENT_WRITE				0x46
 #define		EVENT_TYPE(x)                           ((x) << 0)
 #define		EVENT_INDEX(x)                          ((x) << 8)
-                /* 0 - any non-TS event
-		 * 1 - ZPASS_DONE
-		 * 2 - SAMPLE_PIPELINESTAT
-		 * 3 - SAMPLE_STREAMOUTSTAT*
-		 * 4 - *S_PARTIAL_FLUSH
-		 * 5 - TS events
-		 */
+                 
 #define	PACKET3_EVENT_WRITE_EOP				0x47
 #define		DATA_SEL(x)                             ((x) << 29)
-                /* 0 - discard
-		 * 1 - send low 32bit data
-		 * 2 - send 64bit data
-		 * 3 - send 64bit counter value
-		 */
+                 
 #define		INT_SEL(x)                              ((x) << 24)
-                /* 0 - none
-		 * 1 - interrupt only (DATA_SEL = 0)
-		 * 2 - interrupt when data write is confirmed
-		 */
+                 
 #define	PACKET3_EVENT_WRITE_EOS				0x48
 #define	PACKET3_PREAMBLE_CNTL				0x4A
 #              define PACKET3_PREAMBLE_BEGIN_CLEAR_STATE     (2 << 28)
@@ -1273,7 +1213,7 @@
 #define		PACKET3_SET_CONTEXT_REG_START			0x00028000
 #define		PACKET3_SET_CONTEXT_REG_END			0x00029000
 #define	PACKET3_SET_ALU_CONST				0x6A
-/* alu const buffers only; no reg file */
+ 
 #define	PACKET3_SET_BOOL_CONST				0x6B
 #define		PACKET3_SET_BOOL_CONST_START			0x0003a500
 #define		PACKET3_SET_BOOL_CONST_END			0x0003a518
@@ -1297,17 +1237,17 @@
 #define	PACKET3_SET_APPEND_CNT			        0x75
 #define	PACKET3_ME_WRITE				0x7A
 
-/* ASYNC DMA - first instance at 0xd000, second at 0xd800 */
-#define DMA0_REGISTER_OFFSET                              0x0 /* not a register */
-#define DMA1_REGISTER_OFFSET                              0x800 /* not a register */
+ 
+#define DMA0_REGISTER_OFFSET                              0x0  
+#define DMA1_REGISTER_OFFSET                              0x800  
 
 #define DMA_RB_CNTL                                       0xd000
 #       define DMA_RB_ENABLE                              (1 << 0)
-#       define DMA_RB_SIZE(x)                             ((x) << 1) /* log2 */
-#       define DMA_RB_SWAP_ENABLE                         (1 << 9) /* 8IN32 */
+#       define DMA_RB_SIZE(x)                             ((x) << 1)  
+#       define DMA_RB_SWAP_ENABLE                         (1 << 9)  
 #       define DMA_RPTR_WRITEBACK_ENABLE                  (1 << 12)
-#       define DMA_RPTR_WRITEBACK_SWAP_ENABLE             (1 << 13)  /* 8IN32 */
-#       define DMA_RPTR_WRITEBACK_TIMER(x)                ((x) << 16) /* log2 */
+#       define DMA_RPTR_WRITEBACK_SWAP_ENABLE             (1 << 13)   
+#       define DMA_RPTR_WRITEBACK_TIMER(x)                ((x) << 16)  
 #define DMA_RB_BASE                                       0xd004
 #define DMA_RB_RPTR                                       0xd008
 #define DMA_RB_WPTR                                       0xd00c
@@ -1355,7 +1295,7 @@
 #define DMA_SRBM_READ_PACKET		((9 << 28) |			\
 					 (1 << 27))
 
-/* async DMA Packet types */
+ 
 #define	DMA_PACKET_WRITE				  0x2
 #define	DMA_PACKET_COPY					  0x3
 #define	DMA_PACKET_INDIRECT_BUFFER			  0x4

@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * SM8450 interconnect IDs
- *
- * Copyright (c) 2020-2021, The Linux Foundation. All rights reserved.
- * Copyright (c) 2021, Linaro Limited
- */
+ 
+ 
 
 #ifndef __DRIVERS_INTERCONNECT_QCOM_SM8450_H
 #define __DRIVERS_INTERCONNECT_QCOM_SM8450_H

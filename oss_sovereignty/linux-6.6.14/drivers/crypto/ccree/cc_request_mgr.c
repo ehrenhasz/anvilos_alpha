@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (C) 2012-2019 ARM Limited (or its affiliates). */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/nospec.h>
@@ -9,12 +9,12 @@
 #include "cc_pm.h"
 
 #define CC_MAX_POLL_ITER	10
-/* The highest descriptor count in used */
+ 
 #define CC_MAX_DESC_SEQ_LEN	23
 
 struct cc_req_mgr_handle {
-	/* Request manager resources */
-	unsigned int hw_queue_size; /* HW capability */
+	 
+	unsigned int hw_queue_size;  
 	unsigned int min_free_hw_slots;
 	unsigned int max_used_sw_slots;
 	struct cc_crypto_req req_queue[MAX_REQUEST_QUEUE_SIZE];
@@ -22,18 +22,16 @@ struct cc_req_mgr_handle {
 	u32 req_queue_tail;
 	u32 axi_completed;
 	u32 q_free_slots;
-	/* This lock protects access to HW register
-	 * that must be single request at a time
-	 */
+	 
 	spinlock_t hw_lock;
 	struct cc_hw_desc compl_desc;
 	u8 *dummy_comp_buff;
 	dma_addr_t dummy_comp_buff_dma;
 
-	/* backlog queue */
+	 
 	struct list_head backlog;
 	unsigned int bl_len;
-	spinlock_t bl_lock; /* protect backlog queue */
+	spinlock_t bl_lock;  
 
 #ifdef COMP_IN_WQ
 	struct workqueue_struct *workq;
@@ -89,7 +87,7 @@ void cc_req_mgr_fini(struct cc_drvdata *drvdata)
 	struct device *dev = drvdata_to_dev(drvdata);
 
 	if (!req_mgr_h)
-		return; /* Not allocated */
+		return;  
 
 	if (req_mgr_h->dummy_comp_buff_dma) {
 		dma_free_coherent(dev, sizeof(u32), req_mgr_h->dummy_comp_buff,
@@ -103,7 +101,7 @@ void cc_req_mgr_fini(struct cc_drvdata *drvdata)
 #ifdef COMP_IN_WQ
 	destroy_workqueue(req_mgr_h->workq);
 #else
-	/* Kill tasklet */
+	 
 	tasklet_kill(&req_mgr_h->comptask);
 #endif
 	kfree_sensitive(req_mgr_h);
@@ -154,7 +152,7 @@ int cc_req_mgr_init(struct cc_drvdata *drvdata)
 	req_mgr_h->min_free_hw_slots = req_mgr_h->hw_queue_size;
 	req_mgr_h->max_used_sw_slots = 0;
 
-	/* Allocate DMA word for "dummy" completion descriptor use */
+	 
 	req_mgr_h->dummy_comp_buff =
 		dma_alloc_coherent(dev, sizeof(u32),
 				   &req_mgr_h->dummy_comp_buff_dma,
@@ -166,7 +164,7 @@ int cc_req_mgr_init(struct cc_drvdata *drvdata)
 		goto req_mgr_init_err;
 	}
 
-	/* Init. "dummy" completion descriptor */
+	 
 	hw_desc_init(&req_mgr_h->compl_desc);
 	set_din_const(&req_mgr_h->compl_desc, 0, sizeof(u32));
 	set_dout_dlli(&req_mgr_h->compl_desc, req_mgr_h->dummy_comp_buff_dma,
@@ -188,10 +186,7 @@ static void enqueue_seq(struct cc_drvdata *drvdata, struct cc_hw_desc seq[],
 	void __iomem *reg = drvdata->cc_base + CC_REG(DSCRPTR_QUEUE_WORD0);
 	struct device *dev = drvdata_to_dev(drvdata);
 
-	/*
-	 * We do indeed write all 6 command words to the same
-	 * register. The HW supports this.
-	 */
+	 
 
 	for (i = 0; i < seq_len; i++) {
 		for (w = 0; w <= 5; w++)
@@ -205,14 +200,7 @@ static void enqueue_seq(struct cc_drvdata *drvdata, struct cc_hw_desc seq[],
 	}
 }
 
-/**
- * request_mgr_complete() - Completion will take place if and only if user
- * requested completion by cc_send_sync_request().
- *
- * @dev: Device pointer
- * @dx_compl_h: The completion event to signal
- * @dummy: unused error code
- */
+ 
 static void request_mgr_complete(struct device *dev, void *dx_compl_h,
 				 int dummy)
 {
@@ -228,10 +216,7 @@ static int cc_queues_status(struct cc_drvdata *drvdata,
 	unsigned long poll_queue;
 	struct device *dev = drvdata_to_dev(drvdata);
 
-	/* SW queue is checked only once as it will not
-	 * be changed during the poll because the spinlock_bh
-	 * is held by the thread
-	 */
+	 
 	if (((req_mgr_h->req_queue_head + 1) & (MAX_REQUEST_QUEUE_SIZE - 1)) ==
 	    req_mgr_h->req_queue_tail) {
 		dev_err(dev, "SW FIFO is full. req_queue_head=%d sw_fifo_len=%d\n",
@@ -242,7 +227,7 @@ static int cc_queues_status(struct cc_drvdata *drvdata,
 	if (req_mgr_h->q_free_slots >= total_seq_len)
 		return 0;
 
-	/* Wait for space in HW queue. Poll constant num of iterations. */
+	 
 	for (poll_queue = 0; poll_queue < CC_MAX_POLL_ITER ; poll_queue++) {
 		req_mgr_h->q_free_slots =
 			cc_ioread(drvdata, CC_REG(DSCRPTR_QUEUE_CONTENT));
@@ -250,31 +235,21 @@ static int cc_queues_status(struct cc_drvdata *drvdata,
 			req_mgr_h->min_free_hw_slots = req_mgr_h->q_free_slots;
 
 		if (req_mgr_h->q_free_slots >= total_seq_len) {
-			/* If there is enough place return */
+			 
 			return 0;
 		}
 
 		dev_dbg(dev, "HW FIFO is full. q_free_slots=%d total_seq_len=%d\n",
 			req_mgr_h->q_free_slots, total_seq_len);
 	}
-	/* No room in the HW queue try again later */
+	 
 	dev_dbg(dev, "HW FIFO full, timeout. req_queue_head=%d sw_fifo_len=%d q_free_slots=%d total_seq_len=%d\n",
 		req_mgr_h->req_queue_head, MAX_REQUEST_QUEUE_SIZE,
 		req_mgr_h->q_free_slots, total_seq_len);
 	return -ENOSPC;
 }
 
-/**
- * cc_do_send_request() - Enqueue caller request to crypto hardware.
- * Need to be called with HW lock held and PM running
- *
- * @drvdata: Associated device driver context
- * @cc_req: The request to enqueue
- * @desc: The crypto sequence
- * @len: The crypto sequence length
- * @add_comp: If "true": add an artificial dout DMA to mark completion
- *
- */
+ 
 static void cc_do_send_request(struct cc_drvdata *drvdata,
 			       struct cc_crypto_req *cc_req,
 			       struct cc_hw_desc *desc, unsigned int len,
@@ -282,7 +257,7 @@ static void cc_do_send_request(struct cc_drvdata *drvdata,
 {
 	struct cc_req_mgr_handle *req_mgr_h = drvdata->request_mgr_handle;
 	unsigned int used_sw_slots;
-	unsigned int total_seq_len = len; /*initial sequence length*/
+	unsigned int total_seq_len = len;  
 	struct device *dev = drvdata_to_dev(drvdata);
 
 	used_sw_slots = ((req_mgr_h->req_queue_head -
@@ -291,21 +266,17 @@ static void cc_do_send_request(struct cc_drvdata *drvdata,
 	if (used_sw_slots > req_mgr_h->max_used_sw_slots)
 		req_mgr_h->max_used_sw_slots = used_sw_slots;
 
-	/* Enqueue request - must be locked with HW lock*/
+	 
 	req_mgr_h->req_queue[req_mgr_h->req_queue_head] = *cc_req;
 	req_mgr_h->req_queue_head = (req_mgr_h->req_queue_head + 1) &
 				    (MAX_REQUEST_QUEUE_SIZE - 1);
 
 	dev_dbg(dev, "Enqueue request head=%u\n", req_mgr_h->req_queue_head);
 
-	/*
-	 * We are about to push command to the HW via the command registers
-	 * that may reference host memory. We need to issue a memory barrier
-	 * to make sure there are no outstanding memory writes
-	 */
+	 
 	wmb();
 
-	/* STAT_PHASE_4: Push sequence */
+	 
 
 	enqueue_seq(drvdata, desc, len);
 
@@ -315,14 +286,11 @@ static void cc_do_send_request(struct cc_drvdata *drvdata,
 	}
 
 	if (req_mgr_h->q_free_slots < total_seq_len) {
-		/* This situation should never occur. Maybe indicating problem
-		 * with resuming power. Set the free slot count to 0 and hope
-		 * for the best.
-		 */
+		 
 		dev_err(dev, "HW free slot count mismatch.");
 		req_mgr_h->q_free_slots = 0;
 	} else {
-		/* Update the free slots in HW queue */
+		 
 		req_mgr_h->q_free_slots -= total_seq_len;
 	}
 }
@@ -362,10 +330,7 @@ static void cc_proc_backlog(struct cc_drvdata *drvdata)
 		creq = &bli->creq;
 		req = creq->user_arg;
 
-		/*
-		 * Notify the request we're moving out of the backlog
-		 * but only if we haven't done so already.
-		 */
+		 
 		if (!bli->notif) {
 			creq->user_cb(dev, req, -EINPROGRESS);
 			bli->notif = true;
@@ -375,11 +340,7 @@ static void cc_proc_backlog(struct cc_drvdata *drvdata)
 
 		rc = cc_queues_status(drvdata, mgr, bli->len);
 		if (rc) {
-			/*
-			 * There is still no room in the FIFO for
-			 * this request. Bail out. We'll return here
-			 * on the next completion irq.
-			 */
+			 
 			spin_unlock(&mgr->hw_lock);
 			return;
 		}
@@ -388,7 +349,7 @@ static void cc_proc_backlog(struct cc_drvdata *drvdata)
 				   false);
 		spin_unlock(&mgr->hw_lock);
 
-		/* Remove ourselves from the backlog list */
+		 
 		spin_lock(&mgr->bl_lock);
 		list_del(&bli->list);
 		--mgr->bl_len;
@@ -421,7 +382,7 @@ int cc_send_request(struct cc_drvdata *drvdata, struct cc_crypto_req *cc_req,
 #ifdef CC_DEBUG_FORCE_BACKLOG
 	if (backlog_ok)
 		rc = -ENOSPC;
-#endif /* CC_DEBUG_FORCE_BACKLOG */
+#endif  
 
 	if (rc == -ENOSPC && backlog_ok) {
 		spin_unlock_bh(&mgr->hw_lock);
@@ -485,43 +446,26 @@ int cc_send_sync_request(struct cc_drvdata *drvdata,
 	return 0;
 }
 
-/**
- * send_request_init() - Enqueue caller request to crypto hardware during init
- * process.
- * Assume this function is not called in the middle of a flow,
- * since we set QUEUE_LAST_IND flag in the last descriptor.
- *
- * @drvdata: Associated device driver context
- * @desc: The crypto sequence
- * @len: The crypto sequence length
- *
- * Return:
- * Returns "0" upon success
- */
+ 
 int send_request_init(struct cc_drvdata *drvdata, struct cc_hw_desc *desc,
 		      unsigned int len)
 {
 	struct cc_req_mgr_handle *req_mgr_h = drvdata->request_mgr_handle;
-	unsigned int total_seq_len = len; /*initial sequence length*/
+	unsigned int total_seq_len = len;  
 	int rc = 0;
 
-	/* Wait for space in HW and SW FIFO. Poll for as much as FIFO_TIMEOUT.
-	 */
+	 
 	rc = cc_queues_status(drvdata, req_mgr_h, total_seq_len);
 	if (rc)
 		return rc;
 
 	set_queue_last_ind(drvdata, &desc[(len - 1)]);
 
-	/*
-	 * We are about to push command to the HW via the command registers
-	 * that may reference host memory. We need to issue a memory barrier
-	 * to make sure there are no outstanding memory writes
-	 */
+	 
 	wmb();
 	enqueue_seq(drvdata, desc, len);
 
-	/* Update the free slots in HW queue */
+	 
 	req_mgr_h->q_free_slots =
 		cc_ioread(drvdata, CC_REG(DSCRPTR_QUEUE_CONTENT));
 
@@ -566,12 +510,9 @@ static void proc_completions(struct cc_drvdata *drvdata)
 	while (request_mgr_handle->axi_completed) {
 		request_mgr_handle->axi_completed--;
 
-		/* Dequeue request */
+		 
 		if (*head == *tail) {
-			/* We are supposed to handle a completion but our
-			 * queue is empty. This is not normal. Return and
-			 * hope for the best.
-			 */
+			 
 			dev_err(dev, "Request queue is empty head == tail %u\n",
 				*head);
 			break;
@@ -609,7 +550,7 @@ static inline u32 cc_axi_comp_count(struct cc_drvdata *drvdata)
 			 cc_ioread(drvdata, drvdata->axim_mon_offset));
 }
 
-/* Deferred service handler, run as interrupt-fired tasklet */
+ 
 static void comp_handler(unsigned long devarg)
 {
 	struct cc_drvdata *drvdata = (struct cc_drvdata *)devarg;
@@ -621,12 +562,10 @@ static void comp_handler(unsigned long devarg)
 	dev_dbg(dev, "Completion handler called!\n");
 	irq = (drvdata->irq & drvdata->comp_mask);
 
-	/* To avoid the interrupt from firing as we unmask it,
-	 * we clear it now
-	 */
+	 
 	cc_iowrite(drvdata, CC_REG(HOST_ICR), irq);
 
-	/* Avoid race with above clear: Test completion counter once more */
+	 
 
 	request_mgr_handle->axi_completed += cc_axi_comp_count(drvdata);
 
@@ -639,9 +578,7 @@ static void comp_handler(unsigned long devarg)
 			irq = (drvdata->irq & drvdata->comp_mask);
 			proc_completions(drvdata);
 
-			/* At this point (after proc_completions()),
-			 * request_mgr_handle->axi_completed is 0.
-			 */
+			 
 			request_mgr_handle->axi_completed +=
 						cc_axi_comp_count(drvdata);
 		} while (request_mgr_handle->axi_completed > 0);
@@ -651,9 +588,7 @@ static void comp_handler(unsigned long devarg)
 		request_mgr_handle->axi_completed += cc_axi_comp_count(drvdata);
 	}
 
-	/* after verifying that there is nothing to do,
-	 * unmask AXI completion interrupt
-	 */
+	 
 	cc_iowrite(drvdata, CC_REG(HOST_IMR),
 		   cc_ioread(drvdata, CC_REG(HOST_IMR)) & ~drvdata->comp_mask);
 

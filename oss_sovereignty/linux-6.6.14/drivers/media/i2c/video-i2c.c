@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * video-i2c.c - Support for I2C transport video devices
- *
- * Copyright (C) 2018 Matt Ranostay <matt.ranostay@konsulko.com>
- *
- * Supported:
- * - Panasonic AMG88xx Grid-Eye Sensors
- * - Melexis MLX90640 Thermal Cameras
- */
+
+ 
 
 #include <linux/bits.h>
 #include <linux/delay.h>
@@ -35,33 +27,33 @@
 
 #define VIDEO_I2C_DRIVER	"video-i2c"
 
-/* Power control register */
+ 
 #define AMG88XX_REG_PCTL	0x00
 #define AMG88XX_PCTL_NORMAL		0x00
 #define AMG88XX_PCTL_SLEEP		0x10
 
-/* Reset register */
+ 
 #define AMG88XX_REG_RST		0x01
 #define AMG88XX_RST_FLAG		0x30
 #define AMG88XX_RST_INIT		0x3f
 
-/* Frame rate register */
+ 
 #define AMG88XX_REG_FPSC	0x02
 #define AMG88XX_FPSC_1FPS		BIT(0)
 
-/* Thermistor register */
+ 
 #define AMG88XX_REG_TTHL	0x0e
 
-/* Temperature register */
+ 
 #define AMG88XX_REG_T01L	0x80
 
-/* RAM */
+ 
 #define MLX90640_RAM_START_ADDR		0x0400
 
-/* EEPROM */
+ 
 #define MLX90640_EEPROM_START_ADDR	0x2400
 
-/* Control register */
+ 
 #define MLX90640_REG_CTL1		0x800d
 #define MLX90640_REG_CTL1_MASK		GENMASK(9, 7)
 #define MLX90640_REG_CTL1_MASK_SHIFT	7
@@ -106,7 +98,7 @@ static const struct v4l2_fmtdesc mlx90640_format = {
 
 static const struct v4l2_frmsize_discrete mlx90640_size = {
 	.width = 32,
-	.height = 26, /* 24 lines of pixel data + 2 lines of processing data */
+	.height = 26,  
 };
 
 static const struct regmap_config amg88xx_regmap_config = {
@@ -121,33 +113,33 @@ static const struct regmap_config mlx90640_regmap_config = {
 };
 
 struct video_i2c_chip {
-	/* video dimensions */
+	 
 	const struct v4l2_fmtdesc *format;
 	const struct v4l2_frmsize_discrete *size;
 
-	/* available frame intervals */
+	 
 	const struct v4l2_fract *frame_intervals;
 	unsigned int num_frame_intervals;
 
-	/* pixel buffer size */
+	 
 	unsigned int buffer_size;
 
-	/* pixel size in bits */
+	 
 	unsigned int bpp;
 
 	const struct regmap_config *regmap_config;
 	struct nvmem_config *nvmem_config;
 
-	/* setup function */
+	 
 	int (*setup)(struct video_i2c_data *data);
 
-	/* xfer function */
+	 
 	int (*xfer)(struct video_i2c_data *data, char *buf);
 
-	/* power control function */
+	 
 	int (*set_power)(struct video_i2c_data *data, bool on);
 
-	/* hwmon init function */
+	 
 	int (*hwmon_init)(struct video_i2c_data *data);
 };
 
@@ -229,9 +221,7 @@ static int amg88xx_set_power_on(struct video_i2c_data *data)
 	if (ret)
 		return ret;
 
-	/*
-	 * Wait two frames before reading thermistor and temperature registers
-	 */
+	 
 	msleep(200);
 
 	return 0;
@@ -244,11 +234,7 @@ static int amg88xx_set_power_off(struct video_i2c_data *data)
 	ret = regmap_write(data->regmap, AMG88XX_REG_PCTL, AMG88XX_PCTL_SLEEP);
 	if (ret)
 		return ret;
-	/*
-	 * Wait for a while to avoid resuming normal mode immediately after
-	 * entering sleep mode, otherwise the device occasionally goes wrong
-	 * (thermistor and temperature registers are not updated at all)
-	 */
+	 
 	msleep(100);
 
 	return 0;
@@ -305,11 +291,7 @@ static int amg88xx_read(struct device *dev, enum hwmon_sensor_types type,
 
 	tmp = le16_to_cpu(buf);
 
-	/*
-	 * Check for sign bit, this isn't a two's complement value but an
-	 * absolute temperature that needs to be inverted in the case of being
-	 * negative.
-	 */
+	 
 	if (tmp & BIT(11))
 		tmp = -(tmp & 0x7ff);
 
@@ -630,7 +612,7 @@ static int video_i2c_enum_framesizes(struct file *file, void *fh,
 	const struct video_i2c_data *data = video_drvdata(file);
 	const struct v4l2_frmsize_discrete *size = data->chip->size;
 
-	/* currently only one frame size is allowed */
+	 
 	if (fsize->index > 0)
 		return -EINVAL;
 

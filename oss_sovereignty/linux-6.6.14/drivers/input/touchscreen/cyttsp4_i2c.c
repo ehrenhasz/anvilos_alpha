@@ -1,18 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * cyttsp_i2c.c
- * Cypress TrueTouch(TM) Standard Product (TTSP) I2C touchscreen driver.
- * For use with Cypress  Txx4xx parts.
- * Supported parts include:
- * TMA4XX
- * TMA1036
- *
- * Copyright (C) 2009, 2010, 2011 Cypress Semiconductor, Inc.
- * Copyright (C) 2012 Javier Martinez Canillas <javier@dowhile0.org>
- * Copyright (C) 2013 Cypress Semiconductor
- *
- * Contact Cypress Semiconductor at www.cypress.com <ttdrivers@cypress.com>
- */
+
+ 
 
 #include "cyttsp4_core.h"
 

@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  Sysfs interface for the universal power supply monitor class
- *
- *  Copyright © 2007  David Woodhouse <dwmw2@infradead.org>
- *  Copyright © 2007  Anton Vorontsov <cbou@mail.ru>
- *  Copyright © 2004  Szabolcs Gyurko
- *  Copyright © 2003  Ian Molton <spyro@f2s.com>
- *
- *  Modified: 2004, Oct     Szabolcs Gyurko
- */
+
+ 
 
 #include <linux/ctype.h>
 #include <linux/device.h>
@@ -142,7 +133,7 @@ static const char * const POWER_SUPPLY_CHARGE_BEHAVIOUR_TEXT[] = {
 };
 
 static struct power_supply_attr power_supply_attrs[] = {
-	/* Properties of type `int' */
+	 
 	POWER_SUPPLY_ENUM_ATTR(STATUS),
 	POWER_SUPPLY_ENUM_ATTR(CHARGE_TYPE),
 	POWER_SUPPLY_ENUM_ATTR(HEALTH),
@@ -216,7 +207,7 @@ static struct power_supply_attr power_supply_attrs[] = {
 	POWER_SUPPLY_ATTR(MANUFACTURE_YEAR),
 	POWER_SUPPLY_ATTR(MANUFACTURE_MONTH),
 	POWER_SUPPLY_ATTR(MANUFACTURE_DAY),
-	/* Properties of type `const char *' */
+	 
 	POWER_SUPPLY_ATTR(MODEL_NAME),
 	POWER_SUPPLY_ATTR(MANUFACTURER),
 	POWER_SUPPLY_ATTR(SERIAL_NUMBER),
@@ -332,10 +323,7 @@ static ssize_t power_supply_store_property(struct device *dev,
 					   ps_attr->text_values_len, buf);
 	}
 
-	/*
-	 * If no match was found, then check to see if it is an integer.
-	 * Integer values are valid for enums in addition to the text value.
-	 */
+	 
 	if (ret < 0) {
 		long long_val;
 
@@ -445,10 +433,7 @@ static int add_prop_uevent(const struct device *dev, struct kobj_uevent_env *env
 
 	ret = power_supply_show_property((struct device *)dev, dev_attr, prop_buf);
 	if (ret == -ENODEV || ret == -ENODATA) {
-		/*
-		 * When a battery is absent, we expect -ENODEV. Don't abort;
-		 * send the uevent with at least the PRESENT=0 property
-		 */
+		 
 		return 0;
 	}
 
@@ -482,10 +467,7 @@ int power_supply_uevent(const struct device *dev, struct kobj_uevent_env *env)
 	if (ret)
 		return ret;
 
-	/*
-	 * Kernel generates KOBJ_REMOVE uevent in device removal path, after
-	 * resources have been freed. Exit early to avoid use-after-free.
-	 */
+	 
 	if (psy->removing)
 		return 0;
 

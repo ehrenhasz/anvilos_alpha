@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/***************************************************************************
- *   Copyright (C) 2010-2012 Hans de Goede <hdegoede@redhat.com>           *
- *                                                                         *
- ***************************************************************************/
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -19,30 +16,30 @@
 #include <linux/slab.h>
 #include "sch56xx-common.h"
 
-/* Insmod parameters */
+ 
 static bool nowayout = WATCHDOG_NOWAYOUT;
 module_param(nowayout, bool, 0);
 MODULE_PARM_DESC(nowayout, "Watchdog cannot be stopped once started (default="
 	__MODULE_STRING(WATCHDOG_NOWAYOUT) ")");
 
-#define SIO_SCH56XX_LD_EM	0x0C	/* Embedded uController Logical Dev */
-#define SIO_UNLOCK_KEY		0x55	/* Key to enable Super-I/O */
-#define SIO_LOCK_KEY		0xAA	/* Key to disable Super-I/O */
+#define SIO_SCH56XX_LD_EM	0x0C	 
+#define SIO_UNLOCK_KEY		0x55	 
+#define SIO_LOCK_KEY		0xAA	 
 
-#define SIO_REG_LDSEL		0x07	/* Logical device select */
-#define SIO_REG_DEVID		0x20	/* Device ID */
-#define SIO_REG_ENABLE		0x30	/* Logical device enable */
-#define SIO_REG_ADDR		0x66	/* Logical device address (2 bytes) */
+#define SIO_REG_LDSEL		0x07	 
+#define SIO_REG_DEVID		0x20	 
+#define SIO_REG_ENABLE		0x30	 
+#define SIO_REG_ADDR		0x66	 
 
-#define SIO_SCH5627_ID		0xC6	/* Chipset ID */
-#define SIO_SCH5636_ID		0xC7	/* Chipset ID */
+#define SIO_SCH5627_ID		0xC6	 
+#define SIO_SCH5636_ID		0xC7	 
 
 #define REGION_LENGTH		10
 
 #define SCH56XX_CMD_READ	0x02
 #define SCH56XX_CMD_WRITE	0x03
 
-/* Watchdog registers */
+ 
 #define SCH56XX_REG_WDOG_PRESET		0x58B
 #define SCH56XX_REG_WDOG_CONTROL	0x58C
 #define SCH56XX_WDOG_TIME_BASE_SEC	0x01
@@ -61,7 +58,7 @@ struct sch56xx_watchdog_data {
 
 static struct platform_device *sch56xx_pdev;
 
-/* Super I/O functions */
+ 
 static inline int superio_inb(int base, int reg)
 {
 	outb(reg, base);
@@ -70,7 +67,7 @@ static inline int superio_inb(int base, int reg)
 
 static inline int superio_enter(int base)
 {
-	/* Don't step on other drivers' I/O space by accident */
+	 
 	if (!request_muxed_region(base, 2, "sch56xx")) {
 		pr_err("I/O address 0x%04x already in use\n", base);
 		return -EBUSY;
@@ -97,50 +94,44 @@ static int sch56xx_send_cmd(u16 addr, u8 cmd, u16 reg, u8 v)
 {
 	u8 val;
 	int i;
-	/*
-	 * According to SMSC for the commands we use the maximum time for
-	 * the EM to respond is 15 ms, but testing shows in practice it
-	 * responds within 15-32 reads, so we first busy poll, and if
-	 * that fails sleep a bit and try again until we are way past
-	 * the 15 ms maximum response time.
-	 */
+	 
 	const int max_busy_polls = 64;
 	const int max_lazy_polls = 32;
 
-	/* (Optional) Write-Clear the EC to Host Mailbox Register */
+	 
 	val = inb(addr + 1);
 	outb(val, addr + 1);
 
-	/* Set Mailbox Address Pointer to first location in Region 1 */
+	 
 	outb(0x00, addr + 2);
 	outb(0x80, addr + 3);
 
-	/* Write Request Packet Header */
-	outb(cmd, addr + 4); /* VREG Access Type read:0x02 write:0x03 */
-	outb(0x01, addr + 5); /* # of Entries: 1 Byte (8-bit) */
-	outb(0x04, addr + 2); /* Mailbox AP to first data entry loc. */
+	 
+	outb(cmd, addr + 4);  
+	outb(0x01, addr + 5);  
+	outb(0x04, addr + 2);  
 
-	/* Write Value field */
+	 
 	if (cmd == SCH56XX_CMD_WRITE)
 		outb(v, addr + 4);
 
-	/* Write Address field */
+	 
 	outb(reg & 0xff, addr + 6);
 	outb(reg >> 8, addr + 7);
 
-	/* Execute the Random Access Command */
-	outb(0x01, addr); /* Write 01h to the Host-to-EC register */
+	 
+	outb(0x01, addr);  
 
-	/* EM Interface Polling "Algorithm" */
+	 
 	for (i = 0; i < max_busy_polls + max_lazy_polls; i++) {
 		if (i >= max_busy_polls)
 			usleep_range(1000, 2000);
-		/* Read Interrupt source Register */
+		 
 		val = inb(addr + 8);
-		/* Write Clear the interrupt source bits */
+		 
 		if (val)
 			outb(val, addr + 8);
-		/* Command Completed ? */
+		 
 		if (val & 0x01)
 			break;
 	}
@@ -150,14 +141,11 @@ static int sch56xx_send_cmd(u16 addr, u8 cmd, u16 reg, u8 v)
 		return -EIO;
 	}
 
-	/*
-	 * According to SMSC we may need to retry this, but sofar I've always
-	 * seen this succeed in 1 try.
-	 */
+	 
 	for (i = 0; i < max_busy_polls; i++) {
-		/* Read EC-to-Host Register */
+		 
 		val = inb(addr + 1);
-		/* Command Completed ? */
+		 
 		if (val == 0x01)
 			break;
 
@@ -171,17 +159,9 @@ static int sch56xx_send_cmd(u16 addr, u8 cmd, u16 reg, u8 v)
 		return -EIO;
 	}
 
-	/*
-	 * According to the SMSC app note we should now do:
-	 *
-	 * Set Mailbox Address Pointer to first location in Region 1 *
-	 * outb(0x00, addr + 2);
-	 * outb(0x80, addr + 3);
-	 *
-	 * But if we do that things don't work, so let's not.
-	 */
+	 
 
-	/* Read Value field */
+	 
 	if (cmd == SCH56XX_CMD_READ)
 		return inb(addr + 4);
 
@@ -204,7 +184,7 @@ int sch56xx_read_virtual_reg16(u16 addr, u16 reg)
 {
 	int lsb, msb;
 
-	/* Read LSB first, this will cause the matching MSB to be latched */
+	 
 	lsb = sch56xx_read_virtual_reg(addr, reg);
 	if (lsb < 0)
 		return lsb;
@@ -222,7 +202,7 @@ int sch56xx_read_virtual_reg12(u16 addr, u16 msb_reg, u16 lsn_reg,
 {
 	int msb, lsn;
 
-	/* Read MSB first, this will cause the matching LSN to be latched */
+	 
 	msb = sch56xx_read_virtual_reg(addr, msb_reg);
 	if (msb < 0)
 		return msb;
@@ -238,9 +218,7 @@ int sch56xx_read_virtual_reg12(u16 addr, u16 msb_reg, u16 lsn_reg,
 }
 EXPORT_SYMBOL(sch56xx_read_virtual_reg12);
 
-/*
- * Watchdog routines
- */
+ 
 
 static int watchdog_set_timeout(struct watchdog_device *wddev,
 				unsigned int timeout)
@@ -250,7 +228,7 @@ static int watchdog_set_timeout(struct watchdog_device *wddev,
 	u8 control;
 	int ret;
 
-	/* 1 second or 60 second resolution? */
+	 
 	if (timeout <= 255)
 		resolution = 1;
 	else
@@ -276,10 +254,7 @@ static int watchdog_set_timeout(struct watchdog_device *wddev,
 		data->watchdog_control = control;
 	}
 
-	/*
-	 * Remember new timeout value, but do not write as that (re)starts
-	 * the watchdog countdown.
-	 */
+	 
 	data->watchdog_preset = DIV_ROUND_UP(timeout, resolution);
 	wddev->timeout = data->watchdog_preset * resolution;
 
@@ -292,34 +267,17 @@ static int watchdog_start(struct watchdog_device *wddev)
 	int ret;
 	u8 val;
 
-	/*
-	 * The sch56xx's watchdog cannot really be started / stopped
-	 * it is always running, but we can avoid the timer expiring
-	 * from causing a system reset by clearing the output enable bit.
-	 *
-	 * The sch56xx's watchdog will set the watchdog event bit, bit 0
-	 * of the second interrupt source register (at base-address + 9),
-	 * when the timer expires.
-	 *
-	 * This will only cause a system reset if the 0-1 flank happens when
-	 * output enable is true. Setting output enable after the flank will
-	 * not cause a reset, nor will the timer expiring a second time.
-	 * This means we must clear the watchdog event bit in case it is set.
-	 *
-	 * The timer may still be running (after a recent watchdog_stop) and
-	 * mere milliseconds away from expiring, so the timer must be reset
-	 * first!
-	 */
+	 
 
 	mutex_lock(data->io_lock);
 
-	/* 1. Reset the watchdog countdown counter */
+	 
 	ret = sch56xx_write_virtual_reg(data->addr, SCH56XX_REG_WDOG_PRESET,
 					data->watchdog_preset);
 	if (ret)
 		goto leave;
 
-	/* 2. Enable output */
+	 
 	val = data->watchdog_output_enable | SCH56XX_WDOG_OUTPUT_ENABLE;
 	ret = sch56xx_write_virtual_reg(data->addr,
 					SCH56XX_REG_WDOG_OUTPUT_ENABLE, val);
@@ -328,7 +286,7 @@ static int watchdog_start(struct watchdog_device *wddev)
 
 	data->watchdog_output_enable = val;
 
-	/* 3. Clear the watchdog event bit if set */
+	 
 	val = inb(data->addr + 9);
 	if (val & 0x01)
 		outb(0x01, data->addr + 9);
@@ -343,7 +301,7 @@ static int watchdog_trigger(struct watchdog_device *wddev)
 	struct sch56xx_watchdog_data *data = watchdog_get_drvdata(wddev);
 	int ret;
 
-	/* Reset the watchdog countdown counter */
+	 
 	mutex_lock(data->io_lock);
 	ret = sch56xx_write_virtual_reg(data->addr, SCH56XX_REG_WDOG_PRESET,
 					data->watchdog_preset);
@@ -384,7 +342,7 @@ void sch56xx_watchdog_register(struct device *parent, u16 addr, u32 revision,
 	struct sch56xx_watchdog_data *data;
 	int err, control, output_enable;
 
-	/* Cache the watchdog registers */
+	 
 	mutex_lock(io_lock);
 	control =
 		sch56xx_read_virtual_reg(addr, SCH56XX_REG_WDOG_CONTROL);
@@ -424,13 +382,11 @@ void sch56xx_watchdog_register(struct device *parent, u16 addr, u32 revision,
 	if (output_enable & SCH56XX_WDOG_OUTPUT_ENABLE)
 		set_bit(WDOG_HW_RUNNING, &data->wddev.status);
 
-	/* Since the watchdog uses a downcounter there is no register to read
-	   the BIOS set timeout from (if any was set at all) ->
-	   Choose a preset which will give us a 1 minute timeout */
+	 
 	if (control & SCH56XX_WDOG_TIME_BASE_SEC)
-		data->watchdog_preset = 60; /* seconds */
+		data->watchdog_preset = 60;  
 	else
-		data->watchdog_preset = 1; /* minute */
+		data->watchdog_preset = 1;  
 
 	data->watchdog_control = control;
 	data->watchdog_output_enable = output_enable;
@@ -444,9 +400,7 @@ void sch56xx_watchdog_register(struct device *parent, u16 addr, u32 revision,
 }
 EXPORT_SYMBOL(sch56xx_watchdog_register);
 
-/*
- * platform dev find, add and remove functions
- */
+ 
 
 static int __init sch56xx_find(int sioaddr, const char **name)
 {
@@ -481,10 +435,7 @@ static int __init sch56xx_find(int sioaddr, const char **name)
 		goto exit;
 	}
 
-	/*
-	 * Warning the order of the low / high byte is the other way around
-	 * as on most other superio devices!!
-	 */
+	 
 	address = superio_inb(sioaddr, SIO_REG_ADDR) |
 		   superio_inb(sioaddr, SIO_REG_ADDR + 1) << 8;
 	if (address == 0) {

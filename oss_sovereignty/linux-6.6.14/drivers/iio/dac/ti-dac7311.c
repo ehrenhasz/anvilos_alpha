@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* ti-dac7311.c - Texas Instruments 8/10/12-bit 1-channel DAC driver
- *
- * Copyright (C) 2018 CMC NV
- *
- * https://www.ti.com/lit/ds/symlink/dac7311.pdf
- */
+
+ 
 
 #include <linux/iio/iio.h>
 #include <linux/module.h>
@@ -33,17 +28,7 @@ static const struct ti_dac_spec ti_dac_spec[] = {
 	[ID_DAC7311] = { .resolution = 12 },
 };
 
-/**
- * struct ti_dac_chip - TI DAC chip
- * @lock: protects write sequences
- * @vref: regulator generating Vref
- * @spi: SPI device to send data to the device
- * @val: cached value
- * @powerdown: whether the chip is powered down
- * @powerdown_mode: selected by the user
- * @resolution: resolution of the chip
- * @buf: buffer for transfer data
- */
+ 
 struct ti_dac_chip {
 	struct mutex lock;
 	struct regulator *vref;

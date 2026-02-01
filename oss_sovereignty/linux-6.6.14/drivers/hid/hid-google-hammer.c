@@ -1,17 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- *  HID driver for Google Hammer device.
- *
- *  Copyright (c) 2017 Google Inc.
- *  Author: Wei-Ning Huang <wnhuang@google.com>
- */
 
-/*
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option)
- * any later version.
- */
+ 
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/hid.h>
@@ -28,14 +18,9 @@
 #include "hid-ids.h"
 #include "hid-vivaldi-common.h"
 
-/*
- * C(hrome)B(ase)A(ttached)S(witch) - switch exported by Chrome EC and reporting
- * state of the "Whiskers" base - attached or detached. Whiskers USB device also
- * reports position of the keyboard - folded or not. Combining base state and
- * position allows us to generate proper "Tablet mode" events.
- */
+ 
 struct cbas_ec {
-	struct device *dev;	/* The platform device (EC) */
+	struct device *dev;	 
 	struct input_dev *input;
 	bool base_present;
 	bool base_folded;
@@ -112,13 +97,7 @@ static int cbas_ec_notify(struct notifier_block *nb,
 
 			spin_lock_irqsave(&cbas_ec_lock, flags);
 
-			/*
-			 * While input layer dedupes the events, we do not want
-			 * to disrupt the state reported by the base by
-			 * overriding it with state reported by the LID. Only
-			 * report changes, as we assume that on attach the base
-			 * is not folded.
-			 */
+			 
 			if (base_present != cbas_ec.base_present) {
 				input_report_switch(cbas_ec.input,
 						    SW_TABLET_MODE,
@@ -149,11 +128,7 @@ static __maybe_unused int cbas_ec_resume(struct device *dev)
 
 		cbas_ec.base_present = base_present;
 
-		/*
-		 * Only report if base is disconnected. If base is connected,
-		 * it will resend its state on resume, and we'll update it
-		 * in hammer_event().
-		 */
+		 
 		if (!cbas_ec.base_present) {
 			input_report_switch(cbas_ec.input, SW_TABLET_MODE, 1);
 			input_sync(cbas_ec.input);
@@ -169,7 +144,7 @@ static SIMPLE_DEV_PM_OPS(cbas_ec_pm_ops, NULL, cbas_ec_resume);
 
 static void cbas_ec_set_input(struct input_dev *input)
 {
-	/* Take the lock so hammer_event() does not race with us here */
+	 
 	spin_lock_irq(&cbas_ec_lock);
 	cbas_ec.input = input;
 	spin_unlock_irq(&cbas_ec_lock);
@@ -205,7 +180,7 @@ static int __cbas_ec_probe(struct platform_device *pdev)
 		return error;
 	}
 
-	/* Seed the state */
+	 
 	error = cbas_ec_query_base(ec, true, &cbas_ec.base_present);
 	if (error) {
 		dev_err(&pdev->dev, "cannot query base state: %d\n", error);
@@ -313,10 +288,7 @@ static int hammer_kbd_brightness_set_blocking(struct led_classdev *cdev,
 	led->buf[0] = 0;
 	led->buf[1] = br;
 
-	/*
-	 * Request USB HID device to be in Full On mode, so that sending
-	 * hardware output report and hardware raw request won't fail.
-	 */
+	 
 	ret = hid_hw_power(led->hdev, PM_HINT_FULLON);
 	if (ret < 0) {
 		hid_err(led->hdev, "failed: device not resumed %d\n", ret);
@@ -333,7 +305,7 @@ static int hammer_kbd_brightness_set_blocking(struct led_classdev *cdev,
 		hid_err(led->hdev, "failed to set keyboard backlight: %d\n",
 			ret);
 
-	/* Request USB HID device back to Normal Mode. */
+	 
 	hid_hw_power(led->hdev, PM_HINT_NORMAL);
 
 	return ret;
@@ -355,7 +327,7 @@ static int hammer_register_leds(struct hid_device *hdev)
 		hammer_kbd_brightness_set_blocking;
 	kbd_backlight->cdev.flags = LED_HW_PLUGGABLE;
 
-	/* Set backlight to 0% initially. */
+	 
 	hammer_kbd_brightness_set_blocking(&kbd_backlight->cdev, 0);
 
 	return devm_led_classdev_register(&hdev->dev, &kbd_backlight->cdev);
@@ -365,7 +337,7 @@ static int hammer_register_leds(struct hid_device *hdev)
 #define HID_VD_KBD_FOLDED	0x00000019
 #define HID_USAGE_KBD_FOLDED	(HID_UP_GOOGLEVENDOR | HID_VD_KBD_FOLDED)
 
-/* HID usage for keyboard backlight (Alphanumeric display brightness) */
+ 
 #define HID_AD_BRIGHTNESS	0x00140046
 
 static int hammer_input_mapping(struct hid_device *hdev, struct hid_input *hi,
@@ -374,11 +346,7 @@ static int hammer_input_mapping(struct hid_device *hdev, struct hid_input *hi,
 				unsigned long **bit, int *max)
 {
 	if (usage->hid == HID_USAGE_KBD_FOLDED) {
-		/*
-		 * We do not want to have this usage mapped as it will get
-		 * mixed in with "base attached" signal and delivered over
-		 * separate input device for tablet switch mode.
-		 */
+		 
 		return -1;
 	}
 
@@ -391,10 +359,7 @@ static void hammer_folded_event(struct hid_device *hdev, bool folded)
 
 	spin_lock_irqsave(&cbas_ec_lock, flags);
 
-	/*
-	 * If we are getting events from Whiskers that means that it
-	 * is attached to the lid.
-	 */
+	 
 	cbas_ec.base_present = true;
 	cbas_ec.base_folded = folded;
 	hid_dbg(hdev, "%s: base: %d, folded: %d\n", __func__,
@@ -413,7 +378,7 @@ static int hammer_event(struct hid_device *hid, struct hid_field *field,
 {
 	if (usage->hid == HID_USAGE_KBD_FOLDED) {
 		hammer_folded_event(hid, value);
-		return 1; /* We handled this event */
+		return 1;  
 	}
 
 	return 0;
@@ -524,12 +489,7 @@ static int hammer_probe(struct hid_device *hdev,
 	if (error)
 		return error;
 
-	/*
-	 * We always want to poll for, and handle tablet mode events from
-	 * devices that have folded usage, even when nobody has opened the input
-	 * device. This also prevents the hid core from dropping early tablet
-	 * mode events from the device.
-	 */
+	 
 	if (hammer_has_folded_event(hdev)) {
 		hdev->quirks |= HID_QUIRK_ALWAYS_POLL;
 		error = hid_hw_open(hdev);
@@ -557,16 +517,7 @@ static void hammer_remove(struct hid_device *hdev)
 	if (hammer_has_folded_event(hdev)) {
 		hid_hw_close(hdev);
 
-		/*
-		 * If we are disconnecting then most likely Whiskers is
-		 * being removed. Even if it is not removed, without proper
-		 * keyboard we should not stay in clamshell mode.
-		 *
-		 * The reason for doing it here and not waiting for signal
-		 * from EC, is that on some devices there are high leakage
-		 * on Whiskers pins and we do not detect disconnect reliably,
-		 * resulting in devices being stuck in clamshell mode.
-		 */
+		 
 		spin_lock_irqsave(&cbas_ec_lock, flags);
 		if (cbas_ec.input && cbas_ec.base_present) {
 			input_report_switch(cbas_ec.input, SW_TABLET_MODE, 1);
@@ -576,7 +527,7 @@ static void hammer_remove(struct hid_device *hdev)
 		spin_unlock_irqrestore(&cbas_ec_lock, flags);
 	}
 
-	/* Unregistering LEDs and stopping the hardware is done via devm */
+	 
 }
 
 static const struct hid_device_id hammer_devices[] = {

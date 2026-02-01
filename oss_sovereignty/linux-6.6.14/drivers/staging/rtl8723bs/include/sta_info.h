@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/******************************************************************************
- *
- * Copyright(c) 2007 - 2011 Realtek Corporation. All rights reserved.
- *
- ******************************************************************************/
+ 
+ 
 #ifndef __STA_INFO_H_
 #define __STA_INFO_H_
 
@@ -13,17 +9,17 @@
 #define NUM_ACL 16
 
 
-/* if mode == 0, then the sta is allowed once the addr is hit. */
-/* if mode == 1, then the sta is rejected once the addr is non-hit. */
+ 
+ 
 struct rtw_wlan_acl_node {
 	struct list_head list;
 	u8		 addr[ETH_ALEN];
 	u8		 valid;
 };
 
-/* mode = 0, disable */
-/* mode = 1, accept unless in deny list */
-/* mode =2, deny unless in accept list */
+ 
+ 
+ 
 struct wlan_acl_pool {
 	int mode;
 	int num;
@@ -70,8 +66,8 @@ struct	stainfo_stats	{
 struct sta_info {
 
 	spinlock_t	lock;
-	struct list_head	list; /* free_sta_queue */
-	struct list_head	hash_list; /* sta_hash */
+	struct list_head	list;  
+	struct list_head	hash_list;  
 	struct adapter *padapter;
 
 	struct sta_xmit_priv sta_xmitpriv;
@@ -86,14 +82,14 @@ struct sta_info {
 	uint qos_option;
 	u8 hwaddr[ETH_ALEN];
 
-	uint	ieee8021x_blocked;	/* 0: allowed, 1:blocked */
-	uint	dot118021XPrivacy; /* aes, tkip... */
+	uint	ieee8021x_blocked;	 
+	uint	dot118021XPrivacy;  
 	union Keytype	dot11tkiptxmickey;
 	union Keytype	dot11tkiprxmickey;
 	union Keytype	dot118021x_UncstKey;
-	union pn48		dot11txpn;			/*  PN48 used for Unicast xmit */
-	union pn48		dot11wtxpn;			/*  PN48 used for Unicast mgmt xmit. */
-	union pn48		dot11rxpn;			/*  PN48 used for Unicast recv. */
+	union pn48		dot11txpn;			 
+	union pn48		dot11wtxpn;			 
+	union pn48		dot11rxpn;			 
 
 
 	u8 bssrateset[16];
@@ -107,7 +103,7 @@ struct sta_info {
 	u8 raid;
 	u8 init_rate;
 	u32 ra_mask;
-	u8 wireless_mode;	/*  NETWORK_TYPE */
+	u8 wireless_mode;	 
 	u8 bw_mode;
 
 	u8 ldpc;
@@ -115,27 +111,27 @@ struct sta_info {
 
 	struct stainfo_stats sta_stats;
 
-	/* for A-MPDU TX, ADDBA timeout check */
+	 
 	struct timer_list addba_retry_timer;
 
-	/* for A-MPDU Rx reordering buffer control */
+	 
 	struct recv_reorder_ctrl recvreorder_ctrl[16];
 
-	/* for A-MPDU Tx */
-	/* unsigned char 	ampdu_txen_bitmap; */
+	 
+	 
 	u16 BA_starting_seqctrl[16];
 
 
 	struct ht_priv htpriv;
 
-	/* Notes: */
-	/* STA_Mode: */
-	/* curr_network(mlme_priv/security_priv/qos/ht) + sta_info: (STA & AP) CAP/INFO */
-	/* scan_q: AP CAP/INFO */
+	 
+	 
+	 
+	 
 
-	/* AP_Mode: */
-	/* curr_network(mlme_priv/security_priv/qos/ht) : AP CAP/INFO */
-	/* sta_info: (AP & STA) CAP/INFO */
+	 
+	 
+	 
 
 	struct list_head asoc_list;
 	struct list_head auth_list;
@@ -148,8 +144,8 @@ struct sta_info {
 	u16 capability;
 	int flags;
 
-	int dot8021xalg;/* 0:disable, 1:psk, 2:802.1x */
-	int wpa_psk;/* 0:disable, bit(0): WPA, bit(1):WPA2 */
+	int dot8021xalg; 
+	int wpa_psk; 
 	int wpa_group_cipher;
 	int wpa2_group_cipher;
 	int wpa_pairwise_cipher;
@@ -170,7 +166,7 @@ struct sta_info {
 	u8 qos_info;
 
 	u8 max_sp_len;
-	u8 uapsd_bk;/* BIT(0): Delivery enabled, BIT(1): Trigger enabled */
+	u8 uapsd_bk; 
 	u8 uapsd_be;
 	u8 uapsd_vi;
 	u8 uapsd_vo;
@@ -185,35 +181,35 @@ struct sta_info {
 	u8 *passoc_req;
 	u32 assoc_req_len;
 
-	/* for DM */
+	 
 	struct rssi_sta	 rssi_stat;
 
-	/* ODM_STA_INFO_T */
-	/*  ================ODM Relative Info ======================= */
-	/*  Please be care, dont declare too much structure here. It will cost memory * STA support num. */
-	/*  */
-	/*  */
-	/*  2011/10/20 MH Add for ODM STA info. */
-	/*  */
-	/*  Driver Write */
-	u8 bValid;				/*  record the sta status link or not? */
-	u8 IOTPeer;			/*  Enum value.	HT_IOT_PEER_E */
-	/*  ODM Write */
-	/* 1 PHY_STATUS_INFO */
-	u8 RSSI_Path[4];		/*  */
+	 
+	 
+	 
+	 
+	 
+	 
+	 
+	 
+	u8 bValid;				 
+	u8 IOTPeer;			 
+	 
+	 
+	u8 RSSI_Path[4];		 
 	u8 RSSI_Ave;
 	u8 RXEVM[4];
 	u8 RXSNR[4];
 
-	u8 rssi_level;			/* for Refresh RA mask */
-	/*  ODM Write */
-	/* 1 TX_INFO (may changed by IC) */
-	/* TX_INFO_T		pTxInfo;		 Define in IC folder. Move lower layer. */
-	/*  */
-	/*  ================ODM Relative Info ======================= */
-	/*  */
+	u8 rssi_level;			 
+	 
+	 
+	 
+	 
+	 
+	 
 
-	/* To store the sequence number of received management frame */
+	 
 	u16 RxMgmtFrameSeqNum;
 };
 
@@ -319,18 +315,15 @@ struct	sta_priv {
 	u8 asoc_list_cnt;
 	u8 auth_list_cnt;
 
-	unsigned int auth_to;  /* sec, time to expire in authenticating. */
-	unsigned int assoc_to; /* sec, time to expire before associating. */
-	unsigned int expire_to; /* sec , time to expire after associated. */
+	unsigned int auth_to;   
+	unsigned int assoc_to;  
+	unsigned int expire_to;  
 
-	/* pointers to STA info; based on allocated AID or NULL if AID free
-	 * AID is in the range 1-2007, so sta_aid[0] corresponders to AID 1
-	 * and so on
-	 */
+	 
 	struct sta_info *sta_aid[NUM_STA];
 
-	u16 sta_dz_bitmap;/* only support for 15 stations, aid bitmap for sleeping stations. */
-	u16 tim_bitmap;/* only support 15 stations, aid = 0~15 mapping bit0~bit15 */
+	u16 sta_dz_bitmap; 
+	u16 tim_bitmap; 
 
 	u16 max_num_sta;
 
@@ -371,4 +364,4 @@ extern u32 rtw_init_bcmc_stainfo(struct adapter *padapter);
 extern struct sta_info *rtw_get_bcmc_stainfo(struct adapter *padapter);
 extern u8 rtw_access_ctrl(struct adapter *padapter, u8 *mac_addr);
 
-#endif /* _STA_INFO_H_ */
+#endif  

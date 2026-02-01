@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Channel subsystem I/O instructions.
- */
+
+ 
 
 #include <linux/export.h>
 

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Synopsys G210 Test Chip driver
- *
- * Copyright (C) 2015-2016 Synopsys, Inc. (www.synopsys.com)
- *
- * Authors: Joao Pinto <jpinto@synopsys.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -18,9 +12,7 @@
 #include "ufshcd-dwc.h"
 #include "tc-dwc-g210.h"
 
-/*
- * UFS DWC specific variant operations
- */
+ 
 static struct ufs_hba_variant_ops tc_dwc_g210_20bit_pltfm_hba_vops = {
 	.name                   = "tc-dwc-g210-pltfm",
 	.link_startup_notify	= ufshcd_dwc_link_startup_notify,
@@ -46,11 +38,7 @@ static const struct of_device_id tc_dwc_g210_pltfm_match[] = {
 };
 MODULE_DEVICE_TABLE(of, tc_dwc_g210_pltfm_match);
 
-/**
- * tc_dwc_g210_pltfm_probe()
- * @pdev: pointer to platform device structure
- *
- */
+ 
 static int tc_dwc_g210_pltfm_probe(struct platform_device *pdev)
 {
 	int err;
@@ -61,7 +49,7 @@ static int tc_dwc_g210_pltfm_probe(struct platform_device *pdev)
 	of_id = of_match_node(tc_dwc_g210_pltfm_match, dev->of_node);
 	vops = (struct ufs_hba_variant_ops *)of_id->data;
 
-	/* Perform generic probe */
+	 
 	err = ufshcd_pltfrm_init(pdev, vops);
 	if (err)
 		dev_err(dev, "ufshcd_pltfrm_init() failed %d\n", err);
@@ -69,11 +57,7 @@ static int tc_dwc_g210_pltfm_probe(struct platform_device *pdev)
 	return err;
 }
 
-/**
- * tc_dwc_g210_pltfm_remove()
- * @pdev: pointer to platform device structure
- *
- */
+ 
 static int tc_dwc_g210_pltfm_remove(struct platform_device *pdev)
 {
 	struct ufs_hba *hba =  platform_get_drvdata(pdev);

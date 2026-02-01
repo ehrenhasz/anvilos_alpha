@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Windfarm PowerMac thermal control. LM87 sensor
- *
- * Copyright 2012 Benjamin Herrenschmidt, IBM Corp.
- */
+
+ 
 
 #include <linux/types.h>
 #include <linux/errno.h>
@@ -44,7 +40,7 @@ static int wf_lm87_read_reg(struct i2c_client *chip, int reg)
 	u8 buf;
 
 	for (;;) {
-		/* Set address */
+		 
 		buf = (u8)reg;
 		rc = i2c_master_send(chip, &buf, 1);
 		if (rc <= 0)
@@ -73,7 +69,7 @@ static int wf_lm87_get(struct wf_sensor *sr, s32 *value)
 
 #define LM87_INT_TEMP		0x27
 
-	/* Read temperature register */
+	 
 	temp = wf_lm87_read_reg(lm->i2c, LM87_INT_TEMP);
 	if (temp < 0)
 		return temp;
@@ -102,11 +98,7 @@ static int wf_lm87_probe(struct i2c_client *client)
 	struct device_node *np = NULL;
 	int rc;
 
-	/*
-	 * The lm87 contains a whole pile of sensors, additionally,
-	 * the Xserve G5 has several lm87's. However, for now we only
-	 * care about the internal temperature sensor
-	 */
+	 
 	for_each_child_of_node(client->dev.of_node, np) {
 		if (!of_node_name_eq(np, "int-temp"))
 			continue;
@@ -148,10 +140,10 @@ static void wf_lm87_remove(struct i2c_client *client)
 {
 	struct wf_lm87_sensor *lm = i2c_get_clientdata(client);
 
-	/* Mark client detached */
+	 
 	lm->i2c = NULL;
 
-	/* release sensor */
+	 
 	wf_unregister_sensor(&lm->sens);
 }
 
@@ -179,7 +171,7 @@ static struct i2c_driver wf_lm87_driver = {
 
 static int __init wf_lm87_sensor_init(void)
 {
-	/* We only support this on the Xserve */
+	 
 	if (!of_machine_is_compatible("RackMac3,1"))
 		return -ENODEV;
 

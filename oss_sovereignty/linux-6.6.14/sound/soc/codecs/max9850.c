@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * max9850.c  --  codec driver for max9850
- *
- * Copyright (C) 2011 taskit GmbH
- *
- * Author: Christian Glindkamp <christian.glindkamp@taskit.de>
- *
- * Initial development of this code was funded by
- * MICRONIC Computer Systeme GmbH, https://www.mcsberlin.de/
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -27,8 +18,7 @@ struct max9850_priv {
 	unsigned int sysclk;
 };
 
-/* these registers are not used at the moment but provided for the sake of
- * completeness */
+ 
 static bool max9850_volatile_register(struct device *dev, unsigned int reg)
 {
 	switch (reg) {
@@ -86,22 +76,22 @@ SND_SOC_DAPM_INPUT("INR"),
 };
 
 static const struct snd_soc_dapm_route max9850_dapm_routes[] = {
-	/* output mixer */
+	 
 	{"Output Mixer", NULL, "DAC"},
 	{"Output Mixer", "Line In Switch", "Line Input"},
 
-	/* outputs */
+	 
 	{"Headphone Output", NULL, "Output Mixer"},
 	{"HPL", NULL, "Headphone Output"},
 	{"HPR", NULL, "Headphone Output"},
 	{"OUTL", NULL, "Output Mixer"},
 	{"OUTR", NULL, "Output Mixer"},
 
-	/* inputs */
+	 
 	{"Line Input", NULL, "INL"},
 	{"Line Input", NULL, "INR"},
 
-	/* supplies */
+	 
 	{"Output Mixer", NULL, "Charge Pump 1"},
 	{"Output Mixer", NULL, "Charge Pump 2"},
 	{"Output Mixer", NULL, "SHDN"},
@@ -120,7 +110,7 @@ static int max9850_hw_params(struct snd_pcm_substream *substream,
 	if (!max9850->sysclk)
 		return -EINVAL;
 
-	/* lrclk_div = 2^22 * rate / iclk with iclk = mclk / sf */
+	 
 	sf = (snd_soc_component_read(component, MAX9850_CLOCK) >> 2) + 1;
 	lrclk_div = (1 << 22);
 	lrclk_div *= params_rate(params);
@@ -154,7 +144,7 @@ static int max9850_set_dai_sysclk(struct snd_soc_dai *codec_dai,
 	struct snd_soc_component *component = codec_dai->component;
 	struct max9850_priv *max9850 = snd_soc_component_get_drvdata(component);
 
-	/* calculate mclk -> iclk divider */
+	 
 	if (freq <= 13000000)
 		snd_soc_component_write(component, MAX9850_CLOCK, 0x0);
 	else if (freq <= 26000000)
@@ -173,7 +163,7 @@ static int max9850_set_dai_fmt(struct snd_soc_dai *codec_dai, unsigned int fmt)
 	struct snd_soc_component *component = codec_dai->component;
 	u8 da = 0;
 
-	/* set clock provider for audio interface */
+	 
 	switch (fmt & SND_SOC_DAIFMT_CLOCK_PROVIDER_MASK) {
 	case SND_SOC_DAIFMT_CBP_CFP:
 		da |= MAX9850_MASTER;
@@ -184,7 +174,7 @@ static int max9850_set_dai_fmt(struct snd_soc_dai *codec_dai, unsigned int fmt)
 		return -EINVAL;
 	}
 
-	/* interface format */
+	 
 	switch (fmt & SND_SOC_DAIFMT_FORMAT_MASK) {
 	case SND_SOC_DAIFMT_I2S:
 		da |= MAX9850_DLY;
@@ -198,7 +188,7 @@ static int max9850_set_dai_fmt(struct snd_soc_dai *codec_dai, unsigned int fmt)
 		return -EINVAL;
 	}
 
-	/* clock inversion */
+	 
 	switch (fmt & SND_SOC_DAIFMT_INV_MASK) {
 	case SND_SOC_DAIFMT_NB_NF:
 		break;
@@ -215,7 +205,7 @@ static int max9850_set_dai_fmt(struct snd_soc_dai *codec_dai, unsigned int fmt)
 		return -EINVAL;
 	}
 
-	/* set da */
+	 
 	snd_soc_component_write(component, MAX9850_DIGITAL_AUDIO, da);
 
 	return 0;
@@ -273,11 +263,11 @@ static struct snd_soc_dai_driver max9850_dai = {
 
 static int max9850_probe(struct snd_soc_component *component)
 {
-	/* enable zero-detect */
+	 
 	snd_soc_component_update_bits(component, MAX9850_GENERAL_PURPOSE, 1, 1);
-	/* enable slew-rate control */
+	 
 	snd_soc_component_update_bits(component, MAX9850_VOLUME, 0x40, 0x40);
-	/* set slew-rate 125ms */
+	 
 	snd_soc_component_update_bits(component, MAX9850_CHARGE_PUMP, 0xff, 0xc0);
 
 	return 0;

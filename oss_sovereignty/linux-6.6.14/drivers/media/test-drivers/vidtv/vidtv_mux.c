@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Vidtv serves as a reference DVB driver and helps validate the existing APIs
- * in the media subsystem. It can also aid developers working on userspace
- * applications.
- *
- * This file contains the multiplexer logic for TS packets from different
- * elementary streams
- *
- * Loosely based on libavcodec/mpegtsenc.c
- *
- * Copyright (C) 2020 Daniel W. S. Almeida
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/dev_printk.h>
@@ -79,26 +68,26 @@ static int vidtv_mux_pid_ctx_init(struct vidtv_mux *m)
 	u16 pid;
 
 	hash_init(m->pid_ctx);
-	/* push the pcr pid ctx */
+	 
 	if (!vidtv_mux_create_pid_ctx_once(m, m->pcr_pid))
 		return -ENOMEM;
-	/* push the NULL packet pid ctx */
+	 
 	if (!vidtv_mux_create_pid_ctx_once(m, TS_NULL_PACKET_PID))
 		goto free;
-	/* push the PAT pid ctx */
+	 
 	if (!vidtv_mux_create_pid_ctx_once(m, VIDTV_PAT_PID))
 		goto free;
-	/* push the SDT pid ctx */
+	 
 	if (!vidtv_mux_create_pid_ctx_once(m, VIDTV_SDT_PID))
 		goto free;
-	/* push the NIT pid ctx */
+	 
 	if (!vidtv_mux_create_pid_ctx_once(m, VIDTV_NIT_PID))
 		goto free;
-	/* push the EIT pid ctx */
+	 
 	if (!vidtv_mux_create_pid_ctx_once(m, VIDTV_EIT_PID))
 		goto free;
 
-	/* add a ctx for all PMT sections */
+	 
 	while (p) {
 		pid = vidtv_psi_get_pat_program_pid(p);
 		vidtv_mux_create_pid_ctx_once(m, pid);
@@ -114,7 +103,7 @@ free:
 
 static void vidtv_mux_update_clk(struct vidtv_mux *m)
 {
-	/* call this at every thread iteration */
+	 
 	u64 elapsed_time;
 
 	m->timing.past_jiffies = m->timing.current_jiffies;
@@ -123,7 +112,7 @@ static void vidtv_mux_update_clk(struct vidtv_mux *m)
 	elapsed_time = jiffies_to_usecs(m->timing.current_jiffies -
 					m->timing.past_jiffies);
 
-	/* update the 27Mhz clock proportionally to the elapsed time */
+	 
 	m->timing.clk += (CLOCK_UNIT_27MHZ / USEC_PER_SEC) * elapsed_time;
 }
 
@@ -192,7 +181,7 @@ static u32 vidtv_mux_push_si(struct vidtv_mux *m)
 		pmt_args.pid                = pmt_pid;
 		pmt_args.continuity_counter = &pmt_ctx->cc;
 
-		/* write each section into buffer */
+		 
 		m->mux_buf_offset += vidtv_psi_pmt_write_into(&pmt_args);
 	}
 
@@ -230,7 +219,7 @@ static u32 vidtv_mux_push_pcr(struct vidtv_mux *m)
 	args.buf_sz             = m->mux_buf_sz;
 	args.continuity_counter = &ctx->cc;
 
-	/* the 27Mhz clock will feed both parts of the PCR bitfield */
+	 
 	args.pcr = m->timing.clk;
 
 	nbytes += vidtv_ts_pcr_write_into(args);
@@ -278,8 +267,8 @@ static u32 vidtv_mux_packetize_access_units(struct vidtv_mux *m,
 		.pid                = be16_to_cpu(e->es_pid),
 		.encoder_id         = e->id,
 		.stream_id          = be16_to_cpu(e->stream_id),
-		.send_pts           = true,  /* forbidden value '01'... */
-		.send_dts           = false, /* ...for PTS_DTS flags    */
+		.send_pts           = true,   
+		.send_dts           = false,  
 	};
 	struct vidtv_access_unit *au = e->access_units;
 	u32 initial_offset = m->mux_buf_offset;
@@ -287,7 +276,7 @@ static u32 vidtv_mux_packetize_access_units(struct vidtv_mux *m,
 	u32 nbytes = 0;
 	u8 *buf = NULL;
 
-	/* see SMPTE 302M clause 6.4 */
+	 
 	if (args.encoder_id == S302M) {
 		args.send_dts = false;
 		args.send_pts = true;
@@ -309,10 +298,7 @@ static u32 vidtv_mux_packetize_access_units(struct vidtv_mux *m,
 		au = au->next;
 	}
 
-	/*
-	 * clear the encoder state once the ES data has been written to the mux
-	 * buffer
-	 */
+	 
 	e->clear(e);
 
 	nbytes = m->mux_buf_offset - initial_offset;
@@ -331,15 +317,15 @@ static u32 vidtv_mux_poll_encoders(struct vidtv_mux *m)
 
 		while (e) {
 			e->encode(e);
-			/* get the TS packets into the mux buffer */
+			 
 			au_nbytes = vidtv_mux_packetize_access_units(m, e);
 			nbytes += au_nbytes;
 			m->mux_buf_offset += au_nbytes;
-			/* grab next encoder */
+			 
 			e = e->next;
 		}
 
-		/* grab the next channel */
+		 
 		cur_chnl = cur_chnl->next;
 	}
 
@@ -369,7 +355,7 @@ static u32 vidtv_mux_pad_with_nulls(struct vidtv_mux *m, u32 npkts)
 
 	nbytes = m->mux_buf_offset - initial_offset;
 
-	/* sanity check */
+	 
 	if (nbytes != npkts * TS_PACKET_LEN)
 		dev_err_ratelimited(m->dev, "%d != %d\n",
 				    nbytes, npkts * TS_PACKET_LEN);
@@ -379,9 +365,9 @@ static u32 vidtv_mux_pad_with_nulls(struct vidtv_mux *m, u32 npkts)
 
 static void vidtv_mux_clear(struct vidtv_mux *m)
 {
-	/* clear the packets currently in the mux */
+	 
 	memset(m->mux_buf, 0, m->mux_buf_sz * sizeof(*m->mux_buf));
-	/* point to the beginning of the buffer again */
+	 
 	m->mux_buf_offset = 0;
 }
 
@@ -412,7 +398,7 @@ static void vidtv_mux_tick(struct work_struct *work)
 
 		npkts = nbytes / TS_PACKET_LEN;
 
-		/* if the buffer is not aligned there is a bug somewhere */
+		 
 		if (nbytes % TS_PACKET_LEN)
 			dev_err_ratelimited(m->dev, "Misaligned buffer\n");
 
@@ -423,27 +409,12 @@ static void vidtv_mux_tick(struct work_struct *work)
 
 		vidtv_mux_clear(m);
 
-		/*
-		 * Update bytes and packet counts at DVBv5 stats
-		 *
-		 * For now, both pre and post bit counts are identical,
-		 * but post BER count can be lower than pre BER, if the error
-		 * correction logic discards packages.
-		 */
+		 
 		c->pre_bit_count.stat[0].uvalue = nbytes * 8;
 		c->post_bit_count.stat[0].uvalue = nbytes * 8;
 		c->block_count.stat[0].uvalue += npkts;
 
-		/*
-		 * Even without any visible errors for the user, the pre-BER
-		 * stats usually have an error range up to 1E-6. So,
-		 * add some random error increment count to it.
-		 *
-		 * Please notice that this is a poor guy's implementation,
-		 * as it will produce one corrected bit error every time
-		 * ceil(total bytes / ERR_RATE) is incremented, without
-		 * any sort of (pseudo-)randomness.
-		 */
+		 
 		tot_bits += nbytes * 8;
 		if (tot_bits > ERR_RATE) {
 			c->pre_bit_error.stat[0].uvalue++;
@@ -469,7 +440,7 @@ void vidtv_mux_start_thread(struct vidtv_mux *m)
 void vidtv_mux_stop_thread(struct vidtv_mux *m)
 {
 	if (m->streaming) {
-		m->streaming = false; /* thread will quit */
+		m->streaming = false;  
 		cancel_work_sync(&m->mpeg_thread);
 	}
 }
@@ -515,7 +486,7 @@ struct vidtv_mux *vidtv_mux_init(struct dvb_frontend *fe,
 		if (vidtv_channels_init(m) < 0)
 			goto free_mux_network_name;
 
-	/* will alloc data for pmt_sections after initializing pat */
+	 
 	if (vidtv_channel_si_init(m) < 0)
 		goto free_channels;
 

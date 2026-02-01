@@ -1,17 +1,17 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-// Copyright (c) 2020 Facebook
+
+
 #include "vmlinux.h"
 #include <bpf/bpf_helpers.h>
 #include <bpf/bpf_tracing.h>
 
-/* map of perf event fds, num_cpu * num_metric entries */
+ 
 struct {
 	__uint(type, BPF_MAP_TYPE_PERF_EVENT_ARRAY);
 	__uint(key_size, sizeof(__u32));
 	__uint(value_size, sizeof(int));
 } events SEC(".maps");
 
-/* readings at fentry */
+ 
 struct {
 	__uint(type, BPF_MAP_TYPE_PERCPU_ARRAY);
 	__uint(key_size, sizeof(__u32));
@@ -19,7 +19,7 @@ struct {
 	__uint(max_entries, 1);
 } fentry_readings SEC(".maps");
 
-/* accumulated readings */
+ 
 struct {
 	__uint(type, BPF_MAP_TYPE_PERCPU_ARRAY);
 	__uint(key_size, sizeof(__u32));
@@ -37,7 +37,7 @@ int BPF_PROG(fentry_XXX)
 	__u32 zero = 0;
 	long err;
 
-	/* look up before reading, to reduce error */
+	 
 	ptr = bpf_map_lookup_elem(&fentry_readings, &zero);
 	if (!ptr)
 		return 0;
@@ -56,7 +56,7 @@ fexit_update_maps(struct bpf_perf_event_value *after)
 	__u32 zero = 0;
 
 	before = bpf_map_lookup_elem(&fentry_readings, &zero);
-	/* only account samples with a valid fentry_reading */
+	 
 	if (before && before->counter) {
 		struct bpf_perf_event_value *accum;
 
@@ -80,7 +80,7 @@ int BPF_PROG(fexit_XXX)
 	__u32 cpu = bpf_get_smp_processor_id();
 	int err;
 
-	/* read all events before updating the maps, to reduce error */
+	 
 	err = bpf_perf_event_read_value(&events, cpu, &reading, sizeof(reading));
 	if (err)
 		return 0;

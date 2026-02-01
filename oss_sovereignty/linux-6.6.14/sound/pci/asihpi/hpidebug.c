@@ -1,18 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/************************************************************************
 
-    AudioScience HPI driver
-    Copyright (C) 1997-2011  AudioScience Inc. <support@audioscience.com>
-
-
-Debug macro translation.
-
-************************************************************************/
+ 
 
 #include "hpi_internal.h"
 #include "hpidebug.h"
 
-/* Debug level; 0 quiet; 1 informative, 2 debug, 3 verbose debug.  */
+ 
 int hpi_debug_level = HPI_DEBUG_LEVEL_DEFAULT;
 
 void hpi_debug_init(void)

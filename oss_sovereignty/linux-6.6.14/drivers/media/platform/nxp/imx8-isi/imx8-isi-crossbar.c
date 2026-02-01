@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * i.MX8 ISI - Input crossbar switch
- *
- * Copyright (c) 2022 Laurent Pinchart <laurent.pinchart@ideasonboard.com>
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/errno.h>
@@ -38,11 +34,7 @@ static int mxc_isi_crossbar_gasket_enable(struct mxc_isi_crossbar *xbar,
 	if (!gasket_ops)
 		return 0;
 
-	/*
-	 * Configure and enable the gasket with the frame size and CSI-2 data
-	 * type. For YUV422 8-bit, enable dual component mode unconditionally,
-	 * to match the configuration of the CSIS.
-	 */
+	 
 
 	ret = v4l2_subdev_call(remote_sd, pad, get_frame_desc, remote_pad, &fd);
 	if (ret) {
@@ -78,9 +70,7 @@ static void mxc_isi_crossbar_gasket_disable(struct mxc_isi_crossbar *xbar,
 	gasket_ops->disable(isi, port);
 }
 
-/* -----------------------------------------------------------------------------
- * V4L2 subdev operations
- */
+ 
 
 static const struct v4l2_mbus_framefmt mxc_isi_crossbar_default_format = {
 	.code = MXC_ISI_DEF_MBUS_CODE_SINK,
@@ -106,7 +96,7 @@ static int __mxc_isi_crossbar_set_routing(struct v4l2_subdev *sd,
 	if (ret)
 		return ret;
 
-	/* The memory input can be routed to the first pipeline only. */
+	 
 	for_each_active_route(&state->routing, route) {
 		if (route->sink_pad == xbar->num_sinks - 1 &&
 		    route->source_pad != xbar->num_sinks) {
@@ -135,14 +125,7 @@ mxc_isi_crossbar_xlate_streams(struct mxc_isi_crossbar *xbar,
 	u64 sink_streams = 0;
 	int sink_pad = -1;
 
-	/*
-	 * Translate the source pad and streams to the sink side. The routing
-	 * validation forbids stream merging, so all matching entries in the
-	 * routing table are guaranteed to have the same sink pad.
-	 *
-	 * TODO: This is likely worth a helper function, it could perhaps be
-	 * supported by v4l2_subdev_state_xlate_streams() with pad1 set to -1.
-	 */
+	 
 	for_each_active_route(&state->routing, route) {
 		if (route->source_pad != source_pad ||
 		    !(source_streams & BIT(route->source_stream)))
@@ -185,10 +168,7 @@ static int mxc_isi_crossbar_init_cfg(struct v4l2_subdev *sd,
 	unsigned int i;
 	int ret;
 
-	/*
-	 * Create a 1:1 mapping between pixel link inputs and outputs to
-	 * pipelines by default.
-	 */
+	 
 	routes = kcalloc(xbar->num_sources, sizeof(*routes), GFP_KERNEL);
 	if (!routes)
 		return -ENOMEM;
@@ -221,10 +201,7 @@ static int mxc_isi_crossbar_enum_mbus_code(struct v4l2_subdev *sd,
 	if (code->pad >= xbar->num_sinks) {
 		const struct v4l2_mbus_framefmt *format;
 
-		/*
-		 * The media bus code on source pads is identical to the
-		 * connected sink pad.
-		 */
+		 
 		if (code->index > 0)
 			return -EINVAL;
 
@@ -260,14 +237,11 @@ static int mxc_isi_crossbar_set_fmt(struct v4l2_subdev *sd,
 	    media_pad_is_streaming(&xbar->pads[fmt->pad]))
 		return -EBUSY;
 
-	/*
-	 * The source pad format is always identical to the sink pad format and
-	 * can't be modified.
-	 */
+	 
 	if (fmt->pad >= xbar->num_sinks)
 		return v4l2_subdev_get_fmt(sd, state, fmt);
 
-	/* Validate the requested format. */
+	 
 	if (!mxc_isi_bus_format_by_code(fmt->format.code, MXC_ISI_PIPE_PAD_SINK))
 		fmt->format.code = MXC_ISI_DEF_MBUS_CODE_SINK;
 
@@ -277,10 +251,7 @@ static int mxc_isi_crossbar_set_fmt(struct v4l2_subdev *sd,
 				     MXC_ISI_MIN_HEIGHT, MXC_ISI_MAX_HEIGHT);
 	fmt->format.field = V4L2_FIELD_NONE;
 
-	/*
-	 * Set the format on the sink stream and propagate it to the source
-	 * streams.
-	 */
+	 
 	sink_fmt = v4l2_subdev_state_get_stream_format(state, fmt->pad,
 						       fmt->stream);
 	if (!sink_fmt)
@@ -288,7 +259,7 @@ static int mxc_isi_crossbar_set_fmt(struct v4l2_subdev *sd,
 
 	*sink_fmt = fmt->format;
 
-	/* TODO: A format propagation helper would be useful. */
+	 
 	for_each_active_route(&state->routing, route) {
 		struct v4l2_mbus_framefmt *source_fmt;
 
@@ -339,10 +310,7 @@ static int mxc_isi_crossbar_enable_streams(struct v4l2_subdev *sd,
 
 	input = &xbar->inputs[sink_pad];
 
-	/*
-	 * TODO: Track per-stream enable counts to support multiplexed
-	 * streams.
-	 */
+	 
 	if (!input->enable_count) {
 		ret = mxc_isi_crossbar_gasket_enable(xbar, state, remote_sd,
 						     remote_pad, sink_pad);
@@ -423,9 +391,7 @@ static const struct media_entity_operations mxc_isi_cross_entity_ops = {
 	.has_pad_interdep = v4l2_subdev_has_pad_interdep,
 };
 
-/* -----------------------------------------------------------------------------
- * Init & cleanup
- */
+ 
 
 int mxc_isi_crossbar_init(struct mxc_isi_dev *isi)
 {
@@ -445,10 +411,7 @@ int mxc_isi_crossbar_init(struct mxc_isi_dev *isi)
 	sd->entity.function = MEDIA_ENT_F_VID_MUX;
 	sd->entity.ops = &mxc_isi_cross_entity_ops;
 
-	/*
-	 * The subdev has one sink and one source per port, plus one sink for
-	 * the memory input.
-	 */
+	 
 	xbar->num_sinks = isi->pdata->num_ports + 1;
 	xbar->num_sources = isi->pdata->num_ports;
 	num_pads = xbar->num_sinks + xbar->num_sources;

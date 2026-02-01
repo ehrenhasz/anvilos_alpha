@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0+
-//
-// Copyright 2012 Freescale Semiconductor, Inc.
-// Copyright 2012 Linaro Ltd.
+
+
+
+
 
 #include <linux/gpio.h>
 #include <linux/module.h>
@@ -54,7 +54,7 @@ static int imx_es8328_dai_init(struct snd_soc_pcm_runtime *rtd)
 					struct imx_es8328_data, card);
 	int ret = 0;
 
-	/* Headphone jack detection */
+	 
 	if (gpio_is_valid(data->jack_gpio)) {
 		ret = snd_soc_card_jack_new_pins(rtd->card, "Headphone",
 						 SND_JACK_HEADSET | SND_JACK_BTN_0,
@@ -120,10 +120,7 @@ static int imx_es8328_probe(struct platform_device *pdev)
 		goto fail;
 	}
 
-	/*
-	 * The port numbering in the hardware manual starts at 1, while
-	 * the audmux API expects it starts at 0.
-	 */
+	 
 	int_port--;
 	ext_port--;
 	ret = imx_audmux_v2_configure_port(int_port,
@@ -176,10 +173,7 @@ static int imx_es8328_probe(struct platform_device *pdev)
 
 	data->jack_gpio = of_get_named_gpio(pdev->dev.of_node, "jack-gpio", 0);
 
-	/*
-	 * CPU == Platform
-	 * platform is using soc-generic-dmaengine-pcm
-	 */
+	 
 	data->dai.cpus		=
 	data->dai.platforms	= &comp[0];
 	data->dai.codecs	= &comp[1];
@@ -234,7 +228,7 @@ fail:
 
 static const struct of_device_id imx_es8328_dt_ids[] = {
 	{ .compatible = "fsl,imx-audio-es8328", },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, imx_es8328_dt_ids);
 

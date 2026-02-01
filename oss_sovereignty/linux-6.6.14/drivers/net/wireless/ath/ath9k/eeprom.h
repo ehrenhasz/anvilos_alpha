@@ -1,18 +1,4 @@
-/*
- * Copyright (c) 2008-2011 Atheros Communications Inc.
- *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
+ 
 
 #ifndef EEPROM_H
 #define EEPROM_H
@@ -23,12 +9,7 @@
 #include <net/cfg80211.h>
 #include "ar9003_eeprom.h"
 
-/* helpers to swap EEPROM fields, which are stored as __le16 or __le32. Since
- * we are 100% sure about it we __force these to u16/u32 for the swab calls to
- * silence the sparse checks. These macros are used when we have a Big Endian
- * EEPROM (according to AR5416_EEPMISC_BIG_ENDIAN) and need to convert the
- * fields to __le16/__le32.
- */
+ 
 #define EEPROM_FIELD_SWAB16(field) \
 	(field = (__force __le16)swab16((__force u16)field))
 #define EEPROM_FIELD_SWAB32(field) \
@@ -90,19 +71,10 @@
 #define SUB_NUM_CTL_MODES_AT_5G_40 2
 #define SUB_NUM_CTL_MODES_AT_2G_40 3
 
-#define POWER_CORRECTION_FOR_TWO_CHAIN		6  /* 10*log10(2)*2 */
-#define POWER_CORRECTION_FOR_THREE_CHAIN	10 /* 10*log10(3)*2 */
+#define POWER_CORRECTION_FOR_TWO_CHAIN		6   
+#define POWER_CORRECTION_FOR_THREE_CHAIN	10  
 
-/*
- * For AR9285 and later chipsets, the following bits are not being programmed
- * in EEPROM and so need to be enabled always.
- *
- * Bit 0: en_fcc_mid
- * Bit 1: en_jap_mid
- * Bit 2: en_fcc_dfs_ht40
- * Bit 3: en_jap_ht40
- * Bit 4: en_jap_dfs_ht40
- */
+ 
 #define AR9285_RDEXT_DEFAULT    0x1F
 
 #define ATH9K_POW_SM(_r, _s)	(((_r) & 0x3f) << (_s))
@@ -164,16 +136,16 @@
 #define AR9300_MAX_CHAINS		3
 #define AR5416_PWR_TABLE_OFFSET_DB     -5
 
-/* Rx gain type values */
+ 
 #define AR5416_EEP_RXGAIN_23DB_BACKOFF     0
 #define AR5416_EEP_RXGAIN_13DB_BACKOFF     1
 #define AR5416_EEP_RXGAIN_ORIG             2
 
-/* Tx gain type values */
+ 
 #define AR5416_EEP_TXGAIN_ORIGINAL         0
 #define AR5416_EEP_TXGAIN_HIGH_POWER       1
 
-/* Endianness of EEPROM content */
+ 
 #define AR5416_EEPMISC_BIG_ENDIAN          0x01
 
 #define AR5416_EEP4K_START_LOC                64
@@ -730,4 +702,4 @@ extern const struct eeprom_ops eep_ar9287_ops;
 extern const struct eeprom_ops eep_ar9287_ops;
 extern const struct eeprom_ops eep_ar9300_ops;
 
-#endif /* EEPROM_H */
+#endif  

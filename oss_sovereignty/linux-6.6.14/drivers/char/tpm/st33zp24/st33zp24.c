@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * STMicroelectronics TPM Linux driver for TPM ST33ZP24
- * Copyright (C) 2009 - 2016 STMicroelectronics
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/module.h>
@@ -61,9 +58,7 @@ enum tis_defaults {
 	TIS_LONG_TIMEOUT = 2000,
 };
 
-/*
- * clear the pending interrupt.
- */
+ 
 static u8 clear_interruption(struct st33zp24_dev *tpm_dev)
 {
 	u8 interrupt;
@@ -73,9 +68,7 @@ static u8 clear_interruption(struct st33zp24_dev *tpm_dev)
 	return interrupt;
 }
 
-/*
- * cancel the current command execution or set STS to COMMAND READY.
- */
+ 
 static void st33zp24_cancel(struct tpm_chip *chip)
 {
 	struct st33zp24_dev *tpm_dev = dev_get_drvdata(&chip->dev);
@@ -85,9 +78,7 @@ static void st33zp24_cancel(struct tpm_chip *chip)
 	tpm_dev->ops->send(tpm_dev->phy_id, TPM_STS, &data, 1);
 }
 
-/*
- * return the TPM_STS register
- */
+ 
 static u8 st33zp24_status(struct tpm_chip *chip)
 {
 	struct st33zp24_dev *tpm_dev = dev_get_drvdata(&chip->dev);
@@ -97,9 +88,7 @@ static u8 st33zp24_status(struct tpm_chip *chip)
 	return data;
 }
 
-/*
- * if the locality is active
- */
+ 
 static bool check_locality(struct tpm_chip *chip)
 {
 	struct st33zp24_dev *tpm_dev = dev_get_drvdata(&chip->dev);
@@ -132,14 +121,14 @@ static int request_locality(struct tpm_chip *chip)
 
 	stop = jiffies + chip->timeout_a;
 
-	/* Request locality is usually effective after the request */
+	 
 	do {
 		if (check_locality(chip))
 			return tpm_dev->locality;
 		msleep(TPM_TIMEOUT);
 	} while (time_before(jiffies, stop));
 
-	/* could not get locality */
+	 
 	return -EACCES;
 }
 
@@ -153,9 +142,7 @@ static void release_locality(struct tpm_chip *chip)
 	tpm_dev->ops->send(tpm_dev->phy_id, TPM_ACCESS, &data, 1);
 }
 
-/*
- * get_burstcount return the burstcount value
- */
+ 
 static int get_burstcount(struct tpm_chip *chip)
 {
 	struct st33zp24_dev *tpm_dev = dev_get_drvdata(&chip->dev);
@@ -199,9 +186,7 @@ static bool wait_for_tpm_stat_cond(struct tpm_chip *chip, u8 mask,
 	return false;
 }
 
-/*
- * wait for a TPM_STS value
- */
+ 
 static int wait_for_stat(struct tpm_chip *chip, u8 mask, unsigned long timeout,
 			wait_queue_head_t *queue, bool check_cancel)
 {
@@ -213,7 +198,7 @@ static int wait_for_stat(struct tpm_chip *chip, u8 mask, unsigned long timeout,
 	u32 cur_intrs;
 	u8 status;
 
-	/* check current status */
+	 
 	status = st33zp24_status(chip);
 	if ((status & mask) == mask)
 		return 0;
@@ -296,9 +281,7 @@ static irqreturn_t tpm_ioserirq_handler(int irq, void *dev_id)
 	return IRQ_HANDLED;
 }
 
-/*
- * send TPM commands through the I2C bus.
- */
+ 
 static int st33zp24_send(struct tpm_chip *chip, unsigned char *buf,
 			 size_t len)
 {
@@ -440,9 +423,7 @@ static const struct acpi_gpio_mapping acpi_st33zp24_gpios[] = {
 	{ },
 };
 
-/*
- * initialize the TPM device
- */
+ 
 int st33zp24_probe(void *phy_id, const struct st33zp24_phy_ops *ops,
 		   struct device *dev, int irq)
 {
@@ -477,11 +458,7 @@ int st33zp24_probe(void *phy_id, const struct st33zp24_phy_ops *ops,
 			return ret;
 	}
 
-	/*
-	 * Get LPCPD GPIO. If lpcpd pin is not specified. This is not an
-	 * issue as power management can be also managed by TPM specific
-	 * commands.
-	 */
+	 
 	tpm_dev->io_lpcpd = devm_gpiod_get_optional(dev, "lpcpd",
 						    GPIOD_OUT_HIGH);
 	ret = PTR_ERR_OR_ZERO(tpm_dev->io_lpcpd);
@@ -491,7 +468,7 @@ int st33zp24_probe(void *phy_id, const struct st33zp24_phy_ops *ops,
 	}
 
 	if (irq) {
-		/* INTERRUPT Setup */
+		 
 		init_waitqueue_head(&tpm_dev->read_queue);
 		tpm_dev->intrs = 0;
 

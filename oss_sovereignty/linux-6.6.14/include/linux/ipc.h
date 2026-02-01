@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _LINUX_IPC_H
 #define _LINUX_IPC_H
 
@@ -8,7 +8,7 @@
 #include <uapi/linux/ipc.h>
 #include <linux/refcount.h>
 
-/* used by in-kernel data structures */
+ 
 struct kern_ipc_perm {
 	spinlock_t	lock;
 	bool		deleted;
@@ -28,4 +28,4 @@ struct kern_ipc_perm {
 	refcount_t refcount;
 } ____cacheline_aligned_in_smp __randomize_layout;
 
-#endif /* _LINUX_IPC_H */
+#endif  

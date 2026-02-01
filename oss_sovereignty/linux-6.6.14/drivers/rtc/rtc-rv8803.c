@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * RTC driver for the Micro Crystal RV8803
- *
- * Copyright (C) 2015 Micro Crystal SA
- * Alexandre Belloni <alexandre.belloni@bootlin.com>
- *
- */
+
+ 
 
 #include <linux/bcd.h>
 #include <linux/bitops.h>
@@ -79,10 +73,7 @@ static int rv8803_read_reg(const struct i2c_client *client, u8 reg)
 	int try = RV8803_I2C_TRY_COUNT;
 	s32 ret;
 
-	/*
-	 * There is a 61µs window during which the RTC does not acknowledge I2C
-	 * transfers. In that case, ensure that there are multiple attempts.
-	 */
+	 
 	do
 		ret = i2c_smbus_read_byte_data(client, reg);
 	while ((ret == -ENXIO || ret == -EIO) && --try);
@@ -152,7 +143,7 @@ static int rv8803_regs_init(struct rv8803_data *rv8803)
 		return ret;
 
 	ret = rv8803_write_reg(rv8803->client, RV8803_CTRL,
-			       FIELD_PREP(RX8803_CTRL_CSEL, 1)); /* 2s */
+			       FIELD_PREP(RX8803_CTRL_CSEL, 1));  
 	if (ret)
 		return ret;
 
@@ -168,10 +159,7 @@ static int rv8803_regs_configure(struct rv8803_data *rv8803);
 
 static int rv8803_regs_reset(struct rv8803_data *rv8803, bool full)
 {
-	/*
-	 * The RV-8803 resets all registers to POR defaults after voltage-loss,
-	 * the Epson RTCs don't, so we manually reset the remainder here.
-	 */
+	 
 	if (full || rv8803->type == rx_8803 || rv8803->type == rx_8900) {
 		int ret = rv8803_regs_init(rv8803);
 		if (ret)
@@ -287,7 +275,7 @@ static int rv8803_set_time(struct device *dev, struct rtc_time *tm)
 	if (ctrl < 0)
 		return ctrl;
 
-	/* Stop the clock */
+	 
 	ret = rv8803_write_reg(rv8803->client, RV8803_CTRL,
 			       ctrl | RV8803_CTRL_RESET);
 	if (ret)
@@ -305,7 +293,7 @@ static int rv8803_set_time(struct device *dev, struct rtc_time *tm)
 	if (ret)
 		return ret;
 
-	/* Restart the clock */
+	 
 	ret = rv8803_write_reg(rv8803->client, RV8803_CTRL,
 			       ctrl & ~RV8803_CTRL_RESET);
 	if (ret)
@@ -320,11 +308,7 @@ static int rv8803_set_time(struct device *dev, struct rtc_time *tm)
 	}
 
 	if ((flags & RV8803_FLAG_V2F) || rv8803->alarm_invalid) {
-		/*
-		 * If we sense corruption in the alarm registers, but see no
-		 * voltage loss flag, we can't rely on other registers having
-		 * sensible values. Reset them fully.
-		 */
+		 
 		ret = rv8803_regs_reset(rv8803, rv8803->alarm_invalid);
 		if (ret) {
 			mutex_unlock(&rv8803->flags_lock);
@@ -394,7 +378,7 @@ static int rv8803_set_alarm(struct device *dev, struct rtc_wkalrm *alrm)
 	u8 ctrl[2];
 	int ret, err;
 
-	/* The alarm has no seconds, round up to nearest minute */
+	 
 	if (alrm->time.tm_sec) {
 		time64_t alarm_time = rtc_tm_to_time64(&alrm->time);
 
@@ -589,7 +573,7 @@ static int rx8900_trickle_charger_init(struct rv8803_data *rv8803)
 					 flags);
 }
 
-/* configure registers with values different than the Power-On reset defaults */
+ 
 static int rv8803_regs_configure(struct rv8803_data *rv8803)
 {
 	int err;

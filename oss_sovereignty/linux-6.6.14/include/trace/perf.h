@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 
 #undef TRACE_SYSTEM_VAR
 
@@ -55,11 +55,7 @@ perf_trace_##call(void *__data, proto)					\
 				  head, __task);			\
 }
 
-/*
- * This part is compiled out, it is only here as a build time check
- * to make sure that if the tracepoint handling changes, the
- * perf probe will fail to compile unless it too is updated.
- */
+ 
 #undef DEFINE_EVENT
 #define DEFINE_EVENT(template, call, proto, args)			\
 static inline void perf_test_probe_##call(void)				\
@@ -73,4 +69,4 @@ static inline void perf_test_probe_##call(void)				\
 	DEFINE_EVENT(template, name, PARAMS(proto), PARAMS(args))
 
 #include TRACE_INCLUDE(TRACE_INCLUDE_FILE)
-#endif /* CONFIG_PERF_EVENTS */
+#endif  

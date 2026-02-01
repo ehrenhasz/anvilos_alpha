@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *
- * Copyright (C) Alan Cox GW4PTS (alan@lxorguk.ukuu.org.uk)
- * Copyright (C) Jonathan Naylor G4KLX (g4klx@g4klx.demon.co.uk)
- * Copyright (C) Steven Whitehouse GW7RRM (stevew@acm.org)
- * Copyright (C) Joerg Reuter DL1BKE (jreuter@yaina.de)
- * Copyright (C) Hans-Joachim Hetscher DD8NE (dd8ne@bnv-bamberg.de)
- * Copyright (C) Frederic Rible F1OAT (frible@teaser.fr)
- */
+
+ 
 
 #include <linux/capability.h>
 #include <linux/errno.h>
@@ -336,22 +328,14 @@ const struct seq_operations ax25_rt_seqops = {
 };
 #endif
 
-/*
- *	Find AX.25 route
- *
- *	Only routes with a reference count of zero can be destroyed.
- *	Must be called with ax25_route_lock read locked.
- */
+ 
 ax25_route *ax25_get_route(ax25_address *addr, struct net_device *dev)
 {
 	ax25_route *ax25_spe_rt = NULL;
 	ax25_route *ax25_def_rt = NULL;
 	ax25_route *ax25_rt;
 
-	/*
-	 *	Bind to the physical interface we heard them on, or the default
-	 *	route if none is found;
-	 */
+	 
 	for (ax25_rt = ax25_route_list; ax25_rt != NULL; ax25_rt = ax25_rt->next) {
 		if (dev == NULL) {
 			if (ax25cmp(&ax25_rt->callsign, addr) == 0 && ax25_rt->dev != NULL)
@@ -373,11 +357,7 @@ ax25_route *ax25_get_route(ax25_address *addr, struct net_device *dev)
 	return ax25_rt;
 }
 
-/*
- *	Adjust path: If you specify a default route and want to connect
- *      a target on the digipeater path but w/o having a special route
- *	set before, the path has to be truncated from your target on.
- */
+ 
 static inline void ax25_adjust_path(ax25_address *addr, ax25_digi *digipeat)
 {
 	int k;
@@ -391,9 +371,7 @@ static inline void ax25_adjust_path(ax25_address *addr, ax25_digi *digipeat)
 }
 
 
-/*
- *	Find which interface to use.
- */
+ 
 int ax25_rt_autobind(ax25_cb *ax25, ax25_address *addr)
 {
 	ax25_uid_assoc *user;
@@ -469,9 +447,7 @@ struct sk_buff *ax25_rt_build_path(struct sk_buff *skb, ax25_address *src,
 	return skb;
 }
 
-/*
- *	Free all memory associated with routing structures.
- */
+ 
 void __exit ax25_rt_free(void)
 {
 	ax25_route *s, *ax25_rt = ax25_route_list;

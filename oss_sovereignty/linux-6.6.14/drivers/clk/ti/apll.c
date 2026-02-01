@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * OMAP APLL clock support
- *
- * Copyright (C) 2013 Texas Instruments, Inc.
- *
- * J Keerthy <j-keerthy@ti.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/clk-provider.h>
@@ -46,7 +40,7 @@ static int dra7_apll_enable(struct clk_hw *hw)
 
 	state <<= __ffs(ad->idlest_mask);
 
-	/* Check is already locked */
+	 
 	v = ti_clk_ll_ops->clk_readl(&ad->idlest_reg);
 
 	if ((v & ad->idlest_mask) == state)

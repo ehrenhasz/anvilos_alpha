@@ -1,32 +1,11 @@
-/*
- *  linux/fs/hfs/string.c
- *
- * Copyright (C) 1995-1997  Paul H. Hargrove
- * (C) 2003 Ardis Technologies <roman@ardistech.com>
- * This file may be distributed under the terms of the GNU General Public License.
- *
- * This file contains the string comparison function for the
- * Macintosh character set.
- *
- * The code in this file is derived from code which is copyright
- * 1986, 1989, 1990 by Abacus Research and Development, Inc. (ARDI)
- * It is used here by the permission of ARDI's president Cliff Matthews.
- */
+ 
 
 #include "hfs_fs.h"
 #include <linux/dcache.h>
 
-/*================ File-local variables ================*/
+ 
 
-/*
- * unsigned char caseorder[]
- *
- * Defines the lexical ordering of characters on the Macintosh
- *
- * Composition of the 'casefold' and 'order' tables from ARDI's code
- * with the entry for 0x20 changed to match that for 0xCA to remove
- * special case for those two characters.
- */
+ 
 static unsigned char caseorder[256] = {
 	0x00,0x01,0x02,0x03,0x04,0x05,0x06,0x07,0x08,0x09,0x0A,0x0B,0x0C,0x0D,0x0E,0x0F,
 	0x10,0x11,0x12,0x13,0x14,0x15,0x16,0x17,0x18,0x19,0x1A,0x1B,0x1C,0x1D,0x1E,0x1F,
@@ -46,11 +25,9 @@ static unsigned char caseorder[256] = {
 	0xF0,0xF1,0xF2,0xF3,0xF4,0xF5,0xF6,0xF7,0xF8,0xF9,0xFA,0xFB,0xFC,0xFD,0xFE,0xFF
 };
 
-/*================ Global functions ================*/
+ 
 
-/*
- * Hash a string to an integer in a case-independent way
- */
+ 
 int hfs_hash_dentry(const struct dentry *dentry, struct qstr *this)
 {
 	const unsigned char *name = this->name;
@@ -66,13 +43,7 @@ int hfs_hash_dentry(const struct dentry *dentry, struct qstr *this)
 	return 0;
 }
 
-/*
- * Compare two strings in the HFS filename character ordering
- * Returns positive, negative, or zero, not just 0 or (+/-)1
- *
- * Equivalent to ARDI's call:
- *	ROMlib_RelString(s1+1, s2+1, true, false, (s1[0]<<16) | s2[0])
- */
+ 
 int hfs_strcmp(const unsigned char *s1, unsigned int len1,
 	       const unsigned char *s2, unsigned int len2)
 {
@@ -88,10 +59,7 @@ int hfs_strcmp(const unsigned char *s1, unsigned int len1,
 	return len1 - len2;
 }
 
-/*
- * Test for equality of two strings in the HFS filename character ordering.
- * return 1 on failure and 0 on success
- */
+ 
 int hfs_compare_dentry(const struct dentry *dentry,
 		unsigned int len, const char *str, const struct qstr *name)
 {

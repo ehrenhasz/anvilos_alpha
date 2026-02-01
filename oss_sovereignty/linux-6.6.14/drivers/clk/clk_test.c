@@ -1,11 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Kunit test for clk rate management
- */
+
+ 
 #include <linux/clk.h>
 #include <linux/clk-provider.h>
 
-/* Needed for clk_hw_get_clk() */
+ 
 #include "clk.h"
 
 #include <kunit/test.h>
@@ -31,17 +29,14 @@ static unsigned long clk_dummy_recalc_rate(struct clk_hw *hw,
 static int clk_dummy_determine_rate(struct clk_hw *hw,
 				    struct clk_rate_request *req)
 {
-	/* Just return the same rate without modifying it */
+	 
 	return 0;
 }
 
 static int clk_dummy_maximize_rate(struct clk_hw *hw,
 				   struct clk_rate_request *req)
 {
-	/*
-	 * If there's a maximum set, always run the clock at the maximum
-	 * allowed.
-	 */
+	 
 	if (req->max_rate < ULONG_MAX)
 		req->rate = req->max_rate;
 
@@ -51,10 +46,7 @@ static int clk_dummy_maximize_rate(struct clk_hw *hw,
 static int clk_dummy_minimize_rate(struct clk_hw *hw,
 				   struct clk_rate_request *req)
 {
-	/*
-	 * If there's a minimum set, always run the clock at the minimum
-	 * allowed.
-	 */
+	 
 	if (req->min_rate > 0)
 		req->rate = req->min_rate;
 
@@ -104,22 +96,7 @@ static const struct clk_ops clk_dummy_minimize_rate_ops = {
 };
 
 static const struct clk_ops clk_dummy_single_parent_ops = {
-	/*
-	 * FIXME: Even though we should probably be able to use
-	 * __clk_mux_determine_rate() here, if we use it and call
-	 * clk_round_rate() or clk_set_rate() with a rate lower than
-	 * what all the parents can provide, it will return -EINVAL.
-	 *
-	 * This is due to the fact that it has the undocumented
-	 * behaviour to always pick up the closest rate higher than the
-	 * requested rate. If we get something lower, it thus considers
-	 * that it's not acceptable and will return an error.
-	 *
-	 * It's somewhat inconsistent and creates a weird threshold
-	 * between rates above the parent rate which would be rounded to
-	 * what the parent can provide, but rates below will simply
-	 * return an error.
-	 */
+	 
 	.determine_rate = __clk_mux_determine_rate_closest,
 	.set_parent = clk_dummy_single_set_parent,
 	.get_parent = clk_dummy_single_get_parent,
@@ -209,9 +186,7 @@ static void clk_test_exit(struct kunit *test)
 	clk_hw_unregister(&ctx->hw);
 }
 
-/*
- * Test that the actual rate matches what is returned by clk_get_rate()
- */
+ 
 static void clk_test_get_rate(struct kunit *test)
 {
 	struct clk_dummy_context *ctx = test->priv;
@@ -226,13 +201,7 @@ static void clk_test_get_rate(struct kunit *test)
 	clk_put(clk);
 }
 
-/*
- * Test that, after a call to clk_set_rate(), the rate returned by
- * clk_get_rate() matches.
- *
- * This assumes that clk_ops.determine_rate or clk_ops.round_rate won't
- * modify the requested rate, which is our case in clk_dummy_rate_ops.
- */
+ 
 static void clk_test_set_get_rate(struct kunit *test)
 {
 	struct clk_dummy_context *ctx = test->priv;
@@ -251,13 +220,7 @@ static void clk_test_set_get_rate(struct kunit *test)
 	clk_put(clk);
 }
 
-/*
- * Test that, after several calls to clk_set_rate(), the rate returned
- * by clk_get_rate() matches the last one.
- *
- * This assumes that clk_ops.determine_rate or clk_ops.round_rate won't
- * modify the requested rate, which is our case in clk_dummy_rate_ops.
- */
+ 
 static void clk_test_set_set_get_rate(struct kunit *test)
 {
 	struct clk_dummy_context *ctx = test->priv;
@@ -280,10 +243,7 @@ static void clk_test_set_set_get_rate(struct kunit *test)
 	clk_put(clk);
 }
 
-/*
- * Test that clk_round_rate and clk_set_rate are consitent and will
- * return the same frequency.
- */
+ 
 static void clk_test_round_set_get_rate(struct kunit *test)
 {
 	struct clk_dummy_context *ctx = test->priv;
@@ -315,11 +275,7 @@ static struct kunit_case clk_test_cases[] = {
 	{}
 };
 
-/*
- * Test suite for a basic rate clock, without any parent.
- *
- * These tests exercise the rate API with simple scenarios
- */
+ 
 static struct kunit_suite clk_test_suite = {
 	.name = "clk-test",
 	.init = clk_test_init,
@@ -349,11 +305,7 @@ static int clk_uncached_test_init(struct kunit *test)
 	return 0;
 }
 
-/*
- * Test that for an uncached clock, the clock framework doesn't cache
- * the rate and clk_get_rate() will return the underlying clock rate
- * even if it changed.
- */
+ 
 static void clk_test_uncached_get_rate(struct kunit *test)
 {
 	struct clk_dummy_context *ctx = test->priv;
@@ -365,7 +317,7 @@ static void clk_test_uncached_get_rate(struct kunit *test)
 	KUNIT_ASSERT_GT(test, rate, 0);
 	KUNIT_EXPECT_EQ(test, rate, DUMMY_CLOCK_INIT_RATE);
 
-	/* We change the rate behind the clock framework's back */
+	 
 	ctx->rate = DUMMY_CLOCK_RATE_1;
 	rate = clk_get_rate(clk);
 	KUNIT_ASSERT_GT(test, rate, 0);
@@ -374,10 +326,7 @@ static void clk_test_uncached_get_rate(struct kunit *test)
 	clk_put(clk);
 }
 
-/*
- * Test that for an uncached clock, clk_set_rate_range() will work
- * properly if the rate hasn't changed.
- */
+ 
 static void clk_test_uncached_set_range(struct kunit *test)
 {
 	struct clk_dummy_context *ctx = test->priv;
@@ -399,14 +348,7 @@ static void clk_test_uncached_set_range(struct kunit *test)
 	clk_put(clk);
 }
 
-/*
- * Test that for an uncached clock, clk_set_rate_range() will work
- * properly if the rate has changed in hardware.
- *
- * In this case, it means that if the rate wasn't initially in the range
- * we're trying to set, but got changed at some point into the range
- * without the kernel knowing about it, its rate shouldn't be affected.
- */
+ 
 static void clk_test_uncached_updated_rate_set_range(struct kunit *test)
 {
 	struct clk_dummy_context *ctx = test->priv;
@@ -414,7 +356,7 @@ static void clk_test_uncached_updated_rate_set_range(struct kunit *test)
 	struct clk *clk = clk_hw_get_clk(hw, NULL);
 	unsigned long rate;
 
-	/* We change the rate behind the clock framework's back */
+	 
 	ctx->rate = DUMMY_CLOCK_RATE_1 + 1000;
 	KUNIT_ASSERT_EQ(test,
 			clk_set_rate_range(clk,
@@ -436,11 +378,7 @@ static struct kunit_case clk_uncached_test_cases[] = {
 	{}
 };
 
-/*
- * Test suite for a basic, uncached, rate clock, without any parent.
- *
- * These tests exercise the rate API with simple scenarios
- */
+ 
 static struct kunit_suite clk_uncached_test_suite = {
 	.name = "clk-uncached-test",
 	.init = clk_uncached_test_init,
@@ -497,10 +435,7 @@ clk_multiple_parents_mux_test_exit(struct kunit *test)
 	clk_hw_unregister(&ctx->parents_ctx[1].hw);
 }
 
-/*
- * Test that for a clock with multiple parents, clk_get_parent()
- * actually returns the current one.
- */
+ 
 static void
 clk_test_multiple_parents_mux_get_parent(struct kunit *test)
 {
@@ -515,10 +450,7 @@ clk_test_multiple_parents_mux_get_parent(struct kunit *test)
 	clk_put(clk);
 }
 
-/*
- * Test that for a clock with a multiple parents, clk_has_parent()
- * actually reports all of them as parents.
- */
+ 
 static void
 clk_test_multiple_parents_mux_has_parent(struct kunit *test)
 {
@@ -538,15 +470,7 @@ clk_test_multiple_parents_mux_has_parent(struct kunit *test)
 	clk_put(clk);
 }
 
-/*
- * Test that for a clock with a multiple parents, if we set a range on
- * that clock and the parent is changed, its rate after the reparenting
- * is still within the range we asked for.
- *
- * FIXME: clk_set_parent() only does the reparenting but doesn't
- * reevaluate whether the new clock rate is within its boundaries or
- * not.
- */
+ 
 static void
 clk_test_multiple_parents_mux_set_range_set_parent_get_rate(struct kunit *test)
 {
@@ -597,13 +521,7 @@ static struct kunit_case clk_multiple_parents_mux_test_cases[] = {
 	{}
 };
 
-/*
- * Test suite for a basic mux clock with two parents, with
- * CLK_SET_RATE_PARENT on the child.
- *
- * These tests exercise the consumer API and check that the state of the
- * child and parents are sane and consistent.
- */
+ 
 static struct kunit_suite
 clk_multiple_parents_mux_test_suite = {
 	.name = "clk-multiple-parents-mux-test",
@@ -651,10 +569,7 @@ clk_orphan_transparent_multiple_parent_mux_test_exit(struct kunit *test)
 	clk_hw_unregister(&ctx->parents_ctx[1].hw);
 }
 
-/*
- * Test that, for a mux whose current parent hasn't been registered yet and is
- * thus orphan, clk_get_parent() will return NULL.
- */
+ 
 static void
 clk_test_orphan_transparent_multiple_parent_mux_get_parent(struct kunit *test)
 {
@@ -667,11 +582,7 @@ clk_test_orphan_transparent_multiple_parent_mux_get_parent(struct kunit *test)
 	clk_put(clk);
 }
 
-/*
- * Test that, for a mux whose current parent hasn't been registered yet,
- * calling clk_set_parent() to a valid parent will properly update the
- * mux parent and its orphan status.
- */
+ 
 static void
 clk_test_orphan_transparent_multiple_parent_mux_set_parent(struct kunit *test)
 {
@@ -695,11 +606,7 @@ clk_test_orphan_transparent_multiple_parent_mux_set_parent(struct kunit *test)
 	clk_put(clk);
 }
 
-/*
- * Test that, for a mux that started orphan but got switched to a valid
- * parent, calling clk_drop_range() on the mux won't affect the parent
- * rate.
- */
+ 
 static void
 clk_test_orphan_transparent_multiple_parent_mux_set_parent_drop_range(struct kunit *test)
 {
@@ -730,10 +637,7 @@ clk_test_orphan_transparent_multiple_parent_mux_set_parent_drop_range(struct kun
 	clk_put(clk);
 }
 
-/*
- * Test that, for a mux that started orphan but got switched to a valid
- * parent, the rate of the mux and its new parent are consistent.
- */
+ 
 static void
 clk_test_orphan_transparent_multiple_parent_mux_set_parent_get_rate(struct kunit *test)
 {
@@ -761,10 +665,7 @@ clk_test_orphan_transparent_multiple_parent_mux_set_parent_get_rate(struct kunit
 	clk_put(clk);
 }
 
-/*
- * Test that, for a mux that started orphan but got switched to a valid
- * parent, calling clk_put() on the mux won't affect the parent rate.
- */
+ 
 static void
 clk_test_orphan_transparent_multiple_parent_mux_set_parent_put(struct kunit *test)
 {
@@ -794,11 +695,7 @@ clk_test_orphan_transparent_multiple_parent_mux_set_parent_put(struct kunit *tes
 	clk_put(parent);
 }
 
-/*
- * Test that, for a mux that started orphan but got switched to a valid
- * parent, calling clk_set_rate_range() will affect the parent state if
- * its rate is out of range.
- */
+ 
 static void
 clk_test_orphan_transparent_multiple_parent_mux_set_parent_set_range_modified(struct kunit *test)
 {
@@ -827,11 +724,7 @@ clk_test_orphan_transparent_multiple_parent_mux_set_parent_set_range_modified(st
 	clk_put(clk);
 }
 
-/*
- * Test that, for a mux that started orphan but got switched to a valid
- * parent, calling clk_set_rate_range() won't affect the parent state if
- * its rate is within range.
- */
+ 
 static void
 clk_test_orphan_transparent_multiple_parent_mux_set_parent_set_range_untouched(struct kunit *test)
 {
@@ -864,11 +757,7 @@ clk_test_orphan_transparent_multiple_parent_mux_set_parent_set_range_untouched(s
 	clk_put(clk);
 }
 
-/*
- * Test that, for a mux whose current parent hasn't been registered yet,
- * calling clk_set_rate_range() will succeed, and will be taken into
- * account when rounding a rate.
- */
+ 
 static void
 clk_test_orphan_transparent_multiple_parent_mux_set_range_round_rate(struct kunit *test)
 {
@@ -889,15 +778,7 @@ clk_test_orphan_transparent_multiple_parent_mux_set_range_round_rate(struct kuni
 	clk_put(clk);
 }
 
-/*
- * Test that, for a mux that started orphan, was assigned and rate and
- * then got switched to a valid parent, its rate is eventually within
- * range.
- *
- * FIXME: Even though we update the rate as part of clk_set_parent(), we
- * don't evaluate whether that new rate is within range and needs to be
- * adjusted.
- */
+ 
 static void
 clk_test_orphan_transparent_multiple_parent_mux_set_range_set_parent_get_rate(struct kunit *test)
 {
@@ -940,15 +821,7 @@ static struct kunit_case clk_orphan_transparent_multiple_parent_mux_test_cases[]
 	{}
 };
 
-/*
- * Test suite for a basic mux clock with two parents. The default parent
- * isn't registered, only the second parent is. By default, the clock
- * will thus be orphan.
- *
- * These tests exercise the behaviour of the consumer API when dealing
- * with an orphan clock, and how we deal with the transition to a valid
- * parent.
- */
+ 
 static struct kunit_suite clk_orphan_transparent_multiple_parent_mux_test_suite = {
 	.name = "clk-orphan-transparent-multiple-parent-mux-test",
 	.init = clk_orphan_transparent_multiple_parent_mux_test_init,
@@ -1001,10 +874,7 @@ clk_single_parent_mux_test_exit(struct kunit *test)
 	clk_hw_unregister(&ctx->parent_ctx.hw);
 }
 
-/*
- * Test that for a clock with a single parent, clk_get_parent() actually
- * returns the parent.
- */
+ 
 static void
 clk_test_single_parent_mux_get_parent(struct kunit *test)
 {
@@ -1019,10 +889,7 @@ clk_test_single_parent_mux_get_parent(struct kunit *test)
 	clk_put(clk);
 }
 
-/*
- * Test that for a clock with a single parent, clk_has_parent() actually
- * reports it as a parent.
- */
+ 
 static void
 clk_test_single_parent_mux_has_parent(struct kunit *test)
 {
@@ -1037,15 +904,7 @@ clk_test_single_parent_mux_has_parent(struct kunit *test)
 	clk_put(clk);
 }
 
-/*
- * Test that for a clock that can't modify its rate and with a single
- * parent, if we set disjoints range on the parent and then the child,
- * the second will return an error.
- *
- * FIXME: clk_set_rate_range() only considers the current clock when
- * evaluating whether ranges are disjoints and not the upstream clocks
- * ranges.
- */
+ 
 static void
 clk_test_single_parent_mux_set_range_disjoint_child_last(struct kunit *test)
 {
@@ -1069,15 +928,7 @@ clk_test_single_parent_mux_set_range_disjoint_child_last(struct kunit *test)
 	clk_put(clk);
 }
 
-/*
- * Test that for a clock that can't modify its rate and with a single
- * parent, if we set disjoints range on the child and then the parent,
- * the second will return an error.
- *
- * FIXME: clk_set_rate_range() only considers the current clock when
- * evaluating whether ranges are disjoints and not the downstream clocks
- * ranges.
- */
+ 
 static void
 clk_test_single_parent_mux_set_range_disjoint_parent_last(struct kunit *test)
 {
@@ -1101,12 +952,7 @@ clk_test_single_parent_mux_set_range_disjoint_parent_last(struct kunit *test)
 	clk_put(clk);
 }
 
-/*
- * Test that for a clock that can't modify its rate and with a single
- * parent, if we set a range on the parent and then call
- * clk_round_rate(), the boundaries of the parent are taken into
- * account.
- */
+ 
 static void
 clk_test_single_parent_mux_set_range_round_rate_parent_only(struct kunit *test)
 {
@@ -1131,12 +977,7 @@ clk_test_single_parent_mux_set_range_round_rate_parent_only(struct kunit *test)
 	clk_put(clk);
 }
 
-/*
- * Test that for a clock that can't modify its rate and with a single
- * parent, if we set a range on the parent and a more restrictive one on
- * the child, and then call clk_round_rate(), the boundaries of the
- * two clocks are taken into account.
- */
+ 
 static void
 clk_test_single_parent_mux_set_range_round_rate_child_smaller(struct kunit *test)
 {
@@ -1169,12 +1010,7 @@ clk_test_single_parent_mux_set_range_round_rate_child_smaller(struct kunit *test
 	clk_put(clk);
 }
 
-/*
- * Test that for a clock that can't modify its rate and with a single
- * parent, if we set a range on the child and a more restrictive one on
- * the parent, and then call clk_round_rate(), the boundaries of the
- * two clocks are taken into account.
- */
+ 
 static void
 clk_test_single_parent_mux_set_range_round_rate_parent_smaller(struct kunit *test)
 {
@@ -1218,13 +1054,7 @@ static struct kunit_case clk_single_parent_mux_test_cases[] = {
 	{}
 };
 
-/*
- * Test suite for a basic mux clock with one parent, with
- * CLK_SET_RATE_PARENT on the child.
- *
- * These tests exercise the consumer API and check that the state of the
- * child and parent are sane and consistent.
- */
+ 
 static struct kunit_suite
 clk_single_parent_mux_test_suite = {
 	.name = "clk-single-parent-mux-test",
@@ -1269,13 +1099,7 @@ static int clk_orphan_transparent_single_parent_mux_test_init(struct kunit *test
 	return 0;
 }
 
-/*
- * Test that a mux-only clock, with an initial rate within a range,
- * will still have the same rate after the range has been enforced.
- *
- * See:
- * https://lore.kernel.org/linux-clk/7720158d-10a7-a17b-73a4-a8615c9c6d5c@collabora.com/
- */
+ 
 static void clk_test_orphan_transparent_parent_mux_set_range(struct kunit *test)
 {
 	struct clk_single_parent_ctx *ctx = test->priv;
@@ -1304,14 +1128,7 @@ static struct kunit_case clk_orphan_transparent_single_parent_mux_test_cases[] =
 	{}
 };
 
-/*
- * Test suite for a basic mux clock with one parent. The parent is
- * registered after its child. The clock will thus be an orphan when
- * registered, but will no longer be when the tests run.
- *
- * These tests make sure a clock that used to be orphan has a sane,
- * consistent, behaviour.
- */
+ 
 static struct kunit_suite clk_orphan_transparent_single_parent_test_suite = {
 	.name = "clk-orphan-transparent-single-parent-test",
 	.init = clk_orphan_transparent_single_parent_mux_test_init,
@@ -1375,10 +1192,7 @@ clk_orphan_two_level_root_last_test_exit(struct kunit *test)
 	clk_hw_unregister(&ctx->parent_parent_ctx.hw);
 }
 
-/*
- * Test that, for a clock whose parent used to be orphan, clk_get_rate()
- * will return the proper rate.
- */
+ 
 static void
 clk_orphan_two_level_root_last_test_get_rate(struct kunit *test)
 {
@@ -1393,14 +1207,7 @@ clk_orphan_two_level_root_last_test_get_rate(struct kunit *test)
 	clk_put(clk);
 }
 
-/*
- * Test that, for a clock whose parent used to be orphan,
- * clk_set_rate_range() won't affect its rate if it is already within
- * range.
- *
- * See (for Exynos 4210):
- * https://lore.kernel.org/linux-clk/366a0232-bb4a-c357-6aa8-636e398e05eb@samsung.com/
- */
+ 
 static void
 clk_orphan_two_level_root_last_test_set_range(struct kunit *test)
 {
@@ -1429,18 +1236,7 @@ clk_orphan_two_level_root_last_test_cases[] = {
 	{}
 };
 
-/*
- * Test suite for a basic, transparent, clock with a parent that is also
- * such a clock. The parent's parent is registered last, while the
- * parent and its child are registered in that order. The intermediate
- * and leaf clocks will thus be orphan when registered, but the leaf
- * clock itself will always have its parent and will never be
- * reparented. Indeed, it's only orphan because its parent is.
- *
- * These tests exercise the behaviour of the consumer API when dealing
- * with an orphan clock, and how we deal with the transition to a valid
- * parent.
- */
+ 
 static struct kunit_suite
 clk_orphan_two_level_root_last_test_suite = {
 	.name = "clk-orphan-two-level-root-last-test",
@@ -1449,11 +1245,7 @@ clk_orphan_two_level_root_last_test_suite = {
 	.test_cases = clk_orphan_two_level_root_last_test_cases,
 };
 
-/*
- * Test that clk_set_rate_range won't return an error for a valid range
- * and that it will make sure the rate of the clock is within the
- * boundaries.
- */
+ 
 static void clk_range_test_set_range(struct kunit *test)
 {
 	struct clk_dummy_context *ctx = test->priv;
@@ -1475,10 +1267,7 @@ static void clk_range_test_set_range(struct kunit *test)
 	clk_put(clk);
 }
 
-/*
- * Test that calling clk_set_rate_range with a minimum rate higher than
- * the maximum rate returns an error.
- */
+ 
 static void clk_range_test_set_range_invalid(struct kunit *test)
 {
 	struct clk_dummy_context *ctx = test->priv;
@@ -1494,10 +1283,7 @@ static void clk_range_test_set_range_invalid(struct kunit *test)
 	clk_put(clk);
 }
 
-/*
- * Test that users can't set multiple, disjoints, range that would be
- * impossible to meet.
- */
+ 
 static void clk_range_test_multiple_disjoints_range(struct kunit *test)
 {
 	struct clk_dummy_context *ctx = test->priv;
@@ -1522,10 +1308,7 @@ static void clk_range_test_multiple_disjoints_range(struct kunit *test)
 	clk_put(user1);
 }
 
-/*
- * Test that if our clock has some boundaries and we try to round a rate
- * lower than the minimum, the returned rate will be within range.
- */
+ 
 static void clk_range_test_set_range_round_rate_lower(struct kunit *test)
 {
 	struct clk_dummy_context *ctx = test->priv;
@@ -1547,10 +1330,7 @@ static void clk_range_test_set_range_round_rate_lower(struct kunit *test)
 	clk_put(clk);
 }
 
-/*
- * Test that if our clock has some boundaries and we try to set a rate
- * higher than the maximum, the new rate will be within range.
- */
+ 
 static void clk_range_test_set_range_set_rate_lower(struct kunit *test)
 {
 	struct clk_dummy_context *ctx = test->priv;
@@ -1576,12 +1356,7 @@ static void clk_range_test_set_range_set_rate_lower(struct kunit *test)
 	clk_put(clk);
 }
 
-/*
- * Test that if our clock has some boundaries and we try to round and
- * set a rate lower than the minimum, the rate returned by
- * clk_round_rate() will be consistent with the new rate set by
- * clk_set_rate().
- */
+ 
 static void clk_range_test_set_range_set_round_rate_consistent_lower(struct kunit *test)
 {
 	struct clk_dummy_context *ctx = test->priv;
@@ -1607,10 +1382,7 @@ static void clk_range_test_set_range_set_round_rate_consistent_lower(struct kuni
 	clk_put(clk);
 }
 
-/*
- * Test that if our clock has some boundaries and we try to round a rate
- * higher than the maximum, the returned rate will be within range.
- */
+ 
 static void clk_range_test_set_range_round_rate_higher(struct kunit *test)
 {
 	struct clk_dummy_context *ctx = test->priv;
@@ -1632,10 +1404,7 @@ static void clk_range_test_set_range_round_rate_higher(struct kunit *test)
 	clk_put(clk);
 }
 
-/*
- * Test that if our clock has some boundaries and we try to set a rate
- * higher than the maximum, the new rate will be within range.
- */
+ 
 static void clk_range_test_set_range_set_rate_higher(struct kunit *test)
 {
 	struct clk_dummy_context *ctx = test->priv;
@@ -1661,12 +1430,7 @@ static void clk_range_test_set_range_set_rate_higher(struct kunit *test)
 	clk_put(clk);
 }
 
-/*
- * Test that if our clock has some boundaries and we try to round and
- * set a rate higher than the maximum, the rate returned by
- * clk_round_rate() will be consistent with the new rate set by
- * clk_set_rate().
- */
+ 
 static void clk_range_test_set_range_set_round_rate_consistent_higher(struct kunit *test)
 {
 	struct clk_dummy_context *ctx = test->priv;
@@ -1692,14 +1456,7 @@ static void clk_range_test_set_range_set_round_rate_consistent_higher(struct kun
 	clk_put(clk);
 }
 
-/*
- * Test that if our clock has a rate lower than the minimum set by a
- * call to clk_set_rate_range(), the rate will be raised to match the
- * new minimum.
- *
- * This assumes that clk_ops.determine_rate or clk_ops.round_rate won't
- * modify the requested rate, which is our case in clk_dummy_rate_ops.
- */
+ 
 static void clk_range_test_set_range_get_rate_raised(struct kunit *test)
 {
 	struct clk_dummy_context *ctx = test->priv;
@@ -1724,14 +1481,7 @@ static void clk_range_test_set_range_get_rate_raised(struct kunit *test)
 	clk_put(clk);
 }
 
-/*
- * Test that if our clock has a rate higher than the maximum set by a
- * call to clk_set_rate_range(), the rate will be lowered to match the
- * new maximum.
- *
- * This assumes that clk_ops.determine_rate or clk_ops.round_rate won't
- * modify the requested rate, which is our case in clk_dummy_rate_ops.
- */
+ 
 static void clk_range_test_set_range_get_rate_lowered(struct kunit *test)
 {
 	struct clk_dummy_context *ctx = test->priv;
@@ -1771,12 +1521,7 @@ static struct kunit_case clk_range_test_cases[] = {
 	{}
 };
 
-/*
- * Test suite for a basic rate clock, without any parent.
- *
- * These tests exercise the rate range API: clk_set_rate_range(),
- * clk_set_min_rate(), clk_set_max_rate(), clk_drop_range().
- */
+ 
 static struct kunit_suite clk_range_test_suite = {
 	.name = "clk-range-test",
 	.init = clk_test_init,
@@ -1784,14 +1529,7 @@ static struct kunit_suite clk_range_test_suite = {
 	.test_cases = clk_range_test_cases,
 };
 
-/*
- * Test that if we have several subsequent calls to
- * clk_set_rate_range(), the core will reevaluate whether a new rate is
- * needed each and every time.
- *
- * With clk_dummy_maximize_rate_ops, this means that the rate will
- * trail along the maximum as it evolves.
- */
+ 
 static void clk_range_test_set_range_rate_maximized(struct kunit *test)
 {
 	struct clk_dummy_context *ctx = test->priv;
@@ -1836,14 +1574,7 @@ static void clk_range_test_set_range_rate_maximized(struct kunit *test)
 	clk_put(clk);
 }
 
-/*
- * Test that if we have several subsequent calls to
- * clk_set_rate_range(), across multiple users, the core will reevaluate
- * whether a new rate is needed each and every time.
- *
- * With clk_dummy_maximize_rate_ops, this means that the rate will
- * trail along the maximum as it evolves.
- */
+ 
 static void clk_range_test_multiple_set_range_rate_maximized(struct kunit *test)
 {
 	struct clk_dummy_context *ctx = test->priv;
@@ -1895,14 +1626,7 @@ static void clk_range_test_multiple_set_range_rate_maximized(struct kunit *test)
 	clk_put(clk);
 }
 
-/*
- * Test that if we have several subsequent calls to
- * clk_set_rate_range(), across multiple users, the core will reevaluate
- * whether a new rate is needed, including when a user drop its clock.
- *
- * With clk_dummy_maximize_rate_ops, this means that the rate will
- * trail along the maximum as it evolves.
- */
+ 
 static void clk_range_test_multiple_set_range_rate_put_maximized(struct kunit *test)
 {
 	struct clk_dummy_context *ctx = test->priv;
@@ -1958,13 +1682,7 @@ static struct kunit_case clk_range_maximize_test_cases[] = {
 	{}
 };
 
-/*
- * Test suite for a basic rate clock, without any parent.
- *
- * These tests exercise the rate range API: clk_set_rate_range(),
- * clk_set_min_rate(), clk_set_max_rate(), clk_drop_range(), with a
- * driver that will always try to run at the highest possible rate.
- */
+ 
 static struct kunit_suite clk_range_maximize_test_suite = {
 	.name = "clk-range-maximize-test",
 	.init = clk_maximize_test_init,
@@ -1972,14 +1690,7 @@ static struct kunit_suite clk_range_maximize_test_suite = {
 	.test_cases = clk_range_maximize_test_cases,
 };
 
-/*
- * Test that if we have several subsequent calls to
- * clk_set_rate_range(), the core will reevaluate whether a new rate is
- * needed each and every time.
- *
- * With clk_dummy_minimize_rate_ops, this means that the rate will
- * trail along the minimum as it evolves.
- */
+ 
 static void clk_range_test_set_range_rate_minimized(struct kunit *test)
 {
 	struct clk_dummy_context *ctx = test->priv;
@@ -2024,14 +1735,7 @@ static void clk_range_test_set_range_rate_minimized(struct kunit *test)
 	clk_put(clk);
 }
 
-/*
- * Test that if we have several subsequent calls to
- * clk_set_rate_range(), across multiple users, the core will reevaluate
- * whether a new rate is needed each and every time.
- *
- * With clk_dummy_minimize_rate_ops, this means that the rate will
- * trail along the minimum as it evolves.
- */
+ 
 static void clk_range_test_multiple_set_range_rate_minimized(struct kunit *test)
 {
 	struct clk_dummy_context *ctx = test->priv;
@@ -2079,14 +1783,7 @@ static void clk_range_test_multiple_set_range_rate_minimized(struct kunit *test)
 	clk_put(clk);
 }
 
-/*
- * Test that if we have several subsequent calls to
- * clk_set_rate_range(), across multiple users, the core will reevaluate
- * whether a new rate is needed, including when a user drop its clock.
- *
- * With clk_dummy_minimize_rate_ops, this means that the rate will
- * trail along the minimum as it evolves.
- */
+ 
 static void clk_range_test_multiple_set_range_rate_put_minimized(struct kunit *test)
 {
 	struct clk_dummy_context *ctx = test->priv;
@@ -2138,13 +1835,7 @@ static struct kunit_case clk_range_minimize_test_cases[] = {
 	{}
 };
 
-/*
- * Test suite for a basic rate clock, without any parent.
- *
- * These tests exercise the rate range API: clk_set_rate_range(),
- * clk_set_min_rate(), clk_set_max_rate(), clk_drop_range(), with a
- * driver that will always try to run at the lowest possible rate.
- */
+ 
 static struct kunit_suite clk_range_minimize_test_suite = {
 	.name = "clk-range-minimize-test",
 	.init = clk_minimize_test_init,
@@ -2213,11 +1904,7 @@ static void clk_leaf_mux_set_rate_parent_test_exit(struct kunit *test)
 	clk_hw_unregister(&ctx->mux_ctx.parents_ctx[1].hw);
 }
 
-/*
- * Test that, for a clock that will forward any rate request to its
- * parent, the rate request structure returned by __clk_determine_rate
- * is sane and will be what we expect.
- */
+ 
 static void clk_leaf_mux_set_rate_parent_determine_rate(struct kunit *test)
 {
 	struct clk_leaf_mux_ctx *ctx = test->priv;
@@ -2247,15 +1934,7 @@ static struct kunit_case clk_leaf_mux_set_rate_parent_test_cases[] = {
 	{}
 };
 
-/*
- * Test suite for a clock whose parent is a mux with multiple parents.
- * The leaf clock has CLK_SET_RATE_PARENT, and will forward rate
- * requests to the mux, which will then select which parent is the best
- * fit for a given rate.
- *
- * These tests exercise the behaviour of muxes, and the proper selection
- * of parents.
- */
+ 
 static struct kunit_suite clk_leaf_mux_set_rate_parent_test_suite = {
 	.name = "clk-leaf-mux-set-rate-parent",
 	.init = clk_leaf_mux_set_rate_parent_test_init,
@@ -2364,11 +2043,7 @@ static void clk_mux_notifier_test_exit(struct kunit *test)
 	clk_hw_unregister(&ctx->mux_ctx.parents_ctx[1].hw);
 }
 
-/*
- * Test that if the we have a notifier registered on a mux, the core
- * will notify us when we switch to another parent, and with the proper
- * old and new rates.
- */
+ 
 static void clk_mux_notifier_set_parent_test(struct kunit *test)
 {
 	struct clk_mux_notifier_ctx *ctx = test->priv;
@@ -2405,12 +2080,7 @@ static struct kunit_case clk_mux_notifier_test_cases[] = {
 	{}
 };
 
-/*
- * Test suite for a mux with multiple parents, and a notifier registered
- * on the mux.
- *
- * These tests exercise the behaviour of notifiers.
- */
+ 
 static struct kunit_suite clk_mux_notifier_test_suite = {
 	.name = "clk-mux-notifier",
 	.init = clk_mux_notifier_test_init,
@@ -2467,11 +2137,7 @@ clk_mux_no_reparent_test_exit(struct kunit *test)
 	clk_hw_unregister(&ctx->parents_ctx[1].hw);
 }
 
-/*
- * Test that if the we have a mux that cannot change parent and we call
- * clk_round_rate() on it with a rate that should cause it to change
- * parent, it won't.
- */
+ 
 static void clk_mux_no_reparent_round_rate(struct kunit *test)
 {
 	struct clk_multiple_parent_ctx *ctx = test->priv;
@@ -2503,11 +2169,7 @@ static void clk_mux_no_reparent_round_rate(struct kunit *test)
 	clk_put(clk);
 }
 
-/*
- * Test that if the we have a mux that cannot change parent and we call
- * clk_set_rate() on it with a rate that should cause it to change
- * parent, it won't.
- */
+ 
 static void clk_mux_no_reparent_set_rate(struct kunit *test)
 {
 	struct clk_multiple_parent_ctx *ctx = test->priv;
@@ -2549,13 +2211,7 @@ static struct kunit_case clk_mux_no_reparent_test_cases[] = {
 	{}
 };
 
-/*
- * Test suite for a clock mux that isn't allowed to change parent, using
- * the clk_hw_determine_rate_no_reparent() helper.
- *
- * These tests exercise that helper, and the proper selection of
- * rates and parents.
- */
+ 
 static struct kunit_suite clk_mux_no_reparent_test_suite = {
 	.name = "clk-mux-no-reparent",
 	.init = clk_mux_no_reparent_test_init,

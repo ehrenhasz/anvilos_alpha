@@ -1,26 +1,4 @@
-/*
- * Copyright 2018 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- */
+ 
 #include <linux/string.h>
 #include <linux/acpi.h>
 
@@ -301,7 +279,7 @@ bool dm_pp_get_clock_levels_by_type(
 
 	if (amdgpu_dpm_get_clock_by_type(adev,
 		dc_to_pp_clock_type(clk_type), &pp_clks)) {
-		/* Error in pplib. Provide default values. */
+		 
 		get_default_clock_levels(clk_type, dc_clks);
 		return true;
 	}
@@ -309,7 +287,7 @@ bool dm_pp_get_clock_levels_by_type(
 	pp_to_dc_clock_levels(&pp_clks, dc_clks, clk_type);
 
 	if (amdgpu_dpm_get_display_mode_validation_clks(adev, &validation_clks)) {
-		/* Error in pplib. Provide default values. */
+		 
 		DRM_INFO("DM_PPLIB: Warning: using default validation clocks!\n");
 		validation_clks.engine_max_clock = 72000;
 		validation_clks.memory_max_clock = 80000;
@@ -324,18 +302,15 @@ bool dm_pp_get_clock_levels_by_type(
 	DRM_INFO("DM_PPLIB:    level           : %d\n",
 			validation_clks.level);
 
-	/* Translate 10 kHz to kHz. */
+	 
 	validation_clks.engine_max_clock *= 10;
 	validation_clks.memory_max_clock *= 10;
 
-	/* Determine the highest non-boosted level from the Validation Clocks */
+	 
 	if (clk_type == DM_PP_CLOCK_TYPE_ENGINE_CLK) {
 		for (i = 0; i < dc_clks->num_levels; i++) {
 			if (dc_clks->clocks_in_khz[i] > validation_clks.engine_max_clock) {
-				/* This clock is higher the validation clock.
-				 * Than means the previous one is the highest
-				 * non-boosted one.
-				 */
+				 
 				DRM_INFO("DM_PPLIB: reducing engine clock level from %d to %d\n",
 						dc_clks->num_levels, i);
 				dc_clks->num_levels = i > 0 ? i : 1;
@@ -402,10 +377,7 @@ bool dm_pp_notify_wm_clock_changes(
 {
 	struct amdgpu_device *adev = ctx->driver_context;
 
-	/*
-	 * Limit this watermark setting for Polaris for now
-	 * TODO: expand this to other ASICs
-	 */
+	 
 	if ((adev->asic_type >= CHIP_POLARIS10) &&
 	    (adev->asic_type <= CHIP_VEGAM) &&
 	    !amdgpu_dpm_set_watermarks_for_clocks_ranges(adev,
@@ -419,7 +391,7 @@ bool dm_pp_apply_power_level_change_request(
 	const struct dc_context *ctx,
 	struct dm_pp_power_level_change_request *level_change_req)
 {
-	/* TODO: to be implemented */
+	 
 	return false;
 }
 
@@ -571,7 +543,7 @@ static enum pp_smu_status pp_nv_set_display_count(struct pp_smu *pp, int count)
 	if (ret == -EOPNOTSUPP)
 		return PP_SMU_RESULT_UNSUPPORTED;
 	else if (ret)
-		/* 0: successful or smu.ppt_funcs->set_display_count = NULL;  1: fail */
+		 
 		return PP_SMU_RESULT_FAIL;
 
 	return PP_SMU_RESULT_OK;
@@ -584,7 +556,7 @@ pp_nv_set_min_deep_sleep_dcfclk(struct pp_smu *pp, int mhz)
 	struct amdgpu_device *adev = ctx->driver_context;
 	int ret = 0;
 
-	/* 0: successful or smu.ppt_funcs->set_deep_sleep_dcefclk = NULL;1: fail */
+	 
 	ret = amdgpu_dpm_set_min_deep_sleep_dcefclk(adev, mhz);
 	if (ret == -EOPNOTSUPP)
 		return PP_SMU_RESULT_UNSUPPORTED;
@@ -605,9 +577,7 @@ static enum pp_smu_status pp_nv_set_hard_min_dcefclk_by_freq(
 	clock_req.clock_type = amd_pp_dcef_clock;
 	clock_req.clock_freq_in_khz = mhz * 1000;
 
-	/* 0: successful or smu.ppt_funcs->display_clock_voltage_request = NULL
-	 * 1: fail
-	 */
+	 
 	ret = amdgpu_dpm_display_clock_voltage_request(adev, &clock_req);
 	if (ret == -EOPNOTSUPP)
 		return PP_SMU_RESULT_UNSUPPORTED;
@@ -628,9 +598,7 @@ pp_nv_set_hard_min_uclk_by_freq(struct pp_smu *pp, int mhz)
 	clock_req.clock_type = amd_pp_mem_clock;
 	clock_req.clock_freq_in_khz = mhz * 1000;
 
-	/* 0: successful or smu.ppt_funcs->display_clock_voltage_request = NULL
-	 * 1: fail
-	 */
+	 
 	ret = amdgpu_dpm_display_clock_voltage_request(adev, &clock_req);
 	if (ret == -EOPNOTSUPP)
 		return PP_SMU_RESULT_UNSUPPORTED;
@@ -676,9 +644,7 @@ static enum pp_smu_status pp_nv_set_voltage_by_freq(struct pp_smu *pp,
 	}
 	clock_req.clock_freq_in_khz = mhz * 1000;
 
-	/* 0: successful or smu.ppt_funcs->display_clock_voltage_request = NULL
-	 * 1: fail
-	 */
+	 
 	ret = amdgpu_dpm_display_clock_voltage_request(adev, &clock_req);
 	if (ret == -EOPNOTSUPP)
 		return PP_SMU_RESULT_UNSUPPORTED;
@@ -782,13 +748,13 @@ void dm_pp_get_funcs(
 				pp_nv_set_voltage_by_freq;
 		funcs->nv_funcs.set_wm_ranges = pp_nv_set_wm_ranges;
 
-		/* todo set_pme_wa_enable cause 4k@6ohz display not light up */
+		 
 		funcs->nv_funcs.set_pme_wa_enable = NULL;
-		/* todo debug waring message */
+		 
 		funcs->nv_funcs.set_hard_min_uclk_by_freq = pp_nv_set_hard_min_uclk_by_freq;
-		/* todo  compare data with window driver*/
+		 
 		funcs->nv_funcs.get_maximum_sustainable_clocks = pp_nv_get_maximum_sustainable_clocks;
-		/*todo  compare data with window driver */
+		 
 		funcs->nv_funcs.get_uclk_dpm_states = pp_nv_get_uclk_dpm_states;
 		funcs->nv_funcs.set_pstate_handshake_support = pp_nv_set_pstate_handshake_support;
 		break;

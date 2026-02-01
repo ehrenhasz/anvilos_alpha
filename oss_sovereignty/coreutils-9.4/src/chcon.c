@@ -1,65 +1,32 @@
-/* chcon -- change security context of files
-   Copyright (C) 2005-2023 Free Software Foundation, Inc.
-
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-#include <config.h>
-#include <stdio.h>
-#include <sys/types.h>
-#include <getopt.h>
-#include <selinux/selinux.h>
-
-#include "system.h"
-#include "dev-ino.h"
-#include "ignore-value.h"
-#include "quote.h"
-#include "root-dev-ino.h"
-#include "selinux-at.h"
-#include "xfts.h"
-
-/* The official name of this program (e.g., no 'g' prefix).  */
+ 
 #define PROGRAM_NAME "chcon"
 
 #define AUTHORS \
   proper_name ("Russell Coker"), \
   proper_name ("Jim Meyering")
 
-/* If nonzero, and the systems has support for it, change the context
-   of symbolic links rather than any files they point to.  */
+ 
 static bool affect_symlink_referent;
 
-/* If true, change the modes of directories recursively. */
+ 
 static bool recurse;
 
-/* Level of verbosity. */
+ 
 static bool verbose;
 
-/* Pointer to the device and inode numbers of '/', when --recursive.
-   Otherwise nullptr.  */
+ 
 static struct dev_ino *root_dev_ino;
 
-/* The name of the context file is being given. */
+ 
 static char const *specified_context;
 
-/* Specific components of the context */
+ 
 static char const *specified_user;
 static char const *specified_role;
 static char const *specified_range;
 static char const *specified_type;
 
-/* For long options that have no equivalent short option, use a
-   non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
+ 
 enum
 {
   DEREFERENCE_OPTION = CHAR_MAX + 1,
@@ -86,9 +53,7 @@ static struct option const long_options[] =
   {nullptr, 0, nullptr, 0}
 };
 
-/* Given a security context, CONTEXT, derive a context_t (*RET),
-   setting any portions selected via the global variables, specified_user,
-   specified_role, etc.  */
+ 
 static int
 compute_context_from_mask (char const *context, context_t *ret)
 {
@@ -132,9 +97,7 @@ compute_context_from_mask (char const *context, context_t *ret)
   return 0;
 }
 
-/* Change the context of FILE, using specified components.
-   If it is a directory and -R is given, recurse.
-   Return 0 if successful, 1 if errors occurred. */
+ 
 
 static int
 change_file_context (int fd, char const *file)
@@ -157,9 +120,7 @@ change_file_context (int fd, char const *file)
           return 1;
         }
 
-      /* If the file doesn't have a context, and we're not setting all of
-         the context components, there isn't really an obvious default.
-         Thus, we just give up. */
+       
       if (file_context == nullptr)
         {
           error (0, 0, _("can't apply partial context to unlabeled file %s"),
@@ -200,9 +161,7 @@ change_file_context (int fd, char const *file)
   return errors;
 }
 
-/* Change the context of FILE.
-   Return true if successful.  This function is called
-   once for every file system object that fts encounters.  */
+ 
 
 static bool
 process_file (FTS *fts, FTSENT *ent)
@@ -219,12 +178,11 @@ process_file (FTS *fts, FTSENT *ent)
         {
           if (ROOT_DEV_INO_CHECK (root_dev_ino, ent->fts_statp))
             {
-              /* This happens e.g., with "chcon -R --preserve-root ... /"
-                 and with "chcon -RH --preserve-root ... symlink-to-root".  */
+               
               ROOT_DEV_INO_WARN (file_full_name);
-              /* Tell fts not to traverse into this hierarchy.  */
+               
               fts_set (fts, ent, FTS_SKIP);
-              /* Ensure that we do not process "/" on the second visit.  */
+               
               ignore_value (fts_read (fts));
               return false;
             }
@@ -238,13 +196,7 @@ process_file (FTS *fts, FTSENT *ent)
       break;
 
     case FTS_NS:
-      /* For a top-level file or directory, this FTS_NS (stat failed)
-         indicator is determined at the time of the initial fts_open call.
-         With programs like chmod, chown, and chgrp, that modify
-         permissions, it is possible that the file in question is
-         accessible when control reaches this point.  So, if this is
-         the first time we've seen the FTS_NS for this file, tell
-         fts_read to stat it "again".  */
+       
       if (ent->fts_level == 0 && ent->fts_number == 0)
         {
           ent->fts_number = 1;
@@ -267,7 +219,7 @@ process_file (FTS *fts, FTSENT *ent)
       ok = false;
       break;
 
-    case FTS_DC:		/* directory that causes cycles */
+    case FTS_DC:		 
       if (cycle_warning_required (fts, ent))
         {
           emit_cycle_warning (file_full_name);
@@ -302,9 +254,7 @@ process_file (FTS *fts, FTSENT *ent)
   return ok;
 }
 
-/* Recursively operate on the specified FILES (the last entry
-   of which is null).  BIT_FLAGS controls how fts works.
-   Return true if successful.  */
+ 
 
 static bool
 process_files (char **files, int bit_flags)
@@ -322,7 +272,7 @@ process_files (char **files, int bit_flags)
         {
           if (errno != 0)
             {
-              /* FIXME: try to give a better message  */
+               
               error (0, errno, _("fts_read failed"));
               ok = false;
             }

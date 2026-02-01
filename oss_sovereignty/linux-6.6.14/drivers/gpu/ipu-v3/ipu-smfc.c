@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright 2008-2010 Freescale Semiconductor, Inc. All Rights Reserved.
- */
+
+ 
 #include <linux/export.h>
 #include <linux/types.h>
 #include <linux/init.h>
@@ -28,7 +26,7 @@ struct ipu_smfc_priv {
 	int use_count;
 };
 
-/*SMFC Registers */
+ 
 #define SMFC_MAP	0x0000
 #define SMFC_WMC	0x0004
 #define SMFC_BS		0x0008

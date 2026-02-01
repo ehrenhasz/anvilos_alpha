@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
+ 
 #ifndef _ASM_X86_PERF_REGS_H
 #define _ASM_X86_PERF_REGS_H
 
@@ -27,11 +27,11 @@ enum perf_event_x86_regs {
 	PERF_REG_X86_R13,
 	PERF_REG_X86_R14,
 	PERF_REG_X86_R15,
-	/* These are the limits for the GPRs. */
+	 
 	PERF_REG_X86_32_MAX = PERF_REG_X86_GS + 1,
 	PERF_REG_X86_64_MAX = PERF_REG_X86_R15 + 1,
 
-	/* These all need two bits set because they are 128bit */
+	 
 	PERF_REG_X86_XMM0  = 32,
 	PERF_REG_X86_XMM1  = 34,
 	PERF_REG_X86_XMM2  = 36,
@@ -49,10 +49,10 @@ enum perf_event_x86_regs {
 	PERF_REG_X86_XMM14 = 60,
 	PERF_REG_X86_XMM15 = 62,
 
-	/* These include both GPRs and XMMX registers */
+	 
 	PERF_REG_X86_XMM_MAX = PERF_REG_X86_XMM15 + 2,
 };
 
 #define PERF_REG_EXTENDED_MASK	(~((1ULL << PERF_REG_X86_XMM0) - 1))
 
-#endif /* _ASM_X86_PERF_REGS_H */
+#endif  

@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Driver for Renesas R-Car VIN
- *
- * Copyright (C) 2016 Renesas Electronics Corp.
- * Copyright (C) 2011-2013 Renesas Solutions Corp.
- * Copyright (C) 2013 Cogent Embedded, Inc., <source@cogentembedded.com>
- * Copyright (C) 2008 Magnus Damm
- *
- * Based on the soc-camera rcar_vin driver
- */
+
+ 
 
 #include <linux/pm_runtime.h>
 
@@ -25,9 +16,7 @@
 #define RVIN_DEFAULT_FIELD	V4L2_FIELD_NONE
 #define RVIN_DEFAULT_COLORSPACE	V4L2_COLORSPACE_SRGB
 
-/* -----------------------------------------------------------------------------
- * Format Conversions
- */
+ 
 
 static const struct rvin_video_format rvin_formats[] = {
 	{
@@ -99,10 +88,7 @@ const struct rvin_video_format *rvin_format_from_pixel(struct rvin_dev *vin,
 			return NULL;
 		break;
 	case V4L2_PIX_FMT_NV12:
-		/*
-		 * If NV12 is supported it's only supported on channels 0, 1, 4,
-		 * 5, 8, 9, 12 and 13.
-		 */
+		 
 		if (!vin->info->nv12 || !(BIT(vin->id) & 0x3333))
 			return NULL;
 		break;
@@ -179,25 +165,25 @@ static void rvin_format_align(struct rvin_dev *vin, struct v4l2_pix_format *pix)
 		break;
 	}
 
-	/* Hardware limits width alignment based on format. */
+	 
 	switch (pix->pixelformat) {
-	/* Multiple of 32 (2^5) for NV12/16. */
+	 
 	case V4L2_PIX_FMT_NV12:
 	case V4L2_PIX_FMT_NV16:
 		walign = 5;
 		break;
-	/* Multiple of 2 (2^1) for YUV. */
+	 
 	case V4L2_PIX_FMT_YUYV:
 	case V4L2_PIX_FMT_UYVY:
 		walign = 1;
 		break;
-	/* No multiple for RGB. */
+	 
 	default:
 		walign = 0;
 		break;
 	}
 
-	/* Limit to VIN capabilities */
+	 
 	v4l_bound_align_image(&pix->width, 5, vin->info->max_width, walign,
 			      &pix->height, 2, vin->info->max_height, 0, 0);
 
@@ -208,9 +194,7 @@ static void rvin_format_align(struct rvin_dev *vin, struct v4l2_pix_format *pix)
 		pix->width, pix->height, pix->bytesperline, pix->sizeimage);
 }
 
-/* -----------------------------------------------------------------------------
- * V4L2
- */
+ 
 
 static int rvin_reset_format(struct rvin_dev *vin)
 {
@@ -231,7 +215,7 @@ static int rvin_reset_format(struct rvin_dev *vin)
 	vin->crop.width = vin->format.width;
 	vin->crop.height = vin->format.height;
 
-	/*  Make use of the hardware interlacer by default. */
+	 
 	if (vin->format.field == V4L2_FIELD_ALTERNATE) {
 		vin->format.field = V4L2_FIELD_INTERLACED;
 		vin->format.height *= 2;
@@ -262,10 +246,7 @@ static int rvin_try_format(struct rvin_dev *vin, u32 which,
 	u32 width, height;
 	int ret;
 
-	/*
-	 * FIXME: Drop this call, drivers are not supposed to use
-	 * __v4l2_subdev_state_alloc().
-	 */
+	 
 	sd_state = __v4l2_subdev_state_alloc(sd, "rvin:state->lock", &key);
 	if (IS_ERR(sd_state))
 		return PTR_ERR(sd_state);
@@ -275,7 +256,7 @@ static int rvin_try_format(struct rvin_dev *vin, u32 which,
 
 	v4l2_fill_mbus_format(&format.format, pix, vin->mbus_code);
 
-	/* Allow the video device to override field and to scale */
+	 
 	field = pix->field;
 	width = pix->width;
 	height = pix->height;
@@ -368,17 +349,7 @@ static int rvin_enum_fmt_vid_cap(struct file *file, void *priv,
 	unsigned int i;
 	int matched;
 
-	/*
-	 * If mbus_code is set only enumerate supported pixel formats for that
-	 * bus code. Converting from YCbCr to RGB and RGB to YCbCr is possible
-	 * with VIN, so all supported YCbCr and RGB media bus codes can produce
-	 * all of the related pixel formats. If mbus_code is not set enumerate
-	 * all possible pixelformats.
-	 *
-	 * TODO: Once raw MEDIA_BUS_FMT_SRGGB12_1X12 format is added to the
-	 * driver this needs to be extended so raw media bus code only result in
-	 * raw pixel format.
-	 */
+	 
 	switch (f->mbus_code) {
 	case 0:
 	case MEDIA_BUS_FMT_YUYV8_1X16:
@@ -533,7 +504,7 @@ static int rvin_s_selection(struct file *file, void *fh,
 
 	switch (s->target) {
 	case V4L2_SEL_TGT_CROP:
-		/* Can't crop outside of source input */
+		 
 		ret = rvin_remote_rectangle(vin, &max_rect);
 		if (ret)
 			return ret;
@@ -553,17 +524,13 @@ static int rvin_s_selection(struct file *file, void *fh,
 			max_rect.width, max_rect.height);
 		break;
 	case V4L2_SEL_TGT_COMPOSE:
-		/* Make sure compose rect fits inside output format */
+		 
 		max_rect.top = max_rect.left = 0;
 		max_rect.width = vin->format.width;
 		max_rect.height = vin->format.height;
 		v4l2_rect_map_inside(&r, &max_rect);
 
-		/*
-		 * Composing is done by adding a offset to the buffer address,
-		 * the HW wants this address to be aligned to HW_BUFFER_MASK.
-		 * Make sure the top and left values meets this requirement.
-		 */
+		 
 		while ((r.top * vin->format.bytesperline) & HW_BUFFER_MASK)
 			r.top--;
 
@@ -581,7 +548,7 @@ static int rvin_s_selection(struct file *file, void *fh,
 		return -EINVAL;
 	}
 
-	/* HW supports modifying configuration while running */
+	 
 	rvin_crop_scale_comp(vin);
 
 	return 0;
@@ -678,7 +645,7 @@ static int rvin_s_std(struct file *file, void *priv, v4l2_std_id a)
 
 	vin->std = a;
 
-	/* Changing the standard will change the width/height */
+	 
 	return rvin_reset_format(vin);
 }
 
@@ -734,7 +701,7 @@ static int rvin_s_dv_timings(struct file *file, void *priv_fh,
 	if (ret)
 		return ret;
 
-	/* Changing the timings will change the width/height */
+	 
 	return rvin_reset_format(vin);
 }
 
@@ -858,19 +825,12 @@ static const struct v4l2_ioctl_ops rvin_ioctl_ops = {
 	.vidioc_unsubscribe_event	= v4l2_event_unsubscribe,
 };
 
-/* -----------------------------------------------------------------------------
- * V4L2 Media Controller
- */
+ 
 
 static void rvin_mc_try_format(struct rvin_dev *vin,
 			       struct v4l2_pix_format *pix)
 {
-	/*
-	 * The V4L2 specification clearly documents the colorspace fields
-	 * as being set by drivers for capture devices. Using the values
-	 * supplied by userspace thus wouldn't comply with the API. Until
-	 * the API is updated force fixed values.
-	 */
+	 
 	pix->colorspace = RVIN_DEFAULT_COLORSPACE;
 	pix->xfer_func = V4L2_MAP_XFER_FUNC_DEFAULT(pix->colorspace);
 	pix->ycbcr_enc = V4L2_MAP_YCBCR_ENC_DEFAULT(pix->colorspace);
@@ -936,9 +896,7 @@ static const struct v4l2_ioctl_ops rvin_mc_ioctl_ops = {
 	.vidioc_unsubscribe_event	= v4l2_event_unsubscribe,
 };
 
-/* -----------------------------------------------------------------------------
- * File Operations
- */
+ 
 
 static int rvin_power_parallel(struct rvin_dev *vin, bool on)
 {
@@ -1010,10 +968,10 @@ static int rvin_release(struct file *file)
 
 	mutex_lock(&vin->lock);
 
-	/* Save the singular status before we call the clean-up helper */
+	 
 	fh_singular = v4l2_fh_is_singular_file(file);
 
-	/* the release helper will cleanup any on-going streaming */
+	 
 	ret = _vb2_fop_release(file, NULL);
 
 	if (vin->info->use_mc) {
@@ -1048,7 +1006,7 @@ void rvin_v4l2_unregister(struct rvin_dev *vin)
 	v4l2_info(&vin->v4l2_dev, "Removing %s\n",
 		  video_device_node_name(&vin->vdev));
 
-	/* Checks internally if vdev have been init or not */
+	 
 	video_unregister_device(&vin->vdev);
 }
 
@@ -1074,7 +1032,7 @@ static void rvin_notify(struct v4l2_subdev *sd,
 		container_of(sd->v4l2_dev, struct rvin_dev, v4l2_dev);
 	unsigned int i;
 
-	/* If no media controller, no need to route the event. */
+	 
 	if (!vin->info->use_mc) {
 		rvin_notify_video_device(vin, notification, arg);
 		return;
@@ -1106,7 +1064,7 @@ int rvin_v4l2_register(struct rvin_dev *vin)
 
 	vin->v4l2_dev.notify = rvin_notify;
 
-	/* video node */
+	 
 	vdev->v4l2_dev = &vin->v4l2_dev;
 	vdev->queue = &vin->queue;
 	snprintf(vdev->name, sizeof(vdev->name), "VIN%u output", vin->id);
@@ -1116,7 +1074,7 @@ int rvin_v4l2_register(struct rvin_dev *vin)
 	vdev->device_caps = V4L2_CAP_VIDEO_CAPTURE | V4L2_CAP_STREAMING |
 		V4L2_CAP_READWRITE;
 
-	/* Set a default format */
+	 
 	vin->format.pixelformat	= RVIN_DEFAULT_FORMAT;
 	vin->format.width = RVIN_DEFAULT_WIDTH;
 	vin->format.height = RVIN_DEFAULT_HEIGHT;

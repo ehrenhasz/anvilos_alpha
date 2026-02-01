@@ -1,10 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-// Copyright (c) 2020 Intel Corporation
 
-/*
- * ehl_rt5660 - ASOC Machine driver for Elkhart Lake platforms
- * with rt5660 codec
- */
+
+
+ 
 
 #include <linux/acpi.h>
 #include <sound/core.h>
@@ -36,7 +33,7 @@ struct sof_card_private {
 
 static const struct snd_kcontrol_new rt5660_controls[] = {
 	SOC_DAPM_PIN_SWITCH("Speaker"),
-	/* There are two MICBIAS in rt5660, each for one MIC */
+	 
 	SOC_DAPM_PIN_SWITCH("Headset Mic"),
 	SOC_DAPM_PIN_SWITCH("Headset Mic2"),
 	SOC_DAPM_PIN_SWITCH("Line Out"),
@@ -81,7 +78,7 @@ static int hdmi_init(struct snd_soc_pcm_runtime *rtd)
 	if (!pcm)
 		return -ENOMEM;
 
-	/* dai_link id is 1:1 mapped to the PCM device */
+	 
 	pcm->device = rtd->dai_link->id;
 	pcm->codec_dai = dai;
 
@@ -173,7 +170,7 @@ SND_SOC_DAILINK_DEF(idisp4_codec,
 	DAILINK_COMP_ARRAY(COMP_CODEC("ehdaudio0D2", "intel-hdmi-hifi4")));
 
 static struct snd_soc_dai_link ehl_rt5660_dailink[] = {
-	/* back ends */
+	 
 	{
 		.name = "SSP0-Codec",
 		.id = 0,
@@ -233,7 +230,7 @@ static struct snd_soc_dai_link ehl_rt5660_dailink[] = {
 	},
 };
 
-/* SoC card */
+ 
 static struct snd_soc_card snd_soc_card_ehl_rt5660 = {
 	.name = "ehl-rt5660",
 	.owner = THIS_MODULE,
@@ -249,7 +246,7 @@ static struct snd_soc_card snd_soc_card_ehl_rt5660 = {
 	.late_probe = card_late_probe,
 };
 
-/* If hdmi codec is not supported, switch to use dummy codec */
+ 
 static void hdmi_link_init(struct snd_soc_card *card,
 			   struct sof_card_private *ctx,
 			   struct snd_soc_acpi_mach *mach)
@@ -262,10 +259,7 @@ static void hdmi_link_init(struct snd_soc_card *card,
 		return;
 	}
 
-	/*
-	 * if HDMI is not enabled in kernel config, or
-	 * hdmi codec is not supported
-	 */
+	 
 	for (i = HDMI_LINK_START; i <= HDMI_LINE_END; i++)
 		card->dai_link[i].codecs[0] = asoc_dummy_dlc;
 }

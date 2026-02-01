@@ -1,31 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*****************************************************************************
- *                                                                           *
- * File: subr.c                                                              *
- * $Revision: 1.27 $                                                         *
- * $Date: 2005/06/22 01:08:36 $                                              *
- * Description:                                                              *
- *  Various subroutines (intr,pio,etc.) used by Chelsio 10G Ethernet driver. *
- *  part of the Chelsio 10Gb Ethernet Driver.                                *
- *                                                                           *
- *                                                                           *
- * http://www.chelsio.com                                                    *
- *                                                                           *
- * Copyright (c) 2003 - 2005 Chelsio Communications, Inc.                    *
- * All rights reserved.                                                      *
- *                                                                           *
- * Maintainers: maintainers@chelsio.com                                      *
- *                                                                           *
- * Authors: Dimitrios Michailidis   <dm@chelsio.com>                         *
- *          Tina Yang               <tainay@chelsio.com>                     *
- *          Felix Marti             <felix@chelsio.com>                      *
- *          Scott Bardone           <sbardone@chelsio.com>                   *
- *          Kurt Ottaway            <kottaway@chelsio.com>                   *
- *          Frank DiMambro          <frank@chelsio.com>                      *
- *                                                                           *
- * History:                                                                  *
- *                                                                           *
- ****************************************************************************/
+
+ 
 
 #include "common.h"
 #include "elmer0.h"
@@ -36,19 +10,7 @@
 #include "tp.h"
 #include "espi.h"
 
-/**
- *	t1_wait_op_done - wait until an operation is completed
- *	@adapter: the adapter performing the operation
- *	@reg: the register to check for completion
- *	@mask: a single-bit field within @reg that indicates completion
- *	@polarity: the value of the field when the operation is completed
- *	@attempts: number of check iterations
- *      @delay: delay in usecs between iterations
- *
- *	Wait until an operation is completed by checking a bit in a register
- *	up to @attempts times.  Returns %0 if the operation completes and %1
- *	otherwise.
- */
+ 
 static int t1_wait_op_done(adapter_t *adapter, int reg, u32 mask, int polarity,
 			   int attempts, int delay)
 {
@@ -66,9 +28,7 @@ static int t1_wait_op_done(adapter_t *adapter, int reg, u32 mask, int polarity,
 
 #define TPI_ATTEMPTS 50
 
-/*
- * Write a register over the TPI interface (unlocked and locked versions).
- */
+ 
 int __t1_tpi_write(adapter_t *adapter, u32 addr, u32 value)
 {
 	int tpi_busy;
@@ -95,9 +55,7 @@ int t1_tpi_write(adapter_t *adapter, u32 addr, u32 value)
 	return ret;
 }
 
-/*
- * Read a register over the TPI interface (unlocked and locked versions).
- */
+ 
 int __t1_tpi_read(adapter_t *adapter, u32 addr, u32 *valp)
 {
 	int tpi_busy;
@@ -125,19 +83,13 @@ int t1_tpi_read(adapter_t *adapter, u32 addr, u32 *valp)
 	return ret;
 }
 
-/*
- * Set a TPI parameter.
- */
+ 
 static void t1_tpi_par(adapter_t *adapter, u32 value)
 {
 	writel(V_TPIPAR(value), adapter->regs + A_TPI_PAR);
 }
 
-/*
- * Called when a port's link settings change to propagate the new values to the
- * associated PHY and MAC.  After performing the common tasks it invokes an
- * OS-specific handler.
- */
+ 
 void t1_link_changed(adapter_t *adapter, int port_id)
 {
 	int link_ok, speed, duplex, fc;
@@ -152,7 +104,7 @@ void t1_link_changed(adapter_t *adapter, int port_id)
 		fc = lc->requested_fc & (PAUSE_RX | PAUSE_TX);
 
 	if (link_ok && speed >= 0 && lc->autoneg == AUTONEG_ENABLE) {
-		/* Set MAC speed, duplex, and flow control to match PHY. */
+		 
 		struct cmac *mac = adapter->port[port_id].mac;
 
 		mac->ops->set_speed_duplex_fc(mac, speed, duplex, fc);
@@ -170,7 +122,7 @@ static bool t1_pci_intr_handler(adapter_t *adapter)
 	if (pcix_cause) {
 		pci_write_config_dword(adapter->pdev, A_PCICFG_INTR_CAUSE,
 				       pcix_cause);
-		/* PCI errors are fatal */
+		 
 		t1_interrupts_disable(adapter);
 		adapter->pending_thread_intr |= F_PL_INTR_SGE_ERR;
 		pr_alert("%s: PCI error encountered.\n", adapter->name);
@@ -182,9 +134,7 @@ static bool t1_pci_intr_handler(adapter_t *adapter)
 #ifdef CONFIG_CHELSIO_T1_1G
 #include "fpga_defs.h"
 
-/*
- * PHY interrupt handler for FPGA boards.
- */
+ 
 static int fpga_phy_intr_handler(adapter_t *adapter)
 {
 	int p;
@@ -202,9 +152,7 @@ static int fpga_phy_intr_handler(adapter_t *adapter)
 	return 0;
 }
 
-/*
- * Slow path interrupt handler for FPGAs.
- */
+ 
 static irqreturn_t fpga_slow_intr(adapter_t *adapter)
 {
 	u32 cause = readl(adapter->regs + A_PL_CAUSE);
@@ -220,13 +168,10 @@ static irqreturn_t fpga_slow_intr(adapter_t *adapter)
 		fpga_phy_intr_handler(adapter);
 
 	if (cause & FPGA_PCIX_INTERRUPT_TP) {
-		/*
-		 * FPGA doesn't support MC4 interrupts and it requires
-		 * this odd layer of indirection for MC5.
-		 */
+		 
 		u32 tp_cause = readl(adapter->regs + FPGA_TP_ADDR_INTERRUPT_CAUSE);
 
-		/* Clear TP interrupt */
+		 
 		writel(tp_cause, adapter->regs + FPGA_TP_ADDR_INTERRUPT_CAUSE);
 	}
 	if (cause & FPGA_PCIX_INTERRUPT_PCIX) {
@@ -234,7 +179,7 @@ static irqreturn_t fpga_slow_intr(adapter_t *adapter)
 			ret = IRQ_WAKE_THREAD;
 	}
 
-	/* Clear the interrupts just processed. */
+	 
 	if (cause)
 		writel(cause, adapter->regs + A_PL_CAUSE);
 
@@ -245,9 +190,7 @@ static irqreturn_t fpga_slow_intr(adapter_t *adapter)
 }
 #endif
 
-/*
- * Wait until Elmer's MI1 interface is ready for new operations.
- */
+ 
 static int mi1_wait_until_ready(adapter_t *adapter, int mi1_reg)
 {
 	int attempts = 100, busy;
@@ -265,9 +208,7 @@ static int mi1_wait_until_ready(adapter_t *adapter, int mi1_reg)
 	return busy;
 }
 
-/*
- * MI1 MDIO initialization.
- */
+ 
 static void mi1_mdio_init(adapter_t *adapter, const struct board_info *bi)
 {
 	u32 clkdiv = bi->clock_elmer0 / (2 * bi->mdio_mdc) - 1;
@@ -280,9 +221,7 @@ static void mi1_mdio_init(adapter_t *adapter, const struct board_info *bi)
 }
 
 #if defined(CONFIG_CHELSIO_T1_1G)
-/*
- * Elmer MI1 MDIO read/write operations.
- */
+ 
 static int mi1_mdio_read(struct net_device *dev, int phy_addr, int mmd_addr,
 			 u16 reg_addr)
 {
@@ -334,19 +273,19 @@ static int mi1_mdio_ext_read(struct net_device *dev, int phy_addr, int mmd_addr,
 
 	spin_lock(&adapter->tpi_lock);
 
-	/* Write the address we want. */
+	 
 	__t1_tpi_write(adapter, A_ELMER0_PORT0_MI1_ADDR, addr);
 	__t1_tpi_write(adapter, A_ELMER0_PORT0_MI1_DATA, reg_addr);
 	__t1_tpi_write(adapter, A_ELMER0_PORT0_MI1_OP,
 		       MI1_OP_INDIRECT_ADDRESS);
 	mi1_wait_until_ready(adapter, A_ELMER0_PORT0_MI1_OP);
 
-	/* Write the operation we want. */
+	 
 	__t1_tpi_write(adapter,
 			A_ELMER0_PORT0_MI1_OP, MI1_OP_INDIRECT_READ);
 	mi1_wait_until_ready(adapter, A_ELMER0_PORT0_MI1_OP);
 
-	/* Read the data. */
+	 
 	__t1_tpi_read(adapter, A_ELMER0_PORT0_MI1_DATA, &val);
 	spin_unlock(&adapter->tpi_lock);
 	return val;
@@ -360,14 +299,14 @@ static int mi1_mdio_ext_write(struct net_device *dev, int phy_addr,
 
 	spin_lock(&adapter->tpi_lock);
 
-	/* Write the address we want. */
+	 
 	__t1_tpi_write(adapter, A_ELMER0_PORT0_MI1_ADDR, addr);
 	__t1_tpi_write(adapter, A_ELMER0_PORT0_MI1_DATA, reg_addr);
 	__t1_tpi_write(adapter, A_ELMER0_PORT0_MI1_OP,
 		       MI1_OP_INDIRECT_ADDRESS);
 	mi1_wait_until_ready(adapter, A_ELMER0_PORT0_MI1_OP);
 
-	/* Write the data. */
+	 
 	__t1_tpi_write(adapter, A_ELMER0_PORT0_MI1_DATA, val);
 	__t1_tpi_write(adapter, A_ELMER0_PORT0_MI1_OP, MI1_OP_INDIRECT_WRITE);
 	mi1_wait_until_ready(adapter, A_ELMER0_PORT0_MI1_OP);
@@ -538,10 +477,7 @@ const struct pci_device_id t1_pci_tbl[] = {
 
 MODULE_DEVICE_TABLE(pci, t1_pci_tbl);
 
-/*
- * Return the board_info structure with a given index.  Out-of-range indices
- * return NULL.
- */
+ 
 const struct board_info *t1_get_board_info(unsigned int board_id)
 {
 	return board_id < ARRAY_SIZE(t1_board) ? &t1_board[board_id] : NULL;
@@ -551,17 +487,13 @@ struct chelsio_vpd_t {
 	u32 format_version;
 	u8 serial_number[16];
 	u8 mac_base_address[6];
-	u8 pad[2];           /* make multiple-of-4 size requirement explicit */
+	u8 pad[2];            
 };
 
 #define EEPROMSIZE        (8 * 1024)
 #define EEPROM_MAX_POLL   4
 
-/*
- * Read SEEPROM. A zero is written to the flag register when the address is
- * written to the Control register. The hardware device will set the flag to a
- * one when 4B have been transferred to the Data register.
- */
+ 
 int t1_seeprom_read(adapter_t *adapter, u32 addr, __le32 *data)
 {
 	int i = EEPROM_MAX_POLL;
@@ -598,9 +530,7 @@ static int t1_eeprom_vpd_get(adapter_t *adapter, struct chelsio_vpd_t *vpd)
 	return ret;
 }
 
-/*
- * Read a port's MAC address from the VPD ROM.
- */
+ 
 static int vpd_macaddress_get(adapter_t *adapter, int index, u8 mac_addr[])
 {
 	struct chelsio_vpd_t vpd;
@@ -612,17 +542,7 @@ static int vpd_macaddress_get(adapter_t *adapter, int index, u8 mac_addr[])
 	return 0;
 }
 
-/*
- * Set up the MAC/PHY according to the requested link settings.
- *
- * If the PHY can auto-negotiate first decide what to advertise, then
- * enable/disable auto-negotiation as desired and reset.
- *
- * If the PHY does not auto-negotiate we just reset it.
- *
- * If auto-negotiation is off set the MAC to the proper speed/duplex/FC,
- * otherwise do it later based on the outcome of auto-negotiation.
- */
+ 
 int t1_link_start(struct cphy *phy, struct cmac *mac, struct link_config *lc)
 {
 	unsigned int fc = lc->requested_fc & (PAUSE_RX | PAUSE_TX);
@@ -647,13 +567,13 @@ int t1_link_start(struct cphy *phy, struct cmac *mac, struct link_config *lc)
 			lc->fc = (unsigned char)fc;
 			mac->ops->set_speed_duplex_fc(mac, lc->speed,
 						      lc->duplex, fc);
-			/* Also disables autoneg */
+			 
 			phy->state = PHY_AUTONEG_RDY;
 			phy->ops->set_speed_duplex(phy, lc->speed, lc->duplex);
 			phy->ops->reset(phy, 0);
 		} else {
 			phy->state = PHY_AUTONEG_EN;
-			phy->ops->autoneg_enable(phy); /* also resets PHY */
+			phy->ops->autoneg_enable(phy);  
 		}
 	} else {
 		phy->state = PHY_AUTONEG_RDY;
@@ -664,9 +584,7 @@ int t1_link_start(struct cphy *phy, struct cmac *mac, struct link_config *lc)
 	return 0;
 }
 
-/*
- * External interrupt handler for boards using elmer0.
- */
+ 
 int t1_elmer0_ext_intr_handler(adapter_t *adapter)
 {
 	struct cphy *phy;
@@ -695,7 +613,7 @@ int t1_elmer0_ext_intr_handler(adapter_t *adapter)
 		break;
 	}
 	case CHBT_BOARD_CHT101:
-		if (cause & ELMER0_GP_BIT1) { /* Marvell 88E1111 interrupt */
+		if (cause & ELMER0_GP_BIT1) {  
 			phy = adapter->port[0].phy;
 			phy_cause = phy->ops->interrupt_handler(phy);
 			if (phy_cause & cphy_cause_link_change)
@@ -704,12 +622,7 @@ int t1_elmer0_ext_intr_handler(adapter_t *adapter)
 		break;
 	case CHBT_BOARD_7500: {
 		int p;
-		/*
-		 * Elmer0's interrupt cause isn't useful here because there is
-		 * only one bit that can be set for all 4 ports.  This means
-		 * we are forced to check every PHY's interrupt status
-		 * register to see who initiated the interrupt.
-		 */
+		 
 		for_each_port(adapter, p) {
 			phy = adapter->port[p].phy;
 			phy_cause = phy->ops->interrupt_handler(phy);
@@ -722,7 +635,7 @@ int t1_elmer0_ext_intr_handler(adapter_t *adapter)
 	case CHBT_BOARD_CHT210:
 	case CHBT_BOARD_N210:
 	case CHBT_BOARD_N110:
-		if (cause & ELMER0_GP_BIT6) { /* Marvell 88x2010 interrupt */
+		if (cause & ELMER0_GP_BIT6) {  
 			phy = adapter->port[0].phy;
 			phy_cause = phy->ops->interrupt_handler(phy);
 			if (phy_cause & cphy_cause_link_change)
@@ -734,12 +647,12 @@ int t1_elmer0_ext_intr_handler(adapter_t *adapter)
 		if (netif_msg_intr(adapter))
 			dev_dbg(&adapter->pdev->dev,
 				"External interrupt cause 0x%x\n", cause);
-		if (cause & ELMER0_GP_BIT1) {        /* PMC3393 INTB */
+		if (cause & ELMER0_GP_BIT1) {         
 			struct cmac *mac = adapter->port[0].mac;
 
 			mac->ops->interrupt_handler(mac);
 		}
-		if (cause & ELMER0_GP_BIT5) {        /* XPAK MOD_DETECT */
+		if (cause & ELMER0_GP_BIT5) {         
 			u32 mod_detect;
 
 			t1_tpi_read(adapter,
@@ -754,7 +667,7 @@ int t1_elmer0_ext_intr_handler(adapter_t *adapter)
 	return 0;
 }
 
-/* Enables all interrupts. */
+ 
 void t1_interrupts_enable(adapter_t *adapter)
 {
 	unsigned int i;
@@ -768,17 +681,17 @@ void t1_interrupts_enable(adapter_t *adapter)
 		t1_espi_intr_enable(adapter->espi);
 	}
 
-	/* Enable MAC/PHY interrupts for each port. */
+	 
 	for_each_port(adapter, i) {
 		adapter->port[i].mac->ops->interrupt_enable(adapter->port[i].mac);
 		adapter->port[i].phy->ops->interrupt_enable(adapter->port[i].phy);
 	}
 
-	/* Enable PCIX & external chip interrupts on ASIC boards. */
+	 
 	if (t1_is_asic(adapter)) {
 		u32 pl_intr = readl(adapter->regs + A_PL_ENABLE);
 
-		/* PCI-X interrupts */
+		 
 		pci_write_config_dword(adapter->pdev, A_PCICFG_INTR_ENABLE,
 				       0xffffffff);
 
@@ -788,7 +701,7 @@ void t1_interrupts_enable(adapter_t *adapter)
 	}
 }
 
-/* Disables all interrupts. */
+ 
 void t1_interrupts_disable(adapter_t* adapter)
 {
 	unsigned int i;
@@ -798,23 +711,23 @@ void t1_interrupts_disable(adapter_t* adapter)
 	if (adapter->espi)
 		t1_espi_intr_disable(adapter->espi);
 
-	/* Disable MAC/PHY interrupts for each port. */
+	 
 	for_each_port(adapter, i) {
 		adapter->port[i].mac->ops->interrupt_disable(adapter->port[i].mac);
 		adapter->port[i].phy->ops->interrupt_disable(adapter->port[i].phy);
 	}
 
-	/* Disable PCIX & external chip interrupts. */
+	 
 	if (t1_is_asic(adapter))
 		writel(0, adapter->regs + A_PL_ENABLE);
 
-	/* PCI-X interrupts */
+	 
 	pci_write_config_dword(adapter->pdev, A_PCICFG_INTR_ENABLE, 0);
 
 	adapter->slow_intr_mask = 0;
 }
 
-/* Clears all interrupts */
+ 
 void t1_interrupts_clear(adapter_t* adapter)
 {
 	unsigned int i;
@@ -824,13 +737,13 @@ void t1_interrupts_clear(adapter_t* adapter)
 	if (adapter->espi)
 		t1_espi_intr_clear(adapter->espi);
 
-	/* Clear MAC/PHY interrupts for each port. */
+	 
 	for_each_port(adapter, i) {
 		adapter->port[i].mac->ops->interrupt_clear(adapter->port[i].mac);
 		adapter->port[i].phy->ops->interrupt_clear(adapter->port[i].phy);
 	}
 
-	/* Enable interrupts for external devices. */
+	 
 	if (t1_is_asic(adapter)) {
 		u32 pl_intr = readl(adapter->regs + A_PL_CAUSE);
 
@@ -838,13 +751,11 @@ void t1_interrupts_clear(adapter_t* adapter)
 		       adapter->regs + A_PL_CAUSE);
 	}
 
-	/* PCI-X interrupts */
+	 
 	pci_write_config_dword(adapter->pdev, A_PCICFG_INTR_CAUSE, 0xffffffff);
 }
 
-/*
- * Slow path interrupt handler for ASICs.
- */
+ 
 static irqreturn_t asic_slow_intr(adapter_t *adapter)
 {
 	u32 cause = readl(adapter->regs + A_PL_CAUSE);
@@ -866,10 +777,7 @@ static irqreturn_t asic_slow_intr(adapter_t *adapter)
 			ret = IRQ_WAKE_THREAD;
 	}
 	if (cause & F_PL_INTR_EXT) {
-		/* Wake the threaded interrupt to handle external interrupts as
-		 * we require a process context. We disable EXT interrupts in
-		 * the interim and let the thread reenable them when it's done.
-		 */
+		 
 		adapter->pending_thread_intr |= F_PL_INTR_EXT;
 		adapter->slow_intr_mask &= ~F_PL_INTR_EXT;
 		writel(adapter->slow_intr_mask | F_PL_INTR_SGE_DATA,
@@ -877,9 +785,9 @@ static irqreturn_t asic_slow_intr(adapter_t *adapter)
 		ret = IRQ_WAKE_THREAD;
 	}
 
-	/* Clear the interrupts just processed. */
+	 
 	writel(cause, adapter->regs + A_PL_CAUSE);
-	readl(adapter->regs + A_PL_CAUSE); /* flush writes */
+	readl(adapter->regs + A_PL_CAUSE);  
 	return ret;
 }
 
@@ -892,16 +800,16 @@ irqreturn_t t1_slow_intr_handler(adapter_t *adapter)
 	return asic_slow_intr(adapter);
 }
 
-/* Power sequencing is a work-around for Intel's XPAKs. */
+ 
 static void power_sequence_xpak(adapter_t* adapter)
 {
 	u32 mod_detect;
 	u32 gpo;
 
-	/* Check for XPAK */
+	 
 	t1_tpi_read(adapter, A_ELMER0_GPI_STAT, &mod_detect);
 	if (!(ELMER0_GP_BIT5 & mod_detect)) {
-		/* XPAK is present */
+		 
 		t1_tpi_read(adapter, A_ELMER0_GPO, &gpo);
 		gpo |= ELMER0_GP_BIT18;
 		t1_tpi_write(adapter, A_ELMER0_GPO, gpo);
@@ -930,10 +838,7 @@ int t1_get_board_rev(adapter_t *adapter, const struct board_info *bi,
 	return 0;
 }
 
-/*
- * Enable board components other than the Chelsio chip, such as external MAC
- * and PHY.
- */
+ 
 static int board_init(adapter_t *adapter, const struct board_info *bi)
 {
 	switch (bi->board) {
@@ -948,14 +853,12 @@ static int board_init(adapter_t *adapter, const struct board_info *bi)
 		t1_tpi_par(adapter, 0xf);
 		t1_tpi_write(adapter, A_ELMER0_GPO, 0x1800);
 
-		/* TBD XXX Might not need.  This fixes a problem
-		 *         described in the Intel SR XPAK errata.
-		 */
+		 
 		power_sequence_xpak(adapter);
 		break;
 #ifdef CONFIG_CHELSIO_T1_1G
 	case CHBT_BOARD_CHT204E:
-		/* add config space write here */
+		 
 	case CHBT_BOARD_CHT204:
 	case CHBT_BOARD_CHT204V:
 	case CHBT_BOARD_CHN204:
@@ -972,10 +875,7 @@ static int board_init(adapter_t *adapter, const struct board_info *bi)
 	return 0;
 }
 
-/*
- * Initialize and configure the Terminator HW modules.  Note that external
- * MAC and PHYs are initialized separately.
- */
+ 
 int t1_init_hw_modules(adapter_t *adapter)
 {
 	int err = -EIO;
@@ -1005,9 +905,7 @@ out_err:
 	return err;
 }
 
-/*
- * Determine a card's PCI mode.
- */
+ 
 static void get_pci_mode(adapter_t *adapter, struct chelsio_pci_params *p)
 {
 	static const unsigned short speed_map[] = { 33, 66, 100, 133 };
@@ -1019,9 +917,7 @@ static void get_pci_mode(adapter_t *adapter, struct chelsio_pci_params *p)
 	p->is_pcix = (pci_mode & F_PCI_MODE_PCIX) != 0;
 }
 
-/*
- * Release the structures holding the SW per-Terminator-HW-module state.
- */
+ 
 void t1_free_sw_modules(adapter_t *adapter)
 {
 	unsigned int i;
@@ -1061,10 +957,7 @@ static void init_link_config(struct link_config *lc,
 	}
 }
 
-/*
- * Allocate and initialize the data structures that hold the SW state of
- * the Terminator HW modules.
- */
+ 
 int t1_init_sw_modules(adapter_t *adapter, const struct board_info *bi)
 {
 	unsigned int i;
@@ -1120,10 +1013,7 @@ int t1_init_sw_modules(adapter_t *adapter, const struct board_info *bi)
 			goto error;
 		}
 
-		/*
-		 * Get the port's MAC addresses either from the EEPROM if one
-		 * exists or the one hardcoded in the MAC.
-		 */
+		 
 		if (!t1_is_asic(adapter) || bi->chip_mac == CHBT_MAC_DUMMY)
 			mac->ops->macaddress_get(mac, hw_addr);
 		else if (vpd_macaddress_get(adapter, i, hw_addr)) {

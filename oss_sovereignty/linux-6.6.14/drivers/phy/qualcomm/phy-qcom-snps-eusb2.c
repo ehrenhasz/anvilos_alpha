@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2023, Linaro Limited
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/clk.h>
@@ -154,33 +152,33 @@ static void qcom_snps_eusb2_hsphy_write_mask(void __iomem *base, u32 offset,
 	reg |= val & mask;
 	writel_relaxed(reg, base + offset);
 
-	/* Ensure above write is completed */
+	 
 	readl_relaxed(base + offset);
 }
 
 static void qcom_eusb2_default_parameters(struct qcom_snps_eusb2_hsphy *phy)
 {
-	/* default parameters: tx pre-emphasis */
+	 
 	qcom_snps_eusb2_hsphy_write_mask(phy->base, USB_PHY_CFG_CTRL_9,
 					 PHY_CFG_TX_PREEMP_TUNE_MASK,
 					 FIELD_PREP(PHY_CFG_TX_PREEMP_TUNE_MASK, 0));
 
-	/* tx rise/fall time */
+	 
 	qcom_snps_eusb2_hsphy_write_mask(phy->base, USB_PHY_CFG_CTRL_9,
 					 PHY_CFG_TX_RISE_TUNE_MASK,
 					 FIELD_PREP(PHY_CFG_TX_RISE_TUNE_MASK, 0x2));
 
-	/* source impedance adjustment */
+	 
 	qcom_snps_eusb2_hsphy_write_mask(phy->base, USB_PHY_CFG_CTRL_9,
 					 PHY_CFG_TX_RES_TUNE_MASK,
 					 FIELD_PREP(PHY_CFG_TX_RES_TUNE_MASK, 0x1));
 
-	/* dc voltage level adjustement */
+	 
 	qcom_snps_eusb2_hsphy_write_mask(phy->base, USB_PHY_CFG_CTRL_8,
 					 PHY_CFG_TX_HS_VREF_TUNE_MASK,
 					 FIELD_PREP(PHY_CFG_TX_HS_VREF_TUNE_MASK, 0x3));
 
-	/* transmitter HS crossover adjustement */
+	 
 	qcom_snps_eusb2_hsphy_write_mask(phy->base, USB_PHY_CFG_CTRL_8,
 					 PHY_CFG_TX_HS_XV_TUNE_MASK,
 					 FIELD_PREP(PHY_CFG_TX_HS_XV_TUNE_MASK, 0x0));
@@ -281,7 +279,7 @@ static int qcom_snps_eusb2_hsphy_init(struct phy *p)
 	qcom_snps_eusb2_hsphy_write_mask(phy->base, USB_PHY_FSEL_SEL,
 					 FSEL_SEL, FSEL_SEL);
 
-	/* update ref_clk related registers */
+	 
 	ret = qcom_eusb2_ref_clk_init(phy);
 	if (ret)
 		goto disable_ref_clk;
@@ -313,7 +311,7 @@ static int qcom_snps_eusb2_hsphy_init(struct phy *p)
 	qcom_snps_eusb2_hsphy_write_mask(phy->base, USB_PHY_HS_PHY_CTRL2,
 					 VBUS_DET_EXT_SEL, VBUS_DET_EXT_SEL);
 
-	/* set default parameters */
+	 
 	qcom_eusb2_default_parameters(phy);
 
 	qcom_snps_eusb2_hsphy_write_mask(phy->base, USB_PHY_HS_PHY_CTRL2,

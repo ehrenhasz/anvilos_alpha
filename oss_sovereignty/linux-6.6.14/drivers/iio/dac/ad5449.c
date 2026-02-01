@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * AD5415, AD5426, AD5429, AD5432, AD5439, AD5443, AD5449 Digital to Analog
- * Converter driver.
- *
- * Copyright 2012 Analog Devices Inc.
- *  Author: Lars-Peter Clausen <lars@metafoo.de>
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/err.h>
@@ -36,28 +30,14 @@
 #define AD5449_CTRL_HCLR_TO_MIDSCALE	BIT(8)
 #define AD5449_CTRL_SAMPLE_RISING	BIT(7)
 
-/**
- * struct ad5449_chip_info - chip specific information
- * @channels:		Channel specification
- * @num_channels:	Number of channels
- * @has_ctrl:		Chip has a control register
- */
+ 
 struct ad5449_chip_info {
 	const struct iio_chan_spec *channels;
 	unsigned int num_channels;
 	bool has_ctrl;
 };
 
-/**
- * struct ad5449 - driver instance specific data
- * @spi:		the SPI device for this driver instance
- * @chip_info:		chip model specific constants, available modes etc
- * @vref_reg:		vref supply regulators
- * @has_sdo:		whether the SDO line is connected
- * @dac_cache:		Cache for the DAC values
- * @data:		spi transfer buffers
- * @lock:		lock to protect the data buffer during SPI ops
- */
+ 
 struct ad5449 {
 	struct spi_device		*spi;
 	const struct ad5449_chip_info	*chip_info;
@@ -67,10 +47,7 @@ struct ad5449 {
 	bool has_sdo;
 	uint16_t dac_cache[AD5449_MAX_CHANNELS];
 
-	/*
-	 * DMA (thus cache coherency maintenance) may require the
-	 * transfer buffers to live in their own cache lines.
-	 */
+	 
 	__be16 data[2] __aligned(IIO_DMA_MINALIGN);
 };
 

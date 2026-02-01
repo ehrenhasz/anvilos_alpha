@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-// Copyright(c) 2015-2020 Intel Corporation.
+
+
 
 #include <linux/device.h>
 #include <linux/mod_devicetable.h>
@@ -10,61 +10,9 @@
 #include "bus.h"
 #include "sysfs_local.h"
 
-/*
- * Slave sysfs
- */
+ 
 
-/*
- * The sysfs for Slave reflects the MIPI description as given
- * in the MIPI DisCo spec.
- * status and device_number come directly from the MIPI SoundWire
- * 1.x specification.
- *
- * Base file is device
- *	|---- status
- *	|---- device_number
- *	|---- modalias
- *	|---- dev-properties
- *		|---- mipi_revision
- *		|---- wake_capable
- *		|---- test_mode_capable
- *		|---- clk_stop_mode1
- *		|---- simple_clk_stop_capable
- *		|---- clk_stop_timeout
- *		|---- ch_prep_timeout
- *		|---- reset_behave
- *		|---- high_PHY_capable
- *		|---- paging_support
- *		|---- bank_delay_support
- *		|---- p15_behave
- *		|---- master_count
- *		|---- source_ports
- *		|---- sink_ports
- *	|---- dp0
- *		|---- max_word
- *		|---- min_word
- *		|---- words
- *		|---- BRA_flow_controlled
- *		|---- simple_ch_prep_sm
- *		|---- imp_def_interrupts
- *	|---- dpN_<sink/src>
- *		|---- max_word
- *		|---- min_word
- *		|---- words
- *		|---- type
- *		|---- max_grouping
- *		|---- simple_ch_prep_sm
- *		|---- ch_prep_timeout
- *		|---- imp_def_interrupts
- *		|---- min_ch
- *		|---- max_ch
- *		|---- channels
- *		|---- ch_combinations
- *		|---- max_async_buffer
- *		|---- block_pack_mode
- *		|---- port_encoding
- *
- */
+ 
 
 #define sdw_slave_attr(field, format_string)			\
 static ssize_t field##_show(struct device *dev,			\
@@ -126,18 +74,13 @@ static struct attribute *slave_dev_attrs[] = {
 	NULL,
 };
 
-/*
- * we don't use ATTRIBUTES_GROUP here since we want to add a subdirectory
- * for device-level properties
- */
+ 
 static const struct attribute_group sdw_slave_dev_attr_group = {
 	.attrs	= slave_dev_attrs,
 	.name = "dev-properties",
 };
 
-/*
- * DP0 sysfs
- */
+ 
 
 #define sdw_dp0_attr(field, format_string)				\
 static ssize_t field##_show(struct device *dev,				\
@@ -181,10 +124,7 @@ static struct attribute *dp0_attrs[] = {
 	NULL,
 };
 
-/*
- * we don't use ATTRIBUTES_GROUP here since we want to add a subdirectory
- * for dp0-level properties
- */
+ 
 static const struct attribute_group dp0_group = {
 	.attrs = dp0_attrs,
 	.name = "dp0",
@@ -217,11 +157,7 @@ int sdw_slave_sysfs_init(struct sdw_slave *slave)
 	return 0;
 }
 
-/*
- * the status is shown in capital letters for UNATTACHED and RESERVED
- * on purpose, to highligh users to the fact that these status values
- * are not expected.
- */
+ 
 static const char *const slave_status[] = {
 	[SDW_SLAVE_UNATTACHED] =  "UNATTACHED",
 	[SDW_SLAVE_ATTACHED] = "Attached",
@@ -256,10 +192,7 @@ static struct attribute *slave_status_attrs[] = {
 	NULL,
 };
 
-/*
- * we don't use ATTRIBUTES_GROUP here since the group is used in a
- * separate file and can't be handled as a static.
- */
+ 
 static const struct attribute_group sdw_slave_status_attr_group = {
 	.attrs	= slave_status_attrs,
 };

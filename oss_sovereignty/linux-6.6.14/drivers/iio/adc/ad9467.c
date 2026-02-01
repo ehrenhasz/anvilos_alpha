@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Analog Devices AD9467 SPI ADC driver
- *
- * Copyright 2012-2020 Analog Devices Inc.
- */
+
+ 
 #include <linux/cleanup.h>
 #include <linux/module.h>
 #include <linux/mutex.h>
@@ -24,11 +20,7 @@
 
 #include <linux/iio/adc/adi-axi-adc.h>
 
-/*
- * ADI High-Speed ADC common spi interface registers
- * See Application-Note AN-877:
- *   https://www.analog.com/media/en/technical-documentation/application-notes/AN-877.pdf
- */
+ 
 
 #define AN877_ADC_REG_CHIP_PORT_CONF		0x00
 #define AN877_ADC_REG_CHIP_ID			0x01
@@ -46,7 +38,7 @@
 #define AN877_ADC_REG_VREF			0x18
 #define AN877_ADC_REG_ANALOG_INPUT		0x2C
 
-/* AN877_ADC_REG_TEST_IO */
+ 
 #define AN877_ADC_TESTMODE_OFF			0x0
 #define AN877_ADC_TESTMODE_MIDSCALE_SHORT	0x1
 #define AN877_ADC_TESTMODE_POS_FULLSCALE	0x2
@@ -62,40 +54,34 @@
 #define AN877_ADC_TESTMODE_MIXED_BIT_FREQUENCY	0xC
 #define AN877_ADC_TESTMODE_RAMP			0xF
 
-/* AN877_ADC_REG_TRANSFER */
+ 
 #define AN877_ADC_TRANSFER_SYNC			0x1
 
-/* AN877_ADC_REG_OUTPUT_MODE */
+ 
 #define AN877_ADC_OUTPUT_MODE_OFFSET_BINARY	0x0
 #define AN877_ADC_OUTPUT_MODE_TWOS_COMPLEMENT	0x1
 #define AN877_ADC_OUTPUT_MODE_GRAY_CODE		0x2
 
-/* AN877_ADC_REG_OUTPUT_PHASE */
+ 
 #define AN877_ADC_OUTPUT_EVEN_ODD_MODE_EN	0x20
 #define AN877_ADC_INVERT_DCO_CLK		0x80
 
-/* AN877_ADC_REG_OUTPUT_DELAY */
+ 
 #define AN877_ADC_DCO_DELAY_ENABLE		0x80
 
-/*
- * Analog Devices AD9265 16-Bit, 125/105/80 MSPS ADC
- */
+ 
 
 #define CHIPID_AD9265			0x64
 #define AD9265_DEF_OUTPUT_MODE		0x40
 #define AD9265_REG_VREF_MASK		0xC0
 
-/*
- * Analog Devices AD9434 12-Bit, 370/500 MSPS ADC
- */
+ 
 
 #define CHIPID_AD9434			0x6A
 #define AD9434_DEF_OUTPUT_MODE		0x00
 #define AD9434_REG_VREF_MASK		0xC0
 
-/*
- * Analog Devices AD9467 16-Bit, 200/250 MSPS ADC
- */
+ 
 
 #define CHIPID_AD9467			0x50
 #define AD9467_DEF_OUTPUT_MODE		0x08
@@ -123,7 +109,7 @@ struct ad9467_state {
 	unsigned int                    (*scales)[2];
 
 	struct gpio_desc		*pwrdown_gpio;
-	/* ensure consistent state obtained on multiple related accesses */
+	 
 	struct mutex			lock;
 };
 
@@ -384,7 +370,7 @@ static int ad9467_read_avail(struct adi_axi_adc_conv *conv,
 	case IIO_CHAN_INFO_SCALE:
 		*vals = (const int *)st->scales;
 		*type = IIO_VAL_INT_PLUS_MICRO;
-		/* Values are stored in a 2D matrix */
+		 
 		*length = info->num_scales * 2;
 		return IIO_AVAIL_LIST;
 	default:

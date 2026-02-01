@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright 2015-2017 Pengutronix, Lucas Stach <kernel@pengutronix.de>
- * Copyright 2011-2013 Freescale Semiconductor, Inc.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -62,20 +59,20 @@ static int imx6_pm_domain_power_off(struct generic_pm_domain *genpd)
 	int iso, iso2sw;
 	u32 val;
 
-	/* Read ISO and ISO2SW power down delays */
+	 
 	regmap_read(pd->regmap, pd->reg_offs + GPC_PGC_PDNSCR_OFFS, &val);
 	iso = val & 0x3f;
 	iso2sw = (val >> 8) & 0x3f;
 
-	/* Gate off domain when powered down */
+	 
 	regmap_update_bits(pd->regmap, pd->reg_offs + GPC_PGC_CTRL_OFFS,
 			   0x1, 0x1);
 
-	/* Request GPC to power down domain */
+	 
 	val = BIT(pd->cntr_pdn_bit);
 	regmap_update_bits(pd->regmap, GPC_CNTR, val, val);
 
-	/* Wait ISO + ISO2SW IPG clock cycles */
+	 
 	udelay(DIV_ROUND_UP(iso + iso2sw, pd->ipg_rate_mhz));
 
 	if (pd->supply)
@@ -99,28 +96,28 @@ static int imx6_pm_domain_power_on(struct generic_pm_domain *genpd)
 		}
 	}
 
-	/* Enable reset clocks for all devices in the domain */
+	 
 	for (i = 0; i < pd->num_clks; i++)
 		clk_prepare_enable(pd->clk[i]);
 
-	/* Gate off domain when powered down */
+	 
 	regmap_update_bits(pd->regmap, pd->reg_offs + GPC_PGC_CTRL_OFFS,
 			   0x1, 0x1);
 
-	/* Request GPC to power up domain */
+	 
 	req = BIT(pd->cntr_pdn_bit + 1);
 	regmap_update_bits(pd->regmap, GPC_CNTR, req, req);
 
-	/* Wait for the PGC to handle the request */
+	 
 	ret = regmap_read_poll_timeout(pd->regmap, GPC_CNTR, val, !(val & req),
 				       1, 50);
 	if (ret)
 		pr_err("powerup request on domain %s timed out\n", genpd->name);
 
-	/* Wait for reset to propagate through peripherals */
+	 
 	usleep_range(5, 10);
 
-	/* Disable reset clocks for all devices in the domain */
+	 
 	for (i = 0; i < pd->num_clks; i++)
 		clk_disable_unprepare(pd->clk[i]);
 
@@ -163,7 +160,7 @@ static void imx_pgc_put_clocks(struct imx_pm_domain *domain)
 
 static int imx_pgc_parse_dt(struct device *dev, struct imx_pm_domain *domain)
 {
-	/* try to get the domain supply regulator */
+	 
 	domain->supply = devm_regulator_get_optional(dev, "power");
 	if (IS_ERR(domain->supply)) {
 		if (PTR_ERR(domain->supply) == -ENODEV)
@@ -172,7 +169,7 @@ static int imx_pgc_parse_dt(struct device *dev, struct imx_pm_domain *domain)
 			return PTR_ERR(domain->supply);
 	}
 
-	/* try to get all clocks needed for reset propagation */
+	 
 	return imx_pgc_get_clocks(dev, domain);
 }
 
@@ -182,14 +179,14 @@ static int imx_pgc_power_domain_probe(struct platform_device *pdev)
 	struct device *dev = &pdev->dev;
 	int ret;
 
-	/* if this PD is associated with a DT node try to parse it */
+	 
 	if (dev->of_node) {
 		ret = imx_pgc_parse_dt(dev, domain);
 		if (ret)
 			return ret;
 	}
 
-	/* initially power on the domain */
+	 
 	if (domain->base.power_on)
 		domain->base.power_on(&domain->base);
 
@@ -413,7 +410,7 @@ static int imx_gpc_probe(struct platform_device *pdev)
 
 	pgc_node = of_get_child_by_name(pdev->dev.of_node, "pgc");
 
-	/* bail out if DT too old and doesn't provide the necessary info */
+	 
 	if (!of_property_read_bool(pdev->dev.of_node, "#power-domain-cells") &&
 	    !pgc_node)
 		return 0;
@@ -431,21 +428,12 @@ static int imx_gpc_probe(struct platform_device *pdev)
 		return ret;
 	}
 
-	/*
-	 * Disable PU power down by runtime PM if ERR009619 is present.
-	 *
-	 * The PRE clock will be paused for several cycles when turning on the
-	 * PU domain LDO from power down state. If PRE is in use at that time,
-	 * the IPU/PRG cannot get the correct display data from the PRE.
-	 *
-	 * This is not a concern when the whole system enters suspend state, so
-	 * it's safe to power down PU in this case.
-	 */
+	 
 	if (of_id_data->err009619_present)
 		imx_gpc_domains[GPC_PGC_DOMAIN_PU].base.flags |=
 				GENPD_FLAG_RPM_ALWAYS_ON;
 
-	/* Keep DISP always on if ERR006287 is present */
+	 
 	if (of_id_data->err006287_present)
 		imx_gpc_domains[GPC_PGC_DOMAIN_DISPLAY].base.flags |=
 				GENPD_FLAG_ALWAYS_ON;
@@ -519,15 +507,12 @@ static int imx_gpc_remove(struct platform_device *pdev)
 
 	pgc_node = of_get_child_by_name(pdev->dev.of_node, "pgc");
 
-	/* bail out if DT too old and doesn't provide the necessary info */
+	 
 	if (!of_property_read_bool(pdev->dev.of_node, "#power-domain-cells") &&
 	    !pgc_node)
 		return 0;
 
-	/*
-	 * If the old DT binding is used the toplevel driver needs to
-	 * de-register the power domains
-	 */
+	 
 	if (!pgc_node) {
 		of_genpd_del_provider(pdev->dev.of_node);
 

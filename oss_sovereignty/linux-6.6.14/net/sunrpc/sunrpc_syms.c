@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * linux/net/sunrpc/sunrpc_syms.c
- *
- * Symbols exported by the sunrpc module.
- *
- * Copyright (C) 1997 Olaf Kirch <okir@monad.swb.de>
- */
+
+ 
 
 #include <linux/module.h>
 
@@ -112,8 +106,8 @@ init_sunrpc(void)
 #if IS_ENABLED(CONFIG_SUNRPC_DEBUG)
 	rpc_register_sysctl();
 #endif
-	svc_init_xprt_sock();	/* svc sock transport */
-	init_socket_xprt();	/* clnt sock transport */
+	svc_init_xprt_sock();	 
+	init_socket_xprt();	 
 	return 0;
 
 out5:
@@ -146,8 +140,8 @@ cleanup_sunrpc(void)
 #if IS_ENABLED(CONFIG_SUNRPC_DEBUG)
 	rpc_unregister_sysctl();
 #endif
-	rcu_barrier(); /* Wait for completion of call_rcu()'s */
+	rcu_barrier();  
 }
 MODULE_LICENSE("GPL");
-fs_initcall(init_sunrpc); /* Ensure we're initialised before nfs */
+fs_initcall(init_sunrpc);  
 module_exit(cleanup_sunrpc);

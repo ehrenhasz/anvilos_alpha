@@ -1,18 +1,15 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Written 2000 by Andi Kleen */
+ 
+ 
 #ifndef _ASM_X86_DESC_DEFS_H
 #define _ASM_X86_DESC_DEFS_H
 
-/*
- * Segment descriptor structure definitions, usable from both x86_64 and i386
- * archs.
- */
+ 
 
 #ifndef __ASSEMBLY__
 
 #include <linux/types.h>
 
-/* 8 byte segment descriptor */
+ 
 struct desc_struct {
 	u16	limit0;
 	u16	base0;
@@ -47,10 +44,10 @@ enum {
 enum {
 	DESC_TSS = 0x9,
 	DESC_LDT = 0x2,
-	DESCTYPE_S = 0x10,	/* !system */
+	DESCTYPE_S = 0x10,	 
 };
 
-/* LDT or TSS descriptor in the GDT. */
+ 
 struct ldttss_desc {
 	u16	limit0;
 	u16	base0;
@@ -114,12 +111,12 @@ struct desc_ptr {
 	unsigned long address;
 } __attribute__((packed)) ;
 
-#endif /* !__ASSEMBLY__ */
+#endif  
 
-/* Boot IDT definitions */
+ 
 #define	BOOT_IDT_ENTRIES	32
 
-/* Access rights as returned by LAR */
+ 
 #define AR_TYPE_RODATA		(0 * (1 << 9))
 #define AR_TYPE_RWDATA		(1 * (1 << 9))
 #define AR_TYPE_RODATA_EXPDOWN	(2 * (1 << 9))
@@ -134,12 +131,12 @@ struct desc_ptr {
 #define AR_DPL3			(3 * (1 << 13))
 #define AR_DPL_MASK		(3 * (1 << 13))
 
-#define AR_A			(1 << 8)   /* "Accessed" */
-#define AR_S			(1 << 12)  /* If clear, "System" segment */
-#define AR_P			(1 << 15)  /* "Present" */
-#define AR_AVL			(1 << 20)  /* "AVaiLable" (no HW effect) */
-#define AR_L			(1 << 21)  /* "Long mode" for code segments */
-#define AR_DB			(1 << 22)  /* D/B, effect depends on type */
-#define AR_G			(1 << 23)  /* "Granularity" (limit in pages) */
+#define AR_A			(1 << 8)    
+#define AR_S			(1 << 12)   
+#define AR_P			(1 << 15)   
+#define AR_AVL			(1 << 20)   
+#define AR_L			(1 << 21)   
+#define AR_DB			(1 << 22)   
+#define AR_G			(1 << 23)   
 
-#endif /* _ASM_X86_DESC_DEFS_H */
+#endif  

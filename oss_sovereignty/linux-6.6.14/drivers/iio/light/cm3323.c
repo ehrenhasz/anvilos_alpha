@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * CM3323 - Capella Color Light Sensor
- *
- * Copyright (c) 2015, Intel Corporation.
- *
- * IIO driver for CM3323 (7-bit I2C slave address 0x10)
- *
- * TODO: calibscale to correct the lens factor
- */
+
+ 
 #include <linux/module.h>
 #include <linux/init.h>
 #include <linux/i2c.h>
@@ -24,8 +16,8 @@
 #define CM3323_CMD_BLUE_DATA	0x0A
 #define CM3323_CMD_CLEAR_DATA	0x0B
 
-#define CM3323_CONF_SD_BIT	BIT(0) /* sensor disable */
-#define CM3323_CONF_AF_BIT	BIT(1) /* auto/manual force mode */
+#define CM3323_CONF_SD_BIT	BIT(0)  
+#define CM3323_CONF_AF_BIT	BIT(1)  
 #define CM3323_CONF_IT_MASK	GENMASK(6, 4)
 #define CM3323_CONF_IT_SHIFT	4
 
@@ -35,12 +27,12 @@ static const struct {
 	int val;
 	int val2;
 } cm3323_int_time[] = {
-	{0, 40000},  /* 40 ms */
-	{0, 80000},  /* 80 ms */
-	{0, 160000}, /* 160 ms */
-	{0, 320000}, /* 320 ms */
-	{0, 640000}, /* 640 ms */
-	{1, 280000}, /* 1280 ms */
+	{0, 40000},   
+	{0, 80000},   
+	{0, 160000},  
+	{0, 320000},  
+	{0, 640000},  
+	{1, 280000},  
 };
 
 struct cm3323_data {
@@ -87,7 +79,7 @@ static int cm3323_init(struct iio_dev *indio_dev)
 		return ret;
 	}
 
-	/* enable sensor and set auto force mode */
+	 
 	ret &= ~(CM3323_CONF_SD_BIT | CM3323_CONF_AF_BIT);
 
 	ret = i2c_smbus_write_word_data(data->client, CM3323_CMD_CONF, ret);
@@ -257,7 +249,7 @@ MODULE_DEVICE_TABLE(i2c, cm3323_id);
 
 static const struct of_device_id cm3323_of_match[] = {
 	{ .compatible = "capella,cm3323", },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, cm3323_of_match);
 

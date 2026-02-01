@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * GPIO support for Cirrus Logic Madera codecs
- *
- * Copyright (C) 2015-2018 Cirrus Logic
- */
+
+ 
 
 #include <linux/gpio/driver.h>
 #include <linux/kernel.h>
@@ -16,7 +12,7 @@
 
 struct madera_gpio {
 	struct madera *madera;
-	/* storage space for the gpio_chip we're using */
+	 
 	struct gpio_chip gpio_chip;
 };
 
@@ -100,7 +96,7 @@ static void madera_gpio_set(struct gpio_chip *chip, unsigned int offset,
 				 MADERA_GPIO1_CTRL_1 + reg_offset,
 				 MADERA_GP1_LVL_MASK, reg_val);
 
-	/* set() doesn't return an error so log a warning */
+	 
 	if (ret)
 		dev_warn(madera->dev, "Failed to write to 0x%x (%d)\n",
 			 MADERA_GPIO1_CTRL_1 + reg_offset, ret);
@@ -134,7 +130,7 @@ static int madera_gpio_probe(struct platform_device *pdev)
 
 	madera_gpio->madera = madera;
 
-	/* Construct suitable gpio_chip from the template in madera_gpio_chip */
+	 
 	madera_gpio->gpio_chip = madera_gpio_chip;
 	madera_gpio->gpio_chip.parent = pdev->dev.parent;
 
@@ -163,7 +159,7 @@ static int madera_gpio_probe(struct platform_device *pdev)
 		return -EINVAL;
 	}
 
-	/* We want to be usable on systems that don't use devicetree or acpi */
+	 
 	if (pdata->gpio_base)
 		madera_gpio->gpio_chip.base = pdata->gpio_base;
 	else
@@ -177,15 +173,7 @@ static int madera_gpio_probe(struct platform_device *pdev)
 		return ret;
 	}
 
-	/*
-	 * This is part of a composite MFD device which can only be used with
-	 * the corresponding pinctrl driver. On all supported silicon the GPIO
-	 * to pinctrl mapping is fixed in the silicon, so we register it
-	 * explicitly instead of requiring a redundant gpio-ranges in the
-	 * devicetree.
-	 * In any case we also want to work on systems that don't use devicetree
-	 * or acpi.
-	 */
+	 
 	ret = gpiochip_add_pin_range(&madera_gpio->gpio_chip, "madera-pinctrl",
 				     0, 0, madera_gpio->gpio_chip.ngpio);
 	if (ret) {

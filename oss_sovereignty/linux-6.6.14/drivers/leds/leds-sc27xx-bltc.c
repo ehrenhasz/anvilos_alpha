@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (C) 2018 Spreadtrum Communications Inc.
+
+
 
 #include <linux/leds.h>
 #include <linux/module.h>
@@ -7,7 +7,7 @@
 #include <linux/platform_device.h>
 #include <linux/regmap.h>
 
-/* PMIC global control register definition */
+ 
 #define SC27XX_MODULE_EN0	0xc08
 #define SC27XX_CLK_EN0		0xc18
 #define SC27XX_RGB_CTRL		0xebc
@@ -16,7 +16,7 @@
 #define SC27XX_RTC_EN		BIT(7)
 #define SC27XX_RGB_PD		BIT(0)
 
-/* Breathing light controller register definition */
+ 
 #define SC27XX_LEDS_CTRL	0x00
 #define SC27XX_LEDS_PRESCALE	0x04
 #define SC27XX_LEDS_DUTY	0x08
@@ -38,9 +38,9 @@
 #define SC27XX_LEDS_OFFSET	0x10
 #define SC27XX_LEDS_MAX		3
 #define SC27XX_LEDS_PATTERN_CNT	4
-/* Stage duration step, in milliseconds */
+ 
 #define SC27XX_LEDS_STEP	125
-/* Minimum and maximum duration, in milliseconds */
+ 
 #define SC27XX_DELTA_T_MIN	SC27XX_LEDS_STEP
 #define SC27XX_DELTA_T_MAX	(SC27XX_LEDS_STEP * 255)
 
@@ -154,7 +154,7 @@ static int sc27xx_led_pattern_clear(struct led_classdev *ldev)
 
 	mutex_lock(&leds->priv->lock);
 
-	/* Reset the rise, high, fall and low time to zero. */
+	 
 	regmap_write(regmap, base + SC27XX_LEDS_CURVE0, 0);
 	regmap_write(regmap, base + SC27XX_LEDS_CURVE1, 0);
 
@@ -179,10 +179,7 @@ static int sc27xx_led_pattern_set(struct led_classdev *ldev,
 	struct regmap *regmap = leds->priv->regmap;
 	int err;
 
-	/*
-	 * Must contain 4 tuples to configure the rise time, high time, fall
-	 * time and low time to enable the breathing mode.
-	 */
+	 
 	if (len != SC27XX_LEDS_PATTERN_CNT)
 		return -EINVAL;
 
@@ -225,7 +222,7 @@ static int sc27xx_led_pattern_set(struct led_classdev *ldev,
 	if (err)
 		goto out;
 
-	/* Enable the LED breathing mode */
+	 
 	err = regmap_update_bits(regmap, ctrl_base,
 				 SC27XX_LED_RUN << ctrl_shift,
 				 SC27XX_LED_RUN << ctrl_shift);

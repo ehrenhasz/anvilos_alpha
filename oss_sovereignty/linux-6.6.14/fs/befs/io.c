@@ -1,27 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * linux/fs/befs/io.c
- *
- * Copyright (C) 2001 Will Dyson <will_dyson@pobox.com
- *
- * Based on portions of file.c and inode.c
- * by Makoto Kato (m_kato@ga2.so-net.ne.jp)
- *
- * Many thanks to Dominic Giampaolo, author of Practical File System
- * Design with the Be File System, for such a helpful book.
- *
- */
+
+ 
 
 #include <linux/buffer_head.h>
 
 #include "befs.h"
 #include "io.h"
 
-/*
- * Converts befs notion of disk addr to a disk offset and uses
- * linux kernel function sb_bread() to get the buffer containing
- * the offset.
- */
+ 
 
 struct buffer_head *
 befs_bread_iaddr(struct super_block *sb, befs_inode_addr iaddr)

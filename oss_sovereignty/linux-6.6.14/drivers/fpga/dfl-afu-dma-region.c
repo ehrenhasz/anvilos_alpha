@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Driver for FPGA Accelerated Function Unit (AFU) DMA Region Management
- *
- * Copyright (C) 2017-2018 Intel Corporation, Inc.
- *
- * Authors:
- *   Wu Hao <hao.wu@intel.com>
- *   Xiao Guangrong <guangrong.xiao@linux.intel.com>
- */
+
+ 
 
 #include <linux/dma-mapping.h>
 #include <linux/sched/signal.h>
@@ -23,14 +15,7 @@ void afu_dma_region_init(struct dfl_feature_platform_data *pdata)
 	afu->dma_regions = RB_ROOT;
 }
 
-/**
- * afu_dma_pin_pages - pin pages of given dma memory region
- * @pdata: feature device platform data
- * @region: dma memory region to be pinned
- *
- * Pin all the pages of given dfl_afu_dma_region.
- * Return 0 for success or negative error code.
- */
+ 
 static int afu_dma_pin_pages(struct dfl_feature_platform_data *pdata,
 			     struct dfl_afu_dma_region *region)
 {
@@ -71,14 +56,7 @@ unlock_vm:
 	return ret;
 }
 
-/**
- * afu_dma_unpin_pages - unpin pages of given dma memory region
- * @pdata: feature device platform data
- * @region: dma memory region to be unpinned
- *
- * Unpin all the pages of given dfl_afu_dma_region.
- * Return 0 for success or negative error code.
- */
+ 
 static void afu_dma_unpin_pages(struct dfl_feature_platform_data *pdata,
 				struct dfl_afu_dma_region *region)
 {
@@ -92,13 +70,7 @@ static void afu_dma_unpin_pages(struct dfl_feature_platform_data *pdata,
 	dev_dbg(dev, "%ld pages unpinned\n", npages);
 }
 
-/**
- * afu_dma_check_continuous_pages - check if pages are continuous
- * @region: dma memory region
- *
- * Return true if pages of given dma memory region have continuous physical
- * address, otherwise return false.
- */
+ 
 static bool afu_dma_check_continuous_pages(struct dfl_afu_dma_region *region)
 {
 	int npages = region->length >> PAGE_SHIFT;
@@ -112,15 +84,7 @@ static bool afu_dma_check_continuous_pages(struct dfl_afu_dma_region *region)
 	return true;
 }
 
-/**
- * dma_region_check_iova - check if memory area is fully contained in the region
- * @region: dma memory region
- * @iova: address of the dma memory area
- * @size: size of the dma memory area
- *
- * Compare the dma memory area defined by @iova and @size with given dma region.
- * Return true if memory area is fully contained in the region, otherwise false.
- */
+ 
 static bool dma_region_check_iova(struct dfl_afu_dma_region *region,
 				  u64 iova, u64 size)
 {
@@ -131,15 +95,7 @@ static bool dma_region_check_iova(struct dfl_afu_dma_region *region,
 		(region->length + region->iova >= iova + size);
 }
 
-/**
- * afu_dma_region_add - add given dma region to rbtree
- * @pdata: feature device platform data
- * @region: dma region to be added
- *
- * Return 0 for success, -EEXIST if dma region has already been added.
- *
- * Needs to be called with pdata->lock heold.
- */
+ 
 static int afu_dma_region_add(struct dfl_feature_platform_data *pdata,
 			      struct dfl_afu_dma_region *region)
 {
@@ -175,13 +131,7 @@ static int afu_dma_region_add(struct dfl_feature_platform_data *pdata,
 	return 0;
 }
 
-/**
- * afu_dma_region_remove - remove given dma region from rbtree
- * @pdata: feature device platform data
- * @region: dma region to be removed
- *
- * Needs to be called with pdata->lock heold.
- */
+ 
 static void afu_dma_region_remove(struct dfl_feature_platform_data *pdata,
 				  struct dfl_afu_dma_region *region)
 {
@@ -194,12 +144,7 @@ static void afu_dma_region_remove(struct dfl_feature_platform_data *pdata,
 	rb_erase(&region->node, &afu->dma_regions);
 }
 
-/**
- * afu_dma_region_destroy - destroy all regions in rbtree
- * @pdata: feature device platform data
- *
- * Needs to be called with pdata->lock heold.
- */
+ 
 void afu_dma_region_destroy(struct dfl_feature_platform_data *pdata)
 {
 	struct dfl_afu *afu = dfl_fpga_pdata_get_private(pdata);
@@ -227,20 +172,7 @@ void afu_dma_region_destroy(struct dfl_feature_platform_data *pdata)
 	}
 }
 
-/**
- * afu_dma_region_find - find the dma region from rbtree based on iova and size
- * @pdata: feature device platform data
- * @iova: address of the dma memory area
- * @size: size of the dma memory area
- *
- * It finds the dma region from the rbtree based on @iova and @size:
- * - if @size == 0, it finds the dma region which starts from @iova
- * - otherwise, it finds the dma region which fully contains
- *   [@iova, @iova+size)
- * If nothing is matched returns NULL.
- *
- * Needs to be called with pdata->lock held.
- */
+ 
 struct dfl_afu_dma_region *
 afu_dma_region_find(struct dfl_feature_platform_data *pdata, u64 iova, u64 size)
 {
@@ -264,7 +196,7 @@ afu_dma_region_find(struct dfl_feature_platform_data *pdata, u64 iova, u64 size)
 		else if (iova > region->iova)
 			node = node->rb_right;
 		else
-			/* the iova region is not fully covered. */
+			 
 			break;
 	}
 
@@ -274,44 +206,25 @@ afu_dma_region_find(struct dfl_feature_platform_data *pdata, u64 iova, u64 size)
 	return NULL;
 }
 
-/**
- * afu_dma_region_find_iova - find the dma region from rbtree by iova
- * @pdata: feature device platform data
- * @iova: address of the dma region
- *
- * Needs to be called with pdata->lock held.
- */
+ 
 static struct dfl_afu_dma_region *
 afu_dma_region_find_iova(struct dfl_feature_platform_data *pdata, u64 iova)
 {
 	return afu_dma_region_find(pdata, iova, 0);
 }
 
-/**
- * afu_dma_map_region - map memory region for dma
- * @pdata: feature device platform data
- * @user_addr: address of the memory region
- * @length: size of the memory region
- * @iova: pointer of iova address
- *
- * Map memory region defined by @user_addr and @length, and return dma address
- * of the memory region via @iova.
- * Return 0 for success, otherwise error code.
- */
+ 
 int afu_dma_map_region(struct dfl_feature_platform_data *pdata,
 		       u64 user_addr, u64 length, u64 *iova)
 {
 	struct dfl_afu_dma_region *region;
 	int ret;
 
-	/*
-	 * Check Inputs, only accept page-aligned user memory region with
-	 * valid length.
-	 */
+	 
 	if (!PAGE_ALIGNED(user_addr) || !PAGE_ALIGNED(length) || !length)
 		return -EINVAL;
 
-	/* Check overflow */
+	 
 	if (user_addr + length < user_addr)
 		return -EINVAL;
 
@@ -322,21 +235,21 @@ int afu_dma_map_region(struct dfl_feature_platform_data *pdata,
 	region->user_addr = user_addr;
 	region->length = length;
 
-	/* Pin the user memory region */
+	 
 	ret = afu_dma_pin_pages(pdata, region);
 	if (ret) {
 		dev_err(&pdata->dev->dev, "failed to pin memory region\n");
 		goto free_region;
 	}
 
-	/* Only accept continuous pages, return error else */
+	 
 	if (!afu_dma_check_continuous_pages(region)) {
 		dev_err(&pdata->dev->dev, "pages are not continuous\n");
 		ret = -EINVAL;
 		goto unpin_pages;
 	}
 
-	/* As pages are continuous then start to do DMA mapping */
+	 
 	region->iova = dma_map_page(dfl_fpga_pdata_to_parent(pdata),
 				    region->pages[0], 0,
 				    region->length,
@@ -369,14 +282,7 @@ free_region:
 	return ret;
 }
 
-/**
- * afu_dma_unmap_region - unmap dma memory region
- * @pdata: feature device platform data
- * @iova: dma address of the region
- *
- * Unmap dma memory region based on @iova.
- * Return 0 for success, otherwise error code.
- */
+ 
 int afu_dma_unmap_region(struct dfl_feature_platform_data *pdata, u64 iova)
 {
 	struct dfl_afu_dma_region *region;

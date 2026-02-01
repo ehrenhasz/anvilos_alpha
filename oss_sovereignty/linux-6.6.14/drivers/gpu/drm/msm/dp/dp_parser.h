@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2012-2020, The Linux Foundation. All rights reserved.
- */
+ 
+ 
 
 #ifndef _DP_PARSER_H_
 #define _DP_PARSER_H_
@@ -15,7 +13,7 @@
 #define DP_LABEL "MDSS DP DISPLAY"
 #define DP_MAX_PIXEL_CLK_KHZ	675000
 #define DP_MAX_NUM_DP_LANES	4
-#define DP_LINK_RATE_HBR2	540000 /* kbytes */
+#define DP_LINK_RATE_HBR2	540000  
 
 enum dp_pm_type {
 	DP_CORE_PM,
@@ -48,15 +46,7 @@ static inline const char *dp_parser_pm_name(enum dp_pm_type module)
 	}
 }
 
-/**
- * struct dp_display_data  - display related device tree data.
- *
- * @ctrl_node: referece to controller device
- * @phy_node:  reference to phy device
- * @is_active: is the controller currently active
- * @name: name of the display
- * @display_type: type of the display
- */
+ 
 struct dp_display_data {
 	struct device_node *ctrl_node;
 	struct device_node *phy_node;
@@ -65,26 +55,14 @@ struct dp_display_data {
 	const char *display_type;
 };
 
-/**
- * struct dp_ctrl_resource - controller's IO related data
- *
- * @dp_controller: Display Port controller mapped memory address
- * @phy_io: phy's mapped memory address
- */
+ 
 struct dp_io {
 	struct dss_io_data dp_controller;
 	struct phy *phy;
 	union phy_configure_opts phy_opts;
 };
 
-/**
- * struct dp_pinctrl - DP's pin control
- *
- * @pin: pin-controller's instance
- * @state_active: active state pin control
- * @state_hpd_active: hpd active state pin control
- * @state_suspend: suspend state pin control
- */
+ 
 struct dp_pinctrl {
 	struct pinctrl *pin;
 	struct pinctrl_state *state_active;
@@ -92,7 +70,7 @@ struct dp_pinctrl {
 	struct pinctrl_state *state_suspend;
 };
 
-/* Regulators for DP devices */
+ 
 struct dp_reg_entry {
 	char name[32];
 	int enable_load;
@@ -104,15 +82,7 @@ struct dss_module_power {
 	struct clk_bulk_data *clocks;
 };
 
-/**
- * struct dp_parser - DP parser's data exposed to clients
- *
- * @pdev: platform data of the client
- * @mp: gpio, regulator and clock related data
- * @pinctrl: pin-control related data
- * @disp_data: controller's display related data
- * @parse: function to be called by client to parse device tree.
- */
+ 
 struct dp_parser {
 	struct platform_device *pdev;
 	struct dss_module_power mp[DP_MAX_PM];
@@ -126,30 +96,10 @@ struct dp_parser {
 	int (*parse)(struct dp_parser *parser);
 };
 
-/**
- * dp_parser_get() - get the DP's device tree parser module
- *
- * @pdev: platform data of the client
- * return: pointer to dp_parser structure.
- *
- * This function provides client capability to parse the
- * device tree and populate the data structures. The data
- * related to clock, regulators, pin-control and other
- * can be parsed using this module.
- */
+ 
 struct dp_parser *dp_parser_get(struct platform_device *pdev);
 
-/**
- * devm_dp_parser_find_next_bridge() - find an additional bridge to DP
- *
- * @dev: device to tie bridge lifetime to
- * @parser: dp_parser data from client
- *
- * This function is used to find any additional bridge attached to
- * the DP controller. The eDP interface requires a panel bridge.
- *
- * Return: 0 if able to get the bridge, otherwise negative errno for failure.
- */
+ 
 int devm_dp_parser_find_next_bridge(struct device *dev, struct dp_parser *parser);
 
 #endif

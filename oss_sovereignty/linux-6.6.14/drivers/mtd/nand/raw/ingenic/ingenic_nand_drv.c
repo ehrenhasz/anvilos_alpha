@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Ingenic JZ47xx NAND driver
- *
- * Copyright (c) 2015 Imagination Technologies
- * Author: Alex Smith <alex.smith@imgtec.com>
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/init.h>
@@ -152,10 +147,7 @@ static int ingenic_nand_ecc_calculate(struct nand_chip *chip, const u8 *dat,
 	struct ingenic_nfc *nfc = to_ingenic_nfc(nand->chip.controller);
 	struct ingenic_ecc_params params;
 
-	/*
-	 * Don't need to generate the ECC when reading, the ECC engine does it
-	 * for us as part of decoding/correction.
-	 */
+	 
 	if (nand->reading)
 		return 0;
 
@@ -187,7 +179,7 @@ static int ingenic_nand_attach_chip(struct nand_chip *chip)
 	int eccbytes;
 
 	if (chip->ecc.strength == 4) {
-		/* JZ4740 uses 9 bytes of ECC to correct maximum 4 errors */
+		 
 		chip->ecc.bytes = 9;
 	} else {
 		chip->ecc.bytes = fls((1 + 8) * chip->ecc.size)	*
@@ -219,11 +211,11 @@ static int ingenic_nand_attach_chip(struct nand_chip *chip)
 		return -EINVAL;
 	}
 
-	/* The NAND core will generate the ECC layout for SW ECC */
+	 
 	if (chip->ecc.engine_type != NAND_ECC_ENGINE_TYPE_ON_HOST)
 		return 0;
 
-	/* Generate ECC layout. ECC codes are right aligned in the OOB area. */
+	 
 	eccbytes = mtd->writesize / chip->ecc.size * chip->ecc.bytes;
 
 	if (eccbytes > mtd->oobsize - 2) {
@@ -233,17 +225,14 @@ static int ingenic_nand_attach_chip(struct nand_chip *chip)
 		return -EINVAL;
 	}
 
-	/*
-	 * The generic layout for BBT markers will most likely overlap with our
-	 * ECC bytes in the OOB, so move the BBT markers outside the OOB area.
-	 */
+	 
 	if (chip->bbt_options & NAND_BBT_USE_FLASH)
 		chip->bbt_options |= NAND_BBT_NO_OOB;
 
 	if (nfc->soc_info->oob_first)
 		chip->ecc.read_page = nand_read_page_hwecc_oob_first;
 
-	/* For legacy reasons we use a different layout on the qi,lb60 board. */
+	 
 	if (of_machine_is_compatible("qi,lb60"))
 		mtd_set_ooblayout(mtd, &qi_lb60_ooblayout_ops);
 	else if (nfc->soc_info->oob_layout)
@@ -380,14 +369,7 @@ static int ingenic_nand_init_chip(struct platform_device *pdev,
 		return ret;
 	}
 
-	/*
-	 * The rb-gpios semantics was undocumented and qi,lb60 (along with
-	 * the ingenic driver) got it wrong. The active state encodes the
-	 * NAND ready state, which is high level. Since there's no signal
-	 * inverter on this board, it should be active-high. Let's fix that
-	 * here for older DTs so we can re-use the generic nand_gpio_waitrdy()
-	 * helper, and be consistent with what other drivers do.
-	 */
+	 
 	if (of_machine_is_compatible("qi,lb60") &&
 	    gpiod_is_active_low(nand->busy_gpio))
 		gpiod_toggle_active_low(nand->busy_gpio);
@@ -496,10 +478,7 @@ static int ingenic_nand_probe(struct platform_device *pdev)
 	if (!nfc->soc_info)
 		return -EINVAL;
 
-	/*
-	 * Check for ECC HW before we call nand_scan_ident, to prevent us from
-	 * having to call it again if the ECC driver returns -EPROBE_DEFER.
-	 */
+	 
 	nfc->ecc = of_ingenic_ecc_get(dev->of_node);
 	if (IS_ERR(nfc->ecc))
 		return PTR_ERR(nfc->ecc);

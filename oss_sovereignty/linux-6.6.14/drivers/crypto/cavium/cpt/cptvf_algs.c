@@ -1,8 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0-only
 
-/*
- * Copyright (C) 2016 Cavium, Inc.
- */
+
+ 
 
 #include <crypto/aes.h>
 #include <crypto/algapi.h>
@@ -35,7 +33,7 @@ static inline void update_input_iv(struct cpt_request_info *req_info,
 				   u8 *iv, u32 enc_iv_len,
 				   u32 *argcnt)
 {
-	/* Setting the iv information */
+	 
 	req_info->in[*argcnt].vptr = (void *)iv;
 	req_info->in[*argcnt].size = enc_iv_len;
 	req_info->req.dlen += enc_iv_len;
@@ -47,7 +45,7 @@ static inline void update_output_iv(struct cpt_request_info *req_info,
 				    u8 *iv, u32 enc_iv_len,
 				    u32 *argcnt)
 {
-	/* Setting the iv information */
+	 
 	req_info->out[*argcnt].vptr = (void *)iv;
 	req_info->out[*argcnt].size = enc_iv_len;
 	req_info->rlen += enc_iv_len;
@@ -115,8 +113,8 @@ static inline u32 create_ctx_hdr(struct skcipher_request *req, u32 enc,
 	else
 		req_info->req.opcode.s.minor = 3;
 
-	req_info->req.param1 = req->cryptlen; /* Encryption Data length */
-	req_info->req.param2 = 0; /*Auth data length */
+	req_info->req.param1 = req->cryptlen;  
+	req_info->req.param2 = 0;  
 
 	fctx->enc.enc_ctrl.e.enc_cipher = ctx->cipher_type;
 	fctx->enc.enc_ctrl.e.aes_key = ctx->key_type;
@@ -131,9 +129,7 @@ static inline u32 create_ctx_hdr(struct skcipher_request *req, u32 enc,
 
 	offset_control = (__be64 *)&rctx->control_word;
 	*offset_control = cpu_to_be64(((u64)(enc_iv_len) << 16));
-	/* Storing  Packet Data Information in offset
-	 * Control Word First 8 bytes
-	 */
+	 
 	req_info->in[*argcnt].vptr = (u8 *)offset_control;
 	req_info->in[*argcnt].size = CONTROL_WORD_LEN;
 	req_info->req.dlen += CONTROL_WORD_LEN;
@@ -177,14 +173,8 @@ static inline void create_output_list(struct skcipher_request *req,
 	struct cpt_request_info *req_info = &rctx->cpt_req;
 	u32 argcnt = 0;
 
-	/* OUTPUT Buffer Processing
-	 * AES encryption/decryption output would be
-	 * received in the following format
-	 *
-	 * ------IV--------|------ENCRYPTED/DECRYPTED DATA-----|
-	 * [ 16 Bytes/     [   Request Enc/Dec/ DATA Len AES CBC ]
-	 */
-	/* Reading IV information */
+	 
+	 
 	update_output_iv(req_info, req->iv, enc_iv_len, &argcnt);
 	update_output_data(req_info, req->dst, req->cryptlen, &argcnt);
 	req_info->outcnt = argcnt;
@@ -208,10 +198,7 @@ static inline int cvm_enc_dec(struct skcipher_request *req, u32 enc)
 	store_cb_info(req, req_info);
 	cdev = dev_handle.cdev[smp_processor_id()];
 	status = cptvf_do_request(cdev, req_info);
-	/* We perform an asynchronous send and once
-	 * the request is completed the driver would
-	 * intimate through  registered call back functions
-	 */
+	 
 
 	if (status)
 		return status;

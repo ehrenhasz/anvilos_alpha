@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  SR-IPv6 implementation -- HMAC functions
- *
- *  Author:
- *  David Lebrun <david.lebrun@uclouvain.be>
- */
+
+ 
 
 #include <linux/errno.h>
 #include <linux/kernel.h>
@@ -165,46 +160,36 @@ int seg6_hmac_compute(struct seg6_hmac_info *hinfo, struct ipv6_sr_hdr *hdr,
 	int plen, i, dgsize, wrsize;
 	char *ring, *off;
 
-	/* a 160-byte buffer for digest output allows to store highest known
-	 * hash function (RadioGatun) with up to 1216 bits
-	 */
+	 
 
-	/* saddr(16) + first_seg(1) + flags(1) + keyid(4) + seglist(16n) */
+	 
 	plen = 16 + 1 + 1 + 4 + (hdr->first_segment + 1) * 16;
 
-	/* this limit allows for 14 segments */
+	 
 	if (plen >= SEG6_HMAC_RING_SIZE)
 		return -EMSGSIZE;
 
-	/* Let's build the HMAC text on the ring buffer. The text is composed
-	 * as follows, in order:
-	 *
-	 * 1. Source IPv6 address (128 bits)
-	 * 2. first_segment value (8 bits)
-	 * 3. Flags (8 bits)
-	 * 4. HMAC Key ID (32 bits)
-	 * 5. All segments in the segments list (n * 128 bits)
-	 */
+	 
 
 	local_bh_disable();
 	ring = this_cpu_ptr(hmac_ring);
 	off = ring;
 
-	/* source address */
+	 
 	memcpy(off, saddr, 16);
 	off += 16;
 
-	/* first_segment value */
+	 
 	*off++ = hdr->first_segment;
 
-	/* flags */
+	 
 	*off++ = hdr->flags;
 
-	/* HMAC Key ID */
+	 
 	memcpy(off, &hmackeyid, 4);
 	off += 4;
 
-	/* all segments in the list */
+	 
 	for (i = 0; i < hdr->first_segment + 1; i++) {
 		memcpy(off, hdr->segments + i, 16);
 		off += 16;
@@ -228,11 +213,7 @@ int seg6_hmac_compute(struct seg6_hmac_info *hinfo, struct ipv6_sr_hdr *hdr,
 }
 EXPORT_SYMBOL(seg6_hmac_compute);
 
-/* checks if an incoming SR-enabled packet's HMAC status matches
- * the incoming policy.
- *
- * called with rcu_read_lock()
- */
+ 
 bool seg6_hmac_validate_skb(struct sk_buff *skb)
 {
 	u8 hmac_output[SEG6_HMAC_FIELD_LEN];
@@ -248,19 +229,19 @@ bool seg6_hmac_validate_skb(struct sk_buff *skb)
 
 	tlv = seg6_get_tlv_hmac(srh);
 
-	/* mandatory check but no tlv */
+	 
 	if (idev->cnf.seg6_require_hmac > 0 && !tlv)
 		return false;
 
-	/* no check */
+	 
 	if (idev->cnf.seg6_require_hmac < 0)
 		return true;
 
-	/* check only if present */
+	 
 	if (idev->cnf.seg6_require_hmac == 0 && !tlv)
 		return true;
 
-	/* now, seg6_require_hmac >= 0 && tlv */
+	 
 
 	hinfo = seg6_hmac_info_lookup(net, be32_to_cpu(tlv->hmackeyid));
 	if (!hinfo)
@@ -276,7 +257,7 @@ bool seg6_hmac_validate_skb(struct sk_buff *skb)
 }
 EXPORT_SYMBOL(seg6_hmac_validate_skb);
 
-/* called with rcu_read_lock() */
+ 
 struct seg6_hmac_info *seg6_hmac_info_lookup(struct net *net, u32 key)
 {
 	struct seg6_pernet_data *sdata = seg6_pernet(net);

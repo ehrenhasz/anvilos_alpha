@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *  linux/fs/befs/debug.c
- *
- * Copyright (C) 2001 Will Dyson (will_dyson at pobox.com)
- *
- * With help from the ntfs-tng driver by Anton Altparmakov
- *
- * Copyright (C) 1999  Makoto Kato (m_kato@ga2.so-net.ne.jp)
- *
- * debug functions
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 #ifdef __KERNEL__
@@ -21,7 +11,7 @@
 #include <linux/fs.h>
 #include <linux/slab.h>
 
-#endif				/* __KERNEL__ */
+#endif				 
 
 #include "befs.h"
 
@@ -65,7 +55,7 @@ befs_debug(const struct super_block *sb, const char *fmt, ...)
 	pr_debug("(%s): %pV\n", sb->s_id, &vaf);
 	va_end(args);
 
-#endif				//CONFIG_BEFS_DEBUG
+#endif				
 }
 
 void
@@ -145,12 +135,10 @@ befs_dump_inode(const struct super_block *sb, befs_inode *inode)
 			   fs64_to_cpu(sb, inode->data.datastream.size));
 	}
 
-#endif				//CONFIG_BEFS_DEBUG
+#endif				
 }
 
-/*
- * Display super block structure for debug.
- */
+ 
 
 void
 befs_dump_super_block(const struct super_block *sb, befs_super_block *sup)
@@ -198,17 +186,17 @@ befs_dump_super_block(const struct super_block *sb, befs_super_block *sup)
 	befs_debug(sb, "  indices %u, %hu, %hu",
 		   tmp_run.allocation_group, tmp_run.start, tmp_run.len);
 
-#endif				//CONFIG_BEFS_DEBUG
+#endif				
 }
 
 #if 0
-/* unused */
+ 
 void
 befs_dump_small_data(const struct super_block *sb, befs_small_data *sd)
 {
 }
 
-/* unused */
+ 
 void
 befs_dump_run(const struct super_block *sb, befs_disk_block_run run)
 {
@@ -218,9 +206,9 @@ befs_dump_run(const struct super_block *sb, befs_disk_block_run run)
 
 	befs_debug(sb, "[%u, %hu, %hu]", n.allocation_group, n.start, n.len);
 
-#endif				//CONFIG_BEFS_DEBUG
+#endif				
 }
-#endif  /*  0  */
+#endif   
 
 void
 befs_dump_index_entry(const struct super_block *sb,
@@ -241,7 +229,7 @@ befs_dump_index_entry(const struct super_block *sb,
 	befs_debug(sb, "  maximum size %016LX",
 		   fs64_to_cpu(sb, super->max_size));
 
-#endif				//CONFIG_BEFS_DEBUG
+#endif				
 }
 
 void
@@ -258,5 +246,5 @@ befs_dump_index_node(const struct super_block *sb, befs_btree_nodehead *node)
 	befs_debug(sb, "  all_key_length %hu",
 		   fs16_to_cpu(sb, node->all_key_length));
 
-#endif				//CONFIG_BEFS_DEBUG
+#endif				
 }

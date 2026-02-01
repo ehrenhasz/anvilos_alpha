@@ -1,9 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// MediaTek ALSA SoC Audio Misc Control
-//
-// Copyright (c) 2022 MediaTek Inc.
-// Author: Jiaxin Yu <jiaxin.yu@mediatek.com>
+
+
+
+
+
+
 
 #include <linux/delay.h>
 #include <linux/dma-mapping.h>
@@ -67,7 +67,7 @@ static const int mt8186_sgen_rate_idx[] = {
 	14
 };
 
-/* this order must match reg bit amp_div_ch1/2 */
+ 
 static const char * const mt8186_sgen_amp_str[] = {
 	"1/128", "1/64", "1/32", "1/16", "1/8", "1/4", "1/2", "1" };
 
@@ -112,7 +112,7 @@ static int mt8186_sgen_set(struct snd_kcontrol *kcontrol,
 		regmap_update_bits(afe->regmap, AFE_SINEGEN_CON0,
 				   DAC_EN_MASK_SFT, BIT(DAC_EN_SFT));
 	} else {
-		/* disable sgen */
+		 
 		regmap_update_bits(afe->regmap, AFE_SINEGEN_CON0,
 				   DAC_EN_MASK_SFT, 0);
 		regmap_update_bits(afe->regmap, AFE_SINEGEN_CON2,

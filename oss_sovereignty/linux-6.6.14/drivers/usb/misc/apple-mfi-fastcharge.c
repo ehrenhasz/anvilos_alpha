@@ -1,11 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Fast-charge control for Apple "MFi" devices
- *
- * Copyright (C) 2019 Bastien Nocera <hadess@hadess.net>
- */
 
-/* Standard include files */
+ 
+
+ 
 #include <linux/module.h>
 #include <linux/power_supply.h>
 #include <linux/slab.h>
@@ -18,19 +14,9 @@ MODULE_LICENSE("GPL");
 #define TRICKLE_CURRENT_MA		0
 #define FAST_CURRENT_MA			2500
 
-#define APPLE_VENDOR_ID			0x05ac	/* Apple */
+#define APPLE_VENDOR_ID			0x05ac	 
 
-/* The product ID is defined as starting with 0x12nn, as per the
- * "Choosing an Apple Device USB Configuration" section in
- * release R9 (2012) of the "MFi Accessory Hardware Specification"
- *
- * To distinguish an Apple device, a USB host can check the device
- * descriptor of attached USB devices for the following fields:
- * ■ Vendor ID: 0x05AC
- * ■ Product ID: 0x12nn
- *
- * Those checks will be done in .match() and .probe().
- */
+ 
 
 static const struct usb_device_id mfi_fc_id_table[] = {
 	{ .idVendor = APPLE_VENDOR_ID,
@@ -40,7 +26,7 @@ static const struct usb_device_id mfi_fc_id_table[] = {
 
 MODULE_DEVICE_TABLE(usb, mfi_fc_id_table);
 
-/* Driver-local specific stuff */
+ 
 struct mfi_device {
 	struct usb_device *udev;
 	struct power_supply *battery;
@@ -73,10 +59,10 @@ static int apple_mfi_fc_set_charge_type(struct mfi_device *mfi,
 
 	request_type = USB_DIR_OUT | USB_TYPE_VENDOR | USB_RECIP_DEVICE;
 	retval = usb_control_msg(mfi->udev, usb_sndctrlpipe(mfi->udev, 0),
-				 0x40, /* Vendor‐defined power request */
+				 0x40,  
 				 request_type,
-				 current_ma, /* wValue, current offset */
-				 current_ma, /* wIndex, current offset */
+				 current_ma,  
+				 current_ma,  
 				 NULL, 0, USB_CTRL_GET_TIMEOUT);
 	if (retval) {
 		dev_dbg(&mfi->udev->dev, "retval = %d\n", retval);
@@ -170,7 +156,7 @@ static bool mfi_fc_match(struct usb_device *udev)
 	int idProduct;
 
 	idProduct = le16_to_cpu(udev->descriptor.idProduct);
-	/* See comment above mfi_fc_id_table[] */
+	 
 	return (idProduct >= 0x1200 && idProduct <= 0x12ff);
 }
 

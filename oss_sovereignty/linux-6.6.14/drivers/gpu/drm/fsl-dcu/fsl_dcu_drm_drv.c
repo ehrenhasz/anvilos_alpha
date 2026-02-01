@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright 2015 Freescale Semiconductor, Inc.
- *
- * Freescale DCU drm device driver
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/clk-provider.h>
@@ -297,7 +293,7 @@ static int fsl_dcu_drm_probe(struct platform_device *pdev)
 
 	pix_clk_in = devm_clk_get(dev, "pix");
 	if (IS_ERR(pix_clk_in)) {
-		/* legancy binding, use dcu clock as pixel clock input */
+		 
 		pix_clk_in = fsl_dev->clk;
 	}
 

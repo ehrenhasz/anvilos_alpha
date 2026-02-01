@@ -1,9 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0
- *
- * Copyright 2019-2022 HabanaLabs, Ltd.
- * All Rights Reserved.
- *
- */
+ 
 
 #ifndef GAUDIP_H_
 #define GAUDIP_H_
@@ -24,25 +19,25 @@
 					NUMBER_OF_CPU_HW_QUEUES + \
 					NUMBER_OF_INT_HW_QUEUES)
 
-/* 10 NIC QMANs, DMA5 QMAN, TPC7 QMAN */
+ 
 #define NUMBER_OF_COLLECTIVE_QUEUES	12
 #define NUMBER_OF_SOBS_IN_GRP		11
 
 #define GAUDI_STREAM_MASTER_ARR_SIZE	8
 
-#define CORESIGHT_TIMEOUT_USEC		100000		/* 100 ms */
+#define CORESIGHT_TIMEOUT_USEC		100000		 
 
-#define GAUDI_MAX_CLK_FREQ		2200000000ull	/* 2200 MHz */
+#define GAUDI_MAX_CLK_FREQ		2200000000ull	 
 
-#define MAX_POWER_DEFAULT_PCI		200000		/* 200W */
-#define MAX_POWER_DEFAULT_PMC		350000		/* 350W */
+#define MAX_POWER_DEFAULT_PCI		200000		 
+#define MAX_POWER_DEFAULT_PMC		350000		 
 
-#define DC_POWER_DEFAULT_PCI		60000		/* 60W */
-#define DC_POWER_DEFAULT_PMC		60000		/* 60W */
+#define DC_POWER_DEFAULT_PCI		60000		 
+#define DC_POWER_DEFAULT_PMC		60000		 
 
-#define DC_POWER_DEFAULT_PMC_SEC	97000		/* 97W */
+#define DC_POWER_DEFAULT_PMC_SEC	97000		 
 
-#define GAUDI_CPU_TIMEOUT_USEC		30000000	/* 30s */
+#define GAUDI_CPU_TIMEOUT_USEC		30000000	 
 
 #define TPC_ENABLED_MASK		0xFF
 
@@ -111,12 +106,12 @@
 
 #define MONITOR_MAX_SOBS	8
 
-/* DRAM Memory Map */
+ 
 
-#define CPU_FW_IMAGE_SIZE	0x10000000	/* 256MB */
-#define MMU_PAGE_TABLES_SIZE	0x0BF00000	/* 191MB */
-#define MMU_CACHE_MNG_SIZE	0x00100000	/* 1MB */
-#define RESERVED		0x04000000	/* 64MB */
+#define CPU_FW_IMAGE_SIZE	0x10000000	 
+#define MMU_PAGE_TABLES_SIZE	0x0BF00000	 
+#define MMU_CACHE_MNG_SIZE	0x00100000	 
+#define RESERVED		0x04000000	 
 
 #define CPU_FW_IMAGE_ADDR	DRAM_PHYS_BASE
 #define MMU_PAGE_TABLES_ADDR	(CPU_FW_IMAGE_ADDR + CPU_FW_IMAGE_SIZE)
@@ -131,7 +126,7 @@
 #error "Driver must reserve no more than 512MB"
 #endif
 
-/* Internal QMANs PQ sizes */
+ 
 
 #define MME_QMAN_LENGTH			1024
 #define MME_QMAN_SIZE_IN_BYTES		(MME_QMAN_LENGTH * QMAN_PQ_ENTRY_SIZE)
@@ -149,11 +144,11 @@
 
 #define SRAM_USER_BASE_OFFSET  GAUDI_DRIVER_SRAM_RESERVED_SIZE_FROM_START
 
-/* Virtual address space */
-#define VA_HOST_SPACE_START	0x1000000000000ull	/* 256TB */
-#define VA_HOST_SPACE_END	0x3FF8000000000ull	/* 1PB - 512GB */
+ 
+#define VA_HOST_SPACE_START	0x1000000000000ull	 
+#define VA_HOST_SPACE_END	0x3FF8000000000ull	 
 #define VA_HOST_SPACE_SIZE	(VA_HOST_SPACE_END - \
-					VA_HOST_SPACE_START) /* 767TB */
+					VA_HOST_SPACE_START)  
 #define HOST_SPACE_INTERNAL_CB_SZ	SZ_2M
 
 #define HW_CAP_PLL		BIT(0)
@@ -254,13 +249,7 @@ enum gaudi_nic_mask {
 	GAUDI_NIC_MASK_ALL = 0x3FF
 };
 
-/*
- * struct gaudi_hw_sob_group - H/W SOB group info.
- * @hdev: habanalabs device structure.
- * @kref: refcount of this SOB group. group will reset once refcount is zero.
- * @base_sob_id: base sob id of this SOB group.
- * @queue_id: id of the queue that waits on this sob group
- */
+ 
 struct gaudi_hw_sob_group {
 	struct hl_device	*hdev;
 	struct kref		kref;
@@ -269,14 +258,7 @@ struct gaudi_hw_sob_group {
 };
 
 #define NUM_SOB_GROUPS (HL_RSVD_SOBS * QMAN_STREAMS)
-/**
- * struct gaudi_collective_properties -
- *     holds all SOB groups and queues info reserved for the collective
- * @hw_sob_group: H/W SOB groups.
- * @next_sob_group_val: the next value to use for the currently used SOB group.
- * @curr_sob_group_idx: the index of the currently used SOB group.
- * @mstr_sob_mask: pre-defined masks for collective master monitors
- */
+ 
 struct gaudi_collective_properties {
 	struct gaudi_hw_sob_group hw_sob_group[NUM_SOB_GROUPS];
 	u16			next_sob_group_val[QMAN_STREAMS];
@@ -284,41 +266,18 @@ struct gaudi_collective_properties {
 	u8			mstr_sob_mask[HL_COLLECTIVE_RSVD_MSTR_MONS];
 };
 
-/**
- * struct gaudi_internal_qman_info - Internal QMAN information.
- * @pq_kernel_addr: Kernel address of the PQ memory area in the host.
- * @pq_dma_addr: DMA address of the PQ memory area in the host.
- * @pq_size: Size of allocated host memory for PQ.
- */
+ 
 struct gaudi_internal_qman_info {
 	void		*pq_kernel_addr;
 	dma_addr_t	pq_dma_addr;
 	size_t		pq_size;
 };
 
-/**
- * struct gaudi_device - ASIC specific manage structure.
- * @cpucp_info_get: get information on device from CPU-CP
- * @hw_queues_lock: protects the H/W queues from concurrent access.
- * @internal_qmans: Internal QMANs information. The array size is larger than
- *                  the actual number of internal queues because they are not in
- *                  consecutive order.
- * @hbm_bar_cur_addr: current address of HBM PCI bar.
- * @events: array that holds all event id's
- * @events_stat: array that holds histogram of all received events.
- * @events_stat_aggregate: same as events_stat but doesn't get cleared on reset
- * @hw_cap_initialized: This field contains a bit per H/W engine. When that
- *                      engine is initialized, that bit is set by the driver to
- *                      signal we can use this engine in later code paths.
- *                      Each bit is cleared upon reset of its corresponding H/W
- *                      engine.
- * @mmu_cache_inv_pi: PI for MMU cache invalidation flow. The H/W expects an
- *                    8-bit value so use u8.
- */
+ 
 struct gaudi_device {
 	int (*cpucp_info_get)(struct hl_device *hdev);
 
-	/* TODO: remove hw_queues_lock after moving to scheduler code */
+	 
 	spinlock_t			hw_queues_lock;
 
 	struct gaudi_internal_qman_info	internal_qmans[GAUDI_QUEUE_ID_SIZE];
@@ -340,4 +299,4 @@ int gaudi_debug_coresight(struct hl_device *hdev, struct hl_ctx *ctx, void *data
 void gaudi_halt_coresight(struct hl_device *hdev, struct hl_ctx *ctx);
 void gaudi_mmu_prepare_reg(struct hl_device *hdev, u64 reg, u32 asid);
 
-#endif /* GAUDIP_H_ */
+#endif  

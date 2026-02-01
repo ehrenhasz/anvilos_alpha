@@ -1,29 +1,5 @@
-/*
- * Copyright 2017 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
-/*
- * stream_encoder.h
- *
- */
+ 
+ 
 
 #ifndef STREAM_ENCODER_H_
 #define STREAM_ENCODER_H_
@@ -53,11 +29,11 @@ enum dp_component_depth {
 };
 
 struct audio_clock_info {
-	/* pixel clock frequency*/
+	 
 	uint32_t pixel_clock_in_10khz;
-	/* N - 32KHz audio */
+	 
 	uint32_t n_32khz;
-	/* CTS - 32KHz audio*/
+	 
 	uint32_t cts_32khz;
 	uint32_t n_44khz;
 	uint32_t cts_44khz;
@@ -72,25 +48,25 @@ enum dynamic_metadata_mode {
 };
 
 struct enc_sdp_line_num {
-	/* Adaptive Sync SDP */
+	 
 	bool adaptive_sync_line_num_valid;
 	uint32_t adaptive_sync_line_num;
 };
 
 struct encoder_info_frame {
-	/* auxiliary video information */
+	 
 	struct dc_info_packet avi;
 	struct dc_info_packet gamut;
 	struct dc_info_packet vendor;
 	struct dc_info_packet hfvsif;
 	struct dc_info_packet vtem;
-	/* source product description */
+	 
 	struct dc_info_packet spd;
-	/* video stream configuration */
+	 
 	struct dc_info_packet vsc;
-	/* HDR Static MetaData */
+	 
 	struct dc_info_packet hdrsmd;
-	/* Adaptive Sync SDP*/
+	 
 	struct dc_info_packet adaptive_sync;
 	struct enc_sdp_line_num sdp_line_num;
 };
@@ -119,7 +95,7 @@ struct stream_encoder {
 };
 
 struct enc_state {
-	uint32_t dsc_mode;  // DISABLED  0; 1 or 2 indicate enabled state.
+	uint32_t dsc_mode;  
 	uint32_t dsc_slice_width;
 	uint32_t sec_gsp_pps_line_num;
 	uint32_t vbid6_line_reference;
@@ -255,9 +231,7 @@ struct stream_encoder_funcs {
 			uint32_t hubp_requestor_id,
 			enum dynamic_metadata_mode dmdata_mode);
 
-	/**
-	 * @dp_set_odm_combine: Sets up DP stream encoder for ODM.
-	 */
+	 
 	void (*dp_set_odm_combine)(
 		struct stream_encoder *enc,
 		bool odm_combine);
@@ -357,4 +331,4 @@ struct hpo_dp_stream_encoder_funcs {
 			uint16_t width);
 };
 
-#endif /* STREAM_ENCODER_H_ */
+#endif  

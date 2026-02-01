@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: ISC
-/*
- * Copyright (c) 2005-2011 Atheros Communications Inc.
- * Copyright (c) 2011-2017 Qualcomm Atheros, Inc.
- * Copyright (c) 2018-2019, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/skbuff.h>
 #include <linux/ctype.h>
@@ -25,7 +21,7 @@
 #define ATH10K_WMI_BARRIER_TIMEOUT_HZ (3 * HZ)
 #define ATH10K_WMI_DFS_CONF_TIMEOUT_HZ (HZ / 6)
 
-/* MAIN WMI cmd track */
+ 
 static struct wmi_cmd_map wmi_cmd_map = {
 	.init_cmdid = WMI_INIT_CMDID,
 	.start_scan_cmdid = WMI_START_SCAN_CMDID,
@@ -192,7 +188,7 @@ static struct wmi_cmd_map wmi_cmd_map = {
 	.radar_found_cmdid = WMI_CMD_UNSUPPORTED,
 };
 
-/* 10.X WMI cmd track */
+ 
 static struct wmi_cmd_map wmi_10x_cmd_map = {
 	.init_cmdid = WMI_10X_INIT_CMDID,
 	.start_scan_cmdid = WMI_10X_START_SCAN_CMDID,
@@ -361,7 +357,7 @@ static struct wmi_cmd_map wmi_10x_cmd_map = {
 	.radar_found_cmdid = WMI_CMD_UNSUPPORTED,
 };
 
-/* 10.2.4 WMI cmd track */
+ 
 static struct wmi_cmd_map wmi_10_2_4_cmd_map = {
 	.init_cmdid = WMI_10_2_INIT_CMDID,
 	.start_scan_cmdid = WMI_10_2_START_SCAN_CMDID,
@@ -531,7 +527,7 @@ static struct wmi_cmd_map wmi_10_2_4_cmd_map = {
 	.set_bb_timing_cmdid = WMI_10_2_PDEV_SET_BB_TIMING_CONFIG_CMDID,
 };
 
-/* 10.4 WMI cmd track */
+ 
 static struct wmi_cmd_map wmi_10_4_cmd_map = {
 	.init_cmdid = WMI_10_4_INIT_CMDID,
 	.start_scan_cmdid = WMI_10_4_START_SCAN_CMDID,
@@ -756,7 +752,7 @@ static struct wmi_peer_param_map wmi_peer_param_map = {
 	.dummy_var = WMI_PEER_DUMMY_VAR,
 };
 
-/* MAIN WMI VDEV param map */
+ 
 static struct wmi_vdev_param_map wmi_vdev_param_map = {
 	.rts_threshold = WMI_VDEV_PARAM_RTS_THRESHOLD,
 	.fragmentation_threshold = WMI_VDEV_PARAM_FRAGMENTATION_THRESHOLD,
@@ -833,7 +829,7 @@ static struct wmi_vdev_param_map wmi_vdev_param_map = {
 	.rtt_responder_role = WMI_VDEV_PARAM_UNSUPPORTED,
 };
 
-/* 10.X WMI VDEV param map */
+ 
 static struct wmi_vdev_param_map wmi_10x_vdev_param_map = {
 	.rts_threshold = WMI_10X_VDEV_PARAM_RTS_THRESHOLD,
 	.fragmentation_threshold = WMI_10X_VDEV_PARAM_FRAGMENTATION_THRESHOLD,
@@ -1353,7 +1349,7 @@ static struct wmi_pdev_param_map wmi_10_2_4_pdev_param_map = {
 	.enable_btcoex = WMI_PDEV_PARAM_UNSUPPORTED,
 };
 
-/* firmware 10.2 specific mappings */
+ 
 static struct wmi_cmd_map wmi_10_2_cmd_map = {
 	.init_cmdid = WMI_10_2_INIT_CMDID,
 	.start_scan_cmdid = WMI_10_2_START_SCAN_CMDID,
@@ -1739,10 +1735,10 @@ void ath10k_wmi_put_wmi_channel(struct ath10k *ar, struct wmi_channel *ch,
 
 		ch->band_center_freq1 =
 					__cpu_to_le32(band_center_freq1);
-		/* Minus 10 to get a defined 5G channel frequency*/
+		 
 		chan = ieee80211_get_channel(ar->hw->wiphy,
 					     band_center_freq2 - 10);
-		/* The center frequency of the entire VHT160 */
+		 
 		ch->band_center_freq2 = __cpu_to_le32(arg->band_center_freq1);
 	}
 
@@ -1755,7 +1751,7 @@ void ath10k_wmi_put_wmi_channel(struct ath10k *ar, struct wmi_channel *ch,
 	ch->antenna_max = arg->max_antenna_gain;
 	ch->max_tx_power = arg->max_power;
 
-	/* mode & flags share storage */
+	 
 	ch->mode = arg->mode;
 	ch->flags |= __cpu_to_le32(flags);
 }
@@ -1901,7 +1897,7 @@ static void ath10k_wmi_tx_beacons_nowait(struct ath10k *ar)
 
 static void ath10k_wmi_op_ep_tx_credits(struct ath10k *ar)
 {
-	/* try to send pending beacons first. they take priority */
+	 
 	ath10k_wmi_tx_beacons_nowait(ar);
 
 	wake_up(&ar->wmi.tx_credits_wq);
@@ -1920,7 +1916,7 @@ int ath10k_wmi_cmd_send(struct ath10k *ar, struct sk_buff *skb, u32 cmd_id)
 	}
 
 	wait_event_timeout(ar->wmi.tx_credits_wq, ({
-		/* try to send pending beacons first. they take priority */
+		 
 		ath10k_wmi_tx_beacons_nowait(ar);
 
 		ret = ath10k_wmi_cmd_send_nowait(ar, skb, cmd_id);
@@ -2066,14 +2062,7 @@ static void ath10k_wmi_event_scan_completed(struct ath10k *ar)
 	switch (ar->scan.state) {
 	case ATH10K_SCAN_IDLE:
 	case ATH10K_SCAN_STARTING:
-		/* One suspected reason scan can be completed while starting is
-		 * if firmware fails to deliver all scan events to the host,
-		 * e.g. when transport pipe is full. This has been observed
-		 * with spectral scan phyerr events starving wmi transport
-		 * pipe. In such case the "scan completed" event should be (and
-		 * is) ignored by the host as it may be just firmware's scan
-		 * state machine recovering.
-		 */
+		 
 		ath10k_warn(ar, "received scan completed event in an invalid scan state: %s (%d)\n",
 			    ath10k_scan_state_str(ar->scan.state),
 			    ar->scan.state);
@@ -2246,9 +2235,7 @@ int ath10k_wmi_event_scan(struct ath10k *ar, struct sk_buff *skb)
 	return 0;
 }
 
-/* If keys are configured, HW decrypts all frames
- * with protected bit set. Mark such frames as decrypted.
- */
+ 
 static void ath10k_wmi_handle_wep_reauth(struct ath10k *ar,
 					 struct sk_buff *skb,
 					 struct ieee80211_rx_status *status)
@@ -2323,9 +2310,7 @@ static int ath10k_wmi_op_pull_mgmt_rx_ev(struct ath10k *ar, struct sk_buff *skb,
 		memcpy(&arg->ext_info, ext_info,
 		       sizeof(struct wmi_mgmt_rx_ext_info));
 	}
-	/* the WMI buffer might've ended up being padded to 4 bytes due to HTC
-	 * trailer with credit update. Trim the excess garbage.
-	 */
+	 
 	skb_trim(skb, msdu_len);
 
 	return 0;
@@ -2368,7 +2353,7 @@ static int ath10k_wmi_10_4_op_pull_mgmt_rx_ev(struct ath10k *ar,
 		       sizeof(struct wmi_mgmt_rx_ext_info));
 	}
 
-	/* Make sure bytes added for padding are removed. */
+	 
 	skb_trim(skb, msdu_len);
 
 	return 0;
@@ -2380,16 +2365,11 @@ static bool ath10k_wmi_rx_is_decrypted(struct ath10k *ar,
 	if (!ieee80211_has_protected(hdr->frame_control))
 		return false;
 
-	/* FW delivers WEP Shared Auth frame with Protected Bit set and
-	 * encrypted payload. However in case of PMF it delivers decrypted
-	 * frames with Protected Bit set.
-	 */
+	 
 	if (ieee80211_is_auth(hdr->frame_control))
 		return false;
 
-	/* qca99x0 based FW delivers broadcast or multicast management frames
-	 * (ex: group privacy action frames in mesh) as encrypted payload.
-	 */
+	 
 	if (is_multicast_ether_addr(ieee80211_get_DA(hdr)) &&
 	    ar->hw_params.sw_decrypt_mcast_mgmt)
 		return false;
@@ -2543,18 +2523,13 @@ int ath10k_wmi_event_mgmt_rx(struct ath10k *ar, struct sk_buff *skb)
 			__le64_to_cpu(arg.ext_info.rx_mac_timestamp);
 		status->flag |= RX_FLAG_MACTIME_END;
 	}
-	/* Hardware can Rx CCK rates on 5GHz. In that case phy_mode is set to
-	 * MODE_11B. This means phy_mode is not a reliable source for the band
-	 * of mgmt rx.
-	 */
+	 
 	if (channel >= 1 && channel <= 14) {
 		status->band = NL80211_BAND_2GHZ;
 	} else if (channel >= 36 && channel <= ATH10K_MAX_5G_CHAN) {
 		status->band = NL80211_BAND_5GHZ;
 	} else {
-		/* Shouldn't happen unless list of advertised channels to
-		 * mac80211 has been changed.
-		 */
+		 
 		WARN_ON_ONCE(1);
 		dev_kfree_skb(skb);
 		return 0;
@@ -2586,10 +2561,7 @@ int ath10k_wmi_event_mgmt_rx(struct ath10k *ar, struct sk_buff *skb)
 	hdr = (struct ieee80211_hdr *)skb->data;
 	fc = le16_to_cpu(hdr->frame_control);
 
-	/* Firmware is guaranteed to report all essential management frames via
-	 * WMI while it can deliver some extra via HTT. Since there can be
-	 * duplicates split the reporting wrt monitor/sniffing.
-	 */
+	 
 	status->flag |= RX_FLAG_SKIP_MONITOR;
 
 	ath10k_wmi_handle_wep_reauth(ar, skb, status);
@@ -2690,10 +2662,7 @@ static int ath10k_wmi_10_4_op_pull_ch_info_ev(struct ath10k *ar,
 	return 0;
 }
 
-/*
- * Handle the channel info event for firmware which only sends one
- * chan_info event per scanned channel.
- */
+ 
 static void ath10k_wmi_event_chan_info_unpaired(struct ath10k *ar,
 						struct chan_info_params *params)
 {
@@ -2726,10 +2695,7 @@ static void ath10k_wmi_event_chan_info_unpaired(struct ath10k *ar,
 			  SURVEY_INFO_TIME_BUSY;
 }
 
-/*
- * Handle the channel info event for firmware which sends chan_info
- * event in pairs(start and stop events) for every scanned channel.
- */
+ 
 static void ath10k_wmi_event_chan_info_paired(struct ath10k *ar,
 					      struct chan_info_params *params)
 {
@@ -3028,7 +2994,7 @@ static int ath10k_wmi_main_op_pull_fw_stats(struct ath10k *ar,
 		list_add_tail(&dst->list, &stats->pdevs);
 	}
 
-	/* fw doesn't implement vdev stats */
+	 
 
 	for (i = 0; i < num_peer_stats; i++) {
 		const struct wmi_peer_stats *src;
@@ -3083,7 +3049,7 @@ static int ath10k_wmi_10x_op_pull_fw_stats(struct ath10k *ar,
 		list_add_tail(&dst->list, &stats->pdevs);
 	}
 
-	/* fw doesn't implement vdev stats */
+	 
 
 	for (i = 0; i < num_peer_stats; i++) {
 		const struct wmi_10x_peer_stats *src;
@@ -3140,7 +3106,7 @@ static int ath10k_wmi_10_2_op_pull_fw_stats(struct ath10k *ar,
 		ath10k_wmi_pull_pdev_stats_tx(&src->tx, dst);
 		ath10k_wmi_pull_pdev_stats_rx(&src->rx, dst);
 		ath10k_wmi_pull_pdev_stats_extra(&src->extra, dst);
-		/* FIXME: expose 10.2 specific values */
+		 
 
 		list_add_tail(&dst->list, &stats->pdevs);
 	}
@@ -3152,14 +3118,10 @@ static int ath10k_wmi_10_2_op_pull_fw_stats(struct ath10k *ar,
 		if (!skb_pull(skb, sizeof(*src)))
 			return -EPROTO;
 
-		/* FIXME: expose values to userspace
-		 *
-		 * Note: Even though this loop seems to do nothing it is
-		 * required to parse following sub-structures properly.
-		 */
+		 
 	}
 
-	/* fw doesn't implement vdev stats */
+	 
 
 	for (i = 0; i < num_peer_stats; i++) {
 		const struct wmi_10_2_peer_stats *src;
@@ -3176,7 +3138,7 @@ static int ath10k_wmi_10_2_op_pull_fw_stats(struct ath10k *ar,
 		ath10k_wmi_pull_peer_stats(&src->old, dst);
 
 		dst->peer_rx_rate = __le32_to_cpu(src->peer_rx_rate);
-		/* FIXME: expose 10.2 specific values */
+		 
 
 		list_add_tail(&dst->list, &stats->peers);
 	}
@@ -3217,7 +3179,7 @@ static int ath10k_wmi_10_2_4_op_pull_fw_stats(struct ath10k *ar,
 		ath10k_wmi_pull_pdev_stats_tx(&src->tx, dst);
 		ath10k_wmi_pull_pdev_stats_rx(&src->rx, dst);
 		ath10k_wmi_pull_pdev_stats_extra(&src->extra, dst);
-		/* FIXME: expose 10.2 specific values */
+		 
 
 		list_add_tail(&dst->list, &stats->pdevs);
 	}
@@ -3229,14 +3191,10 @@ static int ath10k_wmi_10_2_4_op_pull_fw_stats(struct ath10k *ar,
 		if (!skb_pull(skb, sizeof(*src)))
 			return -EPROTO;
 
-		/* FIXME: expose values to userspace
-		 *
-		 * Note: Even though this loop seems to do nothing it is
-		 * required to parse following sub-structures properly.
-		 */
+		 
 	}
 
-	/* fw doesn't implement vdev stats */
+	 
 
 	for (i = 0; i < num_peer_stats; i++) {
 		const struct wmi_10_2_4_ext_peer_stats *src;
@@ -3262,7 +3220,7 @@ static int ath10k_wmi_10_2_4_op_pull_fw_stats(struct ath10k *ar,
 
 		if (ath10k_peer_stats_enabled(ar))
 			dst->rx_duration = __le32_to_cpu(src->rx_duration);
-		/* FIXME: expose 10.2 specific values */
+		 
 
 		list_add_tail(&dst->list, &stats->peers);
 	}
@@ -3321,19 +3279,13 @@ static int ath10k_wmi_10_4_op_pull_fw_stats(struct ath10k *ar,
 		if (!skb_pull(skb, sizeof(*src)))
 			return -EPROTO;
 
-		/* FIXME: expose values to userspace
-		 *
-		 * Note: Even though this loop seems to do nothing it is
-		 * required to parse following sub-structures properly.
-		 */
+		 
 	}
 
 	for (i = 0; i < num_vdev_stats; i++) {
 		const struct wmi_vdev_stats *src;
 
-		/* Ignore vdev stats here as it has only vdev id. Actual vdev
-		 * stats will be retrieved from vdev extended stats.
-		 */
+		 
 		src = (void *)skb->data;
 		if (!skb_pull(skb, sizeof(*src)))
 			return -EPROTO;
@@ -3362,11 +3314,7 @@ static int ath10k_wmi_10_4_op_pull_fw_stats(struct ath10k *ar,
 		if (!skb_pull(skb, sizeof(*src)))
 			return -EPROTO;
 
-		/* FIXME: expose values to userspace
-		 *
-		 * Note: Even though this loop seems to do nothing it is
-		 * required to parse following sub-structures properly.
-		 */
+		 
 	}
 
 	if (stats_id & WMI_10_4_STAT_PEER_EXTD) {
@@ -3457,9 +3405,7 @@ void ath10k_wmi_event_vdev_start_resp(struct ath10k *ar, struct sk_buff *skb)
 		ath10k_warn(ar, "vdev-start-response reports status error: %d (%s)\n",
 			    status, (status == WMI_VDEV_START_CHAN_INVALID) ?
 			    "chan-invalid" : "unknown");
-		/* Setup is done one way or another though, so we should still
-		 * do the completion, so don't return here.
-		 */
+		 
 		ar->last_wmi_vdev_start_status = -EINVAL;
 	}
 
@@ -3519,30 +3465,7 @@ exit:
 	rcu_read_unlock();
 }
 
-/*
- * FIXME
- *
- * We don't report to mac80211 sleep state of connected
- * stations. Due to this mac80211 can't fill in TIM IE
- * correctly.
- *
- * I know of no way of getting nullfunc frames that contain
- * sleep transition from connected stations - these do not
- * seem to be sent from the target to the host. There also
- * doesn't seem to be a dedicated event for that. So the
- * only way left to do this would be to read tim_bitmap
- * during SWBA.
- *
- * We could probably try using tim_bitmap from SWBA to tell
- * mac80211 which stations are asleep and which are not. The
- * problem here is calling mac80211 functions so many times
- * could take too long and make us miss the time to submit
- * the beacon to the target.
- *
- * So as a workaround we try to extend the TIM IE if there
- * is unicast buffered for stations with aid > 7 and fill it
- * in ourselves.
- */
+ 
 static void ath10k_wmi_update_tim(struct ath10k *ar,
 				  struct ath10k_vif *arvif,
 				  struct sk_buff *bcn,
@@ -3555,14 +3478,10 @@ static void ath10k_wmi_update_tim(struct ath10k *ar,
 	__le32 t;
 	u32 v, tim_len;
 
-	/* When FW reports 0 in tim_len, ensure at least first byte
-	 * in tim_bitmap is considered for pvm calculation.
-	 */
+	 
 	tim_len = tim_info->tim_len ? __le32_to_cpu(tim_info->tim_len) : 1;
 
-	/* if next SWBA has no tim_changed the tim_bitmap is garbage.
-	 * we must copy the bitmap upon change and reuse it later
-	 */
+	 
 	if (__le32_to_cpu(tim_info->tim_changed)) {
 		int i;
 
@@ -3578,9 +3497,7 @@ static void ath10k_wmi_update_tim(struct ath10k *ar,
 			arvif->u.ap.tim_bitmap[i] = (v >> ((i % 4) * 8)) & 0xFF;
 		}
 
-		/* FW reports either length 0 or length based on max supported
-		 * station. so we calculate this on our own
-		 */
+		 
 		arvif->u.ap.tim_len = 0;
 		for (i = 0; i < tim_len; i++)
 			if (arvif->u.ap.tim_bitmap[i])
@@ -3591,7 +3508,7 @@ static void ath10k_wmi_update_tim(struct ath10k *ar,
 
 	ies = bcn->data;
 	ies += ieee80211_hdrlen(hdr->frame_control);
-	ies += 12; /* fixed parameters */
+	ies += 12;  
 
 	ie = (u8 *)cfg80211_find_ie(WLAN_EID_TIM, ies,
 				    (u8 *)skb_tail_pointer(bcn) - ies);
@@ -3603,7 +3520,7 @@ static void ath10k_wmi_update_tim(struct ath10k *ar,
 
 	tim = (void *)ie + 2;
 	ie_len = ie[1];
-	pvm_len = ie_len - 3; /* exclude dtim count, dtim period, bmap ctl */
+	pvm_len = ie_len - 3;  
 
 	if (pvm_len < arvif->u.ap.tim_len) {
 		int expand_size = tim_len - pvm_len;
@@ -3676,9 +3593,7 @@ static int ath10k_wmi_op_pull_swba_ev(struct ath10k *ar, struct sk_buff *skb,
 		if (!(map & BIT(0)))
 			continue;
 
-		/* If this happens there were some changes in firmware and
-		 * ath10k should update the max size of tim_info array.
-		 */
+		 
 		if (WARN_ON_ONCE(i == ARRAY_SIZE(arg->tim_info)))
 			break;
 
@@ -3722,9 +3637,7 @@ static int ath10k_wmi_10_2_4_op_pull_swba_ev(struct ath10k *ar,
 		if (!(map & BIT(0)))
 			continue;
 
-		/* If this happens there were some changes in firmware and
-		 * ath10k should update the max size of tim_info array.
-		 */
+		 
 		if (WARN_ON_ONCE(i == ARRAY_SIZE(arg->tim_info)))
 			break;
 
@@ -3766,9 +3679,7 @@ static int ath10k_wmi_10_4_op_pull_swba_ev(struct ath10k *ar,
 		if (!(map & BIT(0)))
 			continue;
 
-		/* If this happens there were some changes in firmware and
-		 * ath10k should update the max size of tim_info array.
-		 */
+		 
 		if (WARN_ON_ONCE(i == ARRAY_SIZE(arg->tim_info)))
 			break;
 
@@ -3780,7 +3691,7 @@ static int ath10k_wmi_10_4_op_pull_swba_ev(struct ath10k *ar,
 
 		tim_len = __le32_to_cpu(ev->bcn_info[i].tim_info.tim_len);
 		if (tim_len) {
-			/* Exclude 4 byte guard length */
+			 
 			tim_len -= 4;
 			arg->tim_info[i].tim_len = __cpu_to_le32(tim_len);
 		} else {
@@ -3795,9 +3706,7 @@ static int ath10k_wmi_10_4_op_pull_swba_ev(struct ath10k *ar,
 		arg->tim_info[i].tim_num_ps_pending =
 				ev->bcn_info[i].tim_info.tim_num_ps_pending;
 
-		/* 10.4 firmware doesn't have p2p support. notice of absence
-		 * info can be ignored for now.
-		 */
+		 
 
 		i++;
 	}
@@ -3859,9 +3768,7 @@ void ath10k_wmi_event_host_swba(struct ath10k *ar, struct sk_buff *skb)
 			   __le32_to_cpu(tim_info->tim_bitmap[1]),
 			   __le32_to_cpu(tim_info->tim_bitmap[0]));
 
-		/* TODO: Only first 4 word from tim_bitmap is dumped.
-		 * Extend debug code to dump full tim_bitmap.
-		 */
+		 
 
 		arvif = ath10k_get_arvif(ar, vdev_id);
 		if (arvif == NULL) {
@@ -3870,18 +3777,11 @@ void ath10k_wmi_event_host_swba(struct ath10k *ar, struct sk_buff *skb)
 			continue;
 		}
 
-		/* mac80211 would have already asked us to stop beaconing and
-		 * bring the vdev down, so continue in that case
-		 */
+		 
 		if (!arvif->is_up)
 			continue;
 
-		/* There are no completions for beacons so wait for next SWBA
-		 * before telling mac80211 to decrement CSA counter
-		 *
-		 * Once CSA counter is completed stop sending beacons until
-		 * actual channel switch is done
-		 */
+		 
 		if (arvif->vif->bss_conf.csa_active &&
 		    ieee80211_beacon_cntdwn_is_complete(arvif->vif)) {
 			ieee80211_csa_finish(arvif->vif);
@@ -3963,9 +3863,7 @@ static void ath10k_radar_detected(struct ath10k *ar)
 	ath10k_dbg(ar, ATH10K_DBG_REGULATORY, "dfs radar detected\n");
 	ATH10K_DFS_STAT_INC(ar, radar_detected);
 
-	/* Control radar events reporting in debugfs file
-	 * dfs_block_radar_events
-	 */
+	 
 	if (ar->dfs_block_radar_events)
 		ath10k_info(ar, "DFS Radar detected, but ignored as requested\n");
 	else
@@ -3994,14 +3892,10 @@ static void ath10k_radar_confirmation_work(struct work_struct *work)
 	time_left = wait_for_completion_timeout(&ar->wmi.radar_confirm,
 						ATH10K_WMI_DFS_CONF_TIMEOUT_HZ);
 	if (time_left) {
-		/* DFS Confirmation status event received and
-		 * necessary action completed.
-		 */
+		 
 		goto wait_complete;
 	} else {
-		/* DFS Confirmation event not received from FW.Considering this
-		 * as real radar.
-		 */
+		 
 		ath10k_dbg(ar, ATH10K_DBG_REGULATORY,
 			   "dfs confirmation not received from fw, considering as radar\n");
 		goto radar_detected;
@@ -4010,9 +3904,7 @@ static void ath10k_radar_confirmation_work(struct work_struct *work)
 radar_detected:
 	ath10k_radar_detected(ar);
 
-	/* Reset state to allow sending confirmation on consecutive radar
-	 * detections, unless radar confirmation is disabled/stopped.
-	 */
+	 
 wait_complete:
 	spin_lock_bh(&ar->data_lock);
 	if (ar->radar_conf_state != ATH10K_RADAR_CONFIRMATION_STOPPED)
@@ -4060,7 +3952,7 @@ static void ath10k_dfs_radar_report(struct ath10k *ar,
 	spin_lock_bh(&ar->data_lock);
 	ch = ar->rx_channel;
 
-	/* fetch target operating channel during channel change */
+	 
 	if (!ch)
 		ch = ar->tgt_oper_chan;
 
@@ -4071,7 +3963,7 @@ static void ath10k_dfs_radar_report(struct ath10k *ar,
 		goto radar_detected;
 	}
 
-	/* report event to DFS pattern detector */
+	 
 	tsf32l = phyerr->tsf_timestamp;
 	tsf64 = tsf & (~0xFFFFFFFFULL);
 	tsf64 |= tsf32l;
@@ -4079,9 +3971,7 @@ static void ath10k_dfs_radar_report(struct ath10k *ar,
 	width = MS(reg1, RADAR_REPORT_REG1_PULSE_DUR);
 	rssi = phyerr->rssi_combined;
 
-	/* hardware store this as 8 bit signed value,
-	 * set to zero if negative number
-	 */
+	 
 	if (rssi & 0x80)
 		rssi = 0;
 
@@ -4104,10 +3994,7 @@ static void ath10k_dfs_radar_report(struct ath10k *ar,
 
 	if ((test_bit(WMI_SERVICE_HOST_DFS_CHECK_SUPPORT, ar->wmi.svc_map)) &&
 	    ar->dfs_detector->region == NL80211_DFS_FCC) {
-		/* Consecutive radar indications need not be
-		 * sent to the firmware until we get confirmation
-		 * for the previous detected radar.
-		 */
+		 
 		spin_lock_bh(&ar->data_lock);
 		if (ar->radar_conf_state != ATH10K_RADAR_CONFIRMATION_IDLE) {
 			spin_unlock_bh(&ar->data_lock);
@@ -4120,7 +4007,7 @@ static void ath10k_dfs_radar_report(struct ath10k *ar,
 		radar_info->pri_max = rs.pri_max;
 		radar_info->width_min = rs.width_min;
 		radar_info->width_max = rs.width_max;
-		/*TODO Find sidx_min and sidx_max */
+		 
 		radar_info->sidx_min = MS(reg0, RADAR_REPORT_REG0_PULSE_SIDX);
 		radar_info->sidx_max = MS(reg0, RADAR_REPORT_REG0_PULSE_SIDX);
 
@@ -4165,7 +4052,7 @@ static int ath10k_dfs_fft_report(struct ath10k *ar,
 
 	peak_mag = MS(reg1, SEARCH_FFT_REPORT_REG1_PEAK_MAG);
 
-	/* false event detection */
+	 
 	if (rssi == DFS_RSSI_POSSIBLY_FALSE &&
 	    peak_mag < 2 * DFS_PEAK_MAG_THOLD_POSSIBLY_FALSE) {
 		ath10k_dbg(ar, ATH10K_DBG_REGULATORY, "dfs false pulse detected\n");
@@ -4192,7 +4079,7 @@ void ath10k_wmi_event_dfs(struct ath10k *ar,
 		   phyerr->phy_err_code, phyerr->rssi_combined,
 		   phyerr->tsf_timestamp, tsf, buf_len);
 
-	/* Skip event if DFS disabled */
+	 
 	if (!IS_ENABLED(CONFIG_ATH10K_DFS_CERTIFIED))
 		return;
 
@@ -4322,7 +4209,7 @@ static int ath10k_wmi_10_4_op_pull_phyerr_ev_hdr(struct ath10k *ar,
 	if (skb->len < sizeof(*ev))
 		return -EPROTO;
 
-	/* 10.4 firmware always reports only one phyerr */
+	 
 	arg->num_phyerrs = 1;
 
 	arg->tsf_l32 = __le32_to_cpu(ev->tsf_l32);
@@ -4433,7 +4320,7 @@ void ath10k_wmi_event_phyerr(struct ath10k *ar, struct sk_buff *skb)
 		return;
 	}
 
-	/* Check number of included events */
+	 
 	count = hdr_arg.num_phyerrs;
 
 	left_len = hdr_arg.buf_len;
@@ -4516,10 +4403,7 @@ ath10k_wmi_event_dfs_status_check(struct ath10k *ar, struct sk_buff *skb)
 		   "dfs status event received from fw: %d\n",
 		   status_arg.status);
 
-	/* Even in case of radar detection failure we follow the same
-	 * behaviour as if radar is detected i.e to switch to a different
-	 * channel.
-	 */
+	 
 	if (status_arg.status == WMI_HW_RADAR_DETECTED ||
 	    status_arg.status == WMI_RADAR_DETECTION_FAIL)
 		ath10k_radar_detected(ar);
@@ -4595,11 +4479,11 @@ void ath10k_wmi_event_debug_print(struct ath10k *ar, struct sk_buff *skb)
 	if (i == sizeof(buf) - 1)
 		ath10k_warn(ar, "wmi debug print truncated: %d\n", skb->len);
 
-	/* for some reason the debug prints end with \n, remove that */
+	 
 	if (skb->data[i - 1] == '\n')
 		i--;
 
-	/* the last byte is always reserved for the null character */
+	 
 	buf[i] = '\0';
 
 	ath10k_dbg(ar, ATH10K_DBG_WMI_PRINT, "wmi print '%s'\n", buf);
@@ -4767,11 +4651,11 @@ void ath10k_wmi_tpc_config_get_rate_code(u8 *rate_code, u16 *pream_table,
 	u32 i, j, pream_idx;
 	u8 rate_idx;
 
-	/* Create the rate code table based on the chains supported */
+	 
 	rate_idx = 0;
 	pream_idx = 0;
 
-	/* Fill CCK rate code */
+	 
 	for (i = 0; i < 4; i++) {
 		rate_code[rate_idx] =
 			ATH10K_HW_RATECODE(i, 0, WMI_RATE_PREAMBLE_CCK);
@@ -4780,7 +4664,7 @@ void ath10k_wmi_tpc_config_get_rate_code(u8 *rate_code, u16 *pream_table,
 	pream_table[pream_idx] = rate_idx;
 	pream_idx++;
 
-	/* Fill OFDM rate code */
+	 
 	for (i = 0; i < 8; i++) {
 		rate_code[rate_idx] =
 			ATH10K_HW_RATECODE(i, 0, WMI_RATE_PREAMBLE_OFDM);
@@ -4789,7 +4673,7 @@ void ath10k_wmi_tpc_config_get_rate_code(u8 *rate_code, u16 *pream_table,
 	pream_table[pream_idx] = rate_idx;
 	pream_idx++;
 
-	/* Fill HT20 rate code */
+	 
 	for (i = 0; i < num_tx_chain; i++) {
 		for (j = 0; j < 8; j++) {
 			rate_code[rate_idx] =
@@ -4800,7 +4684,7 @@ void ath10k_wmi_tpc_config_get_rate_code(u8 *rate_code, u16 *pream_table,
 	pream_table[pream_idx] = rate_idx;
 	pream_idx++;
 
-	/* Fill HT40 rate code */
+	 
 	for (i = 0; i < num_tx_chain; i++) {
 		for (j = 0; j < 8; j++) {
 			rate_code[rate_idx] =
@@ -4811,7 +4695,7 @@ void ath10k_wmi_tpc_config_get_rate_code(u8 *rate_code, u16 *pream_table,
 	pream_table[pream_idx] = rate_idx;
 	pream_idx++;
 
-	/* Fill VHT20 rate code */
+	 
 	for (i = 0; i < num_tx_chain; i++) {
 		for (j = 0; j < 10; j++) {
 			rate_code[rate_idx] =
@@ -4822,7 +4706,7 @@ void ath10k_wmi_tpc_config_get_rate_code(u8 *rate_code, u16 *pream_table,
 	pream_table[pream_idx] = rate_idx;
 	pream_idx++;
 
-	/* Fill VHT40 rate code */
+	 
 	for (i = 0; i < num_tx_chain; i++) {
 		for (j = 0; j < 10; j++) {
 			rate_code[rate_idx] =
@@ -4833,7 +4717,7 @@ void ath10k_wmi_tpc_config_get_rate_code(u8 *rate_code, u16 *pream_table,
 	pream_table[pream_idx] = rate_idx;
 	pream_idx++;
 
-	/* Fill VHT80 rate code */
+	 
 	for (i = 0; i < num_tx_chain; i++) {
 		for (j = 0; j < 10; j++) {
 			rate_code[rate_idx] =
@@ -5485,11 +5369,7 @@ ath10k_wmi_10x_op_pull_svc_rdy_ev(struct ath10k *ar, struct sk_buff *skb,
 	arg->service_map = ev->wmi_service_bitmap;
 	arg->service_map_len = sizeof(ev->wmi_service_bitmap);
 
-	/* Deliberately skipping ev->sys_cap_info as WMI and WMI-TLV have
-	 * different values. We would need a translation to handle that,
-	 * but as we don't currently need anything from sys_cap_info from
-	 * WMI interface (only from WMI-TLV) safest it to skip it.
-	 */
+	 
 
 	n = min_t(size_t, __le32_to_cpu(arg->num_mem_reqs),
 		  ARRAY_SIZE(arg->mem_reqs));
@@ -5594,20 +5474,14 @@ static void ath10k_wmi_event_service_ready_work(struct work_struct *work)
 		ar->max_num_stations = TARGET_10_4_NUM_QCACHE_PEERS_MAX;
 	}
 
-	/* TODO: Adjust max peer count for cases like WMI_SERVICE_RATECTRL_CACHE
-	 * and WMI_SERVICE_IRAM_TIDS, etc.
-	 */
+	 
 
 	allocated = ath10k_wmi_is_host_mem_allocated(ar, arg.mem_reqs,
 						     num_mem_reqs);
 	if (allocated)
 		goto skip_mem_alloc;
 
-	/* Either this event is received during boot time or there is a change
-	 * in memory requirement from firmware when compared to last request.
-	 * Free any old memory and do a fresh allocation based on the current
-	 * memory requirement.
-	 */
+	 
 	ath10k_wmi_free_host_mem(ar);
 
 	for (i = 0; i < num_mem_reqs; ++i) {
@@ -5622,11 +5496,7 @@ static void ath10k_wmi_event_service_ready_work(struct work_struct *work)
 			else
 				num_units = ar->max_num_peers + 1;
 		} else if (num_unit_info & NUM_UNITS_IS_NUM_PEERS) {
-			/* number of units to allocate is number of
-			 * peers, 1 extra for self peer on target
-			 * this needs to be tied, host and target
-			 * can get out of sync
-			 */
+			 
 			num_units = ar->max_num_peers + 1;
 		} else if (num_unit_info & NUM_UNITS_IS_NUM_VDEVS) {
 			num_units = ar->max_num_vdevs + 1;
@@ -5755,10 +5625,7 @@ void ath10k_wmi_event_service_available(struct ath10k *ar, struct sk_buff *skb)
 			    ret);
 	}
 
-	/*
-	 * Initialization of "arg.service_map_ext_valid" to ZERO is necessary
-	 * for the below logic to work.
-	 */
+	 
 	if (arg.service_map_ext_valid)
 		ath10k_wmi_map_svc_ext(ar, arg.service_map_ext, ar->wmi.svc_map,
 				       __le32_to_cpu(arg.service_map_ext_len));
@@ -5833,11 +5700,7 @@ static inline void ath10k_wmi_queue_set_coverage_class_work(struct ath10k *ar)
 	if (ar->hw_params.hw_ops->set_coverage_class) {
 		spin_lock_bh(&ar->data_lock);
 
-		/* This call only ensures that the modified coverage class
-		 * persists in case the firmware sets the registers back to
-		 * their default value. So calling it is only necessary if the
-		 * coverage class has a non-zero value.
-		 */
+		 
 		if (ar->fw_coverage.coverage_class)
 			queue_work(ar->workqueue, &ar->set_coverage_class_work);
 
@@ -5861,7 +5724,7 @@ static void ath10k_wmi_op_rx(struct ath10k *ar, struct sk_buff *skb)
 	switch (id) {
 	case WMI_MGMT_RX_EVENTID:
 		ath10k_wmi_event_mgmt_rx(ar, skb);
-		/* mgmt_rx() owns the skb now! */
+		 
 		return;
 	case WMI_SCAN_EVENTID:
 		ath10k_wmi_event_scan(ar, skb);
@@ -5988,10 +5851,7 @@ static void ath10k_wmi_10_1_op_rx(struct ath10k *ar, struct sk_buff *skb)
 
 	consumed = ath10k_tm_event_wmi(ar, id, skb);
 
-	/* Ready event must be handled normally also in UTF mode so that we
-	 * know the UTF firmware has booted, others we are just bypass WMI
-	 * events to testmode.
-	 */
+	 
 	if (consumed && id != WMI_10X_READY_EVENTID) {
 		ath10k_dbg(ar, ATH10K_DBG_WMI,
 			   "wmi testmode consumed 0x%x\n", id);
@@ -6001,7 +5861,7 @@ static void ath10k_wmi_10_1_op_rx(struct ath10k *ar, struct sk_buff *skb)
 	switch (id) {
 	case WMI_10X_MGMT_RX_EVENTID:
 		ath10k_wmi_event_mgmt_rx(ar, skb);
-		/* mgmt_rx() owns the skb now! */
+		 
 		return;
 	case WMI_10X_SCAN_EVENTID:
 		ath10k_wmi_event_scan(ar, skb);
@@ -6092,7 +5952,7 @@ static void ath10k_wmi_10_1_op_rx(struct ath10k *ar, struct sk_buff *skb)
 		ath10k_wmi_queue_set_coverage_class_work(ar);
 		break;
 	case WMI_10X_PDEV_UTF_EVENTID:
-		/* ignore utf events */
+		 
 		break;
 	default:
 		ath10k_warn(ar, "Unknown eventid: %d\n", id);
@@ -6119,10 +5979,7 @@ static void ath10k_wmi_10_2_op_rx(struct ath10k *ar, struct sk_buff *skb)
 
 	consumed = ath10k_tm_event_wmi(ar, id, skb);
 
-	/* Ready event must be handled normally also in UTF mode so that we
-	 * know the UTF firmware has booted, others we are just bypass WMI
-	 * events to testmode.
-	 */
+	 
 	if (consumed && id != WMI_10_2_READY_EVENTID) {
 		ath10k_dbg(ar, ATH10K_DBG_WMI,
 			   "wmi testmode consumed 0x%x\n", id);
@@ -6132,7 +5989,7 @@ static void ath10k_wmi_10_2_op_rx(struct ath10k *ar, struct sk_buff *skb)
 	switch (id) {
 	case WMI_10_2_MGMT_RX_EVENTID:
 		ath10k_wmi_event_mgmt_rx(ar, skb);
-		/* mgmt_rx() owns the skb now! */
+		 
 		return;
 	case WMI_10_2_SCAN_EVENTID:
 		ath10k_wmi_event_scan(ar, skb);
@@ -6268,10 +6125,7 @@ static void ath10k_wmi_10_4_op_rx(struct ath10k *ar, struct sk_buff *skb)
 
 	consumed = ath10k_tm_event_wmi(ar, id, skb);
 
-	/* Ready event must be handled normally also in UTF mode so that we
-	 * know the UTF firmware has booted, others we are just bypass WMI
-	 * events to testmode.
-	 */
+	 
 	if (consumed && id != WMI_10_4_READY_EVENTID) {
 		ath10k_dbg(ar, ATH10K_DBG_WMI,
 			   "wmi testmode consumed 0x%x\n", id);
@@ -6281,7 +6135,7 @@ static void ath10k_wmi_10_4_op_rx(struct ath10k *ar, struct sk_buff *skb)
 	switch (id) {
 	case WMI_10_4_MGMT_RX_EVENTID:
 		ath10k_wmi_event_mgmt_rx(ar, skb);
-		/* mgmt_rx() owns the skb now! */
+		 
 		return;
 	case WMI_10_4_ECHO_EVENTID:
 		ath10k_wmi_event_echo(ar, skb);
@@ -6392,12 +6246,12 @@ int ath10k_wmi_connect(struct ath10k *ar)
 	memset(&conn_req, 0, sizeof(conn_req));
 	memset(&conn_resp, 0, sizeof(conn_resp));
 
-	/* these fields are the same for all service endpoints */
+	 
 	conn_req.ep_ops.ep_tx_complete = ath10k_wmi_htc_tx_complete;
 	conn_req.ep_ops.ep_rx_complete = ath10k_wmi_process_rx;
 	conn_req.ep_ops.ep_tx_credits = ath10k_wmi_op_ep_tx_credits;
 
-	/* connect to control service */
+	 
 	conn_req.service_id = ATH10K_HTC_SVC_ID_WMI_CONTROL;
 
 	status = ath10k_htc_connect_service(&ar->htc, &conn_req, &conn_resp);
@@ -7049,7 +6903,7 @@ ath10k_wmi_10x_op_gen_start_scan(struct ath10k *ar,
 void ath10k_wmi_start_scan_init(struct ath10k *ar,
 				struct wmi_start_scan_arg *arg)
 {
-	/* setup commonly used values */
+	 
 	arg->scan_req_id = 1;
 	arg->scan_priority = WMI_SCAN_PRIORITY_LOW;
 	arg->dwell_time_active = 50;
@@ -7636,7 +7490,7 @@ ath10k_wmi_peer_assoc_fill_10_2(struct ath10k *ar, void *buf,
 	int max_mcs, max_nss;
 	u32 info0;
 
-	/* TODO: Is using max values okay with firmware? */
+	 
 	max_mcs = 0xf;
 	max_nss = 0xf;
 
@@ -7804,7 +7658,7 @@ ath10k_wmi_10_2_op_gen_pdev_bss_chan_info(struct ath10k *ar,
 	return skb;
 }
 
-/* This function assumes the beacon is already DMA mapped */
+ 
 static struct sk_buff *
 ath10k_wmi_op_gen_beacon_dma(struct ath10k *ar, u32 vdev_id, const void *bcn,
 			     size_t bcn_len, u32 bcn_paddr, bool dtim_zero,
@@ -7928,7 +7782,7 @@ ath10k_wmi_op_gen_dbglog_cfg(struct ath10k *ar, u64 module_enable,
 		cfg = SM(log_level,
 			 ATH10K_DBGLOG_CFG_LOG_LVL);
 	} else {
-		/* set back defaults, all modules with WARN level */
+		 
 		cfg = SM(ATH10K_DBGLOG_LEVEL_WARN,
 			 ATH10K_DBGLOG_CFG_LOG_LVL);
 		module_enable = ~0;
@@ -7966,7 +7820,7 @@ ath10k_wmi_10_4_op_gen_dbglog_cfg(struct ath10k *ar, u64 module_enable,
 		cfg = SM(log_level,
 			 ATH10K_DBGLOG_CFG_LOG_LVL);
 	} else {
-		/* set back defaults, all modules with WARN level */
+		 
 		cfg = SM(ATH10K_DBGLOG_LEVEL_WARN,
 			 ATH10K_DBGLOG_CFG_LOG_LVL);
 		module_enable = ~0;
@@ -8908,7 +8762,7 @@ ath10k_wmi_10_4_gen_tdls_peer_update(struct ath10k *ar,
 	int len, chan_len;
 	int i;
 
-	/* tdls peer update cmd has place holder for one channel*/
+	 
 	chan_len = cap->peer_chan_len ? (cap->peer_chan_len - 1) : 0;
 
 	len = sizeof(*cmd) + chan_len * sizeof(*chan);
@@ -9111,7 +8965,7 @@ static const struct wmi_ops wmi_ops = {
 	.gen_vdev_install_key = ath10k_wmi_op_gen_vdev_install_key,
 	.gen_vdev_spectral_conf = ath10k_wmi_op_gen_vdev_spectral_conf,
 	.gen_vdev_spectral_enable = ath10k_wmi_op_gen_vdev_spectral_enable,
-	/* .gen_vdev_wmm_conf not implemented */
+	 
 	.gen_peer_create = ath10k_wmi_op_gen_peer_create,
 	.gen_peer_delete = ath10k_wmi_op_gen_peer_delete,
 	.gen_peer_flush = ath10k_wmi_op_gen_peer_flush,
@@ -9130,7 +8984,7 @@ static const struct wmi_ops wmi_ops = {
 	.gen_pktlog_enable = ath10k_wmi_op_gen_pktlog_enable,
 	.gen_pktlog_disable = ath10k_wmi_op_gen_pktlog_disable,
 	.gen_pdev_set_quiet_mode = ath10k_wmi_op_gen_pdev_set_quiet_mode,
-	/* .gen_pdev_get_temperature not implemented */
+	 
 	.gen_addba_clear_resp = ath10k_wmi_op_gen_addba_clear_resp,
 	.gen_addba_send = ath10k_wmi_op_gen_addba_send,
 	.gen_addba_set_resp = ath10k_wmi_op_gen_addba_set_resp,
@@ -9138,11 +8992,11 @@ static const struct wmi_ops wmi_ops = {
 	.fw_stats_fill = ath10k_wmi_main_op_fw_stats_fill,
 	.get_vdev_subtype = ath10k_wmi_op_get_vdev_subtype,
 	.gen_echo = ath10k_wmi_op_gen_echo,
-	/* .gen_bcn_tmpl not implemented */
-	/* .gen_prb_tmpl not implemented */
-	/* .gen_p2p_go_bcn_ie not implemented */
-	/* .gen_adaptive_qcs not implemented */
-	/* .gen_pdev_enable_adaptive_cca not implemented */
+	 
+	 
+	 
+	 
+	 
 };
 
 static const struct wmi_ops wmi_10_1_ops = {
@@ -9154,9 +9008,9 @@ static const struct wmi_ops wmi_10_1_ops = {
 	.gen_pdev_set_rd = ath10k_wmi_10x_op_gen_pdev_set_rd,
 	.gen_start_scan = ath10k_wmi_10x_op_gen_start_scan,
 	.gen_peer_assoc = ath10k_wmi_10_1_op_gen_peer_assoc,
-	/* .gen_pdev_get_temperature not implemented */
+	 
 
-	/* shared with main branch */
+	 
 	.pull_scan = ath10k_wmi_op_pull_scan_ev,
 	.pull_mgmt_rx = ath10k_wmi_op_pull_mgmt_rx_ev,
 	.pull_ch_info = ath10k_wmi_op_pull_ch_info_ev,
@@ -9183,7 +9037,7 @@ static const struct wmi_ops wmi_10_1_ops = {
 	.gen_vdev_install_key = ath10k_wmi_op_gen_vdev_install_key,
 	.gen_vdev_spectral_conf = ath10k_wmi_op_gen_vdev_spectral_conf,
 	.gen_vdev_spectral_enable = ath10k_wmi_op_gen_vdev_spectral_enable,
-	/* .gen_vdev_wmm_conf not implemented */
+	 
 	.gen_peer_create = ath10k_wmi_op_gen_peer_create,
 	.gen_peer_delete = ath10k_wmi_op_gen_peer_delete,
 	.gen_peer_flush = ath10k_wmi_op_gen_peer_flush,
@@ -9208,11 +9062,11 @@ static const struct wmi_ops wmi_10_1_ops = {
 	.fw_stats_fill = ath10k_wmi_10x_op_fw_stats_fill,
 	.get_vdev_subtype = ath10k_wmi_op_get_vdev_subtype,
 	.gen_echo = ath10k_wmi_op_gen_echo,
-	/* .gen_bcn_tmpl not implemented */
-	/* .gen_prb_tmpl not implemented */
-	/* .gen_p2p_go_bcn_ie not implemented */
-	/* .gen_adaptive_qcs not implemented */
-	/* .gen_pdev_enable_adaptive_cca not implemented */
+	 
+	 
+	 
+	 
+	 
 };
 
 static const struct wmi_ops wmi_10_2_ops = {
@@ -9220,9 +9074,9 @@ static const struct wmi_ops wmi_10_2_ops = {
 	.pull_fw_stats = ath10k_wmi_10_2_op_pull_fw_stats,
 	.gen_init = ath10k_wmi_10_2_op_gen_init,
 	.gen_peer_assoc = ath10k_wmi_10_2_op_gen_peer_assoc,
-	/* .gen_pdev_get_temperature not implemented */
+	 
 
-	/* shared with 10.1 */
+	 
 	.map_svc = wmi_10x_svc_map,
 	.pull_svc_rdy = ath10k_wmi_10x_op_pull_svc_rdy_ev,
 	.gen_pdev_set_rd = ath10k_wmi_10x_op_gen_pdev_set_rd,
@@ -9255,7 +9109,7 @@ static const struct wmi_ops wmi_10_2_ops = {
 	.gen_vdev_install_key = ath10k_wmi_op_gen_vdev_install_key,
 	.gen_vdev_spectral_conf = ath10k_wmi_op_gen_vdev_spectral_conf,
 	.gen_vdev_spectral_enable = ath10k_wmi_op_gen_vdev_spectral_enable,
-	/* .gen_vdev_wmm_conf not implemented */
+	 
 	.gen_peer_create = ath10k_wmi_op_gen_peer_create,
 	.gen_peer_delete = ath10k_wmi_op_gen_peer_delete,
 	.gen_peer_flush = ath10k_wmi_op_gen_peer_flush,
@@ -9280,7 +9134,7 @@ static const struct wmi_ops wmi_10_2_ops = {
 	.gen_delba_send = ath10k_wmi_op_gen_delba_send,
 	.fw_stats_fill = ath10k_wmi_10x_op_fw_stats_fill,
 	.get_vdev_subtype = ath10k_wmi_op_get_vdev_subtype,
-	/* .gen_pdev_enable_adaptive_cca not implemented */
+	 
 };
 
 static const struct wmi_ops wmi_10_2_4_ops = {
@@ -9291,7 +9145,7 @@ static const struct wmi_ops wmi_10_2_4_ops = {
 	.gen_pdev_get_temperature = ath10k_wmi_10_2_op_gen_pdev_get_temperature,
 	.gen_pdev_bss_chan_info_req = ath10k_wmi_10_2_op_gen_pdev_bss_chan_info,
 
-	/* shared with 10.1 */
+	 
 	.map_svc = wmi_10x_svc_map,
 	.pull_svc_rdy = ath10k_wmi_10x_op_pull_svc_rdy_ev,
 	.gen_pdev_set_rd = ath10k_wmi_10x_op_gen_pdev_set_rd,
@@ -9351,10 +9205,10 @@ static const struct wmi_ops wmi_10_2_4_ops = {
 		ath10k_wmi_op_gen_pdev_enable_adaptive_cca,
 	.get_vdev_subtype = ath10k_wmi_10_2_4_op_get_vdev_subtype,
 	.gen_bb_timing = ath10k_wmi_10_2_4_op_gen_bb_timing,
-	/* .gen_bcn_tmpl not implemented */
-	/* .gen_prb_tmpl not implemented */
-	/* .gen_p2p_go_bcn_ie not implemented */
-	/* .gen_adaptive_qcs not implemented */
+	 
+	 
+	 
+	 
 };
 
 static const struct wmi_ops wmi_10_4_ops = {
@@ -9424,7 +9278,7 @@ static const struct wmi_ops wmi_10_4_ops = {
 	.gen_radar_found = ath10k_wmi_10_4_gen_radar_found,
 	.gen_per_peer_per_tid_cfg = ath10k_wmi_10_4_gen_per_peer_per_tid_cfg,
 
-	/* shared with 10.2 */
+	 
 	.pull_echo_ev = ath10k_wmi_op_pull_echo_ev,
 	.gen_request_stats = ath10k_wmi_op_gen_request_stats,
 	.gen_pdev_get_temperature = ath10k_wmi_10_2_op_gen_pdev_get_temperature,
@@ -9514,7 +9368,7 @@ void ath10k_wmi_free_host_mem(struct ath10k *ar)
 {
 	int i;
 
-	/* free the host memory chunks requested by firmware */
+	 
 	for (i = 0; i < ar->wmi.num_mem_chunks; i++) {
 		dma_free_coherent(ar->dev,
 				  ar->wmi.mem_chunks[i].len,

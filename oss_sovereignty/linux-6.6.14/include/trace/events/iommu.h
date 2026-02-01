@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * iommu trace points
- *
- * Copyright (C) 2013 Shuah Khan <shuah.kh@samsung.com>
- *
- */
+ 
+ 
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM iommu
 
@@ -156,7 +151,7 @@ DEFINE_EVENT(iommu_error, io_page_fault,
 
 	TP_ARGS(dev, iova, flags)
 );
-#endif /* _TRACE_IOMMU_H */
+#endif  
 
-/* This part must be outside protection */
+ 
 #include <trace/define_trace.h>

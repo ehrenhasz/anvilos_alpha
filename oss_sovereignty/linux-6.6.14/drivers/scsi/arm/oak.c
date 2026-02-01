@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Oak Generic NCR5380 driver
- *
- * Copyright 1995-2002, Russell King
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/ioport.h>
@@ -28,7 +24,7 @@
 #define NCR5380_queue_command		oakscsi_queue_command
 #define NCR5380_info			oakscsi_info
 
-#define NCR5380_implementation_fields	/* none */
+#define NCR5380_implementation_fields	 
 
 #include "../NCR5380.h"
 

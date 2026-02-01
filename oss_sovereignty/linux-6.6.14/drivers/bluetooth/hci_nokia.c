@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  Bluetooth HCI UART H4 driver with Nokia Extensions AKA Nokia H4+
- *
- *  Copyright (C) 2015 Marcel Holtmann <marcel@holtmann.org>
- *  Copyright (C) 2015-2017 Sebastian Reichel <sre@kernel.org>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/errno.h>
@@ -184,29 +179,29 @@ static int nokia_reset(struct hci_uart *hu)
 	struct device *dev = &btdev->serdev->dev;
 	int err;
 
-	/* reset routine */
+	 
 	gpiod_set_value_cansleep(btdev->reset, 1);
 	gpiod_set_value_cansleep(btdev->wakeup_bt, 1);
 
 	msleep(100);
 
-	/* safety check */
+	 
 	err = gpiod_get_value_cansleep(btdev->wakeup_host);
 	if (err == 1) {
 		dev_err(dev, "reset: host wakeup not low!");
 		return -EPROTO;
 	}
 
-	/* flush queue */
+	 
 	serdev_device_write_flush(btdev->serdev);
 
-	/* init uart */
+	 
 	nokia_flow_control(btdev->serdev, false);
 	serdev_device_set_baudrate(btdev->serdev, INIT_BAUD_RATE);
 
 	gpiod_set_value_cansleep(btdev->reset, 0);
 
-	/* wait for cts */
+	 
 	err = serdev_device_wait_for_cts(btdev->serdev, true, 200);
 	if (err < 0) {
 		dev_err(dev, "CTS not received: %d", err);
@@ -303,10 +298,7 @@ static int nokia_send_negotiation(struct hci_uart *hu)
 	if (btdev->init_error < 0)
 		return btdev->init_error;
 
-	/* Change to previously negotiated speed. Flow Control
-	 * is disabled until bluetooth adapter is ready to avoid
-	 * broken bytes being received.
-	 */
+	 
 	nokia_flow_control(btdev->serdev, false);
 	serdev_device_set_baudrate(btdev->serdev, SETUP_BAUD_RATE);
 	err = serdev_device_wait_for_cts(btdev->serdev, true, 200);
@@ -410,28 +402,28 @@ static int nokia_setup(struct hci_uart *hu)
 
 	dev_dbg(dev, "protocol setup");
 
-	/* 0. reset connection */
+	 
 	err = nokia_reset(hu);
 	if (err < 0) {
 		dev_err(dev, "Reset failed: %d", err);
 		goto out;
 	}
 
-	/* 1. negotiate speed etc */
+	 
 	err = nokia_send_negotiation(hu);
 	if (err < 0) {
 		dev_err(dev, "Negotiation failed: %d", err);
 		goto out;
 	}
 
-	/* 2. verify correct setup using alive packet */
+	 
 	err = nokia_send_alive_packet(hu);
 	if (err < 0) {
 		dev_err(dev, "Alive check failed: %d", err);
 		goto out;
 	}
 
-	/* 3. send firmware */
+	 
 	err = nokia_setup_fw(hu);
 	if (err < 0) {
 		dev_err(dev, "Could not setup FW: %d", err);
@@ -497,7 +489,7 @@ static int nokia_close(struct hci_uart *hu)
 
 	kfree_skb(btdev->rx_skb);
 
-	/* disable module */
+	 
 	gpiod_set_value(btdev->reset, 1);
 	gpiod_set_value(btdev->wakeup_bt, 0);
 
@@ -506,16 +498,16 @@ static int nokia_close(struct hci_uart *hu)
 	return 0;
 }
 
-/* Enqueue frame for transmittion (padding, crc, etc) */
+ 
 static int nokia_enqueue(struct hci_uart *hu, struct sk_buff *skb)
 {
 	struct nokia_bt_dev *btdev = hu->priv;
 	int err;
 
-	/* Prepend skb with frame type */
+	 
 	memcpy(skb_push(skb, 1), &bt_cb(skb)->pkt_type, 1);
 
-	/* Packets must be word aligned */
+	 
 	if (skb->len % 2) {
 		err = skb_pad(skb, 1);
 		if (err)
@@ -603,14 +595,12 @@ finish_alive:
 
 static int nokia_recv_radio(struct hci_dev *hdev, struct sk_buff *skb)
 {
-	/* Packets received on the dedicated radio channel are
-	 * HCI events and so feed them back into the core.
-	 */
+	 
 	hci_skb_pkt_type(skb) = HCI_EVENT_PKT;
 	return hci_recv_frame(hdev, skb);
 }
 
-/* Recv data */
+ 
 static const struct h4_recv_pkt nokia_recv_pkts[] = {
 	{ H4_RECV_ACL,		.recv = hci_recv_frame },
 	{ H4_RECV_SCO,		.recv = hci_recv_frame },
@@ -745,7 +735,7 @@ static int nokia_bluetooth_serdev_probe(struct serdev_device *serdev)
 	skb_queue_head_init(&btdev->txq);
 
 	btdev->hu.priv = btdev;
-	btdev->hu.alignment = 2; /* Nokia H4+ is word aligned */
+	btdev->hu.alignment = 2;  
 
 	err = hci_uart_register_device(&btdev->hu, &nokia_proto);
 	if (err) {

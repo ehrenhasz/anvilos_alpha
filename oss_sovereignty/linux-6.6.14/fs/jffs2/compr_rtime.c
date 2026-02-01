@@ -1,25 +1,4 @@
-/*
- * JFFS2 -- Journalling Flash File System, Version 2.
- *
- * Copyright © 2001-2007 Red Hat, Inc.
- * Copyright © 2004-2010 David Woodhouse <dwmw2@infradead.org>
- *
- * Created by Arjan van de Ven <arjanv@redhat.com>
- *
- * For licensing information, see the file 'LICENCE' in this directory.
- *
- *
- *
- * Very simple lz77-ish encoder.
- *
- * Theory of operation: Both encoder and decoder have a list of "last
- * occurrences" for every possible source-value; after sending the
- * first source-byte, the second byte indicated the "run" length of
- * matches
- *
- * The algorithm is intended to only send "whole bytes", no bit-messing.
- *
- */
+ 
 
 #include <linux/kernel.h>
 #include <linux/types.h>
@@ -28,7 +7,7 @@
 #include <linux/jffs2.h>
 #include "compr.h"
 
-/* _compress returns the compressed size, -1 if bigger */
+ 
 static int jffs2_rtime_compress(unsigned char *data_in,
 				unsigned char *cpage_out,
 				uint32_t *sourcelen, uint32_t *dstlen)
@@ -62,11 +41,11 @@ static int jffs2_rtime_compress(unsigned char *data_in,
 	}
 
 	if (outpos >= pos) {
-		/* We failed */
+		 
 		return -1;
 	}
 
-	/* Tell the caller how much we managed to compress, and how much space it took */
+	 
 	*sourcelen = pos;
 	*dstlen = outpos;
 	return 0;
@@ -89,7 +68,7 @@ static int jffs2_rtime_decompress(unsigned char *data_in,
 		int repeat;
 
 		value = data_in[pos++];
-		cpage_out[outpos++] = value; /* first the verbatim copied byte */
+		cpage_out[outpos++] = value;  
 		repeat = data_in[pos++];
 		backoffs = positions[value];
 

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2020-2022 MaxLinear, Inc.
- * Copyright (C) 2020 Intel Corporation.
- * Zhu Yixin <yzhu@maxlinear.com>
- * Rahul Tanwar <rtanwar@maxlinear.com>
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/delay.h>
@@ -17,10 +12,7 @@
 #define to_lgm_clk_pll(_hw)	container_of(_hw, struct lgm_clk_pll, hw)
 #define PLL_REF_DIV(x)		((x) + 0x08)
 
-/*
- * Calculate formula:
- * rate = (prate * mult + (prate * frac) / frac_div) / div
- */
+ 
 static unsigned long
 lgm_pll_calc_rate(unsigned long prate, unsigned int mult,
 		  unsigned int div, unsigned int frac, unsigned int frac_div)

@@ -1,34 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * ip_vs_nfct.c:	Netfilter connection tracking support for IPVS
- *
- * Portions Copyright (C) 2001-2002
- * Antefacto Ltd, 181 Parnell St, Dublin 1, Ireland.
- *
- * Portions Copyright (C) 2003-2010
- * Julian Anastasov
- *
- * Authors:
- * Ben North <ben@redfrontdoor.org>
- * Julian Anastasov <ja@ssi.bg>		Reorganize and sync with latest kernels
- * Hannes Eder <heder@google.com>	Extend NFCT support for FTP, ipvs match
- *
- * Current status:
- *
- * - provide conntrack confirmation for new and related connections, by
- * this way we can see their proper conntrack state in all hooks
- * - support for all forwarding methods, not only NAT
- * - FTP support (NAT), ability to support other NAT apps with expectations
- * - to correctly create expectations for related NAT connections the proper
- * NF conntrack support must be already installed, eg. ip_vs_ftp requires
- * nf_conntrack_ftp ... iptables_nat for the same ports (but no iptables
- * NAT rules are needed)
- * - alter reply for NAT when forwarding packet in original direction:
- * conntrack from client in NEW or RELATED (Passive FTP DATA) state or
- * when RELATED conntrack is created from real server (Active FTP DATA)
- * - if iptables_nat is not loaded the Passive FTP will not work (the
- * PASV response can not be NAT-ed) but Active FTP should work
- */
+
+ 
 
 #define KMSG_COMPONENT "IPVS"
 #define pr_fmt(fmt) KMSG_COMPONENT ": " fmt
@@ -78,33 +49,26 @@ ip_vs_update_conntrack(struct sk_buff *skb, struct ip_vs_conn *cp, int outin)
 	    nf_ct_is_dying(ct))
 		return;
 
-	/* Never alter conntrack for non-NAT conns */
+	 
 	if (IP_VS_FWD_METHOD(cp) != IP_VS_CONN_F_MASQ)
 		return;
 
-	/* Never alter conntrack for OPS conns (no reply is expected) */
+	 
 	if (cp->flags & IP_VS_CONN_F_ONE_PACKET)
 		return;
 
-	/* Alter reply only in original direction */
+	 
 	if (CTINFO2DIR(ctinfo) != IP_CT_DIR_ORIGINAL)
 		return;
 
-	/* Applications may adjust TCP seqs */
+	 
 	if (cp->app && nf_ct_protonum(ct) == IPPROTO_TCP &&
 	    !nfct_seqadj(ct) && !nfct_seqadj_ext_add(ct))
 		return;
 
-	/*
-	 * The connection is not yet in the hashtable, so we update it.
-	 * CIP->VIP will remain the same, so leave the tuple in
-	 * IP_CT_DIR_ORIGINAL untouched.  When the reply comes back from the
-	 * real-server we will see RIP->DIP.
-	 */
+	 
 	new_tuple = ct->tuplehash[IP_CT_DIR_REPLY].tuple;
-	/*
-	 * This will also take care of UDP and other protocols.
-	 */
+	 
 	if (outin) {
 		new_tuple.src.u3 = cp->daddr;
 		if (new_tuple.dst.protonum != IPPROTO_ICMP &&
@@ -134,9 +98,7 @@ int ip_vs_confirm_conntrack(struct sk_buff *skb)
 	return nf_conntrack_confirm(skb);
 }
 
-/*
- * Called from init_conntrack() as expectfn handler.
- */
+ 
 static void ip_vs_nfct_expect_callback(struct nf_conn *ct,
 	struct nf_conntrack_expect *exp)
 {
@@ -145,22 +107,16 @@ static void ip_vs_nfct_expect_callback(struct nf_conn *ct,
 	struct ip_vs_conn_param p;
 	struct net *net = nf_ct_net(ct);
 
-	/*
-	 * We assume that no NF locks are held before this callback.
-	 * ip_vs_conn_out_get and ip_vs_conn_in_get should match their
-	 * expectations even if they use wildcard values, now we provide the
-	 * actual values from the newly created original conntrack direction.
-	 * The conntrack is confirmed when packet reaches IPVS hooks.
-	 */
+	 
 
-	/* RS->CLIENT */
+	 
 	orig = &ct->tuplehash[IP_CT_DIR_ORIGINAL].tuple;
 	ip_vs_conn_fill_param(net_ipvs(net), exp->tuple.src.l3num, orig->dst.protonum,
 			      &orig->src.u3, orig->src.u.tcp.port,
 			      &orig->dst.u3, orig->dst.u.tcp.port, &p);
 	cp = ip_vs_conn_out_get(&p);
 	if (cp) {
-		/* Change reply CLIENT->RS to CLIENT->VS */
+		 
 		IP_VS_DBG_BUF(7, "%s: for ct=%p, status=0x%lX found inout cp="
 			      FMT_CONN "\n",
 			      __func__, ct, ct->status, ARG_CONN(cp));
@@ -173,10 +129,10 @@ static void ip_vs_nfct_expect_callback(struct nf_conn *ct,
 		goto alter;
 	}
 
-	/* CLIENT->VS */
+	 
 	cp = ip_vs_conn_in_get(&p);
 	if (cp) {
-		/* Change reply VS->CLIENT to RS->CLIENT */
+		 
 		IP_VS_DBG_BUF(7, "%s: for ct=%p, status=0x%lX found outin cp="
 			      FMT_CONN "\n",
 			      __func__, ct, ct->status, ARG_CONN(cp));
@@ -195,19 +151,14 @@ static void ip_vs_nfct_expect_callback(struct nf_conn *ct,
 	return;
 
 alter:
-	/* Never alter conntrack for non-NAT conns */
+	 
 	if (IP_VS_FWD_METHOD(cp) == IP_VS_CONN_F_MASQ)
 		nf_conntrack_alter_reply(ct, &new_reply);
 	ip_vs_conn_put(cp);
 	return;
 }
 
-/*
- * Create NF conntrack expectation with wildcard (optional) source port.
- * Then the default callback function will alter the reply and will confirm
- * the conntrack entry when the first packet comes.
- * Use port 0 to expect connection from any port.
- */
+ 
 void ip_vs_nfct_expect_related(struct sk_buff *skb, struct nf_conn *ct,
 			       struct ip_vs_conn *cp, u_int8_t proto,
 			       const __be16 port, int from_rs)
@@ -236,9 +187,7 @@ void ip_vs_nfct_expect_related(struct sk_buff *skb, struct nf_conn *ct,
 }
 EXPORT_SYMBOL(ip_vs_nfct_expect_related);
 
-/*
- * Our connection was terminated, try to drop the conntrack immediately
- */
+ 
 void ip_vs_conn_drop_conntrack(struct ip_vs_conn *cp)
 {
 	struct nf_conntrack_tuple_hash *h;

@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2022 Kernkonzept GmbH.
- *
- * Based on gcc-msm8916.c:
- *   Copyright 2015 Linaro Limited
- * adapted with data from clock-gcc-8909.c in Qualcomm's msm-3.18 release:
- *   Copyright (c) 2014-2016, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/clk-provider.h>
@@ -29,7 +22,7 @@
 #include "gdsc.h"
 #include "reset.h"
 
-/* Need to match the order of clocks in DT binding */
+ 
 enum {
 	DT_XO,
 	DT_SLEEP_CLK,
@@ -70,7 +63,7 @@ static struct clk_alpha_pll gpll0_early = {
 			.name = "gpll0_early",
 			.parent_data = gcc_xo_data,
 			.num_parents = ARRAY_SIZE(gcc_xo_data),
-			/* Avoid rate changes for shared clock */
+			 
 			.ops = &clk_alpha_pll_fixed_ops,
 		},
 	},
@@ -85,7 +78,7 @@ static struct clk_alpha_pll_postdiv gpll0 = {
 			&gpll0_early.clkr.hw,
 		},
 		.num_parents = 1,
-		/* Avoid rate changes for shared clock */
+		 
 		.ops = &clk_alpha_pll_postdiv_ro_ops,
 	},
 };
@@ -129,7 +122,7 @@ static struct clk_alpha_pll gpll2_early = {
 			.name = "gpll2_early",
 			.parent_data = gcc_xo_data,
 			.num_parents = ARRAY_SIZE(gcc_xo_data),
-			/* Avoid rate changes for shared clock */
+			 
 			.ops = &clk_alpha_pll_fixed_ops,
 		},
 	},
@@ -144,7 +137,7 @@ static struct clk_alpha_pll_postdiv gpll2 = {
 			&gpll2_early.clkr.hw,
 		},
 		.num_parents = 1,
-		/* Avoid rate changes for shared clock */
+		 
 		.ops = &clk_alpha_pll_postdiv_ro_ops,
 	},
 };
@@ -159,7 +152,7 @@ static struct clk_alpha_pll bimc_pll_early = {
 			.name = "bimc_pll_early",
 			.parent_data = gcc_xo_data,
 			.num_parents = ARRAY_SIZE(gcc_xo_data),
-			/* Avoid rate changes for shared clock */
+			 
 			.ops = &clk_alpha_pll_fixed_ops,
 		},
 	},
@@ -174,7 +167,7 @@ static struct clk_alpha_pll_postdiv bimc_pll = {
 			&bimc_pll_early.clkr.hw,
 		},
 		.num_parents = 1,
-		/* Avoid rate changes for shared clock */
+		 
 		.ops = &clk_alpha_pll_postdiv_ro_ops,
 	},
 };
@@ -2672,7 +2665,7 @@ static const struct qcom_reset_map gcc_msm8909_resets[] = {
 	[GCC_USB2_HS_PHY_ONLY_BCR] = { .reg = 0x41034, .udelay = 15 },
 	[GCC_USB_HS_BCR] = { 0x41000 },
 	[GCC_VENUS0_BCR] = { 0x4c014 },
-	/* Subsystem Restart */
+	 
 	[GCC_MSS_RESTART] = { 0x3e000 },
 };
 

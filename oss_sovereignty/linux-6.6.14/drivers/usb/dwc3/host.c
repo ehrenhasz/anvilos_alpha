@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * host.c - DesignWare USB3 DRD Controller Host Glue
- *
- * Copyright (C) 2011 Texas Instruments Incorporated - https://www.ti.com
- *
- * Authors: Felipe Balbi <balbi@ti.com>,
- */
+
+ 
 
 #include <linux/irq.h>
 #include <linux/of.h>
@@ -95,15 +89,7 @@ int dwc3_host_init(struct dwc3 *dwc)
 	if (dwc->usb2_lpm_disable)
 		props[prop_idx++] = PROPERTY_ENTRY_BOOL("usb2-lpm-disable");
 
-	/**
-	 * WORKAROUND: dwc3 revisions <=3.00a have a limitation
-	 * where Port Disable command doesn't work.
-	 *
-	 * The suggested workaround is that we avoid Port Disable
-	 * completely.
-	 *
-	 * This following flag tells XHCI to do just that.
-	 */
+	 
 	if (DWC3_VER_IS_WITHIN(DWC3, ANY, 300A))
 		props[prop_idx++] = PROPERTY_ENTRY_BOOL("quirk-broken-port-ped");
 

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Xtensa xtfpga SPI controller driver
- *
- * Copyright (c) 2014 Cadence Design Systems Inc.
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/io.h>

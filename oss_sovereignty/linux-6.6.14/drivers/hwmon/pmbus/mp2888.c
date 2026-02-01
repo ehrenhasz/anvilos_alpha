@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Hardware monitoring driver for MPS Multi-phase Digital VR Controllers
- *
- * Copyright (C) 2020 Nvidia Technologies Ltd.
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/i2c.h>
@@ -12,7 +8,7 @@
 #include <linux/module.h>
 #include "pmbus.h"
 
-/* Vendor specific registers. */
+ 
 #define MP2888_MFR_SYS_CONFIG	0x44
 #define MP2888_MFR_READ_CS1_2	0x73
 #define MP2888_MFR_READ_CS3_4	0x74
@@ -40,7 +36,7 @@ static int mp2888_read_byte_data(struct i2c_client *client, int page, int reg)
 {
 	switch (reg) {
 	case PMBUS_VOUT_MODE:
-		/* Enforce VOUT direct format. */
+		 
 		return PB_VOUT_MODE_DIRECT;
 	default:
 		return -ENODATA;
@@ -52,12 +48,7 @@ mp2888_current_sense_gain_and_resolution_get(struct i2c_client *client, struct m
 {
 	int ret;
 
-	/*
-	 * Obtain DrMOS current sense gain of power stage from the register
-	 * , bits 0-2. The value is selected as below:
-	 * 00b - 5µA/A, 01b - 8.5µA/A, 10b - 9.7µA/A, 11b - 10µA/A. Other
-	 * values are reserved.
-	 */
+	 
 	ret = i2c_smbus_read_word_data(client, MP2888_MFR_SYS_CONFIG);
 	if (ret < 0)
 		return ret;
@@ -79,11 +70,7 @@ mp2888_current_sense_gain_and_resolution_get(struct i2c_client *client, struct m
 		return -EINVAL;
 	}
 
-	/*
-	 * Obtain resolution selector for total and phase current report and protection.
-	 * 0: original resolution; 1: half resolution (in such case phase current value should
-	 * be doubled.
-	 */
+	 
 	data->total_curr_resolution = (ret & MP2888_TOTAL_CURRENT_RESOLUTION) >> 3;
 	data->phase_curr_resolution = (ret & MP2888_PHASE_CURRENT_RESOLUTION) >> 4;
 
@@ -103,23 +90,9 @@ mp2888_read_phase(struct i2c_client *client, struct mp2888_data *data, int page,
 		ret >>= 8;
 	ret &= 0xff;
 
-	/*
-	 * Output value is calculated as: (READ_CSx / 80 – 1.23) / (Kcs * Rcs)
-	 * where:
-	 * - Kcs is the DrMOS current sense gain of power stage, which is obtained from the
-	 *   register MP2888_MFR_VR_CONFIG1, bits 13-12 with the following selection of DrMOS
-	 *   (data->curr_sense_gain):
-	 *   00b - 8.5µA/A, 01b - 9.7µA/A, 1b - 10µA/A, 11b - 5µA/A.
-	 * - Rcs is the internal phase current sense resistor. This parameter depends on hardware
-	 *   assembly. By default it is set to 1kΩ. In case of different assembly, user should
-	 *   scale this parameter by dividing it by Rcs.
-	 * If phase current resolution bit is set to 1, READ_CSx value should be doubled.
-	 * Note, that current phase sensing, providing by the device is not accurate. This is
-	 * because sampling of current occurrence of bit weight has a big deviation, especially for
-	 * light load.
-	 */
+	 
 	ret = DIV_ROUND_CLOSEST(ret * 200 - 19600, data->curr_sense_gain);
-	/* Scale according to total current resolution. */
+	 
 	ret = (data->total_curr_resolution) ? ret * 2 : ret;
 	return ret;
 }
@@ -163,21 +136,14 @@ static int mp2888_read_word_data(struct i2c_client *client, int page, int phase,
 		if (ret <= 0)
 			return ret;
 
-		/*
-		 * READ_VIN requires fixup to scale it to linear11 format. Register data format
-		 * provides 10 bits for mantissa and 6 bits for exponent. Bits 15:10 are set with
-		 * the fixed value 111011b.
-		 */
+		 
 		ret = (ret & GENMASK(9, 0)) | ((ret & GENMASK(31, 10)) << 1);
 		break;
 	case PMBUS_OT_WARN_LIMIT:
 		ret = pmbus_read_word_data(client, page, phase, reg);
 		if (ret < 0)
 			return ret;
-		/*
-		 * Chip reports limits in degrees C, but the actual temperature in 10th of
-		 * degrees C - scaling is needed to match both.
-		 */
+		 
 		ret *= MP2888_TEMP_UNIT;
 		break;
 	case PMBUS_READ_IOUT:
@@ -187,10 +153,7 @@ static int mp2888_read_word_data(struct i2c_client *client, int page, int phase,
 		ret = pmbus_read_word_data(client, page, phase, reg);
 		if (ret < 0)
 			return ret;
-		/*
-		 * READ_IOUT register has unused bits 15:12 with fixed value 1110b. Clear these
-		 * bits and scale with total current resolution. Data is provided in direct format.
-		 */
+		 
 		ret &= GENMASK(11, 0);
 		ret = data->total_curr_resolution ? ret * 2 : ret;
 		break;
@@ -199,11 +162,7 @@ static int mp2888_read_word_data(struct i2c_client *client, int page, int phase,
 		if (ret < 0)
 			return ret;
 		ret &= GENMASK(9, 0);
-		/*
-		 * Chip reports limits with resolution 1A or 2A, if total current resolution bit is
-		 * set 1. Actual current is reported with 0.25A or respectively 0.5A resolution.
-		 * Scaling is needed to match both.
-		 */
+		 
 		ret = data->total_curr_resolution ? ret * 8 : ret * 4;
 		break;
 	case PMBUS_READ_POUT:
@@ -217,17 +176,10 @@ static int mp2888_read_word_data(struct i2c_client *client, int page, int phase,
 		ret = pmbus_read_word_data(client, page, phase, reg);
 		if (ret < 0)
 			return ret;
-		/*
-		 * Chip reports limits with resolution 1W or 2W, if total current resolution bit is
-		 * set 1. Actual power is reported with 0.5W or 1W respectively resolution. Scaling
-		 * is needed to match both.
-		 */
+		 
 		ret = data->total_curr_resolution ? ret * 2 : ret;
 		break;
-	/*
-	 * The below registers are not implemented by device or implemented not according to the
-	 * spec. Skip all of them to avoid exposing non-relevant inputs to sysfs.
-	 */
+	 
 	case PMBUS_OT_FAULT_LIMIT:
 	case PMBUS_UT_WARN_LIMIT:
 	case PMBUS_UT_FAULT_LIMIT:
@@ -268,21 +220,21 @@ static int mp2888_write_word_data(struct i2c_client *client, int page, int reg, 
 	switch (reg) {
 	case PMBUS_OT_WARN_LIMIT:
 		word = DIV_ROUND_CLOSEST(word, MP2888_TEMP_UNIT);
-		/* Drop unused bits 15:8. */
+		 
 		word = clamp_val(word, 0, GENMASK(7, 0));
 		break;
 	case PMBUS_IOUT_OC_WARN_LIMIT:
-		/* Fix limit according to total curent resolution. */
+		 
 		word = data->total_curr_resolution ? DIV_ROUND_CLOSEST(word, 8) :
 		       DIV_ROUND_CLOSEST(word, 4);
-		/* Drop unused bits 15:10. */
+		 
 		word = clamp_val(word, 0, GENMASK(9, 0));
 		break;
 	case PMBUS_POUT_OP_WARN_LIMIT:
-		/* Fix limit according to total curent resolution. */
+		 
 		word = data->total_curr_resolution ? DIV_ROUND_CLOSEST(word, 4) :
 		       DIV_ROUND_CLOSEST(word, 2);
-		/* Drop unused bits 15:10. */
+		 
 		word = clamp_val(word, 0, GENMASK(9, 0));
 		break;
 	default:
@@ -301,17 +253,14 @@ mp2888_identify_multiphase(struct i2c_client *client, struct mp2888_data *data,
 	if (ret < 0)
 		return ret;
 
-	/* Identify multiphase number - could be from 1 to 10. */
+	 
 	ret = i2c_smbus_read_word_data(client, MP2888_MFR_VR_CONFIG1);
 	if (ret <= 0)
 		return ret;
 
 	info->phases[0] = ret & GENMASK(3, 0);
 
-	/*
-	 * The device provides a total of 10 PWM pins, and can be configured to different phase
-	 * count applications for rail.
-	 */
+	 
 	if (info->phases[0] > MP2888_MAX_PHASE)
 		return -EINVAL;
 
@@ -364,12 +313,12 @@ static int mp2888_probe(struct i2c_client *client)
 	memcpy(&data->info, &mp2888_info, sizeof(*info));
 	info = &data->info;
 
-	/* Identify multiphase configuration. */
+	 
 	ret = mp2888_identify_multiphase(client, data, info);
 	if (ret)
 		return ret;
 
-	/* Obtain current sense gain of power stage and current resolution. */
+	 
 	ret = mp2888_current_sense_gain_and_resolution_get(client, data);
 	if (ret)
 		return ret;

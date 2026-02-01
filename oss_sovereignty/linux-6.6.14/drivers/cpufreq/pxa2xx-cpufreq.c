@@ -1,19 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  Copyright (C) 2002,2003 Intrinsyc Software
- *
- * History:
- *   31-Jul-2002 : Initial version [FB]
- *   29-Jan-2003 : added PXA255 support [FB]
- *   20-Apr-2003 : ported to v2.5 (Dustin McIntire, Sensoria Corp.)
- *
- * Note:
- *   This driver may change the memory bus clock rate, but will not do any
- *   platform specific access timing changes... for example if you have flash
- *   memory connected to CS0, you will need to register a platform specific
- *   notifier which will adjust the memory access strobes to maintain a
- *   minimum strobe width.
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -53,29 +39,27 @@ struct pxa_freqs {
 	int vmax;
 };
 
-/*
- * PXA255 definitions
- */
+ 
 static const struct pxa_freqs pxa255_run_freqs[] =
 {
-	/* CPU   MEMBUS		   run  turbo PXbus SDRAM */
-	{ 99500, -1, -1},	/*  99,   99,   50,   50  */
-	{132700, -1, -1},	/* 133,  133,   66,   66  */
-	{199100, -1, -1},	/* 199,  199,   99,   99  */
-	{265400, -1, -1},	/* 265,  265,  133,   66  */
-	{331800, -1, -1},	/* 331,  331,  166,   83  */
-	{398100, -1, -1},	/* 398,  398,  196,   99  */
+	 
+	{ 99500, -1, -1},	 
+	{132700, -1, -1},	 
+	{199100, -1, -1},	 
+	{265400, -1, -1},	 
+	{331800, -1, -1},	 
+	{398100, -1, -1},	 
 };
 
-/* Use the turbo mode frequencies for the CPUFREQ_POLICY_POWERSAVE policy */
+ 
 static const struct pxa_freqs pxa255_turbo_freqs[] =
 {
-	/* CPU			   run  turbo PXbus SDRAM */
-	{ 99500, -1, -1},	/*  99,   99,   50,   50  */
-	{199100, -1, -1},	/*  99,  199,   50,   99  */
-	{298500, -1, -1},	/*  99,  287,   50,   99  */
-	{298600, -1, -1},	/* 199,  287,   99,   99  */
-	{398100, -1, -1},	/* 199,  398,   99,   99  */
+	 
+	{ 99500, -1, -1},	 
+	{199100, -1, -1},	 
+	{298500, -1, -1},	 
+	{298600, -1, -1},	 
+	{398100, -1, -1},	 
 };
 
 #define NUM_PXA25x_RUN_FREQS ARRAY_SIZE(pxa255_run_freqs)
@@ -189,7 +173,7 @@ static int pxa_set_target(struct cpufreq_policy *policy, unsigned int idx)
 	unsigned int new_freq_cpu;
 	int ret = 0;
 
-	/* Get the current policy */
+	 
 	find_freq_tables(&pxa_freqs_table, &pxa_freq_settings);
 
 	new_freq_cpu = pxa_freq_settings[idx].khz;
@@ -206,15 +190,7 @@ static int pxa_set_target(struct cpufreq_policy *policy, unsigned int idx)
 
 	clk_set_rate(data->clk_core, new_freq_cpu * 1000);
 
-	/*
-	 * Even if voltage setting fails, we don't report it, as the frequency
-	 * change succeeded. The voltage reduction is not a critical failure,
-	 * only power savings will suffer from this.
-	 *
-	 * Note: if the voltage change fails, and a return value is returned, a
-	 * bug is triggered (seems a deadlock). Should anybody find out where,
-	 * the "return 0" should become a "return ret".
-	 */
+	 
 	if (vcc_core && new_freq_cpu < policy->cur)
 		ret = pxa_cpufreq_change_voltage(&pxa_freq_settings[idx]);
 
@@ -228,23 +204,23 @@ static int pxa_cpufreq_init(struct cpufreq_policy *policy)
 	struct cpufreq_frequency_table *pxa255_freq_table;
 	const struct pxa_freqs *pxa255_freqs;
 
-	/* try to guess pxa27x cpu */
+	 
 	if (cpu_is_pxa27x())
 		pxa27x_guess_max_freq();
 
 	pxa_cpufreq_init_voltages();
 
-	/* set default policy and cpuinfo */
-	policy->cpuinfo.transition_latency = 1000; /* FIXME: 1 ms, assumed */
+	 
+	policy->cpuinfo.transition_latency = 1000;  
 
-	/* Generate pxa25x the run cpufreq_frequency_table struct */
+	 
 	for (i = 0; i < NUM_PXA25x_RUN_FREQS; i++) {
 		pxa255_run_freq_table[i].frequency = pxa255_run_freqs[i].khz;
 		pxa255_run_freq_table[i].driver_data = i;
 	}
 	pxa255_run_freq_table[i].frequency = CPUFREQ_TABLE_END;
 
-	/* Generate pxa25x the turbo cpufreq_frequency_table struct */
+	 
 	for (i = 0; i < NUM_PXA25x_TURBO_FREQS; i++) {
 		pxa255_turbo_freq_table[i].frequency =
 			pxa255_turbo_freqs[i].khz;
@@ -254,7 +230,7 @@ static int pxa_cpufreq_init(struct cpufreq_policy *policy)
 
 	pxa255_turbo_table = !!pxa255_turbo_table;
 
-	/* Generate the pxa27x cpufreq_frequency_table struct */
+	 
 	for (i = 0; i < NUM_PXA27x_FREQS; i++) {
 		freq = pxa27x_freqs[i].khz;
 		if (freq > pxa27x_maxfreq)
@@ -265,10 +241,7 @@ static int pxa_cpufreq_init(struct cpufreq_policy *policy)
 	pxa27x_freq_table[i].driver_data = i;
 	pxa27x_freq_table[i].frequency = CPUFREQ_TABLE_END;
 
-	/*
-	 * Set the policy's minimum and maximum frequencies from the tables
-	 * just constructed.  This sets cpuinfo.mxx_freq, min and max.
-	 */
+	 
 	if (cpu_is_pxa25x()) {
 		find_freq_tables(&pxa255_freq_table, &pxa255_freqs);
 		pr_info("using %s frequency table\n",

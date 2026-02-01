@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * drivers/tdm/line_ctrl/slic_ds26522.h
- *
- * Copyright 2016 Freescale Semiconductor, Inc.
- *
- * Author: Zhao Qiang <B45475@freescale.com>
- */
+ 
+ 
 
 #define DS26522_RF_ADDR_START	0x00
 #define DS26522_RF_ADDR_END	0xef
@@ -114,8 +108,8 @@
 #define DS26522_LMCR_TE	0x01
 
 enum line_rate {
-	LINE_RATE_T1,	/* T1 line rate (1.544 Mbps)      */
-	LINE_RATE_E1	/* E1 line rate (2.048 Mbps)     */
+	LINE_RATE_T1,	 
+	LINE_RATE_E1	 
 };
 
 enum tdm_trans_mode {

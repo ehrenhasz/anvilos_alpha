@@ -1,9 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Regulators driver for Dialog Semiconductor DA903x
-//
-// Copyright (C) 2006-2008 Marvell International Ltd.
-// Copyright (C) 2008 Compulab Ltd.
+
+
+
+
+
+
 
 #include <linux/kernel.h>
 #include <linux/init.h>
@@ -14,7 +14,7 @@
 #include <linux/regulator/machine.h>
 #include <linux/mfd/da903x.h>
 
-/* DA9030 Registers */
+ 
 #define DA9030_INVAL		(-1)
 #define DA9030_LDO1011		(0x10)
 #define DA9030_LDO15		(0x11)
@@ -38,7 +38,7 @@
 #define DA9030_LDO_UNLOCK_MASK	(0xe0)
 #define DA9034_OVER1		(0x10)
 
-/* DA9034 Registers */
+ 
 #define DA9034_INVAL		(-1)
 #define DA9034_OVER2		(0x11)
 #define DA9034_OVER3		(0x12)
@@ -61,7 +61,7 @@
 #define DA9034_MDTV2		(0x33)
 #define DA9034_MVRC		(0x34)
 
-/* DA9035 Registers. DA9034 Registers are comptabile to DA9035. */
+ 
 #define DA9035_OVER3		(0x12)
 #define DA9035_VCC2		(0x1f)
 #define DA9035_3DTV1		(0x2c)
@@ -96,7 +96,7 @@ static inline int check_range(struct da903x_regulator_info *info,
 	return 0;
 }
 
-/* DA9030/DA9034 common operations */
+ 
 static int da903x_set_voltage_sel(struct regulator_dev *rdev, unsigned selector)
 {
 	struct da903x_regulator_info *info = rdev_get_drvdata(rdev);
@@ -164,7 +164,7 @@ static int da903x_is_enabled(struct regulator_dev *rdev)
 	return !!(reg_val & (1 << info->enable_bit));
 }
 
-/* DA9030 specific operations */
+ 
 static int da9030_set_ldo1_15_voltage_sel(struct regulator_dev *rdev,
 					  unsigned selector)
 {
@@ -175,10 +175,10 @@ static int da9030_set_ldo1_15_voltage_sel(struct regulator_dev *rdev,
 
 	val = selector << info->vol_shift;
 	mask = ((1 << info->vol_nbits) - 1)  << info->vol_shift;
-	val |= DA9030_LDO_UNLOCK; /* have to set UNLOCK bits */
+	val |= DA9030_LDO_UNLOCK;  
 	mask |= DA9030_LDO_UNLOCK_MASK;
 
-	/* write twice */
+	 
 	ret = da903x_update(da903x_dev, info->vol_reg, val, mask);
 	if (ret)
 		return ret;
@@ -227,7 +227,7 @@ static int da9030_list_ldo14_voltage(struct regulator_dev *rdev,
 	return volt;
 }
 
-/* DA9034 specific operations */
+ 
 static int da9034_set_dvc_voltage_sel(struct regulator_dev *rdev,
 				      unsigned selector)
 {
@@ -263,7 +263,7 @@ static const struct regulator_ops da903x_regulator_ldo_ops = {
 	.is_enabled	= da903x_is_enabled,
 };
 
-/* NOTE: this is dedicated for the insane DA9030 LDO14 */
+ 
 static const struct regulator_ops da9030_regulator_ldo14_ops = {
 	.set_voltage_sel = da903x_set_voltage_sel,
 	.get_voltage_sel = da903x_get_voltage_sel,
@@ -274,7 +274,7 @@ static const struct regulator_ops da9030_regulator_ldo14_ops = {
 	.is_enabled	= da903x_is_enabled,
 };
 
-/* NOTE: this is dedicated for the DA9030 LDO1 and LDO15 that have locks  */
+ 
 static const struct regulator_ops da9030_regulator_ldo1_15_ops = {
 	.set_voltage_sel = da9030_set_ldo1_15_voltage_sel,
 	.get_voltage_sel = da903x_get_voltage_sel,
@@ -295,7 +295,7 @@ static const struct regulator_ops da9034_regulator_dvc_ops = {
 	.is_enabled	= da903x_is_enabled,
 };
 
-/* NOTE: this is dedicated for the insane LDO12 */
+ 
 static const struct regulator_ops da9034_regulator_ldo12_ops = {
 	.set_voltage_sel = da903x_set_voltage_sel,
 	.get_voltage_sel = da903x_get_voltage_sel,
@@ -367,7 +367,7 @@ static const struct regulator_ops da9034_regulator_ldo12_ops = {
 		   ereg, ebit)
 
 static struct da903x_regulator_info da903x_regulator_info[] = {
-	/* DA9030 */
+	 
 	DA9030_DVC(BUCK2, 850, 1625, 25, BUCK2DVM1, 5, BUCK2DVM1, 7, RCTL11, 0),
 
 	DA9030_LDO( 1, 1200, 3200, 100,    LDO1, 0, 5, RCTL12, 1),
@@ -388,9 +388,9 @@ static struct da903x_regulator_info da903x_regulator_info[] = {
 	DA9030_LDO(17, 1800, 3200, 100,   LDO17, 0, 4, RCTL11, 7),
 	DA9030_LDO(18, 1800, 3200, 100, LDO1819, 0, 4, RCTL21, 2),
 	DA9030_LDO(19, 1800, 3200, 100, LDO1819, 4, 4, RCTL21, 1),
-	DA9030_LDO(13, 2100, 2100, 0, INVAL, 0, 0, RCTL11, 3), /* fixed @2.1V */
+	DA9030_LDO(13, 2100, 2100, 0, INVAL, 0, 0, RCTL11, 3),  
 
-	/* DA9034 */
+	 
 	DA9034_DVC(BUCK1, 725, 1500, 25, ADTV2, 5, VCC1, 0, OVER1, 0),
 	DA9034_DVC(BUCK2, 725, 1500, 25, CDTV2, 5, VCC1, 2, OVER1, 1),
 	DA9034_DVC(LDO2,  725, 1500, 25, SDTV2, 5, VCC1, 4, OVER1, 2),
@@ -408,9 +408,9 @@ static struct da903x_regulator_info da903x_regulator_info[] = {
 	DA9034_LDO(13, 1800, 3300, 100, LDO1312, 4, 4, OVER2, 7),
 	DA9034_LDO(14, 1800, 3300, 100, LDO1514, 0, 4, OVER3, 0),
 	DA9034_LDO(15, 1800, 3300, 100, LDO1514, 4, 4, OVER3, 1),
-	DA9034_LDO(5, 3100, 3100, 0, INVAL, 0, 0, OVER3, 7), /* fixed @3.1V */
+	DA9034_LDO(5, 3100, 3100, 0, INVAL, 0, 0, OVER3, 7),  
 
-	/* DA9035 */
+	 
 	DA9035_DVC(BUCK3, 1800, 2200, 100, 3DTV1, 3, VCC2, 0, OVER3, 3),
 };
 
@@ -439,7 +439,7 @@ static int da903x_regulator_probe(struct platform_device *pdev)
 		return -EINVAL;
 	}
 
-	/* Workaround for the weird LDO12 voltage setting */
+	 
 	if (ri->desc.id == DA9034_ID_LDO12) {
 		ri->desc.ops = &da9034_regulator_ldo12_ops;
 		ri->desc.n_voltages = 16;

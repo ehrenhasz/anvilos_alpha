@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2012-2016, The Linux Foundation. All rights reserved.
- * Copyright (C) 2017 Linaro Ltd.
- */
+
+ 
 #include <linux/clk.h>
 #include <linux/module.h>
 #include <linux/mod_devicetable.h>
@@ -22,13 +19,7 @@
 #include "vdec.h"
 #include "pm_helpers.h"
 
-/*
- * Three resons to keep MPLANE formats (despite that the number of planes
- * currently is one):
- * - the MPLANE formats allow only one plane to be used
- * - the downstream driver use MPLANE formats too
- * - future firmware versions could add support for >1 planes
- */
+ 
 static const struct venus_format vdec_formats[] = {
 	[VENUS_FMT_NV12] = {
 		.pixfmt = V4L2_PIX_FMT_NV12,
@@ -259,11 +250,7 @@ static int vdec_check_src_change(struct venus_inst *inst)
 	if (inst->subscriptions & V4L2_EVENT_SOURCE_CHANGE)
 		return 0;
 
-	/*
-	 * The code snippet below is a workaround for backward compatibility
-	 * with applications which doesn't support V4L2 events. It will be
-	 * dropped in future once those applications are fixed.
-	 */
+	 
 
 	if (inst->codec_state != VENUS_DEC_STATE_INIT)
 		goto done;
@@ -560,10 +547,7 @@ vdec_decoder_cmd(struct file *file, void *fh, struct v4l2_decoder_cmd *cmd)
 	mutex_lock(&inst->lock);
 
 	if (cmd->cmd == V4L2_DEC_CMD_STOP) {
-		/*
-		 * Implement V4L2_DEC_CMD_STOP by enqueue an empty buffer on
-		 * decoder input to signal EOS.
-		 */
+		 
 		if (!(inst->streamon_out && inst->streamon_cap))
 			goto unlock;
 
@@ -702,7 +686,7 @@ static int vdec_set_properties(struct venus_inst *inst)
 			return ret;
 	}
 
-	/* Enabling sufficient sequence change support for VP9 */
+	 
 	if (is_fw_rev_or_newer(inst->core, 5, 4, 51)) {
 		ptype = HFI_PROPERTY_PARAM_VDEC_ENABLE_SUFFICIENT_SEQCHANGE_EVENT;
 		ret = hfi_session_set_property(inst, ptype, &en);
@@ -763,11 +747,11 @@ static int vdec_output_conf(struct venus_inst *inst)
 			return ret;
 	}
 
-	/* Force searching UBWC formats for bigger then HD resolutions */
+	 
 	if (width > 1920 && height > ALIGN(1080, 32))
 		ubwc = true;
 
-	/* For Venus v4/v6 UBWC format is mandatory */
+	 
 	if (IS_V4(core) || IS_V6(core))
 		ubwc = true;
 
@@ -1479,10 +1463,7 @@ static void vdec_event_change(struct venus_inst *inst,
 
 	inst->width = format.fmt.pix_mp.width;
 	inst->height = format.fmt.pix_mp.height;
-	/*
-	 * Some versions of the firmware do not report crop information for
-	 * all codecs. For these cases, set the crop to the coded resolution.
-	 */
+	 
 	if (ev_data->input_crop.width > 0 && ev_data->input_crop.height > 0) {
 		inst->crop.left = ev_data->input_crop.left;
 		inst->crop.top = ev_data->input_crop.top;
@@ -1496,7 +1477,7 @@ static void vdec_event_change(struct venus_inst *inst,
 	}
 
 	inst->fw_min_cnt = ev_data->buf_count;
-	/* overwriting this to 11 for vp9 due to fw bug */
+	 
 	if (inst->hfi_codec == HFI_VIDEO_CODEC_VP9)
 		inst->fw_min_cnt = 11;
 
@@ -1529,11 +1510,7 @@ static void vdec_event_change(struct venus_inst *inst,
 		break;
 	}
 
-	/*
-	 * The assumption is that the firmware have to return the last buffer
-	 * before this event is received in the v4l2 driver. Also the firmware
-	 * itself doesn't mark the last decoder output buffer with HFI EOS flag.
-	 */
+	 
 
 	if (inst->codec_state == VENUS_DEC_STATE_DRC) {
 		int ret;
@@ -1705,10 +1682,7 @@ static int vdec_open(struct file *file)
 
 	ida_init(&inst->dpb_ids);
 
-	/*
-	 * create m2m device for every instance, the m2m context scheduling
-	 * is made by firmware side so we do not need to care about.
-	 */
+	 
 	inst->m2m_dev = v4l2_m2m_init(&vdec_m2m_ops);
 	if (IS_ERR(inst->m2m_dev)) {
 		ret = PTR_ERR(inst->m2m_dev);

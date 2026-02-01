@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
-/*******************************************************************************
- *
- * Module Name: dbcmds - Miscellaneous debug commands and output routines
- *
- ******************************************************************************/
+
+ 
 
 #include <acpi/acpi.h>
 #include "accommon.h"
@@ -16,7 +12,7 @@
 #define _COMPONENT          ACPI_CA_DEBUGGER
 ACPI_MODULE_NAME("dbcmds")
 
-/* Local prototypes */
+ 
 static void
 acpi_dm_compare_aml_resources(u8 *aml1_buffer,
 			      acpi_rsdesc_size aml1_buffer_length,
@@ -37,18 +33,7 @@ static void acpi_db_do_one_sleep_state(u8 sleep_state);
 
 static char *acpi_db_trace_method_name = NULL;
 
-/*******************************************************************************
- *
- * FUNCTION:    acpi_db_convert_to_node
- *
- * PARAMETERS:  in_string           - String to convert
- *
- * RETURN:      Pointer to a NS node
- *
- * DESCRIPTION: Convert a string to a valid NS pointer. Handles numeric or
- *              alphanumeric strings.
- *
- ******************************************************************************/
+ 
 
 struct acpi_namespace_node *acpi_db_convert_to_node(char *in_string)
 {
@@ -57,7 +42,7 @@ struct acpi_namespace_node *acpi_db_convert_to_node(char *in_string)
 
 	if ((*in_string >= 0x30) && (*in_string <= 0x39)) {
 
-		/* Numeric argument, convert */
+		 
 
 		address = strtoul(in_string, NULL, 16);
 		node = ACPI_TO_POINTER(address);
@@ -66,7 +51,7 @@ struct acpi_namespace_node *acpi_db_convert_to_node(char *in_string)
 			return (NULL);
 		}
 
-		/* Make sure pointer is valid NS node */
+		 
 
 		if (ACPI_GET_DESCRIPTOR_TYPE(node) != ACPI_DESC_TYPE_NAMED) {
 			acpi_os_printf
@@ -75,10 +60,7 @@ struct acpi_namespace_node *acpi_db_convert_to_node(char *in_string)
 			return (NULL);
 		}
 	} else {
-		/*
-		 * Alpha argument: The parameter is a name string that must be
-		 * resolved to a Namespace object.
-		 */
+		 
 		node = acpi_db_local_ns_lookup(in_string);
 		if (!node) {
 			acpi_os_printf
@@ -91,18 +73,7 @@ struct acpi_namespace_node *acpi_db_convert_to_node(char *in_string)
 	return (node);
 }
 
-/*******************************************************************************
- *
- * FUNCTION:    acpi_db_sleep
- *
- * PARAMETERS:  object_arg          - Desired sleep state (0-5). NULL means
- *                                    invoke all possible sleep states.
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Simulate sleep/wake sequences
- *
- ******************************************************************************/
+ 
 
 acpi_status acpi_db_sleep(char *object_arg)
 {
@@ -111,7 +82,7 @@ acpi_status acpi_db_sleep(char *object_arg)
 
 	ACPI_FUNCTION_TRACE(acpi_db_sleep);
 
-	/* Null input (no arguments) means to invoke all sleep states */
+	 
 
 	if (!object_arg) {
 		acpi_os_printf("Invoking all possible sleep states, 0-%d\n",
@@ -124,24 +95,14 @@ acpi_status acpi_db_sleep(char *object_arg)
 		return_ACPI_STATUS(AE_OK);
 	}
 
-	/* Convert argument to binary and invoke the sleep state */
+	 
 
 	sleep_state = (u8)strtoul(object_arg, NULL, 0);
 	acpi_db_do_one_sleep_state(sleep_state);
 	return_ACPI_STATUS(AE_OK);
 }
 
-/*******************************************************************************
- *
- * FUNCTION:    acpi_db_do_one_sleep_state
- *
- * PARAMETERS:  sleep_state         - Desired sleep state (0-5)
- *
- * RETURN:      None
- *
- * DESCRIPTION: Simulate a sleep/wake sequence
- *
- ******************************************************************************/
+ 
 
 static void acpi_db_do_one_sleep_state(u8 sleep_state)
 {
@@ -149,7 +110,7 @@ static void acpi_db_do_one_sleep_state(u8 sleep_state)
 	u8 sleep_type_a;
 	u8 sleep_type_b;
 
-	/* Validate parameter */
+	 
 
 	if (sleep_state > ACPI_S_STATES_MAX) {
 		acpi_os_printf("Sleep state %d out of range (%d max)\n",
@@ -160,7 +121,7 @@ static void acpi_db_do_one_sleep_state(u8 sleep_state)
 	acpi_os_printf("\n---- Invoking sleep state S%d (%s):\n",
 		       sleep_state, acpi_gbl_sleep_state_names[sleep_state]);
 
-	/* Get the values for the sleep type registers (for display only) */
+	 
 
 	status =
 	    acpi_get_sleep_type_data(sleep_state, &sleep_type_a, &sleep_type_b);
@@ -175,7 +136,7 @@ static void acpi_db_do_one_sleep_state(u8 sleep_state)
 	    ("Register values for sleep state S%d: Sleep-A: %.2X, Sleep-B: %.2X\n",
 	     sleep_state, sleep_type_a, sleep_type_b);
 
-	/* Invoke the various sleep/wake interfaces */
+	 
 
 	acpi_os_printf("**** Sleep: Prepare to sleep (S%d) ****\n",
 		       sleep_state);
@@ -211,17 +172,7 @@ error_exit:
 			sleep_state));
 }
 
-/*******************************************************************************
- *
- * FUNCTION:    acpi_db_display_locks
- *
- * PARAMETERS:  None
- *
- * RETURN:      None
- *
- * DESCRIPTION: Display information about internal mutexes.
- *
- ******************************************************************************/
+ 
 
 void acpi_db_display_locks(void)
 {
@@ -234,18 +185,7 @@ void acpi_db_display_locks(void)
 	}
 }
 
-/*******************************************************************************
- *
- * FUNCTION:    acpi_db_display_table_info
- *
- * PARAMETERS:  table_arg           - Name of table to be displayed
- *
- * RETURN:      None
- *
- * DESCRIPTION: Display information about loaded tables. Current
- *              implementation displays all loaded tables.
- *
- ******************************************************************************/
+ 
 
 void acpi_db_display_table_info(char *table_arg)
 {
@@ -253,21 +193,21 @@ void acpi_db_display_table_info(char *table_arg)
 	struct acpi_table_desc *table_desc;
 	acpi_status status;
 
-	/* Header */
+	 
 
 	acpi_os_printf("Idx ID  Status Type                    "
 		       "TableHeader (Sig, Address, Length, Misc)\n");
 
-	/* Walk the entire root table list */
+	 
 
 	for (i = 0; i < acpi_gbl_root_table_list.current_table_count; i++) {
 		table_desc = &acpi_gbl_root_table_list.tables[i];
 
-		/* Index and Table ID */
+		 
 
 		acpi_os_printf("%3u %.2u ", i, table_desc->owner_id);
 
-		/* Decode the table flags */
+		 
 
 		if (!(table_desc->flags & ACPI_TABLE_IS_LOADED)) {
 			acpi_os_printf("NotLoaded ");
@@ -297,20 +237,20 @@ void acpi_db_display_table_info(char *table_arg)
 			break;
 		}
 
-		/* Make sure that the table is mapped */
+		 
 
 		status = acpi_tb_validate_table(table_desc);
 		if (ACPI_FAILURE(status)) {
 			return;
 		}
 
-		/* Dump the table header */
+		 
 
 		if (table_desc->pointer) {
 			acpi_tb_print_table_header(table_desc->address,
 						   table_desc->pointer);
 		} else {
-			/* If the pointer is null, the table has been unloaded */
+			 
 
 			ACPI_INFO(("%4.4s - Table has been unloaded",
 				   table_desc->signature.ascii));
@@ -318,26 +258,14 @@ void acpi_db_display_table_info(char *table_arg)
 	}
 }
 
-/*******************************************************************************
- *
- * FUNCTION:    acpi_db_unload_acpi_table
- *
- * PARAMETERS:  object_name         - Namespace pathname for an object that
- *                                    is owned by the table to be unloaded
- *
- * RETURN:      None
- *
- * DESCRIPTION: Unload an ACPI table, via any namespace node that is owned
- *              by the table.
- *
- ******************************************************************************/
+ 
 
 void acpi_db_unload_acpi_table(char *object_name)
 {
 	struct acpi_namespace_node *node;
 	acpi_status status;
 
-	/* Translate name to an Named object */
+	 
 
 	node = acpi_db_convert_to_node(object_name);
 	if (!node) {
@@ -354,33 +282,21 @@ void acpi_db_unload_acpi_table(char *object_name)
 	}
 }
 
-/*******************************************************************************
- *
- * FUNCTION:    acpi_db_send_notify
- *
- * PARAMETERS:  name                - Name of ACPI object where to send notify
- *              value               - Value of the notify to send.
- *
- * RETURN:      None
- *
- * DESCRIPTION: Send an ACPI notification. The value specified is sent to the
- *              named object as an ACPI notify.
- *
- ******************************************************************************/
+ 
 
 void acpi_db_send_notify(char *name, u32 value)
 {
 	struct acpi_namespace_node *node;
 	acpi_status status;
 
-	/* Translate name to an Named object */
+	 
 
 	node = acpi_db_convert_to_node(name);
 	if (!node) {
 		return;
 	}
 
-	/* Dispatch the notify if legal */
+	 
 
 	if (acpi_ev_is_notify_object(node)) {
 		status = acpi_ev_queue_notify_request(node, value);
@@ -395,18 +311,7 @@ void acpi_db_send_notify(char *name, u32 value)
 	}
 }
 
-/*******************************************************************************
- *
- * FUNCTION:    acpi_db_display_interfaces
- *
- * PARAMETERS:  action_arg          - Null, "install", or "remove"
- *              interface_name_arg  - Name for install/remove options
- *
- * RETURN:      None
- *
- * DESCRIPTION: Display or modify the global _OSI interface list
- *
- ******************************************************************************/
+ 
 
 void acpi_db_display_interfaces(char *action_arg, char *interface_name_arg)
 {
@@ -414,7 +319,7 @@ void acpi_db_display_interfaces(char *action_arg, char *interface_name_arg)
 	char *sub_string;
 	acpi_status status;
 
-	/* If no arguments, just display current interface list */
+	 
 
 	if (!action_arg) {
 		(void)acpi_os_acquire_mutex(acpi_gbl_osi_mutex,
@@ -433,18 +338,18 @@ void acpi_db_display_interfaces(char *action_arg, char *interface_name_arg)
 		return;
 	}
 
-	/* If action_arg exists, so must interface_name_arg */
+	 
 
 	if (!interface_name_arg) {
 		acpi_os_printf("Missing Interface Name argument\n");
 		return;
 	}
 
-	/* Uppercase the action for match below */
+	 
 
 	acpi_ut_strupr(action_arg);
 
-	/* install - install an interface */
+	 
 
 	sub_string = strstr("INSTALL", action_arg);
 	if (sub_string) {
@@ -457,7 +362,7 @@ void acpi_db_display_interfaces(char *action_arg, char *interface_name_arg)
 		return;
 	}
 
-	/* remove - remove an interface */
+	 
 
 	sub_string = strstr("REMOVE", action_arg);
 	if (sub_string) {
@@ -470,23 +375,13 @@ void acpi_db_display_interfaces(char *action_arg, char *interface_name_arg)
 		return;
 	}
 
-	/* Invalid action_arg */
+	 
 
 	acpi_os_printf("Invalid action argument: %s\n", action_arg);
 	return;
 }
 
-/*******************************************************************************
- *
- * FUNCTION:    acpi_db_display_template
- *
- * PARAMETERS:  buffer_arg          - Buffer name or address
- *
- * RETURN:      None
- *
- * DESCRIPTION: Dump a buffer that contains a resource template
- *
- ******************************************************************************/
+ 
 
 void acpi_db_display_template(char *buffer_arg)
 {
@@ -494,7 +389,7 @@ void acpi_db_display_template(char *buffer_arg)
 	acpi_status status;
 	struct acpi_buffer return_buffer;
 
-	/* Translate buffer_arg to an Named object */
+	 
 
 	node = acpi_db_convert_to_node(buffer_arg);
 	if (!node || (node == acpi_gbl_root_node)) {
@@ -502,7 +397,7 @@ void acpi_db_display_template(char *buffer_arg)
 		return;
 	}
 
-	/* We must have a buffer object */
+	 
 
 	if (node->type != ACPI_TYPE_BUFFER) {
 		acpi_os_printf
@@ -514,7 +409,7 @@ void acpi_db_display_template(char *buffer_arg)
 	return_buffer.length = ACPI_DEBUG_BUFFER_SIZE;
 	return_buffer.pointer = acpi_gbl_db_buffer;
 
-	/* Attempt to convert the raw buffer to a resource list */
+	 
 
 	status = acpi_rs_create_resource_list(node->object, &return_buffer);
 
@@ -528,7 +423,7 @@ void acpi_db_display_template(char *buffer_arg)
 		goto dump_buffer;
 	}
 
-	/* Now we can dump the resource list */
+	 
 
 	acpi_rs_dump_resource_list(ACPI_CAST_PTR(struct acpi_resource,
 						 return_buffer.pointer));
@@ -543,21 +438,7 @@ dump_buffer:
 	return;
 }
 
-/*******************************************************************************
- *
- * FUNCTION:    acpi_dm_compare_aml_resources
- *
- * PARAMETERS:  aml1_buffer         - Contains first resource list
- *              aml1_buffer_length  - Length of first resource list
- *              aml2_buffer         - Contains second resource list
- *              aml2_buffer_length  - Length of second resource list
- *
- * RETURN:      None
- *
- * DESCRIPTION: Compare two AML resource lists, descriptor by descriptor (in
- *              order to isolate a miscompare to an individual resource)
- *
- ******************************************************************************/
+ 
 
 static void
 acpi_dm_compare_aml_resources(u8 *aml1_buffer,
@@ -576,7 +457,7 @@ acpi_dm_compare_aml_resources(u8 *aml1_buffer,
 	u32 count = 0;
 	u32 i;
 
-	/* Compare overall buffer sizes (may be different due to size rounding) */
+	 
 
 	if (aml1_buffer_length != aml2_buffer_length) {
 		acpi_os_printf("**** Buffer length mismatch in converted "
@@ -589,17 +470,17 @@ acpi_dm_compare_aml_resources(u8 *aml1_buffer,
 	aml1_end = aml1_buffer + aml1_buffer_length;
 	aml2_end = aml2_buffer + aml2_buffer_length;
 
-	/* Walk the descriptor lists, comparing each descriptor */
+	 
 
 	while ((aml1 < aml1_end) && (aml2 < aml2_end)) {
 
-		/* Get the lengths of each descriptor */
+		 
 
 		aml1_length = acpi_ut_get_descriptor_length(aml1);
 		aml2_length = acpi_ut_get_descriptor_length(aml2);
 		resource_type = acpi_ut_get_resource_type(aml1);
 
-		/* Check for descriptor length match */
+		 
 
 		if (aml1_length != aml2_length) {
 			acpi_os_printf
@@ -608,7 +489,7 @@ acpi_dm_compare_aml_resources(u8 *aml1_buffer,
 			     resource_type, offset, aml1_length, aml2_length);
 		}
 
-		/* Check for descriptor byte match */
+		 
 
 		else if (memcmp(aml1, aml2, aml1_length)) {
 			acpi_os_printf
@@ -626,13 +507,13 @@ acpi_dm_compare_aml_resources(u8 *aml1_buffer,
 			}
 		}
 
-		/* Exit on end_tag descriptor */
+		 
 
 		if (resource_type == ACPI_RESOURCE_NAME_END_TAG) {
 			return;
 		}
 
-		/* Point to next descriptor in each buffer */
+		 
 
 		count++;
 		offset += aml1_length;
@@ -641,19 +522,7 @@ acpi_dm_compare_aml_resources(u8 *aml1_buffer,
 	}
 }
 
-/*******************************************************************************
- *
- * FUNCTION:    acpi_dm_test_resource_conversion
- *
- * PARAMETERS:  node                - Parent device node
- *              name                - resource method name (_CRS)
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Compare the original AML with a conversion of the AML to
- *              internal resource list, then back to AML.
- *
- ******************************************************************************/
+ 
 
 static acpi_status
 acpi_dm_test_resource_conversion(struct acpi_namespace_node *node, char *name)
@@ -670,7 +539,7 @@ acpi_dm_test_resource_conversion(struct acpi_namespace_node *node, char *name)
 	return_buffer.length = ACPI_ALLOCATE_LOCAL_BUFFER;
 	resource_buffer.length = ACPI_ALLOCATE_LOCAL_BUFFER;
 
-	/* Get the original _CRS AML resource template */
+	 
 
 	status = acpi_evaluate_object(node, name, NULL, &return_buffer);
 	if (ACPI_FAILURE(status)) {
@@ -679,7 +548,7 @@ acpi_dm_test_resource_conversion(struct acpi_namespace_node *node, char *name)
 		return (status);
 	}
 
-	/* Get the AML resource template, converted to internal resource structs */
+	 
 
 	status = acpi_get_current_resources(node, &resource_buffer);
 	if (ACPI_FAILURE(status)) {
@@ -688,7 +557,7 @@ acpi_dm_test_resource_conversion(struct acpi_namespace_node *node, char *name)
 		goto exit1;
 	}
 
-	/* Convert internal resource list to external AML resource template */
+	 
 
 	status = acpi_rs_create_aml_resources(&resource_buffer, &new_aml);
 	if (ACPI_FAILURE(status)) {
@@ -697,7 +566,7 @@ acpi_dm_test_resource_conversion(struct acpi_namespace_node *node, char *name)
 		goto exit2;
 	}
 
-	/* Compare original AML to the newly created AML resource list */
+	 
 
 	original_aml = return_buffer.pointer;
 
@@ -706,7 +575,7 @@ acpi_dm_test_resource_conversion(struct acpi_namespace_node *node, char *name)
 				      length, new_aml.pointer,
 				      (acpi_rsdesc_size)new_aml.length);
 
-	/* Cleanup and exit */
+	 
 
 	ACPI_FREE(new_aml.pointer);
 exit2:
@@ -716,18 +585,7 @@ exit1:
 	return (status);
 }
 
-/*******************************************************************************
- *
- * FUNCTION:    acpi_db_resource_callback
- *
- * PARAMETERS:  acpi_walk_resource_callback
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Simple callback to exercise acpi_walk_resources and
- *              acpi_walk_resource_buffer.
- *
- ******************************************************************************/
+ 
 
 static acpi_status
 acpi_db_resource_callback(struct acpi_resource *resource, void *context)
@@ -736,17 +594,7 @@ acpi_db_resource_callback(struct acpi_resource *resource, void *context)
 	return (AE_OK);
 }
 
-/*******************************************************************************
- *
- * FUNCTION:    acpi_db_device_resources
- *
- * PARAMETERS:  acpi_walk_callback
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Display the _PRT/_CRS/_PRS resources for a device object.
- *
- ******************************************************************************/
+ 
 
 static acpi_status
 acpi_db_device_resources(acpi_handle obj_handle,
@@ -767,7 +615,7 @@ acpi_db_device_resources(acpi_handle obj_handle,
 		return (AE_NO_MEMORY);
 	}
 
-	/* Get handles to the resource methods for this device */
+	 
 
 	(void)acpi_get_handle(node, METHOD_NAME__PRT,
 			      ACPI_CAST_PTR(acpi_handle, &prt_node));
@@ -779,17 +627,17 @@ acpi_db_device_resources(acpi_handle obj_handle,
 			      ACPI_CAST_PTR(acpi_handle, &aei_node));
 
 	if (!prt_node && !crs_node && !prs_node && !aei_node) {
-		goto cleanup;	/* Nothing to do */
+		goto cleanup;	 
 	}
 
 	acpi_os_printf("\nDevice: %s\n", parent_path);
 
-	/* Prepare for a return object of arbitrary size */
+	 
 
 	return_buffer.pointer = acpi_gbl_db_buffer;
 	return_buffer.length = ACPI_DEBUG_BUFFER_SIZE;
 
-	/* _PRT */
+	 
 
 	if (prt_node) {
 		acpi_os_printf("Evaluating _PRT\n");
@@ -815,7 +663,7 @@ acpi_db_device_resources(acpi_handle obj_handle,
 		acpi_rs_dump_irq_list(ACPI_CAST_PTR(u8, acpi_gbl_db_buffer));
 	}
 
-	/* _CRS */
+	 
 
 get_crs:
 	if (crs_node) {
@@ -832,7 +680,7 @@ get_crs:
 			goto get_prs;
 		}
 
-		/* This code exercises the acpi_walk_resources interface */
+		 
 
 		status = acpi_walk_resources(node, METHOD_NAME__CRS,
 					     acpi_db_resource_callback, NULL);
@@ -842,7 +690,7 @@ get_crs:
 			goto get_prs;
 		}
 
-		/* Get the _CRS resource list (test ALLOCATE buffer) */
+		 
 
 		return_buffer.pointer = NULL;
 		return_buffer.length = ACPI_ALLOCATE_LOCAL_BUFFER;
@@ -854,7 +702,7 @@ get_crs:
 			goto get_prs;
 		}
 
-		/* This code exercises the acpi_walk_resource_buffer interface */
+		 
 
 		status = acpi_walk_resource_buffer(&return_buffer,
 						   acpi_db_resource_callback,
@@ -865,20 +713,16 @@ get_crs:
 			goto end_crs;
 		}
 
-		/* Dump the _CRS resource list */
+		 
 
 		acpi_rs_dump_resource_list(ACPI_CAST_PTR(struct acpi_resource,
 							 return_buffer.
 							 pointer));
 
-		/*
-		 * Perform comparison of original AML to newly created AML. This
-		 * tests both the AML->Resource conversion and the Resource->AML
-		 * conversion.
-		 */
+		 
 		(void)acpi_dm_test_resource_conversion(node, METHOD_NAME__CRS);
 
-		/* Execute _SRS with the resource list */
+		 
 
 		acpi_os_printf("Evaluating _SRS\n");
 
@@ -893,7 +737,7 @@ end_crs:
 		ACPI_FREE(return_buffer.pointer);
 	}
 
-	/* _PRS */
+	 
 
 get_prs:
 	if (prs_node) {
@@ -925,7 +769,7 @@ get_prs:
 					    acpi_gbl_db_buffer));
 	}
 
-	/* _AEI */
+	 
 
 get_aei:
 	if (aei_node) {
@@ -962,19 +806,7 @@ cleanup:
 	return (AE_OK);
 }
 
-/*******************************************************************************
- *
- * FUNCTION:    acpi_db_display_resources
- *
- * PARAMETERS:  object_arg          - String object name or object pointer.
- *                                    NULL or "*" means "display resources for
- *                                    all devices"
- *
- * RETURN:      None
- *
- * DESCRIPTION: Display the resource objects associated with a device.
- *
- ******************************************************************************/
+ 
 
 void acpi_db_display_resources(char *object_arg)
 {
@@ -983,7 +815,7 @@ void acpi_db_display_resources(char *object_arg)
 	acpi_db_set_output_destination(ACPI_DB_REDIRECTABLE_OUTPUT);
 	acpi_dbg_level |= ACPI_LV_RESOURCES;
 
-	/* Asterisk means "display resources for all devices" */
+	 
 
 	if (!object_arg || (!strcmp(object_arg, "*"))) {
 		(void)acpi_walk_namespace(ACPI_TYPE_DEVICE, ACPI_ROOT_OBJECT,
@@ -991,7 +823,7 @@ void acpi_db_display_resources(char *object_arg)
 					  acpi_db_device_resources, NULL, NULL,
 					  NULL);
 	} else {
-		/* Convert string to object pointer */
+		 
 
 		node = acpi_db_convert_to_node(object_arg);
 		if (node) {
@@ -1010,17 +842,7 @@ void acpi_db_display_resources(char *object_arg)
 	acpi_db_set_output_destination(ACPI_DB_CONSOLE_OUTPUT);
 }
 
-/*******************************************************************************
- *
- * FUNCTION:    acpi_db_generate_ged
- *
- * PARAMETERS:  ged_arg             - Raw GED number, ascii string
- *
- * RETURN:      None
- *
- * DESCRIPTION: Simulate firing of a GED
- *
- ******************************************************************************/
+ 
 
 void acpi_db_generate_interrupt(char *gsiv_arg)
 {
@@ -1069,19 +891,7 @@ void acpi_db_generate_interrupt(char *gsiv_arg)
 }
 
 #if (!ACPI_REDUCED_HARDWARE)
-/*******************************************************************************
- *
- * FUNCTION:    acpi_db_generate_gpe
- *
- * PARAMETERS:  gpe_arg             - Raw GPE number, ascii string
- *              block_arg           - GPE block number, ascii string
- *                                    0 or 1 for FADT GPE blocks
- *
- * RETURN:      None
- *
- * DESCRIPTION: Simulate firing of a GPE
- *
- ******************************************************************************/
+ 
 
 void acpi_db_generate_gpe(char *gpe_arg, char *block_arg)
 {
@@ -1091,10 +901,7 @@ void acpi_db_generate_gpe(char *gpe_arg, char *block_arg)
 
 	gpe_number = strtoul(gpe_arg, NULL, 0);
 
-	/*
-	 * If no block arg, or block arg == 0 or 1, use the FADT-defined
-	 * GPE blocks.
-	 */
+	 
 	if (block_arg) {
 		block_number = strtoul(block_arg, NULL, 0);
 		if (block_number == 1) {
@@ -1113,39 +920,16 @@ void acpi_db_generate_gpe(char *gpe_arg, char *block_arg)
 	(void)acpi_ev_gpe_dispatch(NULL, gpe_event_info, gpe_number);
 }
 
-/*******************************************************************************
- *
- * FUNCTION:    acpi_db_generate_sci
- *
- * PARAMETERS:  None
- *
- * RETURN:      None
- *
- * DESCRIPTION: Simulate an SCI -- just call the SCI dispatch.
- *
- ******************************************************************************/
+ 
 
 void acpi_db_generate_sci(void)
 {
 	acpi_ev_sci_dispatch();
 }
 
-#endif				/* !ACPI_REDUCED_HARDWARE */
+#endif				 
 
-/*******************************************************************************
- *
- * FUNCTION:    acpi_db_trace
- *
- * PARAMETERS:  enable_arg          - ENABLE/AML to enable tracer
- *                                    DISABLE to disable tracer
- *              method_arg          - Method to trace
- *              once_arg            - Whether trace once
- *
- * RETURN:      None
- *
- * DESCRIPTION: Control method tracing facility
- *
- ******************************************************************************/
+ 
 
 void acpi_db_trace(char *enable_arg, char *method_arg, char *once_arg)
 {
@@ -1177,12 +961,12 @@ void acpi_db_trace(char *enable_arg, char *method_arg, char *once_arg)
 	    !strcmp(enable_arg, "METHOD") || !strcmp(enable_arg, "OPCODE")) {
 		if (!strcmp(enable_arg, "ENABLE")) {
 
-			/* Inherit current console settings */
+			 
 
 			debug_level = acpi_gbl_db_console_debug_level;
 			debug_layer = acpi_dbg_layer;
 		} else {
-			/* Restrict console output to trace points only */
+			 
 
 			debug_level = ACPI_LV_TRACE_POINT;
 			debug_layer = ACPI_EXECUTER;

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * (C) COPYRIGHT 2018 ARM Limited. All rights reserved.
- * Author: James.Qian.Wang <james.qian.wang@arm.com>
- *
- */
+
+ 
 #include <linux/of.h>
 
 #include <drm/drm_print.h>
@@ -11,7 +7,7 @@
 #include "komeda_dev.h"
 #include "komeda_pipeline.h"
 
-/** komeda_pipeline_add - Add a pipeline to &komeda_dev */
+ 
 struct komeda_pipeline *
 komeda_pipeline_add(struct komeda_dev *mdev, size_t size,
 		    const struct komeda_pipeline_funcs *funcs)
@@ -158,7 +154,7 @@ komeda_component_pickup_input(struct komeda_component *c, u32 avail_comps)
 	return komeda_pipeline_get_first_component(c->pipeline, avail_inputs);
 }
 
-/** komeda_component_add - Add a component to &komeda_pipeline */
+ 
 struct komeda_component *
 komeda_component_add(struct komeda_pipeline *pipe,
 		     size_t comp_sz, u32 id, u32 hw_id,
@@ -313,7 +309,7 @@ static void komeda_pipeline_assemble(struct komeda_pipeline *pipe)
 		c = komeda_pipeline_get_component(pipe, id);
 		komeda_component_verify_inputs(c);
 	}
-	/* calculate right layer for the layer split */
+	 
 	for (i = 0; i < pipe->n_layers; i++) {
 		layer = pipe->layers[i];
 
@@ -327,9 +323,7 @@ static void komeda_pipeline_assemble(struct komeda_pipeline *pipe)
 	}
 }
 
-/* if pipeline_A accept another pipeline_B's component as input, treat
- * pipeline_B as slave of pipeline_A.
- */
+ 
 struct komeda_pipeline *
 komeda_pipeline_get_slave(struct komeda_pipeline *master)
 {

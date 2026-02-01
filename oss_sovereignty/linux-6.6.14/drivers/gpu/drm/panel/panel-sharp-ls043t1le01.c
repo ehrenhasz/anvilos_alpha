@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2015 Red Hat
- * Copyright (C) 2015 Sony Mobile Communications Inc.
- * Author: Werner Johansson <werner.johansson@sonymobile.com>
- *
- * Based on AUO panel driver by Rob Clark <robdclark@gmail.com>
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/gpio/consumer.h>
@@ -48,12 +42,12 @@ static int sharp_nt_panel_init(struct sharp_nt_panel *sharp_nt)
 
 	msleep(120);
 
-	/* Novatek two-lane operation */
+	 
 	ret = mipi_dsi_dcs_write(dsi, 0xae, (u8[]){ 0x03 }, 1);
 	if (ret < 0)
 		return ret;
 
-	/* Set both MCU and RGB I/F to 24bpp */
+	 
 	ret = mipi_dsi_dcs_set_pixel_format(dsi, MIPI_DCS_PIXEL_FMT_24BIT |
 					(MIPI_DCS_PIXEL_FMT_24BIT << 4));
 	if (ret < 0)

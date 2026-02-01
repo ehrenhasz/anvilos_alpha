@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2015-2019 Jason A. Donenfeld <Jason@zx2c4.com>. All Rights Reserved.
- */
+
+ 
 
 #include "allowedips.h"
 #include "peer.h"
@@ -99,12 +97,7 @@ static u8 common_bits(const struct allowedips_node *node, const u8 *key,
 static bool prefix_matches(const struct allowedips_node *node, const u8 *key,
 			   u8 bits)
 {
-	/* This could be much faster if it actually just compared the common
-	 * bits properly, by precomputing a mask bswap(~0 << (32 - cidr)), and
-	 * the rest, but it turns out that common_bits is already super fast on
-	 * modern processors, even taking into account the unfortunate bswap.
-	 * So, we just inline it like this instead.
-	 */
+	 
 	return common_bits(node, key, bits) >= node->cidr;
 }
 
@@ -123,11 +116,11 @@ static struct allowedips_node *find_node(struct allowedips_node *trie, u8 bits,
 	return found;
 }
 
-/* Returns a strong reference to a peer */
+ 
 static struct wg_peer *lookup(struct allowedips_node __rcu *root, u8 bits,
 			      const void *be_ip)
 {
-	/* Aligned so it can be passed to fls/fls64 */
+	 
 	u8 ip[16] __aligned(__alignof(u64));
 	struct allowedips_node *node;
 	struct wg_peer *peer = NULL;
@@ -281,7 +274,7 @@ void wg_allowedips_free(struct allowedips *table, struct mutex *lock)
 int wg_allowedips_insert_v4(struct allowedips *table, const struct in_addr *ip,
 			    u8 cidr, struct wg_peer *peer, struct mutex *lock)
 {
-	/* Aligned so it can be passed to fls */
+	 
 	u8 key[4] __aligned(__alignof(u32));
 
 	++table->seq;
@@ -292,7 +285,7 @@ int wg_allowedips_insert_v4(struct allowedips *table, const struct in_addr *ip,
 int wg_allowedips_insert_v6(struct allowedips *table, const struct in6_addr *ip,
 			    u8 cidr, struct wg_peer *peer, struct mutex *lock)
 {
-	/* Aligned so it can be passed to fls64 */
+	 
 	u8 key[16] __aligned(__alignof(u64));
 
 	++table->seq;
@@ -352,7 +345,7 @@ int wg_allowedips_read_node(struct allowedips_node *node, u8 ip[16], u8 *cidr)
 	return node->bitlen == 32 ? AF_INET : AF_INET6;
 }
 
-/* Returns a strong reference to a peer */
+ 
 struct wg_peer *wg_allowedips_lookup_dst(struct allowedips *table,
 					 struct sk_buff *skb)
 {
@@ -363,7 +356,7 @@ struct wg_peer *wg_allowedips_lookup_dst(struct allowedips *table,
 	return NULL;
 }
 
-/* Returns a strong reference to a peer */
+ 
 struct wg_peer *wg_allowedips_lookup_src(struct allowedips *table,
 					 struct sk_buff *skb)
 {

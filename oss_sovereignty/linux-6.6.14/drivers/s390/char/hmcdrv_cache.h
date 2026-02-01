@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- *    SE/HMC Drive (Read) Cache Functions
- *
- *    Copyright IBM Corp. 2013
- *    Author(s): Ralf Hoppe (rhoppe@de.ibm.com)
- */
+ 
+ 
 
 #ifndef __HMCDRV_CACHE_H__
 #define __HMCDRV_CACHE_H__
@@ -22,4 +17,4 @@ ssize_t hmcdrv_cache_cmd(const struct hmcdrv_ftp_cmdspec *ftp,
 int hmcdrv_cache_startup(size_t cachesize);
 void hmcdrv_cache_shutdown(void);
 
-#endif	 /* __HMCDRV_CACHE_H__ */
+#endif	  

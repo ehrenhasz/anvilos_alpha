@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright © 2019 Intel Corporation
- */
+
+ 
 
 #include <linux/kobject.h>
 #include <linux/sysfs.h>
@@ -68,7 +66,7 @@ static const char * const vecs_caps[] = {
 
 static ssize_t repr_trim(char *buf, ssize_t len)
 {
-	/* Trim off the trailing space and replace with a newline */
+	 
 	if (len > PAGE_SIZE)
 		len = PAGE_SIZE;
 	if (len > 0)
@@ -145,22 +143,7 @@ max_spin_store(struct kobject *kobj, struct kobj_attribute *attr,
 	unsigned long long duration, clamped;
 	int err;
 
-	/*
-	 * When waiting for a request, if is it currently being executed
-	 * on the GPU, we busywait for a short while before sleeping. The
-	 * premise is that most requests are short, and if it is already
-	 * executing then there is a good chance that it will complete
-	 * before we can setup the interrupt handler and go to sleep.
-	 * We try to offset the cost of going to sleep, by first spinning
-	 * on the request -- if it completed in less time than it would take
-	 * to go sleep, process the interrupt and return back to the client,
-	 * then we have saved the client some latency, albeit at the cost
-	 * of spinning on an expensive CPU core.
-	 *
-	 * While we try to avoid waiting at all for a request that is unlikely
-	 * to complete, deciding how long it is worth spinning is for is an
-	 * arbitrary decision: trading off power vs latency.
-	 */
+	 
 
 	err = kstrtoull(buf, 0, &duration);
 	if (err)
@@ -205,13 +188,7 @@ timeslice_store(struct kobject *kobj, struct kobj_attribute *attr,
 	unsigned long long duration, clamped;
 	int err;
 
-	/*
-	 * Execlists uses a scheduling quantum (a timeslice) to alternate
-	 * execution between ready-to-run contexts of equal priority. This
-	 * ensures that all users (though only if they of equal importance)
-	 * have the opportunity to run and prevents livelocks where contexts
-	 * may have implicit ordering due to userspace semaphores.
-	 */
+	 
 
 	err = kstrtoull(buf, 0, &duration);
 	if (err)
@@ -259,14 +236,7 @@ stop_store(struct kobject *kobj, struct kobj_attribute *attr,
 	unsigned long long duration, clamped;
 	int err;
 
-	/*
-	 * When we allow ourselves to sleep before a GPU reset after disabling
-	 * submission, even for a few milliseconds, gives an innocent context
-	 * the opportunity to clear the GPU before the reset occurs. However,
-	 * how long to sleep depends on the typical non-preemptible duration
-	 * (a similar problem to determining the ideal preempt-reset timeout
-	 * or even the heartbeat interval).
-	 */
+	 
 
 	err = kstrtoull(buf, 0, &duration);
 	if (err)
@@ -310,14 +280,7 @@ preempt_timeout_store(struct kobject *kobj, struct kobj_attribute *attr,
 	unsigned long long timeout, clamped;
 	int err;
 
-	/*
-	 * After initialising a preemption request, we give the current
-	 * resident a small amount of time to vacate the GPU. The preemption
-	 * request is for a higher priority context and should be immediate to
-	 * maintain high quality of service (and avoid priority inversion).
-	 * However, the preemption granularity of the GPU can be quite coarse
-	 * and so we need a compromise.
-	 */
+	 
 
 	err = kstrtoull(buf, 0, &timeout);
 	if (err)
@@ -367,15 +330,7 @@ heartbeat_store(struct kobject *kobj, struct kobj_attribute *attr,
 	unsigned long long delay, clamped;
 	int err;
 
-	/*
-	 * We monitor the health of the system via periodic heartbeat pulses.
-	 * The pulses also provide the opportunity to perform garbage
-	 * collection.  However, we interpret an incomplete pulse (a missed
-	 * heartbeat) as an indication that the system is no longer responsive,
-	 * i.e. hung, and perform an engine or full GPU reset. Given that the
-	 * preemption granularity can be very coarse on a system, the optimal
-	 * value for any workload is unknowable!
-	 */
+	 
 
 	err = kstrtoull(buf, 0, &delay);
 	if (err)
@@ -441,7 +396,7 @@ kobj_engine(struct kobject *dir, struct intel_engine_cs *engine)
 		return NULL;
 	}
 
-	/* xfer ownership to sysfs tree */
+	 
 	return &ke->base;
 }
 

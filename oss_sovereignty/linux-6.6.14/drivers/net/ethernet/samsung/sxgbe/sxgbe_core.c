@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* 10G controller driver for Samsung SoCs
- *
- * Copyright (C) 2013 Samsung Electronics Co., Ltd.
- *		http://www.samsung.com
- *
- * Author: Siva Reddy Kallam <siva.kallam@samsung.com>
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -17,30 +11,25 @@
 #include "sxgbe_common.h"
 #include "sxgbe_reg.h"
 
-/* MAC core initialization */
+ 
 static void sxgbe_core_init(void __iomem *ioaddr)
 {
 	u32 regval;
 
-	/* TX configuration */
+	 
 	regval = readl(ioaddr + SXGBE_CORE_TX_CONFIG_REG);
-	/* Other configurable parameters IFP, IPG, ISR, ISM
-	 * needs to be set if needed
-	 */
+	 
 	regval |= SXGBE_TX_JABBER_DISABLE;
 	writel(regval, ioaddr + SXGBE_CORE_TX_CONFIG_REG);
 
-	/* RX configuration */
+	 
 	regval = readl(ioaddr + SXGBE_CORE_RX_CONFIG_REG);
-	/* Other configurable parameters CST, SPEN, USP, GPSLCE
-	 * WD, LM, S2KP, HDSMS, GPSL, ELEN, ARPEN needs to be
-	 * set if needed
-	 */
+	 
 	regval |= SXGBE_RX_JUMBPKT_ENABLE | SXGBE_RX_ACS_ENABLE;
 	writel(regval, ioaddr + SXGBE_CORE_RX_CONFIG_REG);
 }
 
-/* Dump MAC registers */
+ 
 static void sxgbe_core_dump_regs(void __iomem *ioaddr)
 {
 }
@@ -50,7 +39,7 @@ static int sxgbe_get_lpi_status(void __iomem *ioaddr, const u32 irq_status)
 	int status = 0;
 	int lpi_status;
 
-	/* Reading this register shall clear all the LPI status bits */
+	 
 	lpi_status = readl(ioaddr + SXGBE_CORE_LPI_CTRL_STATUS);
 
 	if (lpi_status & LPI_CTRL_STATUS_TLPIEN)
@@ -65,7 +54,7 @@ static int sxgbe_get_lpi_status(void __iomem *ioaddr, const u32 irq_status)
 	return status;
 }
 
-/* Handle extra events on specific interrupts hw dependent */
+ 
 static int sxgbe_core_host_irq_status(void __iomem *ioaddr,
 				      struct sxgbe_extra_stats *x)
 {
@@ -79,12 +68,12 @@ static int sxgbe_core_host_irq_status(void __iomem *ioaddr,
 	return status;
 }
 
-/* Set power management mode (e.g. magic frame) */
+ 
 static void sxgbe_core_pmt(void __iomem *ioaddr, unsigned long mode)
 {
 }
 
-/* Set/Get Unicast MAC addresses */
+ 
 static void sxgbe_core_set_umac_addr(void __iomem *ioaddr,
 				     const unsigned char *addr,
 				     unsigned int reg_n)
@@ -106,7 +95,7 @@ static void sxgbe_core_get_umac_addr(void __iomem *ioaddr, unsigned char *addr,
 	high_word = readl(ioaddr + SXGBE_CORE_ADD_HIGHOFFSET(reg_n));
 	low_word = readl(ioaddr + SXGBE_CORE_ADD_LOWOFFSET(reg_n));
 
-	/* extract and assign address */
+	 
 	addr[5] = (high_word & 0x0000FF00) >> 8;
 	addr[4] = (high_word & 0x000000FF);
 	addr[3] = (low_word & 0xFF000000) >> 24;
@@ -144,7 +133,7 @@ static int sxgbe_get_controller_version(void __iomem *ioaddr)
 	return readl(ioaddr + SXGBE_CORE_VERSION_REG);
 }
 
-/* If supported then get the optional core features */
+ 
 static unsigned int sxgbe_get_hw_feature(void __iomem *ioaddr,
 					 unsigned char feature_index)
 {
@@ -155,11 +144,11 @@ static void sxgbe_core_set_speed(void __iomem *ioaddr, unsigned char speed)
 {
 	u32 tx_cfg = readl(ioaddr + SXGBE_CORE_TX_CONFIG_REG);
 
-	/* clear the speed bits */
+	 
 	tx_cfg &= ~0x60000000;
 	tx_cfg |= (speed << SXGBE_SPEED_LSHIFT);
 
-	/* set the speed */
+	 
 	writel(tx_cfg, ioaddr + SXGBE_CORE_TX_CONFIG_REG);
 }
 
@@ -187,11 +176,7 @@ static void  sxgbe_set_eee_mode(void __iomem *ioaddr)
 {
 	u32 ctrl;
 
-	/* Enable the LPI mode for transmit path with Tx automate bit set.
-	 * When Tx Automate bit is set, MAC internally handles the entry
-	 * to LPI mode after all outstanding and pending packets are
-	 * transmitted.
-	 */
+	 
 	ctrl = readl(ioaddr + SXGBE_CORE_LPI_CTRL_STATUS);
 	ctrl |= LPI_CTRL_STATUS_LPIEN | LPI_CTRL_STATUS_TXA;
 	writel(ctrl, ioaddr + SXGBE_CORE_LPI_CTRL_STATUS);
@@ -212,7 +197,7 @@ static void  sxgbe_set_eee_pls(void __iomem *ioaddr, const int link)
 
 	ctrl = readl(ioaddr + SXGBE_CORE_LPI_CTRL_STATUS);
 
-	/* If the PHY link status is UP then set PLS */
+	 
 	if (link)
 		ctrl |= LPI_CTRL_STATUS_PLS;
 	else
@@ -226,13 +211,7 @@ static void  sxgbe_set_eee_timer(void __iomem *ioaddr,
 {
 	int value = ((tw & 0xffff)) | ((ls & 0x7ff) << 16);
 
-	/* Program the timers in the LPI timer control register:
-	 * LS: minimum time (ms) for which the link
-	 *  status from PHY should be ok before transmitting
-	 *  the LPI pattern.
-	 * TW: minimum time (us) for which the core waits
-	 *  after it has stopped transmitting the LPI pattern.
-	 */
+	 
 	writel(value, ioaddr + SXGBE_CORE_LPI_TIMER_CTRL);
 }
 

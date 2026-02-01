@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef __SELFTESTS_POWERPC_PPC_ASM_H
 #define __SELFTESTS_POWERPC_PPC_ASM_H
 #include <ppc-asm.h>
@@ -44,7 +44,7 @@
 #define END_FTR_SECTION_IFCLR(x)	.endif
 #define END_FTR_SECTION_IFSET(x)	.endif
 
-/* Default to taking the first of any alternative feature sections */
+ 
 test_feature = 1
 
-#endif /* __SELFTESTS_POWERPC_PPC_ASM_H */
+#endif  

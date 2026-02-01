@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Core IIO driver for Bosch BMA400 triaxial acceleration sensor.
- *
- * Copyright 2019 Dan Robertson <dan@dlrobertson.com>
- *
- * TODO:
- *  - Support for power management
- *  - Support events and interrupts
- *  - Create channel for step count
- *  - Create channel for sensor time
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/bitops.h>
@@ -33,17 +23,10 @@
 
 #include "bma400.h"
 
-/*
- * The G-range selection may be one of 2g, 4g, 8, or 16g. The scale may
- * be selected with the acc_range bits of the ACC_CONFIG1 register.
- * NB: This buffer is populated in the device init.
- */
+ 
 static int bma400_scales[8];
 
-/*
- * See the ACC_CONFIG1 section of the datasheet.
- * NB: This buffer is populated in the device init.
- */
+ 
 static int bma400_sample_freqs[14];
 
 static const int bma400_osr_range[] = { 0, 1, 3 };
@@ -69,7 +52,7 @@ static int double_tap2_min_delay[BMA400_TAP_TIM_LIST_LEN] = {
 	80000
 };
 
-/* See the ACC_CONFIG0 section of the datasheet */
+ 
 enum bma400_power_mode {
 	POWER_MODE_SLEEP   = 0x00,
 	POWER_MODE_LOW     = 0x01,
@@ -98,7 +81,7 @@ enum bma400_activity {
 struct bma400_data {
 	struct device *dev;
 	struct regmap *regmap;
-	struct mutex mutex; /* data register lock */
+	struct mutex mutex;  
 	struct iio_mount_matrix orientation;
 	enum bma400_power_mode power_mode;
 	struct bma400_sample_freq sample_freq;
@@ -110,7 +93,7 @@ struct bma400_data {
 	bool activity_event_en;
 	unsigned int generic_event_en;
 	unsigned int tap_event_en_bitmask;
-	/* Correct time stamp alignment */
+	 
 	struct {
 		__le16 buff[3];
 		u8 temperature;
@@ -312,28 +295,21 @@ static ssize_t in_accel_gesture_tap_maxtomin_time_store(struct device *dev,
 
 static IIO_DEVICE_ATTR_RW(in_accel_gesture_tap_maxtomin_time, 0);
 
-/*
- * Tap interrupts works with 200 Hz input data rate and the time based tap
- * controls are in the terms of data samples so the below calculation is
- * used to convert the configuration values into seconds.
- * e.g.:
- * 60 data samples * 0.005 ms = 0.3 seconds.
- * 80 data samples * 0.005 ms = 0.4 seconds.
- */
+ 
 
-/* quiet configuration values in seconds */
+ 
 static IIO_CONST_ATTR(in_accel_gesture_tap_reset_timeout_available,
 		      "0.3 0.4 0.5 0.6");
 
-/* tics_th configuration values in seconds */
+ 
 static IIO_CONST_ATTR(in_accel_gesture_tap_maxtomin_time_available,
 		      "0.03 0.045 0.06 0.09");
 
-/* quiet_dt configuration values in seconds */
+ 
 static IIO_CONST_ATTR(in_accel_gesture_doubletap_tap2_min_delay_available,
 		      "0.02 0.04 0.06 0.08");
 
-/* List of sensitivity values available to configure tap interrupts */
+ 
 static IIO_CONST_ATTR(in_accel_gesture_tap_value_available, "0 1 2 3 4 5 6 7");
 
 static struct attribute *bma400_event_attributes[] = {
@@ -377,7 +353,7 @@ static const struct attribute_group bma400_event_attribute_group = {
 	.modified = 1,				\
 	.channel2 = _chan2,			\
 	.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),	\
-	.scan_index = -1, /* No buffer support */		\
+	.scan_index = -1,  		\
 	.event_spec = &bma400_activity_event,			\
 	.num_event_specs = 1,					\
 }
@@ -402,7 +378,7 @@ static const struct iio_chan_spec bma400_channels[] = {
 		.type = IIO_STEPS,
 		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED) |
 				      BIT(IIO_CHAN_INFO_ENABLE),
-		.scan_index = -1, /* No buffer support */
+		.scan_index = -1,  
 		.event_spec = &bma400_step_detect_event,
 		.num_event_specs = 1,
 	},
@@ -426,10 +402,7 @@ static int bma400_get_temp_reg(struct bma400_data *data, int *val, int *val2)
 		return ret;
 
 	host_temp = sign_extend32(raw_temp, 7);
-	/*
-	 * The formula for the TEMP_DATA register in the datasheet
-	 * is: x * 0.5 + 23
-	 */
+	 
 	*val = (host_temp >> 1) + 23;
 	*val2 = (host_temp & 0x1) * 500000;
 	return IIO_VAL_INT_PLUS_MICRO;
@@ -461,7 +434,7 @@ static int bma400_get_accel_reg(struct bma400_data *data,
 		return -EINVAL;
 	}
 
-	/* bulk read two registers, with the base being the LSB register */
+	 
 	ret = regmap_bulk_read(data->regmap, lsb_reg, &raw_accel,
 			       sizeof(raw_accel));
 	if (ret)
@@ -489,19 +462,13 @@ static int bma400_get_accel_output_data_rate(struct bma400_data *data)
 
 	switch (data->power_mode) {
 	case POWER_MODE_LOW:
-		/*
-		 * Runs at a fixed rate in low-power mode. See section 4.3
-		 * in the datasheet.
-		 */
+		 
 		bma400_output_data_rate_from_raw(BMA400_ACC_ODR_LP_RAW,
 						 &data->sample_freq.hz,
 						 &data->sample_freq.uhz);
 		return 0;
 	case POWER_MODE_NORMAL:
-		/*
-		 * In normal mode the ODR can be found in the ACC_CONFIG1
-		 * register.
-		 */
+		 
 		ret = regmap_read(data->regmap, BMA400_ACC_CONFIG1_REG, &val);
 		if (ret)
 			goto error;
@@ -542,7 +509,7 @@ static int bma400_set_accel_output_data_rate(struct bma400_data *data,
 		if (uhz || hz > BMA400_ACC_ODR_MAX_HZ)
 			return -EINVAL;
 
-		/* Note this works because MIN_WHOLE_HZ is odd */
+		 
 		idx = __ffs(hz);
 
 		if (hz >> idx != BMA400_ACC_ODR_MIN_WHOLE_HZ)
@@ -559,7 +526,7 @@ static int bma400_set_accel_output_data_rate(struct bma400_data *data,
 	if (ret)
 		return ret;
 
-	/* preserve the range and normal mode osr */
+	 
 	odr = (~BMA400_ACC_ODR_MASK & val) | idx;
 
 	ret = regmap_write(data->regmap, BMA400_ACC_CONFIG1_REG, odr);
@@ -577,12 +544,7 @@ static int bma400_get_accel_oversampling_ratio(struct bma400_data *data)
 	unsigned int osr;
 	int ret;
 
-	/*
-	 * The oversampling ratio is stored in a different register
-	 * based on the power-mode. In normal mode the OSR is stored
-	 * in ACC_CONFIG1. In low-power mode it is stored in
-	 * ACC_CONFIG0.
-	 */
+	 
 	switch (data->power_mode) {
 	case POWER_MODE_LOW:
 		ret = regmap_read(data->regmap, BMA400_ACC_CONFIG0_REG, &val);
@@ -624,10 +586,7 @@ static int bma400_set_accel_oversampling_ratio(struct bma400_data *data,
 	if (val & ~BMA400_TWO_BITS_MASK)
 		return -EINVAL;
 
-	/*
-	 * The oversampling ratio is stored in a different register
-	 * based on the power-mode.
-	 */
+	 
 	switch (data->power_mode) {
 	case POWER_MODE_LOW:
 		ret = regmap_read(data->regmap, BMA400_ACC_CONFIG0_REG,
@@ -675,7 +634,7 @@ static int bma400_accel_scale_to_raw(struct bma400_data *data,
 	if (val == 0)
 		return -EINVAL;
 
-	/* Note this works because BMA400_SCALE_MIN is odd */
+	 
 	raw = __ffs(val);
 
 	if (val >> raw != BMA400_SCALE_MIN)
@@ -758,7 +717,7 @@ static int bma400_set_power_mode(struct bma400_data *data,
 	if (mode == POWER_MODE_INVALID)
 		return -EINVAL;
 
-	/* Preserve the low-power oversample ratio etc */
+	 
 	ret = regmap_write(data->regmap, BMA400_ACC_CONFIG0_REG,
 			   mode | (val & ~BMA400_TWO_BITS_MASK));
 	if (ret) {
@@ -768,10 +727,7 @@ static int bma400_set_power_mode(struct bma400_data *data,
 
 	data->power_mode = mode;
 
-	/*
-	 * Update our cached osr and odr based on the new
-	 * power-mode.
-	 */
+	 
 	bma400_get_accel_output_data_rate(data);
 	bma400_get_accel_oversampling_ratio(data);
 	return 0;
@@ -870,7 +826,7 @@ static int bma400_init(struct bma400_data *data)
 	if (ret)
 		return dev_err_probe(data->dev, ret, "Failed to get regulators\n");
 
-	/* Try to read chip_id register. It must return 0x90. */
+	 
 	ret = regmap_read(data->regmap, BMA400_CHIP_ID_REG, &val);
 	if (ret) {
 		dev_err(data->dev, "Failed to read chip id register\n");
@@ -894,10 +850,7 @@ static int bma400_init(struct bma400_data *data)
 			dev_err(data->dev, "Failed to wake up the device\n");
 			return ret;
 		}
-		/*
-		 * TODO: The datasheet waits 1500us here in the example, but
-		 * lists 2/ODR as the wakeup time.
-		 */
+		 
 		usleep_range(1500, 2000);
 	}
 
@@ -919,16 +872,11 @@ static int bma400_init(struct bma400_data *data)
 	if (ret)
 		return ret;
 
-	/* Configure INT1 pin to open drain */
+	 
 	ret = regmap_write(data->regmap, BMA400_INT_IO_CTRL_REG, 0x06);
 	if (ret)
 		return ret;
-	/*
-	 * Once the interrupt engine is supported we might use the
-	 * data_src_reg, but for now ensure this is set to the
-	 * variable ODR filter selectable by the sample frequency
-	 * channel.
-	 */
+	 
 	return regmap_write(data->regmap, BMA400_ACC_CONFIG2_REG, 0x00);
 }
 
@@ -955,11 +903,7 @@ static int bma400_read_raw(struct iio_dev *indio_dev,
 					  &activity);
 			if (ret)
 				return ret;
-			/*
-			 * The device does not support confidence value levels,
-			 * so we will always have 100% for current activity and
-			 * 0% for the others.
-			 */
+			 
 			if (chan->channel2 == bma400_act_to_mod(activity))
 				*val = 100;
 			else
@@ -983,10 +927,7 @@ static int bma400_read_raw(struct iio_dev *indio_dev,
 			*val2 = data->sample_freq.uhz;
 			return IIO_VAL_INT_PLUS_MICRO;
 		case IIO_TEMP:
-			/*
-			 * Runs at a fixed sampling frequency. See Section 4.4
-			 * of the datasheet.
-			 */
+			 
 			*val = 6;
 			*val2 = 250000;
 			return IIO_VAL_INT_PLUS_MICRO;
@@ -998,11 +939,7 @@ static int bma400_read_raw(struct iio_dev *indio_dev,
 		*val2 = data->scale;
 		return IIO_VAL_INT_PLUS_MICRO;
 	case IIO_CHAN_INFO_OVERSAMPLING_RATIO:
-		/*
-		 * TODO: We could avoid this logic and returning -EINVAL here if
-		 * we set both the low-power and normal mode OSR registers when
-		 * we configure the device.
-		 */
+		 
 		if (data->oversampling_ratio < 0)
 			return -EINVAL;
 
@@ -1051,10 +988,7 @@ static int bma400_write_raw(struct iio_dev *indio_dev,
 
 	switch (mask) {
 	case IIO_CHAN_INFO_SAMP_FREQ:
-		/*
-		 * The sample frequency is readonly for the temperature
-		 * register and a fixed value in low-power mode.
-		 */
+		 
 		if (chan->type != IIO_ACCEL)
 			return -EINVAL;
 
@@ -1182,22 +1116,22 @@ static int bma400_activity_event_en(struct bma400_data *data,
 		return -EINVAL;
 	}
 
-	/* Enabling all axis for interrupt evaluation */
+	 
 	ret = regmap_write(data->regmap, reg, 0xF8);
 	if (ret)
 		return ret;
 
-	/* OR combination of all axis for interrupt evaluation */
+	 
 	ret = regmap_write(data->regmap, reg + BMA400_GEN_CONFIG1_OFF, value);
 	if (ret)
 		return ret;
 
-	/* Initial value to avoid interrupts while enabling*/
+	 
 	ret = regmap_write(data->regmap, reg + BMA400_GEN_CONFIG2_OFF, 0x0A);
 	if (ret)
 		return ret;
 
-	/* Initial duration value to avoid interrupts while enabling*/
+	 
 	ret = regmap_write(data->regmap, reg + BMA400_GEN_CONFIG31_OFF, 0x0F);
 	if (ret)
 		return ret;
@@ -1222,18 +1156,11 @@ static int bma400_tap_event_en(struct bma400_data *data,
 	unsigned int mask, field_value;
 	int ret;
 
-	/*
-	 * Tap interrupts can be configured only in normal mode.
-	 * See table in section 4.3 "Power modes - performance modes" of
-	 * datasheet v1.2.
-	 */
+	 
 	if (data->power_mode != POWER_MODE_NORMAL)
 		return -EINVAL;
 
-	/*
-	 * Tap interrupts are operating with a data rate of 200Hz.
-	 * See section 4.7 "Tap sensing interrupt" in datasheet v1.2.
-	 */
+	 
 	if (data->sample_freq.hz != 200 && state) {
 		dev_err(data->dev, "Invalid data rate for tap interrupts.\n");
 		return -EINVAL;
@@ -1574,10 +1501,10 @@ static irqreturn_t bma400_trigger_handler(int irq, void *p)
 	struct bma400_data *data = iio_priv(indio_dev);
 	int ret, temp;
 
-	/* Lock to protect the data->buffer */
+	 
 	mutex_lock(&data->mutex);
 
-	/* bulk read six registers, with the base being the LSB register */
+	 
 	ret = regmap_bulk_read(data->regmap, BMA400_X_AXIS_LSB_REG,
 			       &data->buffer.buff, sizeof(data->buffer.buff));
 	if (ret)
@@ -1611,22 +1538,16 @@ static irqreturn_t bma400_interrupt(int irq, void *private)
 	unsigned int act, ev_dir = IIO_EV_DIR_NONE;
 	int ret;
 
-	/* Lock to protect the data->status */
+	 
 	mutex_lock(&data->mutex);
 	ret = regmap_bulk_read(data->regmap, BMA400_INT_STAT0_REG,
 			       &data->status,
 			       sizeof(data->status));
-	/*
-	 * if none of the bit is set in the status register then it is
-	 * spurious interrupt.
-	 */
+	 
 	if (ret || !data->status)
 		goto unlock_err;
 
-	/*
-	 * Disable all advance interrupts if interrupt engine overrun occurs.
-	 * See section 4.7 "Interrupt engine overrun" in datasheet v1.2.
-	 */
+	 
 	if (FIELD_GET(BMA400_INT_ENG_OVRUN_MSK, le16_to_cpu(data->status))) {
 		bma400_disable_adv_interrupt(data);
 		dev_err(data->dev, "Interrupt engine overrun\n");

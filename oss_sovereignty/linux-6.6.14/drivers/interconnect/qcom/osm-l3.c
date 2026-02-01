@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2020-2021, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/args.h>
 #include <linux/bitfield.h>
@@ -20,13 +18,13 @@
 #define LUT_L_VAL			GENMASK(7, 0)
 #define CLK_HW_DIV			2
 
-/* OSM Register offsets */
+ 
 #define REG_ENABLE			0x0
 #define OSM_LUT_ROW_SIZE		32
 #define OSM_REG_FREQ_LUT		0x110
 #define OSM_REG_PERF_STATE		0x920
 
-/* EPSS Register offsets */
+ 
 #define EPSS_LUT_ROW_SIZE		4
 #define EPSS_REG_L3_VOTE		0x90
 #define EPSS_REG_FREQ_LUT		0x100
@@ -45,14 +43,7 @@ struct qcom_osm_l3_icc_provider {
 	struct icc_provider provider;
 };
 
-/**
- * struct qcom_osm_l3_node - Qualcomm specific interconnect nodes
- * @name: the node name used in debugfs
- * @links: an array of nodes where we can go next while traversing
- * @id: a unique node identifier
- * @num_links: the total number of @links
- * @buswidth: width of the interconnect between a node and the bus
- */
+ 
 struct qcom_osm_l3_node {
 	const char *name;
 	u16 links[OSM_L3_MAX_LINKS];
@@ -194,7 +185,7 @@ static int qcom_osm_l3_probe(struct platform_device *pdev)
 	if (IS_ERR(qp->base))
 		return PTR_ERR(qp->base);
 
-	/* HW should be in enabled state to proceed */
+	 
 	if (!(readl_relaxed(qp->base + REG_ENABLE) & 0x1)) {
 		dev_err(&pdev->dev, "error hardware not enabled\n");
 		return -ENODEV;
@@ -216,7 +207,7 @@ static int qcom_osm_l3_probe(struct platform_device *pdev)
 		else
 			freq = hw_rate;
 
-		/* Two of the same frequencies signify end of table */
+		 
 		if (i > 0 && prev_freq == freq)
 			break;
 
@@ -254,7 +245,7 @@ static int qcom_osm_l3_probe(struct platform_device *pdev)
 		}
 
 		node->name = qnodes[i]->name;
-		/* Cast away const and add it back in qcom_osm_l3_set() */
+		 
 		node->data = (void *)qnodes[i];
 		icc_node_add(node, provider);
 

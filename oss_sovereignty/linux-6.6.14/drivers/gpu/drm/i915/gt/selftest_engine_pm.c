@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright © 2018 Intel Corporation
- */
+
+ 
 
 #include <linux/sort.h>
 
@@ -89,14 +87,14 @@ static int __measure_timestamps(struct intel_context *ce,
 		return PTR_ERR(cs);
 	}
 
-	/* Signal & wait for start */
+	 
 	cs = emit_store(cs, offset + 4008, 1);
 	cs = emit_wait(cs, offset + 4008, MI_SEMAPHORE_SAD_NEQ_SDD, 1);
 
 	cs = emit_srm(cs, RING_TIMESTAMP(engine->mmio_base), offset + 4000);
 	cs = emit_srm(cs, RING_CTX_TIMESTAMP(engine->mmio_base), offset + 4004);
 
-	/* Busy wait */
+	 
 	cs = emit_wait(cs, offset + 4008, MI_SEMAPHORE_SAD_EQ_SDD, 1);
 
 	cs = emit_srm(cs, RING_TIMESTAMP(engine->mmio_base), offset + 4016);
@@ -107,14 +105,14 @@ static int __measure_timestamps(struct intel_context *ce,
 	i915_request_add(rq);
 	intel_engine_flush_submission(engine);
 
-	/* Wait for the request to start executing, that then waits for us */
+	 
 	while (READ_ONCE(sema[2]) == 0)
 		cpu_relax();
 
-	/* Run the request for a 100us, sampling timestamps before/after */
+	 
 	local_irq_disable();
 	write_semaphore(&sema[2], 0);
-	while (READ_ONCE(sema[1]) == 0) /* wait for the gpu to catch up */
+	while (READ_ONCE(sema[1]) == 0)  
 		cpu_relax();
 	*dt = local_clock();
 	udelay(100);
@@ -176,7 +174,7 @@ static int __live_engine_timestamps(struct intel_engine_cs *engine)
 
 	d_ctx *= engine->gt->clock_frequency;
 	if (GRAPHICS_VER(engine->i915) == 11)
-		d_ring *= 12500000; /* Fixed 80ns for GEN11 ctx timestamp? */
+		d_ring *= 12500000;  
 	else
 		d_ring *= engine->gt->clock_frequency;
 
@@ -195,10 +193,7 @@ static int live_engine_timestamps(void *arg)
 	struct intel_engine_cs *engine;
 	enum intel_engine_id id;
 
-	/*
-	 * Check that CS_TIMESTAMP / CTX_TIMESTAMP are in sync, i.e. share
-	 * the same CS clock.
-	 */
+	 
 
 	if (GRAPHICS_VER(gt->i915) < 8)
 		return 0;
@@ -223,11 +218,7 @@ static int __spin_until_busier(struct intel_engine_cs *engine, ktime_t busyness)
 	if (!intel_engine_uses_guc(engine))
 		return 0;
 
-	/*
-	 * In GuC mode of submission, the busyness stats may get updated after
-	 * the batch starts running. Poll for a change in busyness and timeout
-	 * after 500 us.
-	 */
+	 
 	start = ktime_get();
 	while (intel_engine_get_busy_time(engine, &unused) == busyness) {
 		dt = ktime_get() - start;
@@ -249,9 +240,7 @@ static int live_engine_busy_stats(void *arg)
 	struct igt_spinner spin;
 	int err = 0;
 
-	/*
-	 * Check that if an engine supports busy-stats, they tell the truth.
-	 */
+	 
 
 	if (igt_spinner_init(&spin, gt))
 		return -ENOMEM;
@@ -292,7 +281,7 @@ static int live_engine_busy_stats(void *arg)
 			goto end;
 		}
 
-		/* 100% busy */
+		 
 		rq = igt_spinner_create_request(&spin,
 						engine->kernel_context,
 						MI_NOOP);
@@ -352,11 +341,7 @@ static int live_engine_pm(void *arg)
 	struct intel_engine_cs *engine;
 	enum intel_engine_id id;
 
-	/*
-	 * Check we can call intel_engine_pm_put from any context. No
-	 * failures are reported directly, but if we mess up lockdep should
-	 * tell us.
-	 */
+	 
 	if (intel_gt_pm_wait_for_idle(gt)) {
 		pr_err("Unable to flush GT pm before test\n");
 		return -EBUSY;
@@ -367,20 +352,7 @@ static int live_engine_pm(void *arg)
 		const typeof(*igt_atomic_phases) *p;
 
 		for (p = igt_atomic_phases; p->name; p++) {
-			/*
-			 * Acquisition is always synchronous, except if we
-			 * know that the engine is already awake, in which
-			 * case we should use intel_engine_pm_get_if_awake()
-			 * to atomically grab the wakeref.
-			 *
-			 * In practice,
-			 *    intel_engine_pm_get();
-			 *    intel_engine_pm_put();
-			 * occurs in one thread, while simultaneously
-			 *    intel_engine_pm_get_if_awake();
-			 *    intel_engine_pm_put();
-			 * occurs from atomic context in another.
-			 */
+			 
 			GEM_BUG_ON(intel_engine_pm_is_awake(engine));
 			intel_engine_pm_get(engine);
 
@@ -401,7 +373,7 @@ static int live_engine_pm(void *arg)
 				return -EINVAL;
 			}
 
-			/* gt wakeref is async (deferred to workqueue) */
+			 
 			if (intel_gt_pm_wait_for_idle(gt)) {
 				gt_err(gt, "GT failed to idle\n");
 				return -EINVAL;

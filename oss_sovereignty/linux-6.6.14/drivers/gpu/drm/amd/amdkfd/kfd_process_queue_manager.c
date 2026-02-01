@@ -1,26 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR MIT
-/*
- * Copyright 2014-2022 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+
+ 
 
 #include <linux/slab.h>
 #include <linux/list.h>
@@ -116,7 +95,7 @@ int pqm_set_gws(struct process_queue_manager *pqm, unsigned int qid,
 		return -EINVAL;
 	}
 
-	/* Only allow one queue per process can have GWS assigned */
+	 
 	if (gws && pdd->qpd.num_gws)
 		return -EBUSY;
 
@@ -134,12 +113,7 @@ int pqm_set_gws(struct process_queue_manager *pqm, unsigned int qid,
 			return ret;
 		pqn->q->gws = mem;
 	} else {
-		/*
-		 * Intentionally set GWS to a non-NULL value
-		 * for devices that do not use GWS for global wave
-		 * synchronization but require the formality
-		 * of setting GWS for cooperative groups.
-		 */
+		 
 		pqn->q->gws = gws ? ERR_PTR(-ENOMEM) : NULL;
 	}
 
@@ -224,11 +198,11 @@ static int init_user_queue(struct process_queue_manager *pqm,
 {
 	int retval;
 
-	/* Doorbell initialized in user space*/
+	 
 	q_properties->doorbell_ptr = NULL;
 	q_properties->exception_status = KFD_EC_MASK(EC_QUEUE_NEW);
 
-	/* let DQM handle it*/
+	 
 	q_properties->vmid = 0;
 	q_properties->queue_id = qid;
 
@@ -280,12 +254,9 @@ int pqm_create_queue(struct process_queue_manager *pqm,
 	struct process_queue_node *pqn;
 	struct kernel_queue *kq;
 	enum kfd_queue_type type = properties->type;
-	unsigned int max_queues = 127; /* HWS limit */
+	unsigned int max_queues = 127;  
 
-	/*
-	 * On GFX 9.4.3, increase the number of queues that
-	 * can be created to 255. No HWS limit on GFX 9.4.3.
-	 */
+	 
 	if (KFD_GC_VERSION(dev) == IP_VERSION(9, 4, 3))
 		max_queues = 255;
 
@@ -298,12 +269,7 @@ int pqm_create_queue(struct process_queue_manager *pqm,
 		return -1;
 	}
 
-	/*
-	 * for debug process, verify that it is within the static queues limit
-	 * currently limit is set to half of the total avail HQD slots
-	 * If we are just about to create DIQ, the is_debug flag is not set yet
-	 * Hence we also check the type as well
-	 */
+	 
 	if ((pdd->qpd.is_debug) || (type == KFD_QUEUE_TYPE_DIQ))
 		max_queues = dev->kfd->device_info.max_no_of_hqd/2;
 
@@ -332,12 +298,7 @@ int pqm_create_queue(struct process_queue_manager *pqm,
 	switch (type) {
 	case KFD_QUEUE_TYPE_SDMA:
 	case KFD_QUEUE_TYPE_SDMA_XGMI:
-		/* SDMA queues are always allocated statically no matter
-		 * which scheduler mode is used. We also do not need to
-		 * check whether a SDMA queue can be allocated here, because
-		 * allocate_sdma_queue() in create_queue() has the
-		 * corresponding check logic.
-		 */
+		 
 		retval = init_user_queue(pqm, dev, &q, properties, f, wptr_bo, *qid);
 		if (retval != 0)
 			goto err_create_queue;
@@ -349,7 +310,7 @@ int pqm_create_queue(struct process_queue_manager *pqm,
 		break;
 
 	case KFD_QUEUE_TYPE_COMPUTE:
-		/* check if there is over subscription */
+		 
 		if ((dev->dqm->sched_policy ==
 		     KFD_SCHED_POLICY_HWS_NO_OVERSUBSCRIPTION) &&
 		((dev->dqm->processes_count >= dev->vm_info.vmid_num_kfd) ||
@@ -396,12 +357,7 @@ int pqm_create_queue(struct process_queue_manager *pqm,
 	}
 
 	if (q && p_doorbell_offset_in_process) {
-		/* Return the doorbell offset within the doorbell page
-		 * to the caller so it can be passed up to user mode
-		 * (in bytes).
-		 * relative doorbell index = Absolute doorbell index -
-		 * absolute index of first doorbell in the page.
-		 */
+		 
 		uint32_t first_db_index = amdgpu_doorbell_index_on_bar(pdd->dev->adev,
 								       pdd->qpd.proc_doorbells,
 								       0,
@@ -429,7 +385,7 @@ err_create_queue:
 		kernel_queue_uninit(kq, false);
 	kfree(pqn);
 err_allocate_pqn:
-	/* check if queues list is empty unregister process from device */
+	 
 	clear_bit(*qid, pqm->queue_slot_bitmap);
 	if (list_empty(&pdd->qpd.queues_list) &&
 	    list_empty(&pdd->qpd.priv_queue_list))
@@ -470,7 +426,7 @@ int pqm_destroy_queue(struct process_queue_manager *pqm, unsigned int qid)
 	}
 
 	if (pqn->kq) {
-		/* destroy kernel queue (DIQ) */
+		 
 		dqm = pqn->kq->dev->dqm;
 		dqm->ops.destroy_kernel_queue(dqm, pqn->kq, &pdd->qpd);
 		kernel_queue_uninit(pqn->kq, false);
@@ -542,11 +498,11 @@ int pqm_update_mqd(struct process_queue_manager *pqm,
 		return -EFAULT;
 	}
 
-	/* CUs are masked for debugger requirements so deny user mask  */
+	 
 	if (pqn->q->properties.is_dbg_wa && minfo && minfo->cu_mask.ptr)
 		return -EBUSY;
 
-	/* ASICs that have WGPs must enforce pairwise enabled mask checks. */
+	 
 	if (minfo && minfo->cu_mask.ptr &&
 			KFD_GC_VERSION(pqn->q->device) >= IP_VERSION(10, 0, 0)) {
 		int i;
@@ -684,7 +640,7 @@ int kfd_process_get_queue_info(struct kfd_process *p,
 
 	*num_queues = 0;
 
-	/* Run over all PDDs of the process */
+	 
 	for (i = 0; i < p->n_pdds; i++) {
 		struct kfd_process_device *pdd = p->pdds[i];
 
@@ -788,7 +744,7 @@ static int criu_checkpoint_queues_device(struct kfd_process_device *pdd,
 				   uint64_t *queues_priv_data_offset)
 {
 	unsigned int q_private_data_size = 0;
-	uint8_t *q_private_data = NULL; /* Local buffer to store individual queue private data */
+	uint8_t *q_private_data = NULL;  
 	struct queue *q;
 	int ret = 0;
 
@@ -813,7 +769,7 @@ static int criu_checkpoint_queues_device(struct kfd_process_device *pdd,
 
 		q_data_size = sizeof(*q_data) + mqd_size + ctl_stack_size;
 
-		/* Increase local buffer space if needed */
+		 
 		if (q_private_data_size < q_data_size) {
 			kfree(q_private_data);
 
@@ -827,7 +783,7 @@ static int criu_checkpoint_queues_device(struct kfd_process_device *pdd,
 
 		q_data = (struct kfd_criu_queue_priv_data *)q_private_data;
 
-		/* data stored in this order: priv_data, mqd, ctl_stack */
+		 
 		q_data->mqd_size = mqd_size;
 		q_data->ctl_stack_size = ctl_stack_size;
 
@@ -861,10 +817,7 @@ int kfd_criu_checkpoint_queues(struct kfd_process *p,
 	for (pdd_index = 0; pdd_index < p->n_pdds; pdd_index++) {
 		struct kfd_process_device *pdd = p->pdds[pdd_index];
 
-		/*
-		 * criu_checkpoint_queues_device will copy data to user and update q_index and
-		 * queues_priv_data_offset
-		 */
+		 
 		ret = criu_checkpoint_queues_device(pdd, user_priv_data, &q_index,
 					      priv_data_offset);
 
@@ -949,7 +902,7 @@ int kfd_criu_restore_queue(struct kfd_process *p,
 		goto exit;
 	}
 
-	/* data stored in this order: mqd, ctl_stack */
+	 
 	mqd = q_extra_data;
 	ctl_stack = mqd + q_data->mqd_size;
 

@@ -1,15 +1,13 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
-//
-// This file is provided under a dual BSD/GPLv2 license. When using or
-// redistributing this file, you may do so under either license.
-//
-// Copyright(c) 2021, 2023 Advanced Micro Devices, Inc.
-//
-// Authors: Ajit Kumar Pandey <AjitKumar.Pandey@amd.com>
 
-/*
- * Hardware interface for ACP DSP Firmware binaries loader
- */
+
+
+
+
+
+
+
+
+ 
 
 #include <linux/firmware.h>
 #include <linux/module.h>
@@ -127,7 +125,7 @@ static void configure_pte_for_fw_loading(int type, int num_pages, struct acp_dev
 		return;
 	}
 
-	/* Group Enable */
+	 
 	snd_sof_dsp_write(sdev, ACP_DSP_BAR, ACPAXI2AXI_ATU_BASE_ADDR_GRP_1,
 			  desc->sram_pte_offset | BIT(31));
 	snd_sof_dsp_write(sdev, ACP_DSP_BAR, ACPAXI2AXI_ATU_PAGE_SIZE_GRP_1,
@@ -143,11 +141,11 @@ static void configure_pte_for_fw_loading(int type, int num_pages, struct acp_dev
 		addr += PAGE_SIZE;
 	}
 
-	/* Flush ATU Cache after PTE Update */
+	 
 	snd_sof_dsp_write(sdev, ACP_DSP_BAR, ACPAXI2AXI_ATU_CTRL, ACP_ATU_CACHE_INVALID);
 }
 
-/* pre fw run operations */
+ 
 int acp_dsp_pre_fw_run(struct snd_sof_dev *sdev)
 {
 	struct pci_dev *pci = to_pci_dev(sdev->dev);
@@ -189,12 +187,12 @@ int acp_dsp_pre_fw_run(struct snd_sof_dev *sdev)
 		dev_err(sdev->dev, "acp dma transfer status: %d\n", ret);
 
 	if (desc->rev > 3) {
-		/* Cache Window enable */
+		 
 		snd_sof_dsp_write(sdev, ACP_DSP_BAR, ACP_DSP0_CACHE_OFFSET0, desc->sram_pte_offset);
 		snd_sof_dsp_write(sdev, ACP_DSP_BAR, ACP_DSP0_CACHE_SIZE0, SRAM1_SIZE | BIT(31));
 	}
 
-	/* Free memory once DMA is complete */
+	 
 	dma_size =  (PAGE_ALIGN(sdev->basefw.fw->size) >> PAGE_SHIFT) * ACP_PAGE_SIZE;
 	dma_free_coherent(&pci->dev, dma_size, adata->bin_buf, adata->sha_dma_addr);
 	dma_free_coherent(&pci->dev, ACP_DEFAULT_DRAM_LENGTH, adata->data_buf, adata->dma_addr);
@@ -215,7 +213,7 @@ int acp_sof_dsp_run(struct snd_sof_dev *sdev)
 	val = snd_sof_dsp_read(sdev, ACP_DSP_BAR, ACP_DSP0_RUNSTALL);
 	dev_dbg(sdev->dev, "ACP_DSP0_RUNSTALL : 0x%0x\n", val);
 
-	/* Some platforms won't support fusion DSP,keep offset zero for no support */
+	 
 	if (desc->fusion_dsp_offset && adata->enable_fw_debug) {
 		snd_sof_dsp_write(sdev, ACP_DSP_BAR, desc->fusion_dsp_offset, ACP_DSP_RUN);
 		val = snd_sof_dsp_read(sdev, ACP_DSP_BAR, desc->fusion_dsp_offset);

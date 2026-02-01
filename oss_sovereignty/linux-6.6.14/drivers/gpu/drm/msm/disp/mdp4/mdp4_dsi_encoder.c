@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2015, The Linux Foundation. All rights reserved.
- * Copyright (c) 2014, Inforce Computing. All rights reserved.
- *
- * Author: Vinay Simha <vinaysimha@inforcecomputing.com>
- */
+
+ 
 
 #include <drm/drm_crtc.h>
 #include <drm/drm_probe_helper.h>
@@ -56,9 +51,9 @@ static void mdp4_dsi_encoder_mode_set(struct drm_encoder *encoder,
 		ctrl_pol |= MDP4_DSI_CTRL_POLARITY_HSYNC_LOW;
 	if (mode->flags & DRM_MODE_FLAG_NVSYNC)
 		ctrl_pol |= MDP4_DSI_CTRL_POLARITY_VSYNC_LOW;
-	/* probably need to get DATA_EN polarity from panel.. */
+	 
 
-	dsi_hsync_skew = 0;  /* get this from panel? */
+	dsi_hsync_skew = 0;   
 
 	hsync_start_x = (mode->htotal - mode->hsync_start);
 	hsync_end_x = mode->htotal - (mode->hsync_start - mode->hdisplay) - 1;
@@ -102,14 +97,7 @@ static void mdp4_dsi_encoder_disable(struct drm_encoder *encoder)
 
 	mdp4_write(mdp4_kms, REG_MDP4_DSI_ENABLE, 0);
 
-	/*
-	 * Wait for a vsync so we know the ENABLE=0 latched before
-	 * the (connector) source of the vsync's gets disabled,
-	 * otherwise we end up in a funny state if we re-enable
-	 * before the disable latches, which results that some of
-	 * the settings changes for the new modeset (like new
-	 * scanout buffer) don't latch properly..
-	 */
+	 
 	mdp_irq_wait(&mdp4_kms->base, MDP4_IRQ_PRIMARY_VSYNC);
 
 	mdp4_dsi_encoder->enabled = false;
@@ -145,7 +133,7 @@ static const struct drm_encoder_helper_funcs mdp4_dsi_encoder_helper_funcs = {
 	.enable = mdp4_dsi_encoder_enable,
 };
 
-/* initialize encoder */
+ 
 struct drm_encoder *mdp4_dsi_encoder_init(struct drm_device *dev)
 {
 	struct drm_encoder *encoder = NULL;
@@ -172,4 +160,4 @@ fail:
 
 	return ERR_PTR(ret);
 }
-#endif /* CONFIG_DRM_MSM_DSI */
+#endif  

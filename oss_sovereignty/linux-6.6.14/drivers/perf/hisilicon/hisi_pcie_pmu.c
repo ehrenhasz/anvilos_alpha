@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * This driver adds support for PCIe PMU RCiEP device. Related
- * perf events are bandwidth, latency etc.
- *
- * Copyright (C) 2021 HiSilicon Limited
- * Author: Qi Liu <liuqi115@huawei.com>
- */
+
+ 
 #include <linux/bitfield.h>
 #include <linux/bitmap.h>
 #include <linux/bug.h>
@@ -20,7 +14,7 @@
 #include <linux/perf_event.h>
 
 #define DRV_NAME "hisi_pcie_pmu"
-/* Define registers */
+ 
 #define HISI_PCIE_GLOBAL_CTRL		0x00
 #define HISI_PCIE_EVENT_CTRL		0x010
 #define HISI_PCIE_CNT			0x090
@@ -31,11 +25,11 @@
 #define HISI_PCIE_REG_VERSION		0xfe4
 #define HISI_PCIE_REG_INFO		0xfe8
 
-/* Define command in HISI_PCIE_GLOBAL_CTRL */
+ 
 #define HISI_PCIE_GLOBAL_EN		0x01
 #define HISI_PCIE_GLOBAL_NONE		0
 
-/* Define command in HISI_PCIE_EVENT_CTRL */
+ 
 #define HISI_PCIE_EVENT_EN		BIT_ULL(20)
 #define HISI_PCIE_RESET_CNT		BIT_ULL(22)
 #define HISI_PCIE_INIT_SET		BIT_ULL(34)
@@ -43,7 +37,7 @@
 #define HISI_PCIE_TARGET_EN		BIT_ULL(32)
 #define HISI_PCIE_TRIG_EN		BIT_ULL(52)
 
-/* Define offsets in HISI_PCIE_EVENT_CTRL */
+ 
 #define HISI_PCIE_EVENT_M		GENMASK_ULL(15, 0)
 #define HISI_PCIE_THR_MODE_M		GENMASK_ULL(27, 27)
 #define HISI_PCIE_THR_M			GENMASK_ULL(31, 28)
@@ -52,7 +46,7 @@
 #define HISI_PCIE_TRIG_MODE_M		GENMASK_ULL(53, 53)
 #define HISI_PCIE_TRIG_M		GENMASK_ULL(59, 56)
 
-/* Default config of TLP length mode, will count both TLP headers and payloads */
+ 
 #define HISI_PCIE_LEN_M_DEFAULT		3ULL
 
 #define HISI_PCIE_MAX_COUNTERS		8
@@ -70,7 +64,7 @@ struct hisi_pcie_pmu {
 	void __iomem *base;
 	int irq;
 	u32 identifier;
-	/* Minimum and maximum BDF of root ports monitored by PMU */
+	 
 	u16 bdf_min;
 	u16 bdf_max;
 	int on_cpu;
@@ -164,17 +158,7 @@ hisi_pcie_parse_reg_value(struct hisi_pcie_pmu *pcie_pmu, u32 reg_off)
 	return regs;
 }
 
-/*
- * Hardware counter and ext_counter work together for bandwidth, latency, bus
- * utilization and buffer occupancy events. For example, RX memory write latency
- * events(index = 0x0010), counter counts total delay cycles and ext_counter
- * counts RX memory write PCIe packets number.
- *
- * As we don't want PMU driver to process these two data, "delay cycles" can
- * be treated as an independent event(index = 0x0010), "RX memory write packets
- * number" as another(index = 0x10010). BIT 16 is used to distinguish and 0-15
- * bits are "real" event index, which can be used to set HISI_PCIE_EVENT_CTRL.
- */
+ 
 #define EXT_COUNTER_IS_USED(idx)		((idx) & BIT(16))
 
 static u32 hisi_pcie_get_real_event(struct perf_event *event)
@@ -223,10 +207,10 @@ static void hisi_pcie_pmu_config_filter(struct perf_event *event)
 	u64 port, trig_len, thr_len, len_mode;
 	u64 reg = HISI_PCIE_INIT_SET;
 
-	/* Config HISI_PCIE_EVENT_CTRL according to event. */
+	 
 	reg |= FIELD_PREP(HISI_PCIE_EVENT_M, hisi_pcie_get_real_event(event));
 
-	/* Config HISI_PCIE_EVENT_CTRL according to root port or EP device. */
+	 
 	port = hisi_pcie_get_port(event);
 	if (port)
 		reg |= FIELD_PREP(HISI_PCIE_TARGET_M, port);
@@ -234,7 +218,7 @@ static void hisi_pcie_pmu_config_filter(struct perf_event *event)
 		reg |= HISI_PCIE_TARGET_EN |
 		       FIELD_PREP(HISI_PCIE_TARGET_M, hisi_pcie_get_bdf(event));
 
-	/* Config HISI_PCIE_EVENT_CTRL according to trigger condition. */
+	 
 	trig_len = hisi_pcie_get_trig_len(event);
 	if (trig_len) {
 		reg |= FIELD_PREP(HISI_PCIE_TRIG_M, trig_len);
@@ -242,7 +226,7 @@ static void hisi_pcie_pmu_config_filter(struct perf_event *event)
 		reg |= HISI_PCIE_TRIG_EN;
 	}
 
-	/* Config HISI_PCIE_EVENT_CTRL according to threshold condition. */
+	 
 	thr_len = hisi_pcie_get_thr_len(event);
 	if (thr_len) {
 		reg |= FIELD_PREP(HISI_PCIE_THR_M, thr_len);
@@ -353,7 +337,7 @@ static int hisi_pcie_pmu_event_init(struct perf_event *event)
 	struct hisi_pcie_pmu *pcie_pmu = to_pcie_pmu(event->pmu);
 	struct hw_perf_event *hwc = &event->hw;
 
-	/* Check the type first before going on, otherwise it's not our event */
+	 
 	if (event->attr.type != event->pmu->type)
 		return -ENOENT;
 
@@ -364,7 +348,7 @@ static int hisi_pcie_pmu_event_init(struct perf_event *event)
 	else
 		hwc->event_base = HISI_PCIE_CNT;
 
-	/* Sampling is not supported. */
+	 
 	if (is_sampling_event(event) || event->attach_state & PERF_ATTACH_TASK)
 		return -EOPNOTSUPP;
 
@@ -399,7 +383,7 @@ static int hisi_pcie_pmu_find_related_event(struct hisi_pcie_pmu *pcie_pmu,
 		if (!hisi_pcie_pmu_cmp_event(sibling, event))
 			continue;
 
-		/* Related events must be used in group */
+		 
 		if (sibling->group_leader == event->group_leader)
 			return idx;
 		else
@@ -544,12 +528,12 @@ static int hisi_pcie_pmu_add(struct perf_event *event, int flags)
 
 	hwc->state = PERF_HES_STOPPED | PERF_HES_UPTODATE;
 
-	/* Check all working events to find a related event. */
+	 
 	idx = hisi_pcie_pmu_find_related_event(pcie_pmu, event);
 	if (idx < 0)
 		return idx;
 
-	/* Current event shares an enabled counter with the related event */
+	 
 	if (idx < HISI_PCIE_MAX_COUNTERS) {
 		hwc->idx = idx;
 		goto start_count;
@@ -561,7 +545,7 @@ static int hisi_pcie_pmu_add(struct perf_event *event, int flags)
 
 	hwc->idx = idx;
 	pcie_pmu->hw_events[idx] = event;
-	/* Reset Counter to avoid previous statistic interference. */
+	 
 	hisi_pcie_pmu_reset_counter(pcie_pmu, idx);
 
 start_count:
@@ -617,7 +601,7 @@ static irqreturn_t hisi_pcie_pmu_irq(int irq, void *data)
 		if (!overflown)
 			continue;
 
-		/* Clear status of interrupt. */
+		 
 		hisi_pcie_pmu_writel(pcie_pmu, HISI_PCIE_INT_STAT, idx, 1);
 		event = pcie_pmu->hw_events[idx];
 		if (!event)
@@ -680,13 +664,13 @@ static int hisi_pcie_pmu_offline_cpu(unsigned int cpu, struct hlist_node *node)
 	cpumask_t mask;
 	int numa_node;
 
-	/* Nothing to do if this CPU doesn't own the PMU */
+	 
 	if (pcie_pmu->on_cpu != cpu)
 		return 0;
 
 	pcie_pmu->on_cpu = -1;
 
-	/* Choose a local CPU from all online cpus. */
+	 
 	numa_node = dev_to_node(&pcie_pmu->pdev->dev);
 	if (cpumask_and(&mask, cpumask_of_node(numa_node), cpu_online_mask) &&
 	    cpumask_andnot(&mask, &mask, cpumask_of(cpu)))
@@ -700,7 +684,7 @@ static int hisi_pcie_pmu_offline_cpu(unsigned int cpu, struct hlist_node *node)
 	}
 
 	perf_pmu_migrate_context(&pcie_pmu->pmu, cpu, target);
-	/* Use this CPU for event counting */
+	 
 	pcie_pmu->on_cpu = target;
 	WARN_ON(irq_set_affinity(pcie_pmu->irq, cpumask_of(target)));
 

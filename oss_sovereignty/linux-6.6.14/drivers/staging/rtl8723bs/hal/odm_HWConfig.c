@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/******************************************************************************
- *
- * Copyright(c) 2007 - 2011 Realtek Corporation. All rights reserved.
- *
- ******************************************************************************/
+
+ 
 
 #include "odm_precomp.h"
 
@@ -49,9 +45,9 @@ s32 odm_signal_scale_mapping(struct dm_odm_t *dm_odm, s32 curr_sig)
 
 static u8 odm_evm_db_to_percentage(s8 value)
 {
-	/*  */
-	/*  -33dB~0dB to 0%~99% */
-	/*  */
+	 
+	 
+	 
 	s8 ret_val;
 
 	ret_val = value;
@@ -76,8 +72,8 @@ static s8 odm_cck_rssi(u8 lna_idx, u8 vga_idx)
 	s8 rx_pwr_all = 0x00;
 
 	switch (lna_idx) {
-	/* 46  53 73 95 201301231630 */
-	/*  46 53 77 99 201301241630 */
+	 
+	 
 
 	case 6:
 		rx_pwr_all = -34 - (2 * vga_idx);
@@ -92,7 +88,7 @@ static s8 odm_cck_rssi(u8 lna_idx, u8 vga_idx)
 		rx_pwr_all = 16 - (2 * vga_idx);
 		break;
 	default:
-		/* rx_pwr_all = -53+(2*(31-VGA_idx)); */
+		 
 		break;
 	}
 	return rx_pwr_all;
@@ -122,18 +118,11 @@ static void odm_rx_phy_status_parsing(struct dm_odm_t *dm_odm,
 
 		dm_odm->PhyDbgInfo.NumQryPhyStatusCCK++;
 
-		/*
-		 * (1)Hardware does not provide RSSI for CCK/
-		 * (2)PWDB, Average PWDB calculated by
-		 *    hardware (for rate adaptive)
-		 */
+		 
 
 		cck_agc_rpt = phy_sta_rpt->cck_agc_rpt_ofdm_cfosho_a;
 
-		/*
-		 * 2011.11.28 LukeLee: 88E use different LNA & VGA gain table
-		 * The RSSI formula should be modified according to the gain table
-		 */
+		 
 		lna_idx = ((cck_agc_rpt & 0xE0)>>5);
 		vga_idx = (cck_agc_rpt & 0x1F);
 		rx_pwr_all = odm_cck_rssi(lna_idx, vga_idx);
@@ -145,9 +134,9 @@ static void odm_rx_phy_status_parsing(struct dm_odm_t *dm_odm,
 		phy_info->bt_rx_rssi_percentage = pwdb_all;
 		phy_info->recv_signal_power = rx_pwr_all;
 
-		/*  (3) Get Signal Quality (EVM) */
+		 
 
-		/* if (pPktinfo->bPacketMatchBSSID) */
+		 
 		{
 			u8 sq, sq_rpt;
 
@@ -169,37 +158,33 @@ static void odm_rx_phy_status_parsing(struct dm_odm_t *dm_odm,
 			phy_info->rx_mimo_signal_quality[RF_PATH_A] = sq;
 			phy_info->rx_mimo_signal_quality[RF_PATH_B] = -1;
 		}
-	} else { /* is OFDM rate */
+	} else {  
 		dm_odm->PhyDbgInfo.NumQryPhyStatusOFDM++;
 
-		/*
-		 * (1)Get RSSI for HT rate
-		 */
+		 
 
 		for (i = RF_PATH_A; i < RF_PATH_MAX; i++) {
-			/*  2008/01/30 MH we will judge RF RX path now. */
+			 
 			if (dm_odm->RFPathRxEnable & BIT(i))
 				rf_rx_num++;
-			/* else */
-				/* continue; */
+			 
+				 
 
 			rx_pwr[i] = ((phy_sta_rpt->path_agc[i].gain & 0x3F) * 2) - 110;
 
 			phy_info->rx_pwr[i] = rx_pwr[i];
 
-			/* Translate DBM to percentage. */
+			 
 			rssi = odm_query_rx_pwr_percentage(rx_pwr[i]);
 			total_rssi += rssi;
 
 			phy_info->rx_mimo_signal_strength[i] = (u8)rssi;
 
-			/* Get Rx snr value in DB */
+			 
 			phy_info->rx_snr[i] = dm_odm->PhyDbgInfo.RxSNRdB[i] = (s32)(phy_sta_rpt->path_rxsnr[i]/2);
 		}
 
-		/*
-		 * (2)PWDB, Average PWDB calculated by hardware (for rate adaptive)
-		 */
+		 
 		rx_pwr_all = ((phy_sta_rpt->cck_sig_qual_ofdm_pwdb_all >> 1) & 0x7f) - 110;
 
 		pwdb_all_bt = pwdb_all = odm_query_rx_pwr_percentage(rx_pwr_all);
@@ -209,22 +194,10 @@ static void odm_rx_phy_status_parsing(struct dm_odm_t *dm_odm,
 		phy_info->rx_power = rx_pwr_all;
 		phy_info->recv_signal_power = rx_pwr_all;
 
-		/*
-		 * (3)EVM of HT rate
-		 *
-		 * Only spatial stream 1 makes sense
-		 *
-		 * Do not use shift operation like "rx_evmX >>= 1"
-		 * because the compiler of free build environment
-		 * fill most significant bit to "zero" when doing
-		 * shifting operation which may change a negative
-		 * value to positive one, then the dbm value (which
-		 * is supposed to be negative) is not correct
-		 * anymore.
-		 */
-		evm = odm_evm_db_to_percentage(phy_sta_rpt->stream_rxevm[0]); /* dbm */
+		 
+		evm = odm_evm_db_to_percentage(phy_sta_rpt->stream_rxevm[0]);  
 
-		/*  Fill value in RFD, Get the first spatial stream only */
+		 
 		phy_info->signal_quality = (u8)(evm & 0xff);
 
 		phy_info->rx_mimo_signal_quality[RF_PATH_A] = (u8)(evm & 0xff);
@@ -232,11 +205,7 @@ static void odm_rx_phy_status_parsing(struct dm_odm_t *dm_odm,
 		odm_parsing_cfo(dm_odm, pkt_info, phy_sta_rpt->path_cfotail);
 	}
 
-	/*
-	 * UI BSS List signal strength(in percentage), make it good
-	 * looking, from 0~100.
-	 * It is assigned to the BSS List in GetValueFromBeaconOrProbeRsp().
-	 */
+	 
 	if (is_cck_rate) {
 		phy_info->signal_strength = (u8)(odm_signal_scale_mapping(dm_odm, pwdb_all));
 	} else {
@@ -276,12 +245,12 @@ static void odm_Process_RSSIForDM(
 	isCCKrate = ((pPktinfo->data_rate <= DESC_RATE11M)) ? true : false;
 	pDM_Odm->RxRate = pPktinfo->data_rate;
 
-	/* Statistic for antenna/path diversity------------------ */
+	 
 	if (pDM_Odm->SupportAbility & ODM_BB_ANT_DIV) {
 
 	}
 
-	/* Smart Antenna Debug Message------------------ */
+	 
 
 	UndecoratedSmoothedCCK = pEntry->rssi_stat.UndecoratedSmoothedCCK;
 	UndecoratedSmoothedOFDM = pEntry->rssi_stat.UndecoratedSmoothedOFDM;
@@ -289,7 +258,7 @@ static void odm_Process_RSSIForDM(
 
 	if (pPktinfo->to_self || pPktinfo->is_beacon) {
 
-		if (!isCCKrate) { /* ofdm rate */
+		if (!isCCKrate) {  
 			if (pPhyInfo->rx_mimo_signal_strength[RF_PATH_B] == 0) {
 				RSSI_Ave = pPhyInfo->rx_mimo_signal_strength[RF_PATH_A];
 				pDM_Odm->RSSI_A = pPhyInfo->rx_mimo_signal_strength[RF_PATH_A];
@@ -319,8 +288,8 @@ static void odm_Process_RSSIForDM(
 					RSSI_Ave = RSSI_max - 3;
 			}
 
-			/* 1 Process OFDM RSSI */
-			if (UndecoratedSmoothedOFDM <= 0)	/*  initialize */
+			 
+			if (UndecoratedSmoothedOFDM <= 0)	 
 				UndecoratedSmoothedOFDM = pPhyInfo->rx_pwd_ba11;
 			else {
 				if (pPhyInfo->rx_pwd_ba11 > (u32)UndecoratedSmoothedOFDM) {
@@ -342,8 +311,8 @@ static void odm_Process_RSSIForDM(
 			pDM_Odm->RSSI_A = (u8) pPhyInfo->rx_pwd_ba11;
 			pDM_Odm->RSSI_B = 0;
 
-			/* 1 Process CCK RSSI */
-			if (UndecoratedSmoothedCCK <= 0)	/*  initialize */
+			 
+			if (UndecoratedSmoothedCCK <= 0)	 
 				UndecoratedSmoothedCCK = pPhyInfo->rx_pwd_ba11;
 			else {
 				if (pPhyInfo->rx_pwd_ba11 > (u32)UndecoratedSmoothedCCK) {
@@ -360,9 +329,9 @@ static void odm_Process_RSSIForDM(
 			pEntry->rssi_stat.PacketMap = pEntry->rssi_stat.PacketMap<<1;
 		}
 
-		/* if (pEntry) */
+		 
 		{
-			/* 2011.07.28 LukeLee: modified to prevent unstable CCK RSSI */
+			 
 			if (pEntry->rssi_stat.ValidBit >= 64)
 				pEntry->rssi_stat.ValidBit = 64;
 			else
@@ -390,9 +359,9 @@ static void odm_Process_RSSIForDM(
 }
 
 
-/*  */
-/*  Endianness before calling this API */
-/*  */
+ 
+ 
+ 
 void odm_phy_status_query(struct dm_odm_t *dm_odm, struct odm_phy_info *phy_info,
 			  u8 *phy_status, struct odm_packet_info *pkt_info)
 {
@@ -403,10 +372,10 @@ void odm_phy_status_query(struct dm_odm_t *dm_odm, struct odm_phy_info *phy_info
 		odm_Process_RSSIForDM(dm_odm, phy_info, pkt_info);
 }
 
-/*  */
-/*  If you want to add a new IC, Please follow below template and generate a new one. */
-/*  */
-/*  */
+ 
+ 
+ 
+ 
 
 enum hal_status ODM_ConfigRFWithHeaderFile(
 	struct dm_odm_t *pDM_Odm,

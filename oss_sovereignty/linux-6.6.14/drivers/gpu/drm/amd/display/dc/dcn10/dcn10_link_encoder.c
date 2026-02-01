@@ -1,27 +1,4 @@
-/*
- * Copyright 2012-15 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 #include "reg_helper.h"
 
@@ -46,11 +23,7 @@
 	enc10->link_shift->field_name, enc10->link_mask->field_name
 
 
-/*
- * @brief
- * Trigger Source Select
- * ASIC-dependent, actual values for register programming
- */
+ 
 #define DCN10_DIG_FE_SOURCE_SELECT_INVALID 0x0
 #define DCN10_DIG_FE_SOURCE_SELECT_DIGA 0x1
 #define DCN10_DIG_FE_SOURCE_SELECT_DIGB 0x2
@@ -106,9 +79,7 @@ static void enable_phy_bypass_mode(
 	struct dcn10_link_encoder *enc10,
 	bool enable)
 {
-	/* This register resides in DP back end block;
-	 * transmitter is used for the offset
-	 */
+	 
 	REG_UPDATE(DP_DPHY_CNTL, DPHY_BYPASS, enable);
 
 }
@@ -117,9 +88,7 @@ static void disable_prbs_symbols(
 	struct dcn10_link_encoder *enc10,
 	bool disable)
 {
-	/* This register resides in DP back end block;
-	 * transmitter is used for the offset
-	 */
+	 
 	REG_UPDATE_4(DP_DPHY_CNTL,
 			DPHY_ATEST_SEL_LANE0, disable,
 			DPHY_ATEST_SEL_LANE1, disable,
@@ -137,25 +106,19 @@ static void program_pattern_symbols(
 	struct dcn10_link_encoder *enc10,
 	uint16_t pattern_symbols[8])
 {
-	/* This register resides in DP back end block;
-	 * transmitter is used for the offset
-	 */
+	 
 	REG_SET_3(DP_DPHY_SYM0, 0,
 			DPHY_SYM1, pattern_symbols[0],
 			DPHY_SYM2, pattern_symbols[1],
 			DPHY_SYM3, pattern_symbols[2]);
 
-	/* This register resides in DP back end block;
-	 * transmitter is used for the offset
-	 */
+	 
 	REG_SET_3(DP_DPHY_SYM1, 0,
 			DPHY_SYM4, pattern_symbols[3],
 			DPHY_SYM5, pattern_symbols[4],
 			DPHY_SYM6, pattern_symbols[5]);
 
-	/* This register resides in DP back end block;
-	 * transmitter is used for the offset
-	 */
+	 
 	REG_SET_2(DP_DPHY_SYM2, 0,
 			DPHY_SYM7, pattern_symbols[6],
 			DPHY_SYM8, pattern_symbols[7]);
@@ -164,20 +127,16 @@ static void program_pattern_symbols(
 static void set_dp_phy_pattern_d102(
 	struct dcn10_link_encoder *enc10)
 {
-	/* Disable PHY Bypass mode to setup the test pattern */
+	 
 	enable_phy_bypass_mode(enc10, false);
 
-	/* For 10-bit PRBS or debug symbols
-	 * please use the following sequence:
-	 *
-	 * Enable debug symbols on the lanes
-	 */
+	 
 	disable_prbs_symbols(enc10, true);
 
-	/* Disable PRBS mode */
+	 
 	disable_prbs_mode(enc10);
 
-	/* Program debug symbols to be output */
+	 
 	{
 		uint16_t pattern_symbols[8] = {
 			0x2AA, 0x2AA, 0x2AA, 0x2AA,
@@ -187,7 +146,7 @@ static void set_dp_phy_pattern_d102(
 		program_pattern_symbols(enc10, pattern_symbols);
 	}
 
-	/* Enable phy bypass mode to enable the test pattern */
+	 
 
 	enable_phy_bypass_mode(enc10, true);
 }
@@ -196,9 +155,7 @@ static void set_link_training_complete(
 	struct dcn10_link_encoder *enc10,
 	bool complete)
 {
-	/* This register resides in DP back end block;
-	 * transmitter is used for the offset
-	 */
+	 
 	REG_UPDATE(DP_LINK_CNTL, DP_LINK_TRAINING_COMPLETE, complete);
 
 }
@@ -208,19 +165,19 @@ void dcn10_link_encoder_set_dp_phy_pattern_training_pattern(
 	uint32_t index)
 {
 	struct dcn10_link_encoder *enc10 = TO_DCN10_LINK_ENC(enc);
-	/* Write Training Pattern */
+	 
 
 	REG_WRITE(DP_DPHY_TRAINING_PATTERN_SEL, index);
 
-	/* Set HW Register Training Complete to false */
+	 
 
 	set_link_training_complete(enc10, false);
 
-	/* Disable PHY Bypass mode to output Training Pattern */
+	 
 
 	enable_phy_bypass_mode(enc10, false);
 
-	/* Disable PRBS mode */
+	 
 	disable_prbs_mode(enc10);
 }
 
@@ -253,43 +210,43 @@ static void setup_panel_mode(
 static void set_dp_phy_pattern_symbol_error(
 	struct dcn10_link_encoder *enc10)
 {
-	/* Disable PHY Bypass mode to setup the test pattern */
+	 
 	enable_phy_bypass_mode(enc10, false);
 
-	/* program correct panel mode*/
+	 
 	setup_panel_mode(enc10, DP_PANEL_MODE_DEFAULT);
 
-	/* A PRBS23 pattern is used for most DP electrical measurements. */
+	 
 
-	/* Enable PRBS symbols on the lanes */
+	 
 	disable_prbs_symbols(enc10, false);
 
-	/* For PRBS23 Set bit DPHY_PRBS_SEL=1 and Set bit DPHY_PRBS_EN=1 */
+	 
 	REG_UPDATE_2(DP_DPHY_PRBS_CNTL,
 			DPHY_PRBS_SEL, 1,
 			DPHY_PRBS_EN, 1);
 
-	/* Enable phy bypass mode to enable the test pattern */
+	 
 	enable_phy_bypass_mode(enc10, true);
 }
 
 static void set_dp_phy_pattern_prbs7(
 	struct dcn10_link_encoder *enc10)
 {
-	/* Disable PHY Bypass mode to setup the test pattern */
+	 
 	enable_phy_bypass_mode(enc10, false);
 
-	/* A PRBS7 pattern is used for most DP electrical measurements. */
+	 
 
-	/* Enable PRBS symbols on the lanes */
+	 
 	disable_prbs_symbols(enc10, false);
 
-	/* For PRBS7 Set bit DPHY_PRBS_SEL=0 and Set bit DPHY_PRBS_EN=1 */
+	 
 	REG_UPDATE_2(DP_DPHY_PRBS_CNTL,
 			DPHY_PRBS_SEL, 0,
 			DPHY_PRBS_EN, 1);
 
-	/* Enable phy bypass mode to enable the test pattern */
+	 
 	enable_phy_bypass_mode(enc10, true);
 }
 
@@ -297,19 +254,19 @@ static void set_dp_phy_pattern_80bit_custom(
 	struct dcn10_link_encoder *enc10,
 	const uint8_t *pattern)
 {
-	/* Disable PHY Bypass mode to setup the test pattern */
+	 
 	enable_phy_bypass_mode(enc10, false);
 
-	/* Enable debug symbols on the lanes */
+	 
 
 	disable_prbs_symbols(enc10, true);
 
-	/* Enable PHY bypass mode to enable the test pattern */
-	/* TODO is it really needed ? */
+	 
+	 
 
 	enable_phy_bypass_mode(enc10, true);
 
-	/* Program 80 bit custom pattern */
+	 
 	{
 		uint16_t pattern_symbols[8];
 
@@ -333,7 +290,7 @@ static void set_dp_phy_pattern_80bit_custom(
 		program_pattern_symbols(enc10, pattern_symbols);
 	}
 
-	/* Enable phy bypass mode to enable the test pattern */
+	 
 
 	enable_phy_bypass_mode(enc10, true);
 }
@@ -343,52 +300,42 @@ static void set_dp_phy_pattern_hbr2_compliance_cp2520_2(
 	unsigned int cp2520_pattern)
 {
 
-	/* previously there is a register DP_HBR2_EYE_PATTERN
-	 * that is enabled to get the pattern.
-	 * But it does not work with the latest spec change,
-	 * so we are programming the following registers manually.
-	 *
-	 * The following settings have been confirmed
-	 * by Nick Chorney and Sandra Liu
-	 */
+	 
 
-	/* Disable PHY Bypass mode to setup the test pattern */
+	 
 
 	enable_phy_bypass_mode(enc10, false);
 
-	/* Setup DIG encoder in DP SST mode */
+	 
 	enc10->base.funcs->setup(&enc10->base, SIGNAL_TYPE_DISPLAY_PORT);
 
-	/* ensure normal panel mode. */
+	 
 	setup_panel_mode(enc10, DP_PANEL_MODE_DEFAULT);
 
-	/* no vbid after BS (SR)
-	 * DP_LINK_FRAMING_CNTL changed history Sandra Liu
-	 * 11000260 / 11000104 / 110000FC
-	 */
+	 
 	REG_UPDATE_3(DP_LINK_FRAMING_CNTL,
 			DP_IDLE_BS_INTERVAL, 0xFC,
 			DP_VBID_DISABLE, 1,
 			DP_VID_ENHANCED_FRAME_MODE, 1);
 
-	/* swap every BS with SR */
+	 
 	REG_UPDATE(DP_DPHY_SCRAM_CNTL, DPHY_SCRAMBLER_BS_COUNT, 0);
 
-	/* select cp2520 patterns */
+	 
 	if (REG(DP_DPHY_HBR2_PATTERN_CONTROL))
 		REG_UPDATE(DP_DPHY_HBR2_PATTERN_CONTROL,
 				DP_DPHY_HBR2_PATTERN_CONTROL, cp2520_pattern);
 	else
-		/* pre-DCE11 can only generate CP2520 pattern 2 */
+		 
 		ASSERT(cp2520_pattern == 2);
 
-	/* set link training complete */
+	 
 	set_link_training_complete(enc10, true);
 
-	/* disable video stream */
+	 
 	REG_UPDATE(DP_VID_STREAM_CNTL, DP_VID_STREAM_ENABLE, 0);
 
-	/* Disable PHY Bypass mode to setup the test pattern */
+	 
 	enable_phy_bypass_mode(enc10, false);
 }
 
@@ -396,12 +343,10 @@ static void set_dp_phy_pattern_passthrough_mode(
 	struct dcn10_link_encoder *enc10,
 	enum dp_panel_mode panel_mode)
 {
-	/* program correct panel mode */
+	 
 	setup_panel_mode(enc10, panel_mode);
 
-	/* restore LINK_FRAMING_CNTL and DPHY_SCRAMBLER_BS_COUNT
-	 * in case we were doing HBR2 compliance pattern before
-	 */
+	 
 	REG_UPDATE_3(DP_LINK_FRAMING_CNTL,
 			DP_IDLE_BS_INTERVAL, 0x2000,
 			DP_VBID_DISABLE, 0,
@@ -409,17 +354,17 @@ static void set_dp_phy_pattern_passthrough_mode(
 
 	REG_UPDATE(DP_DPHY_SCRAM_CNTL, DPHY_SCRAMBLER_BS_COUNT, 0x1FF);
 
-	/* set link training complete */
+	 
 	set_link_training_complete(enc10, true);
 
-	/* Disable PHY Bypass mode to setup the test pattern */
+	 
 	enable_phy_bypass_mode(enc10, false);
 
-	/* Disable PRBS mode */
+	 
 	disable_prbs_mode(enc10);
 }
 
-/* return value is bit-vector */
+ 
 static uint8_t get_frontend_source(
 	enum engine_id engine)
 {
@@ -475,7 +420,7 @@ unsigned int dcn10_get_dig_frontend(struct link_encoder *enc)
 		result = ENGINE_ID_DIGG;
 		break;
 	default:
-		// invalid source select DIG
+		
 		result = ENGINE_ID_UNKNOWN;
 	}
 
@@ -487,11 +432,11 @@ void enc1_configure_encoder(
 	struct dcn10_link_encoder *enc10,
 	const struct dc_link_settings *link_settings)
 {
-	/* set number of lanes */
+	 
 	REG_SET(DP_CONFIG, 0,
 			DP_UDI_LANES, link_settings->lane_count - LANE_COUNT_ONE);
 
-	/* setup scrambler */
+	 
 	REG_UPDATE(DP_DPHY_SCRAM_CNTL, DPHY_SCRAMBLER_ADVANCE, 1);
 }
 
@@ -506,14 +451,7 @@ void dcn10_psr_program_dp_dphy_fast_training(struct link_encoder *enc,
 	else {
 		REG_UPDATE(DP_DPHY_FAST_TRAINING,
 				DPHY_RX_FAST_TRAINING_CAPABLE, 0);
-		/*In DCE 11, we are able to pre-program a Force SR register
-		 * to be able to trigger SR symbol after 5 idle patterns
-		 * transmitted. Upon PSR Exit, DMCU can trigger
-		 * DPHY_LOAD_BS_COUNT_START = 1. Upon writing 1 to
-		 * DPHY_LOAD_BS_COUNT_START and the internal counter
-		 * reaches DPHY_LOAD_BS_COUNT, the next BS symbol will be
-		 * replaced by SR symbol once.
-		 */
+		 
 
 		REG_UPDATE(DP_DPHY_BS_SR_SWAP_CNTL, DPHY_LOAD_BS_COUNT, 0x5);
 	}
@@ -540,21 +478,21 @@ bool dcn10_is_dig_enabled(struct link_encoder *enc)
 
 static void link_encoder_disable(struct dcn10_link_encoder *enc10)
 {
-	/* reset training pattern */
+	 
 	REG_SET(DP_DPHY_TRAINING_PATTERN_SEL, 0,
 			DPHY_TRAINING_PATTERN_SEL, 0);
 
-	/* reset training complete */
+	 
 	REG_UPDATE(DP_LINK_CNTL, DP_LINK_TRAINING_COMPLETE, 0);
 
-	/* reset panel mode */
+	 
 	setup_panel_mode(enc10, DP_PANEL_MODE_DEFAULT);
 }
 
 static void hpd_initialize(
 	struct dcn10_link_encoder *enc10)
 {
-	/* Associate HPD with DIG_BE */
+	 
 	enum hpd_source_id hpd_source = enc10->base.hpd_source;
 
 	REG_UPDATE(DIG_BE_CNTL, DIG_HPD_SELECT, hpd_source);
@@ -571,18 +509,16 @@ bool dcn10_link_encoder_validate_dvi_output(
 	if (signal == SIGNAL_TYPE_DVI_DUAL_LINK)
 		max_pixel_clock *= 2;
 
-	/* This handles the case of HDMI downgrade to DVI we don't want to
-	 * we don't want to cap the pixel clock if the DDI is not DVI.
-	 */
+	 
 	if (connector_signal != SIGNAL_TYPE_DVI_DUAL_LINK &&
 			connector_signal != SIGNAL_TYPE_DVI_SINGLE_LINK)
 		max_pixel_clock = enc10->base.features.max_hdmi_pixel_clock;
 
-	/* DVI only support RGB pixel encoding */
+	 
 	if (crtc_timing->pixel_encoding != PIXEL_ENCODING_RGB)
 		return false;
 
-	/*connect DVI via adpater's HDMI connector*/
+	 
 	if ((connector_signal == SIGNAL_TYPE_DVI_SINGLE_LINK ||
 		connector_signal == SIGNAL_TYPE_HDMI_TYPE_A) &&
 		signal != SIGNAL_TYPE_HDMI_TYPE_A &&
@@ -594,7 +530,7 @@ bool dcn10_link_encoder_validate_dvi_output(
 	if (crtc_timing->pix_clk_100hz > (max_pixel_clock * 10))
 		return false;
 
-	/* DVI supports 6/8bpp single-link and 10/16bpp dual-link */
+	 
 	switch (crtc_timing->display_color_depth) {
 	case COLOR_DEPTH_666:
 	case COLOR_DEPTH_888:
@@ -620,7 +556,7 @@ static bool dcn10_link_encoder_validate_hdmi_output(
 	enum dc_color_depth max_deep_color =
 			enc10->base.features.max_hdmi_deep_color;
 
-	// check pixel clock against edid specified max TMDS clk
+	 
 	if (edid_caps->max_tmds_clk_mhz != 0 &&
 			adjusted_pix_clk_100hz > edid_caps->max_tmds_clk_mhz * 10000)
 		return false;
@@ -637,7 +573,7 @@ static bool dcn10_link_encoder_validate_hdmi_output(
 		(adjusted_pix_clk_100hz > (enc10->base.features.max_hdmi_pixel_clock * 10)))
 		return false;
 
-	/* DCE11 HW does not support 420 */
+	 
 	if (!enc10->base.features.hdmi_ycbcr420_supported &&
 			crtc_timing->pixel_encoding == PIXEL_ENCODING_YCBCR420)
 		return false;
@@ -691,14 +627,9 @@ void dcn10_link_encoder_construct(
 
 	enc10->base.transmitter = init_data->transmitter;
 
-	/* set the flag to indicate whether driver poll the I2C data pin
-	 * while doing the DP sink detect
-	 */
+	 
 
-/*	if (dal_adapter_service_is_feature_supported(as,
-		FEATURE_DP_SINK_DETECT_POLL_DATA_PIN))
-		enc10->base.features.flags.bits.
-			DP_SINK_DETECT_POLL_DATA_PIN = true;*/
+ 
 
 	enc10->base.output_signals =
 		SIGNAL_TYPE_DVI_SINGLE_LINK |
@@ -709,16 +640,7 @@ void dcn10_link_encoder_construct(
 		SIGNAL_TYPE_EDP |
 		SIGNAL_TYPE_HDMI_TYPE_A;
 
-	/* For DCE 8.0 and 8.1, by design, UNIPHY is hardwired to DIG_BE.
-	 * SW always assign DIG_FE 1:1 mapped to DIG_FE for non-MST UNIPHY.
-	 * SW assign DIG_FE to non-MST UNIPHY first and MST last. So prefer
-	 * DIG is per UNIPHY and used by SST DP, eDP, HDMI, DVI and LVDS.
-	 * Prefer DIG assignment is decided by board design.
-	 * For DCE 8.0, there are only max 6 UNIPHYs, we assume board design
-	 * and VBIOS will filter out 7 UNIPHY for DCE 8.0.
-	 * By this, adding DIGG should not hurt DCE 8.0.
-	 * This will let DCE 8.1 share DCE 8.0 as much as possible
-	 */
+	 
 
 	enc10->link_regs = link_regs;
 	enc10->aux_regs = aux_regs;
@@ -753,13 +675,13 @@ void dcn10_link_encoder_construct(
 		enc10->base.preferred_engine = ENGINE_ID_UNKNOWN;
 	}
 
-	/* default to one to mirror Windows behavior */
+	 
 	enc10->base.features.flags.bits.HDMI_6GB_EN = 1;
 
 	result = bp_funcs->get_encoder_cap_info(enc10->base.ctx->dc_bios,
 						enc10->base.id, &bp_cap_info);
 
-	/* Override features with DCE-specific values */
+	 
 	if (result == BP_RESULT_OK) {
 		enc10->base.features.flags.bits.IS_HBR2_CAPABLE =
 				bp_cap_info.DP_HBR2_EN;
@@ -785,7 +707,7 @@ bool dcn10_link_encoder_validate_output_with_stream(
 	struct dcn10_link_encoder *enc10 = TO_DCN10_LINK_ENC(enc);
 	bool is_valid;
 
-	//if SCDC (340-600MHz) is disabled, set to HDMI 1.4 timing limit
+	 
 	if (stream->sink->edid_caps.panel_patch.skip_scdc_overwrite &&
 		enc10->base.features.max_hdmi_pixel_clock > 300000)
 		enc10->base.features.max_hdmi_pixel_clock = 300000;
@@ -862,12 +784,7 @@ void dcn10_link_encoder_hw_init(
 	}
 	dcn10_aux_initialize(enc10);
 
-	/* reinitialize HPD.
-	 * hpd_initialize() will pass DIG_FE id to HW context.
-	 * All other routine within HW context will use fe_engine_offset
-	 * as DIG_FE id even caller pass DIG_FE id.
-	 * So this routine must be called first.
-	 */
+	 
 	hpd_initialize(enc10);
 }
 
@@ -886,35 +803,35 @@ void dcn10_link_encoder_setup(
 	switch (signal) {
 	case SIGNAL_TYPE_EDP:
 	case SIGNAL_TYPE_DISPLAY_PORT:
-		/* DP SST */
+		 
 		REG_UPDATE(DIG_BE_CNTL, DIG_MODE, 0);
 		break;
 	case SIGNAL_TYPE_LVDS:
-		/* LVDS */
+		 
 		REG_UPDATE(DIG_BE_CNTL, DIG_MODE, 1);
 		break;
 	case SIGNAL_TYPE_DVI_SINGLE_LINK:
 	case SIGNAL_TYPE_DVI_DUAL_LINK:
-		/* TMDS-DVI */
+		 
 		REG_UPDATE(DIG_BE_CNTL, DIG_MODE, 2);
 		break;
 	case SIGNAL_TYPE_HDMI_TYPE_A:
-		/* TMDS-HDMI */
+		 
 		REG_UPDATE(DIG_BE_CNTL, DIG_MODE, 3);
 		break;
 	case SIGNAL_TYPE_DISPLAY_PORT_MST:
-		/* DP MST */
+		 
 		REG_UPDATE(DIG_BE_CNTL, DIG_MODE, 5);
 		break;
 	default:
 		ASSERT_CRITICAL(false);
-		/* invalid mode ! */
+		 
 		break;
 	}
 
 }
 
-/* TODO: still need depth or just pass in adjusted pixel clock? */
+ 
 void dcn10_link_encoder_enable_tmds_output(
 	struct link_encoder *enc,
 	enum clock_source_id clock_source,
@@ -926,7 +843,7 @@ void dcn10_link_encoder_enable_tmds_output(
 	struct bp_transmitter_control cntl = { 0 };
 	enum bp_result result;
 
-	/* Enable the PHY */
+	 
 
 	cntl.action = TRANSMITTER_CONTROL_ENABLE;
 	cntl.engine_id = enc->preferred_engine;
@@ -967,7 +884,7 @@ void dcn10_link_encoder_enable_tmds_output_with_clk_pattern_wa(
 	REG_UPDATE(DIG_CLOCK_PATTERN, DIG_CLOCK_PATTERN, 0x1F);
 }
 
-/* enables DP PHY output */
+ 
 void dcn10_link_encoder_enable_dp_output(
 	struct link_encoder *enc,
 	const struct dc_link_settings *link_settings,
@@ -977,12 +894,9 @@ void dcn10_link_encoder_enable_dp_output(
 	struct bp_transmitter_control cntl = { 0 };
 	enum bp_result result;
 
-	/* Enable the PHY */
+	 
 
-	/* number_of_lanes is used for pixel clock adjust,
-	 * but it's not passed to asic_control.
-	 * We need to set number of lanes manually.
-	 */
+	 
 	enc1_configure_encoder(enc10, link_settings);
 
 	cntl.action = TRANSMITTER_CONTROL_ENABLE;
@@ -994,7 +908,7 @@ void dcn10_link_encoder_enable_dp_output(
 	cntl.hpd_sel = enc10->base.hpd_source;
 	cntl.pixel_clock = link_settings->link_rate
 						* LINK_RATE_REF_FREQ_IN_KHZ;
-	/* TODO: check if undefined works */
+	 
 	cntl.color_depth = COLOR_DEPTH_UNDEFINED;
 
 	result = link_transmitter_control(enc10, &cntl);
@@ -1006,7 +920,7 @@ void dcn10_link_encoder_enable_dp_output(
 	}
 }
 
-/* enables DP PHY output in MST mode */
+ 
 void dcn10_link_encoder_enable_dp_mst_output(
 	struct link_encoder *enc,
 	const struct dc_link_settings *link_settings,
@@ -1016,12 +930,9 @@ void dcn10_link_encoder_enable_dp_mst_output(
 	struct bp_transmitter_control cntl = { 0 };
 	enum bp_result result;
 
-	/* Enable the PHY */
+	 
 
-	/* number_of_lanes is used for pixel clock adjust,
-	 * but it's not passed to asic_control.
-	 * We need to set number of lanes manually.
-	 */
+	 
 	enc1_configure_encoder(enc10, link_settings);
 
 	cntl.action = TRANSMITTER_CONTROL_ENABLE;
@@ -1033,7 +944,7 @@ void dcn10_link_encoder_enable_dp_mst_output(
 	cntl.hpd_sel = enc10->base.hpd_source;
 	cntl.pixel_clock = link_settings->link_rate
 						* LINK_RATE_REF_FREQ_IN_KHZ;
-	/* TODO: check if undefined works */
+	 
 	cntl.color_depth = COLOR_DEPTH_UNDEFINED;
 
 	result = link_transmitter_control(enc10, &cntl);
@@ -1044,10 +955,7 @@ void dcn10_link_encoder_enable_dp_mst_output(
 		BREAK_TO_DEBUGGER();
 	}
 }
-/*
- * @brief
- * Disable transmitter and its encoder
- */
+ 
 void dcn10_link_encoder_disable_output(
 	struct link_encoder *enc,
 	enum signal_type signal)
@@ -1057,24 +965,15 @@ void dcn10_link_encoder_disable_output(
 	enum bp_result result;
 
 	if (enc->funcs->is_dig_enabled && !enc->funcs->is_dig_enabled(enc)) {
-		/* OF_SKIP_POWER_DOWN_INACTIVE_ENCODER */
-	/*in DP_Alt_No_Connect case, we turn off the dig already,
-	after excuation the PHY w/a sequence, not allow touch PHY any more*/
+		 
+	 
 		return;
 	}
-	/* Power-down RX and disable GPU PHY should be paired.
-	 * Disabling PHY without powering down RX may cause
-	 * symbol lock loss, on which we will get DP Sink interrupt.
-	 */
+	 
 
-	/* There is a case for the DP active dongles
-	 * where we want to disable the PHY but keep RX powered,
-	 * for those we need to ignore DP Sink interrupt
-	 * by checking lane count that has been set
-	 * on the last do_enable_output().
-	 */
+	 
 
-	/* disable transmitter */
+	 
 	cntl.action = TRANSMITTER_CONTROL_DISABLE;
 	cntl.transmitter = enc10->base.transmitter;
 	cntl.hpd_sel = enc10->base.hpd_source;
@@ -1090,7 +989,7 @@ void dcn10_link_encoder_disable_output(
 		return;
 	}
 
-	/* disable encoder */
+	 
 	if (dc_is_dp_signal(signal))
 		link_encoder_disable(enc10);
 }
@@ -1118,18 +1017,16 @@ void dcn10_link_encoder_dp_set_lane_settings(
 	cntl.pixel_clock = link_settings->link_rate * LINK_RATE_REF_FREQ_IN_KHZ;
 
 	for (lane = 0; lane < link_settings->lane_count; lane++) {
-		/* translate lane settings */
+		 
 
 		training_lane_set.bits.VOLTAGE_SWING_SET =
 				lane_settings[lane].VOLTAGE_SWING;
 		training_lane_set.bits.PRE_EMPHASIS_SET =
 				lane_settings[lane].PRE_EMPHASIS;
 
-		/* post cursor 2 setting only applies to HBR2 link rate */
+		 
 		if (link_settings->link_rate == LINK_RATE_HIGH2) {
-			/* this is passed to VBIOS
-			 * to program post cursor 2 level
-			 */
+			 
 			training_lane_set.bits.POST_CURSOR2_SET =
 					lane_settings[lane].POST_CURSOR2;
 		}
@@ -1137,12 +1034,12 @@ void dcn10_link_encoder_dp_set_lane_settings(
 		cntl.lane_select = lane;
 		cntl.lane_settings = training_lane_set.raw;
 
-		/* call VBIOS table to set voltage swing and pre-emphasis */
+		 
 		link_transmitter_control(enc10, &cntl);
 	}
 }
 
-/* set DP PHY test and training patterns */
+ 
 void dcn10_link_encoder_dp_set_phy_pattern(
 	struct link_encoder *enc,
 	const struct encoder_set_dp_phy_pattern_param *param)
@@ -1191,7 +1088,7 @@ void dcn10_link_encoder_dp_set_phy_pattern(
 	}
 
 	default:
-		/* invalid phy pattern */
+		 
 		ASSERT_CRITICAL(false);
 		break;
 	}
@@ -1213,7 +1110,7 @@ static void fill_stream_allocation_row_info(
 	}
 }
 
-/* programs DP MST VC payload allocation */
+ 
 void dcn10_link_encoder_update_mst_stream_allocation_table(
 	struct link_encoder *enc,
 	const struct link_mst_stream_allocation_table *table)
@@ -1225,15 +1122,11 @@ void dcn10_link_encoder_update_mst_stream_allocation_table(
 	uint32_t src = 0;
 	uint32_t retries = 0;
 
-	/* For CZ, there are only 3 pipes. So Virtual channel is up 3.*/
+	 
 
-	/* --- Set MSE Stream Attribute -
-	 * Setup VC Payload Table on Tx Side,
-	 * Issue allocation change trigger
-	 * to commit payload on both tx and rx side
-	 */
+	 
 
-	/* we should clean-up table each time */
+	 
 
 	if (table->stream_count >= 1) {
 		fill_stream_allocation_row_info(
@@ -1291,32 +1184,15 @@ void dcn10_link_encoder_update_mst_stream_allocation_table(
 			DP_MSE_SAT_SRC3, src,
 			DP_MSE_SAT_SLOT_COUNT3, slots);
 
-	/* --- wait for transaction finish */
+	 
 
-	/* send allocation change trigger (ACT) ?
-	 * this step first sends the ACT,
-	 * then double buffers the SAT into the hardware
-	 * making the new allocation active on the DP MST mode link
-	 */
+	 
 
-	/* DP_MSE_SAT_UPDATE:
-	 * 0 - No Action
-	 * 1 - Update SAT with trigger
-	 * 2 - Update SAT without trigger
-	 */
+	 
 	REG_UPDATE(DP_MSE_SAT_UPDATE,
 			DP_MSE_SAT_UPDATE, 1);
 
-	/* wait for update to complete
-	 * (i.e. DP_MSE_SAT_UPDATE field is reset to 0)
-	 * then wait for the transmission
-	 * of at least 16 MTP headers on immediate local link.
-	 * i.e. DP_MSE_16_MTP_KEEPOUT field (read only) is reset to 0
-	 * a value of 1 indicates that DP MST mode
-	 * is in the 16 MTP keepout region after a VC has been added.
-	 * MST stream bandwidth (VC rate) can be configured
-	 * after this bit is cleared
-	 */
+	 
 	do {
 		udelay(10);
 
@@ -1328,7 +1204,7 @@ void dcn10_link_encoder_update_mst_stream_allocation_table(
 		REG_GET(DP_MSE_SAT_UPDATE,
 				DP_MSE_16_MTP_KEEPOUT, &value2);
 
-		/* bit field DP_MSE_SAT_UPDATE is set to 1 already */
+		 
 		if (!value1 && !value2)
 			break;
 		++retries;
@@ -1416,7 +1292,7 @@ void dcn10_aux_initialize(struct dcn10_link_encoder *enc10)
 			AUX_HPD_SEL, hpd_source,
 			AUX_LS_READ_EN, 0);
 
-	/* 1/4 window (the maximum allowed) */
+	 
 	AUX_REG_UPDATE(AUX_DPHY_RX_CONTROL0,
 			AUX_RX_RECEIVE_WINDOW, 0);
 }
@@ -1445,11 +1321,11 @@ enum signal_type dcn10_get_dig_mode(
 void dcn10_link_encoder_get_max_link_cap(struct link_encoder *enc,
 	struct dc_link_settings *link_settings)
 {
-	/* Set Default link settings */
+	 
 	struct dc_link_settings max_link_cap = {LANE_COUNT_FOUR, LINK_RATE_HIGH,
 			LINK_SPREAD_05_DOWNSPREAD_30KHZ, false, 0};
 
-	/* Higher link settings based on feature supported */
+	 
 	if (enc->features.flags.bits.IS_HBR2_CAPABLE)
 		max_link_cap.link_rate = LINK_RATE_HIGH2;
 

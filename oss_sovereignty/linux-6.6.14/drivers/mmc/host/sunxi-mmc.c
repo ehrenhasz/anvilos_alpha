@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Driver for sunxi SD/MMC host controllers
- * (C) Copyright 2007-2011 Reuuimlla Technology Co., Ltd.
- * (C) Copyright 2007-2011 Aaron Maoye <leafy.myeh@reuuimllatech.com>
- * (C) Copyright 2013-2014 O2S GmbH <www.o2s.ch>
- * (C) Copyright 2013-2014 David Lanzendörfer <david.lanzendoerfer@o2s.ch>
- * (C) Copyright 2013-2014 Hans de Goede <hdegoede@redhat.com>
- * (C) Copyright 2017 Sootech SA
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/clk/sunxi-ng.h>
@@ -37,49 +29,49 @@
 #include <linux/slab.h>
 #include <linux/spinlock.h>
 
-/* register offset definitions */
-#define SDXC_REG_GCTRL	(0x00) /* SMC Global Control Register */
-#define SDXC_REG_CLKCR	(0x04) /* SMC Clock Control Register */
-#define SDXC_REG_TMOUT	(0x08) /* SMC Time Out Register */
-#define SDXC_REG_WIDTH	(0x0C) /* SMC Bus Width Register */
-#define SDXC_REG_BLKSZ	(0x10) /* SMC Block Size Register */
-#define SDXC_REG_BCNTR	(0x14) /* SMC Byte Count Register */
-#define SDXC_REG_CMDR	(0x18) /* SMC Command Register */
-#define SDXC_REG_CARG	(0x1C) /* SMC Argument Register */
-#define SDXC_REG_RESP0	(0x20) /* SMC Response Register 0 */
-#define SDXC_REG_RESP1	(0x24) /* SMC Response Register 1 */
-#define SDXC_REG_RESP2	(0x28) /* SMC Response Register 2 */
-#define SDXC_REG_RESP3	(0x2C) /* SMC Response Register 3 */
-#define SDXC_REG_IMASK	(0x30) /* SMC Interrupt Mask Register */
-#define SDXC_REG_MISTA	(0x34) /* SMC Masked Interrupt Status Register */
-#define SDXC_REG_RINTR	(0x38) /* SMC Raw Interrupt Status Register */
-#define SDXC_REG_STAS	(0x3C) /* SMC Status Register */
-#define SDXC_REG_FTRGL	(0x40) /* SMC FIFO Threshold Watermark Registe */
-#define SDXC_REG_FUNS	(0x44) /* SMC Function Select Register */
-#define SDXC_REG_CBCR	(0x48) /* SMC CIU Byte Count Register */
-#define SDXC_REG_BBCR	(0x4C) /* SMC BIU Byte Count Register */
-#define SDXC_REG_DBGC	(0x50) /* SMC Debug Enable Register */
-#define SDXC_REG_HWRST	(0x78) /* SMC Card Hardware Reset for Register */
-#define SDXC_REG_DMAC	(0x80) /* SMC IDMAC Control Register */
-#define SDXC_REG_DLBA	(0x84) /* SMC IDMAC Descriptor List Base Addre */
-#define SDXC_REG_IDST	(0x88) /* SMC IDMAC Status Register */
-#define SDXC_REG_IDIE	(0x8C) /* SMC IDMAC Interrupt Enable Register */
+ 
+#define SDXC_REG_GCTRL	(0x00)  
+#define SDXC_REG_CLKCR	(0x04)  
+#define SDXC_REG_TMOUT	(0x08)  
+#define SDXC_REG_WIDTH	(0x0C)  
+#define SDXC_REG_BLKSZ	(0x10)  
+#define SDXC_REG_BCNTR	(0x14)  
+#define SDXC_REG_CMDR	(0x18)  
+#define SDXC_REG_CARG	(0x1C)  
+#define SDXC_REG_RESP0	(0x20)  
+#define SDXC_REG_RESP1	(0x24)  
+#define SDXC_REG_RESP2	(0x28)  
+#define SDXC_REG_RESP3	(0x2C)  
+#define SDXC_REG_IMASK	(0x30)  
+#define SDXC_REG_MISTA	(0x34)  
+#define SDXC_REG_RINTR	(0x38)  
+#define SDXC_REG_STAS	(0x3C)  
+#define SDXC_REG_FTRGL	(0x40)  
+#define SDXC_REG_FUNS	(0x44)  
+#define SDXC_REG_CBCR	(0x48)  
+#define SDXC_REG_BBCR	(0x4C)  
+#define SDXC_REG_DBGC	(0x50)  
+#define SDXC_REG_HWRST	(0x78)  
+#define SDXC_REG_DMAC	(0x80)  
+#define SDXC_REG_DLBA	(0x84)  
+#define SDXC_REG_IDST	(0x88)  
+#define SDXC_REG_IDIE	(0x8C)  
 #define SDXC_REG_CHDA	(0x90)
 #define SDXC_REG_CBDA	(0x94)
 
-/* New registers introduced in A64 */
-#define SDXC_REG_A12A		0x058 /* SMC Auto Command 12 Register */
-#define SDXC_REG_SD_NTSR	0x05C /* SMC New Timing Set Register */
-#define SDXC_REG_DRV_DL		0x140 /* Drive Delay Control Register */
-#define SDXC_REG_SAMP_DL_REG	0x144 /* SMC sample delay control */
-#define SDXC_REG_DS_DL_REG	0x148 /* SMC data strobe delay control */
+ 
+#define SDXC_REG_A12A		0x058  
+#define SDXC_REG_SD_NTSR	0x05C  
+#define SDXC_REG_DRV_DL		0x140  
+#define SDXC_REG_SAMP_DL_REG	0x144  
+#define SDXC_REG_DS_DL_REG	0x148  
 
 #define mmc_readl(host, reg) \
 	readl((host)->reg_base + SDXC_##reg)
 #define mmc_writel(host, reg, value) \
 	writel((value), (host)->reg_base + SDXC_##reg)
 
-/* global control register bits */
+ 
 #define SDXC_SOFT_RESET			BIT(0)
 #define SDXC_FIFO_RESET			BIT(1)
 #define SDXC_DMA_RESET			BIT(2)
@@ -95,17 +87,17 @@
 #define SDXC_HARDWARE_RESET \
 	(SDXC_SOFT_RESET | SDXC_FIFO_RESET | SDXC_DMA_RESET)
 
-/* clock control bits */
+ 
 #define SDXC_MASK_DATA0			BIT(31)
 #define SDXC_CARD_CLOCK_ON		BIT(16)
 #define SDXC_LOW_POWER_ON		BIT(17)
 
-/* bus width */
+ 
 #define SDXC_WIDTH1			0
 #define SDXC_WIDTH4			1
 #define SDXC_WIDTH8			2
 
-/* smc command bits */
+ 
 #define SDXC_RESP_EXPIRE		BIT(6)
 #define SDXC_LONG_RESPONSE		BIT(7)
 #define SDXC_CHECK_RESPONSE_CRC		BIT(8)
@@ -127,7 +119,7 @@
 #define SDXC_USE_HOLD_REGISTER	        BIT(29)
 #define SDXC_START			BIT(31)
 
-/* interrupt bits */
+ 
 #define SDXC_RESP_ERROR			BIT(1)
 #define SDXC_COMMAND_DONE		BIT(2)
 #define SDXC_DATA_OVER			BIT(3)
@@ -154,7 +146,7 @@
 	(SDXC_AUTO_COMMAND_DONE | SDXC_DATA_OVER | \
 	 SDXC_COMMAND_DONE | SDXC_VOLTAGE_CHANGE_DONE)
 
-/* status */
+ 
 #define SDXC_RXWL_FLAG			BIT(0)
 #define SDXC_TXWL_FLAG			BIT(1)
 #define SDXC_FIFO_EMPTY			BIT(2)
@@ -165,7 +157,7 @@
 #define SDXC_DMA_REQUEST		BIT(31)
 #define SDXC_FIFO_SIZE			16
 
-/* Function select */
+ 
 #define SDXC_CEATA_ON			(0xceaa << 16)
 #define SDXC_SEND_IRQ_RESPONSE		BIT(0)
 #define SDXC_SDIO_READ_WAIT		BIT(1)
@@ -174,13 +166,13 @@
 #define SDXC_SEND_AUTO_STOPCCSD		BIT(9)
 #define SDXC_CEATA_DEV_IRQ_ENABLE	BIT(10)
 
-/* IDMA controller bus mod bit field */
+ 
 #define SDXC_IDMAC_SOFT_RESET		BIT(0)
 #define SDXC_IDMAC_FIX_BURST		BIT(1)
 #define SDXC_IDMAC_IDMA_ON		BIT(7)
 #define SDXC_IDMAC_REFETCH_DES		BIT(31)
 
-/* IDMA status bit field */
+ 
 #define SDXC_IDMAC_TRANSMIT_INTERRUPT		BIT(0)
 #define SDXC_IDMAC_RECEIVE_INTERRUPT		BIT(1)
 #define SDXC_IDMAC_FATAL_BUS_ERROR		BIT(2)
@@ -199,20 +191,14 @@
 #define SDXC_IDMAC_WRITE			(7 << 13)
 #define SDXC_IDMAC_DESC_CLOSE			(8 << 13)
 
-/*
-* If the idma-des-size-bits of property is ie 13, bufsize bits are:
-*  Bits  0-12: buf1 size
-*  Bits 13-25: buf2 size
-*  Bits 26-31: not used
-* Since we only ever set buf1 size, we can simply store it directly.
-*/
-#define SDXC_IDMAC_DES0_DIC	BIT(1)  /* disable interrupt on completion */
-#define SDXC_IDMAC_DES0_LD	BIT(2)  /* last descriptor */
-#define SDXC_IDMAC_DES0_FD	BIT(3)  /* first descriptor */
-#define SDXC_IDMAC_DES0_CH	BIT(4)  /* chain mode */
-#define SDXC_IDMAC_DES0_ER	BIT(5)  /* end of ring */
-#define SDXC_IDMAC_DES0_CES	BIT(30) /* card error summary */
-#define SDXC_IDMAC_DES0_OWN	BIT(31) /* 1-idma owns it, 0-host owns it */
+ 
+#define SDXC_IDMAC_DES0_DIC	BIT(1)   
+#define SDXC_IDMAC_DES0_LD	BIT(2)   
+#define SDXC_IDMAC_DES0_FD	BIT(3)   
+#define SDXC_IDMAC_DES0_CH	BIT(4)   
+#define SDXC_IDMAC_DES0_ER	BIT(5)   
+#define SDXC_IDMAC_DES0_CES	BIT(30)  
+#define SDXC_IDMAC_DES0_OWN	BIT(31)  
 
 #define SDXC_CLK_400K		0
 #define SDXC_CLK_25M		1
@@ -229,7 +215,7 @@
 #define SDXC_CAL_DL_SW_SHIFT	0
 #define SDXC_CAL_DL_MASK	0x3f
 
-#define SDXC_CAL_TIMEOUT	3	/* in seconds, 3s is enough*/
+#define SDXC_CAL_TIMEOUT	3	 
 
 struct sunxi_mmc_clk_delay {
 	u32 output;
@@ -248,21 +234,16 @@ struct sunxi_mmc_cfg {
 	u32 idma_des_shift;
 	const struct sunxi_mmc_clk_delay *clk_delays;
 
-	/* does the IP block support autocalibration? */
+	 
 	bool can_calibrate;
 
-	/* Does DATA0 needs to be masked while the clock is updated */
+	 
 	bool mask_data0;
 
-	/*
-	 * hardware only supports new timing mode, either due to lack of
-	 * a mode switch in the clock controller, or the mmc controller
-	 * is permanently configured in the new timing mode, without the
-	 * NTSR mode switch.
-	 */
+	 
 	bool needs_new_timings;
 
-	/* clock hardware can switch between old and new timing modes */
+	 
 	bool ccu_has_timings_switch;
 };
 
@@ -272,22 +253,22 @@ struct sunxi_mmc_host {
 	struct reset_control *reset;
 	const struct sunxi_mmc_cfg *cfg;
 
-	/* IO mapping base */
+	 
 	void __iomem	*reg_base;
 
-	/* clock management */
+	 
 	struct clk	*clk_ahb;
 	struct clk	*clk_mmc;
 	struct clk	*clk_sample;
 	struct clk	*clk_output;
 
-	/* irq */
+	 
 	spinlock_t	lock;
 	int		irq;
 	u32		int_sum;
 	u32		sdio_imask;
 
-	/* dma */
+	 
 	dma_addr_t	sg_dma;
 	void		*sg_cpu;
 	bool		wait_dma;
@@ -296,10 +277,10 @@ struct sunxi_mmc_host {
 	struct mmc_request *manual_stop_mrq;
 	int		ferror;
 
-	/* vqmmc */
+	 
 	bool		vqmmc_enabled;
 
-	/* timings */
+	 
 	bool		use_new_timings;
 };
 
@@ -328,28 +309,24 @@ static int sunxi_mmc_init_host(struct sunxi_mmc_host *host)
 	if (sunxi_mmc_reset_host(host))
 		return -EIO;
 
-	/*
-	 * Burst 8 transfers, RX trigger level: 7, TX trigger level: 8
-	 *
-	 * TODO: sun9i has a larger FIFO and supports higher trigger values
-	 */
+	 
 	mmc_writel(host, REG_FTRGL, 0x20070008);
-	/* Maximum timeout value */
+	 
 	mmc_writel(host, REG_TMOUT, 0xffffffff);
-	/* Unmask SDIO interrupt if needed */
+	 
 	mmc_writel(host, REG_IMASK, host->sdio_imask);
-	/* Clear all pending interrupts */
+	 
 	mmc_writel(host, REG_RINTR, 0xffffffff);
-	/* Debug register? undocumented */
+	 
 	mmc_writel(host, REG_DBGC, 0xdeb);
-	/* Enable CEATA support */
+	 
 	mmc_writel(host, REG_FUNS, SDXC_CEATA_ON);
-	/* Set DMA descriptor list base address */
+	 
 	mmc_writel(host, REG_DLBA, host->sg_dma >> host->cfg->idma_des_shift);
 
 	rval = mmc_readl(host, REG_GCTRL);
 	rval |= SDXC_INTERRUPT_ENABLE_BIT;
-	/* Undocumented, but found in Allwinner code */
+	 
 	rval &= ~SDXC_ACCESS_DONE_DIRECT;
 	mmc_writel(host, REG_GCTRL, rval);
 
@@ -369,7 +346,7 @@ static void sunxi_mmc_init_idma_des(struct sunxi_mmc_host *host,
 					     SDXC_IDMAC_DES0_DIC);
 
 		if (data->sg[i].length == max_len)
-			pdes[i].buf_size = 0; /* 0 == max_len */
+			pdes[i].buf_size = 0;  
 		else
 			pdes[i].buf_size = cpu_to_le32(data->sg[i].length);
 
@@ -388,10 +365,7 @@ static void sunxi_mmc_init_idma_des(struct sunxi_mmc_host *host,
 	pdes[i - 1].config &= cpu_to_le32(~SDXC_IDMAC_DES0_DIC);
 	pdes[i - 1].buf_addr_ptr2 = 0;
 
-	/*
-	 * Avoid the io-store starting the idmac hitting io-mem before the
-	 * descriptors hit the main-mem.
-	 */
+	 
 	wmb();
 }
 
@@ -485,7 +459,7 @@ static void sunxi_mmc_dump_errinfo(struct sunxi_mmc_host *host)
 	struct mmc_command *cmd = host->mrq->cmd;
 	struct mmc_data *data = host->mrq->data;
 
-	/* For some cmds timeout is normal with sd/mmc cards */
+	 
 	if ((host->int_sum & SDXC_INTERRUPT_ERROR_BIT) ==
 		SDXC_RESP_TIMEOUT && (cmd->opcode == SD_IO_SEND_OP_COND ||
 				      cmd->opcode == SD_IO_RW_DIRECT))
@@ -507,7 +481,7 @@ static void sunxi_mmc_dump_errinfo(struct sunxi_mmc_host *host)
 		);
 }
 
-/* Called in interrupt context! */
+ 
 static irqreturn_t sunxi_mmc_finalize_request(struct sunxi_mmc_host *host)
 {
 	struct mmc_request *mrq = host->mrq;
@@ -589,12 +563,12 @@ static irqreturn_t sunxi_mmc_irq(int irq, void *dev_id)
 
 		host->int_sum |= msk_int;
 
-		/* Wait for COMMAND_DONE on RESPONSE_TIMEOUT before finalize */
+		 
 		if ((host->int_sum & SDXC_RESP_TIMEOUT) &&
 				!(host->int_sum & SDXC_COMMAND_DONE))
 			mmc_writel(host, REG_IMASK,
 				   host->sdio_imask | SDXC_COMMAND_DONE);
-		/* Don't wait for dma on error */
+		 
 		else if (host->int_sum & SDXC_INTERRUPT_ERROR_BIT)
 			finalize = true;
 		else if ((host->int_sum & SDXC_INTERRUPT_DONE_BIT) &&
@@ -639,14 +613,7 @@ static irqreturn_t sunxi_mmc_handle_manual_stop(int irq, void *dev_id)
 
 	dev_err(mmc_dev(host->mmc), "data error, sending stop command\n");
 
-	/*
-	 * We will never have more than one outstanding request,
-	 * and we do not complete the request until after
-	 * we've cleared host->manual_stop_mrq so we do not need to
-	 * spin lock this function.
-	 * Additionally we have wait states within this function
-	 * so having it in a lock is a very bad idea.
-	 */
+	 
 	sunxi_mmc_send_manual_stop(host, mrq);
 
 	spin_lock_irqsave(&host->lock, iflags);
@@ -683,7 +650,7 @@ static int sunxi_mmc_oclk_onoff(struct sunxi_mmc_host *host, u32 oclk_en)
 		rval = mmc_readl(host, REG_CMDR);
 	} while (time_before(jiffies, expire) && (rval & SDXC_START));
 
-	/* clear irq status bits set by the command */
+	 
 	mmc_writel(host, REG_RINTR,
 		   mmc_readl(host, REG_RINTR) & ~SDXC_SDIO_INTERRUPT);
 
@@ -705,15 +672,7 @@ static int sunxi_mmc_calibrate(struct sunxi_mmc_host *host, int reg_off)
 	if (!host->cfg->can_calibrate)
 		return 0;
 
-	/*
-	 * FIXME:
-	 * This is not clear how the calibration is supposed to work
-	 * yet. The best rate have been obtained by simply setting the
-	 * delay to 0, as Allwinner does in its BSP.
-	 *
-	 * The only mode that doesn't have such a delay is HS400, that
-	 * is in itself a TODO.
-	 */
+	 
 	writel(SDXC_CAL_DL_SW_EN, host->reg_base + reg_off);
 
 	return 0;
@@ -724,15 +683,15 @@ static int sunxi_mmc_clk_set_phase(struct sunxi_mmc_host *host,
 {
 	int index;
 
-	/* clk controller delays not used under new timings mode */
+	 
 	if (host->use_new_timings)
 		return 0;
 
-	/* some old controllers don't support delays */
+	 
 	if (!host->cfg->clk_delays)
 		return 0;
 
-	/* determine delays */
+	 
 	if (rate <= 400000) {
 		index = SDXC_CLK_400K;
 	} else if (rate <= 25000000) {
@@ -769,21 +728,13 @@ static int sunxi_mmc_clk_set_rate(struct sunxi_mmc_host *host,
 	if (ret)
 		return ret;
 
-	/* Our clock is gated now */
+	 
 	mmc->actual_clock = 0;
 
 	if (!ios->clock)
 		return 0;
 
-	/*
-	 * Under the old timing mode, 8 bit DDR requires the module
-	 * clock to be double the card clock. Under the new timing
-	 * mode, all DDR modes require a doubled module clock.
-	 *
-	 * We currently only support the standard MMC DDR52 mode.
-	 * This block should be updated once support for other DDR
-	 * modes is added.
-	 */
+	 
 	if (ios->timing == MMC_TIMING_MMC_DDR52 &&
 	    (host->use_new_timings ||
 	     ios->bus_width == MMC_BUS_WIDTH_8)) {
@@ -809,7 +760,7 @@ static int sunxi_mmc_clk_set_rate(struct sunxi_mmc_host *host,
 	dev_dbg(mmc_dev(mmc), "setting clk to %d, rounded %ld\n",
 		clock, rate);
 
-	/* setting clock rate */
+	 
 	ret = clk_set_rate(host->clk_mmc, rate);
 	if (ret) {
 		dev_err(mmc_dev(mmc), "error setting clk to %ld: %d\n",
@@ -817,29 +768,24 @@ static int sunxi_mmc_clk_set_rate(struct sunxi_mmc_host *host,
 		return ret;
 	}
 
-	/* set internal divider */
+	 
 	rval = mmc_readl(host, REG_CLKCR);
 	rval &= ~0xff;
 	rval |= div - 1;
 	mmc_writel(host, REG_CLKCR, rval);
 
-	/* update card clock rate to account for internal divider */
+	 
 	rate /= div;
 
-	/*
-	 * Configure the controller to use the new timing mode if needed.
-	 * On controllers that only support the new timing mode, such as
-	 * the eMMC controller on the A64, this register does not exist,
-	 * and any writes to it are ignored.
-	 */
+	 
 	if (host->use_new_timings) {
-		/* Don't touch the delay bits */
+		 
 		rval = mmc_readl(host, REG_SD_NTSR);
 		rval |= SDXC_2X_TIMING_MODE;
 		mmc_writel(host, REG_SD_NTSR, rval);
 	}
 
-	/* sunxi_mmc_clk_set_phase expects the actual card clock rate */
+	 
 	ret = sunxi_mmc_clk_set_phase(host, ios, rate);
 	if (ret)
 		return ret;
@@ -848,19 +794,13 @@ static int sunxi_mmc_clk_set_rate(struct sunxi_mmc_host *host,
 	if (ret)
 		return ret;
 
-	/*
-	 * FIXME:
-	 *
-	 * In HS400 we'll also need to calibrate the data strobe
-	 * signal. This should only happen on the MMC2 controller (at
-	 * least on the A64).
-	 */
+	 
 
 	ret = sunxi_mmc_oclk_onoff(host, 1);
 	if (ret)
 		return ret;
 
-	/* And we just enabled our clock back */
+	 
 	mmc->actual_clock = rate;
 
 	return 0;
@@ -886,7 +826,7 @@ static void sunxi_mmc_set_clk(struct sunxi_mmc_host *host, struct mmc_ios *ios)
 {
 	u32 rval;
 
-	/* set ddr mode */
+	 
 	rval = mmc_readl(host, REG_GCTRL);
 	if (ios->timing == MMC_TIMING_UHS_DDR50 ||
 	    ios->timing == MMC_TIMING_MMC_DDR52)
@@ -896,7 +836,7 @@ static void sunxi_mmc_set_clk(struct sunxi_mmc_host *host, struct mmc_ios *ios)
 	mmc_writel(host, REG_GCTRL, rval);
 
 	host->ferror = sunxi_mmc_clk_set_rate(host, ios);
-	/* Android code had a usleep_range(50000, 55000); here */
+	 
 }
 
 static void sunxi_mmc_card_power(struct sunxi_mmc_host *host,
@@ -958,13 +898,13 @@ static int sunxi_mmc_volt_switch(struct mmc_host *mmc, struct mmc_ios *ios)
 {
 	int ret;
 
-	/* vqmmc regulator is available */
+	 
 	if (!IS_ERR(mmc->supply.vqmmc)) {
 		ret = mmc_regulator_set_vqmmc(mmc, ios);
 		return ret < 0 ? ret : 0;
 	}
 
-	/* no vqmmc regulator, assume fixed regulator at 3/3.3V */
+	 
 	if (mmc->ios.signal_voltage == MMC_SIGNAL_VOLTAGE_330)
 		return 0;
 
@@ -1017,7 +957,7 @@ static void sunxi_mmc_request(struct mmc_host *mmc, struct mmc_request *mrq)
 	bool wait_dma = host->wait_dma;
 	int ret;
 
-	/* Check for set_ios errors (should never happen) */
+	 
 	if (host->ferror) {
 		mrq->cmd->error = host->ferror;
 		mmc_request_done(mmc, mrq);
@@ -1125,7 +1065,7 @@ static const struct sunxi_mmc_clk_delay sunxi_mmc_clk_delays[] = {
 	[SDXC_CLK_25M]		= { .output = 180, .sample =  75 },
 	[SDXC_CLK_50M]		= { .output =  90, .sample = 120 },
 	[SDXC_CLK_50M_DDR]	= { .output =  60, .sample = 120 },
-	/* Value from A83T "new timing mode". Works but might not be right. */
+	 
 	[SDXC_CLK_50M_DDR_8BIT]	= { .output =  90, .sample = 180 },
 };
 
@@ -1219,7 +1159,7 @@ static const struct of_device_id sunxi_mmc_of_match[] = {
 	{ .compatible = "allwinner,sun50i-a64-emmc", .data = &sun50i_a64_emmc_cfg },
 	{ .compatible = "allwinner,sun50i-a100-mmc", .data = &sun50i_a100_cfg },
 	{ .compatible = "allwinner,sun50i-a100-emmc", .data = &sun50i_a100_emmc_cfg },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, sunxi_mmc_of_match);
 
@@ -1260,10 +1200,7 @@ static int sunxi_mmc_enable(struct sunxi_mmc_host *host)
 		goto error_disable_clk_output;
 	}
 
-	/*
-	 * Sometimes the controller asserts the irq on boot for some reason,
-	 * make sure the controller is in a sane state before enabling irqs.
-	 */
+	 
 	ret = sunxi_mmc_reset_host(host);
 	if (ret)
 		goto error_disable_clk_sample;
@@ -1394,26 +1331,20 @@ static int sunxi_mmc_probe(struct platform_device *pdev)
 	}
 
 	if (host->cfg->ccu_has_timings_switch) {
-		/*
-		 * Supports both old and new timing modes.
-		 * Try setting the clk to new timing mode.
-		 */
+		 
 		sunxi_ccu_set_mmc_timing_mode(host->clk_mmc, true);
 
-		/* And check the result */
+		 
 		ret = sunxi_ccu_get_mmc_timing_mode(host->clk_mmc);
 		if (ret < 0) {
-			/*
-			 * For whatever reason we were not able to get
-			 * the current active mode. Default to old mode.
-			 */
+			 
 			dev_warn(&pdev->dev, "MMC clk timing mode unknown\n");
 			host->use_new_timings = false;
 		} else {
 			host->use_new_timings = !!ret;
 		}
 	} else if (host->cfg->needs_new_timings) {
-		/* Supports new timing mode only */
+		 
 		host->use_new_timings = true;
 	}
 
@@ -1423,19 +1354,13 @@ static int sunxi_mmc_probe(struct platform_device *pdev)
 	mmc->max_segs		= PAGE_SIZE / sizeof(struct sunxi_idma_des);
 	mmc->max_seg_size	= (1 << host->cfg->idma_des_size_bits);
 	mmc->max_req_size	= mmc->max_seg_size * mmc->max_segs;
-	/* 400kHz ~ 52MHz */
+	 
 	mmc->f_min		=   400000;
 	mmc->f_max		= 52000000;
 	mmc->caps	       |= MMC_CAP_MMC_HIGHSPEED | MMC_CAP_SD_HIGHSPEED |
 				  MMC_CAP_SDIO_IRQ;
 
-	/*
-	 * Some H5 devices do not have signal traces precise enough to
-	 * use HS DDR mode for their eMMC chips.
-	 *
-	 * We still enable HS DDR modes for all the other controller
-	 * variants that support them.
-	 */
+	 
 	if ((host->cfg->clk_delays || host->use_new_timings) &&
 	    !of_device_is_compatible(pdev->dev.of_node,
 				     "allwinner,sun50i-h5-emmc"))
@@ -1445,19 +1370,14 @@ static int sunxi_mmc_probe(struct platform_device *pdev)
 	if (ret)
 		goto error_free_dma;
 
-	/*
-	 * If we don't support delay chains in the SoC, we can't use any
-	 * of the higher speed modes. Mask them out in case the device
-	 * tree specifies the properties for them, which gets added to
-	 * the caps by mmc_of_parse() above.
-	 */
+	 
 	if (!(host->cfg->clk_delays || host->use_new_timings)) {
 		mmc->caps &= ~(MMC_CAP_3_3V_DDR | MMC_CAP_1_8V_DDR |
 			       MMC_CAP_1_2V_DDR | MMC_CAP_UHS);
 		mmc->caps2 &= ~MMC_CAP2_HS200;
 	}
 
-	/* TODO: This driver doesn't support HS400 mode yet */
+	 
 	mmc->caps2 &= ~MMC_CAP2_HS400;
 
 	ret = sunxi_mmc_init_host(host);
@@ -1525,11 +1445,7 @@ static int sunxi_mmc_runtime_suspend(struct device *dev)
 	struct mmc_host	*mmc = dev_get_drvdata(dev);
 	struct sunxi_mmc_host *host = mmc_priv(mmc);
 
-	/*
-	 * When clocks are off, it's possible receiving
-	 * fake interrupts, which will stall the system.
-	 * Disabling the irq  will prevent this.
-	 */
+	 
 	disable_irq(host->irq);
 	sunxi_mmc_reset_host(host);
 	sunxi_mmc_disable(host);

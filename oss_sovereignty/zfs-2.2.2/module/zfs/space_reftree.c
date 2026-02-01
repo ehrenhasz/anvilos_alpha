@@ -1,56 +1,12 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
-/*
- * Copyright 2009 Sun Microsystems, Inc.  All rights reserved.
- * Use is subject to license terms.
- */
-/*
- * Copyright (c) 2013, 2019 by Delphix. All rights reserved.
- */
+ 
+ 
+ 
 
 #include <sys/zfs_context.h>
 #include <sys/range_tree.h>
 #include <sys/space_reftree.h>
 
-/*
- * Space reference trees.
- *
- * A range tree is a collection of integers.  Every integer is either
- * in the tree, or it's not.  A space reference tree generalizes
- * the idea: it allows its members to have arbitrary reference counts,
- * as opposed to the implicit reference count of 0 or 1 in a range tree.
- * This representation comes in handy when computing the union or
- * intersection of multiple space maps.  For example, the union of
- * N range trees is the subset of the reference tree with refcnt >= 1.
- * The intersection of N range trees is the subset with refcnt >= N.
- *
- * [It's very much like a Fourier transform.  Unions and intersections
- * are hard to perform in the 'range tree domain', so we convert the trees
- * into the 'reference count domain', where it's trivial, then invert.]
- *
- * vdev_dtl_reassess() uses computations of this form to determine
- * DTL_MISSING and DTL_OUTAGE for interior vdevs -- e.g. a RAID-Z vdev
- * has an outage wherever refcnt >= vdev_nparity + 1, and a mirror vdev
- * has an outage wherever refcnt >= vdev_children.
- */
+ 
 static int
 space_reftree_compare(const void *x1, const void *x2)
 {
@@ -103,9 +59,7 @@ space_reftree_add_seg(avl_tree_t *t, uint64_t start, uint64_t end,
 	space_reftree_add_node(t, end, -refcnt);
 }
 
-/*
- * Convert (or add) a range tree into a reference tree.
- */
+ 
 void
 space_reftree_add_map(avl_tree_t *t, range_tree_t *rt, int64_t refcnt)
 {
@@ -118,10 +72,7 @@ space_reftree_add_map(avl_tree_t *t, range_tree_t *rt, int64_t refcnt)
 	}
 }
 
-/*
- * Convert a reference tree into a range tree.  The range tree will contain
- * all members of the reference tree for which refcnt >= minref.
- */
+ 
 void
 space_reftree_generate_map(avl_tree_t *t, range_tree_t *rt, int64_t minref)
 {

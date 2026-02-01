@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (C) 2019 Xilinx, Inc.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/nvmem-provider.h>
@@ -43,7 +41,7 @@ static struct nvmem_config econfig = {
 
 static const struct of_device_id zynqmp_nvmem_match[] = {
 	{ .compatible = "xlnx,zynqmp-nvmem-fw", },
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, zynqmp_nvmem_match);
 

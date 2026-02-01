@@ -1,53 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
 
-/*
- * End-to-end eBPF tunnel test suite
- *   The file tests BPF network tunnel implementation.
- *
- * Topology:
- * ---------
- *     root namespace   |     at_ns0 namespace
- *                       |
- *       -----------     |     -----------
- *       | tnl dev |     |     | tnl dev |  (overlay network)
- *       -----------     |     -----------
- *       metadata-mode   |     metadata-mode
- *        with bpf       |       with bpf
- *                       |
- *       ----------      |     ----------
- *       |  veth1  | --------- |  veth0  |  (underlay network)
- *       ----------    peer    ----------
- *
- *
- *  Device Configuration
- *  --------------------
- *  root namespace with metadata-mode tunnel + BPF
- *  Device names and addresses:
- *	veth1 IP 1: 172.16.1.200, IPv6: 00::22 (underlay)
- *		IP 2: 172.16.1.20, IPv6: 00::bb (underlay)
- *	tunnel dev <type>11, ex: gre11, IPv4: 10.1.1.200, IPv6: 1::22 (overlay)
- *
- *  Namespace at_ns0 with native tunnel
- *  Device names and addresses:
- *	veth0 IPv4: 172.16.1.100, IPv6: 00::11 (underlay)
- *	tunnel dev <type>00, ex: gre00, IPv4: 10.1.1.100, IPv6: 1::11 (overlay)
- *
- *
- * End-to-end ping packet flow
- *  ---------------------------
- *  Most of the tests start by namespace creation, device configuration,
- *  then ping the underlay and overlay network.  When doing 'ping 10.1.1.100'
- *  from root namespace, the following operations happen:
- *  1) Route lookup shows 10.1.1.100/24 belongs to tnl dev, fwd to tnl dev.
- *  2) Tnl device's egress BPF program is triggered and set the tunnel metadata,
- *     with local_ip=172.16.1.200, remote_ip=172.16.1.100. BPF program choose
- *     the primary or secondary ip of veth1 as the local ip of tunnel. The
- *     choice is made based on the value of bpf map local_ip_map.
- *  3) Outer tunnel header is prepended and route the packet to veth1's egress.
- *  4) veth0's ingress queue receive the tunneled packet at namespace at_ns0.
- *  5) Tunnel protocol handler, ex: vxlan_rcv, decap the packet.
- *  6) Forward the packet to the overlay tnl dev.
- */
+
+ 
 
 #include <arpa/inet.h>
 #include <linux/if_tun.h>
@@ -119,7 +72,7 @@ static void cleanup(void)
 
 static int add_vxlan_tunnel(void)
 {
-	/* at_ns0 namespace */
+	 
 	SYS(fail, "ip netns exec at_ns0 ip link add dev %s type vxlan external gbp dstport 4789",
 	    VXLAN_TUNL_DEV0);
 	SYS(fail, "ip netns exec at_ns0 ip link set dev %s address %s up",
@@ -131,7 +84,7 @@ static int add_vxlan_tunnel(void)
 	SYS(fail, "ip netns exec at_ns0 ip neigh add %s lladdr %s dev veth0",
 	    IP4_ADDR2_VETH1, MAC_VETH1);
 
-	/* root namespace */
+	 
 	SYS(fail, "ip link add dev %s type vxlan external gbp dstport 4789",
 	    VXLAN_TUNL_DEV1);
 	SYS(fail, "ip link set dev %s address %s up", VXLAN_TUNL_DEV1, MAC_TUNL_DEV1);
@@ -160,7 +113,7 @@ static int add_ip6vxlan_tunnel(void)
 	SYS(fail, "ip -6 addr add %s/96 dev veth1", IP6_ADDR2_VETH1);
 	SYS(fail, "ip link set dev veth1 up");
 
-	/* at_ns0 namespace */
+	 
 	SYS(fail, "ip netns exec at_ns0 ip link add dev %s type vxlan external dstport 4789",
 	    IP6VXLAN_TUNL_DEV0);
 	SYS(fail, "ip netns exec at_ns0 ip addr add dev %s %s/24",
@@ -168,7 +121,7 @@ static int add_ip6vxlan_tunnel(void)
 	SYS(fail, "ip netns exec at_ns0 ip link set dev %s address %s up",
 	    IP6VXLAN_TUNL_DEV0, MAC_TUNL_DEV0);
 
-	/* root namespace */
+	 
 	SYS(fail, "ip link add dev %s type vxlan external dstport 4789",
 	    IP6VXLAN_TUNL_DEV1);
 	SYS(fail, "ip addr add dev %s %s/24", IP6VXLAN_TUNL_DEV1, IP4_ADDR_TUNL_DEV1);
@@ -229,7 +182,7 @@ static int add_ipip_tunnel(enum ipip_encap encap)
 		type = ipproto;
 	}
 
-	/* at_ns0 namespace */
+	 
 	SYS(fail, "ip -n at_ns0 link add dev %s type ipip local %s remote %s",
 	    IPIP_TUNL_DEV0, IP4_ADDR_VETH0, IP4_ADDR1_VETH1);
 
@@ -243,7 +196,7 @@ static int add_ipip_tunnel(enum ipip_encap encap)
 	SYS(fail, "ip -n at_ns0 addr add dev %s %s/24",
 	    IPIP_TUNL_DEV0, IP4_ADDR_TUNL_DEV0);
 
-	/* root namespace */
+	 
 	if (type && ipproto)
 		SYS(fail, "ip fou add port 5555 %s", ipproto);
 	SYS(fail, "ip link add dev %s type ipip external", IPIP_TUNL_DEV1);
@@ -318,12 +271,12 @@ static void test_vxlan_tunnel(void)
 	DECLARE_LIBBPF_OPTS(bpf_tc_hook, tc_hook,
 			    .attach_point = BPF_TC_INGRESS);
 
-	/* add vxlan tunnel */
+	 
 	err = add_vxlan_tunnel();
 	if (!ASSERT_OK(err, "add vxlan tunnel"))
 		goto done;
 
-	/* load and attach bpf prog to tunnel dev tc hook point */
+	 
 	skel = test_tunnel_kern__open_and_load();
 	if (!ASSERT_OK_PTR(skel, "test_tunnel_kern__open_and_load"))
 		goto done;
@@ -340,7 +293,7 @@ static void test_vxlan_tunnel(void)
 	if (attach_tc_prog(&tc_hook, get_src_prog_fd, set_src_prog_fd))
 		goto done;
 
-	/* load and attach bpf prog to veth dev tc hook point */
+	 
 	ifindex = if_nametoindex("veth1");
 	if (!ASSERT_NEQ(ifindex, 0, "veth1 ifindex"))
 		goto done;
@@ -351,7 +304,7 @@ static void test_vxlan_tunnel(void)
 	if (attach_tc_prog(&tc_hook, set_dst_prog_fd, -1))
 		goto done;
 
-	/* load and attach prog set_md to tunnel dev tc hook point at_ns0 */
+	 
 	nstoken = open_netns("at_ns0");
 	if (!ASSERT_OK_PTR(nstoken, "setns src"))
 		goto done;
@@ -366,7 +319,7 @@ static void test_vxlan_tunnel(void)
 		goto done;
 	close_netns(nstoken);
 
-	/* use veth1 ip 2 as tunnel source ip */
+	 
 	local_ip_map_fd = bpf_map__fd(skel->maps.local_ip_map);
 	if (!ASSERT_GE(local_ip_map_fd, 0, "bpf_map__fd"))
 		goto done;
@@ -375,13 +328,13 @@ static void test_vxlan_tunnel(void)
 	if (!ASSERT_OK(err, "update bpf local_ip_map"))
 		goto done;
 
-	/* ping test */
+	 
 	err = test_ping(AF_INET, IP4_ADDR_TUNL_DEV0);
 	if (!ASSERT_OK(err, "test_ping"))
 		goto done;
 
 done:
-	/* delete vxlan tunnel */
+	 
 	delete_vxlan_tunnel();
 	if (local_ip_map_fd >= 0)
 		close(local_ip_map_fd);
@@ -402,12 +355,12 @@ static void test_ip6vxlan_tunnel(void)
 	DECLARE_LIBBPF_OPTS(bpf_tc_hook, tc_hook,
 			    .attach_point = BPF_TC_INGRESS);
 
-	/* add vxlan tunnel */
+	 
 	err = add_ip6vxlan_tunnel();
 	if (!ASSERT_OK(err, "add_ip6vxlan_tunnel"))
 		goto done;
 
-	/* load and attach bpf prog to tunnel dev tc hook point */
+	 
 	skel = test_tunnel_kern__open_and_load();
 	if (!ASSERT_OK_PTR(skel, "test_tunnel_kern__open_and_load"))
 		goto done;
@@ -424,7 +377,7 @@ static void test_ip6vxlan_tunnel(void)
 	if (attach_tc_prog(&tc_hook, get_src_prog_fd, set_src_prog_fd))
 		goto done;
 
-	/* load and attach prog set_md to tunnel dev tc hook point at_ns0 */
+	 
 	nstoken = open_netns("at_ns0");
 	if (!ASSERT_OK_PTR(nstoken, "setns src"))
 		goto done;
@@ -439,7 +392,7 @@ static void test_ip6vxlan_tunnel(void)
 		goto done;
 	close_netns(nstoken);
 
-	/* use veth1 ip 2 as tunnel source ip */
+	 
 	local_ip_map_fd = bpf_map__fd(skel->maps.local_ip_map);
 	if (!ASSERT_GE(local_ip_map_fd, 0, "get local_ip_map fd"))
 		goto done;
@@ -448,13 +401,13 @@ static void test_ip6vxlan_tunnel(void)
 	if (!ASSERT_OK(err, "update bpf local_ip_map"))
 		goto done;
 
-	/* ping test */
+	 
 	err = test_ping(AF_INET, IP4_ADDR_TUNL_DEV0);
 	if (!ASSERT_OK(err, "test_ping"))
 		goto done;
 
 done:
-	/* delete ipv6 vxlan tunnel */
+	 
 	delete_ip6vxlan_tunnel();
 	if (local_ip_map_fd >= 0)
 		close(local_ip_map_fd);
@@ -472,12 +425,12 @@ static void test_ipip_tunnel(enum ipip_encap encap)
 	DECLARE_LIBBPF_OPTS(bpf_tc_hook, tc_hook,
 			    .attach_point = BPF_TC_INGRESS);
 
-	/* add ipip tunnel */
+	 
 	err = add_ipip_tunnel(encap);
 	if (!ASSERT_OK(err, "add_ipip_tunnel"))
 		goto done;
 
-	/* load and attach bpf prog to tunnel dev tc hook point */
+	 
 	skel = test_tunnel_kern__open_and_load();
 	if (!ASSERT_OK_PTR(skel, "test_tunnel_kern__open_and_load"))
 		goto done;
@@ -513,12 +466,12 @@ static void test_ipip_tunnel(enum ipip_encap encap)
 	if (attach_tc_prog(&tc_hook, get_src_prog_fd, set_src_prog_fd))
 		goto done;
 
-	/* ping from root namespace test */
+	 
 	err = test_ping(AF_INET, IP4_ADDR_TUNL_DEV0);
 	if (!ASSERT_OK(err, "test_ping"))
 		goto done;
 
-	/* ping from at_ns0 namespace test */
+	 
 	nstoken = open_netns("at_ns0");
 	err = test_ping(AF_INET, IP4_ADDR_TUNL_DEV1);
 	if (!ASSERT_OK(err, "test_ping"))
@@ -526,7 +479,7 @@ static void test_ipip_tunnel(enum ipip_encap encap)
 	close_netns(nstoken);
 
 done:
-	/* delete ipip tunnel */
+	 
 	delete_ipip_tunnel();
 	if (skel)
 		test_tunnel_kern__destroy(skel);
@@ -560,10 +513,7 @@ void test_tunnel(void)
 	pthread_t test_thread;
 	int err;
 
-	/* Run the tests in their own thread to isolate the namespace changes
-	 * so they do not affect the environment of other tests.
-	 * (specifically needed because of unshare(CLONE_NEWNS) in open_netns())
-	 */
+	 
 	err = pthread_create(&test_thread, NULL, &test_tunnel_run_tests, NULL);
 	if (ASSERT_OK(err, "pthread_create"))
 		ASSERT_OK(pthread_join(test_thread, NULL), "pthread_join");

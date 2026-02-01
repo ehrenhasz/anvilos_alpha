@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2014 Intel Corporation
- */
+ 
+ 
 
 #ifndef __INTEL_EXECLISTS_SUBMISSION_H__
 #define __INTEL_EXECLISTS_SUBMISSION_H__
@@ -39,4 +37,4 @@ void intel_execlists_dump_active_requests(struct intel_engine_cs *engine,
 bool
 intel_engine_in_execlists_submission_mode(const struct intel_engine_cs *engine);
 
-#endif /* __INTEL_EXECLISTS_SUBMISSION_H__ */
+#endif  

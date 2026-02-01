@@ -1,14 +1,8 @@
-/****************************************************************************/
+ 
 
-/*
- *	uclinux.c -- generic memory mapped MTD driver for uclinux
- *
- *	(C) Copyright 2002, Greg Ungerer (gerg@snapgear.com)
- *
- *      License: GPL
- */
+ 
 
-/****************************************************************************/
+ 
 
 #include <linux/moduleparam.h>
 #include <linux/types.h>
@@ -23,7 +17,7 @@
 #include <asm/io.h>
 #include <asm/sections.h>
 
-/****************************************************************************/
+ 
 
 #ifdef CONFIG_MTD_ROM
 #define MAP_NAME "rom"
@@ -41,7 +35,7 @@ module_param(physaddr, ulong, S_IRUGO);
 
 static struct mtd_info *uclinux_ram_mtdinfo;
 
-/****************************************************************************/
+ 
 
 static const struct mtd_partition uclinux_romfs[] = {
 	{ .name = "ROMfs" }
@@ -49,7 +43,7 @@ static const struct mtd_partition uclinux_romfs[] = {
 
 #define	NUM_PARTITIONS	ARRAY_SIZE(uclinux_romfs)
 
-/****************************************************************************/
+ 
 
 static int uclinux_point(struct mtd_info *mtd, loff_t from, size_t len,
 	size_t *retlen, void **virt, resource_size_t *phys)
@@ -62,7 +56,7 @@ static int uclinux_point(struct mtd_info *mtd, loff_t from, size_t len,
 	return(0);
 }
 
-/****************************************************************************/
+ 
 
 static int __init uclinux_mtd_init(void)
 {
@@ -83,12 +77,7 @@ static int __init uclinux_mtd_init(void)
 	printk("uclinux[mtd]: probe address=0x%x size=0x%x\n",
 	       	(int) mapp->phys, (int) mapp->size);
 
-	/*
-	 * The filesystem is guaranteed to be in direct mapped memory. It is
-	 * directly following the kernels own bss region. Following the same
-	 * mechanism used by architectures setting up traditional initrds we
-	 * use phys_to_virt to get the virtual address of its start.
-	 */
+	 
 	mapp->virt = phys_to_virt(mapp->phys);
 
 	if (mapp->virt == 0) {
@@ -115,4 +104,4 @@ static int __init uclinux_mtd_init(void)
 }
 device_initcall(uclinux_mtd_init);
 
-/****************************************************************************/
+ 

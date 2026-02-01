@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
-/*
- * Part of the HSI character device driver.
- *
- * Copyright (C) 2010 Nokia Corporation. All rights reserved.
- *
- * Contact: Andras Domokos <andras.domokos at nokia.com>
- */
+ 
+ 
 
 #ifndef __HSI_CHAR_H
 #define __HSI_CHAR_H
@@ -48,4 +42,4 @@ struct hsc_tx_config {
 	__u32 arb_mode;
 };
 
-#endif /* __HSI_CHAR_H */
+#endif  

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
-/*******************************************************************************
- *
- * Module Name: rsdumpinfo - Tables used to display resource descriptors.
- *
- ******************************************************************************/
+
+ 
 
 #include <acpi/acpi.h>
 #include "accommon.h"
@@ -16,14 +12,7 @@ ACPI_MODULE_NAME("rsdumpinfo")
 #define ACPI_RSD_OFFSET(f)          (u8) ACPI_OFFSET (union acpi_resource_data,f)
 #define ACPI_PRT_OFFSET(f)          (u8) ACPI_OFFSET (struct acpi_pci_routing_table,f)
 #define ACPI_RSD_TABLE_SIZE(name)   (sizeof(name) / sizeof (struct acpi_rsdump_info))
-/*******************************************************************************
- *
- * Resource Descriptor info tables
- *
- * Note: The first table entry must be a Title or Literal and must contain
- * the table length (number of table entries)
- *
- ******************************************************************************/
+ 
 struct acpi_rsdump_info acpi_rs_dump_irq[7] = {
 	{ACPI_RSD_TITLE, ACPI_RSD_TABLE_SIZE(acpi_rs_dump_irq), "IRQ", NULL},
 	{ACPI_RSD_UINT8, ACPI_RSD_OFFSET(irq.descriptor_length),
@@ -523,9 +512,7 @@ struct acpi_rsdump_info acpi_rs_dump_uart_serial_bus[20] = {
 	 "ConnectionSpeed", NULL},
 };
 
-/*
- * Tables used for common address descriptor flag fields
- */
+ 
 struct acpi_rsdump_info acpi_rs_dump_general_flags[5] = {
 	{ACPI_RSD_TITLE, ACPI_RSD_TABLE_SIZE(acpi_rs_dump_general_flags), NULL,
 	 NULL},
@@ -563,9 +550,7 @@ struct acpi_rsdump_info acpi_rs_dump_io_flags[4] = {
 	 "Translation Type", acpi_gbl_trs_decode}
 };
 
-/*
- * Table used to dump _PRT contents
- */
+ 
 struct acpi_rsdump_info acpi_rs_dump_prt[5] = {
 	{ACPI_RSD_TITLE, ACPI_RSD_TABLE_SIZE(acpi_rs_dump_prt), NULL, NULL},
 	{ACPI_RSD_UINT64, ACPI_PRT_OFFSET(address), "Address", NULL},

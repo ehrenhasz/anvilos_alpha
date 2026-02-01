@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Driver for simulating a mouse on GPIO lines.
- *
- * Copyright (C) 2007 Atmel Corporation
- * Copyright (C) 2017 Linus Walleij <linus.walleij@linaro.org>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/platform_device.h>
@@ -13,21 +8,7 @@
 #include <linux/property.h>
 #include <linux/of.h>
 
-/**
- * struct gpio_mouse
- * @scan_ms: the scan interval in milliseconds.
- * @up: GPIO line for up value.
- * @down: GPIO line for down value.
- * @left: GPIO line for left value.
- * @right: GPIO line for right value.
- * @bleft: GPIO line for left button.
- * @bmiddle: GPIO line for middle button.
- * @bright: GPIO line for right button.
- *
- * This struct must be added to the platform_device in the board code.
- * It is used by the gpio_mouse driver to setup GPIO lines and to
- * calculate mouse movement.
- */
+ 
 struct gpio_mouse {
 	u32 scan_ms;
 	struct gpio_desc *up;
@@ -39,10 +20,7 @@ struct gpio_mouse {
 	struct gpio_desc *bright;
 };
 
-/*
- * Timer function which is run every scan_ms ms when the device is opened.
- * The dev input variable is set to the input_dev pointer.
- */
+ 
 static void gpio_mouse_scan(struct input_dev *input)
 {
 	struct gpio_mouse *gpio = input_get_drvdata(input);
@@ -77,7 +55,7 @@ static int gpio_mouse_probe(struct platform_device *pdev)
 	if (!gmouse)
 		return -ENOMEM;
 
-	/* Assign some default scanning time */
+	 
 	error = device_property_read_u32(dev, "scan-interval-ms",
 					 &gmouse->scan_ms);
 	if (error || gmouse->scan_ms == 0) {
@@ -167,4 +145,4 @@ module_platform_driver(gpio_mouse_device_driver);
 MODULE_AUTHOR("Hans-Christian Egtvedt <egtvedt@samfundet.no>");
 MODULE_DESCRIPTION("GPIO mouse driver");
 MODULE_LICENSE("GPL");
-MODULE_ALIAS("platform:gpio_mouse"); /* work with hotplug and coldplug */
+MODULE_ALIAS("platform:gpio_mouse");  

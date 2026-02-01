@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Shared Memory Communications over RDMA (SMC-R) and RoCE
- *
- * Manage RMBE
- * copy new RMBE data into user space
- *
- * Copyright IBM Corp. 2016
- *
- * Author(s):  Ursula Braun <ubraun@linux.vnet.ibm.com>
- */
+
+ 
 
 #include <linux/net.h>
 #include <linux/rcupdate.h>
@@ -21,22 +12,20 @@
 #include "smc.h"
 #include "smc_core.h"
 #include "smc_cdc.h"
-#include "smc_tx.h" /* smc_tx_consumer_update() */
+#include "smc_tx.h"  
 #include "smc_rx.h"
 #include "smc_stats.h"
 #include "smc_tracepoint.h"
 
-/* callback implementation to wakeup consumers blocked with smc_rx_wait().
- * indirectly called by smc_cdc_msg_recv_action().
- */
+ 
 static void smc_rx_wake_up(struct sock *sk)
 {
 	struct socket_wq *wq;
 
 	trace_sk_data_ready(sk);
 
-	/* derived from sock_def_readable() */
-	/* called already in smc_listen_work() */
+	 
+	 
 	rcu_read_lock();
 	wq = rcu_dereference(sk->sk_wq);
 	if (skwq_has_sleeper(wq))
@@ -49,13 +38,7 @@ static void smc_rx_wake_up(struct sock *sk)
 	rcu_read_unlock();
 }
 
-/* Update consumer cursor
- *   @conn   connection to update
- *   @cons   consumer cursor
- *   @len    number of Bytes consumed
- *   Returns:
- *   1 if we should end our receive, 0 otherwise
- */
+ 
 static int smc_rx_update_consumer(struct smc_sock *smc,
 				  union smc_host_cursor cons, size_t len)
 {
@@ -66,7 +49,7 @@ static int smc_rx_update_consumer(struct smc_sock *smc,
 
 	smc_curs_add(conn->rmb_desc->len, &cons, len);
 
-	/* did we process urgent data? */
+	 
 	if (conn->urg_state == SMC_URG_VALID || conn->urg_rx_skip_pend) {
 		diff = smc_curs_comp(conn->rmb_desc->len, &cons,
 				     &conn->urg_curs);
@@ -78,20 +61,20 @@ static int smc_rx_update_consumer(struct smc_sock *smc,
 			}
 		} else {
 			if (diff == 1) {
-				/* skip urgent byte */
+				 
 				force = true;
 				smc_curs_add(conn->rmb_desc->len, &cons, 1);
 				conn->urg_rx_skip_pend = false;
 			} else if (diff < -1)
-				/* we read past urgent byte */
+				 
 				conn->urg_state = SMC_URG_READ;
 		}
 	}
 
 	smc_curs_copy(&conn->local_tx_ctrl.cons, &cons, conn);
 
-	/* send consumer cursor update if required */
-	/* similar to advertising new TCP rcv_wnd if required */
+	 
+	 
 	smc_tx_consumer_update(conn, force);
 
 	return rc;
@@ -178,7 +161,7 @@ static int smc_rx_splice(struct pipe_inode_info *pipe, char *src, size_t len,
 
 	if (lgr->is_smcd ||
 	    (!lgr->is_smcd && !smc->conn.rmb_desc->is_vm)) {
-		/* smcd or smcr that uses physically contiguous RMBs */
+		 
 		priv[0]->len = len;
 		priv[0]->smc = smc;
 		partial[0].offset = src - (char *)smc->conn.rmb_desc->cpu_addr;
@@ -188,7 +171,7 @@ static int smc_rx_splice(struct pipe_inode_info *pipe, char *src, size_t len,
 	} else {
 		int size, left = len;
 		void *buf = src;
-		/* smcr that uses virtually contiguous RMBs*/
+		 
 		for (i = 0; i < nr_pages; i++) {
 			size = min_t(int, PAGE_SIZE - offset, left);
 			priv[i]->len = size;
@@ -244,14 +227,7 @@ static int smc_rx_data_available_and_no_splice_pend(struct smc_connection *conn)
 	       !atomic_read(&conn->splice_pending);
 }
 
-/* blocks rcvbuf consumer until >=len bytes available or timeout or interrupted
- *   @smc    smc socket
- *   @timeo  pointer to max seconds to wait, pointer to value 0 for no timeout
- *   @fcrit  add'l criterion to evaluate as function pointer
- * Returns:
- * 1 if at least 1 byte available in rcvbuf or if socket error/shutdown.
- * 0 otherwise (nothing in rcvbuf nor timeout, e.g. interrupted).
- */
+ 
 int smc_rx_wait(struct smc_sock *smc, long *timeo,
 		int (*fcrit)(struct smc_connection *conn))
 {
@@ -304,9 +280,7 @@ static int smc_rx_recv_urg(struct smc_sock *smc, struct msghdr *msg, int len,
 			if (smc_curs_diff(conn->rmb_desc->len, &cons,
 					  &conn->urg_curs) > 1)
 				conn->urg_rx_skip_pend = true;
-			/* Urgent Byte was already accounted for, but trigger
-			 * skipping the urgent byte in non-inline case
-			 */
+			 
 			if (!(flags & MSG_PEEK))
 				smc_rx_update_consumer(smc, cons, 0);
 		} else {
@@ -329,18 +303,12 @@ static bool smc_rx_recvmsg_data_available(struct smc_sock *smc)
 	if (smc_rx_data_available(conn))
 		return true;
 	else if (conn->urg_state == SMC_URG_VALID)
-		/* we received a single urgent Byte - skip */
+		 
 		smc_rx_update_cons(smc, 0);
 	return false;
 }
 
-/* smc_rx_recvmsg - receive data from RMBE
- * @msg:	copy data to receive buffer
- * @pipe:	copy data to pipe if set - indicates splice() call
- *
- * rcvbuf consumer: main API called by socket layer.
- * Called under sk lock.
- */
+ 
 int smc_rx_recvmsg(struct smc_sock *smc, struct msghdr *msg,
 		   struct pipe_inode_info *pipe, size_t len, int flags)
 {
@@ -354,11 +322,11 @@ int smc_rx_recvmsg(struct smc_sock *smc, struct msghdr *msg,
 	struct sock *sk;
 	int splbytes;
 	long timeo;
-	int target;		/* Read at least these many bytes */
+	int target;		 
 	int rc;
 
 	if (unlikely(flags & MSG_ERRQUEUE))
-		return -EINVAL; /* future work for sk.sk_family == AF_SMC */
+		return -EINVAL;  
 
 	sk = &smc->sk;
 	if (sk->sk_state == SMC_LISTEN)
@@ -374,10 +342,10 @@ int smc_rx_recvmsg(struct smc_sock *smc, struct msghdr *msg,
 
 	if (len < readable)
 		SMC_STAT_RMB_RX_SIZE_SMALL(smc, !conn->lnk);
-	/* we currently use 1 RMBE per RMB, so RMBE == RMB base addr */
+	 
 	rcvbuf_base = conn->rx_off + conn->rmb_desc->cpu_addr;
 
-	do { /* while (read_remaining) */
+	do {  
 		if (read_done >= target || (pipe && read_done))
 			break;
 
@@ -388,9 +356,7 @@ int smc_rx_recvmsg(struct smc_sock *smc, struct msghdr *msg,
 			goto copy;
 
 		if (sk->sk_shutdown & RCV_SHUTDOWN) {
-			/* smc_cdc_msg_recv_action() could have run after
-			 * above smc_rx_recvmsg_data_available()
-			 */
+			 
 			if (smc_rx_recvmsg_data_available(smc))
 				goto copy;
 			break;
@@ -409,9 +375,7 @@ int smc_rx_recvmsg(struct smc_sock *smc, struct msghdr *msg,
 			}
 			if (sk->sk_state == SMC_CLOSED) {
 				if (!sock_flag(sk, SOCK_DONE)) {
-					/* This occurs when user tries to read
-					 * from never connected socket.
-					 */
+					 
 					read_done = -ENOTCONN;
 					break;
 				}
@@ -431,8 +395,8 @@ int smc_rx_recvmsg(struct smc_sock *smc, struct msghdr *msg,
 		}
 
 copy:
-		/* initialize variables for 1st iteration of subsequent loop */
-		/* could be just 1 byte, even after waiting on data above */
+		 
+		 
 		readable = atomic_read(&conn->bytes_to_rcv);
 		splbytes = atomic_read(&conn->splice_pending);
 		if (!readable || (msg && splbytes)) {
@@ -445,17 +409,17 @@ copy:
 		}
 
 		smc_curs_copy(&cons, &conn->local_tx_ctrl.cons, conn);
-		/* subsequent splice() calls pick up where previous left */
+		 
 		if (splbytes)
 			smc_curs_add(conn->rmb_desc->len, &cons, splbytes);
 		if (conn->urg_state == SMC_URG_VALID &&
 		    sock_flag(&smc->sk, SOCK_URGINLINE) &&
 		    readable > 1)
-			readable--;	/* always stop at urgent Byte */
-		/* not more than what user space asked for */
+			readable--;	 
+		 
 		copylen = min_t(size_t, read_remaining, readable);
-		/* determine chunks where to read from rcvbuf */
-		/* either unwrapped case, or 1st chunk of wrapped case */
+		 
+		 
 		chunk_len = min_t(size_t, copylen, conn->rmb_desc->len -
 				  cons.count);
 		chunk_len_sum = chunk_len;
@@ -482,19 +446,19 @@ copy:
 			read_done += chunk_len;
 
 			if (chunk_len_sum == copylen)
-				break; /* either on 1st or 2nd iteration */
-			/* prepare next (== 2nd) iteration */
-			chunk_len = copylen - chunk_len; /* remainder */
+				break;  
+			 
+			chunk_len = copylen - chunk_len;  
 			chunk_len_sum += chunk_len;
-			chunk_off = 0; /* modulo offset in recv ring buffer */
+			chunk_off = 0;  
 		}
 
-		/* update cursors */
+		 
 		if (!(flags & MSG_PEEK)) {
-			/* increased in recv tasklet smc_cdc_msg_rcv() */
+			 
 			smp_mb__before_atomic();
 			atomic_sub(copylen, &conn->bytes_to_rcv);
-			/* guarantee 0 <= bytes_to_rcv <= rmb_desc->len */
+			 
 			smp_mb__after_atomic();
 			if (msg && smc_rx_update_consumer(smc, cons, copylen))
 				goto out;
@@ -506,7 +470,7 @@ out:
 	return read_done;
 }
 
-/* Initialize receive properties on connection establishment. NB: not __init! */
+ 
 void smc_rx_init(struct smc_sock *smc)
 {
 	smc->sk.sk_data_ready = smc_rx_wake_up;

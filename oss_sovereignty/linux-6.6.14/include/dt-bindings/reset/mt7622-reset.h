@@ -1,13 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2017 MediaTek Inc.
- * Author: Sean Wang <sean.wang@mediatek.com>
- */
+ 
+ 
 
 #ifndef _DT_BINDINGS_RESET_CONTROLLER_MT7622
 #define _DT_BINDINGS_RESET_CONTROLLER_MT7622
 
-/* INFRACFG resets */
+ 
 #define MT7622_INFRA_EMI_REG_RST		0
 #define MT7622_INFRA_DRAMC0_A0_RST		1
 #define MT7622_INFRA_APCIRQ_EINT_RST		3
@@ -23,7 +20,7 @@
 #define MT7622_INFRA_SYSIRQ_RST			22
 #define MT7622_INFRA_WED1_RST			25
 
-/* PERICFG Subsystem resets */
+ 
 #define MT7622_PERI_UART0_SW_RST		0
 #define MT7622_PERI_UART1_SW_RST		1
 #define MT7622_PERI_UART2_SW_RST		2
@@ -45,7 +42,7 @@
 #define MT7622_PERI_SPI1_SW_RST			34
 #define MT7622_PERI_FLASHIF_SW_RST		36
 
-/* TOPRGU resets */
+ 
 #define MT7622_TOPRGU_INFRA_RST			0
 #define MT7622_TOPRGU_ETHDMA_RST		1
 #define MT7622_TOPRGU_DDRPHY_RST		6
@@ -54,7 +51,7 @@
 #define MT7622_TOPRGU_APMIXED_RST		10
 #define MT7622_TOPRGU_CONN_MCU_RST		12
 
-/* PCIe/SATA Subsystem resets */
+ 
 #define MT7622_SATA_PHY_REG_RST			12
 #define MT7622_SATA_PHY_SW_RST			13
 #define MT7622_SATA_AXI_BUS_RST			15
@@ -69,11 +66,11 @@
 #define MT7622_PCIE0_USER_RST			30
 #define MT7622_PCIE0_PIPE_RST			31
 
-/* SSUSB Subsystem resets */
+ 
 #define MT7622_SSUSB_PHY_PWR_RST		3
 #define MT7622_SSUSB_MAC_PWR_RST		4
 
-/* ETHSYS Subsystem resets */
+ 
 #define MT7622_ETHSYS_SYS_RST			0
 #define MT7622_ETHSYS_MCM_RST			2
 #define MT7622_ETHSYS_HSDMA_RST			5
@@ -83,4 +80,4 @@
 #define MT7622_ETHSYS_CRYPTO_RST		29
 #define MT7622_ETHSYS_PPE_RST			31
 
-#endif  /* _DT_BINDINGS_RESET_CONTROLLER_MT7622 */
+#endif   

@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef __NET_NET_TRACKERS_H
 #define __NET_NET_TRACKERS_H
 #include <linux/ref_tracker.h>
@@ -15,4 +15,4 @@ typedef struct ref_tracker *netns_tracker;
 typedef struct {} netns_tracker;
 #endif
 
-#endif /* __NET_NET_TRACKERS_H */
+#endif  

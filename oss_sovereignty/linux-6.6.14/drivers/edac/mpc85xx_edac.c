@@ -1,16 +1,4 @@
-/*
- * Freescale MPC85xx Memory Controller kernel module
- *
- * Parts Copyrighted (c) 2013 by Freescale Semiconductor, Inc.
- *
- * Author: Dave Jiang <djiang@mvista.com>
- *
- * 2006-2007 (c) MontaVista Software, Inc. This file is licensed under
- * the terms of the GNU General Public License version 2. This program
- * is licensed "as is" without any warranty of any kind, whether express
- * or implied.
- *
- */
+ 
 #include <linux/module.h>
 #include <linux/init.h>
 #include <linux/interrupt.h>
@@ -34,9 +22,7 @@ static int edac_dev_idx;
 static int edac_pci_idx;
 #endif
 
-/*
- * PCI Err defines
- */
+ 
 #ifdef CONFIG_PCI
 static u32 orig_pci_err_cap_dr;
 static u32 orig_pci_err_en;
@@ -44,7 +30,7 @@ static u32 orig_pci_err_en;
 
 static u32 orig_l2_err_disable;
 
-/**************************** PCI Err device ***************************/
+ 
 #ifdef CONFIG_PCI
 
 static void mpc85xx_pci_check(struct edac_pci_ctl_info *pci)
@@ -54,7 +40,7 @@ static void mpc85xx_pci_check(struct edac_pci_ctl_info *pci)
 
 	err_detect = in_be32(pdata->pci_vbase + MPC85XX_PCI_ERR_DR);
 
-	/* master aborts can happen during PCI config cycles */
+	 
 	if (!(err_detect & ~(PCI_EDE_MULTI_ERR | PCI_EDE_MST_ABRT))) {
 		out_be32(pdata->pci_vbase + MPC85XX_PCI_ERR_DR, err_detect);
 		return;
@@ -74,7 +60,7 @@ static void mpc85xx_pci_check(struct edac_pci_ctl_info *pci)
 	pr_err("PCI/X ERR_DH register: %#08x\n",
 	       in_be32(pdata->pci_vbase + MPC85XX_PCI_ERR_DH));
 
-	/* clear error bits */
+	 
 	out_be32(pdata->pci_vbase + MPC85XX_PCI_ERR_DR, err_detect);
 
 	if (err_detect & PCI_EDE_PERR_MASK)
@@ -104,10 +90,10 @@ static void mpc85xx_pcie_check(struct edac_pci_ctl_info *pci)
 	pr_err("PCIe ERR_CAP_R3 register: 0x%08x\n",
 			in_be32(pdata->pci_vbase + MPC85XX_PCIE_ERR_CAP_R3));
 
-	/* clear error bits */
+	 
 	out_be32(pdata->pci_vbase + MPC85XX_PCI_ERR_DR, err_detect);
 
-	/* reset error capture */
+	 
 	out_be32(pdata->pci_vbase + MPC85XX_PCI_GAS_TIMR, err_cap_stat | 0x1);
 }
 
@@ -158,7 +144,7 @@ static int mpc85xx_pci_err_probe(struct platform_device *op)
 	if (!pci)
 		return -ENOMEM;
 
-	/* make sure error reporting method is sane */
+	 
 	switch (edac_op_state) {
 	case EDAC_OPSTATE_POLL:
 	case EDAC_OPSTATE_INT:
@@ -203,7 +189,7 @@ static int mpc85xx_pci_err_probe(struct platform_device *op)
 		goto err;
 	}
 
-	/* we only need the error registers */
+	 
 	r.start += 0xe00;
 
 	if (!devm_request_mem_region(&op->dev, r.start, resource_size(&r),
@@ -231,20 +217,20 @@ static int mpc85xx_pci_err_probe(struct platform_device *op)
 		orig_pci_err_cap_dr =
 		    in_be32(pdata->pci_vbase + MPC85XX_PCI_ERR_CAP_DR);
 
-		/* PCI master abort is expected during config cycles */
+		 
 		out_be32(pdata->pci_vbase + MPC85XX_PCI_ERR_CAP_DR, 0x40);
 
 		orig_pci_err_en =
 		    in_be32(pdata->pci_vbase + MPC85XX_PCI_ERR_EN);
 
-		/* disable master abort reporting */
+		 
 		out_be32(pdata->pci_vbase + MPC85XX_PCI_ERR_EN, ~0x40);
 	}
 
-	/* clear error bits */
+	 
 	out_be32(pdata->pci_vbase + MPC85XX_PCI_ERR_DR, ~0);
 
-	/* reset error capture */
+	 
 	out_be32(pdata->pci_vbase + MPC85XX_PCI_GAS_TIMR, 0x1);
 
 	if (edac_pci_add_device(pci, pdata->edac_idx) > 0) {
@@ -271,15 +257,7 @@ static int mpc85xx_pci_err_probe(struct platform_device *op)
 	}
 
 	if (pdata->is_pcie) {
-		/*
-		 * Enable all PCIe error interrupt & error detect except invalid
-		 * PEX_CONFIG_ADDR/PEX_CONFIG_DATA access interrupt generation
-		 * enable bit and invalid PEX_CONFIG_ADDR/PEX_CONFIG_DATA access
-		 * detection enable bit. Because PCIe bus code to initialize and
-		 * configure these PCIe devices on booting will use some invalid
-		 * PEX_CONFIG_ADDR/PEX_CONFIG_DATA, edac driver prints the much
-		 * notice information. So disable this detect to fix ugly print.
-		 */
+		 
 		out_be32(pdata->pci_vbase + MPC85XX_PCI_ERR_EN, ~0
 			 & ~PEX_ERR_ICCAIE_EN_BIT);
 		out_be32(pdata->pci_vbase + MPC85XX_PCI_ERR_ADDR, 0
@@ -332,11 +310,11 @@ static struct platform_driver mpc85xx_pci_err_driver = {
 		.suppress_bind_attrs = true,
 	},
 };
-#endif				/* CONFIG_PCI */
+#endif				 
 
-/**************************** L2 Err device ***************************/
+ 
 
-/************************ L2 SYSFS parts ***********************************/
+ 
 
 static ssize_t mpc85xx_l2_inject_data_hi_show(struct edac_device_ctl_info
 					      *edac_dev, char *data)
@@ -424,7 +402,7 @@ static struct edac_dev_sysfs_attribute mpc85xx_l2_sysfs_attributes[] = {
 	 .show = mpc85xx_l2_inject_ctrl_show,
 	 .store = mpc85xx_l2_inject_ctrl_store},
 
-	/* End of list */
+	 
 	{
 	 .attr = {.name = NULL}
 	 }
@@ -436,7 +414,7 @@ static void mpc85xx_set_l2_sysfs_attributes(struct edac_device_ctl_info
 	edac_dev->sysfs_attributes = mpc85xx_l2_sysfs_attributes;
 }
 
-/***************************** L2 ops ***********************************/
+ 
 
 static void mpc85xx_l2_check(struct edac_device_ctl_info *edac_dev)
 {
@@ -461,7 +439,7 @@ static void mpc85xx_l2_check(struct edac_device_ctl_info *edac_dev)
 	pr_err("L2 Error Address Capture Register: 0x%08x\n",
 	       in_be32(pdata->l2_vbase + MPC85XX_L2_ERRADDR));
 
-	/* clear error detect register */
+	 
 	out_be32(pdata->l2_vbase + MPC85XX_L2_ERRDET, err_detect);
 
 	if (err_detect & L2_EDE_CE_MASK)
@@ -518,7 +496,7 @@ static int mpc85xx_l2_err_probe(struct platform_device *op)
 		goto err;
 	}
 
-	/* we only need the error registers */
+	 
 	r.start += 0xe00;
 
 	if (!devm_request_mem_region(&op->dev, r.start, resource_size(&r),
@@ -539,7 +517,7 @@ static int mpc85xx_l2_err_probe(struct platform_device *op)
 
 	orig_l2_err_disable = in_be32(pdata->l2_vbase + MPC85XX_L2_ERRDIS);
 
-	/* clear the err_dis */
+	 
 	out_be32(pdata->l2_vbase + MPC85XX_L2_ERRDIS, 0);
 
 	edac_dev->mod_name = EDAC_MOD_STR;
@@ -681,7 +659,7 @@ static int __init mpc85xx_mc_init(void)
 
 	pr_info("Freescale(R) MPC85xx EDAC driver, (C) 2006 Montavista Software\n");
 
-	/* make sure error reporting method is sane */
+	 
 	switch (edac_op_state) {
 	case EDAC_OPSTATE_POLL:
 	case EDAC_OPSTATE_INT:

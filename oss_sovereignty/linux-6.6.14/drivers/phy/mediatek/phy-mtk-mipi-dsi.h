@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2019 MediaTek Inc.
- * Author: Jitao Shi <jitao.shi@mediatek.com>
- */
+ 
+ 
 
 #ifndef _MTK_MIPI_TX_H
 #define _MTK_MIPI_TX_H

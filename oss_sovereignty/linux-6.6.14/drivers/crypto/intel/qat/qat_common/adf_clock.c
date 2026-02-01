@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright(c) 2023 Intel Corporation */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/dev_printk.h>
@@ -84,32 +84,13 @@ static int measure_clock(struct adf_accel_dev *accel_dev, u32 *frequency)
 	delta_us = timespec_to_us(&ts3) - timespec_to_us(&ts1);
 	temp = (timestamp2 - timestamp1) * ME_CLK_DIVIDER * 10;
 	temp = DIV_ROUND_CLOSEST_ULL(temp, delta_us);
-	/*
-	 * Enclose the division to allow the preprocessor to precalculate it,
-	 * and avoid promoting r-value to 64-bit before division.
-	 */
+	 
 	*frequency = temp * (HZ_PER_MHZ / 10);
 
 	return 0;
 }
 
-/**
- * adf_dev_measure_clock() - measures device clock frequency
- * @accel_dev: Pointer to acceleration device.
- * @frequency: Pointer to variable where result will be stored
- * @min: Minimal allowed frequency value
- * @max: Maximal allowed frequency value
- *
- * If the measurement result will go beyond the min/max thresholds the value
- * will take the value of the crossed threshold.
- *
- * This algorithm compares the device firmware timestamp with the kernel
- * timestamp. So we can't expect too high accuracy from this measurement.
- *
- * Return:
- * * 0 - measurement succeed
- * * -ETIMEDOUT - measurement failed
- */
+ 
 int adf_dev_measure_clock(struct adf_accel_dev *accel_dev,
 			  u32 *frequency, u32 min, u32 max)
 {

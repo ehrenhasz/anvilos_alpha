@@ -1,6 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright (c) 2011-2014 PLUMgrid, http://plumgrid.com
- */
+
+ 
 #include <linux/bpf.h>
 #include <linux/bpf-cgroup.h>
 #include <linux/bpf_trace.h>
@@ -71,22 +70,14 @@ static const struct bpf_map_ops * const bpf_map_types[] = {
 #undef BPF_LINK_TYPE
 };
 
-/*
- * If we're handed a bigger struct than we know of, ensure all the unknown bits
- * are 0 - i.e. new user-space does not rely on any kernel feature extensions
- * we don't know about yet.
- *
- * There is a ToCToU between this function call and the following
- * copy_from_user() call. However, this is not a concern since this function is
- * meant to be a future-proofing of bits.
- */
+ 
 int bpf_check_uarg_tail_zero(bpfptr_t uaddr,
 			     size_t expected_size,
 			     size_t actual_size)
 {
 	int res;
 
-	if (unlikely(actual_size > PAGE_SIZE))	/* silly large */
+	if (unlikely(actual_size > PAGE_SIZE))	 
 		return -E2BIG;
 
 	if (actual_size <= expected_size)
@@ -141,10 +132,7 @@ static u32 bpf_map_value_size(const struct bpf_map *map)
 
 static void maybe_wait_bpf_programs(struct bpf_map *map)
 {
-	/* Wait for any running BPF programs to complete so that
-	 * userspace, when we return to it, knows that all programs
-	 * that could be running use the new map value.
-	 */
+	 
 	if (map->map_type == BPF_MAP_TYPE_HASH_OF_MAPS ||
 	    map->map_type == BPF_MAP_TYPE_ARRAY_OF_MAPS)
 		synchronize_rcu();
@@ -155,7 +143,7 @@ static int bpf_map_update_value(struct bpf_map *map, struct file *map_file,
 {
 	int err;
 
-	/* Need to create a kthread, thus must support schedule */
+	 
 	if (bpf_map_is_offloaded(map)) {
 		return bpf_map_offload_update_elem(map, key, value, flags);
 	} else if (map->map_type == BPF_MAP_TYPE_CPUMAP ||
@@ -189,7 +177,7 @@ static int bpf_map_update_value(struct bpf_map *map, struct file *map_file,
 						  flags);
 		rcu_read_unlock();
 	} else if (map->map_type == BPF_MAP_TYPE_REUSEPORT_SOCKARRAY) {
-		/* rcu_read_lock() is not needed */
+		 
 		err = bpf_fd_reuseport_array_update_elem(map, key, value,
 							 flags);
 	} else if (map->map_type == BPF_MAP_TYPE_QUEUE ||
@@ -237,7 +225,7 @@ static int bpf_map_copy_value(struct bpf_map *map, void *key, void *value,
 		   map->map_type == BPF_MAP_TYPE_BLOOM_FILTER) {
 		err = map->ops->map_peek_elem(map, value);
 	} else if (map->map_type == BPF_MAP_TYPE_STRUCT_OPS) {
-		/* struct_ops map requires directly updating "value" */
+		 
 		err = bpf_struct_ops_map_sys_lookup_elem(map, key, value);
 	} else {
 		rcu_read_lock();
@@ -252,11 +240,11 @@ static int bpf_map_copy_value(struct bpf_map *map, void *key, void *value,
 		} else {
 			err = 0;
 			if (flags & BPF_F_LOCK)
-				/* lock 'ptr' and copy everything but lock */
+				 
 				copy_map_value_locked(map, value, ptr, true);
 			else
 				copy_map_value(map, value, ptr);
-			/* mask lock and timer, since value wasn't zero inited */
+			 
 			check_and_init_map_value(map, value);
 		}
 		rcu_read_unlock();
@@ -268,21 +256,10 @@ static int bpf_map_copy_value(struct bpf_map *map, void *key, void *value,
 	return err;
 }
 
-/* Please, do not use this function outside from the map creation path
- * (e.g. in map update path) without taking care of setting the active
- * memory cgroup (see at bpf_map_kmalloc_node() for example).
- */
+ 
 static void *__bpf_map_area_alloc(u64 size, int numa_node, bool mmapable)
 {
-	/* We really just want to fail instead of triggering OOM killer
-	 * under memory pressure, therefore we set __GFP_NORETRY to kmalloc,
-	 * which is used for lower order allocation requests.
-	 *
-	 * It has been observed that higher order allocation requests done by
-	 * vmalloc with __GFP_NORETRY being set might fail due to not trying
-	 * to reclaim memory from the page cache, thus we set
-	 * __GFP_RETRY_MAYFAIL to avoid such situations.
-	 */
+	 
 
 	gfp_t gfp = bpf_memcg_flags(__GFP_NOWARN | __GFP_ZERO);
 	unsigned int flags = 0;
@@ -292,7 +269,7 @@ static void *__bpf_map_area_alloc(u64 size, int numa_node, bool mmapable)
 	if (size >= SIZE_MAX)
 		return NULL;
 
-	/* kmalloc()'ed memory can't be mmap()'ed */
+	 
 	if (mmapable) {
 		BUG_ON(!PAGE_ALIGNED(size));
 		align = SHMLBA;
@@ -326,13 +303,7 @@ void bpf_map_area_free(void *area)
 
 static u32 bpf_map_flags_retain_permanent(u32 flags)
 {
-	/* Some map creation flags are not tied to the map object but
-	 * rather to the map fd instead, so they have no meaning upon
-	 * map object inspection since multiple file descriptors with
-	 * different (access) properties can exist here. Thus, given
-	 * this has zero meaning for the map itself, lets clear these
-	 * from here.
-	 */
+	 
 	return flags & ~(BPF_F_RDONLY | BPF_F_WRONLY);
 }
 
@@ -369,11 +340,7 @@ void bpf_map_free_id(struct bpf_map *map)
 {
 	unsigned long flags;
 
-	/* Offloaded maps are removed from the IDR store when their device
-	 * disappears - even if someone holds an fd to them they are unusable,
-	 * the memory is gone, all ops will fail; they are simply waiting for
-	 * refcnt to drop to be freed.
-	 */
+	 
 	if (!map->id)
 		return;
 
@@ -388,11 +355,7 @@ void bpf_map_free_id(struct bpf_map *map)
 #ifdef CONFIG_MEMCG_KMEM
 static void bpf_map_save_memcg(struct bpf_map *map)
 {
-	/* Currently if a map is created by a process belonging to the root
-	 * memory cgroup, get_obj_cgroup_from_current() will return NULL.
-	 * So we have to check map->objcg for being NULL each time it's
-	 * being used.
-	 */
+	 
 	if (memcg_bpf_enabled())
 		map->objcg = get_obj_cgroup_from_current();
 }
@@ -525,7 +488,7 @@ void btf_record_free(struct btf_record *rec)
 		case BPF_SPIN_LOCK:
 		case BPF_TIMER:
 		case BPF_REFCOUNT:
-			/* Nothing to release */
+			 
 			break;
 		default:
 			WARN_ON_ONCE(1);
@@ -553,7 +516,7 @@ struct btf_record *btf_record_dup(const struct btf_record *rec)
 	new_rec = kmemdup(rec, size, GFP_KERNEL | __GFP_NOWARN);
 	if (!new_rec)
 		return ERR_PTR(-ENOMEM);
-	/* Do a deep copy of the btf_record */
+	 
 	fields = rec->fields;
 	new_rec->cnt = 0;
 	for (i = 0; i < rec->cnt; i++) {
@@ -573,7 +536,7 @@ struct btf_record *btf_record_dup(const struct btf_record *rec)
 		case BPF_SPIN_LOCK:
 		case BPF_TIMER:
 		case BPF_REFCOUNT:
-			/* Nothing to acquire */
+			 
 			break;
 		default:
 			ret = -EFAULT;
@@ -600,20 +563,7 @@ bool btf_record_equal(const struct btf_record *rec_a, const struct btf_record *r
 	if (rec_a->cnt != rec_b->cnt)
 		return false;
 	size = offsetof(struct btf_record, fields[rec_a->cnt]);
-	/* btf_parse_fields uses kzalloc to allocate a btf_record, so unused
-	 * members are zeroed out. So memcmp is safe to do without worrying
-	 * about padding/unused fields.
-	 *
-	 * While spin_lock, timer, and kptr have no relation to map BTF,
-	 * list_head metadata is specific to map BTF, the btf and value_rec
-	 * members in particular. btf is the map BTF, while value_rec points to
-	 * btf_record in that map BTF.
-	 *
-	 * So while by default, we don't rely on the map BTF (which the records
-	 * were parsed from) matching for both records, which is not backwards
-	 * compatible, in case list_head is part of it, we implicitly rely on
-	 * that by way of depending on memcmp succeeding for it.
-	 */
+	 
 	return !memcmp(rec_a, rec_b, size);
 }
 
@@ -687,7 +637,7 @@ void bpf_obj_free_fields(const struct btf_record *rec, void *obj)
 	}
 }
 
-/* called from workqueue */
+ 
 static void bpf_map_free_deferred(struct work_struct *work)
 {
 	struct bpf_map *map = container_of(work, struct bpf_map, work);
@@ -696,21 +646,11 @@ static void bpf_map_free_deferred(struct work_struct *work)
 
 	security_bpf_map_free(map);
 	bpf_map_release_memcg(map);
-	/* implementation dependent freeing */
+	 
 	map->ops->map_free(map);
-	/* Delay freeing of btf_record for maps, as map_free
-	 * callback usually needs access to them. It is better to do it here
-	 * than require each callback to do the free itself manually.
-	 *
-	 * Note that the btf_record stashed in map->inner_map_meta->record was
-	 * already freed using the map_free callback for map in map case which
-	 * eventually calls bpf_map_free_meta, since inner_map_meta is only a
-	 * template bpf_map struct used during verification.
-	 */
+	 
 	btf_record_free(rec);
-	/* Delay freeing of btf for maps, as map_free callback may need
-	 * struct_meta info which will be freed with btf_put().
-	 */
+	 
 	btf_put(btf);
 }
 
@@ -725,9 +665,7 @@ static void bpf_map_put_uref(struct bpf_map *map)
 static void bpf_map_free_in_work(struct bpf_map *map)
 {
 	INIT_WORK(&map->work, bpf_map_free_deferred);
-	/* Avoid spawning kworkers, since they all might contend
-	 * for the same mutex like slab_mutex.
-	 */
+	 
 	queue_work(system_unbound_wq, &map->work);
 }
 
@@ -744,13 +682,11 @@ static void bpf_map_free_mult_rcu_gp(struct rcu_head *rcu)
 		call_rcu(rcu, bpf_map_free_rcu_gp);
 }
 
-/* decrement map refcnt and schedule it for freeing via workqueue
- * (underlying map implementation ops->map_free() might sleep)
- */
+ 
 void bpf_map_put(struct bpf_map *map)
 {
 	if (atomic64_dec_and_test(&map->refcnt)) {
-		/* bpf_map_free_id() must be called first */
+		 
 		bpf_map_free_id(map);
 
 		if (READ_ONCE(map->free_after_mult_rcu_gp))
@@ -782,16 +718,14 @@ static fmode_t map_get_sys_perms(struct bpf_map *map, struct fd f)
 {
 	fmode_t mode = f.file->f_mode;
 
-	/* Our file permissions may have been overridden by global
-	 * map permissions facing syscall side.
-	 */
+	 
 	if (READ_ONCE(map->frozen))
 		mode &= ~FMODE_CAN_WRITE;
 	return mode;
 }
 
 #ifdef CONFIG_PROC_FS
-/* Show the memory usage of a bpf map */
+ 
 static u64 bpf_map_memory_usage(const struct bpf_map *map)
 {
 	return map->ops->map_mem_usage(map);
@@ -838,22 +772,18 @@ static void bpf_map_show_fdinfo(struct seq_file *m, struct file *filp)
 static ssize_t bpf_dummy_read(struct file *filp, char __user *buf, size_t siz,
 			      loff_t *ppos)
 {
-	/* We need this handler such that alloc_file() enables
-	 * f_mode with FMODE_CAN_READ.
-	 */
+	 
 	return -EINVAL;
 }
 
 static ssize_t bpf_dummy_write(struct file *filp, const char __user *buf,
 			       size_t siz, loff_t *ppos)
 {
-	/* We need this handler such that alloc_file() enables
-	 * f_mode with FMODE_CAN_WRITE.
-	 */
+	 
 	return -EINVAL;
 }
 
-/* called for any extra memory-mapped regions (except initial) */
+ 
 static void bpf_map_mmap_open(struct vm_area_struct *vma)
 {
 	struct bpf_map *map = vma->vm_file->private_data;
@@ -862,7 +792,7 @@ static void bpf_map_mmap_open(struct vm_area_struct *vma)
 		bpf_map_write_active_inc(map);
 }
 
-/* called for all unmapped memory region (including initial) */
+ 
 static void bpf_map_mmap_close(struct vm_area_struct *vma)
 {
 	struct bpf_map *map = vma->vm_file->private_data;
@@ -894,23 +824,19 @@ static int bpf_map_mmap(struct file *filp, struct vm_area_struct *vma)
 			err = -EPERM;
 			goto out;
 		}
-		/* map is meant to be read-only, so do not allow mapping as
-		 * writable, because it's possible to leak a writable page
-		 * reference and allows user-space to still modify it after
-		 * freezing, while verifier will assume contents do not change
-		 */
+		 
 		if (map->map_flags & BPF_F_RDONLY_PROG) {
 			err = -EACCES;
 			goto out;
 		}
 	}
 
-	/* set default open/close callbacks */
+	 
 	vma->vm_ops = &bpf_map_default_vmops;
 	vma->vm_private_data = map;
 	vm_flags_clear(vma, VM_MAYEXEC);
 	if (!(vma->vm_flags & VM_WRITE))
-		/* disallow re-mapping with PROT_WRITE */
+		 
 		vm_flags_clear(vma, VM_MAYWRITE);
 
 	err = map->ops->map_mmap(map, vma);
@@ -968,7 +894,7 @@ int bpf_get_file_flag(int flags)
 	return O_RDWR;
 }
 
-/* helper macro to check that unused fields 'union bpf_attr' are zero */
+ 
 #define CHECK_ATTR(CMD) \
 	memchr_inv((void *) &attr->CMD##_LAST_FIELD + \
 		   sizeof(attr->CMD##_LAST_FIELD), 0, \
@@ -976,16 +902,14 @@ int bpf_get_file_flag(int flags)
 		   offsetof(union bpf_attr, CMD##_LAST_FIELD) - \
 		   sizeof(attr->CMD##_LAST_FIELD)) != NULL
 
-/* dst and src must have at least "size" number of bytes.
- * Return strlen on success and < 0 on error.
- */
+ 
 int bpf_obj_name_cpy(char *dst, const char *src, unsigned int size)
 {
 	const char *end = src + size;
 	const char *orig_src = src;
 
 	memset(dst, 0, size);
-	/* Copy all isalnum(), '_' and '.' chars. */
+	 
 	while (src < end && *src) {
 		if (!isalnum(*src) &&
 		    *src != '_' && *src != '.')
@@ -993,7 +917,7 @@ int bpf_obj_name_cpy(char *dst, const char *src, unsigned int size)
 		*dst++ = *src++;
 	}
 
-	/* No '\0' found in "size" number of bytes */
+	 
 	if (src == end)
 		return -EINVAL;
 
@@ -1015,7 +939,7 @@ static int map_check_btf(struct bpf_map *map, const struct btf *btf,
 	u32 key_size, value_size;
 	int ret = 0;
 
-	/* Some maps allow key to be unspecified. */
+	 
 	if (btf_key_id) {
 		key_type = btf_type_id_size(btf, &btf_key_id, &key_size);
 		if (!key_type || key_size != map->key_size)
@@ -1096,7 +1020,7 @@ static int map_check_btf(struct bpf_map *map, const struct btf *btf,
 				}
 				break;
 			default:
-				/* Fail if map_type checks are missing for a field type */
+				 
 				ret = -EOPNOTSUPP;
 				goto free_map_tab;
 			}
@@ -1120,7 +1044,7 @@ free_map_tab:
 }
 
 #define BPF_MAP_CREATE_LAST_FIELD map_extra
-/* called via syscall */
+ 
 static int map_create(union bpf_attr *attr)
 {
 	const struct bpf_map_ops *ops;
@@ -1155,7 +1079,7 @@ static int map_create(union bpf_attr *attr)
 	     !node_online(numa_node)))
 		return -EINVAL;
 
-	/* find map type and init map: hashtable vs rbtree vs bloom vs ... */
+	 
 	map_type = attr->map_type;
 	if (map_type >= ARRAY_SIZE(bpf_map_types))
 		return -EINVAL;
@@ -1174,16 +1098,11 @@ static int map_create(union bpf_attr *attr)
 	if (!ops->map_mem_usage)
 		return -EINVAL;
 
-	/* Intent here is for unprivileged_bpf_disabled to block BPF map
-	 * creation for unprivileged users; other actions depend
-	 * on fd availability and access to bpffs, so are dependent on
-	 * object creation success. Even with unprivileged BPF disabled,
-	 * capability checks are still carried out.
-	 */
+	 
 	if (sysctl_unprivileged_bpf_disabled && !bpf_capable())
 		return -EPERM;
 
-	/* check privileged map type permissions */
+	 
 	switch (map_type) {
 	case BPF_MAP_TYPE_ARRAY:
 	case BPF_MAP_TYPE_PERCPU_ARRAY:
@@ -1198,7 +1117,7 @@ static int map_create(union bpf_attr *attr)
 	case BPF_MAP_TYPE_USER_RINGBUF:
 	case BPF_MAP_TYPE_CGROUP_STORAGE:
 	case BPF_MAP_TYPE_PERCPU_CGROUP_STORAGE:
-		/* unprivileged */
+		 
 		break;
 	case BPF_MAP_TYPE_SK_STORAGE:
 	case BPF_MAP_TYPE_INODE_STORAGE:
@@ -1247,12 +1166,7 @@ static int map_create(union bpf_attr *attr)
 	spin_lock_init(&map->owner.lock);
 
 	if (attr->btf_key_type_id || attr->btf_value_type_id ||
-	    /* Even the map's value is a kernel's struct,
-	     * the bpf_prog.o must have BTF to begin with
-	     * to figure out the corresponding kernel's
-	     * counter part.  Thus, attr->btf_fd has
-	     * to be valid also.
-	     */
+	     
 	    attr->btf_vmlinux_value_type_id) {
 		struct btf *btf;
 
@@ -1293,12 +1207,7 @@ static int map_create(union bpf_attr *attr)
 
 	err = bpf_map_new_fd(map, f_flags);
 	if (err < 0) {
-		/* failed to allocate fd.
-		 * bpf_map_put_with_uref() is needed because the above
-		 * bpf_map_alloc_id() has published the map
-		 * to the userspace and the userspace may
-		 * have refcnt-ed it through BPF_MAP_GET_FD_BY_ID.
-		 */
+		 
 		bpf_map_put_with_uref(map);
 		return err;
 	}
@@ -1313,9 +1222,7 @@ free_map:
 	return err;
 }
 
-/* if error is returned, fd is released.
- * On success caller should complete fd access with matching fdput()
- */
+ 
 struct bpf_map *__bpf_map_get(struct fd f)
 {
 	if (!f.file)
@@ -1372,9 +1279,7 @@ struct bpf_map *bpf_map_get_with_uref(u32 ufd)
 	return map;
 }
 
-/* map_idr_lock should have been held or the map should have been
- * protected by rcu read lock.
- */
+ 
 struct bpf_map *__bpf_map_inc_not_zero(struct bpf_map *map, bool uref)
 {
 	int refold;
@@ -1425,7 +1330,7 @@ static void *___bpf_copy_key(bpfptr_t ukey, u64 key_size)
 	return NULL;
 }
 
-/* last field in 'union bpf_attr' used by this command */
+ 
 #define BPF_MAP_LOOKUP_ELEM_LAST_FIELD flags
 
 static int map_lookup_elem(union bpf_attr *attr)
@@ -1592,7 +1497,7 @@ static int map_delete_elem(union bpf_attr *attr, bpfptr_t uattr)
 		goto out;
 	} else if (IS_FD_PROG_ARRAY(map) ||
 		   map->map_type == BPF_MAP_TYPE_STRUCT_OPS) {
-		/* These maps require sleepable context */
+		 
 		err = map->ops->map_delete_elem(map, key);
 		goto out;
 	}
@@ -1611,7 +1516,7 @@ err_put:
 	return err;
 }
 
-/* last field in 'union bpf_attr' used by this command */
+ 
 #define BPF_MAP_GET_NEXT_KEY_LAST_FIELD next_key
 
 static int map_get_next_key(union bpf_attr *attr)
@@ -2099,7 +2004,7 @@ static int bpf_prog_alloc_id(struct bpf_prog *prog)
 	spin_unlock_bh(&prog_idr_lock);
 	idr_preload_end();
 
-	/* id is in [1, INT_MAX) */
+	 
 	if (WARN_ON_ONCE(!id))
 		return -ENOSPC;
 
@@ -2110,11 +2015,7 @@ void bpf_prog_free_id(struct bpf_prog *prog)
 {
 	unsigned long flags;
 
-	/* cBPF to eBPF migrations are currently not in the idr store.
-	 * Offloaded programs are removed from the store when their device
-	 * disappears - even if someone grabs an fd to them they are unusable,
-	 * simply waiting for refcnt to drop to be freed.
-	 */
+	 
 	if (!prog->aux->id)
 		return;
 
@@ -2313,11 +2214,7 @@ EXPORT_SYMBOL_GPL(bpf_prog_add);
 
 void bpf_prog_sub(struct bpf_prog *prog, int i)
 {
-	/* Only to be used for undoing previous bpf_prog_add() in some
-	 * error path. We still know that another entity in our call
-	 * path holds a reference to the program, thus atomic_sub() can
-	 * be safely used in such cases!
-	 */
+	 
 	WARN_ON(atomic64_sub_return(i, &prog->aux->refcnt) == 0);
 }
 EXPORT_SYMBOL_GPL(bpf_prog_sub);
@@ -2328,7 +2225,7 @@ void bpf_prog_inc(struct bpf_prog *prog)
 }
 EXPORT_SYMBOL_GPL(bpf_prog_inc);
 
-/* prog_idr_lock should have been held */
+ 
 struct bpf_prog *bpf_prog_inc_not_zero(struct bpf_prog *prog)
 {
 	int refold;
@@ -2345,7 +2242,7 @@ EXPORT_SYMBOL_GPL(bpf_prog_inc_not_zero);
 bool bpf_prog_get_ok(struct bpf_prog *prog,
 			    enum bpf_prog_type *attach_type, bool attach_drv)
 {
-	/* not an attachment, just a refcount inc, always allow */
+	 
 	if (!attach_type)
 		return true;
 
@@ -2389,25 +2286,12 @@ struct bpf_prog *bpf_prog_get_type_dev(u32 ufd, enum bpf_prog_type type,
 }
 EXPORT_SYMBOL_GPL(bpf_prog_get_type_dev);
 
-/* Initially all BPF programs could be loaded w/o specifying
- * expected_attach_type. Later for some of them specifying expected_attach_type
- * at load time became required so that program could be validated properly.
- * Programs of types that are allowed to be loaded both w/ and w/o (for
- * backward compatibility) expected_attach_type, should have the default attach
- * type assigned to expected_attach_type for the latter case, so that it can be
- * validated later at attach time.
- *
- * bpf_prog_load_fixup_attach_type() sets expected_attach_type in @attr if
- * prog type requires it but has some attach types that have to be backward
- * compatible.
- */
+ 
 static void bpf_prog_load_fixup_attach_type(union bpf_attr *attr)
 {
 	switch (attr->prog_type) {
 	case BPF_PROG_TYPE_CGROUP_SOCK:
-		/* Unfortunately BPF_ATTACH_TYPE_UNSPEC enumeration doesn't
-		 * exist so checking for non-zero is the way to go here.
-		 */
+		 
 		if (!attr->expected_attach_type)
 			attr->expected_attach_type =
 				BPF_CGROUP_INET_SOCK_CREATE;
@@ -2541,13 +2425,13 @@ static bool is_net_admin_prog_type(enum bpf_prog_type prog_type)
 	case BPF_PROG_TYPE_CGROUP_SOCKOPT:
 	case BPF_PROG_TYPE_CGROUP_SYSCTL:
 	case BPF_PROG_TYPE_SOCK_OPS:
-	case BPF_PROG_TYPE_EXT: /* extends any prog */
+	case BPF_PROG_TYPE_EXT:  
 	case BPF_PROG_TYPE_NETFILTER:
 		return true;
 	case BPF_PROG_TYPE_CGROUP_SKB:
-		/* always unpriv */
+		 
 	case BPF_PROG_TYPE_SK_REUSEPORT:
-		/* equivalent to SOCKET_FILTER. need CAP_BPF only */
+		 
 	default:
 		return false;
 	}
@@ -2563,15 +2447,15 @@ static bool is_perfmon_prog_type(enum bpf_prog_type prog_type)
 	case BPF_PROG_TYPE_RAW_TRACEPOINT_WRITABLE:
 	case BPF_PROG_TYPE_TRACING:
 	case BPF_PROG_TYPE_LSM:
-	case BPF_PROG_TYPE_STRUCT_OPS: /* has access to struct sock */
-	case BPF_PROG_TYPE_EXT: /* extends any prog */
+	case BPF_PROG_TYPE_STRUCT_OPS:  
+	case BPF_PROG_TYPE_EXT:  
 		return true;
 	default:
 		return false;
 	}
 }
 
-/* last field in 'union bpf_attr' used by this command */
+ 
 #define	BPF_PROG_LOAD_LAST_FIELD log_true_size
 
 static int bpf_prog_load(union bpf_attr *attr, bpfptr_t uattr, u32 uattr_size)
@@ -2599,13 +2483,7 @@ static int bpf_prog_load(union bpf_attr *attr, bpfptr_t uattr, u32 uattr_size)
 	    !bpf_capable())
 		return -EPERM;
 
-	/* Intent here is for unprivileged_bpf_disabled to block BPF program
-	 * creation for unprivileged users; other actions depend
-	 * on fd availability and access to bpffs, so are dependent on
-	 * object creation success. Even with unprivileged BPF disabled,
-	 * capability checks are still carried out for these
-	 * and other operations.
-	 */
+	 
 	if (sysctl_unprivileged_bpf_disabled && !bpf_capable())
 		return -EPERM;
 
@@ -2622,9 +2500,7 @@ static int bpf_prog_load(union bpf_attr *attr, bpfptr_t uattr, u32 uattr_size)
 	if (is_perfmon_prog_type(type) && !perfmon_capable())
 		return -EPERM;
 
-	/* attach_prog_fd/attach_btf_obj_fd can specify fd of either bpf_prog
-	 * or btf, we need to check which one it is
-	 */
+	 
 	if (attr->attach_prog_fd) {
 		dst_prog = bpf_prog_get(attr->attach_prog_fd);
 		if (IS_ERR(dst_prog)) {
@@ -2633,15 +2509,13 @@ static int bpf_prog_load(union bpf_attr *attr, bpfptr_t uattr, u32 uattr_size)
 			if (IS_ERR(attach_btf))
 				return -EINVAL;
 			if (!btf_is_kernel(attach_btf)) {
-				/* attaching through specifying bpf_prog's BTF
-				 * objects directly might be supported eventually
-				 */
+				 
 				btf_put(attach_btf);
 				return -ENOTSUPP;
 			}
 		}
 	} else if (attr->attach_btf_id) {
-		/* fall back to vmlinux BTF, if BTF type ID is specified */
+		 
 		attach_btf = bpf_get_btf_vmlinux();
 		if (IS_ERR(attach_btf))
 			return PTR_ERR(attach_btf);
@@ -2661,7 +2535,7 @@ static int bpf_prog_load(union bpf_attr *attr, bpfptr_t uattr, u32 uattr_size)
 		return -EINVAL;
 	}
 
-	/* plain bpf_prog allocation */
+	 
 	prog = bpf_prog_alloc(bpf_prog_size(attr->insn_cnt), GFP_USER);
 	if (!prog) {
 		if (dst_prog)
@@ -2691,14 +2565,14 @@ static int bpf_prog_load(union bpf_attr *attr, bpfptr_t uattr, u32 uattr_size)
 			     make_bpfptr(attr->insns, uattr.is_kernel),
 			     bpf_prog_insn_size(prog)) != 0)
 		goto free_prog_sec;
-	/* copy eBPF program license from user space */
+	 
 	if (strncpy_from_bpfptr(license,
 				make_bpfptr(attr->license, uattr.is_kernel),
 				sizeof(license) - 1) < 0)
 		goto free_prog_sec;
 	license[sizeof(license) - 1] = 0;
 
-	/* eBPF programs must be GPL compatible to use GPL-ed functions */
+	 
 	prog->gpl_compatible = license_is_gpl_compatible(license) ? 1 : 0;
 
 	prog->orig_prog = NULL;
@@ -2719,7 +2593,7 @@ static int bpf_prog_load(union bpf_attr *attr, bpfptr_t uattr, u32 uattr_size)
 			goto free_prog_sec;
 	}
 
-	/* find program type: socket_filter vs tracing_filter */
+	 
 	err = find_prog_type(type, prog);
 	if (err < 0)
 		goto free_prog_sec;
@@ -2730,7 +2604,7 @@ static int bpf_prog_load(union bpf_attr *attr, bpfptr_t uattr, u32 uattr_size)
 	if (err < 0)
 		goto free_prog_sec;
 
-	/* run eBPF verifier */
+	 
 	err = bpf_check(&prog, attr, uattr, uattr_size);
 	if (err < 0)
 		goto free_used_maps;
@@ -2743,20 +2617,7 @@ static int bpf_prog_load(union bpf_attr *attr, bpfptr_t uattr, u32 uattr_size)
 	if (err)
 		goto free_used_maps;
 
-	/* Upon success of bpf_prog_alloc_id(), the BPF prog is
-	 * effectively publicly exposed. However, retrieving via
-	 * bpf_prog_get_fd_by_id() will take another reference,
-	 * therefore it cannot be gone underneath us.
-	 *
-	 * Only for the time /after/ successful bpf_prog_new_fd()
-	 * and before returning to userspace, we might just hold
-	 * one reference and any parallel close on that fd could
-	 * rip everything out. Hence, below notifications must
-	 * happen before bpf_prog_new_fd().
-	 *
-	 * Also, any failure handling from this point onwards must
-	 * be using bpf_prog_put() given the program is exposed.
-	 */
+	 
 	bpf_prog_kallsyms_add(prog);
 	perf_event_bpf_event(prog, PERF_BPF_EVENT_PROG_LOAD, 0);
 	bpf_audit_prog(prog, BPF_AUDIT_LOAD);
@@ -2767,10 +2628,7 @@ static int bpf_prog_load(union bpf_attr *attr, bpfptr_t uattr, u32 uattr_size)
 	return err;
 
 free_used_maps:
-	/* In case we have subprogs, we need to wait for a grace
-	 * period before we can tear down JIT memory since symbols
-	 * are already exposed under kallsyms.
-	 */
+	 
 	__bpf_prog_put_noref(prog, prog->aux->func_cnt);
 	return err;
 free_prog_sec:
@@ -2792,7 +2650,7 @@ static int bpf_obj_pin(const union bpf_attr *attr)
 	if (CHECK_ATTR(BPF_OBJ) || attr->file_flags & ~BPF_F_PATH_FD)
 		return -EINVAL;
 
-	/* path_fd has to be accompanied by BPF_F_PATH_FD flag */
+	 
 	if (!(attr->file_flags & BPF_F_PATH_FD) && attr->path_fd)
 		return -EINVAL;
 
@@ -2809,7 +2667,7 @@ static int bpf_obj_get(const union bpf_attr *attr)
 	    attr->file_flags & ~(BPF_OBJ_FLAG_MASK | BPF_F_PATH_FD))
 		return -EINVAL;
 
-	/* path_fd has to be accompanied by BPF_F_PATH_FD flag */
+	 
 	if (!(attr->file_flags & BPF_F_PATH_FD) && attr->path_fd)
 		return -EINVAL;
 
@@ -2838,15 +2696,7 @@ static void bpf_link_free_id(int id)
 	spin_unlock_bh(&link_idr_lock);
 }
 
-/* Clean up bpf_link and corresponding anon_inode file and FD. After
- * anon_inode is created, bpf_link can't be just kfree()'d due to deferred
- * anon_inode's release() call. This helper marks bpf_link as
- * defunct, releases anon_inode file and puts reserved FD. bpf_prog's refcnt
- * is not decremented, it's the responsibility of a calling code that failed
- * to complete bpf_link initialization.
- * This helper eventually calls link's dealloc callback, but does not call
- * link's release callback.
- */
+ 
 void bpf_link_cleanup(struct bpf_link_primer *primer)
 {
 	primer->link->prog = NULL;
@@ -2860,16 +2710,16 @@ void bpf_link_inc(struct bpf_link *link)
 	atomic64_inc(&link->refcnt);
 }
 
-/* bpf_link_free is guaranteed to be called from process context */
+ 
 static void bpf_link_free(struct bpf_link *link)
 {
 	bpf_link_free_id(link->id);
 	if (link->prog) {
-		/* detach BPF program, clean up used resources */
+		 
 		link->ops->release(link);
 		bpf_prog_put(link->prog);
 	}
-	/* free bpf_link and its containing memory */
+	 
 	link->ops->dealloc(link);
 }
 
@@ -2880,9 +2730,7 @@ static void bpf_link_put_deferred(struct work_struct *work)
 	bpf_link_free(link);
 }
 
-/* bpf_link_put might be called from atomic context. It needs to be called
- * from sleepable context in order to acquire sleeping locks during the process.
- */
+ 
 void bpf_link_put(struct bpf_link *link)
 {
 	if (!atomic64_dec_and_test(&link->refcnt))
@@ -2966,19 +2814,7 @@ static int bpf_link_alloc_id(struct bpf_link *link)
 	return id;
 }
 
-/* Prepare bpf_link to be exposed to user-space by allocating anon_inode file,
- * reserving unused FD and allocating ID from link_idr. This is to be paired
- * with bpf_link_settle() to install FD and ID and expose bpf_link to
- * user-space, if bpf_link is successfully attached. If not, bpf_link and
- * pre-allocated resources are to be freed with bpf_cleanup() call. All the
- * transient state is passed around in struct bpf_link_primer.
- * This is preferred way to create and initialize bpf_link, especially when
- * there are complicated and expensive operations in between creating bpf_link
- * itself and attaching it to BPF hook. By using bpf_link_prime() and
- * bpf_link_settle() kernel code using bpf_link doesn't have to perform
- * expensive (and potentially failing) roll back operations in a rare case
- * that file, FD, or ID can't be allocated.
- */
+ 
 int bpf_link_prime(struct bpf_link *link, struct bpf_link_primer *primer)
 {
 	struct file *file;
@@ -3011,13 +2847,13 @@ int bpf_link_prime(struct bpf_link *link, struct bpf_link_primer *primer)
 
 int bpf_link_settle(struct bpf_link_primer *primer)
 {
-	/* make bpf_link fetchable by ID */
+	 
 	spin_lock_bh(&link_idr_lock);
 	primer->link->id = primer->id;
 	spin_unlock_bh(&link_idr_lock);
-	/* make bpf_link fetchable by FD */
+	 
 	fd_install(primer->fd, primer->file);
-	/* pass through installed FD */
+	 
 	return primer->fd;
 }
 
@@ -3056,7 +2892,7 @@ static void bpf_tracing_link_release(struct bpf_link *link)
 
 	bpf_trampoline_put(tr_link->trampoline);
 
-	/* tgt_prog is NULL if target is a kernel function */
+	 
 	if (tr_link->tgt_prog)
 		bpf_prog_put(tr_link->tgt_prog);
 }
@@ -3152,7 +2988,7 @@ static int bpf_tracing_prog_attach(struct bpf_prog *prog,
 	}
 
 	if (tgt_prog_fd) {
-		/* For now we only allow new targets for BPF_PROG_TYPE_EXT */
+		 
 		if (prog->type != BPF_PROG_TYPE_EXT) {
 			err = -EINVAL;
 			goto out_put_prog;
@@ -3180,41 +3016,15 @@ static int bpf_tracing_prog_attach(struct bpf_prog *prog,
 
 	mutex_lock(&prog->aux->dst_mutex);
 
-	/* There are a few possible cases here:
-	 *
-	 * - if prog->aux->dst_trampoline is set, the program was just loaded
-	 *   and not yet attached to anything, so we can use the values stored
-	 *   in prog->aux
-	 *
-	 * - if prog->aux->dst_trampoline is NULL, the program has already been
-         *   attached to a target and its initial target was cleared (below)
-	 *
-	 * - if tgt_prog != NULL, the caller specified tgt_prog_fd +
-	 *   target_btf_id using the link_create API.
-	 *
-	 * - if tgt_prog == NULL when this function was called using the old
-	 *   raw_tracepoint_open API, and we need a target from prog->aux
-	 *
-	 * - if prog->aux->dst_trampoline and tgt_prog is NULL, the program
-	 *   was detached and is going for re-attachment.
-	 *
-	 * - if prog->aux->dst_trampoline is NULL and tgt_prog and prog->aux->attach_btf
-	 *   are NULL, then program was already attached and user did not provide
-	 *   tgt_prog_fd so we have no way to find out or create trampoline
-	 */
+	 
 	if (!prog->aux->dst_trampoline && !tgt_prog) {
-		/*
-		 * Allow re-attach for TRACING and LSM programs. If it's
-		 * currently linked, bpf_trampoline_link_prog will fail.
-		 * EXT programs need to specify tgt_prog_fd, so they
-		 * re-attach in separate code path.
-		 */
+		 
 		if (prog->type != BPF_PROG_TYPE_TRACING &&
 		    prog->type != BPF_PROG_TYPE_LSM) {
 			err = -EINVAL;
 			goto out_unlock;
 		}
-		/* We can allow re-attach only if we have valid attach_btf. */
+		 
 		if (!prog->aux->attach_btf) {
 			err = -EINVAL;
 			goto out_unlock;
@@ -3225,10 +3035,7 @@ static int bpf_tracing_prog_attach(struct bpf_prog *prog,
 
 	if (!prog->aux->dst_trampoline ||
 	    (key && key != prog->aux->dst_trampoline->key)) {
-		/* If there is no saved target, or the specified target is
-		 * different from the destination specified at load time, we
-		 * need a new trampoline and a check for compatibility
-		 */
+		 
 		struct bpf_attach_target_info tgt_info = {};
 
 		err = bpf_check_attach_target(NULL, prog, tgt_prog, btf_id,
@@ -3247,13 +3054,7 @@ static int bpf_tracing_prog_attach(struct bpf_prog *prog,
 			goto out_unlock;
 		}
 	} else {
-		/* The caller didn't specify a target, or the target was the
-		 * same as the destination supplied during program load. This
-		 * means we can reuse the trampoline and reference from program
-		 * load time, and there is no need to allocate a new one. This
-		 * can only happen once for any program, as the saved values in
-		 * prog->aux are cleared below.
-		 */
+		 
 		tr = prog->aux->dst_trampoline;
 		tgt_prog = prog->aux->dst_prog;
 	}
@@ -3272,16 +3073,13 @@ static int bpf_tracing_prog_attach(struct bpf_prog *prog,
 	link->tgt_prog = tgt_prog;
 	link->trampoline = tr;
 
-	/* Always clear the trampoline and target prog from prog->aux to make
-	 * sure the original attach destination is not kept alive after a
-	 * program is (re-)attached to another target.
-	 */
+	 
 	if (prog->aux->dst_prog &&
 	    (tgt_prog_fd || tr != prog->aux->dst_trampoline))
-		/* got extra prog ref from syscall, or attaching to different prog */
+		 
 		bpf_prog_put(prog->aux->dst_prog);
 	if (prog->aux->dst_trampoline && tr != prog->aux->dst_trampoline)
-		/* we allocated a new trampoline, so free the old one */
+		 
 		bpf_trampoline_put(prog->aux->dst_trampoline);
 
 	prog->aux->dst_prog = NULL;
@@ -3587,7 +3385,7 @@ static int bpf_perf_link_attach(const union bpf_attr *attr, struct bpf_prog *pro
 		bpf_link_cleanup(&link_primer);
 		goto out_put_file;
 	}
-	/* perf_event_set_bpf_prog() doesn't take its own refcnt on prog */
+	 
 	bpf_prog_inc(prog);
 
 	return bpf_link_settle(&link_primer);
@@ -3601,7 +3399,7 @@ static int bpf_perf_link_attach(const union bpf_attr *attr, struct bpf_prog *pro
 {
 	return -EOPNOTSUPP;
 }
-#endif /* CONFIG_PERF_EVENTS */
+#endif  
 
 static int bpf_raw_tp_link_attach(struct bpf_prog *prog,
 				  const char __user *user_tp_name)
@@ -3618,9 +3416,7 @@ static int bpf_raw_tp_link_attach(struct bpf_prog *prog,
 	case BPF_PROG_TYPE_EXT:
 	case BPF_PROG_TYPE_LSM:
 		if (user_tp_name)
-			/* The attach point for this category of programs
-			 * should be specified via btf_id during program load.
-			 */
+			 
 			return -EINVAL;
 		if (prog->type == BPF_PROG_TYPE_TRACING &&
 		    prog->expected_attach_type == BPF_TRACE_RAW_TP) {
@@ -3770,9 +3566,7 @@ static int bpf_prog_attach_check_attach_type(const struct bpf_prog *prog,
 		return attach_type == prog->expected_attach_type ? 0 : -EINVAL;
 	case BPF_PROG_TYPE_CGROUP_SKB:
 		if (!capable(CAP_NET_ADMIN))
-			/* cg-skb progs can be loaded by unpriv user.
-			 * check permissions at attach time.
-			 */
+			 
 			return -EPERM;
 		return prog->enforce_expected_attach_type &&
 			prog->expected_attach_type != attach_type ?
@@ -4238,7 +4032,7 @@ static struct bpf_insn *bpf_insn_prepare_dump(const struct bpf_prog *prog,
 		if (code == (BPF_JMP | BPF_TAIL_CALL)) {
 			insns[i].code = BPF_JMP | BPF_CALL;
 			insns[i].imm = BPF_FUNC_tail_call;
-			/* fall-through */
+			 
 		}
 		if (code == (BPF_JMP | BPF_CALL) ||
 		    code == (BPF_JMP | BPF_CALL_ARGS)) {
@@ -4271,15 +4065,7 @@ static struct bpf_insn *bpf_insn_prepare_dump(const struct bpf_prog *prog,
 
 static int set_info_rec_size(struct bpf_prog_info *info)
 {
-	/*
-	 * Ensure info.*_rec_size is the same as kernel expected size
-	 *
-	 * or
-	 *
-	 * Only allow zero *_rec_size if both _rec_size and _cnt are
-	 * zero.  In this case, the kernel will set the expected
-	 * _rec_size back to the info.
-	 */
+	 
 
 	if ((info->nr_func_info || info->func_info_rec_size) &&
 	    info->func_info_rec_size != sizeof(struct bpf_func_info))
@@ -4400,10 +4186,7 @@ static int bpf_prog_get_info_by_fd(struct file *file,
 		goto done;
 	}
 
-	/* NOTE: the following code is supposed to be skipped for offload.
-	 * bpf_prog_offload_info_fill() is the place to fill similar fields
-	 * for offload.
-	 */
+	 
 	ulen = info.jited_prog_len;
 	if (prog->aux->func_cnt) {
 		u32 i;
@@ -4420,9 +4203,7 @@ static int bpf_prog_get_info_by_fd(struct file *file,
 			uinsns = u64_to_user_ptr(info.jited_prog_insns);
 			ulen = min_t(u32, info.jited_prog_len, ulen);
 
-			/* for multi-function programs, copy the JITed
-			 * instructions for all the functions
-			 */
+			 
 			if (prog->aux->func_cnt) {
 				u32 len, free, i;
 				u8 *img;
@@ -4456,9 +4237,7 @@ static int bpf_prog_get_info_by_fd(struct file *file,
 			u64 __user *user_ksyms;
 			u32 i;
 
-			/* copy the address of the kernel symbol
-			 * corresponding to each function
-			 */
+			 
 			ulen = min_t(u32, info.nr_jited_ksyms, ulen);
 			user_ksyms = u64_to_user_ptr(info.jited_ksyms);
 			if (prog->aux->func_cnt) {
@@ -4486,7 +4265,7 @@ static int bpf_prog_get_info_by_fd(struct file *file,
 			u32 __user *user_lens;
 			u32 func_len, i;
 
-			/* copy the JITed image lengths for each function */
+			 
 			ulen = min_t(u32, info.nr_jited_func_lens, ulen);
 			user_lens = u64_to_user_ptr(info.jited_func_lens);
 			if (prog->aux->func_cnt) {
@@ -4763,19 +4542,17 @@ static int bpf_task_fd_query_copy(const union bpf_attr *attr,
 	input_len = attr->task_fd_query.buf_len;
 	if (input_len && ubuf) {
 		if (!len) {
-			/* nothing to copy, just make ubuf NULL terminated */
+			 
 			char zero = '\0';
 
 			if (put_user(zero, ubuf))
 				return -EFAULT;
 		} else if (input_len >= len + 1) {
-			/* ubuf can hold the string with NULL terminator */
+			 
 			if (copy_to_user(ubuf, buf, len + 1))
 				return -EFAULT;
 		} else {
-			/* ubuf cannot hold the string with NULL terminator,
-			 * do a partial copy with NULL terminator.
-			 */
+			 
 			char zero = '\0';
 
 			err = -ENOSPC;
@@ -5140,7 +4917,7 @@ struct bpf_link *bpf_link_by_id(u32 id)
 		return ERR_PTR(-ENOENT);
 
 	spin_lock_bh(&link_idr_lock);
-	/* before link is "settled", ID is 0, pretend it doesn't exist yet */
+	 
 	link = idr_find(&link_idr, id);
 	if (link) {
 		if (link->id)
@@ -5218,7 +4995,7 @@ static int bpf_enable_runtime_stats(void)
 
 	mutex_lock(&bpf_stats_enabled_mutex);
 
-	/* Set a very high limit to avoid overflow */
+	 
 	if (static_key_count(&bpf_stats_enabled_key.key) > INT_MAX / 2) {
 		mutex_unlock(&bpf_stats_enabled_mutex);
 		return -EBUSY;
@@ -5347,7 +5124,7 @@ static int __sys_bpf(int cmd, bpfptr_t uattr, unsigned int size)
 		return err;
 	size = min_t(u32, size, sizeof(attr));
 
-	/* copy attributes from user space, may be less than sizeof(bpf_attr) */
+	 
 	memset(&attr, 0, sizeof(attr));
 	if (copy_from_bpfptr(&attr, uattr, size) != 0)
 		return -EFAULT;
@@ -5515,11 +5292,7 @@ BPF_CALL_3(bpf_sys_bpf, int, cmd, union bpf_attr *, attr, u32, attr_size)
 }
 
 
-/* To shut up -Wmissing-prototypes.
- * This function is used by the kernel light skeleton
- * to load bpf programs when modules are loaded or during kernel boot.
- * See tools/lib/bpf/skel_internal.h
- */
+ 
 int kern_sys_bpf(int cmd, union bpf_attr *attr, unsigned int size);
 
 int kern_sys_bpf(int cmd, union bpf_attr *attr, unsigned int size)
@@ -5528,7 +5301,7 @@ int kern_sys_bpf(int cmd, union bpf_attr *attr, unsigned int size)
 	struct bpf_tramp_run_ctx __maybe_unused run_ctx;
 
 	switch (cmd) {
-#ifdef CONFIG_BPF_JIT /* __bpf_prog_enter_sleepable used by trampoline and JIT */
+#ifdef CONFIG_BPF_JIT  
 	case BPF_PROG_TEST_RUN:
 		if (attr->test.data_in || attr->test.data_out ||
 		    attr->test.ctx_out || attr->test.duration ||
@@ -5547,13 +5320,13 @@ int kern_sys_bpf(int cmd, union bpf_attr *attr, unsigned int size)
 
 		run_ctx.bpf_cookie = 0;
 		if (!__bpf_prog_enter_sleepable_recur(prog, &run_ctx)) {
-			/* recursion detected */
+			 
 			__bpf_prog_exit_sleepable_recur(prog, 0, &run_ctx);
 			bpf_prog_put(prog);
 			return -EBUSY;
 		}
 		attr->test.retval = bpf_prog_run(prog, (void *) (long) attr->test.ctx_in);
-		__bpf_prog_exit_sleepable_recur(prog, 0 /* bpf_prog_run does runtime stats */,
+		__bpf_prog_exit_sleepable_recur(prog, 0  ,
 						&run_ctx);
 		bpf_prog_put(prog);
 		return 0;
@@ -5581,11 +5354,7 @@ tracing_prog_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
 
 BPF_CALL_1(bpf_sys_close, u32, fd)
 {
-	/* When bpf program calls this helper there should not be
-	 * an fdget() without matching completed fdput().
-	 * This helper is allowed in the following callchain only:
-	 * sys_bpf->prog_test_run->bpf_prog->bpf_sys_close
-	 */
+	 
 	return close_fd(fd);
 }
 
@@ -5732,4 +5501,4 @@ static int __init bpf_syscall_sysctl_init(void)
 	return 0;
 }
 late_initcall(bpf_syscall_sysctl_init);
-#endif /* CONFIG_SYSCTL */
+#endif  

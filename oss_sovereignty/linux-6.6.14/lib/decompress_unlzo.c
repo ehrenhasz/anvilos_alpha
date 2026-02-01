@@ -1,20 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * LZO decompressor for the Linux kernel. Code borrowed from the lzo
- * implementation by Markus Franz Xaver Johannes Oberhumer.
- *
- * Linux kernel adaptation:
- * Copyright (C) 2009
- * Albin Tonnerre, Free Electrons <albin.tonnerre@free-electrons.com>
- *
- * Original code:
- * Copyright (C) 1996-2005 Markus Franz Xaver Johannes Oberhumer
- * All Rights Reserved.
- *
- * Markus F.X.J. Oberhumer
- * <markus@oberhumer.com>
- * http://www.oberhumer.com/opensource/lzop/
- */
+
+ 
 
 #ifdef STATIC
 #define PREBOOT
@@ -45,47 +30,36 @@ STATIC inline long INIT parse_header(u8 *input, long *skip, long in_len)
 	u8 *end = input + in_len;
 	u16 version;
 
-	/*
-	 * Check that there's enough input to possibly have a valid header.
-	 * Then it is possible to parse several fields until the minimum
-	 * size may have been used.
-	 */
+	 
 	if (in_len < HEADER_SIZE_MIN)
 		return 0;
 
-	/* read magic: 9 first bits */
+	 
 	for (l = 0; l < 9; l++) {
 		if (*parse++ != lzop_magic[l])
 			return 0;
 	}
-	/* get version (2bytes), skip library version (2),
-	 * 'need to be extracted' version (2) and
-	 * method (1) */
+	 
 	version = get_unaligned_be16(parse);
 	parse += 7;
 	if (version >= 0x0940)
 		parse++;
 	if (get_unaligned_be32(parse) & HEADER_HAS_FILTER)
-		parse += 8; /* flags + filter info */
+		parse += 8;  
 	else
-		parse += 4; /* flags */
+		parse += 4;  
 
-	/*
-	 * At least mode, mtime_low, filename length, and checksum must
-	 * be left to be parsed. If also mtime_high is present, it's OK
-	 * because the next input buffer check is after reading the
-	 * filename length.
-	 */
+	 
 	if (end - parse < 8 + 1 + 4)
 		return 0;
 
-	/* skip mode and mtime_low */
+	 
 	parse += 8;
 	if (version >= 0x0940)
-		parse += 4;	/* skip mtime_high */
+		parse += 4;	 
 
 	l = *parse++;
-	/* don't care about the file name, and skip checksum */
+	 
 	if (end - parse < l + 4)
 		return 0;
 	parse += l + 4;
@@ -141,12 +115,7 @@ STATIC int INIT unlzo(u8 *input, long in_len,
 		*posp = 0;
 
 	if (fill) {
-		/*
-		 * Start from in_buf + HEADER_SIZE_MAX to make it possible
-		 * to use memcpy() to copy the unused data to the beginning
-		 * of the buffer. This way memmove() isn't needed which
-		 * is missing from pre-boot environments of most archs.
-		 */
+		 
 		in_buf += HEADER_SIZE_MAX;
 		in_len = fill(in_buf, HEADER_SIZE_MAX);
 	}
@@ -159,7 +128,7 @@ STATIC int INIT unlzo(u8 *input, long in_len,
 	in_len -= skip;
 
 	if (fill) {
-		/* Move the unused data to the beginning of the buffer. */
+		 
 		memcpy(in_buf_save, in_buf, in_len);
 		in_buf = in_buf_save;
 	}
@@ -168,7 +137,7 @@ STATIC int INIT unlzo(u8 *input, long in_len,
 		*posp = skip;
 
 	for (;;) {
-		/* read uncompressed block size */
+		 
 		if (fill && in_len < 4) {
 			skip = fill(in_buf + in_len, 4 - in_len);
 			if (skip > 0)
@@ -182,7 +151,7 @@ STATIC int INIT unlzo(u8 *input, long in_len,
 		in_buf += 4;
 		in_len -= 4;
 
-		/* exit if last block */
+		 
 		if (dst_len == 0) {
 			if (posp)
 				*posp += 4;
@@ -194,7 +163,7 @@ STATIC int INIT unlzo(u8 *input, long in_len,
 			goto exit_2;
 		}
 
-		/* read compressed block size, and skip block checksum info */
+		 
 		if (fill && in_len < 8) {
 			skip = fill(in_buf + in_len, 8 - in_len);
 			if (skip > 0)
@@ -213,7 +182,7 @@ STATIC int INIT unlzo(u8 *input, long in_len,
 			goto exit_2;
 		}
 
-		/* decompress */
+		 
 		if (fill && in_len < src_len) {
 			skip = fill(in_buf + in_len, src_len - in_len);
 			if (skip > 0)
@@ -225,9 +194,7 @@ STATIC int INIT unlzo(u8 *input, long in_len,
 		}
 		tmp = dst_len;
 
-		/* When the input data is not compressed at all,
-		 * lzo1x_decompress_safe will fail, so call memcpy()
-		 * instead */
+		 
 		if (unlikely(dst_len == src_len))
 			memcpy(out_buf, in_buf, src_len);
 		else {
@@ -250,11 +217,7 @@ STATIC int INIT unlzo(u8 *input, long in_len,
 		in_buf += src_len;
 		in_len -= src_len;
 		if (fill) {
-			/*
-			 * If there happens to still be unused data left in
-			 * in_buf, move it to the beginning of the buffer.
-			 * Use a loop to avoid memmove() dependency.
-			 */
+			 
 			if (in_len > 0)
 				for (skip = 0; skip < in_len; ++skip)
 					in_buf_save[skip] = in_buf[skip];

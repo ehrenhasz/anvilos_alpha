@@ -1,29 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR MIT */
-/**************************************************************************
- *
- * Copyright 2009-2023 VMware, Inc., Palo Alto, CA., USA
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the
- * "Software"), to deal in the Software without restriction, including
- * without limitation the rights to use, copy, modify, merge, publish,
- * distribute, sub license, and/or sell copies of the Software, and to
- * permit persons to whom the Software is furnished to do so, subject to
- * the following conditions:
- *
- * The above copyright notice and this permission notice (including the
- * next paragraph) shall be included in all copies or substantial portions
- * of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT. IN NO EVENT SHALL
- * THE COPYRIGHT HOLDERS, AUTHORS AND/OR ITS SUPPLIERS BE LIABLE FOR ANY CLAIM,
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
- * USE OR OTHER DEALINGS IN THE SOFTWARE.
- *
- **************************************************************************/
+ 
+ 
 
 #ifndef _VMWGFX_DRV_H_
 #define _VMWGFX_DRV_H_
@@ -48,10 +24,7 @@
 #include "vmwgfx_reg.h"
 #include "vmwgfx_validation.h"
 
-/*
- * FIXME: vmwgfx_drm.h needs to be last due to dependencies.
- * uapi headers should not depend on header files outside uapi/.
- */
+ 
 #include <drm/vmwgfx_drm.h>
 
 
@@ -70,14 +43,10 @@
 #define VMWGFX_PCI_ID_SVGA2              0x0405
 #define VMWGFX_PCI_ID_SVGA3              0x0406
 
-/*
- * This has to match get_count_order(SVGA_IRQFLAG_MAX)
- */
+ 
 #define VMWGFX_MAX_NUM_IRQS 6
 
-/*
- * Perhaps we should have sysfs entries for these.
- */
+ 
 #define VMWGFX_NUM_GB_CONTEXT 256
 #define VMWGFX_NUM_GB_SHADER 20000
 #define VMWGFX_NUM_GB_SURFACE 32768
@@ -109,7 +78,7 @@
 
 struct vmw_fpriv {
 	struct ttm_object_file *tfile;
-	bool gb_aware; /* user-space is guest-backed aware */
+	bool gb_aware;  
 };
 
 struct vmwgfx_hash_item {
@@ -118,15 +87,7 @@ struct vmwgfx_hash_item {
 };
 
 
-/**
- * struct vmw_validate_buffer - Carries validation info about buffers.
- *
- * @base: Validation info for TTM.
- * @hash: Hash entry for quick lookup of the TTM buffer object.
- *
- * This structure contains also driver private validation info
- * on top of the info needed by TTM.
- */
+ 
 struct vmw_validate_buffer {
 	struct ttm_validate_buffer base;
 	struct vmwgfx_hash_item hash;
@@ -136,36 +97,7 @@ struct vmw_validate_buffer {
 struct vmw_res_func;
 
 
-/**
- * struct vmw-resource - base class for hardware resources
- *
- * @kref: For refcounting.
- * @dev_priv: Pointer to the device private for this resource. Immutable.
- * @id: Device id. Protected by @dev_priv::resource_lock.
- * @guest_memory_size: Guest memory buffer size. Immutable.
- * @res_dirty: Resource contains data not yet in the guest memory buffer.
- * Protected by resource reserved.
- * @guest_memory_dirty: Guest memory buffer contains data not yet in the HW
- * resource. Protected by resource reserved.
- * @coherent: Emulate coherency by tracking vm accesses.
- * @guest_memory_bo: The guest memory buffer if any. Protected by resource
- * reserved.
- * @guest_memory_offset: Offset into the guest memory buffer if any. Protected
- * by resource reserved. Note that only a few resource types can have a
- * @guest_memory_offset different from zero.
- * @pin_count: The pin count for this resource. A pinned resource has a
- * pin-count greater than zero. It is not on the resource LRU lists and its
- * guest memory buffer is pinned. Hence it can't be evicted.
- * @func: Method vtable for this resource. Immutable.
- * @mob_node; Node for the MOB guest memory rbtree. Protected by
- * @guest_memory_bo reserved.
- * @lru_head: List head for the LRU list. Protected by @dev_priv::resource_lock.
- * @binding_head: List head for the context binding list. Protected by
- * the @dev_priv::binding_mutex
- * @res_free: The resource destructor.
- * @hw_destroy: Callback to destroy the resource on the device, as part of
- * resource destruction.
- */
+ 
 struct vmw_bo;
 struct vmw_bo;
 struct vmw_resource_dirty;
@@ -191,9 +123,7 @@ struct vmw_resource {
 };
 
 
-/*
- * Resources that are managed using ioctls.
- */
+ 
 enum vmw_res_type {
 	vmw_res_context,
 	vmw_res_surface,
@@ -206,9 +136,7 @@ enum vmw_res_type {
 	vmw_res_max
 };
 
-/*
- * Resources that are managed using command streams.
- */
+ 
 enum vmw_cmdbuf_res_type {
 	vmw_cmdbuf_res_shader,
 	vmw_cmdbuf_res_view,
@@ -225,27 +153,7 @@ struct vmw_cursor_snooper {
 struct vmw_framebuffer;
 struct vmw_surface_offset;
 
-/**
- * struct vmw_surface_metadata - Metadata describing a surface.
- *
- * @flags: Device flags.
- * @format: Surface SVGA3D_x format.
- * @mip_levels: Mip level for each face. For GB first index is used only.
- * @multisample_count: Sample count.
- * @multisample_pattern: Sample patterns.
- * @quality_level: Quality level.
- * @autogen_filter: Filter for automatically generated mipmaps.
- * @array_size: Number of array elements for a 1D/2D texture. For cubemap
-                texture number of faces * array_size. This should be 0 for pre
-		SM4 device.
- * @buffer_byte_stride: Buffer byte stride.
- * @num_sizes: Size of @sizes. For GB surface this should always be 1.
- * @base_size: Surface dimension.
- * @sizes: Array representing mip sizes. Legacy only.
- * @scanout: Whether this surface will be used for scanout.
- *
- * This tracks metadata for both legacy and guest backed surface.
- */
+ 
 struct vmw_surface_metadata {
 	u64 flags;
 	u32 format;
@@ -262,15 +170,7 @@ struct vmw_surface_metadata {
 	bool scanout;
 };
 
-/**
- * struct vmw_surface: Resource structure for a surface.
- *
- * @res: The base resource for this surface.
- * @metadata: Metadata for this surface resource.
- * @snooper: Cursor data. Legacy surface only.
- * @offsets: Legacy surface only.
- * @view_list: List of views bound to this surface.
- */
+ 
 struct vmw_surface {
 	struct vmw_resource res;
 	struct vmw_surface_metadata metadata;
@@ -290,18 +190,7 @@ struct vmw_fifo_state {
 	struct rw_semaphore rwsem;
 };
 
-/**
- * struct vmw_res_cache_entry - resource information cache entry
- * @handle: User-space handle of a resource.
- * @res: Non-ref-counted pointer to the resource.
- * @valid_handle: Whether the @handle member is valid.
- * @valid: Whether the entry is valid, which also implies that the execbuf
- * code holds a reference to the resource, and it's placed on the
- * validation list.
- *
- * Used to avoid frequent repeated user-space handle lookups of the
- * same resource.
- */
+ 
 struct vmw_res_cache_entry {
 	uint32_t handle;
 	struct vmw_resource *res;
@@ -310,23 +199,15 @@ struct vmw_res_cache_entry {
 	unsigned short valid;
 };
 
-/**
- * enum vmw_dma_map_mode - indicate how to perform TTM page dma mappings.
- */
+ 
 enum vmw_dma_map_mode {
-	vmw_dma_alloc_coherent, /* Use TTM coherent pages */
-	vmw_dma_map_populate,   /* Unmap from DMA just after unpopulate */
-	vmw_dma_map_bind,       /* Unmap from DMA just before unbind */
+	vmw_dma_alloc_coherent,  
+	vmw_dma_map_populate,    
+	vmw_dma_map_bind,        
 	vmw_dma_map_max
 };
 
-/**
- * struct vmw_sg_table - Scatter/gather table for binding, with additional
- * device-specific information.
- *
- * @sgt: Pointer to a struct sg_table with binding information
- * @num_regions: Number of regions with device-address contiguous pages
- */
+ 
 struct vmw_sg_table {
 	enum vmw_dma_map_mode mode;
 	struct page **pages;
@@ -335,20 +216,7 @@ struct vmw_sg_table {
 	unsigned long num_pages;
 };
 
-/**
- * struct vmw_piter - Page iterator that iterates over a list of pages
- * and DMA addresses that could be either a scatter-gather list or
- * arrays
- *
- * @pages: Array of page pointers to the pages.
- * @addrs: DMA addresses to the pages if coherent pages are used.
- * @iter: Scatter-gather page iterator. Current position in SG list.
- * @i: Current position in arrays.
- * @num_pages: Number of pages total.
- * @next: Function to advance the iterator. Returns false if past the list
- * of pages, true otherwise.
- * @dma_address: Function to return the DMA address of the current page.
- */
+ 
 struct vmw_piter {
 	struct page **pages;
 	const dma_addr_t *addrs;
@@ -372,9 +240,7 @@ struct vmw_ttm_tt {
 	bool bound;
 };
 
-/*
- * enum vmw_display_unit_type - Describes the display unit
- */
+ 
 enum vmw_display_unit_type {
 	vmw_du_invalid = 0,
 	vmw_du_legacy,
@@ -386,37 +252,7 @@ enum vmw_display_unit_type {
 struct vmw_validation_context;
 struct vmw_ctx_validation_info;
 
-/**
- * struct vmw_sw_context - Command submission context
- * @res_ht: Pointer hash table used to find validation duplicates
- * @kernel: Whether the command buffer originates from kernel code rather
- * than from user-space
- * @fp: If @kernel is false, points to the file of the client. Otherwise
- * NULL
- * @cmd_bounce: Command bounce buffer used for command validation before
- * copying to fifo space
- * @cmd_bounce_size: Current command bounce buffer size
- * @cur_query_bo: Current buffer object used as query result buffer
- * @bo_relocations: List of buffer object relocations
- * @res_relocations: List of resource relocations
- * @buf_start: Pointer to start of memory where command validation takes
- * place
- * @res_cache: Cache of recently looked up resources
- * @last_query_ctx: Last context that submitted a query
- * @needs_post_query_barrier: Whether a query barrier is needed after
- * command submission
- * @staged_bindings: Cached per-context binding tracker
- * @staged_bindings_inuse: Whether the cached per-context binding tracker
- * is in use
- * @staged_cmd_res: List of staged command buffer managed resources in this
- * command buffer
- * @ctx_list: List of context resources referenced in this command buffer
- * @dx_ctx_node: Validation metadata of the current DX context
- * @dx_query_mob: The MOB used for DX queries
- * @dx_query_ctx: The DX context used for the last DX query
- * @man: Pointer to the command buffer managed resource manager
- * @ctx: The validation context
- */
+ 
 struct vmw_sw_context{
 	DECLARE_HASHTABLE(res_ht, VMW_RES_HT_ORDER);
 	bool kernel;
@@ -454,12 +290,7 @@ struct vmw_vga_topology_state {
 };
 
 
-/*
- * struct vmw_otable - Guest Memory OBject table metadata
- *
- * @size:           Size of the table (page-aligned).
- * @page_table:     Pointer to a struct vmw_mob holding the page table.
- */
+ 
 struct vmw_otable {
 	unsigned long size;
 	struct vmw_mob *page_table;
@@ -479,15 +310,7 @@ enum {
 	VMW_IRQTHREAD_MAX
 };
 
-/**
- * enum vmw_sm_type - Graphics context capability supported by device.
- * @VMW_SM_LEGACY: Pre DX context.
- * @VMW_SM_4: Context support upto SM4.
- * @VMW_SM_4_1: Context support upto SM4_1.
- * @VMW_SM_5: Context support up to SM5.
- * @VMW_SM_5_1X: Adds support for sm5_1 and gl43 extensions.
- * @VMW_SM_MAX: Should be the last.
- */
+ 
 enum vmw_sm_type {
 	VMW_SM_LEGACY = 0,
 	VMW_SM_4,
@@ -534,9 +357,7 @@ struct vmw_private {
 
 	enum vmw_sm_type sm_type;
 
-	/*
-	 * Framebuffer info.
-	 */
+	 
 
 	enum vmw_display_unit_type active_display_unit;
 	struct vmw_legacy_display *ldu_priv;
@@ -546,69 +367,51 @@ struct vmw_private {
 	spinlock_t cursor_lock;
 	struct drm_atomic_state *suspend_state;
 
-	/*
-	 * Context and surface management.
-	 */
+	 
 
 	spinlock_t resource_lock;
 	struct idr res_idr[vmw_res_max];
 
-	/*
-	 * A resource manager for kernel-only surfaces and
-	 * contexts.
-	 */
+	 
 
 	struct ttm_object_device *tdev;
 
-	/*
-	 * Fencing and IRQs.
-	 */
+	 
 
 	atomic_t marker_seq;
 	wait_queue_head_t fence_queue;
 	wait_queue_head_t fifo_queue;
 	spinlock_t waiter_lock;
-	int fence_queue_waiters; /* Protected by waiter_lock */
-	int goal_queue_waiters; /* Protected by waiter_lock */
-	int cmdbuf_waiters; /* Protected by waiter_lock */
-	int error_waiters; /* Protected by waiter_lock */
-	int fifo_queue_waiters; /* Protected by waiter_lock */
+	int fence_queue_waiters;  
+	int goal_queue_waiters;  
+	int cmdbuf_waiters;  
+	int error_waiters;  
+	int fifo_queue_waiters;  
 	uint32_t last_read_seqno;
 	struct vmw_fence_manager *fman;
-	uint32_t irq_mask; /* Updates protected by waiter_lock */
+	uint32_t irq_mask;  
 
-	/*
-	 * Device state
-	 */
+	 
 
 	uint32_t traces_state;
 	uint32_t enable_state;
 	uint32_t config_done_state;
 
-	/**
-	 * Execbuf
-	 */
-	/**
-	 * Protected by the cmdbuf mutex.
-	 */
+	 
+	 
 
 	struct vmw_sw_context ctx;
 	struct mutex cmdbuf_mutex;
 	struct mutex binding_mutex;
 
-	/**
-	 * PM management.
-	 */
+	 
 	struct notifier_block pm_nb;
 	bool refuse_hibernation;
 	bool suspend_locked;
 
 	atomic_t num_fifo_resources;
 
-	/*
-	 * Query processing. These members
-	 * are protected by the cmdbuf mutex.
-	 */
+	 
 
 	struct vmw_bo *dummy_query_bo;
 	struct vmw_bo *pinned_bo;
@@ -616,24 +419,15 @@ struct vmw_private {
 	uint32_t query_cid_valid;
 	bool dummy_query_bo_pinned;
 
-	/*
-	 * Surface swapping. The "surface_lru" list is protected by the
-	 * resource lock in order to be able to destroy a surface and take
-	 * it off the lru atomically. "used_memory_size" is currently
-	 * protected by the cmdbuf mutex for simplicity.
-	 */
+	 
 
 	struct list_head res_lru[vmw_res_max];
 	uint32_t used_memory_size;
 
-	/*
-	 * DMA mapping stuff.
-	 */
+	 
 	enum vmw_dma_map_mode map_mode;
 
-	/*
-	 * Guest Backed stuff
-	 */
+	 
 	struct vmw_otable_batch otable_batch;
 
 	struct vmw_fifo_state *fifo;
@@ -642,9 +436,7 @@ struct vmw_private {
 
 	uint32 *devcaps;
 
-	/*
-	 * mksGuestStat instance-descriptor and pid arrays
-	 */
+	 
 	struct page *mksstat_user_pages[MKSSTAT_CAPACITY];
 	atomic_t mksstat_user_pids[MKSSTAT_CAPACITY];
 
@@ -675,21 +467,13 @@ static inline struct vmw_fpriv *vmw_fpriv(struct drm_file *file_priv)
 	return (struct vmw_fpriv *)file_priv->driver_priv;
 }
 
-/*
- * SVGA v3 has mmio register access and lacks fifo cmds
- */
+ 
 static inline bool vmw_is_svga_v3(const struct vmw_private *dev)
 {
 	return dev->pci_id == VMWGFX_PCI_ID_SVGA3;
 }
 
-/*
- * The locking here is fine-grained, so that it is performed once
- * for every read- and write operation. This is of course costly, but we
- * don't perform much register access in the timing critical paths anyway.
- * Instead we have the extra benefit of being sure that we don't forget
- * the hw lock around register accesses.
- */
+ 
 static inline void vmw_write(struct vmw_private *dev_priv,
 			     unsigned int offset, uint32_t value)
 {
@@ -720,45 +504,25 @@ static inline uint32_t vmw_read(struct vmw_private *dev_priv,
 	return val;
 }
 
-/**
- * has_sm4_context - Does the device support SM4 context.
- * @dev_priv: Device private.
- *
- * Return: Bool value if device support SM4 context or not.
- */
+ 
 static inline bool has_sm4_context(const struct vmw_private *dev_priv)
 {
 	return (dev_priv->sm_type >= VMW_SM_4);
 }
 
-/**
- * has_sm4_1_context - Does the device support SM4_1 context.
- * @dev_priv: Device private.
- *
- * Return: Bool value if device support SM4_1 context or not.
- */
+ 
 static inline bool has_sm4_1_context(const struct vmw_private *dev_priv)
 {
 	return (dev_priv->sm_type >= VMW_SM_4_1);
 }
 
-/**
- * has_sm5_context - Does the device support SM5 context.
- * @dev_priv: Device private.
- *
- * Return: Bool value if device support SM5 context or not.
- */
+ 
 static inline bool has_sm5_context(const struct vmw_private *dev_priv)
 {
 	return (dev_priv->sm_type >= VMW_SM_5);
 }
 
-/**
- * has_gl43_context - Does the device support GL43 context.
- * @dev_priv: Device private.
- *
- * Return: Bool value if device support SM5 context or not.
- */
+ 
 static inline bool has_gl43_context(const struct vmw_private *dev_priv)
 {
 	return (dev_priv->sm_type >= VMW_SM_5_1X);
@@ -776,9 +540,7 @@ extern void vmw_svga_disable(struct vmw_private *dev_priv);
 bool vmwgfx_supported(struct vmw_private *vmw);
 
 
-/**
- * GMR utilities - vmwgfx_gmr.c
- */
+ 
 
 extern int vmw_gmr_bind(struct vmw_private *dev_priv,
 			const struct vmw_sg_table *vsgt,
@@ -786,9 +548,7 @@ extern int vmw_gmr_bind(struct vmw_private *dev_priv,
 			int gmr_id);
 extern void vmw_gmr_unbind(struct vmw_private *dev_priv, int gmr_id);
 
-/**
- * Resource utilities - vmwgfx_resource.c
- */
+ 
 struct vmw_user_resource_conv;
 
 extern void vmw_resource_unreference(struct vmw_resource **p_res);
@@ -839,20 +599,13 @@ void vmw_resource_dirty_update(struct vmw_resource *res, pgoff_t start,
 int vmw_resources_clean(struct vmw_bo *vbo, pgoff_t start,
 			pgoff_t end, pgoff_t *num_prefault);
 
-/**
- * vmw_resource_mob_attached - Whether a resource currently has a mob attached
- * @res: The resource
- *
- * Return: true if the resource has a mob attached, false otherwise.
- */
+ 
 static inline bool vmw_resource_mob_attached(const struct vmw_resource *res)
 {
 	return !RB_EMPTY_NODE(&res->mob_node);
 }
 
-/**
- * GEM related functionality - vmwgfx_gem.c
- */
+ 
 struct vmw_bo_params;
 int vmw_gem_object_create(struct vmw_private *vmw,
 			  struct vmw_bo_params *params,
@@ -866,9 +619,7 @@ extern int vmw_gem_object_create_ioctl(struct drm_device *dev, void *data,
 				       struct drm_file *filp);
 extern void vmw_debugfs_gem_init(struct vmw_private *vdev);
 
-/**
- * Misc Ioctl functionality - vmwgfx_ioctl.c
- */
+ 
 
 extern int vmw_getparam_ioctl(struct drm_device *dev, void *data,
 			      struct drm_file *file_priv);
@@ -879,9 +630,7 @@ extern int vmw_present_ioctl(struct drm_device *dev, void *data,
 extern int vmw_present_readback_ioctl(struct drm_device *dev, void *data,
 				      struct drm_file *file_priv);
 
-/**
- * Fifo utilities - vmwgfx_fifo.c
- */
+ 
 
 extern struct vmw_fifo_state *vmw_fifo_create(struct vmw_private *dev_priv);
 extern void vmw_fifo_destroy(struct vmw_private *dev_priv);
@@ -912,11 +661,7 @@ extern int vmw_cmd_flush(struct vmw_private *dev_priv,
 	VMW_CMD_CTX_RESERVE(__priv, __bytes, SVGA3D_INVALID_ID)
 
 
-/**
- * vmw_fifo_caps - Returns the capabilities of the FIFO command
- * queue or 0 if fifo memory isn't present.
- * @dev_priv: The device private context
- */
+ 
 static inline uint32_t vmw_fifo_caps(const struct vmw_private *dev_priv)
 {
 	if (!dev_priv->fifo_mem || !dev_priv->fifo)
@@ -925,20 +670,14 @@ static inline uint32_t vmw_fifo_caps(const struct vmw_private *dev_priv)
 }
 
 
-/**
- * vmw_is_cursor_bypass3_enabled - Returns TRUE iff Cursor Bypass 3
- * is enabled in the FIFO.
- * @dev_priv: The device private context
- */
+ 
 static inline bool
 vmw_is_cursor_bypass3_enabled(const struct vmw_private *dev_priv)
 {
 	return (vmw_fifo_caps(dev_priv) & SVGA_FIFO_CAP_CURSOR_BYPASS_3) != 0;
 }
 
-/**
- * TTM buffer object driver - vmwgfx_ttm_buffer.c
- */
+ 
 
 extern const size_t vmw_tt_size;
 extern struct ttm_placement vmw_vram_placement;
@@ -956,45 +695,25 @@ extern void vmw_piter_start(struct vmw_piter *viter,
 			    const struct vmw_sg_table *vsgt,
 			    unsigned long p_offs);
 
-/**
- * vmw_piter_next - Advance the iterator one page.
- *
- * @viter: Pointer to the iterator to advance.
- *
- * Returns false if past the list of pages, true otherwise.
- */
+ 
 static inline bool vmw_piter_next(struct vmw_piter *viter)
 {
 	return viter->next(viter);
 }
 
-/**
- * vmw_piter_dma_addr - Return the DMA address of the current page.
- *
- * @viter: Pointer to the iterator
- *
- * Returns the DMA address of the page pointed to by @viter.
- */
+ 
 static inline dma_addr_t vmw_piter_dma_addr(struct vmw_piter *viter)
 {
 	return viter->dma_address(viter);
 }
 
-/**
- * vmw_piter_page - Return a pointer to the current page.
- *
- * @viter: Pointer to the iterator
- *
- * Returns the DMA address of the page pointed to by @viter.
- */
+ 
 static inline struct page *vmw_piter_page(struct vmw_piter *viter)
 {
 	return viter->pages[viter->i];
 }
 
-/**
- * Command submission - vmwgfx_execbuf.c
- */
+ 
 
 extern int vmw_execbuf_ioctl(struct drm_device *dev, void *data,
 			     struct drm_file *file_priv);
@@ -1027,9 +746,7 @@ extern int vmw_execbuf_copy_fence_user(struct vmw_private *dev_priv,
 					int32_t out_fence_fd);
 bool vmw_cmd_describe(const void *buf, u32 *size, char const **cmd);
 
-/**
- * IRQs and wating - vmwgfx_irq.c
- */
+ 
 
 extern int vmw_irq_install(struct vmw_private *dev_priv);
 extern void vmw_irq_uninstall(struct drm_device *dev);
@@ -1051,9 +768,7 @@ extern void vmw_generic_waiter_add(struct vmw_private *dev_priv, u32 flag,
 extern void vmw_generic_waiter_remove(struct vmw_private *dev_priv,
 				      u32 flag, int *waiter_count);
 
-/**
- * Kernel modesetting - vmwgfx_kms.c
- */
+ 
 
 int vmw_kms_init(struct vmw_private *dev_priv);
 int vmw_kms_close(struct vmw_private *dev_priv);
@@ -1091,9 +806,7 @@ extern int vmw_resource_pin(struct vmw_resource *res, bool interruptible);
 extern void vmw_resource_unpin(struct vmw_resource *res);
 extern enum vmw_res_type vmw_res_type(const struct vmw_resource *res);
 
-/**
- * Overlay control - vmwgfx_overlay.c
- */
+ 
 
 int vmw_overlay_init(struct vmw_private *dev_priv);
 int vmw_overlay_close(struct vmw_private *dev_priv);
@@ -1106,22 +819,16 @@ int vmw_overlay_unref(struct vmw_private *dev_priv, uint32_t stream_id);
 int vmw_overlay_num_overlays(struct vmw_private *dev_priv);
 int vmw_overlay_num_free_overlays(struct vmw_private *dev_priv);
 
-/**
- * GMR Id manager
- */
+ 
 
 int vmw_gmrid_man_init(struct vmw_private *dev_priv, int type);
 void vmw_gmrid_man_fini(struct vmw_private *dev_priv, int type);
 
-/**
- * System memory manager
- */
+ 
 int vmw_sys_man_init(struct vmw_private *dev_priv);
 void vmw_sys_man_fini(struct vmw_private *dev_priv);
 
-/**
- * Prime - vmwgfx_prime.c
- */
+ 
 
 extern const struct dma_buf_ops vmw_prime_dmabuf_ops;
 extern int vmw_prime_fd_to_handle(struct drm_device *dev,
@@ -1132,9 +839,7 @@ extern int vmw_prime_handle_to_fd(struct drm_device *dev,
 				  uint32_t handle, uint32_t flags,
 				  int *prime_fd);
 
-/*
- * MemoryOBject management -  vmwgfx_mob.c
- */
+ 
 struct vmw_mob;
 extern int vmw_mob_bind(struct vmw_private *dev_priv, struct vmw_mob *mob,
 			const struct vmw_sg_table *vsgt,
@@ -1146,9 +851,7 @@ extern struct vmw_mob *vmw_mob_create(unsigned long data_pages);
 extern int vmw_otables_setup(struct vmw_private *dev_priv);
 extern void vmw_otables_takedown(struct vmw_private *dev_priv);
 
-/*
- * Context management - vmwgfx_context.c
- */
+ 
 
 extern const struct vmw_user_resource_conv *user_context_converter;
 
@@ -1174,9 +877,7 @@ extern struct vmw_bo *
 vmw_context_get_dx_query_mob(struct vmw_resource *ctx_res);
 
 
-/*
- * Surface management - vmwgfx_surface.c
- */
+ 
 
 extern const struct vmw_user_resource_conv *user_surface_converter;
 
@@ -1201,9 +902,7 @@ int vmw_gb_surface_define(struct vmw_private *dev_priv,
 			  const struct vmw_surface_metadata *req,
 			  struct vmw_surface **srf_out);
 
-/*
- * Shader management - vmwgfx_shader.c
- */
+ 
 
 extern const struct vmw_user_resource_conv *user_shader_converter;
 
@@ -1233,9 +932,7 @@ extern struct vmw_resource *
 vmw_shader_lookup(struct vmw_cmdbuf_res_manager *man,
 		  u32 user_key, SVGA3dShaderType shader_type);
 
-/*
- * Streamoutput management
- */
+ 
 struct vmw_resource *
 vmw_dx_streamoutput_lookup(struct vmw_cmdbuf_res_manager *man,
 			   u32 user_key);
@@ -1251,9 +948,7 @@ void vmw_dx_streamoutput_cotable_list_scrub(struct vmw_private *dev_priv,
 					    struct list_head *list,
 					    bool readback);
 
-/*
- * Command buffer managed resources - vmwgfx_cmdbuf_res.c
- */
+ 
 
 extern struct vmw_cmdbuf_res_manager *
 vmw_cmdbuf_res_man_create(struct vmw_private *dev_priv);
@@ -1275,9 +970,7 @@ extern int vmw_cmdbuf_res_remove(struct vmw_cmdbuf_res_manager *man,
 				 struct list_head *list,
 				 struct vmw_resource **res);
 
-/*
- * COTable management - vmwgfx_cotable.c
- */
+ 
 extern const SVGACOTableType vmw_cotable_scrub_order[];
 extern struct vmw_resource *vmw_cotable_alloc(struct vmw_private *dev_priv,
 					      struct vmw_resource *ctx,
@@ -1287,9 +980,7 @@ extern int vmw_cotable_scrub(struct vmw_resource *res, bool readback);
 extern void vmw_cotable_add_resource(struct vmw_resource *ctx,
 				     struct list_head *head);
 
-/*
- * Command buffer managerment vmwgfx_cmdbuf.c
- */
+ 
 struct vmw_cmdbuf_man;
 struct vmw_cmdbuf_header;
 
@@ -1314,17 +1005,9 @@ extern int vmw_cmdbuf_cur_flush(struct vmw_cmdbuf_man *man,
 				bool interruptible);
 extern void vmw_cmdbuf_irqthread(struct vmw_cmdbuf_man *man);
 
-/* CPU blit utilities - vmwgfx_blit.c */
+ 
 
-/**
- * struct vmw_diff_cpy - CPU blit information structure
- *
- * @rect: The output bounding box rectangle.
- * @line: The current line of the blit.
- * @line_offset: Offset of the current line segment.
- * @cpp: Bytes per pixel (granularity information).
- * @memcpy: Which memcpy function to use.
- */
+ 
 struct vmw_diff_cpy {
 	struct drm_rect rect;
 	size_t line;
@@ -1362,7 +1045,7 @@ int vmw_bo_cpu_blit(struct ttm_buffer_object *dst,
 		    u32 w, u32 h,
 		    struct vmw_diff_cpy *diff);
 
-/* Host messaging -vmwgfx_msg.c: */
+ 
 void vmw_disable_backdoor(void);
 int vmw_host_get_guestinfo(const char *guest_info_param,
 			   char *buffer, size_t *length);
@@ -1370,7 +1053,7 @@ __printf(1, 2) int vmw_host_printf(const char *fmt, ...);
 int vmw_msg_ioctl(struct drm_device *dev, void *data,
 		  struct drm_file *file_priv);
 
-/* Host mksGuestStats -vmwgfx_msg.c: */
+ 
 int vmw_mksstat_get_kern_slot(pid_t pid, struct vmw_private *dev_priv);
 
 int vmw_mksstat_reset_ioctl(struct drm_device *dev, void *data,
@@ -1381,21 +1064,13 @@ int vmw_mksstat_remove_ioctl(struct drm_device *dev, void *data,
 		      struct drm_file *file_priv);
 int vmw_mksstat_remove_all(struct vmw_private *dev_priv);
 
-/* VMW logging */
+ 
 
-/**
- * VMW_DEBUG_USER - Debug output for user-space debugging.
- *
- * @fmt: printf() like format string.
- *
- * This macro is for logging user-space error and debugging messages for e.g.
- * command buffer execution errors due to malformed commands, invalid context,
- * etc.
- */
+ 
 #define VMW_DEBUG_USER(fmt, ...)                                              \
 	DRM_DEBUG_DRIVER(fmt, ##__VA_ARGS__)
 
-/* Resource dirtying - vmwgfx_page_dirty.c */
+ 
 void vmw_bo_dirty_scan(struct vmw_bo *vbo);
 int vmw_bo_dirty_add(struct vmw_bo *vbo);
 void vmw_bo_dirty_transfer_to_res(struct vmw_resource *res);
@@ -1407,17 +1082,11 @@ vm_fault_t vmw_bo_vm_fault(struct vm_fault *vmf);
 vm_fault_t vmw_bo_vm_mkwrite(struct vm_fault *vmf);
 
 
-/**
- * VMW_DEBUG_KMS - Debug output for kernel mode-setting
- *
- * This macro is for debugging vmwgfx mode-setting code.
- */
+ 
 #define VMW_DEBUG_KMS(fmt, ...)                                               \
 	DRM_DEBUG_DRIVER(fmt, ##__VA_ARGS__)
 
-/**
- * Inline helper functions
- */
+ 
 
 static inline void vmw_surface_unreference(struct vmw_surface **srf)
 {
@@ -1444,28 +1113,14 @@ static inline void vmw_fifo_resource_dec(struct vmw_private *dev_priv)
 	atomic_dec(&dev_priv->num_fifo_resources);
 }
 
-/**
- * vmw_fifo_mem_read - Perform a MMIO read from the fifo memory
- *
- * @fifo_reg: The fifo register to read from
- *
- * This function is intended to be equivalent to ioread32() on
- * memremap'd memory, but without byteswapping.
- */
+ 
 static inline u32 vmw_fifo_mem_read(struct vmw_private *vmw, uint32 fifo_reg)
 {
 	BUG_ON(vmw_is_svga_v3(vmw));
 	return READ_ONCE(*(vmw->fifo_mem + fifo_reg));
 }
 
-/**
- * vmw_fifo_mem_write - Perform a MMIO write to volatile memory
- *
- * @addr: The fifo register to write to
- *
- * This function is intended to be equivalent to iowrite32 on
- * memremap'd memory, but without byteswapping.
- */
+ 
 static inline void vmw_fifo_mem_write(struct vmw_private *vmw, u32 fifo_reg,
 				      u32 value)
 {

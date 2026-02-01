@@ -1,30 +1,6 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
+ 
 
-/*
- * Copyright (c) 2005, 2010, Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2011, 2020 by Delphix. All rights reserved.
- * Copyright (c) 2017, Intel Corporation.
- * Copyright (c) 2019, Datto Inc. All rights reserved.
- */
+ 
 
 #ifndef _SYS_VDEV_H
 #define	_SYS_VDEV_H
@@ -41,10 +17,10 @@ extern "C" {
 #endif
 
 typedef enum vdev_dtl_type {
-	DTL_MISSING,	/* 0% replication: no copies of the data */
-	DTL_PARTIAL,	/* less than 100% replication: some copies missing */
-	DTL_SCRUB,	/* unable to fully repair during scrub/resilver */
-	DTL_OUTAGE,	/* temporarily missing (used to attempt detach) */
+	DTL_MISSING,	 
+	DTL_PARTIAL,	 
+	DTL_SCRUB,	 
+	DTL_OUTAGE,	 
 	DTL_TYPES
 } vdev_dtl_type_t;
 
@@ -134,9 +110,7 @@ extern int64_t vdev_deflated_space(vdev_t *vd, int64_t space);
 
 extern uint64_t vdev_psize_to_asize(vdev_t *vd, uint64_t psize);
 
-/*
- * Return the amount of space allocated for a gang block header.
- */
+ 
 static inline uint64_t
 vdev_gang_header_asize(vdev_t *vd)
 {
@@ -191,9 +165,7 @@ extern void vdev_top_config_generate(spa_t *spa, nvlist_t *config);
 extern nvlist_t *vdev_config_generate(spa_t *spa, vdev_t *vd,
     boolean_t getstats, vdev_config_flag_t flags);
 
-/*
- * Label routines
- */
+ 
 struct uberblock;
 extern uint64_t vdev_label_offset(uint64_t psize, int l, uint64_t offset);
 extern int vdev_label_number(uint64_t psise, uint64_t offset);
@@ -206,12 +178,12 @@ extern int vdev_label_read_bootenv(vdev_t *, nvlist_t *);
 extern int vdev_label_write_bootenv(vdev_t *, nvlist_t *);
 
 typedef enum {
-	VDEV_LABEL_CREATE,	/* create/add a new device */
-	VDEV_LABEL_REPLACE,	/* replace an existing device */
-	VDEV_LABEL_SPARE,	/* add a new hot spare */
-	VDEV_LABEL_REMOVE,	/* remove an existing device */
-	VDEV_LABEL_L2CACHE,	/* add an L2ARC cache device */
-	VDEV_LABEL_SPLIT	/* generating new label for split-off dev */
+	VDEV_LABEL_CREATE,	 
+	VDEV_LABEL_REPLACE,	 
+	VDEV_LABEL_SPARE,	 
+	VDEV_LABEL_REMOVE,	 
+	VDEV_LABEL_L2CACHE,	 
+	VDEV_LABEL_SPLIT	 
 } vdev_labeltype_t;
 
 extern int vdev_label_init(vdev_t *vd, uint64_t txg, vdev_labeltype_t reason);
@@ -223,4 +195,4 @@ extern int vdev_prop_get(vdev_t *vd, nvlist_t *nvprops, nvlist_t *outnvl);
 }
 #endif
 
-#endif	/* _SYS_VDEV_H */
+#endif	 

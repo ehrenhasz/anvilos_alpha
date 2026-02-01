@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: ISC
-/* Copyright (C) 2019 MediaTek Inc.
- *
- * Author: Ryder Lee <ryder.lee@mediatek.com>
- *         Felix Fietkau <nbd@nbd.name>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -179,7 +175,7 @@ static int mt7615_pci_resume(struct pci_dev *pdev)
 
 	return err;
 }
-#endif /* CONFIG_PM */
+#endif  
 
 struct pci_driver mt7615_pci_driver = {
 	.name		= KBUILD_MODNAME,
@@ -189,7 +185,7 @@ struct pci_driver mt7615_pci_driver = {
 #ifdef CONFIG_PM
 	.suspend	= mt7615_pci_suspend,
 	.resume		= mt7615_pci_resume,
-#endif /* CONFIG_PM */
+#endif  
 };
 
 MODULE_DEVICE_TABLE(pci, mt7615_pci_device_table);

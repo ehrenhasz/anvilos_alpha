@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// peb2466.c  --  Infineon PEB2466 ALSA SoC driver
-//
-// Copyright 2023 CS GROUP France
-//
-// Author: Herve Codina <herve.codina@bootlin.com>
+
+
+
+
+
+
+
 
 #include <asm/unaligned.h>
 #include <linux/clk.h>
@@ -40,8 +40,8 @@ struct peb2466 {
 	struct spi_device *spi;
 	struct clk *mclk;
 	struct gpio_desc *reset_gpio;
-	u8 spi_tx_buf[2 + 8]; /* Cannot use stack area for SPI (dma-safe memory) */
-	u8 spi_rx_buf[2 + 8]; /* Cannot use stack area for SPI (dma-safe memory) */
+	u8 spi_tx_buf[2 + 8];  
+	u8 spi_rx_buf[2 + 8];  
 	struct regmap *regmap;
 	struct {
 		struct peb2466_lookup ax_lookup;
@@ -69,10 +69,10 @@ struct peb2466 {
 #define PEB2466_CMD_W	(0 << 5)
 
 #define PEB2466_CMD_MASK 0x18
-#define PEB2466_CMD_XOP  0x18  /* XOP is 0bxxx11xxx */
-#define PEB2466_CMD_SOP  0x10  /* SOP is 0bxxx10xxx */
-#define PEB2466_CMD_COP  0x00  /* COP is 0bxxx0xxxx, handle 0bxxx00xxx */
-#define PEB2466_CMD_COP1 0x08  /* COP is 0bxxx0xxxx, handle 0bxxx01xxx */
+#define PEB2466_CMD_XOP  0x18   
+#define PEB2466_CMD_SOP  0x10   
+#define PEB2466_CMD_COP  0x00   
+#define PEB2466_CMD_COP1 0x08   
 
 #define PEB2466_MAKE_XOP(_lsel)      (PEB2466_CMD_XOP | (_lsel))
 #define PEB2466_MAKE_SOP(_ad, _lsel) (PEB2466_CMD_SOP | ((_ad) << 6) | (_lsel))
@@ -201,10 +201,7 @@ static int peb2466_reg_write(void *context, unsigned int reg, unsigned int val)
 	struct peb2466 *peb2466 = context;
 	int ret;
 
-	/*
-	 * Only XOP and SOP commands can be handled as registers.
-	 * COP commands are handled using direct peb2466_write_buf() calls.
-	 */
+	 
 	switch (reg & PEB2466_CMD_MASK) {
 	case PEB2466_CMD_XOP:
 	case PEB2466_CMD_SOP:
@@ -224,7 +221,7 @@ static int peb2466_reg_read(void *context, unsigned int reg, unsigned int *val)
 	int ret;
 	u8 tmp;
 
-	/* Only XOP and SOP commands can be handled as registers */
+	 
 	switch (reg & PEB2466_CMD_MASK) {
 	case PEB2466_CMD_XOP:
 	case PEB2466_CMD_SOP:
@@ -294,7 +291,7 @@ static int peb2466_lkup_ctrl_put(struct snd_kcontrol *kcontrol,
 		return ret;
 
 	lkup_ctrl->index = index;
-	return 1; /* The value changed */
+	return 1;  
 }
 
 static int peb2466_add_lkup_ctrl(struct snd_soc_component *component,
@@ -333,7 +330,7 @@ static const u8 peb2466_tone_lookup[][4] = {
 	[PEB2466_TONE_697HZ] = {0x0a, 0x33, 0x5a, 0x2c},
 	[PEB2466_TONE_800HZ] = {0x12, 0xD6, 0x5a, 0xc0},
 	[PEB2466_TONE_950HZ] = {0x1c, 0xf0, 0x5c, 0xc0},
-	[PEB2466_TONE_1000HZ] = {0}, /* lookup value not used for 1000Hz */
+	[PEB2466_TONE_1000HZ] = {0},  
 	[PEB2466_TONE_1008HZ] = {0x1a, 0xae, 0x57, 0x70},
 	[PEB2466_TONE_2000HZ] = {0x00, 0x80, 0x50, 0x09},
 };
@@ -490,7 +487,7 @@ static int peb2466_tg_freq_put(struct snd_kcontrol *kcontrol,
 	}
 
 	*tg_freq_item = index;
-	return 1; /* The value changed */
+	return 1;  
 }
 
 static const struct snd_kcontrol_new peb2466_ch0_out_mix_controls[] = {
@@ -518,19 +515,19 @@ static const struct snd_kcontrol_new peb2466_ch3_out_mix_controls[] = {
 };
 
 static const struct snd_kcontrol_new peb2466_controls[] = {
-	/* Attenuators */
+	 
 	SOC_SINGLE("DAC0 -6dB Playback Switch", PEB2466_CR3(0), 2, 1, 0),
 	SOC_SINGLE("DAC1 -6dB Playback Switch", PEB2466_CR3(1), 2, 1, 0),
 	SOC_SINGLE("DAC2 -6dB Playback Switch", PEB2466_CR3(2), 2, 1, 0),
 	SOC_SINGLE("DAC3 -6dB Playback Switch", PEB2466_CR3(3), 2, 1, 0),
 
-	/* Amplifiers */
+	 
 	SOC_SINGLE("ADC0 +6dB Capture Switch", PEB2466_CR3(0), 3, 1, 0),
 	SOC_SINGLE("ADC1 +6dB Capture Switch", PEB2466_CR3(1), 3, 1, 0),
 	SOC_SINGLE("ADC2 +6dB Capture Switch", PEB2466_CR3(2), 3, 1, 0),
 	SOC_SINGLE("ADC3 +6dB Capture Switch", PEB2466_CR3(3), 3, 1, 0),
 
-	/* Tone generators */
+	 
 	SOC_ENUM_EXT("DAC0 TG1 Freq", peb2466_tg_freq[0][0],
 		     peb2466_tg_freq_get, peb2466_tg_freq_put),
 	SOC_ENUM_EXT("DAC1 TG1 Freq", peb2466_tg_freq[1][0],
@@ -673,7 +670,7 @@ static int peb2466_dai_set_tdm_slot(struct snd_soc_dai *dai, unsigned int tx_mas
 
 	switch (width) {
 	case 0:
-		/* Not set -> default 8 */
+		 
 	case 8:
 		break;
 	default:
@@ -799,10 +796,7 @@ static int peb2466_dai_startup(struct snd_pcm_substream *substream,
 	max_ch = (substream->stream == SNDRV_PCM_STREAM_PLAYBACK) ?
 		peb2466->max_chan_playback : peb2466->max_chan_capture;
 
-	/*
-	 * Disable stream support (min = 0, max = 0) if no timeslots were
-	 * configured.
-	 */
+	 
 	ret = snd_pcm_hw_constraint_minmax(substream->runtime,
 					   SNDRV_PCM_HW_PARAM_CHANNELS,
 					   max_ch ? 1 : 0, max_ch);
@@ -890,13 +884,7 @@ static int peb2466_reset_audio(struct peb2466 *peb2466)
 		peb2466->ch[i].tg1_freq_item = PEB2466_TONE_1000HZ;
 		peb2466->ch[i].tg2_freq_item = PEB2466_TONE_1000HZ;
 
-		/*
-		 * Even if not used, disabling IM/R1 filter is not recommended.
-		 * Instead, we must configure it with default coefficients and
-		 * enable it.
-		 * The filter will be enabled right after (in the following
-		 * regmap_multi_reg_write() call).
-		 */
+		 
 		ret = peb2466_write_buf(peb2466, PEB2466_IMR1_FILTER_P1(i), imr1_p1, 8);
 		if (ret)
 			return ret;
@@ -904,7 +892,7 @@ static int peb2466_reset_audio(struct peb2466 *peb2466)
 		if (ret)
 			return ret;
 
-		/* Set all other filters coefficients to zero */
+		 
 		ret = peb2466_write_buf(peb2466, PEB2466_TH_FILTER_P1(i), zero, 8);
 		if (ret)
 			return ret;
@@ -942,13 +930,7 @@ static int peb2466_fw_parse_thfilter(struct snd_soc_component *component,
 	dev_info(component->dev, "fw TH filter: mask %x, %*phN\n", *data,
 		 lng - 1, data + 1);
 
-	/*
-	 * TH_FILTER TLV data:
-	 *   - @0  1 byte:  Chan mask (bit set means related channel is concerned)
-	 *   - @1  8 bytes: TH-Filter coefficients part1
-	 *   - @9  8 bytes: TH-Filter coefficients part2
-	 *   - @17 8 bytes: TH-Filter coefficients part3
-	 */
+	 
 	mask = *data;
 	for (i = 0; i < ARRAY_SIZE(peb2466->ch); i++) {
 		if (!(mask & (1 << i)))
@@ -991,12 +973,7 @@ static int peb2466_fw_parse_imr1filter(struct snd_soc_component *component,
 	dev_info(component->dev, "fw IM/R1 filter: mask %x, %*phN\n", *data,
 		 lng - 1, data + 1);
 
-	/*
-	 * IMR1_FILTER TLV data:
-	 *   - @0 1 byte:  Chan mask (bit set means related channel is concerned)
-	 *   - @1 8 bytes: IM/R1-Filter coefficients part1
-	 *   - @9 8 bytes: IM/R1-Filter coefficients part2
-	 */
+	 
 	mask = *data;
 	for (i = 0; i < ARRAY_SIZE(peb2466->ch); i++) {
 		if (!(mask & (1 << i)))
@@ -1034,11 +1011,7 @@ static int peb2466_fw_parse_frxfilter(struct snd_soc_component *component,
 	dev_info(component->dev, "fw FRX filter: mask %x, %*phN\n", *data,
 		 lng - 1, data + 1);
 
-	/*
-	 * FRX_FILTER TLV data:
-	 *   - @0 1 byte:  Chan mask (bit set means related channel is concerned)
-	 *   - @1 8 bytes: FRX-Filter coefficients
-	 */
+	 
 	mask = *data;
 	for (i = 0; i < ARRAY_SIZE(peb2466->ch); i++) {
 		if (!(mask & (1 << i)))
@@ -1072,11 +1045,7 @@ static int peb2466_fw_parse_frrfilter(struct snd_soc_component *component,
 	dev_info(component->dev, "fw FRR filter: mask %x, %*phN\n", *data,
 		 lng - 1, data + 1);
 
-	/*
-	 * FRR_FILTER TLV data:
-	 *   - @0 1 byte:  Chan mask (bit set means related channel is concerned)
-	 *   - @1 8 bytes: FRR-Filter coefficients
-	 */
+	 
 	mask = *data;
 	for (i = 0; i < ARRAY_SIZE(peb2466->ch); i++) {
 		if (!(mask & (1 << i)))
@@ -1110,11 +1079,7 @@ static int peb2466_fw_parse_axfilter(struct snd_soc_component *component,
 	dev_info(component->dev, "fw AX filter: mask %x, %*phN\n", *data,
 		 lng - 1, data + 1);
 
-	/*
-	 * AX_FILTER TLV data:
-	 *   - @0 1 byte:  Chan mask (bit set means related channel is concerned)
-	 *   - @1 4 bytes: AX-Filter coefficients
-	 */
+	 
 	mask = *data;
 	for (i = 0; i < ARRAY_SIZE(peb2466->ch); i++) {
 		if (!(mask & (1 << i)))
@@ -1148,11 +1113,7 @@ static int peb2466_fw_parse_arfilter(struct snd_soc_component *component,
 	dev_info(component->dev, "fw AR filter: mask %x, %*phN\n", *data,
 		 lng - 1, data + 1);
 
-	/*
-	 * AR_FILTER TLV data:
-	 *   - @0 1 byte:  Chan mask (bit set means related channel is concerned)
-	 *   - @1 4 bytes: AR-Filter coefficients
-	 */
+	 
 	mask = *data;
 	for (i = 0; i < ARRAY_SIZE(peb2466->ch); i++) {
 		if (!(mask & (1 << i)))
@@ -1197,23 +1158,9 @@ static int peb2466_fw_parse_axtable(struct snd_soc_component *component,
 	int ret;
 	int i;
 
-	/*
-	 * AX_TABLE TLV data:
-	 *   - @0 1 byte:  Chan mask (bit set means related channel is concerned)
-	 *   - @1 32bits signed: Min table value in centi dB (MinVal)
-	 *                       ie -300 means -3.0 dB
-	 *   - @5 32bits signed: Step from on item to other item in centi dB (Step)
-	 *                       ie 25 means 0.25 dB)
-	 *   - @9 32bits unsigned: Item index in the table to use for the initial
-	 *                         value
-	 *   - @13 N*4 bytes: Table composed of 4 bytes items.
-	 *                    Each item correspond to an AX filter value.
-	 *
-	 * The conversion from raw value item in the table to/from the value in
-	 * dB is: Raw value at index i <-> (MinVal + i * Step) in centi dB.
-	 */
+	 
 
-	/* Check Lng and extract the table size. */
+	 
 	if (lng < 13 || ((lng - 13) % 4)) {
 		dev_err(component->dev, "fw AX table lng %u invalid\n", lng);
 		return -EINVAL;
@@ -1301,23 +1248,9 @@ static int peb2466_fw_parse_artable(struct snd_soc_component *component,
 	int ret;
 	int i;
 
-	/*
-	 * AR_TABLE TLV data:
-	 *   - @0 1 byte:  Chan mask (bit set means related channel is concerned)
-	 *   - @1 32bits signed: Min table value in centi dB (MinVal)
-	 *                       ie -300 means -3.0 dB
-	 *   - @5 32bits signed: Step from on item to other item in centi dB (Step)
-	 *                       ie 25 means 0.25 dB)
-	 *   - @9 32bits unsigned: Item index in the table to use for the initial
-	 *                         value
-	 *   - @13 N*4 bytes: Table composed of 4 bytes items.
-	 *                    Each item correspond to an AR filter value.
-	 *
-	 * The conversion from raw value item in the table to/from the value in
-	 * dB is: Raw value at index i <-> (MinVal + i * Step) in centi dB.
-	 */
+	 
 
-	/* Check Lng and extract the table size. */
+	 
 	if (lng < 13 || ((lng - 13) % 4)) {
 		dev_err(component->dev, "fw AR table lng %u invalid\n", lng);
 		return -EINVAL;
@@ -1406,21 +1339,21 @@ struct peb2466_fw_tag_def {
 }
 
 static const struct peb2466_fw_tag_def peb2466_fw_tag_defs[] = {
-	/* TH FILTER */
+	 
 	PEB2466_TAG_DEF_LNG_EQ(0x0001, 1 + 3 * 8, peb2466_fw_parse_thfilter),
-	/* IMR1 FILTER */
+	 
 	PEB2466_TAG_DEF_LNG_EQ(0x0002, 1 + 2 * 8, peb2466_fw_parse_imr1filter),
-	/* FRX FILTER */
+	 
 	PEB2466_TAG_DEF_LNG_EQ(0x0003, 1 + 8, peb2466_fw_parse_frxfilter),
-	/* FRR FILTER */
+	 
 	PEB2466_TAG_DEF_LNG_EQ(0x0004, 1 + 8, peb2466_fw_parse_frrfilter),
-	/* AX FILTER */
+	 
 	PEB2466_TAG_DEF_LNG_EQ(0x0005, 1 + 4, peb2466_fw_parse_axfilter),
-	/* AR FILTER */
+	 
 	PEB2466_TAG_DEF_LNG_EQ(0x0006, 1 + 4, peb2466_fw_parse_arfilter),
-	/* AX TABLE */
+	 
 	PEB2466_TAG_DEF_LNG_MIN(0x0105, 1 + 3 * 4, peb2466_fw_parse_axtable),
-	/* AR TABLE */
+	 
 	PEB2466_TAG_DEF_LNG_MIN(0x0106, 1 + 3 * 4, peb2466_fw_parse_artable),
 };
 
@@ -1446,24 +1379,7 @@ static int peb2466_fw_parse(struct snd_soc_component *component,
 	u32 lng;
 	int ret;
 
-	/*
-	 * Coefficients firmware binary structure (16bits and 32bits are
-	 * big-endian values).
-	 *
-	 * @0, 16bits: Magic (0x2466)
-	 * @2, 16bits: Version (0x0100 for version 1.0)
-	 * @4, 2+4+N bytes: TLV block
-	 * @4+(2+4+N) bytes: Next TLV block
-	 * ...
-	 *
-	 * Detail of a TLV block:
-	 *   @0, 16bits: Tag
-	 *   @2, 32bits: Lng
-	 *   @6, lng bytes: Data
-	 *
-	 * The detail the Data for a given TLV Tag is provided in the related
-	 * parser.
-	 */
+	 
 
 	left = size;
 	buf = data;
@@ -1473,7 +1389,7 @@ static int peb2466_fw_parse(struct snd_soc_component *component,
 		return -EINVAL;
 	}
 
-	/* Check magic */
+	 
 	val16 = get_unaligned_be16(buf);
 	if (val16 != 0x2466) {
 		dev_err(component->dev, "fw magic 0x%04x exp 0x2466\n", val16);
@@ -1482,7 +1398,7 @@ static int peb2466_fw_parse(struct snd_soc_component *component,
 	buf += 2;
 	left -= 2;
 
-	/* Check version */
+	 
 	val16 = get_unaligned_be16(buf);
 	if (val16 != 0x0100) {
 		dev_err(component->dev, "fw magic 0x%04x exp 0x0100\n", val16);
@@ -1497,7 +1413,7 @@ static int peb2466_fw_parse(struct snd_soc_component *component,
 				buf - data, size, left);
 			return -EINVAL;
 		}
-		/* Check tag and lng */
+		 
 		tag = get_unaligned_be16(buf);
 		lng = get_unaligned_be32(buf + 2);
 		tag_def = peb2466_fw_get_tag_def(tag);
@@ -1519,7 +1435,7 @@ static int peb2466_fw_parse(struct snd_soc_component *component,
 			return -EINVAL;
 		}
 
-		/* TLV block is valid -> parse the data part */
+		 
 		ret = tag_def->parse(component, tag, lng, buf);
 		if (ret) {
 			dev_err(component->dev, "fw %td/%zu tag 0x%04x lng %u parse failed\n",
@@ -1554,7 +1470,7 @@ static int peb2466_component_probe(struct snd_soc_component *component)
 	const char *firmware_name;
 	int ret;
 
-	/* reset peb2466 audio part */
+	 
 	ret = peb2466_reset_audio(peb2466);
 	if (ret)
 		return ret;
@@ -1578,63 +1494,26 @@ static const struct snd_soc_component_driver peb2466_component_driver = {
 	.endianness		= 1,
 };
 
-/*
- * The mapping used for the relationship between the gpio offset and the
- * physical pin is the following:
- *
- * offset     pin
- *      0     SI1_0
- *      1     SI1_1
- *      2     SI2_0
- *      3     SI2_1
- *      4     SI3_0
- *      5     SI3_1
- *      6     SI4_0
- *      7     SI4_1
- *      8     SO1_0
- *      9     SO1_1
- *     10     SO2_0
- *     11     SO2_1
- *     12     SO3_0
- *     13     SO3_1
- *     14     SO4_0
- *     15     SO4_1
- *     16     SB1_0
- *     17     SB1_1
- *     18     SB2_0
- *     19     SB2_1
- *     20     SB3_0
- *     21     SB3_1
- *     22     SB4_0
- *     23     SB4_1
- *     24     SB1_2
- *     25     SB2_2
- *     26     SB3_2
- *     27     SB4_2
- */
+ 
 
 static int peb2466_chip_gpio_offset_to_data_regmask(unsigned int offset,
 						    unsigned int *xr_reg,
 						    unsigned int *mask)
 {
 	if (offset < 16) {
-		/*
-		 * SIx_{0,1} and SOx_{0,1}
-		 *   Read accesses read SIx_{0,1} values
-		 *   Write accesses write SOx_{0,1} values
-		 */
+		 
 		*xr_reg = PEB2466_XR0;
 		*mask = (1 << (offset % 8));
 		return 0;
 	}
 	if (offset < 24) {
-		/* SBx_{0,1} */
+		 
 		*xr_reg = PEB2466_XR1;
 		*mask = (1 << (offset - 16));
 		return 0;
 	}
 	if (offset < 28) {
-		/* SBx_2 */
+		 
 		*xr_reg = PEB2466_XR3;
 		*mask = (1 << (offset - 24 + 4));
 		return 0;
@@ -1647,7 +1526,7 @@ static int peb2466_chip_gpio_offset_to_dir_regmask(unsigned int offset,
 						   unsigned int *mask)
 {
 	if (offset < 16) {
-		/* Direction cannot be changed for these GPIOs */
+		 
 		return -EINVAL;
 	}
 	if (offset < 24) {
@@ -1695,12 +1574,7 @@ static int peb2466_chip_gpio_update_bits(struct peb2466 *peb2466, unsigned int x
 	unsigned int *cache;
 	int ret;
 
-	/*
-	 * Read and write accesses use different peb2466 internal signals (input
-	 * signals on reads and output signals on writes). regmap_update_bits
-	 * cannot be used to read/modify/write the value.
-	 * So, a specific cache value is used.
-	 */
+	 
 
 	mutex_lock(&peb2466->gpio.lock);
 
@@ -1734,10 +1608,7 @@ static void peb2466_chip_gpio_set(struct gpio_chip *c, unsigned int offset, int 
 	int ret;
 
 	if (offset < 8) {
-		/*
-		 * SIx_{0,1} signals cannot be set and writing the related
-		 * register will change the SOx_{0,1} signals
-		 */
+		 
 		dev_warn(&peb2466->spi->dev, "cannot set gpio %d (read-only)\n",
 			 offset);
 		return;
@@ -1768,11 +1639,7 @@ static int peb2466_chip_gpio_get(struct gpio_chip *c, unsigned int offset)
 	int ret;
 
 	if (offset >= 8 && offset < 16) {
-		/*
-		 * SOx_{0,1} signals cannot be read. Reading the related
-		 * register will read the SIx_{0,1} signals.
-		 * Use the cache to get value;
-		 */
+		 
 		use_cache = true;
 	}
 
@@ -1809,11 +1676,11 @@ static int peb2466_chip_get_direction(struct gpio_chip *c, unsigned int offset)
 	int ret;
 
 	if (offset < 8) {
-		/* SIx_{0,1} */
+		 
 		return GPIO_LINE_DIRECTION_IN;
 	}
 	if (offset < 16) {
-		/* SOx_{0,1} */
+		 
 		return GPIO_LINE_DIRECTION_OUT;
 	}
 
@@ -1842,11 +1709,11 @@ static int peb2466_chip_direction_input(struct gpio_chip *c, unsigned int offset
 	int ret;
 
 	if (offset < 8) {
-		/* SIx_{0,1} */
+		 
 		return 0;
 	}
 	if (offset < 16) {
-		/* SOx_{0,1} */
+		 
 		return -EINVAL;
 	}
 
@@ -1875,14 +1742,14 @@ static int peb2466_chip_direction_output(struct gpio_chip *c, unsigned int offse
 	int ret;
 
 	if (offset < 8) {
-		/* SIx_{0,1} */
+		 
 		return -EINVAL;
 	}
 
 	peb2466_chip_gpio_set(c, offset, val);
 
 	if (offset < 16) {
-		/* SOx_{0,1} */
+		 
 		return 0;
 	}
 
@@ -1906,7 +1773,7 @@ static int peb2466_chip_direction_output(struct gpio_chip *c, unsigned int offse
 static int peb2466_reset_gpio(struct peb2466 *peb2466)
 {
 	static const struct reg_sequence reg_reset[] = {
-		/* Output pins at 0, input/output pins as input */
+		 
 		{  .reg = PEB2466_XR0, .def = 0 },
 		{  .reg = PEB2466_XR1, .def = 0 },
 		{  .reg = PEB2466_XR2, .def = 0 },

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * NVM Express device driver verbose errors
- * Copyright (c) 2022, Oracle and/or its affiliates
- */
+
+ 
 
 #include "nvme.h"
 
@@ -109,7 +106,7 @@ static const char * const nvme_statuses[] = {
 	[NVME_SC_QID_INVALID] = "Invalid Queue Identifier",
 	[NVME_SC_QUEUE_SIZE] = "Invalid Queue Size",
 	[NVME_SC_ABORT_LIMIT] = "Abort Command Limit Exceeded",
-	[NVME_SC_ABORT_MISSING] = "Reserved", /* XXX */
+	[NVME_SC_ABORT_MISSING] = "Reserved",  
 	[NVME_SC_ASYNC_LIMIT] = "Asynchronous Event Request Limit Exceeded",
 	[NVME_SC_FIRMWARE_SLOT] = "Invalid Firmware Slot",
 	[NVME_SC_FIRMWARE_IMAGE] = "Invalid Firmware Image",

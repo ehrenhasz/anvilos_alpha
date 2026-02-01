@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Hardware monitoring driver for Infineon IR36021
- *
- * Copyright (c) 2021 Allied Telesis
- */
+
+ 
 #include <linux/err.h>
 #include <linux/i2c.h>
 #include <linux/init.h>

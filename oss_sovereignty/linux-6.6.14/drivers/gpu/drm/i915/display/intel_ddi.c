@@ -1,29 +1,4 @@
-/*
- * Copyright © 2012 Intel Corporation
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice (including the next
- * paragraph) shall be included in all copies or substantial portions of the
- * Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
- * IN THE SOFTWARE.
- *
- * Authors:
- *    Eugeni Dodonov <eugeni.dodonov@intel.com>
- *
- */
+ 
 
 #include <linux/string_helpers.h>
 
@@ -110,11 +85,7 @@ static bool has_iboost(struct drm_i915_private *i915)
 	return DISPLAY_VER(i915) == 9 && !IS_BROXTON(i915);
 }
 
-/*
- * Starting with Haswell, DDI port buffers must be programmed with correct
- * values in advance. This function programs the correct values for
- * DP/eDP/FDI use cases.
- */
+ 
 void hsw_prepare_dp_ddi_buffers(struct intel_encoder *encoder,
 				const struct intel_crtc_state *crtc_state)
 {
@@ -128,7 +99,7 @@ void hsw_prepare_dp_ddi_buffers(struct intel_encoder *encoder,
 	if (drm_WARN_ON_ONCE(&dev_priv->drm, !trans))
 		return;
 
-	/* If we're boosting the current, set bit 31 of trans1 */
+	 
 	if (has_iboost(dev_priv) &&
 	    intel_bios_dp_boost_level(encoder->devdata))
 		iboost_bit = DDI_BUF_BALANCE_LEG_ENABLE;
@@ -141,11 +112,7 @@ void hsw_prepare_dp_ddi_buffers(struct intel_encoder *encoder,
 	}
 }
 
-/*
- * Starting with Haswell, DDI port buffers must be programmed with correct
- * values in advance. This function programs the correct values for
- * HDMI/DVI use cases.
- */
+ 
 static void hsw_prepare_hdmi_ddi_buffers(struct intel_encoder *encoder,
 					 const struct intel_crtc_state *crtc_state)
 {
@@ -160,12 +127,12 @@ static void hsw_prepare_hdmi_ddi_buffers(struct intel_encoder *encoder,
 	if (drm_WARN_ON_ONCE(&dev_priv->drm, !trans))
 		return;
 
-	/* If we're boosting the current, set bit 31 of trans1 */
+	 
 	if (has_iboost(dev_priv) &&
 	    intel_bios_hdmi_boost_level(encoder->devdata))
 		iboost_bit = DDI_BUF_BALANCE_LEG_ENABLE;
 
-	/* Entry 9 is for HDMI: */
+	 
 	intel_de_write(dev_priv, DDI_BUF_TRANS_LO(port, 9),
 		       trans->entries[level].hsw.trans1 | iboost_bit);
 	intel_de_write(dev_priv, DDI_BUF_TRANS_HI(port, 9),
@@ -176,7 +143,7 @@ static void mtl_wait_ddi_buf_idle(struct drm_i915_private *i915, enum port port)
 {
 	int ret;
 
-	/* FIXME: find out why Bspec's 100us timeout is too short */
+	 
 	ret = wait_for_us((intel_de_read(i915, XELPDP_PORT_BUF_CTL1(port)) &
 			   XELPDP_PORT_BUF_PHY_IDLE), 10000);
 	if (ret)
@@ -205,7 +172,7 @@ static void intel_wait_ddi_buf_active(struct drm_i915_private *dev_priv,
 	int timeout_us;
 	int ret;
 
-	/* Wait > 518 usecs for DDI_BUF_CTL to be non idle */
+	 
 	if (DISPLAY_VER(dev_priv) < 10) {
 		usleep_range(518, 1000);
 		return;
@@ -266,10 +233,7 @@ static u32 icl_pll_to_ddi_clk_sel(struct intel_encoder *encoder,
 
 	switch (id) {
 	default:
-		/*
-		 * DPLL_ID_ICL_DPLL0 and DPLL_ID_ICL_DPLL1 should not be used
-		 * here, so do warn if this get passed in
-		 */
+		 
 		MISSING_CASE(id);
 		return DDI_CLK_SEL_NONE;
 	case DPLL_ID_ICL_TBTPLL:
@@ -329,7 +293,7 @@ static void intel_ddi_init_dp_buf_reg(struct intel_encoder *encoder,
 	struct intel_digital_port *dig_port = enc_to_dig_port(encoder);
 	enum phy phy = intel_port_to_phy(i915, encoder->port);
 
-	/* DDI_BUF_CTL_ENABLE will be set by intel_ddi_prepare_link_retrain() later */
+	 
 	intel_dp->DP = dig_port->saved_port_bits |
 		DDI_PORT_WIDTH(crtc_state->lane_count) |
 		DDI_BUF_TRANS_SELECT(0);
@@ -372,7 +336,7 @@ static int icl_calc_tbt_pll_link(struct drm_i915_private *dev_priv,
 
 static void ddi_dotclock_get(struct intel_crtc_state *pipe_config)
 {
-	/* CRT dotclock is determined via other means */
+	 
 	if (pipe_config->has_pch_encoder)
 		return;
 
@@ -413,27 +377,18 @@ void intel_ddi_set_dp_msa(const struct intel_crtc_state *crtc_state,
 		break;
 	}
 
-	/* nonsense combination */
+	 
 	drm_WARN_ON(&dev_priv->drm, crtc_state->limited_color_range &&
 		    crtc_state->output_format != INTEL_OUTPUT_FORMAT_RGB);
 
 	if (crtc_state->limited_color_range)
 		temp |= DP_MSA_MISC_COLOR_CEA_RGB;
 
-	/*
-	 * As per DP 1.2 spec section 2.3.4.3 while sending
-	 * YCBCR 444 signals we should program MSA MISC1/0 fields with
-	 * colorspace information.
-	 */
+	 
 	if (crtc_state->output_format == INTEL_OUTPUT_FORMAT_YCBCR444)
 		temp |= DP_MSA_MISC_COLOR_YCBCR_444_BT709;
 
-	/*
-	 * As per DP 1.4a spec section 2.2.4.3 [MSA Field for Indication
-	 * of Color Encoding Format and Content Color Gamut] while sending
-	 * YCBCR 420, HDR BT.2020 signals we should program MSA MISC1 fields
-	 * which indicate VSC SDP for the Pixel Encoding/Colorimetry Format.
-	 */
+	 
 	if (intel_dp_needs_vsc_sdp(crtc_state, conn_state))
 		temp |= DP_MSA_MISC_COLOR_VSC_SDP;
 
@@ -462,12 +417,7 @@ intel_ddi_config_transcoder_dp2(struct intel_encoder *encoder,
 	intel_de_write(i915, TRANS_DP2_CTL(cpu_transcoder), val);
 }
 
-/*
- * Returns the TRANS_DDI_FUNC_CTL value based on CRTC state.
- *
- * Only intended to be used by intel_ddi_enable_transcoder_func() and
- * intel_ddi_config_transcoder_func().
- */
+ 
 static u32
 intel_ddi_transcoder_func_reg_val_get(struct intel_encoder *encoder,
 				      const struct intel_crtc_state *crtc_state)
@@ -479,7 +429,7 @@ intel_ddi_transcoder_func_reg_val_get(struct intel_encoder *encoder,
 	enum port port = encoder->port;
 	u32 temp;
 
-	/* Enable TRANS_DDI_FUNC_CTL for the pipe to work in HDMI mode */
+	 
 	temp = TRANS_DDI_FUNC_ENABLE;
 	if (DISPLAY_VER(dev_priv) >= 12)
 		temp |= TGL_TRANS_DDI_SELECT_PORT(port);
@@ -515,10 +465,7 @@ intel_ddi_transcoder_func_reg_val_get(struct intel_encoder *encoder,
 			MISSING_CASE(pipe);
 			fallthrough;
 		case PIPE_A:
-			/* On Haswell, can only use the always-on power well for
-			 * eDP when not using the panel fitter, and when not
-			 * using motion blur mitigation (which we don't
-			 * support). */
+			 
 			if (crtc_state->pch_pfit.force_thru)
 				temp |= TRANS_DDI_EDP_INPUT_A_ONOFF;
 			else
@@ -608,10 +555,7 @@ void intel_ddi_enable_transcoder_func(struct intel_encoder *encoder,
 							     crtc_state));
 }
 
-/*
- * Same as intel_ddi_enable_transcoder_func(), but it does not set the enable
- * bit.
- */
+ 
 static void
 intel_ddi_config_transcoder_func(struct intel_encoder *encoder,
 				 const struct intel_crtc_state *crtc_state)
@@ -662,7 +606,7 @@ void intel_ddi_disable_transcoder_func(const struct intel_crtc_state *crtc_state
 	    intel_crtc_has_type(crtc_state, INTEL_OUTPUT_HDMI)) {
 		drm_dbg_kms(&dev_priv->drm,
 			    "Quirk Increase DDI disabled time\n");
-		/* Quirk time at 100ms for reliable operation */
+		 
 		msleep(100);
 	}
 }
@@ -729,17 +673,16 @@ bool intel_ddi_connector_get_hw_state(struct intel_connector *intel_connector)
 		break;
 
 	case TRANS_DDI_MODE_SELECT_DP_MST:
-		/* if the transcoder is in MST state then
-		 * connector isn't connected */
+		 
 		ret = false;
 		break;
 
 	case TRANS_DDI_MODE_SELECT_FDI_OR_128B132B:
 		if (HAS_DP20(dev_priv))
-			/* 128b/132b */
+			 
 			ret = false;
 		else
-			/* FDI */
+			 
 			ret = type == DRM_MODE_CONNECTOR_VGA;
 		break;
 
@@ -893,19 +836,7 @@ intel_ddi_main_link_aux_domain(struct intel_digital_port *dig_port,
 	struct drm_i915_private *i915 = to_i915(dig_port->base.base.dev);
 	enum phy phy = intel_port_to_phy(i915, dig_port->base.port);
 
-	/*
-	 * ICL+ HW requires corresponding AUX IOs to be powered up for PSR with
-	 * DC states enabled at the same time, while for driver initiated AUX
-	 * transfers we need the same AUX IOs to be powered but with DC states
-	 * disabled. Accordingly use the AUX_IO_<port> power domain here which
-	 * leaves DC states enabled.
-	 *
-	 * Before MTL TypeC PHYs (in all TypeC modes and both DP/HDMI) also require
-	 * AUX IO to be enabled, but all these require DC_OFF to be enabled as
-	 * well, so we can acquire a wider AUX_<port> power domain reference
-	 * instead of a specific AUX_IO_<port> reference without powering up any
-	 * extra wells.
-	 */
+	 
 	if (intel_encoder_can_psr(&dig_port->base))
 		return intel_display_power_aux_io_domain(i915, dig_port->aux_ch);
 	else if (DISPLAY_VER(i915) < 14 &&
@@ -954,11 +885,7 @@ static void intel_ddi_get_power_domains(struct intel_encoder *encoder,
 	struct drm_i915_private *dev_priv = to_i915(encoder->base.dev);
 	struct intel_digital_port *dig_port;
 
-	/*
-	 * TODO: Add support for MST encoders. Atm, the following should never
-	 * happen since fake-MST encoders don't set their get_power_domains()
-	 * hook.
-	 */
+	 
 	if (drm_WARN_ON(&dev_priv->drm,
 			intel_crtc_has_type(crtc_state, INTEL_OUTPUT_DP_MST)))
 		return;
@@ -1051,7 +978,7 @@ static void skl_ddi_set_iboost(struct intel_encoder *encoder,
 		iboost = trans->entries[level].hsw.i_boost;
 	}
 
-	/* Make sure that the requested I_boost is valid */
+	 
 	if (iboost && iboost != 0x1 && iboost != 0x3 && iboost != 0x7) {
 		drm_err(&dev_priv->drm, "Invalid I_boost value %u\n", iboost);
 		return;
@@ -1082,11 +1009,7 @@ static u8 intel_ddi_dp_voltage_max(struct intel_dp *intel_dp,
 		DP_TRAIN_VOLTAGE_SWING_MASK;
 }
 
-/*
- * We assume that the full set of pre-emphasis values can be
- * used on all DDI platforms. Should that change we need to
- * rethink this code.
- */
+ 
 static u8 intel_ddi_dp_preemph_max(struct intel_dp *intel_dp)
 {
 	return DP_TRAIN_PRE_EMPH_LEVEL_3;
@@ -1126,7 +1049,7 @@ static void icl_ddi_combo_vswing_program(struct intel_encoder *encoder,
 			     intel_dp->hobl_active ? val : 0);
 	}
 
-	/* Set PORT_TX_DW5 */
+	 
 	val = intel_de_read(dev_priv, ICL_PORT_TX_DW5_LN(0, phy));
 	val &= ~(SCALING_MODE_SEL_MASK | RTERM_SELECT_MASK |
 		  TAP2_DISABLE | TAP3_DISABLE);
@@ -1135,7 +1058,7 @@ static void icl_ddi_combo_vswing_program(struct intel_encoder *encoder,
 	val |= TAP3_DISABLE;
 	intel_de_write(dev_priv, ICL_PORT_TX_DW5_GRP(phy), val);
 
-	/* Program PORT_TX_DW2 */
+	 
 	for (ln = 0; ln < 4; ln++) {
 		int level = intel_ddi_level(encoder, crtc_state, ln);
 
@@ -1146,8 +1069,8 @@ static void icl_ddi_combo_vswing_program(struct intel_encoder *encoder,
 			     RCOMP_SCALAR(0x98));
 	}
 
-	/* Program PORT_TX_DW4 */
-	/* We cannot write to GRP. It would overwrite individual loadgen. */
+	 
+	 
 	for (ln = 0; ln < 4; ln++) {
 		int level = intel_ddi_level(encoder, crtc_state, ln);
 
@@ -1158,7 +1081,7 @@ static void icl_ddi_combo_vswing_program(struct intel_encoder *encoder,
 			     CURSOR_COEFF(trans->entries[level].icl.dw4_cursor_coeff));
 	}
 
-	/* Program PORT_TX_DW7 */
+	 
 	for (ln = 0; ln < 4; ln++) {
 		int level = intel_ddi_level(encoder, crtc_state, ln);
 
@@ -1176,11 +1099,7 @@ static void icl_combo_phy_set_signal_levels(struct intel_encoder *encoder,
 	u32 val;
 	int ln;
 
-	/*
-	 * 1. If port type is eDP or DP,
-	 * set PORT_PCS_DW1 cmnkeeper_enable to 1b,
-	 * else clear to 0b.
-	 */
+	 
 	val = intel_de_read(dev_priv, ICL_PORT_PCS_DW1_LN(0, phy));
 	if (intel_crtc_has_type(crtc_state, INTEL_OUTPUT_HDMI))
 		val &= ~COMMON_KEEPER_EN;
@@ -1188,32 +1107,27 @@ static void icl_combo_phy_set_signal_levels(struct intel_encoder *encoder,
 		val |= COMMON_KEEPER_EN;
 	intel_de_write(dev_priv, ICL_PORT_PCS_DW1_GRP(phy), val);
 
-	/* 2. Program loadgen select */
-	/*
-	 * Program PORT_TX_DW4 depending on Bit rate and used lanes
-	 * <= 6 GHz and 4 lanes (LN0=0, LN1=1, LN2=1, LN3=1)
-	 * <= 6 GHz and 1,2 lanes (LN0=0, LN1=1, LN2=1, LN3=0)
-	 * > 6 GHz (LN0=0, LN1=0, LN2=0, LN3=0)
-	 */
+	 
+	 
 	for (ln = 0; ln < 4; ln++) {
 		intel_de_rmw(dev_priv, ICL_PORT_TX_DW4_LN(ln, phy),
 			     LOADGEN_SELECT,
 			     icl_combo_phy_loadgen_select(crtc_state, ln));
 	}
 
-	/* 3. Set PORT_CL_DW5 SUS Clock Config to 11b */
+	 
 	intel_de_rmw(dev_priv, ICL_PORT_CL_DW5(phy),
 		     0, SUS_CLOCK_CONFIG);
 
-	/* 4. Clear training enable to change swing values */
+	 
 	val = intel_de_read(dev_priv, ICL_PORT_TX_DW5_LN(0, phy));
 	val &= ~TX_TRAINING_EN;
 	intel_de_write(dev_priv, ICL_PORT_TX_DW5_GRP(phy), val);
 
-	/* 5. Program swing and de-emphasis */
+	 
 	icl_ddi_combo_vswing_program(encoder, crtc_state);
 
-	/* 6. Set training enable to trigger update */
+	 
 	val = intel_de_read(dev_priv, ICL_PORT_TX_DW5_LN(0, phy));
 	val |= TX_TRAINING_EN;
 	intel_de_write(dev_priv, ICL_PORT_TX_DW5_GRP(phy), val);
@@ -1241,7 +1155,7 @@ static void icl_mg_phy_set_signal_levels(struct intel_encoder *encoder,
 			     CRI_USE_FS32, 0);
 	}
 
-	/* Program MG_TX_SWINGCTRL with values from vswing table */
+	 
 	for (ln = 0; ln < 2; ln++) {
 		int level;
 
@@ -1258,7 +1172,7 @@ static void icl_mg_phy_set_signal_levels(struct intel_encoder *encoder,
 			     CRI_TXDEEMPH_OVERRIDE_17_12(trans->entries[level].mg.cri_txdeemph_override_17_12));
 	}
 
-	/* Program MG_TX_DRVCTRL with values from vswing table */
+	 
 	for (ln = 0; ln < 2; ln++) {
 		int level;
 
@@ -1280,21 +1194,17 @@ static void icl_mg_phy_set_signal_levels(struct intel_encoder *encoder,
 			     CRI_TXDEEMPH_OVERRIDE_5_0(trans->entries[level].mg.cri_txdeemph_override_5_0) |
 			     CRI_TXDEEMPH_OVERRIDE_EN);
 
-		/* FIXME: Program CRI_LOADGEN_SEL after the spec is updated */
+		 
 	}
 
-	/*
-	 * Program MG_CLKHUB<LN, port being used> with value from frequency table
-	 * In case of Legacy mode on MG PHY, both TX1 and TX2 enabled so use the
-	 * values from table for which TX1 and TX2 enabled.
-	 */
+	 
 	for (ln = 0; ln < 2; ln++) {
 		intel_de_rmw(dev_priv, MG_CLKHUB(ln, tc_port),
 			     CFG_LOW_RATE_LKREN_EN,
 			     crtc_state->port_clock < 300000 ? CFG_LOW_RATE_LKREN_EN : 0);
 	}
 
-	/* Program the MG_TX_DCC<LN, port being used> based on the link frequency */
+	 
 	for (ln = 0; ln < 2; ln++) {
 		intel_de_rmw(dev_priv, MG_TX1_DCC(ln, tc_port),
 			     CFG_AMI_CK_DIV_OVERRIDE_VAL_MASK |
@@ -1311,7 +1221,7 @@ static void icl_mg_phy_set_signal_levels(struct intel_encoder *encoder,
 			     CFG_AMI_CK_DIV_OVERRIDE_EN : 0);
 	}
 
-	/* Program MG_TX_PISO_READLOAD with values from vswing table */
+	 
 	for (ln = 0; ln < 2; ln++) {
 		intel_de_rmw(dev_priv, MG_TX1_PISO_READLOAD(ln, tc_port),
 			     0, CRI_CALCINIT);
@@ -1458,7 +1368,7 @@ hsw_set_signal_levels(struct intel_encoder *encoder,
 	if (has_iboost(dev_priv))
 		skl_ddi_set_iboost(encoder, crtc_state, level);
 
-	/* HDMI ignores the rest */
+	 
 	if (intel_crtc_has_type(crtc_state, INTEL_OUTPUT_HDMI))
 		return;
 
@@ -1481,10 +1391,7 @@ static void _icl_ddi_enable_clock(struct drm_i915_private *i915, i915_reg_t reg,
 
 	intel_de_rmw(i915, reg, clk_sel_mask, clk_sel);
 
-	/*
-	 * "This step and the step before must be
-	 *  done with separate register writes."
-	 */
+	 
 	intel_de_rmw(i915, reg, clk_off, 0);
 
 	mutex_unlock(&i915->display.dpll.lock);
@@ -1615,10 +1522,7 @@ static void dg1_ddi_enable_clock(struct intel_encoder *encoder,
 	if (drm_WARN_ON(&i915->drm, !pll))
 		return;
 
-	/*
-	 * If we fail this, something went very wrong: first 2 PLLs should be
-	 * used by first 2 phys and last 2 PLLs by last phys
-	 */
+	 
 	if (drm_WARN_ON(&i915->drm,
 			(pll->info->id < DPLL_ID_DG1_DPLL2 && phy >= PHY_C) ||
 			(pll->info->id >= DPLL_ID_DG1_DPLL2 && phy < PHY_C)))
@@ -1660,11 +1564,7 @@ static struct intel_shared_dpll *dg1_ddi_get_pll(struct intel_encoder *encoder)
 	val >>= DG1_DPCLKA_CFGCR0_DDI_CLK_SEL_SHIFT(phy);
 	id = val;
 
-	/*
-	 * _DG1_DPCLKA0_CFGCR0 maps between DPLL 0 and 1 with one bit for phy A
-	 * and B while _DG1_DPCLKA1_CFGCR0 maps between DPLL 2 and 3 with one
-	 * bit for phy C and D.
-	 */
+	 
 	if (phy >= PHY_C)
 		id += DPLL_ID_DG1_DPLL2;
 
@@ -1725,10 +1625,7 @@ static void jsl_ddi_tc_enable_clock(struct intel_encoder *encoder,
 	if (drm_WARN_ON(&i915->drm, !pll))
 		return;
 
-	/*
-	 * "For DDIC and DDID, program DDI_CLK_SEL to map the MG clock to the port.
-	 *  MG does not exist, but the programming is required to ungate DDIC and DDID."
-	 */
+	 
 	intel_de_write(i915, DDI_CLK_SEL(port), DDI_CLK_SEL_MG);
 
 	icl_ddi_combo_enable_clock(encoder, crtc_state);
@@ -1905,10 +1802,7 @@ static bool skl_ddi_is_clock_enabled(struct intel_encoder *encoder)
 	struct drm_i915_private *i915 = to_i915(encoder->base.dev);
 	enum port port = encoder->port;
 
-	/*
-	 * FIXME Not sure if the override affects both
-	 * the PLL selection and the CLK_OFF bit.
-	 */
+	 
 	return !(intel_de_read(i915, DPLL_CTRL2) & DPLL_CTRL2_DDI_CLK_OFF(port));
 }
 
@@ -1921,10 +1815,7 @@ static struct intel_shared_dpll *skl_ddi_get_pll(struct intel_encoder *encoder)
 
 	tmp = intel_de_read(i915, DPLL_CTRL2);
 
-	/*
-	 * FIXME Not sure if the override affects both
-	 * the PLL selection and the CLK_OFF bit.
-	 */
+	 
 	if ((tmp & DPLL_CTRL2_DDI_SEL_OVERRIDE(port)) == 0)
 		return NULL;
 
@@ -2020,10 +1911,7 @@ void intel_ddi_sanitize_encoder_pll_mapping(struct intel_encoder *encoder)
 	u32 port_mask;
 	bool ddi_clk_needed;
 
-	/*
-	 * In case of DP MST, we sanitize the primary encoder only, not the
-	 * virtual ones.
-	 */
+	 
 	if (encoder->type == INTEL_OUTPUT_DP_MST)
 		return;
 
@@ -2032,10 +1920,7 @@ void intel_ddi_sanitize_encoder_pll_mapping(struct intel_encoder *encoder)
 		bool is_mst;
 
 		intel_ddi_get_encoder_pipes(encoder, &pipe_mask, &is_mst);
-		/*
-		 * In the unlikely case that BIOS enables DP in MST mode, just
-		 * warn since our MST HW readout is incomplete.
-		 */
+		 
 		if (drm_WARN_ON(&i915->drm, is_mst))
 			return;
 	}
@@ -2047,10 +1932,7 @@ void intel_ddi_sanitize_encoder_pll_mapping(struct intel_encoder *encoder)
 		struct intel_encoder *other_encoder;
 
 		port_mask = intel_dsi_encoder_ports(encoder);
-		/*
-		 * Sanity check that we haven't incorrectly registered another
-		 * encoder using any of the ports of this DSI encoder.
-		 */
+		 
 		for_each_intel_encoder(&i915->drm, other_encoder) {
 			if (other_encoder == encoder)
 				continue;
@@ -2059,10 +1941,7 @@ void intel_ddi_sanitize_encoder_pll_mapping(struct intel_encoder *encoder)
 					port_mask & BIT(other_encoder->port)))
 				return;
 		}
-		/*
-		 * For DSI we keep the ddi clocks gated
-		 * except during enable/disable sequence.
-		 */
+		 
 		ddi_clk_needed = false;
 	}
 
@@ -2102,7 +1981,7 @@ icl_program_mg_dp_mode(struct intel_digital_port *dig_port,
 	ln0 &= ~(MG_DP_MODE_CFG_DP_X1_MODE | MG_DP_MODE_CFG_DP_X2_MODE);
 	ln1 &= ~(MG_DP_MODE_CFG_DP_X1_MODE | MG_DP_MODE_CFG_DP_X2_MODE);
 
-	/* DPPATC */
+	 
 	pin_assignment = intel_tc_port_get_pin_assignment_mask(dig_port);
 	width = crtc_state->lane_count;
 
@@ -2264,7 +2143,7 @@ static void intel_ddi_power_up_lanes(struct intel_encoder *encoder,
 	}
 }
 
-/* Splitter enable for eDP MSO is limited to certain pipes. */
+ 
 static u8 intel_ddi_splitter_pipe_mask(struct drm_i915_private *i915)
 {
 	if (IS_ALDERLAKE_P(i915))
@@ -2416,50 +2295,32 @@ static void mtl_ddi_pre_enable_dp(struct intel_atomic_state *state,
 				 crtc_state->port_clock,
 				 crtc_state->lane_count);
 
-	/*
-	 * We only configure what the register value will be here.  Actual
-	 * enabling happens during link training farther down.
-	 */
+	 
 	intel_ddi_init_dp_buf_reg(encoder, crtc_state);
 
-	/*
-	 * 1. Enable Power Wells
-	 *
-	 * This was handled at the beginning of intel_atomic_commit_tail(),
-	 * before we called down into this function.
-	 */
+	 
 
-	/* 2. PMdemand was already set */
+	 
 
-	/* 3. Select Thunderbolt */
+	 
 	mtl_port_buf_ctl_io_selection(encoder);
 
-	/* 4. Enable Panel Power if PPS is required */
+	 
 	intel_pps_on(intel_dp);
 
-	/* 5. Enable the port PLL */
+	 
 	intel_ddi_enable_clock(encoder, crtc_state);
 
-	/*
-	 * 6.a Configure Transcoder Clock Select to direct the Port clock to the
-	 * Transcoder.
-	 */
+	 
 	intel_ddi_enable_transcoder_clock(encoder, crtc_state);
 
-	/*
-	 * 6.b If DP v2.0/128b mode - Configure TRANS_DP2_CTL register settings.
-	 */
+	 
 	intel_ddi_config_transcoder_dp2(encoder, crtc_state);
 
-	/*
-	 * 6.c Configure TRANS_DDI_FUNC_CTL DDI Select, DDI Mode Select & MST
-	 * Transport Select
-	 */
+	 
 	intel_ddi_config_transcoder_func(encoder, crtc_state);
 
-	/*
-	 * 6.e Program CoG/MSO configuration bits in DSS_CTL1 if selected.
-	 */
+	 
 	intel_ddi_mso_configure(crtc_state);
 
 	if (!is_mst)
@@ -2467,42 +2328,20 @@ static void mtl_ddi_pre_enable_dp(struct intel_atomic_state *state,
 
 	intel_dp_configure_protocol_converter(intel_dp, crtc_state);
 	intel_dp_sink_set_decompression_state(intel_dp, crtc_state, true);
-	/*
-	 * DDI FEC: "anticipates enabling FEC encoding sets the FEC_READY bit
-	 * in the FEC_CONFIGURATION register to 1 before initiating link
-	 * training
-	 */
+	 
 	intel_dp_sink_set_fec_ready(intel_dp, crtc_state);
 
 	intel_dp_check_frl_training(intel_dp);
 	intel_dp_pcon_dsc_configure(intel_dp, crtc_state);
 
-	/*
-	 * 6. The rest of the below are substeps under the bspec's "Enable and
-	 * Train Display Port" step.  Note that steps that are specific to
-	 * MST will be handled by intel_mst_pre_enable_dp() before/after it
-	 * calls into this function.  Also intel_mst_pre_enable_dp() only calls
-	 * us when active_mst_links==0, so any steps designated for "single
-	 * stream or multi-stream master transcoder" can just be performed
-	 * unconditionally here.
-	 *
-	 * mtl_ddi_prepare_link_retrain() that is called by
-	 * intel_dp_start_link_train() will execute steps: 6.d, 6.f, 6.g, 6.h,
-	 * 6.i and 6.j
-	 *
-	 * 6.k Follow DisplayPort specification training sequence (see notes for
-	 *     failure handling)
-	 * 6.m If DisplayPort multi-stream - Set DP_TP_CTL link training to Idle
-	 *     Pattern, wait for 5 idle patterns (DP_TP_STATUS Min_Idles_Sent)
-	 *     (timeout after 800 us)
-	 */
+	 
 	intel_dp_start_link_train(intel_dp, crtc_state);
 
-	/* 6.n Set DP_TP_CTL link training to Normal */
+	 
 	if (!is_trans_port_sync_mode(crtc_state))
 		intel_dp_stop_link_train(intel_dp, crtc_state);
 
-	/* 6.o Configure and enable FEC if needed */
+	 
 	intel_ddi_enable_fec(encoder, crtc_state);
 
 	intel_dsc_dp_pps_write(encoder, crtc_state);
@@ -2522,94 +2361,49 @@ static void tgl_ddi_pre_enable_dp(struct intel_atomic_state *state,
 				 crtc_state->port_clock,
 				 crtc_state->lane_count);
 
-	/*
-	 * We only configure what the register value will be here.  Actual
-	 * enabling happens during link training farther down.
-	 */
+	 
 	intel_ddi_init_dp_buf_reg(encoder, crtc_state);
 
-	/*
-	 * 1. Enable Power Wells
-	 *
-	 * This was handled at the beginning of intel_atomic_commit_tail(),
-	 * before we called down into this function.
-	 */
+	 
 
-	/* 2. Enable Panel Power if PPS is required */
+	 
 	intel_pps_on(intel_dp);
 
-	/*
-	 * 3. For non-TBT Type-C ports, set FIA lane count
-	 * (DFLEXDPSP.DPX4TXLATC)
-	 *
-	 * This was done before tgl_ddi_pre_enable_dp by
-	 * hsw_crtc_enable()->intel_encoders_pre_pll_enable().
-	 */
+	 
 
-	/*
-	 * 4. Enable the port PLL.
-	 *
-	 * The PLL enabling itself was already done before this function by
-	 * hsw_crtc_enable()->intel_enable_shared_dpll().  We need only
-	 * configure the PLL to port mapping here.
-	 */
+	 
 	intel_ddi_enable_clock(encoder, crtc_state);
 
-	/* 5. If IO power is controlled through PWR_WELL_CTL, Enable IO Power */
+	 
 	if (!intel_tc_port_in_tbt_alt_mode(dig_port)) {
 		drm_WARN_ON(&dev_priv->drm, dig_port->ddi_io_wakeref);
 		dig_port->ddi_io_wakeref = intel_display_power_get(dev_priv,
 								   dig_port->ddi_io_power_domain);
 	}
 
-	/* 6. Program DP_MODE */
+	 
 	icl_program_mg_dp_mode(dig_port, crtc_state);
 
-	/*
-	 * 7. The rest of the below are substeps under the bspec's "Enable and
-	 * Train Display Port" step.  Note that steps that are specific to
-	 * MST will be handled by intel_mst_pre_enable_dp() before/after it
-	 * calls into this function.  Also intel_mst_pre_enable_dp() only calls
-	 * us when active_mst_links==0, so any steps designated for "single
-	 * stream or multi-stream master transcoder" can just be performed
-	 * unconditionally here.
-	 */
+	 
 
-	/*
-	 * 7.a Configure Transcoder Clock Select to direct the Port clock to the
-	 * Transcoder.
-	 */
+	 
 	intel_ddi_enable_transcoder_clock(encoder, crtc_state);
 
 	if (HAS_DP20(dev_priv))
 		intel_ddi_config_transcoder_dp2(encoder, crtc_state);
 
-	/*
-	 * 7.b Configure TRANS_DDI_FUNC_CTL DDI Select, DDI Mode Select & MST
-	 * Transport Select
-	 */
+	 
 	intel_ddi_config_transcoder_func(encoder, crtc_state);
 
-	/*
-	 * 7.c Configure & enable DP_TP_CTL with link training pattern 1
-	 * selected
-	 *
-	 * This will be handled by the intel_dp_start_link_train() farther
-	 * down this function.
-	 */
+	 
 
-	/* 7.e Configure voltage swing and related IO settings */
+	 
 	encoder->set_signal_levels(encoder, crtc_state);
 
-	/*
-	 * 7.f Combo PHY: Configure PORT_CL_DW10 Static Power Down to power up
-	 * the used lanes of the DDI.
-	 */
+	 
 	intel_ddi_power_up_lanes(encoder, crtc_state);
 
-	/*
-	 * 7.g Program CoG/MSO configuration bits in DSS_CTL1 if selected.
-	 */
+	 
 	intel_ddi_mso_configure(crtc_state);
 
 	if (!is_mst)
@@ -2617,30 +2411,20 @@ static void tgl_ddi_pre_enable_dp(struct intel_atomic_state *state,
 
 	intel_dp_configure_protocol_converter(intel_dp, crtc_state);
 	intel_dp_sink_set_decompression_state(intel_dp, crtc_state, true);
-	/*
-	 * DDI FEC: "anticipates enabling FEC encoding sets the FEC_READY bit
-	 * in the FEC_CONFIGURATION register to 1 before initiating link
-	 * training
-	 */
+	 
 	intel_dp_sink_set_fec_ready(intel_dp, crtc_state);
 
 	intel_dp_check_frl_training(intel_dp);
 	intel_dp_pcon_dsc_configure(intel_dp, crtc_state);
 
-	/*
-	 * 7.i Follow DisplayPort specification training sequence (see notes for
-	 *     failure handling)
-	 * 7.j If DisplayPort multi-stream - Set DP_TP_CTL link training to Idle
-	 *     Pattern, wait for 5 idle patterns (DP_TP_STATUS Min_Idles_Sent)
-	 *     (timeout after 800 us)
-	 */
+	 
 	intel_dp_start_link_train(intel_dp, crtc_state);
 
-	/* 7.k Set DP_TP_CTL link training to Normal */
+	 
 	if (!is_trans_port_sync_mode(crtc_state))
 		intel_dp_stop_link_train(intel_dp, crtc_state);
 
-	/* 7.l Configure and enable FEC if needed */
+	 
 	intel_ddi_enable_fec(encoder, crtc_state);
 
 	intel_dsc_dp_pps_write(encoder, crtc_state);
@@ -2667,10 +2451,7 @@ static void hsw_ddi_pre_enable_dp(struct intel_atomic_state *state,
 				 crtc_state->port_clock,
 				 crtc_state->lane_count);
 
-	/*
-	 * We only configure what the register value will be here.  Actual
-	 * enabling happens during link training farther down.
-	 */
+	 
 	intel_ddi_init_dp_buf_reg(encoder, crtc_state);
 
 	intel_pps_on(intel_dp);
@@ -2729,9 +2510,7 @@ static void intel_ddi_pre_enable_dp(struct intel_atomic_state *state,
 	else
 		hsw_ddi_pre_enable_dp(state, encoder, crtc_state, conn_state);
 
-	/* MST will call a setting of MSA after an allocating of Virtual Channel
-	 * from MST encoder pre_enable callback.
-	 */
+	 
 	if (!intel_crtc_has_type(crtc_state, INTEL_OUTPUT_DP_MST))
 		intel_ddi_set_dp_msa(crtc_state, conn_state);
 }
@@ -2770,18 +2549,7 @@ static void intel_ddi_pre_enable(struct intel_atomic_state *state,
 	struct drm_i915_private *dev_priv = to_i915(crtc->base.dev);
 	enum pipe pipe = crtc->pipe;
 
-	/*
-	 * When called from DP MST code:
-	 * - conn_state will be NULL
-	 * - encoder will be the main encoder (ie. mst->primary)
-	 * - the main connector associated with this port
-	 *   won't be active or linked to a crtc
-	 * - crtc_state will be the state of the first stream to
-	 *   be activated on this port, and it may not be the same
-	 *   stream that will be deactivated last, but each stream
-	 *   should have a state that is identical when it comes to
-	 *   the DP link parameteres
-	 */
+	 
 
 	drm_WARN_ON(&dev_priv->drm, crtc_state->has_pch_encoder);
 
@@ -2796,8 +2564,8 @@ static void intel_ddi_pre_enable(struct intel_atomic_state *state,
 		intel_ddi_pre_enable_dp(state, encoder, crtc_state,
 					conn_state);
 
-		/* FIXME precompute everything properly */
-		/* FIXME how do we turn infoframes off again? */
+		 
+		 
 		if (dig_port->lspcon.active && intel_dp_has_hdmi_sink(&dig_port->dp))
 			dig_port->set_infoframes(encoder,
 						 crtc_state->has_infoframe,
@@ -2827,20 +2595,20 @@ static void mtl_disable_ddi_buf(struct intel_encoder *encoder,
 	enum port port = encoder->port;
 	u32 val;
 
-	/* 3.b Clear DDI_CTL_DE Enable to 0. */
+	 
 	val = intel_de_read(dev_priv, DDI_BUF_CTL(port));
 	if (val & DDI_BUF_CTL_ENABLE) {
 		val &= ~DDI_BUF_CTL_ENABLE;
 		intel_de_write(dev_priv, DDI_BUF_CTL(port), val);
 
-		/* 3.c Poll for PORT_BUF_CTL Idle Status == 1, timeout after 100us */
+		 
 		mtl_wait_ddi_buf_idle(dev_priv, port);
 	}
 
-	/* 3.d Disable D2D Link */
+	 
 	mtl_ddi_disable_d2d_link(encoder);
 
-	/* 3.e Disable DP_TP_CTL */
+	 
 	if (intel_crtc_has_dp_encoder(crtc_state)) {
 		intel_de_rmw(dev_priv, dp_tp_ctl_reg(encoder, crtc_state),
 			     DP_TP_CTL_ENABLE, 0);
@@ -2866,7 +2634,7 @@ static void disable_ddi_buf(struct intel_encoder *encoder,
 		intel_de_rmw(dev_priv, dp_tp_ctl_reg(encoder, crtc_state),
 			     DP_TP_CTL_ENABLE, 0);
 
-	/* Disable FEC in DP Sink */
+	 
 	intel_ddi_disable_fec_state(encoder, crtc_state);
 
 	if (wait)
@@ -2881,7 +2649,7 @@ static void intel_disable_ddi_buf(struct intel_encoder *encoder,
 	if (DISPLAY_VER(dev_priv) >= 14) {
 		mtl_disable_ddi_buf(encoder, crtc_state);
 
-		/* 3.f Disable DP_TP_CTL FEC Enable if it is needed */
+		 
 		intel_ddi_disable_fec_state(encoder, crtc_state);
 	} else {
 		disable_ddi_buf(encoder, crtc_state);
@@ -2904,10 +2672,7 @@ static void intel_ddi_post_disable_dp(struct intel_atomic_state *state,
 		intel_dp_set_infoframes(encoder, false,
 					old_crtc_state, old_conn_state);
 
-	/*
-	 * Power down sink before disabling the port, otherwise we end
-	 * up getting interrupts from the sink on detecting link loss.
-	 */
+	 
 	intel_dp_set_power(intel_dp, DP_SET_POWER_D3);
 
 	if (DISPLAY_VER(dev_priv) >= 12) {
@@ -2925,11 +2690,7 @@ static void intel_ddi_post_disable_dp(struct intel_atomic_state *state,
 
 	intel_disable_ddi_buf(encoder, old_crtc_state);
 
-	/*
-	 * From TGL spec: "If single stream or multi-stream master transcoder:
-	 * Configure Transcoder Clock select to direct no clock to the
-	 * transcoder"
-	 */
+	 
 	if (DISPLAY_VER(dev_priv) >= 12)
 		intel_ddi_disable_transcoder_clock(old_crtc_state);
 
@@ -2945,7 +2706,7 @@ static void intel_ddi_post_disable_dp(struct intel_atomic_state *state,
 
 	intel_ddi_disable_clock(encoder);
 
-	/* De-select Thunderbolt */
+	 
 	if (DISPLAY_VER(dev_priv) >= 14)
 		intel_de_rmw(dev_priv, XELPDP_PORT_BUF_CTL1(encoder->port),
 			     XELPDP_PORT_BUF_IO_SELECT_TBT, 0);
@@ -3017,18 +2778,7 @@ static void intel_ddi_post_disable(struct intel_atomic_state *state,
 		skl_scaler_disable(old_slave_crtc_state);
 	}
 
-	/*
-	 * When called from DP MST code:
-	 * - old_conn_state will be NULL
-	 * - encoder will be the main encoder (ie. mst->primary)
-	 * - the main connector associated with this port
-	 *   won't be active or linked to a crtc
-	 * - old_crtc_state will be the state of the last stream to
-	 *   be deactivated on this port, and it may not be the same
-	 *   stream that was activated last, but each stream
-	 *   should have a state that is identical when it comes to
-	 *   the DP link parameteres
-	 */
+	 
 
 	if (intel_crtc_has_type(old_crtc_state, INTEL_OUTPUT_HDMI))
 		intel_ddi_post_disable_hdmi(state, encoder, old_crtc_state,
@@ -3157,20 +2907,15 @@ static void intel_enable_ddi_hdmi(struct intel_atomic_state *state,
 	if (has_buf_trans_select(dev_priv))
 		hsw_prepare_hdmi_ddi_buffers(encoder, crtc_state);
 
-	/* e. Enable D2D Link for C10/C20 Phy */
+	 
 	if (DISPLAY_VER(dev_priv) >= 14)
 		mtl_ddi_enable_d2d(encoder);
 
 	encoder->set_signal_levels(encoder, crtc_state);
 
-	/* Display WA #1143: skl,kbl,cfl */
+	 
 	if (DISPLAY_VER(dev_priv) == 9 && !IS_BROXTON(dev_priv)) {
-		/*
-		 * For some reason these chicken bits have been
-		 * stuffed into a transcoder register, event though
-		 * the bits affect a specific DDI port rather than
-		 * a specific transcoder.
-		 */
+		 
 		i915_reg_t reg = gen9_chicken_trans_reg_by_port(dev_priv, port);
 		u32 val;
 
@@ -3200,17 +2945,7 @@ static void intel_enable_ddi_hdmi(struct intel_atomic_state *state,
 
 	intel_ddi_power_up_lanes(encoder, crtc_state);
 
-	/* In HDMI/DVI mode, the port width, and swing/emphasis values
-	 * are ignored so nothing special needs to be done besides
-	 * enabling the port.
-	 *
-	 * On ADL_P the PHY link rate and lane count must be programmed but
-	 * these are both 0 for HDMI.
-	 *
-	 * But MTL onwards HDMI2.1 is supported and in TMDS mode this
-	 * is filled with lane count, already set in the crtc_state.
-	 * The same is required to be filled in PORT_BUF_CTL for C10/20 Phy.
-	 */
+	 
 	buf_ctl = dig_port->saved_port_bits | DDI_BUF_CTL_ENABLE;
 	if (DISPLAY_VER(dev_priv) >= 14) {
 		u8  lane_count = mtl_get_port_width(crtc_state->lane_count);
@@ -3247,7 +2982,7 @@ static void intel_enable_ddi(struct intel_atomic_state *state,
 	if (!intel_crtc_is_bigjoiner_slave(crtc_state))
 		intel_ddi_enable_transcoder_func(encoder, crtc_state);
 
-	/* Enable/Disable DP2.0 SDP split config before transcoder */
+	 
 	intel_audio_sdp_split_update(encoder, crtc_state);
 
 	intel_enable_transcoder(crtc_state);
@@ -3259,7 +2994,7 @@ static void intel_enable_ddi(struct intel_atomic_state *state,
 	else
 		intel_enable_ddi_dp(state, encoder, crtc_state, conn_state);
 
-	/* Enable hdcp if it's desired */
+	 
 	if (conn_state->content_protection ==
 	    DRM_MODE_CONTENT_PROTECTION_DESIRED)
 		intel_hdcp_enable(state, encoder, crtc_state, conn_state);
@@ -3278,10 +3013,10 @@ static void intel_disable_ddi_dp(struct intel_atomic_state *state,
 
 	intel_psr_disable(intel_dp, old_crtc_state);
 	intel_edp_backlight_off(old_conn_state);
-	/* Disable the decompression in DP Sink */
+	 
 	intel_dp_sink_set_decompression_state(intel_dp, old_crtc_state,
 					      false);
-	/* Disable Ignore_MSA bit in DP Sink */
+	 
 	intel_dp_sink_set_msa_timing_par_ignore_state(intel_dp, old_crtc_state,
 						      false);
 }
@@ -3357,7 +3092,7 @@ void intel_ddi_update_active_dpll(struct intel_atomic_state *state,
 	struct intel_crtc *slave_crtc;
 	enum phy phy = intel_port_to_phy(i915, encoder->port);
 
-	/* FIXME: Add MTL pll_mgr */
+	 
 	if (DISPLAY_VER(i915) >= 14 || !intel_phy_is_tc(i915, phy))
 		return;
 
@@ -3389,10 +3124,7 @@ intel_ddi_pre_pll_enable(struct intel_atomic_state *state,
 	main_link_aux_power_domain_get(dig_port, crtc_state);
 
 	if (is_tc_port && !intel_tc_port_in_tbt_alt_mode(dig_port))
-		/*
-		 * Program the lane count for static/dynamic connections on
-		 * Type-C ports.  Skip this step for TBT.
-		 */
+		 
 		intel_tc_port_set_fia_lane_count(dig_port, crtc_state->lane_count);
 	else if (IS_GEMINILAKE(dev_priv) || IS_BROXTON(dev_priv))
 		bxt_ddi_phy_set_lane_optim_mask(encoder,
@@ -3418,15 +3150,12 @@ static void mtl_ddi_prepare_link_retrain(struct intel_dp *intel_dp,
 	enum port port = encoder->port;
 	u32 dp_tp_ctl;
 
-	/*
-	 * TODO: To train with only a different voltage swing entry is not
-	 * necessary disable and enable port
-	 */
+	 
 	dp_tp_ctl = intel_de_read(dev_priv, dp_tp_ctl_reg(encoder, crtc_state));
 	if (dp_tp_ctl & DP_TP_CTL_ENABLE)
 		mtl_disable_ddi_buf(encoder, crtc_state);
 
-	/* 6.d Configure and enable DP_TP_CTL with link training pattern 1 selected */
+	 
 	dp_tp_ctl = DP_TP_CTL_ENABLE | DP_TP_CTL_LINK_TRAIN_PAT1;
 	if (intel_crtc_has_type(crtc_state, INTEL_OUTPUT_DP_MST)) {
 		dp_tp_ctl |= DP_TP_CTL_MODE_MST;
@@ -3438,21 +3167,21 @@ static void mtl_ddi_prepare_link_retrain(struct intel_dp *intel_dp,
 	intel_de_write(dev_priv, dp_tp_ctl_reg(encoder, crtc_state), dp_tp_ctl);
 	intel_de_posting_read(dev_priv, dp_tp_ctl_reg(encoder, crtc_state));
 
-	/* 6.f Enable D2D Link */
+	 
 	mtl_ddi_enable_d2d(encoder);
 
-	/* 6.g Configure voltage swing and related IO settings */
+	 
 	encoder->set_signal_levels(encoder, crtc_state);
 
-	/* 6.h Configure PORT_BUF_CTL1 */
+	 
 	mtl_port_buf_ctl_program(encoder, crtc_state);
 
-	/* 6.i Configure and enable DDI_CTL_DE to start sending valid data to port slice */
+	 
 	intel_dp->DP |= DDI_BUF_CTL_ENABLE;
 	intel_de_write(dev_priv, DDI_BUF_CTL(port), intel_dp->DP);
 	intel_de_posting_read(dev_priv, DDI_BUF_CTL(port));
 
-	/* 6.j Poll for PORT_BUF_CTL Idle Status == 0, timeout after 100 us */
+	 
 	intel_wait_ddi_buf_active(dev_priv, port);
 }
 
@@ -3548,13 +3277,7 @@ static void intel_ddi_set_idle_link_train(struct intel_dp *intel_dp,
 	intel_de_rmw(dev_priv, dp_tp_ctl_reg(encoder, crtc_state),
 		     DP_TP_CTL_LINK_TRAIN_MASK, DP_TP_CTL_LINK_TRAIN_IDLE);
 
-	/*
-	 * Until TGL on PORT_A we can have only eDP in SST mode. There the only
-	 * reason we need to set idle transmission mode is to work around a HW
-	 * issue where we enable the pipe while not in idle link-training mode.
-	 * In this case there is requirement to wait for a minimum number of
-	 * idle patterns to be sent.
-	 */
+	 
 	if (port == PORT_A && DISPLAY_VER(dev_priv) < 12)
 		return;
 
@@ -3742,14 +3465,14 @@ static void intel_ddi_read_func_ctl(struct intel_encoder *encoder,
 		break;
 	case TRANS_DDI_MODE_SELECT_FDI_OR_128B132B:
 		if (!HAS_DP20(dev_priv)) {
-			/* FDI */
+			 
 			pipe_config->output_types |= BIT(INTEL_OUTPUT_ANALOG);
 			pipe_config->enhanced_framing =
 				intel_de_read(dev_priv, dp_tp_ctl_reg(encoder, pipe_config)) &
 				DP_TP_CTL_ENHANCED_FRAME_ENABLE;
 			break;
 		}
-		fallthrough; /* 128b/132b */
+		fallthrough;  
 	case TRANS_DDI_MODE_SELECT_DP_MST:
 		pipe_config->output_types |= BIT(INTEL_OUTPUT_DP_MST);
 		pipe_config->lane_count =
@@ -3776,7 +3499,7 @@ static void intel_ddi_get_config(struct intel_encoder *encoder,
 	struct drm_i915_private *dev_priv = to_i915(encoder->base.dev);
 	enum transcoder cpu_transcoder = pipe_config->cpu_transcoder;
 
-	/* XXX: DSI transcoder paranoia */
+	 
 	if (drm_WARN_ON(&dev_priv->drm, transcoder_is_dsi(cpu_transcoder)))
 		return;
 
@@ -4095,7 +3818,7 @@ static bool mode_equal(const struct drm_display_mode *mode1,
 			      DRM_MODE_MATCH_TIMINGS |
 			      DRM_MODE_MATCH_FLAGS |
 			      DRM_MODE_MATCH_3D_FLAGS) &&
-		mode1->clock == mode2->clock; /* we want an exact match */
+		mode1->clock == mode2->clock;  
 }
 
 static bool m_n_equal(const struct intel_link_m_n *m_n_1,
@@ -4133,10 +3856,7 @@ intel_ddi_port_sync_transcoders(const struct intel_crtc_state *ref_crtc_state,
 	u8 transcoders = 0;
 	int i;
 
-	/*
-	 * We don't enable port sync on BDW due to missing w/as and
-	 * due to not having adjusted the modeset sequence appropriately.
-	 */
+	 
 	if (DISPLAY_VER(dev_priv) < 9)
 		return 0;
 
@@ -4181,10 +3901,7 @@ static int intel_ddi_compute_config_late(struct intel_encoder *encoder,
 		port_sync_transcoders = intel_ddi_port_sync_transcoders(crtc_state,
 									connector->tile_group->id);
 
-	/*
-	 * EDP Transcoders cannot be ensalved
-	 * make them a master always when present
-	 */
+	 
 	if (port_sync_transcoders & BIT(TRANSCODER_EDP))
 		crtc_state->master_transcoder = TRANSCODER_EDP;
 	else
@@ -4378,15 +4095,7 @@ static int intel_hdmi_reset_link(struct intel_encoder *encoder,
 	    crtc_state->hdmi_scrambling)
 		return 0;
 
-	/*
-	 * HDMI 2.0 says that one should not send scrambled data
-	 * prior to configuring the sink scrambling, and that
-	 * TMDS clock/data transmission should be suspended when
-	 * changing the TMDS clock rate in the sink. So let's
-	 * just do a full modeset here, even though some sinks
-	 * would be perfectly happy if were to just reconfigure
-	 * the SCDC settings on the fly.
-	 */
+	 
 	return modeset_pipe(&crtc->base, ctx);
 }
 
@@ -4406,7 +4115,7 @@ intel_ddi_hotplug(struct intel_encoder *encoder,
 	if (intel_dp->compliance.test_active &&
 	    intel_dp->compliance.test_type == DP_TEST_LINK_PHY_TEST_PATTERN) {
 		intel_dp_phy_test(encoder);
-		/* just do the PHY test and nothing else */
+		 
 		return INTEL_HOTPLUG_UNCHANGED;
 	}
 
@@ -4423,28 +4132,7 @@ intel_ddi_hotplug(struct intel_encoder *encoder,
 		drm_WARN_ON(encoder->base.dev, ret);
 	}
 
-	/*
-	 * Unpowered type-c dongles can take some time to boot and be
-	 * responsible, so here giving some time to those dongles to power up
-	 * and then retrying the probe.
-	 *
-	 * On many platforms the HDMI live state signal is known to be
-	 * unreliable, so we can't use it to detect if a sink is connected or
-	 * not. Instead we detect if it's connected based on whether we can
-	 * read the EDID or not. That in turn has a problem during disconnect,
-	 * since the HPD interrupt may be raised before the DDC lines get
-	 * disconnected (due to how the required length of DDC vs. HPD
-	 * connector pins are specified) and so we'll still be able to get a
-	 * valid EDID. To solve this schedule another detection cycle if this
-	 * time around we didn't detect any change in the sink's connection
-	 * status.
-	 *
-	 * Type-c connectors which get their HPD signal deasserted then
-	 * reasserted, without unplugging/replugging the sink from the
-	 * connector, introduce a delay until the AUX channel communication
-	 * becomes functional. Retry the detection for 5 seconds on type-c
-	 * connectors to account for this delay.
-	 */
+	 
 	if (state == INTEL_HOTPLUG_UNCHANGED &&
 	    connector->hotplug_retries < (is_tc ? 5 : 1) &&
 	    !dig_port->dp.is_mst)
@@ -4503,9 +4191,7 @@ static bool intel_ddi_a_force_4_lanes(struct intel_digital_port *dig_port)
 	if (dig_port->saved_port_bits & DDI_A_4_LANES)
 		return false;
 
-	/* Broxton/Geminilake: Bspec says that DDI_A_4_LANES is the only
-	 *                     supported configuration
-	 */
+	 
 	if (IS_GEMINILAKE(dev_priv) || IS_BROXTON(dev_priv))
 		return true;
 
@@ -4526,15 +4212,11 @@ intel_ddi_max_lanes(struct intel_digital_port *dig_port)
 		if (intel_de_read(dev_priv, DDI_BUF_CTL(PORT_A)) & DDI_A_4_LANES)
 			max_lanes = port == PORT_A ? 4 : 0;
 		else
-			/* Both A and E share 2 lanes */
+			 
 			max_lanes = 2;
 	}
 
-	/*
-	 * Some BIOS might fail to set this bit on port A if eDP
-	 * wasn't lit up at boot.  Force this bit set when needed
-	 * so we use the proper lane count for our calculations.
-	 */
+	 
 	if (intel_ddi_a_force_4_lanes(dig_port)) {
 		drm_dbg_kms(&dev_priv->drm,
 			    "Forcing DDI_A_4_LANES for port A\n");
@@ -4657,7 +4339,7 @@ static void intel_ddi_tc_encoder_shutdown_complete(struct intel_encoder *encoder
 
 static bool port_strap_detected(struct drm_i915_private *i915, enum port port)
 {
-	/* straps not used on skl+ */
+	 
 	if (DISPLAY_VER(i915) >= 9)
 		return true;
 
@@ -4671,7 +4353,7 @@ static bool port_strap_detected(struct drm_i915_private *i915, enum port port)
 	case PORT_D:
 		return intel_de_read(i915, SFUSE_STRAP) & SFUSE_STRAP_DDID_DETECTED;
 	case PORT_E:
-		return true; /* no strap for DDI-E */
+		return true;  
 	default:
 		MISSING_CASE(port);
 		return false;
@@ -4698,7 +4380,7 @@ static bool port_in_use(struct drm_i915_private *i915, enum port port)
 	struct intel_encoder *encoder;
 
 	for_each_intel_encoder(&i915->drm, encoder) {
-		/* FIXME what about second port for dual link DSI? */
+		 
 		if (encoder->port == port)
 			return true;
 	}
@@ -4735,7 +4417,7 @@ void intel_ddi_init(struct drm_i915_private *dev_priv,
 	}
 
 	if (intel_bios_encoder_supports_dsi(devdata)) {
-		/* BXT/GLK handled elsewhere, for now at least */
+		 
 		if (!assert_has_icl_dsi(dev_priv))
 			return;
 
@@ -4745,12 +4427,7 @@ void intel_ddi_init(struct drm_i915_private *dev_priv,
 
 	phy = intel_port_to_phy(dev_priv, port);
 
-	/*
-	 * On platforms with HTI (aka HDPORT), if it's enabled at boot it may
-	 * have taken over some of the PHYs and made them unavailable to the
-	 * driver.  In that case we should skip initializing the corresponding
-	 * outputs.
-	 */
+	 
 	if (intel_hti_uses_phy(dev_priv, phy)) {
 		drm_dbg_kms(&dev_priv->drm, "PORT %c / PHY %c reserved by HTI\n",
 			    port_name(port), phy_name(phy));
@@ -4762,11 +4439,7 @@ void intel_ddi_init(struct drm_i915_private *dev_priv,
 	init_dp = intel_bios_encoder_supports_dp(devdata);
 
 	if (intel_bios_encoder_is_lspcon(devdata)) {
-		/*
-		 * Lspcon device needs to be driven with DP connector
-		 * with special detection sequence. So make sure DP
-		 * is initialized before lspcon.
-		 */
+		 
 		init_dp = true;
 		init_hdmi = false;
 		drm_dbg_kms(&dev_priv->drm, "VBT says port %c has lspcon\n",
@@ -4906,7 +4579,7 @@ void intel_ddi_init(struct drm_i915_private *dev_priv,
 			encoder->get_config = icl_ddi_combo_get_config;
 		}
 	} else if (IS_GEMINILAKE(dev_priv) || IS_BROXTON(dev_priv)) {
-		/* BXT/GLK have fixed PLL->port mapping */
+		 
 		encoder->get_config = bxt_ddi_get_config;
 	} else if (DISPLAY_VER(dev_priv) == 9) {
 		encoder->enable_clock = skl_ddi_enable_clock;
@@ -5038,10 +4711,7 @@ void intel_ddi_init(struct drm_i915_private *dev_priv,
 			encoder->pipe_mask = intel_ddi_splitter_pipe_mask(dev_priv);
 	}
 
-	/*
-	 * In theory we don't need the encoder->type check,
-	 * but leave it just in case we have some really bad VBTs...
-	 */
+	 
 	if (encoder->type != INTEL_OUTPUT_EDP && init_hdmi) {
 		if (!intel_ddi_init_hdmi_connector(dig_port))
 			goto err;

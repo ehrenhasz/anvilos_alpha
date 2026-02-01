@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Driver for STM32 Digital Camera Memory Interface
- *
- * Copyright (C) STMicroelectronics SA 2017
- * Authors: Yannick Fertre <yannick.fertre@st.com>
- *          Hugues Fruchet <hugues.fruchet@st.com>
- *          for STMicroelectronics.
- *
- * This driver is based on atmel_isi.c
- *
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/completion.h>
@@ -40,21 +30,21 @@
 
 #define DRV_NAME "stm32-dcmi"
 
-/* Registers offset for DCMI */
-#define DCMI_CR		0x00 /* Control Register */
-#define DCMI_SR		0x04 /* Status Register */
-#define DCMI_RIS	0x08 /* Raw Interrupt Status register */
-#define DCMI_IER	0x0C /* Interrupt Enable Register */
-#define DCMI_MIS	0x10 /* Masked Interrupt Status register */
-#define DCMI_ICR	0x14 /* Interrupt Clear Register */
-#define DCMI_ESCR	0x18 /* Embedded Synchronization Code Register */
-#define DCMI_ESUR	0x1C /* Embedded Synchronization Unmask Register */
-#define DCMI_CWSTRT	0x20 /* Crop Window STaRT */
-#define DCMI_CWSIZE	0x24 /* Crop Window SIZE */
-#define DCMI_DR		0x28 /* Data Register */
-#define DCMI_IDR	0x2C /* IDentifier Register */
+ 
+#define DCMI_CR		0x00  
+#define DCMI_SR		0x04  
+#define DCMI_RIS	0x08  
+#define DCMI_IER	0x0C  
+#define DCMI_MIS	0x10  
+#define DCMI_ICR	0x14  
+#define DCMI_ESCR	0x18  
+#define DCMI_ESUR	0x1C  
+#define DCMI_CWSTRT	0x20  
+#define DCMI_CWSIZE	0x24  
+#define DCMI_DR		0x28  
+#define DCMI_IDR	0x2C  
 
-/* Bits definition for control register (DCMI_CR) */
+ 
 #define CR_CAPTURE	BIT(0)
 #define CR_CM		BIT(1)
 #define CR_CROP		BIT(2)
@@ -69,15 +59,12 @@
 #define CR_EDM_1	BIT(11)
 #define CR_ENABLE	BIT(14)
 
-/* Bits definition for status register (DCMI_SR) */
+ 
 #define SR_HSYNC	BIT(0)
 #define SR_VSYNC	BIT(1)
 #define SR_FNE		BIT(2)
 
-/*
- * Bits definition for interrupt registers
- * (DCMI_RIS, DCMI_IER, DCMI_MIS, DCMI_ICR)
- */
+ 
 #define IT_FRAME	BIT(0)
 #define IT_OVR		BIT(1)
 #define IT_ERR		BIT(2)
@@ -119,7 +106,7 @@ struct dcmi_buf {
 };
 
 struct stm32_dcmi {
-	/* Protects the access of variables shared within the interrupt */
+	 
 	spinlock_t			irqlock;
 	struct device			*dev;
 	void __iomem			*regs;
@@ -147,7 +134,7 @@ struct stm32_dcmi {
 	struct dcmi_framesize		sd_framesize;
 	struct v4l2_rect		sd_bounds;
 
-	/* Protect this data structure */
+	 
 	struct mutex			lock;
 	struct vb2_queue		queue;
 
@@ -164,7 +151,7 @@ struct stm32_dcmi {
 	int				overrun_count;
 	int				buffers_count;
 
-	/* Ensure DMA operations atomicity */
+	 
 	struct mutex			dma_lock;
 
 	struct media_device		mdev;
@@ -237,7 +224,7 @@ static int dcmi_restart_capture(struct stm32_dcmi *dcmi)
 		return -EINVAL;
 	}
 
-	/* Restart a new DMA transfer with next buffer */
+	 
 	if (list_empty(&dcmi->buffers)) {
 		dev_dbg(dcmi->dev, "Capture restart is deferred to next buffer queueing\n");
 		dcmi->state = WAIT_FOR_BUFFER;
@@ -261,7 +248,7 @@ static void dcmi_dma_callback(void *param)
 
 	spin_lock_irq(&dcmi->irqlock);
 
-	/* Check DMA status */
+	 
 	status = dmaengine_tx_status(dcmi->dma_chan, dcmi->dma_cookie, &state);
 
 	switch (status) {
@@ -274,18 +261,18 @@ static void dcmi_dma_callback(void *param)
 	case DMA_ERROR:
 		dev_err(dcmi->dev, "%s: Received DMA_ERROR\n", __func__);
 
-		/* Return buffer to V4L2 in error state */
+		 
 		dcmi_buffer_done(dcmi, buf, 0, -EIO);
 		break;
 	case DMA_COMPLETE:
 		dev_dbg(dcmi->dev, "%s: Received DMA_COMPLETE\n", __func__);
 
-		/* Return buffer to V4L2 */
+		 
 		dcmi_buffer_done(dcmi, buf, buf->size, 0);
 
 		spin_unlock_irq(&dcmi->irqlock);
 
-		/* Restart capture */
+		 
 		if (dcmi_restart_capture(dcmi))
 			dev_err(dcmi->dev, "%s: Cannot restart capture on DMA complete\n",
 				__func__);
@@ -312,7 +299,7 @@ static int dcmi_start_dma(struct stm32_dcmi *dcmi,
 	config.dst_addr_width = DMA_SLAVE_BUSWIDTH_4_BYTES;
 	config.dst_maxburst = 4;
 
-	/* Configure DMA channel */
+	 
 	ret = dmaengine_slave_config(dcmi->dma_chan, &config);
 	if (ret < 0) {
 		dev_err(dcmi->dev, "%s: DMA channel config failed (%d)\n",
@@ -320,14 +307,10 @@ static int dcmi_start_dma(struct stm32_dcmi *dcmi,
 		return ret;
 	}
 
-	/*
-	 * Avoid call of dmaengine_terminate_sync() between
-	 * dmaengine_prep_slave_single() and dmaengine_submit()
-	 * by locking the whole DMA submission sequence
-	 */
+	 
 	mutex_lock(&dcmi->dma_lock);
 
-	/* Prepare a DMA transaction */
+	 
 	desc = dmaengine_prep_slave_sg(dcmi->dma_chan, buf->sgt.sgl, buf->sgt.nents,
 				       DMA_DEV_TO_MEM,
 				       DMA_PREP_INTERRUPT);
@@ -337,11 +320,11 @@ static int dcmi_start_dma(struct stm32_dcmi *dcmi,
 		return -EINVAL;
 	}
 
-	/* Set completion callback routine for notification */
+	 
 	desc->callback = dcmi_dma_callback;
 	desc->callback_param = dcmi;
 
-	/* Push current DMA transaction in the pending queue */
+	 
 	dcmi->dma_cookie = dmaengine_submit(desc);
 	if (dma_submit_error(dcmi->dma_cookie)) {
 		dev_err(dcmi->dev, "%s: DMA submission failed\n", __func__);
@@ -369,7 +352,7 @@ static int dcmi_start_capture(struct stm32_dcmi *dcmi, struct dcmi_buf *buf)
 		return ret;
 	}
 
-	/* Enable capture */
+	 
 	reg_set(dcmi->regs, DCMI_CR, CR_CAPTURE);
 
 	return 0;
@@ -379,12 +362,12 @@ static void dcmi_set_crop(struct stm32_dcmi *dcmi)
 {
 	u32 size, start;
 
-	/* Crop resolution */
+	 
 	size = ((dcmi->crop.height - 1) << 16) |
 		((dcmi->crop.width << 1) - 1);
 	reg_write(dcmi->regs, DCMI_CWSIZE, size);
 
-	/* Crop start point */
+	 
 	start = ((dcmi->crop.top) << 16) |
 		 ((dcmi->crop.left << 1));
 	reg_write(dcmi->regs, DCMI_CWSTRT, start);
@@ -393,7 +376,7 @@ static void dcmi_set_crop(struct stm32_dcmi *dcmi)
 		dcmi->crop.width, dcmi->crop.height,
 		dcmi->crop.left, dcmi->crop.top);
 
-	/* Enable crop */
+	 
 	reg_set(dcmi->regs, DCMI_CR, CR_CROP);
 }
 
@@ -406,36 +389,28 @@ static void dcmi_process_jpeg(struct stm32_dcmi *dcmi)
 	if (!buf)
 		return;
 
-	/*
-	 * Because of variable JPEG buffer size sent by sensor,
-	 * DMA transfer never completes due to transfer size never reached.
-	 * In order to ensure that all the JPEG data are transferred
-	 * in active buffer memory, DMA is drained.
-	 * Then DMA tx status gives the amount of data transferred
-	 * to memory, which is then returned to V4L2 through the active
-	 * buffer payload.
-	 */
+	 
 
-	/* Drain DMA */
+	 
 	dmaengine_synchronize(dcmi->dma_chan);
 
-	/* Get DMA residue to get JPEG size */
+	 
 	status = dmaengine_tx_status(dcmi->dma_chan, dcmi->dma_cookie, &state);
 	if (status != DMA_ERROR && state.residue < buf->size) {
-		/* Return JPEG buffer to V4L2 with received JPEG buffer size */
+		 
 		dcmi_buffer_done(dcmi, buf, buf->size - state.residue, 0);
 	} else {
 		dcmi->errors_count++;
 		dev_err(dcmi->dev, "%s: Cannot get JPEG size from DMA\n",
 			__func__);
-		/* Return JPEG buffer to V4L2 in ERROR state */
+		 
 		dcmi_buffer_done(dcmi, buf, 0, -EIO);
 	}
 
-	/* Abort DMA operation */
+	 
 	dmaengine_terminate_sync(dcmi->dma_chan);
 
-	/* Restart capture */
+	 
 	if (dcmi_restart_capture(dcmi))
 		dev_err(dcmi->dev, "%s: Cannot restart capture on JPEG received\n",
 			__func__);
@@ -457,7 +432,7 @@ static irqreturn_t dcmi_irq_thread(int irq, void *arg)
 
 	if (dcmi->sd_format->fourcc == V4L2_PIX_FMT_JPEG &&
 	    dcmi->misr & IT_FRAME) {
-		/* JPEG received */
+		 
 		spin_unlock_irq(&dcmi->irqlock);
 		dcmi_process_jpeg(dcmi);
 		return IRQ_HANDLED;
@@ -476,7 +451,7 @@ static irqreturn_t dcmi_irq_callback(int irq, void *arg)
 
 	dcmi->misr = reg_read(dcmi->regs, DCMI_MIS);
 
-	/* Clear interrupt */
+	 
 	reg_set(dcmi->regs, DCMI_ICR, IT_FRAME | IT_OVR | IT_ERR);
 
 	spin_unlock_irqrestore(&dcmi->irqlock, flags);
@@ -495,7 +470,7 @@ static int dcmi_queue_setup(struct vb2_queue *vq,
 
 	size = dcmi->fmt.fmt.pix.sizeimage;
 
-	/* Make sure the image size is large enough */
+	 
 	if (*nplanes)
 		return sizes[0] < size ? -EINVAL : 0;
 
@@ -540,7 +515,7 @@ static int dcmi_buf_prepare(struct vb2_buffer *vb)
 	vb2_set_plane_payload(vb, 0, size);
 
 	if (!buf->prepared) {
-		/* Get memory addresses */
+		 
 		buf->size = vb2_plane_size(&buf->vb.vb2_buf, 0);
 		if (buf->size > dcmi->dma_max_burst)
 			num_sgs = DIV_ROUND_UP(buf->size, dcmi->dma_max_burst);
@@ -581,7 +556,7 @@ static void dcmi_buf_queue(struct vb2_buffer *vb)
 
 	spin_lock_irq(&dcmi->irqlock);
 
-	/* Enqueue to video buffers list */
+	 
 	list_add_tail(&buf->list, &dcmi->buffers);
 
 	if (dcmi->state == WAIT_FOR_BUFFER) {
@@ -606,7 +581,7 @@ static struct media_entity *dcmi_find_source(struct stm32_dcmi *dcmi)
 	struct media_entity *entity = &dcmi->vdev->entity;
 	struct media_pad *pad;
 
-	/* Walk searching for entity having no sink */
+	 
 	while (1) {
 		pad = &entity->pads[0];
 		if (!(pad->flags & MEDIA_PAD_FL_SINK))
@@ -634,14 +609,11 @@ static int dcmi_pipeline_s_fmt(struct stm32_dcmi *dcmi,
 	bool found = false;
 	int ret;
 
-	/*
-	 * Starting from sensor subdevice, walk within
-	 * pipeline and set format on each subdevice
-	 */
+	 
 	while (1) {
 		unsigned int i;
 
-		/* Search if current entity has a source pad */
+		 
 		for (i = 0; i < entity->num_pads; i++) {
 			pad = &entity->pads[i];
 			if (pad->flags & MEDIA_PAD_FL_SOURCE) {
@@ -655,7 +627,7 @@ static int dcmi_pipeline_s_fmt(struct stm32_dcmi *dcmi,
 
 		subdev = media_entity_to_v4l2_subdev(entity);
 
-		/* Propagate format on sink pad if any, otherwise source pad */
+		 
 		if (sink_pad)
 			pad = sink_pad;
 
@@ -681,7 +653,7 @@ static int dcmi_pipeline_s_fmt(struct stm32_dcmi *dcmi,
 				fmt.format.width, fmt.format.height);
 		}
 
-		/* Walk to next entity */
+		 
 		sink_pad = media_pad_remote_pad_first(src_pad);
 		if (!sink_pad || !is_media_entity_v4l2_subdev(sink_pad->entity))
 			break;
@@ -723,7 +695,7 @@ static int dcmi_start_streaming(struct vb2_queue *vq, unsigned int count)
 
 	spin_lock_irq(&dcmi->irqlock);
 
-	/* Set bus width */
+	 
 	switch (dcmi->bus.bus_width) {
 	case 14:
 		val |= CR_EDM_0 | CR_EDM_1;
@@ -735,50 +707,44 @@ static int dcmi_start_streaming(struct vb2_queue *vq, unsigned int count)
 		val |= CR_EDM_0;
 		break;
 	default:
-		/* Set bus width to 8 bits by default */
+		 
 		break;
 	}
 
-	/* Set vertical synchronization polarity */
+	 
 	if (dcmi->bus.flags & V4L2_MBUS_VSYNC_ACTIVE_HIGH)
 		val |= CR_VSPOL;
 
-	/* Set horizontal synchronization polarity */
+	 
 	if (dcmi->bus.flags & V4L2_MBUS_HSYNC_ACTIVE_HIGH)
 		val |= CR_HSPOL;
 
-	/* Set pixel clock polarity */
+	 
 	if (dcmi->bus.flags & V4L2_MBUS_PCLK_SAMPLE_RISING)
 		val |= CR_PCKPOL;
 
-	/*
-	 * BT656 embedded synchronisation bus mode.
-	 *
-	 * Default SAV/EAV mode is supported here with default codes
-	 * SAV=0xff000080 & EAV=0xff00009d.
-	 * With DCMI this means LSC=SAV=0x80 & LEC=EAV=0x9d.
-	 */
+	 
 	if (dcmi->bus_type == V4L2_MBUS_BT656) {
 		val |= CR_ESS;
 
-		/* Unmask all codes */
-		reg_write(dcmi->regs, DCMI_ESUR, 0xffffffff);/* FEC:LEC:LSC:FSC */
+		 
+		reg_write(dcmi->regs, DCMI_ESUR, 0xffffffff); 
 
-		/* Trig on LSC=0x80 & LEC=0x9d codes, ignore FSC and FEC */
-		reg_write(dcmi->regs, DCMI_ESCR, 0xff9d80ff);/* FEC:LEC:LSC:FSC */
+		 
+		reg_write(dcmi->regs, DCMI_ESCR, 0xff9d80ff); 
 	}
 
 	reg_write(dcmi->regs, DCMI_CR, val);
 
-	/* Set crop */
+	 
 	if (dcmi->do_crop)
 		dcmi_set_crop(dcmi);
 
-	/* Enable jpeg capture */
+	 
 	if (dcmi->sd_format->fourcc == V4L2_PIX_FMT_JPEG)
-		reg_set(dcmi->regs, DCMI_CR, CR_CM);/* Snapshot mode */
+		reg_set(dcmi->regs, DCMI_CR, CR_CM); 
 
-	/* Enable dcmi */
+	 
 	reg_set(dcmi->regs, DCMI_CR, CR_ENABLE);
 
 	dcmi->sequence = 0;
@@ -786,10 +752,7 @@ static int dcmi_start_streaming(struct vb2_queue *vq, unsigned int count)
 	dcmi->overrun_count = 0;
 	dcmi->buffers_count = 0;
 
-	/*
-	 * Start transfer if at least one buffer has been queued,
-	 * otherwise transfer is deferred at buffer queueing
-	 */
+	 
 	if (list_empty(&dcmi->buffers)) {
 		dev_dbg(dcmi->dev, "Start streaming is deferred to next buffer queueing\n");
 		dcmi->state = WAIT_FOR_BUFFER;
@@ -812,7 +775,7 @@ static int dcmi_start_streaming(struct vb2_queue *vq, unsigned int count)
 		goto err_pipeline_stop;
 	}
 
-	/* Enable interruptions */
+	 
 	if (dcmi->sd_format->fourcc == V4L2_PIX_FMT_JPEG)
 		reg_set(dcmi->regs, DCMI_IER, IT_FRAME | IT_OVR | IT_ERR);
 	else
@@ -830,10 +793,7 @@ err_pm_put:
 	pm_runtime_put(dcmi->dev);
 err_unlocked:
 	spin_lock_irq(&dcmi->irqlock);
-	/*
-	 * Return all buffers to vb2 in QUEUED state.
-	 * This will give ownership back to userspace
-	 */
+	 
 	list_for_each_entry_safe(buf, node, &dcmi->buffers, list) {
 		list_del_init(&buf->list);
 		vb2_buffer_done(&buf->vb.vb2_buf, VB2_BUF_STATE_QUEUED);
@@ -859,13 +819,13 @@ static void dcmi_stop_streaming(struct vb2_queue *vq)
 
 	spin_lock_irq(&dcmi->irqlock);
 
-	/* Disable interruptions */
+	 
 	reg_clear(dcmi->regs, DCMI_IER, IT_FRAME | IT_OVR | IT_ERR);
 
-	/* Disable DCMI */
+	 
 	reg_clear(dcmi->regs, DCMI_CR, CR_ENABLE);
 
-	/* Return all queued buffers to vb2 in ERROR state */
+	 
 	list_for_each_entry_safe(buf, node, &dcmi->buffers, list) {
 		list_del_init(&buf->list);
 		vb2_buffer_done(&buf->vb.vb2_buf, VB2_BUF_STATE_ERROR);
@@ -876,7 +836,7 @@ static void dcmi_stop_streaming(struct vb2_queue *vq)
 
 	spin_unlock_irq(&dcmi->irqlock);
 
-	/* Stop all pending DMA operations */
+	 
 	mutex_lock(&dcmi->dma_lock);
 	dmaengine_terminate_sync(dcmi->dma_chan);
 	mutex_unlock(&dcmi->dma_lock);
@@ -976,19 +936,16 @@ static int dcmi_try_fmt(struct stm32_dcmi *dcmi, struct v4l2_format *f,
 		pix->pixelformat = sd_fmt->fourcc;
 	}
 
-	/* Limit to hardware capabilities */
+	 
 	pix->width = clamp(pix->width, MIN_WIDTH, MAX_WIDTH);
 	pix->height = clamp(pix->height, MIN_HEIGHT, MAX_HEIGHT);
 
-	/* No crop if JPEG is requested */
+	 
 	do_crop = dcmi->do_crop && (pix->pixelformat != V4L2_PIX_FMT_JPEG);
 
 	if (do_crop && dcmi->num_of_sd_framesizes) {
 		struct dcmi_framesize outer_sd_fsize;
-		/*
-		 * If crop is requested and sensor have discrete frame sizes,
-		 * select the frame size that is just larger than request
-		 */
+		 
 		__find_outer_frame_size(dcmi, pix, &outer_sd_fsize);
 		pix->width = outer_sd_fsize.width;
 		pix->height = outer_sd_fsize.height;
@@ -999,10 +956,10 @@ static int dcmi_try_fmt(struct stm32_dcmi *dcmi, struct v4l2_format *f,
 	if (ret < 0)
 		return ret;
 
-	/* Update pix regarding to what sensor can do */
+	 
 	v4l2_fill_pix_format(pix, &format.format);
 
-	/* Save resolution that sensor can actually do */
+	 
 	sd_fsize.width = pix->width;
 	sd_fsize.height = pix->height;
 
@@ -1010,10 +967,7 @@ static int dcmi_try_fmt(struct stm32_dcmi *dcmi, struct v4l2_format *f,
 		struct v4l2_rect c = dcmi->crop;
 		struct v4l2_rect max_rect;
 
-		/*
-		 * Adjust crop by making the intersection between
-		 * format resolution request and crop request
-		 */
+		 
 		max_rect.top = 0;
 		max_rect.left = 0;
 		max_rect.width = pix->width;
@@ -1023,7 +977,7 @@ static int dcmi_try_fmt(struct stm32_dcmi *dcmi, struct v4l2_format *f,
 		c.left = clamp_t(s32, c.left, 0, pix->width - c.width);
 		dcmi->crop = c;
 
-		/* Adjust format resolution request to crop */
+		 
 		pix->width = dcmi->crop.width;
 		pix->height = dcmi->crop.height;
 	}
@@ -1051,22 +1005,17 @@ static int dcmi_set_fmt(struct stm32_dcmi *dcmi, struct v4l2_format *f)
 	struct v4l2_pix_format *pix = &f->fmt.pix;
 	int ret;
 
-	/*
-	 * Try format, fmt.width/height could have been changed
-	 * to match sensor capability or crop request
-	 * sd_format & sd_framesize will contain what subdev
-	 * can do for this request.
-	 */
+	 
 	ret = dcmi_try_fmt(dcmi, f, &sd_format, &sd_framesize);
 	if (ret)
 		return ret;
 
-	/* Disable crop if JPEG is requested or BT656 bus is selected */
+	 
 	if (pix->pixelformat == V4L2_PIX_FMT_JPEG &&
 	    dcmi->bus_type != V4L2_MBUS_BT656)
 		dcmi->do_crop = false;
 
-	/* pix to mbus format */
+	 
 	v4l2_fill_mbus_format(mf, pix,
 			      sd_format->mbus_code);
 	mf->width = sd_framesize.width;
@@ -1175,9 +1124,7 @@ static int dcmi_get_sensor_bounds(struct stm32_dcmi *dcmi,
 	unsigned int i;
 	int ret;
 
-	/*
-	 * Get sensor bounds first
-	 */
+	 
 	ret = v4l2_subdev_call(dcmi->source, pad, get_selection,
 			       NULL, &bounds);
 	if (!ret)
@@ -1185,11 +1132,7 @@ static int dcmi_get_sensor_bounds(struct stm32_dcmi *dcmi,
 	if (ret != -ENOIOCTLCMD)
 		return ret;
 
-	/*
-	 * If selection is not implemented,
-	 * fallback by enumerating sensor frame sizes
-	 * and take the largest one
-	 */
+	 
 	max_width = 0;
 	max_height = 0;
 	max_pixsize = 0;
@@ -1211,10 +1154,7 @@ static int dcmi_get_sensor_bounds(struct stm32_dcmi *dcmi,
 		return 0;
 	}
 
-	/*
-	 * If frame sizes enumeration is not implemented,
-	 * fallback by getting current sensor frame size
-	 */
+	 
 	ret = dcmi_get_sensor_format(dcmi, &pix);
 	if (ret)
 		return ret;
@@ -1269,17 +1209,13 @@ static int dcmi_s_selection(struct file *file, void *priv,
 	    s->target != V4L2_SEL_TGT_CROP)
 		return -EINVAL;
 
-	/* Reset sensor resolution to max resolution */
+	 
 	pix.pixelformat = dcmi->fmt.fmt.pix.pixelformat;
 	pix.width = dcmi->sd_bounds.width;
 	pix.height = dcmi->sd_bounds.height;
 	dcmi_set_sensor_format(dcmi, &pix);
 
-	/*
-	 * Make the intersection between
-	 * sensor resolution
-	 * and crop request
-	 */
+	 
 	max_rect.top = 0;
 	max_rect.left = 0;
 	max_rect.width = pix.width;
@@ -1292,14 +1228,14 @@ static int dcmi_s_selection(struct file *file, void *priv,
 	      r.left == dcmi->sd_bounds.left &&
 	      r.width == dcmi->sd_bounds.width &&
 	      r.height == dcmi->sd_bounds.height)) {
-		/* Crop if request is different than sensor resolution */
+		 
 		dcmi->do_crop = true;
 		dcmi->crop = r;
 		dev_dbg(dcmi->dev, "s_selection: crop %ux%u@(%u,%u) from %ux%u\n",
 			r.width, r.height, r.left, r.top,
 			pix.width, pix.height);
 	} else {
-		/* Disable crop */
+		 
 		dcmi->do_crop = false;
 		dev_dbg(dcmi->dev, "s_selection: crop is disabled\n");
 	}
@@ -1419,7 +1355,7 @@ static int dcmi_enum_frameintervals(struct file *file, void *fh,
 
 static const struct of_device_id stm32_dcmi_of_match[] = {
 	{ .compatible = "st,stm32-dcmi"},
-	{ /* end node */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, stm32_dcmi_of_match);
 
@@ -1655,23 +1591,23 @@ static int dcmi_formats_init(struct stm32_dcmi *dcmi)
 			if (dcmi_formats[i].mbus_code != mbus_code.code)
 				continue;
 
-			/* Exclude JPEG if BT656 bus is selected */
+			 
 			if (dcmi_formats[i].fourcc == V4L2_PIX_FMT_JPEG &&
 			    dcmi->bus_type == V4L2_MBUS_BT656)
 				continue;
 
-			/* Code supported, have we got this fourcc yet? */
+			 
 			for (j = 0; j < num_fmts; j++)
 				if (sd_fmts[j]->fourcc ==
 						dcmi_formats[i].fourcc) {
-					/* Already available */
+					 
 					dev_dbg(dcmi->dev, "Skipping fourcc/code: %4.4s/0x%x\n",
 						(char *)&sd_fmts[j]->fourcc,
 						mbus_code.code);
 					break;
 				}
 			if (j == num_fmts) {
-				/* New */
+				 
 				sd_fmts[num_fmts++] = dcmi_formats + i;
 				dev_dbg(dcmi->dev, "Supported fourcc/code: %4.4s/0x%x\n",
 					(char *)&sd_fmts[num_fmts - 1]->fourcc,
@@ -1711,7 +1647,7 @@ static int dcmi_framesizes_init(struct stm32_dcmi *dcmi)
 	unsigned int ret;
 	unsigned int i;
 
-	/* Allocate discrete framesizes array */
+	 
 	while (!v4l2_subdev_call(subdev, pad, enum_frame_size,
 				 NULL, &fse))
 		fse.index++;
@@ -1729,7 +1665,7 @@ static int dcmi_framesizes_init(struct stm32_dcmi *dcmi)
 		return -ENOMEM;
 	}
 
-	/* Fill array with sensor supported framesizes */
+	 
 	dev_dbg(dcmi->dev, "Sensor supports %u frame sizes:\n", num_fsize);
 	for (i = 0; i < dcmi->num_of_sd_framesizes; i++) {
 		fse.index = i;
@@ -1750,11 +1686,7 @@ static int dcmi_graph_notify_complete(struct v4l2_async_notifier *notifier)
 	struct stm32_dcmi *dcmi = notifier_to_dcmi(notifier);
 	int ret;
 
-	/*
-	 * Now that the graph is complete,
-	 * we search for the source subdevice
-	 * in order to expose it through V4L2 interface
-	 */
+	 
 	dcmi->source = media_entity_to_v4l2_subdev(dcmi_find_source(dcmi));
 	if (!dcmi->source) {
 		dev_err(dcmi->dev, "Source subdevice not found\n");
@@ -1806,7 +1738,7 @@ static void dcmi_graph_notify_unbind(struct v4l2_async_notifier *notifier,
 
 	dev_dbg(dcmi->dev, "Removing %s\n", video_device_node_name(dcmi->vdev));
 
-	/* Checks internally if vdev has been init or not */
+	 
 	video_unregister_device(dcmi->vdev);
 }
 
@@ -1820,10 +1752,7 @@ static int dcmi_graph_notify_bound(struct v4l2_async_notifier *notifier,
 
 	dev_dbg(dcmi->dev, "Subdev \"%s\" bound\n", subdev->name);
 
-	/*
-	 * Link this sub-device to DCMI, it could be
-	 * a parallel camera sensor or a bridge
-	 */
+	 
 	src_pad = media_entity_get_fwnode_pad(&subdev->entity,
 					      subdev->fwnode,
 					      MEDIA_PAD_FL_SOURCE);
@@ -1914,7 +1843,7 @@ static int dcmi_probe(struct platform_device *pdev)
 		return dev_err_probe(&pdev->dev, PTR_ERR(dcmi->rstc),
 				     "Could not get reset control\n");
 
-	/* Get bus characteristics from devicetree */
+	 
 	np = of_graph_get_next_endpoint(np, NULL);
 	if (!np) {
 		dev_err(&pdev->dev, "Could not find the endpoint\n");
@@ -1983,12 +1912,12 @@ static int dcmi_probe(struct platform_device *pdev)
 
 	dcmi->v4l2_dev.mdev = &dcmi->mdev;
 
-	/* Initialize media device */
+	 
 	strscpy(dcmi->mdev.model, DRV_NAME, sizeof(dcmi->mdev.model));
 	dcmi->mdev.dev = &pdev->dev;
 	media_device_init(&dcmi->mdev);
 
-	/* Initialize the top-level structure */
+	 
 	ret = v4l2_device_register(&pdev->dev, &dcmi->v4l2_dev);
 	if (ret)
 		goto err_media_device_cleanup;
@@ -1999,7 +1928,7 @@ static int dcmi_probe(struct platform_device *pdev)
 		goto err_device_unregister;
 	}
 
-	/* Video node */
+	 
 	dcmi->vdev->fops = &dcmi_fops;
 	dcmi->vdev->v4l2_dev = &dcmi->v4l2_dev;
 	dcmi->vdev->queue = &dcmi->queue;
@@ -2011,7 +1940,7 @@ static int dcmi_probe(struct platform_device *pdev)
 				  V4L2_CAP_READWRITE;
 	video_set_drvdata(dcmi->vdev, dcmi);
 
-	/* Media entity pads */
+	 
 	dcmi->vid_cap_pad.flags = MEDIA_PAD_FL_SINK;
 	ret = media_entity_pads_init(&dcmi->vdev->entity,
 				     1, &dcmi->vid_cap_pad);
@@ -2030,7 +1959,7 @@ static int dcmi_probe(struct platform_device *pdev)
 	dev_dbg(dcmi->dev, "Device registered as %s\n",
 		video_device_node_name(dcmi->vdev));
 
-	/* Buffer queue */
+	 
 	q->type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
 	q->io_modes = VB2_MMAP | VB2_READ | VB2_DMABUF;
 	q->lock = &dcmi->lock;
@@ -2053,7 +1982,7 @@ static int dcmi_probe(struct platform_device *pdev)
 	if (ret < 0)
 		goto err_media_entity_cleanup;
 
-	/* Reset device */
+	 
 	ret = reset_control_assert(dcmi->rstc);
 	if (ret) {
 		dev_err(&pdev->dev, "Failed to assert the reset line\n");
@@ -2129,10 +2058,10 @@ static __maybe_unused int dcmi_runtime_resume(struct device *dev)
 
 static __maybe_unused int dcmi_suspend(struct device *dev)
 {
-	/* disable clock */
+	 
 	pm_runtime_force_suspend(dev);
 
-	/* change pinctrl state */
+	 
 	pinctrl_pm_select_sleep_state(dev);
 
 	return 0;
@@ -2140,10 +2069,10 @@ static __maybe_unused int dcmi_suspend(struct device *dev)
 
 static __maybe_unused int dcmi_resume(struct device *dev)
 {
-	/* restore pinctl default state */
+	 
 	pinctrl_pm_select_default_state(dev);
 
-	/* clock enable */
+	 
 	pm_runtime_force_resume(dev);
 
 	return 0;

@@ -1,6 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0+
-//
-// Copyright 2017-2019 NXP
+
+
+
 
 #include <linux/interrupt.h>
 #include <linux/clockchips.h>
@@ -30,11 +30,7 @@ static void sysctr_timer_enable(bool enable)
 
 static void sysctr_irq_acknowledge(void)
 {
-	/*
-	 * clear the enable bit(EN =0) will clear
-	 * the status bit(ISTAT = 0), then the interrupt
-	 * signal will be negated(acknowledged).
-	 */
+	 
 	sysctr_timer_enable(false);
 }
 
@@ -135,7 +131,7 @@ static int __init sysctr_timer_init(struct device_node *np)
 		return ret;
 
 	if (!of_property_read_bool(np, "nxp,no-divider")) {
-		/* system counter clock is divided by 3 internally */
+		 
 		to_sysctr.of_clk.rate /= SYS_CTR_CLK_DIV;
 	}
 

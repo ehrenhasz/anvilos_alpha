@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2021, Linaro Limited
+
+
 
 #include <linux/module.h>
 #include <linux/slab.h>
@@ -164,7 +164,7 @@ static int wcd9380_update_status(struct sdw_slave *slave,
 	struct wcd938x_sdw_priv *wcd = dev_get_drvdata(&slave->dev);
 
 	if (wcd->regmap && (status == SDW_SLAVE_ATTACHED)) {
-		/* Write out any cached changes that happened between probe and attach */
+		 
 		regcache_cache_only(wcd->regmap, false);
 		return regcache_sync(wcd->regmap);
 	}
@@ -1225,10 +1225,7 @@ static int wcd9380_probe(struct sdw_slave *pdev,
 	if (!wcd)
 		return -ENOMEM;
 
-	/**
-	 * Port map index starts with 0, however the data port for this codec
-	 * are from index 1
-	 */
+	 
 	if (of_property_read_bool(dev->of_node, "qcom,tx-port-mapping")) {
 		wcd->is_tx = true;
 		ret = of_property_read_u32_array(dev->of_node, "qcom,tx-port-mapping",
@@ -1268,7 +1265,7 @@ static int wcd9380_probe(struct sdw_slave *pdev,
 			return dev_err_probe(dev, PTR_ERR(wcd->regmap),
 					     "Regmap init failed\n");
 
-		/* Start in cache-only until device is enumerated */
+		 
 		regcache_cache_only(wcd->regmap, true);
 	}
 

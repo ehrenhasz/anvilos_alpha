@@ -1,18 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Thunderbolt link controller support
- *
- * Copyright (C) 2019, Intel Corporation
- * Author: Mika Westerberg <mika.westerberg@linux.intel.com>
- */
+
+ 
 
 #include "tb.h"
 
-/**
- * tb_lc_read_uuid() - Read switch UUID from link controller common register
- * @sw: Switch whose UUID is read
- * @uuid: UUID is placed here
- */
+ 
 int tb_lc_read_uuid(struct tb_switch *sw, u32 *uuid)
 {
 	if (!sw->cap_lc)
@@ -37,7 +28,7 @@ static int find_port_lc_cap(struct tb_port *port)
 	if (ret)
 		return ret;
 
-	/* Start of port LC registers */
+	 
 	start = (desc & TB_LC_DESC_SIZE_MASK) >> TB_LC_DESC_SIZE_SHIFT;
 	size = (desc & TB_LC_DESC_PORT_SIZE_MASK) >> TB_LC_DESC_PORT_SIZE_SHIFT;
 	phys = tb_phy_port_from_link(port->port);
@@ -63,7 +54,7 @@ static int tb_lc_set_port_configured(struct tb_port *port, bool configured)
 	if (ret)
 		return ret;
 
-	/* Resolve correct lane */
+	 
 	if (port->port % 2)
 		lane = TB_LC_SX_CTRL_L1C;
 	else
@@ -82,23 +73,13 @@ static int tb_lc_set_port_configured(struct tb_port *port, bool configured)
 	return tb_sw_write(sw, &ctrl, TB_CFG_SWITCH, cap + TB_LC_SX_CTRL, 1);
 }
 
-/**
- * tb_lc_configure_port() - Let LC know about configured port
- * @port: Port that is set as configured
- *
- * Sets the port configured for power management purposes.
- */
+ 
 int tb_lc_configure_port(struct tb_port *port)
 {
 	return tb_lc_set_port_configured(port, true);
 }
 
-/**
- * tb_lc_unconfigure_port() - Let LC know about unconfigured port
- * @port: Port that is set as configured
- *
- * Sets the port unconfigured for power management purposes.
- */
+ 
 void tb_lc_unconfigure_port(struct tb_port *port)
 {
 	tb_lc_set_port_configured(port, false);
@@ -121,7 +102,7 @@ static int tb_lc_set_xdomain_configured(struct tb_port *port, bool configure)
 	if (ret)
 		return ret;
 
-	/* Resolve correct lane */
+	 
 	if (port->port % 2)
 		lane = TB_LC_SX_CTRL_L1D;
 	else
@@ -135,39 +116,19 @@ static int tb_lc_set_xdomain_configured(struct tb_port *port, bool configure)
 	return tb_sw_write(sw, &ctrl, TB_CFG_SWITCH, cap + TB_LC_SX_CTRL, 1);
 }
 
-/**
- * tb_lc_configure_xdomain() - Inform LC that the link is XDomain
- * @port: Switch downstream port connected to another host
- *
- * Sets the lane configured for XDomain accordingly so that the LC knows
- * about this. Returns %0 in success and negative errno in failure.
- */
+ 
 int tb_lc_configure_xdomain(struct tb_port *port)
 {
 	return tb_lc_set_xdomain_configured(port, true);
 }
 
-/**
- * tb_lc_unconfigure_xdomain() - Unconfigure XDomain from port
- * @port: Switch downstream port that was connected to another host
- *
- * Unsets the lane XDomain configuration.
- */
+ 
 void tb_lc_unconfigure_xdomain(struct tb_port *port)
 {
 	tb_lc_set_xdomain_configured(port, false);
 }
 
-/**
- * tb_lc_start_lane_initialization() - Start lane initialization
- * @port: Device router lane 0 adapter
- *
- * Starts lane initialization for @port after the router resumed from
- * sleep. Should be called for those downstream lane adapters that were
- * not connected (tb_lc_configure_port() was not called) before sleep.
- *
- * Returns %0 in success and negative errno in case of failure.
- */
+ 
 int tb_lc_start_lane_initialization(struct tb_port *port)
 {
 	struct tb_switch *sw = port->sw;
@@ -193,13 +154,7 @@ int tb_lc_start_lane_initialization(struct tb_port *port)
 	return tb_sw_write(sw, &ctrl, TB_CFG_SWITCH, cap + TB_LC_SX_CTRL, 1);
 }
 
-/**
- * tb_lc_is_clx_supported() - Check whether CLx is supported by the lane adapter
- * @port: Lane adapter
- *
- * TB_LC_LINK_ATTR_CPS bit reflects if the link supports CLx including
- * active cables (if connected on the link).
- */
+ 
 bool tb_lc_is_clx_supported(struct tb_port *port)
 {
 	struct tb_switch *sw = port->sw;
@@ -217,12 +172,7 @@ bool tb_lc_is_clx_supported(struct tb_port *port)
 	return !!(val & TB_LC_LINK_ATTR_CPS);
 }
 
-/**
- * tb_lc_is_usb_plugged() - Is there USB device connected to port
- * @port: Device router lane 0 adapter
- *
- * Returns true if the @port has USB type-C device connected.
- */
+ 
 bool tb_lc_is_usb_plugged(struct tb_port *port)
 {
 	struct tb_switch *sw = port->sw;
@@ -243,12 +193,7 @@ bool tb_lc_is_usb_plugged(struct tb_port *port)
 	return !!(val & TB_LC_CS_42_USB_PLUGGED);
 }
 
-/**
- * tb_lc_is_xhci_connected() - Is the internal xHCI connected
- * @port: Device router lane 0 adapter
- *
- * Returns true if the internal xHCI has been connected to @port.
- */
+ 
 bool tb_lc_is_xhci_connected(struct tb_port *port)
 {
 	struct tb_switch *sw = port->sw;
@@ -294,14 +239,7 @@ static int __tb_lc_xhci_connect(struct tb_port *port, bool connect)
 	return tb_sw_write(sw, &val, TB_CFG_SWITCH, cap + TB_LC_LINK_REQ, 1);
 }
 
-/**
- * tb_lc_xhci_connect() - Connect internal xHCI
- * @port: Device router lane 0 adapter
- *
- * Tells LC to connect the internal xHCI to @port. Returns %0 on success
- * and negative errno in case of failure. Can be called for Thunderbolt 3
- * routers only.
- */
+ 
 int tb_lc_xhci_connect(struct tb_port *port)
 {
 	int ret;
@@ -314,13 +252,7 @@ int tb_lc_xhci_connect(struct tb_port *port)
 	return 0;
 }
 
-/**
- * tb_lc_xhci_disconnect() - Disconnect internal xHCI
- * @port: Device router lane 0 adapter
- *
- * Tells LC to disconnect the internal xHCI from @port. Can be called
- * for Thunderbolt 3 routers only.
- */
+ 
 void tb_lc_xhci_disconnect(struct tb_port *port)
 {
 	__tb_lc_xhci_connect(port, false);
@@ -333,10 +265,7 @@ static int tb_lc_set_wake_one(struct tb_switch *sw, unsigned int offset,
 	u32 ctrl;
 	int ret;
 
-	/*
-	 * Enable wake on PCIe and USB4 (wake coming from another
-	 * router).
-	 */
+	 
 	ret = tb_sw_read(sw, &ctrl, TB_CFG_SWITCH,
 			 offset + TB_LC_SX_CTRL, 1);
 	if (ret)
@@ -357,13 +286,7 @@ static int tb_lc_set_wake_one(struct tb_switch *sw, unsigned int offset,
 	return tb_sw_write(sw, &ctrl, TB_CFG_SWITCH, offset + TB_LC_SX_CTRL, 1);
 }
 
-/**
- * tb_lc_set_wake() - Enable/disable wake
- * @sw: Switch whose wakes to configure
- * @flags: Wakeup flags (%0 to disable)
- *
- * For each LC sets wake bits accordingly.
- */
+ 
 int tb_lc_set_wake(struct tb_switch *sw, unsigned int flags)
 {
 	int start, size, nlc, ret, i;
@@ -379,12 +302,12 @@ int tb_lc_set_wake(struct tb_switch *sw, unsigned int flags)
 	if (ret)
 		return ret;
 
-	/* Figure out number of link controllers */
+	 
 	nlc = desc & TB_LC_DESC_NLC_MASK;
 	start = (desc & TB_LC_DESC_SIZE_MASK) >> TB_LC_DESC_SIZE_SHIFT;
 	size = (desc & TB_LC_DESC_PORT_SIZE_MASK) >> TB_LC_DESC_PORT_SIZE_SHIFT;
 
-	/* For each link controller set sleep bit */
+	 
 	for (i = 0; i < nlc; i++) {
 		unsigned int offset = sw->cap_lc + start + i * size;
 
@@ -396,13 +319,7 @@ int tb_lc_set_wake(struct tb_switch *sw, unsigned int flags)
 	return 0;
 }
 
-/**
- * tb_lc_set_sleep() - Inform LC that the switch is going to sleep
- * @sw: Switch to set sleep
- *
- * Let the switch link controllers know that the switch is going to
- * sleep.
- */
+ 
 int tb_lc_set_sleep(struct tb_switch *sw)
 {
 	int start, size, nlc, ret, i;
@@ -415,12 +332,12 @@ int tb_lc_set_sleep(struct tb_switch *sw)
 	if (ret)
 		return ret;
 
-	/* Figure out number of link controllers */
+	 
 	nlc = desc & TB_LC_DESC_NLC_MASK;
 	start = (desc & TB_LC_DESC_SIZE_MASK) >> TB_LC_DESC_SIZE_SHIFT;
 	size = (desc & TB_LC_DESC_PORT_SIZE_MASK) >> TB_LC_DESC_PORT_SIZE_SHIFT;
 
-	/* For each link controller set sleep bit */
+	 
 	for (i = 0; i < nlc; i++) {
 		unsigned int offset = sw->cap_lc + start + i * size;
 		u32 ctrl;
@@ -440,13 +357,7 @@ int tb_lc_set_sleep(struct tb_switch *sw)
 	return 0;
 }
 
-/**
- * tb_lc_lane_bonding_possible() - Is lane bonding possible towards switch
- * @sw: Switch to check
- *
- * Checks whether conditions for lane bonding from parent to @sw are
- * possible.
- */
+ 
 bool tb_lc_lane_bonding_possible(struct tb_switch *sw)
 {
 	struct tb_port *up;
@@ -473,7 +384,7 @@ static int tb_lc_dp_sink_from_port(const struct tb_switch *sw,
 {
 	struct tb_port *port;
 
-	/* The first DP IN port is sink 0 and second is sink 1 */
+	 
 	tb_switch_for_each_port(sw, port) {
 		if (tb_port_is_dpin(port))
 			return in != port;
@@ -492,10 +403,7 @@ static int tb_lc_dp_sink_available(struct tb_switch *sw, int sink)
 	if (ret)
 		return ret;
 
-	/*
-	 * Sink is available for CM/SW to use if the allocation valie is
-	 * either 0 or 1.
-	 */
+	 
 	if (!sink) {
 		alloc = val & TB_LC_SNK_ALLOCATION_SNK0_MASK;
 		if (!alloc || alloc == TB_LC_SNK_ALLOCATION_SNK0_CM)
@@ -510,22 +418,12 @@ static int tb_lc_dp_sink_available(struct tb_switch *sw, int sink)
 	return -EBUSY;
 }
 
-/**
- * tb_lc_dp_sink_query() - Is DP sink available for DP IN port
- * @sw: Switch whose DP sink is queried
- * @in: DP IN port to check
- *
- * Queries through LC SNK_ALLOCATION registers whether DP sink is available
- * for the given DP IN port or not.
- */
+ 
 bool tb_lc_dp_sink_query(struct tb_switch *sw, struct tb_port *in)
 {
 	int sink;
 
-	/*
-	 * For older generations sink is always available as there is no
-	 * allocation mechanism.
-	 */
+	 
 	if (sw->generation < 3)
 		return true;
 
@@ -536,16 +434,7 @@ bool tb_lc_dp_sink_query(struct tb_switch *sw, struct tb_port *in)
 	return !tb_lc_dp_sink_available(sw, sink);
 }
 
-/**
- * tb_lc_dp_sink_alloc() - Allocate DP sink
- * @sw: Switch whose DP sink is allocated
- * @in: DP IN port the DP sink is allocated for
- *
- * Allocate DP sink for @in via LC SNK_ALLOCATION registers. If the
- * resource is available and allocation is successful returns %0. In all
- * other cases returs negative errno. In particular %-EBUSY is returned if
- * the resource was not available.
- */
+ 
 int tb_lc_dp_sink_alloc(struct tb_switch *sw, struct tb_port *in)
 {
 	int ret, sink;
@@ -586,13 +475,7 @@ int tb_lc_dp_sink_alloc(struct tb_switch *sw, struct tb_port *in)
 	return 0;
 }
 
-/**
- * tb_lc_dp_sink_dealloc() - De-allocate DP sink
- * @sw: Switch whose DP sink is de-allocated
- * @in: DP IN port whose DP sink is de-allocated
- *
- * De-allocate DP sink from @in using LC SNK_ALLOCATION registers.
- */
+ 
 int tb_lc_dp_sink_dealloc(struct tb_switch *sw, struct tb_port *in)
 {
 	int ret, sink;
@@ -605,7 +488,7 @@ int tb_lc_dp_sink_dealloc(struct tb_switch *sw, struct tb_port *in)
 	if (sink < 0)
 		return sink;
 
-	/* Needs to be owned by CM/SW */
+	 
 	ret = tb_lc_dp_sink_available(sw, sink);
 	if (ret)
 		return ret;
@@ -629,13 +512,7 @@ int tb_lc_dp_sink_dealloc(struct tb_switch *sw, struct tb_port *in)
 	return 0;
 }
 
-/**
- * tb_lc_force_power() - Forces LC to be powered on
- * @sw: Thunderbolt switch
- *
- * This is useful to let authentication cycle pass even without
- * a Thunderbolt link present.
- */
+ 
 int tb_lc_force_power(struct tb_switch *sw)
 {
 	u32 in = 0xffff;

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2016 Namjae Jeon <linkinjeon@kernel.org>
- * Copyright (C) 2019 Samsung Electronics Co., Ltd.
- */
+
+ 
 
 #include <linux/fs.h>
 #include <linux/filelock.h>
@@ -52,9 +49,7 @@ static void fd_limit_close(void)
 	atomic_long_inc(&fd_limit);
 }
 
-/*
- * INODE hash
- */
+ 
 
 static unsigned long inode_hash(struct super_block *sb, unsigned long hashval)
 {
@@ -228,7 +223,7 @@ int __init ksmbd_inode_hash_init(void)
 
 	size = bucketsize << inode_hash_shift;
 
-	/* init master fp hash table */
+	 
 	inode_hashtable = vmalloc(size);
 	if (!inode_hashtable)
 		return -ENOMEM;
@@ -314,9 +309,7 @@ static void __ksmbd_close_fd(struct ksmbd_file_table *ft, struct ksmbd_file *fp)
 	if (!IS_ERR_OR_NULL(filp))
 		fput(filp);
 
-	/* because the reference count of fp is 0, it is guaranteed that
-	 * there are not accesses to fp->lock_list.
-	 */
+	 
 	list_for_each_entry_safe(smb_lock, tmp_lock, &fp->lock_list, flist) {
 		spin_lock(&fp->conn->llist_lock);
 		list_del(&smb_lock->clist);

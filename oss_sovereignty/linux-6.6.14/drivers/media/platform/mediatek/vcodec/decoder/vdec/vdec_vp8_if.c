@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2016 MediaTek Inc.
- * Author: Jungchang Tsao <jungchang.tsao@mediatek.com>
- *	   PC Chen <pc.chen@mediatek.com>
- */
+
+ 
 
 #include <linux/slab.h>
 #include "../vdec_drv_if.h"
@@ -12,13 +8,13 @@
 #include "../vdec_vpu_if.h"
 #include "../vdec_drv_base.h"
 
-/* Decoding picture buffer size (3 reference frames plus current frame) */
+ 
 #define VP8_DPB_SIZE			4
 
-/* HW working buffer size (bytes) */
+ 
 #define VP8_WORKING_BUF_SZ		(45 * 4096)
 
-/* HW control register address */
+ 
 #define VP8_SEGID_DRAM_ADDR		0x3c
 #define VP8_HW_VLD_ADDR			0x93C
 #define VP8_HW_VLD_VALUE		0x940
@@ -38,7 +34,7 @@
 #define VP8_MAX_FRM_BUF_NUM		5
 #define VP8_MAX_FRM_BUF_NODE_NUM	(VP8_MAX_FRM_BUF_NUM * 2)
 
-/* required buffer size (bytes) to store decode information */
+ 
 #define VP8_HW_SEGMENT_DATA_SZ		272
 #define VP8_HW_SEGMENT_UINT		4
 
@@ -48,18 +44,7 @@
 #define VP8_DEC_TABLE_OFFSET		2
 #define VP8_DEC_TABLE_RW_UNIT		4
 
-/**
- * struct vdec_vp8_dec_info - decode misc information
- * @working_buf_dma   : working buffer dma address
- * @prev_y_dma        : previous decoded frame buffer Y plane address
- * @cur_y_fb_dma      : current plane Y frame buffer dma address
- * @cur_c_fb_dma      : current plane C frame buffer dma address
- * @bs_dma	      : bitstream dma address
- * @bs_sz	      : bitstream size
- * @resolution_changed: resolution change flag 1 - changed,  0 - not change
- * @show_frame	      : display this frame or not
- * @wait_key_frame    : wait key frame coming
- */
+ 
 struct vdec_vp8_dec_info {
 	uint64_t working_buf_dma;
 	uint64_t prev_y_dma;
@@ -72,14 +57,7 @@ struct vdec_vp8_dec_info {
 	uint32_t wait_key_frame;
 };
 
-/**
- * struct vdec_vp8_vsi - VPU shared information
- * @dec			: decoding information
- * @pic			: picture information
- * @dec_table		: decoder coefficient table
- * @segment_buf		: segmentation buffer
- * @load_data		: flag to indicate reload decode data
- */
+ 
 struct vdec_vp8_vsi {
 	struct vdec_vp8_dec_info dec;
 	struct vdec_pic_info pic;
@@ -88,15 +66,7 @@ struct vdec_vp8_vsi {
 	uint32_t load_data;
 };
 
-/**
- * struct vdec_vp8_hw_reg_base - HW register base
- * @misc	: base address for misc
- * @ld		: base address for ld
- * @top		: base address for top
- * @cm		: base address for cm
- * @hwd		: base address for hwd
- * @hwb		: base address for hwb
- */
+ 
 struct vdec_vp8_hw_reg_base {
 	void __iomem *misc;
 	void __iomem *ld;
@@ -106,13 +76,7 @@ struct vdec_vp8_hw_reg_base {
 	void __iomem *hwb;
 };
 
-/**
- * struct vdec_vp8_vpu_inst - VPU instance for VP8 decode
- * @wq_hd	: Wait queue to wait VPU message ack
- * @signaled	: 1 - Host has received ack message from VPU, 0 - not receive
- * @failure	: VPU execution result status 0 - success, others - fail
- * @inst_addr	: VPU decoder instance address
- */
+ 
 struct vdec_vp8_vpu_inst {
 	wait_queue_head_t wq_hd;
 	int signaled;
@@ -120,33 +84,9 @@ struct vdec_vp8_vpu_inst {
 	uint32_t inst_addr;
 };
 
-/* frame buffer (fb) list
- * [available_fb_node_list]  - decode fb are initialized to 0 and populated in
- * [fb_use_list]  - fb is set after decode and is moved to this list
- * [fb_free_list] - fb is not needed for reference will be moved from
- *		     [fb_use_list] to [fb_free_list] and
- *		     once user remove fb from [fb_free_list],
- *		     it is circulated back to [available_fb_node_list]
- * [fb_disp_list] - fb is set after decode and is moved to this list
- *                   once user remove fb from [fb_disp_list] it is
- *                   circulated back to [available_fb_node_list]
- */
+ 
 
-/**
- * struct vdec_vp8_inst - VP8 decoder instance
- * @cur_fb		   : current frame buffer
- * @dec_fb		   : decode frame buffer node
- * @available_fb_node_list : list to store available frame buffer node
- * @fb_use_list		   : list to store frame buffer in use
- * @fb_free_list	   : list to store free frame buffer
- * @fb_disp_list	   : list to store display ready frame buffer
- * @working_buf		   : HW decoder working buffer
- * @reg_base		   : HW register base address
- * @frm_cnt		   : decode frame count
- * @ctx			   : V4L2 context
- * @vpu			   : VPU instance for decoder
- * @vsi			   : VPU share information
- */
+ 
 struct vdec_vp8_inst {
 	struct vdec_fb *cur_fb;
 	struct vdec_fb_node dec_fb[VP8_MAX_FRM_BUF_NODE_NUM];
@@ -216,7 +156,7 @@ static void read_hw_segmentation_data(struct vdec_vp8_inst *inst)
 	}
 }
 
-/* reset HW and enable HW read/write data function */
+ 
 static void enable_hw_rw_function(struct vdec_vp8_inst *inst)
 {
 	u32 val = 0;
@@ -269,7 +209,7 @@ static void load_dec_table(struct vdec_vp8_inst *inst)
 
 	for (i = 0; i < VP8_DEC_TABLE_PROC_LOOP; i++) {
 		writel(addr, hwd + VP8_BSASET);
-		/* read total 11 bytes */
+		 
 		*p++ = readl(hwd + VP8_BSDSET);
 		*p++ = readl(hwd + VP8_BSDSET);
 		*p++ = readl(hwd + VP8_BSDSET) & 0xFFFFFF;
@@ -294,7 +234,7 @@ static void vp8_dec_finish(struct vdec_vp8_inst *inst)
 
 	mtk_vdec_debug(inst->ctx, "prev fb base dma=%llx", prev_y_dma);
 
-	/* put last decode ok frame to fb_free_list */
+	 
 	if (prev_y_dma != 0) {
 		list_for_each_entry(node, &inst->fb_use_list, list) {
 			struct vdec_fb *fb = (struct vdec_fb *)node->fb;
@@ -307,13 +247,13 @@ static void vp8_dec_finish(struct vdec_vp8_inst *inst)
 		}
 	}
 
-	/* available_fb_node_list -> fb_use_list */
+	 
 	node = list_first_entry(&inst->available_fb_node_list,
 				struct vdec_fb_node, list);
 	node->fb = inst->cur_fb;
 	list_move_tail(&node->list, &inst->fb_use_list);
 
-	/* available_fb_node_list -> fb_disp_list */
+	 
 	if (inst->vsi->dec.show_frame) {
 		node = list_first_entry(&inst->available_fb_node_list,
 					struct vdec_fb_node, list);
@@ -436,7 +376,7 @@ static int vdec_vp8_decode(void *h_vdec, struct mtk_vcodec_mem *bs,
 	uint64_t y_fb_dma;
 	uint64_t c_fb_dma;
 
-	/* bs NULL means flush decoder */
+	 
 	if (bs == NULL) {
 		move_fb_list_use_to_free(inst);
 		return vpu_dec_reset(vpu);
@@ -462,7 +402,7 @@ static int vdec_vp8_decode(void *h_vdec, struct mtk_vcodec_mem *bs,
 
 	bs_va = (unsigned char *)bs->va;
 
-	/* retrieve width/hight and scale info from header */
+	 
 	data = (*(bs_va + 9) << 24) | (*(bs_va + 8) << 16) |
 	       (*(bs_va + 7) << 8) | *(bs_va + 6);
 	err = vpu_dec_start(vpu, &data, 1);
@@ -483,7 +423,7 @@ static int vdec_vp8_decode(void *h_vdec, struct mtk_vcodec_mem *bs,
 		return 0;
 	}
 
-	/* wait decoder done interrupt */
+	 
 	mtk_vcodec_wait_for_done_ctx(inst->ctx, MTK_INST_IRQ_RECEIVED,
 				     WAIT_INTR_TIMEOUT_MS, 0);
 

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *  Copyright (C) 2020, Jiaxun Yang <jiaxun.yang@flygoat.com>
- *  Loongson PCH MSI support
- */
+
+ 
 
 #define pr_fmt(fmt) "pch-msi: " fmt
 
@@ -20,8 +17,8 @@ static int nr_pics;
 struct pch_msi_data {
 	struct mutex	msi_map_lock;
 	phys_addr_t	doorbell;
-	u32		irq_first;	/* The vector number that MSIs starts */
-	u32		num_irqs;	/* The number of vectors for MSIs */
+	u32		irq_first;	 
+	u32		num_irqs;	 
 	unsigned long	*msi_map;
 };
 

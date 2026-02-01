@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * LP5521 LED chip driver.
- *
- * Copyright (C) 2010 Nokia Corporation
- * Copyright (C) 2012 Texas Instruments
- *
- * Contact: Samu Onkalo <samu.p.onkalo@nokia.com>
- *          Milo(Woogyom) Kim <milo.kim@ti.com>
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/firmware.h>
@@ -25,7 +17,7 @@
 #define LP5521_MAX_LEDS			3
 #define LP5521_CMD_DIRECT		0x3F
 
-/* Registers */
+ 
 #define LP5521_REG_ENABLE		0x00
 #define LP5521_REG_OP_MODE		0x01
 #define LP5521_REG_R_PWM		0x02
@@ -41,40 +33,40 @@
 #define LP5521_REG_G_PROG_MEM		0x30
 #define LP5521_REG_B_PROG_MEM		0x50
 
-/* Base register to set LED current */
+ 
 #define LP5521_REG_LED_CURRENT_BASE	LP5521_REG_R_CURRENT
-/* Base register to set the brightness */
+ 
 #define LP5521_REG_LED_PWM_BASE		LP5521_REG_R_PWM
 
-/* Bits in ENABLE register */
-#define LP5521_MASTER_ENABLE		0x40	/* Chip master enable */
-#define LP5521_LOGARITHMIC_PWM		0x80	/* Logarithmic PWM adjustment */
+ 
+#define LP5521_MASTER_ENABLE		0x40	 
+#define LP5521_LOGARITHMIC_PWM		0x80	 
 #define LP5521_EXEC_RUN			0x2A
 #define LP5521_ENABLE_DEFAULT	\
 	(LP5521_MASTER_ENABLE | LP5521_LOGARITHMIC_PWM)
 #define LP5521_ENABLE_RUN_PROGRAM	\
 	(LP5521_ENABLE_DEFAULT | LP5521_EXEC_RUN)
 
-/* CONFIG register */
-#define LP5521_PWM_HF			0x40	/* PWM: 0 = 256Hz, 1 = 558Hz */
-#define LP5521_PWRSAVE_EN		0x20	/* 1 = Power save mode */
-#define LP5521_CP_MODE_MASK		0x18	/* Charge pump mode */
+ 
+#define LP5521_PWM_HF			0x40	 
+#define LP5521_PWRSAVE_EN		0x20	 
+#define LP5521_CP_MODE_MASK		0x18	 
 #define LP5521_CP_MODE_SHIFT		3
-#define LP5521_R_TO_BATT		0x04	/* R out: 0 = CP, 1 = Vbat */
-#define LP5521_CLK_INT			0x01	/* Internal clock */
+#define LP5521_R_TO_BATT		0x04	 
+#define LP5521_CLK_INT			0x01	 
 #define LP5521_DEFAULT_CFG		(LP5521_PWM_HF | LP5521_PWRSAVE_EN)
 
-/* Status */
+ 
 #define LP5521_EXT_CLK_USED		0x08
 
-/* default R channel current register value */
+ 
 #define LP5521_REG_R_CURR_DEFAULT	0xAF
 
-/* Reset register value */
+ 
 #define LP5521_RESET			0xFF
 
-/* Program Memory Operations */
-#define LP5521_MODE_R_M			0x30	/* Operation Mode Register */
+ 
+#define LP5521_MODE_R_M			0x30	 
 #define LP5521_MODE_G_M			0x0C
 #define LP5521_MODE_B_M			0x03
 #define LP5521_LOAD_R			0x10
@@ -88,7 +80,7 @@
 #define LP5521_B_IS_LOADING(mode)	\
 	((mode & LP5521_MODE_B_M) == LP5521_LOAD_B)
 
-#define LP5521_EXEC_R_M			0x30	/* Enable Register */
+#define LP5521_EXEC_R_M			0x30	 
 #define LP5521_EXEC_G_M			0x0C
 #define LP5521_EXEC_B_M			0x03
 #define LP5521_EXEC_M			0x3F
@@ -98,13 +90,13 @@
 
 static inline void lp5521_wait_opmode_done(void)
 {
-	/* operation mode change needs to be longer than 153 us */
+	 
 	usleep_range(200, 300);
 }
 
 static inline void lp5521_wait_enable_done(void)
 {
-	/* it takes more 488 us to update ENABLE register */
+	 
 	usleep_range(500, 600);
 }
 
@@ -161,7 +153,7 @@ static void lp5521_run_engine(struct lp55xx_chip *chip, bool start)
 	u8 mode;
 	u8 exec;
 
-	/* stop engine */
+	 
 	if (!start) {
 		lp5521_stop_engine(chip);
 		lp55xx_write(chip, LP5521_REG_OP_MODE, LP5521_CMD_DIRECT);
@@ -169,10 +161,7 @@ static void lp5521_run_engine(struct lp55xx_chip *chip, bool start)
 		return;
 	}
 
-	/*
-	 * To run the engine,
-	 * operation mode and enable register should updated at the same time
-	 */
+	 
 
 	ret = lp55xx_read(chip, LP5521_REG_OP_MODE, &mode);
 	if (ret)
@@ -182,7 +171,7 @@ static void lp5521_run_engine(struct lp55xx_chip *chip, bool start)
 	if (ret)
 		return;
 
-	/* change operation mode to RUN only when each engine is loading */
+	 
 	if (LP5521_R_IS_LOADING(mode)) {
 		mode = (mode & ~LP5521_MODE_R_M) | LP5521_RUN_R;
 		exec = (exec & ~LP5521_EXEC_R_M) | LP5521_RUN_R;
@@ -223,7 +212,7 @@ static int lp5521_update_program_memory(struct lp55xx_chip *chip,
 	int i = 0;
 
 	while ((offset < size - 1) && (i < LP5521_PROGRAM_LENGTH)) {
-		/* separate sscanfs because length is working only for %s */
+		 
 		ret = sscanf(data + offset, "%2s%n ", c, &nrchars);
 		if (ret != 1)
 			goto err;
@@ -237,7 +226,7 @@ static int lp5521_update_program_memory(struct lp55xx_chip *chip,
 		i++;
 	}
 
-	/* Each instruction is 16bit long. Check that length is even */
+	 
 	if (i % 2)
 		goto err;
 
@@ -264,11 +253,7 @@ static void lp5521_firmware_loaded(struct lp55xx_chip *chip)
 		return;
 	}
 
-	/*
-	 * Program memory sequence
-	 *  1) set engine mode to "LOAD"
-	 *  2) write firmware data into program memory
-	 */
+	 
 
 	lp5521_load_engine(chip);
 	lp5521_update_program_memory(chip, fw->data, fw->size);
@@ -279,12 +264,7 @@ static int lp5521_post_init_device(struct lp55xx_chip *chip)
 	int ret;
 	u8 val;
 
-	/*
-	 * Make sure that the chip is reset by reading back the r channel
-	 * current reg. This is dummy read is required on some platforms -
-	 * otherwise further access to the R G B channels in the
-	 * LP5521_REG_ENABLE register will not have any effect - strange!
-	 */
+	 
 	ret = lp55xx_read(chip, LP5521_REG_R_CURRENT, &val);
 	if (ret) {
 		dev_err(&chip->cl->dev, "error in resetting chip\n");
@@ -299,10 +279,10 @@ static int lp5521_post_init_device(struct lp55xx_chip *chip)
 	}
 	usleep_range(10000, 20000);
 
-	/* Set all PWMs to direct control mode */
+	 
 	ret = lp55xx_write(chip, LP5521_REG_OP_MODE, LP5521_CMD_DIRECT);
 
-	/* Update configuration for the clock setting */
+	 
 	val = LP5521_DEFAULT_CFG;
 	if (!lp55xx_is_extclk_used(chip))
 		val |= LP5521_CLK_INT;
@@ -313,12 +293,12 @@ static int lp5521_post_init_device(struct lp55xx_chip *chip)
 	if (ret)
 		return ret;
 
-	/* Initialize all channels PWM to zero -> leds off */
+	 
 	lp55xx_write(chip, LP5521_REG_R_PWM, 0);
 	lp55xx_write(chip, LP5521_REG_G_PWM, 0);
 	lp55xx_write(chip, LP5521_REG_B_PWM, 0);
 
-	/* Set engines are set to run state when OP_MODE enables engines */
+	 
 	ret = lp55xx_write(chip, LP5521_REG_ENABLE, LP5521_ENABLE_RUN_PROGRAM);
 	if (ret)
 		return ret;
@@ -341,7 +321,7 @@ static int lp5521_run_selftest(struct lp55xx_chip *chip, char *buf)
 	if (pdata->clock_mode != LP55XX_CLOCK_EXT)
 		return 0;
 
-	/* Check that ext clock is really in use if requested */
+	 
 	if  ((status & LP5521_EXT_CLK_USED) == 0)
 		return -EIO;
 
@@ -471,7 +451,7 @@ static ssize_t lp5521_selftest(struct device *dev,
 	return sysfs_emit(buf, "%s\n", ret ? "FAIL" : "OK");
 }
 
-/* device attributes */
+ 
 static LP55XX_DEV_ATTR_RW(engine1_mode, show_engine1_mode, store_engine1_mode);
 static LP55XX_DEV_ATTR_RW(engine2_mode, show_engine2_mode, store_engine2_mode);
 static LP55XX_DEV_ATTR_RW(engine3_mode, show_engine3_mode, store_engine3_mode);
@@ -495,7 +475,7 @@ static const struct attribute_group lp5521_group = {
 	.attrs = lp5521_attributes,
 };
 
-/* Chip specific configurations */
+ 
 static struct lp55xx_device_config lp5521_cfg = {
 	.reset = {
 		.addr = LP5521_REG_RESET,
@@ -589,7 +569,7 @@ static void lp5521_remove(struct i2c_client *client)
 }
 
 static const struct i2c_device_id lp5521_id[] = {
-	{ "lp5521", 0 }, /* Three channel chip */
+	{ "lp5521", 0 },  
 	{ }
 };
 MODULE_DEVICE_TABLE(i2c, lp5521_id);

@@ -1,6 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright (c) 2011-2014 PLUMgrid, http://plumgrid.com
- */
+
+ 
 #include <linux/bpf.h>
 #include <linux/btf.h>
 #include <linux/bpf-cgroup.h>
@@ -25,15 +24,7 @@
 
 #include "../../lib/kstrtox.h"
 
-/* If kernel subsystem is allowing eBPF programs to call this function,
- * inside its own verifier_ops->get_func_proto() callback it should return
- * bpf_map_lookup_elem_proto, so that verifier can properly check the arguments
- *
- * Different map implementations will rely on rcu in map methods
- * lookup/update/delete, therefore eBPF programs must run under rcu lock
- * if program is allowed to access maps, so check rcu_read_lock_held in
- * all three functions.
- */
+ 
 BPF_CALL_2(bpf_map_lookup_elem, struct bpf_map *, map, void *, key)
 {
 	WARN_ON_ONCE(!rcu_read_lock_held() && !rcu_read_lock_bh_held());
@@ -169,7 +160,7 @@ const struct bpf_func_proto bpf_get_numa_node_id_proto = {
 
 BPF_CALL_0(bpf_ktime_get_ns)
 {
-	/* NMI safe access to clock monotonic */
+	 
 	return ktime_get_mono_fast_ns();
 }
 
@@ -181,7 +172,7 @@ const struct bpf_func_proto bpf_ktime_get_ns_proto = {
 
 BPF_CALL_0(bpf_ktime_get_boot_ns)
 {
-	/* NMI safe access to clock boottime */
+	 
 	return ktime_get_boot_fast_ns();
 }
 
@@ -204,7 +195,7 @@ const struct bpf_func_proto bpf_ktime_get_coarse_ns_proto = {
 
 BPF_CALL_0(bpf_ktime_get_tai_ns)
 {
-	/* NMI safe access to clock tai */
+	 
 	return ktime_get_tai_fast_ns();
 }
 
@@ -257,7 +248,7 @@ BPF_CALL_2(bpf_get_current_comm, char *, buf, u32, size)
 	if (unlikely(!task))
 		goto err_clear;
 
-	/* Verifier guarantees that size > 0 */
+	 
 	strscpy_pad(buf, task->comm, size);
 	return 0;
 err_clear:
@@ -435,7 +426,7 @@ const struct bpf_func_proto bpf_get_current_ancestor_cgroup_id_proto = {
 	.ret_type	= RET_INTEGER,
 	.arg1_type	= ARG_ANYTHING,
 };
-#endif /* CONFIG_CGROUPS */
+#endif  
 
 #define BPF_STRTOX_BASE_MASK 0x1F
 
@@ -676,7 +667,7 @@ BPF_CALL_5(bpf_copy_from_user_task, void *, dst, u32, size,
 {
 	int ret;
 
-	/* flags is not used yet */
+	 
 	if (unlikely(flags))
 		return -EINVAL;
 
@@ -688,7 +679,7 @@ BPF_CALL_5(bpf_copy_from_user_task, void *, dst, u32, size,
 		return 0;
 
 	memset(dst, 0, size);
-	/* Return -EFAULT for partial read */
+	 
 	return ret < 0 ? ret : -EFAULT;
 }
 
@@ -756,12 +747,10 @@ static int bpf_trace_copy_string(char *buf, void *unsafe_ptr, char fmt_ptype,
 	return -EINVAL;
 }
 
-/* Per-cpu temp buffers used by printf-like helpers to store the bprintf binary
- * arguments representation.
- */
+ 
 #define MAX_BPRINTF_BIN_ARGS	512
 
-/* Support executing three nested bprintf helper calls on a given CPU */
+ 
 #define MAX_BPRINTF_NEST_LEVEL	3
 struct bpf_bprintf_buffers {
 	char bin_args[MAX_BPRINTF_BIN_ARGS];
@@ -797,20 +786,7 @@ void bpf_bprintf_cleanup(struct bpf_bprintf_data *data)
 	preempt_enable();
 }
 
-/*
- * bpf_bprintf_prepare - Generic pass on format strings for bprintf-like helpers
- *
- * Returns a negative value if fmt is an invalid format string or 0 otherwise.
- *
- * This can be used in two ways:
- * - Format string verification only: when data->get_bin_args is false
- * - Arguments preparation: in addition to the above verification, it writes in
- *   data->bin_args a binary representation of arguments usable by bstr_printf
- *   where pointers from BPF have been sanitized.
- *
- * In argument preparation mode, if 0 is returned, safe temporary buffers are
- * allocated and bpf_bprintf_cleanup should be called to free them after use.
- */
+ 
 int bpf_bprintf_prepare(char *fmt, u32 fmt_size, const u64 *raw_args,
 			u32 num_args, struct bpf_bprintf_data *data)
 {
@@ -859,12 +835,10 @@ int bpf_bprintf_prepare(char *fmt, u32 fmt_size, const u64 *raw_args,
 			goto out;
 		}
 
-		/* The string is zero-terminated so if fmt[i] != 0, we can
-		 * always access fmt[i + 1], in the worst case it will be a 0
-		 */
+		 
 		i++;
 
-		/* skip optional "[0 +-][num]" width formatting field */
+		 
 		while (fmt[i] == '0' || fmt[i] == '+'  || fmt[i] == '-' ||
 		       fmt[i] == ' ')
 			i++;
@@ -888,7 +862,7 @@ int bpf_bprintf_prepare(char *fmt, u32 fmt_size, const u64 *raw_args,
 			    ispunct(fmt[i + 1]) || fmt[i + 1] == 'K' ||
 			    fmt[i + 1] == 'x' || fmt[i + 1] == 's' ||
 			    fmt[i + 1] == 'S') {
-				/* just kernel pointers */
+				 
 				if (tmp_buf)
 					cur_arg = raw_args[num_spec];
 				i++;
@@ -909,7 +883,7 @@ int bpf_bprintf_prepare(char *fmt, u32 fmt_size, const u64 *raw_args,
 				continue;
 			}
 
-			/* only support "%pI4", "%pi4", "%pI6" and "%pi6". */
+			 
 			if ((fmt[i + 1] != 'i' && fmt[i + 1] != 'I') ||
 			    (fmt[i + 2] != '4' && fmt[i + 2] != '6')) {
 				err = -EINVAL;
@@ -932,10 +906,7 @@ int bpf_bprintf_prepare(char *fmt, u32 fmt_size, const u64 *raw_args,
 			if (err < 0)
 				memset(cur_ip, 0, sizeof_cur_ip);
 
-			/* hack: bstr_printf expects IP addresses to be
-			 * pre-formatted as strings, ironically, the easiest way
-			 * to do that is to call snprintf.
-			 */
+			 
 			ip_spec[2] = fmt[i - 1];
 			ip_spec[3] = fmt[i];
 			err = snprintf(tmp_buf, tmp_buf_end - tmp_buf,
@@ -1050,9 +1021,7 @@ BPF_CALL_5(bpf_snprintf, char *, str, u32, str_size, char *, fmt,
 		return -EINVAL;
 	num_args = data_len / 8;
 
-	/* ARG_PTR_TO_CONST_STR guarantees that fmt is zero-terminated so we
-	 * can safely give an unbounded size.
-	 */
+	 
 	err = bpf_bprintf_prepare(fmt, UINT_MAX, args, num_args, &data);
 	if (err < 0)
 		return err;
@@ -1075,22 +1044,7 @@ const struct bpf_func_proto bpf_snprintf_proto = {
 	.arg5_type	= ARG_CONST_SIZE_OR_ZERO,
 };
 
-/* BPF map elements can contain 'struct bpf_timer'.
- * Such map owns all of its BPF timers.
- * 'struct bpf_timer' is allocated as part of map element allocation
- * and it's zero initialized.
- * That space is used to keep 'struct bpf_timer_kern'.
- * bpf_timer_init() allocates 'struct bpf_hrtimer', inits hrtimer, and
- * remembers 'struct bpf_map *' pointer it's part of.
- * bpf_timer_set_callback() increments prog refcnt and assign bpf callback_fn.
- * bpf_timer_start() arms the timer.
- * If user space reference to a map goes to zero at this point
- * ops->map_release_uref callback is responsible for cancelling the timers,
- * freeing their memory, and decrementing prog's refcnts.
- * bpf_timer_cancel() cancels the timer and decrements prog's refcnt.
- * Inner maps can contain bpf timers as well. ops->map_release_uref is
- * freeing the timers when inner map is replaced or deleted by user space.
- */
+ 
 struct bpf_hrtimer {
 	struct hrtimer timer;
 	struct bpf_map *map;
@@ -1099,13 +1053,10 @@ struct bpf_hrtimer {
 	void *value;
 };
 
-/* the actual struct hidden inside uapi struct bpf_timer */
+ 
 struct bpf_timer_kern {
 	struct bpf_hrtimer *timer;
-	/* bpf_spin_lock is used here instead of spinlock_t to make
-	 * sure that it always fits into space reserved by struct bpf_timer
-	 * regardless of LOCKDEP and spinlock debug flags.
-	 */
+	 
 	struct bpf_spin_lock lock;
 } __attribute__((aligned(8)));
 
@@ -1125,25 +1076,20 @@ static enum hrtimer_restart bpf_timer_cb(struct hrtimer *hrtimer)
 	if (!callback_fn)
 		goto out;
 
-	/* bpf_timer_cb() runs in hrtimer_run_softirq. It doesn't migrate and
-	 * cannot be preempted by another bpf_timer_cb() on the same cpu.
-	 * Remember the timer this callback is servicing to prevent
-	 * deadlock if callback_fn() calls bpf_timer_cancel() or
-	 * bpf_map_delete_elem() on the same timer.
-	 */
+	 
 	this_cpu_write(hrtimer_running, t);
 	if (map->map_type == BPF_MAP_TYPE_ARRAY) {
 		struct bpf_array *array = container_of(map, struct bpf_array, map);
 
-		/* compute the key */
+		 
 		idx = ((char *)value - array->value) / array->elem_size;
 		key = &idx;
-	} else { /* hash or lru */
+	} else {  
 		key = value - round_up(map->key_size, 8);
 	}
 
 	callback_fn((u64)(long)map, (u64)(long)key, (u64)(long)value, 0, 0);
-	/* The verifier checked that return value is zero. */
+	 
 
 	this_cpu_write(hrtimer_running, NULL);
 out:
@@ -1165,7 +1111,7 @@ BPF_CALL_3(bpf_timer_init, struct bpf_timer_kern *, timer, struct bpf_map *, map
 		return -EOPNOTSUPP;
 
 	if (flags >= MAX_CLOCKS ||
-	    /* similar to timerfd except _ALARM variants are not supported */
+	     
 	    (clockid != CLOCK_MONOTONIC &&
 	     clockid != CLOCK_REALTIME &&
 	     clockid != CLOCK_BOOTTIME))
@@ -1176,7 +1122,7 @@ BPF_CALL_3(bpf_timer_init, struct bpf_timer_kern *, timer, struct bpf_map *, map
 		ret = -EBUSY;
 		goto out;
 	}
-	/* allocate hrtimer via map_kmalloc to use memcg accounting */
+	 
 	t = bpf_map_kmalloc_node(map, sizeof(*t), GFP_ATOMIC, map->numa_node);
 	if (!t) {
 		ret = -ENOMEM;
@@ -1189,16 +1135,10 @@ BPF_CALL_3(bpf_timer_init, struct bpf_timer_kern *, timer, struct bpf_map *, map
 	hrtimer_init(&t->timer, clockid, HRTIMER_MODE_REL_SOFT);
 	t->timer.function = bpf_timer_cb;
 	WRITE_ONCE(timer->timer, t);
-	/* Guarantee the order between timer->timer and map->usercnt. So
-	 * when there are concurrent uref release and bpf timer init, either
-	 * bpf_timer_cancel_and_free() called by uref release reads a no-NULL
-	 * timer or atomic64_read() below returns a zero usercnt.
-	 */
+	 
 	smp_mb();
 	if (!atomic64_read(&map->usercnt)) {
-		/* maps with timers must be either held by user space
-		 * or pinned in bpffs.
-		 */
+		 
 		WRITE_ONCE(timer->timer, NULL);
 		kfree(t);
 		ret = -EPERM;
@@ -1233,26 +1173,20 @@ BPF_CALL_3(bpf_timer_set_callback, struct bpf_timer_kern *, timer, void *, callb
 		goto out;
 	}
 	if (!atomic64_read(&t->map->usercnt)) {
-		/* maps with timers must be either held by user space
-		 * or pinned in bpffs. Otherwise timer might still be
-		 * running even when bpf prog is detached and user space
-		 * is gone, since map_release_uref won't ever be called.
-		 */
+		 
 		ret = -EPERM;
 		goto out;
 	}
 	prev = t->prog;
 	if (prev != prog) {
-		/* Bump prog refcnt once. Every bpf_timer_set_callback()
-		 * can pick different callback_fn-s within the same prog.
-		 */
+		 
 		prog = bpf_prog_inc_not_zero(prog);
 		if (IS_ERR(prog)) {
 			ret = PTR_ERR(prog);
 			goto out;
 		}
 		if (prev)
-			/* Drop prev prog refcnt when swapping with new prog */
+			 
 			bpf_prog_put(prev);
 		t->prog = prog;
 	}
@@ -1332,19 +1266,14 @@ BPF_CALL_1(bpf_timer_cancel, struct bpf_timer_kern *, timer)
 		goto out;
 	}
 	if (this_cpu_read(hrtimer_running) == t) {
-		/* If bpf callback_fn is trying to bpf_timer_cancel()
-		 * its own timer the hrtimer_cancel() will deadlock
-		 * since it waits for callback_fn to finish
-		 */
+		 
 		ret = -EDEADLK;
 		goto out;
 	}
 	drop_prog_refcnt(t);
 out:
 	__bpf_spin_unlock_irqrestore(&timer->lock);
-	/* Cancel the timer and wait for associated callback to finish
-	 * if it was running.
-	 */
+	 
 	ret = ret ?: hrtimer_cancel(&t->timer);
 	return ret;
 }
@@ -1356,48 +1285,29 @@ static const struct bpf_func_proto bpf_timer_cancel_proto = {
 	.arg1_type	= ARG_PTR_TO_TIMER,
 };
 
-/* This function is called by map_delete/update_elem for individual element and
- * by ops->map_release_uref when the user space reference to a map reaches zero.
- */
+ 
 void bpf_timer_cancel_and_free(void *val)
 {
 	struct bpf_timer_kern *timer = val;
 	struct bpf_hrtimer *t;
 
-	/* Performance optimization: read timer->timer without lock first. */
+	 
 	if (!READ_ONCE(timer->timer))
 		return;
 
 	__bpf_spin_lock_irqsave(&timer->lock);
-	/* re-read it under lock */
+	 
 	t = timer->timer;
 	if (!t)
 		goto out;
 	drop_prog_refcnt(t);
-	/* The subsequent bpf_timer_start/cancel() helpers won't be able to use
-	 * this timer, since it won't be initialized.
-	 */
+	 
 	WRITE_ONCE(timer->timer, NULL);
 out:
 	__bpf_spin_unlock_irqrestore(&timer->lock);
 	if (!t)
 		return;
-	/* Cancel the timer and wait for callback to complete if it was running.
-	 * If hrtimer_cancel() can be safely called it's safe to call kfree(t)
-	 * right after for both preallocated and non-preallocated maps.
-	 * The timer->timer = NULL was already done and no code path can
-	 * see address 't' anymore.
-	 *
-	 * Check that bpf_map_delete/update_elem() wasn't called from timer
-	 * callback_fn. In such case don't call hrtimer_cancel() (since it will
-	 * deadlock) and don't call hrtimer_try_to_cancel() (since it will just
-	 * return -1). Though callback_fn is still running on this cpu it's
-	 * safe to do kfree(t) because bpf_timer_cb() read everything it needed
-	 * from 't'. The bpf subprog callback_fn won't be able to access 't',
-	 * since timer->timer = NULL was already done. The timer will be
-	 * effectively cancelled because bpf_timer_cb() will return
-	 * HRTIMER_NORESTART.
-	 */
+	 
 	if (this_cpu_read(hrtimer_running) != t)
 		hrtimer_cancel(&t->timer);
 	kfree(t);
@@ -1410,10 +1320,7 @@ BPF_CALL_2(bpf_kptr_xchg, void *, map_value, void *, ptr)
 	return xchg(kptr, (unsigned long)ptr);
 }
 
-/* Unlike other PTR_TO_BTF_ID helpers the btf_id in bpf_kptr_xchg()
- * helper is determined dynamically by the verifier. Use BPF_PTR_POISON to
- * denote type that verifier will determine.
- */
+ 
 static const struct bpf_func_proto bpf_kptr_xchg_proto = {
 	.func         = bpf_kptr_xchg,
 	.gpl_only     = false,
@@ -1424,9 +1331,7 @@ static const struct bpf_func_proto bpf_kptr_xchg_proto = {
 	.arg2_btf_id  = BPF_PTR_POISON,
 };
 
-/* Since the upper 8 bits of dynptr->size is reserved, the
- * maximum supported size is 2^24 - 1.
- */
+ 
 #define DYNPTR_MAX_SIZE	((1UL << 24) - 1)
 #define DYNPTR_TYPE_SHIFT	28
 #define DYNPTR_SIZE_MASK	0xFFFFFF
@@ -1503,7 +1408,7 @@ BPF_CALL_4(bpf_dynptr_from_mem, void *, data, u32, size, u64, flags, struct bpf_
 	if (err)
 		goto error;
 
-	/* flags is currently unsupported */
+	 
 	if (flags) {
 		err = -EINVAL;
 		goto error;
@@ -1546,10 +1451,7 @@ BPF_CALL_5(bpf_dynptr_read, void *, dst, u32, len, const struct bpf_dynptr_kern 
 	switch (type) {
 	case BPF_DYNPTR_TYPE_LOCAL:
 	case BPF_DYNPTR_TYPE_RINGBUF:
-		/* Source and destination may possibly overlap, hence use memmove to
-		 * copy the data. E.g. bpf_dynptr_from_mem may create two dynptr
-		 * pointing to overlapping PTR_TO_MAP_VALUE regions.
-		 */
+		 
 		memmove(dst, src->data + src->offset + offset, len);
 		return 0;
 	case BPF_DYNPTR_TYPE_SKB:
@@ -1593,10 +1495,7 @@ BPF_CALL_5(bpf_dynptr_write, const struct bpf_dynptr_kern *, dst, u32, offset, v
 	case BPF_DYNPTR_TYPE_RINGBUF:
 		if (flags)
 			return -EINVAL;
-		/* Source and destination may possibly overlap, hence use memmove to
-		 * copy the data. E.g. bpf_dynptr_from_mem may create two dynptr
-		 * pointing to overlapping PTR_TO_MAP_VALUE regions.
-		 */
+		 
 		memmove(dst->data + dst->offset + offset, src, len);
 		return 0;
 	case BPF_DYNPTR_TYPE_SKB:
@@ -1646,7 +1545,7 @@ BPF_CALL_3(bpf_dynptr_data, const struct bpf_dynptr_kern *, ptr, u32, offset, u3
 		return (unsigned long)(ptr->data + ptr->offset + offset);
 	case BPF_DYNPTR_TYPE_SKB:
 	case BPF_DYNPTR_TYPE_XDP:
-		/* skb and xdp dynptrs should use bpf_dynptr_slice / bpf_dynptr_slice_rdwr */
+		 
 		return 0;
 	default:
 		WARN_ONCE(true, "bpf_dynptr_data: unknown dynptr type %d\n", type);
@@ -1824,12 +1723,7 @@ void bpf_list_head_free(const struct btf_field *field, void *list_head,
 	BUILD_BUG_ON(sizeof(struct list_head) > sizeof(struct bpf_list_head));
 	BUILD_BUG_ON(__alignof__(struct list_head) > __alignof__(struct bpf_list_head));
 
-	/* Do the actual list draining outside the lock to not hold the lock for
-	 * too long, and also prevent deadlocks if tracing programs end up
-	 * executing on entry/exit of functions called inside the critical
-	 * section, and end up doing map ops that call bpf_list_head_free for
-	 * the same map value again.
-	 */
+	 
 	__bpf_spin_lock_irqsave(spin_lock);
 	if (!head->next || list_empty(head))
 		goto unlock;
@@ -1843,23 +1737,14 @@ unlock:
 
 		obj -= field->graph_root.node_offset;
 		head = head->next;
-		/* The contained type can also have resources, including a
-		 * bpf_list_head which needs to be freed.
-		 */
+		 
 		migrate_disable();
 		__bpf_obj_drop_impl(obj, field->graph_root.value_rec);
 		migrate_enable();
 	}
 }
 
-/* Like rbtree_postorder_for_each_entry_safe, but 'pos' and 'n' are
- * 'rb_node *', so field name of rb_node within containing struct is not
- * needed.
- *
- * Since bpf_rb_tree's node type has a corresponding struct btf_field with
- * graph_root.node_offset, it's not necessary to know field name
- * or type of node struct
- */
+ 
 #define bpf_rbtree_postorder_for_each_entry_safe(pos, n, root) \
 	for (pos = rb_first_postorder(root); \
 	    pos && ({ n = rb_next_postorder(pos); 1; }); \
@@ -1909,14 +1794,12 @@ __bpf_kfunc void *bpf_obj_new_impl(u64 local_type_id__k, void *meta__ign)
 	return p;
 }
 
-/* Must be called under migrate_disable(), as required by bpf_mem_free */
+ 
 void __bpf_obj_drop_impl(void *p, const struct btf_record *rec)
 {
 	if (rec && rec->refcount_off >= 0 &&
 	    !refcount_dec_and_test((refcount_t *)(p + rec->refcount_off))) {
-		/* Object is refcounted and refcount_dec didn't result in 0
-		 * refcount. Return without freeing the object
-		 */
+		 
 		return;
 	}
 
@@ -1942,16 +1825,12 @@ __bpf_kfunc void *bpf_refcount_acquire_impl(void *p__refcounted_kptr, void *meta
 	struct btf_struct_meta *meta = meta__ign;
 	struct bpf_refcount *ref;
 
-	/* Could just cast directly to refcount_t *, but need some code using
-	 * bpf_refcount type so that it is emitted in vmlinux BTF
-	 */
+	 
 	ref = (struct bpf_refcount *)(p__refcounted_kptr + meta->record->refcount_off);
 	if (!refcount_inc_not_zero((refcount_t *)ref))
 		return NULL;
 
-	/* Verifier strips KF_RET_NULL if input is owned ref, see is_kfunc_ret_null
-	 * in verifier.c
-	 */
+	 
 	return (void *)p__refcounted_kptr;
 }
 
@@ -1961,17 +1840,13 @@ static int __bpf_list_add(struct bpf_list_node_kern *node,
 {
 	struct list_head *n = &node->list_head, *h = (void *)head;
 
-	/* If list_head was 0-initialized by map, bpf_obj_init_field wasn't
-	 * called on its fields, so init here
-	 */
+	 
 	if (unlikely(!h->next))
 		INIT_LIST_HEAD(h);
 
-	/* node->owner != NULL implies !list_empty(n), no need to separately
-	 * check the latter
-	 */
+	 
 	if (cmpxchg(&node->owner, NULL, BPF_PTR_POISON)) {
-		/* Only called from BPF prog, no need to migrate_disable */
+		 
 		__bpf_obj_drop_impl((void *)n - off, rec);
 		return -EINVAL;
 	}
@@ -2007,9 +1882,7 @@ static struct bpf_list_node *__bpf_list_del(struct bpf_list_head *head, bool tai
 	struct list_head *n, *h = (void *)head;
 	struct bpf_list_node_kern *node;
 
-	/* If list_head was 0-initialized by map, bpf_obj_init_field wasn't
-	 * called on its fields, so init here
-	 */
+	 
 	if (unlikely(!h->next))
 		INIT_LIST_HEAD(h);
 	if (list_empty(h))
@@ -2042,9 +1915,7 @@ __bpf_kfunc struct bpf_rb_node *bpf_rbtree_remove(struct bpf_rb_root *root,
 	struct rb_root_cached *r = (struct rb_root_cached *)root;
 	struct rb_node *n = &node_internal->rb_node;
 
-	/* node_internal->owner != root implies either RB_EMPTY_NODE(n) or
-	 * n is owned by some other tree. No need to check RB_EMPTY_NODE(n)
-	 */
+	 
 	if (READ_ONCE(node_internal->owner) != root)
 		return NULL;
 
@@ -2054,9 +1925,7 @@ __bpf_kfunc struct bpf_rb_node *bpf_rbtree_remove(struct bpf_rb_root *root,
 	return (struct bpf_rb_node *)n;
 }
 
-/* Need to copy rbtree_add_cached's logic here because our 'less' is a BPF
- * program
- */
+ 
 static int __bpf_rbtree_add(struct bpf_rb_root *root,
 			    struct bpf_rb_node_kern *node,
 			    void *less, struct btf_record *rec, u64 off)
@@ -2066,11 +1935,9 @@ static int __bpf_rbtree_add(struct bpf_rb_root *root,
 	bpf_callback_t cb = (bpf_callback_t)less;
 	bool leftmost = true;
 
-	/* node->owner != NULL implies !RB_EMPTY_NODE(n), no need to separately
-	 * check the latter
-	 */
+	 
 	if (cmpxchg(&node->owner, NULL, BPF_PTR_POISON)) {
-		/* Only called from BPF prog, no need to migrate_disable */
+		 
 		__bpf_obj_drop_impl((void *)n - off, rec);
 		return -EINVAL;
 	}
@@ -2108,12 +1975,7 @@ __bpf_kfunc struct bpf_rb_node *bpf_rbtree_first(struct bpf_rb_root *root)
 	return (struct bpf_rb_node *)rb_first_cached(r);
 }
 
-/**
- * bpf_task_acquire - Acquire a reference to a task. A task acquired by this
- * kfunc which is not stored in a map as a kptr, must be released by calling
- * bpf_task_release().
- * @p: The task on which a reference is being acquired.
- */
+ 
 __bpf_kfunc struct task_struct *bpf_task_acquire(struct task_struct *p)
 {
 	if (refcount_inc_not_zero(&p->rcu_users))
@@ -2121,46 +1983,26 @@ __bpf_kfunc struct task_struct *bpf_task_acquire(struct task_struct *p)
 	return NULL;
 }
 
-/**
- * bpf_task_release - Release the reference acquired on a task.
- * @p: The task on which a reference is being released.
- */
+ 
 __bpf_kfunc void bpf_task_release(struct task_struct *p)
 {
 	put_task_struct_rcu_user(p);
 }
 
 #ifdef CONFIG_CGROUPS
-/**
- * bpf_cgroup_acquire - Acquire a reference to a cgroup. A cgroup acquired by
- * this kfunc which is not stored in a map as a kptr, must be released by
- * calling bpf_cgroup_release().
- * @cgrp: The cgroup on which a reference is being acquired.
- */
+ 
 __bpf_kfunc struct cgroup *bpf_cgroup_acquire(struct cgroup *cgrp)
 {
 	return cgroup_tryget(cgrp) ? cgrp : NULL;
 }
 
-/**
- * bpf_cgroup_release - Release the reference acquired on a cgroup.
- * If this kfunc is invoked in an RCU read region, the cgroup is guaranteed to
- * not be freed until the current grace period has ended, even if its refcount
- * drops to 0.
- * @cgrp: The cgroup on which a reference is being released.
- */
+ 
 __bpf_kfunc void bpf_cgroup_release(struct cgroup *cgrp)
 {
 	cgroup_put(cgrp);
 }
 
-/**
- * bpf_cgroup_ancestor - Perform a lookup on an entry in a cgroup's ancestor
- * array. A cgroup returned by this kfunc which is not subsequently stored in a
- * map, must be released by calling bpf_cgroup_release().
- * @cgrp: The cgroup for which we're performing a lookup.
- * @level: The level of ancestor to look up.
- */
+ 
 __bpf_kfunc struct cgroup *bpf_cgroup_ancestor(struct cgroup *cgrp, int level)
 {
 	struct cgroup *ancestor;
@@ -2168,19 +2010,14 @@ __bpf_kfunc struct cgroup *bpf_cgroup_ancestor(struct cgroup *cgrp, int level)
 	if (level > cgrp->level || level < 0)
 		return NULL;
 
-	/* cgrp's refcnt could be 0 here, but ancestors can still be accessed */
+	 
 	ancestor = cgrp->ancestors[level];
 	if (!cgroup_tryget(ancestor))
 		return NULL;
 	return ancestor;
 }
 
-/**
- * bpf_cgroup_from_id - Find a cgroup from its ID. A cgroup returned by this
- * kfunc which is not subsequently stored in a map, must be released by calling
- * bpf_cgroup_release().
- * @cgid: cgroup id.
- */
+ 
 __bpf_kfunc struct cgroup *bpf_cgroup_from_id(u64 cgid)
 {
 	struct cgroup *cgrp;
@@ -2191,16 +2028,7 @@ __bpf_kfunc struct cgroup *bpf_cgroup_from_id(u64 cgid)
 	return cgrp;
 }
 
-/**
- * bpf_task_under_cgroup - wrap task_under_cgroup_hierarchy() as a kfunc, test
- * task's membership of cgroup ancestry.
- * @task: the task to be tested
- * @ancestor: possible ancestor of @task's cgroup
- *
- * Tests whether @task's default cgroup hierarchy is a descendant of @ancestor.
- * It follows all the same rules as cgroup_is_descendant, and only applies
- * to the default hierarchy.
- */
+ 
 __bpf_kfunc long bpf_task_under_cgroup(struct task_struct *task,
 				       struct cgroup *ancestor)
 {
@@ -2211,14 +2039,9 @@ __bpf_kfunc long bpf_task_under_cgroup(struct task_struct *task,
 	rcu_read_unlock();
 	return ret;
 }
-#endif /* CONFIG_CGROUPS */
+#endif  
 
-/**
- * bpf_task_from_pid - Find a struct task_struct from its pid by looking it up
- * in the root pid namespace idr. If a task is returned, it must either be
- * stored in a map, or released with bpf_task_release().
- * @pid: The pid of the task being looked up.
- */
+ 
 __bpf_kfunc struct task_struct *bpf_task_from_pid(s32 pid)
 {
 	struct task_struct *p;
@@ -2232,34 +2055,7 @@ __bpf_kfunc struct task_struct *bpf_task_from_pid(s32 pid)
 	return p;
 }
 
-/**
- * bpf_dynptr_slice() - Obtain a read-only pointer to the dynptr data.
- * @ptr: The dynptr whose data slice to retrieve
- * @offset: Offset into the dynptr
- * @buffer__opt: User-provided buffer to copy contents into.  May be NULL
- * @buffer__szk: Size (in bytes) of the buffer if present. This is the
- *               length of the requested slice. This must be a constant.
- *
- * For non-skb and non-xdp type dynptrs, there is no difference between
- * bpf_dynptr_slice and bpf_dynptr_data.
- *
- *  If buffer__opt is NULL, the call will fail if buffer_opt was needed.
- *
- * If the intention is to write to the data slice, please use
- * bpf_dynptr_slice_rdwr.
- *
- * The user must check that the returned pointer is not null before using it.
- *
- * Please note that in the case of skb and xdp dynptrs, bpf_dynptr_slice
- * does not change the underlying packet data pointers, so a call to
- * bpf_dynptr_slice will not invalidate any ctx->data/data_end pointers in
- * the bpf program.
- *
- * Return: NULL if the call failed (eg invalid dynptr), pointer to a read-only
- * data slice (can be either direct pointer to the data or a pointer to the user
- * provided buffer, with its contents containing the data, if unable to obtain
- * direct pointer)
- */
+ 
 __bpf_kfunc void *bpf_dynptr_slice(const struct bpf_dynptr_kern *ptr, u32 offset,
 				   void *buffer__opt, u32 buffer__szk)
 {
@@ -2302,76 +2098,14 @@ __bpf_kfunc void *bpf_dynptr_slice(const struct bpf_dynptr_kern *ptr, u32 offset
 	}
 }
 
-/**
- * bpf_dynptr_slice_rdwr() - Obtain a writable pointer to the dynptr data.
- * @ptr: The dynptr whose data slice to retrieve
- * @offset: Offset into the dynptr
- * @buffer__opt: User-provided buffer to copy contents into. May be NULL
- * @buffer__szk: Size (in bytes) of the buffer if present. This is the
- *               length of the requested slice. This must be a constant.
- *
- * For non-skb and non-xdp type dynptrs, there is no difference between
- * bpf_dynptr_slice and bpf_dynptr_data.
- *
- * If buffer__opt is NULL, the call will fail if buffer_opt was needed.
- *
- * The returned pointer is writable and may point to either directly the dynptr
- * data at the requested offset or to the buffer if unable to obtain a direct
- * data pointer to (example: the requested slice is to the paged area of an skb
- * packet). In the case where the returned pointer is to the buffer, the user
- * is responsible for persisting writes through calling bpf_dynptr_write(). This
- * usually looks something like this pattern:
- *
- * struct eth_hdr *eth = bpf_dynptr_slice_rdwr(&dynptr, 0, buffer, sizeof(buffer));
- * if (!eth)
- *	return TC_ACT_SHOT;
- *
- * // mutate eth header //
- *
- * if (eth == buffer)
- *	bpf_dynptr_write(&ptr, 0, buffer, sizeof(buffer), 0);
- *
- * Please note that, as in the example above, the user must check that the
- * returned pointer is not null before using it.
- *
- * Please also note that in the case of skb and xdp dynptrs, bpf_dynptr_slice_rdwr
- * does not change the underlying packet data pointers, so a call to
- * bpf_dynptr_slice_rdwr will not invalidate any ctx->data/data_end pointers in
- * the bpf program.
- *
- * Return: NULL if the call failed (eg invalid dynptr), pointer to a
- * data slice (can be either direct pointer to the data or a pointer to the user
- * provided buffer, with its contents containing the data, if unable to obtain
- * direct pointer)
- */
+ 
 __bpf_kfunc void *bpf_dynptr_slice_rdwr(const struct bpf_dynptr_kern *ptr, u32 offset,
 					void *buffer__opt, u32 buffer__szk)
 {
 	if (!ptr->data || __bpf_dynptr_is_rdonly(ptr))
 		return NULL;
 
-	/* bpf_dynptr_slice_rdwr is the same logic as bpf_dynptr_slice.
-	 *
-	 * For skb-type dynptrs, it is safe to write into the returned pointer
-	 * if the bpf program allows skb data writes. There are two possiblities
-	 * that may occur when calling bpf_dynptr_slice_rdwr:
-	 *
-	 * 1) The requested slice is in the head of the skb. In this case, the
-	 * returned pointer is directly to skb data, and if the skb is cloned, the
-	 * verifier will have uncloned it (see bpf_unclone_prologue()) already.
-	 * The pointer can be directly written into.
-	 *
-	 * 2) Some portion of the requested slice is in the paged buffer area.
-	 * In this case, the requested data will be copied out into the buffer
-	 * and the returned pointer will be a pointer to the buffer. The skb
-	 * will not be pulled. To persist the write, the user will need to call
-	 * bpf_dynptr_write(), which will pull the skb and commit the write.
-	 *
-	 * Similarly for xdp programs, if the requested slice is not across xdp
-	 * fragments, then a direct pointer will be returned, otherwise the data
-	 * will be copied out into the buffer and the user will need to call
-	 * bpf_dynptr_write() to commit changes.
-	 */
+	 
 	return bpf_dynptr_slice(ptr, offset, buffer__opt, buffer__szk);
 }
 

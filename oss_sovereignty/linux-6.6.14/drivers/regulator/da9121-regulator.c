@@ -1,17 +1,17 @@
-// SPDX-License-Identifier: GPL-2.0-only
-//
-// DA9121 Single-channel dual-phase 10A buck converter
-//
-// Copyright (C) 2020 Axis Communications AB
-//
-// DA9130 Single-channel dual-phase 10A buck converter (Automotive)
-// DA9217 Single-channel dual-phase  6A buck converter
-// DA9122 Dual-channel single-phase  5A buck converter
-// DA9131 Dual-channel single-phase  5A buck converter (Automotive)
-// DA9220 Dual-channel single-phase  3A buck converter
-// DA9132 Dual-channel single-phase  3A buck converter (Automotive)
-//
-// Copyright (C) 2020 Dialog Semiconductor
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 #include <linux/of_device.h>
 #include <linux/of_gpio.h>
@@ -29,7 +29,7 @@
 
 #include "da9121-regulator.h"
 
-/* Chip data */
+ 
 struct da9121 {
 	struct device *dev;
 	struct delayed_work work;
@@ -43,9 +43,7 @@ struct da9121 {
 	int subvariant_id;
 };
 
-/* Define ranges for different variants, enabling translation to/from
- * registers. Maximums give scope to allow for transients.
- */
+ 
 struct da9121_range {
 	int val_min;
 	int val_max;
@@ -109,12 +107,12 @@ struct da9121_variant_info {
 };
 
 static const struct da9121_variant_info variant_parameters[] = {
-	{ 1, 2, &da9121_10A_2phase_current },	//DA9121_TYPE_DA9121_DA9130
-	{ 2, 1, &da9121_3A_1phase_current  },	//DA9121_TYPE_DA9220_DA9132
-	{ 2, 1, &da9121_5A_1phase_current  },	//DA9121_TYPE_DA9122_DA9131
-	{ 1, 2, &da9121_6A_2phase_current  },	//DA9121_TYPE_DA9217
-	{ 1, 4, &da914x_40A_4phase_current },   //DA9121_TYPE_DA9141
-	{ 1, 2, &da914x_20A_2phase_current },   //DA9121_TYPE_DA9142
+	{ 1, 2, &da9121_10A_2phase_current },	
+	{ 2, 1, &da9121_3A_1phase_current  },	
+	{ 2, 1, &da9121_5A_1phase_current  },	
+	{ 1, 2, &da9121_6A_2phase_current  },	
+	{ 1, 4, &da914x_40A_4phase_current },   
+	{ 1, 2, &da914x_20A_2phase_current },   
 };
 
 struct da9121_field {
@@ -133,13 +131,13 @@ static const struct da9121_field da9121_mode_field[2] = {
 };
 
 struct status_event_data {
-	int buck_id; /* 0=core, 1/2-buck */
-	int reg_index;  /* index for status/event/mask register selection */
-	int status_bit; /* bit masks... */
+	int buck_id;  
+	int reg_index;   
+	int status_bit;  
 	int event_bit;
 	int mask_bit;
-	unsigned long notification; /* Notification for status inception */
-	char *warn; /* if NULL, notify - otherwise dev_warn this string */
+	unsigned long notification;  
+	char *warn;  
 };
 
 #define DA9121_STATUS(id, bank, name, notification, warning) \
@@ -149,7 +147,7 @@ struct status_event_data {
 	DA9121_MASK_SYS_MASK_##bank##_M_##name, \
 	notification, warning }
 
-/* For second buck related event bits that are specific to DA9122, DA9220 variants */
+ 
 #define DA9xxx_STATUS(id, bank, name, notification, warning) \
 	{ id, bank, \
 	DA9xxx_MASK_SYS_STATUS_##bank##_##name, \
@@ -157,17 +155,7 @@ struct status_event_data {
 	DA9xxx_MASK_SYS_MASK_##bank##_M_##name, \
 	notification, warning }
 
-/* The status signals that may need servicing, depending on device variant.
- * After assertion, they persist; so event is notified, the IRQ disabled,
- * and status polled until clear again and IRQ is reenabled.
- *
- * SG/PG1/PG2 should be set when device first powers up and should never
- * re-occur. When this driver starts, it is expected that these will have
- * self-cleared for when the IRQs are enabled, so these should never be seen.
- * If seen, the implication is that the device has reset.
- *
- * GPIO0/1/2 are not configured for use by default, so should not be seen.
- */
+ 
 static const struct status_event_data status_event_handling[] = {
 	DA9xxx_STATUS(0, 0, SG, 0, "Handled E_SG\n"),
 	DA9121_STATUS(0, 0, TEMP_CRIT, (REGULATOR_EVENT_OVER_TEMP|REGULATOR_EVENT_DISABLE), NULL),
@@ -452,9 +440,9 @@ static const struct regulator_desc da9121_reg = {
 	.vsel_mask = DA9121_MASK_BUCK_BUCKx_5_CHx_A_VOUT,
 	.enable_reg = DA9121_REG_BUCK_BUCK1_0,
 	.enable_mask = DA9121_MASK_BUCK_BUCKx_0_CHx_EN,
-	/* Default value of BUCK_BUCK1_0.CH1_SRC_DVC_UP */
+	 
 	.ramp_delay = 20000,
-	/* tBUCK_EN */
+	 
 	.enable_time = 20,
 };
 
@@ -633,10 +621,7 @@ static void da9121_status_poll_on(struct work_struct *work)
 		goto error;
 	}
 
-	/* Possible events are tested to be within range for the variant, potentially
-	 * masked by the IRQ handler (not just warned about), as having been masked,
-	 * and the respective state cleared - then flagged to unmask for next IRQ.
-	 */
+	 
 	for (i = 0; i < ARRAY_SIZE(status_event_handling); i++) {
 		const struct status_event_data *item = &status_event_handling[i];
 		int reg_idx = item->reg_index;
@@ -703,11 +688,7 @@ static irqreturn_t da9121_irq_handler(int irq, void *data)
 
 	rdev = chip->rdev[DA9121_IDX_BUCK1];
 
-	/* Possible events are tested to be within range for the variant, currently
-	 * enabled, and having triggered this IRQ. The event may then be notified,
-	 * or a warning given for unexpected events - those from device POR, and
-	 * currently unsupported GPIO configurations.
-	 */
+	 
 	for (i = 0; i < ARRAY_SIZE(status_event_handling); i++) {
 		const struct status_event_data *item = &status_event_handling[i];
 		int reg_idx = item->reg_index;
@@ -736,7 +717,7 @@ static irqreturn_t da9121_irq_handler(int irq, void *data)
 		}
 	}
 
-	/* Mask the interrupts for persistent events OV, OC, UV, WARN, CRIT */
+	 
 	for (i = 0; i < 2; i++) {
 		if (handled[i]) {
 			unsigned int reg = DA9121_REG_SYS_MASK_0 + i;
@@ -753,7 +734,7 @@ static irqreturn_t da9121_irq_handler(int irq, void *data)
 		}
 	}
 
-	/* clear the events */
+	 
 	if (handled[0] | handled[1] | handled[2]) {
 		err = regmap_bulk_write(chip->regmap, DA9121_REG_SYS_EVENT_0, handled, 3);
 		if (err < 0) {
@@ -797,7 +778,7 @@ error:
 	return ret;
 }
 
-/* DA9121 chip register model */
+ 
 static const struct regmap_range da9121_1ch_readable_ranges[] = {
 	regmap_reg_range(DA9121_REG_SYS_STATUS_0, DA9121_REG_SYS_MASK_3),
 	regmap_reg_range(DA9121_REG_SYS_CONFIG_2, DA9121_REG_SYS_CONFIG_3),
@@ -865,7 +846,7 @@ static const struct regmap_access_table da9121_volatile_table = {
 	.n_yes_ranges = ARRAY_SIZE(da9121_volatile_ranges),
 };
 
-/* DA9121 regmap config for 1 channel variants */
+ 
 static struct regmap_config da9121_1ch_regmap_config = {
 	.reg_bits = 8,
 	.val_bits = 8,
@@ -876,7 +857,7 @@ static struct regmap_config da9121_1ch_regmap_config = {
 	.cache_type = REGCACHE_RBTREE,
 };
 
-/* DA9121 regmap config for 2 channel variants */
+ 
 static struct regmap_config da9121_2ch_regmap_config = {
 	.reg_bits = 8,
 	.val_bits = 8,
@@ -999,9 +980,7 @@ static int da9121_assign_chip_model(struct i2c_client *i2c,
 
 	chip->dev = &i2c->dev;
 
-	/* Use configured subtype to select the regulator descriptor index and
-	 * register map, common to both consumer and automotive grade variants
-	 */
+	 
 	switch (chip->subvariant_id) {
 	case DA9121_SUBTYPE_DA9121:
 	case DA9121_SUBTYPE_DA9130:
@@ -1034,7 +1013,7 @@ static int da9121_assign_chip_model(struct i2c_client *i2c,
 		return -EINVAL;
 	}
 
-	/* Set these up for of_regulator_match call which may want .of_map_modes */
+	 
 	da9121_matches[0].desc = local_da9121_regulators[chip->variant_id][0];
 	da9121_matches[1].desc = local_da9121_regulators[chip->variant_id][1];
 

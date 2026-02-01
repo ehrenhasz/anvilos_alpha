@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * net/switchdev/switchdev.c - Switch device API
- * Copyright (c) 2014-2015 Jiri Pirko <jiri@resnulli.us>
- * Copyright (c) 2014-2015 Scott Feldman <sfeldma@gmail.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/types.h>
@@ -50,12 +46,7 @@ unlock:
 	return dfitem;
 }
 
-/**
- *	switchdev_deferred_process - Process ops in deferred queue
- *
- *	Called to flush the ops currently queued in deferred ops queue.
- *	rtnl_lock must be held.
- */
+ 
 void switchdev_deferred_process(void)
 {
 	struct switchdev_deferred_item *dfitem;
@@ -155,16 +146,7 @@ static int switchdev_port_attr_set_defer(struct net_device *dev,
 					  switchdev_port_attr_set_deferred);
 }
 
-/**
- *	switchdev_port_attr_set - Set port attribute
- *
- *	@dev: port device
- *	@attr: attribute to set
- *	@extack: netlink extended ack, for error message propagation
- *
- *	rtnl_lock must be held and must not be in atomic section,
- *	in case SWITCHDEV_F_DEFER flag is not set.
- */
+ 
 int switchdev_port_attr_set(struct net_device *dev,
 			    const struct switchdev_attr *attr,
 			    struct netlink_ext_ack *extack)
@@ -238,16 +220,7 @@ static int switchdev_port_obj_add_defer(struct net_device *dev,
 					  switchdev_port_obj_add_deferred);
 }
 
-/**
- *	switchdev_port_obj_add - Add port object
- *
- *	@dev: port device
- *	@obj: object to add
- *	@extack: netlink extended ack
- *
- *	rtnl_lock must be held and must not be in atomic section,
- *	in case SWITCHDEV_F_DEFER flag is not set.
- */
+ 
 int switchdev_port_obj_add(struct net_device *dev,
 			   const struct switchdev_obj *obj,
 			   struct netlink_ext_ack *extack)
@@ -288,15 +261,7 @@ static int switchdev_port_obj_del_defer(struct net_device *dev,
 					  switchdev_port_obj_del_deferred);
 }
 
-/**
- *	switchdev_port_obj_del - Delete port object
- *
- *	@dev: port device
- *	@obj: object to delete
- *
- *	rtnl_lock must be held and must not be in atomic section,
- *	in case SWITCHDEV_F_DEFER flag is not set.
- */
+ 
 int switchdev_port_obj_del(struct net_device *dev,
 			   const struct switchdev_obj *obj)
 {
@@ -310,38 +275,21 @@ EXPORT_SYMBOL_GPL(switchdev_port_obj_del);
 static ATOMIC_NOTIFIER_HEAD(switchdev_notif_chain);
 static BLOCKING_NOTIFIER_HEAD(switchdev_blocking_notif_chain);
 
-/**
- *	register_switchdev_notifier - Register notifier
- *	@nb: notifier_block
- *
- *	Register switch device notifier.
- */
+ 
 int register_switchdev_notifier(struct notifier_block *nb)
 {
 	return atomic_notifier_chain_register(&switchdev_notif_chain, nb);
 }
 EXPORT_SYMBOL_GPL(register_switchdev_notifier);
 
-/**
- *	unregister_switchdev_notifier - Unregister notifier
- *	@nb: notifier_block
- *
- *	Unregister switch device notifier.
- */
+ 
 int unregister_switchdev_notifier(struct notifier_block *nb)
 {
 	return atomic_notifier_chain_unregister(&switchdev_notif_chain, nb);
 }
 EXPORT_SYMBOL_GPL(unregister_switchdev_notifier);
 
-/**
- *	call_switchdev_notifiers - Call notifiers
- *	@val: value passed unmodified to notifier function
- *	@dev: port device
- *	@info: notifier information data
- *	@extack: netlink extended ack
- *	Call all network notifier blocks.
- */
+ 
 int call_switchdev_notifiers(unsigned long val, struct net_device *dev,
 			     struct switchdev_notifier_info *info,
 			     struct netlink_ext_ack *extack)
@@ -468,17 +416,13 @@ static int __switchdev_handle_fdb_event_to_device(struct net_device *dev,
 	if (check_cb(dev))
 		return mod_cb(dev, orig_dev, event, info->ctx, fdb_info);
 
-	/* Recurse through lower interfaces in case the FDB entry is pointing
-	 * towards a bridge or a LAG device.
-	 */
+	 
 	netdev_for_each_lower_dev(dev, lower_dev, iter) {
-		/* Do not propagate FDB entries across bridges */
+		 
 		if (netif_is_bridge_master(lower_dev))
 			continue;
 
-		/* Bridge ports might be either us, or LAG interfaces
-		 * that we offload.
-		 */
+		 
 		if (!check_cb(lower_dev) &&
 		    !switchdev_lower_dev_find_rcu(lower_dev, check_cb,
 						  foreign_dev_check_cb))
@@ -492,9 +436,7 @@ static int __switchdev_handle_fdb_event_to_device(struct net_device *dev,
 			return err;
 	}
 
-	/* Event is neither on a bridge nor a LAG. Check whether it is on an
-	 * interface that is in a bridge with us.
-	 */
+	 
 	br = netdev_master_upper_dev_get_rcu(dev);
 	if (!br || !netif_is_bridge_master(br))
 		return 0;
@@ -556,21 +498,12 @@ static int __switchdev_handle_port_obj_add(struct net_device *dev,
 		return err;
 	}
 
-	/* Switch ports might be stacked under e.g. a LAG. Ignore the
-	 * unsupported devices, another driver might be able to handle them. But
-	 * propagate to the callers any hard errors.
-	 *
-	 * If the driver does its own bookkeeping of stacked ports, it's not
-	 * necessary to go through this helper.
-	 */
+	 
 	netdev_for_each_lower_dev(dev, lower_dev, iter) {
 		if (netif_is_bridge_master(lower_dev))
 			continue;
 
-		/* When searching for switchdev interfaces that are neighbors
-		 * of foreign ones, and @dev is a bridge, do not recurse on the
-		 * foreign interface again, it was already visited.
-		 */
+		 
 		if (foreign_dev_check_cb && !check_cb(lower_dev) &&
 		    !switchdev_lower_dev_find(lower_dev, check_cb, foreign_dev_check_cb))
 			continue;
@@ -582,9 +515,7 @@ static int __switchdev_handle_port_obj_add(struct net_device *dev,
 			return err;
 	}
 
-	/* Event is neither on a bridge nor a LAG. Check whether it is on an
-	 * interface that is in a bridge with us.
-	 */
+	 
 	if (!foreign_dev_check_cb)
 		return err;
 
@@ -603,10 +534,7 @@ static int __switchdev_handle_port_obj_add(struct net_device *dev,
 					       foreign_dev_check_cb, add_cb);
 }
 
-/* Pass through a port object addition, if @dev passes @check_cb, or replicate
- * it towards all lower interfaces of @dev that pass @check_cb, if @dev is a
- * bridge or a LAG.
- */
+ 
 int switchdev_handle_port_obj_add(struct net_device *dev,
 			struct switchdev_notifier_port_obj_info *port_obj_info,
 			bool (*check_cb)(const struct net_device *dev),
@@ -624,10 +552,7 @@ int switchdev_handle_port_obj_add(struct net_device *dev,
 }
 EXPORT_SYMBOL_GPL(switchdev_handle_port_obj_add);
 
-/* Same as switchdev_handle_port_obj_add(), except if object is notified on a
- * @dev that passes @foreign_dev_check_cb, it is replicated towards all devices
- * that pass @check_cb and are in the same bridge as @dev.
- */
+ 
 int switchdev_handle_port_obj_add_foreign(struct net_device *dev,
 			struct switchdev_notifier_port_obj_info *port_obj_info,
 			bool (*check_cb)(const struct net_device *dev),
@@ -667,21 +592,12 @@ static int __switchdev_handle_port_obj_del(struct net_device *dev,
 		return err;
 	}
 
-	/* Switch ports might be stacked under e.g. a LAG. Ignore the
-	 * unsupported devices, another driver might be able to handle them. But
-	 * propagate to the callers any hard errors.
-	 *
-	 * If the driver does its own bookkeeping of stacked ports, it's not
-	 * necessary to go through this helper.
-	 */
+	 
 	netdev_for_each_lower_dev(dev, lower_dev, iter) {
 		if (netif_is_bridge_master(lower_dev))
 			continue;
 
-		/* When searching for switchdev interfaces that are neighbors
-		 * of foreign ones, and @dev is a bridge, do not recurse on the
-		 * foreign interface again, it was already visited.
-		 */
+		 
 		if (foreign_dev_check_cb && !check_cb(lower_dev) &&
 		    !switchdev_lower_dev_find(lower_dev, check_cb, foreign_dev_check_cb))
 			continue;
@@ -693,9 +609,7 @@ static int __switchdev_handle_port_obj_del(struct net_device *dev,
 			return err;
 	}
 
-	/* Event is neither on a bridge nor a LAG. Check whether it is on an
-	 * interface that is in a bridge with us.
-	 */
+	 
 	if (!foreign_dev_check_cb)
 		return err;
 
@@ -714,10 +628,7 @@ static int __switchdev_handle_port_obj_del(struct net_device *dev,
 					       foreign_dev_check_cb, del_cb);
 }
 
-/* Pass through a port object deletion, if @dev passes @check_cb, or replicate
- * it towards all lower interfaces of @dev that pass @check_cb, if @dev is a
- * bridge or a LAG.
- */
+ 
 int switchdev_handle_port_obj_del(struct net_device *dev,
 			struct switchdev_notifier_port_obj_info *port_obj_info,
 			bool (*check_cb)(const struct net_device *dev),
@@ -734,10 +645,7 @@ int switchdev_handle_port_obj_del(struct net_device *dev,
 }
 EXPORT_SYMBOL_GPL(switchdev_handle_port_obj_del);
 
-/* Same as switchdev_handle_port_obj_del(), except if object is notified on a
- * @dev that passes @foreign_dev_check_cb, it is replicated towards all devices
- * that pass @check_cb and are in the same bridge as @dev.
- */
+ 
 int switchdev_handle_port_obj_del_foreign(struct net_device *dev,
 			struct switchdev_notifier_port_obj_info *port_obj_info,
 			bool (*check_cb)(const struct net_device *dev),
@@ -778,13 +686,7 @@ static int __switchdev_handle_port_attr_set(struct net_device *dev,
 		return err;
 	}
 
-	/* Switch ports might be stacked under e.g. a LAG. Ignore the
-	 * unsupported devices, another driver might be able to handle them. But
-	 * propagate to the callers any hard errors.
-	 *
-	 * If the driver does its own bookkeeping of stacked ports, it's not
-	 * necessary to go through this helper.
-	 */
+	 
 	netdev_for_each_lower_dev(dev, lower_dev, iter) {
 		if (netif_is_bridge_master(lower_dev))
 			continue;

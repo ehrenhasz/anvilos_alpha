@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-// Copyright (C) 2013 Broadcom Corporation
+
+
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -40,7 +40,7 @@
 #define KONA_MMC_AUTOSUSPEND_DELAY		(50)
 
 struct sdhci_bcm_kona_dev {
-	struct mutex	write_lock; /* protect back to back writes */
+	struct mutex	write_lock;  
 };
 
 
@@ -49,10 +49,10 @@ static int sdhci_bcm_kona_sd_reset(struct sdhci_host *host)
 	unsigned int val;
 	unsigned long timeout;
 
-	/* This timeout should be sufficent for core to reset */
+	 
 	timeout = jiffies + msecs_to_jiffies(100);
 
-	/* reset the host using the top level reset */
+	 
 	val = sdhci_readl(host, KONA_SDHOST_CORECTRL);
 	val |= KONA_SDHOST_RESET;
 	sdhci_writel(host, val, KONA_SDHOST_CORECTRL);
@@ -64,16 +64,11 @@ static int sdhci_bcm_kona_sd_reset(struct sdhci_host *host)
 		}
 	}
 
-	/* bring the host out of reset */
+	 
 	val = sdhci_readl(host, KONA_SDHOST_CORECTRL);
 	val &= ~KONA_SDHOST_RESET;
 
-	/*
-	 * Back-to-Back register write needs a delay of 1ms at bootup (min 10uS)
-	 * Back-to-Back writes to same register needs delay when SD bus clock
-	 * is very low w.r.t AHB clock, mainly during boot-time and during card
-	 * insert-removal.
-	 */
+	 
 	usleep_range(1000, 5000);
 	sdhci_writel(host, val, KONA_SDHOST_CORECTRL);
 
@@ -84,44 +79,28 @@ static void sdhci_bcm_kona_sd_init(struct sdhci_host *host)
 {
 	unsigned int val;
 
-	/* enable the interrupt from the IP core */
+	 
 	val = sdhci_readl(host, KONA_SDHOST_COREIMR);
 	val |= KONA_SDHOST_IP;
 	sdhci_writel(host, val, KONA_SDHOST_COREIMR);
 
-	/* Enable the AHB clock gating module to the host */
+	 
 	val = sdhci_readl(host, KONA_SDHOST_CORECTRL);
 	val |= KONA_SDHOST_EN;
 
-	/*
-	 * Back-to-Back register write needs a delay of 1ms at bootup (min 10uS)
-	 * Back-to-Back writes to same register needs delay when SD bus clock
-	 * is very low w.r.t AHB clock, mainly during boot-time and during card
-	 * insert-removal.
-	 */
+	 
 	usleep_range(1000, 5000);
 	sdhci_writel(host, val, KONA_SDHOST_CORECTRL);
 }
 
-/*
- * Software emulation of the SD card insertion/removal. Set insert=1 for insert
- * and insert=0 for removal. The card detection is done by GPIO. For Broadcom
- * IP to function properly the bit 0 of CORESTAT register needs to be set/reset
- * to generate the CD IRQ handled in sdhci.c which schedules card_tasklet.
- */
+ 
 static int sdhci_bcm_kona_sd_card_emulate(struct sdhci_host *host, int insert)
 {
 	struct sdhci_pltfm_host *pltfm_priv = sdhci_priv(host);
 	struct sdhci_bcm_kona_dev *kona_dev = sdhci_pltfm_priv(pltfm_priv);
 	u32 val;
 
-	/*
-	 * Back-to-Back register write needs a delay of min 10uS.
-	 * Back-to-Back writes to same register needs delay when SD bus clock
-	 * is very low w.r.t AHB clock, mainly during boot-time and during card
-	 * insert-removal.
-	 * We keep 20uS
-	 */
+	 
 	mutex_lock(&kona_dev->write_lock);
 	udelay(20);
 	val = sdhci_readl(host, KONA_SDHOST_CORESTAT);
@@ -145,9 +124,7 @@ static int sdhci_bcm_kona_sd_card_emulate(struct sdhci_host *host, int insert)
 	return 0;
 }
 
-/*
- * SD card interrupt event callback
- */
+ 
 static void sdhci_bcm_kona_card_event(struct sdhci_host *host)
 {
 	if (mmc_gpio_get_cd(host->mmc) > 0) {
@@ -164,11 +141,7 @@ static void sdhci_bcm_kona_card_event(struct sdhci_host *host)
 static void sdhci_bcm_kona_init_74_clocks(struct sdhci_host *host,
 				u8 power_mode)
 {
-	/*
-	 *  JEDEC and SD spec specify supplying 74 continuous clocks to
-	 * device after power up. With minimum bus (100KHz) that
-	 * translates to 740us
-	 */
+	 
 	if (power_mode != MMC_POWER_OFF)
 		udelay(740);
 }
@@ -195,7 +168,7 @@ static const struct sdhci_pltfm_data sdhci_pltfm_data_kona = {
 
 static const struct of_device_id sdhci_bcm_kona_of_match[] = {
 	{ .compatible = "brcm,kona-sdhci"},
-	{ .compatible = "bcm,kona-sdhci"}, /* deprecated name */
+	{ .compatible = "bcm,kona-sdhci"},  
 	{}
 };
 MODULE_DEVICE_TABLE(of, sdhci_bcm_kona_of_match);
@@ -232,7 +205,7 @@ static int sdhci_bcm_kona_probe(struct platform_device *pdev)
 		goto err_pltfm_free;
 	}
 
-	/* Get and enable the core clock */
+	 
 	pltfm_priv->clk = devm_clk_get(dev, NULL);
 	if (IS_ERR(pltfm_priv->clk)) {
 		dev_err(dev, "Failed to get core clock\n");
@@ -274,7 +247,7 @@ static int sdhci_bcm_kona_probe(struct platform_device *pdev)
 	if (ret)
 		goto err_reset;
 
-	/* if device is eMMC, emulate card insert right here */
+	 
 	if (!mmc_card_is_removable(host->mmc)) {
 		ret = sdhci_bcm_kona_sd_card_emulate(host, 1);
 		if (ret) {
@@ -283,11 +256,7 @@ static int sdhci_bcm_kona_probe(struct platform_device *pdev)
 			goto err_remove_host;
 		}
 	}
-	/*
-	 * Since the card detection GPIO interrupt is configured to be
-	 * edge sensitive, check the initial GPIO value here, emulate
-	 * only if the card is present
-	 */
+	 
 	if (mmc_gpio_get_cd(host->mmc) > 0)
 		sdhci_bcm_kona_sd_card_emulate(host, 1);
 

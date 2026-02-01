@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * AD5755, AD5755-1, AD5757, AD5735, AD5737 Digital to analog converters driver
- *
- * Copyright 2012 Analog Devices Inc.
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/err.h>
@@ -124,22 +120,7 @@ enum ad5755_slew_step_size {
 	AD5755_SLEW_STEP_SIZE_256 = 8,
 };
 
-/**
- * struct ad5755_platform_data - AD5755 DAC driver platform data
- * @ext_dc_dc_compenstation_resistor: Whether an external DC-DC converter
- * compensation register is used.
- * @dc_dc_phase: DC-DC converter phase.
- * @dc_dc_freq: DC-DC converter frequency.
- * @dc_dc_maxv: DC-DC maximum allowed boost voltage.
- * @dac: Per DAC instance parameters.
- * @dac.mode: The mode to be used for the DAC output.
- * @dac.ext_current_sense_resistor: Whether an external current sense resistor
- * is used.
- * @dac.enable_voltage_overrange: Whether to enable 20% voltage output overrange.
- * @dac.slew.enable: Whether to enable digital slew.
- * @dac.slew.rate: Slew rate of the digital slew.
- * @dac.slew.step_size: Slew step size of the digital slew.
- **/
+ 
 struct ad5755_platform_data {
 	bool ext_dc_dc_compenstation_resistor;
 	enum ad5755_dc_dc_phase dc_dc_phase;
@@ -158,28 +139,14 @@ struct ad5755_platform_data {
 	} dac[4];
 };
 
-/**
- * struct ad5755_chip_info - chip specific information
- * @channel_template:	channel specification
- * @calib_shift:	shift for the calibration data registers
- * @has_voltage_out:	whether the chip has voltage outputs
- */
+ 
 struct ad5755_chip_info {
 	const struct iio_chan_spec channel_template;
 	unsigned int calib_shift;
 	bool has_voltage_out;
 };
 
-/**
- * struct ad5755_state - driver instance specific data
- * @spi:	spi device the driver is attached to
- * @chip_info:	chip model specific constants, available modes etc
- * @pwr_down:	bitmask which contains  hether a channel is powered down or not
- * @ctrl:	software shadow of the channel ctrl registers
- * @channels:	iio channel spec for the device
- * @lock:	lock to protect the data buffer during SPI ops
- * @data:	spi transfer buffers
- */
+ 
 struct ad5755_state {
 	struct spi_device		*spi;
 	const struct ad5755_chip_info	*chip_info;
@@ -188,10 +155,7 @@ struct ad5755_state {
 	struct iio_chan_spec		channels[AD5755_NUM_CHANNELS];
 	struct mutex			lock;
 
-	/*
-	 * DMA (thus cache coherency maintenance) may require the
-	 * transfer buffers to live in their own cache lines.
-	 */
+	 
 
 	union {
 		__be32 d32;

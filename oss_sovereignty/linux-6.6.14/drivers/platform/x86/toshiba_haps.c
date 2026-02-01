@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Toshiba HDD Active Protection Sensor (HAPS) driver
- *
- * Copyright (C) 2014 Azael Avalos <coproscefalo@gmail.com>
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -25,7 +21,7 @@ struct toshiba_haps_dev {
 
 static struct toshiba_haps_dev *toshiba_haps;
 
-/* HAPS functions */
+ 
 static int toshiba_haps_reset_protection(acpi_handle handle)
 {
 	acpi_status status;
@@ -54,7 +50,7 @@ static int toshiba_haps_protection_level(acpi_handle handle, int level)
 	return 0;
 }
 
-/* sysfs files */
+ 
 static ssize_t protection_level_show(struct device *dev,
 				     struct device_attribute *attr, char *buf)
 {
@@ -74,14 +70,11 @@ static ssize_t protection_level_store(struct device *dev,
 	ret = kstrtoint(buf, 0, &level);
 	if (ret)
 		return ret;
-	/*
-	 * Check for supported levels, which can be:
-	 * 0 - Disabled | 1 - Low | 2 - Medium | 3 - High
-	 */
+	 
 	if (level < 0 || level > 3)
 		return -EINVAL;
 
-	/* Set the sensor level */
+	 
 	ret = toshiba_haps_protection_level(haps->acpi_dev->handle, level);
 	if (ret != 0)
 		return ret;
@@ -103,11 +96,11 @@ static ssize_t reset_protection_store(struct device *dev,
 	ret = kstrtoint(buf, 0, &reset);
 	if (ret)
 		return ret;
-	/* The only accepted value is 1 */
+	 
 	if (reset != 1)
 		return -EINVAL;
 
-	/* Reset the protection interface */
+	 
 	ret = toshiba_haps_reset_protection(haps->acpi_dev->handle);
 	if (ret != 0)
 		return ret;
@@ -126,9 +119,7 @@ static const struct attribute_group haps_attr_group = {
 	.attrs = haps_attributes,
 };
 
-/*
- * ACPI stuff
- */
+ 
 static void toshiba_haps_notify(struct acpi_device *device, u32 event)
 {
 	pr_debug("Received event: 0x%x\n", event);
@@ -146,16 +137,13 @@ static void toshiba_haps_remove(struct acpi_device *device)
 		toshiba_haps = NULL;
 }
 
-/* Helper function */
+ 
 static int toshiba_haps_available(acpi_handle handle)
 {
 	acpi_status status;
 	u64 hdd_present;
 
-	/*
-	 * A non existent device as well as having (only)
-	 * Solid State Drives can cause the call to fail.
-	 */
+	 
 	status = acpi_evaluate_integer(handle, "_STA", NULL, &hdd_present);
 	if (ACPI_FAILURE(status)) {
 		pr_err("ACPI call to query HDD protection failed\n");
@@ -192,7 +180,7 @@ static int toshiba_haps_add(struct acpi_device *acpi_dev)
 	acpi_dev->driver_data = haps;
 	dev_set_drvdata(&acpi_dev->dev, haps);
 
-	/* Set the protection level, currently at level 2 (Medium) */
+	 
 	ret = toshiba_haps_protection_level(acpi_dev->handle, 2);
 	if (ret != 0)
 		return ret;
@@ -214,7 +202,7 @@ static int toshiba_haps_suspend(struct device *device)
 
 	haps = acpi_driver_data(to_acpi_device(device));
 
-	/* Deactivate the protection on suspend */
+	 
 	ret = toshiba_haps_protection_level(haps->acpi_dev->handle, 0);
 
 	return ret;
@@ -227,11 +215,11 @@ static int toshiba_haps_resume(struct device *device)
 
 	haps = acpi_driver_data(to_acpi_device(device));
 
-	/* Set the stored protection level */
+	 
 	ret = toshiba_haps_protection_level(haps->acpi_dev->handle,
 					    haps->protection_level);
 
-	/* Reset the protection on resume */
+	 
 	ret = toshiba_haps_reset_protection(haps->acpi_dev->handle);
 	if (ret != 0)
 		return ret;

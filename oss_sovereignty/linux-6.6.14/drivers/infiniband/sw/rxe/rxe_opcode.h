@@ -1,17 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB */
-/*
- * Copyright (c) 2016 Mellanox Technologies Ltd. All rights reserved.
- * Copyright (c) 2015 System Fabric Works, Inc. All rights reserved.
- */
+ 
+ 
 
 #ifndef RXE_OPCODE_H
 #define RXE_OPCODE_H
 
-/*
- * contains header bit mask definitions and header lengths
- * declaration of the rxe_opcode_info struct and
- * rxe_wr_opcode_info struct
- */
+ 
 
 enum rxe_wr_mask {
 	WR_INLINE_MASK			= BIT(0),
@@ -108,4 +101,4 @@ struct rxe_opcode_info {
 
 extern struct rxe_opcode_info rxe_opcode[RXE_NUM_OPCODE];
 
-#endif /* RXE_OPCODE_H */
+#endif  

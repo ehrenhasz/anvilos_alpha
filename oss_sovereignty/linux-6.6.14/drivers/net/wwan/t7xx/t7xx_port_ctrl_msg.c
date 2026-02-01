@@ -1,19 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2021, MediaTek Inc.
- * Copyright (c) 2021-2022, Intel Corporation.
- *
- * Authors:
- *  Haijun Liu <haijun.liu@mediatek.com>
- *  Ricardo Martinez <ricardo.martinez@linux.intel.com>
- *  Moises Veleta <moises.veleta@intel.com>
- *
- * Contributors:
- *  Amir Hanania <amir.hanania@intel.com>
- *  Chiranjeevi Rapolu <chiranjeevi.rapolu@intel.com>
- *  Eliot Lee <eliot.lee@intel.com>
- *  Sreehari Kancharla <sreehari.kancharla@intel.com>
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/device.h>
@@ -113,17 +99,7 @@ static int fsm_ee_message_handler(struct t7xx_port *port, struct t7xx_fsm_ctl *c
 	return ret;
 }
 
-/**
- * t7xx_port_enum_msg_handler() - Parse the port enumeration message to create/remove nodes.
- * @md: Modem context.
- * @msg: Message.
- *
- * Used to control create/remove device node.
- *
- * Return:
- * * 0		- Success.
- * * -EFAULT	- Message check failure.
- */
+ 
 int t7xx_port_enum_msg_handler(struct t7xx_modem *md, void *msg)
 {
 	struct device *dev = &md->t7xx_dev->pdev->dev;

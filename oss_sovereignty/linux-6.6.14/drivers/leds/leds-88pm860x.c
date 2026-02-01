@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * LED driver for Marvell 88PM860x
- *
- * Copyright (C) 2009 Marvell International Ltd.
- *	Haojian Zhuang <haojian.zhuang@marvell.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/of.h>
@@ -95,7 +90,7 @@ static int pm860x_led_set(struct led_classdev *cdev,
 		ret |= buf[1] & LED_PWM_MASK;
 		ret |= buf[2] & LED_PWM_MASK;
 		if (ret == 0) {
-			/* unset current since no led is lighting */
+			 
 			pm860x_set_bits(led->i2c, led->reg_control,
 					LED_CURRENT_MASK, 0);
 			pm860x_set_bits(led->i2c, PM8606_WLED3B,

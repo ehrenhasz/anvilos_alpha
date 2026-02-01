@@ -1,26 +1,4 @@
-/*
- * Copyright 2011 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: Alex Deucher
- */
+ 
 
 #include <linux/pci.h>
 #include <linux/seq_file.h>
@@ -54,7 +32,7 @@ static void rs780_get_pm_mode_parameters(struct radeon_device *rdev)
 	struct radeon_crtc *radeon_crtc;
 	int i;
 
-	/* defaults */
+	 
 	pi->crtc_id = 0;
 	pi->refresh_rate = 60;
 
@@ -873,7 +851,7 @@ int rs780_dpm_init(struct radeon_device *rdev)
 				   &frev, &crev, &data_offset)) {
 		info = (union igp_info *)(rdev->mode_info.atom_context->bios + data_offset);
 
-		/* Get various system informations from bios */
+		 
 		switch (crev) {
 		case 1:
 			pi->num_of_cycles_in_period =
@@ -993,7 +971,7 @@ void rs780_dpm_debugfs_print_current_performance_level(struct radeon_device *rde
 
 	seq_printf(m, "uvd    vclk: %d dclk: %d\n", rps->vclk, rps->dclk);
 
-	/* guess based on the current sclk */
+	 
 	if (sclk < (ps->sclk_low + 500))
 		seq_printf(m, "power level 0    sclk: %u vddc_index: %d\n",
 			   ps->sclk_low, ps->min_voltage);
@@ -1002,7 +980,7 @@ void rs780_dpm_debugfs_print_current_performance_level(struct radeon_device *rde
 			   ps->sclk_high, ps->max_voltage);
 }
 
-/* get the current sclk in 10 khz units */
+ 
 u32 rs780_dpm_get_current_sclk(struct radeon_device *rdev)
 {
 	u32 current_fb_div = RREG32(FVTHROT_STATUS_REG0) & CURRENT_FEEDBACK_DIV_MASK;
@@ -1016,7 +994,7 @@ u32 rs780_dpm_get_current_sclk(struct radeon_device *rdev)
 	return sclk;
 }
 
-/* get the current mclk in 10 khz units */
+ 
 u32 rs780_dpm_get_current_mclk(struct radeon_device *rdev)
 {
 	struct igp_power_info *pi = rs780_get_pi(rdev);

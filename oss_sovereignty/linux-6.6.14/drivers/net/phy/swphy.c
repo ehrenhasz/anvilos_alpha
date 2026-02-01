@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Software PHY emulation
- *
- * Code taken from fixed_phy.c by Russell King.
- *
- * Author: Vitaly Bordug <vbordug@ru.mvista.com>
- *         Anton Vorontsov <avorontsov@ru.mvista.com>
- *
- * Copyright (c) 2006-2007 MontaVista Software, Inc.
- */
+
+ 
 #include <linux/export.h>
 #include <linux/mii.h>
 #include <linux/phy.h>
@@ -33,11 +24,7 @@ enum {
 	SWMII_DUPLEX_FULL,
 };
 
-/*
- * These two tables get bitwise-anded together to produce the final result.
- * This means the speed table must contain both duplex settings, and the
- * duplex table must contain all speed settings.
- */
+ 
 static const struct swmii_regs speed[] = {
 	[SWMII_SPEED_10] = {
 		.lpa   = LPA_10FULL | LPA_10HALF,
@@ -82,14 +69,7 @@ static int swphy_decode_speed(int speed)
 	}
 }
 
-/**
- * swphy_validate_state - validate the software phy status
- * @state: software phy status
- *
- * This checks that we can represent the state stored in @state can be
- * represented in the emulated MII registers.  Returns 0 if it can,
- * otherwise returns -EINVAL.
- */
+ 
 int swphy_validate_state(const struct fixed_phy_status *state)
 {
 	int err;
@@ -105,13 +85,7 @@ int swphy_validate_state(const struct fixed_phy_status *state)
 }
 EXPORT_SYMBOL_GPL(swphy_validate_state);
 
-/**
- * swphy_read_reg - return a MII register from the fixed phy state
- * @reg: MII register
- * @state: fixed phy status
- *
- * Return the MII @reg register generated from the fixed phy state @state.
- */
+ 
 int swphy_read_reg(int reg, const struct fixed_phy_status *state)
 {
 	int speed_index, duplex_index;
@@ -160,10 +134,7 @@ int swphy_read_reg(int reg, const struct fixed_phy_status *state)
 	case MII_ESTATUS:
 		return estat;
 
-	/*
-	 * We do not support emulating Clause 45 over Clause 22 register
-	 * reads.  Return an error instead of bogus data.
-	 */
+	 
 	case MII_MMD_CTRL:
 	case MII_MMD_DATA:
 		return -1;

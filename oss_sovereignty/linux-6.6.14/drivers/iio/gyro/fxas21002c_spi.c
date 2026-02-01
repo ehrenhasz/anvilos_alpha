@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Driver for NXP Fxas21002c Gyroscope - SPI
- *
- * Copyright (C) 2019 Linaro Ltd.
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/mod_devicetable.h>

@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR BSD-2-Clause */
-/*
- * Test interface for Jitter RNG.
- *
- * Copyright (C) 2023, Stephan Mueller <smueller@chronox.de>
- */
+ 
+ 
 
 #include <linux/debugfs.h>
 #include <linux/module.h>
@@ -25,16 +21,9 @@ struct jent_testing {
 
 static struct dentry *jent_raw_debugfs_root = NULL;
 
-/*************************** Generic Data Handling ****************************/
+ 
 
-/*
- * boot variable:
- * 0 ==> No boot test, gathering of runtime data allowed
- * 1 ==> Boot test enabled and ready for collecting data, gathering runtime
- *	 data is disabled
- * 2 ==> Boot test completed and disabled, gathering of runtime data is
- *	 disabled
- */
+ 
 
 static void jent_testing_reset(struct jent_testing *data)
 {
@@ -48,11 +37,7 @@ static void jent_testing_reset(struct jent_testing *data)
 
 static void jent_testing_data_init(struct jent_testing *data, u32 boot)
 {
-	/*
-	 * The boot time testing implies we have a running test. If the
-	 * caller wants to clear it, he has to unset the boot_test flag
-	 * at runtime via sysfs to enable regular runtime testing
-	 */
+	 
 	if (boot)
 		return;
 
@@ -63,7 +48,7 @@ static void jent_testing_data_init(struct jent_testing *data, u32 boot)
 
 static void jent_testing_fini(struct jent_testing *data, u32 boot)
 {
-	/* If we have boot data, we do not reset yet to allow data to be read */
+	 
 	if (boot)
 		return;
 
@@ -82,10 +67,7 @@ static bool jent_testing_store(struct jent_testing *data, u32 value,
 
 	spin_lock_irqsave(&data->lock, flags);
 
-	/*
-	 * Disable entropy testing for boot time testing after ring buffer
-	 * is filled.
-	 */
+	 
 	if (*boot) {
 		if (((u32)atomic_read(&data->rb_writer)) >
 		     JENT_TEST_RINGBUFFER_SIZE) {
@@ -131,15 +113,12 @@ static int jent_testing_reader(struct jent_testing *data, u32 *boot,
 
 		spin_lock_irqsave(&data->lock, flags);
 
-		/* We have no data or reached the writer. */
+		 
 		if (!writer || (writer == data->rb_reader)) {
 
 			spin_unlock_irqrestore(&data->lock, flags);
 
-			/*
-			 * Now we gathered all boot data, enable regular data
-			 * collection.
-			 */
+			 
 			if (*boot) {
 				*boot = 0;
 				goto out;
@@ -155,7 +134,7 @@ static int jent_testing_reader(struct jent_testing *data, u32 *boot,
 			continue;
 		}
 
-		/* We copy out word-wise */
+		 
 		if (outbuflen < sizeof(u32)) {
 			spin_unlock_irqrestore(&data->lock, flags);
 			goto out;
@@ -187,13 +166,7 @@ static int jent_testing_extract_user(struct file *file, char __user *buf,
 	if (!nbytes)
 		return 0;
 
-	/*
-	 * The intention of this interface is for collecting at least
-	 * 1000 samples due to the SP800-90B requirements. So, we make no
-	 * effort in avoiding allocating more memory that actually needed
-	 * by the user. Hence, we allocate sufficient memory to always hold
-	 * that amount of data.
-	 */
+	 
 	tmp = kmalloc(JENT_TEST_RINGBUFFER_SIZE + sizeof(u32), GFP_KERNEL);
 	if (!tmp)
 		return -ENOMEM;
@@ -237,7 +210,7 @@ static int jent_testing_extract_user(struct file *file, char __user *buf,
 	return ret;
 }
 
-/************** Raw High-Resolution Timer Entropy Data Handling **************/
+ 
 
 static u32 boot_raw_hires_test = 0;
 module_param(boot_raw_hires_test, uint, 0644);
@@ -275,7 +248,7 @@ static const struct file_operations jent_raw_hires_fops = {
 	.read = jent_raw_hires_read,
 };
 
-/******************************* Initialization *******************************/
+ 
 
 void jent_testing_init(void)
 {

@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2019 Nuvoton Technology corporation.
+
+
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -14,12 +14,12 @@
 #include <linux/delay.h>
 #include <linux/pm_runtime.h>
 
-#define NPCM_RNGCS_REG		0x00	/* Control and status register */
-#define NPCM_RNGD_REG		0x04	/* Data register */
-#define NPCM_RNGMODE_REG	0x08	/* Mode register */
+#define NPCM_RNGCS_REG		0x00	 
+#define NPCM_RNGD_REG		0x04	 
+#define NPCM_RNGMODE_REG	0x08	 
 
-#define NPCM_RNG_CLK_SET_62_5MHZ	BIT(2) /* 60-80 MHz */
-#define NPCM_RNG_CLK_SET_25MHZ	GENMASK(4, 3) /* 20-25 MHz */
+#define NPCM_RNG_CLK_SET_62_5MHZ	BIT(2)  
+#define NPCM_RNG_CLK_SET_25MHZ	GENMASK(4, 3)  
 #define NPCM_RNG_DATA_VALID	BIT(1)
 #define NPCM_RNG_ENABLE		BIT(0)
 #define NPCM_RNG_M1ROSEL	BIT(1)

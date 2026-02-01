@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* FS-Cache interface to CacheFiles
- *
- * Copyright (C) 2021 Red Hat, Inc. All Rights Reserved.
- * Written by David Howells (dhowells@redhat.com)
- */
+
+ 
 
 #include <linux/slab.h>
 #include <linux/mount.h>
@@ -15,9 +11,7 @@
 
 static atomic_t cachefiles_object_debug_id;
 
-/*
- * Allocate a cache object record.
- */
+ 
 static
 struct cachefiles_object *cachefiles_alloc_object(struct fscache_cookie *cookie)
 {
@@ -45,9 +39,7 @@ struct cachefiles_object *cachefiles_alloc_object(struct fscache_cookie *cookie)
 	return object;
 }
 
-/*
- * Note that an object has been seen.
- */
+ 
 void cachefiles_see_object(struct cachefiles_object *object,
 			   enum cachefiles_obj_ref_trace why)
 {
@@ -55,9 +47,7 @@ void cachefiles_see_object(struct cachefiles_object *object,
 			     refcount_read(&object->ref), why);
 }
 
-/*
- * Increment the usage count on an object;
- */
+ 
 struct cachefiles_object *cachefiles_grab_object(struct cachefiles_object *object,
 						 enum cachefiles_obj_ref_trace why)
 {
@@ -68,9 +58,7 @@ struct cachefiles_object *cachefiles_grab_object(struct cachefiles_object *objec
 	return object;
 }
 
-/*
- * dispose of a reference to an object
- */
+ 
 void cachefiles_put_object(struct cachefiles_object *object,
 			   enum cachefiles_obj_ref_trace why)
 {
@@ -99,13 +87,7 @@ void cachefiles_put_object(struct cachefiles_object *object,
 	_leave("");
 }
 
-/*
- * Adjust the size of a cache file if necessary to match the DIO size.  We keep
- * the EOF marker a multiple of DIO blocks so that we don't fall back to doing
- * non-DIO for a partial block straddling the EOF, but we also have to be
- * careful of someone expanding the file and accidentally accreting the
- * padding.
- */
+ 
 static int cachefiles_adjust_size(struct cachefiles_object *object)
 {
 	struct iattr newattrs;
@@ -129,9 +111,7 @@ static int cachefiles_adjust_size(struct cachefiles_object *object)
 
 	inode_lock(file_inode(file));
 
-	/* if there's an extension to a partial page at the end of the backing
-	 * file, we need to discard the partial page so that we pick up new
-	 * data after it */
+	 
 	if (oi_size & ~PAGE_MASK && ni_size > oi_size) {
 		_debug("discard tail %llx", oi_size);
 		newattrs.ia_valid = ATTR_SIZE;
@@ -166,9 +146,7 @@ truncate_failed:
 	return ret;
 }
 
-/*
- * Attempt to look up the nominated node in this cache
- */
+ 
 static bool cachefiles_lookup_cookie(struct fscache_cookie *cookie)
 {
 	struct cachefiles_object *object;
@@ -209,9 +187,7 @@ fail_withdraw:
 	cachefiles_see_object(object, cachefiles_obj_see_lookup_failed);
 	fscache_caching_failed(cookie);
 	_debug("failed c=%08x o=%08x", cookie->debug_id, object->debug_id);
-	/* The caller holds an access count on the cookie, so we need them to
-	 * drop it before we can withdraw the object.
-	 */
+	 
 	return false;
 
 fail_put:
@@ -220,10 +196,7 @@ fail:
 	return false;
 }
 
-/*
- * Shorten the backing object to discard any dirty data and free up
- * any unused granules.
- */
+ 
 static bool cachefiles_shorten_object(struct cachefiles_object *object,
 				      struct file *file, loff_t new_size)
 {
@@ -267,9 +240,7 @@ static bool cachefiles_shorten_object(struct cachefiles_object *object,
 	return true;
 }
 
-/*
- * Resize the backing object.
- */
+ 
 static void cachefiles_resize_cookie(struct netfs_cache_resources *cres,
 				     loff_t new_size)
 {
@@ -290,16 +261,11 @@ static void cachefiles_resize_cookie(struct netfs_cache_resources *cres,
 		return;
 	}
 
-	/* The file is being expanded.  We don't need to do anything
-	 * particularly.  cookie->initial_size doesn't change and so the point
-	 * at which we have to download before doesn't change.
-	 */
+	 
 	cookie->object_size = new_size;
 }
 
-/*
- * Commit changes to the object as we drop it.
- */
+ 
 static void cachefiles_commit_object(struct cachefiles_object *object,
 				     struct cachefiles_cache *cache)
 {
@@ -316,9 +282,7 @@ static void cachefiles_commit_object(struct cachefiles_object *object,
 		cachefiles_commit_tmpfile(cache, object);
 }
 
-/*
- * Finalise and object and close the VFS structs that we have.
- */
+ 
 static void cachefiles_clean_up_object(struct cachefiles_object *object,
 				       struct cachefiles_cache *cache)
 {
@@ -343,9 +307,7 @@ static void cachefiles_clean_up_object(struct cachefiles_object *object,
 	}
 }
 
-/*
- * Withdraw caching for a cookie.
- */
+ 
 static void cachefiles_withdraw_cookie(struct fscache_cookie *cookie)
 {
 	struct cachefiles_object *object = cookie->cache_priv;
@@ -374,9 +336,7 @@ static void cachefiles_withdraw_cookie(struct fscache_cookie *cookie)
 	cachefiles_put_object(object, cachefiles_obj_put_detach);
 }
 
-/*
- * Invalidate the storage associated with a cookie.
- */
+ 
 static bool cachefiles_invalidate_cookie(struct fscache_cookie *cookie)
 {
 	struct cachefiles_object *object = cookie->cache_priv;
@@ -397,7 +357,7 @@ static bool cachefiles_invalidate_cookie(struct fscache_cookie *cookie)
 	if (IS_ERR(new_file))
 		goto failed;
 
-	/* Substitute the VFS target */
+	 
 	_debug("sub");
 	spin_lock(&object->lock);
 
@@ -410,7 +370,7 @@ static bool cachefiles_invalidate_cookie(struct fscache_cookie *cookie)
 	spin_unlock(&object->lock);
 	_debug("subbed");
 
-	/* Allow I/O to take place again */
+	 
 	fscache_resume_after_invalidation(cookie);
 
 	if (old_file) {

@@ -1,8 +1,8 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef DDK750_DVI_H__
 #define DDK750_DVI_H__
 
-/* dvi chip stuffs structros */
+ 
 
 typedef long (*PFN_DVICTRL_INIT)(unsigned char edge_select,
 				 unsigned char bus_select,
@@ -25,7 +25,7 @@ typedef unsigned char (*PFN_DVICTRL_ISCONNECTED)(void);
 typedef unsigned char (*PFN_DVICTRL_CHECKINTERRUPT)(void);
 typedef void (*PFN_DVICTRL_CLEARINTERRUPT)(void);
 
-/* Structure to hold all the function pointer to the DVI Controller. */
+ 
 struct dvi_ctrl_device {
 	PFN_DVICTRL_INIT		init;
 	PFN_DVICTRL_RESETCHIP		reset_chip;
@@ -41,7 +41,7 @@ struct dvi_ctrl_device {
 
 #define DVI_CTRL_SII164
 
-/* dvi functions prototype */
+ 
 int dvi_init(unsigned char edge_select,
 	     unsigned char bus_select,
 	     unsigned char dual_edge_clk_select,

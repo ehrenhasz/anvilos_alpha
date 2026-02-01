@@ -1,34 +1,4 @@
-/*
- * Copyright (c) 2015, Mellanox Technologies. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 
 #include <linux/irq.h>
 #include <net/xdp_sock_drv.h>
@@ -90,27 +60,22 @@ static bool mlx5e_napi_xsk_post(struct mlx5e_xdpsq *xsksq, struct mlx5e_rq *xskr
 	bool need_wakeup = xsk_uses_need_wakeup(xskrq->xsk_pool);
 	bool busy_xsk = false, xsk_rx_alloc_err;
 
-	/* If SQ is empty, there are no TX completions to trigger NAPI, so set
-	 * need_wakeup. Do it before queuing packets for TX to avoid race
-	 * condition with userspace.
-	 */
+	 
 	if (need_wakeup && xsksq->pc == xsksq->cc)
 		xsk_set_tx_need_wakeup(xsksq->xsk_pool);
 	busy_xsk |= mlx5e_xsk_tx(xsksq, MLX5E_TX_XSK_POLL_BUDGET);
-	/* If we queued some packets for TX, no need for wakeup anymore. */
+	 
 	if (need_wakeup && xsksq->pc != xsksq->cc)
 		xsk_clear_tx_need_wakeup(xsksq->xsk_pool);
 
-	/* If WQ is empty, RX won't trigger NAPI, so set need_wakeup. Do it
-	 * before refilling to avoid race condition with userspace.
-	 */
+	 
 	if (need_wakeup && !mlx5e_rqwq_get_cur_sz(xskrq))
 		xsk_set_rx_need_wakeup(xskrq->xsk_pool);
 	xsk_rx_alloc_err = INDIRECT_CALL_2(xskrq->post_wqes,
 					   mlx5e_post_rx_mpwqes,
 					   mlx5e_post_rx_wqes,
 					   xskrq);
-	/* Ask for wakeup if WQ is not full after refill. */
+	 
 	if (!need_wakeup)
 		busy_xsk |= xsk_rx_alloc_err;
 	else if (xsk_rx_alloc_err)
@@ -150,7 +115,7 @@ int mlx5e_napi_poll(struct napi_struct *napi, int budget)
 		busy |= mlx5e_poll_tx_cq(&c->sq[i].cq, budget);
 
 	if (unlikely(qos_sqs)) {
-		smp_rmb(); /* Pairs with mlx5e_qos_alloc_queues. */
+		smp_rmb();  
 		qos_sqs_size = READ_ONCE(c->qos_sqs_size);
 
 		for (i = 0; i < qos_sqs_size; i++) {
@@ -161,7 +126,7 @@ int mlx5e_napi_poll(struct napi_struct *napi, int budget)
 		}
 	}
 
-	/* budget=0 means we may be in IRQ context, do as little as possible */
+	 
 	if (unlikely(!budget))
 		goto out;
 
@@ -180,12 +145,10 @@ int mlx5e_napi_poll(struct napi_struct *napi, int budget)
 
 	mlx5e_poll_ico_cq(&c->icosq.cq);
 	if (mlx5e_poll_ico_cq(&c->async_icosq.cq))
-		/* Don't clear the flag if nothing was polled to prevent
-		 * queueing more WQEs and overflowing the async ICOSQ.
-		 */
+		 
 		clear_bit(MLX5E_SQ_STATE_PENDING_XSK_TX, &c->async_icosq.state);
 
-	/* Keep after async ICOSQ CQ poll */
+	 
 	if (unlikely(mlx5e_ktls_rx_pending_resync_list(c, budget)))
 		busy |= mlx5e_ktls_rx_handle_resync_list(c, budget);
 

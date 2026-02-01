@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright 2019 NXP.
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/device.h>
@@ -26,7 +24,7 @@
 
 struct imx_key_drv_data {
 	u32 keycode;
-	bool keystate;  /* true: pressed, false: released */
+	bool keystate;   
 	struct delayed_work check_work;
 	struct input_dev *input;
 	struct imx_sc_ipc *key_ipc_handle;
@@ -78,12 +76,7 @@ static void imx_sc_check_for_events(struct work_struct *work)
 		return;
 	}
 
-	/*
-	 * The response data from SCU firmware is 4 bytes,
-	 * but ONLY the first byte is the key state, other
-	 * 3 bytes could be some dirty data, so we should
-	 * ONLY take the first byte as key state.
-	 */
+	 
 	state = (bool)(msg.state & 0xff);
 
 	if (state ^ priv->keystate) {
@@ -172,7 +165,7 @@ static int imx_sc_key_probe(struct platform_device *pdev)
 
 static const struct of_device_id imx_sc_key_ids[] = {
 	{ .compatible = "fsl,imx-sc-key" },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, imx_sc_key_ids);
 

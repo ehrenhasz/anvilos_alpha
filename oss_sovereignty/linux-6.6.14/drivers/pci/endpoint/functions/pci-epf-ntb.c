@@ -1,38 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Endpoint Function Driver to implement Non-Transparent Bridge functionality
- *
- * Copyright (C) 2020 Texas Instruments
- * Author: Kishon Vijay Abraham I <kishon@ti.com>
- */
 
-/*
- * The PCI NTB function driver configures the SoC with multiple PCIe Endpoint
- * (EP) controller instances (see diagram below) in such a way that
- * transactions from one EP controller are routed to the other EP controller.
- * Once PCI NTB function driver configures the SoC with multiple EP instances,
- * HOST1 and HOST2 can communicate with each other using SoC as a bridge.
- *
- *    +-------------+                                   +-------------+
- *    |             |                                   |             |
- *    |    HOST1    |                                   |    HOST2    |
- *    |             |                                   |             |
- *    +------^------+                                   +------^------+
- *           |                                                 |
- *           |                                                 |
- * +---------|-------------------------------------------------|---------+
- * |  +------v------+                                   +------v------+  |
- * |  |             |                                   |             |  |
- * |  |     EP      |                                   |     EP      |  |
- * |  | CONTROLLER1 |                                   | CONTROLLER2 |  |
- * |  |             <----------------------------------->             |  |
- * |  |             |                                   |             |  |
- * |  |             |                                   |             |  |
- * |  |             |  SoC With Multiple EP Instances   |             |  |
- * |  |             |  (Configured using NTB Function)  |             |  |
- * |  +-------------+                                   +-------------+  |
- * +---------------------------------------------------------------------+
- */
+ 
+
+ 
 
 #include <linux/delay.h>
 #include <linux/io.h>
@@ -128,15 +97,7 @@ static struct pci_epf_header epf_ntb_header = {
 	.interrupt_pin	= PCI_INTERRUPT_INTA,
 };
 
-/**
- * epf_ntb_link_up() - Raise link_up interrupt to both the hosts
- * @ntb: NTB device that facilitates communication between HOST1 and HOST2
- * @link_up: true or false indicating Link is UP or Down
- *
- * Once NTB function in HOST1 and the NTB function in HOST2 invoke
- * ntb_link_enable(), this NTB function driver will trigger a link event to
- * the NTB client in both the hosts.
- */
+ 
 static int epf_ntb_link_up(struct epf_ntb *ntb, bool link_up)
 {
 	enum pci_epc_interface_type type;
@@ -172,66 +133,7 @@ static int epf_ntb_link_up(struct epf_ntb *ntb, bool link_up)
 	return 0;
 }
 
-/**
- * epf_ntb_configure_mw() - Configure the Outbound Address Space for one host
- *   to access the memory window of other host
- * @ntb: NTB device that facilitates communication between HOST1 and HOST2
- * @type: PRIMARY interface or SECONDARY interface
- * @mw: Index of the memory window (either 0, 1, 2 or 3)
- *
- * +-----------------+    +---->+----------------+-----------+-----------------+
- * |       BAR0      |    |     |   Doorbell 1   +-----------> MSI|X ADDRESS 1 |
- * +-----------------+    |     +----------------+           +-----------------+
- * |       BAR1      |    |     |   Doorbell 2   +---------+ |                 |
- * +-----------------+----+     +----------------+         | |                 |
- * |       BAR2      |          |   Doorbell 3   +-------+ | +-----------------+
- * +-----------------+----+     +----------------+       | +-> MSI|X ADDRESS 2 |
- * |       BAR3      |    |     |   Doorbell 4   +-----+ |   +-----------------+
- * +-----------------+    |     |----------------+     | |   |                 |
- * |       BAR4      |    |     |                |     | |   +-----------------+
- * +-----------------+    |     |      MW1       +---+ | +-->+ MSI|X ADDRESS 3||
- * |       BAR5      |    |     |                |   | |     +-----------------+
- * +-----------------+    +---->-----------------+   | |     |                 |
- *   EP CONTROLLER 1            |                |   | |     +-----------------+
- *                              |                |   | +---->+ MSI|X ADDRESS 4 |
- *                              +----------------+   |       +-----------------+
- *                      (A)      EP CONTROLLER 2     |       |                 |
- *                                 (OB SPACE)        |       |                 |
- *                                                   +------->      MW1        |
- *                                                           |                 |
- *                                                           |                 |
- *                                                   (B)     +-----------------+
- *                                                           |                 |
- *                                                           |                 |
- *                                                           |                 |
- *                                                           |                 |
- *                                                           |                 |
- *                                                           +-----------------+
- *                                                           PCI Address Space
- *                                                           (Managed by HOST2)
- *
- * This function performs stage (B) in the above diagram (see MW1) i.e., map OB
- * address space of memory window to PCI address space.
- *
- * This operation requires 3 parameters
- *  1) Address in the outbound address space
- *  2) Address in the PCI Address space
- *  3) Size of the address region to be mapped
- *
- * The address in the outbound address space (for MW1, MW2, MW3 and MW4) is
- * stored in epf_bar corresponding to BAR_DB_MW1 for MW1 and BAR_MW2, BAR_MW3
- * BAR_MW4 for rest of the BARs of epf_ntb_epc that is connected to HOST1. This
- * is populated in epf_ntb_alloc_peer_mem() in this driver.
- *
- * The address and size of the PCI address region that has to be mapped would
- * be provided by HOST2 in ctrl->addr and ctrl->size of epf_ntb_epc that is
- * connected to HOST2.
- *
- * Please note Memory window1 (MW1) and Doorbell registers together will be
- * mapped to a single BAR (BAR2) above for 32-bit BARs. The exact BAR that's
- * used for Memory window (MW) can be obtained from epf_ntb_bar[BAR_DB_MW1],
- * epf_ntb_bar[BAR_MW2], epf_ntb_bar[BAR_MW2], epf_ntb_bar[BAR_MW2].
- */
+ 
 static int epf_ntb_configure_mw(struct epf_ntb *ntb,
 				enum pci_epc_interface_type type, u32 mw)
 {
@@ -282,15 +184,7 @@ err_invalid_size:
 	return ret;
 }
 
-/**
- * epf_ntb_teardown_mw() - Teardown the configured OB ATU
- * @ntb: NTB device that facilitates communication between HOST1 and HOST2
- * @type: PRIMARY interface or SECONDARY interface
- * @mw: Index of the memory window (either 0, 1, 2 or 3)
- *
- * Teardown the configured OB ATU configured in epf_ntb_configure_mw() using
- * pci_epc_unmap_addr()
- */
+ 
 static void epf_ntb_teardown_mw(struct epf_ntb *ntb,
 				enum pci_epc_interface_type type, u32 mw)
 {
@@ -319,67 +213,7 @@ static void epf_ntb_teardown_mw(struct epf_ntb *ntb,
 	pci_epc_unmap_addr(epc, func_no, vfunc_no, phys_addr);
 }
 
-/**
- * epf_ntb_configure_msi() - Map OB address space to MSI address
- * @ntb: NTB device that facilitates communication between HOST1 and HOST2
- * @type: PRIMARY interface or SECONDARY interface
- * @db_count: Number of doorbell interrupts to map
- *
- *+-----------------+    +----->+----------------+-----------+-----------------+
- *|       BAR0      |    |      |   Doorbell 1   +---+------->   MSI ADDRESS   |
- *+-----------------+    |      +----------------+   |       +-----------------+
- *|       BAR1      |    |      |   Doorbell 2   +---+       |                 |
- *+-----------------+----+      +----------------+   |       |                 |
- *|       BAR2      |           |   Doorbell 3   +---+       |                 |
- *+-----------------+----+      +----------------+   |       |                 |
- *|       BAR3      |    |      |   Doorbell 4   +---+       |                 |
- *+-----------------+    |      |----------------+           |                 |
- *|       BAR4      |    |      |                |           |                 |
- *+-----------------+    |      |      MW1       |           |                 |
- *|       BAR5      |    |      |                |           |                 |
- *+-----------------+    +----->-----------------+           |                 |
- *  EP CONTROLLER 1             |                |           |                 |
- *                              |                |           |                 |
- *                              +----------------+           +-----------------+
- *                     (A)       EP CONTROLLER 2             |                 |
- *                                 (OB SPACE)                |                 |
- *                                                           |      MW1        |
- *                                                           |                 |
- *                                                           |                 |
- *                                                   (B)     +-----------------+
- *                                                           |                 |
- *                                                           |                 |
- *                                                           |                 |
- *                                                           |                 |
- *                                                           |                 |
- *                                                           +-----------------+
- *                                                           PCI Address Space
- *                                                           (Managed by HOST2)
- *
- *
- * This function performs stage (B) in the above diagram (see Doorbell 1,
- * Doorbell 2, Doorbell 3, Doorbell 4) i.e map OB address space corresponding to
- * doorbell to MSI address in PCI address space.
- *
- * This operation requires 3 parameters
- *  1) Address reserved for doorbell in the outbound address space
- *  2) MSI-X address in the PCIe Address space
- *  3) Number of MSI-X interrupts that has to be configured
- *
- * The address in the outbound address space (for the Doorbell) is stored in
- * epf_bar corresponding to BAR_DB_MW1 of epf_ntb_epc that is connected to
- * HOST1. This is populated in epf_ntb_alloc_peer_mem() in this driver along
- * with address for MW1.
- *
- * pci_epc_map_msi_irq() takes the MSI address from MSI capability register
- * and maps the OB address (obtained in epf_ntb_alloc_peer_mem()) to the MSI
- * address.
- *
- * epf_ntb_configure_msi() also stores the MSI data to raise each interrupt
- * in db_data of the peer's control region. This helps the peer to raise
- * doorbell of the other host by writing db_data to the BAR corresponding to
- * BAR_DB_MW1.
- */
+ 
 static int epf_ntb_configure_msi(struct epf_ntb *ntb,
 				 enum pci_epc_interface_type type, u16 db_count)
 {
@@ -422,68 +256,7 @@ static int epf_ntb_configure_msi(struct epf_ntb *ntb,
 	return 0;
 }
 
-/**
- * epf_ntb_configure_msix() - Map OB address space to MSI-X address
- * @ntb: NTB device that facilitates communication between HOST1 and HOST2
- * @type: PRIMARY interface or SECONDARY interface
- * @db_count: Number of doorbell interrupts to map
- *
- *+-----------------+    +----->+----------------+-----------+-----------------+
- *|       BAR0      |    |      |   Doorbell 1   +-----------> MSI-X ADDRESS 1 |
- *+-----------------+    |      +----------------+           +-----------------+
- *|       BAR1      |    |      |   Doorbell 2   +---------+ |                 |
- *+-----------------+----+      +----------------+         | |                 |
- *|       BAR2      |           |   Doorbell 3   +-------+ | +-----------------+
- *+-----------------+----+      +----------------+       | +-> MSI-X ADDRESS 2 |
- *|       BAR3      |    |      |   Doorbell 4   +-----+ |   +-----------------+
- *+-----------------+    |      |----------------+     | |   |                 |
- *|       BAR4      |    |      |                |     | |   +-----------------+
- *+-----------------+    |      |      MW1       +     | +-->+ MSI-X ADDRESS 3||
- *|       BAR5      |    |      |                |     |     +-----------------+
- *+-----------------+    +----->-----------------+     |     |                 |
- *  EP CONTROLLER 1             |                |     |     +-----------------+
- *                              |                |     +---->+ MSI-X ADDRESS 4 |
- *                              +----------------+           +-----------------+
- *                     (A)       EP CONTROLLER 2             |                 |
- *                                 (OB SPACE)                |                 |
- *                                                           |      MW1        |
- *                                                           |                 |
- *                                                           |                 |
- *                                                   (B)     +-----------------+
- *                                                           |                 |
- *                                                           |                 |
- *                                                           |                 |
- *                                                           |                 |
- *                                                           |                 |
- *                                                           +-----------------+
- *                                                           PCI Address Space
- *                                                           (Managed by HOST2)
- *
- * This function performs stage (B) in the above diagram (see Doorbell 1,
- * Doorbell 2, Doorbell 3, Doorbell 4) i.e map OB address space corresponding to
- * doorbell to MSI-X address in PCI address space.
- *
- * This operation requires 3 parameters
- *  1) Address reserved for doorbell in the outbound address space
- *  2) MSI-X address in the PCIe Address space
- *  3) Number of MSI-X interrupts that has to be configured
- *
- * The address in the outbound address space (for the Doorbell) is stored in
- * epf_bar corresponding to BAR_DB_MW1 of epf_ntb_epc that is connected to
- * HOST1. This is populated in epf_ntb_alloc_peer_mem() in this driver along
- * with address for MW1.
- *
- * The MSI-X address is in the MSI-X table of EP CONTROLLER 2 and
- * the count of doorbell is in ctrl->argument of epf_ntb_epc that is connected
- * to HOST2. MSI-X table is stored memory mapped to ntb_epc->msix_bar and the
- * offset is in ntb_epc->msix_table_offset. From this epf_ntb_configure_msix()
- * gets the MSI-X address and data.
- *
- * epf_ntb_configure_msix() also stores the MSI-X data to raise each interrupt
- * in db_data of the peer's control region. This helps the peer to raise
- * doorbell of the other host by writing db_data to the BAR corresponding to
- * BAR_DB_MW1.
- */
+ 
 static int epf_ntb_configure_msix(struct epf_ntb *ntb,
 				  enum pci_epc_interface_type type,
 				  u16 db_count)
@@ -540,17 +313,7 @@ static int epf_ntb_configure_msix(struct epf_ntb *ntb,
 	return 0;
 }
 
-/**
- * epf_ntb_configure_db() - Configure the Outbound Address Space for one host
- *   to ring the doorbell of other host
- * @ntb: NTB device that facilitates communication between HOST1 and HOST2
- * @type: PRIMARY interface or SECONDARY interface
- * @db_count: Count of the number of doorbells that has to be configured
- * @msix: Indicates whether MSI-X or MSI should be used
- *
- * Invokes epf_ntb_configure_msix() or epf_ntb_configure_msi() required for
- * one HOST to ring the doorbell of other HOST.
- */
+ 
 static int epf_ntb_configure_db(struct epf_ntb *ntb,
 				enum pci_epc_interface_type type,
 				u16 db_count, bool msix)
@@ -577,14 +340,7 @@ static int epf_ntb_configure_db(struct epf_ntb *ntb,
 	return ret;
 }
 
-/**
- * epf_ntb_teardown_db() - Unmap address in OB address space to MSI/MSI-X
- *   address
- * @ntb: NTB device that facilitates communication between HOST1 and HOST2
- * @type: PRIMARY interface or SECONDARY interface
- *
- * Invoke pci_epc_unmap_addr() to unmap OB address to MSI/MSI-X address.
- */
+ 
 static void
 epf_ntb_teardown_db(struct epf_ntb *ntb, enum pci_epc_interface_type type)
 {
@@ -608,15 +364,7 @@ epf_ntb_teardown_db(struct epf_ntb *ntb, enum pci_epc_interface_type type)
 	pci_epc_unmap_addr(epc, func_no, vfunc_no, phys_addr);
 }
 
-/**
- * epf_ntb_cmd_handler() - Handle commands provided by the NTB Host
- * @work: work_struct for the two epf_ntb_epc (PRIMARY and SECONDARY)
- *
- * Workqueue function that gets invoked for the two epf_ntb_epc
- * periodically (once every 5ms) to see if it has received any commands
- * from NTB host. The host can send commands to configure doorbell or
- * configure memory window or to update link status.
- */
+ 
 static void epf_ntb_cmd_handler(struct work_struct *work)
 {
 	enum pci_epc_interface_type type;
@@ -701,36 +449,7 @@ reset_handler:
 			   msecs_to_jiffies(5));
 }
 
-/**
- * epf_ntb_peer_spad_bar_clear() - Clear Peer Scratchpad BAR
- * @ntb_epc: EPC associated with one of the HOST which holds peer's outbound
- *	     address.
- *
- *+-----------------+------->+------------------+        +-----------------+
- *|       BAR0      |        |  CONFIG REGION   |        |       BAR0      |
- *+-----------------+----+   +------------------+<-------+-----------------+
- *|       BAR1      |    |   |SCRATCHPAD REGION |        |       BAR1      |
- *+-----------------+    +-->+------------------+<-------+-----------------+
- *|       BAR2      |            Local Memory            |       BAR2      |
- *+-----------------+                                    +-----------------+
- *|       BAR3      |                                    |       BAR3      |
- *+-----------------+                                    +-----------------+
- *|       BAR4      |                                    |       BAR4      |
- *+-----------------+                                    +-----------------+
- *|       BAR5      |                                    |       BAR5      |
- *+-----------------+                                    +-----------------+
- *  EP CONTROLLER 1                                        EP CONTROLLER 2
- *
- * Clear BAR1 of EP CONTROLLER 2 which contains the HOST2's peer scratchpad
- * region. While BAR1 is the default peer scratchpad BAR, an NTB could have
- * other BARs for peer scratchpad (because of 64-bit BARs or reserved BARs).
- * This function can get the exact BAR used for peer scratchpad from
- * epf_ntb_bar[BAR_PEER_SPAD].
- *
- * Since HOST2's peer scratchpad is also HOST1's self scratchpad, this function
- * gets the address of peer scratchpad from
- * peer_ntb_epc->epf_ntb_bar[BAR_CONFIG].
- */
+ 
 static void epf_ntb_peer_spad_bar_clear(struct epf_ntb_epc *ntb_epc)
 {
 	struct pci_epf_bar *epf_bar;
@@ -746,36 +465,7 @@ static void epf_ntb_peer_spad_bar_clear(struct epf_ntb_epc *ntb_epc)
 	pci_epc_clear_bar(epc, func_no, vfunc_no, epf_bar);
 }
 
-/**
- * epf_ntb_peer_spad_bar_set() - Set peer scratchpad BAR
- * @ntb: NTB device that facilitates communication between HOST1 and HOST2
- * @type: PRIMARY interface or SECONDARY interface
- *
- *+-----------------+------->+------------------+        +-----------------+
- *|       BAR0      |        |  CONFIG REGION   |        |       BAR0      |
- *+-----------------+----+   +------------------+<-------+-----------------+
- *|       BAR1      |    |   |SCRATCHPAD REGION |        |       BAR1      |
- *+-----------------+    +-->+------------------+<-------+-----------------+
- *|       BAR2      |            Local Memory            |       BAR2      |
- *+-----------------+                                    +-----------------+
- *|       BAR3      |                                    |       BAR3      |
- *+-----------------+                                    +-----------------+
- *|       BAR4      |                                    |       BAR4      |
- *+-----------------+                                    +-----------------+
- *|       BAR5      |                                    |       BAR5      |
- *+-----------------+                                    +-----------------+
- *  EP CONTROLLER 1                                        EP CONTROLLER 2
- *
- * Set BAR1 of EP CONTROLLER 2 which contains the HOST2's peer scratchpad
- * region. While BAR1 is the default peer scratchpad BAR, an NTB could have
- * other BARs for peer scratchpad (because of 64-bit BARs or reserved BARs).
- * This function can get the exact BAR used for peer scratchpad from
- * epf_ntb_bar[BAR_PEER_SPAD].
- *
- * Since HOST2's peer scratchpad is also HOST1's self scratchpad, this function
- * gets the address of peer scratchpad from
- * peer_ntb_epc->epf_ntb_bar[BAR_CONFIG].
- */
+ 
 static int epf_ntb_peer_spad_bar_set(struct epf_ntb *ntb,
 				     enum pci_epc_interface_type type)
 {
@@ -817,36 +507,7 @@ static int epf_ntb_peer_spad_bar_set(struct epf_ntb *ntb,
 	return 0;
 }
 
-/**
- * epf_ntb_config_sspad_bar_clear() - Clear Config + Self scratchpad BAR
- * @ntb_epc: EPC associated with one of the HOST which holds peer's outbound
- *	     address.
- *
- * +-----------------+------->+------------------+        +-----------------+
- * |       BAR0      |        |  CONFIG REGION   |        |       BAR0      |
- * +-----------------+----+   +------------------+<-------+-----------------+
- * |       BAR1      |    |   |SCRATCHPAD REGION |        |       BAR1      |
- * +-----------------+    +-->+------------------+<-------+-----------------+
- * |       BAR2      |            Local Memory            |       BAR2      |
- * +-----------------+                                    +-----------------+
- * |       BAR3      |                                    |       BAR3      |
- * +-----------------+                                    +-----------------+
- * |       BAR4      |                                    |       BAR4      |
- * +-----------------+                                    +-----------------+
- * |       BAR5      |                                    |       BAR5      |
- * +-----------------+                                    +-----------------+
- *   EP CONTROLLER 1                                        EP CONTROLLER 2
- *
- * Clear BAR0 of EP CONTROLLER 1 which contains the HOST1's config and
- * self scratchpad region (removes inbound ATU configuration). While BAR0 is
- * the default self scratchpad BAR, an NTB could have other BARs for self
- * scratchpad (because of reserved BARs). This function can get the exact BAR
- * used for self scratchpad from epf_ntb_bar[BAR_CONFIG].
- *
- * Please note the self scratchpad region and config region is combined to
- * a single region and mapped using the same BAR. Also note HOST2's peer
- * scratchpad is HOST1's self scratchpad.
- */
+ 
 static void epf_ntb_config_sspad_bar_clear(struct epf_ntb_epc *ntb_epc)
 {
 	struct pci_epf_bar *epf_bar;
@@ -862,36 +523,7 @@ static void epf_ntb_config_sspad_bar_clear(struct epf_ntb_epc *ntb_epc)
 	pci_epc_clear_bar(epc, func_no, vfunc_no, epf_bar);
 }
 
-/**
- * epf_ntb_config_sspad_bar_set() - Set Config + Self scratchpad BAR
- * @ntb_epc: EPC associated with one of the HOST which holds peer's outbound
- *	     address.
- *
- * +-----------------+------->+------------------+        +-----------------+
- * |       BAR0      |        |  CONFIG REGION   |        |       BAR0      |
- * +-----------------+----+   +------------------+<-------+-----------------+
- * |       BAR1      |    |   |SCRATCHPAD REGION |        |       BAR1      |
- * +-----------------+    +-->+------------------+<-------+-----------------+
- * |       BAR2      |            Local Memory            |       BAR2      |
- * +-----------------+                                    +-----------------+
- * |       BAR3      |                                    |       BAR3      |
- * +-----------------+                                    +-----------------+
- * |       BAR4      |                                    |       BAR4      |
- * +-----------------+                                    +-----------------+
- * |       BAR5      |                                    |       BAR5      |
- * +-----------------+                                    +-----------------+
- *   EP CONTROLLER 1                                        EP CONTROLLER 2
- *
- * Map BAR0 of EP CONTROLLER 1 which contains the HOST1's config and
- * self scratchpad region. While BAR0 is the default self scratchpad BAR, an
- * NTB could have other BARs for self scratchpad (because of reserved BARs).
- * This function can get the exact BAR used for self scratchpad from
- * epf_ntb_bar[BAR_CONFIG].
- *
- * Please note the self scratchpad region and config region is combined to
- * a single region and mapped using the same BAR. Also note HOST2's peer
- * scratchpad is HOST1's self scratchpad.
- */
+ 
 static int epf_ntb_config_sspad_bar_set(struct epf_ntb_epc *ntb_epc)
 {
 	struct pci_epf_bar *epf_bar;
@@ -921,30 +553,7 @@ static int epf_ntb_config_sspad_bar_set(struct epf_ntb_epc *ntb_epc)
 	return 0;
 }
 
-/**
- * epf_ntb_config_spad_bar_free() - Free the physical memory associated with
- *   config + scratchpad region
- * @ntb: NTB device that facilitates communication between HOST1 and HOST2
- *
- * +-----------------+------->+------------------+        +-----------------+
- * |       BAR0      |        |  CONFIG REGION   |        |       BAR0      |
- * +-----------------+----+   +------------------+<-------+-----------------+
- * |       BAR1      |    |   |SCRATCHPAD REGION |        |       BAR1      |
- * +-----------------+    +-->+------------------+<-------+-----------------+
- * |       BAR2      |            Local Memory            |       BAR2      |
- * +-----------------+                                    +-----------------+
- * |       BAR3      |                                    |       BAR3      |
- * +-----------------+                                    +-----------------+
- * |       BAR4      |                                    |       BAR4      |
- * +-----------------+                                    +-----------------+
- * |       BAR5      |                                    |       BAR5      |
- * +-----------------+                                    +-----------------+
- *   EP CONTROLLER 1                                        EP CONTROLLER 2
- *
- * Free the Local Memory mentioned in the above diagram. After invoking this
- * function, any of config + self scratchpad region of HOST1 or peer scratchpad
- * region of HOST2 should not be accessed.
- */
+ 
 static void epf_ntb_config_spad_bar_free(struct epf_ntb *ntb)
 {
 	enum pci_epc_interface_type type;
@@ -961,35 +570,7 @@ static void epf_ntb_config_spad_bar_free(struct epf_ntb *ntb)
 	}
 }
 
-/**
- * epf_ntb_config_spad_bar_alloc() - Allocate memory for config + scratchpad
- *   region
- * @ntb: NTB device that facilitates communication between HOST1 and HOST2
- * @type: PRIMARY interface or SECONDARY interface
- *
- * +-----------------+------->+------------------+        +-----------------+
- * |       BAR0      |        |  CONFIG REGION   |        |       BAR0      |
- * +-----------------+----+   +------------------+<-------+-----------------+
- * |       BAR1      |    |   |SCRATCHPAD REGION |        |       BAR1      |
- * +-----------------+    +-->+------------------+<-------+-----------------+
- * |       BAR2      |            Local Memory            |       BAR2      |
- * +-----------------+                                    +-----------------+
- * |       BAR3      |                                    |       BAR3      |
- * +-----------------+                                    +-----------------+
- * |       BAR4      |                                    |       BAR4      |
- * +-----------------+                                    +-----------------+
- * |       BAR5      |                                    |       BAR5      |
- * +-----------------+                                    +-----------------+
- *   EP CONTROLLER 1                                        EP CONTROLLER 2
- *
- * Allocate the Local Memory mentioned in the above diagram. The size of
- * CONFIG REGION is sizeof(struct epf_ntb_ctrl) and size of SCRATCHPAD REGION
- * is obtained from "spad-count" configfs entry.
- *
- * The size of both config region and scratchpad region has to be aligned,
- * since the scratchpad region will also be mapped as PEER SCRATCHPAD of
- * other host using a separate BAR.
- */
+ 
 static int epf_ntb_config_spad_bar_alloc(struct epf_ntb *ntb,
 					 enum pci_epc_interface_type type)
 {
@@ -1020,7 +601,7 @@ static int epf_ntb_config_spad_bar_alloc(struct epf_ntb *ntb,
 	peer_barno = ntb_epc->epf_ntb_bar[BAR_PEER_SPAD];
 	peer_size = peer_epc_features->bar_fixed_size[peer_barno];
 
-	/* Check if epc_features is populated incorrectly */
+	 
 	if ((!IS_ALIGNED(size, align)))
 		return -EINVAL;
 
@@ -1035,7 +616,7 @@ static int epf_ntb_config_spad_bar_alloc(struct epf_ntb *ntb,
 		ctrl_size = ALIGN(ctrl_size, 8);
 		ntb_epc->msix_table_offset = ctrl_size;
 		ntb_epc->msix_bar = barno;
-		/* Align to QWORD or 8 Bytes */
+		 
 		pba_size = ALIGN(DIV_ROUND_UP(ntb->db_count, 8), 8);
 		ctrl_size = ctrl_size + msix_table_size + pba_size;
 	}
@@ -1054,11 +635,7 @@ static int epf_ntb_config_spad_bar_alloc(struct epf_ntb *ntb,
 		spad_size = peer_size;
 	}
 
-	/*
-	 * In order to make sure SPAD offset is aligned to its size,
-	 * expand control region size to the size of SPAD if SPAD size
-	 * is greater than control region size.
-	 */
+	 
 	if (spad_size > ctrl_size)
 		ctrl_size = spad_size;
 
@@ -1086,14 +663,7 @@ static int epf_ntb_config_spad_bar_alloc(struct epf_ntb *ntb,
 	return 0;
 }
 
-/**
- * epf_ntb_config_spad_bar_alloc_interface() - Allocate memory for config +
- *   scratchpad region for each of PRIMARY and SECONDARY interface
- * @ntb: NTB device that facilitates communication between HOST1 and HOST2
- *
- * Wrapper for epf_ntb_config_spad_bar_alloc() which allocates memory for
- * config + scratchpad region for a specific interface
- */
+ 
 static int epf_ntb_config_spad_bar_alloc_interface(struct epf_ntb *ntb)
 {
 	enum pci_epc_interface_type type;
@@ -1114,47 +684,7 @@ static int epf_ntb_config_spad_bar_alloc_interface(struct epf_ntb *ntb)
 	return 0;
 }
 
-/**
- * epf_ntb_free_peer_mem() - Free memory allocated in peers outbound address
- *   space
- * @ntb_epc: EPC associated with one of the HOST which holds peers outbound
- *   address regions
- *
- * +-----------------+    +---->+----------------+-----------+-----------------+
- * |       BAR0      |    |     |   Doorbell 1   +-----------> MSI|X ADDRESS 1 |
- * +-----------------+    |     +----------------+           +-----------------+
- * |       BAR1      |    |     |   Doorbell 2   +---------+ |                 |
- * +-----------------+----+     +----------------+         | |                 |
- * |       BAR2      |          |   Doorbell 3   +-------+ | +-----------------+
- * +-----------------+----+     +----------------+       | +-> MSI|X ADDRESS 2 |
- * |       BAR3      |    |     |   Doorbell 4   +-----+ |   +-----------------+
- * +-----------------+    |     |----------------+     | |   |                 |
- * |       BAR4      |    |     |                |     | |   +-----------------+
- * +-----------------+    |     |      MW1       +---+ | +-->+ MSI|X ADDRESS 3||
- * |       BAR5      |    |     |                |   | |     +-----------------+
- * +-----------------+    +---->-----------------+   | |     |                 |
- *   EP CONTROLLER 1            |                |   | |     +-----------------+
- *                              |                |   | +---->+ MSI|X ADDRESS 4 |
- *                              +----------------+   |       +-----------------+
- *                      (A)      EP CONTROLLER 2     |       |                 |
- *                                 (OB SPACE)        |       |                 |
- *                                                   +------->      MW1        |
- *                                                           |                 |
- *                                                           |                 |
- *                                                   (B)     +-----------------+
- *                                                           |                 |
- *                                                           |                 |
- *                                                           |                 |
- *                                                           |                 |
- *                                                           |                 |
- *                                                           +-----------------+
- *                                                           PCI Address Space
- *                                                           (Managed by HOST2)
- *
- * Free memory allocated in EP CONTROLLER 2 (OB SPACE) in the above diagram.
- * It'll free Doorbell 1, Doorbell 2, Doorbell 3, Doorbell 4, MW1 (and MW2, MW3,
- * MW4).
- */
+ 
 static void epf_ntb_free_peer_mem(struct epf_ntb_epc *ntb_epc)
 {
 	struct pci_epf_bar *epf_bar;
@@ -1180,46 +710,7 @@ static void epf_ntb_free_peer_mem(struct epf_ntb_epc *ntb_epc)
 	}
 }
 
-/**
- * epf_ntb_db_mw_bar_clear() - Clear doorbell and memory BAR
- * @ntb_epc: EPC associated with one of the HOST which holds peer's outbound
- *   address
- *
- * +-----------------+    +---->+----------------+-----------+-----------------+
- * |       BAR0      |    |     |   Doorbell 1   +-----------> MSI|X ADDRESS 1 |
- * +-----------------+    |     +----------------+           +-----------------+
- * |       BAR1      |    |     |   Doorbell 2   +---------+ |                 |
- * +-----------------+----+     +----------------+         | |                 |
- * |       BAR2      |          |   Doorbell 3   +-------+ | +-----------------+
- * +-----------------+----+     +----------------+       | +-> MSI|X ADDRESS 2 |
- * |       BAR3      |    |     |   Doorbell 4   +-----+ |   +-----------------+
- * +-----------------+    |     |----------------+     | |   |                 |
- * |       BAR4      |    |     |                |     | |   +-----------------+
- * +-----------------+    |     |      MW1       +---+ | +-->+ MSI|X ADDRESS 3||
- * |       BAR5      |    |     |                |   | |     +-----------------+
- * +-----------------+    +---->-----------------+   | |     |                 |
- *   EP CONTROLLER 1            |                |   | |     +-----------------+
- *                              |                |   | +---->+ MSI|X ADDRESS 4 |
- *                              +----------------+   |       +-----------------+
- *                      (A)      EP CONTROLLER 2     |       |                 |
- *                                 (OB SPACE)        |       |                 |
- *                                                   +------->      MW1        |
- *                                                           |                 |
- *                                                           |                 |
- *                                                   (B)     +-----------------+
- *                                                           |                 |
- *                                                           |                 |
- *                                                           |                 |
- *                                                           |                 |
- *                                                           |                 |
- *                                                           +-----------------+
- *                                                           PCI Address Space
- *                                                           (Managed by HOST2)
- *
- * Clear doorbell and memory BARs (remove inbound ATU configuration). In the above
- * diagram it clears BAR2 TO BAR5 of EP CONTROLLER 1 (Doorbell BAR, MW1 BAR, MW2
- * BAR, MW3 BAR and MW4 BAR).
- */
+ 
 static void epf_ntb_db_mw_bar_clear(struct epf_ntb_epc *ntb_epc)
 {
 	struct pci_epf_bar *epf_bar;
@@ -1240,15 +731,7 @@ static void epf_ntb_db_mw_bar_clear(struct epf_ntb_epc *ntb_epc)
 	}
 }
 
-/**
- * epf_ntb_db_mw_bar_cleanup() - Clear doorbell/memory BAR and free memory
- *   allocated in peers outbound address space
- * @ntb: NTB device that facilitates communication between HOST1 and HOST2
- * @type: PRIMARY interface or SECONDARY interface
- *
- * Wrapper for epf_ntb_db_mw_bar_clear() to clear HOST1's BAR and
- * epf_ntb_free_peer_mem() which frees up HOST2 outbound memory.
- */
+ 
 static void epf_ntb_db_mw_bar_cleanup(struct epf_ntb *ntb,
 				      enum pci_epc_interface_type type)
 {
@@ -1261,14 +744,7 @@ static void epf_ntb_db_mw_bar_cleanup(struct epf_ntb *ntb,
 	epf_ntb_free_peer_mem(peer_ntb_epc);
 }
 
-/**
- * epf_ntb_configure_interrupt() - Configure MSI/MSI-X capability
- * @ntb: NTB device that facilitates communication between HOST1 and HOST2
- * @type: PRIMARY interface or SECONDARY interface
- *
- * Configure MSI/MSI-X capability for each interface with number of
- * interrupts equal to "db_count" configfs entry.
- */
+ 
 static int epf_ntb_configure_interrupt(struct epf_ntb *ntb,
 				       enum pci_epc_interface_type type)
 {
@@ -1327,52 +803,7 @@ static int epf_ntb_configure_interrupt(struct epf_ntb *ntb,
 	return 0;
 }
 
-/**
- * epf_ntb_alloc_peer_mem() - Allocate memory in peer's outbound address space
- * @dev: The PCI device.
- * @ntb_epc: EPC associated with one of the HOST whose BAR holds peer's outbound
- *   address
- * @bar: BAR of @ntb_epc in for which memory has to be allocated (could be
- *   BAR_DB_MW1, BAR_MW2, BAR_MW3, BAR_MW4)
- * @peer_ntb_epc: EPC associated with HOST whose outbound address space is
- *   used by @ntb_epc
- * @size: Size of the address region that has to be allocated in peers OB SPACE
- *
- *
- * +-----------------+    +---->+----------------+-----------+-----------------+
- * |       BAR0      |    |     |   Doorbell 1   +-----------> MSI|X ADDRESS 1 |
- * +-----------------+    |     +----------------+           +-----------------+
- * |       BAR1      |    |     |   Doorbell 2   +---------+ |                 |
- * +-----------------+----+     +----------------+         | |                 |
- * |       BAR2      |          |   Doorbell 3   +-------+ | +-----------------+
- * +-----------------+----+     +----------------+       | +-> MSI|X ADDRESS 2 |
- * |       BAR3      |    |     |   Doorbell 4   +-----+ |   +-----------------+
- * +-----------------+    |     |----------------+     | |   |                 |
- * |       BAR4      |    |     |                |     | |   +-----------------+
- * +-----------------+    |     |      MW1       +---+ | +-->+ MSI|X ADDRESS 3||
- * |       BAR5      |    |     |                |   | |     +-----------------+
- * +-----------------+    +---->-----------------+   | |     |                 |
- *   EP CONTROLLER 1            |                |   | |     +-----------------+
- *                              |                |   | +---->+ MSI|X ADDRESS 4 |
- *                              +----------------+   |       +-----------------+
- *                      (A)      EP CONTROLLER 2     |       |                 |
- *                                 (OB SPACE)        |       |                 |
- *                                                   +------->      MW1        |
- *                                                           |                 |
- *                                                           |                 |
- *                                                   (B)     +-----------------+
- *                                                           |                 |
- *                                                           |                 |
- *                                                           |                 |
- *                                                           |                 |
- *                                                           |                 |
- *                                                           +-----------------+
- *                                                           PCI Address Space
- *                                                           (Managed by HOST2)
- *
- * Allocate memory in OB space of EP CONTROLLER 2 in the above diagram. Allocate
- * for Doorbell 1, Doorbell 2, Doorbell 3, Doorbell 4, MW1 (and MW2, MW3, MW4).
- */
+ 
 static int epf_ntb_alloc_peer_mem(struct device *dev,
 				  struct epf_ntb_epc *ntb_epc,
 				  enum epf_ntb_bar bar,
@@ -1418,14 +849,7 @@ static int epf_ntb_alloc_peer_mem(struct device *dev,
 	return 0;
 }
 
-/**
- * epf_ntb_db_mw_bar_init() - Configure Doorbell and Memory window BARs
- * @ntb: NTB device that facilitates communication between HOST1 and HOST2
- * @type: PRIMARY interface or SECONDARY interface
- *
- * Wrapper for epf_ntb_alloc_peer_mem() and pci_epc_set_bar() that allocates
- * memory in OB address space of HOST2 and configures BAR of HOST1
- */
+ 
 static int epf_ntb_db_mw_bar_init(struct epf_ntb *ntb,
 				  enum pci_epc_interface_type type)
 {
@@ -1494,14 +918,7 @@ err_alloc_peer_mem:
 	return ret;
 }
 
-/**
- * epf_ntb_epc_destroy_interface() - Cleanup NTB EPC interface
- * @ntb: NTB device that facilitates communication between HOST1 and HOST2
- * @type: PRIMARY interface or SECONDARY interface
- *
- * Unbind NTB function device from EPC and relinquish reference to pci_epc
- * for each of the interface.
- */
+ 
 static void epf_ntb_epc_destroy_interface(struct epf_ntb *ntb,
 					  enum pci_epc_interface_type type)
 {
@@ -1521,12 +938,7 @@ static void epf_ntb_epc_destroy_interface(struct epf_ntb *ntb,
 	pci_epc_put(epc);
 }
 
-/**
- * epf_ntb_epc_destroy() - Cleanup NTB EPC interface
- * @ntb: NTB device that facilitates communication between HOST1 and HOST2
- *
- * Wrapper for epf_ntb_epc_destroy_interface() to cleanup all the NTB interfaces
- */
+ 
 static void epf_ntb_epc_destroy(struct epf_ntb *ntb)
 {
 	enum pci_epc_interface_type type;
@@ -1535,14 +947,7 @@ static void epf_ntb_epc_destroy(struct epf_ntb *ntb)
 		epf_ntb_epc_destroy_interface(ntb, type);
 }
 
-/**
- * epf_ntb_epc_create_interface() - Create and initialize NTB EPC interface
- * @ntb: NTB device that facilitates communication between HOST1 and HOST2
- * @epc: struct pci_epc to which a particular NTB interface should be associated
- * @type: PRIMARY interface or SECONDARY interface
- *
- * Allocate memory for NTB EPC interface and initialize it.
- */
+ 
 static int epf_ntb_epc_create_interface(struct epf_ntb *ntb,
 					struct pci_epc *epc,
 					enum pci_epc_interface_type type)
@@ -1588,15 +993,7 @@ static int epf_ntb_epc_create_interface(struct epf_ntb *ntb,
 	return 0;
 }
 
-/**
- * epf_ntb_epc_create() - Create and initialize NTB EPC interface
- * @ntb: NTB device that facilitates communication between HOST1 and HOST2
- *
- * Get a reference to EPC device and bind NTB function device to that EPC
- * for each of the interface. It is also a wrapper to
- * epf_ntb_epc_create_interface() to allocate memory for NTB EPC interface
- * and initialize it
- */
+ 
 static int epf_ntb_epc_create(struct epf_ntb *ntb)
 {
 	struct pci_epf *epf;
@@ -1627,15 +1024,7 @@ err_epc_create:
 	return ret;
 }
 
-/**
- * epf_ntb_init_epc_bar_interface() - Identify BARs to be used for each of
- *   the NTB constructs (scratchpad region, doorbell, memorywindow)
- * @ntb: NTB device that facilitates communication between HOST1 and HOST2
- * @type: PRIMARY interface or SECONDARY interface
- *
- * Identify the free BARs to be used for each of BAR_CONFIG, BAR_PEER_SPAD,
- * BAR_DB_MW1, BAR_MW2, BAR_MW3 and BAR_MW4.
- */
+ 
 static int epf_ntb_init_epc_bar_interface(struct epf_ntb *ntb,
 					  enum pci_epc_interface_type type)
 {
@@ -1653,7 +1042,7 @@ static int epf_ntb_init_epc_bar_interface(struct epf_ntb *ntb,
 	dev = &ntb->epf->dev;
 	epc_features = ntb_epc->epc_features;
 
-	/* These are required BARs which are mandatory for NTB functionality */
+	 
 	for (bar = BAR_CONFIG; bar <= BAR_DB_MW1; bar++, barno++) {
 		barno = pci_epc_get_next_free_bar(epc_features, barno);
 		if (barno < 0) {
@@ -1664,7 +1053,7 @@ static int epf_ntb_init_epc_bar_interface(struct epf_ntb *ntb,
 		ntb_epc->epf_ntb_bar[bar] = barno;
 	}
 
-	/* These are optional BARs which don't impact NTB functionality */
+	 
 	for (bar = BAR_MW2, i = 1; i < num_mws; bar++, barno++, i++) {
 		barno = pci_epc_get_next_free_bar(epc_features, barno);
 		if (barno < 0) {
@@ -1677,15 +1066,7 @@ static int epf_ntb_init_epc_bar_interface(struct epf_ntb *ntb,
 	return 0;
 }
 
-/**
- * epf_ntb_init_epc_bar() - Identify BARs to be used for each of the NTB
- * constructs (scratchpad region, doorbell, memorywindow)
- * @ntb: NTB device that facilitates communication between HOST1 and HOST2
- *
- * Wrapper to epf_ntb_init_epc_bar_interface() to identify the free BARs
- * to be used for each of BAR_CONFIG, BAR_PEER_SPAD, BAR_DB_MW1, BAR_MW2,
- * BAR_MW3 and BAR_MW4 for all the interfaces.
- */
+ 
 static int epf_ntb_init_epc_bar(struct epf_ntb *ntb)
 {
 	enum pci_epc_interface_type type;
@@ -1705,15 +1086,7 @@ static int epf_ntb_init_epc_bar(struct epf_ntb *ntb)
 	return 0;
 }
 
-/**
- * epf_ntb_epc_init_interface() - Initialize NTB interface
- * @ntb: NTB device that facilitates communication between HOST1 and HOST2
- * @type: PRIMARY interface or SECONDARY interface
- *
- * Wrapper to initialize a particular EPC interface and start the workqueue
- * to check for commands from host. This function will write to the
- * EP controller HW for configuring it.
- */
+ 
 static int epf_ntb_epc_init_interface(struct epf_ntb *ntb,
 				      enum pci_epc_interface_type type)
 {
@@ -1785,13 +1158,7 @@ err_peer_spad_bar_init:
 	return ret;
 }
 
-/**
- * epf_ntb_epc_cleanup_interface() - Cleanup NTB interface
- * @ntb: NTB device that facilitates communication between HOST1 and HOST2
- * @type: PRIMARY interface or SECONDARY interface
- *
- * Wrapper to cleanup a particular NTB interface.
- */
+ 
 static void epf_ntb_epc_cleanup_interface(struct epf_ntb *ntb,
 					  enum pci_epc_interface_type type)
 {
@@ -1807,12 +1174,7 @@ static void epf_ntb_epc_cleanup_interface(struct epf_ntb *ntb,
 	epf_ntb_config_sspad_bar_clear(ntb_epc);
 }
 
-/**
- * epf_ntb_epc_cleanup() - Cleanup all NTB interfaces
- * @ntb: NTB device that facilitates communication between HOST1 and HOST2
- *
- * Wrapper to cleanup all NTB interfaces.
- */
+ 
 static void epf_ntb_epc_cleanup(struct epf_ntb *ntb)
 {
 	enum pci_epc_interface_type type;
@@ -1821,13 +1183,7 @@ static void epf_ntb_epc_cleanup(struct epf_ntb *ntb)
 		epf_ntb_epc_cleanup_interface(ntb, type);
 }
 
-/**
- * epf_ntb_epc_init() - Initialize all NTB interfaces
- * @ntb: NTB device that facilitates communication between HOST1 and HOST2
- *
- * Wrapper to initialize all NTB interface and start the workqueue
- * to check for commands from host.
- */
+ 
 static int epf_ntb_epc_init(struct epf_ntb *ntb)
 {
 	enum pci_epc_interface_type type;
@@ -1853,15 +1209,7 @@ err_init_type:
 	return ret;
 }
 
-/**
- * epf_ntb_bind() - Initialize endpoint controller to provide NTB functionality
- * @epf: NTB endpoint function device
- *
- * Initialize both the endpoint controllers associated with NTB function device.
- * Invoked when a primary interface or secondary interface is bound to EPC
- * device. This function will succeed only when EPC is bound to both the
- * interfaces.
- */
+ 
 static int epf_ntb_bind(struct pci_epf *epf)
 {
 	struct epf_ntb *ntb = epf_get_drvdata(epf);
@@ -1915,12 +1263,7 @@ err_bar_init:
 	return ret;
 }
 
-/**
- * epf_ntb_unbind() - Cleanup the initialization from epf_ntb_bind()
- * @epf: NTB endpoint function device
- *
- * Cleanup the initialization from epf_ntb_bind()
- */
+ 
 static void epf_ntb_unbind(struct pci_epf *epf)
 {
 	struct epf_ntb *ntb = epf_get_drvdata(epf);
@@ -2051,15 +1394,7 @@ static const struct config_item_type ntb_group_type = {
 	.ct_owner	= THIS_MODULE,
 };
 
-/**
- * epf_ntb_add_cfs() - Add configfs directory specific to NTB
- * @epf: NTB endpoint function device
- * @group: A pointer to the config_group structure referencing a group of
- *	   config_items of a specific type that belong to a specific sub-system.
- *
- * Add configfs directory specific to NTB. This directory will hold
- * NTB specific properties like db_count, spad_count, num_mws etc.,
- */
+ 
 static struct config_group *epf_ntb_add_cfs(struct pci_epf *epf,
 					    struct config_group *group)
 {
@@ -2072,14 +1407,7 @@ static struct config_group *epf_ntb_add_cfs(struct pci_epf *epf,
 	return ntb_group;
 }
 
-/**
- * epf_ntb_probe() - Probe NTB function driver
- * @epf: NTB endpoint function device
- * @id: NTB endpoint function device ID
- *
- * Probe NTB function driver when endpoint function bus detects a NTB
- * endpoint function.
- */
+ 
 static int epf_ntb_probe(struct pci_epf *epf,
 			 const struct pci_epf_device_id *id)
 {

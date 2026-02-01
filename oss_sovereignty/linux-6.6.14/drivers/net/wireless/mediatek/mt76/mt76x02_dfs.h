@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: ISC */
-/*
- * Copyright (C) 2016 Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>
- */
+ 
+ 
 
 #ifndef __MT76x02_DFS_H
 #define __MT76x02_DFS_H
@@ -9,10 +7,10 @@
 #include <linux/types.h>
 #include <linux/nl80211.h>
 
-#define MT_DFS_GP_INTERVAL		(10 << 4) /* 64 us unit */
+#define MT_DFS_GP_INTERVAL		(10 << 4)  
 #define MT_DFS_NUM_ENGINES		4
 
-/* bbp params */
+ 
 #define MT_DFS_SYM_ROUND		0
 #define MT_DFS_DELTA_DELAY		2
 #define MT_DFS_VGA_MASK			0
@@ -22,7 +20,7 @@
 #define MT_DFS_PKT_END_MASK		0
 #define MT_DFS_CH_EN			0xf
 
-/* sw detector params */
+ 
 #define MT_DFS_EVENT_LOOP		64
 #define MT_DFS_SW_TIMEOUT		(HZ / 20)
 #define MT_DFS_EVENT_WINDOW		(HZ / 5)
@@ -129,4 +127,4 @@ void mt76x02_dfs_init_detector(struct mt76x02_dev *dev);
 void mt76x02_regd_notifier(struct wiphy *wiphy,
 			   struct regulatory_request *request);
 void mt76x02_phy_dfs_adjust_agc(struct mt76x02_dev *dev);
-#endif /* __MT76x02_DFS_H */
+#endif  

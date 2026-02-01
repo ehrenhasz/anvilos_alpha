@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * PCIe host controller driver for HiSilicon SoCs
- *
- * Copyright (C) 2015 HiSilicon Co., Ltd. http://www.hisilicon.com
- *
- * Authors: Zhou Wang <wangzhou1@hisilicon.com>
- *          Dacai Zhu <zhudacai@hisilicon.com>
- *          Gabriele Paoloni <gabriele.paoloni@huawei.com>
- */
+
+ 
 #include <linux/interrupt.h>
 #include <linux/init.h>
 #include <linux/platform_device.h>
@@ -29,7 +21,7 @@ static int hisi_pcie_rd_conf(struct pci_bus *bus, u32 devfn, int where,
 	int dev = PCI_SLOT(devfn);
 
 	if (bus->number == cfg->busr.start) {
-		/* access only one slot on each root port */
+		 
 		if (dev > 0)
 			return PCIBIOS_DEVICE_NOT_FOUND;
 		else
@@ -47,7 +39,7 @@ static int hisi_pcie_wr_conf(struct pci_bus *bus, u32 devfn,
 	int dev = PCI_SLOT(devfn);
 
 	if (bus->number == cfg->busr.start) {
-		/* access only one slot on each root port */
+		 
 		if (dev > 0)
 			return PCIBIOS_DEVICE_NOT_FOUND;
 		else
@@ -85,10 +77,7 @@ static int hisi_pcie_init(struct pci_config_window *cfg)
 	if (!pcie)
 		return -ENOMEM;
 
-	/*
-	 * Retrieve RC base and size from a HISI0081 device with _UID
-	 * matching our segment.
-	 */
+	 
 	res = devm_kzalloc(dev, sizeof(*res), GFP_KERNEL);
 	if (!res)
 		return -ENOMEM;

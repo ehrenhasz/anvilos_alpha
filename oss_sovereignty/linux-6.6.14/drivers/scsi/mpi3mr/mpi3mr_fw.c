@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Driver for Broadcom MPI3 Storage Controllers
- *
- * Copyright (C) 2017-2023 Broadcom Inc.
- *  (mailto: mpi3mr-linuxdrv.pdl@broadcom.com)
- *
- */
+
+ 
 
 #include "mpi3mr.h"
 #include <linux/io-64-nonatomic-lo-hi.h>
@@ -469,14 +463,7 @@ int mpi3mr_process_admin_reply_q(struct mpi3mr_ioc *mrioc)
 	return num_admin_replies;
 }
 
-/**
- * mpi3mr_get_reply_desc - get reply descriptor frame corresponding to
- *	queue's consumer index from operational reply descriptor queue.
- * @op_reply_q: op_reply_qinfo object
- * @reply_ci: operational reply descriptor's queue consumer index
- *
- * Returns reply descriptor frame address
- */
+ 
 static inline struct mpi3_default_reply_descriptor *
 mpi3mr_get_reply_desc(struct op_reply_qinfo *op_reply_q, u32 reply_ci)
 {
@@ -491,18 +478,7 @@ mpi3mr_get_reply_desc(struct op_reply_qinfo *op_reply_q, u32 reply_ci)
 	return reply_desc;
 }
 
-/**
- * mpi3mr_process_op_reply_q - Operational reply queue handler
- * @mrioc: Adapter instance reference
- * @op_reply_q: Operational reply queue info
- *
- * Checks the specific operational reply queue and drains the
- * reply queue entries until the queue is empty and process the
- * individual reply descriptors.
- *
- * Return: 0 if queue is already processed,or number of reply
- *	    descriptors processed.
- */
+ 
 int mpi3mr_process_op_reply_q(struct mpi3mr_ioc *mrioc,
 	struct op_reply_qinfo *op_reply_q)
 {
@@ -555,10 +531,7 @@ int mpi3mr_process_op_reply_q(struct mpi3mr_ioc *mrioc,
 		    MPI3_REPLY_DESCRIPT_FLAGS_PHASE_MASK) != exp_phase)
 			break;
 #ifndef CONFIG_PREEMPT_RT
-		/*
-		 * Exit completion loop to avoid CPU lockup
-		 * Ensure remaining completion happens from threaded ISR.
-		 */
+		 
 		if (num_op_reply > mrioc->max_host_ios) {
 			op_reply_q->enable_irq_poll = true;
 			break;
@@ -575,18 +548,7 @@ int mpi3mr_process_op_reply_q(struct mpi3mr_ioc *mrioc,
 	return num_op_reply;
 }
 
-/**
- * mpi3mr_blk_mq_poll - Operational reply queue handler
- * @shost: SCSI Host reference
- * @queue_num: Request queue number (w.r.t OS it is hardware context number)
- *
- * Checks the specific operational reply queue and drains the
- * reply queue entries until the queue is empty and process the
- * individual reply descriptors.
- *
- * Return: 0 if queue is already processed,or number of reply
- *	    descriptors processed.
- */
+ 
 int mpi3mr_blk_mq_poll(struct Scsi_Host *shost, unsigned int queue_num)
 {
 	int num_entries = 0;
@@ -643,13 +605,10 @@ static irqreturn_t mpi3mr_isr(int irq, void *privdata)
 	if (!intr_info)
 		return IRQ_NONE;
 
-	/* Call primary ISR routine */
+	 
 	ret = mpi3mr_isr_primary(irq, privdata);
 
-	/*
-	 * If more IOs are expected, schedule IRQ polling thread.
-	 * Otherwise exit from ISR.
-	 */
+	 
 	if (!intr_info->op_reply_q)
 		return ret;
 
@@ -662,16 +621,7 @@ static irqreturn_t mpi3mr_isr(int irq, void *privdata)
 	return IRQ_WAKE_THREAD;
 }
 
-/**
- * mpi3mr_isr_poll - Reply queue polling routine
- * @irq: IRQ
- * @privdata: Interrupt info
- *
- * poll for pending I/O completions in a loop until pending I/Os
- * present or controller queue depth I/Os are processed.
- *
- * Return: IRQ_NONE or IRQ_HANDLED
- */
+ 
 static irqreturn_t mpi3mr_isr_poll(int irq, void *privdata)
 {
 	struct mpi3mr_intr_info *intr_info = privdata;
@@ -685,7 +635,7 @@ static irqreturn_t mpi3mr_isr_poll(int irq, void *privdata)
 	mrioc = intr_info->mrioc;
 	midx = intr_info->msix_index;
 
-	/* Poll for pending IOs completions */
+	 
 	do {
 		if (!mrioc->intr_enabled || mrioc->unrecoverable)
 			break;
@@ -710,15 +660,7 @@ static irqreturn_t mpi3mr_isr_poll(int irq, void *privdata)
 
 #endif
 
-/**
- * mpi3mr_request_irq - Request IRQ and register ISR
- * @mrioc: Adapter instance reference
- * @index: IRQ vector index
- *
- * Request threaded ISR with primary ISR and secondary
- *
- * Return: 0 on success and non zero on failures.
- */
+ 
 static inline int mpi3mr_request_irq(struct mpi3mr_ioc *mrioc, u16 index)
 {
 	struct pci_dev *pdev = mrioc->pdev;
@@ -754,7 +696,7 @@ static void mpi3mr_calc_poll_queues(struct mpi3mr_ioc *mrioc, u16 max_vectors)
 	if (!mrioc->requested_poll_qcount)
 		return;
 
-	/* Reserved for Admin and Default Queue */
+	 
 	if (max_vectors > 2 &&
 		(mrioc->requested_poll_qcount < max_vectors - 2)) {
 		ioc_info(mrioc,
@@ -768,15 +710,7 @@ static void mpi3mr_calc_poll_queues(struct mpi3mr_ioc *mrioc, u16 max_vectors)
 	}
 }
 
-/**
- * mpi3mr_setup_isr - Setup ISR for the controller
- * @mrioc: Adapter instance reference
- * @setup_one: Request one IRQ or more
- *
- * Allocate IRQ vectors and call mpi3mr_request_irq to setup ISR
- *
- * Return: 0 on success and non zero on failures.
- */
+ 
 static int mpi3mr_setup_isr(struct mpi3mr_ioc *mrioc, u8 setup_one)
 {
 	unsigned int irq_flags = PCI_IRQ_MSIX;
@@ -827,10 +761,7 @@ static int mpi3mr_setup_isr(struct mpi3mr_ioc *mrioc, u8 setup_one)
 		}
 
 
-		/*
-		 * If only one MSI-x is allocated, then MSI-x 0 will be shared
-		 * between Admin queue and operational queue
-		 */
+		 
 		if (retval == min_vec)
 			mrioc->op_reply_q_offset = 0;
 		else if (retval != (max_vectors)) {
@@ -898,7 +829,7 @@ static const char *mpi3mr_iocstate_name(enum mpi3mr_iocstate mrioc_state)
 	return name;
 }
 
-/* Reset reason to name mapper structure*/
+ 
 static const struct {
 	enum mpi3mr_reset_reason value;
 	char *name;
@@ -943,14 +874,7 @@ static const struct {
 	{ MPI3MR_RESET_FROM_SAS_TRANSPORT_TIMEOUT, "timeout of a SAS transport layer request" },
 };
 
-/**
- * mpi3mr_reset_rc_name - get reset reason code name
- * @reason_code: reset reason code value
- *
- * Map reset reason to an NULL terminated ASCII string
- *
- * Return: name corresponding to reset reason value or NULL.
- */
+ 
 static const char *mpi3mr_reset_rc_name(enum mpi3mr_reset_reason reason_code)
 {
 	int i;
@@ -965,7 +889,7 @@ static const char *mpi3mr_reset_rc_name(enum mpi3mr_reset_reason reason_code)
 	return name;
 }
 
-/* Reset type to name mapper structure*/
+ 
 static const struct {
 	u16 reset_type;
 	char *name;
@@ -974,14 +898,7 @@ static const struct {
 	{ MPI3_SYSIF_HOST_DIAG_RESET_ACTION_DIAG_FAULT, "diag fault" },
 };
 
-/**
- * mpi3mr_reset_type_name - get reset type name
- * @reset_type: reset type value
- *
- * Map reset type to an NULL terminated ASCII string
- *
- * Return: name corresponding to reset type value or NULL.
- */
+ 
 static const char *mpi3mr_reset_type_name(u16 reset_type)
 {
 	int i;
@@ -996,15 +913,7 @@ static const char *mpi3mr_reset_type_name(u16 reset_type)
 	return name;
 }
 
-/**
- * mpi3mr_print_fault_info - Display fault information
- * @mrioc: Adapter instance reference
- *
- * Display the controller fault information if there is a
- * controller fault.
- *
- * Return: Nothing.
- */
+ 
 void mpi3mr_print_fault_info(struct mpi3mr_ioc *mrioc)
 {
 	u32 ioc_status, code, code1, code2, code3;
@@ -1023,15 +932,7 @@ void mpi3mr_print_fault_info(struct mpi3mr_ioc *mrioc)
 	}
 }
 
-/**
- * mpi3mr_get_iocstate - Get IOC State
- * @mrioc: Adapter instance reference
- *
- * Return a proper IOC state enum based on the IOC status and
- * IOC configuration and unrcoverable state of the controller.
- *
- * Return: Current IOC state.
- */
+ 
 enum mpi3mr_iocstate mpi3mr_get_iocstate(struct mpi3mr_ioc *mrioc)
 {
 	u32 ioc_status, ioc_config;
@@ -1058,15 +959,7 @@ enum mpi3mr_iocstate mpi3mr_get_iocstate(struct mpi3mr_ioc *mrioc)
 	return MRIOC_STATE_RESET_REQUESTED;
 }
 
-/**
- * mpi3mr_clear_reset_history - clear reset history
- * @mrioc: Adapter instance reference
- *
- * Write the reset history bit in IOC status to clear the bit,
- * if it is already set.
- *
- * Return: Nothing.
- */
+ 
 static inline void mpi3mr_clear_reset_history(struct mpi3mr_ioc *mrioc)
 {
 	u32 ioc_status;
@@ -1076,16 +969,7 @@ static inline void mpi3mr_clear_reset_history(struct mpi3mr_ioc *mrioc)
 		writel(ioc_status, &mrioc->sysif_regs->ioc_status);
 }
 
-/**
- * mpi3mr_issue_and_process_mur - Message unit Reset handler
- * @mrioc: Adapter instance reference
- * @reset_reason: Reset reason code
- *
- * Issue Message unit Reset to the controller and wait for it to
- * be complete.
- *
- * Return: 0 on success, -1 on failure.
- */
+ 
 static int mpi3mr_issue_and_process_mur(struct mpi3mr_ioc *mrioc,
 	u32 reset_reason)
 {
@@ -1128,14 +1012,7 @@ static int mpi3mr_issue_and_process_mur(struct mpi3mr_ioc *mrioc,
 	return retval;
 }
 
-/**
- * mpi3mr_revalidate_factsdata - validate IOCFacts parameters
- * during reset/resume
- * @mrioc: Adapter instance reference
- *
- * Return zero if the new IOCFacts parameters value is compatible with
- * older values else return -EPERM
- */
+ 
 static int
 mpi3mr_revalidate_factsdata(struct mpi3mr_ioc *mrioc)
 {
@@ -1198,15 +1075,7 @@ mpi3mr_revalidate_factsdata(struct mpi3mr_ioc *mrioc)
 	return 0;
 }
 
-/**
- * mpi3mr_bring_ioc_ready - Bring controller to ready state
- * @mrioc: Adapter instance reference
- *
- * Set Enable IOC bit in IOC configuration register and wait for
- * the controller to become ready.
- *
- * Return: 0 on success, appropriate error on failure.
- */
+ 
 static int mpi3mr_bring_ioc_ready(struct mpi3mr_ioc *mrioc)
 {
 	u32 ioc_config, ioc_status, timeout, host_diagnostic;
@@ -1220,7 +1089,7 @@ static int mpi3mr_bring_ioc_ready(struct mpi3mr_ioc *mrioc)
 	ioc_info(mrioc, "ioc_status(0x%08x), ioc_config(0x%08x), ioc_info(0x%016llx) at the bringup\n",
 	    ioc_status, ioc_config, base_info);
 
-	/*The timeout value is in 2sec unit, changing it to seconds*/
+	 
 	mrioc->ready_timeout =
 	    ((base_info & MPI3_SYSIF_IOC_INFO_LOW_TIMEOUT_MASK) >>
 	    MPI3_SYSIF_IOC_INFO_LOW_TIMEOUT_SHIFT) * 2;
@@ -1339,16 +1208,7 @@ out_device_not_present:
 	return retval;
 }
 
-/**
- * mpi3mr_soft_reset_success - Check softreset is success or not
- * @ioc_status: IOC status register value
- * @ioc_config: IOC config register value
- *
- * Check whether the soft reset is successful or not based on
- * IOC status and IOC config register values.
- *
- * Return: True when the soft reset is success, false otherwise.
- */
+ 
 static inline bool
 mpi3mr_soft_reset_success(u32 ioc_status, u32 ioc_config)
 {
@@ -1358,15 +1218,7 @@ mpi3mr_soft_reset_success(u32 ioc_status, u32 ioc_config)
 	return false;
 }
 
-/**
- * mpi3mr_diagfault_success - Check diag fault is success or not
- * @mrioc: Adapter reference
- * @ioc_status: IOC status register value
- *
- * Check whether the controller hit diag reset fault code.
- *
- * Return: True when there is diag fault, false otherwise.
- */
+ 
 static inline bool mpi3mr_diagfault_success(struct mpi3mr_ioc *mrioc,
 	u32 ioc_status)
 {
@@ -1382,15 +1234,7 @@ static inline bool mpi3mr_diagfault_success(struct mpi3mr_ioc *mrioc,
 	return false;
 }
 
-/**
- * mpi3mr_set_diagsave - Set diag save bit for snapdump
- * @mrioc: Adapter reference
- *
- * Set diag save bit in IOC configuration register to enable
- * snapdump.
- *
- * Return: Nothing.
- */
+ 
 static inline void mpi3mr_set_diagsave(struct mpi3mr_ioc *mrioc)
 {
 	u32 ioc_config;
@@ -1400,19 +1244,7 @@ static inline void mpi3mr_set_diagsave(struct mpi3mr_ioc *mrioc)
 	writel(ioc_config, &mrioc->sysif_regs->ioc_configuration);
 }
 
-/**
- * mpi3mr_issue_reset - Issue reset to the controller
- * @mrioc: Adapter reference
- * @reset_type: Reset type
- * @reset_reason: Reset reason code
- *
- * Unlock the host diagnostic registers and write the specific
- * reset type to that, wait for reset acknowledgment from the
- * controller, if the reset is not successful retry for the
- * predefined number of times.
- *
- * Return: 0 on success, non-zero on failure.
- */
+ 
 static int mpi3mr_issue_reset(struct mpi3mr_ioc *mrioc, u16 reset_type,
 	u32 reset_reason)
 {
@@ -1518,19 +1350,7 @@ static int mpi3mr_issue_reset(struct mpi3mr_ioc *mrioc, u16 reset_type,
 	return retval;
 }
 
-/**
- * mpi3mr_admin_request_post - Post request to admin queue
- * @mrioc: Adapter reference
- * @admin_req: MPI3 request
- * @admin_req_sz: Request size
- * @ignore_reset: Ignore reset in process
- *
- * Post the MPI3 request into admin request queue and
- * inform the controller, if the queue is full return
- * appropriate error.
- *
- * Return: 0 on success, non-zero on failure.
- */
+ 
 int mpi3mr_admin_request_post(struct mpi3mr_ioc *mrioc, void *admin_req,
 	u16 admin_req_sz, u8 ignore_reset)
 {
@@ -1576,15 +1396,7 @@ out:
 	return retval;
 }
 
-/**
- * mpi3mr_free_op_req_q_segments - free request memory segments
- * @mrioc: Adapter instance reference
- * @q_idx: operational request queue index
- *
- * Free memory segments allocated for operational request queue
- *
- * Return: Nothing.
- */
+ 
 static void mpi3mr_free_op_req_q_segments(struct mpi3mr_ioc *mrioc, u16 q_idx)
 {
 	u16 j;
@@ -1620,15 +1432,7 @@ static void mpi3mr_free_op_req_q_segments(struct mpi3mr_ioc *mrioc, u16 q_idx)
 	mrioc->req_qinfo[q_idx].qid = 0;
 }
 
-/**
- * mpi3mr_free_op_reply_q_segments - free reply memory segments
- * @mrioc: Adapter instance reference
- * @q_idx: operational reply queue index
- *
- * Free memory segments allocated for operational reply queue
- *
- * Return: Nothing.
- */
+ 
 static void mpi3mr_free_op_reply_q_segments(struct mpi3mr_ioc *mrioc, u16 q_idx)
 {
 	u16 j;
@@ -1665,16 +1469,7 @@ static void mpi3mr_free_op_reply_q_segments(struct mpi3mr_ioc *mrioc, u16 q_idx)
 	mrioc->op_reply_qinfo[q_idx].qid = 0;
 }
 
-/**
- * mpi3mr_delete_op_reply_q - delete operational reply queue
- * @mrioc: Adapter instance reference
- * @qidx: operational reply queue index
- *
- * Delete operatinal reply queue by issuing MPI request
- * through admin queue.
- *
- * Return:  0 on success, non-zero on failure.
- */
+ 
 static int mpi3mr_delete_op_reply_q(struct mpi3mr_ioc *mrioc, u16 qidx)
 {
 	struct mpi3_delete_reply_queue_request delq_req;
@@ -1746,16 +1541,7 @@ out:
 	return retval;
 }
 
-/**
- * mpi3mr_alloc_op_reply_q_segments -Alloc segmented reply pool
- * @mrioc: Adapter instance reference
- * @qidx: request queue index
- *
- * Allocate segmented memory pools for operational reply
- * queue.
- *
- * Return: 0 on success, non-zero on failure.
- */
+ 
 static int mpi3mr_alloc_op_reply_q_segments(struct mpi3mr_ioc *mrioc, u16 qidx)
 {
 	struct op_reply_qinfo *op_reply_q = mrioc->op_reply_qinfo + qidx;
@@ -1803,16 +1589,7 @@ static int mpi3mr_alloc_op_reply_q_segments(struct mpi3mr_ioc *mrioc, u16 qidx)
 	return 0;
 }
 
-/**
- * mpi3mr_alloc_op_req_q_segments - Alloc segmented req pool.
- * @mrioc: Adapter instance reference
- * @qidx: request queue index
- *
- * Allocate segmented memory pools for operational request
- * queue.
- *
- * Return: 0 on success, non-zero on failure.
- */
+ 
 static int mpi3mr_alloc_op_req_q_segments(struct mpi3mr_ioc *mrioc, u16 qidx)
 {
 	struct op_req_qinfo *op_req_q = mrioc->req_qinfo + qidx;
@@ -1861,16 +1638,7 @@ static int mpi3mr_alloc_op_req_q_segments(struct mpi3mr_ioc *mrioc, u16 qidx)
 	return 0;
 }
 
-/**
- * mpi3mr_create_op_reply_q - create operational reply queue
- * @mrioc: Adapter instance reference
- * @qidx: operational reply queue index
- *
- * Create operatinal reply queue by issuing MPI request
- * through admin queue.
- *
- * Return:  0 on success, non-zero on failure.
- */
+ 
 static int mpi3mr_create_op_reply_q(struct mpi3mr_ioc *mrioc, u16 qidx)
 {
 	struct mpi3_create_reply_queue_request create_req;
@@ -1992,17 +1760,7 @@ out:
 	return retval;
 }
 
-/**
- * mpi3mr_create_op_req_q - create operational request queue
- * @mrioc: Adapter instance reference
- * @idx: operational request queue index
- * @reply_qid: Reply queue ID
- *
- * Create operatinal request queue by issuing MPI request
- * through admin queue.
- *
- * Return:  0 on success, non-zero on failure.
- */
+ 
 static int mpi3mr_create_op_req_q(struct mpi3mr_ioc *mrioc, u16 idx,
 	u16 reply_qid)
 {
@@ -2095,15 +1853,7 @@ out:
 	return retval;
 }
 
-/**
- * mpi3mr_create_op_queues - create operational queue pairs
- * @mrioc: Adapter instance reference
- *
- * Allocate memory for operational queue meta data and call
- * create request and reply queue functions.
- *
- * Return: 0 on success, non-zero on failures.
- */
+ 
 static int mpi3mr_create_op_queues(struct mpi3mr_ioc *mrioc)
 {
 	int retval = 0;
@@ -2116,10 +1866,7 @@ static int mpi3mr_create_op_queues(struct mpi3mr_ioc *mrioc)
 	    mrioc->intr_info_count - mrioc->op_reply_q_offset;
 	if (!mrioc->num_queues)
 		mrioc->num_queues = min_t(int, num_queues, msix_count_op_q);
-	/*
-	 * During reset set the num_queues to the number of queues
-	 * that was set before the reset.
-	 */
+	 
 	num_queues = mrioc->num_op_reply_q ?
 	    mrioc->num_op_reply_q : mrioc->num_queues;
 	ioc_info(mrioc, "trying to create %d operational queue pairs\n",
@@ -2159,7 +1906,7 @@ static int mpi3mr_create_op_queues(struct mpi3mr_ioc *mrioc)
 	}
 
 	if (i == 0) {
-		/* Not even one queue is created successfully*/
+		 
 		retval = -1;
 		goto out_failed;
 	}
@@ -2180,18 +1927,7 @@ out_failed:
 	return retval;
 }
 
-/**
- * mpi3mr_op_request_post - Post request to operational queue
- * @mrioc: Adapter reference
- * @op_req_q: Operational request queue info
- * @req: MPI3 request
- *
- * Post the MPI3 request into operational request queue and
- * inform the controller, if the queue is full return
- * appropriate error.
- *
- * Return: 0 on success, non-zero on failure.
- */
+ 
 int mpi3mr_op_request_post(struct mpi3mr_ioc *mrioc,
 	struct op_req_qinfo *op_req_q, u8 *req)
 {
@@ -2256,20 +1992,7 @@ out:
 	return retval;
 }
 
-/**
- * mpi3mr_check_rh_fault_ioc - check reset history and fault
- * controller
- * @mrioc: Adapter instance reference
- * @reason_code: reason code for the fault.
- *
- * This routine will save snapdump and fault the controller with
- * the given reason code if it is not already in the fault or
- * not asynchronosuly reset. This will be used to handle
- * initilaization time faults/resets/timeout as in those cases
- * immediate soft reset invocation is not required.
- *
- * Return:  None.
- */
+ 
 void mpi3mr_check_rh_fault_ioc(struct mpi3mr_ioc *mrioc, u32 reason_code)
 {
 	u32 ioc_status, host_diagnostic, timeout;
@@ -2303,15 +2026,7 @@ void mpi3mr_check_rh_fault_ioc(struct mpi3mr_ioc *mrioc, u32 reason_code)
 	} while (--timeout);
 }
 
-/**
- * mpi3mr_sync_timestamp - Issue time stamp sync request
- * @mrioc: Adapter reference
- *
- * Issue IO unit control MPI request to synchornize firmware
- * timestamp with host time.
- *
- * Return: 0 on success, non-zero on failure.
- */
+ 
 static int mpi3mr_sync_timestamp(struct mpi3mr_ioc *mrioc)
 {
 	ktime_t current_time;
@@ -2372,15 +2087,7 @@ out:
 	return retval;
 }
 
-/**
- * mpi3mr_print_pkg_ver - display controller fw package version
- * @mrioc: Adapter reference
- *
- * Retrieve firmware package version from the component image
- * header of the controller flash and display it.
- *
- * Return: 0 on success and non-zero on failure.
- */
+ 
 static int mpi3mr_print_pkg_ver(struct mpi3mr_ioc *mrioc)
 {
 	struct mpi3_ci_upload_request ci_upload;
@@ -2457,16 +2164,7 @@ out:
 	return retval;
 }
 
-/**
- * mpi3mr_watchdog_work - watchdog thread to monitor faults
- * @work: work struct
- *
- * Watch dog work periodically executed (1 second interval) to
- * monitor firmware fault and to issue periodic timer sync to
- * the firmware.
- *
- * Return: Nothing.
- */
+ 
 static void mpi3mr_watchdog_work(struct work_struct *work)
 {
 	struct mpi3mr_ioc *mrioc =
@@ -2510,7 +2208,7 @@ static void mpi3mr_watchdog_work(struct work_struct *work)
 		return;
 	}
 
-	/*Check for fault state every one second and issue Soft reset*/
+	 
 	ioc_state = mpi3mr_get_iocstate(mrioc);
 	if (ioc_state != MRIOC_STATE_FAULT)
 		goto schedule_work;
@@ -2557,15 +2255,7 @@ schedule_work:
 	return;
 }
 
-/**
- * mpi3mr_start_watchdog - Start watchdog
- * @mrioc: Adapter instance reference
- *
- * Create and start the watchdog thread to monitor controller
- * faults.
- *
- * Return: Nothing.
- */
+ 
 void mpi3mr_start_watchdog(struct mpi3mr_ioc *mrioc)
 {
 	if (mrioc->watchdog_work_q)
@@ -2588,15 +2278,7 @@ void mpi3mr_start_watchdog(struct mpi3mr_ioc *mrioc)
 		    msecs_to_jiffies(MPI3MR_WATCHDOG_INTERVAL));
 }
 
-/**
- * mpi3mr_stop_watchdog - Stop watchdog
- * @mrioc: Adapter instance reference
- *
- * Stop the watchdog thread created to monitor controller
- * faults.
- *
- * Return: Nothing.
- */
+ 
 void mpi3mr_stop_watchdog(struct mpi3mr_ioc *mrioc)
 {
 	unsigned long flags;
@@ -2613,15 +2295,7 @@ void mpi3mr_stop_watchdog(struct mpi3mr_ioc *mrioc)
 	}
 }
 
-/**
- * mpi3mr_setup_admin_qpair - Setup admin queue pair
- * @mrioc: Adapter instance reference
- *
- * Allocate memory for admin queue pair if required and register
- * the admin queue with the controller.
- *
- * Return: 0 on success, non-zero on failures.
- */
+ 
 static int mpi3mr_setup_admin_qpair(struct mpi3mr_ioc *mrioc)
 {
 	int retval = 0;
@@ -2684,16 +2358,7 @@ out_failed:
 	return retval;
 }
 
-/**
- * mpi3mr_issue_iocfacts - Send IOC Facts
- * @mrioc: Adapter instance reference
- * @facts_data: Cached IOC facts data
- *
- * Issue IOC Facts MPI request through admin queue and wait for
- * the completion of it or time out.
- *
- * Return: 0 on success, non-zero on failures.
- */
+ 
 static int mpi3mr_issue_iocfacts(struct mpi3mr_ioc *mrioc,
 	struct mpi3_ioc_facts_data *facts_data)
 {
@@ -2767,15 +2432,7 @@ out:
 	return retval;
 }
 
-/**
- * mpi3mr_check_reset_dma_mask - Process IOC facts data
- * @mrioc: Adapter instance reference
- *
- * Check whether the new DMA mask requested through IOCFacts by
- * firmware needs to be set, if so set it .
- *
- * Return: 0 on success, non-zero on failure.
- */
+ 
 static inline int mpi3mr_check_reset_dma_mask(struct mpi3mr_ioc *mrioc)
 {
 	struct pci_dev *pdev = mrioc->pdev;
@@ -2798,16 +2455,7 @@ static inline int mpi3mr_check_reset_dma_mask(struct mpi3mr_ioc *mrioc)
 	return r;
 }
 
-/**
- * mpi3mr_process_factsdata - Process IOC facts data
- * @mrioc: Adapter instance reference
- * @facts_data: Cached IOC facts data
- *
- * Convert IOC facts data into cpu endianness and cache it in
- * the driver .
- *
- * Return: Nothing.
- */
+ 
 static void mpi3mr_process_factsdata(struct mpi3mr_ioc *mrioc,
 	struct mpi3_ioc_facts_data *facts_data)
 {
@@ -2905,12 +2553,12 @@ static void mpi3mr_process_factsdata(struct mpi3mr_ioc *mrioc,
 		mrioc->facts.max_data_length = MPI3MR_DEFAULT_MAX_IO_SIZE;
 	else
 		mrioc->facts.max_data_length *= MPI3MR_PAGE_SIZE_4K;
-	/* Store in 512b block count */
+	 
 	if (mrioc->facts.io_throttle_data_length)
 		mrioc->io_throttle_data_length =
 		    (mrioc->facts.io_throttle_data_length * 2 * 4);
 	else
-		/* set the length to 1MB + 1K to disable throttle */
+		 
 		mrioc->io_throttle_data_length = (mrioc->facts.max_data_length / 512) + 2;
 
 	mrioc->io_throttle_high = (mrioc->facts.io_throttle_high * 2 * 1024);
@@ -2938,15 +2586,7 @@ static void mpi3mr_process_factsdata(struct mpi3mr_ioc *mrioc,
 	   mrioc->facts.io_throttle_high, mrioc->facts.io_throttle_low);
 }
 
-/**
- * mpi3mr_alloc_reply_sense_bufs - Send IOC Init
- * @mrioc: Adapter instance reference
- *
- * Allocate and initialize the reply free buffers, sense
- * buffers, reply free queue and sense buffer queue.
- *
- * Return: 0 on success, non-zero on failures.
- */
+ 
 static int mpi3mr_alloc_reply_sense_bufs(struct mpi3mr_ioc *mrioc)
 {
 	int retval = 0;
@@ -3013,7 +2653,7 @@ static int mpi3mr_alloc_reply_sense_bufs(struct mpi3mr_ioc *mrioc)
 	mrioc->num_sense_bufs = mrioc->facts.max_reqs / MPI3MR_SENSEBUF_FACTOR;
 	mrioc->sense_buf_q_sz = mrioc->num_sense_bufs + 1;
 
-	/* reply buffer pool, 16 byte align */
+	 
 	sz = mrioc->num_reply_bufs * mrioc->reply_sz;
 	mrioc->reply_buf_pool = dma_pool_create("reply_buf pool",
 	    &mrioc->pdev->dev, sz, 16, 0);
@@ -3029,7 +2669,7 @@ static int mpi3mr_alloc_reply_sense_bufs(struct mpi3mr_ioc *mrioc)
 
 	mrioc->reply_buf_dma_max_address = mrioc->reply_buf_dma + sz;
 
-	/* reply free queue, 8 byte align */
+	 
 	sz = mrioc->reply_free_qsz * 8;
 	mrioc->reply_free_q_pool = dma_pool_create("reply_free_q pool",
 	    &mrioc->pdev->dev, sz, 8, 0);
@@ -3042,7 +2682,7 @@ static int mpi3mr_alloc_reply_sense_bufs(struct mpi3mr_ioc *mrioc)
 	if (!mrioc->reply_free_q)
 		goto out_failed;
 
-	/* sense buffer pool,  4 byte align */
+	 
 	sz = mrioc->num_sense_bufs * MPI3MR_SENSE_BUF_SZ;
 	mrioc->sense_buf_pool = dma_pool_create("sense_buf pool",
 	    &mrioc->pdev->dev, sz, 4, 0);
@@ -3055,7 +2695,7 @@ static int mpi3mr_alloc_reply_sense_bufs(struct mpi3mr_ioc *mrioc)
 	if (!mrioc->sense_buf)
 		goto out_failed;
 
-	/* sense buffer queue, 8 byte align */
+	 
 	sz = mrioc->sense_buf_q_sz * 8;
 	mrioc->sense_buf_q_pool = dma_pool_create("sense_buf_q pool",
 	    &mrioc->pdev->dev, sz, 8, 0);
@@ -3075,16 +2715,7 @@ out_failed:
 	return retval;
 }
 
-/**
- * mpimr_initialize_reply_sbuf_queues - initialize reply sense
- * buffers
- * @mrioc: Adapter instance reference
- *
- * Helper function to initialize reply and sense buffers along
- * with some debug prints.
- *
- * Return:  None.
- */
+ 
 static void mpimr_initialize_reply_sbuf_queues(struct mpi3mr_ioc *mrioc)
 {
 	u32 sz, i;
@@ -3111,28 +2742,20 @@ static void mpimr_initialize_reply_sbuf_queues(struct mpi3mr_ioc *mrioc)
 	    mrioc->sense_buf_q, mrioc->sense_buf_q_sz, 8, (sz / 1024),
 	    (unsigned long long)mrioc->sense_buf_q_dma);
 
-	/* initialize Reply buffer Queue */
+	 
 	for (i = 0, phy_addr = mrioc->reply_buf_dma;
 	    i < mrioc->num_reply_bufs; i++, phy_addr += mrioc->reply_sz)
 		mrioc->reply_free_q[i] = cpu_to_le64(phy_addr);
 	mrioc->reply_free_q[i] = cpu_to_le64(0);
 
-	/* initialize Sense Buffer Queue */
+	 
 	for (i = 0, phy_addr = mrioc->sense_buf_dma;
 	    i < mrioc->num_sense_bufs; i++, phy_addr += MPI3MR_SENSE_BUF_SZ)
 		mrioc->sense_buf_q[i] = cpu_to_le64(phy_addr);
 	mrioc->sense_buf_q[i] = cpu_to_le64(0);
 }
 
-/**
- * mpi3mr_issue_iocinit - Send IOC Init
- * @mrioc: Adapter instance reference
- *
- * Issue IOC Init MPI request through admin queue and wait for
- * the completion of it or time out.
- *
- * Return: 0 on success, non-zero on failures.
- */
+ 
 static int mpi3mr_issue_iocinit(struct mpi3mr_ioc *mrioc)
 {
 	struct mpi3_ioc_init_request iocinit_req;
@@ -3238,16 +2861,7 @@ out:
 	return retval;
 }
 
-/**
- * mpi3mr_unmask_events - Unmask events in event mask bitmap
- * @mrioc: Adapter instance reference
- * @event: MPI event ID
- *
- * Un mask the specific event by resetting the event_mask
- * bitmap.
- *
- * Return: 0 on success, non-zero on failures.
- */
+ 
 static void mpi3mr_unmask_events(struct mpi3mr_ioc *mrioc, u16 event)
 {
 	u32 desired_event;
@@ -3262,15 +2876,7 @@ static void mpi3mr_unmask_events(struct mpi3mr_ioc *mrioc, u16 event)
 	mrioc->event_masks[word] &= ~desired_event;
 }
 
-/**
- * mpi3mr_issue_event_notification - Send event notification
- * @mrioc: Adapter instance reference
- *
- * Issue event notification MPI request through admin queue and
- * wait for the completion of it or time out.
- *
- * Return: 0 on success, non-zero on failures.
- */
+ 
 static int mpi3mr_issue_event_notification(struct mpi3mr_ioc *mrioc)
 {
 	struct mpi3_event_notification_request evtnotify_req;
@@ -3326,17 +2932,7 @@ out:
 	return retval;
 }
 
-/**
- * mpi3mr_process_event_ack - Process event acknowledgment
- * @mrioc: Adapter instance reference
- * @event: MPI3 event ID
- * @event_ctx: event context
- *
- * Send event acknowledgment through admin queue and wait for
- * it to complete.
- *
- * Return: 0 on success, non-zero on failures.
- */
+ 
 int mpi3mr_process_event_ack(struct mpi3mr_ioc *mrioc, u8 event,
 	u32 event_ctx)
 {
@@ -3393,16 +2989,7 @@ out:
 	return retval;
 }
 
-/**
- * mpi3mr_alloc_chain_bufs - Allocate chain buffers
- * @mrioc: Adapter instance reference
- *
- * Allocate chain buffers and set a bitmap to indicate free
- * chain buffers. Chain buffers are used to pass the SGE
- * information along with MPI3 SCSI IO requests for host I/O.
- *
- * Return: 0 on success, non-zero on failure
- */
+ 
 static int mpi3mr_alloc_chain_bufs(struct mpi3mr_ioc *mrioc)
 {
 	int retval = 0;
@@ -3458,16 +3045,7 @@ out_failed:
 	return retval;
 }
 
-/**
- * mpi3mr_port_enable_complete - Mark port enable complete
- * @mrioc: Adapter instance reference
- * @drv_cmd: Internal command tracker
- *
- * Call back for asynchronous port enable request sets the
- * driver command to indicate port enable request is complete.
- *
- * Return: Nothing
- */
+ 
 static void mpi3mr_port_enable_complete(struct mpi3mr_ioc *mrioc,
 	struct mpi3mr_drv_cmd *drv_cmd)
 {
@@ -3480,17 +3058,7 @@ static void mpi3mr_port_enable_complete(struct mpi3mr_ioc *mrioc,
 	drv_cmd->state = MPI3MR_CMD_NOTUSED;
 }
 
-/**
- * mpi3mr_issue_port_enable - Issue Port Enable
- * @mrioc: Adapter instance reference
- * @async: Flag to wait for completion or not
- *
- * Issue Port Enable MPI request through admin queue and if the
- * async flag is not set wait for the completion of the port
- * enable or time out.
- *
- * Return: 0 on success, non-zero on failures.
- */
+ 
 int mpi3mr_issue_port_enable(struct mpi3mr_ioc *mrioc, u8 async)
 {
 	struct mpi3_port_enable_request pe_req;
@@ -3543,7 +3111,7 @@ out:
 	return retval;
 }
 
-/* Protocol type to name mapper structure */
+ 
 static const struct {
 	u8 protocol;
 	char *name;
@@ -3553,7 +3121,7 @@ static const struct {
 	{ MPI3_IOCFACTS_PROTOCOL_NVME, "NVMe attachment" },
 };
 
-/* Capability to name mapper structure*/
+ 
 static const struct {
 	u32 capability;
 	char *name;
@@ -3562,15 +3130,7 @@ static const struct {
 	{ MPI3_IOCFACTS_CAPABILITY_MULTIPATH_ENABLED, "MultiPath" },
 };
 
-/**
- * mpi3mr_print_ioc_info - Display controller information
- * @mrioc: Adapter instance reference
- *
- * Display controller personalit, capability, supported
- * protocols etc.
- *
- * Return: Nothing
- */
+ 
 static void
 mpi3mr_print_ioc_info(struct mpi3mr_ioc *mrioc)
 {
@@ -3623,14 +3183,7 @@ mpi3mr_print_ioc_info(struct mpi3mr_ioc *mrioc)
 		 protocol, capabilities);
 }
 
-/**
- * mpi3mr_cleanup_resources - Free PCI resources
- * @mrioc: Adapter instance reference
- *
- * Unmap PCI device memory and disable PCI device.
- *
- * Return: 0 on success and non-zero on failure.
- */
+ 
 void mpi3mr_cleanup_resources(struct mpi3mr_ioc *mrioc)
 {
 	struct pci_dev *pdev = mrioc->pdev;
@@ -3649,14 +3202,7 @@ void mpi3mr_cleanup_resources(struct mpi3mr_ioc *mrioc)
 	}
 }
 
-/**
- * mpi3mr_setup_resources - Enable PCI resources
- * @mrioc: Adapter instance reference
- *
- * Enable PCI device memory, MSI-x registers and set DMA mask.
- *
- * Return: 0 on success and non-zero on failure.
- */
+ 
 int mpi3mr_setup_resources(struct mpi3mr_ioc *mrioc)
 {
 	struct pci_dev *pdev = mrioc->pdev;
@@ -3747,16 +3293,7 @@ out_failed:
 	return retval;
 }
 
-/**
- * mpi3mr_enable_events - Enable required events
- * @mrioc: Adapter instance reference
- *
- * This routine unmasks the events required by the driver by
- * sennding appropriate event mask bitmapt through an event
- * notification request.
- *
- * Return: 0 on success and non-zero on failure.
- */
+ 
 static int mpi3mr_enable_events(struct mpi3mr_ioc *mrioc)
 {
 	int retval = 0;
@@ -3787,21 +3324,7 @@ static int mpi3mr_enable_events(struct mpi3mr_ioc *mrioc)
 	return retval;
 }
 
-/**
- * mpi3mr_init_ioc - Initialize the controller
- * @mrioc: Adapter instance reference
- *
- * This the controller initialization routine, executed either
- * after soft reset or from pci probe callback.
- * Setup the required resources, memory map the controller
- * registers, create admin and operational reply queue pairs,
- * allocate required memory for reply pool, sense buffer pool,
- * issue IOC init request to the firmware, unmask the events and
- * issue port enable to discover SAS/SATA/NVMe devies and RAID
- * volumes.
- *
- * Return: 0 on success and non-zero on failure.
- */
+ 
 int mpi3mr_init_ioc(struct mpi3mr_ioc *mrioc)
 {
 	int retval = 0;
@@ -3964,20 +3487,7 @@ out_failed_noretry:
 	return retval;
 }
 
-/**
- * mpi3mr_reinit_ioc - Re-Initialize the controller
- * @mrioc: Adapter instance reference
- * @is_resume: Called from resume or reset path
- *
- * This the controller re-initialization routine, executed from
- * the soft reset handler or resume callback. Creates
- * operational reply queue pairs, allocate required memory for
- * reply pool, sense buffer pool, issue IOC init request to the
- * firmware, unmask the events and issue port enable to discover
- * SAS/SATA/NVMe devices and RAID volumes.
- *
- * Return: 0 on success and non-zero on failure.
- */
+ 
 int mpi3mr_reinit_ioc(struct mpi3mr_ioc *mrioc, u8 is_resume)
 {
 	int retval = 0;
@@ -4145,14 +3655,7 @@ out_failed_noretry:
 	return retval;
 }
 
-/**
- * mpi3mr_memset_op_reply_q_buffers - memset the operational reply queue's
- *					segments
- * @mrioc: Adapter instance reference
- * @qidx: Operational reply queue index
- *
- * Return: Nothing.
- */
+ 
 static void mpi3mr_memset_op_reply_q_buffers(struct mpi3mr_ioc *mrioc, u16 qidx)
 {
 	struct op_reply_qinfo *op_reply_q = mrioc->op_reply_qinfo + qidx;
@@ -4168,14 +3671,7 @@ static void mpi3mr_memset_op_reply_q_buffers(struct mpi3mr_ioc *mrioc, u16 qidx)
 		memset(segments[i].segment, 0, size);
 }
 
-/**
- * mpi3mr_memset_op_req_q_buffers - memset the operational request queue's
- *					segments
- * @mrioc: Adapter instance reference
- * @qidx: Operational request queue index
- *
- * Return: Nothing.
- */
+ 
 static void mpi3mr_memset_op_req_q_buffers(struct mpi3mr_ioc *mrioc, u16 qidx)
 {
 	struct op_req_qinfo *op_req_q = mrioc->req_qinfo + qidx;
@@ -4191,16 +3687,7 @@ static void mpi3mr_memset_op_req_q_buffers(struct mpi3mr_ioc *mrioc, u16 qidx)
 		memset(segments[i].segment, 0, size);
 }
 
-/**
- * mpi3mr_memset_buffers - memset memory for a controller
- * @mrioc: Adapter instance reference
- *
- * clear all the memory allocated for a controller, typically
- * called post reset to reuse the memory allocated during the
- * controller init.
- *
- * Return: Nothing.
- */
+ 
 void mpi3mr_memset_buffers(struct mpi3mr_ioc *mrioc)
 {
 	u16 i;
@@ -4275,14 +3762,7 @@ void mpi3mr_memset_buffers(struct mpi3mr_ioc *mrioc)
 	}
 }
 
-/**
- * mpi3mr_free_mem - Free memory allocated for a controller
- * @mrioc: Adapter instance reference
- *
- * Free all the memory allocated for a controller.
- *
- * Return: Nothing.
- */
+ 
 void mpi3mr_free_mem(struct mpi3mr_ioc *mrioc)
 {
 	u16 i;
@@ -4428,15 +3908,7 @@ void mpi3mr_free_mem(struct mpi3mr_ioc *mrioc)
 
 }
 
-/**
- * mpi3mr_issue_ioc_shutdown - shutdown controller
- * @mrioc: Adapter instance reference
- *
- * Send shutodwn notification to the controller and wait for the
- * shutdown_timeout for it to be completed.
- *
- * Return: Nothing.
- */
+ 
 static void mpi3mr_issue_ioc_shutdown(struct mpi3mr_ioc *mrioc)
 {
 	u32 ioc_config, ioc_status;
@@ -4491,15 +3963,7 @@ static void mpi3mr_issue_ioc_shutdown(struct mpi3mr_ioc *mrioc)
 	    ioc_config);
 }
 
-/**
- * mpi3mr_cleanup_ioc - Cleanup controller
- * @mrioc: Adapter instance reference
- *
- * controller cleanup handler, Message unit reset or soft reset
- * and shutdown notification is issued to the controller.
- *
- * Return: Nothing.
- */
+ 
 void mpi3mr_cleanup_ioc(struct mpi3mr_ioc *mrioc)
 {
 	enum mpi3mr_iocstate ioc_state;
@@ -4521,16 +3985,7 @@ void mpi3mr_cleanup_ioc(struct mpi3mr_ioc *mrioc)
 	dprint_exit(mrioc, "controller cleanup completed\n");
 }
 
-/**
- * mpi3mr_drv_cmd_comp_reset - Flush a internal driver command
- * @mrioc: Adapter instance reference
- * @cmdptr: Internal command tracker
- *
- * Complete an internal driver commands with state indicating it
- * is completed due to reset.
- *
- * Return: Nothing.
- */
+ 
 static inline void mpi3mr_drv_cmd_comp_reset(struct mpi3mr_ioc *mrioc,
 	struct mpi3mr_drv_cmd *cmdptr)
 {
@@ -4545,14 +4000,7 @@ static inline void mpi3mr_drv_cmd_comp_reset(struct mpi3mr_ioc *mrioc,
 	}
 }
 
-/**
- * mpi3mr_flush_drv_cmds - Flush internaldriver commands
- * @mrioc: Adapter instance reference
- *
- * Flush all internal driver commands post reset
- *
- * Return: Nothing.
- */
+ 
 void mpi3mr_flush_drv_cmds(struct mpi3mr_ioc *mrioc)
 {
 	struct mpi3mr_drv_cmd *cmdptr;
@@ -4589,15 +4037,7 @@ void mpi3mr_flush_drv_cmds(struct mpi3mr_ioc *mrioc)
 	mpi3mr_drv_cmd_comp_reset(mrioc, cmdptr);
 }
 
-/**
- * mpi3mr_pel_wait_post - Issue PEL Wait
- * @mrioc: Adapter instance reference
- * @drv_cmd: Internal command tracker
- *
- * Issue PEL Wait MPI request through admin queue and return.
- *
- * Return: Nothing.
- */
+ 
 static void mpi3mr_pel_wait_post(struct mpi3mr_ioc *mrioc,
 	struct mpi3mr_drv_cmd *drv_cmd)
 {
@@ -4631,16 +4071,7 @@ static void mpi3mr_pel_wait_post(struct mpi3mr_ioc *mrioc,
 	}
 }
 
-/**
- * mpi3mr_pel_get_seqnum_post - Issue PEL Get Sequence number
- * @mrioc: Adapter instance reference
- * @drv_cmd: Internal command tracker
- *
- * Issue PEL get sequence number MPI request through admin queue
- * and return.
- *
- * Return: 0 on success, non-zero on failure.
- */
+ 
 int mpi3mr_pel_get_seqnum_post(struct mpi3mr_ioc *mrioc,
 	struct mpi3mr_drv_cmd *drv_cmd)
 {
@@ -4674,19 +4105,7 @@ int mpi3mr_pel_get_seqnum_post(struct mpi3mr_ioc *mrioc,
 	return retval;
 }
 
-/**
- * mpi3mr_pel_wait_complete - PELWait Completion callback
- * @mrioc: Adapter instance reference
- * @drv_cmd: Internal command tracker
- *
- * This is a callback handler for the PELWait request and
- * firmware completes a PELWait request when it is aborted or a
- * new PEL entry is available. This sends AEN to the application
- * and if the PELwait completion is not due to PELAbort then
- * this will send a request for new PEL Sequence number
- *
- * Return: Nothing.
- */
+ 
 static void mpi3mr_pel_wait_complete(struct mpi3mr_ioc *mrioc,
 	struct mpi3mr_drv_cmd *drv_cmd)
 {
@@ -4755,17 +4174,7 @@ cleanup_drv_cmd:
 	drv_cmd->retry_count = 0;
 }
 
-/**
- * mpi3mr_pel_get_seqnum_complete - PELGetSeqNum Completion callback
- * @mrioc: Adapter instance reference
- * @drv_cmd: Internal command tracker
- *
- * This is a callback handler for the PEL get sequence number
- * request and a new PEL wait request will be issued to the
- * firmware from this
- *
- * Return: Nothing.
- */
+ 
 void mpi3mr_pel_get_seqnum_complete(struct mpi3mr_ioc *mrioc,
 	struct mpi3mr_drv_cmd *drv_cmd)
 {
@@ -4830,27 +4239,7 @@ cleanup_drv_cmd:
 	drv_cmd->retry_count = 0;
 }
 
-/**
- * mpi3mr_soft_reset_handler - Reset the controller
- * @mrioc: Adapter instance reference
- * @reset_reason: Reset reason code
- * @snapdump: Flag to generate snapdump in firmware or not
- *
- * This is an handler for recovering controller by issuing soft
- * reset are diag fault reset.  This is a blocking function and
- * when one reset is executed if any other resets they will be
- * blocked. All BSG requests will be blocked during the reset. If
- * controller reset is successful then the controller will be
- * reinitalized, otherwise the controller will be marked as not
- * recoverable
- *
- * In snapdump bit is set, the controller is issued with diag
- * fault reset so that the firmware can create a snap dump and
- * post that the firmware will result in F000 fault and the
- * driver will issue soft reset to recover from that.
- *
- * Return: 0 on success, non-zero on failure.
- */
+ 
 int mpi3mr_soft_reset_handler(struct mpi3mr_ioc *mrioc,
 	u32 reset_reason, u8 snapdump)
 {
@@ -4858,16 +4247,13 @@ int mpi3mr_soft_reset_handler(struct mpi3mr_ioc *mrioc,
 	unsigned long flags;
 	u32 host_diagnostic, timeout = MPI3_SYSIF_DIAG_SAVE_TIMEOUT * 10;
 
-	/* Block the reset handler until diag save in progress*/
+	 
 	dprint_reset(mrioc,
 	    "soft_reset_handler: check and block on diagsave_timeout(%d)\n",
 	    mrioc->diagsave_timeout);
 	while (mrioc->diagsave_timeout)
 		ssleep(1);
-	/*
-	 * Block new resets until the currently executing one is finished and
-	 * return the status of the existing reset for all blocked resets
-	 */
+	 
 	dprint_reset(mrioc, "soft_reset_handler: acquiring reset_mutex\n");
 	if (!mutex_trylock(&mrioc->reset_mutex)) {
 		ioc_info(mrioc,
@@ -4999,17 +4385,7 @@ out:
 }
 
 
-/**
- * mpi3mr_free_config_dma_memory - free memory for config page
- * @mrioc: Adapter instance reference
- * @mem_desc: memory descriptor structure
- *
- * Check whether the size of the buffer specified by the memory
- * descriptor is greater than the default page size if so then
- * free the memory pointed by the descriptor.
- *
- * Return: Nothing.
- */
+ 
 static void mpi3mr_free_config_dma_memory(struct mpi3mr_ioc *mrioc,
 	struct dma_memory_desc *mem_desc)
 {
@@ -5020,17 +4396,7 @@ static void mpi3mr_free_config_dma_memory(struct mpi3mr_ioc *mrioc,
 	}
 }
 
-/**
- * mpi3mr_alloc_config_dma_memory - Alloc memory for config page
- * @mrioc: Adapter instance reference
- * @mem_desc: Memory descriptor to hold dma memory info
- *
- * This function allocates new dmaable memory or provides the
- * default config page dmaable memory based on the memory size
- * described by the descriptor.
- *
- * Return: 0 on success, non-zero on failure.
- */
+ 
 static int mpi3mr_alloc_config_dma_memory(struct mpi3mr_ioc *mrioc,
 	struct dma_memory_desc *mem_desc)
 {
@@ -5047,23 +4413,7 @@ static int mpi3mr_alloc_config_dma_memory(struct mpi3mr_ioc *mrioc,
 	return 0;
 }
 
-/**
- * mpi3mr_post_cfg_req - Issue config requests and wait
- * @mrioc: Adapter instance reference
- * @cfg_req: Configuration request
- * @timeout: Timeout in seconds
- * @ioc_status: Pointer to return ioc status
- *
- * A generic function for posting MPI3 configuration request to
- * the firmware. This blocks for the completion of request for
- * timeout seconds and if the request times out this function
- * faults the controller with proper reason code.
- *
- * On successful completion of the request this function returns
- * appropriate ioc status from the firmware back to the caller.
- *
- * Return: 0 on success, non-zero on failure.
- */
+ 
 static int mpi3mr_post_cfg_req(struct mpi3mr_ioc *mrioc,
 	struct mpi3_config_request *cfg_req, int timeout, u16 *ioc_status)
 {
@@ -5117,42 +4467,7 @@ out:
 	return retval;
 }
 
-/**
- * mpi3mr_process_cfg_req - config page request processor
- * @mrioc: Adapter instance reference
- * @cfg_req: Configuration request
- * @cfg_hdr: Configuration page header
- * @timeout: Timeout in seconds
- * @ioc_status: Pointer to return ioc status
- * @cfg_buf: Memory pointer to copy config page or header
- * @cfg_buf_sz: Size of the memory to get config page or header
- *
- * This is handler for config page read, write and config page
- * header read operations.
- *
- * This function expects the cfg_req to be populated with page
- * type, page number, action for the header read and with page
- * address for all other operations.
- *
- * The cfg_hdr can be passed as null for reading required header
- * details for read/write pages the cfg_hdr should point valid
- * configuration page header.
- *
- * This allocates dmaable memory based on the size of the config
- * buffer and set the SGE of the cfg_req.
- *
- * For write actions, the config page data has to be passed in
- * the cfg_buf and size of the data has to be mentioned in the
- * cfg_buf_sz.
- *
- * For read/header actions, on successful completion of the
- * request with successful ioc_status the data will be copied
- * into the cfg_buf limited to a minimum of actual page size and
- * cfg_buf_sz
- *
- *
- * Return: 0 on success, non-zero on failure.
- */
+ 
 static int mpi3mr_process_cfg_req(struct mpi3mr_ioc *mrioc,
 	struct mpi3_config_request *cfg_req,
 	struct mpi3_config_page_header *cfg_hdr, int timeout, u16 *ioc_status,
@@ -5236,23 +4551,7 @@ out:
 	return retval;
 }
 
-/**
- * mpi3mr_cfg_get_dev_pg0 - Read current device page0
- * @mrioc: Adapter instance reference
- * @ioc_status: Pointer to return ioc status
- * @dev_pg0: Pointer to return device page 0
- * @pg_sz: Size of the memory allocated to the page pointer
- * @form: The form to be used for addressing the page
- * @form_spec: Form specific information like device handle
- *
- * This is handler for config page read for a specific device
- * page0. The ioc_status has the controller returned ioc_status.
- * This routine doesn't check ioc_status to decide whether the
- * page read is success or not and it is the callers
- * responsibility.
- *
- * Return: 0 on success, non-zero on failure.
- */
+ 
 int mpi3mr_cfg_get_dev_pg0(struct mpi3mr_ioc *mrioc, u16 *ioc_status,
 	struct mpi3_device_page0 *dev_pg0, u16 pg_sz, u32 form, u32 form_spec)
 {
@@ -5295,23 +4594,7 @@ out_failed:
 }
 
 
-/**
- * mpi3mr_cfg_get_sas_phy_pg0 - Read current SAS Phy page0
- * @mrioc: Adapter instance reference
- * @ioc_status: Pointer to return ioc status
- * @phy_pg0: Pointer to return SAS Phy page 0
- * @pg_sz: Size of the memory allocated to the page pointer
- * @form: The form to be used for addressing the page
- * @form_spec: Form specific information like phy number
- *
- * This is handler for config page read for a specific SAS Phy
- * page0. The ioc_status has the controller returned ioc_status.
- * This routine doesn't check ioc_status to decide whether the
- * page read is success or not and it is the callers
- * responsibility.
- *
- * Return: 0 on success, non-zero on failure.
- */
+ 
 int mpi3mr_cfg_get_sas_phy_pg0(struct mpi3mr_ioc *mrioc, u16 *ioc_status,
 	struct mpi3_sas_phy_page0 *phy_pg0, u16 pg_sz, u32 form,
 	u32 form_spec)
@@ -5354,23 +4637,7 @@ out_failed:
 	return -1;
 }
 
-/**
- * mpi3mr_cfg_get_sas_phy_pg1 - Read current SAS Phy page1
- * @mrioc: Adapter instance reference
- * @ioc_status: Pointer to return ioc status
- * @phy_pg1: Pointer to return SAS Phy page 1
- * @pg_sz: Size of the memory allocated to the page pointer
- * @form: The form to be used for addressing the page
- * @form_spec: Form specific information like phy number
- *
- * This is handler for config page read for a specific SAS Phy
- * page1. The ioc_status has the controller returned ioc_status.
- * This routine doesn't check ioc_status to decide whether the
- * page read is success or not and it is the callers
- * responsibility.
- *
- * Return: 0 on success, non-zero on failure.
- */
+ 
 int mpi3mr_cfg_get_sas_phy_pg1(struct mpi3mr_ioc *mrioc, u16 *ioc_status,
 	struct mpi3_sas_phy_page1 *phy_pg1, u16 pg_sz, u32 form,
 	u32 form_spec)
@@ -5414,23 +4681,7 @@ out_failed:
 }
 
 
-/**
- * mpi3mr_cfg_get_sas_exp_pg0 - Read current SAS Expander page0
- * @mrioc: Adapter instance reference
- * @ioc_status: Pointer to return ioc status
- * @exp_pg0: Pointer to return SAS Expander page 0
- * @pg_sz: Size of the memory allocated to the page pointer
- * @form: The form to be used for addressing the page
- * @form_spec: Form specific information like device handle
- *
- * This is handler for config page read for a specific SAS
- * Expander page0. The ioc_status has the controller returned
- * ioc_status. This routine doesn't check ioc_status to decide
- * whether the page read is success or not and it is the callers
- * responsibility.
- *
- * Return: 0 on success, non-zero on failure.
- */
+ 
 int mpi3mr_cfg_get_sas_exp_pg0(struct mpi3mr_ioc *mrioc, u16 *ioc_status,
 	struct mpi3_sas_expander_page0 *exp_pg0, u16 pg_sz, u32 form,
 	u32 form_spec)
@@ -5474,23 +4725,7 @@ out_failed:
 	return -1;
 }
 
-/**
- * mpi3mr_cfg_get_sas_exp_pg1 - Read current SAS Expander page1
- * @mrioc: Adapter instance reference
- * @ioc_status: Pointer to return ioc status
- * @exp_pg1: Pointer to return SAS Expander page 1
- * @pg_sz: Size of the memory allocated to the page pointer
- * @form: The form to be used for addressing the page
- * @form_spec: Form specific information like phy number
- *
- * This is handler for config page read for a specific SAS
- * Expander page1. The ioc_status has the controller returned
- * ioc_status. This routine doesn't check ioc_status to decide
- * whether the page read is success or not and it is the callers
- * responsibility.
- *
- * Return: 0 on success, non-zero on failure.
- */
+ 
 int mpi3mr_cfg_get_sas_exp_pg1(struct mpi3mr_ioc *mrioc, u16 *ioc_status,
 	struct mpi3_sas_expander_page1 *exp_pg1, u16 pg_sz, u32 form,
 	u32 form_spec)
@@ -5534,23 +4769,7 @@ out_failed:
 	return -1;
 }
 
-/**
- * mpi3mr_cfg_get_enclosure_pg0 - Read current Enclosure page0
- * @mrioc: Adapter instance reference
- * @ioc_status: Pointer to return ioc status
- * @encl_pg0: Pointer to return Enclosure page 0
- * @pg_sz: Size of the memory allocated to the page pointer
- * @form: The form to be used for addressing the page
- * @form_spec: Form specific information like device handle
- *
- * This is handler for config page read for a specific Enclosure
- * page0. The ioc_status has the controller returned ioc_status.
- * This routine doesn't check ioc_status to decide whether the
- * page read is success or not and it is the callers
- * responsibility.
- *
- * Return: 0 on success, non-zero on failure.
- */
+ 
 int mpi3mr_cfg_get_enclosure_pg0(struct mpi3mr_ioc *mrioc, u16 *ioc_status,
 	struct mpi3_enclosure_page0 *encl_pg0, u16 pg_sz, u32 form,
 	u32 form_spec)
@@ -5594,18 +4813,7 @@ out_failed:
 }
 
 
-/**
- * mpi3mr_cfg_get_sas_io_unit_pg0 - Read current SASIOUnit page0
- * @mrioc: Adapter instance reference
- * @sas_io_unit_pg0: Pointer to return SAS IO Unit page 0
- * @pg_sz: Size of the memory allocated to the page pointer
- *
- * This is handler for config page read for the SAS IO Unit
- * page0. This routine checks ioc_status to decide whether the
- * page read is success or not.
- *
- * Return: 0 on success, non-zero on failure.
- */
+ 
 int mpi3mr_cfg_get_sas_io_unit_pg0(struct mpi3mr_ioc *mrioc,
 	struct mpi3_sas_io_unit_page0 *sas_io_unit_pg0, u16 pg_sz)
 {
@@ -5650,18 +4858,7 @@ out_failed:
 	return -1;
 }
 
-/**
- * mpi3mr_cfg_get_sas_io_unit_pg1 - Read current SASIOUnit page1
- * @mrioc: Adapter instance reference
- * @sas_io_unit_pg1: Pointer to return SAS IO Unit page 1
- * @pg_sz: Size of the memory allocated to the page pointer
- *
- * This is handler for config page read for the SAS IO Unit
- * page1. This routine checks ioc_status to decide whether the
- * page read is success or not.
- *
- * Return: 0 on success, non-zero on failure.
- */
+ 
 int mpi3mr_cfg_get_sas_io_unit_pg1(struct mpi3mr_ioc *mrioc,
 	struct mpi3_sas_io_unit_page1 *sas_io_unit_pg1, u16 pg_sz)
 {
@@ -5706,19 +4903,7 @@ out_failed:
 	return -1;
 }
 
-/**
- * mpi3mr_cfg_set_sas_io_unit_pg1 - Write SASIOUnit page1
- * @mrioc: Adapter instance reference
- * @sas_io_unit_pg1: Pointer to the SAS IO Unit page 1 to write
- * @pg_sz: Size of the memory allocated to the page pointer
- *
- * This is handler for config page write for the SAS IO Unit
- * page1. This routine checks ioc_status to decide whether the
- * page read is success or not. This will modify both current
- * and persistent page.
- *
- * Return: 0 on success, non-zero on failure.
- */
+ 
 int mpi3mr_cfg_set_sas_io_unit_pg1(struct mpi3mr_ioc *mrioc,
 	struct mpi3_sas_io_unit_page1 *sas_io_unit_pg1, u16 pg_sz)
 {
@@ -5775,18 +4960,7 @@ out_failed:
 	return -1;
 }
 
-/**
- * mpi3mr_cfg_get_driver_pg1 - Read current Driver page1
- * @mrioc: Adapter instance reference
- * @driver_pg1: Pointer to return Driver page 1
- * @pg_sz: Size of the memory allocated to the page pointer
- *
- * This is handler for config page read for the Driver page1.
- * This routine checks ioc_status to decide whether the page
- * read is success or not.
- *
- * Return: 0 on success, non-zero on failure.
- */
+ 
 int mpi3mr_cfg_get_driver_pg1(struct mpi3mr_ioc *mrioc,
 	struct mpi3_driver_page1 *driver_pg1, u16 pg_sz)
 {

@@ -1,27 +1,6 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
+ 
 
-/*
- * Copyright (c) 2020, 2021, 2022 by Pawel Jakub Dawidek
- */
+ 
 
 #include <sys/zfs_context.h>
 #include <sys/spa.h>
@@ -40,216 +19,12 @@
 #include <sys/kstat.h>
 #include <sys/wmsum.h>
 
-/*
- * Block Cloning design.
- *
- * Block Cloning allows to manually clone a file (or a subset of its blocks)
- * into another (or the same) file by just creating additional references to
- * the data blocks without copying the data itself. Those references are kept
- * in the Block Reference Tables (BRTs).
- *
- * In many ways this is similar to the existing deduplication, but there are
- * some important differences:
- *
- * - Deduplication is automatic and Block Cloning is not - one has to use a
- *   dedicated system call(s) to clone the given file/blocks.
- * - Deduplication keeps all data blocks in its table, even those referenced
- *   just once. Block Cloning creates an entry in its tables only when there
- *   are at least two references to the given data block. If the block was
- *   never explicitly cloned or the second to last reference was dropped,
- *   there will be neither space nor performance overhead.
- * - Deduplication needs data to work - one needs to pass real data to the
- *   write(2) syscall, so hash can be calculated. Block Cloning doesn't require
- *   data, just block pointers to the data, so it is extremely fast, as we pay
- *   neither the cost of reading the data, nor the cost of writing the data -
- *   we operate exclusively on metadata.
- * - If the D (dedup) bit is not set in the block pointer, it means that
- *   the block is not in the dedup table (DDT) and we won't consult the DDT
- *   when we need to free the block. Block Cloning must be consulted on every
- *   free, because we cannot modify the source BP (eg. by setting something
- *   similar to the D bit), thus we have no hint if the block is in the
- *   Block Reference Table (BRT), so we need to look into the BRT. There is
- *   an optimization in place that allows us to eliminate the majority of BRT
- *   lookups which is described below in the "Minimizing free penalty" section.
- * - The BRT entry is much smaller than the DDT entry - for BRT we only store
- *   64bit offset and 64bit reference counter.
- * - Dedup keys are cryptographic hashes, so two blocks that are close to each
- *   other on disk are most likely in totally different parts of the DDT.
- *   The BRT entry keys are offsets into a single top-level VDEV, so data blocks
- *   from one file should have BRT entries close to each other.
- * - Scrub will only do a single pass over a block that is referenced multiple
- *   times in the DDT. Unfortunately it is not currently (if at all) possible
- *   with Block Cloning and block referenced multiple times will be scrubbed
- *   multiple times. The new, sorted scrub should be able to eliminate
- *   duplicated reads given enough memory.
- * - Deduplication requires cryptographically strong hash as a checksum or
- *   additional data verification. Block Cloning works with any checksum
- *   algorithm or even with checksumming disabled.
- *
- * As mentioned above, the BRT entries are much smaller than the DDT entries.
- * To uniquely identify a block we just need its vdev id and offset. We also
- * need to maintain a reference counter. The vdev id will often repeat, as there
- * is a small number of top-level VDEVs and a large number of blocks stored in
- * each VDEV. We take advantage of that to reduce the BRT entry size further by
- * maintaining one BRT for each top-level VDEV, so we can then have only offset
- * and counter as the BRT entry.
- *
- * Minimizing free penalty.
- *
- * Block Cloning allows creating additional references to any existing block.
- * When we free a block there is no hint in the block pointer whether the block
- * was cloned or not, so on each free we have to check if there is a
- * corresponding entry in the BRT or not. If there is, we need to decrease
- * the reference counter. Doing BRT lookup on every free can potentially be
- * expensive by requiring additional I/Os if the BRT doesn't fit into memory.
- * This is the main problem with deduplication, so we've learned our lesson and
- * try not to repeat the same mistake here. How do we do that? We divide each
- * top-level VDEV into 16MB regions. For each region we maintain a counter that
- * is a sum of all the BRT entries that have offsets within the region. This
- * creates the entries count array of 16bit numbers for each top-level VDEV.
- * The entries count array is always kept in memory and updated on disk in the
- * same transaction group as the BRT updates to keep everything in-sync. We can
- * keep the array in memory, because it is very small. With 16MB regions and
- * 1TB VDEV the array requires only 128kB of memory (we may decide to decrease
- * the region size even further in the future). Now, when we want to free
- * a block, we first consult the array. If the counter for the whole region is
- * zero, there is no need to look for the BRT entry, as there isn't one for
- * sure. If the counter for the region is greater than zero, only then we will
- * do a BRT lookup and if an entry is found we will decrease the reference
- * counter in the BRT entry and in the entry counters array.
- *
- * The entry counters array is small, but can potentially be larger for very
- * large VDEVs or smaller regions. In this case we don't want to rewrite entire
- * array on every change. We then divide the array into 32kB block and keep
- * a bitmap of dirty blocks within a transaction group. When we sync the
- * transaction group we can only update the parts of the entry counters array
- * that were modified. Note: Keeping track of the dirty parts of the entry
- * counters array is implemented, but updating only parts of the array on disk
- * is not yet implemented - for now we will update entire array if there was
- * any change.
- *
- * The implementation tries to be economic: if BRT is not used, or no longer
- * used, there will be no entries in the MOS and no additional memory used (eg.
- * the entry counters array is only allocated if needed).
- *
- * Interaction between Deduplication and Block Cloning.
- *
- * If both functionalities are in use, we could end up with a block that is
- * referenced multiple times in both DDT and BRT. When we free one of the
- * references we couldn't tell where it belongs, so we would have to decide
- * what table takes the precedence: do we first clear DDT references or BRT
- * references? To avoid this dilemma BRT cooperates with DDT - if a given block
- * is being cloned using BRT and the BP has the D (dedup) bit set, BRT will
- * lookup DDT entry instead and increase the counter there. No BRT entry
- * will be created for a block which has the D (dedup) bit set.
- * BRT may be more efficient for manual deduplication, but if the block is
- * already in the DDT, then creating additional BRT entry would be less
- * efficient. This clever idea was proposed by Allan Jude.
- *
- * Block Cloning across datasets.
- *
- * Block Cloning is not limited to cloning blocks within the same dataset.
- * It is possible (and very useful) to clone blocks between different datasets.
- * One use case is recovering files from snapshots. By cloning the files into
- * dataset we need no additional storage. Without Block Cloning we would need
- * additional space for those files.
- * Another interesting use case is moving the files between datasets
- * (copying the file content to the new dataset and removing the source file).
- * In that case Block Cloning will only be used briefly, because the BRT entries
- * will be removed when the source is removed.
- * Note: currently it is not possible to clone blocks between encrypted
- * datasets, even if those datasets use the same encryption key (this includes
- * snapshots of encrypted datasets). Cloning blocks between datasets that use
- * the same keys should be possible and should be implemented in the future.
- *
- * Block Cloning flow through ZFS layers.
- *
- * Note: Block Cloning can be used both for cloning file system blocks and ZVOL
- * blocks. As of this writing no interface is implemented that allows for block
- * cloning within a ZVOL.
- * FreeBSD and Linux provides copy_file_range(2) system call and we will use it
- * for blocking cloning.
- *
- *	ssize_t
- *	copy_file_range(int infd, off_t *inoffp, int outfd, off_t *outoffp,
- *	                size_t len, unsigned int flags);
- *
- * Even though offsets and length represent bytes, they have to be
- * block-aligned or we will return an error so the upper layer can
- * fallback to the generic mechanism that will just copy the data.
- * Using copy_file_range(2) will call OS-independent zfs_clone_range() function.
- * This function was implemented based on zfs_write(), but instead of writing
- * the given data we first read block pointers using the new dmu_read_l0_bps()
- * function from the source file. Once we have BPs from the source file we call
- * the dmu_brt_clone() function on the destination file. This function
- * allocates BPs for us. We iterate over all source BPs. If the given BP is
- * a hole or an embedded block, we just copy BP as-is. If it points to a real
- * data we place this BP on a BRT pending list using the brt_pending_add()
- * function.
- *
- * We use this pending list to keep track of all BPs that got new references
- * within this transaction group.
- *
- * Some special cases to consider and how we address them:
- * - The block we want to clone may have been created within the same
- *   transaction group that we are trying to clone. Such block has no BP
- *   allocated yet, so cannot be immediately cloned. We return EAGAIN.
- * - The block we want to clone may have been modified within the same
- *   transaction group. We return EAGAIN.
- * - A block may be cloned multiple times during one transaction group (that's
- *   why pending list is actually a tree and not an append-only list - this
- *   way we can figure out faster if this block is cloned for the first time
- *   in this txg or consecutive time).
- * - A block may be cloned and freed within the same transaction group
- *   (see dbuf_undirty()).
- * - A block may be cloned and within the same transaction group the clone
- *   can be cloned again (see dmu_read_l0_bps()).
- * - A file might have been deleted, but the caller still has a file descriptor
- *   open to this file and clones it.
- *
- * When we free a block we have an additional step in the ZIO pipeline where we
- * call the zio_brt_free() function. We then call the brt_entry_decref()
- * that loads the corresponding BRT entry (if one exists) and decreases
- * reference counter. If this is not the last reference we will stop ZIO
- * pipeline here. If this is the last reference or the block is not in the
- * BRT, we continue the pipeline and free the block as usual.
- *
- * At the beginning of spa_sync() where there can be no more block cloning,
- * but before issuing frees we call brt_pending_apply(). This function applies
- * all the new clones to the BRT table - we load BRT entries and update
- * reference counters. To sync new BRT entries to disk, we use brt_sync()
- * function. This function will sync all dirty per-top-level-vdev BRTs,
- * the entry counters arrays, etc.
- *
- * Block Cloning and ZIL.
- *
- * Every clone operation is divided into chunks (similar to write) and each
- * chunk is cloned in a separate transaction. The chunk size is determined by
- * how many BPs we can fit into a single ZIL entry.
- * Replaying clone operation is different from the regular clone operation,
- * as when we log clone operations we cannot use the source object - it may
- * reside on a different dataset, so we log BPs we want to clone.
- * The ZIL is replayed when we mount the given dataset, not when the pool is
- * imported. Taking this into account it is possible that the pool is imported
- * without mounting datasets and the source dataset is destroyed before the
- * destination dataset is mounted and its ZIL replayed.
- * To address this situation we leverage zil_claim() mechanism where ZFS will
- * parse all the ZILs on pool import. When we come across TX_CLONE_RANGE
- * entries, we will bump reference counters for their BPs in the BRT.  Then
- * on mount and ZIL replay we bump the reference counters once more, while the
- * first references are dropped during ZIL destroy by zil_free_clone_range().
- * It is possible that after zil_claim() we never mount the destination, so
- * we never replay its ZIL and just destroy it.  In this case the only taken
- * references will be dropped by zil_free_clone_range(), since the cloning is
- * not going to ever take place.
- */
+ 
 
 static kmem_cache_t *brt_entry_cache;
 static kmem_cache_t *brt_pending_entry_cache;
 
-/*
- * Enable/disable prefetching of BRT entries that we are going to modify.
- */
+ 
 int zfs_brt_prefetch = 1;
 
 #ifdef ZFS_DEBUG
@@ -482,11 +257,7 @@ brt_vdev_create(brt_t *brt, brt_vdev_t *brtvd, dmu_tx_t *tx)
 	BRT_DEBUG("MOS entries created, object=%llu",
 	    (u_longlong_t)brtvd->bv_mos_entries);
 
-	/*
-	 * We allocate DMU buffer to store the bv_entcount[] array.
-	 * We will keep array size (bv_size) and cummulative count for all
-	 * bv_entcount[]s (bv_totalcount) in the bonus buffer.
-	 */
+	 
 	brtvd->bv_mos_brtvdev = dmu_object_alloc(brt->brt_mos,
 	    DMU_OTN_UINT64_METADATA, BRT_BLOCKSIZE,
 	    DMU_OTN_UINT64_METADATA, sizeof (brt_vdev_phys_t), tx);
@@ -535,12 +306,7 @@ brt_vdev_realloc(brt_t *brt, brt_vdev_t *brtvd)
 		ASSERT(brtvd->bv_entcount != NULL);
 		ASSERT(brtvd->bv_bitmap != NULL);
 		ASSERT(brtvd->bv_nblocks > 0);
-		/*
-		 * TODO: Allow vdev shrinking. We only need to implement
-		 * shrinking the on-disk BRT VDEV object.
-		 * dmu_free_range(brt->brt_mos, brtvd->bv_mos_brtvdev, offset,
-		 *     size, tx);
-		 */
+		 
 		ASSERT3U(brtvd->bv_size, <=, size);
 
 		memcpy(entcount, brtvd->bv_entcount,
@@ -595,12 +361,10 @@ brt_vdev_load(brt_t *brt, brt_vdev_t *brtvd)
 	ASSERT(!brtvd->bv_initiated);
 	brt_vdev_realloc(brt, brtvd);
 
-	/* TODO: We don't support VDEV shrinking. */
+	 
 	ASSERT3U(bvphys->bvp_size, <=, brtvd->bv_size);
 
-	/*
-	 * If VDEV grew, we will leave new bv_entcount[] entries zeroed out.
-	 */
+	 
 	error = dmu_read(brt->brt_mos, brtvd->bv_mos_brtvdev, 0,
 	    MIN(brtvd->bv_size, bvphys->bvp_size) * sizeof (uint16_t),
 	    brtvd->bv_entcount, DMU_READ_NO_PREFETCH);
@@ -726,7 +490,7 @@ brt_vdev_lookup(brt_t *brt, brt_vdev_t *brtvd, const brt_entry_t *bre)
 
 	idx = bre->bre_offset / brt->brt_rangesize;
 	if (brtvd->bv_entcount != NULL && idx < brtvd->bv_size) {
-		/* VDEV wasn't expanded. */
+		 
 		return (brt_vdev_entcount_get(brtvd, idx) > 0);
 	}
 
@@ -756,7 +520,7 @@ brt_vdev_addref(brt_t *brt, brt_vdev_t *brtvd, const brt_entry_t *bre,
 
 	idx = bre->bre_offset / brt->brt_rangesize;
 	if (idx >= brtvd->bv_size) {
-		/* VDEV has been expanded. */
+		 
 		brt_vdev_realloc(brt, brtvd);
 	}
 
@@ -822,9 +586,7 @@ brt_vdev_sync(brt_t *brt, brt_vdev_t *brtvd, dmu_tx_t *tx)
 	VERIFY0(dmu_bonus_hold(brt->brt_mos, brtvd->bv_mos_brtvdev, FTAG, &db));
 
 	if (brtvd->bv_entcount_dirty) {
-		/*
-		 * TODO: Walk brtvd->bv_bitmap and write only the dirty blocks.
-		 */
+		 
 		dmu_write(brt->brt_mos, brtvd->bv_mos_brtvdev, 0,
 		    brtvd->bv_size * sizeof (brtvd->bv_entcount[0]),
 		    brtvd->bv_entcount, tx);
@@ -925,10 +687,7 @@ brt_entry_lookup(brt_t *brt, brt_vdev_t *brtvd, brt_entry_t *bre)
 	if (!brt_vdev_lookup(brt, brtvd, bre))
 		return (SET_ERROR(ENOENT));
 
-	/*
-	 * Remember mos_entries object number. After we reacquire the BRT lock,
-	 * the brtvd pointer may be invalid.
-	 */
+	 
 	mos_entries = brtvd->bv_mos_entries;
 	if (mos_entries == 0)
 		return (SET_ERROR(ENOENT));
@@ -1017,11 +776,7 @@ brt_entry_remove(brt_t *brt, brt_vdev_t *brtvd, brt_entry_t *bre, dmu_tx_t *tx)
 	return (error);
 }
 
-/*
- * Return TRUE if we _can_ have BRT entry for this bp. It might be false
- * positive, but gives us quick answer if we should look into BRT, which
- * may require reads and thus will be more expensive.
- */
+ 
 boolean_t
 brt_maybe_exists(spa_t *spa, const blkptr_t *bp)
 {
@@ -1240,7 +995,7 @@ brt_entry_addref(brt_t *brt, const blkptr_t *bp)
 	if (brtvd == NULL) {
 		ASSERT3U(vdevid, >=, brt->brt_nvdevs);
 
-		/* New VDEV was added. */
+		 
 		brt_vdevs_expand(brt, vdevid + 1);
 		brtvd = brt_vdev(brt, vdevid);
 	}
@@ -1252,21 +1007,15 @@ brt_entry_addref(brt_t *brt, const blkptr_t *bp)
 	if (bre != NULL) {
 		BRTSTAT_BUMP(brt_addref_entry_in_memory);
 	} else {
-		/*
-		 * brt_entry_lookup() may drop the BRT (read) lock and
-		 * reacquire it (write).
-		 */
+		 
 		error = brt_entry_lookup(brt, brtvd, &bre_search);
-		/* bre_search now contains correct bre_refcount */
+		 
 		ASSERT(error == 0 || error == ENOENT);
 		if (error == 0)
 			BRTSTAT_BUMP(brt_addref_entry_on_disk);
 		else
 			BRTSTAT_BUMP(brt_addref_entry_not_on_disk);
-		/*
-		 * When the BRT lock was dropped, brt_vdevs[] may have been
-		 * expanded and reallocated, we need to update brtvd's pointer.
-		 */
+		 
 		brtvd = brt_vdev(brt, vdevid);
 		ASSERT(brtvd != NULL);
 
@@ -1277,10 +1026,7 @@ brt_entry_addref(brt_t *brt, const blkptr_t *bp)
 			avl_insert(&brtvd->bv_tree, bre, where);
 			brt->brt_nentries++;
 		} else {
-			/*
-			 * The entry was added when the BRT lock was dropped in
-			 * brt_entry_lookup().
-			 */
+			 
 			BRTSTAT_BUMP(brt_addref_entry_read_lost_race);
 			bre = racebre;
 		}
@@ -1291,7 +1037,7 @@ brt_entry_addref(brt_t *brt, const blkptr_t *bp)
 	brt_unlock(brt);
 }
 
-/* Return TRUE if block should be freed immediately. */
+ 
 boolean_t
 brt_entry_decref(spa_t *spa, const blkptr_t *bp)
 {
@@ -1318,16 +1064,11 @@ brt_entry_decref(spa_t *spa, const blkptr_t *bp)
 		BRTSTAT_BUMP(brt_decref_entry_not_in_memory);
 	}
 
-	/*
-	 * brt_entry_lookup() may drop the BRT lock and reacquire it.
-	 */
+	 
 	error = brt_entry_lookup(brt, brtvd, &bre_search);
-	/* bre_search now contains correct bre_refcount */
+	 
 	ASSERT(error == 0 || error == ENOENT);
-	/*
-	 * When the BRT lock was dropped, brt_vdevs[] may have been expanded
-	 * and reallocated, we need to update brtvd's pointer.
-	 */
+	 
 	brtvd = brt_vdev(brt, vdevid);
 	ASSERT(brtvd != NULL);
 
@@ -1339,10 +1080,7 @@ brt_entry_decref(spa_t *spa, const blkptr_t *bp)
 
 	racebre = avl_find(&brtvd->bv_tree, &bre_search, &where);
 	if (racebre != NULL) {
-		/*
-		 * The entry was added when the BRT lock was dropped in
-		 * brt_entry_lookup().
-		 */
+		 
 		BRTSTAT_BUMP(brt_decref_entry_read_lost_race);
 		bre = racebre;
 		goto out;
@@ -1356,9 +1094,7 @@ brt_entry_decref(spa_t *spa, const blkptr_t *bp)
 
 out:
 	if (bre == NULL) {
-		/*
-		 * This is a free of a regular (not cloned) block.
-		 */
+		 
 		brt_unlock(brt);
 		BRTSTAT_BUMP(brt_decref_no_entry);
 		return (B_TRUE);
@@ -1489,7 +1225,7 @@ brt_pending_add(spa_t *spa, const blkptr_t *bp, dmu_tx_t *tx)
 		ASSERT(bpe == NULL);
 	}
 
-	/* Prefetch BRT entry, as we will need it in the syncing context. */
+	 
 	brt_prefetch(brt, bp);
 }
 
@@ -1513,7 +1249,7 @@ brt_pending_remove(spa_t *spa, const blkptr_t *bp, dmu_tx_t *tx)
 	mutex_enter(pending_lock);
 
 	bpe = avl_find(pending_tree, &bpe_search, NULL);
-	/* I believe we should always find bpe when this function is called. */
+	 
 	if (bpe != NULL) {
 		ASSERT(bpe->bpe_count > 0);
 
@@ -1551,12 +1287,7 @@ brt_pending_apply(spa_t *spa, uint64_t txg)
 		mutex_exit(pending_lock);
 
 		for (int i = 0; i < bpe->bpe_count; i++) {
-			/*
-			 * If the block has DEDUP bit set, it means that it
-			 * already exists in the DEDUP table, so we can just
-			 * use that instead of creating new entry in
-			 * the BRT table.
-			 */
+			 
 			if (BP_GET_DEDUP(&bpe->bpe_bp)) {
 				added_to_ddt = ddt_addref(spa, &bpe->bpe_bp);
 			} else {
@@ -1585,10 +1316,7 @@ brt_sync_entry(brt_t *brt, brt_vdev_t *brtvd, brt_entry_t *bre, dmu_tx_t *tx)
 
 		error = brt_entry_remove(brt, brtvd, bre, tx);
 		ASSERT(error == 0 || error == ENOENT);
-		/*
-		 * If error == ENOENT then zfs_clone_range() was done from a
-		 * removed (but opened) file (open(), unlink()).
-		 */
+		 
 		ASSERT(brt_entry_lookup(brt, brtvd, bre) == ENOENT);
 	} else {
 		VERIFY0(brt_entry_update(brt, brtvd, bre, tx));
@@ -1653,7 +1381,7 @@ brt_sync(spa_t *spa, uint64_t txg)
 	brt = spa->spa_brt;
 	brt_rlock(brt);
 	if (brt->brt_nentries == 0) {
-		/* No changes. */
+		 
 		brt_unlock(brt);
 		return;
 	}
@@ -1744,10 +1472,10 @@ brt_unload(spa_t *spa)
 	spa->spa_brt = NULL;
 }
 
-/* BEGIN CSTYLED */
+ 
 ZFS_MODULE_PARAM(zfs_brt, zfs_brt_, prefetch, INT, ZMOD_RW,
     "Enable prefetching of BRT entries");
 #ifdef ZFS_BRT_DEBUG
 ZFS_MODULE_PARAM(zfs_brt, zfs_brt_, debug, INT, ZMOD_RW, "BRT debug");
 #endif
-/* END CSTYLED */
+ 

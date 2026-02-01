@@ -1,9 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 #include <linux/module.h>
 #include <linux/kthread.h>
 #include <linux/irq_work.h>
 
-/* Must not be static to force gcc to consider these non constant */
+ 
 char *trace_printk_test_global_str =
 	"This is a dynamic string that will use trace_puts\n";
 
@@ -34,7 +34,7 @@ static int __init trace_printk_init(void)
 	trace_printk("This is a static string that will use trace_bputs\n");
 	trace_printk(trace_printk_test_global_str);
 
-	/* Kick off printing in irq context */
+	 
 	irq_work_queue(&irqwork);
 	irq_work_sync(&irqwork);
 

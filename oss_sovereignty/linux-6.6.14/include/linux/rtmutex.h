@@ -1,14 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * RT Mutexes: blocking mutual exclusion locks with PI support
- *
- * started by Ingo Molnar and Thomas Gleixner:
- *
- *  Copyright (C) 2004-2006 Red Hat, Inc., Ingo Molnar <mingo@redhat.com>
- *  Copyright (C) 2006, Timesys Corp., Thomas Gleixner <tglx@timesys.com>
- *
- * This file contains the public data structure and API definitions.
- */
+ 
+ 
 
 #ifndef __LINUX_RT_MUTEX_H
 #define __LINUX_RT_MUTEX_H
@@ -18,7 +9,7 @@
 #include <linux/rbtree_types.h>
 #include <linux/spinlock_types_raw.h>
 
-extern int max_lock_depth; /* for sysctl */
+extern int max_lock_depth;  
 
 struct rt_mutex_base {
 	raw_spinlock_t		wait_lock;
@@ -33,12 +24,7 @@ struct rt_mutex_base {
 	.owner = NULL							\
 }
 
-/**
- * rt_mutex_base_is_locked - is the rtmutex locked
- * @lock: the mutex to be queried
- *
- * Returns true if the mutex is locked, false if unlocked.
- */
+ 
 static inline bool rt_mutex_base_is_locked(struct rt_mutex_base *lock)
 {
 	return READ_ONCE(lock->owner) != NULL;
@@ -46,14 +32,7 @@ static inline bool rt_mutex_base_is_locked(struct rt_mutex_base *lock)
 
 extern void rt_mutex_base_init(struct rt_mutex_base *rtb);
 
-/**
- * The rt_mutex structure
- *
- * @wait_lock:	spinlock to protect the structure
- * @waiters:	rbtree root to enqueue waiters in priority order;
- *              caches top-waiter (leftmost node).
- * @owner:	the mutex owner
- */
+ 
 struct rt_mutex {
 	struct rt_mutex_base	rtmutex;
 #ifdef CONFIG_DEBUG_LOCK_ALLOC

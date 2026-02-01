@@ -1,49 +1,26 @@
-/* Test of locking in multithreaded situations.
-   Copyright (C) 2005, 2008-2023 Free Software Foundation, Inc.
-
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* Written by Bruno Haible <bruno@clisp.org>, 2005.  */
+ 
 
 #include <config.h>
 
 #if USE_ISOC_THREADS || USE_POSIX_THREADS || USE_ISOC_AND_POSIX_THREADS || USE_WINDOWS_THREADS
 
-/* Whether to enable locking.
-   Uncomment this to get a test program without locking, to verify that
-   it crashes.  */
+ 
 #define ENABLE_LOCKING 1
 
-/* Which tests to perform.
-   Uncomment some of these, to verify that all tests crash if no locking
-   is enabled.  */
+ 
 #define DO_TEST_LOCK 1
 #define DO_TEST_RECURSIVE_LOCK 1
 
-/* Whether to help the scheduler through explicit sched_yield().
-   Uncomment this to see if the operating system has a fair scheduler.  */
+ 
 #define EXPLICIT_YIELD 1
 
-/* Whether to print debugging messages.  */
+ 
 #define ENABLE_DEBUGGING 0
 
-/* Number of simultaneous threads.  */
+ 
 #define THREAD_COUNT 10
 
-/* Number of operations performed in each thread.
-   This is quite high, because with a smaller count, say 5000, we often get
-   an "OK" result even without ENABLE_LOCKING (on Linux/x86).  */
+ 
 #define REPEAT_COUNT 50000
 
 #include <pthread.h>
@@ -76,11 +53,9 @@
 # define yield()
 #endif
 
-/* Returns a reference to the current thread as a pointer, for debugging.  */
+ 
 #if defined __MVS__
-  /* On IBM z/OS, pthread_t is a struct with an 8-byte '__' field.
-     The first three bytes of this field appear to uniquely identify a
-     pthread_t, though not necessarily representing a pointer.  */
+   
 # define pthread_self_pointer() (*((void **) pthread_self ().__))
 #else
 # define pthread_self_pointer() ((void *) (uintptr_t) pthread_self ())
@@ -109,11 +84,9 @@ check_accounts (void)
 }
 
 
-/* ------------------- Test normal (non-recursive) locks ------------------- */
+ 
 
-/* Test normal locks by having several bank accounts and several threads
-   which shuffle around money between the accounts and another thread
-   checking that all the money is still there.  */
+ 
 
 static pthread_mutex_t my_lock;
 
@@ -180,19 +153,19 @@ test_pthread_mutex_normal (void)
   pthread_t checkerthread;
   pthread_t threads[THREAD_COUNT];
 
-  /* Initialization.  */
+   
   for (i = 0; i < ACCOUNT_COUNT; i++)
     account[i] = 1000;
   init_atomic_int (&lock_checker_done);
   set_atomic_int_value (&lock_checker_done, 0);
 
-  /* Spawn the threads.  */
+   
   ASSERT (pthread_create (&checkerthread, NULL, lock_checker_thread, NULL)
           == 0);
   for (i = 0; i < THREAD_COUNT; i++)
     ASSERT (pthread_create (&threads[i], NULL, lock_mutator_thread, NULL) == 0);
 
-  /* Wait for the threads to terminate.  */
+   
   for (i = 0; i < THREAD_COUNT; i++)
     ASSERT (pthread_join (threads[i], NULL) == 0);
   set_atomic_int_value (&lock_checker_done, 1);
@@ -201,11 +174,9 @@ test_pthread_mutex_normal (void)
 }
 
 
-/* -------------------------- Test recursive locks -------------------------- */
+ 
 
-/* Test recursive locks by having several bank accounts and several threads
-   which shuffle around money between the accounts (recursively) and another
-   thread checking that all the money is still there.  */
+ 
 
 static pthread_mutex_t my_reclock;
 
@@ -224,7 +195,7 @@ recshuffle (void)
   account[i1] += value;
   account[i2] -= value;
 
-  /* Recursive with probability 0.5.  */
+   
   if (((unsigned int) rand () >> 3) % 2)
     recshuffle ();
 
@@ -282,20 +253,20 @@ test_pthread_mutex_recursive (void)
   pthread_t checkerthread;
   pthread_t threads[THREAD_COUNT];
 
-  /* Initialization.  */
+   
   for (i = 0; i < ACCOUNT_COUNT; i++)
     account[i] = 1000;
   init_atomic_int (&reclock_checker_done);
   set_atomic_int_value (&reclock_checker_done, 0);
 
-  /* Spawn the threads.  */
+   
   ASSERT (pthread_create (&checkerthread, NULL, reclock_checker_thread, NULL)
           == 0);
   for (i = 0; i < THREAD_COUNT; i++)
     ASSERT (pthread_create (&threads[i], NULL, reclock_mutator_thread, NULL)
             == 0);
 
-  /* Wait for the threads to terminate.  */
+   
   for (i = 0; i < THREAD_COUNT; i++)
     ASSERT (pthread_join (threads[i], NULL) == 0);
   set_atomic_int_value (&reclock_checker_done, 1);
@@ -304,14 +275,13 @@ test_pthread_mutex_recursive (void)
 }
 
 
-/* -------------------------------------------------------------------------- */
+ 
 
 int
 main ()
 {
 #if HAVE_DECL_ALARM
-  /* Declare failure if test takes too long, by using default abort
-     caused by SIGALRM.  */
+   
   int alarm_value = 600;
   signal (SIGALRM, SIG_DFL);
   alarm (alarm_value);
@@ -351,7 +321,7 @@ main ()
 
 #else
 
-/* No multithreading available.  */
+ 
 
 #include <stdio.h>
 

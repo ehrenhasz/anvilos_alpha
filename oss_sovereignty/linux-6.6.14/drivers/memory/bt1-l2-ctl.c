@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2020 BAIKAL ELECTRONICS, JSC
- *
- * Authors:
- *   Serge Semin <Sergey.Semin@baikalelectronics.ru>
- *
- * Baikal-T1 CM2 L2-cache Control Block driver.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -34,34 +27,21 @@
 #define L2_CTL_STALL_SET_DELAY_US	1
 #define L2_CTL_STALL_SET_TOUT_US	1000
 
-/*
- * struct l2_ctl - Baikal-T1 L2 Control block private data.
- * @dev: Pointer to the device structure.
- * @sys_regs: Baikal-T1 System Controller registers map.
- */
+ 
 struct l2_ctl {
 	struct device *dev;
 
 	struct regmap *sys_regs;
 };
 
-/*
- * enum l2_ctl_stall - Baikal-T1 L2-cache-RAM stall identifier.
- * @L2_WSSTALL: Way-select latency.
- * @L2_TAGSTALL: Tag latency.
- * @L2_DATASTALL: Data latency.
- */
+ 
 enum l2_ctl_stall {
 	L2_WS_STALL,
 	L2_TAG_STALL,
 	L2_DATA_STALL
 };
 
-/*
- * struct l2_ctl_device_attribute - Baikal-T1 L2-cache device attribute.
- * @dev_attr: Actual sysfs device attribute.
- * @id: L2-cache stall field identifier.
- */
+ 
 struct l2_ctl_device_attribute {
 	struct device_attribute dev_attr;
 	enum l2_ctl_stall id;

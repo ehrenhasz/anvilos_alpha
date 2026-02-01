@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <stddef.h>
 #include <stdint.h>
 #include <stdbool.h>
@@ -18,8 +18,8 @@
 # define ctx_ptr(field)		(void *)(long)(field)
 #endif
 
-#define ip4_src			0xac100164 /* 172.16.1.100 */
-#define ip4_dst			0xac100264 /* 172.16.2.100 */
+#define ip4_src			0xac100164  
+#define ip4_dst			0xac100264  
 
 #define ip6_src			{ 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, \
 				  0x00, 0x01, 0xde, 0xad, 0xbe, 0xef, 0xca, 0xfe }

@@ -1,34 +1,4 @@
-/*
- * Copyright (c) 2013-2015, Mellanox Technologies. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 
 #include <linux/kernel.h>
 #include <linux/random.h>
@@ -87,7 +57,7 @@ static bool sensor_pci_not_working(struct mlx5_core_dev *dev)
 	struct mlx5_core_health *health = &dev->priv.health;
 	struct health_buffer __iomem *h = health->health;
 
-	/* Offline PCI reads return 0xffffffff */
+	 
 	return (ioread32be(&h->fw_ver) == 0xffffffff);
 }
 
@@ -134,10 +104,7 @@ static int lock_sem_sw_reset(struct mlx5_core_dev *dev, bool lock)
 	if (!mlx5_core_is_pf(dev))
 		return -EBUSY;
 
-	/* Try to lock GW access, this stage doesn't return
-	 * EBUSY because locked GW does not mean that other PF
-	 * already started the reset.
-	 */
+	 
 	ret = mlx5_vsc_gw_lock(dev);
 	if (ret == -EBUSY)
 		return -EINVAL;
@@ -145,15 +112,12 @@ static int lock_sem_sw_reset(struct mlx5_core_dev *dev, bool lock)
 		return ret;
 
 	state = lock ? MLX5_VSC_LOCK : MLX5_VSC_UNLOCK;
-	/* At this stage, if the return status == EBUSY, then we know
-	 * for sure that another PF started the reset, so don't allow
-	 * another reset.
-	 */
+	 
 	ret = mlx5_vsc_sem_set_space(dev, MLX5_SEMAPHORE_SW_RESET, state);
 	if (ret)
 		mlx5_core_warn(dev, "Failed to lock SW reset semaphore\n");
 
-	/* Unlock GW access */
+	 
 	mlx5_vsc_gw_unlock(dev);
 
 	return ret;
@@ -168,11 +132,7 @@ static bool reset_fw_if_needed(struct mlx5_core_dev *dev)
 	if (!supported)
 		return false;
 
-	/* The reset only needs to be issued by one PF. The health buffer is
-	 * shared between all functions, and will be cleared during a reset.
-	 * Check again to avoid a redundant 2nd reset. If the fatal errors was
-	 * PCI related a reset won't help.
-	 */
+	 
 	fatal_error = mlx5_health_check_fatal_sensors(dev);
 	if (fatal_error == MLX5_SENSOR_PCI_COMM_ERR ||
 	    fatal_error == MLX5_SENSOR_NIC_DISABLED ||
@@ -182,9 +142,7 @@ static bool reset_fw_if_needed(struct mlx5_core_dev *dev)
 	}
 
 	mlx5_core_warn(dev, "Issuing FW Reset\n");
-	/* Write the NIC interface field to initiate the reset, the command
-	 * interface address also resides here, don't overwrite it.
-	 */
+	 
 	mlx5_set_nic_state(dev, MLX5_NIC_IFC_SW_RESET);
 
 	return true;
@@ -192,7 +150,7 @@ static bool reset_fw_if_needed(struct mlx5_core_dev *dev)
 
 static void enter_error_state(struct mlx5_core_dev *dev, bool force)
 {
-	if (mlx5_health_check_fatal_sensors(dev) || force) { /* protected state setting */
+	if (mlx5_health_check_fatal_sensors(dev) || force) {  
 		dev->state = MLX5_DEVICE_STATE_INTERNAL_ERROR;
 		mlx5_cmd_flush(dev);
 	}
@@ -204,7 +162,7 @@ void mlx5_enter_error_state(struct mlx5_core_dev *dev, bool force)
 {
 	bool err_detected = false;
 
-	/* Mark the device as fatal in order to abort FW commands */
+	 
 	if ((mlx5_health_check_fatal_sensors(dev) || force) &&
 	    dev->state == MLX5_DEVICE_STATE_UP) {
 		dev->state = MLX5_DEVICE_STATE_INTERNAL_ERROR;
@@ -212,7 +170,7 @@ void mlx5_enter_error_state(struct mlx5_core_dev *dev, bool force)
 	}
 	mutex_lock(&dev->intf_state_mutex);
 	if (!err_detected && dev->state == MLX5_DEVICE_STATE_INTERNAL_ERROR)
-		goto unlock;/* a previous error is still being handled */
+		goto unlock; 
 
 	enter_error_state(dev, force);
 unlock:
@@ -231,19 +189,19 @@ void mlx5_error_sw_reset(struct mlx5_core_dev *dev)
 	mlx5_core_err(dev, "start\n");
 
 	if (mlx5_health_check_fatal_sensors(dev) == MLX5_SENSOR_FW_SYND_RFR) {
-		/* Get cr-dump and reset FW semaphore */
+		 
 		lock = lock_sem_sw_reset(dev, true);
 
 		if (lock == -EBUSY) {
 			delay_ms = mlx5_tout_ms(dev, FULL_CRDUMP);
 			goto recover_from_sw_reset;
 		}
-		/* Execute SW reset */
+		 
 		reset_fw_if_needed(dev);
 	}
 
 recover_from_sw_reset:
-	/* Recover from SW reset */
+	 
 	end = jiffies + msecs_to_jiffies(delay_ms);
 	do {
 		if (mlx5_get_nic_state(dev) == MLX5_NIC_IFC_DISABLED)
@@ -257,7 +215,7 @@ recover_from_sw_reset:
 			mlx5_get_nic_state(dev), delay_ms);
 	}
 
-	/* Release FW semaphore if you are the lock owner */
+	 
 	if (!lock)
 		lock_sem_sw_reset(dev, false);
 
@@ -285,14 +243,7 @@ static void mlx5_handle_bad_state(struct mlx5_core_dev *dev)
 		break;
 
 	case MLX5_NIC_IFC_SW_RESET:
-		/* The IFC mode field is 3 bits, so it will read 0x7 in 2 cases:
-		 * 1. PCI has been disabled (ie. PCI-AER, PF driver unloaded
-		 *    and this is a VF), this is not recoverable by SW reset.
-		 *    Logging of this is handled elsewhere.
-		 * 2. FW reset has been issued by another function, driver can
-		 *    be reloaded to recover after the mode switches to
-		 *    MLX5_NIC_IFC_DISABLED.
-		 */
+		 
 		if (dev->priv.health.fatal_error != MLX5_SENSOR_PCI_COMM_ERR)
 			mlx5_core_warn(dev, "NIC SW reset in progress\n");
 		break;
@@ -407,7 +358,7 @@ static void print_health_info(struct mlx5_core_dev *dev)
 	int severity;
 	int i;
 
-	/* If the syndrome is 0, the device is OK and no need to print buffer */
+	 
 	if (!ioread8(&h->synd))
 		return;
 
@@ -685,11 +636,7 @@ static void mlx5_fw_fatal_reporter_err_work(struct work_struct *work)
 	fw_reporter_ctx.miss_counter = health->miss_counter;
 	if (devlink_health_report(health->fw_fatal_reporter,
 				  "FW fatal error reported", &fw_reporter_ctx) == -ECANCELED) {
-		/* If recovery wasn't performed, due to grace period,
-		 * unload the driver. This ensures that the driver
-		 * closes all its resources and it is not subjected to
-		 * requests from the kernel.
-		 */
+		 
 		mlx5_core_err(dev, "Driver is in error state. Unloading\n");
 		mlx5_unload_one(dev, false);
 	}
@@ -717,7 +664,7 @@ void mlx5_fw_reporters_create(struct mlx5_core_dev *dev)
 	} else if (mlx5_core_is_pf(dev)) {
 		grace_period = MLX5_FW_REPORTER_PF_GRACEFUL_PERIOD;
 	} else {
-		/* VF or SF */
+		 
 		grace_period = MLX5_FW_REPORTER_DEFAULT_GRACEFUL_PERIOD;
 	}
 

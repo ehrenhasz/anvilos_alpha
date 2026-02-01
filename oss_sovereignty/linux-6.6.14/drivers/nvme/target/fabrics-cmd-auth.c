@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * NVMe over Fabrics DH-HMAC-CHAP authentication command handling.
- * Copyright (c) 2020 Hannes Reinecke, SUSE Software Solutions.
- * All rights reserved.
- */
+
+ 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 #include <linux/blkdev.h>
 #include <linux/random.h>
@@ -25,7 +21,7 @@ static void nvmet_auth_expired_work(struct work_struct *work)
 
 void nvmet_auth_sq_init(struct nvmet_sq *sq)
 {
-	/* Initialize in-band authentication */
+	 
 	INIT_DELAYED_WORK(&sq->auth_expired_work, nvmet_auth_expired_work);
 	sq->authenticated = false;
 	sq->dhchap_step = NVME_AUTH_DHCHAP_MESSAGE_NEGOTIATE;
@@ -236,7 +232,7 @@ void nvmet_execute_auth_send(struct nvmet_req *req)
 		goto done_failure1;
 	if (data->auth_type == NVME_AUTH_COMMON_MESSAGES) {
 		if (data->auth_id == NVME_AUTH_DHCHAP_MESSAGE_NEGOTIATE) {
-			/* Restart negotiation */
+			 
 			pr_debug("%s: ctrl %d qid %d reset negotiation\n", __func__,
 				 ctrl->cntlid, req->sq->qid);
 			if (!req->sq->qid) {
@@ -251,7 +247,7 @@ void nvmet_execute_auth_send(struct nvmet_req *req)
 			req->sq->dhchap_step = NVME_AUTH_DHCHAP_MESSAGE_NEGOTIATE;
 		} else if (data->auth_id != req->sq->dhchap_step)
 			goto done_failure1;
-		/* Validate negotiation parameters */
+		 
 		status = nvmet_auth_negotiate(req, d);
 		if (status == 0)
 			req->sq->dhchap_step =
@@ -341,7 +337,7 @@ done:
 				 auth_expire_secs * HZ);
 		goto complete;
 	}
-	/* Final states, clear up variables */
+	 
 	nvmet_auth_sq_free(req->sq);
 	if (req->sq->dhchap_step == NVME_AUTH_DHCHAP_MESSAGE_FAILURE2)
 		nvmet_ctrl_fatal_error(ctrl);

@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-//
-// Copyright (c) 2022 MediaTek Inc.
-// Author: Chun-Jie Chen <chun-jie.chen@mediatek.com>
+
+
+
+
 
 #include <linux/clk-provider.h>
 #include <linux/platform_device.h>
@@ -53,7 +53,7 @@ static const struct of_device_id of_match_clk_mt8186_img[] = {
 		.compatible = "mediatek,mt8186-imgsys2",
 		.data = &img2_desc,
 	}, {
-		/* sentinel */
+		 
 	}
 };
 MODULE_DEVICE_TABLE(of, of_match_clk_mt8186_img);

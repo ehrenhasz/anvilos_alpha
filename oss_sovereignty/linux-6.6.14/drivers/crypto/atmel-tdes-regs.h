@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef __ATMEL_TDES_REGS_H__
 #define __ATMEL_TDES_REGS_H__
 
@@ -89,4 +89,4 @@
 #define TDES_PTSR_RXTEN			(1 << 0)
 #define TDES_PTSR_TXTEN			(1 << 8)
 
-#endif /* __ATMEL_TDES_REGS_H__ */
+#endif  

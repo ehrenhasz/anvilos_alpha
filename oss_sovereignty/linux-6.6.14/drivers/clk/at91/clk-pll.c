@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  Copyright (C) 2013 Boris BREZILLON <b.brezillon@overkiz.com>
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/clkdev.h>
@@ -135,16 +133,11 @@ static long clk_pll_get_best_div_mul(struct clk_pll *pll, unsigned long rate,
 	unsigned long bestmul;
 	int i = 0;
 
-	/* Check if parent_rate is a valid input rate */
+	 
 	if (parent_rate < characteristics->input.min)
 		return -ERANGE;
 
-	/*
-	 * Calculate minimum divider based on the minimum multiplier, the
-	 * parent_rate and the requested rate.
-	 * Should always be 2 according to the input and output characteristics
-	 * of the PLL blocks.
-	 */
+	 
 	mindiv = (parent_rate * PLL_MUL_MIN) / rate;
 	if (!mindiv)
 		mindiv = 1;
@@ -158,28 +151,18 @@ static long clk_pll_get_best_div_mul(struct clk_pll *pll, unsigned long rate,
 			mindiv = tmpdiv;
 	}
 
-	/*
-	 * Calculate the maximum divider which is limited by PLL register
-	 * layout (limited by the MUL or DIV field size).
-	 */
+	 
 	maxdiv = DIV_ROUND_UP(parent_rate * PLL_MUL_MAX(layout), rate);
 	if (maxdiv > PLL_DIV_MAX)
 		maxdiv = PLL_DIV_MAX;
 
-	/*
-	 * Iterate over the acceptable divider values to find the best
-	 * divider/multiplier pair (the one that generates the closest
-	 * rate to the requested one).
-	 */
+	 
 	for (tmpdiv = mindiv; tmpdiv <= maxdiv; tmpdiv++) {
 		unsigned long remainder;
 		unsigned long tmprate;
 		unsigned long tmpmul;
 
-		/*
-		 * Calculate the multiplier associated with the current
-		 * divider that provide the closest rate to the requested one.
-		 */
+		 
 		tmpmul = DIV_ROUND_CLOSEST(rate, parent_rate / tmpdiv);
 		tmprate = (parent_rate / tmpdiv) * tmpmul;
 		if (tmprate > rate)
@@ -187,11 +170,7 @@ static long clk_pll_get_best_div_mul(struct clk_pll *pll, unsigned long rate,
 		else
 			remainder = rate - tmprate;
 
-		/*
-		 * Compare the remainder with the best remainder found until
-		 * now and elect a new best multiplier/divider pair if the
-		 * current remainder is smaller than the best one.
-		 */
+		 
 		if (remainder < bestremainder) {
 			bestremainder = remainder;
 			bestdiv = tmpdiv;
@@ -199,19 +178,16 @@ static long clk_pll_get_best_div_mul(struct clk_pll *pll, unsigned long rate,
 			bestrate = tmprate;
 		}
 
-		/*
-		 * We've found a perfect match!
-		 * Stop searching now and use this multiplier/divider pair.
-		 */
+		 
 		if (!remainder)
 			break;
 	}
 
-	/* We haven't found any multiplier/divider pair => return -ERANGE */
+	 
 	if (bestrate < 0)
 		return bestrate;
 
-	/* Check if bestrate is a valid output rate  */
+	 
 	for (i = 0; i < characteristics->num_output; i++) {
 		if (bestrate >= characteristics->output[i].min &&
 		    bestrate <= characteristics->output[i].max)

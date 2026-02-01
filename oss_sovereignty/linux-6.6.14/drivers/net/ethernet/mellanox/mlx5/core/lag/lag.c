@@ -1,34 +1,4 @@
-/*
- * Copyright (c) 2016, Mellanox Technologies. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 
 #include <linux/netdevice.h>
 #include <net/bonding.h>
@@ -48,10 +18,7 @@ enum {
 	MLX5_LAG_EGRESS_PORT_2,
 };
 
-/* General purpose, use for short periods of time.
- * Beware of lock dependencies (preferably, no locks should be acquired
- * under it).
- */
+ 
 static DEFINE_SPINLOCK(lag_lock);
 
 static int get_port_sel_mode(enum mlx5_lag_mode mode, unsigned long flags)
@@ -303,12 +270,7 @@ static bool __mlx5_lag_is_sriov(struct mlx5_lag *ldev)
 	return ldev->mode == MLX5_LAG_MODE_SRIOV;
 }
 
-/* Create a mapping between steering slots and active ports.
- * As we have ldev->buckets slots per port first assume the native
- * mapping should be used.
- * If there are ports that are disabled fill the relevant slots
- * with mapping that points to active ports.
- */
+ 
 static void mlx5_infer_tx_affinity_mapping(struct lag_tracker *tracker,
 					   u8 num_ports,
 					   u8 buckets,
@@ -331,21 +293,19 @@ static void mlx5_infer_tx_affinity_mapping(struct lag_tracker *tracker,
 			disabled[disabled_ports_num++] = i;
 	}
 
-	/* Use native mapping by default where each port's buckets
-	 * point the native port: 1 1 1 .. 1 2 2 2 ... 2 3 3 3 ... 3 etc
-	 */
+	 
 	for (i = 0; i < num_ports; i++)
 		for (j = 0; j < buckets; j++) {
 			idx = i * buckets + j;
 			ports[idx] = MLX5_LAG_EGRESS_PORT_1 + i;
 		}
 
-	/* If all ports are disabled/enabled keep native mapping */
+	 
 	if (enabled_ports_num == num_ports ||
 	    disabled_ports_num == num_ports)
 		return;
 
-	/* Go over the disabled ports and for each assign a random active port */
+	 
 	for (i = 0; i < disabled_ports_num; i++) {
 		for (j = 0; j < buckets; j++) {
 			get_random_bytes(&rand, 4);
@@ -388,9 +348,7 @@ static void mlx5_lag_drop_rule_setup(struct mlx5_lag *ldev,
 	int err;
 	int i;
 
-	/* First delete the current drop rule so there won't be any dropped
-	 * packets
-	 */
+	 
 	mlx5_lag_drop_rule_cleanup(ldev);
 
 	if (!ldev->tracker.has_inactive)
@@ -882,7 +840,7 @@ static void mlx5_do_bond(struct mlx5_lag *ldev)
 	if (!mlx5_lag_is_ready(ldev)) {
 		do_bond = false;
 	} else {
-		/* VF LAG is in multipath mode, ignore bond change requests */
+		 
 		if (mlx5_lag_is_multipath(dev0))
 			return;
 
@@ -994,11 +952,7 @@ static int mlx5_handle_changeupper_event(struct mlx5_lag *ldev,
 	if (info->linking)
 		lag_upper_info = info->upper_info;
 
-	/* The event may still be of interest if the slave does not belong to
-	 * us, but is enslaved to a master which has one or more of our netdevs
-	 * as slaves (e.g., if a new slave is added to a master that bonds two
-	 * of our netdevs, we should unbond).
-	 */
+	 
 	rcu_read_lock();
 	for_each_netdev_in_bond_rcu(upper, ndev_tmp) {
 		idx = mlx5_lag_dev_get_netdev_idx(ldev, ndev_tmp);
@@ -1013,7 +967,7 @@ static int mlx5_handle_changeupper_event(struct mlx5_lag *ldev,
 	}
 	rcu_read_unlock();
 
-	/* None of this lagdev's netdevs are slaves of this master. */
+	 
 	if (!(bond_status & GENMASK(ldev->ports - 1, 0)))
 		return 0;
 
@@ -1023,14 +977,11 @@ static int mlx5_handle_changeupper_event(struct mlx5_lag *ldev,
 	}
 
 	tracker->has_inactive = has_inactive;
-	/* Determine bonding status:
-	 * A device is considered bonded if both its physical ports are slaves
-	 * of the same lag master, and only them.
-	 */
+	 
 	is_in_lag = num_slaves == ldev->ports &&
 		bond_status == GENMASK(ldev->ports - 1, 0);
 
-	/* Lag mode must be activebackup or hash. */
+	 
 	mode_supported = tracker->tx_type == NETDEV_LAG_TX_TYPE_ACTIVEBACKUP ||
 			 tracker->tx_type == NETDEV_LAG_TX_TYPE_HASH;
 
@@ -1068,9 +1019,7 @@ static int mlx5_handle_changelowerstate_event(struct mlx5_lag *ldev,
 	if (idx < 0)
 		return 0;
 
-	/* This information is used to determine virtual to physical
-	 * port mapping.
-	 */
+	 
 	lag_lower_info = info->lower_state_info;
 	if (!lag_lower_info)
 		return 0;
@@ -1112,7 +1061,7 @@ static int mlx5_handle_changeinfodata_event(struct mlx5_lag *ldev,
 	return 1;
 }
 
-/* this handler is always registered to netdev events */
+ 
 static int mlx5_lag_netdev_event(struct notifier_block *this,
 				 unsigned long event, void *ptr)
 {
@@ -1212,7 +1161,7 @@ static void mlx5_ldev_remove_mdev(struct mlx5_lag *ldev,
 	dev->priv.lag = NULL;
 }
 
-/* Must be called with intf_mutex held */
+ 
 static int __mlx5_lag_dev_add_mdev(struct mlx5_core_dev *dev)
 {
 	struct mlx5_lag *ldev = NULL;
@@ -1252,9 +1201,7 @@ void mlx5_lag_remove_mdev(struct mlx5_core_dev *dev)
 	if (!ldev)
 		return;
 
-	/* mdev is being removed, might as well remove debugfs
-	 * as early as possible.
-	 */
+	 
 	mlx5_ldev_remove_debugfs(dev->priv.dbg.lag_debugfs);
 recheck:
 	mutex_lock(&ldev->lock);

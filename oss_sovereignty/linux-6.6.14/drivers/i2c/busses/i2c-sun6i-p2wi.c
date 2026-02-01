@@ -1,26 +1,4 @@
-/*
- * P2WI (Push-Pull Two Wire Interface) bus driver.
- *
- * Author: Boris BREZILLON <boris.brezillon@free-electrons.com>
- *
- * This file is licensed under the terms of the GNU General Public License
- * version 2.  This program is licensed "as is" without any warranty of any
- * kind, whether express or implied.
- *
- * The P2WI controller looks like an SMBus controller which only supports byte
- * data transfers. But, it differs from standard SMBus protocol on several
- * aspects:
- * - it supports only one slave device, and thus drop the address field
- * - it adds a parity bit every 8bits of data
- * - only one read access is required to read a byte (instead of a write
- *   followed by a read access in standard SMBus protocol)
- * - there's no Ack bit after each byte transfer
- *
- * This means this bus cannot be used to interface with standard SMBus
- * devices (the only known device to support this interface is the AXP221
- * PMIC).
- *
- */
+ 
 #include <linux/clk.h>
 #include <linux/i2c.h>
 #include <linux/io.h>
@@ -31,7 +9,7 @@
 #include <linux/reset.h>
 
 
-/* P2WI registers */
+ 
 #define P2WI_CTRL		0x0
 #define P2WI_CCR		0x4
 #define P2WI_INTE		0x8
@@ -44,28 +22,28 @@
 #define P2WI_LCR		0x24
 #define P2WI_PMCR		0x28
 
-/* CTRL fields */
+ 
 #define P2WI_CTRL_START_TRANS		BIT(7)
 #define P2WI_CTRL_ABORT_TRANS		BIT(6)
 #define P2WI_CTRL_GLOBAL_INT_ENB	BIT(1)
 #define P2WI_CTRL_SOFT_RST		BIT(0)
 
-/* CLK CTRL fields */
+ 
 #define P2WI_CCR_SDA_OUT_DELAY(v)	(((v) & 0x7) << 8)
 #define P2WI_CCR_MAX_CLK_DIV		0xff
 #define P2WI_CCR_CLK_DIV(v)		((v) & P2WI_CCR_MAX_CLK_DIV)
 
-/* STATUS fields */
+ 
 #define P2WI_INTS_TRANS_ERR_ID(v)	(((v) >> 8) & 0xff)
 #define P2WI_INTS_LOAD_BSY		BIT(2)
 #define P2WI_INTS_TRANS_ERR		BIT(1)
 #define P2WI_INTS_TRANS_OVER		BIT(0)
 
-/* DATA LENGTH fields*/
+ 
 #define P2WI_DLEN_READ			BIT(4)
 #define P2WI_DLEN_DATA_LENGTH(v)	((v - 1) & 0x7)
 
-/* LINE CTRL fields*/
+ 
 #define P2WI_LCR_SCL_STATE		BIT(5)
 #define P2WI_LCR_SDA_STATE		BIT(4)
 #define P2WI_LCR_SCL_CTL		BIT(3)
@@ -73,7 +51,7 @@
 #define P2WI_LCR_SDA_CTL		BIT(1)
 #define P2WI_LCR_SDA_CTL_EN		BIT(0)
 
-/* PMU MODE CTRL fields */
+ 
 #define P2WI_PMCR_PMU_INIT_SEND		BIT(31)
 #define P2WI_PMCR_PMU_INIT_DATA(v)	(((v) & 0xff) << 16)
 #define P2WI_PMCR_PMU_MODE_REG(v)	(((v) & 0xff) << 8)
@@ -99,7 +77,7 @@ static irqreturn_t p2wi_interrupt(int irq, void *dev_id)
 	status = readl(p2wi->regs + P2WI_INTS);
 	p2wi->status = status;
 
-	/* Clear interrupts */
+	 
 	status &= (P2WI_INTS_LOAD_BSY | P2WI_INTS_TRANS_ERR |
 		   P2WI_INTS_TRANS_OVER);
 	writel(status, p2wi->regs + P2WI_INTS);
@@ -217,12 +195,7 @@ static int p2wi_probe(struct platform_device *pdev)
 
 	p2wi->slave_addr = -1;
 
-	/*
-	 * Authorize a p2wi node without any children to be able to use an
-	 * i2c-dev from userpace.
-	 * In this case the slave_addr is set to -1 and won't be checked when
-	 * launching a P2WI transfer.
-	 */
+	 
 	childnp = of_get_next_available_child(np, NULL);
 	if (childnp) {
 		ret = of_property_read_u32(childnp, "reg", &slave_addr);

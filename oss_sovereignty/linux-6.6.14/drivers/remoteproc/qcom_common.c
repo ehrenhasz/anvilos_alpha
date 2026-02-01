@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Qualcomm Peripheral Image Loader helpers
- *
- * Copyright (C) 2016 Linaro Ltd
- * Copyright (C) 2015 Sony Mobile Communications Inc
- * Copyright (c) 2012-2013, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/firmware.h>
 #include <linux/kernel.h>
@@ -33,14 +27,7 @@
 #define MINIDUMP_SS_ENCR_DONE		('D' << 24 | 'O' << 16 | 'N' << 8 | 'E' << 0)
 #define MINIDUMP_SS_ENABLED		('E' << 24 | 'N' << 16 | 'B' << 8 | 'L' << 0)
 
-/**
- * struct minidump_region - Minidump region
- * @name		: Name of the region to be dumped
- * @seq_num:		: Use to differentiate regions with same name.
- * @valid		: This entry to be dumped (if set to 1)
- * @address		: Physical address of region to be dumped
- * @size		: Size of the region
- */
+ 
 struct minidump_region {
 	char	name[MAX_REGION_NAME_LENGTH];
 	__le32	seq_num;
@@ -49,15 +36,7 @@ struct minidump_region {
 	__le64	size;
 };
 
-/**
- * struct minidump_subsystem - Subsystem's SMEM Table of content
- * @status : Subsystem toc init status
- * @enabled : if set to 1, this region would be copied during coredump
- * @encryption_status: Encryption status for this subsystem
- * @encryption_required : Decides to encrypt the subsystem regions or not
- * @region_count : Number of regions added in this subsystem toc
- * @regions_baseptr : regions base pointer of the subsystem
- */
+ 
 struct minidump_subsystem {
 	__le32	status;
 	__le32	enabled;
@@ -67,13 +46,7 @@ struct minidump_subsystem {
 	__le64	regions_baseptr;
 };
 
-/**
- * struct minidump_global_toc - Global Table of Content
- * @status : Global Minidump init status
- * @md_revision : Minidump revision
- * @enabled : Minidump enable status
- * @subsystems : Array of subsystems toc
- */
+ 
 struct minidump_global_toc {
 	__le32				status;
 	__le32				md_revision;
@@ -150,22 +123,19 @@ void qcom_minidump(struct rproc *rproc, unsigned int minidump_id,
 	struct minidump_subsystem *subsystem;
 	struct minidump_global_toc *toc;
 
-	/* Get Global minidump ToC*/
+	 
 	toc = qcom_smem_get(QCOM_SMEM_HOST_ANY, SBL_MINIDUMP_SMEM_ID, NULL);
 
-	/* check if global table pointer exists and init is set */
+	 
 	if (IS_ERR(toc) || !toc->status) {
 		dev_err(&rproc->dev, "Minidump TOC not found in SMEM\n");
 		return;
 	}
 
-	/* Get subsystem table of contents using the minidump id */
+	 
 	subsystem = &toc->subsystems[minidump_id];
 
-	/**
-	 * Collect minidump if SS ToC is valid and segment table
-	 * is initialized in memory and encryption status is set.
-	 */
+	 
 	if (subsystem->regions_baseptr == 0 ||
 	    le32_to_cpu(subsystem->status) != 1 ||
 	    le32_to_cpu(subsystem->enabled) != MINIDUMP_SS_ENABLED) {
@@ -177,10 +147,7 @@ void qcom_minidump(struct rproc *rproc, unsigned int minidump_id,
 		return;
 	}
 
-	/**
-	 * Clear out the dump segments populated by parse_fw before
-	 * re-populating them with minidump segments.
-	 */
+	 
 	rproc_coredump_cleanup(rproc);
 
 	ret = qcom_add_minidump_segments(rproc, subsystem, rproc_dumpfn_t);
@@ -218,12 +185,7 @@ static void glink_subdev_unprepare(struct rproc_subdev *subdev)
 	qcom_glink_ssr_notify(glink->ssr_name);
 }
 
-/**
- * qcom_add_glink_subdev() - try to add a GLINK subdevice to rproc
- * @rproc:	rproc handle to parent the subdevice
- * @glink:	reference to a GLINK subdev context
- * @ssr_name:	identifier of the associated remoteproc for ssr notifications
- */
+ 
 void qcom_add_glink_subdev(struct rproc *rproc, struct qcom_rproc_glink *glink,
 			   const char *ssr_name)
 {
@@ -246,11 +208,7 @@ void qcom_add_glink_subdev(struct rproc *rproc, struct qcom_rproc_glink *glink,
 }
 EXPORT_SYMBOL_GPL(qcom_add_glink_subdev);
 
-/**
- * qcom_remove_glink_subdev() - remove a GLINK subdevice from rproc
- * @rproc:	rproc handle
- * @glink:	reference to a GLINK subdev context
- */
+ 
 void qcom_remove_glink_subdev(struct rproc *rproc, struct qcom_rproc_glink *glink)
 {
 	if (!glink->node)
@@ -262,15 +220,7 @@ void qcom_remove_glink_subdev(struct rproc *rproc, struct qcom_rproc_glink *glin
 }
 EXPORT_SYMBOL_GPL(qcom_remove_glink_subdev);
 
-/**
- * qcom_register_dump_segments() - register segments for coredump
- * @rproc:	remoteproc handle
- * @fw:		firmware header
- *
- * Register all segments of the ELF in the remoteproc coredump segment list
- *
- * Return: 0 on success, negative errno on failure.
- */
+ 
 int qcom_register_dump_segments(struct rproc *rproc,
 				const struct firmware *fw)
 {
@@ -322,11 +272,7 @@ static void smd_subdev_stop(struct rproc_subdev *subdev, bool crashed)
 	smd->edge = NULL;
 }
 
-/**
- * qcom_add_smd_subdev() - try to add a SMD subdevice to rproc
- * @rproc:	rproc handle to parent the subdevice
- * @smd:	reference to a Qualcomm subdev context
- */
+ 
 void qcom_add_smd_subdev(struct rproc *rproc, struct qcom_rproc_subdev *smd)
 {
 	struct device *dev = &rproc->dev;
@@ -343,11 +289,7 @@ void qcom_add_smd_subdev(struct rproc *rproc, struct qcom_rproc_subdev *smd)
 }
 EXPORT_SYMBOL_GPL(qcom_add_smd_subdev);
 
-/**
- * qcom_remove_smd_subdev() - remove the smd subdevice from rproc
- * @rproc:	rproc handle
- * @smd:	the SMD subdevice to remove
- */
+ 
 void qcom_remove_smd_subdev(struct rproc *rproc, struct qcom_rproc_subdev *smd)
 {
 	if (!smd->node)
@@ -363,7 +305,7 @@ static struct qcom_ssr_subsystem *qcom_ssr_get_subsys(const char *name)
 	struct qcom_ssr_subsystem *info;
 
 	mutex_lock(&qcom_ssr_subsys_lock);
-	/* Match in the global qcom_ssr_subsystem_list with name */
+	 
 	list_for_each_entry(info, &qcom_ssr_subsystem_list, list)
 		if (!strcmp(info->name, name))
 			goto out;
@@ -376,7 +318,7 @@ static struct qcom_ssr_subsystem *qcom_ssr_get_subsys(const char *name)
 	info->name = kstrdup_const(name, GFP_KERNEL);
 	srcu_init_notifier_head(&info->notifier_list);
 
-	/* Add to global notification list */
+	 
 	list_add_tail(&info->list, &qcom_ssr_subsystem_list);
 
 out:
@@ -384,18 +326,7 @@ out:
 	return info;
 }
 
-/**
- * qcom_register_ssr_notifier() - register SSR notification handler
- * @name:	Subsystem's SSR name
- * @nb:		notifier_block to be invoked upon subsystem's state change
- *
- * This registers the @nb notifier block as part the notifier chain for a
- * remoteproc associated with @name. The notifier block's callback
- * will be invoked when the remote processor's SSR events occur
- * (pre/post startup and pre/post shutdown).
- *
- * Return: a subsystem cookie on success, ERR_PTR on failure.
- */
+ 
 void *qcom_register_ssr_notifier(const char *name, struct notifier_block *nb)
 {
 	struct qcom_ssr_subsystem *info;
@@ -410,16 +341,7 @@ void *qcom_register_ssr_notifier(const char *name, struct notifier_block *nb)
 }
 EXPORT_SYMBOL_GPL(qcom_register_ssr_notifier);
 
-/**
- * qcom_unregister_ssr_notifier() - unregister SSR notification handler
- * @notify:	subsystem cookie returned from qcom_register_ssr_notifier
- * @nb:		notifier_block to unregister
- *
- * This function will unregister the notifier from the particular notifier
- * chain.
- *
- * Return: 0 on success, %ENOENT otherwise.
- */
+ 
 int qcom_unregister_ssr_notifier(void *notify, struct notifier_block *nb)
 {
 	return srcu_notifier_chain_unregister(notify, nb);
@@ -476,16 +398,7 @@ static void ssr_notify_unprepare(struct rproc_subdev *subdev)
 				 QCOM_SSR_AFTER_SHUTDOWN, &data);
 }
 
-/**
- * qcom_add_ssr_subdev() - register subdevice as restart notification source
- * @rproc:	rproc handle
- * @ssr:	SSR subdevice handle
- * @ssr_name:	identifier to use for notifications originating from @rproc
- *
- * As the @ssr is registered with the @rproc SSR events will be sent to all
- * registered listeners for the remoteproc when it's SSR events occur
- * (pre/post startup and pre/post shutdown).
- */
+ 
 void qcom_add_ssr_subdev(struct rproc *rproc, struct qcom_rproc_ssr *ssr,
 			 const char *ssr_name)
 {
@@ -507,11 +420,7 @@ void qcom_add_ssr_subdev(struct rproc *rproc, struct qcom_rproc_ssr *ssr,
 }
 EXPORT_SYMBOL_GPL(qcom_add_ssr_subdev);
 
-/**
- * qcom_remove_ssr_subdev() - remove subdevice as restart notification source
- * @rproc:	rproc handle
- * @ssr:	SSR subdevice handle
- */
+ 
 void qcom_remove_ssr_subdev(struct rproc *rproc, struct qcom_rproc_ssr *ssr)
 {
 	rproc_remove_subdev(rproc, &ssr->subdev);

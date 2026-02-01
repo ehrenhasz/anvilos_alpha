@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2015-2018 Etnaviv Project
- */
+
+ 
 
 #include <linux/devcoredump.h>
 #include <linux/moduleparam.h>
@@ -125,7 +123,7 @@ void etnaviv_core_dump(struct etnaviv_gem_submit *submit)
 	__le64 *bomap, *bomap_start;
 	int i;
 
-	/* Only catch the first event, or when manually re-armed */
+	 
 	if (!etnaviv_dump_core)
 		return;
 	etnaviv_dump_core = false;
@@ -134,14 +132,14 @@ void etnaviv_core_dump(struct etnaviv_gem_submit *submit)
 
 	mmu_size = etnaviv_iommu_dump_size(submit->mmu_context);
 
-	/* We always dump registers, mmu, ring, hanging cmdbuf and end marker */
+	 
 	n_obj = 5;
 	n_bomap_pages = 0;
 	file_size = ARRAY_SIZE(etnaviv_dump_registers) *
 			sizeof(struct etnaviv_dump_registers) +
 		    mmu_size + gpu->buffer.size + submit->cmdbuf.size;
 
-	/* Add in the active buffer objects */
+	 
 	for (i = 0; i < submit->nr_bos; i++) {
 		obj = submit->bos[i].obj;
 		file_size += obj->base.size;
@@ -149,16 +147,16 @@ void etnaviv_core_dump(struct etnaviv_gem_submit *submit)
 		n_obj++;
 	}
 
-	/* If we have any buffer objects, add a bomap object */
+	 
 	if (n_bomap_pages) {
 		file_size += n_bomap_pages * sizeof(__le64);
 		n_obj++;
 	}
 
-	/* Add the size of the headers */
+	 
 	file_size += sizeof(*iter.hdr) * n_obj;
 
-	/* Allocate the file in vmalloc memory, it's likely to be big */
+	 
 	iter.start = __vmalloc(file_size, GFP_KERNEL | __GFP_NOWARN |
 			__GFP_NORETRY);
 	if (!iter.start) {
@@ -167,7 +165,7 @@ void etnaviv_core_dump(struct etnaviv_gem_submit *submit)
 		return;
 	}
 
-	/* Point the data member after the headers */
+	 
 	iter.hdr = iter.start;
 	iter.data = &iter.hdr[n_obj];
 
@@ -187,14 +185,14 @@ void etnaviv_core_dump(struct etnaviv_gem_submit *submit)
 
 	mutex_unlock(&submit->mmu_context->lock);
 
-	/* Reserve space for the bomap */
+	 
 	if (n_bomap_pages) {
 		bomap_start = bomap = iter.data;
 		memset(bomap, 0, sizeof(*bomap) * n_bomap_pages);
 		etnaviv_core_dump_header(&iter, ETDUMP_BUF_BOMAP,
 					 bomap + n_bomap_pages);
 	} else {
-		/* Silence warning */
+		 
 		bomap_start = bomap = NULL;
 	}
 

@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * arch/powerpc/sysdev/qe_lib/qe_io.c
- *
- * QE Parallel I/O ports configuration routines
- *
- * Copyright 2006 Freescale Semiconductor, Inc. All rights reserved.
- *
- * Author: Li Yang <LeoLi@freescale.com>
- * Based on code from Shlomi Gridish <gridish@freescale.com>
- */
+
+ 
 
 #include <linux/stddef.h>
 #include <linux/kernel.h>
@@ -30,7 +21,7 @@ int par_io_init(struct device_node *np)
 	int ret;
 	u32 num_ports;
 
-	/* Map Parallel I/O ports registers */
+	 
 	ret = of_address_to_resource(np, 0, &res);
 	if (ret)
 		return ret;
@@ -52,30 +43,30 @@ void __par_io_config_pin(struct qe_pio_regs __iomem *par_io, u8 pin, int dir,
 	u32 new_mask2bits;
 	u32 tmp_val;
 
-	/* calculate pin location for single and 2 bits information */
+	 
 	pin_mask1bit = (u32) (1 << (QE_PIO_PINS - (pin + 1)));
 
-	/* Set open drain, if required */
+	 
 	tmp_val = ioread32be(&par_io->cpodr);
 	if (open_drain)
 		iowrite32be(pin_mask1bit | tmp_val, &par_io->cpodr);
 	else
 		iowrite32be(~pin_mask1bit & tmp_val, &par_io->cpodr);
 
-	/* define direction */
+	 
 	tmp_val = (pin > (QE_PIO_PINS / 2) - 1) ?
 		ioread32be(&par_io->cpdir2) :
 		ioread32be(&par_io->cpdir1);
 
-	/* get all bits mask for 2 bit per port */
+	 
 	pin_mask2bits = (u32) (0x3 << (QE_PIO_PINS -
 				(pin % (QE_PIO_PINS / 2) + 1) * 2));
 
-	/* Get the final mask we need for the right definition */
+	 
 	new_mask2bits = (u32) (dir << (QE_PIO_PINS -
 				(pin % (QE_PIO_PINS / 2) + 1) * 2));
 
-	/* clear and set 2 bits mask */
+	 
 	if (pin > (QE_PIO_PINS / 2) - 1) {
 		iowrite32be(~pin_mask2bits & tmp_val, &par_io->cpdir2);
 		tmp_val &= ~pin_mask2bits;
@@ -85,14 +76,14 @@ void __par_io_config_pin(struct qe_pio_regs __iomem *par_io, u8 pin, int dir,
 		tmp_val &= ~pin_mask2bits;
 		iowrite32be(new_mask2bits | tmp_val, &par_io->cpdir1);
 	}
-	/* define pin assignment */
+	 
 	tmp_val = (pin > (QE_PIO_PINS / 2) - 1) ?
 		ioread32be(&par_io->cppar2) :
 		ioread32be(&par_io->cppar1);
 
 	new_mask2bits = (u32) (assignment << (QE_PIO_PINS -
 			(pin % (QE_PIO_PINS / 2) + 1) * 2));
-	/* clear and set 2 bits mask */
+	 
 	if (pin > (QE_PIO_PINS / 2) - 1) {
 		iowrite32be(~pin_mask2bits & tmp_val, &par_io->cppar2);
 		tmp_val &= ~pin_mask2bits;
@@ -125,14 +116,14 @@ int par_io_data_set(u8 port, u8 pin, u8 val)
 		return -EINVAL;
 	if (pin >= QE_PIO_PINS)
 		return -EINVAL;
-	/* calculate pin location */
+	 
 	pin_mask = (u32) (1 << (QE_PIO_PINS - 1 - pin));
 
 	tmp_val = ioread32be(&par_io[port].cpdata);
 
-	if (val == 0)		/* clear */
+	if (val == 0)		 
 		iowrite32be(~pin_mask & tmp_val, &par_io[port].cpdata);
-	else			/* set */
+	else			 
 		iowrite32be(pin_mask | tmp_val, &par_io[port].cpdata);
 
 	return 0;

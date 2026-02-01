@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * SD/MMC Greybus driver.
- *
- * Copyright 2014-2015 Google Inc.
- * Copyright 2014-2015 Linaro Ltd.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/mmc/core.h>
@@ -21,9 +16,9 @@ struct gb_sdio_host {
 	struct gbphy_device	*gbphy_dev;
 	struct mmc_host		*mmc;
 	struct mmc_request	*mrq;
-	struct mutex		lock;	/* lock for this host */
+	struct mutex		lock;	 
 	size_t			data_max;
-	spinlock_t		xfer;	/* lock to cancel ongoing transfer */
+	spinlock_t		xfer;	 
 	bool			xfer_stop;
 	struct workqueue_struct	*mrq_workqueue;
 	struct work_struct	mrqwork;
@@ -41,7 +36,7 @@ struct gb_sdio_host {
 #define GB_SDIO_RSP_R1B		(GB_SDIO_RSP_PRESENT | GB_SDIO_RSP_CRC | \
 				 GB_SDIO_RSP_OPCODE | GB_SDIO_RSP_BUSY)
 
-/* kernel vdd starts at 0x80 and we need to translate to greybus ones 0x01 */
+ 
 #define GB_SDIO_VDD_SHIFT	8
 
 #ifndef MMC_CAP2_CORE_RUNTIME_PM
@@ -130,7 +125,7 @@ static int gb_sdio_get_caps(struct gb_sdio_host *host)
 
 	_gb_sdio_set_host_caps(host, r);
 
-	/* get the max block size that could fit our payload */
+	 
 	data_max = gb_operation_get_payload_size_max(host->connection);
 	data_max = min(data_max - sizeof(struct gb_sdio_transfer_request),
 		       data_max - sizeof(struct gb_sdio_transfer_response));
@@ -142,14 +137,14 @@ static int gb_sdio_get_caps(struct gb_sdio_host *host)
 	mmc->max_blk_count = le16_to_cpu(response.max_blk_count);
 	host->data_max = data_max;
 
-	/* get ocr supported values */
+	 
 	ocr = _gb_sdio_get_host_ocr(le32_to_cpu(response.ocr));
 	mmc->ocr_avail = ocr;
 	mmc->ocr_avail_sdio = mmc->ocr_avail;
 	mmc->ocr_avail_sd = mmc->ocr_avail;
 	mmc->ocr_avail_mmc = mmc->ocr_avail;
 
-	/* get frequency range values */
+	 
 	mmc->f_min = le32_to_cpu(response.f_min);
 	mmc->f_max = le32_to_cpu(response.f_max);
 
@@ -372,7 +367,7 @@ static int gb_sdio_transfer(struct gb_sdio_host *host, struct mmc_data *data)
 	left = data->blksz * data->blocks;
 
 	while (left) {
-		/* check is a stop transmission is pending */
+		 
 		spin_lock(&host->xfer);
 		if (host->xfer_stop) {
 			host->xfer_stop = false;
@@ -462,7 +457,7 @@ static int gb_sdio_command(struct gb_sdio_host *host, struct mmc_command *cmd)
 	request.cmd_flags = cmd_flags;
 	request.cmd_type = cmd_type;
 	request.cmd_arg = cpu_to_le32(cmd->arg);
-	/* some controllers need to know at command time data details */
+	 
 	if (data) {
 		request.data_blocks = cpu_to_le16(data->blocks);
 		request.data_blksz = cpu_to_le16(data->blksz);
@@ -477,11 +472,11 @@ static int gb_sdio_command(struct gb_sdio_host *host, struct mmc_command *cmd)
 	if (ret < 0)
 		goto out;
 
-	/* no response expected */
+	 
 	if (cmd_flags == GB_SDIO_RSP_NONE)
 		goto out;
 
-	/* long response expected */
+	 
 	if (cmd_flags & GB_SDIO_RSP_R2)
 		for (i = 0; i < 4; i++)
 			cmd->resp[i] = le32_to_cpu(response.resp[i]);
@@ -553,7 +548,7 @@ static void gb_mmc_request(struct mmc_host *mmc, struct mmc_request *mrq)
 	struct gb_sdio_host *host = mmc_priv(mmc);
 	struct mmc_command *cmd = mrq->cmd;
 
-	/* Check if it is a cancel to ongoing transfer */
+	 
 	if (cmd->opcode == MMC_STOP_TRANSMISSION) {
 		spin_lock(&host->xfer);
 		host->xfer_stop = true;
@@ -800,7 +795,7 @@ static int gb_sdio_probe(struct gbphy_device *gbphy_dev,
 
 	mmc->max_segs = host->mmc->max_blk_count;
 
-	/* for now we make a map 1:1 between max request and segment size */
+	 
 	mmc->max_req_size = mmc->max_blk_size * mmc->max_blk_count;
 	mmc->max_seg_size = mmc->max_req_size;
 

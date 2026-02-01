@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: LGPL-2.1-or-later
-/*
- * dmxdev.c - DVB demultiplexer device
- *
- * Copyright (C) 2000 Ralph Metzler & Marcus Metzler
- *		      for convergence integrated media GmbH
- */
+
+ 
 
 #define pr_fmt(fmt) "dmxdev: " fmt
 
@@ -132,15 +127,7 @@ static int dvb_dvr_open(struct inode *inode, struct file *file)
 
 	dmxdev->may_do_mmap = 0;
 
-	/*
-	 * The logic here is a little tricky due to the ifdef.
-	 *
-	 * The ringbuffer is used for both read and mmap.
-	 *
-	 * It is not needed, however, on two situations:
-	 *	- Write devices (access with O_WRONLY);
-	 *	- For duplex device nodes, opened with O_RDWR.
-	 */
+	 
 
 	if ((file->f_flags & O_ACCMODE) == O_RDONLY)
 		need_ringbuffer = true;
@@ -220,7 +207,7 @@ static int dvb_dvr_release(struct inode *inode, struct file *file)
 		dvbdev->readers++;
 		if (dmxdev->dvr_buffer.data) {
 			void *mem = dmxdev->dvr_buffer.data;
-			/*memory barrier*/
+			 
 			mb();
 			spin_lock_irq(&dmxdev->lock);
 			dmxdev->dvr_buffer.data = NULL;
@@ -228,7 +215,7 @@ static int dvb_dvr_release(struct inode *inode, struct file *file)
 			vfree(mem);
 		}
 	}
-	/* TODO */
+	 
 	dvbdev->users--;
 	if (dvbdev->users == 1 && dmxdev->exit == 1) {
 		mutex_unlock(&dmxdev->mutex);
@@ -300,7 +287,7 @@ static int dvb_dvr_set_buffer_size(struct dmxdev *dmxdev,
 	buf->data = newmem;
 	buf->size = size;
 
-	/* reset and not flush in case the buffer shrinks */
+	 
 	dvb_ringbuffer_reset(buf);
 	spin_unlock_irq(&dmxdev->lock);
 
@@ -341,7 +328,7 @@ static int dvb_dmxdev_set_buffer_size(struct dmxdev_filter *dmxdevfilter,
 	buf->data = newmem;
 	buf->size = size;
 
-	/* reset and not flush in case the buffer shrinks */
+	 
 	dvb_ringbuffer_reset(buf);
 	spin_unlock_irq(&dmxdevfilter->dev->lock);
 
@@ -473,7 +460,7 @@ static int dvb_dmxdev_ts_callback(const u8 *buffer1, size_t buffer1_len,
 	return 0;
 }
 
-/* stop feed but only mark the specified filter as stopped (state set) */
+ 
 static int dvb_dmxdev_feed_stop(struct dmxdev_filter *dmxdevfilter)
 {
 	struct dmxdev_feed *feed;
@@ -495,7 +482,7 @@ static int dvb_dmxdev_feed_stop(struct dmxdev_filter *dmxdevfilter)
 	return 0;
 }
 
-/* start feed associated with the specified filter */
+ 
 static int dvb_dmxdev_feed_start(struct dmxdev_filter *filter)
 {
 	struct dmxdev_feed *feed;
@@ -522,8 +509,7 @@ static int dvb_dmxdev_feed_start(struct dmxdev_filter *filter)
 	return 0;
 }
 
-/* restart section feed if it has filters left associated with it,
-   otherwise release the feed */
+ 
 static int dvb_dmxdev_feed_restart(struct dmxdev_filter *filter)
 {
 	int i;
@@ -586,7 +572,7 @@ static void dvb_dmxdev_delete_pids(struct dmxdev_filter *dmxdevfilter)
 {
 	struct dmxdev_feed *feed, *tmp;
 
-	/* delete all PIDs */
+	 
 	list_for_each_entry_safe(feed, tmp, &dmxdevfilter->feed.ts, next) {
 		list_del(&feed->next);
 		kfree(feed);
@@ -695,7 +681,7 @@ static int dvb_dmxdev_filter_start(struct dmxdev_filter *filter)
 		*secfeed = NULL;
 
 
-		/* find active filter/feed with same PID */
+		 
 		for (i = 0; i < dmxdev->filternum; i++) {
 			if (dmxdev->filter[i].state >= DMXDEV_STATE_GO &&
 			    dmxdev->filter[i].type == DMXDEV_TYPE_SEC &&
@@ -705,7 +691,7 @@ static int dvb_dmxdev_filter_start(struct dmxdev_filter *filter)
 			}
 		}
 
-		/* if no feed found, try to allocate new one */
+		 
 		if (!*secfeed) {
 			ret = dmxdev->demux->allocate_section_feed(dmxdev->demux,
 								   secfeed,
@@ -873,7 +859,7 @@ static int dvb_dmxdev_add_pid(struct dmxdev *dmxdev,
 	    (filter->state < DMXDEV_STATE_SET))
 		return -EINVAL;
 
-	/* only TS packet filters may have multiple PIDs */
+	 
 	if ((filter->params.pes.output != DMX_OUT_TSDEMUX_TAP) &&
 	    (!list_empty(&filter->feed.ts)))
 		return -EINVAL;

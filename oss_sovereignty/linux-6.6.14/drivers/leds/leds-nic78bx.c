@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2016 National Instruments Corp.
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/leds.h>
@@ -160,7 +158,7 @@ static int nic78bx_probe(struct platform_device *pdev)
 			return ret;
 	}
 
-	/* Unlock LED register */
+	 
 	outb(NIC78BX_UNLOCK_VALUE,
 	     led_data->io_base + NIC78BX_LOCK_REG_OFFSET);
 
@@ -171,7 +169,7 @@ static int nic78bx_remove(struct platform_device *pdev)
 {
 	struct nic78bx_led_data *led_data = platform_get_drvdata(pdev);
 
-	/* Lock LED register */
+	 
 	outb(NIC78BX_LOCK_VALUE,
 	     led_data->io_base + NIC78BX_LOCK_REG_OFFSET);
 

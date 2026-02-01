@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2017 MediaTek Inc.
- * Author: Weiyi Lu <weiyi.lu@mediatek.com>
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/platform_device.h>
@@ -40,7 +37,7 @@ static const struct mtk_gate_regs mm2_cg_regs = {
 	GATE_MTK(_id, _name, _parent, &mm2_cg_regs, _shift, &mtk_clk_gate_ops_setclr)
 
 static const struct mtk_gate mm_clks[] = {
-	/* MM0 */
+	 
 	GATE_MM0(CLK_MM_SMI_COMMON, "mm_smi_common", "mm_sel", 0),
 	GATE_MM0(CLK_MM_SMI_LARB0, "mm_smi_larb0", "mm_sel", 1),
 	GATE_MM0(CLK_MM_CAM_MDP, "mm_cam_mdp", "mm_sel", 2),
@@ -71,7 +68,7 @@ static const struct mtk_gate mm_clks[] = {
 	GATE_MM0(CLK_MM_DISP_UFOE, "mm_disp_ufoe", "mm_sel", 27),
 	GATE_MM0(CLK_MM_DISP_SPLIT0, "mm_disp_split0", "mm_sel", 28),
 	GATE_MM0(CLK_MM_DISP_OD, "mm_disp_od", "mm_sel", 31),
-	/* MM1 */
+	 
 	GATE_MM1(CLK_MM_DISP_PWM0_MM, "mm_pwm0_mm", "mm_sel", 0),
 	GATE_MM1(CLK_MM_DISP_PWM0_26M, "mm_pwm0_26m", "pwm_sel", 1),
 	GATE_MM1(CLK_MM_DISP_PWM1_MM, "mm_pwm1_mm", "mm_sel", 2),
@@ -98,7 +95,7 @@ static const struct mtk_gate mm_clks[] = {
 	GATE_MM1(CLK_MM_DISP_OD1, "mm_disp_od1", "mm_sel", 29),
 	GATE_MM1(CLK_MM_LVDS1_PIXEL, "mm_lvds1_pixel", "vpll3_dpix", 30),
 	GATE_MM1(CLK_MM_LVDS1_CTS, "mm_lvds1_cts", "lvdstx3", 31),
-	/* MM2 */
+	 
 	GATE_MM2(CLK_MM_SMI_LARB7, "mm_smi_larb7", "mm_sel", 0),
 	GATE_MM2(CLK_MM_MDP_RDMA3, "mm_mdp_rdma3", "mm_sel", 1),
 	GATE_MM2(CLK_MM_MDP_WROT2, "mm_mdp_wrot2", "mm_sel", 2),
@@ -115,7 +112,7 @@ static const struct mtk_clk_desc mm_desc = {
 
 static const struct platform_device_id clk_mt2712_mm_id_table[] = {
 	{ .name = "clk-mt2712-mm", .driver_data = (kernel_ulong_t)&mm_desc },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(platform, clk_mt2712_mm_id_table);
 

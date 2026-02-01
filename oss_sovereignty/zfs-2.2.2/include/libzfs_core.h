@@ -1,30 +1,6 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
+ 
 
-/*
- * Copyright (c) 2012, 2020 by Delphix. All rights reserved.
- * Copyright 2017 RackTop Systems.
- * Copyright (c) 2017 Open-E, Inc. All Rights Reserved.
- * Copyright (c) 2019 Datto Inc.
- */
+ 
 
 #ifndef	_LIBZFS_CORE_H
 #define	_LIBZFS_CORE_H extern __attribute__((visibility("default")))
@@ -44,9 +20,7 @@ _LIBZFS_CORE_H void libzfs_core_fini(void);
 struct zfs_cmd;
 _LIBZFS_CORE_H int lzc_ioctl_fd(int, unsigned long, struct zfs_cmd *);
 
-/*
- * NB: this type should be kept binary-compatible with dmu_objset_type_t.
- */
+ 
 enum lzc_dataset_type {
 	LZC_DATSET_TYPE_ZFS = 2,
 	LZC_DATSET_TYPE_ZVOL
@@ -161,4 +135,4 @@ _LIBZFS_CORE_H int lzc_scrub(zfs_ioc_t, const char *, nvlist_t *, nvlist_t **);
 }
 #endif
 
-#endif	/* _LIBZFS_CORE_H */
+#endif	 

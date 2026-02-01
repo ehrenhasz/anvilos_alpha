@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #define _GNU_SOURCE
 #define __EXPORTED_HEADERS__
 
@@ -13,9 +13,7 @@
 
 int hugetlbfs_test = 0;
 
-/*
- * Copied from mlock2-tests.c
- */
+ 
 unsigned long default_huge_page_size(void)
 {
 	unsigned long hps = 0;

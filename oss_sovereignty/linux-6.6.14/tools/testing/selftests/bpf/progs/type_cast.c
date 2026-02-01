@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2022 Meta Platforms, Inc. and affiliates. */
+
+ 
 #include "vmlinux.h"
 #include <bpf/bpf_helpers.h>
 #include <bpf/bpf_tracing.h>
@@ -45,15 +45,13 @@ int md_skb(struct __sk_buff *skb)
 
 	kskb_len = kskb->len;
 
-	/* Simulate the following kernel macro:
-	 *   #define skb_shinfo(SKB) ((struct skb_shared_info *)(skb_end_pointer(SKB)))
-	 */
+	 
 	shared_info = bpf_rdonly_cast(kskb->head + kskb->end,
 		bpf_core_type_id_kernel(struct skb_shared_info));
 	meta_len = shared_info->meta_len;
 	frag0_len = shared_info->frag_list->len;
 
-	/* kskb2 should be equal to kskb */
+	 
 	kskb2 = bpf_rdonly_cast(kskb, bpf_core_type_id_kernel(struct sk_buff));
 	kskb2_len = kskb2->len;
 	return 0;

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2014, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/io.h>
 #include <linux/iopoll.h>
@@ -15,7 +13,7 @@
 #include <linux/platform_device.h>
 #include <linux/phy/phy.h>
 
-/* PHY registers */
+ 
 #define UNIPHY_PLL_REFCLK_CFG		0x000
 #define UNIPHY_PLL_PWRGEN_CFG		0x014
 #define UNIPHY_PLL_GLB_CFG		0x020
@@ -62,7 +60,7 @@
 #define SATA_PHY_TX_CAL		BIT(0)
 #define SATA_PHY_RX_CAL		BIT(0)
 
-/* default timeout set to 1 sec */
+ 
 #define TIMEOUT_MS		10000
 #define DELAY_INTERVAL_US	100
 
@@ -72,7 +70,7 @@ struct qcom_apq8064_sata_phy {
 	struct device *dev;
 };
 
-/* Helper function to do poll and timeout */
+ 
 static int poll_timeout(void __iomem *addr, u32 mask)
 {
 	u32 val;
@@ -87,10 +85,10 @@ static int qcom_apq8064_sata_phy_init(struct phy *generic_phy)
 	void __iomem *base = phy->mmio;
 	int ret = 0;
 
-	/* SATA phy initialization */
+	 
 	writel_relaxed(0x01, base + SATA_PHY_SER_CTRL);
 	writel_relaxed(0xB1, base + SATA_PHY_POW_DWN_CTRL0);
-	/* Make sure the power down happens before power up */
+	 
 	mb();
 	usleep_range(10, 60);
 
@@ -100,7 +98,7 @@ static int qcom_apq8064_sata_phy_init(struct phy *generic_phy)
 	writel_relaxed(0x01, base + SATA_PHY_TX_IMCAL0);
 	writel_relaxed(0x02, base + SATA_PHY_TX_IMCAL2);
 
-	/* Write UNIPHYPLL registers to configure PLL */
+	 
 	writel_relaxed(0x04, base + UNIPHY_PLL_REFCLK_CFG);
 	writel_relaxed(0x00, base + UNIPHY_PLL_PWRGEN_CFG);
 
@@ -125,34 +123,34 @@ static int qcom_apq8064_sata_phy_init(struct phy *generic_phy)
 	writel_relaxed(0xFF, base + UNIPHY_PLL_LKDET_CFG1);
 
 	writel_relaxed(0x02, base + UNIPHY_PLL_GLB_CFG);
-	/* make sure global config LDO power down happens before power up */
+	 
 	mb();
 
 	writel_relaxed(0x03, base + UNIPHY_PLL_GLB_CFG);
 	writel_relaxed(0x05, base + UNIPHY_PLL_LKDET_CFG2);
 
-	/* PLL Lock wait */
+	 
 	ret = poll_timeout(base + UNIPHY_PLL_STATUS, UNIPHY_PLL_LOCK);
 	if (ret) {
 		dev_err(phy->dev, "poll timeout UNIPHY_PLL_STATUS\n");
 		return ret;
 	}
 
-	/* TX Calibration */
+	 
 	ret = poll_timeout(base + SATA_PHY_TX_IMCAL_STAT, SATA_PHY_TX_CAL);
 	if (ret) {
 		dev_err(phy->dev, "poll timeout SATA_PHY_TX_IMCAL_STAT\n");
 		return ret;
 	}
 
-	/* RX Calibration */
+	 
 	ret = poll_timeout(base + SATA_PHY_RX_IMCAL_STAT, SATA_PHY_RX_CAL);
 	if (ret) {
 		dev_err(phy->dev, "poll timeout SATA_PHY_RX_IMCAL_STAT\n");
 		return ret;
 	}
 
-	/* SATA phy calibrated successfully, power up to functional mode */
+	 
 	writel_relaxed(0x3E, base + SATA_PHY_POW_DWN_CTRL1);
 	writel_relaxed(0x01, base + SATA_PHY_RX_IMCAL0);
 	writel_relaxed(0x01, base + SATA_PHY_TX_IMCAL0);
@@ -181,11 +179,11 @@ static int qcom_apq8064_sata_phy_exit(struct phy *generic_phy)
 	struct qcom_apq8064_sata_phy *phy = phy_get_drvdata(generic_phy);
 	void __iomem *base = phy->mmio;
 
-	/* Power down PHY */
+	 
 	writel_relaxed(0xF8, base + SATA_PHY_POW_DWN_CTRL0);
 	writel_relaxed(0xFE, base + SATA_PHY_POW_DWN_CTRL1);
 
-	/* Power down PLL block */
+	 
 	writel_relaxed(0x00, base + UNIPHY_PLL_GLB_CFG);
 
 	return 0;

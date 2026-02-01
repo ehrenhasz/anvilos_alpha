@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Marvell NFC driver: Firmware downloader
- *
- * Copyright (C) 2015, Marvell International Ltd.
- */
+
+ 
 
 #include <linux/module.h>
 #include <asm/unaligned.h>
@@ -18,7 +14,7 @@
 #define NCI_OP_PROPRIETARY_BOOT_CMD	nci_opcode_pack(NCI_GID_PROPRIETARY, \
 							NCI_OP_PROP_BOOT_CMD)
 
-/* FW download states */
+ 
 
 enum {
 	STATE_RESET = 0,
@@ -38,9 +34,7 @@ enum {
 	SUBSTATE_WAIT_DATA_CREDIT,
 };
 
-/*
- * Patterns for responses
- */
+ 
 
 static const uint8_t nci_pattern_core_reset_ntf[] = {
 	0x60, 0x00, 0x02, 0xA0, 0x01
@@ -110,7 +104,7 @@ static void fw_dnld_over(struct nfcmrvl_private *priv, u32 error)
 	nfc_info(priv->dev, "FW loading over (%d)]\n", error);
 
 	if (error != 0) {
-		/* failed, halt the chip to avoid power consumption */
+		 
 		nfcmrvl_chip_halt(priv);
 	}
 
@@ -136,7 +130,7 @@ static int process_state_reset(struct nfcmrvl_private *priv,
 
 	nfc_info(priv->dev, "BootROM reset, start fw download\n");
 
-	/* Start FW download state machine */
+	 
 	priv->fw_dnld.state = STATE_INIT;
 	nci_send_cmd(priv->ndev, NCI_OP_CORE_INIT_CMD, 0, NULL);
 
@@ -253,16 +247,9 @@ static int process_state_fw_dnld(struct nfcmrvl_private *priv,
 
 	switch (priv->fw_dnld.substate) {
 	case SUBSTATE_WAIT_COMMAND:
-		/*
-		 * Command format:
-		 * B0..2: NCI header
-		 * B3   : Helper command (0xA5)
-		 * B4..5: le16 data size
-		 * B6..7: le16 data size complement (~)
-		 * B8..N: payload
-		 */
+		 
 
-		/* Remove NCI HDR */
+		 
 		skb_pull(skb, 3);
 		if (skb->data[0] != HELPER_CMD_PACKET_FORMAT || skb->len != 5) {
 			nfc_err(priv->dev, "bad command");
@@ -302,7 +289,7 @@ static int process_state_fw_dnld(struct nfcmrvl_private *priv,
 			return -EINVAL;
 		}
 		if (priv->fw_dnld.chunk_len == 0) {
-			/* FW Loading is done */
+			 
 			uint8_t conn_id = NCI_CORE_LC_CONNID_PROP_FW_DL;
 
 			priv->fw_dnld.state = STATE_CLOSE_LC;
@@ -364,19 +351,12 @@ static int process_state_boot(struct nfcmrvl_private *priv,
 	    memcmp(skb->data, nci_pattern_proprietary_boot_rsp, skb->len))
 		return -EINVAL;
 
-	/*
-	 * Update HI config to use the right configuration for the next
-	 * data exchanges.
-	 */
+	 
 	priv->if_ops->nci_update_config(priv,
 					&priv->fw_dnld.binary_config->config);
 
 	if (priv->fw_dnld.binary_config == &priv->fw_dnld.header->helper) {
-		/*
-		 * This is the case where an helper was needed and we have
-		 * uploaded it. Now we have to wait the next RESET NTF to start
-		 * FW download.
-		 */
+		 
 		priv->fw_dnld.state = STATE_RESET;
 		priv->fw_dnld.binary_config = &priv->fw_dnld.header->firmware;
 		nfc_info(priv->dev, "FW loading: helper loaded");
@@ -462,14 +442,14 @@ void nfcmrvl_fw_dnld_deinit(struct nfcmrvl_private *priv)
 void nfcmrvl_fw_dnld_recv_frame(struct nfcmrvl_private *priv,
 				struct sk_buff *skb)
 {
-	/* Discard command timer */
+	 
 	if (timer_pending(&priv->ndev->cmd_timer))
 		del_timer_sync(&priv->ndev->cmd_timer);
 
-	/* Allow next command */
+	 
 	atomic_set(&priv->ndev->cmd_cnt, 1);
 
-	/* Queue and trigger rx work */
+	 
 	skb_queue_tail(&priv->fw_dnld.rx_q, skb);
 	queue_work(priv->fw_dnld.rx_wq, &priv->fw_dnld.rx_work);
 }
@@ -493,12 +473,9 @@ int nfcmrvl_fw_dnld_start(struct nci_dev *ndev, const char *firmware_name)
 
 	strcpy(fw_dnld->name, firmware_name);
 
-	/*
-	 * Retrieve FW binary file and parse it to initialize FW download
-	 * state machine.
-	 */
+	 
 
-	/* Retrieve FW binary */
+	 
 	res = request_firmware(&fw_dnld->fw, firmware_name,
 			       &ndev->nfc_dev->dev);
 	if (res < 0) {
@@ -526,23 +503,23 @@ int nfcmrvl_fw_dnld_start(struct nci_dev *ndev, const char *firmware_name)
 		fw_dnld->binary_config = &fw_dnld->header->firmware;
 	}
 
-	/* Configure a timer for timeout */
+	 
 	timer_setup(&priv->fw_dnld.timer, fw_dnld_timeout, 0);
 	mod_timer(&priv->fw_dnld.timer,
 		  jiffies + msecs_to_jiffies(FW_DNLD_TIMEOUT));
 
-	/* Ronfigure HI to be sure that it is the bootrom values */
+	 
 	priv->if_ops->nci_update_config(priv,
 					&fw_dnld->header->bootrom.config);
 
-	/* Allow first command */
+	 
 	atomic_set(&priv->ndev->cmd_cnt, 1);
 
-	/* First, reset the chip */
+	 
 	priv->fw_dnld.state = STATE_RESET;
 	nfcmrvl_chip_reset(priv);
 
-	/* Now wait for CORE_RESET_NTF or timeout */
+	 
 
 	return 0;
 }

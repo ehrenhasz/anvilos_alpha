@@ -1,6 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright (c) 2016, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/ethtool.h>
 #include <linux/phy.h>
@@ -152,9 +151,7 @@ static int emac_set_ringparam(struct net_device *netdev,
 {
 	struct emac_adapter *adpt = netdev_priv(netdev);
 
-	/* We don't have separate queues/rings for small/large frames, so
-	 * reject any attempt to specify those values separately.
-	 */
+	 
 	if (ring->rx_mini_pending || ring->rx_jumbo_pending)
 		return -EINVAL;
 
@@ -195,7 +192,7 @@ static int emac_set_pauseparam(struct net_device *netdev,
 	return 0;
 }
 
-/* Selected registers that might want to track during runtime. */
+ 
 static const u16 emac_regs[] = {
 	EMAC_DMA_MAS_CTRL,
 	EMAC_MAC_CTRL,
@@ -208,7 +205,7 @@ static const u16 emac_regs[] = {
 	EMAC_MISC_CTRL,
 };
 
-/* Every time emac_regs[] above is changed, increase this version number. */
+ 
 #define EMAC_REGS_VERSION	0
 
 #define EMAC_MAX_REG_SIZE	ARRAY_SIZE(emac_regs)

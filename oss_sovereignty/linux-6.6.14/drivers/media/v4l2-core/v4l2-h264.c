@@ -1,32 +1,15 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * V4L2 H264 helpers.
- *
- * Copyright (C) 2019 Collabora, Ltd.
- *
- * Author: Boris Brezillon <boris.brezillon@collabora.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/sort.h>
 
 #include <media/v4l2-h264.h>
 
-/*
- * Size of the tempory buffer allocated when printing reference lists. The
- * output will be truncated if the size is too small.
- */
+ 
 static const int tmp_str_size = 1024;
 
-/**
- * v4l2_h264_init_reflist_builder() - Initialize a P/B0/B1 reference list
- *				      builder
- *
- * @b: the builder context to initialize
- * @dec_params: decode parameters control
- * @sps: SPS control
- * @dpb: DPB to use when creating the reference list
- */
+ 
 void
 v4l2_h264_init_reflist_builder(struct v4l2_h264_reflist_builder *b,
 		const struct v4l2_ctrl_h264_decode_params *dec_params,
@@ -59,12 +42,7 @@ v4l2_h264_init_reflist_builder(struct v4l2_h264_reflist_builder *b,
 		if (dpb[i].flags & V4L2_H264_DPB_ENTRY_FLAG_LONG_TERM)
 			b->refs[i].longterm = true;
 
-		/*
-		 * Handle frame_num wraparound as described in section
-		 * '8.2.4.1 Decoding process for picture numbers' of the spec.
-		 * For long term references, frame_num is set to
-		 * long_term_frame_idx which requires no wrapping.
-		 */
+		 
 		if (!b->refs[i].longterm && dpb[i].frame_num > cur_frame_num)
 			b->refs[i].frame_num = (int)dpb[i].frame_num -
 					       max_frame_num;
@@ -118,7 +96,7 @@ static s32 v4l2_h264_get_poc(const struct v4l2_h264_reflist_builder *b,
 		return b->refs[ref->index].bottom_field_order_cnt;
 	}
 
-	/* not reached */
+	 
 	return 0;
 }
 
@@ -136,21 +114,14 @@ static int v4l2_h264_p_ref_list_cmp(const void *ptra, const void *ptrb,
 		return 1;
 
 	if (builder->refs[idxa].longterm != builder->refs[idxb].longterm) {
-		/* Short term pics first. */
+		 
 		if (!builder->refs[idxa].longterm)
 			return -1;
 		else
 			return 1;
 	}
 
-	/*
-	 * For frames, short term pics are in descending pic num order and long
-	 * term ones in ascending order. For fields, the same direction is used
-	 * but with frame_num (wrapped). For frames, the value of pic_num and
-	 * frame_num are the same (see formula (8-28) and (8-29)). For this
-	 * reason we can use frame_num only and share this function between
-	 * frames and fields reflist.
-	 */
+	 
 	if (!builder->refs[idxa].longterm)
 		return builder->refs[idxb].frame_num <
 		       builder->refs[idxa].frame_num ?
@@ -175,14 +146,14 @@ static int v4l2_h264_b0_ref_list_cmp(const void *ptra, const void *ptrb,
 		return 1;
 
 	if (builder->refs[idxa].longterm != builder->refs[idxb].longterm) {
-		/* Short term pics first. */
+		 
 		if (!builder->refs[idxa].longterm)
 			return -1;
 		else
 			return 1;
 	}
 
-	/* Long term pics in ascending frame num order. */
+	 
 	if (builder->refs[idxa].longterm)
 		return builder->refs[idxa].frame_num <
 		       builder->refs[idxb].frame_num ?
@@ -191,11 +162,7 @@ static int v4l2_h264_b0_ref_list_cmp(const void *ptra, const void *ptrb,
 	poca = v4l2_h264_get_poc(builder, ptra);
 	pocb = v4l2_h264_get_poc(builder, ptrb);
 
-	/*
-	 * Short term pics with POC < cur POC first in POC descending order
-	 * followed by short term pics with POC > cur POC in POC ascending
-	 * order.
-	 */
+	 
 	if ((poca < builder->cur_pic_order_count) !=
 	     (pocb < builder->cur_pic_order_count))
 		return poca < pocb ? -1 : 1;
@@ -220,14 +187,14 @@ static int v4l2_h264_b1_ref_list_cmp(const void *ptra, const void *ptrb,
 		return 1;
 
 	if (builder->refs[idxa].longterm != builder->refs[idxb].longterm) {
-		/* Short term pics first. */
+		 
 		if (!builder->refs[idxa].longterm)
 			return -1;
 		else
 			return 1;
 	}
 
-	/* Long term pics in ascending frame num order. */
+	 
 	if (builder->refs[idxa].longterm)
 		return builder->refs[idxa].frame_num <
 		       builder->refs[idxb].frame_num ?
@@ -236,11 +203,7 @@ static int v4l2_h264_b1_ref_list_cmp(const void *ptra, const void *ptrb,
 	poca = v4l2_h264_get_poc(builder, ptra);
 	pocb = v4l2_h264_get_poc(builder, ptrb);
 
-	/*
-	 * Short term pics with POC > cur POC first in POC ascending order
-	 * followed by short term pics with POC < cur POC in POC descending
-	 * order.
-	 */
+	 
 	if ((poca < builder->cur_pic_order_count) !=
 	    (pocb < builder->cur_pic_order_count))
 		return pocb < poca ? -1 : 1;
@@ -250,12 +213,7 @@ static int v4l2_h264_b1_ref_list_cmp(const void *ptra, const void *ptrb,
 	return poca < pocb ? -1 : 1;
 }
 
-/*
- * The references need to be reordered so that references are alternating
- * between top and bottom field references starting with the current picture
- * parity. This has to be done for short term and long term references
- * separately.
- */
+ 
 static void reorder_field_reflist(const struct v4l2_h264_reflist_builder *b,
 				  struct v4l2_h264_reference *reflist)
 {
@@ -311,9 +269,7 @@ static const char *format_ref_list_p(const struct v4l2_h264_reflist_builder *bui
 	n += snprintf(*out_str + n, tmp_str_size - n, "|");
 
 	for (i = 0; i < builder->num_valid; i++) {
-		/* this is pic_num for frame and frame_num (wrapped) for field,
-		 * but for frame pic_num is equal to frame_num (wrapped).
-		 */
+		 
 		int frame_num = builder->refs[reflist[i].index].frame_num;
 		bool longterm = builder->refs[reflist[i].index].longterm;
 
@@ -377,18 +333,7 @@ static void print_ref_list_b(const struct v4l2_h264_reflist_builder *builder,
 	kfree(buf);
 }
 
-/**
- * v4l2_h264_build_p_ref_list() - Build the P reference list
- *
- * @builder: reference list builder context
- * @reflist: 32 sized array used to store the P reference list. Each entry
- *	     is a v4l2_h264_reference structure
- *
- * This functions builds the P reference lists. This procedure is describe in
- * section '8.2.4 Decoding process for reference picture lists construction'
- * of the H264 spec. This function can be used by H264 decoder drivers that
- * need to pass a P reference list to the hardware.
- */
+ 
 void
 v4l2_h264_build_p_ref_list(const struct v4l2_h264_reflist_builder *builder,
 			   struct v4l2_h264_reference *reflist)
@@ -405,20 +350,7 @@ v4l2_h264_build_p_ref_list(const struct v4l2_h264_reflist_builder *builder,
 }
 EXPORT_SYMBOL_GPL(v4l2_h264_build_p_ref_list);
 
-/**
- * v4l2_h264_build_b_ref_lists() - Build the B0/B1 reference lists
- *
- * @builder: reference list builder context
- * @b0_reflist: 32 sized array used to store the B0 reference list. Each entry
- *		is a v4l2_h264_reference structure
- * @b1_reflist: 32 sized array used to store the B1 reference list. Each entry
- *		is a v4l2_h264_reference structure
- *
- * This functions builds the B0/B1 reference lists. This procedure is described
- * in section '8.2.4 Decoding process for reference picture lists construction'
- * of the H264 spec. This function can be used by H264 decoder drivers that
- * need to pass B0/B1 reference lists to the hardware.
- */
+ 
 void
 v4l2_h264_build_b_ref_lists(const struct v4l2_h264_reflist_builder *builder,
 			    struct v4l2_h264_reference *b0_reflist,

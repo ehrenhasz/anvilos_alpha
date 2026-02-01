@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Synopsys DesignWare 8250 driver.
- *
- * Copyright 2011 Picochip, Jamie Iles.
- * Copyright 2013 Intel Corporation
- *
- * The Synopsys DesignWare 8250 has an extra feature whereby it detects if the
- * LCR is written whilst busy.  If it is, then a busy detect interrupt is
- * raised, the LCR needs to be rewritten and the uart status register read.
- */
+
+ 
 #include <linux/acpi.h>
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -32,26 +23,26 @@
 
 #include "8250_dwlib.h"
 
-/* Offsets for the DesignWare specific registers */
-#define DW_UART_USR	0x1f /* UART Status Register */
-#define DW_UART_DMASA	0xa8 /* DMA Software Ack */
+ 
+#define DW_UART_USR	0x1f  
+#define DW_UART_DMASA	0xa8  
 
-#define OCTEON_UART_USR	0x27 /* UART Status Register */
+#define OCTEON_UART_USR	0x27  
 
-#define RZN1_UART_TDMACR 0x10c /* DMA Control Register Transmit Mode */
-#define RZN1_UART_RDMACR 0x110 /* DMA Control Register Receive Mode */
+#define RZN1_UART_TDMACR 0x10c  
+#define RZN1_UART_RDMACR 0x110  
 
-/* DesignWare specific register fields */
+ 
 #define DW_UART_MCR_SIRE		BIT(6)
 
-/* Renesas specific register fields */
+ 
 #define RZN1_UART_xDMACR_DMA_EN		BIT(0)
 #define RZN1_UART_xDMACR_1_WORD_BURST	(0 << 1)
 #define RZN1_UART_xDMACR_4_WORD_BURST	(1 << 1)
 #define RZN1_UART_xDMACR_8_WORD_BURST	(2 << 1)
 #define RZN1_UART_xDMACR_BLK_SZ(x)	((x) << 3)
 
-/* Quirks */
+ 
 #define DW_UART_QUIRK_OCTEON		BIT(0)
 #define DW_UART_QUIRK_ARMADA_38X	BIT(1)
 #define DW_UART_QUIRK_SKIP_SET_RATE	BIT(2)
@@ -71,7 +62,7 @@ static inline int dw8250_modify_msr(struct uart_port *p, int offset, int value)
 {
 	struct dw8250_data *d = to_dw8250_data(p->private_data);
 
-	/* Override any modem control signals if needed */
+	 
 	if (offset == UART_MSR) {
 		value |= d->msr_mask_on;
 		value &= ~d->msr_mask_off;
@@ -87,11 +78,7 @@ static void dw8250_force_idle(struct uart_port *p)
 
 	serial8250_clear_and_reinit_fifos(up);
 
-	/*
-	 * With PSLVERR_RESP_EN parameter set to 1, the device generates an
-	 * error response when an attempt to read an empty RBR with FIFO
-	 * enabled.
-	 */
+	 
 	if (up->fcr & UART_FCR_ENABLE_FIFO) {
 		lsr = p->serial_in(p, UART_LSR);
 		if (!(lsr & UART_LSR_DR))
@@ -106,7 +93,7 @@ static void dw8250_check_lcr(struct uart_port *p, int value)
 	void __iomem *offset = p->membase + (UART_LCR << p->regshift);
 	int tries = 1000;
 
-	/* Make sure LCR write wasn't ignored */
+	 
 	while (tries--) {
 		unsigned int lcr = p->serial_in(p, UART_LCR);
 
@@ -127,13 +114,10 @@ static void dw8250_check_lcr(struct uart_port *p, int value)
 		else
 			writeb(value, offset);
 	}
-	/*
-	 * FIXME: this deadlocks if port->lock is already held
-	 * dev_err(p->dev, "Couldn't set LCR to %d\n", value);
-	 */
+	 
 }
 
-/* Returns once the transmitter is empty or we run out of retries */
+ 
 static void dw8250_tx_wait_empty(struct uart_port *p)
 {
 	struct uart_8250_port *up = up_to_u8250p(p);
@@ -148,10 +132,7 @@ static void dw8250_tx_wait_empty(struct uart_port *p)
 		if (lsr & UART_LSR_TEMT)
 			break;
 
-		/* The device is first given a chance to empty without delay,
-		 * to avoid slowdowns at high bitrates. If after 1000 tries
-		 * the buffer has still not emptied, allow more time for low-
-		 * speed links. */
+		 
 		if (tries < delay_threshold)
 			udelay (1);
 	}
@@ -169,7 +150,7 @@ static void dw8250_serial_out(struct uart_port *p, int offset, int value)
 
 static void dw8250_serial_out38x(struct uart_port *p, int offset, int value)
 {
-	/* Allow the TX to drain before we reconfigure */
+	 
 	if (offset == UART_LCR)
 		dw8250_tx_wait_empty(p);
 
@@ -199,13 +180,13 @@ static void dw8250_serial_outq(struct uart_port *p, int offset, int value)
 
 	value &= 0xff;
 	__raw_writeq(value, p->membase + (offset << p->regshift));
-	/* Read back to ensure register write ordering. */
+	 
 	__raw_readq(p->membase + (UART_LCR << p->regshift));
 
 	if (offset == UART_LCR && !d->uart_16550_compatible)
 		dw8250_check_lcr(p, value);
 }
-#endif /* CONFIG_64BIT */
+#endif  
 
 static void dw8250_serial_out32(struct uart_port *p, int offset, int value)
 {
@@ -252,16 +233,7 @@ static int dw8250_handle_irq(struct uart_port *p)
 	unsigned int status;
 	unsigned long flags;
 
-	/*
-	 * There are ways to get Designware-based UARTs into a state where
-	 * they are asserting UART_IIR_RX_TIMEOUT but there is no actual
-	 * data available.  If we see such a case then we'll do a bogus
-	 * read.  If we don't do this then the "RX TIMEOUT" interrupt will
-	 * fire forever.
-	 *
-	 * This problem has only been observed so far when not in DMA mode
-	 * so we limit the workaround only to non-DMA mode.
-	 */
+	 
 	if (!up->dma && rx_timeout) {
 		spin_lock_irqsave(&p->lock, flags);
 		status = serial_lsr_in(up);
@@ -272,7 +244,7 @@ static int dw8250_handle_irq(struct uart_port *p)
 		spin_unlock_irqrestore(&p->lock, flags);
 	}
 
-	/* Manually stop the Rx DMA transfer when acting as flow controller */
+	 
 	if (quirks & DW_UART_QUIRK_IS_DMA_FC && up->dma && up->dma->rx_running && rx_timeout) {
 		spin_lock_irqsave(&p->lock, flags);
 		status = serial_lsr_in(up);
@@ -288,7 +260,7 @@ static int dw8250_handle_irq(struct uart_port *p)
 		return 1;
 
 	if ((iir & UART_IIR_BUSY) == UART_IIR_BUSY) {
-		/* Clear the USR */
+		 
 		(void)p->serial_in(p, d->pdata->usr_reg);
 
 		return 1;
@@ -317,18 +289,7 @@ static int dw8250_clk_notifier_cb(struct notifier_block *nb,
 {
 	struct dw8250_data *d = clk_to_dw8250_data(nb);
 
-	/*
-	 * We have no choice but to defer the uartclk update due to two
-	 * deadlocks. First one is caused by a recursive mutex lock which
-	 * happens when clk_set_rate() is called from dw8250_set_termios().
-	 * Second deadlock is more tricky and is caused by an inverted order of
-	 * the clk and tty-port mutexes lock. It happens if clock rate change
-	 * is requested asynchronously while set_termios() is executed between
-	 * tty-port mutex lock and clk_set_rate() function invocation and
-	 * vise-versa. Anyway if we didn't have the reference clock alteration
-	 * in the dw8250_set_termios() method we wouldn't have needed this
-	 * deferred event handling complication.
-	 */
+	 
 	if (event == POST_RATE_CHANGE) {
 		queue_work(system_unbound_wq, &d->clk_work);
 		return NOTIFY_OK;
@@ -360,10 +321,7 @@ static void dw8250_set_termios(struct uart_port *p, struct ktermios *termios,
 	clk_disable_unprepare(d->clk);
 	rate = clk_round_rate(d->clk, newrate);
 	if (rate > 0) {
-		/*
-		 * Note that any clock-notifer worker will block in
-		 * serial8250_update_uartclk() until we are done.
-		 */
+		 
 		ret = clk_set_rate(d->clk, newrate);
 		if (!ret)
 			p->uartclk = rate;
@@ -389,14 +347,7 @@ static void dw8250_set_ldisc(struct uart_port *p, struct ktermios *termios)
 	serial8250_do_set_ldisc(p, termios);
 }
 
-/*
- * dw8250_fallback_dma_filter will prevent the UART from getting just any free
- * channel on platforms that have DMA engines, but don't have any channels
- * assigned to the UART.
- *
- * REVISIT: This is a work around for limitation in the DMA Engine API. Once the
- * core problem is fixed, this function is no longer needed.
- */
+ 
 static bool dw8250_fallback_dma_filter(struct dma_chan *chan, void *param)
 {
 	return false;
@@ -451,7 +402,7 @@ static void dw8250_quirks(struct uart_port *p, struct dw8250_data *data)
 		unsigned int quirks = data->pdata->quirks;
 		int id;
 
-		/* get index of serial line, if found in DT aliases */
+		 
 		id = of_alias_get_id(np, "serial");
 		if (id >= 0)
 			p->line = id;
@@ -489,7 +440,7 @@ static void dw8250_quirks(struct uart_port *p, struct dw8250_data *data)
 		data->uart_16550_compatible = true;
 	}
 
-	/* Platforms with iDMA 64-bit */
+	 
 	if (platform_get_resource_byname(to_platform_device(p->dev),
 					 IORESOURCE_MEM, "lpss_priv")) {
 		data->data.dma.rx_param = p->dev->parent;
@@ -524,7 +475,7 @@ static int dw8250_probe(struct platform_device *pdev)
 		return dev_err_probe(dev, -EINVAL, "no registers defined\n");
 
 	irq = platform_get_irq_optional(pdev, 0);
-	/* no interrupt -> fall back to polling */
+	 
 	if (irq == -ENXIO)
 		irq = 0;
 	if (irq < 0)
@@ -571,33 +522,33 @@ static int dw8250_probe(struct platform_device *pdev)
 	}
 
 	if (device_property_read_bool(dev, "dcd-override")) {
-		/* Always report DCD as active */
+		 
 		data->msr_mask_on |= UART_MSR_DCD;
 		data->msr_mask_off |= UART_MSR_DDCD;
 	}
 
 	if (device_property_read_bool(dev, "dsr-override")) {
-		/* Always report DSR as active */
+		 
 		data->msr_mask_on |= UART_MSR_DSR;
 		data->msr_mask_off |= UART_MSR_DDSR;
 	}
 
 	if (device_property_read_bool(dev, "cts-override")) {
-		/* Always report CTS as active */
+		 
 		data->msr_mask_on |= UART_MSR_CTS;
 		data->msr_mask_off |= UART_MSR_DCTS;
 	}
 
 	if (device_property_read_bool(dev, "ri-override")) {
-		/* Always report Ring indicator as inactive */
+		 
 		data->msr_mask_off |= UART_MSR_RI;
 		data->msr_mask_off |= UART_MSR_TERI;
 	}
 
-	/* Always ask for fixed clock rate from a property. */
+	 
 	device_property_read_u32(dev, "clock-frequency", &p->uartclk);
 
-	/* If there is separate baudclk, get the rate from it. */
+	 
 	data->clk = devm_clk_get_optional(dev, "baudclk");
 	if (data->clk == NULL)
 		data->clk = devm_clk_get_optional(dev, NULL);
@@ -618,7 +569,7 @@ static int dw8250_probe(struct platform_device *pdev)
 	if (data->clk)
 		p->uartclk = clk_get_rate(data->clk);
 
-	/* If no clock rate is defined, fail. */
+	 
 	if (!p->uartclk)
 		return dev_err_probe(dev, -EINVAL, "clock rate not defined\n");
 
@@ -646,14 +597,14 @@ static int dw8250_probe(struct platform_device *pdev)
 
 	dw8250_quirks(p, data);
 
-	/* If the Busy Functionality is not implemented, don't handle it */
+	 
 	if (data->uart_16550_compatible)
 		p->handle_irq = NULL;
 
 	if (!data->skip_autocfg)
 		dw8250_setup_port(p);
 
-	/* If we have a valid fifosize, try hooking up DMA */
+	 
 	if (p->fifosize) {
 		data->data.dma.rxconf.src_maxburst = p->fifosize / 4;
 		data->data.dma.txconf.dst_maxburst = p->fifosize / 4;
@@ -664,11 +615,7 @@ static int dw8250_probe(struct platform_device *pdev)
 	if (data->data.line < 0)
 		return data->data.line;
 
-	/*
-	 * Some platforms may provide a reference clock shared between several
-	 * devices. In this case any clock state change must be known to the
-	 * UART port at least post factum.
-	 */
+	 
 	if (data->clk) {
 		err = clk_notifier_register(data->clk, &data->clk_notifier);
 		if (err)
@@ -781,7 +728,7 @@ static const struct of_device_id dw8250_of_match[] = {
 	{ .compatible = "marvell,armada-38x-uart", .data = &dw8250_armada_38x_data },
 	{ .compatible = "renesas,rzn1-uart", .data = &dw8250_renesas_rzn1_data },
 	{ .compatible = "starfive,jh7100-uart", .data = &dw8250_starfive_jh7100_data },
-	{ /* Sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, dw8250_of_match);
 

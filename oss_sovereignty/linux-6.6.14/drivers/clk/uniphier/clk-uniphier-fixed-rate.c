@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2016 Socionext Inc.
- *   Author: Masahiro Yamada <yamada.masahiro@socionext.com>
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/device.h>
@@ -17,7 +14,7 @@ struct clk_hw *uniphier_clk_register_fixed_rate(struct device *dev,
 	struct clk_init_data init;
 	int ret;
 
-	/* allocate fixed-rate clock */
+	 
 	fixed = devm_kzalloc(dev, sizeof(*fixed), GFP_KERNEL);
 	if (!fixed)
 		return ERR_PTR(-ENOMEM);

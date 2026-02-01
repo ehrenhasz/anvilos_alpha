@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
-/******************************************************************************
- *
- * Module Name: nsconvert - Object conversions for objects returned by
- *                          predefined methods
- *
- * Copyright (C) 2000 - 2023, Intel Corp.
- *
- *****************************************************************************/
+
+ 
 
 #include <acpi/acpi.h>
 #include "accommon.h"
@@ -18,18 +11,7 @@
 #define _COMPONENT          ACPI_NAMESPACE
 ACPI_MODULE_NAME("nsconvert")
 
-/*******************************************************************************
- *
- * FUNCTION:    acpi_ns_convert_to_integer
- *
- * PARAMETERS:  original_object     - Object to be converted
- *              return_object       - Where the new converted object is returned
- *
- * RETURN:      Status. AE_OK if conversion was successful.
- *
- * DESCRIPTION: Attempt to convert a String/Buffer object to an Integer.
- *
- ******************************************************************************/
+ 
 acpi_status
 acpi_ns_convert_to_integer(union acpi_operand_object *original_object,
 			   union acpi_operand_object **return_object)
@@ -42,7 +24,7 @@ acpi_ns_convert_to_integer(union acpi_operand_object *original_object,
 	switch (original_object->common.type) {
 	case ACPI_TYPE_STRING:
 
-		/* String-to-Integer conversion */
+		 
 
 		status =
 		    acpi_ut_strtoul64(original_object->string.pointer, &value);
@@ -53,13 +35,13 @@ acpi_ns_convert_to_integer(union acpi_operand_object *original_object,
 
 	case ACPI_TYPE_BUFFER:
 
-		/* Buffer-to-Integer conversion. Max buffer size is 64 bits. */
+		 
 
 		if (original_object->buffer.length > 8) {
 			return (AE_AML_OPERAND_TYPE);
 		}
 
-		/* Extract each buffer byte to create the integer */
+		 
 
 		for (i = 0; i < original_object->buffer.length; i++) {
 			value |= ((u64)
@@ -82,18 +64,7 @@ acpi_ns_convert_to_integer(union acpi_operand_object *original_object,
 	return (AE_OK);
 }
 
-/*******************************************************************************
- *
- * FUNCTION:    acpi_ns_convert_to_string
- *
- * PARAMETERS:  original_object     - Object to be converted
- *              return_object       - Where the new converted object is returned
- *
- * RETURN:      Status. AE_OK if conversion was successful.
- *
- * DESCRIPTION: Attempt to convert a Integer/Buffer object to a String.
- *
- ******************************************************************************/
+ 
 
 acpi_status
 acpi_ns_convert_to_string(union acpi_operand_object *original_object,
@@ -105,14 +76,10 @@ acpi_ns_convert_to_string(union acpi_operand_object *original_object,
 
 	switch (original_object->common.type) {
 	case ACPI_TYPE_INTEGER:
-		/*
-		 * Integer-to-String conversion. Commonly, convert
-		 * an integer of value 0 to a NULL string. The last element of
-		 * _BIF and _BIX packages occasionally need this fix.
-		 */
+		 
 		if (original_object->integer.value == 0) {
 
-			/* Allocate a new NULL string object */
+			 
 
 			new_object = acpi_ut_create_string_object(0);
 			if (!new_object) {
@@ -129,29 +96,21 @@ acpi_ns_convert_to_string(union acpi_operand_object *original_object,
 		break;
 
 	case ACPI_TYPE_BUFFER:
-		/*
-		 * Buffer-to-String conversion. Use a to_string
-		 * conversion, no transform performed on the buffer data. The best
-		 * example of this is the _BIF method, where the string data from
-		 * the battery is often (incorrectly) returned as buffer object(s).
-		 */
+		 
 		length = 0;
 		while ((length < original_object->buffer.length) &&
 		       (original_object->buffer.pointer[length])) {
 			length++;
 		}
 
-		/* Allocate a new string object */
+		 
 
 		new_object = acpi_ut_create_string_object(length);
 		if (!new_object) {
 			return (AE_NO_MEMORY);
 		}
 
-		/*
-		 * Copy the raw buffer data with no transform. String is already NULL
-		 * terminated at Length+1.
-		 */
+		 
 		memcpy(new_object->string.pointer,
 		       original_object->buffer.pointer, length);
 		break;
@@ -165,18 +124,7 @@ acpi_ns_convert_to_string(union acpi_operand_object *original_object,
 	return (AE_OK);
 }
 
-/*******************************************************************************
- *
- * FUNCTION:    acpi_ns_convert_to_buffer
- *
- * PARAMETERS:  original_object     - Object to be converted
- *              return_object       - Where the new converted object is returned
- *
- * RETURN:      Status. AE_OK if conversion was successful.
- *
- * DESCRIPTION: Attempt to convert a Integer/String/Package object to a Buffer.
- *
- ******************************************************************************/
+ 
 
 acpi_status
 acpi_ns_convert_to_buffer(union acpi_operand_object *original_object,
@@ -191,13 +139,7 @@ acpi_ns_convert_to_buffer(union acpi_operand_object *original_object,
 
 	switch (original_object->common.type) {
 	case ACPI_TYPE_INTEGER:
-		/*
-		 * Integer-to-Buffer conversion.
-		 * Convert the Integer to a packed-byte buffer. _MAT and other
-		 * objects need this sometimes, if a read has been performed on a
-		 * Field object that is less than or equal to the global integer
-		 * size (32 or 64 bits).
-		 */
+		 
 		status =
 		    acpi_ex_convert_to_buffer(original_object, &new_object);
 		if (ACPI_FAILURE(status)) {
@@ -207,7 +149,7 @@ acpi_ns_convert_to_buffer(union acpi_operand_object *original_object,
 
 	case ACPI_TYPE_STRING:
 
-		/* String-to-Buffer conversion. Simple data copy */
+		 
 
 		new_object = acpi_ut_create_buffer_object
 		    (original_object->string.length);
@@ -221,13 +163,9 @@ acpi_ns_convert_to_buffer(union acpi_operand_object *original_object,
 		break;
 
 	case ACPI_TYPE_PACKAGE:
-		/*
-		 * This case is often seen for predefined names that must return a
-		 * Buffer object with multiple DWORD integers within. For example,
-		 * _FDE and _GTM. The Package can be converted to a Buffer.
-		 */
+		 
 
-		/* All elements of the Package must be integers */
+		 
 
 		elements = original_object->package.elements;
 		count = original_object->package.count;
@@ -240,14 +178,14 @@ acpi_ns_convert_to_buffer(union acpi_operand_object *original_object,
 			elements++;
 		}
 
-		/* Create the new buffer object to replace the Package */
+		 
 
 		new_object = acpi_ut_create_buffer_object(ACPI_MUL_4(count));
 		if (!new_object) {
 			return (AE_NO_MEMORY);
 		}
 
-		/* Copy the package elements (integers) to the buffer as DWORDs */
+		 
 
 		elements = original_object->package.elements;
 		dword_buffer = ACPI_CAST_PTR(u32, new_object->buffer.pointer);
@@ -268,19 +206,7 @@ acpi_ns_convert_to_buffer(union acpi_operand_object *original_object,
 	return (AE_OK);
 }
 
-/*******************************************************************************
- *
- * FUNCTION:    acpi_ns_convert_to_unicode
- *
- * PARAMETERS:  scope               - Namespace node for the method/object
- *              original_object     - ASCII String Object to be converted
- *              return_object       - Where the new converted object is returned
- *
- * RETURN:      Status. AE_OK if conversion was successful.
- *
- * DESCRIPTION: Attempt to convert a String object to a Unicode string Buffer.
- *
- ******************************************************************************/
+ 
 
 acpi_status
 acpi_ns_convert_to_unicode(struct acpi_namespace_node *scope,
@@ -297,7 +223,7 @@ acpi_ns_convert_to_unicode(struct acpi_namespace_node *scope,
 		return (AE_OK);
 	}
 
-	/* If a Buffer was returned, it must be at least two bytes long */
+	 
 
 	if (original_object->common.type == ACPI_TYPE_BUFFER) {
 		if (original_object->buffer.length < 2) {
@@ -308,14 +234,11 @@ acpi_ns_convert_to_unicode(struct acpi_namespace_node *scope,
 		return (AE_OK);
 	}
 
-	/*
-	 * The original object is an ASCII string. Convert this string to
-	 * a unicode buffer.
-	 */
+	 
 	ascii_string = original_object->string.pointer;
 	unicode_length = (original_object->string.length * 2) + 2;
 
-	/* Create a new buffer object for the Unicode data */
+	 
 
 	new_object = acpi_ut_create_buffer_object(unicode_length);
 	if (!new_object) {
@@ -324,7 +247,7 @@ acpi_ns_convert_to_unicode(struct acpi_namespace_node *scope,
 
 	unicode_buffer = ACPI_CAST_PTR(u16, new_object->buffer.pointer);
 
-	/* Convert ASCII to Unicode */
+	 
 
 	for (i = 0; i < original_object->string.length; i++) {
 		unicode_buffer[i] = (u16)ascii_string[i];
@@ -334,20 +257,7 @@ acpi_ns_convert_to_unicode(struct acpi_namespace_node *scope,
 	return (AE_OK);
 }
 
-/*******************************************************************************
- *
- * FUNCTION:    acpi_ns_convert_to_resource
- *
- * PARAMETERS:  scope               - Namespace node for the method/object
- *              original_object     - Object to be converted
- *              return_object       - Where the new converted object is returned
- *
- * RETURN:      Status. AE_OK if conversion was successful
- *
- * DESCRIPTION: Attempt to convert a Integer object to a resource_template
- *              Buffer.
- *
- ******************************************************************************/
+ 
 
 acpi_status
 acpi_ns_convert_to_resource(struct acpi_namespace_node *scope,
@@ -357,20 +267,12 @@ acpi_ns_convert_to_resource(struct acpi_namespace_node *scope,
 	union acpi_operand_object *new_object;
 	u8 *buffer;
 
-	/*
-	 * We can fix the following cases for an expected resource template:
-	 * 1. No return value (interpreter slack mode is disabled)
-	 * 2. A "Return (Zero)" statement
-	 * 3. A "Return empty buffer" statement
-	 *
-	 * We will return a buffer containing a single end_tag
-	 * resource descriptor.
-	 */
+	 
 	if (original_object) {
 		switch (original_object->common.type) {
 		case ACPI_TYPE_INTEGER:
 
-			/* We can only repair an Integer==0 */
+			 
 
 			if (original_object->integer.value) {
 				return (AE_AML_OPERAND_TYPE);
@@ -381,7 +283,7 @@ acpi_ns_convert_to_resource(struct acpi_namespace_node *scope,
 
 			if (original_object->buffer.length) {
 
-				/* Additional checks can be added in the future */
+				 
 
 				*return_object = NULL;
 				return (AE_OK);
@@ -395,7 +297,7 @@ acpi_ns_convert_to_resource(struct acpi_namespace_node *scope,
 		}
 	}
 
-	/* Create the new buffer object for the resource descriptor */
+	 
 
 	new_object = acpi_ut_create_buffer_object(2);
 	if (!new_object) {
@@ -404,7 +306,7 @@ acpi_ns_convert_to_resource(struct acpi_namespace_node *scope,
 
 	buffer = ACPI_CAST_PTR(u8, new_object->buffer.pointer);
 
-	/* Initialize the Buffer with a single end_tag descriptor */
+	 
 
 	buffer[0] = (ACPI_RESOURCE_NAME_END_TAG | ASL_RDESC_END_TAG_SIZE);
 	buffer[1] = 0x00;
@@ -413,20 +315,7 @@ acpi_ns_convert_to_resource(struct acpi_namespace_node *scope,
 	return (AE_OK);
 }
 
-/*******************************************************************************
- *
- * FUNCTION:    acpi_ns_convert_to_reference
- *
- * PARAMETERS:  scope               - Namespace node for the method/object
- *              original_object     - Object to be converted
- *              return_object       - Where the new converted object is returned
- *
- * RETURN:      Status. AE_OK if conversion was successful
- *
- * DESCRIPTION: Attempt to convert a Integer object to a object_reference.
- *              Buffer.
- *
- ******************************************************************************/
+ 
 
 acpi_status
 acpi_ns_convert_to_reference(struct acpi_namespace_node *scope,
@@ -441,7 +330,7 @@ acpi_ns_convert_to_reference(struct acpi_namespace_node *scope,
 
 	ACPI_FUNCTION_NAME(ns_convert_to_reference);
 
-	/* Convert path into internal presentation */
+	 
 
 	status =
 	    acpi_ns_internalize_name(original_object->string.pointer, &name);
@@ -449,7 +338,7 @@ acpi_ns_convert_to_reference(struct acpi_namespace_node *scope,
 		return_ACPI_STATUS(status);
 	}
 
-	/* Find the namespace node */
+	 
 
 	scope_info.scope.node =
 	    ACPI_CAST_PTR(struct acpi_namespace_node, scope);
@@ -459,14 +348,14 @@ acpi_ns_convert_to_reference(struct acpi_namespace_node *scope,
 			   NULL, &node);
 	if (ACPI_FAILURE(status)) {
 
-		/* Check if we are resolving a named reference within a package */
+		 
 
 		ACPI_ERROR_NAMESPACE(&scope_info,
 				     original_object->string.pointer, status);
 		goto error_exit;
 	}
 
-	/* Create and init a new internal ACPI object */
+	 
 
 	new_object = acpi_ut_create_internal_object(ACPI_TYPE_LOCAL_REFERENCE);
 	if (!new_object) {
@@ -477,10 +366,7 @@ acpi_ns_convert_to_reference(struct acpi_namespace_node *scope,
 	new_object->reference.object = node->object;
 	new_object->reference.class = ACPI_REFCLASS_NAME;
 
-	/*
-	 * Increase reference of the object if needed (the object is likely a
-	 * null for device nodes).
-	 */
+	 
 	acpi_ut_add_reference(node->object);
 
 error_exit:

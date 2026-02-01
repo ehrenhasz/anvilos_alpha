@@ -1,26 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ WITH Linux-syscall-note */
-/*
- * File: include/linux/omapfb.h
- *
- * Framebuffer driver for TI OMAP boards
- *
- * Copyright (C) 2004 Nokia Corporation
- * Author: Imre Deak <imre.deak@nokia.com>
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the
- * Free Software Foundation; either version 2 of the License, or (at your
- * option) any later version.
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License along
- * with this program; if not, write to the Free Software Foundation, Inc.,
- * 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- */
+ 
+ 
 
 #ifndef _UAPI__LINUX_OMAPFB_H__
 #define _UAPI__LINUX_OMAPFB_H__
@@ -29,7 +8,7 @@
 #include <linux/ioctl.h>
 #include <linux/types.h>
 
-/* IOCTL commands. */
+ 
 
 #define OMAP_IOW(num, dtype)	_IOW('O', num, dtype)
 #define OMAP_IOR(num, dtype)	_IOR('O', num, dtype)
@@ -74,7 +53,7 @@
 #define OMAPFB_CAPS_WINDOW_ROTATE	0x00080000
 #define OMAPFB_CAPS_SET_BACKLIGHT	0x01000000
 
-/* Values from DSP must map to lower 16-bits */
+ 
 #define OMAPFB_FORMAT_MASK		0x00ff
 #define OMAPFB_FORMAT_FLAG_DOUBLE	0x0100
 #define OMAPFB_FORMAT_FLAG_TEARSYNC	0x0200
@@ -101,8 +80,8 @@ enum omapfb_color_format {
 	OMAPFB_COLOR_YUY422,
 
 	OMAPFB_COLOR_ARGB16,
-	OMAPFB_COLOR_RGB24U,	/* RGB24, 32-bit container */
-	OMAPFB_COLOR_RGB24P,	/* RGB24, 24-bit container */
+	OMAPFB_COLOR_RGB24U,	 
+	OMAPFB_COLOR_RGB24P,	 
 	OMAPFB_COLOR_ARGB32,
 	OMAPFB_COLOR_RGBA32,
 	OMAPFB_COLOR_RGBX32,
@@ -214,10 +193,10 @@ struct omapfb_tearsync_info {
 struct omapfb_display_info {
 	__u16 xres;
 	__u16 yres;
-	__u32 width;	/* phys width of the display in micrometers */
-	__u32 height;	/* phys height of the display in micrometers */
+	__u32 width;	 
+	__u32 height;	 
 	__u32 reserved[5];
 };
 
 
-#endif /* _UAPI__LINUX_OMAPFB_H__ */
+#endif  

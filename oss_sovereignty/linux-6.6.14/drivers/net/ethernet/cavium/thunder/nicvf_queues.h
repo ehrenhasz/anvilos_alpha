@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2015 Cavium, Inc.
- */
+ 
+ 
 
 #ifndef NICVF_QUEUES_H
 #define NICVF_QUEUES_H
@@ -17,7 +15,7 @@
 #define MAX_SND_QUEUES_PER_QS		8
 #define MAX_CMP_QUEUES_PER_QS		8
 
-/* VF's queue interrupt ranges */
+ 
 #define	NICVF_INTR_ID_CQ		0
 #define	NICVF_INTR_ID_SQ		8
 #define	NICVF_INTR_ID_RBDR		16
@@ -31,31 +29,31 @@
 #define	for_each_rbdr_irq(irq)	\
 	for (irq = NICVF_INTR_ID_RBDR; irq < NICVF_INTR_ID_MISC; irq++)
 
-#define RBDR_SIZE0		0ULL /* 8K entries */
-#define RBDR_SIZE1		1ULL /* 16K entries */
-#define RBDR_SIZE2		2ULL /* 32K entries */
-#define RBDR_SIZE3		3ULL /* 64K entries */
-#define RBDR_SIZE4		4ULL /* 126K entries */
-#define RBDR_SIZE5		5ULL /* 256K entries */
-#define RBDR_SIZE6		6ULL /* 512K entries */
+#define RBDR_SIZE0		0ULL  
+#define RBDR_SIZE1		1ULL  
+#define RBDR_SIZE2		2ULL  
+#define RBDR_SIZE3		3ULL  
+#define RBDR_SIZE4		4ULL  
+#define RBDR_SIZE5		5ULL  
+#define RBDR_SIZE6		6ULL  
 
-#define SND_QUEUE_SIZE0		0ULL /* 1K entries */
-#define SND_QUEUE_SIZE1		1ULL /* 2K entries */
-#define SND_QUEUE_SIZE2		2ULL /* 4K entries */
-#define SND_QUEUE_SIZE3		3ULL /* 8K entries */
-#define SND_QUEUE_SIZE4		4ULL /* 16K entries */
-#define SND_QUEUE_SIZE5		5ULL /* 32K entries */
-#define SND_QUEUE_SIZE6		6ULL /* 64K entries */
+#define SND_QUEUE_SIZE0		0ULL  
+#define SND_QUEUE_SIZE1		1ULL  
+#define SND_QUEUE_SIZE2		2ULL  
+#define SND_QUEUE_SIZE3		3ULL  
+#define SND_QUEUE_SIZE4		4ULL  
+#define SND_QUEUE_SIZE5		5ULL  
+#define SND_QUEUE_SIZE6		6ULL  
 
-#define CMP_QUEUE_SIZE0		0ULL /* 1K entries */
-#define CMP_QUEUE_SIZE1		1ULL /* 2K entries */
-#define CMP_QUEUE_SIZE2		2ULL /* 4K entries */
-#define CMP_QUEUE_SIZE3		3ULL /* 8K entries */
-#define CMP_QUEUE_SIZE4		4ULL /* 16K entries */
-#define CMP_QUEUE_SIZE5		5ULL /* 32K entries */
-#define CMP_QUEUE_SIZE6		6ULL /* 64K entries */
+#define CMP_QUEUE_SIZE0		0ULL  
+#define CMP_QUEUE_SIZE1		1ULL  
+#define CMP_QUEUE_SIZE2		2ULL  
+#define CMP_QUEUE_SIZE3		3ULL  
+#define CMP_QUEUE_SIZE4		4ULL  
+#define CMP_QUEUE_SIZE5		5ULL  
+#define CMP_QUEUE_SIZE6		6ULL  
 
-/* Default queue count per QS, its lengths and threshold values */
+ 
 #define DEFAULT_RBDR_CNT	1
 
 #define SND_QSIZE		SND_QUEUE_SIZE0
@@ -64,71 +62,55 @@
 #define MAX_SND_QUEUE_LEN	(1ULL << (SND_QUEUE_SIZE6 + 10))
 #define SND_QUEUE_THRESH	2ULL
 #define MIN_SQ_DESC_PER_PKT_XMIT	2
-/* Since timestamp not enabled, otherwise 2 */
+ 
 #define MAX_CQE_PER_PKT_XMIT		1
 
-/* Keep CQ and SQ sizes same, if timestamping
- * is enabled this equation will change.
- */
+ 
 #define CMP_QSIZE		CMP_QUEUE_SIZE0
 #define CMP_QUEUE_LEN		(1ULL << (CMP_QSIZE + 10))
 #define MIN_CMP_QUEUE_LEN	(1ULL << (CMP_QUEUE_SIZE0 + 10))
 #define MAX_CMP_QUEUE_LEN	(1ULL << (CMP_QUEUE_SIZE6 + 10))
 #define CMP_QUEUE_CQE_THRESH	(NAPI_POLL_WEIGHT / 2)
-#define CMP_QUEUE_TIMER_THRESH	80 /* ~2usec */
+#define CMP_QUEUE_TIMER_THRESH	80  
 
-/* No of CQEs that might anyway gets used by HW due to pipelining
- * effects irrespective of PASS/DROP/LEVELS being configured
- */
+ 
 #define CMP_QUEUE_PIPELINE_RSVD 544
 
 #define RBDR_SIZE		RBDR_SIZE0
 #define RCV_BUF_COUNT		(1ULL << (RBDR_SIZE + 13))
 #define MAX_RCV_BUF_COUNT	(1ULL << (RBDR_SIZE6 + 13))
 #define RBDR_THRESH		(RCV_BUF_COUNT / 2)
-#define DMA_BUFFER_LEN		1536 /* In multiples of 128bytes */
+#define DMA_BUFFER_LEN		1536  
 #define RCV_FRAG_LEN	 (SKB_DATA_ALIGN(DMA_BUFFER_LEN + NET_SKB_PAD) + \
 			 SKB_DATA_ALIGN(sizeof(struct skb_shared_info)))
 
 #define MAX_CQES_FOR_TX		((SND_QUEUE_LEN / MIN_SQ_DESC_PER_PKT_XMIT) * \
 				 MAX_CQE_PER_PKT_XMIT)
 
-/* RED and Backpressure levels of CQ for pkt reception
- * For CQ, level is a measure of emptiness i.e 0x0 means full
- * eg: For CQ of size 4K, and for pass/drop levels of 160/144
- * HW accepts pkt if unused CQE >= 2560
- * RED accepts pkt if unused CQE < 2304 & >= 2560
- * DROPs pkts if unused CQE < 2304
- */
+ 
 #define RQ_PASS_CQ_LVL         224ULL
 #define RQ_DROP_CQ_LVL         216ULL
 
-/* RED and Backpressure levels of RBDR for pkt reception
- * For RBDR, level is a measure of fullness i.e 0x0 means empty
- * eg: For RBDR of size 8K, and for pass/drop levels of 4/0
- * HW accepts pkt if unused RBs >= 256
- * RED accepts pkt if unused RBs < 256 & >= 0
- * DROPs pkts if unused RBs < 0
- */
+ 
 #define RQ_PASS_RBDR_LVL	8ULL
 #define RQ_DROP_RBDR_LVL	0ULL
 
-/* Descriptor size in bytes */
+ 
 #define SND_QUEUE_DESC_SIZE	16
 #define CMP_QUEUE_DESC_SIZE	512
 
-/* Buffer / descriptor alignments */
+ 
 #define NICVF_RCV_BUF_ALIGN		7
 #define NICVF_RCV_BUF_ALIGN_BYTES	(1ULL << NICVF_RCV_BUF_ALIGN)
-#define NICVF_CQ_BASE_ALIGN_BYTES	512  /* 9 bits */
-#define NICVF_SQ_BASE_ALIGN_BYTES	128  /* 7 bits */
+#define NICVF_CQ_BASE_ALIGN_BYTES	512   
+#define NICVF_SQ_BASE_ALIGN_BYTES	128   
 
 #define NICVF_ALIGNED_ADDR(ADDR, ALIGN_BYTES)	ALIGN(ADDR, ALIGN_BYTES)
 
-/* Queue enable/disable */
+ 
 #define NICVF_SQ_EN		BIT_ULL(19)
 
-/* Queue reset */
+ 
 #define NICVF_CQ_RESET		BIT_ULL(41)
 #define NICVF_SQ_RESET		BIT_ULL(17)
 #define NICVF_RBDR_RESET	BIT_ULL(43)
@@ -222,14 +204,14 @@ struct rbdr {
 	bool		enable;
 	u32		dma_size;
 	u32		frag_len;
-	u32		thresh;		/* Threshold level for interrupt */
+	u32		thresh;		 
 	void		*desc;
 	u32		head;
 	u32		tail;
 	struct q_desc_mem   dmem;
 	bool		is_xdp;
 
-	/* For page recycling */
+	 
 	int		pgidx;
 	int		pgcnt;
 	int		pgalloc;
@@ -241,12 +223,12 @@ struct rcv_queue {
 	struct	rbdr	*rbdr_start;
 	struct	rbdr	*rbdr_cont;
 	bool		en_tcp_reassembly;
-	u8		cq_qs;  /* CQ's QS to which this RQ is assigned */
-	u8		cq_idx; /* CQ index (0 to 7) in the QS */
-	u8		cont_rbdr_qs;      /* Continue buffer ptrs - QS num */
-	u8		cont_qs_rbdr_idx;  /* RBDR idx in the cont QS */
-	u8		start_rbdr_qs;     /* First buffer ptrs - QS num */
-	u8		start_qs_rbdr_idx; /* RBDR idx in the above QS */
+	u8		cq_qs;   
+	u8		cq_idx;  
+	u8		cont_rbdr_qs;       
+	u8		cont_qs_rbdr_idx;   
+	u8		start_rbdr_qs;      
+	u8		start_qs_rbdr_idx;  
 	u8		caching;
 	struct		rx_tx_queue_stats stats;
 	struct xdp_rxq_info xdp_rxq;
@@ -255,7 +237,7 @@ struct rcv_queue {
 struct cmp_queue {
 	bool		enable;
 	u16		thresh;
-	spinlock_t	lock;  /* lock to serialize processing CQEs */
+	spinlock_t	lock;   
 	void		*desc;
 	struct q_desc_mem   dmem;
 	int		irq;
@@ -263,8 +245,8 @@ struct cmp_queue {
 
 struct snd_queue {
 	bool		enable;
-	u8		cq_qs;  /* CQ's QS to which this SQ is pointing */
-	u8		cq_idx; /* CQ index (0 to 7) in the above QS */
+	u8		cq_qs;   
+	u8		cq_idx;  
 	u16		thresh;
 	atomic_t	free_cnt;
 	u32		head;
@@ -276,7 +258,7 @@ struct snd_queue {
 	u16		xdp_free_cnt;
 	bool		is_xdp;
 
-	/* For TSO segment's header */
+	 
 	char		*tso_hdrs;
 	dma_addr_t	tso_hdrs_phys;
 
@@ -309,7 +291,7 @@ struct queue_set {
 #define GET_CQ_DESC(RING, idx)\
 		(&(((union cq_desc_t *)((RING)->desc))[idx]))
 
-/* CQ status bits */
+ 
 #define	CQ_WR_FULL	BIT(26)
 #define	CQ_WR_DISABLE	BIT(25)
 #define	CQ_WR_FAULT	BIT(24)
@@ -319,7 +301,7 @@ struct queue_set {
 
 static inline u64 nicvf_iova_to_phys(struct nicvf *nic, dma_addr_t dma_addr)
 {
-	/* Translation is installed only when IOMMU is present */
+	 
 	if (nic->iommu_domain)
 		return iommu_iova_to_phys(nic->iommu_domain, dma_addr);
 	return dma_addr;
@@ -356,7 +338,7 @@ void nicvf_disable_intr(struct nicvf *nic, int int_type, int q_idx);
 void nicvf_clear_intr(struct nicvf *nic, int int_type, int q_idx);
 int nicvf_is_intr_enabled(struct nicvf *nic, int int_type, int q_idx);
 
-/* Register access APIs */
+ 
 void nicvf_reg_write(struct nicvf *nic, u64 offset, u64 val);
 u64  nicvf_reg_read(struct nicvf *nic, u64 offset);
 void nicvf_qset_reg_write(struct nicvf *nic, u64 offset, u64 val);
@@ -366,9 +348,9 @@ void nicvf_queue_reg_write(struct nicvf *nic, u64 offset,
 u64  nicvf_queue_reg_read(struct nicvf *nic,
 			  u64 offset, u64 qidx);
 
-/* Stats */
+ 
 void nicvf_update_rq_stats(struct nicvf *nic, int rq_idx);
 void nicvf_update_sq_stats(struct nicvf *nic, int sq_idx);
 int nicvf_check_cqe_rx_errs(struct nicvf *nic, struct cqe_rx_t *cqe_rx);
 int nicvf_check_cqe_tx_errs(struct nicvf *nic, struct cqe_send_t *cqe_tx);
-#endif /* NICVF_QUEUES_H */
+#endif  

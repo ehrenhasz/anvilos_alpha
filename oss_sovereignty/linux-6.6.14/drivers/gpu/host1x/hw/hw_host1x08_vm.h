@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2022 NVIDIA Corporation.
- */
+ 
+ 
 
 #define HOST1X_CHANNEL_DMASTART				0x0000
 #define HOST1X_CHANNEL_DMASTART_HI			0x0004

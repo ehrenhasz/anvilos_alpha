@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * camss-csiphy.h
- *
- * Qualcomm MSM Camera Subsystem - CSIPHY Module
- *
- * Copyright (c) 2011-2015, The Linux Foundation. All rights reserved.
- * Copyright (C) 2016-2018 Linaro Ltd.
- */
+ 
+ 
 #ifndef QC_MSM_CAMSS_CSIPHY_H
 #define QC_MSM_CAMSS_CSIPHY_H
 
@@ -45,12 +38,7 @@ struct csiphy_config {
 struct csiphy_device;
 
 struct csiphy_hw_ops {
-	/*
-	 * csiphy_get_lane_mask - Calculate CSI2 lane mask configuration parameter
-	 * @lane_cfg - CSI2 lane configuration
-	 *
-	 * Return lane mask
-	 */
+	 
 	u8 (*get_lane_mask)(struct csiphy_lanes_cfg *lane_cfg);
 	void (*hw_version_read)(struct csiphy_device *csiphy,
 				struct device *dev);
@@ -97,4 +85,4 @@ void msm_csiphy_unregister_entity(struct csiphy_device *csiphy);
 extern const struct csiphy_hw_ops csiphy_ops_2ph_1_0;
 extern const struct csiphy_hw_ops csiphy_ops_3ph_1_0;
 
-#endif /* QC_MSM_CAMSS_CSIPHY_H */
+#endif  

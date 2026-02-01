@@ -1,26 +1,4 @@
-/*
- * Copyright 2014 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: Christian König <christian.koenig@amd.com>
- */
+ 
 
 #include <linux/firmware.h>
 
@@ -38,7 +16,7 @@
 #include "vi.h"
 #include "ivsrcid/ivsrcid_vislands30.h"
 
-/* Polaris10/11/12 firmware version */
+ 
 #define FW_1_130_16 ((1 << 24) | (130 << 16) | (16 << 8))
 
 static void uvd_v6_0_set_ring_funcs(struct amdgpu_device *adev);
@@ -53,13 +31,7 @@ static int uvd_v6_0_set_clockgating_state(void *handle,
 static void uvd_v6_0_enable_mgcg(struct amdgpu_device *adev,
 				 bool enable);
 
-/**
-* uvd_v6_0_enc_support - get encode support status
-*
-* @adev: amdgpu_device pointer
-*
-* Returns the current hardware encode support status
-*/
+ 
 static inline bool uvd_v6_0_enc_support(struct amdgpu_device *adev)
 {
 	return ((adev->asic_type >= CHIP_POLARIS10) &&
@@ -67,13 +39,7 @@ static inline bool uvd_v6_0_enc_support(struct amdgpu_device *adev)
 			(!adev->uvd.fw_version || adev->uvd.fw_version >= FW_1_130_16));
 }
 
-/**
- * uvd_v6_0_ring_get_rptr - get read pointer
- *
- * @ring: amdgpu_ring pointer
- *
- * Returns the current hardware read pointer
- */
+ 
 static uint64_t uvd_v6_0_ring_get_rptr(struct amdgpu_ring *ring)
 {
 	struct amdgpu_device *adev = ring->adev;
@@ -81,13 +47,7 @@ static uint64_t uvd_v6_0_ring_get_rptr(struct amdgpu_ring *ring)
 	return RREG32(mmUVD_RBC_RB_RPTR);
 }
 
-/**
- * uvd_v6_0_enc_ring_get_rptr - get enc read pointer
- *
- * @ring: amdgpu_ring pointer
- *
- * Returns the current hardware enc read pointer
- */
+ 
 static uint64_t uvd_v6_0_enc_ring_get_rptr(struct amdgpu_ring *ring)
 {
 	struct amdgpu_device *adev = ring->adev;
@@ -97,13 +57,7 @@ static uint64_t uvd_v6_0_enc_ring_get_rptr(struct amdgpu_ring *ring)
 	else
 		return RREG32(mmUVD_RB_RPTR2);
 }
-/**
- * uvd_v6_0_ring_get_wptr - get write pointer
- *
- * @ring: amdgpu_ring pointer
- *
- * Returns the current hardware write pointer
- */
+ 
 static uint64_t uvd_v6_0_ring_get_wptr(struct amdgpu_ring *ring)
 {
 	struct amdgpu_device *adev = ring->adev;
@@ -111,13 +65,7 @@ static uint64_t uvd_v6_0_ring_get_wptr(struct amdgpu_ring *ring)
 	return RREG32(mmUVD_RBC_RB_WPTR);
 }
 
-/**
- * uvd_v6_0_enc_ring_get_wptr - get enc write pointer
- *
- * @ring: amdgpu_ring pointer
- *
- * Returns the current hardware enc write pointer
- */
+ 
 static uint64_t uvd_v6_0_enc_ring_get_wptr(struct amdgpu_ring *ring)
 {
 	struct amdgpu_device *adev = ring->adev;
@@ -128,13 +76,7 @@ static uint64_t uvd_v6_0_enc_ring_get_wptr(struct amdgpu_ring *ring)
 		return RREG32(mmUVD_RB_WPTR2);
 }
 
-/**
- * uvd_v6_0_ring_set_wptr - set write pointer
- *
- * @ring: amdgpu_ring pointer
- *
- * Commits the write pointer to the hardware
- */
+ 
 static void uvd_v6_0_ring_set_wptr(struct amdgpu_ring *ring)
 {
 	struct amdgpu_device *adev = ring->adev;
@@ -142,13 +84,7 @@ static void uvd_v6_0_ring_set_wptr(struct amdgpu_ring *ring)
 	WREG32(mmUVD_RBC_RB_WPTR, lower_32_bits(ring->wptr));
 }
 
-/**
- * uvd_v6_0_enc_ring_set_wptr - set enc write pointer
- *
- * @ring: amdgpu_ring pointer
- *
- * Commits the enc write pointer to the hardware
- */
+ 
 static void uvd_v6_0_enc_ring_set_wptr(struct amdgpu_ring *ring)
 {
 	struct amdgpu_device *adev = ring->adev;
@@ -161,12 +97,7 @@ static void uvd_v6_0_enc_ring_set_wptr(struct amdgpu_ring *ring)
 			lower_32_bits(ring->wptr));
 }
 
-/**
- * uvd_v6_0_enc_ring_test_ring - test if UVD ENC ring is working
- *
- * @ring: the engine to test on
- *
- */
+ 
 static int uvd_v6_0_enc_ring_test_ring(struct amdgpu_ring *ring)
 {
 	struct amdgpu_device *adev = ring->adev;
@@ -195,16 +126,7 @@ static int uvd_v6_0_enc_ring_test_ring(struct amdgpu_ring *ring)
 	return r;
 }
 
-/**
- * uvd_v6_0_enc_get_create_msg - generate a UVD ENC create msg
- *
- * @ring: ring we should submit the msg to
- * @handle: session handle to use
- * @bo: amdgpu object for which we query the offset
- * @fence: optional fence to return
- *
- * Open up a stream for HW test
- */
+ 
 static int uvd_v6_0_enc_get_create_msg(struct amdgpu_ring *ring, uint32_t handle,
 				       struct amdgpu_bo *bo,
 				       struct dma_fence **fence)
@@ -226,20 +148,20 @@ static int uvd_v6_0_enc_get_create_msg(struct amdgpu_ring *ring, uint32_t handle
 
 	ib->length_dw = 0;
 	ib->ptr[ib->length_dw++] = 0x00000018;
-	ib->ptr[ib->length_dw++] = 0x00000001; /* session info */
+	ib->ptr[ib->length_dw++] = 0x00000001;  
 	ib->ptr[ib->length_dw++] = handle;
 	ib->ptr[ib->length_dw++] = 0x00010000;
 	ib->ptr[ib->length_dw++] = upper_32_bits(addr);
 	ib->ptr[ib->length_dw++] = addr;
 
 	ib->ptr[ib->length_dw++] = 0x00000014;
-	ib->ptr[ib->length_dw++] = 0x00000002; /* task info */
+	ib->ptr[ib->length_dw++] = 0x00000002;  
 	ib->ptr[ib->length_dw++] = 0x0000001c;
 	ib->ptr[ib->length_dw++] = 0x00000001;
 	ib->ptr[ib->length_dw++] = 0x00000000;
 
 	ib->ptr[ib->length_dw++] = 0x00000008;
-	ib->ptr[ib->length_dw++] = 0x08000001; /* op initialize */
+	ib->ptr[ib->length_dw++] = 0x08000001;  
 
 	for (i = ib->length_dw; i < ib_size_dw; ++i)
 		ib->ptr[i] = 0x0;
@@ -258,16 +180,7 @@ err:
 	return r;
 }
 
-/**
- * uvd_v6_0_enc_get_destroy_msg - generate a UVD ENC destroy msg
- *
- * @ring: ring we should submit the msg to
- * @handle: session handle to use
- * @bo: amdgpu object for which we query the offset
- * @fence: optional fence to return
- *
- * Close up a stream for HW test or if userspace failed to do so
- */
+ 
 static int uvd_v6_0_enc_get_destroy_msg(struct amdgpu_ring *ring,
 					uint32_t handle,
 					struct amdgpu_bo *bo,
@@ -290,20 +203,20 @@ static int uvd_v6_0_enc_get_destroy_msg(struct amdgpu_ring *ring,
 
 	ib->length_dw = 0;
 	ib->ptr[ib->length_dw++] = 0x00000018;
-	ib->ptr[ib->length_dw++] = 0x00000001; /* session info */
+	ib->ptr[ib->length_dw++] = 0x00000001;  
 	ib->ptr[ib->length_dw++] = handle;
 	ib->ptr[ib->length_dw++] = 0x00010000;
 	ib->ptr[ib->length_dw++] = upper_32_bits(addr);
 	ib->ptr[ib->length_dw++] = addr;
 
 	ib->ptr[ib->length_dw++] = 0x00000014;
-	ib->ptr[ib->length_dw++] = 0x00000002; /* task info */
+	ib->ptr[ib->length_dw++] = 0x00000002;  
 	ib->ptr[ib->length_dw++] = 0x0000001c;
 	ib->ptr[ib->length_dw++] = 0x00000001;
 	ib->ptr[ib->length_dw++] = 0x00000000;
 
 	ib->ptr[ib->length_dw++] = 0x00000008;
-	ib->ptr[ib->length_dw++] = 0x08000002; /* op close session */
+	ib->ptr[ib->length_dw++] = 0x08000002;  
 
 	for (i = ib->length_dw; i < ib_size_dw; ++i)
 		ib->ptr[i] = 0x0;
@@ -322,13 +235,7 @@ err:
 	return r;
 }
 
-/**
- * uvd_v6_0_enc_ring_test_ib - test if UVD ENC IBs are working
- *
- * @ring: the engine to test on
- * @timeout: timeout value in jiffies, or MAX_SCHEDULE_TIMEOUT
- *
- */
+ 
 static int uvd_v6_0_enc_ring_test_ib(struct amdgpu_ring *ring, long timeout)
 {
 	struct dma_fence *fence = NULL;
@@ -381,12 +288,12 @@ static int uvd_v6_0_sw_init(void *handle)
 	int i, r;
 	struct amdgpu_device *adev = (struct amdgpu_device *)handle;
 
-	/* UVD TRAP */
+	 
 	r = amdgpu_irq_add_id(adev, AMDGPU_IRQ_CLIENTID_LEGACY, VISLANDS30_IV_SRCID_UVD_SYSTEM_MESSAGE, &adev->uvd.inst->irq);
 	if (r)
 		return r;
 
-	/* UVD ENC TRAP */
+	 
 	if (uvd_v6_0_enc_support(adev)) {
 		for (i = 0; i < adev->uvd.num_enc_rings; ++i) {
 			r = amdgpu_irq_add_id(adev, AMDGPU_IRQ_CLIENTID_LEGACY, i + VISLANDS30_IV_SRCID_UVD_ENC_GEN_PURP, &adev->uvd.inst->irq);
@@ -454,13 +361,7 @@ static int uvd_v6_0_sw_fini(void *handle)
 	return amdgpu_uvd_sw_fini(adev);
 }
 
-/**
- * uvd_v6_0_hw_init - start and test UVD block
- *
- * @handle: handle used to pass amdgpu_device pointer
- *
- * Initialize the hardware, boot up the VCPU and do some testing
- */
+ 
 static int uvd_v6_0_hw_init(void *handle)
 {
 	struct amdgpu_device *adev = (struct amdgpu_device *)handle;
@@ -494,7 +395,7 @@ static int uvd_v6_0_hw_init(void *handle)
 	amdgpu_ring_write(ring, tmp);
 	amdgpu_ring_write(ring, 0xFFFFF);
 
-	/* Clear timeout status bits */
+	 
 	amdgpu_ring_write(ring, PACKET0(mmUVD_SEMA_TIMEOUT_STATUS, 0));
 	amdgpu_ring_write(ring, 0x8);
 
@@ -523,13 +424,7 @@ done:
 	return r;
 }
 
-/**
- * uvd_v6_0_hw_fini - stop the hardware block
- *
- * @handle: handle used to pass amdgpu_device pointer
- *
- * Stop the UVD block, mark ring as not ready any more
- */
+ 
 static int uvd_v6_0_hw_fini(void *handle)
 {
 	struct amdgpu_device *adev = (struct amdgpu_device *)handle;
@@ -547,24 +442,14 @@ static int uvd_v6_0_suspend(void *handle)
 	int r;
 	struct amdgpu_device *adev = (struct amdgpu_device *)handle;
 
-	/*
-	 * Proper cleanups before halting the HW engine:
-	 *   - cancel the delayed idle work
-	 *   - enable powergating
-	 *   - enable clockgating
-	 *   - disable dpm
-	 *
-	 * TODO: to align with the VCN implementation, move the
-	 * jobs for clockgating/powergating/dpm setting to
-	 * ->set_powergating_state().
-	 */
+	 
 	cancel_delayed_work_sync(&adev->uvd.idle_work);
 
 	if (adev->pm.dpm_enabled) {
 		amdgpu_dpm_enable_uvd(adev, false);
 	} else {
 		amdgpu_asic_set_uvd_clocks(adev, 0, 0);
-		/* shutdown the UVD block */
+		 
 		amdgpu_device_ip_set_powergating_state(adev, AMD_IP_BLOCK_TYPE_UVD,
 						       AMD_PG_STATE_GATE);
 		amdgpu_device_ip_set_clockgating_state(adev, AMD_IP_BLOCK_TYPE_UVD,
@@ -590,19 +475,13 @@ static int uvd_v6_0_resume(void *handle)
 	return uvd_v6_0_hw_init(adev);
 }
 
-/**
- * uvd_v6_0_mc_resume - memory controller programming
- *
- * @adev: amdgpu_device pointer
- *
- * Let the UVD memory controller know it's offsets
- */
+ 
 static void uvd_v6_0_mc_resume(struct amdgpu_device *adev)
 {
 	uint64_t offset;
 	uint32_t size;
 
-	/* program memory controller bits 0-27 */
+	 
 	WREG32(mmUVD_LMI_VCPU_CACHE_64BIT_BAR_LOW,
 			lower_32_bits(adev->uvd.inst->gpu_addr));
 	WREG32(mmUVD_LMI_VCPU_CACHE_64BIT_BAR_HIGH,
@@ -710,13 +589,7 @@ static void cz_set_uvd_clock_gating_branches(struct amdgpu_device *adev,
 }
 #endif
 
-/**
- * uvd_v6_0_start - start UVD block
- *
- * @adev: amdgpu_device pointer
- *
- * Setup and start the UVD block
- */
+ 
 static int uvd_v6_0_start(struct amdgpu_device *adev)
 {
 	struct amdgpu_ring *ring = &adev->uvd.inst->ring;
@@ -725,23 +598,23 @@ static int uvd_v6_0_start(struct amdgpu_device *adev)
 	uint32_t mp_swap_cntl;
 	int i, j, r;
 
-	/* disable DPG */
+	 
 	WREG32_P(mmUVD_POWER_STATUS, 0, ~UVD_POWER_STATUS__UVD_PG_MODE_MASK);
 
-	/* disable byte swapping */
+	 
 	lmi_swap_cntl = 0;
 	mp_swap_cntl = 0;
 
 	uvd_v6_0_mc_resume(adev);
 
-	/* disable interupt */
+	 
 	WREG32_FIELD(UVD_MASTINT_EN, VCPU_EN, 0);
 
-	/* stall UMC and register bus before resetting VCPU */
+	 
 	WREG32_FIELD(UVD_LMI_CTRL2, STALL_ARB_UMC, 1);
 	mdelay(1);
 
-	/* put LMI, VCPU, RBC etc... into reset */
+	 
 	WREG32(mmUVD_SOFT_RESET,
 		UVD_SOFT_RESET__LMI_SOFT_RESET_MASK |
 		UVD_SOFT_RESET__VCPU_SOFT_RESET_MASK |
@@ -753,11 +626,11 @@ static int uvd_v6_0_start(struct amdgpu_device *adev)
 		UVD_SOFT_RESET__LMI_UMC_SOFT_RESET_MASK);
 	mdelay(5);
 
-	/* take UVD block out of reset */
+	 
 	WREG32_FIELD(SRBM_SOFT_RESET, SOFT_RESET_UVD, 0);
 	mdelay(5);
 
-	/* initialize UVD memory controller */
+	 
 	WREG32(mmUVD_LMI_CTRL,
 		(0x40 << UVD_LMI_CTRL__WRITE_CLEAN_TIMER__SHIFT) |
 		UVD_LMI_CTRL__WRITE_CLEAN_TIMER_EN_MASK |
@@ -767,7 +640,7 @@ static int uvd_v6_0_start(struct amdgpu_device *adev)
 		UVD_LMI_CTRL__DISABLE_ON_FWV_FAIL_MASK);
 
 #ifdef __BIG_ENDIAN
-	/* swap (8 in 32) RB and IB */
+	 
 	lmi_swap_cntl = 0xa;
 	mp_swap_cntl = 0;
 #endif
@@ -781,17 +654,17 @@ static int uvd_v6_0_start(struct amdgpu_device *adev)
 	WREG32(mmUVD_MPC_SET_ALU, 0);
 	WREG32(mmUVD_MPC_SET_MUX, 0x88);
 
-	/* take all subblocks out of reset, except VCPU */
+	 
 	WREG32(mmUVD_SOFT_RESET, UVD_SOFT_RESET__VCPU_SOFT_RESET_MASK);
 	mdelay(5);
 
-	/* enable VCPU clock */
+	 
 	WREG32(mmUVD_VCPU_CNTL, UVD_VCPU_CNTL__CLK_EN_MASK);
 
-	/* enable UMC */
+	 
 	WREG32_FIELD(UVD_LMI_CTRL2, STALL_ARB_UMC, 0);
 
-	/* boot up the VCPU */
+	 
 	WREG32(mmUVD_SOFT_RESET, 0);
 	mdelay(10);
 
@@ -820,15 +693,15 @@ static int uvd_v6_0_start(struct amdgpu_device *adev)
 		DRM_ERROR("UVD not responding, giving up!!!\n");
 		return r;
 	}
-	/* enable master interrupt */
+	 
 	WREG32_P(mmUVD_MASTINT_EN,
 		(UVD_MASTINT_EN__VCPU_EN_MASK|UVD_MASTINT_EN__SYS_EN_MASK),
 		~(UVD_MASTINT_EN__VCPU_EN_MASK|UVD_MASTINT_EN__SYS_EN_MASK));
 
-	/* clear the bit 4 of UVD_STATUS */
+	 
 	WREG32_P(mmUVD_STATUS, 0, ~(2 << UVD_STATUS__VCPU_REPORT__SHIFT));
 
-	/* force RBC into idle state */
+	 
 	rb_bufsz = order_base_2(ring->ring_size);
 	tmp = REG_SET_FIELD(0, UVD_RBC_RB_CNTL, RB_BUFSZ, rb_bufsz);
 	tmp = REG_SET_FIELD(tmp, UVD_RBC_RB_CNTL, RB_BLKSZ, 1);
@@ -838,19 +711,19 @@ static int uvd_v6_0_start(struct amdgpu_device *adev)
 	tmp = REG_SET_FIELD(tmp, UVD_RBC_RB_CNTL, RB_RPTR_WR_EN, 1);
 	WREG32(mmUVD_RBC_RB_CNTL, tmp);
 
-	/* set the write pointer delay */
+	 
 	WREG32(mmUVD_RBC_RB_WPTR_CNTL, 0);
 
-	/* set the wb address */
+	 
 	WREG32(mmUVD_RBC_RB_RPTR_ADDR, (upper_32_bits(ring->gpu_addr) >> 2));
 
-	/* program the RB_BASE for ring buffer */
+	 
 	WREG32(mmUVD_LMI_RBC_RB_64BIT_BAR_LOW,
 			lower_32_bits(ring->gpu_addr));
 	WREG32(mmUVD_LMI_RBC_RB_64BIT_BAR_HIGH,
 			upper_32_bits(ring->gpu_addr));
 
-	/* Initialize the ring buffer's read and write pointers */
+	 
 	WREG32(mmUVD_RBC_RB_RPTR, 0);
 
 	ring->wptr = RREG32(mmUVD_RBC_RB_RPTR);
@@ -877,45 +750,30 @@ static int uvd_v6_0_start(struct amdgpu_device *adev)
 	return 0;
 }
 
-/**
- * uvd_v6_0_stop - stop UVD block
- *
- * @adev: amdgpu_device pointer
- *
- * stop the UVD block
- */
+ 
 static void uvd_v6_0_stop(struct amdgpu_device *adev)
 {
-	/* force RBC into idle state */
+	 
 	WREG32(mmUVD_RBC_RB_CNTL, 0x11010101);
 
-	/* Stall UMC and register bus before resetting VCPU */
+	 
 	WREG32_P(mmUVD_LMI_CTRL2, 1 << 8, ~(1 << 8));
 	mdelay(1);
 
-	/* put VCPU into reset */
+	 
 	WREG32(mmUVD_SOFT_RESET, UVD_SOFT_RESET__VCPU_SOFT_RESET_MASK);
 	mdelay(5);
 
-	/* disable VCPU clock */
+	 
 	WREG32(mmUVD_VCPU_CNTL, 0x0);
 
-	/* Unstall UMC and register bus */
+	 
 	WREG32_P(mmUVD_LMI_CTRL2, 0, ~(1 << 8));
 
 	WREG32(mmUVD_STATUS, 0);
 }
 
-/**
- * uvd_v6_0_ring_emit_fence - emit an fence & trap command
- *
- * @ring: amdgpu_ring pointer
- * @addr: address
- * @seq: sequence number
- * @flags: fence related flags
- *
- * Write a fence and a trap command to the ring.
- */
+ 
 static void uvd_v6_0_ring_emit_fence(struct amdgpu_ring *ring, u64 addr, u64 seq,
 				     unsigned flags)
 {
@@ -938,16 +796,7 @@ static void uvd_v6_0_ring_emit_fence(struct amdgpu_ring *ring, u64 addr, u64 seq
 	amdgpu_ring_write(ring, 2);
 }
 
-/**
- * uvd_v6_0_enc_ring_emit_fence - emit an enc fence & trap command
- *
- * @ring: amdgpu_ring pointer
- * @addr: address
- * @seq: sequence number
- * @flags: fence related flags
- *
- * Write enc a fence and a trap command to the ring.
- */
+ 
 static void uvd_v6_0_enc_ring_emit_fence(struct amdgpu_ring *ring, u64 addr,
 			u64 seq, unsigned flags)
 {
@@ -960,23 +809,13 @@ static void uvd_v6_0_enc_ring_emit_fence(struct amdgpu_ring *ring, u64 addr,
 	amdgpu_ring_write(ring, HEVC_ENC_CMD_TRAP);
 }
 
-/**
- * uvd_v6_0_ring_emit_hdp_flush - skip HDP flushing
- *
- * @ring: amdgpu_ring pointer
- */
+ 
 static void uvd_v6_0_ring_emit_hdp_flush(struct amdgpu_ring *ring)
 {
-	/* The firmware doesn't seem to like touching registers at this point. */
+	 
 }
 
-/**
- * uvd_v6_0_ring_test_ring - register write test
- *
- * @ring: amdgpu_ring pointer
- *
- * Test if we can successfully write to the context register
- */
+ 
 static int uvd_v6_0_ring_test_ring(struct amdgpu_ring *ring)
 {
 	struct amdgpu_device *adev = ring->adev;
@@ -1005,16 +844,7 @@ static int uvd_v6_0_ring_test_ring(struct amdgpu_ring *ring)
 	return r;
 }
 
-/**
- * uvd_v6_0_ring_emit_ib - execute indirect buffer
- *
- * @ring: amdgpu_ring pointer
- * @job: job to retrieve vmid from
- * @ib: indirect buffer to execute
- * @flags: unused
- *
- * Write ring commands to execute the indirect buffer
- */
+ 
 static void uvd_v6_0_ring_emit_ib(struct amdgpu_ring *ring,
 				  struct amdgpu_job *job,
 				  struct amdgpu_ib *ib,
@@ -1033,16 +863,7 @@ static void uvd_v6_0_ring_emit_ib(struct amdgpu_ring *ring,
 	amdgpu_ring_write(ring, ib->length_dw);
 }
 
-/**
- * uvd_v6_0_enc_ring_emit_ib - enc execute indirect buffer
- *
- * @ring: amdgpu_ring pointer
- * @job: job to retrive vmid from
- * @ib: indirect buffer to execute
- * @flags: unused
- *
- * Write enc ring commands to execute the indirect buffer
- */
+ 
 static void uvd_v6_0_enc_ring_emit_ib(struct amdgpu_ring *ring,
 					struct amdgpu_job *job,
 					struct amdgpu_ib *ib,
@@ -1078,7 +899,7 @@ static void uvd_v6_0_ring_emit_vm_flush(struct amdgpu_ring *ring,
 	amdgpu_ring_write(ring, PACKET0(mmUVD_GPCOM_VCPU_DATA1, 0));
 	amdgpu_ring_write(ring, 0);
 	amdgpu_ring_write(ring, PACKET0(mmUVD_GP_SCRATCH8, 0));
-	amdgpu_ring_write(ring, 1 << vmid); /* mask */
+	amdgpu_ring_write(ring, 1 << vmid);  
 	amdgpu_ring_write(ring, PACKET0(mmUVD_GPCOM_VCPU_CMD, 0));
 	amdgpu_ring_write(ring, 0xC);
 }
@@ -1093,7 +914,7 @@ static void uvd_v6_0_ring_emit_pipeline_sync(struct amdgpu_ring *ring)
 	amdgpu_ring_write(ring, PACKET0(mmUVD_GPCOM_VCPU_DATA1, 0));
 	amdgpu_ring_write(ring, upper_32_bits(addr));
 	amdgpu_ring_write(ring, PACKET0(mmUVD_GP_SCRATCH8, 0));
-	amdgpu_ring_write(ring, 0xffffffff); /* mask */
+	amdgpu_ring_write(ring, 0xffffffff);  
 	amdgpu_ring_write(ring, PACKET0(mmUVD_GP_SCRATCH9, 0));
 	amdgpu_ring_write(ring, seq);
 	amdgpu_ring_write(ring, PACKET0(mmUVD_GPCOM_VCPU_CMD, 0));
@@ -1214,7 +1035,7 @@ static int uvd_v6_0_soft_reset(void *handle)
 		WREG32(mmSRBM_SOFT_RESET, tmp);
 		tmp = RREG32(mmSRBM_SOFT_RESET);
 
-		/* Wait a little for things to settle down */
+		 
 		udelay(50);
 	}
 
@@ -1238,7 +1059,7 @@ static int uvd_v6_0_set_interrupt_state(struct amdgpu_device *adev,
 					unsigned type,
 					enum amdgpu_interrupt_state state)
 {
-	// TODO
+	 
 	return 0;
 }
 
@@ -1316,7 +1137,7 @@ static void uvd_v6_0_enable_clock_gating(struct amdgpu_device *adev, bool enable
 			UVD_CGC_GATE__JPEG_MASK      |
 			UVD_CGC_GATE__SCPU_MASK      |
 			UVD_CGC_GATE__JPEG2_MASK);
-		/* only in pg enabled, we can gate clock to vcpu*/
+		 
 		if (adev->pg_flags & AMD_PG_SUPPORT_UVD)
 			data3 |= UVD_CGC_GATE__VCPU_MASK;
 
@@ -1453,14 +1274,14 @@ static int uvd_v6_0_set_clockgating_state(void *handle,
 	bool enable = (state == AMD_CG_STATE_GATE);
 
 	if (enable) {
-		/* wait for STATUS to clear */
+		 
 		if (uvd_v6_0_wait_for_idle(handle))
 			return -EBUSY;
 		uvd_v6_0_enable_clock_gating(adev, true);
-		/* enable HW gates because UVD is idle */
-/*		uvd_v6_0_set_hw_clock_gating(adev); */
+		 
+ 
 	} else {
-		/* disable HW gating and enable Sw gating */
+		 
 		uvd_v6_0_enable_clock_gating(adev, false);
 	}
 	uvd_v6_0_set_sw_clock_gating(adev);
@@ -1470,13 +1291,7 @@ static int uvd_v6_0_set_clockgating_state(void *handle,
 static int uvd_v6_0_set_powergating_state(void *handle,
 					  enum amd_powergating_state state)
 {
-	/* This doesn't actually powergate the UVD block.
-	 * That's done in the dpm code via the SMC.  This
-	 * just re-inits the block as necessary.  The actual
-	 * gating still happens in the dpm code.  We should
-	 * revisit this when there is a cleaner line between
-	 * the smc and the hw blocks
-	 */
+	 
 	struct amdgpu_device *adev = (struct amdgpu_device *)handle;
 	int ret = 0;
 
@@ -1511,7 +1326,7 @@ static void uvd_v6_0_get_clockgating_state(void *handle, u64 *flags)
 		goto out;
 	}
 
-	/* AMD_CG_SUPPORT_UVD_MGCG */
+	 
 	data = RREG32(mmUVD_CGC_CTRL);
 	if (data & UVD_CGC_CTRL__DYN_CLOCK_MODE_MASK)
 		*flags |= AMD_CG_SUPPORT_UVD_MGCG;
@@ -1551,10 +1366,10 @@ static const struct amdgpu_ring_funcs uvd_v6_0_ring_phys_funcs = {
 	.set_wptr = uvd_v6_0_ring_set_wptr,
 	.parse_cs = amdgpu_uvd_ring_parse_cs,
 	.emit_frame_size =
-		6 + /* hdp invalidate */
-		10 + /* uvd_v6_0_ring_emit_pipeline_sync */
-		14, /* uvd_v6_0_ring_emit_fence x1 no user fence */
-	.emit_ib_size = 8, /* uvd_v6_0_ring_emit_ib */
+		6 +  
+		10 +  
+		14,  
+	.emit_ib_size = 8,  
 	.emit_ib = uvd_v6_0_ring_emit_ib,
 	.emit_fence = uvd_v6_0_ring_emit_fence,
 	.emit_hdp_flush = uvd_v6_0_ring_emit_hdp_flush,
@@ -1576,11 +1391,11 @@ static const struct amdgpu_ring_funcs uvd_v6_0_ring_vm_funcs = {
 	.get_wptr = uvd_v6_0_ring_get_wptr,
 	.set_wptr = uvd_v6_0_ring_set_wptr,
 	.emit_frame_size =
-		6 + /* hdp invalidate */
-		10 + /* uvd_v6_0_ring_emit_pipeline_sync */
-		VI_FLUSH_GPU_TLB_NUM_WREG * 6 + 8 + /* uvd_v6_0_ring_emit_vm_flush */
-		14 + 14, /* uvd_v6_0_ring_emit_fence x2 vm fence */
-	.emit_ib_size = 8, /* uvd_v6_0_ring_emit_ib */
+		6 +  
+		10 +  
+		VI_FLUSH_GPU_TLB_NUM_WREG * 6 + 8 +  
+		14 + 14,  
+	.emit_ib_size = 8,  
 	.emit_ib = uvd_v6_0_ring_emit_ib,
 	.emit_fence = uvd_v6_0_ring_emit_fence,
 	.emit_vm_flush = uvd_v6_0_ring_emit_vm_flush,
@@ -1605,11 +1420,11 @@ static const struct amdgpu_ring_funcs uvd_v6_0_enc_ring_vm_funcs = {
 	.get_wptr = uvd_v6_0_enc_ring_get_wptr,
 	.set_wptr = uvd_v6_0_enc_ring_set_wptr,
 	.emit_frame_size =
-		4 + /* uvd_v6_0_enc_ring_emit_pipeline_sync */
-		5 + /* uvd_v6_0_enc_ring_emit_vm_flush */
-		5 + 5 + /* uvd_v6_0_enc_ring_emit_fence x2 vm fence */
-		1, /* uvd_v6_0_enc_ring_insert_end */
-	.emit_ib_size = 5, /* uvd_v6_0_enc_ring_emit_ib */
+		4 +  
+		5 +  
+		5 + 5 +  
+		1,  
+	.emit_ib_size = 5,  
 	.emit_ib = uvd_v6_0_enc_ring_emit_ib,
 	.emit_fence = uvd_v6_0_enc_ring_emit_fence,
 	.emit_vm_flush = uvd_v6_0_enc_ring_emit_vm_flush,

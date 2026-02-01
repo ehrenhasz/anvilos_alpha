@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * PRU-ICSS platform driver for various TI SoCs
- *
- * Copyright (C) 2014-2020 Texas Instruments Incorporated - http://www.ti.com/
- * Author(s):
- *	Suman Anna <s-anna@ti.com>
- *	Andrew F. Davis <afd@ti.com>
- *	Tero Kristo <t-kristo@ti.com>
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/dma-mapping.h>
@@ -25,34 +17,13 @@
 #include <linux/slab.h>
 #include "pruss.h"
 
-/**
- * struct pruss_private_data - PRUSS driver private data
- * @has_no_sharedram: flag to indicate the absence of PRUSS Shared Data RAM
- * @has_core_mux_clock: flag to indicate the presence of PRUSS core clock
- */
+ 
 struct pruss_private_data {
 	bool has_no_sharedram;
 	bool has_core_mux_clock;
 };
 
-/**
- * pruss_get() - get the pruss for a given PRU remoteproc
- * @rproc: remoteproc handle of a PRU instance
- *
- * Finds the parent pruss device for a PRU given the @rproc handle of the
- * PRU remote processor. This function increments the pruss device's refcount,
- * so always use pruss_put() to decrement it back once pruss isn't needed
- * anymore.
- *
- * This API doesn't check if @rproc is valid or not. It is expected the caller
- * will have done a pru_rproc_get() on @rproc, before calling this API to make
- * sure that @rproc is valid.
- *
- * Return: pruss handle on success, and an ERR_PTR on failure using one
- * of the following error values
- *    -EINVAL if invalid parameter
- *    -ENODEV if PRU device or PRUSS device is not found
- */
+ 
 struct pruss *pruss_get(struct rproc *rproc)
 {
 	struct pruss *pruss;
@@ -64,7 +35,7 @@ struct pruss *pruss_get(struct rproc *rproc)
 
 	dev = &rproc->dev;
 
-	/* make sure it is PRU rproc */
+	 
 	if (!dev->parent || !is_pru_rproc(dev->parent))
 		return ERR_PTR(-ENODEV);
 
@@ -79,13 +50,7 @@ struct pruss *pruss_get(struct rproc *rproc)
 }
 EXPORT_SYMBOL_GPL(pruss_get);
 
-/**
- * pruss_put() - decrement pruss device's usecount
- * @pruss: pruss handle
- *
- * Complimentary function for pruss_get(). Needs to be called
- * after the PRUSS is used, and only if the pruss_get() succeeds.
- */
+ 
 void pruss_put(struct pruss *pruss)
 {
 	if (IS_ERR_OR_NULL(pruss))
@@ -95,20 +60,7 @@ void pruss_put(struct pruss *pruss)
 }
 EXPORT_SYMBOL_GPL(pruss_put);
 
-/**
- * pruss_request_mem_region() - request a memory resource
- * @pruss: the pruss instance
- * @mem_id: the memory resource id
- * @region: pointer to memory region structure to be filled in
- *
- * This function allows a client driver to request a memory resource,
- * and if successful, will let the client driver own the particular
- * memory region until released using the pruss_release_mem_region()
- * API.
- *
- * Return: 0 if requested memory region is available (in such case pointer to
- * memory region is returned via @region), an error otherwise
- */
+ 
 int pruss_request_mem_region(struct pruss *pruss, enum pruss_mem mem_id,
 			     struct pruss_mem_region *region)
 {
@@ -131,17 +83,7 @@ int pruss_request_mem_region(struct pruss *pruss, enum pruss_mem mem_id,
 }
 EXPORT_SYMBOL_GPL(pruss_request_mem_region);
 
-/**
- * pruss_release_mem_region() - release a memory resource
- * @pruss: the pruss instance
- * @region: the memory region to release
- *
- * This function is the complimentary function to
- * pruss_request_mem_region(), and allows the client drivers to
- * release back a memory resource.
- *
- * Return: 0 on success, an error code otherwise
- */
+ 
 int pruss_release_mem_region(struct pruss *pruss,
 			     struct pruss_mem_region *region)
 {
@@ -152,7 +94,7 @@ int pruss_release_mem_region(struct pruss *pruss,
 
 	mutex_lock(&pruss->lock);
 
-	/* find out the memory region being released */
+	 
 	for (id = 0; id < PRUSS_MEM_MAX; id++) {
 		if (pruss->mem_in_use[id] == region)
 			break;
@@ -171,14 +113,7 @@ int pruss_release_mem_region(struct pruss *pruss,
 }
 EXPORT_SYMBOL_GPL(pruss_release_mem_region);
 
-/**
- * pruss_cfg_get_gpmux() - get the current GPMUX value for a PRU device
- * @pruss: pruss instance
- * @pru_id: PRU identifier (0-1)
- * @mux: pointer to store the current mux value into
- *
- * Return: 0 on success, or an error code otherwise
- */
+ 
 int pruss_cfg_get_gpmux(struct pruss *pruss, enum pruss_pru_id pru_id, u8 *mux)
 {
 	int ret;
@@ -195,14 +130,7 @@ int pruss_cfg_get_gpmux(struct pruss *pruss, enum pruss_pru_id pru_id, u8 *mux)
 }
 EXPORT_SYMBOL_GPL(pruss_cfg_get_gpmux);
 
-/**
- * pruss_cfg_set_gpmux() - set the GPMUX value for a PRU device
- * @pruss: pruss instance
- * @pru_id: PRU identifier (0-1)
- * @mux: new mux value for PRU
- *
- * Return: 0 on success, or an error code otherwise
- */
+ 
 int pruss_cfg_set_gpmux(struct pruss *pruss, enum pruss_pru_id pru_id, u8 mux)
 {
 	if (mux >= PRUSS_GP_MUX_SEL_MAX ||
@@ -215,17 +143,7 @@ int pruss_cfg_set_gpmux(struct pruss *pruss, enum pruss_pru_id pru_id, u8 mux)
 }
 EXPORT_SYMBOL_GPL(pruss_cfg_set_gpmux);
 
-/**
- * pruss_cfg_gpimode() - set the GPI mode of the PRU
- * @pruss: the pruss instance handle
- * @pru_id: id of the PRU core within the PRUSS
- * @mode: GPI mode to set
- *
- * Sets the GPI mode for a given PRU by programming the
- * corresponding PRUSS_CFG_GPCFGx register
- *
- * Return: 0 on success, or an error code otherwise
- */
+ 
 int pruss_cfg_gpimode(struct pruss *pruss, enum pruss_pru_id pru_id,
 		      enum pruss_gpi_mode mode)
 {
@@ -238,15 +156,7 @@ int pruss_cfg_gpimode(struct pruss *pruss, enum pruss_pru_id pru_id,
 }
 EXPORT_SYMBOL_GPL(pruss_cfg_gpimode);
 
-/**
- * pruss_cfg_miirt_enable() - Enable/disable MII RT Events
- * @pruss: the pruss instance
- * @enable: enable/disable
- *
- * Enable/disable the MII RT Events for the PRUSS.
- *
- * Return: 0 on success, or an error code otherwise
- */
+ 
 int pruss_cfg_miirt_enable(struct pruss *pruss, bool enable)
 {
 	u32 set = enable ? PRUSS_MII_RT_EVENT_EN : 0;
@@ -256,14 +166,7 @@ int pruss_cfg_miirt_enable(struct pruss *pruss, bool enable)
 }
 EXPORT_SYMBOL_GPL(pruss_cfg_miirt_enable);
 
-/**
- * pruss_cfg_xfr_enable() - Enable/disable XIN XOUT shift functionality
- * @pruss: the pruss instance
- * @pru_type: PRU core type identifier
- * @enable: enable/disable
- *
- * Return: 0 on success, or an error code otherwise
- */
+ 
 int pruss_cfg_xfr_enable(struct pruss *pruss, enum pru_type pru_type,
 			 bool enable)
 {
@@ -501,10 +404,7 @@ static int pruss_probe(struct platform_device *pdev)
 	}
 
 	for (i = 0; i < PRUSS_MEM_MAX; i++) {
-		/*
-		 * On AM437x one of two PRUSS units don't contain Shared RAM,
-		 * skip it
-		 */
+		 
 		if (data && data->has_no_sharedram && i == PRUSS_MEM_SHRD_RAM2)
 			continue;
 
@@ -577,7 +477,7 @@ static int pruss_remove(struct platform_device *pdev)
 	return 0;
 }
 
-/* instance-specific driver private data */
+ 
 static const struct pruss_private_data am437x_pruss1_data = {
 	.has_no_sharedram = false,
 };

@@ -1,29 +1,4 @@
-/*
- * This file is part of the MicroPython project, http://micropython.org/
- *
- * The MIT License (MIT)
- *
- * Copyright (c) 2014 Damien P. George
- * Copyright (c) 2014-2016 Paul Sokolovsky
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
+ 
 
 #include <string.h>
 #include <unistd.h>
@@ -32,17 +7,17 @@
 #include "py/stream.h"
 #include "py/runtime.h"
 
-// This file defines generic Python stream read/write methods which
-// dispatch to the underlying stream interface of an object.
 
-// TODO: should be in mpconfig.h
+
+
+
 #define DEFAULT_BUFFER_SIZE 256
 
 static mp_obj_t stream_readall(mp_obj_t self_in);
 
-// Returns error condition in *errcode, if non-zero, return value is number of bytes written
-// before error condition occurred. If *errcode == 0, returns total bytes written (which will
-// be equal to input size).
+
+
+
 mp_uint_t mp_stream_rw(mp_obj_t stream, void *buf_, mp_uint_t size, int *errcode, byte flags) {
     byte *buf = buf_;
     typedef mp_uint_t (*io_func_t)(mp_obj_t obj, void *buf, mp_uint_t size, int *errcode);
@@ -58,14 +33,14 @@ mp_uint_t mp_stream_rw(mp_obj_t stream, void *buf_, mp_uint_t size, int *errcode
     mp_uint_t done = 0;
     while (size > 0) {
         mp_uint_t out_sz = io_func(stream, buf, size, errcode);
-        // For read, out_sz == 0 means EOF. For write, it's unspecified
-        // what it means, but we don't make any progress, so returning
-        // is still the best option.
+        
+        
+        
         if (out_sz == 0) {
             return done;
         }
         if (out_sz == MP_STREAM_ERROR) {
-            // If we read something before getting EAGAIN, don't leak it
+            
             if (mp_is_nonblocking_error(*errcode) && done != 0) {
                 *errcode = 0;
             }
@@ -104,14 +79,14 @@ const mp_stream_p_t *mp_get_stream_raise(mp_obj_t self_in, int flags) {
             return stream_p;
         }
     }
-    // CPython: io.UnsupportedOperation, OSError subclass
+    
     mp_raise_msg(&mp_type_OSError, MP_ERROR_TEXT("stream operation not supported"));
 }
 
 static mp_obj_t stream_read_generic(size_t n_args, const mp_obj_t *args, byte flags) {
-    // What to do if sz < -1?  Python docs don't specify this case.
-    // CPython does a readall, but here we silently let negatives through,
-    // and they will cause a MemoryError.
+    
+    
+    
     mp_int_t sz;
     if (n_args == 1 || ((sz = mp_obj_get_int(args[1])) == -1)) {
         return stream_readall(args[0]);
@@ -121,14 +96,14 @@ static mp_obj_t stream_read_generic(size_t n_args, const mp_obj_t *args, byte fl
 
     #if MICROPY_PY_BUILTINS_STR_UNICODE
     if (stream_p->is_text) {
-        // We need to read sz number of unicode characters.  Because we don't have any
-        // buffering, and because the stream API can only read bytes, we must read here
-        // in units of bytes and must never over read.  If we want sz chars, then reading
-        // sz bytes will never over-read, so we follow this approach, in a loop to keep
-        // reading until we have exactly enough chars.  This will be 1 read for text
-        // with ASCII-only chars, and about 2 reads for text with a couple of non-ASCII
-        // chars.  For text with lots of non-ASCII chars, it'll be pretty inefficient
-        // in time and memory.
+        
+        
+        
+        
+        
+        
+        
+        
 
         vstr_t vstr;
         vstr_init(&vstr, sz);
@@ -141,10 +116,10 @@ static mp_obj_t stream_read_generic(size_t n_args, const mp_obj_t *args, byte fl
             if (error != 0) {
                 vstr_cut_tail_bytes(&vstr, more_bytes);
                 if (mp_is_nonblocking_error(error)) {
-                    // With non-blocking streams, we read as much as we can.
-                    // If we read nothing, return None, just like read().
-                    // Otherwise, return data read so far.
-                    // TODO what if we have read only half a non-ASCII char?
+                    
+                    
+                    
+                    
                     if (vstr.len == 0) {
                         vstr_clear(&vstr);
                         return mp_const_none;
@@ -155,36 +130,36 @@ static mp_obj_t stream_read_generic(size_t n_args, const mp_obj_t *args, byte fl
             }
 
             if (out_sz < more_bytes) {
-                // Finish reading.
-                // TODO what if we have read only half a non-ASCII char?
+                
+                
                 vstr_cut_tail_bytes(&vstr, more_bytes - out_sz);
                 if (out_sz == 0) {
                     break;
                 }
             }
 
-            // count chars from bytes just read
+            
             for (mp_uint_t off = last_buf_offset;;) {
                 byte b = vstr.buf[off];
                 int n;
                 if (!UTF8_IS_NONASCII(b)) {
-                    // 1-byte ASCII char
+                    
                     n = 1;
                 } else if ((b & 0xe0) == 0xc0) {
-                    // 2-byte char
+                    
                     n = 2;
                 } else if ((b & 0xf0) == 0xe0) {
-                    // 3-byte char
+                    
                     n = 3;
                 } else if ((b & 0xf8) == 0xf0) {
-                    // 4-byte char
+                    
                     n = 4;
                 } else {
-                    // TODO
+                    
                     n = 5;
                 }
                 if (off + n <= vstr.len) {
-                    // got a whole char in n bytes
+                    
                     off += n;
                     sz -= 1;
                     last_buf_offset = off;
@@ -193,8 +168,8 @@ static mp_obj_t stream_read_generic(size_t n_args, const mp_obj_t *args, byte fl
                         break;
                     }
                 } else {
-                    // didn't get a whole char, so work out how many extra bytes are needed for
-                    // this partial char, plus bytes for additional chars that we want
+                    
+                    
                     more_bytes = (off + n - vstr.len) + (sz - 1);
                     break;
                 }
@@ -212,11 +187,11 @@ static mp_obj_t stream_read_generic(size_t n_args, const mp_obj_t *args, byte fl
     if (error != 0) {
         vstr_clear(&vstr);
         if (mp_is_nonblocking_error(error)) {
-            // https://docs.python.org/3.4/library/io.html#io.RawIOBase.read
-            // "If the object is in non-blocking mode and no bytes are available,
-            // None is returned."
-            // This is actually very weird, as naive truth check will treat
-            // this as EOF.
+            
+            
+            
+            
+            
             return mp_const_none;
         }
         mp_raise_OSError(error);
@@ -245,9 +220,9 @@ mp_obj_t mp_stream_write(mp_obj_t self_in, const void *buf, size_t len, byte fla
     mp_uint_t out_sz = mp_stream_rw(self_in, (void *)buf, len, &error, flags);
     if (error != 0) {
         if (mp_is_nonblocking_error(error)) {
-            // http://docs.python.org/3/library/io.html#io.RawIOBase.write
-            // "None is returned if the raw stream is set not to block and
-            // no single byte could be readily written to it."
+            
+            
+            
             return mp_const_none;
         }
         mp_raise_OSError(error);
@@ -256,7 +231,7 @@ mp_obj_t mp_stream_write(mp_obj_t self_in, const void *buf, size_t len, byte fla
     }
 }
 
-// This is used to adapt a stream object to an mp_print_t interface
+
 void mp_stream_write_adaptor(void *self, const char *buf, size_t len) {
     mp_stream_write(MP_OBJ_FROM_PTR(self), buf, len, MP_STREAM_RW_WRITE);
 }
@@ -291,9 +266,9 @@ static mp_obj_t stream_readinto(size_t n_args, const mp_obj_t *args) {
     mp_buffer_info_t bufinfo;
     mp_get_buffer_raise(args[1], &bufinfo, MP_BUFFER_WRITE);
 
-    // CPython extension: if 2nd arg is provided, that's max len to read,
-    // instead of full buffer. Similar to
-    // https://docs.python.org/3/library/socket.html#socket.socket.recv_into
+    
+    
+    
     mp_uint_t len = bufinfo.len;
     if (n_args > 2) {
         len = mp_obj_get_int(args[2]);
@@ -328,9 +303,9 @@ static mp_obj_t stream_readall(mp_obj_t self_in) {
         mp_uint_t out_sz = stream_p->read(self_in, p, current_read, &error);
         if (out_sz == MP_STREAM_ERROR) {
             if (mp_is_nonblocking_error(error)) {
-                // With non-blocking streams, we read as much as we can.
-                // If we read nothing, return None, just like read().
-                // Otherwise, return data read so far.
+                
+                
+                
                 if (total_size == 0) {
                     return mp_const_none;
                 }
@@ -359,7 +334,7 @@ static mp_obj_t stream_readall(mp_obj_t self_in) {
     }
 }
 
-// Unbuffered, inefficient implementation of readline() for raw I/O files.
+
 static mp_obj_t stream_unbuffered_readline(size_t n_args, const mp_obj_t *args) {
     const mp_stream_p_t *stream_p = mp_get_stream(args[0]);
 
@@ -382,12 +357,12 @@ static mp_obj_t stream_unbuffered_readline(size_t n_args, const mp_obj_t *args) 
         if (out_sz == MP_STREAM_ERROR) {
             if (mp_is_nonblocking_error(error)) {
                 if (vstr.len == 1) {
-                    // We just incremented it, but otherwise we read nothing
-                    // and immediately got EAGAIN. This case is not well
-                    // specified in
-                    // https://docs.python.org/3/library/io.html#io.IOBase.readline
-                    // unlike similar case for read(). But we follow the latter's
-                    // behavior - return None.
+                    
+                    
+                    
+                    
+                    
+                    
                     vstr_clear(&vstr);
                     return mp_const_none;
                 } else {
@@ -398,9 +373,9 @@ static mp_obj_t stream_unbuffered_readline(size_t n_args, const mp_obj_t *args) 
         }
         if (out_sz == 0) {
         done:
-            // Back out previously added byte
-            // Consider, what's better - read a char and get OutOfMemory (so read
-            // char is lost), or allocate first as we do.
+            
+            
+            
             vstr_cut_tail_bytes(&vstr, 1);
             break;
         }
@@ -417,7 +392,7 @@ static mp_obj_t stream_unbuffered_readline(size_t n_args, const mp_obj_t *args) 
 }
 MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(mp_stream_unbuffered_readline_obj, 1, 2, stream_unbuffered_readline);
 
-// TODO take an optional extra argument (what does it do exactly?)
+
 static mp_obj_t stream_unbuffered_readlines(mp_obj_t self) {
     mp_obj_t lines = mp_obj_new_list(0, NULL);
     for (;;) {
@@ -457,14 +432,14 @@ static mp_obj_t mp_stream___exit__(size_t n_args, const mp_obj_t *args) {
 MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(mp_stream___exit___obj, 4, 4, mp_stream___exit__);
 
 static mp_obj_t stream_seek(size_t n_args, const mp_obj_t *args) {
-    // TODO: Could be uint64
+    
     mp_off_t offset = mp_obj_get_int(args[1]);
     int whence = SEEK_SET;
     if (n_args == 3) {
         whence = mp_obj_get_int(args[2]);
     }
 
-    // In POSIX, it's error to seek before end of stream, we enforce it here.
+    
     if (whence == SEEK_SET && offset < 0) {
         mp_raise_OSError(MP_EINVAL);
     }
@@ -475,7 +450,7 @@ static mp_obj_t stream_seek(size_t n_args, const mp_obj_t *args) {
         mp_raise_OSError(error);
     }
 
-    // TODO: Could be uint64
+    
     return mp_obj_new_int_from_uint(res);
 }
 MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(mp_stream_seek_obj, 2, 3, stream_seek);
@@ -522,13 +497,7 @@ static mp_obj_t stream_ioctl(size_t n_args, const mp_obj_t *args) {
 MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(mp_stream_ioctl_obj, 2, 3, stream_ioctl);
 
 #if MICROPY_STREAMS_POSIX_API
-/*
- * POSIX-like functions
- *
- * These functions have POSIX-compatible signature (except for "void *stream"
- * first argument instead of "int fd"). They are useful to port existing
- * POSIX-compatible software to work with MicroPython streams.
- */
+ 
 
 #include <errno.h>
 

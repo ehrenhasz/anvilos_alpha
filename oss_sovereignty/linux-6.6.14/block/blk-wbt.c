@@ -1,24 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * buffered writeback throttling. loosely based on CoDel. We can't drop
- * packets for IO scheduling, so the logic is something like this:
- *
- * - Monitor latencies in a defined window of time.
- * - If the minimum latency in the above window exceeds some target, increment
- *   scaling step and scale down queue depth by a factor of 2x. The monitoring
- *   window is then shrunk to 100 / sqrt(scaling step + 1).
- * - For any window where we don't have solid data on what the latencies
- *   look like, retain status quo.
- * - If latencies look good, decrement scaling step.
- * - If we're only doing writes, allow the scaling step to go negative. This
- *   will temporarily boost write performance, snapping back to a stable
- *   scaling step of 0 if reads show up or the heavy writers finish. Unlike
- *   positive scaling steps where we shrink the monitoring window, a negative
- *   scaling step retains the default step==0 window size.
- *
- * Copyright (C) 2016 Jens Axboe
- *
- */
+
+ 
 #include <linux/kernel.h>
 #include <linux/blk_types.h>
 #include <linux/slab.h>
@@ -34,12 +15,12 @@
 #include <trace/events/wbt.h>
 
 enum wbt_flags {
-	WBT_TRACKED		= 1,	/* write, tracked for throttling */
-	WBT_READ		= 2,	/* read */
-	WBT_KSWAPD		= 4,	/* write, from kswapd */
-	WBT_DISCARD		= 8,	/* discard */
+	WBT_TRACKED		= 1,	 
+	WBT_READ		= 2,	 
+	WBT_KSWAPD		= 4,	 
+	WBT_DISCARD		= 8,	 
 
-	WBT_NR_BITS		= 4,	/* number of bits */
+	WBT_NR_BITS		= 4,	 
 };
 
 enum {
@@ -49,35 +30,26 @@ enum {
 	WBT_NUM_RWQ,
 };
 
-/*
- * If current state is WBT_STATE_ON/OFF_DEFAULT, it can be covered to any other
- * state, if current state is WBT_STATE_ON/OFF_MANUAL, it can only be covered
- * to WBT_STATE_OFF/ON_MANUAL.
- */
+ 
 enum {
-	WBT_STATE_ON_DEFAULT	= 1,	/* on by default */
-	WBT_STATE_ON_MANUAL	= 2,	/* on manually by sysfs */
-	WBT_STATE_OFF_DEFAULT	= 3,	/* off by default */
-	WBT_STATE_OFF_MANUAL	= 4,	/* off manually by sysfs */
+	WBT_STATE_ON_DEFAULT	= 1,	 
+	WBT_STATE_ON_MANUAL	= 2,	 
+	WBT_STATE_OFF_DEFAULT	= 3,	 
+	WBT_STATE_OFF_MANUAL	= 4,	 
 };
 
 struct rq_wb {
-	/*
-	 * Settings that govern how we throttle
-	 */
-	unsigned int wb_background;		/* background writeback */
-	unsigned int wb_normal;			/* normal writeback */
+	 
+	unsigned int wb_background;		 
+	unsigned int wb_normal;			 
 
-	short enable_state;			/* WBT_STATE_* */
+	short enable_state;			 
 
-	/*
-	 * Number of consecutive periods where we don't have enough
-	 * information to make a firm scale up/down decision.
-	 */
+	 
 	unsigned int unknown_cnt;
 
-	u64 win_nsec;				/* default window size */
-	u64 cur_win_nsec;			/* current window size */
+	u64 win_nsec;				 
+	u64 cur_win_nsec;			 
 
 	struct blk_stat_callback *cb;
 
@@ -86,8 +58,8 @@ struct rq_wb {
 
 	unsigned int wc;
 
-	unsigned long last_issue;		/* last non-throttled issue */
-	unsigned long last_comp;		/* last non-throttled comp */
+	unsigned long last_issue;		 
+	unsigned long last_comp;		 
 	unsigned long min_lat_nsec;
 	struct rq_qos rqos;
 	struct rq_wait rq_wait[WBT_NUM_RWQ];
@@ -120,26 +92,16 @@ static inline bool wbt_is_read(struct request *rq)
 }
 
 enum {
-	/*
-	 * Default setting, we'll scale up (to 75% of QD max) or down (min 1)
-	 * from here depending on device stats
-	 */
+	 
 	RWB_DEF_DEPTH	= 16,
 
-	/*
-	 * 100msec window
-	 */
+	 
 	RWB_WINDOW_NSEC		= 100 * 1000 * 1000ULL,
 
-	/*
-	 * Disregard stats, if we don't meet this minimum
-	 */
+	 
 	RWB_MIN_WRITE_SAMPLES	= 3,
 
-	/*
-	 * If we have this number of consecutive windows with not enough
-	 * information to scale up or down, scale up.
-	 */
+	 
 	RWB_UNKNOWN_BUMP	= 5,
 };
 
@@ -159,10 +121,7 @@ static void wb_timestamp(struct rq_wb *rwb, unsigned long *var)
 	}
 }
 
-/*
- * If a task was rate throttled in balance_dirty_pages() within the last
- * second or so, use that to indicate a higher cleaning rate.
- */
+ 
 static bool wb_recent_wait(struct rq_wb *rwb)
 {
 	struct bdi_writeback *wb = &rwb->rqos.disk->bdi->wb;
@@ -200,11 +159,7 @@ static void wbt_rqw_done(struct rq_wb *rwb, struct rq_wait *rqw,
 
 	inflight = atomic_dec_return(&rqw->inflight);
 
-	/*
-	 * For discards, our limit is always the background. For writes, if
-	 * the device does write back caching, drop further down before we
-	 * wake people up.
-	 */
+	 
 	if (wb_acct & WBT_DISCARD)
 		limit = rwb->wb_background;
 	else if (rwb->wc && !wb_recent_wait(rwb))
@@ -212,9 +167,7 @@ static void wbt_rqw_done(struct rq_wb *rwb, struct rq_wait *rqw,
 	else
 		limit = rwb->wb_normal;
 
-	/*
-	 * Don't wake anyone up if we are above the normal limit.
-	 */
+	 
 	if (inflight && inflight >= limit)
 		return;
 
@@ -238,10 +191,7 @@ static void __wbt_done(struct rq_qos *rqos, enum wbt_flags wb_acct)
 	wbt_rqw_done(rwb, rqw, wb_acct);
 }
 
-/*
- * Called on completion of a request. Note that it's also called when
- * a request is merged, when the request gets freed.
- */
+ 
 static void wbt_done(struct rq_qos *rqos, struct request *rq)
 {
 	struct rq_wb *rwb = RQWB(rqos);
@@ -263,12 +213,7 @@ static void wbt_done(struct rq_qos *rqos, struct request *rq)
 
 static inline bool stat_sample_valid(struct blk_rq_stat *stat)
 {
-	/*
-	 * We need at least one read sample, and a minimum of
-	 * RWB_MIN_WRITE_SAMPLES. We require some write samples to know
-	 * that it's writes impacting us, and not just some sole read on
-	 * a device that is in a lower power state.
-	 */
+	 
 	return (stat[READ].nr_samples >= 1 &&
 		stat[WRITE].nr_samples >= RWB_MIN_WRITE_SAMPLES);
 }
@@ -307,15 +252,7 @@ static int latency_exceeded(struct rq_wb *rwb, struct blk_rq_stat *stat)
 	struct rq_depth *rqd = &rwb->rq_depth;
 	u64 thislat;
 
-	/*
-	 * If our stored sync issue exceeds the window size, or it
-	 * exceeds our min target AND we haven't logged any entries,
-	 * flag the latency as exceeded. wbt works off completion latencies,
-	 * but for a flooded device, a single sync IO can take a long time
-	 * to complete after being issued. If this time exceeds our
-	 * monitoring window AND we didn't see any other completions in that
-	 * window, then count that sync IO as a violation of the latency.
-	 */
+	 
 	thislat = rwb_sync_issue_lat(rwb);
 	if (thislat > rwb->cur_win_nsec ||
 	    (thislat > rwb->min_lat_nsec && !stat[READ].nr_samples)) {
@@ -323,25 +260,16 @@ static int latency_exceeded(struct rq_wb *rwb, struct blk_rq_stat *stat)
 		return LAT_EXCEEDED;
 	}
 
-	/*
-	 * No read/write mix, if stat isn't valid
-	 */
+	 
 	if (!stat_sample_valid(stat)) {
-		/*
-		 * If we had writes in this stat window and the window is
-		 * current, we're only doing writes. If a task recently
-		 * waited or still has writes in flights, consider us doing
-		 * just writes as well.
-		 */
+		 
 		if (stat[WRITE].nr_samples || wb_recent_wait(rwb) ||
 		    wbt_inflight(rwb))
 			return LAT_UNKNOWN_WRITES;
 		return LAT_UNKNOWN;
 	}
 
-	/*
-	 * If the 'min' latency exceeds our target, step down.
-	 */
+	 
 	if (stat[READ].min > rwb->min_lat_nsec) {
 		trace_wbt_lat(bdi, stat[READ].min);
 		trace_wbt_stat(bdi, stat);
@@ -400,19 +328,11 @@ static void rwb_arm_timer(struct rq_wb *rwb)
 	struct rq_depth *rqd = &rwb->rq_depth;
 
 	if (rqd->scale_step > 0) {
-		/*
-		 * We should speed this up, using some variant of a fast
-		 * integer inverse square root calculation. Since we only do
-		 * this for every window expiration, it's not a huge deal,
-		 * though.
-		 */
+		 
 		rwb->cur_win_nsec = div_u64(rwb->win_nsec << 4,
 					int_sqrt((rqd->scale_step + 1) << 8));
 	} else {
-		/*
-		 * For step < 0, we don't want to increase/decrease the
-		 * window size.
-		 */
+		 
 		rwb->cur_win_nsec = rwb->win_nsec;
 	}
 
@@ -433,11 +353,7 @@ static void wb_timer_fn(struct blk_stat_callback *cb)
 
 	trace_wbt_timer(rwb->rqos.disk->bdi, status, rqd->scale_step, inflight);
 
-	/*
-	 * If we exceeded the latency target, step down. If we did not,
-	 * step one level up. If we don't know enough to say either exceeded
-	 * or ok, then don't do anything.
-	 */
+	 
 	switch (status) {
 	case LAT_EXCEEDED:
 		scale_down(rwb, true);
@@ -446,21 +362,13 @@ static void wb_timer_fn(struct blk_stat_callback *cb)
 		scale_up(rwb);
 		break;
 	case LAT_UNKNOWN_WRITES:
-		/*
-		 * We started a the center step, but don't have a valid
-		 * read/write sample, but we do have writes going on.
-		 * Allow step to go negative, to increase write perf.
-		 */
+		 
 		scale_up(rwb);
 		break;
 	case LAT_UNKNOWN:
 		if (++rwb->unknown_cnt < RWB_UNKNOWN_BUMP)
 			break;
-		/*
-		 * We get here when previously scaled reduced depth, and we
-		 * currently don't have a valid read/write sample. For that
-		 * case, slowly return to center state (step == 0).
-		 */
+		 
 		if (rqd->scale_step > 0)
 			scale_up(rwb);
 		else if (rqd->scale_step < 0)
@@ -470,9 +378,7 @@ static void wb_timer_fn(struct blk_stat_callback *cb)
 		break;
 	}
 
-	/*
-	 * Re-arm timer, if we have IO in flight
-	 */
+	 
 	if (rqd->scale_step || inflight)
 		rwb_arm_timer(rwb);
 }
@@ -538,21 +444,11 @@ static inline unsigned int get_limit(struct rq_wb *rwb, blk_opf_t opf)
 	if ((opf & REQ_OP_MASK) == REQ_OP_DISCARD)
 		return rwb->wb_background;
 
-	/*
-	 * At this point we know it's a buffered write. If this is
-	 * kswapd trying to free memory, or REQ_SYNC is set, then
-	 * it's WB_SYNC_ALL writeback, and we'll use the max limit for
-	 * that. If the write is marked as a background write, then use
-	 * the idle limit, or go to normal if we haven't had competing
-	 * IO for a bit.
-	 */
+	 
 	if ((opf & REQ_HIPRIO) || wb_recent_wait(rwb) || current_is_kswapd())
 		limit = rwb->rq_depth.max_depth;
 	else if ((opf & REQ_BACKGROUND) || close_io(rwb)) {
-		/*
-		 * If less than 100ms since we completed unrelated IO,
-		 * limit us to half the depth for background writeback.
-		 */
+		 
 		limit = rwb->wb_background;
 	} else
 		limit = rwb->wb_normal;
@@ -578,10 +474,7 @@ static void wbt_cleanup_cb(struct rq_wait *rqw, void *private_data)
 	wbt_rqw_done(data->rwb, rqw, data->wb_acct);
 }
 
-/*
- * Block if we will exceed our limit, or if we are currently waiting for
- * the timer to kick off queuing again.
- */
+ 
 static void __wbt_wait(struct rq_wb *rwb, enum wbt_flags wb_acct,
 		       blk_opf_t opf)
 {
@@ -599,9 +492,7 @@ static inline bool wbt_should_throttle(struct bio *bio)
 {
 	switch (bio_op(bio)) {
 	case REQ_OP_WRITE:
-		/*
-		 * Don't throttle WRITE_ODIRECT
-		 */
+		 
 		if ((bio->bi_opf & (REQ_SYNC | REQ_IDLE)) ==
 		    (REQ_SYNC | REQ_IDLE))
 			return false;
@@ -639,11 +530,7 @@ static void wbt_cleanup(struct rq_qos *rqos, struct bio *bio)
 	__wbt_done(rqos, flags);
 }
 
-/*
- * May sleep, if we have exceeded the writeback limits. Caller can pass
- * in an irq held spinlock, if it holds one when calling this function.
- * If we do sleep, we'll release and re-grab it.
- */
+ 
 static void wbt_wait(struct rq_qos *rqos, struct bio *bio)
 {
 	struct rq_wb *rwb = RQWB(rqos);
@@ -675,13 +562,7 @@ static void wbt_issue(struct rq_qos *rqos, struct request *rq)
 	if (!rwb_enabled(rwb))
 		return;
 
-	/*
-	 * Track sync issue, in case it takes a long time to complete. Allows us
-	 * to react quicker, if a sync IO takes a long time to complete. Note
-	 * that this is just a hint. The request can go away when it completes,
-	 * so it's important we never dereference it. We only use the address to
-	 * compare with, which is why we store the sync_issue time locally.
-	 */
+	 
 	if (wbt_is_read(rq) && !rwb->sync_issue) {
 		rwb->sync_cookie = rq;
 		rwb->sync_issue = rq->io_start_time_ns;
@@ -706,9 +587,7 @@ void wbt_set_write_cache(struct request_queue *q, bool write_cache_on)
 		RQWB(rqos)->wc = write_cache_on;
 }
 
-/*
- * Enable wbt if defaults are configured that way
- */
+ 
 void wbt_enable_default(struct gendisk *disk)
 {
 	struct request_queue *q = disk->queue;
@@ -719,7 +598,7 @@ void wbt_enable_default(struct gendisk *disk)
 	    test_bit(ELEVATOR_FLAG_DISABLE_WBT, &q->elevator->flags))
 		enable = false;
 
-	/* Throttling already enabled? */
+	 
 	rqos = wbt_rq_qos(q);
 	if (rqos) {
 		if (enable && RQWB(rqos)->enable_state == WBT_STATE_OFF_DEFAULT)
@@ -727,7 +606,7 @@ void wbt_enable_default(struct gendisk *disk)
 		return;
 	}
 
-	/* Queue not registered? Maybe shutting down... */
+	 
 	if (!blk_queue_registered(q))
 		return;
 
@@ -738,10 +617,7 @@ EXPORT_SYMBOL_GPL(wbt_enable_default);
 
 u64 wbt_default_latency_nsec(struct request_queue *q)
 {
-	/*
-	 * We default to 2msec for non-rotational storage, and 75msec
-	 * for rotational storage.
-	 */
+	 
 	if (blk_queue_nonrot(q))
 		return 2000000ULL;
 	else
@@ -757,7 +633,7 @@ static int wbt_data_dir(const struct request *rq)
 	else if (op_is_write(op))
 		return WRITE;
 
-	/* don't account */
+	 
 	return -1;
 }
 
@@ -776,9 +652,7 @@ static void wbt_exit(struct rq_qos *rqos)
 	kfree(rwb);
 }
 
-/*
- * Disable wbt, if enabled by default.
- */
+ 
 void wbt_disable_default(struct gendisk *disk)
 {
 	struct rq_qos *rqos = wbt_rq_qos(disk->queue);
@@ -924,9 +798,7 @@ int wbt_init(struct gendisk *disk)
 	rwb->rq_depth.queue_depth = blk_queue_depth(q);
 	wbt_update_limits(rwb);
 
-	/*
-	 * Assign rwb and add the stats callback.
-	 */
+	 
 	mutex_lock(&q->rq_qos_mutex);
 	ret = rq_qos_add(&rwb->rqos, disk, RQ_QOS_WBT, &wbt_rqos_ops);
 	mutex_unlock(&q->rq_qos_mutex);

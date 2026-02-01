@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * CS2000  --  CIRRUS LOGIC Fractional-N Clock Synthesizer & Clock Multiplier
- *
- * Copyright (C) 2015 Renesas Electronics Corporation
- * Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>
- */
+
+ 
 #include <linux/clk-provider.h>
 #include <linux/delay.h>
 #include <linux/clk.h>
@@ -27,24 +22,24 @@
 #define FUNC_CFG1	0x16
 #define FUNC_CFG2	0x17
 
-/* DEVICE_ID */
+ 
 #define REVISION_MASK	(0x7)
 #define REVISION_B2_B3	(0x4)
 #define REVISION_C1	(0x6)
 
-/* DEVICE_CTRL */
+ 
 #define PLL_UNLOCK	(1 << 7)
 #define AUXOUTDIS	(1 << 1)
 #define CLKOUTDIS	(1 << 0)
 
-/* DEVICE_CFG1 */
+ 
 #define RSEL(x)		(((x) & 0x3) << 3)
 #define RSEL_MASK	RSEL(0x3)
 #define AUXOUTSRC(x)	(((x) & 0x3) << 1)
 #define AUXOUTSRC_MASK	AUXOUTSRC(0x3)
 #define ENDEV1		(0x1)
 
-/* DEVICE_CFG2 */
+ 
 #define AUTORMOD	(1 << 3)
 #define LOCKCLK(x)	(((x) & 0x3) << 1)
 #define LOCKCLK_MASK	LOCKCLK(0x3)
@@ -52,16 +47,16 @@
 #define FRACNSRC_STATIC		(0 << 0)
 #define FRACNSRC_DYNAMIC	(1 << 0)
 
-/* GLOBAL_CFG */
+ 
 #define FREEZE		(1 << 7)
 #define ENDEV2		(0x1)
 
-/* FUNC_CFG1 */
+ 
 #define CLKSKIPEN	(1 << 7)
 #define REFCLKDIV(x)	(((x) & 0x3) << 3)
 #define REFCLKDIV_MASK	REFCLKDIV(0x3)
 
-/* FUNC_CFG2 */
+ 
 #define LFRATIO_MASK	(1 << 3)
 #define LFRATIO_20_12	(0 << 3)
 #define LFRATIO_12_20	(1 << 3)
@@ -110,7 +105,7 @@ struct cs2000_priv {
 	bool lf_ratio;
 	bool clk_skip;
 
-	/* suspend/resume */
+	 
 	unsigned long saved_rate;
 	unsigned long saved_parent_rate;
 };
@@ -190,7 +185,7 @@ static int cs2000_wait_pll_lock(struct cs2000_priv *priv)
 
 static int cs2000_clk_out_enable(struct cs2000_priv *priv, bool enable)
 {
-	/* enable both AUX_OUT, CLK_OUT */
+	 
 	return regmap_update_bits(priv->regmap, DEVICE_CTRL,
 				  (AUXOUTDIS | CLKOUTDIS),
 				  enable ? 0 :
@@ -202,12 +197,7 @@ static u32 cs2000_rate_to_ratio(u32 rate_in, u32 rate_out, bool lf_ratio)
 	u64 ratio;
 	u32 multiplier = lf_ratio ? 12 : 20;
 
-	/*
-	 * ratio = rate_out / rate_in * 2^multiplier
-	 *
-	 * To avoid over flow, rate_out is u64.
-	 * The result should be u32.
-	 */
+	 
 	ratio = (u64)rate_out << multiplier;
 	do_div(ratio, rate_in);
 
@@ -219,12 +209,7 @@ static unsigned long cs2000_ratio_to_rate(u32 ratio, u32 rate_in, bool lf_ratio)
 	u64 rate_out;
 	u32 multiplier = lf_ratio ? 12 : 20;
 
-	/*
-	 * ratio = rate_out / rate_in * 2^multiplier
-	 *
-	 * To avoid over flow, rate_out is u64.
-	 * The result should be u32 or unsigned long.
-	 */
+	 
 
 	rate_out = (u64)ratio * rate_in;
 	return rate_out >> multiplier;
@@ -297,7 +282,7 @@ static unsigned long cs2000_recalc_rate(struct clk_hw *hw,
 					unsigned long parent_rate)
 {
 	struct cs2000_priv *priv = hw_to_priv(hw);
-	int ch = 0; /* it uses ch0 only at this point */
+	int ch = 0;  
 	u32 ratio;
 
 	ratio = cs2000_ratio_get(priv, ch);
@@ -320,17 +305,7 @@ static int cs2000_select_ratio_mode(struct cs2000_priv *priv,
 				    unsigned long rate,
 				    unsigned long parent_rate)
 {
-	/*
-	 * From the datasheet:
-	 *
-	 * | It is recommended that the 12.20 High-Resolution format be
-	 * | utilized whenever the desired ratio is less than 4096 since
-	 * | the output frequency accuracy of the PLL is directly proportional
-	 * | to the accuracy of the timing reference clock and the resolution
-	 * | of the R_UD.
-	 *
-	 * This mode is only available in dynamic mode.
-	 */
+	 
 	priv->lf_ratio = priv->dynamic_mode && ((rate / parent_rate) > 4096);
 
 	return regmap_update_bits(priv->regmap, FUNC_CFG2, LFRATIO_MASK,
@@ -373,14 +348,14 @@ static int cs2000_set_rate(struct clk_hw *hw,
 			   unsigned long rate, unsigned long parent_rate)
 {
 	struct cs2000_priv *priv = hw_to_priv(hw);
-	int ch = 0; /* it uses ch0 only at this point */
+	int ch = 0;  
 
 	return __cs2000_set_rate(priv, ch, rate, parent_rate);
 }
 
 static int cs2000_set_saved_rate(struct cs2000_priv *priv)
 {
-	int ch = 0; /* it uses ch0 only at this point */
+	int ch = 0;  
 
 	return __cs2000_set_rate(priv, ch,
 				 priv->saved_rate,
@@ -420,10 +395,7 @@ static u8 cs2000_get_parent(struct clk_hw *hw)
 {
 	struct cs2000_priv *priv = hw_to_priv(hw);
 
-	/*
-	 * In dynamic mode, output rates are derived from CLK_IN.
-	 * In static mode, CLK_IN is ignored, so we return REF_CLK instead.
-	 */
+	 
 	return priv->dynamic_mode ? CLK_IN : REF_CLK;
 }
 
@@ -442,12 +414,12 @@ static int cs2000_clk_get(struct cs2000_priv *priv)
 	struct clk *clk_in, *ref_clk;
 
 	clk_in = devm_clk_get(dev, "clk_in");
-	/* not yet provided */
+	 
 	if (IS_ERR(clk_in))
 		return -EPROBE_DEFER;
 
 	ref_clk = devm_clk_get(dev, "ref_clk");
-	/* not yet provided */
+	 
 	if (IS_ERR(ref_clk))
 		return -EPROBE_DEFER;
 
@@ -466,7 +438,7 @@ static int cs2000_clk_register(struct cs2000_priv *priv)
 	static const char *parent_names[CLK_MAX];
 	u32 aux_out = 0;
 	int ref_clk_rate;
-	int ch = 0; /* it uses ch0 only at this point */
+	int ch = 0;  
 	int ret;
 
 	of_property_read_string(np, "clock-output-names", &name);
@@ -489,14 +461,10 @@ static int cs2000_clk_register(struct cs2000_priv *priv)
 		return ret;
 
 	if (priv->dynamic_mode) {
-		/* Default to low-frequency mode to allow for large ratios */
+		 
 		priv->lf_ratio = true;
 	} else {
-		/*
-		 * set default rate as 1/1.
-		 * otherwise .set_rate which setup ratio
-		 * is never called if user requests 1/1 rate
-		 */
+		 
 		ret = __cs2000_set_rate(priv, ch, ref_clk_rate, ref_clk_rate);
 		if (ret < 0)
 			return ret;
@@ -537,7 +505,7 @@ static int cs2000_version_print(struct cs2000_priv *priv)
 	if (ret < 0)
 		return ret;
 
-	/* CS2000 should be 0x0 */
+	 
 	if (val >> 3)
 		return -EIO;
 

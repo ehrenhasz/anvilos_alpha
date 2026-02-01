@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright Altera Corporation (C) 2014. All rights reserved.
- *
- * Adopted from dwmac-sti.c
- */
+
+ 
 
 #include <linux/mfd/altera-sysmgr.h>
 #include <linux/of.h>
@@ -282,14 +279,11 @@ static int socfpga_gen5_set_phy_mode(struct socfpga_dwmac *dwmac)
 		return -EINVAL;
 	}
 
-	/* Overwrite val to GMII if splitter core is enabled. The phymode here
-	 * is the actual phy mode on phy hardware, but phy interface from
-	 * EMAC core is GMII.
-	 */
+	 
 	if (dwmac->splitter_base)
 		val = SYSMGR_EMACGRP_CTRL_PHYSEL_ENUM_GMII_MII;
 
-	/* Assert reset to the enet controller before changing the phy mode */
+	 
 	reset_control_assert(dwmac->stmmac_ocp_rst);
 	reset_control_assert(dwmac->stmmac_rst);
 
@@ -316,9 +310,7 @@ static int socfpga_gen5_set_phy_mode(struct socfpga_dwmac *dwmac)
 
 	regmap_write(sys_mgr_base_addr, reg_offset, ctrl);
 
-	/* Deassert reset for the phy configuration to be sampled by
-	 * the enet controller, and operation to start in requested mode
-	 */
+	 
 	reset_control_deassert(dwmac->stmmac_ocp_rst);
 	reset_control_deassert(dwmac->stmmac_rst);
 	if (phymode == PHY_INTERFACE_MODE_SGMII)
@@ -338,14 +330,11 @@ static int socfpga_gen10_set_phy_mode(struct socfpga_dwmac *dwmac)
 	if (socfpga_set_phy_mode_common(phymode, &val))
 		return -EINVAL;
 
-	/* Overwrite val to GMII if splitter core is enabled. The phymode here
-	 * is the actual phy mode on phy hardware, but phy interface from
-	 * EMAC core is GMII.
-	 */
+	 
 	if (dwmac->splitter_base)
 		val = SYSMGR_EMACGRP_CTRL_PHYSEL_ENUM_GMII_MII;
 
-	/* Assert reset to the enet controller before changing the phy mode */
+	 
 	reset_control_assert(dwmac->stmmac_ocp_rst);
 	reset_control_assert(dwmac->stmmac_rst);
 
@@ -369,9 +358,7 @@ static int socfpga_gen10_set_phy_mode(struct socfpga_dwmac *dwmac)
 
 	regmap_write(sys_mgr_base_addr, reg_offset, ctrl);
 
-	/* Deassert reset for the phy configuration to be sampled by
-	 * the enet controller, and operation to start in requested mode
-	 */
+	 
 	reset_control_deassert(dwmac->stmmac_ocp_rst);
 	reset_control_deassert(dwmac->stmmac_rst);
 	if (phymode == PHY_INTERFACE_MODE_SGMII)
@@ -436,19 +423,14 @@ static int socfpga_dwmac_probe(struct platform_device *pdev)
 	ndev = platform_get_drvdata(pdev);
 	stpriv = netdev_priv(ndev);
 
-	/* The socfpga driver needs to control the stmmac reset to set the phy
-	 * mode. Create a copy of the core reset handle so it can be used by
-	 * the driver later.
-	 */
+	 
 	dwmac->stmmac_rst = stpriv->plat->stmmac_rst;
 
 	ret = ops->set_phy_mode(dwmac);
 	if (ret)
 		goto err_dvr_remove;
 
-	/* Create a regmap for the PCS so that it can be used by the PCS driver,
-	 * if we have such a PCS
-	 */
+	 
 	if (dwmac->tse_pcs_base) {
 		struct regmap_config pcs_regmap_cfg;
 		struct mdio_regmap_config mrc;
@@ -518,27 +500,13 @@ static int socfpga_dwmac_resume(struct device *dev)
 
 	dwmac_priv->ops->set_phy_mode(priv->plat->bsp_priv);
 
-	/* Before the enet controller is suspended, the phy is suspended.
-	 * This causes the phy clock to be gated. The enet controller is
-	 * resumed before the phy, so the clock is still gated "off" when
-	 * the enet controller is resumed. This code makes sure the phy
-	 * is "resumed" before reinitializing the enet controller since
-	 * the enet controller depends on an active phy clock to complete
-	 * a DMA reset. A DMA reset will "time out" if executed
-	 * with no phy clock input on the Synopsys enet controller.
-	 * Verified through Synopsys Case #8000711656.
-	 *
-	 * Note that the phy clock is also gated when the phy is isolated.
-	 * Phy "suspend" and "isolate" controls are located in phy basic
-	 * control register 0, and can be modified by the phy driver
-	 * framework.
-	 */
+	 
 	if (ndev->phydev)
 		phy_resume(ndev->phydev);
 
 	return stmmac_resume(dev);
 }
-#endif /* CONFIG_PM_SLEEP */
+#endif  
 
 static int __maybe_unused socfpga_dwmac_runtime_suspend(struct device *dev)
 {

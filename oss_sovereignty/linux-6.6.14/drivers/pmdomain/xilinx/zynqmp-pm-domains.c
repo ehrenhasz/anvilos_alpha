@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * ZynqMP Generic PM domain support
- *
- *  Copyright (C) 2015-2019 Xilinx, Inc.
- *
- *  Davorin Mista <davorin.mista@aggios.com>
- *  Jolly Shah <jollys@xilinx.com>
- *  Rajan Vaja <rajan.vaja@xilinx.com>
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/list.h>
@@ -23,12 +15,7 @@
 
 static int min_capability;
 
-/**
- * struct zynqmp_pm_domain - Wrapper around struct generic_pm_domain
- * @gpd:		Generic power domain
- * @node_id:		PM node ID corresponding to device inside PM domain
- * @requested:		The PM node mapped to the PM domain has been requested
- */
+ 
 struct zynqmp_pm_domain {
 	struct generic_pm_domain gpd;
 	u32 node_id;
@@ -38,17 +25,7 @@ struct zynqmp_pm_domain {
 #define to_zynqmp_pm_domain(pm_domain) \
 	container_of(pm_domain, struct zynqmp_pm_domain, gpd)
 
-/**
- * zynqmp_gpd_is_active_wakeup_path() - Check if device is in wakeup source
- *					path
- * @dev:	Device to check for wakeup source path
- * @not_used:	Data member (not required)
- *
- * This function is checks device's child hierarchy and checks if any device is
- * set as wakeup source.
- *
- * Return: 1 if device is in wakeup source path else 0
- */
+ 
 static int zynqmp_gpd_is_active_wakeup_path(struct device *dev, void *not_used)
 {
 	int may_wakeup;
@@ -61,15 +38,7 @@ static int zynqmp_gpd_is_active_wakeup_path(struct device *dev, void *not_used)
 			zynqmp_gpd_is_active_wakeup_path);
 }
 
-/**
- * zynqmp_gpd_power_on() - Power on PM domain
- * @domain:	Generic PM domain
- *
- * This function is called before devices inside a PM domain are resumed, to
- * power on PM domain.
- *
- * Return: 0 on success, error code otherwise
- */
+ 
 static int zynqmp_gpd_power_on(struct generic_pm_domain *domain)
 {
 	struct zynqmp_pm_domain *pd = to_zynqmp_pm_domain(domain);
@@ -92,15 +61,7 @@ static int zynqmp_gpd_power_on(struct generic_pm_domain *domain)
 	return 0;
 }
 
-/**
- * zynqmp_gpd_power_off() - Power off PM domain
- * @domain:	Generic PM domain
- *
- * This function is called after devices inside a PM domain are suspended, to
- * power off PM domain.
- *
- * Return: 0 on success, error code otherwise
- */
+ 
 static int zynqmp_gpd_power_off(struct generic_pm_domain *domain)
 {
 	struct zynqmp_pm_domain *pd = to_zynqmp_pm_domain(domain);
@@ -109,7 +70,7 @@ static int zynqmp_gpd_power_off(struct generic_pm_domain *domain)
 	u32 capabilities = min_capability;
 	bool may_wakeup;
 
-	/* If domain is already released there is nothing to be done */
+	 
 	if (!pd->requested) {
 		dev_dbg(&domain->dev, "PM node id %d is already released\n",
 			pd->node_id);
@@ -117,7 +78,7 @@ static int zynqmp_gpd_power_off(struct generic_pm_domain *domain)
 	}
 
 	list_for_each_entry_safe(pdd, tmp, &domain->dev_list, list_node) {
-		/* If device is in wakeup path, set capability to WAKEUP */
+		 
 		may_wakeup = zynqmp_gpd_is_active_wakeup_path(pdd->dev, NULL);
 		if (may_wakeup) {
 			dev_dbg(pdd->dev, "device is in wakeup path in %s\n",
@@ -142,13 +103,7 @@ static int zynqmp_gpd_power_off(struct generic_pm_domain *domain)
 	return 0;
 }
 
-/**
- * zynqmp_gpd_attach_dev() - Attach device to the PM domain
- * @domain:	Generic PM domain
- * @dev:	Device to attach
- *
- * Return: 0 on success, error code otherwise
- */
+ 
 static int zynqmp_gpd_attach_dev(struct generic_pm_domain *domain,
 				 struct device *dev)
 {
@@ -161,7 +116,7 @@ static int zynqmp_gpd_attach_dev(struct generic_pm_domain *domain,
 		dev_dbg(&domain->dev, "failed to create device link for %s\n",
 			dev_name(dev));
 
-	/* If this is not the first device to attach there is nothing to do */
+	 
 	if (domain->device_count)
 		return 0;
 
@@ -181,18 +136,14 @@ static int zynqmp_gpd_attach_dev(struct generic_pm_domain *domain,
 	return 0;
 }
 
-/**
- * zynqmp_gpd_detach_dev() - Detach device from the PM domain
- * @domain:	Generic PM domain
- * @dev:	Device to detach
- */
+ 
 static void zynqmp_gpd_detach_dev(struct generic_pm_domain *domain,
 				  struct device *dev)
 {
 	struct zynqmp_pm_domain *pd = to_zynqmp_pm_domain(domain);
 	int ret;
 
-	/* If this is not the last device to detach there is nothing to do */
+	 
 	if (domain->device_count)
 		return;
 
@@ -221,16 +172,13 @@ static struct generic_pm_domain *zynqmp_gpd_xlate
 	if (genpdspec->args_count != 1)
 		return ERR_PTR(-EINVAL);
 
-	/* Check for existing pm domains */
+	 
 	for (i = 0; i < ZYNQMP_NUM_DOMAINS; i++) {
 		if (pd[i].node_id == idx)
 			goto done;
 	}
 
-	/*
-	 * Add index in empty node_id of power domain list as no existing
-	 * power domain found for current index.
-	 */
+	 
 	for (i = 0; i < ZYNQMP_NUM_DOMAINS; i++) {
 		if (pd[i].node_id == 0) {
 			pd[i].node_id = idx;
@@ -282,7 +230,7 @@ static int zynqmp_gpd_probe(struct platform_device *pdev)
 
 		domains[i] = &pd->gpd;
 
-		/* Mark all PM domains as initially powered off */
+		 
 		pm_genpd_init(&pd->gpd, NULL, true);
 	}
 

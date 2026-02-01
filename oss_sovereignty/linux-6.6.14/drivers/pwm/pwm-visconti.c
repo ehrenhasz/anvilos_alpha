@@ -1,22 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Toshiba Visconti pulse-width-modulation controller driver
- *
- * Copyright (c) 2020 - 2021 TOSHIBA CORPORATION
- * Copyright (c) 2020 - 2021 Toshiba Electronic Devices & Storage Corporation
- *
- * Authors: Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>
- *
- * Limitations:
- * - The fixed input clock is running at 1 MHz and is divided by either 1,
- *   2, 4 or 8.
- * - When the settings of the PWM are modified, the new values are shadowed
- *   in hardware until the PIPGM_PCSR register is written and the currently
- *   running period is completed. This way the hardware switches atomically
- *   from the old setting to the new.
- * - Disabling the hardware completes the currently running period and keeps
- *   the output at low level at all times.
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/io.h>
@@ -54,12 +37,7 @@ static int visconti_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
 		return 0;
 	}
 
-	/*
-	 * The biggest period the hardware can provide is
-	 *	(0xffff << 3) * 1000 ns
-	 * This value fits easily in an u32, so simplify the maths by
-	 * capping the values to 32 bit integers.
-	 */
+	 
 	if (state->period > (0xffff << 3) * 1000)
 		period = (0xffff << 3) * 1000;
 	else
@@ -70,23 +48,14 @@ static int visconti_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
 	else
 		duty_cycle = state->duty_cycle;
 
-	/*
-	 * The input clock runs fixed at 1 MHz, so we have only
-	 * microsecond resolution and so can divide by
-	 * NSEC_PER_SEC / CLKFREQ = 1000 without losing precision.
-	 */
+	 
 	period /= 1000;
 	duty_cycle /= 1000;
 
 	if (!period)
 		return -ERANGE;
 
-	/*
-	 * PWMC controls a divider that divides the input clk by a power of two
-	 * between 1 and 8. As a smaller divider yields higher precision, pick
-	 * the smallest possible one. As period is at most 0xffff << 3, pwmc0 is
-	 * in the intended range [0..3].
-	 */
+	 
 	pwmc0 = fls(period >> 16);
 	if (WARN_ON(pwmc0 > 3))
 		return -EINVAL;

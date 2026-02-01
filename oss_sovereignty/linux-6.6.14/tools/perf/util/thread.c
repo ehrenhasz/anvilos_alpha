@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <errno.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -68,7 +68,7 @@ struct thread *thread__new(pid_t pid, pid_t tid)
 
 		list_add(&comm->list, thread__comm_list(thread));
 		refcount_set(thread__refcnt(thread), 1);
-		/* Thread holds first ref to nsdata. */
+		 
 		RC_CHK_ACCESS(thread)->nsinfo = nsinfo__new(pid);
 		srccode_state_init(thread__srccode_state(thread));
 	}
@@ -177,11 +177,7 @@ static int __thread__set_namespaces(struct thread *thread, u64 timestamp,
 	list_add(&new->list, thread__namespaces_list(thread));
 
 	if (timestamp && curr) {
-		/*
-		 * setns syscall must have changed few or all the namespaces
-		 * of this thread. Update end time for the namespaces
-		 * previously used.
-		 */
+		 
 		curr = list_next_entry(new, list);
 		curr->end_time = timestamp;
 	}
@@ -219,12 +215,7 @@ struct comm *thread__exec_comm(struct thread *thread)
 		last = comm;
 	}
 
-	/*
-	 * 'last' with no start time might be the parent's comm of a synthesized
-	 * thread (created by processing a synthesized fork event). For a main
-	 * thread, that is very probably wrong. Prefer a later comm to avoid
-	 * that case.
-	 */
+	 
 	if (second_last && !last->start && thread__pid(thread) == thread__tid(thread))
 		return second_last;
 
@@ -236,7 +227,7 @@ static int ____thread__set_comm(struct thread *thread, const char *str,
 {
 	struct comm *new, *curr = thread__comm(thread);
 
-	/* Override the default :tid entry */
+	 
 	if (!thread__comm_set(thread)) {
 		int err = comm__override(curr, str, timestamp, exec);
 		if (err)
@@ -314,7 +305,7 @@ static int __thread__comm_len(struct thread *thread, const char *comm)
 	return thread__var_comm_len(thread);
 }
 
-/* CHECKME: it should probably better return the max comm len from its comm list */
+ 
 int thread__comm_len(struct thread *thread)
 {
 	int comm_len = thread__var_comm_len(thread);
@@ -381,7 +372,7 @@ static int thread__prepare_access(struct thread *thread)
 
 static int thread__clone_maps(struct thread *thread, struct thread *parent, bool do_maps_clone)
 {
-	/* This is new thread, we share map groups for process. */
+	 
 	if (thread__pid(thread) == thread__pid(parent))
 		return thread__prepare_access(thread);
 
@@ -391,7 +382,7 @@ static int thread__clone_maps(struct thread *thread, struct thread *parent, bool
 			 thread__pid(parent), thread__tid(parent));
 		return 0;
 	}
-	/* But this one is new process, copy maps. */
+	 
 	return do_maps_clone ? maps__clone(thread, thread__maps(parent)) : 0;
 }
 

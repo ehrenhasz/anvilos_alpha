@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
-/*******************************************************************************
- *
- * Module Name: dbstats - Generation and display of ACPI table statistics
- *
- ******************************************************************************/
+
+ 
 
 #include <acpi/acpi.h>
 #include "accommon.h"
@@ -13,7 +9,7 @@
 #define _COMPONENT          ACPI_CA_DEBUGGER
 ACPI_MODULE_NAME("dbstats")
 
-/* Local prototypes */
+ 
 static void acpi_db_count_namespace_objects(void);
 
 static void acpi_db_enumerate_object(union acpi_operand_object *obj_desc);
@@ -27,9 +23,7 @@ acpi_db_classify_one_object(acpi_handle obj_handle,
 static void acpi_db_list_info(struct acpi_memory_list *list);
 #endif
 
-/*
- * Statistics subcommands
- */
+ 
 static struct acpi_db_argument_info acpi_db_stat_types[] = {
 	{"ALLOCATIONS"},
 	{"OBJECTS"},
@@ -38,7 +32,7 @@ static struct acpi_db_argument_info acpi_db_stat_types[] = {
 	{"TABLES"},
 	{"SIZES"},
 	{"STACK"},
-	{NULL}			/* Must be null terminated */
+	{NULL}			 
 };
 
 #define CMD_STAT_ALLOCATIONS     0
@@ -50,17 +44,7 @@ static struct acpi_db_argument_info acpi_db_stat_types[] = {
 #define CMD_STAT_STACK           6
 
 #if defined ACPI_DBG_TRACK_ALLOCATIONS || defined ACPI_USE_LOCAL_CACHE
-/*******************************************************************************
- *
- * FUNCTION:    acpi_db_list_info
- *
- * PARAMETERS:  list            - Memory list/cache to be displayed
- *
- * RETURN:      None
- *
- * DESCRIPTION: Display information about the input memory list or cache.
- *
- ******************************************************************************/
+ 
 
 static void acpi_db_list_info(struct acpi_memory_list *list)
 {
@@ -70,7 +54,7 @@ static void acpi_db_list_info(struct acpi_memory_list *list)
 
 	acpi_os_printf("\n%s\n", list->list_name);
 
-	/* max_depth > 0 indicates a cache object */
+	 
 
 	if (list->max_depth > 0) {
 		acpi_os_printf
@@ -107,19 +91,7 @@ static void acpi_db_list_info(struct acpi_memory_list *list)
 }
 #endif
 
-/*******************************************************************************
- *
- * FUNCTION:    acpi_db_enumerate_object
- *
- * PARAMETERS:  obj_desc            - Object to be counted
- *
- * RETURN:      None
- *
- * DESCRIPTION: Add this object to the global counts, by object type.
- *              Limited recursion handles subobjects and packages, and this
- *              is probably acceptable within the AML debugger only.
- *
- ******************************************************************************/
+ 
 
 static void acpi_db_enumerate_object(union acpi_operand_object *obj_desc)
 {
@@ -129,7 +101,7 @@ static void acpi_db_enumerate_object(union acpi_operand_object *obj_desc)
 		return;
 	}
 
-	/* Enumerate this object first */
+	 
 
 	acpi_gbl_num_objects++;
 
@@ -139,7 +111,7 @@ static void acpi_db_enumerate_object(union acpi_operand_object *obj_desc)
 		acpi_gbl_obj_type_count[obj_desc->common.type]++;
 	}
 
-	/* Count the sub-objects */
+	 
 
 	switch (obj_desc->common.type) {
 	case ACPI_TYPE_PACKAGE:
@@ -197,18 +169,7 @@ static void acpi_db_enumerate_object(union acpi_operand_object *obj_desc)
 	}
 }
 
-/*******************************************************************************
- *
- * FUNCTION:    acpi_db_classify_one_object
- *
- * PARAMETERS:  Callback for walk_namespace
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Enumerate both the object descriptor (including subobjects) and
- *              the parent namespace node.
- *
- ******************************************************************************/
+ 
 
 static acpi_status
 acpi_db_classify_one_object(acpi_handle obj_handle,
@@ -237,7 +198,7 @@ acpi_db_classify_one_object(acpi_handle obj_handle,
 
 #ifdef ACPI_FUTURE_IMPLEMENTATION
 
-	/* TBD: These need to be counted during the initial parsing phase */
+	 
 
 	if (acpi_ps_is_named_op(op->opcode)) {
 		num_nodes++;
@@ -261,18 +222,7 @@ acpi_db_classify_one_object(acpi_handle obj_handle,
 #endif
 }
 
-/*******************************************************************************
- *
- * FUNCTION:    acpi_db_count_namespace_objects
- *
- * PARAMETERS:  None
- *
- * RETURN:      None
- *
- * DESCRIPTION: Count and classify the entire namespace, including all
- *              namespace nodes and attached objects.
- *
- ******************************************************************************/
+ 
 
 static void acpi_db_count_namespace_objects(void)
 {
@@ -293,17 +243,7 @@ static void acpi_db_count_namespace_objects(void)
 				     NULL);
 }
 
-/*******************************************************************************
- *
- * FUNCTION:    acpi_db_display_statistics
- *
- * PARAMETERS:  type_arg        - Subcommand
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Display various statistics
- *
- ******************************************************************************/
+ 
 
 acpi_status acpi_db_display_statistics(char *type_arg)
 {

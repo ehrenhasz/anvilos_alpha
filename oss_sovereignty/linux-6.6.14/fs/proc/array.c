@@ -1,57 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *  linux/fs/proc/array.c
- *
- *  Copyright (C) 1992  by Linus Torvalds
- *  based on ideas by Darren Senn
- *
- * Fixes:
- * Michael. K. Johnson: stat,statm extensions.
- *                      <johnsonm@stolaf.edu>
- *
- * Pauline Middelink :  Made cmdline,envline only break at '\0's, to
- *                      make sure SET_PROCTITLE works. Also removed
- *                      bad '!' which forced address recalculation for
- *                      EVERY character on the current page.
- *                      <middelin@polyware.iaf.nl>
- *
- * Danny ter Haar    :	added cpuinfo
- *			<dth@cistron.nl>
- *
- * Alessandro Rubini :  profile extension.
- *                      <rubini@ipvvis.unipv.it>
- *
- * Jeff Tranter      :  added BogoMips field to cpuinfo
- *                      <Jeff_Tranter@Mitel.COM>
- *
- * Bruno Haible      :  remove 4K limit for the maps file
- *			<haible@ma2s2.mathematik.uni-karlsruhe.de>
- *
- * Yves Arrouye      :  remove removal of trailing spaces in get_array.
- *			<Yves.Arrouye@marin.fdn.fr>
- *
- * Jerome Forissier  :  added per-CPU time information to /proc/stat
- *                      and /proc/<pid>/cpu extension
- *                      <forissier@isia.cma.fr>
- *			- Incorporation and non-SMP safe operation
- *			of forissier patch in 2.1.78 by
- *			Hans Marcus <crowbar@concepts.nl>
- *
- * aeb@cwi.nl        :  /proc/partitions
- *
- *
- * Alan Cox	     :  security fixes.
- *			<alan@lxorguk.ukuu.org.uk>
- *
- * Al Viro           :  safe handling of mm_struct
- *
- * Gerhard Wichert   :  added BIGMEM support
- * Siemens AG           <Gerhard.Wichert@pdb.siemens.de>
- *
- * Al Viro & Jeff Garzik :  moved most of the thing into base.c and
- *			 :  proc_misc.c. The rest may eventually go into
- *			 :  base.c too.
- */
+
+ 
 
 #include <linux/types.h>
 #include <linux/errno.h>
@@ -100,10 +48,7 @@ void proc_task_name(struct seq_file *m, struct task_struct *p, bool escape)
 {
 	char tcomm[64];
 
-	/*
-	 * Test before PF_KTHREAD because all workqueue worker threads are
-	 * kernel threads.
-	 */
+	 
 	if (p->flags & PF_WQ_WORKER)
 		wq_worker_comm(tcomm, sizeof(tcomm), p);
 	else if (p->flags & PF_KTHREAD)
@@ -117,26 +62,21 @@ void proc_task_name(struct seq_file *m, struct task_struct *p, bool escape)
 		seq_printf(m, "%.64s", tcomm);
 }
 
-/*
- * The task state array is a strange "bitmap" of
- * reasons to sleep. Thus "running" is zero, and
- * you can test for combinations of others with
- * simple bit tests.
- */
+ 
 static const char * const task_state_array[] = {
 
-	/* states in TASK_REPORT: */
-	"R (running)",		/* 0x00 */
-	"S (sleeping)",		/* 0x01 */
-	"D (disk sleep)",	/* 0x02 */
-	"T (stopped)",		/* 0x04 */
-	"t (tracing stop)",	/* 0x08 */
-	"X (dead)",		/* 0x10 */
-	"Z (zombie)",		/* 0x20 */
-	"P (parked)",		/* 0x40 */
+	 
+	"R (running)",		 
+	"S (sleeping)",		 
+	"D (disk sleep)",	 
+	"T (stopped)",		 
+	"t (tracing stop)",	 
+	"X (dead)",		 
+	"Z (zombie)",		 
+	"P (parked)",		 
 
-	/* states beyond TASK_REPORT: */
-	"I (idle)",		/* 0x80 */
+	 
+	"I (idle)",		 
 };
 
 static inline const char *get_task_state(struct task_struct *tsk)
@@ -202,7 +142,7 @@ static inline void task_state(struct seq_file *m, struct pid_namespace *ns,
 		seq_put_decimal_ull(m, g ? " " : "",
 				from_kgid_munged(user_ns, group_info->gid[g]));
 	put_cred(cred);
-	/* Trailing space shouldn't have been added in the first place. */
+	 
 	seq_putc(m, ' ');
 
 #ifdef CONFIG_PID_NS
@@ -281,7 +221,7 @@ static inline void task_sig(struct seq_file *m, struct task_struct *p)
 		blocked = p->blocked;
 		collect_sigign_sigcatch(p, &ignored, &caught);
 		num_threads = get_nr_threads(p);
-		rcu_read_lock();  /* FIXME: is this correct? */
+		rcu_read_lock();   
 		qsize = get_rlimit_value(task_ucounts(p), UCOUNT_RLIMIT_SIGPENDING);
 		rcu_read_unlock();
 		qlim = task_rlimit(p, RLIMIT_SIGPENDING);
@@ -292,7 +232,7 @@ static inline void task_sig(struct seq_file *m, struct task_struct *p)
 	seq_put_decimal_ull(m, "\nSigQ:\t", qsize);
 	seq_put_decimal_ull(m, "/", qlim);
 
-	/* render them all */
+	 
 	render_sigset_t(m, "\nSigPnd:\t", &pending);
 	render_sigset_t(m, "ShdPnd:\t", &shpending);
 	render_sigset_t(m, "SigBlk:\t", &blocked);
@@ -491,15 +431,7 @@ static int do_task_stat(struct seq_file *m, struct pid_namespace *ns,
 	mm = get_task_mm(task);
 	if (mm) {
 		vsize = task_vsize(mm);
-		/*
-		 * esp and eip are intentionally zeroed out.  There is no
-		 * non-racy way to read them without freezing the task.
-		 * Programs that need reliable values can use ptrace(2).
-		 *
-		 * The only exception is if the task is core dumping because
-		 * a program is not able to use ptrace(2) in that case. It is
-		 * safe because the task has stopped executing permanently.
-		 */
+		 
 		if (permitted && (task->flags & (PF_EXITING|PF_DUMPCORE))) {
 			if (try_get_task_stack(task)) {
 				eip = KSTK_EIP(task);
@@ -534,7 +466,7 @@ static int do_task_stat(struct seq_file *m, struct pid_namespace *ns,
 		cgtime = sig->cgtime;
 		rsslim = READ_ONCE(sig->rlim[RLIMIT_RSS].rlim_cur);
 
-		/* add up live thread stats at the group level */
+		 
 		if (whole) {
 			struct task_struct *t = task;
 			do {
@@ -568,12 +500,12 @@ static int do_task_stat(struct seq_file *m, struct pid_namespace *ns,
 		gtime = task_gtime(task);
 	}
 
-	/* scale priority and nice values from timeslices to -20..20 */
-	/* to make it look like a "normal" Unix priority/nice value  */
+	 
+	 
 	priority = task_prio(task);
 	nice = task_nice(task);
 
-	/* apply timens offset for boottime and convert nsec -> ticks */
+	 
 	start_time =
 		nsec_to_clock_t(timens_add_boottime_ns(task->start_boottime));
 
@@ -609,22 +541,13 @@ static int do_task_stat(struct seq_file *m, struct pid_namespace *ns,
 	seq_put_decimal_ull(m, " ", (permitted && mm) ? mm->start_stack : 0);
 	seq_put_decimal_ull(m, " ", esp);
 	seq_put_decimal_ull(m, " ", eip);
-	/* The signal information here is obsolete.
-	 * It must be decimal for Linux 2.0 compatibility.
-	 * Use /proc/#/status for real-time signals.
-	 */
+	 
 	seq_put_decimal_ull(m, " ", task->pending.signal.sig[0] & 0x7fffffffUL);
 	seq_put_decimal_ull(m, " ", task->blocked.sig[0] & 0x7fffffffUL);
 	seq_put_decimal_ull(m, " ", sigign.sig[0] & 0x7fffffffUL);
 	seq_put_decimal_ull(m, " ", sigcatch.sig[0] & 0x7fffffffUL);
 
-	/*
-	 * We used to output the absolute kernel address, but that's an
-	 * information leak - so instead we show a 0/1 flag here, to signal
-	 * to user-space whether there's a wchan field in /proc/PID/wchan.
-	 *
-	 * This works with older implementations of procps as well.
-	 */
+	 
 	seq_put_decimal_ull(m, " ", wchan);
 
 	seq_put_decimal_ull(m, " ", 0);
@@ -686,12 +609,7 @@ int proc_pid_statm(struct seq_file *m, struct pid_namespace *ns,
 		size = task_statm(mm, &shared, &text, &data, &resident);
 		mmput(mm);
 
-		/*
-		 * For quick read, open code by putting numbers directly
-		 * expected format is
-		 * seq_printf(m, "%lu %lu %lu %lu 0 %lu 0\n",
-		 *               size, resident, shared, text, data);
-		 */
+		 
 		seq_put_decimal_ull(m, "", size);
 		seq_put_decimal_ull(m, " ", resident);
 		seq_put_decimal_ull(m, " ", shared);
@@ -719,10 +637,7 @@ get_children_pid(struct inode *inode, struct pid *pid_prev, loff_t pos)
 	if (!start)
 		goto out;
 
-	/*
-	 * Lets try to continue searching first, this gives
-	 * us significant speedup on children-rich processes.
-	 */
+	 
 	if (pid_prev) {
 		task = pid_task(pid_prev, PIDTYPE_PID);
 		if (task && task->real_parent == start &&
@@ -736,21 +651,7 @@ get_children_pid(struct inode *inode, struct pid *pid_prev, loff_t pos)
 		}
 	}
 
-	/*
-	 * Slow search case.
-	 *
-	 * We might miss some children here if children
-	 * are exited while we were not holding the lock,
-	 * but it was never promised to be accurate that
-	 * much.
-	 *
-	 * "Just suppose that the parent sleeps, but N children
-	 *  exit after we printed their tids. Now the slow paths
-	 *  skips N extra children, we miss N tasks." (c)
-	 *
-	 * So one need to stop or freeze the leader and all
-	 * its children to get a precise result.
-	 */
+	 
 	list_for_each_entry(task, &start->children, sibling) {
 		if (pos-- == 0) {
 			pid = get_pid(task_pid(task));
@@ -810,4 +711,4 @@ const struct file_operations proc_tid_children_operations = {
 	.llseek  = seq_lseek,
 	.release = seq_release,
 };
-#endif /* CONFIG_PROC_CHILDREN */
+#endif  

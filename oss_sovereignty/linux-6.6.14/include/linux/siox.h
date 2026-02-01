@@ -1,13 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2015 Pengutronix, Uwe Kleine-König <kernel@pengutronix.de>
- */
+ 
+ 
 
 #include <linux/device.h>
 
 #define to_siox_device(_dev)	container_of((_dev), struct siox_device, dev)
 struct siox_device {
-	struct list_head node; /* node in smaster->devices */
+	struct list_head node;  
 	struct siox_master *smaster;
 	struct device dev;
 
@@ -21,7 +19,7 @@ struct siox_device {
 	u8 status_written_lastcycle;
 	bool connected;
 
-	/* statistics */
+	 
 	unsigned int watchdog_errors;
 	unsigned int status_errors;
 
@@ -39,15 +37,9 @@ struct siox_driver {
 	void (*remove)(struct siox_device *sdevice);
 	void (*shutdown)(struct siox_device *sdevice);
 
-	/*
-	 * buf is big enough to hold sdev->inbytes - 1 bytes, the status byte
-	 * is in the scope of the framework.
-	 */
+	 
 	int (*set_data)(struct siox_device *sdevice, u8 status, u8 buf[]);
-	/*
-	 * buf is big enough to hold sdev->outbytes - 1 bytes, the status byte
-	 * is in the scope of the framework
-	 */
+	 
 	int (*get_data)(struct siox_device *sdevice, const u8 buf[]);
 
 	struct device_driver driver;
@@ -73,12 +65,7 @@ static inline void siox_driver_unregister(struct siox_driver *sdriver)
 	return driver_unregister(&sdriver->driver);
 }
 
-/*
- * module_siox_driver() - Helper macro for drivers that don't do
- * anything special in module init/exit.  This eliminates a lot of
- * boilerplate.  Each module may only use this macro once, and
- * calling it replaces module_init() and module_exit()
- */
+ 
 #define module_siox_driver(__siox_driver) \
 	module_driver(__siox_driver, siox_driver_register, \
 			siox_driver_unregister)

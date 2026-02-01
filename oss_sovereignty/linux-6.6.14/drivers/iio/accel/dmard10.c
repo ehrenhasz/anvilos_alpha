@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * IIO driver for the 3-axis accelerometer Domintech ARD10.
- *
- * Copyright (c) 2016 Hans de Goede <hdegoede@redhat.com>
- * Copyright (c) 2012 Domintech Technology Co., Ltd
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/i2c.h>
@@ -25,13 +20,13 @@
 #define DMARD10_MODE_READ_OTP			0x12
 #define DMARD10_MODE_RESET_DATA_PATH		0x82
 
-/* AFEN set 1, ATM[2:0]=b'000 (normal), EN_Z/Y/X/T=1 */
+ 
 #define DMARD10_VALUE_AFEM_AFEN_NORMAL		0x8f
-/* ODR[3:0]=b'0111 (100Hz), CCK[3:0]=b'0100 (204.8kHZ) */
+ 
 #define DMARD10_VALUE_CKSEL_ODR_100_204		0x74
-/* INTC[6:5]=b'00 */
+ 
 #define DMARD10_VALUE_INTC			0x00
-/* TAP1/TAP2 Average 2 */
+ 
 #define DMARD10_VALUE_TAPNS_AVE_2		0x11
 
 #define DMARD10_VALUE_STADR			0x55
@@ -39,15 +34,12 @@
 #define DMARD10_VALUE_MISC2_OSCA_EN		0x08
 #define DMARD10_VALUE_PD_RST			0x52
 
-/* Offsets into the buffer read in dmard10_read_raw() */
+ 
 #define DMARD10_X_OFFSET			1
 #define DMARD10_Y_OFFSET			2
 #define DMARD10_Z_OFFSET			3
 
-/*
- * a value of + or -128 corresponds to + or - 1G
- * scale = 9.81 / 128 = 0.076640625
- */
+ 
 
 static const int dmard10_nscale = 76640625;
 
@@ -70,22 +62,19 @@ struct dmard10_data {
 	struct i2c_client *client;
 };
 
-/* Init sequence taken from the android driver */
+ 
 static int dmard10_reset(struct i2c_client *client)
 {
 	unsigned char buffer[7];
 	int ret;
 
-	/* 1. Powerdown reset */
+	 
 	ret = i2c_smbus_write_byte_data(client, DMARD10_REG_PD,
 						DMARD10_VALUE_PD_RST);
 	if (ret < 0)
 		return ret;
 
-	/*
-	 * 2. ACTR => Standby mode => Download OTP to parameter reg =>
-	 *    Standby mode => Reset data path => Standby mode
-	 */
+	 
 	buffer[0] = DMARD10_REG_ACTR;
 	buffer[1] = DMARD10_MODE_STANDBY;
 	buffer[2] = DMARD10_MODE_READ_OTP;
@@ -96,25 +85,25 @@ static int dmard10_reset(struct i2c_client *client)
 	if (ret < 0)
 		return ret;
 
-	/* 3. OSCA_EN = 1, TSTO = b'000 (INT1 = normal, TEST0 = normal) */
+	 
 	ret = i2c_smbus_write_byte_data(client, DMARD10_REG_MISC2,
 						DMARD10_VALUE_MISC2_OSCA_EN);
 	if (ret < 0)
 		return ret;
 
-	/* 4. AFEN = 1 (AFE will powerdown after ADC) */
+	 
 	buffer[0] = DMARD10_REG_AFEM;
 	buffer[1] = DMARD10_VALUE_AFEM_AFEN_NORMAL;
 	buffer[2] = DMARD10_VALUE_CKSEL_ODR_100_204;
 	buffer[3] = DMARD10_VALUE_INTC;
 	buffer[4] = DMARD10_VALUE_TAPNS_AVE_2;
-	buffer[5] = 0x00; /* DLYC, no delay timing */
-	buffer[6] = 0x07; /* INTD=1 push-pull, INTA=1 active high, AUTOT=1 */
+	buffer[5] = 0x00;  
+	buffer[6] = 0x07;  
 	ret = i2c_master_send(client, buffer, 7);
 	if (ret < 0)
 		return ret;
 
-	/* 5. Activation mode */
+	 
 	ret = i2c_smbus_write_byte_data(client, DMARD10_REG_ACTR,
 						DMARD10_MODE_ACTIVE);
 	if (ret < 0)
@@ -123,7 +112,7 @@ static int dmard10_reset(struct i2c_client *client)
 	return 0;
 }
 
-/* Shutdown sequence taken from the android driver */
+ 
 static int dmard10_shutdown(struct i2c_client *client)
 {
 	unsigned char buffer[3];
@@ -145,10 +134,7 @@ static int dmard10_read_raw(struct iio_dev *indio_dev,
 
 	switch (mask) {
 	case IIO_CHAN_INFO_RAW:
-		/*
-		 * Read 8 bytes starting at the REG_STADR register, trying to
-		 * read the individual X, Y, Z registers will always read 0.
-		 */
+		 
 		ret = i2c_smbus_read_i2c_block_data(data->client,
 						    DMARD10_REG_STADR,
 						    sizeof(buf), (u8 *)buf);
@@ -181,7 +167,7 @@ static int dmard10_probe(struct i2c_client *client)
 	struct iio_dev *indio_dev;
 	struct dmard10_data *data;
 
-	/* These 2 registers have special POR reset values used for id */
+	 
 	ret = i2c_smbus_read_byte_data(client, DMARD10_REG_STADR);
 	if (ret != DMARD10_VALUE_STADR)
 		return (ret < 0) ? ret : -ENODEV;

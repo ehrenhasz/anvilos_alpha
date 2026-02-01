@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
-/*
- * Northstar Plus switch SerDes/SGMII PHY main logic
- *
- * Copyright (C) 2018 Florian Fainelli <f.fainelli@gmail.com>
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -172,13 +168,13 @@ void b53_serdes_phylink_get_caps(struct b53_device *dev, int port,
 
 	switch (lane) {
 	case 0:
-		/* It appears lane 0 supports 2500base-X and 1000base-X */
+		 
 		__set_bit(PHY_INTERFACE_MODE_2500BASEX,
 			  config->supported_interfaces);
 		config->mac_capabilities |= MAC_2500FD;
 		fallthrough;
 	case 1:
-		/* It appears lane 1 only supports 1000base-X and SGMII */
+		 
 		__set_bit(PHY_INTERFACE_MODE_1000BASEX,
 			  config->supported_interfaces);
 		__set_bit(PHY_INTERFACE_MODE_SGMII,

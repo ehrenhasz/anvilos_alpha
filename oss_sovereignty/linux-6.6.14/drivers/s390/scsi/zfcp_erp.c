@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * zfcp device driver
- *
- * Error Recovery Procedures (ERP).
- *
- * Copyright IBM Corp. 2002, 2020
- */
+
+ 
 
 #define KMSG_COMPONENT "zfcp"
 #define pr_fmt(fmt) KMSG_COMPONENT ": " fmt
@@ -26,17 +20,9 @@ enum zfcp_erp_act_flags {
 	ZFCP_STATUS_ERP_NO_REF		= 0x00800000,
 };
 
-/*
- * Eyecatcher pseudo flag to bitwise or-combine with enum zfcp_erp_act_type.
- * Used to indicate that an ERP action could not be set up despite a detected
- * need for some recovery.
- */
+ 
 #define ZFCP_ERP_ACTION_NONE		0xc0
-/*
- * Eyecatcher pseudo flag to bitwise or-combine with enum zfcp_erp_act_type.
- * Used to indicate that ERP not needed because the object has
- * ZFCP_STATUS_COMMON_ERP_FAILED.
- */
+ 
 #define ZFCP_ERP_ACTION_FAILED		0xe0
 
 enum zfcp_erp_act_result {
@@ -139,7 +125,7 @@ static enum zfcp_erp_act_type zfcp_erp_handle_failed(
 		if (atomic_read(&port->status) &
 		    ZFCP_STATUS_COMMON_ERP_FAILED) {
 			need = 0;
-			/* ensure propagation of failed status to new devices */
+			 
 			zfcp_erp_set_port_status(
 				port, ZFCP_STATUS_COMMON_ERP_FAILED);
 		}
@@ -148,7 +134,7 @@ static enum zfcp_erp_act_type zfcp_erp_handle_failed(
 		if (atomic_read(&adapter->status) &
 		    ZFCP_STATUS_COMMON_ERP_FAILED) {
 			need = 0;
-			/* ensure propagation of failed status to new devices */
+			 
 			zfcp_erp_set_adapter_status(
 				adapter, ZFCP_STATUS_COMMON_ERP_FAILED);
 		}
@@ -204,7 +190,7 @@ static enum zfcp_erp_act_type zfcp_erp_required_act(enum zfcp_erp_act_type want,
 			return 0;
 		if (!(a_status & ZFCP_STATUS_COMMON_RUNNING) &&
 		    !(a_status & ZFCP_STATUS_COMMON_OPEN))
-			return 0; /* shutdown requested for closed adapter */
+			return 0;  
 	}
 
 	return need;
@@ -289,12 +275,12 @@ static void zfcp_erp_action_enqueue(enum zfcp_erp_act_type want,
 
 	need = zfcp_erp_handle_failed(want, adapter, port, sdev);
 	if (!need) {
-		need = ZFCP_ERP_ACTION_FAILED; /* marker for trace */
+		need = ZFCP_ERP_ACTION_FAILED;  
 		goto out;
 	}
 
 	if (!adapter->erp_thread) {
-		need = ZFCP_ERP_ACTION_NONE; /* marker for trace */
+		need = ZFCP_ERP_ACTION_NONE;  
 		goto out;
 	}
 
@@ -304,7 +290,7 @@ static void zfcp_erp_action_enqueue(enum zfcp_erp_act_type want,
 
 	act = zfcp_erp_setup_act(need, act_status, adapter, port, sdev);
 	if (!act) {
-		need |= ZFCP_ERP_ACTION_NONE; /* marker for trace */
+		need |= ZFCP_ERP_ACTION_NONE;  
 		goto out;
 	}
 	atomic_or(ZFCP_STATUS_ADAPTER_ERP_PENDING, &adapter->status);
@@ -320,14 +306,11 @@ void zfcp_erp_port_forced_no_port_dbf(char *dbftag,
 				      u64 port_name, u32 port_id)
 {
 	unsigned long flags;
-	static /* don't waste stack */ struct zfcp_port tmpport;
+	static   struct zfcp_port tmpport;
 
 	write_lock_irqsave(&adapter->erp_lock, flags);
-	/* Stand-in zfcp port with fields just good enough for
-	 * zfcp_dbf_rec_trig() and zfcp_dbf_set_common().
-	 * Under lock because tmpport is static.
-	 */
-	atomic_set(&tmpport.status, -1); /* unknown */
+	 
+	atomic_set(&tmpport.status, -1);  
 	tmpport.wwpn = port_name;
 	tmpport.d_id = port_id;
 	zfcp_dbf_rec_trig(dbftag, adapter, &tmpport, NULL,
@@ -346,12 +329,7 @@ static void _zfcp_erp_adapter_reopen(struct zfcp_adapter *adapter,
 				adapter, NULL, NULL, dbftag, 0);
 }
 
-/**
- * zfcp_erp_adapter_reopen - Reopen adapter.
- * @adapter: Adapter to reopen.
- * @clear: Status flags to clear.
- * @dbftag: Tag for debug trace event.
- */
+ 
 void zfcp_erp_adapter_reopen(struct zfcp_adapter *adapter, int clear,
 			     char *dbftag)
 {
@@ -366,12 +344,7 @@ void zfcp_erp_adapter_reopen(struct zfcp_adapter *adapter, int clear,
 	write_unlock_irqrestore(&adapter->erp_lock, flags);
 }
 
-/**
- * zfcp_erp_adapter_shutdown - Shutdown adapter.
- * @adapter: Adapter to shut down.
- * @clear: Status flags to clear.
- * @dbftag: Tag for debug trace event.
- */
+ 
 void zfcp_erp_adapter_shutdown(struct zfcp_adapter *adapter, int clear,
 			       char *dbftag)
 {
@@ -379,12 +352,7 @@ void zfcp_erp_adapter_shutdown(struct zfcp_adapter *adapter, int clear,
 	zfcp_erp_adapter_reopen(adapter, clear | flags, dbftag);
 }
 
-/**
- * zfcp_erp_port_shutdown - Shutdown port
- * @port: Port to shut down.
- * @clear: Status flags to clear.
- * @dbftag: Tag for debug trace event.
- */
+ 
 void zfcp_erp_port_shutdown(struct zfcp_port *port, int clear, char *dbftag)
 {
 	int flags = ZFCP_STATUS_COMMON_RUNNING | ZFCP_STATUS_COMMON_ERP_FAILED;
@@ -407,12 +375,7 @@ static void _zfcp_erp_port_forced_reopen(struct zfcp_port *port, int clear,
 				port->adapter, port, NULL, dbftag, 0);
 }
 
-/**
- * zfcp_erp_port_forced_reopen - Forced close of port and open again
- * @port: Port to force close and to reopen.
- * @clear: Status flags to clear.
- * @dbftag: Tag for debug trace event.
- */
+ 
 void zfcp_erp_port_forced_reopen(struct zfcp_port *port, int clear,
 				 char *dbftag)
 {
@@ -434,12 +397,7 @@ static void _zfcp_erp_port_reopen(struct zfcp_port *port, int clear,
 				port->adapter, port, NULL, dbftag, 0);
 }
 
-/**
- * zfcp_erp_port_reopen - trigger remote port recovery
- * @port: port to recover
- * @clear: flags in port status to be cleared
- * @dbftag: Tag for debug trace event.
- */
+ 
 void zfcp_erp_port_reopen(struct zfcp_port *port, int clear, char *dbftag)
 {
 	unsigned long flags;
@@ -468,14 +426,7 @@ static void _zfcp_erp_lun_reopen(struct scsi_device *sdev, int clear,
 				zfcp_sdev->port, sdev, dbftag, act_status);
 }
 
-/**
- * zfcp_erp_lun_reopen - initiate reopen of a LUN
- * @sdev: SCSI device / LUN to be reopened
- * @clear: specifies flags in LUN status to be cleared
- * @dbftag: Tag for debug trace event.
- *
- * Return: 0 on success, < 0 on error
- */
+ 
 void zfcp_erp_lun_reopen(struct scsi_device *sdev, int clear, char *dbftag)
 {
 	unsigned long flags;
@@ -488,28 +439,14 @@ void zfcp_erp_lun_reopen(struct scsi_device *sdev, int clear, char *dbftag)
 	write_unlock_irqrestore(&adapter->erp_lock, flags);
 }
 
-/**
- * zfcp_erp_lun_shutdown - Shutdown LUN
- * @sdev: SCSI device / LUN to shut down.
- * @clear: Status flags to clear.
- * @dbftag: Tag for debug trace event.
- */
+ 
 void zfcp_erp_lun_shutdown(struct scsi_device *sdev, int clear, char *dbftag)
 {
 	int flags = ZFCP_STATUS_COMMON_RUNNING | ZFCP_STATUS_COMMON_ERP_FAILED;
 	zfcp_erp_lun_reopen(sdev, clear | flags, dbftag);
 }
 
-/**
- * zfcp_erp_lun_shutdown_wait - Shutdown LUN and wait for erp completion
- * @sdev: SCSI device / LUN to shut down.
- * @dbftag: Tag for debug trace event.
- *
- * Do not acquire a reference for the LUN when creating the ERP
- * action. It is safe, because this function waits for the ERP to
- * complete first. This allows to shutdown the LUN, even when the SCSI
- * device is in the state SDEV_DEL when scsi_device_get will fail.
- */
+ 
 void zfcp_erp_lun_shutdown_wait(struct scsi_device *sdev, char *dbftag)
 {
 	unsigned long flags;
@@ -577,9 +514,7 @@ static void zfcp_erp_strategy_check_fsfreq(struct zfcp_erp_action *act)
 				   ZFCP_STATUS_ERP_TIMEDOUT)) {
 			req->status |= ZFCP_STATUS_FSFREQ_DISMISSED;
 			zfcp_dbf_rec_run("erscf_1", act);
-			/* lock-free concurrent access with
-			 * zfcp_erp_timeout_handler()
-			 */
+			 
 			WRITE_ONCE(req->erp_action, NULL);
 		}
 		if (act->status & ZFCP_STATUS_ERP_TIMEDOUT)
@@ -591,11 +526,7 @@ static void zfcp_erp_strategy_check_fsfreq(struct zfcp_erp_action *act)
 	spin_unlock(&adapter->req_list->lock);
 }
 
-/**
- * zfcp_erp_notify - Trigger ERP action.
- * @erp_action: ERP action to continue.
- * @set_mask: ERP action status flags to set.
- */
+ 
 void zfcp_erp_notify(struct zfcp_erp_action *erp_action, unsigned long set_mask)
 {
 	struct zfcp_adapter *adapter = erp_action->adapter;
@@ -609,10 +540,7 @@ void zfcp_erp_notify(struct zfcp_erp_action *erp_action, unsigned long set_mask)
 	write_unlock_irqrestore(&adapter->erp_lock, flags);
 }
 
-/**
- * zfcp_erp_timeout_handler - Trigger ERP action from timed out ERP request
- * @t: timer list entry embedded in zfcp FSF request
- */
+ 
 void zfcp_erp_timeout_handler(struct timer_list *t)
 {
 	struct zfcp_fsf_req *fsf_req = from_timer(fsf_req, t, timer);
@@ -620,7 +548,7 @@ void zfcp_erp_timeout_handler(struct timer_list *t)
 
 	if (fsf_req->status & ZFCP_STATUS_FSFREQ_DISMISSED)
 		return;
-	/* lock-free concurrent access with zfcp_erp_strategy_check_fsfreq() */
+	 
 	act = READ_ONCE(fsf_req->erp_action);
 	if (!act)
 		return;
@@ -709,7 +637,7 @@ static void zfcp_erp_strategy_followup_success(struct zfcp_erp_action *act)
 		_zfcp_erp_lun_reopen_all(act->port, 0, "ersfs_3");
 		break;
 	case ZFCP_ERP_ACTION_REOPEN_LUN:
-		/* NOP */
+		 
 		break;
 	}
 }
@@ -733,7 +661,7 @@ static void zfcp_erp_enqueue_ptp_port(struct zfcp_adapter *adapter)
 	struct zfcp_port *port;
 	port = zfcp_port_enqueue(adapter, adapter->peer_wwpn, 0,
 				 adapter->peer_d_id);
-	if (IS_ERR(port)) /* error or port already attached */
+	if (IS_ERR(port))  
 		return;
 	zfcp_erp_port_reopen(port, 0, "ereptp1");
 }
@@ -830,16 +758,7 @@ zfcp_erp_adapter_strategy_alloc_shost(struct zfcp_adapter *const adapter)
 	else if (rc)
 		return ZFCP_ERP_FAILED;
 
-	/*
-	 * We allocated the shost for the first time. Before it was NULL,
-	 * and so we deferred all updates in the xconf- and xport-data
-	 * handlers. We need to make up for that now, and make all the updates
-	 * that would have been done before.
-	 *
-	 * We can be sure that xconf- and xport-data succeeded, because
-	 * otherwise this function is not called. But they might have been
-	 * incomplete.
-	 */
+	 
 
 	spin_lock_irqsave(&config_data->header.access_lock, flags);
 	zfcp_scsi_shost_update_config_data(adapter, &config_data->data,
@@ -852,15 +771,7 @@ zfcp_erp_adapter_strategy_alloc_shost(struct zfcp_adapter *const adapter)
 		spin_unlock_irqrestore(&port_data->header.access_lock, flags);
 	}
 
-	/*
-	 * There is a remote possibility that the 'Exchange Port Data' request
-	 * reports a different connectivity status than 'Exchange Config Data'.
-	 * But any change to the connectivity status of the local optic that
-	 * happens after the initial xconf request is expected to be reported
-	 * to us, as soon as we post Status Read Buffers to the FCP channel
-	 * firmware after this function. So any resulting inconsistency will
-	 * only be momentary.
-	 */
+	 
 	if (config_data->header.incomplete)
 		zfcp_fsf_fc_host_link_down(adapter);
 
@@ -901,12 +812,12 @@ static void zfcp_erp_adapter_strategy_close(struct zfcp_erp_action *act)
 {
 	struct zfcp_adapter *adapter = act->adapter;
 
-	/* close queues to ensure that buffers are not accessed by adapter */
+	 
 	zfcp_qdio_close(adapter->qdio);
 	zfcp_fsf_req_dismiss_all(adapter);
 	adapter->fsf_req_seq_no = 0;
 	zfcp_fc_wka_ports_force_offline(adapter->gs);
-	/* all ports and LUNs are closed */
+	 
 	zfcp_erp_clear_adapter_status(adapter, ZFCP_STATUS_COMMON_OPEN);
 
 	atomic_andnot(ZFCP_STATUS_ADAPTER_XCONFIG_OK |
@@ -991,7 +902,7 @@ static enum zfcp_erp_act_result zfcp_erp_port_forced_strategy(
 	case ZFCP_ERP_STEP_PORT_OPENING:
 	case ZFCP_ERP_STEP_LUN_CLOSING:
 	case ZFCP_ERP_STEP_LUN_OPENING:
-		/* NOP */
+		 
 		break;
 	}
 	return ZFCP_ERP_FAILED;
@@ -1058,7 +969,7 @@ static enum zfcp_erp_act_result zfcp_erp_port_strategy_open_common(
 		return zfcp_erp_port_strategy_open_port(act);
 
 	case ZFCP_ERP_STEP_PORT_OPENING:
-		/* D_ID might have changed during open */
+		 
 		if (p_status & ZFCP_STATUS_COMMON_OPEN) {
 			if (!port->d_id) {
 				zfcp_fc_trigger_did_lookup(port);
@@ -1070,11 +981,11 @@ static enum zfcp_erp_act_result zfcp_erp_port_strategy_open_common(
 			port->d_id = 0;
 			return ZFCP_ERP_FAILED;
 		}
-		/* no early return otherwise, continue after switch case */
+		 
 		break;
 	case ZFCP_ERP_STEP_LUN_CLOSING:
 	case ZFCP_ERP_STEP_LUN_OPENING:
-		/* NOP */
+		 
 		break;
 	}
 	return ZFCP_ERP_FAILED;
@@ -1104,7 +1015,7 @@ static enum zfcp_erp_act_result zfcp_erp_port_strategy(
 	case ZFCP_ERP_STEP_PORT_OPENING:
 	case ZFCP_ERP_STEP_LUN_CLOSING:
 	case ZFCP_ERP_STEP_LUN_OPENING:
-		/* NOP */
+		 
 		break;
 	}
 
@@ -1158,7 +1069,7 @@ static enum zfcp_erp_act_result zfcp_erp_lun_strategy(
 		zfcp_erp_lun_strategy_clearstati(sdev);
 		if (atomic_read(&zfcp_sdev->status) & ZFCP_STATUS_COMMON_OPEN)
 			return zfcp_erp_lun_strategy_close(erp_action);
-		/* already closed */
+		 
 		fallthrough;
 	case ZFCP_ERP_STEP_LUN_CLOSING:
 		if (atomic_read(&zfcp_sdev->status) & ZFCP_STATUS_COMMON_OPEN)
@@ -1174,7 +1085,7 @@ static enum zfcp_erp_act_result zfcp_erp_lun_strategy(
 	case ZFCP_ERP_STEP_PHYS_PORT_CLOSING:
 	case ZFCP_ERP_STEP_PORT_CLOSING:
 	case ZFCP_ERP_STEP_PORT_OPENING:
-		/* NOP */
+		 
 		break;
 	}
 	return ZFCP_ERP_FAILED;
@@ -1206,7 +1117,7 @@ static enum zfcp_erp_act_result zfcp_erp_strategy_check_lun(
 	case ZFCP_ERP_EXIT:
 	case ZFCP_ERP_DISMISSED:
 	case ZFCP_ERP_NOMEM:
-		/* NOP */
+		 
 		break;
 	}
 
@@ -1244,7 +1155,7 @@ static enum zfcp_erp_act_result zfcp_erp_strategy_check_port(
 	case ZFCP_ERP_EXIT:
 	case ZFCP_ERP_DISMISSED:
 	case ZFCP_ERP_NOMEM:
-		/* NOP */
+		 
 		break;
 	}
 
@@ -1278,7 +1189,7 @@ static enum zfcp_erp_act_result zfcp_erp_strategy_check_adapter(
 	case ZFCP_ERP_EXIT:
 	case ZFCP_ERP_DISMISSED:
 	case ZFCP_ERP_NOMEM:
-		/* NOP */
+		 
 		break;
 	}
 
@@ -1320,11 +1231,11 @@ static int zfcp_erp_strat_change_det(atomic_t *target_status, u32 erp_status)
 
 	if ((status & ZFCP_STATUS_COMMON_RUNNING) &&
 	    (erp_status & ZFCP_STATUS_ERP_CLOSE_ONLY))
-		return 1; /* take it online */
+		return 1;  
 
 	if (!(status & ZFCP_STATUS_COMMON_RUNNING) &&
 	    !(erp_status & ZFCP_STATUS_ERP_CLOSE_ONLY))
-		return 1; /* take it offline */
+		return 1;  
 
 	return 0;
 }
@@ -1406,10 +1317,7 @@ static void zfcp_erp_action_dequeue(struct zfcp_erp_action *erp_action)
 	}
 }
 
-/**
- * zfcp_erp_try_rport_unblock - unblock rport if no more/new recovery
- * @port: zfcp_port whose fc_rport we should try to unblock
- */
+ 
 static void zfcp_erp_try_rport_unblock(struct zfcp_port *port)
 {
 	unsigned long flags;
@@ -1423,9 +1331,7 @@ static void zfcp_erp_try_rport_unblock(struct zfcp_port *port)
 	if ((port_status & ZFCP_STATUS_COMMON_UNBLOCKED)    == 0 ||
 	    (port_status & (ZFCP_STATUS_COMMON_ERP_INUSE |
 			    ZFCP_STATUS_COMMON_ERP_FAILED)) != 0) {
-		/* new ERP of severity >= port triggered elsewhere meanwhile or
-		 * local link down (adapter erp_failed but not clear unblock)
-		 */
+		 
 		zfcp_dbf_rec_run_lvl(4, "ertru_p", &port->erp_action);
 		write_unlock_irqrestore(&adapter->erp_lock, flags);
 		return;
@@ -1440,26 +1346,21 @@ static void zfcp_erp_try_rport_unblock(struct zfcp_port *port)
 			continue;
 		if (zsdev->port != port)
 			continue;
-		/* LUN under port of interest */
+		 
 		lun_status = atomic_read(&zsdev->status);
 		if ((lun_status & ZFCP_STATUS_COMMON_ERP_FAILED) != 0)
-			continue; /* unblock rport despite failed LUNs */
-		/* LUN recovery not given up yet [maybe follow-up pending] */
+			continue;  
+		 
 		if ((lun_status & ZFCP_STATUS_COMMON_UNBLOCKED) == 0 ||
 		    (lun_status & ZFCP_STATUS_COMMON_ERP_INUSE) != 0) {
-			/* LUN blocked:
-			 * not yet unblocked [LUN recovery pending]
-			 * or meanwhile blocked [new LUN recovery triggered]
-			 */
+			 
 			zfcp_dbf_rec_run_lvl(4, "ertru_l", &zsdev->erp_action);
 			spin_unlock(shost->host_lock);
 			write_unlock_irqrestore(&adapter->erp_lock, flags);
 			return;
 		}
 	}
-	/* now port has no child or all children have completed recovery,
-	 * and no ERP of severity >= port was meanwhile triggered elsewhere
-	 */
+	 
 	zfcp_scsi_schedule_rport_register(port);
 	spin_unlock(shost->host_lock);
 	write_unlock_irqrestore(&adapter->erp_lock, flags);
@@ -1480,11 +1381,7 @@ static void zfcp_erp_action_cleanup(struct zfcp_erp_action *act,
 		break;
 
 	case ZFCP_ERP_ACTION_REOPEN_PORT:
-		/* This switch case might also happen after a forced reopen
-		 * was successfully done and thus overwritten with a new
-		 * non-forced reopen at `ersfs_2'. In this case, we must not
-		 * do the clean-up of the non-forced version.
-		 */
+		 
 		if (act->step != ZFCP_ERP_STEP_UNINITIALIZED)
 			if (result == ZFCP_ERP_SUCCEEDED)
 				zfcp_erp_try_rport_unblock(port);
@@ -1547,7 +1444,7 @@ static enum zfcp_erp_act_result zfcp_erp_strategy(
 
 	zfcp_erp_action_to_running(erp_action);
 
-	/* no lock to allow for blocking operations */
+	 
 	write_unlock_irqrestore(&adapter->erp_lock, flags);
 	result = zfcp_erp_strategy_do_action(erp_action);
 	write_lock_irqsave(&adapter->erp_lock, flags);
@@ -1579,7 +1476,7 @@ static enum zfcp_erp_act_result zfcp_erp_strategy(
 	case ZFCP_ERP_FAILED:
 	case ZFCP_ERP_EXIT:
 	case ZFCP_ERP_DISMISSED:
-		/* NOP */
+		 
 		break;
 	}
 
@@ -1624,7 +1521,7 @@ static int zfcp_erp_thread(void *data)
 		write_unlock_irqrestore(&adapter->erp_lock, flags);
 
 		if (act) {
-			/* there is more to come after dismission, no notify */
+			 
 			if (zfcp_erp_strategy(act) != ZFCP_ERP_DISMISSED)
 				zfcp_erp_wakeup(adapter);
 		}
@@ -1633,12 +1530,7 @@ static int zfcp_erp_thread(void *data)
 	return 0;
 }
 
-/**
- * zfcp_erp_thread_setup - Start ERP thread for adapter
- * @adapter: Adapter to start the ERP thread for
- *
- * Return: 0 on success, or error code from kthread_run().
- */
+ 
 int zfcp_erp_thread_setup(struct zfcp_adapter *adapter)
 {
 	struct task_struct *thread;
@@ -1655,15 +1547,7 @@ int zfcp_erp_thread_setup(struct zfcp_adapter *adapter)
 	return 0;
 }
 
-/**
- * zfcp_erp_thread_kill - Stop ERP thread.
- * @adapter: Adapter where the ERP thread should be stopped.
- *
- * The caller of this routine ensures that the specified adapter has
- * been shut down and that this operation has been completed. Thus,
- * there are no pending erp_actions which would need to be handled
- * here.
- */
+ 
 void zfcp_erp_thread_kill(struct zfcp_adapter *adapter)
 {
 	kthread_stop(adapter->erp_thread);
@@ -1672,10 +1556,7 @@ void zfcp_erp_thread_kill(struct zfcp_adapter *adapter)
 	WARN_ON(!list_empty(&adapter->erp_running_head));
 }
 
-/**
- * zfcp_erp_wait - wait for completion of error recovery on an adapter
- * @adapter: adapter for which to wait for completion of its error recovery
- */
+ 
 void zfcp_erp_wait(struct zfcp_adapter *adapter)
 {
 	wait_event(adapter->erp_done_wqh,
@@ -1683,13 +1564,7 @@ void zfcp_erp_wait(struct zfcp_adapter *adapter)
 			ZFCP_STATUS_ADAPTER_ERP_PENDING));
 }
 
-/**
- * zfcp_erp_set_adapter_status - set adapter status bits
- * @adapter: adapter to change the status
- * @mask: status bits to change
- *
- * Changes in common status bits are propagated to attached ports and LUNs.
- */
+ 
 void zfcp_erp_set_adapter_status(struct zfcp_adapter *adapter, u32 mask)
 {
 	struct zfcp_port *port;
@@ -1707,10 +1582,7 @@ void zfcp_erp_set_adapter_status(struct zfcp_adapter *adapter, u32 mask)
 		atomic_or(common_mask, &port->status);
 	read_unlock_irqrestore(&adapter->port_list_lock, flags);
 
-	/*
-	 * if `scsi_host` is missing, xconfig/xport data has never completed
-	 * yet, so we can't access it, but there are also no SDEVs yet
-	 */
+	 
 	if (adapter->scsi_host == NULL)
 		return;
 
@@ -1720,13 +1592,7 @@ void zfcp_erp_set_adapter_status(struct zfcp_adapter *adapter, u32 mask)
 	spin_unlock_irqrestore(adapter->scsi_host->host_lock, flags);
 }
 
-/**
- * zfcp_erp_clear_adapter_status - clear adapter status bits
- * @adapter: adapter to change the status
- * @mask: status bits to change
- *
- * Changes in common status bits are propagated to attached ports and LUNs.
- */
+ 
 void zfcp_erp_clear_adapter_status(struct zfcp_adapter *adapter, u32 mask)
 {
 	struct zfcp_port *port;
@@ -1751,10 +1617,7 @@ void zfcp_erp_clear_adapter_status(struct zfcp_adapter *adapter, u32 mask)
 	}
 	read_unlock_irqrestore(&adapter->port_list_lock, flags);
 
-	/*
-	 * if `scsi_host` is missing, xconfig/xport data has never completed
-	 * yet, so we can't access it, but there are also no SDEVs yet
-	 */
+	 
 	if (adapter->scsi_host == NULL)
 		return;
 
@@ -1767,13 +1630,7 @@ void zfcp_erp_clear_adapter_status(struct zfcp_adapter *adapter, u32 mask)
 	spin_unlock_irqrestore(adapter->scsi_host->host_lock, flags);
 }
 
-/**
- * zfcp_erp_set_port_status - set port status bits
- * @port: port to change the status
- * @mask: status bits to change
- *
- * Changes in common status bits are propagated to attached LUNs.
- */
+ 
 void zfcp_erp_set_port_status(struct zfcp_port *port, u32 mask)
 {
 	struct scsi_device *sdev;
@@ -1793,13 +1650,7 @@ void zfcp_erp_set_port_status(struct zfcp_port *port, u32 mask)
 	spin_unlock_irqrestore(port->adapter->scsi_host->host_lock, flags);
 }
 
-/**
- * zfcp_erp_clear_port_status - clear port status bits
- * @port: adapter to change the status
- * @mask: status bits to change
- *
- * Changes in common status bits are propagated to attached LUNs.
- */
+ 
 void zfcp_erp_clear_port_status(struct zfcp_port *port, u32 mask)
 {
 	struct scsi_device *sdev;
@@ -1826,11 +1677,7 @@ void zfcp_erp_clear_port_status(struct zfcp_port *port, u32 mask)
 	spin_unlock_irqrestore(port->adapter->scsi_host->host_lock, flags);
 }
 
-/**
- * zfcp_erp_set_lun_status - set lun status bits
- * @sdev: SCSI device / lun to set the status bits
- * @mask: status bits to change
- */
+ 
 void zfcp_erp_set_lun_status(struct scsi_device *sdev, u32 mask)
 {
 	struct zfcp_scsi_dev *zfcp_sdev = sdev_to_zfcp(sdev);
@@ -1838,11 +1685,7 @@ void zfcp_erp_set_lun_status(struct scsi_device *sdev, u32 mask)
 	atomic_or(mask, &zfcp_sdev->status);
 }
 
-/**
- * zfcp_erp_clear_lun_status - clear lun status bits
- * @sdev: SCSi device / lun to clear the status bits
- * @mask: status bits to change
- */
+ 
 void zfcp_erp_clear_lun_status(struct scsi_device *sdev, u32 mask)
 {
 	struct zfcp_scsi_dev *zfcp_sdev = sdev_to_zfcp(sdev);
@@ -1853,11 +1696,7 @@ void zfcp_erp_clear_lun_status(struct scsi_device *sdev, u32 mask)
 		atomic_set(&zfcp_sdev->erp_counter, 0);
 }
 
-/**
- * zfcp_erp_adapter_reset_sync() - Really reopen adapter and wait.
- * @adapter: Pointer to zfcp_adapter to reopen.
- * @dbftag: Trace tag string of length %ZFCP_DBF_TAG_LEN.
- */
+ 
 void zfcp_erp_adapter_reset_sync(struct zfcp_adapter *adapter, char *dbftag)
 {
 	zfcp_erp_set_adapter_status(adapter, ZFCP_STATUS_COMMON_RUNNING);

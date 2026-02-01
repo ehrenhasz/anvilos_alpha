@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Khadas MCU Controlled FAN driver
- *
- * Copyright (C) 2020 BayLibre SAS
- * Author(s): Neil Armstrong <narmstrong@baylibre.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/of.h>

@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright 2023 NXP
+
+
 
 #include <linux/bitfield.h>
 #include <linux/init.h>
@@ -10,7 +10,7 @@
 #include <linux/platform_device.h>
 #include <linux/perf_event.h>
 
-/* Performance monitor configuration */
+ 
 #define PMCFG1  			0x00
 #define PMCFG1_RD_TRANS_FILT_EN 	BIT(31)
 #define PMCFG1_WR_TRANS_FILT_EN 	BIT(30)
@@ -20,21 +20,18 @@
 #define PMCFG2  			0x04
 #define PMCFG2_ID			GENMASK(17, 0)
 
-/* Global control register affects all counters and takes priority over local control registers */
+ 
 #define PMGC0		0x40
-/* Global control register bits */
+ 
 #define PMGC0_FAC	BIT(31)
 #define PMGC0_PMIE	BIT(30)
 #define PMGC0_FCECE	BIT(29)
 
-/*
- * 64bit counter0 exclusively dedicated to counting cycles
- * 32bit counters monitor counter-specific events in addition to counting reference events
- */
+ 
 #define PMLCA(n)	(0x40 + 0x10 + (0x10 * n))
 #define PMLCB(n)	(0x40 + 0x14 + (0x10 * n))
 #define PMC(n)		(0x40 + 0x18 + (0x10 * n))
-/* Local control register bits */
+ 
 #define PMLCA_FC	BIT(31)
 #define PMLCA_CE	BIT(26)
 #define PMLCA_EVENT	GENMASK(22, 16)
@@ -50,7 +47,7 @@
 static DEFINE_IDA(ddr_ida);
 
 struct imx_ddr_devtype_data {
-	const char *identifier;		/* system PMU identifier for userspace */
+	const char *identifier;		 
 };
 
 struct ddr_pmu {
@@ -73,7 +70,7 @@ static const struct imx_ddr_devtype_data imx93_devtype_data = {
 
 static const struct of_device_id imx_ddr_pmu_dt_ids[] = {
 	{.compatible = "fsl,imx93-ddr-pmu", .data = &imx93_devtype_data},
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, imx_ddr_pmu_dt_ids);
 
@@ -134,10 +131,10 @@ static ssize_t ddr_pmu_event_show(struct device *dev,
 	})[0].attr.attr)
 
 static struct attribute *ddr_perf_events_attrs[] = {
-	/* counter0 cycles event */
+	 
 	IMX9_DDR_PMU_EVENT_ATTR(cycles, 0),
 
-	/* reference events for all normal counters, need assert DEBUG19[21] bit */
+	 
 	IMX9_DDR_PMU_EVENT_ATTR(ddrc_ddrc1_rmw_for_ecc, 12),
 	IMX9_DDR_PMU_EVENT_ATTR(eddrtq_pmon_rreorder, 13),
 	IMX9_DDR_PMU_EVENT_ATTR(eddrtq_pmon_wreorder, 14),
@@ -158,7 +155,7 @@ static struct attribute *ddr_perf_events_attrs[] = {
 	IMX9_DDR_PMU_EVENT_ATTR(ddrc_pm_15, 61),
 	IMX9_DDR_PMU_EVENT_ATTR(ddrc_pm_29, 63),
 
-	/* counter1 specific events */
+	 
 	IMX9_DDR_PMU_EVENT_ATTR(ddrc_ld_riq_0, 64),
 	IMX9_DDR_PMU_EVENT_ATTR(ddrc_ld_riq_1, 65),
 	IMX9_DDR_PMU_EVENT_ATTR(ddrc_ld_riq_2, 66),
@@ -168,7 +165,7 @@ static struct attribute *ddr_perf_events_attrs[] = {
 	IMX9_DDR_PMU_EVENT_ATTR(ddrc_ld_riq_6, 70),
 	IMX9_DDR_PMU_EVENT_ATTR(ddrc_ld_riq_7, 71),
 
-	/* counter2 specific events */
+	 
 	IMX9_DDR_PMU_EVENT_ATTR(ddrc_ld_wiq_0, 64),
 	IMX9_DDR_PMU_EVENT_ATTR(ddrc_ld_wiq_1, 65),
 	IMX9_DDR_PMU_EVENT_ATTR(ddrc_ld_wiq_2, 66),
@@ -180,7 +177,7 @@ static struct attribute *ddr_perf_events_attrs[] = {
 	IMX9_DDR_PMU_EVENT_ATTR(eddrtq_pmon_empty, 72),
 	IMX9_DDR_PMU_EVENT_ATTR(eddrtq_pm_rd_trans_filt, 73),
 
-	/* counter3 specific events */
+	 
 	IMX9_DDR_PMU_EVENT_ATTR(ddrc_qx_row_collision_0, 64),
 	IMX9_DDR_PMU_EVENT_ATTR(ddrc_qx_row_collision_1, 65),
 	IMX9_DDR_PMU_EVENT_ATTR(ddrc_qx_row_collision_2, 66),
@@ -192,7 +189,7 @@ static struct attribute *ddr_perf_events_attrs[] = {
 	IMX9_DDR_PMU_EVENT_ATTR(eddrtq_pmon_full, 72),
 	IMX9_DDR_PMU_EVENT_ATTR(eddrtq_pm_wr_trans_filt, 73),
 
-	/* counter4 specific events */
+	 
 	IMX9_DDR_PMU_EVENT_ATTR(ddrc_qx_row_open_0, 64),
 	IMX9_DDR_PMU_EVENT_ATTR(ddrc_qx_row_open_1, 65),
 	IMX9_DDR_PMU_EVENT_ATTR(ddrc_qx_row_open_2, 66),
@@ -204,7 +201,7 @@ static struct attribute *ddr_perf_events_attrs[] = {
 	IMX9_DDR_PMU_EVENT_ATTR(eddrtq_pmon_ld_rdq2_rmw, 72),
 	IMX9_DDR_PMU_EVENT_ATTR(eddrtq_pm_rd_beat_filt, 73),
 
-	/* counter5 specific events */
+	 
 	IMX9_DDR_PMU_EVENT_ATTR(ddrc_qx_valid_start_0, 64),
 	IMX9_DDR_PMU_EVENT_ATTR(ddrc_qx_valid_start_1, 65),
 	IMX9_DDR_PMU_EVENT_ATTR(ddrc_qx_valid_start_2, 66),
@@ -215,23 +212,23 @@ static struct attribute *ddr_perf_events_attrs[] = {
 	IMX9_DDR_PMU_EVENT_ATTR(ddrc_qx_valid_start_7, 71),
 	IMX9_DDR_PMU_EVENT_ATTR(eddrtq_pmon_ld_rdq1, 72),
 
-	/* counter6 specific events */
+	 
 	IMX9_DDR_PMU_EVENT_ATTR(ddrc_qx_valid_end_0, 64),
 	IMX9_DDR_PMU_EVENT_ATTR(eddrtq_pmon_ld_rdq2, 72),
 
-	/* counter7 specific events */
+	 
 	IMX9_DDR_PMU_EVENT_ATTR(eddrtq_pmon_1_2_full, 64),
 	IMX9_DDR_PMU_EVENT_ATTR(eddrtq_pmon_ld_wrq0, 65),
 
-	/* counter8 specific events */
+	 
 	IMX9_DDR_PMU_EVENT_ATTR(eddrtq_pmon_bias_switched, 64),
 	IMX9_DDR_PMU_EVENT_ATTR(eddrtq_pmon_1_4_full, 65),
 
-	/* counter9 specific events */
+	 
 	IMX9_DDR_PMU_EVENT_ATTR(eddrtq_pmon_ld_wrq1, 65),
 	IMX9_DDR_PMU_EVENT_ATTR(eddrtq_pmon_3_4_full, 66),
 
-	/* counter10 specific events */
+	 
 	IMX9_DDR_PMU_EVENT_ATTR(eddrtq_pmon_misc_mrk, 65),
 	IMX9_DDR_PMU_EVENT_ATTR(eddrtq_pmon_ld_rdq0, 66),
 	NULL,
@@ -288,7 +285,7 @@ static u64 ddr_perf_read_counter(struct ddr_pmu *pmu, int counter)
 		goto out;
 	}
 
-	/* special handling for reading 64bit cycle counter */
+	 
 	do {
 		val_upper = readl_relaxed(pmu->base + PMC(counter) + 0x4);
 		val_lower = readl_relaxed(pmu->base + PMC(counter));
@@ -308,23 +305,11 @@ static void ddr_perf_counter_global_config(struct ddr_pmu *pmu, bool enable)
 	ctrl = readl_relaxed(pmu->base + PMGC0);
 
 	if (enable) {
-		/*
-		 * The performance monitor must be reset before event counting
-		 * sequences. The performance monitor can be reset by first freezing
-		 * one or more counters and then clearing the freeze condition to
-		 * allow the counters to count according to the settings in the
-		 * performance monitor registers. Counters can be frozen individually
-		 * by setting PMLCAn[FC] bits, or simultaneously by setting PMGC0[FAC].
-		 * Simply clearing these freeze bits will then allow the performance
-		 * monitor to begin counting based on the register settings.
-		 */
+		 
 		ctrl |= PMGC0_FAC;
 		writel(ctrl, pmu->base + PMGC0);
 
-		/*
-		 * Freeze all counters disabled, interrupt enabled, and freeze
-		 * counters on condition enabled.
-		 */
+		 
 		ctrl &= ~PMGC0_FAC;
 		ctrl |= PMGC0_PMIE | PMGC0_FCECE;
 		writel(ctrl, pmu->base + PMGC0);
@@ -348,14 +333,14 @@ static void ddr_perf_counter_local_config(struct ddr_pmu *pmu, int config,
 
 		ddr_perf_clear_counter(pmu, counter);
 
-		/* Freeze counter disabled, condition enabled, and program event.*/
+		 
 		ctrl_a &= ~PMLCA_FC;
 		ctrl_a |= PMLCA_CE;
 		ctrl_a &= ~FIELD_PREP(PMLCA_EVENT, 0x7F);
 		ctrl_a |= FIELD_PREP(PMLCA_EVENT, (config & 0x000000FF));
 		writel(ctrl_a, pmu->base + PMLCA(counter));
 	} else {
-		/* Freeze counter. */
+		 
 		ctrl_a |= PMLCA_FC;
 		writel(ctrl_a, pmu->base + PMLCA(counter));
 	}
@@ -406,7 +391,7 @@ static void ddr_perf_event_update(struct perf_event *event)
 	new_raw_count = ddr_perf_read_counter(pmu, counter);
 	local64_add(new_raw_count, &event->count);
 
-	/* clear counter's value every time */
+	 
 	ddr_perf_clear_counter(pmu, counter);
 }
 
@@ -427,11 +412,7 @@ static int ddr_perf_event_init(struct perf_event *event)
 		return -EOPNOTSUPP;
 	}
 
-	/*
-	 * We must NOT create groups containing mixed PMUs, although software
-	 * events are acceptable (for example to create a CCN group
-	 * periodically read when a hrtimer aka cpu-clock leader triggers).
-	 */
+	 
 	if (event->group_leader->pmu != event->pmu &&
 			!is_software_event(event->group_leader))
 		return -EINVAL;
@@ -479,7 +460,7 @@ static int ddr_perf_event_add(struct perf_event *event, int flags)
 	if (flags & PERF_EF_START)
 		ddr_perf_event_start(event, flags);
 
-	/* read trans, write trans, read beat */
+	 
 	ddr_perf_monitor_config(pmu, cfg, cfg1, cfg2);
 
 	return 0;
@@ -551,17 +532,7 @@ static irqreturn_t ddr_perf_irq_handler(int irq, void *p)
 	struct perf_event *event;
 	int i;
 
-	/*
-	 * Counters can generate an interrupt on an overflow when msb of a
-	 * counter changes from 0 to 1. For the interrupt to be signalled,
-	 * below condition mush be satisfied:
-	 * PMGC0[PMIE] = 1, PMGC0[FCECE] = 1, PMLCAn[CE] = 1
-	 * When an interrupt is signalled, PMGC0[FAC] is set by hardware and
-	 * all of the registers are frozen.
-	 * Software can clear the interrupt condition by resetting the performance
-	 * monitor and clearing the most significant bit of the counter that
-	 * generate the overflow.
-	 */
+	 
 	for (i = 0; i < NUM_COUNTERS; i++) {
 		if (!pmu->events[i])
 			continue;
@@ -633,14 +604,14 @@ static int ddr_perf_probe(struct platform_device *pdev)
 	}
 	pmu->cpuhp_state = ret;
 
-	/* Register the pmu instance for cpu hotplug */
+	 
 	ret = cpuhp_state_add_instance_nocalls(pmu->cpuhp_state, &pmu->node);
 	if (ret) {
 		dev_err(&pdev->dev, "Error %d registering hotplug\n", ret);
 		goto cpuhp_instance_err;
 	}
 
-	/* Request irq */
+	 
 	irq = platform_get_irq(pdev, 0);
 	if (irq < 0) {
 		ret = irq;

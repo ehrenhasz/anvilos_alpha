@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Analog Devices ADF7242 Low-Power IEEE 802.15.4 Transceiver
- *
- * Copyright 2009-2017 Analog Devices Inc.
- *
- * https://www.analog.com/ADF7242
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -28,102 +22,102 @@
 #define FIRMWARE "adf7242_firmware.bin"
 #define MAX_POLL_LOOPS 200
 
-/* All Registers */
+ 
 
-#define REG_EXT_CTRL	0x100	/* RW External LNA/PA and internal PA control */
-#define REG_TX_FSK_TEST 0x101	/* RW TX FSK test mode configuration */
-#define REG_CCA1	0x105	/* RW RSSI threshold for CCA */
-#define REG_CCA2	0x106	/* RW CCA mode configuration */
-#define REG_BUFFERCFG	0x107	/* RW RX_BUFFER overwrite control */
-#define REG_PKT_CFG	0x108	/* RW FCS evaluation configuration */
-#define REG_DELAYCFG0	0x109	/* RW RC_RX command to SFD or sync word delay */
-#define REG_DELAYCFG1	0x10A	/* RW RC_TX command to TX state */
-#define REG_DELAYCFG2	0x10B	/* RW Mac delay extension */
-#define REG_SYNC_WORD0	0x10C	/* RW sync word bits [7:0] of [23:0]  */
-#define REG_SYNC_WORD1	0x10D	/* RW sync word bits [15:8] of [23:0]  */
-#define REG_SYNC_WORD2	0x10E	/* RW sync word bits [23:16] of [23:0]	*/
-#define REG_SYNC_CONFIG	0x10F	/* RW sync word configuration */
-#define REG_RC_CFG	0x13E	/* RW RX / TX packet configuration */
-#define REG_RC_VAR44	0x13F	/* RW RESERVED */
-#define REG_CH_FREQ0	0x300	/* RW Channel Frequency Settings - Low */
-#define REG_CH_FREQ1	0x301	/* RW Channel Frequency Settings - Middle */
-#define REG_CH_FREQ2	0x302	/* RW Channel Frequency Settings - High */
-#define REG_TX_FD	0x304	/* RW TX Frequency Deviation Register */
-#define REG_DM_CFG0	0x305	/* RW RX Discriminator BW Register */
-#define REG_TX_M	0x306	/* RW TX Mode Register */
-#define REG_RX_M	0x307	/* RW RX Mode Register */
-#define REG_RRB		0x30C	/* R RSSI Readback Register */
-#define REG_LRB		0x30D	/* R Link Quality Readback Register */
-#define REG_DR0		0x30E	/* RW bits [15:8] of [15:0] data rate setting */
-#define REG_DR1		0x30F	/* RW bits [7:0] of [15:0] data rate setting */
-#define REG_PRAMPG	0x313	/* RW RESERVED */
-#define REG_TXPB	0x314	/* RW TX Packet Storage Base Address */
-#define REG_RXPB	0x315	/* RW RX Packet Storage Base Address */
-#define REG_TMR_CFG0	0x316	/* RW Wake up Timer Conf Register - High */
-#define REG_TMR_CFG1	0x317	/* RW Wake up Timer Conf Register - Low */
-#define REG_TMR_RLD0	0x318	/* RW Wake up Timer Value Register - High */
-#define REG_TMR_RLD1	0x319	/* RW Wake up Timer Value Register - Low  */
-#define REG_TMR_CTRL	0x31A	/* RW Wake up Timer Timeout flag */
-#define REG_PD_AUX	0x31E	/* RW Battmon enable */
-#define REG_GP_CFG	0x32C	/* RW GPIO Configuration */
-#define REG_GP_OUT	0x32D	/* RW GPIO Configuration */
-#define REG_GP_IN	0x32E	/* R GPIO Configuration */
-#define REG_SYNT	0x335	/* RW bandwidth calibration timers */
-#define REG_CAL_CFG	0x33D	/* RW Calibration Settings */
-#define REG_PA_BIAS	0x36E	/* RW PA BIAS */
-#define REG_SYNT_CAL	0x371	/* RW Oscillator and Doubler Configuration */
-#define REG_IIRF_CFG	0x389	/* RW BB Filter Decimation Rate */
-#define REG_CDR_CFG	0x38A	/* RW CDR kVCO */
-#define REG_DM_CFG1	0x38B	/* RW Postdemodulator Filter */
-#define REG_AGCSTAT	0x38E	/* R RXBB Ref Osc Calibration Engine Readback */
-#define REG_RXCAL0	0x395	/* RW RX BB filter tuning, LSB */
-#define REG_RXCAL1	0x396	/* RW RX BB filter tuning, MSB */
-#define REG_RXFE_CFG	0x39B	/* RW RXBB Ref Osc & RXFE Calibration */
-#define REG_PA_RR	0x3A7	/* RW Set PA ramp rate */
-#define REG_PA_CFG	0x3A8	/* RW PA enable */
-#define REG_EXTPA_CFG	0x3A9	/* RW External PA BIAS DAC */
-#define REG_EXTPA_MSC	0x3AA	/* RW PA Bias Mode */
-#define REG_ADC_RBK	0x3AE	/* R Readback temp */
-#define REG_AGC_CFG1	0x3B2	/* RW GC Parameters */
-#define REG_AGC_MAX	0x3B4	/* RW Slew rate	 */
-#define REG_AGC_CFG2	0x3B6	/* RW RSSI Parameters */
-#define REG_AGC_CFG3	0x3B7	/* RW RSSI Parameters */
-#define REG_AGC_CFG4	0x3B8	/* RW RSSI Parameters */
-#define REG_AGC_CFG5	0x3B9	/* RW RSSI & NDEC Parameters */
-#define REG_AGC_CFG6	0x3BA	/* RW NDEC Parameters */
-#define REG_OCL_CFG1	0x3C4	/* RW OCL System Parameters */
-#define REG_IRQ1_EN0	0x3C7	/* RW Interrupt Mask set bits for IRQ1 */
-#define REG_IRQ1_EN1	0x3C8	/* RW Interrupt Mask set bits for IRQ1 */
-#define REG_IRQ2_EN0	0x3C9	/* RW Interrupt Mask set bits for IRQ2 */
-#define REG_IRQ2_EN1	0x3CA	/* RW Interrupt Mask set bits for IRQ2 */
-#define REG_IRQ1_SRC0	0x3CB	/* RW Interrupt Source bits for IRQ */
-#define REG_IRQ1_SRC1	0x3CC	/* RW Interrupt Source bits for IRQ */
-#define REG_OCL_BW0	0x3D2	/* RW OCL System Parameters */
-#define REG_OCL_BW1	0x3D3	/* RW OCL System Parameters */
-#define REG_OCL_BW2	0x3D4	/* RW OCL System Parameters */
-#define REG_OCL_BW3	0x3D5	/* RW OCL System Parameters */
-#define REG_OCL_BW4	0x3D6	/* RW OCL System Parameters */
-#define REG_OCL_BWS	0x3D7	/* RW OCL System Parameters */
-#define REG_OCL_CFG13	0x3E0	/* RW OCL System Parameters */
-#define REG_GP_DRV	0x3E3	/* RW I/O pads Configuration and bg trim */
-#define REG_BM_CFG	0x3E6	/* RW Batt. Monitor Threshold Voltage setting */
-#define REG_SFD_15_4	0x3F4	/* RW Option to set non standard SFD */
-#define REG_AFC_CFG	0x3F7	/* RW AFC mode and polarity */
-#define REG_AFC_KI_KP	0x3F8	/* RW AFC ki and kp */
-#define REG_AFC_RANGE	0x3F9	/* RW AFC range */
-#define REG_AFC_READ	0x3FA	/* RW Readback frequency error */
+#define REG_EXT_CTRL	0x100	 
+#define REG_TX_FSK_TEST 0x101	 
+#define REG_CCA1	0x105	 
+#define REG_CCA2	0x106	 
+#define REG_BUFFERCFG	0x107	 
+#define REG_PKT_CFG	0x108	 
+#define REG_DELAYCFG0	0x109	 
+#define REG_DELAYCFG1	0x10A	 
+#define REG_DELAYCFG2	0x10B	 
+#define REG_SYNC_WORD0	0x10C	 
+#define REG_SYNC_WORD1	0x10D	 
+#define REG_SYNC_WORD2	0x10E	 
+#define REG_SYNC_CONFIG	0x10F	 
+#define REG_RC_CFG	0x13E	 
+#define REG_RC_VAR44	0x13F	 
+#define REG_CH_FREQ0	0x300	 
+#define REG_CH_FREQ1	0x301	 
+#define REG_CH_FREQ2	0x302	 
+#define REG_TX_FD	0x304	 
+#define REG_DM_CFG0	0x305	 
+#define REG_TX_M	0x306	 
+#define REG_RX_M	0x307	 
+#define REG_RRB		0x30C	 
+#define REG_LRB		0x30D	 
+#define REG_DR0		0x30E	 
+#define REG_DR1		0x30F	 
+#define REG_PRAMPG	0x313	 
+#define REG_TXPB	0x314	 
+#define REG_RXPB	0x315	 
+#define REG_TMR_CFG0	0x316	 
+#define REG_TMR_CFG1	0x317	 
+#define REG_TMR_RLD0	0x318	 
+#define REG_TMR_RLD1	0x319	 
+#define REG_TMR_CTRL	0x31A	 
+#define REG_PD_AUX	0x31E	 
+#define REG_GP_CFG	0x32C	 
+#define REG_GP_OUT	0x32D	 
+#define REG_GP_IN	0x32E	 
+#define REG_SYNT	0x335	 
+#define REG_CAL_CFG	0x33D	 
+#define REG_PA_BIAS	0x36E	 
+#define REG_SYNT_CAL	0x371	 
+#define REG_IIRF_CFG	0x389	 
+#define REG_CDR_CFG	0x38A	 
+#define REG_DM_CFG1	0x38B	 
+#define REG_AGCSTAT	0x38E	 
+#define REG_RXCAL0	0x395	 
+#define REG_RXCAL1	0x396	 
+#define REG_RXFE_CFG	0x39B	 
+#define REG_PA_RR	0x3A7	 
+#define REG_PA_CFG	0x3A8	 
+#define REG_EXTPA_CFG	0x3A9	 
+#define REG_EXTPA_MSC	0x3AA	 
+#define REG_ADC_RBK	0x3AE	 
+#define REG_AGC_CFG1	0x3B2	 
+#define REG_AGC_MAX	0x3B4	 
+#define REG_AGC_CFG2	0x3B6	 
+#define REG_AGC_CFG3	0x3B7	 
+#define REG_AGC_CFG4	0x3B8	 
+#define REG_AGC_CFG5	0x3B9	 
+#define REG_AGC_CFG6	0x3BA	 
+#define REG_OCL_CFG1	0x3C4	 
+#define REG_IRQ1_EN0	0x3C7	 
+#define REG_IRQ1_EN1	0x3C8	 
+#define REG_IRQ2_EN0	0x3C9	 
+#define REG_IRQ2_EN1	0x3CA	 
+#define REG_IRQ1_SRC0	0x3CB	 
+#define REG_IRQ1_SRC1	0x3CC	 
+#define REG_OCL_BW0	0x3D2	 
+#define REG_OCL_BW1	0x3D3	 
+#define REG_OCL_BW2	0x3D4	 
+#define REG_OCL_BW3	0x3D5	 
+#define REG_OCL_BW4	0x3D6	 
+#define REG_OCL_BWS	0x3D7	 
+#define REG_OCL_CFG13	0x3E0	 
+#define REG_GP_DRV	0x3E3	 
+#define REG_BM_CFG	0x3E6	 
+#define REG_SFD_15_4	0x3F4	 
+#define REG_AFC_CFG	0x3F7	 
+#define REG_AFC_KI_KP	0x3F8	 
+#define REG_AFC_RANGE	0x3F9	 
+#define REG_AFC_READ	0x3FA	 
 
-/* REG_EXTPA_MSC */
+ 
 #define PA_PWR(x)		(((x) & 0xF) << 4)
 #define EXTPA_BIAS_SRC		BIT(3)
 #define EXTPA_BIAS_MODE(x)	(((x) & 0x7) << 0)
 
-/* REG_PA_CFG */
+ 
 #define PA_BRIDGE_DBIAS(x)	(((x) & 0x1F) << 0)
 #define PA_DBIAS_HIGH_POWER	21
 #define PA_DBIAS_LOW_POWER	13
 
-/* REG_PA_BIAS */
+ 
 #define PA_BIAS_CTRL(x)		(((x) & 0x1F) << 1)
 #define REG_PA_BIAS_DFL		BIT(0)
 #define PA_BIAS_HIGH_POWER	63
@@ -147,7 +141,7 @@
 #define REG_AUTO_TX2		0x121
 #define REG_AUTO_STATUS		0x122
 
-/* REG_FFILT_CFG */
+ 
 #define ACCEPT_BEACON_FRAMES   BIT(0)
 #define ACCEPT_DATA_FRAMES     BIT(1)
 #define ACCEPT_ACK_FRAMES      BIT(2)
@@ -155,76 +149,42 @@
 #define ACCEPT_RESERVED_FRAMES BIT(4)
 #define ACCEPT_ALL_ADDRESS     BIT(5)
 
-/* REG_AUTO_CFG */
+ 
 #define AUTO_ACK_FRAMEPEND     BIT(0)
 #define IS_PANCOORD	       BIT(1)
 #define RX_AUTO_ACK_EN	       BIT(3)
 #define CSMA_CA_RX_TURNAROUND  BIT(4)
 
-/* REG_AUTO_TX1 */
+ 
 #define MAX_FRAME_RETRIES(x)   ((x) & 0xF)
 #define MAX_CCA_RETRIES(x)     (((x) & 0x7) << 4)
 
-/* REG_AUTO_TX2 */
+ 
 #define CSMA_MAX_BE(x)	       ((x) & 0xF)
 #define CSMA_MIN_BE(x)	       (((x) & 0xF) << 4)
 
-#define CMD_SPI_NOP		0xFF /* No operation. Use for dummy writes */
-#define CMD_SPI_PKT_WR		0x10 /* Write telegram to the Packet RAM
-				      * starting from the TX packet base address
-				      * pointer tx_packet_base
-				      */
-#define CMD_SPI_PKT_RD		0x30 /* Read telegram from the Packet RAM
-				      * starting from RX packet base address
-				      * pointer rxpb.rx_packet_base
-				      */
-#define CMD_SPI_MEM_WR(x)	(0x18 + (x >> 8)) /* Write data to MCR or
-						   * Packet RAM sequentially
-						   */
-#define CMD_SPI_MEM_RD(x)	(0x38 + (x >> 8)) /* Read data from MCR or
-						   * Packet RAM sequentially
-						   */
-#define CMD_SPI_MEMR_WR(x)	(0x08 + (x >> 8)) /* Write data to MCR or Packet
-						   * RAM as random block
-						   */
-#define CMD_SPI_MEMR_RD(x)	(0x28 + (x >> 8)) /* Read data from MCR or
-						   * Packet RAM random block
-						   */
-#define CMD_SPI_PRAM_WR		0x1E /* Write data sequentially to current
-				      * PRAM page selected
-				      */
-#define CMD_SPI_PRAM_RD		0x3E /* Read data sequentially from current
-				      * PRAM page selected
-				      */
-#define CMD_RC_SLEEP		0xB1 /* Invoke transition of radio controller
-				      * into SLEEP state
-				      */
-#define CMD_RC_IDLE		0xB2 /* Invoke transition of radio controller
-				      * into IDLE state
-				      */
-#define CMD_RC_PHY_RDY		0xB3 /* Invoke transition of radio controller
-				      * into PHY_RDY state
-				      */
-#define CMD_RC_RX		0xB4 /* Invoke transition of radio controller
-				      * into RX state
-				      */
-#define CMD_RC_TX		0xB5 /* Invoke transition of radio controller
-				      * into TX state
-				      */
-#define CMD_RC_MEAS		0xB6 /* Invoke transition of radio controller
-				      * into MEAS state
-				      */
-#define CMD_RC_CCA		0xB7 /* Invoke Clear channel assessment */
-#define CMD_RC_CSMACA		0xC1 /* initiates CSMA-CA channel access
-				      * sequence and frame transmission
-				      */
-#define CMD_RC_PC_RESET		0xC7 /* Program counter reset */
-#define CMD_RC_RESET		0xC8 /* Resets the ADF7242 and puts it in
-				      * the sleep state
-				      */
+#define CMD_SPI_NOP		0xFF  
+#define CMD_SPI_PKT_WR		0x10  
+#define CMD_SPI_PKT_RD		0x30  
+#define CMD_SPI_MEM_WR(x)	(0x18 + (x >> 8))  
+#define CMD_SPI_MEM_RD(x)	(0x38 + (x >> 8))  
+#define CMD_SPI_MEMR_WR(x)	(0x08 + (x >> 8))  
+#define CMD_SPI_MEMR_RD(x)	(0x28 + (x >> 8))  
+#define CMD_SPI_PRAM_WR		0x1E  
+#define CMD_SPI_PRAM_RD		0x3E  
+#define CMD_RC_SLEEP		0xB1  
+#define CMD_RC_IDLE		0xB2  
+#define CMD_RC_PHY_RDY		0xB3  
+#define CMD_RC_RX		0xB4  
+#define CMD_RC_TX		0xB5  
+#define CMD_RC_MEAS		0xB6  
+#define CMD_RC_CCA		0xB7  
+#define CMD_RC_CSMACA		0xC1  
+#define CMD_RC_PC_RESET		0xC7  
+#define CMD_RC_RESET		0xC8  
 #define CMD_RC_PC_RESET_NO_WAIT (CMD_RC_PC_RESET | BIT(31))
 
-/* STATUS */
+ 
 
 #define STAT_SPI_READY		BIT(7)
 #define STAT_IRQ_STATUS		BIT(6)
@@ -237,7 +197,7 @@
 #define RC_STATUS_TX		5
 #define RC_STATUS_MASK		0xF
 
-/* AUTO_STATUS */
+ 
 
 #define SUCCESS			0
 #define SUCCESS_DATPEND		1
@@ -247,7 +207,7 @@
 
 #define PRAM_PAGESIZE		256
 
-/* IRQ1 */
+ 
 
 #define IRQ_CCA_COMPLETE	BIT(0)
 #define IRQ_SFD_RX		BIT(1)
@@ -264,13 +224,13 @@
 #define FLAG_XMIT		0
 #define FLAG_START		1
 
-#define ADF7242_REPORT_CSMA_CA_STAT 0 /* framework doesn't handle yet */
+#define ADF7242_REPORT_CSMA_CA_STAT 0  
 
 struct adf7242_local {
 	struct spi_device *spi;
 	struct completion tx_complete;
 	struct ieee802154_hw *hw;
-	struct mutex bmux; /* protect SPI messages */
+	struct mutex bmux;  
 	struct spi_message stat_msg;
 	struct spi_transfer stat_xfer;
 	struct dentry *debugfs_root;
@@ -285,9 +245,7 @@ struct adf7242_local {
 	u8 max_be;
 	u8 min_be;
 
-	/* DMA (thus cache coherency maintenance) requires the
-	 * transfer buffers to live in their own cache lines.
-	 */
+	 
 
 	u8 buf[3] ____cacheline_aligned;
 	u8 buf_reg_tx[3];
@@ -414,7 +372,7 @@ static int adf7242_read_fbuf(struct adf7242_local *lp,
 	if (packet_read) {
 		buf[0] = CMD_SPI_PKT_RD;
 		buf[1] = CMD_SPI_NOP;
-		buf[2] = 0;	/* PHR */
+		buf[2] = 0;	 
 	} else {
 		buf[0] = CMD_SPI_PRAM_RD;
 		buf[1] = 0;
@@ -573,7 +531,7 @@ static void adf7242_clear_irqstat(struct adf7242_local *lp)
 
 static int adf7242_cmd_rx(struct adf7242_local *lp)
 {
-	/* Wait until the ACK is sent */
+	 
 	adf7242_wait_status(lp, RC_STATUS_PHY_RDY, RC_STATUS_MASK, __LINE__);
 	adf7242_clear_irqstat(lp);
 	mod_delayed_work(lp->wqueue, &lp->work, msecs_to_jiffies(400));
@@ -586,9 +544,7 @@ static void adf7242_rx_cal_work(struct work_struct *work)
 	struct adf7242_local *lp =
 	container_of(work, struct adf7242_local, work.work);
 
-	/* Reissuing RC_RX every 400ms - to adjust for offset
-	 * drift in receiver (datasheet page 61, OCL section)
-	 */
+	 
 
 	if (!test_bit(FLAG_XMIT, &lp->flags)) {
 		adf7242_cmd(lp, CMD_RC_PHY_RDY);
@@ -832,7 +788,7 @@ static int adf7242_xmit(struct ieee802154_hw *hw, struct sk_buff *skb)
 	struct adf7242_local *lp = hw->priv;
 	int ret;
 
-	/* ensure existing instances of the IRQ handler have completed */
+	 
 	disable_irq(lp->spi->irq);
 	set_bit(FLAG_XMIT, &lp->flags);
 	cancel_delayed_work_sync(&lp->work);
@@ -913,7 +869,7 @@ static int adf7242_rx(struct adf7242_local *lp)
 
 	ret = adf7242_cmd_rx(lp);
 
-	skb_trim(skb, len - 2);	/* Don't put RSSI/LQI or CRC into the frame */
+	skb_trim(skb, len - 2);	 
 
 	ieee802154_rx_irqsafe(lp->hw, skb, lqi);
 
@@ -1005,7 +961,7 @@ static irqreturn_t adf7242_isr(int irq, void *data)
 				astat == FAILURE_CSMACA ? "FAILURE_CSMACA" : "",
 				astat == FAILURE_NOACK ? "FAILURE_NOACK" : "");
 
-			/* save CSMA-CA completion status */
+			 
 			lp->tx_stat = astat;
 		} else {
 			lp->tx_stat = SUCCESS;
@@ -1016,16 +972,13 @@ static irqreturn_t adf7242_isr(int irq, void *data)
 		   (irq1 & IRQ_FRAME_VALID)) {
 		adf7242_rx(lp);
 	} else if (!xmit && test_bit(FLAG_START, &lp->flags)) {
-		/* Invalid packet received - drop it and restart */
+		 
 		dev_dbg(&lp->spi->dev, "%s:%d : ERROR IRQ1 = 0x%X\n",
 			__func__, __LINE__, irq1);
 		adf7242_cmd(lp, CMD_RC_PHY_RDY);
 		adf7242_cmd_rx(lp);
 	} else {
-		/* This can only be xmit without IRQ, likely a RX packet.
-		 * we get an TX IRQ shortly - do nothing or let the xmit
-		 * timeout handle this
-		 */
+		 
 
 		dev_dbg(&lp->spi->dev, "%s:%d : ERROR IRQ1 = 0x%X, xmit %d\n",
 			__func__, __LINE__, irq1, xmit);
@@ -1070,11 +1023,7 @@ static int adf7242_hw_init(struct adf7242_local *lp)
 	adf7242_cmd(lp, CMD_RC_RESET);
 	adf7242_cmd(lp, CMD_RC_IDLE);
 
-	/* get ADF7242 addon firmware
-	 * build this driver as module
-	 * and place under /lib/firmware/adf7242_firmware.bin
-	 * or compile firmware into the kernel.
-	 */
+	 
 	ret = request_firmware(&fw, FIRMWARE, &lp->spi->dev);
 	if (ret) {
 		dev_err(&lp->spi->dev,
@@ -1211,7 +1160,7 @@ static int adf7242_probe(struct spi_device *spi)
 	hw->parent = &spi->dev;
 	hw->extra_tx_headroom = 0;
 
-	/* We support only 2.4 Ghz */
+	 
 	hw->phy->supported.channels[0] = 0x7FFF800;
 
 	hw->flags = IEEE802154_HW_OMIT_CKSUM |
@@ -1250,7 +1199,7 @@ static int adf7242_probe(struct spi_device *spi)
 	mutex_init(&lp->bmux);
 	init_completion(&lp->tx_complete);
 
-	/* Setup Status Message */
+	 
 	lp->stat_xfer.len = 1;
 	lp->stat_xfer.tx_buf = &lp->buf_stat_tx;
 	lp->stat_xfer.rx_buf = &lp->buf_stat_rx;

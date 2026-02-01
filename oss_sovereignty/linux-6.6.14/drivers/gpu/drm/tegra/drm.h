@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2012 Avionic Design GmbH
- * Copyright (C) 2012-2013 NVIDIA CORPORATION.  All rights reserved.
- */
+ 
+ 
 
 #ifndef HOST1X_DRM_H
 #define HOST1X_DRM_H 1
@@ -23,7 +20,7 @@
 #include "hub.h"
 #include "trace.h"
 
-/* XXX move to include/uapi/drm/drm_fourcc.h? */
+ 
 #define DRM_FORMAT_MOD_NVIDIA_SECTOR_LAYOUT BIT_ULL(22)
 
 struct reset_control;
@@ -63,10 +60,10 @@ struct tegra_drm_context {
 	struct tegra_drm_client *client;
 	struct host1x_channel *channel;
 
-	/* Only used by legacy UAPI. */
+	 
 	unsigned int id;
 
-	/* Only used by new UAPI. */
+	 
 	struct xarray mappings;
 	struct host1x_memory_context *memory_context;
 };
@@ -102,7 +99,7 @@ struct tegra_drm_client {
 	struct tegra_drm *drm;
 	struct host1x_channel *shared_channel;
 
-	/* Set by driver */
+	 
 	unsigned int version;
 	const struct tegra_drm_client_ops *ops;
 };
@@ -155,7 +152,7 @@ static inline struct tegra_output *connector_to_output(struct drm_connector *c)
 	return container_of(c, struct tegra_output, connector);
 }
 
-/* from output.c */
+ 
 int tegra_output_probe(struct tegra_output *output);
 void tegra_output_remove(struct tegra_output *output);
 int tegra_output_init(struct drm_device *drm, struct tegra_output *output);
@@ -170,7 +167,7 @@ enum drm_connector_status
 tegra_output_connector_detect(struct drm_connector *connector, bool force);
 void tegra_output_connector_destroy(struct drm_connector *connector);
 
-/* from dpaux.c */
+ 
 struct drm_dp_aux *drm_dp_aux_find_by_of_node(struct device_node *np);
 enum drm_connector_status drm_dp_aux_detect(struct drm_dp_aux *aux);
 int drm_dp_aux_attach(struct drm_dp_aux *aux, struct tegra_output *output);
@@ -178,7 +175,7 @@ int drm_dp_aux_detach(struct drm_dp_aux *aux);
 int drm_dp_aux_enable(struct drm_dp_aux *aux);
 int drm_dp_aux_disable(struct drm_dp_aux *aux);
 
-/* from fb.c */
+ 
 struct tegra_bo *tegra_fb_get_plane(struct drm_framebuffer *framebuffer,
 				    unsigned int index);
 bool tegra_fb_is_bottom_up(struct drm_framebuffer *framebuffer);
@@ -210,4 +207,4 @@ extern struct platform_driver tegra_gr3d_driver;
 extern struct platform_driver tegra_vic_driver;
 extern struct platform_driver tegra_nvdec_driver;
 
-#endif /* HOST1X_DRM_H */
+#endif  

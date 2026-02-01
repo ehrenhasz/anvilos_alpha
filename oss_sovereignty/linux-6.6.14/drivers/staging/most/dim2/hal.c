@@ -1,12 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * hal.c - DIM2 HAL implementation
- * (MediaLB, Device Interface Macro IP, OS62420)
- *
- * Copyright (C) 2015-2016, Microchip Technology Germany II GmbH & Co. KG
- */
 
-/* Author: Andrey Shvetsov <andrey.shvetsov@k2l.de> */
+ 
+
+ 
 
 #include "hal.h"
 #include "errors.h"
@@ -15,40 +10,27 @@
 #include <linux/kernel.h>
 #include <linux/io.h>
 
-/*
- * Size factor for isochronous DBR buffer.
- * Minimal value is 3.
- */
+ 
 #define ISOC_DBR_FACTOR 3u
 
-/*
- * Number of 32-bit units for DBR map.
- *
- * 1: block size is 512, max allocation is 16K
- * 2: block size is 256, max allocation is 8K
- * 4: block size is 128, max allocation is 4K
- * 8: block size is 64, max allocation is 2K
- *
- * Min allocated space is block size.
- * Max possible allocated space is 32 blocks.
- */
+ 
 #define DBR_MAP_SIZE 2
 
-/* -------------------------------------------------------------------------- */
-/* not configurable area */
+ 
+ 
 
 #define CDT 0x00
 #define ADT 0x40
 #define MLB_CAT 0x80
 #define AHB_CAT 0x88
 
-#define DBR_SIZE  (16 * 1024) /* specified by IP */
+#define DBR_SIZE  (16 * 1024)  
 #define DBR_BLOCK_SIZE  (DBR_SIZE / 32 / DBR_MAP_SIZE)
 
 #define ROUND_UP_TO(x, d)  (DIV_ROUND_UP(x, (d)) * (d))
 
-/* -------------------------------------------------------------------------- */
-/* generic helper functions and macros */
+ 
+ 
 
 static inline u32 bit_mask(u8 position)
 {
@@ -61,8 +43,8 @@ static inline bool dim_on_error(u8 error_id, const char *error_message)
 	return false;
 }
 
-/* -------------------------------------------------------------------------- */
-/* types and local variables */
+ 
+ 
 
 struct async_tx_dbr {
 	u8 ch_addr;
@@ -75,7 +57,7 @@ struct async_tx_dbr {
 struct lld_global_vars_t {
 	bool dim_is_initialized;
 	bool mcm_is_initialized;
-	struct dim2_regs __iomem *dim2; /* DIM2 core base address */
+	struct dim2_regs __iomem *dim2;  
 	struct async_tx_dbr atx_dbr;
 	u32 fcnt;
 	u32 dbr_map[DBR_MAP_SIZE];
@@ -83,7 +65,7 @@ struct lld_global_vars_t {
 
 static struct lld_global_vars_t g = { false };
 
-/* -------------------------------------------------------------------------- */
+ 
 
 static int dbr_get_mask_size(u16 size)
 {
@@ -95,22 +77,18 @@ static int dbr_get_mask_size(u16 size)
 	return 0;
 }
 
-/**
- * alloc_dbr() - Allocates DBR memory.
- * @size: Allocating memory size.
- * Returns: Offset in DBR memory by success or DBR_SIZE if out of memory.
- */
+ 
 static int alloc_dbr(u16 size)
 {
 	int mask_size;
 	int i, block_idx = 0;
 
 	if (size <= 0)
-		return DBR_SIZE; /* out of memory */
+		return DBR_SIZE;  
 
 	mask_size = dbr_get_mask_size(size);
 	if (mask_size == 0)
-		return DBR_SIZE; /* out of memory */
+		return DBR_SIZE;  
 
 	for (i = 0; i < DBR_MAP_SIZE; i++) {
 		u32 const blocks = DIV_ROUND_UP(size, DBR_BLOCK_SIZE);
@@ -122,12 +100,12 @@ static int alloc_dbr(u16 size)
 				return block_idx * DBR_BLOCK_SIZE;
 			}
 			block_idx += mask_size;
-			/* do shift left with 2 steps in case mask_size == 32 */
+			 
 			mask <<= mask_size - 1;
 		} while ((mask <<= 1) != 0);
 	}
 
-	return DBR_SIZE; /* out of memory */
+	return DBR_SIZE;  
 }
 
 static void free_dbr(int offs, int size)
@@ -140,17 +118,17 @@ static void free_dbr(int offs, int size)
 	g.dbr_map[block_idx / 32] &= ~mask;
 }
 
-/* -------------------------------------------------------------------------- */
+ 
 
 static void dim2_transfer_madr(u32 val)
 {
 	writel(val, &g.dim2->MADR);
 
-	/* wait for transfer completion */
+	 
 	while ((readl(&g.dim2->MCTL) & 1) != 1)
 		continue;
 
-	writel(0, &g.dim2->MCTL);   /* clear transfer complete */
+	writel(0, &g.dim2->MCTL);    
 }
 
 static void dim2_clear_dbr(u16 addr, u16 size)
@@ -160,7 +138,7 @@ static void dim2_clear_dbr(u16 addr, u16 size)
 	u16 const end_addr = addr + size;
 	u32 const cmd = bit_mask(MADR_WNR_BIT) | bit_mask(MADR_TB_BIT);
 
-	writel(0, &g.dim2->MCTL);   /* clear transfer complete */
+	writel(0, &g.dim2->MCTL);    
 	writel(0, &g.dim2->MDAT0);
 
 	for (; addr < end_addr; addr++)
@@ -178,7 +156,7 @@ static void dim2_write_ctr_mask(u32 ctr_addr, const u32 *mask, const u32 *value)
 {
 	enum { MADR_WNR_BIT = 31 };
 
-	writel(0, &g.dim2->MCTL);   /* clear transfer complete */
+	writel(0, &g.dim2->MCTL);    
 
 	if (mask[0] != 0)
 		writel(value[0], &g.dim2->MDAT0);
@@ -355,13 +333,13 @@ static void dim2_configure_channel(u8 ch_addr, u8 type, u8 is_tx, u16 dbr_addres
 	dim2_configure_adt(ch_addr);
 	dim2_configure_cat(AHB_CAT, ch_addr, type, is_tx ? 0 : 1);
 
-	/* unmask interrupt for used channel, enable mlb_sys_int[0] interrupt */
+	 
 	writel(readl(&g.dim2->ACMR0) | bit_mask(ch_addr), &g.dim2->ACMR0);
 }
 
 static void dim2_clear_channel(u8 ch_addr)
 {
-	/* mask interrupt for used channel, disable mlb_sys_int[0] interrupt */
+	 
 	writel(readl(&g.dim2->ACMR0) & ~bit_mask(ch_addr), &g.dim2->ACMR0);
 
 	dim2_clear_cat(AHB_CAT, ch_addr);
@@ -370,12 +348,12 @@ static void dim2_clear_channel(u8 ch_addr)
 	dim2_clear_cat(MLB_CAT, ch_addr);
 	dim2_clear_cdt(ch_addr);
 
-	/* clear channel status bit */
+	 
 	writel(bit_mask(ch_addr), &g.dim2->ACSR0);
 }
 
-/* -------------------------------------------------------------------------- */
-/* trace async tx dbr fill state */
+ 
+ 
 
 static inline u16 norm_pc(u16 pc)
 {
@@ -417,8 +395,8 @@ u16 dim_dbr_space(struct dim_channel *ch)
 	return dbr->rest_size;
 }
 
-/* -------------------------------------------------------------------------- */
-/* channel state helpers */
+ 
+ 
 
 static void state_init(struct int_ch_state *state)
 {
@@ -430,8 +408,8 @@ static void state_init(struct int_ch_state *state)
 	state->level = 0;
 }
 
-/* -------------------------------------------------------------------------- */
-/* macro helper functions */
+ 
+ 
 
 static inline bool check_channel_address(u32 ch_address)
 {
@@ -444,13 +422,13 @@ static inline bool check_packet_length(u32 packet_length)
 	u16 const max_size = ((u16)CDT3_BD_ISOC_MASK + 1u) / ISOC_DBR_FACTOR;
 
 	if (packet_length <= 0)
-		return false; /* too small */
+		return false;  
 
 	if (packet_length > max_size)
-		return false; /* too big */
+		return false;  
 
 	if (packet_length - 1u > (u32)CDT1_BS_ISOC_MASK)
-		return false; /* too big */
+		return false;  
 
 	return true;
 }
@@ -461,10 +439,10 @@ static inline bool check_bytes_per_frame(u32 bytes_per_frame)
 	u16 const max_size = ((u16)CDT3_BD_MASK + 1u) >> bd_factor;
 
 	if (bytes_per_frame <= 0)
-		return false; /* too small */
+		return false;  
 
 	if (bytes_per_frame > max_size)
-		return false; /* too big */
+		return false;  
 
 	return true;
 }
@@ -490,7 +468,7 @@ static inline u16 norm_isoc_buffer_size(u16 buf_size, u16 packet_length)
 	n = buf_size / packet_length;
 
 	if (n < 2u)
-		return 0; /* too small buffer for given packet_length */
+		return 0;  
 
 	return packet_length * n;
 }
@@ -507,26 +485,26 @@ static inline u16 norm_sync_buffer_size(u16 buf_size, u16 bytes_per_frame)
 	n = buf_size / unit;
 
 	if (n < 1u)
-		return 0; /* too small buffer for given bytes_per_frame */
+		return 0;  
 
 	return unit * n;
 }
 
 static void dim2_cleanup(void)
 {
-	/* disable MediaLB */
+	 
 	writel(false << MLBC0_MLBEN_BIT, &g.dim2->MLBC0);
 
 	dim2_clear_ctram();
 
-	/* disable mlb_int interrupt */
+	 
 	writel(0, &g.dim2->MIEN);
 
-	/* clear status for all dma channels */
+	 
 	writel(0xFFFFFFFF, &g.dim2->ACSR0);
 	writel(0xFFFFFFFF, &g.dim2->ACSR1);
 
-	/* mask interrupts for all channels */
+	 
 	writel(0, &g.dim2->ACMR0);
 	writel(0, &g.dim2->ACMR1);
 }
@@ -535,21 +513,21 @@ static void dim2_initialize(bool enable_6pin, u8 mlb_clock)
 {
 	dim2_cleanup();
 
-	/* configure and enable MediaLB */
+	 
 	writel(enable_6pin << MLBC0_MLBPEN_BIT |
 	       mlb_clock << MLBC0_MLBCLK_SHIFT |
 	       g.fcnt << MLBC0_FCNT_SHIFT |
 	       true << MLBC0_MLBEN_BIT,
 	       &g.dim2->MLBC0);
 
-	/* activate all HBI channels */
+	 
 	writel(0xFFFFFFFF, &g.dim2->HCMR0);
 	writel(0xFFFFFFFF, &g.dim2->HCMR1);
 
-	/* enable HBI */
+	 
 	writel(bit_mask(HCTL_EN_BIT), &g.dim2->HCTL);
 
-	/* configure DMA */
+	 
 	writel(ACTL_DMA_MODE_VAL_DMA_MODE_1 << ACTL_DMA_MODE_BIT |
 	       true << ACTL_SCE_BIT, &g.dim2->ACTL);
 }
@@ -567,8 +545,8 @@ static bool dim2_is_mlb_locked(void)
 	       (readl(&g.dim2->MLBC0) & mask0) != 0;
 }
 
-/* -------------------------------------------------------------------------- */
-/* channel help routines */
+ 
+ 
 
 static inline bool service_channel(u8 ch_addr, u8 idx)
 {
@@ -586,14 +564,14 @@ static inline bool service_channel(u8 ch_addr, u8 idx)
 		bit_mask(ADT1_RDY_BIT + shift);
 	dim2_write_ctr_mask(ADT + ch_addr, mask, adt_w);
 
-	/* clear channel status bit */
+	 
 	writel(bit_mask(ch_addr), &g.dim2->ACSR0);
 
 	return true;
 }
 
-/* -------------------------------------------------------------------------- */
-/* channel init routines */
+ 
+ 
 
 static void isoc_init(struct dim_channel *ch, u8 ch_addr, u16 packet_length)
 {
@@ -628,7 +606,7 @@ static void channel_init(struct dim_channel *ch, u8 ch_addr)
 	ch->done_sw_buffers_number = 0;
 }
 
-/* returns true if channel interrupt state is cleared */
+ 
 static bool channel_service_interrupt(struct dim_channel *ch)
 {
 	struct int_ch_state *const state = &ch->state;
@@ -706,8 +684,8 @@ static bool channel_detach_buffers(struct dim_channel *ch, u16 buffers_number)
 	return true;
 }
 
-/* -------------------------------------------------------------------------- */
-/* API */
+ 
+ 
 
 u8 dim_startup(struct dim2_regs __iomem *dim_base_address, u32 mlb_clock,
 	       u32 fcnt)
@@ -717,8 +695,8 @@ u8 dim_startup(struct dim2_regs __iomem *dim_base_address, u32 mlb_clock,
 	if (!dim_base_address)
 		return DIM_INIT_ERR_DIM_ADDR;
 
-	/* MediaLB clock: 0 - 256 fs, 1 - 512 fs, 2 - 1024 fs, 3 - 2048 fs */
-	/* MediaLB clock: 4 - 3072 fs, 5 - 4096 fs, 6 - 6144 fs, 7 - 8192 fs */
+	 
+	 
 	if (mlb_clock >= 8)
 		return DIM_INIT_ERR_MLB_CLOCK;
 
@@ -777,12 +755,7 @@ void dim_service_mlb_int_irq(void)
 	writel(0, &g.dim2->MS1);
 }
 
-/*
- * Retrieves maximal possible correct buffer size for isochronous data type
- * conform to given packet length and not bigger than given buffer size.
- *
- * Returns non-zero correct buffer size or zero by error.
- */
+ 
 u16 dim_norm_isoc_buffer_size(u16 buf_size, u16 packet_length)
 {
 	if (!check_packet_length(packet_length))
@@ -791,12 +764,7 @@ u16 dim_norm_isoc_buffer_size(u16 buf_size, u16 packet_length)
 	return norm_isoc_buffer_size(buf_size, packet_length);
 }
 
-/*
- * Retrieves maximal possible correct buffer size for synchronous data type
- * conform to given bytes per frame and not bigger than given buffer size.
- *
- * Returns non-zero correct buffer size or zero by error.
- */
+ 
 u16 dim_norm_sync_buffer_size(u16 buf_size, u16 bytes_per_frame)
 {
 	if (!check_bytes_per_frame(bytes_per_frame))
@@ -915,13 +883,7 @@ void dim_service_ahb_int_irq(struct dim_channel *const *channels)
 		return;
 	}
 
-	/*
-	 * Use while-loop and a flag to make sure the age is changed back at
-	 * least once, otherwise the interrupt may never come if CPU generates
-	 * interrupt on changing age.
-	 * This cycle runs not more than number of channels, because
-	 * channel_service_interrupt() routine doesn't start the channel again.
-	 */
+	 
 	do {
 		struct dim_channel *const *ch = channels;
 

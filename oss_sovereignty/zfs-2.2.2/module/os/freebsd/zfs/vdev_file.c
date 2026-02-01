@@ -1,27 +1,5 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
-/*
- * Copyright (c) 2005, 2010, Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2011, 2020 by Delphix. All rights reserved.
- */
+ 
+ 
 
 #include <sys/zfs_context.h>
 #include <sys/spa.h>
@@ -34,9 +12,7 @@
 #include <sys/abd.h>
 #include <sys/stat.h>
 
-/*
- * Virtual device vector for files.
- */
+ 
 
 static taskq_t *vdev_file_taskq;
 
@@ -93,36 +69,22 @@ vdev_file_open(vdev_t *vd, uint64_t *psize, uint64_t *max_psize,
 	zfs_file_attr_t zfa;
 	int error;
 
-	/*
-	 * Rotational optimizations only make sense on block devices.
-	 */
+	 
 	vd->vdev_nonrot = B_TRUE;
 
-	/*
-	 * Allow TRIM on file based vdevs.  This may not always be supported,
-	 * since it depends on your kernel version and underlying filesystem
-	 * type but it is always safe to attempt.
-	 */
+	 
 	vd->vdev_has_trim = B_TRUE;
 
-	/*
-	 * Disable secure TRIM on file based vdevs.  There is no way to
-	 * request this behavior from the underlying filesystem.
-	 */
+	 
 	vd->vdev_has_securetrim = B_FALSE;
 
-	/*
-	 * We must have a pathname, and it must be absolute.
-	 */
+	 
 	if (vd->vdev_path == NULL || vd->vdev_path[0] != '/') {
 		vd->vdev_stat.vs_aux = VDEV_AUX_BAD_LABEL;
 		return (SET_ERROR(EINVAL));
 	}
 
-	/*
-	 * Reopen the device if it's not currently open.  Otherwise,
-	 * just update the physical size of the device.
-	 */
+	 
 	if (vd->vdev_tsd != NULL) {
 		ASSERT(vd->vdev_reopening);
 		vf = vd->vdev_tsd;
@@ -131,12 +93,7 @@ vdev_file_open(vdev_t *vd, uint64_t *psize, uint64_t *max_psize,
 
 	vf = vd->vdev_tsd = kmem_zalloc(sizeof (vdev_file_t), KM_SLEEP);
 
-	/*
-	 * We always open the files from the root of the global zone, even if
-	 * we're in a local zone.  If the user has gotten to this point, the
-	 * administrator has already decided that the pool should be available
-	 * to local zone users, so the underlying devices should be as well.
-	 */
+	 
 	ASSERT3P(vd->vdev_path, !=, NULL);
 	ASSERT(vd->vdev_path[0] == '/');
 
@@ -150,9 +107,7 @@ vdev_file_open(vdev_t *vd, uint64_t *psize, uint64_t *max_psize,
 	vf->vf_file = fp;
 
 #ifdef _KERNEL
-	/*
-	 * Make sure it's a regular file.
-	 */
+	 
 	if (zfs_file_getattr(fp, &zfa)) {
 		return (SET_ERROR(ENODEV));
 	}
@@ -194,12 +149,7 @@ vdev_file_close(vdev_t *vd)
 	vd->vdev_tsd = NULL;
 }
 
-/*
- * Implements the interrupt side for file vdev types. This routine will be
- * called when the I/O completes allowing us to transfer the I/O to the
- * interrupt taskqs. For consistency, the code structure mimics disk vdev
- * types.
- */
+ 
 static void
 vdev_file_io_intr(zio_t *zio)
 {
@@ -248,7 +198,7 @@ vdev_file_io_start(zio_t *zio)
 	vdev_file_t *vf = vd->vdev_tsd;
 
 	if (zio->io_type == ZIO_TYPE_IOCTL) {
-		/* XXPOLICY */
+		 
 		if (!vdev_readable(vd)) {
 			zio->io_error = SET_ERROR(ENXIO);
 			zio_interrupt(zio);
@@ -272,7 +222,7 @@ vdev_file_io_start(zio_t *zio)
 
 		ASSERT3U(zio->io_size, !=, 0);
 
-		/* XXX FreeBSD has no fallocate routine in file ops */
+		 
 		zio->io_error = zfs_file_fallocate(vf->vf_file,
 		    mode, zio->io_offset, zio->io_size);
 #endif
@@ -314,13 +264,11 @@ vdev_ops_t vdev_file_ops = {
 	.vdev_op_config_generate = NULL,
 	.vdev_op_nparity = NULL,
 	.vdev_op_ndisks = NULL,
-	.vdev_op_type = VDEV_TYPE_FILE,		/* name of this vdev type */
-	.vdev_op_leaf = B_TRUE			/* leaf vdev */
+	.vdev_op_type = VDEV_TYPE_FILE,		 
+	.vdev_op_leaf = B_TRUE			 
 };
 
-/*
- * From userland we access disks just like files.
- */
+ 
 #ifndef _KERNEL
 
 vdev_ops_t vdev_disk_ops = {
@@ -344,8 +292,8 @@ vdev_ops_t vdev_disk_ops = {
 	.vdev_op_config_generate = NULL,
 	.vdev_op_nparity = NULL,
 	.vdev_op_ndisks = NULL,
-	.vdev_op_type = VDEV_TYPE_DISK,		/* name of this vdev type */
-	.vdev_op_leaf = B_TRUE			/* leaf vdev */
+	.vdev_op_type = VDEV_TYPE_DISK,		 
+	.vdev_op_leaf = B_TRUE			 
 };
 
 #endif

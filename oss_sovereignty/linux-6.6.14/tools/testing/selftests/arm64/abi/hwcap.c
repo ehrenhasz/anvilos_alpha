@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2022 ARM Limited.
- */
+
+ 
 
 #include <errno.h>
 #include <signal.h>
@@ -21,40 +19,30 @@
 
 #define TESTS_PER_HWCAP 3
 
-/*
- * Function expected to generate exception when the feature is not
- * supported and return when it is supported. If the specific exception
- * is generated then the handler must be able to skip over the
- * instruction safely.
- *
- * Note that it is expected that for many architecture extensions
- * there are no specific traps due to no architecture state being
- * added so we may not fault if running on a kernel which doesn't know
- * to add the hwcap.
- */
+ 
 typedef void (*sig_fn)(void);
 
 static void aes_sigill(void)
 {
-	/* AESE V0.16B, V0.16B */
+	 
 	asm volatile(".inst 0x4e284800" : : : );
 }
 
 static void atomics_sigill(void)
 {
-	/* STADD W0, [SP] */
+	 
 	asm volatile(".inst 0xb82003ff" : : : );
 }
 
 static void crc32_sigill(void)
 {
-	/* CRC32W W0, W0, W1 */
+	 
 	asm volatile(".inst 0x1ac14800" : : : );
 }
 
 static void cssc_sigill(void)
 {
-	/* CNT x0, x0 */
+	 
 	asm volatile(".inst 0xdac01c00" : : : "x0");
 }
 
@@ -65,19 +53,19 @@ static void fp_sigill(void)
 
 static void ilrcpc_sigill(void)
 {
-	/* LDAPUR W0, [SP, #8] */
+	 
 	asm volatile(".inst 0x994083e0" : : : );
 }
 
 static void jscvt_sigill(void)
 {
-	/* FJCVTZS W0, D0 */
+	 
 	asm volatile(".inst 0x1e7e0000" : : : );
 }
 
 static void lrcpc_sigill(void)
 {
-	/* LDAPR W0, [SP, #0] */
+	 
 	asm volatile(".inst 0xb8bfc3e0" : : : );
 }
 
@@ -88,7 +76,7 @@ static void mops_sigill(void)
 	register char *srcp asm ("x1") = src;
 	register long size asm ("x2") = 1;
 
-	/* CPYP [x0]!, [x1]!, x2! */
+	 
 	asm volatile(".inst 0x1d010440"
 		     : "+r" (dstp), "+r" (srcp), "+r" (size)
 		     :
@@ -97,7 +85,7 @@ static void mops_sigill(void)
 
 static void pmull_sigill(void)
 {
-	/* PMULL V0.1Q, V0.1D, V0.1D */
+	 
 	asm volatile(".inst 0x0ee0e000" : : : );
 }
 
@@ -108,184 +96,184 @@ static void rng_sigill(void)
 
 static void sha1_sigill(void)
 {
-	/* SHA1H S0, S0 */
+	 
 	asm volatile(".inst 0x5e280800" : : : );
 }
 
 static void sha2_sigill(void)
 {
-	/* SHA256H Q0, Q0, V0.4S */
+	 
 	asm volatile(".inst 0x5e004000" : : : );
 }
 
 static void sha512_sigill(void)
 {
-	/* SHA512H Q0, Q0, V0.2D */
+	 
 	asm volatile(".inst 0xce608000" : : : );
 }
 
 static void sme_sigill(void)
 {
-	/* RDSVL x0, #0 */
+	 
 	asm volatile(".inst 0x04bf5800" : : : "x0");
 }
 
 static void sme2_sigill(void)
 {
-	/* SMSTART ZA */
+	 
 	asm volatile("msr S0_3_C4_C5_3, xzr" : : : );
 
-	/* ZERO ZT0 */
+	 
 	asm volatile(".inst 0xc0480001" : : : );
 
-	/* SMSTOP */
+	 
 	asm volatile("msr S0_3_C4_C6_3, xzr" : : : );
 }
 
 static void sme2p1_sigill(void)
 {
-	/* SMSTART SM */
+	 
 	asm volatile("msr S0_3_C4_C3_3, xzr" : : : );
 
-	/* BFCLAMP { Z0.H - Z1.H }, Z0.H, Z0.H */
+	 
 	asm volatile(".inst 0xc120C000" : : : );
 
-	/* SMSTOP */
+	 
 	asm volatile("msr S0_3_C4_C6_3, xzr" : : : );
 }
 
 static void smei16i32_sigill(void)
 {
-	/* SMSTART */
+	 
 	asm volatile("msr S0_3_C4_C7_3, xzr" : : : );
 
-	/* SMOPA ZA0.S, P0/M, P0/M, Z0.B, Z0.B */
+	 
 	asm volatile(".inst 0xa0800000" : : : );
 
-	/* SMSTOP */
+	 
 	asm volatile("msr S0_3_C4_C6_3, xzr" : : : );
 }
 
 static void smebi32i32_sigill(void)
 {
-	/* SMSTART */
+	 
 	asm volatile("msr S0_3_C4_C7_3, xzr" : : : );
 
-	/* BMOPA ZA0.S, P0/M, P0/M, Z0.B, Z0.B */
+	 
 	asm volatile(".inst 0x80800008" : : : );
 
-	/* SMSTOP */
+	 
 	asm volatile("msr S0_3_C4_C6_3, xzr" : : : );
 }
 
 static void smeb16b16_sigill(void)
 {
-	/* SMSTART */
+	 
 	asm volatile("msr S0_3_C4_C7_3, xzr" : : : );
 
-	/* BFADD ZA.H[W0, 0], {Z0.H-Z1.H} */
+	 
 	asm volatile(".inst 0xC1E41C00" : : : );
 
-	/* SMSTOP */
+	 
 	asm volatile("msr S0_3_C4_C6_3, xzr" : : : );
 }
 
 static void smef16f16_sigill(void)
 {
-	/* SMSTART */
+	 
 	asm volatile("msr S0_3_C4_C7_3, xzr" : : : );
 
-	/* FADD ZA.H[W0, 0], { Z0.H-Z1.H } */
+	 
 	asm volatile(".inst 0xc1a41C00" : : : );
 
-	/* SMSTOP */
+	 
 	asm volatile("msr S0_3_C4_C6_3, xzr" : : : );
 }
 
 static void sve_sigill(void)
 {
-	/* RDVL x0, #0 */
+	 
 	asm volatile(".inst 0x04bf5000" : : : "x0");
 }
 
 static void sve2_sigill(void)
 {
-	/* SQABS Z0.b, P0/M, Z0.B */
+	 
 	asm volatile(".inst 0x4408A000" : : : "z0");
 }
 
 static void sve2p1_sigill(void)
 {
-	/* BFADD Z0.H, Z0.H, Z0.H */
+	 
 	asm volatile(".inst 0x65000000" : : : "z0");
 }
 
 static void sveaes_sigill(void)
 {
-	/* AESD z0.b, z0.b, z0.b */
+	 
 	asm volatile(".inst 0x4522e400" : : : "z0");
 }
 
 static void svepmull_sigill(void)
 {
-	/* PMULLB Z0.Q, Z0.D, Z0.D */
+	 
 	asm volatile(".inst 0x45006800" : : : "z0");
 }
 
 static void svebitperm_sigill(void)
 {
-	/* BDEP Z0.B, Z0.B, Z0.B */
+	 
 	asm volatile(".inst 0x4500b400" : : : "z0");
 }
 
 static void svesha3_sigill(void)
 {
-	/* EOR3 Z0.D, Z0.D, Z0.D, Z0.D */
+	 
 	asm volatile(".inst 0x4203800" : : : "z0");
 }
 
 static void svesm4_sigill(void)
 {
-	/* SM4E Z0.S, Z0.S, Z0.S */
+	 
 	asm volatile(".inst 0x4523e000" : : : "z0");
 }
 
 static void svei8mm_sigill(void)
 {
-	/* USDOT Z0.S, Z0.B, Z0.B[0] */
+	 
 	asm volatile(".inst 0x44a01800" : : : "z0");
 }
 
 static void svef32mm_sigill(void)
 {
-	/* FMMLA Z0.S, Z0.S, Z0.S */
+	 
 	asm volatile(".inst 0x64a0e400" : : : "z0");
 }
 
 static void svef64mm_sigill(void)
 {
-	/* FMMLA Z0.D, Z0.D, Z0.D */
+	 
 	asm volatile(".inst 0x64e0e400" : : : "z0");
 }
 
 static void svebf16_sigill(void)
 {
-	/* BFCVT Z0.H, P0/M, Z0.S */
+	 
 	asm volatile(".inst 0x658aa000" : : : "z0");
 }
 
 static void hbc_sigill(void)
 {
-	/* BC.EQ +4 */
+	 
 	asm volatile("cmp xzr, xzr\n"
 		     ".inst 0x54000030" : : : "cc");
 }
 
 static void uscat_sigbus(void)
 {
-	/* unaligned atomic access */
+	 
 	asm volatile("ADD x1, sp, #2" : : : );
-	/* STADD W0, [X1] */
+	 
 	asm volatile(".inst 0xb820003f" : : : );
 }
 
@@ -574,7 +562,7 @@ static void handle_##SIG(int sig, siginfo_t *info, void *context)	\
 	ucontext_t *uc = context;					\
 									\
 	seen_##SIG = true;						\
-	/* Skip over the offending instruction */			\
+	 			\
 	uc->uc_mcontext.pc += 4;					\
 }
 
@@ -587,10 +575,7 @@ bool cpuinfo_present(const char *name)
 	char buf[2048], name_space[30], name_newline[30];
 	char *s;
 
-	/*
-	 * The feature should appear with a leading space and either a
-	 * trailing space or a newline.
-	 */
+	 
 	snprintf(name_space, sizeof(name_space), " %s ", name);
 	snprintf(name_newline, sizeof(name_newline), " %s\n", name);
 
@@ -601,11 +586,11 @@ bool cpuinfo_present(const char *name)
 	}
 
 	while (fgets(buf, sizeof(buf), f)) {
-		/* Features: line? */
+		 
 		if (strncmp(buf, "Features\t:", strlen("Features\t:")) != 0)
 			continue;
 
-		/* All CPUs should be symmetric, don't read any more */
+		 
 		fclose(f);
 
 		s = strstr(buf, name_space);
@@ -653,7 +638,7 @@ static bool inst_raise_##SIG(const struct hwcap_data *hwcap,		\
 {									\
 	if (!hwcap->SIG##_fn) {						\
 		ksft_test_result_skip(#SIG"_%s\n", hwcap->name);	\
-		/* assume that it would raise exception in default */	\
+		 	\
 		return true;						\
 	}								\
 									\
@@ -663,15 +648,15 @@ static bool inst_raise_##SIG(const struct hwcap_data *hwcap,		\
 	hwcap->SIG##_fn();						\
 									\
 	if (have_hwcap) {						\
-		/* Should be able to use the extension */		\
+		 		\
 		ksft_test_result(!seen_##SIG,				\
 				#SIG"_%s\n", hwcap->name);		\
 	} else if (hwcap->SIG##_reliable) {				\
-		/* Guaranteed a SIGNAL */				\
+		 				\
 		ksft_test_result(seen_##SIG,				\
 				#SIG"_%s\n", hwcap->name);		\
 	} else {							\
-		/* Missing SIGNAL might be fine */			\
+		 			\
 		ksft_print_msg(#SIG"_%sreported for %s\n",		\
 				seen_##SIG ? "" : "not ",		\
 				hwcap->name);				\
@@ -707,10 +692,7 @@ int main(void)
 		ksft_test_result(have_hwcap == have_cpuinfo,
 				 "cpuinfo_match_%s\n", hwcap->name);
 
-		/*
-		 * Testing for SIGBUS only makes sense after make sure
-		 * that the instruction does not cause a SIGILL signal.
-		 */
+		 
 		raise_sigill = inst_raise_sigill(hwcap, have_hwcap);
 		if (!raise_sigill)
 			inst_raise_sigbus(hwcap, have_hwcap);

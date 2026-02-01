@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Reset driver for the StarFive JH71X0 SoCs
- *
- * Copyright (C) 2021 Emil Renner Berthing <kernel@esmil.dk>
- */
+
+ 
 
 #include <linux/bitmap.h>
 #include <linux/device.h>
@@ -16,7 +12,7 @@
 
 struct jh71x0_reset {
 	struct reset_controller_dev rcdev;
-	/* protect registers against concurrent read-modify-write */
+	 
 	spinlock_t lock;
 	void __iomem *assert;
 	void __iomem *status;
@@ -54,7 +50,7 @@ static int jh71x0_reset_update(struct reset_controller_dev *rcdev,
 		value &= ~mask;
 	writel(value, reg_assert);
 
-	/* if the associated clock is gated, deasserting might otherwise hang forever */
+	 
 	ret = readl_poll_timeout_atomic(reg_status, value, (value & mask) == done, 0, 1000);
 
 	spin_unlock_irqrestore(&data->lock, flags);

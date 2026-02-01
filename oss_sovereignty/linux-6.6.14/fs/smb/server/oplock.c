@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *   Copyright (C) 2016 Namjae Jeon <linkinjeon@kernel.org>
- *   Copyright (C) 2018 Samsung Electronics Co., Ltd.
- */
+
+ 
 
 #include <linux/moduleparam.h>
 
@@ -19,14 +16,7 @@
 static LIST_HEAD(lease_table_list);
 static DEFINE_RWLOCK(lease_list_lock);
 
-/**
- * alloc_opinfo() - allocate a new opinfo object for oplock info
- * @work:	smb work
- * @id:		fid of open file
- * @Tid:	tree id of connection
- *
- * Return:      allocated opinfo object on success, otherwise NULL
- */
+ 
 static struct oplock_info *alloc_opinfo(struct ksmbd_work *work,
 					u64 id, __u16 Tid)
 {
@@ -184,11 +174,7 @@ static void opinfo_conn_put(struct oplock_info *opinfo)
 		return;
 
 	conn = opinfo->conn;
-	/*
-	 * Checking waitqueue to dropping pending requests on
-	 * disconnection. waitqueue_active is safe because it
-	 * uses atomic operation for condition.
-	 */
+	 
 	if (!atomic_dec_return(&conn->r_count) && waitqueue_active(&conn->r_count_q))
 		wake_up(&conn->r_count_q);
 	opinfo_put(opinfo);
@@ -249,12 +235,7 @@ static void opinfo_count_dec(struct ksmbd_file *fp)
 		return atomic_dec(&fp->f_ci->op_count);
 }
 
-/**
- * opinfo_write_to_read() - convert a write oplock to read oplock
- * @opinfo:		current oplock info
- *
- * Return:      0 on success, otherwise -EINVAL
- */
+ 
 int opinfo_write_to_read(struct oplock_info *opinfo)
 {
 	struct lease *lease = opinfo->o_lease;
@@ -273,12 +254,7 @@ int opinfo_write_to_read(struct oplock_info *opinfo)
 	return 0;
 }
 
-/**
- * opinfo_read_handle_to_read() - convert a read/handle oplock to read oplock
- * @opinfo:		current oplock info
- *
- * Return:      0 on success, otherwise -EINVAL
- */
+ 
 int opinfo_read_handle_to_read(struct oplock_info *opinfo)
 {
 	struct lease *lease = opinfo->o_lease;
@@ -288,12 +264,7 @@ int opinfo_read_handle_to_read(struct oplock_info *opinfo)
 	return 0;
 }
 
-/**
- * opinfo_write_to_none() - convert a write oplock to none
- * @opinfo:	current oplock info
- *
- * Return:      0 on success, otherwise -EINVAL
- */
+ 
 int opinfo_write_to_none(struct oplock_info *opinfo)
 {
 	struct lease *lease = opinfo->o_lease;
@@ -311,12 +282,7 @@ int opinfo_write_to_none(struct oplock_info *opinfo)
 	return 0;
 }
 
-/**
- * opinfo_read_to_none() - convert a write read to none
- * @opinfo:	current oplock info
- *
- * Return:      0 on success, otherwise -EINVAL
- */
+ 
 int opinfo_read_to_none(struct oplock_info *opinfo)
 {
 	struct lease *lease = opinfo->o_lease;
@@ -333,12 +299,7 @@ int opinfo_read_to_none(struct oplock_info *opinfo)
 	return 0;
 }
 
-/**
- * lease_read_to_write() - upgrade lease state from read to write
- * @opinfo:	current lease info
- *
- * Return:      0 on success, otherwise -EINVAL
- */
+ 
 int lease_read_to_write(struct oplock_info *opinfo)
 {
 	struct lease *lease = opinfo->o_lease;
@@ -357,13 +318,7 @@ int lease_read_to_write(struct oplock_info *opinfo)
 	return 0;
 }
 
-/**
- * lease_none_upgrade() - upgrade lease state from none
- * @opinfo:	current lease info
- * @new_state:	new lease state
- *
- * Return:	0 on success, otherwise -EINVAL
- */
+ 
 static int lease_none_upgrade(struct oplock_info *opinfo, __le32 new_state)
 {
 	struct lease *lease = opinfo->o_lease;
@@ -388,10 +343,7 @@ static int lease_none_upgrade(struct oplock_info *opinfo, __le32 new_state)
 	return 0;
 }
 
-/**
- * close_id_del_oplock() - release oplock object at file close time
- * @fp:		ksmbd file pointer
- */
+ 
 void close_id_del_oplock(struct ksmbd_file *fp)
 {
 	struct oplock_info *opinfo;
@@ -420,14 +372,7 @@ void close_id_del_oplock(struct ksmbd_file *fp)
 	opinfo_put(opinfo);
 }
 
-/**
- * grant_write_oplock() - grant exclusive/batch oplock or write lease
- * @opinfo_new:	new oplock info object
- * @req_oplock: request oplock
- * @lctx:	lease context information
- *
- * Return:      0
- */
+ 
 static void grant_write_oplock(struct oplock_info *opinfo_new, int req_oplock,
 			       struct lease_ctx_info *lctx)
 {
@@ -444,13 +389,7 @@ static void grant_write_oplock(struct oplock_info *opinfo_new, int req_oplock,
 	}
 }
 
-/**
- * grant_read_oplock() - grant level2 oplock or read lease
- * @opinfo_new:	new oplock info object
- * @lctx:	lease context information
- *
- * Return:      0
- */
+ 
 static void grant_read_oplock(struct oplock_info *opinfo_new,
 			      struct lease_ctx_info *lctx)
 {
@@ -466,13 +405,7 @@ static void grant_read_oplock(struct oplock_info *opinfo_new,
 	}
 }
 
-/**
- * grant_none_oplock() - grant none oplock or none lease
- * @opinfo_new:	new oplock info object
- * @lctx:	lease context information
- *
- * Return:      0
- */
+ 
 static void grant_none_oplock(struct oplock_info *opinfo_new,
 			      struct lease_ctx_info *lctx)
 {
@@ -500,15 +433,7 @@ static inline int compare_guid_key(struct oplock_info *opinfo,
 	return 0;
 }
 
-/**
- * same_client_has_lease() - check whether current lease request is
- *		from lease owner of file
- * @ci:		master file pointer
- * @client_guid:	Client GUID
- * @lctx:		lease context information
- *
- * Return:      oplock(lease) object on success, otherwise NULL
- */
+ 
 static struct oplock_info *same_client_has_lease(struct ksmbd_inode *ci,
 						 char *client_guid,
 						 struct lease_ctx_info *lctx)
@@ -521,10 +446,7 @@ static struct oplock_info *same_client_has_lease(struct ksmbd_inode *ci,
 	if (!lctx)
 		return NULL;
 
-	/*
-	 * Compare lease key and client_guid to know request from same owner
-	 * of same client
-	 */
+	 
 	read_lock(&ci->m_lock);
 	list_for_each_entry(opinfo, &ci->m_op_list, op_entry) {
 		if (!opinfo->is_lease)
@@ -535,13 +457,13 @@ static struct oplock_info *same_client_has_lease(struct ksmbd_inode *ci,
 		ret = compare_guid_key(opinfo, client_guid, lctx->lease_key);
 		if (ret) {
 			m_opinfo = opinfo;
-			/* skip upgrading lease about breaking lease */
+			 
 			if (atomic_read(&opinfo->breaking_cnt)) {
 				read_lock(&ci->m_lock);
 				continue;
 			}
 
-			/* upgrading lease */
+			 
 			if ((atomic_read(&ci->op_count) +
 			     atomic_read(&ci->sop_count)) == 1) {
 				if (lease->state != SMB2_LEASE_NONE_LE &&
@@ -580,7 +502,7 @@ static void wait_for_break_ack(struct oplock_info *opinfo)
 					      opinfo->op_state == OPLOCK_CLOSING,
 					      OPLOCK_WAIT_TIME);
 
-	/* is this a timeout ? */
+	 
 	if (!rc) {
 		if (opinfo->is_lease)
 			opinfo->o_lease->state = SMB2_LEASE_NONE_LE;
@@ -592,7 +514,7 @@ static void wait_for_break_ack(struct oplock_info *opinfo)
 static void wake_up_oplock_break(struct oplock_info *opinfo)
 {
 	clear_bit_unlock(0, &opinfo->pending_break);
-	/* memory barrier is needed for wake_up_bit() */
+	 
 	smp_mb__after_atomic();
 	wake_up_bit(&opinfo->pending_break, 0);
 }
@@ -602,7 +524,7 @@ static int oplock_break_pending(struct oplock_info *opinfo, int req_op_level)
 	while (test_and_set_bit(0, &opinfo->pending_break)) {
 		wait_on_bit(&opinfo->pending_break, 0, TASK_UNINTERRUPTIBLE);
 
-		/* Not immediately break to none. */
+		 
 		opinfo->open_trunc = 0;
 
 		if (opinfo->op_state == OPLOCK_CLOSING)
@@ -618,16 +540,7 @@ static int oplock_break_pending(struct oplock_info *opinfo, int req_op_level)
 	return 0;
 }
 
-/**
- * __smb2_oplock_break_noti() - send smb2 oplock break cmd from conn
- * to client
- * @wk:     smb work object
- *
- * There are two ways this function can be called. 1- while file open we break
- * from exclusive/batch lock to levelII oplock and 2- while file write/truncate
- * we break from levelII oplock no oplock.
- * work->request_buf contains oplock_info.
- */
+ 
 static void __smb2_oplock_break_noti(struct work_struct *wk)
 {
 	struct smb2_oplock_break *rsp = NULL;
@@ -689,13 +602,7 @@ out:
 	ksmbd_free_work_struct(work);
 }
 
-/**
- * smb2_oplock_break_noti() - send smb2 exclusive/batch to level2 oplock
- *		break command from server to client
- * @opinfo:		oplock info object
- *
- * Return:      0 on success, otherwise error
- */
+ 
 static int smb2_oplock_break_noti(struct oplock_info *opinfo)
 {
 	struct ksmbd_conn *conn = opinfo->conn;
@@ -733,11 +640,7 @@ static int smb2_oplock_break_noti(struct oplock_info *opinfo)
 	return ret;
 }
 
-/**
- * __smb2_lease_break_noti() - send lease break command from server
- * to client
- * @wk:     smb work object
- */
+ 
 static void __smb2_lease_break_noti(struct work_struct *wk)
 {
 	struct smb2_lease_break *rsp = NULL;
@@ -790,13 +693,7 @@ out:
 	ksmbd_free_work_struct(work);
 }
 
-/**
- * smb2_lease_break_noti() - break lease when a new client request
- *			write lease
- * @opinfo:		conains lease state information
- *
- * Return:	0 on success, otherwise error
- */
+ 
 static int smb2_lease_break_noti(struct oplock_info *opinfo)
 {
 	struct ksmbd_conn *conn = opinfo->conn;
@@ -872,7 +769,7 @@ static int oplock_break(struct oplock_info *brk_opinfo, int req_op_level)
 {
 	int err = 0;
 
-	/* Need to break exclusive/batch oplock, write lease or overwrite_if */
+	 
 	ksmbd_debug(OPLOCK,
 		    "request to send oplock(level : 0x%x) break notification\n",
 		    brk_opinfo->level);
@@ -887,10 +784,7 @@ static int oplock_break(struct oplock_info *brk_opinfo, int req_op_level)
 			return err < 0 ? err : 0;
 
 		if (brk_opinfo->open_trunc) {
-			/*
-			 * Create overwrite break trigger the lease break to
-			 * none.
-			 */
+			 
 			lease->new_state = SMB2_LEASE_NONE_LE;
 		} else {
 			if (lease->state & SMB2_LEASE_WRITE_CACHING_LE) {
@@ -1168,18 +1062,7 @@ void smb_lazy_parent_lease_break_close(struct ksmbd_file *fp)
 	ksmbd_inode_put(p_ci);
 }
 
-/**
- * smb_grant_oplock() - handle oplock/lease request on file open
- * @work:		smb work
- * @req_op_level:	oplock level
- * @pid:		id of open file
- * @fp:			ksmbd file pointer
- * @tid:		Tree id of connection
- * @lctx:		lease context information on file open
- * @share_ret:		share mode
- *
- * Return:      0 on success, otherwise error
- */
+ 
 int smb_grant_oplock(struct ksmbd_work *work, int req_op_level, u64 pid,
 		     struct ksmbd_file *fp, __u16 tid,
 		     struct lease_ctx_info *lctx, int share_ret)
@@ -1191,7 +1074,7 @@ int smb_grant_oplock(struct ksmbd_work *work, int req_op_level, u64 pid,
 	bool prev_op_has_lease;
 	__le32 prev_op_state = 0;
 
-	/* Only v2 leases handle the directory */
+	 
 	if (S_ISDIR(file_inode(fp->filp)->i_mode)) {
 		if (!lctx || lctx->version != 2)
 			return 0;
@@ -1208,11 +1091,11 @@ int smb_grant_oplock(struct ksmbd_work *work, int req_op_level, u64 pid,
 		opinfo->is_lease = 1;
 	}
 
-	/* ci does not have any oplock */
+	 
 	if (!opinfo_count(fp))
 		goto set_lev;
 
-	/* grant none-oplock if second open is trunc */
+	 
 	if (fp->attrib_only && fp->cdoption != FILE_OVERWRITE_IF_LE &&
 	    fp->cdoption != FILE_OVERWRITE_LE &&
 	    fp->cdoption != FILE_SUPERSEDE_LE) {
@@ -1223,7 +1106,7 @@ int smb_grant_oplock(struct ksmbd_work *work, int req_op_level, u64 pid,
 	if (lctx) {
 		struct oplock_info *m_opinfo;
 
-		/* is lease already granted ? */
+		 
 		m_opinfo = same_client_has_lease(ci, sess->ClientGUID,
 						 lctx);
 		if (m_opinfo) {
@@ -1262,7 +1145,7 @@ int smb_grant_oplock(struct ksmbd_work *work, int req_op_level, u64 pid,
 	opinfo_conn_put(prev_opinfo);
 	if (err == -ENOENT)
 		goto set_lev;
-	/* Check all oplock was freed by close */
+	 
 	else if (err < 0)
 		goto err_out;
 
@@ -1275,7 +1158,7 @@ op_break_not_needed:
 	if (req_op_level != SMB2_OPLOCK_LEVEL_NONE)
 		req_op_level = SMB2_OPLOCK_LEVEL_II;
 
-	/* grant fixed oplock on stacked locking between lease and oplock */
+	 
 	if (prev_op_has_lease && !lctx)
 		if (prev_op_state & SMB2_LEASE_HANDLE_CACHING_LE)
 			req_op_level = SMB2_OPLOCK_LEVEL_NONE;
@@ -1306,12 +1189,7 @@ err_out:
 	return err;
 }
 
-/**
- * smb_break_all_write_oplock() - break batch/exclusive oplock to level2
- * @work:	smb work
- * @fp:		ksmbd file pointer
- * @is_trunc:	truncate on open
- */
+ 
 static void smb_break_all_write_oplock(struct ksmbd_work *work,
 				       struct ksmbd_file *fp, int is_trunc)
 {
@@ -1332,13 +1210,7 @@ static void smb_break_all_write_oplock(struct ksmbd_work *work,
 	opinfo_conn_put(brk_opinfo);
 }
 
-/**
- * smb_break_all_levII_oplock() - send level2 oplock or read lease break command
- *	from server to client
- * @work:	smb work
- * @fp:		ksmbd file pointer
- * @is_trunc:	truncate on open
- */
+ 
 void smb_break_all_levII_oplock(struct ksmbd_work *work, struct ksmbd_file *fp,
 				int is_trunc)
 {
@@ -1378,7 +1250,7 @@ void smb_break_all_levII_oplock(struct ksmbd_work *work, struct ksmbd_file *fp,
 			goto next;
 		}
 
-		/* Skip oplock being break to none */
+		 
 		if (brk_op->is_lease &&
 		    brk_op->o_lease->new_state == SMB2_LEASE_NONE_LE &&
 		    atomic_read(&brk_op->breaking_cnt))
@@ -1402,11 +1274,7 @@ next:
 		opinfo_put(op);
 }
 
-/**
- * smb_break_all_oplock() - break both batch/exclusive and level2 oplock
- * @work:	smb work
- * @fp:		ksmbd file pointer
- */
+ 
 void smb_break_all_oplock(struct ksmbd_work *work, struct ksmbd_file *fp)
 {
 	if (!test_share_config_flag(work->tcon->share_conf,
@@ -1417,12 +1285,7 @@ void smb_break_all_oplock(struct ksmbd_work *work, struct ksmbd_file *fp)
 	smb_break_all_levII_oplock(work, fp, 1);
 }
 
-/**
- * smb2_map_lease_to_oplock() - map lease state to corresponding oplock type
- * @lease_state:     lease type
- *
- * Return:      0 if no mapping, otherwise corresponding oplock type
- */
+ 
 __u8 smb2_map_lease_to_oplock(__le32 lease_state)
 {
 	if (lease_state == (SMB2_LEASE_HANDLE_CACHING_LE |
@@ -1439,11 +1302,7 @@ __u8 smb2_map_lease_to_oplock(__le32 lease_state)
 	return 0;
 }
 
-/**
- * create_lease_buf() - create lease context for open cmd response
- * @rbuf:	buffer to create lease context response
- * @lease:	buffer to stored parsed lease state information
- */
+ 
 void create_lease_buf(u8 *rbuf, struct lease *lease)
 {
 	if (lease->version == 2) {
@@ -1487,13 +1346,7 @@ void create_lease_buf(u8 *rbuf, struct lease *lease)
 	}
 }
 
-/**
- * parse_lease_state() - parse lease context containted in file open request
- * @open_req:	buffer containing smb2 file open(create) request
- * @is_dir:	whether leasing file is directory
- *
- * Return:  oplock state, -ENOENT if create lease context not found
- */
+ 
 struct lease_ctx_info *parse_lease_state(void *open_req, bool is_dir)
 {
 	struct create_context *cc;
@@ -1536,15 +1389,7 @@ struct lease_ctx_info *parse_lease_state(void *open_req, bool is_dir)
 	return lreq;
 }
 
-/**
- * smb2_find_context_vals() - find a particular context info in open request
- * @open_req:	buffer containing smb2 file open(create) request
- * @tag:	context name to search for
- * @tag_len:	the length of tag
- *
- * Return:	pointer to requested context, NULL if @str context not found
- *		or error pointer if name length is invalid.
- */
+ 
 struct create_context *smb2_find_context_vals(void *open_req, const char *tag, int tag_len)
 {
 	struct create_context *cc;
@@ -1554,10 +1399,7 @@ struct create_context *smb2_find_context_vals(void *open_req, const char *tag, i
 	unsigned int remain_len, name_off, name_len, value_off, value_len,
 		     cc_len;
 
-	/*
-	 * CreateContextsOffset and CreateContextsLength are guaranteed to
-	 * be valid because of ksmbd_smb2_check_message().
-	 */
+	 
 	cc = (struct create_context *)((char *)req +
 				       le32_to_cpu(req->CreateContextsOffset));
 	remain_len = le32_to_cpu(req->CreateContextsLength);
@@ -1593,10 +1435,7 @@ struct create_context *smb2_find_context_vals(void *open_req, const char *tag, i
 	return NULL;
 }
 
-/**
- * create_durable_rsp_buf() - create durable handle context
- * @cc:	buffer to create durable context response
- */
+ 
 void create_durable_rsp_buf(char *cc)
 {
 	struct create_durable_rsp *buf;
@@ -1609,18 +1448,14 @@ void create_durable_rsp_buf(char *cc)
 	buf->ccontext.NameOffset = cpu_to_le16(offsetof
 			(struct create_durable_rsp, Name));
 	buf->ccontext.NameLength = cpu_to_le16(4);
-	/* SMB2_CREATE_DURABLE_HANDLE_RESPONSE is "DHnQ" */
+	 
 	buf->Name[0] = 'D';
 	buf->Name[1] = 'H';
 	buf->Name[2] = 'n';
 	buf->Name[3] = 'Q';
 }
 
-/**
- * create_durable_v2_rsp_buf() - create durable handle v2 context
- * @cc:	buffer to create durable context response
- * @fp: ksmbd file pointer
- */
+ 
 void create_durable_v2_rsp_buf(char *cc, struct ksmbd_file *fp)
 {
 	struct create_durable_v2_rsp *buf;
@@ -1633,7 +1468,7 @@ void create_durable_v2_rsp_buf(char *cc, struct ksmbd_file *fp)
 	buf->ccontext.NameOffset = cpu_to_le16(offsetof
 			(struct create_durable_rsp, Name));
 	buf->ccontext.NameLength = cpu_to_le16(4);
-	/* SMB2_CREATE_DURABLE_HANDLE_RESPONSE_V2 is "DH2Q" */
+	 
 	buf->Name[0] = 'D';
 	buf->Name[1] = 'H';
 	buf->Name[2] = '2';
@@ -1642,11 +1477,7 @@ void create_durable_v2_rsp_buf(char *cc, struct ksmbd_file *fp)
 	buf->Timeout = cpu_to_le32(fp->durable_timeout);
 }
 
-/**
- * create_mxac_rsp_buf() - create query maximal access context
- * @cc:			buffer to create maximal access context response
- * @maximal_access:	maximal access
- */
+ 
 void create_mxac_rsp_buf(char *cc, int maximal_access)
 {
 	struct create_mxac_rsp *buf;
@@ -1659,7 +1490,7 @@ void create_mxac_rsp_buf(char *cc, int maximal_access)
 	buf->ccontext.NameOffset = cpu_to_le16(offsetof
 			(struct create_mxac_rsp, Name));
 	buf->ccontext.NameLength = cpu_to_le16(4);
-	/* SMB2_CREATE_QUERY_MAXIMAL_ACCESS_RESPONSE is "MxAc" */
+	 
 	buf->Name[0] = 'M';
 	buf->Name[1] = 'x';
 	buf->Name[2] = 'A';
@@ -1681,7 +1512,7 @@ void create_disk_id_rsp_buf(char *cc, __u64 file_id, __u64 vol_id)
 	buf->ccontext.NameOffset = cpu_to_le16(offsetof
 			(struct create_mxac_rsp, Name));
 	buf->ccontext.NameLength = cpu_to_le16(4);
-	/* SMB2_CREATE_QUERY_ON_DISK_ID_RESPONSE is "QFid" */
+	 
 	buf->Name[0] = 'Q';
 	buf->Name[1] = 'F';
 	buf->Name[2] = 'i';
@@ -1691,11 +1522,7 @@ void create_disk_id_rsp_buf(char *cc, __u64 file_id, __u64 vol_id)
 	buf->VolumeId = cpu_to_le64(vol_id);
 }
 
-/**
- * create_posix_rsp_buf() - create posix extension context
- * @cc:	buffer to create posix on posix response
- * @fp: ksmbd file pointer
- */
+ 
 void create_posix_rsp_buf(char *cc, struct ksmbd_file *fp)
 {
 	struct create_posix_rsp *buf;
@@ -1708,15 +1535,12 @@ void create_posix_rsp_buf(char *cc, struct ksmbd_file *fp)
 	memset(buf, 0, sizeof(struct create_posix_rsp));
 	buf->ccontext.DataOffset = cpu_to_le16(offsetof
 			(struct create_posix_rsp, nlink));
-	/*
-	 * DataLength = nlink(4) + reparse_tag(4) + mode(4) +
-	 * domain sid(28) + unix group sid(16).
-	 */
+	 
 	buf->ccontext.DataLength = cpu_to_le32(56);
 	buf->ccontext.NameOffset = cpu_to_le16(offsetof
 			(struct create_posix_rsp, Name));
 	buf->ccontext.NameLength = cpu_to_le16(POSIX_CTXT_DATA_LEN);
-	/* SMB2_CREATE_TAG_POSIX is "0x93AD25509CB411E7B42383DE968BCD7C" */
+	 
 	buf->Name[0] = 0x93;
 	buf->Name[1] = 0xAD;
 	buf->Name[2] = 0x25;
@@ -1737,30 +1561,15 @@ void create_posix_rsp_buf(char *cc, struct ksmbd_file *fp)
 	buf->nlink = cpu_to_le32(inode->i_nlink);
 	buf->reparse_tag = cpu_to_le32(fp->volatile_id);
 	buf->mode = cpu_to_le32(inode->i_mode & 0777);
-	/*
-	 * SidBuffer(44) contain two sids(Domain sid(28), UNIX group sid(16)).
-	 * Domain sid(28) = revision(1) + num_subauth(1) + authority(6) +
-	 *		    sub_auth(4 * 4(num_subauth)) + RID(4).
-	 * UNIX group id(16) = revision(1) + num_subauth(1) + authority(6) +
-	 *		       sub_auth(4 * 1(num_subauth)) + RID(4).
-	 */
+	 
 	id_to_sid(from_kuid_munged(&init_user_ns, vfsuid_into_kuid(vfsuid)),
 		  SIDOWNER, (struct smb_sid *)&buf->SidBuffer[0]);
 	id_to_sid(from_kgid_munged(&init_user_ns, vfsgid_into_kgid(vfsgid)),
 		  SIDUNIX_GROUP, (struct smb_sid *)&buf->SidBuffer[28]);
 }
 
-/*
- * Find lease object(opinfo) for given lease key/fid from lease
- * break/file close path.
- */
-/**
- * lookup_lease_in_table() - find a matching lease info object
- * @conn:	connection instance
- * @lease_key:	lease key to be searched for
- *
- * Return:      opinfo if found matching opinfo, otherwise NULL
- */
+ 
+ 
 struct oplock_info *lookup_lease_in_table(struct ksmbd_conn *conn,
 					  char *lease_key)
 {

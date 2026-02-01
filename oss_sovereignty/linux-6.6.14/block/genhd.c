@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *  gendisk handling
- *
- * Portions Copyright (C) 2020 Christoph Hellwig
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/ctype.h>
@@ -35,24 +31,10 @@
 
 static struct kobject *block_depr;
 
-/*
- * Unique, monotonically increasing sequential number associated with block
- * devices instances (i.e. incremented each time a device is attached).
- * Associating uevents with block devices in userspace is difficult and racy:
- * the uevent netlink socket is lossy, and on slow and overloaded systems has
- * a very high latency.
- * Block devices do not have exclusive owners in userspace, any process can set
- * one up (e.g. loop devices). Moreover, device names can be reused (e.g. loop0
- * can be reused again and again).
- * A userspace process setting up a block device and watching for its events
- * cannot thus reliably tell whether an event relates to the device it just set
- * up or another earlier instance with the same name.
- * This sequential number allows userspace processes to solve this problem, and
- * uniquely associate an uevent to the lifetime to a device.
- */
+ 
 static atomic64_t diskseq;
 
-/* for extended dynamic devt allocation, currently only one major is used */
+ 
 #define NR_EXT_DEVT		(1 << MINORBITS)
 static DEFINE_IDA(ext_devt_ida);
 
@@ -62,10 +44,7 @@ void set_capacity(struct gendisk *disk, sector_t sectors)
 }
 EXPORT_SYMBOL(set_capacity);
 
-/*
- * Set disk capacity and notify if the size is not currently zero and will not
- * be set to zero.  Returns true if a uevent was sent, otherwise false.
- */
+ 
 bool set_capacity_and_notify(struct gendisk *disk, sector_t size)
 {
 	sector_t capacity = get_capacity(disk);
@@ -73,11 +52,7 @@ bool set_capacity_and_notify(struct gendisk *disk, sector_t size)
 
 	set_capacity(disk, size);
 
-	/*
-	 * Only print a message and send a uevent if the gendisk is user visible
-	 * and alive.  This avoids spamming the log and udev when setting the
-	 * initial capacity during probing.
-	 */
+	 
 	if (size == capacity ||
 	    !disk_live(disk) ||
 	    (disk->flags & GENHD_FL_HIDDEN))
@@ -86,10 +61,7 @@ bool set_capacity_and_notify(struct gendisk *disk, sector_t size)
 	pr_info("%s: detected capacity change from %lld to %lld\n",
 		disk->disk_name, capacity, size);
 
-	/*
-	 * Historically we did not send a uevent for changes to/from an empty
-	 * device.
-	 */
+	 
 	if (!capacity || !size)
 		return false;
 	kobject_uevent_env(&disk_to_dev(disk)->kobj, KOBJ_CHANGE, envp);
@@ -150,10 +122,7 @@ static void part_in_flight_rw(struct block_device *part,
 		inflight[1] = 0;
 }
 
-/*
- * Can be deleted altogether. Later.
- *
- */
+ 
 #define BLKDEV_MAJOR_HASH_SIZE 255
 static struct blk_major_name {
 	struct blk_major_name *next;
@@ -166,7 +135,7 @@ static struct blk_major_name {
 static DEFINE_MUTEX(major_names_lock);
 static DEFINE_SPINLOCK(major_names_spinlock);
 
-/* index in the above - for now: assume no multimajor ranges */
+ 
 static inline int major_to_index(unsigned major)
 {
 	return major % BLKDEV_MAJOR_HASH_SIZE;
@@ -183,34 +152,9 @@ void blkdev_show(struct seq_file *seqf, off_t offset)
 			seq_printf(seqf, "%3d %s\n", dp->major, dp->name);
 	spin_unlock(&major_names_spinlock);
 }
-#endif /* CONFIG_PROC_FS */
+#endif  
 
-/**
- * __register_blkdev - register a new block device
- *
- * @major: the requested major device number [1..BLKDEV_MAJOR_MAX-1]. If
- *         @major = 0, try to allocate any unused major number.
- * @name: the name of the new block device as a zero terminated string
- * @probe: pre-devtmpfs / pre-udev callback used to create disks when their
- *	   pre-created device node is accessed. When a probe call uses
- *	   add_disk() and it fails the driver must cleanup resources. This
- *	   interface may soon be removed.
- *
- * The @name must be unique within the system.
- *
- * The return value depends on the @major input parameter:
- *
- *  - if a major device number was requested in range [1..BLKDEV_MAJOR_MAX-1]
- *    then the function returns zero on success, or a negative error code
- *  - if any unused major number was requested with @major = 0 parameter
- *    then the return value is the allocated major number in range
- *    [1..BLKDEV_MAJOR_MAX-1] or a negative error code otherwise
- *
- * See Documentation/admin-guide/devices.txt for the list of allocated
- * major numbers.
- *
- * Use register_blkdev instead for any new code.
- */
+ 
 int __register_blkdev(unsigned int major, const char *name,
 		void (*probe)(dev_t devt))
 {
@@ -219,7 +163,7 @@ int __register_blkdev(unsigned int major, const char *name,
 
 	mutex_lock(&major_names_lock);
 
-	/* temporary */
+	 
 	if (major == 0) {
 		for (index = ARRAY_SIZE(major_names)-1; index > 0; index--) {
 			if (major_names[index] == NULL)
@@ -352,12 +296,7 @@ int disk_scan_partitions(struct gendisk *disk, blk_mode_t mode)
 	if (disk->open_partitions)
 		return -EBUSY;
 
-	/*
-	 * If the device is opened exclusively by current thread already, it's
-	 * safe to scan partitons, otherwise, use bd_prepare_to_claim() to
-	 * synchronize with other exclusive openers and other partition
-	 * scanners.
-	 */
+	 
 	if (!(mode & BLK_OPEN_EXCL)) {
 		ret = bd_prepare_to_claim(disk->part0, disk_scan_partitions,
 					  NULL);
@@ -373,26 +312,14 @@ int disk_scan_partitions(struct gendisk *disk, blk_mode_t mode)
 	else
 		blkdev_put(bdev, NULL);
 
-	/*
-	 * If blkdev_get_by_dev() failed early, GD_NEED_PART_SCAN is still set,
-	 * and this will cause that re-assemble partitioned raid device will
-	 * creat partition for underlying disk.
-	 */
+	 
 	clear_bit(GD_NEED_PART_SCAN, &disk->state);
 	if (!(mode & BLK_OPEN_EXCL))
 		bd_abort_claiming(disk->part0, disk_scan_partitions);
 	return ret;
 }
 
-/**
- * device_add_disk - add disk information to kernel list
- * @parent: parent device for the disk
- * @disk: per-device partitioning information
- * @groups: Additional per-device sysfs groups
- *
- * This function registers the partitioning information in @disk
- * with the kernel.
- */
+ 
 int __must_check device_add_disk(struct device *parent, struct gendisk *disk,
 				 const struct attribute_group **groups)
 
@@ -400,28 +327,17 @@ int __must_check device_add_disk(struct device *parent, struct gendisk *disk,
 	struct device *ddev = disk_to_dev(disk);
 	int ret;
 
-	/* Only makes sense for bio-based to set ->poll_bio */
+	 
 	if (queue_is_mq(disk->queue) && disk->fops->poll_bio)
 		return -EINVAL;
 
-	/*
-	 * The disk queue should now be all set with enough information about
-	 * the device for the elevator code to pick an adequate default
-	 * elevator if one is needed, that is, for devices requesting queue
-	 * registration.
-	 */
+	 
 	elevator_init_mq(disk->queue);
 
-	/* Mark bdev as having a submit_bio, if needed */
+	 
 	disk->part0->bd_has_submit_bio = disk->fops->submit_bio != NULL;
 
-	/*
-	 * If the driver provides an explicit major number it also must provide
-	 * the number of minors numbers supported, and those will be used to
-	 * setup the gendisk.
-	 * Otherwise just allocate the device numbers for both the whole device
-	 * and all partitions from the extended dev_t space.
-	 */
+	 
 	ret = -EINVAL;
 	if (disk->major) {
 		if (WARN_ON(!disk->minors))
@@ -447,7 +363,7 @@ int __must_check device_add_disk(struct device *parent, struct gendisk *disk,
 		disk->first_minor = ret;
 	}
 
-	/* delay uevents, until we scanned partition table */
+	 
 	dev_set_uevent_suppress(ddev, 1);
 
 	ddev->parent = parent;
@@ -468,11 +384,7 @@ int __must_check device_add_disk(struct device *parent, struct gendisk *disk,
 	if (ret)
 		goto out_device_del;
 
-	/*
-	 * avoid probable deadlock caused by allocating memory with
-	 * GFP_KERNEL in runtime_resume callback of its all ancestor
-	 * devices
-	 */
+	 
 	pm_runtime_set_memalloc_noio(ddev, true);
 
 	disk->part0->bd_holder_dir =
@@ -502,7 +414,7 @@ int __must_check device_add_disk(struct device *parent, struct gendisk *disk,
 		if (ret)
 			goto out_unregister_bdi;
 
-		/* Make sure the first partition scan will be proceed */
+		 
 		if (get_capacity(disk) && !(disk->flags & GENHD_FL_NO_PART) &&
 		    !test_bit(GD_SUPPRESS_PART_SCAN, &disk->state))
 			set_bit(GD_NEED_PART_SCAN, &disk->state);
@@ -511,18 +423,11 @@ int __must_check device_add_disk(struct device *parent, struct gendisk *disk,
 		if (get_capacity(disk))
 			disk_scan_partitions(disk, BLK_OPEN_READ);
 
-		/*
-		 * Announce the disk and partitions after all partitions are
-		 * created. (for hidden disks uevents remain suppressed forever)
-		 */
+		 
 		dev_set_uevent_suppress(ddev, 0);
 		disk_uevent(disk, KOBJ_ADD);
 	} else {
-		/*
-		 * Even if the block_device for a hidden gendisk is not
-		 * registered, it needs to have a valid bd_dev so that the
-		 * freeing of the dynamic major works.
-		 */
+		 
 		disk->part0->bd_dev = MKDEV(disk->major, disk->first_minor);
 	}
 
@@ -578,33 +483,21 @@ static void blk_report_disk_dead(struct gendisk *disk, bool surprise)
 
 static void __blk_mark_disk_dead(struct gendisk *disk)
 {
-	/*
-	 * Fail any new I/O.
-	 */
+	 
 	if (test_and_set_bit(GD_DEAD, &disk->state))
 		return;
 
 	if (test_bit(GD_OWNS_QUEUE, &disk->state))
 		blk_queue_flag_set(QUEUE_FLAG_DYING, disk->queue);
 
-	/*
-	 * Stop buffered writers from dirtying pages that can't be written out.
-	 */
+	 
 	set_capacity(disk, 0);
 
-	/*
-	 * Prevent new I/O from crossing bio_queue_enter().
-	 */
+	 
 	blk_queue_start_drain(disk->queue);
 }
 
-/**
- * blk_mark_disk_dead - mark a disk as dead
- * @disk: disk to mark as dead
- *
- * Mark as disk as dead (e.g. surprise removed) and don't accept any new I/O
- * to this disk.
- */
+ 
 void blk_mark_disk_dead(struct gendisk *disk)
 {
 	__blk_mark_disk_dead(disk);
@@ -612,25 +505,7 @@ void blk_mark_disk_dead(struct gendisk *disk)
 }
 EXPORT_SYMBOL_GPL(blk_mark_disk_dead);
 
-/**
- * del_gendisk - remove the gendisk
- * @disk: the struct gendisk to remove
- *
- * Removes the gendisk and all its associated resources. This deletes the
- * partitions associated with the gendisk, and unregisters the associated
- * request_queue.
- *
- * This is the counter to the respective __device_add_disk() call.
- *
- * The final removal of the struct gendisk happens when its refcount reaches 0
- * with put_disk(), which should be called after del_gendisk(), if
- * __device_add_disk() was used.
- *
- * Drivers exist which depend on the release of the gendisk to be synchronous,
- * it should not be deferred.
- *
- * Context: can sleep
- */
+ 
 void del_gendisk(struct gendisk *disk)
 {
 	struct request_queue *q = disk->queue;
@@ -644,25 +519,18 @@ void del_gendisk(struct gendisk *disk)
 
 	disk_del_events(disk);
 
-	/*
-	 * Prevent new openers by unlinked the bdev inode.
-	 */
+	 
 	mutex_lock(&disk->open_mutex);
 	xa_for_each(&disk->part_tbl, idx, part)
 		remove_inode_hash(part->bd_inode);
 	mutex_unlock(&disk->open_mutex);
 
-	/*
-	 * Tell the file system to write back all dirty data and shut down if
-	 * it hasn't been notified earlier.
-	 */
+	 
 	if (!test_bit(GD_DEAD, &disk->state))
 		blk_report_disk_dead(disk, false);
 	__blk_mark_disk_dead(disk);
 
-	/*
-	 * Drop all partitions now that the disk is marked dead.
-	 */
+	 
 	mutex_lock(&disk->open_mutex);
 	xa_for_each_start(&disk->part_tbl, idx, part, 1)
 		drop_partition(part);
@@ -671,10 +539,7 @@ void del_gendisk(struct gendisk *disk)
 	if (!(disk->flags & GENHD_FL_HIDDEN)) {
 		sysfs_remove_link(&disk_to_dev(disk)->kobj, "bdi");
 
-		/*
-		 * Unregister bdi before releasing device numbers (as they can
-		 * get reused and we'd get clashes in sysfs).
-		 */
+		 
 		bdi_unregister(disk->bdi);
 	}
 
@@ -709,10 +574,7 @@ void del_gendisk(struct gendisk *disk)
 	rq_qos_exit(q);
 	blk_mq_unquiesce_queue(q);
 
-	/*
-	 * If the disk does not own the queue, allow using passthrough requests
-	 * again.  Else leave the queue frozen to fail all I/O.
-	 */
+	 
 	if (!test_bit(GD_OWNS_QUEUE, &disk->state)) {
 		blk_queue_flag_clear(QUEUE_FLAG_INIT_DONE, q);
 		__blk_mq_unfreeze_queue(q, true);
@@ -723,16 +585,7 @@ void del_gendisk(struct gendisk *disk)
 }
 EXPORT_SYMBOL(del_gendisk);
 
-/**
- * invalidate_disk - invalidate the disk
- * @disk: the struct gendisk to invalidate
- *
- * A helper to invalidates the disk. It will clean the disk's associated
- * buffer/page caches and reset its internal states so that the disk
- * can be reused by the drivers.
- *
- * Context: can sleep
- */
+ 
 void invalidate_disk(struct gendisk *disk)
 {
 	struct block_device *bdev = disk->part0;
@@ -743,7 +596,7 @@ void invalidate_disk(struct gendisk *disk)
 }
 EXPORT_SYMBOL(invalidate_disk);
 
-/* sysfs access to bad-blocks list. */
+ 
 static ssize_t disk_badblocks_show(struct device *dev,
 					struct device_attribute *attr,
 					char *page)
@@ -785,13 +638,13 @@ void blk_request_module(dev_t devt)
 	mutex_unlock(&major_names_lock);
 
 	if (request_module("block-major-%d-%d", MAJOR(devt), MINOR(devt)) > 0)
-		/* Make old-style 2.4 aliases work */
+		 
 		request_module("block-major-%d", MAJOR(devt));
 }
-#endif /* CONFIG_BLOCK_LEGACY_AUTOLOAD */
+#endif  
 
 #ifdef CONFIG_PROC_FS
-/* iterator */
+ 
 static void *disk_seqf_start(struct seq_file *seqf, loff_t *pos)
 {
 	loff_t skip = *pos;
@@ -829,7 +682,7 @@ static void disk_seqf_stop(struct seq_file *seqf, void *v)
 {
 	struct class_dev_iter *iter = seqf->private;
 
-	/* stop is called even after start failed :-( */
+	 
 	if (iter) {
 		class_dev_iter_exit(iter);
 		kfree(iter);
@@ -887,7 +740,7 @@ static int __init genhd_device_init(void)
 
 	register_blkdev(BLOCK_EXT_MAJOR, "blkext");
 
-	/* create top-level block dir */
+	 
 	block_depr = kobject_create_and_add("block", NULL);
 	return 0;
 }
@@ -1075,7 +928,7 @@ ssize_t part_fail_store(struct device *dev,
 
 static struct device_attribute dev_attr_fail =
 	__ATTR(make-it-fail, 0644, part_fail_show, part_fail_store);
-#endif /* CONFIG_FAIL_MAKE_REQUEST */
+#endif  
 
 #ifdef CONFIG_FAIL_IO_TIMEOUT
 static struct device_attribute dev_attr_fail_timeout =
@@ -1134,20 +987,7 @@ static const struct attribute_group *disk_attr_groups[] = {
 	NULL
 };
 
-/**
- * disk_release - releases all allocated resources of the gendisk
- * @dev: the device representing this disk
- *
- * This function releases all allocated resources of the gendisk.
- *
- * Drivers which used __device_add_disk() have a gendisk with a request_queue
- * assigned. Since the request_queue sits on top of the gendisk for these
- * drivers we also call blk_put_queue() for them, and we expect the
- * request_queue refcount to reach 0 at this point, and so the request_queue
- * will also be freed prior to the disk.
- *
- * Context: can sleep
- */
+ 
 static void disk_release(struct device *dev)
 {
 	struct gendisk *disk = dev_to_disk(dev);
@@ -1157,13 +997,7 @@ static void disk_release(struct device *dev)
 
 	blk_trace_remove(disk->queue);
 
-	/*
-	 * To undo the all initialization from blk_mq_init_allocated_queue in
-	 * case of a probe failure where add_disk is never called we have to
-	 * call blk_mq_exit_queue here. We can't do this for the more common
-	 * teardown case (yet) as the tagset can be gone by the time the disk
-	 * is released once it was added.
-	 */
+	 
 	if (queue_is_mq(disk->queue) &&
 	    test_bit(GD_OWNS_QUEUE, &disk->state) &&
 	    !test_bit(GD_ADDED, &disk->state))
@@ -1184,7 +1018,7 @@ static void disk_release(struct device *dev)
 	if (test_bit(GD_ADDED, &disk->state) && disk->fops->free_disk)
 		disk->fops->free_disk(disk);
 
-	iput(disk->part0->bd_inode);	/* frees the disk */
+	iput(disk->part0->bd_inode);	 
 }
 
 static int block_uevent(const struct device *dev, struct kobj_uevent_env *env)
@@ -1217,13 +1051,7 @@ const struct device_type disk_type = {
 };
 
 #ifdef CONFIG_PROC_FS
-/*
- * aggregate disk stat collector.  Uses the same stats that the sysfs
- * entries do, above, but makes them available through one seq_file.
- *
- * The output looks suspiciously like /proc/partitions with a bunch of
- * extra fields.
- */
+ 
 static int diskstats_show(struct seq_file *seqf, void *v)
 {
 	struct gendisk *gp = v;
@@ -1232,13 +1060,7 @@ static int diskstats_show(struct seq_file *seqf, void *v)
 	struct disk_stats stat;
 	unsigned long idx;
 
-	/*
-	if (&disk_to_dev(gp)->kobj.entry == block_class.devices.next)
-		seq_puts(seqf,	"major minor name"
-				"     rio rmerge rsect ruse wio wmerge "
-				"wsect wuse running use aveq"
-				"\n\n");
-	*/
+	 
 
 	rcu_read_lock();
 	xa_for_each(&gp->part_tbl, idx, hd) {
@@ -1309,7 +1131,7 @@ static int __init proc_genhd_init(void)
 	return 0;
 }
 module_init(proc_genhd_init);
-#endif /* CONFIG_PROC_FS */
+#endif  
 
 dev_t part_devt(struct gendisk *disk, u8 partno)
 {
@@ -1341,7 +1163,7 @@ struct gendisk *__alloc_disk_node(struct request_queue *q, int node_id,
 	if (!disk->bdi)
 		goto out_free_bioset;
 
-	/* bdev_alloc() might need the queue, set before the first call */
+	 
 	disk->queue = q;
 
 	disk->part0 = bdev_alloc(disk, 0);
@@ -1403,19 +1225,7 @@ struct gendisk *__blk_alloc_disk(int node, struct lock_class_key *lkclass)
 }
 EXPORT_SYMBOL(__blk_alloc_disk);
 
-/**
- * put_disk - decrements the gendisk refcount
- * @disk: the struct gendisk to decrement the refcount for
- *
- * This decrements the refcount for the struct gendisk. When this reaches 0
- * we'll have disk_release() called.
- *
- * Note: for blk-mq disk put_disk must be called before freeing the tag_set
- * when handling probe errors (that is before add_disk() is called).
- *
- * Context: Any context, but the last reference must not be dropped from
- *          atomic context.
- */
+ 
 void put_disk(struct gendisk *disk)
 {
 	if (disk)
@@ -1433,15 +1243,7 @@ static void set_disk_ro_uevent(struct gendisk *gd, int ro)
 	kobject_uevent_env(&disk_to_dev(gd)->kobj, KOBJ_CHANGE, envp);
 }
 
-/**
- * set_disk_ro - set a gendisk read-only
- * @disk:	gendisk to operate on
- * @read_only:	%true to set the disk read-only, %false set the disk read/write
- *
- * This function is used to indicate whether a given disk device should have its
- * read-only flag set. set_disk_ro() is typically used by device drivers to
- * indicate whether the underlying physical device is write-protected.
- */
+ 
 void set_disk_ro(struct gendisk *disk, bool read_only)
 {
 	if (read_only) {

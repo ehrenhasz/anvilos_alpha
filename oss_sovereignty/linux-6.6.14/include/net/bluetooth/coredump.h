@@ -1,36 +1,16 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2022 Google Corporation
- */
+ 
+ 
 
 #ifndef __COREDUMP_H
 #define __COREDUMP_H
 
-#define DEVCOREDUMP_TIMEOUT	msecs_to_jiffies(10000)	/* 10 sec */
+#define DEVCOREDUMP_TIMEOUT	msecs_to_jiffies(10000)	 
 
 typedef void (*coredump_t)(struct hci_dev *hdev);
 typedef void (*dmp_hdr_t)(struct hci_dev *hdev, struct sk_buff *skb);
 typedef void (*notify_change_t)(struct hci_dev *hdev, int state);
 
-/* struct hci_devcoredump - Devcoredump state
- *
- * @supported: Indicates if FW dump collection is supported by driver
- * @state: Current state of dump collection
- * @timeout: Indicates a timeout for collecting the devcoredump
- *
- * @alloc_size: Total size of the dump
- * @head: Start of the dump
- * @tail: Pointer to current end of dump
- * @end: head + alloc_size for easy comparisons
- *
- * @dump_q: Dump queue for state machine to process
- * @dump_rx: Devcoredump state machine work
- * @dump_timeout: Devcoredump timeout work
- *
- * @coredump: Called from the driver's .coredump() function.
- * @dmp_hdr: Create a dump header to identify controller/fw/driver info
- * @notify_change: Notify driver when devcoredump state has changed
- */
+ 
 struct hci_devcoredump {
 	bool		supported;
 
@@ -111,6 +91,6 @@ static inline int hci_devcd_abort(struct hci_dev *hdev)
 	return -EOPNOTSUPP;
 }
 
-#endif /* CONFIG_DEV_COREDUMP */
+#endif  
 
-#endif /* __COREDUMP_H */
+#endif  

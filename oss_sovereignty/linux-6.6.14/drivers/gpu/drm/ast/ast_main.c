@@ -1,30 +1,5 @@
-/*
- * Copyright 2012 Red Hat Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the
- * "Software"), to deal in the Software without restriction, including
- * without limitation the rights to use, copy, modify, merge, publish,
- * distribute, sub license, and/or sell copies of the Software, and to
- * permit persons to whom the Software is furnished to do so, subject to
- * the following conditions:
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT. IN NO EVENT SHALL
- * THE COPYRIGHT HOLDERS, AUTHORS AND/OR ITS SUPPLIERS BE LIABLE FOR ANY CLAIM,
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
- * USE OR OTHER DEALINGS IN THE SOFTWARE.
- *
- * The above copyright notice and this permission notice (including the
- * next paragraph) shall be included in all copies or substantial portions
- * of the Software.
- *
- */
-/*
- * Authors: Dave Airlie <airlied@redhat.com>
- */
+ 
+ 
 
 #include <linux/pci.h>
 
@@ -53,15 +28,12 @@ static void ast_enable_vga(struct drm_device *dev)
 	ast_io_write8(ast, AST_IO_MISC_PORT_WRITE, 0x01);
 }
 
-/*
- * Run this function as part of the HW device cleanup; not
- * when the DRM device gets released.
- */
+ 
 static void ast_enable_mmio_release(void *data)
 {
 	struct ast_device *ast = data;
 
-	/* enable standard VGA decode */
+	 
 	ast_set_index_reg(ast, AST_IO_CRTC_PORT, 0xa1, 0x04);
 }
 
@@ -88,43 +60,35 @@ static int ast_device_config_init(struct ast_device *ast)
 	u32 data;
 	u8 jregd0, jregd1;
 
-	/*
-	 * Find configuration mode and read SCU revision
-	 */
+	 
 
 	ast->config_mode = ast_use_defaults;
 
-	/* Check if we have device-tree properties */
+	 
 	if (np && !of_property_read_u32(np, "aspeed,scu-revision-id", &data)) {
-		/* We do, disable P2A access */
+		 
 		ast->config_mode = ast_use_dt;
 		scu_rev = data;
-	} else if (pdev->device == PCI_CHIP_AST2000) { // Not all families have a P2A bridge
-		/*
-		 * The BMC will set SCU 0x40 D[12] to 1 if the P2 bridge
-		 * is disabled. We force using P2A if VGA only mode bit
-		 * is set D[7]
-		 */
+	} else if (pdev->device == PCI_CHIP_AST2000) { 
+		 
 		jregd0 = ast_get_index_reg_mask(ast, AST_IO_CRTC_PORT, 0xd0, 0xff);
 		jregd1 = ast_get_index_reg_mask(ast, AST_IO_CRTC_PORT, 0xd1, 0xff);
 		if (!(jregd0 & 0x80) || !(jregd1 & 0x10)) {
 
-			/*
-			 * We have a P2A bridge and it is enabled.
-			 */
+			 
 
-			/* Patch AST2500/AST2510 */
+			 
 			if ((pdev->revision & 0xf0) == 0x40) {
 				if (!(jregd0 & AST_VRAM_INIT_STATUS_MASK))
 					ast_patch_ahb_2500(ast);
 			}
 
-			/* Double check that it's actually working */
+			 
 			data = ast_read32(ast, 0xf004);
 			if ((data != 0xffffffff) && (data != 0x00)) {
 				ast->config_mode = ast_use_p2a;
 
-				/* Read SCU7c (silicon revision register) */
+				 
 				ast_write32(ast, 0xf004, 0x1e6e0000);
 				ast_write32(ast, 0xf000, 0x1);
 				scu_rev = ast_read32(ast, 0x1207c);
@@ -144,9 +108,7 @@ static int ast_device_config_init(struct ast_device *ast)
 		break;
 	}
 
-	/*
-	 * Identify chipset
-	 */
+	 
 
 	if (pdev->revision >= 0x50) {
 		ast->chip = AST2600;
@@ -213,7 +175,7 @@ static void ast_detect_widescreen(struct ast_device *ast)
 {
 	u8 jreg;
 
-	/* Check if we support wide screen */
+	 
 	switch (AST_GEN(ast)) {
 	case 1:
 		ast->support_wide_screen = false;
@@ -244,17 +206,10 @@ static void ast_detect_tx_chip(struct ast_device *ast, bool need_post)
 	struct drm_device *dev = &ast->base;
 	u8 jreg;
 
-	/* Check 3rd Tx option (digital output afaik) */
+	 
 	ast->tx_chip_types |= AST_TX_NONE_BIT;
 
-	/*
-	 * VGACRA3 Enhanced Color Mode Register, check if DVO is already
-	 * enabled, in that case, assume we have a SIL164 TMDS transmitter
-	 *
-	 * Don't make that assumption if we the chip wasn't enabled and
-	 * is at power-on reset, otherwise we'll incorrectly "detect" a
-	 * SIL164 when there is none.
-	 */
+	 
 	if (!need_post) {
 		jreg = ast_get_index_reg_mask(ast, AST_IO_CRTC_PORT, 0xa3, 0xff);
 		if (jreg & 0x80)
@@ -262,11 +217,7 @@ static void ast_detect_tx_chip(struct ast_device *ast, bool need_post)
 	}
 
 	if (IS_AST_GEN4(ast) || IS_AST_GEN5(ast) || IS_AST_GEN6(ast)) {
-		/*
-		 * On AST GEN4+, look the configuration set by the SoC in
-		 * the SOC scratch register #1 bits 11:8 (interestingly marked
-		 * as "reserved" in the spec)
-		 */
+		 
 		jreg = ast_get_index_reg_mask(ast, AST_IO_CRTC_PORT, 0xd1, 0xff);
 		switch (jreg) {
 		case 0x04:
@@ -275,7 +226,7 @@ static void ast_detect_tx_chip(struct ast_device *ast, bool need_post)
 		case 0x08:
 			ast->dp501_fw_addr = drmm_kzalloc(dev, 32*1024, GFP_KERNEL);
 			if (ast->dp501_fw_addr) {
-				/* backup firmware */
+				 
 				if (ast_backup_fw(dev, ast->dp501_fw_addr, 32*1024)) {
 					drmm_kfree(dev, ast->dp501_fw_addr);
 					ast->dp501_fw_addr = NULL;
@@ -293,7 +244,7 @@ static void ast_detect_tx_chip(struct ast_device *ast, bool need_post)
 		}
 	}
 
-	/* Print stuff for diagnostic purposes */
+	 
 	if (ast->tx_chip_types & AST_TX_NONE_BIT)
 		drm_info(dev, "Using analog VGA\n");
 	if (ast->tx_chip_types & AST_TX_SIL164_BIT)
@@ -313,10 +264,7 @@ static int ast_get_dram_info(struct drm_device *dev)
 
 	switch (ast->config_mode) {
 	case ast_use_dt:
-		/*
-		 * If some properties are missing, use reasonable
-		 * defaults for GEN5
-		 */
+		 
 		if (of_property_read_u32(np, "aspeed,mcr-configuration",
 					 &mcr_cfg))
 			mcr_cfg = 0x00000577;
@@ -448,10 +396,7 @@ struct ast_device *ast_device_create(const struct drm_driver *drv,
 	if (!ast->regs)
 		return ERR_PTR(-EIO);
 
-	/*
-	 * After AST2500, MMIO is enabled by default, and it should be adopted
-	 * to be compatible with Arm.
-	 */
+	 
 	if (pdev->revision >= 0x40) {
 		ast->ioregs = ast->regs + AST_IO_MM_OFFSET;
 	} else if (!(pci_resource_flags(pdev, 2) & IORESOURCE_IO)) {
@@ -459,7 +404,7 @@ struct ast_device *ast_device_create(const struct drm_driver *drv,
 		ast->ioregs = ast->regs + AST_IO_MM_OFFSET;
 	}
 
-	/* "map" IO regs if the above hasn't done so already */
+	 
 	if (!ast->ioregs) {
 		ast->ioregs = pcim_iomap(pdev, 2, 0);
 		if (!ast->ioregs)
@@ -471,14 +416,11 @@ struct ast_device *ast_device_create(const struct drm_driver *drv,
 		need_post = true;
 	}
 
-	/*
-	 * If VGA isn't enabled, we need to enable now or subsequent
-	 * access to the scratch registers will fail.
-	 */
+	 
 	if (need_post)
 		ast_enable_vga(dev);
 
-	/* Enable extended register access */
+	 
 	ast_open_key(ast);
 	ret = ast_enable_mmio(ast);
 	if (ret)
@@ -505,7 +447,7 @@ struct ast_device *ast_device_create(const struct drm_driver *drv,
 	if (ret)
 		return ERR_PTR(ret);
 
-	/* map reserved buffer */
+	 
 	ast->dp501_fw_buf = NULL;
 	if (ast->vram_size < pci_resource_len(pdev, 0)) {
 		ast->dp501_fw_buf = pci_iomap_range(pdev, 0, ast->vram_size, 0);

@@ -1,22 +1,6 @@
-/* pcomplib.c - library functions for programmable completion. */
+ 
 
-/* Copyright (C) 1999-2021 Free Software Foundation, Inc.
-
-   This file is part of GNU Bash, the Bourne Again SHell.
-
-   Bash is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   Bash is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with Bash.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ 
 
 #include <config.h>
 
@@ -37,7 +21,7 @@
 #include "shell.h"
 #include "pcomplete.h"
 
-#define COMPLETE_HASH_BUCKETS	512	/* must be power of two */
+#define COMPLETE_HASH_BUCKETS	512	 
 
 #define STRDUP(x)	((x) ? savestring (x) : (char *)NULL)
 
@@ -96,7 +80,7 @@ compspec_copy (cs)
 
   new = (COMPSPEC *)xmalloc (sizeof (COMPSPEC));
 
-  new->refcount = 1; 	/* was cs->refcount, but this is a fresh copy */
+  new->refcount = 1; 	 
   new->actions = cs->actions;
   new->options = cs->options;
 
@@ -225,4 +209,4 @@ progcomp_walk (pfunc)
   hash_walk (prog_completes, pfunc);
 }
 
-#endif /* PROGRAMMABLE_COMPLETION */
+#endif  

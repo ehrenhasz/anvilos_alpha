@@ -1,21 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Real Time Clock interface for StrongARM SA1x00 and XScale PXA2xx
- *
- * Copyright (c) 2000 Nils Faerber
- *
- * Based on rtc.c by Paul Gortmaker
- *
- * Original Driver by Nils Faerber <nils@kernelconcepts.de>
- *
- * Modifications from:
- *   CIH <cih@coventive.com>
- *   Nicolas Pitre <nico@fluxnic.net>
- *   Andrew Christian <andrew.christian@hp.com>
- *
- * Converted to the RTC subsystem and Driver Model
- *   by Richard Purdie <rpurdie@rpsys.net>
- */
+
+ 
 
 #include <linux/platform_device.h>
 #include <linux/module.h>
@@ -31,10 +15,10 @@
 #include <linux/bitops.h>
 #include <linux/io.h>
 
-#define RTSR_HZE		BIT(3)	/* HZ interrupt enable */
-#define RTSR_ALE		BIT(2)	/* RTC alarm interrupt enable */
-#define RTSR_HZ			BIT(1)	/* HZ rising-edge detected */
-#define RTSR_AL			BIT(0)	/* RTC alarm detected */
+#define RTSR_HZE		BIT(3)	 
+#define RTSR_ALE		BIT(2)	 
+#define RTSR_HZ			BIT(1)	 
+#define RTSR_AL			BIT(0)	 
 
 #include "rtc-sa1100.h"
 
@@ -53,32 +37,23 @@ static irqreturn_t sa1100_rtc_interrupt(int irq, void *dev_id)
 	spin_lock(&info->lock);
 
 	rtsr = readl_relaxed(info->rtsr);
-	/* clear interrupt sources */
+	 
 	writel_relaxed(0, info->rtsr);
-	/* Fix for a nasty initialization problem the in SA11xx RTSR register.
-	 * See also the comments in sa1100_rtc_probe(). */
+	 
 	if (rtsr & (RTSR_ALE | RTSR_HZE)) {
-		/* This is the original code, before there was the if test
-		 * above. This code does not clear interrupts that were not
-		 * enabled. */
+		 
 		writel_relaxed((RTSR_AL | RTSR_HZ) & (rtsr >> 2), info->rtsr);
 	} else {
-		/* For some reason, it is possible to enter this routine
-		 * without interruptions enabled, it has been tested with
-		 * several units (Bug in SA11xx chip?).
-		 *
-		 * This situation leads to an infinite "loop" of interrupt
-		 * routine calling and as a result the processor seems to
-		 * lock on its first call to open(). */
+		 
 		writel_relaxed(RTSR_AL | RTSR_HZ, info->rtsr);
 	}
 
-	/* clear alarm interrupt if it has occurred */
+	 
 	if (rtsr & RTSR_AL)
 		rtsr &= ~RTSR_ALE;
 	writel_relaxed(rtsr & (RTSR_ALE | RTSR_HZE), info->rtsr);
 
-	/* update irq data & counter */
+	 
 	if (rtsr & RTSR_AL)
 		events |= RTC_AF | RTC_IRQF;
 	if (rtsr & RTSR_HZ)
@@ -186,18 +161,12 @@ int sa1100_rtc_init(struct platform_device *pdev, struct sa1100_rtc *info)
 	ret = clk_prepare_enable(info->clk);
 	if (ret)
 		return ret;
-	/*
-	 * According to the manual we should be able to let RTTR be zero
-	 * and then a default diviser for a 32.768KHz clock is used.
-	 * Apparently this doesn't work, at least for my SA1110 rev 5.
-	 * If the clock divider is uninitialized then reset it to the
-	 * default value to get the 1Hz clock.
-	 */
+	 
 	if (readl_relaxed(info->rttr) == 0) {
 		writel_relaxed(RTC_DEF_DIVIDER + (RTC_DEF_TRIM << 16), info->rttr);
 		dev_warn(&pdev->dev, "warning: "
 			"initializing default clock divider/trim value\n");
-		/* The current RTC value probably doesn't make sense either */
+		 
 		writel_relaxed(0, info->rcnr);
 	}
 
@@ -211,28 +180,7 @@ int sa1100_rtc_init(struct platform_device *pdev, struct sa1100_rtc *info)
 		return ret;
 	}
 
-	/* Fix for a nasty initialization problem the in SA11xx RTSR register.
-	 * See also the comments in sa1100_rtc_interrupt().
-	 *
-	 * Sometimes bit 1 of the RTSR (RTSR_HZ) will wake up 1, which means an
-	 * interrupt pending, even though interrupts were never enabled.
-	 * In this case, this bit it must be reset before enabling
-	 * interruptions to avoid a nonexistent interrupt to occur.
-	 *
-	 * In principle, the same problem would apply to bit 0, although it has
-	 * never been observed to happen.
-	 *
-	 * This issue is addressed both here and in sa1100_rtc_interrupt().
-	 * If the issue is not addressed here, in the times when the processor
-	 * wakes up with the bit set there will be one spurious interrupt.
-	 *
-	 * The issue is also dealt with in sa1100_rtc_interrupt() to be on the
-	 * safe side, once the condition that lead to this strange
-	 * initialization is unknown and could in principle happen during
-	 * normal processing.
-	 *
-	 * Notice that clearing bit 1 and 0 is accomplished by writting ONES to
-	 * the corresponding bits in RTSR. */
+	 
 	writel_relaxed(RTSR_AL | RTSR_HZ, info->rtsr);
 
 	return 0;

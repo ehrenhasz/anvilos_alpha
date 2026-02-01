@@ -1,12 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2020 Cloudflare
-/*
- * Test suite for SOCKMAP/SOCKHASH holding listening sockets.
- * Covers:
- *  1. BPF map operations - bpf_map_{update,lookup delete}_elem
- *  2. BPF redirect helpers - bpf_{sk,msg}_redirect_map
- *  3. BPF reuseport helper - bpf_sk_select_reuseport
- */
+
+
+ 
 
 #include <linux/compiler.h>
 #include <errno.h>
@@ -152,7 +146,7 @@ static void test_delete_after_close(struct test_sockmap_listen *skel __always_un
 	errno = 0;
 	err = bpf_map_delete_elem(mapfd, &key);
 	if (!err || (errno != EINVAL && errno != ENOENT))
-		/* SOCKMAP and SOCKHASH return different error codes */
+		 
 		FAIL_ERRNO("map_delete: expected EINVAL/EINVAL");
 }
 
@@ -266,9 +260,7 @@ close_s1:
 	xclose(s1);
 }
 
-/* Exercise the code path where we destroy child sockets that never
- * got accept()'ed, aka orphans, when parent socket gets closed.
- */
+ 
 static void do_destroy_orphan_child(int family, int sotype, int mapfd)
 {
 	struct sockaddr_storage addr;
@@ -327,9 +319,7 @@ static void test_destroy_orphan_child(struct test_sockmap_listen *skel,
 	}
 }
 
-/* Perform a passive open after removing listening socket from SOCKMAP
- * to ensure that callbacks get restored properly.
- */
+ 
 static void test_clone_after_delete(struct test_sockmap_listen *skel __always_unused,
 				    int family, int sotype, int mapfd)
 {
@@ -363,10 +353,7 @@ close_srv:
 	xclose(s);
 }
 
-/* Check that child socket that got created while parent was in a
- * SOCKMAP, but got accept()'ed only after the parent has been removed
- * from SOCKMAP, gets cloned without parent psock state or callbacks.
- */
+ 
 static void test_accept_after_delete(struct test_sockmap_listen *skel __always_unused,
 				     int family, int sotype, int mapfd)
 {
@@ -394,12 +381,12 @@ static void test_accept_after_delete(struct test_sockmap_listen *skel __always_u
 	if (c == -1)
 		goto close_srv;
 
-	/* Create child while parent is in sockmap */
+	 
 	err = xconnect(c, sockaddr(&addr), len);
 	if (err)
 		goto close_cli;
 
-	/* Remove parent from sockmap */
+	 
 	err = xbpf_map_delete_elem(mapfd, &zero);
 	if (err)
 		goto close_cli;
@@ -408,7 +395,7 @@ static void test_accept_after_delete(struct test_sockmap_listen *skel __always_u
 	if (p == -1)
 		goto close_cli;
 
-	/* Check that child sk_user_data is not set */
+	 
 	value = p;
 	xbpf_map_update_elem(mapfd, &zero, &value, BPF_NOEXIST);
 
@@ -419,9 +406,7 @@ close_srv:
 	xclose(s);
 }
 
-/* Check that child socket that got created and accepted while parent
- * was in a SOCKMAP is cloned without parent psock state or callbacks.
- */
+ 
 static void test_accept_before_delete(struct test_sockmap_listen *skel __always_unused,
 				      int family, int sotype, int mapfd)
 {
@@ -449,7 +434,7 @@ static void test_accept_before_delete(struct test_sockmap_listen *skel __always_
 	if (c == -1)
 		goto close_srv;
 
-	/* Create & accept child while parent is in sockmap */
+	 
 	err = xconnect(c, sockaddr(&addr), len);
 	if (err)
 		goto close_cli;
@@ -458,7 +443,7 @@ static void test_accept_before_delete(struct test_sockmap_listen *skel __always_
 	if (p == -1)
 		goto close_cli;
 
-	/* Check that child sk_user_data is not set */
+	 
 	value = p;
 	xbpf_map_update_elem(mapfd, &one, &value, BPF_NOEXIST);
 
@@ -624,14 +609,14 @@ static void test_race_insert_listen(struct test_sockmap_listen *skel __always_un
 	value = s;
 	while (!is_thread_done(&ctx)) {
 		err = bpf_map_update_elem(mapfd, &zero, &value, BPF_NOEXIST);
-		/* Expecting EOPNOTSUPP before listen() */
+		 
 		if (err && errno != EOPNOTSUPP) {
 			FAIL_ERRNO("map_update");
 			break;
 		}
 
 		err = bpf_map_delete_elem(mapfd, &zero);
-		/* Expecting no entry after unhash on connect(AF_UNSPEC) */
+		 
 		if (err && errno != EINVAL && errno != ENOENT) {
 			FAIL_ERRNO("map_delete");
 			break;
@@ -1026,7 +1011,7 @@ static void test_reuseport_select_connected(int family, int sotype,
 	if (s < 0)
 		return;
 
-	/* Populate sock_map[0] to avoid ENOENT on first connection */
+	 
 	key = 0;
 	value = s;
 	err = xbpf_map_update_elem(sock_map, &key, &value, BPF_NOEXIST);
@@ -1065,7 +1050,7 @@ static void test_reuseport_select_connected(int family, int sotype,
 			goto close_cli0;
 	}
 
-	/* Update sock_map[0] to redirect to a connected socket */
+	 
 	key = 0;
 	value = p0;
 	err = xbpf_map_update_elem(sock_map, &key, &value, BPF_EXIST);
@@ -1114,7 +1099,7 @@ close_srv:
 	xclose(s);
 }
 
-/* Check that redirecting across reuseport groups is not allowed. */
+ 
 static void test_reuseport_mixed_groups(int family, int sotype, int sock_map,
 					int verd_map, int reuseport_prog)
 {
@@ -1126,7 +1111,7 @@ static void test_reuseport_mixed_groups(int family, int sotype, int sock_map,
 
 	zero_verdict_count(verd_map);
 
-	/* Create two listeners, each in its own reuseport group */
+	 
 	s1 = socket_loopback_reuseport(family, sotype, reuseport_prog);
 	if (s1 < 0)
 		return;
@@ -1139,7 +1124,7 @@ static void test_reuseport_mixed_groups(int family, int sotype, int sock_map,
 	if (err)
 		goto close_srv2;
 
-	/* Connect to s2, reuseport BPF selects s1 via sock_map[0] */
+	 
 	len = sizeof(addr);
 	err = xgetsockname(s2, sockaddr(&addr), &len);
 	if (err)
@@ -1166,7 +1151,7 @@ static void test_reuseport_mixed_groups(int family, int sotype, int sock_map,
 		goto close_cli;
 	}
 
-	/* Expect drop, can't redirect outside of reuseport group */
+	 
 	key = SK_DROP;
 	err = xbpf_map_lookup_elem(verd_map, &key, &drop);
 	if (err)
@@ -1256,25 +1241,25 @@ static void test_ops(struct test_sockmap_listen *skel, struct bpf_map *map,
 		const char *name;
 		int sotype;
 	} tests[] = {
-		/* insert */
+		 
 		TEST(test_insert_invalid),
 		TEST(test_insert_opened),
 		TEST(test_insert_bound, SOCK_STREAM),
 		TEST(test_insert),
-		/* delete */
+		 
 		TEST(test_delete_after_insert),
 		TEST(test_delete_after_close),
-		/* lookup */
+		 
 		TEST(test_lookup_after_insert),
 		TEST(test_lookup_after_delete),
 		TEST(test_lookup_32_bit_value),
-		/* update */
+		 
 		TEST(test_update_existing),
-		/* races with insert/delete */
+		 
 		TEST(test_destroy_orphan_child, SOCK_STREAM),
 		TEST(test_syn_recv_insert_delete, SOCK_STREAM),
 		TEST(test_race_insert_listen, SOCK_STREAM),
-		/* child clone */
+		 
 		TEST(test_clone_after_delete, SOCK_STREAM),
 		TEST(test_accept_after_delete, SOCK_STREAM),
 		TEST(test_accept_before_delete, SOCK_STREAM),
@@ -1424,7 +1409,7 @@ static void test_unix_redir(struct test_sockmap_listen *skel, struct bpf_map *ma
 	unix_skb_redir_to_connected(skel, map, sotype);
 }
 
-/* Returns two connected loopback vsock sockets */
+ 
 static int vsock_socketpair_connectible(int sotype, int *v0, int *v1)
 {
 	struct sockaddr_storage addr;

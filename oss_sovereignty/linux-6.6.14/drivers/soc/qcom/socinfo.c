@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2009-2017, The Linux Foundation. All rights reserved.
- * Copyright (c) 2017-2019, Linaro Ltd.
- */
+
+ 
 
 #include <linux/debugfs.h>
 #include <linux/err.h>
@@ -21,15 +18,12 @@
 
 #include <dt-bindings/arm/qcom,ids.h>
 
-/*
- * SoC version type with major number in the upper 16 bits and minor
- * number in the lower 16 bits.
- */
+ 
 #define SOCINFO_MAJOR(ver) (((ver) >> 16) & 0xffff)
 #define SOCINFO_MINOR(ver) ((ver) & 0xffff)
 #define SOCINFO_VERSION(maj, min)  ((((maj) & 0xffff) << 16)|((min) & 0xffff))
 
-/* Helper macros to create soc_id table */
+ 
 #define qcom_board_id(id) QCOM_ID_ ## id, __stringify(id)
 #define qcom_board_id_named(id, name) QCOM_ID_ ## id, (name)
 
@@ -40,9 +34,7 @@
 #define SMEM_IMAGE_VERSION_VARIANT_SIZE        20
 #define SMEM_IMAGE_VERSION_OEM_SIZE            32
 
-/*
- * SMEM Image table indices
- */
+ 
 #define SMEM_IMAGE_TABLE_BOOT_INDEX     0
 #define SMEM_IMAGE_TABLE_TZ_INDEX       1
 #define SMEM_IMAGE_TABLE_RPM_INDEX      3
@@ -53,9 +45,7 @@
 #define SMEM_IMAGE_TABLE_VIDEO_INDEX    14
 #define SMEM_IMAGE_VERSION_TABLE       469
 
-/*
- * SMEM Image table names
- */
+ 
 static const char *const socinfo_image_names[] = {
 	[SMEM_IMAGE_TABLE_ADSP_INDEX] = "adsp",
 	[SMEM_IMAGE_TABLE_APPS_INDEX] = "apps",
@@ -150,7 +140,7 @@ struct smem_image_version {
 	char pad;
 	char oem[SMEM_IMAGE_VERSION_OEM_SIZE];
 };
-#endif /* CONFIG_DEBUG_FS */
+#endif  
 
 struct qcom_socinfo {
 	struct soc_device *soc_dev;
@@ -158,7 +148,7 @@ struct qcom_socinfo {
 #ifdef CONFIG_DEBUG_FS
 	struct dentry *dbg_root;
 	struct socinfo_params info;
-#endif /* CONFIG_DEBUG_FS */
+#endif  
 };
 
 struct soc_id {
@@ -486,7 +476,7 @@ static int qcom_show_pmic_model_array(struct seq_file *seq, void *p)
 
 	ptr += pmic_array_offset;
 
-	/* No need for bounds checking, it happened at socinfo_debugfs_init */
+	 
 	for (i = 0; i < num_pmics; i++) {
 		unsigned int model = SOCINFO_MINOR(get_unaligned_le32(ptr + 2 * i * sizeof(u32)));
 		unsigned int die_rev = get_unaligned_le32(ptr + (2 * i + 1) * sizeof(u32));
@@ -730,7 +720,7 @@ static void socinfo_debugfs_init(struct qcom_socinfo *qcom_socinfo,
 {
 }
 static void socinfo_debugfs_exit(struct qcom_socinfo *qcom_socinfo) {  }
-#endif /* CONFIG_DEBUG_FS */
+#endif  
 
 static int qcom_socinfo_probe(struct platform_device *pdev)
 {
@@ -768,7 +758,7 @@ static int qcom_socinfo_probe(struct platform_device *pdev)
 
 	socinfo_debugfs_init(qs, info, item_size);
 
-	/* Feed the soc specific unique data into entropy pool */
+	 
 	add_device_randomness(info, item_size);
 
 	platform_set_drvdata(pdev, qs);

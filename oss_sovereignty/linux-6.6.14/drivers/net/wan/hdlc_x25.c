@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Generic HDLC support routines for Linux
- * X.25 support
- *
- * Copyright (C) 1999 - 2006 Krzysztof Halasa <khc@pm.waw.pl>
- */
+
+ 
 
 #include <linux/errno.h>
 #include <linux/gfp.h>
@@ -24,7 +19,7 @@
 struct x25_state {
 	x25_hdlc_proto settings;
 	bool up;
-	spinlock_t up_lock; /* Protects "up" */
+	spinlock_t up_lock;  
 	struct sk_buff_head rx_queue;
 	struct tasklet_struct rx_tasklet;
 };
@@ -47,7 +42,7 @@ static void x25_rx_queue_kick(struct tasklet_struct *t)
 	}
 }
 
-/* These functions are callbacks called by LAPB layer */
+ 
 
 static void x25_connect_disconnect(struct net_device *dev, int reason, int code)
 {
@@ -110,7 +105,7 @@ static void x25_data_transmit(struct net_device *dev, struct sk_buff *skb)
 	if (dev_nit_active(dev))
 		dev_queue_xmit_nit(skb, dev);
 
-	hdlc->xmit(skb, dev); /* Ignore return value :-( */
+	hdlc->xmit(skb, dev);  
 }
 
 static netdev_tx_t x25_xmit(struct sk_buff *skb, struct net_device *dev)
@@ -119,9 +114,7 @@ static netdev_tx_t x25_xmit(struct sk_buff *skb, struct net_device *dev)
 	struct x25_state *x25st = state(hdlc);
 	int result;
 
-	/* There should be a pseudo header of 1 byte added by upper layers.
-	 * Check to make sure it is there before reading it.
-	 */
+	 
 	if (skb->len < 1) {
 		kfree_skb(skb);
 		return NETDEV_TX_OK;
@@ -135,7 +128,7 @@ static netdev_tx_t x25_xmit(struct sk_buff *skb, struct net_device *dev)
 	}
 
 	switch (skb->data[0]) {
-	case X25_IFACE_DATA:	/* Data to be transmitted */
+	case X25_IFACE_DATA:	 
 		skb_pull(skb, 1);
 		result = lapb_data_request(dev, skb);
 		if (result != LAPB_OK)
@@ -147,7 +140,7 @@ static netdev_tx_t x25_xmit(struct sk_buff *skb, struct net_device *dev)
 		result = lapb_connect_request(dev);
 		if (result != LAPB_OK) {
 			if (result == LAPB_CONNECTED)
-				/* Send connect confirm. msg to level 3 */
+				 
 				x25_connected(dev, 0);
 			else
 				netdev_err(dev, "LAPB connect request failed, error code = %i\n",
@@ -159,7 +152,7 @@ static netdev_tx_t x25_xmit(struct sk_buff *skb, struct net_device *dev)
 		result = lapb_disconnect_request(dev);
 		if (result != LAPB_OK) {
 			if (result == LAPB_NOTCONNECTED)
-				/* Send disconnect confirm. msg to level 3 */
+				 
 				x25_disconnected(dev, 0);
 			else
 				netdev_err(dev, "LAPB disconnect request failed, error code = %i\n",
@@ -167,7 +160,7 @@ static netdev_tx_t x25_xmit(struct sk_buff *skb, struct net_device *dev)
 		}
 		break;
 
-	default:		/* to be defined */
+	default:		 
 		break;
 	}
 
@@ -288,7 +281,7 @@ static int x25_ioctl(struct net_device *dev, struct if_settings *ifs)
 			return -EINVAL;
 		ifs->type = IF_PROTO_X25;
 		if (ifs->size < size) {
-			ifs->size = size; /* data size wanted */
+			ifs->size = size;  
 			return -ENOBUFS;
 		}
 		if (copy_to_user(x25_s, &state(hdlc)->settings, size))
@@ -302,7 +295,7 @@ static int x25_ioctl(struct net_device *dev, struct if_settings *ifs)
 		if (dev->flags & IFF_UP)
 			return -EBUSY;
 
-		/* backward compatibility */
+		 
 		if (ifs->size == 0) {
 			new_settings.dce = 0;
 			new_settings.modulo = 8;
@@ -348,12 +341,9 @@ static int x25_ioctl(struct net_device *dev, struct if_settings *ifs)
 		skb_queue_head_init(&state(hdlc)->rx_queue);
 		tasklet_setup(&state(hdlc)->rx_tasklet, x25_rx_queue_kick);
 
-		/* There's no header_ops so hard_header_len should be 0. */
+		 
 		dev->hard_header_len = 0;
-		/* When transmitting data:
-		 * first we'll remove a pseudo header of 1 byte,
-		 * then we'll prepend an LAPB header of at most 3 bytes.
-		 */
+		 
 		dev->needed_headroom = 3 - 1;
 
 		dev->type = ARPHRD_X25;

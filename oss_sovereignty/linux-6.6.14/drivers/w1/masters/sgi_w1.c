@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * sgi_w1.c - w1 master driver for one wire support in SGI ASICs
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -36,11 +34,7 @@ static u8 sgi_w1_wait(u32 __iomem *mcr)
 	return (mcr_val & MCR_RD_DATA) ? 1 : 0;
 }
 
-/*
- * this is the low level routine to
- * reset the device on the One Wire interface
- * on the hardware
- */
+ 
 static u8 sgi_w1_reset_bus(void *data)
 {
 	struct sgi_w1_device *dev = data;
@@ -48,15 +42,11 @@ static u8 sgi_w1_reset_bus(void *data)
 
 	writel(MCR_PACK(520, 65), dev->mcr);
 	ret = sgi_w1_wait(dev->mcr);
-	udelay(500); /* recovery time */
+	udelay(500);  
 	return ret;
 }
 
-/*
- * this is the low level routine to read/write a bit on the One Wire
- * interface on the hardware. It does write 0 if parameter bit is set
- * to 0, otherwise a write 1/read.
- */
+ 
 static u8 sgi_w1_touch_bit(void *data, u8 bit)
 {
 	struct sgi_w1_device *dev = data;
@@ -69,7 +59,7 @@ static u8 sgi_w1_touch_bit(void *data, u8 bit)
 
 	ret = sgi_w1_wait(dev->mcr);
 	if (bit)
-		udelay(100); /* recovery */
+		udelay(100);  
 	return ret;
 }
 
@@ -102,9 +92,7 @@ static int sgi_w1_probe(struct platform_device *pdev)
 	return w1_add_master_device(&sdev->bus_master);
 }
 
-/*
- * disassociate the w1 device from the driver
- */
+ 
 static int sgi_w1_remove(struct platform_device *pdev)
 {
 	struct sgi_w1_device *sdev = platform_get_drvdata(pdev);

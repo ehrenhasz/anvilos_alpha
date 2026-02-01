@@ -1,8 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Freescale i.MX6UL touchscreen controller driver
-//
-// Copyright (C) 2015 Freescale Semiconductor, Inc.
+
+
+
+
+
 
 #include <linux/errno.h>
 #include <linux/kernel.h>
@@ -19,7 +19,7 @@
 #include <linux/io.h>
 #include <linux/log2.h>
 
-/* ADC configuration registers field define */
+ 
 #define ADC_AIEN		(0x1 << 7)
 #define ADC_CONV_DISABLE	0x1F
 #define ADC_AVGE		(0x1 << 5)
@@ -40,7 +40,7 @@
 #define SELECT_CHANNEL_1	0x01
 #define DISABLE_CONVERSION_INT	(0x0 << 7)
 
-/* ADC registers */
+ 
 #define REG_ADC_HC0		0x00
 #define REG_ADC_HC1		0x04
 #define REG_ADC_HC2		0x08
@@ -54,7 +54,7 @@
 
 #define ADC_TIMEOUT		msecs_to_jiffies(100)
 
-/* TSC registers */
+ 
 #define REG_TSC_BASIC_SETING	0x00
 #define REG_TSC_PRE_CHARGE_TIME	0x10
 #define REG_TSC_FLOW_CONTROL	0x20
@@ -65,7 +65,7 @@
 #define REG_TSC_DEBUG_MODE	0x70
 #define REG_TSC_DEBUG_MODE2	0x80
 
-/* TSC configuration registers field define */
+ 
 #define DETECT_4_WIRE_MODE	(0x0 << 4)
 #define AUTO_MEASURE		0x1
 #define MEASURE_SIGNAL		0x1
@@ -96,10 +96,7 @@ struct imx6ul_tsc {
 	struct completion completion;
 };
 
-/*
- * TSC module need ADC to get the measure value. So
- * before config TSC, we should initialize ADC module.
- */
+ 
 static int imx6ul_adc_init(struct imx6ul_tsc *tsc)
 {
 	u32 adc_hc = 0;
@@ -122,12 +119,12 @@ static int imx6ul_adc_init(struct imx6ul_tsc *tsc)
 	adc_cfg &= ~ADC_HARDWARE_TRIGGER;
 	writel(adc_cfg, tsc->adc_regs + REG_ADC_CFG);
 
-	/* enable calibration interrupt */
+	 
 	adc_hc |= ADC_AIEN;
 	adc_hc |= ADC_CONV_DISABLE;
 	writel(adc_hc, tsc->adc_regs + REG_ADC_HC0);
 
-	/* start ADC calibration */
+	 
 	adc_gc = readl(tsc->adc_regs + REG_ADC_GC);
 	adc_gc |= ADC_CAL;
 	if (tsc->average_enable)
@@ -147,7 +144,7 @@ static int imx6ul_adc_init(struct imx6ul_tsc *tsc)
 		return -EINVAL;
 	}
 
-	/* TSC need the ADC work in hardware trigger */
+	 
 	adc_cfg = readl(tsc->adc_regs + REG_ADC_CFG);
 	adc_cfg |= ADC_HARDWARE_TRIGGER;
 	writel(adc_cfg, tsc->adc_regs + REG_ADC_CFG);
@@ -155,11 +152,7 @@ static int imx6ul_adc_init(struct imx6ul_tsc *tsc)
 	return 0;
 }
 
-/*
- * This is a TSC workaround. Currently TSC misconnect two
- * ADC channels, this function remap channel configure for
- * hardware trigger.
- */
+ 
 static void imx6ul_tsc_channel_config(struct imx6ul_tsc *tsc)
 {
 	u32 adc_hc0, adc_hc1, adc_hc2, adc_hc3, adc_hc4;
@@ -180,11 +173,7 @@ static void imx6ul_tsc_channel_config(struct imx6ul_tsc *tsc)
 	writel(adc_hc4, tsc->adc_regs + REG_ADC_HC4);
 }
 
-/*
- * TSC setting, confige the pre-charge time and measure delay time.
- * different touch screen may need different pre-charge time and
- * measure delay time.
- */
+ 
 static void imx6ul_tsc_set(struct imx6ul_tsc *tsc)
 {
 	u32 basic_setting = 0;
@@ -201,7 +190,7 @@ static void imx6ul_tsc_set(struct imx6ul_tsc *tsc)
 	writel(MEASURE_SIG_EN | VALID_SIG_EN,
 		tsc->tsc_regs + REG_TSC_INT_SIG_EN);
 
-	/* start sense detection */
+	 
 	start = readl(tsc->tsc_regs + REG_TSC_FLOW_CONTROL);
 	start |= START_SENSE;
 	start &= ~TSC_DISABLE;
@@ -226,18 +215,18 @@ static void imx6ul_tsc_disable(struct imx6ul_tsc *tsc)
 	u32 tsc_flow;
 	u32 adc_cfg;
 
-	/* TSC controller enters to idle status */
+	 
 	tsc_flow = readl(tsc->tsc_regs + REG_TSC_FLOW_CONTROL);
 	tsc_flow |= TSC_DISABLE;
 	writel(tsc_flow, tsc->tsc_regs + REG_TSC_FLOW_CONTROL);
 
-	/* ADC controller enters to stop mode */
+	 
 	adc_cfg = readl(tsc->adc_regs + REG_ADC_HC0);
 	adc_cfg |= ADC_CONV_DISABLE;
 	writel(adc_cfg, tsc->adc_regs + REG_ADC_HC0);
 }
 
-/* Delay some time (max 2ms), wait the pre-charge done. */
+ 
 static bool tsc_wait_detect_mode(struct imx6ul_tsc *tsc)
 {
 	unsigned long timeout = jiffies + msecs_to_jiffies(2);
@@ -267,11 +256,11 @@ static irqreturn_t tsc_irq_fn(int irq, void *dev_id)
 
 	status = readl(tsc->tsc_regs + REG_TSC_INT_STATUS);
 
-	/* write 1 to clear the bit measure-signal */
+	 
 	writel(MEASURE_SIGNAL | DETECT_SIGNAL,
 		tsc->tsc_regs + REG_TSC_INT_STATUS);
 
-	/* It's a HW self-clean bit. Set this bit and start sense detection */
+	 
 	start = readl(tsc->tsc_regs + REG_TSC_FLOW_CONTROL);
 	start |= START_SENSE;
 	writel(start, tsc->tsc_regs + REG_TSC_FLOW_CONTROL);
@@ -281,10 +270,7 @@ static irqreturn_t tsc_irq_fn(int irq, void *dev_id)
 		x = (value >> 16) & 0x0fff;
 		y = value & 0x0fff;
 
-		/*
-		 * In detect mode, we can get the xnur gpio value,
-		 * otherwise assume contact is stiull active.
-		 */
+		 
 		if (!tsc_wait_detect_mode(tsc) ||
 		    gpiod_get_value_cansleep(tsc->xnur_gpio)) {
 			input_report_key(tsc->input, BTN_TOUCH, 1);
@@ -485,7 +471,7 @@ static int imx6ul_tsc_probe(struct platform_device *pdev)
 	switch (average_samples) {
 	case 1:
 		tsc->average_enable = false;
-		tsc->average_select = 0; /* value unused; initialize anyway */
+		tsc->average_select = 0;  
 		break;
 	case 4:
 	case 8:
@@ -550,7 +536,7 @@ static DEFINE_SIMPLE_DEV_PM_OPS(imx6ul_tsc_pm_ops,
 
 static const struct of_device_id imx6ul_tsc_match[] = {
 	{ .compatible = "fsl,imx6ul-tsc", },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, imx6ul_tsc_match);
 

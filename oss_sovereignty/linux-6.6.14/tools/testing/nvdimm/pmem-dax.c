@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2014-2016, Intel Corporation.
- */
+
+ 
 #include "test/nfit_test.h"
 #include <linux/blkdev.h>
 #include <linux/dax.h>
@@ -18,10 +16,7 @@ long __pmem_direct_access(struct pmem_device *pmem, pgoff_t pgoff,
 					PFN_PHYS(nr_pages))))
 		return -EIO;
 
-	/*
-	 * Limit dax to a single page at a time given vmalloc()-backed
-	 * in the nfit_test case.
-	 */
+	 
 	if (get_nfit_res(pmem->phys_addr + offset)) {
 		struct page *page;
 
@@ -41,10 +36,7 @@ long __pmem_direct_access(struct pmem_device *pmem, pgoff_t pgoff,
 	if (pfn)
 		*pfn = phys_to_pfn_t(pmem->phys_addr + offset, pmem->pfn_flags);
 
-	/*
-	 * If badblocks are present, limit known good range to the
-	 * requested range.
-	 */
+	 
 	if (unlikely(pmem->bb.count))
 		return nr_pages;
 	return PHYS_PFN(pmem->size - pmem->pfn_pad - offset);

@@ -1,27 +1,4 @@
-/*
- * Copyright 2015 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 #include "dm_services.h"
 #include "dc.h"
@@ -77,37 +54,14 @@ static const struct dce120_hw_seq_reg_offsets reg_offsets[] = {
 
 #define CNTL_ID(controller_id)\
 	controller_id
-/*******************************************************************************
- * Private definitions
- ******************************************************************************/
+ 
 static void dce120_init_pte(struct dc_context *ctx, uint8_t controller_id)
 {
 	uint32_t addr;
 	uint32_t value = 0;
 	uint32_t chunk_int = 0;
 	uint32_t chunk_mul = 0;
-/*
-	addr = mmDCP0_DVMM_PTE_CONTROL + controller_id *
-			(mmDCP1_DVMM_PTE_CONTROL- mmDCP0_DVMM_PTE_CONTROL);
-
-	value = dm_read_reg(ctx, addr);
-
-	set_reg_field_value(
-			value, 0, DCP, controller_id,
-			DVMM_PTE_CONTROL,
-			DVMM_USE_SINGLE_PTE);
-
-	set_reg_field_value_soc15(
-			value, 1, DCP, controller_id,
-			DVMM_PTE_CONTROL,
-			DVMM_PTE_BUFFER_MODE0);
-
-	set_reg_field_value_soc15(
-			value, 1, DCP, controller_id,
-			DVMM_PTE_CONTROL,
-			DVMM_PTE_BUFFER_MODE1);
-
-	dm_write_reg(ctx, addr, value);*/
+ 
 
 	addr = mmDVMM_PTE_REQ;
 	value = dm_read_reg(ctx, addr);
@@ -153,7 +107,7 @@ static bool dce120_enable_display_power_gating(
 	struct dc_bios *dcb,
 	enum pipe_gating_control power_gating)
 {
-	/* disable for bringup */
+	 
 #if 0
 	enum bp_result bp_result = BP_RESULT_OK;
 	enum bp_pipe_control_action cntl;
@@ -171,9 +125,7 @@ static bool dce120_enable_display_power_gating(
 		bp_result = dcb->funcs->enable_disp_power_gating(
 						dcb, controller_id + 1, cntl);
 
-		/* Revert MASTER_UPDATE_MODE to 0 because bios sets it 2
-		 * by default when command table is called
-		 */
+		 
 		dm_write_reg(ctx,
 			HW_REG_CRTC(mmCRTC0_CRTC_MASTER_UPDATE_MODE, controller_id),
 			0);
@@ -194,10 +146,10 @@ static void dce120_update_dchub(
 	struct dce_hwseq *hws,
 	struct dchub_init_data *dh_data)
 {
-	/* TODO: port code from dal2 */
+	 
 	switch (dh_data->fb_mode) {
 	case FRAME_BUFFER_MODE_ZFB_ONLY:
-		/*For ZFB case need to put DCHUB FB BASE and TOP upside down to indicate ZFB mode*/
+		 
 		REG_UPDATE_2(DCHUB_FB_LOCATION,
 				FB_TOP, 0,
 				FB_BASE, 0x0FFFF);
@@ -212,7 +164,7 @@ static void dce120_update_dchub(
 				AGP_TOP, (dh_data->zfb_mc_base_addr + dh_data->zfb_size_in_byte - 1) >> 22);
 		break;
 	case FRAME_BUFFER_MODE_MIXED_ZFB_AND_LOCAL:
-		/*Should not touch FB LOCATION (done by VBIOS on AsicInit table)*/
+		 
 		REG_UPDATE(DCHUB_AGP_BASE,
 				AGP_BASE, dh_data->zfb_phys_addr_base >> 22);
 
@@ -223,7 +175,7 @@ static void dce120_update_dchub(
 				AGP_TOP, (dh_data->zfb_mc_base_addr + dh_data->zfb_size_in_byte - 1) >> 22);
 		break;
 	case FRAME_BUFFER_MODE_LOCAL_ONLY:
-		/*Should not touch FB LOCATION (done by VBIOS on AsicInit table)*/
+		 
 		REG_UPDATE(DCHUB_AGP_BASE,
 				AGP_BASE, 0);
 
@@ -241,26 +193,19 @@ static void dce120_update_dchub(
 	dh_data->dchub_info_valid = false;
 }
 
-/**
- * dce121_xgmi_enabled() - Check if xGMI is enabled
- * @hws: DCE hardware sequencer object
- *
- * Return true if xGMI is enabled. False otherwise.
- */
+ 
 bool dce121_xgmi_enabled(struct dce_hwseq *hws)
 {
 	uint32_t pf_max_region;
 
 	REG_GET(MC_VM_XGMI_LFB_CNTL, PF_MAX_REGION, &pf_max_region);
-	/* PF_MAX_REGION == 0 means xgmi is disabled */
+	 
 	return !!pf_max_region;
 }
 
 void dce120_hw_sequencer_construct(struct dc *dc)
 {
-	/* All registers used by dce11.2 match those in dce11 in offset and
-	 * structure
-	 */
+	 
 	dce110_hw_sequencer_construct(dc);
 	dc->hwseq->funcs.enable_display_power_gating = dce120_enable_display_power_gating;
 	dc->hwss.update_dchub = dce120_update_dchub;

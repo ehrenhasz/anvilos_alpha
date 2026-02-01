@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2005-2008 Red Hat, Inc.  All rights reserved.
- */
+
+ 
 
 #include <linux/fs.h>
 #include <linux/filelock.h>
@@ -33,7 +31,7 @@ struct plock_op {
 	struct list_head list;
 	int done;
 	struct dlm_plock_info info;
-	/* if set indicates async handling */
+	 
 	struct plock_async_data *data;
 };
 
@@ -145,7 +143,7 @@ int dlm_posix_lock(dlm_lockspace_t *lockspace, u64 number, struct file *file,
 	op->info.number		= number;
 	op->info.start		= fl->fl_start;
 	op->info.end		= fl->fl_end;
-	/* async handling */
+	 
 	if (fl->fl_lmops && fl->fl_lmops->lm_grant) {
 		op_data = kzalloc(sizeof(*op_data), GFP_NOFS);
 		if (!op_data) {
@@ -154,8 +152,7 @@ int dlm_posix_lock(dlm_lockspace_t *lockspace, u64 number, struct file *file,
 			goto out;
 		}
 
-		/* fl_owner is lockd which doesn't distinguish
-		   processes on the nfs client */
+		 
 		op->info.owner	= (__u64) fl->fl_pid;
 		op_data->callback = fl->fl_lmops->lm_grant;
 		locks_init_lock(&op_data->flc);
@@ -178,9 +175,7 @@ int dlm_posix_lock(dlm_lockspace_t *lockspace, u64 number, struct file *file,
 		rv = wait_event_interruptible(recv_wq, (op->done != 0));
 		if (rv == -ERESTARTSYS) {
 			spin_lock(&ops_lock);
-			/* recheck under ops_lock if we got a done != 0,
-			 * if so this interrupt case should be ignored
-			 */
+			 
 			if (op->done != 0) {
 				spin_unlock(&ops_lock);
 				goto do_lock_wait;
@@ -190,21 +185,17 @@ int dlm_posix_lock(dlm_lockspace_t *lockspace, u64 number, struct file *file,
 			rv = do_lock_cancel(&op->info);
 			switch (rv) {
 			case 0:
-				/* waiter was deleted in user space, answer will never come
-				 * remove original request. The original request must be
-				 * on recv_list because the answer of do_lock_cancel()
-				 * synchronized it.
-				 */
+				 
 				spin_lock(&ops_lock);
 				list_del(&op->list);
 				spin_unlock(&ops_lock);
 				rv = -EINTR;
 				break;
 			case -ENOENT:
-				/* cancellation wasn't successful but op should be done */
+				 
 				fallthrough;
 			default:
-				/* internal error doing cancel we need to wait */
+				 
 				goto wait;
 			}
 
@@ -238,7 +229,7 @@ out:
 }
 EXPORT_SYMBOL_GPL(dlm_posix_lock);
 
-/* Returns failure iff a successful lock operation should be canceled */
+ 
 static int dlm_plock_callback(struct plock_op *op)
 {
 	struct plock_async_data *op_data = op->data;
@@ -250,7 +241,7 @@ static int dlm_plock_callback(struct plock_op *op)
 
 	WARN_ON(!list_empty(&op->list));
 
-	/* check if the following 2 are still valid or make a copy */
+	 
 	file = op_data->file;
 	flc = &op_data->flc;
 	fl = op_data->fl;
@@ -261,24 +252,17 @@ static int dlm_plock_callback(struct plock_op *op)
 		goto out;
 	}
 
-	/* got fs lock; bookkeep locally as well: */
+	 
 	flc->fl_flags &= ~FL_SLEEP;
 	if (posix_lock_file(file, flc, NULL)) {
-		/*
-		 * This can only happen in the case of kmalloc() failure.
-		 * The filesystem's own lock is the authoritative lock,
-		 * so a failure to get the lock locally is not a disaster.
-		 * As long as the fs cannot reliably cancel locks (especially
-		 * in a low-memory situation), we're better off ignoring
-		 * this failure than trying to recover.
-		 */
+		 
 		log_print("dlm_plock_callback: vfs lock error %llx file %p fl %p",
 			  (unsigned long long)op->info.number, file, fl);
 	}
 
 	rv = notify(fl, 0);
 	if (rv) {
-		/* XXX: We need to cancel the fs lock here: */
+		 
 		log_print("%s: lock granted after lock request failed; dangling lock!",
 			  __func__);
 		goto out;
@@ -307,7 +291,7 @@ int dlm_posix_unlock(dlm_lockspace_t *lockspace, u64 number, struct file *file,
 		goto out;
 	}
 
-	/* cause the vfs unlock to return ENOENT if lock is not found */
+	 
 	fl->fl_flags |= FL_EXISTS;
 
 	rv = locks_lock_file_wait(file, fl);
@@ -357,12 +341,7 @@ out:
 }
 EXPORT_SYMBOL_GPL(dlm_posix_unlock);
 
-/*
- * NOTE: This implementation can only handle async lock requests as nfs
- * do it. It cannot handle cancellation of a pending lock request sitting
- * in wait_event(), but for now only nfs is the only user local kernel
- * user.
- */
+ 
 int dlm_posix_cancel(dlm_lockspace_t *lockspace, u64 number, struct file *file,
 		     struct file_lock *fl)
 {
@@ -371,9 +350,7 @@ int dlm_posix_cancel(dlm_lockspace_t *lockspace, u64 number, struct file *file,
 	struct dlm_ls *ls;
 	int rv;
 
-	/* this only works for async request for now and nfs is the only
-	 * kernel user right now.
-	 */
+	 
 	if (WARN_ON_ONCE(!fl->fl_lmops || !fl->fl_lmops->lm_grant))
 		return -EOPNOTSUPP;
 
@@ -395,9 +372,7 @@ int dlm_posix_cancel(dlm_lockspace_t *lockspace, u64 number, struct file *file,
 	switch (rv) {
 	case 0:
 		spin_lock(&ops_lock);
-		/* lock request to cancel must be on recv_list because
-		 * do_lock_cancel() synchronizes it.
-		 */
+		 
 		op = plock_lookup_waiter(&info);
 		if (WARN_ON_ONCE(!op)) {
 			spin_unlock(&ops_lock);
@@ -413,9 +388,7 @@ int dlm_posix_cancel(dlm_lockspace_t *lockspace, u64 number, struct file *file,
 		rv = -EINTR;
 		break;
 	case -ENOENT:
-		/* if cancel wasn't successful we probably were to late
-		 * or it was a non-blocking lock request, so just unlock it.
-		 */
+		 
 		rv = dlm_posix_unlock(lockspace, number, file, fl);
 		break;
 	default:
@@ -460,8 +433,7 @@ int dlm_posix_get(dlm_lockspace_t *lockspace, u64 number, struct file *file,
 
 	WARN_ON(!list_empty(&op->list));
 
-	/* info.rv from userspace is 1 for conflict, 0 for no-conflict,
-	   -ENOENT if there are no locks on the file */
+	 
 
 	rv = op->info.rv;
 
@@ -487,7 +459,7 @@ out:
 }
 EXPORT_SYMBOL_GPL(dlm_posix_get);
 
-/* a read copies out one plock request from the send list */
+ 
 static ssize_t dev_read(struct file *file, char __user *u, size_t count,
 			loff_t *ppos)
 {
@@ -513,9 +485,7 @@ static ssize_t dev_read(struct file *file, char __user *u, size_t count,
 
 	trace_dlm_plock_read(&info);
 
-	/* there is no need to get a reply from userspace for unlocks
-	   that were generated by the vfs cleaning up for a close
-	   (the process did not make an unlock call). */
+	 
 
 	if (op->info.flags & DLM_PLOCK_FL_CLOSE)
 		dlm_release_plock_op(op);
@@ -525,8 +495,7 @@ static ssize_t dev_read(struct file *file, char __user *u, size_t count,
 	return sizeof(info);
 }
 
-/* a write copies in one plock result that should match a plock_op
-   on the recv list */
+ 
 static ssize_t dev_write(struct file *file, const char __user *u, size_t count,
 			 loff_t *ppos)
 {
@@ -545,12 +514,7 @@ static ssize_t dev_write(struct file *file, const char __user *u, size_t count,
 	if (check_version(&info))
 		return -EINVAL;
 
-	/*
-	 * The results for waiting ops (SETLKW) can be returned in any
-	 * order, so match all fields to find the op.  The results for
-	 * non-waiting ops are returned in the order that they were sent
-	 * to userspace, so match the result with the first non-waiting op.
-	 */
+	 
 	spin_lock(&ops_lock);
 	if (info.wait) {
 		op = plock_lookup_waiter(&info);
@@ -565,7 +529,7 @@ static ssize_t dev_write(struct file *file, const char __user *u, size_t count,
 	}
 
 	if (op) {
-		/* Sanity check that op and info match. */
+		 
 		if (info.wait)
 			WARN_ON(op->info.optype != DLM_PLOCK_OP_LOCK);
 		else

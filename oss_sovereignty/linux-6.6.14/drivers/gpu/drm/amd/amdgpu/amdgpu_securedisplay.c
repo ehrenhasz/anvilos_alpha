@@ -1,49 +1,11 @@
-/*
- * Copyright 2021 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- *
- */
+ 
 #include <linux/debugfs.h>
 #include <linux/pm_runtime.h>
 
 #include "amdgpu.h"
 #include "amdgpu_securedisplay.h"
 
-/**
- * DOC: AMDGPU SECUREDISPLAY debugfs test interface
- *
- * how to use?
- * echo opcode <value> > <debugfs_dir>/dri/xxx/securedisplay_test
- * eg. echo 1 > <debugfs_dir>/dri/xxx/securedisplay_test
- * eg. echo 2 phy_id > <debugfs_dir>/dri/xxx/securedisplay_test
- *
- * opcode:
- * 1：Query whether TA is responding used only for validation pupose
- * 2: Send region of Interest and CRC value to I2C. (uint32)phy_id is
- * send to determine which DIO scratch register should be used to get
- * ROI and receive i2c_buf as the output.
- *
- * You can refer more detail from header file ta_securedisplay_if.h
- *
- */
+ 
 
 void psp_securedisplay_parse_resp_status(struct psp_context *psp,
 	enum ta_securedisplay_status status)

@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: ISC
-/* Copyright (C) 2020 MediaTek Inc. */
+
+ 
 
 #include <linux/etherdevice.h>
 #include <linux/hwmon.h>
@@ -26,7 +26,7 @@ static ssize_t mt7921_thermal_temp_show(struct device *dev,
 
 		if (temperature < 0)
 			return temperature;
-		/* display in millidegree Celsius */
+		 
 		return sprintf(buf, "%u\n", temperature * 1000);
 	}
 	default:
@@ -84,9 +84,9 @@ int mt7921_mac_init(struct mt792x_dev *dev)
 	int i;
 
 	mt76_rmw_field(dev, MT_MDP_DCR1, MT_MDP_DCR1_MAX_RX_LEN, 1536);
-	/* enable hardware de-agg */
+	 
 	mt76_set(dev, MT_MDP_DCR0, MT_MDP_DCR0_DAMSDU_EN);
-	/* enable hardware rx header translation */
+	 
 	mt76_set(dev, MT_MDP_DCR0, MT_MDP_DCR0_RX_HDR_TRANS_EN);
 
 	for (i = 0; i < MT792x_WTBL_SIZE; i++)
@@ -103,9 +103,7 @@ static int __mt7921_init_hardware(struct mt792x_dev *dev)
 {
 	int ret;
 
-	/* force firmware operation mode into normal state,
-	 * which should be set before firmware download stage.
-	 */
+	 
 	mt76_wr(dev, MT_SWDEF_MODE, MT_SWDEF_NORMAL_MODE);
 	ret = mt792x_mcu_init(dev);
 	if (ret)
@@ -176,7 +174,7 @@ static void mt7921_init_work(struct work_struct *work)
 		return;
 	}
 
-	/* we support chip reset now */
+	 
 	dev->hw_init_done = true;
 
 	mt76_connac_mcu_set_deep_sleep(&dev->mt76, dev->pm.ds_enable);

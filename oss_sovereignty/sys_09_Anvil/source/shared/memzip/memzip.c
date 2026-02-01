@@ -12,7 +12,7 @@ const MEMZIP_FILE_HDR *memzip_find_file_header(const char *filename) {
     const MEMZIP_FILE_HDR *file_hdr = (const MEMZIP_FILE_HDR *)memzip_data;
     uint8_t *mem_data;
 
-    /* Zip file filenames don't have a leading /, so we strip it off */
+     
 
     if (*filename == '/') {
         filename++;
@@ -23,7 +23,7 @@ const MEMZIP_FILE_HDR *memzip_find_file_header(const char *filename) {
         mem_data += file_hdr->filename_len;
         mem_data += file_hdr->extra_len;
         if (!strncmp(file_hdr_filename, filename, file_hdr->filename_len)) {
-            /* We found a match */
+             
             return file_hdr;
         }
         mem_data += file_hdr->uncompressed_size;
@@ -37,11 +37,11 @@ bool memzip_is_dir(const char *filename) {
     uint8_t *mem_data;
 
     if (strcmp(filename, "/") == 0) {
-        // The root directory is a directory.
+         
         return true;
     }
 
-    // Zip filenames don't have a leading /, so we strip it off
+     
     if (*filename == '/') {
         filename++;
     }

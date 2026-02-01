@@ -1,15 +1,4 @@
-/*
- * (C) Copyright 2009-2010
- * Nokia Siemens Networks, michael.lawnick.ext@nsn.com
- *
- * Portions Copyright (C) 2010 - 2016 Cavium, Inc.
- *
- * This is a driver for the i2c adapter in Cavium Networks' OCTEON processors.
- *
- * This file is licensed under the terms of the GNU General Public
- * License version 2. This program is licensed "as is" without any
- * warranty of any kind, whether express or implied.
- */
+ 
 
 #include <linux/atomic.h>
 #include <linux/delay.h>
@@ -28,32 +17,20 @@
 
 #define DRV_NAME "i2c-octeon"
 
-/**
- * octeon_i2c_int_enable - enable the CORE interrupt
- * @i2c: The struct octeon_i2c
- *
- * The interrupt will be asserted when there is non-STAT_IDLE state in
- * the SW_TWSI_EOP_TWSI_STAT register.
- */
+ 
 static void octeon_i2c_int_enable(struct octeon_i2c *i2c)
 {
 	octeon_i2c_write_int(i2c, TWSI_INT_CORE_EN);
 }
 
-/* disable the CORE interrupt */
+ 
 static void octeon_i2c_int_disable(struct octeon_i2c *i2c)
 {
-	/* clear TS/ST/IFLG events */
+	 
 	octeon_i2c_write_int(i2c, 0);
 }
 
-/**
- * octeon_i2c_int_enable78 - enable the CORE interrupt
- * @i2c: The struct octeon_i2c
- *
- * The interrupt will be asserted when there is non-STAT_IDLE state in the
- * SW_TWSI_EOP_TWSI_STAT register.
- */
+ 
 static void octeon_i2c_int_enable78(struct octeon_i2c *i2c)
 {
 	atomic_inc_return(&i2c->int_enable_cnt);
@@ -64,42 +41,32 @@ static void __octeon_i2c_irq_disable(atomic_t *cnt, int irq)
 {
 	int count;
 
-	/*
-	 * The interrupt can be disabled in two places, but we only
-	 * want to make the disable_irq_nosync() call once, so keep
-	 * track with the atomic variable.
-	 */
+	 
 	count = atomic_dec_if_positive(cnt);
 	if (count >= 0)
 		disable_irq_nosync(irq);
 }
 
-/* disable the CORE interrupt */
+ 
 static void octeon_i2c_int_disable78(struct octeon_i2c *i2c)
 {
 	__octeon_i2c_irq_disable(&i2c->int_enable_cnt, i2c->irq);
 }
 
-/**
- * octeon_i2c_hlc_int_enable78 - enable the ST interrupt
- * @i2c: The struct octeon_i2c
- *
- * The interrupt will be asserted when there is non-STAT_IDLE state in
- * the SW_TWSI_EOP_TWSI_STAT register.
- */
+ 
 static void octeon_i2c_hlc_int_enable78(struct octeon_i2c *i2c)
 {
 	atomic_inc_return(&i2c->hlc_int_enable_cnt);
 	enable_irq(i2c->hlc_irq);
 }
 
-/* disable the ST interrupt */
+ 
 static void octeon_i2c_hlc_int_disable78(struct octeon_i2c *i2c)
 {
 	__octeon_i2c_irq_disable(&i2c->hlc_int_enable_cnt, i2c->hlc_irq);
 }
 
-/* HLC interrupt service routine */
+ 
 static irqreturn_t octeon_i2c_hlc_isr78(int irq, void *dev_id)
 {
 	struct octeon_i2c *i2c = dev_id;
@@ -149,7 +116,7 @@ static int octeon_i2c_probe(struct platform_device *pdev)
 		if (irq < 0)
 			return irq;
 	} else {
-		/* All adaptors have an irq.  */
+		 
 		irq = platform_get_irq(pdev, 0);
 		if (irq < 0)
 			return irq;
@@ -172,11 +139,7 @@ static int octeon_i2c_probe(struct platform_device *pdev)
 		goto out;
 	}
 
-	/*
-	 * "clock-rate" is a legacy binding, the official binding is
-	 * "clock-frequency".  Try the official one first and then
-	 * fall back if it doesn't exist.
-	 */
+	 
 	if (of_property_read_u32(node, "clock-frequency", &i2c->twsi_freq) &&
 	    of_property_read_u32(node, "clock-rate", &i2c->twsi_freq)) {
 		dev_err(i2c->dev,

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Analog Devices Generic AXI ADC IP core
- * Link: https://wiki.analog.com/resources/fpga/docs/axi_adc_ip
- *
- * Copyright 2012-2020 Analog Devices Inc.
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/clk.h>
@@ -24,19 +19,16 @@
 #include <linux/fpga/adi-axi-common.h>
 #include <linux/iio/adc/adi-axi-adc.h>
 
-/*
- * Register definitions:
- *   https://wiki.analog.com/resources/fpga/docs/axi_adc_ip#register_map
- */
+ 
 
-/* ADC controls */
+ 
 
 #define ADI_AXI_REG_RSTN			0x0040
 #define   ADI_AXI_REG_RSTN_CE_N			BIT(2)
 #define   ADI_AXI_REG_RSTN_MMCM_RSTN		BIT(1)
 #define   ADI_AXI_REG_RSTN_RSTN			BIT(0)
 
-/* ADC Channel controls */
+ 
 
 #define ADI_AXI_REG_CHAN_CTRL(c)		(0x0400 + (c) * 0x40)
 #define   ADI_AXI_REG_CHAN_CTRL_LB_OWR		BIT(11)
@@ -409,10 +401,10 @@ static int adi_axi_adc_probe(struct platform_device *pdev)
 	return 0;
 }
 
-/* Match table for of_platform binding */
+ 
 static const struct of_device_id adi_axi_adc_of_match[] = {
 	{ .compatible = "adi,axi-adc-10.0.a", .data = &adi_axi_adc_10_0_a_info },
-	{ /* end of list */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, adi_axi_adc_of_match);
 

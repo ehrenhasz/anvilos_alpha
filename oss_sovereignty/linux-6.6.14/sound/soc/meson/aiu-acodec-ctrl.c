@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Copyright (c) 2020 BayLibre, SAS.
-// Author: Jerome Brunet <jbrunet@baylibre.com>
+
+
+
+
 
 #include <linux/bitfield.h>
 #include <sound/pcm_params.h>
@@ -47,7 +47,7 @@ static int aiu_acodec_ctrl_mux_put_enum(struct snd_kcontrol *kcontrol,
 	if (!changed)
 		return 0;
 
-	/* Force disconnect of the mux while updating */
+	 
 	snd_soc_dapm_mux_update_power(dapm, kcontrol, 0, NULL, NULL);
 
 	snd_soc_component_update_bits(component, e->reg,
@@ -92,7 +92,7 @@ static int aiu_acodec_ctrl_input_hw_params(struct snd_pcm_substream *substream,
 	if (ret)
 		return ret;
 
-	/* The glue will provide 1 lane out of the 4 to the output */
+	 
 	data = meson_codec_glue_input_get_data(dai);
 	data->params.channels_min = min_t(unsigned int, AIU_ACODEC_OUT_CHMAX,
 					  data->params.channels_min);
@@ -167,13 +167,7 @@ static int aiu_acodec_of_xlate_dai_name(struct snd_soc_component *component,
 
 static int aiu_acodec_ctrl_component_probe(struct snd_soc_component *component)
 {
-	/*
-	 * NOTE: Din Skew setting
-	 * According to the documentation, the following update adds one delay
-	 * to the din line. Without this, the output saturates. This happens
-	 * regardless of the link format (i2s or left_j) so it is not clear what
-	 * it actually does but it seems to be required
-	 */
+	 
 	snd_soc_component_update_bits(component, AIU_ACODEC_CTRL,
 				      CTRL_DIN_SKEW,
 				      FIELD_PREP(CTRL_DIN_SKEW, 2));

@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/* Copyright (c) 2013 Samsung Electronics Co., Ltd.
- *		http://www.samsung.com/
- *
- * Author: Jacek Anaszewski <j.anaszewski@samsung.com>
- *
- * Header file of the register interface for JPEG driver on Exynos4x12.
-*/
+ 
+ 
 
 #ifndef JPEG_HW_EXYNOS4_H_
 #define JPEG_HW_EXYNOS4_H_
@@ -41,4 +35,4 @@ unsigned int exynos4_jpeg_get_frame_fmt(void __iomem *base);
 unsigned int exynos4_jpeg_get_fifo_status(void __iomem *base);
 void exynos4_jpeg_set_timer_count(void __iomem *base, unsigned int size);
 
-#endif /* JPEG_HW_EXYNOS4_H_ */
+#endif  

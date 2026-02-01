@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2015-2021, Linaro Limited
- */
+
+ 
 #include <linux/device.h>
 #include <linux/err.h>
 #include <linux/errno.h>
@@ -13,26 +11,14 @@
 
 #define MAX_ARG_PARAM_COUNT	6
 
-/*
- * How much memory we allocate for each entry. This doesn't have to be a
- * single page, but it makes sense to keep at least keep it as multiples of
- * the page size.
- */
+ 
 #define SHM_ENTRY_SIZE		PAGE_SIZE
 
-/*
- * We need to have a compile time constant to be able to determine the
- * maximum needed size of the bit field.
- */
+ 
 #define MIN_ARG_SIZE		OPTEE_MSG_GET_ARG_SIZE(MAX_ARG_PARAM_COUNT)
 #define MAX_ARG_COUNT_PER_ENTRY	(SHM_ENTRY_SIZE / MIN_ARG_SIZE)
 
-/*
- * Shared memory for argument structs are cached here. The number of
- * arguments structs that can fit is determined at runtime depending on the
- * needed RPC parameter count reported by secure world
- * (optee->rpc_param_count).
- */
+ 
 struct optee_shm_arg_entry {
 	struct list_head list_node;
 	struct tee_shm *shm;
@@ -42,22 +28,10 @@ struct optee_shm_arg_entry {
 void optee_cq_wait_init(struct optee_call_queue *cq,
 			struct optee_call_waiter *w)
 {
-	/*
-	 * We're preparing to make a call to secure world. In case we can't
-	 * allocate a thread in secure world we'll end up waiting in
-	 * optee_cq_wait_for_completion().
-	 *
-	 * Normally if there's no contention in secure world the call will
-	 * complete and we can cleanup directly with optee_cq_wait_final().
-	 */
+	 
 	mutex_lock(&cq->mutex);
 
-	/*
-	 * We add ourselves to the queue, but we don't wait. This
-	 * guarantees that we don't lose a completion if secure world
-	 * returns busy and another thread just exited and try to complete
-	 * someone.
-	 */
+	 
 	init_completion(&w->c);
 	list_add_tail(&w->list_node, &cq->waiters);
 
@@ -71,7 +45,7 @@ void optee_cq_wait_for_completion(struct optee_call_queue *cq,
 
 	mutex_lock(&cq->mutex);
 
-	/* Move to end of list to get out of the way for other waiters */
+	 
 	list_del(&w->list_node);
 	reinit_completion(&w->c);
 	list_add_tail(&w->list_node, &cq->waiters);
@@ -94,32 +68,23 @@ static void optee_cq_complete_one(struct optee_call_queue *cq)
 void optee_cq_wait_final(struct optee_call_queue *cq,
 			 struct optee_call_waiter *w)
 {
-	/*
-	 * We're done with the call to secure world. The thread in secure
-	 * world that was used for this call is now available for some
-	 * other task to use.
-	 */
+	 
 	mutex_lock(&cq->mutex);
 
-	/* Get out of the list */
+	 
 	list_del(&w->list_node);
 
-	/* Wake up one eventual waiting task */
+	 
 	optee_cq_complete_one(cq);
 
-	/*
-	 * If we're completed we've got a completion from another task that
-	 * was just done with its call to secure world. Since yet another
-	 * thread now is available in secure world wake up another eventual
-	 * waiting task.
-	 */
+	 
 	if (completion_done(&w->c))
 		optee_cq_complete_one(cq);
 
 	mutex_unlock(&cq->mutex);
 }
 
-/* Requires the filpstate mutex to be held */
+ 
 static struct optee_session *find_session(struct optee_context_data *ctxdata,
 					  u32 session_id)
 {
@@ -168,16 +133,7 @@ size_t optee_msg_arg_size(size_t rpc_param_count)
 	return sz;
 }
 
-/**
- * optee_get_msg_arg() - Provide shared memory for argument struct
- * @ctx:	Caller TEE context
- * @num_params:	Number of parameter to store
- * @entry_ret:	Entry pointer, needed when freeing the buffer
- * @shm_ret:	Shared memory buffer
- * @offs_ret:	Offset of argument strut in shared memory buffer
- *
- * @returns a pointer to the argument struct in memory, else an ERR_PTR
- */
+ 
 struct optee_msg_arg *optee_get_msg_arg(struct tee_context *ctx,
 					size_t num_params,
 					struct optee_shm_arg_entry **entry_ret,
@@ -208,9 +164,7 @@ struct optee_msg_arg *optee_get_msg_arg(struct tee_context *ctx,
 			goto have_entry;
 	}
 
-	/*
-	 * No entry was found, let's allocate a new.
-	 */
+	 
 	entry = kzalloc(sizeof(*entry), GFP_KERNEL);
 	if (!entry) {
 		res = ERR_PTR(-ENOMEM);
@@ -247,14 +201,7 @@ out:
 	return res;
 }
 
-/**
- * optee_free_msg_arg() - Free previsouly obtained shared memory
- * @ctx:	Caller TEE context
- * @entry:	Pointer returned when the shared memory was obtained
- * @offs:	Offset of shared memory buffer to free
- *
- * This function frees the shared memory obtained with optee_get_msg_arg().
- */
+ 
 void optee_free_msg_arg(struct tee_context *ctx,
 			struct optee_shm_arg_entry *entry, u_int offs)
 {
@@ -291,7 +238,7 @@ int optee_open_session(struct tee_context *ctx,
 	u_int offs;
 	int rc;
 
-	/* +2 for the meta parameters added below */
+	 
 	msg_arg = optee_get_msg_arg(ctx, arg->num_params + 2,
 				    &entry, &shm, &offs);
 	if (IS_ERR(msg_arg))
@@ -300,10 +247,7 @@ int optee_open_session(struct tee_context *ctx,
 	msg_arg->cmd = OPTEE_MSG_CMD_OPEN_SESSION;
 	msg_arg->cancel_id = arg->cancel_id;
 
-	/*
-	 * Initialize and add the meta parameters needed when opening a
-	 * session.
-	 */
+	 
 	msg_arg->params[0].attr = OPTEE_MSG_ATTR_TYPE_VALUE_INPUT |
 				  OPTEE_MSG_ATTR_META;
 	msg_arg->params[1].attr = OPTEE_MSG_ATTR_TYPE_VALUE_INPUT |
@@ -334,7 +278,7 @@ int optee_open_session(struct tee_context *ctx,
 	}
 
 	if (msg_arg->ret == TEEC_SUCCESS) {
-		/* A new session has been created, add it to the list. */
+		 
 		sess->session_id = msg_arg->session;
 		mutex_lock(&ctxdata->mutex);
 		list_add(&sess->list_node, &ctxdata->sess_list);
@@ -347,7 +291,7 @@ int optee_open_session(struct tee_context *ctx,
 				       msg_arg->params + 2)) {
 		arg->ret = TEEC_ERROR_COMMUNICATION;
 		arg->ret_origin = TEEC_ORIGIN_COMMS;
-		/* Close session again to avoid leakage */
+		 
 		optee_close_session(ctx, msg_arg->session);
 	} else {
 		arg->session = msg_arg->session;
@@ -386,7 +330,7 @@ int optee_close_session(struct tee_context *ctx, u32 session)
 	struct optee_context_data *ctxdata = ctx->data;
 	struct optee_session *sess;
 
-	/* Check that the session is valid and remove it from the list */
+	 
 	mutex_lock(&ctxdata->mutex);
 	sess = find_session(ctxdata, session);
 	if (sess)
@@ -411,7 +355,7 @@ int optee_invoke_func(struct tee_context *ctx, struct tee_ioctl_invoke_arg *arg,
 	u_int offs;
 	int rc;
 
-	/* Check that the session is valid */
+	 
 	mutex_lock(&ctxdata->mutex);
 	sess = find_session(ctxdata, arg->session);
 	mutex_unlock(&ctxdata->mutex);
@@ -460,7 +404,7 @@ int optee_cancel_req(struct tee_context *ctx, u32 cancel_id, u32 session)
 	struct tee_shm *shm;
 	u_int offs;
 
-	/* Check that the session is valid */
+	 
 	mutex_lock(&ctxdata->mutex);
 	sess = find_session(ctxdata, session);
 	mutex_unlock(&ctxdata->mutex);
@@ -511,10 +455,7 @@ int optee_check_mem_type(unsigned long start, size_t num_pages)
 	struct mm_struct *mm = current->mm;
 	int rc;
 
-	/*
-	 * Allow kernel address to register with OP-TEE as kernel
-	 * pages are configured as normal memory only.
-	 */
+	 
 	if (virt_addr_valid((void *)start) || is_vmalloc_addr((void *)start))
 		return 0;
 

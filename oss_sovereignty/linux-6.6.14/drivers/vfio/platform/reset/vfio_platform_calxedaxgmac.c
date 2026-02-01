@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * VFIO platform driver specialized for Calxeda xgmac reset
- * reset code is inherited from calxeda xgmac native driver
- *
- * Copyright 2010-2011 Calxeda, Inc.
- * Copyright (c) 2015 Linaro Ltd.
- *              www.linaro.org
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -19,20 +12,20 @@
 #define DRIVER_AUTHOR   "Eric Auger <eric.auger@linaro.org>"
 #define DRIVER_DESC     "Reset support for Calxeda xgmac vfio platform device"
 
-/* XGMAC Register definitions */
-#define XGMAC_CONTROL           0x00000000      /* MAC Configuration */
+ 
+#define XGMAC_CONTROL           0x00000000       
 
-/* DMA Control and Status Registers */
-#define XGMAC_DMA_CONTROL       0x00000f18      /* Ctrl (Operational Mode) */
-#define XGMAC_DMA_INTR_ENA      0x00000f1c      /* Interrupt Enable */
+ 
+#define XGMAC_DMA_CONTROL       0x00000f18       
+#define XGMAC_DMA_INTR_ENA      0x00000f1c       
 
-/* DMA Control register defines */
-#define DMA_CONTROL_ST          0x00002000      /* Start/Stop Transmission */
-#define DMA_CONTROL_SR          0x00000002      /* Start/Stop Receive */
+ 
+#define DMA_CONTROL_ST          0x00002000       
+#define DMA_CONTROL_SR          0x00000002       
 
-/* Common MAC defines */
-#define MAC_ENABLE_TX           0x00000008      /* Transmitter Enable */
-#define MAC_ENABLE_RX           0x00000004      /* Receiver Enable */
+ 
+#define MAC_ENABLE_TX           0x00000008       
+#define MAC_ENABLE_RX           0x00000004       
 
 static inline void xgmac_mac_disable(void __iomem *ioaddr)
 {
@@ -57,10 +50,10 @@ static int vfio_platform_calxedaxgmac_reset(struct vfio_platform_device *vdev)
 			return -ENOMEM;
 	}
 
-	/* disable IRQ */
+	 
 	writel(0, reg->ioaddr + XGMAC_DMA_INTR_ENA);
 
-	/* Disable the MAC core */
+	 
 	xgmac_mac_disable(reg->ioaddr);
 
 	return 0;

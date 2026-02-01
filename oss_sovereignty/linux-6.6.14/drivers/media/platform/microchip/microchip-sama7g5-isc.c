@@ -1,30 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Microchip eXtended Image Sensor Controller (XISC) driver
- *
- * Copyright (C) 2019-2021 Microchip Technology, Inc. and its subsidiaries
- *
- * Author: Eugen Hristev <eugen.hristev@microchip.com>
- *
- * Sensor-->PFE-->DPC-->WB-->CFA-->CC-->GAM-->VHXS-->CSC-->CBHS-->SUB-->RLP-->DMA-->HIS
- *
- * ISC video pipeline integrates the following submodules:
- * PFE: Parallel Front End to sample the camera sensor input stream
- * DPC: Defective Pixel Correction with black offset correction, green disparity
- *      correction and defective pixel correction (3 modules total)
- *  WB: Programmable white balance in the Bayer domain
- * CFA: Color filter array interpolation module
- *  CC: Programmable color correction
- * GAM: Gamma correction
- *VHXS: Vertical and Horizontal Scaler
- * CSC: Programmable color space conversion
- *CBHS: Contrast Brightness Hue and Saturation control
- * SUB: This module performs YCbCr444 to YCbCr420 chrominance subsampling
- * RLP: This module performs rounding, range limiting
- *      and packing of the incoming data
- * DMA: This module performs DMA master accesses to write frames to external RAM
- * HIS: Histogram module performs statistic counters on the frames
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/clkdev.h>
@@ -59,7 +34,7 @@
 	(WB_ENABLE | CFA_ENABLE | CC_ENABLE | GAM_ENABLES | CSC_ENABLE | \
 	CBC_ENABLE | SUB422_ENABLE | SUB420_ENABLE)
 
-/* This is a list of the formats that the ISC can *output* */
+ 
 static const struct isc_format sama7g5_controller_formats[] = {
 	{
 		.fourcc		= V4L2_PIX_FMT_ARGB444,
@@ -126,7 +101,7 @@ static const struct isc_format sama7g5_controller_formats[] = {
 	},
 };
 
-/* This is a list of formats that the ISC can receive as *input* */
+ 
 static struct isc_format sama7g5_formats_list[] = {
 	{
 		.fourcc		= V4L2_PIX_FMT_SBGGR8,
@@ -231,7 +206,7 @@ static void isc_sama7g5_config_csc(struct isc_device *isc)
 {
 	struct regmap *regmap = isc->regmap;
 
-	/* Convert RGB to YUV */
+	 
 	regmap_write(regmap, ISC_CSC_YR_YG + isc->offsets.csc,
 		     0x42 | (0x81 << 16));
 	regmap_write(regmap, ISC_CSC_YB_OY + isc->offsets.csc,
@@ -250,10 +225,10 @@ static void isc_sama7g5_config_cbc(struct isc_device *isc)
 {
 	struct regmap *regmap = isc->regmap;
 
-	/* Configure what is set via v4l2 ctrls */
+	 
 	regmap_write(regmap, ISC_CBC_BRIGHT + isc->offsets.cbc, isc->ctrls.brightness);
 	regmap_write(regmap, ISC_CBC_CONTRAST + isc->offsets.cbc, isc->ctrls.contrast);
-	/* Configure Hue and Saturation as neutral midpoint */
+	 
 	regmap_write(regmap, ISC_CBCHS_HUE, 0);
 	regmap_write(regmap, ISC_CBCHS_SAT, (1 << 4));
 }
@@ -262,7 +237,7 @@ static void isc_sama7g5_config_cc(struct isc_device *isc)
 {
 	struct regmap *regmap = isc->regmap;
 
-	/* Configure each register at the neutral fixed point 1.0 or 0.0 */
+	 
 	regmap_write(regmap, ISC_CC_RR_RG, (1 << 8));
 	regmap_write(regmap, ISC_CC_RB_OR, 0);
 	regmap_write(regmap, ISC_CC_GR_GG, (1 << 8) << 16);
@@ -316,9 +291,9 @@ static void isc_sama7g5_adapt_pipeline(struct isc_device *isc)
 	isc->try_config.bits_pipeline &= ISC_SAMA7G5_PIPELINE;
 }
 
-/* Gamma table with gamma 1/2.2 */
+ 
 static const u32 isc_sama7g5_gamma_table[][GAMMA_ENTRIES] = {
-	/* index 0 --> gamma bipartite */
+	 
 	{
 	      0x980,  0x4c0320,  0x650260,  0x7801e0,  0x8701a0,  0x940180,
 	   0xa00160,  0xab0120,  0xb40120,  0xbd0120,  0xc60100,  0xce0100,
@@ -465,10 +440,10 @@ static int microchip_xisc_probe(struct platform_device *pdev)
 	isc->formats_list = sama7g5_formats_list;
 	isc->formats_list_size = ARRAY_SIZE(sama7g5_formats_list);
 
-	/* sama7g5-isc RAM access port is full AXI4 - 32 bits per beat */
+	 
 	isc->dcfg = ISC_DCFG_YMBSIZE_BEATS32 | ISC_DCFG_CMBSIZE_BEATS32;
 
-	/* sama7g5-isc : ISPCK does not exist, ISC is clocked by MCK */
+	 
 	isc->ispck_required = false;
 
 	ret = microchip_isc_pipeline_init(isc);

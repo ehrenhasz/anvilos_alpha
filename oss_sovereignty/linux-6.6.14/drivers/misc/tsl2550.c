@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  tsl2550.c - Linux kernel modules for ambient light sensor
- *
- *  Copyright (C) 2007 Rodolfo Giometti <giometti@linux.it>
- *  Copyright (C) 2007 Eurotech S.p.A. <info@eurotech.it>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/slab.h>
@@ -14,9 +9,7 @@
 #define TSL2550_DRV_NAME	"tsl2550"
 #define DRIVER_VERSION		"1.2"
 
-/*
- * Defines
- */
+ 
 
 #define TSL2550_POWER_DOWN		0x00
 #define TSL2550_POWER_UP		0x03
@@ -25,9 +18,7 @@
 #define TSL2550_READ_ADC0		0x43
 #define TSL2550_READ_ADC1		0x83
 
-/*
- * Structs
- */
+ 
 
 struct tsl2550_data {
 	struct i2c_client *client;
@@ -37,17 +28,13 @@ struct tsl2550_data {
 	unsigned int operating_mode:1;
 };
 
-/*
- * Global data
- */
+ 
 
 static const u8 TSL2550_MODE_RANGE[2] = {
 	TSL2550_STANDARD_RANGE, TSL2550_EXTENDED_RANGE,
 };
 
-/*
- * Management functions
- */
+ 
 
 static int tsl2550_set_operating_mode(struct i2c_client *client, int mode)
 {
@@ -70,7 +57,7 @@ static int tsl2550_set_power_state(struct i2c_client *client, int state)
 	else {
 		ret = i2c_smbus_write_byte(client, TSL2550_POWER_UP);
 
-		/* On power up we should reset operating mode also... */
+		 
 		tsl2550_set_operating_mode(client, data->operating_mode);
 	}
 
@@ -88,12 +75,10 @@ static int tsl2550_get_adc_value(struct i2c_client *client, u8 cmd)
 		return ret;
 	if (!(ret & 0x80))
 		return -EAGAIN;
-	return ret & 0x7f;	/* remove the "valid" bit */
+	return ret & 0x7f;	 
 }
 
-/*
- * LUX calculation
- */
+ 
 
 #define	TSL2550_MAX_LUX		1846
 
@@ -136,41 +121,33 @@ static const u16 count_lut[] = {
 	3119, 3247, 3375, 3503, 3631, 3759, 3887, 4015,
 };
 
-/*
- * This function is described into Taos TSL2550 Designer's Notebook
- * pages 2, 3.
- */
+ 
 static int tsl2550_calculate_lux(u8 ch0, u8 ch1)
 {
 	unsigned int lux;
 
-	/* Look up count from channel values */
+	 
 	u16 c0 = count_lut[ch0];
 	u16 c1 = count_lut[ch1];
 
-	/* Avoid division by 0 and count 1 cannot be greater than count 0 */
+	 
 	if (c1 <= c0)
 		if (c0) {
-			/*
-			 * Calculate ratio.
-			 * Note: the "128" is a scaling factor
-			 */
+			 
 			u8 r = c1 * 128 / c0;
 
-			/* Calculate LUX */
+			 
 			lux = ((c0 - c1) * ratio_lut[r]) / 256;
 		} else
 			lux = 0;
 	else
 		return 0;
 
-	/* LUX range check */
+	 
 	return lux > TSL2550_MAX_LUX ? TSL2550_MAX_LUX : lux;
 }
 
-/*
- * SysFS support
- */
+ 
 
 static ssize_t tsl2550_show_power_state(struct device *dev,
 		struct device_attribute *attr, char *buf)
@@ -255,7 +232,7 @@ static ssize_t __tsl2550_show_lux(struct i2c_client *client, char *buf)
 		return ret;
 	ch1 = ret;
 
-	/* Do the job */
+	 
 	ret = tsl2550_calculate_lux(ch0, ch1);
 	if (ret < 0)
 		return ret;
@@ -272,7 +249,7 @@ static ssize_t tsl2550_show_lux1_input(struct device *dev,
 	struct tsl2550_data *data = i2c_get_clientdata(client);
 	int ret;
 
-	/* No LUX data if not operational */
+	 
 	if (!data->power_state)
 		return -EBUSY;
 
@@ -297,19 +274,14 @@ static const struct attribute_group tsl2550_attr_group = {
 	.attrs = tsl2550_attributes,
 };
 
-/*
- * Initialization function
- */
+ 
 
 static int tsl2550_init_client(struct i2c_client *client)
 {
 	struct tsl2550_data *data = i2c_get_clientdata(client);
 	int err;
 
-	/*
-	 * Probe the chip. To do so we try to power up the device and then to
-	 * read back the 0x03 code
-	 */
+	 
 	err = i2c_smbus_read_byte_data(client, TSL2550_POWER_UP);
 	if (err < 0)
 		return err;
@@ -317,7 +289,7 @@ static int tsl2550_init_client(struct i2c_client *client)
 		return -ENODEV;
 	data->power_state = 1;
 
-	/* Set the default operating mode */
+	 
 	err = i2c_smbus_write_byte(client,
 				   TSL2550_MODE_RANGE[data->operating_mode]);
 	if (err < 0)
@@ -326,9 +298,7 @@ static int tsl2550_init_client(struct i2c_client *client)
 	return 0;
 }
 
-/*
- * I2C init/probing/exit functions
- */
+ 
 
 static struct i2c_driver tsl2550_driver;
 static int tsl2550_probe(struct i2c_client *client)
@@ -351,7 +321,7 @@ static int tsl2550_probe(struct i2c_client *client)
 	data->client = client;
 	i2c_set_clientdata(client, data);
 
-	/* Check platform data */
+	 
 	opmode = client->dev.platform_data;
 	if (opmode) {
 		if (*opmode < 0 || *opmode > 1) {
@@ -362,18 +332,18 @@ static int tsl2550_probe(struct i2c_client *client)
 		}
 		data->operating_mode = *opmode;
 	} else
-		data->operating_mode = 0;	/* default mode is standard */
+		data->operating_mode = 0;	 
 	dev_info(&client->dev, "%s operating mode\n",
 			data->operating_mode ? "extended" : "standard");
 
 	mutex_init(&data->update_lock);
 
-	/* Initialize the TSL2550 chip */
+	 
 	err = tsl2550_init_client(client);
 	if (err)
 		goto exit_kfree;
 
-	/* Register sysfs hooks */
+	 
 	err = sysfs_create_group(&client->dev.kobj, &tsl2550_attr_group);
 	if (err)
 		goto exit_kfree;
@@ -392,7 +362,7 @@ static void tsl2550_remove(struct i2c_client *client)
 {
 	sysfs_remove_group(&client->dev.kobj, &tsl2550_attr_group);
 
-	/* Power down the device */
+	 
 	tsl2550_set_power_state(client, 0);
 
 	kfree(i2c_get_clientdata(client));
@@ -417,7 +387,7 @@ static SIMPLE_DEV_PM_OPS(tsl2550_pm_ops, tsl2550_suspend, tsl2550_resume);
 
 #define TSL2550_PM_OPS NULL
 
-#endif /* CONFIG_PM_SLEEP */
+#endif  
 
 static const struct i2c_device_id tsl2550_id[] = {
 	{ "tsl2550", 0 },

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
+
 #include "sun4i-ss.h"
 
 int sun4i_ss_prng_seed(struct crypto_rng *tfm, const u8 *seed,
@@ -43,17 +43,17 @@ int sun4i_ss_prng_generate(struct crypto_rng *tfm, const u8 *src,
 	writel(mode, ss->base + SS_CTL);
 
 	while (todo > 0) {
-		/* write the seed */
+		 
 		for (i = 0; i < SS_SEED_LEN / BITS_PER_LONG; i++)
 			writel(ss->seed[i], ss->base + SS_KEY0 + i * 4);
 
-		/* Read the random data */
+		 
 		len = min_t(size_t, SS_DATA_LEN / BITS_PER_BYTE, todo);
 		readsl(ss->base + SS_TXFIFO, data, len / 4);
 		data += len / 4;
 		todo -= len;
 
-		/* Update the seed */
+		 
 		for (i = 0; i < SS_SEED_LEN / BITS_PER_LONG; i++) {
 			v = readl(ss->base + SS_KEY0 + i * 4);
 			ss->seed[i] = v;

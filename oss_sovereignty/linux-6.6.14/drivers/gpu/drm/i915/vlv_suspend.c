@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright © 2020 Intel Corporation
- */
+
+ 
 
 #include <linux/string_helpers.h>
 #include <linux/kernel.h>
@@ -18,7 +16,7 @@
 #include "gt/intel_gt_regs.h"
 
 struct vlv_s0ix_state {
-	/* GAM */
+	 
 	u32 wr_watermark;
 	u32 gfx_prio_ctrl;
 	u32 arb_mode;
@@ -33,12 +31,12 @@ struct vlv_s0ix_state {
 	u32 blt_hwsp;
 	u32 tlb_rd_addr;
 
-	/* MBC */
+	 
 	u32 g3dctl;
 	u32 gsckgctl;
 	u32 mbctl;
 
-	/* GCP */
+	 
 	u32 ucgctl1;
 	u32 ucgctl3;
 	u32 rcgctl1;
@@ -46,7 +44,7 @@ struct vlv_s0ix_state {
 	u32 rstctl;
 	u32 misccpctl;
 
-	/* GPM */
+	 
 	u32 gfxpause;
 	u32 rpdeuhwtc;
 	u32 rpdeuc;
@@ -58,53 +56,28 @@ struct vlv_s0ix_state {
 	u32 rcedata;
 	u32 spare2gh;
 
-	/* Display 1 CZ domain */
+	 
 	u32 gt_imr;
 	u32 gt_ier;
 	u32 pm_imr;
 	u32 pm_ier;
 	u32 gt_scratch[GEN7_GT_SCRATCH_REG_NUM];
 
-	/* GT SA CZ domain */
+	 
 	u32 tilectl;
 	u32 gt_fifoctl;
 	u32 gtlc_wake_ctrl;
 	u32 gtlc_survive;
 	u32 pmwgicz;
 
-	/* Display 2 CZ domain */
+	 
 	u32 gu_ctl0;
 	u32 gu_ctl1;
 	u32 pcbr;
 	u32 clock_gate_dis2;
 };
 
-/*
- * Save all Gunit registers that may be lost after a D3 and a subsequent
- * S0i[R123] transition. The list of registers needing a save/restore is
- * defined in the VLV2_S0IXRegs document. This documents marks all Gunit
- * registers in the following way:
- * - Driver: saved/restored by the driver
- * - Punit : saved/restored by the Punit firmware
- * - No, w/o marking: no need to save/restore, since the register is R/O or
- *                    used internally by the HW in a way that doesn't depend
- *                    keeping the content across a suspend/resume.
- * - Debug : used for debugging
- *
- * We save/restore all registers marked with 'Driver', with the following
- * exceptions:
- * - Registers out of use, including also registers marked with 'Debug'.
- *   These have no effect on the driver's operation, so we don't save/restore
- *   them to reduce the overhead.
- * - Registers that are fully setup by an initialization function called from
- *   the resume path. For example many clock gating and RPS/RC6 registers.
- * - Registers that provide the right functionality with their reset defaults.
- *
- * TODO: Except for registers that based on the above 3 criteria can be safely
- * ignored, we save/restore all others, practically treating the HW context as
- * a black-box for the driver. Further investigation is needed to reduce the
- * saved/restored registers even further, by following the same 3 criteria.
- */
+ 
 static void vlv_save_gunit_s0ix_state(struct drm_i915_private *i915)
 {
 	struct vlv_s0ix_state *s = i915->vlv_s0ix_state;
@@ -114,7 +87,7 @@ static void vlv_save_gunit_s0ix_state(struct drm_i915_private *i915)
 	if (!s)
 		return;
 
-	/* GAM 0x4000-0x4770 */
+	 
 	s->wr_watermark = intel_uncore_read(uncore, GEN7_WR_WATERMARK);
 	s->gfx_prio_ctrl = intel_uncore_read(uncore, GEN7_GFX_PRIO_CTRL);
 	s->arb_mode = intel_uncore_read(uncore, ARB_MODE);
@@ -134,12 +107,12 @@ static void vlv_save_gunit_s0ix_state(struct drm_i915_private *i915)
 
 	s->tlb_rd_addr = intel_uncore_read(uncore, GEN7_TLB_RD_ADDR);
 
-	/* MBC 0x9024-0x91D0, 0x8500 */
+	 
 	s->g3dctl = intel_uncore_read(uncore, VLV_G3DCTL);
 	s->gsckgctl = intel_uncore_read(uncore, VLV_GSCKGCTL);
 	s->mbctl = intel_uncore_read(uncore, GEN6_MBCTL);
 
-	/* GCP 0x9400-0x9424, 0x8100-0x810C */
+	 
 	s->ucgctl1 = intel_uncore_read(uncore, GEN6_UCGCTL1);
 	s->ucgctl3 = intel_uncore_read(uncore, GEN6_UCGCTL3);
 	s->rcgctl1 = intel_uncore_read(uncore, GEN6_RCGCTL1);
@@ -147,7 +120,7 @@ static void vlv_save_gunit_s0ix_state(struct drm_i915_private *i915)
 	s->rstctl = intel_uncore_read(uncore, GEN6_RSTCTL);
 	s->misccpctl = intel_uncore_read(uncore, GEN7_MISCCPCTL);
 
-	/* GPM 0xA000-0xAA84, 0x8000-0x80FC */
+	 
 	s->gfxpause = intel_uncore_read(uncore, GEN6_GFXPAUSE);
 	s->rpdeuhwtc = intel_uncore_read(uncore, GEN6_RPDEUHWTC);
 	s->rpdeuc = intel_uncore_read(uncore, GEN6_RPDEUC);
@@ -159,7 +132,7 @@ static void vlv_save_gunit_s0ix_state(struct drm_i915_private *i915)
 	s->rcedata = intel_uncore_read(uncore, VLV_RCEDATA);
 	s->spare2gh = intel_uncore_read(uncore, VLV_SPAREG2H);
 
-	/* Display CZ domain, 0x4400C-0x4402C, 0x4F000-0x4F11F */
+	 
 	s->gt_imr = intel_uncore_read(uncore, GTIMR);
 	s->gt_ier = intel_uncore_read(uncore, GTIER);
 	s->pm_imr = intel_uncore_read(uncore, GEN6_PMIMR);
@@ -168,26 +141,20 @@ static void vlv_save_gunit_s0ix_state(struct drm_i915_private *i915)
 	for (i = 0; i < ARRAY_SIZE(s->gt_scratch); i++)
 		s->gt_scratch[i] = intel_uncore_read(uncore, GEN7_GT_SCRATCH(i));
 
-	/* GT SA CZ domain, 0x100000-0x138124 */
+	 
 	s->tilectl = intel_uncore_read(uncore, TILECTL);
 	s->gt_fifoctl = intel_uncore_read(uncore, GTFIFOCTL);
 	s->gtlc_wake_ctrl = intel_uncore_read(uncore, VLV_GTLC_WAKE_CTRL);
 	s->gtlc_survive = intel_uncore_read(uncore, VLV_GTLC_SURVIVABILITY_REG);
 	s->pmwgicz = intel_uncore_read(uncore, VLV_PMWGICZ);
 
-	/* Gunit-Display CZ domain, 0x182028-0x1821CF */
+	 
 	s->gu_ctl0 = intel_uncore_read(uncore, VLV_GU_CTL0);
 	s->gu_ctl1 = intel_uncore_read(uncore, VLV_GU_CTL1);
 	s->pcbr = intel_uncore_read(uncore, VLV_PCBR);
 	s->clock_gate_dis2 = intel_uncore_read(uncore, VLV_GUNIT_CLOCK_GATE2);
 
-	/*
-	 * Not saving any of:
-	 * DFT,		0x9800-0x9EC0
-	 * SARB,	0xB000-0xB1FC
-	 * GAC,		0x5208-0x524C, 0x14000-0x14C000
-	 * PCI CFG
-	 */
+	 
 }
 
 static void vlv_restore_gunit_s0ix_state(struct drm_i915_private *i915)
@@ -199,7 +166,7 @@ static void vlv_restore_gunit_s0ix_state(struct drm_i915_private *i915)
 	if (!s)
 		return;
 
-	/* GAM 0x4000-0x4770 */
+	 
 	intel_uncore_write(uncore, GEN7_WR_WATERMARK, s->wr_watermark);
 	intel_uncore_write(uncore, GEN7_GFX_PRIO_CTRL, s->gfx_prio_ctrl);
 	intel_uncore_write(uncore, ARB_MODE, s->arb_mode | (0xffff << 16));
@@ -219,12 +186,12 @@ static void vlv_restore_gunit_s0ix_state(struct drm_i915_private *i915)
 
 	intel_uncore_write(uncore, GEN7_TLB_RD_ADDR, s->tlb_rd_addr);
 
-	/* MBC 0x9024-0x91D0, 0x8500 */
+	 
 	intel_uncore_write(uncore, VLV_G3DCTL, s->g3dctl);
 	intel_uncore_write(uncore, VLV_GSCKGCTL, s->gsckgctl);
 	intel_uncore_write(uncore, GEN6_MBCTL, s->mbctl);
 
-	/* GCP 0x9400-0x9424, 0x8100-0x810C */
+	 
 	intel_uncore_write(uncore, GEN6_UCGCTL1, s->ucgctl1);
 	intel_uncore_write(uncore, GEN6_UCGCTL3, s->ucgctl3);
 	intel_uncore_write(uncore, GEN6_RCGCTL1, s->rcgctl1);
@@ -232,7 +199,7 @@ static void vlv_restore_gunit_s0ix_state(struct drm_i915_private *i915)
 	intel_uncore_write(uncore, GEN6_RSTCTL, s->rstctl);
 	intel_uncore_write(uncore, GEN7_MISCCPCTL, s->misccpctl);
 
-	/* GPM 0xA000-0xAA84, 0x8000-0x80FC */
+	 
 	intel_uncore_write(uncore, GEN6_GFXPAUSE, s->gfxpause);
 	intel_uncore_write(uncore, GEN6_RPDEUHWTC, s->rpdeuhwtc);
 	intel_uncore_write(uncore, GEN6_RPDEUC, s->rpdeuc);
@@ -244,7 +211,7 @@ static void vlv_restore_gunit_s0ix_state(struct drm_i915_private *i915)
 	intel_uncore_write(uncore, VLV_RCEDATA, s->rcedata);
 	intel_uncore_write(uncore, VLV_SPAREG2H, s->spare2gh);
 
-	/* Display CZ domain, 0x4400C-0x4402C, 0x4F000-0x4F11F */
+	 
 	intel_uncore_write(uncore, GTIMR, s->gt_imr);
 	intel_uncore_write(uncore, GTIER, s->gt_ier);
 	intel_uncore_write(uncore, GEN6_PMIMR, s->pm_imr);
@@ -253,14 +220,10 @@ static void vlv_restore_gunit_s0ix_state(struct drm_i915_private *i915)
 	for (i = 0; i < ARRAY_SIZE(s->gt_scratch); i++)
 		intel_uncore_write(uncore, GEN7_GT_SCRATCH(i), s->gt_scratch[i]);
 
-	/* GT SA CZ domain, 0x100000-0x138124 */
+	 
 	intel_uncore_write(uncore, TILECTL, s->tilectl);
 	intel_uncore_write(uncore, GTFIFOCTL, s->gt_fifoctl);
-	/*
-	 * Preserve the GT allow wake and GFX force clock bit, they are not
-	 * be restored, as they are used to control the s0ix suspend/resume
-	 * sequence by the caller.
-	 */
+	 
 	intel_uncore_rmw(uncore, VLV_GTLC_WAKE_CTRL, ~VLV_GTLC_ALLOWWAKEREQ,
 			 s->gtlc_wake_ctrl & ~VLV_GTLC_ALLOWWAKEREQ);
 
@@ -269,7 +232,7 @@ static void vlv_restore_gunit_s0ix_state(struct drm_i915_private *i915)
 
 	intel_uncore_write(uncore, VLV_PMWGICZ, s->pmwgicz);
 
-	/* Gunit-Display CZ domain, 0x182028-0x1821CF */
+	 
 	intel_uncore_write(uncore, VLV_GU_CTL0, s->gu_ctl0);
 	intel_uncore_write(uncore, VLV_GU_CTL1, s->gu_ctl1);
 	intel_uncore_write(uncore, VLV_PCBR, s->pcbr);
@@ -283,18 +246,12 @@ static int vlv_wait_for_pw_status(struct drm_i915_private *i915,
 	u32 reg_value;
 	int ret;
 
-	/* The HW does not like us polling for PW_STATUS frequently, so
-	 * use the sleeping loop rather than risk the busy spin within
-	 * intel_wait_for_register().
-	 *
-	 * Transitioning between RC6 states should be at most 2ms (see
-	 * valleyview_enable_rps) so use a 3ms timeout.
-	 */
+	 
 	ret = wait_for(((reg_value =
 			 intel_uncore_read_notrace(&i915->uncore, reg)) & mask)
 		       == val, 3);
 
-	/* just trace the final value */
+	 
 	trace_i915_reg_rw(false, reg, reg_value, sizeof(reg_value), true);
 
 	return ret;
@@ -354,13 +311,7 @@ static void vlv_wait_for_gt_wells(struct drm_i915_private *dev_priv,
 	mask = VLV_GTLC_PW_MEDIA_STATUS_MASK | VLV_GTLC_PW_RENDER_STATUS_MASK;
 	val = wait_for_on ? mask : 0;
 
-	/*
-	 * RC6 transitioning can be delayed up to 2 msec (see
-	 * valleyview_enable_rps), use 3 msec for safety.
-	 *
-	 * This can fail to turn off the rc6 if the GPU is stuck after a failed
-	 * reset and we are trying to force the machine to sleep.
-	 */
+	 
 	if (vlv_wait_for_pw_status(dev_priv, mask, val))
 		drm_dbg(&dev_priv->drm,
 			"timeout waiting for GT wells to go %s\n",
@@ -386,10 +337,7 @@ int vlv_suspend_complete(struct drm_i915_private *dev_priv)
 	if (!IS_VALLEYVIEW(dev_priv) && !IS_CHERRYVIEW(dev_priv))
 		return 0;
 
-	/*
-	 * Bspec defines the following GT well on flags as debug only, so
-	 * don't treat them as hard failures.
-	 */
+	 
 	vlv_wait_for_gt_wells(dev_priv, false);
 
 	mask = VLV_GTLC_RENDER_CTX_EXISTS | VLV_GTLC_MEDIA_CTX_EXISTS;
@@ -415,7 +363,7 @@ int vlv_suspend_complete(struct drm_i915_private *dev_priv)
 	return 0;
 
 err2:
-	/* For safety always re-enable waking and disable gfx clock forcing */
+	 
 	vlv_allow_gt_wake(dev_priv, true);
 err1:
 	vlv_force_gfx_clock(dev_priv, false);
@@ -431,11 +379,7 @@ int vlv_resume_prepare(struct drm_i915_private *dev_priv, bool rpm_resume)
 	if (!IS_VALLEYVIEW(dev_priv) && !IS_CHERRYVIEW(dev_priv))
 		return 0;
 
-	/*
-	 * If any of the steps fail just try to continue, that's the best we
-	 * can do at this point. Return the first error code (which will also
-	 * leave RPM permanently disabled).
-	 */
+	 
 	ret = vlv_force_gfx_clock(dev_priv, true);
 
 	vlv_restore_gunit_s0ix_state(dev_priv);
@@ -461,7 +405,7 @@ int vlv_suspend_init(struct drm_i915_private *i915)
 	if (!IS_VALLEYVIEW(i915))
 		return 0;
 
-	/* we write all the values in the struct, so no need to zero it out */
+	 
 	i915->vlv_s0ix_state = kmalloc(sizeof(*i915->vlv_s0ix_state),
 				       GFP_KERNEL);
 	if (!i915->vlv_s0ix_state)

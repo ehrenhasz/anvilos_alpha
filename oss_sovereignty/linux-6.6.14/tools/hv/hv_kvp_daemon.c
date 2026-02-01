@@ -1,25 +1,4 @@
-/*
- * An implementation of key value pair (KVP) functionality for Linux.
- *
- *
- * Copyright (C) 2010, Novell, Inc.
- * Author : K. Y. Srinivasan <ksrinivasan@novell.com>
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License version 2 as published
- * by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE, GOOD TITLE or
- * NON INFRINGEMENT.  See the GNU General Public License for more
- * details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
- *
- */
+ 
 
 
 #include <sys/poll.h>
@@ -42,22 +21,12 @@
 #include <limits.h>
 #include <getopt.h>
 
-/*
- * KVP protocol: The user mode component first registers with the
- * kernel component. Subsequently, the kernel component requests, data
- * for the specified keys. In response to this message the user mode component
- * fills in the value corresponding to the specified key. We overload the
- * sequence field in the cn_msg header to define our KVP message types.
- *
- * We use this infrastructure for also supporting queries from user mode
- * application for state that may be maintained in the KVP kernel component.
- *
- */
+ 
 
 
 enum key_index {
 	FullyQualifiedDomainName = 0,
-	IntegrationServicesVersion, /*This key is serviced in the kernel*/
+	IntegrationServicesVersion,  
 	NetworkAddressIPv4,
 	NetworkAddressIPv6,
 	OSBuildNumber,
@@ -88,9 +57,7 @@ static char *lic_version = "Unknown version";
 static char full_domain_name[HV_KVP_EXCHANGE_MAX_VALUE_SIZE];
 static struct utsname uts_buf;
 
-/*
- * The location of the interface configuration file.
- */
+ 
 
 #define KVP_CONFIG_LOC	"/var/lib/hyperv"
 
@@ -146,10 +113,7 @@ static void kvp_update_file(int pool)
 {
 	FILE *filep;
 
-	/*
-	 * We are going to write our in-memory registry out to
-	 * disk; acquire the lock first.
-	 */
+	 
 	kvp_acquire_lock(pool);
 
 	filep = fopen(kvp_file_info[pool].fname, "we");
@@ -205,9 +169,7 @@ static void kvp_update_mem_state(int pool)
 		}
 
 		if (!feof(filep)) {
-			/*
-			 * We have more data to read.
-			 */
+			 
 			num_blocks++;
 			record = realloc(record, alloc_unit * num_blocks);
 
@@ -237,7 +199,7 @@ static int kvp_file_init(void)
 	int alloc_unit = sizeof(struct kvp_record) * ENTRIES_PER_BLOCK;
 
 	if (access(KVP_CONFIG_LOC, F_OK)) {
-		if (mkdir(KVP_CONFIG_LOC, 0755 /* rwxr-xr-x */)) {
+		if (mkdir(KVP_CONFIG_LOC, 0755  )) {
 			syslog(LOG_ERR, "Failed to create '%s'; error: %d %s", KVP_CONFIG_LOC,
 					errno, strerror(errno));
 			exit(EXIT_FAILURE);
@@ -247,7 +209,7 @@ static int kvp_file_init(void)
 	for (i = 0; i < KVP_POOL_COUNT; i++) {
 		fname = kvp_file_info[i].fname;
 		sprintf(fname, "%s/.kvp_pool_%d", KVP_CONFIG_LOC, i);
-		fd = open(fname, O_RDWR | O_CREAT | O_CLOEXEC, 0644 /* rw-r--r-- */);
+		fd = open(fname, O_RDWR | O_CREAT | O_CLOEXEC, 0644  );
 
 		if (fd == -1)
 			return 1;
@@ -271,9 +233,7 @@ static int kvp_key_delete(int pool, const __u8 *key, int key_size)
 	int num_records;
 	struct kvp_record *record;
 
-	/*
-	 * First update the in-memory state.
-	 */
+	 
 	kvp_update_mem_state(pool);
 
 	num_records = kvp_file_info[pool].num_records;
@@ -282,10 +242,7 @@ static int kvp_key_delete(int pool, const __u8 *key, int key_size)
 	for (i = 0; i < num_records; i++) {
 		if (memcmp(key, record[i].key, key_size))
 			continue;
-		/*
-		 * Found a match; just move the remaining
-		 * entries up.
-		 */
+		 
 		if (i == (num_records - 1)) {
 			kvp_file_info[pool].num_records--;
 			kvp_update_file(pool);
@@ -319,9 +276,7 @@ static int kvp_key_add_or_modify(int pool, const __u8 *key, int key_size,
 		(value_size > HV_KVP_EXCHANGE_MAX_VALUE_SIZE))
 		return 1;
 
-	/*
-	 * First update the in-memory state.
-	 */
+	 
 	kvp_update_mem_state(pool);
 
 	num_records = kvp_file_info[pool].num_records;
@@ -331,20 +286,15 @@ static int kvp_key_add_or_modify(int pool, const __u8 *key, int key_size,
 	for (i = 0; i < num_records; i++) {
 		if (memcmp(key, record[i].key, key_size))
 			continue;
-		/*
-		 * Found a match; just update the value -
-		 * this is the modify case.
-		 */
+		 
 		memcpy(record[i].value, value, value_size);
 		kvp_update_file(pool);
 		return 0;
 	}
 
-	/*
-	 * Need to add a new entry;
-	 */
+	 
 	if (num_records == (ENTRIES_PER_BLOCK * num_blocks)) {
-		/* Need to allocate a larger array for reg entries. */
+		 
 		record = realloc(record, sizeof(struct kvp_record) *
 			 ENTRIES_PER_BLOCK * (num_blocks + 1));
 
@@ -372,9 +322,7 @@ static int kvp_get_value(int pool, const __u8 *key, int key_size, __u8 *value,
 		(value_size > HV_KVP_EXCHANGE_MAX_VALUE_SIZE))
 		return 1;
 
-	/*
-	 * First update the in-memory state.
-	 */
+	 
 	kvp_update_mem_state(pool);
 
 	num_records = kvp_file_info[pool].num_records;
@@ -383,9 +331,7 @@ static int kvp_get_value(int pool, const __u8 *key, int key_size, __u8 *value,
 	for (i = 0; i < num_records; i++) {
 		if (memcmp(key, record[i].key, key_size))
 			continue;
-		/*
-		 * Found a match; just copy the value out.
-		 */
+		 
 		memcpy(value, record[i].value, value_size);
 		return 0;
 	}
@@ -398,9 +344,7 @@ static int kvp_pool_enumerate(int pool, int index, __u8 *key, int key_size,
 {
 	struct kvp_record *record;
 
-	/*
-	 * First update our in-memory database.
-	 */
+	 
 	kvp_update_mem_state(pool);
 	record = kvp_file_info[pool].records;
 
@@ -426,35 +370,28 @@ void kvp_get_os_info(void)
 	os_name = uts_buf.sysname;
 	processor_arch = uts_buf.machine;
 
-	/*
-	 * The current windows host (win7) expects the build
-	 * string to be of the form: x.y.z
-	 * Strip additional information we may have.
-	 */
+	 
 	p = strchr(os_version, '-');
 	if (p)
 		*p = '\0';
 
-	/*
-	 * Parse the /etc/os-release file if present:
-	 * https://www.freedesktop.org/software/systemd/man/os-release.html
-	 */
+	 
 	file = fopen("/etc/os-release", "r");
 	if (file != NULL) {
 		while (fgets(buf, sizeof(buf), file)) {
 			char *value, *q;
 
-			/* Ignore comments */
+			 
 			if (buf[0] == '#')
 				continue;
 
-			/* Split into name=value */
+			 
 			p = strchr(buf, '=');
 			if (!p)
 				continue;
 			*p++ = 0;
 
-			/* Remove quotes and newline; un-escape */
+			 
 			value = p;
 			q = p;
 			while (*p) {
@@ -488,7 +425,7 @@ void kvp_get_os_info(void)
 		return;
 	}
 
-	/* Fallback for older RH/SUSE releases */
+	 
 	file = fopen("/etc/SuSE-release", "r");
 	if (file != NULL)
 		goto kvp_osinfo_found;
@@ -496,13 +433,11 @@ void kvp_get_os_info(void)
 	if (file != NULL)
 		goto kvp_osinfo_found;
 
-	/*
-	 * We don't have information about the os.
-	 */
+	 
 	return;
 
 kvp_osinfo_found:
-	/* up to three lines */
+	 
 	p = fgets(buf, sizeof(buf), file);
 	if (p) {
 		p = strchr(buf, '\n');
@@ -513,7 +448,7 @@ kvp_osinfo_found:
 			goto done;
 		os_name = p;
 
-		/* second line */
+		 
 		p = fgets(buf, sizeof(buf), file);
 		if (p) {
 			p = strchr(buf, '\n');
@@ -524,7 +459,7 @@ kvp_osinfo_found:
 				goto done;
 			os_major = p;
 
-			/* third line */
+			 
 			p = fgets(buf, sizeof(buf), file);
 			if (p)  {
 				p = strchr(buf, '\n');
@@ -544,13 +479,7 @@ done:
 
 
 
-/*
- * Retrieve an interface name corresponding to the specified guid.
- * If there is a match, the function returns a pointer
- * to the interface name and if not, a NULL is returned.
- * If a match is found, the caller is responsible for
- * freeing the memory.
- */
+ 
 
 static char *kvp_get_if_name(char *guid)
 {
@@ -567,9 +496,7 @@ static char *kvp_get_if_name(char *guid)
 		return NULL;
 
 	while ((entry = readdir(dir)) != NULL) {
-		/*
-		 * Set the state for the next pass.
-		 */
+		 
 		snprintf(dev_id, sizeof(dev_id), "%s%s/device/device_id",
 			 KVP_NET_DIR, entry->d_name);
 
@@ -584,10 +511,7 @@ static char *kvp_get_if_name(char *guid)
 				*x = '\0';
 
 			if (!strcmp(p, guid)) {
-				/*
-				 * Found the guid match; return the interface
-				 * name. The caller will free the memory.
-				 */
+				 
 				if_name = strdup(entry->d_name);
 				fclose(file);
 				break;
@@ -600,9 +524,7 @@ static char *kvp_get_if_name(char *guid)
 	return if_name;
 }
 
-/*
- * Retrieve the MAC address given the interface name.
- */
+ 
 
 static char *kvp_if_name_to_mac(char *if_name)
 {
@@ -643,9 +565,7 @@ static void kvp_process_ipconfig_file(char *cmd,
 	char *x;
 	FILE *file;
 
-	/*
-	 * First execute the command.
-	 */
+	 
 	file = popen(cmd, "r");
 	if (file == NULL)
 		return;
@@ -674,62 +594,32 @@ static void kvp_get_ipconfig_info(char *if_name,
 	char *p;
 	FILE *file;
 
-	/*
-	 * Get the address of default gateway (ipv4).
-	 */
+	 
 	sprintf(cmd, "%s %s", "ip route show dev", if_name);
 	strcat(cmd, " | awk '/default/ {print $3 }'");
 
-	/*
-	 * Execute the command to gather gateway info.
-	 */
+	 
 	kvp_process_ipconfig_file(cmd, (char *)buffer->gate_way,
 				(MAX_GATEWAY_SIZE * 2), INET_ADDRSTRLEN, 0);
 
-	/*
-	 * Get the address of default gateway (ipv6).
-	 */
+	 
 	sprintf(cmd, "%s %s", "ip -f inet6  route show dev", if_name);
 	strcat(cmd, " | awk '/default/ {print $3 }'");
 
-	/*
-	 * Execute the command to gather gateway info (ipv6).
-	 */
+	 
 	kvp_process_ipconfig_file(cmd, (char *)buffer->gate_way,
 				(MAX_GATEWAY_SIZE * 2), INET6_ADDRSTRLEN, 1);
 
 
-	/*
-	 * Gather the DNS state.
-	 * Since there is no standard way to get this information
-	 * across various distributions of interest; we just invoke
-	 * an external script that needs to be ported across distros
-	 * of interest.
-	 *
-	 * Following is the expected format of the information from the script:
-	 *
-	 * ipaddr1 (nameserver1)
-	 * ipaddr2 (nameserver2)
-	 * .
-	 * .
-	 */
+	 
 
 	sprintf(cmd, KVP_SCRIPTS_PATH "%s",  "hv_get_dns_info");
 
-	/*
-	 * Execute the command to gather DNS info.
-	 */
+	 
 	kvp_process_ipconfig_file(cmd, (char *)buffer->dns_addr,
 				(MAX_IP_ADDR_SIZE * 2), INET_ADDRSTRLEN, 0);
 
-	/*
-	 * Gather the DHCP state.
-	 * We will gather this state by invoking an external script.
-	 * The parameter to the script is the interface name.
-	 * Here is the expected output:
-	 *
-	 * Enabled: DHCP enabled.
-	 */
+	 
 
 	sprintf(cmd, KVP_SCRIPTS_PATH "%s %s", "hv_get_dhcp_info", if_name);
 
@@ -810,7 +700,7 @@ kvp_get_ip_info(int family, char *if_name, int op,
 	int error = 0;
 	char *buffer;
 	struct hv_kvp_ipaddr_value *ip_buffer = NULL;
-	char cidr_mask[5]; /* /xyz */
+	char cidr_mask[5];  
 	int weight;
 	int i;
 	unsigned int *w;
@@ -824,10 +714,7 @@ kvp_get_ip_info(int family, char *if_name, int op,
 		buffer = (char *)ip_buffer->ip_addr;
 		ip_buffer->addr_family = 0;
 	}
-	/*
-	 * On entry into this function, the buffer is capable of holding the
-	 * maximum key value.
-	 */
+	 
 
 	if (getifaddrs(&ifap)) {
 		strcpy(buffer, "getifaddrs failed\n");
@@ -843,20 +730,12 @@ kvp_get_ip_info(int family, char *if_name, int op,
 
 		if ((if_name != NULL) &&
 			(strncmp(curp->ifa_name, if_name, strlen(if_name)))) {
-			/*
-			 * We want info about a specific interface;
-			 * just continue.
-			 */
+			 
 			curp = curp->ifa_next;
 			continue;
 		}
 
-		/*
-		 * We only support two address families: AF_INET and AF_INET6.
-		 * If a family value of 0 is specified, we collect both
-		 * supported address families; if not we gather info on
-		 * the specified address family.
-		 */
+		 
 		if ((((family != 0) &&
 			 (curp->ifa_addr->sa_family != family))) ||
 			 (curp->ifa_flags & IFF_LOOPBACK)) {
@@ -870,15 +749,10 @@ kvp_get_ip_info(int family, char *if_name, int op,
 		}
 
 		if (op == KVP_OP_GET_IP_INFO) {
-			/*
-			 * Gather info other than the IP address.
-			 * IP address info will be gathered later.
-			 */
+			 
 			if (curp->ifa_addr->sa_family == AF_INET) {
 				ip_buffer->addr_family |= ADDR_FAMILY_IPV4;
-				/*
-				 * Get subnet info.
-				 */
+				 
 				error = kvp_process_ip_address(
 							     curp->ifa_netmask,
 							     AF_INET,
@@ -891,9 +765,7 @@ kvp_get_ip_info(int family, char *if_name, int op,
 			} else {
 				ip_buffer->addr_family |= ADDR_FAMILY_IPV6;
 
-				/*
-				 * Get subnet info in CIDR format.
-				 */
+				 
 				weight = 0;
 				sn_str = (char *)ip_buffer->sub_net;
 				addr6 = (struct sockaddr_in6 *)
@@ -916,9 +788,7 @@ kvp_get_ip_info(int family, char *if_name, int op,
 				sn_offset += strlen(sn_str) + 1;
 			}
 
-			/*
-			 * Collect other ip related configuration info.
-			 */
+			 
 
 			kvp_get_ipconfig_info(if_name, ip_buffer);
 		}
@@ -939,9 +809,7 @@ getaddr_done:
 	return error;
 }
 
-/*
- * Retrieve the IP given the MAC address.
- */
+ 
 static int kvp_mac_to_ip(struct hv_kvp_ipaddr_value *kvp_ip_val)
 {
 	char *mac = (char *)kvp_ip_val->adapter_id;
@@ -960,9 +828,7 @@ static int kvp_mac_to_ip(struct hv_kvp_ipaddr_value *kvp_ip_val)
 		return HV_E_FAIL;
 
 	while ((entry = readdir(dir)) != NULL) {
-		/*
-		 * Set the state for the next pass.
-		 */
+		 
 		snprintf(dev_id, sizeof(dev_id), "%s%s/address", KVP_NET_DIR,
 			 entry->d_name);
 
@@ -985,10 +851,7 @@ static int kvp_mac_to_ip(struct hv_kvp_ipaddr_value *kvp_ip_val)
 		if (strcmp(p, mac))
 			continue;
 
-		/*
-		 * Found the MAC match.
-		 * A NIC (e.g. VF) matching the MAC, but without IP, is skipped.
-		 */
+		 
 		if_name = entry->d_name;
 		if (!if_name)
 			continue;
@@ -1050,11 +913,7 @@ static int parse_ip_val_buffer(char *in_buf, int *offset,
 	char *x;
 	char *start;
 
-	/*
-	 * in_buf has sequence of characters that are separated by
-	 * the character ';'. The last sequence does not have the
-	 * terminating ";" character.
-	 */
+	 
 	start = in_buf + *offset;
 
 	x = strchr(start, ';');
@@ -1065,9 +924,7 @@ static int parse_ip_val_buffer(char *in_buf, int *offset,
 
 	if (strlen(start) != 0) {
 		int i = 0;
-		/*
-		 * Get rid of leading spaces.
-		 */
+		 
 		while (start[i] == ' ')
 			i++;
 
@@ -1171,18 +1028,13 @@ static int process_ip_string(FILE *f, char *ip_string, int type)
 	return 0;
 }
 
-/*
- * Only IPv4 subnet strings needs to be converted to plen
- * For IPv6 the subnet is already privided in plen format
- */
+ 
 static int kvp_subnet_to_plen(char *subnet_addr_str)
 {
 	int plen = 0;
 	struct in_addr subnet_addr4;
 
-	/*
-	 * Convert subnet address to binary representation
-	 */
+	 
 	if (inet_pton(AF_INET, subnet_addr_str, &subnet_addr4) == 1) {
 		uint32_t subnet_mask = ntohl(subnet_addr4.s_addr);
 
@@ -1247,82 +1099,9 @@ static int kvp_set_ip_info(char *if_name, struct hv_kvp_ipaddr_value *new_val)
 	char *mac_addr;
 	int str_len;
 
-	/*
-	 * Set the configuration for the specified interface with
-	 * the information provided. Since there is no standard
-	 * way to configure an interface, we will have an external
-	 * script that does the job of configuring the interface and
-	 * flushing the configuration.
-	 *
-	 * The parameters passed to this external script are:
-	 * 1. A configuration file that has the specified configuration.
-	 *
-	 * We will embed the name of the interface in the configuration
-	 * file: ifcfg-ethx (where ethx is the interface name).
-	 *
-	 * The information provided here may be more than what is needed
-	 * in a given distro to configure the interface and so are free
-	 * ignore information that may not be relevant.
-	 *
-	 * Here is the ifcfg format of the ip configuration file:
-	 *
-	 * HWADDR=macaddr
-	 * DEVICE=interface name
-	 * BOOTPROTO=<protocol> (where <protocol> is "dhcp" if DHCP is configured
-	 *                       or "none" if no boot-time protocol should be used)
-	 *
-	 * IPADDR0=ipaddr1
-	 * IPADDR1=ipaddr2
-	 * IPADDRx=ipaddry (where y = x + 1)
-	 *
-	 * NETMASK0=netmask1
-	 * NETMASKx=netmasky (where y = x + 1)
-	 *
-	 * GATEWAY=ipaddr1
-	 * GATEWAYx=ipaddry (where y = x + 1)
-	 *
-	 * DNSx=ipaddrx (where first DNS address is tagged as DNS1 etc)
-	 *
-	 * IPV6 addresses will be tagged as IPV6ADDR, IPV6 gateway will be
-	 * tagged as IPV6_DEFAULTGW and IPV6 NETMASK will be tagged as
-	 * IPV6NETMASK.
-	 *
-	 * Here is the keyfile format of the ip configuration file:
-	 *
-	 * [ethernet]
-	 * mac-address=macaddr
-	 * [connection]
-	 * interface-name=interface name
-	 *
-	 * [ipv4]
-	 * method=<protocol> (where <protocol> is "auto" if DHCP is configured
-	 *                       or "manual" if no boot-time protocol should be used)
-	 *
-	 * address1=ipaddr1/plen
-	 * address2=ipaddr2/plen
-	 *
-	 * gateway=gateway1;gateway2
-	 *
-	 * dns=dns1;dns2
-	 *
-	 * [ipv6]
-	 * address1=ipaddr1/plen
-	 * address2=ipaddr2/plen
-	 *
-	 * gateway=gateway1;gateway2
-	 *
-	 * dns=dns1;dns2
-	 *
-	 * The host can specify multiple ipv4 and ipv6 addresses to be
-	 * configured for the interface. Furthermore, the configuration
-	 * needs to be persistent. A subsequent GET call on the interface
-	 * is expected to return the configuration that is set via the SET
-	 * call.
-	 */
+	 
 
-	/*
-	 * We are populating both ifcfg and nmconnection files
-	 */
+	 
 	snprintf(if_filename, sizeof(if_filename), "%s%s%s", KVP_CONFIG_LOC,
 		 "/ifcfg-", if_name);
 
@@ -1346,9 +1125,7 @@ static int kvp_set_ip_info(char *if_name, struct hv_kvp_ipaddr_value *new_val)
 		return HV_E_FAIL;
 	}
 
-	/*
-	 * First write out the MAC address.
-	 */
+	 
 
 	mac_addr = kvp_if_name_to_mac(if_name);
 	if (mac_addr == NULL) {
@@ -1382,16 +1159,9 @@ static int kvp_set_ip_info(char *if_name, struct hv_kvp_ipaddr_value *new_val)
 
 	free(mac_addr);
 
-	/*
-	 * The dhcp_enabled flag is only for IPv4. In the case the host only
-	 * injects an IPv6 address, the flag is true, but we still need to
-	 * proceed to parse and pass the IPv6 information to the
-	 * disto-specific script hv_set_ifconfig.
-	 */
+	 
 
-	/*
-	 * First populate the ifcfg file format
-	 */
+	 
 	if (new_val->dhcp_enabled) {
 		error = kvp_write_file(ifcfg_file, "BOOTPROTO", "", "dhcp");
 		if (error)
@@ -1432,9 +1202,7 @@ static int kvp_set_ip_info(char *if_name, struct hv_kvp_ipaddr_value *new_val)
 			goto setval_error;
 	}
 
-	/*
-	 * Now we populate the keyfile format
-	 */
+	 
 
 	if (new_val->dhcp_enabled) {
 		error = kvp_write_file(nmfile, "method", "", "auto");
@@ -1446,16 +1214,13 @@ static int kvp_set_ip_info(char *if_name, struct hv_kvp_ipaddr_value *new_val)
 			goto setval_error;
 	}
 
-	/*
-	 * Write the configuration for ipaddress, netmask, gateway and
-	 * name services
-	 */
+	 
 	error = process_ip_string_nm(nmfile, (char *)new_val->ip_addr,
 				     (char *)new_val->sub_net, is_ipv6);
 	if (error < 0)
 		goto setval_error;
 
-	/* we do not want ipv4 addresses in ipv6 section and vice versa */
+	 
 	if (is_ipv6 != is_ipv4((char *)new_val->gate_way)) {
 		error = fprintf(nmfile, "gateway=%s\n", (char *)new_val->gate_way);
 		if (error < 0)
@@ -1470,17 +1235,11 @@ static int kvp_set_ip_info(char *if_name, struct hv_kvp_ipaddr_value *new_val)
 	fclose(nmfile);
 	fclose(ifcfg_file);
 
-	/*
-	 * Now that we have populated the configuration file,
-	 * invoke the external script to do its magic.
-	 */
+	 
 
 	str_len = snprintf(cmd, sizeof(cmd), KVP_SCRIPTS_PATH "%s %s %s",
 			   "hv_set_ifconfig", if_filename, nm_filename);
-	/*
-	 * This is a little overcautious, but it's necessary to suppress some
-	 * false warnings from gcc 8.0.1.
-	 */
+	 
 	if (str_len <= 0 || (unsigned int)str_len >= sizeof(cmd)) {
 		syslog(LOG_ERR, "Cmd '%s' (len=%d) may be too long",
 		       cmd, str_len);
@@ -1511,7 +1270,7 @@ kvp_get_domain_name(char *buffer, int length)
 
 	gethostname(buffer, length);
 	memset(&hints, 0, sizeof(hints));
-	hints.ai_family = AF_INET; /*Get only ipv4 addrinfo. */
+	hints.ai_family = AF_INET;  
 	hints.ai_socktype = SOCK_STREAM;
 	hints.ai_flags = AI_CANONNAME;
 
@@ -1575,14 +1334,9 @@ int main(int argc, char *argv[])
 	openlog("KVP", 0, LOG_USER);
 	syslog(LOG_INFO, "KVP starting; pid is:%d", getpid());
 
-	/*
-	 * Retrieve OS release information.
-	 */
+	 
 	kvp_get_os_info();
-	/*
-	 * Cache Fully Qualified Domain Name because getaddrinfo takes an
-	 * unpredictable amount of time to finish.
-	 */
+	 
 	kvp_get_domain_name(full_domain_name, sizeof(full_domain_name));
 
 	if (kvp_file_init()) {
@@ -1602,9 +1356,7 @@ reopen_kvp_fd:
 		exit(EXIT_FAILURE);
 	}
 
-	/*
-	 * Register ourselves with the kernel.
-	 */
+	 
 	hv_msg->kvp_hdr.operation = KVP_OP_REGISTER1;
 	len = write(kvp_fd, hv_msg, sizeof(struct hv_kvp_msg));
 	if (len != sizeof(struct hv_kvp_msg)) {
@@ -1638,20 +1390,13 @@ reopen_kvp_fd:
 			goto reopen_kvp_fd;
 		}
 
-		/*
-		 * We will use the KVP header information to pass back
-		 * the error from this daemon. So, first copy the state
-		 * and set the error code to success.
-		 */
+		 
 		op = hv_msg->kvp_hdr.operation;
 		pool = hv_msg->kvp_hdr.pool;
 		hv_msg->error = HV_S_OK;
 
 		if ((in_hand_shake) && (op == KVP_OP_REGISTER1)) {
-			/*
-			 * Driver is registering with us; stash away the version
-			 * information.
-			 */
+			 
 			in_hand_shake = 0;
 			p = (char *)hv_msg->body.kvp_register.version;
 			lic_version = malloc(strlen(p) + 1);
@@ -1681,10 +1426,7 @@ reopen_kvp_fd:
 			if_name = kvp_get_if_name(
 					(char *)kvp_ip_val->adapter_id);
 			if (if_name == NULL) {
-				/*
-				 * We could not map the guid to an
-				 * interface name; return error.
-				 */
+				 
 				hv_msg->error = HV_GUID_NOTFOUND;
 				break;
 			}
@@ -1727,11 +1469,7 @@ reopen_kvp_fd:
 		if (op != KVP_OP_ENUMERATE)
 			goto kvp_done;
 
-		/*
-		 * If the pool is KVP_POOL_AUTO, dynamically generate
-		 * both the key and the value; if not read from the
-		 * appropriate pool.
-		 */
+		 
 		if (pool != KVP_POOL_AUTO) {
 			if (kvp_pool_enumerate(pool,
 					hv_msg->body.kvp_enum_data.index,
@@ -1794,11 +1532,7 @@ reopen_kvp_fd:
 			break;
 		}
 
-		/*
-		 * Send the value back to the kernel. Note: the write() may
-		 * return an error due to hibernation; we can ignore the error
-		 * by resetting the dev file, i.e. closing and re-opening it.
-		 */
+		 
 kvp_done:
 		len = write(kvp_fd, hv_msg, sizeof(struct hv_kvp_msg));
 		if (len != sizeof(struct hv_kvp_msg)) {

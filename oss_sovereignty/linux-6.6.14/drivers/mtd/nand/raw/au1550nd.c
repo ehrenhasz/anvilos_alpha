@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  Copyright (C) 2004 Embedded Edge, LLC
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/slab.h>
@@ -29,14 +27,7 @@ static struct au1550nd_ctx *chip_to_au_ctx(struct nand_chip *this)
 	return container_of(this, struct au1550nd_ctx, chip);
 }
 
-/**
- * au_write_buf -  write buffer to chip
- * @this:	NAND chip object
- * @buf:	data buffer
- * @len:	number of bytes to write
- *
- * write function for 8bit buswidth
- */
+ 
 static void au_write_buf(struct nand_chip *this, const void *buf,
 			 unsigned int len)
 {
@@ -46,18 +37,11 @@ static void au_write_buf(struct nand_chip *this, const void *buf,
 
 	for (i = 0; i < len; i++) {
 		writeb(p[i], ctx->base + MEM_STNAND_DATA);
-		wmb(); /* drain writebuffer */
+		wmb();  
 	}
 }
 
-/**
- * au_read_buf -  read chip data into buffer
- * @this:	NAND chip object
- * @buf:	buffer to store date
- * @len:	number of bytes to read
- *
- * read function for 8bit buswidth
- */
+ 
 static void au_read_buf(struct nand_chip *this, void *buf,
 			unsigned int len)
 {
@@ -67,18 +51,11 @@ static void au_read_buf(struct nand_chip *this, void *buf,
 
 	for (i = 0; i < len; i++) {
 		p[i] = readb(ctx->base + MEM_STNAND_DATA);
-		wmb(); /* drain writebuffer */
+		wmb();  
 	}
 }
 
-/**
- * au_write_buf16 -  write buffer to chip
- * @this:	NAND chip object
- * @buf:	data buffer
- * @len:	number of bytes to write
- *
- * write function for 16bit buswidth
- */
+ 
 static void au_write_buf16(struct nand_chip *this, const void *buf,
 			   unsigned int len)
 {
@@ -89,18 +66,11 @@ static void au_write_buf16(struct nand_chip *this, const void *buf,
 	len >>= 1;
 	for (i = 0; i < len; i++) {
 		writew(p[i], ctx->base + MEM_STNAND_DATA);
-		wmb(); /* drain writebuffer */
+		wmb();  
 	}
 }
 
-/**
- * au_read_buf16 -  read chip data into buffer
- * @this:	NAND chip object
- * @buf:	buffer to store date
- * @len:	number of bytes to read
- *
- * read function for 16bit buswidth
- */
+ 
 static void au_read_buf16(struct nand_chip *this, void *buf, unsigned int len)
 {
 	struct au1550nd_ctx *ctx = chip_to_au_ctx(this);
@@ -110,7 +80,7 @@ static void au_read_buf16(struct nand_chip *this, void *buf, unsigned int len)
 	len >>= 1;
 	for (i = 0; i < len; i++) {
 		p[i] = readw(ctx->base + MEM_STNAND_DATA);
-		wmb(); /* drain writebuffer */
+		wmb();  
 	}
 }
 
@@ -122,9 +92,9 @@ static int find_nand_cs(unsigned long nand_base)
 	int i;
 
 	for (i = 0; i < 4; i++) {
-		addr = 0x1000 + (i * 0x10);			/* CSx */
-		staddr = __raw_readl(base + addr + 0x08);	/* STADDRx */
-		/* figure out the decoded range of this CS */
+		addr = 0x1000 + (i * 0x10);			 
+		staddr = __raw_readl(base + addr + 0x08);	 
+		 
 		start = (staddr << 4) & 0xfffc0000;
 		mask = (staddr << 18) & 0xfffc0000;
 		end = (start | (start - 1)) & ~(start ^ mask);
@@ -161,7 +131,7 @@ static int au1550nd_exec_instr(struct nand_chip *this,
 	case NAND_OP_CMD_INSTR:
 		writeb(instr->ctx.cmd.opcode,
 		       ctx->base + MEM_STNAND_CMD);
-		/* Drain the writebuffer */
+		 
 		wmb();
 		break;
 
@@ -169,7 +139,7 @@ static int au1550nd_exec_instr(struct nand_chip *this,
 		for (i = 0; i < instr->ctx.addr.naddrs; i++) {
 			writeb(instr->ctx.addr.addrs[i],
 			       ctx->base + MEM_STNAND_ADDR);
-			/* Drain the writebuffer */
+			 
 			wmb();
 		}
 		break;
@@ -218,9 +188,9 @@ static int au1550nd_exec_op(struct nand_chip *this,
 	if (check_only)
 		return 0;
 
-	/* assert (force assert) chip enable */
+	 
 	alchemy_wrsmem((1 << (4 + ctx->cs)), AU1000_MEM_STNDCTL);
-	/* Drain the writebuffer */
+	 
 	wmb();
 
 	for (i = 0; i < op->ninstrs; i++) {
@@ -229,9 +199,9 @@ static int au1550nd_exec_op(struct nand_chip *this,
 			break;
 	}
 
-	/* deassert chip enable */
+	 
 	alchemy_wrsmem(0, AU1000_MEM_STNDCTL);
-	/* Drain the writebuffer */
+	 
 	wmb();
 
 	return ret;
@@ -293,7 +263,7 @@ static int au1550nd_probe(struct platform_device *pdev)
 	mtd = nand_to_mtd(this);
 	mtd->dev.parent = &pdev->dev;
 
-	/* figure out which CS# r->start belongs to */
+	 
 	cs = find_nand_cs(r->start);
 	if (cs < 0) {
 		dev_err(&pdev->dev, "cannot detect NAND chipselect\n");
@@ -309,11 +279,7 @@ static int au1550nd_probe(struct platform_device *pdev)
 	if (pd->devwidth)
 		this->options |= NAND_BUSWIDTH_16;
 
-	/*
-	 * This driver assumes that the default ECC engine should be TYPE_SOFT.
-	 * Set ->engine_type before registering the NAND devices in order to
-	 * provide a driver specific default value.
-	 */
+	 
 	this->ecc.engine_type = NAND_ECC_ENGINE_TYPE_SOFT;
 
 	ret = nand_scan(this, 1);

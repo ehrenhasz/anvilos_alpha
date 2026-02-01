@@ -1,21 +1,9 @@
-/*
- *	linux/drivers/video/bt431.h
- *
- *	Copyright 2003  Thiemo Seufer <seufer@csv.ica.uni-stuttgart.de>
- *	Copyright 2016  Maciej W. Rozycki <macro@linux-mips.org>
- *
- *	This file is subject to the terms and conditions of the GNU General
- *	Public License. See the file COPYING in the main directory of this
- *	archive for more details.
- */
+ 
 #include <linux/types.h>
 
 #define BT431_CURSOR_SIZE	64
 
-/*
- * Bt431 cursor generator registers, 32-bit aligned.
- * Two twin Bt431 are used on the DECstation's PMAG-AA.
- */
+ 
 struct bt431_regs {
 	volatile u16 addr_lo;
 	u16 pad0;
@@ -37,9 +25,7 @@ static inline u8 bt431_get_value(u16 val)
 	return val & 0xff;
 }
 
-/*
- * Additional registers addressed indirectly.
- */
+ 
 #define BT431_REG_CMD		0x0000
 #define BT431_REG_CXLO		0x0001
 #define BT431_REG_CXHI		0x0002
@@ -57,9 +43,7 @@ static inline u8 bt431_get_value(u16 val)
 #define BT431_REG_CRAM_BASE	0x0000
 #define BT431_REG_CRAM_END	0x01ff
 
-/*
- * Command register.
- */
+ 
 #define BT431_CMD_CURS_ENABLE	0x40
 #define BT431_CMD_XHAIR_ENABLE	0x20
 #define BT431_CMD_OR_CURSORS	0x10
@@ -75,10 +59,7 @@ static inline u8 bt431_get_value(u16 val)
 
 static inline void bt431_select_reg(struct bt431_regs *regs, int ir)
 {
-	/*
-	 * The compiler splits the write in two bytes without these
-	 * helper variables.
-	 */
+	 
 	volatile u16 *lo = &(regs->addr_lo);
 	volatile u16 *hi = &(regs->addr_hi);
 
@@ -88,13 +69,10 @@ static inline void bt431_select_reg(struct bt431_regs *regs, int ir)
 	*hi = bt431_set_value((ir >> 8) & 0xff);
 }
 
-/* Autoincrement read/write. */
+ 
 static inline u8 bt431_read_reg_inc(struct bt431_regs *regs)
 {
-	/*
-	 * The compiler splits the write in two bytes without the
-	 * helper variable.
-	 */
+	 
 	volatile u16 *r = &(regs->addr_reg);
 
 	mb();
@@ -103,10 +81,7 @@ static inline u8 bt431_read_reg_inc(struct bt431_regs *regs)
 
 static inline void bt431_write_reg_inc(struct bt431_regs *regs, u8 value)
 {
-	/*
-	 * The compiler splits the write in two bytes without the
-	 * helper variable.
-	 */
+	 
 	volatile u16 *r = &(regs->addr_reg);
 
 	mb();
@@ -125,13 +100,10 @@ static inline void bt431_write_reg(struct bt431_regs *regs, int ir, u8 value)
 	bt431_write_reg_inc(regs, value);
 }
 
-/* Autoincremented read/write for the cursor map. */
+ 
 static inline u16 bt431_read_cmap_inc(struct bt431_regs *regs)
 {
-	/*
-	 * The compiler splits the write in two bytes without the
-	 * helper variable.
-	 */
+	 
 	volatile u16 *r = &(regs->addr_cmap);
 
 	mb();
@@ -140,10 +112,7 @@ static inline u16 bt431_read_cmap_inc(struct bt431_regs *regs)
 
 static inline void bt431_write_cmap_inc(struct bt431_regs *regs, u16 value)
 {
-	/*
-	 * The compiler splits the write in two bytes without the
-	 * helper variable.
-	 */
+	 
 	volatile u16 *r = &(regs->addr_cmap);
 
 	mb();
@@ -176,27 +145,16 @@ static inline void bt431_erase_cursor(struct bt431_regs *regs)
 
 static inline void bt431_position_cursor(struct bt431_regs *regs, u16 x, u16 y)
 {
-	/*
-	 * Magic from the MACH sources.
-	 *
-	 * Cx = x + D + H - P
-	 *  P = 37 if 1:1, 52 if 4:1, 57 if 5:1
-	 *  D = pixel skew between outdata and external data
-	 *  H = pixels between HSYNCH falling and active video
-	 *
-	 * Cy = y + V - 32
-	 *  V = scanlines between HSYNCH falling, two or more
-	 *      clocks after VSYNCH falling, and active video
-	 */
+	 
 	x += 412 - 52;
 	y += 68 - 32;
 
-	/* Use autoincrement. */
+	 
 	bt431_select_reg(regs, BT431_REG_CXLO);
-	bt431_write_reg_inc(regs, x & 0xff); /* BT431_REG_CXLO */
-	bt431_write_reg_inc(regs, (x >> 8) & 0x0f); /* BT431_REG_CXHI */
-	bt431_write_reg_inc(regs, y & 0xff); /* BT431_REG_CYLO */
-	bt431_write_reg_inc(regs, (y >> 8) & 0x0f); /* BT431_REG_CYHI */
+	bt431_write_reg_inc(regs, x & 0xff);  
+	bt431_write_reg_inc(regs, (x >> 8) & 0x0f);  
+	bt431_write_reg_inc(regs, y & 0xff);  
+	bt431_write_reg_inc(regs, (y >> 8) & 0x0f);  
 }
 
 static inline void bt431_set_cursor(struct bt431_regs *regs,
@@ -227,14 +185,14 @@ static inline void bt431_set_cursor(struct bt431_regs *regs,
 
 static inline void bt431_init_cursor(struct bt431_regs *regs)
 {
-	/* no crosshair window */
+	 
 	bt431_select_reg(regs, BT431_REG_WXLO);
-	bt431_write_reg_inc(regs, 0x00); /* BT431_REG_WXLO */
-	bt431_write_reg_inc(regs, 0x00); /* BT431_REG_WXHI */
-	bt431_write_reg_inc(regs, 0x00); /* BT431_REG_WYLO */
-	bt431_write_reg_inc(regs, 0x00); /* BT431_REG_WYHI */
-	bt431_write_reg_inc(regs, 0x00); /* BT431_REG_WWLO */
-	bt431_write_reg_inc(regs, 0x00); /* BT431_REG_WWHI */
-	bt431_write_reg_inc(regs, 0x00); /* BT431_REG_WHLO */
-	bt431_write_reg_inc(regs, 0x00); /* BT431_REG_WHHI */
+	bt431_write_reg_inc(regs, 0x00);  
+	bt431_write_reg_inc(regs, 0x00);  
+	bt431_write_reg_inc(regs, 0x00);  
+	bt431_write_reg_inc(regs, 0x00);  
+	bt431_write_reg_inc(regs, 0x00);  
+	bt431_write_reg_inc(regs, 0x00);  
+	bt431_write_reg_inc(regs, 0x00);  
+	bt431_write_reg_inc(regs, 0x00);  
 }

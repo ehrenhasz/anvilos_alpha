@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2017 Nicira, Inc.
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -50,7 +48,7 @@ static void ovs_meter_free(struct dp_meter *meter)
 	kfree_rcu(meter, rcu);
 }
 
-/* Call with ovs_mutex or RCU read lock. */
+ 
 static struct dp_meter *lookup_meter(const struct dp_meter_table *tbl,
 				     u32 meter_id)
 {
@@ -137,15 +135,13 @@ static int attach_meter(struct dp_meter_table *tbl, struct dp_meter *meter)
 	u32 hash = meter_hash(ti, meter->id);
 	int err;
 
-	/* In generally, slots selected should be empty, because
-	 * OvS uses id-pool to fetch a available id.
-	 */
+	 
 	if (unlikely(rcu_dereference_ovsl(ti->dp_meters[hash])))
 		return -EBUSY;
 
 	dp_meter_instance_insert(ti, meter);
 
-	/* That function is thread-safe. */
+	 
 	tbl->count++;
 	if (tbl->count >= tbl->max_meters_allowed) {
 		err = -EFBIG;
@@ -179,16 +175,13 @@ static int detach_meter(struct dp_meter_table *tbl, struct dp_meter *meter)
 
 	tbl->count--;
 
-	/* Shrink the meter array if necessary. */
+	 
 	if (ti->n_meters > DP_METER_ARRAY_SIZE_MIN &&
 	    tbl->count <= (ti->n_meters / 4)) {
 		int half_size = ti->n_meters / 2;
 		int i;
 
-		/* Avoid hash collision, don't move slots to other place.
-		 * Make sure there are no references of meters in array
-		 * which will be released.
-		 */
+		 
 		for (i = half_size; i < ti->n_meters; i++)
 			if (rcu_dereference_ovsl(ti->dp_meters[i]))
 				goto out;
@@ -307,7 +300,7 @@ static int ovs_meter_cmd_features(struct sk_buff *skb, struct genl_info *info)
 	band_nla = nla_nest_start_noflag(reply, OVS_BAND_ATTR_UNSPEC);
 	if (!band_nla)
 		goto nla_put_failure;
-	/* Currently only DROP band type is supported. */
+	 
 	if (nla_put_u32(reply, OVS_BAND_ATTR_TYPE, OVS_METER_BAND_TYPE_DROP))
 		goto nla_put_failure;
 	nla_nest_end(reply, band_nla);
@@ -332,7 +325,7 @@ static struct dp_meter *dp_meter_create(struct nlattr **a)
 	struct dp_meter_band *band;
 	int err;
 
-	/* Validate attributes, count the bands. */
+	 
 	if (!a[OVS_METER_ATTR_BANDS])
 		return ERR_PTR(-EINVAL);
 
@@ -340,7 +333,7 @@ static struct dp_meter *dp_meter_create(struct nlattr **a)
 		if (++n_bands > DP_MAX_BANDS)
 			return ERR_PTR(-EINVAL);
 
-	/* Allocate and set up the meter before locking anything. */
+	 
 	meter = kzalloc(struct_size(meter, bands, n_bands), GFP_KERNEL_ACCOUNT);
 	if (!meter)
 		return ERR_PTR(-ENOMEM);
@@ -356,7 +349,7 @@ static struct dp_meter *dp_meter_create(struct nlattr **a)
 	}
 	meter->n_bands = n_bands;
 
-	/* Set up meter bands. */
+	 
 	band = meter->bands;
 	nla_for_each_nested(nla, a[OVS_METER_ATTR_BANDS], rem) {
 		struct nlattr *attr[OVS_BAND_ATTR_MAX + 1];
@@ -383,12 +376,7 @@ static struct dp_meter *dp_meter_create(struct nlattr **a)
 		}
 
 		band->burst_size = nla_get_u32(attr[OVS_BAND_ATTR_BURST]);
-		/* Figure out max delta_t that is enough to fill any bucket.
-		 * Keep max_delta_t size to the bucket units:
-		 * pkts => 1/1000 packets, kilobits => bits.
-		 *
-		 * Start with a full bucket.
-		 */
+		 
 		band->bucket = band->burst_size * 1000ULL;
 		band_max_delta_t = div_u64(band->bucket, band->rate);
 		if (band_max_delta_t > meter->max_delta_t)
@@ -451,9 +439,7 @@ static int ovs_meter_cmd_set(struct sk_buff *skb, struct genl_info *info)
 
 	ovs_unlock();
 
-	/* Build response with the meter_id and stats from
-	 * the old meter, if any.
-	 */
+	 
 	failed = nla_put_u32(reply, OVS_METER_ATTR_ID, meter_id);
 	WARN_ON(failed);
 	if (old_meter) {
@@ -509,7 +495,7 @@ static int ovs_meter_cmd_get(struct sk_buff *skb, struct genl_info *info)
 		goto exit_unlock;
 	}
 
-	/* Locate meter, copy stats. */
+	 
 	meter = lookup_meter(&dp->meter_tbl, meter_id);
 	if (!meter) {
 		err = -ENOENT;
@@ -584,11 +570,7 @@ exit_unlock:
 	return err;
 }
 
-/* Meter action execution.
- *
- * Return true 'meter_id' drop band is triggered. The 'skb' should be
- * dropped by the caller'.
- */
+ 
 bool ovs_meter_execute(struct datapath *dp, struct sk_buff *skb,
 		       struct sw_flow_key *key, u32 meter_id)
 {
@@ -602,48 +584,32 @@ bool ovs_meter_execute(struct datapath *dp, struct sk_buff *skb,
 	u32 cost;
 
 	meter = lookup_meter(&dp->meter_tbl, meter_id);
-	/* Do not drop the packet when there is no meter. */
+	 
 	if (!meter)
 		return false;
 
-	/* Lock the meter while using it. */
+	 
 	spin_lock(&meter->lock);
 
-	long_delta_ms = (now_ms - meter->used); /* ms */
+	long_delta_ms = (now_ms - meter->used);  
 	if (long_delta_ms < 0) {
-		/* This condition means that we have several threads fighting
-		 * for a meter lock, and the one who received the packets a
-		 * bit later wins. Assuming that all racing threads received
-		 * packets at the same time to avoid overflow.
-		 */
+		 
 		long_delta_ms = 0;
 	}
 
-	/* Make sure delta_ms will not be too large, so that bucket will not
-	 * wrap around below.
-	 */
+	 
 	delta_ms = (long_delta_ms > (long long int)meter->max_delta_t)
 		   ? meter->max_delta_t : (u32)long_delta_ms;
 
-	/* Update meter statistics.
-	 */
+	 
 	meter->used = now_ms;
 	meter->stats.n_packets += 1;
 	meter->stats.n_bytes += skb->len;
 
-	/* Bucket rate is either in kilobits per second, or in packets per
-	 * second.  We maintain the bucket in the units of either bits or
-	 * 1/1000th of a packet, correspondingly.
-	 * Then, when rate is multiplied with milliseconds, we get the
-	 * bucket units:
-	 * msec * kbps = bits, and
-	 * msec * packets/sec = 1/1000 packets.
-	 *
-	 * 'cost' is the number of bucket units in this packet.
-	 */
+	 
 	cost = (meter->kbps) ? skb->len * 8 : 1000;
 
-	/* Update all bands and find the one hit with the highest rate. */
+	 
 	for (i = 0; i < meter->n_bands; ++i) {
 		long long int max_bucket_size;
 
@@ -663,12 +629,12 @@ bool ovs_meter_execute(struct datapath *dp, struct sk_buff *skb,
 	}
 
 	if (band_exceeded_max >= 0) {
-		/* Update band statistics. */
+		 
 		band = &meter->bands[band_exceeded_max];
 		band->stats.n_packets += 1;
 		band->stats.n_bytes += skb->len;
 
-		/* Drop band triggered, let the caller drop the 'skb'.  */
+		 
 		if (band->type == OVS_METER_BAND_TYPE_DROP) {
 			spin_unlock(&meter->lock);
 			return true;
@@ -682,26 +648,22 @@ bool ovs_meter_execute(struct datapath *dp, struct sk_buff *skb,
 static const struct genl_small_ops dp_meter_genl_ops[] = {
 	{ .cmd = OVS_METER_CMD_FEATURES,
 		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
-		.flags = 0,		  /* OK for unprivileged users. */
+		.flags = 0,		   
 		.doit = ovs_meter_cmd_features
 	},
 	{ .cmd = OVS_METER_CMD_SET,
 		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
-		.flags = GENL_UNS_ADMIN_PERM, /* Requires CAP_NET_ADMIN
-					       *  privilege.
-					       */
+		.flags = GENL_UNS_ADMIN_PERM,  
 		.doit = ovs_meter_cmd_set,
 	},
 	{ .cmd = OVS_METER_CMD_GET,
 		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
-		.flags = 0,		  /* OK for unprivileged users. */
+		.flags = 0,		   
 		.doit = ovs_meter_cmd_get,
 	},
 	{ .cmd = OVS_METER_CMD_DEL,
 		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
-		.flags = GENL_UNS_ADMIN_PERM, /* Requires CAP_NET_ADMIN
-					       *  privilege.
-					       */
+		.flags = GENL_UNS_ADMIN_PERM,  
 		.doit = ovs_meter_cmd_del
 	},
 };
@@ -736,7 +698,7 @@ int ovs_meters_init(struct datapath *dp)
 	if (!ti)
 		return -ENOMEM;
 
-	/* Allow meters in a datapath to use ~3.12% of physical memory. */
+	 
 	free_mem_bytes = nr_free_buffer_pages() * (PAGE_SIZE >> 5);
 	tbl->max_meters_allowed = min(free_mem_bytes / sizeof(struct dp_meter),
 				      DP_METER_NUM_MAX);

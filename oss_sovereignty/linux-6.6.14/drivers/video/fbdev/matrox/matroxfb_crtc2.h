@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef __MATROXFB_CRTC2_H__
 #define __MATROXFB_CRTC2_H__
 
@@ -13,8 +13,8 @@ struct matroxfb_dh_fb_info {
 	struct matrox_fb_info*	primary_dev;
 
 	struct {
-		unsigned long	base;	/* physical */
-		vaddr_t		vbase;	/* virtual */
+		unsigned long	base;	 
+		vaddr_t		vbase;	 
 		unsigned int	len;
 		unsigned int	len_usable;
 		unsigned int	len_maximum;
@@ -32,4 +32,4 @@ struct matroxfb_dh_fb_info {
 	u_int32_t cmap[16];
 };
 
-#endif /* __MATROXFB_CRTC2_H__ */
+#endif  

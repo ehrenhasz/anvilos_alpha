@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Processor thermal device for newer processors
- * Copyright (c) 2020, Intel Corporation.
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/kernel.h>
@@ -91,11 +88,7 @@ static void proc_thermal_mmio_write(struct proc_thermal_pci *pci_info,
 				proc_thermal_mmio_info[type].mmio_addr));
 }
 
-/*
- * To avoid sending two many messages to user space, we have 1 second delay.
- * On interrupt we are disabling interrupt and enabling after 1 second.
- * This workload function is delayed by 1 second.
- */
+ 
 static void proc_thermal_threshold_work_fn(struct work_struct *work)
 {
 	struct delayed_work *delayed_work = to_delayed_work(work);
@@ -106,7 +99,7 @@ static void proc_thermal_threshold_work_fn(struct work_struct *work)
 	if (tzone)
 		thermal_zone_device_update(tzone, THERMAL_TRIP_VIOLATED);
 
-	/* Enable interrupt flag */
+	 
 	proc_thermal_mmio_write(pci_info, PROC_THERMAL_MMIO_INT_ENABLE_0, 1);
 }
 
@@ -124,7 +117,7 @@ static irqreturn_t proc_thermal_irq_handler(int irq, void *devid)
 
 	proc_thermal_mmio_read(pci_info, PROC_THERMAL_MMIO_INT_STATUS_0, &status);
 
-	/* Disable enable interrupt flag */
+	 
 	proc_thermal_mmio_write(pci_info, PROC_THERMAL_MMIO_INT_ENABLE_0, 0);
 	pci_write_config_byte(pci_info->pdev, 0xdc, 0x01);
 
@@ -248,7 +241,7 @@ static int proc_thermal_pci_probe(struct pci_dev *pdev, const struct pci_device_
 		goto err_ret_mmio;
 	}
 
-	/* request and enable interrupt */
+	 
 	ret = pci_alloc_irq_vectors(pdev, 1, 1, PCI_IRQ_ALL_TYPES);
 	if (ret < 0) {
 		dev_err(&pdev->dev, "Failed to allocate vectors!\n");

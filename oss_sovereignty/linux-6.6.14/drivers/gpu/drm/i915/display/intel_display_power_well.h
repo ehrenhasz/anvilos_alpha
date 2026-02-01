@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2022 Intel Corporation
- */
+ 
+ 
 #ifndef __INTEL_DISPLAY_POWER_WELL_H__
 #define __INTEL_DISPLAY_POWER_WELL_H__
 
@@ -26,15 +24,9 @@ struct intel_encoder;
 	     (__power_well) - (__dev_priv)->display.power.domains.power_wells >= 0;	\
 	     (__power_well)--)
 
-/*
- * i915_power_well_id:
- *
- * IDs used to look up power wells. Power wells accessed directly bypassing
- * the power domains framework must be assigned a unique ID. The rest of power
- * wells must be assigned DISP_PW_ID_NONE.
- */
+ 
 enum i915_power_well_id {
-	DISP_PW_ID_NONE = 0,		/* must be kept zero */
+	DISP_PW_ID_NONE = 0,		 
 
 	VLV_DISP_PW_DISP2D,
 	BXT_DISP_PW_DPIO_CMN_A,
@@ -57,28 +49,19 @@ struct i915_power_well_instance {
 		u8 count;
 	} *domain_list;
 
-	/* unique identifier for this power well */
+	 
 	enum i915_power_well_id id;
-	/*
-	 * Arbitraty data associated with this power well. Platform and power
-	 * well specific.
-	 */
+	 
 	union {
 		struct {
-			/*
-			 * request/status flag index in the PUNIT power well
-			 * control/status registers.
-			 */
+			 
 			u8 idx;
 		} vlv;
 		struct {
 			enum dpio_phy phy;
 		} bxt;
 		struct {
-			/*
-			 * request/status flag index in the power well
-			 * constrol/status registers.
-			 */
+			 
 			u8 idx;
 		} hsw;
 		struct {
@@ -94,35 +77,28 @@ struct i915_power_well_desc {
 		u8 count;
 	} *instances;
 
-	/* Mask of pipes whose IRQ logic is backed by the pw */
+	 
 	u16 irq_pipe_mask:4;
 	u16 always_on:1;
-	/*
-	 * Instead of waiting for the status bit to ack enables,
-	 * just wait a specific amount of time and then consider
-	 * the well enabled.
-	 */
+	 
 	u16 fixed_enable_delay:1;
-	/* The pw is backing the VGA functionality */
+	 
 	u16 has_vga:1;
 	u16 has_fuses:1;
-	/*
-	 * The pw is for an ICL+ TypeC PHY port in
-	 * Thunderbolt mode.
-	 */
+	 
 	u16 is_tc_tbt:1;
-	/* Enable timeout if greater than the default 1ms */
+	 
 	u16 enable_timeout;
 };
 
 struct i915_power_well {
 	const struct i915_power_well_desc *desc;
 	struct intel_power_domain_mask domains;
-	/* power well enable/disable usage count */
+	 
 	int count;
-	/* cached hw enabled state */
+	 
 	bool hw_enabled;
-	/* index into desc->instances->list */
+	 
 	u8 instance_idx;
 };
 

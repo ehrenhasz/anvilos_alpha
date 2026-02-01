@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Technologic Systems TS-73xx SBC FPGA loader
- *
- * Copyright (C) 2016 Florian Fainelli <f.fainelli@gmail.com>
- *
- * FPGA Manager Driver for the on-board Altera Cyclone II FPGA found on
- * TS-7300, heavily based on load_fpga.c in their vendor tree.
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/io.h>
@@ -20,10 +13,10 @@
 #define TS73XX_FPGA_CONFIG_REG		1
 
 #define TS73XX_FPGA_WRITE_DONE		0x1
-#define TS73XX_FPGA_WRITE_DONE_TIMEOUT	1000	/* us */
+#define TS73XX_FPGA_WRITE_DONE_TIMEOUT	1000	 
 #define TS73XX_FPGA_RESET		0x2
-#define TS73XX_FPGA_RESET_LOW_DELAY	30	/* us */
-#define TS73XX_FPGA_RESET_HIGH_DELAY	80	/* us */
+#define TS73XX_FPGA_RESET_LOW_DELAY	30	 
+#define TS73XX_FPGA_RESET_HIGH_DELAY	80	 
 #define TS73XX_FPGA_LOAD_OK		0x4
 #define TS73XX_FPGA_CONFIG_LOAD		0x8
 
@@ -38,7 +31,7 @@ static int ts73xx_fpga_write_init(struct fpga_manager *mgr,
 {
 	struct ts73xx_fpga_priv *priv = mgr->priv;
 
-	/* Reset the FPGA */
+	 
 	writeb(0, priv->io_base + TS73XX_FPGA_CONFIG_REG);
 	udelay(TS73XX_FPGA_RESET_LOW_DELAY);
 	writeb(TS73XX_FPGA_RESET, priv->io_base + TS73XX_FPGA_CONFIG_REG);

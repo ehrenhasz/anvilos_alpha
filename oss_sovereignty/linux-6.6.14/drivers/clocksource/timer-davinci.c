@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * TI DaVinci clocksource driver
- *
- * Copyright (C) 2019 Texas Instruments
- * Author: Bartosz Golaszewski <bgolaszewski@baylibre.com>
- * (with tiny parts adopted from code by Kevin Hilman <khilman@baylibre.com>)
- */
+
+ 
 
 #define pr_fmt(fmt) "%s: " fmt, __func__
 
@@ -53,10 +47,7 @@ struct davinci_clockevent {
 	unsigned int cmp_off;
 };
 
-/*
- * This must be globally accessible by davinci_timer_read_sched_clock(), so
- * let's keep it here.
- */
+ 
 static struct {
 	struct clocksource dev;
 	void __iomem *base;
@@ -88,11 +79,7 @@ static void davinci_tim12_shutdown(void __iomem *base)
 
 	tcr = DAVINCI_TIMER_ENAMODE_DISABLED <<
 		DAVINCI_TIMER_ENAMODE_SHIFT_TIM12;
-	/*
-	 * This function is only ever called if we're using both timer
-	 * halves. In this case TIM34 runs in periodic mode and we must
-	 * not modify it.
-	 */
+	 
 	tcr |= DAVINCI_TIMER_ENAMODE_PERIODIC <<
 		DAVINCI_TIMER_ENAMODE_SHIFT_TIM34;
 
@@ -105,7 +92,7 @@ static void davinci_tim12_set_oneshot(void __iomem *base)
 
 	tcr = DAVINCI_TIMER_ENAMODE_ONESHOT <<
 		DAVINCI_TIMER_ENAMODE_SHIFT_TIM12;
-	/* Same as above. */
+	 
 	tcr |= DAVINCI_TIMER_ENAMODE_PERIODIC <<
 		DAVINCI_TIMER_ENAMODE_SHIFT_TIM34;
 
@@ -188,11 +175,7 @@ static u64 davinci_clocksource_read(struct clocksource *dev)
 	return davinci_timer_read_sched_clock();
 }
 
-/*
- * Standard use-case: we're using tim12 for clockevent and tim34 for
- * clocksource. The default is making the former run in oneshot mode
- * and the latter in periodic mode.
- */
+ 
 static void davinci_clocksource_init_tim34(void __iomem *base)
 {
 	int tcr;
@@ -207,11 +190,7 @@ static void davinci_clocksource_init_tim34(void __iomem *base)
 	writel_relaxed(tcr, base + DAVINCI_TIMER_REG_TCR);
 }
 
-/*
- * Special use-case on da830: the DSP may use tim34. We're using tim12 for
- * both clocksource and clockevent. We set tim12 to periodic and don't touch
- * tim34.
- */
+ 
 static void davinci_clocksource_init_tim12(void __iomem *base)
 {
 	unsigned int tcr;
@@ -226,15 +205,12 @@ static void davinci_clocksource_init_tim12(void __iomem *base)
 
 static void davinci_timer_init(void __iomem *base)
 {
-	/* Set clock to internal mode and disable it. */
+	 
 	writel_relaxed(0x0, base + DAVINCI_TIMER_REG_TCR);
-	/*
-	 * Reset both 32-bit timers, set no prescaler for timer 34, set the
-	 * timer to dual 32-bit unchained mode, unreset both 32-bit timers.
-	 */
+	 
 	writel_relaxed(DAVINCI_TIMER_TGCR_DEFAULT,
 		       base + DAVINCI_TIMER_REG_TGCR);
-	/* Init both counters to zero. */
+	 
 	writel_relaxed(0x0, base + DAVINCI_TIMER_REG_TIM12);
 	writel_relaxed(0x0, base + DAVINCI_TIMER_REG_TIM34);
 }

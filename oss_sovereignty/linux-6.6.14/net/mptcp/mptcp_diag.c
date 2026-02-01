@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* MPTCP socket monitoring support
- *
- * Copyright (c) 2020 Red Hat
- *
- * Author: Paolo Abeni <pabeni@redhat.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/net.h>
@@ -186,7 +181,7 @@ static void mptcp_diag_dump(struct sk_buff *skb, struct netlink_callback *cb,
 next:
 		sock_put(sk);
 		if (ret < 0) {
-			/* will retry on the same position */
+			 
 			diag_ctx->s_num--;
 			break;
 		}
@@ -210,9 +205,7 @@ static void mptcp_diag_get_info(struct sock *sk, struct inet_diag_msg *r,
 		struct sock *lsk = READ_ONCE(msk->first);
 
 		if (lsk) {
-			/* override with settings from tcp listener,
-			 * so Send-Q will show accept queue.
-			 */
+			 
 			r->idiag_rqueue = READ_ONCE(lsk->sk_ack_backlog);
 			r->idiag_wqueue = READ_ONCE(lsk->sk_max_ack_backlog);
 		}
@@ -245,4 +238,4 @@ static void __exit mptcp_diag_exit(void)
 module_init(mptcp_diag_init);
 module_exit(mptcp_diag_exit);
 MODULE_LICENSE("GPL");
-MODULE_ALIAS_NET_PF_PROTO_TYPE(PF_NETLINK, NETLINK_SOCK_DIAG, 2-262 /* AF_INET - IPPROTO_MPTCP */);
+MODULE_ALIAS_NET_PF_PROTO_TYPE(PF_NETLINK, NETLINK_SOCK_DIAG, 2-262  );

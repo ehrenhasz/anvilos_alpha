@@ -1,17 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Support for Intel Camera Imaging ISP subsystem.
- * Copyright (c) 2010-2015, Intel Corporation.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms and conditions of the GNU General Public License,
- * version 2, as published by the Free Software Foundation.
- *
- * This program is distributed in the hope it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- * more details.
- */
+ 
+ 
 
 #ifndef __DMA_LOCAL_H_INCLUDED__
 #define __DMA_LOCAL_H_INCLUDED__
@@ -19,9 +7,9 @@
 #include <type_support.h>
 #include "dma_global.h"
 
-#include <defs.h>				/* HRTCAT() */
-#include <bits.h>				/* _hrt_get_bits() */
-#include <hive_isp_css_defs.h>		/* HIVE_DMA_NUM_CHANNELS */
+#include <defs.h>				 
+#include <bits.h>				 
+#include <hive_isp_css_defs.h>		 
 #include <dma_v2_defs.h>
 
 #define _DMA_FSM_GROUP_CMD_IDX						_DMA_V2_FSM_GROUP_CMD_IDX
@@ -66,13 +54,11 @@
 
 #define _DMA_DEV_INTERF_MAX_BURST_IDX			_DMA_V2_DEV_INTERF_MAX_BURST_IDX
 
-/*
- * Macro's to compute the DMA parameter register indices
- */
+ 
 #define DMA_SEL_COMP(comp)     (((comp)  & _hrt_ones(_DMA_V2_ADDR_SEL_COMP_BITS))            << _DMA_V2_ADDR_SEL_COMP_IDX)
 #define DMA_SEL_CH(ch)         (((ch)    & _hrt_ones(_DMA_V2_ADDR_SEL_CH_REG_BITS))          << _DMA_V2_ADDR_SEL_CH_REG_IDX)
 #define DMA_SEL_PARAM(param)   (((param) & _hrt_ones(_DMA_V2_ADDR_SEL_PARAM_BITS))           << _DMA_V2_ADDR_SEL_PARAM_IDX)
-/* CG = Connection Group */
+ 
 #define DMA_SEL_CG_INFO(info)  (((info)  & _hrt_ones(_DMA_V2_ADDR_SEL_GROUP_COMP_INFO_BITS)) << _DMA_V2_ADDR_SEL_GROUP_COMP_INFO_IDX)
 #define DMA_SEL_CG_COMP(comp)  (((comp)  & _hrt_ones(_DMA_V2_ADDR_SEL_GROUP_COMP_BITS))      << _DMA_V2_ADDR_SEL_GROUP_COMP_IDX)
 #define DMA_SEL_DEV_INFO(info) (((info)  & _hrt_ones(_DMA_V2_ADDR_SEL_DEV_INTERF_INFO_BITS)) << _DMA_V2_ADDR_SEL_DEV_INTERF_INFO_IDX)
@@ -126,7 +112,7 @@ typedef enum {
 	N_DMA_FIFO_STATES
 } dma_fifo_states_t;
 
-/* typedef struct dma_state_s			dma_state_t; */
+ 
 typedef struct dma_channel_state_s	dma_channel_state_t;
 typedef struct dma_port_state_s		dma_port_state_t;
 
@@ -205,4 +191,4 @@ struct dma_state_s {
 	dma_channel_state_t        channel_states[HIVE_DMA_NUM_CHANNELS];
 };
 
-#endif /* __DMA_LOCAL_H_INCLUDED__ */
+#endif  

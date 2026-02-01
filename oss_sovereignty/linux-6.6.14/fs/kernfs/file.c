@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * fs/kernfs/file.c - kernfs file implementation
- *
- * Copyright (c) 2001-3 Patrick Mochel
- * Copyright (c) 2007 SUSE Linux Products GmbH
- * Copyright (c) 2007, 2013 Tejun Heo <tj@kernel.org>
- */
+
+ 
 
 #include <linux/fs.h>
 #include <linux/seq_file.h>
@@ -22,19 +16,12 @@ struct kernfs_open_node {
 	struct rcu_head		rcu_head;
 	atomic_t		event;
 	wait_queue_head_t	poll;
-	struct list_head	files; /* goes through kernfs_open_file.list */
+	struct list_head	files;  
 	unsigned int		nr_mmapped;
 	unsigned int		nr_to_release;
 };
 
-/*
- * kernfs_notify() may be called from any context and bounces notifications
- * through a work item.  To minimize space overhead in kernfs_node, the
- * pending queue is implemented as a singly linked list of kernfs_nodes.
- * The list is terminated with the self pointer so that whether a
- * kernfs_node is on the list or not can be determined by testing the next
- * pointer for %NULL.
- */
+ 
 #define KERNFS_NOTIFY_EOL			((void *)&kernfs_notify_list)
 
 static DEFINE_SPINLOCK(kernfs_notify_lock);
@@ -58,35 +45,14 @@ static inline struct mutex *kernfs_open_file_mutex_lock(struct kernfs_node *kn)
 	return lock;
 }
 
-/**
- * of_on - Get the kernfs_open_node of the specified kernfs_open_file
- * @of: target kernfs_open_file
- *
- * Return: the kernfs_open_node of the kernfs_open_file
- */
+ 
 static struct kernfs_open_node *of_on(struct kernfs_open_file *of)
 {
 	return rcu_dereference_protected(of->kn->attr.open,
 					 !list_empty(&of->list));
 }
 
-/**
- * kernfs_deref_open_node_locked - Get kernfs_open_node corresponding to @kn
- *
- * @kn: target kernfs_node.
- *
- * Fetch and return ->attr.open of @kn when caller holds the
- * kernfs_open_file_mutex_ptr(kn).
- *
- * Update of ->attr.open happens under kernfs_open_file_mutex_ptr(kn). So when
- * the caller guarantees that this mutex is being held, other updaters can't
- * change ->attr.open and this means that we can safely deref ->attr.open
- * outside RCU read-side critical section.
- *
- * The caller needs to make sure that kernfs_open_file_mutex is held.
- *
- * Return: @kn->attr.open when kernfs_open_file_mutex is held.
- */
+ 
 static struct kernfs_open_node *
 kernfs_deref_open_node_locked(struct kernfs_node *kn)
 {
@@ -99,10 +65,7 @@ static struct kernfs_open_file *kernfs_of(struct file *file)
 	return ((struct seq_file *)file->private_data)->private;
 }
 
-/*
- * Determine the kernfs_ops for the given kernfs_node.  This function must
- * be called while holding an active reference.
- */
+ 
 static const struct kernfs_ops *kernfs_ops(struct kernfs_node *kn)
 {
 	if (kn->flags & KERNFS_LOCKDEP)
@@ -110,28 +73,7 @@ static const struct kernfs_ops *kernfs_ops(struct kernfs_node *kn)
 	return kn->attr.ops;
 }
 
-/*
- * As kernfs_seq_stop() is also called after kernfs_seq_start() or
- * kernfs_seq_next() failure, it needs to distinguish whether it's stopping
- * a seq_file iteration which is fully initialized with an active reference
- * or an aborted kernfs_seq_start() due to get_active failure.  The
- * position pointer is the only context for each seq_file iteration and
- * thus the stop condition should be encoded in it.  As the return value is
- * directly visible to userland, ERR_PTR(-ENODEV) is the only acceptable
- * choice to indicate get_active failure.
- *
- * Unfortunately, this is complicated due to the optional custom seq_file
- * operations which may return ERR_PTR(-ENODEV) too.  kernfs_seq_stop()
- * can't distinguish whether ERR_PTR(-ENODEV) is from get_active failure or
- * custom seq_file operations and thus can't decide whether put_active
- * should be performed or not only on ERR_PTR(-ENODEV).
- *
- * This is worked around by factoring out the custom seq_stop() and
- * put_active part into kernfs_seq_stop_active(), skipping it from
- * kernfs_seq_stop() if ERR_PTR(-ENODEV) while invoking it directly after
- * custom seq_file operations fail with ERR_PTR(-ENODEV) - this ensures
- * that kernfs_seq_stop_active() is skipped only after get_active failure.
- */
+ 
 static void kernfs_seq_stop_active(struct seq_file *sf, void *v)
 {
 	struct kernfs_open_file *of = sf->private;
@@ -147,10 +89,7 @@ static void *kernfs_seq_start(struct seq_file *sf, loff_t *ppos)
 	struct kernfs_open_file *of = sf->private;
 	const struct kernfs_ops *ops;
 
-	/*
-	 * @of->mutex nests outside active ref and is primarily to ensure that
-	 * the ops aren't called concurrently for the same open file.
-	 */
+	 
 	mutex_lock(&of->mutex);
 	if (!kernfs_get_active(of->kn))
 		return ERR_PTR(-ENODEV);
@@ -158,7 +97,7 @@ static void *kernfs_seq_start(struct seq_file *sf, loff_t *ppos)
 	ops = kernfs_ops(of->kn);
 	if (ops->seq_start) {
 		void *next = ops->seq_start(sf, ppos);
-		/* see the comment above kernfs_seq_stop_active() */
+		 
 		if (next == ERR_PTR(-ENODEV))
 			kernfs_seq_stop_active(sf, next);
 		return next;
@@ -173,15 +112,12 @@ static void *kernfs_seq_next(struct seq_file *sf, void *v, loff_t *ppos)
 
 	if (ops->seq_next) {
 		void *next = ops->seq_next(sf, v, ppos);
-		/* see the comment above kernfs_seq_stop_active() */
+		 
 		if (next == ERR_PTR(-ENODEV))
 			kernfs_seq_stop_active(sf, next);
 		return next;
 	} else {
-		/*
-		 * The same behavior and code as single_open(), always
-		 * terminate after the initial read.
-		 */
+		 
 		++*ppos;
 		return NULL;
 	}
@@ -212,12 +148,7 @@ static const struct seq_operations kernfs_seq_ops = {
 	.show = kernfs_seq_show,
 };
 
-/*
- * As reading a bin file can have side-effects, the exact offset and bytes
- * specified in read(2) call should be passed to the read callback making
- * it difficult to use seq_file.  Implement simplistic custom buffering for
- * bin files.
- */
+ 
 static ssize_t kernfs_file_read_iter(struct kiocb *iocb, struct iov_iter *iter)
 {
 	struct kernfs_open_file *of = kernfs_of(iocb->ki_filp);
@@ -233,10 +164,7 @@ static ssize_t kernfs_file_read_iter(struct kiocb *iocb, struct iov_iter *iter)
 	if (!buf)
 		return -ENOMEM;
 
-	/*
-	 * @of->mutex nests outside active ref and is used both to ensure that
-	 * the ops aren't called concurrently for the same open file.
-	 */
+	 
 	mutex_lock(&of->mutex);
 	if (!kernfs_get_active(of->kn)) {
 		len = -ENODEV;
@@ -280,16 +208,7 @@ static ssize_t kernfs_fop_read_iter(struct kiocb *iocb, struct iov_iter *iter)
 	return kernfs_file_read_iter(iocb, iter);
 }
 
-/*
- * Copy data in from userland and pass it to the matching kernfs write
- * operation.
- *
- * There is no easy way for us to know if userspace is only doing a partial
- * write, so we don't support them. We expect the entire buffer to come on
- * the first write.  Hint: if you're writing a value, first read the file,
- * modify only the value you're changing, then write entire buffer
- * back.
- */
+ 
 static ssize_t kernfs_fop_write_iter(struct kiocb *iocb, struct iov_iter *iter)
 {
 	struct kernfs_open_file *of = kernfs_of(iocb->ki_filp);
@@ -316,12 +235,9 @@ static ssize_t kernfs_fop_write_iter(struct kiocb *iocb, struct iov_iter *iter)
 		len = -EFAULT;
 		goto out_free;
 	}
-	buf[len] = '\0';	/* guarantee string termination */
+	buf[len] = '\0';	 
 
-	/*
-	 * @of->mutex nests outside active ref and is used both to ensure that
-	 * the ops aren't called concurrently for the same open file.
-	 */
+	 
 	mutex_lock(&of->mutex);
 	if (!kernfs_get_active(of->kn)) {
 		mutex_unlock(&of->mutex);
@@ -491,13 +407,7 @@ static int kernfs_fop_mmap(struct file *file, struct vm_area_struct *vma)
 	const struct kernfs_ops *ops;
 	int rc;
 
-	/*
-	 * mmap path and of->mutex are prone to triggering spurious lockdep
-	 * warnings and we don't want to add spurious locking dependency
-	 * between the two.  Check whether mmap is actually implemented
-	 * without grabbing @of->mutex by testing HAS_MMAP flag.  See the
-	 * comment in kernfs_file_open() for more details.
-	 */
+	 
 	if (!(of->kn->flags & KERNFS_HAS_MMAP))
 		return -ENODEV;
 
@@ -512,11 +422,7 @@ static int kernfs_fop_mmap(struct file *file, struct vm_area_struct *vma)
 	if (rc)
 		goto out_put;
 
-	/*
-	 * PowerPC's pci_mmap of legacy_mem uses shmem_zero_setup()
-	 * to satisfy versions of X which crash if the mmap fails: that
-	 * substitutes a new vm_file, and we don't then want bin_vm_ops.
-	 */
+	 
 	if (vma->vm_file != file)
 		goto out_put;
 
@@ -524,10 +430,7 @@ static int kernfs_fop_mmap(struct file *file, struct vm_area_struct *vma)
 	if (of->mmapped && of->vm_ops != vma->vm_ops)
 		goto out_put;
 
-	/*
-	 * It is not possible to successfully wrap close.
-	 * So error if someone is trying to use close.
-	 */
+	 
 	if (vma->vm_ops && vma->vm_ops->close)
 		goto out_put;
 
@@ -544,20 +447,7 @@ out_unlock:
 	return rc;
 }
 
-/**
- *	kernfs_get_open_node - get or create kernfs_open_node
- *	@kn: target kernfs_node
- *	@of: kernfs_open_file for this instance of open
- *
- *	If @kn->attr.open exists, increment its reference count; otherwise,
- *	create one.  @of is chained to the files list.
- *
- *	Locking:
- *	Kernel thread context (may sleep).
- *
- *	Return:
- *	%0 on success, -errno on failure.
- */
+ 
 static int kernfs_get_open_node(struct kernfs_node *kn,
 				struct kernfs_open_file *of)
 {
@@ -568,7 +458,7 @@ static int kernfs_get_open_node(struct kernfs_node *kn,
 	on = kernfs_deref_open_node_locked(kn);
 
 	if (!on) {
-		/* not there, initialize a new one */
+		 
 		on = kzalloc(sizeof(*on), GFP_KERNEL);
 		if (!on) {
 			mutex_unlock(mutex);
@@ -588,20 +478,7 @@ static int kernfs_get_open_node(struct kernfs_node *kn,
 	return 0;
 }
 
-/**
- *	kernfs_unlink_open_file - Unlink @of from @kn.
- *
- *	@kn: target kernfs_node
- *	@of: associated kernfs_open_file
- *	@open_failed: ->open() failed, cancel ->release()
- *
- *	Unlink @of from list of @kn's associated open files. If list of
- *	associated open files becomes empty, disassociate and free
- *	kernfs_open_node.
- *
- *	LOCKING:
- *	None.
- */
+ 
 static void kernfs_unlink_open_file(struct kernfs_node *kn,
 				    struct kernfs_open_file *of,
 				    bool open_failed)
@@ -654,7 +531,7 @@ static int kernfs_fop_open(struct inode *inode, struct file *file)
 	has_write = ops->write || ops->mmap;
 	has_mmap = ops->mmap;
 
-	/* see the flag definition for details */
+	 
 	if (root->flags & KERNFS_ROOT_EXTRA_OPEN_PERM_CHECK) {
 		if ((file->f_mode & FMODE_WRITE) &&
 		    (!(inode->i_mode & S_IWUGO) || !has_write))
@@ -665,27 +542,13 @@ static int kernfs_fop_open(struct inode *inode, struct file *file)
 			goto err_out;
 	}
 
-	/* allocate a kernfs_open_file for the file */
+	 
 	error = -ENOMEM;
 	of = kzalloc(sizeof(struct kernfs_open_file), GFP_KERNEL);
 	if (!of)
 		goto err_out;
 
-	/*
-	 * The following is done to give a different lockdep key to
-	 * @of->mutex for files which implement mmap.  This is a rather
-	 * crude way to avoid false positive lockdep warning around
-	 * mm->mmap_lock - mmap nests @of->mutex under mm->mmap_lock and
-	 * reading /sys/block/sda/trace/act_mask grabs sr_mutex, under
-	 * which mm->mmap_lock nests, while holding @of->mutex.  As each
-	 * open file has a separate mutex, it's okay as long as those don't
-	 * happen on the same file.  At this point, we can't easily give
-	 * each file a separate locking class.  Let's differentiate on
-	 * whether the file has mmap or not for now.
-	 *
-	 * Both paths of the branch look the same.  They're supposed to
-	 * look that way and give @of->mutex different static lockdep keys.
-	 */
+	 
 	if (has_mmap)
 		mutex_init(&of->mutex);
 	else
@@ -694,18 +557,11 @@ static int kernfs_fop_open(struct inode *inode, struct file *file)
 	of->kn = kn;
 	of->file = file;
 
-	/*
-	 * Write path needs to atomic_write_len outside active reference.
-	 * Cache it in open_file.  See kernfs_fop_write_iter() for details.
-	 */
+	 
 	of->atomic_write_len = ops->atomic_write_len;
 
 	error = -EINVAL;
-	/*
-	 * ->seq_show is incompatible with ->prealloc,
-	 * as seq_read does its own allocation.
-	 * ->read must be used instead.
-	 */
+	 
 	if (ops->prealloc && ops->seq_show)
 		goto err_free;
 	if (ops->prealloc) {
@@ -717,11 +573,7 @@ static int kernfs_fop_open(struct inode *inode, struct file *file)
 		mutex_init(&of->prealloc_mutex);
 	}
 
-	/*
-	 * Always instantiate seq_file even if read access doesn't use
-	 * seq_file or is not requested.  This unifies private data access
-	 * and readable regular files are the vast majority anyway.
-	 */
+	 
 	if (ops->seq_show)
 		error = seq_open(file, &kernfs_seq_ops);
 	else
@@ -732,23 +584,23 @@ static int kernfs_fop_open(struct inode *inode, struct file *file)
 	of->seq_file = file->private_data;
 	of->seq_file->private = of;
 
-	/* seq_file clears PWRITE unconditionally, restore it if WRITE */
+	 
 	if (file->f_mode & FMODE_WRITE)
 		file->f_mode |= FMODE_PWRITE;
 
-	/* make sure we have open node struct */
+	 
 	error = kernfs_get_open_node(kn, of);
 	if (error)
 		goto err_seq_release;
 
 	if (ops->open) {
-		/* nobody has access to @of yet, skip @of->mutex */
+		 
 		error = ops->open(of);
 		if (error)
 			goto err_put_node;
 	}
 
-	/* open succeeded, put active references */
+	 
 	kernfs_put_active(kn);
 	return 0;
 
@@ -764,25 +616,15 @@ err_out:
 	return error;
 }
 
-/* used from release/drain to ensure that ->release() is called exactly once */
+ 
 static void kernfs_release_file(struct kernfs_node *kn,
 				struct kernfs_open_file *of)
 {
-	/*
-	 * @of is guaranteed to have no other file operations in flight and
-	 * we just want to synchronize release and drain paths.
-	 * @kernfs_open_file_mutex_ptr(kn) is enough. @of->mutex can't be used
-	 * here because drain path may be called from places which can
-	 * cause circular dependency.
-	 */
+	 
 	lockdep_assert_held(kernfs_open_file_mutex_ptr(kn));
 
 	if (!of->released) {
-		/*
-		 * A file is never detached without being released and we
-		 * need to be able to release files which are deactivated
-		 * and being drained.  Don't use kernfs_ops().
-		 */
+		 
 		kn->attr.ops->release(of);
 		of->released = true;
 		of_on(of)->nr_to_release--;
@@ -815,10 +657,7 @@ bool kernfs_should_drain_open_files(struct kernfs_node *kn)
 	struct kernfs_open_node *on;
 	bool ret;
 
-	/*
-	 * @kn being deactivated guarantees that @kn->attr.open can't change
-	 * beneath us making the lockless test below safe.
-	 */
+	 
 	WARN_ON_ONCE(atomic_read(&kn->active) != KN_DEACTIVATED_BIAS);
 
 	rcu_read_lock();
@@ -859,20 +698,7 @@ void kernfs_drain_open_files(struct kernfs_node *kn)
 	mutex_unlock(mutex);
 }
 
-/*
- * Kernfs attribute files are pollable.  The idea is that you read
- * the content and then you use 'poll' or 'select' to wait for
- * the content to change.  When the content changes (assuming the
- * manager for the kobject supports notification), poll will
- * return EPOLLERR|EPOLLPRI, and select will return the fd whether
- * it is waiting for read, write, or exceptions.
- * Once poll/select indicates that the value has changed, you
- * need to close and re-open the file, or seek to 0 and read again.
- * Reminder: this only works for attributes which actively support
- * it, and it is not possible to test an attribute from userspace
- * to see if it supports poll (Neither 'poll' nor 'select' return
- * an appropriate error code).  When in doubt, set a suitable timeout value.
- */
+ 
 __poll_t kernfs_generic_poll(struct kernfs_open_file *of, poll_table *wait)
 {
 	struct kernfs_open_node *on = of_on(of);
@@ -909,7 +735,7 @@ static void kernfs_notify_workfn(struct work_struct *work)
 	struct kernfs_super_info *info;
 	struct kernfs_root *root;
 repeat:
-	/* pop one off the notify_list */
+	 
 	spin_lock_irq(&kernfs_notify_lock);
 	kn = kernfs_notify_list;
 	if (kn == KERNFS_NOTIFY_EOL) {
@@ -921,7 +747,7 @@ repeat:
 	spin_unlock_irq(&kernfs_notify_lock);
 
 	root = kernfs_root(kn);
-	/* kick fsnotify */
+	 
 
 	down_read(&root->kernfs_supers_rwsem);
 	list_for_each_entry(info, &kernfs_root(kn)->supers, node) {
@@ -930,12 +756,7 @@ repeat:
 		struct inode *inode;
 		struct qstr name;
 
-		/*
-		 * We want fsnotify_modify() on @kn but as the
-		 * modifications aren't originating from userland don't
-		 * have the matching @file available.  Look up the inodes
-		 * and generate the events manually.
-		 */
+		 
 		inode = ilookup(info->sb, kernfs_ino(kn));
 		if (!inode)
 			continue;
@@ -965,13 +786,7 @@ repeat:
 	goto repeat;
 }
 
-/**
- * kernfs_notify - notify a kernfs file
- * @kn: file to notify
- *
- * Notify @kn such that poll(2) on @kn wakes up.  Maybe be called from any
- * context.
- */
+ 
 void kernfs_notify(struct kernfs_node *kn)
 {
 	static DECLARE_WORK(kernfs_notify_work, kernfs_notify_workfn);
@@ -981,7 +796,7 @@ void kernfs_notify(struct kernfs_node *kn)
 	if (WARN_ON(kernfs_type(kn) != KERNFS_FILE))
 		return;
 
-	/* kick poll immediately */
+	 
 	rcu_read_lock();
 	on = rcu_dereference(kn->attr.open);
 	if (on) {
@@ -990,7 +805,7 @@ void kernfs_notify(struct kernfs_node *kn)
 	}
 	rcu_read_unlock();
 
-	/* schedule work to kick fsnotify */
+	 
 	spin_lock_irqsave(&kernfs_notify_lock, flags);
 	if (!kn->attr.notify_next) {
 		kernfs_get(kn);
@@ -1015,21 +830,7 @@ const struct file_operations kernfs_file_fops = {
 	.splice_write	= iter_file_splice_write,
 };
 
-/**
- * __kernfs_create_file - kernfs internal function to create a file
- * @parent: directory to create the file in
- * @name: name of the file
- * @mode: mode of the file
- * @uid: uid of the file
- * @gid: gid of the file
- * @size: size of the file
- * @ops: kernfs operations for the file
- * @priv: private data for the file
- * @ns: optional namespace tag of the file
- * @key: lockdep key for the file's active_ref, %NULL to disable lockdep
- *
- * Return: the created node on success, ERR_PTR() value on error.
- */
+ 
 struct kernfs_node *__kernfs_create_file(struct kernfs_node *parent,
 					 const char *name,
 					 umode_t mode, kuid_t uid, kgid_t gid,
@@ -1061,11 +862,7 @@ struct kernfs_node *__kernfs_create_file(struct kernfs_node *parent,
 	}
 #endif
 
-	/*
-	 * kn->attr.ops is accessible only while holding active ref.  We
-	 * need to know whether some ops are implemented outside active
-	 * ref.  Cache their existence in flags.
-	 */
+	 
 	if (ops->seq_show)
 		kn->flags |= KERNFS_HAS_SEQ_SHOW;
 	if (ops->mmap)

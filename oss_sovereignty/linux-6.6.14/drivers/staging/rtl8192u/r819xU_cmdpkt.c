@@ -1,29 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/******************************************************************************
- *
- *  (c) Copyright 2008, RealTEK Technologies Inc. All Rights Reserved.
- *
- *  Module:	r819xusb_cmdpkt.c
- *		(RTL8190 TX/RX command packet handler Source C File)
- *
- *  Note:	The module is responsible for handling TX and RX command packet.
- *		1. TX : Send set and query configuration command packet.
- *		2. RX : Receive tx feedback, beacon state, query configuration
- *			command packet.
- *
- *  Function:
- *
- *  Export:
- *
- *  Abbrev:
- *
- *  History:
- *
- *	Date		Who		Remark
- *	05/06/2008	amy		Create initial version porting from
- *					windows driver.
- *
- ******************************************************************************/
+
+ 
 #include "r8192U.h"
 #include "r819xU_cmdpkt.h"
 
@@ -33,9 +9,7 @@ rt_status SendTxCommandPacket(struct net_device *dev, void *pData, u32 DataLen)
 	struct sk_buff	    *skb;
 	struct cb_desc	    *tcb_desc;
 
-	/* Get TCB and local buffer from common pool.
-	 * (It is shared by CmdQ, MgntQ, and USB coalesce DataQ)
-	 */
+	 
 	skb  = dev_alloc_skb(USB_HWDESC_HEADER_LEN + DataLen + 4);
 	if (!skb)
 		return RT_STATUS_FAILURE;
@@ -69,10 +43,7 @@ static void cmpk_count_txstatistic(struct net_device *dev, struct cmd_pkt_tx_fee
 	pAdapter->HalFunc.GetHwRegHandler(pAdapter, HW_VAR_RF_STATE,
 					  (pu1Byte)(&rtState));
 
-	/* When RF is off, we should not count the packet for hw/sw synchronize
-	 * reason, ie. there may be a duration while sw switch is changed and
-	 * hw switch is being changed.
-	 */
+	 
 	if (rtState == eRfOff)
 		return;
 #endif
@@ -81,17 +52,14 @@ static void cmpk_count_txstatistic(struct net_device *dev, struct cmd_pkt_tx_fee
 	if (pAdapter->bInHctTest)
 		return;
 #endif
-	/* We can not know the packet length and transmit type:
-	 * broadcast or uni or multicast. So the relative statistics
-	 * must be collected in tx feedback info.
-	 */
+	 
 	if (pstx_fb->tok) {
 		priv->stats.txfeedbackok++;
 		priv->stats.txoktotal++;
 		priv->stats.txokbytestotal += pstx_fb->pkt_length;
 		priv->stats.txokinperiod++;
 
-		/* We can not make sure broadcast/multicast or unicast mode. */
+		 
 		if (pstx_fb->pkt_type == PACKET_MULTICAST) {
 			priv->stats.txmulticast++;
 			priv->stats.txbytesmulticast += pstx_fb->pkt_length;
@@ -107,7 +75,7 @@ static void cmpk_count_txstatistic(struct net_device *dev, struct cmd_pkt_tx_fee
 		priv->stats.txerrtotal++;
 		priv->stats.txerrbytestotal += pstx_fb->pkt_length;
 
-		/* We can not make sure broadcast/multicast or unicast mode. */
+		 
 		if (pstx_fb->pkt_type == PACKET_MULTICAST)
 			priv->stats.txerrmulticast++;
 		else if (pstx_fb->pkt_type == PACKET_BROADCAST)
@@ -120,28 +88,7 @@ static void cmpk_count_txstatistic(struct net_device *dev, struct cmd_pkt_tx_fee
 	priv->stats.txfeedbackretry += pstx_fb->retry_cnt;
 }
 
-/*-----------------------------------------------------------------------------
- * Function:    cmpk_handle_tx_feedback()
- *
- * Overview:	The function is responsible for extract the message inside TX
- *		feedbck message from firmware. It will contain dedicated info in
- *		ws-06-0063-rtl8190-command-packet-specification.
- *		Please refer to chapter "TX Feedback Element".
- *              We have to read 20 bytes in the command packet.
- *
- * Input:       struct net_device	*dev
- *              u8			*pmsg	- Msg Ptr of the command packet.
- *
- * Output:      NONE
- *
- * Return:      NONE
- *
- * Revised History:
- *  When		Who	Remark
- *  05/08/2008		amy	Create Version 0 porting from windows code.
- *
- *---------------------------------------------------------------------------
- */
+ 
 static void cmpk_handle_tx_feedback(struct net_device *dev, u8 *pmsg)
 {
 	struct r8192_priv *priv = ieee80211_priv(dev);
@@ -149,20 +96,15 @@ static void cmpk_handle_tx_feedback(struct net_device *dev, u8 *pmsg)
 
 	priv->stats.txfeedback++;
 
-	/* 1. Extract TX feedback info from RFD to temp structure buffer. */
-	/* It seems that FW use big endian(MIPS) and DRV use little endian in
-	 * windows OS. So we have to read the content byte by byte or transfer
-	 * endian type before copy the message copy.
-	 */
-	/* Use pointer to transfer structure memory. */
+	 
+	 
+	 
 	memcpy((u8 *)&rx_tx_fb, pmsg, sizeof(struct cmd_pkt_tx_feedback));
-	/* 2. Use tx feedback info to count TX statistics. */
+	 
 	cmpk_count_txstatistic(dev, &rx_tx_fb);
-	/* Comment previous method for TX statistic function. */
-	/* Collect info TX feedback packet to fill TCB. */
-	/* We can not know the packet length and transmit type: broadcast or uni
-	 * or multicast.
-	 */
+	 
+	 
+	 
 }
 
 static void cmdpkt_beacontimerinterrupt_819xusb(struct net_device *dev)
@@ -170,7 +112,7 @@ static void cmdpkt_beacontimerinterrupt_819xusb(struct net_device *dev)
 	struct r8192_priv *priv = ieee80211_priv(dev);
 	u16 tx_rate;
 
-	/* 87B have to S/W beacon for DTM encryption_cmn. */
+	 
 	if (priv->ieee80211->current_network.mode == IEEE_A ||
 	    priv->ieee80211->current_network.mode == IEEE_N_5G ||
 	    (priv->ieee80211->current_network.mode == IEEE_N_24G &&
@@ -182,51 +124,28 @@ static void cmdpkt_beacontimerinterrupt_819xusb(struct net_device *dev)
 		DMESG("send beacon frame  tx rate is 1Mbpm\n");
 	}
 
-	rtl819xusb_beacon_tx(dev, tx_rate); /* HW Beacon */
+	rtl819xusb_beacon_tx(dev, tx_rate);  
 }
 
-/*-----------------------------------------------------------------------------
- * Function:    cmpk_handle_interrupt_status()
- *
- * Overview:    The function is responsible for extract the message from
- *		firmware. It will contain dedicated info in
- *		ws-07-0063-v06-rtl819x-command-packet-specification-070315.doc.
- *		Please refer to chapter "Interrupt Status Element".
- *
- * Input:       struct net_device *dev
- *              u8 *pmsg		- Message Pointer of the command packet.
- *
- * Output:      NONE
- *
- * Return:      NONE
- *
- * Revised History:
- *  When		Who	Remark
- *  05/12/2008		amy	Add this for rtl8192 porting from windows code.
- *
- *---------------------------------------------------------------------------
- */
+ 
 static void cmpk_handle_interrupt_status(struct net_device *dev, u8 *pmsg)
 {
-	struct cmd_pkt_interrupt_status	 rx_intr_status;	/* */
+	struct cmd_pkt_interrupt_status	 rx_intr_status;	 
 	struct r8192_priv *priv = ieee80211_priv(dev);
 
 	DMESG("---> cmpk_Handle_Interrupt_Status()\n");
 
-	/* 1. Extract TX feedback info from RFD to temp structure buffer. */
-	/* It seems that FW use big endian(MIPS) and DRV use little endian in
-	 * windows OS. So we have to read the content byte by byte or transfer
-	 * endian type before copy the message copy.
-	 */
+	 
+	 
 	rx_intr_status.length = pmsg[1];
 	if (rx_intr_status.length != (sizeof(struct cmd_pkt_interrupt_status) - 2)) {
 		DMESG("cmpk_Handle_Interrupt_Status: wrong length!\n");
 		return;
 	}
 
-	/* Statistics of beacon for ad-hoc mode. */
+	 
 	if (priv->ieee80211->iw_mode == IW_MODE_ADHOC) {
-		/* 2 maybe need endian transform? */
+		 
 		rx_intr_status.interrupt_status = *((u32 *)(pmsg + 4));
 
 		DMESG("interrupt status = 0x%x\n",
@@ -244,29 +163,12 @@ static void cmpk_handle_interrupt_status(struct net_device *dev, u8 *pmsg)
 			cmdpkt_beacontimerinterrupt_819xusb(dev);
 	}
 
-	/* Other information in interrupt status we need? */
+	 
 
 	DMESG("<---- cmpk_handle_interrupt_status()\n");
 }
 
-/*-----------------------------------------------------------------------------
- * Function:	cmpk_count_tx_status()
- *
- * Overview:	Count aggregated tx status from firmwar of one type rx command
- *		packet element id = RX_TX_STATUS.
- *
- * Input:	NONE
- *
- * Output:	NONE
- *
- * Return:	NONE
- *
- * Revised History:
- *	When		Who	Remark
- *	05/12/2008	amy	Create Version 0 porting from windows code.
- *
- *---------------------------------------------------------------------------
- */
+ 
 static void cmpk_count_tx_status(struct net_device *dev,
 				 cmpk_tx_status_t *pstx_status)
 {
@@ -279,10 +181,7 @@ static void cmpk_count_tx_status(struct net_device *dev,
 	pAdapter->HalFunc.GetHwRegHandler(pAdapter, HW_VAR_RF_STATE,
 					  (pu1Byte)(&rtState));
 
-	/* When RF is off, we should not count the packet for hw/sw synchronize
-	 * reason, ie. there may be a duration while sw switch is changed and
-	 * hw switch is being changed.
-	 */
+	 
 	if (rtState == eRfOff)
 		return;
 #endif
@@ -311,50 +210,17 @@ static void cmpk_count_tx_status(struct net_device *dev,
 	priv->stats.last_packet_rate	= pstx_status->rate;
 }
 
-/*-----------------------------------------------------------------------------
- * Function:	cmpk_handle_tx_status()
- *
- * Overview:	Firmware add a new tx feedback status to reduce rx command
- *		packet buffer operation load.
- *
- * Input:		NONE
- *
- * Output:		NONE
- *
- * Return:		NONE
- *
- * Revised History:
- *	When		Who	Remark
- *	05/12/2008	amy	Create Version 0 porting from windows code.
- *
- *---------------------------------------------------------------------------
- */
+ 
 static void cmpk_handle_tx_status(struct net_device *dev, u8 *pmsg)
 {
 	cmpk_tx_status_t	rx_tx_sts;
 
 	memcpy((void *)&rx_tx_sts, (void *)pmsg, sizeof(cmpk_tx_status_t));
-	/* 2. Use tx feedback info to count TX statistics. */
+	 
 	cmpk_count_tx_status(dev, &rx_tx_sts);
 }
 
-/*-----------------------------------------------------------------------------
- * Function:	cmpk_handle_tx_rate_history()
- *
- * Overview:	Firmware add a new tx rate history
- *
- * Input:		NONE
- *
- * Output:		NONE
- *
- * Return:		NONE
- *
- * Revised History:
- *	When		Who	Remark
- *	05/12/2008	amy	Create Version 0 porting from windows code.
- *
- *---------------------------------------------------------------------------
- */
+ 
 static void cmpk_handle_tx_rate_history(struct net_device *dev, u8 *pmsg)
 {
 	cmpk_tx_rahis_t	*ptxrate;
@@ -367,19 +233,14 @@ static void cmpk_handle_tx_rate_history(struct net_device *dev, u8 *pmsg)
 	pAdapter->HalFunc.GetHwRegHandler(pAdapter, HW_VAR_RF_STATE,
 					  (pu1Byte)(&rtState));
 
-	/* When RF is off, we should not count the packet for hw/sw synchronize
-	 * reason, ie. there may be a duration while sw switch is changed and
-	 * hw switch is being changed.
-	 */
+	 
 	if (rtState == eRfOff)
 		return;
 #endif
 
 	ptemp = (u32 *)pmsg;
 
-	/* Do endian transfer to word alignment(16 bits) for windows system.
-	 * You must do different endian transfer for linux and MAC OS
-	 */
+	 
 	for (i = 0; i < (length/4); i++) {
 		u16	 temp1, temp2;
 
@@ -394,11 +255,11 @@ static void cmpk_handle_tx_rate_history(struct net_device *dev, u8 *pmsg)
 		return;
 
 	for (i = 0; i < 16; i++) {
-		/* Collect CCK rate packet num */
+		 
 		if (i < 4)
 			priv->stats.txrate.cck[i] += ptxrate->cck[i];
 
-		/* Collect OFDM rate packet num */
+		 
 		if (i < 8)
 			priv->stats.txrate.ofdm[i] += ptxrate->ofdm[i];
 
@@ -407,27 +268,7 @@ static void cmpk_handle_tx_rate_history(struct net_device *dev, u8 *pmsg)
 	}
 }
 
-/*-----------------------------------------------------------------------------
- * Function:    cmpk_message_handle_rx()
- *
- * Overview:    In the function, we will capture different RX command packet
- *		info. Every RX command packet element has different message
- *		length and meaning in content. We only support three type of RX
- *		command packet now. Please refer to document
- *		ws-06-0063-rtl8190-command-packet-specification.
- *
- * Input:       NONE
- *
- * Output:      NONE
- *
- * Return:      NONE
- *
- * Revised History:
- *  When		Who	Remark
- *  05/06/2008		amy	Create Version 0 porting from windows code.
- *
- *---------------------------------------------------------------------------
- */
+ 
 u32 cmpk_message_handle_rx(struct net_device *dev,
 			   struct ieee80211_rx_stats *pstats)
 {
@@ -436,30 +277,23 @@ u32 cmpk_message_handle_rx(struct net_device *dev,
 	u8			element_id;
 	u8			*pcmd_buff;
 
-	/* 0. Check inpt arguments. It is a command queue message or
-	 * pointer is null.
-	 */
+	 
 	if (!pstats)
-		return 0;	/* This is not a command packet. */
+		return 0;	 
 
-	/* 1. Read received command packet message length from RFD. */
+	 
 	total_length = pstats->Length;
 
-	/* 2. Read virtual address from RFD. */
+	 
 	pcmd_buff = pstats->virtual_address;
 
-	/* 3. Read command packet element id and length. */
+	 
 	element_id = pcmd_buff[0];
 
-	/* 4. Check every received command packet content according to different
-	 *    element type. Because FW may aggregate RX command packet to
-	 *    minimize transmit time between DRV and FW.
-	 */
-	/* Add a counter to prevent the lock in the loop from being held too
-	 * long
-	 */
+	 
+	 
 	while (total_length > 0 && exe_cnt++ < 100) {
-		/* We support aggregation of different cmd in the same packet */
+		 
 		element_id = pcmd_buff[0];
 
 		switch (element_id) {
@@ -483,9 +317,7 @@ u32 cmpk_message_handle_rx(struct net_device *dev,
 			break;
 
 		case RX_TX_PER_PKT_FEEDBACK:
-			/* You must at lease add a switch case element here,
-			 * Otherwise, we will jump to default case.
-			 */
+			 
 			cmd_length = CMPK_RX_TX_FB_SIZE;
 			break;
 
@@ -498,11 +330,11 @@ u32 cmpk_message_handle_rx(struct net_device *dev,
 
 			RT_TRACE(COMP_ERR, "---->%s():unknown CMD Element\n",
 				 __func__);
-			return 1;	/* This is a command packet. */
+			return 1;	 
 		}
 
 		total_length -= cmd_length;
 		pcmd_buff    += cmd_length;
 	}
-	return	1;	/* This is a command packet. */
+	return	1;	 
 }

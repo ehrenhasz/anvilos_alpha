@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * ADC generic resistive touchscreen (GRTS)
- * This is a generic input driver that connects to an ADC
- * given the channels in device tree, and reports events to the input
- * subsystem.
- *
- * Copyright (C) 2017,2018 Microchip Technology,
- * Author: Eugen Hristev <eugen.hristev@microchip.com>
- *
- */
+
+ 
 #include <linux/input.h>
 #include <linux/input/touchscreen.h>
 #include <linux/iio/consumer.h>
@@ -33,17 +24,7 @@ enum grts_ch_type {
 	GRTS_CH_MAX = GRTS_CH_Z2 + 1
 };
 
-/**
- * struct grts_state - generic resistive touch screen information struct
- * @x_plate_ohms:	resistance of the X plate
- * @pressure_min:	number representing the minimum for the pressure
- * @pressure:		are we getting pressure info or not
- * @iio_chans:		list of channels acquired
- * @iio_cb:		iio_callback buffer for the data
- * @input:		the input device structure that we register
- * @prop:		touchscreen properties struct
- * @ch_map:		map of channels that are defined for the touchscreen
- */
+ 
 struct grts_state {
 	u32				x_plate_ohms;
 	u32				pressure_min;
@@ -79,24 +60,20 @@ static int grts_cb(const void *data, void *private)
 			Rt *= x;
 			Rt /= z1;
 			Rt = DIV_ROUND_CLOSEST(Rt, 256);
-			/*
-			 * On increased pressure the resistance (Rt) is
-			 * decreasing so, convert values to make it looks as
-			 * real pressure.
-			 */
+			 
 			if (Rt < GRTS_DEFAULT_PRESSURE_MAX)
 				press = GRTS_DEFAULT_PRESSURE_MAX - Rt;
 		}
 	}
 
 	if ((!x && !y) || (st->pressure && (press < st->pressure_min))) {
-		/* report end of touch */
+		 
 		input_report_key(st->input, BTN_TOUCH, 0);
 		input_sync(st->input);
 		return 0;
 	}
 
-	/* report proper touch to subsystem*/
+	 
 	touchscreen_report_pos(st->input, &st->prop, x, y, false);
 	if (st->pressure)
 		input_report_abs(st->input, ABS_PRESSURE, press);
@@ -162,7 +139,7 @@ static int grts_get_properties(struct grts_state *st, struct device *dev)
 	if (error)
 		return error;
 
-	/* pressure is optional */
+	 
 	error = grts_map_channel(st, dev, GRTS_CH_PRESSURE, "pressure", true);
 	if (error)
 		return error;
@@ -172,7 +149,7 @@ static int grts_get_properties(struct grts_state *st, struct device *dev)
 		return 0;
 	}
 
-	/* if no pressure is defined, try optional z1 + z2 */
+	 
 	error = grts_map_channel(st, dev, GRTS_CH_Z1, "z1", true);
 	if (error)
 		return error;
@@ -180,7 +157,7 @@ static int grts_get_properties(struct grts_state *st, struct device *dev)
 	if (st->ch_map[GRTS_CH_Z1] >= GRTS_MAX_CHANNELS)
 		return 0;
 
-	/* if z1 is provided z2 is not optional */
+	 
 	error = grts_map_channel(st, dev, GRTS_CH_Z2, "z2", true);
 	if (error)
 		return error;
@@ -208,7 +185,7 @@ static int grts_probe(struct platform_device *pdev)
 	if (!st)
 		return -ENOMEM;
 
-	/* get the channels from IIO device */
+	 
 	st->iio_chans = devm_iio_channel_get_all(dev);
 	if (IS_ERR(st->iio_chans))
 		return dev_err_probe(dev, PTR_ERR(st->iio_chans), "can't get iio channels\n");
@@ -251,7 +228,7 @@ static int grts_probe(struct platform_device *pdev)
 
 	input_set_capability(input, EV_KEY, BTN_TOUCH);
 
-	/* parse optional device tree properties */
+	 
 	touchscreen_parse_properties(input, false, &st->prop);
 
 	st->input = input;
@@ -282,7 +259,7 @@ static const struct of_device_id grts_of_match[] = {
 	{
 		.compatible = "resistive-adc-touch",
 	}, {
-		/* sentinel */
+		 
 	},
 };
 

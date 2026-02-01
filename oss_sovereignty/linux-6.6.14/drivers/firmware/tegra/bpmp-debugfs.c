@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2017, NVIDIA CORPORATION.  All rights reserved.
- */
+
+ 
 #include <linux/debugfs.h>
 #include <linux/dma-mapping.h>
 #include <linux/slab.h>
@@ -66,7 +64,7 @@ static void seqbuf_seek(struct seqbuf *seqbuf, ssize_t offset)
 	seqbuf->pos += offset;
 }
 
-/* map filename in Linux debugfs to corresponding entry in BPMP */
+ 
 static const char *get_filename(struct tegra_bpmp *bpmp,
 				const struct file *file, char *buf, int size)
 {
@@ -702,10 +700,10 @@ static int bpmp_populate_dir(struct tegra_bpmp *bpmp, struct seqbuf *seqbuf,
 
 		if (d < depth) {
 			seqbuf_seek(seqbuf, -4);
-			/* go up a level */
+			 
 			return 0;
 		} else if (d != depth) {
-			/* malformed data received from BPMP */
+			 
 			return -EIO;
 		}
 

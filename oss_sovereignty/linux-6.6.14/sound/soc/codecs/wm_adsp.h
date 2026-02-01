@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * wm_adsp.h  --  Wolfson ADSP support
- *
- * Copyright 2012 Wolfson Microelectronics plc
- *
- * Author: Mark Brown <broonie@opensource.wolfsonmicro.com>
- */
+ 
+ 
 
 #ifndef __WM_ADSP_H
 #define __WM_ADSP_H
@@ -17,7 +11,7 @@
 #include <sound/soc-dapm.h>
 #include <sound/compress_driver.h>
 
-/* Return values for wm_adsp_compr_handle_irq */
+ 
 #define WM_ADSP_COMPR_OK                 0
 #define WM_ADSP_COMPR_VOICE_TRIGGER      1
 
@@ -45,12 +39,7 @@ struct wm_adsp {
 	struct list_head compr_list;
 	struct list_head buffer_list;
 
-	/*
-	 * Flag indicating the preloader widget only needs power toggled
-	 * on state change rather than held on for the duration of the
-	 * preload, useful for devices that can retain firmware memory
-	 * across power down.
-	 */
+	 
 	bool toggle_preload;
 };
 
@@ -67,7 +56,7 @@ struct wm_adsp {
 {	.id = snd_soc_dapm_supply, .name = wname " Preloader", \
 	.reg = SND_SOC_NOPM, .shift = num, .event = event_fn, \
 	.event_flags = SND_SOC_DAPM_PRE_PMU | SND_SOC_DAPM_PRE_PMD, \
-	.subseq = 100, /* Ensure we run after SYSCLK supply widget */ }, \
+	.subseq = 100,   }, \
 {	.id = snd_soc_dapm_out_drv, .name = wname, \
 	.reg = SND_SOC_NOPM, .shift = num, .event = wm_adsp_event, \
 	.event_flags = SND_SOC_DAPM_POST_PMU | SND_SOC_DAPM_PRE_PMD }

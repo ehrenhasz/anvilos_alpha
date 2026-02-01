@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2020 Hannes Reinecke, SUSE Linux
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/crc32.h>
@@ -159,7 +157,7 @@ struct nvme_dhchap_key *nvme_auth_extract_key(unsigned char *secret,
 	int ret, key_len;
 	size_t allocated_len = strlen(secret);
 
-	/* Secret might be affixed with a ':' */
+	 
 	p = strrchr(secret, ':');
 	if (p)
 		allocated_len = p - secret;
@@ -195,12 +193,9 @@ struct nvme_dhchap_key *nvme_auth_extract_key(unsigned char *secret,
 		goto out_free_secret;
 	}
 
-	/* The last four bytes is the CRC in little-endian format */
+	 
 	key_len -= 4;
-	/*
-	 * The linux implementation doesn't do pre- and post-increments,
-	 * so we have to do it manually.
-	 */
+	 
 	crc = ~crc32(~0, key->key, key_len);
 
 	if (get_unaligned_le32(key->key + key_len) != crc) {
@@ -468,7 +463,7 @@ int nvme_auth_generate_key(u8 *secret, struct nvme_dhchap_key **ret_key)
 	if (sscanf(secret, "DHHC-1:%hhd:%*s:", &key_hash) != 1)
 		return -EINVAL;
 
-	/* Pass in the secret without the 'DHHC-1:XX:' prefix */
+	 
 	key = nvme_auth_extract_key(secret + 10, key_hash);
 	if (IS_ERR(key)) {
 		*ret_key = NULL;

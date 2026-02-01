@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: BSD-3-Clause
-/*
- * Copyright (c) 2020, MIPI Alliance, Inc.
- *
- * Author: Nicolas Pitre <npitre@baylibre.com>
- *
- * Note: The I3C HCI v2.0 spec is still in flux. The IBI support is based on
- * v1.x of the spec and v2.0 will likely be split out.
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/device.h>
@@ -20,42 +13,35 @@
 #include "ibi.h"
 
 
-/*
- * Software Parameter Values (somewhat arb itrary for now).
- * Some of them could be determined at run time eventually.
- */
+ 
 
-#define XFER_RINGS			1	/* max: 8 */
-#define XFER_RING_ENTRIES		16	/* max: 255 */
+#define XFER_RINGS			1	 
+#define XFER_RING_ENTRIES		16	 
 
-#define IBI_RINGS			1	/* max: 8 */
-#define IBI_STATUS_RING_ENTRIES		32	/* max: 255 */
-#define IBI_CHUNK_CACHELINES		1	/* max: 256 bytes equivalent */
-#define IBI_CHUNK_POOL_SIZE		128	/* max: 1023 */
+#define IBI_RINGS			1	 
+#define IBI_STATUS_RING_ENTRIES		32	 
+#define IBI_CHUNK_CACHELINES		1	 
+#define IBI_CHUNK_POOL_SIZE		128	 
 
-/*
- * Ring Header Preamble
- */
+ 
 
 #define rhs_reg_read(r)		readl(hci->RHS_regs + (RHS_##r))
 #define rhs_reg_write(r, v)	writel(v, hci->RHS_regs + (RHS_##r))
 
 #define RHS_CONTROL			0x00
-#define PREAMBLE_SIZE			GENMASK(31, 24)	/* Preamble Section Size */
-#define HEADER_SIZE			GENMASK(23, 16)	/* Ring Header Size */
-#define MAX_HEADER_COUNT_CAP		GENMASK(7, 4) /* HC Max Header Count */
-#define MAX_HEADER_COUNT		GENMASK(3, 0) /* Driver Max Header Count */
+#define PREAMBLE_SIZE			GENMASK(31, 24)	 
+#define HEADER_SIZE			GENMASK(23, 16)	 
+#define MAX_HEADER_COUNT_CAP		GENMASK(7, 4)  
+#define MAX_HEADER_COUNT		GENMASK(3, 0)  
 
 #define RHS_RHn_OFFSET(n)		(0x04 + (n)*4)
 
-/*
- * Ring Header (Per-Ring Bundle)
- */
+ 
 
 #define rh_reg_read(r)		readl(rh->regs + (RH_##r))
 #define rh_reg_write(r, v)	writel(v, rh->regs + (RH_##r))
 
-#define RH_CR_SETUP			0x00	/* Command/Response Ring */
+#define RH_CR_SETUP			0x00	 
 #define CR_XFER_STRUCT_SIZE		GENMASK(31, 24)
 #define CR_RESP_STRUCT_SIZE		GENMASK(23, 16)
 #define CR_RING_SIZE			GENMASK(8, 0)
@@ -109,19 +95,17 @@
 #define RH_IBI_DATA_RING_BASE_LO	0x48
 #define RH_IBI_DATA_RING_BASE_HI	0x4c
 
-#define RH_CMD_RING_SG			0x50	/* Ring Scatter Gather Support */
+#define RH_CMD_RING_SG			0x50	 
 #define RH_RESP_RING_SG			0x54
 #define RH_IBI_STATUS_RING_SG		0x58
 #define RH_IBI_DATA_RING_SG		0x5c
-#define RING_SG_BLP			BIT(31)	/* Buffer Vs. List Pointer */
+#define RING_SG_BLP			BIT(31)	 
 #define RING_SG_LIST_SIZE		GENMASK(15, 0)
 
-/*
- * Data Buffer Descriptor (in memory)
- */
+ 
 
-#define DATA_BUF_BLP			BIT(31)	/* Buffer Vs. List Pointer */
-#define DATA_BUF_IOC			BIT(30)	/* Interrupt on Completion */
+#define DATA_BUF_BLP			BIT(31)	 
+#define DATA_BUF_IOC			BIT(30)	 
 #define DATA_BUF_BLOCK_SIZE		GENMASK(15, 0)
 
 
@@ -154,7 +138,7 @@ static inline u32 lo32(dma_addr_t physaddr)
 
 static inline u32 hi32(dma_addr_t physaddr)
 {
-	/* trickery to avoid compiler warnings on 32-bit build targets */
+	 
 	if (sizeof(dma_addr_t) > 4) {
 		u64 hi = physaddr;
 		return hi >> 32;
@@ -279,7 +263,7 @@ static int hci_dma_init(struct i3c_hci *hci)
 						 INTR_IBI_RING_FULL |
 						 INTR_TRANSFER_ABORT);
 
-		/* IBIs */
+		 
 
 		if (i >= IBI_RINGS)
 			goto ring_ready;
@@ -359,7 +343,7 @@ static int hci_dma_queue_xfer(struct i3c_hci *hci,
 	unsigned int i, ring, enqueue_ptr;
 	u32 op1_val, op2_val;
 
-	/* For now we only use ring 0 */
+	 
 	ring = 0;
 	rh = &rings->headers[ring];
 
@@ -369,7 +353,7 @@ static int hci_dma_queue_xfer(struct i3c_hci *hci,
 		struct hci_xfer *xfer = xfer_list + i;
 		u32 *ring_data = rh->xfer + rh->xfer_struct_sz * enqueue_ptr;
 
-		/* store cmd descriptor */
+		 
 		*ring_data++ = xfer->cmd_desc[0];
 		*ring_data++ = xfer->cmd_desc[1];
 		if (hci->cmd == &mipi_i3c_hci_cmd_v2) {
@@ -377,14 +361,14 @@ static int hci_dma_queue_xfer(struct i3c_hci *hci,
 			*ring_data++ = xfer->cmd_desc[3];
 		}
 
-		/* first word of Data Buffer Descriptor Structure */
+		 
 		if (!xfer->data)
 			xfer->data_len = 0;
 		*ring_data++ =
 			FIELD_PREP(DATA_BUF_BLOCK_SIZE, xfer->data_len) |
 			((i == n - 1) ? DATA_BUF_IOC : 0);
 
-		/* 2nd and 3rd words of Data Buffer Descriptor Structure */
+		 
 		if (xfer->data) {
 			xfer->data_dma =
 				dma_map_single(&hci->master.dev,
@@ -405,27 +389,24 @@ static int hci_dma_queue_xfer(struct i3c_hci *hci,
 			*ring_data++ = 0;
 		}
 
-		/* remember corresponding xfer struct */
+		 
 		rh->src_xfers[enqueue_ptr] = xfer;
-		/* remember corresponding ring/entry for this xfer structure */
+		 
 		xfer->ring_number = ring;
 		xfer->ring_entry = enqueue_ptr;
 
 		enqueue_ptr = (enqueue_ptr + 1) % rh->xfer_entries;
 
-		/*
-		 * We may update the hardware view of the enqueue pointer
-		 * only if we didn't reach its dequeue pointer.
-		 */
+		 
 		op2_val = rh_reg_read(RING_OPERATION2);
 		if (enqueue_ptr == FIELD_GET(RING_OP2_CR_DEQ_PTR, op2_val)) {
-			/* the ring is full */
+			 
 			hci_dma_unmap_xfer(hci, xfer_list, i + 1);
 			return -EBUSY;
 		}
 	}
 
-	/* take care to update the hardware enqueue pointer atomically */
+	 
 	spin_lock_irq(&rh->lock);
 	op1_val = rh_reg_read(RING_OPERATION1);
 	op1_val &= ~RING_OP1_CR_ENQ_PTR;
@@ -444,14 +425,10 @@ static bool hci_dma_dequeue_xfer(struct i3c_hci *hci,
 	unsigned int i;
 	bool did_unqueue = false;
 
-	/* stop the ring */
+	 
 	rh_reg_write(RING_CONTROL, RING_CTRL_ABORT);
 	if (wait_for_completion_timeout(&rh->op_done, HZ) == 0) {
-		/*
-		 * We're deep in it if ever this condition is ever met.
-		 * Hardware might still be writing to memory, etc.
-		 * Better suspend the world than risking silent corruption.
-		 */
+		 
 		dev_crit(&hci->master.dev, "unable to abort the ring\n");
 		BUG();
 	}
@@ -460,15 +437,11 @@ static bool hci_dma_dequeue_xfer(struct i3c_hci *hci,
 		struct hci_xfer *xfer = xfer_list + i;
 		int idx = xfer->ring_entry;
 
-		/*
-		 * At the time the abort happened, the xfer might have
-		 * completed already. If not then replace corresponding
-		 * descriptor entries with a no-op.
-		 */
+		 
 		if (idx >= 0) {
 			u32 *ring_data = rh->xfer + rh->xfer_struct_sz * idx;
 
-			/* store no-op cmd descriptor */
+			 
 			*ring_data++ = FIELD_PREP(CMD_0_ATTR, 0x7);
 			*ring_data++ = 0;
 			if (hci->cmd == &mipi_i3c_hci_cmd_v2) {
@@ -476,17 +449,17 @@ static bool hci_dma_dequeue_xfer(struct i3c_hci *hci,
 				*ring_data++ = 0;
 			}
 
-			/* disassociate this xfer struct */
+			 
 			rh->src_xfers[idx] = NULL;
 
-			/* and unmap it */
+			 
 			hci_dma_unmap_xfer(hci, xfer, 1);
 
 			did_unqueue = true;
 		}
 	}
 
-	/* restart the ring */
+	 
 	rh_reg_write(RING_CONTROL, RING_CTRL_ENABLE);
 
 	return did_unqueue;
@@ -519,7 +492,7 @@ static void hci_dma_xfer_done(struct i3c_hci *hci, struct hci_rh_data *rh)
 				dev_err(&hci->master.dev,
 					"response tid=%d when expecting %d\n",
 					tid, xfer->cmd_tid);
-				/* TODO: do something about it? */
+				 
 			}
 			if (xfer->completion)
 				complete(xfer->completion);
@@ -529,7 +502,7 @@ static void hci_dma_xfer_done(struct i3c_hci *hci, struct hci_rh_data *rh)
 		rh->done_ptr = done_ptr;
 	}
 
-	/* take care to update the software dequeue pointer atomically */
+	 
 	spin_lock(&rh->lock);
 	op1_val = rh_reg_read(RING_OPERATION1);
 	op1_val &= ~RING_OP1_CR_SW_DEQ_PTR;
@@ -604,7 +577,7 @@ static void hci_dma_process_ibi(struct i3c_hci *hci, struct hci_rh_data *rh)
 	ibi_size = 0;
 	last_ptr = -1;
 
-	/* let's find all we can about this IBI */
+	 
 	for (ptr = deq_ptr; ptr != enq_ptr;
 	     ptr = (ptr + 1) % rh->ibi_status_entries) {
 		u32 ibi_status, *ring_ibi_status;
@@ -615,13 +588,13 @@ static void hci_dma_process_ibi(struct i3c_hci *hci, struct hci_rh_data *rh)
 		DBG("status = %#x", ibi_status);
 
 		if (ibi_status_error) {
-			/* we no longer care */
+			 
 		} else if (ibi_status & IBI_ERROR) {
 			ibi_status_error = ibi_status;
 		} else if (ibi_addr ==  -1) {
 			ibi_addr = FIELD_GET(IBI_TARGET_ADDR, ibi_status);
 		} else if (ibi_addr != FIELD_GET(IBI_TARGET_ADDR, ibi_status)) {
-			/* the address changed unexpectedly */
+			 
 			ibi_status_error = ibi_status;
 		}
 
@@ -636,10 +609,10 @@ static void hci_dma_process_ibi(struct i3c_hci *hci, struct hci_rh_data *rh)
 		}
 	}
 
-	/* validate what we've got */
+	 
 
 	if (last_ptr == -1) {
-		/* this IBI sequence is not yet complete */
+		 
 		DBG("no LAST_STATUS available (e=%d d=%d)", enq_ptr, deq_ptr);
 		return;
 	}
@@ -651,7 +624,7 @@ static void hci_dma_process_ibi(struct i3c_hci *hci, struct hci_rh_data *rh)
 		goto done;
 	}
 
-	/* determine who this is for */
+	 
 	dev = i3c_hci_addr_to_dev(hci, ibi_addr);
 	if (!dev) {
 		dev_err(&hci->master.dev,
@@ -667,23 +640,14 @@ static void hci_dma_process_ibi(struct i3c_hci *hci, struct hci_rh_data *rh)
 		goto done;
 	}
 
-	/*
-	 * This ring model is not suitable for zero-copy processing of IBIs.
-	 * We have the data chunk ring wrap-around to deal with, meaning
-	 * that the payload might span multiple chunks beginning at the
-	 * end of the ring and wrap to the start of the ring. Furthermore
-	 * there is no guarantee that those chunks will be released in order
-	 * and in a timely manner by the upper driver. So let's just copy
-	 * them to a discrete buffer. In practice they're supposed to be
-	 * small anyway.
-	 */
+	 
 	slot = i3c_generic_ibi_get_free_slot(dev_ibi->pool);
 	if (!slot) {
 		dev_err(&hci->master.dev, "no free slot for IBI\n");
 		goto done;
 	}
 
-	/* copy first part of the payload */
+	 
 	ibi_data_offset = rh->ibi_chunk_sz * rh->ibi_chunk_ptr;
 	ring_ibi_data = rh->ibi_data + ibi_data_offset;
 	ring_ibi_data_dma = rh->ibi_data_dma + ibi_data_offset;
@@ -695,9 +659,9 @@ static void hci_dma_process_ibi(struct i3c_hci *hci, struct hci_rh_data *rh)
 				first_part, DMA_FROM_DEVICE);
 	memcpy(slot->data, ring_ibi_data, first_part);
 
-	/* copy second part if any */
+	 
 	if (ibi_size > first_part) {
-		/* we wrap back to the start and copy remaining data */
+		 
 		ring_ibi_data = rh->ibi_data;
 		ring_ibi_data_dma = rh->ibi_data_dma;
 		dma_sync_single_for_cpu(&hci->master.dev, ring_ibi_data_dma,
@@ -706,13 +670,13 @@ static void hci_dma_process_ibi(struct i3c_hci *hci, struct hci_rh_data *rh)
 		       ibi_size - first_part);
 	}
 
-	/* submit it */
+	 
 	slot->dev = dev;
 	slot->len = ibi_size;
 	i3c_master_queue_ibi(dev, slot);
 
 done:
-	/* take care to update the ibi dequeue pointer atomically */
+	 
 	spin_lock(&rh->lock);
 	op1_val = rh_reg_read(RING_OPERATION1);
 	op1_val &= ~RING_OP1_IBI_DEQ_PTR;
@@ -720,11 +684,11 @@ done:
 	rh_reg_write(RING_OPERATION1, op1_val);
 	spin_unlock(&rh->lock);
 
-	/* update the chunk pointer */
+	 
 	rh->ibi_chunk_ptr += ibi_chunks;
 	rh->ibi_chunk_ptr %= rh->ibi_chunks_total;
 
-	/* and tell the hardware about freed chunks */
+	 
 	rh_reg_write(CHUNK_CONTROL, rh_reg_read(CHUNK_CONTROL) + ibi_chunks);
 }
 

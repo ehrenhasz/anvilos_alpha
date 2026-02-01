@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * AES-GMAC for IEEE 802.11 BIP-GMAC-128 and BIP-GMAC-256
- * Copyright 2015, Qualcomm Atheros, Inc.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/types.h>
@@ -37,7 +34,7 @@ int ieee80211_aes_gmac(struct crypto_aead *tfm, const u8 *aad, u8 *nonce,
 
 	fc = (const __le16 *)aad;
 	if (ieee80211_is_beacon(*fc)) {
-		/* mask Timestamp field to zero */
+		 
 		sg_init_table(sg, 5);
 		sg_set_buf(&sg[0], __aad, GMAC_AAD_LEN);
 		sg_set_buf(&sg[1], zero, 8);

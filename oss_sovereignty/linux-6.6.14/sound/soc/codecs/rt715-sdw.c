@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * rt715-sdw.c -- rt715 ALSA SoC audio driver
- *
- * Copyright(c) 2019 Realtek Semiconductor Corp.
- *
- * ALC715 ASoC Codec Driver based Intel Dummy SdW codec driver
- *
- */
+
+ 
 #include <linux/delay.h>
 #include <linux/device.h>
 #include <linux/mod_devicetable.h>
@@ -133,11 +126,11 @@ static bool rt715_volatile_register(struct device *dev, unsigned int reg)
 	case 0x201f:
 	case 0x2023:
 	case 0x2230:
-	case 0x200b ... 0x200e: /* i2c read */
-	case 0x2012 ... 0x2015: /* HD-A read */
-	case 0x202d ... 0x202f: /* BRA */
-	case 0x2201 ... 0x2212: /* i2c debug */
-	case 0x2220 ... 0x2223: /* decoded HD-A */
+	case 0x200b ... 0x200e:  
+	case 0x2012 ... 0x2015:  
+	case 0x202d ... 0x202f:  
+	case 0x2201 ... 0x2212:  
+	case 0x2220 ... 0x2223:  
 		return true;
 	default:
 		return false;
@@ -158,7 +151,7 @@ static int rt715_sdw_read(void *context, unsigned int reg, unsigned int *val)
 
 	mask = reg & 0xf000;
 
-	if (is_index_reg) { /* index registers */
+	if (is_index_reg) {  
 		val2 = reg & 0xff;
 		reg = reg >> 8;
 		nid = reg & 0xff;
@@ -198,7 +191,7 @@ static int rt715_sdw_read(void *context, unsigned int reg, unsigned int *val)
 		ret = regmap_write(rt715->sdw_regmap, reg2, (*val & 0xff));
 		if (ret < 0)
 			return ret;
-	} else if ((reg & 0xff00) == 0x8300) { /* for R channel */
+	} else if ((reg & 0xff00) == 0x8300) {  
 		reg2 = reg - 0x1000;
 		reg2 &= ~0x80;
 		ret = regmap_write(rt715->sdw_regmap, reg2,
@@ -280,7 +273,7 @@ static int rt715_sdw_write(void *context, unsigned int reg, unsigned int val)
 
 	mask = reg & 0xf000;
 
-	if (is_index_reg) { /* index registers */
+	if (is_index_reg) {  
 		val2 = reg & 0xff;
 		reg = reg >> 8;
 		nid = reg & 0xff;
@@ -322,7 +315,7 @@ static int rt715_sdw_write(void *context, unsigned int reg, unsigned int val)
 		ret = regmap_write(rt715->sdw_regmap, reg2, (val & 0xff));
 		if (ret < 0)
 			return ret;
-	} else if ((reg & 0xff00) == 0x8300) {  /* for R channel */
+	} else if ((reg & 0xff00) == 0x8300) {   
 		reg2 = reg - 0x1000;
 		reg2 &= ~0x80;
 		ret = regmap_write(rt715->sdw_regmap, reg2,
@@ -349,10 +342,10 @@ static int rt715_sdw_write(void *context, unsigned int reg, unsigned int val)
 static const struct regmap_config rt715_regmap = {
 	.reg_bits = 24,
 	.val_bits = 32,
-	.readable_reg = rt715_readable_register, /* Readable registers */
-	.volatile_reg = rt715_volatile_register, /* volatile register */
-	.max_register = 0x752039, /* Maximum number of register */
-	.reg_defaults = rt715_reg_defaults, /* Defaults */
+	.readable_reg = rt715_readable_register,  
+	.volatile_reg = rt715_volatile_register,  
+	.max_register = 0x752039,  
+	.reg_defaults = rt715_reg_defaults,  
 	.num_reg_defaults = ARRAY_SIZE(rt715_reg_defaults),
 	.cache_type = REGCACHE_MAPLE,
 	.use_single_read = true,
@@ -363,9 +356,9 @@ static const struct regmap_config rt715_regmap = {
 
 static const struct regmap_config rt715_sdw_regmap = {
 	.name = "sdw",
-	.reg_bits = 32, /* Total register space for SDW */
-	.val_bits = 8, /* Total number of bits in register */
-	.max_register = 0xff01, /* Maximum number of register */
+	.reg_bits = 32,  
+	.val_bits = 8,  
+	.max_register = 0xff01,  
 	.cache_type = REGCACHE_NONE,
 	.use_single_read = true,
 	.use_single_write = true,
@@ -377,30 +370,30 @@ int hda_to_sdw(unsigned int nid, unsigned int verb, unsigned int payload,
 {
 	unsigned int offset_h, offset_l, e_verb;
 
-	if (((verb & 0xff) != 0) || verb == 0xf00) { /* 12 bits command */
-		if (verb == 0x7ff) /* special case */
+	if (((verb & 0xff) != 0) || verb == 0xf00) {  
+		if (verb == 0x7ff)  
 			offset_h = 0;
 		else
 			offset_h = 0x3000;
 
-		if (verb & 0x800) /* get command */
+		if (verb & 0x800)  
 			e_verb = (verb - 0xf00) | 0x80;
-		else /* set command */
+		else  
 			e_verb = (verb - 0x700);
 
-		*sdw_data_h = payload; /* 7 bits payload */
+		*sdw_data_h = payload;  
 		*sdw_addr_l = *sdw_data_l = 0;
-	} else { /* 4 bits command */
-		if ((verb & 0x800) == 0x800) { /* read */
+	} else {  
+		if ((verb & 0x800) == 0x800) {  
 			offset_h = 0x9000;
 			offset_l = 0xa000;
-		} else { /* write */
+		} else {  
 			offset_h = 0x7000;
 			offset_l = 0x8000;
 		}
 		e_verb = verb >> 8;
-		*sdw_data_h = (payload >> 8); /* 16 bits payload [15:8] */
-		*sdw_addr_l = (e_verb << 8) | nid | 0x80; /* 0x80: valid bit */
+		*sdw_data_h = (payload >> 8);  
+		*sdw_addr_l = (e_verb << 8) | nid | 0x80;  
 		*sdw_addr_l += offset_l;
 		*sdw_data_l = payload & 0xff;
 	}
@@ -417,14 +410,11 @@ static int rt715_update_status(struct sdw_slave *slave,
 {
 	struct rt715_priv *rt715 = dev_get_drvdata(&slave->dev);
 
-	/*
-	 * Perform initialization only if slave status is present and
-	 * hw_init flag is false
-	 */
+	 
 	if (rt715->hw_init || status != SDW_SLAVE_ATTACHED)
 		return 0;
 
-	/* perform I/O transfers required for Slave initialization */
+	 
 	return rt715_io_init(&slave->dev, slave);
 }
 
@@ -442,9 +432,9 @@ static int rt715_read_prop(struct sdw_slave *slave)
 
 	prop->paging_support = false;
 
-	/* first we need to allocate memory for set bits in port lists */
-	prop->source_ports = 0x50;/* BITMAP: 01010000 */
-	prop->sink_ports = 0x0;	/* BITMAP:  00000000 */
+	 
+	prop->source_ports = 0x50; 
+	prop->sink_ports = 0x0;	 
 
 	nval = hweight32(prop->source_ports);
 	prop->src_dpn_prop = devm_kcalloc(&slave->dev, nval,
@@ -463,10 +453,10 @@ static int rt715_read_prop(struct sdw_slave *slave)
 		i++;
 	}
 
-	/* set the timeout values */
+	 
 	prop->clk_stop_timeout = 20;
 
-	/* wake-up event */
+	 
 	prop->wake_capable = 1;
 
 	return 0;
@@ -498,7 +488,7 @@ static int rt715_sdw_probe(struct sdw_slave *slave,
 {
 	struct regmap *sdw_regmap, *regmap;
 
-	/* Regmap Initialization */
+	 
 	sdw_regmap = devm_regmap_init_sdw(slave, &rt715_sdw_regmap);
 	if (IS_ERR(sdw_regmap))
 		return PTR_ERR(sdw_regmap);

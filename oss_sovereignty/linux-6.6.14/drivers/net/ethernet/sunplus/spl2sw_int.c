@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright Sunplus Technology Co., Ltd.
- *       All rights reserved.
- */
+
+ 
 
 #include <linux/platform_device.h>
 #include <linux/etherdevice.h>
@@ -31,7 +29,7 @@ int spl2sw_rx_poll(struct napi_struct *napi, int budget)
 	u32 cmd;
 	u32 len;
 
-	/* Process high-priority queue and then low-priority queue. */
+	 
 	for (queue = 0; queue < RX_DESC_QUEUE_NUM; queue++) {
 		rx_pos = comm->rx_pos[queue];
 		rx_count = comm->rx_desc_num[queue];
@@ -61,7 +59,7 @@ int spl2sw_rx_poll(struct napi_struct *napi, int budget)
 					 comm->rx_desc_buff_size, DMA_FROM_DEVICE);
 
 			skb = sinfo->skb;
-			skb_put(skb, pkg_len - 4); /* Minus FCS */
+			skb_put(skb, pkg_len - 4);  
 			skb->ip_summed = CHECKSUM_NONE;
 			skb->protocol = eth_type_trans(skb, comm->ndev[port]);
 			len = skb->len;
@@ -70,7 +68,7 @@ int spl2sw_rx_poll(struct napi_struct *napi, int budget)
 			stats->rx_packets++;
 			stats->rx_bytes += len;
 
-			/* Allocate a new skb for receiving. */
+			 
 			new_skb = netdev_alloc_skb(NULL, comm->rx_desc_buff_size);
 			if (unlikely(!new_skb)) {
 				desc->cmd2 = (rx_pos == comm->rx_desc_num[queue] - 1) ?
@@ -102,25 +100,23 @@ spl2sw_rx_poll_rec_err:
 				     RXD_EOR | comm->rx_desc_buff_size :
 				     comm->rx_desc_buff_size;
 
-			wmb();	/* Set RXD_OWN after other fields are effective. */
+			wmb();	 
 			desc->cmd1 = RXD_OWN;
 
 spl2sw_rx_poll_alloc_err:
-			/* Move rx_pos to next position */
+			 
 			rx_pos = ((rx_pos + 1) == comm->rx_desc_num[queue]) ? 0 : rx_pos + 1;
 
 			budget_left--;
 
-			/* If there are packets in high-priority queue,
-			 * stop processing low-priority queue.
-			 */
+			 
 			if (queue == 1 && !(h_desc->cmd1 & RXD_OWN))
 				break;
 		}
 
 		comm->rx_pos[queue] = rx_pos;
 
-		/* Save pointer to last rx descriptor of high-priority queue. */
+		 
 		if (queue == 0)
 			h_desc = comm->rx_desc[queue] + rx_pos;
 	}
@@ -180,7 +176,7 @@ spl2sw_tx_poll_unmap:
 		skbinfo->skb = NULL;
 
 spl2sw_tx_poll_next:
-		/* Move tx_done_pos to next position */
+		 
 		tx_done_pos = ((tx_done_pos + 1) == TX_DESC_NUM) ? 0 : tx_done_pos + 1;
 
 		if (comm->tx_desc_full == 1)
@@ -223,7 +219,7 @@ irqreturn_t spl2sw_ethernet_interrupt(int irq, void *dev_id)
 	writel(status, comm->l2sw_reg_base + L2SW_SW_INT_STATUS_0);
 
 	if (status & MAC_INT_RX) {
-		/* Disable RX interrupts. */
+		 
 		spin_lock(&comm->int_mask_lock);
 		mask = readl(comm->l2sw_reg_base + L2SW_SW_INT_MASK_0);
 		mask |= MAC_INT_RX;
@@ -243,7 +239,7 @@ irqreturn_t spl2sw_ethernet_interrupt(int irq, void *dev_id)
 	}
 
 	if (status & MAC_INT_TX) {
-		/* Disable TX interrupts. */
+		 
 		spin_lock(&comm->int_mask_lock);
 		mask = readl(comm->l2sw_reg_base + L2SW_SW_INT_MASK_0);
 		mask |= MAC_INT_TX;

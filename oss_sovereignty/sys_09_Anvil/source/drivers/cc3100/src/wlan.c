@@ -1,51 +1,17 @@
-/*
-* wlan.c - CC31xx/CC32xx Host Driver Implementation
-*
-* Copyright (C) 2014 Texas Instruments Incorporated - http://www.ti.com/ 
-* 
-* 
-*  Redistribution and use in source and binary forms, with or without 
-*  modification, are permitted provided that the following conditions 
-*  are met:
-*
-*    Redistributions of source code must retain the above copyright 
-*    notice, this list of conditions and the following disclaimer.
-*
-*    Redistributions in binary form must reproduce the above copyright
-*    notice, this list of conditions and the following disclaimer in the 
-*    documentation and/or other materials provided with the   
-*    distribution.
-*
-*    Neither the name of Texas Instruments Incorporated nor the names of
-*    its contributors may be used to endorse or promote products derived
-*    from this software without specific prior written permission.
-*
-*  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS 
-*  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT 
-*  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-*  A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT 
-*  OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, 
-*  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT 
-*  LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-*  DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-*  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT 
-*  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE 
-*  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*
-*/
+ 
 
 
 
-/*****************************************************************************/
-/* Include files                                                             */
-/*****************************************************************************/
+ 
+ 
+ 
 #include "simplelink.h"
 #include "protocol.h"
 #include "driver.h"
 
-/*****************************************************************************/
-/* Macro declarations                                                        */
-/*****************************************************************************/
+ 
+ 
+ 
 #define MAX_SSID_LEN           (32)
 #define MAX_KEY_LEN            (63)
 #define MAX_USER_LEN           (32)
@@ -53,9 +19,7 @@
 #define MAX_SMART_CONFIG_KEY   (16)
 
 
-/*****************************************************************************
-sl_WlanConnect
-*****************************************************************************/
+ 
 typedef struct 
 {
     _WlanConnectEapCommand_t    Args;
@@ -77,43 +41,43 @@ _i16 sl_WlanConnect(const _i8*  pName,const _i16 NameLen,const _u8 *pMacAddr,con
 
     sl_Memset (&Msg, 0, sizeof(Msg));
 
-    CmdCtrl.TxDescLen = 0;/* init */
+    CmdCtrl.TxDescLen = 0; 
     CmdCtrl.RxDescLen = sizeof(_BasicResponse_t);
 
-    /* verify SSID length */
+     
     VERIFY_PROTOCOL(NameLen <= MAX_SSID_LEN);
-    /* verify SSID is not NULL */
+     
     if( NULL == pName )
     {
        return SL_INVALPARAM;
     }
-    /* update SSID length */
+     
     Msg.Cmd.Args.Common.SsidLen = (_u8)NameLen;
 
-    /* Profile with no security */
-    /* Enterprise security profile */
+     
+     
     if (NULL != pSecExtParams)
     {
-        /* Update command opcode */
+         
         CmdCtrl.Opcode = SL_OPCODE_WLAN_WLANCONNECTEAPCOMMAND;
         CmdCtrl.TxDescLen += sizeof(_WlanConnectEapCommand_t);
-        /* copy SSID */
+         
         sl_Memcpy(EAP_SSID_STRING(&Msg), pName, NameLen);
         CmdCtrl.TxDescLen += NameLen;
-        /* Copy password if supplied */
+         
         if ((NULL != pSecParams) && (pSecParams->KeyLen > 0))
         {
-            /* update security type */
+             
             Msg.Cmd.Args.Common.SecType = pSecParams->Type;
-            /* verify key length */
+             
             if (pSecParams->KeyLen > MAX_KEY_LEN)
             {
                 return SL_INVALPARAM;
             }
-            /* update key length */
+             
             Msg.Cmd.Args.Common.PasswordLen = pSecParams->KeyLen;
             ARG_CHECK_PTR(pSecParams->Key);
-            /* copy key		 */
+             
             sl_Memcpy(EAP_PASSWORD_STRING(&Msg), pSecParams->Key, pSecParams->KeyLen);
             CmdCtrl.TxDescLen += pSecParams->KeyLen;
         }
@@ -123,29 +87,29 @@ _i16 sl_WlanConnect(const _i8*  pName,const _i16 NameLen,const _u8 *pMacAddr,con
         }
 
         ARG_CHECK_PTR(pSecExtParams);
-        /* Update Eap bitmask */
+         
         Msg.Cmd.Args.EapBitmask = pSecExtParams->EapMethod;
-        /* Update Certificate file ID index - currently not supported */
+         
         Msg.Cmd.Args.CertIndex = pSecExtParams->CertIndex;
-        /* verify user length */
+         
         if (pSecExtParams->UserLen > MAX_USER_LEN)
         {
             return SL_INVALPARAM;
         }
         Msg.Cmd.Args.UserLen = pSecExtParams->UserLen;
-        /* copy user name (identity) */
+         
         if(pSecExtParams->UserLen > 0)
         {
             sl_Memcpy(EAP_USER_STRING(&Msg), pSecExtParams->User, pSecExtParams->UserLen);
             CmdCtrl.TxDescLen += pSecExtParams->UserLen;
         }
-        /* verify Anonymous user length  */
+         
         if (pSecExtParams->AnonUserLen > MAX_ANON_USER_LEN)
         {
             return SL_INVALPARAM;
         }
         Msg.Cmd.Args.AnonUserLen = pSecExtParams->AnonUserLen;
-        /* copy Anonymous user */
+         
         if(pSecExtParams->AnonUserLen > 0)
         {
             sl_Memcpy(EAP_ANON_USER_STRING(&Msg), pSecExtParams->AnonUser, pSecExtParams->AnonUserLen);
@@ -154,42 +118,42 @@ _i16 sl_WlanConnect(const _i8*  pName,const _i16 NameLen,const _u8 *pMacAddr,con
 
     }
 
-    /* Regular or open security profile */
+     
     else
     {
-        /* Update command opcode */
+         
         CmdCtrl.Opcode = SL_OPCODE_WLAN_WLANCONNECTCOMMAND;
         CmdCtrl.TxDescLen += sizeof(_WlanConnectCommon_t);
-        /* copy SSID */
+         
         sl_Memcpy(SSID_STRING(&Msg), pName, NameLen);	
         CmdCtrl.TxDescLen += NameLen;
-        /* Copy password if supplied */
+         
         if( NULL != pSecParams )
         {
-            /* update security type */
+             
             Msg.Cmd.Args.Common.SecType = pSecParams->Type;
-            /* verify key length is valid */
+             
             if (pSecParams->KeyLen > MAX_KEY_LEN)
             {
                 return SL_INVALPARAM;
             }
-            /* update key length */
+             
             Msg.Cmd.Args.Common.PasswordLen = pSecParams->KeyLen;
             CmdCtrl.TxDescLen += pSecParams->KeyLen;
-            /* copy key (could be no key in case of WPS pin) */
+             
             if( NULL != pSecParams->Key )
             {
                 sl_Memcpy(PASSWORD_STRING(&Msg), pSecParams->Key, pSecParams->KeyLen);
             }
         }
-        /* Profile with no security */
+         
         else
         {
             Msg.Cmd.Args.Common.PasswordLen = 0;
             Msg.Cmd.Args.Common.SecType = SL_SEC_TYPE_OPEN;
         }	
     }
-    /* If BSSID is not null, copy to buffer, otherwise set to 0 */
+     
     if(NULL != pMacAddr)
     {
         sl_Memcpy(Msg.Cmd.Args.Common.Bssid, pMacAddr, sizeof(Msg.Cmd.Args.Common.Bssid));
@@ -206,9 +170,9 @@ _i16 sl_WlanConnect(const _i8*  pName,const _i16 NameLen,const _u8 *pMacAddr,con
 }
 #endif
 
-/*******************************************************************************/
-/*   sl_Disconnect  */
-/* ******************************************************************************/
+ 
+ 
+ 
 #if _SL_INCLUDE_FUNC(sl_WlanDisconnect)
 _i16 sl_WlanDisconnect(void)
 {
@@ -216,9 +180,9 @@ _i16 sl_WlanDisconnect(void)
 }
 #endif
 
-/******************************************************************************/
-/*  sl_PolicySet  */
-/******************************************************************************/
+ 
+ 
+ 
 typedef union
 {
     _WlanPoliciySetGet_t    Cmd;
@@ -256,9 +220,9 @@ _i16 sl_WlanPolicySet(const _u8 Type , const _u8 Policy, _u8 *pVal,const _u8 Val
 #endif
 
 
-/******************************************************************************/
-/*  sl_PolicyGet  */
-/******************************************************************************/
+ 
+ 
+ 
 typedef union
 {
     _WlanPoliciySetGet_t	    Cmd;
@@ -300,7 +264,7 @@ _i16 sl_WlanPolicyGet(const _u8 Type ,_u8 Policy,_u8 *pVal,_u8 *pValLen)
     }
     else
     {
-        /*  no pointer valus, fill the results into _i8 */
+         
         *pValLen = (_u8)CmdExt.ActualRxPayloadLen;
         if( 0 == CmdExt.ActualRxPayloadLen )
         {
@@ -313,9 +277,9 @@ _i16 sl_WlanPolicyGet(const _u8 Type ,_u8 Policy,_u8 *pVal,_u8 *pValLen)
 #endif
 
 
-/*******************************************************************************/
-/*  sl_ProfileAdd  */
-/*******************************************************************************/
+ 
+ 
+ 
 typedef struct
 {
     _WlanAddGetEapProfile_t	Args;
@@ -335,37 +299,37 @@ _i16 sl_WlanProfileAdd(const _i8*  pName,const  _i16 NameLen,const  _u8 *pMacAdd
 {
     _SlProfileAddMsg_u      Msg;
     _SlCmdCtrl_t           CmdCtrl = {0};
-    CmdCtrl.TxDescLen = 0;/* init */
+    CmdCtrl.TxDescLen = 0; 
     CmdCtrl.RxDescLen = sizeof(_BasicResponse_t);
 
-    /* update priority */
+     
     Msg.Cmd.Args.Common.Priority = (_u8)Priority; 
-    /* verify SSID is not NULL */
+     
     if( NULL == pName )
     {
        return SL_INVALPARAM;
     }
-    /* verify SSID length */
+     
     VERIFY_PROTOCOL(NameLen <= MAX_SSID_LEN);
-    /* update SSID length */
+     
     Msg.Cmd.Args.Common.SsidLen = (_u8)NameLen;
 
 
-    /* Enterprise security profile */
+     
     if  (NULL != pSecExtParams)
     {
-        /* Update command opcode */
+         
         CmdCtrl.Opcode = SL_OPCODE_WLAN_EAP_PROFILEADDCOMMAND;
         CmdCtrl.TxDescLen += sizeof(_WlanAddGetEapProfile_t);
 
-        /* copy SSID */
+         
         sl_Memcpy(EAP_PROFILE_SSID_STRING(&Msg), pName, NameLen);	
         CmdCtrl.TxDescLen += NameLen;
 
-        /* Copy password if supplied */
+         
         if ((NULL != pSecParams) && (pSecParams->KeyLen > 0))
         {
-            /* update security type */
+             
             Msg.Cmd.Args.Common.SecType = pSecParams->Type;
 
             if( SL_SEC_TYPE_WEP == Msg.Cmd.Args.Common.SecType )
@@ -373,17 +337,17 @@ _i16 sl_WlanProfileAdd(const _i8*  pName,const  _i16 NameLen,const  _u8 *pMacAdd
                 Msg.Cmd.Args.Common.WepKeyId = 0;
             }
 
-            /* verify key length */
+             
             if (pSecParams->KeyLen > MAX_KEY_LEN)
             {
                 return SL_INVALPARAM;
             }
             VERIFY_PROTOCOL(pSecParams->KeyLen <= MAX_KEY_LEN);
-            /* update key length */
+             
             Msg.Cmd.Args.Common.PasswordLen = pSecParams->KeyLen;	
             CmdCtrl.TxDescLen += pSecParams->KeyLen;
             ARG_CHECK_PTR(pSecParams->Key);
-            /* copy key  */
+             
             sl_Memcpy(EAP_PROFILE_PASSWORD_STRING(&Msg), pSecParams->Key, pSecParams->KeyLen);
         }
         else
@@ -392,31 +356,31 @@ _i16 sl_WlanProfileAdd(const _i8*  pName,const  _i16 NameLen,const  _u8 *pMacAdd
         }
 
         ARG_CHECK_PTR(pSecExtParams);
-        /* Update Eap bitmask */
+         
         Msg.Cmd.Args.EapBitmask = pSecExtParams->EapMethod;
-        /* Update Certificate file ID index - currently not supported */
+         
         Msg.Cmd.Args.CertIndex = pSecExtParams->CertIndex;
-        /* verify user length */
+         
         if (pSecExtParams->UserLen > MAX_USER_LEN)
         {
             return SL_INVALPARAM;
         }
         Msg.Cmd.Args.UserLen = pSecExtParams->UserLen;
-        /* copy user name (identity) */
+         
         if(pSecExtParams->UserLen > 0)
         {
             sl_Memcpy(EAP_PROFILE_USER_STRING(&Msg), pSecExtParams->User, pSecExtParams->UserLen);
             CmdCtrl.TxDescLen += pSecExtParams->UserLen;
         }
 
-        /* verify Anonymous user length (for tunneled) */
+         
         if (pSecExtParams->AnonUserLen > MAX_ANON_USER_LEN)
         {
             return SL_INVALPARAM;
         }
         Msg.Cmd.Args.AnonUserLen = pSecExtParams->AnonUserLen;
 
-        /* copy Anonymous user */
+         
         if(pSecExtParams->AnonUserLen > 0)
         {
             sl_Memcpy(EAP_PROFILE_ANON_USER_STRING(&Msg), pSecExtParams->AnonUser, pSecExtParams->AnonUserLen);
@@ -424,25 +388,25 @@ _i16 sl_WlanProfileAdd(const _i8*  pName,const  _i16 NameLen,const  _u8 *pMacAdd
         }
 
     }
-    /* Regular or open security profile */
+     
     else
     {
-        /* Update command opcode */
+         
         CmdCtrl.Opcode = SL_OPCODE_WLAN_PROFILEADDCOMMAND;
-        /* update commnad length */
+         
         CmdCtrl.TxDescLen += sizeof(_WlanAddGetProfile_t);
 
         if (NULL != pName)
         {
-            /* copy SSID */
+             
             sl_Memcpy(PROFILE_SSID_STRING(&Msg), pName, NameLen);
             CmdCtrl.TxDescLen += NameLen;
         }
 
-        /* Copy password if supplied */
+         
         if( NULL != pSecParams )
         {
-            /* update security type */
+             
             Msg.Cmd.Args.Common.SecType = pSecParams->Type;
 
             if( SL_SEC_TYPE_WEP == Msg.Cmd.Args.Common.SecType )
@@ -450,15 +414,15 @@ _i16 sl_WlanProfileAdd(const _i8*  pName,const  _i16 NameLen,const  _u8 *pMacAdd
                 Msg.Cmd.Args.Common.WepKeyId = 0;
             }
 
-            /* verify key length */
+             
             if (pSecParams->KeyLen > MAX_KEY_LEN)
             {
                 return SL_INVALPARAM;
             }
-            /* update key length */
+             
             Msg.Cmd.Args.Common.PasswordLen = pSecParams->KeyLen;
             CmdCtrl.TxDescLen += pSecParams->KeyLen;
-            /* copy key (could be no key in case of WPS pin) */
+             
             if( NULL != pSecParams->Key )
             {
                 sl_Memcpy(PROFILE_PASSWORD_STRING(&Msg), pSecParams->Key, pSecParams->KeyLen);
@@ -473,7 +437,7 @@ _i16 sl_WlanProfileAdd(const _i8*  pName,const  _i16 NameLen,const  _u8 *pMacAdd
     }
 
 
-    /* If BSSID is not null, copy to buffer, otherwise set to 0  */
+     
     if(NULL != pMacAddr)
     {
         sl_Memcpy(Msg.Cmd.Args.Common.Bssid, pMacAddr, sizeof(Msg.Cmd.Args.Common.Bssid));
@@ -488,9 +452,9 @@ _i16 sl_WlanProfileAdd(const _i8*  pName,const  _i16 NameLen,const  _u8 *pMacAdd
     return (_i16)Msg.Rsp.status;
 }
 #endif
-/*******************************************************************************/
-/*   sl_ProfileGet */
-/*******************************************************************************/
+ 
+ 
+ 
 typedef union
 {
     _WlanProfileDelGetCommand_t Cmd;
@@ -515,18 +479,18 @@ _i16 sl_WlanProfileGet(const _i16 Index,_i8*  pName, _i16 *pNameLen, _u8 *pMacAd
     VERIFY_RET_OK(_SlDrvCmdOp((_SlCmdCtrl_t *)&_SlProfileGetCmdCtrl, &Msg, NULL));
 
     pSecParams->Type = Msg.Rsp.Args.Common.SecType;
-    /* since password is not transferred in getprofile, password length should always be zero */
+     
     pSecParams->KeyLen = Msg.Rsp.Args.Common.PasswordLen;
     if (NULL != pEntParams)
     {
         pEntParams->UserLen = Msg.Rsp.Args.UserLen;
-        /* copy user name */
+         
         if (pEntParams->UserLen > 0)
         {	 
             sl_Memcpy(pEntParams->User, EAP_PROFILE_USER_STRING(&Msg), pEntParams->UserLen);
         }
         pEntParams->AnonUserLen = Msg.Rsp.Args.AnonUserLen;
-        /* copy anonymous user name */
+         
         if (pEntParams->AnonUserLen > 0)
         {
             sl_Memcpy(pEntParams->AnonUser, EAP_PROFILE_ANON_USER_STRING(&Msg), pEntParams->AnonUserLen);
@@ -544,9 +508,9 @@ _i16 sl_WlanProfileGet(const _i16 Index,_i8*  pName, _i16 *pNameLen, _u8 *pMacAd
 
 }
 #endif
-/*******************************************************************************/
-/*   sl_ProfileDel  */
-/*******************************************************************************/
+ 
+ 
+ 
 typedef union
 {
     _WlanProfileDelGetCommand_t	    Cmd;
@@ -576,9 +540,9 @@ _i16 sl_WlanProfileDel(const _i16 Index)
 #endif
 
 
-/******************************************************************************/
-/*  sl_WlanGetNetworkList  */
-/******************************************************************************/
+ 
+ 
+ 
 typedef union
 {
     _WlanGetNetworkListCommand_t    Cmd;
@@ -624,11 +588,11 @@ _i16 sl_WlanGetNetworkList(const _u8 Index,const _u8 Count, Sl_WlanNetworkEntry_
 
 
 
-/******************************************************************************/
-/*     RX filters message command response structures  */
-/******************************************************************************/
+ 
+ 
+ 
 
-/* Set command */
+ 
 typedef union
 {
     _WlanRxFilterAddCommand_t	          Cmd;
@@ -636,7 +600,7 @@ typedef union
 }_SlrxFilterAddMsg_u;
 
 
-/* Set command */
+ 
 typedef union _SlRxFilterSetMsg_u
 {
     _WlanRxFilterSetCommand_t	            Cmd;
@@ -644,7 +608,7 @@ typedef union _SlRxFilterSetMsg_u
 }_SlRxFilterSetMsg_u;
 
 
-/* Get command */
+ 
 typedef union _SlRxFilterGetMsg_u
 {
     _WlanRxFilterGetCommand_t	            Cmd;
@@ -661,9 +625,7 @@ const _SlCmdCtrl_t _SlRxFilterAddtCmdCtrl =
 };
 
 
-/*****************************************************************************
-    RX filters
-*****************************************************************************/
+ 
 SlrxFilterID_t sl_WlanRxFilterAdd(	SlrxFilterRuleType_t 				RuleType,
     SlrxFilterFlags_t 					FilterFlags,
     const SlrxFilterRule_t* const 		Rule,
@@ -675,7 +637,7 @@ SlrxFilterID_t sl_WlanRxFilterAdd(	SlrxFilterRuleType_t 				RuleType,
 
     _SlrxFilterAddMsg_u Msg;
     Msg.Cmd.RuleType = RuleType;
-    /* filterId is zero */
+     
     Msg.Cmd.FilterId = 0;
     Msg.Cmd.FilterFlags = FilterFlags;
     sl_Memcpy( &(Msg.Cmd.Rule), Rule, sizeof(SlrxFilterRule_t) );
@@ -690,9 +652,9 @@ SlrxFilterID_t sl_WlanRxFilterAdd(	SlrxFilterRuleType_t 				RuleType,
 
 
 
-/*******************************************************************************/
-/*     RX filters    */
-/*******************************************************************************/
+ 
+ 
+ 
 #if _SL_INCLUDE_FUNC(sl_WlanRxFilterSet)
 
 const _SlCmdCtrl_t _SlRxFilterSetCmdCtrl =
@@ -725,9 +687,9 @@ _i16 sl_WlanRxFilterSet(const SLrxFilterOperation_t RxFilterOperation,
 }
 #endif
 
-/******************************************************************************/
-/*     RX filters  */
-/******************************************************************************/
+ 
+ 
+ 
 #if _SL_INCLUDE_FUNC(sl_WlanRxFilterGet)
 
 const _SlCmdCtrl_t _SlRxFilterGetCmdCtrl =
@@ -769,9 +731,9 @@ _i16 sl_WlanRxFilterGet(const SLrxFilterOperation_t RxFilterOperation,
 }
 #endif
 
-/*******************************************************************************/
-/*             sl_WlanRxStatStart                                              */
-/*******************************************************************************/
+ 
+ 
+ 
 #if _SL_INCLUDE_FUNC(sl_WlanRxStatStart)
 _i16 sl_WlanRxStatStart(void)
 {
@@ -800,9 +762,9 @@ _i16 sl_WlanRxStatGet(SlGetRxStatResponse_t *pRxStat,const _u32 Flags)
 
 
 
-/******************************************************************************/
-/*   sl_WlanSmartConfigStop                                                   */
-/******************************************************************************/
+ 
+ 
+ 
 #if _SL_INCLUDE_FUNC(sl_WlanSmartConfigStop)
 _i16 sl_WlanSmartConfigStop(void)
 {
@@ -811,15 +773,15 @@ _i16 sl_WlanSmartConfigStop(void)
 #endif
 
 
-/******************************************************************************/
-/*   sl_WlanSmartConfigStart                                                  */
-/******************************************************************************/
+ 
+ 
+ 
 
 
 typedef struct
 {
     _WlanSmartConfigStartCommand_t	Args;
-    _i8                            Strings[3 * MAX_SMART_CONFIG_KEY]; /* public key + groupId1 key + groupId2 key */
+    _i8                            Strings[3 * MAX_SMART_CONFIG_KEY];  
 }_SlSmartConfigStart_t;
 
 typedef union
@@ -854,7 +816,7 @@ _i16 sl_WlanSmartConfigStart( const _u32    groupIdBitmask,
     Msg.Cmd.Args.group1KeyLen   = (_u8)group1KeyLen;
     Msg.Cmd.Args.group2KeyLen   = (_u8)group2KeyLen;
 
-    /* copy keys (if exist) after command (one after another) */
+     
     sl_Memcpy(SMART_CONFIG_START_PUBLIC_KEY_STRING(&Msg), pPublicKey, publicKeyLen);
     sl_Memcpy(SMART_CONFIG_START_GROUP1_KEY_STRING(&Msg), pGroup1Key, group1KeyLen);
     sl_Memcpy(SMART_CONFIG_START_GROUP2_KEY_STRING(&Msg), pGroup2Key, group2KeyLen);
@@ -868,9 +830,9 @@ _i16 sl_WlanSmartConfigStart( const _u32    groupIdBitmask,
 #endif
 
 
-/*******************************************************************************/
-/*   sl_WlanSetMode  */
-/*******************************************************************************/
+ 
+ 
+ 
 typedef union
 {
     _WlanSetMode_t		    Cmd;
@@ -886,10 +848,7 @@ const _SlCmdCtrl_t _SlWlanSetModeCmdCtrl =
     sizeof(_BasicResponse_t)
 };
 
-/* possible values are: 
-WLAN_SET_STA_MODE   =   1
-WLAN_SET_AP_MODE    =   2
-WLAN_SET_P2P_MODE   =   3  */
+ 
 _i16 sl_WlanSetMode(const _u8    mode)
 {
     _SlwlanSetModeMsg_u      Msg;
@@ -905,9 +864,9 @@ _i16 sl_WlanSetMode(const _u8    mode)
 
 
 
-/*******************************************************************************/
-/*   sl_WlanSet  */
-/* ******************************************************************************/
+ 
+ 
+ 
 typedef union
 {
     _WlanCfgSetGet_t	    Cmd;
@@ -944,9 +903,9 @@ _i16 sl_WlanSet(const _u16 ConfigId ,const _u16 ConfigOpt,const _u16 ConfigLen,c
 #endif
 
 
-/******************************************************************************/
-/*  sl_WlanGet  */
-/******************************************************************************/
+ 
+ 
+ 
 typedef union
 {
     _WlanCfgSetGet_t	    Cmd;

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * max98088.c -- MAX98088 ALSA SoC Audio driver
- *
- * Copyright 2010 Maxim Integrated Products
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/moduleparam.h>
@@ -57,205 +53,205 @@ struct max98088_priv {
 };
 
 static const struct reg_default max98088_reg[] = {
-	{  0xf, 0x00 }, /* 0F interrupt enable */
+	{  0xf, 0x00 },  
 
-	{ 0x10, 0x00 }, /* 10 master clock */
-	{ 0x11, 0x00 }, /* 11 DAI1 clock mode */
-	{ 0x12, 0x00 }, /* 12 DAI1 clock control */
-	{ 0x13, 0x00 }, /* 13 DAI1 clock control */
-	{ 0x14, 0x00 }, /* 14 DAI1 format */
-	{ 0x15, 0x00 }, /* 15 DAI1 clock */
-	{ 0x16, 0x00 }, /* 16 DAI1 config */
-	{ 0x17, 0x00 }, /* 17 DAI1 TDM */
-	{ 0x18, 0x00 }, /* 18 DAI1 filters */
-	{ 0x19, 0x00 }, /* 19 DAI2 clock mode */
-	{ 0x1a, 0x00 }, /* 1A DAI2 clock control */
-	{ 0x1b, 0x00 }, /* 1B DAI2 clock control */
-	{ 0x1c, 0x00 }, /* 1C DAI2 format */
-	{ 0x1d, 0x00 }, /* 1D DAI2 clock */
-	{ 0x1e, 0x00 }, /* 1E DAI2 config */
-	{ 0x1f, 0x00 }, /* 1F DAI2 TDM */
+	{ 0x10, 0x00 },  
+	{ 0x11, 0x00 },  
+	{ 0x12, 0x00 },  
+	{ 0x13, 0x00 },  
+	{ 0x14, 0x00 },  
+	{ 0x15, 0x00 },  
+	{ 0x16, 0x00 },  
+	{ 0x17, 0x00 },  
+	{ 0x18, 0x00 },  
+	{ 0x19, 0x00 },  
+	{ 0x1a, 0x00 },  
+	{ 0x1b, 0x00 },  
+	{ 0x1c, 0x00 },  
+	{ 0x1d, 0x00 },  
+	{ 0x1e, 0x00 },  
+	{ 0x1f, 0x00 },  
 
-	{ 0x20, 0x00 }, /* 20 DAI2 filters */
-	{ 0x21, 0x00 }, /* 21 data config */
-	{ 0x22, 0x00 }, /* 22 DAC mixer */
-	{ 0x23, 0x00 }, /* 23 left ADC mixer */
-	{ 0x24, 0x00 }, /* 24 right ADC mixer */
-	{ 0x25, 0x00 }, /* 25 left HP mixer */
-	{ 0x26, 0x00 }, /* 26 right HP mixer */
-	{ 0x27, 0x00 }, /* 27 HP control */
-	{ 0x28, 0x00 }, /* 28 left REC mixer */
-	{ 0x29, 0x00 }, /* 29 right REC mixer */
-	{ 0x2a, 0x00 }, /* 2A REC control */
-	{ 0x2b, 0x00 }, /* 2B left SPK mixer */
-	{ 0x2c, 0x00 }, /* 2C right SPK mixer */
-	{ 0x2d, 0x00 }, /* 2D SPK control */
-	{ 0x2e, 0x00 }, /* 2E sidetone */
-	{ 0x2f, 0x00 }, /* 2F DAI1 playback level */
+	{ 0x20, 0x00 },  
+	{ 0x21, 0x00 },  
+	{ 0x22, 0x00 },  
+	{ 0x23, 0x00 },  
+	{ 0x24, 0x00 },  
+	{ 0x25, 0x00 },  
+	{ 0x26, 0x00 },  
+	{ 0x27, 0x00 },  
+	{ 0x28, 0x00 },  
+	{ 0x29, 0x00 },  
+	{ 0x2a, 0x00 },  
+	{ 0x2b, 0x00 },  
+	{ 0x2c, 0x00 },  
+	{ 0x2d, 0x00 },  
+	{ 0x2e, 0x00 },  
+	{ 0x2f, 0x00 },  
 
-	{ 0x30, 0x00 }, /* 30 DAI1 playback level */
-	{ 0x31, 0x00 }, /* 31 DAI2 playback level */
-	{ 0x32, 0x00 }, /* 32 DAI2 playbakc level */
-	{ 0x33, 0x00 }, /* 33 left ADC level */
-	{ 0x34, 0x00 }, /* 34 right ADC level */
-	{ 0x35, 0x00 }, /* 35 MIC1 level */
-	{ 0x36, 0x00 }, /* 36 MIC2 level */
-	{ 0x37, 0x00 }, /* 37 INA level */
-	{ 0x38, 0x00 }, /* 38 INB level */
-	{ 0x39, 0x00 }, /* 39 left HP volume */
-	{ 0x3a, 0x00 }, /* 3A right HP volume */
-	{ 0x3b, 0x00 }, /* 3B left REC volume */
-	{ 0x3c, 0x00 }, /* 3C right REC volume */
-	{ 0x3d, 0x00 }, /* 3D left SPK volume */
-	{ 0x3e, 0x00 }, /* 3E right SPK volume */
-	{ 0x3f, 0x00 }, /* 3F MIC config */
+	{ 0x30, 0x00 },  
+	{ 0x31, 0x00 },  
+	{ 0x32, 0x00 },  
+	{ 0x33, 0x00 },  
+	{ 0x34, 0x00 },  
+	{ 0x35, 0x00 },  
+	{ 0x36, 0x00 },  
+	{ 0x37, 0x00 },  
+	{ 0x38, 0x00 },  
+	{ 0x39, 0x00 },  
+	{ 0x3a, 0x00 },  
+	{ 0x3b, 0x00 },  
+	{ 0x3c, 0x00 },  
+	{ 0x3d, 0x00 },  
+	{ 0x3e, 0x00 },  
+	{ 0x3f, 0x00 },  
 
-	{ 0x40, 0x00 }, /* 40 MIC threshold */
-	{ 0x41, 0x00 }, /* 41 excursion limiter filter */
-	{ 0x42, 0x00 }, /* 42 excursion limiter threshold */
-	{ 0x43, 0x00 }, /* 43 ALC */
-	{ 0x44, 0x00 }, /* 44 power limiter threshold */
-	{ 0x45, 0x00 }, /* 45 power limiter config */
-	{ 0x46, 0x00 }, /* 46 distortion limiter config */
-	{ 0x47, 0x00 }, /* 47 audio input */
-        { 0x48, 0x00 }, /* 48 microphone */
-	{ 0x49, 0x00 }, /* 49 level control */
-	{ 0x4a, 0x00 }, /* 4A bypass switches */
-	{ 0x4b, 0x00 }, /* 4B jack detect */
-	{ 0x4c, 0x00 }, /* 4C input enable */
-	{ 0x4d, 0x00 }, /* 4D output enable */
-	{ 0x4e, 0xF0 }, /* 4E bias control */
-	{ 0x4f, 0x00 }, /* 4F DAC power */
+	{ 0x40, 0x00 },  
+	{ 0x41, 0x00 },  
+	{ 0x42, 0x00 },  
+	{ 0x43, 0x00 },  
+	{ 0x44, 0x00 },  
+	{ 0x45, 0x00 },  
+	{ 0x46, 0x00 },  
+	{ 0x47, 0x00 },  
+        { 0x48, 0x00 },  
+	{ 0x49, 0x00 },  
+	{ 0x4a, 0x00 },  
+	{ 0x4b, 0x00 },  
+	{ 0x4c, 0x00 },  
+	{ 0x4d, 0x00 },  
+	{ 0x4e, 0xF0 },  
+	{ 0x4f, 0x00 },  
 
-	{ 0x50, 0x0F }, /* 50 DAC power */
-	{ 0x51, 0x00 }, /* 51 system */
-	{ 0x52, 0x00 }, /* 52 DAI1 EQ1 */
-	{ 0x53, 0x00 }, /* 53 DAI1 EQ1 */
-	{ 0x54, 0x00 }, /* 54 DAI1 EQ1 */
-	{ 0x55, 0x00 }, /* 55 DAI1 EQ1 */
-	{ 0x56, 0x00 }, /* 56 DAI1 EQ1 */
-	{ 0x57, 0x00 }, /* 57 DAI1 EQ1 */
-	{ 0x58, 0x00 }, /* 58 DAI1 EQ1 */
-	{ 0x59, 0x00 }, /* 59 DAI1 EQ1 */
-	{ 0x5a, 0x00 }, /* 5A DAI1 EQ1 */
-	{ 0x5b, 0x00 }, /* 5B DAI1 EQ1 */
-	{ 0x5c, 0x00 }, /* 5C DAI1 EQ2 */
-	{ 0x5d, 0x00 }, /* 5D DAI1 EQ2 */
-	{ 0x5e, 0x00 }, /* 5E DAI1 EQ2 */
-	{ 0x5f, 0x00 }, /* 5F DAI1 EQ2 */
+	{ 0x50, 0x0F },  
+	{ 0x51, 0x00 },  
+	{ 0x52, 0x00 },  
+	{ 0x53, 0x00 },  
+	{ 0x54, 0x00 },  
+	{ 0x55, 0x00 },  
+	{ 0x56, 0x00 },  
+	{ 0x57, 0x00 },  
+	{ 0x58, 0x00 },  
+	{ 0x59, 0x00 },  
+	{ 0x5a, 0x00 },  
+	{ 0x5b, 0x00 },  
+	{ 0x5c, 0x00 },  
+	{ 0x5d, 0x00 },  
+	{ 0x5e, 0x00 },  
+	{ 0x5f, 0x00 },  
 
-	{ 0x60, 0x00 }, /* 60 DAI1 EQ2 */
-	{ 0x61, 0x00 }, /* 61 DAI1 EQ2 */
-	{ 0x62, 0x00 }, /* 62 DAI1 EQ2 */
-	{ 0x63, 0x00 }, /* 63 DAI1 EQ2 */
-	{ 0x64, 0x00 }, /* 64 DAI1 EQ2 */
-	{ 0x65, 0x00 }, /* 65 DAI1 EQ2 */
-	{ 0x66, 0x00 }, /* 66 DAI1 EQ3 */
-	{ 0x67, 0x00 }, /* 67 DAI1 EQ3 */
-	{ 0x68, 0x00 }, /* 68 DAI1 EQ3 */
-	{ 0x69, 0x00 }, /* 69 DAI1 EQ3 */
-	{ 0x6a, 0x00 }, /* 6A DAI1 EQ3 */
-	{ 0x6b, 0x00 }, /* 6B DAI1 EQ3 */
-	{ 0x6c, 0x00 }, /* 6C DAI1 EQ3 */
-	{ 0x6d, 0x00 }, /* 6D DAI1 EQ3 */
-	{ 0x6e, 0x00 }, /* 6E DAI1 EQ3 */
-	{ 0x6f, 0x00 }, /* 6F DAI1 EQ3 */
+	{ 0x60, 0x00 },  
+	{ 0x61, 0x00 },  
+	{ 0x62, 0x00 },  
+	{ 0x63, 0x00 },  
+	{ 0x64, 0x00 },  
+	{ 0x65, 0x00 },  
+	{ 0x66, 0x00 },  
+	{ 0x67, 0x00 },  
+	{ 0x68, 0x00 },  
+	{ 0x69, 0x00 },  
+	{ 0x6a, 0x00 },  
+	{ 0x6b, 0x00 },  
+	{ 0x6c, 0x00 },  
+	{ 0x6d, 0x00 },  
+	{ 0x6e, 0x00 },  
+	{ 0x6f, 0x00 },  
 
-	{ 0x70, 0x00 }, /* 70 DAI1 EQ4 */
-	{ 0x71, 0x00 }, /* 71 DAI1 EQ4 */
-	{ 0x72, 0x00 }, /* 72 DAI1 EQ4 */
-	{ 0x73, 0x00 }, /* 73 DAI1 EQ4 */
-	{ 0x74, 0x00 }, /* 74 DAI1 EQ4 */
-	{ 0x75, 0x00 }, /* 75 DAI1 EQ4 */
-	{ 0x76, 0x00 }, /* 76 DAI1 EQ4 */
-	{ 0x77, 0x00 }, /* 77 DAI1 EQ4 */
-	{ 0x78, 0x00 }, /* 78 DAI1 EQ4 */
-	{ 0x79, 0x00 }, /* 79 DAI1 EQ4 */
-	{ 0x7a, 0x00 }, /* 7A DAI1 EQ5 */
-	{ 0x7b, 0x00 }, /* 7B DAI1 EQ5 */
-	{ 0x7c, 0x00 }, /* 7C DAI1 EQ5 */
-	{ 0x7d, 0x00 }, /* 7D DAI1 EQ5 */
-	{ 0x7e, 0x00 }, /* 7E DAI1 EQ5 */
-	{ 0x7f, 0x00 }, /* 7F DAI1 EQ5 */
+	{ 0x70, 0x00 },  
+	{ 0x71, 0x00 },  
+	{ 0x72, 0x00 },  
+	{ 0x73, 0x00 },  
+	{ 0x74, 0x00 },  
+	{ 0x75, 0x00 },  
+	{ 0x76, 0x00 },  
+	{ 0x77, 0x00 },  
+	{ 0x78, 0x00 },  
+	{ 0x79, 0x00 },  
+	{ 0x7a, 0x00 },  
+	{ 0x7b, 0x00 },  
+	{ 0x7c, 0x00 },  
+	{ 0x7d, 0x00 },  
+	{ 0x7e, 0x00 },  
+	{ 0x7f, 0x00 },  
 
-	{ 0x80, 0x00 }, /* 80 DAI1 EQ5 */
-	{ 0x81, 0x00 }, /* 81 DAI1 EQ5 */
-	{ 0x82, 0x00 }, /* 82 DAI1 EQ5 */
-	{ 0x83, 0x00 }, /* 83 DAI1 EQ5 */
-	{ 0x84, 0x00 }, /* 84 DAI2 EQ1 */
-	{ 0x85, 0x00 }, /* 85 DAI2 EQ1 */
-	{ 0x86, 0x00 }, /* 86 DAI2 EQ1 */
-	{ 0x87, 0x00 }, /* 87 DAI2 EQ1 */
-	{ 0x88, 0x00 }, /* 88 DAI2 EQ1 */
-	{ 0x89, 0x00 }, /* 89 DAI2 EQ1 */
-	{ 0x8a, 0x00 }, /* 8A DAI2 EQ1 */
-	{ 0x8b, 0x00 }, /* 8B DAI2 EQ1 */
-	{ 0x8c, 0x00 }, /* 8C DAI2 EQ1 */
-	{ 0x8d, 0x00 }, /* 8D DAI2 EQ1 */
-	{ 0x8e, 0x00 }, /* 8E DAI2 EQ2 */
-	{ 0x8f, 0x00 }, /* 8F DAI2 EQ2 */
+	{ 0x80, 0x00 },  
+	{ 0x81, 0x00 },  
+	{ 0x82, 0x00 },  
+	{ 0x83, 0x00 },  
+	{ 0x84, 0x00 },  
+	{ 0x85, 0x00 },  
+	{ 0x86, 0x00 },  
+	{ 0x87, 0x00 },  
+	{ 0x88, 0x00 },  
+	{ 0x89, 0x00 },  
+	{ 0x8a, 0x00 },  
+	{ 0x8b, 0x00 },  
+	{ 0x8c, 0x00 },  
+	{ 0x8d, 0x00 },  
+	{ 0x8e, 0x00 },  
+	{ 0x8f, 0x00 },  
 
-	{ 0x90, 0x00 }, /* 90 DAI2 EQ2 */
-	{ 0x91, 0x00 }, /* 91 DAI2 EQ2 */
-	{ 0x92, 0x00 }, /* 92 DAI2 EQ2 */
-	{ 0x93, 0x00 }, /* 93 DAI2 EQ2 */
-	{ 0x94, 0x00 }, /* 94 DAI2 EQ2 */
-	{ 0x95, 0x00 }, /* 95 DAI2 EQ2 */
-	{ 0x96, 0x00 }, /* 96 DAI2 EQ2 */
-	{ 0x97, 0x00 }, /* 97 DAI2 EQ2 */
-	{ 0x98, 0x00 }, /* 98 DAI2 EQ3 */
-	{ 0x99, 0x00 }, /* 99 DAI2 EQ3 */
-	{ 0x9a, 0x00 }, /* 9A DAI2 EQ3 */
-        { 0x9b, 0x00 }, /* 9B DAI2 EQ3 */
-	{ 0x9c, 0x00 }, /* 9C DAI2 EQ3 */
-	{ 0x9d, 0x00 }, /* 9D DAI2 EQ3 */
-	{ 0x9e, 0x00 }, /* 9E DAI2 EQ3 */
-	{ 0x9f, 0x00 }, /* 9F DAI2 EQ3 */
+	{ 0x90, 0x00 },  
+	{ 0x91, 0x00 },  
+	{ 0x92, 0x00 },  
+	{ 0x93, 0x00 },  
+	{ 0x94, 0x00 },  
+	{ 0x95, 0x00 },  
+	{ 0x96, 0x00 },  
+	{ 0x97, 0x00 },  
+	{ 0x98, 0x00 },  
+	{ 0x99, 0x00 },  
+	{ 0x9a, 0x00 },  
+        { 0x9b, 0x00 },  
+	{ 0x9c, 0x00 },  
+	{ 0x9d, 0x00 },  
+	{ 0x9e, 0x00 },  
+	{ 0x9f, 0x00 },  
 
-	{ 0xa0, 0x00 }, /* A0 DAI2 EQ3 */
-	{ 0xa1, 0x00 }, /* A1 DAI2 EQ3 */
-	{ 0xa2, 0x00 }, /* A2 DAI2 EQ4 */
-	{ 0xa3, 0x00 }, /* A3 DAI2 EQ4 */
-	{ 0xa4, 0x00 }, /* A4 DAI2 EQ4 */
-	{ 0xa5, 0x00 }, /* A5 DAI2 EQ4 */
-	{ 0xa6, 0x00 }, /* A6 DAI2 EQ4 */
-	{ 0xa7, 0x00 }, /* A7 DAI2 EQ4 */
-	{ 0xa8, 0x00 }, /* A8 DAI2 EQ4 */
-	{ 0xa9, 0x00 }, /* A9 DAI2 EQ4 */
-	{ 0xaa, 0x00 }, /* AA DAI2 EQ4 */
-	{ 0xab, 0x00 }, /* AB DAI2 EQ4 */
-	{ 0xac, 0x00 }, /* AC DAI2 EQ5 */
-	{ 0xad, 0x00 }, /* AD DAI2 EQ5 */
-	{ 0xae, 0x00 }, /* AE DAI2 EQ5 */
-	{ 0xaf, 0x00 }, /* AF DAI2 EQ5 */
+	{ 0xa0, 0x00 },  
+	{ 0xa1, 0x00 },  
+	{ 0xa2, 0x00 },  
+	{ 0xa3, 0x00 },  
+	{ 0xa4, 0x00 },  
+	{ 0xa5, 0x00 },  
+	{ 0xa6, 0x00 },  
+	{ 0xa7, 0x00 },  
+	{ 0xa8, 0x00 },  
+	{ 0xa9, 0x00 },  
+	{ 0xaa, 0x00 },  
+	{ 0xab, 0x00 },  
+	{ 0xac, 0x00 },  
+	{ 0xad, 0x00 },  
+	{ 0xae, 0x00 },  
+	{ 0xaf, 0x00 },  
 
-	{ 0xb0, 0x00 }, /* B0 DAI2 EQ5 */
-	{ 0xb1, 0x00 }, /* B1 DAI2 EQ5 */
-	{ 0xb2, 0x00 }, /* B2 DAI2 EQ5 */
-	{ 0xb3, 0x00 }, /* B3 DAI2 EQ5 */
-	{ 0xb4, 0x00 }, /* B4 DAI2 EQ5 */
-	{ 0xb5, 0x00 }, /* B5 DAI2 EQ5 */
-	{ 0xb6, 0x00 }, /* B6 DAI1 biquad */
-	{ 0xb7, 0x00 }, /* B7 DAI1 biquad */
-	{ 0xb8 ,0x00 }, /* B8 DAI1 biquad */
-	{ 0xb9, 0x00 }, /* B9 DAI1 biquad */
-	{ 0xba, 0x00 }, /* BA DAI1 biquad */
-	{ 0xbb, 0x00 }, /* BB DAI1 biquad */
-	{ 0xbc, 0x00 }, /* BC DAI1 biquad */
-	{ 0xbd, 0x00 }, /* BD DAI1 biquad */
-	{ 0xbe, 0x00 }, /* BE DAI1 biquad */
-        { 0xbf, 0x00 }, /* BF DAI1 biquad */
+	{ 0xb0, 0x00 },  
+	{ 0xb1, 0x00 },  
+	{ 0xb2, 0x00 },  
+	{ 0xb3, 0x00 },  
+	{ 0xb4, 0x00 },  
+	{ 0xb5, 0x00 },  
+	{ 0xb6, 0x00 },  
+	{ 0xb7, 0x00 },  
+	{ 0xb8 ,0x00 },  
+	{ 0xb9, 0x00 },  
+	{ 0xba, 0x00 },  
+	{ 0xbb, 0x00 },  
+	{ 0xbc, 0x00 },  
+	{ 0xbd, 0x00 },  
+	{ 0xbe, 0x00 },  
+        { 0xbf, 0x00 },  
 
-	{ 0xc0, 0x00 }, /* C0 DAI2 biquad */
-	{ 0xc1, 0x00 }, /* C1 DAI2 biquad */
-	{ 0xc2, 0x00 }, /* C2 DAI2 biquad */
-	{ 0xc3, 0x00 }, /* C3 DAI2 biquad */
-	{ 0xc4, 0x00 }, /* C4 DAI2 biquad */
-	{ 0xc5, 0x00 }, /* C5 DAI2 biquad */
-	{ 0xc6, 0x00 }, /* C6 DAI2 biquad */
-	{ 0xc7, 0x00 }, /* C7 DAI2 biquad */
-	{ 0xc8, 0x00 }, /* C8 DAI2 biquad */
-	{ 0xc9, 0x00 }, /* C9 DAI2 biquad */
+	{ 0xc0, 0x00 },  
+	{ 0xc1, 0x00 },  
+	{ 0xc2, 0x00 },  
+	{ 0xc3, 0x00 },  
+	{ 0xc4, 0x00 },  
+	{ 0xc5, 0x00 },  
+	{ 0xc6, 0x00 },  
+	{ 0xc7, 0x00 },  
+	{ 0xc8, 0x00 },  
+	{ 0xc9, 0x00 },  
 };
 
 static bool max98088_readable_register(struct device *dev, unsigned int reg)
@@ -304,9 +300,7 @@ static const struct regmap_config max98088_regmap = {
 	.cache_type = REGCACHE_RBTREE,
 };
 
-/*
- * Load equalizer DSP coefficient configurations registers
- */
+ 
 static void m98088_eq_band(struct snd_soc_component *component, unsigned int dai,
                    unsigned int band, u16 *coefs)
 {
@@ -317,22 +311,20 @@ static void m98088_eq_band(struct snd_soc_component *component, unsigned int dai
 	    WARN_ON(dai > 1))
 		return;
 
-	/* Load the base register address */
+	 
 	eq_reg = dai ? M98088_REG_84_DAI2_EQ_BASE : M98088_REG_52_DAI1_EQ_BASE;
 
-	/* Add the band address offset, note adjustment for word address */
+	 
 	eq_reg += band * (M98088_COEFS_PER_BAND << 1);
 
-	/* Step through the registers and coefs */
+	 
 	for (i = 0; i < M98088_COEFS_PER_BAND; i++) {
 		snd_soc_component_write(component, eq_reg++, M98088_BYTE1(coefs[i]));
 		snd_soc_component_write(component, eq_reg++, M98088_BYTE0(coefs[i]));
 	}
 }
 
-/*
- * Excursion limiter modes
- */
+ 
 static const char *max98088_exmode_texts[] = {
        "Off", "100Hz", "400Hz", "600Hz", "800Hz", "1000Hz", "200-400Hz",
        "400-600Hz", "400-800Hz",
@@ -347,7 +339,7 @@ static SOC_VALUE_ENUM_SINGLE_DECL(max98088_exmode_enum,
 				  max98088_exmode_texts,
 				  max98088_exmode_values);
 
-static const char *max98088_ex_thresh[] = { /* volts PP */
+static const char *max98088_ex_thresh[] = {  
        "0.6", "1.2", "1.8", "2.4", "3.0", "3.6", "4.2", "4.8"};
 static SOC_ENUM_SINGLE_DECL(max98088_ex_thresh_enum,
 			    M98088_REG_42_SPKDHP_THRESH, 0,
@@ -513,7 +505,7 @@ static const struct snd_kcontrol_new max98088_snd_controls[] = {
        SOC_SINGLE("THD Limiter Time", M98088_REG_46_THDLMT_CFG, 0, 7, 0),
 };
 
-/* Left speaker mixer switch */
+ 
 static const struct snd_kcontrol_new max98088_left_speaker_mixer_controls[] = {
        SOC_DAPM_SINGLE("Left DAC1 Switch", M98088_REG_2B_MIX_SPK_LEFT, 0, 1, 0),
        SOC_DAPM_SINGLE("Right DAC1 Switch", M98088_REG_2B_MIX_SPK_LEFT, 7, 1, 0),
@@ -527,7 +519,7 @@ static const struct snd_kcontrol_new max98088_left_speaker_mixer_controls[] = {
        SOC_DAPM_SINGLE("INB2 Switch", M98088_REG_2B_MIX_SPK_LEFT, 4, 1, 0),
 };
 
-/* Right speaker mixer switch */
+ 
 static const struct snd_kcontrol_new max98088_right_speaker_mixer_controls[] = {
        SOC_DAPM_SINGLE("Left DAC1 Switch", M98088_REG_2C_MIX_SPK_RIGHT, 7, 1, 0),
        SOC_DAPM_SINGLE("Right DAC1 Switch", M98088_REG_2C_MIX_SPK_RIGHT, 0, 1, 0),
@@ -541,7 +533,7 @@ static const struct snd_kcontrol_new max98088_right_speaker_mixer_controls[] = {
        SOC_DAPM_SINGLE("INB2 Switch", M98088_REG_2C_MIX_SPK_RIGHT, 4, 1, 0),
 };
 
-/* Left headphone mixer switch */
+ 
 static const struct snd_kcontrol_new max98088_left_hp_mixer_controls[] = {
        SOC_DAPM_SINGLE("Left DAC1 Switch", M98088_REG_25_MIX_HP_LEFT, 0, 1, 0),
        SOC_DAPM_SINGLE("Right DAC1 Switch", M98088_REG_25_MIX_HP_LEFT, 7, 1, 0),
@@ -555,7 +547,7 @@ static const struct snd_kcontrol_new max98088_left_hp_mixer_controls[] = {
        SOC_DAPM_SINGLE("INB2 Switch", M98088_REG_25_MIX_HP_LEFT, 4, 1, 0),
 };
 
-/* Right headphone mixer switch */
+ 
 static const struct snd_kcontrol_new max98088_right_hp_mixer_controls[] = {
        SOC_DAPM_SINGLE("Left DAC1 Switch", M98088_REG_26_MIX_HP_RIGHT, 7, 1, 0),
        SOC_DAPM_SINGLE("Right DAC1 Switch", M98088_REG_26_MIX_HP_RIGHT, 0, 1, 0),
@@ -569,7 +561,7 @@ static const struct snd_kcontrol_new max98088_right_hp_mixer_controls[] = {
        SOC_DAPM_SINGLE("INB2 Switch", M98088_REG_26_MIX_HP_RIGHT, 4, 1, 0),
 };
 
-/* Left earpiece/receiver mixer switch */
+ 
 static const struct snd_kcontrol_new max98088_left_rec_mixer_controls[] = {
        SOC_DAPM_SINGLE("Left DAC1 Switch", M98088_REG_28_MIX_REC_LEFT, 0, 1, 0),
        SOC_DAPM_SINGLE("Right DAC1 Switch", M98088_REG_28_MIX_REC_LEFT, 7, 1, 0),
@@ -583,7 +575,7 @@ static const struct snd_kcontrol_new max98088_left_rec_mixer_controls[] = {
        SOC_DAPM_SINGLE("INB2 Switch", M98088_REG_28_MIX_REC_LEFT, 4, 1, 0),
 };
 
-/* Right earpiece/receiver mixer switch */
+ 
 static const struct snd_kcontrol_new max98088_right_rec_mixer_controls[] = {
        SOC_DAPM_SINGLE("Left DAC1 Switch", M98088_REG_29_MIX_REC_RIGHT, 7, 1, 0),
        SOC_DAPM_SINGLE("Right DAC1 Switch", M98088_REG_29_MIX_REC_RIGHT, 0, 1, 0),
@@ -597,7 +589,7 @@ static const struct snd_kcontrol_new max98088_right_rec_mixer_controls[] = {
        SOC_DAPM_SINGLE("INB2 Switch", M98088_REG_29_MIX_REC_RIGHT, 4, 1, 0),
 };
 
-/* Left ADC mixer switch */
+ 
 static const struct snd_kcontrol_new max98088_left_ADC_mixer_controls[] = {
        SOC_DAPM_SINGLE("MIC1 Switch", M98088_REG_23_MIX_ADC_LEFT, 7, 1, 0),
        SOC_DAPM_SINGLE("MIC2 Switch", M98088_REG_23_MIX_ADC_LEFT, 6, 1, 0),
@@ -607,7 +599,7 @@ static const struct snd_kcontrol_new max98088_left_ADC_mixer_controls[] = {
        SOC_DAPM_SINGLE("INB2 Switch", M98088_REG_23_MIX_ADC_LEFT, 0, 1, 0),
 };
 
-/* Right ADC mixer switch */
+ 
 static const struct snd_kcontrol_new max98088_right_ADC_mixer_controls[] = {
        SOC_DAPM_SINGLE("MIC1 Switch", M98088_REG_24_MIX_ADC_RIGHT, 7, 1, 0),
        SOC_DAPM_SINGLE("MIC2 Switch", M98088_REG_24_MIX_ADC_RIGHT, 6, 1, 0),
@@ -643,10 +635,7 @@ static int max98088_mic_event(struct snd_soc_dapm_widget *w,
        return 0;
 }
 
-/*
- * The line inputs are 2-channel stereo inputs with the left
- * and right channels sharing a common PGA power control signal.
- */
+ 
 static int max98088_line_pga(struct snd_soc_dapm_widget *w,
                             int event, int line, u8 channel)
 {
@@ -818,7 +807,7 @@ static const struct snd_soc_dapm_widget max98088_dapm_widgets[] = {
 };
 
 static const struct snd_soc_dapm_route max98088_audio_map[] = {
-       /* Left headphone output mixer */
+        
        {"Left HP Mixer", "Left DAC1 Switch", "DACL1"},
        {"Left HP Mixer", "Left DAC2 Switch", "DACL2"},
        {"Left HP Mixer", "Right DAC1 Switch", "DACR1"},
@@ -830,7 +819,7 @@ static const struct snd_soc_dapm_route max98088_audio_map[] = {
        {"Left HP Mixer", "INB1 Switch", "INB1 Input"},
        {"Left HP Mixer", "INB2 Switch", "INB2 Input"},
 
-       /* Right headphone output mixer */
+        
        {"Right HP Mixer", "Left DAC1 Switch", "DACL1"},
        {"Right HP Mixer", "Left DAC2 Switch", "DACL2"  },
        {"Right HP Mixer", "Right DAC1 Switch", "DACR1"},
@@ -842,7 +831,7 @@ static const struct snd_soc_dapm_route max98088_audio_map[] = {
        {"Right HP Mixer", "INB1 Switch", "INB1 Input"},
        {"Right HP Mixer", "INB2 Switch", "INB2 Input"},
 
-       /* Left speaker output mixer */
+        
        {"Left SPK Mixer", "Left DAC1 Switch", "DACL1"},
        {"Left SPK Mixer", "Left DAC2 Switch", "DACL2"},
        {"Left SPK Mixer", "Right DAC1 Switch", "DACR1"},
@@ -854,7 +843,7 @@ static const struct snd_soc_dapm_route max98088_audio_map[] = {
        {"Left SPK Mixer", "INB1 Switch", "INB1 Input"},
        {"Left SPK Mixer", "INB2 Switch", "INB2 Input"},
 
-       /* Right speaker output mixer */
+        
        {"Right SPK Mixer", "Left DAC1 Switch", "DACL1"},
        {"Right SPK Mixer", "Left DAC2 Switch", "DACL2"},
        {"Right SPK Mixer", "Right DAC1 Switch", "DACR1"},
@@ -866,7 +855,7 @@ static const struct snd_soc_dapm_route max98088_audio_map[] = {
        {"Right SPK Mixer", "INB1 Switch", "INB1 Input"},
        {"Right SPK Mixer", "INB2 Switch", "INB2 Input"},
 
-       /* Earpiece/Receiver output mixer */
+        
        {"Left REC Mixer", "Left DAC1 Switch", "DACL1"},
        {"Left REC Mixer", "Left DAC2 Switch", "DACL2"},
        {"Left REC Mixer", "Right DAC1 Switch", "DACR1"},
@@ -878,7 +867,7 @@ static const struct snd_soc_dapm_route max98088_audio_map[] = {
        {"Left REC Mixer", "INB1 Switch", "INB1 Input"},
        {"Left REC Mixer", "INB2 Switch", "INB2 Input"},
 
-       /* Earpiece/Receiver output mixer */
+        
        {"Right REC Mixer", "Left DAC1 Switch", "DACL1"},
        {"Right REC Mixer", "Left DAC2 Switch", "DACL2"},
        {"Right REC Mixer", "Right DAC1 Switch", "DACR1"},
@@ -904,7 +893,7 @@ static const struct snd_soc_dapm_route max98088_audio_map[] = {
        {"RECL", NULL, "REC Left Out"},
        {"RECR", NULL, "REC Right Out"},
 
-       /* Left ADC input mixer */
+        
        {"Left ADC Mixer", "MIC1 Switch", "MIC1 Input"},
        {"Left ADC Mixer", "MIC2 Switch", "MIC2 Input"},
        {"Left ADC Mixer", "INA1 Switch", "INA1 Input"},
@@ -912,7 +901,7 @@ static const struct snd_soc_dapm_route max98088_audio_map[] = {
        {"Left ADC Mixer", "INB1 Switch", "INB1 Input"},
        {"Left ADC Mixer", "INB2 Switch", "INB2 Input"},
 
-       /* Right ADC input mixer */
+        
        {"Right ADC Mixer", "MIC1 Switch", "MIC1 Input"},
        {"Right ADC Mixer", "MIC2 Switch", "MIC2 Input"},
        {"Right ADC Mixer", "INA1 Switch", "INA1 Input"},
@@ -920,7 +909,7 @@ static const struct snd_soc_dapm_route max98088_audio_map[] = {
        {"Right ADC Mixer", "INB1 Switch", "INB1 Input"},
        {"Right ADC Mixer", "INB2 Switch", "INB2 Input"},
 
-       /* Inputs */
+        
        {"ADCL", NULL, "Left ADC Mixer"},
        {"ADCR", NULL, "Right ADC Mixer"},
        {"INA1 Input", NULL, "INA1"},
@@ -931,7 +920,7 @@ static const struct snd_soc_dapm_route max98088_audio_map[] = {
        {"MIC2 Input", NULL, "MIC2"},
 };
 
-/* codec mclk clock divider coefficients */
+ 
 static const struct {
        u32 rate;
        u8  sr;
@@ -999,7 +988,7 @@ static int max98088_dai1_hw_params(struct snd_pcm_substream *substream,
                M98088_CLKMODE_MASK, regval);
        cdata->rate = rate;
 
-       /* Configure NI when operating as master */
+        
        if (snd_soc_component_read(component, M98088_REG_14_DAI1_FORMAT)
                & M98088_DAI_MAS) {
                unsigned long pclk;
@@ -1018,7 +1007,7 @@ static int max98088_dai1_hw_params(struct snd_pcm_substream *substream,
                        ni & 0xFF);
        }
 
-       /* Update sample rate mode */
+        
        if (rate < 50000)
                snd_soc_component_update_bits(component, M98088_REG_18_DAI1_FILTERS,
                        M98088_DAI_DHF, 0);
@@ -1069,7 +1058,7 @@ static int max98088_dai2_hw_params(struct snd_pcm_substream *substream,
                M98088_CLKMODE_MASK, regval);
        cdata->rate = rate;
 
-       /* Configure NI when operating as master */
+        
        if (snd_soc_component_read(component, M98088_REG_1C_DAI2_FORMAT)
                & M98088_DAI_MAS) {
                unsigned long pclk;
@@ -1088,7 +1077,7 @@ static int max98088_dai2_hw_params(struct snd_pcm_substream *substream,
                        ni & 0xFF);
        }
 
-       /* Update sample rate mode */
+        
        if (rate < 50000)
                snd_soc_component_update_bits(component, M98088_REG_20_DAI2_FILTERS,
                        M98088_DAI_DHF, 0);
@@ -1108,7 +1097,7 @@ static int max98088_dai_set_sysclk(struct snd_soc_dai *dai,
        struct snd_soc_component *component = dai->component;
        struct max98088_priv *max98088 = snd_soc_component_get_drvdata(component);
 
-       /* Requested clock frequency is already setup */
+        
        if (freq == max98088->sysclk)
                return 0;
 
@@ -1117,10 +1106,7 @@ static int max98088_dai_set_sysclk(struct snd_soc_dai *dai,
 		clk_set_rate(max98088->mclk, freq);
 	}
 
-       /* Setup clocks for slave mode, and using the PLL
-        * PSCLK = 0x01 (when master clk is 10MHz to 20MHz)
-        *         0x02 (when master clk is 20MHz to 30MHz)..
-        */
+        
        if ((freq >= 10000000) && (freq < 20000000)) {
                snd_soc_component_write(component, M98088_REG_10_SYS_CLK, 0x10);
                max98088->mclk_prescaler = 1;
@@ -1161,14 +1147,14 @@ static int max98088_dai1_set_fmt(struct snd_soc_dai *codec_dai,
 
                switch (fmt & SND_SOC_DAIFMT_CLOCK_PROVIDER_MASK) {
                case SND_SOC_DAIFMT_CBC_CFC:
-                       /* Consumer mode PLL */
+                        
                        snd_soc_component_write(component, M98088_REG_12_DAI1_CLKCFG_HI,
                                0x80);
                        snd_soc_component_write(component, M98088_REG_13_DAI1_CLKCFG_LO,
                                0x00);
                        break;
                case SND_SOC_DAIFMT_CBP_CFP:
-                       /* Set to provider mode */
+                        
                        reg14val |= M98088_DAI_MAS;
                        break;
                default:
@@ -1230,14 +1216,14 @@ static int max98088_dai2_set_fmt(struct snd_soc_dai *codec_dai,
 
                switch (fmt & SND_SOC_DAIFMT_CLOCK_PROVIDER_MASK) {
                case SND_SOC_DAIFMT_CBC_CFC:
-                       /* Consumer mode PLL */
+                        
                        snd_soc_component_write(component, M98088_REG_1A_DAI2_CLKCFG_HI,
                                0x80);
                        snd_soc_component_write(component, M98088_REG_1B_DAI2_CLKCFG_LO,
                                0x00);
                        break;
                case SND_SOC_DAIFMT_CBP_CFP:
-                       /* Set to provider mode */
+                        
                        reg1Cval |= M98088_DAI_MAS;
                        break;
                default:
@@ -1324,13 +1310,7 @@ static int max98088_set_bias_level(struct snd_soc_component *component,
 		break;
 
 	case SND_SOC_BIAS_PREPARE:
-		/*
-		 * SND_SOC_BIAS_PREPARE is called while preparing for a
-		 * transition to ON or away from ON. If current bias_level
-		 * is SND_SOC_BIAS_ON, then it is preparing for a transition
-		 * away from ON. Disable the clock in that case, otherwise
-		 * enable it.
-		 */
+		 
 		if (!IS_ERR(max98088->mclk)) {
 			if (snd_soc_component_get_bias_level(component) ==
 			    SND_SOC_BIAS_ON)
@@ -1433,7 +1413,7 @@ static void max98088_setup_eq1(struct snd_soc_component *component)
        if (!pdata || !max98088->eq_textcnt)
                return;
 
-       /* Find the selected configuration with nearest sample rate */
+        
        fs = cdata->rate;
        sel = cdata->eq_sel;
 
@@ -1451,7 +1431,7 @@ static void max98088_setup_eq1(struct snd_soc_component *component)
                pdata->eq_cfg[best].name,
                pdata->eq_cfg[best].rate, fs);
 
-       /* Disable EQ while configuring, and save current on/off state */
+        
        save = snd_soc_component_read(component, M98088_REG_49_CFG_LEVEL);
        snd_soc_component_update_bits(component, M98088_REG_49_CFG_LEVEL, M98088_EQ1EN, 0);
 
@@ -1463,7 +1443,7 @@ static void max98088_setup_eq1(struct snd_soc_component *component)
        m98088_eq_band(component, 0, 3, coef_set->band4);
        m98088_eq_band(component, 0, 4, coef_set->band5);
 
-       /* Restore the original on/off state */
+        
        snd_soc_component_update_bits(component, M98088_REG_49_CFG_LEVEL, M98088_EQ1EN, save);
 }
 
@@ -1480,7 +1460,7 @@ static void max98088_setup_eq2(struct snd_soc_component *component)
        if (!pdata || !max98088->eq_textcnt)
                return;
 
-       /* Find the selected configuration with nearest sample rate */
+        
        fs = cdata->rate;
 
        sel = cdata->eq_sel;
@@ -1498,7 +1478,7 @@ static void max98088_setup_eq2(struct snd_soc_component *component)
                pdata->eq_cfg[best].name,
                pdata->eq_cfg[best].rate, fs);
 
-       /* Disable EQ while configuring, and save current on/off state */
+        
        save = snd_soc_component_read(component, M98088_REG_49_CFG_LEVEL);
        snd_soc_component_update_bits(component, M98088_REG_49_CFG_LEVEL, M98088_EQ2EN, 0);
 
@@ -1510,7 +1490,7 @@ static void max98088_setup_eq2(struct snd_soc_component *component)
        m98088_eq_band(component, 1, 3, coef_set->band4);
        m98088_eq_band(component, 1, 4, coef_set->band5);
 
-       /* Restore the original on/off state */
+        
        snd_soc_component_update_bits(component, M98088_REG_49_CFG_LEVEL, M98088_EQ2EN,
                save);
 }
@@ -1587,9 +1567,7 @@ static void max98088_handle_eq_pdata(struct snd_soc_component *component)
        cfg = pdata->eq_cfg;
        cfgcnt = pdata->eq_cfgcnt;
 
-       /* Setup an array of texts for the equalizer enum.
-        * This is based on Mark Brown's equalizer driver code.
-        */
+        
        max98088->eq_textcnt = 0;
        max98088->eq_texts = NULL;
        for (i = 0; i < cfgcnt; i++) {
@@ -1601,20 +1579,20 @@ static void max98088_handle_eq_pdata(struct snd_soc_component *component)
                if (j != max98088->eq_textcnt)
                        continue;
 
-               /* Expand the array */
+                
                t = krealloc(max98088->eq_texts,
                             sizeof(char *) * (max98088->eq_textcnt + 1),
                             GFP_KERNEL);
                if (t == NULL)
                        continue;
 
-               /* Store the new entry */
+                
                t[max98088->eq_textcnt] = cfg[i].name;
                max98088->eq_textcnt++;
                max98088->eq_texts = t;
        }
 
-       /* Now point the soc_enum to .texts array items */
+        
        max98088->eq_enum.texts = max98088->eq_texts;
        max98088->eq_enum.items = max98088->eq_textcnt;
 
@@ -1634,7 +1612,7 @@ static void max98088_handle_pdata(struct snd_soc_component *component)
                return;
        }
 
-       /* Configure mic for analog/digital mic mode */
+        
        if (pdata->digmic_left_mode)
                regval |= M98088_DIGMIC_L;
 
@@ -1645,12 +1623,12 @@ static void max98088_handle_pdata(struct snd_soc_component *component)
 
        snd_soc_component_write(component, M98088_REG_48_CFG_MIC, regval);
 
-       /* Configure receiver output */
+        
        regval = ((pdata->receiver_mode) ? M98088_REC_LINEMODE : 0);
        snd_soc_component_update_bits(component, M98088_REG_2A_MIC_REC_CNTL,
                M98088_REC_LINEMODE_MASK, regval);
 
-       /* Configure equalizers */
+        
        if (pdata->eq_cfgcnt)
                max98088_handle_eq_pdata(component);
 }
@@ -1663,7 +1641,7 @@ static int max98088_probe(struct snd_soc_component *component)
 
        regcache_mark_dirty(max98088->regmap);
 
-       /* initialize private data */
+        
 
        max98088->sysclk = (unsigned)-1;
        max98088->eq_textcnt = 0;

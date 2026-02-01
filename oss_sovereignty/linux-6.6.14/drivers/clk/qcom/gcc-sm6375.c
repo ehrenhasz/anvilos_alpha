@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2021, The Linux Foundation. All rights reserved.
- * Copyright (c) 2022, Konrad Dybcio <konrad.dybcio@somainline.org>
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/module.h>
@@ -136,7 +133,7 @@ static struct clk_alpha_pll gpll1 = {
 	},
 };
 
-/* 1152MHz Configuration */
+ 
 static const struct alpha_pll_config gpll10_config = {
 	.l = 0x3c,
 	.alpha = 0x0,
@@ -168,7 +165,7 @@ static struct clk_alpha_pll gpll10 = {
 	},
 };
 
-/* 532MHz Configuration */
+ 
 static const struct alpha_pll_config gpll11_config = {
 	.l = 0x1b,
 	.alpha = 0xb555,
@@ -329,7 +326,7 @@ static struct clk_alpha_pll gpll7 = {
 	},
 };
 
-/* 400MHz Configuration */
+ 
 static const struct alpha_pll_config gpll8_config = {
 	.l = 0x14,
 	.alpha = 0xd555,
@@ -384,7 +381,7 @@ static struct clk_alpha_pll_postdiv gpll8_out_even = {
 	},
 };
 
-/* 1440MHz Configuration */
+ 
 static const struct alpha_pll_config gpll9_config = {
 	.l = 0x4b,
 	.alpha = 0x0,
@@ -3535,7 +3532,7 @@ static struct gdsc usb30_prim_gdsc = {
 	.pd = {
 		.name = "usb30_prim_gdsc",
 	},
-	/* TODO: Change to OFF_ON when USB drivers get proper suspend support */
+	 
 	.pwrsts = PWRSTS_RET_ON,
 };
 
@@ -3882,10 +3879,7 @@ static int gcc_sm6375_probe(struct platform_device *pdev)
 	if (ret)
 		return ret;
 
-	/*
-	 * Keep the following clocks always on:
-	 * GCC_CAMERA_XO_CLK, GCC_CPUSS_GNOC_CLK, GCC_DISP_XO_CLK
-	 */
+	 
 	regmap_update_bits(regmap, 0x17028, BIT(0), BIT(0));
 	regmap_update_bits(regmap, 0x2b004, BIT(0), BIT(0));
 	regmap_update_bits(regmap, 0x1702c, BIT(0), BIT(0));

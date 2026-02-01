@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * NET4:	Sysctl interface to net af_unix subsystem.
- *
- * Authors:	Mike Shaver.
- */
+
+ 
 
 #include <linux/mm.h>
 #include <linux/slab.h>

@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Cedrus VPU driver
- *
- * Copyright (C) 2016 Florent Revest <florent.revest@free-electrons.com>
- * Copyright (C) 2018 Paul Kocialkowski <paul.kocialkowski@bootlin.com>
- * Copyright (C) 2018 Bootlin
- *
- * Based on the vim2m driver, that is:
- *
- * Copyright (c) 2009-2010 Samsung Electronics Co., Ltd.
- * Pawel Osciak, <pawel@osciak.com>
- * Marek Szyprowski, <m.szyprowski@samsung.com>
- */
+
+ 
 
 #include <linux/platform_device.h>
 #include <linux/of.h>
@@ -35,10 +23,7 @@ int cedrus_engine_enable(struct cedrus_ctx *ctx)
 {
 	u32 reg = 0;
 
-	/*
-	 * FIXME: This is only valid on 32-bits DDR's, we should test
-	 * it on the A13/A33.
-	 */
+	 
 	reg |= VE_MODE_REC_WR_MODE_2MB;
 	reg |= VE_MODE_DDR_MODE_BW_128;
 
@@ -47,7 +32,7 @@ int cedrus_engine_enable(struct cedrus_ctx *ctx)
 		reg |= VE_MODE_DEC_MPEG;
 		break;
 
-	/* H.264 and VP8 both use the same decoding mode bit. */
+	 
 	case V4L2_PIX_FMT_H264_SLICE:
 	case V4L2_PIX_FMT_VP8_FRAME:
 		reg |= VE_MODE_DEC_H264;
@@ -118,10 +103,7 @@ static irqreturn_t cedrus_irq(int irq, void *data)
 	enum vb2_buffer_state state;
 	enum cedrus_irq_status status;
 
-	/*
-	 * If cancel_delayed_work returns false it means watchdog already
-	 * executed and finished the job.
-	 */
+	 
 	if (!cancel_delayed_work(&dev->watchdog_work))
 		return IRQ_HANDLED;
 

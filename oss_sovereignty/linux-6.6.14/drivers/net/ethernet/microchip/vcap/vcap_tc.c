@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/* Microchip VCAP TC
- *
- * Copyright (c) 2023 Microchip Technology Inc. and its subsidiaries.
- */
+
+ 
 
 #include <net/flow_offload.h>
 #include <net/ipv6.h>
@@ -106,7 +103,7 @@ int vcap_tc_flower_handler_ipv6_usage(struct vcap_tc_flower_parse_usage *st)
 		struct vcap_u128_key dip;
 
 		flow_rule_match_ipv6_addrs(st->frule, &mt);
-		/* Check if address masks are non-zero */
+		 
 		if (!ipv6_addr_any(&mt.mask->src)) {
 			vcap_netbytes_copy(sip.value, mt.key->src.s6_addr, 16);
 			vcap_netbytes_copy(sip.mask, mt.mask->src.s6_addr, 16);
@@ -338,7 +335,7 @@ int vcap_tc_flower_handler_arp_usage(struct vcap_tc_flower_parse_usage *st)
 			value = mt.key->op == VCAP_ARP_OP_REQUEST ?
 					VCAP_IS2_ARP_REQUEST :
 					VCAP_IS2_ARP_REPLY;
-		} else { /* RARP */
+		} else {  
 			value = mt.key->op == VCAP_ARP_OP_REQUEST ?
 					VCAP_IS2_RARP_REQUEST :
 					VCAP_IS2_RARP_REPLY;
@@ -349,7 +346,7 @@ int vcap_tc_flower_handler_arp_usage(struct vcap_tc_flower_parse_usage *st)
 			goto out;
 	}
 
-	/* The IS2 ARP keyset does not support ARP hardware addresses */
+	 
 	if (!is_zero_ether_addr(mt.mask->sha) ||
 	    !is_zero_ether_addr(mt.mask->tha)) {
 		err = -EINVAL;

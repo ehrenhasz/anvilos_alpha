@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * AD7091R5 Analog to Digital converter driver
- *
- * Copyright 2014-2019 Analog Devices Inc.
- */
+
+ 
 
 #include <linux/i2c.h>
 #include <linux/iio/iio.h>

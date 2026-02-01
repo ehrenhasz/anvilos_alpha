@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * AMx3 Wkup M3 IPC driver
- *
- * Copyright (C) 2015 Texas Instruments, Inc.
- *
- * Dave Gerlach <d-gerlach@ti.com>
- */
+
+ 
 
 #include <linux/debugfs.h>
 #include <linux/err.h>
@@ -25,7 +19,7 @@
 #define AM33XX_CTRL_IPC_REG_COUNT	0x8
 #define AM33XX_CTRL_IPC_REG_OFFSET(m)	(0x4 + 4 * (m))
 
-/* AM33XX M3_TXEV_EOI register */
+ 
 #define AM33XX_CONTROL_M3_TXEV_EOI	0x00
 
 #define AM33XX_M3_TXEV_ACK		(0x1 << 0)
@@ -86,14 +80,7 @@ static const struct wkup_m3_wakeup_src wakeups[] = {
 	{.irq_nr = 0,	.src = "Unknown"},
 };
 
-/**
- * wkup_m3_copy_aux_data - Copy auxiliary data to special region of m3 dmem
- * @data - pointer to data
- * @sz - size of data to copy (limit 256 bytes)
- *
- * Copies any additional blob of data to the wkup_m3 dmem to be used by the
- * firmware
- */
+ 
 static unsigned long wkup_m3_copy_aux_data(struct wkup_m3_ipc *m3_ipc,
 					   const void *data, int sz)
 {
@@ -146,10 +133,7 @@ static int wkup_m3_init_scale_data(struct wkup_m3_ipc *m3_ipc,
 {
 	int ret = 0;
 
-	/*
-	 * If no name is provided, user has already been warned, pm will
-	 * still work so return 0
-	 */
+	 
 
 	if (!m3_ipc->sd_fw_name)
 		return ret;
@@ -226,7 +210,7 @@ static inline int wkup_m3_ipc_dbg_init(struct wkup_m3_ipc *m3_ipc)
 static inline void wkup_m3_ipc_dbg_destroy(struct wkup_m3_ipc *m3_ipc)
 {
 }
-#endif /* CONFIG_DEBUG_FS */
+#endif  
 
 static void am33xx_txev_eoi(struct wkup_m3_ipc *m3_ipc)
 {
@@ -323,13 +307,7 @@ static int wkup_m3_ping(struct wkup_m3_ipc *m3_ipc)
 		return -EIO;
 	}
 
-	/*
-	 * Write a dummy message to the mailbox in order to trigger the RX
-	 * interrupt to alert the M3 that data is available in the IPC
-	 * registers. We must enable the IRQ here and disable it after in
-	 * the RX callback to avoid multiple interrupts being received
-	 * by the CM3.
-	 */
+	 
 	ret = mbox_send_message(m3_ipc->mbox, &dummy_msg);
 	if (ret < 0) {
 		dev_err(dev, "%s: mbox_send_message() failed: %d\n",
@@ -389,38 +367,20 @@ static void wkup_m3_set_io_isolation(struct wkup_m3_ipc *m3_ipc)
 	m3_ipc->isolation_conf = (1 << IPC_IO_ISOLATION_STAT_SHIFT);
 }
 
-/* Public functions */
-/**
- * wkup_m3_set_mem_type - Pass wkup_m3 which type of memory is in use
- * @m3_ipc: Pointer to wkup_m3_ipc context
- * @mem_type: memory type value read directly from emif
- *
- * wkup_m3 must know what memory type is in use to properly suspend
- * and resume.
- */
+ 
+ 
 static void wkup_m3_set_mem_type(struct wkup_m3_ipc *m3_ipc, int mem_type)
 {
 	m3_ipc->mem_type = mem_type;
 }
 
-/**
- * wkup_m3_set_resume_address - Pass wkup_m3 resume address
- * @m3_ipc: Pointer to wkup_m3_ipc context
- * @addr: Physical address from which resume code should execute
- */
+ 
 static void wkup_m3_set_resume_address(struct wkup_m3_ipc *m3_ipc, void *addr)
 {
 	m3_ipc->resume_addr = (unsigned long)addr;
 }
 
-/**
- * wkup_m3_request_pm_status - Retrieve wkup_m3 status code after suspend
- * @m3_ipc: Pointer to wkup_m3_ipc context
- *
- * Returns code representing the status of a low power mode transition.
- *	0 - Successful transition
- *	1 - Failure to transition to low power state
- */
+ 
 static int wkup_m3_request_pm_status(struct wkup_m3_ipc *m3_ipc)
 {
 	unsigned int i;
@@ -434,14 +394,7 @@ static int wkup_m3_request_pm_status(struct wkup_m3_ipc *m3_ipc)
 	return i;
 }
 
-/**
- * wkup_m3_prepare_low_power - Request preparation for transition to
- *			       low power state
- * @m3_ipc: Pointer to wkup_m3_ipc context
- * @state: A kernel suspend state to enter, either MEM or STANDBY
- *
- * Returns 0 if preparation was successful, otherwise returns error code
- */
+ 
 static int wkup_m3_prepare_low_power(struct wkup_m3_ipc *m3_ipc, int state)
 {
 	struct device *dev = m3_ipc->dev;
@@ -468,7 +421,7 @@ static int wkup_m3_prepare_low_power(struct wkup_m3_ipc *m3_ipc, int state)
 		return 1;
 	}
 
-	/* Program each required IPC register then write defaults to others */
+	 
 	wkup_m3_ctrl_ipc_write(m3_ipc, m3_ipc->resume_addr, 0);
 	wkup_m3_ctrl_ipc_write(m3_ipc, m3_power_state, 1);
 	wkup_m3_ctrl_ipc_write(m3_ipc, m3_ipc->mem_type |
@@ -496,12 +449,7 @@ static int wkup_m3_prepare_low_power(struct wkup_m3_ipc *m3_ipc, int state)
 	return 0;
 }
 
-/**
- * wkup_m3_finish_low_power - Return m3 to reset state
- * @m3_ipc: Pointer to wkup_m3_ipc context
- *
- * Returns 0 if reset was successful, otherwise returns error code
- */
+ 
 static int wkup_m3_finish_low_power(struct wkup_m3_ipc *m3_ipc)
 {
 	struct device *dev = m3_ipc->dev;
@@ -524,10 +472,7 @@ static int wkup_m3_finish_low_power(struct wkup_m3_ipc *m3_ipc)
 	return 0;
 }
 
-/**
- * wkup_m3_request_wake_src - Get the wakeup source info passed from wkup_m3
- * @m3_ipc: Pointer to wkup_m3_ipc context
- */
+ 
 static const char *wkup_m3_request_wake_src(struct wkup_m3_ipc *m3_ipc)
 {
 	unsigned int wakeup_src_idx;
@@ -544,10 +489,7 @@ static const char *wkup_m3_request_wake_src(struct wkup_m3_ipc *m3_ipc)
 	return wakeups[j].src;
 }
 
-/**
- * wkup_m3_set_rtc_only - Set the rtc_only flag
- * @m3_ipc: Pointer to wkup_m3_ipc context
- */
+ 
 static void wkup_m3_set_rtc_only(struct wkup_m3_ipc *m3_ipc)
 {
 	if (m3_ipc_state)
@@ -564,12 +506,7 @@ static struct wkup_m3_ipc_ops ipc_ops = {
 	.set_rtc_only = wkup_m3_set_rtc_only,
 };
 
-/**
- * wkup_m3_ipc_get - Return handle to wkup_m3_ipc
- *
- * Returns NULL if the wkup_m3 is not yet available, otherwise returns
- * pointer to wkup_m3_ipc struct.
- */
+ 
 struct wkup_m3_ipc *wkup_m3_ipc_get(void)
 {
 	if (m3_ipc_state)
@@ -581,10 +518,7 @@ struct wkup_m3_ipc *wkup_m3_ipc_get(void)
 }
 EXPORT_SYMBOL_GPL(wkup_m3_ipc_get);
 
-/**
- * wkup_m3_ipc_put - Free handle to wkup_m3_ipc returned from wkup_m3_ipc_get
- * @m3_ipc: A pointer to wkup_m3_ipc struct returned by wkup_m3_ipc_get
- */
+ 
 void wkup_m3_ipc_put(struct wkup_m3_ipc *m3_ipc)
 {
 	if (m3_ipc_state)
@@ -688,11 +622,7 @@ static int wkup_m3_ipc_probe(struct platform_device *pdev)
 		dev_dbg(dev, "Voltage scaling data blob not provided from DT.\n");
 	}
 
-	/*
-	 * Wait for firmware loading completion in a thread so we
-	 * can boot the wkup_m3 as soon as it's ready without holding
-	 * up kernel boot
-	 */
+	 
 	task = kthread_run(wkup_m3_rproc_boot_thread, m3_ipc,
 			   "wkup_m3_rproc_loader");
 
@@ -729,9 +659,7 @@ static int wkup_m3_ipc_remove(struct platform_device *pdev)
 
 static int __maybe_unused wkup_m3_ipc_suspend(struct device *dev)
 {
-	/*
-	 * Nothing needs to be done on suspend even with rtc_only flag set
-	 */
+	 
 	return 0;
 }
 

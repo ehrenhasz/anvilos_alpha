@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2016-2017 Linaro Ltd., Rob Herring <robh@kernel.org>
- *
- * Based on drivers/spmi/spmi.c:
- * Copyright (c) 2012-2015, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/errno.h>
@@ -46,7 +41,7 @@ static int serdev_device_uevent(const struct device *dev, struct kobj_uevent_env
 {
 	int rc;
 
-	/* TODO: platform modalias */
+	 
 
 	rc = acpi_device_uevent_modalias(dev, env);
 	if (rc != -ENODEV)
@@ -88,17 +83,14 @@ static int serdev_device_match(struct device *dev, struct device_driver *drv)
 	if (!is_serdev_device(dev))
 		return 0;
 
-	/* TODO: platform matching */
+	 
 	if (acpi_driver_match_device(dev, drv))
 		return 1;
 
 	return of_driver_match_device(dev, drv);
 }
 
-/**
- * serdev_device_add() - add a device previously constructed via serdev_device_alloc()
- * @serdev:	serdev_device to be added
- */
+ 
 int serdev_device_add(struct serdev_device *serdev)
 {
 	struct serdev_controller *ctrl = serdev->ctrl;
@@ -107,7 +99,7 @@ int serdev_device_add(struct serdev_device *serdev)
 
 	dev_set_name(&serdev->dev, "%s-%d", dev_name(parent), serdev->nr);
 
-	/* Only a single slave device is currently supported. */
+	 
 	if (ctrl->serdev) {
 		dev_err(&serdev->dev, "controller busy\n");
 		return -EBUSY;
@@ -131,10 +123,7 @@ err_clear_serdev:
 }
 EXPORT_SYMBOL_GPL(serdev_device_add);
 
-/**
- * serdev_device_remove(): remove an serdev device
- * @serdev:	serdev_device to be removed
- */
+ 
 void serdev_device_remove(struct serdev_device *serdev)
 {
 	struct serdev_controller *ctrl = serdev->ctrl;
@@ -218,21 +207,7 @@ void serdev_device_write_wakeup(struct serdev_device *serdev)
 }
 EXPORT_SYMBOL_GPL(serdev_device_write_wakeup);
 
-/**
- * serdev_device_write_buf() - write data asynchronously
- * @serdev:	serdev device
- * @buf:	data to be written
- * @count:	number of bytes to write
- *
- * Write data to the device asynchronously.
- *
- * Note that any accepted data has only been buffered by the controller; use
- * serdev_device_wait_until_sent() to make sure the controller write buffer
- * has actually been emptied.
- *
- * Return: The number of bytes written (less than count if not enough room in
- * the write buffer), or a negative errno on errors.
- */
+ 
 int serdev_device_write_buf(struct serdev_device *serdev,
 			    const unsigned char *buf, size_t count)
 {
@@ -245,28 +220,7 @@ int serdev_device_write_buf(struct serdev_device *serdev,
 }
 EXPORT_SYMBOL_GPL(serdev_device_write_buf);
 
-/**
- * serdev_device_write() - write data synchronously
- * @serdev:	serdev device
- * @buf:	data to be written
- * @count:	number of bytes to write
- * @timeout:	timeout in jiffies, or 0 to wait indefinitely
- *
- * Write data to the device synchronously by repeatedly calling
- * serdev_device_write() until the controller has accepted all data (unless
- * interrupted by a timeout or a signal).
- *
- * Note that any accepted data has only been buffered by the controller; use
- * serdev_device_wait_until_sent() to make sure the controller write buffer
- * has actually been emptied.
- *
- * Note that this function depends on serdev_device_write_wakeup() being
- * called in the serdev driver write_wakeup() callback.
- *
- * Return: The number of bytes written (less than count if interrupted),
- * -ETIMEDOUT or -ERESTARTSYS if interrupted before any bytes were written, or
- * a negative errno on errors.
- */
+ 
 int serdev_device_write(struct serdev_device *serdev,
 			const unsigned char *buf, size_t count,
 			long timeout)
@@ -448,13 +402,7 @@ static struct bus_type serdev_bus_type = {
 	.remove		= serdev_drv_remove,
 };
 
-/**
- * serdev_device_alloc() - Allocate a new serdev device
- * @ctrl:	associated controller
- *
- * Caller is responsible for either calling serdev_device_add() to add the
- * newly allocated controller, or calling serdev_device_put() to discard it.
- */
+ 
 struct serdev_device *serdev_device_alloc(struct serdev_controller *ctrl)
 {
 	struct serdev_device *serdev;
@@ -474,16 +422,7 @@ struct serdev_device *serdev_device_alloc(struct serdev_controller *ctrl)
 }
 EXPORT_SYMBOL_GPL(serdev_device_alloc);
 
-/**
- * serdev_controller_alloc() - Allocate a new serdev controller
- * @parent:	parent device
- * @size:	size of private data
- *
- * Caller is responsible for either calling serdev_controller_add() to add the
- * newly allocated controller, or calling serdev_controller_put() to discard it.
- * The allocated private data region may be accessed via
- * serdev_controller_get_drvdata()
- */
+ 
 struct serdev_controller *serdev_controller_alloc(struct device *parent,
 					      size_t size)
 {
@@ -573,16 +512,7 @@ struct acpi_serdev_lookup {
 	int index;
 };
 
-/**
- * serdev_acpi_get_uart_resource - Gets UARTSerialBus resource if type matches
- * @ares:	ACPI resource
- * @uart:	Pointer to UARTSerialBus resource will be returned here
- *
- * Checks if the given ACPI resource is of type UARTSerialBus.
- * In this case, returns a pointer to it to the caller.
- *
- * Return: True if resource type is of UARTSerialBus, otherwise false.
- */
+ 
 bool serdev_acpi_get_uart_resource(struct acpi_resource *ares,
 				   struct acpi_resource_uart_serialbus **uart)
 {
@@ -618,10 +548,7 @@ static int acpi_serdev_parse_resource(struct acpi_resource *ares, void *data)
 	if (ACPI_FAILURE(status))
 		return 1;
 
-	/*
-	 * NOTE: Ideally, we would also want to retrieve other properties here,
-	 * once setting them before opening the device is supported by serdev.
-	 */
+	 
 
 	return 1;
 }
@@ -656,23 +583,19 @@ static int acpi_serdev_check_resources(struct serdev_controller *ctrl,
 	if (acpi_bus_get_status(adev) || !adev->status.present)
 		return -EINVAL;
 
-	/* Look for UARTSerialBusV2 resource */
-	lookup.index = -1;	// we only care for the last device
+	 
+	lookup.index = -1;	
 
 	ret = acpi_serdev_do_lookup(adev, &lookup);
 	if (ret)
 		return ret;
 
-	/*
-	 * Apple machines provide an empty resource template, so on those
-	 * machines just look for immediate children with a "baud" property
-	 * (from the _DSM method) instead.
-	 */
+	 
 	if (!lookup.controller_handle && x86_apple_machine &&
 	    !acpi_dev_get_property(adev, "baud", ACPI_TYPE_BUFFER, NULL))
 		acpi_get_parent(adev->handle, &lookup.controller_handle);
 
-	/* Make sure controller and ResourceSource handle match */
+	 
 	if (ACPI_HANDLE(ctrl->dev.parent) != lookup.controller_handle)
 		return -ENODEV;
 
@@ -721,7 +644,7 @@ static acpi_status acpi_serdev_add_device(acpi_handle handle, u32 level,
 	if (!adev || acpi_device_enumerated(adev))
 		return AE_OK;
 
-	/* Skip if black listed */
+	 
 	if (!acpi_match_device_ids(adev, serdev_acpi_devices_blacklist))
 		return AE_OK;
 
@@ -741,12 +664,7 @@ static int acpi_serdev_register_devices(struct serdev_controller *ctrl)
 	if (!has_acpi_companion(ctrl->dev.parent))
 		return -ENODEV;
 
-	/*
-	 * Skip registration on boards where the ACPI tables are known to
-	 * contain buggy devices. Note serdev_controller_add() must still
-	 * succeed in this case, so that the proper serdev devices can be
-	 * added "manually" later.
-	 */
+	 
 	ret = acpi_quirk_skip_serdev_enumeration(ctrl->dev.parent, &skip);
 	if (ret)
 		return ret;
@@ -769,20 +687,14 @@ static inline int acpi_serdev_register_devices(struct serdev_controller *ctrl)
 {
 	return -ENODEV;
 }
-#endif /* CONFIG_ACPI */
+#endif  
 
-/**
- * serdev_controller_add() - Add an serdev controller
- * @ctrl:	controller to be registered.
- *
- * Register a controller previously allocated via serdev_controller_alloc() with
- * the serdev core.
- */
+ 
 int serdev_controller_add(struct serdev_controller *ctrl)
 {
 	int ret_of, ret_acpi, ret;
 
-	/* Can't register until after driver model init */
+	 
 	if (WARN_ON(!is_registered))
 		return -EAGAIN;
 
@@ -812,7 +724,7 @@ err_rpm_disable:
 };
 EXPORT_SYMBOL_GPL(serdev_controller_add);
 
-/* Remove a device associated with a controller */
+ 
 static int serdev_remove_device(struct device *dev, void *data)
 {
 	struct serdev_device *serdev = to_serdev_device(dev);
@@ -821,13 +733,7 @@ static int serdev_remove_device(struct device *dev, void *data)
 	return 0;
 }
 
-/**
- * serdev_controller_remove(): remove an serdev controller
- * @ctrl:	controller to remove
- *
- * Remove a serdev controller.  Caller is responsible for calling
- * serdev_controller_put() to discard the allocated controller.
- */
+ 
 void serdev_controller_remove(struct serdev_controller *ctrl)
 {
 	if (!ctrl)
@@ -839,20 +745,13 @@ void serdev_controller_remove(struct serdev_controller *ctrl)
 }
 EXPORT_SYMBOL_GPL(serdev_controller_remove);
 
-/**
- * __serdev_device_driver_register() - Register client driver with serdev core
- * @sdrv:	client driver to be associated with client-device.
- * @owner:	client driver owner to set.
- *
- * This API will register the client driver with the serdev framework.
- * It is typically called from the driver's module-init function.
- */
+ 
 int __serdev_device_driver_register(struct serdev_device_driver *sdrv, struct module *owner)
 {
 	sdrv->driver.bus = &serdev_bus_type;
 	sdrv->driver.owner = owner;
 
-	/* force drivers to async probe so I/O is possible in probe */
+	 
         sdrv->driver.probe_type = PROBE_PREFER_ASYNCHRONOUS;
 
 	return driver_register(&sdrv->driver);
@@ -877,7 +776,7 @@ static int __init serdev_init(void)
 	is_registered = true;
 	return 0;
 }
-/* Must be before serial drivers register */
+ 
 postcore_initcall(serdev_init);
 
 MODULE_AUTHOR("Rob Herring <robh@kernel.org>");

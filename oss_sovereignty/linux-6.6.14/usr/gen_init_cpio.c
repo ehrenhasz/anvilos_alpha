@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
@@ -13,12 +13,7 @@
 #include <ctype.h>
 #include <limits.h>
 
-/*
- * Original work by Jeff Garzik
- *
- * External file lists, symlink, pipe and fifo support by Thayne Harbaugh
- * Hard link support by Luciano Rocha
- */
+ 
 
 #define xstr(s) #s
 #define str(s) xstr(s)
@@ -81,20 +76,20 @@ static void cpio_trailer(void)
 
 	sprintf(s, "%s%08X%08X%08lX%08lX%08X%08lX"
 	       "%08X%08X%08X%08X%08X%08X%08X",
-		do_csum ? "070702" : "070701", /* magic */
-		0,			/* ino */
-		0,			/* mode */
-		(long) 0,		/* uid */
-		(long) 0,		/* gid */
-		1,			/* nlink */
-		(long) 0,		/* mtime */
-		0,			/* filesize */
-		0,			/* major */
-		0,			/* minor */
-		0,			/* rmajor */
-		0,			/* rminor */
-		(unsigned)strlen(name)+1, /* namesize */
-		0);			/* chksum */
+		do_csum ? "070702" : "070701",  
+		0,			 
+		0,			 
+		(long) 0,		 
+		(long) 0,		 
+		1,			 
+		(long) 0,		 
+		0,			 
+		0,			 
+		0,			 
+		0,			 
+		0,			 
+		(unsigned)strlen(name)+1,  
+		0);			 
 	push_hdr(s);
 	push_rest(name);
 
@@ -113,20 +108,20 @@ static int cpio_mkslink(const char *name, const char *target,
 		name++;
 	sprintf(s,"%s%08X%08X%08lX%08lX%08X%08lX"
 	       "%08X%08X%08X%08X%08X%08X%08X",
-		do_csum ? "070702" : "070701", /* magic */
-		ino++,			/* ino */
-		S_IFLNK | mode,		/* mode */
-		(long) uid,		/* uid */
-		(long) gid,		/* gid */
-		1,			/* nlink */
-		(long) default_mtime,	/* mtime */
-		(unsigned)strlen(target)+1, /* filesize */
-		3,			/* major */
-		1,			/* minor */
-		0,			/* rmajor */
-		0,			/* rminor */
-		(unsigned)strlen(name) + 1,/* namesize */
-		0);			/* chksum */
+		do_csum ? "070702" : "070701",  
+		ino++,			 
+		S_IFLNK | mode,		 
+		(long) uid,		 
+		(long) gid,		 
+		1,			 
+		(long) default_mtime,	 
+		(unsigned)strlen(target)+1,  
+		3,			 
+		1,			 
+		0,			 
+		0,			 
+		(unsigned)strlen(name) + 1, 
+		0);			 
 	push_hdr(s);
 	push_string(name);
 	push_pad();
@@ -162,20 +157,20 @@ static int cpio_mkgeneric(const char *name, unsigned int mode,
 		name++;
 	sprintf(s,"%s%08X%08X%08lX%08lX%08X%08lX"
 	       "%08X%08X%08X%08X%08X%08X%08X",
-		do_csum ? "070702" : "070701", /* magic */
-		ino++,			/* ino */
-		mode,			/* mode */
-		(long) uid,		/* uid */
-		(long) gid,		/* gid */
-		2,			/* nlink */
-		(long) default_mtime,	/* mtime */
-		0,			/* filesize */
-		3,			/* major */
-		1,			/* minor */
-		0,			/* rmajor */
-		0,			/* rminor */
-		(unsigned)strlen(name) + 1,/* namesize */
-		0);			/* chksum */
+		do_csum ? "070702" : "070701",  
+		ino++,			 
+		mode,			 
+		(long) uid,		 
+		(long) gid,		 
+		2,			 
+		(long) default_mtime,	 
+		0,			 
+		3,			 
+		1,			 
+		0,			 
+		0,			 
+		(unsigned)strlen(name) + 1, 
+		0);			 
 	push_hdr(s);
 	push_rest(name);
 	return 0;
@@ -256,20 +251,20 @@ static int cpio_mknod(const char *name, unsigned int mode,
 		name++;
 	sprintf(s,"%s%08X%08X%08lX%08lX%08X%08lX"
 	       "%08X%08X%08X%08X%08X%08X%08X",
-		do_csum ? "070702" : "070701", /* magic */
-		ino++,			/* ino */
-		mode,			/* mode */
-		(long) uid,		/* uid */
-		(long) gid,		/* gid */
-		1,			/* nlink */
-		(long) default_mtime,	/* mtime */
-		0,			/* filesize */
-		3,			/* major */
-		1,			/* minor */
-		maj,			/* rmajor */
-		min,			/* rminor */
-		(unsigned)strlen(name) + 1,/* namesize */
-		0);			/* chksum */
+		do_csum ? "070702" : "070701",  
+		ino++,			 
+		mode,			 
+		(long) uid,		 
+		(long) gid,		 
+		1,			 
+		(long) default_mtime,	 
+		0,			 
+		3,			 
+		1,			 
+		maj,			 
+		min,			 
+		(unsigned)strlen(name) + 1, 
+		0);			 
 	push_hdr(s);
 	push_rest(name);
 	return 0;
@@ -312,7 +307,7 @@ static int cpio_mkfile_csum(int fd, unsigned long size, uint32_t *csum)
 
 		size -= this_read;
 	}
-	/* seek back to the start for data segment I/O */
+	 
 	if (lseek(fd, 0, SEEK_SET) < 0)
 		return -1;
 
@@ -372,7 +367,7 @@ static int cpio_mkfile(const char *name, const char *location,
 
 	size = 0;
 	for (i = 1; i <= nlinks; i++) {
-		/* data goes on last link */
+		 
 		if (i == nlinks)
 			size = buf.st_size;
 
@@ -381,20 +376,20 @@ static int cpio_mkfile(const char *name, const char *location,
 		namesize = strlen(name) + 1;
 		sprintf(s,"%s%08X%08X%08lX%08lX%08X%08lX"
 		       "%08lX%08X%08X%08X%08X%08X%08X",
-			do_csum ? "070702" : "070701", /* magic */
-			ino,			/* ino */
-			mode,			/* mode */
-			(long) uid,		/* uid */
-			(long) gid,		/* gid */
-			nlinks,			/* nlink */
-			(long) buf.st_mtime,	/* mtime */
-			size,			/* filesize */
-			3,			/* major */
-			1,			/* minor */
-			0,			/* rmajor */
-			0,			/* rminor */
-			namesize,		/* namesize */
-			size ? csum : 0);	/* chksum */
+			do_csum ? "070702" : "070701",  
+			ino,			 
+			mode,			 
+			(long) uid,		 
+			(long) gid,		 
+			nlinks,			 
+			(long) buf.st_mtime,	 
+			size,			 
+			3,			 
+			1,			 
+			0,			 
+			0,			 
+			namesize,		 
+			size ? csum : 0);	 
 		push_hdr(s);
 		push_string(name);
 		push_pad();
@@ -450,7 +445,7 @@ static char *cpio_replace_env(char *new_location)
 static int cpio_mkfile_line(const char *line)
 {
 	char name[PATH_MAX + 1];
-	char *dname = NULL; /* malloc'ed buffer for hard links */
+	char *dname = NULL;  
 	char location[PATH_MAX + 1];
 	unsigned int mode;
 	int uid;
@@ -605,11 +600,7 @@ int main (int argc, char *argv[])
 		}
 	}
 
-	/*
-	 * Timestamps after 2106-02-07 06:28:15 UTC have an ascii hex time_t
-	 * representation that exceeds 8 chars and breaks the cpio header
-	 * specification. Negative timestamps similarly exceed 8 chars.
-	 */
+	 
 	if (default_mtime > 0xffffffff || default_mtime < 0) {
 		fprintf(stderr, "ERROR: Timestamp out of range for cpio format\n");
 		exit(1);
@@ -636,7 +627,7 @@ int main (int argc, char *argv[])
 		line_nr++;
 
 		if ('#' == *line) {
-			/* comment - skip to next line */
+			 
 			continue;
 		}
 
@@ -649,12 +640,12 @@ int main (int argc, char *argv[])
 		}
 
 		if ('\n' == *type) {
-			/* a blank line */
+			 
 			continue;
 		}
 
 		if (slen == strlen(type)) {
-			/* must be an empty line */
+			 
 			continue;
 		}
 

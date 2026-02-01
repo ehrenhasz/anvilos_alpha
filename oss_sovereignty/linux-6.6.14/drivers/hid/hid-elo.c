@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * HID driver for ELO usb touchscreen 4000/4500
- *
- * Copyright (c) 2013 Jiri Slaby
- *
- * Data parsing taken from elousb driver by Vojtech Pavlik.
- */
+
+ 
 
 #include <linux/hid.h>
 #include <linux/input.h>
@@ -16,13 +10,13 @@
 #include "hid-ids.h"
 
 #define ELO_PERIODIC_READ_INTERVAL	HZ
-#define ELO_SMARTSET_CMD_TIMEOUT	2000 /* msec */
+#define ELO_SMARTSET_CMD_TIMEOUT	2000  
 
-/* Elo SmartSet commands */
-#define ELO_FLUSH_SMARTSET_RESPONSES	0x02 /* Flush all pending smartset responses */
-#define ELO_SEND_SMARTSET_COMMAND	0x05 /* Send a smartset command */
-#define ELO_GET_SMARTSET_RESPONSE	0x06 /* Get a smartset response */
-#define ELO_DIAG			0x64 /* Diagnostics command */
+ 
+#define ELO_FLUSH_SMARTSET_RESPONSES	0x02  
+#define ELO_SEND_SMARTSET_COMMAND	0x05  
+#define ELO_GET_SMARTSET_RESPONSE	0x06  
+#define ELO_DIAG			0x64  
 #define ELO_SMARTSET_PACKET_SIZE	8
 
 struct elo_priv {
@@ -41,11 +35,7 @@ static int elo_input_configured(struct hid_device *hdev,
 {
 	struct input_dev *input = hidinput->input;
 
-	/*
-	 * ELO devices have one Button usage in GenDesk field, which makes
-	 * hid-input map it to BTN_LEFT; that confuses userspace, which then
-	 * considers the device to be a mouse/touchpad instead of touchscreen.
-	 */
+	 
 	clear_bit(BTN_LEFT, input->keybit);
 	set_bit(BTN_TOUCH, input->keybit);
 	set_bit(ABS_PRESSURE, input->absbit);
@@ -89,13 +79,13 @@ static int elo_raw_event(struct hid_device *hdev, struct hid_report *report,
 
 	switch (report->id) {
 	case 0:
-		if (data[0] == 'T') {	/* Mandatory ELO packet marker */
+		if (data[0] == 'T') {	 
 			elo_process_data(hidinput->input, data, size);
 			return 1;
 		}
 		break;
-	default:	/* unknown report */
-		/* Unknown report type; pass upstream */
+	default:	 
+		 
 		hid_info(hdev, "unknown report type %d\n", report->id);
 		break;
 	}
@@ -146,7 +136,7 @@ static void elo_work(struct work_struct *work)
 		goto fail;
 	}
 
-	/* send Diagnostics command */
+	 
 	*buffer = ELO_DIAG;
 	ret = elo_smartset_send_get(dev, ELO_SEND_SMARTSET_COMMAND, buffer);
 	if (ret < 0) {
@@ -155,7 +145,7 @@ static void elo_work(struct work_struct *work)
 		goto fail;
 	}
 
-	/* get the result */
+	 
 	ret = elo_smartset_send_get(dev, ELO_GET_SMARTSET_RESPONSE, buffer);
 	if (ret < 0) {
 		dev_err(&dev->dev, "get Diagnostics Command response failed, error %d\n",
@@ -163,7 +153,7 @@ static void elo_work(struct work_struct *work)
 		goto fail;
 	}
 
-	/* read the ack */
+	 
 	if (*buffer != 'A') {
 		ret = elo_smartset_send_get(dev, ELO_GET_SMARTSET_RESPONSE,
 				buffer);
@@ -182,10 +172,7 @@ fail:
 	queue_delayed_work(wq, &priv->work, ELO_PERIODIC_READ_INTERVAL);
 }
 
-/*
- * Not all Elo devices need the periodic HID descriptor reads.
- * Only firmware version M needs this.
- */
+ 
 static bool elo_broken_firmware(struct usb_device *dev)
 {
 	struct usb_device *hub = dev->parent;
@@ -199,24 +186,18 @@ static bool elo_broken_firmware(struct usb_device *dev)
 	if (fw_lvl != 0x10d)
 		return false;
 
-	/* iterate sibling devices of the touch controller */
+	 
 	usb_hub_for_each_child(hub, i, child) {
 		child_vid = le16_to_cpu(child->descriptor.idVendor);
 		child_pid = le16_to_cpu(child->descriptor.idProduct);
 
-		/*
-		 * If one of the devices below is present attached as a sibling of 
-		 * the touch controller then  this is a newer IBM 4820 monitor that 
-		 * does not need the IBM-requested workaround if fw level is
-		 * 0x010d - aka 'M'.
-		 * No other HW can have this combination.
-		 */
+		 
 		if (child_vid==0x04b3) {
 			switch (child_pid) {
-			case 0x4676: /* 4820 21x Video */
-			case 0x4677: /* 4820 51x Video */
-			case 0x4678: /* 4820 2Lx Video */
-			case 0x4679: /* 4820 5Lx Video */
+			case 0x4676:  
+			case 0x4677:  
+			case 0x4678:  
+			case 0x4679:  
 				return false;
 			}
 		}

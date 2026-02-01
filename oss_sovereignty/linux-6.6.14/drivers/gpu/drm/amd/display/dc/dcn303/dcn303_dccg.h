@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright (C) 2021 Advanced Micro Devices, Inc.
- *
- * Authors: AMD
- */
+
+ 
 
 #ifndef __DCN303_DCCG_H__
 #define __DCN303_DCCG_H__
@@ -43,4 +39,4 @@
 		DCCG_SFII(OTG, PIXEL_RATE_CNTL, OTG, DROP_PIXEL, 0, mask_sh),\
 		DCCG_SFII(OTG, PIXEL_RATE_CNTL, OTG, DROP_PIXEL, 1, mask_sh)
 
-#endif //__DCN303_DCCG_H__
+#endif 

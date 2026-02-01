@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
+ 
 #ifndef _NETFILTER_NF_NAT_H
 #define _NETFILTER_NF_NAT_H
 
@@ -52,4 +52,4 @@ struct nf_nat_range2 {
 	union nf_conntrack_man_proto	base_proto;
 };
 
-#endif /* _NETFILTER_NF_NAT_H */
+#endif  

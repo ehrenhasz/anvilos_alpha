@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* nettest - used for functional tests of networking APIs
- *
- * Copyright (c) 2013-2019 David Ahern <dsahern@gmail.com>. All rights reserved.
- */
+
+ 
 
 #define _GNU_SOURCE
 #include <features.h>
@@ -53,7 +50,7 @@
 #endif
 
 struct sock_args {
-	/* local address */
+	 
 	const char *local_addr_str;
 	const char *client_local_addr_str;
 	union {
@@ -61,15 +58,15 @@ struct sock_args {
 		struct in6_addr in6;
 	} local_addr;
 
-	/* remote address */
+	 
 	const char *remote_addr_str;
 	union {
 		struct in_addr  in;
 		struct in6_addr in6;
 	} remote_addr;
-	int scope_id;  /* remote scope; v6 send only */
+	int scope_id;   
 
-	struct in_addr grp;     /* multicast group */
+	struct in_addr grp;      
 
 	unsigned int has_local_ip:1,
 		     has_remote_ip:1,
@@ -82,9 +79,9 @@ struct sock_args {
 
 	unsigned short port;
 
-	int type;      /* DGRAM, STREAM, RAW */
+	int type;       
 	int protocol;
-	int version;   /* AF_INET/AF_INET6 */
+	int version;    
 
 	int use_setsockopt;
 	int use_freebind;
@@ -99,39 +96,39 @@ struct sock_args {
 
 	const char *password;
 	const char *client_pw;
-	/* prefix for MD5 password */
+	 
 	const char *md5_prefix_str;
 	union {
 		struct sockaddr_in v4;
 		struct sockaddr_in6 v6;
 	} md5_prefix;
 	unsigned int prefix_len;
-	/* 0: default, -1: force off, +1: force on */
+	 
 	int bind_key_ifindex;
 
-	/* expected addresses and device index for connection */
+	 
 	const char *expected_dev;
 	const char *expected_server_dev;
 	int expected_ifindex;
 
-	/* local address */
+	 
 	const char *expected_laddr_str;
 	union {
 		struct in_addr  in;
 		struct in6_addr in6;
 	} expected_laddr;
 
-	/* remote address */
+	 
 	const char *expected_raddr_str;
 	union {
 		struct in_addr  in;
 		struct in6_addr in6;
 	} expected_raddr;
 
-	/* ESP in UDP encap test */
+	 
 	int use_xfrm;
 
-	/* use send() and connect() instead of sendto */
+	 
 	int datagram_connect;
 };
 
@@ -293,7 +290,7 @@ static int tcp_md5sig(int sd, void *addr, socklen_t alen, struct sock_args *args
 
 	rc = setsockopt(sd, IPPROTO_TCP, opt, &md5sig, sizeof(md5sig));
 	if (rc < 0) {
-		/* ENOENT is harmless. Returned when a password is cleared */
+		 
 		if (errno == ENOENT)
 			rc = 0;
 		else
@@ -633,9 +630,7 @@ static int str_to_uint(const char *str, int min, int max, unsigned int *value)
 	errno = 0;
 	number = (unsigned int) strtoul(str, &end, 0);
 
-	/* entire string should be consumed by conversion
-	 * and value should be between min and max
-	 */
+	 
 	if (((*end == '\0') || (*end == '\n')) && (end != str) &&
 	    (errno != ERANGE) && (min <= number) && (number <= max)) {
 		*value = number;
@@ -1124,15 +1119,12 @@ again:
 			struct sockaddr_in6 *s6 = (struct sockaddr_in6 *) sa;
 
 			if (args->dev) {
-				/* avoid PKTINFO conflicts with bindtodev */
+				 
 				if (sendto(sd, buf, len, 0,
 					   (void *) addr, alen) < 0)
 					goto out_err;
 			} else {
-				/* kernel is allowing scope_id to be set to VRF
-				 * index for LLA. for sends to global address
-				 * reset scope id
-				 */
+				 
 				s6->sin6_scope_id = ifindex;
 				if (sendmsg(sd, &m, 0) < 0)
 					goto out_err;
@@ -1260,7 +1252,7 @@ static int msg_loop(int client, int sd, void *addr, socklen_t alen,
 	if (msg) {
 		msglen = strlen(msg);
 
-		/* client sends first message */
+		 
 		if (client) {
 			if (send_msg(sd, addr, alen, args))
 				return 1;
@@ -1551,7 +1543,7 @@ err:
 
 static void ipc_write(int fd, int message)
 {
-	/* Not in both_mode, so there's no process to signal */
+	 
 	if (fd < 0)
 		return;
 
@@ -1561,7 +1553,7 @@ static void ipc_write(int fd, int message)
 
 static int do_server(struct sock_args *args, int ipc_fd)
 {
-	/* ipc_fd = -1 if no parent process to signal */
+	 
 	struct timeval timeout = { .tv_sec = prog_timeout }, *ptval = NULL;
 	unsigned char addr[sizeof(struct sockaddr_in6)] = {};
 	socklen_t alen = sizeof(addr);
@@ -1884,11 +1876,9 @@ static int ipc_child(int fd, struct sock_args *args)
 	setbuffer(stdout, outbuf, 4096);
 	setbuffer(stderr, errbuf, 4096);
 
-	server_mode = 1; /* to tell log_msg in case we are in both_mode */
+	server_mode = 1;  
 
-	/* when running in both mode, address validation applies
-	 * solely to client side
-	 */
+	 
 	args->has_expected_laddr = 0;
 	args->has_expected_raddr = 0;
 
@@ -1907,9 +1897,7 @@ static int ipc_parent(int cpid, int fd, struct sock_args *args)
 	int status;
 	int buf;
 
-	/* do the client-side function here in the parent process,
-	 * waiting to be told when to continue
-	 */
+	 
 	if (read(fd, &buf, sizeof(buf)) <= 0) {
 		log_err_errno("Failed to read IPC status from status");
 		return 1;
@@ -2020,13 +2008,11 @@ int main(int argc, char *argv[])
 	int fd[2];
 	int cpid;
 
-	/* process inputs */
+	 
 	extern char *optarg;
 	int rc = 0;
 
-	/*
-	 * process input args
-	 */
+	 
 
 	while ((rc = getopt_long(argc, argv, GETOPT_STR, long_opts, NULL)) != -1) {
 		switch (rc) {

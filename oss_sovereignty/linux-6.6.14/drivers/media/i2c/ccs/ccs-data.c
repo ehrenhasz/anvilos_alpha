@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
-/*
- * CCS static data binary parser library
- *
- * Copyright 2019--2020 Intel Corporation
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/errno.h>
@@ -449,7 +445,7 @@ static int ccs_data_parse_rules(struct bin_container *bin,
 		const u8 *__rule_type;
 		const void *rule_payload;
 
-		/* Size of a single rule */
+		 
 		rval = ccs_data_parse_length_specifier(__next_rule, &rule_hlen,
 						       &rule_plen, endp);
 
@@ -476,7 +472,7 @@ static int ccs_data_parse_rules(struct bin_container *bin,
 					  rule_payload + rule_plen2))
 				return -ENODATA;
 
-			/* Also check there is no extra data */
+			 
 			if (__if_rules + __num_if_rules !=
 			    rule_payload + rule_plen2)
 				return -EINVAL;
@@ -514,7 +510,7 @@ static int ccs_data_parse_rules(struct bin_container *bin,
 				rules->num_if_rules = __num_if_rules;
 			}
 		} else {
-			/* Check there was an if rule before any other rules */
+			 
 			if (bin->base && !rules)
 				return -EINVAL;
 
@@ -931,15 +927,7 @@ static int __ccs_data_parse(struct bin_container *bin,
 	return 0;
 }
 
-/**
- * ccs_data_parse - Parse a CCS static data file into a usable in-memory
- *		    data structure
- * @ccsdata:	CCS static data in-memory data structure
- * @data:	CCS static data binary
- * @len:	Length of @data
- * @dev:	Device the data is related to (used for printing debug messages)
- * @verbose:	Whether to be verbose or not
- */
+ 
 int ccs_data_parse(struct ccs_data_container *ccsdata, const void *data,
 		   size_t len, struct device *dev, bool verbose)
 {

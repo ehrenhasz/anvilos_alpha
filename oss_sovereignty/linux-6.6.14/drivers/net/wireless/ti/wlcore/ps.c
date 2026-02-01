@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * This file is part of wl1271
- *
- * Copyright (C) 2008-2009 Nokia Corporation
- *
- * Contact: Luciano Coelho <luciano.coelho@nokia.com>
- */
+
+ 
 
 #include "ps.h"
 #include "io.h"
@@ -38,10 +32,7 @@ int wl1271_ps_set_mode(struct wl1271 *wl, struct wl12xx_vif *wlvif,
 
 		set_bit(WLVIF_FLAG_IN_PS, &wlvif->flags);
 
-		/*
-		 * enable beacon early termination.
-		 * Not relevant for 5GHz and for high rates.
-		 */
+		 
 		if ((wlvif->band == NL80211_BAND_2GHZ) &&
 		    (wlvif->basic_rate < CONF_HW_BIT_RATE_9MBPS)) {
 			ret = wl1271_acx_bet_enable(wl, wlvif, true);
@@ -52,7 +43,7 @@ int wl1271_ps_set_mode(struct wl1271 *wl, struct wl12xx_vif *wlvif,
 	case STATION_ACTIVE_MODE:
 		wl1271_debug(DEBUG_PSM, "leaving psm");
 
-		/* disable beacon early termination */
+		 
 		if ((wlvif->band == NL80211_BAND_2GHZ) &&
 		    (wlvif->basic_rate < CONF_HW_BIT_RATE_9MBPS)) {
 			ret = wl1271_acx_bet_enable(wl, wlvif, false);
@@ -83,7 +74,7 @@ static void wl1271_ps_filter_frames(struct wl1271 *wl, u8 hlid)
 	int filtered[NUM_TX_QUEUES];
 	struct wl1271_link *lnk = &wl->links[hlid];
 
-	/* filter all frames currently in the low level queues for this hlid */
+	 
 	for (i = 0; i < NUM_TX_QUEUES; i++) {
 		filtered[i] = 0;
 		while ((skb = skb_dequeue(&lnk->tx_queue[i]))) {
@@ -139,7 +130,7 @@ void wl12xx_ps_link_start(struct wl1271 *wl, struct wl12xx_vif *wlvif,
 	ieee80211_sta_ps_transition_ni(sta, true);
 	rcu_read_unlock();
 
-	/* do we want to filter all frames from this link's queues? */
+	 
 	if (clean_queues)
 		wl1271_ps_filter_frames(wl, hlid);
 

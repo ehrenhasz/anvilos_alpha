@@ -1,12 +1,12 @@
-/* SPDX-License-Identifier: (GPL-2.0 OR Linux-OpenIB) OR BSD-2-Clause */
-/* Copyright(c) 2023 Advanced Micro Devices, Inc. */
+ 
+ 
 
 #ifndef _PDS_COMMON_H_
 #define _PDS_COMMON_H_
 
 #define PDS_CORE_DRV_NAME			"pds_core"
 
-/* the device's internal addressing uses up to 52 bits */
+ 
 #define PDS_CORE_ADDR_LEN	52
 #define PDS_CORE_ADDR_MASK	(BIT_ULL(PDS_ADDR_LEN) - 1)
 #define PDS_PAGE_SIZE		4096
@@ -28,8 +28,8 @@ enum pds_core_vif_types {
 	PDS_DEV_TYPE_RDMA	= 4,
 	PDS_DEV_TYPE_LM		= 5,
 
-	/* new ones added before this line */
-	PDS_DEV_TYPE_MAX	= 16   /* don't change - used in struct size */
+	 
+	PDS_DEV_TYPE_MAX	= 16    
 };
 
 #define PDS_DEV_TYPE_CORE_STR	"Core"
@@ -49,4 +49,4 @@ void pdsc_unregister_notify(struct notifier_block *nb);
 void *pdsc_get_pf_struct(struct pci_dev *vf_pdev);
 int pds_client_register(struct pdsc *pf, char *devname);
 int pds_client_unregister(struct pdsc *pf, u16 client_id);
-#endif /* _PDS_COMMON_H_ */
+#endif  

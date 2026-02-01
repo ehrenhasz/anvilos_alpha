@@ -1,29 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR MIT
-/**************************************************************************
- *
- * Copyright 2015-2023 VMware, Inc., Palo Alto, CA., USA
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the
- * "Software"), to deal in the Software without restriction, including
- * without limitation the rights to use, copy, modify, merge, publish,
- * distribute, sub license, and/or sell copies of the Software, and to
- * permit persons to whom the Software is furnished to do so, subject to
- * the following conditions:
- *
- * The above copyright notice and this permission notice (including the
- * next paragraph) shall be included in all copies or substantial portions
- * of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT. IN NO EVENT SHALL
- * THE COPYRIGHT HOLDERS, AUTHORS AND/OR ITS SUPPLIERS BE LIABLE FOR ANY CLAIM,
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
- * USE OR OTHER DEALINGS IN THE SOFTWARE.
- *
- **************************************************************************/
+
+ 
 
 #include "vmwgfx_bo.h"
 #include "vmwgfx_drv.h"
@@ -33,24 +9,12 @@
 #include <linux/dmapool.h>
 #include <linux/pci.h>
 
-/*
- * Size of inline command buffers. Try to make sure that a page size is a
- * multiple of the DMA pool allocation size.
- */
+ 
 #define VMW_CMDBUF_INLINE_ALIGN 64
 #define VMW_CMDBUF_INLINE_SIZE \
 	(1024 - ALIGN(sizeof(SVGACBHeader), VMW_CMDBUF_INLINE_ALIGN))
 
-/**
- * struct vmw_cmdbuf_context - Command buffer context queues
- *
- * @submitted: List of command buffers that have been submitted to the
- * manager but not yet submitted to hardware.
- * @hw_submitted: List of command buffers submitted to hardware.
- * @preempted: List of preempted command buffers.
- * @num_hw_submitted: Number of buffers currently being processed by hardware
- * @block_submission: Identifies a block command submission.
- */
+ 
 struct vmw_cmdbuf_context {
 	struct list_head submitted;
 	struct list_head hw_submitted;
@@ -59,54 +23,7 @@ struct vmw_cmdbuf_context {
 	bool block_submission;
 };
 
-/**
- * struct vmw_cmdbuf_man - Command buffer manager
- *
- * @cur_mutex: Mutex protecting the command buffer used for incremental small
- * kernel command submissions, @cur.
- * @space_mutex: Mutex to protect against starvation when we allocate
- * main pool buffer space.
- * @error_mutex: Mutex to serialize the work queue error handling.
- * Note this is not needed if the same workqueue handler
- * can't race with itself...
- * @work: A struct work_struct implementeing command buffer error handling.
- * Immutable.
- * @dev_priv: Pointer to the device private struct. Immutable.
- * @ctx: Array of command buffer context queues. The queues and the context
- * data is protected by @lock.
- * @error: List of command buffers that have caused device errors.
- * Protected by @lock.
- * @mm: Range manager for the command buffer space. Manager allocations and
- * frees are protected by @lock.
- * @cmd_space: Buffer object for the command buffer space, unless we were
- * able to make a contigous coherent DMA memory allocation, @handle. Immutable.
- * @map: Pointer to command buffer space. May be a mapped buffer object or
- * a contigous coherent DMA memory allocation. Immutable.
- * @cur: Command buffer for small kernel command submissions. Protected by
- * the @cur_mutex.
- * @cur_pos: Space already used in @cur. Protected by @cur_mutex.
- * @default_size: Default size for the @cur command buffer. Immutable.
- * @max_hw_submitted: Max number of in-flight command buffers the device can
- * handle. Immutable.
- * @lock: Spinlock protecting command submission queues.
- * @headers: Pool of DMA memory for device command buffer headers.
- * Internal protection.
- * @dheaders: Pool of DMA memory for device command buffer headers with trailing
- * space for inline data. Internal protection.
- * @alloc_queue: Wait queue for processes waiting to allocate command buffer
- * space.
- * @idle_queue: Wait queue for processes waiting for command buffer idle.
- * @irq_on: Whether the process function has requested irq to be turned on.
- * Protected by @lock.
- * @using_mob: Whether the command buffer space is a MOB or a contigous DMA
- * allocation. Immutable.
- * @has_pool: Has a large pool of DMA memory which allows larger allocations.
- * Typically this is false only during bootstrap.
- * @handle: DMA address handle for the command buffer space if @using_mob is
- * false. Immutable.
- * @size: The size of the command buffer space. Immutable.
- * @num_contexts: Number of contexts actually enabled.
- */
+ 
 struct vmw_cmdbuf_man {
 	struct mutex cur_mutex;
 	struct mutex space_mutex;
@@ -135,21 +52,7 @@ struct vmw_cmdbuf_man {
 	u32 num_contexts;
 };
 
-/**
- * struct vmw_cmdbuf_header - Command buffer metadata
- *
- * @man: The command buffer manager.
- * @cb_header: Device command buffer header, allocated from a DMA pool.
- * @cb_context: The device command buffer context.
- * @list: List head for attaching to the manager lists.
- * @node: The range manager node.
- * @handle: The DMA address of @cb_header. Handed to the device on command
- * buffer submission.
- * @cmd: Pointer to the command buffer space of this buffer.
- * @size: Size of the command buffer space of this buffer.
- * @reserved: Reserved space of this buffer.
- * @inline_space: Whether inline command buffer space is used.
- */
+ 
 struct vmw_cmdbuf_header {
 	struct vmw_cmdbuf_man *man;
 	SVGACBHeader *cb_header;
@@ -163,32 +66,20 @@ struct vmw_cmdbuf_header {
 	bool inline_space;
 };
 
-/**
- * struct vmw_cmdbuf_dheader - Device command buffer header with inline
- * command buffer space.
- *
- * @cb_header: Device command buffer header.
- * @cmd: Inline command buffer space.
- */
+ 
 struct vmw_cmdbuf_dheader {
 	SVGACBHeader cb_header;
 	u8 cmd[VMW_CMDBUF_INLINE_SIZE] __aligned(VMW_CMDBUF_INLINE_ALIGN);
 };
 
-/**
- * struct vmw_cmdbuf_alloc_info - Command buffer space allocation metadata
- *
- * @page_size: Size of requested command buffer space in pages.
- * @node: Pointer to the range manager node.
- * @done: True if this allocation has succeeded.
- */
+ 
 struct vmw_cmdbuf_alloc_info {
 	size_t page_size;
 	struct drm_mm_node *node;
 	bool done;
 };
 
-/* Loop over each context in the command buffer manager. */
+ 
 #define for_each_cmdbuf_ctx(_man, _i, _ctx)				\
 	for (_i = 0, _ctx = &(_man)->ctx[0]; (_i) < (_man)->num_contexts; \
 	     ++(_i), ++(_ctx))
@@ -197,12 +88,7 @@ static int vmw_cmdbuf_startstop(struct vmw_cmdbuf_man *man, u32 context,
 				bool enable);
 static int vmw_cmdbuf_preempt(struct vmw_cmdbuf_man *man, u32 context);
 
-/**
- * vmw_cmdbuf_cur_lock - Helper to lock the cur_mutex.
- *
- * @man: The range manager.
- * @interruptible: Whether to wait interruptible when locking.
- */
+ 
 static int vmw_cmdbuf_cur_lock(struct vmw_cmdbuf_man *man, bool interruptible)
 {
 	if (interruptible) {
@@ -215,23 +101,13 @@ static int vmw_cmdbuf_cur_lock(struct vmw_cmdbuf_man *man, bool interruptible)
 	return 0;
 }
 
-/**
- * vmw_cmdbuf_cur_unlock - Helper to unlock the cur_mutex.
- *
- * @man: The range manager.
- */
+ 
 static void vmw_cmdbuf_cur_unlock(struct vmw_cmdbuf_man *man)
 {
 	mutex_unlock(&man->cur_mutex);
 }
 
-/**
- * vmw_cmdbuf_header_inline_free - Free a struct vmw_cmdbuf_header that has
- * been used for the device context with inline command buffers.
- * Need not be called locked.
- *
- * @header: Pointer to the header to free.
- */
+ 
 static void vmw_cmdbuf_header_inline_free(struct vmw_cmdbuf_header *header)
 {
 	struct vmw_cmdbuf_dheader *dheader;
@@ -245,14 +121,7 @@ static void vmw_cmdbuf_header_inline_free(struct vmw_cmdbuf_header *header)
 	kfree(header);
 }
 
-/**
- * __vmw_cmdbuf_header_free - Free a struct vmw_cmdbuf_header  and its
- * associated structures.
- *
- * @header: Pointer to the header to free.
- *
- * For internal use. Must be called with man::lock held.
- */
+ 
 static void __vmw_cmdbuf_header_free(struct vmw_cmdbuf_header *header)
 {
 	struct vmw_cmdbuf_man *man = header->man;
@@ -272,17 +141,12 @@ static void __vmw_cmdbuf_header_free(struct vmw_cmdbuf_header *header)
 	kfree(header);
 }
 
-/**
- * vmw_cmdbuf_header_free - Free a struct vmw_cmdbuf_header  and its
- * associated structures.
- *
- * @header: Pointer to the header to free.
- */
+ 
 void vmw_cmdbuf_header_free(struct vmw_cmdbuf_header *header)
 {
 	struct vmw_cmdbuf_man *man = header->man;
 
-	/* Avoid locking if inline_space */
+	 
 	if (header->inline_space) {
 		vmw_cmdbuf_header_inline_free(header);
 		return;
@@ -293,11 +157,7 @@ void vmw_cmdbuf_header_free(struct vmw_cmdbuf_header *header)
 }
 
 
-/**
- * vmw_cmdbuf_header_submit: Submit a command buffer to hardware.
- *
- * @header: The header of the buffer to submit.
- */
+ 
 static int vmw_cmdbuf_header_submit(struct vmw_cmdbuf_header *header)
 {
 	struct vmw_cmdbuf_man *man = header->man;
@@ -313,11 +173,7 @@ static int vmw_cmdbuf_header_submit(struct vmw_cmdbuf_header *header)
 	return header->cb_header->status;
 }
 
-/**
- * vmw_cmdbuf_ctx_init: Initialize a command buffer context.
- *
- * @ctx: The command buffer context to initialize
- */
+ 
 static void vmw_cmdbuf_ctx_init(struct vmw_cmdbuf_context *ctx)
 {
 	INIT_LIST_HEAD(&ctx->hw_submitted);
@@ -326,16 +182,7 @@ static void vmw_cmdbuf_ctx_init(struct vmw_cmdbuf_context *ctx)
 	ctx->num_hw_submitted = 0;
 }
 
-/**
- * vmw_cmdbuf_ctx_submit: Submit command buffers from a command buffer
- * context.
- *
- * @man: The command buffer manager.
- * @ctx: The command buffer context.
- *
- * Submits command buffers to hardware until there are no more command
- * buffers to submit or the hardware can't handle more command buffers.
- */
+ 
 static void vmw_cmdbuf_ctx_submit(struct vmw_cmdbuf_man *man,
 				  struct vmw_cmdbuf_context *ctx)
 {
@@ -351,7 +198,7 @@ static void vmw_cmdbuf_ctx_submit(struct vmw_cmdbuf_man *man,
 
 		status = vmw_cmdbuf_header_submit(entry);
 
-		/* This should never happen */
+		 
 		if (WARN_ON_ONCE(status == SVGA_CB_STATUS_QUEUE_FULL)) {
 			entry->cb_header->status = SVGA_CB_STATUS_NONE;
 			break;
@@ -363,17 +210,7 @@ static void vmw_cmdbuf_ctx_submit(struct vmw_cmdbuf_man *man,
 
 }
 
-/**
- * vmw_cmdbuf_ctx_process - Process a command buffer context.
- *
- * @man: The command buffer manager.
- * @ctx: The command buffer context.
- * @notempty: Pass back count of non-empty command submitted lists.
- *
- * Submit command buffers to hardware if possible, and process finished
- * buffers. Typically freeing them, but on preemption or error take
- * appropriate action. Wake up waiters if appropriate.
- */
+ 
 static void vmw_cmdbuf_ctx_process(struct vmw_cmdbuf_man *man,
 				   struct vmw_cmdbuf_context *ctx,
 				   int *notempty)
@@ -421,16 +258,7 @@ static void vmw_cmdbuf_ctx_process(struct vmw_cmdbuf_man *man,
 		(*notempty)++;
 }
 
-/**
- * vmw_cmdbuf_man_process - Process all command buffer contexts and
- * switch on and off irqs as appropriate.
- *
- * @man: The command buffer manager.
- *
- * Calls vmw_cmdbuf_ctx_process() on all contexts. If any context has
- * command buffers left that are not submitted to hardware, Make sure
- * IRQ handling is turned on. Otherwise, make sure it's turned off.
- */
+ 
 static void vmw_cmdbuf_man_process(struct vmw_cmdbuf_man *man)
 {
 	int notempty;
@@ -453,24 +281,12 @@ retry:
 				       &man->dev_priv->cmdbuf_waiters);
 		man->irq_on = true;
 
-		/* Rerun in case we just missed an irq. */
+		 
 		goto retry;
 	}
 }
 
-/**
- * vmw_cmdbuf_ctx_add - Schedule a command buffer for submission on a
- * command buffer context
- *
- * @man: The command buffer manager.
- * @header: The header of the buffer to submit.
- * @cb_context: The command buffer context to use.
- *
- * This function adds @header to the "submitted" queue of the command
- * buffer context identified by @cb_context. It then calls the command buffer
- * manager processing to potentially submit the buffer to hardware.
- * @man->lock needs to be held when calling this function.
- */
+ 
 static void vmw_cmdbuf_ctx_add(struct vmw_cmdbuf_man *man,
 			       struct vmw_cmdbuf_header *header,
 			       SVGACBContext cb_context)
@@ -483,16 +299,7 @@ static void vmw_cmdbuf_ctx_add(struct vmw_cmdbuf_man *man,
 	vmw_cmdbuf_man_process(man);
 }
 
-/**
- * vmw_cmdbuf_irqthread - The main part of the command buffer interrupt
- * handler implemented as a threaded irq task.
- *
- * @man: Pointer to the command buffer manager.
- *
- * The bottom half of the interrupt handler simply calls into the
- * command buffer processor to free finished buffers and submit any
- * queued buffers to hardware.
- */
+ 
 void vmw_cmdbuf_irqthread(struct vmw_cmdbuf_man *man)
 {
 	spin_lock(&man->lock);
@@ -500,15 +307,7 @@ void vmw_cmdbuf_irqthread(struct vmw_cmdbuf_man *man)
 	spin_unlock(&man->lock);
 }
 
-/**
- * vmw_cmdbuf_work_func - The deferred work function that handles
- * command buffer errors.
- *
- * @work: The work func closure argument.
- *
- * Restarting the command buffer context after an error requires process
- * context, so it is deferred to this work function.
- */
+ 
 static void vmw_cmdbuf_work_func(struct work_struct *work)
 {
 	struct vmw_cmdbuf_man *man =
@@ -578,25 +377,19 @@ static void vmw_cmdbuf_work_func(struct work_struct *work)
 
 	spin_unlock(&man->lock);
 
-	/* Preempt all contexts */
+	 
 	if (global_block && vmw_cmdbuf_preempt(man, 0))
 		DRM_ERROR("Failed preempting command buffer contexts\n");
 
 	spin_lock(&man->lock);
 	for_each_cmdbuf_ctx(man, i, ctx) {
-		/* Move preempted command buffers to the preempted queue. */
+		 
 		vmw_cmdbuf_ctx_process(man, ctx, &dummy);
 
-		/*
-		 * Add the preempted queue after the command buffer
-		 * that caused an error.
-		 */
+		 
 		list_splice_init(&ctx->preempted, restart_head[i].prev);
 
-		/*
-		 * Finally add all command buffers first in the submitted
-		 * queue, to rerun them.
-		 */
+		 
 
 		ctx->block_submission = false;
 		list_splice_init(&restart_head[i], &ctx->submitted);
@@ -608,7 +401,7 @@ static void vmw_cmdbuf_work_func(struct work_struct *work)
 	if (global_block && vmw_cmdbuf_startstop(man, 0, true))
 		DRM_ERROR("Failed restarting command buffer contexts\n");
 
-	/* Send a new fence in case one was removed */
+	 
 	if (send_fence) {
 		vmw_cmd_send_fence(man->dev_priv, &dummy);
 		wake_up_all(&man->idle_queue);
@@ -617,13 +410,7 @@ static void vmw_cmdbuf_work_func(struct work_struct *work)
 	mutex_unlock(&man->error_mutex);
 }
 
-/**
- * vmw_cmdbuf_man_idle - Check whether the command buffer manager is idle.
- *
- * @man: The command buffer manager.
- * @check_preempted: Check also the preempted queue for pending command buffers.
- *
- */
+ 
 static bool vmw_cmdbuf_man_idle(struct vmw_cmdbuf_man *man,
 				bool check_preempted)
 {
@@ -648,15 +435,7 @@ out_unlock:
 	return idle;
 }
 
-/**
- * __vmw_cmdbuf_cur_flush - Flush the current command buffer for small kernel
- * command submissions
- *
- * @man: The command buffer manager.
- *
- * Flushes the current command buffer without allocating a new one. A new one
- * is automatically allocated when needed. Call with @man->cur_mutex held.
- */
+ 
 static void __vmw_cmdbuf_cur_flush(struct vmw_cmdbuf_man *man)
 {
 	struct vmw_cmdbuf_header *cur = man->cur;
@@ -680,16 +459,7 @@ out_unlock:
 	man->cur_pos = 0;
 }
 
-/**
- * vmw_cmdbuf_cur_flush - Flush the current command buffer for small kernel
- * command submissions
- *
- * @man: The command buffer manager.
- * @interruptible: Whether to sleep interruptible when sleeping.
- *
- * Flushes the current command buffer without allocating a new one. A new one
- * is automatically allocated when needed.
- */
+ 
 int vmw_cmdbuf_cur_flush(struct vmw_cmdbuf_man *man,
 			 bool interruptible)
 {
@@ -704,17 +474,7 @@ int vmw_cmdbuf_cur_flush(struct vmw_cmdbuf_man *man,
 	return 0;
 }
 
-/**
- * vmw_cmdbuf_idle - Wait for command buffer manager idle.
- *
- * @man: The command buffer manager.
- * @interruptible: Sleep interruptible while waiting.
- * @timeout: Time out after this many ticks.
- *
- * Wait until the command buffer manager has processed all command buffers,
- * or until a timeout occurs. If a timeout occurs, the function will return
- * -EBUSY.
- */
+ 
 int vmw_cmdbuf_idle(struct vmw_cmdbuf_man *man, bool interruptible,
 		    unsigned long timeout)
 {
@@ -749,16 +509,7 @@ int vmw_cmdbuf_idle(struct vmw_cmdbuf_man *man, bool interruptible,
 	return ret;
 }
 
-/**
- * vmw_cmdbuf_try_alloc - Try to allocate buffer space from the main pool.
- *
- * @man: The command buffer manager.
- * @info: Allocation info. Will hold the size on entry and allocated mm node
- * on successful return.
- *
- * Try to allocate buffer space from the main pool. Returns true if succeeded.
- * If a fatal error was hit, the error code is returned in @info->ret.
- */
+ 
 static bool vmw_cmdbuf_try_alloc(struct vmw_cmdbuf_man *man,
 				 struct vmw_cmdbuf_alloc_info *info)
 {
@@ -781,18 +532,7 @@ static bool vmw_cmdbuf_try_alloc(struct vmw_cmdbuf_man *man,
 	return info->done;
 }
 
-/**
- * vmw_cmdbuf_alloc_space - Allocate buffer space from the main pool.
- *
- * @man: The command buffer manager.
- * @node: Pointer to pre-allocated range-manager node.
- * @size: The size of the allocation.
- * @interruptible: Whether to sleep interruptible while waiting for space.
- *
- * This function allocates buffer space from the main pool, and if there is
- * no space available ATM, it turns on IRQ handling and sleeps waiting for it to
- * become available.
- */
+ 
 static int vmw_cmdbuf_alloc_space(struct vmw_cmdbuf_man *man,
 				  struct drm_mm_node *node,
 				  size_t size,
@@ -804,10 +544,7 @@ static int vmw_cmdbuf_alloc_space(struct vmw_cmdbuf_man *man,
 	info.node = node;
 	info.done = false;
 
-	/*
-	 * To prevent starvation of large requests, only one allocating call
-	 * at a time waiting for space.
-	 */
+	 
 	if (interruptible) {
 		if (mutex_lock_interruptible(&man->space_mutex))
 			return -ERESTARTSYS;
@@ -815,7 +552,7 @@ static int vmw_cmdbuf_alloc_space(struct vmw_cmdbuf_man *man,
 		mutex_lock(&man->space_mutex);
 	}
 
-	/* Try to allocate space without waiting. */
+	 
 	if (vmw_cmdbuf_try_alloc(man, &info))
 		goto out_unlock;
 
@@ -848,15 +585,7 @@ out_unlock:
 	return 0;
 }
 
-/**
- * vmw_cmdbuf_space_pool - Set up a command buffer header with command buffer
- * space from the main pool.
- *
- * @man: The command buffer manager.
- * @header: Pointer to the header to set up.
- * @size: The requested size of the buffer space.
- * @interruptible: Whether to sleep interruptible while waiting for space.
- */
+ 
 static int vmw_cmdbuf_space_pool(struct vmw_cmdbuf_man *man,
 				 struct vmw_cmdbuf_header *header,
 				 size_t size,
@@ -903,14 +632,7 @@ out_no_cb_header:
 	return ret;
 }
 
-/**
- * vmw_cmdbuf_space_inline - Set up a command buffer header with
- * inline command buffer space.
- *
- * @man: The command buffer manager.
- * @header: Pointer to the header to set up.
- * @size: The requested size of the buffer space.
- */
+ 
 static int vmw_cmdbuf_space_inline(struct vmw_cmdbuf_man *man,
 				   struct vmw_cmdbuf_header *header,
 				   int size)
@@ -939,19 +661,7 @@ static int vmw_cmdbuf_space_inline(struct vmw_cmdbuf_man *man,
 	return 0;
 }
 
-/**
- * vmw_cmdbuf_alloc - Allocate a command buffer header complete with
- * command buffer space.
- *
- * @man: The command buffer manager.
- * @size: The requested size of the buffer space.
- * @interruptible: Whether to sleep interruptible while waiting for space.
- * @p_header: points to a header pointer to populate on successful return.
- *
- * Returns a pointer to command buffer space if successful. Otherwise
- * returns an error pointer. The header pointer returned in @p_header should
- * be used for upcoming calls to vmw_cmdbuf_reserve() and vmw_cmdbuf_commit().
- */
+ 
 void *vmw_cmdbuf_alloc(struct vmw_cmdbuf_man *man,
 		       size_t size, bool interruptible,
 		       struct vmw_cmdbuf_header **p_header)
@@ -983,18 +693,7 @@ void *vmw_cmdbuf_alloc(struct vmw_cmdbuf_man *man,
 	return header->cmd;
 }
 
-/**
- * vmw_cmdbuf_reserve_cur - Reserve space for commands in the current
- * command buffer.
- *
- * @man: The command buffer manager.
- * @size: The requested size of the commands.
- * @ctx_id: The context id if any. Otherwise set to SVGA3D_REG_INVALID.
- * @interruptible: Whether to sleep interruptible while waiting for space.
- *
- * Returns a pointer to command buffer space if successful. Otherwise
- * returns an error pointer.
- */
+ 
 static void *vmw_cmdbuf_reserve_cur(struct vmw_cmdbuf_man *man,
 				    size_t size,
 				    int ctx_id,
@@ -1034,13 +733,7 @@ static void *vmw_cmdbuf_reserve_cur(struct vmw_cmdbuf_man *man,
 	return (void *) (man->cur->cmd + man->cur_pos);
 }
 
-/**
- * vmw_cmdbuf_commit_cur - Commit commands in the current command buffer.
- *
- * @man: The command buffer manager.
- * @size: The size of the commands actually written.
- * @flush: Whether to flush the command buffer immediately.
- */
+ 
 static void vmw_cmdbuf_commit_cur(struct vmw_cmdbuf_man *man,
 				  size_t size, bool flush)
 {
@@ -1057,19 +750,7 @@ static void vmw_cmdbuf_commit_cur(struct vmw_cmdbuf_man *man,
 	vmw_cmdbuf_cur_unlock(man);
 }
 
-/**
- * vmw_cmdbuf_reserve - Reserve space for commands in a command buffer.
- *
- * @man: The command buffer manager.
- * @size: The requested size of the commands.
- * @ctx_id: The context id if any. Otherwise set to SVGA3D_REG_INVALID.
- * @interruptible: Whether to sleep interruptible while waiting for space.
- * @header: Header of the command buffer. NULL if the current command buffer
- * should be used.
- *
- * Returns a pointer to command buffer space if successful. Otherwise
- * returns an error pointer.
- */
+ 
 void *vmw_cmdbuf_reserve(struct vmw_cmdbuf_man *man, size_t size,
 			 int ctx_id, bool interruptible,
 			 struct vmw_cmdbuf_header *header)
@@ -1089,15 +770,7 @@ void *vmw_cmdbuf_reserve(struct vmw_cmdbuf_man *man, size_t size,
 	return header->cmd;
 }
 
-/**
- * vmw_cmdbuf_commit - Commit commands in a command buffer.
- *
- * @man: The command buffer manager.
- * @size: The size of the commands actually written.
- * @header: Header of the command buffer. NULL if the current command buffer
- * should be used.
- * @flush: Whether to flush the command buffer immediately.
- */
+ 
 void vmw_cmdbuf_commit(struct vmw_cmdbuf_man *man, size_t size,
 		       struct vmw_cmdbuf_header *header, bool flush)
 {
@@ -1119,15 +792,7 @@ void vmw_cmdbuf_commit(struct vmw_cmdbuf_man *man, size_t size,
 }
 
 
-/**
- * vmw_cmdbuf_send_device_command - Send a command through the device context.
- *
- * @man: The command buffer manager.
- * @command: Pointer to the command to send.
- * @size: Size of the command.
- *
- * Synchronously sends a device context command.
- */
+ 
 static int vmw_cmdbuf_send_device_command(struct vmw_cmdbuf_man *man,
 					  const void *command,
 					  size_t size)
@@ -1156,15 +821,7 @@ static int vmw_cmdbuf_send_device_command(struct vmw_cmdbuf_man *man,
 	return 0;
 }
 
-/**
- * vmw_cmdbuf_preempt - Send a preempt command through the device
- * context.
- *
- * @man: The command buffer manager.
- * @context: Device context to pass command through.
- *
- * Synchronously sends a preempt command.
- */
+ 
 static int vmw_cmdbuf_preempt(struct vmw_cmdbuf_man *man, u32 context)
 {
 	struct {
@@ -1180,16 +837,7 @@ static int vmw_cmdbuf_preempt(struct vmw_cmdbuf_man *man, u32 context)
 }
 
 
-/**
- * vmw_cmdbuf_startstop - Send a start / stop command through the device
- * context.
- *
- * @man: The command buffer manager.
- * @context: Device context to start/stop.
- * @enable: Whether to enable or disable the context.
- *
- * Synchronously sends a device start / stop context command.
- */
+ 
 static int vmw_cmdbuf_startstop(struct vmw_cmdbuf_man *man, u32 context,
 				bool enable)
 {
@@ -1205,18 +853,7 @@ static int vmw_cmdbuf_startstop(struct vmw_cmdbuf_man *man, u32 context,
 	return vmw_cmdbuf_send_device_command(man, &cmd, sizeof(cmd));
 }
 
-/**
- * vmw_cmdbuf_set_pool_size - Set command buffer manager sizes
- *
- * @man: The command buffer manager.
- * @size: The size of the main space pool.
- *
- * Set the size and allocate the main command buffer space pool.
- * If successful, this enables large command submissions.
- * Note that this function requires that rudimentary command
- * submission is already available and that the MOB memory manager is alive.
- * Returns 0 on success. Negative error code on failure.
- */
+ 
 int vmw_cmdbuf_set_pool_size(struct vmw_cmdbuf_man *man, size_t size)
 {
 	struct vmw_private *dev_priv = man->dev_priv;
@@ -1225,7 +862,7 @@ int vmw_cmdbuf_set_pool_size(struct vmw_cmdbuf_man *man, size_t size)
 	if (man->has_pool)
 		return -EINVAL;
 
-	/* First, try to allocate a huge chunk of DMA memory */
+	 
 	size = PAGE_ALIGN(size);
 	man->map = dma_alloc_coherent(dev_priv->drm.dev, size,
 				      &man->handle, GFP_KERNEL);
@@ -1239,12 +876,7 @@ int vmw_cmdbuf_set_pool_size(struct vmw_cmdbuf_man *man, size_t size)
 			.size = size,
 			.pin = true
 		};
-		/*
-		 * DMA memory failed. If we can have command buffers in a
-		 * MOB, try to use that instead. Note that this will
-		 * actually call into the already enabled manager, when
-		 * binding the MOB.
-		 */
+		 
 		if (!(dev_priv->capabilities & SVGA_CAP_DX) ||
 		    !dev_priv->has_mob)
 			return -ENOMEM;
@@ -1262,12 +894,7 @@ int vmw_cmdbuf_set_pool_size(struct vmw_cmdbuf_man *man, size_t size)
 
 	man->has_pool = true;
 
-	/*
-	 * For now, set the default size to VMW_CMDBUF_INLINE_SIZE to
-	 * prevent deadlocks from happening when vmw_cmdbuf_space_pool()
-	 * needs to wait for space and we block on further command
-	 * submissions to be able to free up space.
-	 */
+	 
 	man->default_size = VMW_CMDBUF_INLINE_SIZE;
 	drm_info(&dev_priv->drm,
 		 "Using command buffers with %s pool.\n",
@@ -1276,16 +903,7 @@ int vmw_cmdbuf_set_pool_size(struct vmw_cmdbuf_man *man, size_t size)
 	return 0;
 }
 
-/**
- * vmw_cmdbuf_man_create: Create a command buffer manager and enable it for
- * inline command buffer submissions only.
- *
- * @dev_priv: Pointer to device private structure.
- *
- * Returns a pointer to a cummand buffer manager to success or error pointer
- * on failure. The command buffer manager will be enabled for submissions of
- * size VMW_CMDBUF_INLINE_SIZE only.
- */
+ 
 struct vmw_cmdbuf_man *vmw_cmdbuf_man_create(struct vmw_private *dev_priv)
 {
 	struct vmw_cmdbuf_man *man;
@@ -1353,17 +971,7 @@ out_no_pool:
 	return ERR_PTR(ret);
 }
 
-/**
- * vmw_cmdbuf_remove_pool - Take down the main buffer space pool.
- *
- * @man: Pointer to a command buffer manager.
- *
- * This function removes the main buffer space pool, and should be called
- * before MOB memory management is removed. When this function has been called,
- * only small command buffer submissions of size VMW_CMDBUF_INLINE_SIZE or
- * less are allowed, and the default size of the command buffer for small kernel
- * submissions is also set to this size.
- */
+ 
 void vmw_cmdbuf_remove_pool(struct vmw_cmdbuf_man *man)
 {
 	if (!man->has_pool)
@@ -1379,13 +987,7 @@ void vmw_cmdbuf_remove_pool(struct vmw_cmdbuf_man *man)
 				  man->size, man->map, man->handle);
 }
 
-/**
- * vmw_cmdbuf_man_destroy - Take down a command buffer manager.
- *
- * @man: Pointer to a command buffer manager.
- *
- * This function idles and then destroys a command buffer manager.
- */
+ 
 void vmw_cmdbuf_man_destroy(struct vmw_cmdbuf_man *man)
 {
 	WARN_ON_ONCE(man->has_pool);

@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2018 Facebook
+
+
 
 #define _GNU_SOURCE
 
@@ -62,20 +62,20 @@ char bpf_log_buf[BPF_LOG_BUF_SIZE];
 
 struct sock_addr_test {
 	const char *descr;
-	/* BPF prog properties */
+	 
 	load_fn loadfn;
 	enum bpf_attach_type expected_attach_type;
 	enum bpf_attach_type attach_type;
-	/* Socket properties */
+	 
 	int domain;
 	int type;
-	/* IP:port pairs for BPF prog to override */
+	 
 	const char *requested_ip;
 	unsigned short requested_port;
 	const char *expected_ip;
 	unsigned short expected_port;
 	const char *expected_src_ip;
-	/* Expected test result */
+	 
 	enum {
 		LOAD_REJECT,
 		ATTACH_REJECT,
@@ -104,7 +104,7 @@ static int sendmsg6_rw_v4mapped_prog_load(const struct sock_addr_test *test);
 static int sendmsg6_rw_wildcard_prog_load(const struct sock_addr_test *test);
 
 static struct sock_addr_test tests[] = {
-	/* bind */
+	 
 	{
 		"bind4: load prog with wrong expected attach type",
 		bind4_prog_load,
@@ -218,7 +218,7 @@ static struct sock_addr_test tests[] = {
 		SUCCESS,
 	},
 
-	/* connect */
+	 
 	{
 		"connect4: load prog with wrong expected attach type",
 		connect4_prog_load,
@@ -332,7 +332,7 @@ static struct sock_addr_test tests[] = {
 		SUCCESS,
 	},
 
-	/* sendmsg */
+	 
 	{
 		"sendmsg4: load prog with wrong expected attach type",
 		sendmsg4_rw_asm_prog_load,
@@ -516,7 +516,7 @@ static struct sock_addr_test tests[] = {
 		SYSCALL_EPERM,
 	},
 
-	/* recvmsg */
+	 
 	{
 		"recvmsg4: return code ok",
 		recvmsg_allow_prog_load,
@@ -718,7 +718,7 @@ static int xmsg_ret_only_prog_load(const struct sock_addr_test *test,
 				   int32_t rc)
 {
 	struct bpf_insn insns[] = {
-		/* return rc */
+		 
 		BPF_MOV64_IMM(BPF_REG_0, rc),
 		BPF_EXIT_INSN(),
 	};
@@ -727,22 +727,22 @@ static int xmsg_ret_only_prog_load(const struct sock_addr_test *test,
 
 static int sendmsg_allow_prog_load(const struct sock_addr_test *test)
 {
-	return xmsg_ret_only_prog_load(test, /*rc*/ 1);
+	return xmsg_ret_only_prog_load(test,   1);
 }
 
 static int sendmsg_deny_prog_load(const struct sock_addr_test *test)
 {
-	return xmsg_ret_only_prog_load(test, /*rc*/ 0);
+	return xmsg_ret_only_prog_load(test,   0);
 }
 
 static int recvmsg_allow_prog_load(const struct sock_addr_test *test)
 {
-	return xmsg_ret_only_prog_load(test, /*rc*/ 1);
+	return xmsg_ret_only_prog_load(test,   1);
 }
 
 static int recvmsg_deny_prog_load(const struct sock_addr_test *test)
 {
-	return xmsg_ret_only_prog_load(test, /*rc*/ 0);
+	return xmsg_ret_only_prog_load(test,   0);
 }
 
 static int sendmsg4_rw_asm_prog_load(const struct sock_addr_test *test)
@@ -763,33 +763,33 @@ static int sendmsg4_rw_asm_prog_load(const struct sock_addr_test *test)
 	struct bpf_insn insns[] = {
 		BPF_MOV64_REG(BPF_REG_6, BPF_REG_1),
 
-		/* if (sk.family == AF_INET && */
+		 
 		BPF_LDX_MEM(BPF_W, BPF_REG_7, BPF_REG_6,
 			    offsetof(struct bpf_sock_addr, family)),
 		BPF_JMP_IMM(BPF_JNE, BPF_REG_7, AF_INET, 8),
 
-		/*     sk.type == SOCK_DGRAM)  { */
+		 
 		BPF_LDX_MEM(BPF_W, BPF_REG_7, BPF_REG_6,
 			    offsetof(struct bpf_sock_addr, type)),
 		BPF_JMP_IMM(BPF_JNE, BPF_REG_7, SOCK_DGRAM, 6),
 
-		/*      msg_src_ip4 = src4_rw_ip */
+		 
 		BPF_MOV32_IMM(BPF_REG_7, src4_rw_ip.s_addr),
 		BPF_STX_MEM(BPF_W, BPF_REG_6, BPF_REG_7,
 			    offsetof(struct bpf_sock_addr, msg_src_ip4)),
 
-		/*      user_ip4 = dst4_rw_addr.sin_addr */
+		 
 		BPF_MOV32_IMM(BPF_REG_7, dst4_rw_addr.sin_addr.s_addr),
 		BPF_STX_MEM(BPF_W, BPF_REG_6, BPF_REG_7,
 			    offsetof(struct bpf_sock_addr, user_ip4)),
 
-		/*      user_port = dst4_rw_addr.sin_port */
+		 
 		BPF_MOV32_IMM(BPF_REG_7, dst4_rw_addr.sin_port),
 		BPF_STX_MEM(BPF_W, BPF_REG_6, BPF_REG_7,
 			    offsetof(struct bpf_sock_addr, user_port)),
-		/* } */
+		 
 
-		/* return 1 */
+		 
 		BPF_MOV64_IMM(BPF_REG_0, 1),
 		BPF_EXIT_INSN(),
 	};
@@ -826,7 +826,7 @@ static int sendmsg6_rw_dst_asm_prog_load(const struct sock_addr_test *test,
 	struct bpf_insn insns[] = {
 		BPF_MOV64_REG(BPF_REG_6, BPF_REG_1),
 
-		/* if (sk.family == AF_INET6) { */
+		 
 		BPF_LDX_MEM(BPF_W, BPF_REG_7, BPF_REG_6,
 			    offsetof(struct bpf_sock_addr, family)),
 		BPF_JMP_IMM(BPF_JNE, BPF_REG_7, AF_INET6, 18),
@@ -845,14 +845,14 @@ static int sendmsg6_rw_dst_asm_prog_load(const struct sock_addr_test *test,
 		STORE_IPV6(msg_src_ip6, src6_rw_ip.s6_addr32),
 		STORE_IPV6(user_ip6, dst6_rw_addr.sin6_addr.s6_addr32),
 
-		/*      user_port = dst6_rw_addr.sin6_port */
+		 
 		BPF_MOV32_IMM(BPF_REG_7, dst6_rw_addr.sin6_port),
 		BPF_STX_MEM(BPF_W, BPF_REG_6, BPF_REG_7,
 			    offsetof(struct bpf_sock_addr, user_port)),
 
-		/* } */
+		 
 
-		/* return 1 */
+		 
 		BPF_MOV64_IMM(BPF_REG_0, 1),
 		BPF_EXIT_INSN(),
 	};
@@ -925,17 +925,17 @@ static int cmp_sock_addr(info_fn fn, int sock1,
 
 static int cmp_local_ip(int sock1, const struct sockaddr_storage *addr2)
 {
-	return cmp_sock_addr(getsockname, sock1, addr2, /*cmp_port*/ 0);
+	return cmp_sock_addr(getsockname, sock1, addr2,   0);
 }
 
 static int cmp_local_addr(int sock1, const struct sockaddr_storage *addr2)
 {
-	return cmp_sock_addr(getsockname, sock1, addr2, /*cmp_port*/ 1);
+	return cmp_sock_addr(getsockname, sock1, addr2,   1);
 }
 
 static int cmp_peer_addr(int sock1, const struct sockaddr_storage *addr2)
 {
-	return cmp_sock_addr(getpeername, sock1, addr2, /*cmp_port*/ 1);
+	return cmp_sock_addr(getpeername, sock1, addr2,   1);
 }
 
 static int start_server(int type, const struct sockaddr_storage *addr,
@@ -1105,7 +1105,7 @@ static int fastconnect_to_server(const struct sockaddr_storage *addr,
 {
 	int sendmsg_err;
 
-	return sendmsg_to_server(SOCK_STREAM, addr, addr_len, /*set_cmsg*/0,
+	return sendmsg_to_server(SOCK_STREAM, addr, addr_len,  0,
 				 MSG_FASTOPEN, &sendmsg_err);
 }
 
@@ -1184,7 +1184,7 @@ static int run_bind_test_case(const struct sock_addr_test *test)
 	if (cmp_local_addr(servfd, &expected_addr))
 		goto err;
 
-	/* Try to connect to server just in case */
+	 
 	clientfd = connect_to_server(test->type, &expected_addr, addr_len);
 	if (clientfd == -1)
 		goto err;
@@ -1212,7 +1212,7 @@ static int run_connect_test_case(const struct sock_addr_test *test)
 		       &expected_src_addr))
 		goto err;
 
-	/* Prepare server to connect to */
+	 
 	servfd = start_server(test->type, &expected_addr, addr_len);
 	if (servfd == -1)
 		goto err;
@@ -1221,7 +1221,7 @@ static int run_connect_test_case(const struct sock_addr_test *test)
 	if (clientfd == -1)
 		goto err;
 
-	/* Make sure src and dst addrs were overridden properly */
+	 
 	if (cmp_peer_addr(clientfd, &expected_addr))
 		goto err;
 
@@ -1229,12 +1229,12 @@ static int run_connect_test_case(const struct sock_addr_test *test)
 		goto err;
 
 	if (test->type == SOCK_STREAM) {
-		/* Test TCP Fast Open scenario */
+		 
 		clientfd = fastconnect_to_server(&requested_addr, addr_len);
 		if (clientfd == -1)
 			goto err;
 
-		/* Make sure src and dst addrs were overridden properly */
+		 
 		if (cmp_peer_addr(clientfd, &expected_addr))
 			goto err;
 
@@ -1269,7 +1269,7 @@ static int run_xmsg_test_case(const struct sock_addr_test *test, int max_cmsg)
 	if (init_addrs(test, &sendmsg_addr, &server_addr, &expected_addr))
 		goto err;
 
-	/* Prepare server to sendmsg to */
+	 
 	servfd = start_server(test->type, &server_addr, addr_len);
 	if (servfd == -1)
 		goto err;
@@ -1279,29 +1279,18 @@ static int run_xmsg_test_case(const struct sock_addr_test *test, int max_cmsg)
 			close(clientfd);
 
 		clientfd = sendmsg_to_server(test->type, &sendmsg_addr,
-					     addr_len, set_cmsg, /*flags*/0,
+					     addr_len, set_cmsg,  0,
 					     &err);
 		if (err)
 			goto out;
 		else if (clientfd == -1)
 			goto err;
 
-		/* Try to receive message on server instead of using
-		 * getpeername(2) on client socket, to check that client's
-		 * destination address was rewritten properly, since
-		 * getpeername(2) doesn't work with unconnected datagram
-		 * sockets.
-		 *
-		 * Get source address from recvmsg(2) as well to make sure
-		 * source was rewritten properly: getsockname(2) can't be used
-		 * since socket is unconnected and source defined for one
-		 * specific packet may differ from the one used by default and
-		 * returned by getsockname(2).
-		 */
+		 
 		if (recvmsg_from_client(servfd, &recvmsg_addr) == -1)
 			goto err;
 
-		if (cmp_addr(&recvmsg_addr, &expected_addr, /*cmp_port*/0))
+		if (cmp_addr(&recvmsg_addr, &expected_addr,  0))
 			goto err;
 	}
 
@@ -1330,7 +1319,7 @@ static int run_test_case(int cgfd, const struct sock_addr_test *test)
 	err = bpf_prog_attach(progfd, cgfd, test->attach_type,
 			      BPF_F_ALLOW_OVERRIDE);
 	if (test->expected_result == ATTACH_REJECT && err) {
-		err = 0; /* error was expected, reset it */
+		err = 0;  
 		goto out;
 	} else if (test->expected_result == ATTACH_REJECT || err) {
 		goto err;
@@ -1361,12 +1350,12 @@ static int run_test_case(int cgfd, const struct sock_addr_test *test)
 	}
 
 	if (test->expected_result == SYSCALL_EPERM && err == EPERM) {
-		err = 0; /* error was expected, reset it */
+		err = 0;  
 		goto out;
 	}
 
 	if (test->expected_result == SYSCALL_ENOTSUPP && err == ENOTSUPP) {
-		err = 0; /* error was expected, reset it */
+		err = 0;  
 		goto out;
 	}
 
@@ -1377,7 +1366,7 @@ static int run_test_case(int cgfd, const struct sock_addr_test *test)
 err:
 	err = -1;
 out:
-	/* Detaching w/o checking return code: best effort attempt. */
+	 
 	if (progfd != -1)
 		bpf_prog_detach(cgfd, test->attach_type);
 	close(progfd);
@@ -1417,7 +1406,7 @@ int main(int argc, char **argv)
 	if (cgfd < 0)
 		goto err;
 
-	/* Use libbpf 1.0 API mode */
+	 
 	libbpf_set_strict_mode(LIBBPF_STRICT_ALL);
 
 	if (run_tests(cgfd))

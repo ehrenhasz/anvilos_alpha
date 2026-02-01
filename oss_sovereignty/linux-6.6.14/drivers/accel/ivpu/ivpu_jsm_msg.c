@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2020-2023 Intel Corporation
- */
+
+ 
 
 #include "ivpu_drv.h"
 #include "ivpu_ipc.h"

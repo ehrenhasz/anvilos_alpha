@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2018 Synopsys, Inc. and/or its affiliates.
- *
- * Author: Vitor Soares <vitor.soares@synopsys.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/mod_devicetable.h>
@@ -18,7 +14,7 @@
 static const struct i3c_device_id st_lsm6dsx_i3c_ids[] = {
 	I3C_DEVICE(0x0104, 0x006C, (void *)ST_LSM6DSO_ID),
 	I3C_DEVICE(0x0104, 0x006B, (void *)ST_LSM6DSR_ID),
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(i3c, st_lsm6dsx_i3c_ids);
 

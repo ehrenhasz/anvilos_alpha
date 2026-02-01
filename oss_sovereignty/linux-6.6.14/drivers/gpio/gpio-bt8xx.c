@@ -1,35 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
 
-    bt8xx GPIO abuser
-
-    Copyright (C) 2008 Michael Buesch <m@bues.ch>
-
-    Please do _only_ contact the people listed _above_ with issues related to this driver.
-    All the other people listed below are not related to this driver. Their names
-    are only here, because this driver is derived from the bt848 driver.
-
-
-    Derived from the bt848 driver:
-
-    Copyright (C) 1996,97,98 Ralph  Metzler
-			   & Marcus Metzler
-    (c) 1999-2002 Gerd Knorr
-
-    some v4l2 code lines are taken from Justin's bttv2 driver which is
-    (c) 2000 Justin Schoeman
-
-    V4L1 removal from:
-    (c) 2005-2006 Nickolay V. Shmyrev
-
-    Fixes to be fully V4L2 compliant by
-    (c) 2006 Mauro Carvalho Chehab
-
-    Cropping and overscan support
-    Copyright (C) 2005, 2006 Michael H. Schimek
-    Sponsored by OPQ Systems AB
-
-*/
+ 
 
 #include <linux/module.h>
 #include <linux/pci.h>
@@ -37,11 +7,11 @@
 #include <linux/gpio/driver.h>
 #include <linux/slab.h>
 
-/* Steal the hardware definitions from the bttv driver. */
+ 
 #include "../media/pci/bt8xx/bt848.h"
 
 
-#define BT8XXGPIO_NR_GPIOS		24 /* We have 24 GPIO pins */
+#define BT8XXGPIO_NR_GPIOS		24  
 
 
 struct bt8xxgpio {
@@ -61,7 +31,7 @@ struct bt8xxgpio {
 #define bgread(adr)		readl(bg->mmio+(adr))
 
 
-static int modparam_gpiobase = -1/* dynamic */;
+static int modparam_gpiobase = -1 ;
 module_param_named(gpiobase, modparam_gpiobase, int, 0444);
 MODULE_PARM_DESC(gpiobase, "The GPIO number base. -1 means dynamic, which is the default.");
 
@@ -196,10 +166,10 @@ static int bt8xxgpio_probe(struct pci_dev *dev,
 		goto err_disable;
 	}
 
-	/* Disable interrupts */
+	 
 	bgwrite(0, BT848_INT_MASK);
 
-	/* gpio init */
+	 
 	bgwrite(0, BT848_GPIO_DMA_CTL);
 	bgwrite(0, BT848_GPIO_REG_INP);
 	bgwrite(0, BT848_GPIO_OUT_EN);
@@ -284,7 +254,7 @@ static int bt8xxgpio_resume(struct pci_dev *pdev)
 #else
 #define bt8xxgpio_suspend NULL
 #define bt8xxgpio_resume NULL
-#endif /* CONFIG_PM */
+#endif  
 
 static const struct pci_device_id bt8xxgpio_pci_tbl[] = {
 	{ PCI_DEVICE(PCI_VENDOR_ID_BROOKTREE, PCI_DEVICE_ID_BT848) },

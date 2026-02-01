@@ -1,6 +1,6 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-/* Copyright (C) 2018 Netronome Systems, Inc */
-/* Copyright (C) 2021 Corigine, Inc */
+
+ 
+ 
 
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -15,15 +15,15 @@
 #include "../nfp_net.h"
 #include "crypto.h"
 
-#define NFP_NET_IPSEC_MAX_SA_CNT  (16 * 1024) /* Firmware support a maximum of 16K SA offload */
+#define NFP_NET_IPSEC_MAX_SA_CNT  (16 * 1024)  
 
-/* IPsec config message cmd codes */
+ 
 enum nfp_ipsec_cfg_mssg_cmd_codes {
-	NFP_IPSEC_CFG_MSSG_ADD_SA,	 /* Add a new SA */
-	NFP_IPSEC_CFG_MSSG_INV_SA	 /* Invalidate an existing SA */
+	NFP_IPSEC_CFG_MSSG_ADD_SA,	  
+	NFP_IPSEC_CFG_MSSG_INV_SA	  
 };
 
-/* IPsec config message response codes */
+ 
 enum nfp_ipsec_cfg_mssg_rsp_codes {
 	NFP_IPSEC_CFG_MSSG_OK,
 	NFP_IPSEC_CFG_MSSG_FAILED,
@@ -33,19 +33,19 @@ enum nfp_ipsec_cfg_mssg_rsp_codes {
 	NFP_IPSEC_CFG_MSSG_SA_INVALID_CMD
 };
 
-/* Protocol */
+ 
 enum nfp_ipsec_sa_prot {
 	NFP_IPSEC_PROTOCOL_AH = 0,
 	NFP_IPSEC_PROTOCOL_ESP = 1
 };
 
-/* Mode */
+ 
 enum nfp_ipsec_sa_mode {
 	NFP_IPSEC_PROTMODE_TRANSPORT = 0,
 	NFP_IPSEC_PROTMODE_TUNNEL = 1
 };
 
-/* Cipher types */
+ 
 enum nfp_ipsec_sa_cipher {
 	NFP_IPSEC_CIPHER_NULL,
 	NFP_IPSEC_CIPHER_3DES,
@@ -58,7 +58,7 @@ enum nfp_ipsec_sa_cipher {
 	NFP_IPSEC_CIPHER_CHACHA20
 };
 
-/* Cipher modes */
+ 
 enum nfp_ipsec_sa_cipher_mode {
 	NFP_IPSEC_CIMODE_ECB,
 	NFP_IPSEC_CIMODE_CBC,
@@ -67,7 +67,7 @@ enum nfp_ipsec_sa_cipher_mode {
 	NFP_IPSEC_CIMODE_CTR
 };
 
-/* Hash types */
+ 
 enum nfp_ipsec_sa_hash_type {
 	NFP_IPSEC_HASH_NONE,
 	NFP_IPSEC_HASH_MD5_96,
@@ -84,45 +84,45 @@ enum nfp_ipsec_sa_hash_type {
 	NFP_IPSEC_HASH_POLY1305_128
 };
 
-/* IPSEC_CFG_MSSG_ADD_SA */
+ 
 struct nfp_ipsec_cfg_add_sa {
-	u32 ciph_key[8];		  /* Cipher Key */
+	u32 ciph_key[8];		   
 	union {
-		u32 auth_key[16];	  /* Authentication Key */
-		struct nfp_ipsec_aesgcm { /* AES-GCM-ESP fields */
-			u32 salt;	  /* Initialized with SA */
+		u32 auth_key[16];	   
+		struct nfp_ipsec_aesgcm {  
+			u32 salt;	   
 			u32 resv[15];
 		} aesgcm_fields;
 	};
 	struct sa_ctrl_word {
-		uint32_t hash   :4;	  /* From nfp_ipsec_sa_hash_type */
-		uint32_t cimode :4;	  /* From nfp_ipsec_sa_cipher_mode */
-		uint32_t cipher :4;	  /* From nfp_ipsec_sa_cipher */
-		uint32_t mode   :2;	  /* From nfp_ipsec_sa_mode */
-		uint32_t proto  :2;	  /* From nfp_ipsec_sa_prot */
-		uint32_t dir :1;	  /* SA direction */
+		uint32_t hash   :4;	   
+		uint32_t cimode :4;	   
+		uint32_t cipher :4;	   
+		uint32_t mode   :2;	   
+		uint32_t proto  :2;	   
+		uint32_t dir :1;	   
 		uint32_t resv0 :12;
-		uint32_t encap_dsbl:1;	  /* Encap/Decap disable */
-		uint32_t resv1 :2;	  /* Must be set to 0 */
+		uint32_t encap_dsbl:1;	   
+		uint32_t resv1 :2;	   
 	} ctrl_word;
-	u32 spi;			  /* SPI Value */
-	uint32_t pmtu_limit :16;          /* PMTU Limit */
+	u32 spi;			   
+	uint32_t pmtu_limit :16;           
 	uint32_t resv0 :5;
-	uint32_t ipv6       :1;		  /* Outbound IPv6 addr format */
+	uint32_t ipv6       :1;		   
 	uint32_t resv1	 :10;
 	u32 resv2[2];
-	u32 src_ip[4];			  /* Src IP addr */
-	u32 dst_ip[4];			  /* Dst IP addr */
+	u32 src_ip[4];			   
+	u32 dst_ip[4];			   
 	u32 resv3[6];
 };
 
-/* IPSEC_CFG_MSSG */
+ 
 struct nfp_ipsec_cfg_mssg {
 	union {
 		struct{
-			uint32_t cmd:16;     /* One of nfp_ipsec_cfg_mssg_cmd_codes */
-			uint32_t rsp:16;     /* One of nfp_ipsec_cfg_mssg_rsp_codes */
-			uint32_t sa_idx:16;  /* SA table index */
+			uint32_t cmd:16;      
+			uint32_t rsp:16;      
+			uint32_t sa_idx:16;   
 			uint32_t spare0:16;
 			struct nfp_ipsec_cfg_add_sa cfg_add_sa;
 		};
@@ -150,7 +150,7 @@ static int nfp_net_ipsec_cfg(struct nfp_net *nn, struct nfp_mbox_amsg_entry *ent
 		return ret;
 	}
 
-	/* For now we always read the whole message response back */
+	 
 	for (i = 0; i < msg_size; i++)
 		msg->raw[i] = nn_readl(nn, offset + 4 * i);
 
@@ -279,7 +279,7 @@ static int nfp_net_xfrm_add_state(struct xfrm_state *x,
 	nn = netdev_priv(netdev);
 	cfg = &msg.cfg_add_sa;
 
-	/* General */
+	 
 	switch (x->props.mode) {
 	case XFRM_MODE_TUNNEL:
 		cfg->ctrl_word.mode = NFP_IPSEC_PROTMODE_TUNNEL;
@@ -316,7 +316,7 @@ static int nfp_net_xfrm_add_state(struct xfrm_state *x,
 
 	cfg->spi = ntohl(x->id.spi);
 
-	/* Hash/Authentication */
+	 
 	if (x->aalg)
 		trunc_len = x->aalg->alg_trunc_len;
 	else
@@ -375,7 +375,7 @@ static int nfp_net_xfrm_add_state(struct xfrm_state *x,
 							      sizeof(cfg->auth_key[0]) * i);
 	}
 
-	/* Encryption */
+	 
 	switch (x->props.ealgo) {
 	case SADB_EALG_NONE:
 	case SADB_EALG_NULL:
@@ -404,7 +404,7 @@ static int nfp_net_xfrm_add_state(struct xfrm_state *x,
 		cfg->ctrl_word.cimode = NFP_IPSEC_CIMODE_CTR;
 		cfg->ctrl_word.hash = NFP_IPSEC_HASH_GF128_128;
 
-		/* Aead->alg_key_len includes 32-bit salt */
+		 
 		if (set_aes_keylen(cfg, x->props.ealgo, x->aead->alg_key_len - 32)) {
 			NL_SET_ERR_MSG_MOD(extack, "Unsupported AES key length");
 			return -EINVAL;
@@ -441,7 +441,7 @@ static int nfp_net_xfrm_add_state(struct xfrm_state *x,
 			cfg->ciph_key[i] = get_unaligned_be32(x->aead->alg_key +
 							      sizeof(cfg->ciph_key[0]) * i);
 
-		/* Load up the salt */
+		 
 		cfg->aesgcm_fields.salt = get_unaligned_be32(x->aead->alg_key + key_len);
 	}
 
@@ -457,7 +457,7 @@ static int nfp_net_xfrm_add_state(struct xfrm_state *x,
 							      sizeof(cfg->ciph_key[0]) * i);
 	}
 
-	/* IP related info */
+	 
 	switch (x->props.family) {
 	case AF_INET:
 		cfg->ipv6 = 0;
@@ -476,14 +476,14 @@ static int nfp_net_xfrm_add_state(struct xfrm_state *x,
 		return -EINVAL;
 	}
 
-	/* Maximum nic IPsec code could handle. Other limits may apply. */
+	 
 	cfg->pmtu_limit = 0xffff;
 	cfg->ctrl_word.encap_dsbl = 1;
 
-	/* SA direction */
+	 
 	cfg->ctrl_word.dir = x->xso.dir;
 
-	/* Find unused SA data*/
+	 
 	err = xa_alloc(&nn->xa_ipsec, &saidx, x,
 		       XA_LIMIT(0, NFP_NET_IPSEC_MAX_SA_CNT - 1), GFP_KERNEL);
 	if (err < 0) {
@@ -491,7 +491,7 @@ static int nfp_net_xfrm_add_state(struct xfrm_state *x,
 		return err;
 	}
 
-	/* Allocate saidx and commit the SA */
+	 
 	msg.cmd = NFP_IPSEC_CFG_MSSG_ADD_SA;
 	msg.sa_idx = saidx;
 	err = nfp_net_sched_mbox_amsg_work(nn, NFP_NET_CFG_MBOX_CMD_IPSEC, &msg,
@@ -502,7 +502,7 @@ static int nfp_net_xfrm_add_state(struct xfrm_state *x,
 		return err;
 	}
 
-	/* 0 is invalid offload_handle for kernel */
+	 
 	x->xso.offload_handle = saidx + 1;
 	return 0;
 }
@@ -529,10 +529,10 @@ static void nfp_net_xfrm_del_state(struct xfrm_state *x)
 static bool nfp_net_ipsec_offload_ok(struct sk_buff *skb, struct xfrm_state *x)
 {
 	if (x->props.family == AF_INET)
-		/* Offload with IPv4 options is not supported yet */
+		 
 		return ip_hdr(skb)->ihl == 5;
 
-	/* Offload with IPv6 extension headers is not support yet */
+	 
 	return !(ipv6_ext_hdr(ipv6_hdr(skb)->nexthdr));
 }
 

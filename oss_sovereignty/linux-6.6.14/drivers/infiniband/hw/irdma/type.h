@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 or Linux-OpenIB */
-/* Copyright (c) 2015 - 2021 Intel Corporation */
+ 
+ 
 #ifndef IRDMA_TYPE_H
 #define IRDMA_TYPE_H
 #include "osdep.h"
@@ -102,7 +102,7 @@ enum irdma_qp_event_type {
 };
 
 enum irdma_hw_stats_index {
-	/* gen1 - 32-bit */
+	 
 	IRDMA_HW_STAT_INDEX_IP4RXDISCARD	= 0,
 	IRDMA_HW_STAT_INDEX_IP4RXTRUNC		= 1,
 	IRDMA_HW_STAT_INDEX_IP4TXNOROUTE	= 2,
@@ -113,7 +113,7 @@ enum irdma_hw_stats_index {
 	IRDMA_HW_STAT_INDEX_TCPRXOPTERR		= 7,
 	IRDMA_HW_STAT_INDEX_TCPRXPROTOERR	= 8,
 	IRDMA_HW_STAT_INDEX_RXVLANERR		= 9,
-		/* gen1 - 64-bit */
+		 
 	IRDMA_HW_STAT_INDEX_IP4RXOCTS		= 10,
 	IRDMA_HW_STAT_INDEX_IP4RXPKTS		= 11,
 	IRDMA_HW_STAT_INDEX_IP4RXFRAGS		= 12,
@@ -146,10 +146,10 @@ enum irdma_hw_stats_index {
 	IRDMA_HW_STAT_INDEX_IP6TXMCOCTS         = 39,
 	IRDMA_HW_STAT_INDEX_UDPRXPKTS           = 40,
 	IRDMA_HW_STAT_INDEX_UDPTXPKTS           = 41,
-	IRDMA_HW_STAT_INDEX_MAX_GEN_1           = 42, /* Must be same value as next entry */
-	/* gen2 - 64-bit */
+	IRDMA_HW_STAT_INDEX_MAX_GEN_1           = 42,  
+	 
 	IRDMA_HW_STAT_INDEX_RXNPECNMARKEDPKTS   = 42,
-	/* gen2 - 32-bit */
+	 
 	IRDMA_HW_STAT_INDEX_RXRPCNPHANDLED      = 43,
 	IRDMA_HW_STAT_INDEX_RXRPCNPIGNORED      = 44,
 	IRDMA_HW_STAT_INDEX_TXNPCNPSENT         = 45,
@@ -160,7 +160,7 @@ enum irdma_feature_type {
 	IRDMA_FEATURE_FW_INFO = 0,
 	IRDMA_HW_VERSION_INFO = 1,
 	IRDMA_QSETS_MAX       = 26,
-	IRDMA_MAX_FEATURES, /* Must be last entry */
+	IRDMA_MAX_FEATURES,  
 };
 
 enum irdma_sched_prio_type {
@@ -307,7 +307,7 @@ struct irdma_vsi_pestat {
 	struct timer_list stats_timer;
 	struct irdma_sc_vsi *vsi;
 	struct irdma_dev_hw_stats last_hw_stats;
-	spinlock_t lock; /* rdma stats lock */
+	spinlock_t lock;  
 };
 
 struct irdma_hw {
@@ -337,7 +337,7 @@ struct irdma_pfpdu {
 	u64 pmode_count;
 	struct irdma_sc_ah *ah;
 	struct irdma_puda_buf *ah_buf;
-	spinlock_t lock; /* fpdu processing lock */
+	spinlock_t lock;  
 	struct irdma_puda_buf *lastrcv_buf;
 };
 
@@ -415,7 +415,7 @@ struct irdma_sc_ceq {
 	struct irdma_sc_vsi *vsi;
 	struct irdma_sc_cq **reg_cq;
 	u32 reg_cq_size;
-	spinlock_t req_cq_lock; /* protect access to reg_cq array */
+	spinlock_t req_cq_lock;  
 	bool virtual_map:1;
 	bool tph_en:1;
 	bool itr_no_expire:1;
@@ -531,7 +531,7 @@ struct irdma_hmc_fpm_misc {
 
 struct irdma_qos {
 	struct list_head qplist;
-	struct mutex qos_mutex; /* protect QoS attributes per QoS level */
+	struct mutex qos_mutex;  
 	u64 lan_qos_handle;
 	u32 l2_sched_node_id;
 	u16 qs_handle;
@@ -574,8 +574,8 @@ struct irdma_sc_vsi {
 };
 
 struct irdma_sc_dev {
-	struct list_head cqp_cmd_head; /* head of the CQP command list */
-	spinlock_t cqp_lock; /* protect CQP list access */
+	struct list_head cqp_cmd_head;  
+	spinlock_t cqp_lock;  
 	bool stats_idx_array[IRDMA_MAX_STATS_COUNT_GEN_1];
 	struct irdma_dma_mem vf_fpm_query_buf[IRDMA_MAX_PE_ENA_VF_COUNT];
 	u64 fpm_query_buf_pa;
@@ -592,7 +592,7 @@ struct irdma_sc_dev {
 	u32 __iomem *ceq_itr_mask_db;
 	u32 __iomem *aeq_itr_mask_db;
 	u32 __iomem *hw_regs[IRDMA_MAX_REGS];
-	u32 ceq_itr;   /* Interrupt throttle, usecs between interrupts: 0 disabled. 2 - 8160 */
+	u32 ceq_itr;    
 	u64 hw_masks[IRDMA_MAX_MASKS];
 	u64 hw_shifts[IRDMA_MAX_SHIFTS];
 	const struct irdma_hw_stat_map *hw_stats_map;
@@ -608,7 +608,7 @@ struct irdma_sc_dev {
 	const struct irdma_irq_ops *irq_ops;
 	struct irdma_hmc_fpm_misc hmc_fpm_misc;
 	struct irdma_ws_node *ws_tree_root;
-	struct mutex ws_mutex; /* ws tree mutex */
+	struct mutex ws_mutex;  
 	u16 num_vfs;
 	u8 hmc_fn_id;
 	u8 vf_id;
@@ -890,10 +890,10 @@ struct irdma_tcp_offload_info {
 	u16 src_port;
 	u16 dst_port;
 	u32 dest_ip_addr[4];
-	//u32 dest_ip_addr0;
-	//u32 dest_ip_addr1;
-	//u32 dest_ip_addr2;
-	//u32 dest_ip_addr3;
+	
+	
+	
+	
 	u32 snd_mss;
 	u16 syn_rst_handling;
 	u16 vlan_tag;
@@ -1480,15 +1480,11 @@ struct cqp_cmds_info {
 __le64 *irdma_sc_cqp_get_next_send_wqe_idx(struct irdma_sc_cqp *cqp, u64 scratch,
 					   u32 *wqe_idx);
 
-/**
- * irdma_sc_cqp_get_next_send_wqe - get next wqe on cqp sq
- * @cqp: struct for cqp hw
- * @scratch: private data for CQP WQE
- */
+ 
 static inline __le64 *irdma_sc_cqp_get_next_send_wqe(struct irdma_sc_cqp *cqp, u64 scratch)
 {
 	u32 wqe_idx;
 
 	return irdma_sc_cqp_get_next_send_wqe_idx(cqp, scratch, &wqe_idx);
 }
-#endif /* IRDMA_TYPE_H */
+#endif  

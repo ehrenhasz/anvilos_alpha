@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2022 MediaTek Inc.
- * Copyright (c) 2022 BayLibre, SAS
- */
+
+ 
 #include <linux/delay.h>
 #include <linux/io.h>
 #include <linux/mfd/syscon.h>
@@ -19,7 +16,7 @@
 
 static void mtk_hdmi_ana_fifo_en(struct mtk_hdmi_phy *hdmi_phy)
 {
-	/* make data fifo writable for hdmi2.0 */
+	 
 	mtk_phy_set_bits(hdmi_phy->regs + HDMI_ANA_CTL, REG_ANA_HDMI20_FIFO_EN);
 }
 
@@ -30,9 +27,7 @@ mtk_phy_tmds_clk_ratio(struct mtk_hdmi_phy *hdmi_phy, bool enable)
 
 	mtk_hdmi_ana_fifo_en(hdmi_phy);
 
-	/* HDMI 2.0 specification, 3.4Gbps <= TMDS Bit Rate <= 6G,
-	 * clock bit ratio 1:40, under 3.4Gbps, clock bit ratio 1:10
-	 */
+	 
 	if (enable)
 		mtk_phy_update_field(regs + HDMI20_CLK_CFG, REG_TXC_DIV, 3);
 	else
@@ -47,7 +42,7 @@ static void mtk_hdmi_pll_sel_src(struct clk_hw *hw)
 	mtk_phy_clear_bits(regs + HDMI_CTL_3, REG_HDMITX_REF_XTAL_SEL);
 	mtk_phy_clear_bits(regs + HDMI_CTL_3, REG_HDMITX_REF_RESPLL_SEL);
 
-	/* DA_HDMITX21_REF_CK for TXPLL input source */
+	 
 	mtk_phy_clear_bits(regs + HDMI_1_CFG_10, RG_HDMITXPLL_REF_CK_SEL);
 }
 
@@ -101,14 +96,14 @@ static int mtk_hdmi_pll_set_hw(struct clk_hw *hw, u8 prediv,
 	mtk_phy_update_field(regs + HDMI_1_CFG_6, RG_HDMITX21_INTR_CAL, 0x11);
 	mtk_phy_set_bits(regs + HDMI_1_PLL_CFG_2, RG_HDMITXPLL_PWD);
 
-	/* TXPOSDIV */
+	 
 	txposdiv_value = ilog2(txposdiv);
 
 	mtk_phy_update_field(regs + HDMI_1_CFG_6, RG_HDMITX21_TX_POSDIV, txposdiv_value);
 	mtk_phy_set_bits(regs + HDMI_1_CFG_6, RG_HDMITX21_TX_POSDIV_EN);
 	mtk_phy_clear_bits(regs + HDMI_1_CFG_6, RG_HDMITX21_FRL_EN);
 
-	/* TXPREDIV */
+	 
 	switch (txprediv) {
 	case 2:
 		div3_ctrl_value = 0x0;
@@ -133,7 +128,7 @@ static int mtk_hdmi_pll_set_hw(struct clk_hw *hw, u8 prediv,
 	mtk_phy_update_field(regs + HDMI_1_PLL_CFG_4, RG_HDMITXPLL_POSDIV_DIV3_CTRL, div3_ctrl_value);
 	mtk_phy_update_field(regs + HDMI_1_PLL_CFG_4, RG_HDMITXPLL_POSDIV, posdiv_vallue);
 
-	/* POSDIV1 */
+	 
 	switch (posdiv1) {
 	case 5:
 		div_ctrl_value = 0x0;
@@ -153,10 +148,10 @@ static int mtk_hdmi_pll_set_hw(struct clk_hw *hw, u8 prediv,
 
 	mtk_phy_update_field(regs + HDMI_1_PLL_CFG_4, RG_HDMITXPLL_DIV_CTRL, div_ctrl_value);
 
-	/* DE add new setting */
+	 
 	mtk_phy_clear_bits(regs + HDMI_1_PLL_CFG_1, RG_HDMITXPLL_RESERVE_BIT14);
 
-	/* POSDIV2 */
+	 
 	switch (posdiv2) {
 	case 1:
 		reserve_3_2_value = 0x0;
@@ -176,24 +171,24 @@ static int mtk_hdmi_pll_set_hw(struct clk_hw *hw, u8 prediv,
 
 	mtk_phy_update_field(regs + HDMI_1_PLL_CFG_1, RG_HDMITXPLL_RESERVE_BIT3_2, reserve_3_2_value);
 
-	/* DE add new setting */
+	 
 	mtk_phy_update_field(regs + HDMI_1_PLL_CFG_1, RG_HDMITXPLL_RESERVE_BIT1_0, 0x2);
 
-	/* PREDIV */
+	 
 	prediv_value = ilog2(prediv);
 
 	mtk_phy_update_field(regs + HDMI_1_PLL_CFG_4, RG_HDMITXPLL_PREDIV, prediv_value);
 
-	/* FBKDIV_HS3 */
+	 
 	reserve13_value = ilog2(fbkdiv_hs3);
 
 	mtk_phy_update_field(regs + HDMI_1_PLL_CFG_1, RG_HDMITXPLL_RESERVE_BIT13, reserve13_value);
 
-	/* FBDIV */
+	 
 	mtk_phy_update_field(regs + HDMI_1_PLL_CFG_4, RG_HDMITXPLL_FBKDIV_HIGH, fbkdiv_high);
 	mtk_phy_update_field(regs + HDMI_1_PLL_CFG_3, RG_HDMITXPLL_FBKDIV_LOW, fbkdiv_low);
 
-	/* Digital DIVIDER */
+	 
 	mtk_phy_clear_bits(regs + HDMI_CTL_3, REG_PIXEL_CLOCK_SEL);
 
 	if (digital_div == 1) {
@@ -226,15 +221,10 @@ static int mtk_hdmi_pll_calc(struct mtk_hdmi_phy *hdmi_phy, struct clk_hw *hw,
 	else
 		hdmi_phy->tmds_over_340M = false;
 
-	/* in Hz */
+	 
 	da_hdmitx21_ref_ck = 26 * MEGA;
 
-	/*  TXPOSDIV stage treatment:
-	 *	0M  <  TMDS clk  < 54M		  /8
-	 *	54M <= TMDS clk  < 148.35M    /4
-	 *	148.35M <=TMDS clk < 296.7M   /2
-	 *	296.7 <=TMDS clk <= 594M	  /1
-	 */
+	 
 	if (tmds_clk < 54 * MEGA)
 		txposdiv = 8;
 	else if (tmds_clk >= 54 * MEGA && (tmds_clk * 100) < 14835 * MEGA)
@@ -246,10 +236,7 @@ static int mtk_hdmi_pll_calc(struct mtk_hdmi_phy *hdmi_phy, struct clk_hw *hw,
 	else
 		return -EINVAL;
 
-	/* calculate txprediv: can be 2, 4, 6, 12
-	 * ICO clk = 5*TMDS_CLK*TXPOSDIV*TXPREDIV
-	 * ICO clk constraint: 5G =< ICO clk <= 12G
-	 */
+	 
 	for (i = 0; i < ARRAY_SIZE(txpredivs); i++) {
 		ns_hdmipll_ck = 5 * tmds_clk * txposdiv * txpredivs[i];
 		if (ns_hdmipll_ck >= 5 * GIGA &&
@@ -265,11 +252,7 @@ static int mtk_hdmi_pll_calc(struct mtk_hdmi_phy *hdmi_phy, struct clk_hw *hw,
 
 	txprediv = txpredivs[i];
 
-	/* PCW calculation: FBKDIV
-	 * formula: pcw=(frequency_out*2^pcw_bit) / frequency_in / FBKDIV_HS3;
-	 * RG_HDMITXPLL_FBKDIV[32:0]:
-	 * [32,24] 9bit integer, [23,0]:24bit fraction
-	 */
+	 
 	pcw = div_u64(((u64)ns_hdmipll_ck) << PCW_DECIMAL_WIDTH,
 		      da_hdmitx21_ref_ck * PLL_FBKDIV_HS3);
 
@@ -279,15 +262,11 @@ static int mtk_hdmi_pll_calc(struct mtk_hdmi_phy *hdmi_phy, struct clk_hw *hw,
 	fbkdiv_high = FIELD_GET(GENMASK_ULL(63, 32), pcw);
 	fbkdiv_low = FIELD_GET(GENMASK(31, 0), pcw);
 
-	/* posdiv1:
-	 * posdiv1 stage treatment according to color_depth:
-	 * 24bit -> posdiv1 /10, 30bit -> posdiv1 /12.5,
-	 * 36bit -> posdiv1 /15, 48bit -> posdiv1 /10
-	 */
+	 
 	posdiv1 = 10;
 	posdiv2 = 1;
 
-	/* Digital clk divider, max /32 */
+	 
 	digital_div = div_u64(ns_hdmipll_ck, posdiv1 * posdiv2 * pixel_clk);
 	if (!(digital_div <= 32 && digital_div >= 1))
 		return -EINVAL;
@@ -308,43 +287,35 @@ static int mtk_hdmi_pll_drv_setting(struct clk_hw *hw)
 
 	tmds_clk = pixel_clk;
 
-	/* bias & impedance setting:
-	 * 3G < data rate <= 6G: enable impedance 100ohm,
-	 *      data channel bias 24mA, clock channel bias 20mA
-	 * pixel clk >= HD,  74.175MHZ <= pixel clk <= 300MHZ:
-	 *      enalbe impedance 100ohm
-	 *      data channel 20mA, clock channel 16mA
-	 * 27M =< pixel clk < 74.175: disable impedance
-	 *      data channel & clock channel bias 10mA
-	 */
+	 
 
-	/* 3G < data rate <= 6G, 300M < tmds rate <= 594M */
+	 
 	if (tmds_clk > 300 * MEGA && tmds_clk <= 594 * MEGA) {
-		data_channel_bias = 0x3c; /* 24mA */
-		clk_channel_bias = 0x34; /* 20mA */
+		data_channel_bias = 0x3c;  
+		clk_channel_bias = 0x34;  
 		impedance_en = 0xf;
-		impedance = 0x36; /* 100ohm */
+		impedance = 0x36;  
 	} else if (((u64)pixel_clk * 1000) >= 74175 * MEGA && pixel_clk <= 300 * MEGA) {
-		data_channel_bias = 0x34; /* 20mA */
-		clk_channel_bias = 0x2c; /* 16mA */
+		data_channel_bias = 0x34;  
+		clk_channel_bias = 0x2c;  
 		impedance_en = 0xf;
-		impedance = 0x36; /* 100ohm */
+		impedance = 0x36;  
 	} else if (pixel_clk >= 27 * MEGA && ((u64)pixel_clk * 1000) < 74175 * MEGA) {
-		data_channel_bias = 0x14; /* 10mA */
-		clk_channel_bias = 0x14; /* 10mA */
+		data_channel_bias = 0x14;  
+		clk_channel_bias = 0x14;  
 		impedance_en = 0x0;
 		impedance = 0x0;
 	} else {
 		return -EINVAL;
 	}
 
-	/* bias */
+	 
 	mtk_phy_update_field(regs + HDMI_1_CFG_1, RG_HDMITX21_DRV_IBIAS_D0, data_channel_bias);
 	mtk_phy_update_field(regs + HDMI_1_CFG_1, RG_HDMITX21_DRV_IBIAS_D1, data_channel_bias);
 	mtk_phy_update_field(regs + HDMI_1_CFG_1, RG_HDMITX21_DRV_IBIAS_D2, data_channel_bias);
 	mtk_phy_update_field(regs + HDMI_1_CFG_0, RG_HDMITX21_DRV_IBIAS_CLK, clk_channel_bias);
 
-	/* impedance */
+	 
 	mtk_phy_update_field(regs + HDMI_1_CFG_0, RG_HDMITX21_DRV_IMP_EN, impedance_en);
 	mtk_phy_update_field(regs + HDMI_1_CFG_2, RG_HDMITX21_DRV_IMP_D0_EN1, impedance);
 	mtk_phy_update_field(regs + HDMI_1_CFG_2, RG_HDMITX21_DRV_IMP_D1_EN1, impedance);

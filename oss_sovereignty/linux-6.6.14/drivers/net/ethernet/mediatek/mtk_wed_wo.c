@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright (C) 2022 MediaTek Inc.
- *
- * Author: Lorenzo Bianconi <lorenzo@kernel.org>
- *	   Sujuan Chen <sujuan.chen@mediatek.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/dma-mapping.h>
@@ -236,7 +232,7 @@ static void mtk_wed_wo_irq_tasklet(struct tasklet_struct *t)
 	struct mtk_wed_wo *wo = from_tasklet(wo, t, mmio.irq_tasklet);
 	u32 intr, mask;
 
-	/* disable interrupts */
+	 
 	mtk_wed_wo_set_isr(wo, 0);
 
 	intr = mtk_wed_wo_get_isr(wo);
@@ -250,7 +246,7 @@ static void mtk_wed_wo_irq_tasklet(struct tasklet_struct *t)
 	}
 }
 
-/* mtk wed wo hw queues */
+ 
 
 static int
 mtk_wed_wo_queue_alloc(struct mtk_wed_wo *wo, struct mtk_wed_wo_queue *q,
@@ -443,7 +439,7 @@ mtk_wed_wo_hardware_init(struct mtk_wed_wo *wo)
 	mtk_wed_wo_queue_refill(wo, &wo->q_rx, true);
 	mtk_wed_wo_queue_reset(wo, &wo->q_rx);
 
-	/* rx queue irqmask */
+	 
 	mtk_wed_wo_set_isr(wo, wo->mmio.irq_mask);
 
 	return 0;
@@ -458,7 +454,7 @@ error_put:
 static void
 mtk_wed_wo_hw_deinit(struct mtk_wed_wo *wo)
 {
-	/* disable interrupts */
+	 
 	mtk_wed_wo_set_isr(wo, 0);
 
 	tasklet_disable(&wo->mmio.irq_tasklet);

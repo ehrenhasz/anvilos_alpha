@@ -1,13 +1,4 @@
-/*
- * Helper routines for SuperH Clock Pulse Generator blocks (CPG).
- *
- *  Copyright (C) 2010  Magnus Damm
- *  Copyright (C) 2010 - 2012  Paul Mundt
- *
- * This file is subject to the terms and conditions of the GNU General Public
- * License.  See the file "COPYING" in the main directory of this archive
- * for more details.
- */
+ 
 #include <linux/clk.h>
 #include <linux/compiler.h>
 #include <linux/slab.h>
@@ -91,9 +82,7 @@ int __init sh_clk_mstp_register(struct clk *clks, int nr)
 	return ret;
 }
 
-/*
- * Div/mult table lookup helpers
- */
+ 
 static inline struct clk_div_table *clk_to_div_table(struct clk *clk)
 {
 	return clk->priv;
@@ -104,9 +93,7 @@ static inline struct clk_div_mult_table *clk_to_div_mult_table(struct clk *clk)
 	return clk_to_div_table(clk)->div_mult_table;
 }
 
-/*
- * Common div ops
- */
+ 
 static long sh_clk_div_round_rate(struct clk *clk, unsigned long rate)
 {
 	return clk_rate_table_round(clk, clk->freq_table, rate);
@@ -140,7 +127,7 @@ static int sh_clk_div_set_rate(struct clk *clk, unsigned long rate)
 	value |= (idx << clk->enable_bit);
 	sh_clk_write(value, clk);
 
-	/* XXX: Should use a post-change notifier */
+	 
 	if (dt->kick)
 		dt->kick(clk);
 
@@ -166,11 +153,7 @@ static void sh_clk_div_disable(struct clk *clk)
 	val = sh_clk_read(clk);
 	val |= CPG_CKSTP_BIT;
 
-	/*
-	 * div6 clocks require the divisor field to be non-zero or the
-	 * above CKSTP toggle silently fails. Ensure that the divisor
-	 * array is reset to its initial state on disable.
-	 */
+	 
 	if (clk->flags & CLK_MASK_DIV_ON_DISABLE)
 		val |= clk->div_mask;
 
@@ -257,9 +240,7 @@ static int __init sh_clk_div_register_ops(struct clk *clks, int nr,
 	return ret;
 }
 
-/*
- * div6 support
- */
+ 
 static int sh_clk_div6_divisors[64] = {
 	1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
 	17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32,
@@ -285,7 +266,7 @@ static int sh_clk_div6_set_parent(struct clk *clk, struct clk *parent)
 	if (!clk->parent_table || !clk->parent_num)
 		return -EINVAL;
 
-	/* Search the parent */
+	 
 	for (i = 0; i < clk->parent_num; i++)
 		if (clk->parent_table[i] == parent)
 			break;
@@ -302,7 +283,7 @@ static int sh_clk_div6_set_parent(struct clk *clk, struct clk *parent)
 
 	sh_clk_write(value | (i << clk->src_shift), clk);
 
-	/* Rebuild the frequency table */
+	 
 	clk_rate_table_build(clk, clk->freq_table, table->nr_divisors,
 			     table, NULL);
 
@@ -330,19 +311,14 @@ int __init sh_clk_div6_reparent_register(struct clk *clks, int nr)
 				       &sh_clk_div6_reparent_clk_ops);
 }
 
-/*
- * div4 support
- */
+ 
 static int sh_clk_div4_set_parent(struct clk *clk, struct clk *parent)
 {
 	struct clk_div_mult_table *table = clk_to_div_mult_table(clk);
 	u32 value;
 	int ret;
 
-	/* we really need a better way to determine parent index, but for
-	 * now assume internal parent comes with CLK_ENABLE_ON_INIT set,
-	 * no CLK_ENABLE_ON_INIT means external clock...
-	 */
+	 
 
 	if (parent->flags & CLK_ENABLE_ON_INIT)
 		value = sh_clk_read(clk) & ~(1 << 7);
@@ -355,7 +331,7 @@ static int sh_clk_div4_set_parent(struct clk *clk, struct clk *parent)
 
 	sh_clk_write(value, clk);
 
-	/* Rebiuld the frequency table */
+	 
 	clk_rate_table_build(clk, clk->freq_table, table->nr_divisors,
 			     table, &clk->arch_flags);
 
@@ -391,7 +367,7 @@ int __init sh_clk_div4_reparent_register(struct clk *clks, int nr,
 				       &sh_clk_div4_reparent_clk_ops);
 }
 
-/* FSI-DIV */
+ 
 static unsigned long fsidiv_recalc(struct clk *clk)
 {
 	u32 value;
@@ -462,11 +438,11 @@ int __init sh_clk_fsidiv_register(struct clk *clks, int nr)
 			return -ENOMEM;
 		}
 
-		/* clks[i].enable_reg came from SH_CLK_FSIDIV() */
+		 
 		map->phys		= (phys_addr_t)clks[i].enable_reg;
 		map->len		= 8;
 
-		clks[i].enable_reg	= 0; /* remove .enable_reg */
+		clks[i].enable_reg	= 0;  
 		clks[i].ops		= &fsidiv_clk_ops;
 		clks[i].mapping		= map;
 

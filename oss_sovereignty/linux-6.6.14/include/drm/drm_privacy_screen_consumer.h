@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright (C) 2020 Red Hat, Inc.
- *
- * Authors:
- * Hans de Goede <hdegoede@redhat.com>
- */
+ 
+ 
 
 #ifndef __DRM_PRIVACY_SCREEN_CONSUMER_H__
 #define __DRM_PRIVACY_SCREEN_CONSUMER_H__

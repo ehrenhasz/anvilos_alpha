@@ -1,15 +1,15 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-//
-// File:         sound/soc/codecs/ssm2602.c
-// Author:       Cliff Cai <Cliff.Cai@analog.com>
-//
-// Created:      Tue June 06 2008
-// Description:  Driver for ssm2602 sound chip
-//
-// Modified:
-//               Copyright 2008 Analog Devices Inc.
-//
-// Bugs:         Enter bugs at http://blackfin.uclinux.org/
+
+
+
+
+
+
+
+
+
+
+
+
 
 #include <linux/delay.h>
 #include <linux/module.h>
@@ -23,7 +23,7 @@
 
 #include "ssm2602.h"
 
-/* codec private data */
+ 
 struct ssm2602_priv {
 	unsigned int sysclk;
 	const struct snd_pcm_hw_constraint_list *sysclk_constraints;
@@ -34,12 +34,7 @@ struct ssm2602_priv {
 	unsigned int clk_out_pwr;
 };
 
-/*
- * ssm2602 register cache
- * We can't read the ssm2602 register space when we are
- * using 2 wire for device control, so we cache them instead.
- * There is no point in caching the reset register
- */
+ 
 static const struct reg_default ssm2602_reg[SSM2602_CACHEREGNUM] = {
 	{ .reg = 0x00, .def = 0x0097 },
 	{ .reg = 0x01, .def = 0x0097 },
@@ -53,11 +48,7 @@ static const struct reg_default ssm2602_reg[SSM2602_CACHEREGNUM] = {
 	{ .reg = 0x09, .def = 0x0000 }
 };
 
-/*
- * ssm2602 register patch
- * Workaround for playback distortions after power up: activates digital
- * core, and then powers on output, DAC, and whole chip at the same time
- */
+ 
 
 static const struct reg_sequence ssm2602_patch[] = {
 	{ SSM2602_ACTIVE, 0x01 },
@@ -66,7 +57,7 @@ static const struct reg_sequence ssm2602_patch[] = {
 };
 
 
-/*Appending several "None"s just for OSS mixer use*/
+ 
 static const char *ssm2602_input_select[] = {
 	"Line", "Mic",
 };
@@ -111,7 +102,7 @@ SOC_SINGLE("Mic Boost (+20dB)", SSM2602_APANA, 0, 1, 0),
 SOC_SINGLE("Mic Boost2 (+20dB)", SSM2602_APANA, 8, 1, 0),
 };
 
-/* Output Mixer */
+ 
 static const struct snd_kcontrol_new ssm260x_output_mixer_controls[] = {
 SOC_DAPM_SINGLE("Line Bypass Switch", SSM2602_APANA, 3, 1, 0),
 SOC_DAPM_SINGLE("HiFi Playback Switch", SSM2602_APANA, 4, 1, 0),
@@ -121,23 +112,14 @@ SOC_DAPM_SINGLE("Mic Sidetone Switch", SSM2602_APANA, 5, 1, 0),
 static const struct snd_kcontrol_new mic_ctl =
 	SOC_DAPM_SINGLE("Switch", SSM2602_APANA, 1, 1, 1);
 
-/* Input mux */
+ 
 static const struct snd_kcontrol_new ssm2602_input_mux_controls =
 SOC_DAPM_ENUM("Input Select", ssm2602_enum[0]);
 
 static int ssm2602_mic_switch_event(struct snd_soc_dapm_widget *w,
 				struct snd_kcontrol *kcontrol, int event)
 {
-	/*
-	 * According to the ssm2603 data sheet (control register sequencing),
-	 * the digital core should be activated only after all necessary bits
-	 * in the power register are enabled, and a delay determined by the
-	 * decoupling capacitor on the VMID pin has passed. If the digital core
-	 * is activated too early, or even before the ADC is powered up, audible
-	 * artifacts appear at the beginning and end of the recorded signal.
-	 *
-	 * In practice, audible artifacts disappear well over 500 ms.
-	 */
+	 
 	msleep(500);
 
 	return 0;
@@ -175,7 +157,7 @@ SND_SOC_DAPM_INPUT("MICIN"),
 static const struct snd_soc_dapm_widget ssm2604_dapm_widgets[] = {
 SND_SOC_DAPM_MIXER("Output Mixer", SND_SOC_NOPM, 0, 0,
 	ssm260x_output_mixer_controls,
-	ARRAY_SIZE(ssm260x_output_mixer_controls) - 1), /* Last element is the mic */
+	ARRAY_SIZE(ssm260x_output_mixer_controls) - 1),  
 };
 
 static const struct snd_soc_dapm_route ssm260x_routes[] = {
@@ -237,51 +219,51 @@ struct ssm2602_coeff {
 
 #define SSM2602_COEFF_SRATE(sr, bosr, usb) (((sr) << 2) | ((bosr) << 1) | (usb))
 
-/* codec mclk clock coefficients */
+ 
 static const struct ssm2602_coeff ssm2602_coeff_table[] = {
-	/* 48k */
+	 
 	{12288000, 48000, SSM2602_COEFF_SRATE(0x0, 0x0, 0x0)},
 	{18432000, 48000, SSM2602_COEFF_SRATE(0x0, 0x1, 0x0)},
 	{12000000, 48000, SSM2602_COEFF_SRATE(0x0, 0x0, 0x1)},
 
-	/* 32k */
+	 
 	{12288000, 32000, SSM2602_COEFF_SRATE(0x6, 0x0, 0x0)},
 	{18432000, 32000, SSM2602_COEFF_SRATE(0x6, 0x1, 0x0)},
 	{12000000, 32000, SSM2602_COEFF_SRATE(0x6, 0x0, 0x1)},
 
-	/* 16k */
+	 
 	{12288000, 16000, SSM2602_COEFF_SRATE(0x5, 0x0, 0x0)},
 	{18432000, 16000, SSM2602_COEFF_SRATE(0x5, 0x1, 0x0)},
 	{12000000, 16000, SSM2602_COEFF_SRATE(0xa, 0x0, 0x1)},
 
-	/* 8k */
+	 
 	{12288000, 8000, SSM2602_COEFF_SRATE(0x3, 0x0, 0x0)},
 	{18432000, 8000, SSM2602_COEFF_SRATE(0x3, 0x1, 0x0)},
 	{11289600, 8000, SSM2602_COEFF_SRATE(0xb, 0x0, 0x0)},
 	{16934400, 8000, SSM2602_COEFF_SRATE(0xb, 0x1, 0x0)},
 	{12000000, 8000, SSM2602_COEFF_SRATE(0x3, 0x0, 0x1)},
 
-	/* 96k */
+	 
 	{12288000, 96000, SSM2602_COEFF_SRATE(0x7, 0x0, 0x0)},
 	{18432000, 96000, SSM2602_COEFF_SRATE(0x7, 0x1, 0x0)},
 	{12000000, 96000, SSM2602_COEFF_SRATE(0x7, 0x0, 0x1)},
 
-	/* 11.025k */
+	 
 	{11289600, 11025, SSM2602_COEFF_SRATE(0xc, 0x0, 0x0)},
 	{16934400, 11025, SSM2602_COEFF_SRATE(0xc, 0x1, 0x0)},
 	{12000000, 11025, SSM2602_COEFF_SRATE(0xc, 0x1, 0x1)},
 
-	/* 22.05k */
+	 
 	{11289600, 22050, SSM2602_COEFF_SRATE(0xd, 0x0, 0x0)},
 	{16934400, 22050, SSM2602_COEFF_SRATE(0xd, 0x1, 0x0)},
 	{12000000, 22050, SSM2602_COEFF_SRATE(0xd, 0x1, 0x1)},
 
-	/* 44.1k */
+	 
 	{11289600, 44100, SSM2602_COEFF_SRATE(0x8, 0x0, 0x0)},
 	{16934400, 44100, SSM2602_COEFF_SRATE(0x8, 0x1, 0x0)},
 	{12000000, 44100, SSM2602_COEFF_SRATE(0x8, 0x1, 0x1)},
 
-	/* 88.2k */
+	 
 	{11289600, 88200, SSM2602_COEFF_SRATE(0xf, 0x0, 0x0)},
 	{16934400, 88200, SSM2602_COEFF_SRATE(0xf, 0x1, 0x0)},
 	{12000000, 88200, SSM2602_COEFF_SRATE(0xf, 0x1, 0x1)},
@@ -316,7 +298,7 @@ static int ssm2602_hw_params(struct snd_pcm_substream *substream,
 
 	regmap_write(ssm2602->regmap, SSM2602_SRATE, srate);
 
-	/* bit size */
+	 
 	switch (params_width(params)) {
 	case 16:
 		iface = 0x0;
@@ -431,7 +413,7 @@ static int ssm2602_set_dai_fmt(struct snd_soc_dai *codec_dai,
 	struct ssm2602_priv *ssm2602 = snd_soc_component_get_drvdata(codec_dai->component);
 	unsigned int iface = 0;
 
-	/* set master/slave audio interface */
+	 
 	switch (fmt & SND_SOC_DAIFMT_CLOCK_PROVIDER_MASK) {
 	case SND_SOC_DAIFMT_CBP_CFP:
 		iface |= 0x0040;
@@ -442,7 +424,7 @@ static int ssm2602_set_dai_fmt(struct snd_soc_dai *codec_dai,
 		return -EINVAL;
 	}
 
-	/* interface format */
+	 
 	switch (fmt & SND_SOC_DAIFMT_FORMAT_MASK) {
 	case SND_SOC_DAIFMT_I2S:
 		iface |= 0x0002;
@@ -462,7 +444,7 @@ static int ssm2602_set_dai_fmt(struct snd_soc_dai *codec_dai,
 		return -EINVAL;
 	}
 
-	/* clock inversion */
+	 
 	switch (fmt & SND_SOC_DAIFMT_INV_MASK) {
 	case SND_SOC_DAIFMT_NB_NF:
 		break;
@@ -479,7 +461,7 @@ static int ssm2602_set_dai_fmt(struct snd_soc_dai *codec_dai,
 		return -EINVAL;
 	}
 
-	/* set iface */
+	 
 	regmap_write(ssm2602->regmap, SSM2602_IFACE, iface);
 	return 0;
 }
@@ -491,7 +473,7 @@ static int ssm2602_set_bias_level(struct snd_soc_component *component,
 
 	switch (level) {
 	case SND_SOC_BIAS_ON:
-		/* vref/mid on, osc and clkout on if enabled */
+		 
 		regmap_update_bits(ssm2602->regmap, SSM2602_PWR,
 			PWR_POWER_OFF | PWR_CLK_OUT_PDN | PWR_OSC_PDN,
 			ssm2602->clk_out_pwr);
@@ -499,13 +481,13 @@ static int ssm2602_set_bias_level(struct snd_soc_component *component,
 	case SND_SOC_BIAS_PREPARE:
 		break;
 	case SND_SOC_BIAS_STANDBY:
-		/* everything off except vref/vmid, */
+		 
 		regmap_update_bits(ssm2602->regmap, SSM2602_PWR,
 			PWR_POWER_OFF | PWR_CLK_OUT_PDN | PWR_OSC_PDN,
 			PWR_CLK_OUT_PDN | PWR_OSC_PDN);
 		break;
 	case SND_SOC_BIAS_OFF:
-		/* everything off */
+		 
 		regmap_update_bits(ssm2602->regmap, SSM2602_PWR,
 			PWR_POWER_OFF, PWR_POWER_OFF);
 		break;
@@ -613,12 +595,12 @@ static int ssm260x_component_probe(struct snd_soc_component *component)
 	regmap_register_patch(ssm2602->regmap, ssm2602_patch,
 			      ARRAY_SIZE(ssm2602_patch));
 
-	/* set the update bits */
+	 
 	regmap_update_bits(ssm2602->regmap, SSM2602_LINVOL,
 			    LINVOL_LRIN_BOTH, LINVOL_LRIN_BOTH);
 	regmap_update_bits(ssm2602->regmap, SSM2602_RINVOL,
 			    RINVOL_RLIN_BOTH, RINVOL_RLIN_BOTH);
-	/*select Line in as default input*/
+	 
 	regmap_write(ssm2602->regmap, SSM2602_APANA, APANA_SELECT_DAC |
 			APANA_ENABLE_MIC_BOOST);
 

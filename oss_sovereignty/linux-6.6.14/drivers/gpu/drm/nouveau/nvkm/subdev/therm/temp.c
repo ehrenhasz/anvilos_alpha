@@ -1,26 +1,4 @@
-/*
- * Copyright 2012 The Nouveau community
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: Martin Peres
- */
+ 
 #include "priv.h"
 
 static void
@@ -38,7 +16,7 @@ nvkm_therm_temp_set_defaults(struct nvkm_therm *therm)
 	therm->bios_sensor.thrs_critical.hysteresis = 5;
 
 	therm->bios_sensor.thrs_shutdown.temp = 135;
-	therm->bios_sensor.thrs_shutdown.hysteresis = 5; /*not that it matters */
+	therm->bios_sensor.thrs_shutdown.hysteresis = 5;  
 }
 
 static void
@@ -46,14 +24,14 @@ nvkm_therm_temp_safety_checks(struct nvkm_therm *therm)
 {
 	struct nvbios_therm_sensor *s = &therm->bios_sensor;
 
-	/* enforce a minimum hysteresis on thresholds */
+	 
 	s->thrs_fan_boost.hysteresis = max_t(u8, s->thrs_fan_boost.hysteresis, 2);
 	s->thrs_down_clock.hysteresis = max_t(u8, s->thrs_down_clock.hysteresis, 2);
 	s->thrs_critical.hysteresis = max_t(u8, s->thrs_critical.hysteresis, 2);
 	s->thrs_shutdown.hysteresis = max_t(u8, s->thrs_shutdown.hysteresis, 2);
 }
 
-/* must be called with alarm_program_lock taken ! */
+ 
 void
 nvkm_therm_sensor_set_threshold_state(struct nvkm_therm *therm,
 				      enum nvkm_therm_thrs thrs,
@@ -62,7 +40,7 @@ nvkm_therm_sensor_set_threshold_state(struct nvkm_therm *therm,
 	therm->sensor.alarm_state[thrs] = st;
 }
 
-/* must be called with alarm_program_lock taken ! */
+ 
 enum nvkm_therm_thrs_state
 nvkm_therm_sensor_get_threshold_state(struct nvkm_therm *therm,
 				      enum nvkm_therm_thrs thrs)
@@ -132,7 +110,7 @@ nvkm_therm_sensor_event(struct nvkm_therm *therm, enum nvkm_therm_thrs thrs,
 
 }
 
-/* must be called with alarm_program_lock taken ! */
+ 
 static void
 nvkm_therm_threshold_hyst_polling(struct nvkm_therm *therm,
 				  const struct nvbios_therm_threshold *thrs,
@@ -152,7 +130,7 @@ nvkm_therm_threshold_hyst_polling(struct nvkm_therm *therm,
 		direction = NVKM_THERM_THRS_FALLING;
 		new_state = NVKM_THERM_THRS_LOWER;
 	} else
-		return; /* nothing to do */
+		return;  
 
 	nvkm_therm_sensor_set_threshold_state(therm, thrs_name, new_state);
 	nvkm_therm_sensor_event(therm, thrs_name, direction);
@@ -184,7 +162,7 @@ alarm_timer_callback(struct nvkm_alarm *alarm)
 
 	spin_unlock_irqrestore(&therm->sensor.alarm_program_lock, flags);
 
-	/* schedule the next poll in one second */
+	 
 	if (therm->func->temp_get(therm) >= 0)
 		nvkm_timer_alarm(tmr, 1000000000ULL, alarm);
 }

@@ -1,30 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Driver for FPGA Management Engine (FME) Global Performance Reporting
- *
- * Copyright 2019 Intel Corporation, Inc.
- *
- * Authors:
- *   Kang Luwei <luwei.kang@intel.com>
- *   Xiao Guangrong <guangrong.xiao@linux.intel.com>
- *   Wu Hao <hao.wu@intel.com>
- *   Xu Yilun <yilun.xu@intel.com>
- *   Joseph Grecco <joe.grecco@intel.com>
- *   Enno Luebbers <enno.luebbers@intel.com>
- *   Tim Whisonant <tim.whisonant@intel.com>
- *   Ananda Ravuri <ananda.ravuri@intel.com>
- *   Mitchel, Henry <henry.mitchel@intel.com>
- */
+
+ 
 
 #include <linux/perf_event.h>
 #include "dfl.h"
 #include "dfl-fme.h"
 
-/*
- * Performance Counter Registers for Cache.
- *
- * Cache Events are listed below as CACHE_EVNT_*.
- */
+ 
 #define CACHE_CTRL			0x8
 #define CACHE_RESET_CNTR		BIT_ULL(0)
 #define CACHE_FREEZE_CNTR		BIT_ULL(8)
@@ -49,11 +30,7 @@
 #define CACHE_CNTR_EVNT_CNTR		GENMASK_ULL(47, 0)
 #define CACHE_CNTR_EVNT			GENMASK_ULL(63, 60)
 
-/*
- * Performance Counter Registers for Fabric.
- *
- * Fabric Events are listed below as FAB_EVNT_*
- */
+ 
 #define FAB_CTRL			0x20
 #define FAB_RESET_CNTR			BIT_ULL(0)
 #define FAB_FREEZE_CNTR			BIT_ULL(8)
@@ -75,20 +52,12 @@
 #define FAB_CNTR_EVNT_CNTR		GENMASK_ULL(59, 0)
 #define FAB_CNTR_EVNT			GENMASK_ULL(63, 60)
 
-/*
- * Performance Counter Registers for Clock.
- *
- * Clock Counter can't be reset or frozen by SW.
- */
+ 
 #define CLK_CNTR			0x30
 #define BASIC_EVNT_CLK			0x0
 #define BASIC_EVNT_MAX			BASIC_EVNT_CLK
 
-/*
- * Performance Counter Registers for IOMMU / VT-D.
- *
- * VT-D Events are listed below as VTD_EVNT_* and VTD_SIP_EVNT_*
- */
+ 
 #define VTD_CTRL			0x38
 #define VTD_RESET_CNTR			BIT_ULL(0)
 #define VTD_FREEZE_CNTR			BIT_ULL(8)
@@ -130,20 +99,7 @@
 
 #define PERF_MAX_PORT_NUM		1U
 
-/**
- * struct fme_perf_priv - priv data structure for fme perf driver
- *
- * @dev: parent device.
- * @ioaddr: mapped base address of mmio region.
- * @pmu: pmu data structure for fme perf counters.
- * @id: id of this fme performance report private feature.
- * @fab_users: current user number on fabric counters.
- * @fab_port_id: used to indicate current working mode of fabric counters.
- * @fab_lock: lock to protect fabric counters working mode.
- * @cpu: active CPU to which the PMU is bound for accesses.
- * @node: node for CPU hotplug notifier link.
- * @cpuhp_state: state for CPU hotplug notification;
- */
+ 
 struct fme_perf_priv {
 	struct device *dev;
 	void __iomem *ioaddr;
@@ -159,13 +115,7 @@ struct fme_perf_priv {
 	enum cpuhp_state cpuhp_state;
 };
 
-/**
- * struct fme_perf_event_ops - callbacks for fme perf events
- *
- * @event_init: callback invoked during event init.
- * @event_destroy: callback invoked during event destroy.
- * @read_counter: callback to read hardware counters.
- */
+ 
 struct fme_perf_event_ops {
 	int (*event_init)(struct fme_perf_priv *priv, u32 event, u32 portid);
 	void (*event_destroy)(struct fme_perf_priv *priv, u32 event,
@@ -230,11 +180,7 @@ static const struct attribute_group fme_perf_format_group = {
 	.attrs = fme_perf_format_attrs,
 };
 
-/*
- * There are no default events, but we need to create
- * "events" group (with empty attrs) before updating
- * it with detected events (using pmu->attr_update).
- */
+ 
 static struct attribute *fme_perf_events_attrs_empty[] = {
 	NULL,
 };
@@ -271,12 +217,7 @@ static u64 fme_read_perf_cntr_reg(void __iomem *addr)
 	u32 low;
 	u64 v;
 
-	/*
-	 * For 64bit counter registers, the counter may increases and carries
-	 * out of bit [31] between 2 32bit reads. So add extra reads to help
-	 * to prevent this issue. This only happens in platforms which don't
-	 * support 64bit read - readq is split into 2 readl.
-	 */
+	 
 	do {
 		v = readq(addr);
 		low = readl(addr);
@@ -324,7 +265,7 @@ static u64 cache_read_event_counter(struct fme_perf_priv *priv,
 	else
 		channel = CACHE_CHANNEL_RD;
 
-	/* set channel access type and cache event code. */
+	 
 	v = readq(base + CACHE_CTRL);
 	v &= ~(CACHE_CHANNEL_SEL | CACHE_CTRL_EVNT);
 	v |= FIELD_PREP(CACHE_CHANNEL_SEL, channel);
@@ -369,14 +310,7 @@ static int fabric_event_init(struct fme_perf_priv *priv, u32 event, u32 portid)
 	if (!is_fabric_event_supported(priv, event, portid))
 		return -EINVAL;
 
-	/*
-	 * as fabric counter set only can be in either overall or port mode.
-	 * In overall mode, it counts overall data for FPGA, and in port mode,
-	 * it is configured to monitor on one individual port.
-	 *
-	 * so every time, a new event is initialized, driver checks
-	 * current working mode and if someone is using this counter set.
-	 */
+	 
 	spin_lock(&priv->fab_lock);
 	if (priv->fab_users && priv->fab_port_id != portid) {
 		dev_dbg(priv->dev, "conflict fabric event monitoring mode.\n");
@@ -386,10 +320,7 @@ static int fabric_event_init(struct fme_perf_priv *priv, u32 event, u32 portid)
 
 	priv->fab_users++;
 
-	/*
-	 * skip if current working mode matches, otherwise change the working
-	 * mode per input port_id, to monitor overall data or another port.
-	 */
+	 
 	if (priv->fab_port_id == portid)
 		goto exit;
 
@@ -552,7 +483,7 @@ static ssize_t fme_perf_event_show(struct device *dev,
 		(((_type) << FME_EVTYPE_SHIFT) & FME_EVTYPE_MASK) |	\
 		(FME_PORTID_ROOT << FME_PORTID_SHIFT))
 
-/* FME Perf Basic Events */
+ 
 #define FME_EVENT_BASIC(_name, _event)					\
 static struct dev_ext_attribute fme_perf_event_##_name = {		\
 	.attr = FME_EVENT_ATTR(_name),					\
@@ -571,7 +502,7 @@ static const struct attribute_group fme_perf_basic_events_group = {
 	.attrs = fme_perf_basic_events_attrs,
 };
 
-/* FME Perf Cache Events */
+ 
 #define FME_EVENT_CACHE(_name, _event)					\
 static struct dev_ext_attribute fme_perf_event_cache_##_name = {	\
 	.attr = FME_EVENT_ATTR(cache_##_name),				\
@@ -618,7 +549,7 @@ static const struct attribute_group fme_perf_cache_events_group = {
 	.is_visible = fme_perf_events_visible,
 };
 
-/* FME Perf Fabric Events */
+ 
 #define FME_EVENT_FABRIC(_name, _event)					\
 static struct dev_ext_attribute fme_perf_event_fab_##_name = {		\
 	.attr = FME_EVENT_ATTR(fab_##_name),				\
@@ -692,7 +623,7 @@ static const struct attribute_group fme_perf_fabric_events_group = {
 	.is_visible = fme_perf_fabric_events_visible,
 };
 
-/* FME Perf VTD Events */
+ 
 #define FME_EVENT_VTD_PORT(_name, _event)				\
 static struct dev_ext_attribute fme_perf_event_vtd_port_##_name = {	\
 	.attr = FME_EVENT_ATTR(vtd_port_##_name),			\
@@ -724,7 +655,7 @@ static const struct attribute_group fme_perf_vtd_events_group = {
 	.is_visible = fme_perf_events_visible,
 };
 
-/* FME Perf VTD SIP Events */
+ 
 #define FME_EVENT_VTD_SIP(_name, _event)				\
 static struct dev_ext_attribute fme_perf_event_vtd_sip_##_name = {	\
 	.attr = FME_EVENT_ATTR(vtd_sip_##_name),			\
@@ -799,15 +730,11 @@ static int fme_perf_event_init(struct perf_event *event)
 	struct fme_perf_event_ops *ops;
 	u32 eventid, evtype, portid;
 
-	/* test the event attr type check for PMU enumeration */
+	 
 	if (event->attr.type != event->pmu->type)
 		return -ENOENT;
 
-	/*
-	 * fme counters are shared across all cores.
-	 * Therefore, it does not support per-process mode.
-	 * Also, it does not support event sampling mode.
-	 */
+	 
 	if (is_sampling_event(event) || event->attach_state & PERF_ATTACH_TASK)
 		return -EINVAL;
 
@@ -892,7 +819,7 @@ static void fme_perf_setup_hardware(struct fme_perf_priv *priv)
 	void __iomem *base = priv->ioaddr;
 	u64 v;
 
-	/* read and save current working mode for fabric counters */
+	 
 	v = readq(base + FAB_CTRL);
 
 	if (FIELD_GET(FAB_PORT_FILTER, v) == FAB_PORT_FILTER_DISABLE)
@@ -981,7 +908,7 @@ static int fme_perf_init(struct platform_device *pdev,
 
 	priv->cpuhp_state = ret;
 
-	/* Register the pmu instance for cpu hotplug */
+	 
 	ret = cpuhp_state_add_instance_nocalls(priv->cpuhp_state, &priv->node);
 	if (ret)
 		goto cpuhp_instance_err;

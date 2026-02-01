@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright(c) 2021-2022 Intel Corporation. All rights reserved.
- *
- * Author: Cezary Rojewski <cezary.rojewski@intel.com>
- */
+ 
+ 
 
 #ifndef __SOUND_SOC_INTEL_AVS_CLDMA_H
 #define __SOUND_SOC_INTEL_AVS_CLDMA_H

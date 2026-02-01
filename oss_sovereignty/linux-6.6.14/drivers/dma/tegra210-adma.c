@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * ADMA driver for Nvidia's Tegra210 ADMA controller.
- *
- * Copyright (c) 2016, NVIDIA CORPORATION.  All rights reserved.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/iopoll.h>
@@ -64,23 +60,7 @@
 
 struct tegra_adma;
 
-/*
- * struct tegra_adma_chip_data - Tegra chip specific data
- * @adma_get_burst_config: Function callback used to set DMA burst size.
- * @global_reg_offset: Register offset of DMA global register.
- * @global_int_clear: Register offset of DMA global interrupt clear.
- * @ch_req_tx_shift: Register offset for AHUB transmit channel select.
- * @ch_req_rx_shift: Register offset for AHUB receive channel select.
- * @ch_base_offset: Register offset of DMA channel registers.
- * @ch_fifo_ctrl: Default value for channel FIFO CTRL register.
- * @ch_req_mask: Mask for Tx or Rx channel select.
- * @ch_req_max: Maximum number of Tx or Rx channels available.
- * @ch_reg_size: Size of DMA channel register space.
- * @nr_channels: Number of DMA channels available.
- * @ch_fifo_size_mask: Mask for FIFO size field.
- * @sreq_index_offset: Slave channel index offset.
- * @has_outstanding_reqs: If DMA channel can have outstanding requests.
- */
+ 
 struct tegra_adma_chip_data {
 	unsigned int (*adma_get_burst_config)(unsigned int burst_size);
 	unsigned int global_reg_offset;
@@ -98,9 +78,7 @@ struct tegra_adma_chip_data {
 	bool has_outstanding_reqs;
 };
 
-/*
- * struct tegra_adma_chan_regs - Tegra ADMA channel registers
- */
+ 
 struct tegra_adma_chan_regs {
 	unsigned int ctrl;
 	unsigned int config;
@@ -111,9 +89,7 @@ struct tegra_adma_chan_regs {
 	unsigned int tc;
 };
 
-/*
- * struct tegra_adma_desc - Tegra ADMA descriptor to manage transfer requests.
- */
+ 
 struct tegra_adma_desc {
 	struct virt_dma_desc		vd;
 	struct tegra_adma_chan_regs	ch_regs;
@@ -122,9 +98,7 @@ struct tegra_adma_desc {
 	size_t				num_periods;
 };
 
-/*
- * struct tegra_adma_chan - Tegra ADMA channel information
- */
+ 
 struct tegra_adma_chan {
 	struct virt_dma_chan		vc;
 	struct tegra_adma_desc		*desc;
@@ -132,21 +106,19 @@ struct tegra_adma_chan {
 	int				irq;
 	void __iomem			*chan_addr;
 
-	/* Slave channel configuration info */
+	 
 	struct dma_slave_config		sconfig;
 	enum dma_transfer_direction	sreq_dir;
 	unsigned int			sreq_index;
 	bool				sreq_reserved;
 	struct tegra_adma_chan_regs	ch_regs;
 
-	/* Transfer count and position info */
+	 
 	unsigned int			tx_buf_count;
 	unsigned int			tx_buf_pos;
 };
 
-/*
- * struct tegra_adma - Tegra ADMA controller information
- */
+ 
 struct tegra_adma {
 	struct dma_device		dma_dev;
 	struct device			*dev;
@@ -156,12 +128,12 @@ struct tegra_adma {
 	unsigned long			rx_requests_reserved;
 	unsigned long			tx_requests_reserved;
 
-	/* Used to store global command register state when suspending */
+	 
 	unsigned int			global_cmd;
 
 	const struct tegra_adma_chip_data *cdata;
 
-	/* Last member of the structure */
+	 
 	struct tegra_adma_chan		channels[];
 };
 
@@ -221,13 +193,13 @@ static int tegra_adma_init(struct tegra_adma *tdma)
 	u32 status;
 	int ret;
 
-	/* Clear any interrupts */
+	 
 	tdma_write(tdma, tdma->cdata->ch_base_offset + tdma->cdata->global_int_clear, 0x1);
 
-	/* Assert soft reset */
+	 
 	tdma_write(tdma, ADMA_GLOBAL_SOFT_RESET, 0x1);
 
-	/* Wait for reset to clear */
+	 
 	ret = readx_poll_timeout(readl,
 				 tdma->base_addr +
 				 tdma->cdata->global_reg_offset +
@@ -236,7 +208,7 @@ static int tegra_adma_init(struct tegra_adma *tdma)
 	if (ret)
 		return ret;
 
-	/* Enable global ADMA registers */
+	 
 	tdma_write(tdma, ADMA_GLOBAL_CMD, 1);
 
 	return 0;
@@ -329,10 +301,10 @@ static void tegra_adma_stop(struct tegra_adma_chan *tdc)
 {
 	unsigned int status;
 
-	/* Disable ADMA */
+	 
 	tdma_ch_write(tdc, ADMA_CH_CMD, 0);
 
-	/* Clear interrupt status */
+	 
 	tegra_adma_irq_clear(tdc);
 
 	if (readx_poll_timeout_atomic(readl, tdc->chan_addr + ADMA_CH_STATUS,
@@ -375,7 +347,7 @@ static void tegra_adma_start(struct tegra_adma_chan *tdc)
 	tdma_ch_write(tdc, ADMA_CH_FIFO_CTRL, ch_regs->fifo_ctrl);
 	tdma_ch_write(tdc, ADMA_CH_CONFIG, ch_regs->config);
 
-	/* Start ADMA */
+	 
 	tdma_ch_write(tdc, ADMA_CH_CMD, 1);
 
 	tdc->desc = desc;
@@ -388,9 +360,7 @@ static unsigned int tegra_adma_get_residue(struct tegra_adma_chan *tdc)
 	unsigned int pos = tdma_ch_read(tdc, ADMA_CH_XFER_STATUS);
 	unsigned int periods_remaining;
 
-	/*
-	 * Handle wrap around of buffer count register
-	 */
+	 
 	if (pos < tdc->tx_buf_pos)
 		tdc->tx_buf_count += pos + (max - tdc->tx_buf_pos);
 	else
@@ -599,17 +569,7 @@ static int tegra_adma_set_xfer_params(struct tegra_adma_chan *tdc,
 	if (cdata->has_outstanding_reqs)
 		ch_regs->config |= TEGRA186_ADMA_CH_CONFIG_OUTSTANDING_REQS(8);
 
-	/*
-	 * 'sreq_index' represents the current ADMAIF channel number and as per
-	 * HW recommendation its FIFO size should match with the corresponding
-	 * ADMA channel.
-	 *
-	 * ADMA FIFO size is set as per below (based on default ADMAIF channel
-	 * FIFO sizes):
-	 *    fifo_size = 0x2 (sreq_index > sreq_index_offset)
-	 *    fifo_size = 0x3 (sreq_index <= sreq_index_offset)
-	 *
-	 */
+	 
 	if (tdc->sreq_index > cdata->sreq_index_offset)
 		ch_regs->fifo_ctrl =
 			ADMA_CH_REG_FIELD_VAL(2, cdata->ch_fifo_size_mask,
@@ -743,7 +703,7 @@ static int __maybe_unused tegra_adma_runtime_suspend(struct device *dev)
 		tdc = &tdma->channels[i];
 		ch_reg = &tdc->ch_regs;
 		ch_reg->cmd = tdma_ch_read(tdc, ADMA_CH_CMD);
-		/* skip if channel is not active */
+		 
 		if (!ch_reg->cmd)
 			continue;
 		ch_reg->tc = tdma_ch_read(tdc, ADMA_CH_TC);
@@ -780,7 +740,7 @@ static int __maybe_unused tegra_adma_runtime_resume(struct device *dev)
 	for (i = 0; i < tdma->nr_channels; i++) {
 		tdc = &tdma->channels[i];
 		ch_reg = &tdc->ch_regs;
-		/* skip if channel was not active earlier */
+		 
 		if (!ch_reg->cmd)
 			continue;
 		tdma_ch_write(tdc, ADMA_CH_TC, ch_reg->tc);

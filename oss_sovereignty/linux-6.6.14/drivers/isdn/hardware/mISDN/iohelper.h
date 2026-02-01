@@ -1,14 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * iohelper.h
- *		helper for define functions to access ISDN hardware
- *              supported are memory mapped IO
- *		indirect port IO (one port for address, one for data)
- *
- * Author       Karsten Keil <keil@isdn4linux.de>
- *
- * Copyright 2009  by Karsten Keil <keil@isdn4linux.de>
- */
+ 
+ 
 
 #ifndef _IOHELPER_H
 #define _IOHELPER_H

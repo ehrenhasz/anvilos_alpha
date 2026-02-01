@@ -1,10 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright 2013 Cisco Systems, Inc. and/or its affiliates.
- * All rights reserved.
- */
 
-/* kernel includes */
+ 
+
+ 
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/usb.h>
@@ -13,7 +10,7 @@
 #include <linux/input.h>
 #include <linux/mutex.h>
 #include <linux/i2c.h>
-/* V4l includes */
+ 
 #include <linux/videodev2.h>
 #include <media/v4l2-common.h>
 #include <media/v4l2-device.h>
@@ -23,12 +20,12 @@
 
 #include "si4713.h"
 
-/* driver and module definitions */
+ 
 MODULE_AUTHOR("Dinesh Ram <dinesh.ram@cern.ch>");
 MODULE_DESCRIPTION("Si4713 FM Transmitter USB driver");
 MODULE_LICENSE("GPL v2");
 
-/* The Device announces itself as Cygnal Integrated Products, Inc. */
+ 
 #define USB_SI4713_VENDOR		0x10c4
 #define USB_SI4713_PRODUCT		0x8244
 
@@ -36,11 +33,11 @@ MODULE_LICENSE("GPL v2");
 #define USB_TIMEOUT			1000
 #define USB_RESP_TIMEOUT		50000
 
-/* USB Device ID List */
+ 
 static const struct usb_device_id usb_si4713_usb_device_table[] = {
 	{USB_DEVICE_AND_INTERFACE_INFO(USB_SI4713_VENDOR, USB_SI4713_PRODUCT,
 							USB_CLASS_HID, 0, 0) },
-	{ }						/* Terminating entry */
+	{ }						 
 };
 
 MODULE_DEVICE_TABLE(usb, usb_si4713_usb_device_table);
@@ -116,7 +113,7 @@ static const struct v4l2_ioctl_ops usb_si4713_ioctl_ops = {
 	.vidioc_unsubscribe_event = v4l2_event_unsubscribe,
 };
 
-/* File system interface */
+ 
 static const struct v4l2_file_operations usb_si4713_fops = {
 	.owner		= THIS_MODULE,
 	.open           = v4l2_fh_open,
@@ -136,26 +133,14 @@ static void usb_si4713_video_device_release(struct v4l2_device *v4l2_dev)
 	kfree(radio);
 }
 
-/*
- * This command sequence emulates the behaviour of the Windows driver.
- * The structure of these commands was determined by sniffing the
- * usb traffic of the device during startup.
- * Most likely, these commands make some queries to the device.
- * Commands are sent to enquire parameters like the bus mode,
- * component revision, boot mode, the device serial number etc.
- *
- * These commands are necessary to be sent in this order during startup.
- * The device fails to powerup if these commands are not sent.
- *
- * The complete list of startup commands is given in the start_seq table below.
- */
+ 
 static int si4713_send_startup_command(struct si4713_usb_device *radio)
 {
 	unsigned long until_jiffies = jiffies + usecs_to_jiffies(USB_RESP_TIMEOUT) + 1;
 	u8 *buffer = radio->buffer;
 	int retval;
 
-	/* send the command */
+	 
 	retval = usb_control_msg(radio->usbdev, usb_sndctrlpipe(radio->usbdev, 0),
 					0x09, 0x21, 0x033f, 0, radio->buffer,
 					BUFFER_LENGTH, USB_TIMEOUT);
@@ -163,15 +148,14 @@ static int si4713_send_startup_command(struct si4713_usb_device *radio)
 		return retval;
 
 	for (;;) {
-		/* receive the response */
+		 
 		retval = usb_control_msg(radio->usbdev, usb_rcvctrlpipe(radio->usbdev, 0),
 				0x01, 0xa1, 0x033f, 0, radio->buffer,
 				BUFFER_LENGTH, USB_TIMEOUT);
 		if (retval < 0)
 			return retval;
 		if (!radio->buffer[1]) {
-			/* USB traffic sniffing showed that some commands require
-			 * additional checks. */
+			 
 			switch (buffer[1]) {
 			case 0x32:
 				if (radio->buffer[2] == 0)
@@ -203,11 +187,7 @@ struct si4713_start_seq_table {
 	u8 payload[8];
 };
 
-/*
- * Some of the startup commands that could be recognized are :
- * (0x03): Get serial number of the board (Response : CB000-00-00)
- * (0x06, 0x03, 0x03, 0x08, 0x01, 0x0f) : Get Component revision
- */
+ 
 static const struct si4713_start_seq_table start_seq[] = {
 
 	{ 1, { 0x03 } },
@@ -220,8 +200,7 @@ static const struct si4713_start_seq_table start_seq[] = {
 	{ 2, { 0x05, 0x03 } },
 	{ 7, { 0x06, 0x00, 0x06, 0x0e, 0x01, 0x0f, 0x05 } },
 	{ 1, { 0x12 } },
-	/* Commands that are sent after pressing the 'Initialize'
-		button in the windows application */
+	 
 	{ 1, { 0x03 } },
 	{ 1, { 0x01 } },
 	{ 2, { 0x09, 0x90 } },
@@ -265,14 +244,7 @@ struct si4713_command_table {
 	u8 payload[8];
 };
 
-/*
- * Structure of a command :
- *	Byte 1 : 0x3f (always)
- *	Byte 2 : 0x06 (send a command)
- *	Byte 3 : Unknown
- *	Byte 4 : Number of arguments + 1 (for the command byte)
- *	Byte 5 : Number of response bytes
- */
+ 
 static struct si4713_command_table command_table[] = {
 
 	{ SI4713_CMD_POWER_UP,		{ 0x00, SI4713_PWUP_NARGS + 1, SI4713_PWUP_NRESP} },
@@ -301,7 +273,7 @@ static int send_command(struct si4713_usb_device *radio, u8 *payload, char *data
 	memcpy(radio->buffer + 5, data, len);
 	memset(radio->buffer + 5 + len, 0, BUFFER_LENGTH - 5 - len);
 
-	/* send the command */
+	 
 	retval = usb_control_msg(radio->usbdev, usb_sndctrlpipe(radio->usbdev, 0),
 					0x09, 0x21, 0x033f, 0, radio->buffer,
 					BUFFER_LENGTH, USB_TIMEOUT);
@@ -314,7 +286,7 @@ static int si4713_i2c_read(struct si4713_usb_device *radio, char *data, int len)
 	unsigned long until_jiffies = jiffies + usecs_to_jiffies(USB_RESP_TIMEOUT) + 1;
 	int retval;
 
-	/* receive the response */
+	 
 	for (;;) {
 		retval = usb_control_msg(radio->usbdev,
 					usb_rcvctrlpipe(radio->usbdev, 0),
@@ -323,19 +295,13 @@ static int si4713_i2c_read(struct si4713_usb_device *radio, char *data, int len)
 		if (retval < 0)
 			return retval;
 
-		/*
-		 * Check that we get a valid reply back (buffer[1] == 0) and
-		 * that CTS is set before returning, otherwise we wait and try
-		 * again. The i2c driver also does the CTS check, but the timeouts
-		 * used there are much too small for this USB driver, so we wait
-		 * for it here.
-		 */
+		 
 		if (radio->buffer[1] == 0 && (radio->buffer[2] & SI4713_CTS)) {
 			memcpy(data, radio->buffer + 2, len);
 			return 0;
 		}
 		if (time_is_before_jiffies(until_jiffies)) {
-			/* Zero the status value, ensuring CTS isn't set */
+			 
 			data[0] = 0;
 			return 0;
 		}
@@ -389,8 +355,7 @@ static const struct i2c_algorithm si4713_algo = {
 	.functionality = si4713_functionality,
 };
 
-/* This name value shows up in the sysfs filename associated
-		with this I2C adapter */
+ 
 static const struct i2c_adapter si4713_i2c_adapter_template = {
 	.name   = "si4713-i2c",
 	.owner  = THIS_MODULE,
@@ -400,14 +365,14 @@ static const struct i2c_adapter si4713_i2c_adapter_template = {
 static int si4713_register_i2c_adapter(struct si4713_usb_device *radio)
 {
 	radio->i2c_adapter = si4713_i2c_adapter_template;
-	/* set up sysfs linkage to our parent device */
+	 
 	radio->i2c_adapter.dev.parent = &radio->usbdev->dev;
 	i2c_set_adapdata(&radio->i2c_adapter, radio);
 
 	return i2c_add_adapter(&radio->i2c_adapter);
 }
 
-/* check if the device is present and register with v4l and usb if it is */
+ 
 static int usb_si4713_probe(struct usb_interface *intf,
 				const struct usb_device_id *id)
 {
@@ -419,7 +384,7 @@ static int usb_si4713_probe(struct usb_interface *intf,
 	dev_info(&intf->dev, "Si4713 development board discovered: (%04X:%04X)\n",
 			id->idVendor, id->idProduct);
 
-	/* Initialize local device structure */
+	 
 	radio = kzalloc(sizeof(struct si4713_usb_device), GFP_KERNEL);
 	if (radio)
 		radio->buffer = kmalloc(BUFFER_LENGTH, GFP_KERNEL);
@@ -511,7 +476,7 @@ static void usb_si4713_disconnect(struct usb_interface *intf)
 	v4l2_device_put(&radio->v4l2_dev);
 }
 
-/* USB subsystem interface */
+ 
 static struct usb_driver usb_si4713_driver = {
 	.name			= "radio-usb-si4713",
 	.probe			= usb_si4713_probe,

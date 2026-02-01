@@ -1,15 +1,4 @@
-/*
- * include/linux/pata_arasan_cf_data.h
- *
- * Arasan Compact Flash host controller platform data header file
- *
- * Copyright (C) 2011 ST Microelectronics
- * Viresh Kumar <vireshk@kernel.org>
- *
- * This file is licensed under the terms of the GNU General Public
- * License version 2. This program is licensed "as is" without any
- * warranty of any kind, whether express or implied.
- */
+ 
 
 #ifndef _PATA_ARASAN_CF_DATA_H
 #define _PATA_ARASAN_CF_DATA_H
@@ -29,10 +18,7 @@ struct arasan_cf_pdata {
 	#define CF_IF_CLK_150M			(0x8)
 	#define CF_IF_CLK_166M			(0x9)
 	#define CF_IF_CLK_200M			(0xA)
-	/*
-	 * Platform specific incapabilities of CF controller is handled via
-	 * quirks
-	 */
+	 
 	u32 quirk;
 	#define CF_BROKEN_PIO			(1)
 	#define CF_BROKEN_MWDMA			(1 << 1)
@@ -44,4 +30,4 @@ set_arasan_cf_pdata(struct platform_device *pdev, struct arasan_cf_pdata *data)
 {
 	pdev->dev.platform_data = data;
 }
-#endif /* _PATA_ARASAN_CF_DATA_H */
+#endif  

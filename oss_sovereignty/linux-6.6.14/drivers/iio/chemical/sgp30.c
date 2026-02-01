@@ -1,20 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * sgp30.c - Support for Sensirion SGP Gas Sensors
- *
- * Copyright (C) 2018 Andreas Brauchli <andreas.brauchli@sensirion.com>
- *
- * I2C slave address: 0x58
- *
- * Datasheets:
- * https://www.sensirion.com/file/datasheet_sgp30
- * https://www.sensirion.com/file/datasheet_sgpc3
- *
- * TODO:
- * - baseline support
- * - humidity compensation
- * - power mode switching (SGPC3)
- */
+
+ 
 
 #include <linux/crc8.h>
 #include <linux/delay.h>
@@ -191,15 +176,7 @@ static const struct sgp_device sgp_devices[] = {
 	},
 };
 
-/**
- * sgp_verify_buffer() - verify the checksums of the data buffer words
- *
- * @data:       SGP data
- * @buf:        Raw data buffer
- * @word_count: Num data words stored in the buffer, excluding CRC bytes
- *
- * Return:      0 on success, negative error otherwise.
- */
+ 
 static int sgp_verify_buffer(const struct sgp_data *data,
 			     union sgp_reading *buf, size_t word_count)
 {
@@ -220,17 +197,7 @@ static int sgp_verify_buffer(const struct sgp_data *data,
 	return 0;
 }
 
-/**
- * sgp_read_cmd() - reads data from sensor after issuing a command
- * The caller must hold data->data_lock for the duration of the call.
- * @data:        SGP data
- * @cmd:         SGP Command to issue
- * @buf:         Raw data buffer to use
- * @word_count:  Num words to read, excluding CRC bytes
- * @duration_us: Time taken to sensor to take a reading and data to be ready.
- *
- * Return:       0 on success, negative error otherwise.
- */
+ 
 static int sgp_read_cmd(struct sgp_data *data, enum sgp_cmd cmd,
 			union sgp_reading *buf, size_t word_count,
 			unsigned long duration_us)
@@ -258,19 +225,12 @@ static int sgp_read_cmd(struct sgp_data *data, enum sgp_cmd cmd,
 	return sgp_verify_buffer(data, buf, word_count);
 }
 
-/**
- * sgp_measure_iaq() - measure and retrieve IAQ values from sensor
- * The caller must hold data->data_lock for the duration of the call.
- * @data:       SGP data
- *
- * Return:      0 on success, -EBUSY on default values, negative error
- *              otherwise.
- */
+ 
 
 static int sgp_measure_iaq(struct sgp_data *data)
 {
 	int ret;
-	/* data contains default values */
+	 
 	bool default_vals = !time_after(jiffies, data->iaq_init_start_jiffies +
 						 data->iaq_defval_skip_jiffies);
 
@@ -415,7 +375,7 @@ static int sgp_check_compat(struct sgp_data *data,
 	u16 ix, num_fs;
 	u16 product, generation, major, minor;
 
-	/* driver does not match product */
+	 
 	generation = SGP_VERS_GEN(data);
 	if (generation != 0) {
 		dev_err(dev,
@@ -433,7 +393,7 @@ static int sgp_check_compat(struct sgp_data *data,
 	if (SGP_VERS_RESERVED(data))
 		dev_warn(dev, "reserved bit is set\n");
 
-	/* engineering samples are not supported: no interface guarantees */
+	 
 	if (SGP_VERS_ENG_BIT(data))
 		return -ENODEV;
 
@@ -520,7 +480,7 @@ static int sgp_probe(struct i2c_client *client)
 	crc8_populate_msb(sgp_crc8_table, SGP_CRC8_POLYNOMIAL);
 	mutex_init(&data->data_lock);
 
-	/* get feature set version and write it to client data */
+	 
 	ret = sgp_read_cmd(data, SGP_CMD_GET_FEATURE_SET, &data->buffer, 1,
 			   SGP_CMD_DURATION_US);
 	if (ret < 0)

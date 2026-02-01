@@ -1,18 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (c) 1996, 2003 VIA Networking Technologies, Inc.
- * All rights reserved.
- *
- * Purpose:  MAC routines
- *
- * Author: Tevin Chen
- *
- * Date: May 21, 1996
- *
- * Functions:
- *
- * Revision History:
- */
+
+ 
 
 #include <linux/etherdevice.h>
 
@@ -64,7 +51,7 @@ int vnt_mac_set_keyentry(struct vnt_private *priv, u16 key_ctl, u32 entry_idx,
 	set_key.u.write.key_ctl = cpu_to_le16(key_ctl);
 	ether_addr_copy(set_key.u.write.addr, addr);
 
-	/* swap over swap[0] and swap[1] to get correct write order */
+	 
 	swap(set_key.u.swap[0], set_key.u.swap[1]);
 
 	memcpy(set_key.key, key, WLAN_KEY_LEN_CCMP);

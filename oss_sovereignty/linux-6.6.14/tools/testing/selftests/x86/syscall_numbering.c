@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * syscall_numbering.c - test calling the x86-64 kernel with various
- * valid and invalid system call numbers.
- *
- * Copyright (c) 2018 Andrew Lutomirski
- */
+ 
+ 
 
 #define _GNU_SOURCE
 
@@ -26,23 +21,23 @@
 
 #include <linux/ptrace.h>
 
-/* Common system call numbers */
+ 
 #define SYS_READ	  0
 #define SYS_WRITE	  1
 #define SYS_GETPID	 39
-/* x64-only system call numbers */
+ 
 #define X64_IOCTL	 16
 #define X64_READV	 19
 #define X64_WRITEV	 20
-/* x32-only system call numbers (without X32_BIT) */
+ 
 #define X32_IOCTL	514
 #define X32_READV	515
 #define X32_WRITEV	516
 
 #define X32_BIT 0x40000000
 
-static int nullfd = -1;		/* File descriptor for /dev/null */
-static bool with_x32;		/* x32 supported on this kernel? */
+static int nullfd = -1;		 
+static bool with_x32;		 
 
 enum ptrace_pass {
 	PTP_NOTHING,
@@ -64,14 +59,12 @@ static const char * const ptrace_pass_name[] =
 	[PTP_INTNUM]	= "sign-extending the syscall number",
 };
 
-/*
- * Shared memory block between tracer and test
- */
+ 
 struct shared {
-	unsigned int nerr;	/* Total error count */
-	unsigned int indent;	/* Message indentation level */
+	unsigned int nerr;	 
+	unsigned int indent;	 
 	enum ptrace_pass ptrace_pass;
-	bool probing_syscall;	/* In probe_syscall() */
+	bool probing_syscall;	 
 };
 static volatile struct shared *sh;
 
@@ -103,15 +96,10 @@ static inline unsigned int offset(void)
 		exit(EX_OSERR);				\
        } while (0)
 
-/* Sentinel for ptrace-modified return value */
+ 
 #define MODIFIED_BY_PTRACE	-9999
 
-/*
- * Directly invokes the given syscall with nullfd as the first argument
- * and the rest zero. Avoids involving glibc wrappers in case they ever
- * end up intercepting some system calls for some reason, or modify
- * the system call number itself.
- */
+ 
 static long long probe_syscall(int msb, int lsb)
 {
 	register long long arg1 asm("rdi") = nullfd;
@@ -123,13 +111,7 @@ static long long probe_syscall(int msb, int lsb)
 	long long nr = ((long long)msb << 32) | (unsigned int)lsb;
 	long long ret;
 
-	/*
-	 * We pass in an extra copy of the extended system call number
-	 * in %rbx, so we can examine it from the ptrace handler without
-	 * worrying about it being possibly modified. This is to test
-	 * the validity of struct user regs.orig_rax a.k.a.
-	 * struct pt_regs.orig_ax.
-	 */
+	 
 	sh->probing_syscall = true;
 	asm volatile("syscall"
 		     : "=a" (ret)
@@ -148,10 +130,7 @@ static const char *syscall_str(int msb, int start, int end)
 	const char * const type = (start & X32_BIT) ? "x32" : "x64";
 	int lsb = start;
 
-	/*
-	 * Improve readability by stripping the x32 bit, but round
-	 * toward zero so we don't display -1 as -1073741825.
-	 */
+	 
 	if (lsb < 0)
 		lsb |= X32_BIT;
 	else
@@ -218,11 +197,7 @@ static bool check_enosys(int msb, int nr)
 	return check_for(msb, nr, nr, -ENOSYS);
 }
 
-/*
- * Anyone diagnosing a failure will want to know whether the kernel
- * supports x32. Tell them. This can also be used to conditionalize
- * tests based on existence or nonexistence of x32.
- */
+ 
 static bool test_x32(void)
 {
 	long long ret;
@@ -271,12 +246,7 @@ static void test_syscalls_common(int msb)
 
 static void test_syscalls_with_x32(int msb)
 {
-	/*
-	 * Syscalls 512-547 are "x32" syscalls.  They are
-	 * intended to be called with the x32 (0x40000000) bit
-	 * set.  Calling them without the x32 bit set is
-	 * nonsense and should not work.
-	 */
+	 
 	run("Checking x32 syscalls as 64 bit\n");
 	check_for(msb, 512, 547, -ENOSYS);
 
@@ -309,10 +279,7 @@ static void test_syscall_numbering(void)
 
 	sh->indent++;
 
-	/*
-	 * The MSB is supposed to be ignored, so we loop over a few
-	 * to test that out.
-	 */
+	 
 	for (size_t i = 0; i < sizeof(msbs)/sizeof(msbs[0]); i++) {
 		int msb = msbs[i];
 		run("Checking system calls with msb = %d (0x%x)\n",
@@ -353,9 +320,9 @@ static void mess_with_syscall(pid_t testpid, enum ptrace_pass pass)
 {
 	struct user_regs_struct regs;
 
-	sh->probing_syscall = false; /* Do this on entry only */
+	sh->probing_syscall = false;  
 
-	/* For these, don't even getregs */
+	 
 	if (pass == PTP_NOTHING || pass == PTP_DONE)
 		return;
 
@@ -369,10 +336,10 @@ static void mess_with_syscall(pid_t testpid, enum ptrace_pass pass)
 
 	switch (pass) {
 	case PTP_GETREGS:
-		/* Just read, no writeback */
+		 
 		return;
 	case PTP_WRITEBACK:
-		/* Write back the same register state verbatim */
+		 
 		break;
 	case PTP_FUZZRET:
 		regs.rax = MODIFIED_BY_PTRACE;
@@ -404,7 +371,7 @@ static void syscall_numbering_tracer(pid_t testpid)
 		if (wpid != testpid)
 			continue;
 		if (!WIFSTOPPED(wstatus))
-			break;	/* Thread exited? */
+			break;	 
 
 		if (sh->probing_syscall && WSTOPSIG(wstatus) == SIGTRAP)
 			mess_with_syscall(testpid, sh->ptrace_pass);
@@ -413,16 +380,16 @@ static void syscall_numbering_tracer(pid_t testpid)
 
 	ptrace(PTRACE_DETACH, testpid, NULL, NULL);
 
-	/* Wait for the child process to terminate */
+	 
 	while (waitpid(testpid, &wstatus, 0) != testpid || !WIFEXITED(wstatus))
-		/* wait some more */;
+		 ;
 }
 
 static void test_traced_syscall_numbering(void)
 {
 	pid_t testpid;
 
-	/* Launch the test thread; this thread continues as the tracer thread */
+	 
 	testpid = fork();
 
 	if (testpid < 0) {
@@ -439,23 +406,16 @@ int main(void)
 {
 	unsigned int nerr;
 
-	/*
-	 * It is quite likely to get a segfault on a failure, so make
-	 * sure the message gets out by setting stdout to nonbuffered.
-	 */
+	 
 	setvbuf(stdout, NULL, _IONBF, 0);
 
-	/*
-	 * Harmless file descriptor to work on...
-	 */
+	 
 	nullfd = open("/dev/null", O_RDWR);
 	if (nullfd < 0) {
 		crit("Unable to open /dev/null: %s\n", strerror(errno));
 	}
 
-	/*
-	 * Set up a block of shared memory...
-	 */
+	 
 	sh = mmap(NULL, sysconf(_SC_PAGE_SIZE), PROT_READ|PROT_WRITE,
 		  MAP_ANONYMOUS|MAP_SHARED, 0, 0);
 	if (sh == MAP_FAILED) {

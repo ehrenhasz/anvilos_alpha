@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Driver for Pericom UART */
+
+ 
 
 #include <linux/bits.h>
 #include <linux/module.h>
@@ -67,7 +67,7 @@ static void pericom_do_set_divisor(struct uart_port *port, unsigned int baud,
 		if (divisor > 0xffff)
 			continue;
 
-		/* Update delta due to possible divisor change */
+		 
 		delta = maxrate / divisor - baud;
 		if (abs(delta) < baud / 50) {
 			struct uart_8250_port *up = up_to_u8250p(port);
@@ -152,19 +152,13 @@ static void pericom8250_remove(struct pci_dev *pdev)
 }
 
 static const struct pci_device_id pericom8250_pci_ids[] = {
-	/*
-	 * Pericom PI7C9X795[1248] Uno/Dual/Quad/Octal UART
-	 * (Only 7954 has an offset jump for port 4)
-	 */
+	 
 	{ PCI_VDEVICE(PERICOM, PCI_DEVICE_ID_PERICOM_PI7C9X7951) },
 	{ PCI_VDEVICE(PERICOM, PCI_DEVICE_ID_PERICOM_PI7C9X7952) },
 	{ PCI_VDEVICE(PERICOM, PCI_DEVICE_ID_PERICOM_PI7C9X7954) },
 	{ PCI_VDEVICE(PERICOM, PCI_DEVICE_ID_PERICOM_PI7C9X7958) },
 
-	/*
-	 * ACCES I/O Products quad
-	 * (Only 7954 has an offset jump for port 4)
-	 */
+	 
 	{ PCI_VDEVICE(ACCESSIO, PCI_DEVICE_ID_ACCESSIO_PCIE_COM_2SDB) },
 	{ PCI_VDEVICE(ACCESSIO, PCI_DEVICE_ID_ACCESSIO_MPCIE_COM_2S) },
 	{ PCI_VDEVICE(ACCESSIO, PCI_DEVICE_ID_ACCESSIO_PCIE_COM422_4) },

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Intel Low Power Subsystem clocks.
- *
- * Copyright (C) 2013, Intel Corporation
- * Authors: Mika Westerberg <mika.westerberg@linux.intel.com>
- *	    Heikki Krogerus <heikki.krogerus@linux.intel.com>
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/err.h>
@@ -22,7 +16,7 @@ static int lpss_atom_clk_probe(struct platform_device *pdev)
 	if (!drvdata)
 		return -ENOMEM;
 
-	/* LPSS free running clock */
+	 
 	drvdata->name = "lpss_clk";
 	clk = clk_register_fixed_rate(&pdev->dev, drvdata->name, NULL,
 				      0, 100000000);

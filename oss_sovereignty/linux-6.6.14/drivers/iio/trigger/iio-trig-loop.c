@@ -1,22 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright 2016 Jonathan Cameron <jic23@kernel.org>
- *
- * Based on a mashup of the hrtimer trigger and continuous sampling proposal of
- * Gregor Boirie <gregor.boirie@parrot.com>
- *
- * Note this is still rather experimental and may eat babies.
- *
- * Todo
- * * Protect against connection of devices that 'need' the top half
- *   handler.
- * * Work out how to run top half handlers in this context if it is
- *   safe to do so (timestamp grabbing for example)
- *
- * Tested against a max1363. Used about 33% cpu for the thread and 20%
- * for generic_buffer piping to /dev/null. Watermark set at 64 on a 128
- * element kfifo buffer.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>

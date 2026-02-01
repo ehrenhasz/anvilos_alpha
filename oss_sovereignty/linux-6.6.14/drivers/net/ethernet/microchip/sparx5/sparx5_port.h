@@ -1,20 +1,17 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/* Microchip Sparx5 Switch driver
- *
- * Copyright (c) 2021 Microchip Technology Inc. and its subsidiaries.
- */
+ 
+ 
 
 #ifndef __SPARX5_PORT_H__
 #define __SPARX5_PORT_H__
 
 #include "sparx5_main.h"
 
-/* Port PCP rewrite mode */
+ 
 #define SPARX5_PORT_REW_TAG_CTRL_CLASSIFIED 0
 #define SPARX5_PORT_REW_TAG_CTRL_DEFAULT 1
 #define SPARX5_PORT_REW_TAG_CTRL_MAPPED  2
 
-/* Port DSCP rewrite mode */
+ 
 #define SPARX5_PORT_REW_DSCP_NONE 0
 #define SPARX5_PORT_REW_DSCP_IF_ZERO 1
 #define SPARX5_PORT_REW_DSCP_SELECTED  2
@@ -174,4 +171,4 @@ int sparx5_port_qos_dscp_rewr_set(const struct sparx5_port *port,
 int sparx5_port_qos_default_set(const struct sparx5_port *port,
 				const struct sparx5_port_qos *qos);
 
-#endif	/* __SPARX5_PORT_H__ */
+#endif	 

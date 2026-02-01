@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Meson GXL and GXM USB2 PHY driver
- *
- * Copyright (C) 2017 Martin Blumenstingl <martin.blumenstingl@googlemail.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -15,7 +11,7 @@
 #include <linux/phy/phy.h>
 #include <linux/platform_device.h>
 
-/* bits [31:27] are read-only */
+ 
 #define U2P_R0							0x0
 	#define U2P_R0_BYPASS_SEL				BIT(0)
 	#define U2P_R0_BYPASS_DM_EN				BIT(1)
@@ -63,7 +59,7 @@
 	#define U2P_R1_SQRX_TUNE_MASK				GENMASK(28, 26)
 	#define U2P_R1_COMP_DIS_TUNE_MASK			GENMASK(31, 29)
 
-/* bits [31:14] are read-only */
+ 
 #define U2P_R2							0x8
 	#define U2P_R2_TESTDATA_IN_MASK				GENMASK(7, 0)
 	#define U2P_R2_TESTADDR_MASK				GENMASK(11, 8)
@@ -137,7 +133,7 @@ static int phy_meson_gxl_usb2_reset(struct phy *phy)
 	struct phy_meson_gxl_usb2_priv *priv = phy_get_drvdata(phy);
 
 	if (priv->is_enabled) {
-		/* reset the PHY and wait until settings are stabilized */
+		 
 		regmap_update_bits(priv->regmap, U2P_R0, U2P_R0_POWER_ON_RESET,
 				   U2P_R0_POWER_ON_RESET);
 		udelay(RESET_COMPLETE_TIME);
@@ -191,7 +187,7 @@ static int phy_meson_gxl_usb2_power_off(struct phy *phy)
 
 	priv->is_enabled = 0;
 
-	/* power off the PHY by putting it into reset mode */
+	 
 	regmap_update_bits(priv->regmap, U2P_R0, U2P_R0_POWER_ON_RESET,
 			   U2P_R0_POWER_ON_RESET);
 
@@ -205,7 +201,7 @@ static int phy_meson_gxl_usb2_power_on(struct phy *phy)
 
 	priv->is_enabled = 1;
 
-	/* power on the PHY by taking it out of reset mode */
+	 
 	regmap_update_bits(priv->regmap, U2P_R0, U2P_R0_POWER_ON_RESET, 0);
 
 	ret = phy_meson_gxl_usb2_set_mode(phy, priv->mode, 0);
@@ -249,7 +245,7 @@ static int phy_meson_gxl_usb2_probe(struct platform_device *pdev)
 	if (IS_ERR(base))
 		return PTR_ERR(base);
 
-	/* start in host mode */
+	 
 	priv->mode = PHY_MODE_USB_HOST;
 
 	priv->regmap = devm_regmap_init_mmio(dev, base,

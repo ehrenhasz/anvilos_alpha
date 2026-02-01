@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * smccc_filter - Tests for the SMCCC filter UAPI.
- *
- * Copyright (c) 2023 Google LLC
- *
- * This test includes:
- *  - Tests that the UAPI constraints are upheld by KVM. For example, userspace
- *    is prevented from filtering the architecture range of SMCCC calls.
- *  - Test that the filter actions (DENIED, FWD_TO_USER) work as intended.
- */
+
+ 
 
 #include <linux/arm-smccc.h>
 #include <linux/psci.h>
@@ -66,10 +57,7 @@ static struct kvm_vm *setup_vm(struct kvm_vcpu **vcpu)
 	vm = vm_create(1);
 	vm_ioctl(vm, KVM_ARM_PREFERRED_TARGET, &init);
 
-	/*
-	 * Enable in-kernel emulation of PSCI to ensure that calls are denied
-	 * due to the SMCCC filter, not because of KVM.
-	 */
+	 
 	init.features[0] |= (1 << KVM_ARM_VCPU_PSCI_0_2);
 
 	*vcpu = aarch64_vcpu_add(vm, 0, &init, guest_main);
@@ -94,7 +82,7 @@ static void test_pad_must_be_zero(void)
 		    "Setting filter with nonzero padding should return EINVAL");
 }
 
-/* Ensure that userspace cannot filter the Arm Architecture SMCCC range */
+ 
 static void test_filter_reserved_range(void)
 {
 	struct kvm_vcpu *vcpu;
@@ -157,7 +145,7 @@ static void test_reserved_action(void)
 }
 
 
-/* Test that overlapping configurations of the SMCCC filter are rejected */
+ 
 static void test_filter_overlap(void)
 {
 	struct kvm_vcpu *vcpu;
@@ -184,7 +172,7 @@ static void expect_call_denied(struct kvm_vcpu *vcpu)
 		    "Unexpected SMCCC return code: %lu", uc.args[1]);
 }
 
-/* Denied SMCCC calls have a return code of SMCCC_RET_NOT_SUPPORTED */
+ 
 static void test_filter_denied(void)
 {
 	enum smccc_conduit conduit;
@@ -222,7 +210,7 @@ static void expect_call_fwd_to_user(struct kvm_vcpu *vcpu, uint32_t func_id,
 			    "KVM_HYPERCALL_EXIT_SMC is set");
 }
 
-/* SMCCC calls forwarded to userspace cause KVM_EXIT_HYPERCALL exits */
+ 
 static void test_filter_fwd_to_user(void)
 {
 	enum smccc_conduit conduit;

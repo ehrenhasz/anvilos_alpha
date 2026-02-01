@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) 2020 MediaTek Inc.
- * Author: Zhiyong Tao <zhiyong.tao@mediatek.com>
- */
+ 
+ 
 
 #ifndef __MT8195_PINFUNC_H
 #define __MT8195_PINFUNC_H
@@ -959,4 +956,4 @@
 #define PINMUX_GPIO143__FUNC_DMIC4_CLK (MTK_PIN_NO(143) | 4)
 #define PINMUX_GPIO143__FUNC_DBG_MON_A13 (MTK_PIN_NO(143) | 7)
 
-#endif /* __MT8195-PINFUNC_H */
+#endif  

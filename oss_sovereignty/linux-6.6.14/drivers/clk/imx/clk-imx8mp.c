@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright 2019 NXP.
- */
+
+ 
 
 #include <dt-bindings/clock/imx8mp-clock.h>
 #include <linux/clk-provider.h>
@@ -526,7 +524,7 @@ static int imx8mp_clocks_probe(struct platform_device *pdev)
 	hws[IMX8MP_CLK_HSIO_AXI] = imx8m_clk_hw_composite("hsio_axi", imx8mp_hsio_axi_sels, ccm_base + 0x8380);
 	hws[IMX8MP_CLK_MEDIA_ISP] = imx8m_clk_hw_composite("media_isp", imx8mp_media_isp_sels, ccm_base + 0x8400);
 
-	/* CORE SEL */
+	 
 	hws[IMX8MP_CLK_A53_CORE] = imx_clk_hw_mux2("arm_a53_core", ccm_base + 0x9880, 24, 1, imx8mp_a53_core_sels, ARRAY_SIZE(imx8mp_a53_core_sels));
 
 	hws[IMX8MP_CLK_MAIN_AXI] = imx8m_clk_hw_composite_bus_critical("main_axi", imx8mp_main_axi_sels, ccm_base + 0x8800);
@@ -728,7 +726,7 @@ static int imx8mp_clocks_probe(struct platform_device *pdev)
 
 static const struct of_device_id imx8mp_clk_of_match[] = {
 	{ .compatible = "fsl,imx8mp-ccm" },
-	{ /* Sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, imx8mp_clk_of_match);
 
@@ -736,10 +734,7 @@ static struct platform_driver imx8mp_clk_driver = {
 	.probe = imx8mp_clocks_probe,
 	.driver = {
 		.name = "imx8mp-ccm",
-		/*
-		 * Disable bind attributes: clocks are not removed and
-		 * reloading the driver will crash or break devices.
-		 */
+		 
 		.suppress_bind_attrs = true,
 		.of_match_table = imx8mp_clk_of_match,
 	},

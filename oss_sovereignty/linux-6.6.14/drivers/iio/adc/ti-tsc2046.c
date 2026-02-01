@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Texas Instruments TSC2046 SPI ADC driver
- *
- * Copyright (c) 2021 Oleksij Rempel <kernel@pengutronix.de>, Pengutronix
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/delay.h>
@@ -19,23 +15,11 @@
 #include <linux/iio/triggered_buffer.h>
 #include <linux/iio/trigger.h>
 
-/*
- * The PENIRQ of TSC2046 controller is implemented as level shifter attached to
- * the X+ line. If voltage of the X+ line reaches a specific level the IRQ will
- * be activated or deactivated.
- * To make this kind of IRQ reusable as trigger following additions were
- * implemented:
- * - rate limiting:
- *   For typical touchscreen use case, we need to trigger about each 10ms.
- * - hrtimer:
- *   Continue triggering at least once after the IRQ was deactivated. Then
- *   deactivate this trigger to stop sampling in order to reduce power
- *   consumption.
- */
+ 
 
 #define TI_TSC2046_NAME				"tsc2046"
 
-/* This driver doesn't aim at the peak continuous sample rate */
+ 
 #define	TI_TSC2046_MAX_SAMPLE_RATE		125000
 #define	TI_TSC2046_SAMPLE_BITS \
 	BITS_PER_TYPE(struct tsc2046_adc_atom)
@@ -55,32 +39,17 @@
 #define TI_TSC2046_ADDR_Y			1
 #define TI_TSC2046_ADDR_TEMP0			0
 
-/*
- * The mode bit sets the resolution of the ADC. With this bit low, the next
- * conversion has 12-bit resolution, whereas with this bit high, the next
- * conversion has 8-bit resolution. This driver is optimized for 12-bit mode.
- * So, for this driver, this bit should stay zero.
- */
+ 
 #define TI_TSC2046_8BIT_MODE			BIT(3)
 
-/*
- * SER/DFR - The SER/DFR bit controls the reference mode, either single-ended
- * (high) or differential (low).
- */
+ 
 #define TI_TSC2046_SER				BIT(2)
 
-/*
- * If VREF_ON and ADC_ON are both zero, then the chip operates in
- * auto-wake/suspend mode. In most case this bits should stay zero.
- */
+ 
 #define TI_TSC2046_PD1_VREF_ON			BIT(1)
 #define TI_TSC2046_PD0_ADC_ON			BIT(0)
 
-/*
- * All supported devices can do 8 or 12bit resolution. This driver
- * supports only 12bit mode, here we have a 16bit data transfer, where
- * the MSB and the 3 LSB are 0.
- */
+ 
 #define TI_TSC2046_DATA_12BIT			GENMASK(14, 3)
 
 #define TI_TSC2046_MAX_CHAN			8
@@ -90,33 +59,21 @@
 	(TI_TSC2046_MIN_POLL_CNT + TI_TSC2046_EXT_POLL_CNT)
 #define TI_TSC2046_INT_VREF			2500
 
-/* Represents a HW sample */
+ 
 struct tsc2046_adc_atom {
-	/*
-	 * Command transmitted to the controller. This field is empty on the RX
-	 * buffer.
-	 */
+	 
 	u8 cmd;
-	/*
-	 * Data received from the controller. This field is empty for the TX
-	 * buffer
-	 */
+	 
 	__be16 data;
 } __packed;
 
-/* Layout of atomic buffers within big buffer */
+ 
 struct tsc2046_adc_group_layout {
-	/* Group offset within the SPI RX buffer */
+	 
 	unsigned int offset;
-	/*
-	 * Amount of tsc2046_adc_atom structs within the same command gathered
-	 * within same group.
-	 */
+	 
 	unsigned int count;
-	/*
-	 * Settling samples (tsc2046_adc_atom structs) which should be skipped
-	 * before good samples will start.
-	 */
+	 
 	unsigned int skip;
 };
 
@@ -153,18 +110,13 @@ struct tsc2046_adc_priv {
 	struct spi_message msg;
 
 	struct {
-		/* Scan data for each channel */
+		 
 		u16 data[TI_TSC2046_MAX_CHAN];
-		/* Timestamp */
+		 
 		s64 ts __aligned(8);
 	} scan_buf;
 
-	/*
-	 * Lock to protect the layout and the SPI transfer buffer.
-	 * tsc2046_adc_group_layout can be changed within update_scan_mode(),
-	 * in this case the l[] and tx/rx buffer will be out of sync to each
-	 * other.
-	 */
+	 
 	struct mutex slock;
 	struct tsc2046_adc_group_layout l[TI_TSC2046_MAX_CHAN];
 	struct tsc2046_adc_atom *rx;
@@ -218,10 +170,7 @@ static const struct tsc2046_adc_dcfg tsc2046_adc_dcfg_tsc2046e = {
 	.num_channels = ARRAY_SIZE(tsc2046_adc_channels),
 };
 
-/*
- * Convert time to a number of samples which can be transferred within this
- * time.
- */
+ 
 static unsigned int tsc2046_adc_time_to_count(struct tsc2046_adc_priv *priv,
 					      unsigned long time)
 {
@@ -242,10 +191,7 @@ static u8 tsc2046_adc_get_cmd(struct tsc2046_adc_priv *priv, int ch_idx,
 {
 	u32 pd;
 
-	/*
-	 * if PD bits are 0, controller will automatically disable ADC, VREF and
-	 * enable IRQ.
-	 */
+	 
 	if (keep_power)
 		pd = TI_TSC2046_PD0_ADC_ON;
 	else
@@ -300,16 +246,13 @@ static int tsc2046_adc_read_one(struct tsc2046_adc_priv *priv, int ch_idx,
 		goto free_tx;
 	}
 
-	/*
-	 * Do not enable automatic power down on working samples. Otherwise the
-	 * plates will never be completely charged.
-	 */
+	 
 	cmd = tsc2046_adc_get_cmd(priv, ch_idx, true);
 
 	for (i = 0; i < max_count - 1; i++)
 		tx_buf[i].cmd = cmd;
 
-	/* automatically power down on last sample */
+	 
 	tx_buf[i].cmd = tsc2046_adc_get_cmd(priv, ch_idx, false);
 
 	memset(&xfer, 0, sizeof(xfer));
@@ -318,10 +261,7 @@ static int tsc2046_adc_read_one(struct tsc2046_adc_priv *priv, int ch_idx,
 	xfer.len = sizeof(*tx_buf) * max_count;
 	spi_message_init_with_transfers(&msg, &xfer, 1);
 
-	/*
-	 * We aren't using spi_write_then_read() because we need to be able
-	 * to get hold of the effective_speed_hz from the xfer
-	 */
+	 
 	ret = spi_sync(priv->spi, &msg);
 	if (ret) {
 		dev_err_ratelimited(&priv->spi->dev, "SPI transfer failed %pe\n",
@@ -377,16 +317,13 @@ static void tsc2046_adc_group_set_cmd(struct tsc2046_adc_priv *priv,
 	unsigned int i;
 	u8 cmd;
 
-	/*
-	 * Do not enable automatic power down on working samples. Otherwise the
-	 * plates will never be completely charged.
-	 */
+	 
 	cmd = tsc2046_adc_get_cmd(priv, ch_idx, true);
 
 	for (i = 0; i < l->count - 1; i++)
 		priv->tx[l->offset + i].cmd = cmd;
 
-	/* automatically power down on last sample */
+	 
 	priv->tx[l->offset + i].cmd = tsc2046_adc_get_cmd(priv, ch_idx, false);
 }
 
@@ -425,7 +362,7 @@ static int tsc2046_adc_scan(struct iio_dev *indio_dev)
 
 	ret = iio_push_to_buffers_with_timestamp(indio_dev, &priv->scan_buf,
 						 iio_get_time_ns(indio_dev));
-	/* If the consumer is kfifo, we may get a EBUSY here - ignore it. */
+	 
 	if (ret < 0 && ret != -EBUSY) {
 		dev_err_ratelimited(dev, "Failed to push scan buffer %pe\n",
 				    ERR_PTR(ret));
@@ -468,12 +405,7 @@ static int tsc2046_adc_read_raw(struct iio_dev *indio_dev,
 
 		return IIO_VAL_INT;
 	case IIO_CHAN_INFO_SCALE:
-		/*
-		 * Note: the TSC2046 has internal voltage divider on the VBAT
-		 * line. This divider can be influenced by external divider.
-		 * So, it is better to use external voltage-divider driver
-		 * instead, which is calculating complete chain.
-		 */
+		 
 		*val = priv->vref_mv;
 		*val2 = chan->scan_type.realbits;
 		return IIO_VAL_FRACTIONAL_LOG2;
@@ -523,16 +455,7 @@ static enum hrtimer_restart tsc2046_adc_timer(struct hrtimer *hrtimer)
 						     trig_timer);
 	unsigned long flags;
 
-	/*
-	 * This state machine should address following challenges :
-	 * - the interrupt source is based on level shifter attached to the X
-	 *   channel of ADC. It will change the state every time we switch
-	 *   between channels. So, we need to disable IRQ if we do
-	 *   iio_trigger_poll().
-	 * - we should do iio_trigger_poll() at some reduced sample rate
-	 * - we should still trigger for some amount of time after last
-	 *   interrupt with enabled IRQ was processed.
-	 */
+	 
 
 	spin_lock_irqsave(&priv->state_lock, flags);
 	switch (priv->state) {
@@ -560,7 +483,7 @@ static enum hrtimer_restart tsc2046_adc_timer(struct hrtimer *hrtimer)
 		fallthrough;
 	case TSC2046_STATE_POLL:
 		priv->state = TSC2046_STATE_ENABLE_IRQ;
-		/* iio_trigger_poll() starts hrtimer */
+		 
 		iio_trigger_poll(priv->trig);
 		break;
 	case TSC2046_STATE_SHUTDOWN:
@@ -590,7 +513,7 @@ static irqreturn_t tsc2046_adc_irq(int irq, void *dev_id)
 		priv->state = TSC2046_STATE_ENABLE_IRQ;
 		priv->poll_cnt = 0;
 
-		/* iio_trigger_poll() starts hrtimer */
+		 
 		disable_irq_nosync(priv->spi->irq);
 		iio_trigger_poll(priv->trig);
 	}
@@ -605,11 +528,7 @@ static void tsc2046_adc_reenable_trigger(struct iio_trigger *trig)
 	struct tsc2046_adc_priv *priv = iio_priv(indio_dev);
 	ktime_t tim;
 
-	/*
-	 * We can sample it as fast as we can, but usually we do not need so
-	 * many samples. Reduce the sample rate for default (touchscreen) use
-	 * case.
-	 */
+	 
 	tim = ns_to_ktime((priv->scan_interval_us - priv->time_per_scan_us) *
 			  NSEC_PER_USEC);
 	hrtimer_start(&priv->trig_timer, tim, HRTIMER_MODE_REL_SOFT);
@@ -655,20 +574,13 @@ static int tsc2046_adc_setup_spi_msg(struct tsc2046_adc_priv *priv)
 	size_t size;
 	int ret;
 
-	/*
-	 * Make dummy read to set initial power state and get real SPI clock
-	 * freq. It seems to be not important which channel is used for this
-	 * case.
-	 */
+	 
 	ret = tsc2046_adc_read_one(priv, TI_TSC2046_ADDR_TEMP0,
 				   &priv->effective_speed_hz);
 	if (ret < 0)
 		return ret;
 
-	/*
-	 * In case SPI controller do not report effective_speed_hz, use
-	 * configure value and hope it will match.
-	 */
+	 
 	if (!priv->effective_speed_hz)
 		priv->effective_speed_hz = priv->spi->max_speed_hz;
 
@@ -677,10 +589,7 @@ static int tsc2046_adc_setup_spi_msg(struct tsc2046_adc_priv *priv)
 	priv->time_per_bit_ns = DIV_ROUND_UP(NSEC_PER_SEC,
 					     priv->effective_speed_hz);
 
-	/*
-	 * Calculate and allocate maximal size buffer if all channels are
-	 * enabled.
-	 */
+	 
 	size = 0;
 	for (ch_idx = 0; ch_idx < ARRAY_SIZE(priv->l); ch_idx++)
 		size += tsc2046_adc_group_set_layout(priv, ch_idx, ch_idx);
@@ -760,13 +669,13 @@ static int tsc2046_adc_configure_regulator(struct tsc2046_adc_priv *priv)
 
 	priv->vref_reg = devm_regulator_get_optional(dev, "vref");
 	if (IS_ERR(priv->vref_reg)) {
-		/* If regulator exists but can't be get, return an error */
+		 
 		if (PTR_ERR(priv->vref_reg) != -ENODEV)
 			return PTR_ERR(priv->vref_reg);
 		priv->vref_reg = NULL;
 	}
 	if (!priv->vref_reg) {
-		/* Use internal reference */
+		 
 		priv->vref_mv = TI_TSC2046_INT_VREF;
 		return 0;
 	}
@@ -879,7 +788,7 @@ static int tsc2046_adc_probe(struct spi_device *spi)
 		return ret;
 	}
 
-	/* set default trigger */
+	 
 	indio_dev->trig = iio_trigger_get(priv->trig);
 
 	return devm_iio_device_register(dev, indio_dev);

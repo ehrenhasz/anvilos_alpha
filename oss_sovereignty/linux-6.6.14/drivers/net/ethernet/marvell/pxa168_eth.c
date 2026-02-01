@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * PXA168 ethernet driver.
- * Most of the code is derived from mv643xx ethernet driver.
- *
- * Copyright (C) 2010 Marvell International Ltd.
- *		Sachin Sanap <ssanap@marvell.com>
- *		Zhangfei Gao <zgao6@marvell.com>
- *		Philip Rakity <prakity@marvell.com>
- *		Mark Brown <markb@marvell.com>
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/clk.h>
@@ -38,9 +29,7 @@
 #define DRIVER_NAME	"pxa168-eth"
 #define DRIVER_VERSION	"0.3"
 
-/*
- * Registers
- */
+ 
 
 #define PHY_ADDRESS		0x0000
 #define SMI			0x0010
@@ -60,25 +49,25 @@
 #define ETH_C_RX_DESC_0		0x04A0
 #define ETH_C_TX_DESC_1		0x04E4
 
-/* smi register */
-#define SMI_BUSY		(1 << 28)	/* 0 - Write, 1 - Read  */
-#define SMI_R_VALID		(1 << 27)	/* 0 - Write, 1 - Read  */
-#define SMI_OP_W		(0 << 26)	/* Write operation      */
-#define SMI_OP_R		(1 << 26)	/* Read operation */
+ 
+#define SMI_BUSY		(1 << 28)	 
+#define SMI_R_VALID		(1 << 27)	 
+#define SMI_OP_W		(0 << 26)	 
+#define SMI_OP_R		(1 << 26)	 
 
 #define PHY_WAIT_ITERATIONS	10
 
 #define PXA168_ETH_PHY_ADDR_DEFAULT	0
-/* RX & TX descriptor command */
+ 
 #define BUF_OWNED_BY_DMA	(1 << 31)
 
-/* RX descriptor status */
+ 
 #define RX_EN_INT		(1 << 23)
 #define RX_FIRST_DESC		(1 << 17)
 #define RX_LAST_DESC		(1 << 16)
 #define RX_ERROR		(1 << 15)
 
-/* TX descriptor command */
+ 
 #define TX_EN_INT		(1 << 23)
 #define TX_GEN_CRC		(1 << 22)
 #define TX_ZERO_PADDING		(1 << 18)
@@ -86,20 +75,20 @@
 #define TX_LAST_DESC		(1 << 16)
 #define TX_ERROR		(1 << 15)
 
-/* SDMA_CMD */
+ 
 #define SDMA_CMD_AT		(1 << 31)
 #define SDMA_CMD_TXDL		(1 << 24)
 #define SDMA_CMD_TXDH		(1 << 23)
 #define SDMA_CMD_AR		(1 << 15)
 #define SDMA_CMD_ERD		(1 << 7)
 
-/* Bit definitions of the Port Config Reg */
+ 
 #define PCR_DUPLEX_FULL		(1 << 15)
 #define PCR_HS			(1 << 12)
 #define PCR_EN			(1 << 7)
 #define PCR_PM			(1 << 0)
 
-/* Bit definitions of the Port Config Extend Reg */
+ 
 #define PCXR_2BSM		(1 << 28)
 #define PCXR_DSCP_EN		(1 << 21)
 #define PCXR_RMII_EN		(1 << 20)
@@ -116,7 +105,7 @@
 #define PCXR_PRIO_TX_OFF	3
 #define PCXR_TX_HIGH_PRI	(7 << PCXR_PRIO_TX_OFF)
 
-/* Bit definitions of the SDMA Config Reg */
+ 
 #define SDCR_BSZ_OFF		12
 #define SDCR_BSZ8		(3 << SDCR_BSZ_OFF)
 #define SDCR_BSZ4		(2 << SDCR_BSZ_OFF)
@@ -128,10 +117,7 @@
 #define SDCR_RC_OFF		2
 #define SDCR_RC_MAX_RETRANS	(0xf << SDCR_RC_OFF)
 
-/*
- * Bit definitions of the Interrupt Cause Reg
- * and Interrupt MASK Reg is the same
- */
+ 
 #define ICR_RXBUF		(1 << 0)
 #define ICR_TXBUF_H		(1 << 2)
 #define ICR_TXBUF_L		(1 << 3)
@@ -148,60 +134,58 @@
 				ICR_TXEND_H  | ICR_TXEND_L |\
 				ICR_RXBUF | ICR_RXERR  | ICR_MII_CH)
 
-#define ETH_HW_IP_ALIGN		2	/* hw aligns IP header */
+#define ETH_HW_IP_ALIGN		2	 
 
 #define NUM_RX_DESCS		64
 #define NUM_TX_DESCS		64
 
 #define HASH_ADD		0
 #define HASH_DELETE		1
-#define HASH_ADDR_TABLE_SIZE	0x4000	/* 16K (1/2K address - PCR_HS == 1) */
+#define HASH_ADDR_TABLE_SIZE	0x4000	 
 #define HOP_NUMBER		12
 
-/* Bit definitions for Port status */
+ 
 #define PORT_SPEED_100		(1 << 0)
 #define FULL_DUPLEX		(1 << 1)
 #define FLOW_CONTROL_DISABLED	(1 << 2)
 #define LINK_UP			(1 << 3)
 
-/* Bit definitions for work to be done */
+ 
 #define WORK_TX_DONE		(1 << 1)
 
-/*
- * Misc definitions.
- */
+ 
 #define SKB_DMA_REALIGN		((PAGE_SIZE - NET_SKB_PAD) % SMP_CACHE_BYTES)
 
 struct rx_desc {
-	u32 cmd_sts;		/* Descriptor command status            */
-	u16 byte_cnt;		/* Descriptor buffer byte count         */
-	u16 buf_size;		/* Buffer size                          */
-	u32 buf_ptr;		/* Descriptor buffer pointer            */
-	u32 next_desc_ptr;	/* Next descriptor pointer              */
+	u32 cmd_sts;		 
+	u16 byte_cnt;		 
+	u16 buf_size;		 
+	u32 buf_ptr;		 
+	u32 next_desc_ptr;	 
 };
 
 struct tx_desc {
-	u32 cmd_sts;		/* Command/status field                 */
+	u32 cmd_sts;		 
 	u16 reserved;
-	u16 byte_cnt;		/* buffer byte count                    */
-	u32 buf_ptr;		/* pointer to buffer for this descriptor */
-	u32 next_desc_ptr;	/* Pointer to next descriptor           */
+	u16 byte_cnt;		 
+	u32 buf_ptr;		 
+	u32 next_desc_ptr;	 
 };
 
 struct pxa168_eth_private {
 	struct platform_device *pdev;
-	int port_num;		/* User Ethernet port number    */
+	int port_num;		 
 	int phy_addr;
 	int phy_speed;
 	int phy_duplex;
 	phy_interface_t phy_intf;
 
-	int rx_resource_err;	/* Rx ring resource error flag */
+	int rx_resource_err;	 
 
-	/* Next available and first returning Rx resource */
+	 
 	int rx_curr_desc_q, rx_used_desc_q;
 
-	/* Next available and first returning Tx resource */
+	 
 	int tx_curr_desc_q, tx_used_desc_q;
 
 	struct rx_desc *p_rx_desc_area;
@@ -221,31 +205,26 @@ struct pxa168_eth_private {
 	u8 work_todo;
 	int skb_size;
 
-	/* Size of Tx Ring per queue */
+	 
 	int tx_ring_size;
-	/* Number of tx descriptors in use */
+	 
 	int tx_desc_count;
-	/* Size of Rx Ring per queue */
+	 
 	int rx_ring_size;
-	/* Number of rx descriptors in use */
+	 
 	int rx_desc_count;
 
-	/*
-	 * Used in case RX Ring is empty, which can occur when
-	 * system does not have resources (skb's)
-	 */
+	 
 	struct timer_list timeout;
 	struct mii_bus *smi_bus;
 
-	/* clock */
+	 
 	struct clk *clk;
 	struct pxa168_eth_platform_data *pd;
-	/*
-	 * Ethernet controller base address.
-	 */
+	 
 	void __iomem *base;
 
-	/* Pointer to the hardware address filter table */
+	 
 	void *htpr;
 	dma_addr_t htpr_dma;
 };
@@ -255,7 +234,7 @@ struct addr_table_entry {
 	__le32 hi;
 };
 
-/* Bit fields of a Hash Table Entry */
+ 
 enum hash_table_entry {
 	HASH_ENTRY_VALID = 1,
 	SKIP = 2,
@@ -316,7 +295,7 @@ static void rxq_refill(struct net_device *dev)
 		if (SKB_DMA_REALIGN)
 			skb_reserve(skb, SKB_DMA_REALIGN);
 		pep->rx_desc_count++;
-		/* Get 'used' Rx descriptor */
+		 
 		used_rx_desc = pep->rx_used_desc_q;
 		p_used_rx_desc = &pep->p_rx_desc_area[used_rx_desc];
 		size = skb_end_pointer(skb) - skb->data;
@@ -327,24 +306,21 @@ static void rxq_refill(struct net_device *dev)
 		p_used_rx_desc->buf_size = size;
 		pep->rx_skb[used_rx_desc] = skb;
 
-		/* Return the descriptor to DMA ownership */
+		 
 		dma_wmb();
 		p_used_rx_desc->cmd_sts = BUF_OWNED_BY_DMA | RX_EN_INT;
 		dma_wmb();
 
-		/* Move the used descriptor pointer to the next descriptor */
+		 
 		pep->rx_used_desc_q = (used_rx_desc + 1) % pep->rx_ring_size;
 
-		/* Any Rx return cancels the Rx resource error status */
+		 
 		pep->rx_resource_err = 0;
 
 		skb_reserve(skb, ETH_HW_IP_ALIGN);
 	}
 
-	/*
-	 * If RX ring is empty of SKB, set a timer to try allocating
-	 * again at a later time.
-	 */
+	 
 	if (pep->rx_desc_count == 0) {
 		pep->timeout.expires = jiffies + (HZ / 10);
 		add_timer(&pep->timeout);
@@ -381,14 +357,7 @@ static void inverse_every_nibble(unsigned char *mac_addr)
 		mac_addr[i] = flip_8_bits(mac_addr[i]);
 }
 
-/*
- * ----------------------------------------------------------------------------
- * This function will calculate the hash function of the address.
- * Inputs
- * mac_addr_orig    - MAC address.
- * Outputs
- * return the calculated entry.
- */
+ 
 static u32 hash_function(const unsigned char *mac_addr_orig)
 {
 	u32 hash_result;
@@ -398,9 +367,7 @@ static u32 hash_function(const unsigned char *mac_addr_orig)
 	u32 addr3;
 	unsigned char mac_addr[ETH_ALEN];
 
-	/* Make a copy of MAC address since we are going to performe bit
-	 * operations on it
-	 */
+	 
 	memcpy(mac_addr, mac_addr_orig, ETH_ALEN);
 
 	nibble_swap_every_byte(mac_addr);
@@ -416,23 +383,7 @@ static u32 hash_function(const unsigned char *mac_addr_orig)
 	return hash_result;
 }
 
-/*
- * ----------------------------------------------------------------------------
- * This function will add/del an entry to the address table.
- * Inputs
- * pep - ETHERNET .
- * mac_addr - MAC address.
- * skip - if 1, skip this address.Used in case of deleting an entry which is a
- *	  part of chain in the hash table.We can't just delete the entry since
- *	  that will break the chain.We need to defragment the tables time to
- *	  time.
- * rd   - 0 Discard packet upon match.
- *	- 1 Receive packet upon match.
- * Outputs
- * address table entry is added/deleted.
- * 0 if success.
- * -ENOSPC if table full
- */
+ 
 static int add_del_hash_entry(struct pxa168_eth_private *pep,
 			      const unsigned char *mac_addr,
 			      u32 rd, u32 skip, int del)
@@ -459,17 +410,14 @@ static int add_del_hash_entry(struct pxa168_eth_private *pep,
 	    | (((mac_addr[4] >> 0) & 0xf) << 3)
 	    | (((mac_addr[3] >> 5) & 0x7) << 0);
 
-	/*
-	 * Pick the appropriate table, start scanning for free/reusable
-	 * entries at the index obtained by hashing the specified MAC address
-	 */
+	 
 	start = pep->htpr;
 	entry = start + hash_function(mac_addr);
 	for (i = 0; i < HOP_NUMBER; i++) {
 		if (!(le32_to_cpu(entry->lo) & HASH_ENTRY_VALID)) {
 			break;
 		} else {
-			/* if same address put in same position */
+			 
 			if (((le32_to_cpu(entry->lo) & 0xfffffff8) ==
 				(new_low & 0xfffffff8)) &&
 				(le32_to_cpu(entry->hi) == new_high)) {
@@ -497,9 +445,7 @@ static int add_del_hash_entry(struct pxa168_eth_private *pep,
 			return 0;
 	}
 
-	/*
-	 * Update the selected entry
-	 */
+	 
 	if (del) {
 		entry->hi = 0;
 		entry->lo = 0;
@@ -511,40 +457,22 @@ static int add_del_hash_entry(struct pxa168_eth_private *pep,
 	return 0;
 }
 
-/*
- * ----------------------------------------------------------------------------
- *  Create an addressTable entry from MAC address info
- *  found in the specifed net_device struct
- *
- *  Input : pointer to ethernet interface network device structure
- *  Output : N/A
- */
+ 
 static void update_hash_table_mac_address(struct pxa168_eth_private *pep,
 					  unsigned char *oaddr,
 					  const unsigned char *addr)
 {
-	/* Delete old entry */
+	 
 	if (oaddr)
 		add_del_hash_entry(pep, oaddr, 1, 0, HASH_DELETE);
-	/* Add new entry */
+	 
 	add_del_hash_entry(pep, addr, 1, 0, HASH_ADD);
 }
 
 static int init_hash_table(struct pxa168_eth_private *pep)
 {
-	/*
-	 * Hardware expects CPU to build a hash table based on a predefined
-	 * hash function and populate it based on hardware address. The
-	 * location of the hash table is identified by 32-bit pointer stored
-	 * in HTPR internal register. Two possible sizes exists for the hash
-	 * table 8kB (256kB of DRAM required (4 x 64 kB banks)) and 1/2kB
-	 * (16kB of DRAM required (4 x 4 kB banks)).We currently only support
-	 * 1/2kB.
-	 */
-	/* TODO: Add support for 8kB hash table and alternative hash
-	 * function.Driver can dynamically switch to them if the 1/2kB hash
-	 * table is full.
-	 */
+	 
+	 
 	if (!pep->htpr) {
 		pep->htpr = dma_alloc_coherent(pep->dev->dev.parent,
 					       HASH_ADDR_TABLE_SIZE,
@@ -571,10 +499,7 @@ static void pxa168_eth_set_rx_mode(struct net_device *dev)
 		val &= ~PCR_PM;
 	wrl(pep, PORT_CONFIG, val);
 
-	/*
-	 * Remove the old list of MAC address and add dev->addr
-	 * and multicast address.
-	 */
+	 
 	memset(pep->htpr, 0, HASH_ADDR_TABLE_SIZE);
 	update_hash_table_mac_address(pep, NULL, dev->dev_addr);
 
@@ -632,12 +557,12 @@ static void eth_port_start(struct net_device *dev)
 
 	phy_start(dev->phydev);
 
-	/* Assignment of Tx CTRP of given queue */
+	 
 	tx_curr_desc = pep->tx_curr_desc_q;
 	wrl(pep, ETH_C_TX_DESC_1,
 	    (u32) (pep->tx_desc_dma + tx_curr_desc * sizeof(struct tx_desc)));
 
-	/* Assignment of Rx CRDP of given queue */
+	 
 	rx_curr_desc = pep->rx_curr_desc_q;
 	wrl(pep, ETH_C_RX_DESC_0,
 	    (u32) (pep->rx_desc_dma + rx_curr_desc * sizeof(struct rx_desc)));
@@ -645,17 +570,17 @@ static void eth_port_start(struct net_device *dev)
 	wrl(pep, ETH_F_RX_DESC_0,
 	    (u32) (pep->rx_desc_dma + rx_curr_desc * sizeof(struct rx_desc)));
 
-	/* Clear all interrupts */
+	 
 	wrl(pep, INT_CAUSE, 0);
 
-	/* Enable all interrupts for receive, transmit and error. */
+	 
 	wrl(pep, INT_MASK, ALL_INTS);
 
 	val = rdl(pep, PORT_CONFIG);
 	val |= PCR_EN;
 	wrl(pep, PORT_CONFIG, val);
 
-	/* Start RX DMA engine */
+	 
 	val = rdl(pep, SDMA_CMD);
 	val |= SDMA_CMD_ERD;
 	wrl(pep, SDMA_CMD, val);
@@ -666,22 +591,20 @@ static void eth_port_reset(struct net_device *dev)
 	struct pxa168_eth_private *pep = netdev_priv(dev);
 	unsigned int val = 0;
 
-	/* Stop all interrupts for receive, transmit and error. */
+	 
 	wrl(pep, INT_MASK, 0);
 
-	/* Clear all interrupts */
+	 
 	wrl(pep, INT_CAUSE, 0);
 
-	/* Stop RX DMA */
+	 
 	val = rdl(pep, SDMA_CMD);
-	val &= ~SDMA_CMD_ERD;	/* abort dma command */
+	val &= ~SDMA_CMD_ERD;	 
 
-	/* Abort any transmit and receive operations and put DMA
-	 * in idle state.
-	 */
+	 
 	abort_dma(pep);
 
-	/* Disable port */
+	 
 	val = rdl(pep, PORT_CONFIG);
 	val &= ~PCR_EN;
 	wrl(pep, PORT_CONFIG, val);
@@ -689,10 +612,7 @@ static void eth_port_reset(struct net_device *dev)
 	phy_stop(dev->phydev);
 }
 
-/*
- * txq_reclaim - Free the tx desc data for completed descriptors
- * If force is non-zero, frees uncompleted descriptors as well
- */
+ 
 static int txq_reclaim(struct net_device *dev, int force)
 {
 	struct pxa168_eth_private *pep = netdev_priv(dev);
@@ -773,7 +693,7 @@ static int rxq_process(struct net_device *dev, int budget)
 		struct rx_desc *rx_desc;
 		unsigned int cmd_sts;
 
-		/* Do not process Rx ring in case of Rx ring resource error */
+		 
 		if (pep->rx_resource_err)
 			break;
 		rx_curr_desc = pep->rx_curr_desc_q;
@@ -789,8 +709,8 @@ static int rxq_process(struct net_device *dev, int budget)
 		rx_next_curr_desc = (rx_curr_desc + 1) % pep->rx_ring_size;
 		pep->rx_curr_desc_q = rx_next_curr_desc;
 
-		/* Rx descriptors exhausted. */
-		/* Set the Rx ring resource error flag */
+		 
+		 
 		if (rx_next_curr_desc == rx_used_desc)
 			pep->rx_resource_err = 1;
 		pep->rx_desc_count--;
@@ -798,16 +718,10 @@ static int rxq_process(struct net_device *dev, int budget)
 				 rx_desc->buf_size,
 				 DMA_FROM_DEVICE);
 		received_packets++;
-		/*
-		 * Update statistics.
-		 * Note byte count includes 4 byte CRC count
-		 */
+		 
 		stats->rx_packets++;
 		stats->rx_bytes += rx_desc->byte_cnt;
-		/*
-		 * In case received a packet without first / last bits on OR
-		 * the error summary bit is on, the packets needs to be droped.
-		 */
+		 
 		if (((cmd_sts & (RX_FIRST_DESC | RX_LAST_DESC)) !=
 		     (RX_FIRST_DESC | RX_LAST_DESC))
 		    || (cmd_sts & RX_ERROR)) {
@@ -823,16 +737,13 @@ static int rxq_process(struct net_device *dev, int budget)
 				stats->rx_errors++;
 			dev_kfree_skb_irq(skb);
 		} else {
-			/*
-			 * The -4 is for the CRC in the trailer of the
-			 * received packet
-			 */
+			 
 			skb_put(skb, rx_desc->byte_cnt - 4);
 			skb->protocol = eth_type_trans(skb, dev);
 			netif_receive_skb(skb);
 		}
 	}
-	/* Fill RX ring with skb's */
+	 
 	rxq_refill(dev);
 	return received_packets;
 }
@@ -864,7 +775,7 @@ static irqreturn_t pxa168_eth_int_handler(int irq, void *dev_id)
 
 	if (unlikely(!pxa168_eth_collect_events(pep, dev)))
 		return IRQ_NONE;
-	/* Disable interrupts */
+	 
 	wrl(pep, INT_MASK, 0);
 	napi_schedule(&pep->napi);
 	return IRQ_HANDLED;
@@ -874,27 +785,13 @@ static void pxa168_eth_recalc_skb_size(struct pxa168_eth_private *pep)
 {
 	int skb_size;
 
-	/*
-	 * Reserve 2+14 bytes for an ethernet header (the hardware
-	 * automatically prepends 2 bytes of dummy data to each
-	 * received packet), 16 bytes for up to four VLAN tags, and
-	 * 4 bytes for the trailing FCS -- 36 bytes total.
-	 */
+	 
 	skb_size = pep->dev->mtu + 36;
 
-	/*
-	 * Make sure that the skb size is a multiple of 8 bytes, as
-	 * the lower three bits of the receive descriptor's buffer
-	 * size field are ignored by the hardware.
-	 */
+	 
 	pep->skb_size = (skb_size + 7) & ~7;
 
-	/*
-	 * If NET_SKB_PAD is smaller than a cache line,
-	 * netdev_alloc_skb() will cause skb->data to be misaligned
-	 * to a cache line boundary.  If this is the case, include
-	 * some extra space to allow re-aligning the data area.
-	 */
+	 
 	pep->skb_size += SKB_DMA_REALIGN;
 
 }
@@ -913,15 +810,15 @@ static int set_port_config_ext(struct pxa168_eth_private *pep)
 	else
 		skb_size = PCXR_MFL_64K;
 
-	/* Extended Port Configuration */
+	 
 	wrl(pep, PORT_CONFIG_EXT,
-	    PCXR_AN_SPEED_DIS |		 /* Disable HW AN */
+	    PCXR_AN_SPEED_DIS |		  
 	    PCXR_AN_DUPLEX_DIS |
 	    PCXR_AN_FLOWCTL_DIS |
-	    PCXR_2BSM |			 /* Two byte prefix aligns IP hdr */
-	    PCXR_DSCP_EN |		 /* Enable DSCP in IP */
-	    skb_size | PCXR_FLP |	 /* do not force link pass */
-	    PCXR_TX_HIGH_PRI);		 /* Transmit - high priority queue */
+	    PCXR_2BSM |			  
+	    PCXR_DSCP_EN |		  
+	    skb_size | PCXR_FLP |	  
+	    PCXR_TX_HIGH_PRI);		  
 
 	return 0;
 }
@@ -945,7 +842,7 @@ static void pxa168_eth_adjust_link(struct net_device *dev)
 	if (!phy->pause)
 		cfgext |= PCXR_FLOWCTL_DIS;
 
-	/* Bail out if there has nothing changed */
+	 
 	if (cfg == cfg_o && cfgext == cfgext_o)
 		return;
 
@@ -990,27 +887,25 @@ static int pxa168_init_hw(struct pxa168_eth_private *pep)
 {
 	int err = 0;
 
-	/* Disable interrupts */
+	 
 	wrl(pep, INT_MASK, 0);
 	wrl(pep, INT_CAUSE, 0);
-	/* Write to ICR to clear interrupts. */
+	 
 	wrl(pep, INT_W_CLEAR, 0);
-	/* Abort any transmit and receive operations and put DMA
-	 * in idle state.
-	 */
+	 
 	abort_dma(pep);
-	/* Initialize address hash table */
+	 
 	err = init_hash_table(pep);
 	if (err)
 		return err;
-	/* SDMA configuration */
-	wrl(pep, SDMA_CONFIG, SDCR_BSZ8 |	/* Burst size = 32 bytes */
-	    SDCR_RIFB |				/* Rx interrupt on frame */
-	    SDCR_BLMT |				/* Little endian transmit */
-	    SDCR_BLMR |				/* Little endian receive */
-	    SDCR_RC_MAX_RETRANS);		/* Max retransmit count */
-	/* Port Configuration */
-	wrl(pep, PORT_CONFIG, PCR_HS);		/* Hash size is 1/2kb */
+	 
+	wrl(pep, SDMA_CONFIG, SDCR_BSZ8 |	 
+	    SDCR_RIFB |				 
+	    SDCR_BLMT |				 
+	    SDCR_BLMR |				 
+	    SDCR_RC_MAX_RETRANS);		 
+	 
+	wrl(pep, PORT_CONFIG, PCR_HS);		 
 	set_port_config_ext(pep);
 
 	return err;
@@ -1023,12 +918,12 @@ static int rxq_init(struct net_device *dev)
 	int size = 0, i = 0;
 	int rx_desc_num = pep->rx_ring_size;
 
-	/* Allocate RX skb rings */
+	 
 	pep->rx_skb = kcalloc(rx_desc_num, sizeof(*pep->rx_skb), GFP_KERNEL);
 	if (!pep->rx_skb)
 		return -ENOMEM;
 
-	/* Allocate RX ring */
+	 
 	pep->rx_desc_count = 0;
 	size = pep->rx_ring_size * sizeof(struct rx_desc);
 	pep->rx_desc_area_size = size;
@@ -1038,13 +933,13 @@ static int rxq_init(struct net_device *dev)
 	if (!pep->p_rx_desc_area)
 		goto out;
 
-	/* initialize the next_desc_ptr links in the Rx descriptors ring */
+	 
 	p_rx_desc = pep->p_rx_desc_area;
 	for (i = 0; i < rx_desc_num; i++) {
 		p_rx_desc[i].next_desc_ptr = pep->rx_desc_dma +
 		    ((i + 1) % rx_desc_num) * sizeof(struct rx_desc);
 	}
-	/* Save Rx desc pointer to driver struct. */
+	 
 	pep->rx_curr_desc_q = 0;
 	pep->rx_used_desc_q = 0;
 	pep->rx_desc_area_size = rx_desc_num * sizeof(struct rx_desc);
@@ -1059,7 +954,7 @@ static void rxq_deinit(struct net_device *dev)
 	struct pxa168_eth_private *pep = netdev_priv(dev);
 	int curr;
 
-	/* Free preallocated skb's on RX rings */
+	 
 	for (curr = 0; pep->rx_desc_count && curr < pep->rx_ring_size; curr++) {
 		if (pep->rx_skb[curr]) {
 			dev_kfree_skb(pep->rx_skb[curr]);
@@ -1069,7 +964,7 @@ static void rxq_deinit(struct net_device *dev)
 	if (pep->rx_desc_count)
 		netdev_err(dev, "Error in freeing Rx Ring. %d skb's still\n",
 			   pep->rx_desc_count);
-	/* Free RX ring */
+	 
 	if (pep->p_rx_desc_area)
 		dma_free_coherent(pep->dev->dev.parent, pep->rx_desc_area_size,
 				  pep->p_rx_desc_area, pep->rx_desc_dma);
@@ -1087,7 +982,7 @@ static int txq_init(struct net_device *dev)
 	if (!pep->tx_skb)
 		return -ENOMEM;
 
-	/* Allocate TX ring */
+	 
 	pep->tx_desc_count = 0;
 	size = pep->tx_ring_size * sizeof(struct tx_desc);
 	pep->tx_desc_area_size = size;
@@ -1096,7 +991,7 @@ static int txq_init(struct net_device *dev)
 						 GFP_KERNEL);
 	if (!pep->p_tx_desc_area)
 		goto out;
-	/* Initialize the next_desc_ptr links in the Tx descriptors ring */
+	 
 	p_tx_desc = pep->p_tx_desc_area;
 	for (i = 0; i < tx_desc_num; i++) {
 		p_tx_desc[i].next_desc_ptr = pep->tx_desc_dma +
@@ -1115,10 +1010,10 @@ static void txq_deinit(struct net_device *dev)
 {
 	struct pxa168_eth_private *pep = netdev_priv(dev);
 
-	/* Free outstanding skb's on TX ring */
+	 
 	txq_reclaim(dev, 1);
 	BUG_ON(pep->tx_used_desc_q != pep->tx_curr_desc_q);
-	/* Free TX ring */
+	 
 	if (pep->p_tx_desc_area)
 		dma_free_coherent(pep->dev->dev.parent, pep->tx_desc_area_size,
 				  pep->p_tx_desc_area, pep->tx_desc_dma);
@@ -1149,7 +1044,7 @@ static int pxa168_eth_open(struct net_device *dev)
 	pep->rx_used_desc_q = 0;
 	pep->rx_curr_desc_q = 0;
 
-	/* Fill RX ring with skb's */
+	 
 	rxq_refill(dev);
 	pep->rx_used_desc_q = 0;
 	pep->rx_curr_desc_q = 0;
@@ -1169,10 +1064,10 @@ static int pxa168_eth_stop(struct net_device *dev)
 	struct pxa168_eth_private *pep = netdev_priv(dev);
 	eth_port_reset(dev);
 
-	/* Disable interrupts */
+	 
 	wrl(pep, INT_MASK, 0);
 	wrl(pep, INT_CAUSE, 0);
-	/* Write to ICR to clear interrupts. */
+	 
 	wrl(pep, INT_W_CLEAR, 0);
 	napi_disable(&pep->napi);
 	del_timer_sync(&pep->timeout);
@@ -1194,12 +1089,7 @@ static int pxa168_eth_change_mtu(struct net_device *dev, int mtu)
 	if (!netif_running(dev))
 		return 0;
 
-	/*
-	 * Stop and then re-open the interface. This will allocate RX
-	 * skbs of the new MTU.
-	 * There is a possible danger that the open will not succeed,
-	 * due to memory being full.
-	 */
+	 
 	pxa168_eth_stop(dev);
 	if (pxa168_eth_open(dev)) {
 		dev_err(&dev->dev,
@@ -1228,11 +1118,7 @@ static int pxa168_rx_poll(struct napi_struct *napi, int budget)
 	struct net_device *dev = pep->dev;
 	int work_done = 0;
 
-	/*
-	 * We call txq_reclaim every time since in NAPI interupts are disabled
-	 * and due to this we miss the TX_DONE interrupt,which is not updated in
-	 * interrupt status register.
-	 */
+	 
 	txq_reclaim(dev, 0);
 	if (netif_queue_stopped(dev)
 	    && pep->tx_ring_size - pep->tx_desc_count > 1) {
@@ -1276,7 +1162,7 @@ pxa168_eth_start_xmit(struct sk_buff *skb, struct net_device *dev)
 	stats->tx_packets++;
 	netif_trans_update(dev);
 	if (pep->tx_ring_size - pep->tx_desc_count <= 1) {
-		/* We handled the current skb, but now we are out of space.*/
+		 
 		netif_stop_queue(dev);
 	}
 
@@ -1287,7 +1173,7 @@ static int smi_wait_ready(struct pxa168_eth_private *pep)
 {
 	int i = 0;
 
-	/* wait for the SMI register to become available */
+	 
 	for (i = 0; rdl(pep, SMI) & SMI_BUSY; i++) {
 		if (i == PHY_WAIT_ITERATIONS)
 			return -ETIMEDOUT;
@@ -1308,7 +1194,7 @@ static int pxa168_smi_read(struct mii_bus *bus, int phy_addr, int regnum)
 		return -ETIMEDOUT;
 	}
 	wrl(pep, SMI, (phy_addr << 16) | (regnum << 21) | SMI_OP_R);
-	/* now wait for the data to be valid */
+	 
 	for (i = 0; !((val = rdl(pep, SMI)) & SMI_R_VALID); i++) {
 		if (i == PHY_WAIT_ITERATIONS) {
 			netdev_warn(pep->dev,
@@ -1428,7 +1314,7 @@ static int pxa168_eth_probe(struct platform_device *pdev)
 	dev->base_addr = 0;
 	dev->ethtool_ops = &pxa168_ethtool_ops;
 
-	/* MTU range: 68 - 9500 */
+	 
 	dev->min_mtu = ETH_MIN_MTU;
 	dev->max_mtu = 9500;
 
@@ -1438,7 +1324,7 @@ static int pxa168_eth_probe(struct platform_device *pdev)
 	if (err) {
 		u8 addr[ETH_ALEN];
 
-		/* try reading the mac address, if set by the bootloader */
+		 
 		pxa168_eth_get_mac_address(dev, addr);
 		if (is_valid_ether_addr(addr)) {
 			eth_hw_addr_set(dev, addr);
@@ -1484,7 +1370,7 @@ static int pxa168_eth_probe(struct platform_device *pdev)
 			goto err_netdev;
 	}
 
-	/* Hardware supports only 3 ports */
+	 
 	BUG_ON(pep->port_num > 2);
 	netif_napi_add_weight(dev, &pep->napi, pxa168_rx_poll,
 			      pep->rx_ring_size);

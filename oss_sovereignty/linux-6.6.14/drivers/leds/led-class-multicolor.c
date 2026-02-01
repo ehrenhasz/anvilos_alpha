@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-// LED Multicolor class interface
-// Copyright (C) 2019-20 Texas Instruments Incorporated - http://www.ti.com/
-// Author: Dan Murphy <dmurphy@ti.com>
+
+
+
+
 
 #include <linux/device.h>
 #include <linux/init.h>

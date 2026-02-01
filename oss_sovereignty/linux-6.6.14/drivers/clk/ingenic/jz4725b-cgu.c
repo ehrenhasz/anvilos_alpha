@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Ingenic JZ4725B SoC CGU driver
- *
- * Copyright (C) 2018 Paul Cercueil
- * Author: Paul Cercueil <paul@crapouillou.net>
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/delay.h>
@@ -15,7 +10,7 @@
 #include "cgu.h"
 #include "pm.h"
 
-/* CGU register offsets */
+ 
 #define CGU_REG_CPCCR		0x00
 #define CGU_REG_LCR		0x04
 #define CGU_REG_CPPCR		0x10
@@ -27,7 +22,7 @@
 #define CGU_REG_SSICDR		0x74
 #define CGU_REG_CIMCDR		0x78
 
-/* bits within the LCR register */
+ 
 #define LCR_SLEEP		BIT(0)
 
 static struct ingenic_cgu *cgu;
@@ -46,7 +41,7 @@ static const u8 jz4725b_cgu_pll_half_div_table[] = {
 
 static const struct ingenic_cgu_clk_info jz4725b_cgu_clocks[] = {
 
-	/* External clocks */
+	 
 
 	[JZ4725B_CLK_EXT] = { "ext", CGU_CLK_EXT },
 	[JZ4725B_CLK_OSC32K] = { "osc32k", CGU_CLK_EXT },
@@ -74,7 +69,7 @@ static const struct ingenic_cgu_clk_info jz4725b_cgu_clocks[] = {
 		},
 	},
 
-	/* Muxes & dividers */
+	 
 
 	[JZ4725B_CLK_PLL_HALF] = {
 		"pll half", CGU_CLK_DIV,
@@ -87,10 +82,7 @@ static const struct ingenic_cgu_clk_info jz4725b_cgu_clocks[] = {
 
 	[JZ4725B_CLK_CCLK] = {
 		"cclk", CGU_CLK_DIV,
-		/*
-		 * Disabling the CPU clock or any parent clocks will hang the
-		 * system; mark it critical.
-		 */
+		 
 		.flags = CLK_IS_CRITICAL,
 		.parents = { JZ4725B_CLK_PLL, -1, -1, -1 },
 		.div = {
@@ -119,10 +111,7 @@ static const struct ingenic_cgu_clk_info jz4725b_cgu_clocks[] = {
 
 	[JZ4725B_CLK_MCLK] = {
 		"mclk", CGU_CLK_DIV,
-		/*
-		 * Disabling MCLK or its parents will render DRAM
-		 * inaccessible; mark it critical.
-		 */
+		 
 		.flags = CLK_IS_CRITICAL,
 		.parents = { JZ4725B_CLK_PLL, -1, -1, -1 },
 		.div = {
@@ -176,7 +165,7 @@ static const struct ingenic_cgu_clk_info jz4725b_cgu_clocks[] = {
 		.div = { CGU_REG_CPCCR, 23, 1, 6, -1, -1, -1 },
 	},
 
-	/* Gate-only clocks */
+	 
 
 	[JZ4725B_CLK_UART] = {
 		"uart", CGU_CLK_GATE,
@@ -222,13 +211,13 @@ static const struct ingenic_cgu_clk_info jz4725b_cgu_clocks[] = {
 
 	[JZ4725B_CLK_BCH] = {
 		"bch", CGU_CLK_GATE,
-		.parents = { JZ4725B_CLK_MCLK/* not sure */, -1, -1, -1 },
+		.parents = { JZ4725B_CLK_MCLK , -1, -1, -1 },
 		.gate = { CGU_REG_CLKGR, 11 },
 	},
 
 	[JZ4725B_CLK_TCU] = {
 		"tcu", CGU_CLK_GATE,
-		.parents = { JZ4725B_CLK_EXT/* not sure */, -1, -1, -1 },
+		.parents = { JZ4725B_CLK_EXT , -1, -1, -1 },
 		.gate = { CGU_REG_CLKGR, 1 },
 	},
 
@@ -236,7 +225,7 @@ static const struct ingenic_cgu_clk_info jz4725b_cgu_clocks[] = {
 		"ext/512", CGU_CLK_FIXDIV,
 		.parents = { JZ4725B_CLK_EXT },
 
-		/* Doc calls it EXT512, but it seems to be /256... */
+		 
 		.fixdiv = { 256 },
 	},
 

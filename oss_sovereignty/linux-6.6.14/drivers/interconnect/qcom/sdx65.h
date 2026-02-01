@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2022, Qualcomm Innovation Center, Inc. All rights reserved.
- */
+ 
+ 
 
 #ifndef __DRIVERS_INTERCONNECT_QCOM_SDX65_H
 #define __DRIVERS_INTERCONNECT_QCOM_SDX65_H

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2012 - 2018 Microchip Technology Inc., and its subsidiaries.
- * All rights reserved.
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include "wlan_if.h"
@@ -52,11 +49,7 @@ static const struct wilc_cfg_str g_cfg_str[] = {
 #define WILC_RESP_MSG_TYPE_NETWORK_INFO		'N'
 #define WILC_RESP_MSG_TYPE_SCAN_COMPLETE	'S'
 
-/********************************************
- *
- *      Configuration Functions
- *
- ********************************************/
+ 
 
 static int wilc_wlan_cfg_set_byte(u8 *frame, u32 offset, u16 id, u8 val8)
 {
@@ -129,11 +122,7 @@ static int wilc_wlan_cfg_set_bin(u8 *frame, u32 offset, u16 id, u8 *b, u32 size)
 	return (size + 5);
 }
 
-/********************************************
- *
- *      Configuration Response Functions
- *
- ********************************************/
+ 
 
 static void wilc_wlan_parse_response_frame(struct wilc *wl, u8 *info, int size)
 {
@@ -215,11 +204,7 @@ static void wilc_wlan_parse_info_frame(struct wilc *wl, u8 *info)
 	}
 }
 
-/********************************************
- *
- *      Configuration Exported Functions
- *
- ********************************************/
+ 
 
 int wilc_wlan_cfg_set_wid(u8 *frame, u32 offset, u16 id, u8 *buf, int size)
 {
@@ -321,7 +306,7 @@ void wilc_wlan_cfg_indicate_rx(struct wilc *wilc, u8 *frame, int size,
 	u8 msg_id;
 
 	msg_type = frame[0];
-	msg_id = frame[1];      /* seq no */
+	msg_id = frame[1];       
 	frame += 4;
 	size -= 4;
 	rsp->type = 0;
@@ -337,7 +322,7 @@ void wilc_wlan_cfg_indicate_rx(struct wilc *wilc, u8 *frame, int size,
 		wilc_wlan_parse_info_frame(wilc, frame);
 		rsp->type = WILC_CFG_RSP_STATUS;
 		rsp->seq_no = msg_id;
-		/* call host interface info parse as well */
+		 
 		wilc_gnrl_async_info_received(wilc, frame - 4, size + 4);
 		break;
 
@@ -381,7 +366,7 @@ int wilc_wlan_cfg_init(struct wilc *wl)
 		goto out_s;
 
 	wl->cfg.str_vals = str_vals;
-	/* store the string cfg parameters */
+	 
 	wl->cfg.s[i].id = WID_FIRMWARE_VERSION;
 	wl->cfg.s[i].str = str_vals->firmware_version;
 	i++;

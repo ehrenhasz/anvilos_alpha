@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright 2014 Bart Tanghe <bart.tanghe@thomasmore.be>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/err.h>
@@ -14,7 +12,7 @@
 #define PWM_CONTROL		0x000
 #define PWM_CONTROL_SHIFT(x)	((x) * 8)
 #define PWM_CONTROL_MASK	0xff
-#define PWM_MODE		0x80		/* set timer in PWM mode */
+#define PWM_MODE		0x80		 
 #define PWM_ENABLE		(1 << 0)
 #define PWM_POLARITY		(1 << 4)
 
@@ -74,39 +72,26 @@ static int bcm2835_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
 		return -EINVAL;
 	}
 
-	/*
-	 * period_cycles must be a 32 bit value, so period * rate / NSEC_PER_SEC
-	 * must be <= U32_MAX. As U32_MAX * NSEC_PER_SEC < U64_MAX the
-	 * multiplication period * rate doesn't overflow.
-	 * To calculate the maximal possible period that guarantees the
-	 * above inequality:
-	 *
-	 *     round(period * rate / NSEC_PER_SEC) <= U32_MAX
-	 * <=> period * rate / NSEC_PER_SEC < U32_MAX + 0.5
-	 * <=> period * rate < (U32_MAX + 0.5) * NSEC_PER_SEC
-	 * <=> period < ((U32_MAX + 0.5) * NSEC_PER_SEC) / rate
-	 * <=> period < ((U32_MAX * NSEC_PER_SEC + NSEC_PER_SEC/2) / rate
-	 * <=> period <= ceil((U32_MAX * NSEC_PER_SEC + NSEC_PER_SEC/2) / rate) - 1
-	 */
+	 
 	max_period = DIV_ROUND_UP_ULL((u64)U32_MAX * NSEC_PER_SEC + NSEC_PER_SEC / 2, rate) - 1;
 
 	if (state->period > max_period)
 		return -EINVAL;
 
-	/* set period */
+	 
 	period_cycles = DIV_ROUND_CLOSEST_ULL(state->period * rate, NSEC_PER_SEC);
 
-	/* don't accept a period that is too small */
+	 
 	if (period_cycles < PERIOD_MIN)
 		return -EINVAL;
 
 	writel(period_cycles, pc->base + PERIOD(pwm->hwpwm));
 
-	/* set duty cycle */
+	 
 	val = DIV_ROUND_CLOSEST_ULL(state->duty_cycle * rate, NSEC_PER_SEC);
 	writel(val, pc->base + DUTY(pwm->hwpwm));
 
-	/* set polarity */
+	 
 	val = readl(pc->base + PWM_CONTROL);
 
 	if (state->polarity == PWM_POLARITY_NORMAL)
@@ -114,7 +99,7 @@ static int bcm2835_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
 	else
 		val |= PWM_POLARITY << PWM_CONTROL_SHIFT(pwm->hwpwm);
 
-	/* enable/disable */
+	 
 	if (state->enabled)
 		val |= PWM_ENABLE << PWM_CONTROL_SHIFT(pwm->hwpwm);
 	else
@@ -184,7 +169,7 @@ static void bcm2835_pwm_remove(struct platform_device *pdev)
 
 static const struct of_device_id bcm2835_pwm_of_match[] = {
 	{ .compatible = "brcm,bcm2835-pwm", },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, bcm2835_pwm_of_match);
 

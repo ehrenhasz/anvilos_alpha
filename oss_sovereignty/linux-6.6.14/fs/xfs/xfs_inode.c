@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2000-2006 Silicon Graphics, Inc.
- * All Rights Reserved.
- */
+
+ 
 #include <linux/iversion.h>
 
 #include "xfs.h"
@@ -40,27 +37,19 @@
 
 struct kmem_cache *xfs_inode_cache;
 
-/*
- * Used in xfs_itruncate_extents().  This is the maximum number of extents
- * freed from a file in a single transaction.
- */
+ 
 #define	XFS_ITRUNC_MAX_EXTENTS	2
 
 STATIC int xfs_iunlink(struct xfs_trans *, struct xfs_inode *);
 STATIC int xfs_iunlink_remove(struct xfs_trans *tp, struct xfs_perag *pag,
 	struct xfs_inode *);
 
-/*
- * helper function to extract extent size hint from inode
- */
+ 
 xfs_extlen_t
 xfs_get_extsz_hint(
 	struct xfs_inode	*ip)
 {
-	/*
-	 * No point in aligning allocations if we need to COW to actually
-	 * write to them.
-	 */
+	 
 	if (xfs_is_always_cow_inode(ip))
 		return 0;
 	if ((ip->i_diflags & XFS_DIFLAG_EXTSIZE) && ip->i_extsize)
@@ -70,12 +59,7 @@ xfs_get_extsz_hint(
 	return 0;
 }
 
-/*
- * Helper function to extract CoW extent size hint from inode.
- * Between the extent size hint and the CoW extent size hint, we
- * return the greater of the two.  If the value is zero (automatic),
- * use the default size.
- */
+ 
 xfs_extlen_t
 xfs_get_cowextsz_hint(
 	struct xfs_inode	*ip)
@@ -93,21 +77,7 @@ xfs_get_cowextsz_hint(
 	return a;
 }
 
-/*
- * These two are wrapper routines around the xfs_ilock() routine used to
- * centralize some grungy code.  They are used in places that wish to lock the
- * inode solely for reading the extents.  The reason these places can't just
- * call xfs_ilock(ip, XFS_ILOCK_SHARED) is that the inode lock also guards to
- * bringing in of the extents from disk for a file in b-tree format.  If the
- * inode is in b-tree format, then we need to lock the inode exclusively until
- * the extents are read in.  Locking it exclusively all the time would limit
- * our parallelism unnecessarily, though.  What we do instead is check to see
- * if the extents have been read in yet, and only lock the inode exclusively
- * if they have not.
- *
- * The functions return a value which should be given to the corresponding
- * xfs_iunlock() call.
- */
+ 
 uint
 xfs_ilock_data_map_shared(
 	struct xfs_inode	*ip)
@@ -132,12 +102,7 @@ xfs_ilock_attr_map_shared(
 	return lock_mode;
 }
 
-/*
- * You can't set both SHARED and EXCL for the same lock,
- * and only XFS_IOLOCK_SHARED, XFS_IOLOCK_EXCL, XFS_MMAPLOCK_SHARED,
- * XFS_MMAPLOCK_EXCL, XFS_ILOCK_SHARED, XFS_ILOCK_EXCL are valid values
- * to set in lock_flags.
- */
+ 
 static inline void
 xfs_lock_flags_assert(
 	uint		lock_flags)
@@ -152,36 +117,7 @@ xfs_lock_flags_assert(
 	ASSERT(lock_flags != 0);
 }
 
-/*
- * In addition to i_rwsem in the VFS inode, the xfs inode contains 2
- * multi-reader locks: invalidate_lock and the i_lock.  This routine allows
- * various combinations of the locks to be obtained.
- *
- * The 3 locks should always be ordered so that the IO lock is obtained first,
- * the mmap lock second and the ilock last in order to prevent deadlock.
- *
- * Basic locking order:
- *
- * i_rwsem -> invalidate_lock -> page_lock -> i_ilock
- *
- * mmap_lock locking order:
- *
- * i_rwsem -> page lock -> mmap_lock
- * mmap_lock -> invalidate_lock -> page_lock
- *
- * The difference in mmap_lock locking order mean that we cannot hold the
- * invalidate_lock over syscall based read(2)/write(2) based IO. These IO paths
- * can fault in pages during copy in/out (for buffered IO) or require the
- * mmap_lock in get_user_pages() to map the user pages into the kernel address
- * space for direct IO. Similarly the i_rwsem cannot be taken inside a page
- * fault because page faults already hold the mmap_lock.
- *
- * Hence to serialise fully against both syscall and mmap based IO, we need to
- * take both the i_rwsem and the invalidate_lock. These locks should *only* be
- * both taken in places where we need to invalidate the page cache in a race
- * free manner (e.g. truncate, hole punch and other extent manipulation
- * functions).
- */
+ 
 void
 xfs_ilock(
 	xfs_inode_t		*ip,
@@ -213,18 +149,7 @@ xfs_ilock(
 		mraccess_nested(&ip->i_lock, XFS_ILOCK_DEP(lock_flags));
 }
 
-/*
- * This is just like xfs_ilock(), except that the caller
- * is guaranteed not to sleep.  It returns 1 if it gets
- * the requested locks and 0 otherwise.  If the IO lock is
- * obtained but the inode lock cannot be, then the IO lock
- * is dropped before returning.
- *
- * ip -- the inode being locked
- * lock_flags -- this parameter indicates the inode's locks to be
- *       to be locked.  See the comment for xfs_ilock() for a list
- *	 of valid values.
- */
+ 
 int
 xfs_ilock_nowait(
 	xfs_inode_t		*ip,
@@ -273,18 +198,7 @@ out:
 	return 0;
 }
 
-/*
- * xfs_iunlock() is used to drop the inode locks acquired with
- * xfs_ilock() and xfs_ilock_nowait().  The caller must pass
- * in the flags given to xfs_ilock() or xfs_ilock_nowait() so
- * that we know which locks to drop.
- *
- * ip -- the inode being unlocked
- * lock_flags -- this parameter indicates the inode's locks to be
- *       to be unlocked.  See the comment for xfs_ilock() for a list
- *	 of valid values for this parameter.
- *
- */
+ 
 void
 xfs_iunlock(
 	xfs_inode_t		*ip,
@@ -310,10 +224,7 @@ xfs_iunlock(
 	trace_xfs_iunlock(ip, lock_flags, _RET_IP_);
 }
 
-/*
- * give up write locks.  the i/o lock cannot be held nested
- * if it is being demoted.
- */
+ 
 void
 xfs_ilock_demote(
 	xfs_inode_t		*ip,
@@ -345,12 +256,7 @@ __xfs_rwsem_islocked(
 	if (!shared)
 		return lockdep_is_held_type(rwsem, 0);
 
-	/*
-	 * We are checking that the lock is held at least in shared
-	 * mode but don't care that it might be held exclusively
-	 * (i.e. shared | excl). Hence we check if the lock is held
-	 * in any mode rather than an explicit shared mode.
-	 */
+	 
 	return lockdep_is_held_type(rwsem, -1);
 }
 
@@ -380,12 +286,7 @@ xfs_isilocked(
 }
 #endif
 
-/*
- * xfs_lockdep_subclass_ok() is only used in an ASSERT, so is only called when
- * DEBUG or XFS_WARN is set. And MAX_LOCKDEP_SUBCLASSES is then only defined
- * when CONFIG_LOCKDEP is set. Hence the complex define below to avoid build
- * errors and warnings.
- */
+ 
 #if (defined(DEBUG) || defined(XFS_WARN)) && defined(CONFIG_LOCKDEP)
 static bool
 xfs_lockdep_subclass_ok(
@@ -397,12 +298,7 @@ xfs_lockdep_subclass_ok(
 #define xfs_lockdep_subclass_ok(subclass)	(true)
 #endif
 
-/*
- * Bump the subclass so xfs_lock_inodes() acquires each lock with a different
- * value. This can be called for any type of inode lock combination, including
- * parent locking. Care must be taken to ensure we don't overrun the subclass
- * storage fields in the class mask we build.
- */
+ 
 static inline uint
 xfs_lock_inumorder(
 	uint	lock_mode,
@@ -432,21 +328,7 @@ xfs_lock_inumorder(
 	return (lock_mode & ~XFS_LOCK_SUBCLASS_MASK) | class;
 }
 
-/*
- * The following routine will lock n inodes in exclusive mode.  We assume the
- * caller calls us with the inodes in i_ino order.
- *
- * We need to detect deadlock where an inode that we lock is in the AIL and we
- * start waiting for another inode that is locked by a thread in a long running
- * transaction (such as truncate). This can result in deadlock since the long
- * running trans might need to wait for the inode we just locked in order to
- * push the tail and free space in the log.
- *
- * xfs_lock_inodes() can only be used to lock one type of lock at a time -
- * the iolock, the mmaplock or the ilock, but not more than one at a time. If we
- * lock more than one at a time, lockdep will report false positives saying we
- * have violated locking orders.
- */
+ 
 static void
 xfs_lock_inodes(
 	struct xfs_inode	**ips,
@@ -459,13 +341,7 @@ xfs_lock_inodes(
 	bool			try_lock;
 	struct xfs_log_item	*lp;
 
-	/*
-	 * Currently supports between 2 and 5 inodes with exclusive locking.  We
-	 * support an arbitrary depth of locking here, but absolute limits on
-	 * inodes depend on the type of locking and the limits placed by
-	 * lockdep annotations in xfs_lock_inumorder.  These are all checked by
-	 * the asserts.
-	 */
+	 
 	ASSERT(ips && inodes >= 2 && inodes <= 5);
 	ASSERT(lock_mode & (XFS_IOLOCK_EXCL | XFS_MMAPLOCK_EXCL |
 			    XFS_ILOCK_EXCL));
@@ -487,13 +363,10 @@ again:
 	for (; i < inodes; i++) {
 		ASSERT(ips[i]);
 
-		if (i && (ips[i] == ips[i - 1]))	/* Already locked */
+		if (i && (ips[i] == ips[i - 1]))	 
 			continue;
 
-		/*
-		 * If try_lock is not set yet, make sure all locked inodes are
-		 * not in the AIL.  If any are, set try_lock to be used later.
-		 */
+		 
 		if (!try_lock) {
 			for (j = (i - 1); j >= 0 && !try_lock; j--) {
 				lp = &ips[j]->i_itemp->ili_item;
@@ -502,33 +375,21 @@ again:
 			}
 		}
 
-		/*
-		 * If any of the previous locks we have locked is in the AIL,
-		 * we must TRY to get the second and subsequent locks. If
-		 * we can't get any, we must release all we have
-		 * and try again.
-		 */
+		 
 		if (!try_lock) {
 			xfs_ilock(ips[i], xfs_lock_inumorder(lock_mode, i));
 			continue;
 		}
 
-		/* try_lock means we have an inode locked that is in the AIL. */
+		 
 		ASSERT(i != 0);
 		if (xfs_ilock_nowait(ips[i], xfs_lock_inumorder(lock_mode, i)))
 			continue;
 
-		/*
-		 * Unlock all previous guys and try again.  xfs_iunlock will try
-		 * to push the tail if the inode is in the AIL.
-		 */
+		 
 		attempts++;
 		for (j = i - 1; j >= 0; j--) {
-			/*
-			 * Check to see if we've already unlocked this one.  Not
-			 * the first one going back, and the inode ptr is the
-			 * same.
-			 */
+			 
 			if (j != (i - 1) && ips[j] == ips[j + 1])
 				continue;
 
@@ -536,18 +397,13 @@ again:
 		}
 
 		if ((attempts % 5) == 0) {
-			delay(1); /* Don't just spin the CPU */
+			delay(1);  
 		}
 		goto again;
 	}
 }
 
-/*
- * xfs_lock_two_inodes() can only be used to lock ilock. The iolock and
- * mmaplock must be double-locked separately since we use i_rwsem and
- * invalidate_lock for that. We now support taking one lock EXCL and the
- * other SHARED.
- */
+ 
 void
 xfs_lock_two_inodes(
 	struct xfs_inode	*ip0,
@@ -574,17 +430,13 @@ xfs_lock_two_inodes(
  again:
 	xfs_ilock(ip0, xfs_lock_inumorder(ip0_mode, 0));
 
-	/*
-	 * If the first lock we have locked is in the AIL, we must TRY to get
-	 * the second lock. If we can't get it, we must release the first one
-	 * and try again.
-	 */
+	 
 	lp = &ip0->i_itemp->ili_item;
 	if (lp && test_bit(XFS_LI_IN_AIL, &lp->li_flags)) {
 		if (!xfs_ilock_nowait(ip1, xfs_lock_inumorder(ip1_mode, 1))) {
 			xfs_iunlock(ip0, ip0_mode);
 			if ((++attempts % 5) == 0)
-				delay(1); /* Don't just spin the CPU */
+				delay(1);  
 			goto again;
 		}
 	} else {
@@ -641,12 +493,7 @@ xfs_ip2xflags(
 	return flags;
 }
 
-/*
- * Lookups up an inode from "name". If ci_name is not NULL, then a CI match
- * is allowed, otherwise it has to be an exact match. If a CI match is found,
- * ci_name->name will point to a the actual name (caller must free) or
- * will be set to NULL if an exact match is found.
- */
+ 
 int
 xfs_lookup(
 	struct xfs_inode	*dp,
@@ -680,7 +527,7 @@ out_unlock:
 	return error;
 }
 
-/* Propagate di_flags from a parent inode to a child inode. */
+ 
 static void
 xfs_inode_inherit_flags(
 	struct xfs_inode	*ip,
@@ -728,16 +575,7 @@ xfs_inode_inherit_flags(
 
 	ip->i_diflags |= di_flags;
 
-	/*
-	 * Inode verifiers on older kernels only check that the extent size
-	 * hint is an integer multiple of the rt extent size on realtime files.
-	 * They did not check the hint alignment on a directory with both
-	 * rtinherit and extszinherit flags set.  If the misaligned hint is
-	 * propagated from a directory into a new realtime file, new file
-	 * allocations will fail due to math errors in the rt allocator and/or
-	 * trip the verifiers.  Validate the hint settings in the new file so
-	 * that we don't let broken hints propagate.
-	 */
+	 
 	failaddr = xfs_inode_validate_extsize(ip->i_mount, ip->i_extsize,
 			VFS_I(ip)->i_mode, ip->i_diflags);
 	if (failaddr) {
@@ -747,7 +585,7 @@ xfs_inode_inherit_flags(
 	}
 }
 
-/* Propagate di_flags2 from a parent inode to a child inode. */
+ 
 static void
 xfs_inode_inherit_flags2(
 	struct xfs_inode	*ip,
@@ -762,7 +600,7 @@ xfs_inode_inherit_flags2(
 	if (pip->i_diflags2 & XFS_DIFLAG2_DAX)
 		ip->i_diflags2 |= XFS_DIFLAG2_DAX;
 
-	/* Don't let invalid cowextsize hints propagate. */
+	 
 	failaddr = xfs_inode_validate_cowextsize(ip->i_mount, ip->i_cowextsize,
 			VFS_I(ip)->i_mode, ip->i_diflags, ip->i_diflags2);
 	if (failaddr) {
@@ -771,10 +609,7 @@ xfs_inode_inherit_flags2(
 	}
 }
 
-/*
- * Initialise a newly allocated inode and return the in-core inode to the
- * caller locked exclusively.
- */
+ 
 int
 xfs_init_new_inode(
 	struct mnt_idmap	*idmap,
@@ -796,22 +631,13 @@ xfs_init_new_inode(
 	struct timespec64	tv;
 	struct inode		*inode;
 
-	/*
-	 * Protect against obviously corrupt allocation btree records. Later
-	 * xfs_iget checks will catch re-allocation of other active in-memory
-	 * and on-disk inodes. If we don't catch reallocating the parent inode
-	 * here we will deadlock in xfs_iget() so we have to do these checks
-	 * first.
-	 */
+	 
 	if ((pip && ino == pip->i_ino) || !xfs_verify_dir_ino(mp, ino)) {
 		xfs_alert(mp, "Allocated a known in-use inode 0x%llx!", ino);
 		return -EFSCORRUPTED;
 	}
 
-	/*
-	 * Get the in-core inode with the lock held exclusively to prevent
-	 * others from looking at until we're done.
-	 */
+	 
 	error = xfs_iget(mp, tp, ino, XFS_IGET_CREATE, XFS_ILOCK_EXCL, &ip);
 	if (error)
 		return error;
@@ -830,11 +656,7 @@ xfs_init_new_inode(
 		inode_init_owner(idmap, inode, dir, mode);
 	}
 
-	/*
-	 * If the group ID of the new file does not match the effective group
-	 * ID or one of the supplementary group IDs, the S_ISGID bit is cleared
-	 * (and only if the irix_sgid_inherit compatibility variable is set).
-	 */
+	 
 	if (irix_sgid_inherit && (inode->i_mode & S_ISGID) &&
 	    !vfsgid_in_group_p(i_gid_into_vfsgid(idmap, inode)))
 		inode->i_mode &= ~S_ISGID;
@@ -881,39 +703,25 @@ xfs_init_new_inode(
 		ASSERT(0);
 	}
 
-	/*
-	 * If we need to create attributes immediately after allocating the
-	 * inode, initialise an empty attribute fork right now. We use the
-	 * default fork offset for attributes here as we don't know exactly what
-	 * size or how many attributes we might be adding. We can do this
-	 * safely here because we know the data fork is completely empty and
-	 * this saves us from needing to run a separate transaction to set the
-	 * fork offset in the immediate future.
-	 */
+	 
 	if (init_xattrs && xfs_has_attr(mp)) {
 		ip->i_forkoff = xfs_default_attroffset(ip) >> 3;
 		xfs_ifork_init_attr(ip, XFS_DINODE_FMT_EXTENTS, 0);
 	}
 
-	/*
-	 * Log the new values stuffed into the inode.
-	 */
+	 
 	xfs_trans_ijoin(tp, ip, XFS_ILOCK_EXCL);
 	xfs_trans_log_inode(tp, ip, flags);
 
-	/* now that we have an i_mode we can setup the inode structure */
+	 
 	xfs_setup_inode(ip);
 
 	*ipp = ip;
 	return 0;
 }
 
-/*
- * Decrement the link count on an inode & log the change.  If this causes the
- * link count to go to zero, move the inode to AGI unlinked list so that it can
- * be freed when the last active reference goes away via xfs_inactive().
- */
-static int			/* error */
+ 
+static int			 
 xfs_droplink(
 	xfs_trans_t *tp,
 	xfs_inode_t *ip)
@@ -929,9 +737,7 @@ xfs_droplink(
 	return xfs_iunlink(tp, ip);
 }
 
-/*
- * Increment the link count on an inode & log the change.
- */
+ 
 static void
 xfs_bumplink(
 	xfs_trans_t *tp,
@@ -974,9 +780,7 @@ xfs_create(
 
 	prid = xfs_get_initial_prid(dp);
 
-	/*
-	 * Make sure that we have allocated dquot(s) on disk.
-	 */
+	 
 	error = xfs_qm_vop_dqalloc(dp, mapped_fsuid(idmap, &init_user_ns),
 			mapped_fsgid(idmap, &init_user_ns), prid,
 			XFS_QMOPT_QUOTALL | XFS_QMOPT_INHERIT,
@@ -992,16 +796,11 @@ xfs_create(
 		tres = &M_RES(mp)->tr_create;
 	}
 
-	/*
-	 * Initially assume that the file does not exist and
-	 * reserve the resources for that case.  If that is not
-	 * the case we'll drop the one we have and get a more
-	 * appropriate transaction later.
-	 */
+	 
 	error = xfs_trans_alloc_icreate(mp, tres, udqp, gdqp, pdqp, resblks,
 			&tp);
 	if (error == -ENOSPC) {
-		/* flush outstanding delalloc blocks and retry */
+		 
 		xfs_flush_inodes(mp);
 		error = xfs_trans_alloc_icreate(mp, tres, udqp, gdqp, pdqp,
 				resblks, &tp);
@@ -1012,11 +811,7 @@ xfs_create(
 	xfs_ilock(dp, XFS_ILOCK_EXCL | XFS_ILOCK_PARENT);
 	unlock_dp_on_error = true;
 
-	/*
-	 * A newly created regular or special file just has one directory
-	 * entry pointing to them, but a directory also the "." entry
-	 * pointing to itself.
-	 */
+	 
 	error = xfs_dialloc(&tp, dp->i_ino, mode, &ino);
 	if (!error)
 		error = xfs_init_new_inode(idmap, tp, dp, ino, mode,
@@ -1024,13 +819,7 @@ xfs_create(
 	if (error)
 		goto out_trans_cancel;
 
-	/*
-	 * Now we join the directory inode to the transaction.  We do not do it
-	 * earlier because xfs_dialloc might commit the previous transaction
-	 * (and release all the locks).  An error from here on will result in
-	 * the transaction cancel unlocking dp so don't do it explicitly in the
-	 * error path.
-	 */
+	 
 	xfs_trans_ijoin(tp, dp, XFS_ILOCK_EXCL);
 	unlock_dp_on_error = false;
 
@@ -1051,19 +840,11 @@ xfs_create(
 		xfs_bumplink(tp, dp);
 	}
 
-	/*
-	 * If this is a synchronous mount, make sure that the
-	 * create transaction goes to disk before returning to
-	 * the user.
-	 */
+	 
 	if (xfs_has_wsync(mp) || xfs_has_dirsync(mp))
 		xfs_trans_set_sync(tp);
 
-	/*
-	 * Attach the dquot(s) to the inodes and modify them incore.
-	 * These ids of the inode couldn't have changed since the new
-	 * inode has been locked ever since it was created.
-	 */
+	 
 	xfs_qm_vop_create_dqattach(tp, ip, udqp, gdqp, pdqp);
 
 	error = xfs_trans_commit(tp);
@@ -1080,11 +861,7 @@ xfs_create(
  out_trans_cancel:
 	xfs_trans_cancel(tp);
  out_release_inode:
-	/*
-	 * Wait until after the current transaction is aborted to finish the
-	 * setup of the inode and release the inode.  This prevents recursive
-	 * transactions and deadlocks from xfs_inactive.
-	 */
+	 
 	if (ip) {
 		xfs_finish_inode_setup(ip);
 		xfs_irele(ip);
@@ -1123,9 +900,7 @@ xfs_create_tmpfile(
 
 	prid = xfs_get_initial_prid(dp);
 
-	/*
-	 * Make sure that we have allocated dquot(s) on disk.
-	 */
+	 
 	error = xfs_qm_vop_dqalloc(dp, mapped_fsuid(idmap, &init_user_ns),
 			mapped_fsgid(idmap, &init_user_ns), prid,
 			XFS_QMOPT_QUOTALL | XFS_QMOPT_INHERIT,
@@ -1151,11 +926,7 @@ xfs_create_tmpfile(
 	if (xfs_has_wsync(mp))
 		xfs_trans_set_sync(tp);
 
-	/*
-	 * Attach the dquot(s) to the inodes and modify them incore.
-	 * These ids of the inode couldn't have changed since the new
-	 * inode has been locked ever since it was created.
-	 */
+	 
 	xfs_qm_vop_create_dqattach(tp, ip, udqp, gdqp, pdqp);
 
 	error = xfs_iunlink(tp, ip);
@@ -1176,11 +947,7 @@ xfs_create_tmpfile(
  out_trans_cancel:
 	xfs_trans_cancel(tp);
  out_release_inode:
-	/*
-	 * Wait until after the current transaction is aborted to finish the
-	 * setup of the inode and release the inode.  This prevents recursive
-	 * transactions and deadlocks from xfs_inactive.
-	 */
+	 
 	if (ip) {
 		xfs_finish_inode_setup(ip);
 		xfs_irele(ip);
@@ -1225,11 +992,7 @@ xfs_link(
 	if (error)
 		goto std_return;
 
-	/*
-	 * If we are using project inheritance, we only allow hard link
-	 * creation in our tree when the project IDs are the same; else
-	 * the tree quota mechanism could be circumvented.
-	 */
+	 
 	if (unlikely((tdp->i_diflags & XFS_DIFLAG_PROJINHERIT) &&
 		     tdp->i_projid != sip->i_projid)) {
 		error = -EXDEV;
@@ -1242,9 +1005,7 @@ xfs_link(
 			goto error_return;
 	}
 
-	/*
-	 * Handle initial link state of O_TMPFILE inode
-	 */
+	 
 	if (VFS_I(sip)->i_nlink == 0) {
 		struct xfs_perag	*pag;
 
@@ -1264,11 +1025,7 @@ xfs_link(
 
 	xfs_bumplink(tp, sip);
 
-	/*
-	 * If this is a synchronous mount, make sure that the
-	 * link transaction goes to disk before returning to
-	 * the user.
-	 */
+	 
 	if (xfs_has_wsync(mp) || xfs_has_dirsync(mp))
 		xfs_trans_set_sync(tp);
 
@@ -1282,7 +1039,7 @@ xfs_link(
 	return error;
 }
 
-/* Clear the reflink flag and the cowblocks tag if possible. */
+ 
 static void
 xfs_itruncate_clear_reflink_flags(
 	struct xfs_inode	*ip)
@@ -1300,27 +1057,7 @@ xfs_itruncate_clear_reflink_flags(
 		xfs_inode_clear_cowblocks_tag(ip);
 }
 
-/*
- * Free up the underlying blocks past new_size.  The new size must be smaller
- * than the current size.  This routine can be used both for the attribute and
- * data fork, and does not modify the inode size, which is left to the caller.
- *
- * The transaction passed to this routine must have made a permanent log
- * reservation of at least XFS_ITRUNCATE_LOG_RES.  This routine may commit the
- * given transaction and start new ones, so make sure everything involved in
- * the transaction is tidy before calling here.  Some transaction will be
- * returned to the caller to be committed.  The incoming transaction must
- * already include the inode, and both inode locks must be held exclusively.
- * The inode must also be "held" within the transaction.  On return the inode
- * will be "held" within the returned transaction.  This routine does NOT
- * require any disk space to be reserved for it within the transaction.
- *
- * If we get an error, we must return with the inode locked and linked into the
- * current transaction. This keeps things simple for the higher level code,
- * because it always knows that the inode is locked and held in the transaction
- * that returns to it whether errors occur or not.  We don't mark the inode
- * dirty on error so that transactions can be easily aborted if possible.
- */
+ 
 int
 xfs_itruncate_extents_flags(
 	struct xfs_trans	**tpp,
@@ -1348,16 +1085,7 @@ xfs_itruncate_extents_flags(
 
 	flags |= xfs_bmapi_aflag(whichfork);
 
-	/*
-	 * Since it is possible for space to become allocated beyond
-	 * the end of the file (in a crash where the space is allocated
-	 * but the inode size is not yet updated), simply remove any
-	 * blocks which show up between the new EOF and the maximum
-	 * possible file size.
-	 *
-	 * We have to free all the blocks to the bmbt maximum offset, even if
-	 * the page cache can't scale that far.
-	 */
+	 
 	first_unmap_block = XFS_B_TO_FSB(mp, (xfs_ufsize_t)new_size);
 	if (!xfs_verify_fileoff(mp, first_unmap_block)) {
 		WARN_ON_ONCE(first_unmap_block > XFS_MAX_FILEOFF);
@@ -1372,14 +1100,14 @@ xfs_itruncate_extents_flags(
 		if (error)
 			goto out;
 
-		/* free the just unmapped extents */
+		 
 		error = xfs_defer_finish(&tp);
 		if (error)
 			goto out;
 	}
 
 	if (whichfork == XFS_DATA_FORK) {
-		/* Remove all pending CoW reservations. */
+		 
 		error = xfs_reflink_cancel_cow_blocks(ip, &tp,
 				first_unmap_block, XFS_MAX_FILEOFF, true);
 		if (error)
@@ -1388,10 +1116,7 @@ xfs_itruncate_extents_flags(
 		xfs_itruncate_clear_reflink_flags(ip);
 	}
 
-	/*
-	 * Always re-log the inode so that our permanent transaction can keep
-	 * on rolling it forward in the log.
-	 */
+	 
 	xfs_trans_log_inode(tp, ip, XFS_ILOG_CORE);
 
 	trace_xfs_itruncate_extents_end(ip, new_size);
@@ -1411,23 +1136,14 @@ xfs_release(
 	if (!S_ISREG(VFS_I(ip)->i_mode) || (VFS_I(ip)->i_mode == 0))
 		return 0;
 
-	/* If this is a read-only mount, don't do this (would generate I/O) */
+	 
 	if (xfs_is_readonly(mp))
 		return 0;
 
 	if (!xfs_is_shutdown(mp)) {
 		int truncated;
 
-		/*
-		 * If we previously truncated this file and removed old data
-		 * in the process, we want to initiate "early" writeout on
-		 * the last close.  This is an attempt to combat the notorious
-		 * NULL files problem which is particularly noticeable from a
-		 * truncate down, buffered (re-)write (delalloc), followed by
-		 * a crash.  What we are effectively doing here is
-		 * significantly reducing the time window where we'd otherwise
-		 * be exposed to that problem.
-		 */
+		 
 		truncated = xfs_iflags_test_and_clear(ip, XFS_ITRUNCATED);
 		if (truncated) {
 			xfs_iflags_clear(ip, XFS_IDIRTY_RELEASE);
@@ -1442,30 +1158,12 @@ xfs_release(
 	if (VFS_I(ip)->i_nlink == 0)
 		return 0;
 
-	/*
-	 * If we can't get the iolock just skip truncating the blocks past EOF
-	 * because we could deadlock with the mmap_lock otherwise. We'll get
-	 * another chance to drop them once the last reference to the inode is
-	 * dropped, so we'll never leak blocks permanently.
-	 */
+	 
 	if (!xfs_ilock_nowait(ip, XFS_IOLOCK_EXCL))
 		return 0;
 
 	if (xfs_can_free_eofblocks(ip, false)) {
-		/*
-		 * Check if the inode is being opened, written and closed
-		 * frequently and we have delayed allocation blocks outstanding
-		 * (e.g. streaming writes from the NFS server), truncating the
-		 * blocks past EOF will cause fragmentation to occur.
-		 *
-		 * In this case don't do the truncation, but we have to be
-		 * careful how we detect this case. Blocks beyond EOF show up as
-		 * i_delayed_blks even when the inode is clean, so we need to
-		 * truncate them away first before checking for a dirty release.
-		 * Hence on the first dirty close we will still remove the
-		 * speculative allocation, but after that we will leave it in
-		 * place.
-		 */
+		 
 		if (xfs_iflags_test(ip, XFS_IDIRTY_RELEASE))
 			goto out_unlock;
 
@@ -1473,7 +1171,7 @@ xfs_release(
 		if (error)
 			goto out_unlock;
 
-		/* delalloc blocks after truncation means it really is dirty */
+		 
 		if (ip->i_delayed_blks)
 			xfs_iflags_set(ip, XFS_IDIRTY_RELEASE);
 	}
@@ -1483,11 +1181,7 @@ out_unlock:
 	return error;
 }
 
-/*
- * xfs_inactive_truncate
- *
- * Called to perform a truncate when an inode becomes unlinked.
- */
+ 
 STATIC int
 xfs_inactive_truncate(
 	struct xfs_inode *ip)
@@ -1504,11 +1198,7 @@ xfs_inactive_truncate(
 	xfs_ilock(ip, XFS_ILOCK_EXCL);
 	xfs_trans_ijoin(tp, ip, 0);
 
-	/*
-	 * Log the inode size first to prevent stale data exposure in the event
-	 * of a system crash before the truncate completes. See the related
-	 * comment in xfs_vn_setattr_size() for details.
-	 */
+	 
 	ip->i_disk_size = 0;
 	xfs_trans_log_inode(tp, ip, XFS_ILOG_CORE);
 
@@ -1532,11 +1222,7 @@ error_unlock:
 	return error;
 }
 
-/*
- * xfs_inactive_ifree()
- *
- * Perform the inode free when an inode is unlinked.
- */
+ 
 STATIC int
 xfs_inactive_ifree(
 	struct xfs_inode *ip)
@@ -1545,17 +1231,7 @@ xfs_inactive_ifree(
 	struct xfs_trans	*tp;
 	int			error;
 
-	/*
-	 * We try to use a per-AG reservation for any block needed by the finobt
-	 * tree, but as the finobt feature predates the per-AG reservation
-	 * support a degraded file system might not have enough space for the
-	 * reservation at mount time.  In that case try to dip into the reserved
-	 * pool and pray.
-	 *
-	 * Send a warning if the reservation does happen to fail, as the inode
-	 * now remains allocated and sits on the unlinked list until the fs is
-	 * repaired.
-	 */
+	 
 	if (unlikely(mp->m_finobt_nores)) {
 		error = xfs_trans_alloc(mp, &M_RES(mp)->tr_ifree,
 				XFS_IFREE_SPACE_RES(mp), 0, XFS_TRANS_RESERVE,
@@ -1574,37 +1250,14 @@ xfs_inactive_ifree(
 		return error;
 	}
 
-	/*
-	 * We do not hold the inode locked across the entire rolling transaction
-	 * here. We only need to hold it for the first transaction that
-	 * xfs_ifree() builds, which may mark the inode XFS_ISTALE if the
-	 * underlying cluster buffer is freed. Relogging an XFS_ISTALE inode
-	 * here breaks the relationship between cluster buffer invalidation and
-	 * stale inode invalidation on cluster buffer item journal commit
-	 * completion, and can result in leaving dirty stale inodes hanging
-	 * around in memory.
-	 *
-	 * We have no need for serialising this inode operation against other
-	 * operations - we freed the inode and hence reallocation is required
-	 * and that will serialise on reallocating the space the deferops need
-	 * to free. Hence we can unlock the inode on the first commit of
-	 * the transaction rather than roll it right through the deferops. This
-	 * avoids relogging the XFS_ISTALE inode.
-	 *
-	 * We check that xfs_ifree() hasn't grown an internal transaction roll
-	 * by asserting that the inode is still locked when it returns.
-	 */
+	 
 	xfs_ilock(ip, XFS_ILOCK_EXCL);
 	xfs_trans_ijoin(tp, ip, XFS_ILOCK_EXCL);
 
 	error = xfs_ifree(tp, ip);
 	ASSERT(xfs_isilocked(ip, XFS_ILOCK_EXCL));
 	if (error) {
-		/*
-		 * If we fail to free the inode, shut down.  The cancel
-		 * might do that, we need to make sure.  Otherwise the
-		 * inode might be lost for a long time or forever.
-		 */
+		 
 		if (!xfs_is_shutdown(mp)) {
 			xfs_notice(mp, "%s: xfs_ifree returned error %d",
 				__func__, error);
@@ -1614,20 +1267,13 @@ xfs_inactive_ifree(
 		return error;
 	}
 
-	/*
-	 * Credit the quota account(s). The inode is gone.
-	 */
+	 
 	xfs_trans_mod_dquot_byino(tp, ip, XFS_TRANS_DQ_ICOUNT, -1);
 
 	return xfs_trans_commit(tp);
 }
 
-/*
- * Returns true if we need to update the on-disk metadata before we can free
- * the memory used by this inode.  Updates include freeing post-eof
- * preallocations; freeing COW staging extents; and marking the inode free in
- * the inobt if it is on the unlinked list.
- */
+ 
 bool
 xfs_inode_needs_inactive(
 	struct xfs_inode	*ip)
@@ -1635,57 +1281,35 @@ xfs_inode_needs_inactive(
 	struct xfs_mount	*mp = ip->i_mount;
 	struct xfs_ifork	*cow_ifp = xfs_ifork_ptr(ip, XFS_COW_FORK);
 
-	/*
-	 * If the inode is already free, then there can be nothing
-	 * to clean up here.
-	 */
+	 
 	if (VFS_I(ip)->i_mode == 0)
 		return false;
 
-	/*
-	 * If this is a read-only mount, don't do this (would generate I/O)
-	 * unless we're in log recovery and cleaning the iunlinked list.
-	 */
+	 
 	if (xfs_is_readonly(mp) && !xlog_recovery_needed(mp->m_log))
 		return false;
 
-	/* If the log isn't running, push inodes straight to reclaim. */
+	 
 	if (xfs_is_shutdown(mp) || xfs_has_norecovery(mp))
 		return false;
 
-	/* Metadata inodes require explicit resource cleanup. */
+	 
 	if (xfs_is_metadata_inode(ip))
 		return false;
 
-	/* Want to clean out the cow blocks if there are any. */
+	 
 	if (cow_ifp && cow_ifp->if_bytes > 0)
 		return true;
 
-	/* Unlinked files must be freed. */
+	 
 	if (VFS_I(ip)->i_nlink == 0)
 		return true;
 
-	/*
-	 * This file isn't being freed, so check if there are post-eof blocks
-	 * to free.  @force is true because we are evicting an inode from the
-	 * cache.  Post-eof blocks must be freed, lest we end up with broken
-	 * free space accounting.
-	 *
-	 * Note: don't bother with iolock here since lockdep complains about
-	 * acquiring it in reclaim context. We have the only reference to the
-	 * inode at this point anyways.
-	 */
+	 
 	return xfs_can_free_eofblocks(ip, true);
 }
 
-/*
- * xfs_inactive
- *
- * This is called when the vnode reference count for the vnode
- * goes to zero.  If the file has been unlinked, then it must
- * now be truncated.  Also, we clear all of the read-ahead state
- * kept for the inode here since the file is now closed.
- */
+ 
 int
 xfs_inactive(
 	xfs_inode_t	*ip)
@@ -1694,10 +1318,7 @@ xfs_inactive(
 	int			error = 0;
 	int			truncate = 0;
 
-	/*
-	 * If the inode is already free, then there can be nothing
-	 * to clean up here.
-	 */
+	 
 	if (VFS_I(ip)->i_mode == 0) {
 		ASSERT(ip->i_df.if_broot_bytes == 0);
 		goto out;
@@ -1706,31 +1327,20 @@ xfs_inactive(
 	mp = ip->i_mount;
 	ASSERT(!xfs_iflags_test(ip, XFS_IRECOVERY));
 
-	/*
-	 * If this is a read-only mount, don't do this (would generate I/O)
-	 * unless we're in log recovery and cleaning the iunlinked list.
-	 */
+	 
 	if (xfs_is_readonly(mp) && !xlog_recovery_needed(mp->m_log))
 		goto out;
 
-	/* Metadata inodes require explicit resource cleanup. */
+	 
 	if (xfs_is_metadata_inode(ip))
 		goto out;
 
-	/* Try to clean out the cow blocks if there are any. */
+	 
 	if (xfs_inode_has_cow_data(ip))
 		xfs_reflink_cancel_cow_range(ip, 0, NULLFILEOFF, true);
 
 	if (VFS_I(ip)->i_nlink != 0) {
-		/*
-		 * force is true because we are evicting an inode from the
-		 * cache. Post-eof blocks must be freed, lest we end up with
-		 * broken free space accounting.
-		 *
-		 * Note: don't bother with iolock here since lockdep complains
-		 * about acquiring it in reclaim context. We have the only
-		 * reference to the inode at this point anyways.
-		 */
+		 
 		if (xfs_can_free_eofblocks(ip, true))
 			error = xfs_free_eofblocks(ip);
 
@@ -1743,14 +1353,7 @@ xfs_inactive(
 		truncate = 1;
 
 	if (xfs_iflags_test(ip, XFS_IQUOTAUNCHECKED)) {
-		/*
-		 * If this inode is being inactivated during a quotacheck and
-		 * has not yet been scanned by quotacheck, we /must/ remove
-		 * the dquots from the inode before inactivation changes the
-		 * block and inode counts.  Most probably this is a result of
-		 * reloading the incore iunlinked list to purge unrecovered
-		 * unlinked inodes.
-		 */
+		 
 		xfs_qm_dqdetach(ip);
 	} else {
 		error = xfs_qm_dqattach(ip);
@@ -1765,11 +1368,7 @@ xfs_inactive(
 	if (error)
 		goto out;
 
-	/*
-	 * If there are attributes associated with the file then blow them away
-	 * now.  The code calls a routine that recursively deconstructs the
-	 * attribute fork. If also blows away the in-core attribute fork.
-	 */
+	 
 	if (xfs_inode_has_attr_fork(ip)) {
 		error = xfs_attr_inactive(ip);
 		if (error)
@@ -1778,59 +1377,18 @@ xfs_inactive(
 
 	ASSERT(ip->i_forkoff == 0);
 
-	/*
-	 * Free the inode.
-	 */
+	 
 	error = xfs_inactive_ifree(ip);
 
 out:
-	/*
-	 * We're done making metadata updates for this inode, so we can release
-	 * the attached dquots.
-	 */
+	 
 	xfs_qm_dqdetach(ip);
 	return error;
 }
 
-/*
- * In-Core Unlinked List Lookups
- * =============================
- *
- * Every inode is supposed to be reachable from some other piece of metadata
- * with the exception of the root directory.  Inodes with a connection to a
- * file descriptor but not linked from anywhere in the on-disk directory tree
- * are collectively known as unlinked inodes, though the filesystem itself
- * maintains links to these inodes so that on-disk metadata are consistent.
- *
- * XFS implements a per-AG on-disk hash table of unlinked inodes.  The AGI
- * header contains a number of buckets that point to an inode, and each inode
- * record has a pointer to the next inode in the hash chain.  This
- * singly-linked list causes scaling problems in the iunlink remove function
- * because we must walk that list to find the inode that points to the inode
- * being removed from the unlinked hash bucket list.
- *
- * Hence we keep an in-memory double linked list to link each inode on an
- * unlinked list. Because there are 64 unlinked lists per AGI, keeping pointer
- * based lists would require having 64 list heads in the perag, one for each
- * list. This is expensive in terms of memory (think millions of AGs) and cache
- * misses on lookups. Instead, use the fact that inodes on the unlinked list
- * must be referenced at the VFS level to keep them on the list and hence we
- * have an existence guarantee for inodes on the unlinked list.
- *
- * Given we have an existence guarantee, we can use lockless inode cache lookups
- * to resolve aginos to xfs inodes. This means we only need 8 bytes per inode
- * for the double linked unlinked list, and we don't need any extra locking to
- * keep the list safe as all manipulations are done under the AGI buffer lock.
- * Keeping the list up to date does not require memory allocation, just finding
- * the XFS inode and updating the next/prev unlinked list aginos.
- */
+ 
 
-/*
- * Find an inode on the unlinked list. This does not take references to the
- * inode as we have existence guarantees by holding the AGI buffer lock and that
- * only unlinked, referenced inodes can be on the unlinked inode list.  If we
- * don't find the inode in cache, then let the caller handle the situation.
- */
+ 
 static struct xfs_inode *
 xfs_iunlink_lookup(
 	struct xfs_perag	*pag,
@@ -1841,15 +1399,12 @@ xfs_iunlink_lookup(
 	rcu_read_lock();
 	ip = radix_tree_lookup(&pag->pag_ici_root, agino);
 	if (!ip) {
-		/* Caller can handle inode not being in memory. */
+		 
 		rcu_read_unlock();
 		return NULL;
 	}
 
-	/*
-	 * Inode in RCU freeing limbo should not happen.  Warn about this and
-	 * let the caller handle the failure.
-	 */
+	 
 	if (WARN_ON_ONCE(!ip->i_ino)) {
 		rcu_read_unlock();
 		return NULL;
@@ -1859,10 +1414,7 @@ xfs_iunlink_lookup(
 	return ip;
 }
 
-/*
- * Update the prev pointer of the next agino.  Returns -ENOLINK if the inode
- * is not in cache.
- */
+ 
 static int
 xfs_iunlink_update_backref(
 	struct xfs_perag	*pag,
@@ -1871,7 +1423,7 @@ xfs_iunlink_update_backref(
 {
 	struct xfs_inode	*ip;
 
-	/* No update necessary if we are at the end of the list. */
+	 
 	if (next_agino == NULLAGINO)
 		return 0;
 
@@ -1883,10 +1435,7 @@ xfs_iunlink_update_backref(
 	return 0;
 }
 
-/*
- * Point the AGI unlinked bucket at an inode and log the results.  The caller
- * is responsible for validating the old value.
- */
+ 
 STATIC int
 xfs_iunlink_update_bucket(
 	struct xfs_trans	*tp,
@@ -1905,11 +1454,7 @@ xfs_iunlink_update_bucket(
 	trace_xfs_iunlink_update_bucket(tp->t_mountp, pag->pag_agno, bucket_index,
 			old_value, new_agino);
 
-	/*
-	 * We should never find the head of the list already set to the value
-	 * passed in because either we're adding or removing ourselves from the
-	 * head of the list.
-	 */
+	 
 	if (old_value == new_agino) {
 		xfs_buf_mark_corrupt(agibp);
 		return -EFSCORRUPTED;
@@ -1922,11 +1467,7 @@ xfs_iunlink_update_bucket(
 	return 0;
 }
 
-/*
- * Load the inode @next_agino into the cache and set its prev_unlinked pointer
- * to @prev_agino.  Caller must hold the AGI to synchronize with other changes
- * to the unlinked list.
- */
+ 
 STATIC int
 xfs_iunlink_reload_next(
 	struct xfs_trans	*tp,
@@ -1953,18 +1494,13 @@ xfs_iunlink_reload_next(
  "Found unrecovered unlinked inode 0x%x in AG 0x%x.  Initiating recovery.",
 			next_agino, pag->pag_agno);
 
-	/*
-	 * Use an untrusted lookup just to be cautious in case the AGI has been
-	 * corrupted and now points at a free inode.  That shouldn't happen,
-	 * but we'd rather shut down now since we're already running in a weird
-	 * situation.
-	 */
+	 
 	ino = XFS_AGINO_TO_INO(mp, pag->pag_agno, next_agino);
 	error = xfs_iget(mp, tp, ino, XFS_IGET_UNTRUSTED, 0, &next_ip);
 	if (error)
 		return error;
 
-	/* If this is not an unlinked inode, something is very wrong. */
+	 
 	if (VFS_I(next_ip)->i_nlink != 0) {
 		error = -EFSCORRUPTED;
 		goto rele;
@@ -1994,11 +1530,7 @@ xfs_iunlink_insert_inode(
 	short			bucket_index = agino % XFS_AGI_UNLINKED_BUCKETS;
 	int			error;
 
-	/*
-	 * Get the index into the agi hash table for the list this inode will
-	 * go on.  Make sure the pointer isn't garbage and that this inode
-	 * isn't already on the list.
-	 */
+	 
 	next_agino = be32_to_cpu(agi->agi_unlinked[bucket_index]);
 	if (next_agino == agino ||
 	    !xfs_verify_agino_or_null(pag, next_agino)) {
@@ -2006,10 +1538,7 @@ xfs_iunlink_insert_inode(
 		return -EFSCORRUPTED;
 	}
 
-	/*
-	 * Update the prev pointer in the next inode to point back to this
-	 * inode.
-	 */
+	 
 	error = xfs_iunlink_update_backref(pag, agino, next_agino);
 	if (error == -ENOLINK)
 		error = xfs_iunlink_reload_next(tp, agibp, agino, next_agino);
@@ -2017,28 +1546,19 @@ xfs_iunlink_insert_inode(
 		return error;
 
 	if (next_agino != NULLAGINO) {
-		/*
-		 * There is already another inode in the bucket, so point this
-		 * inode to the current head of the list.
-		 */
+		 
 		error = xfs_iunlink_log_inode(tp, ip, pag, next_agino);
 		if (error)
 			return error;
 		ip->i_next_unlinked = next_agino;
 	}
 
-	/* Point the head of the list to point to this inode. */
+	 
 	ip->i_prev_unlinked = NULLAGINO;
 	return xfs_iunlink_update_bucket(tp, pag, agibp, bucket_index, agino);
 }
 
-/*
- * This is called when the inode's link count has gone to 0 or we are creating
- * a tmpfile via O_TMPFILE.  The inode @ip must have nlink == 0.
- *
- * We place the on-disk inode on a list in the AGI.  It will be pulled from this
- * list when the inode is freed.
- */
+ 
 STATIC int
 xfs_iunlink(
 	struct xfs_trans	*tp,
@@ -2055,7 +1575,7 @@ xfs_iunlink(
 
 	pag = xfs_perag_get(mp, XFS_INO_TO_AGNO(mp, ip->i_ino));
 
-	/* Get the agi buffer first.  It ensures lock ordering on the list. */
+	 
 	error = xfs_read_agi(pag, tp, &agibp);
 	if (error)
 		goto out;
@@ -2082,10 +1602,7 @@ xfs_iunlink_remove_inode(
 
 	trace_xfs_iunlink_remove(ip);
 
-	/*
-	 * Get the index into the agi hash table for the list this inode will
-	 * go on.  Make sure the head pointer isn't garbage.
-	 */
+	 
 	head_agino = be32_to_cpu(agi->agi_unlinked[bucket_index]);
 	if (!xfs_verify_agino(pag, head_agino)) {
 		XFS_CORRUPTION_ERROR(__func__, XFS_ERRLEVEL_LOW, mp,
@@ -2093,19 +1610,12 @@ xfs_iunlink_remove_inode(
 		return -EFSCORRUPTED;
 	}
 
-	/*
-	 * Set our inode's next_unlinked pointer to NULL and then return
-	 * the old pointer value so that we can update whatever was previous
-	 * to us in the list to point to whatever was next in the list.
-	 */
+	 
 	error = xfs_iunlink_log_inode(tp, ip, pag, NULLAGINO);
 	if (error)
 		return error;
 
-	/*
-	 * Update the prev pointer in the next inode to point back to previous
-	 * inode in the chain.
-	 */
+	 
 	error = xfs_iunlink_update_backref(pag, ip->i_prev_unlinked,
 			ip->i_next_unlinked);
 	if (error == -ENOLINK)
@@ -2125,7 +1635,7 @@ xfs_iunlink_remove_inode(
 				ip->i_next_unlinked);
 		prev_ip->i_next_unlinked = ip->i_next_unlinked;
 	} else {
-		/* Point the head of the list to the next unlinked inode. */
+		 
 		error = xfs_iunlink_update_bucket(tp, pag, agibp, bucket_index,
 				ip->i_next_unlinked);
 	}
@@ -2135,9 +1645,7 @@ xfs_iunlink_remove_inode(
 	return error;
 }
 
-/*
- * Pull the on-disk inode from the AGI unlinked list.
- */
+ 
 STATIC int
 xfs_iunlink_remove(
 	struct xfs_trans	*tp,
@@ -2149,7 +1657,7 @@ xfs_iunlink_remove(
 
 	trace_xfs_iunlink_remove(ip);
 
-	/* Get the agi buffer first.  It ensures lock ordering on the list. */
+	 
 	error = xfs_read_agi(pag, tp, &agibp);
 	if (error)
 		return error;
@@ -2157,11 +1665,7 @@ xfs_iunlink_remove(
 	return xfs_iunlink_remove_inode(tp, pag, agibp, ip);
 }
 
-/*
- * Look up the inode number specified and if it is not already marked XFS_ISTALE
- * mark it stale. We should only find clean inodes in this lookup that aren't
- * already stale.
- */
+ 
 static void
 xfs_ifree_mark_inode_stale(
 	struct xfs_perag	*pag,
@@ -2176,28 +1680,18 @@ retry:
 	rcu_read_lock();
 	ip = radix_tree_lookup(&pag->pag_ici_root, XFS_INO_TO_AGINO(mp, inum));
 
-	/* Inode not in memory, nothing to do */
+	 
 	if (!ip) {
 		rcu_read_unlock();
 		return;
 	}
 
-	/*
-	 * because this is an RCU protected lookup, we could find a recently
-	 * freed or even reallocated inode during the lookup. We need to check
-	 * under the i_flags_lock for a valid inode here. Skip it if it is not
-	 * valid, the wrong inode or stale.
-	 */
+	 
 	spin_lock(&ip->i_flags_lock);
 	if (ip->i_ino != inum || __xfs_iflags_test(ip, XFS_ISTALE))
 		goto out_iflags_unlock;
 
-	/*
-	 * Don't try to lock/unlock the current inode, but we _cannot_ skip the
-	 * other inodes that we did not find in the list attached to the buffer
-	 * and are not already marked stale. If we can't lock it, back off and
-	 * retry.
-	 */
+	 
 	if (ip != free_ip) {
 		if (!xfs_ilock_nowait(ip, XFS_ILOCK_EXCL)) {
 			spin_unlock(&ip->i_flags_lock);
@@ -2208,11 +1702,7 @@ retry:
 	}
 	ip->i_flags |= XFS_ISTALE;
 
-	/*
-	 * If the inode is flushing, it is already attached to the buffer.  All
-	 * we needed to do here is mark the inode stale so buffer IO completion
-	 * will remove it from the AIL.
-	 */
+	 
 	iip = ip->i_itemp;
 	if (__xfs_iflags_test(ip, XFS_IFLUSHING)) {
 		ASSERT(!list_empty(&iip->ili_item.li_bio_list));
@@ -2220,12 +1710,7 @@ retry:
 		goto out_iunlock;
 	}
 
-	/*
-	 * Inodes not attached to the buffer can be released immediately.
-	 * Everything else has to go through xfs_iflush_abort() on journal
-	 * commit as the flock synchronises removal of the inode from the
-	 * cluster buffer against inode reclaim.
-	 */
+	 
 	if (!iip || list_empty(&iip->ili_item.li_bio_list))
 		goto out_iunlock;
 
@@ -2233,7 +1718,7 @@ retry:
 	spin_unlock(&ip->i_flags_lock);
 	rcu_read_unlock();
 
-	/* we have a dirty inode in memory that has not yet been flushed. */
+	 
 	spin_lock(&iip->ili_lock);
 	iip->ili_last_fields = iip->ili_fields;
 	iip->ili_fields = 0;
@@ -2253,11 +1738,7 @@ out_iflags_unlock:
 	rcu_read_unlock();
 }
 
-/*
- * A big issue when freeing the inode cluster is that we _cannot_ skip any
- * inodes that are in memory - they all must be marked stale and attached to
- * the cluster buffer.
- */
+ 
 static int
 xfs_ifree_cluster(
 	struct xfs_trans	*tp,
@@ -2278,11 +1759,7 @@ xfs_ifree_cluster(
 	nbufs = igeo->ialloc_blks / igeo->blocks_per_cluster;
 
 	for (j = 0; j < nbufs; j++, inum += igeo->inodes_per_cluster) {
-		/*
-		 * The allocation bitmap tells us which inodes of the chunk were
-		 * physically allocated. Skip the cluster if an inode falls into
-		 * a sparse region.
-		 */
+		 
 		ioffset = inum - xic->first_ino;
 		if ((xic->alloc & XFS_INOBT_MASK(ioffset)) == 0) {
 			ASSERT(ioffset % igeo->inodes_per_cluster == 0);
@@ -2292,37 +1769,17 @@ xfs_ifree_cluster(
 		blkno = XFS_AGB_TO_DADDR(mp, XFS_INO_TO_AGNO(mp, inum),
 					 XFS_INO_TO_AGBNO(mp, inum));
 
-		/*
-		 * We obtain and lock the backing buffer first in the process
-		 * here to ensure dirty inodes attached to the buffer remain in
-		 * the flushing state while we mark them stale.
-		 *
-		 * If we scan the in-memory inodes first, then buffer IO can
-		 * complete before we get a lock on it, and hence we may fail
-		 * to mark all the active inodes on the buffer stale.
-		 */
+		 
 		error = xfs_trans_get_buf(tp, mp->m_ddev_targp, blkno,
 				mp->m_bsize * igeo->blocks_per_cluster,
 				XBF_UNMAPPED, &bp);
 		if (error)
 			return error;
 
-		/*
-		 * This buffer may not have been correctly initialised as we
-		 * didn't read it from disk. That's not important because we are
-		 * only using to mark the buffer as stale in the log, and to
-		 * attach stale cached inodes on it. That means it will never be
-		 * dispatched for IO. If it is, we want to know about it, and we
-		 * want it to fail. We can acheive this by adding a write
-		 * verifier to the buffer.
-		 */
+		 
 		bp->b_ops = &xfs_inode_buf_ops;
 
-		/*
-		 * Now we need to set all the cached clean inodes as XFS_ISTALE,
-		 * too. This requires lookups, and will skip inodes that we've
-		 * already marked XFS_ISTALE.
-		 */
+		 
 		for (i = 0; i < igeo->inodes_per_cluster; i++)
 			xfs_ifree_mark_inode_stale(pag, free_ip, inum + i);
 
@@ -2332,15 +1789,7 @@ xfs_ifree_cluster(
 	return 0;
 }
 
-/*
- * This is called to return an inode to the inode free list.  The inode should
- * already be truncated to 0 length and have no pages associated with it.  This
- * routine also assumes that the inode is already a part of the transaction.
- *
- * The on-disk copy of the inode will have been added to the list of unlinked
- * inodes in the AGI. We need to remove the inode from that list atomically with
- * respect to freeing it here.
- */
+ 
 int
 xfs_ifree(
 	struct xfs_trans	*tp,
@@ -2360,12 +1809,7 @@ xfs_ifree(
 
 	pag = xfs_perag_get(mp, XFS_INO_TO_AGNO(mp, ip->i_ino));
 
-	/*
-	 * Free the inode first so that we guarantee that the AGI lock is going
-	 * to be taken before we remove the inode from the unlinked list. This
-	 * makes the AGI lock -> unlinked list modification order the same as
-	 * used in O_TMPFILE creation.
-	 */
+	 
 	error = xfs_difree(tp, pag, ip->i_ino, &xic);
 	if (error)
 		goto out;
@@ -2374,34 +1818,27 @@ xfs_ifree(
 	if (error)
 		goto out;
 
-	/*
-	 * Free any local-format data sitting around before we reset the
-	 * data fork to extents format.  Note that the attr fork data has
-	 * already been freed by xfs_attr_inactive.
-	 */
+	 
 	if (ip->i_df.if_format == XFS_DINODE_FMT_LOCAL) {
 		kmem_free(ip->i_df.if_u1.if_data);
 		ip->i_df.if_u1.if_data = NULL;
 		ip->i_df.if_bytes = 0;
 	}
 
-	VFS_I(ip)->i_mode = 0;		/* mark incore inode as free */
+	VFS_I(ip)->i_mode = 0;		 
 	ip->i_diflags = 0;
 	ip->i_diflags2 = mp->m_ino_geo.new_diflags2;
-	ip->i_forkoff = 0;		/* mark the attr fork not in use */
+	ip->i_forkoff = 0;		 
 	ip->i_df.if_format = XFS_DINODE_FMT_EXTENTS;
 	if (xfs_iflags_test(ip, XFS_IPRESERVE_DM_FIELDS))
 		xfs_iflags_clear(ip, XFS_IPRESERVE_DM_FIELDS);
 
-	/* Don't attempt to replay owner changes for a deleted inode */
+	 
 	spin_lock(&iip->ili_lock);
 	iip->ili_fields &= ~(XFS_ILOG_AOWNER | XFS_ILOG_DOWNER);
 	spin_unlock(&iip->ili_lock);
 
-	/*
-	 * Bump the generation count so no one will be confused
-	 * by reincarnations of this inode.
-	 */
+	 
 	VFS_I(ip)->i_generation++;
 	xfs_trans_log_inode(tp, ip, XFS_ILOG_CORE);
 
@@ -2412,11 +1849,7 @@ out:
 	return error;
 }
 
-/*
- * This is called to unpin an inode.  The caller must have the inode locked
- * in at least shared mode so that the buffer cannot be subsequently pinned
- * once someone is waiting for it to be unpinned.
- */
+ 
 static void
 xfs_iunpin(
 	struct xfs_inode	*ip)
@@ -2425,7 +1858,7 @@ xfs_iunpin(
 
 	trace_xfs_inode_unpin_nowait(ip, _RET_IP_);
 
-	/* Give the log a push to start the unpinning I/O */
+	 
 	xfs_log_force_seq(ip->i_mount, ip->i_itemp->ili_commit_seq, 0, NULL);
 
 }
@@ -2455,33 +1888,7 @@ xfs_iunpin_wait(
 		__xfs_iunpin_wait(ip);
 }
 
-/*
- * Removing an inode from the namespace involves removing the directory entry
- * and dropping the link count on the inode. Removing the directory entry can
- * result in locking an AGF (directory blocks were freed) and removing a link
- * count can result in placing the inode on an unlinked list which results in
- * locking an AGI.
- *
- * The big problem here is that we have an ordering constraint on AGF and AGI
- * locking - inode allocation locks the AGI, then can allocate a new extent for
- * new inodes, locking the AGF after the AGI. Similarly, freeing the inode
- * removes the inode from the unlinked list, requiring that we lock the AGI
- * first, and then freeing the inode can result in an inode chunk being freed
- * and hence freeing disk space requiring that we lock an AGF.
- *
- * Hence the ordering that is imposed by other parts of the code is AGI before
- * AGF. This means we cannot remove the directory entry before we drop the inode
- * reference count and put it on the unlinked list as this results in a lock
- * order of AGF then AGI, and this can deadlock against inode allocation and
- * freeing. Therefore we must drop the link counts before we remove the
- * directory entry.
- *
- * This is still safe from a transactional point of view - it is not until we
- * get to xfs_defer_finish() that we have the possibility of multiple
- * transactions in this operation. Hence as long as we remove the directory
- * entry and drop the link count in the first transaction of the remove
- * operation, there are no transactional constraints on the ordering here.
- */
+ 
 int
 xfs_remove(
 	xfs_inode_t             *dp,
@@ -2508,17 +1915,7 @@ xfs_remove(
 	if (error)
 		goto std_return;
 
-	/*
-	 * We try to get the real space reservation first, allowing for
-	 * directory btree deletion(s) implying possible bmap insert(s).  If we
-	 * can't get the space reservation then we use 0 instead, and avoid the
-	 * bmap btree insert(s) in the directory code by, if the bmap insert
-	 * tries to happen, instead trimming the LAST block from the directory.
-	 *
-	 * Ignore EDQUOT and ENOSPC being returned via nospace_error because
-	 * the directory code can handle a reservationless update and we don't
-	 * want to prevent a user from trying to free space by deleting things.
-	 */
+	 
 	resblks = XFS_REMOVE_SPACE_RES(mp);
 	error = xfs_trans_alloc_dir(dp, &M_RES(mp)->tr_remove, ip, &resblks,
 			&tp, &dontcare);
@@ -2527,9 +1924,7 @@ xfs_remove(
 		goto std_return;
 	}
 
-	/*
-	 * If we're removing a directory perform some additional validation.
-	 */
+	 
 	if (is_dir) {
 		ASSERT(VFS_I(ip)->i_nlink >= 2);
 		if (VFS_I(ip)->i_nlink != 2) {
@@ -2541,22 +1936,17 @@ xfs_remove(
 			goto out_trans_cancel;
 		}
 
-		/* Drop the link from ip's "..".  */
+		 
 		error = xfs_droplink(tp, dp);
 		if (error)
 			goto out_trans_cancel;
 
-		/* Drop the "." link from ip to self.  */
+		 
 		error = xfs_droplink(tp, ip);
 		if (error)
 			goto out_trans_cancel;
 
-		/*
-		 * Point the unlinked child directory's ".." entry to the root
-		 * directory to eliminate back-references to inodes that may
-		 * get freed before the child directory is closed.  If the fs
-		 * gets shrunk, this can lead to dirent inode validation errors.
-		 */
+		 
 		if (dp->i_ino != tp->t_mountp->m_sb.sb_rootino) {
 			error = xfs_dir_replace(tp, ip, &xfs_name_dotdot,
 					tp->t_mountp->m_sb.sb_rootino, 0);
@@ -2564,16 +1954,12 @@ xfs_remove(
 				goto out_trans_cancel;
 		}
 	} else {
-		/*
-		 * When removing a non-directory we need to log the parent
-		 * inode here.  For a directory this is done implicitly
-		 * by the xfs_droplink call for the ".." entry.
-		 */
+		 
 		xfs_trans_log_inode(tp, dp, XFS_ILOG_CORE);
 	}
 	xfs_trans_ichgtime(tp, dp, XFS_ICHGTIME_MOD | XFS_ICHGTIME_CHG);
 
-	/* Drop the link from dp to ip. */
+	 
 	error = xfs_droplink(tp, ip);
 	if (error)
 		goto out_trans_cancel;
@@ -2584,11 +1970,7 @@ xfs_remove(
 		goto out_trans_cancel;
 	}
 
-	/*
-	 * If this is a synchronous mount, make sure that the
-	 * remove transaction goes to disk before returning to
-	 * the user.
-	 */
+	 
 	if (xfs_has_wsync(mp) || xfs_has_dirsync(mp))
 		xfs_trans_set_sync(tp);
 
@@ -2607,32 +1989,24 @@ xfs_remove(
 	return error;
 }
 
-/*
- * Enter all inodes for a rename transaction into a sorted array.
- */
+ 
 #define __XFS_SORT_INODES	5
 STATIC void
 xfs_sort_for_rename(
-	struct xfs_inode	*dp1,	/* in: old (source) directory inode */
-	struct xfs_inode	*dp2,	/* in: new (target) directory inode */
-	struct xfs_inode	*ip1,	/* in: inode of old entry */
-	struct xfs_inode	*ip2,	/* in: inode of new entry */
-	struct xfs_inode	*wip,	/* in: whiteout inode */
-	struct xfs_inode	**i_tab,/* out: sorted array of inodes */
-	int			*num_inodes)  /* in/out: inodes in array */
+	struct xfs_inode	*dp1,	 
+	struct xfs_inode	*dp2,	 
+	struct xfs_inode	*ip1,	 
+	struct xfs_inode	*ip2,	 
+	struct xfs_inode	*wip,	 
+	struct xfs_inode	**i_tab, 
+	int			*num_inodes)   
 {
 	int			i, j;
 
 	ASSERT(*num_inodes == __XFS_SORT_INODES);
 	memset(i_tab, 0, *num_inodes * sizeof(struct xfs_inode *));
 
-	/*
-	 * i_tab contains a list of pointers to inodes.  We initialize
-	 * the table here & we'll sort it.  We will then use it to
-	 * order the acquisition of the inode locks.
-	 *
-	 * Note that the table may contain duplicates.  e.g., dp1 == dp2.
-	 */
+	 
 	i = 0;
 	i_tab[i++] = dp1;
 	i_tab[i++] = dp2;
@@ -2643,10 +2017,7 @@ xfs_sort_for_rename(
 		i_tab[i++] = wip;
 	*num_inodes = i;
 
-	/*
-	 * Sort the elements via bubble sort.  (Remember, there are at
-	 * most 5 elements to sort, so this is adequate.)
-	 */
+	 
 	for (i = 0; i < *num_inodes; i++) {
 		for (j = 1; j < *num_inodes; j++) {
 			if (i_tab[j]->i_ino < i_tab[j-1]->i_ino) {
@@ -2662,21 +2033,14 @@ static int
 xfs_finish_rename(
 	struct xfs_trans	*tp)
 {
-	/*
-	 * If this is a synchronous mount, make sure that the rename transaction
-	 * goes to disk before returning to the user.
-	 */
+	 
 	if (xfs_has_wsync(tp->t_mountp) || xfs_has_dirsync(tp->t_mountp))
 		xfs_trans_set_sync(tp);
 
 	return xfs_trans_commit(tp);
 }
 
-/*
- * xfs_cross_rename()
- *
- * responsible for handling RENAME_EXCHANGE flag in renameat2() syscall
- */
+ 
 STATIC int
 xfs_cross_rename(
 	struct xfs_trans	*tp,
@@ -2693,21 +2057,17 @@ xfs_cross_rename(
 	int		ip2_flags = 0;
 	int		dp2_flags = 0;
 
-	/* Swap inode number for dirent in first parent */
+	 
 	error = xfs_dir_replace(tp, dp1, name1, ip2->i_ino, spaceres);
 	if (error)
 		goto out_trans_abort;
 
-	/* Swap inode number for dirent in second parent */
+	 
 	error = xfs_dir_replace(tp, dp2, name2, ip1->i_ino, spaceres);
 	if (error)
 		goto out_trans_abort;
 
-	/*
-	 * If we're renaming one or more directories across different parents,
-	 * update the respective ".." entries (and link counts) to match the new
-	 * parents.
-	 */
+	 
 	if (dp1 != dp2) {
 		dp2_flags = XFS_ICHGTIME_MOD | XFS_ICHGTIME_CHG;
 
@@ -2717,7 +2077,7 @@ xfs_cross_rename(
 			if (error)
 				goto out_trans_abort;
 
-			/* transfer ip2 ".." reference to dp1 */
+			 
 			if (!S_ISDIR(VFS_I(ip1)->i_mode)) {
 				error = xfs_droplink(tp, dp2);
 				if (error)
@@ -2725,12 +2085,7 @@ xfs_cross_rename(
 				xfs_bumplink(tp, dp1);
 			}
 
-			/*
-			 * Although ip1 isn't changed here, userspace needs
-			 * to be warned about the change, so that applications
-			 * relying on it (like backup ones), will properly
-			 * notify the change
-			 */
+			 
 			ip1_flags |= XFS_ICHGTIME_CHG;
 			ip2_flags |= XFS_ICHGTIME_MOD | XFS_ICHGTIME_CHG;
 		}
@@ -2741,7 +2096,7 @@ xfs_cross_rename(
 			if (error)
 				goto out_trans_abort;
 
-			/* transfer ip1 ".." reference to dp2 */
+			 
 			if (!S_ISDIR(VFS_I(ip2)->i_mode)) {
 				error = xfs_droplink(tp, dp1);
 				if (error)
@@ -2749,12 +2104,7 @@ xfs_cross_rename(
 				xfs_bumplink(tp, dp2);
 			}
 
-			/*
-			 * Although ip2 isn't changed here, userspace needs
-			 * to be warned about the change, so that applications
-			 * relying on it (like backup ones), will properly
-			 * notify the change
-			 */
+			 
 			ip1_flags |= XFS_ICHGTIME_MOD | XFS_ICHGTIME_CHG;
 			ip2_flags |= XFS_ICHGTIME_CHG;
 		}
@@ -2781,14 +2131,7 @@ out_trans_abort:
 	return error;
 }
 
-/*
- * xfs_rename_alloc_whiteout()
- *
- * Return a referenced, unlinked, unlocked inode that can be used as a
- * whiteout in a rename transaction. We use a tmpfile inode here so that if we
- * crash between allocating the inode and linking it into the rename transaction
- * recovery will free the inode and we won't leak it.
- */
+ 
 static int
 xfs_rename_alloc_whiteout(
 	struct mnt_idmap	*idmap,
@@ -2814,11 +2157,7 @@ xfs_rename_alloc_whiteout(
 		return error;
 	}
 
-	/*
-	 * Prepare the tmpfile inode as if it were created through the VFS.
-	 * Complete the inode setup and flag it as linkable.  nlink is already
-	 * zero, so we can skip the drop_nlink.
-	 */
+	 
 	xfs_setup_iops(tmpfile);
 	xfs_finish_inode_setup(tmpfile);
 	VFS_I(tmpfile)->i_state |= I_LINKABLE;
@@ -2827,9 +2166,7 @@ xfs_rename_alloc_whiteout(
 	return 0;
 }
 
-/*
- * xfs_rename
- */
+ 
 int
 xfs_rename(
 	struct mnt_idmap	*idmap,
@@ -2843,7 +2180,7 @@ xfs_rename(
 {
 	struct xfs_mount	*mp = src_dp->i_mount;
 	struct xfs_trans	*tp;
-	struct xfs_inode	*wip = NULL;		/* whiteout inode */
+	struct xfs_inode	*wip = NULL;		 
 	struct xfs_inode	*inodes[__XFS_SORT_INODES];
 	int			i;
 	int			num_inodes = __XFS_SORT_INODES;
@@ -2858,18 +2195,14 @@ xfs_rename(
 	if ((flags & RENAME_EXCHANGE) && !target_ip)
 		return -EINVAL;
 
-	/*
-	 * If we are doing a whiteout operation, allocate the whiteout inode
-	 * we will be placing at the target and ensure the type is set
-	 * appropriately.
-	 */
+	 
 	if (flags & RENAME_WHITEOUT) {
 		error = xfs_rename_alloc_whiteout(idmap, src_name,
 						  target_dp, &wip);
 		if (error)
 			return error;
 
-		/* setup target dirent info as whiteout */
+		 
 		src_name->type = XFS_DIR3_FT_CHRDEV;
 	}
 
@@ -2889,26 +2222,15 @@ retry:
 	if (error)
 		goto out_release_wip;
 
-	/*
-	 * Attach the dquots to the inodes
-	 */
+	 
 	error = xfs_qm_vop_rename_dqattach(inodes);
 	if (error)
 		goto out_trans_cancel;
 
-	/*
-	 * Lock all the participating inodes. Depending upon whether
-	 * the target_name exists in the target directory, and
-	 * whether the target directory is the same as the source
-	 * directory, we can lock from 2 to 5 inodes.
-	 */
+	 
 	xfs_lock_inodes(inodes, num_inodes, XFS_ILOCK_EXCL);
 
-	/*
-	 * Join all the inodes to the transaction. From this point on,
-	 * we can rely on either trans_commit or trans_cancel to unlock
-	 * them.
-	 */
+	 
 	xfs_trans_ijoin(tp, src_dp, XFS_ILOCK_EXCL);
 	if (new_parent)
 		xfs_trans_ijoin(tp, target_dp, XFS_ILOCK_EXCL);
@@ -2918,29 +2240,20 @@ retry:
 	if (wip)
 		xfs_trans_ijoin(tp, wip, XFS_ILOCK_EXCL);
 
-	/*
-	 * If we are using project inheritance, we only allow renames
-	 * into our tree when the project IDs are the same; else the
-	 * tree quota mechanism would be circumvented.
-	 */
+	 
 	if (unlikely((target_dp->i_diflags & XFS_DIFLAG_PROJINHERIT) &&
 		     target_dp->i_projid != src_ip->i_projid)) {
 		error = -EXDEV;
 		goto out_trans_cancel;
 	}
 
-	/* RENAME_EXCHANGE is unique from here on. */
+	 
 	if (flags & RENAME_EXCHANGE)
 		return xfs_cross_rename(tp, src_dp, src_name, src_ip,
 					target_dp, target_name, target_ip,
 					spaceres);
 
-	/*
-	 * Try to reserve quota to handle an expansion of the target directory.
-	 * We'll allow the rename to continue in reservationless mode if we hit
-	 * a space usage constraint.  If we trigger reservationless mode, save
-	 * the errno if there isn't any free space in the target directory.
-	 */
+	 
 	if (spaceres != 0) {
 		error = xfs_trans_reserve_quota_nblks(tp, target_dp, spaceres,
 				0, false);
@@ -2960,25 +2273,16 @@ retry:
 			goto out_trans_cancel;
 	}
 
-	/*
-	 * Check for expected errors before we dirty the transaction
-	 * so we can return an error without a transaction abort.
-	 */
+	 
 	if (target_ip == NULL) {
-		/*
-		 * If there's no space reservation, check the entry will
-		 * fit before actually inserting it.
-		 */
+		 
 		if (!spaceres) {
 			error = xfs_dir_canenter(tp, target_dp, target_name);
 			if (error)
 				goto out_trans_cancel;
 		}
 	} else {
-		/*
-		 * If target exists and it's a directory, check that whether
-		 * it can be destroyed.
-		 */
+		 
 		if (S_ISDIR(VFS_I(target_ip)->i_mode) &&
 		    (!xfs_dir_isempty(target_ip) ||
 		     (VFS_I(target_ip)->i_nlink > 2))) {
@@ -2987,16 +2291,7 @@ retry:
 		}
 	}
 
-	/*
-	 * Lock the AGI buffers we need to handle bumping the nlink of the
-	 * whiteout inode off the unlinked list and to handle dropping the
-	 * nlink of the target inode.  Per locking order rules, do this in
-	 * increasing AG order and before directory block allocation tries to
-	 * grab AGFs because we grab AGIs before AGFs.
-	 *
-	 * The (vfs) caller must ensure that if src is a directory then
-	 * target_ip is either null or an empty directory.
-	 */
+	 
 	for (i = 0; i < num_inodes && inodes[i] != NULL; i++) {
 		if (inodes[i] == wip ||
 		    (inodes[i] == target_ip &&
@@ -3013,18 +2308,7 @@ retry:
 		}
 	}
 
-	/*
-	 * Directory entry creation below may acquire the AGF. Remove
-	 * the whiteout from the unlinked list first to preserve correct
-	 * AGI/AGF locking order. This dirties the transaction so failures
-	 * after this point will abort and log recovery will clean up the
-	 * mess.
-	 *
-	 * For whiteouts, we need to bump the link count on the whiteout
-	 * inode. After this point, we have a real link, clear the tmpfile
-	 * state flag from the inode so it doesn't accidentally get misused
-	 * in future.
-	 */
+	 
 	if (wip) {
 		struct xfs_perag	*pag;
 
@@ -3040,15 +2324,9 @@ retry:
 		VFS_I(wip)->i_state &= ~I_LINKABLE;
 	}
 
-	/*
-	 * Set up the target.
-	 */
+	 
 	if (target_ip == NULL) {
-		/*
-		 * If target does not exist and the rename crosses
-		 * directories, adjust the target directory link count
-		 * to account for the ".." reference from the new entry.
-		 */
+		 
 		error = xfs_dir_createname(tp, target_dp, target_name,
 					   src_ip->i_ino, spaceres);
 		if (error)
@@ -3060,16 +2338,8 @@ retry:
 		if (new_parent && src_is_directory) {
 			xfs_bumplink(tp, target_dp);
 		}
-	} else { /* target_ip != NULL */
-		/*
-		 * Link the source inode under the target name.
-		 * If the source inode is a directory and we are moving
-		 * it across directories, its ".." entry will be
-		 * inconsistent until we replace that down below.
-		 *
-		 * In case there is already an entry with the same
-		 * name at the destination directory, remove it first.
-		 */
+	} else {  
+		 
 		error = xfs_dir_replace(tp, target_dp, target_name,
 					src_ip->i_ino, spaceres);
 		if (error)
@@ -3078,32 +2348,22 @@ retry:
 		xfs_trans_ichgtime(tp, target_dp,
 					XFS_ICHGTIME_MOD | XFS_ICHGTIME_CHG);
 
-		/*
-		 * Decrement the link count on the target since the target
-		 * dir no longer points to it.
-		 */
+		 
 		error = xfs_droplink(tp, target_ip);
 		if (error)
 			goto out_trans_cancel;
 
 		if (src_is_directory) {
-			/*
-			 * Drop the link from the old "." entry.
-			 */
+			 
 			error = xfs_droplink(tp, target_ip);
 			if (error)
 				goto out_trans_cancel;
 		}
-	} /* target_ip != NULL */
+	}  
 
-	/*
-	 * Remove the source.
-	 */
+	 
 	if (new_parent && src_is_directory) {
-		/*
-		 * Rewrite the ".." entry to point to the new
-		 * directory.
-		 */
+		 
 		error = xfs_dir_replace(tp, src_ip, &xfs_name_dotdot,
 					target_dp->i_ino, spaceres);
 		ASSERT(error != -EEXIST);
@@ -3111,37 +2371,20 @@ retry:
 			goto out_trans_cancel;
 	}
 
-	/*
-	 * We always want to hit the ctime on the source inode.
-	 *
-	 * This isn't strictly required by the standards since the source
-	 * inode isn't really being changed, but old unix file systems did
-	 * it and some incremental backup programs won't work without it.
-	 */
+	 
 	xfs_trans_ichgtime(tp, src_ip, XFS_ICHGTIME_CHG);
 	xfs_trans_log_inode(tp, src_ip, XFS_ILOG_CORE);
 
-	/*
-	 * Adjust the link count on src_dp.  This is necessary when
-	 * renaming a directory, either within one parent when
-	 * the target existed, or across two parent directories.
-	 */
+	 
 	if (src_is_directory && (new_parent || target_ip != NULL)) {
 
-		/*
-		 * Decrement link count on src_directory since the
-		 * entry that's moved no longer points to it.
-		 */
+		 
 		error = xfs_droplink(tp, src_dp);
 		if (error)
 			goto out_trans_cancel;
 	}
 
-	/*
-	 * For whiteouts, we only need to update the source dirent with the
-	 * inode number of the whiteout inode rather than removing it
-	 * altogether.
-	 */
+	 
 	if (wip)
 		error = xfs_dir_replace(tp, src_dp, src_name, wip->i_ino,
 					spaceres);
@@ -3190,12 +2433,7 @@ xfs_iflush(
 
 	dip = xfs_buf_offset(bp, ip->i_imap.im_boffset);
 
-	/*
-	 * We don't flush the inode if any of the following checks fail, but we
-	 * do still update the log item and attach to the backing buffer as if
-	 * the flush happened. This is a formality to facilitate predictable
-	 * error handling as the caller will shutdown and fail the buffer.
-	 */
+	 
 	error = -EFSCORRUPTED;
 	if (XFS_TEST_ERROR(dip->di_magic != cpu_to_be16(XFS_DINODE_MAGIC),
 			       mp, XFS_ERRTAG_IFLUSH_1)) {
@@ -3244,21 +2482,11 @@ xfs_iflush(
 		goto flush_out;
 	}
 
-	/*
-	 * Inode item log recovery for v2 inodes are dependent on the flushiter
-	 * count for correct sequencing.  We bump the flush iteration count so
-	 * we can detect flushes which postdate a log record during recovery.
-	 * This is redundant as we now log every change and hence this can't
-	 * happen but we need to still do it to ensure backwards compatibility
-	 * with old kernels that predate logging all inode changes.
-	 */
+	 
 	if (!xfs_has_v3inodes(mp))
 		ip->i_flushiter++;
 
-	/*
-	 * If there are inline format data / attr forks attached to this inode,
-	 * make sure they are not corrupt.
-	 */
+	 
 	if (ip->i_df.if_format == XFS_DINODE_FMT_LOCAL &&
 	    xfs_ifork_verify_local_data(ip))
 		goto flush_out;
@@ -3267,14 +2495,10 @@ xfs_iflush(
 	    xfs_ifork_verify_local_attr(ip))
 		goto flush_out;
 
-	/*
-	 * Copy the dirty parts of the inode into the on-disk inode.  We always
-	 * copy out the core of the inode, because if the inode is dirty at all
-	 * the core must be.
-	 */
+	 
 	xfs_inode_to_disk(ip, dip, iip->ili_item.li_lsn);
 
-	/* Wrap, we never let the log put out DI_MAX_FLUSH */
+	 
 	if (!xfs_has_v3inodes(mp)) {
 		if (ip->i_flushiter == DI_MAX_FLUSH)
 			ip->i_flushiter = 0;
@@ -3284,22 +2508,7 @@ xfs_iflush(
 	if (xfs_inode_has_attr_fork(ip))
 		xfs_iflush_fork(ip, dip, iip, XFS_ATTR_FORK);
 
-	/*
-	 * We've recorded everything logged in the inode, so we'd like to clear
-	 * the ili_fields bits so we don't log and flush things unnecessarily.
-	 * However, we can't stop logging all this information until the data
-	 * we've copied into the disk buffer is written to disk.  If we did we
-	 * might overwrite the copy of the inode in the log with all the data
-	 * after re-logging only part of it, and in the face of a crash we
-	 * wouldn't have all the data we need to recover.
-	 *
-	 * What we do is move the bits to the ili_last_fields field.  When
-	 * logging the inode, these bits are moved back to the ili_fields field.
-	 * In the xfs_buf_inode_iodone() routine we clear ili_last_fields, since
-	 * we know that the information those bits represent is permanently on
-	 * disk.  As long as the flush completes before the inode is logged
-	 * again, then both ili_fields and ili_last_fields will be cleared.
-	 */
+	 
 	error = 0;
 flush_out:
 	spin_lock(&iip->ili_lock);
@@ -3308,31 +2517,16 @@ flush_out:
 	iip->ili_fsync_fields = 0;
 	spin_unlock(&iip->ili_lock);
 
-	/*
-	 * Store the current LSN of the inode so that we can tell whether the
-	 * item has moved in the AIL from xfs_buf_inode_iodone().
-	 */
+	 
 	xfs_trans_ail_copy_lsn(mp->m_ail, &iip->ili_flush_lsn,
 				&iip->ili_item.li_lsn);
 
-	/* generate the checksum. */
+	 
 	xfs_dinode_calc_crc(mp, dip);
 	return error;
 }
 
-/*
- * Non-blocking flush of dirty inode metadata into the backing buffer.
- *
- * The caller must have a reference to the inode and hold the cluster buffer
- * locked. The function will walk across all the inodes on the cluster buffer it
- * can find and lock without blocking, and flush them to the cluster buffer.
- *
- * On successful flushing of at least one inode, the caller must write out the
- * buffer and release it. If no inodes are flushed, -EAGAIN will be returned and
- * the caller needs to release the buffer. On failure, the filesystem will be
- * shut down, the buffer will have been unlocked and released, and EFSCORRUPTED
- * will be returned.
- */
+ 
 int
 xfs_iflush_cluster(
 	struct xfs_buf		*bp)
@@ -3344,29 +2538,18 @@ xfs_iflush_cluster(
 	int			clcount = 0;
 	int			error = 0;
 
-	/*
-	 * We must use the safe variant here as on shutdown xfs_iflush_abort()
-	 * will remove itself from the list.
-	 */
+	 
 	list_for_each_entry_safe(lip, n, &bp->b_li_list, li_bio_list) {
 		iip = (struct xfs_inode_log_item *)lip;
 		ip = iip->ili_inode;
 
-		/*
-		 * Quick and dirty check to avoid locks if possible.
-		 */
+		 
 		if (__xfs_iflags_test(ip, XFS_IRECLAIM | XFS_IFLUSHING))
 			continue;
 		if (xfs_ipincount(ip))
 			continue;
 
-		/*
-		 * The inode is still attached to the buffer, which means it is
-		 * dirty but reclaim might try to grab it. Check carefully for
-		 * that, and grab the ilock while still holding the i_flags_lock
-		 * to guarantee reclaim will not be able to reclaim this inode
-		 * once we drop the i_flags_lock.
-		 */
+		 
 		spin_lock(&ip->i_flags_lock);
 		ASSERT(!__xfs_iflags_test(ip, XFS_ISTALE));
 		if (__xfs_iflags_test(ip, XFS_IRECLAIM | XFS_IFLUSHING)) {
@@ -3374,12 +2557,7 @@ xfs_iflush_cluster(
 			continue;
 		}
 
-		/*
-		 * ILOCK will pin the inode against reclaim and prevent
-		 * concurrent transactions modifying the inode while we are
-		 * flushing the inode. If we get the lock, set the flushing
-		 * state before we drop the i_flags_lock.
-		 */
+		 
 		if (!xfs_ilock_nowait(ip, XFS_ILOCK_SHARED)) {
 			spin_unlock(&ip->i_flags_lock);
 			continue;
@@ -3387,13 +2565,7 @@ xfs_iflush_cluster(
 		__xfs_iflags_set(ip, XFS_IFLUSHING);
 		spin_unlock(&ip->i_flags_lock);
 
-		/*
-		 * Abort flushing this inode if we are shut down because the
-		 * inode may not currently be in the AIL. This can occur when
-		 * log I/O failure unpins the inode without inserting into the
-		 * AIL, leaving a dirty/unpinned inode attached to the buffer
-		 * that otherwise looks like it should be flushed.
-		 */
+		 
 		if (xlog_is_shutdown(mp->m_log)) {
 			xfs_iunpin_wait(ip);
 			xfs_iflush_abort(ip);
@@ -3402,7 +2574,7 @@ xfs_iflush_cluster(
 			continue;
 		}
 
-		/* don't block waiting on a log force to unpin dirty inodes */
+		 
 		if (xfs_ipincount(ip)) {
 			xfs_iflags_clear(ip, XFS_IFLUSHING);
 			xfs_iunlock(ip, XFS_ILOCK_SHARED);
@@ -3420,16 +2592,7 @@ xfs_iflush_cluster(
 	}
 
 	if (error) {
-		/*
-		 * Shutdown first so we kill the log before we release this
-		 * buffer. If it is an INODE_ALLOC buffer and pins the tail
-		 * of the log, failing it before the _log_ is shut down can
-		 * result in the log tail being moved forward in the journal
-		 * on disk because log writes can still be taking place. Hence
-		 * unpinning the tail will allow the ICREATE intent to be
-		 * removed from the log an recovery will fail with uninitialised
-		 * inode cluster buffers.
-		 */
+		 
 		xfs_force_shutdown(mp, SHUTDOWN_CORRUPT_INCORE);
 		bp->b_flags |= XBF_ASYNC;
 		xfs_buf_ioend_fail(bp);
@@ -3445,7 +2608,7 @@ xfs_iflush_cluster(
 
 }
 
-/* Release an inode. */
+ 
 void
 xfs_irele(
 	struct xfs_inode	*ip)
@@ -3454,9 +2617,7 @@ xfs_irele(
 	iput(VFS_I(ip));
 }
 
-/*
- * Ensure all commited transactions touching the inode are written to the log.
- */
+ 
 int
 xfs_log_force_inode(
 	struct xfs_inode	*ip)
@@ -3473,13 +2634,7 @@ xfs_log_force_inode(
 	return xfs_log_force_seq(ip->i_mount, seq, XFS_LOG_SYNC, NULL);
 }
 
-/*
- * Grab the exclusive iolock for a data copy from src to dest, making sure to
- * abide vfs locking order (lowest pointer value goes first) and breaking the
- * layout leases before proceeding.  The loop is needed because we cannot call
- * the blocking break_layout() with the iolocks held, and therefore have to
- * back out both locks.
- */
+ 
 static int
 xfs_iolock_two_inodes_and_break_layout(
 	struct inode		*src,
@@ -3491,7 +2646,7 @@ xfs_iolock_two_inodes_and_break_layout(
 		swap(src, dest);
 
 retry:
-	/* Wait to break both inodes' layouts before we start locking. */
+	 
 	error = break_layout(src, true);
 	if (error)
 		return error;
@@ -3501,7 +2656,7 @@ retry:
 			return error;
 	}
 
-	/* Lock one inode and make sure nobody got in and leased it. */
+	 
 	inode_lock(src);
 	error = break_layout(src, false);
 	if (error) {
@@ -3514,7 +2669,7 @@ retry:
 	if (src == dest)
 		return 0;
 
-	/* Lock the other inode and make sure nobody got in and leased it. */
+	 
 	inode_lock_nested(dest, I_MUTEX_NONDIR2);
 	error = break_layout(dest, false);
 	if (error) {
@@ -3542,7 +2697,7 @@ xfs_mmaplock_two_inodes_and_break_dax_layout(
 
 again:
 	retry = false;
-	/* Lock the first inode */
+	 
 	xfs_ilock(ip1, XFS_MMAPLOCK_EXCL);
 	error = xfs_break_dax_layouts(VFS_I(ip1), &retry);
 	if (error || retry) {
@@ -3555,13 +2710,9 @@ again:
 	if (ip1 == ip2)
 		return 0;
 
-	/* Nested lock the second inode */
+	 
 	xfs_ilock(ip2, xfs_lock_inumorder(XFS_MMAPLOCK_EXCL, 1));
-	/*
-	 * We cannot use xfs_break_dax_layouts() directly here because it may
-	 * need to unlock & lock the XFS_MMAPLOCK_EXCL which is not suitable
-	 * for this nested lock case.
-	 */
+	 
 	page = dax_layout_busy_page(VFS_I(ip2)->i_mapping);
 	if (page && page_ref_count(page) != 1) {
 		xfs_iunlock(ip2, XFS_MMAPLOCK_EXCL);
@@ -3572,10 +2723,7 @@ again:
 	return 0;
 }
 
-/*
- * Lock two inodes so that userspace cannot initiate I/O via file syscalls or
- * mmap activity.
- */
+ 
 int
 xfs_ilock2_io_mmap(
 	struct xfs_inode	*ip1,
@@ -3602,7 +2750,7 @@ xfs_ilock2_io_mmap(
 	return 0;
 }
 
-/* Unlock both inodes to allow IO and mmap activity. */
+ 
 void
 xfs_iunlock2_io_mmap(
 	struct xfs_inode	*ip1,
@@ -3621,11 +2769,7 @@ xfs_iunlock2_io_mmap(
 		inode_unlock(VFS_I(ip1));
 }
 
-/*
- * Reload the incore inode list for this inode.  Caller should ensure that
- * the link count cannot change, either by taking ILOCK_SHARED or otherwise
- * preventing other threads from executing.
- */
+ 
 int
 xfs_inode_reload_unlinked_bucket(
 	struct xfs_trans	*tp,
@@ -3642,18 +2786,14 @@ xfs_inode_reload_unlinked_bucket(
 	bool			foundit = false;
 	int			error;
 
-	/* Grab the first inode in the list */
+	 
 	pag = xfs_perag_get(mp, agno);
 	error = xfs_ialloc_read_agi(pag, tp, &agibp);
 	xfs_perag_put(pag);
 	if (error)
 		return error;
 
-	/*
-	 * We've taken ILOCK_SHARED and the AGI buffer lock to stabilize the
-	 * incore unlinked list pointers for this inode.  Check once more to
-	 * see if we raced with anyone else to reload the unlinked list.
-	 */
+	 
 	if (!xfs_inode_unlinked_incomplete(ip)) {
 		foundit = true;
 		goto out_agibp;
@@ -3673,7 +2813,7 @@ xfs_inode_reload_unlinked_bucket(
 	while (next_agino != NULLAGINO) {
 		struct xfs_inode	*next_ip = NULL;
 
-		/* Found this caller's inode, set its backlink. */
+		 
 		if (next_agino == agino) {
 			next_ip = ip;
 			next_ip->i_prev_unlinked = prev_agino;
@@ -3681,21 +2821,21 @@ xfs_inode_reload_unlinked_bucket(
 			goto next_inode;
 		}
 
-		/* Try in-memory lookup first. */
+		 
 		next_ip = xfs_iunlink_lookup(pag, next_agino);
 		if (next_ip)
 			goto next_inode;
 
-		/* Inode not in memory, try reloading it. */
+		 
 		error = xfs_iunlink_reload_next(tp, agibp, prev_agino,
 				next_agino);
 		if (error)
 			break;
 
-		/* Grab the reloaded inode. */
+		 
 		next_ip = xfs_iunlink_lookup(pag, next_agino);
 		if (!next_ip) {
-			/* No incore inode at all?  We reloaded it... */
+			 
 			ASSERT(next_ip != NULL);
 			error = -EFSCORRUPTED;
 			break;
@@ -3708,13 +2848,13 @@ next_inode:
 
 out_agibp:
 	xfs_trans_brelse(tp, agibp);
-	/* Should have found this inode somewhere in the iunlinked bucket. */
+	 
 	if (!error && !foundit)
 		error = -EFSCORRUPTED;
 	return error;
 }
 
-/* Decide if this inode is missing its unlinked list and reload it. */
+ 
 int
 xfs_inode_reload_unlinked(
 	struct xfs_inode	*ip)

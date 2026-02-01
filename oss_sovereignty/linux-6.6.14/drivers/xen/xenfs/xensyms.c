@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/init.h>
 #include <linux/seq_file.h>
 #include <linux/fs.h>
@@ -11,7 +11,7 @@
 #include "xenfs.h"
 
 
-#define XEN_KSYM_NAME_LEN 127 /* Hypervisor may have different name length */
+#define XEN_KSYM_NAME_LEN 127  
 
 struct xensyms {
 	struct xen_platform_op op;
@@ -19,7 +19,7 @@ struct xensyms {
 	uint32_t namelen;
 };
 
-/* Grab next output page from the hypervisor */
+ 
 static int xensyms_next_sym(struct xensyms *xs)
 {
 	int ret;
@@ -35,10 +35,7 @@ static int xensyms_next_sym(struct xensyms *xs)
 	if (ret < 0)
 		return ret;
 
-	/*
-	 * If hypervisor's symbol didn't fit into the buffer then allocate
-	 * a larger buffer and try again.
-	 */
+	 
 	if (unlikely(symdata->namelen > xs->namelen)) {
 		kfree(xs->name);
 
@@ -48,7 +45,7 @@ static int xensyms_next_sym(struct xensyms *xs)
 			return -ENOMEM;
 
 		set_xen_guest_handle(symdata->name, xs->name);
-		symdata->symnum--; /* Rewind */
+		symdata->symnum--;  
 
 		ret = HYPERVISOR_platform_op(&xs->op);
 		if (ret < 0)
@@ -56,7 +53,7 @@ static int xensyms_next_sym(struct xensyms *xs)
 	}
 
 	if (symdata->symnum == symnum)
-		/* End of symbols */
+		 
 		return 1;
 
 	return 0;

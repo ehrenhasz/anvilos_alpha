@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _LINUX_VIRTIO_BYTEORDER_H
 #define _LINUX_VIRTIO_BYTEORDER_H
 #include <linux/types.h>
@@ -61,4 +61,4 @@ static inline __virtio64 __cpu_to_virtio64(bool little_endian, u64 val)
 		return (__force __virtio64)cpu_to_be64(val);
 }
 
-#endif /* _LINUX_VIRTIO_BYTEORDER */
+#endif  

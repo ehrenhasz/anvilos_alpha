@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) STMicroelectronics 2019 - All Rights Reserved
- * Authors: Benjamin Gaignard <benjamin.gaignard@st.com> for STMicroelectronics.
- *	    Pascal Paillet <p.paillet@st.com> for STMicroelectronics.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/clockchips.h>
@@ -39,7 +35,7 @@ static int stm32_clkevent_lp_shutdown(struct clock_event_device *clkevt)
 
 	regmap_write(priv->reg, STM32_LPTIM_CR, 0);
 	regmap_write(priv->reg, STM32_LPTIM_IER, 0);
-	/* clear pending flags */
+	 
 	regmap_write(priv->reg, STM32_LPTIM_ICR, STM32_LPTIM_ARRMCF);
 
 	return 0;
@@ -51,16 +47,16 @@ static int stm32_clkevent_lp_set_timer(unsigned long evt,
 {
 	struct stm32_lp_private *priv = to_priv(clkevt);
 
-	/* disable LPTIMER to be able to write into IER register*/
+	 
 	regmap_write(priv->reg, STM32_LPTIM_CR, 0);
-	/* enable ARR interrupt */
+	 
 	regmap_write(priv->reg, STM32_LPTIM_IER, STM32_LPTIM_ARRMIE);
-	/* enable LPTIMER to be able to write into ARR register */
+	 
 	regmap_write(priv->reg, STM32_LPTIM_CR, STM32_LPTIM_ENABLE);
-	/* set next event counter */
+	 
 	regmap_write(priv->reg, STM32_LPTIM_ARR, evt);
 
-	/* start counter */
+	 
 	if (is_periodic)
 		regmap_write(priv->reg, STM32_LPTIM_CR,
 			     STM32_LPTIM_CNTSTRT | STM32_LPTIM_ENABLE);
@@ -117,7 +113,7 @@ static void stm32_clkevent_lp_set_prescaler(struct stm32_lp_private *priv,
 
 	regmap_write(priv->reg, STM32_LPTIM_CFGR, i << CFGR_PSC_OFFSET);
 
-	/* Adjust rate and period given the prescaler value */
+	 
 	*rate = DIV_ROUND_CLOSEST(*rate, (1 << i));
 	priv->period = DIV_ROUND_UP(*rate, HZ);
 }

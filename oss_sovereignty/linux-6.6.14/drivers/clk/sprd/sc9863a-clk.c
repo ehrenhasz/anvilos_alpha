@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Unisoc SC9863A clock driver
- *
- * Copyright (C) 2019 Unisoc, Inc.
- * Author: Chunyan Zhang <chunyan.zhang@unisoc.com>
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/err.h>
@@ -22,7 +17,7 @@
 #include "mux.h"
 #include "pll.h"
 
-/* mpll*_gate clocks control cpu cores, they were enabled by default */
+ 
 static SPRD_PLL_SC_GATE_CLK_FW_NAME(mpll0_gate, "mpll0-gate", "ext-26m", 0x94,
 				    0x1000, BIT(0), CLK_IGNORE_UNUSED, 0, 240);
 static SPRD_PLL_SC_GATE_CLK_FW_NAME(dpll0_gate, "dpll0-gate", "ext-26m", 0x98,
@@ -41,7 +36,7 @@ static SPRD_PLL_SC_GATE_CLK_FW_NAME(isppll_gate, "isppll-gate", "ext-26m",
 				    0x1e8, 0x1000, BIT(0), 0, 0, 240);
 
 static struct sprd_clk_common *sc9863a_pmu_gate_clks[] = {
-	/* address base is 0x402b0000 */
+	 
 	&mpll0_gate.common,
 	&dpll0_gate.common,
 	&lpll_gate.common,
@@ -76,17 +71,17 @@ static const u64 itable[5] = {4, 1000000000, 1200000000,
 			      1400000000, 1600000000};
 
 static const struct clk_bit_field f_twpll[PLL_FACT_MAX] = {
-	{ .shift = 95,	.width = 1 },	/* lock_done	*/
-	{ .shift = 0,	.width = 1 },	/* div_s	*/
-	{ .shift = 1,	.width = 1 },	/* mod_en	*/
-	{ .shift = 2,	.width = 1 },	/* sdm_en	*/
-	{ .shift = 0,	.width = 0 },	/* refin	*/
-	{ .shift = 3,	.width = 3 },	/* ibias	*/
-	{ .shift = 8,	.width = 11 },	/* n		*/
-	{ .shift = 55,	.width = 7 },	/* nint		*/
-	{ .shift = 32,	.width = 23},	/* kint		*/
-	{ .shift = 0,	.width = 0 },	/* prediv	*/
-	{ .shift = 0,	.width = 0 },	/* postdiv	*/
+	{ .shift = 95,	.width = 1 },	 
+	{ .shift = 0,	.width = 1 },	 
+	{ .shift = 1,	.width = 1 },	 
+	{ .shift = 2,	.width = 1 },	 
+	{ .shift = 0,	.width = 0 },	 
+	{ .shift = 3,	.width = 3 },	 
+	{ .shift = 8,	.width = 11 },	 
+	{ .shift = 55,	.width = 7 },	 
+	{ .shift = 32,	.width = 23},	 
+	{ .shift = 0,	.width = 0 },	 
+	{ .shift = 0,	.width = 0 },	 
 };
 static SPRD_PLL_FW_NAME(twpll, "twpll", "ext-26m", 0x4, 3, itable,
 			f_twpll, 240, 1000, 1000, 0, 0);
@@ -111,17 +106,17 @@ static CLK_FIXED_FACTOR_HW(twpll_38m4, "twpll-38m4", &twpll.common.hw, 40, 1, 0)
 static CLK_FIXED_FACTOR_HW(twpll_19m2, "twpll-19m2", &twpll.common.hw, 80, 1, 0);
 
 static const struct clk_bit_field f_lpll[PLL_FACT_MAX] = {
-	{ .shift = 95,	.width = 1 },	/* lock_done	*/
-	{ .shift = 0,	.width = 1 },	/* div_s	*/
-	{ .shift = 1,	.width = 1 },	/* mod_en	*/
-	{ .shift = 2,	.width = 1 },	/* sdm_en	*/
-	{ .shift = 0,	.width = 0 },	/* refin	*/
-	{ .shift = 6,	.width = 2 },	/* ibias	*/
-	{ .shift = 8,	.width = 11 },	/* n		*/
-	{ .shift = 55,	.width = 7 },	/* nint		*/
-	{ .shift = 32,	.width = 23},	/* kint		*/
-	{ .shift = 0,	.width = 0 },	/* prediv	*/
-	{ .shift = 0,	.width = 0 },	/* postdiv	*/
+	{ .shift = 95,	.width = 1 },	 
+	{ .shift = 0,	.width = 1 },	 
+	{ .shift = 1,	.width = 1 },	 
+	{ .shift = 2,	.width = 1 },	 
+	{ .shift = 0,	.width = 0 },	 
+	{ .shift = 6,	.width = 2 },	 
+	{ .shift = 8,	.width = 11 },	 
+	{ .shift = 55,	.width = 7 },	 
+	{ .shift = 32,	.width = 23},	 
+	{ .shift = 0,	.width = 0 },	 
+	{ .shift = 0,	.width = 0 },	 
 };
 static SPRD_PLL_HW(lpll, "lpll", &lpll_gate.common.hw, 0x20, 3, itable,
 		   f_lpll, 240, 1000, 1000, 0, 0);
@@ -129,17 +124,17 @@ static CLK_FIXED_FACTOR_HW(lpll_409m6, "lpll-409m6", &lpll.common.hw, 3, 1, 0);
 static CLK_FIXED_FACTOR_HW(lpll_245m76, "lpll-245m76", &lpll.common.hw, 5, 1, 0);
 
 static const struct clk_bit_field f_gpll[PLL_FACT_MAX] = {
-	{ .shift = 95,	.width = 1 },	/* lock_done	*/
-	{ .shift = 0,	.width = 1 },	/* div_s	*/
-	{ .shift = 1,	.width = 1 },	/* mod_en	*/
-	{ .shift = 2,	.width = 1 },	/* sdm_en	*/
-	{ .shift = 0,	.width = 0 },	/* refin	*/
-	{ .shift = 6,	.width = 2 },	/* ibias	*/
-	{ .shift = 8,	.width = 11 },	/* n		*/
-	{ .shift = 55,	.width = 7 },	/* nint		*/
-	{ .shift = 32,	.width = 23},	/* kint		*/
-	{ .shift = 0,	.width = 0 },	/* prediv	*/
-	{ .shift = 80,	.width = 1 },	/* postdiv	*/
+	{ .shift = 95,	.width = 1 },	 
+	{ .shift = 0,	.width = 1 },	 
+	{ .shift = 1,	.width = 1 },	 
+	{ .shift = 2,	.width = 1 },	 
+	{ .shift = 0,	.width = 0 },	 
+	{ .shift = 6,	.width = 2 },	 
+	{ .shift = 8,	.width = 11 },	 
+	{ .shift = 55,	.width = 7 },	 
+	{ .shift = 32,	.width = 23},	 
+	{ .shift = 0,	.width = 0 },	 
+	{ .shift = 80,	.width = 1 },	 
 };
 static SPRD_PLL_HW(gpll, "gpll", &gpll_gate.common.hw, 0x38, 3, itable,
 		   f_gpll, 240, 1000, 1000, 1, 400000000);
@@ -149,7 +144,7 @@ static SPRD_PLL_HW(isppll, "isppll", &isppll_gate.common.hw, 0x50, 3, itable,
 static CLK_FIXED_FACTOR_HW(isppll_468m, "isppll-468m", &isppll.common.hw, 2, 1, 0);
 
 static struct sprd_clk_common *sc9863a_pll_clks[] = {
-	/* address base is 0x40353000 */
+	 
 	&twpll.common,
 	&lpll.common,
 	&gpll.common,
@@ -206,7 +201,7 @@ static SPRD_PLL_HW(mpll2, "mpll2", &mpll2_gate.common.hw, 0x30, 3, itable_mpll,
 static CLK_FIXED_FACTOR_HW(mpll2_675m, "mpll2-675m", &mpll2.common.hw, 2, 1, 0);
 
 static struct sprd_clk_common *sc9863a_mpll_clks[] = {
-	/* address base is 0x40359000 */
+	 
 	&mpll0.common,
 	&mpll1.common,
 	&mpll2.common,
@@ -241,7 +236,7 @@ static CLK_FIXED_FACTOR_HW(rpll_195m, "rpll-195m", &rpll.common.hw, 4, 1, 0);
 static CLK_FIXED_FACTOR_HW(rpll_26m, "rpll-26m", &rpll.common.hw, 30, 1, 0);
 
 static struct sprd_clk_common *sc9863a_rpll_clks[] = {
-	/* address base is 0x4035c000 */
+	 
 	&audio_gate.common,
 	&rpll.common,
 };
@@ -279,7 +274,7 @@ static CLK_FIXED_FACTOR_HW(dpll1_123m1, "dpll1-123m1", &dpll0.common.hw, 13, 1, 
 static CLK_FIXED_FACTOR_HW(dpll1_50m, "dpll1-50m", &dpll0.common.hw, 32, 1, 0);
 
 static struct sprd_clk_common *sc9863a_dpll_clks[] = {
-	/* address base is 0x40363000 */
+	 
 	&dpll0.common,
 	&dpll1.common,
 };
@@ -704,7 +699,7 @@ static SPRD_COMP_CLK_DATA(periph_clk, "periph-clk", gic_parents, 0xa5c,
 			  0, 2, 8, 3, 0);
 
 static struct sprd_clk_common *sc9863a_aon_clks[] = {
-	/* address base is 0x402d0000 */
+	 
 	&emc_clk.common,
 	&aon_apb.common,
 	&adi_clk.common,
@@ -976,7 +971,7 @@ static SPRD_MUX_CLK_DATA(sim0_32k, "sim0-32k", sim0_32k_parents, 0x94,
 			 0, 1, SC9863A_MUX_FLAG);
 
 static struct sprd_clk_common *sc9863a_ap_clks[] = {
-	/* address base is 0x21500000 */
+	 
 	&ap_apb.common,
 	&ap_ce.common,
 	&nandc_ecc.common,
@@ -1083,7 +1078,7 @@ static SPRD_SC_GATE_CLK_HW(ce_eb2, "ce-eb2", &ap_axi.common.hw, 0x18,
 			   0x1000, BIT(1), 0, 0);
 
 static struct sprd_clk_common *sc9863a_apahb_gate_clks[] = {
-	/* address base is 0x20e00000 */
+	 
 	&otg_eb.common,
 	&dma_eb.common,
 	&ce_eb.common,
@@ -1128,7 +1123,7 @@ static const struct sprd_clk_desc sc9863a_apahb_gate_desc = {
 	.hw_clks	= &sc9863a_apahb_gate_hws,
 };
 
-/* aon gate clocks */
+ 
 static SPRD_SC_GATE_CLK_HW(gpio_eb, "gpio-eb",	&aon_apb.common.hw,
 			   0x0, 0x1000, BIT(3), 0, 0);
 static SPRD_SC_GATE_CLK_HW(pwm0_eb,	"pwm0-eb",	&aon_apb.common.hw,
@@ -1326,7 +1321,7 @@ static SPRD_SC_GATE_CLK_HW(serdes_eb, "serdes-eb", &aon_apb.common.hw, 0xb0,
 static SPRD_SC_GATE_CLK_HW(aon_ap_emc_eb, "aon-ap-emc-eb", &aon_apb.common.hw, 0xb0,
 			   0x1000, BIT(28), 0, 0);
 static struct sprd_clk_common *sc9863a_aonapb_gate_clks[] = {
-	/* address base is 0x402e0000 */
+	 
 	&gpio_eb.common,
 	&pwm0_eb.common,
 	&pwm1_eb.common,
@@ -1537,7 +1532,7 @@ static const struct sprd_clk_desc sc9863a_aonapb_gate_desc = {
 	.hw_clks	= &sc9863a_aonapb_gate_hws,
 };
 
-/* mm gate clocks */
+ 
 static SPRD_SC_GATE_CLK_HW(mahb_ckg_eb, "mahb-ckg-eb", &mm_ahb.common.hw, 0x0, 0x1000,
 			   BIT(0), 0, 0);
 static SPRD_SC_GATE_CLK_HW(mdcam_eb, "mdcam-eb", &mm_ahb.common.hw, 0x0, 0x1000,
@@ -1570,7 +1565,7 @@ static SPRD_GATE_CLK_HW(mcphy_cfg_eb, "mcphy-cfg-eb", &mm_ahb.common.hw, 0x8,
 			BIT(8), 0, 0);
 
 static struct sprd_clk_common *sc9863a_mm_gate_clks[] = {
-	/* address base is 0x60800000 */
+	 
 	&mahb_ckg_eb.common,
 	&mdcam_eb.common,
 	&misp_eb.common,
@@ -1615,7 +1610,7 @@ static const struct sprd_clk_desc sc9863a_mm_gate_desc = {
 	.hw_clks	= &sc9863a_mm_gate_hws,
 };
 
-/* camera sensor clocks */
+ 
 static SPRD_GATE_CLK_HW(mipi_csi_clk, "mipi-csi-clk", &mahb_ckg_eb.common.hw,
 			0x20, BIT(16), 0, SPRD_GATE_NON_AON);
 static SPRD_GATE_CLK_HW(mipi_csi_s_clk, "mipi-csi-s-clk", &mahb_ckg_eb.common.hw,
@@ -1624,7 +1619,7 @@ static SPRD_GATE_CLK_HW(mipi_csi_m_clk, "mipi-csi-m-clk", &mahb_ckg_eb.common.hw
 			0x28, BIT(16), 0, SPRD_GATE_NON_AON);
 
 static struct sprd_clk_common *sc9863a_mm_clk_clks[] = {
-	/* address base is 0x60900000 */
+	 
 	&mipi_csi_clk.common,
 	&mipi_csi_s_clk.common,
 	&mipi_csi_m_clk.common,
@@ -1671,7 +1666,7 @@ static SPRD_SC_GATE_CLK_FW_NAME(i2c4_eb,	"i2c4-eb",	"ext-26m", 0x0,
 				0x1000, BIT(12), 0, 0);
 static SPRD_SC_GATE_CLK_FW_NAME(uart0_eb,	"uart0-eb",	"ext-26m", 0x0,
 				0x1000, BIT(13), 0, 0);
-/* uart1_eb is for console, don't gate even if unused */
+ 
 static SPRD_SC_GATE_CLK_FW_NAME(uart1_eb,	"uart1-eb",	"ext-26m", 0x0,
 				0x1000, BIT(14), CLK_IGNORE_UNUSED, 0);
 static SPRD_SC_GATE_CLK_FW_NAME(uart2_eb,	"uart2-eb",	"ext-26m", 0x0,
@@ -1690,7 +1685,7 @@ static SPRD_SC_GATE_CLK_FW_NAME(i2c6_eb,	"i2c6-eb",	"ext-26m", 0x0,
 				0x1000, BIT(21), 0, 0);
 
 static struct sprd_clk_common *sc9863a_apapb_gate[] = {
-	/* address base is 0x71300000 */
+	 
 	&sim0_eb.common,
 	&iis0_eb.common,
 	&iis1_eb.common,
@@ -1748,29 +1743,29 @@ static const struct sprd_clk_desc sc9863a_apapb_gate_desc = {
 };
 
 static const struct of_device_id sprd_sc9863a_clk_ids[] = {
-	{ .compatible = "sprd,sc9863a-ap-clk",	/* 0x21500000 */
+	{ .compatible = "sprd,sc9863a-ap-clk",	 
 	  .data = &sc9863a_ap_clk_desc },
-	{ .compatible = "sprd,sc9863a-pmu-gate",	/* 0x402b0000 */
+	{ .compatible = "sprd,sc9863a-pmu-gate",	 
 	  .data = &sc9863a_pmu_gate_desc },
-	{ .compatible = "sprd,sc9863a-pll",	/* 0x40353000 */
+	{ .compatible = "sprd,sc9863a-pll",	 
 	  .data = &sc9863a_pll_desc },
-	{ .compatible = "sprd,sc9863a-mpll",	/* 0x40359000 */
+	{ .compatible = "sprd,sc9863a-mpll",	 
 	  .data = &sc9863a_mpll_desc },
-	{ .compatible = "sprd,sc9863a-rpll",	/* 0x4035c000 */
+	{ .compatible = "sprd,sc9863a-rpll",	 
 	  .data = &sc9863a_rpll_desc },
-	{ .compatible = "sprd,sc9863a-dpll",	/* 0x40363000 */
+	{ .compatible = "sprd,sc9863a-dpll",	 
 	  .data = &sc9863a_dpll_desc },
-	{ .compatible = "sprd,sc9863a-aon-clk",	/* 0x402d0000 */
+	{ .compatible = "sprd,sc9863a-aon-clk",	 
 	  .data = &sc9863a_aon_clk_desc },
-	{ .compatible = "sprd,sc9863a-apahb-gate",	/* 0x20e00000 */
+	{ .compatible = "sprd,sc9863a-apahb-gate",	 
 	  .data = &sc9863a_apahb_gate_desc },
-	{ .compatible = "sprd,sc9863a-aonapb-gate",	/* 0x402e0000 */
+	{ .compatible = "sprd,sc9863a-aonapb-gate",	 
 	  .data = &sc9863a_aonapb_gate_desc },
-	{ .compatible = "sprd,sc9863a-mm-gate",	/* 0x60800000 */
+	{ .compatible = "sprd,sc9863a-mm-gate",	 
 	  .data = &sc9863a_mm_gate_desc },
-	{ .compatible = "sprd,sc9863a-mm-clk",	/* 0x60900000 */
+	{ .compatible = "sprd,sc9863a-mm-clk",	 
 	  .data = &sc9863a_mm_clk_desc },
-	{ .compatible = "sprd,sc9863a-apapb-gate",	/* 0x71300000 */
+	{ .compatible = "sprd,sc9863a-apapb-gate",	 
 	  .data = &sc9863a_apapb_gate_desc },
 	{ }
 };

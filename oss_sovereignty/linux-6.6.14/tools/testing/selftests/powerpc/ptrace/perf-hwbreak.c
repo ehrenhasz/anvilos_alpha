@@ -1,21 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * perf events self profiling example test case for hw breakpoints.
- *
- * This tests perf PERF_TYPE_BREAKPOINT parameters
- * 1) tests all variants of the break on read/write flags
- * 2) tests exclude_user == 0 and 1
- * 3) test array matches (if DAWR is supported))
- * 4) test different numbers of breakpoints matches
- *
- * Configure this breakpoint, then read and write the data a number of
- * times. Then check the output count from perf is as expected.
- *
- * Based on:
- *   http://ozlabs.org/~anton/junkcode/perf_events_example1.c
- *
- * Copyright (C) 2018 Michael Neuling, IBM Corporation.
- */
+
+ 
 
 #define _GNU_SOURCE
 
@@ -203,7 +187,7 @@ static inline bool breakpoint_test(int len)
 {
 	int fd;
 
-	/* bp_addr can point anywhere but needs to be aligned */
+	 
 	fd = perf_process_event_open(HW_BREAKPOINT_R, (__u64)(&fd) & 0xfffffffffffff800, len);
 	if (fd < 0)
 		return false;
@@ -231,11 +215,11 @@ static int runtestsingle(int readwriteflag, int exclude_user, int arraytest)
 	int *readintalign;
 	volatile int *ptr;
 	int break_fd;
-	int loop_num = MAX_LOOPS - (rand() % 100); /* provide some variability */
+	int loop_num = MAX_LOOPS - (rand() % 100);  
 	volatile int *k;
 	__u64 len;
 
-	/* align to 0x400 boundary as required by DAWR */
+	 
 	readintalign = (int *)(((unsigned long)readintarraybig + 0x7ff) &
 			       0xfffffffffffff800);
 
@@ -251,10 +235,10 @@ static int runtestsingle(int readwriteflag, int exclude_user, int arraytest)
 		exit(1);
 	}
 
-	/* start counters */
+	 
 	ioctl(break_fd, PERF_EVENT_IOC_ENABLE);
 
-	/* Test a bunch of reads and writes */
+	 
 	k = &readint;
 	for (i = 0; i < loop_num; i++) {
 		if (arraytest)
@@ -264,13 +248,13 @@ static int runtestsingle(int readwriteflag, int exclude_user, int arraytest)
 		*k = j;
 	}
 
-	/* stop counters */
+	 
 	ioctl(break_fd, PERF_EVENT_IOC_DISABLE);
 
-	/* read and check counters */
+	 
 	res = read(break_fd, &breaks, sizeof(unsigned long long));
 	assert(res == sizeof(unsigned long long));
-	/* we read and write each loop, so subtract the ones we are counting */
+	 
 	needed = 0;
 	if (readwriteflag & HW_BREAKPOINT_R)
 		needed += loop_num;
@@ -305,7 +289,7 @@ static int runtest_dar_outside(void)
 		exit(EXIT_FAILURE);
 	}
 
-	/* watch middle half of target array */
+	 
 	break_fd = perf_process_event_open(HW_BREAKPOINT_RW, (__u64)(target + 2), 4);
 	if (break_fd < 0) {
 		free(target);
@@ -313,7 +297,7 @@ static int runtest_dar_outside(void)
 		exit(EXIT_FAILURE);
 	}
 
-	/* Shouldn't hit. */
+	 
 	ioctl(break_fd, PERF_EVENT_IOC_RESET);
 	ioctl(break_fd, PERF_EVENT_IOC_ENABLE);
 	temp16 = *((__u16 *)target);
@@ -328,7 +312,7 @@ static int runtest_dar_outside(void)
 		fail = 1;
 	}
 
-	/* Hit */
+	 
 	ioctl(break_fd, PERF_EVENT_IOC_RESET);
 	ioctl(break_fd, PERF_EVENT_IOC_ENABLE);
 	temp16 = *((__u16 *)(target + 1));
@@ -343,7 +327,7 @@ static int runtest_dar_outside(void)
 		fail = 1;
 	}
 
-	/* Hit */
+	 
 	ioctl(break_fd, PERF_EVENT_IOC_RESET);
 	ioctl(break_fd, PERF_EVENT_IOC_ENABLE);
 	temp16 = *((__u16 *)(target + 5));
@@ -358,7 +342,7 @@ static int runtest_dar_outside(void)
 		fail = 1;
 	}
 
-	/* Shouldn't Hit */
+	 
 	ioctl(break_fd, PERF_EVENT_IOC_RESET);
 	ioctl(break_fd, PERF_EVENT_IOC_ENABLE);
 	temp16 = *((__u16 *)(target + 6));
@@ -373,7 +357,7 @@ static int runtest_dar_outside(void)
 		fail = 1;
 	}
 
-	/* Hit */
+	 
 	ioctl(break_fd, PERF_EVENT_IOC_RESET);
 	ioctl(break_fd, PERF_EVENT_IOC_ENABLE);
 	temp64 = *((__u64 *)target);
@@ -805,7 +789,7 @@ static int runtest_unaligned_512bytes(void)
 	return 0;
 }
 
-/* There is no perf api to find number of available watchpoints. Use ptrace. */
+ 
 static int get_nr_wps(bool *arch_31)
 {
 	struct ppc_debug_info dbginfo;
@@ -843,17 +827,14 @@ static int runtest(void)
 	bool arch_31 = false;
 	int nr_wps = get_nr_wps(&arch_31);
 
-	/*
-	 * perf defines rwflag as two bits read and write and at least
-	 * one must be set.  So range 1-3.
-	 */
+	 
 	for (rwflag = 1 ; rwflag < 4; rwflag++) {
 		for (exclude_user = 0 ; exclude_user < 2; exclude_user++) {
 			ret = runtestsingle(rwflag, exclude_user, 0);
 			if (ret)
 				return ret;
 
-			/* if we have the dawr, we can do an array test */
+			 
 			if (!dawr)
 				continue;
 			ret = runtestsingle(rwflag, exclude_user, 1);

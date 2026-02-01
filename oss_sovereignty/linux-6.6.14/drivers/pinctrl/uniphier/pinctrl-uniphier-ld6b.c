@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0+
-//
-// Copyright (C) 2015-2017 Socionext Inc.
-//   Author: Masahiro Yamada <yamada.masahiro@socionext.com>
+
+
+
+
 
 #include <linux/kernel.h>
 #include <linux/init.h>
@@ -803,36 +803,36 @@ static const int usb2_muxvals[] = {0, 0};
 static const unsigned usb3_pins[] = {62, 63};
 static const int usb3_muxvals[] = {0, 0};
 static const unsigned int gpio_range0_pins[] = {
-	127, 128, 129, 130, 131, 132, 133, 134,		/* PORT0x */
-	135, 136, 137, 138, 139, 140, 141, 142,		/* PORT1x */
-	0, 1, 2, 3, 4, 5, 6, 7,				/* PORT2x */
-	8, 9, 10, 11, 12, 13, 14, 15,			/* PORT3x */
-	16, 17, 18, 19, 21, 22, 23, 24,			/* PORT4x */
-	25, 30, 31, 32, 33, 34, 35, 36,			/* PORT5x */
-	37, 38, 39, 40, 41, 42, 43, 44,			/* PORT6x */
-	45, 46, 47, 48, 49, 50, 51, 52,			/* PORT7x */
-	53, 54, 55, 56, 57, 58, 59, 60,			/* PORT8x */
-	61, 62, 63, 64, 65, 66, 67, 68,			/* PORT9x */
-	69, 70, 71, 76, 77, 78, 79, 80,			/* PORT10x */
+	127, 128, 129, 130, 131, 132, 133, 134,		 
+	135, 136, 137, 138, 139, 140, 141, 142,		 
+	0, 1, 2, 3, 4, 5, 6, 7,				 
+	8, 9, 10, 11, 12, 13, 14, 15,			 
+	16, 17, 18, 19, 21, 22, 23, 24,			 
+	25, 30, 31, 32, 33, 34, 35, 36,			 
+	37, 38, 39, 40, 41, 42, 43, 44,			 
+	45, 46, 47, 48, 49, 50, 51, 52,			 
+	53, 54, 55, 56, 57, 58, 59, 60,			 
+	61, 62, 63, 64, 65, 66, 67, 68,			 
+	69, 70, 71, 76, 77, 78, 79, 80,			 
 };
 static const unsigned int gpio_range1_pins[] = {
-	81, 82, 83, 84, 85, 86, 87, 88,			/* PORT12x */
-	89, 90, 95, 96, 97, 98, 99, 100,		/* PORT13x */
-	101, 102, 103, 104, 105, 106, 107, 108,		/* PORT14x */
-	118, 119, 120, 121, 122, 123, 124, 125,		/* XIRQ0-7 */
-	126, 72, 73, 92, 177, 93, 94, 176,		/* XIRQ8-15 */
-	74, 91, 27, 28, 29, 75, 20, 26,			/* XIRQ16-23 */
-	109, 110, 111, 112, 113, 114, 115, 116,		/* PORT18x */
-	117, 143, 144, 145, 146, 147, 148, 149,		/* PORT19x */
-	150, 151, 152, 153, 154, 155, 156, 157,		/* PORT20x */
-	158, 159, 160, 161, 162, 163, 164, 165,		/* PORT21x */
-	166, 178, 179, 180, 181, 182, 183, 184,		/* PORT22x */
-	185, 187, 188, 189, 190, 191, 192, 193,		/* PORT23x */
-	194, 195, 196, 197, 198, 199, 200, 201,		/* PORT24x */
-	202, 203, 204, 205, 206, 207, 208, 209,		/* PORT25x */
-	210, 211, 212, 213, 214, 215, 216, 217,		/* PORT26x */
-	218, 219, 220, 221, 223, 224, 225, 226,		/* PORT27x */
-	227, 228, 229, 230, 231, 232, 233, 234,		/* PORT28x */
+	81, 82, 83, 84, 85, 86, 87, 88,			 
+	89, 90, 95, 96, 97, 98, 99, 100,		 
+	101, 102, 103, 104, 105, 106, 107, 108,		 
+	118, 119, 120, 121, 122, 123, 124, 125,		 
+	126, 72, 73, 92, 177, 93, 94, 176,		 
+	74, 91, 27, 28, 29, 75, 20, 26,			 
+	109, 110, 111, 112, 113, 114, 115, 116,		 
+	117, 143, 144, 145, 146, 147, 148, 149,		 
+	150, 151, 152, 153, 154, 155, 156, 157,		 
+	158, 159, 160, 161, 162, 163, 164, 165,		 
+	166, 178, 179, 180, 181, 182, 183, 184,		 
+	185, 187, 188, 189, 190, 191, 192, 193,		 
+	194, 195, 196, 197, 198, 199, 200, 201,		 
+	202, 203, 204, 205, 206, 207, 208, 209,		 
+	210, 211, 212, 213, 214, 215, 216, 217,		 
+	218, 219, 220, 221, 223, 224, 225, 226,		 
+	227, 228, 229, 230, 231, 232, 233, 234,		 
 };
 
 static const struct uniphier_pinctrl_group uniphier_ld6b_groups[] = {
@@ -900,7 +900,7 @@ static const char * const usb2_groups[] = {"usb2"};
 static const char * const usb3_groups[] = {"usb3"};
 
 static const struct uniphier_pinmux_function uniphier_ld6b_functions[] = {
-	UNIPHIER_PINMUX_FUNCTION(adinter), /* Achip-Dchip interconnect */
+	UNIPHIER_PINMUX_FUNCTION(adinter),  
 	UNIPHIER_PINMUX_FUNCTION(emmc),
 	UNIPHIER_PINMUX_FUNCTION(ether_rgmii),
 	UNIPHIER_PINMUX_FUNCTION(ether_rmii),
@@ -925,8 +925,8 @@ static const struct uniphier_pinmux_function uniphier_ld6b_functions[] = {
 static int uniphier_ld6b_get_gpio_muxval(unsigned int pin,
 					 unsigned int gpio_offset)
 {
-	if (gpio_offset >= 120 && gpio_offset <= 143)	/* XIRQx */
-		/* 15 will do because XIRQ0-23 are aliases of PORT150-177. */
+	if (gpio_offset >= 120 && gpio_offset <= 143)	 
+		 
 		return 14;
 
 	return 15;
@@ -950,7 +950,7 @@ static int uniphier_ld6b_pinctrl_probe(struct platform_device *pdev)
 
 static const struct of_device_id uniphier_ld6b_pinctrl_match[] = {
 	{ .compatible = "socionext,uniphier-ld6b-pinctrl" },
-	{ /* sentinel */ }
+	{   }
 };
 
 static struct platform_driver uniphier_ld6b_pinctrl_driver = {

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *  linux/fs/readdir.c
- *
- *  Copyright (C) 1995  Linus Torvalds
- */
+
+ 
 
 #include <linux/stddef.h>
 #include <linux/kernel.h>
@@ -24,12 +20,7 @@
 
 #include <asm/unaligned.h>
 
-/*
- * Some filesystems were never converted to '->iterate_shared()'
- * and their directory iterators want the inode lock held for
- * writing. This wrapper allows for converting from the shared
- * semantics to the exclusive inode use.
- */
+ 
 int wrap_directory_iterator(struct file *file,
 			    struct dir_context *ctx,
 			    int (*iter)(struct file *, struct dir_context *))
@@ -37,31 +28,11 @@ int wrap_directory_iterator(struct file *file,
 	struct inode *inode = file_inode(file);
 	int ret;
 
-	/*
-	 * We'd love to have an 'inode_upgrade_trylock()' operation,
-	 * see the comment in mmap_upgrade_trylock() in mm/memory.c.
-	 *
-	 * But considering this is for "filesystems that never got
-	 * converted", it really doesn't matter.
-	 *
-	 * Also note that since we have to return with the lock held
-	 * for reading, we can't use the "killable()" locking here,
-	 * since we do need to get the lock even if we're dying.
-	 *
-	 * We could do the write part killably and then get the read
-	 * lock unconditionally if it mattered, but see above on why
-	 * this does the very simplistic conversion.
-	 */
+	 
 	up_read(&inode->i_rwsem);
 	down_write(&inode->i_rwsem);
 
-	/*
-	 * Since we dropped the inode lock, we should do the
-	 * DEADDIR test again. See 'iterate_dir()' below.
-	 *
-	 * Note that we don't need to re-do the f_pos games,
-	 * since the file must be locked wrt f_pos anyway.
-	 */
+	 
 	ret = -ENOENT;
 	if (!IS_DEADDIR(inode))
 		ret = iter(file, ctx);
@@ -71,10 +42,7 @@ int wrap_directory_iterator(struct file *file,
 }
 EXPORT_SYMBOL(wrap_directory_iterator);
 
-/*
- * Note the "unsafe_put_user() semantics: we goto a
- * label for errors.
- */
+ 
 #define unsafe_copy_dirent_name(_dst, _src, _len, label) do {	\
 	char __user *dst = (_dst);				\
 	const char *src = (_src);				\
@@ -114,35 +82,7 @@ out:
 }
 EXPORT_SYMBOL(iterate_dir);
 
-/*
- * POSIX says that a dirent name cannot contain NULL or a '/'.
- *
- * It's not 100% clear what we should really do in this case.
- * The filesystem is clearly corrupted, but returning a hard
- * error means that you now don't see any of the other names
- * either, so that isn't a perfect alternative.
- *
- * And if you return an error, what error do you use? Several
- * filesystems seem to have decided on EUCLEAN being the error
- * code for EFSCORRUPTED, and that may be the error to use. Or
- * just EIO, which is perhaps more obvious to users.
- *
- * In order to see the other file names in the directory, the
- * caller might want to make this a "soft" error: skip the
- * entry, and return the error at the end instead.
- *
- * Note that this should likely do a "memchr(name, 0, len)"
- * check too, since that would be filesystem corruption as
- * well. However, that case can't actually confuse user space,
- * which has to do a strlen() on the name anyway to find the
- * filename length, and the above "soft error" worry means
- * that it's probably better left alone until we have that
- * issue clarified.
- *
- * Note the PATH_MAX check - it's arbitrary but the real
- * kernel limit on a possible path component, not NAME_MAX,
- * which is the technical standard limit.
- */
+ 
 static int verify_dirent_name(const char *name, int len)
 {
 	if (len <= 0 || len >= PATH_MAX)
@@ -152,14 +92,7 @@ static int verify_dirent_name(const char *name, int len)
 	return 0;
 }
 
-/*
- * Traditional linux readdir() handling..
- *
- * "count=1" is a special case, meaning that the buffer is one
- * dirent-structure in size and that the code can't handle more
- * anyway. Thus the special "fillonedir()" function for that
- * case (the low-level handlers don't need to care about this).
- */
+ 
 
 #ifdef __ARCH_WANT_OLD_READDIR
 
@@ -234,12 +167,9 @@ SYSCALL_DEFINE3(old_readdir, unsigned int, fd,
 	return error;
 }
 
-#endif /* __ARCH_WANT_OLD_READDIR */
+#endif  
 
-/*
- * New, all-improved, singing, dancing, iBCS2-compliant getdents()
- * interface. 
- */
+ 
 struct linux_dirent {
 	unsigned long	d_ino;
 	unsigned long	d_off;
@@ -269,7 +199,7 @@ static bool filldir(struct dir_context *ctx, const char *name, int namlen,
 	buf->error = verify_dirent_name(name, namlen);
 	if (unlikely(buf->error))
 		return false;
-	buf->error = -EINVAL;	/* only used if we fail.. */
+	buf->error = -EINVAL;	 
 	if (reclen > buf->count)
 		return false;
 	d_ino = ino;
@@ -285,7 +215,7 @@ static bool filldir(struct dir_context *ctx, const char *name, int namlen,
 	if (!user_write_access_begin(prev, reclen + prev_reclen))
 		goto efault;
 
-	/* This might be 'dirent->d_off', but if so it will get overwritten */
+	 
 	unsafe_put_user(offset, &prev->d_off, efault_end);
 	unsafe_put_user(d_ino, &dirent->d_ino, efault_end);
 	unsafe_put_user(reclen, &dirent->d_reclen, efault_end);
@@ -356,7 +286,7 @@ static bool filldir64(struct dir_context *ctx, const char *name, int namlen,
 	buf->error = verify_dirent_name(name, namlen);
 	if (unlikely(buf->error))
 		return false;
-	buf->error = -EINVAL;	/* only used if we fail.. */
+	buf->error = -EINVAL;	 
 	if (reclen > buf->count)
 		return false;
 	prev_reclen = buf->prev_reclen;
@@ -367,7 +297,7 @@ static bool filldir64(struct dir_context *ctx, const char *name, int namlen,
 	if (!user_write_access_begin(prev, reclen + prev_reclen))
 		goto efault;
 
-	/* This might be 'dirent->d_off', but if so it will get overwritten */
+	 
 	unsafe_put_user(offset, &prev->d_off, efault_end);
 	unsafe_put_user(ino, &dirent->d_ino, efault_end);
 	unsafe_put_user(reclen, &dirent->d_reclen, efault_end);
@@ -521,7 +451,7 @@ static bool compat_filldir(struct dir_context *ctx, const char *name, int namlen
 	buf->error = verify_dirent_name(name, namlen);
 	if (unlikely(buf->error))
 		return false;
-	buf->error = -EINVAL;	/* only used if we fail.. */
+	buf->error = -EINVAL;	 
 	if (reclen > buf->count)
 		return false;
 	d_ino = ino;

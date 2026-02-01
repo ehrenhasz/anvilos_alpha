@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Driver for the TI bq24190 battery charger.
- *
- * Author: Mark A. Greer <mgreer@animalcreek.com>
- */
+
+ 
 
 #include <linux/mod_devicetable.h>
 #include <linux/module.h>
@@ -20,7 +16,7 @@
 
 #define	BQ24190_MANUFACTURER	"Texas Instruments"
 
-#define BQ24190_REG_ISC		0x00 /* Input Source Control */
+#define BQ24190_REG_ISC		0x00  
 #define BQ24190_REG_ISC_EN_HIZ_MASK		BIT(7)
 #define BQ24190_REG_ISC_EN_HIZ_SHIFT		7
 #define BQ24190_REG_ISC_VINDPM_MASK		(BIT(6) | BIT(5) | BIT(4) | \
@@ -29,7 +25,7 @@
 #define BQ24190_REG_ISC_IINLIM_MASK		(BIT(2) | BIT(1) | BIT(0))
 #define BQ24190_REG_ISC_IINLIM_SHIFT		0
 
-#define BQ24190_REG_POC		0x01 /* Power-On Configuration */
+#define BQ24190_REG_POC		0x01  
 #define BQ24190_REG_POC_RESET_MASK		BIT(7)
 #define BQ24190_REG_POC_RESET_SHIFT		7
 #define BQ24190_REG_POC_WDT_RESET_MASK		BIT(6)
@@ -47,14 +43,14 @@
 #define BQ24190_REG_POC_BOOST_LIM_MASK		BIT(0)
 #define BQ24190_REG_POC_BOOST_LIM_SHIFT		0
 
-#define BQ24190_REG_CCC		0x02 /* Charge Current Control */
+#define BQ24190_REG_CCC		0x02  
 #define BQ24190_REG_CCC_ICHG_MASK		(BIT(7) | BIT(6) | BIT(5) | \
 						 BIT(4) | BIT(3) | BIT(2))
 #define BQ24190_REG_CCC_ICHG_SHIFT		2
 #define BQ24190_REG_CCC_FORCE_20PCT_MASK	BIT(0)
 #define BQ24190_REG_CCC_FORCE_20PCT_SHIFT	0
 
-#define BQ24190_REG_PCTCC	0x03 /* Pre-charge/Termination Current Cntl */
+#define BQ24190_REG_PCTCC	0x03  
 #define BQ24190_REG_PCTCC_IPRECHG_MASK		(BIT(7) | BIT(6) | BIT(5) | \
 						 BIT(4))
 #define BQ24190_REG_PCTCC_IPRECHG_SHIFT		4
@@ -66,7 +62,7 @@
 #define BQ24190_REG_PCTCC_ITERM_MIN			128
 #define BQ24190_REG_PCTCC_ITERM_MAX			2048
 
-#define BQ24190_REG_CVC		0x04 /* Charge Voltage Control */
+#define BQ24190_REG_CVC		0x04  
 #define BQ24190_REG_CVC_VREG_MASK		(BIT(7) | BIT(6) | BIT(5) | \
 						 BIT(4) | BIT(3) | BIT(2))
 #define BQ24190_REG_CVC_VREG_SHIFT		2
@@ -75,7 +71,7 @@
 #define BQ24190_REG_CVC_VRECHG_MASK		BIT(0)
 #define BQ24190_REG_CVC_VRECHG_SHIFT		0
 
-#define BQ24190_REG_CTTC	0x05 /* Charge Term/Timer Control */
+#define BQ24190_REG_CTTC	0x05  
 #define BQ24190_REG_CTTC_EN_TERM_MASK		BIT(7)
 #define BQ24190_REG_CTTC_EN_TERM_SHIFT		7
 #define BQ24190_REG_CTTC_TERM_STAT_MASK		BIT(6)
@@ -89,7 +85,7 @@
 #define BQ24190_REG_CTTC_JEITA_ISET_MASK	BIT(0)
 #define BQ24190_REG_CTTC_JEITA_ISET_SHIFT	0
 
-#define BQ24190_REG_ICTRC	0x06 /* IR Comp/Thermal Regulation Control */
+#define BQ24190_REG_ICTRC	0x06  
 #define BQ24190_REG_ICTRC_BAT_COMP_MASK		(BIT(7) | BIT(6) | BIT(5))
 #define BQ24190_REG_ICTRC_BAT_COMP_SHIFT	5
 #define BQ24190_REG_ICTRC_VCLAMP_MASK		(BIT(4) | BIT(3) | BIT(2))
@@ -97,7 +93,7 @@
 #define BQ24190_REG_ICTRC_TREG_MASK		(BIT(1) | BIT(0))
 #define BQ24190_REG_ICTRC_TREG_SHIFT		0
 
-#define BQ24190_REG_MOC		0x07 /* Misc. Operation Control */
+#define BQ24190_REG_MOC		0x07  
 #define BQ24190_REG_MOC_DPDM_EN_MASK		BIT(7)
 #define BQ24190_REG_MOC_DPDM_EN_SHIFT		7
 #define BQ24190_REG_MOC_TMR2X_EN_MASK		BIT(6)
@@ -109,7 +105,7 @@
 #define BQ24190_REG_MOC_INT_MASK_MASK		(BIT(1) | BIT(0))
 #define BQ24190_REG_MOC_INT_MASK_SHIFT		0
 
-#define BQ24190_REG_SS		0x08 /* System Status */
+#define BQ24190_REG_SS		0x08  
 #define BQ24190_REG_SS_VBUS_STAT_MASK		(BIT(7) | BIT(6))
 #define BQ24190_REG_SS_VBUS_STAT_SHIFT		6
 #define BQ24190_REG_SS_CHRG_STAT_MASK		(BIT(5) | BIT(4))
@@ -123,7 +119,7 @@
 #define BQ24190_REG_SS_VSYS_STAT_MASK		BIT(0)
 #define BQ24190_REG_SS_VSYS_STAT_SHIFT		0
 
-#define BQ24190_REG_F		0x09 /* Fault */
+#define BQ24190_REG_F		0x09  
 #define BQ24190_REG_F_WATCHDOG_FAULT_MASK	BIT(7)
 #define BQ24190_REG_F_WATCHDOG_FAULT_SHIFT	7
 #define BQ24190_REG_F_BOOST_FAULT_MASK		BIT(6)
@@ -135,24 +131,18 @@
 #define BQ24190_REG_F_NTC_FAULT_MASK		(BIT(2) | BIT(1) | BIT(0))
 #define BQ24190_REG_F_NTC_FAULT_SHIFT		0
 
-#define BQ24190_REG_VPRS	0x0A /* Vendor/Part/Revision Status */
+#define BQ24190_REG_VPRS	0x0A  
 #define BQ24190_REG_VPRS_PN_MASK		(BIT(5) | BIT(4) | BIT(3))
 #define BQ24190_REG_VPRS_PN_SHIFT		3
 #define BQ24190_REG_VPRS_PN_24190			0x4
-#define BQ24190_REG_VPRS_PN_24192			0x5 /* Also 24193, 24196 */
+#define BQ24190_REG_VPRS_PN_24192			0x5  
 #define BQ24190_REG_VPRS_PN_24192I			0x3
 #define BQ24190_REG_VPRS_TS_PROFILE_MASK	BIT(2)
 #define BQ24190_REG_VPRS_TS_PROFILE_SHIFT	2
 #define BQ24190_REG_VPRS_DEV_REG_MASK		(BIT(1) | BIT(0))
 #define BQ24190_REG_VPRS_DEV_REG_SHIFT		0
 
-/*
- * The FAULT register is latched by the bq24190 (except for NTC_FAULT)
- * so the first read after a fault returns the latched value and subsequent
- * reads return the current value.  In order to return the fault status
- * to the user, have the interrupt handler save the reg's value and retrieve
- * it in the appropriate health/status routine.
- */
+ 
 struct bq24190_dev_info {
 	struct i2c_client		*client;
 	struct device			*dev;
@@ -186,20 +176,14 @@ static const unsigned int bq24190_usb_extcon_cable[] = {
 	EXTCON_NONE,
 };
 
-/*
- * The tables below provide a 2-way mapping for the value that goes in
- * the register field and the real-world value that it represents.
- * The index of the array is the value that goes in the register; the
- * number at that index in the array is the real-world value that it
- * represents.
- */
+ 
 
-/* REG00[2:0] (IINLIM) in uAh */
+ 
 static const int bq24190_isc_iinlim_values[] = {
 	 100000,  150000,  500000,  900000, 1200000, 1500000, 2000000, 3000000
 };
 
-/* REG02[7:2] (ICHG) in uAh */
+ 
 static const int bq24190_ccc_ichg_values[] = {
 	 512000,  576000,  640000,  704000,  768000,  832000,  896000,  960000,
 	1024000, 1088000, 1152000, 1216000, 1280000, 1344000, 1408000, 1472000,
@@ -211,7 +195,7 @@ static const int bq24190_ccc_ichg_values[] = {
 	4096000, 4160000, 4224000, 4288000, 4352000, 4416000, 4480000, 4544000
 };
 
-/* REG04[7:2] (VREG) in uV */
+ 
 static const int bq24190_cvc_vreg_values[] = {
 	3504000, 3520000, 3536000, 3552000, 3568000, 3584000, 3600000, 3616000,
 	3632000, 3648000, 3664000, 3680000, 3696000, 3712000, 3728000, 3744000,
@@ -223,17 +207,12 @@ static const int bq24190_cvc_vreg_values[] = {
 	4400000
 };
 
-/* REG06[1:0] (TREG) in tenths of degrees Celsius */
+ 
 static const int bq24190_ictrc_treg_values[] = {
 	600, 800, 1000, 1200
 };
 
-/*
- * Return the index in 'tbl' of greatest value that is less than or equal to
- * 'val'.  The index range returned is 0 to 'tbl_size' - 1.  Assumes that
- * the values in 'tbl' are sorted from smallest to largest and 'tbl_size'
- * is less than 2^8.
- */
+ 
 static u8 bq24190_find_idx(const int tbl[], int tbl_size, int v)
 {
 	int i;
@@ -245,7 +224,7 @@ static u8 bq24190_find_idx(const int tbl[], int tbl_size, int v)
 	return i - 1;
 }
 
-/* Basic driver I/O routines */
+ 
 
 static int bq24190_read(struct bq24190_dev_info *bdi, u8 reg, u8 *data)
 {
@@ -328,13 +307,7 @@ static int bq24190_set_field_val(struct bq24190_dev_info *bdi,
 }
 
 #ifdef CONFIG_SYSFS
-/*
- * There are a numerous options that are configurable on the bq24190
- * that go well beyond what the power_supply properties provide access to.
- * Provide sysfs access to them so they can be examined and possibly modified
- * on the fly.  They will be provided for the charger power_supply object only
- * and will be prefixed by 'f_' to make them easier to recognize.
- */
+ 
 
 #define BQ24190_SYSFS_FIELD(_name, r, f, m, store)			\
 {									\
@@ -363,11 +336,11 @@ struct bq24190_sysfs_field_info {
 	u8	shift;
 };
 
-/* On i386 ptrace-abi.h defines SS that breaks the macro calls below. */
+ 
 #undef SS
 
 static struct bq24190_sysfs_field_info bq24190_sysfs_field_tbl[] = {
-			/*	sysfs name	reg	field in reg */
+			 
 	BQ24190_SYSFS_FIELD_RW(en_hiz,		ISC,	EN_HIZ),
 	BQ24190_SYSFS_FIELD_RW(vindpm,		ISC,	VINDPM),
 	BQ24190_SYSFS_FIELD_RW(iinlim,		ISC,	IINLIM),
@@ -423,7 +396,7 @@ static void bq24190_sysfs_init_attrs(void)
 	for (i = 0; i < limit; i++)
 		bq24190_sysfs_attrs[i] = &bq24190_sysfs_field_tbl[i].attr.attr;
 
-	bq24190_sysfs_attrs[limit] = NULL; /* Has additional entry for this */
+	bq24190_sysfs_attrs[limit] = NULL;  
 }
 
 static struct bq24190_sysfs_field_info *bq24190_sysfs_field_lookup(
@@ -629,14 +602,7 @@ static int bq24190_set_config(struct bq24190_dev_info *bdi)
 	bdi->watchdog = ((v & BQ24190_REG_CTTC_WATCHDOG_MASK) >>
 					BQ24190_REG_CTTC_WATCHDOG_SHIFT);
 
-	/*
-	 * According to the "Host Mode and default Mode" section of the
-	 * manual, a write to any register causes the bq24190 to switch
-	 * from default mode to host mode.  It will switch back to default
-	 * mode after a WDT timeout unless the WDT is turned off as well.
-	 * So, by simply turning off the WDT, we accomplish both with the
-	 * same write.
-	 */
+	 
 	v &= ~BQ24190_REG_CTTC_WATCHDOG_MASK;
 
 	ret = bq24190_write(bdi, BQ24190_REG_CTTC, v);
@@ -644,7 +610,7 @@ static int bq24190_set_config(struct bq24190_dev_info *bdi)
 		return ret;
 
 	if (bdi->sys_min) {
-		v = bdi->sys_min / 100 - 30; // manual section 9.5.1.2, table 9
+		v = bdi->sys_min / 100 - 30; 
 		ret = bq24190_write_mask(bdi, BQ24190_REG_POC,
 					 BQ24190_REG_POC_SYS_MIN_MASK,
 					 BQ24190_REG_POC_SYS_MIN_SHIFT,
@@ -654,7 +620,7 @@ static int bq24190_set_config(struct bq24190_dev_info *bdi)
 	}
 
 	if (bdi->iprechg) {
-		v = bdi->iprechg / 128 - 1; // manual section 9.5.1.4, table 11
+		v = bdi->iprechg / 128 - 1; 
 		ret = bq24190_write_mask(bdi, BQ24190_REG_PCTCC,
 					 BQ24190_REG_PCTCC_IPRECHG_MASK,
 					 BQ24190_REG_PCTCC_IPRECHG_SHIFT,
@@ -664,7 +630,7 @@ static int bq24190_set_config(struct bq24190_dev_info *bdi)
 	}
 
 	if (bdi->iterm) {
-		v = bdi->iterm / 128 - 1; // manual section 9.5.1.4, table 11
+		v = bdi->iterm / 128 - 1; 
 		ret = bq24190_write_mask(bdi, BQ24190_REG_PCTCC,
 					 BQ24190_REG_PCTCC_ITERM_MASK,
 					 BQ24190_REG_PCTCC_ITERM_SHIFT,
@@ -703,20 +669,11 @@ static int bq24190_register_reset(struct bq24190_dev_info *bdi)
 	int ret, limit = 100;
 	u8 v;
 
-	/*
-	 * This prop. can be passed on device instantiation from platform code:
-	 * struct property_entry pe[] =
-	 *   { PROPERTY_ENTRY_BOOL("disable-reset"), ... };
-	 * struct i2c_board_info bi =
-	 *   { .type = "bq24190", .addr = 0x6b, .properties = pe, .irq = irq };
-	 * struct i2c_adapter ad = { ... };
-	 * i2c_add_adapter(&ad);
-	 * i2c_new_client_device(&ad, &bi);
-	 */
+	 
 	if (device_property_read_bool(bdi->dev, "disable-reset"))
 		return 0;
 
-	/* Reset the registers */
+	 
 	ret = bq24190_write_mask(bdi, BQ24190_REG_POC,
 			BQ24190_REG_POC_RESET_MASK,
 			BQ24190_REG_POC_RESET_SHIFT,
@@ -724,7 +681,7 @@ static int bq24190_register_reset(struct bq24190_dev_info *bdi)
 	if (ret < 0)
 		return ret;
 
-	/* Reset bit will be cleared by hardware so poll until it is */
+	 
 	do {
 		ret = bq24190_read_mask(bdi, BQ24190_REG_POC,
 				BQ24190_REG_POC_RESET_MASK,
@@ -742,7 +699,7 @@ static int bq24190_register_reset(struct bq24190_dev_info *bdi)
 	return -EIO;
 }
 
-/* Charger power supply property routines */
+ 
 
 static int bq24190_charger_get_charge_type(struct bq24190_dev_info *bdi,
 		union power_supply_propval *val)
@@ -757,7 +714,7 @@ static int bq24190_charger_get_charge_type(struct bq24190_dev_info *bdi,
 	if (ret < 0)
 		return ret;
 
-	/* If POC[CHG_CONFIG] (REG01[5:4]) == 0, charge is disabled */
+	 
 	if (!v) {
 		type = POWER_SUPPLY_CHARGE_TYPE_NONE;
 	} else {
@@ -783,16 +740,7 @@ static int bq24190_charger_set_charge_type(struct bq24190_dev_info *bdi,
 	u8 chg_config, force_20pct, en_term;
 	int ret;
 
-	/*
-	 * According to the "Termination when REG02[0] = 1" section of
-	 * the bq24190 manual, the trickle charge could be less than the
-	 * termination current so it recommends turning off the termination
-	 * function.
-	 *
-	 * Note: AFAICT from the datasheet, the user will have to manually
-	 * turn off the charging when in 20% mode.  If its not turned off,
-	 * there could be battery damage.  So, use this mode at your own risk.
-	 */
+	 
 	switch (val->intval) {
 	case POWER_SUPPLY_CHARGE_TYPE_NONE:
 		chg_config = 0x0;
@@ -812,14 +760,11 @@ static int bq24190_charger_set_charge_type(struct bq24190_dev_info *bdi,
 	}
 
 	bdi->charge_type = val->intval;
-	/*
-	 * If the 5V Vbus boost regulator is enabled delay setting
-	 * the charge-type until its gets disabled.
-	 */
+	 
 	if (bdi->otg_vbus_enabled)
 		return 0;
 
-	if (chg_config) { /* Enabling the charger */
+	if (chg_config) {  
 		ret = bq24190_write_mask(bdi, BQ24190_REG_CCC,
 				BQ24190_REG_CCC_FORCE_20PCT_MASK,
 				BQ24190_REG_CCC_FORCE_20PCT_SHIFT,
@@ -852,14 +797,14 @@ static int bq24190_charger_get_health(struct bq24190_dev_info *bdi,
 
 	if (v & BQ24190_REG_F_NTC_FAULT_MASK) {
 		switch (v >> BQ24190_REG_F_NTC_FAULT_SHIFT & 0x7) {
-		case 0x1: /* TS1  Cold */
-		case 0x3: /* TS2  Cold */
-		case 0x5: /* Both Cold */
+		case 0x1:  
+		case 0x3:  
+		case 0x5:  
 			health = POWER_SUPPLY_HEALTH_COLD;
 			break;
-		case 0x2: /* TS1  Hot */
-		case 0x4: /* TS2  Hot */
-		case 0x6: /* Both Hot */
+		case 0x2:  
+		case 0x4:  
+		case 0x6:  
 			health = POWER_SUPPLY_HEALTH_OVERHEAT;
 			break;
 		default:
@@ -869,32 +814,21 @@ static int bq24190_charger_get_health(struct bq24190_dev_info *bdi,
 		health = POWER_SUPPLY_HEALTH_OVERVOLTAGE;
 	} else if (v & BQ24190_REG_F_CHRG_FAULT_MASK) {
 		switch (v >> BQ24190_REG_F_CHRG_FAULT_SHIFT & 0x3) {
-		case 0x1: /* Input Fault (VBUS OVP or VBAT<VBUS<3.8V) */
-			/*
-			 * This could be over-voltage or under-voltage
-			 * and there's no way to tell which.  Instead
-			 * of looking foolish and returning 'OVERVOLTAGE'
-			 * when its really under-voltage, just return
-			 * 'UNSPEC_FAILURE'.
-			 */
+		case 0x1:  
+			 
 			health = POWER_SUPPLY_HEALTH_UNSPEC_FAILURE;
 			break;
-		case 0x2: /* Thermal Shutdown */
+		case 0x2:  
 			health = POWER_SUPPLY_HEALTH_OVERHEAT;
 			break;
-		case 0x3: /* Charge Safety Timer Expiration */
+		case 0x3:  
 			health = POWER_SUPPLY_HEALTH_SAFETY_TIMER_EXPIRE;
 			break;
-		default:  /* prevent compiler warning */
+		default:   
 			health = -1;
 		}
 	} else if (v & BQ24190_REG_F_BOOST_FAULT_MASK) {
-		/*
-		 * This could be over-current or over-voltage but there's
-		 * no way to tell which.  Return 'OVERVOLTAGE' since there
-		 * isn't an 'OVERCURRENT' value defined that we can return
-		 * even if it was over-current.
-		 */
+		 
 		health = POWER_SUPPLY_HEALTH_OVERVOLTAGE;
 	} else {
 		health = POWER_SUPPLY_HEALTH_GOOD;
@@ -981,7 +915,7 @@ static int bq24190_charger_get_precharge(struct bq24190_dev_info *bdi,
 	if (ret < 0)
 		return ret;
 
-	/* If FORCE_20PCT is enabled, then current is 50% of IPRECHG value */
+	 
 	if (v)
 		curr /= 2;
 
@@ -1025,7 +959,7 @@ static int bq24190_charger_get_current(struct bq24190_dev_info *bdi,
 	if (ret < 0)
 		return ret;
 
-	/* If FORCE_20PCT is enabled, then current is 20% of ICHG value */
+	 
 	if (v)
 		curr /= 5;
 
@@ -1045,7 +979,7 @@ static int bq24190_charger_set_current(struct bq24190_dev_info *bdi,
 	if (ret < 0)
 		return ret;
 
-	/* If FORCE_20PCT is enabled, have to multiply value passed in by 5 */
+	 
 	if (v)
 		curr *= 5;
 
@@ -1278,19 +1212,12 @@ static void bq24190_input_current_limit_work(struct work_struct *work)
 	power_supply_changed(bdi->charger);
 }
 
-/* Sync the input-current-limit with our parent supply (if we have one) */
+ 
 static void bq24190_charger_external_power_changed(struct power_supply *psy)
 {
 	struct bq24190_dev_info *bdi = power_supply_get_drvdata(psy);
 
-	/*
-	 * The Power-Good detection may take up to 220ms, sometimes
-	 * the external charger detection is quicker, and the bq24190 will
-	 * reset to iinlim based on its own charger detection (which is not
-	 * hooked up when using external charger detection) resulting in a
-	 * too low default 500mA iinlim. Delay setting the input-current-limit
-	 * for 300ms to avoid this.
-	 */
+	 
 	queue_delayed_work(system_wq, &bdi->input_current_limit_work,
 			   msecs_to_jiffies(300));
 }
@@ -1328,7 +1255,7 @@ static const struct power_supply_desc bq24190_charger_desc = {
 	.external_power_changed	= bq24190_charger_external_power_changed,
 };
 
-/* Battery power supply property routines */
+ 
 
 static int bq24190_battery_get_status(struct bq24190_dev_info *bdi,
 		union power_supply_propval *val)
@@ -1347,13 +1274,7 @@ static int bq24190_battery_get_status(struct bq24190_dev_info *bdi,
 	if (ret < 0)
 		return ret;
 
-	/*
-	 * The battery must be discharging when any of these are true:
-	 * - there is no good power source;
-	 * - there is a charge fault.
-	 * Could also be discharging when in "supplement mode" but
-	 * there is no way to tell when its in that mode.
-	 */
+	 
 	if (!(ss_reg & BQ24190_REG_SS_PG_STAT_MASK) || chrg_fault) {
 		status = POWER_SUPPLY_STATUS_DISCHARGING;
 	} else {
@@ -1361,14 +1282,14 @@ static int bq24190_battery_get_status(struct bq24190_dev_info *bdi,
 		ss_reg >>= BQ24190_REG_SS_CHRG_STAT_SHIFT;
 
 		switch (ss_reg) {
-		case 0x0: /* Not Charging */
+		case 0x0:  
 			status = POWER_SUPPLY_STATUS_NOT_CHARGING;
 			break;
-		case 0x1: /* Pre-charge */
-		case 0x2: /* Fast Charging */
+		case 0x1:  
+		case 0x2:  
 			status = POWER_SUPPLY_STATUS_CHARGING;
 			break;
-		case 0x3: /* Charge Termination Done */
+		case 0x3:  
 			status = POWER_SUPPLY_STATUS_FULL;
 			break;
 		default:
@@ -1399,17 +1320,17 @@ static int bq24190_battery_get_health(struct bq24190_dev_info *bdi,
 		v >>= BQ24190_REG_F_NTC_FAULT_SHIFT;
 
 		switch (v) {
-		case 0x0: /* Normal */
+		case 0x0:  
 			health = POWER_SUPPLY_HEALTH_GOOD;
 			break;
-		case 0x1: /* TS1 Cold */
-		case 0x3: /* TS2 Cold */
-		case 0x5: /* Both Cold */
+		case 0x1:  
+		case 0x3:  
+		case 0x5:  
 			health = POWER_SUPPLY_HEALTH_COLD;
 			break;
-		case 0x2: /* TS1 Hot */
-		case 0x4: /* TS2 Hot */
-		case 0x6: /* Both Hot */
+		case 0x2:  
+		case 0x4:  
+		case 0x6:  
 			health = POWER_SUPPLY_HEALTH_OVERHEAT;
 			break;
 		default:
@@ -1496,7 +1417,7 @@ static int bq24190_battery_get_property(struct power_supply *psy,
 		ret = bq24190_battery_get_online(bdi, val);
 		break;
 	case POWER_SUPPLY_PROP_TECHNOLOGY:
-		/* Could be Li-on or Li-polymer but no way to tell which */
+		 
 		val->intval = POWER_SUPPLY_TECHNOLOGY_UNKNOWN;
 		ret = 0;
 		break;
@@ -1622,7 +1543,7 @@ static void bq24190_check_status(struct bq24190_dev_info *bdi)
 		}
 	} while (f_reg && ++i < 2);
 
-	/* ignore over/under voltage fault after disconnect */
+	 
 	if (f_reg == (1 << BQ24190_REG_F_CHRG_FAULT_SHIFT) &&
 	    !(ss_reg & BQ24190_REG_SS_PG_STAT_MASK))
 		f_reg = 0;
@@ -1645,10 +1566,7 @@ static void bq24190_check_status(struct bq24190_dev_info *bdi)
 	}
 
 	if (ss_reg != bdi->ss_reg) {
-		/*
-		 * The device is in host mode so when PG_STAT goes from 1->0
-		 * (i.e., power removed) HIZ needs to be disabled.
-		 */
+		 
 		if ((bdi->ss_reg & BQ24190_REG_SS_PG_STAT_MASK) &&
 				!(ss_reg & BQ24190_REG_SS_PG_STAT_MASK)) {
 			ret = bq24190_write_mask(bdi, BQ24190_REG_ISC,
@@ -1701,7 +1619,7 @@ static int bq24190_hw_init(struct bq24190_dev_info *bdi)
 	u8 v;
 	int ret;
 
-	/* First check that the device really is what its supposed to be */
+	 
 	ret = bq24190_read_mask(bdi, BQ24190_REG_VPRS,
 			BQ24190_REG_VPRS_PN_MASK,
 			BQ24190_REG_VPRS_PN_SHIFT,
@@ -1768,7 +1686,7 @@ static int bq24190_get_config(struct bq24190_dev_info *bdi)
 			dev_warn(bdi->dev, "invalid value for battery:charge-term-current-microamp: %d\n",
 				 v);
 
-		/* These are optional, so no warning when not set */
+		 
 		v = info->constant_charge_current_max_ua;
 		if (v >= bq24190_ccc_ichg_values[0] && v <= bdi->ichg_max)
 			bdi->ichg = bdi->ichg_max = v;
@@ -1807,7 +1725,7 @@ static int bq24190_probe(struct i2c_client *client)
 	mutex_init(&bdi->f_reg_lock);
 	bdi->charge_type = POWER_SUPPLY_CHARGE_TYPE_FAST;
 	bdi->f_reg = 0;
-	bdi->ss_reg = BQ24190_REG_SS_VBUS_STAT_MASK; /* impossible state */
+	bdi->ss_reg = BQ24190_REG_SS_VBUS_STAT_MASK;  
 	INIT_DELAYED_WORK(&bdi->input_current_limit_work,
 			  bq24190_input_current_limit_work);
 
@@ -1852,8 +1770,8 @@ static int bq24190_probe(struct i2c_client *client)
 		goto out_pmrt;
 	}
 
-	/* the battery class is deprecated and will be removed. */
-	/* in the interim, this property hides it.              */
+	 
+	 
 	if (!device_property_read_bool(dev, "omit-battery-class")) {
 		battery_cfg.drv_data = bdi;
 		bdi->battery = power_supply_register(dev, &bq24190_battery_desc,
@@ -1939,7 +1857,7 @@ static void bq24190_shutdown(struct i2c_client *client)
 {
 	struct bq24190_dev_info *bdi = i2c_get_clientdata(client);
 
-	/* Turn off 5V boost regulator on shutdown */
+	 
 	bq24190_set_otg_vbus(bdi, false);
 }
 
@@ -1999,7 +1917,7 @@ static __maybe_unused int bq24190_pm_resume(struct device *dev)
 	int error;
 
 	bdi->f_reg = 0;
-	bdi->ss_reg = BQ24190_REG_SS_VBUS_STAT_MASK; /* impossible state */
+	bdi->ss_reg = BQ24190_REG_SS_VBUS_STAT_MASK;  
 
 	error = pm_runtime_resume_and_get(bdi->dev);
 	if (error < 0)
@@ -2014,7 +1932,7 @@ static __maybe_unused int bq24190_pm_resume(struct device *dev)
 		pm_runtime_put_autosuspend(bdi->dev);
 	}
 
-	/* Things may have changed while suspended so alert upper layer */
+	 
 	power_supply_changed(bdi->charger);
 	if (bdi->battery)
 		power_supply_changed(bdi->battery);

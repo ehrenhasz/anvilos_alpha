@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * GPU memory trace points
- *
- * Copyright (C) 2020 Google, Inc.
- */
+ 
+ 
 
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM gpu_mem
@@ -13,20 +9,7 @@
 
 #include <linux/tracepoint.h>
 
-/*
- * The gpu_memory_total event indicates that there's an update to either the
- * global or process total gpu memory counters.
- *
- * This event should be emitted whenever the kernel device driver allocates,
- * frees, imports, unimports memory in the GPU addressable space.
- *
- * @gpu_id: This is the gpu id.
- *
- * @pid: Put 0 for global total, while positive pid for process total.
- *
- * @size: Size of the allocation in bytes.
- *
- */
+ 
 TRACE_EVENT(gpu_mem_total,
 
 	TP_PROTO(uint32_t gpu_id, uint32_t pid, uint64_t size),
@@ -51,7 +34,7 @@ TRACE_EVENT(gpu_mem_total,
 		__entry->size)
 );
 
-#endif /* _TRACE_GPU_MEM_H */
+#endif  
 
-/* This part must be outside protection */
+ 
 #include <trace/define_trace.h>

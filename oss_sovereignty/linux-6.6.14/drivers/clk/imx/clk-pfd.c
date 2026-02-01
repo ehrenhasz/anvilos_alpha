@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright 2012 Freescale Semiconductor, Inc.
- * Copyright 2012 Linaro Ltd.
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/export.h>
@@ -11,16 +8,7 @@
 #include <linux/err.h>
 #include "clk.h"
 
-/**
- * struct clk_pfd - IMX PFD clock
- * @hw:		clock source
- * @reg:	PFD register address
- * @idx:	the index of PFD encoded in the register
- *
- * PFD clock found on i.MX6 series.  Each register for PFD has 4 clk_pfd
- * data encoded, and member idx is used to specify the one.  And each
- * register has SET, CLR and TOG registers at offset 0x4 0x8 and 0xc.
- */
+ 
 struct clk_pfd {
 	struct clk_hw	hw;
 	void __iomem	*reg;

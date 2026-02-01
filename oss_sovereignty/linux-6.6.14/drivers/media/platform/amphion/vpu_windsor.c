@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright 2020-2021 NXP
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/interconnect.h>
@@ -207,16 +205,16 @@ struct vpu_enc_config_params {
 	u32 h264_buffering_period_present;
 	u32 h264_low_delay_hrd_flag;
 	u32 aspect_ratio;
-	u32 test_mode;                  // Automated firmware test mode
-	u32 dsa_test_mode;              // Automated test mode for the DSA.
-	u32 fme_test_mode;              // Automated test mode for the fme
-	u32 cbr_row_mode;               //0: FW mode; 1: HW mode
-	u32 windsor_mode;               //0: normal mode; 1: intra only mode; 2: intra+0MV mode
-	u32 encode_mode;                // H264, VC1, MPEG2, DIVX
-	u32 frame_width;                // display width
-	u32 frame_height;               // display height
-	u32 enc_frame_width;            // encoding width, should be 16-pix align
-	u32 enc_frame_height;           // encoding height, should be 16-pix aligned
+	u32 test_mode;                  
+	u32 dsa_test_mode;              
+	u32 fme_test_mode;              
+	u32 cbr_row_mode;               
+	u32 windsor_mode;               
+	u32 encode_mode;                
+	u32 frame_width;                
+	u32 frame_height;               
+	u32 enc_frame_width;            
+	u32 enc_frame_height;           
 	u32 frame_rate_num;
 	u32 frame_rate_den;
 	u32 vi_field_source;
@@ -428,7 +426,7 @@ struct vpu_enc_mem_pool {
 
 struct vpu_enc_encoding_status {
 	u32   frame_id;
-	u32   error_flag;   //Error type
+	u32   error_flag;   
 	u32   mb_y;
 	u32   mb_x;
 	u32   reserved[12];
@@ -879,7 +877,7 @@ int vpu_windsor_update_stream_buffer(struct vpu_shared_addr *shared,
 
 	desc = get_stream_buf_desc(shared, instance);
 
-	/*update wptr/rptr after data is written or read*/
+	 
 	mb();
 	if (write)
 		desc->wptr = ptr;
@@ -1153,7 +1151,7 @@ static int vpu_windsor_update_params(struct vpu_shared_addr *shared,
 	vpu_windsor_set_sar(expert, params);
 	vpu_windsor_set_color(expert, params);
 	vpu_windsor_update_bitrate(shared, instance, params);
-	/*expert->config_param.iac_sc_threshold = 0;*/
+	 
 
 	return 0;
 }

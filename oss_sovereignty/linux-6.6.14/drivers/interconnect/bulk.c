@@ -1,17 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #include <linux/interconnect-provider.h>
 #include <linux/device.h>
 #include <linux/export.h>
 
-/**
- * of_icc_bulk_get() - get interconnect paths
- * @dev: the device requesting the path
- * @num_paths: the number of icc_bulk_data
- * @paths: the table with the paths we want to get
- *
- * Returns 0 on success or negative errno otherwise.
- */
+ 
 int __must_check of_icc_bulk_get(struct device *dev, int num_paths,
 				 struct icc_bulk_data *paths)
 {
@@ -38,11 +31,7 @@ err:
 }
 EXPORT_SYMBOL_GPL(of_icc_bulk_get);
 
-/**
- * icc_bulk_put() - put a list of interconnect paths
- * @num_paths: the number of icc_bulk_data
- * @paths: the icc_bulk_data table with the paths being put
- */
+ 
 void icc_bulk_put(int num_paths, struct icc_bulk_data *paths)
 {
 	while (--num_paths >= 0) {
@@ -52,13 +41,7 @@ void icc_bulk_put(int num_paths, struct icc_bulk_data *paths)
 }
 EXPORT_SYMBOL_GPL(icc_bulk_put);
 
-/**
- * icc_bulk_set_bw() - set bandwidth to a set of paths
- * @num_paths: the number of icc_bulk_data
- * @paths: the icc_bulk_data table containing the paths and bandwidth
- *
- * Returns 0 on success or negative errno otherwise.
- */
+ 
 int icc_bulk_set_bw(int num_paths, const struct icc_bulk_data *paths)
 {
 	int ret = 0;
@@ -76,13 +59,7 @@ int icc_bulk_set_bw(int num_paths, const struct icc_bulk_data *paths)
 }
 EXPORT_SYMBOL_GPL(icc_bulk_set_bw);
 
-/**
- * icc_bulk_enable() - enable a previously disabled set of paths
- * @num_paths: the number of icc_bulk_data
- * @paths: the icc_bulk_data table containing the paths and bandwidth
- *
- * Returns 0 on success or negative errno otherwise.
- */
+ 
 int icc_bulk_enable(int num_paths, const struct icc_bulk_data *paths)
 {
 	int ret, i;
@@ -104,11 +81,7 @@ err:
 }
 EXPORT_SYMBOL_GPL(icc_bulk_enable);
 
-/**
- * icc_bulk_disable() - disable a set of interconnect paths
- * @num_paths: the number of icc_bulk_data
- * @paths: the icc_bulk_data table containing the paths and bandwidth
- */
+ 
 void icc_bulk_disable(int num_paths, const struct icc_bulk_data *paths)
 {
 	while (--num_paths >= 0)
@@ -128,14 +101,7 @@ static void devm_icc_bulk_release(struct device *dev, void *res)
 	icc_bulk_put(devres->num_paths, devres->paths);
 }
 
-/**
- * devm_of_icc_bulk_get() - resource managed of_icc_bulk_get
- * @dev: the device requesting the path
- * @num_paths: the number of icc_bulk_data
- * @paths: the table with the paths we want to get
- *
- * Returns 0 on success or negative errno otherwise.
- */
+ 
 int devm_of_icc_bulk_get(struct device *dev, int num_paths, struct icc_bulk_data *paths)
 {
 	struct icc_bulk_devres *devres;

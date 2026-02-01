@@ -1,47 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * LTC2952 (PowerPath) driver
- *
- * Copyright (C) 2014, Xsens Technologies BV <info@xsens.com>
- * Maintainer: René Moll <linux@r-moll.nl>
- *
- * ----------------------------------------
- * - Description
- * ----------------------------------------
- *
- * This driver is to be used with an external PowerPath Controller (LTC2952).
- * Its function is to determine when a external shut down is triggered
- * and react by properly shutting down the system.
- *
- * This driver expects a device tree with a ltc2952 entry for pin mapping.
- *
- * ----------------------------------------
- * - GPIO
- * ----------------------------------------
- *
- * The following GPIOs are used:
- * - trigger (input)
- *     A level change indicates the shut-down trigger. If it's state reverts
- *     within the time-out defined by trigger_delay, the shut down is not
- *     executed. If no pin is assigned to this input, the driver will start the
- *     watchdog toggle immediately. The chip will only power off the system if
- *     it is requested to do so through the kill line.
- *
- * - watchdog (output)
- *     Once a shut down is triggered, the driver will toggle this signal,
- *     with an internal (wde_interval) to stall the hardware shut down.
- *
- * - kill (output)
- *     The last action during shut down is triggering this signalling, such
- *     that the PowerPath Control will power down the hardware.
- *
- * ----------------------------------------
- * - Interrupts
- * ----------------------------------------
- *
- * The driver requires a non-shared, edge-triggered interrupt on the trigger
- * GPIO.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/init.h>
@@ -77,21 +35,10 @@ struct ltc2952_poweroff {
 
 #define to_ltc2952(p, m) container_of(p, struct ltc2952_poweroff, m)
 
-/*
- * This global variable is only needed for pm_power_off. We should
- * remove it entirely once we don't need the global state anymore.
- */
+ 
 static struct ltc2952_poweroff *ltc2952_data;
 
-/**
- * ltc2952_poweroff_timer_wde - Timer callback
- * Toggles the watchdog reset signal each wde_interval
- *
- * @timer: corresponding timer
- *
- * Returns HRTIMER_RESTART for an infinite loop which will only stop when the
- * machine actually shuts down
- */
+ 
 static enum hrtimer_restart ltc2952_poweroff_timer_wde(struct hrtimer *timer)
 {
 	int state;
@@ -125,21 +72,13 @@ ltc2952_poweroff_timer_trigger(struct hrtimer *timer)
 	return HRTIMER_NORESTART;
 }
 
-/**
- * ltc2952_poweroff_handler - Interrupt handler
- * Triggered each time the trigger signal changes state and (de)activates a
- * time-out (timer_trigger). Once the time-out is actually reached the shut
- * down is executed.
- *
- * @irq: IRQ number
- * @dev_id: pointer to the main data structure
- */
+ 
 static irqreturn_t ltc2952_poweroff_handler(int irq, void *dev_id)
 {
 	struct ltc2952_poweroff *data = dev_id;
 
 	if (data->kernel_panic || hrtimer_active(&data->timer_wde)) {
-		/* shutdown is already triggered, nothing to do any more */
+		 
 		return IRQ_HANDLED;
 	}
 
@@ -201,11 +140,7 @@ static int ltc2952_poweroff_init(struct platform_device *pdev)
 	data->gpio_trigger = devm_gpiod_get_optional(&pdev->dev, "trigger",
 						     GPIOD_IN);
 	if (IS_ERR(data->gpio_trigger)) {
-		/*
-		 * It's not a problem if the trigger gpio isn't available, but
-		 * it is worth a warning if its use was defined in the device
-		 * tree.
-		 */
+		 
 		dev_err(&pdev->dev, "unable to claim gpio \"trigger\"\n");
 		data->gpio_trigger = NULL;
 	}
@@ -215,21 +150,7 @@ static int ltc2952_poweroff_init(struct platform_device *pdev)
 			     (IRQF_TRIGGER_FALLING | IRQF_TRIGGER_RISING),
 			     "ltc2952-poweroff",
 			     data)) {
-		/*
-		 * Some things may have happened:
-		 * - No trigger input was defined
-		 * - Claiming the GPIO failed
-		 * - We could not map to an IRQ
-		 * - We couldn't register an interrupt handler
-		 *
-		 * None of these really are problems, but all of them
-		 * disqualify the push button from controlling the power.
-		 *
-		 * It is therefore important to note that if the ltc2952
-		 * detects a button press for long enough, it will still start
-		 * its own powerdown window and cut the power on us if we don't
-		 * start the watchdog trigger.
-		 */
+		 
 		if (data->gpio_trigger) {
 			dev_warn(&pdev->dev,
 				 "unable to configure the trigger interrupt\n");
@@ -274,7 +195,7 @@ static int ltc2952_poweroff_probe(struct platform_device *pdev)
 	if (ret)
 		return ret;
 
-	/* TODO: remove ltc2952_data */
+	 
 	ltc2952_data = data;
 	pm_power_off = ltc2952_poweroff_kill;
 

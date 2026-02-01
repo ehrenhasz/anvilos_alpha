@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
-/* QLogic qed NIC Driver
- * Copyright (c) 2015-2017  QLogic Corporation
- * Copyright (c) 2019-2020 Marvell International Ltd.
- */
+
+ 
 
 #include <linux/types.h>
 #include <asm/byteorder.h>
@@ -111,7 +108,7 @@ static bool qed_bmap_is_empty(struct qed_bmap *bmap)
 
 static u32 qed_rdma_get_sb_id(void *p_hwfn, u32 rel_sb_id)
 {
-	/* First sb id for RoCE is after all the l2 sb */
+	 
 	return FEAT_NUM((struct qed_hwfn *)p_hwfn, QED_PF_L2_QUE) + rel_sb_id;
 }
 
@@ -154,30 +151,28 @@ static int qed_rdma_alloc(struct qed_hwfn *p_hwfn)
 	if (QED_IS_IWARP_PERSONALITY(p_hwfn))
 		p_rdma_info->num_qps = num_cons;
 	else
-		p_rdma_info->num_qps = num_cons / 2; /* 2 cids per qp */
+		p_rdma_info->num_qps = num_cons / 2;  
 
 	num_tasks = qed_cxt_get_proto_tid_count(p_hwfn, PROTOCOLID_ROCE);
 
-	/* Each MR uses a single task */
+	 
 	p_rdma_info->num_mrs = num_tasks;
 
-	/* Queue zone lines are shared between RoCE and L2 in such a way that
-	 * they can be used by each without obstructing the other.
-	 */
+	 
 	p_rdma_info->queue_zone_base = (u16)RESC_START(p_hwfn, QED_L2_QUEUE);
 	p_rdma_info->max_queue_zones = (u16)RESC_NUM(p_hwfn, QED_L2_QUEUE);
 
-	/* Allocate a struct with device params and fill it */
+	 
 	p_rdma_info->dev = kzalloc(sizeof(*p_rdma_info->dev), GFP_KERNEL);
 	if (!p_rdma_info->dev)
 		return rc;
 
-	/* Allocate a struct with port params and fill it */
+	 
 	p_rdma_info->port = kzalloc(sizeof(*p_rdma_info->port), GFP_KERNEL);
 	if (!p_rdma_info->port)
 		goto free_rdma_dev;
 
-	/* Allocate bit map for pd's */
+	 
 	rc = qed_rdma_bmap_alloc(p_hwfn, &p_rdma_info->pd_map, RDMA_MAX_PDS,
 				 "PD");
 	if (rc) {
@@ -187,7 +182,7 @@ static int qed_rdma_alloc(struct qed_hwfn *p_hwfn)
 		goto free_rdma_port;
 	}
 
-	/* Allocate bit map for XRC Domains */
+	 
 	rc = qed_rdma_bmap_alloc(p_hwfn, &p_rdma_info->xrcd_map,
 				 QED_RDMA_MAX_XRCDS, "XRCD");
 	if (rc) {
@@ -196,7 +191,7 @@ static int qed_rdma_alloc(struct qed_hwfn *p_hwfn)
 		goto free_pd_map;
 	}
 
-	/* Allocate DPI bitmap */
+	 
 	rc = qed_rdma_bmap_alloc(p_hwfn, &p_rdma_info->dpi_map,
 				 p_hwfn->dpi_count, "DPI");
 	if (rc) {
@@ -205,10 +200,7 @@ static int qed_rdma_alloc(struct qed_hwfn *p_hwfn)
 		goto free_xrcd_map;
 	}
 
-	/* Allocate bitmap for cq's. The maximum number of CQs is bound to
-	 * the number of connections we support. (num_qps in iWARP or
-	 * num_qps/2 in RoCE).
-	 */
+	 
 	rc = qed_rdma_bmap_alloc(p_hwfn, &p_rdma_info->cq_map, num_cons, "CQ");
 	if (rc) {
 		DP_VERBOSE(p_hwfn, QED_MSG_RDMA,
@@ -216,10 +208,7 @@ static int qed_rdma_alloc(struct qed_hwfn *p_hwfn)
 		goto free_dpi_map;
 	}
 
-	/* Allocate bitmap for toggle bit for cq icids
-	 * We toggle the bit every time we create or resize cq for a given icid.
-	 * Size needs to equal the size of the cq bmap.
-	 */
+	 
 	rc = qed_rdma_bmap_alloc(p_hwfn, &p_rdma_info->toggle_bits,
 				 num_cons, "Toggle");
 	if (rc) {
@@ -228,7 +217,7 @@ static int qed_rdma_alloc(struct qed_hwfn *p_hwfn)
 		goto free_cq_map;
 	}
 
-	/* Allocate bitmap for itids */
+	 
 	rc = qed_rdma_bmap_alloc(p_hwfn, &p_rdma_info->tid_map,
 				 p_rdma_info->num_mrs, "MR");
 	if (rc) {
@@ -237,7 +226,7 @@ static int qed_rdma_alloc(struct qed_hwfn *p_hwfn)
 		goto free_toggle_map;
 	}
 
-	/* Allocate bitmap for cids used for qps. */
+	 
 	rc = qed_rdma_bmap_alloc(p_hwfn, &p_rdma_info->cid_map, num_cons,
 				 "CID");
 	if (rc) {
@@ -246,7 +235,7 @@ static int qed_rdma_alloc(struct qed_hwfn *p_hwfn)
 		goto free_tid_map;
 	}
 
-	/* Allocate bitmap for cids used for responders/requesters. */
+	 
 	rc = qed_rdma_bmap_alloc(p_hwfn, &p_rdma_info->real_cid_map, num_cons,
 				 "REAL_CID");
 	if (rc) {
@@ -255,9 +244,7 @@ static int qed_rdma_alloc(struct qed_hwfn *p_hwfn)
 		goto free_cid_map;
 	}
 
-	/* The first SRQ follows the last XRC SRQ. This means that the
-	 * SRQ IDs start from an offset equals to max_xrc_srqs.
-	 */
+	 
 	p_rdma_info->srq_id_offset = p_hwfn->p_cxt_mngr->xrc_srq_count;
 	rc = qed_rdma_bmap_alloc(p_hwfn,
 				 &p_rdma_info->xrc_srq_map,
@@ -268,7 +255,7 @@ static int qed_rdma_alloc(struct qed_hwfn *p_hwfn)
 		goto free_real_cid_map;
 	}
 
-	/* Allocate bitmap for srqs */
+	 
 	p_rdma_info->num_srqs = p_hwfn->p_cxt_mngr->srq_count;
 	rc = qed_rdma_bmap_alloc(p_hwfn, &p_rdma_info->srq_map,
 				 p_rdma_info->num_srqs, "SRQ");
@@ -413,7 +400,7 @@ static void qed_rdma_init_devinfo(struct qed_hwfn *p_hwfn,
 	u32 pci_status_control;
 	u32 num_qps;
 
-	/* Vendor specific information */
+	 
 	dev->vendor_id = cdev->vendor_id;
 	dev->vendor_part_id = cdev->device_id;
 	dev->hw_ver = cdev->chip_rev;
@@ -446,29 +433,19 @@ static void qed_rdma_init_devinfo(struct qed_hwfn *p_hwfn,
 	dev->max_wqe = QED_RDMA_MAX_WQE;
 	dev->max_cnq = (u8)FEAT_NUM(p_hwfn, QED_RDMA_CNQ);
 
-	/* The number of QPs may be higher than QED_ROCE_MAX_QPS, because
-	 * it is up-aligned to 16 and then to ILT page size within qed cxt.
-	 * This is OK in terms of ILT but we don't want to configure the FW
-	 * above its abilities
-	 */
+	 
 	num_qps = ROCE_MAX_QPS;
 	num_qps = min_t(u64, num_qps, p_hwfn->p_rdma_info->num_qps);
 	dev->max_qp = num_qps;
 
-	/* CQs uses the same icids that QPs use hence they are limited by the
-	 * number of icids. There are two icids per QP.
-	 */
+	 
 	dev->max_cq = num_qps * 2;
 
-	/* The number of mrs is smaller by 1 since the first is reserved */
+	 
 	dev->max_mr = p_hwfn->p_rdma_info->num_mrs - 1;
 	dev->max_mr_size = QED_RDMA_MAX_MR_SIZE;
 
-	/* The maximum CQE capacity per CQ supported.
-	 * max number of cqes will be in two layer pbl,
-	 * 8 is the pointer size in bytes
-	 * 32 is the size of cq element in bytes
-	 */
+	 
 	if (params->cq_mode == QED_RDMA_CQ_MODE_32_BITS)
 		dev->max_cqe = QED_RDMA_MAX_CQE_32_BIT;
 	else
@@ -494,7 +471,7 @@ static void qed_rdma_init_devinfo(struct qed_hwfn *p_hwfn,
 	dev->max_ah = p_hwfn->p_rdma_info->num_qps;
 	dev->max_stats_queues = (u8)RESC_NUM(p_hwfn, QED_RDMA_STATS_QUEUE);
 
-	/* Set capablities */
+	 
 	dev->dev_caps = 0;
 	SET_FIELD(dev->dev_caps, QED_RDMA_DEV_CAP_RNR_NAK, 1);
 	SET_FIELD(dev->dev_caps, QED_RDMA_DEV_CAP_PORT_ACTIVE_EVENT, 1);
@@ -505,7 +482,7 @@ static void qed_rdma_init_devinfo(struct qed_hwfn *p_hwfn,
 	SET_FIELD(dev->dev_caps, QED_RDMA_DEV_CAP_ZBVA, 1);
 	SET_FIELD(dev->dev_caps, QED_RDMA_DEV_CAP_LOCAL_INV_FENCE, 1);
 
-	/* Check atomic operations support in PCI configuration space. */
+	 
 	pcie_capability_read_dword(cdev->pdev, PCI_EXP_DEVCTL2,
 				   &pci_status_control);
 
@@ -563,10 +540,10 @@ static int qed_rdma_start_fw(struct qed_hwfn *p_hwfn,
 
 	DP_VERBOSE(p_hwfn, QED_MSG_RDMA, "Starting FW\n");
 
-	/* Save the number of cnqs for the function close ramrod */
+	 
 	p_hwfn->p_rdma_info->num_cnqs = params->desired_cnq;
 
-	/* Get SPQ entry */
+	 
 	memset(&init_data, 0, sizeof(init_data));
 	init_data.opaque_fid = p_hwfn->hw_info.opaque_fid;
 	init_data.comp_mode = QED_SPQ_MODE_EBLOCK;
@@ -610,7 +587,7 @@ static int qed_rdma_start_fw(struct qed_hwfn *p_hwfn,
 		DMA_REGPAIR_LE(p_cnq_params->pbl_base_addr,
 			       p_cnq_pbl_list->pbl_ptr);
 
-		/* we assume here that cnq_id and qz_offset are the same */
+		 
 		p_cnq_params->queue_zone_num =
 			cpu_to_le16(p_hwfn->p_rdma_info->queue_zone_base +
 				    cnq_id);
@@ -643,10 +620,7 @@ static int qed_rdma_reserve_lkey(struct qed_hwfn *p_hwfn)
 {
 	struct qed_rdma_device *dev = p_hwfn->p_rdma_info->dev;
 
-	/* Tid 0 will be used as the key for "reserved MR".
-	 * The driver should allocate memory for it so it can be loaded but no
-	 * ramrod should be passed on it.
-	 */
+	 
 	qed_rdma_alloc_tid(p_hwfn, &dev->reserved_lkey);
 	if (dev->reserved_lkey != RDMA_RESERVED_LKEY) {
 		DP_NOTICE(p_hwfn,
@@ -708,7 +682,7 @@ static int qed_rdma_stop(void *rdma_cxt)
 		return rc;
 	}
 
-	/* Disable RoCE search */
+	 
 	qed_wr(p_hwfn, p_ptt, p_hwfn->rdma_prs_search_reg, 0);
 	p_hwfn->b_rdma_enabled_in_prs = false;
 	p_hwfn->p_rdma_info->active = 0;
@@ -731,12 +705,12 @@ static int qed_rdma_stop(void *rdma_cxt)
 
 	qed_ptt_release(p_hwfn, p_ptt);
 
-	/* Get SPQ entry */
+	 
 	memset(&init_data, 0, sizeof(init_data));
 	init_data.opaque_fid = p_hwfn->hw_info.opaque_fid;
 	init_data.comp_mode = QED_SPQ_MODE_EBLOCK;
 
-	/* Stop RoCE */
+	 
 	rc = qed_sp_init_request(p_hwfn, &p_ent, RDMA_RAMROD_FUNC_CLOSE,
 				 p_hwfn->p_rdma_info->proto, &init_data);
 	if (rc)
@@ -766,7 +740,7 @@ static int qed_rdma_add_user(void *rdma_cxt,
 
 	DP_VERBOSE(p_hwfn, QED_MSG_RDMA, "Adding User\n");
 
-	/* Allocate DPI */
+	 
 	spin_lock_bh(&p_hwfn->p_rdma_info->lock);
 	rc = qed_rdma_bmap_alloc_id(p_hwfn, &p_hwfn->p_rdma_info->dpi_map,
 				    &returned_id);
@@ -774,7 +748,7 @@ static int qed_rdma_add_user(void *rdma_cxt,
 
 	out_params->dpi = (u16)returned_id;
 
-	/* Calculate the corresponding DPI address */
+	 
 	dpi_start_offset = p_hwfn->dpi_start_offset;
 
 	out_params->dpi_addr = p_hwfn->doorbells + dpi_start_offset +
@@ -799,7 +773,7 @@ static struct qed_rdma_port *qed_rdma_query_port(void *rdma_cxt)
 
 	DP_VERBOSE(p_hwfn, QED_MSG_RDMA, "RDMA Query port\n");
 
-	/* The link state is saved only for the leading hwfn */
+	 
 	p_link_output = &QED_LEADING_HWFN(p_hwfn->cdev)->mcp_info->link_output;
 
 	p_port->port_state = p_link_output->link_up ? QED_RDMA_PORT_UP
@@ -818,7 +792,7 @@ static struct qed_rdma_device *qed_rdma_query_device(void *rdma_cxt)
 
 	DP_VERBOSE(p_hwfn, QED_MSG_RDMA, "Query device\n");
 
-	/* Return struct with device parameters */
+	 
 	return p_hwfn->p_rdma_info->dev;
 }
 
@@ -843,7 +817,7 @@ static void qed_rdma_cnq_prod_update(void *rdma_cxt, u8 qz_offset, u16 prod)
 
 	REG_WR16(p_hwfn, addr, prod);
 
-	/* keep prod updates ordered */
+	 
 	wmb();
 }
 
@@ -889,7 +863,7 @@ static int qed_rdma_set_int(struct qed_dev *cdev, u16 cnt)
 {
 	int limit = 0;
 
-	/* Mark the fastpath as free/used */
+	 
 	cdev->int_params.fp_initialized = cnt ? true : false;
 
 	if (cdev->int_params.out.int_mode != QED_INT_MODE_MSIX) {
@@ -938,7 +912,7 @@ static int qed_rdma_alloc_pd(void *rdma_cxt, u16 *pd)
 
 	DP_VERBOSE(p_hwfn, QED_MSG_RDMA, "Alloc PD\n");
 
-	/* Allocates an unused protection domain */
+	 
 	spin_lock_bh(&p_hwfn->p_rdma_info->lock);
 	rc = qed_rdma_bmap_alloc_id(p_hwfn,
 				    &p_hwfn->p_rdma_info->pd_map, &returned_id);
@@ -956,7 +930,7 @@ static void qed_rdma_free_pd(void *rdma_cxt, u16 pd)
 
 	DP_VERBOSE(p_hwfn, QED_MSG_RDMA, "pd = %08x\n", pd);
 
-	/* Returns a previously allocated protection domain for reuse */
+	 
 	spin_lock_bh(&p_hwfn->p_rdma_info->lock);
 	qed_bmap_release_id(p_hwfn, &p_hwfn->p_rdma_info->pd_map, pd);
 	spin_unlock_bh(&p_hwfn->p_rdma_info->lock);
@@ -1006,9 +980,7 @@ qed_rdma_toggle_bit_create_resize_cq(struct qed_hwfn *p_hwfn, u16 icid)
 
 	DP_VERBOSE(p_hwfn, QED_MSG_RDMA, "icid = %08x\n", icid);
 
-	/* the function toggle the bit that is related to a given icid
-	 * and returns the new toggle bit's value
-	 */
+	 
 	bmap_id = icid - qed_cxt_get_proto_cid_start(p_hwfn, p_info->proto);
 
 	spin_lock_bh(&p_info->lock);
@@ -1038,7 +1010,7 @@ static int qed_rdma_create_cq(void *rdma_cxt,
 	DP_VERBOSE(p_hwfn, QED_MSG_RDMA, "cq_handle = %08x%08x\n",
 		   params->cq_handle_hi, params->cq_handle_lo);
 
-	/* Allocate icid */
+	 
 	spin_lock_bh(&p_info->lock);
 	rc = qed_rdma_bmap_alloc_id(p_hwfn, &p_info->cq_map, &returned_id);
 	spin_unlock_bh(&p_info->lock);
@@ -1052,18 +1024,18 @@ static int qed_rdma_create_cq(void *rdma_cxt,
 						p_info->proto);
 	*icid = returned_id + start_cid;
 
-	/* Check if icid requires a page allocation */
+	 
 	rc = qed_cxt_dynamic_ilt_alloc(p_hwfn, QED_ELEM_CXT, *icid);
 	if (rc)
 		goto err;
 
-	/* Get SPQ entry */
+	 
 	memset(&init_data, 0, sizeof(init_data));
 	init_data.cid = *icid;
 	init_data.opaque_fid = p_hwfn->hw_info.opaque_fid;
 	init_data.comp_mode = QED_SPQ_MODE_EBLOCK;
 
-	/* Send create CQ ramrod */
+	 
 	rc = qed_sp_init_request(p_hwfn, &p_ent,
 				 RDMA_RAMROD_CREATE_CQ,
 				 p_info->proto, &init_data);
@@ -1083,14 +1055,14 @@ static int qed_rdma_create_cq(void *rdma_cxt,
 			   params->cnq_id;
 	p_ramrod->int_timeout = cpu_to_le16(params->int_timeout);
 
-	/* toggle the bit for every resize or create cq for a given icid */
+	 
 	toggle_bit = qed_rdma_toggle_bit_create_resize_cq(p_hwfn, *icid);
 
 	p_ramrod->toggle_bit = toggle_bit;
 
 	rc = qed_spq_post(p_hwfn, p_ent, NULL);
 	if (rc) {
-		/* restore toggle bit */
+		 
 		qed_rdma_toggle_bit_create_resize_cq(p_hwfn, *icid);
 		goto err;
 	}
@@ -1099,7 +1071,7 @@ static int qed_rdma_create_cq(void *rdma_cxt,
 	return rc;
 
 err:
-	/* release allocated icid */
+	 
 	spin_lock_bh(&p_info->lock);
 	qed_bmap_release_id(p_hwfn, &p_info->cq_map, returned_id);
 	spin_unlock_bh(&p_info->lock);
@@ -1134,13 +1106,13 @@ qed_rdma_destroy_cq(void *rdma_cxt,
 		return rc;
 	}
 
-	/* Get SPQ entry */
+	 
 	memset(&init_data, 0, sizeof(init_data));
 	init_data.cid = in_params->icid;
 	init_data.opaque_fid = p_hwfn->hw_info.opaque_fid;
 	init_data.comp_mode = QED_SPQ_MODE_EBLOCK;
 	proto = p_hwfn->p_rdma_info->proto;
-	/* Send destroy CQ ramrod */
+	 
 	rc = qed_sp_init_request(p_hwfn, &p_ent,
 				 RDMA_RAMROD_DESTROY_CQ,
 				 proto, &init_data);
@@ -1160,7 +1132,7 @@ qed_rdma_destroy_cq(void *rdma_cxt,
 			  sizeof(struct rdma_destroy_cq_output_params),
 			  p_ramrod_res, ramrod_res_phys);
 
-	/* Free icid */
+	 
 	spin_lock_bh(&p_hwfn->p_rdma_info->lock);
 
 	qed_bmap_release_id(p_hwfn,
@@ -1196,9 +1168,7 @@ static int qed_rdma_query_qp(void *rdma_cxt,
 
 	DP_VERBOSE(p_hwfn, QED_MSG_RDMA, "icid = %08x\n", qp->icid);
 
-	/* The following fields are filled in from qp and not FW as they can't
-	 * be modified by FW
-	 */
+	 
 	out_params->mtu = qp->mtu;
 	out_params->dest_qp = qp->dest_qp;
 	out_params->incoming_atomic_en = qp->incoming_atomic_en;
@@ -1239,7 +1209,7 @@ static int qed_rdma_destroy_qp(void *rdma_cxt, struct qed_rdma_qp *qp)
 	else
 		rc = qed_roce_destroy_qp(p_hwfn, qp);
 
-	/* free qp params struct */
+	 
 	kfree(qp);
 
 	DP_VERBOSE(p_hwfn, QED_MSG_RDMA, "QP destroyed\n");
@@ -1267,7 +1237,7 @@ qed_rdma_create_qp(void *rdma_cxt,
 		   "qed rdma create qp called with qp_handle = %08x%08x\n",
 		   in_params->qp_handle_hi, in_params->qp_handle_lo);
 
-	/* Some sanity checks... */
+	 
 	max_stats_queues = p_hwfn->p_rdma_info->dev->max_stats_queues;
 	if (in_params->stats_queue >= max_stats_queues) {
 		DP_ERR(p_hwfn->cdev,
@@ -1365,7 +1335,7 @@ static int qed_rdma_modify_qp(void *rdma_cxt,
 		qp->incoming_atomic_en = params->incoming_atomic_en;
 	}
 
-	/* Update QP structure with the updated values */
+	 
 	if (GET_FIELD(params->modify_flags, QED_ROCE_MODIFY_QP_VALID_ROCE_MODE))
 		qp->roce_mode = params->roce_mode;
 	if (GET_FIELD(params->modify_flags, QED_ROCE_MODIFY_QP_VALID_PKEY))
@@ -1377,10 +1347,7 @@ static int qed_rdma_modify_qp(void *rdma_cxt,
 		qp->dest_qp = params->dest_qp;
 	if (GET_FIELD(params->modify_flags,
 		      QED_ROCE_MODIFY_QP_VALID_ADDRESS_VECTOR)) {
-		/* Indicates that the following parameters have changed:
-		 * Traffic class, flow label, hop limit, source GID,
-		 * destination GID, loopback indicator
-		 */
+		 
 		qp->traffic_class_tos = params->traffic_class_tos;
 		qp->flow_label = params->flow_label;
 		qp->hop_limit_ttl = params->hop_limit_ttl;
@@ -1473,7 +1440,7 @@ qed_rdma_register_tid(void *rdma_cxt,
 
 	DP_VERBOSE(p_hwfn, QED_MSG_RDMA, "itid = %08x\n", params->itid);
 
-	/* Get SPQ entry */
+	 
 	memset(&init_data, 0, sizeof(init_data));
 	init_data.opaque_fid = p_hwfn->hw_info.opaque_fid;
 	init_data.comp_mode = QED_SPQ_MODE_EBLOCK;
@@ -1496,7 +1463,7 @@ qed_rdma_register_tid(void *rdma_cxt,
 
 	SET_FIELD(flags, RDMA_REGISTER_TID_RAMROD_DATA_PHY_MR, params->phy_mr);
 
-	/* Don't initialize D/C field, as it may override other bits. */
+	 
 	if (!(params->tid_type == QED_RDMA_TID_FMR) && !(params->dma_mr))
 		SET_FIELD(flags, RDMA_REGISTER_TID_RAMROD_DATA_PAGE_SIZE_LOG,
 			  params->page_size_log - 12);
@@ -1557,7 +1524,7 @@ qed_rdma_register_tid(void *rdma_cxt,
 	DMA_REGPAIR_LE(p_ramrod->va, params->vaddr);
 	DMA_REGPAIR_LE(p_ramrod->pbl_base, params->pbl_ptr);
 
-	/* DIF */
+	 
 	if (params->dif_enabled) {
 		SET_FIELD(p_ramrod->flags2,
 			  RDMA_REGISTER_TID_RAMROD_DATA_DIF_ON_HOST_FLG, 1);
@@ -1590,7 +1557,7 @@ static int qed_rdma_deregister_tid(void *rdma_cxt, u32 itid)
 
 	DP_VERBOSE(p_hwfn, QED_MSG_RDMA, "itid = %08x\n", itid);
 
-	/* Get SPQ entry */
+	 
 	memset(&init_data, 0, sizeof(init_data));
 	init_data.opaque_fid = p_hwfn->hw_info.opaque_fid;
 	init_data.comp_mode = QED_SPQ_MODE_EBLOCK;
@@ -1615,9 +1582,7 @@ static int qed_rdma_deregister_tid(void *rdma_cxt, u32 itid)
 		DP_NOTICE(p_hwfn, "fw_return_code = %d\n", fw_return_code);
 		return -EINVAL;
 	} else if (fw_return_code == RDMA_RETURN_NIG_DRAIN_REQ) {
-		/* Bit indicating that the TID is in use and a nig drain is
-		 * required before sending the ramrod again
-		 */
+		 
 		p_ptt = qed_ptt_acquire(p_hwfn);
 		if (!p_ptt) {
 			rc = -EBUSY;
@@ -1636,7 +1601,7 @@ static int qed_rdma_deregister_tid(void *rdma_cxt, u32 itid)
 
 		qed_ptt_release(p_hwfn, p_ptt);
 
-		/* Resend the ramrod */
+		 
 		rc = qed_sp_init_request(p_hwfn, &p_ent,
 					 RDMA_RAMROD_DEREGISTER_MR,
 					 p_hwfn->p_rdma_info->proto,
@@ -1851,7 +1816,7 @@ bool qed_rdma_allocated_qps(struct qed_hwfn *p_hwfn)
 {
 	bool result;
 
-	/* if rdma wasn't activated yet, naturally there are no qps */
+	 
 	if (!p_hwfn->p_rdma_info->active)
 		return false;
 
@@ -1960,7 +1925,7 @@ static int qed_iwarp_set_engine_affin(struct qed_dev *cdev, bool b_reset)
 	u8 ppfid = 0;
 	int rc;
 
-	/* Make sure iwarp cmt mode is enabled before setting affinity */
+	 
 	if (!cdev->iwarp_cmt)
 		return -EINVAL;
 

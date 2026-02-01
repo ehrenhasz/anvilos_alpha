@@ -1,70 +1,7 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
-/*
- * Copyright (c) 2007, 2010, Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2011, 2015 by Delphix. All rights reserved.
- */
+ 
+ 
 
-/*
- * DSL permissions are stored in a two level zap attribute
- * mechanism.   The first level identifies the "class" of
- * entry.  The class is identified by the first 2 letters of
- * the attribute.  The second letter "l" or "d" identifies whether
- * it is a local or descendent permission.  The first letter
- * identifies the type of entry.
- *
- * ul$<id>    identifies permissions granted locally for this userid.
- * ud$<id>    identifies permissions granted on descendent datasets for
- *            this userid.
- * Ul$<id>    identifies permission sets granted locally for this userid.
- * Ud$<id>    identifies permission sets granted on descendent datasets for
- *            this userid.
- * gl$<id>    identifies permissions granted locally for this groupid.
- * gd$<id>    identifies permissions granted on descendent datasets for
- *            this groupid.
- * Gl$<id>    identifies permission sets granted locally for this groupid.
- * Gd$<id>    identifies permission sets granted on descendent datasets for
- *            this groupid.
- * el$        identifies permissions granted locally for everyone.
- * ed$        identifies permissions granted on descendent datasets
- *            for everyone.
- * El$        identifies permission sets granted locally for everyone.
- * Ed$        identifies permission sets granted to descendent datasets for
- *            everyone.
- * c-$        identifies permission to create at dataset creation time.
- * C-$        identifies permission sets to grant locally at dataset creation
- *            time.
- * s-$@<name> permissions defined in specified set @<name>
- * S-$@<name> Sets defined in named set @<name>
- *
- * Each of the above entities points to another zap attribute that contains one
- * attribute for each allowed permission, such as create, destroy,...
- * All of the "upper" case class types will specify permission set names
- * rather than permissions.
- *
- * Basically it looks something like this:
- * ul$12 -> ZAP OBJ -> permissions...
- *
- * The ZAP OBJ is referred to as the jump object.
- */
+ 
 
 #include <sys/dmu.h>
 #include <sys/dmu_objset.h>
@@ -82,12 +19,7 @@
 
 #include "zfs_deleg.h"
 
-/*
- * Validate that user is allowed to delegate specified permissions.
- *
- * In order to delegate "create" you must have "create"
- * and "allow".
- */
+ 
 int
 dsl_deleg_can_allow(char *ddname, nvlist_t *nvp, cred_t *cr)
 {
@@ -116,11 +48,7 @@ dsl_deleg_can_allow(char *ddname, nvlist_t *nvp, cred_t *cr)
 	return (0);
 }
 
-/*
- * Validate that user is allowed to unallow specified permissions.  They
- * must have the 'allow' permission, and even then can only unallow
- * perms for their uid.
- */
+ 
 int
 dsl_deleg_can_unallow(char *ddname, nvlist_t *nvp, cred_t *cr)
 {
@@ -275,7 +203,7 @@ dsl_deleg_set(const char *ddname, nvlist_t *nvp, boolean_t unset)
 {
 	dsl_deleg_arg_t dda;
 
-	/* nvp must already have been verified to be valid */
+	 
 
 	dda.dda_name = ddname;
 	dda.dda_nvlist = nvp;
@@ -285,23 +213,7 @@ dsl_deleg_set(const char *ddname, nvlist_t *nvp, boolean_t unset)
 	    &dda, fnvlist_num_pairs(nvp), ZFS_SPACE_CHECK_RESERVED));
 }
 
-/*
- * Find all 'allow' permissions from a given point and then continue
- * traversing up to the root.
- *
- * This function constructs an nvlist of nvlists.
- * each setpoint is an nvlist composed of an nvlist of an nvlist
- * of the individual * users/groups/everyone/create
- * permissions.
- *
- * The nvlist will look like this.
- *
- * { source fsname -> { whokeys { permissions,...}, ...}}
- *
- * The fsname nvpairs will be arranged in a bottom up order.  For example,
- * if we have the following structure a/b/c then the nvpairs for the fsnames
- * will be ordered a/b/c, a/b, a.
- */
+ 
 int
 dsl_deleg_get(const char *ddname, nvlist_t **nvp)
 {
@@ -381,9 +293,7 @@ dsl_deleg_get(const char *ddname, nvlist_t **nvp)
 	return (0);
 }
 
-/*
- * Routines for dsl_deleg_access() -- access checking.
- */
+ 
 typedef struct perm_set {
 	avl_node_t	p_node;
 	boolean_t	p_matched;
@@ -402,16 +312,7 @@ perm_set_compare(const void *arg1, const void *arg2)
 	return (TREE_ISIGN(val));
 }
 
-/*
- * Determine whether a specified permission exists.
- *
- * First the base attribute has to be retrieved.  i.e. ul$12
- * Once the base object has been retrieved the actual permission
- * is lookup up in the zap object the base object points to.
- *
- * Return 0 if permission exists, ENOENT if there is no whokey, EPERM if
- * there is no perm in that jumpobj.
- */
+ 
 static int
 dsl_check_access(objset_t *mos, uint64_t zapobj,
     char type, char checkflag, void *valp, const char *perm)
@@ -430,9 +331,7 @@ dsl_check_access(objset_t *mos, uint64_t zapobj,
 	return (error);
 }
 
-/*
- * check a specified user/group for a requested permission
- */
+ 
 static int
 dsl_check_user_access(objset_t *mos, uint64_t zapobj, const char *perm,
     int checkflag, cred_t *cr)
@@ -442,25 +341,25 @@ dsl_check_user_access(objset_t *mos, uint64_t zapobj, const char *perm,
 	int	i;
 	uint64_t id;
 
-	/* check for user */
+	 
 	id = crgetuid(cr);
 	if (dsl_check_access(mos, zapobj,
 	    ZFS_DELEG_USER, checkflag, &id, perm) == 0)
 		return (0);
 
-	/* check for users primary group */
+	 
 	id = crgetgid(cr);
 	if (dsl_check_access(mos, zapobj,
 	    ZFS_DELEG_GROUP, checkflag, &id, perm) == 0)
 		return (0);
 
-	/* check for everyone entry */
+	 
 	id = -1;
 	if (dsl_check_access(mos, zapobj,
 	    ZFS_DELEG_EVERYONE, checkflag, &id, perm) == 0)
 		return (0);
 
-	/* check each supplemental group user is a member of */
+	 
 	ngids = crgetngroups(cr);
 	gids = crgetgroups(cr);
 	for (i = 0; i != ngids; i++) {
@@ -473,10 +372,7 @@ dsl_check_user_access(objset_t *mos, uint64_t zapobj, const char *perm,
 	return (SET_ERROR(EPERM));
 }
 
-/*
- * Iterate over the sets specified in the specified zapobj
- * and load them into the permsets avl tree.
- */
+ 
 static int
 dsl_load_sets(objset_t *mos, uint64_t zapobj,
     char type, char checkflag, void *valp, avl_tree_t *avl)
@@ -513,9 +409,7 @@ dsl_load_sets(objset_t *mos, uint64_t zapobj,
 	return (0);
 }
 
-/*
- * Load all permissions user based on cred belongs to.
- */
+ 
 static void
 dsl_load_user_sets(objset_t *mos, uint64_t zapobj, avl_tree_t *avl,
     char checkflag, cred_t *cr)
@@ -544,9 +438,7 @@ dsl_load_user_sets(objset_t *mos, uint64_t zapobj, avl_tree_t *avl,
 	}
 }
 
-/*
- * Check if user has requested permission.
- */
+ 
 int
 dsl_deleg_access_impl(dsl_dataset_t *ds, const char *perm, cred_t *cr)
 {
@@ -570,10 +462,7 @@ dsl_deleg_access_impl(dsl_dataset_t *ds, const char *perm, cred_t *cr)
 		return (SET_ERROR(EPERM));
 
 	if (ds->ds_is_snapshot) {
-		/*
-		 * Snapshots are treated as descendents only,
-		 * local permissions do not apply.
-		 */
+		 
 		checkflag = ZFS_DELEG_DESCENDENT;
 	} else {
 		checkflag = ZFS_DELEG_LOCAL;
@@ -588,10 +477,7 @@ dsl_deleg_access_impl(dsl_dataset_t *ds, const char *perm, cred_t *cr)
 		uint64_t zapobj;
 		boolean_t expanded;
 
-		/*
-		 * If not in global zone then make sure
-		 * the zoned property is set
-		 */
+		 
 		if (!INGLOBALZONE(curproc)) {
 			uint64_t zoned;
 
@@ -615,7 +501,7 @@ again:
 			if (setnode->p_matched == B_TRUE)
 				continue;
 
-			/* See if this set directly grants this permission */
+			 
 			error = dsl_check_access(mos, zapobj,
 			    ZFS_DELEG_NAMED_SET, 0, setnode->p_setname, perm);
 			if (error == 0)
@@ -623,17 +509,14 @@ again:
 			if (error == EPERM)
 				setnode->p_matched = B_TRUE;
 
-			/* See if this set includes other sets */
+			 
 			error = dsl_load_sets(mos, zapobj,
 			    ZFS_DELEG_NAMED_SET_SETS, 0,
 			    setnode->p_setname, &permsets);
 			if (error == 0)
 				setnode->p_matched = expanded = B_TRUE;
 		}
-		/*
-		 * If we expanded any sets, that will define more sets,
-		 * which we need to check.
-		 */
+		 
 		if (expanded)
 			goto again;
 
@@ -671,9 +554,7 @@ dsl_deleg_access(const char *dsname, const char *perm, cred_t *cr)
 	return (error);
 }
 
-/*
- * Other routines.
- */
+ 
 
 static void
 copy_create_perms(dsl_dir_t *dd, uint64_t pzapobj,
@@ -718,9 +599,7 @@ copy_create_perms(dsl_dir_t *dd, uint64_t pzapobj,
 	zap_cursor_fini(&zc);
 }
 
-/*
- * set all create time permission on new dataset.
- */
+ 
 void
 dsl_deleg_set_create_perms(dsl_dir_t *sdd, dmu_tx_t *tx, cred_t *cr)
 {

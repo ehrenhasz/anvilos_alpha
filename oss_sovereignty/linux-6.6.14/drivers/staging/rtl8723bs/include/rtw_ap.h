@@ -1,15 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/******************************************************************************
- *
- * Copyright(c) 2007 - 2012 Realtek Corporation. All rights reserved.
- *
- ******************************************************************************/
+ 
+ 
 #ifndef __RTW_AP_H_
 #define __RTW_AP_H_
 
 void init_mlme_ap_info(struct adapter *padapter);
 void free_mlme_ap_info(struct adapter *padapter);
-/* void update_BCNTIM(struct adapter *padapter); */
+ 
 void update_beacon(struct adapter *padapter, u8 ie_id, u8 *oui, u8 tx);
 void add_RATid(struct adapter *padapter, struct sta_info *psta, u8 rssi_level);
 void expire_timeout_chk(struct adapter *padapter);

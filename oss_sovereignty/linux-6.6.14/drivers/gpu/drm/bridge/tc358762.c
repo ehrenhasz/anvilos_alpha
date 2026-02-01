@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2020 Marek Vasut <marex@denx.de>
- *
- * Based on tc358764.c by
- *  Andrzej Hajda <a.hajda@samsung.com>
- *  Maciej Purski <m.purski@samsung.com>
- *
- * Based on rpi_touchscreen.c by
- *  Eric Anholt <eric@anholt.net>
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/gpio/consumer.h>
@@ -27,43 +18,43 @@
 #include <drm/drm_print.h>
 #include <drm/drm_probe_helper.h>
 
-/* PPI layer registers */
-#define PPI_STARTPPI		0x0104 /* START control bit */
-#define PPI_LPTXTIMECNT		0x0114 /* LPTX timing signal */
+ 
+#define PPI_STARTPPI		0x0104  
+#define PPI_LPTXTIMECNT		0x0114  
 #define PPI_D0S_ATMR		0x0144
 #define PPI_D1S_ATMR		0x0148
-#define PPI_D0S_CLRSIPOCOUNT	0x0164 /* Assertion timer for Lane 0 */
-#define PPI_D1S_CLRSIPOCOUNT	0x0168 /* Assertion timer for Lane 1 */
+#define PPI_D0S_CLRSIPOCOUNT	0x0164  
+#define PPI_D1S_CLRSIPOCOUNT	0x0168  
 #define PPI_START_FUNCTION	1
 
-/* DSI layer registers */
-#define DSI_STARTDSI		0x0204 /* START control bit of DSI-TX */
-#define DSI_LANEENABLE		0x0210 /* Enables each lane */
+ 
+#define DSI_STARTDSI		0x0204  
+#define DSI_LANEENABLE		0x0210  
 #define DSI_RX_START		1
 
-/* LCDC/DPI Host Registers, based on guesswork that this matches TC358764 */
-#define LCDCTRL			0x0420 /* Video Path Control */
-#define LCDCTRL_MSF		BIT(0) /* Magic square in RGB666 */
-#define LCDCTRL_VTGEN		BIT(4)/* Use chip clock for timing */
-#define LCDCTRL_UNK6		BIT(6) /* Unknown */
-#define LCDCTRL_EVTMODE		BIT(5) /* Event mode */
-#define LCDCTRL_RGB888		BIT(8) /* RGB888 mode */
-#define LCDCTRL_HSPOL		BIT(17) /* Polarity of HSYNC signal */
-#define LCDCTRL_DEPOL		BIT(18) /* Polarity of DE signal */
-#define LCDCTRL_VSPOL		BIT(19) /* Polarity of VSYNC signal */
-#define LCDCTRL_VSDELAY(v)	(((v) & 0xfff) << 20) /* VSYNC delay */
+ 
+#define LCDCTRL			0x0420  
+#define LCDCTRL_MSF		BIT(0)  
+#define LCDCTRL_VTGEN		BIT(4) 
+#define LCDCTRL_UNK6		BIT(6)  
+#define LCDCTRL_EVTMODE		BIT(5)  
+#define LCDCTRL_RGB888		BIT(8)  
+#define LCDCTRL_HSPOL		BIT(17)  
+#define LCDCTRL_DEPOL		BIT(18)  
+#define LCDCTRL_VSPOL		BIT(19)  
+#define LCDCTRL_VSDELAY(v)	(((v) & 0xfff) << 20)  
 
-/* SPI Master Registers */
+ 
 #define SPICMR			0x0450
 #define SPITCR			0x0454
 
-/* System Controller Registers */
+ 
 #define SYSCTRL			0x0464
 
-/* System registers */
+ 
 #define LPX_PERIOD		3
 
-/* Lane enable PPI and DSI register bits */
+ 
 #define LANEENABLE_CLEN		BIT(0)
 #define LANEENABLE_L0EN		BIT(1)
 #define LANEENABLE_L1EN		BIT(2)
@@ -154,10 +145,7 @@ static void tc358762_post_disable(struct drm_bridge *bridge, struct drm_bridge_s
 	struct tc358762 *ctx = bridge_to_tc358762(bridge);
 	int ret;
 
-	/*
-	 * The post_disable hook might be called multiple times.
-	 * We want to avoid regulator imbalance below.
-	 */
+	 
 	if (!ctx->pre_enabled)
 		return;
 
@@ -238,7 +226,7 @@ static int tc358762_parse_dt(struct tc358762 *ctx)
 
 	ctx->panel_bridge = panel_bridge;
 
-	/* Reset GPIO is optional */
+	 
 	ctx->reset_gpio = devm_gpiod_get_optional(dev, "reset", GPIOD_OUT_LOW);
 	if (IS_ERR(ctx->reset_gpio))
 		return PTR_ERR(ctx->reset_gpio);
@@ -270,7 +258,7 @@ static int tc358762_probe(struct mipi_dsi_device *dsi)
 	ctx->dev = dev;
 	ctx->pre_enabled = false;
 
-	/* TODO: Find out how to get dual-lane mode working */
+	 
 	dsi->lanes = 1;
 	dsi->format = MIPI_DSI_FMT_RGB888;
 	dsi->mode_flags = MIPI_DSI_MODE_VIDEO | MIPI_DSI_MODE_VIDEO_SYNC_PULSE |

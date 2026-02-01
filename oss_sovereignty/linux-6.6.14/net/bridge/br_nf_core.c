@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *	Handle firewalling core
- *	Linux ethernet bridge
- *
- *	Authors:
- *	Lennert Buytenhek		<buytenh@gnu.org>
- *	Bart De Schuymer		<bdschuym@pandora.be>
- *
- *	Lennert dedicates this file to Kerstin Wurdinger.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -58,13 +49,7 @@ static struct dst_ops fake_dst_ops = {
 	.mtu		= fake_mtu,
 };
 
-/*
- * Initialize bogus route table used to keep netfilter happy.
- * Currently, we fill in the PMTU entry because netfilter
- * refragmentation needs it, and the rt_flags entry because
- * ipt_REJECT needs it.  Future netfilter modules might
- * require us to fill additional fields.
- */
+ 
 static const u32 br_dst_default_metrics[RTAX_MAX] = {
 	[RTAX_MTU - 1] = 1500,
 };

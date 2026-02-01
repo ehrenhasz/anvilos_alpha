@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * local apic based NMI watchdog for various CPUs.
- *
- * This file also handles reservation of performance counters for coordination
- * with other users.
- *
- * Note that these events normally don't tick when the CPU idles. This means
- * the frequency varies with CPU load.
- *
- * Original code for K7/P6 written by Keith Owens
- *
- */
+
+ 
 
 #include <linux/percpu.h>
 #include <linux/export.h>
@@ -23,28 +12,17 @@
 #include <asm/apic.h>
 #include <asm/perf_event.h>
 
-/*
- * this number is calculated from Intel's MSR_P4_CRU_ESCR5 register and it's
- * offset from MSR_P4_BSU_ESCR0.
- *
- * It will be the max for all platforms (for now)
- */
+ 
 #define NMI_MAX_COUNTER_BITS 66
 
-/*
- * perfctr_nmi_owner tracks the ownership of the perfctr registers:
- * evtsel_nmi_owner tracks the ownership of the event selection
- * - different performance counters/ event selection may be reserved for
- *   different subsystems this reservation system just tries to coordinate
- *   things a little
- */
+ 
 static DECLARE_BITMAP(perfctr_nmi_owner, NMI_MAX_COUNTER_BITS);
 static DECLARE_BITMAP(evntsel_nmi_owner, NMI_MAX_COUNTER_BITS);
 
-/* converts an msr to an appropriate reservation bit */
+ 
 static inline unsigned int nmi_perfctr_msr_to_bit(unsigned int msr)
 {
-	/* returns the bit offset of the performance counter register */
+	 
 	switch (boot_cpu_data.x86_vendor) {
 	case X86_VENDOR_HYGON:
 	case X86_VENDOR_AMD:
@@ -71,13 +49,10 @@ static inline unsigned int nmi_perfctr_msr_to_bit(unsigned int msr)
 	return 0;
 }
 
-/*
- * converts an msr to an appropriate reservation bit
- * returns the bit offset of the event selection register
- */
+ 
 static inline unsigned int nmi_evntsel_msr_to_bit(unsigned int msr)
 {
-	/* returns the bit offset of the event selection register */
+	 
 	switch (boot_cpu_data.x86_vendor) {
 	case X86_VENDOR_HYGON:
 	case X86_VENDOR_AMD:
@@ -110,7 +85,7 @@ int reserve_perfctr_nmi(unsigned int msr)
 	unsigned int counter;
 
 	counter = nmi_perfctr_msr_to_bit(msr);
-	/* register not managed by the allocator? */
+	 
 	if (counter > NMI_MAX_COUNTER_BITS)
 		return 1;
 
@@ -125,7 +100,7 @@ void release_perfctr_nmi(unsigned int msr)
 	unsigned int counter;
 
 	counter = nmi_perfctr_msr_to_bit(msr);
-	/* register not managed by the allocator? */
+	 
 	if (counter > NMI_MAX_COUNTER_BITS)
 		return;
 
@@ -138,7 +113,7 @@ int reserve_evntsel_nmi(unsigned int msr)
 	unsigned int counter;
 
 	counter = nmi_evntsel_msr_to_bit(msr);
-	/* register not managed by the allocator? */
+	 
 	if (counter > NMI_MAX_COUNTER_BITS)
 		return 1;
 
@@ -153,7 +128,7 @@ void release_evntsel_nmi(unsigned int msr)
 	unsigned int counter;
 
 	counter = nmi_evntsel_msr_to_bit(msr);
-	/* register not managed by the allocator? */
+	 
 	if (counter > NMI_MAX_COUNTER_BITS)
 		return;
 

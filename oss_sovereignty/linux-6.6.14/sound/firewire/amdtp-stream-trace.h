@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * amdtp-stream-trace.h - tracepoint definitions to dump a part of packet data
- *
- * Copyright (c) 2016 Takashi Sakamoto
- */
+ 
+ 
 
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM		snd_firewire_lib

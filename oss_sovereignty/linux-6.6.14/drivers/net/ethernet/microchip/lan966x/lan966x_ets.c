@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0+
+
 
 #include "lan966x_main.h"
 
@@ -8,9 +8,7 @@ static u32 lan966x_ets_hw_cost(u32 w_min, u32 weight)
 {
 	u32 res;
 
-	/* Round half up: Multiply with 16 before division,
-	 * add 8 and divide result with 16 again
-	 */
+	 
 	res = (((DWRR_COST_BIT_WIDTH << 4) * w_min / weight) + 8) >> 4;
 	return max_t(u32, 1, res) - 1;
 }
@@ -25,7 +23,7 @@ int lan966x_ets_add(struct lan966x_port *port,
 	u32 se_idx;
 	u8 i;
 
-	/* Check the input */
+	 
 	if (qopt->parent != TC_H_ROOT)
 		return -EINVAL;
 
@@ -34,10 +32,7 @@ int lan966x_ets_add(struct lan966x_port *port,
 		return -EINVAL;
 
 	for (i = 0; i < params->bands; ++i) {
-		/* In the switch the DWRR is always on the lowest consecutive
-		 * priorities. Due to this, the first priority must map to the
-		 * first DWRR band.
-		 */
+		 
 		if (params->priomap[i] != (7 - i))
 			return -EINVAL;
 
@@ -47,7 +42,7 @@ int lan966x_ets_add(struct lan966x_port *port,
 
 	se_idx = SE_IDX_PORT + port->chip_port;
 
-	/* Find minimum weight */
+	 
 	for (i = 0; i < params->bands; ++i) {
 		if (params->quanta[i] == 0)
 			continue;

@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2017-2018 Covalent IO, Inc. http://covalent.io
+
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/socket.h>
@@ -48,7 +48,7 @@ static void running_handler(int a);
 # define SOL_TLS 282
 #endif
 
-/* randomly selected ports for testing on lo */
+ 
 #define S1_PORT 10000
 #define S2_PORT 10001
 
@@ -56,7 +56,7 @@ static void running_handler(int a);
 #define BPF_SOCKHASH_FILENAME "test_sockhash_kern.bpf.o"
 #define CG_PATH "/sockmap"
 
-/* global sockets */
+ 
 int s1, s2, c1, c2, p1, p2;
 int test_cnt;
 int passed;
@@ -304,7 +304,7 @@ static int sockmap_init_sockets(int verbose)
 
 	s1 = s2 = p1 = p2 = c1 = c2 = 0;
 
-	/* Init sockets */
+	 
 	for (i = 0; i < 4; i++) {
 		*fds[i] = socket(AF_INET, SOCK_STREAM, 0);
 		if (*fds[i] < 0) {
@@ -313,7 +313,7 @@ static int sockmap_init_sockets(int verbose)
 		}
 	}
 
-	/* Allow reuse */
+	 
 	for (i = 0; i < 2; i++) {
 		err = setsockopt(*fds[i], SOL_SOCKET, SO_REUSEADDR,
 				 (char *)&one, sizeof(one));
@@ -323,7 +323,7 @@ static int sockmap_init_sockets(int verbose)
 		}
 	}
 
-	/* Non-blocking sockets */
+	 
 	for (i = 0; i < 2; i++) {
 		err = ioctl(*fds[i], FIONBIO, (char *)&one);
 		if (err < 0) {
@@ -332,7 +332,7 @@ static int sockmap_init_sockets(int verbose)
 		}
 	}
 
-	/* Bind server sockets */
+	 
 	memset(&addr, 0, sizeof(struct sockaddr_in));
 	addr.sin_family = AF_INET;
 	addr.sin_addr.s_addr = inet_addr("127.0.0.1");
@@ -351,7 +351,7 @@ static int sockmap_init_sockets(int verbose)
 		return errno;
 	}
 
-	/* Listen server sockets */
+	 
 	addr.sin_port = htons(S1_PORT);
 	err = listen(s1, 32);
 	if (err < 0) {
@@ -366,7 +366,7 @@ static int sockmap_init_sockets(int verbose)
 		return errno;
 	}
 
-	/* Initiate Connect */
+	 
 	addr.sin_port = htons(S1_PORT);
 	err = connect(c1, (struct sockaddr *)&addr, sizeof(addr));
 	if (err < 0 && errno != EINPROGRESS) {
@@ -383,7 +383,7 @@ static int sockmap_init_sockets(int verbose)
 		err = 0;
 	}
 
-	/* Accept Connecrtions */
+	 
 	p1 = accept(s1, NULL, NULL);
 	if (p1 < 0) {
 		perror("accept s1 failed()");
@@ -517,7 +517,7 @@ static int msg_verify_data(struct msghdr *msg, int size, int chunk_sz)
 	for (i = 0; i < msg->msg_iovlen; i++) {
 		unsigned char *d = msg->msg_iov[i].iov_base;
 
-		/* Special case test for skb ingress + ktls */
+		 
 		if (i == 0 && txmsg_ktls_skb) {
 			if (msg->msg_iov[i].iov_len < 4)
 				return -EIO;
@@ -527,7 +527,7 @@ static int msg_verify_data(struct msghdr *msg, int size, int chunk_sz)
 					i, 0, d[0], d[1], d[2], d[3]);
 				return -EIO;
 			}
-			j = 4; /* advance index past PASS header */
+			j = 4;  
 		}
 
 		for (; j < msg->msg_iov[i].iov_len && size; j++) {
@@ -604,16 +604,7 @@ static int msg_loop(int fd, int iov_count, int iov_length, int cnt,
 		fd_set w;
 
 		fcntl(fd, fd_flags);
-		/* Account for pop bytes noting each iteration of apply will
-		 * call msg_pop_data helper so we need to account for this
-		 * by calculating the number of apply iterations. Note user
-		 * of the tool can create cases where no data is sent by
-		 * manipulating pop/push/pull/etc. For example txmsg_apply 1
-		 * with txmsg_pop 1 will try to apply 1B at a time but each
-		 * iteration will then pop 1B so no data will ever be sent.
-		 * This is really only useful for testing edge cases in code
-		 * paths.
-		 */
+		 
 		total_bytes = (float)iov_count * (float)iov_length * (float)cnt;
 		if (txmsg_apply)
 			txmsg_pop_total = txmsg_pop * (total_bytes / txmsg_apply);
@@ -632,7 +623,7 @@ static int msg_loop(int fd, int iov_count, int iov_length, int cnt,
 				timeout.tv_usec = 0;
 			}
 
-			/* FD sets */
+			 
 			FD_ZERO(&w);
 			FD_SET(fd, &w);
 
@@ -752,10 +743,7 @@ static int sendmsg_test(struct sockmap_options *opt)
 		rx_fd = p2;
 
 	if (ktls) {
-		/* Redirecting into non-TLS socket which sends into a TLS
-		 * socket is not a valid test. So in this case lets not
-		 * enable kTLS but still run the test.
-		 */
+		 
 		if (!txmsg_redir || txmsg_ingress) {
 			err = sockmap_init_ktls(opt->verbose, rx_fd);
 			if (err)
@@ -789,7 +777,7 @@ static int sendmsg_test(struct sockmap_options *opt)
 		if (opt->drop_expected || txmsg_ktls_skb_drop)
 			_exit(0);
 
-		if (!iov_buf) /* zero bytes sent case */
+		if (!iov_buf)  
 			_exit(0);
 
 		if (opt->sendpage)
@@ -875,7 +863,7 @@ static int forever_ping_pong(int rate, struct sockmap_options *opt)
 	timeout.tv_sec = 10;
 	timeout.tv_usec = 0;
 
-	/* Ping/Pong data from client to server */
+	 
 	sc = send(c1, buf, sizeof(buf), 0);
 	if (sc < 0) {
 		perror("send failed()");
@@ -886,7 +874,7 @@ static int forever_ping_pong(int rate, struct sockmap_options *opt)
 		int s, rc, i, max_fd = p2;
 		fd_set w;
 
-		/* FD sets */
+		 
 		FD_ZERO(&w);
 		FD_SET(c1, &w);
 		FD_SET(c2, &w);
@@ -954,11 +942,11 @@ static int run_options(struct sockmap_options *options, int cg_fd,  int test)
 {
 	int i, key, next_key, err, tx_prog_fd = -1, zero = 0;
 
-	/* If base test skip BPF setup */
+	 
 	if (test == BASE || test == BASE_SENDPAGE)
 		goto run;
 
-	/* Attach programs to sockmap */
+	 
 	if (!txmsg_omit_skb_parser) {
 		err = bpf_prog_attach(prog_fd[0], map_fd[0],
 				      BPF_SK_SKB_STREAM_PARSER, 0);
@@ -978,7 +966,7 @@ static int run_options(struct sockmap_options *options, int cg_fd,  int test)
 		return err;
 	}
 
-	/* Attach programs to TLS sockmap */
+	 
 	if (txmsg_ktls_skb) {
 		if (!txmsg_omit_skb_parser) {
 			err = bpf_prog_attach(prog_fd[0], map_fd[8],
@@ -1000,7 +988,7 @@ static int run_options(struct sockmap_options *options, int cg_fd,  int test)
 		}
 	}
 
-	/* Attach to cgroups */
+	 
 	err = bpf_prog_attach(prog_fd[3], cg_fd, BPF_CGROUP_SOCK_OPS, 0);
 	if (err) {
 		fprintf(stderr, "ERROR: bpf_prog_attach (groups): %d (%s)\n",
@@ -1015,7 +1003,7 @@ run:
 		goto out;
 	}
 
-	/* Attach txmsg program to sockmap */
+	 
 	if (txmsg_pass)
 		tx_prog_fd = prog_fd[4];
 	else if (txmsg_redir)
@@ -1278,7 +1266,7 @@ run:
 	} else
 		fprintf(stderr, "unknown test\n");
 out:
-	/* Detatch and zero all the maps */
+	 
 	bpf_prog_detach2(prog_fd[3], cg_fd, BPF_CGROUP_SOCK_OPS);
 	bpf_prog_detach2(prog_fd[0], map_fd[0], BPF_SK_SKB_STREAM_PARSER);
 	bpf_prog_detach2(prog_fd[1], map_fd[0], BPF_SK_SKB_STREAM_VERDICT);
@@ -1321,10 +1309,10 @@ static void append_str(char *dst, const char *src, size_t dst_cap)
 {
 	size_t avail = dst_cap - strlen(dst);
 
-	if (avail <= 1) /* just zero byte could be written */
+	if (avail <= 1)  
 		return;
 
-	strncat(dst, src, avail - 1); /* strncat() adds + 1 for zero byte */
+	strncat(dst, src, avail - 1);  
 }
 
 #define OPTSTRING 60
@@ -1474,7 +1462,7 @@ static void test_send(struct sockmap_options *opt, int cgrp)
 
 static void test_txmsg_pass(int cgrp, struct sockmap_options *opt)
 {
-	/* Test small and large iov_count values with pass/redir/apply/cork */
+	 
 	txmsg_pass = 1;
 	test_send(opt, cgrp);
 }
@@ -1519,10 +1507,7 @@ static void test_txmsg_skb(int cgrp, struct sockmap_options *opt)
 	txmsg_ktls_skb = 1;
 	txmsg_pass = 1;
 
-	/* Using data verification so ensure iov layout is
-	 * expected from test receiver side. e.g. has enough
-	 * bytes to write test code.
-	 */
+	 
 	opt->iov_length = 100;
 	opt->iov_count = 1;
 	opt->rate = 1;
@@ -1536,7 +1521,7 @@ static void test_txmsg_skb(int cgrp, struct sockmap_options *opt)
 	test_exec(cgrp, opt);
 	txmsg_ktls_skb_redir = 0;
 
-	/* Tests that omit skb_parser */
+	 
 	txmsg_omit_skb_parser = 1;
 	ktls = 0;
 	txmsg_ktls_skb = 0;
@@ -1557,13 +1542,7 @@ static void test_txmsg_skb(int cgrp, struct sockmap_options *opt)
 	ktls = k;
 }
 
-/* Test cork with hung data. This tests poor usage patterns where
- * cork can leave data on the ring if user program is buggy and
- * doesn't flush them somehow. They do take some time however
- * because they wait for a timeout. Test pass, redir and cork with
- * apply logic. Use cork size of 4097 with send_large to avoid
- * aligning cork size with send size.
- */
+ 
 static void test_txmsg_cork_hangs(int cgrp, struct sockmap_options *opt)
 {
 	txmsg_pass = 1;
@@ -1587,30 +1566,30 @@ static void test_txmsg_cork_hangs(int cgrp, struct sockmap_options *opt)
 
 static void test_txmsg_pull(int cgrp, struct sockmap_options *opt)
 {
-	/* Test basic start/end */
+	 
 	txmsg_start = 1;
 	txmsg_end = 2;
 	test_send(opt, cgrp);
 
-	/* Test >4k pull */
+	 
 	txmsg_start = 4096;
 	txmsg_end = 9182;
 	test_send_large(opt, cgrp);
 
-	/* Test pull + redirect */
+	 
 	txmsg_redir = 0;
 	txmsg_start = 1;
 	txmsg_end = 2;
 	test_send(opt, cgrp);
 
-	/* Test pull + cork */
+	 
 	txmsg_redir = 0;
 	txmsg_cork = 512;
 	txmsg_start = 1;
 	txmsg_end = 2;
 	test_send_many(opt, cgrp);
 
-	/* Test pull + cork + redirect */
+	 
 	txmsg_redir = 1;
 	txmsg_cork = 512;
 	txmsg_start = 1;
@@ -1620,30 +1599,30 @@ static void test_txmsg_pull(int cgrp, struct sockmap_options *opt)
 
 static void test_txmsg_pop(int cgrp, struct sockmap_options *opt)
 {
-	/* Test basic pop */
+	 
 	txmsg_start_pop = 1;
 	txmsg_pop = 2;
 	test_send_many(opt, cgrp);
 
-	/* Test pop with >4k */
+	 
 	txmsg_start_pop = 4096;
 	txmsg_pop = 4096;
 	test_send_large(opt, cgrp);
 
-	/* Test pop + redirect */
+	 
 	txmsg_redir = 1;
 	txmsg_start_pop = 1;
 	txmsg_pop = 2;
 	test_send_many(opt, cgrp);
 
-	/* Test pop + cork */
+	 
 	txmsg_redir = 0;
 	txmsg_cork = 512;
 	txmsg_start_pop = 1;
 	txmsg_pop = 2;
 	test_send_many(opt, cgrp);
 
-	/* Test pop + redirect + cork */
+	 
 	txmsg_redir = 1;
 	txmsg_cork = 4;
 	txmsg_start_pop = 1;
@@ -1653,23 +1632,23 @@ static void test_txmsg_pop(int cgrp, struct sockmap_options *opt)
 
 static void test_txmsg_push(int cgrp, struct sockmap_options *opt)
 {
-	/* Test basic push */
+	 
 	txmsg_start_push = 1;
 	txmsg_end_push = 1;
 	test_send(opt, cgrp);
 
-	/* Test push 4kB >4k */
+	 
 	txmsg_start_push = 4096;
 	txmsg_end_push = 4096;
 	test_send_large(opt, cgrp);
 
-	/* Test push + redirect */
+	 
 	txmsg_redir = 1;
 	txmsg_start_push = 1;
 	txmsg_end_push = 2;
 	test_send_many(opt, cgrp);
 
-	/* Test push + cork */
+	 
 	txmsg_redir = 0;
 	txmsg_cork = 512;
 	txmsg_start_push = 1;
@@ -1924,7 +1903,7 @@ static int __test_selftests(int cg_fd, struct sockmap_options *opt)
 		return err;
 	}
 
-	/* Tests basic commands and APIs */
+	 
 	for (i = 0; i < ARRAY_SIZE(test); i++) {
 		struct _test t = test[i];
 
@@ -2075,7 +2054,7 @@ int main(int argc, char **argv)
 		cg_created = 1;
 	}
 
-	/* Use libbpf 1.0 API mode */
+	 
 	libbpf_set_strict_mode(LIBBPF_STRICT_ALL);
 
 	if (test == SELFTESTS) {
@@ -2091,7 +2070,7 @@ int main(int argc, char **argv)
 	}
 	running = 1;
 
-	/* catch SIGINT */
+	 
 	signal(SIGINT, running_handler);
 
 	options.iov_count = iov_count;

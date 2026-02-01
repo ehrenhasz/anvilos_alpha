@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2021, The Linux Foundation. All rights reserved.
- * Copyright (c) 2023, Linaro Ltd.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/clk-provider.h>
@@ -27,7 +24,7 @@
 #include "reset.h"
 #include "gdsc.h"
 
-/* Need to match the order of clocks in DT binding */
+ 
 enum {
 	DT_BI_TCXO,
 	DT_BI_TCXO_AO,
@@ -1777,13 +1774,10 @@ static int disp_cc_sm8550_probe(struct platform_device *pdev)
 	clk_lucid_evo_pll_configure(&disp_cc_pll0, regmap, &disp_cc_pll0_config);
 	clk_lucid_evo_pll_configure(&disp_cc_pll1, regmap, &disp_cc_pll1_config);
 
-	/* Enable clock gating for MDP clocks */
+	 
 	regmap_update_bits(regmap, DISP_CC_MISC_CMD, 0x10, 0x10);
 
-	/*
-	 * Keep clocks always enabled:
-	 *	disp_cc_xo_clk
-	 */
+	 
 	regmap_update_bits(regmap, 0xe054, BIT(0), BIT(0));
 
 	ret = qcom_cc_really_probe(pdev, &disp_cc_sm8550_desc, regmap);

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2020 MediaTek Inc.
- *
- * Author: ChiYuan Huang <cy_huang@richtek.com>
- */
+
+ 
 
 #include <linux/interrupt.h>
 #include <linux/kernel.h>
@@ -29,11 +25,11 @@
 #define MT6360_REG_RXCTRL2	0xCF
 #define MT6360_REG_CTDCTRL2	0xEC
 
-/* MT6360_REG_VCONNCTRL1 */
+ 
 #define MT6360_VCONNCL_ENABLE	BIT(0)
-/* MT6360_REG_RXCTRL2 */
+ 
 #define MT6360_OPEN40M_ENABLE	BIT(7)
-/* MT6360_REG_CTDCTRL2 */
+ 
 #define MT6360_RPONESHOT_ENABLE	BIT(6)
 
 struct mt6360_tcpc_info {
@@ -58,53 +54,53 @@ static int mt6360_tcpc_init(struct tcpci *tcpci, struct tcpci_data *tdata)
 	if (ret)
 		return ret;
 
-	/* after reset command, wait 1~2ms to wait IC action */
+	 
 	usleep_range(1000, 2000);
 
-	/* write all alert to masked */
+	 
 	ret = mt6360_tcpc_write16(regmap, TCPC_ALERT_MASK, 0);
 	if (ret)
 		return ret;
 
-	/* config I2C timeout reset enable , and timeout to 200ms */
+	 
 	ret = regmap_write(regmap, MT6360_REG_I2CTORST, 0x8F);
 	if (ret)
 		return ret;
 
-	/* config CC Detect Debounce : 26.7*val us */
+	 
 	ret = regmap_write(regmap, MT6360_REG_DEBCTRL1, 0x10);
 	if (ret)
 		return ret;
 
-	/* DRP Toggle Cycle : 51.2 + 6.4*val ms */
+	 
 	ret = regmap_write(regmap, MT6360_REG_DRPCTRL1, 4);
 	if (ret)
 		return ret;
 
-	/* DRP Duyt Ctrl : dcSRC: /1024 */
+	 
 	ret = mt6360_tcpc_write16(regmap, MT6360_REG_DRPCTRL2, 330);
 	if (ret)
 		return ret;
 
-	/* Enable VCONN Current Limit function */
+	 
 	ret = regmap_update_bits(regmap, MT6360_REG_VCONNCTRL1, MT6360_VCONNCL_ENABLE,
 				 MT6360_VCONNCL_ENABLE);
 	if (ret)
 		return ret;
 
-	/* Enable cc open 40ms when pmic send vsysuv signal */
+	 
 	ret = regmap_update_bits(regmap, MT6360_REG_RXCTRL2, MT6360_OPEN40M_ENABLE,
 				 MT6360_OPEN40M_ENABLE);
 	if (ret)
 		return ret;
 
-	/* Enable Rpdet oneshot detection */
+	 
 	ret = regmap_update_bits(regmap, MT6360_REG_CTDCTRL2, MT6360_RPONESHOT_ENABLE,
 				 MT6360_RPONESHOT_ENABLE);
 	if (ret)
 		return ret;
 
-	/* BMC PHY */
+	 
 	ret = mt6360_tcpc_write16(regmap, MT6360_REG_PHYCTRL1, 0x3A70);
 	if (ret)
 		return ret;
@@ -125,7 +121,7 @@ static int mt6360_tcpc_init(struct tcpci *tcpci, struct tcpci_data *tdata)
 	if (ret)
 		return ret;
 
-	/* Set shipping mode off, AUTOIDLE on */
+	 
 	return regmap_write(regmap, MT6360_REG_MODECTRL2, 0x7A);
 }
 

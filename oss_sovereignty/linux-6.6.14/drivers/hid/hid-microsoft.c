@@ -1,16 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  HID driver for some microsoft "special" devices
- *
- *  Copyright (c) 1999 Andreas Gal
- *  Copyright (c) 2000-2005 Vojtech Pavlik <vojtech@suse.cz>
- *  Copyright (c) 2005 Michael Haboustak <mike-@cinci.rr.com> for Concept2, Inc
- *  Copyright (c) 2006-2007 Jiri Kosina
- *  Copyright (c) 2008 Jiri Slaby
- */
 
-/*
- */
+ 
+
+ 
 
 #include <linux/device.h>
 #include <linux/input.h>
@@ -62,10 +53,7 @@ static __u8 *ms_report_fixup(struct hid_device *hdev, __u8 *rdesc,
 	struct ms_data *ms = hid_get_drvdata(hdev);
 	unsigned long quirks = ms->quirks;
 
-	/*
-	 * Microsoft Wireless Desktop Receiver (Model 1028) has
-	 * 'Usage Min/Max' where it ought to have 'Physical Min/Max'
-	 */
+	 
 	if ((quirks & MS_RDESC) && *rsize == 571 && rdesc[557] == 0x19 &&
 			rdesc[559] == 0x29) {
 		hid_info(hdev, "fixing up Microsoft Wireless Receiver Model 1028 report descriptor\n");
@@ -84,10 +72,7 @@ static int ms_ergonomy_kb_quirk(struct hid_input *hi, struct hid_usage *usage,
 
 	if ((usage->hid & HID_USAGE_PAGE) == HID_UP_CONSUMER) {
 		switch (usage->hid & HID_USAGE) {
-		/*
-		 * Microsoft uses these 2 reserved usage ids for 2 keys on
-		 * the MS office kb labelled "Office Home" and "Task Pane".
-		 */
+		 
 		case 0x29d:
 			ms_map_key_clear(KEY_PROG1);
 			return 1;
@@ -105,24 +90,17 @@ static int ms_ergonomy_kb_quirk(struct hid_input *hi, struct hid_usage *usage,
 	case 0xfd06: ms_map_key_clear(KEY_CHAT);	break;
 	case 0xfd07: ms_map_key_clear(KEY_PHONE);	break;
 	case 0xff00:
-		/* Special keypad keys */
+		 
 		ms_map_key_clear(KEY_KPEQUAL);
 		set_bit(KEY_KPLEFTPAREN, input->keybit);
 		set_bit(KEY_KPRIGHTPAREN, input->keybit);
 		break;
 	case 0xff01:
-		/* Scroll wheel */
+		 
 		hid_map_usage_clear(hi, usage, bit, max, EV_REL, REL_WHEEL);
 		break;
 	case 0xff02:
-		/*
-		 * This byte contains a copy of the modifier keys byte of a
-		 * standard hid keyboard report, as send by interface 0
-		 * (this usage is found on interface 1).
-		 *
-		 * This byte only gets send when another key in the same report
-		 * changes state, and as such is useless, ignore it.
-		 */
+		 
 		return -1;
 	case 0xff05:
 		set_bit(EV_REP, input->evbit);
@@ -164,14 +142,14 @@ static int ms_surface_dial_quirk(struct hid_input *hi, struct hid_field *field,
 	switch (usage->hid & HID_USAGE_PAGE) {
 	case 0xff070000:
 	case HID_UP_DIGITIZER:
-		/* ignore those axis */
+		 
 		return -1;
 	case HID_UP_GENDESK:
 		switch (usage->hid) {
 		case HID_GD_X:
 		case HID_GD_Y:
 		case HID_GD_RFKILL_BTN:
-			/* ignore those axis */
+			 
 			return -1;
 		}
 	}
@@ -232,9 +210,9 @@ static int ms_event(struct hid_device *hdev, struct hid_field *field,
 
 	input = field->hidinput->input;
 
-	/* Handling MS keyboards special buttons */
+	 
 	if (quirks & MS_ERGONOMY && usage->hid == (HID_UP_MSVENDOR | 0xff00)) {
-		/* Special keypad keys */
+		 
 		input_report_key(input, KEY_KPEQUAL, value & 0x01);
 		input_report_key(input, KEY_KPLEFTPAREN, value & 0x02);
 		input_report_key(input, KEY_KPRIGHTPAREN, value & 0x04);
@@ -242,7 +220,7 @@ static int ms_event(struct hid_device *hdev, struct hid_field *field,
 	}
 
 	if (quirks & MS_ERGONOMY && usage->hid == (HID_UP_MSVENDOR | 0xff01)) {
-		/* Scroll wheel */
+		 
 		int step = ((value & 0x60) >> 5) + 1;
 
 		switch (value & 0x1f) {
@@ -289,15 +267,11 @@ static void ms_ff_worker(struct work_struct *work)
 
 	r->report_id = XB1S_FF_REPORT;
 	r->enable = ENABLE_WEAK | ENABLE_STRONG;
-	/*
-	 * Specifying maximum duration and maximum loop count should
-	 * cover maximum duration of a single effect, which is 65536
-	 * ms
-	 */
+	 
 	r->duration_10ms = U8_MAX;
 	r->loop_count = U8_MAX;
-	r->magnitude[MAGNITUDE_STRONG] = ms->strong; /* left actuator */
-	r->magnitude[MAGNITUDE_WEAK] = ms->weak;     /* right actuator */
+	r->magnitude[MAGNITUDE_STRONG] = ms->strong;  
+	r->magnitude[MAGNITUDE_WEAK] = ms->weak;      
 
 	ret = hid_hw_output_report(hdev, (__u8 *)r, sizeof(*r));
 	if (ret < 0)
@@ -313,9 +287,7 @@ static int ms_play_effect(struct input_dev *dev, void *data,
 	if (effect->type != FF_RUMBLE)
 		return 0;
 
-	/*
-	 * Magnitude is 0..100 so scale the 16-bit input here
-	 */
+	 
 	ms->strong = ((u32) effect->u.rumble.strong_magnitude * 100) / U16_MAX;
 	ms->weak = ((u32) effect->u.rumble.weak_magnitude * 100) / U16_MAX;
 

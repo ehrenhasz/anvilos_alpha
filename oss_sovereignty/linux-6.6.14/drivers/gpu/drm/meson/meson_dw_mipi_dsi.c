@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2021 BayLibre, SAS
- * Author: Neil Armstrong <narmstrong@baylibre.com>
- * Copyright (C) 2015 Amlogic, Inc. All rights reserved.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/kernel.h>
@@ -53,7 +49,7 @@ struct meson_dw_mipi_dsi {
 
 static void meson_dw_mipi_dsi_hw_init(struct meson_dw_mipi_dsi *mipi_dsi)
 {
-	/* Software reset */
+	 
 	writel_bits_relaxed(MIPI_DSI_TOP_SW_RESET_DWC | MIPI_DSI_TOP_SW_RESET_INTR |
 			    MIPI_DSI_TOP_SW_RESET_DPI | MIPI_DSI_TOP_SW_RESET_TIMING,
 			    MIPI_DSI_TOP_SW_RESET_DWC | MIPI_DSI_TOP_SW_RESET_INTR |
@@ -63,12 +59,12 @@ static void meson_dw_mipi_dsi_hw_init(struct meson_dw_mipi_dsi *mipi_dsi)
 			    MIPI_DSI_TOP_SW_RESET_DPI | MIPI_DSI_TOP_SW_RESET_TIMING,
 			    0, mipi_dsi->base + MIPI_DSI_TOP_SW_RESET);
 
-	/* Enable clocks */
+	 
 	writel_bits_relaxed(MIPI_DSI_TOP_CLK_SYSCLK_EN | MIPI_DSI_TOP_CLK_PIXCLK_EN,
 			    MIPI_DSI_TOP_CLK_SYSCLK_EN | MIPI_DSI_TOP_CLK_PIXCLK_EN,
 			    mipi_dsi->base + MIPI_DSI_TOP_CLK_CNTL);
 
-	/* Take memory out of power down */
+	 
 	writel_relaxed(0, mipi_dsi->base + MIPI_DSI_TOP_MEM_PD);
 }
 
@@ -78,7 +74,7 @@ static int dw_mipi_dsi_phy_init(void *priv_data)
 	unsigned int dpi_data_format, venc_data_width;
 	int ret;
 
-	/* Set the bit clock rate to hs_clk_rate */
+	 
 	ret = clk_set_rate(mipi_dsi->bit_clk,
 			   mipi_dsi->phy_opts.mipi_dphy.hs_clk_rate);
 	if (ret) {
@@ -87,7 +83,7 @@ static int dw_mipi_dsi_phy_init(void *priv_data)
 		return ret;
 	}
 
-	/* Make sure the rate of the bit clock is not modified by someone else */
+	 
 	ret = clk_rate_exclusive_get(mipi_dsi->bit_clk);
 	if (ret) {
 		dev_err(mipi_dsi->dev,
@@ -117,7 +113,7 @@ static int dw_mipi_dsi_phy_init(void *priv_data)
 		return -EINVAL;
 	}
 
-	/* Configure color format for DPI register */
+	 
 	writel_relaxed(FIELD_PREP(MIPI_DSI_TOP_DPI_COLOR_MODE, dpi_data_format) |
 		       FIELD_PREP(MIPI_DSI_TOP_IN_COLOR_MODE, venc_data_width) |
 		       FIELD_PREP(MIPI_DSI_TOP_COMP2_SEL, 2) |
@@ -143,7 +139,7 @@ static void dw_mipi_dsi_phy_power_off(void *priv_data)
 	if (phy_power_off(mipi_dsi->phy))
 		dev_warn(mipi_dsi->dev, "Failed to power off PHY\n");
 
-	/* Remove the exclusivity on the bit clock rate */
+	 
 	clk_rate_exclusive_put(mipi_dsi->bit_clk);
 }
 
@@ -198,7 +194,7 @@ dw_mipi_dsi_phy_get_timing(void *priv_data, unsigned int lane_mbps,
 static int
 dw_mipi_dsi_get_esc_clk_rate(void *priv_data, unsigned int *esc_clk_rate)
 {
-	*esc_clk_rate = 4; /* Mhz */
+	*esc_clk_rate = 4;  
 
 	return 0;
 }
@@ -280,7 +276,7 @@ static int meson_dw_mipi_dsi_probe(struct platform_device *pdev)
 	if (IS_ERR(mipi_dsi->bit_clk)) {
 		int ret = PTR_ERR(mipi_dsi->bit_clk);
 
-		/* TOFIX GP0 on some platforms fails to lock in early boot, defer probe */
+		 
 		if (ret == -EIO)
 			ret = -EPROBE_DEFER;
 
@@ -292,10 +288,7 @@ static int meson_dw_mipi_dsi_probe(struct platform_device *pdev)
 		return dev_err_probe(dev, PTR_ERR(mipi_dsi->px_clk),
 				     "Unable to get enabled px_clk\n");
 
-	/*
-	 * We use a TOP reset signal because the APB reset signal
-	 * is handled by the TOP control registers.
-	 */
+	 
 	mipi_dsi->top_rst = devm_reset_control_get_exclusive(dev, "top");
 	if (IS_ERR(mipi_dsi->top_rst))
 		return dev_err_probe(dev, PTR_ERR(mipi_dsi->top_rst),
@@ -305,7 +298,7 @@ static int meson_dw_mipi_dsi_probe(struct platform_device *pdev)
 	usleep_range(10, 20);
 	reset_control_deassert(mipi_dsi->top_rst);
 
-	/* MIPI DSI Controller */
+	 
 
 	mipi_dsi->dev = dev;
 	mipi_dsi->pdata.base = mipi_dsi->base;

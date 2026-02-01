@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2016-2017, Linaro Ltd
- */
+
+ 
 
 #include <linux/idr.h>
 #include <linux/interrupt.h>
@@ -23,12 +21,12 @@
 #include "qcom_glink_native.h"
 
 #define RPM_TOC_SIZE		256
-#define RPM_TOC_MAGIC		0x67727430 /* grt0 */
+#define RPM_TOC_MAGIC		0x67727430  
 #define RPM_TOC_MAX_ENTRIES	((RPM_TOC_SIZE - sizeof(struct rpm_toc)) / \
 				 sizeof(struct rpm_toc_entry))
 
-#define RPM_TX_FIFO_ID		0x61703272 /* ap2r */
-#define RPM_RX_FIFO_ID		0x72326170 /* r2ap */
+#define RPM_TX_FIFO_ID		0x61703272  
+#define RPM_RX_FIFO_ID		0x72326170  
 
 #define to_rpm_pipe(p) container_of(p, struct glink_rpm_pipe, native)
 
@@ -170,14 +168,11 @@ static void glink_rpm_tx_write(struct qcom_glink_pipe *glink_pipe,
 	char padding[8] = {0};
 	size_t pad;
 
-	/* Header length comes from glink native and is always 4 byte aligned */
+	 
 	if (WARN(hlen % 4, "Glink Header length must be 4 bytes aligned\n"))
 		return;
 
-	/*
-	 * Move the unaligned tail of the message to the padding chunk, to
-	 * ensure word aligned accesses
-	 */
+	 
 	aligned_dlen = ALIGN_DOWN(dlen, 4);
 	if (aligned_dlen != dlen)
 		memcpy(padding, data + aligned_dlen, dlen - aligned_dlen);
@@ -331,7 +326,7 @@ static int glink_rpm_probe(struct platform_device *pdev)
 	if (IS_ERR(rpm->mbox_chan))
 		return dev_err_probe(dev, PTR_ERR(rpm->mbox_chan), "failed to acquire IPC channel\n");
 
-	/* Pipe specific accessors */
+	 
 	rpm->rx_pipe.native.avail = glink_rpm_rx_avail;
 	rpm->rx_pipe.native.peek = glink_rpm_rx_peek;
 	rpm->rx_pipe.native.advance = glink_rpm_rx_advance;

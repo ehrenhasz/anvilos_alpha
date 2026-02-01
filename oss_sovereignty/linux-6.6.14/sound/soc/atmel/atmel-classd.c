@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* Atmel ALSA SoC Audio Class D Amplifier (CLASSD) driver
- *
- * Copyright (C) 2015 Atmel
- *
- * Author: Songjun Wu <songjun.wu@atmel.com>
- */
+
+ 
 
 #include <linux/of.h>
 #include <linux/clk.h>
@@ -39,7 +34,7 @@ static const struct of_device_id atmel_classd_of_match[] = {
 	{
 		.compatible = "atmel,sama5d2-classd",
 	}, {
-		/* sentinel */
+		 
 	}
 };
 MODULE_DEVICE_TABLE(of, atmel_classd_of_match);
@@ -114,7 +109,7 @@ static const struct snd_pcm_hardware atmel_classd_hw = {
 
 #define ATMEL_CLASSD_PREALLOC_BUF_SIZE  (64 * 1024)
 
-/* cpu dai component */
+ 
 static int atmel_classd_cpu_dai_startup(struct snd_pcm_substream *substream,
 					struct snd_soc_dai *cpu_dai)
 {
@@ -135,7 +130,7 @@ static int atmel_classd_cpu_dai_startup(struct snd_pcm_substream *substream,
 	return 0;
 }
 
-/* platform */
+ 
 static int
 atmel_classd_platform_configure_dma(struct snd_pcm_substream *substream,
 	struct snd_pcm_hw_params *params,
@@ -171,7 +166,7 @@ atmel_classd_dmaengine_pcm_config = {
 	.prealloc_buffer_size	= ATMEL_CLASSD_PREALLOC_BUF_SIZE,
 };
 
-/* codec */
+ 
 static const char * const mono_mode_text[] = {
 	"mix", "sat", "left", "right"
 };
@@ -350,7 +345,7 @@ atmel_classd_cpu_dai_hw_params(struct snd_pcm_substream *substream,
 	best = 0;
 	best_val = abs(fs - sample_rates[0].rate);
 	for (i = 1; i < ARRAY_SIZE(sample_rates); i++) {
-		/* Closest match */
+		 
 		cur_val = abs(fs - sample_rates[i].rate);
 		if (cur_val < best_val) {
 			best = i;
@@ -461,7 +456,7 @@ static const struct snd_soc_component_driver atmel_classd_cpu_dai_component = {
 	.legacy_dai_naming	= 1,
 };
 
-/* ASoC sound card */
+ 
 static int atmel_classd_asoc_card_init(struct device *dev,
 					struct snd_soc_card *card)
 {
@@ -495,7 +490,7 @@ static int atmel_classd_asoc_card_init(struct device *dev,
 	return 0;
 };
 
-/* regmap configuration */
+ 
 static const struct reg_default atmel_classd_reg_defaults[] = {
 	{ CLASSD_INTPMR,   0x00301212 },
 };
@@ -584,7 +579,7 @@ static int atmel_classd_probe(struct platform_device *pdev)
 		return ret;
 	}
 
-	/* register sound card */
+	 
 	card = devm_kzalloc(dev, sizeof(*card), GFP_KERNEL);
 	if (!card) {
 		ret = -ENOMEM;

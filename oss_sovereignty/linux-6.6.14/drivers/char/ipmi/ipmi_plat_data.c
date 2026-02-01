@@ -1,8 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0+
 
-/*
- * Add an IPMI platform device.
- */
+
+ 
 
 #include <linux/platform_device.h>
 #include "ipmi_plat_data.h"
@@ -43,7 +41,7 @@ struct platform_device *ipmi_platform_add(const char *name, unsigned int inst,
 	if (p->regshift)
 		pr[pidx++] = PROPERTY_ENTRY_U8("reg-shift", p->regshift);
 	pr[pidx++] = PROPERTY_ENTRY_U8("reg-size", p->regsize);
-	/* Last entry must be left NULL to terminate it. */
+	 
 
 	pdev = platform_device_alloc(name, inst);
 	if (!pdev) {
@@ -53,13 +51,10 @@ struct platform_device *ipmi_platform_add(const char *name, unsigned int inst,
 	}
 
 	if (size == 0)
-		/* An invalid or SSIF interface, no resources. */
+		 
 		goto add_properties;
 
-	/*
-	 * Register spacing is derived from the resources in
-	 * the IPMI platform code.
-	 */
+	 
 
 	if (p->space == IPMI_IO_ADDR_SPACE)
 		flags = IORESOURCE_IO;

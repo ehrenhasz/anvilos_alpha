@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  Cobalt NOR flash functions
- *
- *  Copyright 2012-2015 Cisco Systems, Inc. and/or its affiliates.
- *  All rights reserved.
- */
+
+ 
 
 #include <linux/mtd/mtd.h>
 #include <linux/mtd/map.h>
@@ -17,9 +12,9 @@
 
 static struct map_info cobalt_flash_map = {
 	.name =		"cobalt-flash",
-	.bankwidth =	2,         /* 16 bits */
-	.size =		0x4000000, /* 64MB */
-	.phys =		0,         /* offset  */
+	.bankwidth =	2,          
+	.size =		0x4000000,  
+	.phys =		0,          
 };
 
 static map_word flash_read16(struct map_info *map, unsigned long offset)

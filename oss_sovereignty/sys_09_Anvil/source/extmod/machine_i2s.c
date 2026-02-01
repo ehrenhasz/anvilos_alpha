@@ -1,29 +1,4 @@
-/*
- * This file is part of the MicroPython project, http://micropython.org/
- *
- * The MIT License (MIT)
- *
- * Copyright (c) 2021 Mike Teachman
- * Copyright (c) 2023 Damien P. George
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
+ 
 
 #include "py/runtime.h"
 #include "py/stream.h"
@@ -32,37 +7,37 @@
 
 #include "extmod/modmachine.h"
 
-// The I2S class has 3 modes of operation:
-//
-// Mode1:  Blocking
-// - readinto() and write() methods block until the supplied buffer is filled (read) or emptied (write)
-// - this is the default mode of operation
-//
-// Mode2:  Non-Blocking
-// - readinto() and write() methods return immediately
-// - buffer filling and emptying happens asynchronously to the main MicroPython task
-// - a callback function is called when the supplied buffer has been filled (read) or emptied (write)
-// - non-blocking mode is enabled when a callback is set with the irq() method
-// - implementation of asynchronous background operations is port specific
-//
-// Mode3: Asyncio
-// - implements the stream protocol
-// - asyncio mode is enabled when the ioctl() function is called
-// - the state of the internal ring buffer is used to detect that I2S samples can be read or written
-//
-// The samples contained in the app buffer supplied for the readinto() and write() methods have the following convention:
-//   Mono:  little endian format
-//   Stereo:  little endian format, left channel first
-//
-// I2S terms:
-//   "frame":  consists of two audio samples (Left audio sample + Right audio sample)
-//
-// Misc:
-// - for Mono configuration:
-//   - readinto method: samples are gathered from the L channel only
-//   - write method: every sample is output to both the L and R channels
-// - for readinto method the I2S hardware is read using 8-byte frames
-//   (this is standard for almost all I2S hardware, such as MEMS microphones)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 #define NUM_I2S_USER_FORMATS (4)
 #define I2S_RX_FRAME_SIZE_IN_BYTES (8)
@@ -78,7 +53,7 @@ typedef enum {
     ASYNCIO
 } io_mode_t;
 
-// Arguments for I2S() constructor and I2S.init().
+
 enum {
     ARG_sck,
     ARG_ws,
@@ -116,24 +91,24 @@ static size_t ringbuf_available_space(ring_buf_t *rbuf);
 static void fill_appbuf_from_ringbuf_non_blocking(machine_i2s_obj_t *self);
 static void copy_appbuf_to_ringbuf_non_blocking(machine_i2s_obj_t *self);
 
-#endif // MICROPY_PY_MACHINE_I2S_RING_BUF
+#endif 
 
-// The port must provide implementations of these low-level I2S functions.
+
 static void mp_machine_i2s_init_helper(machine_i2s_obj_t *self, mp_arg_val_t *args);
 static machine_i2s_obj_t *mp_machine_i2s_make_new_instance(mp_int_t i2s_id);
 static void mp_machine_i2s_deinit(machine_i2s_obj_t *self);
 static void mp_machine_i2s_irq_update(machine_i2s_obj_t *self);
 
-// The port provides implementations of the above in this file.
+
 #include MICROPY_PY_MACHINE_I2S_INCLUDEFILE
 
 #if MICROPY_PY_MACHINE_I2S_RING_BUF
 
-// Ring Buffer
-// Thread safe when used with these constraints:
-// - Single Producer, Single Consumer
-// - Sequential atomic operations
-// One byte of capacity is used to detect buffer empty/full
+
+
+
+
+
 
 static void ringbuf_init(ring_buf_t *rbuf, uint8_t *buffer, size_t size) {
     rbuf->buffer = buffer;
@@ -151,13 +126,13 @@ static bool ringbuf_push(ring_buf_t *rbuf, uint8_t data) {
         return true;
     }
 
-    // full
+    
     return false;
 }
 
 static bool ringbuf_pop(ring_buf_t *rbuf, uint8_t *data) {
     if (rbuf->head == rbuf->tail) {
-        // empty
+        
         return false;
     }
 
@@ -184,15 +159,15 @@ static size_t ringbuf_available_space(ring_buf_t *rbuf) {
 
 static uint32_t fill_appbuf_from_ringbuf(machine_i2s_obj_t *self, mp_buffer_info_t *appbuf) {
 
-    // copy audio samples from the ring buffer to the app buffer
-    // loop, copying samples until the app buffer is filled
-    // For asyncio mode, the loop will make an early exit if the ring buffer becomes empty
-    // Example:
-    //   a MicroPython I2S object is configured for 16-bit mono (2 bytes per audio sample).
-    //   For every frame coming from the ring buffer (8 bytes), 2 bytes are "cherry picked" and
-    //   copied to the supplied app buffer.
-    //   Thus, for every 1 byte copied to the app buffer, 4 bytes are read from the ring buffer.
-    //   If a 8kB app buffer is supplied, 32kB of audio samples is read from the ring buffer.
+    
+    
+    
+    
+    
+    
+    
+    
+    
 
     uint32_t num_bytes_copied_to_appbuf = 0;
     uint8_t *app_p = (uint8_t *)appbuf->buf;
@@ -207,35 +182,35 @@ static uint32_t fill_appbuf_from_ringbuf(machine_i2s_obj_t *self, mp_buffer_info
             int8_t r_to_a_mapping = i2s_frame_map[f_index][i];
             if (r_to_a_mapping != -1) {
                 if (self->io_mode == BLOCKING) {
-                    // poll the ringbuf until a sample becomes available,  copy into appbuf using the mapping transform
+                    
                     while (ringbuf_pop(&self->ring_buffer, app_p + r_to_a_mapping) == false) {
                         ;
                     }
                     num_bytes_copied_to_appbuf++;
                 } else if (self->io_mode == ASYNCIO) {
                     if (ringbuf_pop(&self->ring_buffer, app_p + r_to_a_mapping) == false) {
-                        // ring buffer is empty, exit
+                        
                         goto exit;
                     } else {
                         num_bytes_copied_to_appbuf++;
                     }
                 } else {
-                    return 0;  // should never get here (non-blocking mode does not use this function)
+                    return 0;  
                 }
-            } else { // r_a_mapping == -1
-                // discard unused byte from ring buffer
+            } else { 
+                
                 if (self->io_mode == BLOCKING) {
-                    // poll the ringbuf until a sample becomes available
+                    
                     while (ringbuf_pop(&self->ring_buffer, &discard_byte) == false) {
                         ;
                     }
                 } else if (self->io_mode == ASYNCIO) {
                     if (ringbuf_pop(&self->ring_buffer, &discard_byte) == false) {
-                        // ring buffer is empty, exit
+                        
                         goto exit;
                     }
                 } else {
-                    return 0;  // should never get here (non-blocking mode does not use this function)
+                    return 0;  
                 }
             }
             num_bytes_needed_from_ringbuf--;
@@ -246,11 +221,11 @@ exit:
     return num_bytes_copied_to_appbuf;
 }
 
-// function is used in IRQ context
+
 static void fill_appbuf_from_ringbuf_non_blocking(machine_i2s_obj_t *self) {
 
-    // attempt to copy a block of audio samples from the ring buffer to the supplied app buffer.
-    // audio samples will be formatted as part of the copy operation
+    
+    
 
     uint32_t num_bytes_copied_to_appbuf = 0;
     uint8_t *app_p = &(((uint8_t *)self->non_blocking_descriptor.appbuf.buf)[self->non_blocking_descriptor.index]);
@@ -271,8 +246,8 @@ static void fill_appbuf_from_ringbuf_non_blocking(machine_i2s_obj_t *self) {
                 if (r_to_a_mapping != -1) {
                     ringbuf_pop(&self->ring_buffer, app_p + r_to_a_mapping);
                     num_bytes_copied_to_appbuf++;
-                } else { // r_a_mapping == -1
-                    // discard unused byte from ring buffer
+                } else { 
+                    
                     ringbuf_pop(&self->ring_buffer, &discard_byte);
                 }
                 num_bytes_needed_from_ringbuf--;
@@ -290,38 +265,38 @@ static void fill_appbuf_from_ringbuf_non_blocking(machine_i2s_obj_t *self) {
 
 static uint32_t copy_appbuf_to_ringbuf(machine_i2s_obj_t *self, mp_buffer_info_t *appbuf) {
 
-    // copy audio samples from the app buffer to the ring buffer
-    // loop, reading samples until the app buffer is emptied
-    // for asyncio mode, the loop will make an early exit if the ring buffer becomes full
+    
+    
+    
 
     uint32_t a_index = 0;
 
     while (a_index < appbuf->len) {
         if (self->io_mode == BLOCKING) {
-            // copy a byte to the ringbuf when space becomes available
+            
             while (ringbuf_push(&self->ring_buffer, ((uint8_t *)appbuf->buf)[a_index]) == false) {
                 ;
             }
             a_index++;
         } else if (self->io_mode == ASYNCIO) {
             if (ringbuf_push(&self->ring_buffer, ((uint8_t *)appbuf->buf)[a_index]) == false) {
-                // ring buffer is full, exit
+                
                 break;
             } else {
                 a_index++;
             }
         } else {
-            return 0;  // should never get here (non-blocking mode does not use this function)
+            return 0;  
         }
     }
 
     return a_index;
 }
 
-// function is used in IRQ context
+
 static void copy_appbuf_to_ringbuf_non_blocking(machine_i2s_obj_t *self) {
 
-    // copy audio samples from app buffer into ring buffer
+    
     uint32_t num_bytes_remaining_to_copy = self->non_blocking_descriptor.appbuf.len - self->non_blocking_descriptor.index;
     uint32_t num_bytes_to_copy = MIN(SIZEOF_NON_BLOCKING_COPY_IN_BYTES, num_bytes_remaining_to_copy);
 
@@ -339,7 +314,7 @@ static void copy_appbuf_to_ringbuf_non_blocking(machine_i2s_obj_t *self) {
     }
 }
 
-#endif // MICROPY_PY_MACHINE_I2S_RING_BUF
+#endif 
 
 MP_NOINLINE static void machine_i2s_init_helper(machine_i2s_obj_t *self, size_t n_pos_args, const mp_obj_t *pos_args, mp_map_t *kw_args) {
     static const mp_arg_t allowed_args[] = {
@@ -400,7 +375,7 @@ static mp_obj_t machine_i2s_make_new(const mp_obj_type_t *type, size_t n_pos_arg
     return MP_OBJ_FROM_PTR(self);
 }
 
-// I2S.init(...)
+
 static mp_obj_t machine_i2s_init(size_t n_pos_args, const mp_obj_t *pos_args, mp_map_t *kw_args) {
     machine_i2s_obj_t *self = MP_OBJ_TO_PTR(pos_args[0]);
     mp_machine_i2s_deinit(self);
@@ -409,7 +384,7 @@ static mp_obj_t machine_i2s_init(size_t n_pos_args, const mp_obj_t *pos_args, mp
 }
 static MP_DEFINE_CONST_FUN_OBJ_KW(machine_i2s_init_obj, 1, machine_i2s_init);
 
-// I2S.deinit()
+
 static mp_obj_t machine_i2s_deinit(mp_obj_t self_in) {
     machine_i2s_obj_t *self = MP_OBJ_TO_PTR(self_in);
     mp_machine_i2s_deinit(self);
@@ -417,7 +392,7 @@ static mp_obj_t machine_i2s_deinit(mp_obj_t self_in) {
 }
 static MP_DEFINE_CONST_FUN_OBJ_1(machine_i2s_deinit_obj, machine_i2s_deinit);
 
-// I2S.irq(handler)
+
 static mp_obj_t machine_i2s_irq(mp_obj_t self_in, mp_obj_t handler) {
     machine_i2s_obj_t *self = MP_OBJ_TO_PTR(self_in);
     if (handler != mp_const_none && !mp_obj_is_callable(handler)) {
@@ -438,8 +413,8 @@ static mp_obj_t machine_i2s_irq(mp_obj_t self_in, mp_obj_t handler) {
 }
 static MP_DEFINE_CONST_FUN_OBJ_2(machine_i2s_irq_obj, machine_i2s_irq);
 
-// Shift() is typically used as a volume control.
-// shift=1 increases volume by 6dB, shift=-1 decreases volume by 6dB
+
+
 static mp_obj_t machine_i2s_shift(size_t n_args, const mp_obj_t *pos_args, mp_map_t *kw_args) {
     enum { ARG_buf, ARG_bits, ARG_shift};
     static const mp_arg_t allowed_args[] = {
@@ -448,7 +423,7 @@ static mp_obj_t machine_i2s_shift(size_t n_args, const mp_obj_t *pos_args, mp_ma
         { MP_QSTR_shift,  MP_ARG_REQUIRED | MP_ARG_KW_ONLY | MP_ARG_INT, {.u_int = -1} },
     };
 
-    // parse args
+    
     mp_arg_val_t args[MP_ARRAY_SIZE(allowed_args)];
     mp_arg_parse_all(n_args, pos_args, kw_args, MP_ARRAY_SIZE(allowed_args), allowed_args, args);
 
@@ -501,7 +476,7 @@ static MP_DEFINE_CONST_FUN_OBJ_KW(machine_i2s_shift_fun_obj, 0, machine_i2s_shif
 static MP_DEFINE_CONST_STATICMETHOD_OBJ(machine_i2s_shift_obj, MP_ROM_PTR(&machine_i2s_shift_fun_obj));
 
 static const mp_rom_map_elem_t machine_i2s_locals_dict_table[] = {
-    // Methods
+    
     { MP_ROM_QSTR(MP_QSTR_init),            MP_ROM_PTR(&machine_i2s_init_obj) },
     { MP_ROM_QSTR(MP_QSTR_readinto),        MP_ROM_PTR(&mp_stream_readinto_obj) },
     { MP_ROM_QSTR(MP_QSTR_write),           MP_ROM_PTR(&mp_stream_write_obj) },
@@ -511,10 +486,10 @@ static const mp_rom_map_elem_t machine_i2s_locals_dict_table[] = {
     { MP_ROM_QSTR(MP_QSTR___del__),         MP_ROM_PTR(&machine_i2s_deinit_obj) },
     #endif
 
-    // Static method
+    
     { MP_ROM_QSTR(MP_QSTR_shift),           MP_ROM_PTR(&machine_i2s_shift_obj) },
 
-    // Constants
+    
     { MP_ROM_QSTR(MP_QSTR_RX),              MP_ROM_INT(MICROPY_PY_MACHINE_I2S_CONSTANT_RX) },
     { MP_ROM_QSTR(MP_QSTR_TX),              MP_ROM_INT(MICROPY_PY_MACHINE_I2S_CONSTANT_TX) },
     { MP_ROM_QSTR(MP_QSTR_STEREO),          MP_ROM_INT(STEREO) },
@@ -552,12 +527,12 @@ static mp_uint_t machine_i2s_stream_read(mp_obj_t self_in, void *buf_in, mp_uint
         descriptor.appbuf.len = size;
         descriptor.callback = self->callback_for_non_blocking;
         descriptor.direction = I2S_RX_TRANSFER;
-        // send the descriptor to the task that handles non-blocking mode
+        
         xQueueSend(self->non_blocking_mode_queue, &descriptor, 0);
         #endif
 
         return size;
-    } else { // blocking or asyncio mode
+    } else { 
         mp_buffer_info_t appbuf;
         appbuf.buf = (void *)buf_in;
         appbuf.len = size;
@@ -594,12 +569,12 @@ static mp_uint_t machine_i2s_stream_write(mp_obj_t self_in, const void *buf_in, 
         descriptor.appbuf.len = size;
         descriptor.callback = self->callback_for_non_blocking;
         descriptor.direction = I2S_TX_TRANSFER;
-        // send the descriptor to the task that handles non-blocking mode
+        
         xQueueSend(self->non_blocking_mode_queue, &descriptor, 0);
         #endif
 
         return size;
-    } else { // blocking or asyncio mode
+    } else { 
         mp_buffer_info_t appbuf;
         appbuf.buf = (void *)buf_in;
         appbuf.len = size;
@@ -617,7 +592,7 @@ static mp_uint_t machine_i2s_ioctl(mp_obj_t self_in, mp_uint_t request, uintptr_
     machine_i2s_obj_t *self = MP_OBJ_TO_PTR(self_in);
     mp_uint_t ret;
     uintptr_t flags = arg;
-    self->io_mode = ASYNCIO; // a call to ioctl() is an indication that asyncio is being used
+    self->io_mode = ASYNCIO; 
 
     if (request == MP_STREAM_POLL) {
         ret = 0;
@@ -680,4 +655,4 @@ MP_DEFINE_CONST_OBJ_TYPE(
     locals_dict, &machine_i2s_locals_dict
     );
 
-#endif // MICROPY_PY_MACHINE_I2S
+#endif 

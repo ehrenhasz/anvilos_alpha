@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM cma
 
@@ -125,7 +125,7 @@ TRACE_EVENT(cma_alloc_busy_retry,
 		  __entry->align)
 );
 
-#endif /* _TRACE_CMA_H */
+#endif  
 
-/* This part must be outside protection */
+ 
 #include <trace/define_trace.h>

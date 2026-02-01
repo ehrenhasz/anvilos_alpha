@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Coda multi-standard codec IP - MPEG-4 helper functions
- *
- * Copyright (C) 2019 Pengutronix, Philipp Zabel
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/videodev2.h>
@@ -48,16 +44,7 @@ int coda_mpeg4_level(int level_idc)
 	}
 }
 
-/*
- * Check if the buffer starts with the MPEG-4 visual object sequence and visual
- * object headers, for example:
- *
- *   00 00 01 b0 f1
- *   00 00 01 b5 a9 13 00 00 01 00 00 00 01 20 08
- *               d4 8d 88 00 f5 04 04 08 14 30 3f
- *
- * Returns the detected header size in bytes or 0.
- */
+ 
 u32 coda_mpeg4_parse_headers(struct coda_ctx *ctx, u8 *buf, u32 size)
 {
 	static const u8 vos_start[4] = { 0x00, 0x00, 0x01, 0xb0 };

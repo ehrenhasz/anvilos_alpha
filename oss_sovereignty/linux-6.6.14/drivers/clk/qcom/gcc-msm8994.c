@@ -1,6 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright (c) 2013-2016, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/kernel.h>
@@ -655,7 +654,7 @@ static struct clk_rcg2 blsp2_qup5_spi_apps_clk_src = {
 	.mnd_width = 8,
 	.hid_width = 5,
 	.parent_map = gcc_xo_gpll0_map,
-	/* BLSP1 QUP1 and BLSP2 QUP5 use the same freqs */
+	 
 	.freq_tbl = ftbl_blsp1_qup1_spi_apps_clk_src,
 	.clkr.hw.init = &(struct clk_init_data){
 		.name = "blsp2_qup5_spi_apps_clk_src",
@@ -2604,18 +2603,14 @@ static struct clk_regmap *gcc_msm8994_clocks[] = {
 	[GCC_BOOT_ROM_AHB_CLK] = &gcc_boot_rom_ahb_clk.clkr,
 	[GCC_PRNG_AHB_CLK] = &gcc_prng_ahb_clk.clkr,
 
-	/*
-	 * The following clocks should NOT be managed by this driver, but they once were
-	 * mistakengly added. Now they are only here to indicate that they are not defined
-	 * on purpose, even though the names will stay in the header file (for ABI sanity).
-	 */
+	 
 	[CONFIG_NOC_CLK_SRC] = NULL,
 	[PERIPH_NOC_CLK_SRC] = NULL,
 	[SYSTEM_NOC_CLK_SRC] = NULL,
 };
 
 static struct gdsc *gcc_msm8994_gdscs[] = {
-	/* This GDSC does not exist, but ABI has to remain intact */
+	 
 	[PCIE_GDSC] = NULL,
 	[PCIE_0_GDSC] = &pcie_0_gdsc,
 	[PCIE_1_GDSC] = &pcie_1_gdsc,
@@ -2652,7 +2647,7 @@ static const struct qcom_cc_desc gcc_msm8994_desc = {
 
 static const struct of_device_id gcc_msm8994_match_table[] = {
 	{ .compatible = "qcom,gcc-msm8992" },
-	{ .compatible = "qcom,gcc-msm8994" }, /* V2 and V2.1 */
+	{ .compatible = "qcom,gcc-msm8994" },  
 	{}
 };
 MODULE_DEVICE_TABLE(of, gcc_msm8994_match_table);
@@ -2660,7 +2655,7 @@ MODULE_DEVICE_TABLE(of, gcc_msm8994_match_table);
 static int gcc_msm8994_probe(struct platform_device *pdev)
 {
 	if (of_device_is_compatible(pdev->dev.of_node, "qcom,gcc-msm8992")) {
-		/* MSM8992 features less clocks and some have different freq tables */
+		 
 		gcc_msm8994_desc.clks[UFS_AXI_CLK_SRC] = NULL;
 		gcc_msm8994_desc.clks[GCC_LPASS_Q6_AXI_CLK] = NULL;
 		gcc_msm8994_desc.clks[UFS_PHY_LDO] = NULL;
@@ -2687,11 +2682,7 @@ static int gcc_msm8994_probe(struct platform_device *pdev)
 		blsp2_qup5_i2c_apps_clk_src.freq_tbl = ftbl_blsp1_qup_spi_apps_clk_src_8992;
 		blsp2_qup6_i2c_apps_clk_src.freq_tbl = ftbl_blsp1_qup_spi_apps_clk_src_8992;
 
-		/*
-		 * Some 8992 boards might *possibly* use
-		 * PCIe1 clocks and controller, but it's not
-		 * standard and they should be disabled otherwise.
-		 */
+		 
 		gcc_msm8994_desc.clks[PCIE_1_AUX_CLK_SRC] = NULL;
 		gcc_msm8994_desc.clks[PCIE_1_PIPE_CLK_SRC] = NULL;
 		gcc_msm8994_desc.clks[PCIE_1_PHY_LDO] = NULL;

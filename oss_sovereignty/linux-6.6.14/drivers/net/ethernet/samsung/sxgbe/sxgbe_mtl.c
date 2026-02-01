@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* 10G controller driver for Samsung SoCs
- *
- * Copyright (C) 2013 Samsung Electronics Co., Ltd.
- *		http://www.samsung.com
- *
- * Author: Siva Reddy Kallam <siva.kallam@samsung.com>
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -25,7 +19,7 @@ static void sxgbe_mtl_init(void __iomem *ioaddr, unsigned int etsalg,
 	reg_val = readl(ioaddr + SXGBE_MTL_OP_MODE_REG);
 	reg_val &= ETS_RST;
 
-	/* ETS Algorith */
+	 
 	switch (etsalg & SXGBE_MTL_OPMODE_ESTMASK) {
 	case ETS_WRR:
 		reg_val &= ETS_WRR;
@@ -50,7 +44,7 @@ static void sxgbe_mtl_init(void __iomem *ioaddr, unsigned int etsalg,
 	writel(reg_val, ioaddr + SXGBE_MTL_OP_MODE_REG);
 }
 
-/* For Dynamic DMA channel mapping for Rx queue */
+ 
 static void sxgbe_mtl_dma_dm_rxqueue(void __iomem *ioaddr)
 {
 	writel(RX_QUEUE_DYNAMIC, ioaddr + SXGBE_MTL_RXQ_DMAMAP0_REG);
@@ -63,7 +57,7 @@ static void sxgbe_mtl_set_txfifosize(void __iomem *ioaddr, int queue_num,
 {
 	u32 fifo_bits, reg_val;
 
-	/* 0 means 256 bytes */
+	 
 	fifo_bits = (queue_fifo / SXGBE_MTL_TX_FIFO_DIV) - 1;
 	reg_val = readl(ioaddr + SXGBE_MTL_TXQ_OPMODE_REG(queue_num));
 	reg_val |= (fifo_bits << SXGBE_MTL_FIFO_LSHIFT);
@@ -75,7 +69,7 @@ static void sxgbe_mtl_set_rxfifosize(void __iomem *ioaddr, int queue_num,
 {
 	u32 fifo_bits, reg_val;
 
-	/* 0 means 256 bytes */
+	 
 	fifo_bits = (queue_fifo / SXGBE_MTL_RX_FIFO_DIV)-1;
 	reg_val = readl(ioaddr + SXGBE_MTL_RXQ_OPMODE_REG(queue_num));
 	reg_val |= (fifo_bits << SXGBE_MTL_FIFO_LSHIFT);
@@ -180,11 +174,11 @@ static void sxgbe_set_tx_mtl_mode(void __iomem *ioaddr, int queue_num,
 	u32 reg_val;
 
 	reg_val = readl(ioaddr + SXGBE_MTL_TXQ_OPMODE_REG(queue_num));
-	/* TX specific MTL mode settings */
+	 
 	if (tx_mode == SXGBE_MTL_SFMODE) {
 		reg_val |= SXGBE_MTL_SFMODE;
 	} else {
-		/* set the TTC values */
+		 
 		if (tx_mode <= 64)
 			reg_val |= MTL_CONTROL_TTC_64;
 		else if (tx_mode <= 96)
@@ -201,7 +195,7 @@ static void sxgbe_set_tx_mtl_mode(void __iomem *ioaddr, int queue_num,
 			reg_val |= MTL_CONTROL_TTC_512;
 	}
 
-	/* write into TXQ operation register */
+	 
 	writel(reg_val, ioaddr + SXGBE_MTL_TXQ_OPMODE_REG(queue_num));
 }
 
@@ -211,7 +205,7 @@ static void sxgbe_set_rx_mtl_mode(void __iomem *ioaddr, int queue_num,
 	u32 reg_val;
 
 	reg_val = readl(ioaddr + SXGBE_MTL_RXQ_OPMODE_REG(queue_num));
-	/* RX specific MTL mode settings */
+	 
 	if (rx_mode == SXGBE_RX_MTL_SFMODE) {
 		reg_val |= SXGBE_RX_MTL_SFMODE;
 	} else {
@@ -223,7 +217,7 @@ static void sxgbe_set_rx_mtl_mode(void __iomem *ioaddr, int queue_num,
 			reg_val |= MTL_CONTROL_RTC_128;
 	}
 
-	/* write into RXQ operation register */
+	 
 	writel(reg_val, ioaddr + SXGBE_MTL_RXQ_OPMODE_REG(queue_num));
 }
 

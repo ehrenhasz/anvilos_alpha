@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright (c) 2018 Facebook */
+ 
+ 
 
 #ifndef __TEST_SELECT_REUSEPORT_COMMON_H
 #define __TEST_SELECT_REUSEPORT_COMMON_H

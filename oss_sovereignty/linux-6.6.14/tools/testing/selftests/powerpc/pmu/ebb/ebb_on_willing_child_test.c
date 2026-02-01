@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright 2014, Michael Ellerman, IBM Corp.
- */
+
+ 
 
 #include <signal.h>
 #include <stdio.h>
@@ -14,17 +12,13 @@
 #include "ebb.h"
 
 
-/*
- * Tests we can setup an EBB on our child. The child expects this and enables
- * EBBs, which are then delivered to the child, even though the event is
- * created by the parent.
- */
+ 
 
 static int victim_child(union pipe read_pipe, union pipe write_pipe)
 {
 	FAIL_IF(wait_for_parent(read_pipe));
 
-	/* Setup our EBB handler, before the EBB event is created */
+	 
 	ebb_enable_pmc_counting(1);
 	setup_ebb_handler(standard_ebb_callee);
 	ebb_global_enable();
@@ -45,7 +39,7 @@ static int victim_child(union pipe read_pipe, union pipe write_pipe)
 	return 0;
 }
 
-/* Tests we can setup an EBB on our child - if it's expecting it */
+ 
 int ebb_on_willing_child(void)
 {
 	union pipe read_pipe, write_pipe;
@@ -59,14 +53,14 @@ int ebb_on_willing_child(void)
 
 	pid = fork();
 	if (pid == 0) {
-		/* NB order of pipes looks reversed */
+		 
 		exit(victim_child(write_pipe, read_pipe));
 	}
 
-	/* Signal the child to setup its EBB handler */
+	 
 	FAIL_IF(sync_with_child(read_pipe, write_pipe));
 
-	/* Child is running now */
+	 
 
 	event_init_named(&event, 0x1001e, "cycles");
 	event_leader_ebb_init(&event);
@@ -78,7 +72,7 @@ int ebb_on_willing_child(void)
 	FAIL_IF(event_open_with_pid(&event, pid));
 	FAIL_IF(ebb_event_enable(&event));
 
-	/* Child show now take EBBs and then exit */
+	 
 	FAIL_IF(wait_for_child(pid));
 
 	event_close(&event);

@@ -1,26 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2011-2017, The Linux Foundation
- */
+
+ 
 
 #include <linux/slab.h>
 #include <linux/pm_runtime.h>
 #include "slimbus.h"
 
-/**
- * slim_msg_response() - Deliver Message response received from a device to the
- *			framework.
- *
- * @ctrl: Controller handle
- * @reply: Reply received from the device
- * @len: Length of the reply
- * @tid: Transaction ID received with which framework can associate reply.
- *
- * Called by controller to inform framework about the response received.
- * This helps in making the API asynchronous, and controller-driver doesn't need
- * to manage 1 more table other than the one managed by framework mapping TID
- * with buffers
- */
+ 
 void slim_msg_response(struct slim_controller *ctrl, u8 *reply, u8 tid, u8 len)
 {
 	struct slim_msg_txn *txn;
@@ -46,20 +31,13 @@ void slim_msg_response(struct slim_controller *ctrl, u8 *reply, u8 tid, u8 len)
 	if (txn->comp)
 		complete(txn->comp);
 
-	/* Remove runtime-pm vote now that response was received for TID txn */
+	 
 	pm_runtime_mark_last_busy(ctrl->dev);
 	pm_runtime_put_autosuspend(ctrl->dev);
 }
 EXPORT_SYMBOL_GPL(slim_msg_response);
 
-/**
- * slim_alloc_txn_tid() - Allocate a tid to txn
- *
- * @ctrl: Controller handle
- * @txn: transaction to be allocated with tid.
- *
- * Return: zero on success with valid txn->tid and error code on failures.
- */
+ 
 int slim_alloc_txn_tid(struct slim_controller *ctrl, struct slim_msg_txn *txn)
 {
 	unsigned long flags;
@@ -78,12 +56,7 @@ int slim_alloc_txn_tid(struct slim_controller *ctrl, struct slim_msg_txn *txn)
 }
 EXPORT_SYMBOL_GPL(slim_alloc_txn_tid);
 
-/**
- * slim_free_txn_tid() - Free tid of txn
- *
- * @ctrl: Controller handle
- * @txn: transaction whose tid should be freed
- */
+ 
 void slim_free_txn_tid(struct slim_controller *ctrl, struct slim_msg_txn *txn)
 {
 	unsigned long flags;
@@ -94,29 +67,14 @@ void slim_free_txn_tid(struct slim_controller *ctrl, struct slim_msg_txn *txn)
 }
 EXPORT_SYMBOL_GPL(slim_free_txn_tid);
 
-/**
- * slim_do_transfer() - Process a SLIMbus-messaging transaction
- *
- * @ctrl: Controller handle
- * @txn: Transaction to be sent over SLIMbus
- *
- * Called by controller to transmit messaging transactions not dealing with
- * Interface/Value elements. (e.g. transmitting a message to assign logical
- * address to a slave device
- *
- * Return: -ETIMEDOUT: If transmission of this message timed out
- *	(e.g. due to bus lines not being clocked or driven by controller)
- */
+ 
 int slim_do_transfer(struct slim_controller *ctrl, struct slim_msg_txn *txn)
 {
 	DECLARE_COMPLETION_ONSTACK(done);
 	bool need_tid = false, clk_pause_msg = false;
 	int ret, timeout;
 
-	/*
-	 * do not vote for runtime-PM if the transactions are part of clock
-	 * pause sequence
-	 */
+	 
 	if (ctrl->sched.clk_state == SLIM_CLK_ENTERING_PAUSE &&
 		(txn->mt == SLIM_MSG_MT_CORE &&
 		 txn->mc >= SLIM_MSG_MC_BEGIN_RECONFIGURATION &&
@@ -131,7 +89,7 @@ int slim_do_transfer(struct slim_controller *ctrl, struct slim_msg_txn *txn)
 			goto slim_xfer_err;
 		}
 	}
-	/* Initialize tid to invalid value */
+	 
 	txn->tid = 0;
 	need_tid = slim_tid_txn(txn->mt, txn->mc);
 
@@ -165,10 +123,7 @@ int slim_do_transfer(struct slim_controller *ctrl, struct slim_msg_txn *txn)
 
 slim_xfer_err:
 	if (!clk_pause_msg && (txn->tid == 0  || ret == -ETIMEDOUT)) {
-		/*
-		 * remove runtime-pm vote if this was TX only, or
-		 * if there was error during this transaction
-		 */
+		 
 		pm_runtime_mark_last_busy(ctrl->dev);
 		pm_runtime_put_autosuspend(ctrl->dev);
 	}
@@ -219,17 +174,7 @@ static u16 slim_slicesize(int code)
 	return sizetocode[code - 1];
 }
 
-/**
- * slim_xfer_msg() - Transfer a value info message on slim device
- *
- * @sbdev: slim device to which this msg has to be transfered
- * @msg: value info message pointer
- * @mc: message code of the message
- *
- * Called by drivers which want to transfer a vlaue or info elements.
- *
- * Return: -ETIMEDOUT: If transmission of this message timed out
- */
+ 
 int slim_xfer_msg(struct slim_device *sbdev, struct slim_val_inf *msg,
 		  u8 mc)
 {
@@ -281,18 +226,7 @@ static void slim_fill_msg(struct slim_val_inf *msg, u32 addr,
 	msg->comp = NULL;
 }
 
-/**
- * slim_read() - Read SLIMbus value element
- *
- * @sdev: client handle.
- * @addr:  address of value element to read.
- * @count: number of bytes to read. Maximum bytes allowed are 16.
- * @val: will return what the value element value was
- *
- * Return: -EINVAL for Invalid parameters, -ETIMEDOUT If transmission of
- * this message timed out (e.g. due to bus lines not being clocked
- * or driven by controller)
- */
+ 
 int slim_read(struct slim_device *sdev, u32 addr, size_t count, u8 *val)
 {
 	struct slim_val_inf msg;
@@ -303,14 +237,7 @@ int slim_read(struct slim_device *sdev, u32 addr, size_t count, u8 *val)
 }
 EXPORT_SYMBOL_GPL(slim_read);
 
-/**
- * slim_readb() - Read byte from SLIMbus value element
- *
- * @sdev: client handle.
- * @addr:  address in the value element to read.
- *
- * Return: byte value of value element.
- */
+ 
 int slim_readb(struct slim_device *sdev, u32 addr)
 {
 	int ret;
@@ -324,18 +251,7 @@ int slim_readb(struct slim_device *sdev, u32 addr)
 }
 EXPORT_SYMBOL_GPL(slim_readb);
 
-/**
- * slim_write() - Write SLIMbus value element
- *
- * @sdev: client handle.
- * @addr:  address in the value element to write.
- * @count: number of bytes to write. Maximum bytes allowed are 16.
- * @val: value to write to value element
- *
- * Return: -EINVAL for Invalid parameters, -ETIMEDOUT If transmission of
- * this message timed out (e.g. due to bus lines not being clocked
- * or driven by controller)
- */
+ 
 int slim_write(struct slim_device *sdev, u32 addr, size_t count, u8 *val)
 {
 	struct slim_val_inf msg;
@@ -346,18 +262,7 @@ int slim_write(struct slim_device *sdev, u32 addr, size_t count, u8 *val)
 }
 EXPORT_SYMBOL_GPL(slim_write);
 
-/**
- * slim_writeb() - Write byte to SLIMbus value element
- *
- * @sdev: client handle.
- * @addr:  address of value element to write.
- * @value: value to write to value element
- *
- * Return: -EINVAL for Invalid parameters, -ETIMEDOUT If transmission of
- * this message timed out (e.g. due to bus lines not being clocked
- * or driven by controller)
- *
- */
+ 
 int slim_writeb(struct slim_device *sdev, u32 addr, u8 value)
 {
 	return slim_write(sdev, addr, 1, &value);

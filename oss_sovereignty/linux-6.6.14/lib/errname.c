@@ -1,18 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/build_bug.h>
 #include <linux/errno.h>
 #include <linux/errname.h>
 #include <linux/kernel.h>
 #include <linux/math.h>
 
-/*
- * Ensure these tables do not accidentally become gigantic if some
- * huge errno makes it in. On most architectures, the first table will
- * only have about 140 entries, but mips and parisc have more sparsely
- * allocated errnos (with EHWPOISON = 257 on parisc, and EDQUOT = 1133
- * on mips), so this wastes a bit of space on those - though we
- * special case the EDQUOT case.
- */
+ 
 #define E(err) [err + BUILD_BUG_ON_ZERO(err <= 0 || err > 300)] = "-" #err
 static const char *names_0[] = {
 	E(E2BIG),
@@ -21,7 +14,7 @@ static const char *names_0[] = {
 	E(EADDRNOTAVAIL),
 	E(EADV),
 	E(EAFNOSUPPORT),
-	E(EAGAIN), /* EWOULDBLOCK */
+	E(EAGAIN),  
 	E(EALREADY),
 	E(EBADE),
 	E(EBADF),
@@ -32,15 +25,15 @@ static const char *names_0[] = {
 	E(EBADSLT),
 	E(EBFONT),
 	E(EBUSY),
-	E(ECANCELED), /* ECANCELLED */
+	E(ECANCELED),  
 	E(ECHILD),
 	E(ECHRNG),
 	E(ECOMM),
 	E(ECONNABORTED),
-	E(ECONNREFUSED), /* EREFUSED */
+	E(ECONNREFUSED),  
 	E(ECONNRESET),
-	E(EDEADLK), /* EDEADLOCK */
-#if EDEADLK != EDEADLOCK /* mips, sparc, powerpc */
+	E(EDEADLK),  
+#if EDEADLK != EDEADLOCK  
 	E(EDEADLOCK),
 #endif
 	E(EDESTADDRREQ),
@@ -166,13 +159,13 @@ static const char *names_0[] = {
 };
 #undef E
 
-#ifdef EREFUSED /* parisc */
+#ifdef EREFUSED  
 static_assert(EREFUSED == ECONNREFUSED);
 #endif
-#ifdef ECANCELLED /* parisc */
+#ifdef ECANCELLED  
 static_assert(ECANCELLED == ECANCELED);
 #endif
-static_assert(EAGAIN == EWOULDBLOCK); /* everywhere */
+static_assert(EAGAIN == EWOULDBLOCK);  
 
 #define E(err) [err - 512 + BUILD_BUG_ON_ZERO(err < 512 || err > 550)] = "-" #err
 static const char *names_512[] = {
@@ -204,16 +197,13 @@ static const char *__errname(unsigned err)
 		return names_0[err];
 	if (err >= 512 && err - 512 < ARRAY_SIZE(names_512))
 		return names_512[err - 512];
-	/* But why? */
-	if (IS_ENABLED(CONFIG_MIPS) && err == EDQUOT) /* 1133 */
+	 
+	if (IS_ENABLED(CONFIG_MIPS) && err == EDQUOT)  
 		return "-EDQUOT";
 	return NULL;
 }
 
-/*
- * errname(EIO) -> "EIO"
- * errname(-EIO) -> "-EIO"
- */
+ 
 const char *errname(int err)
 {
 	const char *name = __errname(abs(err));

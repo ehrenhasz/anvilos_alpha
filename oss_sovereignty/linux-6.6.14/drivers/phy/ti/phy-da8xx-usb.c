@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * phy-da8xx-usb - TI DaVinci DA8xx USB PHY driver
- *
- * Copyright (C) 2016 David Lechner <david@lechnology.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/io.h>
@@ -92,13 +88,13 @@ static int da8xx_usb20_phy_set_mode(struct phy *phy,
 	u32 val;
 
 	switch (mode) {
-	case PHY_MODE_USB_HOST:		/* Force VBUS valid, ID = 0 */
+	case PHY_MODE_USB_HOST:		 
 		val = CFGCHIP2_OTGMODE_FORCE_HOST;
 		break;
-	case PHY_MODE_USB_DEVICE:	/* Force VBUS valid, ID = 1 */
+	case PHY_MODE_USB_DEVICE:	 
 		val = CFGCHIP2_OTGMODE_FORCE_DEVICE;
 		break;
-	case PHY_MODE_USB_OTG:	/* Don't override the VBUS/ID comparators */
+	case PHY_MODE_USB_OTG:	 
 		val = CFGCHIP2_OTGMODE_NO_OVERRIDE;
 		break;
 	default:

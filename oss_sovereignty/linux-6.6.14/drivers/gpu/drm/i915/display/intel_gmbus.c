@@ -1,31 +1,4 @@
-/*
- * Copyright (c) 2006 Dave Airlie <airlied@linux.ie>
- * Copyright © 2006-2008,2010 Intel Corporation
- *   Jesse Barnes <jesse.barnes@intel.com>
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice (including the next
- * paragraph) shall be included in all copies or substantial portions of the
- * Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
- * DEALINGS IN THE SOFTWARE.
- *
- * Authors:
- *	Eric Anholt <eric@anholt.net>
- *	Chris Wilson <chris@chris-wilson.co.uk>
- */
+ 
 
 #include <linux/export.h>
 #include <linux/i2c-algo-bit.h>
@@ -74,7 +47,7 @@ struct gmbus_pin {
 	enum gmbus_gpio gpio;
 };
 
-/* Map gmbus pin pairs to names and registers. */
+ 
 static const struct gmbus_pin gmbus_pins[] = {
 	[GMBUS_PIN_SSC] = { "ssc", GPIOB },
 	[GMBUS_PIN_VGADDC] = { "vga", GPIOA },
@@ -195,7 +168,7 @@ bool intel_gmbus_is_valid_pin(struct drm_i915_private *i915, unsigned int pin)
 	return get_gmbus_pin(i915, pin);
 }
 
-/* Intel GPIO access functions */
+ 
 
 #define I2C_RISEFALL_TIME 10
 
@@ -215,7 +188,7 @@ intel_gmbus_reset(struct drm_i915_private *i915)
 static void pnv_gmbus_clock_gating(struct drm_i915_private *i915,
 				   bool enable)
 {
-	/* When using bit bashing for I2C, this bit needs to be set to 1 */
+	 
 	intel_de_rmw(i915, DSPCLK_GATE_D(i915), PNV_GMBUSUNIT_CLOCK_GATE_DISABLE,
 		     !enable ? PNV_GMBUSUNIT_CLOCK_GATE_DISABLE : 0);
 }
@@ -239,7 +212,7 @@ static u32 get_reserved(struct intel_gmbus *bus)
 	struct drm_i915_private *i915 = bus->i915;
 	u32 reserved = 0;
 
-	/* On most chips, these bits must be preserved in software. */
+	 
 	if (!IS_I830(i915) && !IS_I845G(i915))
 		reserved = intel_de_read_notrace(i915, bus->gpio_reg) &
 			(GPIO_DATA_PULLUP_DISABLE | GPIO_CLOCK_PULLUP_DISABLE);
@@ -357,10 +330,7 @@ intel_gpio_setup(struct intel_gmbus *bus, i915_reg_t gpio_reg)
 
 static bool has_gmbus_irq(struct drm_i915_private *i915)
 {
-	/*
-	 * encoder->shutdown() may want to use GMBUS
-	 * after irqs have already been disabled.
-	 */
+	 
 	return HAS_GMBUS_IRQ(i915) && intel_irqs_enabled(i915);
 }
 
@@ -370,10 +340,7 @@ static int gmbus_wait(struct drm_i915_private *i915, u32 status, u32 irq_en)
 	u32 gmbus2;
 	int ret;
 
-	/* Important: The hw handles only the first bit, so set only one! Since
-	 * we also need to check for NAKs besides the hw ready/idle signal, we
-	 * need to wake up periodically and check that ourselves.
-	 */
+	 
 	if (!has_gmbus_irq(i915))
 		irq_en = 0;
 
@@ -403,7 +370,7 @@ gmbus_wait_idle(struct drm_i915_private *i915)
 	u32 irq_enable;
 	int ret;
 
-	/* Important: The hw handles only the first bit, so set only one! */
+	 
 	irq_enable = 0;
 	if (has_gmbus_irq(i915))
 		irq_enable = GMBUS_IDLE_EN;
@@ -435,10 +402,7 @@ gmbus_xfer_read_chunk(struct drm_i915_private *i915,
 	bool extra_byte_added = false;
 
 	if (burst_read) {
-		/*
-		 * As per HW Spec, for 512Bytes need to read extra Byte and
-		 * Ignore the extra byte read.
-		 */
+		 
 		if (len == 512) {
 			extra_byte_added = true;
 			len++;
@@ -468,21 +432,14 @@ gmbus_xfer_read_chunk(struct drm_i915_private *i915,
 		} while (--len && ++loop < 4);
 
 		if (burst_read && len == size - 4)
-			/* Reset the override bit */
+			 
 			intel_de_write_fw(i915, GMBUS0(i915), gmbus0_reg);
 	}
 
 	return 0;
 }
 
-/*
- * HW spec says that 512Bytes in Burst read need special treatment.
- * But it doesn't talk about other multiple of 256Bytes. And couldn't locate
- * an I2C slave, which supports such a lengthy burst read too for experiments.
- *
- * So until things get clarified on HW support, to avoid the burst read length
- * in fold of 256Bytes except 512, max burst read length is fixed at 767Bytes.
- */
+ 
 #define INTEL_GMBUS_BURST_READ_MAX_LEN		767U
 
 static int
@@ -571,10 +528,7 @@ gmbus_xfer_write(struct drm_i915_private *i915, struct i2c_msg *msg,
 	return 0;
 }
 
-/*
- * The gmbus controller can combine a 1 or 2 byte write with another read/write
- * that immediately follows it by using an "INDEX" cycle.
- */
+ 
 static bool
 gmbus_is_index_xfer(struct i2c_msg *msgs, int i, int num)
 {
@@ -600,7 +554,7 @@ gmbus_index_xfer(struct drm_i915_private *i915, struct i2c_msg *msgs,
 		gmbus1_index = GMBUS_CYCLE_INDEX |
 			       (msgs[0].buf[0] << GMBUS_SLAVE_INDEX_SHIFT);
 
-	/* GMBUS5 holds 16-bit index */
+	 
 	if (gmbus5)
 		intel_de_write_fw(i915, GMBUS5(i915), gmbus5);
 
@@ -610,7 +564,7 @@ gmbus_index_xfer(struct drm_i915_private *i915, struct i2c_msg *msgs,
 	else
 		ret = gmbus_xfer_write(i915, &msgs[1], gmbus1_index);
 
-	/* Clear GMBUS5 after each index transfer */
+	 
 	if (gmbus5)
 		intel_de_write_fw(i915, GMBUS5(i915), 0);
 
@@ -626,7 +580,7 @@ do_gmbus_xfer(struct i2c_adapter *adapter, struct i2c_msg *msgs, int num,
 	int i = 0, inc, try = 0;
 	int ret = 0;
 
-	/* Display WA #0868: skl,bxt,kbl,cfl,glk */
+	 
 	if (IS_GEMINILAKE(i915) || IS_BROXTON(i915))
 		bxt_gmbus_clock_gating(i915, false);
 	else if (HAS_PCH_SPT(i915) || HAS_PCH_CNP(i915))
@@ -640,7 +594,7 @@ retry:
 		if (gmbus_is_index_xfer(msgs, i, num)) {
 			ret = gmbus_index_xfer(i915, &msgs[i],
 					       gmbus0_source | bus->reg0);
-			inc = 2; /* an index transmission is two msgs */
+			inc = 2;  
 		} else if (msgs[i].flags & I2C_M_RD) {
 			ret = gmbus_xfer_read(i915, &msgs[i],
 					      gmbus0_source | bus->reg0, 0);
@@ -657,16 +611,10 @@ retry:
 			goto clear_err;
 	}
 
-	/* Generate a STOP condition on the bus. Note that gmbus can't generata
-	 * a STOP on the very first cycle. To simplify the code we
-	 * unconditionally generate the STOP condition with an additional gmbus
-	 * cycle. */
+	 
 	intel_de_write_fw(i915, GMBUS1(i915), GMBUS_CYCLE_STOP | GMBUS_SW_RDY);
 
-	/* Mark the GMBUS interface as disabled after waiting for idle.
-	 * We will re-enable it at the start of the next xfer,
-	 * till then let it sleep.
-	 */
+	 
 	if (gmbus_wait_idle(i915)) {
 		drm_dbg_kms(&i915->drm,
 			    "GMBUS [%s] timed out waiting for idle\n",
@@ -678,19 +626,7 @@ retry:
 	goto out;
 
 clear_err:
-	/*
-	 * Wait for bus to IDLE before clearing NAK.
-	 * If we clear the NAK while bus is still active, then it will stay
-	 * active and the next transaction may fail.
-	 *
-	 * If no ACK is received during the address phase of a transaction, the
-	 * adapter must report -ENXIO. It is not clear what to return if no ACK
-	 * is received at other times. But we have to be careful to not return
-	 * spurious -ENXIO because that will prevent i2c and drm edid functions
-	 * from retrying. So return -ENXIO only when gmbus properly quiescents -
-	 * timing out seems to happen when there _is_ a ddc chip present, but
-	 * it's slow responding and only answers on the 2nd retry.
-	 */
+	 
 	ret = -ENXIO;
 	if (gmbus_wait_idle(i915)) {
 		drm_dbg_kms(&i915->drm,
@@ -699,10 +635,7 @@ clear_err:
 		ret = -ETIMEDOUT;
 	}
 
-	/* Toggle the Software Clear Interrupt bit. This has the effect
-	 * of resetting the GMBUS controller and so clearing the
-	 * BUS_ERROR raised by the slave's NAK.
-	 */
+	 
 	intel_de_write_fw(i915, GMBUS1(i915), GMBUS_SW_CLR_INT);
 	intel_de_write_fw(i915, GMBUS1(i915), 0);
 	intel_de_write_fw(i915, GMBUS0(i915), 0);
@@ -711,12 +644,7 @@ clear_err:
 		    adapter->name, msgs[i].addr,
 		    (msgs[i].flags & I2C_M_RD) ? 'r' : 'w', msgs[i].len);
 
-	/*
-	 * Passive adapters sometimes NAK the first probe. Retry the first
-	 * message once on -ENXIO for GMBUS transfers; the bit banging algorithm
-	 * has retries internally. See also the retry loop in
-	 * drm_do_probe_ddc_edid, which bails out on the first -ENXIO.
-	 */
+	 
 	if (ret == -ENXIO && i == 0 && try++ == 0) {
 		drm_dbg_kms(&i915->drm,
 			    "GMBUS [%s] NAK on first message, retry\n",
@@ -732,14 +660,11 @@ timeout:
 		    bus->adapter.name, bus->reg0 & 0xff);
 	intel_de_write_fw(i915, GMBUS0(i915), 0);
 
-	/*
-	 * Hardware may not support GMBUS over these pins? Try GPIO bitbanging
-	 * instead. Use EAGAIN to have i2c core retry.
-	 */
+	 
 	ret = -EAGAIN;
 
 out:
-	/* Display WA #0868: skl,bxt,kbl,cfl,glk */
+	 
 	if (IS_GEMINILAKE(i915) || IS_BROXTON(i915))
 		bxt_gmbus_clock_gating(i915, true);
 	else if (HAS_PCH_SPT(i915) || HAS_PCH_CNP(i915))
@@ -799,11 +724,7 @@ int intel_gmbus_output_aksv(struct i2c_adapter *adapter)
 	wakeref = intel_display_power_get(i915, POWER_DOMAIN_GMBUS);
 	mutex_lock(&i915->display.gmbus.mutex);
 
-	/*
-	 * In order to output Aksv to the receiver, use an indexed write to
-	 * pass the i2c command, and tell GMBUS to use the HW-provided value
-	 * instead of sourcing GMBUS3 for the data.
-	 */
+	 
 	ret = do_gmbus_xfer(adapter, msgs, ARRAY_SIZE(msgs), GMBUS_AKSV_SELECT);
 
 	mutex_unlock(&i915->display.gmbus.mutex);
@@ -816,7 +737,7 @@ static u32 gmbus_func(struct i2c_adapter *adapter)
 {
 	return i2c_bit_algo.functionality(adapter) &
 		(I2C_FUNC_I2C | I2C_FUNC_SMBUS_EMUL |
-		/* I2C_FUNC_10BIT_ADDR | */
+		 
 		I2C_FUNC_SMBUS_READ_BLOCK_DATA |
 		I2C_FUNC_SMBUS_BLOCK_PROC_CALL);
 }
@@ -859,10 +780,7 @@ static const struct i2c_lock_operations gmbus_lock_ops = {
 	.unlock_bus =  gmbus_unlock_bus,
 };
 
-/**
- * intel_gmbus_setup - instantiate all Intel i2c GMBuses
- * @i915: i915 device private
- */
+ 
 int intel_gmbus_setup(struct drm_i915_private *i915)
 {
 	struct pci_dev *pdev = to_pci_dev(i915->drm.dev);
@@ -872,10 +790,7 @@ int intel_gmbus_setup(struct drm_i915_private *i915)
 	if (IS_VALLEYVIEW(i915) || IS_CHERRYVIEW(i915))
 		i915->display.gmbus.mmio_base = VLV_DISPLAY_BASE;
 	else if (!HAS_GMCH(i915))
-		/*
-		 * Broxton uses the same PCH offsets for South Display Engine,
-		 * even though it doesn't have a PCH.
-		 */
+		 
 		i915->display.gmbus.mmio_base = PCH_DISPLAY_BASE;
 
 	mutex_init(&i915->display.gmbus.mutex);
@@ -907,16 +822,13 @@ int intel_gmbus_setup(struct drm_i915_private *i915)
 		bus->adapter.algo = &gmbus_algorithm;
 		bus->adapter.lock_ops = &gmbus_lock_ops;
 
-		/*
-		 * We wish to retry with bit banging
-		 * after a timed out GMBUS attempt.
-		 */
+		 
 		bus->adapter.retries = 1;
 
-		/* By default use a conservative clock rate */
+		 
 		bus->reg0 = pin | GMBUS_RATE_100KHZ;
 
-		/* gmbus seems to be broken on i830 */
+		 
 		if (IS_I830(i915))
 			bus->force_bit = 1;
 

@@ -1,35 +1,4 @@
-/******************************************************************************
- * grant_table.c
- *
- * Granting foreign access to our memory reservation.
- *
- * Copyright (c) 2005-2006, Christopher Clark
- * Copyright (c) 2004-2005, K A Fraser
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License version 2
- * as published by the Free Software Foundation; or, when distributed
- * separately from the Linux kernel or incorporated into other
- * software packages, subject to the following license:
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this source file (the "Software"), to deal in the Software without
- * restriction, including without limitation the rights to use, copy, modify,
- * merge, publish, distribute, sublicense, and/or sell copies of the Software,
- * and to permit persons to whom the Software is furnished to do so, subject to
- * the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
- * IN THE SOFTWARE.
- */
+ 
 
 #define pr_fmt(fmt) "xen:" KBUILD_MODNAME ": " fmt
 
@@ -72,23 +41,7 @@
 static grant_ref_t **gnttab_list;
 static unsigned int nr_grant_frames;
 
-/*
- * Handling of free grants:
- *
- * Free grants are in a simple list anchored in gnttab_free_head. They are
- * linked by grant ref, the last element contains GNTTAB_LIST_END. The number
- * of free entries is stored in gnttab_free_count.
- * Additionally there is a bitmap of free entries anchored in
- * gnttab_free_bitmap. This is being used for simplifying allocation of
- * multiple consecutive grants, which is needed e.g. for support of virtio.
- * gnttab_last_free is used to add free entries of new frames at the end of
- * the free list.
- * gnttab_free_tail_ptr specifies the variable which references the start
- * of consecutive free grants ending with gnttab_last_free. This pointer is
- * updated in a rather defensive way, in order to avoid performance hits in
- * hot paths.
- * All those variables are protected by gnttab_list_lock.
- */
+ 
 static int gnttab_free_count;
 static unsigned int gnttab_size;
 static grant_ref_t gnttab_free_head = GNTTAB_LIST_END;
@@ -107,48 +60,22 @@ static union {
 	void *addr;
 } gnttab_shared;
 
-/*This is a structure of function pointers for grant table*/
+ 
 struct gnttab_ops {
-	/*
-	 * Version of the grant interface.
-	 */
+	 
 	unsigned int version;
-	/*
-	 * Grant refs per grant frame.
-	 */
+	 
 	unsigned int grefs_per_grant_frame;
-	/*
-	 * Mapping a list of frames for storing grant entries. Frames parameter
-	 * is used to store grant table address when grant table being setup,
-	 * nr_gframes is the number of frames to map grant table. Returning
-	 * GNTST_okay means success and negative value means failure.
-	 */
+	 
 	int (*map_frames)(xen_pfn_t *frames, unsigned int nr_gframes);
-	/*
-	 * Release a list of frames which are mapped in map_frames for grant
-	 * entry status.
-	 */
+	 
 	void (*unmap_frames)(void);
-	/*
-	 * Introducing a valid entry into the grant table, granting the frame of
-	 * this grant entry to domain for accessing. Ref
-	 * parameter is reference of this introduced grant entry, domid is id of
-	 * granted domain, frame is the page frame to be granted, and flags is
-	 * status of the grant entry to be updated.
-	 */
+	 
 	void (*update_entry)(grant_ref_t ref, domid_t domid,
 			     unsigned long frame, unsigned flags);
-	/*
-	 * Stop granting a grant entry to domain for accessing. Ref parameter is
-	 * reference of a grant entry whose grant access will be stopped.
-	 * If the grant entry is currently mapped for reading or writing, just
-	 * return failure(==0) directly and don't tear down the grant access.
-	 * Otherwise, stop grant access for this entry and return success(==1).
-	 */
+	 
 	int (*end_foreign_access_ref)(grant_ref_t ref);
-	/*
-	 * Read the frame number related to a given grant reference.
-	 */
+	 
 	unsigned long (*read_frame)(grant_ref_t ref);
 };
 
@@ -159,7 +86,7 @@ struct unmap_refs_callback_data {
 
 static const struct gnttab_ops *gnttab_interface;
 
-/* This reflects status of grant entries, so act as a global value. */
+ 
 static grant_status_t *grstatus;
 
 static struct gnttab_free_callback *gnttab_free_callback_list;
@@ -173,7 +100,7 @@ static inline grant_ref_t *__gnttab_entry(grant_ref_t entry)
 {
 	return &gnttab_list[(entry) / RPP][(entry) % RPP];
 }
-/* This can be used as an l-value */
+ 
 #define gnttab_entry(entry) (*__gnttab_entry(entry))
 
 static int get_free_entries(unsigned count)
@@ -221,7 +148,7 @@ static int get_seq_entry_count(void)
 	return gnttab_last_free - *gnttab_free_tail_ptr + 1;
 }
 
-/* Rebuilds the free grant list and tries to find count consecutive entries. */
+ 
 static int get_free_seq(unsigned int count)
 {
 	int ret = -ENOSPC;
@@ -245,11 +172,7 @@ static int get_free_seq(unsigned int count)
 				continue;
 		}
 
-		/*
-		 * Recreate the free list in order to have it properly sorted.
-		 * This is needed to make sure that the free tail has the maximum
-		 * possible size.
-		 */
+		 
 		while (from < to) {
 			*last = from;
 			last = __gnttab_entry(from);
@@ -373,14 +296,7 @@ static void gnttab_set_free(unsigned int start, unsigned int n)
 	bitmap_set(gnttab_free_bitmap, start, n);
 }
 
-/*
- * Following applies to gnttab_update_entry_v1 and gnttab_update_entry_v2.
- * Introducing a valid entry into the grant table:
- *  1. Write ent->domid.
- *  2. Write ent->frame: Frame to which access is permitted.
- *  3. Write memory barrier (WMB).
- *  4. Write ent->flags, inc. valid type.
- */
+ 
 static void gnttab_update_entry_v1(grant_ref_t ref, domid_t domid,
 				   unsigned long frame, unsigned flags)
 {
@@ -395,13 +311,11 @@ static void gnttab_update_entry_v2(grant_ref_t ref, domid_t domid,
 {
 	gnttab_shared.v2[ref].hdr.domid = domid;
 	gnttab_shared.v2[ref].full_page.frame = frame;
-	wmb();	/* Hypervisor concurrent accesses. */
+	wmb();	 
 	gnttab_shared.v2[ref].hdr.flags = GTF_permit_access | flags;
 }
 
-/*
- * Public grant-issuing interface functions
- */
+ 
 void gnttab_grant_foreign_access_ref(grant_ref_t ref, domid_t domid,
 				     unsigned long frame, int readonly)
 {
@@ -444,16 +358,11 @@ static int gnttab_end_foreign_access_ref_v1(grant_ref_t ref)
 static int gnttab_end_foreign_access_ref_v2(grant_ref_t ref)
 {
 	gnttab_shared.v2[ref].hdr.flags = 0;
-	mb();	/* Concurrent access by hypervisor. */
+	mb();	 
 	if (grstatus[ref] & (GTF_reading|GTF_writing)) {
 		return 0;
 	} else {
-		/*
-		 * The read of grstatus needs to have acquire semantics.
-		 *  On x86, reads already have that, and we just need to
-		 * protect against compiler reorderings.
-		 * On other architectures we may need a full barrier.
-		 */
+		 
 #ifdef CONFIG_X86
 		barrier();
 #else
@@ -710,7 +619,7 @@ void gnttab_request_free_callback(struct gnttab_free_callback *callback,
 
 	spin_lock_irqsave(&gnttab_list_lock, flags);
 
-	/* Check if the callback is already on the list */
+	 
 	cb = gnttab_free_callback_list;
 	while (cb) {
 		if (cb == callback)
@@ -797,7 +706,7 @@ static unsigned int __max_nr_grant_frames(void)
 
 	rc = HYPERVISOR_grant_table_op(GNTTABOP_query_size, &query, 1);
 	if ((rc < 0) || (query.status != GNTST_okay))
-		return 4; /* Legacy max supported number of frames */
+		return 4;  
 
 	return query.max_nr_frames;
 }
@@ -807,7 +716,7 @@ unsigned int gnttab_max_grant_frames(void)
 	unsigned int xen_max = __max_nr_grant_frames();
 	static unsigned int boot_max_nr_grant_frames;
 
-	/* First time, initialize it properly. */
+	 
 	if (!boot_max_nr_grant_frames)
 		boot_max_nr_grant_frames = __max_nr_grant_frames();
 
@@ -883,11 +792,7 @@ int gnttab_pages_set_private(int nr_pages, struct page **pages)
 }
 EXPORT_SYMBOL_GPL(gnttab_pages_set_private);
 
-/**
- * gnttab_alloc_pages - alloc pages suitable for grant mapping into
- * @nr_pages: number of pages to alloc
- * @pages: returns the pages
- */
+ 
 int gnttab_alloc_pages(int nr_pages, struct page **pages)
 {
 	int ret;
@@ -1042,11 +947,7 @@ void gnttab_pages_clear_private(int nr_pages, struct page **pages)
 }
 EXPORT_SYMBOL_GPL(gnttab_pages_clear_private);
 
-/**
- * gnttab_free_pages - free pages allocated by gnttab_alloc_pages()
- * @nr_pages: number of pages to free
- * @pages: the pages
- */
+ 
 void gnttab_free_pages(int nr_pages, struct page **pages)
 {
 	gnttab_pages_clear_private(nr_pages, pages);
@@ -1055,10 +956,7 @@ void gnttab_free_pages(int nr_pages, struct page **pages)
 EXPORT_SYMBOL_GPL(gnttab_free_pages);
 
 #ifdef CONFIG_XEN_GRANT_DMA_ALLOC
-/**
- * gnttab_dma_alloc_pages - alloc DMAable pages suitable for grant mapping into
- * @args: arguments to the function
- */
+ 
 int gnttab_dma_alloc_pages(struct gnttab_dma_alloc_args *args)
 {
 	unsigned long pfn, start_pfn;
@@ -1113,10 +1011,7 @@ fail:
 }
 EXPORT_SYMBOL_GPL(gnttab_dma_alloc_pages);
 
-/**
- * gnttab_dma_free_pages - free DMAable pages
- * @args: arguments to the function
- */
+ 
 int gnttab_dma_free_pages(struct gnttab_dma_alloc_args *args)
 {
 	size_t size;
@@ -1150,7 +1045,7 @@ int gnttab_dma_free_pages(struct gnttab_dma_alloc_args *args)
 EXPORT_SYMBOL_GPL(gnttab_dma_free_pages);
 #endif
 
-/* Handling of paged out grant targets (GNTST_eagain) */
+ 
 #define MAX_DELAY 256
 static inline void
 gnttab_retry_eagain_gop(unsigned int cmd, void *gop, int16_t *status,
@@ -1272,11 +1167,11 @@ int gnttab_map_refs(struct gnttab_map_grant_ref *map_ops,
 			break;
 
 		case GNTST_eagain:
-			/* Retry eagain maps */
+			 
 			gnttab_retry_eagain_gop(GNTTABOP_map_grant_ref,
 						map_ops + i,
 						&map_ops[i].status, __func__);
-			/* Test status in next loop iteration. */
+			 
 			i--;
 			break;
 
@@ -1404,9 +1299,7 @@ static int gnttab_map_frames_v2(xen_pfn_t *frames, unsigned int nr_gframes)
 
 	nr_sframes = nr_status_frames(nr_gframes);
 
-	/* No need for kzalloc as it is initialized in following hypercall
-	 * GNTTABOP_get_status_frames.
-	 */
+	 
 	sframes = kmalloc_array(nr_sframes, sizeof(uint64_t), GFP_ATOMIC);
 	if (!sframes)
 		return -ENOMEM;
@@ -1456,10 +1349,7 @@ static int gnttab_map(unsigned int start_idx, unsigned int end_idx)
 		unsigned int i = end_idx;
 		rc = 0;
 		BUG_ON(xen_auto_xlat_grant_frames.count < nr_gframes);
-		/*
-		 * Loop backwards, so that the first hypercall has the largest
-		 * index, ensuring that the table will grow only once.
-		 */
+		 
 		do {
 			xatp.domid = DOMID_SELF;
 			xatp.idx = i;
@@ -1476,9 +1366,7 @@ static int gnttab_map(unsigned int start_idx, unsigned int end_idx)
 		return rc;
 	}
 
-	/* No need for kzalloc as it is initialized in following hypercall
-	 * GNTTABOP_setup_table.
-	 */
+	 
 	frames = kmalloc_array(nr_gframes, sizeof(unsigned long), GFP_ATOMIC);
 	if (!frames)
 		return -ENOMEM;
@@ -1532,7 +1420,7 @@ static bool gnttab_need_v2(void)
 	if (xen_pv_domain()) {
 		base = xen_cpuid_base();
 		if (cpuid_eax(base) < 5)
-			return false;	/* Information not available, use V1. */
+			return false;	 
 		width = cpuid_ebx(base + 5) &
 			XEN_CPUID_MACHINE_ADDRESS_WIDTH_MASK;
 		return width > 32 + PAGE_SHIFT;
@@ -1551,7 +1439,7 @@ static void gnttab_request_version(void)
 	else
 		gsv.version = 1;
 
-	/* Boot parameter overrides automatic selection. */
+	 
 	if (xen_gnttab_version >= 1 && xen_gnttab_version <= 2)
 		gsv.version = xen_gnttab_version;
 
@@ -1632,9 +1520,7 @@ int gnttab_init(void)
 			gnttab_interface->grefs_per_grant_frame;
 	nr_grant_frames = 1;
 
-	/* Determine the maximum number of frames required for the
-	 * grant reference free list on the current hypervisor.
-	 */
+	 
 	max_nr_glist_frames = max_nr_grefs / RPP;
 
 	gnttab_list = kmalloc_array(max_nr_glist_frames,
@@ -1690,12 +1576,11 @@ static int __gnttab_init(void)
 	if (!xen_domain())
 		return -ENODEV;
 
-	/* Delay grant-table initialization in the PV on HVM case */
+	 
 	if (xen_hvm_domain() && !xen_pvh_domain())
 		return 0;
 
 	return gnttab_init();
 }
-/* Starts after core_initcall so that xen_pvh_gnttab_setup can be called
- * beforehand to initialize xen_auto_xlat_grant_frames. */
+ 
 core_initcall_sync(__gnttab_init);

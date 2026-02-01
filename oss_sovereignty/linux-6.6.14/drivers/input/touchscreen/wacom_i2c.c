@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Wacom Penabled Driver for I2C
- *
- * Copyright (c) 2011 - 2013 Tatsunosuke Tobita, Wacom.
- * <tobita.tatsunosuke@wacom.co.jp>
- */
+
+ 
 
 #include <linux/bits.h>
 #include <linux/module.h>
@@ -15,7 +10,7 @@
 #include <linux/interrupt.h>
 #include <asm/unaligned.h>
 
-/* Bitmasks (for data[3]) */
+ 
 #define WACOM_TIP_SWITCH	BIT(0)
 #define WACOM_BARREL_SWITCH	BIT(1)
 #define WACOM_ERASER		BIT(2)
@@ -23,17 +18,17 @@
 #define WACOM_BARREL_SWITCH_2	BIT(4)
 #define WACOM_IN_PROXIMITY	BIT(5)
 
-/* Registers */
+ 
 #define WACOM_COMMAND_LSB	0x04
 #define WACOM_COMMAND_MSB	0x00
 
 #define WACOM_DATA_LSB		0x05
 #define WACOM_DATA_MSB		0x00
 
-/* Report types */
+ 
 #define REPORT_FEATURE		0x30
 
-/* Requests / operations */
+ 
 #define OPCODE_GET_REPORT	0x02
 
 #define WACOM_QUERY_REPORT	3
@@ -69,7 +64,7 @@ static int wacom_query_device(struct i2c_client *client,
 	int ret;
 
 	struct i2c_msg msgs[] = {
-		/* Request reading of feature ReportID: 3 (Pen Query Data) */
+		 
 		{
 			.addr = client->addr,
 			.flags = 0,
@@ -220,7 +215,7 @@ static int wacom_i2c_probe(struct i2c_client *client)
 		return error;
 	}
 
-	/* Disable the IRQ, we'll enable it in wac_i2c_open() */
+	 
 	disable_irq(client->irq);
 
 	error = input_register_device(wac_i2c->input);

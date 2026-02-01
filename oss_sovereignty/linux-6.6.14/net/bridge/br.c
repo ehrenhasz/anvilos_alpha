@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *	Generic parts
- *	Linux ethernet bridge
- *
- *	Authors:
- *	Lennert Buytenhek		<buytenh@gnu.org>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -19,12 +13,7 @@
 
 #include "br_private.h"
 
-/*
- * Handle changes in state of network devices enslaved to a bridge.
- *
- * Note: don't care about up/down if bridge itself is down, because
- *     port state is checked when bridge is brought up.
- */
+ 
 static int br_device_event(struct notifier_block *unused, unsigned long event, void *ptr)
 {
 	struct netlink_ext_ack *extack = netdev_notifier_info_to_extack(ptr);
@@ -42,7 +31,7 @@ static int br_device_event(struct notifier_block *unused, unsigned long event, v
 			return notifier_from_errno(err);
 
 		if (event == NETDEV_REGISTER) {
-			/* register of bridge completed, add sysfs entries */
+			 
 			err = br_sysfs_addbr(dev);
 			if (err)
 				return notifier_from_errno(err);
@@ -51,7 +40,7 @@ static int br_device_event(struct notifier_block *unused, unsigned long event, v
 		}
 	}
 
-	/* not a port of a bridge */
+	 
 	p = br_port_get_rtnl(dev);
 	if (!p)
 		return NOTIFY_DONE;
@@ -122,11 +111,11 @@ static int br_device_event(struct notifier_block *unused, unsigned long event, v
 		break;
 
 	case NETDEV_PRE_TYPE_CHANGE:
-		/* Forbid underlying device to change its type. */
+		 
 		return NOTIFY_BAD;
 
 	case NETDEV_RESEND_IGMP:
-		/* Propagate to master device */
+		 
 		call_netdevice_notifiers(event, br->dev);
 		break;
 	}
@@ -134,7 +123,7 @@ static int br_device_event(struct notifier_block *unused, unsigned long event, v
 	if (event != NETDEV_UNREGISTER)
 		br_vlan_port_event(p, event);
 
-	/* Events that may cause spanning tree to refresh */
+	 
 	if (!notified && (event == NETDEV_CHANGEADDR || event == NETDEV_UP ||
 			  event == NETDEV_CHANGE || event == NETDEV_DOWN))
 		br_ifinfo_notify(RTM_NEWLINK, NULL, p);
@@ -146,7 +135,7 @@ static struct notifier_block br_device_notifier = {
 	.notifier_call = br_device_event
 };
 
-/* called with RTNL or RCU */
+ 
 static int br_switchdev_event(struct notifier_block *unused,
 			      unsigned long event, void *ptr)
 {
@@ -189,7 +178,7 @@ static int br_switchdev_event(struct notifier_block *unused,
 		break;
 	case SWITCHDEV_FDB_FLUSH_TO_BRIDGE:
 		fdb_info = ptr;
-		/* Don't delete static entries */
+		 
 		br_fdb_delete_by_port(br, p, fdb_info->vid, 0);
 		break;
 	}
@@ -202,7 +191,7 @@ static struct notifier_block br_switchdev_notifier = {
 	.notifier_call = br_switchdev_event,
 };
 
-/* called under rtnl_mutex */
+ 
 static int br_switchdev_blocking_event(struct notifier_block *nb,
 				       unsigned long event, void *ptr)
 {
@@ -252,16 +241,7 @@ static struct notifier_block br_switchdev_blocking_notifier = {
 	.notifier_call = br_switchdev_blocking_event,
 };
 
-/* br_boolopt_toggle - change user-controlled boolean option
- *
- * @br: bridge device
- * @opt: id of the option to change
- * @on: new option value
- * @extack: extack for error messages
- *
- * Changes the value of the respective boolean option to @on taking care of
- * any internal option value mapping and configuration.
- */
+ 
 int br_boolopt_toggle(struct net_bridge *br, enum br_boolopt_id opt, bool on,
 		      struct netlink_ext_ack *extack)
 {
@@ -278,7 +258,7 @@ int br_boolopt_toggle(struct net_bridge *br, enum br_boolopt_id opt, bool on,
 		err = br_mst_set_enabled(br, on, extack);
 		break;
 	default:
-		/* shouldn't be called with unsupported options */
+		 
 		WARN_ON(1);
 		break;
 	}
@@ -296,7 +276,7 @@ int br_boolopt_get(const struct net_bridge *br, enum br_boolopt_id opt)
 	case BR_BOOLOPT_MST_ENABLE:
 		return br_opt_get(br, BROPT_MST_ENABLED);
 	default:
-		/* shouldn't be called with unsupported options */
+		 
 		WARN_ON(1);
 		break;
 	}
@@ -339,7 +319,7 @@ void br_boolopt_multi_get(const struct net_bridge *br,
 	bm->optmask = GENMASK((BR_BOOLOPT_MAX - 1), 0);
 }
 
-/* private bridge options, controlled by the kernel */
+ 
 void br_opt_toggle(struct net_bridge *br, enum net_bridge_opts opt, bool on)
 {
 	bool cur = !!br_opt_get(br, opt);
@@ -463,7 +443,7 @@ static void __exit br_deinit(void)
 	brioctl_set(NULL);
 	unregister_pernet_subsys(&br_net_ops);
 
-	rcu_barrier(); /* Wait for completion of call_rcu()'s */
+	rcu_barrier();  
 
 	br_nf_core_fini();
 #if IS_ENABLED(CONFIG_ATM_LANE)

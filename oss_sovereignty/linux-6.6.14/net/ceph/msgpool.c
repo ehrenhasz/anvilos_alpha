@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/ceph/ceph_debug.h>
 
 #include <linux/err.h>
@@ -68,7 +68,7 @@ struct ceph_msg *ceph_msgpool_get(struct ceph_msgpool *pool, int front_len,
 		    pool->front_len, pool->max_data_items);
 		WARN_ON_ONCE(1);
 
-		/* try to alloc a fresh message */
+		 
 		return ceph_msg_new2(pool->type, front_len, max_data_items,
 				     GFP_NOFS, false);
 	}
@@ -82,13 +82,13 @@ void ceph_msgpool_put(struct ceph_msgpool *pool, struct ceph_msg *msg)
 {
 	dout("msgpool_put %s %p\n", pool->name, msg);
 
-	/* reset msg front_len; user may have changed it */
+	 
 	msg->front.iov_len = pool->front_len;
 	msg->hdr.front_len = cpu_to_le32(pool->front_len);
 
 	msg->data_length = 0;
 	msg->num_data_items = 0;
 
-	kref_init(&msg->kref);  /* retake single ref */
+	kref_init(&msg->kref);   
 	mempool_free(msg, pool->pool);
 }

@@ -1,35 +1,4 @@
-/*
- * Copyright (c) 2004 Topspin Communications.  All rights reserved.
- * Copyright (c) 2005 Mellanox Technologies. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 
 #include <linux/slab.h>
 #include <linux/errno.h>
@@ -44,9 +13,7 @@ struct mthca_mtt {
 	u32                 first_seg;
 };
 
-/*
- * Must be packed because mtt_seg is 64 bits but only aligned to 32 bits.
- */
+ 
 struct mthca_mpt_entry {
 	__be32 flags;
 	__be32 page_size;
@@ -58,7 +25,7 @@ struct mthca_mpt_entry {
 	__be32 window_count;
 	__be32 window_count_limit;
 	__be64 mtt_seg;
-	__be32 mtt_sz;		/* Arbel only */
+	__be32 mtt_sz;		 
 	u32    reserved[2];
 } __packed;
 
@@ -75,11 +42,7 @@ struct mthca_mpt_entry {
 
 #define SINAI_FMR_KEY_INC 0x1000000
 
-/*
- * Buddy allocator for MTT segments (currently not very efficient
- * since it doesn't keep a free list and just searches linearly
- * through the bitmaps)
- */
+ 
 
 static u32 mthca_buddy_alloc(struct mthca_buddy *buddy, int order)
 {
@@ -271,10 +234,7 @@ static int __mthca_write_mtt(struct mthca_dev *dev, struct mthca_mtt *mtt,
 			mtt_entry[i + 2] = cpu_to_be64(buffer_list[i] |
 						       MTHCA_MTT_FLAG_PRESENT);
 
-		/*
-		 * If we have an odd number of entries to write, add
-		 * one more dummy entry for firmware efficiency.
-		 */
+		 
 		if (i & 1)
 			mtt_entry[i + 2] = 0;
 
@@ -298,15 +258,10 @@ int mthca_write_mtt_size(struct mthca_dev *dev)
 {
 	if (dev->mr_table.fmr_mtt_buddy != &dev->mr_table.mtt_buddy ||
 	    !(dev->mthca_flags & MTHCA_FLAG_FMR))
-		/*
-		 * Be friendly to WRITE_MTT command
-		 * and leave two empty slots for the
-		 * index and reserved fields of the
-		 * mailbox.
-		 */
+		 
 		return PAGE_SIZE / sizeof (u64) - 2;
 
-	/* For Arbel, all MTTs must fit in the same page. */
+	 
 	return mthca_is_memfree(dev) ? (PAGE_SIZE / sizeof (u64)) : 0x7ffffff;
 }
 
@@ -333,9 +288,9 @@ static void mthca_arbel_write_mtt_seg(struct mthca_dev *dev,
 	int i;
 	int s = start_index * sizeof (u64);
 
-	/* For Arbel, all MTTs must fit in the same page. */
+	 
 	BUG_ON(s / PAGE_SIZE != (s + list_len * sizeof(u64) - 1) / PAGE_SIZE);
-	/* Require full segments */
+	 
 	BUG_ON(s % dev->limits.mtt_seg_size);
 
 	mtts = mthca_table_find(dev->mr_table.mtt_table, mtt->first_seg +
@@ -538,7 +493,7 @@ int mthca_mr_alloc_phys(struct mthca_dev *dev, u32 pd,
 	return err;
 }
 
-/* Free mr */
+ 
 static void mthca_free_region(struct mthca_dev *dev, u32 lkey)
 {
 	mthca_table_put(dev, dev->mr_table.mpt_table,
@@ -638,7 +593,7 @@ int mthca_init_mr_table(struct mthca_dev *dev)
 		if (err)
 			goto err_fmr_mtt_buddy;
 
-		/* Prevent regular MRs from using FMR keys */
+		 
 		err = mthca_buddy_alloc(&dev->mr_table.mtt_buddy, fls(mtts - 1));
 		if (err)
 			goto err_reserve_fmr;
@@ -648,7 +603,7 @@ int mthca_init_mr_table(struct mthca_dev *dev)
 	} else
 		dev->mr_table.fmr_mtt_buddy = &dev->mr_table.mtt_buddy;
 
-	/* FMR table is always the first, take reserved MTTs out of there */
+	 
 	if (dev->limits.reserved_mtts) {
 		i = fls(dev->limits.reserved_mtts - 1);
 
@@ -687,7 +642,7 @@ err_mtt_buddy:
 
 void mthca_cleanup_mr_table(struct mthca_dev *dev)
 {
-	/* XXX check if any MRs are still allocated? */
+	 
 	if (dev->limits.fmr_reserved_mtts)
 		mthca_buddy_cleanup(&dev->mr_table.tavor_fmr.mtt_buddy);
 

@@ -1,13 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * linux/drivers/video/omap2/omapfb.h
- *
- * Copyright (C) 2008 Nokia Corporation
- * Author: Tomi Valkeinen <tomi.valkeinen@nokia.com>
- *
- * Some code and ideas taken from drivers/video/omap/ driver
- * by Imre Deak.
- */
+ 
+ 
 
 #ifndef __DRIVERS_VIDEO_OMAP2_OMAPFB_H__
 #define __DRIVERS_VIDEO_OMAP2_OMAPFB_H__
@@ -34,7 +26,7 @@ extern bool omapfb_debug;
 
 #define FB2OFB(fb_info) ((struct omapfb_info *)(fb_info->par))
 
-/* max number of overlays to which a framebuffer data can be direct */
+ 
 #define OMAPFB_MAX_OVL_PER_FB 3
 
 struct omapfb2_mem_region {
@@ -46,15 +38,15 @@ struct omapfb2_mem_region {
 	void __iomem	*vaddr;
 	struct vrfb	vrfb;
 	unsigned long	size;
-	u8		type;		/* OMAPFB_PLANE_MEM_* */
-	bool		alloc;		/* allocated by the driver */
-	bool		map;		/* kernel mapped by the driver */
+	u8		type;		 
+	bool		alloc;		 
+	bool		map;		 
 	atomic_t	map_count;
 	struct rw_semaphore lock;
 	atomic_t	lock_count;
 };
 
-/* appended to fb_info */
+ 
 struct omapfb_info {
 	int id;
 	struct omapfb2_mem_region *region;
@@ -130,13 +122,13 @@ void omapfb_stop_auto_update(struct omapfb2_device *fbdev,
 int omapfb_get_update_mode(struct fb_info *fbi, enum omapfb_update_mode *mode);
 int omapfb_set_update_mode(struct fb_info *fbi, enum omapfb_update_mode mode);
 
-/* find the display connected to this fb, if any */
+ 
 static inline struct omap_dss_device *fb2display(struct fb_info *fbi)
 {
 	struct omapfb_info *ofbi = FB2OFB(fbi);
 	struct omap_overlay *ovl;
 
-	/* XXX: returns the display connected to first attached overlay */
+	 
 
 	if (ofbi->num_overlays == 0)
 		return NULL;
@@ -155,7 +147,7 @@ static inline struct omapfb_display_data *get_display_data(
 		if (fbdev->displays[i].dssdev == dssdev)
 			return &fbdev->displays[i];
 
-	/* This should never happen */
+	 
 	BUG();
 	return NULL;
 }

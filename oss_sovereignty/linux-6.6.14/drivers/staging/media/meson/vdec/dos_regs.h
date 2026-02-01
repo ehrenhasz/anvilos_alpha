@@ -1,13 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * Copyright (C) 2018 BayLibre, SAS
- * Author: Maxime Jourdan <mjourdan@baylibre.com>
- */
+ 
+ 
 
 #ifndef __MESON_VDEC_DOS_REGS_H_
 #define __MESON_VDEC_DOS_REGS_H_
 
-/* DOS registers */
+ 
 #define VDEC_ASSIST_AMR1_INT8	0x00b4
 
 #define ASSIST_MBOX1_CLR_REG	0x01d4
@@ -39,7 +36,7 @@
 #define ANC0_CANVAS_ADDR	0x2640
 #define MDEC_PIC_DC_THRESH	0x26e0
 
-/* Firmware interface registers */
+ 
 #define AV_SCRATCH_0		0x2700
 #define AV_SCRATCH_1		0x2704
 #define AV_SCRATCH_2		0x2708
@@ -68,7 +65,7 @@
 #define POWER_CTL_VLD		0x3020
 #define M4_CONTROL_REG		0x30a4
 
-/* Stream Buffer (stbuf) regs */
+ 
 #define VLD_MEM_VIFIFO_START_PTR	0x3100
 #define VLD_MEM_VIFIFO_CURR_PTR	0x3104
 #define VLD_MEM_VIFIFO_END_PTR	0x3108

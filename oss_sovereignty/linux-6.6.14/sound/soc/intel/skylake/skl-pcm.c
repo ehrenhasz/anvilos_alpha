@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  skl-pcm.c -ASoC HDA Platform driver file implementing PCM functionality
- *
- *  Copyright (C) 2014-2015 Intel Corp
- *  Author:  Jeeja KP <jeeja.kp@intel.com>
- *
- *  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- *
- * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- */
+
+ 
 
 #include <linux/pci.h>
 #include <linux/pm_runtime.h>
@@ -34,7 +25,7 @@ static const struct snd_pcm_hardware azx_pcm_hw = {
 				 SNDRV_PCM_INFO_PAUSE |
 				 SNDRV_PCM_INFO_RESUME |
 				 SNDRV_PCM_INFO_SYNC_START |
-				 SNDRV_PCM_INFO_HAS_WALL_CLOCK | /* legacy */
+				 SNDRV_PCM_INFO_HAS_WALL_CLOCK |  
 				 SNDRV_PCM_INFO_HAS_LINK_ATIME |
 				 SNDRV_PCM_INFO_NO_PERIOD_WAKEUP),
 	.formats =		SNDRV_PCM_FMTBIT_S16_LE |
@@ -86,7 +77,7 @@ static void skl_set_pcm_constrains(struct hdac_bus *bus,
 {
 	snd_pcm_hw_constraint_integer(runtime, SNDRV_PCM_HW_PARAM_PERIODS);
 
-	/* avoid wrap-around with wall-clock */
+	 
 	snd_pcm_hw_constraint_minmax(runtime, SNDRV_PCM_HW_PARAM_BUFFER_TIME,
 				     20, 178000000);
 }
@@ -99,13 +90,7 @@ static enum hdac_ext_stream_type skl_get_host_stream_type(struct hdac_bus *bus)
 		return HDAC_EXT_STREAM_TYPE_COUPLED;
 }
 
-/*
- * check if the stream opened is marked as ignore_suspend by machine, if so
- * then enable suspend_active refcount
- *
- * The count supend_active does not need lock as it is used in open/close
- * and suspend context
- */
+ 
 static void skl_set_suspend_active(struct snd_pcm_substream *substream,
 					 struct snd_soc_dai *dai, bool enable)
 {
@@ -149,10 +134,7 @@ int skl_pcm_host_dma_prepare(struct device *dev, struct skl_pipe_params *params)
 	if (err < 0)
 		return err;
 
-	/*
-	 * The recommended SDxFMT programming sequence for BXT
-	 * platforms is to couple the stream before writing the format
-	 */
+	 
 	if (HDA_CONTROLLER_IS_APL(skl->pci)) {
 		snd_hdac_ext_stream_decouple(bus, stream, false);
 		err = snd_hdac_stream_setup(hdac_stream(stream));
@@ -228,12 +210,9 @@ static int skl_pcm_open(struct snd_pcm_substream *substream,
 
 	skl_set_pcm_constrains(bus, runtime);
 
-	/*
-	 * disable WALLCLOCK timestamps for capture streams
-	 * until we figure out how to handle digital inputs
-	 */
+	 
 	if (substream->stream == SNDRV_PCM_STREAM_CAPTURE) {
-		runtime->hw.info &= ~SNDRV_PCM_INFO_HAS_WALL_CLOCK; /* legacy */
+		runtime->hw.info &= ~SNDRV_PCM_INFO_HAS_WALL_CLOCK;  
 		runtime->hw.info &= ~SNDRV_PCM_INFO_HAS_LINK_ATIME;
 	}
 
@@ -273,10 +252,7 @@ static int skl_pcm_prepare(struct snd_pcm_substream *substream,
 
 	mconfig = skl_tplg_fe_get_cpr_module(dai, substream->stream);
 
-	/*
-	 * In case of XRUN recovery or in the case when the application
-	 * calls prepare another time, reset the FW pipe to clean state
-	 */
+	 
 	if (mconfig &&
 		(substream->runtime->state == SNDRV_PCM_STATE_XRUN ||
 		 mconfig->pipe->state == SKL_PIPE_CREATED ||
@@ -353,17 +329,11 @@ static void skl_pcm_close(struct snd_pcm_substream *substream,
 	snd_hdac_ext_stream_release(stream, skl_get_host_stream_type(bus));
 
 	dma_params = snd_soc_dai_get_dma_data(dai, substream);
-	/*
-	 * now we should set this to NULL as we are freeing by the
-	 * dma_params
-	 */
+	 
 	snd_soc_dai_set_dma_data(dai, substream, NULL);
 	skl_set_suspend_active(substream, dai, false);
 
-	/*
-	 * check if close is for "Reference Pin" and set back the
-	 * CGCTL.MISCBDCGE if disabled by driver
-	 */
+	 
 	if (!strncmp(dai->name, "Reference Pin", 13) &&
 			skl->miscbdcg_disabled) {
 		skl->enable_miscbdcge(dai->dev, true);
@@ -483,11 +453,7 @@ static int skl_pcm_trigger(struct snd_pcm_substream *substream, int cmd,
 	switch (cmd) {
 	case SNDRV_PCM_TRIGGER_RESUME:
 		if (!w->ignore_suspend) {
-			/*
-			 * enable DMA Resume enable bit for the stream, set the
-			 * dpib & lpib position to resume before starting the
-			 * DMA
-			 */
+			 
 			snd_hdac_stream_drsm_enable(bus, true, hstream->index);
 			snd_hdac_stream_set_dpibr(bus, hstream, hstream->lpib);
 			snd_hdac_stream_set_lpib(hstream, hstream->lpib);
@@ -496,12 +462,7 @@ static int skl_pcm_trigger(struct snd_pcm_substream *substream, int cmd,
 
 	case SNDRV_PCM_TRIGGER_START:
 	case SNDRV_PCM_TRIGGER_PAUSE_RELEASE:
-		/*
-		 * Start HOST DMA and Start FE Pipe.This is to make sure that
-		 * there are no underrun/overrun in the case when the FE
-		 * pipeline is started but there is a delay in starting the
-		 * DMA channel on the host.
-		 */
+		 
 		ret = skl_decoupled_trigger(substream, cmd);
 		if (ret < 0)
 			return ret;
@@ -510,18 +471,14 @@ static int skl_pcm_trigger(struct snd_pcm_substream *substream, int cmd,
 	case SNDRV_PCM_TRIGGER_PAUSE_PUSH:
 	case SNDRV_PCM_TRIGGER_SUSPEND:
 	case SNDRV_PCM_TRIGGER_STOP:
-		/*
-		 * Stop FE Pipe first and stop DMA. This is to make sure that
-		 * there are no underrun/overrun in the case if there is a delay
-		 * between the two operations.
-		 */
+		 
 		ret = skl_stop_pipe(skl, mconfig->pipe);
 		if (ret < 0)
 			return ret;
 
 		ret = skl_decoupled_trigger(substream, cmd);
 		if ((cmd == SNDRV_PCM_TRIGGER_SUSPEND) && !w->ignore_suspend) {
-			/* save the dpib and lpib positions */
+			 
 			hstream->dpib = readl(bus->remap_addr +
 					AZX_REG_VS_SDXDPIB_XBASE +
 					(AZX_REG_VS_SDXDPIB_XINTERVAL *
@@ -566,7 +523,7 @@ static int skl_link_hw_params(struct snd_pcm_substream *substream,
 
 	stream_tag = hdac_stream(link_dev)->stream_tag;
 
-	/* set the hdac_stream in the codec dai */
+	 
 	snd_soc_dai_set_stream(codec_dai, hdac_stream(link_dev), substream->stream);
 
 	p_params.s_fmt = snd_pcm_format_width(params_format(params));
@@ -592,7 +549,7 @@ static int skl_link_pcm_prepare(struct snd_pcm_substream *substream,
 	struct skl_dev *skl = get_skl_ctx(dai->dev);
 	struct skl_module_cfg *mconfig = NULL;
 
-	/* In case of XRUN recovery, reset the FW pipe to clean state */
+	 
 	mconfig = skl_tplg_be_get_cpr_module(dai, substream->stream);
 	if (mconfig && !mconfig->pipe->passthru &&
 		(substream->runtime->state == SNDRV_PCM_STATE_XRUN))
@@ -828,7 +785,7 @@ static struct snd_soc_dai_driver skl_fe_dai[] = {
 },
 };
 
-/* BE CPU  Dais */
+ 
 static struct snd_soc_dai_driver skl_platform_dai[] = {
 {
 	.name = "SSP0 Pin",
@@ -1129,7 +1086,7 @@ static int skl_coupled_trigger(struct snd_pcm_substream *substream,
 
 	spin_lock_irqsave(&bus->reg_lock, cookie);
 
-	/* first, set SYNC bits of corresponding streams */
+	 
 	snd_hdac_stream_sync_trigger(hstr, true, sbits, AZX_REG_SSYNC);
 
 	snd_pcm_group_for_each_entry(s, substream) {
@@ -1147,7 +1104,7 @@ static int skl_coupled_trigger(struct snd_pcm_substream *substream,
 
 	spin_lock_irqsave(&bus->reg_lock, cookie);
 
-	/* reset SYNC bits */
+	 
 	snd_hdac_stream_sync_trigger(hstr, false, sbits, AZX_REG_SSYNC);
 	if (start)
 		snd_hdac_stream_timecounter_init(hstr, sbits);
@@ -1176,26 +1133,7 @@ static snd_pcm_uframes_t skl_platform_soc_pointer(
 	struct hdac_bus *bus = get_bus_ctx(substream);
 	unsigned int pos;
 
-	/*
-	 * Use DPIB for Playback stream as the periodic DMA Position-in-
-	 * Buffer Writes may be scheduled at the same time or later than
-	 * the MSI and does not guarantee to reflect the Position of the
-	 * last buffer that was transferred. Whereas DPIB register in
-	 * HAD space reflects the actual data that is transferred.
-	 * Use the position buffer for capture, as DPIB write gets
-	 * completed earlier than the actual data written to the DDR.
-	 *
-	 * For capture stream following workaround is required to fix the
-	 * incorrect position reporting.
-	 *
-	 * 1. Wait for 20us before reading the DMA position in buffer once
-	 * the interrupt is generated for stream completion as update happens
-	 * on the HDA frame boundary i.e. 20.833uSec.
-	 * 2. Read DPIB register to flush the DMA position value. This dummy
-	 * read is required to flush DMA position value.
-	 * 3. Read the DMA Position-in-Buffer. This value now will be equal to
-	 * or greater than period boundary.
-	 */
+	 
 
 	if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK) {
 		pos = readl(bus->remap_addr + AZX_REG_VS_SDXDPIB_XBASE +
@@ -1259,8 +1197,8 @@ static int skl_platform_soc_get_time_info(
 		*audio_ts = ns_to_timespec64(nsec);
 
 		audio_tstamp_report->actual_type = SNDRV_PCM_AUDIO_TSTAMP_TYPE_LINK;
-		audio_tstamp_report->accuracy_report = 1; /* rest of struct is valid */
-		audio_tstamp_report->accuracy = 42; /* 24MHzWallClk == 42ns resolution */
+		audio_tstamp_report->accuracy_report = 1;  
+		audio_tstamp_report->accuracy = 42;  
 
 	} else {
 		audio_tstamp_report->actual_type = SNDRV_PCM_AUDIO_TSTAMP_TYPE_DEFAULT;
@@ -1282,7 +1220,7 @@ static int skl_platform_soc_new(struct snd_soc_component *component,
 
 	if (dai->driver->playback.channels_min ||
 		dai->driver->capture.channels_min) {
-		/* buffer pre-allocation */
+		 
 		size = CONFIG_SND_HDA_PREALLOC_SIZE * 1024;
 		if (size > MAX_PREALLOC_SIZE)
 			size = MAX_PREALLOC_SIZE;
@@ -1389,7 +1327,7 @@ static int skl_platform_soc_probe(struct snd_soc_component *component)
 	if (bus->ppcap) {
 		skl->component = component;
 
-		/* init debugfs */
+		 
 		skl->debugfs = skl_debugfs_init(skl);
 
 		ret = skl_tplg_init(component, bus);
@@ -1398,15 +1336,12 @@ static int skl_platform_soc_probe(struct snd_soc_component *component)
 			return ret;
 		}
 
-		/* load the firmwares, since all is set */
+		 
 		ops = skl_get_dsp_ops(skl->pci->device);
 		if (!ops)
 			return -EIO;
 
-		/*
-		 * Disable dynamic clock and power gating during firmware
-		 * and library download
-		 */
+		 
 		skl->enable_miscbdcge(component->dev, false);
 		skl->clock_power_gating(component->dev, false);
 
@@ -1451,7 +1386,7 @@ static const struct snd_soc_component_driver skl_component  = {
 	.pointer	= skl_platform_soc_pointer,
 	.get_time_info	= skl_platform_soc_get_time_info,
 	.pcm_construct	= skl_platform_soc_new,
-	.module_get_upon_open = 1, /* increment refcount when a pcm is opened */
+	.module_get_upon_open = 1,  
 };
 
 int skl_platform_register(struct device *dev)

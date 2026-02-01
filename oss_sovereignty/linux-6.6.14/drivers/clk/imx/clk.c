@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/bits.h>
 #include <linux/clk.h>
 #include <linux/clk-provider.h>
@@ -128,24 +128,7 @@ struct clk_hw *imx_get_clk_hw_by_name(struct device_node *np, const char *name)
 }
 EXPORT_SYMBOL_GPL(imx_get_clk_hw_by_name);
 
-/*
- * This fixups the register CCM_CSCMR1 write value.
- * The write/read/divider values of the aclk_podf field
- * of that register have the relationship described by
- * the following table:
- *
- * write value       read value        divider
- * 3b'000            3b'110            7
- * 3b'001            3b'111            8
- * 3b'010            3b'100            5
- * 3b'011            3b'101            6
- * 3b'100            3b'010            3
- * 3b'101            3b'011            4
- * 3b'110            3b'000            1
- * 3b'111            3b'001            2(default)
- *
- * That's why we do the xor operation below.
- */
+ 
 #define CSCMR1_FIXUP	0x00600000
 
 void imx_cscmr1_fixup(u32 *val)
@@ -177,7 +160,7 @@ void imx_register_uart_clocks(void)
 
 	imx_enabled_uart_clocks = 0;
 
-/* i.MX boards use device trees now.  For build tests without CONFIG_OF, do nothing */
+ 
 #ifdef CONFIG_OF
 	if (imx_keep_uart_clocks) {
 		int i;
@@ -196,11 +179,11 @@ void imx_register_uart_clocks(void)
 		for (i = 0; i < num; i++) {
 			imx_uart_clocks[imx_enabled_uart_clocks] = of_clk_get(of_stdout, i);
 
-			/* Stop if there are no more of_stdout references */
+			 
 			if (IS_ERR(imx_uart_clocks[imx_enabled_uart_clocks]))
 				return;
 
-			/* Only enable the clock if it's not NULL */
+			 
 			if (imx_uart_clocks[imx_enabled_uart_clocks])
 				clk_prepare_enable(imx_uart_clocks[imx_enabled_uart_clocks++]);
 		}

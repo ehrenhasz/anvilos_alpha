@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright (c) 2019, Intel Corporation. */
+ 
+ 
 
 #ifndef _ICE_DCB_LIB_H_
 #define _ICE_DCB_LIB_H_
@@ -9,10 +9,10 @@
 #include "ice_lib.h"
 
 #ifdef CONFIG_DCB
-#define ICE_TC_MAX_BW		100 /* Default Max BW percentage */
-#define ICE_DCB_HW_CHG_RST	0 /* DCB configuration changed with reset */
-#define ICE_DCB_NO_HW_CHG	1 /* DCB configuration did not change */
-#define ICE_DCB_HW_CHG		2 /* DCB configuration changed, no reset */
+#define ICE_TC_MAX_BW		100  
+#define ICE_DCB_HW_CHG_RST	0  
+#define ICE_DCB_NO_HW_CHG	1  
+#define ICE_DCB_HW_CHG		2  
 
 void ice_dcb_rebuild(struct ice_pf *pf);
 int ice_dcb_sw_dflt_cfg(struct ice_pf *pf, bool ets_willing, bool locked);
@@ -33,14 +33,7 @@ ice_tx_prepare_vlan_flags_dcb(struct ice_tx_ring *tx_ring,
 void
 ice_dcb_process_lldp_set_mib_change(struct ice_pf *pf,
 				    struct ice_rq_event_info *event);
-/**
- * ice_find_q_in_range
- * @low: start of queue range for a TC i.e. offset of TC
- * @high: start of queue for next TC
- * @tx_q: hung_queue/tx_queue
- *
- * finds if queue 'tx_q' falls between the two offsets of any given TC
- */
+ 
 static inline bool ice_find_q_in_range(u16 low, u16 high, unsigned int tx_q)
 {
 	return (tx_q >= low) && (tx_q < high);
@@ -134,5 +127,5 @@ static inline void ice_update_dcb_stats(struct ice_pf *pf) { }
 static inline void
 ice_dcb_process_lldp_set_mib_change(struct ice_pf *pf, struct ice_rq_event_info *event) { }
 static inline void ice_set_cgd_num(struct ice_tlan_ctx *tlan_ctx, u8 dcb_tc) { }
-#endif /* CONFIG_DCB */
-#endif /* _ICE_DCB_LIB_H_ */
+#endif  
+#endif  

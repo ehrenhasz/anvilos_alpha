@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: LGPL-2.1
-/*
- *
- *   Copyright (C) International Business Machines  Corp., 2002,2008
- *   Author(s): Steve French (sfrench@us.ibm.com)
- *
- */
+
+ 
 #include <linux/fs.h>
 #include <linux/stat.h>
 #include <linux/slab.h>
@@ -19,9 +14,7 @@
 #include "smb2proto.h"
 #include "cifs_ioctl.h"
 
-/*
- * M-F Symlink Functions - Begin
- */
+ 
 
 #define CIFS_MF_SYMLINK_LEN_OFFSET (4+1)
 #define CIFS_MF_SYMLINK_MD5_OFFSET (CIFS_MF_SYMLINK_LEN_OFFSET+(4+1))
@@ -158,11 +151,11 @@ bool
 couldbe_mf_symlink(const struct cifs_fattr *fattr)
 {
 	if (!S_ISREG(fattr->cf_mode))
-		/* it's not a symlink */
+		 
 		return false;
 
 	if (fattr->cf_eof != CIFS_MF_SYMLINK_FILE_SIZE)
-		/* it's not a symlink */
+		 
 		return false;
 
 	return true;
@@ -213,7 +206,7 @@ check_mf_symlink(unsigned int xid, struct cifs_tcon *tcon,
 	char *symlink = NULL;
 
 	if (!couldbe_mf_symlink(fattr))
-		/* it's not a symlink */
+		 
 		return 0;
 
 	buf = kmalloc(CIFS_MF_SYMLINK_FILE_SIZE, GFP_KERNEL);
@@ -229,12 +222,12 @@ check_mf_symlink(unsigned int xid, struct cifs_tcon *tcon,
 	if (rc)
 		goto out;
 
-	if (bytes_read == 0) /* not a symlink */
+	if (bytes_read == 0)  
 		goto out;
 
 	rc = parse_mf_symlink(buf, bytes_read, &link_len, &symlink);
 	if (rc == -EINVAL) {
-		/* it's not a symlink */
+		 
 		rc = 0;
 		goto out;
 	}
@@ -242,7 +235,7 @@ check_mf_symlink(unsigned int xid, struct cifs_tcon *tcon,
 	if (rc != 0)
 		goto out;
 
-	/* it is a symlink */
+	 
 	fattr->cf_eof = link_len;
 	fattr->cf_mode &= ~S_IFMT;
 	fattr->cf_mode |= S_IFLNK | S_IRWXU | S_IRWXG | S_IRWXO;
@@ -254,9 +247,7 @@ out:
 }
 
 #ifdef CONFIG_CIFS_ALLOW_INSECURE_LEGACY
-/*
- * SMB 1.0 Protocol specific functions
- */
+ 
 
 int
 cifs_query_mf_symlink(unsigned int xid, struct cifs_tcon *tcon,
@@ -287,7 +278,7 @@ cifs_query_mf_symlink(unsigned int xid, struct cifs_tcon *tcon,
 
 	if (file_info.EndOfFile != cpu_to_le64(CIFS_MF_SYMLINK_FILE_SIZE)) {
 		rc = -ENOENT;
-		/* it's not a symlink */
+		 
 		goto out;
 	}
 
@@ -338,11 +329,9 @@ cifs_create_mf_symlink(unsigned int xid, struct cifs_tcon *tcon,
 	CIFSSMBClose(xid, tcon, fid.netfid);
 	return rc;
 }
-#endif /* CONFIG_CIFS_ALLOW_INSECURE_LEGACY */
+#endif  
 
-/*
- * SMB 2.1/SMB3 Protocol specific functions
- */
+ 
 int
 smb3_query_mf_symlink(unsigned int xid, struct cifs_tcon *tcon,
 		      struct cifs_sb_info *cifs_sb, const unsigned char *path,
@@ -385,8 +374,8 @@ smb3_query_mf_symlink(unsigned int xid, struct cifs_tcon *tcon,
 		goto qmf_out_open_fail;
 
 	if (pfile_info->EndOfFile != cpu_to_le64(CIFS_MF_SYMLINK_FILE_SIZE)) {
-		/* it's not a symlink */
-		rc = -ENOENT; /* Is there a better rc to return? */
+		 
+		rc = -ENOENT;  
 		goto qmf_out;
 	}
 
@@ -451,13 +440,13 @@ smb3_create_mf_symlink(unsigned int xid, struct cifs_tcon *tcon,
 	io_parms.persistent_fid = fid.persistent_fid;
 	io_parms.volatile_fid = fid.volatile_fid;
 
-	/* iov[0] is reserved for smb header */
+	 
 	iov[1].iov_base = pbuf;
 	iov[1].iov_len = CIFS_MF_SYMLINK_FILE_SIZE;
 
 	rc = SMB2_write(xid, &io_parms, pbytes_written, iov, 1);
 
-	/* Make sure we wrote all of the symlink data */
+	 
 	if ((rc == 0) && (*pbytes_written != CIFS_MF_SYMLINK_FILE_SIZE))
 		rc = -EIO;
 
@@ -467,9 +456,7 @@ smb3_create_mf_symlink(unsigned int xid, struct cifs_tcon *tcon,
 	return rc;
 }
 
-/*
- * M-F Symlink Functions - End
- */
+ 
 
 int
 cifs_hardlink(struct dentry *old_file, struct inode *inode,
@@ -516,7 +503,7 @@ cifs_hardlink(struct dentry *old_file, struct inode *inode,
 	else {
 #else
 	{
-#endif /* CONFIG_CIFS_ALLOW_INSECURE_LEGACY */
+#endif  
 		server = tcon->ses->server;
 		if (!server->ops->create_hardlink) {
 			rc = -ENOSYS;
@@ -528,12 +515,9 @@ cifs_hardlink(struct dentry *old_file, struct inode *inode,
 			rc = -EOPNOTSUPP;
 	}
 
-	d_drop(direntry);	/* force new lookup from server of target */
+	d_drop(direntry);	 
 
-	/*
-	 * if source file is cached (oplocked) revalidate will not go to server
-	 * until the file is closed or oplock broken so update nlinks locally
-	 */
+	 
 	if (d_really_is_positive(old_file)) {
 		cifsInode = CIFS_I(d_inode(old_file));
 		if (rc == 0) {
@@ -541,29 +525,12 @@ cifs_hardlink(struct dentry *old_file, struct inode *inode,
 			inc_nlink(d_inode(old_file));
 			spin_unlock(&d_inode(old_file)->i_lock);
 
-			/*
-			 * parent dir timestamps will update from srv within a
-			 * second, would it really be worth it to set the parent
-			 * dir cifs inode time to zero to force revalidate
-			 * (faster) for it too?
-			 */
+			 
 		}
-		/*
-		 * if not oplocked will force revalidate to get info on source
-		 * file from srv.  Note Samba server prior to 4.2 has bug -
-		 * not updating src file ctime on hardlinks but Windows servers
-		 * handle it properly
-		 */
+		 
 		cifsInode->time = 0;
 
-		/*
-		 * Will update parent dir timestamps from srv within a second.
-		 * Would it really be worth it to set the parent dir (cifs
-		 * inode) time field to zero to force revalidate on parent
-		 * directory faster ie
-		 *
-		 * CIFS_I(inode)->time = 0;
-		 */
+		 
 	}
 
 cifs_hl_exit:
@@ -612,7 +579,7 @@ cifs_symlink(struct mnt_idmap *idmap, struct inode *inode,
 	cifs_dbg(FYI, "Full path: %s\n", full_path);
 	cifs_dbg(FYI, "symname is %s\n", symname);
 
-	/* BB what if DFS and this volume is on different share? BB */
+	 
 	if (cifs_sb->mnt_cifs_flags & CIFS_MOUNT_MF_SYMLINKS)
 		rc = create_mf_symlink(xid, pTcon, cifs_sb, full_path, symname);
 #ifdef CONFIG_CIFS_ALLOW_INSECURE_LEGACY
@@ -620,10 +587,8 @@ cifs_symlink(struct mnt_idmap *idmap, struct inode *inode,
 		rc = CIFSUnixCreateSymLink(xid, pTcon, full_path, symname,
 					   cifs_sb->local_nls,
 					   cifs_remap(cifs_sb));
-#endif /* CONFIG_CIFS_ALLOW_INSECURE_LEGACY */
-	/* else
-	   rc = CIFSCreateReparseSymLink(xid, pTcon, fromName, toName,
-					cifs_sb_target->local_nls); */
+#endif  
+	 
 
 	if (rc == 0) {
 		if (pTcon->posix_extensions)

@@ -1,6 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/* Copyright (c) 2014-2018, The Linux Foundation. All rights reserved.
- */
+ 
+ 
 
 #if !defined(_DPU_TRACE_H_) || defined(TRACE_HEADER_MULTI_READ)
 #define _DPU_TRACE_H_
@@ -960,9 +959,9 @@ DEFINE_EVENT(dpu_hw_ctl_pending_flush_template, dpu_hw_ctl_trigger_start,
 #define DPU_ATRACE_INT(name, value) \
 	trace_dpu_trace_counter(current->tgid, name, value)
 
-#endif /* _DPU_TRACE_H_ */
+#endif  
 
-/* This part must be outside protection */
+ 
 #undef TRACE_INCLUDE_PATH
 #define TRACE_INCLUDE_PATH .
 #include <trace/define_trace.h>

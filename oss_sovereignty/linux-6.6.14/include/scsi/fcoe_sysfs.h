@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2011-2012 Intel Corporation.  All rights reserved.
- *
- * Maintained at www.Open-FCoE.org
- */
+ 
+ 
 
 #ifndef FCOE_SYSFS
 #define FCOE_SYSFS
@@ -61,7 +57,7 @@ struct fcoe_ctlr_device {
 
 	enum ctlr_enabled_state         enabled;
 
-	/* expected in host order for displaying */
+	 
 	struct fcoe_fc_els_lesb         lesb;
 };
 
@@ -70,7 +66,7 @@ static inline void *fcoe_ctlr_device_priv(const struct fcoe_ctlr_device *ctlr)
 	return (void *)(ctlr + 1);
 }
 
-/* fcf states */
+ 
 enum fcf_state {
 	FCOE_FCF_STATE_UNKNOWN,
 	FCOE_FCF_STATE_DISCONNECTED,
@@ -101,7 +97,7 @@ struct fcoe_fcf_device {
 
 #define dev_to_fcf(d)					\
 	container_of((d), struct fcoe_fcf_device, dev)
-/* parentage should never be missing */
+ 
 #define fcoe_fcf_dev_to_ctlr_dev(x)		\
 	dev_to_ctlr((x)->dev.parent)
 #define fcoe_fcf_device_priv(x)			\
@@ -118,4 +114,4 @@ void fcoe_fcf_device_delete(struct fcoe_fcf_device *);
 int __init fcoe_sysfs_setup(void);
 void __exit fcoe_sysfs_teardown(void);
 
-#endif /* FCOE_SYSFS */
+#endif  

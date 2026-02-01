@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * AMD Cryptographic Coprocessor (CCP) driver
- *
- * Copyright (C) 2013,2017 Advanced Micro Devices, Inc.
- *
- * Author: Tom Lendacky <thomas.lendacky@amd.com>
- * Author: Gary R Hook <gary.hook@amd.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -39,7 +32,7 @@ static u32 ccp_alloc_ksb(struct ccp_cmd_queue *cmd_q, unsigned int count)
 
 		mutex_unlock(&ccp->sb_mutex);
 
-		/* Wait for KSB entries to become available */
+		 
 		if (wait_event_interruptible(ccp->sb_queue, ccp->sb_avail))
 			return 0;
 	}
@@ -80,10 +73,7 @@ static int ccp_do_cmd(struct ccp_op *op, u32 *cr, unsigned int cr_count)
 	unsigned int i;
 	int ret = 0;
 
-	/* We could read a status register to see how many free slots
-	 * are actually available, but reading that register resets it
-	 * and you could lose some error information.
-	 */
+	 
 	cmd_q->free_slots--;
 
 	cr0 = (cmd_q->id << REQ0_CMD_Q_SHIFT)
@@ -97,27 +87,27 @@ static int ccp_do_cmd(struct ccp_op *op, u32 *cr, unsigned int cr_count)
 	if (op->ioc || !cmd_q->free_slots)
 		cr0 |= REQ0_INT_ON_COMPLETE;
 
-	/* Start at CMD_REQ1 */
+	 
 	cr_addr = ccp->io_regs + CMD_REQ0 + CMD_REQ_INCR;
 
 	mutex_lock(&ccp->req_mutex);
 
-	/* Write CMD_REQ1 through CMD_REQx first */
+	 
 	for (i = 0; i < cr_count; i++, cr_addr += CMD_REQ_INCR)
 		iowrite32(*(cr + i), cr_addr);
 
-	/* Tell the CCP to start */
+	 
 	wmb();
 	iowrite32(cr0, ccp->io_regs + CMD_REQ0);
 
 	mutex_unlock(&ccp->req_mutex);
 
 	if (cr0 & REQ0_INT_ON_COMPLETE) {
-		/* Wait for the job to complete */
+		 
 		ret = wait_event_interruptible(cmd_q->int_queue,
 					       cmd_q->int_rcvd);
 		if (ret || cmd_q->cmd_error) {
-			/* On error delete all related jobs from the queue */
+			 
 			cmd = (cmd_q->id << DEL_Q_ID_SHIFT)
 			      | op->jobid;
 			if (cmd_q->cmd_error)
@@ -129,7 +119,7 @@ static int ccp_do_cmd(struct ccp_op *op, u32 *cr, unsigned int cr_count)
 			if (!ret)
 				ret = -EIO;
 		} else if (op->soc) {
-			/* Delete just head job from the queue on SoC */
+			 
 			cmd = DEL_Q_ACTIVE
 			      | (cmd_q->id << DEL_Q_ID_SHIFT)
 			      | op->jobid;
@@ -149,7 +139,7 @@ static int ccp_perform_aes(struct ccp_op *op)
 {
 	u32 cr[6];
 
-	/* Fill out the register contents for REQ1 through REQ6 */
+	 
 	cr[0] = (CCP_ENGINE_AES << REQ1_ENGINE_SHIFT)
 		| (op->u.aes.type << REQ1_AES_TYPE_SHIFT)
 		| (op->u.aes.mode << REQ1_AES_MODE_SHIFT)
@@ -180,7 +170,7 @@ static int ccp_perform_xts_aes(struct ccp_op *op)
 {
 	u32 cr[6];
 
-	/* Fill out the register contents for REQ1 through REQ6 */
+	 
 	cr[0] = (CCP_ENGINE_XTS_AES_128 << REQ1_ENGINE_SHIFT)
 		| (op->u.xts.action << REQ1_AES_ACTION_SHIFT)
 		| (op->u.xts.unit_size << REQ1_XTS_AES_SIZE_SHIFT)
@@ -207,7 +197,7 @@ static int ccp_perform_sha(struct ccp_op *op)
 {
 	u32 cr[6];
 
-	/* Fill out the register contents for REQ1 through REQ6 */
+	 
 	cr[0] = (CCP_ENGINE_SHA << REQ1_ENGINE_SHIFT)
 		| (op->u.sha.type << REQ1_SHA_TYPE_SHIFT)
 		| REQ1_INIT;
@@ -233,7 +223,7 @@ static int ccp_perform_rsa(struct ccp_op *op)
 {
 	u32 cr[6];
 
-	/* Fill out the register contents for REQ1 through REQ6 */
+	 
 	cr[0] = (CCP_ENGINE_RSA << REQ1_ENGINE_SHIFT)
 		| (op->u.rsa.mod_size << REQ1_RSA_MOD_SIZE_SHIFT)
 		| (op->sb_key << REQ1_KEY_KSB_SHIFT)
@@ -254,7 +244,7 @@ static int ccp_perform_passthru(struct ccp_op *op)
 {
 	u32 cr[6];
 
-	/* Fill out the register contents for REQ1 through REQ6 */
+	 
 	cr[0] = (CCP_ENGINE_PASSTHRU << REQ1_ENGINE_SHIFT)
 		| (op->u.passthru.bit_mod << REQ1_PT_BW_SHIFT)
 		| (op->u.passthru.byte_swap << REQ1_PT_BS_SHIFT);
@@ -295,7 +285,7 @@ static int ccp_perform_ecc(struct ccp_op *op)
 {
 	u32 cr[6];
 
-	/* Fill out the register contents for REQ1 through REQ6 */
+	 
 	cr[0] = REQ1_ECC_AFFINE_CONVERT
 		| (CCP_ENGINE_ECC << REQ1_ENGINE_SHIFT)
 		| (op->u.ecc.function << REQ1_ECC_FUNCTION_SHIFT)
@@ -339,13 +329,13 @@ static void ccp_irq_bh(unsigned long data)
 			cmd_q->q_status = ioread32(cmd_q->reg_status);
 			cmd_q->q_int_status = ioread32(cmd_q->reg_int_status);
 
-			/* On error, only save the first error value */
+			 
 			if ((q_int & cmd_q->int_err) && !cmd_q->cmd_error)
 				cmd_q->cmd_error = CMD_Q_ERROR(cmd_q->q_status);
 
 			cmd_q->int_rcvd = 1;
 
-			/* Acknowledge the interrupt and wake the kthread */
+			 
 			iowrite32(q_int, ccp->io_regs + IRQ_STATUS_REG);
 			wake_up_interruptible(&cmd_q->int_queue);
 		}
@@ -375,14 +365,14 @@ static int ccp_init(struct ccp_device *ccp)
 	unsigned int qmr, i;
 	int ret;
 
-	/* Find available queues */
+	 
 	ccp->qim = 0;
 	qmr = ioread32(ccp->io_regs + Q_MASK_REG);
 	for (i = 0; (i < MAX_HW_QUEUES) && (ccp->cmd_q_count < ccp->max_q_count); i++) {
 		if (!(qmr & (1 << i)))
 			continue;
 
-		/* Allocate a dma pool for this queue */
+		 
 		snprintf(dma_pool_name, sizeof(dma_pool_name), "%s_q%d",
 			 ccp->name, i);
 		dma_pool = dma_pool_create(dma_pool_name, dev,
@@ -401,14 +391,12 @@ static int ccp_init(struct ccp_device *ccp)
 		cmd_q->id = i;
 		cmd_q->dma_pool = dma_pool;
 
-		/* Reserve 2 KSB regions for the queue */
+		 
 		cmd_q->sb_key = KSB_START + ccp->sb_start++;
 		cmd_q->sb_ctx = KSB_START + ccp->sb_start++;
 		ccp->sb_count -= 2;
 
-		/* Preset some register values and masks that are queue
-		 * number dependent
-		 */
+		 
 		cmd_q->reg_status = ccp->io_regs + CMD_Q_STATUS_BASE +
 				    (CMD_Q_STATUS_INCR * i);
 		cmd_q->reg_int_status = ccp->io_regs + CMD_Q_INT_STATUS_BASE +
@@ -420,11 +408,11 @@ static int ccp_init(struct ccp_device *ccp)
 
 		init_waitqueue_head(&cmd_q->int_queue);
 
-		/* Build queue interrupt mask (two interrupts per queue) */
+		 
 		ccp->qim |= cmd_q->int_ok | cmd_q->int_err;
 
 #ifdef CONFIG_ARM64
-		/* For arm64 set the recommended queue cache settings */
+		 
 		iowrite32(ccp->axcache, ccp->io_regs + CMD_Q_CACHE_BASE +
 			  (CMD_Q_CACHE_INC * i));
 #endif
@@ -438,7 +426,7 @@ static int ccp_init(struct ccp_device *ccp)
 	}
 	dev_notice(dev, "%u command queues available\n", ccp->cmd_q_count);
 
-	/* Disable and clear interrupts until ready */
+	 
 	ccp_disable_queue_interrupts(ccp);
 	for (i = 0; i < ccp->cmd_q_count; i++) {
 		cmd_q = &ccp->cmd_q[i];
@@ -448,20 +436,20 @@ static int ccp_init(struct ccp_device *ccp)
 	}
 	iowrite32(ccp->qim, ccp->io_regs + IRQ_STATUS_REG);
 
-	/* Request an irq */
+	 
 	ret = sp_request_ccp_irq(ccp->sp, ccp_irq_handler, ccp->name, ccp);
 	if (ret) {
 		dev_err(dev, "unable to allocate an IRQ\n");
 		goto e_pool;
 	}
 
-	/* Initialize the ISR tasklet? */
+	 
 	if (ccp->use_tasklet)
 		tasklet_init(&ccp->irq_tasklet, ccp_irq_bh,
 			     (unsigned long)ccp);
 
 	dev_dbg(dev, "Starting threads...\n");
-	/* Create a kthread for each queue */
+	 
 	for (i = 0; i < ccp->cmd_q_count; i++) {
 		struct task_struct *kthread;
 
@@ -480,7 +468,7 @@ static int ccp_init(struct ccp_device *ccp)
 	}
 
 	dev_dbg(dev, "Enabling interrupts...\n");
-	/* Enable interrupts */
+	 
 	ccp_enable_queue_interrupts(ccp);
 
 	dev_dbg(dev, "Registering device...\n");
@@ -490,7 +478,7 @@ static int ccp_init(struct ccp_device *ccp)
 	if (ret)
 		goto e_kthread;
 
-	/* Register the DMA engine support */
+	 
 	ret = ccp_dmaengine_register(ccp);
 	if (ret)
 		goto e_hwrng;
@@ -520,16 +508,16 @@ static void ccp_destroy(struct ccp_device *ccp)
 	struct ccp_cmd *cmd;
 	unsigned int i;
 
-	/* Unregister the DMA engine */
+	 
 	ccp_dmaengine_unregister(ccp);
 
-	/* Unregister the RNG */
+	 
 	ccp_unregister_rng(ccp);
 
-	/* Remove this device from the list of available units */
+	 
 	ccp_del_device(ccp);
 
-	/* Disable and clear interrupts */
+	 
 	ccp_disable_queue_interrupts(ccp);
 	for (i = 0; i < ccp->cmd_q_count; i++) {
 		cmd_q = &ccp->cmd_q[i];
@@ -539,7 +527,7 @@ static void ccp_destroy(struct ccp_device *ccp)
 	}
 	iowrite32(ccp->qim, ccp->io_regs + IRQ_STATUS_REG);
 
-	/* Stop the queue kthreads */
+	 
 	for (i = 0; i < ccp->cmd_q_count; i++)
 		if (ccp->cmd_q[i].kthread)
 			kthread_stop(ccp->cmd_q[i].kthread);
@@ -549,15 +537,15 @@ static void ccp_destroy(struct ccp_device *ccp)
 	for (i = 0; i < ccp->cmd_q_count; i++)
 		dma_pool_destroy(ccp->cmd_q[i].dma_pool);
 
-	/* Flush the cmd and backlog queue */
+	 
 	while (!list_empty(&ccp->cmd)) {
-		/* Invoke the callback directly with an error code */
+		 
 		cmd = list_first_entry(&ccp->cmd, struct ccp_cmd, entry);
 		list_del(&cmd->entry);
 		cmd->callback(cmd->data, -ENODEV);
 	}
 	while (!list_empty(&ccp->backlog)) {
-		/* Invoke the callback directly with an error code */
+		 
 		cmd = list_first_entry(&ccp->backlog, struct ccp_cmd, entry);
 		list_del(&cmd->entry);
 		cmd->callback(cmd->data, -ENODEV);

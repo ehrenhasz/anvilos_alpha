@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2021-2022, NVIDIA CORPORATION. All rights reserved
- *
- * The driver handles Error's from Control Backbone(CBB) generated due to
- * illegal accesses. When an error is reported from a NOC within CBB,
- * the driver checks ErrVld status of all three Error Logger's of that NOC.
- * It then prints debug information about failed transaction using ErrLog
- * registers of error logger which has ErrVld set. Currently, SLV, DEC,
- * TMO, SEC, UNS are the codes which are supported by CBB.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/cpufeature.h>
@@ -106,11 +97,11 @@
 #define DMAAPB_X_RAW_INTERRUPT_STATUS 0x2ec
 
 struct tegra194_cbb_packet_header {
-	bool lock;   // [0]
-	u8 opc;      // [4:1]
-	u8 errcode;  // [10:8]= RD, RDW, RDL, RDX, WR, WRW, WRC, PRE, URG
-	u16 len1;    // [27:16]
-	bool format; // [31]  = 1 -> FlexNoC versions 2.7 & above
+	bool lock;   
+	u8 opc;      
+	u8 errcode;  
+	u16 len1;    
+	bool format; 
 };
 
 struct tegra194_cbb_aperture {
@@ -183,12 +174,12 @@ static DEFINE_SPINLOCK(cbb_lock);
 
 static const char * const tegra194_cbb_trantype[] = {
 	"RD  - Read, Incrementing",
-	"RDW - Read, Wrap",			/* Not Supported */
-	"RDX - Exclusive Read",			/* Not Supported */
-	"RDL - Linked Read",			/* Not Supported */
+	"RDW - Read, Wrap",			 
+	"RDX - Exclusive Read",			 
+	"RDL - Linked Read",			 
 	"WR  - Write, Incrementing",
-	"WRW - Write, Wrap",			/* Not Supported */
-	"WRC - Exclusive Write",		/* Not Supported */
+	"WRW - Write, Wrap",			 
+	"WRC - Exclusive Write",		 
 	"PRE - Preamble Sequence for Fixed Accesses"
 };
 
@@ -248,7 +239,7 @@ static const struct tegra_cbb_error tegra194_cbb_errors[] = {
 		.source = "Target NIU",
 		.desc = "Unsupported request. Not a valid transaction"
 	}, {
-		.code = "DISC", /* Not Supported by CBB */
+		.code = "DISC",  
 		.source = "Power Disconnect",
 		.desc = "Disconnected target or domain"
 	}, {
@@ -256,7 +247,7 @@ static const struct tegra_cbb_error tegra194_cbb_errors[] = {
 		.source = "Initiator NIU or Firewall",
 		.desc = "Security violation. Firewall error"
 	}, {
-		.code = "HIDE", /* Not Supported by CBB */
+		.code = "HIDE",  
 		.source = "Firewall",
 		.desc = "Hidden security violation, reported as OK to initiator"
 	}, {
@@ -270,9 +261,7 @@ static const struct tegra_cbb_error tegra194_cbb_errors[] = {
 	}
 };
 
-/*
- * CBB NOC aperture lookup table as per file "cbb_central_noc_Structure.info".
- */
+ 
 static const char * const tegra194_cbbcentralnoc_routeid_initflow[] = {
 	[0x0] = "aon_p2ps/I/aon",
 	[0x1] = "ape_p2ps/I/ape_p2ps",
@@ -311,12 +300,7 @@ static const char * const tegra194_cbbcentralnoc_routeid_targflow[] = {
 	[0xf] = "RESERVED"
 };
 
-/*
- * Fields of CBB NOC lookup table:
- * Init flow, Targ flow, Targ subrange, Init mapping, Init localAddress,
- *                                              Targ mapping, Targ localAddress
- * ----------------------------------------------------------------------------
- */
+ 
 static const struct tegra194_cbb_aperture tegra194_cbbcentralnoc_apert_lookup[] = {
 	{ 0x0, 0x0, 0x00, 0x0, 0x02300000,  0, 0x00000000 },
 	{ 0x0, 0x1, 0x00, 0x0, 0x02003000,  0, 0x02003000 },
@@ -505,9 +489,7 @@ static const struct tegra194_cbb_aperture tegra194_cbbcentralnoc_apert_lookup[] 
 	{ 0x0, 0xa, 0x00, 0x0, 0x22000000,  0, 0x22000000 }
 };
 
-/*
- * BPMP NOC aperture lookup table as per file "BPMP_NOC_Structure.info".
- */
+ 
 static const char * const tegra194_bpmpnoc_routeid_initflow[] = {
 	[0x0] = "cbb_i/I/0",
 	[0x1] = "cpu_m_i/I/0",
@@ -554,12 +536,7 @@ static const char * const tegra194_bpmpnoc_routeid_targflow[] = {
 	[0x1f] = "svc_t/T/0"
 };
 
-/*
- * Fields of BPMP NOC lookup table:
- * Init flow, Targ flow, Targ subrange, Init mapping, Init localAddress,
- *                                              Targ mapping, Targ localAddress
- * ----------------------------------------------------------------------------
- */
+ 
 static const struct tegra194_cbb_aperture tegra194_bpmpnoc_apert_lookup[] = {
 	{ 0x0, 0x1c, 0x0, 0x0, 0x0d640000, 0,  0x00000000 },
 	{ 0x0, 0x1e, 0x0, 0x0, 0x0d400000, 0,  0x0d400000 },
@@ -827,9 +804,7 @@ static const struct tegra194_cbb_aperture tegra194_bpmpnoc_apert_lookup[] = {
 	{ 0x5, 0x1f, 0x1, 0x0, 0x00000000, 0,  0x00000000 }
 };
 
-/*
- * AON NOC aperture lookup table as per file "AON_NOC_Structure.info".
- */
+ 
 static const char * const tegra194_aonnoc_routeid_initflow[] = {
 	[0x0] = "cbb_i/I/0",
 	[0x1] = "cpu_p_i/I/0",
@@ -904,12 +879,7 @@ static const char * const tegra194_aonnoc_routeid_targflow[] = {
 	[0x3f] = "RESERVED"
 };
 
-/*
- * Fields of AON NOC lookup table:
- * Init flow, Targ flow, Targ subrange, Init mapping, Init localAddress,
- *                                              Targ mapping, Targ localAddress
- * ----------------------------------------------------------------------------
- */
+ 
 static const struct tegra194_cbb_aperture tegra194_aonnoc_aperture_lookup[] = {
 	{ 0x0, 0x37, 0x00, 0, 0x0c640000, 0,  0x00000000 },
 	{ 0x0, 0x20, 0x00, 0, 0x0c3b0000, 0,  0x00000000 },
@@ -1191,9 +1161,7 @@ static const struct tegra194_cbb_aperture tegra194_aonnoc_aperture_lookup[] = {
 	{ 0x3, 0x39, 0x00, 0, 0x0c280000, 0,  0x00000000 }
 };
 
-/*
- * SCE/RCE NOC aperture lookup table as per file "AON_NOC_Structure.info".
- */
+ 
 static const char * const tegra194_scenoc_routeid_initflow[] = {
 	[0x0] = "cbb_i/I/0",
 	[0x1] = "cpu_m_i/I/0",
@@ -1240,12 +1208,7 @@ static const char * const tegra194_scenoc_routeid_targflow[] = {
 	[0x1f] = "RESERVED"
 };
 
-/*
- * Fields of SCE/RCE NOC lookup table:
- * Init flow, Targ flow, Targ subrange, Init mapping, Init localAddress,
- *                                              Targ mapping, Targ localAddress
- * ----------------------------------------------------------------------------
- */
+ 
 static const struct tegra194_cbb_aperture tegra194_scenoc_apert_lookup[] = {
 	{ 0x0, 0x16, 0x0,  0, 0x0b400000, 0,  0x0b400000 },
 	{ 0x0, 0x16, 0x1,  0, 0x0bc00000, 1,  0x0bc00000 },
@@ -1730,10 +1693,7 @@ static bool tegra194_axi2apb_fatal(struct seq_file *file, unsigned int bridge, u
 	return is_fatal;
 }
 
-/*
- * Fetch InitlocalAddress from NOC Aperture lookup table
- * using Targflow, Targsubrange
- */
+ 
 static u32 get_init_localaddress(const struct tegra194_cbb_aperture *info,
 				 const struct tegra194_cbb_aperture *aper, unsigned int max)
 {
@@ -1783,12 +1743,7 @@ static void print_errlog5(struct seq_file *file, struct tegra194_cbb *cbb)
 	tegra_cbb_print_err(file, "\t  Virtual Queuing Channel(VQC): %#x\n", userbits.vqc);
 }
 
-/*
- *  Fetch Base Address/InitlocalAddress from NOC aperture lookup table using TargFlow &
- *  Targ_subRange extracted from RouteId. Perform address reconstruction as below:
- *
- *    Address = Base Address + (ErrLog3 + ErrLog4)
- */
+ 
 static void
 print_errlog3_4(struct seq_file *file, u32 errlog3, u32 errlog4,
 		const struct tegra194_cbb_aperture *info,
@@ -1796,11 +1751,7 @@ print_errlog3_4(struct seq_file *file, u32 errlog3, u32 errlog4,
 {
 	u64 addr = (u64)errlog4 << 32 | errlog3;
 
-	/*
-	 * If errlog4[7] = "1", then it's a joker entry. Joker entries are a rare phenomenon and
-	 * such addresses are not reliable. Debugging should be done using only the RouteId
-	 * information.
-	 */
+	 
 	if (errlog4 & 0x80)
 		tegra_cbb_print_err(file, "\t debug using RouteId alone as below address is a "
 					  "joker entry and not reliable");
@@ -1810,10 +1761,7 @@ print_errlog3_4(struct seq_file *file, u32 errlog3, u32 errlog4,
 	tegra_cbb_print_err(file, "\t  Address accessed\t: %#llx\n", addr);
 }
 
-/*
- *  Get RouteId from ErrLog1+ErrLog2 registers and fetch values of
- *  InitFlow, TargFlow, Targ_subRange and SeqId values from RouteId
- */
+ 
 static void
 print_errlog1_2(struct seq_file *file, struct tegra194_cbb *cbb,
 		struct tegra194_cbb_aperture *info)
@@ -1835,18 +1783,7 @@ print_errlog1_2(struct seq_file *file, struct tegra194_cbb *cbb,
 	tegra_cbb_print_err(file, "\t  SeqId\t\t\t: %d\n", seqid);
 }
 
-/*
- * Print transcation type, error code and description from ErrLog0 for all
- * errors. For NOC slave errors, all relevant error info is printed using
- * ErrLog0 only. But additional information is printed for errors from
- * APB slaves because for them:
- *  - All errors are logged as SLV(slave) errors due to APB having only single
- *    bit pslverr to report all errors.
- *  - Exact cause is printed by reading DMAAPB_X_RAW_INTERRUPT_STATUS register.
- *  - The driver prints information showing AXI2APB bridge and exact error
- *    only if there is error in any AXI2APB slave.
- *  - There is still no way to disambiguate a DEC error from SLV error type.
- */
+ 
 static bool print_errlog0(struct seq_file *file, struct tegra194_cbb *cbb)
 {
 	struct tegra194_cbb_packet_header hdr;
@@ -1867,10 +1804,7 @@ static bool print_errlog0(struct seq_file *file, struct tegra194_cbb *cbb)
 	tegra_cbb_print_err(file, "\t  Error Description\t: %s\n",
 			    tegra194_cbb_errors[hdr.errcode].desc);
 
-	/*
-	 * Do not crash system for errors which are only notifications to indicate a transaction
-	 * was not allowed to be attempted.
-	 */
+	 
 	if (!strcmp(tegra194_cbb_errors[hdr.errcode].code, "SEC") ||
 	    !strcmp(tegra194_cbb_errors[hdr.errcode].code, "DEC") ||
 	    !strcmp(tegra194_cbb_errors[hdr.errcode].code, "UNS") ||
@@ -1881,13 +1815,7 @@ static bool print_errlog0(struct seq_file *file, struct tegra194_cbb *cbb)
 		unsigned int i;
 		u32 status;
 
-		/* For all SLV errors, read DMAAPB_X_RAW_INTERRUPT_STATUS
-		 * register to get error status for all AXI2APB bridges.
-		 * Print bridge details if a bit is set in a bridge's
-		 * status register due to error in a APB slave connected
-		 * to that bridge. For other NOC slaves, none of the status
-		 * register will be set.
-		 */
+		 
 
 		for (i = 0; i < cbb->num_bridges; i++) {
 			status = tegra194_axi2apb_status(cbb->bridges[i].base);
@@ -1910,10 +1838,7 @@ static bool print_errlog0(struct seq_file *file, struct tegra194_cbb *cbb)
 	return is_fatal;
 }
 
-/*
- * Print debug information about failed transaction using
- * ErrLog registers of error loggger having ErrVld set
- */
+ 
 static bool print_errloggerX_info(struct seq_file *file, struct tegra194_cbb *cbb,
 				  int errloggerX)
 {
@@ -2008,20 +1933,18 @@ static int tegra194_cbb_debugfs_show(struct tegra_cbb *cbb, struct seq_file *fil
 }
 #endif
 
-/*
- * Handler for CBB errors from different initiators
- */
+ 
 static irqreturn_t tegra194_cbb_err_isr(int irq, void *data)
 {
 	bool is_inband_err = false, is_fatal = false;
-	//struct tegra194_cbb *cbb = data;
+	
 	struct tegra_cbb *noc;
 	unsigned long flags;
 	u8 mstr_id = 0;
 
 	spin_lock_irqsave(&cbb_lock, flags);
 
-	/* XXX only process interrupts for "cbb" instead of iterating over all NOCs? */
+	 
 	list_for_each_entry(noc, &cbb_list, node) {
 		struct tegra194_cbb *priv = to_tegra194_cbb(noc);
 		u32 status = 0;
@@ -2035,10 +1958,7 @@ static irqreturn_t tegra194_cbb_err_isr(int irq, void *data)
 
 			is_fatal = print_errlog(NULL, priv, status);
 
-			/*
-			 * If illegal request is from CCPLEX(0x1) initiator
-			 * and error is fatal then call BUG() to crash system.
-			 */
+			 
 			if (priv->noc->erd_mask_inband_err) {
 				mstr_id =  FIELD_GET(CBB_NOC_MSTR_ID, priv->errlog5);
 				if (mstr_id == 0x1)
@@ -2059,10 +1979,7 @@ static irqreturn_t tegra194_cbb_err_isr(int irq, void *data)
 	return IRQ_HANDLED;
 }
 
-/*
- * Register handler for CBB_NONSECURE & CBB_SECURE interrupts
- * for reporting CBB errors
- */
+ 
 static int tegra194_cbb_interrupt_enable(struct tegra_cbb *cbb)
 {
 	struct tegra194_cbb *priv = to_tegra194_cbb(cbb);
@@ -2093,13 +2010,10 @@ static int tegra194_cbb_interrupt_enable(struct tegra_cbb *cbb)
 
 static void tegra194_cbb_error_enable(struct tegra_cbb *cbb)
 {
-	/*
-	 * Set “StallEn=1” to enable queuing of error packets till
-	 * first is served & cleared
-	 */
+	 
 	tegra_cbb_stall_enable(cbb);
 
-	/* set “FaultEn=1” to enable error reporting signal “Fault” */
+	 
 	tegra_cbb_fault_enable(cbb);
 }
 
@@ -2181,7 +2095,7 @@ static const struct of_device_id tegra194_cbb_match[] = {
 	{ .compatible = "nvidia,tegra194-bpmp-noc", .data = &tegra194_bpmp_noc_data },
 	{ .compatible = "nvidia,tegra194-rce-noc", .data = &tegra194_rce_noc_data },
 	{ .compatible = "nvidia,tegra194-sce-noc", .data = &tegra194_sce_noc_data },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, tegra194_cbb_match);
 
@@ -2247,11 +2161,7 @@ static int tegra194_cbb_probe(struct platform_device *pdev)
 	noc = of_device_get_match_data(&pdev->dev);
 
 	if (noc->erd_mask_inband_err) {
-		/*
-		 * Set Error Response Disable(ERD) bit to mask SError/inband
-		 * error and only trigger interrupts for illegal access from
-		 * CCPLEX initiator.
-		 */
+		 
 		err = tegra194_miscreg_mask_serror();
 		if (err) {
 			dev_err(&pdev->dev, "couldn't mask inband errors\n");

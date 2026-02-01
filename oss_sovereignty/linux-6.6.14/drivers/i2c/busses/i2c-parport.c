@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* ------------------------------------------------------------------------ *
- * i2c-parport.c I2C bus over parallel port                                 *
- * ------------------------------------------------------------------------ *
-   Copyright (C) 2003-2011 Jean Delvare <jdelvare@suse.de>
 
-   Based on older i2c-philips-par.c driver
-   Copyright (C) 1995-2000 Simon G. Vogl
-   With some changes from:
-   Frodo Looijaard <frodol@dds.nl>
-   Kyösti Mälkki <kmalkki@cc.hut.fi>
-
- * ------------------------------------------------------------------------ */
+ 
 
 #define pr_fmt(fmt) "i2c-parport: " fmt
 
@@ -46,33 +35,33 @@ struct adapter_parm {
 };
 
 static const struct adapter_parm adapter_parm[] = {
-	/* type 0: Philips adapter */
+	 
 	{
 		.setsda	= { 0x80, PORT_DATA, 1 },
 		.setscl	= { 0x08, PORT_CTRL, 0 },
 		.getsda	= { 0x80, PORT_STAT, 0 },
 		.getscl	= { 0x08, PORT_STAT, 0 },
 	},
-	/* type 1: home brew teletext adapter */
+	 
 	{
 		.setsda	= { 0x02, PORT_DATA, 0 },
 		.setscl	= { 0x01, PORT_DATA, 0 },
 		.getsda	= { 0x80, PORT_STAT, 1 },
 	},
-	/* type 2: Velleman K8000 adapter */
+	 
 	{
 		.setsda	= { 0x02, PORT_CTRL, 1 },
 		.setscl	= { 0x08, PORT_CTRL, 1 },
 		.getsda	= { 0x10, PORT_STAT, 0 },
 	},
-	/* type 3: ELV adapter */
+	 
 	{
 		.setsda	= { 0x02, PORT_DATA, 1 },
 		.setscl	= { 0x01, PORT_DATA, 1 },
 		.getsda	= { 0x40, PORT_STAT, 1 },
 		.getscl	= { 0x08, PORT_STAT, 1 },
 	},
-	/* type 4: ADM1032 evaluation board */
+	 
 	{
 		.setsda	= { 0x02, PORT_DATA, 1 },
 		.setscl	= { 0x01, PORT_DATA, 1 },
@@ -80,13 +69,13 @@ static const struct adapter_parm adapter_parm[] = {
 		.init	= { 0xf0, PORT_DATA, 0 },
 		.smbus_alert = 1,
 	},
-	/* type 5: ADM1025, ADM1030 and ADM1031 evaluation boards */
+	 
 	{
 		.setsda	= { 0x02, PORT_DATA, 1 },
 		.setscl	= { 0x01, PORT_DATA, 1 },
 		.getsda	= { 0x10, PORT_STAT, 1 },
 	},
-	/* type 6: Barco LPT->DVI (K5800236) adapter */
+	 
 	{
 		.setsda	= { 0x02, PORT_DATA, 1 },
 		.setscl	= { 0x01, PORT_DATA, 1 },
@@ -94,14 +83,14 @@ static const struct adapter_parm adapter_parm[] = {
 		.getscl	= { 0x40, PORT_STAT, 0 },
 		.init	= { 0xfc, PORT_DATA, 0 },
 	},
-	/* type 7: One For All JP1 parallel port adapter */
+	 
 	{
 		.setsda	= { 0x01, PORT_DATA, 0 },
 		.setscl	= { 0x02, PORT_DATA, 0 },
 		.getsda	= { 0x80, PORT_STAT, 1 },
 		.init	= { 0x04, PORT_DATA, 1 },
 	},
-	/* type 8: VCT-jig */
+	 
 	{
 		.setsda	= { 0x04, PORT_DATA, 1 },
 		.setscl	= { 0x01, PORT_DATA, 1 },
@@ -110,7 +99,7 @@ static const struct adapter_parm adapter_parm[] = {
 	},
 };
 
-/* ----- Device list ------------------------------------------------------ */
+ 
 
 struct i2c_par {
 	struct pardevice *pdev;
@@ -148,7 +137,7 @@ MODULE_PARM_DESC(type,
 	" 8 = VCT-jig\n"
 );
 
-/* ----- Low-level parallel port access ----------------------------------- */
+ 
 
 static void port_write_data(struct parport *p, unsigned char d)
 {
@@ -187,14 +176,14 @@ static unsigned char (* const port_read[])(struct parport *) = {
 	port_read_control,
 };
 
-/* ----- Unified line operation functions --------------------------------- */
+ 
 
 static inline void line_set(struct parport *data, int state,
 	const struct lineop *op)
 {
 	u8 oldval = port_read[op->port](data);
 
-	/* Touch only the bit(s) needed */
+	 
 	if ((op->inverted && !state) || (!op->inverted && state))
 		port_write[op->port](data, oldval | op->val);
 	else
@@ -210,7 +199,7 @@ static inline int line_get(struct parport *data,
 	    || (!op->inverted && (oldval & op->val) == op->val));
 }
 
-/* ----- I2C algorithm call-back functions and structures ----------------- */
+ 
 
 static void parport_setscl(void *data, int state)
 {
@@ -232,21 +221,17 @@ static int parport_getsda(void *data)
 	return line_get((struct parport *) data, &adapter_parm[type].getsda);
 }
 
-/* Encapsulate the functions above in the correct structure.
-   Note that this is only a template, from which the real structures are
-   copied. The attaching code will set getscl to NULL for adapters that
-   cannot read SCL back, and will also make the data field point to
-   the parallel port structure. */
+ 
 static const struct i2c_algo_bit_data parport_algo_data = {
 	.setsda		= parport_setsda,
 	.setscl		= parport_setscl,
 	.getsda		= parport_getsda,
 	.getscl		= parport_getscl,
-	.udelay		= 10, /* ~50 kbps */
+	.udelay		= 10,  
 	.timeout	= HZ,
 };
 
-/* ----- I2c and parallel port call-back functions and structures --------- */
+ 
 
 static void i2c_parport_irq(void *data)
 {
@@ -305,16 +290,16 @@ static void i2c_parport_attach(struct parport *port)
 		goto err_free;
 	}
 
-	/* Fill the rest of the structure */
+	 
 	adapter->adapter.owner = THIS_MODULE;
 	adapter->adapter.class = I2C_CLASS_HWMON;
 	strscpy(adapter->adapter.name, "Parallel port adapter",
 		sizeof(adapter->adapter.name));
 	adapter->algo_data = parport_algo_data;
-	/* Slow down if we can't sense SCL */
+	 
 	if (!adapter_parm[type].getscl.val) {
 		adapter->algo_data.getscl = NULL;
-		adapter->algo_data.udelay = 50; /* ~10 kbps */
+		adapter->algo_data.udelay = 50;  
 	}
 	adapter->algo_data.data = port;
 	adapter->adapter.algo_data = &adapter->algo_data;
@@ -326,13 +311,13 @@ static void i2c_parport_attach(struct parport *port)
 		goto err_unregister;
 	}
 
-	/* Reset hardware to a sane state (SCL and SDA high) */
+	 
 	parport_setsda(port, 1);
 	parport_setscl(port, 1);
-	/* Other init if needed (power on...) */
+	 
 	if (adapter_parm[type].init.val) {
 		line_set(port, 1, &adapter_parm[type].init);
-		/* Give powered devices some time to settle */
+		 
 		msleep(100);
 	}
 
@@ -341,7 +326,7 @@ static void i2c_parport_attach(struct parport *port)
 		goto err_unregister;
 	}
 
-	/* Setup SMBus alert if supported */
+	 
 	if (adapter_parm[type].smbus_alert) {
 		struct i2c_client *ara;
 
@@ -356,7 +341,7 @@ static void i2c_parport_attach(struct parport *port)
 		}
 	}
 
-	/* Add the new adapter to the list */
+	 
 	mutex_lock(&adapter_list_lock);
 	list_add_tail(&adapter->node, &adapter_list);
 	mutex_unlock(&adapter_list_lock);
@@ -373,7 +358,7 @@ static void i2c_parport_detach(struct parport *port)
 {
 	struct i2c_par *adapter, *_n;
 
-	/* Walk the list */
+	 
 	mutex_lock(&adapter_list_lock);
 	list_for_each_entry_safe(adapter, _n, &adapter_list, node) {
 		if (adapter->pdev->port == port) {
@@ -383,7 +368,7 @@ static void i2c_parport_detach(struct parport *port)
 			}
 			i2c_del_adapter(&adapter->adapter);
 
-			/* Un-init if needed (power off...) */
+			 
 			if (adapter_parm[type].init.val)
 				line_set(port, 0, &adapter_parm[type].init);
 

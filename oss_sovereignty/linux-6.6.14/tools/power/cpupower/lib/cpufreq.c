@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  (C) 2004-2009  Dominik Brodowski <linux@dominikbrodowski.de>
- */
+
+ 
 
 
 #include <stdio.h>
@@ -16,10 +14,10 @@
 #include "cpufreq.h"
 #include "cpupower_intern.h"
 
-/* CPUFREQ sysfs access **************************************************/
+ 
 
-/* helper function to read file from /sys into given buffer */
-/* fname is a relative path under "cpuX/cpufreq" dir */
+ 
+ 
 static unsigned int sysfs_cpufreq_read_file(unsigned int cpu, const char *fname,
 					    char *buf, size_t buflen)
 {
@@ -30,8 +28,8 @@ static unsigned int sysfs_cpufreq_read_file(unsigned int cpu, const char *fname,
 	return cpupower_read_sysfs(path, buf, buflen);
 }
 
-/* helper function to write a new value to a /sys file */
-/* fname is a relative path under "cpuX/cpufreq" dir */
+ 
+ 
 static unsigned int sysfs_cpufreq_write_file(unsigned int cpu,
 					     const char *fname,
 					     const char *value, size_t len)
@@ -58,7 +56,7 @@ static unsigned int sysfs_cpufreq_write_file(unsigned int cpu,
 	return (unsigned int) numwrite;
 }
 
-/* read access to files which contain one numeric value */
+ 
 
 enum cpufreq_value {
 	CPUINFO_CUR_FREQ,
@@ -118,7 +116,7 @@ static unsigned long sysfs_cpufreq_get_one_value(unsigned int cpu,
 						  MAX_CPUFREQ_VALUE_READ_FILES);
 }
 
-/* read access to files which contain one string */
+ 
 
 enum cpufreq_string {
 	SCALING_DRIVER,
@@ -157,7 +155,7 @@ static char *sysfs_cpufreq_get_one_string(unsigned int cpu,
 	return result;
 }
 
-/* write access */
+ 
 
 enum cpufreq_write {
 	WRITE_SCALING_MIN_FREQ,

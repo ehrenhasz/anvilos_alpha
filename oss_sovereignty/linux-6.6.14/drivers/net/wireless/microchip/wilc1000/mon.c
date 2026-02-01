@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2012 - 2018 Microchip Technology Inc., and its subsidiaries.
- * All rights reserved.
- */
+
+ 
 
 #include "cfg80211.h"
 
@@ -34,16 +31,13 @@ void wilc_wfi_monitor_rx(struct net_device *mon_dev, u8 *buff, u32 size)
 	if (!netif_running(mon_dev))
 		return;
 
-	/* Get WILC header */
+	 
 	header = get_unaligned_le32(buff - HOST_HDR_OFFSET);
-	/*
-	 * The packet offset field contain info about what type of management
-	 * the frame we are dealing with and ack status
-	 */
+	 
 	pkt_offset = FIELD_GET(WILC_PKT_HDR_OFFSET_FIELD, header);
 
 	if (pkt_offset & IS_MANAGMEMENT_CALLBACK) {
-		/* hostapd callback mgmt frame */
+		 
 
 		skb = dev_alloc_skb(size + sizeof(*cb_hdr));
 		if (!skb)
@@ -54,7 +48,7 @@ void wilc_wfi_monitor_rx(struct net_device *mon_dev, u8 *buff, u32 size)
 		cb_hdr = skb_push(skb, sizeof(*cb_hdr));
 		memset(cb_hdr, 0, sizeof(*cb_hdr));
 
-		cb_hdr->hdr.it_version = 0; /* PKTHDR_RADIOTAP_VERSION; */
+		cb_hdr->hdr.it_version = 0;  
 
 		cb_hdr->hdr.it_len = cpu_to_le16(sizeof(*cb_hdr));
 
@@ -63,7 +57,7 @@ void wilc_wfi_monitor_rx(struct net_device *mon_dev, u8 *buff, u32 size)
 		cb_hdr->rate = 5;
 
 		if (pkt_offset & IS_MGMT_STATUS_SUCCES)	{
-			/* success */
+			 
 			cb_hdr->tx_flags = IEEE80211_RADIOTAP_F_TX_RTS;
 		} else {
 			cb_hdr->tx_flags = IEEE80211_RADIOTAP_F_TX_FAIL;
@@ -78,7 +72,7 @@ void wilc_wfi_monitor_rx(struct net_device *mon_dev, u8 *buff, u32 size)
 		skb_put_data(skb, buff, size);
 		hdr = skb_push(skb, sizeof(*hdr));
 		memset(hdr, 0, sizeof(struct wilc_wfi_radiotap_hdr));
-		hdr->hdr.it_version = 0; /* PKTHDR_RADIOTAP_VERSION; */
+		hdr->hdr.it_version = 0;  
 		hdr->hdr.it_len = cpu_to_le16(sizeof(*hdr));
 		hdr->hdr.it_present = cpu_to_le32
 				(1 << IEEE80211_RADIOTAP_RATE);
@@ -103,10 +97,7 @@ struct tx_complete_mon_data {
 static void mgmt_tx_complete(void *priv, int status)
 {
 	struct tx_complete_mon_data *pv_data = priv;
-	/*
-	 * in case of fully hosting mode, the freeing will be done
-	 * in response to the cfg packet
-	 */
+	 
 	kfree(pv_data->buff);
 
 	kfree(pv_data);
@@ -169,7 +160,7 @@ static netdev_tx_t wilc_wfi_mon_xmit(struct sk_buff *skb,
 		cb_hdr = skb_push(skb2, sizeof(*cb_hdr));
 		memset(cb_hdr, 0, sizeof(struct wilc_wfi_radiotap_cb_hdr));
 
-		cb_hdr->hdr.it_version = 0; /* PKTHDR_RADIOTAP_VERSION; */
+		cb_hdr->hdr.it_version = 0;  
 
 		cb_hdr->hdr.it_len = cpu_to_le16(sizeof(*cb_hdr));
 
@@ -193,10 +184,7 @@ static netdev_tx_t wilc_wfi_mon_xmit(struct sk_buff *skb,
 
 	ether_addr_copy(srcadd, &skb->data[10]);
 	ether_addr_copy(bssid, &skb->data[16]);
-	/*
-	 * Identify if data or mgmt packet, if source address and bssid
-	 * fields are equal send it to mgmt frames handler
-	 */
+	 
 	if (!(memcmp(srcadd, bssid, 6))) {
 		ret = mon_mgmt_tx(mon_priv->real_ndev, skb->data, skb->len);
 		if (ret)
@@ -220,7 +208,7 @@ struct net_device *wilc_wfi_init_mon_interface(struct wilc *wl,
 {
 	struct wilc_wfi_mon_priv *priv;
 
-	/* If monitor interface is already initialized, return it */
+	 
 	if (wl->monitor_dev)
 		return wl->monitor_dev;
 

@@ -1,6 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
- /* Copyright (C) 2004-2006, Advanced Micro Devices, Inc.
-  */
+
+  
 
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -18,12 +17,12 @@
 
 #include "geode-aes.h"
 
-/* Static structures */
+ 
 
 static void __iomem *_iobase;
 static DEFINE_SPINLOCK(lock);
 
-/* Write a 128 bit field (either a writable key or IV) */
+ 
 static inline void
 _writefield(u32 offset, const void *value)
 {
@@ -33,7 +32,7 @@ _writefield(u32 offset, const void *value)
 		iowrite32(((const u32 *) value)[i], _iobase + offset + (i * 4));
 }
 
-/* Read a 128 bit field (either a writable key or IV) */
+ 
 static inline void
 _readfield(u32 offset, void *value)
 {
@@ -53,7 +52,7 @@ do_crypt(const void *src, void *dst, u32 len, u32 flags)
 	iowrite32(virt_to_phys(dst), _iobase + AES_DSTA_REG);
 	iowrite32(len,  _iobase + AES_LENA_REG);
 
-	/* Start the operation */
+	 
 	iowrite32(AES_CTRL_START | flags, _iobase + AES_CTRLA_REG);
 
 	do {
@@ -61,7 +60,7 @@ do_crypt(const void *src, void *dst, u32 len, u32 flags)
 		cpu_relax();
 	} while (!(status & AES_INTRA_PENDING) && --counter);
 
-	/* Clear the event */
+	 
 	iowrite32((status & 0xFF) | AES_INTRA_PENDING, _iobase + AES_INTR_REG);
 	return counter ? 0 : 1;
 }
@@ -74,17 +73,14 @@ geode_aes_crypt(const struct geode_aes_tfm_ctx *tctx, const void *src,
 	unsigned long iflags;
 	int ret;
 
-	/* If the source and destination is the same, then
-	 * we need to turn on the coherent flags, otherwise
-	 * we don't need to worry
-	 */
+	 
 
 	flags |= (AES_CTRL_DCA | AES_CTRL_SCA);
 
 	if (dir == AES_DIR_ENCRYPT)
 		flags |= AES_CTRL_ENCRYPT;
 
-	/* Start the critical section */
+	 
 
 	spin_lock_irqsave(&lock, iflags);
 
@@ -105,7 +101,7 @@ geode_aes_crypt(const struct geode_aes_tfm_ctx *tctx, const void *src,
 	spin_unlock_irqrestore(&lock, iflags);
 }
 
-/* CRYPTO-API Functions */
+ 
 
 static int geode_setkey_cip(struct crypto_tfm *tfm, const u8 *key,
 		unsigned int len)
@@ -120,12 +116,10 @@ static int geode_setkey_cip(struct crypto_tfm *tfm, const u8 *key,
 	}
 
 	if (len != AES_KEYSIZE_192 && len != AES_KEYSIZE_256)
-		/* not supported at all */
+		 
 		return -EINVAL;
 
-	/*
-	 * The requested key size is not supported by HW, do a fallback
-	 */
+	 
 	tctx->fallback.cip->base.crt_flags &= ~CRYPTO_TFM_REQ_MASK;
 	tctx->fallback.cip->base.crt_flags |=
 		(tfm->crt_flags & CRYPTO_TFM_REQ_MASK);
@@ -146,12 +140,10 @@ static int geode_setkey_skcipher(struct crypto_skcipher *tfm, const u8 *key,
 	}
 
 	if (len != AES_KEYSIZE_192 && len != AES_KEYSIZE_256)
-		/* not supported at all */
+		 
 		return -EINVAL;
 
-	/*
-	 * The requested key size is not supported by HW, do a fallback
-	 */
+	 
 	crypto_skcipher_clear_flags(tctx->fallback.skcipher,
 				    CRYPTO_TFM_REQ_MASK);
 	crypto_skcipher_set_flags(tctx->fallback.skcipher,
@@ -383,7 +375,7 @@ static int geode_aes_probe(struct pci_dev *dev, const struct pci_device_id *id)
 		goto erequest;
 	}
 
-	/* Clear any pending activity */
+	 
 	iowrite32(AES_INTR_PENDING | AES_INTR_MASK, _iobase + AES_INTR_REG);
 
 	ret = crypto_register_alg(&geode_alg);

@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * sl3516-ce-cipher.c - hardware cryptographic offloader for Storlink SL3516 SoC
- *
- * Copyright (C) 2021 Corentin LABBE <clabbe@baylibre.com>
- *
- * This file adds support for AES cipher with 128,192,256 bits keysize in
- * ECB mode.
- */
+
+ 
 
 #include <crypto/engine.h>
 #include <crypto/internal/skcipher.h>
@@ -21,7 +14,7 @@
 #include <linux/string.h>
 #include "sl3516-ce.h"
 
-/* sl3516_ce_need_fallback - check if a request can be handled by the CE */
+ 
 static bool sl3516_ce_need_fallback(struct skcipher_request *areq)
 {
 	struct crypto_skcipher *tfm = crypto_skcipher_reqtfm(areq);
@@ -36,15 +29,12 @@ static bool sl3516_ce_need_fallback(struct skcipher_request *areq)
 		return true;
 	}
 
-	/*
-	 * check if we have enough descriptors for TX
-	 * Note: TX need one control desc for each SG
-	 */
+	 
 	if (sg_nents(areq->src) > MAXDESC / 2) {
 		ce->fallback_sg_count_tx++;
 		return true;
 	}
-	/* check if we have enough descriptors for RX */
+	 
 	if (sg_nents(areq->dst) > MAXDESC) {
 		ce->fallback_sg_count_rx++;
 		return true;
@@ -83,7 +73,7 @@ static bool sl3516_ce_need_fallback(struct skcipher_request *areq)
 		sg = sg_next(sg);
 	}
 
-	/* need same numbers of SG (with same length) for source and destination */
+	 
 	in_sg = areq->src;
 	out_sg = areq->dst;
 	while (in_sg && out_sg) {

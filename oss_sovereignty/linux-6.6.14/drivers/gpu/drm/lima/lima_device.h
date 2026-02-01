@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR MIT */
-/* Copyright 2018-2019 Qiang Yu <yuq825@gmail.com> */
+ 
+ 
 
 #ifndef __LIMA_DEVICE_H__
 #define __LIMA_DEVICE_H__
@@ -60,11 +60,11 @@ struct lima_ip {
 	int irq;
 
 	union {
-		/* gp/pp */
+		 
 		bool async_reset;
-		/* l2 cache */
+		 
 		spinlock_t lock;
-		/* pmu/bcast */
+		 
 		u32 mask;
 	} data;
 };
@@ -102,7 +102,7 @@ struct lima_device {
 
 	struct lima_devfreq devfreq;
 
-	/* debug info */
+	 
 	struct lima_dump_head dump;
 	struct list_head error_task_list;
 	struct mutex error_task_list_lock;

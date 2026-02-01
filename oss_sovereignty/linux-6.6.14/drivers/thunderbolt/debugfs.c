@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Debugfs interface
- *
- * Copyright (C) 2020, Intel Corporation
- * Authors: Gil Fine <gil.fine@intel.com>
- *	    Mika Westerberg <mika.westerberg@linux.intel.com>
- */
+
+ 
 
 #include <linux/debugfs.h>
 #include <linux/pm_runtime.h>
@@ -93,23 +87,9 @@ static bool parse_line(char **line, u32 *offs, u32 *val, int short_fmt_len,
 	if (!token)
 		return false;
 
-	/*
-	 * For Adapter/Router configuration space:
-	 * Short format is: offset value\n
-	 *		    v[0]   v[1]
-	 * Long format as produced from the read side:
-	 * offset relative_offset cap_id vs_cap_id value\n
-	 * v[0]   v[1]            v[2]   v[3]      v[4]
-	 *
-	 * For Counter configuration space:
-	 * Short format is: offset\n
-	 *		    v[0]
-	 * Long format as produced from the read side:
-	 * offset relative_offset counter_id value\n
-	 * v[0]   v[1]            v[2]       v[3]
-	 */
+	 
 	ret = sscanf(token, "%i %i %i %i %i", &v[0], &v[1], &v[2], &v[3], &v[4]);
-	/* In case of Counters, clear counter, "val" content is NA */
+	 
 	if (ret == short_fmt_len) {
 		*offs = v[0];
 		*val = v[short_fmt_len - 1];
@@ -144,7 +124,7 @@ static ssize_t regs_write(struct tb_switch *sw, struct tb_port *port,
 		goto out;
 	}
 
-	/* User did hardware changes behind the driver's back */
+	 
 	add_taint(TAINT_USER, LOCKDEP_STILL_OK);
 
 	line = buf;
@@ -192,23 +172,7 @@ static ssize_t switch_regs_write(struct file *file, const char __user *user_buf,
 #endif
 
 #if IS_ENABLED(CONFIG_USB4_DEBUGFS_MARGINING)
-/**
- * struct tb_margining - Lane margining support
- * @caps: Port lane margining capabilities
- * @results: Last lane margining results
- * @lanes: %0, %1 or %7 (all)
- * @min_ber_level: Minimum supported BER level contour value
- * @max_ber_level: Maximum supported BER level contour value
- * @ber_level: Current BER level contour value
- * @voltage_steps: Number of mandatory voltage steps
- * @max_voltage_offset: Maximum mandatory voltage offset (in mV)
- * @time_steps: Number of time margin steps
- * @max_time_offset: Maximum time margin offset (in mUI)
- * @software: %true if software margining is used instead of hardware
- * @time: %true if time margining is used instead of voltage
- * @right_high: %false if left/low margin test is performed, %true if
- *		right/high
- */
+ 
 struct tb_margining {
 	u32 caps[2];
 	u32 results[2];
@@ -251,7 +215,7 @@ static bool supports_time(const struct usb4_port *usb4)
 	return usb4->margining->caps[0] & USB4_MARGIN_CAP_0_TIME;
 }
 
-/* Only applicable if supports_time() returns true */
+ 
 static unsigned int independent_time_margins(const struct usb4_port *usb4)
 {
 	return (usb4->margining->caps[1] & USB4_MARGIN_CAP_1_TIME_INDP_MASK) >>
@@ -336,7 +300,7 @@ static int margining_caps_show(struct seq_file *s, void *not_used)
 	if (mutex_lock_interruptible(&tb->lock))
 		return -ERESTARTSYS;
 
-	/* Dump the raw caps first */
+	 
 	cap0 = usb4->margining->caps[0];
 	seq_printf(s, "0x%08x\n", cap0);
 	cap1 = usb4->margining->caps[1];
@@ -430,7 +394,7 @@ margining_lanes_write(struct file *file, const char __user *user_buf,
 	} else if (!strcmp(buf, "1")) {
 		usb4->margining->lanes = 1;
 	} else if (!strcmp(buf, "all")) {
-		/* Needs to be supported */
+		 
 		if (both_lanes(usb4))
 			usb4->margining->lanes = 7;
 		else
@@ -578,10 +542,7 @@ static int margining_run_write(void *data, u64 val)
 		down_sw = NULL;
 
 	if (down_sw) {
-		/*
-		 * CL states may interfere with lane margining so
-		 * disable them temporarily now.
-		 */
+		 
 		ret = tb_switch_clx_disable(down_sw);
 		if (ret < 0) {
 			tb_sw_warn(down_sw, "failed to disable CL states\n");
@@ -605,7 +566,7 @@ static int margining_run_write(void *data, u64 val)
 	} else {
 		tb_port_dbg(port, "running hardware %s lane margining for lanes %u\n",
 			    margining->time ? "time" : "voltage", margining->lanes);
-		/* Clear the results */
+		 
 		margining->results[0] = 0;
 		margining->results[1] = 0;
 		ret = usb4_port_hw_margin(port, margining->lanes,
@@ -639,7 +600,7 @@ static ssize_t margining_results_write(struct file *file,
 	if (mutex_lock_interruptible(&tb->lock))
 		return -ERESTARTSYS;
 
-	/* Just clear the results */
+	 
 	usb4->margining->results[0] = 0;
 	usb4->margining->results[1] = 0;
 
@@ -684,9 +645,9 @@ static int margining_results_show(struct seq_file *s, void *not_used)
 		return -ERESTARTSYS;
 
 	margining = usb4->margining;
-	/* Dump the raw results first */
+	 
 	seq_printf(s, "0x%08x\n", margining->results[0]);
-	/* Only the hardware margining has two result dwords */
+	 
 	if (!margining->software) {
 		unsigned int val;
 
@@ -898,7 +859,7 @@ static void margining_port_init(struct tb_port *port)
 
 	usb4->margining = margining;
 
-	/* Set the initial mode */
+	 
 	if (supports_software(usb4))
 		margining->software = true;
 
@@ -915,10 +876,7 @@ static void margining_port_init(struct tb_port *port)
 		margining->time_steps = val;
 		val = (margining->caps[1] & USB4_MARGIN_CAP_1_TIME_OFFSET_MASK) >>
 			USB4_MARGIN_CAP_1_TIME_OFFSET_SHIFT;
-		/*
-		 * Store it as mUI (milli Unit Interval) because we want
-		 * to keep it as integer.
-		 */
+		 
 		margining->max_time_offset = 200 + 10 * val;
 	}
 
@@ -931,7 +889,7 @@ static void margining_port_init(struct tb_port *port)
 			USB4_MARGIN_CAP_1_MAX_BER_SHIFT;
 		margining->max_ber_level = val;
 
-		/* Set the default to minimum */
+		 
 		margining->ber_level = margining->min_ber_level;
 
 		debugfs_create_file("ber_level_contour", 0400, dir, port,
@@ -1064,7 +1022,7 @@ static ssize_t counters_write(struct file *file, const char __user *user_buf,
 		goto out;
 	}
 
-	/* If written delimiter only, clear all counters in one shot */
+	 
 	if (buf[0] == '\n') {
 		ret = port_clear_all_counters(port);
 	} else  {
@@ -1342,7 +1300,7 @@ static int switch_basic_regs_show(struct tb_switch *sw, struct seq_file *s)
 	size_t dwords;
 	int ret, i;
 
-	/* Only USB4 has the additional registers */
+	 
 	if (tb_switch_is_usb4(sw))
 		dwords = ARRAY_SIZE(data);
 	else
@@ -1425,7 +1383,7 @@ static int path_show(struct seq_file *s, void *not_used)
 
 	seq_puts(s, "# offset relative_offset in_hop_id value\n");
 
-	/* NHI and lane adapters have entry for path 0 */
+	 
 	if (tb_port_is_null(port) || tb_port_is_nhi(port)) {
 		ret = path_show_one(port, s, 0);
 		if (ret)
@@ -1504,12 +1462,7 @@ out:
 }
 DEBUGFS_ATTR_RW(counters);
 
-/**
- * tb_switch_debugfs_init() - Add debugfs entries for router
- * @sw: Pointer to the router
- *
- * Adds debugfs directories and files for given router.
- */
+ 
 void tb_switch_debugfs_init(struct tb_switch *sw)
 {
 	struct dentry *debugfs_dir;
@@ -1543,12 +1496,7 @@ void tb_switch_debugfs_init(struct tb_switch *sw)
 	margining_switch_init(sw);
 }
 
-/**
- * tb_switch_debugfs_remove() - Remove all router debugfs entries
- * @sw: Pointer to the router
- *
- * Removes all previously added debugfs entries under this router.
- */
+ 
 void tb_switch_debugfs_remove(struct tb_switch *sw)
 {
 	margining_switch_remove(sw);
@@ -1565,24 +1513,14 @@ void tb_xdomain_debugfs_remove(struct tb_xdomain *xd)
 	margining_xdomain_remove(xd);
 }
 
-/**
- * tb_service_debugfs_init() - Add debugfs directory for service
- * @svc: Thunderbolt service pointer
- *
- * Adds debugfs directory for service.
- */
+ 
 void tb_service_debugfs_init(struct tb_service *svc)
 {
 	svc->debugfs_dir = debugfs_create_dir(dev_name(&svc->dev),
 					      tb_debugfs_root);
 }
 
-/**
- * tb_service_debugfs_remove() - Remove service debugfs directory
- * @svc: Thunderbolt service pointer
- *
- * Removes the previously created debugfs directory for @svc.
- */
+ 
 void tb_service_debugfs_remove(struct tb_service *svc)
 {
 	debugfs_remove_recursive(svc->debugfs_dir);

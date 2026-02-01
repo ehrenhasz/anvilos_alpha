@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2019 Intel Corporation
- */
+ 
+ 
 
 #ifndef __INTEL_COLOR_H__
 #define __INTEL_COLOR_H__
@@ -30,4 +28,4 @@ bool intel_color_lut_equal(const struct intel_crtc_state *crtc_state,
 			   bool is_pre_csc_lut);
 void intel_color_assert_luts(const struct intel_crtc_state *crtc_state);
 
-#endif /* __INTEL_COLOR_H__ */
+#endif  

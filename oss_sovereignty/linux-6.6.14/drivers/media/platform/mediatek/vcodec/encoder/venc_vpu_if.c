@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2016 MediaTek Inc.
- * Author: PoChun Lin <pochun.lin@mediatek.com>
- */
+
+ 
 
 #include "mtk_vcodec_enc_drv.h"
 #include "venc_ipi_msg.h"
@@ -16,11 +13,11 @@ static void handle_enc_init_msg(struct venc_vpu_inst *vpu, const void *data)
 	vpu->vsi = mtk_vcodec_fw_map_dm_addr(vpu->ctx->dev->fw_handler,
 					     msg->vpu_inst_addr);
 
-	/* Firmware version field value is unspecified on MT8173. */
+	 
 	if (mtk_vcodec_fw_get_type(vpu->ctx->dev->fw_handler) == VPU)
 		return;
 
-	/* Check firmware version. */
+	 
 	mtk_venc_debug(vpu->ctx, "firmware version: 0x%x\n", msg->venc_abi_version);
 	switch (msg->venc_abi_version) {
 	case 1:

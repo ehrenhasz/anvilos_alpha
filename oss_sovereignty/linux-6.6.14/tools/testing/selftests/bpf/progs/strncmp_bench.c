@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (C) 2021. Huawei Technologies Co., Ltd */
+
+ 
 #include <linux/types.h>
 #include <linux/bpf.h>
 #include <bpf/bpf_helpers.h>
@@ -7,7 +7,7 @@
 
 #define STRNCMP_STR_SZ 4096
 
-/* Will be updated by benchmark before program loading */
+ 
 const volatile unsigned int cmp_str_len = 1;
 const char target[STRNCMP_STR_SZ];
 
@@ -23,7 +23,7 @@ static __always_inline int local_strncmp(const char *s1, unsigned int sz,
 	unsigned int i;
 
 	for (i = 0; i < sz; i++) {
-		/* E.g. 0xff > 0x31 */
+		 
 		ret = (unsigned char)s1[i] - (unsigned char)s2[i];
 		if (ret || !s1[i])
 			break;

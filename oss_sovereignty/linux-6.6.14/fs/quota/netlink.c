@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/cred.h>
 #include <linux/init.h>
 #include <linux/kernel.h>
@@ -12,7 +12,7 @@ static const struct genl_multicast_group quota_mcgrps[] = {
 	{ .name = "events", },
 };
 
-/* Netlink family structure for quota */
+ 
 static struct genl_family quota_genl_family __ro_after_init = {
 	.module = THIS_MODULE,
 	.hdrsize = 0,
@@ -23,16 +23,7 @@ static struct genl_family quota_genl_family __ro_after_init = {
 	.n_mcgrps = ARRAY_SIZE(quota_mcgrps),
 };
 
-/**
- * quota_send_warning - Send warning to userspace about exceeded quota
- * @qid: The kernel internal quota identifier.
- * @dev: The device on which the fs is mounted (sb->s_dev)
- * @warntype: The type of the warning: QUOTA_NL_...
- *
- * This can be used by filesystems (including those which don't use
- * dquot) to send a message to userspace relating to quota limits.
- *
- */
+ 
 
 void quota_send_warning(struct kqid qid, dev_t dev,
 			const char warntype)
@@ -44,9 +35,7 @@ void quota_send_warning(struct kqid qid, dev_t dev,
 	int msg_size = 4 * nla_total_size(sizeof(u32)) +
 		       2 * nla_total_size_64bit(sizeof(u64));
 
-	/* We have to allocate using GFP_NOFS as we are called from a
-	 * filesystem performing write and thus further recursion into
-	 * the fs to free some data could cause deadlocks. */
+	 
 	skb = genlmsg_new(msg_size, GFP_NOFS);
 	if (!skb) {
 		printk(KERN_ERR

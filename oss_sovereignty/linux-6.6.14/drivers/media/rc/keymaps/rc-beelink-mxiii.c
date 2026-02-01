@@ -1,16 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (C) 2019 Christian Hewitt <christianshewitt@gmail.com>
- *
- */
+
+ 
 
 #include <media/rc-map.h>
 #include <linux/module.h>
 
-/*
- * Keytable for the Beelink Mini MXIII remote control
- *
- */
+ 
 
 static struct rc_map_table beelink_mxiii[] = {
 	{ 0xb2dc, KEY_POWER },

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * linux/net/sunrpc/auth_null.c
- *
- * AUTH_NULL authentication. Really :-)
- *
- * Copyright (C) 1996, Olaf Kirch <okir@monad.swb.de>
- */
+
+ 
 
 #include <linux/types.h>
 #include <linux/module.h>
@@ -30,35 +24,27 @@ nul_destroy(struct rpc_auth *auth)
 {
 }
 
-/*
- * Lookup NULL creds for current process
- */
+ 
 static struct rpc_cred *
 nul_lookup_cred(struct rpc_auth *auth, struct auth_cred *acred, int flags)
 {
 	return get_rpccred(&null_cred);
 }
 
-/*
- * Destroy cred handle.
- */
+ 
 static void
 nul_destroy_cred(struct rpc_cred *cred)
 {
 }
 
-/*
- * Match cred handle against current process
- */
+ 
 static int
 nul_match(struct auth_cred *acred, struct rpc_cred *cred, int taskflags)
 {
 	return 1;
 }
 
-/*
- * Marshal credential.
- */
+ 
 static int
 nul_marshal(struct rpc_task *task, struct xdr_stream *xdr)
 {
@@ -67,18 +53,16 @@ nul_marshal(struct rpc_task *task, struct xdr_stream *xdr)
 	p = xdr_reserve_space(xdr, 4 * sizeof(*p));
 	if (!p)
 		return -EMSGSIZE;
-	/* Credential */
+	 
 	*p++ = rpc_auth_null;
 	*p++ = xdr_zero;
-	/* Verifier */
+	 
 	*p++ = rpc_auth_null;
 	*p   = xdr_zero;
 	return 0;
 }
 
-/*
- * Refresh credential. This is a no-op for AUTH_NULL
- */
+ 
 static int
 nul_refresh(struct rpc_task *task)
 {

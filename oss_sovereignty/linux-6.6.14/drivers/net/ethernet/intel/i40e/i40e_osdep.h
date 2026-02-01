@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright(c) 2013 - 2018 Intel Corporation. */
+ 
+ 
 
 #ifndef _I40E_OSDEP_H_
 #define _I40E_OSDEP_H_
@@ -11,12 +11,10 @@
 #include <linux/pci.h>
 #include <linux/highuid.h>
 
-/* get readq/writeq support for 32 bit kernels, use the low-first version */
+ 
 #include <linux/io-64-nonatomic-lo-hi.h>
 
-/* File to be the magic between shared code and
- * actual OS primitives
- */
+ 
 
 #define hw_dbg(hw, S, A...)							\
 do {										\
@@ -29,7 +27,7 @@ do {										\
 #define rd64(a, reg)		readq((a)->hw_addr + (reg))
 #define i40e_flush(a)		readl((a)->hw_addr + I40E_GLGEN_STAT)
 
-/* memory allocation tracking */
+ 
 struct i40e_dma_mem {
 	void *va;
 	dma_addr_t pa;
@@ -56,4 +54,4 @@ do {								\
 			(h)->bus.func, ##__VA_ARGS__);		\
 } while (0)
 
-#endif /* _I40E_OSDEP_H_ */
+#endif  

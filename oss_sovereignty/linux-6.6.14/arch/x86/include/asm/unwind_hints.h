@@ -88,6 +88,6 @@
 #define UNWIND_HINT_RESTORE \
 	UNWIND_HINT(UNWIND_HINT_TYPE_RESTORE, 0, 0, 0)
 
-#endif /* __ASSEMBLY__ */
+#endif  
 
-#endif /* _ASM_X86_UNWIND_HINTS_H */
+#endif  

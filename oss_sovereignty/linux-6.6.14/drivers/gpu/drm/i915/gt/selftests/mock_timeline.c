@@ -1,8 +1,4 @@
-/*
- * SPDX-License-Identifier: MIT
- *
- * Copyright © 2017-2018 Intel Corporation
- */
+ 
 
 #include "../intel_timeline.h"
 

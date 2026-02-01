@@ -1,14 +1,12 @@
-// SPDX-License-Identifier: ISC
-/*
- * Copyright (c) 2010 Broadcom Corporation
- */
+
+ 
 
 #ifndef BRCMFMAC_DEBUG_H
 #define BRCMFMAC_DEBUG_H
 
-#include <linux/net.h>	/* net_ratelimit() */
+#include <linux/net.h>	 
 
-/* message levels */
+ 
 #define BRCMF_TRACE_VAL		0x00000002
 #define BRCMF_INFO_VAL		0x00000004
 #define BRCMF_DATA_VAL		0x00000008
@@ -30,7 +28,7 @@
 #define BRCMF_PCIE_VAL		0x00080000
 #define BRCMF_FWCON_VAL		0x00100000
 
-/* set default print format */
+ 
 #undef pr_fmt
 #define pr_fmt(fmt)		KBUILD_MODNAME ": " fmt
 
@@ -38,9 +36,7 @@ struct brcmf_bus;
 
 __printf(3, 4)
 void __brcmf_err(struct brcmf_bus *bus, const char *func, const char *fmt, ...);
-/* Macro for error messages. When debugging / tracing the driver all error
- * messages are important to us.
- */
+ 
 #ifndef brcmf_err
 #define brcmf_err(fmt, ...)						\
 	do {								\
@@ -66,7 +62,7 @@ void __brcmf_err(struct brcmf_bus *bus, const char *func, const char *fmt, ...);
 
 #if defined(DEBUG) || defined(CONFIG_BRCM_TRACING)
 
-/* For debug/tracing purposes treat info messages as errors */
+ 
 #define brcmf_info brcmf_err
 
 __printf(3, 4)
@@ -86,7 +82,7 @@ do {								\
 #define BRCMF_FWCON_ON()	(brcmf_msg_level & BRCMF_FWCON_VAL)
 #define BRCMF_SCAN_ON()		(brcmf_msg_level & BRCMF_SCAN_VAL)
 
-#else /* defined(DEBUG) || defined(CONFIG_BRCM_TRACING) */
+#else  
 
 #define brcmf_info(fmt, ...)						\
 	do {								\
@@ -105,7 +101,7 @@ do {								\
 #define BRCMF_FWCON_ON()	0
 #define BRCMF_SCAN_ON()		0
 
-#endif /* defined(DEBUG) || defined(CONFIG_BRCM_TRACING) */
+#endif  
 
 #define brcmf_dbg_hex_dump(test, data, len, fmt, ...)			\
 do {									\
@@ -140,4 +136,4 @@ int brcmf_debug_create_memdump(struct brcmf_bus *bus, const void *data,
 }
 #endif
 
-#endif /* BRCMFMAC_DEBUG_H */
+#endif  

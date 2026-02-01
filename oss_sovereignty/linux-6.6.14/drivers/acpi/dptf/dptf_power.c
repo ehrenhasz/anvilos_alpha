@@ -1,27 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * dptf_power:  DPTF platform power driver
- * Copyright (c) 2016, Intel Corporation.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/acpi.h>
 #include <linux/platform_device.h>
 
-/*
- * Presentation of attributes which are defined for INT3407 and INT3532.
- * They are:
- * PMAX : Maximum platform power
- * PSRC : Platform power source
- * ARTG : Adapter rating
- * CTYP : Charger type
- * PROP : Rest of worst case platform Power
- * PBSS : Power Battery Steady State
- * RBHF : High Frequency Impedance
- * VBNL : Instantaneous No-Load Voltage
- * CMPP : Current Discharge Capability
- */
+ 
 #define DPTF_POWER_SHOW(name, object) \
 static ssize_t name##_show(struct device *dev,\
 			   struct device_attribute *attr,\
@@ -159,10 +144,7 @@ static void dptf_power_notify(acpi_handle handle, u32 event, void *data)
 		return;
 	}
 
-	/*
-	 * Notify that an attribute is changed, so that user space can read
-	 * again.
-	 */
+	 
 	if (dptf_participant_type(handle) == 0x0CULL)
 		sysfs_notify(&pdev->dev.kobj, "dptf_battery", attr);
 	else

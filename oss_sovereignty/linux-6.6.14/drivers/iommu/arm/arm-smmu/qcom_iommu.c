@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * IOMMU API for QCOM secure IOMMUs.  Somewhat based on arm-smmu.c
- *
- * Copyright (C) 2013 ARM Limited
- * Copyright (C) 2017 Red Hat
- */
+
+ 
 
 #include <linux/atomic.h>
 #include <linux/bitfield.h>
@@ -44,14 +39,14 @@ enum qcom_iommu_clk {
 struct qcom_iommu_ctx;
 
 struct qcom_iommu_dev {
-	/* IOMMU core code handle */
+	 
 	struct iommu_device	 iommu;
 	struct device		*dev;
 	struct clk_bulk_data clks[CLK_NUM];
 	void __iomem		*local_base;
 	u32			 sec_id;
 	u8			 max_asid;
-	struct qcom_iommu_ctx	*ctxs[];   /* indexed by asid */
+	struct qcom_iommu_ctx	*ctxs[];    
 };
 
 struct qcom_iommu_ctx {
@@ -59,14 +54,14 @@ struct qcom_iommu_ctx {
 	void __iomem		*base;
 	bool			 secure_init;
 	bool			 secured_ctx;
-	u8			 asid;      /* asid and ctx bank # are 1:1 */
+	u8			 asid;       
 	struct iommu_domain	*domain;
 };
 
 struct qcom_iommu_domain {
 	struct io_pgtable_ops	*pgtbl_ops;
 	spinlock_t		 pgtbl_lock;
-	struct mutex		 init_mutex; /* Protects iommu pointer */
+	struct mutex		 init_mutex;  
 	struct iommu_domain	 domain;
 	struct qcom_iommu_dev	*iommu;
 	struct iommu_fwspec	*fwspec;
@@ -256,7 +251,7 @@ static int qcom_iommu_init_domain(struct iommu_domain *domain,
 		goto out_clear_iommu;
 	}
 
-	/* Update the domain's page sizes to reflect the page table format */
+	 
 	domain->pgsize_bitmap = pgtbl_cfg.pgsize_bitmap;
 	domain->geometry.aperture_end = (1ULL << pgtbl_cfg.ias) - 1;
 	domain->geometry.force_aperture = true;
@@ -273,38 +268,38 @@ static int qcom_iommu_init_domain(struct iommu_domain *domain,
 			ctx->secure_init = true;
 		}
 
-		/* Secured QSMMU-500/QSMMU-v2 contexts cannot be programmed */
+		 
 		if (ctx->secured_ctx) {
 			ctx->domain = domain;
 			continue;
 		}
 
-		/* Disable context bank before programming */
+		 
 		iommu_writel(ctx, ARM_SMMU_CB_SCTLR, 0);
 
-		/* Clear context bank fault address fault status registers */
+		 
 		iommu_writel(ctx, ARM_SMMU_CB_FAR, 0);
 		iommu_writel(ctx, ARM_SMMU_CB_FSR, ARM_SMMU_FSR_FAULT);
 
-		/* TTBRs */
+		 
 		iommu_writeq(ctx, ARM_SMMU_CB_TTBR0,
 				pgtbl_cfg.arm_lpae_s1_cfg.ttbr |
 				FIELD_PREP(ARM_SMMU_TTBRn_ASID, ctx->asid));
 		iommu_writeq(ctx, ARM_SMMU_CB_TTBR1, 0);
 
-		/* TCR */
+		 
 		iommu_writel(ctx, ARM_SMMU_CB_TCR2,
 				arm_smmu_lpae_tcr2(&pgtbl_cfg));
 		iommu_writel(ctx, ARM_SMMU_CB_TCR,
 			     arm_smmu_lpae_tcr(&pgtbl_cfg) | ARM_SMMU_TCR_EAE);
 
-		/* MAIRs (stage-1 only) */
+		 
 		iommu_writel(ctx, ARM_SMMU_CB_S1_MAIR0,
 				pgtbl_cfg.arm_lpae_s1_cfg.mair);
 		iommu_writel(ctx, ARM_SMMU_CB_S1_MAIR1,
 				pgtbl_cfg.arm_lpae_s1_cfg.mair >> 32);
 
-		/* SCTLR */
+		 
 		reg = ARM_SMMU_SCTLR_CFIE | ARM_SMMU_SCTLR_CFRE |
 		      ARM_SMMU_SCTLR_AFE | ARM_SMMU_SCTLR_TRE |
 		      ARM_SMMU_SCTLR_M | ARM_SMMU_SCTLR_S1_ASIDPNE |
@@ -320,7 +315,7 @@ static int qcom_iommu_init_domain(struct iommu_domain *domain,
 
 	mutex_unlock(&qcom_domain->init_mutex);
 
-	/* Publish page table ops for map/unmap */
+	 
 	qcom_domain->pgtbl_ops = pgtbl_ops;
 
 	return 0;
@@ -338,11 +333,7 @@ static struct iommu_domain *qcom_iommu_domain_alloc(unsigned type)
 
 	if (type != IOMMU_DOMAIN_UNMANAGED && type != IOMMU_DOMAIN_DMA)
 		return NULL;
-	/*
-	 * Allocate the domain and initialise some of its data structures.
-	 * We can't really do anything meaningful until we've added a
-	 * master.
-	 */
+	 
 	qcom_domain = kzalloc(sizeof(*qcom_domain), GFP_KERNEL);
 	if (!qcom_domain)
 		return NULL;
@@ -358,12 +349,7 @@ static void qcom_iommu_domain_free(struct iommu_domain *domain)
 	struct qcom_iommu_domain *qcom_domain = to_qcom_iommu_domain(domain);
 
 	if (qcom_domain->iommu) {
-		/*
-		 * NOTE: unmap can be called after client device is powered
-		 * off, for example, with GPUs or anything involving dma-buf.
-		 * So we cannot rely on the device_link.  Make sure the IOMMU
-		 * is on to avoid unclocked accesses in the TLB inv path:
-		 */
+		 
 		pm_runtime_get_sync(qcom_domain->iommu->dev);
 		free_io_pgtable_ops(qcom_domain->pgtbl_ops);
 		pm_runtime_put_sync(qcom_domain->iommu->dev);
@@ -383,17 +369,14 @@ static int qcom_iommu_attach_dev(struct iommu_domain *domain, struct device *dev
 		return -ENXIO;
 	}
 
-	/* Ensure that the domain is finalized */
+	 
 	pm_runtime_get_sync(qcom_iommu->dev);
 	ret = qcom_iommu_init_domain(domain, qcom_iommu, dev);
 	pm_runtime_put_sync(qcom_iommu->dev);
 	if (ret < 0)
 		return ret;
 
-	/*
-	 * Sanity check the domain. We don't support domains across
-	 * different IOMMUs.
-	 */
+	 
 	if (qcom_domain->iommu != qcom_iommu)
 		return -EINVAL;
 
@@ -430,11 +413,7 @@ static size_t qcom_iommu_unmap(struct iommu_domain *domain, unsigned long iova,
 	if (!ops)
 		return 0;
 
-	/* NOTE: unmap can be called after client device is powered off,
-	 * for example, with GPUs or anything involving dma-buf.  So we
-	 * cannot rely on the device_link.  Make sure the IOMMU is on to
-	 * avoid unclocked accesses in the TLB inv path:
-	 */
+	 
 	pm_runtime_get_sync(qcom_domain->iommu->dev);
 	spin_lock_irqsave(&qcom_domain->pgtbl_lock, flags);
 	ret = ops->unmap_pages(ops, iova, pgsize, pgcount, gather);
@@ -485,10 +464,7 @@ static bool qcom_iommu_capable(struct device *dev, enum iommu_cap cap)
 {
 	switch (cap) {
 	case IOMMU_CAP_CACHE_COHERENCY:
-		/*
-		 * Return true here as the SMMU can always send out coherent
-		 * requests.
-		 */
+		 
 		return true;
 	case IOMMU_CAP_NOEXEC:
 		return true;
@@ -505,11 +481,7 @@ static struct iommu_device *qcom_iommu_probe_device(struct device *dev)
 	if (!qcom_iommu)
 		return ERR_PTR(-ENODEV);
 
-	/*
-	 * Establish the link between iommu and master, so that the
-	 * iommu gets runtime enabled/disabled as per the master's
-	 * needs.
-	 */
+	 
 	link = device_link_add(dev, qcom_iommu->dev, DL_FLAG_PM_RUNTIME);
 	if (!link) {
 		dev_err(qcom_iommu->dev, "Unable to create device link between %s and %s\n",
@@ -539,9 +511,7 @@ static int qcom_iommu_of_xlate(struct device *dev, struct of_phandle_args *args)
 
 	qcom_iommu = platform_get_drvdata(iommu_pdev);
 
-	/* make sure the asid specified in dt is valid, so we don't have
-	 * to sanity check this elsewhere:
-	 */
+	 
 	if (WARN_ON(asid > qcom_iommu->max_asid) ||
 	    WARN_ON(qcom_iommu->ctxs[asid] == NULL)) {
 		put_device(&iommu_pdev->dev);
@@ -551,10 +521,7 @@ static int qcom_iommu_of_xlate(struct device *dev, struct of_phandle_args *args)
 	if (!dev_iommu_priv_get(dev)) {
 		dev_iommu_priv_set(dev, qcom_iommu);
 	} else {
-		/* make sure devices iommus dt node isn't referring to
-		 * multiple different iommu devices.  Multiple context
-		 * banks are ok, but multiple devices are not:
-		 */
+		 
 		if (WARN_ON(qcom_iommu != dev_iommu_priv_get(dev))) {
 			put_device(&iommu_pdev->dev);
 			return -EINVAL;
@@ -632,17 +599,11 @@ static int get_asid(const struct device_node *np)
 	u32 reg, val;
 	int asid;
 
-	/* read the "reg" property directly to get the relative address
-	 * of the context bank, and calculate the asid from that:
-	 */
+	 
 	if (of_property_read_u32_index(np, "reg", 0, &reg))
 		return -ENODEV;
 
-	/*
-	 * Context banks are 0x1000 apart but, in some cases, the ASID
-	 * number doesn't match to this logic and needs to be passed
-	 * from the DT configuration explicitly.
-	 */
+	 
 	if (!of_property_read_u32(np, "qcom,ctx-asid", &val))
 		asid = val;
 	else
@@ -676,9 +637,7 @@ static int qcom_iommu_ctx_probe(struct platform_device *pdev)
 	if (of_device_is_compatible(dev->of_node, "qcom,msm-iommu-v2-sec"))
 		ctx->secured_ctx = true;
 
-	/* clear IRQs before registering fault handler, just in case the
-	 * boot-loader left us a surprise:
-	 */
+	 
 	if (!ctx->secured_ctx)
 		iommu_writel(ctx, ARM_SMMU_CB_FSR, iommu_readl(ctx, ARM_SMMU_CB_FSR));
 
@@ -722,7 +681,7 @@ static const struct of_device_id ctx_of_match[] = {
 	{ .compatible = "qcom,msm-iommu-v1-sec" },
 	{ .compatible = "qcom,msm-iommu-v2-ns" },
 	{ .compatible = "qcom,msm-iommu-v2-sec" },
-	{ /* sentinel */ }
+	{   }
 };
 
 static struct platform_driver qcom_iommu_ctx_driver = {
@@ -758,9 +717,7 @@ static int qcom_iommu_device_probe(struct platform_device *pdev)
 	struct clk *clk;
 	int ret, max_asid = 0;
 
-	/* find the max asid (which is 1:1 to ctx bank idx), so we know how
-	 * many child ctx devices we have:
-	 */
+	 
 	for_each_child_of_node(dev->of_node, child)
 		max_asid = max(max_asid, get_asid(child));
 
@@ -817,7 +774,7 @@ static int qcom_iommu_device_probe(struct platform_device *pdev)
 
 	pm_runtime_enable(dev);
 
-	/* register context bank devices, which are child nodes: */
+	 
 	ret = devm_of_platform_populate(dev);
 	if (ret) {
 		dev_err(dev, "Failed to populate iommu contexts\n");
@@ -885,7 +842,7 @@ static const struct dev_pm_ops qcom_iommu_pm_ops = {
 static const struct of_device_id qcom_iommu_of_match[] = {
 	{ .compatible = "qcom,msm-iommu-v1" },
 	{ .compatible = "qcom,msm-iommu-v2" },
-	{ /* sentinel */ }
+	{   }
 };
 
 static struct platform_driver qcom_iommu_driver = {

@@ -1,44 +1,13 @@
-/****************************************************************************
- * Copyright 2018-2021,2022 Thomas E. Dickey                                *
- * Copyright 1998-2016,2017 Free Software Foundation, Inc.                  *
- *                                                                          *
- * Permission is hereby granted, free of charge, to any person obtaining a  *
- * copy of this software and associated documentation files (the            *
- * "Software"), to deal in the Software without restriction, including      *
- * without limitation the rights to use, copy, modify, merge, publish,      *
- * distribute, distribute with modifications, sublicense, and/or sell       *
- * copies of the Software, and to permit persons to whom the Software is    *
- * furnished to do so, subject to the following conditions:                 *
- *                                                                          *
- * The above copyright notice and this permission notice shall be included  *
- * in all copies or substantial portions of the Software.                   *
- *                                                                          *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS  *
- * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF               *
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.   *
- * IN NO EVENT SHALL THE ABOVE COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,   *
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR    *
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR    *
- * THE USE OR OTHER DEALINGS IN THE SOFTWARE.                               *
- *                                                                          *
- * Except as contained in this notice, the name(s) of the above copyright   *
- * holders shall not be used in advertising or otherwise to promote the     *
- * sale, use or other dealings in this Software without prior written       *
- * authorization.                                                           *
- ****************************************************************************/
+ 
 
-/****************************************************************************
- *  Author: Zeyd M. Ben-Halim <zmbenhal@netcom.com> 1992,1995               *
- *     and: Eric S. Raymond <esr@snark.thyrsus.com>                         *
- *     and: Thomas E. Dickey                        1996 on                 *
- ****************************************************************************/
+ 
 
 #define __INTERNAL_CAPS_VISIBLE
 #include <progs.priv.h>
 
 #include <dump_entry.h>
-#include <termsort.h>		/* this C file is generated */
-#include <parametrized.h>	/* so is this */
+#include <termsort.h>		 
+#include <parametrized.h>	 
 
 MODULE_ID("$Id: dump_entry.c,v 1.190 2022/01/22 21:23:58 tom Exp $")
 
@@ -55,25 +24,25 @@ typedef struct {
     size_t size;
 } DYNBUF;
 
-static int tversion;		/* terminfo version */
-static int outform;		/* output format to use */
-static int sortmode;		/* sort mode to use */
-static int width = 60;		/* max line width for listings */
-static int height = 65535;	/* max number of lines for listings */
-static int column;		/* current column, limited by 'width' */
-static int oldcol;		/* last value of column before wrap */
-static bool pretty;		/* true if we format if-then-else strings */
-static bool wrapped;		/* true if we wrap too-long strings */
-static bool did_wrap;		/* true if last wrap_concat did wrapping */
-static bool checking;		/* true if we are checking for tic */
-static int quickdump;		/* true if we are dumping compiled data */
+static int tversion;		 
+static int outform;		 
+static int sortmode;		 
+static int width = 60;		 
+static int height = 65535;	 
+static int column;		 
+static int oldcol;		 
+static bool pretty;		 
+static bool wrapped;		 
+static bool did_wrap;		 
+static bool checking;		 
+static int quickdump;		 
 
 static char *save_sgr;
 
 static DYNBUF outbuf;
 static DYNBUF tmpbuf;
 
-/* indirection pointers for implementing sort and display modes */
+ 
 static const PredIdx *bool_indirect, *num_indirect, *str_indirect;
 static NCURSES_CONST char *const *bool_names;
 static NCURSES_CONST char *const *num_names;
@@ -82,12 +51,12 @@ static NCURSES_CONST char *const *str_names;
 static const char *separator = "", *trailer = "";
 static int indent = 8;
 
-/* cover various ports and variants of terminfo */
-#define V_ALLCAPS	0	/* all capabilities (SVr4, XSI, ncurses) */
-#define V_SVR1		1	/* SVR1, Ultrix */
-#define V_HPUX		2	/* HP-UX */
-#define V_AIX		3	/* AIX */
-#define V_BSD		4	/* BSD */
+ 
+#define V_ALLCAPS	0	 
+#define V_SVR1		1	 
+#define V_HPUX		2	 
+#define V_AIX		3	 
+#define V_BSD		4	 
 
 #if NCURSES_XNAMES
 #define OBSOLETE(n) (!_nc_user_definable && (n[0] == 'O' && n[1] == 'T'))
@@ -119,7 +88,7 @@ strncpy_DYN(DYNBUF * dst, const char *src, size_t need)
 {
     size_t want = need + dst->used + 1;
     if (want > dst->size) {
-	dst->size += (want + 1024);	/* be generous */
+	dst->size += (want + 1024);	 
 	dst->text = typeRealloc(char, dst->size, dst->text);
 	if (dst->text == 0)
 	    failed("strncpy_DYN");
@@ -166,7 +135,7 @@ _nc_leaks_dump_entry(void)
 
 NCURSES_CONST char *
 nametrans(const char *name)
-/* translate a capability name to termcap from terminfo */
+ 
 {
     const struct name_table_entry *np;
 
@@ -200,7 +169,7 @@ dump_init(const char *version,
 	  bool formatted,
 	  bool check,
 	  int quick)
-/* set up for entry display */
+ 
 {
     width = twidth;
     height = theight;
@@ -211,7 +180,7 @@ dump_init(const char *version,
 
     did_wrap = (width <= 0);
 
-    /* versions */
+     
     if (version == 0)
 	tversion = V_ALLCAPS;
     else if (!strcmp(version, "SVr1") || !strcmp(version, "SVR1")
@@ -226,7 +195,7 @@ dump_init(const char *version,
     else
 	tversion = V_ALLCAPS;
 
-    /* implement display modes */
+     
     switch (outform = mode) {
     case F_LITERAL:
     case F_TERMINFO:
@@ -256,7 +225,7 @@ dump_init(const char *version,
     }
     indent = 8;
 
-    /* implement sort modes */
+     
     switch (sortmode = sort) {
     case S_NOSORT:
 	if (traceval)
@@ -302,7 +271,7 @@ static TERMTYPE2 *cur_type;
 
 static int
 dump_predicate(PredType type, PredIdx idx)
-/* predicate function to use for ordinary decompilation */
+ 
 {
     switch (type) {
     case BOOLEAN:
@@ -318,35 +287,32 @@ dump_predicate(PredType type, PredIdx idx)
 	    ? (int) TRUE : FAIL;
     }
 
-    return (FALSE);		/* pacify compiler */
+    return (FALSE);		 
 }
 
 static void set_obsolete_termcaps(TERMTYPE2 *tp);
 
-/* is this the index of a function key string? */
+ 
 #define FNKEY(i) \
     (((i) >= STR_IDX(key_f0) && \
       (i) <= STR_IDX(key_f9)) || \
      ((i) >= STR_IDX(key_f11) && \
       (i) <= STR_IDX(key_f63)))
 
-/*
- * If we configure with a different Caps file, the offsets into the arrays
- * will change.  So we use an address expression.
- */
+ 
 #define BOOL_IDX(name) (PredType) (&(name) - &(CUR Booleans[0]))
 #define NUM_IDX(name)  (PredType) (&(name) - &(CUR Numbers[0]))
 #define STR_IDX(name)  (PredType) (&(name) - &(CUR Strings[0]))
 
 static bool
 version_filter(PredType type, PredIdx idx)
-/* filter out capabilities we may want to suppress */
+ 
 {
     switch (tversion) {
-    case V_ALLCAPS:		/* SVr4, XSI Curses */
+    case V_ALLCAPS:		 
 	return (TRUE);
 
-    case V_SVR1:		/* System V Release 1, Ultrix */
+    case V_SVR1:		 
 	switch (type) {
 	case BOOLEAN:
 	    return ((idx <= BOOL_IDX(xon_xoff)) ? TRUE : FALSE);
@@ -357,7 +323,7 @@ version_filter(PredType type, PredIdx idx)
 	}
 	break;
 
-    case V_HPUX:		/* Hewlett-Packard */
+    case V_HPUX:		 
 	switch (type) {
 	case BOOLEAN:
 	    return ((idx <= BOOL_IDX(xon_xoff)) ? TRUE : FALSE);
@@ -366,7 +332,7 @@ version_filter(PredType type, PredIdx idx)
 	case STRING:
 	    if (idx <= STR_IDX(prtr_non))
 		return (TRUE);
-	    else if (FNKEY(idx))	/* function keys */
+	    else if (FNKEY(idx))	 
 		return (TRUE);
 	    else if (idx == STR_IDX(plab_norm)
 		     || idx == STR_IDX(label_on)
@@ -377,7 +343,7 @@ version_filter(PredType type, PredIdx idx)
 	}
 	break;
 
-    case V_AIX:		/* AIX */
+    case V_AIX:		 
 	switch (type) {
 	case BOOLEAN:
 	    return ((idx <= BOOL_IDX(xon_xoff)) ? TRUE : FALSE);
@@ -386,7 +352,7 @@ version_filter(PredType type, PredIdx idx)
 	case STRING:
 	    if (idx <= STR_IDX(prtr_non))
 		return (TRUE);
-	    else if (FNKEY(idx))	/* function keys */
+	    else if (FNKEY(idx))	 
 		return (TRUE);
 	    else
 		return (FALSE);
@@ -396,7 +362,7 @@ version_filter(PredType type, PredIdx idx)
 #define is_termcap(type) (OkIndex(idx, type##_from_termcap) && \
 			  type##_from_termcap[idx])
 
-    case V_BSD:		/* BSD */
+    case V_BSD:		 
 	switch (type) {
 	case BOOLEAN:
 	    return is_termcap(bool);
@@ -408,7 +374,7 @@ version_filter(PredType type, PredIdx idx)
 	break;
     }
 
-    return (FALSE);		/* pacify the compiler */
+    return (FALSE);		 
 }
 
 static void
@@ -437,7 +403,7 @@ op_length(const char *src, int offset)
     } else {
 	int ch;
 
-	result++;		/* for '%' mark */
+	result++;		 
 	ch = src[offset + result];
 	if (TcOutput()) {
 	    if (ch == '>') {
@@ -461,25 +427,20 @@ op_length(const char *src, int offset)
 	} else if (strchr("pPg", ch) != 0) {
 	    result += 2;
 	} else {
-	    result++;		/* ordinary operator */
+	    result++;		 
 	}
     }
     return result;
 }
 
-/*
- * When wrapping too-long strings, avoid splitting a backslash sequence, or
- * a terminfo '%' operator.  That will leave things a little ragged, but avoids
- * a stray backslash at the end of the line, as well as making the result a
- * little more readable.
- */
+ 
 static int
 find_split(const char *src, int step, int size)
 {
     int result = size;
 
     if (size > 0) {
-	/* check if that would split a backslash-sequence */
+	 
 	int mark = size;
 	int n;
 
@@ -497,7 +458,7 @@ find_split(const char *src, int step, int size)
 	if (mark < size) {
 	    result = mark;
 	} else {
-	    /* check if that would split a backslash-sequence */
+	     
 	    for (n = size - 1; n > 0; --n) {
 		int ch = UChar(src[step + n]);
 		if (ch == '%') {
@@ -516,10 +477,7 @@ find_split(const char *src, int step, int size)
     return result;
 }
 
-/*
- * If we are going to wrap lines, we cannot leave literal spaces because that
- * would be ambiguous if we split on that space.
- */
+ 
 static char *
 fill_spaces(const char *src)
 {
@@ -611,7 +569,7 @@ wrap_concat(const char *src, int need, unsigned mode)
 	} else {
 	    align[base] = '\0';
 	}
-	/* "pretty" overrides wrapping if it already split the line */
+	 
 	if (!pretty || strchr(fill, '\n') == 0) {
 	    int tag = 0;
 
@@ -682,15 +640,7 @@ wrap_concat3(const char *name, const char *eqls, const char *value)
 	 && !strncmp(first, sep_trail, sizeof(sep_trail)-1)) \
 		first += sizeof(sep_trail)-2
 
-/* Returns the nominal length of the buffer assuming it is termcap format,
- * i.e., the continuation sequence is treated as a single character ":".
- *
- * There are several implementations of termcap which read the text into a
- * fixed-size buffer.  Generally they strip the newlines from the text, but may
- * not do it until after the buffer is read.  Also, "tc=" resolution may be
- * expanded in the same buffer.  This function is useful for measuring the size
- * of the best fixed-buffer implementation; the worst case may be much worse.
- */
+ 
 #ifdef TEST_TERMCAP_LENGTH
 static int
 termcap_length(const char *src)
@@ -720,10 +670,7 @@ indent_DYN(DYNBUF * buffer, int level)
 	strncpy_DYN(buffer, "\t", (size_t) 1);
 }
 
-/*
- * Check if the current line which was begun consists only of a tab and the
- * given leading text.
- */
+ 
 static bool
 leading_DYN(DYNBUF * buffer, const char *leading)
 {
@@ -794,13 +741,13 @@ fmt_complex(TERMTYPE2 *tterm, const char *capability, char *src, int level)
 	case '%':
 	    percent = TRUE;
 	    break;
-	case '?':		/* "if" */
-	case 't':		/* "then" */
-	case 'e':		/* "else" */
+	case '?':		 
+	case 't':		 
+	case 'e':		 
 	    if (percent) {
 		percent = FALSE;
 		tmpbuf.text[tmpbuf.used - 1] = '\n';
-		/* treat a "%e" as else-if, on the same level */
+		 
 		if (*src == 'e') {
 		    indent_DYN(&tmpbuf, level);
 		    strncpy_DYN(&tmpbuf, "%", (size_t) 1);
@@ -831,7 +778,7 @@ fmt_complex(TERMTYPE2 *tterm, const char *capability, char *src, int level)
 		continue;
 	    }
 	    break;
-	case ';':		/* "endif" */
+	case ';':		 
 	    if (percent) {
 		percent = FALSE;
 		if (level > 1) {
@@ -874,10 +821,7 @@ fmt_complex(TERMTYPE2 *tterm, const char *capability, char *src, int level)
     return src;
 }
 
-/*
- * Make "large" numbers a little easier to read by showing them in hexadecimal
- * if they are "close" to a power of two.
- */
+ 
 static const char *
 number_format(int value)
 {
@@ -924,7 +868,7 @@ fmt_entry(TERMTYPE2 *tterm,
 #define WRAP_CONCAT1(s)		wrap_concat1(s); outcount = TRUE
 #define WRAP_CONCAT		WRAP_CONCAT1(buffer)
 
-    len = 12;			/* terminfo file-header */
+    len = 12;			 
 
     if (pred == 0) {
 	cur_type = tterm;
@@ -933,13 +877,11 @@ fmt_entry(TERMTYPE2 *tterm,
 
     strcpy_DYN(&outbuf, 0);
     if (content_only) {
-	column = indent;	/* FIXME: workaround to prevent empty lines */
+	column = indent;	 
     } else {
 	strcpy_DYN(&outbuf, tterm->term_names);
 
-	/*
-	 * Colon is legal in terminfo descriptions, but not in termcap.
-	 */
+	 
 	if (!infodump) {
 	    char *p = outbuf.text;
 	    while (*p) {
@@ -1046,20 +988,13 @@ fmt_entry(TERMTYPE2 *tterm,
 	    continue;
 
 #if NCURSES_XNAMES
-	/*
-	 * Extended names can be longer than 2 characters, but termcap programs
-	 * cannot read those (filter them out).
-	 */
+	 
 	if (outform == F_TERMCAP && (strlen(name) > 2))
 	    continue;
 #endif
 
 	if (outform == F_TERMCAP) {
-	    /*
-	     * Some older versions of vi want rmir/smir to be defined
-	     * for ich/ich1 to work.  If they're not defined, force
-	     * them to be output as defined and empty.
-	     */
+	     
 	    if (PRESENT(insert_character) || PRESENT(parm_ich)) {
 		if (SAME_CAP(i, enter_insert_mode)
 		    && enter_insert_mode == ABSENT_STRING) {
@@ -1075,10 +1010,7 @@ fmt_entry(TERMTYPE2 *tterm,
 		    continue;
 		}
 	    }
-	    /*
-	     * termcap applications such as screen will be confused if sgr0
-	     * is translated to a string containing rmacs.  Filter that out.
-	     */
+	     
 	    if (PRESENT(exit_attribute_mode)) {
 		if (SAME_CAP(i, exit_attribute_mode)) {
 		    char *trimmed_sgr0;
@@ -1182,18 +1114,14 @@ fmt_entry(TERMTYPE2 *tterm,
 		WRAP_CONCAT1(tmpbuf.text);
 	    }
 	}
-	/* e.g., trimmed_sgr0 */
+	 
 	if (VALID_STRING(capability) &&
 	    capability != tterm->Strings[i])
 	    free(capability);
     }
     len += (int) (num_strings * 2);
 
-    /*
-     * This piece of code should be an effective inverse of the functions
-     * postprocess_terminfo() and postprocess_terminfo() in parse_entry.c.
-     * Much more work should be done on this to support dumping termcaps.
-     */
+     
     if (tversion == V_HPUX) {
 	if (VALID_STRING(memory_lock)) {
 	    _nc_SPRINTF(buffer, _nc_SLIMIT(sizeof(buffer))
@@ -1236,20 +1164,14 @@ fmt_entry(TERMTYPE2 *tterm,
 		    size_t last = next;
 		    char save = '\0';
 
-		    /*
-		     * If the expanded string is too long for the buffer,
-		     * chop it off and save the location where we chopped it.
-		     */
+		     
 		    if (want >= sizeof(buffer)) {
 			save = tmp[last];
 			tmp[last] = '\0';
 		    }
 		    _nc_STRCAT(buffer, tmp, sizeof(buffer));
 
-		    /*
-		     * If we chopped the buffer, replace the missing piece and
-		     * shift everything to append the remainder.
-		     */
+		     
 		    if (save != '\0') {
 			next = 0;
 			tmp[last] = save;
@@ -1265,15 +1187,12 @@ fmt_entry(TERMTYPE2 *tterm,
 	}
     }
 
-    /*
-     * kludge: trim off trailer to avoid an extra blank line
-     * in infocmp -u output when there are no string differences
-     */
+     
     if (outcount) {
 	bool trimmed = FALSE;
 	j = (PredIdx) outbuf.used;
 	if (wrapped && did_wrap) {
-	    /* EMPTY */ ;
+	      ;
 	} else if (j >= 2
 		   && outbuf.text[j - 1] == '\t'
 		   && outbuf.text[j - 2] == '\n') {
@@ -1300,13 +1219,7 @@ fmt_entry(TERMTYPE2 *tterm,
     fprintf(stderr, "term_names=%s, len=%d, strlen(outbuf)=%d, outbuf=%s\n",
 	    tterm->term_names, len, outbuf.used, outbuf.text);
 #endif
-    /*
-     * Here's where we use infodump to trigger a more stringent length check
-     * for termcap-translation purposes.
-     * Return the length of the raw entry, without tc= expansions,
-     * It gives an idea of which entries are deadly to even *scan past*,
-     * as opposed to *use*.
-     */
+     
     return (infodump ? len : (int) termcap_length(outbuf.text));
 }
 
@@ -1340,10 +1253,7 @@ find_string(TERMTYPE2 *tterm, char *name)
     return ABSENT_STRING;
 }
 
-/*
- * This is used to remove function-key labels from a termcap entry to
- * make it smaller.
- */
+ 
 static int
 kill_labels(TERMTYPE2 *tterm, int target)
 {
@@ -1367,10 +1277,7 @@ kill_labels(TERMTYPE2 *tterm, int target)
     return result;
 }
 
-/*
- * This is used to remove function-key definitions from a termcap entry to
- * make it smaller.
- */
+ 
 static int
 kill_fkeys(TERMTYPE2 *tterm, int target)
 {
@@ -1394,10 +1301,7 @@ kill_fkeys(TERMTYPE2 *tterm, int target)
     return result;
 }
 
-/*
- * Check if the given acsc string is a 1-1 mapping, i.e., just-like-vt100.
- * Also, since this is for termcap, we only care about the line-drawing map.
- */
+ 
 #define isLine(c) (strchr("lmkjtuvwqxn", c) != 0)
 
 static bool
@@ -1446,7 +1350,7 @@ purged_acs(TERMTYPE2 *tterm)
 static void
 encode_b64(char *target, char *source, unsigned state, int *saved)
 {
-    /* RFC-4648 */
+     
     static const char data[] =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
     "abcdefghijklmnopqrstuvwxyz"
@@ -1471,9 +1375,7 @@ encode_b64(char *target, char *source, unsigned state, int *saved)
     *target = '\0';
 }
 
-/*
- * Dump a single entry.
- */
+ 
 void
 dump_entry(TERMTYPE2 *tterm,
 	   int suppress_untranslatable,
@@ -1562,25 +1464,18 @@ dump_entry(TERMTYPE2 *tterm,
 	    suppress_untranslatable = TRUE;
 	}
 	if (FMT_ENTRY() > critlen) {
-	    /*
-	     * We pick on sgr because it is a nice long string capability that
-	     * is really just an optimization hack.  Another good candidate is
-	     * acsc since it is both long and unused by BSD termcap.
-	     */
+	     
 	    bool changed = FALSE;
 
 #if NCURSES_XNAMES
-	    /*
-	     * Extended names are most likely function-key definitions.  Drop
-	     * those first.
-	     */
+	     
 	    unsigned n;
 	    for (n = STRCOUNT; n < NUM_STRINGS(tterm); n++) {
 		const char *name = ExtStrname(tterm, (int) n, strnames);
 
 		if (VALID_STRING(tterm->Strings[n])) {
 		    set_attributes = ABSENT_STRING;
-		    /* we remove long names anyway - only report the short */
+		     
 		    if (strlen(name) <= 2) {
 			SHOW_WHY("# (%s removed to fit entry within %d bytes)\n",
 				 name,
@@ -1652,7 +1547,7 @@ dump_entry(TERMTYPE2 *tterm,
 
 void
 dump_uses(const char *name, bool infodump)
-/* dump "use=" clauses in the appropriate format */
+ 
 {
     char buffer[MAX_TERMINFO_LENGTH];
 
@@ -1666,9 +1561,7 @@ dump_uses(const char *name, bool infodump)
 int
 show_entry(void)
 {
-    /*
-     * Trim any remaining whitespace.
-     */
+     
     if (outbuf.used != 0) {
 	bool infodump = !TcOutput();
 	char delim = (char) (infodump ? ',' : ':');
@@ -1701,7 +1594,7 @@ void
 compare_entry(PredHook hook,
 	      TERMTYPE2 *tp GCC_UNUSED,
 	      bool quiet)
-/* compare two entries */
+ 
 {
     PredIdx i, j;
     NCURSES_CONST char *name;
@@ -1742,18 +1635,14 @@ compare_entry(PredHook hook,
 	(*hook) (CMP_STRING, i, name);
     }
 
-    /* (void) fputs("    comparing use entries.\n", stdout); */
+     
     (*hook) (CMP_USE, 0, "use");
 
 }
 
 #define NOTSET(s)	((s) == 0)
 
-/*
- * This bit of legerdemain turns all the terminfo variable names into
- * references to locations in the arrays Booleans, Numbers, and Strings ---
- * precisely what's needed.
- */
+ 
 #undef CUR
 #define CUR tp->
 
@@ -1763,10 +1652,7 @@ set_obsolete_termcaps(TERMTYPE2 *tp)
 #include "capdefaults.c"
 }
 
-/*
- * Convert an alternate-character-set string to canonical form: sorted and
- * unique.
- */
+ 
 void
 repair_acsc(TERMTYPE2 *tp)
 {
@@ -1809,7 +1695,7 @@ repair_acsc(TERMTYPE2 *tp)
 		}
 	    }
 	    if (extra)
-		acs_chars[m++] = extra;		/* garbage in, garbage out */
+		acs_chars[m++] = extra;		 
 	    acs_chars[m] = 0;
 	}
     }

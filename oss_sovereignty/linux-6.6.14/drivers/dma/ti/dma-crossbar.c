@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  Copyright (C) 2015 Texas Instruments Incorporated - http://www.ti.com
- *  Author: Peter Ujfalusi <peter.ujfalusi@ti.com>
- */
+
+ 
 #include <linux/platform_device.h>
 #include <linux/slab.h>
 #include <linux/err.h>
@@ -32,7 +29,7 @@ static const struct of_device_id ti_dma_xbar_match[] = {
 	{},
 };
 
-/* Crossbar on AM335x/AM437x family */
+ 
 #define TI_AM335X_XBAR_LINES	64
 
 struct ti_am335x_xbar_data {
@@ -40,8 +37,8 @@ struct ti_am335x_xbar_data {
 
 	struct dma_router dmarouter;
 
-	u32 xbar_events; /* maximum number of events to select in xbar */
-	u32 dma_requests; /* number of DMA requests on eDMA */
+	u32 xbar_events;  
+	u32 dma_requests;  
 };
 
 struct ti_am335x_xbar_map {
@@ -51,11 +48,7 @@ struct ti_am335x_xbar_map {
 
 static inline void ti_am335x_xbar_write(void __iomem *iomem, int event, u8 val)
 {
-	/*
-	 * TPCC_EVT_MUX_60_63 register layout is different than the
-	 * rest, in the sense, that event 63 is mapped to lowest byte
-	 * and event 60 is mapped to highest, handle it separately.
-	 */
+	 
 	if (event >= 60 && event <= 63)
 		writeb_relaxed(val, iomem + (63 - event % 4));
 	else
@@ -96,7 +89,7 @@ static void *ti_am335x_xbar_route_allocate(struct of_phandle_args *dma_spec,
 		return ERR_PTR(-EINVAL);
 	}
 
-	/* The of_node_put() will be done in the core for the node */
+	 
 	dma_spec->np = of_parse_phandle(ofdma->of_node, "dma-masters", 0);
 	if (!dma_spec->np) {
 		dev_err(&pdev->dev, "Can't get DMA master\n");
@@ -184,7 +177,7 @@ static int ti_am335x_xbar_probe(struct platform_device *pdev)
 
 	platform_set_drvdata(pdev, xbar);
 
-	/* Reset the crossbar */
+	 
 	for (i = 0; i < xbar->dma_requests; i++)
 		ti_am335x_xbar_write(xbar->iomem, i, 0);
 
@@ -194,7 +187,7 @@ static int ti_am335x_xbar_probe(struct platform_device *pdev)
 	return ret;
 }
 
-/* Crossbar on DRA7xx family */
+ 
 #define TI_DRA7_XBAR_OUTPUTS	127
 #define TI_DRA7_XBAR_INPUTS	256
 
@@ -205,9 +198,9 @@ struct ti_dra7_xbar_data {
 	struct mutex mutex;
 	unsigned long *dma_inuse;
 
-	u16 safe_val; /* Value to rest the crossbar lines */
-	u32 xbar_requests; /* number of DMA requests connected to XBAR */
-	u32 dma_requests; /* number of DMA requests forwarded to DMA */
+	u16 safe_val;  
+	u32 xbar_requests;  
+	u32 dma_requests;  
 	u32 dma_offset;
 };
 
@@ -250,7 +243,7 @@ static void *ti_dra7_xbar_route_allocate(struct of_phandle_args *dma_spec,
 		return ERR_PTR(-EINVAL);
 	}
 
-	/* The of_node_put() will be done in the core for the node */
+	 
 	dma_spec->np = of_parse_phandle(ofdma->of_node, "dma-masters", 0);
 	if (!dma_spec->np) {
 		dev_err(&pdev->dev, "Can't get DMA master\n");
@@ -419,7 +412,7 @@ static int ti_dra7_xbar_probe(struct platform_device *pdev)
 	mutex_init(&xbar->mutex);
 	platform_set_drvdata(pdev, xbar);
 
-	/* Reset the crossbar */
+	 
 	for (i = 0; i < xbar->dma_requests; i++) {
 		if (!test_bit(i, xbar->dma_inuse))
 			ti_dra7_xbar_write(xbar->iomem, i, xbar->safe_val);
@@ -428,7 +421,7 @@ static int ti_dra7_xbar_probe(struct platform_device *pdev)
 	ret = of_dma_router_register(node, ti_dra7_xbar_route_allocate,
 				     &xbar->dmarouter);
 	if (ret) {
-		/* Restore the defaults for the crossbar */
+		 
 		for (i = 0; i < xbar->dma_requests; i++) {
 			if (!test_bit(i, xbar->dma_inuse))
 				ti_dra7_xbar_write(xbar->iomem, i, i);

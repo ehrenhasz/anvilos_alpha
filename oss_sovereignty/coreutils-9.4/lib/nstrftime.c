@@ -1,56 +1,4 @@
-/* Copyright (C) 1991-2023 Free Software Foundation, Inc.
-   This file is part of the GNU C Library.
-
-   This file is free software: you can redistribute it and/or modify
-   it under the terms of the GNU Lesser General Public License as
-   published by the Free Software Foundation, either version 3 of the
-   License, or (at your option) any later version.
-
-   This file is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU Lesser General Public License for more details.
-
-   You should have received a copy of the GNU Lesser General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-#ifdef _LIBC
-# define USE_IN_EXTENDED_LOCALE_MODEL 1
-# define HAVE_STRUCT_ERA_ENTRY 1
-# define HAVE_TM_GMTOFF 1
-# define HAVE_STRUCT_TM_TM_ZONE 1
-# define HAVE_TZNAME 1
-# include "../locale/localeinfo.h"
-#else
-# include <libc-config.h>
-# if FPRINTFTIME
-#  include "fprintftime.h"
-# else
-#  include "strftime.h"
-# endif
-# include "time-internal.h"
-#endif
-
-#include <ctype.h>
-#include <errno.h>
-#include <time.h>
-
-#if HAVE_TZNAME && !HAVE_DECL_TZNAME
-extern char *tzname[];
-#endif
-
-/* Do multibyte processing if multibyte encodings are supported, unless
-   multibyte sequences are safe in formats.  Multibyte sequences are
-   safe if they cannot contain byte sequences that look like format
-   conversion specifications.  The multibyte encodings used by the
-   C library on the various platforms (UTF-8, GB2312, GBK, CP936,
-   GB18030, EUC-TW, BIG5, BIG5-HKSCS, CP950, EUC-JP, EUC-KR, CP949,
-   SHIFT_JIS, CP932, JOHAB) are safe for formats, because the byte '%'
-   cannot occur in a multibyte character except in the first byte.
-
-   The DEC-HANYU encoding used on OSF/1 is not safe for formats, but
-   this encoding has never been seen in real-life use, so we ignore
-   it.  */
+ 
 #if !(defined __osf__ && 0)
 # define MULTIBYTE_IS_FORMAT_SAFE 1
 #endif
@@ -92,16 +40,7 @@ extern char *tzname[];
 
 #endif
 
-/* Shift A right by B bits portably, by dividing A by 2**B and
-   truncating towards minus infinity.  A and B should be free of side
-   effects, and B should be in the range 0 <= B <= INT_BITS - 2, where
-   INT_BITS is the number of useful bits in an int.  GNU code can
-   assume that INT_BITS is at least 32.
-
-   ISO C99 says that A >> B is implementation-defined if A < 0.  Some
-   implementations (e.g., UNICOS 9.0 on a Cray Y-MP EL) don't shift
-   right in the usual way when A < 0, so SHR falls back on division if
-   ordinary A >> B doesn't seem to be the usual signed shift.  */
+ 
 #define SHR(a, b)       \
   (-1 >> 1 == -1        \
    ? (a) >> (b)         \
@@ -110,8 +49,7 @@ extern char *tzname[];
 #define TM_YEAR_BASE 1900
 
 #ifndef __isleap
-/* Nonzero if YEAR is a leap year (every 4 years,
-   except every 100th isn't, and every 400th is).  */
+ 
 # define __isleap(year) \
   ((year) % 4 == 0 && ((year) % 100 != 0 || (year) % 400 == 0))
 #endif
@@ -129,7 +67,7 @@ extern char *tzname[];
 
 #if FPRINTFTIME
 # define STREAM_OR_CHAR_T FILE
-# define STRFTIME_ARG(x) /* empty */
+# define STRFTIME_ARG(x)  
 #else
 # define STREAM_OR_CHAR_T CHAR_T
 # define STRFTIME_ARG(x) x,
@@ -201,11 +139,7 @@ extern char *tzname[];
            fwrite_uppcase (p, (s), _n);                                       \
          else                                                                 \
            {                                                                  \
-             /* Ignore the value of fwrite.  The caller can determine whether \
-                an error occurred by inspecting ferror (P).  All known fwrite \
-                implementations set the stream's error indicator when they    \
-                fail due to ENOMEM etc., even though C11 and POSIX.1-2008 do  \
-                not require this.  */                                         \
+                                                       \
              fwrite (s, _n, 1, p);                                            \
            }                                                                  \
        }                                                                      \
@@ -231,10 +165,7 @@ extern char *tzname[];
 
 
 #if defined _LIBC && defined USE_IN_EXTENDED_LOCALE_MODEL
-/* We use this code also for the extended locale handling where the
-   function gets as an additional argument the locale which has to be
-   used.  To access the values we have to redefine the _NL_CURRENT
-   macro.  */
+ 
 # define strftime               __strftime_l
 # define wcsftime               __wcsftime_l
 # undef _NL_CURRENT
@@ -270,16 +201,10 @@ extern char *tzname[];
 #  define TOLOWER(Ch, L) tolower (Ch)
 # endif
 #endif
-/* We don't use 'isdigit' here since the locale dependent
-   interpretation is not what we want here.  We only need to accept
-   the arabic digits in the ASCII range.  One day there is perhaps a
-   more reliable way to accept other sets of digits.  */
+ 
 #define ISDIGIT(Ch) ((unsigned int) (Ch) - L_('0') <= 9)
 
-/* Avoid false GCC warning "'memset' specified size 18446744073709551615 exceeds
-   maximum object size 9223372036854775807", caused by insufficient data flow
-   analysis and value propagation of the 'width_add' expansion when GCC is not
-   optimizing.  Cf. <https://gcc.gnu.org/bugzilla/show_bug.cgi?id=88443>.  */
+ 
 #if __GNUC__ >= 7 && !__OPTIMIZE__
 # pragma GCC diagnostic ignored "-Wstringop-overflow"
 #endif
@@ -330,16 +255,13 @@ memcpy_uppcase (CHAR_T *dest, const CHAR_T *src, size_t len LOCALE_PARAM)
 
 
 #if ! HAVE_TM_GMTOFF
-/* Yield the difference between *A and *B,
-   measured in seconds, ignoring leap seconds.  */
+ 
 # define tm_diff ftime_tm_diff
 static int tm_diff (const struct tm *, const struct tm *);
 static int
 tm_diff (const struct tm *a, const struct tm *b)
 {
-  /* Compute intervening leap days correctly even if year is negative.
-     Take care to avoid int overflow in leap day calculations,
-     but it's OK to assume that A and B are close to each other.  */
+   
   int a4 = SHR (a->tm_year, 2) + SHR (TM_YEAR_BASE, 2) - ! (a->tm_year & 3);
   int b4 = SHR (b->tm_year, 2) + SHR (TM_YEAR_BASE, 2) - ! (b->tm_year & 3);
   int a100 = (a4 + (a4 < 0)) / 25 - (a4 < 0);
@@ -354,22 +276,19 @@ tm_diff (const struct tm *a, const struct tm *b)
                 + (a->tm_min - b->tm_min))
           + (a->tm_sec - b->tm_sec));
 }
-#endif /* ! HAVE_TM_GMTOFF */
+#endif  
 
 
 
-/* The number of days from the first day of the first ISO week of this
-   year to the year day YDAY with week day WDAY.  ISO weeks start on
-   Monday; the first ISO week has the year's first Thursday.  YDAY may
-   be as small as YDAY_MINIMUM.  */
-#define ISO_WEEK_START_WDAY 1 /* Monday */
-#define ISO_WEEK1_WDAY 4 /* Thursday */
+ 
+#define ISO_WEEK_START_WDAY 1  
+#define ISO_WEEK1_WDAY 4  
 #define YDAY_MINIMUM (-366)
 static int iso_week_days (int, int);
 static __inline int
 iso_week_days (int yday, int wday)
 {
-  /* Add enough to the first operand of % to make it nonnegative.  */
+   
   int big_enough_multiple_of_7 = (-YDAY_MINIMUM / 7 + 2) * 7;
   return (yday
           - (yday - wday + ISO_WEEK1_WDAY + big_enough_multiple_of_7) % 7
@@ -377,9 +296,7 @@ iso_week_days (int yday, int wday)
 }
 
 
-/* When compiling this file, GNU applications can #define my_strftime
-   to a symbol (typically nstrftime) to get an extended strftime with
-   extra arguments TZ and NS.  */
+ 
 
 #if FPRINTFTIME
 # undef my_strftime
@@ -399,7 +316,7 @@ iso_week_days (int yday, int wday)
 # endif
 # define extra_args
 # define extra_args_spec
-/* We don't have this information in general.  */
+ 
 # define tz 1
 # define ns 0
 #endif
@@ -409,12 +326,7 @@ static size_t __strftime_internal (STREAM_OR_CHAR_T *, STRFTIME_ARG (size_t)
                                    bool, int, int, bool *
                                    extra_args_spec LOCALE_PARAM);
 
-/* Write information from TP into S according to the format
-   string FORMAT, writing no more that MAXSIZE characters
-   (including the terminating '\0') and returning number of
-   characters written.  If S is NULL, nothing will be written
-   anywhere, so to determine how many characters would be
-   written, use NULL for S and (size_t) -1 for MAXSIZE.  */
+ 
 size_t
 my_strftime (STREAM_OR_CHAR_T *s, STRFTIME_ARG (size_t maxsize)
              const CHAR_T *format,
@@ -426,10 +338,7 @@ my_strftime (STREAM_OR_CHAR_T *s, STRFTIME_ARG (size_t maxsize)
 }
 libc_hidden_def (my_strftime)
 
-/* Just like my_strftime, above, but with more parameters.
-   UPCASE indicates that the result should be converted to upper case.
-   YR_SPEC and WIDTH specify the padding and width for the year.
-   *TZSET_CALLED indicates whether tzset has been called here.  */
+ 
 static size_t
 __strftime_internal (STREAM_OR_CHAR_T *s, STRFTIME_ARG (size_t maxsize)
                      const CHAR_T *format,
@@ -447,12 +356,7 @@ __strftime_internal (STREAM_OR_CHAR_T *s, STRFTIME_ARG (size_t maxsize)
   int saved_errno = errno;
   int hour12 = tp->tm_hour;
 #ifdef _NL_CURRENT
-  /* We cannot make the following values variables since we must delay
-     the evaluation of these values until really needed since some
-     expressions might not be valid in every situation.  The 'struct tm'
-     might be generated by a strptime() call that initialized
-     only a few elements.  Dereference the pointers only if the format
-     requires this.  Then it is ok to fail if the pointers are invalid.  */
+   
 # define a_wkday \
   ((const CHAR_T *) (tp->tm_wday < 0 || tp->tm_wday > 6                      \
                      ? "?" : _NL_CURRENT (LC_TIME, NLW(ABDAY_1) + tp->tm_wday)))
@@ -493,12 +397,7 @@ __strftime_internal (STREAM_OR_CHAR_T *s, STRFTIME_ARG (size_t maxsize)
 
   zone = NULL;
 #if HAVE_STRUCT_TM_TM_ZONE
-  /* The POSIX test suite assumes that setting
-     the environment variable TZ to a new value before calling strftime()
-     will influence the result (the %Z format) even if the information in
-     TP is computed with a totally different time zone.
-     This is bogus: though POSIX allows bad behavior like this,
-     POSIX does not require it.  Do the right thing instead.  */
+   
   zone = (const char *) tp->tm_zone;
 #endif
 #if HAVE_TZNAME
@@ -510,15 +409,14 @@ __strftime_internal (STREAM_OR_CHAR_T *s, STRFTIME_ARG (size_t maxsize)
   else
     {
 # if !HAVE_STRUCT_TM_TM_ZONE
-      /* Infer the zone name from *TZ instead of from TZNAME.  */
+       
       tzname_vec = tz->tzname_copy;
 # endif
     }
-  /* The tzset() call might have changed the value.  */
+   
   if (!(zone && *zone) && tp->tm_isdst >= 0)
     {
-      /* POSIX.1 requires that local time zone information be used as
-         though strftime called tzset.  */
+       
 # ifndef my_strftime
       if (!*tzset_called)
         {
@@ -540,18 +438,18 @@ __strftime_internal (STREAM_OR_CHAR_T *s, STRFTIME_ARG (size_t maxsize)
 
   for (f = format; *f != '\0'; width = -1, f++)
     {
-      int pad = 0;  /* Padding for number ('_', '-', '+', '0', or 0).  */
-      int modifier;             /* Field modifier ('E', 'O', or 0).  */
-      int digits = 0;           /* Max digits for numeric format.  */
-      int number_value;         /* Numeric value to be printed.  */
-      unsigned int u_number_value; /* (unsigned int) number_value.  */
-      bool negative_number;     /* The number is negative.  */
-      bool always_output_a_sign; /* +/- should always be output.  */
-      int tz_colon_mask;        /* Bitmask of where ':' should appear.  */
+      int pad = 0;   
+      int modifier;              
+      int digits = 0;            
+      int number_value;          
+      unsigned int u_number_value;  
+      bool negative_number;      
+      bool always_output_a_sign;  
+      int tz_colon_mask;         
       const CHAR_T *subfmt;
       CHAR_T *bufp;
       CHAR_T buf[1
-                 + 2 /* for the two colons in a %::z or %:::z time zone */
+                 + 2  
                  + (sizeof (int) < sizeof (time_t)
                     ? INT_STRLEN_BOUND (time_t)
                     : INT_STRLEN_BOUND (int))];
@@ -589,16 +487,12 @@ __strftime_internal (STREAM_OR_CHAR_T *s, STRFTIME_ARG (size_t maxsize)
         case L_('t'): case L_('u'): case L_('v'): case L_('w'): case L_('x'):
         case L_('y'): case L_('z'): case L_('{'): case L_('|'): case L_('}'):
         case L_('~'):
-          /* The C Standard requires these 98 characters (plus '%') to
-             be in the basic execution character set.  None of these
-             characters can start a multibyte sequence, so they need
-             not be analyzed further.  */
+           
           add1 (*f);
           continue;
 
         default:
-          /* Copy this multibyte sequence until we reach its end, find
-             an error, or come back to the initial shift state.  */
+           
           {
             mbstate_t mbstate = mbstate_zero;
             size_t len = 0;
@@ -637,27 +531,25 @@ __strftime_internal (STREAM_OR_CHAR_T *s, STRFTIME_ARG (size_t maxsize)
           }
         }
 
-#else /* ! DO_MULTIBYTE */
+#else  
 
-      /* Either multibyte encodings are not supported, they are
-         safe for formats, so any non-'%' byte can be copied through,
-         or this is the wide character version.  */
+       
       if (*f != L_('%'))
         {
           add1 (*f);
           continue;
         }
 
-#endif /* ! DO_MULTIBYTE */
+#endif  
 
       char const *percent = f;
 
-      /* Check for flags that can modify a format.  */
+       
       while (1)
         {
           switch (*++f)
             {
-              /* This influences the number formats.  */
+               
             case L_('_'):
             case L_('-'):
             case L_('+'):
@@ -665,7 +557,7 @@ __strftime_internal (STREAM_OR_CHAR_T *s, STRFTIME_ARG (size_t maxsize)
               pad = *f;
               continue;
 
-              /* This changes textual output.  */
+               
             case L_('^'):
               to_uppcase = true;
               continue;
@@ -692,7 +584,7 @@ __strftime_internal (STREAM_OR_CHAR_T *s, STRFTIME_ARG (size_t maxsize)
           while (ISDIGIT (*f));
         }
 
-      /* Check for modifiers.  */
+       
       switch (*f)
         {
         case L_('E'):
@@ -705,7 +597,7 @@ __strftime_internal (STREAM_OR_CHAR_T *s, STRFTIME_ARG (size_t maxsize)
           break;
         }
 
-      /* Now do the specified format.  */
+       
       format_char = *f;
       switch (format_char)
         {
@@ -731,9 +623,7 @@ __strftime_internal (STREAM_OR_CHAR_T *s, STRFTIME_ARG (size_t maxsize)
             }                                                                 \
           while (0)
 
-          /* The mask is not what you might think.
-             When the ordinal i'th bit is set, insert a colon
-             before the i'th digit of the time zone representation.  */
+           
 #define DO_TZ_OFFSET(d, mask, v) \
           do                                                                  \
             {                                                                 \
@@ -858,22 +748,18 @@ __strftime_internal (STREAM_OR_CHAR_T *s, STRFTIME_ARG (size_t maxsize)
 #if !(defined _NL_CURRENT && HAVE_STRUCT_ERA_ENTRY)
         underlying_strftime:
           {
-            /* The relevant information is available only via the
-               underlying strftime implementation, so use that.  */
+             
             char ufmt[5];
             char *u = ufmt;
-            char ubuf[1024]; /* enough for any single format in practice */
+            char ubuf[1024];  
             size_t len;
-            /* Make sure we're calling the actual underlying strftime.
-               In some cases, config.h contains something like
-               "#define strftime rpl_strftime".  */
+             
 # ifdef strftime
 #  undef strftime
             size_t strftime ();
 # endif
 
-            /* The space helps distinguish strftime failure from empty
-               output.  */
+             
             *u++ = ' ';
             *u++ = '%';
             if (modifier != 0)
@@ -947,8 +833,7 @@ __strftime_internal (STREAM_OR_CHAR_T *s, STRFTIME_ARG (size_t maxsize)
 
           DO_NUMBER_SPACEPAD (2, tp->tm_mday);
 
-          /* All numeric formats set DIGITS and NUMBER_VALUE (or U_NUMBER_VALUE)
-             and then jump to one of these labels.  */
+           
 
         do_tz_offset:
           always_output_a_sign = true;
@@ -968,7 +853,7 @@ __strftime_internal (STREAM_OR_CHAR_T *s, STRFTIME_ARG (size_t maxsize)
             pad = L_('_');
 
         do_number:
-          /* Format NUMBER_VALUE according to the MODIFIER flag.  */
+           
           negative_number = number_value < 0;
           u_number_value = number_value;
 
@@ -979,16 +864,11 @@ __strftime_internal (STREAM_OR_CHAR_T *s, STRFTIME_ARG (size_t maxsize)
           tz_colon_mask = 0;
 
         do_number_body:
-          /* Format U_NUMBER_VALUE according to the MODIFIER flag.
-             NEGATIVE_NUMBER is nonzero if the original number was
-             negative; in this case it was converted directly to
-             unsigned int (i.e., modulo (UINT_MAX + 1)) without
-             negating it.  */
+           
           if (modifier == L_('O') && !negative_number)
             {
 #ifdef _NL_CURRENT
-              /* Get the locale specific alternate representation of
-                 the number.  If none exist NULL is returned.  */
+               
               const CHAR_T *cp = nl_get_alt_digit (u_number_value
                                                    HELPER_LOCALE_ARG);
 
@@ -1081,13 +961,13 @@ __strftime_internal (STREAM_OR_CHAR_T *s, STRFTIME_ARG (size_t maxsize)
 
           DO_NUMBER (2, hour12);
 
-        case L_('k'):           /* GNU extension.  */
+        case L_('k'):            
           if (modifier == L_('E'))
             goto bad_format;
 
           DO_NUMBER_SPACEPAD (2, tp->tm_hour);
 
-        case L_('l'):           /* GNU extension.  */
+        case L_('l'):            
           if (modifier == L_('E'))
             goto bad_format;
 
@@ -1112,7 +992,7 @@ __strftime_internal (STREAM_OR_CHAR_T *s, STRFTIME_ARG (size_t maxsize)
           DO_SIGNED_NUMBER (2, tp->tm_mon < -1, tp->tm_mon + 1U);
 
 #ifndef _LIBC
-        case L_('N'):           /* GNU extension.  */
+        case L_('N'):            
           if (modifier == L_('E'))
             goto bad_format;
           {
@@ -1155,7 +1035,7 @@ __strftime_internal (STREAM_OR_CHAR_T *s, STRFTIME_ARG (size_t maxsize)
           goto underlying_strftime;
 #endif
 
-        case L_('q'):           /* GNU extension.  */
+        case L_('q'):            
           DO_SIGNED_NUMBER (1, false, ((tp->tm_mon * 11) >> 5) + 1);
 
         case L_('R'):
@@ -1179,7 +1059,7 @@ __strftime_internal (STREAM_OR_CHAR_T *s, STRFTIME_ARG (size_t maxsize)
 
           DO_NUMBER (2, tp->tm_sec);
 
-        case L_('s'):           /* GNU extension.  */
+        case L_('s'):            
           {
             struct tm ltm;
             time_t t;
@@ -1193,8 +1073,7 @@ __strftime_internal (STREAM_OR_CHAR_T *s, STRFTIME_ARG (size_t maxsize)
                 return 0;
               }
 
-            /* Generate string value for T using time_t arithmetic;
-               this works even if sizeof (long) < sizeof (time_t).  */
+             
 
             bufp = buf + sizeof (buf) / sizeof (buf[0]);
             negative_number = t < 0;
@@ -1248,10 +1127,7 @@ __strftime_internal (STREAM_OR_CHAR_T *s, STRFTIME_ARG (size_t maxsize)
           if (modifier == L_('E'))
             goto bad_format;
           {
-            /* YEAR is a leap year if and only if (tp->tm_year + TM_YEAR_BASE)
-               is a leap year, except that YEAR and YEAR - 1 both work
-               correctly even when (tp->tm_year + TM_YEAR_BASE) would
-               overflow.  */
+             
             int year = (tp->tm_year
                         + (tp->tm_year < 0
                            ? TM_YEAR_BASE % 400
@@ -1261,7 +1137,7 @@ __strftime_internal (STREAM_OR_CHAR_T *s, STRFTIME_ARG (size_t maxsize)
 
             if (days < 0)
               {
-                /* This ISO week belongs to the previous year.  */
+                 
                 year_adjust = -1;
                 days = iso_week_days (tp->tm_yday + (365 + __isleap (year - 1)),
                                       tp->tm_wday);
@@ -1272,7 +1148,7 @@ __strftime_internal (STREAM_OR_CHAR_T *s, STRFTIME_ARG (size_t maxsize)
                                        tp->tm_wday);
                 if (0 <= d)
                   {
-                    /* This ISO week belongs to the next year.  */
+                     
                     year_adjust = 1;
                     days = d;
                   }
@@ -1373,8 +1249,7 @@ __strftime_internal (STREAM_OR_CHAR_T *s, STRFTIME_ARG (size_t maxsize)
 
 #ifdef COMPILE_WIDE
           {
-            /* The zone string is always given in multibyte form.  We have
-               to convert it to wide character.  */
+             
             size_t w = pad == L_('-') || width < 0 ? 0 : width;
             char const *z = zone;
             mbstate_t st = {0};
@@ -1406,8 +1281,7 @@ __strftime_internal (STREAM_OR_CHAR_T *s, STRFTIME_ARG (size_t maxsize)
           break;
 
         case L_(':'):
-          /* :, ::, and ::: are valid only just before 'z'.
-             :::: etc. are rejected later.  */
+           
           for (colons = 1; f[colons] == L_(':'); colons++)
             continue;
           if (f[colons] != L_('z'))
@@ -1438,8 +1312,7 @@ __strftime_internal (STREAM_OR_CHAR_T *s, STRFTIME_ARG (size_t maxsize)
                 struct tm ltm;
                 time_t lt;
 
-                /* POSIX.1 requires that local time zone information be used as
-                   though strftime called tzset.  */
+                 
 # ifndef my_strftime
                 if (!*tzset_called)
                   {
@@ -1464,17 +1337,17 @@ __strftime_internal (STREAM_OR_CHAR_T *s, STRFTIME_ARG (size_t maxsize)
 
             switch (colons)
               {
-              case 0: /* +hhmm */
+              case 0:  
                 DO_TZ_OFFSET (5, 0, hour_diff * 100 + min_diff);
 
-              case 1: tz_hh_mm: /* +hh:mm */
+              case 1: tz_hh_mm:  
                 DO_TZ_OFFSET (6, 04, hour_diff * 100 + min_diff);
 
-              case 2: tz_hh_mm_ss: /* +hh:mm:ss */
+              case 2: tz_hh_mm_ss:  
                 DO_TZ_OFFSET (9, 024,
                               hour_diff * 10000 + min_diff * 100 + sec_diff);
 
-              case 3: /* +hh if possible, else +hh:mm, else +hh:mm:ss */
+              case 3:  
                 if (sec_diff != 0)
                   goto tz_hh_mm_ss;
                 if (min_diff != 0)
@@ -1486,14 +1359,12 @@ __strftime_internal (STREAM_OR_CHAR_T *s, STRFTIME_ARG (size_t maxsize)
               }
           }
 
-        case L_('\0'):          /* GNU extension: % at end of format.  */
+        case L_('\0'):           
         bad_percent:
             --f;
             FALLTHROUGH;
         default:
-          /* Unknown format; output the format, including the '%',
-             since this is most likely the right thing to do if a
-             multibyte string has been misparsed.  */
+           
         bad_format:
           cpy (f - percent + 1, percent);
           break;

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* AFS vlserver list management.
- *
- * Copyright (C) 2018 Red Hat, Inc. All Rights Reserved.
- * Written by David Howells (dhowells@redhat.com)
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/slab.h>
@@ -80,9 +76,7 @@ static u16 afs_extract_le16(const u8 **_b)
 	return val;
 }
 
-/*
- * Build a VL server address list from a DNS queried server list.
- */
+ 
 static struct afs_addr_list *afs_extract_vl_addrs(const u8 **_b, const u8 *end,
 						  u8 nr_addrs, u16 port)
 {
@@ -131,7 +125,7 @@ static struct afs_addr_list *afs_extract_vl_addrs(const u8 **_b, const u8 *end,
 		}
 	}
 
-	/* Start with IPv6 if available. */
+	 
 	if (alist->nr_ipv4 < alist->nr_addrs)
 		alist->preferred = alist->nr_ipv4;
 
@@ -144,9 +138,7 @@ error:
 	return ERR_PTR(ret);
 }
 
-/*
- * Build a VL server list from a DNS queried server list.
- */
+ 
 struct afs_vlserver_list *afs_extract_vlserver_list(struct afs_cell *cell,
 						    const void *buffer,
 						    size_t buffer_size)
@@ -161,7 +153,7 @@ struct afs_vlserver_list *afs_extract_vlserver_list(struct afs_cell *cell,
 
 	_enter("");
 
-	/* Check that it's a server list, v1 */
+	 
 	if (end - b < sizeof(*hdr) ||
 	    hdr->hdr.content != DNS_PAYLOAD_IS_SERVER_LIST ||
 	    hdr->hdr.version != 1) {
@@ -222,7 +214,7 @@ struct afs_vlserver_list *afs_extract_vlserver_list(struct afs_cell *cell,
 		if (bs.status > NR__dns_lookup_status)
 			bs.status = NR__dns_lookup_status;
 
-		/* See if we can update an old server record */
+		 
 		server = NULL;
 		for (i = 0; i < previous->nr_servers; i++) {
 			struct afs_vlserver *p = previous->servers[i].server;
@@ -244,9 +236,7 @@ struct afs_vlserver_list *afs_extract_vlserver_list(struct afs_cell *cell,
 
 		b += bs.name_len;
 
-		/* Extract the addresses - note that we can't skip this as we
-		 * have to advance the payload pointer.
-		 */
+		 
 		addrs = afs_extract_vl_addrs(&b, end, bs.nr_addrs, bs.port);
 		if (IS_ERR(addrs)) {
 			ret = PTR_ERR(addrs);
@@ -280,15 +270,15 @@ struct afs_vlserver_list *afs_extract_vlserver_list(struct afs_cell *cell,
 		}
 
 
-		/* TODO: Might want to check for duplicates */
+		 
 
-		/* Insertion-sort by priority and weight */
+		 
 		for (j = 0; j < vllist->nr_servers; j++) {
 			if (bs.priority < vllist->servers[j].priority)
-				break; /* Lower preferable */
+				break;  
 			if (bs.priority == vllist->servers[j].priority &&
 			    bs.weight > vllist->servers[j].weight)
-				break; /* Higher preferable */
+				break;  
 		}
 
 		if (j < vllist->nr_servers) {

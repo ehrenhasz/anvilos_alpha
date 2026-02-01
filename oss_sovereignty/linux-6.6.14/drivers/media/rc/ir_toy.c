@@ -1,16 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
 
-/*
- * Infrared Toy and IR Droid RC core driver
- *
- * Copyright (C) 2020 Sean Young <sean@mess.org>
- *
- * http://dangerousprototypes.com/docs/USB_IR_Toy:_Sampling_mode
- *
- * This driver is based on the lirc driver which can be found here:
- * https://sourceforge.net/p/lirc/git/ci/master/tree/plugins/irtoy.c
- * Copyright (C) 2011 Peter Kooiman <pkooiman@gmail.com>
- */
+
+ 
 
 #include <asm/unaligned.h>
 #include <linux/completion.h>
@@ -23,7 +13,7 @@
 #include <media/rc-core.h>
 
 static const u8 COMMAND_VERSION[] = { 'v' };
-// End transmit and repeat reset command so we exit sump mode
+
 static const u8 COMMAND_RESET[] = { 0xff, 0xff, 0, 0, 0, 0, 0 };
 static const u8 COMMAND_SMODE_ENTER[] = { 's' };
 static const u8 COMMAND_SMODE_EXIT[] = { 0 };
@@ -163,7 +153,7 @@ static void irtoy_response(struct irtoy *irtoy, u32 len)
 				complete(&irtoy->command_done);
 			}
 		} else {
-			// send next part of tx buffer
+			
 			uint space = irtoy->in[0];
 			uint buf_len;
 			int err;
@@ -273,7 +263,7 @@ static int irtoy_setup(struct irtoy *irtoy)
 
 	usleep_range(50, 50);
 
-	// get version
+	
 	err = irtoy_command(irtoy, COMMAND_VERSION, sizeof(COMMAND_VERSION),
 			    STATE_COMMAND);
 	if (err) {
@@ -282,7 +272,7 @@ static int irtoy_setup(struct irtoy *irtoy)
 		return err;
 	}
 
-	// enter sample mode
+	
 	err = irtoy_command(irtoy, COMMAND_SMODE_ENTER,
 			    sizeof(COMMAND_SMODE_ENTER), STATE_COMMAND);
 	if (err)
@@ -292,12 +282,7 @@ static int irtoy_setup(struct irtoy *irtoy)
 	return err;
 }
 
-/*
- * When sending IR, it is imperative that we send the IR data as quickly
- * as possible to the device, so it does not run out of IR data and
- * introduce gaps. Allocate the buffer here, and then feed the data from
- * the urb callback handler.
- */
+ 
 static int irtoy_tx(struct rc_dev *rc, uint *txbuf, uint count)
 {
 	struct irtoy *irtoy = rc->priv;
@@ -324,10 +309,10 @@ static int irtoy_tx(struct rc_dev *rc, uint *txbuf, uint count)
 	irtoy->tx_len = size;
 	irtoy->emitted = 0;
 
-	// There is an issue where if the unit is receiving IR while the
-	// first TXSTART command is sent, the device might end up hanging
-	// with its led on. It does not respond to any command when this
-	// happens. To work around this, re-enter sample mode.
+	
+	
+	
+	
 	err = irtoy_command(irtoy, COMMAND_SMODE_EXIT,
 			    sizeof(COMMAND_SMODE_EXIT), STATE_COMMAND_NO_RESP);
 	if (err) {
@@ -349,7 +334,7 @@ static int irtoy_tx(struct rc_dev *rc, uint *txbuf, uint count)
 	if (err) {
 		dev_err(irtoy->dev, "failed to send tx start command: %d\n",
 			err);
-		// not sure what state the device is in, reset it
+		
 		irtoy_setup(irtoy);
 		return err;
 	}
@@ -357,7 +342,7 @@ static int irtoy_tx(struct rc_dev *rc, uint *txbuf, uint count)
 	if (size != irtoy->emitted) {
 		dev_err(irtoy->dev, "expected %u emitted, got %u\n", size,
 			irtoy->emitted);
-		// not sure what state the device is in, reset it
+		
 		irtoy_setup(irtoy);
 		return -EINVAL;
 	}
@@ -491,15 +476,7 @@ static int irtoy_probe(struct usb_interface *intf,
 	rc->rx_resolution = UNIT_US;
 	rc->timeout = IR_DEFAULT_TIMEOUT;
 
-	/*
-	 * end of transmission is detected by absence of a usb packet
-	 * with more pulse/spaces. However, each usb packet sent can
-	 * contain 32 pulse/spaces, which can be quite lengthy, so there
-	 * can be a delay between usb packets. For example with nec there is a
-	 * 17ms gap between packets.
-	 *
-	 * So, make timeout a largish minimum which works with most protocols.
-	 */
+	 
 	rc->min_timeout = MS_TO_US(40);
 	rc->max_timeout = MAX_TIMEOUT_US;
 

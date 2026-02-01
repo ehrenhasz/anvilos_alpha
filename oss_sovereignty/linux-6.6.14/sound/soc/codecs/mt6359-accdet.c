@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// mt6359-accdet.c  --  ALSA SoC mt6359 accdet driver
-//
-// Copyright (C) 2021 MediaTek Inc.
-// Author: Argus Lin <argus.lin@mediatek.com>
-//
+
+
+
+
+
+
+
 
 #include <linux/of_gpio.h>
 #include <linux/of.h>
@@ -31,10 +31,10 @@
 #include "mt6359-accdet.h"
 #include "mt6359.h"
 
-/* global variable definitions */
+ 
 #define REGISTER_VAL(x)	((x) - 1)
 
-/* mt6359 accdet capability */
+ 
 #define ACCDET_PMIC_EINT_IRQ		BIT(0)
 #define ACCDET_AP_GPIO_EINT		BIT(1)
 
@@ -58,7 +58,7 @@
 static struct platform_driver mt6359_accdet_driver;
 static const struct snd_soc_component_driver mt6359_accdet_soc_driver;
 
-/* local function declaration */
+ 
 static void accdet_set_debounce(struct mt6359_accdet *priv, int state,
 				unsigned int debounce);
 static unsigned int adjust_eint_analog_setting(struct mt6359_accdet *priv);
@@ -76,19 +76,19 @@ static unsigned int adjust_eint_analog_setting(struct mt6359_accdet *priv)
 {
 	if (priv->data->eint_detect_mode == 0x3 ||
 	    priv->data->eint_detect_mode == 0x4) {
-		/* ESD switches off */
+		 
 		regmap_update_bits(priv->regmap,
 				   RG_ACCDETSPARE_ADDR, 1 << 8, 0);
 	}
 	if (priv->data->eint_detect_mode == 0x4) {
 		if (priv->caps & ACCDET_PMIC_EINT0) {
-			/* enable RG_EINT0CONFIGACCDET */
+			 
 			regmap_update_bits(priv->regmap,
 					   RG_EINT0CONFIGACCDET_ADDR,
 					   RG_EINT0CONFIGACCDET_MASK_SFT,
 					   BIT(RG_EINT0CONFIGACCDET_SFT));
 		} else if (priv->caps & ACCDET_PMIC_EINT1) {
-			/* enable RG_EINT1CONFIGACCDET */
+			 
 			regmap_update_bits(priv->regmap,
 					   RG_EINT1CONFIGACCDET_ADDR,
 					   RG_EINT1CONFIGACCDET_MASK_SFT,
@@ -96,7 +96,7 @@ static unsigned int adjust_eint_analog_setting(struct mt6359_accdet *priv)
 		}
 		if (priv->data->eint_use_ext_res == 0x3 ||
 		    priv->data->eint_use_ext_res == 0x4) {
-			/*select 500k, use internal resistor */
+			 
 			regmap_update_bits(priv->regmap,
 					   RG_EINT0HIRENB_ADDR,
 					   RG_EINT0HIRENB_MASK_SFT,
@@ -109,12 +109,12 @@ static unsigned int adjust_eint_analog_setting(struct mt6359_accdet *priv)
 static unsigned int adjust_eint_digital_setting(struct mt6359_accdet *priv)
 {
 	if (priv->caps & ACCDET_PMIC_EINT0) {
-		/* disable inverter */
+		 
 		regmap_update_bits(priv->regmap,
 				   ACCDET_EINT0_INVERTER_SW_EN_ADDR,
 				   ACCDET_EINT0_INVERTER_SW_EN_MASK_SFT, 0);
 	} else if (priv->caps & ACCDET_PMIC_EINT1) {
-		/* disable inverter */
+		 
 		regmap_update_bits(priv->regmap,
 				   ACCDET_EINT1_INVERTER_SW_EN_ADDR,
 				   ACCDET_EINT1_INVERTER_SW_EN_MASK_SFT, 0);
@@ -122,12 +122,12 @@ static unsigned int adjust_eint_digital_setting(struct mt6359_accdet *priv)
 
 	if (priv->data->eint_detect_mode == 0x4) {
 		if (priv->caps & ACCDET_PMIC_EINT0) {
-			/* set DA stable signal */
+			 
 			regmap_update_bits(priv->regmap,
 					   ACCDET_DA_STABLE_ADDR,
 					   ACCDET_EINT0_CEN_STABLE_MASK_SFT, 0);
 		} else if (priv->caps & ACCDET_PMIC_EINT1) {
-			/* set DA stable signal */
+			 
 			regmap_update_bits(priv->regmap,
 					   ACCDET_DA_STABLE_ADDR,
 					   ACCDET_EINT1_CEN_STABLE_MASK_SFT, 0);
@@ -139,12 +139,12 @@ static unsigned int adjust_eint_digital_setting(struct mt6359_accdet *priv)
 static unsigned int mt6359_accdet_jd_setting(struct mt6359_accdet *priv)
 {
 	if (priv->jd_sts == M_PLUG_IN) {
-		/* adjust digital setting */
+		 
 		adjust_eint_digital_setting(priv);
-		/* adjust analog setting */
+		 
 		adjust_eint_analog_setting(priv);
 	} else if (priv->jd_sts == M_PLUG_OUT) {
-		/* set debounce to 1ms */
+		 
 		accdet_set_debounce(priv, eint_state000,
 				    priv->data->pwm_deb->eint_debounce0);
 	} else {
@@ -158,18 +158,18 @@ static void recover_eint_analog_setting(struct mt6359_accdet *priv)
 {
 	if (priv->data->eint_detect_mode == 0x3 ||
 	    priv->data->eint_detect_mode == 0x4) {
-		/* ESD switches on */
+		 
 		regmap_update_bits(priv->regmap, RG_ACCDETSPARE_ADDR,
 				   1 << 8, 1 << 8);
 	}
 	if (priv->data->eint_detect_mode == 0x4) {
 		if (priv->caps & ACCDET_PMIC_EINT0) {
-			/* disable RG_EINT0CONFIGACCDET */
+			 
 			regmap_update_bits(priv->regmap,
 					   RG_EINT0CONFIGACCDET_ADDR,
 					   RG_EINT0CONFIGACCDET_MASK_SFT, 0);
 		} else if (priv->caps & ACCDET_PMIC_EINT1) {
-			/* disable RG_EINT1CONFIGACCDET */
+			 
 			regmap_update_bits(priv->regmap,
 					   RG_EINT1CONFIGACCDET_ADDR,
 					   RG_EINT1CONFIGACCDET_MASK_SFT, 0);
@@ -191,15 +191,15 @@ static void recover_eint_digital_setting(struct mt6359_accdet *priv)
 				   ACCDET_EINT1_M_SW_EN_MASK_SFT, 0);
 	}
 	if (priv->data->eint_detect_mode == 0x4) {
-		/* enable eint0cen */
+		 
 		if (priv->caps & ACCDET_PMIC_EINT0) {
-			/* enable eint0cen */
+			 
 			regmap_update_bits(priv->regmap,
 					   ACCDET_DA_STABLE_ADDR,
 					   ACCDET_EINT0_CEN_STABLE_MASK_SFT,
 					   BIT(ACCDET_EINT0_CEN_STABLE_SFT));
 		} else if (priv->caps & ACCDET_PMIC_EINT1) {
-			/* enable eint1cen */
+			 
 			regmap_update_bits(priv->regmap,
 					   ACCDET_DA_STABLE_ADDR,
 					   ACCDET_EINT1_CEN_STABLE_MASK_SFT,
@@ -209,13 +209,13 @@ static void recover_eint_digital_setting(struct mt6359_accdet *priv)
 
 	if (priv->data->eint_detect_mode != 0x1) {
 		if (priv->caps & ACCDET_PMIC_EINT0) {
-			/* enable inverter */
+			 
 			regmap_update_bits(priv->regmap,
 					   ACCDET_EINT0_INVERTER_SW_EN_ADDR,
 					   ACCDET_EINT0_INVERTER_SW_EN_MASK_SFT,
 					   BIT(ACCDET_EINT0_INVERTER_SW_EN_SFT));
 		} else if (priv->caps & ACCDET_PMIC_EINT1) {
-			/* enable inverter */
+			 
 			regmap_update_bits(priv->regmap,
 					   ACCDET_EINT1_INVERTER_SW_EN_ADDR,
 					   ACCDET_EINT1_INVERTER_SW_EN_MASK_SFT,
@@ -248,14 +248,14 @@ static void mt6359_accdet_recover_jd_setting(struct mt6359_accdet *priv)
 				       1000);
 	if (ret)
 		dev_warn(priv->dev, "%s(), ret %d\n", __func__, ret);
-	/* clear accdet int, modify  for fix interrupt trigger twice error */
+	 
 	regmap_update_bits(priv->regmap, ACCDET_IRQ_ADDR,
 			   ACCDET_IRQ_CLR_MASK_SFT, 0);
 	regmap_update_bits(priv->regmap, RG_INT_STATUS_ACCDET_ADDR,
 			   RG_INT_STATUS_ACCDET_MASK_SFT,
 			   BIT(RG_INT_STATUS_ACCDET_SFT));
 
-	/* recover accdet debounce0,3 */
+	 
 	accdet_set_debounce(priv, accdet_state000,
 			    priv->data->pwm_deb->debounce0);
 	accdet_set_debounce(priv, accdet_state001,
@@ -424,7 +424,7 @@ static void mt6359_accdet_jd_work(struct work_struct *work)
 	if (priv->jd_sts == M_PLUG_IN) {
 		priv->jack_plugged = true;
 
-		/* set and clear initial bit every eint interrupt */
+		 
 		regmap_update_bits(priv->regmap, ACCDET_SEQ_INIT_ADDR,
 				   ACCDET_SEQ_INIT_MASK_SFT,
 				   BIT(ACCDET_SEQ_INIT_SFT));
@@ -439,7 +439,7 @@ static void mt6359_accdet_jd_work(struct work_struct *work)
 		if (ret)
 			dev_err(priv->dev, "%s(), ret %d\n", __func__, ret);
 
-		/* enable ACCDET unit */
+		 
 		regmap_update_bits(priv->regmap, ACCDET_SW_EN_ADDR,
 				   ACCDET_SW_EN_MASK_SFT, BIT(ACCDET_SW_EN_SFT));
 	} else if (priv->jd_sts == M_PLUG_OUT) {
@@ -535,11 +535,11 @@ static irqreturn_t mt6359_accdet_irq(int irq, void *data)
 					   RG_INT_STATUS_ACCDET_EINT1_MASK_SFT,
 					   BIT(RG_INT_STATUS_ACCDET_EINT1_SFT));
 		}
-		/* get jack detection status */
+		 
 		regmap_read(priv->regmap, ACCDET_EINT0_MEM_IN_ADDR, &val);
 		priv->jd_sts = ((val >> ACCDET_EINT0_MEM_IN_SFT) &
 				   ACCDET_EINT0_MEM_IN_MASK);
-		/* adjust eint digital/analog setting */
+		 
 		mt6359_accdet_jd_setting(priv);
 
 		queue_work(priv->jd_workqueue, &priv->jd_work);
@@ -578,7 +578,7 @@ static int mt6359_accdet_parse_dt(struct mt6359_accdet *priv)
 
 	ret = of_property_read_u32_array(node, "mediatek,pwm-deb-setting",
 					 pwm_deb, ARRAY_SIZE(pwm_deb));
-	/* debounce8(auxadc debounce) is default, needn't get from dts */
+	 
 	if (!ret)
 		memcpy(priv->data->pwm_deb, pwm_deb, sizeof(pwm_deb));
 
@@ -598,7 +598,7 @@ static int mt6359_accdet_parse_dt(struct mt6359_accdet *priv)
 	ret = of_property_read_u32(node, "mediatek,eint-detect-mode",
 				   &priv->data->eint_detect_mode);
 	if (ret) {
-		/* eint detection mode equals to EINT HW Mode */
+		 
 		priv->data->eint_detect_mode = 0x4;
 	}
 
@@ -624,7 +624,7 @@ static int mt6359_accdet_parse_dt(struct mt6359_accdet *priv)
 	ret = of_property_read_u32(node, "mediatek,eint-use-ext-res",
 				   &priv->data->eint_use_ext_res);
 	if (ret) {
-		/* eint use internal resister */
+		 
 		priv->data->eint_use_ext_res = 0x0;
 	}
 
@@ -683,11 +683,11 @@ static int mt6359_accdet_parse_dt(struct mt6359_accdet *priv)
 
 static void config_digital_init_by_mode(struct mt6359_accdet *priv)
 {
-	/* enable eint cmpmem pwm */
+	 
 	regmap_write(priv->regmap, ACCDET_EINT_CMPMEN_PWM_THRESH_ADDR,
 		     (priv->data->pwm_deb->eint_pwm_width << 4 |
 		     priv->data->pwm_deb->eint_pwm_thresh));
-	/* DA signal stable */
+	 
 	if (priv->caps & ACCDET_PMIC_EINT0) {
 		regmap_write(priv->regmap, ACCDET_DA_STABLE_ADDR,
 			     ACCDET_EINT0_STABLE_VAL);
@@ -695,24 +695,21 @@ static void config_digital_init_by_mode(struct mt6359_accdet *priv)
 		regmap_write(priv->regmap, ACCDET_DA_STABLE_ADDR,
 			     ACCDET_EINT1_STABLE_VAL);
 	}
-	/* after receive n+1 number, interrupt issued. */
+	 
 	regmap_update_bits(priv->regmap, ACCDET_EINT_M_PLUG_IN_NUM_ADDR,
 			   ACCDET_EINT_M_PLUG_IN_NUM_MASK_SFT,
 			   BIT(ACCDET_EINT_M_PLUG_IN_NUM_SFT));
-	/* setting HW mode, enable digital fast discharge
-	 * if use EINT0 & EINT1 detection, please modify
-	 * ACCDET_HWMODE_EN_ADDR[2:1]
-	 */
+	 
 	regmap_write(priv->regmap, ACCDET_HWMODE_EN_ADDR, 0x100);
 
 	regmap_update_bits(priv->regmap, ACCDET_EINT_M_DETECT_EN_ADDR,
 			   ACCDET_EINT_M_DETECT_EN_MASK_SFT, 0);
 
-	/* enable PWM */
+	 
 	regmap_write(priv->regmap, ACCDET_CMP_PWM_EN_ADDR, 0x67);
-	/* enable inverter detection */
+	 
 	if (priv->data->eint_detect_mode == 0x1) {
-		/* disable inverter detection */
+		 
 		if (priv->caps & ACCDET_PMIC_EINT0) {
 			regmap_update_bits(priv->regmap,
 					   ACCDET_EINT0_INVERTER_SW_EN_ADDR,
@@ -750,10 +747,10 @@ static void config_eint_init_by_mode(struct mt6359_accdet *priv)
 		regmap_update_bits(priv->regmap, RG_EINT1EN_ADDR,
 				   RG_EINT1EN_MASK_SFT, BIT(RG_EINT1EN_SFT));
 	}
-	/* ESD switches on */
+	 
 	regmap_update_bits(priv->regmap, RG_ACCDETSPARE_ADDR,
 			   1 << 8, 1 << 8);
-	/* before playback, set NCP pull low before nagative voltage */
+	 
 	regmap_update_bits(priv->regmap, RG_NCP_PDDIS_EN_ADDR,
 			   RG_NCP_PDDIS_EN_MASK_SFT, BIT(RG_NCP_PDDIS_EN_SFT));
 
@@ -788,7 +785,7 @@ static void config_eint_init_by_mode(struct mt6359_accdet *priv)
 	}
 
 	if (priv->data->eint_detect_mode != 0x1) {
-		/* current detect set 0.25uA */
+		 
 		regmap_update_bits(priv->regmap, RG_ACCDETSPARE_ADDR,
 				   0x3 << RG_ACCDETSPARE_SFT,
 				   0x3 << RG_ACCDETSPARE_SFT);
@@ -807,7 +804,7 @@ static void mt6359_accdet_init(struct mt6359_accdet *priv)
 	regmap_update_bits(priv->regmap, ACCDET_SEQ_INIT_ADDR,
 			   ACCDET_SEQ_INIT_MASK_SFT, 0);
 	mdelay(1);
-	/* init the debounce time (debounce/32768)sec */
+	 
 	accdet_set_debounce(priv, accdet_state000,
 			    priv->data->pwm_deb->debounce0);
 	accdet_set_debounce(priv, accdet_state001,
@@ -831,13 +828,13 @@ static void mt6359_accdet_init(struct mt6359_accdet *priv)
 	regmap_update_bits(priv->regmap, RG_ACCDET_RST_ADDR,
 			   RG_ACCDET_RST_MASK_SFT, 0);
 
-	/* clear high micbias1 voltage setting */
+	 
 	regmap_update_bits(priv->regmap, RG_AUDPWDBMICBIAS1_ADDR,
 			   0x3 << RG_AUDMICBIAS1HVEN_SFT, 0);
 	regmap_update_bits(priv->regmap, RG_AUDPWDBMICBIAS1_ADDR,
 			   0x7 << RG_AUDMICBIAS1VREF_SFT, 0);
 
-	/* init pwm frequency, duty & rise/falling delay */
+	 
 	regmap_write(priv->regmap, ACCDET_PWM_WIDTH_ADDR,
 		     REGISTER_VAL(priv->data->pwm_deb->pwm_width));
 	regmap_write(priv->regmap, ACCDET_PWM_THRESH_ADDR,
@@ -848,51 +845,49 @@ static void mt6359_accdet_init(struct mt6359_accdet *priv)
 
 	regmap_read(priv->regmap, RG_AUDPWDBMICBIAS1_ADDR, &reg);
 	if (priv->data->mic_vol <= 7) {
-		/* micbias1 <= 2.7V */
+		 
 		regmap_write(priv->regmap, RG_AUDPWDBMICBIAS1_ADDR,
 			     reg | (priv->data->mic_vol << RG_AUDMICBIAS1VREF_SFT) |
 			     RG_AUDMICBIAS1LOWPEN_MASK_SFT);
 	} else if (priv->data->mic_vol == 8) {
-		/* micbias1 = 2.8v */
+		 
 		regmap_write(priv->regmap, RG_AUDPWDBMICBIAS1_ADDR,
 			     reg | (3 << RG_AUDMICBIAS1HVEN_SFT) |
 			     RG_AUDMICBIAS1LOWPEN_MASK_SFT);
 	} else if (priv->data->mic_vol == 9) {
-		/* micbias1 = 2.85v */
+		 
 		regmap_write(priv->regmap, RG_AUDPWDBMICBIAS1_ADDR,
 			     reg | (1 << RG_AUDMICBIAS1HVEN_SFT) |
 			     RG_AUDMICBIAS1LOWPEN_MASK_SFT);
 	}
-	/* mic mode setting */
+	 
 	regmap_read(priv->regmap, RG_AUDACCDETMICBIAS0PULLLOW_ADDR, &reg);
 	if (priv->data->mic_mode == HEADSET_MODE_1) {
-		/* ACC mode*/
+		 
 		regmap_write(priv->regmap, RG_AUDACCDETMICBIAS0PULLLOW_ADDR,
 			     reg | RG_ACCDET_MODE_ANA11_MODE1);
-		/* enable analog fast discharge */
+		 
 		regmap_update_bits(priv->regmap, RG_ANALOGFDEN_ADDR,
 				   RG_ANALOGFDEN_MASK_SFT,
 				   BIT(RG_ANALOGFDEN_SFT));
 		regmap_update_bits(priv->regmap, RG_ACCDETSPARE_ADDR,
 				   0x3 << 11, 0x3 << 11);
 	} else if (priv->data->mic_mode == HEADSET_MODE_2) {
-		/* DCC mode Low cost mode without internal bias */
+		 
 		regmap_write(priv->regmap, RG_AUDACCDETMICBIAS0PULLLOW_ADDR,
 			     reg | RG_ACCDET_MODE_ANA11_MODE2);
-		/* enable analog fast discharge */
+		 
 		regmap_update_bits(priv->regmap, RG_ANALOGFDEN_ADDR,
 				   0x3 << RG_ANALOGFDEN_SFT,
 				   0x3 << RG_ANALOGFDEN_SFT);
 	} else if (priv->data->mic_mode == HEADSET_MODE_6) {
-		/* DCC mode Low cost mode with internal bias,
-		 * bit8 = 1 to use internal bias
-		 */
+		 
 		regmap_write(priv->regmap, RG_AUDACCDETMICBIAS0PULLLOW_ADDR,
 			     reg | RG_ACCDET_MODE_ANA11_MODE6);
 		regmap_update_bits(priv->regmap, RG_AUDPWDBMICBIAS1_ADDR,
 				   RG_AUDMICBIAS1DCSW1PEN_MASK_SFT,
 				   BIT(RG_AUDMICBIAS1DCSW1PEN_SFT));
-		/* enable analog fast discharge */
+		 
 		regmap_update_bits(priv->regmap, RG_ANALOGFDEN_ADDR,
 				   0x3 << RG_ANALOGFDEN_SFT,
 				   0x3 << RG_ANALOGFDEN_SFT);
@@ -1060,7 +1055,7 @@ static struct platform_driver mt6359_accdet_driver = {
 
 module_platform_driver(mt6359_accdet_driver)
 
-/* Module information */
+ 
 MODULE_DESCRIPTION("MT6359 ALSA SoC codec jack driver");
 MODULE_AUTHOR("Argus Lin <argus.lin@mediatek.com>");
 MODULE_LICENSE("GPL v2");

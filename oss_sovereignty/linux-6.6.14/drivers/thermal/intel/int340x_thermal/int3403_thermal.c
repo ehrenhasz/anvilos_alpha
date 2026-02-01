@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * ACPI INT3403 thermal driver
- * Copyright (c) 2013, Intel Corporation.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -20,7 +17,7 @@
 #define INT3403_PERF_TRIP_POINT_CHANGED	0x81
 #define INT3403_THERMAL_EVENT		0x90
 
-/* Preserved structure for future expandbility */
+ 
 struct int3403_sensor {
 	struct int34x_thermal_zone *int340x_zone;
 };
@@ -118,7 +115,7 @@ static int int3403_sensor_remove(struct int3403_priv *priv)
 	return 0;
 }
 
-/* INT3403 Cooling devices */
+ 
 static int int3403_get_max_state(struct thermal_cooling_device *cdev,
 				 unsigned long *state)
 {
@@ -195,7 +192,7 @@ static int int3403_cdev_add(struct int3403_priv *priv)
 		result = PTR_ERR(obj->cdev);
 
 	kfree(buf.pointer);
-	/* TODO: add ACPI notification support */
+	 
 
 	return result;
 }

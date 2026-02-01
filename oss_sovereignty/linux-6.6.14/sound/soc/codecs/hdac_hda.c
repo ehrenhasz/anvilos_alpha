@@ -1,11 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright(c) 2015-18 Intel Corporation.
 
-/*
- * hdac_hda.c - ASoC extensions to reuse the legacy HDA codec drivers
- * with ASoC platform drivers. These APIs are called by the legacy HDA
- * codec drivers using hdac_ext_bus_ops ops.
- */
+
+
+ 
 
 #include <linux/init.h>
 #include <linux/delay.h>
@@ -332,11 +328,7 @@ static struct hda_pcm *snd_soc_find_pcm_from_dai(struct hdac_hda_priv *hda_pvt,
 	struct hda_pcm *cpcm;
 	const char *pcm_name;
 
-	/*
-	 * map DAI ID to the closest matching PCM name, using the naming
-	 * scheme used by hda-codec snd_hda_gen_build_pcms() and for
-	 * HDMI in hda_codec patch_hdmi.c)
-	 */
+	 
 
 	switch (dai->id) {
 	case HDAC_ANALOG_DAI_ID:
@@ -411,11 +403,7 @@ static int hdac_hda_codec_probe(struct snd_soc_component *component)
 
 	snd_hdac_ext_bus_link_get(hdev->bus, hlink);
 
-	/*
-	 * Ensure any HDA display is powered at codec probe.
-	 * After snd_hda_codec_device_new(), display power is
-	 * managed by runtime PM.
-	 */
+	 
 	if (hda_pvt->need_display_power)
 		snd_hdac_display_power(hdev->bus,
 				       HDA_CODEC_IDX_CONTROLLER, true);
@@ -426,17 +414,10 @@ static int hdac_hda_codec_probe(struct snd_soc_component *component)
 		dev_err(&hdev->dev, "failed to create hda codec %d\n", ret);
 		goto error_no_pm;
 	}
-	/*
-	 * Overwrite type to HDA_DEV_ASOC since it is a ASoC driver
-	 * hda_codec.c will check this flag to determine if unregister
-	 * device is needed.
-	 */
+	 
 	hdev->type = HDA_DEV_ASOC;
 
-	/*
-	 * snd_hda_codec_device_new decrements the usage count so call get pm
-	 * else the device will be powered off
-	 */
+	 
 	pm_runtime_get_noresume(&hdev->dev);
 
 	hcodec->bus->card = dapm->card->snd_card;
@@ -470,7 +451,7 @@ static int hdac_hda_codec_probe(struct snd_soc_component *component)
 		goto error_patch;
 	}
 
-	/* HDMI controls need to be created in machine drivers */
+	 
 	if (!is_hdmi_codec(hcodec)) {
 		ret = snd_hda_codec_build_controls(hcodec);
 		if (ret < 0) {
@@ -486,14 +467,10 @@ static int hdac_hda_codec_probe(struct snd_soc_component *component)
 		snd_hdac_display_power(hdev->bus,
 				       HDA_CODEC_IDX_CONTROLLER, false);
 
-	/* match for forbid call in snd_hda_codec_device_new() */
+	 
 	pm_runtime_allow(&hdev->dev);
 
-	/*
-	 * hdac_device core already sets the state to active and calls
-	 * get_noresume. So enable runtime and set the device to suspend.
-	 * pm_runtime_enable is also called during codec registeration
-	 */
+	 
 	pm_runtime_put(&hdev->dev);
 	pm_runtime_suspend(&hdev->dev);
 
@@ -545,7 +522,7 @@ static const struct snd_soc_dapm_route hdac_hda_dapm_routes[] = {
 };
 
 static const struct snd_soc_dapm_widget hdac_hda_dapm_widgets[] = {
-	/* Audio Interface */
+	 
 	SND_SOC_DAPM_AIF_IN("AIF1RX", "Analog Codec Playback", 0,
 			    SND_SOC_NOPM, 0, 0),
 	SND_SOC_DAPM_AIF_IN("AIF2RX", "Digital Codec Playback", 0,
@@ -559,12 +536,12 @@ static const struct snd_soc_dapm_widget hdac_hda_dapm_widgets[] = {
 	SND_SOC_DAPM_AIF_OUT("AIF3TX", "Alt Analog Codec Capture", 0,
 			     SND_SOC_NOPM, 0, 0),
 
-	/* Input Pins */
+	 
 	SND_SOC_DAPM_INPUT("Codec Input Pin1"),
 	SND_SOC_DAPM_INPUT("Codec Input Pin2"),
 	SND_SOC_DAPM_INPUT("Codec Input Pin3"),
 
-	/* Output Pins */
+	 
 	SND_SOC_DAPM_OUTPUT("Codec Output Pin1"),
 	SND_SOC_DAPM_OUTPUT("Codec Output Pin2"),
 	SND_SOC_DAPM_OUTPUT("Codec Output Pin3"),
@@ -594,7 +571,7 @@ static int hdac_hda_dev_probe(struct hdac_device *hdev)
 	struct hdac_ext_link *hlink;
 	int ret;
 
-	/* hold the ref while we probe */
+	 
 	hlink = snd_hdac_ext_bus_get_hlink_by_name(hdev->bus, dev_name(&hdev->dev));
 	if (!hlink) {
 		dev_err(&hdev->dev, "hdac link not found\n");
@@ -602,7 +579,7 @@ static int hdac_hda_dev_probe(struct hdac_device *hdev)
 	}
 	snd_hdac_ext_bus_link_get(hdev->bus, hlink);
 
-	/* ASoC specific initialization */
+	 
 	if (hda_pvt->need_display_power)
 		ret = devm_snd_soc_register_component(&hdev->dev,
 						&hdac_hda_hdmi_codec, hdac_hda_hdmi_dais,
@@ -624,10 +601,7 @@ static int hdac_hda_dev_probe(struct hdac_device *hdev)
 
 static int hdac_hda_dev_remove(struct hdac_device *hdev)
 {
-	/*
-	 * Resources are freed in hdac_hda_codec_remove(). This
-	 * function is kept to keep hda_codec_driver_remove() happy.
-	 */
+	 
 	return 0;
 }
 

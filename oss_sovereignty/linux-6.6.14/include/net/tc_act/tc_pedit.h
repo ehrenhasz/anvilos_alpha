@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef __NET_TC_PED_H
 #define __NET_TC_PED_H
 
@@ -116,4 +116,4 @@ static inline u32 tcf_pedit_offset(const struct tc_action *a, int index)
 
 	return off;
 }
-#endif /* __NET_TC_PED_H */
+#endif  

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2021-2022, NVIDIA CORPORATION & AFFILIATES.
- *
- * Kernel side components to support tools/testing/selftests/iommu
- */
+
+ 
 #include <linux/slab.h>
 #include <linux/iommu.h>
 #include <linux/xarray.h>
@@ -26,11 +23,7 @@ size_t iommufd_test_memory_limit = 65536;
 enum {
 	MOCK_IO_PAGE_SIZE = PAGE_SIZE / 2,
 
-	/*
-	 * Like a real page table alignment requires the low bits of the address
-	 * to be zero. xarray also requires the high bit to be zero, so we store
-	 * the pfns shifted. The upper bits are used for metadata.
-	 */
+	 
 	MOCK_PFN_MASK = ULONG_MAX / MOCK_IO_PAGE_SIZE,
 
 	_MOCK_PFN_START = MOCK_PFN_MASK + 1,
@@ -38,12 +31,7 @@ enum {
 	MOCK_PFN_LAST_IOVA = _MOCK_PFN_START,
 };
 
-/*
- * Syzkaller has trouble randomizing the correct iova to use since it is linked
- * to the map ioctl's output, and it has no ide about that. So, simplify things.
- * In syzkaller mode the 64 bit IOVA is converted into an nth area and offset
- * value. This has a much smaller randomization space and syzkaller can hit it.
- */
+ 
 static unsigned long iommufd_test_syz_conv_iova(struct io_pagetable *iopt,
 						u64 *iova)
 {
@@ -185,10 +173,7 @@ static int mock_domain_map_pages(struct iommu_domain *domain,
 	unsigned long flags = MOCK_PFN_START_IOVA;
 	unsigned long start_iova = iova;
 
-	/*
-	 * xarray does not reliably work with fault injection because it does a
-	 * retry allocation, so put our own failure point.
-	 */
+	 
 	if (iommufd_should_fail())
 		return -ENOENT;
 
@@ -244,14 +229,7 @@ static size_t mock_domain_unmap_pages(struct iommu_domain *domain,
 		for (cur = 0; cur != pgsize; cur += MOCK_IO_PAGE_SIZE) {
 			ent = xa_erase(&mock->pfns, iova / MOCK_IO_PAGE_SIZE);
 			WARN_ON(!ent);
-			/*
-			 * iommufd generates unmaps that must be a strict
-			 * superset of the map's performend So every starting
-			 * IOVA should have been an iova passed to map, and the
-			 *
-			 * First IOVA must be present and have been a first IOVA
-			 * passed to map_pages
-			 */
+			 
 			if (first) {
 				WARN_ON(!(xa_to_value(ent) &
 					  MOCK_PFN_START_IOVA));
@@ -288,10 +266,7 @@ static bool mock_domain_capable(struct device *dev, enum iommu_cap cap)
 
 static void mock_domain_set_plaform_dma_ops(struct device *dev)
 {
-	/*
-	 * mock doesn't setup default domains because we can't hook into the
-	 * normal probe path
-	 */
+	 
 }
 
 static struct iommu_device mock_iommu_device = {
@@ -400,7 +375,7 @@ bool iommufd_selftest_is_mock_dev(struct device *dev)
 	return dev->release == mock_dev_release;
 }
 
-/* Create an hw_pagetable with the mock domain so we can test the domain ops */
+ 
 static int iommufd_test_mock_domain(struct iommufd_ucmd *ucmd,
 				    struct iommu_test_cmd *cmd)
 {
@@ -435,7 +410,7 @@ static int iommufd_test_mock_domain(struct iommufd_ucmd *ucmd,
 	if (rc)
 		goto out_unbind;
 
-	/* Userspace must destroy the device_id to destroy the object */
+	 
 	cmd->mock_domain.out_hwpt_id = pt_id;
 	cmd->mock_domain.out_stdev_id = sobj->obj.id;
 	cmd->mock_domain.out_idev_id = idev_id;
@@ -456,7 +431,7 @@ out_sobj:
 	return rc;
 }
 
-/* Replace the mock domain with a manually allocated hw_pagetable */
+ 
 static int iommufd_test_mock_domain_replace(struct iommufd_ucmd *ucmd,
 					    unsigned int device_id, u32 pt_id,
 					    struct iommu_test_cmd *cmd)
@@ -465,10 +440,7 @@ static int iommufd_test_mock_domain_replace(struct iommufd_ucmd *ucmd,
 	struct selftest_obj *sobj;
 	int rc;
 
-	/*
-	 * Prefer to use the OBJ_SELFTEST because the destroy_rwsem will ensure
-	 * it doesn't race with detach, which is not allowed.
-	 */
+	 
 	dev_obj =
 		iommufd_get_object(ucmd->ictx, device_id, IOMMUFD_OBJ_SELFTEST);
 	if (IS_ERR(dev_obj))
@@ -492,7 +464,7 @@ out_dev_obj:
 	return rc;
 }
 
-/* Add an additional reserved IOVA to the IOAS */
+ 
 static int iommufd_test_add_reserved(struct iommufd_ucmd *ucmd,
 				     unsigned int mockpt_id,
 				     unsigned long start, size_t length)
@@ -510,7 +482,7 @@ static int iommufd_test_add_reserved(struct iommufd_ucmd *ucmd,
 	return rc;
 }
 
-/* Check that every pfn under each iova matches the pfn under a user VA */
+ 
 static int iommufd_test_md_check_pa(struct iommufd_ucmd *ucmd,
 				    unsigned int mockpt_id, unsigned long iova,
 				    size_t length, void __user *uptr)
@@ -565,7 +537,7 @@ out_put:
 	return rc;
 }
 
-/* Check that the page ref count matches, to look for missing pin/unpins */
+ 
 static int iommufd_test_md_check_refs(struct iommufd_ucmd *ucmd,
 				      void __user *uptr, size_t length,
 				      unsigned int refs)
@@ -801,7 +773,7 @@ static int iommufd_test_access_replace_ioas(struct iommufd_ucmd *ucmd,
 	return rc;
 }
 
-/* Check that the pages in a page array match the pages in the user VA */
+ 
 static int iommufd_test_check_pages(void __user *uptr, struct page **pages,
 				    size_t npages)
 {
@@ -835,7 +807,7 @@ static int iommufd_test_access_pages(struct iommufd_ucmd *ucmd,
 	size_t npages;
 	int rc;
 
-	/* Prevent syzkaller from triggering a WARN_ON in kvzalloc() */
+	 
 	if (length > 16*1024*1024)
 		return -ENOMEM;
 
@@ -864,22 +836,14 @@ static int iommufd_test_access_pages(struct iommufd_ucmd *ucmd,
 		goto out_put;
 	}
 
-	/*
-	 * Drivers will need to think very carefully about this locking. The
-	 * core code can do multiple unmaps instantaneously after
-	 * iommufd_access_pin_pages() and *all* the unmaps must not return until
-	 * the range is unpinned. This simple implementation puts a global lock
-	 * around the pin, which may not suit drivers that want this to be a
-	 * performance path. drivers that get this wrong will trigger WARN_ON
-	 * races and cause EDEADLOCK failures to userspace.
-	 */
+	 
 	mutex_lock(&staccess->lock);
 	rc = iommufd_access_pin_pages(staccess->access, iova, length, pages,
 				      flags & MOCK_FLAGS_ACCESS_WRITE);
 	if (rc)
 		goto out_unlock;
 
-	/* For syzkaller allow uptr to be NULL to skip this check */
+	 
 	if (uptr) {
 		rc = iommufd_test_check_pages(
 			uptr - (iova - ALIGN_DOWN(iova, PAGE_SIZE)), pages,
@@ -928,7 +892,7 @@ static int iommufd_test_access_rw(struct iommufd_ucmd *ucmd,
 	void *tmp;
 	int rc;
 
-	/* Prevent syzkaller from triggering a WARN_ON in kvzalloc() */
+	 
 	if (length > 16*1024*1024)
 		return -ENOMEM;
 
@@ -1035,7 +999,7 @@ int iommufd_test(struct iommufd_ucmd *ucmd)
 		return iommufd_test_access_item_destroy(
 			ucmd, cmd->id, cmd->destroy_access_pages.access_pages_id);
 	case IOMMU_TEST_OP_SET_TEMP_MEMORY_LIMIT:
-		/* Protect _batch_init(), can not be less than elmsz */
+		 
 		if (cmd->memory_limit.limit <
 		    sizeof(unsigned long) + sizeof(u32))
 			return -EINVAL;

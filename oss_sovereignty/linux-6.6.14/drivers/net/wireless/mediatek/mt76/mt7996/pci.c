@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: ISC
-/*
- * Copyright (C) 2022 MediaTek Inc.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -136,7 +134,7 @@ static int mt7996_pci_probe(struct pci_dev *pdev,
 		goto free_irq_vector;
 
 	mt76_wr(dev, MT_INT_MASK_CSR, 0);
-	/* master switch of PCIe tnterrupt enable */
+	 
 	mt76_wr(dev, MT_PCIE_MAC_INT_ENABLE, 0xff);
 
 	if (hif2) {
@@ -155,7 +153,7 @@ static int mt7996_pci_probe(struct pci_dev *pdev,
 			goto free_hif2_irq_vector;
 
 		mt76_wr(dev, MT_INT1_MASK_CSR, 0);
-		/* master switch of PCIe tnterrupt enable */
+		 
 		mt76_wr(dev, MT_PCIE1_MAC_INT_ENABLE, 0xff);
 	}
 

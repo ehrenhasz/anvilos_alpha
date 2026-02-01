@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: BSD-3-Clause
-/*
- * Copyright (c) 2020, MIPI Alliance, Inc.
- *
- * Author: Nicolas Pitre <npitre@baylibre.com>
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/bitmap.h>
@@ -16,23 +12,21 @@
 #include "dat.h"
 
 
-/*
- * Device Address Table Structure
- */
+ 
 
 #define DAT_1_AUTOCMD_HDR_CODE		W1_MASK(58, 51)
 #define DAT_1_AUTOCMD_MODE		W1_MASK(50, 48)
 #define DAT_1_AUTOCMD_VALUE		W1_MASK(47, 40)
 #define DAT_1_AUTOCMD_MASK		W1_MASK(39, 32)
-/*	DAT_0_I2C_DEVICE		W0_BIT_(31) */
+ 
 #define DAT_0_DEV_NACK_RETRY_CNT	W0_MASK(30, 29)
 #define DAT_0_RING_ID			W0_MASK(28, 26)
 #define DAT_0_DYNADDR_PARITY		W0_BIT_(23)
 #define DAT_0_DYNAMIC_ADDRESS		W0_MASK(22, 16)
 #define DAT_0_TS			W0_BIT_(15)
 #define DAT_0_MR_REJECT			W0_BIT_(14)
-/*	DAT_0_SIR_REJECT		W0_BIT_(13) */
-/*	DAT_0_IBI_PAYLOAD		W0_BIT_(12) */
+ 
+ 
 #define DAT_0_STATIC_ADDRESS		W0_MASK(6, 0)
 
 #define dat_w0_read(i)		readl(hci->DAT_regs + (i) * 8)
@@ -65,12 +59,12 @@ static int hci_dat_v1_init(struct i3c_hci *hci)
 	}
 
 	if (!hci->DAT_data) {
-		/* use a bitmap for faster free slot search */
+		 
 		hci->DAT_data = bitmap_zalloc(hci->DAT_entries, GFP_KERNEL);
 		if (!hci->DAT_data)
 			return -ENOMEM;
 
-		/* clear them */
+		 
 		for (dat_idx = 0; dat_idx < hci->DAT_entries; dat_idx++) {
 			dat_w0_write(dat_idx, 0);
 			dat_w1_write(dat_idx, 0);
@@ -101,7 +95,7 @@ static int hci_dat_v1_alloc_entry(struct i3c_hci *hci)
 		return -ENOENT;
 	__set_bit(dat_idx, hci->DAT_data);
 
-	/* default flags */
+	 
 	dat_w0_write(dat_idx, DAT_0_SIR_REJECT | DAT_0_MR_REJECT);
 
 	return dat_idx;

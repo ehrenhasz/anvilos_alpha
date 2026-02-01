@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright(c) 2013-2015 Intel Corporation. All rights reserved.
- */
+
+ 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 #include <linux/libnvdimm.h>
 #include <linux/sched/mm.h>
@@ -50,7 +48,7 @@ static int nvdimm_bus_uevent(const struct device *dev, struct kobj_uevent_env *e
 
 static struct module *to_bus_provider(struct device *dev)
 {
-	/* pin bus providers while regions are enabled */
+	 
 	if (is_nd_region(dev)) {
 		struct nvdimm_bus *nvdimm_bus = walk_to_nvdimm_bus(dev);
 
@@ -152,7 +150,7 @@ void nvdimm_region_notify(struct nd_region *nd_region, enum nvdimm_event event)
 	if (!nvdimm_bus)
 		return;
 
-	/* caller is responsible for holding a reference on the device */
+	 
 	nd_device_notify(&nd_region->dev, event);
 }
 EXPORT_SYMBOL_GPL(nvdimm_region_notify);
@@ -168,14 +166,14 @@ static int nvdimm_clear_badblocks_region(struct device *dev, void *data)
 	resource_size_t ndr_end;
 	sector_t sector;
 
-	/* make sure device is a region */
+	 
 	if (!is_memory(dev))
 		return 0;
 
 	nd_region = to_nd_region(dev);
 	ndr_end = nd_region->ndr_start + nd_region->ndr_size - 1;
 
-	/* make sure we are in the region */
+	 
 	if (ctx->phys < nd_region->ndr_start ||
 	    (ctx->phys + ctx->cleared - 1) > ndr_end)
 		return 0;
@@ -226,10 +224,7 @@ long nvdimm_clear_poison(struct device *dev, phys_addr_t phys,
 		return -ENXIO;
 
 	nd_desc = nvdimm_bus->nd_desc;
-	/*
-	 * if ndctl does not exist, it's PMEM_LEGACY and
-	 * we want to just pretend everything is handled.
-	 */
+	 
 	if (!nd_desc->ndctl)
 		return len;
 
@@ -385,12 +380,7 @@ EXPORT_SYMBOL_GPL(nvdimm_bus_unregister);
 
 static int child_unregister(struct device *dev, void *data)
 {
-	/*
-	 * the singular ndctl class device per bus needs to be
-	 * "device_destroy"ed, so skip it here
-	 *
-	 * i.e. remove classless children
-	 */
+	 
 	if (dev->class)
 		return 0;
 
@@ -447,7 +437,7 @@ static int nd_bus_probe(struct device *dev)
 	list_add_tail(&nvdimm_bus->list, &nvdimm_bus_list);
 	mutex_unlock(&nvdimm_bus_list_mutex);
 
-	/* enable bus provider attributes to look up their local context */
+	 
 	dev_set_drvdata(dev, nvdimm_bus->nd_desc);
 
 	return 0;
@@ -500,7 +490,7 @@ static void nd_async_device_unregister(void *d, async_cookie_t cookie)
 {
 	struct device *dev = d;
 
-	/* flush bus operations before delete */
+	 
 	nvdimm_bus_lock(dev);
 	nvdimm_bus_unlock(dev);
 
@@ -513,12 +503,7 @@ static void __nd_device_register(struct device *dev, bool sync)
 	if (!dev)
 		return;
 
-	/*
-	 * Ensure that region devices always have their NUMA node set as
-	 * early as possible. This way we are able to make certain that
-	 * any memory associated with the creation and the creation
-	 * itself of the region is associated with the correct node.
-	 */
+	 
 	if (is_nd_region(dev))
 		set_dev_node(dev, to_nd_region(dev)->numa_node);
 
@@ -555,12 +540,7 @@ void nd_device_unregister(struct device *dev, enum nd_async_mode mode)
 
 	switch (mode) {
 	case ND_ASYNC:
-		/*
-		 * In the async case this is being triggered with the
-		 * device lock held and the unregistration work needs to
-		 * be moved out of line iff this is thread has won the
-		 * race to schedule the deletion.
-		 */
+		 
 		if (!kill_device(dev))
 			return;
 
@@ -569,13 +549,7 @@ void nd_device_unregister(struct device *dev, enum nd_async_mode mode)
 				&nd_async_domain);
 		break;
 	case ND_SYNC:
-		/*
-		 * In the sync case the device is being unregistered due
-		 * to a state change of the parent. Claim the kill state
-		 * to synchronize against other unregistration requests,
-		 * or otherwise let the async path handle it if the
-		 * unregistration was already queued.
-		 */
+		 
 		device_lock(dev);
 		killed = kill_device(dev);
 		device_unlock(dev);
@@ -590,12 +564,7 @@ void nd_device_unregister(struct device *dev, enum nd_async_mode mode)
 }
 EXPORT_SYMBOL(nd_device_unregister);
 
-/**
- * __nd_driver_register() - register a region or a namespace driver
- * @nd_drv: driver to register
- * @owner: automatically set by nd_driver_register() macro
- * @mod_name: automatically set by nd_driver_register() macro
- */
+ 
 int __nd_driver_register(struct nd_device_driver *nd_drv, struct module *owner,
 		const char *mod_name)
 {
@@ -626,7 +595,7 @@ void nvdimm_check_and_set_ro(struct gendisk *disk)
 	struct nd_region *nd_region = to_nd_region(dev->parent);
 	int disk_ro = get_disk_ro(disk);
 
-	/* catch the disk up with the region ro state */
+	 
 	if (disk_ro == nd_region->ro)
 		return;
 
@@ -658,9 +627,7 @@ static struct attribute *nd_device_attributes[] = {
 	NULL,
 };
 
-/*
- * nd_device_attribute_group - generic attributes for all devices on an nd bus
- */
+ 
 const struct attribute_group nd_device_attribute_group = {
 	.attrs = nd_device_attributes,
 };
@@ -715,9 +682,7 @@ static umode_t nd_numa_attr_visible(struct kobject *kobj, struct attribute *a,
 	return a->mode;
 }
 
-/*
- * nd_numa_attribute_group - NUMA attributes for all devices on an nd bus
- */
+ 
 const struct attribute_group nd_numa_attribute_group = {
 	.attrs = nd_numa_attributes,
 	.is_visible = nd_numa_attr_visible,
@@ -902,19 +867,10 @@ u32 nd_cmd_out_size(struct nvdimm *nvdimm, int cmd,
 	else if (nvdimm && cmd == ND_CMD_VENDOR && idx == 2)
 		return out_field[1];
 	else if (!nvdimm && cmd == ND_CMD_ARS_STATUS && idx == 2) {
-		/*
-		 * Per table 9-276 ARS Data in ACPI 6.1, out_field[1] is
-		 * "Size of Output Buffer in bytes, including this
-		 * field."
-		 */
+		 
 		if (out_field[1] < 4)
 			return 0;
-		/*
-		 * ACPI 6.1 is ambiguous if 'status' is included in the
-		 * output size. If we encounter an output size that
-		 * overshoots the remainder by 4 bytes, assume it was
-		 * including 'status'.
-		 */
+		 
 		if (out_field[1] - 4 == remainder)
 			return remainder;
 		return out_field[1] - 8;
@@ -991,13 +947,13 @@ static int nd_ns_forget_poison_check(struct device *dev, void *data)
 	return device_for_each_child(dev, data, nd_pmem_forget_poison_check);
 }
 
-/* set_config requires an idle interleave set */
+ 
 static int nd_cmd_clear_to_send(struct nvdimm_bus *nvdimm_bus,
 		struct nvdimm *nvdimm, unsigned int cmd, void *data)
 {
 	struct nvdimm_bus_descriptor *nd_desc = nvdimm_bus->nd_desc;
 
-	/* ask the bus provider if it would like to block this request */
+	 
 	if (nd_desc->clear_to_send) {
 		int rc = nd_desc->clear_to_send(nd_desc, nvdimm, cmd, data);
 
@@ -1005,7 +961,7 @@ static int nd_cmd_clear_to_send(struct nvdimm_bus *nvdimm_bus,
 			return rc;
 	}
 
-	/* require clear error to go through the pmem driver */
+	 
 	if (!nvdimm && cmd == ND_CMD_CLEAR_ERROR)
 		return device_for_each_child(&nvdimm_bus->dev, data,
 				nd_ns_forget_poison_check);
@@ -1013,7 +969,7 @@ static int nd_cmd_clear_to_send(struct nvdimm_bus *nvdimm_bus,
 	if (!nvdimm || cmd != ND_CMD_SET_CONFIG_DATA)
 		return 0;
 
-	/* prevent label manipulation while the kernel owns label updates */
+	 
 	wait_nvdimm_bus_probe_idle(&nvdimm_bus->dev);
 	if (atomic_read(&nvdimm->busy))
 		return -EBUSY;
@@ -1050,7 +1006,7 @@ static int __nd_ioctl(struct nvdimm_bus *nvdimm_bus, struct nvdimm *nvdimm,
 		dimm_name = "bus";
 	}
 
-	/* Validate command family support against bus declared support */
+	 
 	if (cmd == ND_CMD_CALL) {
 		unsigned long *mask;
 
@@ -1077,7 +1033,7 @@ static int __nd_ioctl(struct nvdimm_bus *nvdimm_bus, struct nvdimm *nvdimm,
 	    !test_bit(cmd, &cmd_mask))
 		return -ENOTTY;
 
-	/* fail write commands (when read-only) */
+	 
 	if (read_only)
 		switch (cmd) {
 		case ND_CMD_VENDOR:
@@ -1093,7 +1049,7 @@ static int __nd_ioctl(struct nvdimm_bus *nvdimm_bus, struct nvdimm *nvdimm,
 			break;
 		}
 
-	/* process an input envelope */
+	 
 	in_env = kzalloc(ND_CMD_MAX_ENVELOPE, GFP_KERNEL);
 	if (!in_env)
 		return -ENOMEM;
@@ -1125,7 +1081,7 @@ static int __nd_ioctl(struct nvdimm_bus *nvdimm_bus, struct nvdimm *nvdimm,
 				in_len, out_len, buf_len);
 	}
 
-	/* process an output envelope */
+	 
 	out_env = kzalloc(ND_CMD_MAX_ENVELOPE, GFP_KERNEL);
 	if (!out_env) {
 		rc = -ENOMEM;

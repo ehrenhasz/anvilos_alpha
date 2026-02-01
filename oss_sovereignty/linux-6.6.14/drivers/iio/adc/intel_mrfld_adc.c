@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * ADC driver for Basin Cove PMIC
- *
- * Copyright (C) 2012 Intel Corporation
- * Author: Bin Yang <bin.yang@intel.com>
- *
- * Rewritten for upstream by:
- *	 Vincent Pelletier <plr.vincent@gmail.com>
- *	 Andy Shevchenko <andriy.shevchenko@linux.intel.com>
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/completion.h>
@@ -55,7 +46,7 @@ static const u8 mrfld_adc_requests[] = {
 struct mrfld_adc {
 	struct regmap *regmap;
 	struct completion completion;
-	/* Lock to protect the IPC transfers */
+	 
 	struct mutex lock;
 };
 

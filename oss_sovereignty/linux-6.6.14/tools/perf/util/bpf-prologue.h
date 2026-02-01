@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) 2015, He Kuang <hekuang@huawei.com>
- * Copyright (C) 2015, Huawei Inc.
- */
+ 
+ 
 #ifndef __BPF_PROLOGUE_H
 #define __BPF_PROLOGUE_H
 
@@ -34,4 +31,4 @@ bpf__gen_prologue(struct probe_trace_arg *args __maybe_unused,
 	return -ENOTSUP;
 }
 #endif
-#endif /* __BPF_PROLOGUE_H */
+#endif  

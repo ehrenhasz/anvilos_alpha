@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Counter - example userspace application
- *
- * The userspace application opens /dev/counter0, configures the
- * COUNTER_EVENT_INDEX event channel 0 to gather Count 0 count and Count
- * 1 count, and prints out the data as it becomes available on the
- * character device node.
- *
- * Copyright (C) 2021 William Breathitt Gray
- */
+
+ 
 #include <errno.h>
 #include <fcntl.h>
 #include <linux/counter.h>
@@ -18,23 +10,23 @@
 
 static struct counter_watch watches[2] = {
 	{
-		/* Component data: Count 0 count */
+		 
 		.component.type = COUNTER_COMPONENT_COUNT,
 		.component.scope = COUNTER_SCOPE_COUNT,
 		.component.parent = 0,
-		/* Event type: Index */
+		 
 		.event = COUNTER_EVENT_INDEX,
-		/* Device event channel 0 */
+		 
 		.channel = 0,
 	},
 	{
-		/* Component data: Count 1 count */
+		 
 		.component.type = COUNTER_COMPONENT_COUNT,
 		.component.scope = COUNTER_SCOPE_COUNT,
 		.component.parent = 1,
-		/* Event type: Index */
+		 
 		.event = COUNTER_EVENT_INDEX,
-		/* Device event channel 0 */
+		 
 		.channel = 0,
 	},
 };

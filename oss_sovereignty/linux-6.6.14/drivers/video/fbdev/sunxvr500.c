@@ -1,9 +1,4 @@
-/* sunxvr500.c: Sun 3DLABS XVR-500 Expert3D fb driver for sparc64 systems
- *
- * License: GPL
- *
- * Copyright (C) 2007 David S. Miller (davem@davemloft.net)
- */
+ 
 
 #include <linux/aperture.h>
 #include <linux/kernel.h>
@@ -14,17 +9,7 @@
 
 #include <asm/io.h>
 
-/* XXX This device has a 'dev-comm' property which apparently is
- * XXX a pointer into the openfirmware's address space which is
- * XXX a shared area the kernel driver can use to keep OBP
- * XXX informed about the current resolution setting.  The idea
- * XXX is that the kernel can change resolutions, and as long
- * XXX as the values in the 'dev-comm' area are accurate then
- * XXX OBP can still render text properly to the console.
- * XXX
- * XXX I'm still working out the layout of this and whether there
- * XXX are any signatures we need to look for etc.
- */
+ 
 struct e3d_info {
 	struct fb_info		*info;
 	struct pci_dev		*pdev;
@@ -68,31 +53,19 @@ static int e3d_get_props(struct e3d_info *ep)
 	return 0;
 }
 
-/* My XVR-500 comes up, at 1280x768 and a FB base register value of
- * 0x04000000, the following video layout register values:
- *
- * RAMDAC_VID_WH	0x03ff04ff
- * RAMDAC_VID_CFG	0x1a0b0088
- * RAMDAC_VID_32FB_0	0x04000000
- * RAMDAC_VID_32FB_1	0x04800000
- * RAMDAC_VID_8FB_0	0x05000000
- * RAMDAC_VID_8FB_1	0x05200000
- * RAMDAC_VID_XXXFB	0x05400000
- * RAMDAC_VID_YYYFB	0x05c00000
- * RAMDAC_VID_ZZZFB	0x05e00000
- */
-/* Video layout registers */
-#define RAMDAC_VID_WH		0x00000070UL /* (height-1)<<16 | (width-1) */
-#define RAMDAC_VID_CFG		0x00000074UL /* 0x1a000088|(linesz_log2<<16) */
-#define RAMDAC_VID_32FB_0	0x00000078UL /* PCI base 32bpp FB buffer 0 */
-#define RAMDAC_VID_32FB_1	0x0000007cUL /* PCI base 32bpp FB buffer 1 */
-#define RAMDAC_VID_8FB_0	0x00000080UL /* PCI base 8bpp FB buffer 0 */
-#define RAMDAC_VID_8FB_1	0x00000084UL /* PCI base 8bpp FB buffer 1 */
-#define RAMDAC_VID_XXXFB	0x00000088UL /* PCI base of XXX FB */
-#define RAMDAC_VID_YYYFB	0x0000008cUL /* PCI base of YYY FB */
-#define RAMDAC_VID_ZZZFB	0x00000090UL /* PCI base of ZZZ FB */
+ 
+ 
+#define RAMDAC_VID_WH		0x00000070UL  
+#define RAMDAC_VID_CFG		0x00000074UL  
+#define RAMDAC_VID_32FB_0	0x00000078UL  
+#define RAMDAC_VID_32FB_1	0x0000007cUL  
+#define RAMDAC_VID_8FB_0	0x00000080UL  
+#define RAMDAC_VID_8FB_1	0x00000084UL  
+#define RAMDAC_VID_XXXFB	0x00000088UL  
+#define RAMDAC_VID_YYYFB	0x0000008cUL  
+#define RAMDAC_VID_ZZZFB	0x00000090UL  
 
-/* CLUT registers */
+ 
 #define RAMDAC_INDEX		0x000000bcUL
 #define RAMDAC_DATA		0x000000c0UL
 
@@ -141,13 +114,7 @@ static int e3d_setcolreg(unsigned regno,
 	return 0;
 }
 
-/* XXX This is a bit of a hack.  I can't figure out exactly how the
- * XXX two 8bpp areas of the framebuffer work.  I imagine there is
- * XXX a WID attribute somewhere else in the framebuffer which tells
- * XXX the ramdac which of the two 8bpp framebuffer regions to take
- * XXX the pixel from.  So, for now, render into both regions to make
- * XXX sure the pixel shows up.
- */
+ 
 static void e3d_imageblit(struct fb_info *info, const struct fb_image *image)
 {
 	struct e3d_info *ep = info->par;
@@ -206,7 +173,7 @@ static int e3d_set_fbinfo(struct e3d_info *ep)
 
 	info->pseudo_palette = ep->pseudo_palette;
 
-	/* Fill fix common fields */
+	 
 	strscpy(info->fix.id, "e3d", sizeof(info->fix.id));
         info->fix.smem_start = ep->fb_base_phys;
         info->fix.smem_len = ep->fb_size;
@@ -286,10 +253,7 @@ static int e3d_pci_register(struct pci_dev *pdev,
 	spin_lock_init(&ep->lock);
 	ep->of_node = of_node;
 
-	/* Read the PCI base register of the frame buffer, which we
-	 * need in order to interpret the RAMDAC_VID_*FB* values in
-	 * the ramdac correctly.
-	 */
+	 
 	pci_read_config_dword(pdev, PCI_BASE_ADDRESS_0,
 			      &ep->fb_base_reg);
 	ep->fb_base_reg &= PCI_BASE_ADDRESS_MEM_MASK;

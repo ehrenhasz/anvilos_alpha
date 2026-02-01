@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Export Runtime Configuration Interface Table Version 2 (RCI2)
- * to sysfs
- *
- * Copyright (C) 2019 Dell Inc
- * by Narendra K <Narendra.K@dell.com>
- *
- * System firmware advertises the address of the RCI2 Table via
- * an EFI Configuration Table entry. This code retrieves the RCI2
- * table from the address and exports it to sysfs as a binary
- * attribute 'rci2' under /sys/firmware/efi/tables directory.
- */
+
+ 
 
 #include <linux/kobject.h>
 #include <linux/device.h>

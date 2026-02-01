@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include "msm_gem.h"
 #include "msm_ringbuffer.h"
 

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2012 Russell King
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/component.h>
@@ -68,7 +66,7 @@ static int armada_drm_bind(struct device *dev)
 		if (!r)
 			break;
 
-		/* Resources above 64K are graphics memory */
+		 
 		if (resource_size(r) > SZ_64K)
 			mem = r;
 		else
@@ -90,7 +88,7 @@ static int armada_drm_bind(struct device *dev)
 		return PTR_ERR(priv);
 	}
 
-	/* Remove early framebuffers */
+	 
 	ret = drm_aperture_remove_framebuffers(&armada_drm_driver);
 	if (ret) {
 		dev_err(dev, "[" DRM_NAME ":%s] can't kick out simple-fb: %d\n",
@@ -100,15 +98,12 @@ static int armada_drm_bind(struct device *dev)
 
 	dev_set_drvdata(dev, &priv->drm);
 
-	/* Mode setting support */
+	 
 	drm_mode_config_init(&priv->drm);
 	priv->drm.mode_config.min_width = 320;
 	priv->drm.mode_config.min_height = 200;
 
-	/*
-	 * With vscale enabled, the maximum width is 1920 due to the
-	 * 1920 by 3 lines RAM
-	 */
+	 
 	priv->drm.mode_config.max_width = 1920;
 	priv->drm.mode_config.max_height = 2048;
 

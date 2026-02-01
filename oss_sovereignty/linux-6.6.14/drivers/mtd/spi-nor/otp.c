@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * OTP support for SPI NOR flashes
- *
- * Copyright (C) 2021 Michael Walle <michael@walle.cc>
- */
+
+ 
 
 #include <linux/log2.h>
 #include <linux/mtd/mtd.h>
@@ -14,25 +10,7 @@
 #define spi_nor_otp_region_len(nor) ((nor)->params->otp.org->len)
 #define spi_nor_otp_n_regions(nor) ((nor)->params->otp.org->n_regions)
 
-/**
- * spi_nor_otp_read_secr() - read security register
- * @nor:	pointer to 'struct spi_nor'
- * @addr:       offset to read from
- * @len:        number of bytes to read
- * @buf:        pointer to dst buffer
- *
- * Read a security register by using the SPINOR_OP_RSECR commands.
- *
- * In Winbond/GigaDevice datasheets the term "security register" stands for
- * an one-time-programmable memory area, consisting of multiple bytes (usually
- * 256). Thus one "security register" maps to one OTP region.
- *
- * This method is used on GigaDevice and Winbond flashes.
- *
- * Please note, the read must not span multiple registers.
- *
- * Return: number of bytes read successfully, -errno otherwise
- */
+ 
 int spi_nor_otp_read_secr(struct spi_nor *nor, loff_t addr, size_t len, u8 *buf)
 {
 	u8 addr_nbytes, read_opcode, read_dummy;
@@ -62,24 +40,7 @@ int spi_nor_otp_read_secr(struct spi_nor *nor, loff_t addr, size_t len, u8 *buf)
 	return ret;
 }
 
-/**
- * spi_nor_otp_write_secr() - write security register
- * @nor:        pointer to 'struct spi_nor'
- * @addr:       offset to write to
- * @len:        number of bytes to write
- * @buf:        pointer to src buffer
- *
- * Write a security register by using the SPINOR_OP_PSECR commands.
- *
- * For more information on the term "security register", see the documentation
- * of spi_nor_otp_read_secr().
- *
- * This method is used on GigaDevice and Winbond flashes.
- *
- * Please note, the write must not span multiple registers.
- *
- * Return: number of bytes written successfully, -errno otherwise
- */
+ 
 int spi_nor_otp_write_secr(struct spi_nor *nor, loff_t addr, size_t len,
 			   const u8 *buf)
 {
@@ -97,10 +58,7 @@ int spi_nor_otp_write_secr(struct spi_nor *nor, loff_t addr, size_t len,
 	nor->write_proto = SNOR_PROTO_1_1_1;
 	nor->dirmap.wdesc = NULL;
 
-	/*
-	 * We only support a write to one single page. For now all winbond
-	 * flashes only have one page per security register.
-	 */
+	 
 	ret = spi_nor_write_enable(nor);
 	if (ret)
 		goto out;
@@ -120,20 +78,7 @@ out:
 	return ret ?: written;
 }
 
-/**
- * spi_nor_otp_erase_secr() - erase a security register
- * @nor:        pointer to 'struct spi_nor'
- * @addr:       offset of the security register to be erased
- *
- * Erase a security register by using the SPINOR_OP_ESECR command.
- *
- * For more information on the term "security register", see the documentation
- * of spi_nor_otp_read_secr().
- *
- * This method is used on GigaDevice and Winbond flashes.
- *
- * Return: 0 on success, -errno otherwise
- */
+ 
 int spi_nor_otp_erase_secr(struct spi_nor *nor, loff_t addr)
 {
 	u8 erase_opcode = nor->erase_opcode;
@@ -162,16 +107,7 @@ static int spi_nor_otp_lock_bit_cr(unsigned int region)
 	return lock_bits[region];
 }
 
-/**
- * spi_nor_otp_lock_sr2() - lock the OTP region
- * @nor:        pointer to 'struct spi_nor'
- * @region:     OTP region
- *
- * Lock the OTP region by writing the status register-2. This method is used on
- * GigaDevice and Winbond flashes.
- *
- * Return: 0 on success, -errno otherwise.
- */
+ 
 int spi_nor_otp_lock_sr2(struct spi_nor *nor, unsigned int region)
 {
 	u8 *cr = nor->bouncebuf;
@@ -185,7 +121,7 @@ int spi_nor_otp_lock_sr2(struct spi_nor *nor, unsigned int region)
 	if (ret)
 		return ret;
 
-	/* no need to write the register if region is already locked */
+	 
 	if (cr[0] & lock_bit)
 		return 0;
 
@@ -194,16 +130,7 @@ int spi_nor_otp_lock_sr2(struct spi_nor *nor, unsigned int region)
 	return spi_nor_write_16bit_cr_and_check(nor, cr[0]);
 }
 
-/**
- * spi_nor_otp_is_locked_sr2() - get the OTP region lock status
- * @nor:        pointer to 'struct spi_nor'
- * @region:     OTP region
- *
- * Retrieve the OTP region lock bit by reading the status register-2. This
- * method is used on GigaDevice and Winbond flashes.
- *
- * Return: 0 on success, -errno otherwise.
- */
+ 
 int spi_nor_otp_is_locked_sr2(struct spi_nor *nor, unsigned int region)
 {
 	u8 *cr = nor->bouncebuf;
@@ -232,7 +159,7 @@ static size_t spi_nor_otp_size(struct spi_nor *nor)
 	return spi_nor_otp_n_regions(nor) * spi_nor_otp_region_len(nor);
 }
 
-/* Translate the file offsets from and to OTP regions. */
+ 
 static loff_t spi_nor_otp_region_to_offset(struct spi_nor *nor, unsigned int region)
 {
 	return region * spi_nor_otp_region_len(nor);
@@ -288,15 +215,12 @@ static int spi_nor_mtd_otp_range_is_locked(struct spi_nor *nor, loff_t ofs,
 	unsigned int region;
 	int locked;
 
-	/*
-	 * If any of the affected OTP regions are locked the entire range is
-	 * considered locked.
-	 */
+	 
 	for (region = spi_nor_otp_offset_to_region(nor, ofs);
 	     region <= spi_nor_otp_offset_to_region(nor, ofs + len - 1);
 	     region++) {
 		locked = ops->is_locked(nor, region);
-		/* take the branch it is locked or in case of an error */
+		 
 		if (locked)
 			return locked;
 	}
@@ -319,7 +243,7 @@ static int spi_nor_mtd_otp_read_write(struct mtd_info *mtd, loff_t ofs,
 	if (ofs < 0 || ofs >= spi_nor_otp_size(nor))
 		return 0;
 
-	/* don't access beyond the end */
+	 
 	total_len = min_t(size_t, total_len, spi_nor_otp_size(nor) - ofs);
 
 	if (!total_len)
@@ -340,23 +264,14 @@ static int spi_nor_mtd_otp_read_write(struct mtd_info *mtd, loff_t ofs,
 	}
 
 	while (total_len) {
-		/*
-		 * The OTP regions are mapped into a contiguous area starting
-		 * at 0 as expected by the MTD layer. This will map the MTD
-		 * file offsets to the address of an OTP region as used in the
-		 * actual SPI commands.
-		 */
+		 
 		region = spi_nor_otp_offset_to_region(nor, ofs);
 		rstart = spi_nor_otp_region_start(nor, region);
 
-		/*
-		 * The size of a OTP region is expected to be a power of two,
-		 * thus we can just mask the lower bits and get the offset into
-		 * a region.
-		 */
+		 
 		rofs = ofs & (rlen - 1);
 
-		/* don't access beyond one OTP region */
+		 
 		len = min_t(size_t, total_len, rlen - rofs);
 
 		if (is_write)
@@ -401,7 +316,7 @@ static int spi_nor_mtd_otp_erase(struct mtd_info *mtd, loff_t from, size_t len)
 	loff_t rstart;
 	int ret;
 
-	/* OTP erase is optional */
+	 
 	if (!ops->erase)
 		return -EOPNOTSUPP;
 
@@ -411,7 +326,7 @@ static int spi_nor_mtd_otp_erase(struct mtd_info *mtd, loff_t from, size_t len)
 	if (from < 0 || (from + len) > spi_nor_otp_size(nor))
 		return -EINVAL;
 
-	/* the user has to explicitly ask for whole regions */
+	 
 	if (!IS_ALIGNED(len, rlen) || !IS_ALIGNED(from, rlen))
 		return -EINVAL;
 
@@ -456,7 +371,7 @@ static int spi_nor_mtd_otp_lock(struct mtd_info *mtd, loff_t from, size_t len)
 	if (from < 0 || (from + len) > spi_nor_otp_size(nor))
 		return -EINVAL;
 
-	/* the user has to explicitly ask for whole regions */
+	 
 	if (!IS_ALIGNED(len, rlen) || !IS_ALIGNED(from, rlen))
 		return -EINVAL;
 
@@ -490,15 +405,7 @@ void spi_nor_set_mtd_otp_ops(struct spi_nor *nor)
 	if (WARN_ON(!is_power_of_2(spi_nor_otp_region_len(nor))))
 		return;
 
-	/*
-	 * We only support user_prot callbacks (yet).
-	 *
-	 * Some SPI NOR flashes like Macronix ones can be ordered in two
-	 * different variants. One with a factory locked OTP area and one where
-	 * it is left to the user to write to it. The factory locked OTP is
-	 * usually preprogrammed with an "electrical serial number". We don't
-	 * support these for now.
-	 */
+	 
 	mtd->_get_user_prot_info = spi_nor_mtd_otp_info;
 	mtd->_read_user_prot_reg = spi_nor_mtd_otp_read;
 	mtd->_write_user_prot_reg = spi_nor_mtd_otp_write;

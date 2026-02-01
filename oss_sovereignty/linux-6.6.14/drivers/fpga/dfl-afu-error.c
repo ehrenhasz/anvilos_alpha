@@ -1,18 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Driver for FPGA Accelerated Function Unit (AFU) Error Reporting
- *
- * Copyright 2019 Intel Corporation, Inc.
- *
- * Authors:
- *   Wu Hao <hao.wu@linux.intel.com>
- *   Xiao Guangrong <guangrong.xiao@linux.intel.com>
- *   Joseph Grecco <joe.grecco@intel.com>
- *   Enno Luebbers <enno.luebbers@intel.com>
- *   Tim Whisonant <tim.whisonant@intel.com>
- *   Ananda Ravuri <ananda.ravuri@intel.com>
- *   Mitchel Henry <henry.mitchel@intel.com>
- */
+
+ 
 
 #include <linux/fpga-dfl.h>
 #include <linux/uaccess.h>
@@ -27,7 +14,7 @@
 
 #define ERROR_MASK		GENMASK_ULL(63, 0)
 
-/* mask or unmask port errors by the error mask register. */
+ 
 static void __afu_port_err_mask(struct device *dev, bool mask)
 {
 	void __iomem *base;
@@ -46,7 +33,7 @@ static void afu_port_err_mask(struct device *dev, bool mask)
 	mutex_unlock(&pdata->lock);
 }
 
-/* clear port errors. */
+ 
 static int afu_port_err_clear(struct device *dev, u64 err)
 {
 	struct dfl_feature_platform_data *pdata = dev_get_platdata(dev);
@@ -60,34 +47,24 @@ static int afu_port_err_clear(struct device *dev, u64 err)
 
 	mutex_lock(&pdata->lock);
 
-	/*
-	 * clear Port Errors
-	 *
-	 * - Check for AP6 State
-	 * - Halt Port by keeping Port in reset
-	 * - Set PORT Error mask to all 1 to mask errors
-	 * - Clear all errors
-	 * - Set Port mask to all 0 to enable errors
-	 * - All errors start capturing new errors
-	 * - Enable Port by pulling the port out of reset
-	 */
+	 
 
-	/* if device is still in AP6 power state, can not clear any error. */
+	 
 	v = readq(base_hdr + PORT_HDR_STS);
 	if (FIELD_GET(PORT_STS_PWR_STATE, v) == PORT_STS_PWR_STATE_AP6) {
 		dev_err(dev, "Could not clear errors, device in AP6 state.\n");
 		goto done;
 	}
 
-	/* Halt Port by keeping Port in reset */
+	 
 	ret = __afu_port_disable(pdev);
 	if (ret)
 		goto done;
 
-	/* Mask all errors */
+	 
 	__afu_port_err_mask(dev, true);
 
-	/* Clear errors if err input matches with current port errors.*/
+	 
 	v = readq(base_err + PORT_ERROR);
 
 	if (v == err) {
@@ -101,10 +78,10 @@ static int afu_port_err_clear(struct device *dev, u64 err)
 		ret = -EINVAL;
 	}
 
-	/* Clear mask */
+	 
 	__afu_port_err_mask(dev, false);
 
-	/* Enable the Port by clearing the reset */
+	 
 	enable_ret = __afu_port_enable(pdev);
 
 done:
@@ -192,10 +169,7 @@ static umode_t port_err_attrs_visible(struct kobject *kobj,
 {
 	struct device *dev = kobj_to_dev(kobj);
 
-	/*
-	 * sysfs entries are visible only if related private feature is
-	 * enumerated.
-	 */
+	 
 	if (!dfl_get_feature_by_id(dev, PORT_FEATURE_ID_ERROR))
 		return 0;
 

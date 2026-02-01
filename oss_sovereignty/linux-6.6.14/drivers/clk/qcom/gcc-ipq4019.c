@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2015 The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/err.h>
@@ -41,14 +39,7 @@ enum {
 	P_DDRPLLAPSS,
 };
 
-/*
- * struct clk_fepll_vco - vco feedback divider corresponds for FEPLL clocks
- * @fdbkdiv_shift: lowest bit for FDBKDIV
- * @fdbkdiv_width: number of bits in FDBKDIV
- * @refclkdiv_shift: lowest bit for REFCLKDIV
- * @refclkdiv_width: number of bits in REFCLKDIV
- * @reg: PLL_DIV register address
- */
+ 
 struct clk_fepll_vco {
 	u32 fdbkdiv_shift;
 	u32 fdbkdiv_width;
@@ -57,16 +48,7 @@ struct clk_fepll_vco {
 	u32 reg;
 };
 
-/*
- * struct clk_fepll - clk divider corresponds to FEPLL clocks
- * @fixed_div: fixed divider value if divider is fixed
- * @parent_map: map from software's parent index to hardware's src_sel field
- * @cdiv: divider values for PLL_DIV
- * @pll_vco: vco feedback divider
- * @div_table: mapping for actual divider value to register divider value
- *             in case of non fixed divider
- * @freq_tbl: frequency table
- */
+ 
 struct clk_fepll {
 	u32 fixed_div;
 	const u8 *parent_map;
@@ -76,14 +58,10 @@ struct clk_fepll {
 	const struct freq_tbl *freq_tbl;
 };
 
-/*
- * Contains index for safe clock during APSS freq change.
- * fepll500 is being used as safe clock so initialize it
- * with its index in parents list gcc_xo_ddr_500_200.
- */
+ 
 static const int gcc_ipq4019_cpu_safe_parent = 2;
 
-/* Calculates the VCO rate for FEPLL. */
+ 
 static u64 clk_fepll_vco_calc_rate(struct clk_fepll *pll_div,
 				   unsigned long parent_rate)
 {
@@ -120,11 +98,7 @@ static const struct clk_fepll_vco gcc_fepll_vco = {
 	.reg = 0x2f020,
 };
 
-/*
- * Round rate function for APSS CPU PLL Clock divider.
- * It looks up the frequency table and returns the next higher frequency
- * supported in hardware.
- */
+ 
 static long clk_cpu_div_round_rate(struct clk_hw *hw, unsigned long rate,
 				   unsigned long *p_rate)
 {
@@ -142,11 +116,7 @@ static long clk_cpu_div_round_rate(struct clk_hw *hw, unsigned long rate,
 	return f->freq;
 };
 
-/*
- * Clock set rate function for APSS CPU PLL Clock divider.
- * It looks up the frequency table and updates the PLL divider to corresponding
- * divider value.
- */
+ 
 static int clk_cpu_div_set_rate(struct clk_hw *hw, unsigned long rate,
 				unsigned long parent_rate)
 {
@@ -162,21 +132,13 @@ static int clk_cpu_div_set_rate(struct clk_hw *hw, unsigned long rate,
 	regmap_update_bits(pll->cdiv.clkr.regmap,
 			   pll->cdiv.reg, mask,
 			   f->pre_div << pll->cdiv.shift);
-	/*
-	 * There is no status bit which can be checked for successful CPU
-	 * divider update operation so using delay for the same.
-	 */
+	 
 	udelay(1);
 
 	return 0;
 };
 
-/*
- * Clock frequency calculation function for APSS CPU PLL Clock divider.
- * This clock divider is nonlinear so this function calculates the actual
- * divider and returns the output frequency by dividing VCO Frequency
- * with this actual divider value.
- */
+ 
 static unsigned long
 clk_cpu_div_recalc_rate(struct clk_hw *hw,
 			unsigned long parent_rate)
@@ -188,11 +150,7 @@ clk_cpu_div_recalc_rate(struct clk_hw *hw,
 	regmap_read(pll->cdiv.clkr.regmap, pll->cdiv.reg, &cdiv);
 	cdiv = (cdiv >> pll->cdiv.shift) & (BIT(pll->cdiv.width) - 1);
 
-	/*
-	 * Some dividers have value in 0.5 fraction so multiply both VCO
-	 * frequency(parent_rate) and pre_div with 2 to make integer
-	 * calculation.
-	 */
+	 
 	if (cdiv > 10)
 		pre_div = (cdiv + 1) * 2;
 	else
@@ -249,11 +207,7 @@ static struct clk_fepll gcc_apss_cpu_plldiv_clk = {
 	.pll_vco = &gcc_apss_ddrpll_vco,
 };
 
-/* Calculates the rate for PLL divider.
- * If the divider value is not fixed then it gets the actual divider value
- * from divider table. Then, it calculate the clock rate by dividing the
- * parent rate with actual divider value.
- */
+ 
 static unsigned long
 clk_regmap_clk_div_recalc_rate(struct clk_hw *hw,
 			       unsigned long parent_rate)

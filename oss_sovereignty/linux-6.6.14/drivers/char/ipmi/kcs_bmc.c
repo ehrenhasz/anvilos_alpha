@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2015-2018, Intel Corporation.
- * Copyright (c) 2021, IBM Corp.
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/list.h>
@@ -11,16 +8,16 @@
 
 #include "kcs_bmc.h"
 
-/* Implement both the device and client interfaces here */
+ 
 #include "kcs_bmc_device.h"
 #include "kcs_bmc_client.h"
 
-/* Record registered devices and drivers */
+ 
 static DEFINE_MUTEX(kcs_bmc_lock);
 static LIST_HEAD(kcs_bmc_devices);
 static LIST_HEAD(kcs_bmc_drivers);
 
-/* Consumer data access */
+ 
 
 u8 kcs_bmc_read_data(struct kcs_bmc_device *kcs_bmc)
 {

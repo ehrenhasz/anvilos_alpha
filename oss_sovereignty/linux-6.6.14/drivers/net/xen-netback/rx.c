@@ -1,31 +1,4 @@
-/*
- * Copyright (c) 2016 Citrix Systems Inc.
- * Copyright (c) 2002-2005, K A Fraser
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License version 2
- * as published by the Free Software Foundation; or, when distributed
- * separately from the Linux kernel or incorporated into other
- * software packages, subject to the following license:
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this source file (the "Software"), to deal in the Software without
- * restriction, including without limitation the rights to use, copy, modify,
- * merge, publish, distribute, sublicense, and/or sell copies of the Software,
- * and to permit persons to whom the Software is furnished to do so, subject to
- * the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
- * IN THE SOFTWARE.
- */
+ 
 #include "common.h"
 
 #include <linux/kthread.h>
@@ -33,12 +6,7 @@
 #include <xen/xen.h>
 #include <xen/events.h>
 
-/*
- * Update the needed ring page slots for the first SKB queued.
- * Note that any call sequence outside the RX thread calling this function
- * needs to wake up the RX thread via a call of xenvif_kick_thread()
- * afterwards in order to avoid a race with putting the thread to sleep.
- */
+ 
 static void xenvif_update_needed_slots(struct xenvif_queue *queue,
 				       const struct sk_buff *skb)
 {
@@ -73,9 +41,7 @@ static bool xenvif_rx_ring_slots_available(struct xenvif_queue *queue)
 
 		queue->rx.sring->req_event = prod + 1;
 
-		/* Make sure event is visible before we check prod
-		 * again.
-		 */
+		 
 		mb();
 	} while (queue->rx.sring->req_prod != prod);
 
@@ -168,9 +134,7 @@ static void xenvif_rx_copy_flush(struct xenvif_queue *queue)
 
 		op = &queue->rx_copy.op[i];
 
-		/* If the copy failed, overwrite the status field in
-		 * the corresponding response.
-		 */
+		 
 		if (unlikely(op->status != GNTST_okay)) {
 			struct xen_netif_rx_response *rsp;
 
@@ -182,7 +146,7 @@ static void xenvif_rx_copy_flush(struct xenvif_queue *queue)
 
 	queue->rx_copy.num = 0;
 
-	/* Push responses for all completed packets. */
+	 
 	RING_PUSH_RESPONSES_AND_CHECK_NOTIFY(&queue->rx, notify);
 	if (notify)
 		notify_remote_via_irq(queue->rx_irq);
@@ -242,7 +206,7 @@ struct xenvif_pkt_state {
 	struct sk_buff *skb;
 	size_t remaining_len;
 	struct sk_buff *frag_iter;
-	int frag; /* frag == -1 => frag_iter->head */
+	int frag;  
 	unsigned int frag_offset;
 	struct xen_netif_extra_info extras[XEN_NETIF_EXTRA_TYPE_MAX - 1];
 	unsigned int extra_count;
@@ -260,7 +224,7 @@ static void xenvif_rx_next_skb(struct xenvif_queue *queue,
 	queue->stats.tx_bytes += skb->len;
 	queue->stats.tx_packets++;
 
-	/* Reset packet state. */
+	 
 	memset(pkt, 0, sizeof(struct xenvif_pkt_state));
 
 	pkt->skb = skb;
@@ -328,7 +292,7 @@ static void xenvif_rx_next_skb(struct xenvif_queue *queue,
 static void xenvif_rx_complete(struct xenvif_queue *queue,
 			       struct xenvif_pkt_state *pkt)
 {
-	/* All responses are ready to be pushed. */
+	 
 	queue->rx.rsp_prod_pvt = queue->rx.req_cons;
 
 	__skb_queue_tail(queue->rx_copy.completed, pkt->skb);
@@ -382,7 +346,7 @@ static void xenvif_rx_next_chunk(struct xenvif_queue *queue,
 
 	pkt->frag_offset += chunk_len;
 
-	/* Advance to next frag? */
+	 
 	if (frag_len == chunk_len)
 		xenvif_rx_next_frag(pkt);
 
@@ -473,7 +437,7 @@ static void xenvif_rx_skb(struct xenvif_queue *queue)
 		req = RING_GET_REQUEST(&queue->rx, queue->rx.req_cons);
 		rsp = RING_GET_RESPONSE(&queue->rx, queue->rx.req_cons);
 
-		/* Extras must go after the first data slot */
+		 
 		if (pkt.slot != 0 && pkt.extra_count != 0)
 			xenvif_rx_extra_slot(queue, &pkt, req, rsp);
 		else
@@ -503,7 +467,7 @@ static void xenvif_rx_action(struct xenvif_queue *queue)
 		work_done++;
 	}
 
-	/* Flush any pending copies and complete all skbs. */
+	 
 	xenvif_rx_copy_flush(queue);
 }
 
@@ -557,16 +521,7 @@ static long xenvif_rx_queue_timeout(struct xenvif_queue *queue)
 	return timeout < 0 ? 0 : timeout;
 }
 
-/* Wait until the guest Rx thread has work.
- *
- * The timeout needs to be adjusted based on the current head of the
- * queue (and not just the head at the beginning).  In particular, if
- * the queue is initially empty an infinite timeout is used and this
- * needs to be reduced when a skb is queued.
- *
- * This cannot be done with wait_event_timeout() because it only
- * calculates the timeout once.
- */
+ 
 static void xenvif_wait_for_rx_work(struct xenvif_queue *queue)
 {
 	DEFINE_WAIT(wait);
@@ -598,7 +553,7 @@ static void xenvif_queue_carrier_off(struct xenvif_queue *queue)
 
 	queue->stalled = true;
 
-	/* At least one queue has stalled? Disable the carrier. */
+	 
 	spin_lock(&vif->lock);
 	if (vif->stalled_queues++ == 0) {
 		netdev_info(vif->dev, "Guest Rx stalled");
@@ -611,10 +566,10 @@ static void xenvif_queue_carrier_on(struct xenvif_queue *queue)
 {
 	struct xenvif *vif = queue->vif;
 
-	queue->last_rx_time = jiffies; /* Reset Rx stall detection. */
+	queue->last_rx_time = jiffies;  
 	queue->stalled = false;
 
-	/* All queues are ready? Enable the carrier. */
+	 
 	spin_lock(&vif->lock);
 	if (--vif->stalled_queues == 0) {
 		netdev_info(vif->dev, "Guest Rx ready");
@@ -637,13 +592,7 @@ int xenvif_kthread_guest_rx(void *data)
 		if (kthread_should_stop())
 			break;
 
-		/* This frontend is found to be rogue, disable it in
-		 * kthread context. Currently this is only set when
-		 * netback finds out frontend sends malformed packet,
-		 * but we cannot disable the interface in softirq
-		 * context so we defer it here, if this thread is
-		 * associated with queue 0.
-		 */
+		 
 		if (unlikely(vif->disabled && queue->id == 0)) {
 			xenvif_carrier_off(vif);
 			break;
@@ -652,10 +601,7 @@ int xenvif_kthread_guest_rx(void *data)
 		if (!skb_queue_empty(&queue->rx_queue))
 			xenvif_rx_action(queue);
 
-		/* If the guest hasn't provided any Rx slots for a
-		 * while it's probably not responsive, drop the
-		 * carrier so packets are dropped earlier.
-		 */
+		 
 		if (vif->stall_timeout) {
 			if (xenvif_rx_queue_stalled(queue))
 				xenvif_queue_carrier_off(queue);
@@ -663,17 +609,13 @@ int xenvif_kthread_guest_rx(void *data)
 				xenvif_queue_carrier_on(queue);
 		}
 
-		/* Queued packets may have foreign pages from other
-		 * domains.  These cannot be queued indefinitely as
-		 * this would starve guests of grant refs and transmit
-		 * slots.
-		 */
+		 
 		xenvif_rx_queue_drop_expired(queue);
 
 		cond_resched();
 	}
 
-	/* Bin any remaining skbs */
+	 
 	xenvif_rx_queue_purge(queue);
 
 	return 0;

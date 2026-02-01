@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * ADS1100 - Texas Instruments Analog-to-Digital Converter
- *
- * Copyright (c) 2023, Topic Embedded Products
- *
- * Datasheet: https://www.ti.com/lit/gpn/ads1100
- * IIO driver for ADS1100 and ADS1000 ADC 16-bit I2C
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/bits.h>
@@ -23,15 +16,15 @@
 #include <linux/iio/iio.h>
 #include <linux/iio/types.h>
 
-/* The ADS1100 has a single byte config register */
+ 
 
-/* Conversion in progress bit */
+ 
 #define ADS1100_CFG_ST_BSY	BIT(7)
-/* Single conversion bit */
+ 
 #define ADS1100_CFG_SC		BIT(4)
-/* Data rate */
+ 
 #define ADS1100_DR_MASK		GENMASK(3, 2)
-/* Gain */
+ 
 #define ADS1100_PGA_MASK	GENMASK(1, 0)
 
 #define ADS1100_CONTINUOUS	0
@@ -46,9 +39,9 @@ struct ads1100_data {
 	struct i2c_client *client;
 	struct regulator *reg_vdd;
 	struct mutex lock;
-	int scale_avail[2 * 4]; /* 4 gain settings */
+	int scale_avail[2 * 4];  
 	u8 config;
-	bool supports_data_rate; /* Only the ADS1100 can select the rate */
+	bool supports_data_rate;  
 };
 
 static const struct iio_chan_spec ads1100_channel = {
@@ -73,7 +66,7 @@ static int ads1100_set_config_bits(struct ads1100_data *data, u8 mask, u8 value)
 	u8 config = (data->config & ~mask) | (value & mask);
 
 	if (data->config == config)
-		return 0;	/* Already done */
+		return 0;	 
 
 	ret = i2c_master_send(data->client, &config, 1);
 	if (ret < 0)
@@ -112,10 +105,10 @@ static int ads1100_get_adc_result(struct ads1100_data *data, int chan, int *val)
 		return ret;
 	}
 
-	/* Value is always 16-bit 2's complement */
+	 
 	value = be16_to_cpu(buffer);
 
-	/* Shift result to compensate for bit resolution vs. sample rate */
+	 
 	value <<= 16 - ads1100_data_bits(data);
 
 	*val = sign_extend32(value, 15);
@@ -128,7 +121,7 @@ static int ads1100_set_scale(struct ads1100_data *data, int val, int val2)
 	int microvolts;
 	int gain;
 
-	/* With Vdd between 2.7 and 5V, the scale is always below 1 */
+	 
 	if (val)
 		return -EINVAL;
 
@@ -136,13 +129,7 @@ static int ads1100_set_scale(struct ads1100_data *data, int val, int val2)
 		return -EINVAL;
 
 	microvolts = regulator_get_voltage(data->reg_vdd);
-	/*
-	 * val2 is in 'micro' units, n = val2 / 1000000
-	 * result must be millivolts, d = microvolts / 1000
-	 * the full-scale value is d/n, corresponds to 2^15,
-	 * hence the gain = (d / n) >> 15, factoring out the 1000 and moving the
-	 * bitshift so everything fits in 32-bits yields this formula.
-	 */
+	 
 	gain = DIV_ROUND_CLOSEST(microvolts, BIT(15)) * MILLI / val2;
 	if (gain < BIT(0) || gain > BIT(3))
 		return -EINVAL;
@@ -232,7 +219,7 @@ static int ads1100_read_raw(struct iio_dev *indio_dev,
 		iio_device_release_direct_mode(indio_dev);
 		break;
 	case IIO_CHAN_INFO_SCALE:
-		/* full-scale is the supply voltage in millivolts */
+		 
 		*val = ads1100_get_vdd_millivolts(data);
 		*val2 = 15 + FIELD_GET(ADS1100_PGA_MASK, data->config);
 		ret = IIO_VAL_FRACTIONAL_LOG2;
@@ -286,7 +273,7 @@ static int ads1100_setup(struct ads1100_data *data)
 	int ret;
 	u8 buffer[3];
 
-	/* Setup continuous sampling mode at 8sps */
+	 
 	buffer[0] = ADS1100_DR_MASK | ADS1100_CONTINUOUS;
 	ret = i2c_master_send(data->client, buffer, 1);
 	if (ret < 0)
@@ -296,10 +283,10 @@ static int ads1100_setup(struct ads1100_data *data)
 	if (ret < 0)
 		return ret;
 
-	/* Config register returned in third byte, strip away the busy status */
+	 
 	data->config = buffer[2] & ~ADS1100_CFG_ST_BSY;
 
-	/* Detect the sample rate capability by checking the DR bits */
+	 
 	data->supports_data_rate = FIELD_GET(ADS1100_DR_MASK, buffer[2]) != 0;
 
 	return 0;
@@ -398,11 +385,7 @@ static int ads1100_runtime_resume(struct device *dev)
 		return ret;
 	}
 
-	/*
-	 * We'll always change the mode bit in the config register, so there is
-	 * no need here to "force" a write to the config register. If the device
-	 * has been power-cycled, we'll re-write its config register now.
-	 */
+	 
 	return ads1100_set_config_bits(data, ADS1100_CFG_SC,
 				       ADS1100_CONTINUOUS);
 }

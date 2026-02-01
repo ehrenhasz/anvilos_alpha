@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: (BSD-3-Clause OR GPL-2.0-only)
-/* Copyright(c) 2014 - 2020 Intel Corporation */
+
+ 
 #include <linux/kernel.h>
 #include <linux/init.h>
 #include <linux/types.h>
@@ -93,16 +93,13 @@ static bool adf_handle_vf2pf_int(struct adf_accel_dev *accel_dev)
 	bool irq_handled = false;
 	unsigned long vf_mask;
 
-	/* Get the interrupt sources triggered by VFs, except for those already disabled */
+	 
 	vf_mask = adf_disable_pending_vf2pf_interrupts(accel_dev);
 	if (vf_mask) {
 		struct adf_accel_vf_info *vf_info;
 		int i;
 
-		/*
-		 * Handle VF2PF interrupt unless the VF is malicious and
-		 * is attempting to flood the host OS with VF2PF interrupts.
-		 */
+		 
 		for_each_set_bit(i, &vf_mask, ADF_MAX_NUM_VFS) {
 			vf_info = accel_dev->pf.vf_info + i;
 
@@ -119,7 +116,7 @@ static bool adf_handle_vf2pf_int(struct adf_accel_dev *accel_dev)
 	}
 	return irq_handled;
 }
-#endif /* CONFIG_PCI_IOV */
+#endif  
 
 static bool adf_handle_pm_int(struct adf_accel_dev *accel_dev)
 {
@@ -137,10 +134,10 @@ static irqreturn_t adf_msix_isr_ae(int irq, void *dev_ptr)
 	struct adf_accel_dev *accel_dev = dev_ptr;
 
 #ifdef CONFIG_PCI_IOV
-	/* If SR-IOV is enabled (vf_info is non-NULL), check for VF->PF ints */
+	 
 	if (accel_dev->pf.vf_info && adf_handle_vf2pf_int(accel_dev))
 		return IRQ_HANDLED;
-#endif /* CONFIG_PCI_IOV */
+#endif  
 
 	if (adf_handle_pm_int(accel_dev))
 		return IRQ_HANDLED;
@@ -186,7 +183,7 @@ static int adf_request_irqs(struct adf_accel_dev *accel_dev)
 	int ret, irq, i = 0;
 	char *name;
 
-	/* Request msix irq for all banks unless SR-IOV enabled */
+	 
 	if (!accel_dev->pf.vf_info) {
 		for (i = 0; i < hw_data->num_banks; i++) {
 			struct adf_etr_bank_data *bank = &etr_data->banks[i];
@@ -219,7 +216,7 @@ static int adf_request_irqs(struct adf_accel_dev *accel_dev)
 		}
 	}
 
-	/* Request msix irq for AE */
+	 
 	name = irqs[i].name;
 	snprintf(name, ADF_MAX_MSIX_VECTOR_NAME,
 		 "qat%d-ae-cluster", accel_dev->accel_id);
@@ -250,7 +247,7 @@ static int adf_isr_alloc_msix_vectors_data(struct adf_accel_dev *accel_dev)
 	u32 msix_num_entries = 1;
 	struct adf_irq *irqs;
 
-	/* If SR-IOV is disabled (vf_info is NULL), add entries for each bank */
+	 
 	if (!accel_dev->pf.vf_info)
 		msix_num_entries += hw_data->num_banks;
 
@@ -295,12 +292,7 @@ static void adf_cleanup_bh(struct adf_accel_dev *accel_dev)
 	}
 }
 
-/**
- * adf_isr_resource_free() - Free IRQ for acceleration device
- * @accel_dev:  Pointer to acceleration device.
- *
- * Function frees interrupts for acceleration device.
- */
+ 
 void adf_isr_resource_free(struct adf_accel_dev *accel_dev)
 {
 	adf_free_irqs(accel_dev);
@@ -310,14 +302,7 @@ void adf_isr_resource_free(struct adf_accel_dev *accel_dev)
 }
 EXPORT_SYMBOL_GPL(adf_isr_resource_free);
 
-/**
- * adf_isr_resource_alloc() - Allocate IRQ for acceleration device
- * @accel_dev:  Pointer to acceleration device.
- *
- * Function allocates interrupts for acceleration device.
- *
- * Return: 0 on success, error code otherwise.
- */
+ 
 int adf_isr_resource_alloc(struct adf_accel_dev *accel_dev)
 {
 	int ret;
@@ -354,13 +339,7 @@ err_out:
 }
 EXPORT_SYMBOL_GPL(adf_isr_resource_alloc);
 
-/**
- * adf_init_misc_wq() - Init misc workqueue
- *
- * Function init workqueue 'qat_misc_wq' for general purpose.
- *
- * Return: 0 on success, error code otherwise.
- */
+ 
 int __init adf_init_misc_wq(void)
 {
 	adf_misc_wq = alloc_workqueue("qat_misc_wq", WQ_MEM_RECLAIM, 0);

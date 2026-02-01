@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Intel Speed Select -- Allow speed select to daemonize
- * Copyright (c) 2022 Intel Corporation.
- */
+
+ 
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -171,7 +168,7 @@ static void daemonize(char *rundir, char *pidfile)
 
 	pid = fork();
 	if (pid < 0) {
-		/* Could not fork */
+		 
 		exit(EXIT_FAILURE);
 	}
 	if (pid > 0)
@@ -183,7 +180,7 @@ static void daemonize(char *rundir, char *pidfile)
 	if (sid < 0)
 		exit(EXIT_FAILURE);
 
-	/* close all descriptors */
+	 
 	for (i = getdtablesize(); i >= 0; --i)
 		close(i);
 
@@ -201,16 +198,16 @@ static void daemonize(char *rundir, char *pidfile)
 
 	pid_file_handle = open(pidfile, O_RDWR | O_CREAT, 0600);
 	if (pid_file_handle == -1) {
-		/* Couldn't open lock file */
+		 
 		exit(1);
 	}
-	/* Try to lock file */
+	 
 #ifdef LOCKF_SUPPORT
 	if (lockf(pid_file_handle, F_TLOCK, 0) == -1) {
 #else
 	if (flock(pid_file_handle, LOCK_EX|LOCK_NB) < 0) {
 #endif
-		/* Couldn't get lock on lock file */
+		 
 		fprintf(stderr, "Couldn't get lock file %d\n", getpid());
 		exit(1);
 	}

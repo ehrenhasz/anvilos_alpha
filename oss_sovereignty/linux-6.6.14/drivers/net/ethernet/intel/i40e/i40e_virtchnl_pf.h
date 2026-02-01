@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright(c) 2013 - 2018 Intel Corporation. */
+ 
+ 
 
 #ifndef _I40E_VIRTCHNL_PF_H_
 #define _I40E_VIRTCHNL_PF_H_
@@ -19,7 +19,7 @@
 #define I40E_VF_STATE_WAIT_COUNT	20
 #define I40E_VFR_WAIT_COUNT		100
 
-/* Various queue ctrls */
+ 
 enum i40e_queue_ctrl {
 	I40E_QUEUE_CTRL_UNKNOWN = 0,
 	I40E_QUEUE_CTRL_ENABLE,
@@ -30,7 +30,7 @@ enum i40e_queue_ctrl {
 	I40E_QUEUE_CTRL_FASTDISABLECHECK,
 };
 
-/* VF states */
+ 
 enum i40e_vf_states {
 	I40E_VF_STATE_INIT = 0,
 	I40E_VF_STATE_ACTIVE,
@@ -42,72 +42,64 @@ enum i40e_vf_states {
 	I40E_VF_STATE_RESETTING
 };
 
-/* VF capabilities */
+ 
 enum i40e_vf_capabilities {
 	I40E_VIRTCHNL_VF_CAP_PRIVILEGE = 0,
 	I40E_VIRTCHNL_VF_CAP_L2,
 	I40E_VIRTCHNL_VF_CAP_RDMA,
 };
 
-/* In ADq, max 4 VSI's can be allocated per VF including primary VF VSI.
- * These variables are used to store indices, id's and number of queues
- * for each VSI including that of primary VF VSI. Each Traffic class is
- * termed as channel and each channel can in-turn have 4 queues which
- * means max 16 queues overall per VF.
- */
+ 
 struct i40evf_channel {
-	u16 vsi_idx; /* index in PF struct for all channel VSIs */
-	u16 vsi_id; /* VSI ID used by firmware */
-	u16 num_qps; /* number of queue pairs requested by user */
-	u64 max_tx_rate; /* bandwidth rate allocation for VSIs */
+	u16 vsi_idx;  
+	u16 vsi_id;  
+	u16 num_qps;  
+	u64 max_tx_rate;  
 };
 
-/* VF information structure */
+ 
 struct i40e_vf {
 	struct i40e_pf *pf;
 
-	/* VF id in the PF space */
+	 
 	s16 vf_id;
-	/* all VF vsis connect to the same parent */
+	 
 	enum i40e_switch_element_types parent_type;
 	struct virtchnl_version_info vf_ver;
-	u32 driver_caps; /* reported by VF driver */
+	u32 driver_caps;  
 
-	/* VF Port Extender (PE) stag if used */
+	 
 	u16 stag;
 
 	struct virtchnl_ether_addr default_lan_addr;
 	u16 port_vlan_id;
-	bool pf_set_mac;	/* The VMM admin set the VF MAC address */
+	bool pf_set_mac;	 
 	bool trusted;
 
-	/* VSI indices - actual VSI pointers are maintained in the PF structure
-	 * When assigned, these will be non-zero, because VSI 0 is always
-	 * the main LAN VSI for the PF.
-	 */
-	u16 lan_vsi_idx;	/* index into PF struct */
-	u16 lan_vsi_id;		/* ID as used by firmware */
+	 
+	u16 lan_vsi_idx;	 
+	u16 lan_vsi_id;		 
 
-	u8 num_queue_pairs;	/* num of qps assigned to VF vsis */
-	u8 num_req_queues;	/* num of requested qps */
-	u64 num_mdd_events;	/* num of mdd events detected */
+	u8 num_queue_pairs;	 
+	u8 num_req_queues;	 
+	u64 num_mdd_events;	 
 
-	unsigned long vf_caps;	/* vf's adv. capabilities */
-	unsigned long vf_states;	/* vf's runtime states */
-	unsigned int tx_rate;	/* Tx bandwidth limit in Mbps */
+	unsigned long vf_caps;	 
+	unsigned long vf_states;	 
+	unsigned int tx_rate;	 
 	bool link_forced;
-	bool link_up;		/* only valid if VF link is forced */
+	bool link_up;		 
 	bool spoofchk;
 	u16 num_vlan;
 
-	/* ADq related variables */
-	bool adq_enabled; /* flag to enable adq */
+	 
+	bool adq_enabled;  
 	u8 num_tc;
 	struct i40evf_channel ch[I40E_MAX_VF_VSI];
 	struct hlist_head cloud_filter_list;
 	u16 num_cloud_filters;
 
-	/* RDMA Client */
+	 
 	struct virtchnl_rdma_qvlist_info *qvlist_info;
 };
 
@@ -121,7 +113,7 @@ bool i40e_reset_vf(struct i40e_vf *vf, bool flr);
 bool i40e_reset_all_vfs(struct i40e_pf *pf, bool flr);
 void i40e_vc_notify_vf_reset(struct i40e_vf *vf);
 
-/* VF configuration related iplink handlers */
+ 
 int i40e_ndo_set_vf_mac(struct net_device *netdev, int vf_id, u8 *mac);
 int i40e_ndo_set_vf_port_vlan(struct net_device *netdev, int vf_id,
 			      u16 vlan_id, u8 qos, __be16 vlan_proto);
@@ -137,8 +129,8 @@ void i40e_vc_notify_link_state(struct i40e_pf *pf);
 void i40e_vc_notify_reset(struct i40e_pf *pf);
 #ifdef CONFIG_PCI_IOV
 void i40e_restore_all_vfs_msi_state(struct pci_dev *pdev);
-#endif /* CONFIG_PCI_IOV */
+#endif  
 int i40e_get_vf_stats(struct net_device *netdev, int vf_id,
 		      struct ifla_vf_stats *vf_stats);
 
-#endif /* _I40E_VIRTCHNL_PF_H_ */
+#endif  

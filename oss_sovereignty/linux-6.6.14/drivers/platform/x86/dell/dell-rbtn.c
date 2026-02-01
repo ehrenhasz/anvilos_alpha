@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
-    Dell Airplane Mode Switch driver
-    Copyright (C) 2014-2015  Pali Rohár <pali@kernel.org>
 
-*/
+ 
 
 #include <linux/module.h>
 #include <linux/acpi.h>
@@ -26,9 +22,7 @@ struct rbtn_data {
 };
 
 
-/*
- * acpi functions
- */
+ 
 
 static enum rbtn_type rbtn_check(struct acpi_device *device)
 {
@@ -82,9 +76,7 @@ static int rbtn_acquire(struct acpi_device *device, bool enable)
 }
 
 
-/*
- * rfkill device
- */
+ 
 
 static void rbtn_rfkill_query(struct rfkill *rfkill, void *data)
 {
@@ -100,7 +92,7 @@ static void rbtn_rfkill_query(struct rfkill *rfkill, void *data)
 
 static int rbtn_rfkill_set_block(void *data, bool blocked)
 {
-	/* NOTE: setting soft rfkill state is not supported */
+	 
 	return -EINVAL;
 }
 
@@ -117,11 +109,7 @@ static int rbtn_rfkill_init(struct acpi_device *device)
 	if (rbtn_data->rfkill)
 		return 0;
 
-	/*
-	 * NOTE: rbtn controls all radio devices, not only WLAN
-	 *       but rfkill interface does not support "ANY" type
-	 *       so "WLAN" type is used
-	 */
+	 
 	rbtn_data->rfkill = rfkill_alloc("dell-rbtn", &device->dev,
 					 RFKILL_TYPE_WLAN, &rbtn_ops, device);
 	if (!rbtn_data->rfkill)
@@ -158,9 +146,7 @@ static void rbtn_rfkill_event(struct acpi_device *device)
 }
 
 
-/*
- * input device
- */
+ 
 
 static int rbtn_input_init(struct rbtn_data *rbtn_data)
 {
@@ -201,9 +187,7 @@ static void rbtn_input_event(struct rbtn_data *rbtn_data)
 }
 
 
-/*
- * acpi driver
- */
+ 
 
 static int rbtn_add(struct acpi_device *device);
 static void rbtn_remove(struct acpi_device *device);
@@ -213,30 +197,7 @@ static const struct acpi_device_id rbtn_ids[] = {
 	{ "DELRBTN", 0 },
 	{ "DELLABCE", 0 },
 
-	/*
-	 * This driver can also handle the "DELLABC6" device that
-	 * appears on the XPS 13 9350, but that device is disabled by
-	 * the DSDT unless booted with acpi_osi="!Windows 2012"
-	 * acpi_osi="!Windows 2013".
-	 *
-	 * According to Mario at Dell:
-	 *
-	 *  DELLABC6 is a custom interface that was created solely to
-	 *  have airplane mode support for Windows 7.  For Windows 10
-	 *  the proper interface is to use that which is handled by
-	 *  intel-hid. A OEM airplane mode driver is not used.
-	 *
-	 *  Since the kernel doesn't identify as Windows 7 it would be
-	 *  incorrect to do attempt to use that interface.
-	 *
-	 * Even if we override _OSI and bind to DELLABC6, we end up with
-	 * inconsistent behavior in which userspace can get out of sync
-	 * with the rfkill state as it conflicts with events from
-	 * intel-hid.
-	 *
-	 * The upshot is that it is better to just ignore DELLABC6
-	 * devices.
-	 */
+	 
 
 	{ "", 0 },
 };
@@ -265,16 +226,7 @@ static int rbtn_resume(struct device *dev)
 	struct rbtn_data *rbtn_data = acpi_driver_data(device);
 	acpi_status status;
 
-	/*
-	 * Upon resume, some BIOSes send an ACPI notification thet triggers
-	 * an unwanted input event. In order to ignore it, we use a flag
-	 * that we set at suspend and clear once we have received the extra
-	 * ACPI notification. Since ACPI notifications are delivered
-	 * asynchronously to drivers, we clear the flag from the workqueue
-	 * used to deliver the notifications. This should be enough
-	 * to have the flag cleared only after we received the extra
-	 * notification, if any.
-	 */
+	 
 	status = acpi_os_execute(OSL_NOTIFY_HANDLER,
 			 rbtn_clear_suspended_flag, rbtn_data);
 	if (ACPI_FAILURE(status))
@@ -299,9 +251,7 @@ static struct acpi_driver rbtn_driver = {
 };
 
 
-/*
- * notifier export functions
- */
+ 
 
 static bool auto_remove_rfkill = true;
 
@@ -379,9 +329,7 @@ int dell_rbtn_notifier_unregister(struct notifier_block *nb)
 EXPORT_SYMBOL_GPL(dell_rbtn_notifier_unregister);
 
 
-/*
- * acpi driver functions
- */
+ 
 
 static int rbtn_add(struct acpi_device *device)
 {
@@ -450,10 +398,7 @@ static void rbtn_notify(struct acpi_device *device, u32 event)
 {
 	struct rbtn_data *rbtn_data = device->driver_data;
 
-	/*
-	 * Some BIOSes send a notification at resume.
-	 * Ignore it to prevent unwanted input events.
-	 */
+	 
 	if (rbtn_data->suspended) {
 		dev_dbg(&device->dev, "ACPI notification ignored\n");
 		return;
@@ -479,9 +424,7 @@ static void rbtn_notify(struct acpi_device *device, u32 event)
 }
 
 
-/*
- * module functions
- */
+ 
 
 module_acpi_driver(rbtn_driver);
 

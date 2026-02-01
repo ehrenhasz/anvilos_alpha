@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
- /* Management for virtio crypto devices (refer to adf_dev_mgr.c)
-  *
-  * Copyright 2016 HUAWEI TECHNOLOGIES CO., LTD.
-  */
+
+  
 
 #include <linux/mutex.h>
 #include <linux/list.h>
@@ -14,22 +11,13 @@
 static LIST_HEAD(virtio_crypto_table);
 static uint32_t num_devices;
 
-/* The table_lock protects the above global list and num_devices */
+ 
 static DEFINE_MUTEX(table_lock);
 
 #define VIRTIO_CRYPTO_MAX_DEVICES 32
 
 
-/*
- * virtcrypto_devmgr_add_dev() - Add vcrypto_dev to the acceleration
- * framework.
- * @vcrypto_dev:  Pointer to virtio crypto device.
- *
- * Function adds virtio crypto device to the global list.
- * To be used by virtio crypto device specific drivers.
- *
- * Return: 0 on success, error code othewise.
- */
+ 
 int virtcrypto_devmgr_add_dev(struct virtio_crypto *vcrypto_dev)
 {
 	struct list_head *itr;
@@ -63,16 +51,7 @@ struct list_head *virtcrypto_devmgr_get_head(void)
 	return &virtio_crypto_table;
 }
 
-/*
- * virtcrypto_devmgr_rm_dev() - Remove vcrypto_dev from the acceleration
- * framework.
- * @vcrypto_dev:  Pointer to virtio crypto device.
- *
- * Function removes virtio crypto device from the acceleration framework.
- * To be used by virtio crypto device specific drivers.
- *
- * Return: void
- */
+ 
 void virtcrypto_devmgr_rm_dev(struct virtio_crypto *vcrypto_dev)
 {
 	mutex_lock(&table_lock);
@@ -81,16 +60,7 @@ void virtcrypto_devmgr_rm_dev(struct virtio_crypto *vcrypto_dev)
 	mutex_unlock(&table_lock);
 }
 
-/*
- * virtcrypto_devmgr_get_first()
- *
- * Function returns the first virtio crypto device from the acceleration
- * framework.
- *
- * To be used by virtio crypto device specific drivers.
- *
- * Return: pointer to vcrypto_dev or NULL if not found.
- */
+ 
 struct virtio_crypto *virtcrypto_devmgr_get_first(void)
 {
 	struct virtio_crypto *dev = NULL;
@@ -104,30 +74,13 @@ struct virtio_crypto *virtcrypto_devmgr_get_first(void)
 	return dev;
 }
 
-/*
- * virtcrypto_dev_in_use() - Check whether vcrypto_dev is currently in use
- * @vcrypto_dev: Pointer to virtio crypto device.
- *
- * To be used by virtio crypto device specific drivers.
- *
- * Return: 1 when device is in use, 0 otherwise.
- */
+ 
 int virtcrypto_dev_in_use(struct virtio_crypto *vcrypto_dev)
 {
 	return atomic_read(&vcrypto_dev->ref_count) != 0;
 }
 
-/*
- * virtcrypto_dev_get() - Increment vcrypto_dev reference count
- * @vcrypto_dev: Pointer to virtio crypto device.
- *
- * Increment the vcrypto_dev refcount and if this is the first time
- * incrementing it during this period the vcrypto_dev is in use,
- * increment the module refcount too.
- * To be used by virtio crypto device specific drivers.
- *
- * Return: 0 when successful, EFAULT when fail to bump module refcount
- */
+ 
 int virtcrypto_dev_get(struct virtio_crypto *vcrypto_dev)
 {
 	if (atomic_add_return(1, &vcrypto_dev->ref_count) == 1)
@@ -136,51 +89,20 @@ int virtcrypto_dev_get(struct virtio_crypto *vcrypto_dev)
 	return 0;
 }
 
-/*
- * virtcrypto_dev_put() - Decrement vcrypto_dev reference count
- * @vcrypto_dev: Pointer to virtio crypto device.
- *
- * Decrement the vcrypto_dev refcount and if this is the last time
- * decrementing it during this period the vcrypto_dev is in use,
- * decrement the module refcount too.
- * To be used by virtio crypto device specific drivers.
- *
- * Return: void
- */
+ 
 void virtcrypto_dev_put(struct virtio_crypto *vcrypto_dev)
 {
 	if (atomic_sub_return(1, &vcrypto_dev->ref_count) == 0)
 		module_put(vcrypto_dev->owner);
 }
 
-/*
- * virtcrypto_dev_started() - Check whether device has started
- * @vcrypto_dev: Pointer to virtio crypto device.
- *
- * To be used by virtio crypto device specific drivers.
- *
- * Return: 1 when the device has started, 0 otherwise
- */
+ 
 int virtcrypto_dev_started(struct virtio_crypto *vcrypto_dev)
 {
 	return (vcrypto_dev->status & VIRTIO_CRYPTO_S_HW_READY);
 }
 
-/*
- * virtcrypto_get_dev_node() - Get vcrypto_dev on the node.
- * @node:  Node id the driver works.
- * @service: Crypto service that needs to be supported by the
- *	      dev
- * @algo: The algorithm number that needs to be supported by the
- *	  dev
- *
- * Function returns the virtio crypto device used fewest on the node,
- * and supports the given crypto service and algorithm.
- *
- * To be used by virtio crypto device specific drivers.
- *
- * Return: pointer to vcrypto_dev or NULL if not found.
- */
+ 
 struct virtio_crypto *virtcrypto_get_dev_node(int node, uint32_t service,
 					      uint32_t algo)
 {
@@ -206,7 +128,7 @@ struct virtio_crypto *virtcrypto_get_dev_node(int node, uint32_t service,
 	if (!vcrypto_dev) {
 		pr_info("virtio_crypto: Could not find a device on node %d\n",
 				node);
-		/* Get any started device */
+		 
 		list_for_each_entry(tmp_dev,
 				virtcrypto_devmgr_get_head(), list) {
 			if (virtcrypto_dev_started(tmp_dev) &&
@@ -225,16 +147,7 @@ struct virtio_crypto *virtcrypto_get_dev_node(int node, uint32_t service,
 	return vcrypto_dev;
 }
 
-/*
- * virtcrypto_dev_start() - Start virtio crypto device
- * @vcrypto:    Pointer to virtio crypto device.
- *
- * Function notifies all the registered services that the virtio crypto device
- * is ready to be used.
- * To be used by virtio crypto device specific drivers.
- *
- * Return: 0 on success, EFAULT when fail to register algorithms
- */
+ 
 int virtcrypto_dev_start(struct virtio_crypto *vcrypto)
 {
 	if (virtio_crypto_skcipher_algs_register(vcrypto)) {
@@ -251,35 +164,14 @@ int virtcrypto_dev_start(struct virtio_crypto *vcrypto)
 	return 0;
 }
 
-/*
- * virtcrypto_dev_stop() - Stop virtio crypto device
- * @vcrypto:    Pointer to virtio crypto device.
- *
- * Function notifies all the registered services that the virtio crypto device
- * is ready to be used.
- * To be used by virtio crypto device specific drivers.
- *
- * Return: void
- */
+ 
 void virtcrypto_dev_stop(struct virtio_crypto *vcrypto)
 {
 	virtio_crypto_skcipher_algs_unregister(vcrypto);
 	virtio_crypto_akcipher_algs_unregister(vcrypto);
 }
 
-/*
- * vcrypto_algo_is_supported()
- * @vcrypto: Pointer to virtio crypto device.
- * @service: The bit number for service validate.
- *	      See VIRTIO_CRYPTO_SERVICE_*
- * @algo : The bit number for the algorithm to validate.
- *
- *
- * Validate if the virtio crypto device supports a service and
- * algo.
- *
- * Return true if device supports a service and algo.
- */
+ 
 
 bool virtcrypto_algo_is_supported(struct virtio_crypto *vcrypto,
 				  uint32_t service,

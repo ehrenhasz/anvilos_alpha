@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Supervisor Mode Access Prevention support
- *
- * Copyright (C) 2012 Intel Corporation
- * Author: H. Peter Anvin <hpa@linux.intel.com>
- */
+ 
+ 
 
 #ifndef _ASM_X86_SMAP_H
 #define _ASM_X86_SMAP_H
@@ -13,7 +8,7 @@
 #include <asm/cpufeatures.h>
 #include <asm/alternative.h>
 
-/* "Raw" instruction opcodes */
+ 
 #define __ASM_CLAC	".byte 0x0f,0x01,0xca"
 #define __ASM_STAC	".byte 0x0f,0x01,0xcb"
 
@@ -25,17 +20,17 @@
 #define ASM_STAC \
 	ALTERNATIVE "", __ASM_STAC, X86_FEATURE_SMAP
 
-#else /* __ASSEMBLY__ */
+#else  
 
 static __always_inline void clac(void)
 {
-	/* Note: a barrier is implicit in alternative() */
+	 
 	alternative("", __ASM_CLAC, X86_FEATURE_SMAP);
 }
 
 static __always_inline void stac(void)
 {
-	/* Note: a barrier is implicit in alternative() */
+	 
 	alternative("", __ASM_STAC, X86_FEATURE_SMAP);
 }
 
@@ -59,12 +54,12 @@ static __always_inline void smap_restore(unsigned long flags)
 		      : : "g" (flags) : "memory", "cc");
 }
 
-/* These macros can be used in asm() statements */
+ 
 #define ASM_CLAC \
 	ALTERNATIVE("", __ASM_CLAC, X86_FEATURE_SMAP)
 #define ASM_STAC \
 	ALTERNATIVE("", __ASM_STAC, X86_FEATURE_SMAP)
 
-#endif /* __ASSEMBLY__ */
+#endif  
 
-#endif /* _ASM_X86_SMAP_H */
+#endif  

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2016 MediaTek Inc.
- * Author: PC Chen <pc.chen@mediatek.com>
- *         Tiffany Lin <tiffany.lin@mediatek.com>
- */
+
+ 
 
 #include <media/v4l2-event.h>
 #include <media/v4l2-mem2mem.h>
@@ -268,7 +264,7 @@ static int vidioc_try_fmt(struct mtk_vcodec_dec_ctx *ctx, struct v4l2_format *f,
 
 	pix_fmt_mp->field = V4L2_FIELD_NONE;
 
-	/* Always apply frame size constraints from the coded side */
+	 
 	if (V4L2_TYPE_IS_OUTPUT(f->type))
 		frmsize = &fmt->frmsize;
 	else
@@ -283,12 +279,7 @@ static int vidioc_try_fmt(struct mtk_vcodec_dec_ctx *ctx, struct v4l2_format *f,
 	} else if (f->type == V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE) {
 		int tmp_w, tmp_h;
 
-		/*
-		 * Find next closer width align 64, heign align 64, size align
-		 * 64 rectangle
-		 * Note: This only get default value, the real HW needed value
-		 *       only available when ctx in MTK_STATE_HEADER state
-		 */
+		 
 		tmp_w = pix_fmt_mp->width;
 		tmp_h = pix_fmt_mp->height;
 		v4l_bound_align_image(&pix_fmt_mp->width, MTK_VDEC_MIN_W, frmsize->max_width, 6,
@@ -390,7 +381,7 @@ static int vidioc_vdec_g_selection(struct file *file, void *priv,
 		break;
 	case V4L2_SEL_TGT_COMPOSE:
 		if (vdec_if_get_param(ctx, GET_PARAM_CROP_INFO, &(s->r))) {
-			/* set to default value if header info not ready yet*/
+			 
 			s->r.left = 0;
 			s->r.top = 0;
 			s->r.width = q_data->visible_width;
@@ -402,7 +393,7 @@ static int vidioc_vdec_g_selection(struct file *file, void *priv,
 	}
 
 	if (ctx->state < MTK_STATE_HEADER) {
-		/* set to default value if header info not ready yet*/
+		 
 		s->r.left = 0;
 		s->r.top = 0;
 		s->r.width = q_data->visible_width;
@@ -452,10 +443,7 @@ static int vidioc_vdec_s_fmt(struct file *file, void *priv,
 		return -EINVAL;
 
 	pix_mp = &f->fmt.pix_mp;
-	/*
-	 * Setting OUTPUT format after OUTPUT buffers are allocated is invalid
-	 * if using the stateful API.
-	 */
+	 
 	if (!dec_pdata->uses_stateless_api &&
 	    f->type == V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE &&
 	    vb2_is_busy(&ctx->m2m_ctx->out_q_ctx.q)) {
@@ -463,10 +451,7 @@ static int vidioc_vdec_s_fmt(struct file *file, void *priv,
 		ret = -EBUSY;
 	}
 
-	/*
-	 * Setting CAPTURE format after CAPTURE buffers are allocated is
-	 * invalid.
-	 */
+	 
 	if ((f->type == V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE) &&
 	    vb2_is_busy(&ctx->m2m_ctx->cap_q_ctx.q)) {
 		mtk_v4l2_vdec_err(ctx, "cap_q_ctx buffers already requested");
@@ -514,18 +499,12 @@ static int vidioc_vdec_s_fmt(struct file *file, void *priv,
 		ctx->capture_fourcc = fmt->fourcc;
 	}
 
-	/*
-	 * If using the stateless API, S_FMT should have the effect of setting
-	 * the CAPTURE queue resolution no matter which queue it was called on.
-	 */
+	 
 	if (dec_pdata->uses_stateless_api) {
 		ctx->picinfo.pic_w = pix_mp->width;
 		ctx->picinfo.pic_h = pix_mp->height;
 
-		/*
-		 * If get pic info fail, need to use the default pic info params, or
-		 * v4l2-compliance will fail
-		 */
+		 
 		ret = vdec_if_get_param(ctx, GET_PARAM_PIC_INFO, &ctx->picinfo);
 		if (ret) {
 			mtk_v4l2_vdec_err(ctx, "[%d]Error!! Get GET_PARAM_PICTURE_INFO Fail",
@@ -578,7 +557,7 @@ static int vidioc_enum_framesizes(struct file *file, void *priv,
 		if (fsize->pixel_format != dec_pdata->vdec_formats[i].fourcc)
 			continue;
 
-		/* Only coded formats have frame sizes set */
+		 
 		if (!dec_pdata->vdec_formats[i].frmsize.max_width)
 			return -ENOTTY;
 
@@ -667,12 +646,7 @@ static int vidioc_vdec_g_fmt(struct file *file, void *priv,
 
 	if ((f->type == V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE) &&
 	    (ctx->state >= MTK_STATE_HEADER)) {
-		/* Until STREAMOFF is called on the CAPTURE queue
-		 * (acknowledging the event), the driver operates as if
-		 * the resolution hasn't changed yet.
-		 * So we just return picinfo yet, and update picinfo in
-		 * stop_streaming hook function
-		 */
+		 
 		q_data->sizeimage[0] = ctx->picinfo.fb_sz[0];
 		q_data->sizeimage[1] = ctx->picinfo.fb_sz[1];
 		q_data->bytesperline[0] = ctx->last_decoded_picinfo.buf_w;
@@ -681,19 +655,11 @@ static int vidioc_vdec_g_fmt(struct file *file, void *priv,
 		q_data->coded_height = ctx->picinfo.buf_h;
 		ctx->last_decoded_picinfo.cap_fourcc = q_data->fmt->fourcc;
 
-		/*
-		 * Width and height are set to the dimensions
-		 * of the movie, the buffer is bigger and
-		 * further processing stages should crop to this
-		 * rectangle.
-		 */
+		 
 		pix_mp->width = q_data->coded_width;
 		pix_mp->height = q_data->coded_height;
 
-		/*
-		 * Set pixelformat to the format in which mt vcodec
-		 * outputs the decoded frame
-		 */
+		 
 		pix_mp->num_planes = q_data->fmt->num_planes;
 		pix_mp->pixelformat = q_data->fmt->fourcc;
 		pix_mp->plane_fmt[0].bytesperline = q_data->bytesperline[0];
@@ -702,12 +668,7 @@ static int vidioc_vdec_g_fmt(struct file *file, void *priv,
 		pix_mp->plane_fmt[1].sizeimage = q_data->sizeimage[1];
 
 	} else if (f->type == V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE) {
-		/*
-		 * This is run on OUTPUT
-		 * The buffer contains compressed image
-		 * so width and height have no meaning.
-		 * Assign value here to pass v4l2-compliance test
-		 */
+		 
 		pix_mp->width = q_data->visible_width;
 		pix_mp->height = q_data->visible_height;
 		pix_mp->plane_fmt[0].bytesperline = q_data->bytesperline[0];
@@ -872,12 +833,7 @@ void vb2ops_vdec_stop_streaming(struct vb2_queue *q)
 
 	if (ctx->state >= MTK_STATE_HEADER) {
 
-		/* Until STREAMOFF is called on the CAPTURE queue
-		 * (acknowledging the event), the driver operates
-		 * as if the resolution hasn't changed yet, i.e.
-		 * VIDIOC_G_FMT< etc. return previous resolution.
-		 * So we update picinfo here
-		 */
+		 
 		ctx->picinfo = ctx->last_decoded_picinfo;
 
 		mtk_v4l2_vdec_dbg(2, ctx,

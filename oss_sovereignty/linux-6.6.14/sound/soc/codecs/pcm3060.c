@@ -1,8 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// PCM3060 codec driver
-//
-// Copyright (C) 2018 Kirill Marinushkin <kmarinushkin@birdec.com>
+
+
+
+
+
 
 #include <linux/module.h>
 #include <sound/pcm_params.h>
@@ -11,7 +11,7 @@
 
 #include "pcm3060.h"
 
-/* dai */
+ 
 
 static int pcm3060_set_sysclk(struct snd_soc_dai *dai, int clk_id,
 			      unsigned int freq, int dir)
@@ -204,7 +204,7 @@ static struct snd_soc_dai_driver pcm3060_dai[] = {
 	},
 };
 
-/* dapm */
+ 
 
 static DECLARE_TLV_DB_SCALE(pcm3060_dapm_tlv, -10050, 50, 1);
 
@@ -246,7 +246,7 @@ static const struct snd_soc_dapm_route pcm3060_dapm_map[] = {
 	{ "ADC", NULL, "INR" },
 };
 
-/* soc component */
+ 
 
 static const struct snd_soc_component_driver pcm3060_soc_comp_driver = {
 	.controls = pcm3060_dapm_controls,
@@ -258,7 +258,7 @@ static const struct snd_soc_component_driver pcm3060_soc_comp_driver = {
 	.endianness = 1,
 };
 
-/* regmap */
+ 
 
 static bool pcm3060_reg_writeable(struct device *dev, unsigned int reg)
 {
@@ -272,7 +272,7 @@ static bool pcm3060_reg_readable(struct device *dev, unsigned int reg)
 
 static bool pcm3060_reg_volatile(struct device *dev, unsigned int reg)
 {
-	/* PCM3060_REG64 is volatile */
+	 
 	return (reg == PCM3060_REG64);
 }
 
@@ -302,7 +302,7 @@ const struct regmap_config pcm3060_regmap = {
 };
 EXPORT_SYMBOL(pcm3060_regmap);
 
-/* device */
+ 
 
 static void pcm3060_parse_dt(const struct device_node *np,
 			     struct pcm3060_priv *priv)
@@ -315,7 +315,7 @@ int pcm3060_probe(struct device *dev)
 	int rc;
 	struct pcm3060_priv *priv = dev_get_drvdata(dev);
 
-	/* soft reset */
+	 
 	rc = regmap_update_bits(priv->regmap, PCM3060_REG64,
 				PCM3060_REG_MRST, 0);
 	if (rc) {

@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2020 Facebook
+
+
 
 #include <linux/bpf.h>
 #include <stdint.h>
@@ -59,11 +59,11 @@ int test_core_enumval(void *ctx)
 
 	out->named_val1 = bpf_core_enum_value(named, NAMED_ENUM_VAL1);
 	out->named_val2 = bpf_core_enum_value(named, NAMED_ENUM_VAL2);
-	/* NAMED_ENUM_VAL3 value is optional */
+	 
 
 	out->anon_val1 = bpf_core_enum_value(anon, ANON_ENUM_VAL1);
 	out->anon_val2 = bpf_core_enum_value(anon, ANON_ENUM_VAL2);
-	/* ANON_ENUM_VAL3 value is optional */
+	 
 #else
 	data.skip = true;
 #endif

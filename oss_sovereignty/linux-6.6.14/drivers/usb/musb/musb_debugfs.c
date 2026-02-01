@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * MUSB OTG driver debugfs support
- *
- * Copyright 2010 Nokia Corporation
- * Contact: Felipe Balbi <felipe.balbi@nokia.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -78,7 +73,7 @@ static const struct musb_register_map musb_regmap[] = {
 	{ "RxFIFOadd",	MUSB_RXFIFOADD,	16 },
 	{ "EPInfo",	MUSB_EPINFO,	8 },
 	{ "RAMInfo",	MUSB_RAMINFO,	8 },
-	{  }	/* Terminating Entry */
+	{  }	 
 };
 
 static int musb_regdump_show(struct seq_file *s, void *unused)
@@ -288,12 +283,7 @@ static ssize_t musb_softconnect_write(struct file *file,
 	} else if (!strncmp(buf, "1", 1)) {
 		switch (musb_get_state(musb)) {
 		case OTG_STATE_A_WAIT_BCON:
-			/*
-			 * musb_save_context() called in musb_runtime_suspend()
-			 * might cache devctl with SESSION bit cleared during
-			 * soft-disconnect, so specifically set SESSION bit
-			 * here to preserve it for musb_runtime_resume().
-			 */
+			 
 			musb->context.devctl |= MUSB_DEVCTL_SESSION;
 			reg = musb_readb(musb->mregs, MUSB_DEVCTL);
 			reg |= MUSB_DEVCTL_SESSION;
@@ -309,10 +299,7 @@ static ssize_t musb_softconnect_write(struct file *file,
 	return count;
 }
 
-/*
- * In host mode, connect/disconnect the bus without physically
- * remove the devices.
- */
+ 
 static const struct file_operations musb_softconnect_fops = {
 	.open			= musb_softconnect_open,
 	.write			= musb_softconnect_write,
@@ -335,7 +322,7 @@ void musb_init_debugfs(struct musb *musb)
 			    &musb_softconnect_fops);
 }
 
-void /* __init_or_exit */ musb_exit_debugfs(struct musb *musb)
+void   musb_exit_debugfs(struct musb *musb)
 {
 	debugfs_remove_recursive(musb->debugfs_root);
 }

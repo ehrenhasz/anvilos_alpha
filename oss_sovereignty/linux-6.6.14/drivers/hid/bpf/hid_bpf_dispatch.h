@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
+ 
 
 #ifndef _BPF_HID_BPF_DISPATCH_H
 #define _BPF_HID_BPF_DISPATCH_H

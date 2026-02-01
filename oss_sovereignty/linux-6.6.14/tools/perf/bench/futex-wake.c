@@ -1,15 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2013  Davidlohr Bueso <davidlohr@hp.com>
- *
- * futex-wake: Block a bunch of threads on a futex and wake'em up, N at a time.
- *
- * This program is particularly useful to measure the latency of nthread wakeups
- * in non-error situations:  all waiters are queued and all wake calls wakeup
- * one or more tasks, and thus the waitqueue is never empty.
- */
 
-/* For the CLR_() macros */
+ 
+
+ 
 #include <string.h>
 #include <pthread.h>
 
@@ -30,7 +22,7 @@
 #include <sys/time.h>
 #include <sys/mman.h>
 
-/* all threads will block on the same futex */
+ 
 static u_int32_t futex1 = 0;
 
 static pthread_t *worker;
@@ -42,10 +34,7 @@ static unsigned int threads_starting;
 static int futex_flag = 0;
 
 static struct bench_futex_parameters params = {
-	/*
-	 * How many wakeups to do at a time.
-	 * Default to 1 in order to make the kernel work more.
-	 */
+	 
 	.nwakes  = 1,
 };
 
@@ -107,7 +96,7 @@ static void block_threads(pthread_t *w, struct perf_cpu_map *cpu)
 	BUG_ON(!cpuset);
 	size = CPU_ALLOC_SIZE(nrcpus);
 
-	/* create and block all threads */
+	 
 	for (i = 0; i < params.nthreads; i++) {
 		pthread_attr_t thread_attr;
 
@@ -188,10 +177,10 @@ int bench_futex_wake(int argc, const char **argv)
 		unsigned int nwoken = 0;
 		struct timeval start, end, runtime;
 
-		/* create, launch & block all threads */
+		 
 		block_threads(worker, cpu);
 
-		/* make sure all threads are already blocked */
+		 
 		mutex_lock(&thread_lock);
 		while (threads_starting)
 			cond_wait(&thread_parent, &thread_lock);
@@ -200,7 +189,7 @@ int bench_futex_wake(int argc, const char **argv)
 
 		usleep(100000);
 
-		/* Ok, all threads are patiently blocked, start waking folks up */
+		 
 		gettimeofday(&start, NULL);
 		while (nwoken != params.nthreads)
 			nwoken += futex_wake(&futex1,
@@ -225,7 +214,7 @@ int bench_futex_wake(int argc, const char **argv)
 
 	}
 
-	/* cleanup & report results */
+	 
 	cond_destroy(&thread_parent);
 	cond_destroy(&thread_worker);
 	mutex_destroy(&thread_lock);

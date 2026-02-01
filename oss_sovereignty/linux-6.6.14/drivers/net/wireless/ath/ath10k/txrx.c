@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: ISC
-/*
- * Copyright (c) 2005-2011 Atheros Communications Inc.
- * Copyright (c) 2011-2016 Qualcomm Atheros, Inc.
- * Copyright (c) 2018, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include "core.h"
 #include "txrx.h"
@@ -21,11 +17,7 @@ static void ath10k_report_offchan_tx(struct ath10k *ar, struct sk_buff *skb)
 	if (ath10k_mac_tx_frm_has_freq(ar))
 		return;
 
-	/* If the original wait_for_completion() timed out before
-	 * {data,mgmt}_tx_completed() was called then we could complete
-	 * offchan_tx_completed for a different skb. Prevent this by using
-	 * offchan_tx_skb.
-	 */
+	 
 	spin_lock_bh(&ar->data_lock);
 	if (ar->offchan_tx_skb != skb) {
 		ath10k_warn(ar, "completed old offchannel frame\n");
@@ -33,7 +25,7 @@ static void ath10k_report_offchan_tx(struct ath10k *ar, struct sk_buff *skb)
 	}
 
 	complete(&ar->offchan_tx_completed);
-	ar->offchan_tx_skb = NULL; /* just for sanity */
+	ar->offchan_tx_skb = NULL;  
 
 	ath10k_dbg(ar, ATH10K_DBG_HTT, "completed offchannel skb %pK\n", skb);
 out:
@@ -142,7 +134,7 @@ int ath10k_txrx_tx_unref(struct ath10k_htt *htt,
 
 	rcu_read_unlock();
 
-	/* we do not own the msdu anymore */
+	 
 
 	return 0;
 }

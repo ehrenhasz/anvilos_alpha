@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright Â© 2006-2011 Intel Corporation
- *
- * Authors:
- *	Eric Anholt <eric@anholt.net>
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/i2c.h>
@@ -24,7 +19,7 @@
 #define INTEL_LIMIT_I9XX_LVDS	    1
 
 static const struct gma_limit_t psb_intel_limits[] = {
-	{			/* INTEL_LIMIT_I9XX_SDVO_DAC */
+	{			 
 	 .dot = {.min = 20000, .max = 400000},
 	 .vco = {.min = 1400000, .max = 2800000},
 	 .n = {.min = 1, .max = 6},
@@ -36,7 +31,7 @@ static const struct gma_limit_t psb_intel_limits[] = {
 	 .p2 = {.dot_limit = 200000, .p2_slow = 10, .p2_fast = 5},
 	 .find_pll = gma_find_best_pll,
 	 },
-	{			/* INTEL_LIMIT_I9XX_LVDS */
+	{			 
 	 .dot = {.min = 20000, .max = 400000},
 	 .vco = {.min = 1400000, .max = 2800000},
 	 .n = {.min = 1, .max = 6},
@@ -45,9 +40,7 @@ static const struct gma_limit_t psb_intel_limits[] = {
 	 .m2 = {.min = 3, .max = 7},
 	 .p = {.min = 7, .max = 98},
 	 .p1 = {.min = 1, .max = 8},
-	 /* The single-channel range is 25-112Mhz, and dual-channel
-	  * is 80-224Mhz.  Prefer single channel as much as possible.
-	  */
+	  
 	 .p2 = {.dot_limit = 112000, .p2_slow = 14, .p2_fast = 7},
 	 .find_pll = gma_find_best_pll,
 	 },
@@ -73,20 +66,17 @@ static void psb_intel_clock(int refclk, struct gma_clock_t *clock)
 	clock->dot = clock->vco / clock->p;
 }
 
-/*
- * Return the pipe currently connected to the panel fitter,
- * or -1 if the panel fitter is not present or not in use
- */
+ 
 static int psb_intel_panel_fitter_pipe(struct drm_device *dev)
 {
 	u32 pfit_control;
 
 	pfit_control = REG_READ(PFIT_CONTROL);
 
-	/* See if the panel fitter is in use */
+	 
 	if ((pfit_control & PFIT_ENABLE) == 0)
 		return -1;
-	/* Must be on PIPE 1 for PSB */
+	 
 	return 1;
 }
 
@@ -111,7 +101,7 @@ static int psb_intel_crtc_mode_set(struct drm_crtc *crtc,
 	struct drm_connector *connector;
 	const struct gma_limit_t *limit;
 
-	/* No scan out no play */
+	 
 	if (crtc->primary->fb == NULL) {
 		crtc_funcs->mode_set_base(crtc, x, y, old_fb);
 		return 0;
@@ -169,7 +159,7 @@ static int psb_intel_crtc_mode_set(struct drm_crtc *crtc,
 		    (sdvo_pixel_multiply - 1) << SDVO_MULTIPLIER_SHIFT_HIRES;
 	}
 
-	/* compute bitmask from p1 value */
+	 
 	dpll |= (1 << (clock.p1 - 1)) << 16;
 	switch (clock.p2) {
 	case 5:
@@ -187,16 +177,16 @@ static int psb_intel_crtc_mode_set(struct drm_crtc *crtc,
 	}
 
 	if (is_tv) {
-		/* XXX: just matching BIOS for now */
-/*	dpll |= PLL_REF_INPUT_TVCLKINBC; */
+		 
+ 
 		dpll |= 3;
 	}
 	dpll |= PLL_REF_INPUT_DREFCLK;
 
-	/* setup pipeconf */
+	 
 	pipeconf = REG_READ(map->conf);
 
-	/* Set up the display plane register */
+	 
 	dspcntr = DISPPLANE_GAMMA_ENABLE;
 
 	if (pipe == 0)
@@ -209,7 +199,7 @@ static int psb_intel_crtc_mode_set(struct drm_crtc *crtc,
 	dpll |= DPLL_VCO_ENABLE;
 
 
-	/* Disable the panel fitter if it was on our pipe */
+	 
 	if (psb_intel_panel_fitter_pipe(dev) == pipe)
 		REG_WRITE(PFIT_CONTROL, 0);
 
@@ -222,10 +212,7 @@ static int psb_intel_crtc_mode_set(struct drm_crtc *crtc,
 		udelay(150);
 	}
 
-	/* The LVDS pin pair needs to be on before the DPLLs are enabled.
-	 * This is an exception to the general rule that mode_set doesn't turn
-	 * things on.
-	 */
+	 
 	if (is_lvds) {
 		u32 lvds = REG_READ(LVDS);
 
@@ -234,18 +221,12 @@ static int psb_intel_crtc_mode_set(struct drm_crtc *crtc,
 			lvds |= LVDS_PIPEB_SELECT;
 
 		lvds |= LVDS_PORT_EN | LVDS_A0A2_CLKA_POWER_UP;
-		/* Set the B0-B3 data pairs corresponding to
-		 * whether we're going to
-		 * set the DPLLs for dual-channel mode or not.
-		 */
+		 
 		lvds &= ~(LVDS_B0B3_POWER_UP | LVDS_CLKB_POWER_UP);
 		if (clock.p2 == 7)
 			lvds |= LVDS_B0B3_POWER_UP | LVDS_CLKB_POWER_UP;
 
-		/* It would be nice to set 24 vs 18-bit mode (LVDS_A3_POWER_UP)
-		 * appropriately here, but we need to look more
-		 * thoroughly into how panels behave in the two modes.
-		 */
+		 
 
 		REG_WRITE(LVDS, lvds);
 		REG_READ(LVDS);
@@ -254,14 +235,14 @@ static int psb_intel_crtc_mode_set(struct drm_crtc *crtc,
 	REG_WRITE(map->fp0, fp);
 	REG_WRITE(map->dpll, dpll);
 	REG_READ(map->dpll);
-	/* Wait for the clocks to stabilize. */
+	 
 	udelay(150);
 
-	/* write it again -- the BIOS does, after all */
+	 
 	REG_WRITE(map->dpll, dpll);
 
 	REG_READ(map->dpll);
-	/* Wait for the clocks to stabilize. */
+	 
 	udelay(150);
 
 	REG_WRITE(map->htotal, (adjusted_mode->crtc_hdisplay - 1) |
@@ -276,9 +257,7 @@ static int psb_intel_crtc_mode_set(struct drm_crtc *crtc,
 		  ((adjusted_mode->crtc_vblank_end - 1) << 16));
 	REG_WRITE(map->vsync, (adjusted_mode->crtc_vsync_start - 1) |
 		  ((adjusted_mode->crtc_vsync_end - 1) << 16));
-	/* pipesrc and dspsize control the size that is scaled from,
-	 * which should always be the user's requested size.
-	 */
+	 
 	REG_WRITE(map->size,
 		  ((mode->vdisplay - 1) << 16) | (mode->hdisplay - 1));
 	REG_WRITE(map->pos, 0);
@@ -291,7 +270,7 @@ static int psb_intel_crtc_mode_set(struct drm_crtc *crtc,
 
 	REG_WRITE(map->cntr, dspcntr);
 
-	/* Flush the plane changes */
+	 
 	crtc_funcs->mode_set_base(crtc, x, y, old_fb);
 
 	gma_wait_for_vblank(dev);
@@ -299,7 +278,7 @@ static int psb_intel_crtc_mode_set(struct drm_crtc *crtc,
 	return 0;
 }
 
-/* Returns the clock of the currently programmed mode of the given pipe. */
+ 
 static int psb_intel_crtc_clock_get(struct drm_device *dev,
 				struct drm_crtc *crtc)
 {
@@ -346,7 +325,7 @@ static int psb_intel_crtc_clock_get(struct drm_device *dev,
 
 		if ((dpll & PLL_REF_INPUT_MASK) ==
 		    PLLB_REF_INPUT_SPREADSPECTRUMIN) {
-			/* XXX: might not be 66MHz */
+			 
 			psb_intel_clock(66000, &clock);
 		} else
 			psb_intel_clock(48000, &clock);
@@ -367,15 +346,12 @@ static int psb_intel_crtc_clock_get(struct drm_device *dev,
 		psb_intel_clock(48000, &clock);
 	}
 
-	/* XXX: It would be nice to validate the clocks, but we can't reuse
-	 * i830PllIsValid() because it relies on the xf86_config connector
-	 * configuration being accurate, which it isn't necessarily.
-	 */
+	 
 
 	return clock.dot;
 }
 
-/** Returns the currently programmed mode of the given pipe. */
+ 
 struct drm_display_mode *psb_intel_crtc_mode_get(struct drm_device *dev,
 					     struct drm_crtc *crtc)
 {
@@ -438,10 +414,7 @@ const struct gma_clock_funcs psb_clock_funcs = {
 	.pll_is_valid = gma_pll_is_valid,
 };
 
-/*
- * Set the default value of cursor control and base register
- * to zero. This is a workaround for h/w defect on Oaktrail
- */
+ 
 static void psb_intel_cursor_init(struct drm_device *dev,
 				  struct gma_crtc *gma_crtc)
 {
@@ -451,9 +424,7 @@ static void psb_intel_cursor_init(struct drm_device *dev,
 	struct psb_gem_object *cursor_pobj;
 
 	if (dev_priv->ops->cursor_needs_phys) {
-		/* Allocate 4 pages of stolen mem for a hardware cursor. That
-		 * is enough for the 64 x 64 ARGB cursors we support.
-		 */
+		 
 		cursor_pobj = psb_gem_create(dev, 4 * PAGE_SIZE, "cursor", true, PAGE_SIZE);
 		if (IS_ERR(cursor_pobj)) {
 			gma_crtc->cursor_pobj = NULL;
@@ -477,8 +448,7 @@ void psb_intel_crtc_init(struct drm_device *dev, int pipe,
 	struct gma_crtc *gma_crtc;
 	int i;
 
-	/* We allocate a extra array of drm_connector pointers
-	 * for fbdev after the crtc */
+	 
 	gma_crtc = kzalloc(sizeof(struct gma_crtc) +
 			(INTELFB_CONN_LIMIT * sizeof(struct drm_connector *)),
 			GFP_KERNEL);
@@ -495,7 +465,7 @@ void psb_intel_crtc_init(struct drm_device *dev, int pipe,
 
 	drm_crtc_init(dev, &gma_crtc->base, &gma_crtc_funcs);
 
-	/* Set the CRTC clock functions from chip specific data */
+	 
 	gma_crtc->clock_funcs = dev_priv->ops->clock_funcs;
 
 	drm_mode_crtc_set_gamma_size(&gma_crtc->base, 256);
@@ -511,7 +481,7 @@ void psb_intel_crtc_init(struct drm_device *dev, int pipe,
 	drm_crtc_helper_add(&gma_crtc->base,
 						dev_priv->ops->crtc_helper);
 
-	/* Setup the array of drm_connector pointer array */
+	 
 	gma_crtc->mode_set.crtc = &gma_crtc->base;
 	BUG_ON(pipe >= ARRAY_SIZE(dev_priv->plane_to_crtc_mapping) ||
 	       dev_priv->plane_to_crtc_mapping[gma_crtc->plane] != NULL);
@@ -521,7 +491,7 @@ void psb_intel_crtc_init(struct drm_device *dev, int pipe,
 	gma_crtc->mode_set.num_connectors = 0;
 	psb_intel_cursor_init(dev, gma_crtc);
 
-	/* Set to true so that the pipe is forced off on initial config. */
+	 
 	gma_crtc->active = true;
 }
 

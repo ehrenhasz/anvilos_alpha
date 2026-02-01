@@ -1,13 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _LINUX_CPUSET_H
 #define _LINUX_CPUSET_H
-/*
- *  cpuset interface
- *
- *  Copyright (C) 2003 BULL SA
- *  Copyright (C) 2004-2006 Silicon Graphics, Inc.
- *
- */
+ 
 
 #include <linux/sched.h>
 #include <linux/sched/topology.h>
@@ -20,18 +14,7 @@
 
 #ifdef CONFIG_CPUSETS
 
-/*
- * Static branch rewrites can happen in an arbitrary order for a given
- * key. In code paths where we need to loop with read_mems_allowed_begin() and
- * read_mems_allowed_retry() to get a consistent view of mems_allowed, we need
- * to ensure that begin() always gets rewritten before retry() in the
- * disabled -> enabled transition. If not, then if local irqs are disabled
- * around the loop, we can deadlock since retry() would always be
- * comparing the latest value of the mems_allowed seqcount against 0 as
- * begin() still would see cpusets_enabled() as false. The enabled -> disabled
- * transition should happen in reverse order for the same reasons (want to stop
- * looking at real value of mems_allowed.sequence in retry() first).
- */
+ 
 extern struct static_key_false cpusets_pre_enable_key;
 extern struct static_key_false cpusets_enabled_key;
 extern struct static_key_false cpusets_insane_config_key;
@@ -53,14 +36,7 @@ static inline void cpuset_dec(void)
 	static_branch_dec_cpuslocked(&cpusets_pre_enable_key);
 }
 
-/*
- * This will get enabled whenever a cpuset configuration is considered
- * unsupportable in general. E.g. movable only node which cannot satisfy
- * any non movable allocations (see update_nodemask). Page allocator
- * needs to make additional checks for those configurations and this
- * check is meant to guard those checks without any overhead for sane
- * configurations.
- */
+ 
 static inline bool cpusets_insane_config(void)
 {
 	return static_branch_unlikely(&cpusets_insane_config_key);
@@ -131,13 +107,7 @@ extern void rebuild_sched_domains(void);
 
 extern void cpuset_print_current_mems_allowed(void);
 
-/*
- * read_mems_allowed_begin is required when making decisions involving
- * mems_allowed such as during page allocation. mems_allowed can be updated in
- * parallel and depending on the new value an operation can fail potentially
- * causing process failure. A retry loop with read_mems_allowed_begin and
- * read_mems_allowed_retry prevents these artificial failures.
- */
+ 
 static inline unsigned int read_mems_allowed_begin(void)
 {
 	if (!static_branch_unlikely(&cpusets_pre_enable_key))
@@ -146,12 +116,7 @@ static inline unsigned int read_mems_allowed_begin(void)
 	return read_seqcount_begin(&current->mems_allowed_seq);
 }
 
-/*
- * If this returns true, the operation that took place after
- * read_mems_allowed_begin may have failed artificially due to a concurrent
- * update of mems_allowed. It is up to the caller to retry the operation if
- * appropriate.
- */
+ 
 static inline bool read_mems_allowed_retry(unsigned int seq)
 {
 	if (!static_branch_unlikely(&cpusets_enabled_key))
@@ -173,7 +138,7 @@ static inline void set_mems_allowed(nodemask_t nodemask)
 	task_unlock(current);
 }
 
-#else /* !CONFIG_CPUSETS */
+#else  
 
 static inline bool cpusets_enabled(void) { return false; }
 
@@ -291,6 +256,6 @@ static inline bool read_mems_allowed_retry(unsigned int seq)
 	return false;
 }
 
-#endif /* !CONFIG_CPUSETS */
+#endif  
 
-#endif /* _LINUX_CPUSET_H */
+#endif  

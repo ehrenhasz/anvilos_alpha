@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * RTC driver for Maxim MAX8907
- *
- * Copyright (c) 2011-2012, NVIDIA Corporation.
- *
- * Based on drivers/rtc/rtc-max8925.c,
- * Copyright (C) 2009-2010 Marvell International Ltd.
- */
+
+ 
 
 #include <linux/bcd.h>
 #include <linux/mfd/max8907.h>
@@ -148,7 +141,7 @@ static int max8907_rtc_set_alarm(struct device *dev, struct rtc_wkalrm *alrm)
 
 	tm_to_regs(&alrm->time, regs);
 
-	/* Disable alarm while we update the target time */
+	 
 	ret = regmap_write(rtc->regmap, MAX8907_REG_ALARM0_CNTL, 0);
 	if (ret < 0)
 		return ret;

@@ -1,11 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _LINUX_KERNEL_READ_FILE_H
 #define _LINUX_KERNEL_READ_FILE_H
 
 #include <linux/file.h>
 #include <linux/types.h>
 
-/* This is a list of *what* is being read, not *how* nor *where*. */
+ 
 #define __kernel_read_file_id(id) \
 	id(UNKNOWN, unknown)		\
 	id(FIRMWARE, firmware)		\
@@ -52,4 +52,4 @@ ssize_t kernel_read_file_from_fd(int fd, loff_t offset,
 				 size_t *file_size,
 				 enum kernel_read_file_id id);
 
-#endif /* _LINUX_KERNEL_READ_FILE_H */
+#endif  

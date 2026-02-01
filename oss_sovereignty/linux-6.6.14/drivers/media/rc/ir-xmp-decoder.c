@@ -1,22 +1,15 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* ir-xmp-decoder.c - handle XMP IR Pulse/Space protocol
- *
- * Copyright (C) 2014 by Marcel Mol
- *
- * - Based on info from http://www.hifi-remote.com
- * - Ignore Toggle=9 frames
- * - Ignore XMP-1 XMP-2 difference, always store 16 bit OBC
- */
+
+ 
 
 #include <linux/bitrev.h>
 #include <linux/module.h>
 #include "rc-core-priv.h"
 
-#define XMP_UNIT		  136 /* us */
-#define XMP_LEADER		  210 /* us */
-#define XMP_NIBBLE_PREFIX	  760 /* us */
-#define	XMP_HALFFRAME_SPACE	13800 /* us */
-/* should be 80ms but not all duration supliers can go that high */
+#define XMP_UNIT		  136  
+#define XMP_LEADER		  210  
+#define XMP_NIBBLE_PREFIX	  760  
+#define	XMP_HALFFRAME_SPACE	13800  
+ 
 #define	XMP_TRAILER_SPACE	20000
 
 enum xmp_state {
@@ -25,13 +18,7 @@ enum xmp_state {
 	STATE_NIBBLE_SPACE,
 };
 
-/**
- * ir_xmp_decode() - Decode one XMP pulse or space
- * @dev:	the struct rc_dev descriptor of the device
- * @ev:		the struct ir_raw_event descriptor of the pulse/space
- *
- * This function returns -EINVAL if the pulse violates the state machine
- */
+ 
 static int ir_xmp_decode(struct rc_dev *dev, struct ir_raw_event ev)
 {
 	struct xmp_dec *data = &dev->raw->xmp;
@@ -85,11 +72,7 @@ static int ir_xmp_decode(struct rc_dev *dev, struct ir_raw_event ev)
 			}
 
 			n = data->durations;
-			/*
-			 * the 4th nibble should be 15 so base the divider on this
-			 * to transform durations into nibbles. Subtract 2000 from
-			 * the divider to compensate for fluctuations in the signal
-			 */
+			 
 			divider = (n[3] - XMP_NIBBLE_PREFIX) / 15 - 2000;
 			if (divider < 50) {
 				dev_dbg(&dev->dev, "divider to small %d.\n",
@@ -98,7 +81,7 @@ static int ir_xmp_decode(struct rc_dev *dev, struct ir_raw_event ev)
 				return -EINVAL;
 			}
 
-			/* convert to nibbles and do some sanity checks */
+			 
 			for (i = 0; i < 16; i++)
 				n[i] = (n[i] - XMP_NIBBLE_PREFIX) / divider;
 			sum1 = (15 + n[0] + n[1] + n[2] + n[3] +
@@ -145,15 +128,11 @@ static int ir_xmp_decode(struct rc_dev *dev, struct ir_raw_event ev)
 			return 0;
 
 		} else if (geq_margin(ev.duration, XMP_HALFFRAME_SPACE, XMP_NIBBLE_PREFIX)) {
-			/* Expect 8 or 16 nibble pulses. 16 in case of 'final' frame */
+			 
 			if (data->count == 16) {
 				dev_dbg(&dev->dev, "received half frame pulse at index %d. Probably a final frame key-up event: %u\n",
 					data->count, ev.duration);
-				/*
-				 * TODO: for now go back to half frame position
-				 *	 so trailer can be found and key press
-				 *	 can be handled.
-				 */
+				 
 				data->count = 8;
 			}
 
@@ -165,7 +144,7 @@ static int ir_xmp_decode(struct rc_dev *dev, struct ir_raw_event ev)
 			return 0;
 
 		} else if (geq_margin(ev.duration, XMP_NIBBLE_PREFIX, XMP_UNIT)) {
-			/* store nibble raw data, decode after trailer */
+			 
 			if (data->count == 16) {
 				dev_dbg(&dev->dev, "too many pulses (%d) ignoring: %u\n",
 					data->count, ev.duration);

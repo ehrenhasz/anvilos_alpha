@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/************************************************************************
-File  : Clock H/w specific Information
-
-Author: Pankaj Dev <pankaj.dev@st.com>
-
-Copyright (C) 2014 STMicroelectronics
-************************************************************************/
+ 
+ 
 
 #ifndef __CLKGEN_INFO_H
 #define __CLKGEN_INFO_H
@@ -47,5 +41,5 @@ static inline void clkgen_write(void __iomem *base, struct clkgen_field *field,
 #define CLKGEN_WRITE(pll, field, val) clkgen_write(pll->regs_base, \
 		&pll->data->field, val)
 
-#endif /*__CLKGEN_INFO_H*/
+#endif  
 

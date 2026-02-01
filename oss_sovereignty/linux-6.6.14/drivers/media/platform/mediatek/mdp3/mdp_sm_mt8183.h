@@ -1,19 +1,12 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2023 MediaTek Inc.
- * Author: Ping-Hsun Wu <ping-hsun.wu@mediatek.com>
- */
+ 
+ 
 
 #ifndef __MDP_SM_MT8183_H__
 #define __MDP_SM_MT8183_H__
 
 #include "mtk-mdp3-type.h"
 
-/*
- * ISP-MDP generic output information
- * MD5 of the target SCP prebuild:
- *     2d995ddb5c3b0cf26e96d6a823481886
- */
+ 
 
 #define IMG_MAX_SUBFRAMES_8183      14
 
@@ -35,8 +28,8 @@ struct img_comp_subfrm_8183 {
 	struct img_region out;
 	struct img_offset luma;
 	struct img_offset chroma;
-	s16 out_vertical; /* Output vertical index */
-	s16 out_horizontal; /* Output horizontal index */
+	s16 out_vertical;  
+	s16 out_horizontal;  
 } __packed;
 
 struct mdp_rdma_subfrm_8183 {
@@ -109,7 +102,7 @@ struct mdp_wdma_data_8183 {
 } __packed;
 
 struct isp_data_8183 {
-	u64 dl_flags; /* 1 << (enum mdp_comp_type) */
+	u64 dl_flags;  
 	u32 smxi_iova[4];
 	u32 cq_idx;
 	u32 cq_iova;
@@ -117,8 +110,8 @@ struct isp_data_8183 {
 } __packed;
 
 struct img_compparam_8183 {
-	u16 type; /* enum mdp_comp_id */
-	u16 id; /* engine alias_id */
+	u16 type;  
+	u16 id;  
 	u32 input;
 	u32 outputs[IMG_MAX_HW_OUTPUTS];
 	u32 num_outputs;
@@ -141,4 +134,4 @@ struct img_config_8183 {
 	u32 num_subfrms;
 } __packed;
 
-#endif  /* __MDP_SM_MT8183_H__ */
+#endif   

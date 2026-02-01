@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: LGPL-2.1 */
-/*
- *
- *   Copyright (c) International Business Machines  Corp., 2002, 2007
- *   Author(s): Steve French (sfrench@us.ibm.com)
- *
- */
+ 
+ 
 
 #ifndef _CIFSFS_H
 #define _CIFSFS_H
@@ -13,11 +8,7 @@
 
 #define ROOT_I 2
 
-/*
- * ino_t is 32-bits on 32-bit arch. We have to squash the 64-bit value down
- * so that it will fit. We use hash_64 to convert the value to 31 bits, and
- * then add 1, to ensure that we don't end up with a 0 as the value.
- */
+ 
 static inline ino_t
 cifs_uniqueid_to_ino_t(u64 fileid)
 {
@@ -42,11 +33,11 @@ extern struct file_system_type cifs_fs_type, smb3_fs_type;
 extern const struct address_space_operations cifs_addr_ops;
 extern const struct address_space_operations cifs_addr_ops_smallbuf;
 
-/* Functions related to super block operations */
+ 
 extern void cifs_sb_active(struct super_block *sb);
 extern void cifs_sb_deactive(struct super_block *sb);
 
-/* Functions related to inodes */
+ 
 extern const struct inode_operations cifs_dir_inode_ops;
 extern struct inode *cifs_root_iget(struct super_block *);
 extern int cifs_create(struct mnt_idmap *, struct inode *,
@@ -84,11 +75,11 @@ extern const struct inode_operations cifs_symlink_inode_ops;
 extern const struct inode_operations cifs_namespace_inode_operations;
 
 
-/* Functions related to files and directories */
+ 
 extern const struct file_operations cifs_file_ops;
-extern const struct file_operations cifs_file_direct_ops; /* if directio mnt */
-extern const struct file_operations cifs_file_strict_ops; /* if strictio mnt */
-extern const struct file_operations cifs_file_nobrl_ops; /* no brlocks */
+extern const struct file_operations cifs_file_direct_ops;  
+extern const struct file_operations cifs_file_strict_ops;  
+extern const struct file_operations cifs_file_nobrl_ops;  
 extern const struct file_operations cifs_file_direct_nobrl_ops;
 extern const struct file_operations cifs_file_strict_nobrl_ops;
 extern int cifs_open(struct inode *inode, struct file *file);
@@ -114,13 +105,13 @@ extern void cifs_pages_written_back(struct inode *inode, loff_t start, unsigned 
 extern void cifs_pages_write_failed(struct inode *inode, loff_t start, unsigned int len);
 extern void cifs_pages_write_redirty(struct inode *inode, loff_t start, unsigned int len);
 
-/* Functions related to dir entries */
+ 
 extern const struct dentry_operations cifs_dentry_ops;
 extern const struct dentry_operations cifs_ci_dentry_ops;
 
 extern struct vfsmount *cifs_d_automount(struct path *path);
 
-/* Functions related to symlinks */
+ 
 extern const char *cifs_get_link(struct dentry *, struct inode *,
 			struct delayed_call *);
 extern int cifs_symlink(struct mnt_idmap *idmap, struct inode *inode,
@@ -149,9 +140,9 @@ extern struct dentry *cifs_smb3_do_mount(struct file_system_type *fs_type,
 
 #ifdef CONFIG_CIFS_NFSD_EXPORT
 extern const struct export_operations cifs_export_ops;
-#endif /* CONFIG_CIFS_NFSD_EXPORT */
+#endif  
 
-/* when changing internal version - update following two lines at same time */
+ 
 #define SMB3_PRODUCT_BUILD 45
 #define CIFS_VERSION   "2.45"
-#endif				/* _CIFSFS_H */
+#endif				 

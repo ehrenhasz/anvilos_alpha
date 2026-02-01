@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Virtual DMA channel support for DMAengine
- *
- * Copyright (C) 2012 Russell King
- */
+
+ 
 #include <linux/device.h>
 #include <linux/dmaengine.h>
 #include <linux/module.h>
@@ -36,16 +32,7 @@ dma_cookie_t vchan_tx_submit(struct dma_async_tx_descriptor *tx)
 }
 EXPORT_SYMBOL_GPL(vchan_tx_submit);
 
-/**
- * vchan_tx_desc_free - free a reusable descriptor
- * @tx: the transfer
- *
- * This function frees a previously allocated reusable descriptor. The only
- * other way is to clear the DMA_CTRL_REUSE flag and submit one last time the
- * transfer.
- *
- * Returns 0 upon success
- */
+ 
 int vchan_tx_desc_free(struct dma_async_tx_descriptor *tx)
 {
 	struct virt_dma_chan *vc = to_virt_chan(tx->chan);
@@ -76,10 +63,7 @@ struct virt_dma_desc *vchan_find_desc(struct virt_dma_chan *vc,
 }
 EXPORT_SYMBOL_GPL(vchan_find_desc);
 
-/*
- * This tasklet handles the completion of a DMA descriptor by
- * calling its callback and freeing it.
- */
+ 
 static void vchan_complete(struct tasklet_struct *t)
 {
 	struct virt_dma_chan *vc = from_tasklet(vc, t, task);

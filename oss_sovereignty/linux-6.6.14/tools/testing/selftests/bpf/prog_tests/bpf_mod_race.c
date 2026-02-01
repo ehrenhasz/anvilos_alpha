@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <unistd.h>
 #include <pthread.h>
 #include <sys/mman.h>
@@ -13,23 +13,7 @@
 #include "kfunc_call_race.skel.h"
 #include "testing_helpers.h"
 
-/* This test crafts a race between btf_try_get_module and do_init_module, and
- * checks whether btf_try_get_module handles the invocation for a well-formed
- * but uninitialized module correctly. Unless the module has completed its
- * initcalls, the verifier should fail the program load and return ENXIO.
- *
- * userfaultfd is used to trigger a fault in an fmod_ret program, and make it
- * sleep, then the BPF program is loaded and the return value from verifier is
- * inspected. After this, the userfaultfd is closed so that the module loading
- * thread makes forward progress, and fmod_ret injects an error so that the
- * module load fails and it is freed.
- *
- * If the verifier succeeded in loading the supplied program, it will end up
- * taking reference to freed module, and trigger a crash when the program fd
- * is closed later. This is true for both kfuncs and ksyms. In both cases,
- * the crash is triggered inside bpf_prog_free_deferred, when module reference
- * is finally released.
- */
+ 
 
 struct test_config {
 	const char *str_open;
@@ -125,7 +109,7 @@ static void test_bpf_mod_race_config(const struct test_config *config)
 		       "load module thread"))
 		goto end_uffd;
 
-	/* Now, we either fail loading module, or block in bpf prog, spin to find out */
+	 
 	while (!atomic_load(&state) && !atomic_load(blockingp))
 		;
 	if (!ASSERT_EQ(state, _TS_INVALID, "module load should block"))
@@ -135,24 +119,18 @@ static void test_bpf_mod_race_config(const struct test_config *config)
 		goto end_uffd;
 	}
 
-	/* We might have set bpf_blocking to 1, but may have not blocked in
-	 * bpf_copy_from_user. Read userfaultfd descriptor to verify that.
-	 */
+	 
 	if (!ASSERT_EQ(read(uffd, &uffd_msg, sizeof(uffd_msg)), sizeof(uffd_msg),
 		       "read uffd block event"))
 		goto end_join;
 	if (!ASSERT_EQ(uffd_msg.event, UFFD_EVENT_PAGEFAULT, "read uffd event is pagefault"))
 		goto end_join;
 
-	/* We know that load_mod_thrd is blocked in the fmod_ret program, the
-	 * module state is still MODULE_STATE_COMING because mod->init hasn't
-	 * returned. This is the time we try to load a program calling kfunc and
-	 * check if we get ENXIO from verifier.
-	 */
+	 
 	skel_fail = config->bpf_open_and_load();
 	ret = errno;
 	if (!ASSERT_EQ(skel_fail, NULL, config->str_open)) {
-		/* Close uffd to unblock load_mod_thrd */
+		 
 		close(uffd);
 		uffd = -1;
 		while (atomic_load(blockingp) != 2)

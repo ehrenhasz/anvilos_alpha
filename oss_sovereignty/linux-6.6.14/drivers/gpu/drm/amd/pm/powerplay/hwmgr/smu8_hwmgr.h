@@ -1,25 +1,4 @@
-/*
- * Copyright 2015 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 
 #ifndef _SMU8_HWMGR_H_
 #define _SMU8_HWMGR_H_
@@ -34,7 +13,7 @@
 #define SMU8_VOTINGRIGHTSCLIENTS_DFLT0   0x3FFFC102
 #define SMU8_MIN_DEEP_SLEEP_SCLK         800
 
-/* Carrizo device IDs */
+ 
 #define DEVICE_ID_CZ_9870             0x9870
 #define DEVICE_ID_CZ_9874             0x9874
 #define DEVICE_ID_CZ_9875             0x9875
@@ -167,14 +146,14 @@ struct smu8_power_state {
 #define DPMFlags_ForceHighestValid		0x40000000
 #define DPMFlags_Debug				0x80000000
 
-#define SMU_EnabledFeatureScoreboard_AcpDpmOn   0x00000001 /* bit 0 */
-#define SMU_EnabledFeatureScoreboard_UvdDpmOn   0x00800000 /* bit 23 */
-#define SMU_EnabledFeatureScoreboard_VceDpmOn   0x01000000 /* bit 24 */
+#define SMU_EnabledFeatureScoreboard_AcpDpmOn   0x00000001  
+#define SMU_EnabledFeatureScoreboard_UvdDpmOn   0x00800000  
+#define SMU_EnabledFeatureScoreboard_VceDpmOn   0x01000000  
 
 struct cc6_settings {
 	bool cc6_setting_changed;
-	bool nb_pstate_switch_disable;/* controls NB PState switch */
-	bool cpu_cc6_disable; /* controls CPU CState switch ( on or off) */
+	bool nb_pstate_switch_disable; 
+	bool cpu_cc6_disable;  
 	bool cpu_pstate_disable;
 	uint32_t cpu_pstate_separation_time;
 };
@@ -195,7 +174,7 @@ struct smu8_hwmgr {
 	uint32_t activity_hysteresis;
 	uint32_t bootup_sclk_divider;
 	uint32_t gfx_ramp_step;
-	uint32_t gfx_ramp_delay; /* in micro-seconds */
+	uint32_t gfx_ramp_delay;  
 
 	uint32_t thermal_auto_throttling_treshold;
 
@@ -208,7 +187,7 @@ struct smu8_hwmgr {
 	uint32_t mgcg_cgtt_local0;
 	uint32_t mgcg_cgtt_local1;
 
-	uint32_t tdr_clock; /* in 10khz unit */
+	uint32_t tdr_clock;  
 
 	uint32_t ddi_power_gating_disabled;
 	uint32_t disable_gfx_power_gating_in_uvd;
@@ -217,9 +196,9 @@ struct smu8_hwmgr {
 	uint32_t lock_nb_ps_in_uvd_play_back;
 
 	struct smu8_display_phy_info display_phy_info;
-	uint32_t vce_slow_sclk_threshold; /* default 200mhz */
-	uint32_t dce_slow_sclk_threshold; /* default 300mhz */
-	uint32_t min_sclk_did;  /* minimum sclk divider */
+	uint32_t vce_slow_sclk_threshold;  
+	uint32_t dce_slow_sclk_threshold;  
+	uint32_t min_sclk_did;   
 
 	bool disp_clk_bypass;
 	bool disp_clk_bypass_pending;
@@ -247,7 +226,7 @@ struct smu8_hwmgr {
 
 	uint8_t disp_config;
 
-	/* PowerTune */
+	 
 	uint32_t power_containment_features;
 	bool cac_enabled;
 	bool disable_uvd_power_tune_feature;
@@ -308,4 +287,4 @@ struct smu8_hwmgr {
 	uint32_t num_of_clk_entries;
 };
 
-#endif /* _SMU8_HWMGR_H_ */
+#endif  

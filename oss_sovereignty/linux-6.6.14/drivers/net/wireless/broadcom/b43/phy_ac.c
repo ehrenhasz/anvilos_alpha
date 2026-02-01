@@ -1,17 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Broadcom B43 wireless driver
- * IEEE 802.11ac AC-PHY support
- *
- * Copyright (c) 2015 Rafał Miłecki <zajec5@gmail.com>
- */
+
+ 
 
 #include "b43.h"
 #include "phy_ac.h"
 
-/**************************************************
- * Basic PHY ops
- **************************************************/
+ 
 
 static int b43_phy_ac_op_allocate(struct b43_wldev *dev)
 {
@@ -72,9 +65,7 @@ static void b43_phy_ac_op_adjust_txpower(struct b43_wldev *dev)
 {
 }
 
-/**************************************************
- * PHY ops struct
- **************************************************/
+ 
 
 const struct b43_phy_operations b43_phyops_ac = {
 	.allocate		= b43_phy_ac_op_allocate,

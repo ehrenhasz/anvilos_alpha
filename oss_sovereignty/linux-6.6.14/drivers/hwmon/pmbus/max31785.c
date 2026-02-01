@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2017 IBM Corp.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -145,12 +143,7 @@ static int max31785_read_word_data(struct i2c_client *client, int page,
 		rv = (val >> 16) & 0xffff;
 		break;
 	case PMBUS_FAN_COMMAND_1:
-		/*
-		 * PMBUS_FAN_COMMAND_x is probed to judge whether or not to
-		 * expose fan control registers.
-		 *
-		 * Don't expose fan_target attribute for virtual pages.
-		 */
+		 
 		rv = (page >= MAX31785_NR_PAGES) ? -ENOTSUPP : -ENODATA;
 		break;
 	case PMBUS_VIRT_PWM_1:
@@ -169,22 +162,7 @@ static int max31785_read_word_data(struct i2c_client *client, int page,
 
 static inline u32 max31785_scale_pwm(u32 sensor_val)
 {
-	/*
-	 * The datasheet describes the accepted value range for manual PWM as
-	 * [0, 0x2710], while the hwmon pwmX sysfs interface accepts values in
-	 * [0, 255]. The MAX31785 uses DIRECT mode to scale the FAN_COMMAND
-	 * registers and in PWM mode the coefficients are m=1, b=0, R=2. The
-	 * important observation here is that 0x2710 == 10000 == 100 * 100.
-	 *
-	 * R=2 (== 10^2 == 100) accounts for scaling the value provided at the
-	 * sysfs interface into the required hardware resolution, but it does
-	 * not yet yield a value that we can write to the device (this initial
-	 * scaling is handled by pmbus_data2reg()). Multiplying by 100 below
-	 * translates the parameter value into the percentage units required by
-	 * PMBus, and then we scale back by 255 as required by the hwmon pwmX
-	 * interface to yield the percentage value at the appropriate
-	 * resolution for hardware.
-	 */
+	 
 	return (sensor_val * 100) / 255;
 }
 
@@ -253,12 +231,12 @@ static const struct pmbus_driver_info max31785_info = {
 	.read_word_data = max31785_read_word_data,
 	.write_byte = max31785_write_byte,
 
-	/* RPM */
+	 
 	.format[PSC_FAN] = direct,
 	.m[PSC_FAN] = 1,
 	.b[PSC_FAN] = 0,
 	.R[PSC_FAN] = 0,
-	/* PWM */
+	 
 	.format[PSC_PWM] = direct,
 	.m[PSC_PWM] = 1,
 	.b[PSC_PWM] = 0,

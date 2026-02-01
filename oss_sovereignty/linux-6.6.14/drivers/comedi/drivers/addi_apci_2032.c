@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * addi_apci_2032.c
- * Copyright (C) 2004,2005  ADDI-DATA GmbH for the source code of this module.
- * Project manager: Eric Stolz
- *
- *	ADDI-DATA GmbH
- *	Dieselstrasse 3
- *	D-77833 Ottersweier
- *	Tel: +19(0)7223/9493-0
- *	Fax: +49(0)7223/9493-92
- *	http://www.addi-data.com
- *	info@addi-data.com
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/interrupt.h>
@@ -20,9 +8,7 @@
 
 #include "addi_watchdog.h"
 
-/*
- * PCI bar 1 I/O Register map
- */
+ 
 #define APCI2032_DO_REG			0x00
 #define APCI2032_INT_CTRL_REG		0x04
 #define APCI2032_INT_CTRL_VCC_ENA	BIT(0)
@@ -35,9 +21,9 @@
 #define APCI2032_WDOG_REG		0x10
 
 struct apci2032_int_private {
-	spinlock_t spinlock;		/* protects the following members */
-	bool active;			/* an async command is running */
-	unsigned char enabled_isns;	/* mask of enabled interrupt channels */
+	spinlock_t spinlock;		 
+	bool active;			 
+	unsigned char enabled_isns;	 
 };
 
 static int apci2032_do_insn_bits(struct comedi_device *dev,
@@ -80,7 +66,7 @@ static int apci2032_int_cmdtest(struct comedi_device *dev,
 {
 	int err = 0;
 
-	/* Step 1 : check if triggers are trivially valid */
+	 
 
 	err |= comedi_check_trigger_src(&cmd->start_src, TRIG_NOW);
 	err |= comedi_check_trigger_src(&cmd->scan_begin_src, TRIG_EXT);
@@ -91,15 +77,15 @@ static int apci2032_int_cmdtest(struct comedi_device *dev,
 	if (err)
 		return 1;
 
-	/* Step 2a : make sure trigger sources are unique */
+	 
 	err |= comedi_check_trigger_is_unique(cmd->stop_src);
 
-	/* Step 2b : and mutually compatible */
+	 
 
 	if (err)
 		return 2;
 
-	/* Step 3: check if arguments are trivially valid */
+	 
 
 	err |= comedi_check_trigger_arg_is(&cmd->start_arg, 0);
 	err |= comedi_check_trigger_arg_is(&cmd->scan_begin_arg, 0);
@@ -108,15 +94,15 @@ static int apci2032_int_cmdtest(struct comedi_device *dev,
 					   cmd->chanlist_len);
 	if (cmd->stop_src == TRIG_COUNT)
 		err |= comedi_check_trigger_arg_min(&cmd->stop_arg, 1);
-	else	/* TRIG_NONE */
+	else	 
 		err |= comedi_check_trigger_arg_is(&cmd->stop_arg, 0);
 
 	if (err)
 		return 3;
 
-	/* Step 4: fix up any arguments */
+	 
 
-	/* Step 5: check channel list if it exists */
+	 
 
 	return 0;
 }
@@ -170,7 +156,7 @@ static irqreturn_t apci2032_interrupt(int irq, void *d)
 	if (!dev->attached)
 		return IRQ_NONE;
 
-	/* Check if VCC OR CC interrupt has occurred */
+	 
 	val = inl(dev->iobase + APCI2032_STATUS_REG) & APCI2032_STATUS_IRQ;
 	if (!val)
 		return IRQ_NONE;
@@ -179,19 +165,15 @@ static irqreturn_t apci2032_interrupt(int irq, void *d)
 	spin_lock(&subpriv->spinlock);
 
 	val = inl(dev->iobase + APCI2032_INT_STATUS_REG) & 3;
-	/* Disable triggered interrupt sources. */
+	 
 	outl(~val & 3, dev->iobase + APCI2032_INT_CTRL_REG);
-	/*
-	 * Note: We don't reenable the triggered interrupt sources because they
-	 * are level-sensitive, hardware error status interrupt sources and
-	 * they'd keep triggering interrupts repeatedly.
-	 */
+	 
 
 	if (subpriv->active && (val & subpriv->enabled_isns) != 0) {
 		unsigned short bits = 0;
 		int i;
 
-		/* Bits in scan data correspond to indices in channel list. */
+		 
 		for (i = 0; i < cmd->chanlist_len; i++) {
 			unsigned int chan = CR_CHAN(cmd->chanlist[i]);
 
@@ -247,7 +229,7 @@ static int apci2032_auto_attach(struct comedi_device *dev,
 	if (ret)
 		return ret;
 
-	/* Initialize the digital output subdevice */
+	 
 	s = &dev->subdevices[0];
 	s->type		= COMEDI_SUBD_DO;
 	s->subdev_flags	= SDF_WRITABLE;
@@ -256,13 +238,13 @@ static int apci2032_auto_attach(struct comedi_device *dev,
 	s->range_table	= &range_digital;
 	s->insn_bits	= apci2032_do_insn_bits;
 
-	/* Initialize the watchdog subdevice */
+	 
 	s = &dev->subdevices[1];
 	ret = addi_watchdog_init(s, dev->iobase + APCI2032_WDOG_REG);
 	if (ret)
 		return ret;
 
-	/* Initialize the interrupt subdevice */
+	 
 	s = &dev->subdevices[2];
 	s->type		= COMEDI_SUBD_DI;
 	s->subdev_flags	= SDF_READABLE;

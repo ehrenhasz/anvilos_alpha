@@ -1,16 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * kernel/sched/debug.c
- *
- * Print the CFS rbtree and other debugging details
- *
- * Copyright(C) 2007, Red Hat, Inc., Ingo Molnar
- */
 
-/*
- * This allows printing both to /proc/sched_debug and
- * to the console
- */
+ 
+
+ 
 #define SEQ_printf(m, x...)			\
  do {						\
 	if (m)					\
@@ -19,9 +10,7 @@
 		pr_cont(x);			\
  } while (0)
 
-/*
- * Ease the printing of nsec fields:
- */
+ 
 static long long nsec_high(unsigned long long nsec)
 {
 	if ((long long)nsec < 0) {
@@ -93,7 +82,7 @@ static void sched_feat_enable(int i)
 #else
 static void sched_feat_disable(int i) { };
 static void sched_feat_enable(int i) { };
-#endif /* CONFIG_JUMP_LABEL */
+#endif  
 
 static int sched_feat_set(char *cmp)
 {
@@ -138,7 +127,7 @@ sched_feat_write(struct file *filp, const char __user *ubuf,
 	buf[cnt] = 0;
 	cmp = strstrip(buf);
 
-	/* Ensure the static_key remains in a consistent state */
+	 
 	inode = file_inode(filp);
 	cpus_read_lock();
 	inode_lock(inode);
@@ -214,7 +203,7 @@ static const struct file_operations sched_scaling_fops = {
 	.release	= single_release,
 };
 
-#endif /* SMP */
+#endif  
 
 #ifdef CONFIG_PREEMPT_DYNAMIC
 
@@ -276,7 +265,7 @@ static const struct file_operations sched_dynamic_fops = {
 	.release	= single_release,
 };
 
-#endif /* CONFIG_PREEMPT_DYNAMIC */
+#endif  
 
 __read_mostly bool sched_debug_verbose;
 
@@ -431,10 +420,7 @@ void update_sched_domain_debugfs(void)
 {
 	int cpu, i;
 
-	/*
-	 * This can unfortunately be invoked before sched_debug_init() creates
-	 * the debug directory. Don't touch sd_sysctl_cpus until then.
-	 */
+	 
 	if (!debugfs_sched)
 		return;
 
@@ -450,7 +436,7 @@ void update_sched_domain_debugfs(void)
 	if (!sd_dentry) {
 		sd_dentry = debugfs_create_dir("domains", debugfs_sched);
 
-		/* rebuild sd_sysctl_cpus if empty since it gets cleared below */
+		 
 		if (cpumask_empty(sd_sysctl_cpus))
 			cpumask_copy(sd_sysctl_cpus, cpu_online_mask);
 	}
@@ -485,7 +471,7 @@ void dirty_sched_domain_sysctl(int cpu)
 		__cpumask_set_cpu(cpu, sd_sysctl_cpus);
 }
 
-#endif /* CONFIG_SMP */
+#endif  
 
 #ifdef CONFIG_FAIR_GROUP_SCHED
 static void print_cfs_group_stats(struct seq_file *m, int cpu, struct task_group *tg)
@@ -548,13 +534,7 @@ static void task_group_path(struct task_group *tg, char *path, int plen)
 	cgroup_path(tg->css.cgroup, path, plen);
 }
 
-/*
- * Only 1 SEQ_printf_task_group_path() caller can use the full length
- * group_path[] for cgroup path. Other simultaneous callers will have
- * to use a shorter stack buffer. A "..." suffix is appended at the end
- * of the stack buffer so that it will show up in case the output length
- * matches the given buffer size to indicate possible path name truncation.
- */
+ 
 #define SEQ_printf_task_group_path(m, tg, fmt...)			\
 {									\
 	if (spin_trylock(&sched_debug_lock)) {				\
@@ -894,24 +874,14 @@ void sysrq_sched_debug_show(void)
 
 	sched_debug_header(NULL);
 	for_each_online_cpu(cpu) {
-		/*
-		 * Need to reset softlockup watchdogs on all CPUs, because
-		 * another CPU might be blocked waiting for us to process
-		 * an IPI or stop_machine.
-		 */
+		 
 		touch_nmi_watchdog();
 		touch_all_softlockup_watchdogs();
 		print_cpu(NULL, cpu);
 	}
 }
 
-/*
- * This iterator needs some explanation.
- * It returns 1 for the header position.
- * This means 2 is CPU 0.
- * In a hotplugged system some CPUs, including CPU 0, may be missing so we have
- * to use cpumask_* to iterate over the CPUs.
- */
+ 
 static void *sched_debug_start(struct seq_file *file, loff_t *offset)
 {
 	unsigned long n = *offset;

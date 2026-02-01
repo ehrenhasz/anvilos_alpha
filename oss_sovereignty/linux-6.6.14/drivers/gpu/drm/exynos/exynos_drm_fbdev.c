@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* exynos_drm_fbdev.c
- *
- * Copyright (c) 2011 Samsung Electronics Co., Ltd.
- * Authors:
- *	Inki Dae <inki.dae@samsung.com>
- *	Joonyoung Shim <jy0922.shim@samsung.com>
- *	Seung-Woo Kim <sw0312.kim@samsung.com>
- */
+
+ 
 
 #include <linux/fb.h>
 
@@ -139,9 +132,7 @@ static const struct drm_fb_helper_funcs exynos_drm_fb_helper_funcs = {
 	.fb_probe =	exynos_drm_fbdev_create,
 };
 
-/*
- * struct drm_client
- */
+ 
 
 static void exynos_drm_fbdev_client_unregister(struct drm_client_dev *client)
 {

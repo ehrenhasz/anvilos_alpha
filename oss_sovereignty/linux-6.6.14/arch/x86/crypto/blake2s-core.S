@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR MIT */
-/*
- * Copyright (C) 2015-2019 Jason A. Donenfeld <Jason@zx2c4.com>. All Rights Reserved.
- * Copyright (C) 2017-2019 Samuel Neves <sneves@dei.uc.pt>. All Rights Reserved.
- */
+ 
+ 
 
 #include <linux/linkage.h>
 
@@ -43,7 +40,7 @@ SIGMA2:
 .long  6, 13,  0, 14, 12,  2,  1, 11, 15,  4,  5,  8,  7,  9,  3, 10
 .long 15,  5,  4, 13, 10,  7,  3, 11, 12,  2,  0,  6,  9,  8,  1, 14
 .long  8,  7, 14, 11, 13, 15,  0, 12, 10,  4,  5,  6,  3,  2,  1,  9
-#endif /* CONFIG_AS_AVX512 */
+#endif  
 
 .text
 SYM_FUNC_START(blake2s_compress_ssse3)
@@ -253,4 +250,4 @@ SYM_FUNC_START(blake2s_compress_avx512)
 	vzeroupper
 	RET
 SYM_FUNC_END(blake2s_compress_avx512)
-#endif /* CONFIG_AS_AVX512 */
+#endif  

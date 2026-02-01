@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) Maxime Coquelin 2015
- * Copyright (C) STMicroelectronics 2017
- * Author:  Maxime Coquelin <mcoquelin.stm32@gmail.com>
- */
+
+ 
 #include <linux/init.h>
 #include <linux/of.h>
 #include <linux/platform_device.h>

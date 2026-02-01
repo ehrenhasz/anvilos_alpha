@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/******************************************************************************
-*******************************************************************************
-**
-**  Copyright (C) Sistina Software, Inc.  1997-2003  All rights reserved.
-**  Copyright (C) 2004-2007 Red Hat, Inc.  All rights reserved.
-**
-**
-*******************************************************************************
-******************************************************************************/
+
+ 
 
 #include "dlm_internal.h"
 #include "midcomms.h"
@@ -127,7 +119,7 @@ void dlm_free_lkb(struct dlm_lkb *lkb)
 		}
 	}
 
-	/* drop references if they are set */
+	 
 	dlm_callback_set_last_ptr(&lkb->lkb_last_cast, NULL);
 	dlm_callback_set_last_ptr(&lkb->lkb_last_cb, NULL);
 

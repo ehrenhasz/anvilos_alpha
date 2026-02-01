@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (C) B.A.T.M.A.N. contributors:
- *
- * Marek Lindner, Simon Wunderlich
- */
+
+ 
 
 #include "main.h"
 
@@ -24,21 +21,13 @@
 char batadv_routing_algo[20] = "BATMAN_IV";
 static struct hlist_head batadv_algo_list;
 
-/**
- * batadv_algo_init() - Initialize batman-adv algorithm management data
- *  structures
- */
+ 
 void batadv_algo_init(void)
 {
 	INIT_HLIST_HEAD(&batadv_algo_list);
 }
 
-/**
- * batadv_algo_get() - Search for algorithm with specific name
- * @name: algorithm name to find
- *
- * Return: Pointer to batadv_algo_ops on success, NULL otherwise
- */
+ 
 struct batadv_algo_ops *batadv_algo_get(const char *name)
 {
 	struct batadv_algo_ops *bat_algo_ops = NULL, *bat_algo_ops_tmp;
@@ -54,12 +43,7 @@ struct batadv_algo_ops *batadv_algo_get(const char *name)
 	return bat_algo_ops;
 }
 
-/**
- * batadv_algo_register() - Register callbacks for a mesh algorithm
- * @bat_algo_ops: mesh algorithm callbacks to add
- *
- * Return: 0 on success or negative error number in case of failure
- */
+ 
 int batadv_algo_register(struct batadv_algo_ops *bat_algo_ops)
 {
 	struct batadv_algo_ops *bat_algo_ops_tmp;
@@ -71,7 +55,7 @@ int batadv_algo_register(struct batadv_algo_ops *bat_algo_ops)
 		return -EEXIST;
 	}
 
-	/* all algorithms must implement all ops (for now) */
+	 
 	if (!bat_algo_ops->iface.enable ||
 	    !bat_algo_ops->iface.disable ||
 	    !bat_algo_ops->iface.update_mac ||
@@ -89,19 +73,7 @@ int batadv_algo_register(struct batadv_algo_ops *bat_algo_ops)
 	return 0;
 }
 
-/**
- * batadv_algo_select() - Select algorithm of soft interface
- * @bat_priv: the bat priv with all the soft interface information
- * @name: name of the algorithm to select
- *
- * The algorithm callbacks for the soft interface will be set when the algorithm
- * with the correct name was found. Any previous selected algorithm will not be
- * deinitialized and the new selected algorithm will also not be initialized.
- * It is therefore not allowed to call batadv_algo_select outside the creation
- * function of the soft interface.
- *
- * Return: 0 on success or negative error number in case of failure
- */
+ 
 int batadv_algo_select(struct batadv_priv *bat_priv, const char *name)
 {
 	struct batadv_algo_ops *bat_algo_ops;
@@ -146,16 +118,7 @@ static struct kparam_string batadv_param_string_ra = {
 module_param_cb(routing_algo, &batadv_param_ops_ra, &batadv_param_string_ra,
 		0644);
 
-/**
- * batadv_algo_dump_entry() - fill in information about one supported routing
- *  algorithm
- * @msg: netlink message to be sent back
- * @portid: Port to reply to
- * @seq: Sequence number of message
- * @bat_algo_ops: Algorithm to be dumped
- *
- * Return: Error number, or 0 on success
- */
+ 
 static int batadv_algo_dump_entry(struct sk_buff *msg, u32 portid, u32 seq,
 				  struct batadv_algo_ops *bat_algo_ops)
 {
@@ -177,14 +140,7 @@ static int batadv_algo_dump_entry(struct sk_buff *msg, u32 portid, u32 seq,
 	return -EMSGSIZE;
 }
 
-/**
- * batadv_algo_dump() - fill in information about supported routing
- *  algorithms
- * @msg: netlink message to be sent back
- * @cb: Parameters to the netlink request
- *
- * Return: Length of reply message.
- */
+ 
 int batadv_algo_dump(struct sk_buff *msg, struct netlink_callback *cb)
 {
 	int portid = NETLINK_CB(cb->skb).portid;

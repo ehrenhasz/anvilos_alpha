@@ -1,6 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Copyright (c) 2019 MediaTek Inc.
+
+
+
 
 #include <linux/interrupt.h>
 #include <linux/irq.h>
@@ -188,7 +188,7 @@ int mt6397_irq_init(struct mt6397_chip *chip)
 		return -ENODEV;
 	}
 
-	/* Mask all interrupt sources */
+	 
 	regmap_write(chip->regmap, chip->int_con[0], 0x0);
 	regmap_write(chip->regmap, chip->int_con[1], 0x0);
 

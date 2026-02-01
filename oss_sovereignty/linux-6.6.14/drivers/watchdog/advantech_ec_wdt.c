@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *	Advantech Embedded Controller Watchdog Driver
- *
- *	This driver supports Advantech products with ITE based Embedded Controller.
- *	It does not support Advantech products with other ECs or without EC.
- *
- *	Copyright (C) 2022 Advantech Europe B.V.
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/io.h>
@@ -18,14 +11,14 @@
 
 #define DRIVER_NAME		"advantech_ec_wdt"
 
-/* EC IO region */
+ 
 #define EC_BASE_ADDR		0x299
 #define EC_ADDR_EXTENT		2
 
-/* EC minimum IO access delay in ms */
+ 
 #define EC_MIN_DELAY		10
 
-/* EC interface definitions */
+ 
 #define EC_ADDR_CMD		(EC_BASE_ADDR + 1)
 #define EC_ADDR_DATA		EC_BASE_ADDR
 #define EC_CMD_EC_PROBE		0x30
@@ -39,9 +32,9 @@
 #define EC_DAT_RST_DLY_L	0x5F
 #define EC_MAGIC		0x95
 
-/* module parameters */
+ 
 #define MIN_TIME		1
-#define MAX_TIME		6000 /* 100 minutes */
+#define MAX_TIME		6000  
 #define DEFAULT_TIME		60
 
 static unsigned int timeout;
@@ -55,7 +48,7 @@ static void adv_ec_wdt_timing_gate(void)
 {
 	ktime_t time_cur, time_delta;
 
-	/* ensure minimum delay between IO accesses*/
+	 
 	time_cur = ktime_get();
 	time_delta = ktime_to_ms(ktime_sub(time_cur, ec_timestamp));
 	if (time_delta < EC_MIN_DELAY) {
@@ -87,10 +80,10 @@ static int adv_ec_wdt_set_timeout(struct watchdog_device *wdd, unsigned int t)
 {
 	unsigned int val;
 
-	/* scale time to EC 100 ms base */
+	 
 	val = t * 10;
 
-	/* reset enable delay, just in case it was set by BIOS etc. */
+	 
 	adv_ec_wdt_outb(EC_CMD_COMM, EC_ADDR_CMD);
 	adv_ec_wdt_outb(EC_DAT_EN_DLY_H, EC_ADDR_DATA);
 	adv_ec_wdt_outb(0, EC_ADDR_DATA);
@@ -99,7 +92,7 @@ static int adv_ec_wdt_set_timeout(struct watchdog_device *wdd, unsigned int t)
 	adv_ec_wdt_outb(EC_DAT_EN_DLY_L, EC_ADDR_DATA);
 	adv_ec_wdt_outb(0, EC_ADDR_DATA);
 
-	/* set reset delay */
+	 
 	adv_ec_wdt_outb(EC_CMD_COMM, EC_ADDR_CMD);
 	adv_ec_wdt_outb(EC_DAT_RST_DLY_H, EC_ADDR_DATA);
 	adv_ec_wdt_outb(val >> 8, EC_ADDR_DATA);
@@ -176,7 +169,7 @@ static int __init adv_ec_wdt_init(void)
 {
 	unsigned int val;
 
-	/* quick probe for EC */
+	 
 	if (!request_region(EC_BASE_ADDR, EC_ADDR_EXTENT, DRIVER_NAME))
 		return -EBUSY;
 

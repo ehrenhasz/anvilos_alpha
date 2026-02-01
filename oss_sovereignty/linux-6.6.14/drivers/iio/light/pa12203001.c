@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2015 Intel Corporation
- *
- * Driver for TXC PA12203001 Proximity and Ambient Light Sensor.
- *
- * To do: Interrupt support.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -40,13 +34,13 @@
 
 #define PA12203001_PSCAN			0x03
 
-/* als range 31000, ps, als disabled */
+ 
 #define PA12203001_REG_CFG0_DEFAULT		0x30
 
-/* led current: 100 mA */
+ 
 #define PA12203001_REG_CFG1_DEFAULT		0x20
 
-/* ps mode: normal, interrupts not active */
+ 
 #define PA12203001_REG_CFG2_DEFAULT		0xcc
 
 #define PA12203001_REG_CFG3_DEFAULT		0x00
@@ -56,13 +50,13 @@
 #define PA12203001_CHIP_ENABLE		0xff
 #define PA12203001_CHIP_DISABLE		0x00
 
-/* available scales: corresponding to [500, 4000, 7000, 31000]  lux */
+ 
 static const int pa12203001_scales[] = { 7629, 61036, 106813, 473029};
 
 struct pa12203001_data {
 	struct i2c_client *client;
 
-	/* protect device states */
+	 
 	struct mutex lock;
 
 	bool als_enabled;
@@ -221,10 +215,7 @@ static int pa12203001_read_raw(struct iio_dev *indio_dev,
 			ret = pa12203001_set_power_state(data, true, dev_mask);
 			if (ret < 0)
 				return ret;
-			/*
-			 * ALS ADC value is stored in registers
-			 * PA12203001_REG_ADL and in PA12203001_REG_ADL + 1.
-			 */
+			 
 			ret = regmap_bulk_read(data->map, PA12203001_REG_ADL,
 					       &reg_word, 2);
 			if (ret < 0)

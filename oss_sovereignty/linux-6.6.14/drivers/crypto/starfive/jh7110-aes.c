@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * StarFive AES acceleration driver
- *
- * Copyright (c) 2022 StarFive Technology
- */
+
+ 
 
 #include <crypto/engine.h>
 #include <crypto/gcm.h>
@@ -45,7 +41,7 @@
 #define FLG_MODE_MASK			GENMASK(2, 0)
 #define FLG_ENCRYPT			BIT(4)
 
-/* Misc */
+ 
 #define CCM_B0_ADATA			0x40
 #define AES_BLOCK_32			(AES_BLOCK_SIZE / sizeof(u32))
 
@@ -131,7 +127,7 @@ static inline void starfive_aes_set_mlen(struct starfive_cryp_ctx *ctx)
 
 static inline int starfive_aes_ccm_check_iv(const u8 *iv)
 {
-	/* 2 <= L <= 8, so 1 <= L' <= 7. */
+	 
 	if (iv[0] < 1 || iv[0] > 7)
 		return -EINVAL;
 
@@ -213,7 +209,7 @@ static int starfive_aes_ccm_init(struct starfive_cryp_ctx *ctx)
 	memcpy(iv, cryp->req.areq->iv, AES_BLOCK_SIZE);
 	memset(iv + AES_BLOCK_SIZE - 1 - iv[0], 0, iv[0] + 1);
 
-	/* Build B0 */
+	 
 	memcpy(b0, iv, AES_BLOCK_SIZE);
 
 	b0[0] |= (8 * ((cryp->authsize - 2) / 2));
@@ -237,12 +233,12 @@ static int starfive_aes_hw_init(struct starfive_cryp_ctx *ctx)
 	struct starfive_cryp_dev *cryp = ctx->cryp;
 	u32 hw_mode;
 
-	/* reset */
+	 
 	rctx->csr.aes.v = 0;
 	rctx->csr.aes.aesrst = 1;
 	writel(rctx->csr.aes.v, cryp->base + STARFIVE_AES_CSR);
 
-	/* csr setup */
+	 
 	hw_mode = cryp->flags & FLG_MODE_MASK;
 
 	rctx->csr.aes.v = 0;
@@ -348,7 +344,7 @@ static void starfive_aes_finish_req(struct starfive_cryp_dev *cryp)
 		     (cryp->flags & FLG_MODE_MASK) == STARFIVE_AES_MODE_CTR))
 		starfive_aes_get_iv(cryp, (void *)cryp->req.sreq->iv);
 
-	/* reset irq flags*/
+	 
 	csr.v = 0;
 	csr.aesrst = 1;
 	writel(csr.v, cryp->base + STARFIVE_AES_CSR);
@@ -530,10 +526,7 @@ static int starfive_aes_do_one_req(struct crypto_engine *engine, void *areq)
 	if (err)
 		return err;
 
-	/*
-	 * Write first plain/ciphertext block to start the module
-	 * then let irq tasklet handle the rest of the data blocks.
-	 */
+	 
 	scatterwalk_copychunks(block, &cryp->in_walk, min_t(size_t, AES_BLOCK_SIZE,
 							    cryp->total_in), 0);
 	cryp->total_in -= min_t(size_t, AES_BLOCK_SIZE, cryp->total_in);
@@ -596,10 +589,7 @@ write_text:
 	if (!cryp->total_in)
 		goto finish_req;
 
-	/*
-	 * Write first plain/ciphertext block to start the module
-	 * then let irq tasklet handle the rest of the data blocks.
-	 */
+	 
 	scatterwalk_copychunks(block, &cryp->in_walk, min_t(size_t, AES_BLOCK_SIZE,
 							    cryp->total_in), 0);
 	cryp->total_in -= min_t(size_t, AES_BLOCK_SIZE, cryp->total_in);
@@ -675,10 +665,7 @@ static int starfive_aes_aead_crypt(struct aead_request *req, unsigned long flags
 
 	cryp->flags = flags;
 
-	/*
-	 * HW engine could not perform CCM tag verification on
-	 * non-blocksize aligned text, use fallback algo instead
-	 */
+	 
 	if (ctx->aead_fbk && !is_encrypt(cryp)) {
 		struct aead_request *subreq = aead_request_ctx(req);
 

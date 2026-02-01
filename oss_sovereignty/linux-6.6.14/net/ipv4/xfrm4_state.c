@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * xfrm4_state.c
- *
- * Changes:
- * 	YOSHIFUJI Hideaki @USAGI
- * 		Split up af-specific portion
- *
- */
+
+ 
 
 #include <net/xfrm.h>
 

@@ -1,19 +1,13 @@
-// SPDX-License-Identifier: GPL-2.0
 
-/*
- * SP800-108 Key-derivation function
- *
- * Copyright (C) 2021, Stephan Mueller <smueller@chronox.de>
- */
+
+ 
 
 #include <linux/fips.h>
 #include <linux/module.h>
 #include <crypto/kdf_sp800108.h>
 #include <crypto/internal/kdf_selftest.h>
 
-/*
- * SP800-108 CTR KDF implementation
- */
+ 
 int crypto_kdf108_ctr_generate(struct crypto_shash *kmd,
 			       const struct kvec *info, unsigned int info_nvec,
 			       u8 *dst, unsigned int dlen)
@@ -71,32 +65,27 @@ out:
 }
 EXPORT_SYMBOL(crypto_kdf108_ctr_generate);
 
-/*
- * The seeding of the KDF
- */
+ 
 int crypto_kdf108_setkey(struct crypto_shash *kmd,
 			 const u8 *key, size_t keylen,
 			 const u8 *ikm, size_t ikmlen)
 {
 	unsigned int ds = crypto_shash_digestsize(kmd);
 
-	/* SP800-108 does not support IKM */
+	 
 	if (ikm || ikmlen)
 		return -EINVAL;
 
-	/* Check according to SP800-108 section 7.2 */
+	 
 	if (ds > keylen)
 		return -EINVAL;
 
-	/* Set the key for the MAC used for the KDF. */
+	 
 	return crypto_shash_setkey(kmd, key, keylen);
 }
 EXPORT_SYMBOL(crypto_kdf108_setkey);
 
-/*
- * Test vector obtained from
- * http://csrc.nist.gov/groups/STM/cavp/documents/KBKDF800-108/CounterMode.zip
- */
+ 
 static const struct kdf_testvec kdf_ctr_hmac_sha256_tv_template[] = {
 	{
 		.key = "\xdd\x1d\x91\xb7\xd9\x0b\x2b\xd3"

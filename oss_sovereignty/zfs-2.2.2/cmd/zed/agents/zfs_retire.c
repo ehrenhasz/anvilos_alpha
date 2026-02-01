@@ -1,39 +1,7 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
-/*
- * Copyright (c) 2006, 2010, Oracle and/or its affiliates. All rights reserved.
- *
- * Copyright (c) 2016, Intel Corporation.
- * Copyright (c) 2018, loli10K <ezomori.nozomu@gmail.com>
- */
+ 
+ 
 
-/*
- * The ZFS retire agent is responsible for managing hot spares across all pools.
- * When we see a device fault or a device removal, we try to open the associated
- * pool and look for any hot spares.  We iterate over any available hot spares
- * and attempt a 'zpool replace' for each one.
- *
- * For vdevs diagnosed as faulty, the agent is also responsible for proactively
- * marking the vdev FAULTY (for I/O errors) or DEGRADED (for checksum errors).
- */
+ 
 
 #include <sys/fs/zfs.h>
 #include <sys/fm/protocol.h>
@@ -69,9 +37,7 @@ zfs_retire_clear_data(fmd_hdl_t *hdl, zfs_retire_data_t *zdp)
 	}
 }
 
-/*
- * Find a pool with a matching GUID.
- */
+ 
 typedef struct find_cbdata {
 	uint64_t	cb_guid;
 	zpool_handle_t	*cb_zhp;
@@ -95,9 +61,7 @@ find_pool(zpool_handle_t *zhp, void *data)
 	return (0);
 }
 
-/*
- * Find a vdev within a tree with a matching GUID.
- */
+ 
 static nvlist_t *
 find_vdev(libzfs_handle_t *zhdl, nvlist_t *nv, uint64_t search_guid)
 {
@@ -186,9 +150,7 @@ remove_spares(zpool_handle_t *zhp, void *data)
 	return (0);
 }
 
-/*
- * Given a vdev guid, find and remove all spares associated with it.
- */
+ 
 static int
 find_and_remove_spares(libzfs_handle_t *zhdl, uint64_t vdev_guid)
 {
@@ -201,9 +163,7 @@ find_and_remove_spares(libzfs_handle_t *zhdl, uint64_t vdev_guid)
 	return (cb.cb_num_spares);
 }
 
-/*
- * Given a (pool, vdev) GUID pair, find the matching pool and vdev.
- */
+ 
 static zpool_handle_t *
 find_by_guid(libzfs_handle_t *zhdl, uint64_t pool_guid, uint64_t vdev_guid,
     nvlist_t **vdevp)
@@ -212,9 +172,7 @@ find_by_guid(libzfs_handle_t *zhdl, uint64_t pool_guid, uint64_t vdev_guid,
 	zpool_handle_t *zhp;
 	nvlist_t *config, *nvroot;
 
-	/*
-	 * Find the corresponding pool and make sure the vdev still exists.
-	 */
+	 
 	cb.cb_guid = pool_guid;
 	if (zpool_iter(zhdl, find_pool, &cb) != 1)
 		return (NULL);
@@ -237,11 +195,7 @@ find_by_guid(libzfs_handle_t *zhdl, uint64_t pool_guid, uint64_t vdev_guid,
 	return (zhp);
 }
 
-/*
- * Given a vdev, attempt to replace it with every known spare until one
- * succeeds or we run out of devices to try.
- * Return whether we were successful or not in replacing the device.
- */
+ 
 static boolean_t
 replace_with_spare(fmd_hdl_t *hdl, zpool_handle_t *zhp, nvlist_t *vdev)
 {
@@ -257,16 +211,12 @@ replace_with_spare(fmd_hdl_t *hdl, zpool_handle_t *zhp, nvlist_t *vdev)
 	    &nvroot) != 0)
 		return (B_FALSE);
 
-	/*
-	 * Find out if there are any hot spares available in the pool.
-	 */
+	 
 	if (nvlist_lookup_nvlist_array(nvroot, ZPOOL_CONFIG_SPARES,
 	    &spares, &nspares) != 0)
 		return (B_FALSE);
 
-	/*
-	 * lookup "ashift" pool property, we may need it for the replacement
-	 */
+	 
 	ashift = zpool_get_prop_int(zhp, ZPOOL_PROP_ASHIFT, &source);
 
 	replacement = fmd_nvl_alloc(hdl, FMD_SLEEP);
@@ -276,10 +226,7 @@ replace_with_spare(fmd_hdl_t *hdl, zpool_handle_t *zhp, nvlist_t *vdev)
 
 	dev_name = zpool_vdev_name(NULL, zhp, vdev, B_FALSE);
 
-	/*
-	 * Try to replace each spare, ending when we successfully
-	 * replace it.
-	 */
+	 
 	for (s = 0; s < nspares; s++) {
 		boolean_t rebuild = B_FALSE;
 		const char *spare_name, *type;
@@ -288,12 +235,12 @@ replace_with_spare(fmd_hdl_t *hdl, zpool_handle_t *zhp, nvlist_t *vdev)
 		    &spare_name) != 0)
 			continue;
 
-		/* prefer sequential resilvering for distributed spares */
+		 
 		if ((nvlist_lookup_string(spares[s], ZPOOL_CONFIG_TYPE,
 		    &type) == 0) && strcmp(type, VDEV_TYPE_DRAID_SPARE) == 0)
 			rebuild = B_TRUE;
 
-		/* if set, add the "ashift" pool property to the spare nvlist */
+		 
 		if (source != ZPROP_SRC_DEFAULT)
 			(void) nvlist_add_uint64(spares[s],
 			    ZPOOL_CONFIG_ASHIFT, ashift);
@@ -318,11 +265,7 @@ replace_with_spare(fmd_hdl_t *hdl, zpool_handle_t *zhp, nvlist_t *vdev)
 	return (B_FALSE);
 }
 
-/*
- * Repair this vdev if we had diagnosed a 'fault.fs.zfs.device' and
- * ASRU is now usable.  ZFS has found the device to be present and
- * functioning.
- */
+ 
 static void
 zfs_vdev_repair(fmd_hdl_t *hdl, nvlist_t *nvl)
 {
@@ -334,17 +277,7 @@ zfs_vdev_repair(fmd_hdl_t *hdl, nvlist_t *nvl)
 	    FM_EREPORT_PAYLOAD_ZFS_VDEV_GUID, &vdev_guid) != 0)
 		return;
 
-	/*
-	 * Before checking the state of the ASRU, go through and see if we've
-	 * already made an attempt to repair this ASRU.  This list is cleared
-	 * whenever we receive any kind of list event, and is designed to
-	 * prevent us from generating a feedback loop when we attempt repairs
-	 * against a faulted pool.  The problem is that checking the unusable
-	 * state of the ASRU can involve opening the pool, which can post
-	 * statechange events but otherwise leave the pool in the faulted
-	 * state.  This list allows us to detect when a statechange event is
-	 * due to our own request.
-	 */
+	 
 	for (zrp = zdp->zrd_repaired; zrp != NULL; zrp = zrp->zrr_next) {
 		if (zrp->zrr_pool == pool_guid &&
 		    zrp->zrr_vdev == vdev_guid)
@@ -393,11 +326,7 @@ zfs_retire_recv(fmd_hdl_t *hdl, fmd_event_t *ep, nvlist_t *nvl,
 	(void) nvlist_lookup_uint64(nvl, FM_EREPORT_PAYLOAD_ZFS_VDEV_STATE,
 	    &state);
 
-	/*
-	 * If this is a resource notifying us of device removal then simply
-	 * check for an available spare and continue unless the device is a
-	 * l2arc vdev, in which case we just offline it.
-	 */
+	 
 	if (strcmp(class, "resource.fs.zfs.removed") == 0 ||
 	    (strcmp(class, "resource.fs.zfs.statechange") == 0 &&
 	    (state == VDEV_STATE_REMOVED || state == VDEV_STATE_FAULTED))) {
@@ -440,16 +369,12 @@ zfs_retire_recv(fmd_hdl_t *hdl, fmd_event_t *ep, nvlist_t *nvl,
 		nvlist_lookup_uint64_array(vdev, ZPOOL_CONFIG_VDEV_STATS,
 		    (uint64_t **)&vs, &c);
 
-		/*
-		 * If state removed is requested for already removed vdev,
-		 * its a loopback event from spa_async_remove(). Just
-		 * ignore it.
-		 */
+		 
 		if (vs->vs_state == VDEV_STATE_REMOVED &&
 		    state == VDEV_STATE_REMOVED)
 			return;
 
-		/* Remove the vdev since device is unplugged */
+		 
 		int remove_status = 0;
 		if (l2arc || (strcmp(class, "resource.fs.zfs.removed") == 0)) {
 			remove_status = zpool_vdev_remove_wanted(zhp, devname);
@@ -457,11 +382,11 @@ zfs_retire_recv(fmd_hdl_t *hdl, fmd_event_t *ep, nvlist_t *nvl,
 			    ", err:%d", devname, libzfs_errno(zhdl));
 		}
 
-		/* Replace the vdev with a spare if its not a l2arc */
+		 
 		if (!l2arc && !remove_status &&
 		    (!fmd_prop_get_int32(hdl, "spare_on_remove") ||
 		    replace_with_spare(hdl, zhp, vdev) == B_FALSE)) {
-			/* Could not handle with spare */
+			 
 			fmd_hdl_debug(hdl, "no spare for '%s'", devname);
 		}
 
@@ -473,10 +398,7 @@ zfs_retire_recv(fmd_hdl_t *hdl, fmd_event_t *ep, nvlist_t *nvl,
 	if (strcmp(class, FM_LIST_RESOLVED_CLASS) == 0)
 		return;
 
-	/*
-	 * Note: on Linux statechange events are more than just
-	 * healthy ones so we need to confirm the actual state value.
-	 */
+	 
 	if (strcmp(class, "resource.fs.zfs.statechange") == 0 &&
 	    state == VDEV_STATE_HEALTHY) {
 		zfs_vdev_repair(hdl, nvl);
@@ -494,9 +416,7 @@ zfs_retire_recv(fmd_hdl_t *hdl, fmd_event_t *ep, nvlist_t *nvl,
 	else
 		is_repair = B_FALSE;
 
-	/*
-	 * We subscribe to zfs faults as well as all repair events.
-	 */
+	 
 	if (nvlist_lookup_nvlist_array(nvl, FM_SUSPECT_FAULT_LIST,
 	    &faults, &nfaults) != 0)
 		return;
@@ -512,12 +432,7 @@ zfs_retire_recv(fmd_hdl_t *hdl, fmd_event_t *ep, nvlist_t *nvl,
 		    &retire) == 0 && retire == 0)
 			continue;
 
-		/*
-		 * While we subscribe to fault.fs.zfs.*, we only take action
-		 * for faults targeting a specific vdev (open failure or SERD
-		 * failure).  We also subscribe to fault.io.* events, so that
-		 * faulty disks will be faulted in the ZFS configuration.
-		 */
+		 
 		if (fmd_nvl_class_match(hdl, fault, "fault.fs.zfs.vdev.io")) {
 			fault_device = B_TRUE;
 		} else if (fmd_nvl_class_match(hdl, fault,
@@ -536,10 +451,7 @@ zfs_retire_recv(fmd_hdl_t *hdl, fmd_event_t *ep, nvlist_t *nvl,
 		if (is_disk) {
 			continue;
 		} else {
-			/*
-			 * This is a ZFS fault.  Lookup the resource, and
-			 * attempt to find the matching vdev.
-			 */
+			 
 			if (nvlist_lookup_nvlist(fault, FM_FAULT_RESOURCE,
 			    &resource) != 0 ||
 			    nvlist_lookup_string(resource, FM_FMRI_SCHEME,
@@ -569,9 +481,7 @@ zfs_retire_recv(fmd_hdl_t *hdl, fmd_event_t *ep, nvlist_t *nvl,
 		}
 
 		if (vdev_guid == 0) {
-			/*
-			 * For pool-level repair events, clear the entire pool.
-			 */
+			 
 			fmd_hdl_debug(hdl, "zpool_clear of pool '%s'",
 			    zpool_get_name(zhp));
 			(void) zpool_clear(zhp, NULL, NULL);
@@ -579,10 +489,7 @@ zfs_retire_recv(fmd_hdl_t *hdl, fmd_event_t *ep, nvlist_t *nvl,
 			continue;
 		}
 
-		/*
-		 * If this is a repair event, then mark the vdev as repaired and
-		 * continue.
-		 */
+		 
 		if (is_repair) {
 			repair_done = 1;
 			fmd_hdl_debug(hdl, "zpool_clear of pool '%s' vdev %llu",
@@ -592,9 +499,7 @@ zfs_retire_recv(fmd_hdl_t *hdl, fmd_event_t *ep, nvlist_t *nvl,
 			continue;
 		}
 
-		/*
-		 * Actively fault the device if needed.
-		 */
+		 
 		if (fault_device)
 			(void) zpool_vdev_fault(zhp, vdev_guid, aux);
 		if (degrade_device)
@@ -605,9 +510,7 @@ zfs_retire_recv(fmd_hdl_t *hdl, fmd_event_t *ep, nvlist_t *nvl,
 			    fault_device ? "fault" : "degrade", vdev_guid,
 			    zpool_get_name(zhp));
 
-		/*
-		 * Attempt to substitute a hot spare.
-		 */
+		 
 		(void) replace_with_spare(hdl, zhp, vdev);
 
 		zpool_close(zhp);
@@ -619,11 +522,11 @@ zfs_retire_recv(fmd_hdl_t *hdl, fmd_event_t *ep, nvlist_t *nvl,
 }
 
 static const fmd_hdl_ops_t fmd_ops = {
-	zfs_retire_recv,	/* fmdo_recv */
-	NULL,			/* fmdo_timeout */
-	NULL,			/* fmdo_close */
-	NULL,			/* fmdo_stats */
-	NULL,			/* fmdo_gc */
+	zfs_retire_recv,	 
+	NULL,			 
+	NULL,			 
+	NULL,			 
+	NULL,			 
 };
 
 static const fmd_prop_t fmd_props[] = {

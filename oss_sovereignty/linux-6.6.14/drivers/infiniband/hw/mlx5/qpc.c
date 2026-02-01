@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-/*
- * Copyright (c) 2013-2020, Mellanox Technologies inc. All rights reserved.
- */
+
+ 
 
 #include <linux/gfp.h>
 #include <linux/mlx5/qp.h>
@@ -145,7 +143,7 @@ static int rsc_event_notifier(struct notifier_block *nb,
 	case MLX5_RES_SQ:
 		qp = (struct mlx5_core_qp *)common;
 		qp->event(qp, event_type);
-		/* Need to put resource in event handler */
+		 
 		return NOTIFY_OK;
 	default:
 		break;
@@ -410,7 +408,7 @@ static int modify_qp_mbox_alloc(struct mlx5_core_dev *dev, u16 opcode, int qpn,
 	} while (0)
 
 	switch (opcode) {
-	/* 2RST & 2ERR */
+	 
 	case MLX5_CMD_OP_2RST_QP:
 		if (MBOX_ALLOC(mbox, qp_2rst))
 			return -ENOMEM;
@@ -422,7 +420,7 @@ static int modify_qp_mbox_alloc(struct mlx5_core_dev *dev, u16 opcode, int qpn,
 		MOD_QP_IN_SET(qp_2err, mbox->in, opcode, qpn, uid);
 		break;
 
-	/* MODIFY with QPC */
+	 
 	case MLX5_CMD_OP_RST2INIT_QP:
 		if (MBOX_ALLOC(mbox, rst2init_qp))
 			return -ENOMEM;

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2021 ARM Limited
- *
- * Check that the SME vector length reported in signal contexts is the
- * expected one.
- */
+
+ 
 
 #include <signal.h>
 #include <ucontext.h>
@@ -33,7 +28,7 @@ static int sme_vl(struct tdescr *td, siginfo_t *si, ucontext_t *uc)
 	struct _aarch64_ctx *head = GET_SF_RESV_HEAD(sf);
 	struct za_context *za;
 
-	/* Get a signal context which should have a ZA frame in it */
+	 
 	if (!get_current_context(td, &sf.uc, sizeof(sf.uc)))
 		return 1;
 

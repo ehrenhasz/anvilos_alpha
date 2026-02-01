@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Functions related to sysfs handling
- */
+
+ 
 #include <linux/kernel.h>
 #include <linux/slab.h>
 #include <linux/module.h>
@@ -532,7 +530,7 @@ QUEUE_RO_ENTRY(queue_dma_alignment, "dma_alignment");
 QUEUE_RW_ENTRY(blk_throtl_sample_time, "throttle_sample_time");
 #endif
 
-/* legacy alias for logical_block_size: */
+ 
 static struct queue_sysfs_entry queue_hw_sector_size_entry = {
 	.attr = {.name = "hw_sector_size", .mode = 0444 },
 	.show = queue_logical_block_size_show,
@@ -596,11 +594,7 @@ static ssize_t queue_wb_lat_store(struct request_queue *q, const char *page,
 	if (wbt_get_min_lat(q) == val)
 		return count;
 
-	/*
-	 * Ensure that the queue is idled, in case the latency update
-	 * ends up either enabling or disabling wbt completely. We can't
-	 * have IO inflight if that happens.
-	 */
+	 
 	blk_mq_freeze_queue(q);
 	blk_mq_quiesce_queue(q);
 
@@ -758,7 +752,7 @@ static const struct attribute_group *blk_queue_attr_groups[] = {
 
 static void blk_queue_release(struct kobject *kobj)
 {
-	/* nothing to do here, all data is associated with the parent gendisk */
+	 
 }
 
 static const struct kobj_type blk_queue_ktype = {
@@ -780,10 +774,7 @@ static void blk_debugfs_remove(struct gendisk *disk)
 	mutex_unlock(&q->debugfs_mutex);
 }
 
-/**
- * blk_register_queue - register a block layer queue with sysfs
- * @disk: Disk of which the request queue should be registered with sysfs.
- */
+ 
 int blk_register_queue(struct gendisk *disk)
 {
 	struct request_queue *q = disk->queue;
@@ -826,22 +817,14 @@ int blk_register_queue(struct gendisk *disk)
 	wbt_enable_default(disk);
 	blk_throtl_register(disk);
 
-	/* Now everything is ready and send out KOBJ_ADD uevent */
+	 
 	kobject_uevent(&disk->queue_kobj, KOBJ_ADD);
 	if (q->elevator)
 		kobject_uevent(&q->elevator->kobj, KOBJ_ADD);
 	mutex_unlock(&q->sysfs_lock);
 	mutex_unlock(&q->sysfs_dir_lock);
 
-	/*
-	 * SCSI probing may synchronously create and destroy a lot of
-	 * request_queues for non-existent devices.  Shutting down a fully
-	 * functional queue takes measureable wallclock time as RCU grace
-	 * periods are involved.  To avoid excessive latency in these
-	 * cases, a request_queue starts out in a degraded mode which is
-	 * faster to shut down and is made fully functional here as
-	 * request_queues for non-existent devices never get registered.
-	 */
+	 
 	if (!blk_queue_init_done(q)) {
 		blk_queue_flag_set(QUEUE_FLAG_INIT_DONE, q);
 		percpu_ref_switch_to_percpu(&q->q_usage_counter);
@@ -862,13 +845,7 @@ out_put_queue_kobj:
 	return ret;
 }
 
-/**
- * blk_unregister_queue - counterpart of blk_register_queue()
- * @disk: Disk of which the request queue should be unregistered from sysfs.
- *
- * Note: the caller is responsible for guaranteeing that this function is called
- * after blk_register_queue() has finished.
- */
+ 
 void blk_unregister_queue(struct gendisk *disk)
 {
 	struct request_queue *q = disk->queue;
@@ -876,24 +853,17 @@ void blk_unregister_queue(struct gendisk *disk)
 	if (WARN_ON(!q))
 		return;
 
-	/* Return early if disk->queue was never registered. */
+	 
 	if (!blk_queue_registered(q))
 		return;
 
-	/*
-	 * Since sysfs_remove_dir() prevents adding new directory entries
-	 * before removal of existing entries starts, protect against
-	 * concurrent elv_iosched_store() calls.
-	 */
+	 
 	mutex_lock(&q->sysfs_lock);
 	blk_queue_flag_clear(QUEUE_FLAG_REGISTERED, q);
 	mutex_unlock(&q->sysfs_lock);
 
 	mutex_lock(&q->sysfs_dir_lock);
-	/*
-	 * Remove the sysfs attributes before unregistering the queue data
-	 * structures that can be modified through sysfs.
-	 */
+	 
 	if (queue_is_mq(q))
 		blk_mq_sysfs_unregister(disk);
 	blk_crypto_sysfs_unregister(disk);
@@ -903,7 +873,7 @@ void blk_unregister_queue(struct gendisk *disk)
 	disk_unregister_independent_access_ranges(disk);
 	mutex_unlock(&q->sysfs_lock);
 
-	/* Now that we've deleted all child objects, we can delete the queue. */
+	 
 	kobject_uevent(&disk->queue_kobj, KOBJ_REMOVE);
 	kobject_del(&disk->queue_kobj);
 	mutex_unlock(&q->sysfs_dir_lock);

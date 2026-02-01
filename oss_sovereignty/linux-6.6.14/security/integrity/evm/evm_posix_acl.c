@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2011 IBM Corporation
- *
- * Author:
- * Mimi Zohar <zohar@us.ibm.com>
- */
+
+ 
 
 #include <linux/xattr.h>
 #include <linux/evm.h>

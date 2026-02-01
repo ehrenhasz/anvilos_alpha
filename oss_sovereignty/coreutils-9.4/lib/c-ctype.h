@@ -1,29 +1,9 @@
-/* Character handling in C locale.
-
-   These functions work like the corresponding functions in <ctype.h>,
-   except that they have the C (POSIX) locale hardwired, whereas the
-   <ctype.h> functions' behaviour depends on the current locale set via
-   setlocale.
-
-   Copyright (C) 2000-2003, 2006, 2008-2023 Free Software Foundation, Inc.
-
-   This file is free software: you can redistribute it and/or modify
-   it under the terms of the GNU Lesser General Public License as
-   published by the Free Software Foundation; either version 2.1 of the
-   License, or (at your option) any later version.
-
-   This file is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU Lesser General Public License for more details.
-
-   You should have received a copy of the GNU Lesser General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
+ 
 
 #ifndef C_CTYPE_H
 #define C_CTYPE_H
 
-/* This file uses _GL_INLINE_HEADER_BEGIN, _GL_INLINE.  */
+ 
 #if !_GL_CONFIG_H_INCLUDED
  #error "Please include config.h first."
 #endif
@@ -38,12 +18,7 @@ extern "C" {
 #endif
 
 
-/* The functions defined in this file assume the "C" locale and a character
-   set without diacritics (ASCII-US or EBCDIC-US or something like that).
-   Even if the "C" locale on a particular system is an extension of the ASCII
-   character set (like on BeOS, where it is UTF-8, or on AmigaOS, where it
-   is ISO-8859-1), the functions in this file recognize only the ASCII
-   characters.  */
+ 
 
 
 #if (' ' == 32) && ('!' == 33) && ('"' == 34) && ('#' == 35) \
@@ -69,8 +44,7 @@ extern "C" {
     && ('s' == 115) && ('t' == 116) && ('u' == 117) && ('v' == 118) \
     && ('w' == 119) && ('x' == 120) && ('y' == 121) && ('z' == 122) \
     && ('{' == 123) && ('|' == 124) && ('}' == 125) && ('~' == 126)
-/* The character set is ASCII or one of its variants or extensions, not EBCDIC.
-   Testing the value of '\n' and '\r' is not relevant.  */
+ 
 # define C_CTYPE_ASCII 1
 #elif ! (' ' == '\x40' && '0' == '\xf0'                     \
          && 'A' == '\xc1' && 'J' == '\xd1' && 'S' == '\xe2' \
@@ -82,14 +56,14 @@ extern "C" {
 # error "EBCDIC and char is signed -- not supported"
 #endif
 
-/* Cases for control characters.  */
+ 
 
 #define _C_CTYPE_CNTRL \
    case '\a': case '\b': case '\f': case '\n': \
    case '\r': case '\t': case '\v': \
    _C_CTYPE_OTHER_CNTRL
 
-/* ASCII control characters other than those with \-letter escapes.  */
+ 
 
 #if C_CTYPE_ASCII
 # define _C_CTYPE_OTHER_CNTRL \
@@ -101,8 +75,7 @@ extern "C" {
     case '\x1b': case '\x1c': case '\x1d': case '\x1e': \
     case '\x1f': case '\x7f'
 #else
-   /* Use EBCDIC code page 1047's assignments for ASCII control chars;
-      assume all EBCDIC code pages agree about these assignments.  */
+    
 # define _C_CTYPE_OTHER_CNTRL \
     case '\x00': case '\x01': case '\x02': case '\x03': \
     case '\x07': case '\x0e': case '\x0f': case '\x10': \
@@ -113,7 +86,7 @@ extern "C" {
     case '\x3d': case '\x3f'
 #endif
 
-/* Cases for lowercase hex letters, and lowercase letters, all offset by N.  */
+ 
 
 #define _C_CTYPE_LOWER_A_THRU_F_N(N) \
    case 'a' + (N): case 'b' + (N): case 'c' + (N): case 'd' + (N): \
@@ -126,7 +99,7 @@ extern "C" {
    case 's' + (N): case 't' + (N): case 'u' + (N): case 'v' + (N): \
    case 'w' + (N): case 'x' + (N): case 'y' + (N): case 'z' + (N)
 
-/* Cases for hex letters, digits, lower, punct, and upper.  */
+ 
 
 #define _C_CTYPE_A_THRU_F \
    _C_CTYPE_LOWER_A_THRU_F_N (0): \
@@ -148,22 +121,9 @@ extern "C" {
 #define _C_CTYPE_UPPER _C_CTYPE_LOWER_N ('A' - 'a')
 
 
-/* Function definitions.  */
+ 
 
-/* Unlike the functions in <ctype.h>, which require an argument in the range
-   of the 'unsigned char' type, the functions here operate on values that are
-   in the 'unsigned char' range or in the 'char' range.  In other words,
-   when you have a 'char' value, you need to cast it before using it as
-   argument to a <ctype.h> function:
-
-         const char *s = ...;
-         if (isalpha ((unsigned char) *s)) ...
-
-   but you don't need to cast it for the functions defined in this file:
-
-         const char *s = ...;
-         if (c_isalpha (*s)) ...
- */
+ 
 
 C_CTYPE_INLINE bool
 c_isalnum (int c)
@@ -192,8 +152,7 @@ c_isalpha (int c)
     }
 }
 
-/* The function isascii is not locale dependent.
-   Its use in EBCDIC is questionable. */
+ 
 C_CTYPE_INLINE bool
 c_isascii (int c)
 {
@@ -363,4 +322,4 @@ c_toupper (int c)
 
 _GL_INLINE_HEADER_END
 
-#endif /* C_CTYPE_H */
+#endif  

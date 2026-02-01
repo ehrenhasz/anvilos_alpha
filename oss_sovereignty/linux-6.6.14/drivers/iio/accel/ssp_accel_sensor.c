@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  Copyright (C) 2014, Samsung Electronics Co. Ltd. All Rights Reserved.
- */
+
+ 
 
 #include <linux/iio/common/ssp_sensors.h>
 #include <linux/iio/iio.h>
@@ -123,7 +121,7 @@ static int ssp_accel_probe(struct platform_device *pdev)
 	if (ret < 0)
 		return ret;
 
-	/* ssp registering should be done after all iio setup */
+	 
 	ssp_register_consumer(indio_dev, SSP_ACCELEROMETER_SENSOR);
 
 	return 0;

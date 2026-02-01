@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #define _GNU_SOURCE
 #include <errno.h>
@@ -83,7 +83,7 @@ static int __do_binderfs_test(struct __test_metadata *_metadata)
 		goto rmdir;
 	}
 
-	/* success: binderfs mounted */
+	 
 
 	memcpy(device.name, "my-binder", strlen("my-binder"));
 
@@ -108,7 +108,7 @@ static int __do_binderfs_test(struct __test_metadata *_metadata)
 	TH_LOG("Allocated new binder device with major %d, minor %d, and name %s",
 		device.major, device.minor, device.name);
 
-	/* success: binder device allocation */
+	 
 
 	snprintf(device_path, sizeof(device_path), "%s/my-binder", binderfs_mntpt);
 	fd = open(device_path, O_CLOEXEC | O_RDONLY);
@@ -130,7 +130,7 @@ static int __do_binderfs_test(struct __test_metadata *_metadata)
 
 	TH_LOG("Detected binder version: %d", version.protocol_version);
 
-	/* success: binder transaction with binderfs binder device */
+	 
 
 	ret = unlink(device_path);
 	EXPECT_EQ(ret, 0) {
@@ -139,7 +139,7 @@ static int __do_binderfs_test(struct __test_metadata *_metadata)
 		goto umount;
 	}
 
-	/* success: binder device removal */
+	 
 
 	snprintf(device_path, sizeof(device_path), "%s/binder-control", binderfs_mntpt);
 	ret = unlink(device_path);
@@ -153,7 +153,7 @@ static int __do_binderfs_test(struct __test_metadata *_metadata)
 		goto umount;
 	}
 
-	/* success: binder-control device removal failed as expected */
+	 
 
 	for (int i = 0; i < ARRAY_SIZE(binder_features); i++) {
 		snprintf(device_path, sizeof(device_path), "%s/features/%s",
@@ -167,7 +167,7 @@ static int __do_binderfs_test(struct __test_metadata *_metadata)
 		close(fd);
 	}
 
-	/* success: binder feature files found */
+	 
 	result = 0;
 
 umount:
@@ -370,12 +370,7 @@ static void *binder_version_thread(void *data)
 	pthread_exit(data);
 }
 
-/*
- * Regression test:
- * 2669b8b0c798 ("binder: prevent UAF for binderfs devices")
- * f0fe2c0f050d ("binder: prevent UAF for binderfs devices II")
- * 211b64e4b5b6 ("binderfs: use refcount for binder control devices too")
- */
+ 
 TEST(binderfs_stress)
 {
 	int fds[1000];

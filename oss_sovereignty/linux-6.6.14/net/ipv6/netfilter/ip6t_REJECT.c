@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * IP6 tables REJECT target module
- * Linux INET6 implementation
- *
- * Copyright (C)2003 USAGI/WIDE Project
- *
- * Authors:
- *	Yasuyuki Kozakai	<yasuyuki.kozakai@toshiba.co.jp>
- *
- * Copyright (c) 2005-2007 Patrick McHardy <kaber@trash.net>
- *
- * Based on net/ipv4/netfilter/ipt_REJECT.c
- */
+
+ 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
 #include <linux/gfp.h>
@@ -58,7 +46,7 @@ reject_tg6(struct sk_buff *skb, const struct xt_action_param *par)
 				 xt_hooknum(par));
 		break;
 	case IP6T_ICMP6_ECHOREPLY:
-		/* Do nothing */
+		 
 		break;
 	case IP6T_TCP_RESET:
 		nf_send_reset6(net, par->state->sk, skb, xt_hooknum(par));
@@ -84,7 +72,7 @@ static int reject_tg6_check(const struct xt_tgchk_param *par)
 		pr_info_ratelimited("ECHOREPLY is not supported\n");
 		return -EINVAL;
 	} else if (rejinfo->with == IP6T_TCP_RESET) {
-		/* Must specify that it's a TCP packet */
+		 
 		if (!(e->ipv6.flags & IP6T_F_PROTO) ||
 		    e->ipv6.proto != IPPROTO_TCP ||
 		    (e->ipv6.invflags & XT_INV_PROTO)) {

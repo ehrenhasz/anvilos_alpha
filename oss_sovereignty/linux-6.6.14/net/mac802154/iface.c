@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright 2007-2012 Siemens AG
- *
- * Written by:
- * Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>
- * Sergey Lapin <slapin@ossfans.org>
- * Maxim Gorbachyov <maxim.gorbachev@siemens.com>
- * Alexander Smirnov <alex.bluesman.smirnov@gmail.com>
- */
+
+ 
 
 #include <linux/netdevice.h>
 #include <linux/module.h>
@@ -117,9 +109,7 @@ static int mac802154_wpan_mac_addr(struct net_device *dev, void *p)
 	if (netif_running(dev))
 		return -EBUSY;
 
-	/* lowpan need to be down for update
-	 * SLAAC address after ifup
-	 */
+	 
 	if (sdata->wpan_dev.lowpan_dev) {
 		if (netif_running(sdata->wpan_dev.lowpan_dev))
 			return -EBUSY;
@@ -132,9 +122,7 @@ static int mac802154_wpan_mac_addr(struct net_device *dev, void *p)
 	dev_addr_set(dev, addr->sa_data);
 	sdata->wpan_dev.extended_addr = extended_addr;
 
-	/* update lowpan interface mac address when
-	 * wpan mac has been changed
-	 */
+	 
 	if (sdata->wpan_dev.lowpan_dev)
 		dev_addr_set(sdata->wpan_dev.lowpan_dev, dev->dev_addr);
 
@@ -203,7 +191,7 @@ static int mac802154_slave_open(struct net_device *dev)
 	netif_start_queue(dev);
 	return 0;
 err:
-	/* might already be clear but that doesn't matter */
+	 
 	clear_bit(SDATA_STATE_RUNNING, &sdata->state);
 
 	return res;
@@ -256,23 +244,17 @@ ieee802154_check_concurrent_iface(struct ieee802154_sub_if_data *sdata,
 	struct ieee802154_local *local = sdata->local;
 	struct ieee802154_sub_if_data *nsdata;
 
-	/* we hold the RTNL here so can safely walk the list */
+	 
 	list_for_each_entry(nsdata, &local->interfaces, list) {
 		if (nsdata != sdata && ieee802154_sdata_running(nsdata)) {
 			int ret;
 
-			/* TODO currently we don't support multiple node/coord
-			 * types we need to run skb_clone at rx path. Check if
-			 * there exist really an use case if we need to support
-			 * multiple node/coord types at the same time.
-			 */
+			 
 			if (sdata->wpan_dev.iftype != NL802154_IFTYPE_MONITOR &&
 			    nsdata->wpan_dev.iftype != NL802154_IFTYPE_MONITOR)
 				return -EBUSY;
 
-			/* check all phy mac sublayer settings are the same.
-			 * We have only one phy, different values makes trouble.
-			 */
+			 
 			ret = ieee802154_check_mac_settings(local, sdata, nsdata);
 			if (ret < 0)
 				return ret;
@@ -410,12 +392,7 @@ static const struct wpan_dev_header_ops ieee802154_header_ops = {
 	.create		= ieee802154_header_create,
 };
 
-/* This header create functionality assumes a 8 byte array for
- * source and destination pointer at maximum. To adapt this for
- * the 802.15.4 dataframe header we use extended address handling
- * here only and intra pan connection. fc fields are mostly fallback
- * handling. For provide dev_hard_header for dgram sockets.
- */
+ 
 static int mac802154_header_create(struct sk_buff *skb,
 				   struct net_device *dev,
 				   unsigned short type,
@@ -437,9 +414,7 @@ static int mac802154_header_create(struct sk_buff *skb,
 	hdr.fc.ack_request = wpan_dev->ackreq;
 	hdr.seq = atomic_inc_return(&dev->ieee802154_ptr->dsn) & 0xFF;
 
-	/* TODO currently a workaround to give zero cb block to set
-	 * security parameters defaults according MIB.
-	 */
+	 
 	if (mac802154_set_header_security(sdata, &hdr, &cb) < 0)
 		return -EINVAL;
 
@@ -517,27 +492,12 @@ static void ieee802154_if_setup(struct net_device *dev)
 	dev->addr_len		= IEEE802154_EXTENDED_ADDR_LEN;
 	memset(dev->broadcast, 0xff, IEEE802154_EXTENDED_ADDR_LEN);
 
-	/* Let hard_header_len set to IEEE802154_MIN_HEADER_LEN. AF_PACKET
-	 * will not send frames without any payload, but ack frames
-	 * has no payload, so substract one that we can send a 3 bytes
-	 * frame. The xmit callback assumes at least a hard header where two
-	 * bytes fc and sequence field are set.
-	 */
+	 
 	dev->hard_header_len	= IEEE802154_MIN_HEADER_LEN - 1;
-	/* The auth_tag header is for security and places in private payload
-	 * room of mac frame which stucks between payload and FCS field.
-	 */
+	 
 	dev->needed_tailroom	= IEEE802154_MAX_AUTH_TAG_LEN +
 				  IEEE802154_FCS_LEN;
-	/* The mtu size is the payload without mac header in this case.
-	 * We have a dynamic length header with a minimum header length
-	 * which is hard_header_len. In this case we let mtu to the size
-	 * of maximum payload which is IEEE802154_MTU - IEEE802154_FCS_LEN -
-	 * hard_header_len. The FCS which is set by hardware or ndo_start_xmit
-	 * and the minimum mac header which can be evaluated inside driver
-	 * layer. The rest of mac header will be part of payload if greater
-	 * than hard_header_len.
-	 */
+	 
 	dev->mtu		= IEEE802154_MTU - IEEE802154_FCS_LEN -
 				  dev->hard_header_len;
 	dev->tx_queue_len	= 300;
@@ -552,7 +512,7 @@ ieee802154_setup_sdata(struct ieee802154_sub_if_data *sdata,
 	int ret;
 	u8 tmp;
 
-	/* set some type-dependent values */
+	 
 	sdata->wpan_dev.iftype = type;
 
 	get_random_bytes(&tmp, sizeof(tmp));
@@ -560,7 +520,7 @@ ieee802154_setup_sdata(struct ieee802154_sub_if_data *sdata,
 	get_random_bytes(&tmp, sizeof(tmp));
 	atomic_set(&wpan_dev->dsn, tmp);
 
-	/* defaults per 802.15.4-2011 */
+	 
 	wpan_dev->min_be = 3;
 	wpan_dev->max_be = 5;
 	wpan_dev->csma_retries = 4;
@@ -648,7 +608,7 @@ ieee802154_if_add(struct ieee802154_local *local, const char *name,
 		goto err;
 	}
 
-	/* TODO check this */
+	 
 	SET_NETDEV_DEV(ndev, &local->phy->dev);
 	dev_net_set(ndev, wpan_phy_net(local->hw.phy));
 	sdata = netdev_priv(ndev);
@@ -659,7 +619,7 @@ ieee802154_if_add(struct ieee802154_local *local, const char *name,
 	sdata->local = local;
 	INIT_LIST_HEAD(&sdata->wpan_dev.list);
 
-	/* setup type-dependent data */
+	 
 	ret = ieee802154_setup_sdata(sdata, type);
 	if (ret)
 		goto err;

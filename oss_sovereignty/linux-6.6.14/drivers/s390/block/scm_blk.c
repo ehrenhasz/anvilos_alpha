@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Block driver for s390 storage class memory.
- *
- * Copyright IBM Corp. 2012
- * Author(s): Sebastian Ott <sebott@linux.vnet.ibm.com>
- */
+
+ 
 
 #define KMSG_COMPONENT "scm_block"
 #define pr_fmt(fmt) KMSG_COMPONENT ": " fmt
@@ -230,7 +225,7 @@ static inline void scm_request_init(struct scm_blk_dev *bdev,
 	scmrq->bdev = bdev;
 	scmrq->retries = 4;
 	scmrq->error = BLK_STS_OK;
-	/* We don't use all msbs - place aidaws at the end of the aob page. */
+	 
 	scmrq->next_aidaw = (void *) &aob->msb[nr_requests_per_io];
 }
 
@@ -377,7 +372,7 @@ static void scm_blk_handle_error(struct scm_request *scmrq)
 	if (scmrq->error != BLK_STS_IOERR)
 		goto restart;
 
-	/* For -EIO the response block is valid. */
+	 
 	switch (scmrq->aob->response.eqc) {
 	case EQC_WR_PROHIBIT:
 		spin_lock_irqsave(&bdev->lock, flags);
@@ -440,7 +435,7 @@ int scm_blk_dev_setup(struct scm_blk_dev *bdev, struct scm_device *scmdev)
 	int len, ret;
 
 	devindex = atomic_inc_return(&nr_devices) - 1;
-	/* scma..scmz + scmaa..scmzz */
+	 
 	if (devindex > 701) {
 		ret = -ENODEV;
 		goto out;
@@ -472,7 +467,7 @@ int scm_blk_dev_setup(struct scm_blk_dev *bdev, struct scm_device *scmdev)
 			 (unsigned int) (PAGE_SIZE / sizeof(struct aidaw)));
 
 	blk_queue_logical_block_size(rq, 1 << 12);
-	blk_queue_max_hw_sectors(rq, nr_max_blk << 3); /* 8 * 512 = blk_size */
+	blk_queue_max_hw_sectors(rq, nr_max_blk << 3);  
 	blk_queue_max_segments(rq, nr_max_blk);
 	blk_queue_flag_set(QUEUE_FLAG_NONROT, rq);
 	blk_queue_flag_clear(QUEUE_FLAG_ADD_RANDOM, rq);
@@ -493,7 +488,7 @@ int scm_blk_dev_setup(struct scm_blk_dev *bdev, struct scm_device *scmdev)
 	snprintf(bdev->gendisk->disk_name + len, DISK_NAME_LEN - len, "%c",
 		 'a' + devindex);
 
-	/* 512 byte sectors */
+	 
 	set_capacity(bdev->gendisk, scmdev->size >> 9);
 	ret = device_add_disk(&scmdev->dev, bdev->gendisk, NULL);
 	if (ret)

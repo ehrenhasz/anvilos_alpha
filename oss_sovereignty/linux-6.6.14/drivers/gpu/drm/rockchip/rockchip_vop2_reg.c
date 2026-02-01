@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) Rockchip Electronics Co.Ltd
- * Author: Andy Yan <andy.yan@rock-chips.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/component.h>
@@ -90,7 +87,7 @@ static const uint64_t format_modifiers_afbc[] = {
 				AFBC_FORMAT_MOD_CBR |
 				AFBC_FORMAT_MOD_SPARSE),
 
-	/* SPLIT mandates SPARSE, RGB modes mandates YTR */
+	 
 	DRM_FORMAT_MOD_ARM_AFBC(AFBC_FORMAT_MOD_BLOCK_SIZE_16x16 |
 				AFBC_FORMAT_MOD_YTR |
 				AFBC_FORMAT_MOD_SPARSE |
@@ -122,23 +119,7 @@ static const struct vop2_video_port_data rk3568_vop_video_ports[] = {
 	},
 };
 
-/*
- * rk3568 vop with 2 cluster, 2 esmart win, 2 smart win.
- * Every cluster can work as 4K win or split into two win.
- * All win in cluster support AFBCD.
- *
- * Every esmart win and smart win support 4 Multi-region.
- *
- * Scale filter mode:
- *
- * * Cluster:  bicubic for horizontal scale up, others use bilinear
- * * ESmart:
- *    * nearest-neighbor/bilinear/bicubic for scale up
- *    * nearest-neighbor/bilinear/average for scale down
- *
- *
- * @TODO describe the wind like cpu-map dt nodes;
- */
+ 
 static const struct vop2_win_data rk3568_vop_win_data[] = {
 	{
 		.name = "Smart0-win0",

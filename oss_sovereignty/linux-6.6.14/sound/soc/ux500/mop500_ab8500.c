@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) ST-Ericsson SA 2012
- *
- * Author: Ola Lilja <ola.o.lilja@stericsson.com>,
- *         Kristoffer Karlsson <kristoffer.karlsson@stericsson.com>
- *         for ST-Ericsson.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/device.h>
@@ -36,17 +30,17 @@
 #define DRIVERMODE_NORMAL	0
 #define DRIVERMODE_CODEC_ONLY	1
 
-/* Slot configuration */
+ 
 static unsigned int tx_slots = DEF_TX_SLOTS;
 static unsigned int rx_slots = DEF_RX_SLOTS;
 
-/* Configuration consistency parameters */
+ 
 static DEFINE_MUTEX(mop500_ab8500_params_lock);
 static unsigned long mop500_ab8500_usage;
 static int mop500_ab8500_rate;
 static int mop500_ab8500_channels;
 
-/* Clocks */
+ 
 static const char * const enum_mclk[] = {
 	"SYSCLK",
 	"ULPCLK"
@@ -58,9 +52,9 @@ enum mclk {
 
 static SOC_ENUM_SINGLE_EXT_DECL(soc_enum_mclk, enum_mclk);
 
-/* Private data for machine-part MOP500<->AB8500 */
+ 
 struct mop500_ab8500_drvdata {
-	/* Clocks */
+	 
 	enum mclk mclk_sel;
 	struct clk *clk_ptr_intclk;
 	struct clk *clk_ptr_sysclk;
@@ -121,9 +115,7 @@ static int mop500_ab8500_set_mclk(struct device *dev,
 	return status;
 }
 
-/*
- * Control-events
- */
+ 
 
 static int mclk_input_control_get(struct snd_kcontrol *kcontrol,
 				struct snd_ctl_elem_value *ucontrol)
@@ -155,9 +147,7 @@ static int mclk_input_control_put(struct snd_kcontrol *kcontrol,
 	return 1;
 }
 
-/*
- * Controls
- */
+ 
 
 static struct snd_kcontrol_new mop500_ab8500_ctrls[] = {
 	SOC_ENUM_EXT("Master Clock Select",
@@ -184,13 +174,13 @@ static struct snd_kcontrol_new mop500_ab8500_ctrls[] = {
 	SOC_DAPM_PIN_SWITCH("DMic 6"),
 };
 
-/* ASoC */
+ 
 
 static int mop500_ab8500_startup(struct snd_pcm_substream *substream)
 {
 	struct snd_soc_pcm_runtime *rtd = asoc_substream_to_rtd(substream);
 
-	/* Set audio-clock source */
+	 
 	return mop500_ab8500_set_mclk(rtd->card->dev,
 				snd_soc_card_get_drvdata(rtd->card));
 }
@@ -202,7 +192,7 @@ static void mop500_ab8500_shutdown(struct snd_pcm_substream *substream)
 
 	dev_dbg(dev, "%s: Enter\n", __func__);
 
-	/* Reset slots configuration to default(s) */
+	 
 	if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK)
 		tx_slots = DEF_TX_SLOTS;
 	else
@@ -233,7 +223,7 @@ static int mop500_ab8500_hw_params(struct snd_pcm_substream *substream,
 		substream->name,
 		substream->number);
 
-	/* Ensure configuration consistency between DAIs */
+	 
 	mutex_lock(&mop500_ab8500_params_lock);
 	if (mop500_ab8500_usage) {
 		if (mop500_ab8500_rate != params_rate(params) ||
@@ -263,7 +253,7 @@ static int mop500_ab8500_hw_params(struct snd_pcm_substream *substream,
 		return -EINVAL;
 	}
 
-	/* Setup codec depending on driver-mode */
+	 
 	if (channels == 8)
 		driver_mode = DRIVERMODE_CODEC_ONLY;
 	else
@@ -271,7 +261,7 @@ static int mop500_ab8500_hw_params(struct snd_pcm_substream *substream,
 	dev_dbg(dev, "%s: Driver-mode: %s.\n", __func__,
 		(driver_mode == DRIVERMODE_NORMAL) ? "NORMAL" : "CODEC_ONLY");
 
-	/* Setup format */
+	 
 
 	if (driver_mode == DRIVERMODE_NORMAL) {
 		fmt = SND_SOC_DAIFMT_DSP_A |
@@ -289,7 +279,7 @@ static int mop500_ab8500_hw_params(struct snd_pcm_substream *substream,
 	if (ret)
 		return ret;
 
-	/* Setup TDM-slots */
+	 
 
 	is_playback = (substream->stream == SNDRV_PCM_STREAM_PLAYBACK);
 	switch (channels) {
@@ -364,7 +354,7 @@ int mop500_ab8500_machine_init(struct snd_soc_pcm_runtime *rtd)
 
 	dev_dbg(dev, "%s Enter.\n", __func__);
 
-	/* Create driver private-data struct */
+	 
 	drvdata = devm_kzalloc(dev, sizeof(struct mop500_ab8500_drvdata),
 			GFP_KERNEL);
 
@@ -373,7 +363,7 @@ int mop500_ab8500_machine_init(struct snd_soc_pcm_runtime *rtd)
 
 	snd_soc_card_set_drvdata(rtd->card, drvdata);
 
-	/* Setup clocks */
+	 
 
 	drvdata->clk_ptr_sysclk = clk_get(dev, "sysclk");
 	if (IS_ERR(drvdata->clk_ptr_sysclk))
@@ -388,7 +378,7 @@ int mop500_ab8500_machine_init(struct snd_soc_pcm_runtime *rtd)
 		dev_warn(dev, "%s: WARNING: clk_get failed for 'intclk'!\n",
 			__func__);
 
-	/* Set intclk default parent to ulpclk */
+	 
 	drvdata->mclk_sel = MCLK_ULPCLK;
 	ret = mop500_ab8500_set_mclk(dev, drvdata);
 	if (ret < 0)
@@ -397,7 +387,7 @@ int mop500_ab8500_machine_init(struct snd_soc_pcm_runtime *rtd)
 
 	drvdata->mclk_sel = MCLK_ULPCLK;
 
-	/* Add controls */
+	 
 	ret = snd_soc_add_card_controls(rtd->card, mop500_ab8500_ctrls,
 			ARRAY_SIZE(mop500_ab8500_ctrls));
 	if (ret < 0) {

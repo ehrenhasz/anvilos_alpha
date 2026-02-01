@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2014 Felix Fietkau <nbd@openwrt.org>
- * Copyright (C) 2015 Jakub Kicinski <kubakici@wp.pl>
- */
+ 
+ 
 
 #ifndef __MT7601U_EEPROM_H
 #define __MT7601U_EEPROM_H
@@ -73,12 +70,12 @@ enum mt7601u_eeprom_access_modes {
 };
 
 struct power_per_rate  {
-	u8 raw;  /* validated s6 value */
-	s8 bw20; /* sign-extended int */
-	s8 bw40; /* sign-extended int */
+	u8 raw;   
+	s8 bw20;  
+	s8 bw40;  
 };
 
-/* Power per rate - one value per two rates */
+ 
 struct mt7601u_rate_power {
 	struct power_per_rate cck[2];
 	struct power_per_rate ofdm[4];
@@ -101,7 +98,7 @@ struct mt7601u_eeprom_params {
 	struct mt7601u_rate_power power_rate_table;
 	s8 real_cck_bw20[2];
 
-	/* TSSI stuff - only with internal TX ALC */
+	 
 	struct tssi_data {
 		int tx0_delta_offset;
 		u8 slope;

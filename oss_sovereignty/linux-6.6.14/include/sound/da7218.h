@@ -1,16 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * da7218.h - DA7218 ASoC Codec Driver Platform Data
- *
- * Copyright (c) 2015 Dialog Semiconductor
- *
- * Author: Adam Thomson <Adam.Thomson.Opensource@diasemi.com>
- */
+ 
+ 
 
 #ifndef _DA7218_PDATA_H
 #define _DA7218_PDATA_H
 
-/* Mic Bias */
+ 
 enum da7218_micbias_voltage {
 	DA7218_MICBIAS_1_2V = -1,
 	DA7218_MICBIAS_1_6V,
@@ -29,7 +23,7 @@ enum da7218_mic_amp_in_sel {
 	DA7218_MIC_AMP_IN_SEL_SE_N,
 };
 
-/* DMIC */
+ 
 enum da7218_dmic_data_sel {
 	DA7218_DMIC_DATA_LRISE_RFALL = 0,
 	DA7218_DMIC_DATA_LFALL_RRISE,
@@ -45,7 +39,7 @@ enum da7218_dmic_clk_rate {
 	DA7218_DMIC_CLK_1_5MHZ,
 };
 
-/* Headphone Detect */
+ 
 enum da7218_hpldet_jack_rate {
 	DA7218_HPLDET_JACK_RATE_5US = 0,
 	DA7218_HPLDET_JACK_RATE_10US,
@@ -81,13 +75,13 @@ struct da7218_hpldet_pdata {
 };
 
 struct da7218_pdata {
-	/* Mic */
+	 
 	enum da7218_micbias_voltage micbias1_lvl;
 	enum da7218_micbias_voltage micbias2_lvl;
 	enum da7218_mic_amp_in_sel mic1_amp_in_sel;
 	enum da7218_mic_amp_in_sel mic2_amp_in_sel;
 
-	/* DMIC */
+	 
 	enum da7218_dmic_data_sel dmic1_data_sel;
 	enum da7218_dmic_data_sel dmic2_data_sel;
 	enum da7218_dmic_samplephase dmic1_samplephase;
@@ -95,11 +89,11 @@ struct da7218_pdata {
 	enum da7218_dmic_clk_rate dmic1_clk_rate;
 	enum da7218_dmic_clk_rate dmic2_clk_rate;
 
-	/* HP Diff Supply - DA7217 only */
+	 
 	bool hp_diff_single_supply;
 
-	/* HP Detect - DA7218 only */
+	 
 	struct da7218_hpldet_pdata *hpldet_pdata;
 };
 
-#endif /* _DA7218_PDATA_H */
+#endif  

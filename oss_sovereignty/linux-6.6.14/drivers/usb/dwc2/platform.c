@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0+ OR BSD-3-Clause)
-/*
- * platform.c - DesignWare HS OTG Controller platform driver
- *
- * Copyright (C) Matthijs Kooijman <matthijs@stdin.nl>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -26,29 +22,7 @@
 
 static const char dwc2_driver_name[] = "dwc2";
 
-/*
- * Check the dr_mode against the module configuration and hardware
- * capabilities.
- *
- * The hardware, module, and dr_mode, can each be set to host, device,
- * or otg. Check that all these values are compatible and adjust the
- * value of dr_mode if possible.
- *
- *                      actual
- *    HW  MOD dr_mode   dr_mode
- *  ------------------------------
- *   HST  HST  any    :  HST
- *   HST  DEV  any    :  ---
- *   HST  OTG  any    :  HST
- *
- *   DEV  HST  any    :  ---
- *   DEV  DEV  any    :  DEV
- *   DEV  OTG  any    :  DEV
- *
- *   OTG  HST  any    :  HST
- *   OTG  DEV  any    :  DEV
- *   OTG  OTG  any    :  dr_mode
- */
+ 
 static int dwc2_get_dr_mode(struct dwc2_hsotg *hsotg)
 {
 	enum usb_dr_mode mode;
@@ -145,13 +119,7 @@ err_dis_reg:
 	return ret;
 }
 
-/**
- * dwc2_lowlevel_hw_enable - enable platform lowlevel hw resources
- * @hsotg: The driver state
- *
- * A wrapper for platform code responsible for controlling
- * low-level USB platform resources (phy, clock, regulators)
- */
+ 
 int dwc2_lowlevel_hw_enable(struct dwc2_hsotg *hsotg)
 {
 	int ret = __dwc2_lowlevel_hw_enable(hsotg);
@@ -187,13 +155,7 @@ static int __dwc2_lowlevel_hw_disable(struct dwc2_hsotg *hsotg)
 	return regulator_bulk_disable(ARRAY_SIZE(hsotg->supplies), hsotg->supplies);
 }
 
-/**
- * dwc2_lowlevel_hw_disable - disable platform lowlevel hw resources
- * @hsotg: The driver state
- *
- * A wrapper for platform code responsible for controlling
- * low-level USB platform resources (phy, clock, regulators)
- */
+ 
 int dwc2_lowlevel_hw_disable(struct dwc2_hsotg *hsotg)
 {
 	int ret = __dwc2_lowlevel_hw_disable(hsotg);
@@ -234,10 +196,7 @@ static int dwc2_lowlevel_hw_init(struct dwc2_hsotg *hsotg)
 	if (ret)
 		return ret;
 
-	/*
-	 * Attempt to find a generic PHY, then look for an old style
-	 * USB PHY and then fall back to pdata
-	 */
+	 
 	hsotg->phy = devm_phy_get(hsotg->dev, "usb2-phy");
 	if (IS_ERR(hsotg->phy)) {
 		ret = PTR_ERR(hsotg->phy);
@@ -268,7 +227,7 @@ static int dwc2_lowlevel_hw_init(struct dwc2_hsotg *hsotg)
 
 	hsotg->plat = dev_get_platdata(hsotg->dev);
 
-	/* Clock */
+	 
 	hsotg->clk = devm_clk_get_optional(hsotg->dev, "otg");
 	if (IS_ERR(hsotg->clk))
 		return dev_err_probe(hsotg->dev, PTR_ERR(hsotg->clk), "cannot get otg clock\n");
@@ -278,7 +237,7 @@ static int dwc2_lowlevel_hw_init(struct dwc2_hsotg *hsotg)
 		return dev_err_probe(hsotg->dev, PTR_ERR(hsotg->utmi_clk),
 				     "cannot get utmi clock\n");
 
-	/* Regulators */
+	 
 	for (i = 0; i < ARRAY_SIZE(hsotg->supplies); i++)
 		hsotg->supplies[i].supply = dwc2_hsotg_supply_names[i];
 
@@ -290,17 +249,7 @@ static int dwc2_lowlevel_hw_init(struct dwc2_hsotg *hsotg)
 	return 0;
 }
 
-/**
- * dwc2_driver_remove() - Called when the DWC_otg core is unregistered with the
- * DWC_otg driver
- *
- * @dev: Platform device
- *
- * This routine is called, for example, when the rmmod command is executed. The
- * device may or may not be electrically present. If it is present, the driver
- * stops device processing. Any resources used on behalf of this device are
- * freed.
- */
+ 
 static void dwc2_driver_remove(struct platform_device *dev)
 {
 	struct dwc2_hsotg *hsotg = platform_get_drvdata(dev);
@@ -309,7 +258,7 @@ static void dwc2_driver_remove(struct platform_device *dev)
 
 	gr = &hsotg->gr_backup;
 
-	/* Exit Hibernation when driver is removed. */
+	 
 	if (hsotg->hibernated) {
 		if (gr->gotgctl & GOTGCTL_CURMODE_HOST)
 			ret = dwc2_exit_hibernation(hsotg, 0, 0, 1);
@@ -321,7 +270,7 @@ static void dwc2_driver_remove(struct platform_device *dev)
 				"exit hibernation failed.\n");
 	}
 
-	/* Exit Partial Power Down when driver is removed. */
+	 
 	if (hsotg->in_ppd) {
 		ret = dwc2_exit_partial_power_down(hsotg, 0, true);
 		if (ret)
@@ -329,7 +278,7 @@ static void dwc2_driver_remove(struct platform_device *dev)
 				"exit partial_power_down failed\n");
 	}
 
-	/* Exit clock gating when driver is removed. */
+	 
 	if (hsotg->params.power_down == DWC2_POWER_DOWN_PARAM_NONE &&
 	    hsotg->bus_suspended) {
 		if (dwc2_is_device_mode(hsotg))
@@ -353,18 +302,7 @@ static void dwc2_driver_remove(struct platform_device *dev)
 		dwc2_lowlevel_hw_disable(hsotg);
 }
 
-/**
- * dwc2_driver_shutdown() - Called on device shutdown
- *
- * @dev: Platform device
- *
- * In specific conditions (involving usb hubs) dwc2 devices can create a
- * lot of interrupts, even to the point of overwhelming devices running
- * at low frequencies. Some devices need to do special clock handling
- * at shutdown-time which may bring the system clock below the threshold
- * of being able to handle the dwc2 interrupts. Disabling dwc2-irqs
- * prevents reboots/poweroffs from getting stuck in such cases.
- */
+ 
 static void dwc2_driver_shutdown(struct platform_device *dev)
 {
 	struct dwc2_hsotg *hsotg = platform_get_drvdata(dev);
@@ -373,11 +311,7 @@ static void dwc2_driver_shutdown(struct platform_device *dev)
 	synchronize_irq(hsotg->irq);
 }
 
-/**
- * dwc2_check_core_endianness() - Returns true if core and AHB have
- * opposite endianness.
- * @hsotg:	Programming view of the DWC_otg controller.
- */
+ 
 static bool dwc2_check_core_endianness(struct dwc2_hsotg *hsotg)
 {
 	u32 snpsid;
@@ -390,21 +324,12 @@ static bool dwc2_check_core_endianness(struct dwc2_hsotg *hsotg)
 	return true;
 }
 
-/**
- * dwc2_check_core_version() - Check core version
- *
- * @hsotg: Programming view of the DWC_otg controller
- *
- */
+ 
 int dwc2_check_core_version(struct dwc2_hsotg *hsotg)
 {
 	struct dwc2_hw_params *hw = &hsotg->hw_params;
 
-	/*
-	 * Attempt to ensure this device is really a DWC_otg Controller.
-	 * Read and verify the GSNPSID register contents. The value should be
-	 * 0x45f4xxxx, 0x5531xxxx or 0x5532xxxx
-	 */
+	 
 
 	hw->snpsid = dwc2_readl(hsotg, GSNPSID);
 	if ((hw->snpsid & GSNPSID_ID_MASK) != DWC2_OTG_ID &&
@@ -421,18 +346,7 @@ int dwc2_check_core_version(struct dwc2_hsotg *hsotg)
 	return 0;
 }
 
-/**
- * dwc2_driver_probe() - Called when the DWC_otg core is bound to the DWC_otg
- * driver
- *
- * @dev: Platform device
- *
- * This routine creates the driver components required to control the device
- * (core, HCD, and PCD) and initializes the device. The driver components are
- * stored in a dwc2_hsotg structure. A reference to the dwc2_hsotg is saved
- * in the device private data. This allows the driver to access the dwc2_hsotg
- * structure on subsequent calls to driver methods for this device.
- */
+ 
 static int dwc2_driver_probe(struct platform_device *dev)
 {
 	struct dwc2_hsotg *hsotg;
@@ -445,9 +359,7 @@ static int dwc2_driver_probe(struct platform_device *dev)
 
 	hsotg->dev = &dev->dev;
 
-	/*
-	 * Use reasonable defaults so platforms don't have to provide these.
-	 */
+	 
 	if (!dev->dev.dma_mask)
 		dev->dev.dma_mask = &dev->dev.coherent_dma_mask;
 	retval = dma_set_coherent_mask(&dev->dev, DMA_BIT_MASK(32));
@@ -503,32 +415,22 @@ static int dwc2_driver_probe(struct platform_device *dev)
 		of_property_read_bool(dev->dev.of_node,
 				      "snps,need-phy-for-wake");
 
-	/*
-	 * Before performing any core related operations
-	 * check core version.
-	 */
+	 
 	retval = dwc2_check_core_version(hsotg);
 	if (retval)
 		goto error;
 
-	/*
-	 * Reset before dwc2_get_hwparams() then it could get power-on real
-	 * reset value form registers.
-	 */
+	 
 	retval = dwc2_core_reset(hsotg, false);
 	if (retval)
 		goto error;
 
-	/* Detect config values from hardware */
+	 
 	retval = dwc2_get_hwparams(hsotg);
 	if (retval)
 		goto error;
 
-	/*
-	 * For OTG cores, set the force mode bits to reflect the value
-	 * of dr_mode. Force mode bits should not be touched at any
-	 * other time after this.
-	 */
+	 
 	dwc2_force_dr_mode(hsotg);
 
 	retval = dwc2_init_params(hsotg);
@@ -555,7 +457,7 @@ static int dwc2_driver_probe(struct platform_device *dev)
 		ggpio |= GGPIO_STM32_OTG_GCCFG_VBDEN;
 		dwc2_writel(hsotg, ggpio, GGPIO);
 
-		/* ID/VBUS detection startup time */
+		 
 		usleep_range(5000, 7000);
 	}
 
@@ -572,11 +474,7 @@ static int dwc2_driver_probe(struct platform_device *dev)
 		hsotg->gadget_enabled = 1;
 	}
 
-	/*
-	 * If we need PHY for wakeup we must be wakeup capable.
-	 * When we have a device that can wake without the PHY we
-	 * can adjust this condition.
-	 */
+	 
 	if (hsotg->need_phy_for_wake)
 		device_set_wakeup_capable(&dev->dev, true);
 
@@ -604,13 +502,13 @@ static int dwc2_driver_probe(struct platform_device *dev)
 
 	dwc2_debugfs_init(hsotg);
 
-	/* Gadget code manages lowlevel hw on its own */
+	 
 	if (hsotg->dr_mode == USB_DR_MODE_PERIPHERAL)
 		dwc2_lowlevel_hw_disable(hsotg);
 
 #if IS_ENABLED(CONFIG_USB_DWC2_PERIPHERAL) || \
 	IS_ENABLED(CONFIG_USB_DWC2_DUAL_ROLE)
-	/* Postponed adding a new gadget to the udc class driver list */
+	 
 	if (hsotg->gadget_enabled) {
 		retval = usb_add_gadget_udc(hsotg->dev, &hsotg->gadget);
 		if (retval) {
@@ -619,7 +517,7 @@ static int dwc2_driver_probe(struct platform_device *dev)
 			goto error_debugfs;
 		}
 	}
-#endif /* CONFIG_USB_DWC2_PERIPHERAL || CONFIG_USB_DWC2_DUAL_ROLE */
+#endif  
 	return 0;
 
 #if IS_ENABLED(CONFIG_USB_DWC2_PERIPHERAL) || \
@@ -656,18 +554,15 @@ static int __maybe_unused dwc2_suspend(struct device *dev)
 		unsigned long flags;
 		u32 ggpio, gotgctl;
 
-		/*
-		 * Need to force the mode to the current mode to avoid Mode
-		 * Mismatch Interrupt when ID detection will be disabled.
-		 */
+		 
 		dwc2_force_mode(dwc2, !is_device_mode);
 
 		spin_lock_irqsave(&dwc2->lock, flags);
 		gotgctl = dwc2_readl(dwc2, GOTGCTL);
-		/* bypass debounce filter, enable overrides */
+		 
 		gotgctl |= GOTGCTL_DBNCE_FLTR_BYPASS;
 		gotgctl |= GOTGCTL_BVALOEN | GOTGCTL_AVALOEN;
-		/* Force A / B session if needed */
+		 
 		if (gotgctl & GOTGCTL_ASESVLD)
 			gotgctl |= GOTGCTL_AVALOVAL;
 		if (gotgctl & GOTGCTL_BSESVLD)
@@ -717,7 +612,7 @@ static int __maybe_unused dwc2_resume(struct device *dev)
 		ggpio |= GGPIO_STM32_OTG_GCCFG_VBDEN;
 		dwc2_writel(dwc2, ggpio, GGPIO);
 
-		/* ID/VBUS detection startup time */
+		 
 		usleep_range(5000, 7000);
 
 		spin_lock_irqsave(&dwc2->lock, flags);
@@ -730,7 +625,7 @@ static int __maybe_unused dwc2_resume(struct device *dev)
 	}
 
 	if (!dwc2->role_sw) {
-		/* Need to restore FORCEDEVMODE/FORCEHOSTMODE */
+		 
 		dwc2_force_dr_mode(dwc2);
 	} else {
 		dwc2_drd_resume(dwc2);

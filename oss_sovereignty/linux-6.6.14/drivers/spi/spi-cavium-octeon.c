@@ -1,10 +1,4 @@
-/*
- * This file is subject to the terms and conditions of the GNU General Public
- * License.  See the file "COPYING" in the main directory of this archive
- * for more details.
- *
- * Copyright (C) 2011, 2012 Cavium, Inc.
- */
+ 
 
 #include <linux/platform_device.h>
 #include <linux/spi/spi.h>
@@ -74,7 +68,7 @@ static void octeon_spi_remove(struct platform_device *pdev)
 	struct spi_controller *host = platform_get_drvdata(pdev);
 	struct octeon_spi *p = spi_controller_get_devdata(host);
 
-	/* Clear the CSENA* and put everything in a known state. */
+	 
 	writeq(0, p->register_base + OCTEON_SPI_CFG(p));
 }
 

@@ -1,17 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * rt5514-spi.h  --  RT5514 driver
- *
- * Copyright 2015 Realtek Semiconductor Corp.
- * Author: Oder Chiou <oder_chiou@realtek.com>
- */
+ 
+ 
 
 #ifndef __RT5514_SPI_H__
 #define __RT5514_SPI_H__
 
-/**
- * RT5514_SPI_BUF_LEN is the buffer size of SPI master controller.
-*/
+ 
 #define RT5514_SPI_BUF_LEN		240
 
 #define RT5514_BUFFER_VOICE_BASE	0x18000200
@@ -21,7 +14,7 @@
 
 #define RT5514_IRQ_STATUS_BIT		(0x1 << 5)
 
-/* SPI Command */
+ 
 enum {
 	RT5514_SPI_CMD_16_READ = 0,
 	RT5514_SPI_CMD_16_WRITE,
@@ -34,4 +27,4 @@ enum {
 int rt5514_spi_burst_read(unsigned int addr, u8 *rxbuf, size_t len);
 int rt5514_spi_burst_write(u32 addr, const u8 *txbuf, size_t len);
 
-#endif /* __RT5514_SPI_H__ */
+#endif  

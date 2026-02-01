@@ -1,9 +1,4 @@
-/* Copyright (c) 2016 Facebook
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of version 2 of the GNU General Public
- * License as published by the Free Software Foundation.
- */
+ 
 #include "vmlinux.h"
 #include <errno.h>
 #include <linux/version.h>
@@ -49,9 +44,9 @@ struct {
 	__uint(type, BPF_MAP_TYPE_ARRAY_OF_MAPS);
 	__uint(max_entries, MAX_NR_CPUS);
 	__uint(key_size, sizeof(u32));
-	__array(values, struct inner_lru); /* use inner_lru as inner map */
+	__array(values, struct inner_lru);  
 } array_of_lru_hashs SEC(".maps") = {
-	/* statically initialize the first element */
+	 
 	.values = { &inner_lru_hash_map },
 };
 

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-/*
- * Copyright (c) 2013-2020, Mellanox Technologies inc. All rights reserved.
- * Copyright (c) 2020, Intel Corporation. All rights reserved.
- */
+
+ 
 
 #include <linux/debugfs.h>
 #include <linux/highmem.h>
@@ -74,9 +71,7 @@ enum {
 static struct workqueue_struct *mlx5_ib_event_wq;
 static LIST_HEAD(mlx5_ib_unaffiliated_port_list);
 static LIST_HEAD(mlx5_ib_dev_list);
-/*
- * This mutex should be held when accessing either of the above lists
- */
+ 
 static DEFINE_MUTEX(mlx5_ib_multiport_mutex);
 
 struct mlx5_ib_dev *mlx5_ib_get_ibdev_from_mpi(struct mlx5_ib_multiport_info *mpi)
@@ -177,7 +172,7 @@ static int mlx5_netdev_event(struct notifier_block *this,
 
 	switch (event) {
 	case NETDEV_REGISTER:
-		/* Should already be registered during the load */
+		 
 		if (ibdev->is_rep)
 			break;
 		write_lock(&roce->netdev_lock);
@@ -187,7 +182,7 @@ static int mlx5_netdev_event(struct notifier_block *this,
 		break;
 
 	case NETDEV_UNREGISTER:
-		/* In case of reps, ib device goes away before the netdevs */
+		 
 		write_lock(&roce->netdev_lock);
 		if (roce->netdev == ndev)
 			roce->netdev = NULL;
@@ -260,8 +255,7 @@ static struct net_device *mlx5_ib_get_netdev(struct ib_device *device,
 	if (ndev)
 		goto out;
 
-	/* Ensure ndev does not disappear before we invoke dev_hold()
-	 */
+	 
 	read_lock(&ibdev->port[port_num - 1].roce.netdev_lock);
 	ndev = ibdev->port[port_num - 1].roce.netdev;
 	if (ndev)
@@ -298,9 +292,7 @@ struct mlx5_core_dev *mlx5_ib_get_native_port_mdev(struct mlx5_ib_dev *ibdev,
 	mpi = ibdev->port[ib_port_num - 1].mp.mpi;
 	if (mpi && !mpi->unaffiliate) {
 		mdev = mpi->mdev;
-		/* If it's the master no need to refcount, it'll exist
-		 * as long as the ib_dev exists.
-		 */
+		 
 		if (!mpi->is_master)
 			mpi->mdev_refcnt++;
 	}
@@ -485,19 +477,14 @@ static int mlx5_query_port_roce(struct ib_device *device, u32 port_num,
 
 	mdev = mlx5_ib_get_native_port_mdev(dev, port_num, &mdev_port_num);
 	if (!mdev) {
-		/* This means the port isn't affiliated yet. Get the
-		 * info for the master port instead.
-		 */
+		 
 		put_mdev = false;
 		mdev = dev->mdev;
 		mdev_port_num = 1;
 		port_num = 1;
 	}
 
-	/* Possible bad flows are checked before filling out props so in case
-	 * of an error it will still be zeroed out.
-	 * Use native port in case of reps
-	 */
+	 
 	if (dev->is_rep)
 		err = mlx5_query_port_ptys(mdev, out, sizeof(out), MLX5_PTYS_EN,
 					   1);
@@ -531,7 +518,7 @@ static int mlx5_query_port_roce(struct ib_device *device, u32 port_num,
 	props->state            = IB_PORT_DOWN;
 	props->phys_state       = IB_PORT_PHYS_STATE_DISABLED;
 
-	/* If this is a stub query for an unaffiliated port stop here */
+	 
 	if (!put_mdev)
 		goto out;
 
@@ -676,9 +663,7 @@ static void get_atomic_caps(struct mlx5_ib_dev *dev,
 	u8 atomic_req_8B_endianness_mode =
 		MLX5_CAP_ATOMIC(dev->mdev, atomic_req_8B_endianness_mode);
 
-	/* Check if HW supports 8 bytes standard atomic operations and capable
-	 * of host endianness respond
-	 */
+	 
 	tmp = MLX5_ATOMIC_OPS_CMP_SWAP | MLX5_ATOMIC_OPS_FETCH_ADD;
 	if (((atomic_operations & tmp) == tmp) &&
 	    (atomic_size_qp & MLX5_ATOMIC_SIZE_QP_8BYTES) &&
@@ -872,15 +857,15 @@ static int mlx5_ib_query_device(struct ib_device *ibdev,
 		props->device_cap_flags |= IB_DEVICE_MEM_WINDOW |
 					   IB_DEVICE_MEM_WINDOW_TYPE_2B;
 		props->max_mw = 1 << MLX5_CAP_GEN(mdev, log_max_mkey);
-		/* We support 'Gappy' memory registration too */
+		 
 		props->kernel_cap_flags |= IBK_SG_GAPS_REG;
 	}
-	/* IB_WR_REG_MR always requires changing the entity size with UMR */
+	 
 	if (!MLX5_CAP_GEN(dev->mdev, umr_modify_entity_size_disabled))
 		props->device_cap_flags |= IB_DEVICE_MEM_MGT_EXTENSIONS;
 	if (MLX5_CAP_GEN(mdev, sho)) {
 		props->kernel_cap_flags |= IBK_INTEGRITY_HANDOVER;
-		/* At this stage no support for signature handover */
+		 
 		props->sig_prot_cap = IB_PROT_T10DIF_TYPE_1 |
 				      IB_PROT_T10DIF_TYPE_2 |
 				      IB_PROT_T10DIF_TYPE_3;
@@ -892,7 +877,7 @@ static int mlx5_ib_query_device(struct ib_device *ibdev,
 
 	if (MLX5_CAP_GEN(dev->mdev, eth_net_offloads) && raw_support) {
 		if (MLX5_CAP_ETH(mdev, csum_cap)) {
-			/* Legacy bit to support old userspace libraries */
+			 
 			props->device_cap_flags |= IB_DEVICE_RAW_IP_CSUM;
 			props->raw_packet_caps |= IB_RAW_PACKET_CAP_IP_CSUM;
 		}
@@ -950,7 +935,7 @@ static int mlx5_ib_query_device(struct ib_device *ibdev,
 	if (MLX5_CAP_GEN(dev->mdev, eth_net_offloads) &&
 	    MLX5_CAP_ETH(dev->mdev, scatter_fcs) &&
 	    raw_support) {
-		/* Legacy bit to support old userspace libraries */
+		 
 		props->device_cap_flags |= IB_DEVICE_RAW_SCATTER_FCS;
 		props->raw_packet_caps |= IB_RAW_PACKET_CAP_SCATTER_FCS;
 	}
@@ -1014,9 +999,7 @@ static int mlx5_ib_query_device(struct ib_device *ibdev,
 			props->kernel_cap_flags |= IBK_ON_DEMAND_PAGING;
 		props->odp_caps = dev->odp_caps;
 		if (!uhw) {
-			/* ODP for kernel QPs is not implemented for receive
-			 * WQEs and SRQ WQEs
-			 */
+			 
 			props->odp_caps.per_transport_caps.rc_odp_caps &=
 				~(IB_ODP_SUPPORT_READ |
 				  IB_ODP_SUPPORT_SRQ_RECV);
@@ -1318,7 +1301,7 @@ static int mlx5_query_hca_port(struct ib_device *ibdev, u32 port,
 		goto out;
 	}
 
-	/* props being zeroed by the caller, avoid zeroing it here */
+	 
 
 	err = mlx5_query_hca_vport_context(mdev, 0, port, 0, rep);
 	if (err)
@@ -1398,9 +1381,7 @@ int mlx5_ib_query_port(struct ib_device *ibdev, u32 port,
 
 		mdev = mlx5_ib_get_native_port_mdev(dev, port, NULL);
 		if (!mdev) {
-			/* If the port isn't affiliated yet query the master.
-			 * The master and slave will have the same values.
-			 */
+			 
 			mdev = dev->mdev;
 			port = 1;
 			put_mdev = false;
@@ -1422,9 +1403,7 @@ static int mlx5_ib_rep_query_port(struct ib_device *ibdev, u32 port,
 static int mlx5_ib_rep_query_pkey(struct ib_device *ibdev, u32 port, u16 index,
 				  u16 *pkey)
 {
-	/* Default special Pkey for representor device port as per the
-	 * IB specification 1.3 section 10.9.1.2.
-	 */
+	 
 	*pkey = 0xffff;
 	return 0;
 }
@@ -1459,9 +1438,7 @@ static int mlx5_query_hca_nic_pkey(struct ib_device *ibdev, u32 port,
 
 	mdev = mlx5_ib_get_native_port_mdev(dev, port, &mdev_port_num);
 	if (!mdev) {
-		/* The port isn't affiliated yet, get the PKey from the master
-		 * port. For RoCE the PKey tables will be the same.
-		 */
+		 
 		put_mdev = false;
 		mdev = dev->mdev;
 		mdev_port_num = 1;
@@ -1504,10 +1481,7 @@ static int mlx5_ib_modify_device(struct ib_device *ibdev, int mask,
 	if (!(mask & IB_DEVICE_MODIFY_NODE_DESC))
 		return 0;
 
-	/*
-	 * If possible, pass node desc to FW, so it can generate
-	 * a 144 trap.  If cmd fails, just ignore.
-	 */
+	 
 	memcpy(&in, props->node_desc, IB_DEVICE_NODE_DESC_MAX);
 	err = mlx5_core_access_reg(dev->mdev, &in, sizeof(in), &out,
 				   sizeof(out), MLX5_REG_NODE_DESC, 0, 1);
@@ -1565,9 +1539,7 @@ static int mlx5_ib_modify_port(struct ib_device *ibdev, u32 port, int mask,
 	bool is_ib = (mlx5_ib_port_link_layer(ibdev, port) ==
 		      IB_LINK_LAYER_INFINIBAND);
 
-	/* CM layer calls ib_modify_port() regardless of the link layer. For
-	 * Ethernet ports, qkey violation and Port capabilities are meaningless.
-	 */
+	 
 	if (!is_ib)
 		return 0;
 
@@ -1601,7 +1573,7 @@ static void print_lib_caps(struct mlx5_ib_dev *dev, u64 caps)
 
 static u16 calc_dynamic_bfregs(int uars_per_sys_page)
 {
-	/* Large page with non 4k uar support might limit the dynamic size */
+	 
 	if (uars_per_sys_page == 1  && PAGE_SIZE > 4096)
 		return MLX5_MIN_DYN_BFREGS;
 
@@ -1627,7 +1599,7 @@ static int calc_total_bfregs(struct mlx5_ib_dev *dev, bool lib_uar_4k,
 
 	uars_per_sys_page = get_uars_per_sys_page(dev, lib_uar_4k);
 	bfregs_per_sys_page = uars_per_sys_page * MLX5_NON_FP_BFREGS_PER_UAR;
-	/* This holds the required static allocation asked by the user */
+	 
 	req->total_num_bfregs = ALIGN(req->total_num_bfregs, bfregs_per_sys_page);
 	if (req->num_low_latency_bfregs > req->total_num_bfregs - 1)
 		return -EINVAL;
@@ -1812,12 +1784,7 @@ static int set_ucontext_resp(struct ib_ucontext *uctx,
 	if (dev->mdev->clock_info)
 		resp->clock_info_versions = BIT(MLX5_IB_CLOCK_INFO_V1);
 
-	/*
-	 * We don't want to expose information from the PCI bar that is located
-	 * after 4096 bytes, so if the arch only supports larger pages, let's
-	 * pretend we don't support reading the HCA's core clock. This is also
-	 * forced by mmap function.
-	 */
+	 
 	if (PAGE_SIZE <= 4096) {
 		resp->comp_mask |=
 			MLX5_IB_ALLOC_UCONTEXT_RESP_MASK_CORE_CLOCK_OFFSET;
@@ -1903,7 +1870,7 @@ static int mlx5_ib_alloc_ucontext(struct ib_ucontext *uctx,
 		goto uar_done;
 	}
 
-	/* updates req->total_num_bfregs */
+	 
 	err = calc_total_bfregs(dev, lib_uar_4k, &req, bfregi);
 	if (err)
 		goto out_devx;
@@ -2062,7 +2029,7 @@ static int get_index(unsigned long offset)
 	return get_arg(offset);
 }
 
-/* Index resides in an extra byte to enable larger values than 255 */
+ 
 static int get_extended_index(unsigned long offset)
 {
 	return get_arg(offset) | ((offset >> 16) & 0xff) << 8;
@@ -2176,7 +2143,7 @@ static int uar_mmap(struct mlx5_ib_dev *dev, enum mlx5_ib_mmap_cmd cmd,
 	case MLX5_IB_MMAP_WC_PAGE:
 	case MLX5_IB_MMAP_ALLOC_WC:
 	case MLX5_IB_MMAP_REGULAR_PAGE:
-		/* For MLX5_IB_MMAP_REGULAR_PAGE do the best effort to get WC */
+		 
 		prot = pgprot_writecombine(vma->vm_page_prot);
 		break;
 	case MLX5_IB_MMAP_NC_PAGE:
@@ -2198,9 +2165,7 @@ static int uar_mmap(struct mlx5_ib_dev *dev, enum mlx5_ib_mmap_cmd cmd,
 		}
 
 		mutex_lock(&bfregi->lock);
-		/* Fail if uar already allocated, first bfreg index of each
-		 * page holds its count.
-		 */
+		 
 		if (bfregi->count[bfreg_dyn_idx]) {
 			mlx5_ib_warn(dev, "wrong offset, idx %lu is busy, bfregn=%u\n", idx, bfreg_dyn_idx);
 			mutex_unlock(&bfregi->lock);
@@ -2328,7 +2293,7 @@ static int mlx5_ib_mmap(struct ib_ucontext *ibcontext, struct vm_area_struct *vm
 			return -EPERM;
 		vm_flags_clear(vma, VM_MAYWRITE);
 
-		/* Don't expose to user-space information it shouldn't have */
+		 
 		if (PAGE_SIZE > 4096)
 			return -EOPNOTSUPP;
 
@@ -2512,10 +2477,7 @@ static void pkey_change_handler(struct work_struct *work)
 			     pkey_change_work);
 
 	if (!ports->gsi)
-		/*
-		 * We got this event before device was fully configured
-		 * and MAD registration code wasn't called/finished yet.
-		 */
+		 
 		return;
 
 	mlx5_ib_gsi_pkey_change(ports->gsi);
@@ -2533,7 +2495,7 @@ static void mlx5_ib_handle_internal_error(struct mlx5_ib_dev *ibdev)
 
 	INIT_LIST_HEAD(&cq_armed_list);
 
-	/* Go over qp list reside on that ibdev, sync with create/destroy qp.*/
+	 
 	spin_lock_irqsave(&ibdev->reset_flow_resource_lock, flags);
 	list_for_each_entry(mqp, &ibdev->qp_list, qps_list) {
 		spin_lock_irqsave(&mqp->sq.lock, flags_qp);
@@ -2552,7 +2514,7 @@ static void mlx5_ib_handle_internal_error(struct mlx5_ib_dev *ibdev)
 		}
 		spin_unlock_irqrestore(&mqp->sq.lock, flags_qp);
 		spin_lock_irqsave(&mqp->rq.lock, flags_qp);
-		/* no handling is needed for SRQ */
+		 
 		if (!mqp->ibqp.srq) {
 			if (mqp->rq.tail != mqp->rq.head) {
 				recv_mcq = to_mcq(mqp->ibqp.recv_cq);
@@ -2571,9 +2533,7 @@ static void mlx5_ib_handle_internal_error(struct mlx5_ib_dev *ibdev)
 		}
 		spin_unlock_irqrestore(&mqp->rq.lock, flags_qp);
 	}
-	/*At that point all inflight post send were put to be executed as of we
-	 * lock/unlock above locks Now need to arm all involved CQs.
-	 */
+	 
 	list_for_each_entry(mcq, &cq_armed_list, reset_notify) {
 		mcq->comp(mcq, NULL);
 	}
@@ -2610,7 +2570,7 @@ static void handle_general_event(struct mlx5_ib_dev *ibdev, struct mlx5_eqe *eqe
 					    IB_LINK_LAYER_ETHERNET)
 			schedule_work(&ibdev->delay_drop.delay_drop_work);
 		break;
-	default: /* do nothing */
+	default:  
 		return;
 	}
 }
@@ -2626,9 +2586,7 @@ static int handle_port_change(struct mlx5_ib_dev *ibdev, struct mlx5_eqe *eqe,
 	case MLX5_PORT_CHANGE_SUBTYPE_ACTIVE:
 	case MLX5_PORT_CHANGE_SUBTYPE_DOWN:
 	case MLX5_PORT_CHANGE_SUBTYPE_INITIALIZED:
-		/* In RoCE, port up/down events are handled in
-		 * mlx5_netdev_event().
-		 */
+		 
 		if (mlx5_ib_port_link_layer(&ibdev->ib_dev, port) ==
 					    IB_LINK_LAYER_ETHERNET)
 			return -EINVAL;
@@ -2875,12 +2833,7 @@ static void mlx5_ib_dev_res_cleanup(struct mlx5_ib_dev *dev)
 	struct mlx5_ib_resources *devr = &dev->devr;
 	int port;
 
-	/*
-	 * Make sure no change P_Key work items are still executing.
-	 *
-	 * At this stage, the mlx5_ib_event should be unregistered
-	 * and it ensures that no new works are added.
-	 */
+	 
 	for (port = 0; port < ARRAY_SIZE(devr->ports); ++port)
 		cancel_work_sync(&devr->ports[port].pkey_change_work);
 
@@ -3220,9 +3173,7 @@ static void mlx5_ib_unbind_slave_port(struct mlx5_ib_dev *ibdev,
 	err = mlx5_nic_vport_unaffiliate_multiport(mpi->mdev);
 
 	mlx5_ib_dbg(ibdev, "unaffiliated port %u\n", port_num + 1);
-	/* Log an error, still needed to cleanup the pointers and add
-	 * it back to the list.
-	 */
+	 
 	if (err)
 		mlx5_ib_err(ibdev, "Failed to unaffiliate port %u\n",
 			    port_num + 1);
@@ -3303,7 +3254,7 @@ static int mlx5_ib_init_multiport_master(struct mlx5_ib_dev *dev)
 	for (i = 0; i < dev->num_ports; i++) {
 		bool bound = false;
 
-		/* build a stub multiport info struct for the native port. */
+		 
 		if (i == port_num) {
 			mpi = kzalloc(sizeof(*mpi), GFP_KERNEL);
 			if (!mpi) {
@@ -3359,7 +3310,7 @@ static void mlx5_ib_cleanup_multiport_master(struct mlx5_ib_dev *dev)
 	mutex_lock(&mlx5_ib_multiport_mutex);
 	for (i = 0; i < dev->num_ports; i++) {
 		if (dev->port[i].mp.mpi) {
-			/* Destroy the native port stub */
+			 
 			if (i == port_num) {
 				kfree(dev->port[i].mp.mpi);
 				dev->port[i].mp.mpi = NULL;
@@ -3684,7 +3635,7 @@ static int mlx5_ib_stage_init_init(struct mlx5_ib_dev *dev)
 	int err, i;
 
 	dev->ib_dev.node_type = RDMA_NODE_IB_CA;
-	dev->ib_dev.local_dma_lkey = 0 /* not supported for now */;
+	dev->ib_dev.local_dma_lkey = 0  ;
 	dev->ib_dev.phys_port_cnt = dev->num_ports;
 	dev->ib_dev.dev.parent = mdev->device;
 	dev->ib_dev.lag_flags = RDMA_LAG_FLAGS_HASH_ALL_SLAVES;
@@ -3980,7 +3931,7 @@ static int mlx5_ib_roce_init(struct mlx5_ib_dev *dev)
 
 		port_num = mlx5_core_native_port_num(dev->mdev) - 1;
 
-		/* Register only for native ports */
+		 
 		mlx5_mdev_netdev_track(dev, port_num);
 
 		err = mlx5_enable_eth(dev);
@@ -4158,7 +4109,7 @@ void __mlx5_ib_remove(struct mlx5_ib_dev *dev,
 {
 	dev->ib_active = false;
 
-	/* Number of stages to cleanup */
+	 
 	while (stage) {
 		stage--;
 		if (profile->stage[stage].cleanup)
@@ -4189,7 +4140,7 @@ int __mlx5_ib_add(struct mlx5_ib_dev *dev,
 	return 0;
 
 err_out:
-	/* Clean up stages which were initialized */
+	 
 	while (i) {
 		i--;
 		if (profile->stage[i].cleanup)

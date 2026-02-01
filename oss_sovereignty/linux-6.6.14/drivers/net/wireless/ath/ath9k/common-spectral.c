@@ -1,18 +1,4 @@
-/*
- * Copyright (c) 2013 Qualcomm Atheros, Inc.
- *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
+ 
 
 #include <linux/relay.h>
 #include <linux/random.h>
@@ -48,9 +34,7 @@ ath_cmn_max_idx_verify_ht20_fft(u8 *sample_end, int bytes_read)
 	u8 max_index;
 	u8 max_exp;
 
-	/* Sanity check so that we don't read outside the read
-	 * buffer
-	 */
+	 
 	if (bytes_read < SPECTRAL_HT20_SAMPLE_LEN - 1)
 		return -1;
 
@@ -64,10 +48,7 @@ ath_cmn_max_idx_verify_ht20_fft(u8 *sample_end, int bytes_read)
 
 	max_exp = mag_info->max_exp & 0xf;
 
-	/* Don't try to read something outside the read buffer
-	 * in case of a missing byte (so bins[0] will be outside
-	 * the read buffer)
-	 */
+	 
 	if (bytes_read < SPECTRAL_HT20_SAMPLE_LEN && max_index < 1)
 		return -1;
 
@@ -87,9 +68,7 @@ ath_cmn_max_idx_verify_ht20_40_fft(u8 *sample_end, int bytes_read)
 	u8 max_exp;
 	int dc_pos = SPECTRAL_HT20_40_NUM_BINS / 2;
 
-	/* Sanity check so that we don't read outside the read
-	 * buffer
-	 */
+	 
 	if (bytes_read < SPECTRAL_HT20_40_SAMPLE_LEN - 1)
 		return -1;
 
@@ -106,10 +85,7 @@ ath_cmn_max_idx_verify_ht20_40_fft(u8 *sample_end, int bytes_read)
 
 	max_exp = mag_info->max_exp & 0xf;
 
-	/* Don't try to read something outside the read buffer
-	 * in case of a missing byte (so bins[0] will be outside
-	 * the read buffer)
-	 */
+	 
 	if (bytes_read < SPECTRAL_HT20_40_SAMPLE_LEN &&
 	   ((upper_max_index < 1) || (lower_max_index < 1)))
 		return -1;
@@ -181,16 +157,11 @@ ath_cmn_process_ht20_fft(struct ath_rx_status *rs,
 		ret = -1;
 	}
 
-	/* DC value (value in the middle) is the blind spot of the spectral
-	 * sample and invalid, interpolate it.
-	 */
+	 
 	fft_sample_20.data[dc_pos] = (fft_sample_20.data[dc_pos + 1] +
 					fft_sample_20.data[dc_pos - 1]) / 2;
 
-	/* Check if the maximum magnitude is indeed maximum,
-	 * also if the maximum value was at dc_pos, calculate
-	 * a new one (since value at dc_pos is invalid).
-	 */
+	 
 	if (max_index == dc_pos) {
 		tmp_mag = 0;
 		for (i = 0; i < dc_pos; i++) {
@@ -317,9 +288,7 @@ ath_cmn_process_ht20_40_fft(struct ath_rx_status *rs,
 					upper_mag >> max_exp,
 					upper_max_index);
 
-	/* Check if we got the expected magnitude values at
-	 * the expected bins
-	 */
+	 
 	if (((fft_sample_40.data[upper_max_index + dc_pos] & 0xf8)
 	    != ((upper_mag >> max_exp) & 0xf8)) ||
 	   ((fft_sample_40.data[lower_max_index] & 0xf8)
@@ -328,16 +297,11 @@ ath_cmn_process_ht20_40_fft(struct ath_rx_status *rs,
 		ret = -1;
 	}
 
-	/* DC value (value in the middle) is the blind spot of the spectral
-	 * sample and invalid, interpolate it.
-	 */
+	 
 	fft_sample_40.data[dc_pos] = (fft_sample_40.data[dc_pos + 1] +
 					fft_sample_40.data[dc_pos - 1]) / 2;
 
-	/* Check if the maximum magnitudes are indeed maximum,
-	 * also if the maximum value was at dc_pos, calculate
-	 * a new one (since value at dc_pos is invalid).
-	 */
+	 
 	if (lower_max_index == dc_pos) {
 		tmp_mag = 0;
 		for (i = 0; i < dc_pos; i++) {
@@ -413,27 +377,23 @@ ath_cmn_copy_fft_frame(u8 *in, u8 *out, int sample_len, int sample_bytes)
 {
 	switch (sample_bytes - sample_len) {
 	case -1:
-		/* First byte missing */
+		 
 		memcpy(&out[1], in,
 		       sample_len - 1);
 		break;
 	case 0:
-		/* Length correct, nothing to do. */
+		 
 		memcpy(out, in, sample_len);
 		break;
 	case 1:
-		/* MAC added 2 extra bytes AND first byte
-		 * is missing.
-		 */
+		 
 		memcpy(&out[1], in, 30);
 		out[31] = in[31];
 		memcpy(&out[32], &in[33],
 		       sample_len - 32);
 		break;
 	case 2:
-		/* MAC added 2 extra bytes at bin 30 and 32,
-		 * remove them.
-		 */
+		 
 		memcpy(out, in, 30);
 		out[30] = in[31];
 		memcpy(&out[31], &in[33],
@@ -464,7 +424,7 @@ ath_cmn_is_fft_buf_full(struct ath_spec_scan_priv *spec_priv)
 		return 0;
 }
 
-/* returns 1 if this was a spectral frame, even if not handled. */
+ 
 int ath_cmn_process_fft(struct ath_spec_scan_priv *spec_priv, struct ieee80211_hdr *hdr,
 		    struct ath_rx_status *rs, u64 tsf)
 {
@@ -485,18 +445,13 @@ int ath_cmn_process_fft(struct ath_spec_scan_priv *spec_priv, struct ieee80211_h
 	ath_cmn_fft_idx_validator *fft_idx_validator;
 	ath_cmn_fft_sample_handler *fft_handler;
 
-	/* AR9280 and before report via ATH9K_PHYERR_RADAR, AR93xx and newer
-	 * via ATH9K_PHYERR_SPECTRAL. Haven't seen ATH9K_PHYERR_FALSE_RADAR_EXT
-	 * yet, but this is supposed to be possible as well.
-	 */
+	 
 	if (rs->rs_phyerr != ATH9K_PHYERR_RADAR &&
 	    rs->rs_phyerr != ATH9K_PHYERR_FALSE_RADAR_EXT &&
 	    rs->rs_phyerr != ATH9K_PHYERR_SPECTRAL)
 		return 0;
 
-	/* check if spectral scan bit is set. This does not have to be checked
-	 * if received through a SPECTRAL phy error, but shouldn't hurt.
-	 */
+	 
 	radar_info = ((struct ath_radar_info *)&vdata[len]) - 1;
 	if (!(radar_info->pulse_bw_info & SPECTRAL_SCAN_BITMASK))
 		return 0;
@@ -504,9 +459,7 @@ int ath_cmn_process_fft(struct ath_spec_scan_priv *spec_priv, struct ieee80211_h
 	if (!spec_priv->rfs_chan_spec_scan)
 		return 1;
 
-	/* Output buffers are full, no need to process anything
-	 * since there is no space to put the result anyway
-	 */
+	 
 	ret = ath_cmn_is_fft_buf_full(spec_priv);
 	if (ret == 1) {
 		ath_dbg(common, SPECTRAL_SCAN, "FFT report ignored, no space "
@@ -539,68 +492,38 @@ int ath_cmn_process_fft(struct ath_spec_scan_priv *spec_priv, struct ieee80211_h
 	for (i = 0; i < len - 2; i++) {
 		sample_bytes++;
 
-		/* Only a single sample received, no need to look
-		 * for the sample's end, do the correction based
-		 * on the packet's length instead. Note that hw
-		 * will always put the radar_info structure on
-		 * the end.
-		 */
+		 
 		if (len <= fft_len + 2) {
 			sample_bytes = len - sizeof(struct ath_radar_info);
 			got_slen = 1;
 		}
 
-		/* Search for the end of the FFT frame between
-		 * sample_len - 1 and sample_len + 2. exp_max is 3
-		 * bits long and it's the only value on the last
-		 * byte of the frame so since it'll be smaller than
-		 * the next byte (the first bin of the next sample)
-		 * 90% of the time, we can use it as a separator.
-		 */
+		 
 		if (vdata[i] <= 0x7 && sample_bytes >= sample_len - 1) {
 
-			/* Got a frame length within boundaries, there are
-			 * four scenarios here:
-			 *
-			 * a) sample_len -> We got the correct length
-			 * b) sample_len + 2 -> 2 bytes added around bin[31]
-			 * c) sample_len - 1 -> The first byte is missing
-			 * d) sample_len + 1 -> b + c at the same time
-			 *
-			 * When MAC adds 2 extra bytes, bin[31] and bin[32]
-			 * have the same value, so we can use that for further
-			 * verification in cases b and d.
-			 */
+			 
 
-			/* Did we go too far ? If so we couldn't determine
-			 * this sample's boundaries, discard any further
-			 * data
-			 */
+			 
 			if ((sample_bytes > sample_len + 2) ||
 			   ((sample_bytes > sample_len) &&
 			   (sample_start[31] != sample_start[32])))
 				break;
 
-			/* See if we got a valid frame by checking the
-			 * consistency of mag_info fields. This is to
-			 * prevent from "fixing" a correct frame.
-			 * Failure is non-fatal, later frames may
-			 * be valid.
-			 */
+			 
 			if (!fft_idx_validator(&vdata[i], i)) {
 				ath_dbg(common, SPECTRAL_SCAN,
 					"Found valid fft frame at %i\n", i);
 				got_slen = 1;
 			}
 
-			/* We expect 1 - 2 more bytes */
+			 
 			else if ((sample_start[31] == sample_start[32]) &&
 				(sample_bytes >= sample_len) &&
 				(sample_bytes < sample_len + 2) &&
 				(vdata[i + 1] <= 0x7))
 				continue;
 
-			/* Try to distinguish cases a and c */
+			 
 			else if ((sample_bytes == sample_len - 1) &&
 				(vdata[i + 1] <= 0x7))
 				continue;
@@ -612,9 +535,7 @@ int ath_cmn_process_fft(struct ath_spec_scan_priv *spec_priv, struct ieee80211_h
 			ath_dbg(common, SPECTRAL_SCAN, "FFT frame len: %i\n",
 				sample_bytes);
 
-			/* Only try to fix a frame if it's the only one
-			 * on the report, else just skip it.
-			 */
+			 
 			if (sample_bytes != sample_len && len <= fft_len + 2) {
 				ath_cmn_copy_fft_frame(sample_start,
 						       sample_buf, sample_len,
@@ -630,13 +551,11 @@ int ath_cmn_process_fft(struct ath_spec_scan_priv *spec_priv, struct ieee80211_h
 
 				memset(sample_buf, 0, SPECTRAL_SAMPLE_MAX_LEN);
 
-				/* Mix the received bins to the /dev/random
-				 * pool
-				 */
+				 
 				add_device_randomness(sample_buf, num_bins);
 			}
 
-			/* Process a normal frame */
+			 
 			if (sample_bytes == sample_len) {
 				ret = fft_handler(rs, spec_priv, sample_start,
 						  tsf, freq, chan_type);
@@ -646,25 +565,17 @@ int ath_cmn_process_fft(struct ath_spec_scan_priv *spec_priv, struct ieee80211_h
 				else
 					RX_STAT_INC(sc, rx_spectral_sample_err);
 
-				/* Mix the received bins to the /dev/random
-				 * pool
-				 */
+				 
 				add_device_randomness(sample_start, num_bins);
 			}
 
-			/* Short report processed, break out of the
-			 * loop.
-			 */
+			 
 			if (len <= fft_len + 2)
 				return 1;
 
 			sample_start = &vdata[i + 1];
 
-			/* -1 to grab sample_len -1, -2 since
-			 * they 'll get increased by one. In case
-			 * of failure try to recover by going byte
-			 * by byte instead.
-			 */
+			 
 			if (ret == 0) {
 				i += num_bins - 2;
 				sample_bytes = num_bins - 2;
@@ -682,9 +593,9 @@ int ath_cmn_process_fft(struct ath_spec_scan_priv *spec_priv, struct ieee80211_h
 }
 EXPORT_SYMBOL(ath_cmn_process_fft);
 
-/*********************/
-/* spectral_scan_ctl */
-/*********************/
+ 
+ 
+ 
 
 static ssize_t read_file_spec_scan_ctl(struct file *file, char __user *user_buf,
 				       size_t count, loff_t *ppos)
@@ -734,11 +645,7 @@ void ath9k_cmn_spectral_scan_trigger(struct ath_common *common,
 				 ATH9K_RX_FILTER_PHYRADAR |
 				 ATH9K_RX_FILTER_PHYERR);
 
-	/* TODO: usually this should not be neccesary, but for some reason
-	 * (or in some mode?) the trigger must be called after the
-	 * configuration, otherwise the register will have its values reset
-	 * (on my ar9220 to value 0x01002310)
-	 */
+	 
 	ath9k_cmn_spectral_scan_config(common, spec_priv, spec_priv->spectral_mode);
 	ath9k_hw_ops(ah)->spectral_scan_trigger(ah);
 	ath_ps_ops(common)->restore(common);
@@ -761,9 +668,7 @@ int ath9k_cmn_spectral_scan_config(struct ath_common *common,
 		spec_priv->spec_config.enabled = 0;
 		break;
 	case SPECTRAL_BACKGROUND:
-		/* send endless samples.
-		 * TODO: is this really useful for "background"?
-		 */
+		 
 		spec_priv->spec_config.endless = 1;
 		spec_priv->spec_config.enabled = 1;
 		break;
@@ -833,9 +738,9 @@ static const struct file_operations fops_spec_scan_ctl = {
 	.llseek = default_llseek,
 };
 
-/*************************/
-/* spectral_short_repeat */
-/*************************/
+ 
+ 
+ 
 
 static ssize_t read_file_spectral_short_repeat(struct file *file,
 					       char __user *user_buf,
@@ -876,9 +781,9 @@ static const struct file_operations fops_spectral_short_repeat = {
 	.llseek = default_llseek,
 };
 
-/******************/
-/* spectral_count */
-/******************/
+ 
+ 
+ 
 
 static ssize_t read_file_spectral_count(struct file *file,
 					char __user *user_buf,
@@ -918,9 +823,9 @@ static const struct file_operations fops_spectral_count = {
 	.llseek = default_llseek,
 };
 
-/*******************/
-/* spectral_period */
-/*******************/
+ 
+ 
+ 
 
 static ssize_t read_file_spectral_period(struct file *file,
 					 char __user *user_buf,
@@ -961,9 +866,9 @@ static const struct file_operations fops_spectral_period = {
 	.llseek = default_llseek,
 };
 
-/***********************/
-/* spectral_fft_period */
-/***********************/
+ 
+ 
+ 
 
 static ssize_t read_file_spectral_fft_period(struct file *file,
 					     char __user *user_buf,
@@ -1004,9 +909,9 @@ static const struct file_operations fops_spectral_fft_period = {
 	.llseek = default_llseek,
 };
 
-/*******************/
-/* Relay interface */
-/*******************/
+ 
+ 
+ 
 
 static struct dentry *create_buf_file_handler(const char *filename,
 					      struct dentry *parent,
@@ -1037,9 +942,9 @@ static const struct rchan_callbacks rfs_spec_scan_cb = {
 	.remove_buf_file = remove_buf_file_handler,
 };
 
-/*********************/
-/* Debug Init/Deinit */
-/*********************/
+ 
+ 
+ 
 
 void ath9k_cmn_spectral_deinit_debug(struct ath_spec_scan_priv *spec_priv)
 {

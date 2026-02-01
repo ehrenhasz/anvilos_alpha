@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Qualcomm Technologies HIDMA debug file
- *
- * Copyright (c) 2015-2016, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/debugfs.h>
 #include <linux/device.h>
@@ -76,11 +72,7 @@ static void hidma_ll_devstats(struct seq_file *s, void *llhndl)
 	seq_printf(s, "tre_write_offset = 0x%x\n", lldev->tre_write_offset);
 }
 
-/*
- * hidma_chan_show: display HIDMA channel statistics
- *
- * Display the statistics for the current HIDMA virtual channel device.
- */
+ 
 static int hidma_chan_show(struct seq_file *s, void *unused)
 {
 	struct hidma_chan *mchan = s->private;
@@ -108,11 +100,7 @@ static int hidma_chan_show(struct seq_file *s, void *unused)
 	return 0;
 }
 
-/*
- * hidma_dma_show: display HIDMA device info
- *
- * Display the info for the current HIDMA device.
- */
+ 
 static int hidma_dma_show(struct seq_file *s, void *unused)
 {
 	struct hidma_dev *dmadev = s->private;
@@ -146,7 +134,7 @@ void hidma_debug_init(struct hidma_dev *dmadev)
 
 	dmadev->debugfs = debugfs_create_dir(dev_name(dmadev->ddev.dev), NULL);
 
-	/* walk through the virtual channel list */
+	 
 	list_for_each(position, &dmadev->ddev.channels) {
 		struct hidma_chan *chan;
 

@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * RISC-V performance counter support.
- *
- * Copyright (C) 2021 Western Digital Corporation or its affiliates.
- *
- * This implementation is based on old RISC-V perf and ARM perf event code
- * which are in turn based on sparc64 and x86 code.
- */
+
+ 
 
 #include <linux/mod_devicetable.h>
 #include <linux/perf/riscv_pmu.h>
@@ -31,7 +24,7 @@ static int pmu_legacy_ctr_get_idx(struct perf_event *event)
 		return -EOPNOTSUPP;
 }
 
-/* For legacy config & counter index are same */
+ 
 static int pmu_legacy_event_map(struct perf_event *event, u64 *config)
 {
 	return pmu_legacy_ctr_get_idx(event);
@@ -62,12 +55,7 @@ static void pmu_legacy_ctr_start(struct perf_event *event, u64 ival)
 	struct hw_perf_event *hwc = &event->hw;
 	u64 initial_val = pmu_legacy_read_ctr(event);
 
-	/**
-	 * The legacy method doesn't really have a start/stop method.
-	 * It also can not update the counter with a initial value.
-	 * But we still need to set the prev_count so that read() can compute
-	 * the delta. Just use the current counter value to set the prev_count.
-	 */
+	 
 	local64_set(&hwc->prev_count, initial_val);
 }
 
@@ -94,13 +82,7 @@ static void pmu_legacy_event_unmapped(struct perf_event *event, struct mm_struct
 	event->hw.flags &= ~PERF_EVENT_FLAG_USER_READ_CNT;
 }
 
-/*
- * This is just a simple implementation to allow legacy implementations
- * compatible with new RISC-V PMU driver framework.
- * This driver only allows reading two counters i.e CYCLE & INSTRET.
- * However, it can not start or stop the counter. Thus, it is not very useful
- * will be removed in future.
- */
+ 
 static void pmu_legacy_init(struct riscv_pmu *pmu)
 {
 	pr_info("Legacy PMU implementation is available\n");

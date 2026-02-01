@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Mapping of DWARF debug register numbers into register names.
- *
- * Copyright IBM Corp. 2010, 2017
- * Author(s): Hendrik Brueckner <brueckner@linux.vnet.ibm.com>
- *
- */
+
+ 
 
 #include <errno.h>
 #include <stddef.h>
@@ -21,12 +15,7 @@ const char *get_arch_regstr(unsigned int n)
 	return (n >= ARRAY_SIZE(s390_dwarf_regs)) ? NULL : s390_dwarf_regs[n];
 }
 
-/*
- * Convert the register name into an offset to struct pt_regs (kernel).
- * This is required by the BPF prologue generator.  The BPF
- * program is called in the BPF overflow handler in the perf
- * core.
- */
+ 
 int regs_query_register_offset(const char *name)
 {
 	unsigned long gpr;

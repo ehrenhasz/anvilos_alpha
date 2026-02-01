@@ -1,17 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * tascam-hwdep.c - a part of driver for TASCAM FireWire series
- *
- * Copyright (c) 2015 Takashi Sakamoto
- */
 
-/*
- * This codes give three functionality.
- *
- * 1.get firewire node information
- * 2.get notification about starting/stopping stream
- * 3.lock/unlock stream
- */
+ 
+
+ 
 
 #include "tascam.h"
 
@@ -44,13 +34,13 @@ static long tscm_hwdep_read_queue(struct snd_tscm *tscm, char __user *buf,
 	struct snd_firewire_tascam_change *entries = tscm->queue;
 	long count;
 
-	// At least, one control event can be copied.
+	
 	if (remained < sizeof(type) + sizeof(*entries)) {
 		spin_unlock_irq(&tscm->lock);
 		return -EINVAL;
 	}
 
-	// Copy the type field later.
+	
 	count = sizeof(type);
 	remained -= sizeof(type);
 	pos += sizeof(type);
@@ -113,7 +103,7 @@ static long hwdep_read(struct snd_hwdep *hwdep, char __user *buf, long count,
 		spin_lock_irq(&tscm->lock);
 	}
 
-	// NOTE: The acquired lock should be released in callee side.
+	
 	if (tscm->dev_lock_changed) {
 		count = tscm_hwdep_read_locked(tscm, buf, count, offset);
 	} else if (tscm->push_pos != tscm->pull_pos) {

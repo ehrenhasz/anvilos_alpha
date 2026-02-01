@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *  linux/fs/hfs/btree.c
- *
- * Copyright (C) 2001
- * Brad Boyer (flar@allandria.com)
- * (C) 2003 Ardis Technologies <roman@ardistech.com>
- *
- * Handle opening/closing btree
- */
+
+ 
 
 #include <linux/pagemap.h>
 #include <linux/slab.h>
@@ -15,7 +7,7 @@
 
 #include "btree.h"
 
-/* Get a reference to a B*Tree and do some initial checks */
+ 
 struct hfs_btree *hfs_btree_open(struct super_block *sb, u32 id, btree_keycmp keycmp)
 {
 	struct hfs_btree *tree;
@@ -30,7 +22,7 @@ struct hfs_btree *hfs_btree_open(struct super_block *sb, u32 id, btree_keycmp ke
 
 	mutex_init(&tree->tree_lock);
 	spin_lock_init(&tree->hash_lock);
-	/* Set the correct compare function */
+	 
 	tree->sb = sb;
 	tree->cnid = id;
 	tree->keycmp = keycmp;
@@ -79,7 +71,7 @@ struct hfs_btree *hfs_btree_open(struct super_block *sb, u32 id, btree_keycmp ke
 	if (IS_ERR(page))
 		goto free_inode;
 
-	/* Load the header */
+	 
 	head = (struct hfs_btree_header_rec *)(kmap_local_page(page) +
 					       sizeof(struct hfs_bnode_desc));
 	tree->root = be32_to_cpu(head->root);
@@ -135,7 +127,7 @@ free_tree:
 	return NULL;
 }
 
-/* Release resources used by a btree */
+ 
 void hfs_btree_close(struct hfs_btree *tree)
 {
 	struct hfs_bnode *node;
@@ -167,9 +159,9 @@ void hfs_btree_write(struct hfs_btree *tree)
 
 	node = hfs_bnode_find(tree, 0);
 	if (IS_ERR(node))
-		/* panic? */
+		 
 		return;
-	/* Load the header */
+	 
 	page = node->page[0];
 	head = (struct hfs_btree_header_rec *)(kmap_local_page(page) +
 					       sizeof(struct hfs_bnode_desc));
@@ -223,7 +215,7 @@ static struct hfs_bnode *hfs_bmap_new_bmap(struct hfs_bnode *prev, u32 idx)
 	return node;
 }
 
-/* Make sure @tree has enough space for the @rsvd_nodes */
+ 
 int hfs_bmap_reserve(struct hfs_btree *tree, int rsvd_nodes)
 {
 	struct inode *inode = tree->inode;
@@ -342,7 +334,7 @@ void hfs_bmap_free(struct hfs_bnode *node)
 		nidx -= len * 8;
 		i = node->next;
 		if (!i) {
-			/* panic */;
+			 ;
 			pr_crit("unable to free bnode %u. bmap not found!\n",
 				node->this);
 			hfs_bnode_put(node);
@@ -353,7 +345,7 @@ void hfs_bmap_free(struct hfs_bnode *node)
 		if (IS_ERR(node))
 			return;
 		if (node->type != HFS_NODE_MAP) {
-			/* panic */;
+			 ;
 			pr_crit("invalid bmap found! (%u,%d)\n",
 				node->this, node->type);
 			hfs_bnode_put(node);

@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Memory subsystem support
- *
- * Written by Matt Tolentino <matthew.e.tolentino@intel.com>
- *            Dave Hansen <haveblue@us.ibm.com>
- *
- * This file provides the necessary infrastructure to represent
- * a SPARSEMEM-memory-model system's physical memory in /sysfs.
- * All arch-independent code that assumes MEMORY_HOTPLUG requires
- * SPARSEMEM should be contained here, or in mm/memory_hotplug.c.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -75,16 +65,10 @@ static struct bus_type memory_subsys = {
 	.offline = memory_subsys_offline,
 };
 
-/*
- * Memory blocks are cached in a local radix tree to avoid
- * a costly linear search for the corresponding device on
- * the subsystem bus.
- */
+ 
 static DEFINE_XARRAY(memory_blocks);
 
-/*
- * Memory groups, indexed by memory group id (mgid).
- */
+ 
 static DEFINE_XARRAY_FLAGS(memory_groups, XA_FLAGS_ALLOC);
 #define MEMORY_GROUP_MARK_DYNAMIC	XA_MARK_1
 
@@ -105,7 +89,7 @@ EXPORT_SYMBOL(unregister_memory_notifier);
 static void memory_block_release(struct device *dev)
 {
 	struct memory_block *mem = to_memory_block(dev);
-	/* Verify that the altmap is freed */
+	 
 	WARN_ON(mem->altmap);
 	kfree(mem);
 }
@@ -116,7 +100,7 @@ unsigned long __weak memory_block_size_bytes(void)
 }
 EXPORT_SYMBOL_GPL(memory_block_size_bytes);
 
-/* Show the memory block ID, relative to the memory block size */
+ 
 static ssize_t phys_index_show(struct device *dev,
 			       struct device_attribute *attr, char *buf)
 {
@@ -125,29 +109,21 @@ static ssize_t phys_index_show(struct device *dev,
 	return sysfs_emit(buf, "%08lx\n", memory_block_id(mem->start_section_nr));
 }
 
-/*
- * Legacy interface that we cannot remove. Always indicate "removable"
- * with CONFIG_MEMORY_HOTREMOVE - bad heuristic.
- */
+ 
 static ssize_t removable_show(struct device *dev, struct device_attribute *attr,
 			      char *buf)
 {
 	return sysfs_emit(buf, "%d\n", (int)IS_ENABLED(CONFIG_MEMORY_HOTREMOVE));
 }
 
-/*
- * online, offline, going offline, etc.
- */
+ 
 static ssize_t state_show(struct device *dev, struct device_attribute *attr,
 			  char *buf)
 {
 	struct memory_block *mem = to_memory_block(dev);
 	const char *output;
 
-	/*
-	 * We can probably put these states in a nice little array
-	 * so that they're not open-coded
-	 */
+	 
 	switch (mem->state) {
 	case MEM_ONLINE:
 		output = "online";
@@ -180,9 +156,7 @@ static inline unsigned long memblk_nr_poison(struct memory_block *mem)
 }
 #endif
 
-/*
- * Must acquire mem_hotplug_lock in write mode.
- */
+ 
 static int memory_block_online(struct memory_block *mem)
 {
 	unsigned long start_pfn = section_nr_to_pfn(mem->start_section_nr);
@@ -197,13 +171,7 @@ static int memory_block_online(struct memory_block *mem)
 	zone = zone_for_pfn_range(mem->online_type, mem->nid, mem->group,
 				  start_pfn, nr_pages);
 
-	/*
-	 * Although vmemmap pages have a different lifecycle than the pages
-	 * they describe (they remain until the memory is unplugged), doing
-	 * their initialization and accounting at memory onlining/offlining
-	 * stage helps to keep accounting easier to follow - e.g vmemmaps
-	 * belong to the same zone as the memory they backed.
-	 */
+	 
 	if (mem->altmap)
 		nr_vmemmap_pages = mem->altmap->free;
 
@@ -222,10 +190,7 @@ static int memory_block_online(struct memory_block *mem)
 		goto out;
 	}
 
-	/*
-	 * Account once onlining succeeded. If the zone was unpopulated, it is
-	 * now already properly populated.
-	 */
+	 
 	if (nr_vmemmap_pages)
 		adjust_present_page_count(pfn_to_page(start_pfn), mem->group,
 					  nr_vmemmap_pages);
@@ -236,9 +201,7 @@ out:
 	return ret;
 }
 
-/*
- * Must acquire mem_hotplug_lock in write mode.
- */
+ 
 static int memory_block_offline(struct memory_block *mem)
 {
 	unsigned long start_pfn = section_nr_to_pfn(mem->start_section_nr);
@@ -249,10 +212,7 @@ static int memory_block_offline(struct memory_block *mem)
 	if (!mem->zone)
 		return -EINVAL;
 
-	/*
-	 * Unaccount before offlining, such that unpopulated zone and kthreads
-	 * can properly be torn down in offline_pages().
-	 */
+	 
 	if (mem->altmap)
 		nr_vmemmap_pages = mem->altmap->free;
 
@@ -264,7 +224,7 @@ static int memory_block_offline(struct memory_block *mem)
 	ret = offline_pages(start_pfn + nr_vmemmap_pages,
 			    nr_pages - nr_vmemmap_pages, mem->zone, mem->group);
 	if (ret) {
-		/* offline_pages() failed. Account back. */
+		 
 		if (nr_vmemmap_pages)
 			adjust_present_page_count(pfn_to_page(start_pfn),
 						  mem->group, nr_vmemmap_pages);
@@ -280,10 +240,7 @@ out:
 	return ret;
 }
 
-/*
- * MEMORY_HOTPLUG depends on SPARSEMEM in mm/Kconfig, so it is
- * OK to have direct references to sparsemem variables in here.
- */
+ 
 static int
 memory_block_action(struct memory_block *mem, unsigned long action)
 {
@@ -322,7 +279,7 @@ static int memory_block_change_state(struct memory_block *mem,
 	return ret;
 }
 
-/* The device lock serializes operations on memory_subsys_[online|offline] */
+ 
 static int memory_subsys_online(struct device *dev)
 {
 	struct memory_block *mem = to_memory_block(dev);
@@ -331,10 +288,7 @@ static int memory_subsys_online(struct device *dev)
 	if (mem->state == MEM_ONLINE)
 		return 0;
 
-	/*
-	 * When called via device_online() without configuring the online_type,
-	 * we want to default to MMOP_ONLINE.
-	 */
+	 
 	if (mem->online_type == MMOP_OFFLINE)
 		mem->online_type = MMOP_ONLINE;
 
@@ -372,7 +326,7 @@ static ssize_t state_store(struct device *dev, struct device_attribute *attr,
 	case MMOP_ONLINE_KERNEL:
 	case MMOP_ONLINE_MOVABLE:
 	case MMOP_ONLINE:
-		/* mem->online_type is protected by device_hotplug_lock */
+		 
 		mem->online_type = online_type;
 		ret = device_online(&mem->dev);
 		break;
@@ -380,7 +334,7 @@ static ssize_t state_store(struct device *dev, struct device_attribute *attr,
 		ret = device_offline(&mem->dev);
 		break;
 	default:
-		ret = -EINVAL; /* should never happen */
+		ret = -EINVAL;  
 	}
 
 	unlock_device_hotplug();
@@ -393,13 +347,7 @@ static ssize_t state_store(struct device *dev, struct device_attribute *attr,
 	return count;
 }
 
-/*
- * Legacy interface that we cannot remove: s390x exposes the storage increment
- * covered by a memory block, allowing for identifying which memory blocks
- * comprise a storage increment. Since a memory block spans complete
- * storage increments nowadays, this interface is basically unused. Other
- * archs never exposed != 0.
- */
+ 
 static ssize_t phys_device_show(struct device *dev,
 				struct device_attribute *attr, char *buf)
 {
@@ -436,15 +384,9 @@ static ssize_t valid_zones_show(struct device *dev,
 	int nid = mem->nid;
 	int len = 0;
 
-	/*
-	 * Check the existing zone. Make sure that we do that only on the
-	 * online nodes otherwise the page_zone is not reliable
-	 */
+	 
 	if (mem->state == MEM_ONLINE) {
-		/*
-		 * If !mem->zone, the memory block spans multiple zones and
-		 * cannot get offlined.
-		 */
+		 
 		default_zone = mem->zone;
 		if (!default_zone)
 			return sysfs_emit(buf, "%s\n", "none");
@@ -472,9 +414,7 @@ static DEVICE_ATTR_RW(state);
 static DEVICE_ATTR_RO(phys_device);
 static DEVICE_ATTR_RO(removable);
 
-/*
- * Show the memory block size (shared by all memory blocks).
- */
+ 
 static ssize_t block_size_bytes_show(struct device *dev,
 				     struct device_attribute *attr, char *buf)
 {
@@ -483,9 +423,7 @@ static ssize_t block_size_bytes_show(struct device *dev,
 
 static DEVICE_ATTR_RO(block_size_bytes);
 
-/*
- * Memory auto online policy.
- */
+ 
 
 static ssize_t auto_online_blocks_show(struct device *dev,
 				       struct device_attribute *attr, char *buf)
@@ -519,12 +457,7 @@ static ssize_t crash_hotplug_show(struct device *dev,
 static DEVICE_ATTR_RO(crash_hotplug);
 #endif
 
-/*
- * Some architectures will have custom drivers to do this, and
- * will not need to do it from userspace.  The fake hot-add code
- * as well as ppc64 will do all of their discovery in userspace
- * and will require this interface.
- */
+ 
 #ifdef CONFIG_ARCH_MEMORY_PROBE
 static ssize_t probe_store(struct device *dev, struct device_attribute *attr,
 			   const char *buf, size_t count)
@@ -562,11 +495,9 @@ static DEVICE_ATTR_WO(probe);
 #endif
 
 #ifdef CONFIG_MEMORY_FAILURE
-/*
- * Support for offlining pages of memory
- */
+ 
 
-/* Soft offline a page */
+ 
 static ssize_t soft_offline_page_store(struct device *dev,
 				       struct device_attribute *attr,
 				       const char *buf, size_t count)
@@ -582,7 +513,7 @@ static ssize_t soft_offline_page_store(struct device *dev,
 	return ret == 0 ? count : ret;
 }
 
-/* Forcibly offline a page, including killing processes. */
+ 
 static ssize_t hard_offline_page_store(struct device *dev,
 				       struct device_attribute *attr,
 				       const char *buf, size_t count)
@@ -604,17 +535,13 @@ static DEVICE_ATTR_WO(soft_offline_page);
 static DEVICE_ATTR_WO(hard_offline_page);
 #endif
 
-/* See phys_device_show(). */
+ 
 int __weak arch_get_memory_phys_device(unsigned long start_pfn)
 {
 	return 0;
 }
 
-/*
- * A reference for the returned memory block device is acquired.
- *
- * Called under device_hotplug_lock.
- */
+ 
 static struct memory_block *find_memory_block_by_id(unsigned long block_id)
 {
 	struct memory_block *mem;
@@ -625,9 +552,7 @@ static struct memory_block *find_memory_block_by_id(unsigned long block_id)
 	return mem;
 }
 
-/*
- * Called under device_hotplug_lock.
- */
+ 
 struct memory_block *find_memory_block(unsigned long section_nr)
 {
 	unsigned long block_id = memory_block_id(section_nr);
@@ -687,14 +612,7 @@ static struct zone *early_node_zone_for_memory_block(struct memory_block *mem,
 	pg_data_t *pgdat = NODE_DATA(nid);
 	int i;
 
-	/*
-	 * This logic only works for early memory, when the applicable zones
-	 * already span the memory block. We don't expect overlapping zones on
-	 * a single node for early memory. So if we're told that some PFNs
-	 * of a node fall into this memory block, we can assume that all node
-	 * zones that intersect with the memory block are actually applicable.
-	 * No need to look at the memmap.
-	 */
+	 
 	for (i = 0; i < MAX_NR_ZONES; i++) {
 		zone = pgdat->node_zones + i;
 		if (!populated_zone(zone))
@@ -705,7 +623,7 @@ static struct zone *early_node_zone_for_memory_block(struct memory_block *mem,
 			matching_zone = zone;
 			continue;
 		}
-		/* Spans multiple zones ... */
+		 
 		matching_zone = NULL;
 		break;
 	}
@@ -713,43 +631,19 @@ static struct zone *early_node_zone_for_memory_block(struct memory_block *mem,
 }
 
 #ifdef CONFIG_NUMA
-/**
- * memory_block_add_nid() - Indicate that system RAM falling into this memory
- *			    block device (partially) belongs to the given node.
- * @mem: The memory block device.
- * @nid: The node id.
- * @context: The memory initialization context.
- *
- * Indicate that system RAM falling into this memory block (partially) belongs
- * to the given node. If the context indicates ("early") that we are adding the
- * node during node device subsystem initialization, this will also properly
- * set/adjust mem->zone based on the zone ranges of the given node.
- */
+ 
 void memory_block_add_nid(struct memory_block *mem, int nid,
 			  enum meminit_context context)
 {
 	if (context == MEMINIT_EARLY && mem->nid != nid) {
-		/*
-		 * For early memory we have to determine the zone when setting
-		 * the node id and handle multiple nodes spanning a single
-		 * memory block by indicate via zone == NULL that we're not
-		 * dealing with a single zone. So if we're setting the node id
-		 * the first time, determine if there is a single zone. If we're
-		 * setting the node id a second time to a different node,
-		 * invalidate the single detected zone.
-		 */
+		 
 		if (mem->nid == NUMA_NO_NODE)
 			mem->zone = early_node_zone_for_memory_block(mem, nid);
 		else
 			mem->zone = NULL;
 	}
 
-	/*
-	 * If this memory block spans multiple nodes, we only indicate
-	 * the last processed node. If we span multiple nodes (not applicable
-	 * to hotplugged memory), zone == NULL will prohibit memory offlining
-	 * and consequently unplug.
-	 */
+	 
 	mem->nid = nid;
 }
 #endif
@@ -778,14 +672,9 @@ static int add_memory_block(unsigned long block_id, unsigned long state,
 
 #ifndef CONFIG_NUMA
 	if (state == MEM_ONLINE)
-		/*
-		 * MEM_ONLINE at this point implies early memory. With NUMA,
-		 * we'll determine the zone when setting the node id via
-		 * memory_block_add_nid(). Memory hotplug updated the zone
-		 * manually when memory onlining/offlining succeeds.
-		 */
+		 
 		mem->zone = early_node_zone_for_memory_block(mem, NUMA_NO_NODE);
-#endif /* CONFIG_NUMA */
+#endif  
 
 	ret = __add_memory_block(mem);
 	if (ret)
@@ -834,18 +723,12 @@ static void remove_memory_block(struct memory_block *memory)
 		memory->group = NULL;
 	}
 
-	/* drop the ref. we got via find_memory_block() */
+	 
 	put_device(&memory->dev);
 	device_unregister(&memory->dev);
 }
 
-/*
- * Create memory block devices for the given memory area. Start and size
- * have to be aligned to memory block granularity. Memory block devices
- * will be initialized as offline.
- *
- * Called under device_hotplug_lock.
- */
+ 
 int create_memory_block_devices(unsigned long start, unsigned long size,
 				struct vmem_altmap *altmap,
 				struct memory_group *group)
@@ -878,13 +761,7 @@ int create_memory_block_devices(unsigned long start, unsigned long size,
 	return ret;
 }
 
-/*
- * Remove memory block devices for the given memory area. Start and size
- * have to be aligned to memory block granularity. Memory block devices
- * have to be offline.
- *
- * Called under device_hotplug_lock.
- */
+ 
 void remove_memory_block_devices(unsigned long start, unsigned long size)
 {
 	const unsigned long start_block_id = pfn_to_block_id(PFN_DOWN(start));
@@ -933,17 +810,13 @@ static const struct attribute_group *memory_root_attr_groups[] = {
 	NULL,
 };
 
-/*
- * Initialize the sysfs support for memory devices. At the time this function
- * is called, we cannot have concurrent creation/deletion of memory block
- * devices, the device_hotplug_lock is not needed.
- */
+ 
 void __init memory_dev_init(void)
 {
 	int ret;
 	unsigned long block_sz, nr;
 
-	/* Validate the configured memory block size */
+	 
 	block_sz = memory_block_size_bytes();
 	if (!is_power_of_2(block_sz) || block_sz < MIN_MEMORY_BLOCK_SIZE)
 		panic("Memory block size not suitable: 0x%lx\n", block_sz);
@@ -953,10 +826,7 @@ void __init memory_dev_init(void)
 	if (ret)
 		panic("%s() failed to register subsystem: %d\n", __func__, ret);
 
-	/*
-	 * Create entries for memory sections that were found
-	 * during boot and have been initialized
-	 */
+	 
 	for (nr = 0; nr <= __highest_present_section_nr;
 	     nr += sections_per_block) {
 		ret = add_boot_memory_block(nr);
@@ -966,23 +836,7 @@ void __init memory_dev_init(void)
 	}
 }
 
-/**
- * walk_memory_blocks - walk through all present memory blocks overlapped
- *			by the range [start, start + size)
- *
- * @start: start address of the memory range
- * @size: size of the memory range
- * @arg: argument passed to func
- * @func: callback for each memory section walked
- *
- * This function walks through all present memory blocks overlapped by the
- * range [start, start + size), calling func on each memory block.
- *
- * In case func() returns an error, walking is aborted and the error is
- * returned.
- *
- * Called under device_hotplug_lock.
- */
+ 
 int walk_memory_blocks(unsigned long start, unsigned long size,
 		       void *arg, walk_memory_blocks_func_t func)
 {
@@ -1021,18 +875,7 @@ static int for_each_memory_block_cb(struct device *dev, void *data)
 	return cb_data->func(mem, cb_data->arg);
 }
 
-/**
- * for_each_memory_block - walk through all present memory blocks
- *
- * @arg: argument passed to func
- * @func: callback for each memory block walked
- *
- * This function walks through all present memory blocks, calling func on
- * each memory block.
- *
- * In case func() returns an error, walking is aborted and the error is
- * returned.
- */
+ 
 int for_each_memory_block(void *arg, walk_memory_blocks_func_t func)
 {
 	struct for_each_memory_block_cb_data cb_data = {
@@ -1044,12 +887,7 @@ int for_each_memory_block(void *arg, walk_memory_blocks_func_t func)
 				for_each_memory_block_cb);
 }
 
-/*
- * This is an internal helper to unify allocation and initialization of
- * memory groups. Note that the passed memory group will be copied to a
- * dynamically allocated memory group. After this call, the passed
- * memory group should no longer be used.
- */
+ 
 static int memory_group_register(struct memory_group group)
 {
 	struct memory_group *new_group;
@@ -1076,21 +914,7 @@ static int memory_group_register(struct memory_group group)
 	return mgid;
 }
 
-/**
- * memory_group_register_static() - Register a static memory group.
- * @nid: The node id.
- * @max_pages: The maximum number of pages we'll have in this static memory
- *	       group.
- *
- * Register a new static memory group and return the memory group id.
- * All memory in the group belongs to a single unit, such as a DIMM. All
- * memory belonging to a static memory group is added in one go to be removed
- * in one go -- it's static.
- *
- * Returns an error if out of memory, if the node id is invalid, if no new
- * memory groups can be registered, or if max_pages is invalid (0). Otherwise,
- * returns the new memory group id.
- */
+ 
 int memory_group_register_static(int nid, unsigned long max_pages)
 {
 	struct memory_group group = {
@@ -1106,21 +930,7 @@ int memory_group_register_static(int nid, unsigned long max_pages)
 }
 EXPORT_SYMBOL_GPL(memory_group_register_static);
 
-/**
- * memory_group_register_dynamic() - Register a dynamic memory group.
- * @nid: The node id.
- * @unit_pages: Unit in pages in which is memory added/removed in this dynamic
- *		memory group.
- *
- * Register a new dynamic memory group and return the memory group id.
- * Memory within a dynamic memory group is added/removed dynamically
- * in unit_pages.
- *
- * Returns an error if out of memory, if the node id is invalid, if no new
- * memory groups can be registered, or if unit_pages is invalid (0, not a
- * power of two, smaller than a single memory block). Otherwise, returns the
- * new memory group id.
- */
+ 
 int memory_group_register_dynamic(int nid, unsigned long unit_pages)
 {
 	struct memory_group group = {
@@ -1138,17 +948,7 @@ int memory_group_register_dynamic(int nid, unsigned long unit_pages)
 }
 EXPORT_SYMBOL_GPL(memory_group_register_dynamic);
 
-/**
- * memory_group_unregister() - Unregister a memory group.
- * @mgid: the memory group id
- *
- * Unregister a memory group. If any memory block still belongs to this
- * memory group, unregistering will fail.
- *
- * Returns -EINVAL if the memory group id is invalid, returns -EBUSY if some
- * memory blocks still belong to this memory group and returns 0 if
- * unregistering succeeded.
- */
+ 
 int memory_group_unregister(int mgid)
 {
 	struct memory_group *group;
@@ -1167,22 +967,13 @@ int memory_group_unregister(int mgid)
 }
 EXPORT_SYMBOL_GPL(memory_group_unregister);
 
-/*
- * This is an internal helper only to be used in core memory hotplug code to
- * lookup a memory group. We don't care about locking, as we don't expect a
- * memory group to get unregistered while adding memory to it -- because
- * the group and the memory is managed by the same driver.
- */
+ 
 struct memory_group *memory_group_find_by_id(int mgid)
 {
 	return xa_load(&memory_groups, mgid);
 }
 
-/*
- * This is an internal helper only to be used in core memory hotplug code to
- * walk all dynamic memory groups excluding a given memory group, either
- * belonging to a specific node, or belonging to any node.
- */
+ 
 int walk_dynamic_memory_groups(int nid, walk_memory_groups_func_t func,
 			       struct memory_group *excluded, void *arg)
 {
@@ -1197,7 +988,7 @@ int walk_dynamic_memory_groups(int nid, walk_memory_groups_func_t func,
 #ifdef CONFIG_NUMA
 		if (nid != NUMA_NO_NODE && group->nid != nid)
 			continue;
-#endif /* CONFIG_NUMA */
+#endif  
 		ret = func(group, arg);
 		if (ret)
 			break;

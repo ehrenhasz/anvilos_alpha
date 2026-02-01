@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/* net/sched/act_ctinfo.c  netfilter ctinfo connmark actions
- *
- * Copyright (c) 2019 Kevin Darbyshire-Bryant <ldir@darbyshire-bryant.me.uk>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -117,7 +114,7 @@ TC_INDIRECT_SCOPE int tcf_ctinfo_act(struct sk_buff *skb,
 	}
 
 	ct = nf_ct_get(skb, &ctinfo);
-	if (!ct) { /* look harder, usually ingress */
+	if (!ct) {  
 		if (!nf_ct_get_tuplepr(skb, skb_network_offset(skb),
 				       proto, cp->net, &tuple))
 			goto out;
@@ -185,11 +182,11 @@ static int tcf_ctinfo_init(struct net *net, struct nlattr *nla,
 	}
 	actparm = nla_data(tb[TCA_CTINFO_ACT]);
 
-	/* do some basic validation here before dynamically allocating things */
-	/* that we would otherwise have to clean up.			      */
+	 
+	 
 	if (tb[TCA_CTINFO_PARMS_DSCP_MASK]) {
 		dscpmask = nla_get_u32(tb[TCA_CTINFO_PARMS_DSCP_MASK]);
-		/* need contiguous 6 bit mask */
+		 
 		dscpmaskshift = dscpmask ? __ffs(dscpmask) : 0;
 		if ((~0 & (dscpmask >> dscpmaskshift)) != 0x3f) {
 			NL_SET_ERR_MSG_ATTR(extack,
@@ -199,7 +196,7 @@ static int tcf_ctinfo_init(struct net *net, struct nlattr *nla,
 		}
 		dscpstatemask = tb[TCA_CTINFO_PARMS_DSCP_STATEMASK] ?
 			nla_get_u32(tb[TCA_CTINFO_PARMS_DSCP_STATEMASK]) : 0;
-		/* mask & statemask must not overlap */
+		 
 		if (dscpmask & dscpstatemask) {
 			NL_SET_ERR_MSG_ATTR(extack,
 					    tb[TCA_CTINFO_PARMS_DSCP_STATEMASK],
@@ -208,7 +205,7 @@ static int tcf_ctinfo_init(struct net *net, struct nlattr *nla,
 		}
 	}
 
-	/* done the validation:now to the actual action allocation */
+	 
 	index = actparm->index;
 	err = tcf_idr_check_alloc(tn, &index, a, bind);
 	if (!err) {
@@ -220,7 +217,7 @@ static int tcf_ctinfo_init(struct net *net, struct nlattr *nla,
 		}
 		ret = ACT_P_CREATED;
 	} else if (err > 0) {
-		if (bind) /* don't override defaults */
+		if (bind)  
 			return 0;
 		if (!(flags & TCA_ACT_FLAGS_REPLACE)) {
 			tcf_idr_release(*a, bind);

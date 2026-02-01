@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Hardware monitoring driver for UCD90xxx Sequencer and System Health
- * Controller series
- *
- * Copyright (C) 2011 Ericsson AB.
- */
+
+ 
 
 #include <linux/debugfs.h>
 #include <linux/delay.h>
@@ -32,7 +27,7 @@ enum chips { ucd9000, ucd90120, ucd90124, ucd90160, ucd90320, ucd9090,
 #define UCD9000_GPIO_CONFIG		0xfb
 #define UCD9000_DEVICE_ID		0xfd
 
-/* GPIO CONFIG bits */
+ 
 #define UCD9000_GPIO_CONFIG_ENABLE	BIT(0)
 #define UCD9000_GPIO_CONFIG_OUT_ENABLE	BIT(1)
 #define UCD9000_GPIO_CONFIG_OUT_VALUE	BIT(2)
@@ -76,14 +71,7 @@ struct ucd9000_debugfs_entry {
 	u8 index;
 };
 
-/*
- * It has been observed that the UCD90320 randomly fails register access when
- * doing another access right on the back of a register write. To mitigate this
- * make sure that there is a minimum delay between a write access and the
- * following access. The 250us is based on experimental data. At a delay of
- * 200us the issue seems to go away. Add a bit of extra margin to allow for
- * system to system differences.
- */
+ 
 #define UCD90320_WAIT_DELAY_US 250
 
 static inline void ucd90320_wait(const struct ucd9000_data *data)
@@ -150,9 +138,9 @@ static int ucd9000_get_fan_config(struct i2c_client *client, int fan)
 	  = to_ucd9000_data(pmbus_get_driver_info(client));
 
 	if (data->fan_data[fan][3] & 1)
-		fan_config |= PB_FAN_2_INSTALLED;   /* Use lower bit position */
+		fan_config |= PB_FAN_2_INSTALLED;    
 
-	/* Pulses/revolution */
+	 
 	fan_config |= (data->fan_data[fan][3] & 0x06) >> 1;
 
 	return fan_config;
@@ -250,7 +238,7 @@ static int ucd9000_gpio_read_config(struct i2c_client *client,
 {
 	int ret;
 
-	/* No page set required */
+	 
 	ret = i2c_smbus_write_byte_data(client, UCD9000_GPIO_SELECT, offset);
 	if (ret < 0)
 		return ret;
@@ -297,7 +285,7 @@ static void ucd9000_gpio_set(struct gpio_chip *gc, unsigned int offset,
 
 	ret |= UCD9000_GPIO_CONFIG_ENABLE;
 
-	/* Page set not required */
+	 
 	ret = i2c_smbus_write_byte_data(client, UCD9000_GPIO_CONFIG, ret);
 	if (ret < 0) {
 		dev_dbg(&client->dev, "Failed to write GPIO %d config: %d\n",
@@ -362,7 +350,7 @@ static int ucd9000_gpio_set_direction(struct gpio_chip *gc,
 	ret |= UCD9000_GPIO_CONFIG_ENABLE;
 	config = ret;
 
-	/* Page set not required */
+	 
 	ret = i2c_smbus_write_byte_data(client, UCD9000_GPIO_CONFIG, config);
 	if (ret < 0)
 		return ret;
@@ -407,14 +395,10 @@ static void ucd9000_probe_gpio(struct i2c_client *client,
 		data->gpio.ngpio = UCD90910_NUM_GPIOS;
 		break;
 	default:
-		return; /* GPIO support is optional. */
+		return;  
 	}
 
-	/*
-	 * Pinmux support has not been added to the new gpio_chip.
-	 * This support should be added when possible given the mux
-	 * behavior of these IO devices.
-	 */
+	 
 	data->gpio.label = client->name;
 	data->gpio.get_direction = ucd9000_gpio_get_direction;
 	data->gpio.direction_input = ucd9000_gpio_direction_input;
@@ -435,7 +419,7 @@ static void ucd9000_probe_gpio(struct i2c_client *client,
 			       struct ucd9000_data *data)
 {
 }
-#endif /* CONFIG_GPIOLIB */
+#endif  
 
 #ifdef CONFIG_DEBUG_FS
 static int ucd9000_get_mfr_status(struct i2c_client *client, u8 *buffer)
@@ -459,9 +443,7 @@ static int ucd9000_debugfs_show_mfr_status_bit(void *data, u64 *val)
 	if (ret < 0)
 		return ret;
 
-	/*
-	 * GPI fault bits are in sets of 8, two bytes from end of response.
-	 */
+	 
 	i = ret - 3 - entry->index / 8;
 	if (i >= 0)
 		*val = !!(buffer[i] & BIT(entry->index % 8));
@@ -513,12 +495,7 @@ static int ucd9000_init_debugfs(struct i2c_client *client,
 
 	data->debugfs = debugfs_create_dir(client->name, debugfs);
 
-	/*
-	 * Of the chips this driver supports, only the UCD9090, UCD90160,
-	 * UCD90320, and UCD90910 report GPI faults in their MFR_STATUS
-	 * register, so only create the GPI fault debugfs attributes for those
-	 * chips.
-	 */
+	 
 	if (mid->driver_data == ucd9090 || mid->driver_data == ucd90160 ||
 	    mid->driver_data == ucd90320 || mid->driver_data == ucd90910) {
 		gpi_count = mid->driver_data == ucd90320 ? UCD90320_GPI_COUNT
@@ -553,7 +530,7 @@ static int ucd9000_init_debugfs(struct i2c_client *client,
 {
 	return 0;
 }
-#endif /* CONFIG_DEBUG_FS */
+#endif  
 
 static int ucd9000_probe(struct i2c_client *client)
 {
@@ -615,10 +592,10 @@ static int ucd9000_probe(struct i2c_client *client)
 		return -ENODEV;
 	}
 
-	/* The internal temperature sensor is always active */
+	 
 	info->func[0] = PMBUS_HAVE_TEMP;
 
-	/* Everything else is configurable */
+	 
 	ret = i2c_smbus_read_block_data(client, UCD9000_MONITOR_CONFIG,
 					block_buffer);
 	if (ret <= 0) {
@@ -650,7 +627,7 @@ static int ucd9000_probe(struct i2c_client *client)
 		}
 	}
 
-	/* Fan configuration */
+	 
 	if (mid->driver_data == ucd90124) {
 		for (i = 0; i < UCD9000_NUM_FAN; i++) {
 			i2c_smbus_write_byte_data(client,
@@ -687,7 +664,7 @@ static int ucd9000_probe(struct i2c_client *client)
 	return 0;
 }
 
-/* This is the driver that will be inserted */
+ 
 static struct i2c_driver ucd9000_driver = {
 	.driver = {
 		.name = "ucd9000",

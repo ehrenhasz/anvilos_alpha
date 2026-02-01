@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Mediated device Core Driver
- *
- * Copyright (c) 2016, NVIDIA CORPORATION. All rights reserved.
- *     Author: Neo Jia <cjia@nvidia.com>
- *             Kirti Wankhede <kwankhede@nvidia.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/slab.h>
@@ -23,7 +17,7 @@ static struct class_compat *mdev_bus_compat_class;
 static LIST_HEAD(mdev_list);
 static DEFINE_MUTEX(mdev_list_lock);
 
-/* Caller must hold parent unreg_sem read or write lock */
+ 
 static void mdev_device_remove_common(struct mdev_device *mdev)
 {
 	struct mdev_parent *parent = mdev->type->parent;
@@ -31,7 +25,7 @@ static void mdev_device_remove_common(struct mdev_device *mdev)
 	mdev_remove_sysfs_files(mdev);
 	device_del(&mdev->dev);
 	lockdep_assert_held(&parent->unreg_sem);
-	/* Balances with device_initialize() */
+	 
 	put_device(&mdev->dev);
 }
 
@@ -42,20 +36,7 @@ static int mdev_device_remove_cb(struct device *dev, void *data)
 	return 0;
 }
 
-/*
- * mdev_register_parent: Register a device as parent for mdevs
- * @parent: parent structure registered
- * @dev: device structure representing parent device.
- * @mdev_driver: Device driver to bind to the newly created mdev
- * @types: Array of supported mdev types
- * @nr_types: Number of entries in @types
- *
- * Registers the @parent stucture as a parent for mdev types and thus mdev
- * devices.  The caller needs to hold a reference on @dev that must not be
- * released until after the call to mdev_unregister_parent().
- *
- * Returns a negative value on error, otherwise 0.
- */
+ 
 int mdev_register_parent(struct mdev_parent *parent, struct device *dev,
 		struct mdev_driver *mdev_driver, struct mdev_type **types,
 		unsigned int nr_types)
@@ -86,10 +67,7 @@ int mdev_register_parent(struct mdev_parent *parent, struct device *dev,
 }
 EXPORT_SYMBOL(mdev_register_parent);
 
-/*
- * mdev_unregister_parent : Unregister a parent device
- * @parent: parent structure to unregister
- */
+ 
 void mdev_unregister_parent(struct mdev_parent *parent)
 {
 	char *env_string = "MDEV_STATE=unregistered";
@@ -118,7 +96,7 @@ static void mdev_device_release(struct device *dev)
 		atomic_inc(&parent->available_instances);
 	mutex_unlock(&mdev_list_lock);
 
-	/* Pairs with the get in mdev_device_create() */
+	 
 	kobject_put(&mdev->type->kobj);
 
 	dev_dbg(&mdev->dev, "MDEV: destroying\n");
@@ -134,7 +112,7 @@ int mdev_device_create(struct mdev_type *type, const guid_t *uuid)
 
 	mutex_lock(&mdev_list_lock);
 
-	/* Check for duplicate */
+	 
 	list_for_each_entry(tmp, &mdev_list, next) {
 		if (guid_equal(&tmp->uuid, uuid)) {
 			mutex_unlock(&mdev_list_lock);
@@ -143,10 +121,7 @@ int mdev_device_create(struct mdev_type *type, const guid_t *uuid)
 	}
 
 	if (!drv->get_available) {
-		/*
-		 * Note: that non-atomic read and dec is fine here because
-		 * all modifications are under mdev_list_lock.
-		 */
+		 
 		if (!atomic_read(&parent->available_instances)) {
 			mutex_unlock(&mdev_list_lock);
 			return -EUSERS;
@@ -166,7 +141,7 @@ int mdev_device_create(struct mdev_type *type, const guid_t *uuid)
 	mdev->dev.release = mdev_device_release;
 	mdev->dev.groups = mdev_device_groups;
 	mdev->type = type;
-	/* Pairs with the put in mdev_device_release() */
+	 
 	kobject_get(&type->kobj);
 
 	guid_copy(&mdev->uuid, uuid);
@@ -177,7 +152,7 @@ int mdev_device_create(struct mdev_type *type, const guid_t *uuid)
 	if (ret)
 		goto out_put_device;
 
-	/* Check if parent unregistration has started */
+	 
 	if (!down_read_trylock(&parent->unreg_sem)) {
 		ret = -ENODEV;
 		goto out_put_device;
@@ -234,7 +209,7 @@ int mdev_device_remove(struct mdev_device *mdev)
 	mdev->active = false;
 	mutex_unlock(&mdev_list_lock);
 
-	/* Check if parent unregistration has started */
+	 
 	if (!down_read_trylock(&parent->unreg_sem))
 		return -ENODEV;
 

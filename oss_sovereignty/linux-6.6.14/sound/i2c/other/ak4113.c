@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  Routines for control of the AK4113 via I2C/4-wire serial interface
- *  IEC958 (S/PDIF) receiver by Asahi Kasei
- *  Copyright (c) by Jaroslav Kysela <perex@perex.cz>
- *  Copyright (c) by Pavel Hofman <pavel.hofman@ivitera.com>
- */
+
+ 
 
 #include <linux/slab.h>
 #include <linux/delay.h>
@@ -20,7 +15,7 @@ MODULE_AUTHOR("Pavel Hofman <pavel.hofman@ivitera.com>");
 MODULE_DESCRIPTION("AK4113 IEC958 (S/PDIF) receiver by Asahi Kasei");
 MODULE_LICENSE("GPL");
 
-#define AK4113_ADDR			0x00 /* fixed address */
+#define AK4113_ADDR			0x00  
 
 static void ak4113_stats(struct work_struct *work);
 static void ak4113_init_regs(struct ak4113 *chip);
@@ -41,7 +36,7 @@ static inline unsigned char reg_read(struct ak4113 *ak4113, unsigned char reg)
 
 static void snd_ak4113_free(struct ak4113 *chip)
 {
-	atomic_inc(&chip->wq_processing);	/* don't schedule new work */
+	atomic_inc(&chip->wq_processing);	 
 	cancel_delayed_work_sync(&chip->work);
 	kfree(chip);
 }
@@ -111,15 +106,15 @@ static void ak4113_init_regs(struct ak4113 *chip)
 {
 	unsigned char old = chip->regmap[AK4113_REG_PWRDN], reg;
 
-	/* bring the chip to reset state and powerdown state */
+	 
 	reg_write(chip, AK4113_REG_PWRDN, old & ~(AK4113_RST|AK4113_PWN));
 	udelay(200);
-	/* release reset, but leave powerdown */
+	 
 	reg_write(chip, AK4113_REG_PWRDN, (old | AK4113_RST) & ~AK4113_PWN);
 	udelay(200);
 	for (reg = 1; reg < AK4113_WRITABLE_REGS; reg++)
 		reg_write(chip, reg, chip->regmap[reg]);
-	/* release powerdown, everything is initialized now */
+	 
 	reg_write(chip, AK4113_REG_PWRDN, old | AK4113_RST | AK4113_PWN);
 }
 
@@ -130,7 +125,7 @@ void snd_ak4113_reinit(struct ak4113 *chip)
 	mutex_lock(&chip->reinit_mutex);
 	ak4113_init_regs(chip);
 	mutex_unlock(&chip->reinit_mutex);
-	/* bring up statistics / event queing */
+	 
 	if (atomic_dec_and_test(&chip->wq_processing))
 		schedule_delayed_work(&chip->work, HZ / 10);
 }
@@ -348,7 +343,7 @@ static int snd_ak4113_spdif_qget(struct snd_kcontrol *kcontrol,
 	return 0;
 }
 
-/* Don't forget to change AK4113_CONTROLS define!!! */
+ 
 static const struct snd_kcontrol_new snd_ak4113_iec958_controls[] = {
 {
 	.iface =	SNDRV_CTL_ELEM_IFACE_PCM,
@@ -468,7 +463,7 @@ static void snd_ak4113_proc_regs_read(struct snd_info_entry *entry,
 {
 	struct ak4113 *ak4113 = entry->private_data;
 	int reg, val;
-	/* all ak4113 registers 0x00 - 0x1c */
+	 
 	for (reg = 0; reg < 0x1d; reg++) {
 		val = reg_read(ak4113, reg);
 		snd_iprintf(buffer, "0x%02x = 0x%02x\n", reg, val);
@@ -503,7 +498,7 @@ int snd_ak4113_build(struct ak4113 *ak4113,
 		ak4113->kctls[idx] = kctl;
 	}
 	snd_ak4113_proc_init(ak4113);
-	/* trigger workq */
+	 
 	schedule_delayed_work(&ak4113->work, HZ / 10);
 	return 0;
 }
@@ -567,7 +562,7 @@ int snd_ak4113_check_rate_and_errors(struct ak4113 *ak4113, unsigned int flags)
 		snd_ctl_notify(ak4113->card, SNDRV_CTL_EVENT_MASK_VALUE,
 				&ak4113->kctls[3]->id);
 
-	/* rate change */
+	 
 	if (c1 & 0xf0)
 		snd_ctl_notify(ak4113->card, SNDRV_CTL_EVENT_MASK_VALUE,
 				&ak4113->kctls[4]->id);
@@ -593,14 +588,13 @@ int snd_ak4113_check_rate_and_errors(struct ak4113 *ak4113, unsigned int flags)
 		ak4113->change_callback(ak4113, c0, c1);
 
 __rate:
-	/* compare rate */
+	 
 	res = external_rate(rcs1);
 	if (!(flags & AK4113_CHECK_NO_RATE) && runtime &&
 			(runtime->rate != res)) {
 		snd_pcm_stream_lock_irqsave(ak4113->substream, _flags);
 		if (snd_pcm_running(ak4113->substream)) {
-			/*printk(KERN_DEBUG "rate changed (%i <- %i)\n",
-			 * runtime->rate, res); */
+			 
 			snd_pcm_stop(ak4113->substream,
 					SNDRV_PCM_STATE_DRAINING);
 			wake_up(&runtime->sleep);
@@ -626,7 +620,7 @@ static void ak4113_stats(struct work_struct *work)
 #ifdef CONFIG_PM
 void snd_ak4113_suspend(struct ak4113 *chip)
 {
-	atomic_inc(&chip->wq_processing); /* don't schedule new work */
+	atomic_inc(&chip->wq_processing);  
 	cancel_delayed_work_sync(&chip->work);
 }
 EXPORT_SYMBOL(snd_ak4113_suspend);

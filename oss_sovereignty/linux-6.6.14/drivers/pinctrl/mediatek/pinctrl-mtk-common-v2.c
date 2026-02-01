@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2018 MediaTek Inc.
- *
- * Author: Sean Wang <sean.wang@mediatek.com>
- *
- */
+
+ 
 
 #include <dt-bindings/pinctrl/mt65xx.h>
 #include <linux/device.h>
@@ -18,16 +13,7 @@
 #include "mtk-eint.h"
 #include "pinctrl-mtk-common-v2.h"
 
-/**
- * struct mtk_drive_desc - the structure that holds the information
- *			    of the driving current
- * @min:	the minimum current of this group
- * @max:	the maximum current of this group
- * @step:	the step current of this group
- * @scal:	the weight factor
- *
- * formula: output = ((input) / step - 1) * scal
- */
+ 
 struct mtk_drive_desc {
 	u8 min;
 	u8 max;
@@ -35,7 +21,7 @@ struct mtk_drive_desc {
 	u8 scal;
 };
 
-/* The groups of drive strength */
+ 
 static const struct mtk_drive_desc mtk_drive[] = {
 	[DRV_GRP0] = { 4, 16, 4, 1 },
 	[DRV_GRP1] = { 4, 16, 4, 2 },
@@ -118,25 +104,17 @@ static int mtk_hw_pin_field_lookup(struct mtk_pinctrl *hw,
 		return -EINVAL;
 	}
 
-	/* Calculated bits as the overall offset the pin is located at,
-	 * if c->fixed is held, that determines the all the pins in the
-	 * range use the same field with the s_pin.
-	 */
+	 
 	bits = c->fixed ? c->s_bit : c->s_bit +
 	       (desc->number - c->s_pin) * (c->x_bits);
 
-	/* Fill pfd from bits. For example 32-bit register applied is assumed
-	 * when c->sz_reg is equal to 32.
-	 */
+	 
 	pfd->index = c->i_base;
 	pfd->offset = c->s_addr + c->x_addrs * (bits / c->sz_reg);
 	pfd->bitpos = bits % c->sz_reg;
 	pfd->mask = (1 << c->x_bits) - 1;
 
-	/* pfd->next is used for indicating that bit wrapping-around happens
-	 * which requires the manipulation for bit 0 starting in the next
-	 * register to form the complete field read/write.
-	 */
+	 
 	pfd->next = pfd->bitpos + c->x_bits > c->sz_reg ? c->x_addrs : 0;
 
 	return 0;
@@ -248,14 +226,7 @@ static int mtk_xt_find_eint_num(struct mtk_pinctrl *hw, unsigned long eint_n)
 	return EINT_NA;
 }
 
-/*
- * Virtual GPIO only used inside SOC and not being exported to outside SOC.
- * Some modules use virtual GPIO as eint (e.g. pmif or usb).
- * In MTK platform, external interrupt (EINT) and GPIO is 1-1 mapping
- * and we can set GPIO as eint.
- * But some modules use specific eint which doesn't have real GPIO pin.
- * So we use virtual GPIO to map it.
- */
+ 
 
 bool mtk_is_virt_gpio(struct mtk_pinctrl *hw, unsigned int gpio_n)
 {
@@ -264,7 +235,7 @@ bool mtk_is_virt_gpio(struct mtk_pinctrl *hw, unsigned int gpio_n)
 
 	desc = (const struct mtk_pin_desc *)&hw->soc->pins[gpio_n];
 
-	/* if the GPIO is not supported for eint mode */
+	 
 	if (desc->eint.eint_m == NO_EINT_SUPPORT)
 		return virt_gpio;
 
@@ -285,10 +256,7 @@ static int mtk_xt_get_gpio_n(void *data, unsigned long eint_n,
 	desc = (const struct mtk_pin_desc *)hw->soc->pins;
 	*gpio_chip = &hw->chip;
 
-	/*
-	 * Be greedy to guess first gpio_n is equal to eint_n.
-	 * Only eint virtual eint number is greater than gpio number.
-	 */
+	 
 	if (hw->soc->npins > eint_n &&
 	    desc[eint_n].eint.eint_n == eint_n)
 		*gpio_n = eint_n;
@@ -346,12 +314,7 @@ static int mtk_xt_set_gpio_as_eint(void *data, unsigned long eint_n)
 		return err;
 
 	err = mtk_hw_set_value(hw, desc, PINCTRL_PIN_REG_SMT, MTK_ENABLE);
-	/* SMT is supposed to be supported by every real GPIO and doesn't
-	 * support virtual GPIOs, so the extra condition err != -ENOTSUPP
-	 * is just for adding EINT support to these virtual GPIOs. It should
-	 * add an extra flag in the pin descriptor when more pins with
-	 * distinctive characteristic come out.
-	 */
+	 
 	if (err && err != -ENOTSUPP)
 		return err;
 
@@ -410,7 +373,7 @@ err_free_eint:
 }
 EXPORT_SYMBOL_GPL(mtk_build_eint);
 
-/* Revision 0 */
+ 
 int mtk_pinconf_bias_disable_set(struct mtk_pinctrl *hw,
 				 const struct mtk_pin_desc *desc)
 {
@@ -493,7 +456,7 @@ int mtk_pinconf_bias_get(struct mtk_pinctrl *hw,
 }
 EXPORT_SYMBOL_GPL(mtk_pinconf_bias_get);
 
-/* Revision 1 */
+ 
 int mtk_pinconf_bias_disable_set_rev1(struct mtk_pinctrl *hw,
 				      const struct mtk_pin_desc *desc)
 {
@@ -566,11 +529,7 @@ int mtk_pinconf_bias_get_rev1(struct mtk_pinctrl *hw,
 }
 EXPORT_SYMBOL_GPL(mtk_pinconf_bias_get_rev1);
 
-/* Combo for the following pull register type:
- * 1. PU + PD
- * 2. PULLSEL + PULLEN
- * 3. PUPD + R0 + R1
- */
+ 
 static int mtk_pinconf_bias_set_pu_pd(struct mtk_pinctrl *hw,
 				const struct mtk_pin_desc *desc,
 				u32 pullup, u32 arg)
@@ -650,7 +609,7 @@ static int mtk_pinconf_bias_set_pupd_r1_r0(struct mtk_pinctrl *hw,
 		goto out;
 	}
 
-	/* MTK HW PUPD bit: 1 for pull-down, 0 for pull-up */
+	 
 	err = mtk_hw_set_value(hw, desc, PINCTRL_PIN_REG_PUPD, !pullup);
 	if (err)
 		goto out;
@@ -713,7 +672,7 @@ static int mtk_pinconf_bias_set_rsel(struct mtk_pinctrl *hw,
 		return 0;
 
 	if (hw->rsel_si_unit) {
-		/* find pin rsel_index from pin_rsel array*/
+		 
 		err = mtk_hw_pin_rsel_lookup(hw, desc, pullup, arg, &rsel_val);
 		if (err)
 			goto out;
@@ -900,7 +859,7 @@ static int mtk_pinconf_bias_get_pupd_r1_r0(struct mtk_pinctrl *hw,
 	err = mtk_hw_get_value(hw, desc, PINCTRL_PIN_REG_PUPD, pullup);
 	if (err)
 		goto out;
-	/* MTK HW PUPD bit: 1 for pull-down, 0 for pull-up */
+	 
 	*pullup = !(*pullup);
 
 	err = mtk_hw_get_value(hw, desc, PINCTRL_PIN_REG_R0, &r0);
@@ -964,7 +923,7 @@ int mtk_pinconf_bias_get_combo(struct mtk_pinctrl *hw,
 }
 EXPORT_SYMBOL_GPL(mtk_pinconf_bias_get_combo);
 
-/* Revision 0 */
+ 
 int mtk_pinconf_drive_set(struct mtk_pinctrl *hw,
 			  const struct mtk_pin_desc *desc, u32 arg)
 {
@@ -972,11 +931,7 @@ int mtk_pinconf_drive_set(struct mtk_pinctrl *hw,
 	int err = -ENOTSUPP;
 
 	tb = &mtk_drive[desc->drv_n];
-	/* 4mA when (e8, e4) = (0, 0)
-	 * 8mA when (e8, e4) = (0, 1)
-	 * 12mA when (e8, e4) = (1, 0)
-	 * 16mA when (e8, e4) = (1, 1)
-	 */
+	 
 	if ((arg >= tb->min && arg <= tb->max) && !(arg % tb->step)) {
 		arg = (arg / tb->step - 1) * tb->scal;
 		err = mtk_hw_set_value(hw, desc, PINCTRL_PIN_REG_E4,
@@ -1010,16 +965,14 @@ int mtk_pinconf_drive_get(struct mtk_pinctrl *hw,
 	if (err)
 		return err;
 
-	/* 4mA when (e8, e4) = (0, 0); 8mA when (e8, e4) = (0, 1)
-	 * 12mA when (e8, e4) = (1, 0); 16mA when (e8, e4) = (1, 1)
-	 */
+	 
 	*val = (((val2 << 1) + val1) / tb->scal + 1) * tb->step;
 
 	return 0;
 }
 EXPORT_SYMBOL_GPL(mtk_pinconf_drive_get);
 
-/* Revision 1 */
+ 
 int mtk_pinconf_drive_set_rev1(struct mtk_pinctrl *hw,
 			       const struct mtk_pin_desc *desc, u32 arg)
 {
@@ -1079,11 +1032,7 @@ int mtk_pinconf_adv_pull_set(struct mtk_pinctrl *hw,
 {
 	int err;
 
-	/* 10K off & 50K (75K) off, when (R0, R1) = (0, 0);
-	 * 10K off & 50K (75K) on, when (R0, R1) = (0, 1);
-	 * 10K on & 50K (75K) off, when (R0, R1) = (1, 0);
-	 * 10K on & 50K (75K) on, when (R0, R1) = (1, 1)
-	 */
+	 
 	err = mtk_hw_set_value(hw, desc, PINCTRL_PIN_REG_R0, arg & 1);
 	if (err)
 		return 0;
@@ -1097,9 +1046,7 @@ int mtk_pinconf_adv_pull_set(struct mtk_pinctrl *hw,
 
 	err = mtk_hw_set_value(hw, desc, PINCTRL_PIN_REG_PUPD, arg);
 
-	/* If PUPD register is not supported for that pin, let's fallback to
-	 * general bias control.
-	 */
+	 
 	if (err == -ENOTSUPP) {
 		if (hw->soc->bias_set) {
 			err = hw->soc->bias_set(hw, desc, pullup);
@@ -1125,9 +1072,7 @@ int mtk_pinconf_adv_pull_get(struct mtk_pinctrl *hw,
 
 	err = mtk_hw_get_value(hw, desc, PINCTRL_PIN_REG_PUPD, &t);
 
-	/* If PUPD register is not supported for that pin, let's fallback to
-	 * general bias control.
-	 */
+	 
 	if (err == -ENOTSUPP) {
 		if (hw->soc->bias_get) {
 			err = hw->soc->bias_get(hw, desc, pullup, val);
@@ -1137,7 +1082,7 @@ int mtk_pinconf_adv_pull_get(struct mtk_pinctrl *hw,
 			return -ENOTSUPP;
 		}
 	} else {
-		/* t == 0 supposes PULLUP for the customized PULL setup */
+		 
 		if (err)
 			return err;
 

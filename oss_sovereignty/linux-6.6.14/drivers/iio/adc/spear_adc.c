@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * ST SPEAr ADC driver
- *
- * Copyright 2012 Stefan Roese <sr@denx.de>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/platform_device.h>
@@ -21,13 +17,13 @@
 #include <linux/iio/iio.h>
 #include <linux/iio/sysfs.h>
 
-/* SPEAR registers definitions */
+ 
 #define SPEAR600_ADC_SCAN_RATE_LO(x)	((x) & 0xFFFF)
 #define SPEAR600_ADC_SCAN_RATE_HI(x)	(((x) >> 0x10) & 0xFFFF)
 #define SPEAR_ADC_CLK_LOW(x)		(((x) & 0xf) << 0)
 #define SPEAR_ADC_CLK_HIGH(x)		(((x) & 0xf) << 4)
 
-/* Bit definitions for SPEAR_ADC_STATUS */
+ 
 #define SPEAR_ADC_STATUS_START_CONVERSION	BIT(0)
 #define SPEAR_ADC_STATUS_CHANNEL_NUM(x)		((x) << 1)
 #define SPEAR_ADC_STATUS_ADC_ENABLE		BIT(4)
@@ -48,7 +44,7 @@ struct adc_regs_spear3xx {
 	u32 status;
 	u32 average;
 	u32 scan_rate;
-	u32 clk;	/* Not avail for 1340 & 1310 */
+	u32 clk;	 
 	u32 ch_ctrl[SPEAR_ADC_CHANNEL_NUM];
 	u32 ch_data[SPEAR_ADC_CHANNEL_NUM];
 };
@@ -75,14 +71,7 @@ struct spear_adc_state {
 	struct adc_regs_spear6xx __iomem *adc_base_spear6xx;
 	struct clk *clk;
 	struct completion completion;
-	/*
-	 * Lock to protect the device state during a potential concurrent
-	 * read access from userspace. Reading a raw value requires a sequence
-	 * of register writes, then a wait for a completion callback,
-	 * and finally a register read, during which userspace could issue
-	 * another read request. This lock protects a read access from
-	 * ocurring before another one has finished.
-	 */
+	 
 	struct mutex lock;
 	u32 current_clk;
 	u32 sampling_freq;
@@ -91,11 +80,7 @@ struct spear_adc_state {
 	u32 value;
 };
 
-/*
- * Functions to access some SPEAr ADC register. Abstracted into
- * static inline functions, because of different register offsets
- * on different SoC variants (SPEAr300 vs SPEAr600 etc).
- */
+ 
 static void spear_adc_set_status(struct spear_adc_state *st, u32 val)
 {
 	__raw_writel(val, &st->adc_base_spear6xx->status);
@@ -165,7 +150,7 @@ static int spear_adc_read_raw(struct iio_dev *indio_dev,
 			status |= SPEAR_ADC_STATUS_VREF_INTERNAL;
 
 		spear_adc_set_status(st, status);
-		wait_for_completion(&st->completion); /* set by ISR */
+		wait_for_completion(&st->completion);  
 		*val = st->value;
 
 		mutex_unlock(&st->lock);
@@ -236,7 +221,7 @@ static irqreturn_t spear_adc_isr(int irq, void *dev_id)
 {
 	struct spear_adc_state *st = dev_id;
 
-	/* Read value to clear IRQ */
+	 
 	st->value = spear_adc_get_average(st);
 	complete(&st->completion);
 
@@ -247,7 +232,7 @@ static int spear_adc_configure(struct spear_adc_state *st)
 {
 	int i;
 
-	/* Reset ADC core */
+	 
 	spear_adc_set_status(st, 0);
 	__raw_writel(0, &st->adc_base_spear6xx->clk);
 	for (i = 0; i < 8; i++)
@@ -285,11 +270,7 @@ static int spear_adc_probe(struct platform_device *pdev)
 
 	st->np = np;
 
-	/*
-	 * SPEAr600 has a different register layout than other SPEAr SoC's
-	 * (e.g. SPEAr3xx). Let's provide two register base addresses
-	 * to support multi-arch kernels.
-	 */
+	 
 	st->adc_base_spear6xx = devm_platform_ioremap_resource(pdev, 0);
 	if (IS_ERR(st->adc_base_spear6xx))
 		return PTR_ERR(st->adc_base_spear6xx);
@@ -329,16 +310,10 @@ static int spear_adc_probe(struct platform_device *pdev)
 		goto errout2;
 	}
 
-	/*
-	 * Optional avg_samples defaults to 0, resulting in single data
-	 * conversion
-	 */
+	 
 	of_property_read_u32(np, "average-samples", &st->avg_samples);
 
-	/*
-	 * Optional vref_external defaults to 0, resulting in internal vref
-	 * selection
-	 */
+	 
 	of_property_read_u32(np, "vref-external", &st->vref_external);
 
 	spear_adc_configure(st);
@@ -380,7 +355,7 @@ static int spear_adc_remove(struct platform_device *pdev)
 #ifdef CONFIG_OF
 static const struct of_device_id spear_adc_dt_ids[] = {
 	{ .compatible = "st,spear600-adc", },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, spear_adc_dt_ids);
 #endif

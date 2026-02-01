@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (C) 2007-2008 Atmel Corporation
-// Copyright (C) 2010-2011 ST Microelectronics
-// Copyright (C) 2013,2018 Intel Corporation
+
+
+
+
 
 #include <linux/bitops.h>
 #include <linux/dmaengine.h>
@@ -22,7 +22,7 @@ static void dw_dma_initialize_chan(struct dw_dma_chan *dwc)
 	cfghi |= DWC_CFGH_SRC_PER(dwc->dws.src_id);
 	cfghi |= DWC_CFGH_PROTCTL(dw->pdata->protctl);
 
-	/* Set polarity of handshake interface */
+	 
 	cfglo |= hs_polarity ? DWC_CFGL_HS_DST_POL | DWC_CFGL_HS_SRC_POL : 0;
 
 	channel_writel(dwc, CFG_LO, cfglo);
@@ -81,10 +81,7 @@ static u32 dw_dma_prepare_ctllo(struct dw_dma_chan *dwc)
 
 static void dw_dma_encode_maxburst(struct dw_dma_chan *dwc, u32 *maxburst)
 {
-	/*
-	 * Fix burst size according to dw_dmac. We need to convert them as:
-	 * 1 -> 0, 4 -> 1, 8 -> 2, 16 -> 3.
-	 */
+	 
 	*maxburst = *maxburst > 1 ? fls(*maxburst) - 2 : 0;
 }
 
@@ -111,7 +108,7 @@ int dw_dma_probe(struct dw_dma_chip *chip)
 	if (!dw)
 		return -ENOMEM;
 
-	/* Channel operations */
+	 
 	dw->initialize_chan = dw_dma_initialize_chan;
 	dw->suspend_chan = dw_dma_suspend_chan;
 	dw->resume_chan = dw_dma_resume_chan;
@@ -120,7 +117,7 @@ int dw_dma_probe(struct dw_dma_chip *chip)
 	dw->bytes2block = dw_dma_bytes2block;
 	dw->block2bytes = dw_dma_block2bytes;
 
-	/* Device operations */
+	 
 	dw->set_device_name = dw_dma_set_device_name;
 	dw->disable = dw_dma_disable;
 	dw->enable = dw_dma_enable;

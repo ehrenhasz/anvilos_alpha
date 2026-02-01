@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2020-2022 MaxLinear, Inc.
- * Copyright (C) 2020 Intel Corporation.
- * Zhu Yixin <yzhu@maxlinear.com>
- * Rahul Tanwar <rtanwar@maxlinear.com>
- */
+
+ 
 #include <linux/clk-provider.h>
 #include <linux/mfd/syscon.h>
 #include <linux/of.h>
@@ -15,7 +10,7 @@
 #define PLL_DIV_WIDTH		4
 #define PLL_DDIV_WIDTH		3
 
-/* Gate0 clock shift */
+ 
 #define G_C55_SHIFT		7
 #define G_QSPI_SHIFT		9
 #define G_EIP197_SHIFT		11
@@ -26,7 +21,7 @@
 #define G_SPIDBG_SHIFT		17
 #define G_DMA3_SHIFT		28
 
-/* Gate1 clock shift */
+ 
 #define G_DMA0_SHIFT		0
 #define G_LEDC0_SHIFT		1
 #define G_LEDC1_SHIFT		2
@@ -58,7 +53,7 @@
 #define G_PCM1_SHIFT		28
 #define G_PCM2_SHIFT		29
 
-/* Gate2 clock shift */
+ 
 #define G_PCIE10_SHIFT		1
 #define G_PCIE11_SHIFT		2
 #define G_PCIE30_SHIFT		3
@@ -77,7 +72,7 @@
 #define G_SATA2_SHIFT		16
 #define G_SATA3_SHIFT		17
 
-/* Gate3 clock shift */
+ 
 #define G_ARCEM4_SHIFT		0
 #define G_IDMAR1_SHIFT		2
 #define G_IDMAT0_SHIFT		3
@@ -92,7 +87,7 @@
 #define G_USB2_SHIFT		26
 
 
-/* Register definition */
+ 
 #define CGU_PLL0CZ_CFG0		0x000
 #define CGU_PLL0CM0_CFG0	0x020
 #define CGU_PLL0CM1_CFG0	0x040
@@ -116,11 +111,7 @@
 
 #define CLK_NR_CLKS		(LGM_GCLK_USB2 + 1)
 
-/*
- * Below table defines the pair's of regval & effective dividers.
- * It's more efficient to provide an explicit table due to non-linear
- * relation between values.
- */
+ 
 static const struct clk_div_table pll_div[] = {
 	{ .val = 0, .div = 1 },
 	{ .val = 1, .div = 2 },
@@ -220,12 +211,7 @@ static const struct lgm_clk_branch lgm_branch_clks[] = {
 		CLK_IGNORE_UNUSED, PLL_DIV(CGU_PLL0CM1_CFG0),
 		0, PLL_DIV_WIDTH, 24, 1, 0, 0, pll_div),
 
-	/*
-	 * Marking ngi_clk (next generation interconnect) and noc_clk
-	 * (network on chip peripheral clk) as critical clocks because
-	 * these are shared parent clock sources for many different
-	 * peripherals.
-	 */
+	 
 	LGM_DIV(LGM_CLK_NGI, "ngi", "pll0b",
 		(CLK_IGNORE_UNUSED|CLK_IS_CRITICAL), PLL_DIV(CGU_PLL0B_CFG0),
 		0, PLL_DIV_WIDTH, 24, 1, 0, 0, pll_div),

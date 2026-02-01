@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright 2014, Michael Ellerman, IBM Corp.
- */
+ 
+ 
 
 #ifndef __SELFTESTS_POWERPC_PMU_LIB_H
 #define __SELFTESTS_POWERPC_PMU_LIB_H
@@ -37,4 +35,4 @@ extern struct addr_range libc, vdso;
 
 int parse_proc_maps(void);
 
-#endif /* __SELFTESTS_POWERPC_PMU_LIB_H */
+#endif  

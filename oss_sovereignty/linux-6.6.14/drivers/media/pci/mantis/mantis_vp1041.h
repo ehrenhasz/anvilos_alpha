@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
-	Mantis VP-1041 driver
-
-	Copyright (C) Manu Abraham (abraham.manu@gmail.com)
-
-*/
+ 
+ 
 
 #ifndef __MANTIS_VP1041_H
 #define __MANTIS_VP1041_H
@@ -18,4 +13,4 @@
 
 extern struct mantis_hwconfig vp1041_config;
 
-#endif /* __MANTIS_VP1041_H */
+#endif  

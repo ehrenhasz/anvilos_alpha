@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Hardware monitoring driver for MAX127.
- *
- * Copyright (c) 2020 Facebook Inc.
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/hwmon.h>
@@ -11,10 +7,7 @@
 #include <linux/init.h>
 #include <linux/module.h>
 
-/*
- * MAX127 Control Byte. Refer to MAX127 datasheet, Table 1 "Control-Byte
- * Format" for details.
- */
+ 
 #define MAX127_CTRL_START	BIT(7)
 #define MAX127_CTRL_SEL_SHIFT	4
 #define MAX127_CTRL_RNG		BIT(3)
@@ -25,20 +18,11 @@
 #define MAX127_NUM_CHANNELS	8
 #define MAX127_SET_CHANNEL(ch)	(((ch) & 7) << MAX127_CTRL_SEL_SHIFT)
 
-/*
- * MAX127 channel input ranges. Refer to MAX127 datasheet, Table 3 "Range
- * and Polarity Selection" for details.
- */
-#define MAX127_FULL_RANGE	10000	/* 10V */
-#define MAX127_HALF_RANGE	5000	/* 5V */
+ 
+#define MAX127_FULL_RANGE	10000	 
+#define MAX127_HALF_RANGE	5000	 
 
-/*
- * MAX127 returns 2 bytes at read:
- *   - the first byte contains data[11:4].
- *   - the second byte contains data[3:0] (MSB) and 4 dummy 0s (LSB).
- * Refer to MAX127 datasheet, "Read a Conversion (Read Cycle)" section
- * for details.
- */
+ 
 #define MAX127_DATA_LEN		2
 #define MAX127_DATA_SHIFT	4
 
@@ -95,13 +79,7 @@ static long max127_process_raw(u8 ctrl_byte, long raw)
 {
 	long scale, weight;
 
-	/*
-	 * MAX127's data coding is binary in unipolar mode with 1 LSB =
-	 * (Full-Scale/4096) and two’s complement binary in bipolar mode
-	 * with 1 LSB = [(2 x |FS|)/4096].
-	 * Refer to MAX127 datasheet, "Transfer Function" section for
-	 * details.
-	 */
+	 
 	scale = (ctrl_byte & MAX127_CTRL_RNG) ? MAX127_FULL_RANGE :
 						MAX127_HALF_RANGE;
 	if (ctrl_byte & MAX127_CTRL_BIP) {
@@ -142,10 +120,10 @@ static int max127_read_min(struct max127_data *data, int channel, long *val)
 {
 	u8 rng_bip = (data->ctrl_byte[channel] >> 2) & 3;
 	static const int min_input_map[4] = {
-		0,			/* RNG=0, BIP=0 */
-		-MAX127_HALF_RANGE,	/* RNG=0, BIP=1 */
-		0,			/* RNG=1, BIP=0 */
-		-MAX127_FULL_RANGE,	/* RNG=1, BIP=1 */
+		0,			 
+		-MAX127_HALF_RANGE,	 
+		0,			 
+		-MAX127_FULL_RANGE,	 
 	};
 
 	*val = min_input_map[rng_bip];
@@ -156,10 +134,10 @@ static int max127_read_max(struct max127_data *data, int channel, long *val)
 {
 	u8 rng_bip = (data->ctrl_byte[channel] >> 2) & 3;
 	static const int max_input_map[4] = {
-		MAX127_HALF_RANGE,	/* RNG=0, BIP=0 */
-		MAX127_HALF_RANGE,	/* RNG=0, BIP=1 */
-		MAX127_FULL_RANGE,	/* RNG=1, BIP=0 */
-		MAX127_FULL_RANGE,	/* RNG=1, BIP=1 */
+		MAX127_HALF_RANGE,	 
+		MAX127_HALF_RANGE,	 
+		MAX127_FULL_RANGE,	 
+		MAX127_FULL_RANGE,	 
 	};
 
 	*val = max_input_map[rng_bip];

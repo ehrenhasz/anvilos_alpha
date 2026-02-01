@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *   Copyright (C) 2018 Samsung Electronics Co., Ltd.
- *   Copyright (C) 2018 Namjae Jeon <linkinjeon@kernel.org>
- */
+
+ 
 
 #include <linux/user_namespace.h>
 
@@ -17,7 +14,7 @@
 #include "mgmt/tree_connect.h"
 #include "mgmt/share_config.h"
 
-/*for shortname implementation */
+ 
 static const char basechars[43] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_-!@#$%";
 #define MANGLE_BASE (sizeof(basechars) / sizeof(char) - 1)
 #define MAGIC_CHAR '~'
@@ -124,14 +121,7 @@ int ksmbd_lookup_protocol_idx(char *str)
 	return -1;
 }
 
-/**
- * ksmbd_verify_smb_message() - check for valid smb2 request header
- * @work:	smb work
- *
- * check for valid smb signature and packet direction(request/response)
- *
- * Return:      0 on success, otherwise -EINVAL
- */
+ 
 int ksmbd_verify_smb_message(struct ksmbd_work *work)
 {
 	struct smb2_hdr *smb2_hdr = ksmbd_req_buf_next(work);
@@ -150,12 +140,7 @@ int ksmbd_verify_smb_message(struct ksmbd_work *work)
 	return -EINVAL;
 }
 
-/**
- * ksmbd_smb_request() - check for valid smb request type
- * @conn:	connection instance
- *
- * Return:      true on success, otherwise false
- */
+ 
 bool ksmbd_smb_request(struct ksmbd_conn *conn)
 {
 	__le32 *proto;
@@ -301,23 +286,13 @@ err_out:
 
 #define SMB_COM_NEGOTIATE_EX	0x0
 
-/**
- * get_smb1_cmd_val() - get smb command value from smb header
- * @work:	smb work containing smb header
- *
- * Return:      smb command value
- */
+ 
 static u16 get_smb1_cmd_val(struct ksmbd_work *work)
 {
 	return SMB_COM_NEGOTIATE_EX;
 }
 
-/**
- * init_smb1_rsp_hdr() - initialize smb negotiate response header
- * @work:	smb work containing smb request
- *
- * Return:      0 on success, otherwise -EINVAL
- */
+ 
 static int init_smb1_rsp_hdr(struct ksmbd_work *work)
 {
 	struct smb_hdr *rsp_hdr = (struct smb_hdr *)work->response_buf;
@@ -333,12 +308,7 @@ static int init_smb1_rsp_hdr(struct ksmbd_work *work)
 	return 0;
 }
 
-/**
- * smb1_check_user_session() - check for valid session for a user
- * @work:	smb work containing smb request buffer
- *
- * Return:      0 on success, otherwise error
- */
+ 
 static int smb1_check_user_session(struct ksmbd_work *work)
 {
 	unsigned int cmd = work->conn->ops->get_cmd_val(work);
@@ -349,12 +319,7 @@ static int smb1_check_user_session(struct ksmbd_work *work)
 	return -EINVAL;
 }
 
-/**
- * smb1_allocate_rsp_buf() - allocate response buffer for a command
- * @work:	smb work containing smb request
- *
- * Return:      0 on success, otherwise -ENOMEM
- */
+ 
 static int smb1_allocate_rsp_buf(struct ksmbd_work *work)
 {
 	work->response_buf = kzalloc(MAX_CIFS_SMALL_BUFFER_SIZE,
@@ -370,11 +335,7 @@ static int smb1_allocate_rsp_buf(struct ksmbd_work *work)
 	return 0;
 }
 
-/**
- * set_smb1_rsp_status() - set error type in smb response header
- * @work:	smb work containing smb response header
- * @err:	error code to set in response
- */
+ 
 static void set_smb1_rsp_status(struct ksmbd_work *work, __le32 err)
 {
 	work->send_no_response = 1;
@@ -439,7 +400,7 @@ int ksmbd_populate_dot_dotdot_entries(struct ksmbd_work *work, int info_level,
 		struct ksmbd_kstat ksmbd_kstat;
 		struct dentry *dentry;
 
-		if (!dir->dot_dotdot[i]) { /* fill dot entry info */
+		if (!dir->dot_dotdot[i]) {  
 			if (i == 0) {
 				d_info->name = ".";
 				d_info->name_len = 1;
@@ -478,16 +439,7 @@ int ksmbd_populate_dot_dotdot_entries(struct ksmbd_work *work, int info_level,
 	return rc;
 }
 
-/**
- * ksmbd_extract_shortname() - get shortname from long filename
- * @conn:	connection instance
- * @longname:	source long filename
- * @shortname:	destination short filename
- *
- * Return:	shortname length or 0 when source long name is '.' or '..'
- * TODO: Though this function comforms the restriction of 8.3 Filename spec,
- * but the result is different with Windows 7's one. need to check.
- */
+ 
 int ksmbd_extract_shortname(struct ksmbd_conn *conn, const char *longname,
 			    char *shortname)
 {
@@ -502,12 +454,12 @@ int ksmbd_extract_shortname(struct ksmbd_conn *conn, const char *longname,
 
 	p = longname;
 	if ((*p == '.') || (!(strcmp(p, "..")))) {
-		/*no mangling required */
+		 
 		return 0;
 	}
 
 	p = strrchr(longname, '.');
-	if (p == longname) { /*name starts with a dot*/
+	if (p == longname) {  
 		strscpy(extension, "___", strlen("___"));
 	} else {
 		if (p) {
@@ -639,10 +591,7 @@ int ksmbd_smb_check_shared_mode(struct file *filp, struct ksmbd_file *curr_fp)
 	int rc = 0;
 	struct ksmbd_file *prev_fp;
 
-	/*
-	 * Lookup fp in master fp list, and check desired access and
-	 * shared mode between previous open and current open.
-	 */
+	 
 	read_lock(&curr_fp->f_ci->m_lock);
 	list_for_each_entry(prev_fp, &curr_fp->f_ci->m_fp_list, node) {
 		if (file_inode(filp) != file_inode(prev_fp->filp))
@@ -667,10 +616,7 @@ int ksmbd_smb_check_shared_mode(struct file *filp, struct ksmbd_file *curr_fp)
 			break;
 		}
 
-		/*
-		 * Only check FILE_SHARE_DELETE if stream opened and
-		 * normal file opened.
-		 */
+		 
 		if (ksmbd_stream_fd(prev_fp) && !ksmbd_stream_fd(curr_fp))
 			continue;
 

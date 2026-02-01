@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- *  Driver for Maxim MAX2165 silicon tuner
- *
- *  Copyright (c) 2009 David T. L. Wong <davidtlwong@gmail.com>
- */
+ 
+ 
 
 #ifndef __MAX2165_PRIV_H__
 #define __MAX2165_PRIV_H__
@@ -23,7 +19,7 @@
 #define REG_DC_OFFSET_DAC 0x0C
 #define REG_ROM_TABLE_ADDR 0x0D
 
-/* Read Only Registers */
+ 
 #define REG_ROM_TABLE_DATA 0x10
 #define REG_STATUS 0x11
 #define REG_AUTOTUNE 0x12

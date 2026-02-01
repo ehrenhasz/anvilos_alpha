@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-// Copyright 2012 Cisco Systems, Inc.  All rights reserved.
+
+
 
 #include <linux/module.h>
 #include <linux/mempool.h>
@@ -20,7 +20,7 @@ static DEFINE_SPINLOCK(fnic_trace_lock);
 static fnic_trace_dbg_t fnic_trace_entries;
 int fnic_tracing_enabled = 1;
 
-/* static char *fnic_fc_ctlr_trace_buf_p; */
+ 
 
 static int fc_trace_max_entries;
 static unsigned long fnic_fc_ctlr_trace_buf_p;
@@ -30,18 +30,7 @@ int fnic_fc_trace_cleared = 1;
 static DEFINE_SPINLOCK(fnic_fc_trace_lock);
 
 
-/*
- * fnic_trace_get_buf - Give buffer pointer to user to fill up trace information
- *
- * Description:
- * This routine gets next available trace buffer entry location @wr_idx
- * from allocated trace buffer pages and give that memory location
- * to user to store the trace information.
- *
- * Return Value:
- * This routine returns pointer to next available trace entry
- * @fnic_buf_head for user to fill trace information.
- */
+ 
 fnic_trace_data_t *fnic_trace_get_buf(void)
 {
 	unsigned long fnic_buf_head;
@@ -49,25 +38,16 @@ fnic_trace_data_t *fnic_trace_get_buf(void)
 
 	spin_lock_irqsave(&fnic_trace_lock, flags);
 
-	/*
-	 * Get next available memory location for writing trace information
-	 * at @wr_idx and increment @wr_idx
-	 */
+	 
 	fnic_buf_head =
 		fnic_trace_entries.page_offset[fnic_trace_entries.wr_idx];
 	fnic_trace_entries.wr_idx++;
 
-	/*
-	 * Verify if trace buffer is full then change wd_idx to
-	 * start from zero
-	 */
+	 
 	if (fnic_trace_entries.wr_idx >= fnic_max_trace_entries)
 		fnic_trace_entries.wr_idx = 0;
 
-	/*
-	 * Verify if write index @wr_idx and read index @rd_idx are same then
-	 * increment @rd_idx to move to next entry in trace buffer
-	 */
+	 
 	if (fnic_trace_entries.wr_idx == fnic_trace_entries.rd_idx) {
 		fnic_trace_entries.rd_idx++;
 		if (fnic_trace_entries.rd_idx >= fnic_max_trace_entries)
@@ -77,19 +57,7 @@ fnic_trace_data_t *fnic_trace_get_buf(void)
 	return (fnic_trace_data_t *)fnic_buf_head;
 }
 
-/*
- * fnic_get_trace_data - Copy trace buffer to a memory file
- * @fnic_dbgfs_t: pointer to debugfs trace buffer
- *
- * Description:
- * This routine gathers the fnic trace debugfs data from the fnic_trace_data_t
- * buffer and dumps it to fnic_dbgfs_t. It will start at the rd_idx entry in
- * the log and process the log until the end of the buffer. Then it will gather
- * from the beginning of the log and process until the current entry @wr_idx.
- *
- * Return Value:
- * This routine returns the amount of bytes that were dumped into fnic_dbgfs_t
- */
+ 
 int fnic_get_trace_data(fnic_dbgfs_t *fnic_dbgfs_prt)
 {
 	int rd_idx;
@@ -105,14 +73,14 @@ int fnic_get_trace_data(fnic_dbgfs_t *fnic_dbgfs_prt)
 	wr_idx = fnic_trace_entries.wr_idx;
 	if (wr_idx < rd_idx) {
 		while (1) {
-			/* Start from read index @rd_idx */
+			 
 			tbp = (fnic_trace_data_t *)
 				  fnic_trace_entries.page_offset[rd_idx];
 			if (!tbp) {
 				spin_unlock_irqrestore(&fnic_trace_lock, flags);
 				return 0;
 			}
-			/* Convert function pointer to function name */
+			 
 			if (sizeof(unsigned long) < 8) {
 				sprint_symbol(str, tbp->fnaddr.low);
 				jiffies_to_timespec64(tbp->timestamp.low, &val);
@@ -120,10 +88,7 @@ int fnic_get_trace_data(fnic_dbgfs_t *fnic_dbgfs_prt)
 				sprint_symbol(str, tbp->fnaddr.val);
 				jiffies_to_timespec64(tbp->timestamp.val, &val);
 			}
-			/*
-			 * Dump trace buffer entry to memory file
-			 * and increment read index @rd_idx
-			 */
+			 
 			len += scnprintf(fnic_dbgfs_prt->buffer + len,
 				  (trace_max_pages * PAGE_SIZE * 3) - len,
 				  "%16llu.%09lu %-50s %8x %8x %16llx %16llx "
@@ -132,29 +97,23 @@ int fnic_get_trace_data(fnic_dbgfs_t *fnic_dbgfs_prt)
 				  tbp->data[0], tbp->data[1], tbp->data[2],
 				  tbp->data[3], tbp->data[4]);
 			rd_idx++;
-			/*
-			 * If rd_idx is reached to maximum trace entries
-			 * then move rd_idx to zero
-			 */
+			 
 			if (rd_idx > (fnic_max_trace_entries-1))
 				rd_idx = 0;
-			/*
-			 * Continue dumping trace buffer entries into
-			 * memory file till rd_idx reaches write index
-			 */
+			 
 			if (rd_idx == wr_idx)
 				break;
 		}
 	} else if (wr_idx > rd_idx) {
 		while (1) {
-			/* Start from read index @rd_idx */
+			 
 			tbp = (fnic_trace_data_t *)
 				  fnic_trace_entries.page_offset[rd_idx];
 			if (!tbp) {
 				spin_unlock_irqrestore(&fnic_trace_lock, flags);
 				return 0;
 			}
-			/* Convert function pointer to function name */
+			 
 			if (sizeof(unsigned long) < 8) {
 				sprint_symbol(str, tbp->fnaddr.low);
 				jiffies_to_timespec64(tbp->timestamp.low, &val);
@@ -162,10 +121,7 @@ int fnic_get_trace_data(fnic_dbgfs_t *fnic_dbgfs_prt)
 				sprint_symbol(str, tbp->fnaddr.val);
 				jiffies_to_timespec64(tbp->timestamp.val, &val);
 			}
-			/*
-			 * Dump trace buffer entry to memory file
-			 * and increment read index @rd_idx
-			 */
+			 
 			len += scnprintf(fnic_dbgfs_prt->buffer + len,
 				  (trace_max_pages * PAGE_SIZE * 3) - len,
 				  "%16llu.%09lu %-50s %8x %8x %16llx %16llx "
@@ -174,10 +130,7 @@ int fnic_get_trace_data(fnic_dbgfs_t *fnic_dbgfs_prt)
 				  tbp->data[0], tbp->data[1], tbp->data[2],
 				  tbp->data[3], tbp->data[4]);
 			rd_idx++;
-			/*
-			 * Continue dumping trace buffer entries into
-			 * memory file till rd_idx reaches write index
-			 */
+			 
 			if (rd_idx == wr_idx)
 				break;
 		}
@@ -186,18 +139,7 @@ int fnic_get_trace_data(fnic_dbgfs_t *fnic_dbgfs_prt)
 	return len;
 }
 
-/*
- * fnic_get_stats_data - Copy fnic stats buffer to a memory file
- * @fnic_dbgfs_t: pointer to debugfs fnic stats buffer
- *
- * Description:
- * This routine gathers the fnic stats debugfs data from the fnic_stats struct
- * and dumps it to stats_debug_info.
- *
- * Return Value:
- * This routine returns the amount of bytes that were dumped into
- * stats_debug_info
- */
+ 
 int fnic_get_stats_data(struct stats_debug_info *debug,
 			struct fnic_stats *stats)
 {
@@ -447,14 +389,7 @@ int fnic_get_stats_data(struct stats_debug_info *debug,
 
 }
 
-/*
- * fnic_trace_buf_init - Initialize fnic trace buffer logging facility
- *
- * Description:
- * Initialize trace buffer data structure by allocating required memory and
- * setting page_offset information for every trace entry by adding trace entry
- * length to previous page_offset value.
- */
+ 
 int fnic_trace_buf_init(void)
 {
 	unsigned long fnic_buf_head;
@@ -491,11 +426,7 @@ int fnic_trace_buf_init(void)
 	fnic_trace_entries.wr_idx = fnic_trace_entries.rd_idx = 0;
 	fnic_buf_head = fnic_trace_buf_p;
 
-	/*
-	 * Set page_offset field of fnic_trace_entries struct by
-	 * calculating memory location for every trace entry using
-	 * length of each trace entry
-	 */
+	 
 	for (i = 0; i < fnic_max_trace_entries; i++) {
 		fnic_trace_entries.page_offset[i] = fnic_buf_head;
 		fnic_buf_head += FNIC_ENTRY_SIZE_BYTES;
@@ -508,9 +439,7 @@ err_fnic_trace_buf_init:
 	return err;
 }
 
-/*
- * fnic_trace_free - Free memory of fnic trace data structures.
- */
+ 
 void fnic_trace_free(void)
 {
 	fnic_tracing_enabled = 0;
@@ -526,18 +455,7 @@ void fnic_trace_free(void)
 	printk(KERN_INFO PFX "Successfully Freed Trace Buffer\n");
 }
 
-/*
- * fnic_fc_ctlr_trace_buf_init -
- * Initialize trace buffer to log fnic control frames
- * Description:
- * Initialize trace buffer data structure by allocating
- * required memory for trace data as well as for Indexes.
- * Frame size is 256 bytes and
- * memory is allocated for 1024 entries of 256 bytes.
- * Page_offset(Index) is set to the address of trace entry
- * and page_offset is initialized by adding frame size
- * to the previous page_offset entry.
- */
+ 
 
 int fnic_fc_trace_init(void)
 {
@@ -560,7 +478,7 @@ int fnic_fc_trace_init(void)
 	memset((void *)fnic_fc_ctlr_trace_buf_p, 0,
 			fnic_fc_trace_max_pages * PAGE_SIZE);
 
-	/* Allocate memory for page offset */
+	 
 	fc_trace_entries.page_offset =
 		vmalloc(array_size(fc_trace_max_entries,
 				   sizeof(unsigned long)));
@@ -580,10 +498,7 @@ int fnic_fc_trace_init(void)
 	fc_trace_entries.rd_idx = fc_trace_entries.wr_idx = 0;
 	fc_trace_buf_head = fnic_fc_ctlr_trace_buf_p;
 
-	/*
-	* Set up fc_trace_entries.page_offset field with memory location
-	* for every trace entry
-	*/
+	 
 	for (i = 0; i < fc_trace_max_entries; i++) {
 		fc_trace_entries.page_offset[i] = fc_trace_buf_head;
 		fc_trace_buf_head += FC_TRC_SIZE_BYTES;
@@ -596,9 +511,7 @@ err_fnic_fc_ctlr_trace_buf_init:
 	return err;
 }
 
-/*
- * Fnic_fc_ctlr_trace_free - Free memory of fnic_fc_ctlr trace data structures.
- */
+ 
 void fnic_fc_trace_free(void)
 {
 	fnic_fc_tracing_enabled = 0;
@@ -614,23 +527,7 @@ void fnic_fc_trace_free(void)
 	pr_info("fnic:Successfully FC_CTLR Freed Trace Buffer\n");
 }
 
-/*
- * fnic_fc_ctlr_set_trace_data:
- *       Maintain rd & wr idx accordingly and set data
- * Passed parameters:
- *       host_no: host number associated with fnic
- *       frame_type: send_frame, rece_frame or link event
- *       fc_frame: pointer to fc_frame
- *       frame_len: Length of the fc_frame
- * Description:
- *   This routine will get next available wr_idx and
- *   copy all passed trace data to the buffer pointed by wr_idx
- *   and increment wr_idx. It will also make sure that we dont
- *   overwrite the entry which we are reading and also
- *   wrap around if we reach the maximum entries.
- * Returned Value:
- *   It will return 0 for success or -1 for failure
- */
+ 
 int fnic_fc_trace_set_data(u32 host_no, u8 frame_type,
 				char *frame, u32 fc_trc_frame_len)
 {
@@ -672,14 +569,12 @@ int fnic_fc_trace_set_data(u32 host_no, u8 frame_type,
 
 	fc_trace = (char *)FC_TRACE_ADDRESS(fc_buf);
 
-	/* During the receive path, we do not have eth hdr as well as fcoe hdr
-	 * at trace entry point so we will stuff 0xff just to make it generic.
-	 */
+	 
 	if (frame_type == FNIC_FC_RECV) {
 		eth_fcoe_hdr_len = sizeof(struct ethhdr) +
 					sizeof(struct fcoe_hdr);
 		memset((char *)fc_trace, 0xff, eth_fcoe_hdr_len);
-		/* Copy the rest of data frame */
+		 
 		memcpy((char *)(fc_trace + eth_fcoe_hdr_len), (void *)frame,
 		min_t(u8, fc_trc_frame_len,
 			(u8)(FC_TRC_SIZE_BYTES - FC_TRC_HEADER_SIZE
@@ -690,26 +585,14 @@ int fnic_fc_trace_set_data(u32 host_no, u8 frame_type,
 			(u8)(FC_TRC_SIZE_BYTES - FC_TRC_HEADER_SIZE)));
 	}
 
-	/* Store the actual received length */
+	 
 	fc_buf->frame_len = fc_trc_frame_len;
 
 	spin_unlock_irqrestore(&fnic_fc_trace_lock, flags);
 	return 0;
 }
 
-/*
- * fnic_fc_ctlr_get_trace_data: Copy trace buffer to a memory file
- * Passed parameter:
- *       @fnic_dbgfs_t: pointer to debugfs trace buffer
- *       rdata_flag: 1 => Unformatted file
- *                   0 => formatted file
- * Description:
- *       This routine will copy the trace data to memory file with
- *       proper formatting and also copy to another memory
- *       file without formatting for further processing.
- * Return Value:
- *       Number of bytes that were dumped into fnic_dbgfs_t
- */
+ 
 
 int fnic_fc_trace_get_data(fnic_dbgfs_t *fnic_dbgfs_prt, u8 rdata_flag)
 {
@@ -751,7 +634,7 @@ int fnic_fc_trace_get_data(fnic_dbgfs_t *fnic_dbgfs_prt, u8 rdata_flag)
 				len += scnprintf(fnic_dbgfs_prt->buffer + len,
 				(fnic_fc_trace_max_pages * PAGE_SIZE * 3)
 				- len, "%02x", fc_trace[j] & 0xff);
-			} /* for loop */
+			}  
 			len += scnprintf(fnic_dbgfs_prt->buffer + len,
 				(fnic_fc_trace_max_pages * PAGE_SIZE * 3) - len,
 				"\n");
@@ -765,17 +648,7 @@ int fnic_fc_trace_get_data(fnic_dbgfs_t *fnic_dbgfs_prt, u8 rdata_flag)
 	return len;
 }
 
-/*
- * copy_and_format_trace_data: Copy formatted data to char * buffer
- * Passed Parameter:
- *      @fc_trace_hdr_t: pointer to trace data
- *      @fnic_dbgfs_t: pointer to debugfs trace buffer
- *      @orig_len: pointer to len
- *      rdata_flag: 0 => Formatted file, 1 => Unformatted file
- * Description:
- *      This routine will format and copy the passed trace data
- *      for formatted file or unformatted file accordingly.
- */
+ 
 
 void copy_and_format_trace_data(struct fc_trace_hdr *tdata,
 				fnic_dbgfs_t *fnic_dbgfs_prt, int *orig_len,
@@ -818,8 +691,8 @@ void copy_and_format_trace_data(struct fc_trace_hdr *tdata,
 					"\n\t\t\t\t\t\t\t\t");
 				i++;
 			}
-		} /* end of else*/
-	} /* End of for loop*/
+		}  
+	}  
 	len += scnprintf(fnic_dbgfs_prt->buffer + len,
 		max_size - len, "\n");
 	*orig_len = len;

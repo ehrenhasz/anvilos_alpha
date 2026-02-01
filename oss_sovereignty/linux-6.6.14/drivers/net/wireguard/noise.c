@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2015-2019 Jason A. Donenfeld <Jason@zx2c4.com>. All Rights Reserved.
- */
+
+ 
 
 #include "noise.h"
 #include "device.h"
@@ -17,13 +15,7 @@
 #include <linux/highmem.h>
 #include <crypto/algapi.h>
 
-/* This implements Noise_IKpsk2:
- *
- * <- s
- * ******
- * -> e, es, s, ss, {t}
- * <- e, ee, se, psk, {}
- */
+ 
 
 static const u8 handshake_name[37] = "Noise_IKpsk2_25519_ChaChaPoly_BLAKE2s";
 static const u8 identifier_name[34] = "WireGuard v1 zx2c4 Jason@zx2c4.com";
@@ -43,7 +35,7 @@ void __init wg_noise_init(void)
 	blake2s_final(&blake, handshake_init_hash);
 }
 
-/* Must hold peer->handshake.static_identity->lock */
+ 
 void wg_noise_precompute_static_static(struct wg_peer *peer)
 {
 	down_write(&peer->handshake.lock);
@@ -154,10 +146,7 @@ void wg_noise_keypairs_clear(struct noise_keypairs *keypairs)
 
 	spin_lock_bh(&keypairs->keypair_update_lock);
 
-	/* We zero the next_keypair before zeroing the others, so that
-	 * wg_noise_received_with_keypair returns early before subsequent ones
-	 * are zeroed.
-	 */
+	 
 	old = rcu_dereference_protected(keypairs->next_keypair,
 		lockdep_is_held(&keypairs->keypair_update_lock));
 	RCU_INIT_POINTER(keypairs->next_keypair, NULL);
@@ -208,40 +197,21 @@ static void add_new_keypair(struct noise_keypairs *keypairs,
 	current_keypair = rcu_dereference_protected(keypairs->current_keypair,
 		lockdep_is_held(&keypairs->keypair_update_lock));
 	if (new_keypair->i_am_the_initiator) {
-		/* If we're the initiator, it means we've sent a handshake, and
-		 * received a confirmation response, which means this new
-		 * keypair can now be used.
-		 */
+		 
 		if (next_keypair) {
-			/* If there already was a next keypair pending, we
-			 * demote it to be the previous keypair, and free the
-			 * existing current. Note that this means KCI can result
-			 * in this transition. It would perhaps be more sound to
-			 * always just get rid of the unused next keypair
-			 * instead of putting it in the previous slot, but this
-			 * might be a bit less robust. Something to think about
-			 * for the future.
-			 */
+			 
 			RCU_INIT_POINTER(keypairs->next_keypair, NULL);
 			rcu_assign_pointer(keypairs->previous_keypair,
 					   next_keypair);
 			wg_noise_keypair_put(current_keypair, true);
-		} else /* If there wasn't an existing next keypair, we replace
-			* the previous with the current one.
-			*/
+		} else  
 			rcu_assign_pointer(keypairs->previous_keypair,
 					   current_keypair);
-		/* At this point we can get rid of the old previous keypair, and
-		 * set up the new keypair.
-		 */
+		 
 		wg_noise_keypair_put(previous_keypair, true);
 		rcu_assign_pointer(keypairs->current_keypair, new_keypair);
 	} else {
-		/* If we're the responder, it means we can't use the new keypair
-		 * until we receive confirmation via the first data packet, so
-		 * we get rid of the existing previous one, the possibly
-		 * existing next one, and slide in the new next one.
-		 */
+		 
 		rcu_assign_pointer(keypairs->next_keypair, new_keypair);
 		wg_noise_keypair_put(next_keypair, true);
 		RCU_INIT_POINTER(keypairs->previous_keypair, NULL);
@@ -256,16 +226,14 @@ bool wg_noise_received_with_keypair(struct noise_keypairs *keypairs,
 	struct noise_keypair *old_keypair;
 	bool key_is_new;
 
-	/* We first check without taking the spinlock. */
+	 
 	key_is_new = received_keypair ==
 		     rcu_access_pointer(keypairs->next_keypair);
 	if (likely(!key_is_new))
 		return false;
 
 	spin_lock_bh(&keypairs->keypair_update_lock);
-	/* After locking, we double check that things didn't change from
-	 * beneath us.
-	 */
+	 
 	if (unlikely(received_keypair !=
 		    rcu_dereference_protected(keypairs->next_keypair,
 			    lockdep_is_held(&keypairs->keypair_update_lock)))) {
@@ -273,10 +241,7 @@ bool wg_noise_received_with_keypair(struct noise_keypairs *keypairs,
 		return false;
 	}
 
-	/* When we've finally received the confirmation, we slide the next
-	 * into the current, the current into the previous, and get rid of
-	 * the old previous.
-	 */
+	 
 	old_keypair = rcu_dereference_protected(keypairs->previous_keypair,
 		lockdep_is_held(&keypairs->keypair_update_lock));
 	rcu_assign_pointer(keypairs->previous_keypair,
@@ -290,7 +255,7 @@ bool wg_noise_received_with_keypair(struct noise_keypairs *keypairs,
 	return true;
 }
 
-/* Must hold static_identity->lock */
+ 
 void wg_noise_set_static_identity_private_key(
 	struct noise_static_identity *static_identity,
 	const u8 private_key[NOISE_PUBLIC_KEY_LEN])
@@ -337,10 +302,7 @@ static void hmac(u8 *out, const u8 *in, const u8 *key, const size_t inlen, const
 	memzero_explicit(i_hash, BLAKE2S_HASH_SIZE);
 }
 
-/* This is Hugo Krawczyk's HKDF:
- *  - https://eprint.iacr.org/2010/264.pdf
- *  - https://tools.ietf.org/html/rfc5869
- */
+ 
 static void kdf(u8 *first_dst, u8 *second_dst, u8 *third_dst, const u8 *data,
 		size_t first_len, size_t second_len, size_t third_len,
 		size_t data_len, const u8 chaining_key[NOISE_HASH_LEN])
@@ -356,13 +318,13 @@ static void kdf(u8 *first_dst, u8 *second_dst, u8 *third_dst, const u8 *data,
 		  (!first_len || !first_dst)) ||
 		 ((third_len || third_dst) && (!second_len || !second_dst))));
 
-	/* Extract entropy from data into secret */
+	 
 	hmac(secret, data, chaining_key, data_len, NOISE_HASH_LEN);
 
 	if (!first_dst || !first_len)
 		goto out;
 
-	/* Expand first key: key = secret, data = 0x1 */
+	 
 	output[0] = 1;
 	hmac(output, output, secret, 1, BLAKE2S_HASH_SIZE);
 	memcpy(first_dst, output, first_len);
@@ -370,7 +332,7 @@ static void kdf(u8 *first_dst, u8 *second_dst, u8 *third_dst, const u8 *data,
 	if (!second_dst || !second_len)
 		goto out;
 
-	/* Expand second key: key = secret, data = first-key || 0x2 */
+	 
 	output[BLAKE2S_HASH_SIZE] = 2;
 	hmac(output, output, secret, BLAKE2S_HASH_SIZE + 1, BLAKE2S_HASH_SIZE);
 	memcpy(second_dst, output, second_len);
@@ -378,13 +340,13 @@ static void kdf(u8 *first_dst, u8 *second_dst, u8 *third_dst, const u8 *data,
 	if (!third_dst || !third_len)
 		goto out;
 
-	/* Expand third key: key = secret, data = second-key || 0x3 */
+	 
 	output[BLAKE2S_HASH_SIZE] = 3;
 	hmac(output, output, secret, BLAKE2S_HASH_SIZE + 1, BLAKE2S_HASH_SIZE);
 	memcpy(third_dst, output, third_len);
 
 out:
-	/* Clear sensitive data from stack */
+	 
 	memzero_explicit(secret, BLAKE2S_HASH_SIZE);
 	memzero_explicit(output, BLAKE2S_HASH_SIZE + 1);
 }
@@ -466,7 +428,7 @@ static void message_encrypt(u8 *dst_ciphertext, const u8 *src_plaintext,
 {
 	chacha20poly1305_encrypt(dst_ciphertext, src_plaintext, src_len, hash,
 				 NOISE_HASH_LEN,
-				 0 /* Always zero for Noise_IK */, key);
+				 0  , key);
 	mix_hash(hash, dst_ciphertext, noise_encrypted_len(src_len));
 }
 
@@ -476,7 +438,7 @@ static bool message_decrypt(u8 *dst_plaintext, const u8 *src_ciphertext,
 {
 	if (!chacha20poly1305_decrypt(dst_plaintext, src_ciphertext, src_len,
 				      hash, NOISE_HASH_LEN,
-				      0 /* Always zero for Noise_IK */, key))
+				      0  , key))
 		return false;
 	mix_hash(hash, src_ciphertext, src_len);
 	return true;
@@ -500,30 +462,11 @@ static void tai64n_now(u8 output[NOISE_TIMESTAMP_LEN])
 
 	ktime_get_real_ts64(&now);
 
-	/* In order to prevent some sort of infoleak from precise timers, we
-	 * round down the nanoseconds part to the closest rounded-down power of
-	 * two to the maximum initiations per second allowed anyway by the
-	 * implementation.
-	 */
+	 
 	now.tv_nsec = ALIGN_DOWN(now.tv_nsec,
 		rounddown_pow_of_two(NSEC_PER_SEC / INITIATIONS_PER_SECOND));
 
-	/* https://cr.yp.to/libtai/tai64.html */
-	*(__be64 *)output = cpu_to_be64(0x400000000000000aULL + now.tv_sec);
-	*(__be32 *)(output + sizeof(__be64)) = cpu_to_be32(now.tv_nsec);
-}
-
-bool
-wg_noise_handshake_create_initiation(struct message_handshake_initiation *dst,
-				     struct noise_handshake *handshake)
-{
-	u8 timestamp[NOISE_TIMESTAMP_LEN];
-	u8 key[NOISE_SYMMETRIC_KEY_LEN];
-	bool ret = false;
-
-	/* We need to wait for crng _before_ taking any locks, since
-	 * curve25519_generate_secret uses get_random_bytes_wait.
-	 */
+	 
 	wait_for_random_bytes();
 
 	down_read(&handshake->static_identity->lock);
@@ -537,7 +480,7 @@ wg_noise_handshake_create_initiation(struct message_handshake_initiation *dst,
 	handshake_init(handshake->chaining_key, handshake->hash,
 		       handshake->remote_static);
 
-	/* e */
+	 
 	curve25519_generate_secret(handshake->ephemeral_private);
 	if (!curve25519_generate_public(dst->unencrypted_ephemeral,
 					handshake->ephemeral_private))
@@ -546,22 +489,22 @@ wg_noise_handshake_create_initiation(struct message_handshake_initiation *dst,
 			  dst->unencrypted_ephemeral, handshake->chaining_key,
 			  handshake->hash);
 
-	/* es */
+	 
 	if (!mix_dh(handshake->chaining_key, key, handshake->ephemeral_private,
 		    handshake->remote_static))
 		goto out;
 
-	/* s */
+	 
 	message_encrypt(dst->encrypted_static,
 			handshake->static_identity->static_public,
 			NOISE_PUBLIC_KEY_LEN, key, handshake->hash);
 
-	/* ss */
+	 
 	if (!mix_precomputed_dh(handshake->chaining_key, key,
 				handshake->precomputed_static_static))
 		goto out;
 
-	/* {t} */
+	 
 	tai64n_now(timestamp);
 	message_encrypt(dst->encrypted_timestamp, timestamp,
 			NOISE_TIMESTAMP_LEN, key, handshake->hash);
@@ -601,30 +544,30 @@ wg_noise_handshake_consume_initiation(struct message_handshake_initiation *src,
 
 	handshake_init(chaining_key, hash, wg->static_identity.static_public);
 
-	/* e */
+	 
 	message_ephemeral(e, src->unencrypted_ephemeral, chaining_key, hash);
 
-	/* es */
+	 
 	if (!mix_dh(chaining_key, key, wg->static_identity.static_private, e))
 		goto out;
 
-	/* s */
+	 
 	if (!message_decrypt(s, src->encrypted_static,
 			     sizeof(src->encrypted_static), key, hash))
 		goto out;
 
-	/* Lookup which peer we're actually talking to */
+	 
 	peer = wg_pubkey_hashtable_lookup(wg->peer_hashtable, s);
 	if (!peer)
 		goto out;
 	handshake = &peer->handshake;
 
-	/* ss */
+	 
 	if (!mix_precomputed_dh(chaining_key, key,
 				handshake->precomputed_static_static))
 	    goto out;
 
-	/* {t} */
+	 
 	if (!message_decrypt(t, src->encrypted_timestamp,
 			     sizeof(src->encrypted_timestamp), key, hash))
 		goto out;
@@ -639,7 +582,7 @@ wg_noise_handshake_consume_initiation(struct message_handshake_initiation *src,
 	if (replay_attack || flood_attack)
 		goto out;
 
-	/* Success! Copy everything to peer */
+	 
 	down_write(&handshake->lock);
 	memcpy(handshake->remote_ephemeral, e, NOISE_PUBLIC_KEY_LEN);
 	if (memcmp(t, handshake->latest_timestamp, NOISE_TIMESTAMP_LEN) > 0)
@@ -670,9 +613,7 @@ bool wg_noise_handshake_create_response(struct message_handshake_response *dst,
 	u8 key[NOISE_SYMMETRIC_KEY_LEN];
 	bool ret = false;
 
-	/* We need to wait for crng _before_ taking any locks, since
-	 * curve25519_generate_secret uses get_random_bytes_wait.
-	 */
+	 
 	wait_for_random_bytes();
 
 	down_read(&handshake->static_identity->lock);
@@ -684,7 +625,7 @@ bool wg_noise_handshake_create_response(struct message_handshake_response *dst,
 	dst->header.type = cpu_to_le32(MESSAGE_HANDSHAKE_RESPONSE);
 	dst->receiver_index = handshake->remote_index;
 
-	/* e */
+	 
 	curve25519_generate_secret(handshake->ephemeral_private);
 	if (!curve25519_generate_public(dst->unencrypted_ephemeral,
 					handshake->ephemeral_private))
@@ -693,21 +634,21 @@ bool wg_noise_handshake_create_response(struct message_handshake_response *dst,
 			  dst->unencrypted_ephemeral, handshake->chaining_key,
 			  handshake->hash);
 
-	/* ee */
+	 
 	if (!mix_dh(handshake->chaining_key, NULL, handshake->ephemeral_private,
 		    handshake->remote_ephemeral))
 		goto out;
 
-	/* se */
+	 
 	if (!mix_dh(handshake->chaining_key, NULL, handshake->ephemeral_private,
 		    handshake->remote_static))
 		goto out;
 
-	/* psk */
+	 
 	mix_psk(handshake->chaining_key, handshake->hash, key,
 		handshake->preshared_key);
 
-	/* {} */
+	 
 	message_encrypt(dst->encrypted_nothing, NULL, 0, key, handshake->hash);
 
 	dst->sender_index = wg_index_hashtable_insert(
@@ -763,30 +704,28 @@ wg_noise_handshake_consume_response(struct message_handshake_response *src,
 	if (state != HANDSHAKE_CREATED_INITIATION)
 		goto fail;
 
-	/* e */
+	 
 	message_ephemeral(e, src->unencrypted_ephemeral, chaining_key, hash);
 
-	/* ee */
+	 
 	if (!mix_dh(chaining_key, NULL, ephemeral_private, e))
 		goto fail;
 
-	/* se */
+	 
 	if (!mix_dh(chaining_key, NULL, wg->static_identity.static_private, e))
 		goto fail;
 
-	/* psk */
+	 
 	mix_psk(chaining_key, hash, key, preshared_key);
 
-	/* {} */
+	 
 	if (!message_decrypt(NULL, src->encrypted_nothing,
 			     sizeof(src->encrypted_nothing), key, hash))
 		goto fail;
 
-	/* Success! Copy everything to peer */
+	 
 	down_write(&handshake->lock);
-	/* It's important to check that the state is still the same, while we
-	 * have an exclusive lock.
-	 */
+	 
 	if (handshake->state != state) {
 		up_write(&handshake->lock);
 		goto fail;

@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * See Documentation/core-api/errseq.rst and lib/errseq.c
- */
+ 
+ 
 #ifndef _LINUX_ERRSEQ_H
 #define _LINUX_ERRSEQ_H
 

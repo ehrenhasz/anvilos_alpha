@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: ISC
+
 
 #include <linux/etherdevice.h>
 #include "mt7603.h"
@@ -186,33 +186,33 @@ mt7603_mac_init(struct mt7603_dev *dev)
 
 	mt7603_set_tmac_template(dev);
 
-	/* Enable RX group to HIF */
+	 
 	addr = mt7603_reg_map(dev, MT_CLIENT_BASE_PHYS_ADDR);
 	mt76_set(dev, addr + MT_CLIENT_RXINF, MT_CLIENT_RXINF_RXSH_GROUPS);
 
-	/* Enable RX group to MCU */
+	 
 	mt76_set(dev, MT_DMA_DCR1, GENMASK(13, 11));
 
 	mt76_rmw_field(dev, MT_AGG_PCR_RTS, MT_AGG_PCR_RTS_PKT_THR, 3);
 	mt76_set(dev, MT_TMAC_PCR, MT_TMAC_PCR_SPE_EN);
 
-	/* include preamble detection in CCA trigger signal */
+	 
 	mt76_rmw_field(dev, MT_TXREQ, MT_TXREQ_CCA_SRC_SEL, 2);
 
 	mt76_wr(dev, MT_RXREQ, 4);
 
-	/* Configure all rx packets to HIF */
+	 
 	mt76_wr(dev, MT_DMA_RCFR0, 0xc0000000);
 
-	/* Configure MCU txs selection with aggregation */
+	 
 	mt76_wr(dev, MT_DMA_TCFR0,
-		FIELD_PREP(MT_DMA_TCFR_TXS_AGGR_TIMEOUT, 1) | /* 32 us */
+		FIELD_PREP(MT_DMA_TCFR_TXS_AGGR_TIMEOUT, 1) |  
 		MT_DMA_TCFR_TXS_AGGR_COUNT);
 
-	/* Configure HIF txs selection with aggregation */
+	 
 	mt76_wr(dev, MT_DMA_TCFR1,
-		FIELD_PREP(MT_DMA_TCFR_TXS_AGGR_TIMEOUT, 1) | /* 32 us */
-		MT_DMA_TCFR_TXS_AGGR_COUNT | /* Maximum count */
+		FIELD_PREP(MT_DMA_TCFR_TXS_AGGR_TIMEOUT, 1) |  
+		MT_DMA_TCFR_TXS_AGGR_COUNT |  
 		MT_DMA_TCFR_TXS_BIT_MAP);
 
 	mt76_wr(dev, MT_MCU_PCIE_REMAP_1, MT_PSE_WTBL_2_PHYS_ADDR);
@@ -260,7 +260,7 @@ mt7603_mac_init(struct mt7603_dev *dev)
 	mt76_clear(dev, MT_SEC_SCR, MT_SEC_SCR_MASK_ORDER);
 	mt76_clear(dev, MT_SEC_SCR, BIT(18));
 
-	/* Set secondary beacon time offsets */
+	 
 	for (i = 0; i <= 4; i++)
 		mt76_rmw_field(dev, MT_LPON_SBTOR(i), MT_LPON_SBTOR_TIME_OFFSET,
 			       (i + 1) * (20 + 4096));
@@ -471,7 +471,7 @@ mt7603_init_txpower(struct mt7603_dev *dev,
 
 	target_power = DIV_ROUND_UP(target_power, 2);
 
-	/* add 3 dBm for 2SS devices (combined output) */
+	 
 	if (dev->mphy.antenna_mask & BIT(1))
 		target_power += 3;
 
@@ -531,7 +531,7 @@ int mt7603_register_device(struct mt7603_dev *dev)
 	ieee80211_hw_set(hw, HOST_BROADCAST_PS_BUFFERING);
 	ieee80211_hw_set(hw, NEEDS_UNIQUE_STA_ADDR);
 
-	/* init led callbacks */
+	 
 	if (IS_ENABLED(CONFIG_MT76_LEDS)) {
 		dev->mphy.leds.cdev.brightness_set = mt7603_led_set_brightness;
 		dev->mphy.leds.cdev.blink_set = mt7603_led_set_blink;

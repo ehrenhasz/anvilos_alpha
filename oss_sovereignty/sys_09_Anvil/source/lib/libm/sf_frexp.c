@@ -1,26 +1,8 @@
-/*
- * This file is part of the MicroPython project, http://micropython.org/
- *
- * These math functions are taken from newlib-nano-2, the newlib/libm/math
- * directory, available from https://github.com/32bitmicro/newlib-nano-2.
- *
- * Appropriate copyright headers are reproduced below.
- */
+ 
 
-/* sf_frexp.c -- float version of s_frexp.c.
- * Conversion to float by Ian Lance Taylor, Cygnus Support, ian@cygnus.com.
- */
+ 
 
-/*
- * ====================================================
- * Copyright (C) 1993 by Sun Microsystems, Inc. All rights reserved.
- *
- * Developed at SunPro, a Sun Microsystems, Inc. business.
- * Permission to use, copy, modify, and distribute this
- * software is freely granted, provided that this notice 
- * is preserved.
- * ====================================================
- */
+ 
 
 #include "fdlibm.h"
 
@@ -29,7 +11,7 @@ static const float
 #else
 static float
 #endif
-two25 =  3.3554432000e+07f; /* 0x4c000000 */
+two25 =  3.3554432000e+07f;  
 
 #ifdef __STDC__
 	float frexpf(float x, int *eptr)
@@ -42,8 +24,8 @@ two25 =  3.3554432000e+07f; /* 0x4c000000 */
 	GET_FLOAT_WORD(hx,x);
 	ix = 0x7fffffff&hx;
 	*eptr = 0;
-	if(!FLT_UWORD_IS_FINITE(ix)||FLT_UWORD_IS_ZERO(ix)) return x;	/* 0,inf,nan */
-	if (FLT_UWORD_IS_SUBNORMAL(ix)) {		/* subnormal */
+	if(!FLT_UWORD_IS_FINITE(ix)||FLT_UWORD_IS_ZERO(ix)) return x;	 
+	if (FLT_UWORD_IS_SUBNORMAL(ix)) {		 
 	    x *= two25;
 	    GET_FLOAT_WORD(hx,x);
 	    ix = hx&0x7fffffff;
@@ -67,4 +49,4 @@ two25 =  3.3554432000e+07f; /* 0x4c000000 */
 	return (double) frexpf((float) x, eptr);
 }
 
-#endif /* defined(_DOUBLE_IS_32BITS) */
+#endif  

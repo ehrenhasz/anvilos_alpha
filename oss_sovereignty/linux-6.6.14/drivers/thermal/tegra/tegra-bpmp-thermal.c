@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2015-2017, NVIDIA CORPORATION.  All rights reserved.
- *
- * Author:
- *	Mikko Perttunen <mperttunen@nvidia.com>
- *	Aapo Vienamo	<avienamo@nvidia.com>
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/module.h>
@@ -262,10 +256,7 @@ static int tegra_bpmp_thermal_probe(struct platform_device *pdev)
 
 		err = __tegra_bpmp_thermal_get_temp(zone, &temp);
 
-		/*
-		 * Sensors in powergated domains may temporarily fail to be read
-		 * (-EAGAIN), but will become accessible when the domain is powered on.
-		 */
+		 
 		if (err < 0 && err != -EAGAIN) {
 			devm_kfree(&pdev->dev, zone);
 			continue;

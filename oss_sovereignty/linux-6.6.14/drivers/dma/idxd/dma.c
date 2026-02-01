@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright(c) 2019 Intel Corporation. All rights rsvd. */
+
+ 
 #include <linux/init.h>
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -73,11 +73,7 @@ static inline void idxd_prep_desc_common(struct idxd_wq *wq,
 	hw->src_addr = addr_f1;
 	hw->dst_addr = addr_f2;
 	hw->xfer_size = len;
-	/*
-	 * For dedicated WQ, this field is ignored and HW will use the WQCFG.priv
-	 * field instead. This field should be set to 0 for kernel descriptors
-	 * since kernel DMA on VT-d supports "user" privilege only.
-	 */
+	 
 	hw->priv = 0;
 	hw->completion_addr = compl;
 }
@@ -160,10 +156,7 @@ static enum dma_status idxd_dma_tx_status(struct dma_chan *dma_chan,
 	return DMA_OUT_OF_ORDER;
 }
 
-/*
- * issue_pending() does not need to do anything since tx_submit() does the job
- * already.
- */
+ 
 static void idxd_dma_issue_pending(struct dma_chan *dma_chan)
 {
 }
@@ -232,10 +225,7 @@ int idxd_register_dma_device(struct idxd_device *idxd)
 	}
 
 	idxd_dma->idxd = idxd;
-	/*
-	 * This pointer is protected by the refs taken by the dma_chan. It will remain valid
-	 * as long as there are outstanding channels.
-	 */
+	 
 	idxd->idxd_dma = idxd_dma;
 	return 0;
 }

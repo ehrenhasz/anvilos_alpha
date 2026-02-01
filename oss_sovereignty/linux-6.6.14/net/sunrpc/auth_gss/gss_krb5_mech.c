@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: BSD-3-Clause
-/*
- *  linux/net/sunrpc/gss_krb5_mech.c
- *
- *  Copyright (c) 2001-2008 The Regents of the University of Michigan.
- *  All rights reserved.
- *
- *  Andy Adamson <andros@umich.edu>
- *  J. Bruce Fields <bfields@umich.edu>
- */
+
+ 
 
 #include <crypto/hash.h>
 #include <crypto/skcipher.h>
@@ -32,9 +24,7 @@ static struct gss_api_mech gss_kerberos_mech;
 
 static const struct gss_krb5_enctype supported_gss_krb5_enctypes[] = {
 #if defined(CONFIG_RPCSEC_GSS_KRB5_ENCTYPES_AES_SHA1)
-	/*
-	 * AES-128 with SHA-1 (RFC 3962)
-	 */
+	 
 	{
 	  .etype = ENCTYPE_AES128_CTS_HMAC_SHA1_96,
 	  .ctype = CKSUMTYPE_HMAC_SHA1_96_AES128,
@@ -61,9 +51,7 @@ static const struct gss_krb5_enctype supported_gss_krb5_enctypes[] = {
 	  .cksumlength = BITS2OCTETS(96),
 	  .keyed_cksum = 1,
 	},
-	/*
-	 * AES-256 with SHA-1 (RFC 3962)
-	 */
+	 
 	{
 	  .etype = ENCTYPE_AES256_CTS_HMAC_SHA1_96,
 	  .ctype = CKSUMTYPE_HMAC_SHA1_96_AES256,
@@ -93,9 +81,7 @@ static const struct gss_krb5_enctype supported_gss_krb5_enctypes[] = {
 #endif
 
 #if defined(CONFIG_RPCSEC_GSS_KRB5_ENCTYPES_CAMELLIA)
-	/*
-	 * Camellia-128 with CMAC (RFC 6803)
-	 */
+	 
 	{
 		.etype		= ENCTYPE_CAMELLIA128_CTS_CMAC,
 		.ctype		= CKSUMTYPE_CMAC_CAMELLIA128,
@@ -119,9 +105,7 @@ static const struct gss_krb5_enctype supported_gss_krb5_enctypes[] = {
 		.wrap		= gss_krb5_wrap_v2,
 		.unwrap		= gss_krb5_unwrap_v2,
 	},
-	/*
-	 * Camellia-256 with CMAC (RFC 6803)
-	 */
+	 
 	{
 		.etype		= ENCTYPE_CAMELLIA256_CTS_CMAC,
 		.ctype		= CKSUMTYPE_CMAC_CAMELLIA256,
@@ -148,9 +132,7 @@ static const struct gss_krb5_enctype supported_gss_krb5_enctypes[] = {
 #endif
 
 #if defined(CONFIG_RPCSEC_GSS_KRB5_ENCTYPES_AES_SHA2)
-	/*
-	 * AES-128 with SHA-256 (RFC 8009)
-	 */
+	 
 	{
 		.etype		= ENCTYPE_AES128_CTS_HMAC_SHA256_128,
 		.ctype		= CKSUMTYPE_HMAC_SHA256_128_AES128,
@@ -174,9 +156,7 @@ static const struct gss_krb5_enctype supported_gss_krb5_enctypes[] = {
 		.wrap		= gss_krb5_wrap_v2,
 		.unwrap		= gss_krb5_unwrap_v2,
 	},
-	/*
-	 * AES-256 with SHA-384 (RFC 8009)
-	 */
+	 
 	{
 		.etype		= ENCTYPE_AES256_CTS_HMAC_SHA384_192,
 		.ctype		= CKSUMTYPE_HMAC_SHA384_192_AES256,
@@ -203,10 +183,7 @@ static const struct gss_krb5_enctype supported_gss_krb5_enctypes[] = {
 #endif
 };
 
-/*
- * The list of advertised enctypes is specified in order of most
- * preferred to least.
- */
+ 
 static char gss_krb5_enctype_priority_list[64];
 
 static void gss_krb5_prepare_enctype_priority_list(void)
@@ -244,13 +221,7 @@ static void gss_krb5_prepare_enctype_priority_list(void)
 	}
 }
 
-/**
- * gss_krb5_lookup_enctype - Retrieve profile information for a given enctype
- * @etype: ENCTYPE value
- *
- * Returns a pointer to a gss_krb5_enctype structure, or NULL if no
- * matching etype is found.
- */
+ 
 VISIBLE_IF_KUNIT
 const struct gss_krb5_enctype *gss_krb5_lookup_enctype(u32 etype)
 {
@@ -307,7 +278,7 @@ gss_krb5_import_ctx_v2(struct krb5_ctx *ctx, gfp_t gfp_mask)
 	if (!keyout.data)
 		return -ENOMEM;
 
-	/* initiator seal encryption */
+	 
 	keyout.len = ctx->gk5e->Ke_length;
 	if (krb5_derive_key(ctx, &keyin, &keyout, KG_USAGE_INITIATOR_SEAL,
 			    KEY_USAGE_SEED_ENCRYPTION, gfp_mask))
@@ -324,7 +295,7 @@ gss_krb5_import_ctx_v2(struct krb5_ctx *ctx, gfp_t gfp_mask)
 			goto out_free;
 	}
 
-	/* acceptor seal encryption */
+	 
 	if (krb5_derive_key(ctx, &keyin, &keyout, KG_USAGE_ACCEPTOR_SEAL,
 			    KEY_USAGE_SEED_ENCRYPTION, gfp_mask))
 		goto out_free;
@@ -340,7 +311,7 @@ gss_krb5_import_ctx_v2(struct krb5_ctx *ctx, gfp_t gfp_mask)
 			goto out_free;
 	}
 
-	/* initiator sign checksum */
+	 
 	keyout.len = ctx->gk5e->Kc_length;
 	if (krb5_derive_key(ctx, &keyin, &keyout, KG_USAGE_INITIATOR_SIGN,
 			    KEY_USAGE_SEED_CHECKSUM, gfp_mask))
@@ -349,7 +320,7 @@ gss_krb5_import_ctx_v2(struct krb5_ctx *ctx, gfp_t gfp_mask)
 	if (ctx->initiator_sign == NULL)
 		goto out_free;
 
-	/* acceptor sign checksum */
+	 
 	if (krb5_derive_key(ctx, &keyin, &keyout, KG_USAGE_ACCEPTOR_SIGN,
 			    KEY_USAGE_SEED_CHECKSUM, gfp_mask))
 		goto out_free;
@@ -357,7 +328,7 @@ gss_krb5_import_ctx_v2(struct krb5_ctx *ctx, gfp_t gfp_mask)
 	if (ctx->acceptor_sign == NULL)
 		goto out_free;
 
-	/* initiator seal integrity */
+	 
 	keyout.len = ctx->gk5e->Ki_length;
 	if (krb5_derive_key(ctx, &keyin, &keyout, KG_USAGE_INITIATOR_SEAL,
 			    KEY_USAGE_SEED_INTEGRITY, gfp_mask))
@@ -366,7 +337,7 @@ gss_krb5_import_ctx_v2(struct krb5_ctx *ctx, gfp_t gfp_mask)
 	if (ctx->initiator_integ == NULL)
 		goto out_free;
 
-	/* acceptor seal integrity */
+	 
 	if (krb5_derive_key(ctx, &keyin, &keyout, KG_USAGE_ACCEPTOR_SEAL,
 			    KEY_USAGE_SEED_INTEGRITY, gfp_mask))
 		goto out_free;
@@ -407,13 +378,13 @@ gss_import_v2_context(const void *p, const void *end, struct krb5_ctx *ctx,
 	p = simple_get_bytes(p, end, &time32, sizeof(time32));
 	if (IS_ERR(p))
 		goto out_err;
-	/* unsigned 32-bit time overflows in year 2106 */
+	 
 	ctx->endtime = (time64_t)time32;
 	p = simple_get_bytes(p, end, &seq_send64, sizeof(seq_send64));
 	if (IS_ERR(p))
 		goto out_err;
 	atomic64_set(&ctx->seq_send64, seq_send64);
-	/* set seq_send for use by "older" enctypes */
+	 
 	atomic_set(&ctx->seq_send, seq_send64);
 	if (seq_send64 != atomic_read(&ctx->seq_send)) {
 		dprintk("%s: seq_send64 %llx, seq_send %x overflow?\n", __func__,
@@ -500,17 +471,7 @@ gss_krb5_delete_sec_context(void *internal_ctx)
 	kfree(kctx);
 }
 
-/**
- * gss_krb5_get_mic - get_mic for the Kerberos GSS mechanism
- * @gctx: GSS context
- * @text: plaintext to checksum
- * @token: buffer into which to write the computed checksum
- *
- * Return values:
- *    %GSS_S_COMPLETE - success, and @token is filled in
- *    %GSS_S_FAILURE - checksum could not be generated
- *    %GSS_S_CONTEXT_EXPIRED - Kerberos context is no longer valid
- */
+ 
 static u32 gss_krb5_get_mic(struct gss_ctx *gctx, struct xdr_buf *text,
 			    struct xdr_netobj *token)
 {
@@ -519,19 +480,7 @@ static u32 gss_krb5_get_mic(struct gss_ctx *gctx, struct xdr_buf *text,
 	return kctx->gk5e->get_mic(kctx, text, token);
 }
 
-/**
- * gss_krb5_verify_mic - verify_mic for the Kerberos GSS mechanism
- * @gctx: GSS context
- * @message_buffer: plaintext to check
- * @read_token: received checksum to check
- *
- * Return values:
- *    %GSS_S_COMPLETE - computed and received checksums match
- *    %GSS_S_DEFECTIVE_TOKEN - received checksum is not valid
- *    %GSS_S_BAD_SIG - computed and received checksums do not match
- *    %GSS_S_FAILURE - received checksum could not be checked
- *    %GSS_S_CONTEXT_EXPIRED - Kerberos context is no longer valid
- */
+ 
 static u32 gss_krb5_verify_mic(struct gss_ctx *gctx,
 			       struct xdr_buf *message_buffer,
 			       struct xdr_netobj *read_token)
@@ -541,18 +490,7 @@ static u32 gss_krb5_verify_mic(struct gss_ctx *gctx,
 	return kctx->gk5e->verify_mic(kctx, message_buffer, read_token);
 }
 
-/**
- * gss_krb5_wrap - gss_wrap for the Kerberos GSS mechanism
- * @gctx: initialized GSS context
- * @offset: byte offset in @buf to start writing the cipher text
- * @buf: OUT: send buffer
- * @pages: plaintext to wrap
- *
- * Return values:
- *    %GSS_S_COMPLETE - success, @buf has been updated
- *    %GSS_S_FAILURE - @buf could not be wrapped
- *    %GSS_S_CONTEXT_EXPIRED - Kerberos context is no longer valid
- */
+ 
 static u32 gss_krb5_wrap(struct gss_ctx *gctx, int offset,
 			 struct xdr_buf *buf, struct page **pages)
 {
@@ -561,20 +499,7 @@ static u32 gss_krb5_wrap(struct gss_ctx *gctx, int offset,
 	return kctx->gk5e->wrap(kctx, offset, buf, pages);
 }
 
-/**
- * gss_krb5_unwrap - gss_unwrap for the Kerberos GSS mechanism
- * @gctx: initialized GSS context
- * @offset: starting byte offset into @buf
- * @len: size of ciphertext to unwrap
- * @buf: ciphertext to unwrap
- *
- * Return values:
- *    %GSS_S_COMPLETE - success, @buf has been updated
- *    %GSS_S_DEFECTIVE_TOKEN - received blob is not valid
- *    %GSS_S_BAD_SIG - computed and received checksums do not match
- *    %GSS_S_FAILURE - @buf could not be unwrapped
- *    %GSS_S_CONTEXT_EXPIRED - Kerberos context is no longer valid
- */
+ 
 static u32 gss_krb5_unwrap(struct gss_ctx *gctx, int offset,
 			   int len, struct xdr_buf *buf)
 {

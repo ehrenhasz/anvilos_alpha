@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2008 Sensoray Company Inc.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/usb.h>
@@ -16,12 +14,7 @@
 MODULE_DESCRIPTION("Sensoray 2250/2251 i2c v4l2 subdev driver");
 MODULE_LICENSE("GPL v2");
 
-/*
- * Note: this board has two i2c devices: a vpx3226f and a tlv320aic23b.
- * Due to the unusual way these are accessed on this device we do not
- * reuse the i2c drivers, but instead they are implemented in this
- * driver. It would be nice to improve on this, though.
- */
+ 
 
 #define TLV320_ADDRESS      0x34
 #define VPX322_ADDR_ANALOGCONTROL1	0x02
@@ -96,7 +89,7 @@ static u16 vid_regs_fp[] = {
 	0x000, 0x000
 };
 
-/* PAL specific values */
+ 
 static u16 vid_regs_fp_pal[] = {
 	0x120, 0x017,
 	0x121, 0xd22,
@@ -127,7 +120,7 @@ static inline struct s2250 *to_state(struct v4l2_subdev *sd)
 	return container_of(sd, struct s2250, sd);
 }
 
-/* from go7007-usb.c which is Copyright (C) 2005-2006 Micronas USA Inc.*/
+ 
 static int go7007_usb_vendor_request(struct go7007 *go, u16 request,
 	u16 value, u16 index, void *transfer_buffer, int length, int in)
 {
@@ -146,14 +139,14 @@ static int go7007_usb_vendor_request(struct go7007 *go, u16 request,
 				value, index, transfer_buffer, length, timeout);
 	}
 }
-/* end from go7007-usb.c which is Copyright (C) 2005-2006 Micronas USA Inc.*/
+ 
 
 static int write_reg(struct i2c_client *client, u8 reg, u8 value)
 {
 	struct go7007 *go = i2c_get_adapdata(client->adapter);
 	struct go7007_usb *usb;
 	int rc;
-	int dev_addr = client->addr << 1;  /* firmware wants 8-bit address */
+	int dev_addr = client->addr << 1;   
 	u8 *buf;
 
 	if (go == NULL)
@@ -239,7 +232,7 @@ static int write_reg_fp(struct i2c_client *client, u16 addr, u16 val)
 		return -EFAULT;
 	}
 
-	/* save last 12b value */
+	 
 	if (addr == 0x12b)
 		dec->reg12b_val = val;
 
@@ -314,7 +307,7 @@ static int write_regs_fp(struct i2c_client *client, u16 *regs)
 }
 
 
-/* ------------------------------------------------------------------------- */
+ 
 
 static int s2250_s_video_routing(struct v4l2_subdev *sd, u32 input, u32 output,
 				 u32 config)
@@ -325,12 +318,12 @@ static int s2250_s_video_routing(struct v4l2_subdev *sd, u32 input, u32 output,
 
 	vidsys = (state->std == V4L2_STD_NTSC) ? 0x01 : 0x00;
 	if (input == 0) {
-		/* composite */
+		 
 		write_reg_fp(client, 0x20, 0x020 | vidsys);
 		write_reg_fp(client, 0x21, 0x662);
 		write_reg_fp(client, 0x140, 0x060);
 	} else if (input == 1) {
-		/* S-Video */
+		 
 		write_reg_fp(client, 0x20, 0x040 | vidsys);
 		write_reg_fp(client, 0x21, 0x666);
 		write_reg_fp(client, 0x140, 0x060);
@@ -428,13 +421,13 @@ static int s2250_s_audio_routing(struct v4l2_subdev *sd, u32 input, u32 output,
 
 	switch (input) {
 	case 0:
-		write_reg(state->audio, 0x08, 0x02); /* Line In */
+		write_reg(state->audio, 0x08, 0x02);  
 		break;
 	case 1:
-		write_reg(state->audio, 0x08, 0x04); /* Mic */
+		write_reg(state->audio, 0x08, 0x04);  
 		break;
 	case 2:
-		write_reg(state->audio, 0x08, 0x05); /* Mic Boost */
+		write_reg(state->audio, 0x08, 0x05);  
 		break;
 	default:
 		return -EINVAL;
@@ -462,7 +455,7 @@ static int s2250_log_status(struct v4l2_subdev *sd)
 	return v4l2_ctrl_subdev_log_status(sd);
 }
 
-/* --------------------------------------------------------------------------*/
+ 
 
 static const struct v4l2_ctrl_ops s2250_ctrl_ops = {
 	.s_ctrl = s2250_s_ctrl,
@@ -492,7 +485,7 @@ static const struct v4l2_subdev_ops s2250_ops = {
 	.pad = &s2250_pad_ops,
 };
 
-/* --------------------------------------------------------------------------*/
+ 
 
 static int s2250_probe(struct i2c_client *client)
 {
@@ -543,7 +536,7 @@ static int s2250_probe(struct i2c_client *client)
 	state->hue = 0;
 	state->audio = audio;
 
-	/* initialize the audio */
+	 
 	if (write_regs(audio, aud_regs) < 0) {
 		dev_err(&client->dev, "error initializing audio\n");
 		goto fail;
@@ -557,15 +550,15 @@ static int s2250_probe(struct i2c_client *client)
 		dev_err(&client->dev, "error initializing decoder\n");
 		goto fail;
 	}
-	/* set default channel */
-	/* composite */
+	 
+	 
 	write_reg_fp(client, 0x20, 0x020 | 1);
 	write_reg_fp(client, 0x21, 0x662);
 	write_reg_fp(client, 0x140, 0x060);
 
-	/* set default audio input */
+	 
 	state->audio_input = 0;
-	write_reg(client, 0x08, 0x02); /* Line In */
+	write_reg(client, 0x08, 0x02);  
 
 	if (mutex_lock_interruptible(&usb->i2c_lock) == 0) {
 		data = kzalloc(16, GFP_KERNEL);

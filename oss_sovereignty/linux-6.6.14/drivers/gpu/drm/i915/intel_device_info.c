@@ -1,26 +1,4 @@
-/*
- * Copyright © 2016 Intel Corporation
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice (including the next
- * paragraph) shall be included in all copies or substantial portions of the
- * Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
- * IN THE SOFTWARE.
- *
- */
+ 
 
 #include <linux/string_helpers.h>
 
@@ -233,10 +211,10 @@ static void intel_device_info_subplatform_init(struct drm_i915_private *i915)
 	u16 devid = INTEL_DEVID(i915);
 	u32 mask = 0;
 
-	/* Make sure IS_<platform> checks are working. */
+	 
 	RUNTIME_INFO(i915)->platform_mask[pi] = BIT(pb);
 
-	/* Find and mark subplatform bits based on the PCI device id. */
+	 
 	if (find_devid(devid, subplatform_ult_ids,
 		       ARRAY_SIZE(subplatform_ult_ids))) {
 		mask = BIT(INTEL_SUBPLATFORM_ULT);
@@ -246,7 +224,7 @@ static void intel_device_info_subplatform_init(struct drm_i915_private *i915)
 			      ARRAY_SIZE(subplatform_ulx_ids))) {
 		mask = BIT(INTEL_SUBPLATFORM_ULX);
 		if (IS_HASWELL(i915) || IS_BROADWELL(i915)) {
-			/* ULX machines are also considered ULT. */
+			 
 			mask |= BIT(INTEL_SUBPLATFORM_ULT);
 			DISPLAY_RUNTIME_INFO(i915)->port_mask &= ~BIT(PORT_D);
 		}
@@ -307,33 +285,21 @@ static void ip_ver_read(struct drm_i915_private *i915, u32 offset, struct intel_
 	ip->rel = REG_FIELD_GET(GMD_ID_RELEASE_MASK, val);
 	ip->step = REG_FIELD_GET(GMD_ID_STEP, val);
 
-	/* Sanity check against expected versions from device info */
+	 
 	if (IP_VER(ip->ver, ip->rel) < IP_VER(expected_ver, expected_rel))
 		drm_dbg(&i915->drm,
 			"Hardware reports GMD IP version %u.%u (REG[0x%x] = 0x%08x) but minimum expected is %u.%u\n",
 			ip->ver, ip->rel, offset, val, expected_ver, expected_rel);
 }
 
-/*
- * Setup the graphics version for the current device.  This must be done before
- * any code that performs checks on GRAPHICS_VER or DISPLAY_VER, so this
- * function should be called very early in the driver initialization sequence.
- *
- * Regular MMIO access is not yet setup at the point this function is called so
- * we peek at the appropriate MMIO offset directly.  The GMD_ID register is
- * part of an 'always on' power well by design, so we don't need to worry about
- * forcewake while reading it.
- */
+ 
 static void intel_ipver_early_init(struct drm_i915_private *i915)
 {
 	struct intel_runtime_info *runtime = RUNTIME_INFO(i915);
 
 	if (!HAS_GMD_ID(i915)) {
 		drm_WARN_ON(&i915->drm, RUNTIME_INFO(i915)->graphics.ip.ver > 12);
-		/*
-		 * On older platforms, graphics and media share the same ip
-		 * version and release.
-		 */
+		 
 		RUNTIME_INFO(i915)->media.ip =
 			RUNTIME_INFO(i915)->graphics.ip;
 		return;
@@ -341,7 +307,7 @@ static void intel_ipver_early_init(struct drm_i915_private *i915)
 
 	ip_ver_read(i915, i915_mmio_reg_offset(GMD_ID_GRAPHICS),
 		    &runtime->graphics.ip);
-	/* Wa_22012778468 */
+	 
 	if (runtime->graphics.ip.ver == 0x0 &&
 	    INTEL_INFO(i915)->platform == INTEL_METEORLAKE) {
 		RUNTIME_INFO(i915)->graphics.ip.ver = 12;
@@ -351,13 +317,7 @@ static void intel_ipver_early_init(struct drm_i915_private *i915)
 		    &runtime->media.ip);
 }
 
-/**
- * intel_device_info_runtime_init_early - initialize early runtime info
- * @i915: the i915 device
- *
- * Determine early intel_device_info fields at runtime. This function needs
- * to be called before the MMIO has been setup.
- */
+ 
 void intel_device_info_runtime_init_early(struct drm_i915_private *i915)
 {
 	intel_ipver_early_init(i915);
@@ -366,22 +326,7 @@ void intel_device_info_runtime_init_early(struct drm_i915_private *i915)
 
 static const struct intel_display_device_info no_display = {};
 
-/**
- * intel_device_info_runtime_init - initialize runtime info
- * @dev_priv: the i915 device
- *
- * Determine various intel_device_info fields at runtime.
- *
- * Use it when either:
- *   - it's judged too laborious to fill n static structures with the limit
- *     when a simple if statement does the job,
- *   - run-time checks (eg read fuse/strap registers) are needed.
- *
- * This function needs to be called:
- *   - after the MMIO has been setup as we are reading registers,
- *   - after the PCH has been detected,
- *   - before the first usage of the fields it can tweak.
- */
+ 
 void intel_device_info_runtime_init(struct drm_i915_private *dev_priv)
 {
 	struct intel_runtime_info *runtime = RUNTIME_INFO(dev_priv);
@@ -389,14 +334,14 @@ void intel_device_info_runtime_init(struct drm_i915_private *dev_priv)
 	if (HAS_DISPLAY(dev_priv))
 		intel_display_device_info_runtime_init(dev_priv);
 
-	/* Display may have been disabled by runtime init */
+	 
 	if (!HAS_DISPLAY(dev_priv)) {
 		dev_priv->drm.driver_features &= ~(DRIVER_MODESET |
 						   DRIVER_ATOMIC);
 		dev_priv->display.info.__device_info = &no_display;
 	}
 
-	/* Disable nuclear pageflip by default on pre-g4x */
+	 
 	if (!dev_priv->params.nuclear_pageflip &&
 	    DISPLAY_VER(dev_priv) < 5 && !IS_G4X(dev_priv))
 		dev_priv->drm.driver_features &= ~DRIVER_ATOMIC;
@@ -414,11 +359,7 @@ void intel_device_info_runtime_init(struct drm_i915_private *dev_priv)
 
 }
 
-/*
- * Set up device info and initial runtime info at driver create.
- *
- * Note: i915 is only an allocated blob of memory at this point.
- */
+ 
 void intel_device_info_driver_create(struct drm_i915_private *i915,
 				     u16 device_id,
 				     const struct intel_device_info *match_info)
@@ -426,14 +367,14 @@ void intel_device_info_driver_create(struct drm_i915_private *i915,
 	struct intel_runtime_info *runtime;
 	u16 ver, rel, step;
 
-	/* Setup INTEL_INFO() */
+	 
 	i915->__info = match_info;
 
-	/* Initialize initial runtime info from static const data and pdev. */
+	 
 	runtime = RUNTIME_INFO(i915);
 	memcpy(runtime, &INTEL_INFO(i915)->__runtime, sizeof(*runtime));
 
-	/* Probe display support */
+	 
 	i915->display.info.__device_info = intel_display_device_probe(i915, HAS_GMD_ID(i915),
 								      &ver, &rel, &step);
 	memcpy(DISPLAY_RUNTIME_INFO(i915),

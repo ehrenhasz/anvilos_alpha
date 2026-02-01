@@ -1,22 +1,18 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Clocksource driver for Loongson-1 SoC
- *
- * Copyright (c) 2023 Keguang Zhang <keguang.zhang@gmail.com>
- */
+
+ 
 
 #include <linux/clockchips.h>
 #include <linux/interrupt.h>
 #include <linux/sizes.h>
 #include "timer-of.h"
 
-/* Loongson-1 PWM Timer Register Definitions */
+ 
 #define PWM_CNTR		0x0
 #define PWM_HRC			0x4
 #define PWM_LRC			0x8
 #define PWM_CTRL		0xc
 
-/* PWM Control Register Bits */
+ 
 #define INT_LRC_EN		BIT(11)
 #define INT_HRC_EN		BIT(10)
 #define CNTR_RST		BIT(7)
@@ -150,11 +146,7 @@ static struct timer_of ls1x_to = {
 	},
 };
 
-/*
- * Since the PWM timer overflows every two ticks, its not very useful
- * to just read by itself. So use jiffies to emulate a free
- * running counter:
- */
+ 
 static u64 ls1x_clocksource_read(struct clocksource *cs)
 {
 	struct ls1x_clocksource *ls1x_cs = to_ls1x_clksrc(cs);
@@ -165,33 +157,12 @@ static u64 ls1x_clocksource_read(struct clocksource *cs)
 	static u32 old_jifs;
 
 	raw_spin_lock_irqsave(&ls1x_timer_lock, flags);
-	/*
-	 * Although our caller may have the read side of xtime_lock,
-	 * this is now a seqlock, and we are cheating in this routine
-	 * by having side effects on state that we cannot undo if
-	 * there is a collision on the seqlock and our caller has to
-	 * retry.  (Namely, old_jifs and old_count.)  So we must treat
-	 * jiffies as volatile despite the lock.  We read jiffies
-	 * before latching the timer count to guarantee that although
-	 * the jiffies value might be older than the count (that is,
-	 * the counter may underflow between the last point where
-	 * jiffies was incremented and the point where we latch the
-	 * count), it cannot be newer.
-	 */
+	 
 	jifs = jiffies;
-	/* read the count */
+	 
 	count = readl(ls1x_cs->reg_base + PWM_CNTR);
 
-	/*
-	 * It's possible for count to appear to go the wrong way for this
-	 * reason:
-	 *
-	 *  The timer counter underflows, but we haven't handled the resulting
-	 *  interrupt and incremented jiffies yet.
-	 *
-	 * Previous attempts to handle these cases intelligently were buggy, so
-	 * we just do the simple thing now.
-	 */
+	 
 	if (count < old_count && jifs == old_jifs)
 		count = old_count;
 

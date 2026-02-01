@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * linux/drivers/video/omap2/dss/manager.c
- *
- * Copyright (C) 2009 Nokia Corporation
- * Author: Tomi Valkeinen <tomi.valkeinen@nokia.com>
- *
- * Some code and ideas taken from drivers/video/omap/ driver
- * by Imre Deak.
- */
+
+ 
 
 #define DSS_SUBSYS_NAME "MANAGER"
 
@@ -121,11 +113,7 @@ int dss_mgr_simple_check(struct omap_overlay_manager *mgr,
 		const struct omap_overlay_manager_info *info)
 {
 	if (dss_has_feature(FEAT_ALPHA_FIXED_ZORDER)) {
-		/*
-		 * OMAP3 supports only graphics source transparency color key
-		 * and alpha blending simultaneously. See TRM 15.4.2.4.2.2
-		 * Alpha Mode.
-		 */
+		 
 		if (info->partial_alpha_enabled && info->trans_enabled
 			&& info->trans_key_type != OMAP_DSS_COLOR_KEY_GFX_DST) {
 			DSSERR("check_manager: illegal transparency key\n");
@@ -197,15 +185,11 @@ static int dss_mgr_check_lcd_config(struct omap_overlay_manager *mgr,
 	if (dl != 12 && dl != 16 && dl != 18 && dl != 24)
 		return -EINVAL;
 
-	/* fifohandcheck should be used only with stallmode */
+	 
 	if (!stallmode && fifohandcheck)
 		return -EINVAL;
 
-	/*
-	 * io pad mode can be only checked by using dssdev connected to the
-	 * manager. Ignore checking these for now, add checks when manager
-	 * is capable of holding information related to the connected interface
-	 */
+	 
 
 	return 0;
 }

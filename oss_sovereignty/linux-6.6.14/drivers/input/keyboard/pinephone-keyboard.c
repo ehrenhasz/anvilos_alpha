@@ -1,6 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0-only
-//
-// Copyright (C) 2021-2022 Samuel Holland <samuel@sholland.org>
+
+
+
 
 #include <linux/crc8.h>
 #include <linux/delay.h>
@@ -39,7 +39,7 @@
 #define PPKB_ROWS			6
 #define PPKB_COLS			12
 
-/* Size of the scan buffer, including the CRC byte at the beginning. */
+ 
 #define PPKB_BUF_LEN			(1 + PPKB_COLS)
 
 static const uint32_t ppkb_keymap[] = {
@@ -103,7 +103,7 @@ static const uint32_t ppkb_keymap[] = {
 	KEY(5,  3, KEY_LEFTALT),
 	KEY(5,  5, KEY_RIGHTALT),
 
-	/* FN layer */
+	 
 	KEY(PPKB_ROWS + 0,  0, KEY_FN_ESC),
 	KEY(PPKB_ROWS + 0,  1, KEY_F1),
 	KEY(PPKB_ROWS + 0,  2, KEY_F2),
@@ -171,14 +171,14 @@ static int ppkb_adap_smbus_xfer(struct i2c_adapter *adap, u16 addr,
 	if (ret)
 		return ret;
 
-	/* Read back the command status until it passes or fails. */
+	 
 	do {
 		usleep_range(300, 500);
 		ret = i2c_smbus_read_byte_data(client, PPKB_SYS_COMMAND);
 	} while (ret == buf[2]);
 	if (ret < 0)
 		return ret;
-	/* Commands return 0x00 on success and 0xff on failure. */
+	 
 	if (ret)
 		return -EIO;
 
@@ -245,15 +245,12 @@ static void ppkb_update(struct i2c_client *client)
 			if (!(changed & mask))
 				continue;
 
-			/*
-			 * Save off the FN key state when the key was pressed,
-			 * and use that to determine the code during a release.
-			 */
+			 
 			fn_state = value ? ppkb->fn_pressed : ppkb->fn_state[col] & mask;
 			if (fn_state)
 				ppkb->fn_state[col] ^= mask;
 
-			/* The FN layer is a second set of rows. */
+			 
 			code = MATRIX_SCAN_CODE(fn_state ? PPKB_ROWS + row : row,
 						col, row_shift);
 			input_event(ppkb->input, EV_MSC, MSC_SCAN, code);
@@ -361,7 +358,7 @@ static int ppkb_probe(struct i2c_client *client)
 		return -EINVAL;
 	}
 
-	/* Disable scan by default to save power. */
+	 
 	error = ppkb_set_scan(client, false);
 	if (error)
 		return error;

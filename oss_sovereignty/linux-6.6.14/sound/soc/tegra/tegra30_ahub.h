@@ -1,14 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * tegra30_ahub.h - Definitions for Tegra30 AHUB driver
- *
- * Copyright (c) 2011,2012, NVIDIA CORPORATION.  All rights reserved.
- */
+ 
+ 
 
 #ifndef __TEGRA30_AHUB_H__
 #define __TEGRA30_AHUB_H__
 
-/* Fields in *_CIF_RX/TX_CTRL; used by AHUB FIFOs, and all other audio modules */
+ 
 
 #define TEGRA30_AUDIOCIF_CTRL_FIFO_THRESHOLD_SHIFT	28
 #define TEGRA30_AUDIOCIF_CTRL_FIFO_THRESHOLD_MASK_US	0xf
@@ -18,22 +14,22 @@
 #define TEGRA124_AUDIOCIF_CTRL_FIFO_THRESHOLD_MASK_US	0x3f
 #define TEGRA124_AUDIOCIF_CTRL_FIFO_THRESHOLD_MASK	(TEGRA124_AUDIOCIF_CTRL_FIFO_THRESHOLD_MASK_US << TEGRA124_AUDIOCIF_CTRL_FIFO_THRESHOLD_SHIFT)
 
-/* Channel count minus 1 */
+ 
 #define TEGRA30_AUDIOCIF_CTRL_AUDIO_CHANNELS_SHIFT	24
 #define TEGRA30_AUDIOCIF_CTRL_AUDIO_CHANNELS_MASK_US	7
 #define TEGRA30_AUDIOCIF_CTRL_AUDIO_CHANNELS_MASK	(TEGRA30_AUDIOCIF_CTRL_AUDIO_CHANNELS_MASK_US << TEGRA30_AUDIOCIF_CTRL_AUDIO_CHANNELS_SHIFT)
 
-/* Channel count minus 1 */
+ 
 #define TEGRA124_AUDIOCIF_CTRL_AUDIO_CHANNELS_SHIFT	20
 #define TEGRA124_AUDIOCIF_CTRL_AUDIO_CHANNELS_MASK_US	0xf
 #define TEGRA124_AUDIOCIF_CTRL_AUDIO_CHANNELS_MASK	(TEGRA124_AUDIOCIF_CTRL_AUDIO_CHANNELS_MASK_US << TEGRA124_AUDIOCIF_CTRL_AUDIO_CHANNELS_SHIFT)
 
-/* Channel count minus 1 */
+ 
 #define TEGRA30_AUDIOCIF_CTRL_CLIENT_CHANNELS_SHIFT	16
 #define TEGRA30_AUDIOCIF_CTRL_CLIENT_CHANNELS_MASK_US	7
 #define TEGRA30_AUDIOCIF_CTRL_CLIENT_CHANNELS_MASK	(TEGRA30_AUDIOCIF_CTRL_CLIENT_CHANNELS_MASK_US << TEGRA30_AUDIOCIF_CTRL_CLIENT_CHANNELS_SHIFT)
 
-/* Channel count minus 1 */
+ 
 #define TEGRA124_AUDIOCIF_CTRL_CLIENT_CHANNELS_SHIFT	16
 #define TEGRA124_AUDIOCIF_CTRL_CLIENT_CHANNELS_MASK_US	0xf
 #define TEGRA124_AUDIOCIF_CTRL_CLIENT_CHANNELS_MASK	(TEGRA30_AUDIOCIF_CTRL_CLIENT_CHANNELS_MASK_US << TEGRA30_AUDIOCIF_CTRL_CLIENT_CHANNELS_SHIFT)
@@ -115,9 +111,9 @@
 #define TEGRA30_AUDIOCIF_CTRL_MONO_CONV_ZERO		(TEGRA30_AUDIOCIF_MONO_CONV_ZERO << TEGRA30_AUDIOCIF_CTRL_MONO_CONV_SHIFT)
 #define TEGRA30_AUDIOCIF_CTRL_MONO_CONV_COPY		(TEGRA30_AUDIOCIF_MONO_CONV_COPY << TEGRA30_AUDIOCIF_CTRL_MONO_CONV_SHIFT)
 
-/* Registers within TEGRA30_AUDIO_CLUSTER_BASE */
+ 
 
-/* TEGRA30_AHUB_CHANNEL_CTRL */
+ 
 
 #define TEGRA30_AHUB_CHANNEL_CTRL			0x0
 #define TEGRA30_AHUB_CHANNEL_CTRL_STRIDE		0x20
@@ -153,7 +149,7 @@
 #define TEGRA30_AHUB_CHANNEL_CTRL_RX_PACK_8_4		(TEGRA30_PACK_8_4                          << TEGRA30_AHUB_CHANNEL_CTRL_RX_PACK_SHIFT)
 #define TEGRA30_AHUB_CHANNEL_CTRL_RX_PACK_16		(TEGRA30_PACK_16                           << TEGRA30_AHUB_CHANNEL_CTRL_RX_PACK_SHIFT)
 
-/* TEGRA30_AHUB_CHANNEL_CLEAR */
+ 
 
 #define TEGRA30_AHUB_CHANNEL_CLEAR			0x4
 #define TEGRA30_AHUB_CHANNEL_CLEAR_STRIDE		0x20
@@ -161,7 +157,7 @@
 #define TEGRA30_AHUB_CHANNEL_CLEAR_TX_SOFT_RESET	(1 << 31)
 #define TEGRA30_AHUB_CHANNEL_CLEAR_RX_SOFT_RESET	(1 << 30)
 
-/* TEGRA30_AHUB_CHANNEL_STATUS */
+ 
 
 #define TEGRA30_AHUB_CHANNEL_STATUS			0x8
 #define TEGRA30_AHUB_CHANNEL_STATUS_STRIDE		0x20
@@ -175,33 +171,33 @@
 #define TEGRA30_AHUB_CHANNEL_STATUS_TX_TRIG		(1 << 1)
 #define TEGRA30_AHUB_CHANNEL_STATUS_RX_TRIG		(1 << 0)
 
-/* TEGRA30_AHUB_CHANNEL_TXFIFO */
+ 
 
 #define TEGRA30_AHUB_CHANNEL_TXFIFO			0xc
 #define TEGRA30_AHUB_CHANNEL_TXFIFO_STRIDE		0x20
 #define TEGRA30_AHUB_CHANNEL_TXFIFO_COUNT		4
 
-/* TEGRA30_AHUB_CHANNEL_RXFIFO */
+ 
 
 #define TEGRA30_AHUB_CHANNEL_RXFIFO			0x10
 #define TEGRA30_AHUB_CHANNEL_RXFIFO_STRIDE		0x20
 #define TEGRA30_AHUB_CHANNEL_RXFIFO_COUNT		4
 
-/* TEGRA30_AHUB_CIF_TX_CTRL */
+ 
 
 #define TEGRA30_AHUB_CIF_TX_CTRL			0x14
 #define TEGRA30_AHUB_CIF_TX_CTRL_STRIDE			0x20
 #define TEGRA30_AHUB_CIF_TX_CTRL_COUNT			4
-/* Uses field from TEGRA30_AUDIOCIF_CTRL_* */
+ 
 
-/* TEGRA30_AHUB_CIF_RX_CTRL */
+ 
 
 #define TEGRA30_AHUB_CIF_RX_CTRL			0x18
 #define TEGRA30_AHUB_CIF_RX_CTRL_STRIDE			0x20
 #define TEGRA30_AHUB_CIF_RX_CTRL_COUNT			4
-/* Uses field from TEGRA30_AUDIOCIF_CTRL_* */
+ 
 
-/* TEGRA30_AHUB_CONFIG_LINK_CTRL */
+ 
 
 #define TEGRA30_AHUB_CONFIG_LINK_CTRL					0x80
 #define TEGRA30_AHUB_CONFIG_LINK_CTRL_MASTER_FIFO_FULL_CNT_SHIFT	28
@@ -217,7 +213,7 @@
 #define TEGRA30_AHUB_CONFIG_LINK_CTRL_CLEAR_TIMEOUT_CNTR		(1 << 1)
 #define TEGRA30_AHUB_CONFIG_LINK_CTRL_SOFT_RESET			(1 << 0)
 
-/* TEGRA30_AHUB_MISC_CTRL */
+ 
 
 #define TEGRA30_AHUB_MISC_CTRL				0x84
 #define TEGRA30_AHUB_MISC_CTRL_AUDIO_ACTIVE		(1 << 31)
@@ -225,7 +221,7 @@
 #define TEGRA30_AHUB_MISC_CTRL_AUDIO_OBS_SEL_SHIFT	0
 #define TEGRA30_AHUB_MISC_CTRL_AUDIO_OBS_SEL_MASK	(0x1f << TEGRA30_AHUB_MISC_CTRL_AUDIO_OBS_SEL_SHIFT)
 
-/* TEGRA30_AHUB_APBDMA_LIVE_STATUS */
+ 
 
 #define TEGRA30_AHUB_APBDMA_LIVE_STATUS				0x88
 #define TEGRA30_AHUB_APBDMA_LIVE_STATUS_CH3_RX_CIF_FIFO_FULL	(1 << 31)
@@ -261,7 +257,7 @@
 #define TEGRA30_AHUB_APBDMA_LIVE_STATUS_CH0_RX_DMA_FIFO_EMPTY	(1 << 1)
 #define TEGRA30_AHUB_APBDMA_LIVE_STATUS_CH0_TX_DMA_FIFO_EMPTY	(1 << 0)
 
-/* TEGRA30_AHUB_I2S_LIVE_STATUS */
+ 
 
 #define TEGRA30_AHUB_I2S_LIVE_STATUS				0x8c
 #define TEGRA30_AHUB_I2S_LIVE_STATUS_I2S4_RX_FIFO_FULL		(1 << 29)
@@ -295,7 +291,7 @@
 #define TEGRA30_AHUB_I2S_LIVE_STATUS_I2S0_RX_FIFO_EMPTY		(1 << 1)
 #define TEGRA30_AHUB_I2S_LIVE_STATUS_I2S0_TX_FIFO_EMPTY		(1 << 0)
 
-/* TEGRA30_AHUB_DAM0_LIVE_STATUS */
+ 
 
 #define TEGRA30_AHUB_DAM_LIVE_STATUS				0x90
 #define TEGRA30_AHUB_DAM_LIVE_STATUS_STRIDE			0x8
@@ -310,7 +306,7 @@
 #define TEGRA30_AHUB_DAM_LIVE_STATUS_RX1FIFO_EMPTY		(1 << 1)
 #define TEGRA30_AHUB_DAM_LIVE_STATUS_RX0FIFO_EMPTY		(1 << 0)
 
-/* TEGRA30_AHUB_SPDIF_LIVE_STATUS */
+ 
 
 #define TEGRA30_AHUB_SPDIF_LIVE_STATUS				0xa8
 #define TEGRA30_AHUB_SPDIF_LIVE_STATUS_USER_TX_ENABLED		(1 << 11)
@@ -326,95 +322,79 @@
 #define TEGRA30_AHUB_SPDIF_LIVE_STATUS_DATA_TXFIFO_EMPTY	(1 << 1)
 #define TEGRA30_AHUB_SPDIF_LIVE_STATUS_DATA_RXFIFO_EMPTY	(1 << 0)
 
-/* TEGRA30_AHUB_I2S_INT_MASK */
+ 
 
 #define TEGRA30_AHUB_I2S_INT_MASK				0xb0
 
-/* TEGRA30_AHUB_DAM_INT_MASK */
+ 
 
 #define TEGRA30_AHUB_DAM_INT_MASK				0xb4
 
-/* TEGRA30_AHUB_SPDIF_INT_MASK */
+ 
 
 #define TEGRA30_AHUB_SPDIF_INT_MASK				0xbc
 
-/* TEGRA30_AHUB_APBIF_INT_MASK */
+ 
 
 #define TEGRA30_AHUB_APBIF_INT_MASK				0xc0
 
-/* TEGRA30_AHUB_I2S_INT_STATUS */
+ 
 
 #define TEGRA30_AHUB_I2S_INT_STATUS				0xc8
 
-/* TEGRA30_AHUB_DAM_INT_STATUS */
+ 
 
 #define TEGRA30_AHUB_DAM_INT_STATUS				0xcc
 
-/* TEGRA30_AHUB_SPDIF_INT_STATUS */
+ 
 
 #define TEGRA30_AHUB_SPDIF_INT_STATUS				0xd4
 
-/* TEGRA30_AHUB_APBIF_INT_STATUS */
+ 
 
 #define TEGRA30_AHUB_APBIF_INT_STATUS				0xd8
 
-/* TEGRA30_AHUB_I2S_INT_SOURCE */
+ 
 
 #define TEGRA30_AHUB_I2S_INT_SOURCE				0xe0
 
-/* TEGRA30_AHUB_DAM_INT_SOURCE */
+ 
 
 #define TEGRA30_AHUB_DAM_INT_SOURCE				0xe4
 
-/* TEGRA30_AHUB_SPDIF_INT_SOURCE */
+ 
 
 #define TEGRA30_AHUB_SPDIF_INT_SOURCE				0xec
 
-/* TEGRA30_AHUB_APBIF_INT_SOURCE */
+ 
 
 #define TEGRA30_AHUB_APBIF_INT_SOURCE				0xf0
 
-/* TEGRA30_AHUB_I2S_INT_SET */
+ 
 
 #define TEGRA30_AHUB_I2S_INT_SET				0xf8
 
-/* TEGRA30_AHUB_DAM_INT_SET */
+ 
 
 #define TEGRA30_AHUB_DAM_INT_SET				0xfc
 
-/* TEGRA30_AHUB_SPDIF_INT_SET */
+ 
 
 #define TEGRA30_AHUB_SPDIF_INT_SET				0x100
 
-/* TEGRA30_AHUB_APBIF_INT_SET */
+ 
 
 #define TEGRA30_AHUB_APBIF_INT_SET				0x104
 
-/* Registers within TEGRA30_AHUB_BASE */
+ 
 
 #define TEGRA30_AHUB_AUDIO_RX					0x0
 #define TEGRA30_AHUB_AUDIO_RX_STRIDE				0x4
 #define TEGRA30_AHUB_AUDIO_RX_COUNT				17
-/* This register repeats once for each entry in enum tegra30_ahub_rxcif */
-/* The fields in this register are 1 bit per entry in tegra30_ahub_txcif */
+ 
+ 
 
-/*
- * Terminology:
- * AHUB: Audio Hub; a cross-bar switch between the audio devices: DMA FIFOs,
- *       I2S controllers, SPDIF controllers, and DAMs.
- * XBAR: The core cross-bar component of the AHUB.
- * CIF:  Client Interface; the HW module connecting an audio device to the
- *       XBAR.
- * DAM:  Digital Audio Mixer: A HW module that mixes multiple audio streams,
- *       possibly including sample-rate conversion.
- *
- * Each TX CIF transmits data into the XBAR. Each RX CIF can receive audio
- * transmitted by a particular TX CIF.
- *
- * This driver is currently very simplistic; many HW features are not
- * exposed; DAMs are not supported, only 16-bit stereo audio is supported,
- * etc.
- */
+ 
 
 enum tegra30_ahub_txcif {
 	TEGRA30_AHUB_TXCIF_APBIF_TX0,
@@ -495,17 +475,7 @@ struct tegra30_ahub_soc_data {
 	void (*set_audio_cif)(struct regmap *regmap,
 			      unsigned int reg,
 			      struct tegra30_ahub_cif_conf *conf);
-	/*
-	 * FIXME: There are many more differences in HW, such as:
-	 * - More APBIF channels.
-	 * - Extra separate chunks of register address space to represent
-	 *   the extra APBIF channels.
-	 * - More units connected to the AHUB, so that tegra30_ahub_[rt]xcif
-	 *   need expansion, coupled with there being more defined bits in
-	 *   the AHUB routing registers.
-	 * However, the driver doesn't support those new features yet, so we
-	 * don't represent them here yet.
-	 */
+	 
 };
 
 struct tegra30_ahub {

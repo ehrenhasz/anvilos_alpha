@@ -1,28 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright 2022 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+
+ 
 
 #include <drm/drm_atomic_helper.h>
 #include <drm/drm_blend.h>
@@ -38,12 +15,7 @@
 #include "gc/gc_11_0_0_offset.h"
 #include "gc/gc_11_0_0_sh_mask.h"
 
-/*
- * TODO: these are currently initialized to rgb formats only.
- * For future use cases we should either initialize them dynamically based on
- * plane capabilities, or initialize this array to all formats, so internal drm
- * check will succeed, and let DC implement proper check
- */
+ 
 static const uint32_t rgb_formats[] = {
 	DRM_FORMAT_XRGB8888,
 	DRM_FORMAT_ARGB8888,
@@ -180,7 +152,7 @@ static unsigned int modifier_gfx9_swizzle_mode(uint64_t modifier)
 static void fill_gfx8_tiling_info_from_flags(union dc_tiling_info *tiling_info,
 				 uint64_t tiling_flags)
 {
-	/* Fill GFX8 params */
+	 
 	if (AMDGPU_TILING_GET(tiling_flags, ARRAY_MODE) == DC_ARRAY_2D_TILED_THIN1) {
 		unsigned int bankw, bankh, mtaspect, tile_split, num_banks;
 
@@ -190,7 +162,7 @@ static void fill_gfx8_tiling_info_from_flags(union dc_tiling_info *tiling_info,
 		tile_split = AMDGPU_TILING_GET(tiling_flags, TILE_SPLIT);
 		num_banks = AMDGPU_TILING_GET(tiling_flags, NUM_BANKS);
 
-		/* XXX fix me for VI */
+		 
 		tiling_info->gfx8.num_banks = num_banks;
 		tiling_info->gfx8.array_mode =
 				DC_ARRAY_2D_TILED_THIN1;
@@ -212,7 +184,7 @@ static void fill_gfx8_tiling_info_from_flags(union dc_tiling_info *tiling_info,
 static void fill_gfx9_tiling_info_from_device(const struct amdgpu_device *adev,
 				  union dc_tiling_info *tiling_info)
 {
-	/* Fill GFX9 params */
+	 
 	tiling_info->gfx9.num_pipes =
 		adev->gfx.config.gb_addr_config_fields.num_pipes;
 	tiling_info->gfx9.num_banks =
@@ -254,7 +226,7 @@ static void fill_gfx9_tiling_info_from_modifier(const struct amdgpu_device *adev
 	} else {
 		tiling_info->gfx9.num_banks = 1u << mod_bank_xor_bits;
 
-		/* for DCC we know it isn't rb aligned, so rb_per_se doesn't matter. */
+		 
 	}
 }
 
@@ -389,7 +361,7 @@ static void add_gfx10_1_modifiers(const struct amdgpu_device *adev,
 		    AMD_FMT_MOD_SET(PIPE_XOR_BITS, pipe_xor_bits));
 
 
-	/* Only supported for 64bpp, will be filtered in dm_plane_format_mod_supported */
+	 
 	add_modifier(mods, size, capacity, AMD_FMT_MOD |
 		    AMD_FMT_MOD_SET(TILE, AMD_FMT_MOD_TILE_GFX9_64K_D) |
 		    AMD_FMT_MOD_SET(TILE_VERSION, AMD_FMT_MOD_TILE_VER_GFX9));
@@ -412,13 +384,10 @@ static void add_gfx9_modifiers(const struct amdgpu_device *adev,
 
 
 	if (adev->family == AMDGPU_FAMILY_RV) {
-		/* Raven2 and later */
+		 
 		bool has_constant_encode = adev->asic_type > CHIP_RAVEN || adev->external_rev_id >= 0x81;
 
-		/*
-		 * No _D DCC swizzles yet because we only allow 32bpp, which
-		 * doesn't support _D on DCN
-		 */
+		 
 
 		if (has_constant_encode) {
 			add_modifier(mods, size, capacity, AMD_FMT_MOD |
@@ -472,10 +441,7 @@ static void add_gfx9_modifiers(const struct amdgpu_device *adev,
 			    AMD_FMT_MOD_SET(PIPE, pipes));
 	}
 
-	/*
-	 * Only supported for 64bpp on Raven, will be filtered on format in
-	 * dm_plane_format_mod_supported.
-	 */
+	 
 	add_modifier(mods, size, capacity, AMD_FMT_MOD |
 		    AMD_FMT_MOD_SET(TILE, AMD_FMT_MOD_TILE_GFX9_64K_D_X) |
 		    AMD_FMT_MOD_SET(TILE_VERSION, AMD_FMT_MOD_TILE_VER_GFX9) |
@@ -490,10 +456,7 @@ static void add_gfx9_modifiers(const struct amdgpu_device *adev,
 			    AMD_FMT_MOD_SET(BANK_XOR_BITS, bank_xor_bits));
 	}
 
-	/*
-	 * Only supported for 64bpp on Raven, will be filtered on format in
-	 * dm_plane_format_mod_supported.
-	 */
+	 
 	add_modifier(mods, size, capacity, AMD_FMT_MOD |
 		    AMD_FMT_MOD_SET(TILE, AMD_FMT_MOD_TILE_GFX9_64K_D) |
 		    AMD_FMT_MOD_SET(TILE_VERSION, AMD_FMT_MOD_TILE_VER_GFX9));
@@ -567,7 +530,7 @@ static void add_gfx10_3_modifiers(const struct amdgpu_device *adev,
 		    AMD_FMT_MOD_SET(PIPE_XOR_BITS, pipe_xor_bits) |
 		    AMD_FMT_MOD_SET(PACKERS, pkrs));
 
-	/* Only supported for 64bpp, will be filtered in dm_plane_format_mod_supported */
+	 
 	add_modifier(mods, size, capacity, AMD_FMT_MOD |
 		    AMD_FMT_MOD_SET(TILE, AMD_FMT_MOD_TILE_GFX9_64K_D) |
 		    AMD_FMT_MOD_SET(TILE_VERSION, AMD_FMT_MOD_TILE_VER_GFX9));
@@ -591,9 +554,7 @@ static void add_gfx11_modifiers(struct amdgpu_device *adev,
 	uint64_t modifier_dcc_best;
 	uint64_t modifier_dcc_4k;
 
-	/* TODO: GFX11 IP HW init hasnt finish and we get zero if we read from
-	 * adev->gfx.config.gb_addr_config_fields.num_{pkrs,pipes}
-	 */
+	 
 	gb_addr_config = RREG32_SOC15(GC, 0, regGB_ADDR_CONFIG);
 	ASSERT(gb_addr_config != 0);
 
@@ -603,8 +564,8 @@ static void add_gfx11_modifiers(struct amdgpu_device *adev,
 	pipe_xor_bits = ilog2(num_pipes);
 
 	for (i = 0; i < 2; i++) {
-		/* Insert the best one first. */
-		/* R_X swizzle modes are the best for rendering and DCC requires them. */
+		 
+		 
 		if (num_pipes > 16)
 			swizzle_r_x = !i ? AMD_FMT_MOD_TILE_GFX11_256K_R_X : AMD_FMT_MOD_TILE_GFX9_64K_R_X;
 		else
@@ -616,13 +577,13 @@ static void add_gfx11_modifiers(struct amdgpu_device *adev,
 			       AMD_FMT_MOD_SET(TILE, swizzle_r_x) |
 			       AMD_FMT_MOD_SET(PACKERS, pkrs);
 
-		/* DCC_CONSTANT_ENCODE is not set because it can't vary with gfx11 (it's implied to be 1). */
+		 
 		modifier_dcc_best = modifier_r_x | AMD_FMT_MOD_SET(DCC, 1) |
 				    AMD_FMT_MOD_SET(DCC_INDEPENDENT_64B, 0) |
 				    AMD_FMT_MOD_SET(DCC_INDEPENDENT_128B, 1) |
 				    AMD_FMT_MOD_SET(DCC_MAX_COMPRESSED_BLOCK, AMD_FMT_MOD_DCC_BLOCK_128B);
 
-		/* DCC settings for 4K and greater resolutions. (required by display hw) */
+		 
 		modifier_dcc_4k = modifier_r_x | AMD_FMT_MOD_SET(DCC, 1) |
 				  AMD_FMT_MOD_SET(DCC_INDEPENDENT_64B, 1) |
 				  AMD_FMT_MOD_SET(DCC_INDEPENDENT_128B, 1) |
@@ -647,7 +608,7 @@ static int get_plane_modifiers(struct amdgpu_device *adev, unsigned int plane_ty
 	uint64_t size = 0, capacity = 128;
 	*mods = NULL;
 
-	/* We have not hooked up any pre-GFX9 modifiers. */
+	 
 	if (adev->family < AMDGPU_FAMILY_AI)
 		return 0;
 
@@ -682,7 +643,7 @@ static int get_plane_modifiers(struct amdgpu_device *adev, unsigned int plane_ty
 
 	add_modifier(mods, &size, &capacity, DRM_FORMAT_MOD_LINEAR);
 
-	/* INVALID marks the end of the list. */
+	 
 	add_modifier(mods, &size, &capacity, DRM_FORMAT_MOD_INVALID);
 
 	if (!*mods)
@@ -697,11 +658,7 @@ static int get_plane_formats(const struct drm_plane *plane,
 {
 	int i, num_formats = 0;
 
-	/*
-	 * TODO: Query support for each group of formats directly from
-	 * DC plane caps. This will require adding more formats to the
-	 * caps list.
-	 */
+	 
 
 	if (plane->type == DRM_PLANE_TYPE_PRIMARY ||
 		(plane_cap && plane_cap->type == DC_PLANE_TYPE_DCN_UNIVERSAL && plane->type != DRM_PLANE_TYPE_CURSOR)) {
@@ -798,7 +755,7 @@ int amdgpu_dm_plane_fill_plane_buffer_attributes(struct amdgpu_device *adev,
 
 		plane_size->chroma_size.x = 0;
 		plane_size->chroma_size.y = 0;
-		/* TODO: set these based on surface format */
+		 
 		plane_size->chroma_size.width = fb->width / 2;
 		plane_size->chroma_size.height = fb->height / 2;
 
@@ -892,14 +849,7 @@ static int dm_plane_helper_prepare_fb(struct drm_plane *plane,
 
 	amdgpu_bo_ref(rbo);
 
-	/**
-	 * We don't do surface updates on planes that have been newly created,
-	 * but we also don't have the afb->address during atomic check.
-	 *
-	 * Fill in buffer attributes depending on the address here, but only on
-	 * newly created planes since they're not being used by DC yet and this
-	 * won't modify global state.
-	 */
+	 
 	dm_plane_state_old = to_dm_plane_state(plane->state);
 	dm_plane_state_new = to_dm_plane_state(new_state);
 
@@ -954,7 +904,7 @@ static void get_min_max_dc_plane_scaling(struct drm_device *dev,
 {
 	struct amdgpu_device *adev = drm_to_adev(dev);
 	struct dc *dc = adev->dm.dc;
-	/* Caps for all supported planes are the same on DCE and DCN 1 - 3 */
+	 
 	struct dc_plane_cap *plane_cap = &dc->caps.planes[0];
 
 	switch (fb->format->format) {
@@ -979,10 +929,7 @@ static void get_min_max_dc_plane_scaling(struct drm_device *dev,
 		break;
 	}
 
-	/*
-	 * A factor of 1 in the plane_cap means to not allow scaling, ie. use a
-	 * scaling factor of 1.0 == 1000 units.
-	 */
+	 
 	if (*max_upscale == 1)
 		*max_upscale = 1000;
 
@@ -998,9 +945,9 @@ int amdgpu_dm_plane_helper_check_state(struct drm_plane_state *state,
 	int min_scale = 0;
 	int max_scale = INT_MAX;
 
-	/* Plane enabled? Validate viewport and get scaling factors from plane caps. */
+	 
 	if (fb && state->crtc) {
-		/* Validate viewport to cover the case when only the position changes */
+		 
 		if (state->plane->type != DRM_PLANE_TYPE_CURSOR) {
 			int viewport_width = state->crtc_w;
 			int viewport_height = state->crtc_h;
@@ -1018,7 +965,7 @@ int amdgpu_dm_plane_helper_check_state(struct drm_plane_state *state,
 			if (viewport_width < 0 || viewport_height < 0) {
 				DRM_DEBUG_ATOMIC("Plane completely outside of screen\n");
 				return -EINVAL;
-			} else if (viewport_width < MIN_VIEWPORT_SIZE*2) { /* x2 for width is because of pipe-split. */
+			} else if (viewport_width < MIN_VIEWPORT_SIZE*2) {  
 				DRM_DEBUG_ATOMIC("Viewport width %d smaller than %d\n", viewport_width, MIN_VIEWPORT_SIZE*2);
 				return -EINVAL;
 			} else if (viewport_height < MIN_VIEWPORT_SIZE) {
@@ -1028,14 +975,10 @@ int amdgpu_dm_plane_helper_check_state(struct drm_plane_state *state,
 
 		}
 
-		/* Get min/max allowed scaling factors from plane caps. */
+		 
 		get_min_max_dc_plane_scaling(state->crtc->dev, fb,
 					     &min_downscale, &max_upscale);
-		/*
-		 * Convert to drm convention: 16.16 fixed point, instead of dc's
-		 * 1.0 == 1000. Also drm scaling is src/dst instead of dc's
-		 * dst/src, so min_scale = 1.0 / max_upscale, etc.
-		 */
+		 
 		min_scale = (1000 << 16) / max_upscale;
 		max_scale = (1000 << 16) / min_downscale;
 	}
@@ -1052,22 +995,11 @@ int amdgpu_dm_plane_fill_dc_scaling_info(struct amdgpu_device *adev,
 
 	memset(scaling_info, 0, sizeof(*scaling_info));
 
-	/* Source is fixed 16.16 but we ignore mantissa for now... */
+	 
 	scaling_info->src_rect.x = state->src_x >> 16;
 	scaling_info->src_rect.y = state->src_y >> 16;
 
-	/*
-	 * For reasons we don't (yet) fully understand a non-zero
-	 * src_y coordinate into an NV12 buffer can cause a
-	 * system hang on DCN1x.
-	 * To avoid hangs (and maybe be overly cautious)
-	 * let's reject both non-zero src_x and src_y.
-	 *
-	 * We currently know of only one use-case to reproduce a
-	 * scenario with non-zero src_x and src_y for NV12, which
-	 * is to gesture the YouTube Android app into full screen
-	 * on ChromeOS.
-	 */
+	 
 	if (((adev->ip_versions[DCE_HWIP][0] == IP_VERSION(1, 0, 0)) ||
 	    (adev->ip_versions[DCE_HWIP][0] == IP_VERSION(1, 0, 1))) &&
 	    (state->fb && state->fb->format->format == DRM_FORMAT_NV12 &&
@@ -1095,10 +1027,10 @@ int amdgpu_dm_plane_fill_dc_scaling_info(struct amdgpu_device *adev,
 
 	scaling_info->dst_rect.height = state->crtc_h;
 
-	/* DRM doesn't specify clipping on destination output. */
+	 
 	scaling_info->clip_rect = scaling_info->dst_rect;
 
-	/* Validate scaling per-format with DC plane caps */
+	 
 	if (state->plane && state->plane->dev && state->fb) {
 		get_min_max_dc_plane_scaling(state->plane->dev, state->fb,
 					     &min_downscale, &max_upscale);
@@ -1119,10 +1051,7 @@ int amdgpu_dm_plane_fill_dc_scaling_info(struct amdgpu_device *adev,
 	if (scale_h < min_downscale || scale_h > max_upscale)
 		return -EINVAL;
 
-	/*
-	 * The "scaling_quality" can be ignored for now, quality = 0 has DC
-	 * assume reasonable defaults based on the format.
-	 */
+	 
 
 	return 0;
 }
@@ -1169,7 +1098,7 @@ static int dm_plane_atomic_check(struct drm_plane *plane,
 static int dm_plane_atomic_async_check(struct drm_plane *plane,
 				       struct drm_atomic_state *state)
 {
-	/* Only support async updates on cursor planes. */
+	 
 	if (plane->type != DRM_PLANE_TYPE_CURSOR)
 		return -EINVAL;
 
@@ -1247,7 +1176,7 @@ void amdgpu_dm_plane_handle_cursor_update(struct drm_plane *plane,
 		return;
 
 	if (!position.enable) {
-		/* turn off cursor */
+		 
 		if (crtc_state && crtc_state->stream) {
 			mutex_lock(&adev->dm.dc_lock);
 			dc_stream_set_cursor_position(crtc_state->stream,
@@ -1269,9 +1198,7 @@ void amdgpu_dm_plane_handle_cursor_update(struct drm_plane *plane,
 	attributes.rotation_angle    = 0;
 	attributes.attribute_flags.value = 0;
 
-	/* Enable cursor degamma ROM on DCN3+ for implicit sRGB degamma in DRM
-	 * legacy gamma setup.
-	 */
+	 
 	if (crtc_state->cm_is_degamma_srgb &&
 	    adev->dm.dc->caps.color.dpp.gamma_corr)
 		attributes.attribute_flags.bits.ENABLE_CURSOR_DEGAMMA = 1;
@@ -1370,17 +1297,13 @@ static bool dm_plane_format_mod_supported(struct drm_plane *plane,
 	if (!info)
 		return false;
 
-	/*
-	 * We always have to allow these modifiers:
-	 * 1. Core DRM checks for LINEAR support if userspace does not provide modifiers.
-	 * 2. Not passing any modifiers is the same as explicitly passing INVALID.
-	 */
+	 
 	if (modifier == DRM_FORMAT_MOD_LINEAR ||
 	    modifier == DRM_FORMAT_MOD_INVALID) {
 		return true;
 	}
 
-	/* Check that the modifier is on the list of the plane's supported modifiers. */
+	 
 	for (i = 0; i < plane->modifier_count; i++) {
 		if (modifier == plane->modifiers[i])
 			break;
@@ -1388,10 +1311,7 @@ static bool dm_plane_format_mod_supported(struct drm_plane *plane,
 	if (i == plane->modifier_count)
 		return false;
 
-	/*
-	 * For D swizzle the canonical modifier depends on the bpp, so check
-	 * it here.
-	 */
+	 
 	if (AMD_FMT_MOD_GET(TILE_VERSION, modifier) == AMD_FMT_MOD_TILE_VER_GFX9 &&
 	    adev->family >= AMDGPU_FAMILY_NV) {
 		if (microtile == MICRO_SWIZZLE_D && info->cpp[0] == 4)
@@ -1403,12 +1323,10 @@ static bool dm_plane_format_mod_supported(struct drm_plane *plane,
 		return false;
 
 	if (modifier_has_dcc(modifier)) {
-		/* Per radeonsi comments 16/64 bpp are more complicated. */
+		 
 		if (info->cpp[0] != 4)
 			return false;
-		/* We support multi-planar formats, but not when combined with
-		 * additional DCC metadata planes.
-		 */
+		 
 		if (info->num_planes > 1)
 			return false;
 	}
@@ -1488,7 +1406,7 @@ int amdgpu_dm_plane_init(struct amdgpu_display_manager *dm,
 	    plane_cap &&
 	    (plane_cap->pixel_format_support.nv12 ||
 	     plane_cap->pixel_format_support.p010)) {
-		/* This only affects YUV formats. */
+		 
 		drm_plane_create_color_properties(
 			plane,
 			BIT(DRM_COLOR_YCBCR_BT601) |
@@ -1514,7 +1432,7 @@ int amdgpu_dm_plane_init(struct amdgpu_display_manager *dm,
 
 	drm_plane_helper_add(plane, &dm_plane_helper_funcs);
 
-	/* Create (reset) the plane state */
+	 
 	if (plane->funcs->reset)
 		plane->funcs->reset(plane);
 

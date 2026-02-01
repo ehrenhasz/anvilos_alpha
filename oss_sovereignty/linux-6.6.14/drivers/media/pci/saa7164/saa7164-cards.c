@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  Driver for the NXP SAA7164 PCIe bridge
- *
- *  Copyright (c) 2010-2015 Steven Toth <stoth@kernellabs.com>
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/module.h>
@@ -12,29 +8,25 @@
 
 #include "saa7164.h"
 
-/* The Bridge API needs to understand register widths (in bytes) for the
- * attached I2C devices, so we can simplify the virtual i2c mechansms
- * and keep the -i2c.c implementation clean.
- */
+ 
 #define REGLEN_0bit	0
 #define REGLEN_8bit	1
 #define REGLEN_16bit	2
 
 struct saa7164_board saa7164_boards[] = {
 	[SAA7164_BOARD_UNKNOWN] = {
-		/* Bridge will not load any firmware, without knowing
-		 * the rev this would be fatal. */
+		 
 		.name		= "Unknown",
 	},
 	[SAA7164_BOARD_UNKNOWN_REV2] = {
-		/* Bridge will load the v2 f/w and dump descriptors */
-		/* Required during new board bringup */
+		 
+		 
 		.name		= "Generic Rev2",
 		.chiprev	= SAA7164_CHIP_REV2,
 	},
 	[SAA7164_BOARD_UNKNOWN_REV3] = {
-		/* Bridge will load the v2 f/w and dump descriptors */
-		/* Required during new board bringup */
+		 
+		 
 		.name		= "Generic Rev3",
 		.chiprev	= SAA7164_CHIP_REV3,
 	},
@@ -627,8 +619,8 @@ struct saa7164_board saa7164_boards[] = {
 };
 const unsigned int saa7164_bcount = ARRAY_SIZE(saa7164_boards);
 
-/* ------------------------------------------------------------------ */
-/* PCI subsystem IDs                                                  */
+ 
+ 
 
 struct saa7164_subid saa7164_subids[] = {
 	{
@@ -675,9 +667,7 @@ struct saa7164_subid saa7164_subids[] = {
 		.subvendor = 0x0070,
 		.subdevice = 0xf111,
 		.card      = SAA7164_BOARD_HAUPPAUGE_HVR2255,
-		/* Prototype card left here for documentation purposes.
-		.card      = SAA7164_BOARD_HAUPPAUGE_HVR2255proto,
-		*/
+		 
 	}, {
 		.subvendor = 0x0070,
 		.subdevice = 0xf123,
@@ -720,7 +710,7 @@ void saa7164_card_list(struct saa7164_dev *dev)
 		       dev->name, i, saa7164_boards[i].name);
 }
 
-/* TODO: clean this define up into the -cards.c structs */
+ 
 #define PCIEBRIDGE_UNITID 2
 
 void saa7164_gpio_setup(struct saa7164_dev *dev)
@@ -737,24 +727,13 @@ void saa7164_gpio_setup(struct saa7164_dev *dev)
 	case SAA7164_BOARD_HAUPPAUGE_HVR2255proto:
 	case SAA7164_BOARD_HAUPPAUGE_HVR2255:
 	case SAA7164_BOARD_HAUPPAUGE_HVR2205:
-		/*
-		HVR2200 / HVR2250
-		GPIO 2: s5h1411 / tda10048-1 demod reset
-		GPIO 3: s5h1411 / tda10048-2 demod reset
-		GPIO 7: IRBlaster Zilog reset
-		 */
+		 
 
-		/* HVR2255
-		 * GPIO 2: lgdg3306-1 demod reset
-		 * GPIO 3: lgdt3306-2 demod reset
-		 */
+		 
 
-		/* HVR2205
-		 * GPIO 2: si2168-1 demod reset
-		 * GPIO 3: si2168-2 demod reset
-		 */
+		 
 
-		/* Reset parts by going in and out of reset */
+		 
 		saa7164_api_clear_gpiobit(dev, PCIEBRIDGE_UNITID, 2);
 		saa7164_api_clear_gpiobit(dev, PCIEBRIDGE_UNITID, 3);
 
@@ -772,47 +751,38 @@ static void hauppauge_eeprom(struct saa7164_dev *dev, u8 *eeprom_data)
 
 	tveeprom_hauppauge_analog(&tv, eeprom_data);
 
-	/* Make sure we support the board model */
+	 
 	switch (tv.model) {
 	case 88001:
-		/* Development board - Limit circulation */
-		/* WinTV-HVR2250 (PCIe, Retail, full-height bracket)
-		 * ATSC/QAM (TDA18271/S5H1411) and basic analog, no IR, FM */
+		 
+		 
 	case 88021:
-		/* WinTV-HVR2250 (PCIe, Retail, full-height bracket)
-		 * ATSC/QAM (TDA18271/S5H1411) and basic analog, MCE CIR, FM */
+		 
 		break;
 	case 88041:
-		/* WinTV-HVR2250 (PCIe, Retail, full-height bracket)
-		 * ATSC/QAM (TDA18271/S5H1411) and basic analog, no IR, FM */
+		 
 		break;
 	case 88061:
-		/* WinTV-HVR2250 (PCIe, Retail, full-height bracket)
-		 * ATSC/QAM (TDA18271/S5H1411) and basic analog, FM */
+		 
 		break;
 	case 89519:
 	case 89609:
-		/* WinTV-HVR2200 (PCIe, Retail, full-height)
-		 * DVB-T (TDA18271/TDA10048) and basic analog, no IR */
+		 
 		break;
 	case 89619:
-		/* WinTV-HVR2200 (PCIe, Retail, half-height)
-		 * DVB-T (TDA18271/TDA10048) and basic analog, no IR */
+		 
 		break;
 	case 151009:
-		/* First production board rev B2I6 */
-		/* WinTV-HVR2205 (PCIe, Retail, full-height bracket)
-		 * DVB-T/T2/C (SI2157/SI2168) and basic analog, FM */
+		 
+		 
 		break;
 	case 151609:
-		/* First production board rev B2I6 */
-		/* WinTV-HVR2205 (PCIe, Retail, half-height bracket)
-		 * DVB-T/T2/C (SI2157/SI2168) and basic analog, FM */
+		 
+		 
 		break;
 	case 151061:
-		/* First production board rev B1I6 */
-		/* WinTV-HVR2255 (PCIe, Retail, full-height bracket)
-		 * ATSC/QAM (SI2157/LGDT3306) and basic analog, FM */
+		 
+		 
 		break;
 	default:
 		printk(KERN_ERR "%s: Warning: Unknown Hauppauge model #%d\n",
@@ -851,23 +821,10 @@ void saa7164_card_setup(struct saa7164_dev *dev)
 	}
 }
 
-/* With most other drivers, the kernel expects to communicate with subdrivers
- * through i2c. This bridge does not allow that, it does not expose any direct
- * access to I2C. Instead we have to communicate through the device f/w for
- * register access to 'processing units'. Each unit has a unique
- * id, regardless of how the physical implementation occurs across
- * the three physical i2c buses. The being said if we want leverge of
- * the existing kernel drivers for tuners and demods we have to 'speak i2c',
- * to this bridge implements 3 virtual i2c buses. This is a helper function
- * for those.
- *
- * Description: Translate the kernels notion of an i2c address and bus into
- * the appropriate unitid.
- */
+ 
 int saa7164_i2caddr_to_unitid(struct saa7164_i2c *bus, int addr)
 {
-	/* For a given bus and i2c device address, return the saa7164 unique
-	 * unitid. < 0 on error */
+	 
 
 	struct saa7164_dev *dev = bus->dev;
 	struct saa7164_unit *unit;
@@ -886,15 +843,10 @@ int saa7164_i2caddr_to_unitid(struct saa7164_i2c *bus, int addr)
 	return -1;
 }
 
-/* The 7164 API needs to know the i2c register length in advance.
- * this is a helper function. Based on a specific chip addr and bus return the
- * reg length.
- */
+ 
 int saa7164_i2caddr_to_reglen(struct saa7164_i2c *bus, int addr)
 {
-	/* For a given bus and i2c device address, return the
-	 * saa7164 registry address width. < 0 on error
-	 */
+	 
 
 	struct saa7164_dev *dev = bus->dev;
 	struct saa7164_unit *unit;
@@ -913,11 +865,9 @@ int saa7164_i2caddr_to_reglen(struct saa7164_i2c *bus, int addr)
 
 	return -1;
 }
-/* TODO: implement a 'findeeprom' functio like the above and fix any other
- * eeprom related todo's in -api.c.
- */
+ 
 
-/* Translate a unitid into a x readable device name, for display purposes.  */
+ 
 char *saa7164_unitid_name(struct saa7164_dev *dev, u8 unitid)
 {
 	char *undefed = "UNDEFINED";

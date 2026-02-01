@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright © 2023 Intel Corporation
- */
+
+ 
 
 #include "gt/intel_rps.h"
 #include "i915_drv.h"
@@ -30,12 +28,7 @@ intel_handle_vblank(struct drm_i915_private *dev_priv, enum pipe pipe)
 	drm_crtc_handle_vblank(&crtc->base);
 }
 
-/**
- * ilk_update_display_irq - update DEIMR
- * @dev_priv: driver private
- * @interrupt_mask: mask of interrupt bits to update
- * @enabled_irq_mask: mask of interrupt bits to enable
- */
+ 
 void ilk_update_display_irq(struct drm_i915_private *dev_priv,
 			    u32 interrupt_mask, u32 enabled_irq_mask)
 {
@@ -66,12 +59,7 @@ void ilk_disable_display_irq(struct drm_i915_private *i915, u32 bits)
 	ilk_update_display_irq(i915, bits, 0);
 }
 
-/**
- * bdw_update_port_irq - update DE port interrupt
- * @dev_priv: driver private
- * @interrupt_mask: mask of interrupt bits to update
- * @enabled_irq_mask: mask of interrupt bits to enable
- */
+ 
 void bdw_update_port_irq(struct drm_i915_private *dev_priv,
 			 u32 interrupt_mask, u32 enabled_irq_mask)
 {
@@ -97,13 +85,7 @@ void bdw_update_port_irq(struct drm_i915_private *dev_priv,
 	}
 }
 
-/**
- * bdw_update_pipe_irq - update DE pipe interrupt
- * @dev_priv: driver private
- * @pipe: pipe whose interrupt to update
- * @interrupt_mask: mask of interrupt bits to update
- * @enabled_irq_mask: mask of interrupt bits to enable
- */
+ 
 static void bdw_update_pipe_irq(struct drm_i915_private *dev_priv,
 				enum pipe pipe, u32 interrupt_mask,
 				u32 enabled_irq_mask)
@@ -140,12 +122,7 @@ void bdw_disable_pipe_irq(struct drm_i915_private *i915,
 	bdw_update_pipe_irq(i915, pipe, bits, 0);
 }
 
-/**
- * ibx_display_interrupt_update - update SDEIMR
- * @dev_priv: driver private
- * @interrupt_mask: mask of interrupt bits to update
- * @enabled_irq_mask: mask of interrupt bits to enable
- */
+ 
 void ibx_display_interrupt_update(struct drm_i915_private *dev_priv,
 				  u32 interrupt_mask,
 				  u32 enabled_irq_mask)
@@ -187,17 +164,11 @@ u32 i915_pipestat_enable_mask(struct drm_i915_private *dev_priv,
 	if (DISPLAY_VER(dev_priv) < 5)
 		goto out;
 
-	/*
-	 * On pipe A we don't support the PSR interrupt yet,
-	 * on pipe B and C the same bit MBZ.
-	 */
+	 
 	if (drm_WARN_ON_ONCE(&dev_priv->drm,
 			     status_mask & PIPE_A_PSR_STATUS_VLV))
 		return 0;
-	/*
-	 * On pipe B and C we don't support the PSR interrupt yet, on pipe
-	 * A the same bit is for perf counters which we don't use either.
-	 */
+	 
 	if (drm_WARN_ON_ONCE(&dev_priv->drm,
 			     status_mask & PIPE_B_PSR_STATUS_VLV))
 		return 0;
@@ -274,10 +245,7 @@ static bool i915_has_asle(struct drm_i915_private *dev_priv)
 	return IS_PINEVIEW(dev_priv) || IS_MOBILE(dev_priv);
 }
 
-/**
- * i915_enable_asle_pipestat - enable ASLE pipestat for OpRegion
- * @dev_priv: i915 device private
- */
+ 
 void i915_enable_asle_pipestat(struct drm_i915_private *dev_priv)
 {
 	if (!i915_has_asle(dev_priv))
@@ -307,14 +275,7 @@ static void display_pipe_crc_irq_handler(struct drm_i915_private *dev_priv,
 	trace_intel_pipe_crc(crtc, crcs);
 
 	spin_lock(&pipe_crc->lock);
-	/*
-	 * For some not yet identified reason, the first CRC is
-	 * bonkers. So let's just wait for the next vblank and read
-	 * out the buggy result.
-	 *
-	 * On GEN8+ sometimes the second CRC is bonkers as well, so
-	 * don't trust that one either.
-	 */
+	 
 	if (pipe_crc->skipped <= 0 ||
 	    (DISPLAY_VER(dev_priv) >= 8 && pipe_crc->skipped == 1)) {
 		pipe_crc->skipped++;
@@ -424,15 +385,9 @@ void i9xx_pipestat_irq_ack(struct drm_i915_private *dev_priv,
 		i915_reg_t reg;
 		u32 status_mask, enable_mask, iir_bit = 0;
 
-		/*
-		 * PIPESTAT bits get signalled even when the interrupt is
-		 * disabled with the mask bits, and some of the status bits do
-		 * not generate interrupts at all (like the underrun bit). Hence
-		 * we need to be careful that we only handle what we want to
-		 * handle.
-		 */
+		 
 
-		/* fifo underruns are filterered in the underrun handler. */
+		 
 		status_mask = PIPE_FIFO_UNDERRUN_STATUS;
 
 		switch (pipe) {
@@ -457,15 +412,7 @@ void i9xx_pipestat_irq_ack(struct drm_i915_private *dev_priv,
 		pipe_stats[pipe] = intel_uncore_read(&dev_priv->uncore, reg) & status_mask;
 		enable_mask = i915_pipestat_enable_mask(dev_priv, pipe);
 
-		/*
-		 * Clear the PIPE*STAT regs before the IIR
-		 *
-		 * Toggle the enable bits to make sure we get an
-		 * edge in the ISR pipe event bit if we don't clear
-		 * all the enabled status bits. Otherwise the edge
-		 * triggered IIR on i965/g4x wouldn't notice that
-		 * an interrupt is still pending.
-		 */
+		 
 		if (pipe_stats[pipe]) {
 			intel_uncore_write(&dev_priv->uncore, reg, pipe_stats[pipe]);
 			intel_uncore_write(&dev_priv->uncore, reg, enable_mask);
@@ -721,7 +668,7 @@ void ilk_display_irq_handler(struct drm_i915_private *dev_priv, u32 de_iir)
 			i9xx_pipe_crc_irq_handler(dev_priv, pipe);
 	}
 
-	/* check event from PCH */
+	 
 	if (de_iir & DE_PCH_EVENT) {
 		u32 pch_iir = intel_uncore_read(&dev_priv->uncore, SDEIIR);
 
@@ -730,7 +677,7 @@ void ilk_display_irq_handler(struct drm_i915_private *dev_priv, u32 de_iir)
 		else
 			ibx_irq_handler(dev_priv, pch_iir);
 
-		/* should clear PCH hotplug event before clear CPU irq */
+		 
 		intel_uncore_write(&dev_priv->uncore, SDEIIR, pch_iir);
 	}
 
@@ -777,13 +724,13 @@ void ivb_display_irq_handler(struct drm_i915_private *dev_priv, u32 de_iir)
 			flip_done_handler(dev_priv, pipe);
 	}
 
-	/* check event from PCH */
+	 
 	if (!HAS_PCH_NOP(dev_priv) && (de_iir & DE_PCH_EVENT_IVB)) {
 		u32 pch_iir = intel_uncore_read(&dev_priv->uncore, SDEIIR);
 
 		cpt_irq_handler(dev_priv, pch_iir);
 
-		/* clear PCH hotplug event before clear CPU irq */
+		 
 		intel_uncore_write(&dev_priv->uncore, SDEIIR, pch_iir);
 	}
 }
@@ -887,7 +834,7 @@ gen8_de_misc_irq_handler(struct drm_i915_private *dev_priv, u32 iir)
 
 			intel_psr_irq_handler(intel_dp, psr_iir);
 
-			/* prior GEN12 only have one EDP PSR */
+			 
 			if (DISPLAY_VER(dev_priv) < 12)
 				break;
 		}
@@ -905,22 +852,16 @@ static void gen11_dsi_te_interrupt_handler(struct drm_i915_private *dev_priv,
 	enum port port;
 	u32 val;
 
-	/*
-	 * Incase of dual link, TE comes from DSI_1
-	 * this is to check if dual link is enabled
-	 */
+	 
 	val = intel_uncore_read(&dev_priv->uncore, TRANS_DDI_FUNC_CTL2(TRANSCODER_DSI_0));
 	val &= PORT_SYNC_MODE_ENABLE;
 
-	/*
-	 * if dual link is enabled, then read DSI_0
-	 * transcoder registers
-	 */
+	 
 	port = ((te_trigger & DSI1_TE && val) || (te_trigger & DSI0_TE)) ?
 						  PORT_A : PORT_B;
 	dsi_trans = (port == PORT_A) ? TRANSCODER_DSI_0 : TRANSCODER_DSI_1;
 
-	/* Check if DSI configured in command mode */
+	 
 	val = intel_uncore_read(&dev_priv->uncore, DSI_TRANS_FUNC_CONF(dsi_trans));
 	val = val & OP_MODE_MASK;
 
@@ -929,7 +870,7 @@ static void gen11_dsi_te_interrupt_handler(struct drm_i915_private *dev_priv,
 		return;
 	}
 
-	/* Get PIPE for handling VBLANK event */
+	 
 	val = intel_uncore_read(&dev_priv->uncore, TRANS_DDI_FUNC_CTL(dsi_trans));
 	switch (val & TRANS_DDI_EDP_INPUT_MASK) {
 	case TRANS_DDI_EDP_INPUT_A_ON:
@@ -948,7 +889,7 @@ static void gen11_dsi_te_interrupt_handler(struct drm_i915_private *dev_priv,
 
 	intel_handle_vblank(dev_priv, pipe);
 
-	/* clear TE in dsi IIR */
+	 
 	port = (te_trigger & DSI1_TE) ? PORT_B : PORT_A;
 	intel_uncore_rmw(&dev_priv->uncore, DSI_INTR_IDENT_REG(port), 0, 0);
 }
@@ -981,11 +922,7 @@ static void gen8_read_and_ack_pch_irqs(struct drm_i915_private *i915, u32 *pch_i
 	if (!*pch_iir)
 		return;
 
-	/**
-	 * PICA IER must be disabled/re-enabled around clearing PICA IIR and
-	 * SDEIIR, to avoid losing PICA IRQs and to ensure that such IRQs set
-	 * their flags both in the PICA and SDE IIR.
-	 */
+	 
 	if (*pch_iir & SDE_PICAINTERRUPT) {
 		drm_WARN_ON(&i915->drm, INTEL_PCH_TYPE(i915) < PCH_MTP);
 
@@ -1120,11 +1057,7 @@ void gen8_de_irq_handler(struct drm_i915_private *dev_priv, u32 master_ctl)
 	    master_ctl & GEN8_DE_PCH_IRQ) {
 		u32 pica_iir;
 
-		/*
-		 * FIXME(BDW): Assume for now that the new interrupt handling
-		 * scheme also closed the SDE interrupt handling race we've seen
-		 * on older pch-split platforms. But this needs testing.
-		 */
+		 
 		gen8_read_and_ack_pch_irqs(dev_priv, &iir, &pica_iir);
 		if (iir) {
 			if (pica_iir)
@@ -1137,10 +1070,7 @@ void gen8_de_irq_handler(struct drm_i915_private *dev_priv, u32 master_ctl)
 			else
 				cpt_irq_handler(dev_priv, iir);
 		} else {
-			/*
-			 * Like on previous PCH there seems to be something
-			 * fishy going on with forwarding PCH interrupts.
-			 */
+			 
 			drm_dbg(&dev_priv->drm,
 				"The master control interrupt lied (SDE)!\n");
 		}
@@ -1174,10 +1104,7 @@ void gen11_display_irq_handler(struct drm_i915_private *i915)
 	const u32 disp_ctl = raw_reg_read(regs, GEN11_DISPLAY_INT_CTL);
 
 	disable_rpm_wakeref_asserts(&i915->runtime_pm);
-	/*
-	 * GEN11_DISPLAY_INT_CTL has same format as GEN8_MASTER_IRQ
-	 * for the display related bits.
-	 */
+	 
 	raw_reg_write(regs, GEN11_DISPLAY_INT_CTL, 0x0);
 	gen8_de_irq_handler(i915, disp_ctl);
 	raw_reg_write(regs, GEN11_DISPLAY_INT_CTL,
@@ -1186,9 +1113,7 @@ void gen11_display_irq_handler(struct drm_i915_private *i915)
 	enable_rpm_wakeref_asserts(&i915->runtime_pm);
 }
 
-/* Called from drm generic code, passed 'crtc' which
- * we use as a pipe index
- */
+ 
 int i8xx_enable_vblank(struct drm_crtc *crtc)
 {
 	struct drm_i915_private *dev_priv = to_i915(crtc->dev);
@@ -1206,12 +1131,7 @@ int i915gm_enable_vblank(struct drm_crtc *crtc)
 {
 	struct drm_i915_private *dev_priv = to_i915(crtc->dev);
 
-	/*
-	 * Vblank interrupts fail to wake the device up from C2+.
-	 * Disabling render clock gating during C-states avoids
-	 * the problem. There is a small power cost so we do this
-	 * only when vblank interrupts are actually enabled.
-	 */
+	 
 	if (dev_priv->vblank_enabled++ == 0)
 		intel_uncore_write(&dev_priv->uncore, SCPD0, _MASKED_BIT_ENABLE(CSTATE_RENDER_CLOCK_GATE_DISABLE));
 
@@ -1244,9 +1164,7 @@ int ilk_enable_vblank(struct drm_crtc *crtc)
 	ilk_enable_display_irq(dev_priv, bit);
 	spin_unlock_irqrestore(&dev_priv->irq_lock, irqflags);
 
-	/* Even though there is no DMC, frame counter can get stuck when
-	 * PSR is active as no frames are generated.
-	 */
+	 
 	if (HAS_PSR(dev_priv))
 		drm_crtc_vblank_restore(crtc);
 
@@ -1263,7 +1181,7 @@ static bool gen11_dsi_configure_te(struct intel_crtc *intel_crtc,
 	    (I915_MODE_FLAG_DSI_USE_TE1 | I915_MODE_FLAG_DSI_USE_TE0)))
 		return false;
 
-	/* for dual link cases we consider TE from slave */
+	 
 	if (intel_crtc->mode_flags & I915_MODE_FLAG_DSI_USE_TE1)
 		port = PORT_B;
 	else
@@ -1291,18 +1209,14 @@ int bdw_enable_vblank(struct drm_crtc *_crtc)
 	bdw_enable_pipe_irq(dev_priv, pipe, GEN8_PIPE_VBLANK);
 	spin_unlock_irqrestore(&dev_priv->irq_lock, irqflags);
 
-	/* Even if there is no DMC, frame counter can get stuck when
-	 * PSR is active as no frames are generated, so check only for PSR.
-	 */
+	 
 	if (HAS_PSR(dev_priv))
 		drm_crtc_vblank_restore(&crtc->base);
 
 	return 0;
 }
 
-/* Called from drm generic code, passed 'crtc' which
- * we use as a pipe index
- */
+ 
 void i8xx_disable_vblank(struct drm_crtc *crtc)
 {
 	struct drm_i915_private *dev_priv = to_i915(crtc->dev);
@@ -1522,21 +1436,11 @@ void gen8_irq_power_well_pre_disable(struct drm_i915_private *dev_priv,
 
 	spin_unlock_irq(&dev_priv->irq_lock);
 
-	/* make sure we're done processing display irqs */
+	 
 	intel_synchronize_irq(dev_priv);
 }
 
-/*
- * SDEIER is also touched by the interrupt handler to work around missed PCH
- * interrupts. Hence we can't update it after the interrupt handler is enabled -
- * instead we unconditionally enable all PCH interrupt sources here, but then
- * only unmask them as needed with SDEIMR.
- *
- * Note that we currently do this after installing the interrupt handler,
- * but before we enable the master interrupt. That should be sufficient
- * to avoid races with the irq handler, assuming we have MSI. Shared legacy
- * interrupts could still race.
- */
+ 
 static void ibx_irq_postinstall(struct drm_i915_private *dev_priv)
 {
 	struct intel_uncore *uncore = &dev_priv->uncore;
@@ -1764,13 +1668,7 @@ void intel_display_irq_init(struct drm_i915_private *i915)
 {
 	i915->drm.vblank_disable_immediate = true;
 
-	/*
-	 * Most platforms treat the display irq block as an always-on power
-	 * domain. vlv/chv can disable it at runtime and need special care to
-	 * avoid writing any of the display block registers outside of the power
-	 * domain. We defer setting up the display irqs in this case to the
-	 * runtime pm.
-	 */
+	 
 	i915->display_irqs_enabled = true;
 	if (IS_VALLEYVIEW(i915) || IS_CHERRYVIEW(i915))
 		i915->display_irqs_enabled = false;

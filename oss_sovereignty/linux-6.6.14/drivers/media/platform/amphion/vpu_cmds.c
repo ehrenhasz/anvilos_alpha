@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright 2020-2021 NXP
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/interconnect.h>
@@ -70,7 +68,7 @@ static int vpu_cmd_send(struct vpu_core *core, struct vpu_rpc_event *pkt)
 	if (ret)
 		return ret;
 
-	/*write cmd data to cmd buffer before trigger a cmd interrupt*/
+	 
 	mb();
 	vpu_mbox_send_type(core, COMMAND);
 
@@ -322,11 +320,7 @@ static int vpu_session_send_cmd(struct vpu_inst *inst, u32 id, void *data)
 	if (ret)
 		goto exit;
 
-	/* workaround for a firmware issue,
-	 * firmware should be waked up by start or configure command,
-	 * but there is a very small change that firmware failed to wakeup.
-	 * in such case, try to wakeup firmware again by sending a noop command
-	 */
+	 
 	if (sync && (id == VPU_CMD_ID_CONFIGURE_CODEC || id == VPU_CMD_ID_START)) {
 		if (sync_session_response(inst, key, VPU_TIMEOUT_WAKEUP, 1))
 			vpu_core_keep_active(inst->core);
@@ -363,10 +357,7 @@ int vpu_session_stop(struct vpu_inst *inst)
 	vpu_trace(inst->dev, "[%d]\n", inst->id);
 
 	ret = vpu_session_send_cmd(inst, VPU_CMD_ID_STOP, NULL);
-	/* workaround for a firmware bug,
-	 * if the next command is too close after stop cmd,
-	 * the firmware may enter wfi wrongly.
-	 */
+	 
 	usleep_range(3000, 5000);
 	return ret;
 }

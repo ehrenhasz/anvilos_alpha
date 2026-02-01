@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2003-2022, Intel Corporation. All rights reserved.
- * Intel Management Engine Interface (Intel MEI) Linux driver
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -24,7 +21,7 @@
 #include "hw-me-regs.h"
 #include "hw-me.h"
 
-/* mei_pci_tbl - PCI Device ID Table */
+ 
 static const struct pci_device_id mei_me_pci_tbl[] = {
 	{MEI_PCI_DEVICE(MEI_DEV_ID_82946GZ, MEI_ME_ICH_CFG)},
 	{MEI_PCI_DEVICE(MEI_DEV_ID_82G35, MEI_ME_ICH_CFG)},
@@ -120,7 +117,7 @@ static const struct pci_device_id mei_me_pci_tbl[] = {
 
 	{MEI_PCI_DEVICE(MEI_DEV_ID_MTL_M, MEI_ME_PCH15_CFG)},
 
-	/* required last entry */
+	 
 	{0, }
 };
 
@@ -132,7 +129,7 @@ static inline void mei_me_unset_pm_domain(struct mei_device *dev);
 #else
 static inline void mei_me_set_pm_domain(struct mei_device *dev) {}
 static inline void mei_me_unset_pm_domain(struct mei_device *dev) {}
-#endif /* CONFIG_PM */
+#endif  
 
 static int mei_me_read_fws(const struct mei_device *dev, int where, u32 *val)
 {
@@ -141,14 +138,7 @@ static int mei_me_read_fws(const struct mei_device *dev, int where, u32 *val)
 	return pci_read_config_dword(pdev, where, val);
 }
 
-/**
- * mei_me_quirk_probe - probe for devices that doesn't valid ME interface
- *
- * @pdev: PCI device structure
- * @cfg: per generation config
- *
- * Return: true if ME Interface is valid, false otherwise
- */
+ 
 static bool mei_me_quirk_probe(struct pci_dev *pdev,
 				const struct mei_cfg *cfg)
 {
@@ -160,14 +150,7 @@ static bool mei_me_quirk_probe(struct pci_dev *pdev,
 	return true;
 }
 
-/**
- * mei_me_probe - Device Initialization Routine
- *
- * @pdev: PCI device structure
- * @ent: entry in kcs_pci_tbl
- *
- * Return: 0 on success, <0 on failure.
- */
+ 
 static int mei_me_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 {
 	const struct mei_cfg *cfg;
@@ -183,15 +166,15 @@ static int mei_me_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 	if (!mei_me_quirk_probe(pdev, cfg))
 		return -ENODEV;
 
-	/* enable pci dev */
+	 
 	err = pcim_enable_device(pdev);
 	if (err) {
 		dev_err(&pdev->dev, "failed to enable pci device.\n");
 		goto end;
 	}
-	/* set PCI host mastering  */
+	 
 	pci_set_master(pdev);
-	/* pci request regions and mapping IO device memory for mei driver */
+	 
 	err = pcim_iomap_regions(pdev, BIT(0), KBUILD_MODNAME);
 	if (err) {
 		dev_err(&pdev->dev, "failed to get pci regions.\n");
@@ -204,7 +187,7 @@ static int mei_me_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 		goto end;
 	}
 
-	/* allocates and initializes the mei dev structure */
+	 
 	dev = mei_me_dev_init(&pdev->dev, cfg, false);
 	if (!dev) {
 		err = -ENOMEM;
@@ -218,7 +201,7 @@ static int mei_me_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 
 	hw->irq = pdev->irq;
 
-	 /* request and enable interrupt */
+	  
 	irqflags = pci_dev_msi_enabled(pdev) ? IRQF_ONESHOT : IRQF_SHARED;
 
 	err = request_threaded_irq(pdev->irq,
@@ -246,21 +229,10 @@ static int mei_me_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 
 	pci_set_drvdata(pdev, dev);
 
-	/*
-	 * MEI requires to resume from runtime suspend mode
-	 * in order to perform link reset flow upon system suspend.
-	 */
+	 
 	dev_pm_set_driver_flags(&pdev->dev, DPM_FLAG_NO_DIRECT_COMPLETE);
 
-	/*
-	 * ME maps runtime suspend/resume to D0i states,
-	 * hence we need to go around native PCI runtime service which
-	 * eventually brings the device into D3cold/hot state,
-	 * but the mei device cannot wake up from D3 unlike from D0i3.
-	 * To get around the PCI device native runtime pm,
-	 * ME uses runtime pm domain handlers which take precedence
-	 * over the driver's pm handlers.
-	 */
+	 
 	mei_me_set_pm_domain(dev);
 
 	if (mei_pg_is_enabled(dev)) {
@@ -284,15 +256,7 @@ end:
 	return err;
 }
 
-/**
- * mei_me_shutdown - Device Removal Routine
- *
- * @pdev: PCI device structure
- *
- * mei_me_shutdown is called from the reboot notifier
- * it's a simplified version of remove so we go down
- * faster.
- */
+ 
 static void mei_me_shutdown(struct pci_dev *pdev)
 {
 	struct mei_device *dev;
@@ -310,14 +274,7 @@ static void mei_me_shutdown(struct pci_dev *pdev)
 	free_irq(pdev->irq, dev);
 }
 
-/**
- * mei_me_remove - Device Removal Routine
- *
- * @pdev: PCI device structure
- *
- * mei_me_remove is called by the PCI subsystem to alert the driver
- * that it should release a PCI device.
- */
+ 
 static void mei_me_remove(struct pci_dev *pdev)
 {
 	struct mei_device *dev;
@@ -383,7 +340,7 @@ static int mei_me_pci_resume(struct device *device)
 
 	irqflags = pci_dev_msi_enabled(pdev) ? IRQF_ONESHOT : IRQF_SHARED;
 
-	/* request and enable interrupt */
+	 
 	err = request_threaded_irq(pdev->irq,
 			mei_me_irq_quick_handler,
 			mei_me_irq_thread_handler,
@@ -399,7 +356,7 @@ static int mei_me_pci_resume(struct device *device)
 	if (err)
 		return err;
 
-	/* Start timer if stopped in suspend */
+	 
 	schedule_delayed_work(&dev->timer_work, HZ);
 
 	return 0;
@@ -409,12 +366,12 @@ static void mei_me_pci_complete(struct device *device)
 {
 	pm_runtime_suspend(device);
 }
-#else /* CONFIG_PM_SLEEP */
+#else  
 
 #define mei_me_pci_prepare NULL
 #define mei_me_pci_complete NULL
 
-#endif /* !CONFIG_PM_SLEEP */
+#endif  
 
 #ifdef CONFIG_PM
 static int mei_me_pm_runtime_idle(struct device *device)
@@ -485,11 +442,7 @@ static int mei_me_pm_runtime_resume(struct device *device)
 	return ret;
 }
 
-/**
- * mei_me_set_pm_domain - fill and set pm domain structure for device
- *
- * @dev: mei_device
- */
+ 
 static inline void mei_me_set_pm_domain(struct mei_device *dev)
 {
 	struct pci_dev *pdev  = to_pci_dev(dev->dev);
@@ -505,14 +458,10 @@ static inline void mei_me_set_pm_domain(struct mei_device *dev)
 	}
 }
 
-/**
- * mei_me_unset_pm_domain - clean pm domain structure for device
- *
- * @dev: mei_device
- */
+ 
 static inline void mei_me_unset_pm_domain(struct mei_device *dev)
 {
-	/* stop using pm callbacks if any */
+	 
 	dev_pm_domain_set(dev->dev, NULL);
 }
 
@@ -530,10 +479,8 @@ static const struct dev_pm_ops mei_me_pm_ops = {
 #define MEI_ME_PM_OPS	(&mei_me_pm_ops)
 #else
 #define MEI_ME_PM_OPS	NULL
-#endif /* CONFIG_PM */
-/*
- *  PCI driver structure
- */
+#endif  
+ 
 static struct pci_driver mei_me_driver = {
 	.name = KBUILD_MODNAME,
 	.id_table = mei_me_pci_tbl,

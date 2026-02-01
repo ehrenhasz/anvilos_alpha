@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Interrupt driver for RICOH583 power management chip.
- *
- * Copyright (c) 2011-2012, NVIDIA CORPORATION.  All rights reserved.
- * Author: Laxman dewangan <ldewangan@nvidia.com>
- *
- * based on code
- *      Copyright (C) 2011 RICOH COMPANY,LTD
- */
+
+ 
 #include <linux/device.h>
 #include <linux/interrupt.h>
 #include <linux/irq.h>
@@ -176,7 +168,7 @@ static int rc5t583_irq_set_type(struct irq_data *irq_data, unsigned int type)
 	int gpedge_index;
 	int gpedge_bit_pos;
 
-	/* Supporting only trigger level inetrrupt */
+	 
 	if ((data->int_type & GPIO_INT) && (type & IRQ_TYPE_EDGE_BOTH)) {
 		gpedge_index = data->int_en_bit / 4;
 		gpedge_bit_pos = data->int_en_bit % 4;
@@ -244,7 +236,7 @@ static irqreturn_t rc5t583_irq(int irq, void *data)
 	int ret;
 	unsigned int rtc_int_sts = 0;
 
-	/* Clear the status */
+	 
 	for (i = 0; i < RC5T583_MAX_INTERRUPT_MASK_REGS; i++)
 		int_sts[i] = 0;
 
@@ -292,10 +284,10 @@ static irqreturn_t rc5t583_irq(int irq, void *data)
 			int_sts[i] = rtc_int_sts;
 	}
 
-	/* Merge gpio interrupts for rising and falling case*/
+	 
 	int_sts[7] |= int_sts[8];
 
-	/* Call interrupt handler if enabled */
+	 
 	for (i = 0; i < RC5T583_MAX_IRQS; ++i) {
 		const struct rc5t583_irq_data *data = &rc5t583_irqs[i];
 		if ((int_sts[data->mask_reg_index] & (1 << data->int_en_bit)) &&
@@ -328,7 +320,7 @@ int rc5t583_irq_init(struct rc5t583 *rc5t583, int irq, int irq_base)
 
 	mutex_init(&rc5t583->irq_lock);
 
-	/* Initailize all int register to 0 */
+	 
 	for (i = 0; i < RC5T583_MAX_INTERRUPT_EN_REGS; i++)  {
 		ret = rc5t583_write(rc5t583->dev, irq_en_add[i],
 				rc5t583->irq_en_reg[i]);
@@ -353,7 +345,7 @@ int rc5t583_irq_init(struct rc5t583 *rc5t583, int irq, int irq_base)
 			"Error in writing reg 0x%02x error: %d\n",
 			RC5T583_INTC_INTEN, ret);
 
-	/* Clear all interrupts in case they woke up active. */
+	 
 	for (i = 0; i < RC5T583_MAX_INTERRUPT_MASK_REGS; i++)  {
 		ret = rc5t583_write(rc5t583->dev, irq_clr_add[i], 0);
 		if (ret < 0)

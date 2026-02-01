@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/******************************************************************************
- *
- * Copyright(c) 2009 - 2014 Intel Corporation. All rights reserved.
- * Copyright(c) 2015 Intel Mobile Communications GmbH
- * Copyright(c) 2016 - 2017 Intel Deutschland GmbH
- * Copyright(c) 2018        Intel Corporation
- *****************************************************************************/
+ 
+ 
 
 #if !defined(__IWLWIFI_DEVICE_TRACE_IWLWIFI) || defined(TRACE_HEADER_MULTI_READ)
 #define __IWLWIFI_DEVICE_TRACE_IWLWIFI
@@ -85,11 +79,7 @@ TRACE_EVENT(iwlwifi_dev_tx,
 		__field(size_t, framelen)
 		__dynamic_array(u8, tfd, tfdlen)
 
-		/*
-		 * Do not insert between or below these items,
-		 * we want to keep the frame together (except
-		 * for the possible padding).
-		 */
+		 
 		__dynamic_array(u8, buf0, buf0_len)
 		__dynamic_array(u8, buf1, hdr_len > 0 && iwl_trace_data(skb) ?
 						0 : skb->len - hdr_len)
@@ -131,7 +121,7 @@ TRACE_EVENT(iwlwifi_dev_ucode_event,
 	TP_printk("[%s] EVT_LOGT:%010u:0x%08x:%04u",
 		  __get_str(dev), __entry->time, __entry->data, __entry->ev)
 );
-#endif /* __IWLWIFI_DEVICE_TRACE_IWLWIFI */
+#endif  
 
 #undef TRACE_INCLUDE_PATH
 #define TRACE_INCLUDE_PATH .

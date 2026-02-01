@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause) */
+ 
 
 #ifndef _FUNETH_H
 #define _FUNETH_H
@@ -40,19 +40,19 @@ struct fun_vport_info {
 	unsigned int max_rate;
 };
 
-/* "subclass" of fun_dev for Ethernet functions */
+ 
 struct fun_ethdev {
 	struct fun_dev fdev;
 
-	/* the function's network ports */
+	 
 	struct net_device **netdevs;
 	unsigned int num_ports;
 
-	/* configuration for the function's virtual ports */
+	 
 	unsigned int num_vports;
 	struct fun_vport_info *vport_info;
 
-	struct mutex state_mutex; /* nests inside RTNL if both taken */
+	struct mutex state_mutex;  
 
 	unsigned int nsqs_per_port;
 };
@@ -78,7 +78,7 @@ struct fun_qset {
 	int state;
 };
 
-/* Per netdevice driver state, i.e., netdev_priv. */
+ 
 struct funeth_priv {
 	struct fun_dev *fdev;
 	struct pci_dev *pdev;
@@ -96,7 +96,7 @@ struct funeth_priv {
 	unsigned int lane_attrs;
 	u16 lport;
 
-	/* link settings */
+	 
 	u64 port_caps;
 	u64 advertising;
 	u64 lp_advertising;
@@ -111,7 +111,7 @@ struct funeth_priv {
 
 	unsigned int num_xdpqs;
 
-	/* ethtool, etc. config parameters */
+	 
 	unsigned int sq_depth;
 	unsigned int rq_depth;
 	unsigned int cq_depth;
@@ -123,7 +123,7 @@ struct funeth_priv {
 
 	struct hwtstamp_config hwtstamp_cfg;
 
-	/* cumulative queue stats from earlier queue instances */
+	 
 	u64 tx_packets;
 	u64 tx_bytes;
 	u64 tx_dropped;
@@ -131,7 +131,7 @@ struct funeth_priv {
 	u64 rx_bytes;
 	u64 rx_dropped;
 
-	/* RSS */
+	 
 	unsigned int rss_hw_id;
 	enum fun_eth_hash_alg hash_algo;
 	u8 rss_key[FUN_ETH_RSS_MAX_KEY_SIZE];
@@ -140,7 +140,7 @@ struct funeth_priv {
 	dma_addr_t rss_dma_addr;
 	void *rss_cfg;
 
-	/* DMA area for port stats */
+	 
 	dma_addr_t stats_dma_addr;
 	__be64 *stats;
 
@@ -148,7 +148,7 @@ struct funeth_priv {
 
 	struct devlink_port dl_port;
 
-	/* kTLS state */
+	 
 	unsigned int ktls_id;
 	atomic64_t tx_tls_add;
 	atomic64_t tx_tls_del;
@@ -168,4 +168,4 @@ void fun_set_ring_count(struct net_device *netdev, unsigned int ntx,
 int fun_config_rss(struct net_device *dev, int algo, const u8 *key,
 		   const u32 *qtable, u8 op);
 
-#endif /* _FUNETH_H */
+#endif  

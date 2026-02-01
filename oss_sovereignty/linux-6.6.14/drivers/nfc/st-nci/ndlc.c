@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Low Level Transport (NDLC) Driver for STMicroelectronics NFC Chip
- *
- * Copyright (C) 2014-2015  STMicroelectronics SAS. All rights reserved.
- */
+
+ 
 
 #include <linux/sched.h>
 #include <net/nfc/nci_core.h>
@@ -45,7 +41,7 @@ do {                                                             \
 
 int ndlc_open(struct llt_ndlc *ndlc)
 {
-	/* toggle reset pin */
+	 
 	ndlc->ops->enable(ndlc->phy_id);
 	ndlc->powered = 1;
 	return 0;
@@ -59,7 +55,7 @@ void ndlc_close(struct llt_ndlc *ndlc)
 	cmd.cmd_type = ST_NCI_SET_NFC_MODE;
 	cmd.mode = 0;
 
-	/* toggle reset pin */
+	 
 	ndlc->ops->enable(ndlc->phy_id);
 
 	nci_prop_cmd(ndlc->ndev, ST_NCI_CORE_PROP,
@@ -72,7 +68,7 @@ EXPORT_SYMBOL(ndlc_close);
 
 int ndlc_send(struct llt_ndlc *ndlc, struct sk_buff *skb)
 {
-	/* add ndlc header */
+	 
 	u8 pcb = PCB_TYPE_DATAFRAME | PCB_DATAFRAME_RETRANSMIT_NO |
 		PCB_FRAME_CRC_INFO_NOTPRESENT;
 
@@ -108,11 +104,11 @@ static void llt_ndlc_send_queue(struct llt_ndlc *ndlc)
 
 		skb_queue_tail(&ndlc->ack_pending_q, skb);
 
-		/* start timer t1 for ndlc aknowledge */
+		 
 		ndlc->t1_active = true;
 		mod_timer(&ndlc->t1_timer, time_sent +
 			msecs_to_jiffies(NDLC_TIMER_T1));
-		/* start timer t2 for chip availability */
+		 
 		ndlc->t2_active = true;
 		mod_timer(&ndlc->t2_timer, time_sent +
 			msecs_to_jiffies(NDLC_TIMER_T2));
@@ -169,7 +165,7 @@ static void llt_ndlc_rcv_queue(struct llt_ndlc *ndlc)
 			case PCB_SYNC_NACK:
 				llt_ndlc_requeue_data_pending(ndlc);
 				llt_ndlc_send_queue(ndlc);
-				/* start timer t1 for ndlc aknowledge */
+				 
 				time_sent = jiffies;
 				ndlc->t1_active = true;
 				mod_timer(&ndlc->t1_timer, time_sent +
@@ -266,7 +262,7 @@ int ndlc_probe(void *phy_id, const struct nfc_phy_ops *phy_ops,
 
 	*ndlc_id = ndlc;
 
-	/* initialize timers */
+	 
 	timer_setup(&ndlc->t1_timer, ndlc_t1_timeout, 0);
 	timer_setup(&ndlc->t2_timer, ndlc_t2_timeout, 0);
 
@@ -282,12 +278,12 @@ EXPORT_SYMBOL(ndlc_probe);
 
 void ndlc_remove(struct llt_ndlc *ndlc)
 {
-	/* cancel timers */
+	 
 	del_timer_sync(&ndlc->t1_timer);
 	del_timer_sync(&ndlc->t2_timer);
 	ndlc->t2_active = false;
 	ndlc->t1_active = false;
-	/* cancel work */
+	 
 	cancel_work_sync(&ndlc->sm_work);
 
 	st_nci_remove(ndlc->ndev);

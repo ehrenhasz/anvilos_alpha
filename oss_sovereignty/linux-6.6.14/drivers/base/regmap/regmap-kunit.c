@@ -1,8 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// regmap KUnit tests
-//
-// Copyright 2023 Arm Ltd
+
+
+
+
+
 
 #include <kunit/test.h>
 #include "internal.h"
@@ -118,12 +118,12 @@ static void basic_read_write(struct kunit *test)
 
 	get_random_bytes(&val, sizeof(val));
 
-	/* If we write a value to a register we can read it back */
+	 
 	KUNIT_EXPECT_EQ(test, 0, regmap_write(map, 0, val));
 	KUNIT_EXPECT_EQ(test, 0, regmap_read(map, 0, &rval));
 	KUNIT_EXPECT_EQ(test, val, rval);
 
-	/* If using a cache the cache satisfied the read */
+	 
 	KUNIT_EXPECT_EQ(test, t->type == REGCACHE_NONE, data->read[0]);
 
 	regmap_exit(map);
@@ -148,10 +148,7 @@ static void bulk_write(struct kunit *test)
 
 	get_random_bytes(&val, sizeof(val));
 
-	/*
-	 * Data written via the bulk API can be read back with single
-	 * reads.
-	 */
+	 
 	KUNIT_EXPECT_EQ(test, 0, regmap_bulk_write(map, 0, val,
 						   BLOCK_TEST_SIZE));
 	for (i = 0; i < BLOCK_TEST_SIZE; i++)
@@ -159,7 +156,7 @@ static void bulk_write(struct kunit *test)
 
 	KUNIT_EXPECT_MEMEQ(test, val, rval, sizeof(val));
 
-	/* If using a cache the cache satisfied the read */
+	 
 	for (i = 0; i < BLOCK_TEST_SIZE; i++)
 		KUNIT_EXPECT_EQ(test, t->type == REGCACHE_NONE, data->read[i]);
 
@@ -185,14 +182,14 @@ static void bulk_read(struct kunit *test)
 
 	get_random_bytes(&val, sizeof(val));
 
-	/* Data written as single writes can be read via the bulk API */
+	 
 	for (i = 0; i < BLOCK_TEST_SIZE; i++)
 		KUNIT_EXPECT_EQ(test, 0, regmap_write(map, i, val[i]));
 	KUNIT_EXPECT_EQ(test, 0, regmap_bulk_read(map, 0, rval,
 						  BLOCK_TEST_SIZE));
 	KUNIT_EXPECT_MEMEQ(test, val, rval, sizeof(val));
 
-	/* If using a cache the cache satisfied the read */
+	 
 	for (i = 0; i < BLOCK_TEST_SIZE; i++)
 		KUNIT_EXPECT_EQ(test, t->type == REGCACHE_NONE, data->read[i]);
 
@@ -223,11 +220,11 @@ static void write_readonly(struct kunit *test)
 	for (i = 0; i < BLOCK_TEST_SIZE; i++)
 		data->written[i] = false;
 
-	/* Change the value of all registers, readonly should fail */
+	 
 	for (i = 0; i < BLOCK_TEST_SIZE; i++)
 		KUNIT_EXPECT_EQ(test, i != 5, regmap_write(map, i, val) == 0);
 
-	/* Did that match what we see on the device? */
+	 
 	for (i = 0; i < BLOCK_TEST_SIZE; i++)
 		KUNIT_EXPECT_EQ(test, i != 5, data->written[i]);
 
@@ -255,10 +252,7 @@ static void read_writeonly(struct kunit *test)
 	for (i = 0; i < BLOCK_TEST_SIZE; i++)
 		data->read[i] = false;
 
-	/*
-	 * Try to read all the registers, the writeonly one should
-	 * fail if we aren't using the flat cache.
-	 */
+	 
 	for (i = 0; i < BLOCK_TEST_SIZE; i++) {
 		if (t->type != REGCACHE_FLAT) {
 			KUNIT_EXPECT_EQ(test, i != 5,
@@ -268,7 +262,7 @@ static void read_writeonly(struct kunit *test)
 		}
 	}
 
-	/* Did we trigger a hardware access? */
+	 
 	KUNIT_EXPECT_FALSE(test, data->read[5]);
 
 	regmap_exit(map);
@@ -292,12 +286,12 @@ static void reg_defaults(struct kunit *test)
 	if (IS_ERR(map))
 		return;
 
-	/* Read back the expected default data */
+	 
 	KUNIT_EXPECT_EQ(test, 0, regmap_bulk_read(map, 0, rval,
 						  BLOCK_TEST_SIZE));
 	KUNIT_EXPECT_MEMEQ(test, data->vals, rval, sizeof(rval));
 
-	/* The data should have been read from cache if there was one */
+	 
 	for (i = 0; i < BLOCK_TEST_SIZE; i++)
 		KUNIT_EXPECT_EQ(test, t->type == REGCACHE_NONE, data->read[i]);
 }
@@ -320,18 +314,18 @@ static void reg_defaults_read_dev(struct kunit *test)
 	if (IS_ERR(map))
 		return;
 
-	/* We should have read the cache defaults back from the map */
+	 
 	for (i = 0; i < BLOCK_TEST_SIZE; i++) {
 		KUNIT_EXPECT_EQ(test, t->type != REGCACHE_NONE, data->read[i]);
 		data->read[i] = false;
 	}
 
-	/* Read back the expected default data */
+	 
 	KUNIT_EXPECT_EQ(test, 0, regmap_bulk_read(map, 0, rval,
 						  BLOCK_TEST_SIZE));
 	KUNIT_EXPECT_MEMEQ(test, data->vals, rval, sizeof(rval));
 
-	/* The data should have been read from cache if there was one */
+	 
 	for (i = 0; i < BLOCK_TEST_SIZE; i++)
 		KUNIT_EXPECT_EQ(test, t->type == REGCACHE_NONE, data->read[i]);
 }
@@ -346,7 +340,7 @@ static void register_patch(struct kunit *test)
 	unsigned int rval[BLOCK_TEST_SIZE];
 	int i;
 
-	/* We need defaults so readback works */
+	 
 	config = test_regmap_config;
 	config.cache_type = t->type;
 	config.num_reg_defaults = BLOCK_TEST_SIZE;
@@ -356,11 +350,11 @@ static void register_patch(struct kunit *test)
 	if (IS_ERR(map))
 		return;
 
-	/* Stash the original values */
+	 
 	KUNIT_EXPECT_EQ(test, 0, regmap_bulk_read(map, 0, rval,
 						  BLOCK_TEST_SIZE));
 
-	/* Patch a couple of values */
+	 
 	patch[0].reg = 2;
 	patch[0].def = rval[2] + 1;
 	patch[0].delay_us = 0;
@@ -370,7 +364,7 @@ static void register_patch(struct kunit *test)
 	KUNIT_EXPECT_EQ(test, 0, regmap_register_patch(map, patch,
 						       ARRAY_SIZE(patch)));
 
-	/* Only the patched registers are written */
+	 
 	for (i = 0; i < BLOCK_TEST_SIZE; i++) {
 		switch (i) {
 		case 2:
@@ -407,7 +401,7 @@ static void stride(struct kunit *test)
 	if (IS_ERR(map))
 		return;
 
-	/* Only even registers can be accessed, try both read and write */
+	 
 	for (i = 0; i < BLOCK_TEST_SIZE; i++) {
 		data->read[i] = false;
 		data->written[i] = false;
@@ -480,11 +474,11 @@ static void basic_ranges(struct kunit *test)
 		data->written[i] = false;
 	}
 
-	/* Reset the page to a non-zero value to trigger a change */
+	 
 	KUNIT_EXPECT_EQ(test, 0, regmap_write(map, test_range.selector_reg,
 					      test_range.range_max));
 
-	/* Check we set the page and use the window for writes */
+	 
 	data->written[test_range.selector_reg] = false;
 	data->written[test_range.window_start] = false;
 	KUNIT_EXPECT_EQ(test, 0, regmap_write(map, test_range.range_min, 0));
@@ -500,7 +494,7 @@ static void basic_ranges(struct kunit *test)
 	KUNIT_EXPECT_TRUE(test, data->written[test_range.selector_reg]);
 	KUNIT_EXPECT_TRUE(test, data->written[test_range.window_start]);
 
-	/* Same for reads */
+	 
 	data->written[test_range.selector_reg] = false;
 	data->read[test_range.window_start] = false;
 	KUNIT_EXPECT_EQ(test, 0, regmap_read(map, test_range.range_min, &val));
@@ -516,7 +510,7 @@ static void basic_ranges(struct kunit *test)
 	KUNIT_EXPECT_TRUE(test, data->written[test_range.selector_reg]);
 	KUNIT_EXPECT_TRUE(test, data->read[test_range.window_start]);
 
-	/* No physical access triggered in the virtual range */
+	 
 	for (i = test_range.range_min; i < test_range.range_max; i++) {
 		KUNIT_EXPECT_FALSE(test, data->read[i]);
 		KUNIT_EXPECT_FALSE(test, data->written[i]);
@@ -525,7 +519,7 @@ static void basic_ranges(struct kunit *test)
 	regmap_exit(map);
 }
 
-/* Try to stress dynamic creation of cache data structures */
+ 
 static void stress_insert(struct kunit *test)
 {
 	struct regcache_types *t = (struct regcache_types *)test->param_value;
@@ -552,7 +546,7 @@ static void stress_insert(struct kunit *test)
 
 	get_random_bytes(vals, buf_sz);
 
-	/* Write data into the map/cache in ever decreasing strides */
+	 
 	for (i = 0; i < config.max_register; i += 100)
 		KUNIT_EXPECT_EQ(test, 0, regmap_write(map, i, vals[i]));
 	for (i = 0; i < config.max_register; i += 50)
@@ -570,7 +564,7 @@ static void stress_insert(struct kunit *test)
 	for (i = 0; i < config.max_register; i++)
 		KUNIT_EXPECT_EQ(test, 0, regmap_write(map, i, vals[i]));
 
-	/* Do reads from the cache (if there is one) match? */
+	 
 	for (i = 0; i < config.max_register; i ++) {
 		KUNIT_EXPECT_EQ(test, 0, regmap_read(map, i, &rval));
 		KUNIT_EXPECT_EQ(test, rval, vals[i]);
@@ -598,19 +592,19 @@ static void cache_bypass(struct kunit *test)
 
 	get_random_bytes(&val, sizeof(val));
 
-	/* Ensure the cache has a value in it */
+	 
 	KUNIT_EXPECT_EQ(test, 0, regmap_write(map, 0, val));
 
-	/* Bypass then write a different value */
+	 
 	regcache_cache_bypass(map, true);
 	KUNIT_EXPECT_EQ(test, 0, regmap_write(map, 0, val + 1));
 
-	/* Read the bypassed value */
+	 
 	KUNIT_EXPECT_EQ(test, 0, regmap_read(map, 0, &rval));
 	KUNIT_EXPECT_EQ(test, val + 1, rval);
 	KUNIT_EXPECT_EQ(test, data->vals[0], rval);
 
-	/* Disable bypass, the cache should still return the original value */
+	 
 	regcache_cache_bypass(map, false);
 	KUNIT_EXPECT_EQ(test, 0, regmap_read(map, 0, &rval));
 	KUNIT_EXPECT_EQ(test, val, rval);
@@ -637,18 +631,18 @@ static void cache_sync(struct kunit *test)
 
 	get_random_bytes(&val, sizeof(val));
 
-	/* Put some data into the cache */
+	 
 	KUNIT_EXPECT_EQ(test, 0, regmap_bulk_write(map, 0, val,
 						   BLOCK_TEST_SIZE));
 	for (i = 0; i < BLOCK_TEST_SIZE; i++)
 		data->written[i] = false;
 
-	/* Trash the data on the device itself then resync */
+	 
 	regcache_mark_dirty(map);
 	memset(data->vals, 0, sizeof(val));
 	KUNIT_EXPECT_EQ(test, 0, regcache_sync(map));
 
-	/* Did we just write the correct data out? */
+	 
 	KUNIT_EXPECT_MEMEQ(test, data->vals, val, sizeof(val));
 	for (i = 0; i < BLOCK_TEST_SIZE; i++)
 		KUNIT_EXPECT_EQ(test, true, data->written[i]);
@@ -676,16 +670,16 @@ static void cache_sync_defaults(struct kunit *test)
 
 	get_random_bytes(&val, sizeof(val));
 
-	/* Change the value of one register */
+	 
 	KUNIT_EXPECT_EQ(test, 0, regmap_write(map, 2, val));
 
-	/* Resync */
+	 
 	regcache_mark_dirty(map);
 	for (i = 0; i < BLOCK_TEST_SIZE; i++)
 		data->written[i] = false;
 	KUNIT_EXPECT_EQ(test, 0, regcache_sync(map));
 
-	/* Did we just sync the one register we touched? */
+	 
 	for (i = 0; i < BLOCK_TEST_SIZE; i++)
 		KUNIT_EXPECT_EQ(test, i == 2, data->written[i]);
 
@@ -710,23 +704,23 @@ static void cache_sync_readonly(struct kunit *test)
 	if (IS_ERR(map))
 		return;
 
-	/* Read all registers to fill the cache */
+	 
 	for (i = 0; i < BLOCK_TEST_SIZE; i++)
 		KUNIT_EXPECT_EQ(test, 0, regmap_read(map, i, &val));
 
-	/* Change the value of all registers, readonly should fail */
+	 
 	get_random_bytes(&val, sizeof(val));
 	regcache_cache_only(map, true);
 	for (i = 0; i < BLOCK_TEST_SIZE; i++)
 		KUNIT_EXPECT_EQ(test, i != 5, regmap_write(map, i, val) == 0);
 	regcache_cache_only(map, false);
 
-	/* Resync */
+	 
 	for (i = 0; i < BLOCK_TEST_SIZE; i++)
 		data->written[i] = false;
 	KUNIT_EXPECT_EQ(test, 0, regcache_sync(map));
 
-	/* Did that match what we see on the device? */
+	 
 	for (i = 0; i < BLOCK_TEST_SIZE; i++)
 		KUNIT_EXPECT_EQ(test, i != 5, data->written[i]);
 
@@ -743,7 +737,7 @@ static void cache_sync_patch(struct kunit *test)
 	unsigned int rval[BLOCK_TEST_SIZE], val;
 	int i;
 
-	/* We need defaults so readback works */
+	 
 	config = test_regmap_config;
 	config.cache_type = t->type;
 	config.num_reg_defaults = BLOCK_TEST_SIZE;
@@ -753,11 +747,11 @@ static void cache_sync_patch(struct kunit *test)
 	if (IS_ERR(map))
 		return;
 
-	/* Stash the original values */
+	 
 	KUNIT_EXPECT_EQ(test, 0, regmap_bulk_read(map, 0, rval,
 						  BLOCK_TEST_SIZE));
 
-	/* Patch a couple of values */
+	 
 	patch[0].reg = 2;
 	patch[0].def = rval[2] + 1;
 	patch[0].delay_us = 0;
@@ -767,13 +761,13 @@ static void cache_sync_patch(struct kunit *test)
 	KUNIT_EXPECT_EQ(test, 0, regmap_register_patch(map, patch,
 						       ARRAY_SIZE(patch)));
 
-	/* Sync the cache */
+	 
 	regcache_mark_dirty(map);
 	for (i = 0; i < BLOCK_TEST_SIZE; i++)
 		data->written[i] = false;
 	KUNIT_EXPECT_EQ(test, 0, regcache_sync(map));
 
-	/* The patch should be on the device but not in the cache */
+	 
 	for (i = 0; i < BLOCK_TEST_SIZE; i++) {
 		KUNIT_EXPECT_EQ(test, 0, regmap_read(map, i, &val));
 		KUNIT_EXPECT_EQ(test, val, rval[i]);
@@ -812,7 +806,7 @@ static void cache_drop(struct kunit *test)
 	if (IS_ERR(map))
 		return;
 
-	/* Ensure the data is read from the cache */
+	 
 	for (i = 0; i < BLOCK_TEST_SIZE; i++)
 		data->read[i] = false;
 	KUNIT_EXPECT_EQ(test, 0, regmap_bulk_read(map, 0, rval,
@@ -823,10 +817,10 @@ static void cache_drop(struct kunit *test)
 	}
 	KUNIT_EXPECT_MEMEQ(test, data->vals, rval, sizeof(rval));
 
-	/* Drop some registers */
+	 
 	KUNIT_EXPECT_EQ(test, 0, regcache_drop_region(map, 3, 5));
 
-	/* Reread and check only the dropped registers hit the device. */
+	 
 	KUNIT_EXPECT_EQ(test, 0, regmap_bulk_read(map, 0, rval,
 						  BLOCK_TEST_SIZE));
 	for (i = 0; i < BLOCK_TEST_SIZE; i++)
@@ -856,19 +850,19 @@ static void cache_present(struct kunit *test)
 	for (i = 0; i < BLOCK_TEST_SIZE; i++)
 		data->read[i] = false;
 
-	/* No defaults so no registers cached. */
+	 
 	for (i = 0; i < BLOCK_TEST_SIZE; i++)
 		KUNIT_ASSERT_FALSE(test, regcache_reg_cached(map, i));
 
-	/* We didn't trigger any reads */
+	 
 	for (i = 0; i < BLOCK_TEST_SIZE; i++)
 		KUNIT_ASSERT_FALSE(test, data->read[i]);
 
-	/* Fill the cache */
+	 
 	for (i = 0; i < BLOCK_TEST_SIZE; i++)
 		KUNIT_EXPECT_EQ(test, 0, regmap_read(map, i, &val));
 
-	/* Now everything should be cached */
+	 
 	for (i = 0; i < BLOCK_TEST_SIZE; i++)
 		KUNIT_ASSERT_TRUE(test, regcache_reg_cached(map, i));
 
@@ -967,10 +961,7 @@ static struct regmap *gen_raw_regmap(struct regmap_config *config,
 		}
 	}
 
-	/*
-	 * We use the defaults in the tests but they don't make sense
-	 * to the core if there's no cache.
-	 */
+	 
 	if (config->cache_type == REGCACHE_NONE)
 		config->num_reg_defaults = 0;
 
@@ -999,7 +990,7 @@ static void raw_read_defaults_single(struct kunit *test)
 	if (IS_ERR(map))
 		return;
 
-	/* Check that we can read the defaults via the API */
+	 
 	for (i = 0; i < config.max_register + 1; i++) {
 		KUNIT_EXPECT_EQ(test, 0, regmap_read(map, i, &rval));
 		KUNIT_EXPECT_EQ(test, config.reg_defaults[i].def, rval);
@@ -1032,7 +1023,7 @@ static void raw_read_defaults(struct kunit *test)
 	if (!rval)
 		return;
 	
-	/* Check that we can read the defaults via the API */
+	 
 	KUNIT_EXPECT_EQ(test, 0, regmap_raw_read(map, 0, rval, val_len));
 	for (i = 0; i < config.max_register + 1; i++) {
 		def = config.reg_defaults[i].def;
@@ -1065,7 +1056,7 @@ static void raw_write_read_single(struct kunit *test)
 
 	get_random_bytes(&val, sizeof(val));
 
-	/* If we write a value to a register we can read it back */
+	 
 	KUNIT_EXPECT_EQ(test, 0, regmap_write(map, 0, val));
 	KUNIT_EXPECT_EQ(test, 0, regmap_read(map, 0, &rval));
 	KUNIT_EXPECT_EQ(test, val, rval);
@@ -1095,10 +1086,10 @@ static void raw_write(struct kunit *test)
 
 	get_random_bytes(&val, sizeof(val));
 
-	/* Do a raw write */
+	 
 	KUNIT_EXPECT_EQ(test, 0, regmap_raw_write(map, 2, val, sizeof(val)));
 
-	/* We should read back the new values, and defaults for the rest */
+	 
 	for (i = 0; i < config.max_register + 1; i++) {
 		KUNIT_EXPECT_EQ(test, 0, regmap_read(map, i, &rval));
 
@@ -1119,7 +1110,7 @@ static void raw_write(struct kunit *test)
 		}
 	}
 
-	/* The values should appear in the "hardware" */
+	 
 	KUNIT_EXPECT_MEMEQ(test, &hw_buf[2], val, sizeof(val));
 
 	regmap_exit(map);
@@ -1147,7 +1138,7 @@ static void raw_sync(struct kunit *test)
 
 	get_random_bytes(&val, sizeof(val));
 
-	/* Do a regular write and a raw write in cache only mode */
+	 
 	regcache_cache_only(map, true);
 	KUNIT_EXPECT_EQ(test, 0, regmap_raw_write(map, 2, val, sizeof(val)));
 	if (config.val_format_endian == REGMAP_ENDIAN_BIG)
@@ -1157,7 +1148,7 @@ static void raw_sync(struct kunit *test)
 		KUNIT_EXPECT_EQ(test, 0, regmap_write(map, 6,
 						      le16_to_cpu(val[0])));
 
-	/* We should read back the new values, and defaults for the rest */
+	 
 	for (i = 0; i < config.max_register + 1; i++) {
 		KUNIT_EXPECT_EQ(test, 0, regmap_read(map, i, &rval));
 
@@ -1179,19 +1170,19 @@ static void raw_sync(struct kunit *test)
 		}
 	}
 	
-	/* The values should not appear in the "hardware" */
+	 
 	KUNIT_EXPECT_MEMNEQ(test, &hw_buf[2], val, sizeof(val));
 	KUNIT_EXPECT_MEMNEQ(test, &hw_buf[6], val, sizeof(u16));
 
 	for (i = 0; i < config.max_register + 1; i++)
 		data->written[i] = false;
 
-	/* Do the sync */
+	 
 	regcache_cache_only(map, false);
 	regcache_mark_dirty(map);
 	KUNIT_EXPECT_EQ(test, 0, regcache_sync(map));
 
-	/* The values should now appear in the "hardware" */
+	 
 	KUNIT_EXPECT_MEMEQ(test, &hw_buf[2], val, sizeof(val));
 	KUNIT_EXPECT_MEMEQ(test, &hw_buf[6], val, sizeof(u16));
 

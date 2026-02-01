@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2016 HGST, a Western Digital Company.
- */
+
+ 
 #include <rdma/ib_verbs.h>
 #include <rdma/mr_pool.h>
 

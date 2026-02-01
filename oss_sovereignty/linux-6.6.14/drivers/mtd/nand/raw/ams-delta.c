@@ -1,18 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *  Copyright (C) 2006 Jonathan McDowell <noodles@earth.li>
- *
- *  Derived from drivers/mtd/nand/toto.c (removed in v2.6.28)
- *    Copyright (c) 2003 Texas Instruments
- *    Copyright (c) 2002 Thomas Gleixner <tgxl@linutronix.de>
- *
- *  Converted to platform driver by Janusz Krzysztofik <jkrzyszt@tis.icnet.pl>
- *  Partially stolen from plat_nand.c
- *
- *  Overview:
- *   This is a device driver for the NAND flash device found on the
- *   Amstrad E3 (Delta).
- */
+
+ 
 
 #include <linux/slab.h>
 #include <linux/module.h>
@@ -26,9 +13,7 @@
 #include <linux/platform_device.h>
 #include <linux/sizes.h>
 
-/*
- * MTD structure for E3 (Delta)
- */
+ 
 struct gpio_nand {
 	struct nand_controller	base;
 	struct nand_chip	nand_chip;
@@ -230,9 +215,7 @@ static const struct nand_controller_ops gpio_nand_ops = {
 	.setup_interface = gpio_nand_setup_interface,
 };
 
-/*
- * Main initialization routine
- */
+ 
 static int gpio_nand_probe(struct platform_device *pdev)
 {
 	struct gpio_nand_platdata *pdata = dev_get_platdata(&pdev->dev);
@@ -249,7 +232,7 @@ static int gpio_nand_probe(struct platform_device *pdev)
 		num_partitions = pdata->num_parts;
 	}
 
-	/* Allocate memory for MTD device structure and private data */
+	 
 	priv = devm_kzalloc(&pdev->dev, sizeof(struct gpio_nand),
 			    GFP_KERNEL);
 	if (!priv)
@@ -272,7 +255,7 @@ static int gpio_nand_probe(struct platform_device *pdev)
 
 	platform_set_drvdata(pdev, priv);
 
-	/* Set chip enabled but write protected */
+	 
 	priv->gpiod_nwp = devm_gpiod_get_optional(&pdev->dev, "nwp",
 						  GPIOD_OUT_HIGH);
 	if (IS_ERR(priv->gpiod_nwp)) {
@@ -319,7 +302,7 @@ static int gpio_nand_probe(struct platform_device *pdev)
 		return err;
 	}
 
-	/* Request array of data pins, initialize them as input */
+	 
 	priv->data_gpiods = devm_gpiod_get_array_optional(&pdev->dev, "data",
 							  GPIOD_IN);
 	if (IS_ERR(priv->data_gpiods)) {
@@ -353,35 +336,24 @@ static int gpio_nand_probe(struct platform_device *pdev)
 		return -ENODEV;
 	}
 
-	/* Initialize the NAND controller object embedded in gpio_nand. */
+	 
 	priv->base.ops = &gpio_nand_ops;
 	nand_controller_init(&priv->base);
 	this->controller = &priv->base;
 
-	/*
-	 * FIXME: We should release write protection only after nand_scan() to
-	 * be on the safe side but we can't do that until we have a generic way
-	 * to assert/deassert WP from the core.  Even if the core shouldn't
-	 * write things in the nand_scan() path, it should have control on this
-	 * pin just in case we ever need to disable write protection during
-	 * chip detection/initialization.
-	 */
-	/* Release write protection */
+	 
+	 
 	gpiod_set_value(priv->gpiod_nwp, 0);
 
-	/*
-	 * This driver assumes that the default ECC engine should be TYPE_SOFT.
-	 * Set ->engine_type before registering the NAND devices in order to
-	 * provide a driver specific default value.
-	 */
+	 
 	this->ecc.engine_type = NAND_ECC_ENGINE_TYPE_SOFT;
 
-	/* Scan to find existence of the device */
+	 
 	err = nand_scan(this, 1);
 	if (err)
 		return err;
 
-	/* Register the partitions */
+	 
 	err = mtd_device_register(mtd, partitions, num_partitions);
 	if (err)
 		goto err_nand_cleanup;
@@ -394,19 +366,17 @@ err_nand_cleanup:
 	return err;
 }
 
-/*
- * Clean up routine
- */
+ 
 static void gpio_nand_remove(struct platform_device *pdev)
 {
 	struct gpio_nand *priv = platform_get_drvdata(pdev);
 	struct mtd_info *mtd = nand_to_mtd(&priv->nand_chip);
 	int ret;
 
-	/* Apply write protection */
+	 
 	gpiod_set_value(priv->gpiod_nwp, 1);
 
-	/* Unregister device */
+	 
 	ret = mtd_device_unregister(mtd);
 	WARN_ON(ret);
 	nand_cleanup(mtd_to_nand(mtd));
@@ -415,7 +385,7 @@ static void gpio_nand_remove(struct platform_device *pdev)
 #ifdef CONFIG_OF
 static const struct of_device_id gpio_nand_of_id_table[] = {
 	{
-		/* sentinel */
+		 
 	},
 };
 MODULE_DEVICE_TABLE(of, gpio_nand_of_id_table);
@@ -425,7 +395,7 @@ static const struct platform_device_id gpio_nand_plat_id_table[] = {
 	{
 		.name	= "ams-delta-nand",
 	}, {
-		/* sentinel */
+		 
 	},
 };
 MODULE_DEVICE_TABLE(platform, gpio_nand_plat_id_table);

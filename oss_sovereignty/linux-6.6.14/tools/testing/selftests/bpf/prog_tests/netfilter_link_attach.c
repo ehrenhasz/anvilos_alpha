@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
+
 
 #include <netinet/in.h>
 #include <linux/netfilter.h>

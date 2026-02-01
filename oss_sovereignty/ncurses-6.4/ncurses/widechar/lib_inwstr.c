@@ -1,42 +1,8 @@
-/****************************************************************************
- * Copyright 2020 Thomas E. Dickey                                          *
- * Copyright 2002-2016,2017 Free Software Foundation, Inc.                  *
- *                                                                          *
- * Permission is hereby granted, free of charge, to any person obtaining a  *
- * copy of this software and associated documentation files (the            *
- * "Software"), to deal in the Software without restriction, including      *
- * without limitation the rights to use, copy, modify, merge, publish,      *
- * distribute, distribute with modifications, sublicense, and/or sell       *
- * copies of the Software, and to permit persons to whom the Software is    *
- * furnished to do so, subject to the following conditions:                 *
- *                                                                          *
- * The above copyright notice and this permission notice shall be included  *
- * in all copies or substantial portions of the Software.                   *
- *                                                                          *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS  *
- * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF               *
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.   *
- * IN NO EVENT SHALL THE ABOVE COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,   *
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR    *
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR    *
- * THE USE OR OTHER DEALINGS IN THE SOFTWARE.                               *
- *                                                                          *
- * Except as contained in this notice, the name(s) of the above copyright   *
- * holders shall not be used in advertising or otherwise to promote the     *
- * sale, use or other dealings in this Software without prior written       *
- * authorization.                                                           *
- ****************************************************************************/
+ 
 
-/****************************************************************************
- * Author: Thomas Dickey                                                    *
- ****************************************************************************/
+ 
 
-/*
-**	lib_inwstr.c
-**
-**	The routines winnwstr() and winwstr().
-**
-*/
+ 
 
 #include <curses.priv.h>
 
@@ -70,9 +36,9 @@ winnwstr(WINDOW *win, wchar_t *wstr, int n)
 			if (count + 1 > n) {
 			    done = TRUE;
 			    if (last == 0) {
-				count = ERR;	/* error if we store nothing */
+				count = ERR;	 
 			    } else {
-				count = last;	/* only store complete chars */
+				count = last;	 
 			    }
 			    break;
 			}
@@ -93,11 +59,7 @@ winnwstr(WINDOW *win, wchar_t *wstr, int n)
     returnCode(count);
 }
 
-/*
- * X/Open says winwstr() returns OK if not ERR.  If that is not a blunder, it
- * must have a null termination on the string (see above).  Unlike winnstr(),
- * it does not define what happens for a negative count with winnwstr().
- */
+ 
 NCURSES_EXPORT(int)
 winwstr(WINDOW *win, wchar_t *wstr)
 {

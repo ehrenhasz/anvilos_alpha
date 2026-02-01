@@ -1,24 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0
- *
- * Copyright 2016-2020 HabanaLabs, Ltd.
- * All Rights Reserved.
- *
- */
+ 
 
-/************************************
- ** This is an auto-generated file **
- **       DO NOT EDIT BELOW        **
- ************************************/
+ 
 
 #ifndef ASIC_REG_DCORE0_TPC0_EML_FUNNEL_REGS_H_
 #define ASIC_REG_DCORE0_TPC0_EML_FUNNEL_REGS_H_
 
-/*
- *****************************************
- *   DCORE0_TPC0_EML_FUNNEL
- *   (Prototype: FUNNEL_2X1)
- *****************************************
- */
+ 
 
 #define mmDCORE0_TPC0_EML_FUNNEL_CTRL_REG 0x6000
 
@@ -72,4 +59,4 @@
 
 #define mmDCORE0_TPC0_EML_FUNNEL_CID3 0x6FFC
 
-#endif /* ASIC_REG_DCORE0_TPC0_EML_FUNNEL_REGS_H_ */
+#endif  

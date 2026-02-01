@@ -1,21 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/******************************************************************************
- *
- *   Copyright © International Business Machines  Corp., 2006-2008
- *
- * DESCRIPTION
- *      This test excercises the futex syscall op codes needed for requeuing
- *      priority inheritance aware POSIX condition variables and mutexes.
- *
- * AUTHORS
- *      Sripathi Kodi <sripathik@in.ibm.com>
- *      Darren Hart <dvhart@linux.intel.com>
- *
- * HISTORY
- *      2008-Jan-13: Initial version by Sripathi Kodi <sripathik@in.ibm.com>
- *      2009-Nov-6: futex test adaptation by Darren Hart <dvhart@linux.intel.com>
- *
- *****************************************************************************/
+
+ 
 
 #include <errno.h>
 #include <limits.h>
@@ -40,7 +24,7 @@ futex_t f1 = FUTEX_INITIALIZER;
 futex_t f2 = FUTEX_INITIALIZER;
 futex_t wake_complete = FUTEX_INITIALIZER;
 
-/* Test option defaults */
+ 
 static long timeout_ns;
 static int broadcast;
 static int owner;
@@ -111,9 +95,7 @@ void *waiterfn(void *arg)
 	futex_t old_val;
 
 	info("Waiter %ld: running\n", args->id);
-	/* Each thread sleeps for a different amount of time
-	 * This is to avoid races, because we don't lock the
-	 * external mutex here */
+	 
 	usleep(1000 * (long)args->id);
 
 	old_val = f1;
@@ -212,7 +194,7 @@ void *signal_wakerfn(void *arg)
 			futex_lock_pi(&f2, NULL, 0, FUTEX_PRIVATE_FLAG);
 		}
 		info("Waker: Calling signal\n");
-		/* cond_signal */
+		 
 		old_val = f1;
 		args->ret = futex_cmp_requeue_pi(&f1, old_val, &f2,
 						 nr_wake, nr_requeue,
@@ -235,7 +217,7 @@ void *signal_wakerfn(void *arg)
 		task_count += args->ret;
 		usleep(SIGNAL_PERIOD_US);
 		i++;
-		/* we have to loop at least THREAD_MAX times */
+		 
 		if (i > MAX_WAKE_ITERS + THREAD_MAX) {
 			error("max signaling iterations (%d) reached, giving up on pending waiters.\n",
 			      0, MAX_WAKE_ITERS + THREAD_MAX);
@@ -332,8 +314,8 @@ int unit_test(int broadcast, long lock, int third_party_owner, long timeout_ns)
 		goto out;
 	}
 
-	/* Wait for threads to finish */
-	/* Store the first error or failure encountered in waiter_ret */
+	 
+	 
 	waiter_ret = &args[0].ret;
 	for (i = 0; i < THREAD_MAX; i++)
 		pthread_join(waiter[i],
@@ -397,11 +379,7 @@ int main(int argc, char *argv[])
 		"\tArguments: broadcast=%d locked=%d owner=%d timeout=%ldns\n",
 		broadcast, locked, owner, timeout_ns);
 
-	/*
-	 * FIXME: unit_test is obsolete now that we parse options and the
-	 * various style of runs are done by run.sh - simplify the code and move
-	 * unit_test into main()
-	 */
+	 
 	ret = unit_test(broadcast, locked, owner, timeout_ns);
 
 	print_result(TEST_NAME, ret);

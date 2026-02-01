@@ -1,22 +1,6 @@
-/* mailcheck.c -- The check is in the mail... */
+ 
 
-/* Copyright (C) 1987-2020 Free Software Foundation, Inc.
-
-   This file is part of GNU Bash, the Bourne Again SHell.
-
-   Bash is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   Bash is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with Bash.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ 
 
 #include "config.h"
 
@@ -38,7 +22,7 @@
 #include "mailcheck.h"
 #include <tilde/tilde.h>
 
-/* Values for flags word in struct _fileinfo */
+ 
 #define MBOX_INITIALIZED	0x01
 
 extern time_t shell_start_time;
@@ -54,16 +38,16 @@ typedef struct _fileinfo {
   int flags;
 } FILEINFO;
 
-/* The list of remembered mail files. */
+ 
 static FILEINFO **mailfiles = (FILEINFO **)NULL;
 
-/* Number of mail files that we have. */
+ 
 static int mailfiles_count;
 
-/* The last known time that mail was checked. */
+ 
 static time_t last_time_mail_checked = 0;
 
-/* Non-zero means warn if a mail file has been read since last checked. */
+ 
 int mail_warning;
 
 static int find_mail_file PARAMS((char *));
@@ -80,7 +64,7 @@ static int file_has_grown PARAMS((int));
 
 static char *parse_mailpath_spec PARAMS((char *));
 
-/* Returns non-zero if it is time to check mail. */
+ 
 int
 time_to_check_mail ()
 {
@@ -90,27 +74,23 @@ time_to_check_mail ()
 
   temp = get_string_value ("MAILCHECK");
 
-  /* Negative number, or non-numbers (such as empty string) cause no
-     checking to take place. */
+   
   if (temp == 0 || legal_number (temp, &seconds) == 0 || seconds < 0)
     return (0);
 
   now = NOW;
-  /* Time to check if MAILCHECK is explicitly set to zero, or if enough
-     time has passed since the last check. */
+   
   return (seconds == 0 || ((now - last_time_mail_checked) >= seconds));
 }
 
-/* Okay, we have checked the mail.  Perhaps I should make this function
-   go away. */
+ 
 void
 reset_mail_timer ()
 {
   last_time_mail_checked = NOW;
 }
 
-/* Locate a file in the list.  Return index of
-   entry, or -1 if not found. */
+ 
 static int
 find_mail_file (file)
      char *file;
@@ -166,8 +146,7 @@ update_mail_file (i)
     RESET_MAIL_FILE (i);
 }
 
-/* Add this file to the list of remembered files and return its index
-   in the list of mail files. */
+ 
 static int
 add_mail_file (file, msg)
      char *file, *msg;
@@ -197,7 +176,7 @@ add_mail_file (file, msg)
   return i;
 }
 
-/* Reset the existing mail files access and modification times to zero. */
+ 
 void
 reset_mail_files ()
 {
@@ -230,7 +209,7 @@ dispose_mail_file (mf)
   free (mf);
 }
 
-/* Free the information that we have about the remembered mail files. */
+ 
 void
 free_mail_files ()
 {
@@ -253,9 +232,7 @@ init_mail_dates ()
     remember_mail_dates ();
 }
 
-/* Return non-zero if FILE's mod date has changed and it has not been
-   accessed since modified.  If the size has dropped to zero, reset
-   the cached mail file info. */
+ 
 static int
 file_mod_date_changed (i)
      int i;
@@ -279,7 +256,7 @@ file_mod_date_changed (i)
   return (0);
 }
 
-/* Return non-zero if FILE's access date has changed. */
+ 
 static int
 file_access_date_changed (i)
      int i;
@@ -300,7 +277,7 @@ file_access_date_changed (i)
   return (0);
 }
 
-/* Return non-zero if FILE's size has increased. */
+ 
 static int
 file_has_grown (i)
      int i;
@@ -315,9 +292,7 @@ file_has_grown (i)
   return ((mailstat (file, &finfo) == 0) && (finfo.st_size > size));
 }
 
-/* Take an element from $MAILPATH and return the portion from
-   the first unquoted `?' or `%' to the end of the string.  This is the
-   message to be printed when the file contents change. */
+ 
 static char *
 parse_mailpath_spec (str)
      char *str;
@@ -360,9 +335,7 @@ make_default_mailpath ()
 #endif
 }
 
-/* Remember the dates of the files specified by MAILPATH, or if there is
-   no MAILPATH, by the file specified in MAIL.  If neither exists, use a
-   default value, which we randomly concoct from using Unix. */
+ 
 
 void
 remember_mail_dates ()
@@ -373,7 +346,7 @@ remember_mail_dates ()
 
   mailpaths = get_string_value ("MAILPATH");
 
-  /* If no $MAILPATH, but $MAIL, use that as a single filename to check. */
+   
   if (mailpaths == 0 && (mailpaths = get_string_value ("MAIL")))
     {
       add_mail_file (mailpaths, (char *)NULL);
@@ -401,18 +374,9 @@ remember_mail_dates ()
     }
 }
 
-/* check_mail () is useful for more than just checking mail.  Since it has
-   the paranoids dream ability of telling you when someone has read your
-   mail, it can just as easily be used to tell you when someones .profile
-   file has been read, thus letting one know when someone else has logged
-   in.  Pretty good, huh? */
+ 
 
-/* Check for mail in some files.  If the modification date of any
-   of the files in MAILPATH has changed since we last did a
-   remember_mail_dates () then mention that the user has mail.
-   Special hack:  If the variable MAIL_WARNING is non-zero and the
-   mail file has been accessed since the last time we remembered, then
-   the message "The mail in <mailfile> has been read" is printed. */
+ 
 void
 check_mail ()
 {
@@ -443,23 +407,16 @@ check_mail ()
 #define atime mailfiles[i]->access_time
 #define mtime mailfiles[i]->mod_time
 
-	  /* Have to compute this before the call to update_mail_file, which
-	     resets all the information. */
+	   
 	  file_is_bigger = file_has_grown (i);
 
 	  update_mail_file (i);
 
-	  /* If the user has just run a program which manipulates the
-	     mail file, then don't bother explaining that the mail
-	     file has been manipulated.  Since some systems don't change
-	     the access time to be equal to the modification time when
-	     the mail in the file is manipulated, check the size also.  If
-	     the file has not grown, continue. */
+	   
 	  if ((atime >= mtime) && !file_is_bigger)
 	    continue;
 
-	  /* If the mod time is later than the access time and the file
-	     has grown, note the fact that this is *new* mail. */
+	   
 	  if (use_user_notification == 0 && (atime < mtime) && file_is_bigger)
 	    message = _("You have new mail in $_");
 #undef atime

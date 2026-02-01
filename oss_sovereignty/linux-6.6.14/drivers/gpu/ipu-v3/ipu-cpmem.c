@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2012 Mentor Graphics Inc.
- * Copyright 2005-2012 Freescale Semiconductor, Inc. All Rights Reserved.
- */
+
+ 
 #include <linux/types.h>
 #include <linux/bitrev.h>
 #include <linux/io.h>
@@ -149,62 +146,48 @@ static u32 ipu_ch_param_read_field(struct ipuv3_channel *ch, u32 wbs)
 	return val;
 }
 
-/*
- * The V4L2 spec defines packed RGB formats in memory byte order, which from
- * point of view of the IPU corresponds to little-endian words with the first
- * component in the least significant bits.
- * The DRM pixel formats and IPU internal representation are ordered the other
- * way around, with the first named component ordered at the most significant
- * bits. Further, V4L2 formats are not well defined:
- *     https://linuxtv.org/downloads/v4l-dvb-apis/packed-rgb.html
- * We choose the interpretation which matches GStreamer behavior.
- */
+ 
 static int v4l2_pix_fmt_to_drm_fourcc(u32 pixelformat)
 {
 	switch (pixelformat) {
 	case V4L2_PIX_FMT_RGB565:
-		/*
-		 * Here we choose the 'corrected' interpretation of RGBP, a
-		 * little-endian 16-bit word with the red component at the most
-		 * significant bits:
-		 * g[2:0]b[4:0] r[4:0]g[5:3] <=> [16:0] R:G:B
-		 */
+		 
 		return DRM_FORMAT_RGB565;
 	case V4L2_PIX_FMT_BGR24:
-		/* B G R <=> [24:0] R:G:B */
+		 
 		return DRM_FORMAT_RGB888;
 	case V4L2_PIX_FMT_RGB24:
-		/* R G B <=> [24:0] B:G:R */
+		 
 		return DRM_FORMAT_BGR888;
 	case V4L2_PIX_FMT_BGR32:
-		/* B G R A <=> [32:0] A:B:G:R */
+		 
 		return DRM_FORMAT_XRGB8888;
 	case V4L2_PIX_FMT_RGB32:
-		/* R G B A <=> [32:0] A:B:G:R */
+		 
 		return DRM_FORMAT_XBGR8888;
 	case V4L2_PIX_FMT_ABGR32:
-		/* B G R A <=> [32:0] A:R:G:B */
+		 
 		return DRM_FORMAT_ARGB8888;
 	case V4L2_PIX_FMT_XBGR32:
-		/* B G R X <=> [32:0] X:R:G:B */
+		 
 		return DRM_FORMAT_XRGB8888;
 	case V4L2_PIX_FMT_BGRA32:
-		/* A B G R <=> [32:0] R:G:B:A */
+		 
 		return DRM_FORMAT_RGBA8888;
 	case V4L2_PIX_FMT_BGRX32:
-		/* X B G R <=> [32:0] R:G:B:X */
+		 
 		return DRM_FORMAT_RGBX8888;
 	case V4L2_PIX_FMT_RGBA32:
-		/* R G B A <=> [32:0] A:B:G:R */
+		 
 		return DRM_FORMAT_ABGR8888;
 	case V4L2_PIX_FMT_RGBX32:
-		/* R G B X <=> [32:0] X:B:G:R */
+		 
 		return DRM_FORMAT_XBGR8888;
 	case V4L2_PIX_FMT_ARGB32:
-		/* A R G B <=> [32:0] B:G:R:A */
+		 
 		return DRM_FORMAT_BGRA8888;
 	case V4L2_PIX_FMT_XRGB32:
-		/* X R G B <=> [32:0] B:G:R:X */
+		 
 		return DRM_FORMAT_BGRX8888;
 	case V4L2_PIX_FMT_UYVY:
 		return DRM_FORMAT_UYVY;
@@ -413,7 +396,7 @@ int ipu_cpmem_set_format_rgb(struct ipuv3_channel *ch,
 	}
 	ipu_ch_param_write_field(ch, IPU_FIELD_BPP, bpp);
 	ipu_ch_param_write_field(ch, IPU_FIELD_NPB, npb);
-	ipu_ch_param_write_field(ch, IPU_FIELD_PFS, 7); /* rgb mode */
+	ipu_ch_param_write_field(ch, IPU_FIELD_PFS, 7);  
 
 	return 0;
 }
@@ -446,7 +429,7 @@ int ipu_cpmem_set_format_passthrough(struct ipuv3_channel *ch, int width)
 
 	ipu_ch_param_write_field(ch, IPU_FIELD_BPP, bpp);
 	ipu_ch_param_write_field(ch, IPU_FIELD_NPB, npb);
-	ipu_ch_param_write_field(ch, IPU_FIELD_PFS, 6); /* raw mode */
+	ipu_ch_param_write_field(ch, IPU_FIELD_PFS, 6);  
 
 	return 0;
 }
@@ -456,14 +439,14 @@ void ipu_cpmem_set_yuv_interleaved(struct ipuv3_channel *ch, u32 pixel_format)
 {
 	switch (pixel_format) {
 	case V4L2_PIX_FMT_UYVY:
-		ipu_ch_param_write_field(ch, IPU_FIELD_BPP, 3); /* bits/pixel */
-		ipu_ch_param_write_field(ch, IPU_FIELD_PFS, 0xA);/* pix fmt */
-		ipu_ch_param_write_field(ch, IPU_FIELD_NPB, 31);/* burst size */
+		ipu_ch_param_write_field(ch, IPU_FIELD_BPP, 3);  
+		ipu_ch_param_write_field(ch, IPU_FIELD_PFS, 0xA); 
+		ipu_ch_param_write_field(ch, IPU_FIELD_NPB, 31); 
 		break;
 	case V4L2_PIX_FMT_YUYV:
-		ipu_ch_param_write_field(ch, IPU_FIELD_BPP, 3); /* bits/pixel */
-		ipu_ch_param_write_field(ch, IPU_FIELD_PFS, 0x8);/* pix fmt */
-		ipu_ch_param_write_field(ch, IPU_FIELD_NPB, 31);/* burst size */
+		ipu_ch_param_write_field(ch, IPU_FIELD_BPP, 3);  
+		ipu_ch_param_write_field(ch, IPU_FIELD_PFS, 0x8); 
+		ipu_ch_param_write_field(ch, IPU_FIELD_NPB, 31); 
 		break;
 	}
 }
@@ -603,7 +586,7 @@ static const struct ipu_rgb def_bgra_16 = {
 
 #define NUM_ALPHA_CHANNELS	7
 
-/* See Table 37-12. Alpha channels mapping. */
+ 
 static int ipu_channel_albm(int ch_num)
 {
 	switch (ch_num) {
@@ -643,51 +626,51 @@ int ipu_cpmem_set_fmt(struct ipuv3_channel *ch, u32 drm_fourcc)
 	switch (drm_fourcc) {
 	case DRM_FORMAT_YUV420:
 	case DRM_FORMAT_YVU420:
-		/* pix format */
+		 
 		ipu_ch_param_write_field(ch, IPU_FIELD_PFS, 2);
-		/* burst size */
+		 
 		ipu_ch_param_write_field(ch, IPU_FIELD_NPB, 31);
 		break;
 	case DRM_FORMAT_YUV422:
 	case DRM_FORMAT_YVU422:
-		/* pix format */
+		 
 		ipu_ch_param_write_field(ch, IPU_FIELD_PFS, 1);
-		/* burst size */
+		 
 		ipu_ch_param_write_field(ch, IPU_FIELD_NPB, 31);
 		break;
 	case DRM_FORMAT_YUV444:
 	case DRM_FORMAT_YVU444:
-		/* pix format */
+		 
 		ipu_ch_param_write_field(ch, IPU_FIELD_PFS, 0);
-		/* burst size */
+		 
 		ipu_ch_param_write_field(ch, IPU_FIELD_NPB, 31);
 		break;
 	case DRM_FORMAT_NV12:
-		/* pix format */
+		 
 		ipu_ch_param_write_field(ch, IPU_FIELD_PFS, 4);
-		/* burst size */
+		 
 		ipu_ch_param_write_field(ch, IPU_FIELD_NPB, 31);
 		break;
 	case DRM_FORMAT_NV16:
-		/* pix format */
+		 
 		ipu_ch_param_write_field(ch, IPU_FIELD_PFS, 3);
-		/* burst size */
+		 
 		ipu_ch_param_write_field(ch, IPU_FIELD_NPB, 31);
 		break;
 	case DRM_FORMAT_UYVY:
-		/* bits/pixel */
+		 
 		ipu_ch_param_write_field(ch, IPU_FIELD_BPP, 3);
-		/* pix format */
+		 
 		ipu_ch_param_write_field(ch, IPU_FIELD_PFS, 0xA);
-		/* burst size */
+		 
 		ipu_ch_param_write_field(ch, IPU_FIELD_NPB, 31);
 		break;
 	case DRM_FORMAT_YUYV:
-		/* bits/pixel */
+		 
 		ipu_ch_param_write_field(ch, IPU_FIELD_BPP, 3);
-		/* pix format */
+		 
 		ipu_ch_param_write_field(ch, IPU_FIELD_PFS, 0x8);
-		/* burst size */
+		 
 		ipu_ch_param_write_field(ch, IPU_FIELD_NPB, 31);
 		break;
 	case DRM_FORMAT_ABGR8888:
@@ -873,7 +856,7 @@ int ipu_cpmem_set_image(struct ipuv3_channel *ch, struct ipu_image *image)
 			 image->rect.top * pix->bytesperline;
 		break;
 	default:
-		/* This should not happen */
+		 
 		WARN_ON(1);
 		offset = 0;
 		ret = -EINVAL;

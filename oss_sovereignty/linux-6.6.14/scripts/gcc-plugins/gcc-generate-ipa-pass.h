@@ -1,28 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Generator for IPA pass related boilerplate code/data
- *
- * Supports gcc 4.5-6
- *
- * Usage:
- *
- * 1. before inclusion define PASS_NAME
- * 2. before inclusion define NO_* for unimplemented callbacks
- *    NO_GENERATE_SUMMARY
- *    NO_READ_SUMMARY
- *    NO_WRITE_SUMMARY
- *    NO_READ_OPTIMIZATION_SUMMARY
- *    NO_WRITE_OPTIMIZATION_SUMMARY
- *    NO_STMT_FIXUP
- *    NO_FUNCTION_TRANSFORM
- *    NO_VARIABLE_TRANSFORM
- *    NO_GATE
- *    NO_EXECUTE
- * 3. before inclusion define PROPERTIES_* and *TODO_FLAGS_* to override
- *    the default 0 values
- * 4. for convenience, all the above will be undefined after inclusion!
- * 5. the only exported name is make_PASS_NAME_pass() to register with gcc
- */
+ 
+ 
 
 #ifndef PASS_NAME
 #error at least PASS_NAME must be defined
@@ -190,7 +167,7 @@ struct opt_pass *_MAKE_PASS_NAME_PASS(void)
 }
 #endif
 
-/* clean up user provided defines */
+ 
 #undef PASS_NAME
 #undef NO_GENERATE_SUMMARY
 #undef NO_WRITE_SUMMARY
@@ -210,7 +187,7 @@ struct opt_pass *_MAKE_PASS_NAME_PASS(void)
 #undef TODO_FLAGS_FINISH
 #undef TODO_FLAGS_START
 
-/* clean up generated defines */
+ 
 #undef _EXECUTE
 #undef __EXECUTE
 #undef _FUNCTION_TRANSFORM
@@ -245,4 +222,4 @@ struct opt_pass *_MAKE_PASS_NAME_PASS(void)
 #undef _WRITE_SUMMARY
 #undef __WRITE_SUMMARY
 
-#endif /* PASS_NAME */
+#endif  

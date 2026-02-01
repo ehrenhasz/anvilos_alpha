@@ -1,16 +1,4 @@
-/*
- * This file is part of the ZFS Event Daemon (ZED).
- *
- * Developed at Lawrence Livermore National Laboratory (LLNL-CODE-403049).
- * Copyright (C) 2013-2014 Lawrence Livermore National Security, LLC.
- * Refer to the OpenZFS git commit log for authoritative copyright attribution.
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License Version 1.0 (CDDL-1.0).
- * You can obtain a copy of the license from the top-level file
- * "OPENSOLARIS.LICENSE" or at <http://opensource.org/licenses/CDDL-1.0>.
- * You may not use this file except in compliance with the license.
- */
+ 
 
 #include <ctype.h>
 #include <errno.h>
@@ -40,9 +28,7 @@
 
 static int max_zevent_buf_len = 1 << 20;
 
-/*
- * Open the libzfs interface.
- */
+ 
 int
 zed_event_init(struct zed_conf *zcp)
 {
@@ -78,9 +64,7 @@ zed_event_init(struct zed_conf *zcp)
 	return (0);
 }
 
-/*
- * Close the libzfs interface.
- */
+ 
 void
 zed_event_fini(struct zed_conf *zcp)
 {
@@ -109,7 +93,7 @@ static void
 _bump_event_queue_length(void)
 {
 	int zzlm = -1, wr;
-	char qlen_buf[12] = {0}; /* parameter is int => max "-2147483647\n" */
+	char qlen_buf[12] = {0};  
 	long int qlen, orig_qlen;
 
 	zzlm = open("/sys/module/zfs/parameters/zfs_zevent_len_max", O_RDWR);
@@ -126,14 +110,11 @@ _bump_event_queue_length(void)
 		goto done;
 
 	if (qlen <= 0)
-		qlen = 512; /* default zfs_zevent_len_max value */
+		qlen = 512;  
 	else
 		qlen *= 2;
 
-	/*
-	 * Don't consume all of kernel memory with event logs if something
-	 * goes wrong.
-	 */
+	 
 	if (qlen > max_zevent_buf_len)
 		qlen = max_zevent_buf_len;
 	if (qlen == orig_qlen)
@@ -154,16 +135,7 @@ done:
 		(void) close(zzlm);
 }
 
-/*
- * Seek to the event specified by [saved_eid] and [saved_etime].
- * This protects against processing a given event more than once.
- * Return 0 upon a successful seek to the specified event, or -1 otherwise.
- *
- * A zevent is considered to be uniquely specified by its (eid,time) tuple.
- * The unsigned 64b eid is set to 1 when the kernel module is loaded, and
- * incremented by 1 for each new event.  Since the state file can persist
- * across a kernel module reload, the time must be checked to ensure a match.
- */
+ 
 int
 zed_event_seek(struct zed_conf *zcp, uint64_t saved_eid, int64_t saved_etime[])
 {
@@ -207,7 +179,7 @@ zed_event_seek(struct zed_conf *zcp, uint64_t saved_eid, int64_t saved_etime[])
 		} else if ((eid != saved_eid) ||
 		    (etime[0] != saved_etime[0]) ||
 		    (etime[1] != saved_etime[1])) {
-			/* no-op */
+			 
 		} else {
 			found = 1;
 		}
@@ -224,9 +196,7 @@ zed_event_seek(struct zed_conf *zcp, uint64_t saved_eid, int64_t saved_etime[])
 	return (found ? 0 : -1);
 }
 
-/*
- * Return non-zero if nvpair [name] should be formatted in hex; o/w, return 0.
- */
+ 
 static int
 _zed_event_value_is_hex(const char *name)
 {
@@ -249,21 +219,7 @@ _zed_event_value_is_hex(const char *name)
 	return (0);
 }
 
-/*
- * Add an environment variable for [eid] to the container [zsp].
- *
- * The variable name is the concatenation of [prefix] and [name] converted to
- * uppercase with non-alphanumeric characters converted to underscores;
- * [prefix] is optional, and [name] must begin with an alphabetic character.
- * If the converted variable name already exists within the container [zsp],
- * its existing value will be replaced with the new value.
- *
- * The variable value is specified by the format string [fmt].
- *
- * Returns 0 on success, and -1 on error (with errno set).
- *
- * All environment variables in [zsp] should be added through this function.
- */
+ 
 static __attribute__((format(printf, 5, 6))) int
 _zed_event_add_var(uint64_t eid, zed_strings_t *zsp,
     const char *prefix, const char *name, const char *fmt, ...)
@@ -292,9 +248,7 @@ _zed_event_add_var(uint64_t eid, zed_strings_t *zsp,
 		    "Name \"%s\" is invalid", eid, name);
 		return (-1);
 	}
-	/*
-	 * Construct the string key by converting PREFIX (if present) and NAME.
-	 */
+	 
 	dstp = keybuf;
 	lastp = keybuf + sizeof (keybuf);
 	if (prefix) {
@@ -311,9 +265,7 @@ _zed_event_add_var(uint64_t eid, zed_strings_t *zsp,
 		return (-1);
 	}
 	*dstp = '\0';
-	/*
-	 * Construct the string specified by "[PREFIX][NAME]=[FMT]".
-	 */
+	 
 	dstp = valbuf;
 	buflen = sizeof (valbuf);
 	n = strlcpy(dstp, keybuf, buflen);
@@ -635,11 +587,7 @@ _zed_event_add_string_array(uint64_t eid, zed_strings_t *zsp,
 	return (_zed_event_add_var(eid, zsp, prefix, name, "%s", buf));
 }
 
-/*
- * Convert the nvpair [nvp] to a string which is added to the environment
- * of the child process.
- * Return 0 on success, -1 on error.
- */
+ 
 static void
 _zed_event_add_nvpair(uint64_t eid, zed_strings_t *zsp, nvpair_t *nvp)
 {
@@ -706,9 +654,7 @@ _zed_event_add_nvpair(uint64_t eid, zed_strings_t *zsp, nvpair_t *nvp)
 		_zed_event_add_var(eid, zsp, prefix, name,
 		    (_zed_event_value_is_hex(name) ? "0x%.16llX" : "%llu"),
 		    (u_longlong_t)i64);
-		/*
-		 * shadow readable strings for vdev state pairs
-		 */
+		 
 		if (strcmp(name, FM_EREPORT_PAYLOAD_ZFS_VDEV_STATE) == 0 ||
 		    strcmp(name, FM_EREPORT_PAYLOAD_ZFS_VDEV_LASTSTATE) == 0) {
 			char alt[32];
@@ -717,9 +663,7 @@ _zed_event_add_nvpair(uint64_t eid, zed_strings_t *zsp, nvpair_t *nvp)
 			_zed_event_add_var(eid, zsp, prefix, alt, "%s",
 			    zpool_state_to_name(i64, VDEV_AUX_NONE));
 		} else
-		/*
-		 * shadow readable strings for pool state
-		 */
+		 
 		if (strcmp(name, FM_EREPORT_PAYLOAD_ZFS_POOL_STATE) == 0) {
 			char alt[32];
 
@@ -784,13 +728,7 @@ _zed_event_add_nvpair(uint64_t eid, zed_strings_t *zsp, nvpair_t *nvp)
 	}
 }
 
-/*
- * Restrict various environment variables to safe and sane values
- * when constructing the environment for the child process, unless
- * we're running with a custom $PATH (like under the ZFS test suite).
- *
- * Reference: Secure Programming Cookbook by Viega & Messier, Section 1.1.
- */
+ 
 static void
 _zed_event_add_env_restrict(uint64_t eid, zed_strings_t *zsp,
     const char *path)
@@ -809,13 +747,10 @@ _zed_event_add_env_restrict(uint64_t eid, zed_strings_t *zsp,
 		{ NULL,			NULL }
 	};
 
-	/*
-	 * If we have a custom $PATH, use the default ZFS binary locations
-	 * instead of the hard-coded ones.
-	 */
+	 
 	const char *env_path[][2] = {
 		{ "IFS",		" \t\n" },
-		{ "PATH",		NULL }, /* $PATH copied in later on */
+		{ "PATH",		NULL },  
 		{ "ZDB",		"zdb" },
 		{ "ZED",		"zed" },
 		{ "ZFS",		"zfs" },
@@ -833,7 +768,7 @@ _zed_event_add_env_restrict(uint64_t eid, zed_strings_t *zsp,
 	pa = path != NULL ? env_path : env_restrict;
 
 	for (; *(*pa); pa++) {
-		/* Use our custom $PATH if we have one */
+		 
 		if (path != NULL && strcmp((*pa)[0], "PATH") == 0)
 			(*pa)[1] = path;
 
@@ -841,12 +776,7 @@ _zed_event_add_env_restrict(uint64_t eid, zed_strings_t *zsp,
 	}
 }
 
-/*
- * Preserve specified variables from the parent environment
- * when constructing the environment for the child process.
- *
- * Reference: Secure Programming Cookbook by Viega & Messier, Section 1.1.
- */
+ 
 static void
 _zed_event_add_env_preserve(uint64_t eid, zed_strings_t *zsp)
 {
@@ -865,11 +795,7 @@ _zed_event_add_env_preserve(uint64_t eid, zed_strings_t *zsp)
 	}
 }
 
-/*
- * Compute the "subclass" by removing the first 3 components of [class]
- * (which will always be of the form "*.fs.zfs").  Return a pointer inside
- * the string [class], or NULL if insufficient components exist.
- */
+ 
 static const char *
 _zed_event_get_subclass(const char *class)
 {
@@ -889,13 +815,7 @@ _zed_event_get_subclass(const char *class)
 	return (p);
 }
 
-/*
- * Convert the zevent time from a 2-element array of 64b integers
- * into a more convenient form:
- * - TIME_SECS is the second component of the time.
- * - TIME_NSECS is the nanosecond component of the time.
- * - TIME_STRING is an almost-RFC3339-compliant string representation.
- */
+ 
 static void
 _zed_event_add_time_strings(uint64_t eid, zed_strings_t *zsp, int64_t etime[])
 {
@@ -922,9 +842,7 @@ _zed_event_add_time_strings(uint64_t eid, zed_strings_t *zsp, int64_t etime[])
 	}
 }
 
-/*
- * Service the next zevent, blocking until one is available.
- */
+ 
 int
 zed_event_service(struct zed_conf *zcp)
 {
@@ -969,7 +887,7 @@ zed_event_service(struct zed_conf *zcp)
 		zed_log_msg(LOG_WARNING,
 		    "Failed to lookup zevent class (eid=%llu)", eid);
 	} else {
-		/* let internal modules see this event first */
+		 
 		zfs_agent_post_event(class, NULL, nvl);
 
 		zsp = zed_strings_create();

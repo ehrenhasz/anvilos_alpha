@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
-/* Copyright (c) 2018 Mellanox Technologies. All rights reserved */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/err.h>
@@ -30,10 +30,10 @@ struct mlxsw_env_line_card {
 struct mlxsw_env {
 	struct mlxsw_core *core;
 	const struct mlxsw_bus_info *bus_info;
-	u8 max_module_count; /* Maximum number of modules per-slot. */
-	u8 num_of_slots; /* Including the main board. */
-	u8 max_eeprom_len; /* Maximum module EEPROM transaction length. */
-	struct mutex line_cards_lock; /* Protects line cards. */
+	u8 max_module_count;  
+	u8 num_of_slots;  
+	u8 max_eeprom_len;  
+	struct mutex line_cards_lock;  
 	struct mlxsw_env_line_card *line_cards[];
 };
 
@@ -159,28 +159,19 @@ mlxsw_env_query_module_eeprom(struct mlxsw_core *mlxsw_core, u8 slot_index,
 
 	if (offset < MLXSW_REG_MCIA_EEPROM_PAGE_LENGTH &&
 	    offset + size > MLXSW_REG_MCIA_EEPROM_PAGE_LENGTH)
-		/* Cross pages read, read until offset 256 in low page */
+		 
 		size = MLXSW_REG_MCIA_EEPROM_PAGE_LENGTH - offset;
 
 	i2c_addr = MLXSW_REG_MCIA_I2C_ADDR_LOW;
 	if (offset >= MLXSW_REG_MCIA_EEPROM_PAGE_LENGTH) {
 		if (qsfp) {
-			/* When reading upper pages 1, 2 and 3 the offset
-			 * starts at 128. Please refer to "QSFP+ Memory Map"
-			 * figure in SFF-8436 specification and to "CMIS Module
-			 * Memory Map" figure in CMIS specification for
-			 * graphical depiction.
-			 */
+			 
 			page = MLXSW_REG_MCIA_PAGE_GET(offset);
 			offset -= MLXSW_REG_MCIA_EEPROM_UP_PAGE_LENGTH * page;
 			if (offset + size > MLXSW_REG_MCIA_EEPROM_PAGE_LENGTH)
 				size = MLXSW_REG_MCIA_EEPROM_PAGE_LENGTH - offset;
 		} else {
-			/* When reading upper pages 1, 2 and 3 the offset
-			 * starts at 0 and I2C high address is used. Please refer
-			 * to "Memory Organization" figure in SFF-8472
-			 * specification for graphical depiction.
-			 */
+			 
 			i2c_addr = MLXSW_REG_MCIA_I2C_ADDR_HIGH;
 			offset -= MLXSW_REG_MCIA_EEPROM_PAGE_LENGTH;
 		}
@@ -233,33 +224,22 @@ mlxsw_env_module_temp_thresholds_get(struct mlxsw_core *core, u8 slot_index,
 		return 0;
 	}
 
-	/* Validate if threshold reading is available through MTMP register,
-	 * otherwise fallback to read through MCIA.
-	 */
+	 
 	if (module_emerg) {
 		*temp = off == SFP_TEMP_HIGH_WARN ? module_crit : module_emerg;
 		return 0;
 	}
 
-	/* Read Free Side Device Temperature Thresholds from page 03h
-	 * (MSB at lower byte address).
-	 * Bytes:
-	 * 128-129 - Temp High Alarm (SFP_TEMP_HIGH_ALARM);
-	 * 130-131 - Temp Low Alarm (SFP_TEMP_LOW_ALARM);
-	 * 132-133 - Temp High Warning (SFP_TEMP_HIGH_WARN);
-	 * 134-135 - Temp Low Warning (SFP_TEMP_LOW_WARN);
-	 */
+	 
 
-	/* Validate module identifier value. */
+	 
 	err = mlxsw_env_validate_cable_ident(core, slot_index, module, &qsfp,
 					     &cmis);
 	if (err)
 		return err;
 
 	if (qsfp) {
-		/* For QSFP/CMIS module-defined thresholds are located in page
-		 * 02h, otherwise in page 03h.
-		 */
+		 
 		if (cmis)
 			page = MLXSW_REG_MCIA_TH_PAGE_CMIS_NUM;
 		else
@@ -339,7 +319,7 @@ int mlxsw_env_get_module_info(struct net_device *netdev,
 		}
 		break;
 	case MLXSW_REG_MCIA_EEPROM_MODULE_INFO_ID_SFP:
-		/* Verify if transceiver provides diagnostic monitoring page */
+		 
 		err = mlxsw_env_query_module_eeprom(mlxsw_core, slot_index,
 						    module, SFP_DIAGMON, 1,
 						    &diag_mon, false,
@@ -358,15 +338,9 @@ int mlxsw_env_get_module_info(struct net_device *netdev,
 		break;
 	case MLXSW_REG_MCIA_EEPROM_MODULE_INFO_ID_QSFP_DD:
 	case MLXSW_REG_MCIA_EEPROM_MODULE_INFO_ID_OSFP:
-		/* Use SFF_8636 as base type. ethtool should recognize specific
-		 * type through the identifier value.
-		 */
+		 
 		modinfo->type       = ETH_MODULE_SFF_8636;
-		/* Verify if module EEPROM is a flat memory. In case of flat
-		 * memory only page 00h (0-255 bytes) can be read. Otherwise
-		 * upper pages 01h and 02h can also be read. Upper pages 10h
-		 * and 11h are currently not supported by the driver.
-		 */
+		 
 		if (module_info[MLXSW_REG_MCIA_EEPROM_MODULE_INFO_TYPE_ID] &
 		    MLXSW_REG_MCIA_EEPROM_CMIS_FLAT_MEMORY)
 			modinfo->eeprom_len = ETH_MODULE_SFF_8636_LEN;
@@ -402,7 +376,7 @@ int mlxsw_env_get_module_eeprom(struct net_device *netdev,
 	}
 
 	memset(data, 0, ee->len);
-	/* Validate module identifier value. */
+	 
 	err = mlxsw_env_validate_cable_ident(mlxsw_core, slot_index, module,
 					     &qsfp, &cmis);
 	if (err)
@@ -478,7 +452,7 @@ mlxsw_env_get_module_eeprom_by_page(struct mlxsw_core *mlxsw_core,
 		return err;
 	}
 
-	/* Offset cannot be larger than 2 * ETH_MODULE_EEPROM_PAGE_LEN */
+	 
 	device_addr = page->offset;
 
 	while (bytes_read < page->length) {
@@ -601,7 +575,7 @@ mlxsw_env_get_module_power_mode(struct mlxsw_core *mlxsw_core, u8 slot_index,
 	module_info = mlxsw_env_module_info_get(mlxsw_core, slot_index, module);
 	params->policy = module_info->power_mode_policy;
 
-	/* Avoid accessing an inactive line card, as it will result in an error. */
+	 
 	if (!__mlxsw_env_linecard_is_active(mlxsw_env, slot_index))
 		goto out;
 
@@ -651,7 +625,7 @@ static int mlxsw_env_module_low_power_set(struct mlxsw_core *mlxsw_core,
 
 	mlxsw_reg_pmmp_pack(pmmp_pl, slot_index, module);
 	mlxsw_reg_pmmp_sticky_set(pmmp_pl, true);
-	/* Mask all the bits except low power mode. */
+	 
 	eeprom_override_mask = ~MLXSW_REG_PMMP_EEPROM_OVERRIDE_LOW_POWER_MASK;
 	mlxsw_reg_pmmp_eeprom_override_mask_set(pmmp_pl, eeprom_override_mask);
 	eeprom_override = low_power ? MLXSW_REG_PMMP_EEPROM_OVERRIDE_LOW_POWER_MASK :
@@ -669,10 +643,7 @@ static int __mlxsw_env_set_module_power_mode(struct mlxsw_core *mlxsw_core,
 	struct mlxsw_env *mlxsw_env = mlxsw_core_env(mlxsw_core);
 	int err;
 
-	/* Avoid accessing an inactive line card, as it will result in an error.
-	 * Cached configuration will be applied by mlxsw_env_got_active() when
-	 * line card becomes active.
-	 */
+	 
 	if (!__mlxsw_env_linecard_is_active(mlxsw_env, slot_index))
 		return 0;
 
@@ -726,7 +697,7 @@ mlxsw_env_set_module_power_mode_apply(struct mlxsw_core *mlxsw_core,
 	if (module_info->power_mode_policy == policy)
 		goto out;
 
-	/* If any ports are up, we are already in high power mode. */
+	 
 	if (module_info->num_ports_up)
 		goto out_set_policy;
 
@@ -816,17 +787,11 @@ mlxsw_env_temp_event_set(struct mlxsw_core *mlxsw_core, u8 slot_index,
 							   MLXSW_REG_MTMP_MODULE_INDEX_MIN,
 							   SFP_TEMP_HIGH_WARN,
 							   &threshold_hi);
-		/* In case it is not possible to query the module's threshold,
-		 * use the default value.
-		 */
+		 
 		if (err)
 			threshold_hi = MLXSW_REG_MTMP_THRESH_HI;
 		else
-			/* mlxsw_env_module_temp_thresholds_get() multiplies
-			 * Celsius degrees by 1000 whereas MTMP expects
-			 * temperature in 0.125 Celsius degrees units.
-			 * Convert threshold_hi to correct units.
-			 */
+			 
 			threshold_hi = threshold_hi / 1000 * 8;
 
 		mlxsw_reg_mtmp_temperature_threshold_hi_set(mtmp_pl, threshold_hi);
@@ -883,36 +848,26 @@ static void mlxsw_env_mtwe_event_work(struct work_struct *work)
 	mlxsw_env = event->mlxsw_env;
 
 	for (i = 0; i < mlxsw_env->max_module_count; i++) {
-		/* 64-127 of sensor_index are mapped to the port modules
-		 * sequentially (module 0 is mapped to sensor_index 64,
-		 * module 1 to sensor_index 65 and so on)
-		 */
+		 
 		sensor_warning =
 			mlxsw_reg_mtwe_sensor_warning_get(event->mtwe_pl,
 							  i + MLXSW_REG_MTMP_MODULE_INDEX_MIN);
 		mutex_lock(&mlxsw_env->line_cards_lock);
-		/* MTWE only supports main board. */
+		 
 		module_info = mlxsw_env_module_info_get(mlxsw_env->core, 0, i);
 		is_overheat = module_info->is_overheat;
 
 		if ((is_overheat && sensor_warning) ||
 		    (!is_overheat && !sensor_warning)) {
-			/* Current state is "warning" and MTWE still reports
-			 * warning OR current state in "no warning" and MTWE
-			 * does not report warning.
-			 */
+			 
 			mutex_unlock(&mlxsw_env->line_cards_lock);
 			continue;
 		} else if (is_overheat && !sensor_warning) {
-			/* MTWE reports "no warning", turn is_overheat off.
-			 */
+			 
 			module_info->is_overheat = false;
 			mutex_unlock(&mlxsw_env->line_cards_lock);
 		} else {
-			/* Current state is "no warning" and MTWE reports
-			 * "warning", increase the counter and turn is_overheat
-			 * on.
-			 */
+			 
 			module_info->is_overheat = true;
 			module_info->module_overheat_counter++;
 			mutex_unlock(&mlxsw_env->line_cards_lock);
@@ -988,9 +943,7 @@ static void mlxsw_env_pmpe_event_work(struct work_struct *work)
 					       event->slot_index,
 					       event->module,
 					       &has_temp_sensor);
-	/* Do not disable events on modules without sensors or faulty sensors
-	 * because FW returns errors.
-	 */
+	 
 	if (err)
 		goto out;
 
@@ -1135,9 +1088,7 @@ int mlxsw_env_module_port_up(struct mlxsw_core *mlxsw_core, u8 slot_index,
 	if (module_info->num_ports_up != 0)
 		goto out_inc;
 
-	/* Transition to high power mode following first port using the module
-	 * being put administratively up.
-	 */
+	 
 	err = __mlxsw_env_set_module_power_mode(mlxsw_core, slot_index, module,
 						false, NULL);
 	if (err)
@@ -1169,9 +1120,7 @@ void mlxsw_env_module_port_down(struct mlxsw_core *mlxsw_core, u8 slot_index,
 	if (module_info->num_ports_up != 0)
 		goto out_unlock;
 
-	/* Transition to low power mode following last port using the module
-	 * being put administratively down.
-	 */
+	 
 	__mlxsw_env_set_module_power_mode(mlxsw_core, slot_index, module, true,
 					  NULL);
 
@@ -1193,9 +1142,7 @@ static int mlxsw_env_line_cards_alloc(struct mlxsw_env *env)
 		if (!env->line_cards[i])
 			goto kzalloc_err;
 
-		/* Firmware defaults to high power mode policy where modules
-		 * are transitioned to high power mode following plug-in.
-		 */
+		 
 		for (j = 0; j < env->max_module_count; j++) {
 			module_info = &env->line_cards[i]->module_info[j];
 			module_info->power_mode_policy =
@@ -1322,7 +1269,7 @@ mlxsw_env_got_active(struct mlxsw_core *mlxsw_core, u8 slot_index, void *priv)
 	}
 
 	mlxsw_env->line_cards[slot_index]->active = true;
-	/* Apply power mode policy. */
+	 
 	mlxsw_env_linecard_modules_power_mode_apply(mlxsw_core, mlxsw_env,
 						    slot_index);
 	mutex_unlock(&mlxsw_env->line_cards_lock);
@@ -1393,9 +1340,7 @@ int mlxsw_env_init(struct mlxsw_core *mlxsw_core,
 
 	mlxsw_reg_mgpir_unpack(mgpir_pl, NULL, NULL, NULL, &module_count,
 			       &num_of_slots);
-	/* If the system is modular, get the maximum number of modules per-slot.
-	 * Otherwise, get the maximum number of modules on the main board.
-	 */
+	 
 	max_module_count = num_of_slots ?
 			   mlxsw_reg_mgpir_max_modules_per_slot_get(mgpir_pl) :
 			   module_count;
@@ -1429,14 +1374,9 @@ int mlxsw_env_init(struct mlxsw_core *mlxsw_core,
 	if (err)
 		goto err_module_plug_event_register;
 
-	/* Set 'module_count' only for main board. Actual count for line card
-	 * is to be set after line card is activated.
-	 */
+	 
 	env->line_cards[0]->module_count = num_of_slots ? 0 : module_count;
-	/* Enable events only for main board. Line card events are to be
-	 * configured only after line card is activated. Before that, access to
-	 * modules on line cards is not allowed.
-	 */
+	 
 	err = mlxsw_env_module_event_enable(env, 0);
 	if (err)
 		goto err_mlxsw_env_module_event_enable;
@@ -1476,7 +1416,7 @@ void mlxsw_env_fini(struct mlxsw_env *env)
 	env->line_cards[0]->active = false;
 	mlxsw_env_module_event_disable(env, 0);
 	mlxsw_env_module_plug_event_unregister(env);
-	/* Make sure there is no more event work scheduled. */
+	 
 	mlxsw_core_flush_owq();
 	mlxsw_env_temp_warn_event_unregister(env);
 	mlxsw_linecards_event_ops_unregister(env->core,

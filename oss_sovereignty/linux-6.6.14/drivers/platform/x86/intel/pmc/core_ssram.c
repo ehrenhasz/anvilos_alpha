@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * This file contains functions to handle discovery of PMC metrics located
- * in the PMC SSRAM PCI device.
- *
- * Copyright (c) 2023, Intel Corporation.
- * All Rights Reserved.
- *
- */
+
+ 
 
 #include <linux/pci.h>
 #include <linux/io-64-nonatomic-lo-hi.h>
@@ -44,7 +37,7 @@ pmc_core_pmc_add(struct pmc_dev *pmcdev, u64 pwrm_base,
 	if (!pwrm_base)
 		return;
 
-	/* Memory for primary PMC has been allocated in core.c */
+	 
 	if (!pmc) {
 		pmc = devm_kzalloc(&pmcdev->pdev->dev, sizeof(*pmc), GFP_KERNEL);
 		if (!pmc)

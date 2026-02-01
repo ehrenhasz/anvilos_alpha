@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 #include <linux/module.h>
 
 #include <asm/cpu_device_id.h>
@@ -17,18 +17,18 @@ struct intel_uncore_type **uncore_mmio_uncores = empty_uncore;
 
 static bool pcidrv_registered;
 struct pci_driver *uncore_pci_driver;
-/* The PCI driver for the device which the uncore doesn't own. */
+ 
 struct pci_driver *uncore_pci_sub_driver;
-/* pci bus to socket mapping */
+ 
 DEFINE_RAW_SPINLOCK(pci2phy_map_lock);
 struct list_head pci2phy_map_head = LIST_HEAD_INIT(pci2phy_map_head);
 struct pci_extra_dev *uncore_extra_pci_dev;
 int __uncore_max_dies;
 
-/* mask of cpus that collect uncore events */
+ 
 static cpumask_t uncore_cpu_mask;
 
-/* constraint for the fixed counter */
+ 
 static struct event_constraint uncore_constraint_fixed =
 	EVENT_CONSTRAINT(~0ULL, 1 << UNCORE_PMC_IDX_FIXED, ~0ULL);
 struct event_constraint uncore_constraint_empty =
@@ -57,7 +57,7 @@ int uncore_die_to_segment(int die)
 {
 	struct pci_bus *bus = NULL;
 
-	/* Find first pci bus which attributes to specified die. */
+	 
 	while ((bus = pci_find_next_bus(bus)) &&
 	       (die != uncore_pcibus_to_dieid(bus)))
 		;
@@ -138,10 +138,7 @@ struct intel_uncore_box *uncore_pmu_to_box(struct intel_uncore_pmu *pmu, int cpu
 {
 	unsigned int dieid = topology_logical_die_id(cpu);
 
-	/*
-	 * The unsigned check also catches the '-1' return value for non
-	 * existent mappings in the topology map.
-	 */
+	 
 	return dieid < uncore_max_dies() ? pmu->boxes[dieid] : NULL;
 }
 
@@ -172,9 +169,7 @@ u64 uncore_mmio_read_counter(struct intel_uncore_box *box,
 	return readq(box->io_addr + event->hw.event_base);
 }
 
-/*
- * generic get constraint function for shared match/mask registers.
- */
+ 
 struct event_constraint *
 uncore_get_constraint(struct intel_uncore_box *box, struct perf_event *event)
 {
@@ -184,11 +179,7 @@ uncore_get_constraint(struct intel_uncore_box *box, struct perf_event *event)
 	unsigned long flags;
 	bool ok = false;
 
-	/*
-	 * reg->alloc can be set due to existing state, so for fake box we
-	 * need to ignore this, otherwise we might fail to allocate proper
-	 * fake state for this extra reg constraint.
-	 */
+	 
 	if (reg1->idx == EXTRA_REG_NONE ||
 	    (!uncore_box_is_fake(box) && reg1->alloc))
 		return NULL;
@@ -218,14 +209,7 @@ void uncore_put_constraint(struct intel_uncore_box *box, struct perf_event *even
 	struct intel_uncore_extra_reg *er;
 	struct hw_perf_event_extra *reg1 = &event->hw.extra_reg;
 
-	/*
-	 * Only put constraint if extra reg was actually allocated. Also
-	 * takes care of event which do not use an extra shared reg.
-	 *
-	 * Also, if this is a fake box we shouldn't touch any event state
-	 * (reg->alloc) and we don't care about leaving inconsistent box
-	 * state either since it will be thrown out.
-	 */
+	 
 	if (uncore_box_is_fake(box) || !reg1->alloc)
 		return;
 
@@ -279,7 +263,7 @@ void uncore_perf_event_update(struct intel_uncore_box *box, struct perf_event *e
 	else
 		shift = 64 - uncore_perf_ctr_bits(box);
 
-	/* the hrtimer might modify the previous event value */
+	 
 again:
 	prev_count = local64_read(&event->hw.prev_count);
 	new_count = uncore_read_counter(box, event);
@@ -292,11 +276,7 @@ again:
 	local64_add(delta, &event->count);
 }
 
-/*
- * The overflow interrupt is unavailable for SandyBridge-EP, is broken
- * for SandyBridge. So we use hrtimer to periodically poll the counter
- * to avoid overflow.
- */
+ 
 static enum hrtimer_restart uncore_pmu_hrtimer(struct hrtimer *hrtimer)
 {
 	struct intel_uncore_box *box;
@@ -307,16 +287,10 @@ static enum hrtimer_restart uncore_pmu_hrtimer(struct hrtimer *hrtimer)
 	box = container_of(hrtimer, struct intel_uncore_box, hrtimer);
 	if (!box->n_active || box->cpu != smp_processor_id())
 		return HRTIMER_NORESTART;
-	/*
-	 * disable local interrupt to prevent uncore_pmu_event_start/stop
-	 * to interrupt the update process
-	 */
+	 
 	local_irq_save(flags);
 
-	/*
-	 * handle boxes with an active event list as opposed to active
-	 * counters
-	 */
+	 
 	list_for_each_entry(event, &box->active_list, active_entry) {
 		uncore_perf_event_update(box, event);
 	}
@@ -366,7 +340,7 @@ static struct intel_uncore_box *uncore_alloc_box(struct intel_uncore_type *type,
 	box->cpu = -1;
 	box->dieid = -1;
 
-	/* set default hrtimer timeout */
+	 
 	box->hrtimer_duration = UNCORE_PMU_HRTIMER_INTERVAL;
 
 	INIT_LIST_HEAD(&box->active_list);
@@ -374,10 +348,7 @@ static struct intel_uncore_box *uncore_alloc_box(struct intel_uncore_type *type,
 	return box;
 }
 
-/*
- * Using uncore_pmu_event_init pmu event_init callback
- * as a detection point for uncore events.
- */
+ 
 static int uncore_pmu_event_init(struct perf_event *event);
 
 static bool is_box_event(struct intel_uncore_box *box, struct perf_event *event)
@@ -471,20 +442,20 @@ static int uncore_assign_events(struct intel_uncore_box *box, int assign[], int 
 		wmax = max(wmax, c->weight);
 	}
 
-	/* fastpath, try to reuse previous register */
+	 
 	for (i = 0; i < n; i++) {
 		hwc = &box->event_list[i]->hw;
 		c = box->event_constraint[i];
 
-		/* never assigned */
+		 
 		if (hwc->idx == -1)
 			break;
 
-		/* constraint still honored */
+		 
 		if (!test_bit(hwc->idx, c->idxmsk))
 			break;
 
-		/* not already used */
+		 
 		if (test_bit(hwc->idx, used_mask))
 			break;
 
@@ -492,7 +463,7 @@ static int uncore_assign_events(struct intel_uncore_box *box, int assign[], int 
 		if (assign)
 			assign[i] = hwc->idx;
 	}
-	/* slow path */
+	 
 	if (i != n)
 		ret = perf_assign_events(box->event_constraint, n,
 					 wmin, wmax, n, assign);
@@ -512,12 +483,7 @@ void uncore_pmu_event_start(struct perf_event *event, int flags)
 	if (WARN_ON_ONCE(idx == -1 || idx >= UNCORE_PMC_IDX_MAX))
 		return;
 
-	/*
-	 * Free running counter is read-only and always active.
-	 * Use the current counter value as start point.
-	 * There is no overflow interrupt for free running counter.
-	 * Use hrtimer to periodically poll the counter to avoid overflow.
-	 */
+	 
 	if (uncore_pmc_freerunning(event->hw.idx)) {
 		list_add_tail(&event->active_entry, &box->active_list);
 		local64_set(&event->hw.prev_count,
@@ -547,7 +513,7 @@ void uncore_pmu_event_stop(struct perf_event *event, int flags)
 	struct intel_uncore_box *box = uncore_event_to_box(event);
 	struct hw_perf_event *hwc = &event->hw;
 
-	/* Cannot disable free running counter which is read-only */
+	 
 	if (uncore_pmc_freerunning(hwc->idx)) {
 		list_del(&event->active_entry);
 		if (--box->n_active == 0)
@@ -568,10 +534,7 @@ void uncore_pmu_event_stop(struct perf_event *event, int flags)
 	}
 
 	if ((flags & PERF_EF_UPDATE) && !(hwc->state & PERF_HES_UPTODATE)) {
-		/*
-		 * Drain the remaining delta count out of a event
-		 * that we are disabling:
-		 */
+		 
 		uncore_perf_event_update(box, event);
 		hwc->state |= PERF_HES_UPTODATE;
 	}
@@ -587,11 +550,7 @@ int uncore_pmu_event_add(struct perf_event *event, int flags)
 	if (!box)
 		return -ENODEV;
 
-	/*
-	 * The free funning counter is assigned in event_init().
-	 * The free running counter event and free running counter
-	 * are 1:1 mapped. It doesn't need to be tracked in event_list.
-	 */
+	 
 	if (uncore_pmc_freerunning(hwc->idx)) {
 		if (flags & PERF_EF_START)
 			uncore_pmu_event_start(event, 0);
@@ -610,7 +569,7 @@ int uncore_pmu_event_add(struct perf_event *event, int flags)
 	if (ret)
 		return ret;
 
-	/* save events moving to new counters */
+	 
 	for (i = 0; i < box->n_events; i++) {
 		event = box->event_list[i];
 		hwc = &event->hw;
@@ -618,17 +577,14 @@ int uncore_pmu_event_add(struct perf_event *event, int flags)
 		if (hwc->idx == assign[i] &&
 			hwc->last_tag == box->tags[assign[i]])
 			continue;
-		/*
-		 * Ensure we don't accidentally enable a stopped
-		 * counter simply because we rescheduled.
-		 */
+		 
 		if (hwc->state & PERF_HES_STOPPED)
 			hwc->state |= PERF_HES_ARCH;
 
 		uncore_pmu_event_stop(event, PERF_EF_UPDATE);
 	}
 
-	/* reprogram moved events into new counters */
+	 
 	for (i = 0; i < n; i++) {
 		event = box->event_list[i];
 		hwc = &event->hw;
@@ -656,11 +612,7 @@ void uncore_pmu_event_del(struct perf_event *event, int flags)
 
 	uncore_pmu_event_stop(event, PERF_EF_UPDATE);
 
-	/*
-	 * The event for free running counter is not tracked by event_list.
-	 * It doesn't need to force event->hw.idx = -1 to reassign the counter.
-	 * Because the event and the free running counter are 1:1 mapped.
-	 */
+	 
 	if (uncore_pmc_freerunning(event->hw.idx))
 		return;
 
@@ -686,10 +638,7 @@ void uncore_pmu_event_read(struct perf_event *event)
 	uncore_perf_event_update(box, event);
 }
 
-/*
- * validation ensures the group can be loaded onto the
- * PMU if it was the only group available.
- */
+ 
 static int uncore_validate_group(struct intel_uncore_pmu *pmu,
 				struct perf_event *event)
 {
@@ -697,7 +646,7 @@ static int uncore_validate_group(struct intel_uncore_pmu *pmu,
 	struct intel_uncore_box *fake_box;
 	int ret = -EINVAL, n;
 
-	/* The free running counter is always active. */
+	 
 	if (uncore_pmc_freerunning(event->hw.idx))
 		return 0;
 
@@ -706,12 +655,7 @@ static int uncore_validate_group(struct intel_uncore_pmu *pmu,
 		return -ENOMEM;
 
 	fake_box->pmu = pmu;
-	/*
-	 * the event is not yet connected with its
-	 * siblings therefore we must first collect
-	 * existing siblings, then add the new event
-	 * before we can simulate the scheduling
-	 */
+	 
 	n = uncore_collect_events(fake_box, leader, true);
 	if (n < 0)
 		goto out;
@@ -740,18 +684,15 @@ static int uncore_pmu_event_init(struct perf_event *event)
 		return -ENOENT;
 
 	pmu = uncore_event_to_pmu(event);
-	/* no device found for this pmu */
+	 
 	if (pmu->func_id < 0)
 		return -ENOENT;
 
-	/* Sampling not supported yet */
+	 
 	if (hwc->sample_period)
 		return -EINVAL;
 
-	/*
-	 * Place all uncore events for a particular physical package
-	 * onto a single cpu
-	 */
+	 
 	if (event->cpu < 0)
 		return -EINVAL;
 	box = uncore_pmu_to_box(pmu, event->cpu);
@@ -768,29 +709,21 @@ static int uncore_pmu_event_init(struct perf_event *event)
 	event->hw.branch_reg.idx = EXTRA_REG_NONE;
 
 	if (event->attr.config == UNCORE_FIXED_EVENT) {
-		/* no fixed counter */
+		 
 		if (!pmu->type->fixed_ctl)
 			return -EINVAL;
-		/*
-		 * if there is only one fixed counter, only the first pmu
-		 * can access the fixed counter
-		 */
+		 
 		if (pmu->type->single_fixed && pmu->pmu_idx > 0)
 			return -EINVAL;
 
-		/* fixed counters have event field hardcoded to zero */
+		 
 		hwc->config = 0ULL;
 	} else if (is_freerunning_event(event)) {
 		hwc->config = event->attr.config;
 		if (!check_valid_freerunning_event(box, event))
 			return -EINVAL;
 		event->hw.idx = UNCORE_PMC_IDX_FREERUNNING;
-		/*
-		 * The free running counter event and free running counter
-		 * are always 1:1 mapped.
-		 * The free running counter is always active.
-		 * Assign the free running counter here.
-		 */
+		 
 		event->hw.event_base = uncore_freerunning_counter(box, event);
 	} else {
 		hwc->config = event->attr.config &
@@ -879,10 +812,7 @@ static void uncore_get_pmu_name(struct intel_uncore_pmu *pmu)
 {
 	struct intel_uncore_type *type = pmu->type;
 
-	/*
-	 * No uncore block name in discovery table.
-	 * Use uncore_type_&typeid_&boxid as name.
-	 */
+	 
 	if (!type->name) {
 		uncore_get_alias_name(pmu->name, pmu);
 		return;
@@ -894,9 +824,7 @@ static void uncore_get_pmu_name(struct intel_uncore_pmu *pmu)
 		else
 			sprintf(pmu->name, "uncore");
 	} else {
-		/*
-		 * Use the box ID from the discovery table if applicable.
-		 */
+		 
 		sprintf(pmu->name, "uncore_%s_%d", type->name,
 			uncore_get_box_id(type, pmu));
 	}
@@ -1058,11 +986,7 @@ uncore_types_init(struct intel_uncore_type **types, bool setid)
 	return 0;
 }
 
-/*
- * Get the die information of a PCI device.
- * @pdev: The PCI device.
- * @die: The die id which the device maps to.
- */
+ 
 static int uncore_pci_get_dev_die_info(struct pci_dev *pdev, int *die)
 {
 	*die = uncore_pcibus_to_dieid(pdev->bus);
@@ -1098,12 +1022,7 @@ uncore_pci_find_dev_pmu_from_types(struct pci_dev *pdev)
 	return NULL;
 }
 
-/*
- * Find the PMU of a PCI device.
- * @pdev: The PCI device.
- * @ids: The ID table of the available PCI devices with a PMU.
- *       If NULL, search the whole uncore_pci_uncores.
- */
+ 
 static struct intel_uncore_pmu *
 uncore_pci_find_dev_pmu(struct pci_dev *pdev, const struct pci_device_id *ids)
 {
@@ -1132,13 +1051,7 @@ uncore_pci_find_dev_pmu(struct pci_dev *pdev, const struct pci_device_id *ids)
 	return pmu;
 }
 
-/*
- * Register the PMU for a PCI device
- * @pdev: The PCI device.
- * @type: The corresponding PMU type of the device.
- * @pmu: The corresponding PMU of the device.
- * @die: The die id which the device maps to.
- */
+ 
 static int uncore_pci_pmu_register(struct pci_dev *pdev,
 				   struct intel_uncore_type *type,
 				   struct intel_uncore_pmu *pmu,
@@ -1169,7 +1082,7 @@ static int uncore_pci_pmu_register(struct pci_dev *pdev,
 	if (atomic_inc_return(&pmu->activeboxes) > 1)
 		return 0;
 
-	/* First active box registers the pmu */
+	 
 	ret = uncore_pmu_register(pmu);
 	if (ret) {
 		pmu->boxes[die] = NULL;
@@ -1179,9 +1092,7 @@ static int uncore_pci_pmu_register(struct pci_dev *pdev,
 	return ret;
 }
 
-/*
- * add a pci uncore device
- */
+ 
 static int uncore_pci_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 {
 	struct intel_uncore_type *type;
@@ -1202,11 +1113,7 @@ static int uncore_pci_probe(struct pci_dev *pdev, const struct pci_device_id *id
 
 	type = uncore_pci_uncores[UNCORE_PCI_DEV_TYPE(id->driver_data)];
 
-	/*
-	 * Some platforms, e.g.  Knights Landing, use a common PCI device ID
-	 * for multiple instances of an uncore PMU device type. We should check
-	 * PCI slot and func to indicate the uncore box.
-	 */
+	 
 	if (id->driver_data & ~0xffff) {
 		struct pci_driver *pci_drv = to_pci_driver(pdev->dev.driver);
 
@@ -1214,10 +1121,7 @@ static int uncore_pci_probe(struct pci_dev *pdev, const struct pci_device_id *id
 		if (pmu == NULL)
 			return -ENODEV;
 	} else {
-		/*
-		 * for performance monitoring unit with multiple boxes,
-		 * each box has a different function id.
-		 */
+		 
 		pmu = &type->pmus[UNCORE_PCI_DEV_IDX(id->driver_data)];
 	}
 
@@ -1228,11 +1132,7 @@ static int uncore_pci_probe(struct pci_dev *pdev, const struct pci_device_id *id
 	return ret;
 }
 
-/*
- * Unregister the PMU of a PCI device
- * @pmu: The corresponding PMU is unregistered.
- * @die: The die id which the device maps to.
- */
+ 
 static void uncore_pci_pmu_unregister(struct intel_uncore_pmu *pmu, int die)
 {
 	struct intel_uncore_box *box = pmu->boxes[die];
@@ -1281,7 +1181,7 @@ static int uncore_bus_notify(struct notifier_block *nb,
 	struct intel_uncore_pmu *pmu;
 	int die;
 
-	/* Unregister the PMU when the device is going to be deleted. */
+	 
 	if (action != BUS_NOTIFY_DEL_DEVICE)
 		return NOTIFY_DONE;
 
@@ -1321,10 +1221,7 @@ static void uncore_pci_sub_driver_init(void)
 	while (ids && ids->vendor) {
 		pci_sub_dev = NULL;
 		type = uncore_pci_uncores[UNCORE_PCI_DEV_TYPE(ids->driver_data)];
-		/*
-		 * Search the available device, and register the
-		 * corresponding PMU.
-		 */
+		 
 		while ((pci_sub_dev = pci_get_device(PCI_VENDOR_ID_INTEL,
 						     ids->device, pci_sub_dev))) {
 			devfn = PCI_DEVFN(UNCORE_PCI_DEV_DEV(ids->driver_data),
@@ -1512,13 +1409,13 @@ static int uncore_event_cpu_offline(unsigned int cpu)
 {
 	int die, target;
 
-	/* Check if exiting cpu is used for collecting uncore events */
+	 
 	if (!cpumask_test_and_clear_cpu(cpu, &uncore_cpu_mask))
 		goto unref;
-	/* Find a new cpu to collect uncore events */
+	 
 	target = cpumask_any_but(topology_die_cpumask(cpu), cpu);
 
-	/* Migrate uncore events to the new target */
+	 
 	if (target < nr_cpu_ids)
 		cpumask_set_cpu(target, &uncore_cpu_mask);
 	else
@@ -1529,7 +1426,7 @@ static int uncore_event_cpu_offline(unsigned int cpu)
 	uncore_change_context(uncore_pci_uncores, cpu, target);
 
 unref:
-	/* Clear the references */
+	 
 	die = topology_logical_die_id(cpu);
 	uncore_box_unref(uncore_msr_uncores, die);
 	uncore_box_unref(uncore_mmio_uncores, die);
@@ -1545,7 +1442,7 @@ static int allocate_boxes(struct intel_uncore_type **types,
 	LIST_HEAD(allocated);
 	int i;
 
-	/* Try to allocate all required boxes */
+	 
 	for (; *types; types++) {
 		type = *types;
 		pmu = type->pmus;
@@ -1560,7 +1457,7 @@ static int allocate_boxes(struct intel_uncore_type **types,
 			list_add(&box->active_list, &allocated);
 		}
 	}
-	/* Install them in the pmus */
+	 
 	list_for_each_entry_safe(box, tmp, &allocated, active_list) {
 		list_del_init(&box->active_list);
 		box->pmu->boxes[die] = box;
@@ -1609,10 +1506,7 @@ static int uncore_event_cpu_online(unsigned int cpu)
 	if (msr_ret && mmio_ret)
 		return -ENOMEM;
 
-	/*
-	 * Check if there is an online cpu in the package
-	 * which collects uncore events already.
-	 */
+	 
 	target = cpumask_any_and(&uncore_cpu_mask, topology_die_cpumask(cpu));
 	if (target < nr_cpu_ids)
 		return 0;
@@ -1695,9 +1589,9 @@ struct intel_uncore_init_fun {
 	void	(*cpu_init)(void);
 	int	(*pci_init)(void);
 	void	(*mmio_init)(void);
-	/* Discovery table is required */
+	 
 	bool	use_discovery;
-	/* The units in the discovery table should be ignored. */
+	 
 	int	*uncore_units_ignore;
 };
 
@@ -1919,7 +1813,7 @@ static int __init intel_uncore_init(void)
 		goto free_discovery;
 	}
 
-	/* Install hotplug callbacks to setup the targets for each package */
+	 
 	ret = cpuhp_setup_state(CPUHP_AP_PERF_X86_UNCORE_ONLINE,
 				"perf/x86/intel/uncore:online",
 				uncore_event_cpu_online,

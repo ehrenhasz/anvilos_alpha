@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Driver for Himax hx83112b touchscreens
- *
- * Copyright (C) 2022 Job Noorman <job@noorman.info>
- *
- * This code is based on "Himax Android Driver Sample Code for QCT platform":
- *
- * Copyright (C) 2017 Himax Corporation.
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/err.h>
@@ -86,14 +78,11 @@ static void himax_reset(struct himax_ts_data *ts)
 {
 	gpiod_set_value_cansleep(ts->gpiod_rst, 1);
 
-	/* Delay copied from downstream driver */
+	 
 	msleep(20);
 	gpiod_set_value_cansleep(ts->gpiod_rst, 0);
 
-	/*
-	 * The downstream driver doesn't contain this delay but is seems safer
-	 * to include it. The range is just a guess that seems to work well.
-	 */
+	 
 	usleep_range(1000, 1100);
 }
 
@@ -243,10 +232,7 @@ static int himax_handle_input(struct himax_ts_data *ts)
 		return error;
 	}
 
-	/*
-	 * Only process the current event when it has a valid checksum but
-	 * don't consider it a fatal error when it doesn't.
-	 */
+	 
 	if (himax_verify_checksum(ts, &event))
 		himax_process_event(ts, &event);
 
@@ -336,14 +322,14 @@ static DEFINE_SIMPLE_DEV_PM_OPS(himax_pm_ops, himax_suspend, himax_resume);
 
 static const struct i2c_device_id himax_ts_id[] = {
 	{ "hx83112b", 0 },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(i2c, himax_ts_id);
 
 #ifdef CONFIG_OF
 static const struct of_device_id himax_of_match[] = {
 	{ .compatible = "himax,hx83112b" },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, himax_of_match);
 #endif

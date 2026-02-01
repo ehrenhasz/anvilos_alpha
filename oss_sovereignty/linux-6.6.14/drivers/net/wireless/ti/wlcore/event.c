@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * This file is part of wl1271
- *
- * Copyright (C) 2008-2009 Nokia Corporation
- *
- * Contact: Luciano Coelho <luciano.coelho@nokia.com>
- */
+
+ 
 
 #include "wlcore.h"
 #include "debug.h"
@@ -61,14 +55,14 @@ int wlcore_event_fw_logger(struct wl1271 *wl)
 	if (actual_len == 0)
 		goto free_out;
 
-	/* Calculate the internal pointer to the fwlog structure */
+	 
 	addr_ptr = internal_fw_addrbase + addr;
 
-	/* Calculate the internal pointers to the start and end of log buffer */
+	 
 	buff_start_ptr = addr_ptr + WL18XX_LOGGER_BUFF_OFFSET;
 	buff_end_ptr = buff_start_ptr + le32_to_cpu(fw_log.max_buff_size);
 
-	/* Read the read pointer and validate it */
+	 
 	buff_read_ptr = le32_to_cpu(fw_log.buff_read_ptr);
 	if (buff_read_ptr < buff_start_ptr ||
 	    buff_read_ptr >= buff_end_ptr) {
@@ -80,14 +74,14 @@ int wlcore_event_fw_logger(struct wl1271 *wl)
 	start_loc = buff_read_ptr - addr_ptr;
 	available_len = buff_end_ptr - buff_read_ptr;
 
-	/* Copy initial part up to the end of ring buffer */
+	 
 	len = min(actual_len, available_len);
 	wl12xx_copy_fwlog(wl, &buffer[start_loc], len);
 	clear_ptr = addr_ptr + start_loc + actual_len;
 	if (clear_ptr == buff_end_ptr)
 		clear_ptr = buff_start_ptr;
 
-	/* Copy any remaining part from beginning of ring buffer */
+	 
 	len = actual_len - len;
 	if (len) {
 		wl12xx_copy_fwlog(wl,
@@ -96,7 +90,7 @@ int wlcore_event_fw_logger(struct wl1271 *wl)
 		clear_ptr = addr_ptr + WL18XX_LOGGER_BUFF_OFFSET + len;
 	}
 
-	/* Update the read pointer */
+	 
 	ret = wlcore_write32(wl, addr + WL18XX_LOGGER_READ_POINT_OFFSET,
 			     clear_ptr);
 free_out:
@@ -115,7 +109,7 @@ void wlcore_event_rssi_trigger(struct wl1271 *wl, s8 *metric_arr)
 
 	wl1271_debug(DEBUG_EVENT, "RSSI trigger metric: %d", metric);
 
-	/* TODO: check actual multi-role support */
+	 
 	wl12xx_for_each_wlvif_sta(wl, wlvif) {
 		if (metric <= wlvif->rssi_thold)
 			event = NL80211_CQM_RSSI_THRESHOLD_EVENT_LOW;
@@ -262,7 +256,7 @@ static void wlcore_disconnect_sta(struct wl1271 *wl, unsigned long sta_bitmap)
 
 	for_each_set_bit(h, &sta_bitmap, wl->num_links) {
 		bool found = false;
-		/* find the ap vif connected to this sta */
+		 
 		wl12xx_for_each_wlvif_ap(wl, wlvif) {
 			if (!test_bit(h, wlvif->ap.sta_hlid_map))
 				continue;
@@ -309,10 +303,7 @@ EXPORT_SYMBOL_GPL(wlcore_event_roc_complete);
 
 void wlcore_event_beacon_loss(struct wl1271 *wl, unsigned long roles_bitmap)
 {
-	/*
-	 * We are HW_MONITOR device. On beacon loss - queue
-	 * connection loss work. Cancel it on REGAINED event.
-	 */
+	 
 	struct wl12xx_vif *wlvif;
 	struct ieee80211_vif *vif;
 	int delay = wl->conf.conn.synch_fail_thold *
@@ -327,17 +318,13 @@ void wlcore_event_beacon_loss(struct wl1271 *wl, unsigned long roles_bitmap)
 
 		vif = wl12xx_wlvif_to_vif(wlvif);
 
-		/* don't attempt roaming in case of p2p */
+		 
 		if (wlvif->p2p) {
 			ieee80211_connection_loss(vif);
 			continue;
 		}
 
-		/*
-		 * if the work is already queued, it should take place.
-		 * We don't want to delay the connection loss
-		 * indication any more.
-		 */
+		 
 		ieee80211_queue_delayed_work(wl->hw,
 					     &wlvif->connection_loss_work,
 					     msecs_to_jiffies(delay));
@@ -368,21 +355,18 @@ int wl1271_event_handle(struct wl1271 *wl, u8 mbox_num)
 	if (mbox_num > 1)
 		return -EINVAL;
 
-	/* first we read the mbox descriptor */
+	 
 	ret = wlcore_read(wl, wl->mbox_ptr[mbox_num], wl->mbox,
 			  wl->mbox_size, false);
 	if (ret < 0)
 		return ret;
 
-	/* process the descriptor */
+	 
 	ret = wl->ops->process_mailbox_events(wl);
 	if (ret < 0)
 		return ret;
 
-	/*
-	 * TODO: we just need this because one bit is in a different
-	 * place.  Is there any better way?
-	 */
+	 
 	ret = wl->ops->ack_event(wl);
 
 	return ret;

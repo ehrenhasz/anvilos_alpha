@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _INTEL_PMT_CLASS_H
 #define _INTEL_PMT_CLASS_H
 
@@ -10,11 +10,11 @@
 
 #include "../vsec.h"
 
-/* PMT access types */
+ 
 #define ACCESS_BARID		2
 #define ACCESS_LOCAL		3
 
-/* PMT discovery base address/offset register layout */
+ 
 #define GET_BIR(v)		((v) & GENMASK(2, 0))
 #define GET_ADDRESS(v)		((v) & GENMASK(31, 3))
 

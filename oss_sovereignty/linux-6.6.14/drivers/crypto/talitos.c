@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * talitos - Freescale Integrated Security Engine (SEC) device driver
- *
- * Copyright (c) 2008-2011 Freescale Semiconductor, Inc.
- *
- * Scatterlist Crypto API glue code copied from files with the following:
- * Copyright (c) 2006-2007 Herbert Xu <herbert@gondor.apana.org.au>
- *
- * Crypto algorithm registration code copied from hifn driver:
- * 2007+ Copyright (c) Evgeniy Polyakov <johnpol@2ka.mipt.ru>
- * All rights reserved.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -89,9 +78,7 @@ static void to_talitos_ptr_ext_or(struct talitos_ptr *ptr, u8 val, bool is_sec1)
 		ptr->j_extent |= val;
 }
 
-/*
- * map virtual single (contiguous) pointer to h/w descriptor pointer
- */
+ 
 static void __map_single_talitos_ptr(struct device *dev,
 				     struct talitos_ptr *ptr,
 				     unsigned int len, void *data,
@@ -122,9 +109,7 @@ static void map_single_talitos_ptr_nosync(struct device *dev,
 				 DMA_ATTR_SKIP_CPU_SYNC);
 }
 
-/*
- * unmap bus single (contiguous) h/w descriptor pointer
- */
+ 
 static void unmap_single_talitos_ptr(struct device *dev,
 				     struct talitos_ptr *ptr,
 				     enum dma_data_direction dir)
@@ -163,15 +148,15 @@ static int reset_channel(struct device *dev, int ch)
 		return -EIO;
 	}
 
-	/* set 36-bit addressing, done writeback enable and done IRQ enable */
+	 
 	setbits32(priv->chan[ch].reg + TALITOS_CCCR_LO, TALITOS_CCCR_LO_EAE |
 		  TALITOS_CCCR_LO_CDWE | TALITOS_CCCR_LO_CDIE);
-	/* enable chaining descriptors */
+	 
 	if (is_sec1)
 		setbits32(priv->chan[ch].reg + TALITOS_CCCR_LO,
 			  TALITOS_CCCR_LO_NE);
 
-	/* and ICCR writeback, if available */
+	 
 	if (priv->features & TALITOS_FTR_HW_AUTH_CHECK)
 		setbits32(priv->chan[ch].reg + TALITOS_CCCR_LO,
 		          TALITOS_CCCR_LO_IWSE);
@@ -205,21 +190,14 @@ static int reset_device(struct device *dev)
 	return 0;
 }
 
-/*
- * Reset and initialize the device
- */
+ 
 static int init_device(struct device *dev)
 {
 	struct talitos_private *priv = dev_get_drvdata(dev);
 	int ch, err;
 	bool is_sec1 = has_ftr_sec1(priv);
 
-	/*
-	 * Master reset
-	 * errata documentation: warning: certain SEC interrupts
-	 * are not fully cleared by writing the MCR:SWR bit,
-	 * set bit twice to completely reset
-	 */
+	 
 	err = reset_device(dev);
 	if (err)
 		return err;
@@ -228,25 +206,25 @@ static int init_device(struct device *dev)
 	if (err)
 		return err;
 
-	/* reset channels */
+	 
 	for (ch = 0; ch < priv->num_channels; ch++) {
 		err = reset_channel(dev, ch);
 		if (err)
 			return err;
 	}
 
-	/* enable channel done and error interrupts */
+	 
 	if (is_sec1) {
 		clrbits32(priv->reg + TALITOS_IMR, TALITOS1_IMR_INIT);
 		clrbits32(priv->reg + TALITOS_IMR_LO, TALITOS1_IMR_LO_INIT);
-		/* disable parity error check in DEU (erroneous? test vect.) */
+		 
 		setbits32(priv->reg_deu + TALITOS_EUICR, TALITOS1_DEUICR_KPE);
 	} else {
 		setbits32(priv->reg + TALITOS_IMR, TALITOS2_IMR_INIT);
 		setbits32(priv->reg + TALITOS_IMR_LO, TALITOS2_IMR_LO_INIT);
 	}
 
-	/* disable integrity check error interrupts (use writeback instead) */
+	 
 	if (priv->features & TALITOS_FTR_HW_AUTH_CHECK)
 		setbits32(priv->reg_mdeu + TALITOS_EUICR_LO,
 		          TALITOS_MDEUICR_LO_ICE);
@@ -254,18 +232,7 @@ static int init_device(struct device *dev)
 	return 0;
 }
 
-/**
- * talitos_submit - submits a descriptor to the device for processing
- * @dev:	the SEC device to be used
- * @ch:		the SEC device channel to be used
- * @desc:	the descriptor to be processed by the device
- * @callback:	whom to call when processing is complete
- * @context:	a handle for use by caller (optional)
- *
- * desc must contain valid dma-mapped (bus physical) address pointers.
- * callback must check err and feedback in descriptor header
- * for device processing status.
- */
+ 
 static int talitos_submit(struct device *dev, int ch, struct talitos_desc *desc,
 			  void (*callback)(struct device *dev,
 					   struct talitos_desc *desc,
@@ -281,7 +248,7 @@ static int talitos_submit(struct device *dev, int ch, struct talitos_desc *desc,
 	spin_lock_irqsave(&priv->chan[ch].head_lock, flags);
 
 	if (!atomic_inc_not_zero(&priv->chan[ch].submit_count)) {
-		/* h/w fifo is full */
+		 
 		spin_unlock_irqrestore(&priv->chan[ch].head_lock, flags);
 		return -EAGAIN;
 	}
@@ -289,7 +256,7 @@ static int talitos_submit(struct device *dev, int ch, struct talitos_desc *desc,
 	head = priv->chan[ch].head;
 	request = &priv->chan[ch].fifo[head];
 
-	/* map descriptor and save caller data */
+	 
 	if (is_sec1) {
 		desc->hdr1 = desc->hdr;
 		request->dma_desc = dma_map_single(dev, &desc->hdr1,
@@ -303,13 +270,13 @@ static int talitos_submit(struct device *dev, int ch, struct talitos_desc *desc,
 	request->callback = callback;
 	request->context = context;
 
-	/* increment fifo head */
+	 
 	priv->chan[ch].head = (priv->chan[ch].head + 1) & (priv->fifo_len - 1);
 
 	smp_wmb();
 	request->desc = desc;
 
-	/* GO! */
+	 
 	wmb();
 	out_be32(priv->chan[ch].reg + TALITOS_FF,
 		 upper_32_bits(request->dma_desc));
@@ -336,9 +303,7 @@ static __be32 get_request_hdr(struct talitos_request *request, bool is_sec1)
 	return ((struct talitos_desc *)(edesc->buf + edesc->dma_len))->hdr1;
 }
 
-/*
- * process what was done, notify callback of error if not
- */
+ 
 static void flush_channel(struct device *dev, int ch, int error, int reset_ch)
 {
 	struct talitos_private *priv = dev_get_drvdata(dev);
@@ -355,7 +320,7 @@ static void flush_channel(struct device *dev, int ch, int error, int reset_ch)
 
 		request = &priv->chan[ch].fifo[tail];
 
-		/* descriptors with their done bits set don't get the error */
+		 
 		rmb();
 		hdr = get_request_hdr(request, is_sec1);
 
@@ -371,16 +336,16 @@ static void flush_channel(struct device *dev, int ch, int error, int reset_ch)
 				 TALITOS_DESC_SIZE,
 				 DMA_BIDIRECTIONAL);
 
-		/* copy entries so we can call callback outside lock */
+		 
 		saved_req.desc = request->desc;
 		saved_req.callback = request->callback;
 		saved_req.context = request->context;
 
-		/* release request entry in fifo */
+		 
 		smp_wmb();
 		request->desc = NULL;
 
-		/* increment fifo tail */
+		 
 		priv->chan[ch].tail = (tail + 1) & (priv->fifo_len - 1);
 
 		spin_unlock_irqrestore(&priv->chan[ch].tail_lock, flags);
@@ -389,7 +354,7 @@ static void flush_channel(struct device *dev, int ch, int error, int reset_ch)
 
 		saved_req.callback(dev, saved_req.desc, saved_req.context,
 				   status);
-		/* channel may resume processing in single desc error case */
+		 
 		if (error && !reset_ch && status == error)
 			return;
 		spin_lock_irqsave(&priv->chan[ch].tail_lock, flags);
@@ -399,9 +364,7 @@ static void flush_channel(struct device *dev, int ch, int error, int reset_ch)
 	spin_unlock_irqrestore(&priv->chan[ch].tail_lock, flags);
 }
 
-/*
- * process completed requests for channels that have done status
- */
+ 
 #define DEF_TALITOS1_DONE(name, ch_done_mask)				\
 static void talitos1_done_##name(unsigned long data)			\
 {									\
@@ -418,8 +381,8 @@ static void talitos1_done_##name(unsigned long data)			\
 	if (ch_done_mask & 0x00040000)					\
 		flush_channel(dev, 3, 0, 0);			\
 									\
-	/* At this point, all completed channels have been processed */	\
-	/* Unmask done interrupts for channels completed later on. */	\
+	 	\
+	 	\
 	spin_lock_irqsave(&priv->reg_lock, flags);			\
 	clrbits32(priv->reg + TALITOS_IMR, ch_done_mask);		\
 	clrbits32(priv->reg + TALITOS_IMR_LO, TALITOS1_IMR_LO_INIT);	\
@@ -445,8 +408,8 @@ static void talitos2_done_##name(unsigned long data)			\
 	if (ch_done_mask & (1 << 6))					\
 		flush_channel(dev, 3, 0, 0);				\
 									\
-	/* At this point, all completed channels have been processed */	\
-	/* Unmask done interrupts for channels completed later on. */	\
+	 	\
+	 	\
 	spin_lock_irqsave(&priv->reg_lock, flags);			\
 	setbits32(priv->reg + TALITOS_IMR, ch_done_mask);		\
 	setbits32(priv->reg + TALITOS_IMR_LO, TALITOS2_IMR_LO_INIT);	\
@@ -458,9 +421,7 @@ DEF_TALITOS2_DONE(ch0, TALITOS2_ISR_CH_0_DONE)
 DEF_TALITOS2_DONE(ch0_2, TALITOS2_ISR_CH_0_2_DONE)
 DEF_TALITOS2_DONE(ch1_3, TALITOS2_ISR_CH_1_3_DONE)
 
-/*
- * locate current (offending) descriptor
- */
+ 
 static __be32 current_desc_hdr(struct device *dev, int ch)
 {
 	struct talitos_private *priv = dev_get_drvdata(dev);
@@ -499,9 +460,7 @@ static __be32 current_desc_hdr(struct device *dev, int ch)
 	return priv->chan[ch].fifo[iter].desc->hdr;
 }
 
-/*
- * user diagnostics; report root cause of error based on execution unit status
- */
+ 
 static void report_eu_error(struct device *dev, int ch, __be32 desc_hdr)
 {
 	struct talitos_private *priv = dev_get_drvdata(dev);
@@ -574,9 +533,7 @@ static void report_eu_error(struct device *dev, int ch, __be32 desc_hdr)
 			in_be32(priv->chan[ch].reg + TALITOS_DESCBUF_LO + 8*i));
 }
 
-/*
- * recover from error interrupts
- */
+ 
 static void talitos_error(struct device *dev, u32 isr, u32 isr_lo)
 {
 	struct talitos_private *priv = dev_get_drvdata(dev);
@@ -584,12 +541,12 @@ static void talitos_error(struct device *dev, u32 isr, u32 isr_lo)
 	int ch, error, reset_dev = 0;
 	u32 v_lo;
 	bool is_sec1 = has_ftr_sec1(priv);
-	int reset_ch = is_sec1 ? 1 : 0; /* only SEC2 supports continuation */
+	int reset_ch = is_sec1 ? 1 : 0;  
 
 	for (ch = 0; ch < priv->num_channels; ch++) {
-		/* skip channels without errors */
+		 
 		if (is_sec1) {
-			/* bits 29, 31, 17, 19 */
+			 
 			if (!(isr & (1 << (29 + (ch & 1) * 2 - (ch & 2) * 6))))
 				continue;
 		} else {
@@ -607,7 +564,7 @@ static void talitos_error(struct device *dev, u32 isr, u32 isr_lo)
 			reset_ch = 1;
 		}
 		if (v_lo & TALITOS_CCPSR_LO_SOF) {
-			/* h/w dropped descriptor */
+			 
 			dev_err(dev, "single fetch fifo overflow error\n");
 			error = -EAGAIN;
 		}
@@ -664,11 +621,11 @@ static void talitos_error(struct device *dev, u32 isr, u32 isr_lo)
 			dev_err(dev, "done overflow, internal time out, or "
 				"rngu error: ISR 0x%08x_%08x\n", isr, isr_lo);
 
-		/* purge request queues */
+		 
 		for (ch = 0; ch < priv->num_channels; ch++)
 			flush_channel(dev, ch, -EIO, 1);
 
-		/* reset and reinitialize the device */
+		 
 		init_device(dev);
 	}
 }
@@ -684,7 +641,7 @@ static irqreturn_t talitos1_interrupt_##name(int irq, void *data)	       \
 	spin_lock_irqsave(&priv->reg_lock, flags);			       \
 	isr = in_be32(priv->reg + TALITOS_ISR);				       \
 	isr_lo = in_be32(priv->reg + TALITOS_ISR_LO);			       \
-	/* Acknowledge interrupt */					       \
+	 					       \
 	out_be32(priv->reg + TALITOS_ICR, isr & (ch_done_mask | ch_err_mask)); \
 	out_be32(priv->reg + TALITOS_ICR_LO, isr_lo);			       \
 									       \
@@ -694,9 +651,9 @@ static irqreturn_t talitos1_interrupt_##name(int irq, void *data)	       \
 	}								       \
 	else {								       \
 		if (likely(isr & ch_done_mask)) {			       \
-			/* mask further done interrupts. */		       \
+			 		       \
 			setbits32(priv->reg + TALITOS_IMR, ch_done_mask);      \
-			/* done_task will unmask done interrupts at exit */    \
+			     \
 			tasklet_schedule(&priv->done_task[tlet]);	       \
 		}							       \
 		spin_unlock_irqrestore(&priv->reg_lock, flags);		       \
@@ -719,7 +676,7 @@ static irqreturn_t talitos2_interrupt_##name(int irq, void *data)	       \
 	spin_lock_irqsave(&priv->reg_lock, flags);			       \
 	isr = in_be32(priv->reg + TALITOS_ISR);				       \
 	isr_lo = in_be32(priv->reg + TALITOS_ISR_LO);			       \
-	/* Acknowledge interrupt */					       \
+	 					       \
 	out_be32(priv->reg + TALITOS_ICR, isr & (ch_done_mask | ch_err_mask)); \
 	out_be32(priv->reg + TALITOS_ICR_LO, isr_lo);			       \
 									       \
@@ -729,9 +686,9 @@ static irqreturn_t talitos2_interrupt_##name(int irq, void *data)	       \
 	}								       \
 	else {								       \
 		if (likely(isr & ch_done_mask)) {			       \
-			/* mask further done interrupts. */		       \
+			 		       \
 			clrbits32(priv->reg + TALITOS_IMR, ch_done_mask);      \
-			/* done_task will unmask done interrupts at exit */    \
+			     \
 			tasklet_schedule(&priv->done_task[tlet]);	       \
 		}							       \
 		spin_unlock_irqrestore(&priv->reg_lock, flags);		       \
@@ -747,9 +704,7 @@ DEF_TALITOS2_INTERRUPT(ch0_2, TALITOS2_ISR_CH_0_2_DONE, TALITOS2_ISR_CH_0_2_ERR,
 DEF_TALITOS2_INTERRUPT(ch1_3, TALITOS2_ISR_CH_1_3_DONE, TALITOS2_ISR_CH_1_3_ERR,
 		       1)
 
-/*
- * hwrng
- */
+ 
 static int talitos_rng_data_present(struct hwrng *rng, int wait)
 {
 	struct device *dev = (struct device *)rng->priv;
@@ -773,7 +728,7 @@ static int talitos_rng_data_read(struct hwrng *rng, u32 *data)
 	struct device *dev = (struct device *)rng->priv;
 	struct talitos_private *priv = dev_get_drvdata(dev);
 
-	/* rng fifo requires 64-bit accesses */
+	 
 	*data = in_be32(priv->reg_rngu + TALITOS_EU_FIFO);
 	*data = in_be32(priv->reg_rngu + TALITOS_EU_FIFO_LO);
 
@@ -796,7 +751,7 @@ static int talitos_rng_init(struct hwrng *rng)
 		return -ENODEV;
 	}
 
-	/* start generating */
+	 
 	setbits32(priv->reg_rngu + TALITOS_EUDSR_LO, 0);
 
 	return 0;
@@ -831,21 +786,16 @@ static void talitos_unregister_rng(struct device *dev)
 	priv->rng_registered = false;
 }
 
-/*
- * crypto alg
- */
+ 
 #define TALITOS_CRA_PRIORITY		3000
-/*
- * Defines a priority for doing AEAD with descriptors type
- * HMAC_SNOOP_NO_AFEA (HSNA) instead of type IPSEC_ESP
- */
+ 
 #define TALITOS_CRA_PRIORITY_AEAD_HSNA	(TALITOS_CRA_PRIORITY - 1)
 #ifdef CONFIG_CRYPTO_DEV_TALITOS2
 #define TALITOS_MAX_KEY_SIZE		(AES_MAX_KEY_SIZE + SHA512_BLOCK_SIZE)
 #else
 #define TALITOS_MAX_KEY_SIZE		(AES_MAX_KEY_SIZE + SHA256_BLOCK_SIZE)
 #endif
-#define TALITOS_MAX_IV_LENGTH		16 /* max of AES_BLOCK_SIZE, DES3_EDE_BLOCK_SIZE */
+#define TALITOS_MAX_IV_LENGTH		16  
 
 struct talitos_ctx {
 	struct device *dev;
@@ -1016,9 +966,7 @@ static void ipsec_esp_unmap(struct device *dev,
 	}
 }
 
-/*
- * ipsec_esp descriptor callbacks
- */
+ 
 static void ipsec_esp_encrypt_done(struct device *dev,
 				   struct talitos_desc *desc, void *context,
 				   int err)
@@ -1054,7 +1002,7 @@ static void ipsec_esp_decrypt_swauth_done(struct device *dev,
 	ipsec_esp_unmap(dev, edesc, req, false);
 
 	if (!err) {
-		/* auth check */
+		 
 		oicv = edesc->buf + edesc->dma_len;
 		icv = oicv - authsize;
 
@@ -1077,7 +1025,7 @@ static void ipsec_esp_decrypt_hwauth_done(struct device *dev,
 
 	ipsec_esp_unmap(dev, edesc, req, false);
 
-	/* check ICV auth status */
+	 
 	if (!err && ((desc->hdr_lo & DESC_HDR_LO_ICCR1_MASK) !=
 		     DESC_HDR_LO_ICCR1_PASS))
 		err = -EBADMSG;
@@ -1087,10 +1035,7 @@ static void ipsec_esp_decrypt_hwauth_done(struct device *dev,
 	aead_request_complete(req, err);
 }
 
-/*
- * convert scatterlist to SEC h/w link table format
- * stop at cryptlen bytes
- */
+ 
 static int sg_to_link_tbl_offset(struct scatterlist *sg, int sg_count,
 				 unsigned int offset, int datalen, int elen,
 				 struct talitos_ptr *link_tbl_ptr, int align)
@@ -1133,7 +1078,7 @@ next:
 		sg = sg_next(sg);
 	}
 
-	/* tag end of link table */
+	 
 	if (count > 0)
 		to_talitos_ptr_ext_set(link_tbl_ptr + count - 1,
 				       DESC_PTR_LNKTBL_RET, 0);
@@ -1167,7 +1112,7 @@ static int talitos_sg_map_ext(struct device *dev, struct scatterlist *src,
 	sg_count = sg_to_link_tbl_offset(src, sg_count, offset, len, elen,
 					 &edesc->link_tbl[tbl_off], align);
 	if (sg_count == 1 && !force) {
-		/* Only one segment now, so no link tbl needed*/
+		 
 		copy_talitos_ptr(ptr, &edesc->link_tbl[tbl_off], is_sec1);
 		return sg_count;
 	}
@@ -1187,9 +1132,7 @@ static int talitos_sg_map(struct device *dev, struct scatterlist *src,
 				  tbl_off, 0, false, 1);
 }
 
-/*
- * fill in and submit ipsec_esp descriptor
- */
+ 
 static int ipsec_esp(struct talitos_edesc *edesc, struct aead_request *areq,
 		     bool encrypt,
 		     void (*callback)(struct device *dev,
@@ -1214,7 +1157,7 @@ static int ipsec_esp(struct talitos_edesc *edesc, struct aead_request *areq,
 	struct talitos_ptr *ckey_ptr = &desc->ptr[is_ipsec_esp ? 3 : 2];
 	dma_addr_t dma_icv = edesc->dma_link_tbl + edesc->dma_len - authsize;
 
-	/* hmac key */
+	 
 	to_talitos_ptr(&desc->ptr[0], ctx->dma_key, ctx->authkeylen, is_sec1);
 
 	sg_count = edesc->src_nents ?: 1;
@@ -1226,7 +1169,7 @@ static int ipsec_esp(struct talitos_edesc *edesc, struct aead_request *areq,
 				      (areq->src == areq->dst) ?
 				      DMA_BIDIRECTIONAL : DMA_TO_DEVICE);
 
-	/* hmac data */
+	 
 	ret = talitos_sg_map(dev, areq->src, areq->assoclen, edesc,
 			     &desc->ptr[1], sg_count, 0, tbl_off);
 
@@ -1235,19 +1178,14 @@ static int ipsec_esp(struct talitos_edesc *edesc, struct aead_request *areq,
 		sync_needed = true;
 	}
 
-	/* cipher iv */
+	 
 	to_talitos_ptr(civ_ptr, edesc->iv_dma, ivsize, is_sec1);
 
-	/* cipher key */
+	 
 	to_talitos_ptr(ckey_ptr, ctx->dma_key  + ctx->authkeylen,
 		       ctx->enckeylen, is_sec1);
 
-	/*
-	 * cipher in
-	 * map and adjust cipher len to aead request cryptlen.
-	 * extent is bytes of HMAC postpended to ciphertext,
-	 * typically 12 for ipsec
-	 */
+	 
 	if (is_ipsec_esp && (desc->hdr & DESC_HDR_MODE1_MDEU_CICV))
 		elen = authsize;
 
@@ -1260,7 +1198,7 @@ static int ipsec_esp(struct talitos_edesc *edesc, struct aead_request *areq,
 		sync_needed = true;
 	}
 
-	/* cipher out */
+	 
 	if (areq->src != areq->dst) {
 		sg_count = edesc->dst_nents ? : 1;
 		if (!is_sec1 || sg_count == 1)
@@ -1279,11 +1217,11 @@ static int ipsec_esp(struct talitos_edesc *edesc, struct aead_request *areq,
 	if (!encrypt && is_ipsec_esp) {
 		struct talitos_ptr *tbl_ptr = &edesc->link_tbl[tbl_off];
 
-		/* Add an entry to the link table for ICV data */
+		 
 		to_talitos_ptr_ext_set(tbl_ptr - 1, 0, is_sec1);
 		to_talitos_ptr_ext_set(tbl_ptr, DESC_PTR_LNKTBL_RET, is_sec1);
 
-		/* icv data follows link tables */
+		 
 		to_talitos_ptr(tbl_ptr, dma_icv, authsize, is_sec1);
 		to_talitos_ptr_ext_or(&desc->ptr[5], authsize, is_sec1);
 		sync_needed = true;
@@ -1295,7 +1233,7 @@ static int ipsec_esp(struct talitos_edesc *edesc, struct aead_request *areq,
 			       sg_count, areq->assoclen + cryptlen, tbl_off);
 	}
 
-	/* iv out */
+	 
 	if (is_ipsec_esp)
 		map_single_talitos_ptr(dev, &desc->ptr[6], ivsize, ctx->iv,
 				       DMA_FROM_DEVICE);
@@ -1313,9 +1251,7 @@ static int ipsec_esp(struct talitos_edesc *edesc, struct aead_request *areq,
 	return ret;
 }
 
-/*
- * allocate and map the extended descriptor
- */
+ 
 static struct talitos_edesc *talitos_edesc_alloc(struct device *dev,
 						 struct scatterlist *src,
 						 struct scatterlist *dst,
@@ -1352,7 +1288,7 @@ static struct talitos_edesc *talitos_edesc_alloc(struct device *dev,
 		src_nents = (src_nents == 1) ? 0 : src_nents;
 		dst_nents = dst ? src_nents : 0;
 		dst_len = 0;
-	} else { /* dst && dst != src*/
+	} else {  
 		src_len = assoclen + cryptlen + (encrypt ? 0 : authsize);
 		src_nents = sg_nents_for_len(src, src_len);
 		if (src_nents < 0) {
@@ -1369,11 +1305,7 @@ static struct talitos_edesc *talitos_edesc_alloc(struct device *dev,
 		dst_nents = (dst_nents == 1) ? 0 : dst_nents;
 	}
 
-	/*
-	 * allocate space for base edesc plus the link tables,
-	 * allowing for two separate entries for AD and generated ICV (+ 2),
-	 * and space for two sets of ICVs (stashed and generated)
-	 */
+	 
 	alloc_len = sizeof(struct talitos_edesc);
 	if (src_nents || dst_nents || !encrypt) {
 		if (is_sec1)
@@ -1388,7 +1320,7 @@ static struct talitos_edesc *talitos_edesc_alloc(struct device *dev,
 	}
 	alloc_len += icv_stashing ? authsize : 0;
 
-	/* if its a ahash, add space for a second desc next to the first one */
+	 
 	if (is_sec1 && !dst)
 		alloc_len += sizeof(struct talitos_desc);
 	alloc_len += ivsize;
@@ -1435,12 +1367,12 @@ static int aead_encrypt(struct aead_request *req)
 	struct talitos_ctx *ctx = crypto_aead_ctx(authenc);
 	struct talitos_edesc *edesc;
 
-	/* allocate extended descriptor */
+	 
 	edesc = aead_edesc_alloc(req, req->iv, 0, true);
 	if (IS_ERR(edesc))
 		return PTR_ERR(edesc);
 
-	/* set encrypt */
+	 
 	edesc->desc.hdr = ctx->desc_hdr_template | DESC_HDR_MODE0_ENCRYPT;
 
 	return ipsec_esp(edesc, req, true, ipsec_esp_encrypt_done);
@@ -1455,7 +1387,7 @@ static int aead_decrypt(struct aead_request *req)
 	struct talitos_edesc *edesc;
 	void *icvdata;
 
-	/* allocate extended descriptor */
+	 
 	edesc = aead_edesc_alloc(req, req->iv, 1, false);
 	if (IS_ERR(edesc))
 		return PTR_ERR(edesc);
@@ -1465,21 +1397,21 @@ static int aead_decrypt(struct aead_request *req)
 	    ((!edesc->src_nents && !edesc->dst_nents) ||
 	     priv->features & TALITOS_FTR_SRC_LINK_TBL_LEN_INCLUDES_EXTENT)) {
 
-		/* decrypt and check the ICV */
+		 
 		edesc->desc.hdr = ctx->desc_hdr_template |
 				  DESC_HDR_DIR_INBOUND |
 				  DESC_HDR_MODE1_MDEU_CICV;
 
-		/* reset integrity check result bits */
+		 
 
 		return ipsec_esp(edesc, req, false,
 				 ipsec_esp_decrypt_hwauth_done);
 	}
 
-	/* Have to check the ICV with software */
+	 
 	edesc->desc.hdr = ctx->desc_hdr_template | DESC_HDR_DIR_INBOUND;
 
-	/* stash incoming ICV for later cmp with ICV generated by the h/w */
+	 
 	icvdata = edesc->buf + edesc->dma_len;
 
 	sg_pcopy_to_buffer(req->src, edesc->src_nents ? : 1, icvdata, authsize,
@@ -1582,12 +1514,12 @@ static int common_nonsnoop(struct talitos_edesc *edesc,
 	bool is_ctr = (desc->hdr & DESC_HDR_SEL0_MASK) == DESC_HDR_SEL0_AESU &&
 		      (desc->hdr & DESC_HDR_MODE0_AESU_MASK) == DESC_HDR_MODE0_AESU_CTR;
 
-	/* first DWORD empty */
+	 
 
-	/* cipher iv */
+	 
 	to_talitos_ptr(&desc->ptr[1], edesc->iv_dma, ivsize, is_sec1);
 
-	/* cipher key */
+	 
 	to_talitos_ptr(&desc->ptr[2], ctx->dma_key, ctx->keylen, is_sec1);
 
 	sg_count = edesc->src_nents ?: 1;
@@ -1598,15 +1530,13 @@ static int common_nonsnoop(struct talitos_edesc *edesc,
 		sg_count = dma_map_sg(dev, areq->src, sg_count,
 				      (areq->src == areq->dst) ?
 				      DMA_BIDIRECTIONAL : DMA_TO_DEVICE);
-	/*
-	 * cipher in
-	 */
+	 
 	sg_count = talitos_sg_map_ext(dev, areq->src, cryptlen, edesc, &desc->ptr[3],
 				      sg_count, 0, 0, 0, false, is_ctr ? 16 : 1);
 	if (sg_count > 1)
 		sync_needed = true;
 
-	/* cipher out */
+	 
 	if (areq->src != areq->dst) {
 		sg_count = edesc->dst_nents ? : 1;
 		if (!is_sec1 || sg_count == 1)
@@ -1618,11 +1548,11 @@ static int common_nonsnoop(struct talitos_edesc *edesc,
 	if (ret > 1)
 		sync_needed = true;
 
-	/* iv out */
+	 
 	map_single_talitos_ptr(dev, &desc->ptr[5], ivsize, ctx->iv,
 			       DMA_FROM_DEVICE);
 
-	/* last DWORD empty */
+	 
 
 	if (sync_needed)
 		dma_sync_single_for_device(dev, edesc->dma_link_tbl,
@@ -1662,12 +1592,12 @@ static int skcipher_encrypt(struct skcipher_request *areq)
 	if (areq->cryptlen % blocksize)
 		return -EINVAL;
 
-	/* allocate extended descriptor */
+	 
 	edesc = skcipher_edesc_alloc(areq, true);
 	if (IS_ERR(edesc))
 		return PTR_ERR(edesc);
 
-	/* set encrypt */
+	 
 	edesc->desc.hdr = ctx->desc_hdr_template | DESC_HDR_MODE0_ENCRYPT;
 
 	return common_nonsnoop(edesc, areq, skcipher_done);
@@ -1687,7 +1617,7 @@ static int skcipher_decrypt(struct skcipher_request *areq)
 	if (areq->cryptlen % blocksize)
 		return -EINVAL;
 
-	/* allocate extended descriptor */
+	 
 	edesc = skcipher_edesc_alloc(areq, false);
 	if (IS_ERR(edesc))
 		return PTR_ERR(edesc);
@@ -1720,7 +1650,7 @@ static void common_nonsnoop_hash_unmap(struct device *dev,
 	if (req_ctx->psrc)
 		talitos_sg_unmap(dev, edesc, req_ctx->psrc, NULL, 0, 0);
 
-	/* When using hashctx-in, must unmap it. */
+	 
 	if (from_talitos_ptr_len(&desc->ptr[1], is_sec1))
 		unmap_single_talitos_ptr(dev, &desc->ptr[1],
 					 DMA_TO_DEVICE);
@@ -1751,7 +1681,7 @@ static void ahash_done(struct device *dev,
 	struct talitos_ahash_req_ctx *req_ctx = ahash_request_ctx(areq);
 
 	if (!req_ctx->last && req_ctx->to_hash_later) {
-		/* Position any partial block for next update/final/finup */
+		 
 		req_ctx->buf_idx = (req_ctx->buf_idx + 1) & 1;
 		req_ctx->nbuf = req_ctx->to_hash_later;
 	}
@@ -1762,10 +1692,7 @@ static void ahash_done(struct device *dev,
 	ahash_request_complete(areq, err);
 }
 
-/*
- * SEC1 doesn't like hashing of 0 sized message, so we do the padding
- * ourself and submit a padded block
- */
+ 
 static void talitos_handle_buggy_hash(struct talitos_ctx *ctx,
 			       struct talitos_edesc *edesc,
 			       struct talitos_ptr *ptr)
@@ -1800,9 +1727,9 @@ static int common_nonsnoop_hash(struct talitos_edesc *edesc,
 	bool is_sec1 = has_ftr_sec1(priv);
 	int sg_count;
 
-	/* first DWORD empty */
+	 
 
-	/* hash context in */
+	 
 	if (!req_ctx->first || req_ctx->swinit) {
 		map_single_talitos_ptr_nosync(dev, &desc->ptr[1],
 					      req_ctx->hw_context_size,
@@ -1810,10 +1737,10 @@ static int common_nonsnoop_hash(struct talitos_edesc *edesc,
 					      DMA_TO_DEVICE);
 		req_ctx->swinit = 0;
 	}
-	/* Indicate next op is not the first. */
+	 
 	req_ctx->first = 0;
 
-	/* HMAC key */
+	 
 	if (ctx->keylen)
 		to_talitos_ptr(&desc->ptr[2], ctx->dma_key, ctx->keylen,
 			       is_sec1);
@@ -1827,9 +1754,7 @@ static int common_nonsnoop_hash(struct talitos_edesc *edesc,
 	else if (length)
 		sg_count = dma_map_sg(dev, req_ctx->psrc, sg_count,
 				      DMA_TO_DEVICE);
-	/*
-	 * data in
-	 */
+	 
 	if (is_sec1 && req_ctx->nbuf) {
 		map_single_talitos_ptr(dev, &desc->ptr[3], req_ctx->nbuf,
 				       req_ctx->buf[req_ctx->buf_idx],
@@ -1841,9 +1766,9 @@ static int common_nonsnoop_hash(struct talitos_edesc *edesc,
 			sync_needed = true;
 	}
 
-	/* fifth DWORD empty */
+	 
 
-	/* hash/HMAC out -or- hash context out */
+	 
 	if (req_ctx->last)
 		map_single_talitos_ptr(dev, &desc->ptr[5],
 				       crypto_ahash_digestsize(tfm),
@@ -1854,7 +1779,7 @@ static int common_nonsnoop_hash(struct talitos_edesc *edesc,
 					      req_ctx->hw_context,
 					      DMA_FROM_DEVICE);
 
-	/* last DWORD empty */
+	 
 
 	if (is_sec1 && from_talitos_ptr_len(&desc->ptr[3], true) == 0)
 		talitos_handle_buggy_hash(ctx, edesc, &desc->ptr[3]);
@@ -1934,11 +1859,11 @@ static int ahash_init(struct ahash_request *areq)
 	unsigned int size;
 	dma_addr_t dma;
 
-	/* Initialize the context */
+	 
 	req_ctx->buf_idx = 0;
 	req_ctx->nbuf = 0;
-	req_ctx->first = 1; /* first indicates h/w must init its context */
-	req_ctx->swinit = 0; /* assume h/w init of context */
+	req_ctx->first = 1;  
+	req_ctx->swinit = 0;  
 	size =	(crypto_ahash_digestsize(tfm) <= SHA256_DIGEST_SIZE)
 			? TALITOS_MDEU_CONTEXT_SIZE_MD5_SHA1_SHA256
 			: TALITOS_MDEU_CONTEXT_SIZE_SHA384_SHA512;
@@ -1951,10 +1876,7 @@ static int ahash_init(struct ahash_request *areq)
 	return 0;
 }
 
-/*
- * on h/w without explicit sha224 support, we initialize h/w context
- * manually with sha224 constants, and tell it to run sha256.
- */
+ 
 static int ahash_init_sha224_swinit(struct ahash_request *areq)
 {
 	struct talitos_ahash_req_ctx *req_ctx = ahash_request_ctx(areq);
@@ -1968,12 +1890,12 @@ static int ahash_init_sha224_swinit(struct ahash_request *areq)
 	req_ctx->hw_context[6] = SHA224_H6;
 	req_ctx->hw_context[7] = SHA224_H7;
 
-	/* init 64-bit count */
+	 
 	req_ctx->hw_context[8] = 0;
 	req_ctx->hw_context[9] = 0;
 
 	ahash_init(areq);
-	req_ctx->swinit = 1;/* prevent h/w initting context with sha256 values*/
+	req_ctx->swinit = 1; 
 
 	return 0;
 }
@@ -1996,7 +1918,7 @@ static int ahash_process_req(struct ahash_request *areq, unsigned int nbytes)
 	u8 *ctx_buf = req_ctx->buf[req_ctx->buf_idx];
 
 	if (!req_ctx->last && (nbytes + req_ctx->nbuf <= blocksize)) {
-		/* Buffer up to one whole block */
+		 
 		nents = sg_nents_for_len(areq->src, nbytes);
 		if (nents < 0) {
 			dev_err(dev, "Invalid number of src SG.\n");
@@ -2008,22 +1930,22 @@ static int ahash_process_req(struct ahash_request *areq, unsigned int nbytes)
 		return 0;
 	}
 
-	/* At least (blocksize + 1) bytes are available to hash */
+	 
 	nbytes_to_hash = nbytes + req_ctx->nbuf;
 	to_hash_later = nbytes_to_hash & (blocksize - 1);
 
 	if (req_ctx->last)
 		to_hash_later = 0;
 	else if (to_hash_later)
-		/* There is a partial block. Hash the full block(s) now */
+		 
 		nbytes_to_hash -= to_hash_later;
 	else {
-		/* Keep one block buffered */
+		 
 		nbytes_to_hash -= blocksize;
 		to_hash_later = blocksize;
 	}
 
-	/* Chain in any previously buffered data */
+	 
 	if (!is_sec1 && req_ctx->nbuf) {
 		nsg = (req_ctx->nbuf < nbytes_to_hash) ? 2 : 1;
 		sg_init_table(req_ctx->bufsl, nsg);
@@ -2064,26 +1986,24 @@ static int ahash_process_req(struct ahash_request *areq, unsigned int nbytes)
 	}
 	req_ctx->to_hash_later = to_hash_later;
 
-	/* Allocate extended descriptor */
+	 
 	edesc = ahash_edesc_alloc(areq, nbytes_to_hash);
 	if (IS_ERR(edesc))
 		return PTR_ERR(edesc);
 
 	edesc->desc.hdr = ctx->desc_hdr_template;
 
-	/* On last one, request SEC to pad; otherwise continue */
+	 
 	if (req_ctx->last)
 		edesc->desc.hdr |= DESC_HDR_MODE0_MDEU_PAD;
 	else
 		edesc->desc.hdr |= DESC_HDR_MODE0_MDEU_CONT;
 
-	/* request SEC to INIT hash. */
+	 
 	if (req_ctx->first && !req_ctx->swinit)
 		edesc->desc.hdr |= DESC_HDR_MODE0_MDEU_INIT;
 
-	/* When the tfm context has a keylen, it's an HMAC.
-	 * A first or last (ie. not middle) descriptor must request HMAC.
-	 */
+	 
 	if (ctx->keylen && (req_ctx->first || req_ctx->last))
 		edesc->desc.hdr |= DESC_HDR_MODE0_MDEU_HMAC;
 
@@ -2199,7 +2119,7 @@ static int keyhash(struct crypto_ahash *tfm, const u8 *key, unsigned int keylen,
 	if (!req)
 		return -ENOMEM;
 
-	/* Keep tfm keylen == 0 during hash of the long key */
+	 
 	ctx->keylen = 0;
 	ahash_request_set_callback(req, CRYPTO_TFM_REQ_MAY_BACKLOG,
 				   crypto_req_done, &wait);
@@ -2229,7 +2149,7 @@ static int ahash_setkey(struct crypto_ahash *tfm, const u8 *key,
 	if (keylen <= blocksize)
 		memcpy(ctx->key, key, keysize);
 	else {
-		/* Must get the hash of the long key */
+		 
 		ret = keyhash(tfm, key, keylen, hash);
 
 		if (ret)
@@ -2261,7 +2181,7 @@ struct talitos_alg_template {
 };
 
 static struct talitos_alg_template driver_algs[] = {
-	/* AEAD algorithms.  These use a single-pass ipsec_esp descriptor */
+	 
 	{	.type = CRYPTO_ALG_TYPE_AEAD,
 		.alg.aead = {
 			.base = {
@@ -2718,7 +2638,7 @@ static struct talitos_alg_template driver_algs[] = {
 				     DESC_HDR_MODE1_MDEU_PAD |
 				     DESC_HDR_MODE1_MDEU_MD5_HMAC,
 	},
-	/* SKCIPHER algorithms. */
+	 
 	{	.type = CRYPTO_ALG_TYPE_SKCIPHER,
 		.alg.skcipher = {
 			.base.cra_name = "ecb(aes)",
@@ -2843,7 +2763,7 @@ static struct talitos_alg_template driver_algs[] = {
 		                     DESC_HDR_MODE0_DEU_CBC |
 		                     DESC_HDR_MODE0_DEU_3DES,
 	},
-	/* AHASH algorithms. */
+	 
 	{	.type = CRYPTO_ALG_TYPE_AHASH,
 		.alg.hash = {
 			.halg.digestsize = MD5_DIGEST_SIZE,
@@ -3049,18 +2969,18 @@ static int talitos_init_common(struct talitos_ctx *ctx,
 {
 	struct talitos_private *priv;
 
-	/* update context with ptr to dev */
+	 
 	ctx->dev = talitos_alg->dev;
 
-	/* assign SEC channel to tfm in round-robin fashion */
+	 
 	priv = dev_get_drvdata(ctx->dev);
 	ctx->ch = atomic_inc_return(&priv->last_chan) &
 		  (priv->num_channels - 1);
 
-	/* copy descriptor header template value */
+	 
 	ctx->desc_hdr_template = talitos_alg->algt.desc_hdr_template;
 
-	/* select done notification */
+	 
 	ctx->desc_hdr_template |= DESC_HDR_DONE_NOTIFY;
 
 	return 0;
@@ -3116,11 +3036,7 @@ static void talitos_cra_exit(struct crypto_tfm *tfm)
 		dma_unmap_single(dev, ctx->dma_key, ctx->keylen, DMA_TO_DEVICE);
 }
 
-/*
- * given the alg's descriptor header template, determine whether descriptor
- * type and primary/secondary execution units required match the hw
- * capabilities description provided in the device tree node.
- */
+ 
 static int hw_supports(struct device *dev, __be32 desc_hdr_template)
 {
 	struct talitos_private *priv = dev_get_drvdata(dev);
@@ -3292,7 +3208,7 @@ static int talitos_probe_irq(struct platform_device *ofdev)
 
 	priv->irq[1] = irq_of_parse_and_map(np, 1);
 
-	/* get the primary irq line */
+	 
 	if (!priv->irq[1]) {
 		err = request_irq(priv->irq[0], talitos2_interrupt_4ch, 0,
 				  dev_driver_string(dev), dev);
@@ -3304,7 +3220,7 @@ static int talitos_probe_irq(struct platform_device *ofdev)
 	if (err)
 		goto primary_out;
 
-	/* get the secondary irq line */
+	 
 	err = request_irq(priv->irq[1], talitos2_interrupt_ch1_3, 0,
 			  dev_driver_string(dev), dev);
 	if (err) {
@@ -3356,7 +3272,7 @@ static int talitos_probe(struct platform_device *ofdev)
 		goto err_out;
 	}
 
-	/* get SEC version capabilities from device tree */
+	 
 	of_property_read_u32(np, "fsl,num-channels", &priv->num_channels);
 	of_property_read_u32(np, "fsl,channel-fifo-len", &priv->chfifo_len);
 	of_property_read_u32(np, "fsl,exec-units-mask", &priv->exec_units);
@@ -3468,14 +3384,14 @@ static int talitos_probe(struct platform_device *ofdev)
 
 	dma_set_mask(dev, DMA_BIT_MASK(36));
 
-	/* reset and initialize the h/w */
+	 
 	err = init_device(dev);
 	if (err) {
 		dev_err(dev, "failed to initialize device\n");
 		goto err_out;
 	}
 
-	/* register the RNG, if available */
+	 
 	if (hw_supports(dev, DESC_HDR_SEL0_RNG)) {
 		err = talitos_register_rng(dev);
 		if (err) {
@@ -3485,7 +3401,7 @@ static int talitos_probe(struct platform_device *ofdev)
 			dev_info(dev, "hwrng\n");
 	}
 
-	/* register crypto algorithms the device supports */
+	 
 	for (i = 0; i < ARRAY_SIZE(driver_algs); i++) {
 		if (hw_supports(dev, driver_algs[i].desc_hdr_template)) {
 			struct talitos_crypto_alg *t_alg;

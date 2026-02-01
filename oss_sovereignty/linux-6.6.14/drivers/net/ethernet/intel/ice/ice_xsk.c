@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2019, Intel Corporation. */
+
+ 
 
 #include <linux/bpf_trace.h>
 #include <net/xdp_sock_drv.h>
@@ -17,11 +17,7 @@ static struct xdp_buff **ice_xdp_buf(struct ice_rx_ring *rx_ring, u32 idx)
 	return &rx_ring->xdp_buf[idx];
 }
 
-/**
- * ice_qp_reset_stats - Resets all stats for rings of given index
- * @vsi: VSI that contains rings of interest
- * @q_idx: ring index in array
- */
+ 
 static void ice_qp_reset_stats(struct ice_vsi *vsi, u16 q_idx)
 {
 	struct ice_vsi_stats *vsi_stat;
@@ -44,11 +40,7 @@ static void ice_qp_reset_stats(struct ice_vsi *vsi, u16 q_idx)
 		       sizeof(vsi->xdp_rings[q_idx]->ring_stats->stats));
 }
 
-/**
- * ice_qp_clean_rings - Cleans all the rings of a given index
- * @vsi: VSI that contains rings of interest
- * @q_idx: ring index in array
- */
+ 
 static void ice_qp_clean_rings(struct ice_vsi *vsi, u16 q_idx)
 {
 	ice_clean_tx_ring(vsi->tx_rings[q_idx]);
@@ -59,12 +51,7 @@ static void ice_qp_clean_rings(struct ice_vsi *vsi, u16 q_idx)
 	ice_clean_rx_ring(vsi->rx_rings[q_idx]);
 }
 
-/**
- * ice_qvec_toggle_napi - Enables/disables NAPI for a given q_vector
- * @vsi: VSI that has netdev
- * @q_vector: q_vector that has NAPI context
- * @enable: true for enable, false for disable
- */
+ 
 static void
 ice_qvec_toggle_napi(struct ice_vsi *vsi, struct ice_q_vector *q_vector,
 		     bool enable)
@@ -78,12 +65,7 @@ ice_qvec_toggle_napi(struct ice_vsi *vsi, struct ice_q_vector *q_vector,
 		napi_disable(&q_vector->napi);
 }
 
-/**
- * ice_qvec_dis_irq - Mask off queue interrupt generation on given ring
- * @vsi: the VSI that contains queue vector being un-configured
- * @rx_ring: Rx ring that will have its IRQ disabled
- * @q_vector: queue vector
- */
+ 
 static void
 ice_qvec_dis_irq(struct ice_vsi *vsi, struct ice_rx_ring *rx_ring,
 		 struct ice_q_vector *q_vector)
@@ -93,9 +75,7 @@ ice_qvec_dis_irq(struct ice_vsi *vsi, struct ice_rx_ring *rx_ring,
 	u16 reg;
 	u32 val;
 
-	/* QINT_TQCTL is being cleared in ice_vsi_stop_tx_ring, so handle
-	 * here only QINT_RQCTL
-	 */
+	 
 	reg = rx_ring->reg_idx;
 	val = rd32(hw, QINT_RQCTL(reg));
 	val &= ~QINT_RQCTL_CAUSE_ENA_M;
@@ -108,11 +88,7 @@ ice_qvec_dis_irq(struct ice_vsi *vsi, struct ice_rx_ring *rx_ring,
 	}
 }
 
-/**
- * ice_qvec_cfg_msix - Enable IRQ for given queue vector
- * @vsi: the VSI that contains queue vector
- * @q_vector: queue vector
- */
+ 
 static void
 ice_qvec_cfg_msix(struct ice_vsi *vsi, struct ice_q_vector *q_vector)
 {
@@ -135,11 +111,7 @@ ice_qvec_cfg_msix(struct ice_vsi *vsi, struct ice_q_vector *q_vector)
 	ice_flush(hw);
 }
 
-/**
- * ice_qvec_ena_irq - Enable IRQ for given queue vector
- * @vsi: the VSI that contains queue vector
- * @q_vector: queue vector
- */
+ 
 static void ice_qvec_ena_irq(struct ice_vsi *vsi, struct ice_q_vector *q_vector)
 {
 	struct ice_pf *pf = vsi->back;
@@ -150,13 +122,7 @@ static void ice_qvec_ena_irq(struct ice_vsi *vsi, struct ice_q_vector *q_vector)
 	ice_flush(hw);
 }
 
-/**
- * ice_qp_dis - Disables a queue pair
- * @vsi: VSI of interest
- * @q_idx: ring index in array
- *
- * Returns 0 on success, negative on failure.
- */
+ 
 static int ice_qp_dis(struct ice_vsi *vsi, u16 q_idx)
 {
 	struct ice_txq_meta txq_meta = { };
@@ -208,13 +174,7 @@ static int ice_qp_dis(struct ice_vsi *vsi, u16 q_idx)
 	return 0;
 }
 
-/**
- * ice_qp_ena - Enables a queue pair
- * @vsi: VSI of interest
- * @q_idx: ring index in array
- *
- * Returns 0 on success, negative on failure.
- */
+ 
 static int ice_qp_ena(struct ice_vsi *vsi, u16 q_idx)
 {
 	struct ice_aqc_add_tx_qgrp *qg_buf;
@@ -274,13 +234,7 @@ free_buf:
 	return err;
 }
 
-/**
- * ice_xsk_pool_disable - disable a buffer pool region
- * @vsi: Current VSI
- * @qid: queue ID
- *
- * Returns 0 on success, negative on failure
- */
+ 
 static int ice_xsk_pool_disable(struct ice_vsi *vsi, u16 qid)
 {
 	struct xsk_buff_pool *pool = xsk_get_pool_from_qid(vsi->netdev, qid);
@@ -294,14 +248,7 @@ static int ice_xsk_pool_disable(struct ice_vsi *vsi, u16 qid)
 	return 0;
 }
 
-/**
- * ice_xsk_pool_enable - enable a buffer pool region
- * @vsi: Current VSI
- * @pool: pointer to a requested buffer pool region
- * @qid: queue ID
- *
- * Returns 0 on success, negative on failure
- */
+ 
 static int
 ice_xsk_pool_enable(struct ice_vsi *vsi, struct xsk_buff_pool *pool, u16 qid)
 {
@@ -324,15 +271,7 @@ ice_xsk_pool_enable(struct ice_vsi *vsi, struct xsk_buff_pool *pool, u16 qid)
 	return 0;
 }
 
-/**
- * ice_realloc_rx_xdp_bufs - reallocate for either XSK or normal buffer
- * @rx_ring: Rx ring
- * @pool_present: is pool for XSK present
- *
- * Try allocating memory and return ENOMEM, if failed to allocate.
- * If allocation was successful, substitute buffer with allocated one.
- * Returns 0 on success, negative on failure
- */
+ 
 static int
 ice_realloc_rx_xdp_bufs(struct ice_rx_ring *rx_ring, bool pool_present)
 {
@@ -356,15 +295,7 @@ ice_realloc_rx_xdp_bufs(struct ice_rx_ring *rx_ring, bool pool_present)
 	return 0;
 }
 
-/**
- * ice_realloc_zc_buf - reallocate XDP ZC queue pairs
- * @vsi: Current VSI
- * @zc: is zero copy set
- *
- * Reallocate buffer for rx_rings that might be used by XSK.
- * XDP requires more memory, than rx_buf provides.
- * Returns 0 on success, negative on failure
- */
+ 
 int ice_realloc_zc_buf(struct ice_vsi *vsi, bool zc)
 {
 	struct ice_rx_ring *rx_ring;
@@ -380,14 +311,7 @@ int ice_realloc_zc_buf(struct ice_vsi *vsi, bool zc)
 	return 0;
 }
 
-/**
- * ice_xsk_pool_setup - enable/disable a buffer pool region depending on its state
- * @vsi: Current VSI
- * @pool: buffer pool to enable/associate to a ring, NULL to disable
- * @qid: queue ID
- *
- * Returns 0 on success, negative on failure
- */
+ 
 int ice_xsk_pool_setup(struct ice_vsi *vsi, struct xsk_buff_pool *pool, u16 qid)
 {
 	bool if_running, pool_present = !!pool;
@@ -437,20 +361,7 @@ failure:
 	return ret;
 }
 
-/**
- * ice_fill_rx_descs - pick buffers from XSK buffer pool and use it
- * @pool: XSK Buffer pool to pull the buffers from
- * @xdp: SW ring of xdp_buff that will hold the buffers
- * @rx_desc: Pointer to Rx descriptors that will be filled
- * @count: The number of buffers to allocate
- *
- * This function allocates a number of Rx buffers from the fill ring
- * or the internal recycle mechanism and places them on the Rx ring.
- *
- * Note that ring wrap should be handled by caller of this function.
- *
- * Returns the amount of allocated Rx descriptors
- */
+ 
 static u16 ice_fill_rx_descs(struct xsk_buff_pool *pool, struct xdp_buff **xdp,
 			     union ice_32b_rx_flex_desc *rx_desc, u16 count)
 {
@@ -471,17 +382,7 @@ static u16 ice_fill_rx_descs(struct xsk_buff_pool *pool, struct xdp_buff **xdp,
 	return buffs;
 }
 
-/**
- * __ice_alloc_rx_bufs_zc - allocate a number of Rx buffers
- * @rx_ring: Rx ring
- * @count: The number of buffers to allocate
- *
- * Place the @count of descriptors onto Rx ring. Handle the ring wrap
- * for case where space from next_to_use up to the end of ring is less
- * than @count. Finally do a tail bump.
- *
- * Returns true if all allocations were successful, false if any fail.
- */
+ 
 static bool __ice_alloc_rx_bufs_zc(struct ice_rx_ring *rx_ring, u16 count)
 {
 	u32 nb_buffs_extra = 0, nb_buffs = 0;
@@ -521,16 +422,7 @@ exit:
 	return total_count == (nb_buffs_extra + nb_buffs);
 }
 
-/**
- * ice_alloc_rx_bufs_zc - allocate a number of Rx buffers
- * @rx_ring: Rx ring
- * @count: The number of buffers to allocate
- *
- * Wrapper for internal allocation routine; figure out how many tail
- * bumps should take place based on the given threshold
- *
- * Returns true if all calls to internal alloc routine succeeded
- */
+ 
 bool ice_alloc_rx_bufs_zc(struct ice_rx_ring *rx_ring, u16 count)
 {
 	u16 rx_thresh = ICE_RING_QUARTER(rx_ring);
@@ -545,15 +437,7 @@ bool ice_alloc_rx_bufs_zc(struct ice_rx_ring *rx_ring, u16 count)
 	return __ice_alloc_rx_bufs_zc(rx_ring, leftover);
 }
 
-/**
- * ice_construct_skb_zc - Create an sk_buff from zero-copy buffer
- * @rx_ring: Rx ring
- * @xdp: Pointer to XDP buffer
- *
- * This function allocates a new skb from a zero-copy Rx buffer.
- *
- * Returns the skb on success, NULL on failure.
- */
+ 
 static struct sk_buff *
 ice_construct_skb_zc(struct ice_rx_ring *rx_ring, struct xdp_buff *xdp)
 {
@@ -609,10 +493,7 @@ out:
 	return skb;
 }
 
-/**
- * ice_clean_xdp_irq_zc - produce AF_XDP descriptors to CQ
- * @xdp_ring: XDP Tx ring
- */
+ 
 static u32 ice_clean_xdp_irq_zc(struct ice_tx_ring *xdp_ring)
 {
 	u16 ntc = xdp_ring->next_to_clean;
@@ -669,18 +550,7 @@ skip:
 	return completed_frames;
 }
 
-/**
- * ice_xmit_xdp_tx_zc - AF_XDP ZC handler for XDP_TX
- * @xdp: XDP buffer to xmit
- * @xdp_ring: XDP ring to produce descriptor onto
- *
- * note that this function works directly on xdp_buff, no need to convert
- * it to xdp_frame. xdp_buff pointer is stored to ice_tx_buf so that cleaning
- * side will be able to xsk_buff_free() it.
- *
- * Returns ICE_XDP_TX for successfully produced desc, ICE_XDP_CONSUMED if there
- * was not enough space on XDP ring
- */
+ 
 static int ice_xmit_xdp_tx_zc(struct xdp_buff *xdp,
 			      struct ice_tx_ring *xdp_ring)
 {
@@ -722,7 +592,7 @@ static int ice_xmit_xdp_tx_zc(struct xdp_buff *xdp,
 		tx_buf->type = ICE_TX_BUF_XSK_TX;
 		tx_desc->buf_addr = cpu_to_le64(dma);
 		tx_desc->cmd_type_offset_bsz = ice_build_ctob(0, 0, size, 0);
-		/* account for each xdp_buff from xsk_buff_pool */
+		 
 		xdp_ring->xdp_tx_active++;
 
 		if (++ntu == xdp_ring->count)
@@ -740,7 +610,7 @@ static int ice_xmit_xdp_tx_zc(struct xdp_buff *xdp,
 	}
 
 	xdp_ring->next_to_use = ntu;
-	/* update last descriptor from a frame with EOP */
+	 
 	tx_desc->cmd_type_offset_bsz |=
 		cpu_to_le64(ICE_TX_DESC_CMD_EOP << ICE_TXD_QW1_CMD_S);
 
@@ -752,15 +622,7 @@ busy:
 	return ICE_XDP_CONSUMED;
 }
 
-/**
- * ice_run_xdp_zc - Executes an XDP program in zero-copy path
- * @rx_ring: Rx ring
- * @xdp: xdp_buff used as input to the XDP program
- * @xdp_prog: XDP program to run
- * @xdp_ring: ring to be used for XDP_TX action
- *
- * Returns any of ICE_XDP_{PASS, CONSUMED, TX, REDIR}
- */
+ 
 static int
 ice_run_xdp_zc(struct ice_rx_ring *rx_ring, struct xdp_buff *xdp,
 	       struct bpf_prog *xdp_prog, struct ice_tx_ring *xdp_ring)
@@ -833,13 +695,7 @@ ice_add_xsk_frag(struct ice_rx_ring *rx_ring, struct xdp_buff *first,
 	return 0;
 }
 
-/**
- * ice_clean_rx_irq_zc - consumes packets from the hardware ring
- * @rx_ring: AF_XDP Rx ring
- * @budget: NAPI budget
- *
- * Returns number of processed packets on success, remaining budget on failure.
- */
+ 
 int ice_clean_rx_irq_zc(struct ice_rx_ring *rx_ring, int budget)
 {
 	unsigned int total_rx_bytes = 0, total_rx_packets = 0;
@@ -854,9 +710,7 @@ int ice_clean_rx_irq_zc(struct ice_rx_ring *rx_ring, int budget)
 	bool failure = false;
 	int entries_to_alloc;
 
-	/* ZC patch is enabled only when XDP program is set,
-	 * so here it can not be NULL
-	 */
+	 
 	xdp_prog = READ_ONCE(rx_ring->xdp_prog);
 	xdp_ring = rx_ring->xdp_ring;
 
@@ -878,10 +732,7 @@ int ice_clean_rx_irq_zc(struct ice_rx_ring *rx_ring, int budget)
 		if (!ice_test_staterr(rx_desc->wb.status_error0, stat_err_bits))
 			break;
 
-		/* This memory barrier is needed to keep us from reading
-		 * any other fields out of the rx_desc until we have
-		 * verified the descriptor has been written back.
-		 */
+		 
 		dma_rmb();
 
 		if (unlikely(ntc == ntu))
@@ -930,7 +781,7 @@ int ice_clean_rx_irq_zc(struct ice_rx_ring *rx_ring, int budget)
 		continue;
 
 construct_skb:
-		/* XDP_PASS path */
+		 
 		skb = ice_construct_skb_zc(rx_ring, first);
 		if (!skb) {
 			rx_ring->ring_stats->rx_stats.alloc_buf_failed++;
@@ -966,9 +817,7 @@ construct_skb:
 	ice_update_rx_ring_stats(rx_ring, total_rx_packets, total_rx_bytes);
 
 	if (xsk_uses_need_wakeup(xsk_pool)) {
-		/* ntu could have changed when allocating entries above, so
-		 * use rx_ring value instead of stack based one
-		 */
+		 
 		if (failure || ntc == rx_ring->next_to_use)
 			xsk_set_rx_need_wakeup(xsk_pool);
 		else
@@ -980,12 +829,7 @@ construct_skb:
 	return failure ? budget : (int)total_rx_packets;
 }
 
-/**
- * ice_xmit_pkt - produce a single HW Tx descriptor out of AF_XDP descriptor
- * @xdp_ring: XDP ring to produce the HW Tx descriptor on
- * @desc: AF_XDP descriptor to pull the DMA address and length from
- * @total_bytes: bytes accumulator that will be used for stats update
- */
+ 
 static void ice_xmit_pkt(struct ice_tx_ring *xdp_ring, struct xdp_desc *desc,
 			 unsigned int *total_bytes)
 {
@@ -1003,12 +847,7 @@ static void ice_xmit_pkt(struct ice_tx_ring *xdp_ring, struct xdp_desc *desc,
 	*total_bytes += desc->len;
 }
 
-/**
- * ice_xmit_pkt_batch - produce a batch of HW Tx descriptors out of AF_XDP descriptors
- * @xdp_ring: XDP ring to produce the HW Tx descriptors on
- * @descs: AF_XDP descriptors to pull the DMA addresses and lengths from
- * @total_bytes: bytes accumulator that will be used for stats update
- */
+ 
 static void ice_xmit_pkt_batch(struct ice_tx_ring *xdp_ring, struct xdp_desc *descs,
 			       unsigned int *total_bytes)
 {
@@ -1033,13 +872,7 @@ static void ice_xmit_pkt_batch(struct ice_tx_ring *xdp_ring, struct xdp_desc *de
 	xdp_ring->next_to_use = ntu;
 }
 
-/**
- * ice_fill_tx_hw_ring - produce the number of Tx descriptors onto ring
- * @xdp_ring: XDP ring to produce the HW Tx descriptors on
- * @descs: AF_XDP descriptors to pull the DMA addresses and lengths from
- * @nb_pkts: count of packets to be send
- * @total_bytes: bytes accumulator that will be used for stats update
- */
+ 
 static void ice_fill_tx_hw_ring(struct ice_tx_ring *xdp_ring, struct xdp_desc *descs,
 				u32 nb_pkts, unsigned int *total_bytes)
 {
@@ -1053,12 +886,7 @@ static void ice_fill_tx_hw_ring(struct ice_tx_ring *xdp_ring, struct xdp_desc *d
 		ice_xmit_pkt(xdp_ring, &descs[i], total_bytes);
 }
 
-/**
- * ice_xmit_zc - take entries from XSK Tx ring and place them onto HW Tx ring
- * @xdp_ring: XDP ring to produce the HW Tx descriptors on
- *
- * Returns true if there is no more work that needs to be done, false otherwise
- */
+ 
 bool ice_xmit_zc(struct ice_tx_ring *xdp_ring)
 {
 	struct xdp_desc *descs = xdp_ring->xsk_pool->tx_descs;
@@ -1094,14 +922,7 @@ bool ice_xmit_zc(struct ice_tx_ring *xdp_ring)
 	return nb_pkts < budget;
 }
 
-/**
- * ice_xsk_wakeup - Implements ndo_xsk_wakeup
- * @netdev: net_device
- * @queue_id: queue to wake up
- * @flags: ignored in our case, since we have Rx and Tx in the same NAPI
- *
- * Returns negative on error, zero otherwise.
- */
+ 
 int
 ice_xsk_wakeup(struct net_device *netdev, u32 queue_id,
 	       u32 __always_unused flags)
@@ -1125,12 +946,7 @@ ice_xsk_wakeup(struct net_device *netdev, u32 queue_id,
 	if (!ring->xsk_pool)
 		return -EINVAL;
 
-	/* The idea here is that if NAPI is running, mark a miss, so
-	 * it will run again. If not, trigger an interrupt and
-	 * schedule the NAPI from interrupt context. If NAPI would be
-	 * scheduled here, the interrupt affinity would not be
-	 * honored.
-	 */
+	 
 	q_vector = ring->q_vector;
 	if (!napi_if_scheduled_mark_missed(&q_vector->napi))
 		ice_trigger_sw_intr(&vsi->back->hw, q_vector);
@@ -1138,12 +954,7 @@ ice_xsk_wakeup(struct net_device *netdev, u32 queue_id,
 	return 0;
 }
 
-/**
- * ice_xsk_any_rx_ring_ena - Checks if Rx rings have AF_XDP buff pool attached
- * @vsi: VSI to be checked
- *
- * Returns true if any of the Rx rings has an AF_XDP buff pool attached
- */
+ 
 bool ice_xsk_any_rx_ring_ena(struct ice_vsi *vsi)
 {
 	int i;
@@ -1156,10 +967,7 @@ bool ice_xsk_any_rx_ring_ena(struct ice_vsi *vsi)
 	return false;
 }
 
-/**
- * ice_xsk_clean_rx_ring - clean buffer pool queues connected to a given Rx ring
- * @rx_ring: ring to be cleaned
- */
+ 
 void ice_xsk_clean_rx_ring(struct ice_rx_ring *rx_ring)
 {
 	u16 ntc = rx_ring->next_to_clean;
@@ -1175,10 +983,7 @@ void ice_xsk_clean_rx_ring(struct ice_rx_ring *rx_ring)
 	}
 }
 
-/**
- * ice_xsk_clean_xdp_ring - Clean the XDP Tx ring and its buffer pool queues
- * @xdp_ring: XDP_Tx ring
- */
+ 
 void ice_xsk_clean_xdp_ring(struct ice_tx_ring *xdp_ring)
 {
 	u16 ntc = xdp_ring->next_to_clean, ntu = xdp_ring->next_to_use;

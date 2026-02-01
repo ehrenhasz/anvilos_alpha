@@ -1,19 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * symlink.c
- *
- * PURPOSE
- *	Symlink handling routines for the OSTA-UDF(tm) filesystem.
- *
- * COPYRIGHT
- *  (C) 1998-2001 Ben Fennema
- *  (C) 1999 Stelias Computing Inc
- *
- * HISTORY
- *
- *  04/16/99 blf  Created.
- *
- */
+
+ 
 
 #include "udfdecl.h"
 #include <linux/uaccess.h>
@@ -33,17 +19,14 @@ static int udf_pc_to_char(struct super_block *sb, unsigned char *from,
 	int comp_len;
 	unsigned char *p = to;
 
-	/* Reserve one byte for terminating \0 */
+	 
 	tolen--;
 	while (elen < fromlen) {
 		pc = (struct pathComponent *)(from + elen);
 		elen += sizeof(struct pathComponent);
 		switch (pc->componentType) {
 		case 1:
-			/*
-			 * Symlink points to some place which should be agreed
- 			 * upon between originator and receiver of the media. Ignore.
-			 */
+			 
 			if (pc->lengthComponentIdent > 0) {
 				elen += pc->lengthComponentIdent;
 				break;
@@ -69,7 +52,7 @@ static int udf_pc_to_char(struct super_block *sb, unsigned char *from,
 			memcpy(p, "./", 2);
 			p += 2;
 			tolen -= 2;
-			/* that would be . - just ignore */
+			 
 			break;
 		case 5:
 			elen += pc->lengthComponentIdent;
@@ -107,7 +90,7 @@ static int udf_symlink_filler(struct file *file, struct folio *folio)
 	unsigned char *p = page_address(page);
 	struct udf_inode_info *iinfo = UDF_I(inode);
 
-	/* We don't support symlinks longer than one block */
+	 
 	if (inode->i_size > inode->i_sb->s_blocksize) {
 		err = -ENAMETOOLONG;
 		goto out_unlock;
@@ -153,24 +136,14 @@ static int udf_symlink_getattr(struct mnt_idmap *idmap,
 	page = read_mapping_page(inode->i_mapping, 0, NULL);
 	if (IS_ERR(page))
 		return PTR_ERR(page);
-	/*
-	 * UDF uses non-trivial encoding of symlinks so i_size does not match
-	 * number of characters reported by readlink(2) which apparently some
-	 * applications expect. Also POSIX says that "The value returned in the
-	 * st_size field shall be the length of the contents of the symbolic
-	 * link, and shall not count a trailing null if one is present." So
-	 * let's report the length of string returned by readlink(2) for
-	 * st_size.
-	 */
+	 
 	stat->size = strlen(page_address(page));
 	put_page(page);
 
 	return 0;
 }
 
-/*
- * symlinks can't do much...
- */
+ 
 const struct address_space_operations udf_symlink_aops = {
 	.read_folio		= udf_symlink_filler,
 };

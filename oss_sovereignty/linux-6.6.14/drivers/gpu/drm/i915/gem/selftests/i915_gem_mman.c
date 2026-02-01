@@ -1,8 +1,4 @@
-/*
- * SPDX-License-Identifier: MIT
- *
- * Copyright © 2016 Intel Corporation
- */
+ 
 
 #include <linux/highmem.h>
 #include <linux/prime_numbers.h>
@@ -314,7 +310,7 @@ setup_tile_size(struct tile *tile, struct drm_i915_private *i915)
 
 static int igt_partial_tiling(void *arg)
 {
-	const unsigned int nreal = 1 << 12; /* largest tile row x2 */
+	const unsigned int nreal = 1 << 12;  
 	struct drm_i915_private *i915 = arg;
 	struct drm_i915_gem_object *obj;
 	intel_wakeref_t wakeref;
@@ -324,13 +320,7 @@ static int igt_partial_tiling(void *arg)
 	if (!i915_ggtt_has_aperture(to_gt(i915)->ggtt))
 		return 0;
 
-	/* We want to check the page mapping and fencing of a large object
-	 * mmapped through the GTT. The object we create is larger than can
-	 * possibly be mmaped as a whole, and so we must use partial GGTT vma.
-	 * We then check that a write through each partial GGTT vma ends up
-	 * in the right set of pages within the object, and with the expected
-	 * tiling, which we verify by manual swizzling.
-	 */
+	 
 
 	obj = huge_gem_object(i915,
 			      nreal << PAGE_SHIFT,
@@ -370,11 +360,7 @@ static int igt_partial_tiling(void *arg)
 		struct tile tile;
 
 		if (i915->gem_quirks & GEM_QUIRK_PIN_SWIZZLED_PAGES)
-			/*
-			 * The swizzling pattern is actually unknown as it
-			 * varies based on physical address of each page.
-			 * See i915_gem_detect_bit_6_swizzle().
-			 */
+			 
 			break;
 
 		tile.tiling = tiling;
@@ -445,7 +431,7 @@ out:
 
 static int igt_smoke_tiling(void *arg)
 {
-	const unsigned int nreal = 1 << 12; /* largest tile row x2 */
+	const unsigned int nreal = 1 << 12;  
 	struct drm_i915_private *i915 = arg;
 	struct drm_i915_gem_object *obj;
 	intel_wakeref_t wakeref;
@@ -457,14 +443,7 @@ static int igt_smoke_tiling(void *arg)
 	if (!i915_ggtt_has_aperture(to_gt(i915)->ggtt))
 		return 0;
 
-	/*
-	 * igt_partial_tiling() does an exhastive check of partial tiling
-	 * chunking, but will undoubtably run out of time. Here, we do a
-	 * randomised search and hope over many runs of 1s with different
-	 * seeds we will do a thorough check.
-	 *
-	 * Remember to look at the st_seed if we see a flip-flop in BAT!
-	 */
+	 
 
 	if (i915->gem_quirks & GEM_QUIRK_PIN_SWIZZLED_PAGES)
 		return 0;
@@ -583,7 +562,7 @@ err:
 			return err;
 	}
 
-	i915_gem_object_put(obj); /* leave it only alive via its active ref */
+	i915_gem_object_put(obj);  
 	return 0;
 }
 
@@ -663,15 +642,15 @@ static int igt_mmap_offset_exhaustion(void *arg)
 	u64 offset;
 	int enospc = HAS_LMEM(i915) ? -ENXIO : -ENOSPC;
 
-	/* Disable background reaper */
+	 
 	disable_retire_worker(i915);
 	GEM_BUG_ON(!to_gt(i915)->awake);
 	intel_gt_retire_requests(to_gt(i915));
 	i915_gem_drain_freed_objects(i915);
 
-	/* Trim the device mmap space to only a page */
+	 
 	mmap_offset_lock(i915);
-	loop = 1; /* PAGE_SIZE units */
+	loop = 1;  
 	list_for_each_entry_safe(hole, next, &mm->hole_stack, hole_stack) {
 		struct drm_mm_node *resv;
 
@@ -704,21 +683,21 @@ static int igt_mmap_offset_exhaustion(void *arg)
 	GEM_BUG_ON(!list_is_singular(&mm->hole_stack));
 	mmap_offset_unlock(i915);
 
-	/* Just fits! */
+	 
 	if (!assert_mmap_offset(i915, PAGE_SIZE, 0)) {
 		pr_err("Unable to insert object into single page hole\n");
 		err = -EINVAL;
 		goto out;
 	}
 
-	/* Too large */
+	 
 	if (!assert_mmap_offset(i915, 2 * PAGE_SIZE, enospc)) {
 		pr_err("Unexpectedly succeeded in inserting too large object into single page hole\n");
 		err = -EINVAL;
 		goto out;
 	}
 
-	/* Fill the hole, further allocation attempts should then fail */
+	 
 	obj = create_sys_or_internal(i915, PAGE_SIZE);
 	if (IS_ERR(obj)) {
 		err = PTR_ERR(obj);
@@ -740,7 +719,7 @@ static int igt_mmap_offset_exhaustion(void *arg)
 
 	i915_gem_object_put(obj);
 
-	/* Now fill with busy dead objects that we expect to reap */
+	 
 	for (loop = 0; loop < 3; loop++) {
 		if (intel_gt_is_wedged(to_gt(i915)))
 			break;
@@ -1019,7 +998,7 @@ static void igt_close_objects(struct drm_i915_private *i915,
 		i915_gem_object_lock(obj, NULL);
 		if (i915_gem_object_has_pinned_pages(obj))
 			i915_gem_object_unpin_pages(obj);
-		/* No polluting the memory region between tests */
+		 
 		__i915_gem_object_put_pages(obj);
 		i915_gem_object_unlock(obj);
 		list_del(&obj->st_link);
@@ -1192,12 +1171,7 @@ static int __igt_mmap_migrate(struct intel_memory_region **placements,
 	if (err)
 		goto out_put;
 
-	/*
-	 * This will eventually create a GEM context, due to opening dummy drm
-	 * file, which needs a tiny amount of mappable device memory for the top
-	 * level paging structures(and perhaps scratch), so make sure we
-	 * allocate early, to avoid tears.
-	 */
+	 
 	addr = igt_mmap_offset(i915, offset, obj->base.size,
 			       PROT_WRITE, MAP_SHARED);
 	if (IS_ERR_VALUE(addr)) {
@@ -1245,10 +1219,7 @@ static int __igt_mmap_migrate(struct intel_memory_region **placements,
 		if (err)
 			goto out_put;
 
-		/*
-		 * Ensure we only simulate the gpu failuire when faulting the
-		 * pages.
-		 */
+		 
 		err = i915_gem_object_wait_moving_fence(obj, true);
 		i915_gem_object_unlock(obj);
 		if (err)
@@ -1322,10 +1293,7 @@ static int igt_mmap_migrate(void *arg)
 		if (!mr->io_size)
 			continue;
 
-		/*
-		 * For testing purposes let's force small BAR, if not already
-		 * present.
-		 */
+		 
 		saved_io_size = mr->io_size;
 		if (mr->io_size == mr->total) {
 			resource_size_t io_size = mr->io_size;
@@ -1339,17 +1307,12 @@ static int igt_mmap_migrate(void *arg)
 							      io_size >> PAGE_SHIFT);
 		}
 
-		/*
-		 * Allocate in the mappable portion, should be no suprises here.
-		 */
+		 
 		err = __igt_mmap_migrate(mixed, ARRAY_SIZE(mixed), mr, 0);
 		if (err)
 			goto out_io_size;
 
-		/*
-		 * Allocate in the non-mappable portion, but force migrating to
-		 * the mappable portion on fault (LMEM -> LMEM)
-		 */
+		 
 		err = __igt_mmap_migrate(single, ARRAY_SIZE(single), mr,
 					 IGT_MMAP_MIGRATE_TOPDOWN |
 					 IGT_MMAP_MIGRATE_FILL |
@@ -1357,21 +1320,14 @@ static int igt_mmap_migrate(void *arg)
 		if (err)
 			goto out_io_size;
 
-		/*
-		 * Allocate in the non-mappable portion, but force spilling into
-		 * system memory on fault (LMEM -> SMEM)
-		 */
+		 
 		err = __igt_mmap_migrate(mixed, ARRAY_SIZE(mixed), system,
 					 IGT_MMAP_MIGRATE_TOPDOWN |
 					 IGT_MMAP_MIGRATE_FILL);
 		if (err)
 			goto out_io_size;
 
-		/*
-		 * Allocate in the non-mappable portion, but since the mappable
-		 * portion is already full, and we can't spill to system memory,
-		 * then we should expect the fault to fail.
-		 */
+		 
 		err = __igt_mmap_migrate(single, ARRAY_SIZE(single), mr,
 					 IGT_MMAP_MIGRATE_TOPDOWN |
 					 IGT_MMAP_MIGRATE_FILL |
@@ -1379,14 +1335,7 @@ static int igt_mmap_migrate(void *arg)
 		if (err)
 			goto out_io_size;
 
-		/*
-		 * Allocate in the non-mappable portion, but force migrating to
-		 * the mappable portion on fault (LMEM -> LMEM). We then also
-		 * simulate a gpu error when moving the pages when faulting the
-		 * pages, which should result in wedging the gpu and returning
-		 * SIGBUS in the fault handler, since we can't fallback to
-		 * memcpy.
-		 */
+		 
 		err = __igt_mmap_migrate(single, ARRAY_SIZE(single), mr,
 					 IGT_MMAP_MIGRATE_TOPDOWN |
 					 IGT_MMAP_MIGRATE_FILL |
@@ -1548,11 +1497,7 @@ static int __igt_mmap_gpu(struct drm_i915_private *i915,
 	int err;
 	u64 offset;
 
-	/*
-	 * Verify that the mmap access into the backing store aligns with
-	 * that of the GPU, i.e. that mmap is indeed writing into the same
-	 * page as being read by the GPU.
-	 */
+	 
 
 	if (!can_mmap(obj, type))
 		return 0;
@@ -1764,11 +1709,7 @@ static int __igt_mmap_revoke(struct drm_i915_private *i915,
 		goto out_unmap;
 	}
 
-	/*
-	 * After unbinding the object from the GGTT, its address may be reused
-	 * for other objects. Ergo we have to revoke the previous mmap PTE
-	 * access as it no longer points to the same object.
-	 */
+	 
 	i915_gem_object_lock(obj, NULL);
 	err = i915_gem_object_unbind(obj, I915_GEM_OBJECT_UNBIND_ACTIVE);
 	i915_gem_object_unlock(obj);

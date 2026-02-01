@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2015, Sony Mobile Communications AB.
- * Copyright (c) 2013, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/gpio/driver.h>
 #include <linux/interrupt.h>
@@ -24,16 +21,16 @@
 #include "../core.h"
 #include "../pinctrl-utils.h"
 
-/* mode */
+ 
 #define PM8XXX_GPIO_MODE_ENABLED	BIT(0)
 #define PM8XXX_GPIO_MODE_INPUT		0
 #define PM8XXX_GPIO_MODE_OUTPUT		2
 
-/* output buffer */
+ 
 #define PM8XXX_GPIO_PUSH_PULL		0
 #define PM8XXX_GPIO_OPEN_DRAIN		1
 
-/* bias */
+ 
 #define PM8XXX_GPIO_BIAS_PU_30		0
 #define PM8XXX_GPIO_BIAS_PU_1P5		1
 #define PM8XXX_GPIO_BIAS_PU_31P5	2
@@ -41,7 +38,7 @@
 #define PM8XXX_GPIO_BIAS_PD		4
 #define PM8XXX_GPIO_BIAS_NP		5
 
-/* GPIO registers */
+ 
 #define SSBI_REG_ADDR_GPIO_BASE		0x150
 #define SSBI_REG_ADDR_GPIO(n)		(SSBI_REG_ADDR_GPIO_BASE + n)
 
@@ -51,26 +48,11 @@
 
 #define PM8XXX_GPIO_PHYSICAL_OFFSET	1
 
-/* custom pinconf parameters */
+ 
 #define PM8XXX_QCOM_DRIVE_STRENGH      (PIN_CONFIG_END + 1)
 #define PM8XXX_QCOM_PULL_UP_STRENGTH   (PIN_CONFIG_END + 2)
 
-/**
- * struct pm8xxx_pin_data - dynamic configuration for a pin
- * @reg:               address of the control register
- * @power_source:      logical selected voltage source, mapping in static data
- *                     is used translate to register values
- * @mode:              operating mode for the pin (input/output)
- * @open_drain:        output buffer configured as open-drain (vs push-pull)
- * @output_value:      configured output value
- * @bias:              register view of configured bias
- * @pull_up_strength:  placeholder for selected pull up strength
- *                     only used to configure bias when pull up is selected
- * @output_strength:   selector of output-strength
- * @disable:           pin disabled / configured as tristate
- * @function:          pinmux selector
- * @inverted:          pin logic is inverted
- */
+ 
 struct pm8xxx_pin_data {
 	unsigned reg;
 	u8 power_source;
@@ -822,16 +804,7 @@ static int pm8xxx_gpio_probe(struct platform_device *pdev)
 		return ret;
 	}
 
-	/*
-	 * For DeviceTree-supported systems, the gpio core checks the
-	 * pinctrl's device node for the "gpio-ranges" property.
-	 * If it is present, it takes care of adding the pin ranges
-	 * for the driver. In this case the driver can skip ahead.
-	 *
-	 * In order to remain compatible with older, existing DeviceTree
-	 * files which don't set the "gpio-ranges" property or systems that
-	 * utilize ACPI the driver has to call gpiochip_add_pin_range().
-	 */
+	 
 	if (!of_property_read_bool(pctrl->dev->of_node, "gpio-ranges")) {
 		ret = gpiochip_add_pin_range(&pctrl->chip, dev_name(pctrl->dev),
 					     0, 0, pctrl->chip.ngpio);

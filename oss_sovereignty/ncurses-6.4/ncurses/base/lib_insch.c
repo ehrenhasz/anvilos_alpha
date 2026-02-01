@@ -1,55 +1,15 @@
-/****************************************************************************
- * Copyright 2020 Thomas E. Dickey                                          *
- * Copyright 1998-2013,2016 Free Software Foundation, Inc.                  *
- *                                                                          *
- * Permission is hereby granted, free of charge, to any person obtaining a  *
- * copy of this software and associated documentation files (the            *
- * "Software"), to deal in the Software without restriction, including      *
- * without limitation the rights to use, copy, modify, merge, publish,      *
- * distribute, distribute with modifications, sublicense, and/or sell       *
- * copies of the Software, and to permit persons to whom the Software is    *
- * furnished to do so, subject to the following conditions:                 *
- *                                                                          *
- * The above copyright notice and this permission notice shall be included  *
- * in all copies or substantial portions of the Software.                   *
- *                                                                          *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS  *
- * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF               *
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.   *
- * IN NO EVENT SHALL THE ABOVE COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,   *
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR    *
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR    *
- * THE USE OR OTHER DEALINGS IN THE SOFTWARE.                               *
- *                                                                          *
- * Except as contained in this notice, the name(s) of the above copyright   *
- * holders shall not be used in advertising or otherwise to promote the     *
- * sale, use or other dealings in this Software without prior written       *
- * authorization.                                                           *
- ****************************************************************************/
+ 
 
-/****************************************************************************
- *  Author: Zeyd M. Ben-Halim <zmbenhal@netcom.com> 1992,1995               *
- *     and: Eric S. Raymond <esr@snark.thyrsus.com>                         *
- *     and: Sven Verdoolaege                                                *
- *     and: Thomas E. Dickey                                                *
- ****************************************************************************/
+ 
 
-/*
-**	lib_insch.c
-**
-**	The routine winsch().
-**
-*/
+ 
 
 #include <curses.priv.h>
 #include <ctype.h>
 
 MODULE_ID("$Id: lib_insch.c,v 1.37 2020/02/02 23:34:34 tom Exp $")
 
-/*
- * Insert the given character, updating the current location to simplify
- * inserting a string.
- */
+ 
 NCURSES_EXPORT(int)
 _nc_insert_ch(SCREEN *sp, WINDOW *win, chtype ch)
 {
@@ -113,9 +73,7 @@ _nc_insert_ch(SCREEN *sp, WINDOW *win, chtype ch)
 	}
 #if USE_WIDEC_SUPPORT
 	else {
-	    /*
-	     * Handle multibyte characters here
-	     */
+	     
 	    SetChar2(wch, ch);
 	    wch = _nc_render(win, wch);
 	    count = _nc_build_wch(win, &wch);
@@ -123,7 +81,7 @@ _nc_insert_ch(SCREEN *sp, WINDOW *win, chtype ch)
 		code = _nc_insert_wch(win, &wch);
 	    } else if (count == -1) {
 		NCURSES_CONST char *s;
-		/* handle EILSEQ */
+		 
 		s = NCURSES_SP_NAME(unctrl) (NCURSES_SP_ARGx (chtype) ch8);
 		if (strlen(s) > 1) {
 		    while (*s != '\0') {

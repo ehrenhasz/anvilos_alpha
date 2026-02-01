@@ -1,31 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2019 Brian Masney <masneyb@onstation.org>
- *
- * Based on MSM bus code from downstream MSM kernel sources.
- * Copyright (c) 2012-2013 The Linux Foundation. All rights reserved.
- *
- * Based on qcs404.c
- * Copyright (C) 2019 Linaro Ltd
- *
- * Here's a rough representation that shows the various buses that form the
- * Network On Chip (NOC) for the msm8974:
- *
- *                         Multimedia Subsystem (MMSS)
- *         |----------+-----------------------------------+-----------|
- *                    |                                   |
- *                    |                                   |
- *        Config      |                     Bus Interface | Memory Controller
- *       |------------+-+-----------|        |------------+-+-----------|
- *                      |                                   |
- *                      |                                   |
- *                      |             System                |
- *     |--------------+-+---------------------------------+-+-------------|
- *                    |                                   |
- *                    |                                   |
- *        Peripheral  |                           On Chip | Memory (OCMEM)
- *       |------------+-------------|        |------------+-------------|
- */
+
+ 
 
 #include <dt-bindings/interconnect/qcom,msm8974.h>
 #include <linux/clk.h>
@@ -182,12 +156,7 @@ static const struct clk_bulk_data msm8974_icc_bus_clocks[] = {
 	{ .id = "bus_a" },
 };
 
-/**
- * struct msm8974_icc_provider - Qualcomm specific interconnect provider
- * @provider: generic interconnect provider
- * @bus_clks: the clk_bulk_data table of bus clocks
- * @num_clks: the total number of clk_bulk_data entries
- */
+ 
 struct msm8974_icc_provider {
 	struct icc_provider provider;
 	struct clk_bulk_data *bus_clks;
@@ -196,17 +165,7 @@ struct msm8974_icc_provider {
 
 #define MSM8974_ICC_MAX_LINKS	3
 
-/**
- * struct msm8974_icc_node - Qualcomm specific interconnect nodes
- * @name: the node name used in debugfs
- * @id: a unique node identifier
- * @links: an array of nodes where we can go next while traversing
- * @num_links: the total number of @links
- * @buswidth: width of the interconnect between a node and the bus (bytes)
- * @mas_rpm_id:	RPM ID for devices that are bus masters
- * @slv_rpm_id:	RPM ID for devices that are bus slaves
- * @rate: current bus clock rate in Hz
- */
+ 
 struct msm8974_icc_node {
 	unsigned char *name;
 	u16 id;
@@ -404,7 +363,7 @@ DEFINE_QNODE(mas_cnoc_onoc_cfg, MSM8974_OCMEM_MAS_CNOC_ONOC_CFG, 16, 12, -1);
 DEFINE_QNODE(slv_service_onoc, MSM8974_OCMEM_SLV_SERVICE_ONOC, 16, -1, 19);
 DEFINE_QNODE(slv_ocmem, MSM8974_OCMEM_SLV_OCMEM, 16, -1, 18);
 
-/* Virtual NoC is needed for connection to OCMEM */
+ 
 DEFINE_QNODE(ocmem_vnoc_to_onoc, MSM8974_OCMEM_VNOC_TO_OCMEM_NOC, 16, 56, 79, MSM8974_OCMEM_NOC_TO_OCMEM_VNOC);
 DEFINE_QNODE(ocmem_vnoc_to_snoc, MSM8974_OCMEM_VNOC_TO_SNOC, 8, 57, 80);
 DEFINE_QNODE(mas_v_ocmem_gfx3d, MSM8974_OCMEM_VNOC_MAS_GFX3D, 8, 55, -1, MSM8974_OCMEM_VNOC_TO_OCMEM_NOC);
@@ -557,19 +516,7 @@ static void msm8974_icc_rpm_smd_send(struct device *dev, int rsc_type,
 	if (id == -1)
 		return;
 
-	/*
-	 * Setting the bandwidth requests for some nodes fails and this same
-	 * behavior occurs on the downstream MSM 3.4 kernel sources based on
-	 * errors like this in that kernel:
-	 *
-	 *   msm_rpm_get_error_from_ack(): RPM NACK Unsupported resource
-	 *   AXI: msm_bus_rpm_req(): RPM: Ack failed
-	 *   AXI: msm_bus_rpm_commit_arb(): RPM: Req fail: mas:32, bw:240000000
-	 *
-	 * Since there's no publicly available documentation for this hardware,
-	 * and the bandwidth for some nodes in the path can be set properly,
-	 * let's not return an error.
-	 */
+	 
 	ret = qcom_icc_rpm_smd_send(QCOM_SMD_RPM_ACTIVE_STATE, rsc_type, id,
 				    val);
 	if (ret)
@@ -599,14 +546,14 @@ static int msm8974_icc_set(struct icc_node *src, struct icc_node *dst)
 	sum_bw = icc_units_to_bps(agg_avg);
 	max_peak_bw = icc_units_to_bps(agg_peak);
 
-	/* Set bandwidth on source node */
+	 
 	msm8974_icc_rpm_smd_send(provider->dev, RPM_BUS_MASTER_REQ,
 				 src_qn->name, src_qn->mas_rpm_id, sum_bw);
 
 	msm8974_icc_rpm_smd_send(provider->dev, RPM_BUS_SLAVE_REQ,
 				 src_qn->name, src_qn->slv_rpm_id, sum_bw);
 
-	/* Set bandwidth on destination node */
+	 
 	msm8974_icc_rpm_smd_send(provider->dev, RPM_BUS_MASTER_REQ,
 				 dst_qn->name, dst_qn->mas_rpm_id, sum_bw);
 
@@ -656,7 +603,7 @@ static int msm8974_icc_probe(struct platform_device *pdev)
 	size_t num_nodes, i;
 	int ret;
 
-	/* wait for the RPM proxy */
+	 
 	if (!qcom_icc_rpm_smd_available())
 		return -EPROBE_DEFER;
 
@@ -716,7 +663,7 @@ static int msm8974_icc_probe(struct platform_device *pdev)
 
 		dev_dbg(dev, "registered node %s\n", node->name);
 
-		/* populate links */
+		 
 		for (j = 0; j < qnodes[i]->num_links; j++)
 			icc_link_create(node, qnodes[i]->links[j]);
 

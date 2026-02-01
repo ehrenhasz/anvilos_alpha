@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Cortina Gemini SoC Clock Controller driver
- * Copyright (c) 2017 Linus Walleij <linus.walleij@linaro.org>
- */
+
+ 
 
 #define pr_fmt(fmt) "clk-gemini: " fmt
 
@@ -22,7 +19,7 @@
 #include <dt-bindings/reset/cortina,gemini-reset.h>
 #include <dt-bindings/clock/cortina,gemini-clock.h>
 
-/* Globally visible clocks */
+ 
 static DEFINE_SPINLOCK(gemini_clk_lock);
 
 #define GEMINI_GLOBAL_STATUS		0x04
@@ -49,13 +46,7 @@ static DEFINE_SPINLOCK(gemini_clk_lock);
 #define PCI_DLL_BYPASS			BIT(31)
 #define PCI_DLL_TAP_SEL_MASK		0x1f
 
-/**
- * struct gemini_gate_data - Gemini gated clocks
- * @bit_idx: the bit used to gate this clock in the clock register
- * @name: the clock name
- * @parent_name: the name of the parent clock
- * @flags: standard clock framework flags
- */
+ 
 struct gemini_gate_data {
 	u8 bit_idx;
 	const char *name;
@@ -63,29 +54,20 @@ struct gemini_gate_data {
 	unsigned long flags;
 };
 
-/**
- * struct clk_gemini_pci - Gemini PCI clock
- * @hw: corresponding clock hardware entry
- * @map: regmap to access the registers
- * @rate: current rate
- */
+ 
 struct clk_gemini_pci {
 	struct clk_hw hw;
 	struct regmap *map;
 	unsigned long rate;
 };
 
-/**
- * struct gemini_reset - gemini reset controller
- * @map: regmap to access the containing system controller
- * @rcdev: reset controller device
- */
+ 
 struct gemini_reset {
 	struct regmap *map;
 	struct reset_controller_dev rcdev;
 };
 
-/* Keeps track of all clocks */
+ 
 static struct clk_hw_onecell_data *gemini_clk_data;
 
 static const struct gemini_gate_data gemini_gates[] = {
@@ -98,15 +80,9 @@ static const struct gemini_gate_data gemini_gates[] = {
 	{ 7, "usb1-gate", "ahb", 0 },
 	{ 8, "ide-gate", "ahb", 0 },
 	{ 9, "pci-gate", "ahb", 0 },
-	/*
-	 * The DDR controller may never have a driver, but certainly must
-	 * not be gated off.
-	 */
+	 
 	{ 10, "ddr-gate", "ahb", CLK_IS_CRITICAL },
-	/*
-	 * The flash controller must be on to access NOR flash through the
-	 * memory map.
-	 */
+	 
 	{ 11, "flash-gate", "ahb", CLK_IGNORE_UNUSED },
 	{ 12, "tvc-gate", "ahb", 0 },
 	{ 13, "boot-gate", "apb", 0 },
@@ -131,7 +107,7 @@ static unsigned long gemini_pci_recalc_rate(struct clk_hw *hw,
 static long gemini_pci_round_rate(struct clk_hw *hw, unsigned long rate,
 				  unsigned long *prate)
 {
-	/* We support 33 and 66 MHz */
+	 
 	if (rate < 48000000)
 		return 33000000;
 	return 66000000;
@@ -217,15 +193,13 @@ static struct clk_hw *gemini_pci_clk_setup(const char *name,
 	return &pciclk->hw;
 }
 
-/*
- * This is a self-deasserting reset controller.
- */
+ 
 static int gemini_reset(struct reset_controller_dev *rcdev,
 			unsigned long id)
 {
 	struct gemini_reset *gr = to_gemini_reset(rcdev);
 
-	/* Manual says to always set BIT 30 (CPU1) to 1 */
+	 
 	return regmap_write(gr->map,
 			    GEMINI_GLOBAL_SOFT_RESET,
 			    BIT(GEMINI_RESET_CPU1) | BIT(id));
@@ -266,7 +240,7 @@ static const struct reset_control_ops gemini_reset_ops = {
 
 static int gemini_clk_probe(struct platform_device *pdev)
 {
-	/* Gives the fracions 1x, 1.5x, 1.85x and 2x */
+	 
 	unsigned int cpu_ahb_mult[4] = { 1, 3, 24, 2 };
 	unsigned int cpu_ahb_div[4] = { 1, 2, 13, 1 };
 	void __iomem *base;
@@ -284,7 +258,7 @@ static int gemini_clk_probe(struct platform_device *pdev)
 	if (!gr)
 		return -ENOMEM;
 
-	/* Remap the system controller for the exclusive register */
+	 
 	base = devm_platform_ioremap_resource(pdev, 0);
 	if (IS_ERR(base))
 		return PTR_ERR(base);
@@ -307,11 +281,11 @@ static int gemini_clk_probe(struct platform_device *pdev)
 		return ret;
 	}
 
-	/* RTC clock 32768 Hz */
+	 
 	hw = clk_hw_register_fixed_rate(NULL, "rtc", NULL, 0, 32768);
 	gemini_clk_data->hws[GEMINI_CLK_RTC] = hw;
 
-	/* CPU clock derived as a fixed ratio from the AHB clock */
+	 
 	regmap_read(map, GEMINI_GLOBAL_STATUS, &val);
 	val >>= CPU_AHB_RATIO_SHIFT;
 	val &= CPU_AHB_RATIO_MASK;
@@ -320,7 +294,7 @@ static int gemini_clk_probe(struct platform_device *pdev)
 					  cpu_ahb_div[val]);
 	gemini_clk_data->hws[GEMINI_CLK_CPU] = hw;
 
-	/* Security clock is 1:1 or 0.75 of APB */
+	 
 	regmap_read(map, GEMINI_GLOBAL_CLOCK_CONTROL, &val);
 	if (val & SECURITY_CLK_SEL) {
 		mult = 1;
@@ -331,9 +305,7 @@ static int gemini_clk_probe(struct platform_device *pdev)
 	}
 	hw = clk_hw_register_fixed_factor(NULL, "secdiv", "ahb", 0, mult, div);
 
-	/*
-	 * These are the leaf gates, at boot no clocks are gated.
-	 */
+	 
 	for (i = 0; i < ARRAY_SIZE(gemini_gates); i++) {
 		const struct gemini_gate_data *gd;
 
@@ -348,12 +320,7 @@ static int gemini_clk_probe(struct platform_device *pdev)
 					     &gemini_clk_lock);
 	}
 
-	/*
-	 * The TV Interface Controller has a 5-bit half divider register.
-	 * This clock is supposed to be 27MHz as this is an exact multiple
-	 * of PAL and NTSC frequencies. The register is undocumented :(
-	 * FIXME: figure out the parent and how the divider works.
-	 */
+	 
 	mult = 1;
 	div = ((val >> TVC_HALFDIV_SHIFT) & TVC_HALFDIV_MASK);
 	dev_dbg(dev, "TVC half divider value = %d\n", div);
@@ -361,11 +328,11 @@ static int gemini_clk_probe(struct platform_device *pdev)
 	hw = clk_hw_register_fixed_rate(NULL, "tvcdiv", "xtal", 0, 27000000);
 	gemini_clk_data->hws[GEMINI_CLK_TVC] = hw;
 
-	/* FIXME: very unclear what the parent is */
+	 
 	hw = gemini_pci_clk_setup("PCI", "xtal", map);
 	gemini_clk_data->hws[GEMINI_CLK_PCI] = hw;
 
-	/* FIXME: very unclear what the parent is */
+	 
 	hw = clk_hw_register_fixed_rate(NULL, "uart", "xtal", 0, 48000000);
 	gemini_clk_data->hws[GEMINI_CLK_UART] = hw;
 
@@ -374,7 +341,7 @@ static int gemini_clk_probe(struct platform_device *pdev)
 
 static const struct of_device_id gemini_clk_dt_ids[] = {
 	{ .compatible = "cortina,gemini-syscon", },
-	{ /* sentinel */ },
+	{   },
 };
 
 static struct platform_driver gemini_clk_driver = {
@@ -404,10 +371,7 @@ static void __init gemini_cc_init(struct device_node *np)
 		return;
 	gemini_clk_data->num = GEMINI_NUM_CLKS;
 
-	/*
-	 * This way all clock fetched before the platform device probes,
-	 * except those we assign here for early use, will be deferred.
-	 */
+	 
 	for (i = 0; i < GEMINI_NUM_CLKS; i++)
 		gemini_clk_data->hws[i] = ERR_PTR(-EPROBE_DEFER);
 
@@ -416,22 +380,14 @@ static void __init gemini_cc_init(struct device_node *np)
 		pr_err("no syscon regmap\n");
 		return;
 	}
-	/*
-	 * We check that the regmap works on this very first access,
-	 * but as this is an MMIO-backed regmap, subsequent regmap
-	 * access is not going to fail and we skip error checks from
-	 * this point.
-	 */
+	 
 	ret = regmap_read(map, GEMINI_GLOBAL_STATUS, &val);
 	if (ret) {
 		pr_err("failed to read global status register\n");
 		return;
 	}
 
-	/*
-	 * XTAL is the crystal oscillator, 60 or 30 MHz selected from
-	 * strap pin E6
-	 */
+	 
 	if (val & PLL_OSC_SEL)
 		freq = 30000000;
 	else
@@ -439,23 +395,23 @@ static void __init gemini_cc_init(struct device_node *np)
 	hw = clk_hw_register_fixed_rate(NULL, "xtal", NULL, 0, freq);
 	pr_debug("main crystal @%lu MHz\n", freq / 1000000);
 
-	/* VCO clock derived from the crystal */
+	 
 	mult = 13 + ((val >> AHBSPEED_SHIFT) & AHBSPEED_MASK);
 	div = 2;
-	/* If we run on 30 MHz crystal we have to multiply with two */
+	 
 	if (val & PLL_OSC_SEL)
 		mult *= 2;
 	hw = clk_hw_register_fixed_factor(NULL, "vco", "xtal", 0, mult, div);
 
-	/* The AHB clock is always 1/3 of the VCO */
+	 
 	hw = clk_hw_register_fixed_factor(NULL, "ahb", "vco", 0, 1, 3);
 	gemini_clk_data->hws[GEMINI_CLK_AHB] = hw;
 
-	/* The APB clock is always 1/6 of the AHB */
+	 
 	hw = clk_hw_register_fixed_factor(NULL, "apb", "ahb", 0, 1, 6);
 	gemini_clk_data->hws[GEMINI_CLK_APB] = hw;
 
-	/* Register the clocks to be accessed by the device tree */
+	 
 	of_clk_add_hw_provider(np, of_clk_hw_onecell_get, gemini_clk_data);
 }
 CLK_OF_DECLARE_DRIVER(gemini_cc, "cortina,gemini-syscon", gemini_cc_init);

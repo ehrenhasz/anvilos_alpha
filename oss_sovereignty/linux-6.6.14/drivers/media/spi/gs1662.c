@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * GS1662 device registration.
- *
- * Copyright (C) 2015-2016 Nexvision
- * Author: Charles-Antoine Couret <charles-antoine.couret@nexvision.fr>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/init.h>
@@ -98,7 +93,7 @@ static const struct gs_reg_fmt reg_fmt[] = {
 	{ 0x0A, V4L2_DV_BT_CEA_1920X1080I60 },
 	{ 0x0B, V4L2_DV_BT_CEA_1920X1080P30 },
 
-	/* Default value: keep this field before 0xC */
+	 
 	{ 0x14, V4L2_DV_BT_CEA_1920X1080I50 },
 	{ 0x0C, V4L2_DV_BT_CEA_1920X1080I50 },
 	{ 0x0D, V4L2_DV_BT_CEA_1920X1080P25 },
@@ -110,24 +105,21 @@ static const struct gs_reg_fmt reg_fmt[] = {
 	{ 0x18, V4L2_DV_BT_CEA_720X576P50 },
 	{ 0x1A, V4L2_DV_BT_CEA_720X576P50 },
 
-	/* Implement following timings before enable it.
-	 * Because of we don't have access to these theoretical timings yet.
-	 * Workaround: use functions to get and set registers for these formats.
-	 */
+	 
 #if 0
-	{ 0x0F, V4L2_DV_BT_XXX_1920X1080I25 }, /* SMPTE 274M */
-	{ 0x11, V4L2_DV_BT_XXX_1920X1080I24 }, /* SMPTE 274M */
-	{ 0x13, V4L2_DV_BT_XXX_1920X1080I25 }, /* SMPTE 274M */
-	{ 0x15, V4L2_DV_BT_XXX_1920X1035I60 }, /* SMPTE 260M */
-	{ 0x17, V4L2_DV_BT_SDI_720X507I60 }, /* SMPTE 125M */
-	{ 0x1B, V4L2_DV_BT_SDI_720X507I60 }, /* SMPTE 125M */
-	{ 0x1C, V4L2_DV_BT_XXX_2048X1080P25 }, /* SMPTE 428.1M */
+	{ 0x0F, V4L2_DV_BT_XXX_1920X1080I25 },  
+	{ 0x11, V4L2_DV_BT_XXX_1920X1080I24 },  
+	{ 0x13, V4L2_DV_BT_XXX_1920X1080I25 },  
+	{ 0x15, V4L2_DV_BT_XXX_1920X1035I60 },  
+	{ 0x17, V4L2_DV_BT_SDI_720X507I60 },  
+	{ 0x1B, V4L2_DV_BT_SDI_720X507I60 },  
+	{ 0x1C, V4L2_DV_BT_XXX_2048X1080P25 },  
 #endif
 };
 
 static const struct v4l2_dv_timings_cap gs_timings_cap = {
 	.type = V4L2_DV_BT_656_1120,
-	/* keep this initialization for compatibility with GCC < 4.4.6 */
+	 
 	.reserved = { 0 },
 	V4L2_INIT_BT_TIMINGS(GS_WIDTH_MIN, GS_WIDTH_MAX, GS_HEIGHT_MIN,
 			     GS_HEIGHT_MAX, GS_PIXELCLOCK_MIN,
@@ -293,17 +285,14 @@ static int gs_query_dv_timings(struct v4l2_subdev *sd,
 	if (gs->enabled)
 		return -EBUSY;
 
-	/*
-	 * Check if the component detect a line, a frame or something else
-	 * which looks like a video signal activity.
-	 */
+	 
 	for (i = 0; i < 4; i++) {
 		gs_read_register(gs->pdev, REG_LINES_PER_FRAME + i, &reg_value);
 		if (reg_value)
 			break;
 	}
 
-	/* If no register reports a video signal */
+	 
 	if (i >= 4)
 		return -ENOLINK;
 
@@ -346,12 +335,12 @@ static int gs_s_stream(struct v4l2_subdev *sd, int enable)
 	gs->enabled = enable;
 
 	if (enable) {
-		/* To force the specific format */
+		 
 		reg_value = get_register_timings(&gs->current_timings);
 		return gs_write_register(gs->pdev, REG_FORCE_FMT, reg_value);
 	}
 
-	/* To renable auto-detection mode */
+	 
 	return gs_write_register(gs->pdev, REG_FORCE_FMT, 0x0);
 }
 
@@ -361,10 +350,7 @@ static int gs_g_input_status(struct v4l2_subdev *sd, u32 *status)
 	u16 reg_value, i;
 	int ret;
 
-	/*
-	 * Check if the component detect a line, a frame or something else
-	 * which looks like a video signal activity.
-	 */
+	 
 	for (i = 0; i < 4; i++) {
 		ret = gs_read_register(gs->pdev,
 				       REG_LINES_PER_FRAME + i, &reg_value);
@@ -376,7 +362,7 @@ static int gs_g_input_status(struct v4l2_subdev *sd, u32 *status)
 		}
 	}
 
-	/* If no register reports a video signal */
+	 
 	if (i >= 4)
 		*status |= V4L2_IN_ST_NO_SIGNAL;
 
@@ -401,7 +387,7 @@ static int gs_dv_timings_cap(struct v4l2_subdev *sd,
 	return 0;
 }
 
-/* V4L2 core operation handlers */
+ 
 static const struct v4l2_subdev_core_ops gs_core_ops = {
 #ifdef CONFIG_VIDEO_ADV_DEBUG
 	.g_register = gs_g_register,
@@ -422,7 +408,7 @@ static const struct v4l2_subdev_pad_ops gs_pad_ops = {
 	.dv_timings_cap = gs_dv_timings_cap,
 };
 
-/* V4L2 top level operation handlers */
+ 
 static const struct v4l2_subdev_ops gs_ops = {
 	.core = &gs_core_ops,
 	.video = &gs_video_ops,
@@ -452,7 +438,7 @@ static int gs_probe(struct spi_device *spi)
 	gs->current_timings = reg_fmt[0].format;
 	gs->enabled = 0;
 
-	/* Set H_CONFIG to SMPTE timings */
+	 
 	gs_write_register(spi, 0x0, 0x300);
 
 	return ret;

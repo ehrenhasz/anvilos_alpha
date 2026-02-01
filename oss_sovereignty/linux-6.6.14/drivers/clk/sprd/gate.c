@@ -1,9 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Spreadtrum gate clock driver
-//
-// Copyright (C) 2017 Spreadtrum, Inc.
-// Author: Chunyan Zhang <chunyan.zhang@spreadtrum.com>
+
+
+
+
+
+
 
 #include <linux/clk-provider.h>
 #include <linux/regmap.h>
@@ -36,12 +36,7 @@ static void clk_sc_gate_toggle(const struct sprd_gate *sg, bool en)
 
 	set ^= en;
 
-	/*
-	 * Each set/clear gate clock has three registers:
-	 * common->reg			- base register
-	 * common->reg + offset		- set register
-	 * common->reg + 2 * offset	- clear register
-	 */
+	 
 	offset = set ? sg->sc_offset : sg->sc_offset * 2;
 
 	regmap_write(common->regmap, common->reg + offset,

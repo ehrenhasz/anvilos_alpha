@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright (c) 2014      Protonic Holland,
- *                         David Jander
- * Copyright (C) 2014-2021, 2023 Pengutronix,
- *                         Marc Kleine-Budde <kernel@pengutronix.de>
- */
+
+ 
 
 #include <linux/can/dev.h>
 #include <linux/can/rx-offload.h>
@@ -65,7 +61,7 @@ static int can_rx_offload_napi_poll(struct napi_struct *napi, int quota)
 	if (work_done < quota) {
 		napi_complete_done(napi, work_done);
 
-		/* Check if there was another interrupt */
+		 
 		if (!skb_queue_empty(&offload->skb_queue))
 			napi_reschedule(&offload->napi);
 	}
@@ -110,33 +106,11 @@ static int can_rx_offload_compare(struct sk_buff *a, struct sk_buff *b)
 	cb_a = can_rx_offload_get_cb(a);
 	cb_b = can_rx_offload_get_cb(b);
 
-	/* Subtract two u32 and return result as int, to keep
-	 * difference steady around the u32 overflow.
-	 */
+	 
 	return cb_b->timestamp - cb_a->timestamp;
 }
 
-/**
- * can_rx_offload_offload_one() - Read one CAN frame from HW
- * @offload: pointer to rx_offload context
- * @n: number of mailbox to read
- *
- * The task of this function is to read a CAN frame from mailbox @n
- * from the device and return the mailbox's content as a struct
- * sk_buff.
- *
- * If the struct can_rx_offload::skb_queue exceeds the maximal queue
- * length (struct can_rx_offload::skb_queue_len_max) or no skb can be
- * allocated, the mailbox contents is discarded by reading it into an
- * overflow buffer. This way the mailbox is marked as free by the
- * driver.
- *
- * Return: A pointer to skb containing the CAN frame on success.
- *
- *         NULL if the mailbox @n is empty.
- *
- *         ERR_PTR() in case of an error
- */
+ 
 static struct sk_buff *
 can_rx_offload_offload_one(struct can_rx_offload *offload, unsigned int n)
 {
@@ -145,19 +119,17 @@ can_rx_offload_offload_one(struct can_rx_offload *offload, unsigned int n)
 	bool drop = false;
 	u32 timestamp;
 
-	/* If queue is full drop frame */
+	 
 	if (unlikely(skb_queue_len(&offload->skb_queue) >
 		     offload->skb_queue_len_max))
 		drop = true;
 
 	skb = offload->mailbox_read(offload, n, &timestamp, drop);
-	/* Mailbox was empty. */
+	 
 	if (unlikely(!skb))
 		return NULL;
 
-	/* There was a problem reading the mailbox, propagate
-	 * error value.
-	 */
+	 
 	if (IS_ERR(skb)) {
 		offload->dev->stats.rx_dropped++;
 		offload->dev->stats.rx_fifo_errors++;
@@ -165,7 +137,7 @@ can_rx_offload_offload_one(struct can_rx_offload *offload, unsigned int n)
 		return skb;
 	}
 
-	/* Mailbox was read. */
+	 
 	cb = can_rx_offload_get_cb(skb);
 	cb->timestamp = timestamp;
 
@@ -355,7 +327,7 @@ static int can_rx_offload_init_queue(struct net_device *dev,
 {
 	offload->dev = dev;
 
-	/* Limit queue len to 4x the weight (rounded to next power of two) */
+	 
 	offload->skb_queue_len_max = 2 << fls(weight);
 	offload->skb_queue_len_max *= 4;
 	skb_queue_head_init(&offload->skb_queue);

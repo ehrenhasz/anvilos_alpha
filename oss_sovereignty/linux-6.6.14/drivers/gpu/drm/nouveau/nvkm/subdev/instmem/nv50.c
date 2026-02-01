@@ -1,26 +1,4 @@
-/*
- * Copyright 2012 Red Hat Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: Ben Skeggs
- */
+ 
 #define nv50_instmem(p) container_of((p), struct nv50_instmem, base)
 #include "priv.h"
 
@@ -33,13 +11,11 @@ struct nv50_instmem {
 	struct nvkm_instmem base;
 	u64 addr;
 
-	/* Mappings that can be evicted when BAR2 space has been exhausted. */
+	 
 	struct list_head lru;
 };
 
-/******************************************************************************
- * instmem object implementation
- *****************************************************************************/
+ 
 #define nv50_instobj(p) container_of((p), struct nv50_instobj, base.memory)
 
 struct nv50_instobj {
@@ -129,15 +105,10 @@ nv50_instobj_kmap(struct nv50_instobj *iobj, struct nvkm_vmm *vmm)
 	void *emap;
 	int ret;
 
-	/* Attempt to allocate BAR2 address-space and map the object
-	 * into it.  The lock has to be dropped while doing this due
-	 * to the possibility of recursion for page table allocation.
-	 */
+	 
 	mutex_unlock(&imem->base.mutex);
 	while ((ret = nvkm_vmm_get(vmm, 12, size, &bar))) {
-		/* Evict unused mappings, and keep retrying until we either
-		 * succeed,or there's no more objects left on the LRU.
-		 */
+		 
 		mutex_lock(&imem->base.mutex);
 		eobj = list_first_entry_or_null(&imem->lru, typeof(*eobj), lru);
 		if (eobj) {
@@ -162,14 +133,14 @@ nv50_instobj_kmap(struct nv50_instobj *iobj, struct nvkm_vmm *vmm)
 		ret = nvkm_memory_map(memory, 0, vmm, bar, NULL, 0);
 	mutex_lock(&imem->base.mutex);
 	if (ret || iobj->bar) {
-		/* We either failed, or another thread beat us. */
+		 
 		mutex_unlock(&imem->base.mutex);
 		nvkm_vmm_put(vmm, &bar);
 		mutex_lock(&imem->base.mutex);
 		return;
 	}
 
-	/* Make the mapping visible to the host. */
+	 
 	iobj->bar = bar;
 	iobj->map = ioremap_wc(device->func->resource_addr(device, 3) +
 			       (u32)iobj->bar->addr, size);
@@ -198,15 +169,13 @@ nv50_instobj_release(struct nvkm_memory *memory)
 	nvkm_bar_flush(subdev->device->bar);
 
 	if (refcount_dec_and_mutex_lock(&iobj->maps, &imem->base.mutex)) {
-		/* Add the now-unused mapping to the LRU instead of directly
-		 * unmapping it here, in case we need to map it again later.
-		 */
+		 
 		if (likely(iobj->lru.next) && iobj->map) {
 			BUG_ON(!list_empty(&iobj->lru));
 			list_add_tail(&iobj->lru, &imem->lru);
 		}
 
-		/* Switch back to NULL accessors when last map is gone. */
+		 
 		iobj->base.memory.ptrs = NULL;
 		mutex_unlock(&imem->base.mutex);
 	}
@@ -220,20 +189,18 @@ nv50_instobj_acquire(struct nvkm_memory *memory)
 	struct nvkm_vmm *vmm;
 	void __iomem *map = NULL;
 
-	/* Already mapped? */
+	 
 	if (refcount_inc_not_zero(&iobj->maps))
 		return iobj->map;
 
-	/* Take the lock, and re-check that another thread hasn't
-	 * already mapped the object in the meantime.
-	 */
+	 
 	mutex_lock(&imem->mutex);
 	if (refcount_inc_not_zero(&iobj->maps)) {
 		mutex_unlock(&imem->mutex);
 		return iobj->map;
 	}
 
-	/* Attempt to get a direct CPU mapping of the object. */
+	 
 	if ((vmm = nvkm_bar_bar2_vmm(imem->subdev.device))) {
 		if (!iobj->map)
 			nv50_instobj_kmap(iobj, vmm);
@@ -241,7 +208,7 @@ nv50_instobj_acquire(struct nvkm_memory *memory)
 	}
 
 	if (!refcount_inc_not_zero(&iobj->maps)) {
-		/* Exclude object from eviction while it's being accessed. */
+		 
 		if (likely(iobj->lru.next))
 			list_del_init(&iobj->lru);
 
@@ -262,9 +229,7 @@ nv50_instobj_boot(struct nvkm_memory *memory, struct nvkm_vmm *vmm)
 	struct nv50_instobj *iobj = nv50_instobj(memory);
 	struct nvkm_instmem *imem = &iobj->imem->base;
 
-	/* Exclude bootstrapped objects (ie. the page tables for the
-	 * instmem BAR itself) from eviction.
-	 */
+	 
 	mutex_lock(&imem->mutex);
 	if (likely(iobj->lru.next)) {
 		list_del_init(&iobj->lru);
@@ -294,7 +259,7 @@ nv50_instobj_bar2(struct nvkm_memory *memory)
 	struct nv50_instobj *iobj = nv50_instobj(memory);
 	u64 addr = ~0ULL;
 	if (nv50_instobj_acquire(&iobj->base.memory)) {
-		iobj->lru.next = NULL; /* Exclude from eviction. */
+		iobj->lru.next = NULL;  
 		addr = iobj->bar->addr;
 	}
 	nv50_instobj_release(&iobj->base.memory);
@@ -325,7 +290,7 @@ nv50_instobj_dtor(struct nvkm_memory *memory)
 	if (map) {
 		struct nvkm_vmm *vmm = nvkm_bar_bar2_vmm(imem->subdev.device);
 		iounmap(map);
-		if (likely(vmm)) /* Can be NULL during BAR destructor. */
+		if (likely(vmm))  
 			nvkm_vmm_put(vmm, &bar);
 	}
 
@@ -384,9 +349,7 @@ nv50_instobj_new(struct nvkm_instmem *imem, u32 size, u32 align, bool zero,
 	return ret;
 }
 
-/******************************************************************************
- * instmem subdev implementation
- *****************************************************************************/
+ 
 
 static void
 nv50_instmem_fini(struct nvkm_instmem *base)

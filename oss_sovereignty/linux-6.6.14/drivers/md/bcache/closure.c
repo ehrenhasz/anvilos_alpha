@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Asynchronous refcounty things
- *
- * Copyright 2010, 2011 Kent Overstreet <kent.overstreet@gmail.com>
- * Copyright 2012 Google, Inc.
- */
+
+ 
 
 #include <linux/debugfs.h>
 #include <linux/module.h>
@@ -40,23 +35,19 @@ static inline void closure_put_after_sub(struct closure *cl, int flags)
 	}
 }
 
-/* For clearing flags with the same atomic op as a put */
+ 
 void closure_sub(struct closure *cl, int v)
 {
 	closure_put_after_sub(cl, atomic_sub_return(v, &cl->remaining));
 }
 
-/*
- * closure_put - decrement a closure's refcount
- */
+ 
 void closure_put(struct closure *cl)
 {
 	closure_put_after_sub(cl, atomic_dec_return(&cl->remaining));
 }
 
-/*
- * closure_wake_up - wake up all closures on a wait list, without memory barrier
- */
+ 
 void __closure_wake_up(struct closure_waitlist *wait_list)
 {
 	struct llist_node *list;
@@ -65,23 +56,17 @@ void __closure_wake_up(struct closure_waitlist *wait_list)
 
 	list = llist_del_all(&wait_list->list);
 
-	/* We first reverse the list to preserve FIFO ordering and fairness */
+	 
 	reverse = llist_reverse_order(list);
 
-	/* Then do the wakeups */
+	 
 	llist_for_each_entry_safe(cl, t, reverse, list) {
 		closure_set_waiting(cl, 0);
 		closure_sub(cl, CLOSURE_WAITING + 1);
 	}
 }
 
-/**
- * closure_wait - add a closure to a waitlist
- * @waitlist: will own a ref on @cl, which will be released when
- * closure_wake_up() is called on @waitlist.
- * @cl: closure pointer.
- *
- */
+ 
 bool closure_wait(struct closure_waitlist *waitlist, struct closure *cl)
 {
 	if (atomic_read(&cl->remaining) & CLOSURE_WAITING)
@@ -193,11 +178,7 @@ DEFINE_SHOW_ATTRIBUTE(debug);
 void  __init closure_debug_init(void)
 {
 	if (!IS_ERR_OR_NULL(bcache_debug))
-		/*
-		 * it is unnecessary to check return value of
-		 * debugfs_create_file(), we should not care
-		 * about this.
-		 */
+		 
 		closure_debug = debugfs_create_file(
 			"closures", 0400, bcache_debug, NULL, &debug_fops);
 }

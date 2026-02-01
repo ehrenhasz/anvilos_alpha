@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * This header provides clock numbers for the ingenic,tcu DT binding.
- */
+ 
+ 
 
 #ifndef __DT_BINDINGS_CLOCK_INGENIC_TCU_H__
 #define __DT_BINDINGS_CLOCK_INGENIC_TCU_H__
@@ -17,4 +15,4 @@
 #define TCU_CLK_WDT	8
 #define TCU_CLK_OST	9
 
-#endif /* __DT_BINDINGS_CLOCK_INGENIC_TCU_H__ */
+#endif  

@@ -1,29 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- *      Driver for the MTX-1 Watchdog.
- *
- *      (C) Copyright 2005 4G Systems <info@4g-systems.biz>,
- *							All Rights Reserved.
- *                              http://www.4g-systems.biz
- *
- *	(C) Copyright 2007 OpenWrt.org, Florian Fainelli <florian@openwrt.org>
- *      (c) Copyright 2005    4G Systems <info@4g-systems.biz>
- *
- *      Release 0.01.
- *      Author: Michael Stickel  michael.stickel@4g-systems.biz
- *
- *      Release 0.02.
- *	Author: Florian Fainelli florian@openwrt.org
- *		use the Linux watchdog/timer APIs
- *
- *      The Watchdog is configured to reset the MTX-1
- *      if it is not triggered for 100 seconds.
- *      It should not be triggered more often than 1.6 seconds.
- *
- *      A timer triggers the watchdog every 5 seconds, until
- *      it is opened for the first time. After the first open
- *      it MUST be triggered every 2..95 seconds.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/moduleparam.h>
@@ -63,7 +39,7 @@ static void mtx1_wdt_trigger(struct timer_list *unused)
 	if (mtx1_wdt_device.running)
 		ticks--;
 
-	/* toggle wdt gpio */
+	 
 	mtx1_wdt_device.gstate = !mtx1_wdt_device.gstate;
 	gpiod_set_value(mtx1_wdt_device.gpiod, mtx1_wdt_device.gstate);
 
@@ -110,7 +86,7 @@ static int mtx1_wdt_stop(void)
 	return 0;
 }
 
-/* Filesystem functions */
+ 
 
 static int mtx1_wdt_open(struct inode *inode, struct file *file)
 {
@@ -223,7 +199,7 @@ static int mtx1_wdt_probe(struct platform_device *pdev)
 
 static void mtx1_wdt_remove(struct platform_device *pdev)
 {
-	/* FIXME: do we need to lock this test ? */
+	 
 	if (mtx1_wdt_device.queue) {
 		mtx1_wdt_device.queue = 0;
 		wait_for_completion(&mtx1_wdt_device.stop);

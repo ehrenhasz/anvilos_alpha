@@ -1,6 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
-// TI LM3697 LED chip family driver
-// Copyright (C) 2018 Texas Instruments Incorporated - https://www.ti.com/
+
+
+
 
 #include <linux/bits.h>
 #include <linux/gpio/consumer.h>
@@ -43,18 +43,7 @@
 #define LM3697_CONTROL_B	1
 #define LM3697_MAX_CONTROL_BANKS 2
 
-/**
- * struct lm3697_led -
- * @hvled_strings: Array of LED strings associated with a control bank
- * @label: LED label
- * @led_dev: LED class device
- * @priv: Pointer to the device struct
- * @lmu_data: Register and setting values for common code
- * @control_bank: Control bank the LED is associated to. 0 is control bank A
- *		   1 is control bank B
- * @enabled: LED brightness level (or LED_OFF)
- * @num_leds: Number of LEDs available
- */
+ 
 struct lm3697_led {
 	u32 hvled_strings[LM3697_MAX_LED_STRINGS];
 	char label[LED_MAX_NAME_SIZE];
@@ -66,18 +55,7 @@ struct lm3697_led {
 	int num_leds;
 };
 
-/**
- * struct lm3697 -
- * @enable_gpio: Hardware enable gpio
- * @regulator: LED supply regulator pointer
- * @client: Pointer to the I2C client
- * @regmap: Devices register map
- * @dev: Pointer to the devices device struct
- * @lock: Lock for reading/writing the device
- * @leds: Array of LED strings
- * @bank_cfg: OUTPUT_CONFIG register values
- * @num_banks: Number of control banks
- */
+ 
 struct lm3697 {
 	struct gpio_desc *enable_gpio;
 	struct regulator *regulator;
@@ -275,7 +253,7 @@ static int lm3697_probe_dt(struct lm3697 *priv)
 
 		init_data.fwnode = child;
 		init_data.devicename = priv->client->name;
-		/* for backwards compatibility if `label` is not present */
+		 
 		init_data.default_label = ":";
 
 		led->priv = priv;

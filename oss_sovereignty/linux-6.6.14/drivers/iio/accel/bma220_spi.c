@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * BMA220 Digital triaxial acceleration sensor driver
- *
- * Copyright (c) 2016,2020 Intel Corporation.
- */
+
+ 
 
 #include <linux/bits.h>
 #include <linux/kernel.h>
@@ -64,7 +60,7 @@ struct bma220_data {
 	struct mutex lock;
 	struct {
 		s8 chans[3];
-		/* Ensure timestamp is naturally aligned. */
+		 
 		s64 timestamp __aligned(8);
 	} scan;
 	u8 tx_buf[2] __aligned(IIO_DMA_MINALIGN);
@@ -206,7 +202,7 @@ static int bma220_init(struct spi_device *spi)
 	if (ret != BMA220_CHIP_ID)
 		return -ENODEV;
 
-	/* Make sure the chip is powered on */
+	 
 	ret = bma220_read_reg(spi, BMA220_REG_SUSPEND);
 	if (ret == BMA220_SUSPEND_WAKE)
 		ret = bma220_read_reg(spi, BMA220_REG_SUSPEND);
@@ -222,11 +218,7 @@ static int bma220_power(struct spi_device *spi, bool up)
 {
 	int i, ret;
 
-	/**
-	 * The chip can be suspended/woken up by a simple register read.
-	 * So, we need up to 2 register reads of the suspend register
-	 * to make sure that the device is in the desired state.
-	 */
+	 
 	for (i = 0; i < 2; i++) {
 		ret = bma220_read_reg(spi, BMA220_REG_SUSPEND);
 		if (ret < 0)

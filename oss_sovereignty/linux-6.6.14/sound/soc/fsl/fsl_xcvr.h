@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * NXP XCVR ALSA SoC Digital Audio Interface (DAI) driver
- *
- * Copyright 2019 NXP
- */
+ 
+ 
 
 #ifndef __FSL_XCVR_H
 #define __FSL_XCVR_H
@@ -12,31 +8,31 @@
 #define FSL_XCVR_MODE_ARC	1
 #define FSL_XCVR_MODE_EARC	2
 
-/* XCVR Registers */
-#define FSL_XCVR_REG_OFFSET		0x800 /* regs offset */
-#define FSL_XCVR_FIFO_SIZE		0x80  /* 128 */
-#define FSL_XCVR_FIFO_WMK_RX		(FSL_XCVR_FIFO_SIZE >> 1)   /* 64 */
-#define FSL_XCVR_FIFO_WMK_TX		(FSL_XCVR_FIFO_SIZE >> 1)   /* 64 */
-#define FSL_XCVR_MAXBURST_RX		(FSL_XCVR_FIFO_WMK_RX >> 2) /* 16 */
-#define FSL_XCVR_MAXBURST_TX		(FSL_XCVR_FIFO_WMK_TX >> 2) /* 16 */
+ 
+#define FSL_XCVR_REG_OFFSET		0x800  
+#define FSL_XCVR_FIFO_SIZE		0x80   
+#define FSL_XCVR_FIFO_WMK_RX		(FSL_XCVR_FIFO_SIZE >> 1)    
+#define FSL_XCVR_FIFO_WMK_TX		(FSL_XCVR_FIFO_SIZE >> 1)    
+#define FSL_XCVR_MAXBURST_RX		(FSL_XCVR_FIFO_WMK_RX >> 2)  
+#define FSL_XCVR_MAXBURST_TX		(FSL_XCVR_FIFO_WMK_TX >> 2)  
 
 #define FSL_XCVR_RX_FIFO_ADDR		0x0C00
 #define FSL_XCVR_TX_FIFO_ADDR		0x0E00
 
-#define FSL_XCVR_VERSION		0x00  /* Version */
-#define FSL_XCVR_EXT_CTRL		0x10  /* Control */
-#define FSL_XCVR_EXT_STATUS		0x20  /* Status */
-#define FSL_XCVR_EXT_IER0		0x30  /* Interrupt en 0 */
-#define FSL_XCVR_EXT_IER1		0x40  /* Interrupt en 1 */
-#define FSL_XCVR_EXT_ISR		0x50  /* Interrupt status */
-#define FSL_XCVR_EXT_ISR_SET		0x54  /* Interrupt status */
-#define FSL_XCVR_EXT_ISR_CLR		0x58  /* Interrupt status */
-#define FSL_XCVR_EXT_ISR_TOG		0x5C  /* Interrupt status */
-#define FSL_XCVR_IER			0x70  /* Interrupt en for M0+ */
-#define FSL_XCVR_ISR			0x80  /* Interrupt status */
-#define FSL_XCVR_ISR_SET		0x84  /* Interrupt status set */
-#define FSL_XCVR_ISR_CLR		0x88  /* Interrupt status clear */
-#define FSL_XCVR_ISR_TOG		0x8C  /* Interrupt status toggle */
+#define FSL_XCVR_VERSION		0x00   
+#define FSL_XCVR_EXT_CTRL		0x10   
+#define FSL_XCVR_EXT_STATUS		0x20   
+#define FSL_XCVR_EXT_IER0		0x30   
+#define FSL_XCVR_EXT_IER1		0x40   
+#define FSL_XCVR_EXT_ISR		0x50   
+#define FSL_XCVR_EXT_ISR_SET		0x54   
+#define FSL_XCVR_EXT_ISR_CLR		0x58   
+#define FSL_XCVR_EXT_ISR_TOG		0x5C   
+#define FSL_XCVR_IER			0x70   
+#define FSL_XCVR_ISR			0x80   
+#define FSL_XCVR_ISR_SET		0x84   
+#define FSL_XCVR_ISR_CLR		0x88   
+#define FSL_XCVR_ISR_TOG		0x8C   
 #define FSL_XCVR_PHY_AI_CTRL		0x90
 #define FSL_XCVR_PHY_AI_CTRL_SET	0x94
 #define FSL_XCVR_PHY_AI_CTRL_CLR	0x98
@@ -44,7 +40,7 @@
 #define FSL_XCVR_PHY_AI_WDATA		0xA0
 #define FSL_XCVR_PHY_AI_RDATA		0xA4
 #define FSL_XCVR_CLK_CTRL		0xB0
-#define FSL_XCVR_RX_DPTH_CTRL		0x180 /* RX datapath ctrl reg */
+#define FSL_XCVR_RX_DPTH_CTRL		0x180  
 #define FSL_XCVR_RX_DPTH_CTRL_SET	0x184
 #define FSL_XCVR_RX_DPTH_CTRL_CLR	0x188
 #define FSL_XCVR_RX_DPTH_CTRL_TOG	0x18c
@@ -66,11 +62,11 @@
 #define FSL_XCVR_RX_DPTH_BCTR		0x1D8
 #define FSL_XCVR_RX_DPTH_BCRR		0x1DC
 
-#define FSL_XCVR_TX_DPTH_CTRL		0x220 /* TX datapath ctrl reg */
+#define FSL_XCVR_TX_DPTH_CTRL		0x220  
 #define FSL_XCVR_TX_DPTH_CTRL_SET	0x224
 #define FSL_XCVR_TX_DPTH_CTRL_CLR	0x228
 #define FSL_XCVR_TX_DPTH_CTRL_TOG	0x22C
-#define FSL_XCVR_TX_CS_DATA_0		0x230 /* TX channel status bits regs */
+#define FSL_XCVR_TX_CS_DATA_0		0x230  
 #define FSL_XCVR_TX_CS_DATA_1		0x234
 #define FSL_XCVR_TX_CS_DATA_2		0x238
 #define FSL_XCVR_TX_CS_DATA_3		0x23C
@@ -284,11 +280,11 @@
 #define FSL_XCVR_CS_DATA_1_CH_16		0xB000
 #define FSL_XCVR_CS_DATA_1_CH_32		0x3000
 
-/* Data memory structures */
-#define FSL_XCVR_RX_CS_CTRL_0		0x20 /* First  RX CS control register */
-#define FSL_XCVR_RX_CS_CTRL_1		0x24 /* Second RX CS control register */
-#define FSL_XCVR_RX_CS_BUFF_0		0x80 /* First  RX CS buffer */
-#define FSL_XCVR_RX_CS_BUFF_1		0xA0 /* Second RX CS buffer */
-#define FSL_XCVR_CAP_DATA_STR		0x300 /* Capabilities data structure */
+ 
+#define FSL_XCVR_RX_CS_CTRL_0		0x20  
+#define FSL_XCVR_RX_CS_CTRL_1		0x24  
+#define FSL_XCVR_RX_CS_BUFF_0		0x80  
+#define FSL_XCVR_RX_CS_BUFF_1		0xA0  
+#define FSL_XCVR_CAP_DATA_STR		0x300  
 
-#endif /* __FSL_XCVR_H */
+#endif  

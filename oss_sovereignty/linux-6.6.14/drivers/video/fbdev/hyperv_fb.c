@@ -1,47 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2012, Microsoft Corporation.
- *
- * Author:
- *   Haiyang Zhang <haiyangz@microsoft.com>
- */
 
-/*
- * Hyper-V Synthetic Video Frame Buffer Driver
- *
- * This is the driver for the Hyper-V Synthetic Video, which supports
- * screen resolution up to Full HD 1920x1080 with 32 bit color on Windows
- * Server 2012, and 1600x1200 with 16 bit color on Windows Server 2008 R2
- * or earlier.
- *
- * It also solves the double mouse cursor issue of the emulated video mode.
- *
- * The default screen resolution is 1152x864, which may be changed by a
- * kernel parameter:
- *     video=hyperv_fb:<width>x<height>
- *     For example: video=hyperv_fb:1280x1024
- *
- * Portrait orientation is also supported:
- *     For example: video=hyperv_fb:864x1152
- *
- * When a Windows 10 RS5+ host is used, the virtual machine screen
- * resolution is obtained from the host. The "video=hyperv_fb" option is
- * not needed, but still can be used to overwrite what the host specifies.
- * The VM resolution on the host could be set by executing the powershell
- * "set-vmvideo" command. For example
- *     set-vmvideo -vmname name -horizontalresolution:1920 \
- * -verticalresolution:1200 -resolutiontype single
- *
- * Gen 1 VMs also support direct using VM's physical memory for framebuffer.
- * It could improve the efficiency and performance for framebuffer and VM.
- * This requires to allocate contiguous physical memory from Linux kernel's
- * CMA memory allocator. To enable this, supply a kernel parameter to give
- * enough memory space to CMA allocator for framebuffer. For example:
- *    cma=130m
- * This gives 130MB memory to CMA allocator that can be allocated to
- * framebuffer. For reference, 8K resolution (7680x4320) takes about
- * 127MB memory.
- */
+ 
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -60,11 +20,11 @@
 
 #include <linux/hyperv.h>
 
-/* Hyper-V Synthetic Video Protocol definitions and structures */
+ 
 #define MAX_VMBUS_PKT_SIZE 0x4000
 
 #define SYNTHVID_VERSION(major, minor) ((minor) << 16 | (major))
-/* Support for VERSION_WIN7 is removed. #define is retained for reference. */
+ 
 #define SYNTHVID_VERSION_WIN7 SYNTHVID_VERSION(3, 0)
 #define SYNTHVID_VERSION_WIN8 SYNTHVID_VERSION(3, 2)
 #define SYNTHVID_VERSION_WIN10 SYNTHVID_VERSION(3, 5)
@@ -83,7 +43,7 @@ enum pipe_msg_type {
 
 struct pipe_msg_hdr {
 	u32 type;
-	u32 size; /* size of message after this field */
+	u32 size;  
 } __packed;
 
 
@@ -115,7 +75,7 @@ struct hvd_screen_info {
 
 struct synthvid_msg_hdr {
 	u32 type;
-	u32 size;  /* size of this header + payload after this field*/
+	u32 size;   
 } __packed;
 
 struct synthvid_version_req {
@@ -187,9 +147,9 @@ struct synthvid_pointer_position {
 struct synthvid_pointer_shape {
 	u8 part_idx;
 	u8 is_argb;
-	u32 width; /* CURSOR_MAX_X at most */
-	u32 height; /* CURSOR_MAX_Y at most */
-	u32 hot_x; /* hotspot relative to upper-left of pointer image */
+	u32 width;  
+	u32 height;  
+	u32 hot_x;  
 	u32 hot_y;
 	u8 data[4];
 } __packed;
@@ -202,8 +162,8 @@ struct synthvid_feature_change {
 } __packed;
 
 struct rect {
-	s32 x1, y1; /* top left corner */
-	s32 x2, y2; /* bottom right corner, exclusive */
+	s32 x1, y1;  
+	s32 x2, y2;  
 } __packed;
 
 struct synthvid_dirt {
@@ -232,9 +192,9 @@ struct synthvid_msg {
 } __packed;
 
 
-/* FB driver definitions and structures */
-#define HVFB_WIDTH 1152 /* default screen width */
-#define HVFB_HEIGHT 864 /* default screen height */
+ 
+#define HVFB_WIDTH 1152  
+#define HVFB_HEIGHT 864  
 #define HVFB_WIDTH_MIN 640
 #define HVFB_HEIGHT_MIN 480
 
@@ -246,32 +206,32 @@ struct synthvid_msg {
 struct hvfb_par {
 	struct fb_info *info;
 	struct resource *mem;
-	bool fb_ready; /* fb device is ready */
+	bool fb_ready;  
 	struct completion wait;
 	u32 synthvid_version;
 
 	struct delayed_work dwork;
 	bool update;
-	bool update_saved; /* The value of 'update' before hibernation */
+	bool update_saved;  
 
 	u32 pseudo_palette[16];
 	u8 init_buf[MAX_VMBUS_PKT_SIZE];
 	u8 recv_buf[MAX_VMBUS_PKT_SIZE];
 
-	/* If true, the VSC notifies the VSP on every framebuffer change */
+	 
 	bool synchronous_fb;
 
-	/* If true, need to copy from deferred IO mem to framebuffer mem */
+	 
 	bool need_docopy;
 
 	struct notifier_block hvfb_panic_nb;
 
-	/* Memory for deferred IO and frame buffer itself */
+	 
 	unsigned char *dio_vp;
 	unsigned char *mmio_vp;
 	phys_addr_t mmio_pp;
 
-	/* Dirty rectangle, protected by delayed_refresh_lock */
+	 
 	int x1, y1, x2, y2;
 	bool delayed_refresh;
 	spinlock_t delayed_refresh_lock;
@@ -281,9 +241,9 @@ static uint screen_width = HVFB_WIDTH;
 static uint screen_height = HVFB_HEIGHT;
 static uint screen_depth;
 static uint screen_fb_size;
-static uint dio_fb_size; /* FB size for deferred IO */
+static uint dio_fb_size;  
 
-/* Send message to Hyper-V host */
+ 
 static inline int synthvid_send(struct hv_device *hdev,
 				struct synthvid_msg *msg)
 {
@@ -305,7 +265,7 @@ static inline int synthvid_send(struct hv_device *hdev,
 }
 
 
-/* Send screen resolution info to host */
+ 
 static int synthvid_send_situ(struct hv_device *hdev)
 {
 	struct fb_info *info = hv_get_drvdata(hdev);
@@ -333,7 +293,7 @@ static int synthvid_send_situ(struct hv_device *hdev)
 	return 0;
 }
 
-/* Send mouse pointer info to host */
+ 
 static int synthvid_send_ptr(struct hv_device *hdev)
 {
 	struct synthvid_msg msg;
@@ -367,7 +327,7 @@ static int synthvid_send_ptr(struct hv_device *hdev)
 	return 0;
 }
 
-/* Send updated screen area (dirty rectangle) location to host */
+ 
 static int
 synthvid_update(struct fb_info *info, int x1, int y1, int x2, int y2)
 {
@@ -411,7 +371,7 @@ static void hvfb_docopy(struct hvfb_par *par,
 	memcpy(par->mmio_vp + offset, par->dio_vp + offset, size);
 }
 
-/* Deferred IO callback */
+ 
 static void synthvid_deferred_io(struct fb_info *p, struct list_head *pagereflist)
 {
 	struct hvfb_par *par = p->par;
@@ -422,12 +382,7 @@ static void synthvid_deferred_io(struct fb_info *p, struct list_head *pagereflis
 	miny = INT_MAX;
 	maxy = 0;
 
-	/*
-	 * Merge dirty pages. It is possible that last page cross
-	 * over the end of frame buffer row yres. This is taken care of
-	 * in synthvid_update function by clamping the y2
-	 * value to yres.
-	 */
+	 
 	list_for_each_entry(pageref, pagereflist, list) {
 		start = pageref->offset;
 		end = start + PAGE_SIZE - 1;
@@ -436,7 +391,7 @@ static void synthvid_deferred_io(struct fb_info *p, struct list_head *pagereflis
 		miny = min_t(int, miny, y1);
 		maxy = max_t(int, maxy, y2);
 
-		/* Copy from dio space to mmio address */
+		 
 		if (par->fb_ready && par->need_docopy)
 			hvfb_docopy(par, start, PAGE_SIZE);
 	}
@@ -450,11 +405,7 @@ static struct fb_deferred_io synthvid_defio = {
 	.deferred_io	= synthvid_deferred_io,
 };
 
-/*
- * Actions on received messages from host:
- * Complete the wait event.
- * Or, reply with screen and cursor info.
- */
+ 
 static void synthvid_recv_sub(struct hv_device *hdev)
 {
 	struct fb_info *info = hv_get_drvdata(hdev);
@@ -467,7 +418,7 @@ static void synthvid_recv_sub(struct hv_device *hdev)
 	par = info->par;
 	msg = (struct synthvid_msg *)par->recv_buf;
 
-	/* Complete the wait event */
+	 
 	if (msg->vid_hdr.type == SYNTHVID_VERSION_RESPONSE ||
 	    msg->vid_hdr.type == SYNTHVID_RESOLUTION_RESPONSE ||
 	    msg->vid_hdr.type == SYNTHVID_VRAM_LOCATION_ACK) {
@@ -476,7 +427,7 @@ static void synthvid_recv_sub(struct hv_device *hdev)
 		return;
 	}
 
-	/* Reply with screen and cursor info */
+	 
 	if (msg->vid_hdr.type == SYNTHVID_FEATURE_CHANGE) {
 		if (par->fb_ready) {
 			synthvid_send_ptr(hdev);
@@ -489,7 +440,7 @@ static void synthvid_recv_sub(struct hv_device *hdev)
 	}
 }
 
-/* Receive callback for messages from the host */
+ 
 static void synthvid_receive(void *ctx)
 {
 	struct hv_device *hdev = ctx;
@@ -516,7 +467,7 @@ static void synthvid_receive(void *ctx)
 	} while (bytes_recvd > 0 && ret == 0);
 }
 
-/* Check if the ver1 version is equal or greater than ver2 */
+ 
 static inline bool synthvid_ver_ge(u32 ver1, u32 ver2)
 {
 	if (SYNTHVID_VER_GET_MAJOR(ver1) > SYNTHVID_VER_GET_MAJOR(ver2) ||
@@ -527,7 +478,7 @@ static inline bool synthvid_ver_ge(u32 ver1, u32 ver2)
 	return false;
 }
 
-/* Check synthetic video protocol version with the host */
+ 
 static int synthvid_negotiate_ver(struct hv_device *hdev, u32 ver)
 {
 	struct fb_info *info = hv_get_drvdata(hdev);
@@ -562,7 +513,7 @@ out:
 	return ret;
 }
 
-/* Get current resolution from the host */
+ 
 static int synthvid_get_supported_resolution(struct hv_device *hdev)
 {
 	struct fb_info *info = hv_get_drvdata(hdev);
@@ -610,7 +561,7 @@ out:
 	return ret;
 }
 
-/* Connect to VSP (Virtual Service Provider) on host */
+ 
 static int synthvid_connect_vsp(struct hv_device *hdev)
 {
 	struct fb_info *info = hv_get_drvdata(hdev);
@@ -624,7 +575,7 @@ static int synthvid_connect_vsp(struct hv_device *hdev)
 		return ret;
 	}
 
-	/* Negotiate the protocol version with host */
+	 
 	switch (vmbus_proto_version) {
 	case VERSION_WIN10:
 	case VERSION_WIN10_V5:
@@ -663,7 +614,7 @@ error:
 	return ret;
 }
 
-/* Send VRAM and Situation messages to the host */
+ 
 static int synthvid_send_config(struct hv_device *hdev)
 {
 	struct fb_info *info = hv_get_drvdata(hdev);
@@ -672,7 +623,7 @@ static int synthvid_send_config(struct hv_device *hdev)
 	int ret = 0;
 	unsigned long t;
 
-	/* Send VRAM location */
+	 
 	memset(msg, 0, sizeof(struct synthvid_msg));
 	msg->vid_hdr.type = SYNTHVID_VRAM_LOCATION;
 	msg->vid_hdr.size = sizeof(struct synthvid_msg_hdr) +
@@ -693,7 +644,7 @@ static int synthvid_send_config(struct hv_device *hdev)
 		goto out;
 	}
 
-	/* Send pointer and situation update */
+	 
 	synthvid_send_ptr(hdev);
 	synthvid_send_situ(hdev);
 
@@ -702,11 +653,7 @@ out:
 }
 
 
-/*
- * Delayed work callback:
- * It is scheduled to call whenever update request is received and it has
- * not been called in last HVFB_ONDEMAND_THROTTLE time interval.
- */
+ 
 static void hvfb_update_work(struct work_struct *w)
 {
 	struct hvfb_par *par = container_of(w, struct hvfb_par, dwork.work);
@@ -716,16 +663,16 @@ static void hvfb_update_work(struct work_struct *w)
 	int j;
 
 	spin_lock_irqsave(&par->delayed_refresh_lock, flags);
-	/* Reset the request flag */
+	 
 	par->delayed_refresh = false;
 
-	/* Store the dirty rectangle to local variables */
+	 
 	x1 = par->x1;
 	x2 = par->x2;
 	y1 = par->y1;
 	y2 = par->y2;
 
-	/* Clear dirty rectangle */
+	 
 	par->x1 = par->y1 = INT_MAX;
 	par->x2 = par->y2 = 0;
 
@@ -735,7 +682,7 @@ static void hvfb_update_work(struct work_struct *w)
 	    y1 > info->var.yres || y2 > info->var.yres || x2 <= x1)
 		return;
 
-	/* Copy the dirty rectangle to frame buffer memory */
+	 
 	if (par->need_docopy)
 		for (j = y1; j < y2; j++)
 			hvfb_docopy(par,
@@ -743,15 +690,12 @@ static void hvfb_update_work(struct work_struct *w)
 				    (x1 * screen_depth / 8),
 				    (x2 - x1) * screen_depth / 8);
 
-	/* Refresh */
+	 
 	if (par->fb_ready && par->update)
 		synthvid_update(info, x1, y1, x2, y2);
 }
 
-/*
- * Control the on-demand refresh frequency. It schedules a delayed
- * screen update if it has not yet.
- */
+ 
 static void hvfb_ondemand_refresh_throttle(struct hvfb_par *par,
 					   int x1, int y1, int w, int h)
 {
@@ -761,13 +705,13 @@ static void hvfb_ondemand_refresh_throttle(struct hvfb_par *par,
 
 	spin_lock_irqsave(&par->delayed_refresh_lock, flags);
 
-	/* Merge dirty rectangle */
+	 
 	par->x1 = min_t(int, par->x1, x1);
 	par->y1 = min_t(int, par->y1, y1);
 	par->x2 = max_t(int, par->x2, x2);
 	par->y2 = max_t(int, par->y2, y2);
 
-	/* Schedule a delayed screen update if not yet */
+	 
 	if (par->delayed_refresh == false) {
 		schedule_delayed_work(&par->dwork,
 				      HVFB_ONDEMAND_THROTTLE);
@@ -799,7 +743,7 @@ static int hvfb_on_panic(struct notifier_block *nb,
 	return NOTIFY_DONE;
 }
 
-/* Framebuffer operation handlers */
+ 
 
 static int hvfb_check_var(struct fb_var_screeninfo *var, struct fb_info *info)
 {
@@ -845,7 +789,7 @@ static int hvfb_setcolreg(unsigned regno, unsigned red, unsigned green,
 
 static int hvfb_blank(int blank, struct fb_info *info)
 {
-	return 1;	/* get fb_blank to set the colormap to all black */
+	return 1;	 
 }
 
 static void hvfb_cfb_fillrect(struct fb_info *p,
@@ -900,7 +844,7 @@ static const struct fb_ops hvfb_ops = {
 };
 
 
-/* Get options from kernel paramenter "video=" */
+ 
 static void hvfb_get_option(struct fb_info *info)
 {
 	struct hvfb_par *par = info->par;
@@ -931,10 +875,7 @@ static void hvfb_get_option(struct fb_info *info)
 	return;
 }
 
-/*
- * Allocate enough contiguous physical memory.
- * Return physical address if succeeded or -1 if failed.
- */
+ 
 static phys_addr_t hvfb_get_phymem(struct hv_device *hdev,
 				   unsigned int request_size)
 {
@@ -948,14 +889,14 @@ static phys_addr_t hvfb_get_phymem(struct hv_device *hdev,
 		return -1;
 
 	if (order <= MAX_ORDER) {
-		/* Call alloc_pages if the size is less than 2^MAX_ORDER */
+		 
 		page = alloc_pages(GFP_KERNEL | __GFP_ZERO, order);
 		if (!page)
 			return -1;
 
 		paddr = (page_to_pfn(page) << PAGE_SHIFT);
 	} else {
-		/* Allocate from CMA */
+		 
 		hdev->device.coherent_dma_mask = DMA_BIT_MASK(64);
 
 		vmem = dma_alloc_coherent(&hdev->device,
@@ -972,7 +913,7 @@ static phys_addr_t hvfb_get_phymem(struct hv_device *hdev,
 	return paddr;
 }
 
-/* Release contiguous physical memory */
+ 
 static void hvfb_release_phymem(struct hv_device *hdev,
 				phys_addr_t paddr, unsigned int size)
 {
@@ -988,7 +929,7 @@ static void hvfb_release_phymem(struct hv_device *hdev,
 }
 
 
-/* Get framebuffer memory from Hyper-V video pci space */
+ 
 static int hvfb_getmem(struct hv_device *hdev, struct fb_info *info)
 {
 	struct hvfb_par *par = info->par;
@@ -1010,12 +951,7 @@ static int hvfb_getmem(struct hv_device *hdev, struct fb_info *info)
 		base = pci_resource_start(pdev, 0);
 		size = pci_resource_len(pdev, 0);
 
-		/*
-		 * For Gen 1 VM, we can directly use the contiguous memory
-		 * from VM. If we succeed, deferred IO happens directly
-		 * on this allocated framebuffer memory, avoiding extra
-		 * memory copy.
-		 */
+		 
 		paddr = hvfb_get_phymem(hdev, screen_fb_size);
 		if (paddr != (phys_addr_t) -1) {
 			par->mmio_pp = paddr;
@@ -1035,10 +971,7 @@ static int hvfb_getmem(struct hv_device *hdev, struct fb_info *info)
 		size = screen_info.lfb_size;
 	}
 
-	/*
-	 * Cannot use the contiguous physical memory.
-	 * Allocate mmio space for framebuffer.
-	 */
+	 
 	dio_fb_size =
 		screen_width * screen_height * screen_depth / 8;
 
@@ -1049,23 +982,19 @@ static int hvfb_getmem(struct hv_device *hdev, struct fb_info *info)
 		goto err1;
 	}
 
-	/*
-	 * Map the VRAM cacheable for performance. This is also required for
-	 * VM Connect to display properly for ARM64 Linux VM, as the host also
-	 * maps the VRAM cacheable.
-	 */
+	 
 	fb_virt = ioremap_cache(par->mem->start, screen_fb_size);
 	if (!fb_virt)
 		goto err2;
 
-	/* Allocate memory for deferred IO */
+	 
 	par->dio_vp = vzalloc(round_up(dio_fb_size, PAGE_SIZE));
 	if (par->dio_vp == NULL)
 		goto err3;
 
-	/* Physical address of FB device */
+	 
 	par->mmio_pp = par->mem->start;
-	/* Virtual address of FB device */
+	 
 	par->mmio_vp = (unsigned char *) fb_virt;
 
 	info->fix.smem_start = par->mem->start;
@@ -1077,7 +1006,7 @@ getmem_done:
 	aperture_remove_conflicting_devices(base, size, KBUILD_MODNAME);
 
 	if (gen2vm) {
-		/* framebuffer is reallocated, clear screen_info to avoid misuse from kexec */
+		 
 		screen_info.lfb_size = 0;
 		screen_info.lfb_base = 0;
 		screen_info.orig_video_isVGA = 0;
@@ -1099,7 +1028,7 @@ err1:
 	return -ENOMEM;
 }
 
-/* Release the framebuffer */
+ 
 static void hvfb_putmem(struct hv_device *hdev, struct fb_info *info)
 {
 	struct hvfb_par *par = info->par;
@@ -1140,7 +1069,7 @@ static int hvfb_probe(struct hv_device *hdev,
 	par->x1 = par->y1 = INT_MAX;
 	par->x2 = par->y2 = 0;
 
-	/* Connect to VSP */
+	 
 	hv_set_drvdata(hdev, info);
 	ret = synthvid_connect_vsp(hdev);
 	if (ret) {
@@ -1158,7 +1087,7 @@ static int hvfb_probe(struct hv_device *hdev,
 		goto error2;
 	}
 
-	/* Set up fb_info */
+	 
 	info->var.xres_virtual = info->var.xres = screen_width;
 	info->var.yres_virtual = info->var.yres = screen_height;
 	info->var.bits_per_pixel = screen_depth;
@@ -1189,11 +1118,11 @@ static int hvfb_probe(struct hv_device *hdev,
 	info->fbops = &hvfb_ops;
 	info->pseudo_palette = par->pseudo_palette;
 
-	/* Initialize deferred IO */
+	 
 	info->fbdefio = &synthvid_defio;
 	fb_deferred_io_init(info);
 
-	/* Send config to host */
+	 
 	ret = synthvid_send_config(hdev);
 	if (ret)
 		goto error;
@@ -1208,12 +1137,7 @@ static int hvfb_probe(struct hv_device *hdev,
 
 	par->synchronous_fb = false;
 
-	/*
-	 * We need to be sure this panic notifier runs _before_ the
-	 * vmbus disconnect, so order it by priority. It must execute
-	 * before the function hv_panic_vmbus_unload() [drivers/hv/vmbus_drv.c],
-	 * which is almost at the end of list, with priority = INT_MIN + 1.
-	 */
+	 
 	par->hvfb_panic_nb.notifier_call = hvfb_on_panic;
 	par->hvfb_panic_nb.priority = INT_MIN + 10,
 	atomic_notifier_chain_register(&panic_notifier_list,
@@ -1263,7 +1187,7 @@ static int hvfb_suspend(struct hv_device *hdev)
 
 	console_lock();
 
-	/* 1 means do suspend */
+	 
 	fb_set_suspend(info, 1);
 
 	cancel_delayed_work_sync(&par->dwork);
@@ -1304,7 +1228,7 @@ static int hvfb_resume(struct hv_device *hdev)
 	schedule_delayed_work(&info->deferred_work, info->fbdefio->delay);
 	schedule_delayed_work(&par->dwork, HVFB_UPDATE_DELAY);
 
-	/* 0 means do resume */
+	 
 	fb_set_suspend(info, 0);
 
 out:
@@ -1319,11 +1243,11 @@ static const struct pci_device_id pci_stub_id_table[] = {
 		.vendor      = PCI_VENDOR_ID_MICROSOFT,
 		.device      = PCI_DEVICE_ID_HYPERV_VIDEO,
 	},
-	{ /* end of list */ }
+	{   }
 };
 
 static const struct hv_vmbus_device_id id_table[] = {
-	/* Synthetic Video Device GUID */
+	 
 	{HV_SYNTHVID_GUID},
 	{}
 };

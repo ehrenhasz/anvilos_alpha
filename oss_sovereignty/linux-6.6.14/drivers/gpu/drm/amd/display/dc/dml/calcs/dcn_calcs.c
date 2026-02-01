@@ -1,28 +1,4 @@
-/*
- * Copyright 2017 Advanced Micro Devices, Inc.
- * Copyright 2019 Raptor Engineering, LLC
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 #include "dm_services.h"
 #include "dc.h"
@@ -45,81 +21,63 @@
 #define WM_C 2
 #define WM_D 3
 
-/*
- * NOTE:
- *   This file is gcc-parseable HW gospel, coming straight from HW engineers.
- *
- * It doesn't adhere to Linux kernel style and sometimes will do things in odd
- * ways. Unless there is something clearly wrong with it the code should
- * remain as-is as it provides us with a guarantee from HW that it is correct.
- */
+ 
 
-/* Defaults from spreadsheet rev#247.
- * RV2 delta: dram_clock_change_latency, max_num_dpp
- */
+ 
 const struct dcn_soc_bounding_box dcn10_soc_defaults = {
-		/* latencies */
-		.sr_exit_time = 17, /*us*/
-		.sr_enter_plus_exit_time = 19, /*us*/
-		.urgent_latency = 4, /*us*/
-		.dram_clock_change_latency = 17, /*us*/
-		.write_back_latency = 12, /*us*/
-		.percent_of_ideal_drambw_received_after_urg_latency = 80, /*%*/
+		 
+		.sr_exit_time = 17,  
+		.sr_enter_plus_exit_time = 19,  
+		.urgent_latency = 4,  
+		.dram_clock_change_latency = 17,  
+		.write_back_latency = 12,  
+		.percent_of_ideal_drambw_received_after_urg_latency = 80,  
 
-		/* below default clocks derived from STA target base on
-		 * slow-slow corner + 10% margin with voltages aligned to FCLK.
-		 *
-		 * Use these value if fused value doesn't make sense as earlier
-		 * part don't have correct value fused */
-		/* default DCF CLK DPM on RV*/
-		.dcfclkv_max0p9 = 655,	/* MHz, = 3600/5.5 */
-		.dcfclkv_nom0p8 = 626,	/* MHz, = 3600/5.75 */
-		.dcfclkv_mid0p72 = 600,	/* MHz, = 3600/6, bypass */
-		.dcfclkv_min0p65 = 300,	/* MHz, = 3600/12, bypass */
+		 
+		 
+		.dcfclkv_max0p9 = 655,	 
+		.dcfclkv_nom0p8 = 626,	 
+		.dcfclkv_mid0p72 = 600,	 
+		.dcfclkv_min0p65 = 300,	 
 
-		/* default DISP CLK voltage state on RV */
-		.max_dispclk_vmax0p9 = 1108,	/* MHz, = 3600/3.25 */
-		.max_dispclk_vnom0p8 = 1029,	/* MHz, = 3600/3.5 */
-		.max_dispclk_vmid0p72 = 960,	/* MHz, = 3600/3.75 */
-		.max_dispclk_vmin0p65 = 626,	/* MHz, = 3600/5.75 */
+		 
+		.max_dispclk_vmax0p9 = 1108,	 
+		.max_dispclk_vnom0p8 = 1029,	 
+		.max_dispclk_vmid0p72 = 960,	 
+		.max_dispclk_vmin0p65 = 626,	 
 
-		/* default DPP CLK voltage state on RV */
-		.max_dppclk_vmax0p9 = 720,	/* MHz, = 3600/5 */
-		.max_dppclk_vnom0p8 = 686,	/* MHz, = 3600/5.25 */
-		.max_dppclk_vmid0p72 = 626,	/* MHz, = 3600/5.75 */
-		.max_dppclk_vmin0p65 = 400,	/* MHz, = 3600/9 */
+		 
+		.max_dppclk_vmax0p9 = 720,	 
+		.max_dppclk_vnom0p8 = 686,	 
+		.max_dppclk_vmid0p72 = 626,	 
+		.max_dppclk_vmin0p65 = 400,	 
 
-		/* default PHY CLK voltage state on RV */
-		.phyclkv_max0p9 = 900, /*MHz*/
-		.phyclkv_nom0p8 = 847, /*MHz*/
-		.phyclkv_mid0p72 = 800, /*MHz*/
-		.phyclkv_min0p65 = 600, /*MHz*/
+		 
+		.phyclkv_max0p9 = 900,  
+		.phyclkv_nom0p8 = 847,  
+		.phyclkv_mid0p72 = 800,  
+		.phyclkv_min0p65 = 600,  
 
-		/* BW depend on FCLK, MCLK, # of channels */
-		/* dual channel BW */
-		.fabric_and_dram_bandwidth_vmax0p9 = 38.4f, /*GB/s*/
-		.fabric_and_dram_bandwidth_vnom0p8 = 34.133f, /*GB/s*/
-		.fabric_and_dram_bandwidth_vmid0p72 = 29.866f, /*GB/s*/
-		.fabric_and_dram_bandwidth_vmin0p65 = 12.8f, /*GB/s*/
-		/* single channel BW
-		.fabric_and_dram_bandwidth_vmax0p9 = 19.2f,
-		.fabric_and_dram_bandwidth_vnom0p8 = 17.066f,
-		.fabric_and_dram_bandwidth_vmid0p72 = 14.933f,
-		.fabric_and_dram_bandwidth_vmin0p65 = 12.8f,
-		*/
+		 
+		 
+		.fabric_and_dram_bandwidth_vmax0p9 = 38.4f,  
+		.fabric_and_dram_bandwidth_vnom0p8 = 34.133f,  
+		.fabric_and_dram_bandwidth_vmid0p72 = 29.866f,  
+		.fabric_and_dram_bandwidth_vmin0p65 = 12.8f,  
+		 
 
 		.number_of_channels = 2,
 
-		.socclk = 208, /*MHz*/
-		.downspreading = 0.5f, /*%*/
-		.round_trip_ping_latency_cycles = 128, /*DCFCLK Cycles*/
-		.urgent_out_of_order_return_per_channel = 256, /*bytes*/
-		.vmm_page_size = 4096, /*bytes*/
-		.return_bus_width = 64, /*bytes*/
-		.max_request_size = 256, /*bytes*/
+		.socclk = 208,  
+		.downspreading = 0.5f,  
+		.round_trip_ping_latency_cycles = 128,  
+		.urgent_out_of_order_return_per_channel = 256,  
+		.vmm_page_size = 4096,  
+		.return_bus_width = 64,  
+		.max_request_size = 256,  
 
-		/* Depends on user class (client vs embedded, workstation, etc) */
-		.percent_disp_bw_limit = 0.3f /*%*/
+		 
+		.percent_disp_bw_limit = 0.3f  
 };
 
 const struct dcn_ip_params dcn10_ip_defaults = {
@@ -129,34 +87,34 @@ const struct dcn_ip_params dcn10_ip_defaults = {
 		.opp_output_buffer_lines = 1,
 		.pixel_chunk_size_in_kbyte = 8,
 		.pte_enable = dcn_bw_yes,
-		.pte_chunk_size = 2, /*kbytes*/
-		.meta_chunk_size = 2, /*kbytes*/
-		.writeback_chunk_size = 2, /*kbytes*/
+		.pte_chunk_size = 2,  
+		.meta_chunk_size = 2,  
+		.writeback_chunk_size = 2,  
 		.odm_capability = dcn_bw_no,
 		.dsc_capability = dcn_bw_no,
-		.line_buffer_size = 589824, /*bit*/
+		.line_buffer_size = 589824,  
 		.max_line_buffer_lines = 12,
 		.is_line_buffer_bpp_fixed = dcn_bw_no,
 		.line_buffer_fixed_bpp = dcn_bw_na,
-		.writeback_luma_buffer_size = 12, /*kbytes*/
-		.writeback_chroma_buffer_size = 8, /*kbytes*/
+		.writeback_luma_buffer_size = 12,  
+		.writeback_chroma_buffer_size = 8,  
 		.max_num_dpp = 4,
 		.max_num_writeback = 2,
-		.max_dchub_topscl_throughput = 4, /*pixels/dppclk*/
-		.max_pscl_tolb_throughput = 2, /*pixels/dppclk*/
-		.max_lb_tovscl_throughput = 4, /*pixels/dppclk*/
-		.max_vscl_tohscl_throughput = 4, /*pixels/dppclk*/
+		.max_dchub_topscl_throughput = 4,  
+		.max_pscl_tolb_throughput = 2,  
+		.max_lb_tovscl_throughput = 4,  
+		.max_vscl_tohscl_throughput = 4,  
 		.max_hscl_ratio = 4,
 		.max_vscl_ratio = 4,
 		.max_hscl_taps = 8,
 		.max_vscl_taps = 8,
 		.pte_buffer_size_in_requests = 42,
-		.dispclk_ramping_margin = 1, /*%*/
+		.dispclk_ramping_margin = 1,  
 		.under_scan_factor = 1.11f,
 		.max_inter_dcn_tile_repeaters = 8,
 		.can_vstartup_lines_exceed_vsync_plus_back_porch_lines_minus_one = dcn_bw_no,
 		.bug_forcing_luma_and_chroma_request_to_same_size_fixed = dcn_bw_no,
-		.dcfclk_cstate_latency = 10 /*TODO clone of something else? sr_enter_plus_exit_time?*/
+		.dcfclk_cstate_latency = 10  
 };
 
 static enum dcn_bw_defs tl_sw_mode_to_bw_defs(enum swizzle_mode_values sw_mode)
@@ -202,7 +160,7 @@ static enum dcn_bw_defs tl_sw_mode_to_bw_defs(enum swizzle_mode_values sw_mode)
 	case DC_SW_64KB_R_X:
 	case DC_SW_VAR_R_X:
 	default:
-		BREAK_TO_DEBUGGER(); /*not in formula*/
+		BREAK_TO_DEBUGGER();  
 		return dcn_bw_sw_4_kb_s;
 	}
 }
@@ -254,7 +212,7 @@ static enum dcn_bw_defs tl_pixel_format_to_bw_defs(enum surface_pixel_format for
 enum source_macro_tile_size swizzle_mode_to_macro_tile_size(enum swizzle_mode_values sw_mode)
 {
 	switch (sw_mode) {
-	/* for 4/8/16 high tiles */
+	 
 	case DC_SW_LINEAR:
 		return dm_4k_tile;
 	case DC_SW_4KB_S:
@@ -268,7 +226,7 @@ enum source_macro_tile_size swizzle_mode_to_macro_tile_size(enum swizzle_mode_va
 	case DC_SW_VAR_S_X:
 		return dm_256k_tile;
 
-	/* For 64bpp 2 high tiles */
+	 
 	case DC_SW_4KB_D:
 	case DC_SW_4KB_D_X:
 		return dm_4k_tile;
@@ -290,10 +248,10 @@ enum source_macro_tile_size swizzle_mode_to_macro_tile_size(enum swizzle_mode_va
 	case DC_SW_VAR_R_X:
 		return dm_256k_tile;
 
-	/* Unsupported swizzle modes for dcn */
+	 
 	case DC_SW_256B_S:
 	default:
-		ASSERT(0); /* Not supported */
+		ASSERT(0);  
 		return 0;
 	}
 }
@@ -304,10 +262,10 @@ static void pipe_ctx_to_e2e_pipe_params (
 {
 	input->src.is_hsplit = false;
 
-	/* stereo can never be split */
+	 
 	if (pipe->plane_state->stereo_format == PLANE_STEREO_FORMAT_SIDE_BY_SIDE ||
 	    pipe->plane_state->stereo_format == PLANE_STEREO_FORMAT_TOP_AND_BOTTOM) {
-		/* reset the split group if it was already considered split. */
+		 
 		input->src.hsplit_grp = pipe->pipe_idx;
 	} else if (pipe->top_pipe != NULL && pipe->top_pipe->plane_state == pipe->plane_state) {
 		input->src.is_hsplit = true;
@@ -316,18 +274,10 @@ static void pipe_ctx_to_e2e_pipe_params (
 	}
 
 	if (pipe->plane_res.dpp->ctx->dc->debug.optimized_watermark) {
-		/*
-		 * this method requires us to always re-calculate watermark when dcc change
-		 * between flip.
-		 */
+		 
 		input->src.dcc = pipe->plane_state->dcc.enable ? 1 : 0;
 	} else {
-		/*
-		 * allow us to disable dcc on the fly without re-calculating WM
-		 *
-		 * extra overhead for DCC is quite small.  for 1080p WM without
-		 * DCC is only 0.417us lower (urgent goes from 6.979us to 6.562us)
-		 */
+		 
 		unsigned int bpe;
 
 		input->src.dcc = pipe->plane_res.dpp->ctx->dc->res_pool->hubbub->funcs->
@@ -342,7 +292,7 @@ static void pipe_ctx_to_e2e_pipe_params (
 	input->src.viewport_height     = pipe->plane_res.scl_data.viewport.height;
 	input->src.data_pitch          = pipe->plane_res.scl_data.viewport.width;
 	input->src.data_pitch_c        = pipe->plane_res.scl_data.viewport.width;
-	input->src.cur0_src_width      = 128; /* TODO: Cursor calcs, not curently stored */
+	input->src.cur0_src_width      = 128;  
 	input->src.cur0_bpp            = 32;
 
 	input->src.macro_tile_size = swizzle_mode_to_macro_tile_size(pipe->plane_state->tiling_info.gfx9.swizzle);
@@ -357,11 +307,11 @@ static void pipe_ctx_to_e2e_pipe_params (
 		input->src.source_scan = dm_vert;
 		break;
 	default:
-		ASSERT(0); /* Not supported */
+		ASSERT(0);  
 		break;
 	}
 
-	/* TODO: Fix pixel format mappings */
+	 
 	switch (pipe->plane_state->format) {
 	case SURFACE_PIXEL_FORMAT_VIDEO_420_YCbCr:
 	case SURFACE_PIXEL_FORMAT_VIDEO_420_YCrCb:
@@ -497,12 +447,12 @@ static void dcn_bw_calc_rq_dlg_ttu(
 	input->clks_cfg.refclk_mhz = dc->res_pool->ref_clocks.dchub_ref_clock_inKhz / 1000.0;
 	input->clks_cfg.socclk_mhz = v->socclk;
 	input->clks_cfg.voltage = v->voltage_level;
-//	dc->dml.logger = pool->base.logger;
+ 
 	input->dout.output_format = (v->output_format[in_idx] == dcn_bw_420) ? dm_420 : dm_444;
 	input->dout.output_type  = (v->output[in_idx] == dcn_bw_hdmi) ? dm_hdmi : dm_dp;
-	//input[in_idx].dout.output_standard;
+	 
 
-	/*todo: soc->sr_enter_plus_exit_time??*/
+	 
 
 	dml1_rq_dlg_get_rq_params(dml, rq_param, &input->pipe.src);
 	dml1_extract_rq_regs(dml, rq_regs, rq_param);
@@ -556,7 +506,7 @@ static void calc_wm_sets_and_perf_params(
 		struct dc_state *context,
 		struct dcn_bw_internal_vars *v)
 {
-	/* Calculate set A last to keep internal var state consistent for required config */
+	 
 	if (v->voltage_level < 2) {
 		v->fabric_and_dram_bandwidth_per_state[1] = v->fabric_and_dram_bandwidth_vnom0p8;
 		v->fabric_and_dram_bandwidth_per_state[0] = v->fabric_and_dram_bandwidth_vnom0p8;
@@ -680,10 +630,7 @@ static bool dcn_bw_apply_registry_override(struct dc *dc)
 
 static void hack_disable_optional_pipe_split(struct dcn_bw_internal_vars *v)
 {
-	/*
-	 * disable optional pipe split by lower dispclk bounding box
-	 * at DPM0
-	 */
+	 
 	v->max_dispclk[0] = v->max_dppclk_vmin0p65;
 }
 
@@ -692,10 +639,7 @@ static void hack_force_pipe_split(struct dcn_bw_internal_vars *v,
 {
 	float pixel_rate_mhz = pixel_rate_100hz / 10000;
 
-	/*
-	 * force enabling pipe split by lower dpp clock for DPM0 to just
-	 * below the specify pixel_rate, so bw calc would split pipe.
-	 */
+	 
 	if (pixel_rate_mhz < v->max_dppclk[0])
 		v->max_dppclk[0] = pixel_rate_mhz;
 }
@@ -709,11 +653,7 @@ static void hack_bounding_box(struct dcn_bw_internal_vars *v,
 	for (i = 0; i < MAX_PIPES; i++) {
 		struct pipe_ctx *pipe = &context->res_ctx.pipe_ctx[i];
 
-		/**
-		 * Workaround for avoiding pipe-split in cases where we'd split
-		 * planes that are too small, resulting in splits that aren't
-		 * valid for the scaler.
-		 */
+		 
 		if (pipe->plane_state &&
 		    (pipe->plane_state->dst_rect.width <= 16 ||
 		     pipe->plane_state->dst_rect.height <= 16 ||
@@ -738,10 +678,10 @@ static void hack_bounding_box(struct dcn_bw_internal_vars *v,
 
 static unsigned int get_highest_allowed_voltage_level(bool is_vmin_only_asic)
 {
-	/* for low power RV2 variants, the highest voltage level we want is 0 */
+	 
 	if (is_vmin_only_asic)
 		return 0;
-	else	/* we are ok with all levels */
+	else	 
 		return 4;
 }
 
@@ -750,10 +690,7 @@ bool dcn_validate_bandwidth(
 		struct dc_state *context,
 		bool fast_validate)
 {
-	/*
-	 * we want a breakdown of the various stages of validation, which the
-	 * perf_trace macro doesn't support
-	 */
+	 
 	BW_VAL_TRACE_SETUP();
 
 	const struct resource_pool *pool = dc->res_pool;
@@ -895,11 +832,11 @@ bool dcn_validate_bandwidth(
 
 		if (!pipe->stream)
 			continue;
-		/* skip all but first of split pipes */
+		 
 		if (pipe->top_pipe && pipe->top_pipe->plane_state == pipe->plane_state)
 			continue;
 
-		v->underscan_output[input_idx] = false; /* taken care of in recout already*/
+		v->underscan_output[input_idx] = false;  
 		v->interlace_output[input_idx] = false;
 
 		v->htotal[input_idx] = pipe->stream->timing.h_total;
@@ -919,13 +856,7 @@ bool dcn_validate_bandwidth(
 			v->lb_bit_per_pixel[input_idx] = 30;
 			v->viewport_width[input_idx] = pipe->stream->timing.h_addressable;
 			v->viewport_height[input_idx] = pipe->stream->timing.v_addressable;
-			/*
-			 * for cases where we have no plane, we want to validate up to 1080p
-			 * source size because here we are only interested in if the output
-			 * timing is supported or not. if we cannot support native resolution
-			 * of the high res display, we still want to support lower res up scale
-			 * to native
-			 */
+			 
 			if (v->viewport_width[input_idx] > 1920)
 				v->viewport_width[input_idx] = 1920;
 			if (v->viewport_height[input_idx] > 1080)
@@ -986,18 +917,10 @@ bool dcn_validate_bandwidth(
 			}
 
 			if (dc->debug.optimized_watermark) {
-				/*
-				 * this method requires us to always re-calculate watermark when dcc change
-				 * between flip.
-				 */
+				 
 				v->dcc_enable[input_idx] = pipe->plane_state->dcc.enable ? dcn_bw_yes : dcn_bw_no;
 			} else {
-				/*
-				 * allow us to disable dcc on the fly without re-calculating WM
-				 *
-				 * extra overhead for DCC is quite small.  for 1080p WM without
-				 * DCC is only 0.417us lower (urgent goes from 6.979us to 6.562us)
-				 */
+				 
 				unsigned int bpe;
 
 				v->dcc_enable[input_idx] = dc->res_pool->hubbub->funcs->dcc_support_pixel_format(
@@ -1013,11 +936,7 @@ bool dcn_validate_bandwidth(
 			v->override_vta_ps[input_idx] = pipe->plane_res.scl_data.taps.v_taps;
 			v->override_hta_pschroma[input_idx] = pipe->plane_res.scl_data.taps.h_taps_c;
 			v->override_vta_pschroma[input_idx] = pipe->plane_res.scl_data.taps.v_taps_c;
-			/*
-			 * Spreadsheet doesn't handle taps_c is one properly,
-			 * need to force Chroma to always be scaled to pass
-			 * bandwidth validation.
-			 */
+			 
 			if (v->override_hta_pschroma[input_idx] == 1)
 				v->override_hta_pschroma[input_idx] = 2;
 			if (v->override_vta_pschroma[input_idx] == 1)
@@ -1026,7 +945,7 @@ bool dcn_validate_bandwidth(
 		}
 		if (v->is_line_buffer_bpp_fixed == dcn_bw_yes)
 			v->lb_bit_per_pixel[input_idx] = v->line_buffer_fixed_bpp;
-		v->dcc_rate[input_idx] = 1; /*TODO: Worst case? does this change?*/
+		v->dcc_rate[input_idx] = 1;  
 		v->output_format[input_idx] = pipe->stream->timing.pixel_encoding ==
 				PIXEL_ENCODING_YCBCR420 ? dcn_bw_420 : dcn_bw_444;
 		v->output[input_idx] = pipe->stream->signal ==
@@ -1058,7 +977,7 @@ bool dcn_validate_bandwidth(
 
 	mode_support_and_system_configuration(v);
 
-	/* Unhack dppclk: dont bother with trying to pipe split if we cannot maintain dpm0 */
+	 
 	if (v->voltage_level != 0
 			&& context->stream_count == 1
 			&& dc->debug.force_single_disp_pipe_split) {
@@ -1136,10 +1055,8 @@ bool dcn_validate_bandwidth(
 				bw_consumed = v->fabric_and_dram_bandwidth;
 
 		display_pipe_configuration(v);
-		/*calc_wm_sets_and_perf_params(context, v);*/
-		/* Only 1 set is used by dcn since no noticeable
-		 * performance improvement was measured and due to hw bug DEGVIDCN10-254
-		 */
+		 
+		 
 		dispclkdppclkdcfclk_deep_sleep_prefetch_parameters_watermarks_and_performance_calculation(v);
 
 		context->bw_ctx.bw.dcn.watermarks.a.cstate_pstate.cstate_exit_ns =
@@ -1199,10 +1116,10 @@ bool dcn_validate_bandwidth(
 		for (i = 0, input_idx = 0; i < pool->pipe_count; i++) {
 			struct pipe_ctx *pipe = &context->res_ctx.pipe_ctx[i];
 
-			/* skip inactive pipe */
+			 
 			if (!pipe->stream)
 				continue;
-			/* skip all but first of split pipes */
+			 
 			if (pipe->top_pipe && pipe->top_pipe->plane_state == pipe->plane_state)
 				continue;
 
@@ -1246,7 +1163,7 @@ bool dcn_validate_bandwidth(
 					 pipe->stream->timing.timing_3d_format ==
 					 TIMING_3D_FORMAT_SIDE_BY_SIDE))) {
 					if (hsplit_pipe && hsplit_pipe->plane_state == pipe->plane_state) {
-						/* update previously split pipe */
+						 
 						hsplit_pipe->pipe_dlg_param.vupdate_width = v->v_update_width_pix[input_idx];
 						hsplit_pipe->pipe_dlg_param.vupdate_offset = v->v_update_offset_pix[input_idx];
 						hsplit_pipe->pipe_dlg_param.vready_offset = v->v_ready_offset_pix[input_idx];
@@ -1257,7 +1174,7 @@ bool dcn_validate_bandwidth(
 						hsplit_pipe->pipe_dlg_param.vblank_start = pipe->pipe_dlg_param.vblank_start;
 						hsplit_pipe->pipe_dlg_param.vblank_end = pipe->pipe_dlg_param.vblank_end;
 					} else {
-						/* pipe not split previously needs split */
+						 
 						hsplit_pipe = resource_find_free_secondary_pipe_legacy(&context->res_ctx, pool, pipe);
 						ASSERT(hsplit_pipe);
 						split_stream_across_pipes(&context->res_ctx, pool, pipe, hsplit_pipe);
@@ -1265,7 +1182,7 @@ bool dcn_validate_bandwidth(
 
 					dcn_bw_calc_rq_dlg_ttu(dc, v, hsplit_pipe, input_idx);
 				} else if (hsplit_pipe && hsplit_pipe->plane_state == pipe->plane_state) {
-					/* merge previously split pipe */
+					 
 					pipe->bottom_pipe = hsplit_pipe->bottom_pipe;
 					if (hsplit_pipe->bottom_pipe)
 						hsplit_pipe->bottom_pipe->top_pipe = pipe;
@@ -1273,12 +1190,12 @@ bool dcn_validate_bandwidth(
 					hsplit_pipe->stream = NULL;
 					hsplit_pipe->top_pipe = NULL;
 					hsplit_pipe->bottom_pipe = NULL;
-					/* Clear plane_res and stream_res */
+					 
 					memset(&hsplit_pipe->plane_res, 0, sizeof(hsplit_pipe->plane_res));
 					memset(&hsplit_pipe->stream_res, 0, sizeof(hsplit_pipe->stream_res));
 					resource_build_scaling_params(pipe);
 				}
-				/* for now important to do this after pipe split for building e2e params */
+				 
 				dcn_bw_calc_rq_dlg_ttu(dc, v, pipe, input_idx);
 			}
 
@@ -1296,9 +1213,7 @@ bool dcn_validate_bandwidth(
 		context->bw_ctx.dml.soc.sr_exit_time_us = dc->dcn_soc->sr_exit_time;
 	}
 
-	/*
-	 * BW limit is set to prevent display from impacting other system functions
-	 */
+	 
 
 	bw_limit = dc->dcn_soc->percent_disp_bw_limit * v->fabric_and_dram_bandwidth_vmax0p9;
 	bw_limit_pass = (v->total_data_read_bandwidth / 1000.0) < bw_limit;
@@ -1319,7 +1234,7 @@ static unsigned int dcn_find_normalized_clock_vdd_Level(
 {
 	int vdd_level = dcn_bw_v_min0p65;
 
-	if (clocks_in_khz == 0)/*todo some clock not in the considerations*/
+	if (clocks_in_khz == 0) 
 		return vdd_level;
 
 	switch (clocks_type) {
@@ -1409,7 +1324,7 @@ unsigned int dcn_find_dcfclk_suits_all(
 	unsigned vdd_level, vdd_level_temp;
 	unsigned dcf_clk;
 
-	/*find a common supported voltage level*/
+	 
 	vdd_level = dcn_find_normalized_clock_vdd_Level(
 		dc, DM_PP_CLOCK_TYPE_DISPLAY_CLK, clocks->dispclk_khz);
 	vdd_level_temp = dcn_find_normalized_clock_vdd_Level(
@@ -1426,7 +1341,7 @@ unsigned int dcn_find_dcfclk_suits_all(
 	vdd_level_temp = dcn_find_normalized_clock_vdd_Level(
 		dc, DM_PP_CLOCK_TYPE_DCFCLK, clocks->dcfclk_khz);
 
-	/*find that level conresponding dcfclk*/
+	 
 	vdd_level = dcn_bw_max(vdd_level, vdd_level_temp);
 	if (vdd_level == dcn_bw_v_max0p91) {
 		BREAK_TO_DEBUGGER();
@@ -1505,21 +1420,15 @@ void dcn_bw_notify_pplib_of_wm_ranges(
 {
 	struct pp_smu_funcs_rv *pp = NULL;
 	struct pp_smu_wm_range_sets ranges = {0};
-	const int overdrive = 5000000; /* 5 GHz to cover Overdrive */
+	const int overdrive = 5000000;  
 
 	if (dc->res_pool->pp_smu)
 		pp = &dc->res_pool->pp_smu->rv_funcs;
 	if (!pp || !pp->set_wm_ranges)
 		return;
 
-	/* Now notify PPLib/SMU about which Watermarks sets they should select
-	 * depending on DPM state they are in. And update BW MGR GFX Engine and
-	 * Memory clock member variables for Watermarks calculations for each
-	 * Watermark Set. Only one watermark set for dcn1 due to hw bug DEGVIDCN10-254.
-	 */
-	/* SOCCLK does not affect anytihng but writeback for DCN so for now we dont
-	 * care what the value is, hence min to overdrive level
-	 */
+	 
+	 
 	ranges.num_reader_wm_sets = WM_SET_COUNT;
 	ranges.num_writer_wm_sets = WM_SET_COUNT;
 	ranges.reader_wm_sets[0].wm_inst = WM_A;
@@ -1555,7 +1464,7 @@ void dcn_bw_notify_pplib_of_wm_ranges(
 	ranges.reader_wm_sets[3] = ranges.writer_wm_sets[0];
 	ranges.reader_wm_sets[3].wm_inst = WM_D;
 
-	/* Notify PP Lib/SMU which Watermarks to use for which clock ranges */
+	 
 	pp->set_wm_ranges(&pp->pp_smu, &ranges);
 }
 
@@ -1740,7 +1649,7 @@ void dcn_bw_sync_calcs_and_dml(struct dc *dc)
 	dc->dml.ip.max_vscl_ratio = dc->dcn_ip->max_vscl_ratio;
 	dc->dml.ip.max_hscl_taps = dc->dcn_ip->max_hscl_taps;
 	dc->dml.ip.max_vscl_taps = dc->dcn_ip->max_vscl_taps;
-	/*pte_buffer_size_in_requests missing in dml*/
+	 
 	dc->dml.ip.dispclk_ramp_margin_percent = dc->dcn_ip->dispclk_ramping_margin;
 	dc->dml.ip.underscan_factor = dc->dcn_ip->under_scan_factor;
 	dc->dml.ip.max_inter_dcn_tile_repeaters = dc->dcn_ip->max_inter_dcn_tile_repeaters;

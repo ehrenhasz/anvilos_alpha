@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * drivers/media/i2c/ccs/ccs-reg-access.c
- *
- * Generic driver for MIPI CCS/SMIA/SMIA++ compliant camera sensors
- *
- * Copyright (C) 2020 Intel Corporation
- * Copyright (C) 2011--2012 Nokia Corporation
- * Contact: Sakari Ailus <sakari.ailus@linux.intel.com>
- */
+
+ 
 
 #include <asm/unaligned.h>
 
@@ -28,27 +20,24 @@ static u32 float_to_u32_mul_1000000(struct i2c_client *client, u32 phloat)
 	}
 
 	if (phloat == 0x7f800000)
-		return ~0; /* Inf. */
+		return ~0;  
 
 	if ((phloat & 0x7f800000) == 0x7f800000) {
 		dev_err(&client->dev, "NaN or other special number\n");
 		return 0;
 	}
 
-	/* Valid cases begin here */
+	 
 	if (phloat == 0)
-		return 0; /* Valid zero */
+		return 0;  
 
 	if (phloat > 0x4f800000)
-		return ~0; /* larger than 4294967295 */
+		return ~0;  
 
-	/*
-	 * Unbias exponent (note how phloat is now guaranteed to
-	 * have 0 in the high bit)
-	 */
+	 
 	exp = ((int32_t)phloat >> 23) - 127;
 
-	/* Extract mantissa, add missing '1' bit and it's in MHz */
+	 
 	man = ((phloat & 0x7fffff) | 0x800000) * 1000000ULL;
 
 	if (exp < 0)
@@ -56,16 +45,13 @@ static u32 float_to_u32_mul_1000000(struct i2c_client *client, u32 phloat)
 	else
 		man <<= exp;
 
-	man >>= 23; /* Remove mantissa bias */
+	man >>= 23;  
 
 	return man & 0xffffffff;
 }
 
 
-/*
- * Read a 8/16/32-bit i2c register.  The value is returned in 'val'.
- * Returns zero if successful, or non-zero otherwise.
- */
+ 
 static int ____ccs_read_addr(struct ccs_sensor *sensor, u16 reg, u16 len,
 			     u32 *val)
 {
@@ -112,7 +98,7 @@ err:
 	return r;
 }
 
-/* Read a register using 8-bit access only. */
+ 
 static int ____ccs_read_addr_8only(struct ccs_sensor *sensor, u16 reg,
 				   u16 len, u32 *val)
 {
@@ -171,10 +157,7 @@ u32 ccs_reg_conv(struct ccs_sensor *sensor, u32 reg, u32 val)
 	return val;
 }
 
-/*
- * Read a 8/16/32-bit i2c register.  The value is returned in 'val'.
- * Returns zero if successful, or non-zero otherwise.
- */
+ 
 static int __ccs_read_addr(struct ccs_sensor *sensor, u32 reg, u32 *val,
 			   bool only8, bool conv)
 {
@@ -297,11 +280,7 @@ static int ccs_write_retry(struct i2c_client *client, struct i2c_msg *msg)
 	int r;
 
 	for (retries = 0; retries < 10; retries++) {
-		/*
-		 * Due to unknown reason sensor stops responding. This
-		 * loop is a temporaty solution until the root cause
-		 * is found.
-		 */
+		 
 		r = i2c_transfer(client->adapter, msg, 1);
 		if (r != 1) {
 			usleep_range(1000, 2000);
@@ -330,7 +309,7 @@ int ccs_write_addr_no_quirk(struct ccs_sensor *sensor, u32 reg, u32 val)
 		return -EINVAL;
 
 	msg.addr = client->addr;
-	msg.flags = 0; /* Write */
+	msg.flags = 0;  
 	msg.len = 2 + len;
 	msg.buf = data;
 
@@ -350,10 +329,7 @@ int ccs_write_addr_no_quirk(struct ccs_sensor *sensor, u32 reg, u32 val)
 	return r;
 }
 
-/*
- * Write to a 8/16-bit register.
- * Returns zero if successful, or non-zero otherwise.
- */
+ 
 int ccs_write_addr(struct ccs_sensor *sensor, u32 reg, u32 val)
 {
 	int rval;
@@ -387,7 +363,7 @@ int ccs_write_data_regs(struct ccs_sensor *sensor, struct ccs_reg *regs,
 		for (j = 0; j < regs->len;
 		     j += msg.len - 2, regdata += msg.len - 2) {
 			char printbuf[(MAX_WRITE_LEN << 1) +
-				      1 /* \0 */] = { 0 };
+				      1  ] = { 0 };
 			int rval;
 
 			msg.len = min(regs->len - j, MAX_WRITE_LEN);

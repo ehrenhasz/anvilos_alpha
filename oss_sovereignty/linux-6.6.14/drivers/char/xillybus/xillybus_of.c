@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * linux/drivers/misc/xillybus_of.c
- *
- * Copyright 2011 Xillybus Ltd, http://xillybus.com
- *
- * Driver for the Xillybus FPGA/host framework using Open Firmware.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/device.h>
@@ -22,10 +16,10 @@ MODULE_LICENSE("GPL v2");
 
 static const char xillyname[] = "xillybus_of";
 
-/* Match table for of_platform binding */
+ 
 static const struct of_device_id xillybus_of_match[] = {
 	{ .compatible = "xillybus,xillybus-1.00.a", },
-	{ .compatible = "xlnx,xillybus-1.00.a", }, /* Deprecated */
+	{ .compatible = "xlnx,xillybus-1.00.a", },  
 	{}
 };
 

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * /proc/bootconfig - Extra boot configuration
- */
+
+ 
 #include <linux/fs.h>
 #include <linux/init.h>
 #include <linux/printk.h>
@@ -19,10 +17,10 @@ static int boot_config_proc_show(struct seq_file *m, void *v)
 	return 0;
 }
 
-/* Rest size of buffer */
+ 
 #define rest(dst, end) ((end) > (dst) ? (end) - (dst) : 0)
 
-/* Return the needed total length if @size is 0 */
+ 
 static int __init copy_xbc_key_value_list(char *dst, size_t size)
 {
 	struct xbc_node *leaf, *vnode;

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * ddbridge.c: Digital Devices PCIe bridge driver
- *
- * Copyright (C) 2010-2017 Digital Devices GmbH
- *                         Ralph Metzler <rjkm@metzlerbros.de>
- *                         Marcus Metzler <mocm@metzlerbros.de>
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -29,8 +23,8 @@
 #include "ddbridge-hw.h"
 #include "ddbridge-io.h"
 
-/****************************************************************************/
-/* module parameters */
+ 
+ 
 
 #ifdef CONFIG_PCI_MSI
 #ifdef CONFIG_DVB_DDBRIDGE_MSIENABLE
@@ -46,9 +40,9 @@ MODULE_PARM_DESC(msi, "Control MSI interrupts: 0-disable (default), 1-enable");
 #endif
 #endif
 
-/****************************************************************************/
-/****************************************************************************/
-/****************************************************************************/
+ 
+ 
+ 
 
 static void ddb_irq_disable(struct ddb *dev)
 {
@@ -241,9 +235,9 @@ fail:
 	return -1;
 }
 
-/****************************************************************************/
-/****************************************************************************/
-/****************************************************************************/
+ 
+ 
+ 
 
 #define DDB_DEVICE_ANY(_device) \
 		{ PCI_DEVICE_SUB(DDVID, _device, DDVID, PCI_ANY_ID) }

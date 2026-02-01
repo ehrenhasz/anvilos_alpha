@@ -1,29 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *	Low-Level PCI Access for i386 machines
- *
- * Copyright 1993, 1994 Drew Eckhardt
- *      Visionary Computing
- *      (Unix and Linux consulting and custom programming)
- *      Drew@Colorado.EDU
- *      +1 (303) 786-7975
- *
- * Drew's work was sponsored by:
- *	iX Multiuser Multitasking Magazine
- *	Hannover, Germany
- *	hm@ix.de
- *
- * Copyright 1997--2000 Martin Mares <mj@ucw.cz>
- *
- * For more information, please consult the following manuals (look at
- * http://www.pcisig.com/ for how to get them):
- *
- * PCI BIOS Specification
- * PCI Local Bus Specification
- * PCI to PCI Bridge Specification
- * PCI System Design Guide
- *
- */
+
+ 
 
 #include <linux/types.h>
 #include <linux/kernel.h>
@@ -40,10 +16,7 @@
 #include <asm/io_apic.h>
 
 
-/*
- * This list of dynamic mappings is for temporarily maintaining
- * original BIOS BAR addresses for possible reinstatement.
- */
+ 
 struct pcibios_fwaddrmap {
 	struct list_head list;
 	struct pci_dev *dev;
@@ -54,7 +27,7 @@ static LIST_HEAD(pcibios_fwaddrmappings);
 static DEFINE_SPINLOCK(pcibios_fwaddrmap_lock);
 static bool pcibios_fw_addr_done;
 
-/* Must be called with 'pcibios_fwaddrmap_lock' lock held. */
+ 
 static struct pcibios_fwaddrmap *pcibios_fwaddrmap_lookup(struct pci_dev *dev)
 {
 	struct pcibios_fwaddrmap *map;
@@ -138,19 +111,7 @@ skip_isa_ioresource_align(struct pci_dev *dev) {
 	return 0;
 }
 
-/*
- * We need to avoid collisions with `mirrored' VGA ports
- * and other strange ISA hardware, so we always want the
- * addresses to be allocated in the 0x000-0x0ff region
- * modulo 0x400.
- *
- * Why? Because some silly external IO cards only decode
- * the low 10 bits of the IO address. The 0x00-0xff region
- * is reserved for motherboard devices that decode all 16
- * bits, so it's ok to allocate at, say, 0x2800-0x28ff,
- * but we want to try to avoid allocating at 0x2900-0x2bff
- * which might have be mirrored at 0x0100-0x03ff..
- */
+ 
 resource_size_t
 pcibios_align_resource(void *data, const struct resource *res,
 			resource_size_t size, resource_size_t align)
@@ -164,7 +125,7 @@ pcibios_align_resource(void *data, const struct resource *res,
 		if (start & 0x300)
 			start = (start + 0x3ff) & ~0x3ff;
 	} else if (res->flags & IORESOURCE_MEM) {
-		/* The low 1MB range is reserved for ISA cards */
+		 
 		if (start < BIOS_END)
 			start = BIOS_END;
 	}
@@ -172,39 +133,7 @@ pcibios_align_resource(void *data, const struct resource *res,
 }
 EXPORT_SYMBOL(pcibios_align_resource);
 
-/*
- *  Handle resources of PCI devices.  If the world were perfect, we could
- *  just allocate all the resource regions and do nothing more.  It isn't.
- *  On the other hand, we cannot just re-allocate all devices, as it would
- *  require us to know lots of host bridge internals.  So we attempt to
- *  keep as much of the original configuration as possible, but tweak it
- *  when it's found to be wrong.
- *
- *  Known BIOS problems we have to work around:
- *	- I/O or memory regions not configured
- *	- regions configured, but not enabled in the command register
- *	- bogus I/O addresses above 64K used
- *	- expansion ROMs left enabled (this may sound harmless, but given
- *	  the fact the PCI specs explicitly allow address decoders to be
- *	  shared between expansion ROMs and other resource regions, it's
- *	  at least dangerous)
- *	- bad resource sizes or overlaps with other regions
- *
- *  Our solution:
- *	(1) Allocate resources for all buses behind PCI-to-PCI bridges.
- *	    This gives us fixed barriers on where we can allocate.
- *	(2) Allocate resources for all enabled devices.  If there is
- *	    a collision, just mark the resource as unallocated. Also
- *	    disable expansion ROMs during this step.
- *	(3) Try to allocate resources for disabled devices.  If the
- *	    resources were assigned correctly, everything goes well,
- *	    if they weren't, they won't disturb allocation of other
- *	    resources.
- *	(4) Assign new addresses to resources which were either
- *	    not configured at all or misconfigured.  If explicitly
- *	    requested by the user, configure expansion ROM address
- *	    as well.
- */
+ 
 
 static void pcibios_allocate_bridge_resources(struct pci_dev *dev)
 {
@@ -215,15 +144,10 @@ static void pcibios_allocate_bridge_resources(struct pci_dev *dev)
 		r = &dev->resource[idx];
 		if (!r->flags)
 			continue;
-		if (r->parent)	/* Already allocated */
+		if (r->parent)	 
 			continue;
 		if (!r->start || pci_claim_bridge_resource(dev, idx) < 0) {
-			/*
-			 * Something is wrong with the region.
-			 * Invalidate the resource to prevent
-			 * child resource allocations in this
-			 * range.
-			 */
+			 
 			r->start = r->end = 0;
 			r->flags = 0;
 		}
@@ -234,7 +158,7 @@ static void pcibios_allocate_bus_resources(struct pci_bus *bus)
 {
 	struct pci_bus *child;
 
-	/* Depth-First Search on bus tree */
+	 
 	if (bus->self)
 		pcibios_allocate_bridge_resources(bus->self);
 	list_for_each_entry(child, &bus->children, node)
@@ -263,9 +187,9 @@ static void pcibios_allocate_dev_resources(struct pci_dev *dev, int pass)
 	for (i = 0; i < ARRAY_SIZE(idx_range); i++)
 		for (idx = idx_range[i].start; idx <= idx_range[i].end; idx++) {
 			r = &dev->resource[idx];
-			if (r->parent)	/* Already allocated */
+			if (r->parent)	 
 				continue;
-			if (!r->start)	/* Address not assigned at all */
+			if (!r->start)	 
 				continue;
 			if (r->flags & IORESOURCE_IO)
 				disabled = !(command & PCI_COMMAND_IO);
@@ -280,7 +204,7 @@ static void pcibios_allocate_dev_resources(struct pci_dev *dev, int pass)
 						dev_info(&dev->dev, "BAR %d %pR is immovable\n",
 							 idx, r);
 					} else {
-						/* We'll assign a new address later */
+						 
 						pcibios_save_fw_addr(dev,
 								idx, r->start);
 						r->end -= r->start;
@@ -292,8 +216,7 @@ static void pcibios_allocate_dev_resources(struct pci_dev *dev, int pass)
 	if (!pass) {
 		r = &dev->resource[PCI_ROM_RESOURCE];
 		if (r->flags & IORESOURCE_ROM_ENABLE) {
-			/* Turn the ROM off, leave the resource region,
-			 * but keep it unregistered. */
+			 
 			u32 reg;
 			dev_dbg(&dev->dev, "disabling ROM %pR\n", r);
 			r->flags &= ~IORESOURCE_ROM_ENABLE;
@@ -322,15 +245,11 @@ static void pcibios_allocate_dev_rom_resource(struct pci_dev *dev)
 {
 	struct resource *r;
 
-	/*
-	 * Try to use BIOS settings for ROMs, otherwise let
-	 * pci_assign_unassigned_resources() allocate the new
-	 * addresses.
-	 */
+	 
 	r = &dev->resource[PCI_ROM_RESOURCE];
 	if (!r->flags || !r->start)
 		return;
-	if (r->parent) /* Already allocated */
+	if (r->parent)  
 		return;
 
 	if (pci_claim_resource(dev, PCI_ROM_RESOURCE) < 0) {
@@ -366,10 +285,7 @@ static int __init pcibios_assign_resources(void)
 	return 0;
 }
 
-/*
- * This is an fs_initcall (one below subsys_initcall) in order to reserve
- * resources properly.
- */
+ 
 fs_initcall(pcibios_assign_resources);
 
 void pcibios_resource_survey_bus(struct pci_bus *bus)
@@ -400,10 +316,6 @@ void __init pcibios_resource_survey(void)
 		pcibios_allocate_resources(bus, 1);
 
 	e820__reserve_resources_late();
-	/*
-	 * Insert the IO APIC resources after PCI initialization has
-	 * occurred to handle IO APICS that are mapped in on a BAR in
-	 * PCI space, but before trying to assign unassigned pci res.
-	 */
+	 
 	ioapic_insert_resources();
 }

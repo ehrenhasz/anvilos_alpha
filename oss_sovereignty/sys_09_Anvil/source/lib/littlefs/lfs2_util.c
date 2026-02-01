@@ -1,17 +1,11 @@
-/*
- * lfs2 util functions
- *
- * Copyright (c) 2022, The littlefs authors.
- * Copyright (c) 2017, Arm Limited. All rights reserved.
- * SPDX-License-Identifier: BSD-3-Clause
- */
+ 
 #include "lfs2_util.h"
 
-// Only compile if user does not provide custom config
+
 #ifndef LFS2_CONFIG
 
 
-// Software CRC implementation with small lookup table
+
 uint32_t lfs2_crc(uint32_t crc, const void *buffer, size_t size) {
     static const uint32_t rtable[16] = {
         0x00000000, 0x1db71064, 0x3b6e20c8, 0x26d930ac,

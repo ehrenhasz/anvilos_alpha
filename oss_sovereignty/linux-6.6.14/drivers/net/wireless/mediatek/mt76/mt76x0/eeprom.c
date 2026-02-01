@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2014 Felix Fietkau <nbd@openwrt.org>
- * Copyright (C) 2015 Jakub Kicinski <kubakici@wp.pl>
- * Copyright (C) 2018 Stanislaw Gruszka <stf_xl@wp.pl>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/of.h>
@@ -159,36 +155,36 @@ void mt76x0_get_tx_power_per_rate(struct mt76x02_dev *dev,
 
 	memset(t, 0, sizeof(*t));
 
-	/* cck 1M, 2M, 5.5M, 11M */
+	 
 	val = mt76x02_eeprom_get(dev, MT_EE_TX_POWER_BYRATE_BASE);
 	t->cck[0] = t->cck[1] = s6_to_s8(val);
 	t->cck[2] = t->cck[3] = s6_to_s8(val >> 8);
 
-	/* ofdm 6M, 9M, 12M, 18M */
+	 
 	addr = is_2ghz ? MT_EE_TX_POWER_BYRATE_BASE + 2 : 0x120;
 	val = mt76x02_eeprom_get(dev, addr);
 	t->ofdm[0] = t->ofdm[1] = s6_to_s8(val);
 	t->ofdm[2] = t->ofdm[3] = s6_to_s8(val >> 8);
 
-	/* ofdm 24M, 36M, 48M, 54M */
+	 
 	addr = is_2ghz ? MT_EE_TX_POWER_BYRATE_BASE + 4 : 0x122;
 	val = mt76x02_eeprom_get(dev, addr);
 	t->ofdm[4] = t->ofdm[5] = s6_to_s8(val);
 	t->ofdm[6] = t->ofdm[7] = s6_to_s8(val >> 8);
 
-	/* ht-vht mcs 1ss 0, 1, 2, 3 */
+	 
 	addr = is_2ghz ? MT_EE_TX_POWER_BYRATE_BASE + 6 : 0x124;
 	val = mt76x02_eeprom_get(dev, addr);
 	t->ht[0] = t->ht[1] = s6_to_s8(val);
 	t->ht[2] = t->ht[3] = s6_to_s8(val >> 8);
 
-	/* ht-vht mcs 1ss 4, 5, 6 */
+	 
 	addr = is_2ghz ? MT_EE_TX_POWER_BYRATE_BASE + 8 : 0x126;
 	val = mt76x02_eeprom_get(dev, addr);
 	t->ht[4] = t->ht[5] = s6_to_s8(val);
 	t->ht[6] = t->ht[7] = s6_to_s8(val >> 8);
 
-	/* vht mcs 8, 9 5GHz */
+	 
 	val = mt76x02_eeprom_get(dev, 0x12c);
 	t->vht[0] = s6_to_s8(val);
 	t->vht[1] = s6_to_s8(val >> 8);

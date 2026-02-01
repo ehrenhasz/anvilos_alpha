@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-// Copyright (c) 2018-2020, The Linux Foundation. All rights reserved.
+
+
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -281,7 +281,7 @@ struct tx_macro {
 static const DECLARE_TLV_DB_SCALE(digital_gain, -8400, 100, -8400);
 
 static struct reg_default tx_defaults[] = {
-	/* TX Macro */
+	 
 	{ CDC_TX_CLK_RST_CTRL_MCLK_CONTROL, 0x00 },
 	{ CDC_TX_CLK_RST_CTRL_FS_CNT_CONTROL, 0x00 },
 	{ CDC_TX_CLK_RST_CTRL_SWR_CONTROL, 0x00},
@@ -425,7 +425,7 @@ static struct reg_default tx_defaults[] = {
 
 static bool tx_is_volatile_register(struct device *dev, unsigned int reg)
 {
-	/* Update volatile list for tx/tx macros */
+	 
 	switch (reg) {
 	case CDC_TX_TOP_CSR_SWR_DMIC0_CTL:
 	case CDC_TX_TOP_CSR_SWR_DMIC1_CTL:
@@ -605,7 +605,7 @@ static int tx_macro_mclk_enable(struct tx_macro *tx,
 
 	if (mclk_enable) {
 		if (tx->tx_mclk_users == 0) {
-			/* 9.6MHz MCLK, set value 0x00 if other frequency */
+			 
 			regmap_update_bits(regmap, CDC_TX_TOP_CSR_FREQ_MCLK, 0x01, 0x01);
 			regmap_update_bits(regmap, CDC_TX_CLK_RST_CTRL_MCLK_CONTROL,
 					   CDC_TX_MCLK_EN_MASK,
@@ -689,7 +689,7 @@ static void tx_macro_tx_hpf_corner_freq_callback(struct work_struct *work)
 					      hpf_cut_off_freq);
 		snd_soc_component_write_field(component, hpf_gate_reg,
 					      CDC_TXn_HPF_F_CHANGE_MASK, 0x1);
-		/* Minimum 1 clk cycle delay is required as per HW spec */
+		 
 		usleep_range(1000, 1010);
 		snd_soc_component_write_field(component, hpf_gate_reg,
 					      CDC_TXn_HPF_F_CHANGE_MASK, 0x0);
@@ -780,7 +780,7 @@ static int tx_macro_put_dec_enum(struct snd_kcontrol *kcontrol,
 	}
 
 	if (val != 0) {
-		if (widget->shift) { /* MSM DMIC */
+		if (widget->shift) {  
 			snd_soc_component_write_field(component, mic_sel_reg,
 						      CDC_TXn_ADC_DMIC_SEL_MASK, 1);
 		} else if (val < 5) {
@@ -888,7 +888,7 @@ static int tx_macro_enable_dec(struct snd_soc_dapm_widget *w,
 		snd_soc_component_write_field(component, dec_cfg_reg,
 					      CDC_TXn_ADC_MODE_MASK,
 					      tx->dec_mode[decimator]);
-		/* Enable TX PGA Mute */
+		 
 		snd_soc_component_write_field(component, tx_vol_ctl_reg,
 					      CDC_TXn_PGA_MUTE_MASK, 0x1);
 		break;
@@ -897,7 +897,7 @@ static int tx_macro_enable_dec(struct snd_soc_dapm_widget *w,
 					     CDC_TXn_CLK_EN_MASK, 0x1);
 		if (!is_amic_enabled(component, decimator)) {
 			snd_soc_component_update_bits(component, hpf_gate_reg, 0x01, 0x00);
-			/* Minimum 1 clk cycle delay is required as per HW spec */
+			 
 			usleep_range(1000, 1010);
 		}
 		hpf_cut_off_freq = snd_soc_component_read_field(component, dec_cfg_reg,
@@ -915,7 +915,7 @@ static int tx_macro_enable_dec(struct snd_soc_dapm_widget *w,
 			hpf_delay = TX_MACRO_AMIC_HPF_DELAY_MS;
 			unmute_delay = TX_MACRO_AMIC_UNMUTE_DELAY_MS;
 		}
-		/* schedule work queue to Remove Mute */
+		 
 		queue_delayed_work(system_freezable_wq,
 				   &tx->tx_mute_dwork[decimator].dwork,
 				   msecs_to_jiffies(unmute_delay));
@@ -937,12 +937,10 @@ static int tx_macro_enable_dec(struct snd_soc_dapm_widget *w,
 					      CDC_TXn_HPF_ZERO_GATE_MASK,
 					      0x01);
 
-			/*
-			 * 6ms delay is required as per HW spec
-			 */
+			 
 			usleep_range(6000, 6010);
 		}
-		/* apply gain after decimator is enabled */
+		 
 		snd_soc_component_write(component, tx_gain_ctl_reg,
 			      snd_soc_component_read(component,
 					tx_gain_ctl_reg));
@@ -977,10 +975,7 @@ static int tx_macro_enable_dec(struct snd_soc_dapm_widget *w,
 					      CDC_TXn_HPF_ZERO_GATE_MASK,
 					      0x03);
 
-				/*
-				 * Minimum 1 clk cycle delay is required
-				 * as per HW spec
-				 */
+				 
 				usleep_range(1000, 1010);
 				snd_soc_component_update_bits(component, hpf_gate_reg,
 					      CDC_TXn_HPF_F_CHANGE_MASK |
@@ -1136,7 +1131,7 @@ static int tx_macro_digital_mute(struct snd_soc_dai *dai, int mute, int stream)
 	struct tx_macro *tx = snd_soc_component_get_drvdata(component);
 	u8 decimator;
 
-	/* active decimator not set yet */
+	 
 	if (tx->active_decimator[dai->id] == -1)
 		return 0;
 
@@ -1847,7 +1842,7 @@ static int tx_macro_component_probe(struct snd_soc_component *comp)
 
 	snd_soc_component_update_bits(comp, CDC_TX0_TX_PATH_SEC7, 0x3F,
 				      0x0A);
-	/* Enable swr mic0 and mic1 clock */
+	 
 	snd_soc_component_update_bits(comp, CDC_TX_TOP_CSR_SWR_AMIC0_CTL, 0xFF, 0x00);
 	snd_soc_component_update_bits(comp, CDC_TX_TOP_CSR_SWR_AMIC1_CTL, 0xFF, 0x00);
 
@@ -1997,7 +1992,7 @@ static int tx_macro_probe(struct platform_device *pdev)
 		goto err;
 	}
 
-	/* Update defaults for lpass sc7280 */
+	 
 	if (of_device_is_compatible(np, "qcom,sc7280-lpass-tx-macro")) {
 		for (reg = 0; reg < ARRAY_SIZE(tx_defaults); reg++) {
 			switch (tx_defaults[reg].reg) {
@@ -2021,12 +2016,12 @@ static int tx_macro_probe(struct platform_device *pdev)
 
 	tx->dev = dev;
 
-	/* Set active_decimator default value */
+	 
 	tx->active_decimator[TX_MACRO_AIF1_CAP] = -1;
 	tx->active_decimator[TX_MACRO_AIF2_CAP] = -1;
 	tx->active_decimator[TX_MACRO_AIF3_CAP] = -1;
 
-	/* set MCLK and NPL rates */
+	 
 	clk_set_rate(tx->mclk, MCLK_FREQ);
 	clk_set_rate(tx->npl, MCLK_FREQ);
 
@@ -2050,7 +2045,7 @@ static int tx_macro_probe(struct platform_device *pdev)
 	if (ret)
 		goto err_fsgen;
 
-	/* reset soundwire block */
+	 
 	regmap_update_bits(tx->regmap, CDC_TX_CLK_RST_CTRL_SWR_CONTROL,
 			   CDC_TX_SWR_RESET_MASK, CDC_TX_SWR_RESET_ENABLE);
 

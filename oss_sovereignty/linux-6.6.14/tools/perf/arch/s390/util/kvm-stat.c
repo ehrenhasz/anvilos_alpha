@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Arch specific functions for perf kvm stat.
- *
- * Copyright 2014 IBM Corp.
- * Author(s): Alexander Yarygin <yarygin@linux.vnet.ibm.com>
- */
+
+ 
 
 #include <errno.h>
 #include <string.h>

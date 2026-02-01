@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright © 2009 - Maxim Levitsky
- * Common routines & support for xD format
- */
+
+ 
 #include <linux/kernel.h>
 #include <linux/mtd/rawnand.h>
 #include <linux/module.h>
@@ -26,17 +23,17 @@ static int oob_sm_ooblayout_free(struct mtd_info *mtd, int section,
 {
 	switch (section) {
 	case 0:
-		/* reserved */
+		 
 		oobregion->offset = 0;
 		oobregion->length = 4;
 		break;
 	case 1:
-		/* LBA1 */
+		 
 		oobregion->offset = 6;
 		oobregion->length = 2;
 		break;
 	case 2:
-		/* LBA2 */
+		 
 		oobregion->offset = 11;
 		oobregion->length = 2;
 		break;
@@ -52,11 +49,11 @@ static const struct mtd_ooblayout_ops oob_sm_ops = {
 	.free = oob_sm_ooblayout_free,
 };
 
-/* NOTE: This layout is not compatabable with SmartMedia, */
-/* because the 256 byte devices have page depenent oob layout */
-/* However it does preserve the bad block markers */
-/* If you use smftl, it will bypass this and work correctly */
-/* If you not, then you break SmartMedia compliance anyway */
+ 
+ 
+ 
+ 
+ 
 
 static int oob_sm_small_ooblayout_ecc(struct mtd_info *mtd, int section,
 				      struct mtd_oob_region *oobregion)
@@ -75,12 +72,12 @@ static int oob_sm_small_ooblayout_free(struct mtd_info *mtd, int section,
 {
 	switch (section) {
 	case 0:
-		/* reserved */
+		 
 		oobregion->offset = 3;
 		oobregion->length = 2;
 		break;
 	case 1:
-		/* LBA1 */
+		 
 		oobregion->offset = 6;
 		oobregion->length = 2;
 		break;
@@ -106,8 +103,7 @@ static int sm_block_markbad(struct nand_chip *chip, loff_t ofs)
 	memset(&oob, -1, SM_OOB_SIZE);
 	oob.block_status = 0x0F;
 
-	/* As long as this function is called on erase block boundaries
-		it will work correctly for 256 byte nand */
+	 
 	ops.mode = MTD_OPS_PLACE_OOB;
 	ops.ooboffs = 0;
 	ops.ooblen = mtd->oobsize;
@@ -162,12 +158,12 @@ static int sm_attach_chip(struct nand_chip *chip)
 {
 	struct mtd_info *mtd = nand_to_mtd(chip);
 
-	/* Bad block marker position */
+	 
 	chip->badblockpos = 0x05;
 	chip->badblockbits = 7;
 	chip->legacy.block_markbad = sm_block_markbad;
 
-	/* ECC layout */
+	 
 	if (mtd->writesize == SM_SECTOR_SIZE)
 		mtd_set_ooblayout(mtd, &oob_sm_ops);
 	else if (mtd->writesize == SM_SMALL_PAGE)
@@ -190,7 +186,7 @@ int sm_register_device(struct mtd_info *mtd, int smartmedia)
 
 	chip->options |= NAND_SKIP_BBTSCAN;
 
-	/* Scan for card properties */
+	 
 	chip->legacy.dummy_controller.ops = &sm_controller_ops;
 	flash_ids = smartmedia ? nand_smartmedia_flash_ids : nand_xd_flash_ids;
 	ret = nand_scan_with_ids(chip, 1, flash_ids);

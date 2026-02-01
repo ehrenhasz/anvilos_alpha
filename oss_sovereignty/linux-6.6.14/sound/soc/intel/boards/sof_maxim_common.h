@@ -1,12 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright(c) 2020 Intel Corporation.
- */
+ 
+ 
 
-/*
- * This file defines data structures used in Machine Driver for Intel
- * platforms with Maxim Codecs.
- */
+ 
 #ifndef __SOF_MAXIM_COMMON_H
 #define __SOF_MAXIM_COMMON_H
 
@@ -24,9 +19,7 @@ int max_98373_spk_codec_init(struct snd_soc_pcm_runtime *rtd);
 void max_98373_set_codec_conf(struct snd_soc_card *card);
 int max_98373_trigger(struct snd_pcm_substream *substream, int cmd);
 
-/*
- * Maxim MAX98390
- */
+ 
 #define MAX_98390_ACPI_HID	"MX98390"
 #define MAX_98390_CODEC_DAI	"max98390-aif1"
 #define MAX_98390_DEV0_NAME	"i2c-" MAX_98390_ACPI_HID ":00"
@@ -37,9 +30,7 @@ int max_98373_trigger(struct snd_pcm_substream *substream, int cmd);
 void max_98390_dai_link(struct device *dev, struct snd_soc_dai_link *link);
 void max_98390_set_codec_conf(struct device *dev, struct snd_soc_card *card);
 
-/*
- * Maxim MAX98357A/MAX98360A
- */
+ 
 #define MAX_98357A_CODEC_DAI	"HiFi"
 #define MAX_98357A_DEV0_NAME	"MX98357A:00"
 #define MAX_98360A_DEV0_NAME	"MX98360A:00"
@@ -47,4 +38,4 @@ void max_98390_set_codec_conf(struct device *dev, struct snd_soc_card *card);
 void max_98357a_dai_link(struct snd_soc_dai_link *link);
 void max_98360a_dai_link(struct snd_soc_dai_link *link);
 
-#endif /* __SOF_MAXIM_COMMON_H */
+#endif  

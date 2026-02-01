@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* Request a key from userspace
- *
- * Copyright (C) 2004-2007 Red Hat, Inc. All Rights Reserved.
- * Written by David Howells (dhowells@redhat.com)
- *
- * See Documentation/security/keys/request-key.rst
- */
+
+ 
 
 #include <linux/export.h>
 #include <linux/sched.h>
@@ -17,7 +11,7 @@
 #include "internal.h"
 #include <keys/request_key_auth-type.h>
 
-#define key_negative_timeout	60	/* default timeout on a negative key's existence */
+#define key_negative_timeout	60	 
 
 static struct key *check_cached_key(struct keyring_search_context *ctx)
 {
@@ -38,7 +32,7 @@ static void cache_requested_key(struct key *key)
 #ifdef CONFIG_KEYS_REQUEST_CACHE
 	struct task_struct *t = current;
 
-	/* Do not cache key if it is a kernel thread */
+	 
 	if (!(t->flags & PF_KTHREAD)) {
 		key_put(t->cached_requested_key);
 		t->cached_requested_key = key_get(key);
@@ -47,15 +41,7 @@ static void cache_requested_key(struct key *key)
 #endif
 }
 
-/**
- * complete_request_key - Complete the construction of a key.
- * @authkey: The authorisation key.
- * @error: The success or failute of the construction.
- *
- * Complete the attempt to construct a key.  The key will be negated
- * if an error is indicated.  The authorisation key will be revoked
- * unconditionally.
- */
+ 
 void complete_request_key(struct key *authkey, int error)
 {
 	struct request_key_auth *rka = get_request_key_auth(authkey);
@@ -70,13 +56,7 @@ void complete_request_key(struct key *authkey, int error)
 }
 EXPORT_SYMBOL(complete_request_key);
 
-/*
- * Initialise a usermode helper that is going to have a specific session
- * keyring.
- *
- * This is called in context of freshly forked kthread before kernel_execve(),
- * so we can simply install the desired session_keyring at this point.
- */
+ 
 static int umh_keys_init(struct subprocess_info *info, struct cred *cred)
 {
 	struct key *keyring = info->data;
@@ -84,18 +64,14 @@ static int umh_keys_init(struct subprocess_info *info, struct cred *cred)
 	return install_session_keyring_to_cred(cred, keyring);
 }
 
-/*
- * Clean up a usermode helper with session keyring.
- */
+ 
 static void umh_keys_cleanup(struct subprocess_info *info)
 {
 	struct key *keyring = info->data;
 	key_put(keyring);
 }
 
-/*
- * Call a usermode helper with a specific session keyring.
- */
+ 
 static int call_usermodehelper_keys(const char *path, char **argv, char **envp,
 					struct key *session_keyring, int wait)
 {
@@ -111,10 +87,7 @@ static int call_usermodehelper_keys(const char *path, char **argv, char **envp,
 	return call_usermodehelper_exec(info, wait);
 }
 
-/*
- * Request userspace finish the construction of a key
- * - execute "/sbin/request-key <op> <key> <uid> <gid> <keyring> <keyring> <keyring>"
- */
+ 
 static int call_sbin_request_key(struct key *authkey, void *aux)
 {
 	static char const request_key[] = "/sbin/request-key";
@@ -133,7 +106,7 @@ static int call_sbin_request_key(struct key *authkey, void *aux)
 	if (ret < 0)
 		goto error_us;
 
-	/* allocate a new session keyring */
+	 
 	sprintf(desc, "_req.%u", key->serial);
 
 	cred = get_current_cred();
@@ -146,19 +119,19 @@ static int call_sbin_request_key(struct key *authkey, void *aux)
 		goto error_alloc;
 	}
 
-	/* attach the auth key to the session keyring */
+	 
 	ret = key_link(keyring, authkey);
 	if (ret < 0)
 		goto error_link;
 
-	/* record the UID and GID */
+	 
 	sprintf(uid_str, "%d", from_kuid(&init_user_ns, cred->fsuid));
 	sprintf(gid_str, "%d", from_kgid(&init_user_ns, cred->fsgid));
 
-	/* we say which key is under construction */
+	 
 	sprintf(key_str, "%d", key->serial);
 
-	/* we specify the process's default keyrings */
+	 
 	sprintf(keyring_str[0], "%d",
 		cred->thread_keyring ? cred->thread_keyring->serial : 0);
 
@@ -174,13 +147,13 @@ static int call_sbin_request_key(struct key *authkey, void *aux)
 
 	sprintf(keyring_str[2], "%d", sskey);
 
-	/* set up a minimal environment */
+	 
 	i = 0;
 	envp[i++] = "HOME=/";
 	envp[i++] = "PATH=/sbin:/bin:/usr/sbin:/usr/bin";
 	envp[i] = NULL;
 
-	/* set up the argument list */
+	 
 	i = 0;
 	argv[i++] = (char *)request_key;
 	argv[i++] = (char *)rka->op;
@@ -192,18 +165,17 @@ static int call_sbin_request_key(struct key *authkey, void *aux)
 	argv[i++] = keyring_str[2];
 	argv[i] = NULL;
 
-	/* do it */
+	 
 	ret = call_usermodehelper_keys(request_key, argv, envp, keyring,
 				       UMH_WAIT_PROC);
 	kdebug("usermode -> 0x%x", ret);
 	if (ret >= 0) {
-		/* ret is the exit/wait code */
+		 
 		if (test_bit(KEY_FLAG_USER_CONSTRUCT, &key->flags) ||
 		    key_validate(key) < 0)
 			ret = -ENOKEY;
 		else
-			/* ignore any errors from userspace if the key was
-			 * instantiated */
+			 
 			ret = 0;
 	}
 
@@ -218,11 +190,7 @@ error_us:
 	return ret;
 }
 
-/*
- * Call out to userspace for key construction.
- *
- * Program failure is ignored in favour of key status.
- */
+ 
 static int construct_key(struct key *key, const void *callout_info,
 			 size_t callout_len, void *aux,
 			 struct key *dest_keyring)
@@ -233,21 +201,20 @@ static int construct_key(struct key *key, const void *callout_info,
 
 	kenter("%d,%p,%zu,%p", key->serial, callout_info, callout_len, aux);
 
-	/* allocate an authorisation key */
+	 
 	authkey = request_key_auth_new(key, "create", callout_info, callout_len,
 				       dest_keyring);
 	if (IS_ERR(authkey))
 		return PTR_ERR(authkey);
 
-	/* Make the call */
+	 
 	actor = call_sbin_request_key;
 	if (key->type->request_key)
 		actor = key->type->request_key;
 
 	ret = actor(authkey, aux);
 
-	/* check that the actor called complete_request_key() prior to
-	 * returning an error */
+	 
 	WARN_ON(ret < 0 &&
 		!test_bit(KEY_FLAG_INVALIDATED, &authkey->flags));
 
@@ -256,12 +223,7 @@ static int construct_key(struct key *key, const void *callout_info,
 	return ret;
 }
 
-/*
- * Get the appropriate destination keyring for the request.
- *
- * The keyring selected is returned with an extra reference upon it which the
- * caller must release.
- */
+ 
 static int construct_get_dest_keyring(struct key **_dest_keyring)
 {
 	struct request_key_auth *rka;
@@ -271,15 +233,14 @@ static int construct_get_dest_keyring(struct key **_dest_keyring)
 
 	kenter("%p", dest_keyring);
 
-	/* find the appropriate keyring */
+	 
 	if (dest_keyring) {
-		/* the caller supplied one */
+		 
 		key_get(dest_keyring);
 	} else {
 		bool do_perm_check = true;
 
-		/* use a default keyring; falling through the cases until we
-		 * find one that we actually have */
+		 
 		switch (cred->jit_keyring) {
 		case KEY_REQKEY_DEFL_DEFAULT:
 		case KEY_REQKEY_DEFL_REQUESTOR_KEYRING:
@@ -335,15 +296,7 @@ static int construct_get_dest_keyring(struct key **_dest_keyring)
 			BUG();
 		}
 
-		/*
-		 * Require Write permission on the keyring.  This is essential
-		 * because the default keyring may be the session keyring, and
-		 * joining a keyring only requires Search permission.
-		 *
-		 * However, this check is skipped for the "requestor keyring" so
-		 * that /sbin/request-key can itself use request_key() to add
-		 * keys to the original requestor's destination keyring.
-		 */
+		 
 		if (dest_keyring && do_perm_check) {
 			ret = key_permission(make_key_ref(dest_keyring, 1),
 					     KEY_NEED_WRITE);
@@ -359,13 +312,7 @@ static int construct_get_dest_keyring(struct key **_dest_keyring)
 	return 0;
 }
 
-/*
- * Allocate a new key in under-construction state and attempt to link it in to
- * the requested keyring.
- *
- * May return a key that's already under construction instead if there was a
- * race between two thread calling request_key().
- */
+ 
 static int construct_alloc_key(struct keyring_search_context *ctx,
 			       struct key *dest_keyring,
 			       unsigned long flags,
@@ -406,16 +353,7 @@ static int construct_alloc_key(struct keyring_search_context *ctx,
 			goto link_lock_failed;
 	}
 
-	/*
-	 * Attach the key to the destination keyring under lock, but we do need
-	 * to do another check just in case someone beat us to it whilst we
-	 * waited for locks.
-	 *
-	 * The caller might specify a comparison function which looks for keys
-	 * that do not exactly match but are still equivalent from the caller's
-	 * perspective. The __key_link_begin() operation must be done only after
-	 * an actual key is determined.
-	 */
+	 
 	mutex_lock(&key_construction_mutex);
 
 	rcu_read_lock();
@@ -439,8 +377,7 @@ static int construct_alloc_key(struct keyring_search_context *ctx,
 	kleave(" = 0 [%d]", key_serial(key));
 	return 0;
 
-	/* the key is now present - we tell the caller that we found it by
-	 * returning -EINPROGRESS  */
+	 
 key_already_present:
 	key_put(key);
 	mutex_unlock(&key_construction_mutex);
@@ -483,9 +420,7 @@ alloc_failed:
 	return PTR_ERR(key);
 }
 
-/*
- * Commence key construction.
- */
+ 
 static struct key *construct_key_and_link(struct keyring_search_context *ctx,
 					  const char *callout_info,
 					  size_t callout_len,
@@ -542,35 +477,7 @@ error:
 	return ERR_PTR(ret);
 }
 
-/**
- * request_key_and_link - Request a key and cache it in a keyring.
- * @type: The type of key we want.
- * @description: The searchable description of the key.
- * @domain_tag: The domain in which the key operates.
- * @callout_info: The data to pass to the instantiation upcall (or NULL).
- * @callout_len: The length of callout_info.
- * @aux: Auxiliary data for the upcall.
- * @dest_keyring: Where to cache the key.
- * @flags: Flags to key_alloc().
- *
- * A key matching the specified criteria (type, description, domain_tag) is
- * searched for in the process's keyrings and returned with its usage count
- * incremented if found.  Otherwise, if callout_info is not NULL, a key will be
- * allocated and some service (probably in userspace) will be asked to
- * instantiate it.
- *
- * If successfully found or created, the key will be linked to the destination
- * keyring if one is provided.
- *
- * Returns a pointer to the key if successful; -EACCES, -ENOKEY, -EKEYREVOKED
- * or -EKEYEXPIRED if an inaccessible, negative, revoked or expired key was
- * found; -ENOKEY if no key was found and no @callout_info was given; -EDQUOT
- * if insufficient key quota was available to create a new key; or -ENOMEM if
- * insufficient memory was available.
- *
- * If the returned key was created, then it may still be under construction,
- * and wait_for_key_construction() should be used to wait for that to complete.
- */
+ 
 struct key *request_key_and_link(struct key_type *type,
 				 const char *description,
 				 struct key_tag *domain_tag,
@@ -613,7 +520,7 @@ struct key *request_key_and_link(struct key_type *type,
 	if (key)
 		goto error_free;
 
-	/* search all the process keyrings for a key */
+	 
 	rcu_read_lock();
 	key_ref = search_process_keyrings_rcu(&ctx);
 	rcu_read_unlock();
@@ -639,13 +546,12 @@ struct key *request_key_and_link(struct key_type *type,
 			}
 		}
 
-		/* Only cache the key on immediate success */
+		 
 		cache_requested_key(key);
 	} else if (PTR_ERR(key_ref) != -EAGAIN) {
 		key = ERR_CAST(key_ref);
 	} else  {
-		/* the search failed, but the keyrings were searchable, so we
-		 * should consult userspace if we can */
+		 
 		key = ERR_PTR(-ENOKEY);
 		if (!callout_info)
 			goto error_free;
@@ -662,17 +568,7 @@ error:
 	return key;
 }
 
-/**
- * wait_for_key_construction - Wait for construction of a key to complete
- * @key: The key being waited for.
- * @intr: Whether to wait interruptibly.
- *
- * Wait for a key to finish being constructed.
- *
- * Returns 0 if successful; -ERESTARTSYS if the wait was interrupted; -ENOKEY
- * if the key was negated; or -EKEYREVOKED or -EKEYEXPIRED if the key was
- * revoked or expired.
- */
+ 
 int wait_for_key_construction(struct key *key, bool intr)
 {
 	int ret;
@@ -688,21 +584,7 @@ int wait_for_key_construction(struct key *key, bool intr)
 }
 EXPORT_SYMBOL(wait_for_key_construction);
 
-/**
- * request_key_tag - Request a key and wait for construction
- * @type: Type of key.
- * @description: The searchable description of the key.
- * @domain_tag: The domain in which the key operates.
- * @callout_info: The data to pass to the instantiation upcall (or NULL).
- *
- * As for request_key_and_link() except that it does not add the returned key
- * to a keyring if found, new keys are always allocated in the user's quota,
- * the callout_info must be a NUL-terminated string and no auxiliary data can
- * be passed.
- *
- * Furthermore, it then works as wait_for_key_construction() to wait for the
- * completion of keys undergoing construction with a non-interruptible wait.
- */
+ 
 struct key *request_key_tag(struct key_type *type,
 			    const char *description,
 			    struct key_tag *domain_tag,
@@ -728,21 +610,7 @@ struct key *request_key_tag(struct key_type *type,
 }
 EXPORT_SYMBOL(request_key_tag);
 
-/**
- * request_key_with_auxdata - Request a key with auxiliary data for the upcaller
- * @type: The type of key we want.
- * @description: The searchable description of the key.
- * @domain_tag: The domain in which the key operates.
- * @callout_info: The data to pass to the instantiation upcall (or NULL).
- * @callout_len: The length of callout_info.
- * @aux: Auxiliary data for the upcall.
- *
- * As for request_key_and_link() except that it does not add the returned key
- * to a keyring if found and new keys are always allocated in the user's quota.
- *
- * Furthermore, it then works as wait_for_key_construction() to wait for the
- * completion of keys undergoing construction with a non-interruptible wait.
- */
+ 
 struct key *request_key_with_auxdata(struct key_type *type,
 				     const char *description,
 				     struct key_tag *domain_tag,
@@ -767,18 +635,7 @@ struct key *request_key_with_auxdata(struct key_type *type,
 }
 EXPORT_SYMBOL(request_key_with_auxdata);
 
-/**
- * request_key_rcu - Request key from RCU-read-locked context
- * @type: The type of key we want.
- * @description: The name of the key we want.
- * @domain_tag: The domain in which the key operates.
- *
- * Request a key from a context that we may not sleep in (such as RCU-mode
- * pathwalk).  Keys under construction are ignored.
- *
- * Return a pointer to the found key if successful, -ENOKEY if we couldn't find
- * a key or some other error if the key found was unsuitable or inaccessible.
- */
+ 
 struct key *request_key_rcu(struct key_type *type,
 			    const char *description,
 			    struct key_tag *domain_tag)
@@ -804,7 +661,7 @@ struct key *request_key_rcu(struct key_type *type,
 	if (key)
 		return key;
 
-	/* search all the process keyrings for a key */
+	 
 	key_ref = search_process_keyrings_rcu(&ctx);
 	if (IS_ERR(key_ref)) {
 		key = ERR_CAST(key_ref);

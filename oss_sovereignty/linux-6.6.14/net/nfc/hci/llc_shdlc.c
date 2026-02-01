@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * shdlc Link Layer Control
- *
- * Copyright (C) 2012  Intel Corporation. All rights reserved.
- */
+
+ 
 
 #define pr_fmt(fmt) "shdlc: %s: " fmt, __func__
 
@@ -35,25 +31,25 @@ struct llc_shdlc {
 	wait_queue_head_t *connect_wq;
 	int connect_tries;
 	int connect_result;
-	struct timer_list connect_timer;/* aka T3 in spec 10.6.1 */
+	struct timer_list connect_timer; 
 
-	u8 w;				/* window size */
+	u8 w;				 
 	bool srej_support;
 
-	struct timer_list t1_timer;	/* send ack timeout */
+	struct timer_list t1_timer;	 
 	bool t1_active;
 
-	struct timer_list t2_timer;	/* guard/retransmit timeout */
+	struct timer_list t2_timer;	 
 	bool t2_active;
 
-	int ns;				/* next seq num for send */
-	int nr;				/* next expected seq num for receive */
-	int dnr;			/* oldest sent unacked seq num */
+	int ns;				 
+	int nr;				 
+	int dnr;			 
 
 	struct sk_buff_head rcv_q;
 
 	struct sk_buff_head send_q;
-	bool rnr;			/* other side is not ready to receive */
+	bool rnr;			 
 
 	struct sk_buff_head ack_pending_q;
 
@@ -105,7 +101,7 @@ do {								  \
 		       16, 1, skb->data, skb->len, 0);		  \
 } while (0)
 
-/* checks x < y <= z modulo 8 */
+ 
 static bool llc_shdlc_x_lt_y_lteq_z(int x, int y, int z)
 {
 	if (x < z)
@@ -114,12 +110,12 @@ static bool llc_shdlc_x_lt_y_lteq_z(int x, int y, int z)
 		return ((y > x) || (y <= z)) ? true : false;
 }
 
-/* checks x <= y < z modulo 8 */
+ 
 static bool llc_shdlc_x_lteq_y_lt_z(int x, int y, int z)
 {
 	if (x <= z)
 		return ((x <= y) && (y < z)) ? true : false;
-	else			/* x > z -> z+8 > x */
+	else			 
 		return ((y >= x) || (y < z)) ? true : false;
 }
 
@@ -136,7 +132,7 @@ static struct sk_buff *llc_shdlc_alloc_skb(const struct llc_shdlc *shdlc,
 	return skb;
 }
 
-/* immediately sends an S frame. */
+ 
 static int llc_shdlc_send_s_frame(const struct llc_shdlc *shdlc,
 				  enum sframe_type sframe_type, int nr)
 {
@@ -158,7 +154,7 @@ static int llc_shdlc_send_s_frame(const struct llc_shdlc *shdlc,
 	return r;
 }
 
-/* immediately sends an U frame. skb may contain optional payload */
+ 
 static int llc_shdlc_send_u_frame(const struct llc_shdlc *shdlc,
 				  struct sk_buff *skb,
 				  enum uframe_modifier uframe_modifier)
@@ -176,14 +172,11 @@ static int llc_shdlc_send_u_frame(const struct llc_shdlc *shdlc,
 	return r;
 }
 
-/*
- * Free ack_pending frames until y_nr - 1, and reset t2 according to
- * the remaining oldest ack_pending frame sent time
- */
+ 
 static void llc_shdlc_reset_t2(struct llc_shdlc *shdlc, int y_nr)
 {
 	struct sk_buff *skb;
-	int dnr = shdlc->dnr;	/* MUST initially be < y_nr */
+	int dnr = shdlc->dnr;	 
 
 	pr_debug("release ack pending up to frame %d excluded\n", y_nr);
 
@@ -214,10 +207,7 @@ static void llc_shdlc_reset_t2(struct llc_shdlc *shdlc, int y_nr)
 	}
 }
 
-/*
- * Receive validated frames from lower layer. skb contains HCI payload only.
- * Handle according to algorithm at spec:10.8.2
- */
+ 
 static void llc_shdlc_rcv_i_frame(struct llc_shdlc *shdlc,
 				  struct sk_buff *skb, int ns, int nr)
 {
@@ -275,7 +265,7 @@ static void llc_shdlc_requeue_ack_pending(struct llc_shdlc *shdlc)
 	pr_debug("ns reset to %d\n", shdlc->dnr);
 
 	while ((skb = skb_dequeue_tail(&shdlc->ack_pending_q))) {
-		skb_pull(skb, 1);	/* remove control field */
+		skb_pull(skb, 1);	 
 		skb_queue_head(&shdlc->send_q, skb);
 	}
 	shdlc->ns = shdlc->dnr;
@@ -305,7 +295,7 @@ static void llc_shdlc_rcv_rej(struct llc_shdlc *shdlc, int y_nr)
 	}
 }
 
-/* See spec RR:10.8.3 REJ:10.8.4 */
+ 
 static void llc_shdlc_rcv_s_frame(struct llc_shdlc *shdlc,
 				  enum sframe_type s_frame_type, int nr)
 {
@@ -317,7 +307,7 @@ static void llc_shdlc_rcv_s_frame(struct llc_shdlc *shdlc,
 	switch (s_frame_type) {
 	case S_FRAME_RR:
 		llc_shdlc_rcv_ack(shdlc, nr);
-		if (shdlc->rnr == true) {	/* see SHDLC 10.7.7 */
+		if (shdlc->rnr == true) {	 
 			shdlc->rnr = false;
 			if (shdlc->send_q.qlen == 0) {
 				skb = llc_shdlc_alloc_skb(shdlc, 0);
@@ -399,10 +389,7 @@ static void llc_shdlc_rcv_u_frame(struct llc_shdlc *shdlc,
 		switch (shdlc->state) {
 		case SHDLC_NEGOTIATING:
 		case SHDLC_CONNECTING:
-			/*
-			 * We sent RSET, but chip wants to negotiate or we
-			 * got RSET before we managed to send out our.
-			 */
+			 
 			if (skb->len > 0)
 				w = skb->data[0];
 
@@ -419,16 +406,10 @@ static void llc_shdlc_rcv_u_frame(struct llc_shdlc *shdlc,
 			}
 			break;
 		case SHDLC_HALF_CONNECTED:
-			/*
-			 * Chip resent RSET due to its timeout - Ignote it
-			 * as we already sent UA.
-			 */
+			 
 			break;
 		case SHDLC_CONNECTED:
-			/*
-			 * Chip wants to reset link. This is unexpected and
-			 * unsupported.
-			 */
+			 
 			shdlc->hard_fault = -ECONNRESET;
 			break;
 		default:
@@ -508,7 +489,7 @@ static int llc_shdlc_w_used(int ns, int dnr)
 	return unack_count;
 }
 
-/* Send frames according to algorithm at spec:10.8.1 */
+ 
 static void llc_shdlc_handle_send_queue(struct llc_shdlc *shdlc)
 {
 	struct sk_buff *skb;
@@ -665,10 +646,7 @@ static void llc_shdlc_sm_work(struct work_struct *work)
 	mutex_unlock(&shdlc->state_mutex);
 }
 
-/*
- * Called from syscall context to establish shdlc link. Sleeps until
- * link is ready or failure.
- */
+ 
 static int llc_shdlc_connect(struct llc_shdlc *shdlc)
 {
 	DECLARE_WAIT_QUEUE_HEAD_ONSTACK(connect_wq);
@@ -700,11 +678,7 @@ static void llc_shdlc_disconnect(struct llc_shdlc *shdlc)
 	schedule_work(&shdlc->sm_work);
 }
 
-/*
- * Receive an incoming shdlc frame. Frame has already been crc-validated.
- * skb contains only LLC header and payload.
- * If skb == NULL, it is a notification that the link below is dead.
- */
+ 
 static void llc_shdlc_recv_frame(struct llc_shdlc *shdlc, struct sk_buff *skb)
 {
 	if (skb == NULL) {

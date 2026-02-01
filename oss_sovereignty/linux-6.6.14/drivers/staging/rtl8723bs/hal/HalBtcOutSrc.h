@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/******************************************************************************
- *
- * Copyright(c) 2007 - 2012 Realtek Corporation. All rights reserved.
- *
- ******************************************************************************/
+ 
+ 
 #ifndef	__HALBTC_OUT_SRC_H__
 #define __HALBTC_OUT_SRC_H__
 
@@ -27,25 +23,25 @@
 #define BT_COEX_ANT_TYPE_ANTDIV		1
 #define BT_COEX_ANT_TYPE_DETECTED	2
 
-#define BTC_MIMO_PS_STATIC	0	/*  1ss */
-#define BTC_MIMO_PS_DYNAMIC	1	/*  2ss */
+#define BTC_MIMO_PS_STATIC	0	 
+#define BTC_MIMO_PS_DYNAMIC	1	 
 
 #define BTC_RATE_DISABLE	0
 #define BTC_RATE_ENABLE		1
 
-/*  single Antenna definition */
+ 
 #define BTC_ANT_PATH_WIFI	0
 #define BTC_ANT_PATH_BT		1
 #define BTC_ANT_PATH_PTA	2
-/*  dual Antenna definition */
+ 
 #define BTC_ANT_WIFI_AT_MAIN	0
 #define BTC_ANT_WIFI_AT_AUX	1
-/*  coupler Antenna definition */
+ 
 #define BTC_ANT_WIFI_AT_CPL_MAIN	0
 #define BTC_ANT_WIFI_AT_CPL_AUX		1
 
 enum {
-	BTC_PS_WIFI_NATIVE	= 0,	/*  wifi original power save behavior */
+	BTC_PS_WIFI_NATIVE	= 0,	 
 	BTC_PS_LPS_ON		= 1,
 	BTC_PS_LPS_OFF		= 2,
 	BTC_PS_MAX
@@ -68,7 +64,7 @@ enum btc_chip_interface {
 	BTC_INTF_MAX
 };
 
-/*  following is for wifi link status */
+ 
 #define WIFI_STA_CONNECTED				BIT0
 #define WIFI_AP_CONNECTED				BIT1
 #define WIFI_HS_CONNECTED				BIT2
@@ -76,12 +72,12 @@ enum btc_chip_interface {
 #define WIFI_P2P_GC_CONNECTED			BIT4
 
 struct btc_board_info {
-	/*  The following is some board information */
-	u8 pgAntNum;	/*  pg ant number */
-	u8 btdmAntNum;	/*  ant number for btdm */
-	u8 btdmAntPos;		/* Bryant Add to indicate Antenna Position for (pgAntNum = 2) && (btdmAntNum = 1)  (DPDT+1Ant case) */
-	u8 singleAntPath;	/*  current used for 8723b only, 1 =>s0,  0 =>s1 */
-	/* bool				bBtExist; */
+	 
+	u8 pgAntNum;	 
+	u8 btdmAntNum;	 
+	u8 btdmAntPos;		 
+	u8 singleAntPath;	 
+	 
 };
 
 enum {
@@ -116,9 +112,9 @@ enum {
 	BTC_WIFI_PNP_MAX
 };
 
-/*  defined for BFP_BTC_GET */
+ 
 enum {
-	/*  type bool */
+	 
 	BTC_GET_BL_HS_OPERATION,
 	BTC_GET_BL_HS_CONNECTING,
 	BTC_GET_BL_WIFI_CONNECTED,
@@ -133,33 +129,33 @@ enum {
 	BTC_GET_BL_EXT_SWITCH,
 	BTC_GET_BL_WIFI_IS_IN_MP_MODE,
 
-	/*  type s32 */
+	 
 	BTC_GET_S4_WIFI_RSSI,
 	BTC_GET_S4_HS_RSSI,
 
-	/*  type u32 */
+	 
 	BTC_GET_U4_WIFI_BW,
 	BTC_GET_U4_WIFI_TRAFFIC_DIRECTION,
 	BTC_GET_U4_WIFI_FW_VER,
 	BTC_GET_U4_WIFI_LINK_STATUS,
 	BTC_GET_U4_BT_PATCH_VER,
 
-	/*  type u8 */
+	 
 	BTC_GET_U1_WIFI_DOT11_CHNL,
 	BTC_GET_U1_WIFI_CENTRAL_CHNL,
 	BTC_GET_U1_WIFI_HS_CHNL,
 	BTC_GET_U1_MAC_PHY_MODE,
 	BTC_GET_U1_AP_NUM,
 
-	/*  for 1Ant ====== */
+	 
 	BTC_GET_U1_LPS_MODE,
 
 	BTC_GET_MAX
 };
 
-/*  defined for BFP_BTC_SET */
+ 
 enum {
-	/*  type bool */
+	 
 	BTC_SET_BL_BT_DISABLE,
 	BTC_SET_BL_BT_TRAFFIC_BUSY,
 	BTC_SET_BL_BT_LIMITED_DIG,
@@ -169,32 +165,32 @@ enum {
 	BTC_SET_BL_INC_SCAN_DEV_NUM,
 	BTC_SET_BL_BT_TX_RX_MASK,
 
-	/*  type u8 */
+	 
 	BTC_SET_U1_RSSI_ADJ_VAL_FOR_AGC_TABLE_ON,
 	BTC_SET_U1_AGG_BUF_SIZE,
 
-	/*  type trigger some action */
+	 
 	BTC_SET_ACT_GET_BT_RSSI,
 	BTC_SET_ACT_AGGREGATE_CTRL,
-	/*  for 1Ant ====== */
-	/*  type bool */
+	 
+	 
 
-	/*  type u8 */
+	 
 	BTC_SET_U1_RSSI_ADJ_VAL_FOR_1ANT_COEX_TYPE,
 	BTC_SET_U1_LPS_VAL,
 	BTC_SET_U1_RPWM_VAL,
-	/*  type trigger some action */
+	 
 	BTC_SET_ACT_LEAVE_LPS,
 	BTC_SET_ACT_ENTER_LPS,
 	BTC_SET_ACT_NORMAL_LPS,
 	BTC_SET_ACT_DISABLE_LOW_POWER,
 	BTC_SET_ACT_UPDATE_RAMASK,
 	BTC_SET_ACT_SEND_MIMO_PS,
-	/*  BT Coex related */
+	 
 	BTC_SET_ACT_CTRL_BT_INFO,
 	BTC_SET_ACT_CTRL_BT_COEX,
 	BTC_SET_ACT_CTRL_8723B_ANT,
-	/*  */
+	 
 	BTC_SET_MAX
 };
 
@@ -243,7 +239,7 @@ enum {
 	BTC_PACKET_MAX
 };
 
-/* Bryant Add */
+ 
 enum {
 	BTC_ANTENNA_AT_MAIN_PORT = 0x1,
 	BTC_ANTENNA_AT_AUX_PORT  = 0x2,
@@ -304,7 +300,7 @@ struct btc_bt_info {
 
 	bool bBtCtrlLps;
 	bool bBtLpsOn;
-	bool bForceToRoam;	/*  for 1Ant solution */
+	bool bForceToRoam;	 
 	u8 lpsVal;
 	u8 rpwmVal;
 	u32 raMask;
@@ -312,7 +308,7 @@ struct btc_bt_info {
 
 struct btc_stack_info {
 	bool bProfileNotified;
-	u16 hciVersion;	/*  stack hci version */
+	u16 hciVersion;	 
 	u8 numOfLink;
 	bool bBtLinkExist;
 	bool bScoExist;
@@ -358,10 +354,10 @@ struct btc_statistics {
 };
 
 struct btc_coexist {
-	bool bBinded;		/*  make sure only one adapter can bind the data context */
-	void *Adapter;		/*  default adapter */
+	bool bBinded;		 
+	void *Adapter;		 
 	struct btc_board_info boardInfo;
-	struct btc_bt_info btInfo;		/*  some bt info referenced by non-bt module */
+	struct btc_bt_info btInfo;		 
 	struct btc_stack_info stackInfo;
 	struct btc_bt_link_info btLinkInfo;
 	enum btc_chip_interface chipInterface;
@@ -372,8 +368,8 @@ struct btc_coexist {
 	struct btc_statistics statistics;
 	u8 pwrModeVal[10];
 
-	/*  function pointers */
-	/*  io related */
+	 
+	 
 	BFP_BTC_R1 fBtcRead1Byte;
 	BFP_BTC_W1 fBtcWrite1Byte;
 	BFP_BTC_W1_BIT_MASK fBtcWrite1ByteBitMask;
@@ -382,17 +378,17 @@ struct btc_coexist {
 	BFP_BTC_R4 fBtcRead4Byte;
 	BFP_BTC_W4 fBtcWrite4Byte;
 	BFP_BTC_LOCAL_REG_W1 fBtcWriteLocalReg1Byte;
-	/*  read/write bb related */
+	 
 	BFP_BTC_SET_BB_REG fBtcSetBbReg;
 	BFP_BTC_GET_BB_REG fBtcGetBbReg;
 
-	/*  read/write rf related */
+	 
 	BFP_BTC_SET_RF_REG fBtcSetRfReg;
 	BFP_BTC_GET_RF_REG fBtcGetRfReg;
 
-	/*  fill h2c related */
+	 
 	BFP_BTC_FILL_H2C fBtcFillH2c;
-	/*  normal get/set related */
+	 
 	BFP_BTC_GET fBtcGet;
 	BFP_BTC_SET fBtcSet;
 

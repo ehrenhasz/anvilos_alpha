@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef __PERF_EVSEL_H
 #define __PERF_EVSEL_H 1
 
@@ -41,21 +41,7 @@ enum perf_tool_event perf_tool_event__from_str(const char *str);
 #define perf_tool_event__for_each_event(ev)		\
 	for ((ev) = PERF_TOOL_DURATION_TIME; (ev) < PERF_TOOL_MAX; ev++)
 
-/** struct evsel - event selector
- *
- * @evlist - evlist this evsel is in, if it is in one.
- * @core - libperf evsel object
- * @name - Can be set to retain the original event name passed by the user,
- *         so that when showing results in tools such as 'perf stat', we
- *         show the name used, not some alias.
- * @id_pos: the position of the event id (PERF_SAMPLE_ID or
- *          PERF_SAMPLE_IDENTIFIER) in a sample event i.e. in the array of
- *          struct perf_record_sample
- * @is_pos: the position (counting backwards) of the event id (PERF_SAMPLE_ID or
- *          PERF_SAMPLE_IDENTIFIER) in a non-sample event i.e. if sample_id_all
- *          is used there is an id sample appended to non-sample events
- * @priv:   And what is in its containing unnamed union are tool specific
- */
+ 
 struct evsel {
 	struct perf_evsel	core;
 	struct evlist		*evlist;
@@ -64,11 +50,7 @@ struct evsel {
 	int			is_pos;
 	unsigned int		sample_size;
 
-	/*
-	 * These fields can be set in the parse-events code or similar.
-	 * Please check evsel__clone() to copy them properly so that
-	 * they can be released properly.
-	 */
+	 
 	struct {
 		char			*name;
 		char			*group_name;
@@ -84,7 +66,7 @@ struct evsel {
 		struct cgroup		*cgrp;
 		const char		*metric_id;
 		enum perf_tool_event	tool_event;
-		/* parse modifier helper */
+		 
 		int			exclude_GH;
 		int			sample_read;
 		bool			snapshot;
@@ -103,10 +85,7 @@ struct evsel {
 		struct list_head	config_terms;
 	};
 
-	/*
-	 * metric fields are similar, but needs more care as they can have
-	 * references to other metric (evsel).
-	 */
+	 
 	struct evsel		**metric_events;
 	struct evsel		*metric_leader;
 
@@ -131,33 +110,23 @@ struct evsel {
 	bool			reset_group;
 	bool			errored;
 	bool			needs_auxtrace_mmap;
-	bool			default_metricgroup; /* A member of the Default metricgroup */
+	bool			default_metricgroup;  
 	struct hashmap		*per_pkg_mask;
 	int			err;
 	struct {
 		evsel__sb_cb_t	*cb;
 		void		*data;
 	} side_band;
-	/*
-	 * For reporting purposes, an evsel sample can have a callchain
-	 * synthesized from AUX area data. Keep track of synthesized sample
-	 * types here. Note, the recorded sample_type cannot be changed because
-	 * it is needed to continue to parse events.
-	 * See also evsel__has_callchain().
-	 */
+	 
 	__u64			synth_sample_type;
 
-	/*
-	 * bpf_counter_ops serves two use cases:
-	 *   1. perf-stat -b          counting events used byBPF programs
-	 *   2. perf-stat --use-bpf   use BPF programs to aggregate counts
-	 */
+	 
 	struct bpf_counter_ops	*bpf_counter_ops;
 
-	struct list_head	bpf_counter_list; /* for perf-stat -b */
-	struct list_head	bpf_filters; /* for perf-record --filter */
+	struct list_head	bpf_counter_list;  
+	struct list_head	bpf_filters;  
 
-	/* for perf-stat --use-bpf */
+	 
 	int			bperf_leader_prog_fd;
 	int			bperf_leader_link_fd;
 	union {
@@ -168,7 +137,7 @@ struct evsel {
 	unsigned long		open_flags;
 	int			precise_ip_original;
 
-	/* for missing_features */
+	 
 	struct perf_pmu		*pmu;
 };
 
@@ -235,9 +204,7 @@ void free_config_terms(struct list_head *config_terms);
 #ifdef HAVE_LIBTRACEEVENT
 struct evsel *evsel__newtp_idx(const char *sys, const char *name, int idx);
 
-/*
- * Returns pointer with encoded error via <linux/err.h> interface.
- */
+ 
 static inline struct evsel *evsel__newtp(const char *sys, const char *name)
 {
 	return evsel__newtp_idx(sys, name, 0);
@@ -377,25 +344,13 @@ int evsel__read_counter(struct evsel *evsel, int cpu_map_idx, int thread);
 
 int __evsel__read_on_cpu(struct evsel *evsel, int cpu_map_idx, int thread, bool scale);
 
-/**
- * evsel__read_on_cpu - Read out the results on a CPU and thread
- *
- * @evsel - event selector to read value
- * @cpu_map_idx - CPU of interest
- * @thread - thread of interest
- */
+ 
 static inline int evsel__read_on_cpu(struct evsel *evsel, int cpu_map_idx, int thread)
 {
 	return __evsel__read_on_cpu(evsel, cpu_map_idx, thread, false);
 }
 
-/**
- * evsel__read_on_cpu_scaled - Read out the results on a CPU and thread, scaled
- *
- * @evsel - event selector to read value
- * @cpu_map_idx - CPU of interest
- * @thread - thread of interest
- */
+ 
 static inline int evsel__read_on_cpu_scaled(struct evsel *evsel, int cpu_map_idx, int thread)
 {
 	return __evsel__read_on_cpu(evsel, cpu_map_idx, thread, true);
@@ -419,26 +374,13 @@ static inline struct evsel *evsel__prev(struct evsel *evsel)
 	return list_entry(evsel->core.node.prev, struct evsel, core.node);
 }
 
-/**
- * evsel__is_group_leader - Return whether given evsel is a leader event
- *
- * @evsel - evsel selector to be tested
- *
- * Return %true if @evsel is a group leader or a stand-alone event
- */
+ 
 static inline bool evsel__is_group_leader(const struct evsel *evsel)
 {
 	return evsel->core.leader == &evsel->core;
 }
 
-/**
- * evsel__is_group_event - Return whether given evsel is a group event
- *
- * @evsel - evsel selector to be tested
- *
- * Return %true iff event group view is enabled and @evsel is a actual group
- * leader which has other members in the group
- */
+ 
 static inline bool evsel__is_group_event(struct evsel *evsel)
 {
 	if (!symbol_conf.event_group)
@@ -469,7 +411,7 @@ static inline int evsel__group_idx(struct evsel *evsel)
 	return evsel->core.idx - evsel->core.leader->idx;
 }
 
-/* Iterates group WITHOUT the leader. */
+ 
 #define for_each_group_member_head(_evsel, _leader, _head)				\
 for ((_evsel) = list_entry((_leader)->core.node.next, struct evsel, core.node);		\
 	(_evsel) && &(_evsel)->core.node != (_head) &&					\
@@ -479,7 +421,7 @@ for ((_evsel) = list_entry((_leader)->core.node.next, struct evsel, core.node);	
 #define for_each_group_member(_evsel, _leader)				\
 	for_each_group_member_head(_evsel, _leader, &(_leader)->evlist->core.entries)
 
-/* Iterates group WITH the leader. */
+ 
 #define for_each_group_evsel_head(_evsel, _leader, _head)				\
 for ((_evsel) = _leader;								\
 	(_evsel) && &(_evsel)->core.node != (_head) &&					\
@@ -501,20 +443,14 @@ static inline bool evsel__has_branch_hw_idx(const struct evsel *evsel)
 
 static inline bool evsel__has_callchain(const struct evsel *evsel)
 {
-	/*
-	 * For reporting purposes, an evsel sample can have a recorded callchain
-	 * or a callchain synthesized from AUX area data.
-	 */
+	 
 	return evsel->core.attr.sample_type & PERF_SAMPLE_CALLCHAIN ||
 	       evsel->synth_sample_type & PERF_SAMPLE_CALLCHAIN;
 }
 
 static inline bool evsel__has_br_stack(const struct evsel *evsel)
 {
-	/*
-	 * For reporting purposes, an evsel sample can have a recorded branch
-	 * stack or a branch stack synthesized from AUX area data.
-	 */
+	 
 	return evsel->core.attr.sample_type & PERF_SAMPLE_BRANCH_STACK ||
 	       evsel->synth_sample_type & PERF_SAMPLE_BRANCH_STACK;
 }
@@ -540,14 +476,7 @@ void evsel__remove_from_group(struct evsel *evsel, struct evsel *leader);
 
 bool arch_evsel__must_be_in_group(const struct evsel *evsel);
 
-/*
- * Macro to swap the bit-field postition and size.
- * Used when,
- * - dont need to swap the entire u64 &&
- * - when u64 has variable bit-field sizes &&
- * - when presented in a host endian which is different
- *   than the source endian of the perf.data file
- */
+ 
 #define bitfield_swap(src, pos, size)	\
 	((((src) >> (pos)) & ((1ull << (size)) - 1)) << (63 - ((pos) + (size) - 1)))
 
@@ -555,4 +484,4 @@ u64 evsel__bitfield_swap_branch_flags(u64 value);
 void evsel__set_config_if_unset(struct perf_pmu *pmu, struct evsel *evsel,
 				const char *config_name, u64 val);
 
-#endif /* __PERF_EVSEL_H */
+#endif  

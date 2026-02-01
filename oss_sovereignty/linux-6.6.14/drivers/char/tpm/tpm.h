@@ -1,19 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2004 IBM Corporation
- * Copyright (C) 2015 Intel Corporation
- *
- * Authors:
- * Leendert van Doorn <leendert@watson.ibm.com>
- * Dave Safford <safford@watson.ibm.com>
- * Reiner Sailer <sailer@watson.ibm.com>
- * Kylene Hall <kjhall@us.ibm.com>
- *
- * Maintained by: <tpmdd-devel@lists.sourceforge.net>
- *
- * Device driver for TCG/TCPA TPM (trusted platform module).
- * Specifications at www.trustedcomputinggroup.org
- */
+ 
+ 
 
 #ifndef __TPM_H__
 #define __TPM_H__
@@ -31,21 +17,21 @@
 #include <asm/intel-family.h>
 #endif
 
-#define TPM_MINOR		224	/* officially assigned */
+#define TPM_MINOR		224	 
 #define TPM_BUFSIZE		4096
 #define TPM_NUM_DEVICES		65536
 #define TPM_RETRY		50
 
 enum tpm_timeout {
-	TPM_TIMEOUT = 5,	/* msecs */
-	TPM_TIMEOUT_RETRY = 100, /* msecs */
-	TPM_TIMEOUT_RANGE_US = 300,	/* usecs */
-	TPM_TIMEOUT_POLL = 1,	/* msecs */
-	TPM_TIMEOUT_USECS_MIN = 100,      /* usecs */
-	TPM_TIMEOUT_USECS_MAX = 500      /* usecs */
+	TPM_TIMEOUT = 5,	 
+	TPM_TIMEOUT_RETRY = 100,  
+	TPM_TIMEOUT_RANGE_US = 300,	 
+	TPM_TIMEOUT_POLL = 1,	 
+	TPM_TIMEOUT_USECS_MIN = 100,       
+	TPM_TIMEOUT_USECS_MAX = 500       
 };
 
-/* TPM addresses */
+ 
 enum tpm_addr {
 	TPM_SUPERIO_ADDR = 0x2E,
 	TPM_ADDR = 0x4E,
@@ -60,8 +46,8 @@ enum tpm_addr {
 
 #define TPM_TAG_RQU_COMMAND 193
 
-/* TPM2 specific constants. */
-#define TPM2_SPACE_BUFFER_SIZE		16384 /* 16 kB */
+ 
+#define TPM2_SPACE_BUFFER_SIZE		16384  
 
 struct	stclear_flags_t {
 	__be16	tag;
@@ -224,10 +210,7 @@ enum tpm2_pt_props {
 	TPM2_PT_AUDIT_COUNTER_1 = TPM2_PT_VAR + 20,
 };
 
-/* 128 bytes is an arbitrary cap. This could be as large as TPM_BUFSIZE - 18
- * bytes, but 128 is still a relatively large number of random bytes and
- * anything much bigger causes users of struct tpm_cmd_t to start getting
- * compiler warnings about stack frame size. */
+ 
 #define TPM_MAX_RNG_DATA	128
 
 extern const struct class tpm_class;

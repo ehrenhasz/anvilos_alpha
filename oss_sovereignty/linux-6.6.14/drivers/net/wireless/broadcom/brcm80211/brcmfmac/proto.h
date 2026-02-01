@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: ISC
-/*
- * Copyright (c) 2013 Broadcom Corporation
- */
+
+ 
 #ifndef BRCMFMAC_PROTO_H
 #define BRCMFMAC_PROTO_H
 
@@ -51,9 +49,7 @@ static inline int brcmf_proto_hdrpull(struct brcmf_pub *drvr, bool do_fws,
 {
 	struct brcmf_if *tmp = NULL;
 
-	/* assure protocol is always called with
-	 * non-null initialized pointer.
-	 */
+	 
 	if (ifp)
 		*ifp = NULL;
 	else
@@ -152,4 +148,4 @@ brcmf_proto_debugfs_create(struct brcmf_pub *drvr)
 	drvr->proto->debugfs_create(drvr);
 }
 
-#endif /* BRCMFMAC_PROTO_H */
+#endif  

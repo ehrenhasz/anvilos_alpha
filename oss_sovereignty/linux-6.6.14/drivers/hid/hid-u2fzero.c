@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * U2F Zero LED and RNG driver
- *
- * Copyright 2018 Andrej Shadura <andrew@shadura.me>
- * Loosely based on drivers/hid/hid-led.c
- *              and drivers/usb/misc/chaoskey.c
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation, version 2.
- */
+
+ 
 
 #include <linux/hid.h>
 #include <linux/hidraw.h>
@@ -50,7 +40,7 @@ static const struct hw_revision_config hw_configs[] = {
 	},
 };
 
-/* We only use broadcast (CID-less) messages */
+ 
 #define CID_BROADCAST		0xffffffff
 
 struct u2f_hid_msg {
@@ -78,9 +68,9 @@ struct u2f_hid_report {
 
 struct u2fzero_device {
 	struct hid_device	*hdev;
-	struct urb		*urb;	    /* URB for the RNG data */
-	struct led_classdev	ldev;	    /* Embedded struct for led */
-	struct hwrng		hwrng;	    /* Embedded struct for hwrng */
+	struct urb		*urb;	     
+	struct led_classdev	ldev;	     
+	struct hwrng		hwrng;	     
 	char			*led_name;
 	char			*rng_name;
 	u8			*buf_out;
@@ -212,7 +202,7 @@ static int u2fzero_rng_read(struct hwrng *rng, void *data,
 	struct u2f_hid_msg resp;
 	int ret;
 	size_t actual_length;
-	/* valid packets must have a correct header */
+	 
 	int min_length = offsetof(struct u2f_hid_msg, init.data);
 
 	if (!dev->present) {
@@ -222,11 +212,11 @@ static int u2fzero_rng_read(struct hwrng *rng, void *data,
 
 	ret = u2fzero_recv(dev, &req, &resp);
 
-	/* ignore errors or packets without data */
+	 
 	if (ret < min_length)
 		return 0;
 
-	/* only take the minimum amount of data it is safe to take */
+	 
 	actual_length = min3((size_t)ret - min_length,
 		U2F_HID_MSG_LEN(resp), max);
 

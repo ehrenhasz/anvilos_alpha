@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2019 Intel Corporation
- */
+ 
+ 
 
 #ifndef __INTEL_DP_MST_H__
 #define __INTEL_DP_MST_H__
@@ -23,4 +21,4 @@ bool intel_dp_mst_source_support(struct intel_dp *intel_dp);
 int intel_dp_mst_add_topology_state_for_crtc(struct intel_atomic_state *state,
 					     struct intel_crtc *crtc);
 
-#endif /* __INTEL_DP_MST_H__ */
+#endif  

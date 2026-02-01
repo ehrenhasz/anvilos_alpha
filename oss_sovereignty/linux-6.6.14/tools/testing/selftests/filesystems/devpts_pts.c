@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #define _GNU_SOURCE
 #include <errno.h>
 #include <fcntl.h>
@@ -109,10 +109,7 @@ static int do_tiocgptpeer(char *ptmx, char *expected_procfd_contents)
 		return -1;
 	}
 
-	/*
-	 * grantpt() makes assumptions about /dev/pts/ so ignore it. It's also
-	 * not really needed.
-	 */
+	 
 	ret = unlockpt(master);
 	if (ret < 0) {
 		fprintf(stderr, "Failed to unlock terminal\n");

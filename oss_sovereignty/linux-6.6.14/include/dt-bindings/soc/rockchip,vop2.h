@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 OR BSD-2-Clause */
+ 
 
 #ifndef __DT_BINDINGS_ROCKCHIP_VOP2_H
 #define __DT_BINDINGS_ROCKCHIP_VOP2_H
@@ -11,4 +11,4 @@
 #define ROCKCHIP_VOP2_EP_MIPI1	6
 #define ROCKCHIP_VOP2_EP_LVDS1	7
 
-#endif /* __DT_BINDINGS_ROCKCHIP_VOP2_H */
+#endif  

@@ -1,34 +1,4 @@
-/*
- * Copyright (c) 2004 Topspin Communications.  All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 
 #include <linux/sched/signal.h>
 
@@ -56,20 +26,11 @@ static bool is_child_unique(struct ipoib_dev_priv *ppriv,
 
 	ASSERT_RTNL();
 
-	/*
-	 * Since the legacy sysfs interface uses pkey for deletion it cannot
-	 * support more than one interface with the same pkey, it creates
-	 * ambiguity.  The RTNL interface deletes using the netdev so it does
-	 * not have a problem to support duplicated pkeys.
-	 */
+	 
 	if (priv->child_type != IPOIB_LEGACY_CHILD)
 		return true;
 
-	/*
-	 * First ensure this isn't a duplicate. We check the parent device and
-	 * then all of the legacy child interfaces to make sure the Pkey
-	 * doesn't match.
-	 */
+	 
 	if (ppriv->pkey == priv->pkey)
 		return false;
 
@@ -82,15 +43,7 @@ static bool is_child_unique(struct ipoib_dev_priv *ppriv,
 	return true;
 }
 
-/*
- * NOTE: If this function fails then the priv->dev will remain valid, however
- * priv will have been freed and must not be touched by caller in the error
- * case.
- *
- * If (ndev->reg_state == NETREG_UNINITIALIZED) then it is up to the caller to
- * free the net_device (just as rtnl_newlink does) otherwise the net_device
- * will be freed when the rtnl is unlocked.
- */
+ 
 int __ipoib_vlan_add(struct ipoib_dev_priv *ppriv, struct ipoib_dev_priv *priv,
 		     u16 pkey, int type)
 {
@@ -100,16 +53,10 @@ int __ipoib_vlan_add(struct ipoib_dev_priv *ppriv, struct ipoib_dev_priv *priv,
 
 	ASSERT_RTNL();
 
-	/*
-	 * We do not need to touch priv if register_netdevice fails, so just
-	 * always use this flow.
-	 */
+	 
 	ndev->priv_destructor = ipoib_intf_free;
 
-	/*
-	 * Racing with unregister of the parent must be prevented by the
-	 * caller.
-	 */
+	 
 	WARN_ON(ppriv->dev->reg_state != NETREG_REGISTERED);
 
 	if (pkey == 0 || pkey == 0x8000) {
@@ -132,14 +79,11 @@ int __ipoib_vlan_add(struct ipoib_dev_priv *ppriv, struct ipoib_dev_priv *priv,
 	if (result) {
 		ipoib_warn(priv, "failed to initialize; error %i", result);
 
-		/*
-		 * register_netdevice sometimes calls priv_destructor,
-		 * sometimes not. Make sure it was done.
-		 */
+		 
 		goto out_early;
 	}
 
-	/* RTNL childs don't need proprietary sysfs entries */
+	 
 	if (type == IPOIB_LEGACY_CHILD) {
 		if (ipoib_cm_add_mode_attr(ndev))
 			goto sysfs_failed;
@@ -212,16 +156,7 @@ struct ipoib_vlan_delete_work {
 	struct net_device *dev;
 };
 
-/*
- * sysfs callbacks of a netdevice cannot obtain the rtnl lock as
- * unregister_netdev ultimately deletes the sysfs files while holding the rtnl
- * lock. This deadlocks the system.
- *
- * A callback can use rtnl_trylock to avoid the deadlock but it cannot call
- * unregister_netdev as that internally takes and releases the rtnl_lock.  So
- * instead we find the netdev to unregister and then do the actual unregister
- * from the global work queue where we can obtain the rtnl_lock safely.
- */
+ 
 static void ipoib_vlan_delete_task(struct work_struct *work)
 {
 	struct ipoib_vlan_delete_work *pwork =
@@ -230,7 +165,7 @@ static void ipoib_vlan_delete_task(struct work_struct *work)
 
 	rtnl_lock();
 
-	/* Unregistering tasks can race with another task or parent removal */
+	 
 	if (dev->reg_state == NETREG_REGISTERED) {
 		struct ipoib_dev_priv *priv = ipoib_priv(dev);
 		struct ipoib_dev_priv *ppriv = ipoib_priv(priv->parent);

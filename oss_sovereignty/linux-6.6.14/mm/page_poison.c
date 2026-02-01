@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/kernel.h>
 #include <linux/string.h>
 #include <linux/mm.h>
@@ -23,7 +23,7 @@ static void poison_page(struct page *page)
 {
 	void *addr = kmap_atomic(page);
 
-	/* KASAN still think the page is in-use, so skip it. */
+	 
 	kasan_disable_current();
 	memset(kasan_reset_tag(addr), PAGE_POISON, PAGE_SIZE);
 	kasan_enable_current();
@@ -79,11 +79,7 @@ static void unpoison_page(struct page *page)
 
 	addr = kmap_atomic(page);
 	kasan_disable_current();
-	/*
-	 * Page poisoning when enabled poisons each and every page
-	 * that is freed to buddy. Thus no extra check is done to
-	 * see if a page was poisoned.
-	 */
+	 
 	check_poison_mem(page, kasan_reset_tag(addr), PAGE_SIZE);
 	kasan_enable_current();
 	kunmap_atomic(addr);
@@ -100,6 +96,6 @@ void __kernel_unpoison_pages(struct page *page, int n)
 #ifndef CONFIG_ARCH_SUPPORTS_DEBUG_PAGEALLOC
 void __kernel_map_pages(struct page *page, int numpages, int enable)
 {
-	/* This function does nothing, all work is done via poison pages */
+	 
 }
 #endif

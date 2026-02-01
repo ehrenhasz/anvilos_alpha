@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2020-2023 Intel Corporation
- */
+ 
+ 
 
 #ifndef __IVPU_HW_H__
 #define __IVPU_HW_H__
@@ -47,10 +45,7 @@ struct ivpu_hw_info {
 	struct {
 		u8 min_ratio;
 		u8 max_ratio;
-		/*
-		 * Pll ratio for the efficiency frequency. The VPU has optimum
-		 * performance to power ratio at this frequency.
-		 */
+		 
 		u8 pn_ratio;
 		u32 profiling_freq;
 	} pll;
@@ -104,7 +99,7 @@ static inline void ivpu_hw_wdt_disable(struct ivpu_device *vdev)
 	vdev->hw->ops->wdt_disable(vdev);
 };
 
-/* Register indirect accesses */
+ 
 static inline u32 ivpu_hw_reg_pll_freq_get(struct ivpu_device *vdev)
 {
 	return vdev->hw->ops->reg_pll_freq_get(vdev);
@@ -176,4 +171,4 @@ static inline void ivpu_hw_diagnose_failure(struct ivpu_device *vdev)
 	vdev->hw->ops->diagnose_failure(vdev);
 }
 
-#endif /* __IVPU_HW_H__ */
+#endif  

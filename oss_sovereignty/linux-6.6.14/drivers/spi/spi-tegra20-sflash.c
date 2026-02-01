@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * SPI driver for Nvidia's Tegra20 Serial Flash Controller.
- *
- * Copyright (c) 2012, NVIDIA CORPORATION.  All rights reserved.
- *
- * Author: Laxman Dewangan <ldewangan@nvidia.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/completion.h>
@@ -150,7 +144,7 @@ static inline void tegra_sflash_writel(struct tegra_sflash_data *tsd,
 
 static void tegra_sflash_clear_status(struct tegra_sflash_data *tsd)
 {
-	/* Write 1 to clear status register */
+	 
 	tegra_sflash_writel(tsd, SPI_RDY | SPI_FIFO_ERROR, SPI_STATUS);
 }
 
@@ -433,7 +427,7 @@ static int tegra_sflash_probe(struct platform_device *pdev)
 		return -ENOMEM;
 	}
 
-	/* the spi->mode bits understood by this driver: */
+	 
 	master->mode_bits = SPI_CPOL | SPI_CPHA;
 	master->transfer_one_message = tegra_sflash_transfer_one_message;
 	master->auto_runtime_pm = true;
@@ -447,7 +441,7 @@ static int tegra_sflash_probe(struct platform_device *pdev)
 
 	if (of_property_read_u32(tsd->dev->of_node, "spi-max-frequency",
 				 &master->max_speed_hz))
-		master->max_speed_hz = 25000000; /* 25MHz */
+		master->max_speed_hz = 25000000;  
 
 	tsd->base = devm_platform_ioremap_resource(pdev, 0);
 	if (IS_ERR(tsd->base)) {
@@ -496,7 +490,7 @@ static int tegra_sflash_probe(struct platform_device *pdev)
 		goto exit_pm_disable;
 	}
 
-	/* Reset controller */
+	 
 	reset_control_assert(tsd->rst);
 	udelay(2);
 	reset_control_deassert(tsd->rst);
@@ -567,7 +561,7 @@ static int tegra_sflash_runtime_suspend(struct device *dev)
 	struct spi_master *master = dev_get_drvdata(dev);
 	struct tegra_sflash_data *tsd = spi_master_get_devdata(master);
 
-	/* Flush all write which are in PPSB queue by reading back */
+	 
 	tegra_sflash_readl(tsd, SPI_COMMAND);
 
 	clk_disable_unprepare(tsd->clk);

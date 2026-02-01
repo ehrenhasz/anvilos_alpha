@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
-/* Copyright (c) 2016-2018 Mellanox Technologies. All rights reserved */
+
+ 
 
 #include <linux/err.h>
 #include <linux/i2c.h>
@@ -53,31 +53,11 @@
 #define MLXSW_I2C_TIMEOUT_MSECS		5000
 #define MLXSW_I2C_MAX_DATA_SIZE		256
 
-/* Driver can be initialized by kernel platform driver or from the user
- * space. In the first case IRQ line number is passed through the platform
- * data, otherwise default IRQ line is to be used. Default IRQ is relevant
- * only for specific I2C slave address, allowing 3.4 MHz I2C path to the chip
- * (special hardware feature for I2C acceleration).
- */
+ 
 #define MLXSW_I2C_DEFAULT_IRQ		17
 #define MLXSW_FAST_I2C_SLAVE		0x37
 
-/**
- * struct mlxsw_i2c - device private data:
- * @cmd: command attributes;
- * @cmd.mb_size_in: input mailbox size;
- * @cmd.mb_off_in: input mailbox offset in register space;
- * @cmd.mb_size_out: output mailbox size;
- * @cmd.mb_off_out: output mailbox offset in register space;
- * @cmd.lock: command execution lock;
- * @dev: I2C device;
- * @core: switch core pointer;
- * @bus_info: bus info block;
- * @block_size: maximum block size allowed to pass to under layer;
- * @pdata: device platform data;
- * @irq_work: interrupts work item;
- * @irq: IRQ line number;
- */
+ 
 struct mlxsw_i2c {
 	struct {
 		u32 mb_size_in;
@@ -111,13 +91,13 @@ struct mlxsw_i2c {
 	  .len = (_len),					\
 	  .flags = 0 }
 
-/* Routine converts in and out mail boxes offset and size. */
+ 
 static inline void
 mlxsw_i2c_convert_mbox(struct mlxsw_i2c *mlxsw_i2c, u8 *buf)
 {
 	u32 tmp;
 
-	/* Local in/out mailboxes: 20 bits for offset, 12 for size */
+	 
 	tmp = be32_to_cpup((__be32 *) buf);
 	mlxsw_i2c->cmd.mb_off_in = tmp &
 				   GENMASK(MLXSW_I2C_MBOX_OFFSET_BITS - 1, 0);
@@ -133,7 +113,7 @@ mlxsw_i2c_convert_mbox(struct mlxsw_i2c *mlxsw_i2c, u8 *buf)
 					MLXSW_I2C_MBOX_OFFSET_BITS;
 }
 
-/* Routine obtains register size from mail box buffer. */
+ 
 static inline int mlxsw_i2c_get_reg_size(u8 *in_mbox)
 {
 	u16  tmp = be16_to_cpup((__be16 *) (in_mbox + MLXSW_I2C_TLV_HDR_SIZE));
@@ -141,7 +121,7 @@ static inline int mlxsw_i2c_get_reg_size(u8 *in_mbox)
 	return (tmp & 0x7ff) * 4 + MLXSW_I2C_TLV_HDR_SIZE;
 }
 
-/* Routine sets I2C device internal offset in the transaction buffer. */
+ 
 static inline void mlxsw_i2c_set_slave_addr(u8 *buf, u32 off)
 {
 	__be32 *val = (__be32 *) buf;
@@ -149,7 +129,7 @@ static inline void mlxsw_i2c_set_slave_addr(u8 *buf, u32 off)
 	*val = htonl(off);
 }
 
-/* Routine waits until go bit is cleared. */
+ 
 static int mlxsw_i2c_wait_go_bit(struct i2c_client *client,
 				 struct mlxsw_i2c *mlxsw_i2c, u8 *p_status)
 {
@@ -193,7 +173,7 @@ static int mlxsw_i2c_wait_go_bit(struct i2c_client *client,
 	return err > 0 ? 0 : err;
 }
 
-/* Routine posts a command to ASIC through mail box. */
+ 
 static int mlxsw_i2c_write_cmd(struct i2c_client *client,
 			       struct mlxsw_i2c *mlxsw_i2c,
 			       int immediate)
@@ -222,14 +202,14 @@ static int mlxsw_i2c_write_cmd(struct i2c_client *client,
 	mlxsw_i2c_set_slave_addr((u8 *)push_cmd_buf,
 				 MLXSW_I2C_CIR2_OFF_STATUS);
 
-	/* Prepare Command Interface Register for transaction */
+	 
 	err = i2c_transfer(client->adapter, &prep_cmd, 1);
 	if (err < 0)
 		return err;
 	else if (err != 1)
 		return -EIO;
 
-	/* Write out Command Interface Register GO bit to push transaction */
+	 
 	err = i2c_transfer(client->adapter, &push_cmd, 1);
 	if (err < 0)
 		return err;
@@ -239,7 +219,7 @@ static int mlxsw_i2c_write_cmd(struct i2c_client *client,
 	return 0;
 }
 
-/* Routine posts initialization command to ASIC through mail box. */
+ 
 static int
 mlxsw_i2c_write_init_cmd(struct i2c_client *client,
 			 struct mlxsw_i2c *mlxsw_i2c, u16 opcode, u32 in_mod)
@@ -268,28 +248,28 @@ mlxsw_i2c_write_init_cmd(struct i2c_client *client,
 	mlxsw_i2c_set_slave_addr((u8 *)push_cmd_buf,
 				 MLXSW_I2C_CIR2_OFF_STATUS);
 
-	/* Prepare Command Interface Register for transaction */
+	 
 	err = i2c_transfer(client->adapter, &prep_cmd, 1);
 	if (err < 0)
 		return err;
 	else if (err != 1)
 		return -EIO;
 
-	/* Write out Command Interface Register GO bit to push transaction */
+	 
 	err = i2c_transfer(client->adapter, &push_cmd, 1);
 	if (err < 0)
 		return err;
 	else if (err != 1)
 		return -EIO;
 
-	/* Wait until go bit is cleared. */
+	 
 	err = mlxsw_i2c_wait_go_bit(client, mlxsw_i2c, &status);
 	if (err) {
 		dev_err(&client->dev, "HW semaphore is not released");
 		return err;
 	}
 
-	/* Validate transaction completion status. */
+	 
 	if (status) {
 		dev_err(&client->dev, "Bad transaction completion status %x\n",
 			status);
@@ -299,7 +279,7 @@ mlxsw_i2c_write_init_cmd(struct i2c_client *client,
 	return 0;
 }
 
-/* Routine obtains mail box offsets from ASIC register space. */
+ 
 static int mlxsw_i2c_get_mbox(struct i2c_client *client,
 			      struct mlxsw_i2c *mlxsw_i2c)
 {
@@ -309,7 +289,7 @@ static int mlxsw_i2c_get_mbox(struct i2c_client *client,
 		MLXSW_I2C_READ_MSG(client, addr_buf, buf, MLXSW_I2C_MBOX_SIZE);
 	int err;
 
-	/* Read mail boxes offsets. */
+	 
 	mlxsw_i2c_set_slave_addr(addr_buf, MLXSW_I2C_CIR2_BASE);
 	err = i2c_transfer(client->adapter, mbox_cmd, 2);
 	if (err != 2) {
@@ -320,13 +300,13 @@ static int mlxsw_i2c_get_mbox(struct i2c_client *client,
 			return err;
 	}
 
-	/* Convert mail boxes. */
+	 
 	mlxsw_i2c_convert_mbox(mlxsw_i2c, &buf[MLXSW_I2C_MBOX_OUT_PARAM_OFF]);
 
 	return err;
 }
 
-/* Routine sends I2C write transaction to ASIC device. */
+ 
 static int
 mlxsw_i2c_write(struct device *dev, size_t in_mbox_size, u8 *in_mbox, int num,
 		u8 *p_status)
@@ -377,7 +357,7 @@ mlxsw_i2c_write(struct device *dev, size_t in_mbox_size, u8 *in_mbox, int num,
 		in_mbox_size -= chunk_size;
 	}
 
-	/* Prepare and write out Command Interface Register for transaction. */
+	 
 	err = mlxsw_i2c_write_cmd(client, mlxsw_i2c, 0);
 	if (err) {
 		dev_err(&client->dev, "Could not start transaction");
@@ -385,14 +365,14 @@ mlxsw_i2c_write(struct device *dev, size_t in_mbox_size, u8 *in_mbox, int num,
 		goto mlxsw_i2c_write_exit;
 	}
 
-	/* Wait until go bit is cleared. */
+	 
 	err = mlxsw_i2c_wait_go_bit(client, mlxsw_i2c, p_status);
 	if (err) {
 		dev_err(&client->dev, "HW semaphore is not released");
 		goto mlxsw_i2c_write_exit;
 	}
 
-	/* Validate transaction completion status. */
+	 
 	if (*p_status) {
 		dev_err(&client->dev, "Bad transaction completion status %x\n",
 			*p_status);
@@ -404,7 +384,7 @@ mlxsw_i2c_write_exit:
 	return err;
 }
 
-/* Routine executes I2C command. */
+ 
 static int
 mlxsw_i2c_cmd(struct device *dev, u16 opcode, u32 in_mod, size_t in_mbox_size,
 	      u8 *in_mbox, size_t out_mbox_size, u8 *out_mbox, u8 *status)
@@ -437,13 +417,13 @@ mlxsw_i2c_cmd(struct device *dev, u16 opcode, u32 in_mod, size_t in_mbox_size,
 		if (err)
 			goto cmd_fail;
 
-		/* No out mailbox is case of write transaction. */
+		 
 		if (!out_mbox) {
 			mutex_unlock(&mlxsw_i2c->cmd.lock);
 			return 0;
 		}
 	} else {
-		/* No input mailbox is case of initialization query command. */
+		 
 		reg_size = MLXSW_I2C_MAX_DATA_SIZE;
 		num = DIV_ROUND_UP(reg_size, mlxsw_i2c->block_size);
 
@@ -458,7 +438,7 @@ mlxsw_i2c_cmd(struct device *dev, u16 opcode, u32 in_mod, size_t in_mbox_size,
 			goto cmd_fail;
 	}
 
-	/* Send read transaction to get output mailbox content. */
+	 
 	read_tran[1].buf = out_mbox;
 	for (i = 0; i < num; i++) {
 		chunk_size = (reg_size > mlxsw_i2c->block_size) ?
@@ -577,9 +557,7 @@ static irqreturn_t mlxsw_i2c_irq_handler(int irq, void *dev)
 
 	mlxsw_core_schedule_work(&mlxsw_i2c->irq_work);
 
-	/* Interrupt handler shares IRQ line with 'main' interrupt handler.
-	 * Return here IRQ_NONE, while main handler will return IRQ_HANDLED.
-	 */
+	 
 	return IRQ_NONE;
 }
 
@@ -587,14 +565,11 @@ static int mlxsw_i2c_irq_init(struct mlxsw_i2c *mlxsw_i2c, u8 addr)
 {
 	int err;
 
-	/* Initialize interrupt handler if system hotplug driver is reachable,
-	 * otherwise interrupt line is not enabled and interrupts will not be
-	 * raised to CPU. Also request_irq() call will be not valid.
-	 */
+	 
 	if (!IS_REACHABLE(CONFIG_MLXREG_HOTPLUG))
 		return 0;
 
-	/* Set default interrupt line. */
+	 
 	if (mlxsw_i2c->pdata && mlxsw_i2c->pdata->irq)
 		mlxsw_i2c->irq = mlxsw_i2c->pdata->irq;
 	else if (addr == MLXSW_FAST_I2C_SLAVE)
@@ -664,33 +639,23 @@ static int mlxsw_i2c_probe(struct i2c_client *client)
 	i2c_set_clientdata(client, mlxsw_i2c);
 	mutex_init(&mlxsw_i2c->cmd.lock);
 
-	/* In order to use mailboxes through the i2c, special area is reserved
-	 * on the i2c address space that can be used for input and output
-	 * mailboxes. Such mailboxes are called local mailboxes. When using a
-	 * local mailbox, software should specify 0 as the Input/Output
-	 * parameters. The location of the Local Mailbox addresses on the i2c
-	 * space can be retrieved through the QUERY_FW command.
-	 * For this purpose QUERY_FW is to be issued with opcode modifier equal
-	 * 0x01. For such command the output parameter is an immediate value.
-	 * Here QUERY_FW command is invoked for ASIC probing and for getting
-	 * local mailboxes addresses from immedate output parameters.
-	 */
+	 
 
-	/* Prepare and write out Command Interface Register for transaction */
+	 
 	err = mlxsw_i2c_write_cmd(client, mlxsw_i2c, 1);
 	if (err) {
 		dev_err(&client->dev, "Could not start transaction");
 		goto errout;
 	}
 
-	/* Wait until go bit is cleared. */
+	 
 	err = mlxsw_i2c_wait_go_bit(client, mlxsw_i2c, &status);
 	if (err) {
 		dev_err(&client->dev, "HW semaphore is not released");
 		goto errout;
 	}
 
-	/* Validate transaction completion status. */
+	 
 	if (status) {
 		dev_err(&client->dev, "Bad transaction completion status %x\n",
 			status);
@@ -698,7 +663,7 @@ static int mlxsw_i2c_probe(struct i2c_client *client)
 		goto errout;
 	}
 
-	/* Get mailbox offsets. */
+	 
 	err = mlxsw_i2c_get_mbox(client, mlxsw_i2c);
 	if (err < 0) {
 		dev_err(&client->dev, "Fail to get mailboxes\n");
@@ -710,7 +675,7 @@ static int mlxsw_i2c_probe(struct i2c_client *client)
 		 mlxsw_i2c->cmd.mb_off_in, mlxsw_i2c->cmd.mb_size_out,
 		 mlxsw_i2c->cmd.mb_off_out);
 
-	/* Register device bus. */
+	 
 	mlxsw_i2c->bus_info.device_kind = id->name;
 	mlxsw_i2c->bus_info.device_name = client->name;
 	mlxsw_i2c->bus_info.dev = &client->dev;

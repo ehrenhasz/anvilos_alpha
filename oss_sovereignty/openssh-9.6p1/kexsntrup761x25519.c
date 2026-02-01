@@ -1,27 +1,5 @@
-/* $OpenBSD: kexsntrup761x25519.c,v 1.2 2021/12/05 12:28:27 jsg Exp $ */
-/*
- * Copyright (c) 2019 Markus Friedl.  All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- *
- * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
- * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
- * IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
- * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
- * NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
- * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+ 
+ 
 
 #include "includes.h"
 
@@ -86,7 +64,7 @@ kex_kem_sntrup761x25519_enc(struct kex *kex,
 	*server_blobp = NULL;
 	*shared_secretp = NULL;
 
-	/* client_blob contains both KEM and ECDH client pubkeys */
+	 
 	need = crypto_kem_sntrup761_PUBLICKEYBYTES + CURVE25519_SIZE;
 	if (sshbuf_len(client_blob) != need) {
 		r = SSH_ERR_SIGNATURE_INVALID;
@@ -100,8 +78,8 @@ kex_kem_sntrup761x25519_enc(struct kex *kex,
 	    client_pub + crypto_kem_sntrup761_PUBLICKEYBYTES,
 	    CURVE25519_SIZE);
 #endif
-	/* allocate buffer for concatenation of KEM key and ECDH shared key */
-	/* the buffer will be hashed and the result is the shared secret */
+	 
+	 
 	if ((buf = sshbuf_new()) == NULL) {
 		r = SSH_ERR_ALLOC_FAIL;
 		goto out;
@@ -109,7 +87,7 @@ kex_kem_sntrup761x25519_enc(struct kex *kex,
 	if ((r = sshbuf_reserve(buf, crypto_kem_sntrup761_BYTES,
 	    &kem_key)) != 0)
 		goto out;
-	/* allocate space for encrypted KEM key and ECDH pub key */
+	 
 	if ((server_blob = sshbuf_new()) == NULL) {
 		r = SSH_ERR_ALLOC_FAIL;
 		goto out;
@@ -117,12 +95,12 @@ kex_kem_sntrup761x25519_enc(struct kex *kex,
 	need = crypto_kem_sntrup761_CIPHERTEXTBYTES + CURVE25519_SIZE;
 	if ((r = sshbuf_reserve(server_blob, need, &ciphertext)) != 0)
 		goto out;
-	/* generate and encrypt KEM key with client key */
+	 
 	crypto_kem_sntrup761_enc(ciphertext, kem_key, client_pub);
-	/* generate ECDH key pair, store server pubkey after ciphertext */
+	 
 	server_pub = ciphertext + crypto_kem_sntrup761_CIPHERTEXTBYTES;
 	kexc25519_keygen(server_key, server_pub);
-	/* append ECDH shared key */
+	 
 	client_pub += crypto_kem_sntrup761_PUBLICKEYBYTES;
 	if ((r = kexc25519_shared_key_ext(server_key, client_pub, buf, 1)) < 0)
 		goto out;
@@ -136,7 +114,7 @@ kex_kem_sntrup761x25519_enc(struct kex *kex,
 	dump_digest("concatenation of KEM key and ECDH shared key:",
 	    sshbuf_ptr(buf), sshbuf_len(buf));
 #endif
-	/* string-encoded hash is resulting shared secret */
+	 
 	sshbuf_reset(buf);
 	if ((r = sshbuf_put_string(buf, hash,
 	    ssh_digest_bytes(kex->hash_alg))) != 0)
@@ -181,7 +159,7 @@ kex_kem_sntrup761x25519_dec(struct kex *kex,
 	    crypto_kem_sntrup761_CIPHERTEXTBYTES);
 	dump_digest("server public key c25519:", server_pub, CURVE25519_SIZE);
 #endif
-	/* hash concatenation of KEM key and ECDH shared key */
+	 
 	if ((buf = sshbuf_new()) == NULL) {
 		r = SSH_ERR_ALLOC_FAIL;
 		goto out;
@@ -248,4 +226,4 @@ kex_kem_sntrup761x25519_dec(struct kex *kex,
 {
 	return SSH_ERR_SIGN_ALG_UNSUPPORTED;
 }
-#endif /* USE_SNTRUP761X25519 */
+#endif  

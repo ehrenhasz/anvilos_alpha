@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2022 Meta Platforms, Inc. and affiliates. */
+
+ 
 
 #include <vmlinux.h>
 #include <bpf/bpf_tracing.h>
@@ -10,12 +10,7 @@
 
 char _license[] SEC("license") = "GPL";
 
-/* Prototype for all of the program trace events below:
- *
- * TRACE_EVENT(cgroup_mkdir,
- *         TP_PROTO(struct cgroup *cgrp, const char *path),
- *         TP_ARGS(cgrp, path)
- */
+ 
 
 static struct __cgrps_kfunc_map_value *insert_lookup_cgrp(struct cgroup *cgrp)
 {
@@ -39,7 +34,7 @@ int BPF_PROG(cgrp_kfunc_acquire_untrusted, struct cgroup *cgrp, const char *path
 	if (!v)
 		return 0;
 
-	/* Can't invoke bpf_cgroup_acquire() on an untrusted pointer. */
+	 
 	acquired = bpf_cgroup_acquire(v->cgrp);
 	if (acquired)
 		bpf_cgroup_release(acquired);
@@ -54,10 +49,7 @@ int BPF_PROG(cgrp_kfunc_acquire_no_null_check, struct cgroup *cgrp, const char *
 	struct cgroup *acquired;
 
 	acquired = bpf_cgroup_acquire(cgrp);
-	/*
-	 * Can't invoke bpf_cgroup_release() without checking the return value
-	 * of bpf_cgroup_acquire().
-	 */
+	 
 	bpf_cgroup_release(acquired);
 
 	return 0;
@@ -69,7 +61,7 @@ int BPF_PROG(cgrp_kfunc_acquire_fp, struct cgroup *cgrp, const char *path)
 {
 	struct cgroup *acquired, *stack_cgrp = (struct cgroup *)&path;
 
-	/* Can't invoke bpf_cgroup_acquire() on a random frame pointer. */
+	 
 	acquired = bpf_cgroup_acquire((struct cgroup *)&stack_cgrp);
 	if (acquired)
 		bpf_cgroup_release(acquired);
@@ -83,7 +75,7 @@ int BPF_PROG(cgrp_kfunc_acquire_unsafe_kretprobe, struct cgroup *cgrp)
 {
 	struct cgroup *acquired;
 
-	/* Can't acquire an untrusted struct cgroup * pointer. */
+	 
 	acquired = bpf_cgroup_acquire(cgrp);
 	if (acquired)
 		bpf_cgroup_release(acquired);
@@ -97,7 +89,7 @@ int BPF_PROG(cgrp_kfunc_acquire_trusted_walked, struct cgroup *cgrp, const char 
 {
 	struct cgroup *acquired;
 
-	/* Can't invoke bpf_cgroup_acquire() on a pointer obtained from walking a trusted cgroup. */
+	 
 	acquired = bpf_cgroup_acquire(cgrp->old_dom_cgrp);
 	if (acquired)
 		bpf_cgroup_release(acquired);
@@ -111,7 +103,7 @@ int BPF_PROG(cgrp_kfunc_acquire_null, struct cgroup *cgrp, const char *path)
 {
 	struct cgroup *acquired;
 
-	/* Can't invoke bpf_cgroup_acquire() on a NULL pointer. */
+	 
 	acquired = bpf_cgroup_acquire(NULL);
 	if (acquired)
 		bpf_cgroup_release(acquired);
@@ -127,7 +119,7 @@ int BPF_PROG(cgrp_kfunc_acquire_unreleased, struct cgroup *cgrp, const char *pat
 
 	acquired = bpf_cgroup_acquire(cgrp);
 
-	/* Acquired cgroup is never released. */
+	 
 	__sink(acquired);
 
 	return 0;
@@ -148,7 +140,7 @@ int BPF_PROG(cgrp_kfunc_xchg_unreleased, struct cgroup *cgrp, const char *path)
 	if (!kptr)
 		return 0;
 
-	/* Kptr retrieved from map is never released. */
+	 
 
 	return 0;
 }
@@ -167,7 +159,7 @@ int BPF_PROG(cgrp_kfunc_rcu_get_release, struct cgroup *cgrp, const char *path)
 	bpf_rcu_read_lock();
 	kptr = v->cgrp;
 	if (kptr)
-		/* Can't release a cgroup kptr stored in a map. */
+		 
 		bpf_cgroup_release(kptr);
 	bpf_rcu_read_unlock();
 
@@ -184,7 +176,7 @@ int BPF_PROG(cgrp_kfunc_release_untrusted, struct cgroup *cgrp, const char *path
 	if (!v)
 		return 0;
 
-	/* Can't invoke bpf_cgroup_release() on an untrusted pointer. */
+	 
 	bpf_cgroup_release(v->cgrp);
 
 	return 0;
@@ -196,7 +188,7 @@ int BPF_PROG(cgrp_kfunc_release_fp, struct cgroup *cgrp, const char *path)
 {
 	struct cgroup *acquired = (struct cgroup *)&path;
 
-	/* Cannot release random frame pointer. */
+	 
 	bpf_cgroup_release(acquired);
 
 	return 0;
@@ -230,7 +222,7 @@ int BPF_PROG(cgrp_kfunc_release_null, struct cgroup *cgrp, const char *path)
 
 	old = bpf_kptr_xchg(&v->cgrp, acquired);
 
-	/* old cannot be passed to bpf_cgroup_release() without a NULL check. */
+	 
 	bpf_cgroup_release(old);
 
 	return 0;
@@ -240,7 +232,7 @@ SEC("tp_btf/cgroup_mkdir")
 __failure __msg("release kernel function bpf_cgroup_release expects")
 int BPF_PROG(cgrp_kfunc_release_unacquired, struct cgroup *cgrp, const char *path)
 {
-	/* Cannot release trusted cgroup pointer which was not acquired. */
+	 
 	bpf_cgroup_release(cgrp);
 
 	return 0;

@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * drivers/usb/core/endpoint.c
- *
- * (C) Copyright 2002,2004,2006 Greg Kroah-Hartman
- * (C) Copyright 2002,2004 IBM Corp.
- * (C) Copyright 2006 Novell Inc.
- *
- * Released under the GPLv2 only.
- *
- * Endpoint sysfs stuff
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/spinlock.h>

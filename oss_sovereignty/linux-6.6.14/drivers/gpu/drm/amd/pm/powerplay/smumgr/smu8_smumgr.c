@@ -1,25 +1,4 @@
-/*
- * Copyright 2015 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 
 #include <linux/delay.h>
 #include <linux/gfp.h>
@@ -62,7 +41,7 @@ static uint32_t smu8_get_argument(struct pp_hwmgr *hwmgr)
 					mmSMU_MP1_SRBM2P_ARG_0);
 }
 
-/* Send a message to the SMC, and wait for its response.*/
+ 
 static int smu8_send_msg_to_smc_with_parameter(struct pp_hwmgr *hwmgr,
 					    uint16_t msg, uint32_t parameter)
 {
@@ -76,7 +55,7 @@ static int smu8_send_msg_to_smc_with_parameter(struct pp_hwmgr *hwmgr,
 	result = PHM_WAIT_FIELD_UNEQUAL(hwmgr,
 					SMU_MP1_SRBM2P_RESP_0, CONTENT, 0);
 	if (result != 0) {
-		/* Read the last message to SMU, to report actual cause */
+		 
 		uint32_t val = cgs_read_register(hwmgr->device,
 						 mmSMU_MP1_SRBM2P_MSG_0);
 		pr_err("%s(0x%04x) aborted; SMU still servicing msg (0x%04x)\n",
@@ -187,7 +166,7 @@ static int smu8_load_mec_firmware(struct pp_hwmgr *hwmgr)
 	if (ret)
 		return -EINVAL;
 
-	/* Disable MEC parsing/prefetching */
+	 
 	tmp = cgs_read_register(hwmgr->device,
 					mmCP_MEC_CNTL);
 	tmp = PHM_SET_FIELD(tmp, CP_MEC_CNTL, MEC_ME1_HALT, 1);
@@ -458,7 +437,7 @@ static int smu8_smu_construct_toc_for_vddgfx_exit(struct pp_hwmgr *hwmgr)
 	smu8_smu_populate_single_ucode_load_task(hwmgr,
 				SMU8_SCRATCH_ENTRY_UCODE_ID_RLC_G, false);
 
-	/* populate scratch */
+	 
 	smu8_smu_populate_single_scratch_task(hwmgr,
 				SMU8_SCRATCH_ENTRY_UCODE_ID_RLC_SCRATCH,
 				TASK_TYPE_UCODE_LOAD, false);

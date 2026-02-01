@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright © 2020 Intel Corporation
- */
+
+ 
 
 #include "i915_drv.h"
 #include "i915_reg.h"
@@ -58,15 +56,7 @@ static u32 gen11_read_clock_frequency(struct intel_uncore *uncore)
 	u32 ctc_reg = intel_uncore_read(uncore, CTC_MODE);
 	u32 freq = 0;
 
-	/*
-	 * Note that on gen11+, the clock frequency may be reconfigured.
-	 * We do not, and we assume nobody else does.
-	 *
-	 * First figure out the reference frequency. There are 2 ways
-	 * we can compute the frequency, either through the
-	 * TIMESTAMP_OVERRIDE register or through RPM_CONFIG. CTC_MODE
-	 * tells us which one we should use.
-	 */
+	 
 	if ((ctc_reg & CTC_SOURCE_PARAMETER_MASK) == CTC_SOURCE_DIVIDE_LOGIC) {
 		freq = read_reference_ts_freq(uncore);
 	} else {
@@ -74,11 +64,7 @@ static u32 gen11_read_clock_frequency(struct intel_uncore *uncore)
 
 		freq = gen11_get_crystal_clock_freq(uncore, c0);
 
-		/*
-		 * Now figure out how the command stream's timestamp
-		 * register increments from this frequency (it might
-		 * increment only every few clock cycle).
-		 */
+		 
 		freq >>= 3 - ((c0 & GEN10_RPM_CONFIG0_CTC_SHIFT_PARAMETER_MASK) >>
 			      GEN10_RPM_CONFIG0_CTC_SHIFT_PARAMETER_SHIFT);
 	}
@@ -96,11 +82,7 @@ static u32 gen9_read_clock_frequency(struct intel_uncore *uncore)
 	} else {
 		freq = IS_GEN9_LP(uncore->i915) ? 19200000 : 24000000;
 
-		/*
-		 * Now figure out how the command stream's timestamp
-		 * register increments from this frequency (it might
-		 * increment only every few clock cycle).
-		 */
+		 
 		freq >>= 3 - ((ctc_reg & CTC_SHIFT_PARAMETER_MASK) >>
 			      CTC_SHIFT_PARAMETER_SHIFT);
 	}
@@ -110,47 +92,25 @@ static u32 gen9_read_clock_frequency(struct intel_uncore *uncore)
 
 static u32 gen6_read_clock_frequency(struct intel_uncore *uncore)
 {
-	/*
-	 * PRMs say:
-	 *
-	 *     "The PCU TSC counts 10ns increments; this timestamp
-	 *      reflects bits 38:3 of the TSC (i.e. 80ns granularity,
-	 *      rolling over every 1.5 hours).
-	 */
+	 
 	return 12500000;
 }
 
 static u32 gen5_read_clock_frequency(struct intel_uncore *uncore)
 {
-	/*
-	 * 63:32 increments every 1000 ns
-	 * 31:0 mbz
-	 */
+	 
 	return 1000000000 / 1000;
 }
 
 static u32 g4x_read_clock_frequency(struct intel_uncore *uncore)
 {
-	/*
-	 * 63:20 increments every 1/4 ns
-	 * 19:0 mbz
-	 *
-	 * -> 63:32 increments every 1024 ns
-	 */
+	 
 	return 1000000000 / 1024;
 }
 
 static u32 gen4_read_clock_frequency(struct intel_uncore *uncore)
 {
-	/*
-	 * PRMs say:
-	 *
-	 *     "The value in this register increments once every 16
-	 *      hclks." (through the “Clocking Configuration”
-	 *      (“CLKCFG”) MCHBAR register)
-	 *
-	 * Testing on actual hardware has shown there is no /16.
-	 */
+	 
 	return RUNTIME_INFO(uncore->i915)->rawclk_freq * 1000;
 }
 
@@ -176,7 +136,7 @@ void intel_gt_init_clock_frequency(struct intel_gt *gt)
 {
 	gt->clock_frequency = read_clock_frequency(gt->uncore);
 
-	/* Icelake appears to use another fixed frequency for CTX_TIMESTAMP */
+	 
 	if (GRAPHICS_VER(gt->i915) == 11)
 		gt->clock_period_ns = NSEC_PER_SEC / 13750000;
 	else if (gt->clock_frequency)
@@ -225,13 +185,7 @@ u64 intel_gt_ns_to_pm_interval(const struct intel_gt *gt, u64 ns)
 {
 	u64 val;
 
-	/*
-	 * Make these a multiple of magic 25 to avoid SNB (eg. Dell XPS
-	 * 8300) freezing up around GPU hangs. Looks as if even
-	 * scheduling/timer interrupts start misbehaving if the RPS
-	 * EI/thresholds are "bad", leading to a very sluggish or even
-	 * frozen machine.
-	 */
+	 
 	val = div_u64_roundup(intel_gt_ns_to_clock_interval(gt, ns), 16);
 	if (GRAPHICS_VER(gt->i915) == 6)
 		val = div_u64_roundup(val, 25) * 25;

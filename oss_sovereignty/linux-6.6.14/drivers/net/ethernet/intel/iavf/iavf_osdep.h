@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright(c) 2013 - 2018 Intel Corporation. */
+ 
+ 
 
 #ifndef _IAVF_OSDEP_H_
 #define _IAVF_OSDEP_H_
@@ -10,7 +10,7 @@
 #include <linux/tcp.h>
 #include <linux/pci.h>
 
-/* get readq/writeq support for 32 bit kernels, use the low-first version */
+ 
 #include <linux/io-64-nonatomic-lo-hi.h>
 
 #define wr32(a, reg, value)	writel((value), ((a)->hw_addr + (reg)))
@@ -20,7 +20,7 @@
 #define rd64(a, reg)		readq((a)->hw_addr + (reg))
 #define iavf_flush(a)		readl((a)->hw_addr + IAVF_VFGEN_RSTAT)
 
-/* memory allocation tracking */
+ 
 struct iavf_dma_mem {
 	void *va;
 	dma_addr_t pa;
@@ -43,4 +43,4 @@ do {								\
 			(h)->bus.func, ##__VA_ARGS__);		\
 } while (0)
 
-#endif /* _IAVF_OSDEP_H_ */
+#endif  

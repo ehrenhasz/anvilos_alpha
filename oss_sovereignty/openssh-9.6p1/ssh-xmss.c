@@ -1,20 +1,5 @@
-/* $OpenBSD: ssh-xmss.c,v 1.14 2022/10/28 00:44:44 djm Exp $*/
-/*
- * Copyright (c) 2017 Stefan-Lukas Gazdag.
- * Copyright (c) 2017 Markus Friedl.
- *
- * Permission to use, copy, modify, and distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
+ 
+ 
 #include "includes.h"
 #ifdef WITH_XMSS
 
@@ -91,7 +76,7 @@ ssh_xmss_serialize_private(const struct sshkey *key, struct sshbuf *b,
 
 	if (key->xmss_name == NULL)
 		return SSH_ERR_INVALID_ARGUMENT;
-	/* Note: can't reuse ssh_xmss_serialize_public because of sk order */
+	 
 	if ((r = sshbuf_put_cstring(b, key->xmss_name)) != 0 ||
 	    (r = sshbuf_put_string(b, key->xmss_pk,
 	    sshkey_xmss_pklen(key))) != 0 ||
@@ -113,7 +98,7 @@ ssh_xmss_copy_public(const struct sshkey *from, struct sshkey *to)
 	if ((r = sshkey_xmss_init(to, from->xmss_name)) != 0)
 		return r;
 	if (from->xmss_pk == NULL)
-		return 0; /* XXX SSH_ERR_INTERNAL_ERROR ? */
+		return 0;  
 
 	if ((pklen = sshkey_xmss_pklen(from)) == 0 ||
 	    sshkey_xmss_pklen(to) != pklen)
@@ -121,7 +106,7 @@ ssh_xmss_copy_public(const struct sshkey *from, struct sshkey *to)
 	if ((to->xmss_pk = malloc(pklen)) == NULL)
 		return SSH_ERR_ALLOC_FAIL;
 	memcpy(to->xmss_pk, from->xmss_pk, pklen);
-	/* simulate number of signatures left on pubkey */
+	 
 	left = sshkey_xmss_signatures_left(from);
 	if (left)
 		sshkey_xmss_enable_maxsign(to, left);
@@ -152,7 +137,7 @@ ssh_xmss_deserialize_public(const char *ktype, struct sshbuf *b,
 	if (!sshkey_is_cert(key) &&
 	    (ret = sshkey_xmss_deserialize_pk_info(key, b)) != 0)
 		goto out;
-	/* success */
+	 
 	ret = 0;
  out:
 	free(xmss_name);
@@ -169,7 +154,7 @@ ssh_xmss_deserialize_private(const char *ktype, struct sshbuf *b,
 	size_t pklen = 0, sklen = 0;
 	u_char *xmss_pk = NULL, *xmss_sk = NULL;
 
-	/* Note: can't reuse ssh_xmss_deserialize_public because of sk order */
+	 
 	if ((r = sshbuf_get_cstring(b, &xmss_name, NULL)) != 0 ||
 	    (r = sshbuf_get_string(b, &xmss_pk, &pklen)) != 0 ||
 	    (r = sshbuf_get_string(b, &xmss_sk, &sklen)) != 0)
@@ -185,10 +170,10 @@ ssh_xmss_deserialize_private(const char *ktype, struct sshbuf *b,
 	key->xmss_pk = xmss_pk;
 	key->xmss_sk = xmss_sk;
 	xmss_pk = xmss_sk = NULL;
-	/* optional internal state */
+	 
 	if ((r = sshkey_xmss_deserialize_state_opt(key, b)) != 0)
 		goto out;
-	/* success */
+	 
 	r = 0;
  out:
 	free(xmss_name);
@@ -230,10 +215,10 @@ ssh_xmss_sign(struct sshkey *key,
 		goto out;
 	if ((ret = xmss_sign(key->xmss_sk, sshkey_xmss_bds_state(key), sig, &smlen,
 	    data, datalen, sshkey_xmss_params(key))) != 0 || smlen <= datalen) {
-		r = SSH_ERR_INVALID_ARGUMENT; /* XXX better error? */
+		r = SSH_ERR_INVALID_ARGUMENT;  
 		goto out;
 	}
-	/* encode signature */
+	 
 	if ((b = sshbuf_new()) == NULL) {
 		r = SSH_ERR_ALLOC_FAIL;
 		goto out;
@@ -251,11 +236,11 @@ ssh_xmss_sign(struct sshkey *key,
 	}
 	if (lenp != NULL)
 		*lenp = len;
-	/* success */
+	 
 	r = 0;
  out:
 	if ((ret = sshkey_xmss_update_state(key, 1)) != 0) {
-		/* discard signature since we cannot update the state */
+		 
 		if (r == 0 && sigp != NULL && *sigp != NULL) {
 			explicit_bzero(*sigp, len);
 			free(*sigp);
@@ -335,8 +320,8 @@ ssh_xmss_verify(const struct sshkey *key,
 		r = SSH_ERR_SIGNATURE_INVALID;
 		goto out;
 	}
-	/* XXX compare 'm' and 'data' ? */
-	/* success */
+	 
+	 
 	r = 0;
  out:
 	if (sm != NULL)
@@ -349,41 +334,41 @@ ssh_xmss_verify(const struct sshkey *key,
 }
 
 static const struct sshkey_impl_funcs sshkey_xmss_funcs = {
-	/* .size = */		NULL,
-	/* .alloc = */		NULL,
-	/* .cleanup = */	ssh_xmss_cleanup,
-	/* .equal = */		ssh_xmss_equal,
-	/* .ssh_serialize_public = */ ssh_xmss_serialize_public,
-	/* .ssh_deserialize_public = */ ssh_xmss_deserialize_public,
-	/* .ssh_serialize_private = */ ssh_xmss_serialize_private,
-	/* .ssh_deserialize_private = */ ssh_xmss_deserialize_private,
-	/* .generate = */	sshkey_xmss_generate_private_key,
-	/* .copy_public = */	ssh_xmss_copy_public,
-	/* .sign = */		ssh_xmss_sign,
-	/* .verify = */		ssh_xmss_verify,
+	 		NULL,
+	 		NULL,
+	 	ssh_xmss_cleanup,
+	 		ssh_xmss_equal,
+	  ssh_xmss_serialize_public,
+	  ssh_xmss_deserialize_public,
+	  ssh_xmss_serialize_private,
+	  ssh_xmss_deserialize_private,
+	 	sshkey_xmss_generate_private_key,
+	 	ssh_xmss_copy_public,
+	 		ssh_xmss_sign,
+	 		ssh_xmss_verify,
 };
 
 const struct sshkey_impl sshkey_xmss_impl = {
-	/* .name = */		"ssh-xmss@openssh.com",
-	/* .shortname = */	"XMSS",
-	/* .sigalg = */		NULL,
-	/* .type = */		KEY_XMSS,
-	/* .nid = */		0,
-	/* .cert = */		0,
-	/* .sigonly = */	0,
-	/* .keybits = */	256,
-	/* .funcs = */		&sshkey_xmss_funcs,
+	 		"ssh-xmss@openssh.com",
+	 	"XMSS",
+	 		NULL,
+	 		KEY_XMSS,
+	 		0,
+	 		0,
+	 	0,
+	 	256,
+	 		&sshkey_xmss_funcs,
 };
 
 const struct sshkey_impl sshkey_xmss_cert_impl = {
-	/* .name = */		"ssh-xmss-cert-v01@openssh.com",
-	/* .shortname = */	"XMSS-CERT",
-	/* .sigalg = */		NULL,
-	/* .type = */		KEY_XMSS_CERT,
-	/* .nid = */		0,
-	/* .cert = */		1,
-	/* .sigonly = */	0,
-	/* .keybits = */	256,
-	/* .funcs = */		&sshkey_xmss_funcs,
+	 		"ssh-xmss-cert-v01@openssh.com",
+	 	"XMSS-CERT",
+	 		NULL,
+	 		KEY_XMSS_CERT,
+	 		0,
+	 		1,
+	 	0,
+	 	256,
+	 		&sshkey_xmss_funcs,
 };
-#endif /* WITH_XMSS */
+#endif  

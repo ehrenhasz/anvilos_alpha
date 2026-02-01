@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  Driver for the Conexant CX25821 PCIe bridge
- *
- *  Copyright (C) 2009 Conexant Systems Inc.
- *  Authors  <shu.lin@conexant.com>, <hiep.huynh@conexant.com>
- *  Based on Steven Toth <stoth@linuxtv.org> cx25821 driver
- *  Parts adapted/taken from Eduardo Moscoso Rubino
- *  Copyright (C) 2009 Eduardo Moscoso Rubino <moscoso@TopoLogica.com>
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -62,20 +54,20 @@ int cx25821_start_video_dma(struct cx25821_dev *dev,
 {
 	int tmp = 0;
 
-	/* setup fifo + format */
+	 
 	cx25821_sram_channel_setup(dev, channel, buf->bpl, buf->risc.dma);
 
-	/* reset counter */
+	 
 	cx_write(channel->gpcnt_ctl, 3);
 
-	/* enable irq */
+	 
 	cx_set(PCI_INT_MSK, cx_read(PCI_INT_MSK) | (1 << channel->i));
 	cx_set(channel->int_msk, 0x11);
 
-	/* start dma */
-	cx_write(channel->dma_ctl, 0x11);	/* FIFO and RISC enable */
+	 
+	cx_write(channel->dma_ctl, 0x11);	 
 
-	/* make sure upstream setting if any is reversed */
+	 
 	tmp = cx_read(VID_CH_MODE_SEL);
 	cx_write(VID_CH_MODE_SEL, tmp & 0xFFFFFE00);
 
@@ -94,7 +86,7 @@ int cx25821_video_irq(struct cx25821_dev *dev, int chan_num, u32 status)
 
 	cx_write(channel->int_stat, status);
 
-	/* risc op code error */
+	 
 	if (status & (1 << 16)) {
 		pr_warn("%s, %s: video risc op code error\n",
 			dev->name, channel->name);
@@ -102,7 +94,7 @@ int cx25821_video_irq(struct cx25821_dev *dev, int chan_num, u32 status)
 		cx25821_sram_channel_dump(dev, channel);
 	}
 
-	/* risc1 y */
+	 
 	if (status & FLD_VID_DST_RISC1) {
 		struct cx25821_dmaqueue *dmaq =
 			&dev->channels[channel->i].dma_vidq;
@@ -164,7 +156,7 @@ static int cx25821_buffer_prepare(struct vb2_buffer *vb)
 	if (chan->pixel_formats == PIXEL_FRMT_411) {
 		bpl_local = buf->bpl;
 	} else {
-		bpl_local = buf->bpl;   /* Default */
+		bpl_local = buf->bpl;    
 
 		if (chan->use_cif_resolution) {
 			if (dev->tvnorm & V4L2_STD_625_50)
@@ -186,7 +178,7 @@ static int cx25821_buffer_prepare(struct vb2_buffer *vb)
 				buf->bpl, 0, chan->height);
 		break;
 	case V4L2_FIELD_INTERLACED:
-		/* All other formats are top field first */
+		 
 		line0_offset = 0;
 		dprintk(1, "top field first\n");
 
@@ -245,7 +237,7 @@ static void cx25821_buffer_queue(struct vb2_buffer *vb)
 	buf->risc.cpu[1] = cpu_to_le32(buf->risc.dma + 12);
 	buf->risc.jmp[0] = cpu_to_le32(RISC_JUMP | RISC_CNT_INC);
 	buf->risc.jmp[1] = cpu_to_le32(buf->risc.dma + 12);
-	buf->risc.jmp[2] = cpu_to_le32(0); /* bits 63-32 */
+	buf->risc.jmp[2] = cpu_to_le32(0);  
 
 	if (list_empty(&q->active)) {
 		list_add_tail(&buf->queue, &q->active);
@@ -278,7 +270,7 @@ static void cx25821_stop_streaming(struct vb2_queue *q)
 	struct cx25821_dmaqueue *dmaq = &dev->channels[chan->id].dma_vidq;
 	unsigned long flags;
 
-	cx_write(chan->sram_channels->dma_ctl, 0); /* FIFO and RISC disable */
+	cx_write(chan->sram_channels->dma_ctl, 0);  
 	spin_lock_irqsave(&dev->slock, flags);
 	while (!list_empty(&dmaq->active)) {
 		struct cx25821_buffer *buf = list_entry(dmaq->active.next,
@@ -301,7 +293,7 @@ static const struct vb2_ops cx25821_video_qops = {
 	.stop_streaming = cx25821_stop_streaming,
 };
 
-/* VIDEO IOCTLS */
+ 
 
 static int cx25821_vidioc_enum_fmt_vid_cap(struct file *file, void *priv,
 			    struct v4l2_fmtdesc *f)
@@ -393,7 +385,7 @@ static int vidioc_s_fmt_vid_cap(struct file *file, void *priv,
 
 	cx25821_set_pixel_format(dev, SRAM_CH00, pix_format);
 
-	/* check if cif resolution */
+	 
 	if (chan->width == 320 || chan->width == 352)
 		chan->use_cif_resolution = 1;
 	else
@@ -669,7 +661,7 @@ int cx25821_video_register(struct cx25821_dev *dev)
 	int err;
 	int i;
 
-	/* initial device configuration */
+	 
 	dev->tvnorm = V4L2_STD_NTSC_M;
 
 	spin_lock_init(&dev->slock);
@@ -681,7 +673,7 @@ int cx25821_video_register(struct cx25821_dev *dev)
 		struct vb2_queue *q;
 		bool is_output = i > SRAM_CH08;
 
-		if (i == SRAM_CH08) /* audio channel */
+		if (i == SRAM_CH08)  
 			continue;
 
 		if (!is_output) {
@@ -745,7 +737,7 @@ int cx25821_video_register(struct cx25821_dev *dev)
 				goto fail_unreg;
 		}
 
-		/* register v4l devices */
+		 
 		*vdev = is_output ? cx25821_video_out_device : cx25821_video_device;
 		vdev->v4l2_dev = &dev->v4l2_dev;
 		if (!is_output)
@@ -764,7 +756,7 @@ int cx25821_video_register(struct cx25821_dev *dev)
 			goto fail_unreg;
 	}
 
-	/* set PCI interrupt */
+	 
 	cx_set(PCI_INT_MSK, 0xff);
 
 	return 0;

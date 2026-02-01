@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * STMicroelectronics hts221 spi driver
- *
- * Copyright 2016 STMicroelectronics Inc.
- *
- * Lorenzo Bianconi <lorenzo.bianconi@st.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>

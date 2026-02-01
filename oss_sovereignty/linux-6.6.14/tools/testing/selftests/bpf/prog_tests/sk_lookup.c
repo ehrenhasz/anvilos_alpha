@@ -1,18 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
-// Copyright (c) 2020 Cloudflare
-/*
- * Test BPF attach point for INET socket lookup (BPF_SK_LOOKUP).
- *
- * Tests exercise:
- *  - attaching/detaching/querying programs to BPF_SK_LOOKUP hook,
- *  - redirecting socket lookup to a socket selected by BPF program,
- *  - failing a socket lookup on BPF program's request,
- *  - error scenarios for selecting a socket from BPF program,
- *  - accessing BPF program context,
- *  - attaching and running multiple BPF programs.
- *
- * Tests run in a dedicated network namespace.
- */
+
+
+ 
 
 #define _GNU_SOURCE
 #include <arpa/inet.h>
@@ -36,12 +24,12 @@
 #include "testing_helpers.h"
 #include "test_sk_lookup.skel.h"
 
-/* External (address, port) pairs the client sends packets to. */
+ 
 #define EXT_IP4		"127.0.0.1"
 #define EXT_IP6		"fd00::1"
 #define EXT_PORT	7007
 
-/* Internal (address, port) pairs the server listens/receives at. */
+ 
 #define INT_IP4		"127.0.0.2"
 #define INT_IP4_V6	"::ffff:127.0.0.2"
 #define INT_IP6		"fd00::2"
@@ -74,10 +62,10 @@ struct test {
 	struct inet_addr connect_to;
 	struct inet_addr listen_at;
 	enum server accept_on;
-	bool reuseport_has_conns; /* Add a connected socket to reuseport group */
+	bool reuseport_has_conns;  
 };
 
-static __u32 duration;		/* for CHECK macro */
+static __u32 duration;		 
 
 static bool is_ipv6(const char *ip)
 {
@@ -153,7 +141,7 @@ static int make_server(int sotype, const char *ip, int port,
 	if (fd < 0)
 		return -1;
 
-	/* Enabled for UDPv6 sockets for IPv4-mapped IPv6 to work. */
+	 
 	if (sotype == SOCK_DGRAM) {
 		err = setsockopt(fd, SOL_IP, IP_RECVORIGDSTADDR, &one,
 				 sizeof(one));
@@ -204,7 +192,7 @@ static int make_server(int sotype, const char *ip, int port,
 		}
 	}
 
-	/* Late attach reuseport prog so we can have one init path */
+	 
 	if (reuseport_prog) {
 		err = attach_reuseport(fd, reuseport_prog);
 		if (CHECK(err, "attach_reuseport", "failed\n")) {
@@ -399,13 +387,13 @@ static int udp_recv_send(int server_fd)
 	if (CHECK(!dst_addr, "recvmsg", "missing ORIGDSTADDR\n"))
 		return -1;
 
-	/* Server socket bound to IPv4-mapped IPv6 address */
+	 
 	if (src_addr->ss_family == AF_INET6 &&
 	    dst_addr->ss_family == AF_INET) {
 		v4_to_v6(dst_addr);
 	}
 
-	/* Reply from original destination address. */
+	 
 	fd = socket(dst_addr->ss_family, SOCK_DGRAM, 0);
 	if (CHECK(fd < 0, "socket", "failed\n")) {
 		log_err("failed to create tx socket");
@@ -539,7 +527,7 @@ static void query_lookup_prog(struct test_sk_lookup *skel)
 	if (!link[2])
 		goto detach;
 
-	err = bpf_prog_query(net_fd, BPF_SK_LOOKUP, 0 /* query flags */,
+	err = bpf_prog_query(net_fd, BPF_SK_LOOKUP, 0  ,
 			     &attach_flags, prog_ids, &prog_cnt);
 	if (CHECK(err, "bpf_prog_query", "failed\n")) {
 		log_err("failed to query lookup prog");
@@ -576,7 +564,7 @@ static void query_lookup_prog(struct test_sk_lookup *skel)
 	if (CHECK(err, "link_detach", "failed %d\n", err))
 		goto detach;
 
-	/* prog id is still there, but netns_ino is zeroed out */
+	 
 	prog_id = link_info_prog_id(link[0], &info);
 	CHECK(prog_ids[0] != prog_id, "bpf_prog_query",
 	      "invalid program #0 id on query: %u != %u\n",
@@ -617,29 +605,24 @@ static void run_lookup_prog(const struct test *t)
 		if (err)
 			goto close;
 
-		/* want just one server for non-reuseport test */
+		 
 		if (!t->reuseport_prog)
 			break;
 	}
 
-	/* Regular UDP socket lookup with reuseport behaves
-	 * differently when reuseport group contains connected
-	 * sockets. Check that adding a connected UDP socket to the
-	 * reuseport group does not affect how reuseport works with
-	 * BPF socket lookup.
-	 */
+	 
 	if (t->reuseport_has_conns) {
 		struct sockaddr_storage addr = {};
 		socklen_t len = sizeof(addr);
 
-		/* Add an extra socket to reuseport group */
+		 
 		reuse_conn_fd = make_server(t->sotype, t->listen_at.ip,
 					    t->listen_at.port,
 					    t->reuseport_prog);
 		if (reuse_conn_fd < 0)
 			goto close;
 
-		/* Connect the extra socket to itself */
+		 
 		err = getsockname(reuse_conn_fd, (void *)&addr, &len);
 		if (CHECK(err, "getsockname", "errno %d\n", errno))
 			goto close;
@@ -889,7 +872,7 @@ static void drop_on_lookup(const struct test *t)
 		if (err)
 			goto close_all;
 
-		/* Read out asynchronous error */
+		 
 		n = recv(client_fd, NULL, 0, 0);
 		err = n == -1;
 	}
@@ -936,9 +919,7 @@ static void test_drop_on_lookup(struct test_sk_lookup *skel)
 			.connect_to	= { EXT_IP6, EXT_PORT },
 			.listen_at	= { EXT_IP6, INT_PORT },
 		},
-		/* The program will drop on success, meaning that the ifindex
-		 * was 1.
-		 */
+		 
 		{
 			.desc		= "TCP IPv4 drop on valid ifindex",
 			.lookup_prog	= skel->progs.check_ifindex,
@@ -996,9 +977,9 @@ static void drop_on_reuseport(const struct test *t)
 	if (err)
 		goto detach;
 
-	/* second server on destination address we should never reach */
+	 
 	server2 = make_server(t->sotype, t->connect_to.ip, t->connect_to.port,
-			      NULL /* reuseport prog */);
+			      NULL  );
 	if (server2 < 0)
 		goto close_srv1;
 
@@ -1013,7 +994,7 @@ static void drop_on_reuseport(const struct test *t)
 		if (err)
 			goto close_all;
 
-		/* Read out asynchronous error */
+		 
 		n = recv(client, NULL, 0, 0);
 		err = n == -1;
 	}
@@ -1158,7 +1139,7 @@ static void run_sk_assign_connected(struct test_sk_lookup *skel,
 	if (connected_fd < 0)
 		goto out_close_server;
 
-	/* Put a connected socket in redirect map */
+	 
 	err = update_lookup_map(skel->maps.redir_map, SERVER_A, connected_fd);
 	if (err)
 		goto out_close_connected;
@@ -1167,7 +1148,7 @@ static void run_sk_assign_connected(struct test_sk_lookup *skel,
 	if (!lookup_link)
 		goto out_close_connected;
 
-	/* Try to redirect TCP SYN / UDP packet to a connected socket */
+	 
 	client_fd = make_client(sotype, EXT_IP4, EXT_PORT);
 	if (client_fd < 0)
 		goto out_unlink_prog;

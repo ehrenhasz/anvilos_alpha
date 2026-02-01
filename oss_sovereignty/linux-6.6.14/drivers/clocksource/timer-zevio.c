@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  linux/drivers/clocksource/zevio-timer.c
- *
- *  Copyright (C) 2013 Daniel Tang <tangrs@tangrs.id.au>
- */
+
+ 
 
 #include <linux/io.h>
 #include <linux/irq.h>
@@ -40,7 +36,7 @@
 #define CNTL_MATCH(x)	((x) + 1)
 #define CNTL_FOREVER	7
 
-/* There are 6 match registers but we only use one. */
+ 
 #define TIMER_MATCH	0
 
 #define TIMER_INTR_MSK	(1 << (TIMER_MATCH))
@@ -76,10 +72,10 @@ static int zevio_timer_shutdown(struct clock_event_device *dev)
 	struct zevio_timer *timer = container_of(dev, struct zevio_timer,
 						 clkevt);
 
-	/* Disable timer interrupts */
+	 
 	writel(0, timer->interrupt_regs + IO_INTR_MSK);
 	writel(TIMER_INTR_ALL, timer->interrupt_regs + IO_INTR_ACK);
-	/* Stop timer */
+	 
 	writel(CNTL_STOP_TIMER, timer->timer1 + IO_CONTROL);
 	return 0;
 }
@@ -89,7 +85,7 @@ static int zevio_timer_set_oneshot(struct clock_event_device *dev)
 	struct zevio_timer *timer = container_of(dev, struct zevio_timer,
 						 clkevt);
 
-	/* Enable timer interrupts */
+	 
 	writel(TIMER_INTR_MSK, timer->interrupt_regs + IO_INTR_MSK);
 	writel(TIMER_INTR_ALL, timer->interrupt_regs + IO_INTR_ACK);
 	return 0;
@@ -164,11 +160,11 @@ static int __init zevio_timer_add(struct device_node *node)
 		writel(CNTL_STOP_TIMER, timer->timer1 + IO_CONTROL);
 		writel(0, timer->timer1 + IO_DIVIDER);
 
-		/* Start with timer interrupts disabled */
+		 
 		writel(0, timer->interrupt_regs + IO_INTR_MSK);
 		writel(TIMER_INTR_ALL, timer->interrupt_regs + IO_INTR_ACK);
 
-		/* Interrupt to occur when timer value matches 0 */
+		 
 		writel(0, timer->base + IO_MATCH(TIMER_MATCH));
 
 		if (request_irq(irqnr, zevio_timer_interrupt,

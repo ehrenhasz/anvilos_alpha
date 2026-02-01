@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * finite state machine implementation
- *
- * Author       Karsten Keil <kkeil@novell.com>
- *
- * Thanks to    Jan den Ouden
- *              Fritz Elfert
- * Copyright 2008  by Karsten Keil <kkeil@novell.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/slab.h>

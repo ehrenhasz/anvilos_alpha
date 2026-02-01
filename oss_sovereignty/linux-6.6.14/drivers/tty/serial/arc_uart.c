@@ -1,25 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * ARC On-Chip(fpga) UART Driver
- *
- * Copyright (C) 2010-2012 Synopsys, Inc. (www.synopsys.com)
- *
- * vineetg: July 10th 2012
- *  -Decoupled the driver from arch/arc
- *    +Using platform_get_resource() for irq/membase (thx to bfin_uart.c)
- *    +Using early_platform_xxx() for early console (thx to mach-shmobile/xxx)
- *
- * Vineetg: Aug 21st 2010
- *  -Is uart_tx_stopped() not done in tty write path as it has already been
- *   taken care of, in serial core
- *
- * Vineetg: Aug 18th 2010
- *  -New Serial Core based ARC UART driver
- *  -Derived largely from blackfin driver albiet with some major tweaks
- *
- * TODO:
- *  -check if sysreq works
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/serial.h>
@@ -33,15 +13,10 @@
 #include <linux/of_irq.h>
 #include <linux/of_address.h>
 
-/*************************************
- * ARC UART Hardware Specs
- ************************************/
+ 
 #define ARC_UART_TX_FIFO_SIZE  1
 
-/*
- * UART Register set (this is not a Standards Compliant IP)
- * Also each reg is Word aligned, but only 8 bits wide
- */
+ 
 #define R_ID0	0
 #define R_ID1	4
 #define R_ID2	8
@@ -51,20 +26,20 @@
 #define R_BAUDL	24
 #define R_BAUDH	28
 
-/* Bits for UART Status Reg (R/W) */
-#define RXIENB  0x04	/* Receive Interrupt Enable */
-#define TXIENB  0x40	/* Transmit Interrupt Enable */
+ 
+#define RXIENB  0x04	 
+#define TXIENB  0x40	 
 
-#define RXEMPTY 0x20	/* Receive FIFO Empty: No char receivede */
-#define TXEMPTY 0x80	/* Transmit FIFO Empty, thus char can be written into */
+#define RXEMPTY 0x20	 
+#define TXEMPTY 0x80	 
 
-#define RXFULL  0x08	/* Receive FIFO full */
-#define RXFULL1 0x10	/* Receive FIFO has space for 1 char (tot space=4) */
+#define RXFULL  0x08	 
+#define RXFULL1 0x10	 
 
-#define RXFERR  0x01	/* Frame Error: Stop Bit not detected */
-#define RXOERR  0x02	/* OverFlow Err: Char recv but RXFULL still set */
+#define RXFERR  0x01	 
+#define RXOERR  0x02	 
 
-/* Uart bit fiddling helpers: lowest level */
+ 
 #define RBASE(port, reg)      (port->membase + reg)
 #define UART_REG_SET(u, r, v) writeb((v), RBASE(u, r))
 #define UART_REG_GET(u, r)    readb(RBASE(u, r))
@@ -72,7 +47,7 @@
 #define UART_REG_OR(u, r, v)  UART_REG_SET(u, r, UART_REG_GET(u, r) | (v))
 #define UART_REG_CLR(u, r, v) UART_REG_SET(u, r, UART_REG_GET(u, r) & ~(v))
 
-/* Uart bit fiddling helpers: API level */
+ 
 #define UART_SET_DATA(uart, val)   UART_REG_SET(uart, R_DATA, val)
 #define UART_GET_DATA(uart)        UART_REG_GET(uart, R_DATA)
 
@@ -132,9 +107,7 @@ static void arc_serial_stop_tx(struct uart_port *port)
 	UART_TX_IRQ_DISABLE(port);
 }
 
-/*
- * Return TIOCSER_TEMT when transmitter is not busy.
- */
+ 
 static unsigned int arc_serial_tx_empty(struct uart_port *port)
 {
 	unsigned int stat;
@@ -146,13 +119,7 @@ static unsigned int arc_serial_tx_empty(struct uart_port *port)
 	return 0;
 }
 
-/*
- * Driver internal routine, used by both tty(serial core) as well as tx-isr
- *  -Called under spinlock in either cases
- *  -also tty->flow.stopped has already been checked
- *     = by uart_start( ) before calling us
- *     = tx_ist checks that too before calling
- */
+ 
 static void arc_serial_tx_chars(struct uart_port *port)
 {
 	struct circ_buf *xmit = &port->state->xmit;
@@ -173,10 +140,7 @@ static void arc_serial_tx_chars(struct uart_port *port)
 		sent = 1;
 	}
 
-	/*
-	 * If num chars in xmit buffer are too few, ask tty layer for more.
-	 * By Hard ISR to schedule processing in software interrupt part
-	 */
+	 
 	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
 		uart_write_wakeup(port);
 
@@ -184,10 +148,7 @@ static void arc_serial_tx_chars(struct uart_port *port)
 		UART_TX_IRQ_ENABLE(port);
 }
 
-/*
- * port is locked and interrupts are disabled
- * uart_start( ) calls us under the port spinlock irqsave
- */
+ 
 static void arc_serial_start_tx(struct uart_port *port)
 {
 	arc_serial_tx_chars(port);
@@ -195,22 +156,11 @@ static void arc_serial_start_tx(struct uart_port *port)
 
 static void arc_serial_rx_chars(struct uart_port *port, unsigned int status)
 {
-	/*
-	 * UART has 4 deep RX-FIFO. Driver's recongnition of this fact
-	 * is very subtle. Here's how ...
-	 * Upon getting a RX-Intr, such that RX-EMPTY=0, meaning data available,
-	 * driver reads the DATA Reg and keeps doing that in a loop, until
-	 * RX-EMPTY=1. Multiple chars being avail, with a single Interrupt,
-	 * before RX-EMPTY=0, implies some sort of buffering going on in the
-	 * controller, which is indeed the Rx-FIFO.
-	 */
+	 
 	do {
 		u8 ch, flg = TTY_NORMAL;
 
-		/*
-		 * This could be an Rx Intr for err (no data),
-		 * so check err and clear that Intr first
-		 */
+		 
 		if (status & RXOERR) {
 			port->icount.overrun++;
 			flg = TTY_OVERRUN;
@@ -236,33 +186,7 @@ static void arc_serial_rx_chars(struct uart_port *port, unsigned int status)
 	} while (!((status = UART_GET_STATUS(port)) & RXEMPTY));
 }
 
-/*
- * A note on the Interrupt handling state machine of this driver
- *
- * kernel printk writes funnel thru the console driver framework and in order
- * to keep things simple as well as efficient, it writes to UART in polled
- * mode, in one shot, and exits.
- *
- * OTOH, Userland output (via tty layer), uses interrupt based writes as there
- * can be undeterministic delay between char writes.
- *
- * Thus Rx-interrupts are always enabled, while tx-interrupts are by default
- * disabled.
- *
- * When tty has some data to send out, serial core calls driver's start_tx
- * which
- *   -checks-if-tty-buffer-has-char-to-send
- *   -writes-data-to-uart
- *   -enable-tx-intr
- *
- * Once data bits are pushed out, controller raises the Tx-room-avail-Interrupt.
- * The first thing Tx ISR does is disable further Tx interrupts (as this could
- * be the last char to send, before settling down into the quiet polled mode).
- * It then calls the exact routine used by tty layer write to send out any
- * more char in tty buffer. In case of sending, it re-enables Tx-intr. In case
- * of no data, it remains disabled.
- * This is how the transmit state machine is dynamically switched on/off
- */
+ 
 
 static irqreturn_t arc_serial_isr(int irq, void *dev_id)
 {
@@ -271,14 +195,10 @@ static irqreturn_t arc_serial_isr(int irq, void *dev_id)
 
 	status = UART_GET_STATUS(port);
 
-	/*
-	 * Single IRQ for both Rx (data available) Tx (room available) Interrupt
-	 * notifications from the UART Controller.
-	 * To demultiplex between the two, we check the relevant bits
-	 */
+	 
 	if (status & RXIENB) {
 
-		/* already in ISR, no need of xx_irqsave */
+		 
 		spin_lock(&port->lock);
 		arc_serial_rx_chars(port, status);
 		spin_unlock(&port->lock);
@@ -286,9 +206,7 @@ static irqreturn_t arc_serial_isr(int irq, void *dev_id)
 
 	if ((status & TXIENB) && (status & TXEMPTY)) {
 
-		/* Unconditionally disable further Tx-Interrupts.
-		 * will be enabled by tx_chars() if needed.
-		 */
+		 
 		UART_TX_IRQ_DISABLE(port);
 
 		spin_lock(&port->lock);
@@ -304,29 +222,23 @@ static irqreturn_t arc_serial_isr(int irq, void *dev_id)
 
 static unsigned int arc_serial_get_mctrl(struct uart_port *port)
 {
-	/*
-	 * Pretend we have a Modem status reg and following bits are
-	 *  always set, to satify the serial core state machine
-	 *  (DSR) Data Set Ready
-	 *  (CTS) Clear To Send
-	 *  (CAR) Carrier Detect
-	 */
+	 
 	return TIOCM_CTS | TIOCM_DSR | TIOCM_CAR;
 }
 
 static void arc_serial_set_mctrl(struct uart_port *port, unsigned int mctrl)
 {
-	/* MCR not present */
+	 
 }
 
 static void arc_serial_break_ctl(struct uart_port *port, int break_state)
 {
-	/* ARC UART doesn't support sending Break signal */
+	 
 }
 
 static int arc_serial_startup(struct uart_port *port)
 {
-	/* Before we hook up the ISR, Disable all UART Interrupts */
+	 
 	UART_ALL_IRQ_DISABLE(port);
 
 	if (request_irq(port->irq, arc_serial_isr, 0, "arc uart rx-tx", port)) {
@@ -334,12 +246,12 @@ static int arc_serial_startup(struct uart_port *port)
 		return -EBUSY;
 	}
 
-	UART_RX_IRQ_ENABLE(port); /* Only Rx IRQ enabled to begin with */
+	UART_RX_IRQ_ENABLE(port);  
 
 	return 0;
 }
 
-/* This is not really needed */
+ 
 static void arc_serial_shutdown(struct uart_port *port)
 {
 	free_irq(port->irq, port);
@@ -353,13 +265,7 @@ arc_serial_set_termios(struct uart_port *port, struct ktermios *new,
 	unsigned int baud, uartl, uarth, hw_val;
 	unsigned long flags;
 
-	/*
-	 * Use the generic handler so that any specially encoded baud rates
-	 * such as SPD_xx flags or "%B0" can be handled
-	 * Max Baud I suppose will not be more than current 115K * 4
-	 * Formula for ARC UART is: hw-val = ((CLK/(BAUD*4)) -1)
-	 * spread over two 8-bit registers
-	 */
+	 
 	baud = uart_get_baud_rate(port, new, old, 0, 460800);
 
 	hw_val = port->uartclk / (uart->baud * 4) - 1;
@@ -375,17 +281,14 @@ arc_serial_set_termios(struct uart_port *port, struct ktermios *new,
 
 	UART_RX_IRQ_ENABLE(port);
 
-	/*
-	 * UART doesn't support Parity/Hardware Flow Control;
-	 * Only supports 8N1 character size
-	 */
+	 
 	new->c_cflag &= ~(CMSPAR|CRTSCTS|CSIZE);
 	new->c_cflag |= CS8;
 
 	if (old)
 		tty_termios_copy_hw(new, old);
 
-	/* Don't rewrite B0 */
+	 
 	if (tty_termios_baud_rate(new))
 		tty_termios_encode_baud_rate(new, baud, baud);
 
@@ -408,9 +311,7 @@ static int arc_serial_request_port(struct uart_port *port)
 	return 0;
 }
 
-/*
- * Verify the new serial_struct (for TIOCSSERIAL).
- */
+ 
 static int
 arc_serial_verify_port(struct uart_port *port, struct serial_struct *ser)
 {
@@ -420,9 +321,7 @@ arc_serial_verify_port(struct uart_port *port, struct serial_struct *ser)
 	return 0;
 }
 
-/*
- * Configure/autoconfigure the port.
- */
+ 
 static void arc_serial_config_port(struct uart_port *port, int flags)
 {
 	if (flags & UART_CONFIG_TYPE)
@@ -486,10 +385,7 @@ static int arc_serial_console_setup(struct console *co, char *options)
 	if (co->index < 0 || co->index >= CONFIG_SERIAL_ARC_NR_PORTS)
 		return -ENODEV;
 
-	/*
-	 * The uart port backing the console (e.g. ttyARC1) might not have been
-	 * init yet. If so, defer the console setup to after the port.
-	 */
+	 
 	port = &arc_uart_ports[co->index].port;
 	if (!port->membase)
 		return -ENODEV;
@@ -497,10 +393,7 @@ static int arc_serial_console_setup(struct console *co, char *options)
 	if (options)
 		uart_parse_options(options, &baud, &parity, &bits, &flow);
 
-	/*
-	 * Serial core will call port->ops->set_termios( )
-	 * which will set the baud reg
-	 */
+	 
 	return uart_set_options(port, co, baud, parity, bits, flow);
 }
 
@@ -512,9 +405,7 @@ static void arc_serial_console_putchar(struct uart_port *port, unsigned char ch)
 	UART_SET_DATA(port, (unsigned char)ch);
 }
 
-/*
- * Interrupts are disabled on entering
- */
+ 
 static void arc_serial_console_write(struct console *co, const char *s,
 				     unsigned int count)
 {
@@ -565,7 +456,7 @@ static int __init arc_early_console_setup(struct earlycon_device *dev,
 }
 OF_EARLYCON_DECLARE(arc_uart, "snps,arc-uart", arc_early_console_setup);
 
-#endif	/* CONFIG_SERIAL_ARC_CONSOLE */
+#endif	 
 
 static int arc_serial_probe(struct platform_device *pdev)
 {
@@ -575,7 +466,7 @@ static int arc_serial_probe(struct platform_device *pdev)
 	int dev_id;
 	u32 val;
 
-	/* no device tree device */
+	 
 	if (!np)
 		return -ENODEV;
 
@@ -605,7 +496,7 @@ static int arc_serial_probe(struct platform_device *pdev)
 
 	port->membase = devm_platform_ioremap_resource(pdev, 0);
 	if (IS_ERR(port->membase)) {
-		/* No point of dev_err since UART itself is hosed here */
+		 
 		return PTR_ERR(port->membase);
 	}
 
@@ -620,10 +511,7 @@ static int arc_serial_probe(struct platform_device *pdev)
 
 	port->fifosize = ARC_UART_TX_FIFO_SIZE;
 
-	/*
-	 * uart_insert_char( ) uses it in decideding whether to ignore a
-	 * char or not. Explicitly setting it here, removes the subtelty
-	 */
+	 
 	port->ignore_status_mask = 0;
 
 	return uart_add_one_port(&arc_uart_driver, &arc_uart_ports[dev_id].port);
@@ -631,7 +519,7 @@ static int arc_serial_probe(struct platform_device *pdev)
 
 static const struct of_device_id arc_uart_dt_ids[] = {
 	{ .compatible = "snps,arc-uart" },
-	{ /* Sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, arc_uart_dt_ids);
 

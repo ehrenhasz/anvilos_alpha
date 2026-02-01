@@ -1,26 +1,4 @@
-/*
- * Copyright 2015 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- *
- */
+ 
 #ifndef _CGS_COMMON_H
 #define _CGS_COMMON_H
 
@@ -28,9 +6,7 @@
 
 struct cgs_device;
 
-/**
- * enum cgs_ind_reg - Indirect register spaces
- */
+ 
 enum cgs_ind_reg {
 	CGS_IND_REG__PCIE,
 	CGS_IND_REG__SMC,
@@ -41,9 +17,7 @@ enum cgs_ind_reg {
 	CGS_IND_REG__AUDIO_ENDPT
 };
 
-/*
- * enum cgs_ucode_id - Firmware types for different IPs
- */
+ 
 enum cgs_ucode_id {
 	CGS_UCODE_ID_SMU = 0,
 	CGS_UCODE_ID_SMU_SK,
@@ -61,9 +35,7 @@ enum cgs_ucode_id {
 	CGS_UCODE_ID_MAXIMUM,
 };
 
-/**
- * struct cgs_firmware_info - Firmware information
- */
+ 
 struct cgs_firmware_info {
 	uint16_t		version;
 	uint16_t		fw_version;
@@ -71,7 +43,7 @@ struct cgs_firmware_info {
 	uint32_t		image_size;
 	uint64_t		mc_addr;
 
-	/* only for smc firmware */
+	 
 	uint32_t		ucode_start_address;
 
 	void			*kptr;
@@ -80,40 +52,18 @@ struct cgs_firmware_info {
 
 typedef unsigned long cgs_handle_t;
 
-/**
- * cgs_read_register() - Read an MMIO register
- * @cgs_device:	opaque device handle
- * @offset:	register offset
- *
- * Return:  register value
- */
+ 
 typedef uint32_t (*cgs_read_register_t)(struct cgs_device *cgs_device, unsigned offset);
 
-/**
- * cgs_write_register() - Write an MMIO register
- * @cgs_device:	opaque device handle
- * @offset:	register offset
- * @value:	register value
- */
+ 
 typedef void (*cgs_write_register_t)(struct cgs_device *cgs_device, unsigned offset,
 				     uint32_t value);
 
-/**
- * cgs_read_ind_register() - Read an indirect register
- * @cgs_device:	opaque device handle
- * @offset:	register offset
- *
- * Return:  register value
- */
+ 
 typedef uint32_t (*cgs_read_ind_register_t)(struct cgs_device *cgs_device, enum cgs_ind_reg space,
 					    unsigned index);
 
-/**
- * cgs_write_ind_register() - Write an indirect register
- * @cgs_device:	opaque device handle
- * @offset:	register offset
- * @value:	register value
- */
+ 
 typedef void (*cgs_write_ind_register_t)(struct cgs_device *cgs_device, enum cgs_ind_reg space,
 					 unsigned index, uint32_t value);
 
@@ -138,25 +88,24 @@ typedef int (*cgs_get_firmware_info)(struct cgs_device *cgs_device,
 				     struct cgs_firmware_info *info);
 
 struct cgs_ops {
-	/* MMIO access */
+	 
 	cgs_read_register_t read_register;
 	cgs_write_register_t write_register;
 	cgs_read_ind_register_t read_ind_register;
 	cgs_write_ind_register_t write_ind_register;
-	/* Firmware Info */
+	 
 	cgs_get_firmware_info get_firmware_info;
 };
 
-struct cgs_os_ops; /* To be define in OS-specific CGS header */
+struct cgs_os_ops;  
 
 struct cgs_device
 {
 	const struct cgs_ops *ops;
-	/* to be embedded at the start of driver private structure */
+	 
 };
 
-/* Convenience macros that make CGS indirect function calls look like
- * normal function calls */
+ 
 #define CGS_CALL(func,dev,...) \
 	(((struct cgs_device *)dev)->ops->func(dev, ##__VA_ARGS__))
 #define CGS_OS_CALL(func,dev,...) \
@@ -174,4 +123,4 @@ struct cgs_device
 #define cgs_get_firmware_info(dev, type, info)	\
 	CGS_CALL(get_firmware_info, dev, type, info)
 
-#endif /* _CGS_COMMON_H */
+#endif  

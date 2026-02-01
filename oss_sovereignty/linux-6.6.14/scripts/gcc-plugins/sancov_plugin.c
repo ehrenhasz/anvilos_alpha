@@ -1,23 +1,4 @@
-/*
- * Copyright 2011-2016 by Emese Revfy <re.emese@gmail.com>
- * Licensed under the GPL v2, or (at your option) v3
- *
- * Homepage:
- * https://github.com/ephox-gcc-plugins/sancov
- *
- * This plugin inserts a __sanitizer_cov_trace_pc() call at the start of basic blocks.
- * It supports all gcc versions with plugin support (from gcc-4.5 on).
- * It is based on the commit "Add fuzzing coverage support" by Dmitry Vyukov <dvyukov@google.com>.
- *
- * You can read about it more here:
- *  https://gcc.gnu.org/viewcvs/gcc?limit_changes=0&view=revision&revision=231296
- *  https://lwn.net/Articles/674854/
- *  https://github.com/google/syzkaller
- *  https://lwn.net/Articles/677764/
- *
- * Usage:
- * make run
- */
+ 
 
 #include "gcc-common.h"
 
@@ -34,10 +15,7 @@ static unsigned int sancov_execute(void)
 {
 	basic_block bb;
 
-	/* Remove this line when this plugin and kcov will be in the kernel.
-	if (!strcmp(DECL_NAME_POINTER(current_function_decl), DECL_NAME_POINTER(sancov_fndecl)))
-		return 0;
-	*/
+	 
 
 	FOR_EACH_BB_FN(bb, cfun) {
 		const_gimple stmt;
@@ -103,7 +81,7 @@ __visible int plugin_init(struct plugin_name_args *plugin_info, struct plugin_gc
 		LAST_GGC_ROOT_TAB
 	};
 
-	/* BBs can be split afterwards?? */
+	 
 	PASS_INFO(sancov, "asan", 0, PASS_POS_INSERT_BEFORE);
 
 	if (!plugin_default_version_check(version, &gcc_version)) {

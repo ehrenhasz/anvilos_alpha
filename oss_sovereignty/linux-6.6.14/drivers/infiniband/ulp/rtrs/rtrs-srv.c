@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * RDMA Transport Layer
- *
- * Copyright (c) 2014 - 2018 ProfitBricks GmbH. All rights reserved.
- * Copyright (c) 2018 - 2019 1&1 IONOS Cloud GmbH. All rights reserved.
- * Copyright (c) 2019 - 2020 1&1 IONOS SE. All rights reserved.
- */
+
+ 
 
 #undef pr_fmt
 #define pr_fmt(fmt) KBUILD_MODNAME " L" __stringify(__LINE__) ": " fmt
@@ -21,7 +15,7 @@
 MODULE_DESCRIPTION("RDMA Transport Server");
 MODULE_LICENSE("GPL");
 
-/* Must be power of 2, see mask from mr->page_size in ib_sg_to_pages() */
+ 
 #define DEFAULT_MAX_CHUNK_SIZE (128 << 10)
 #define DEFAULT_SESS_QUEUE_DEPTH 512
 #define MAX_HDR_SIZE PAGE_SIZE
@@ -222,9 +216,7 @@ static int rdma_write_sg(struct rtrs_srv_op *id)
 	plist->addr	= dma_addr + offset;
 	plist->length	= le32_to_cpu(id->rd_msg->desc[0].len);
 
-	/* WR will fail with length error
-	 * if this is 0
-	 */
+	 
 	if (plist->length == 0) {
 		rtrs_err(s, "Invalid RDMA-Write sg list length 0\n");
 		return -EINVAL;
@@ -240,7 +232,7 @@ static int rdma_write_sg(struct rtrs_srv_op *id)
 	if (rkey == 0)
 		rkey = wr->rkey;
 	else
-		/* Only one key is actually used */
+		 
 		WARN_ON_ONCE(rkey != wr->rkey);
 
 	wr->wr.opcode = IB_WR_RDMA_WRITE;
@@ -261,10 +253,7 @@ static int rdma_write_sg(struct rtrs_srv_op *id)
 	} else {
 		wr->wr.next = &imm_wr.wr;
 	}
-	/*
-	 * From time to time we have to post signaled sends,
-	 * or send queue will fill up and only QP reset can help.
-	 */
+	 
 	flags = (atomic_inc_return(&id->con->c.wr_cnt) % s->signal_interval) ?
 		0 : IB_SEND_SIGNALED;
 
@@ -326,15 +315,7 @@ static int rdma_write_sg(struct rtrs_srv_op *id)
 	return err;
 }
 
-/**
- * send_io_resp_imm() - respond to client with empty IMM on failed READ/WRITE
- *                      requests or on successful WRITE request.
- * @con:	the connection to send back result
- * @id:		the id associated with the IO
- * @errno:	the error number of the IO.
- *
- * Return 0 on success, errno otherwise.
- */
+ 
 static int send_io_resp_imm(struct rtrs_srv_con *con, struct rtrs_srv_op *id,
 			    int errno)
 {
@@ -364,7 +345,7 @@ static int send_io_resp_imm(struct rtrs_srv_con *con, struct rtrs_srv_op *id,
 				inv_wr.num_sge = 0;
 				inv_wr.opcode = IB_WR_SEND_WITH_INV;
 				inv_wr.send_flags = 0;
-				/* Only one key is actually used */
+				 
 				inv_wr.ex.invalidate_rkey =
 					le32_to_cpu(rd_msg->desc[0].key);
 			} else {
@@ -389,10 +370,7 @@ static int send_io_resp_imm(struct rtrs_srv_con *con, struct rtrs_srv_op *id,
 	} else {
 		wr = &imm_wr.wr;
 	}
-	/*
-	 * From time to time we have to post signalled sends,
-	 * or send queue will fill up and only QP reset can help.
-	 */
+	 
 	flags = (atomic_inc_return(&con->c.wr_cnt) % s->signal_interval) ?
 		0 : IB_SEND_SIGNALED;
 	imm = rtrs_to_io_rsp_imm(id->msg_id, errno, need_inval);
@@ -466,17 +444,7 @@ static inline const char *rtrs_srv_state_str(enum rtrs_srv_state state)
 	}
 }
 
-/**
- * rtrs_srv_resp_rdma() - Finish an RDMA request
- *
- * @id:		Internal RTRS operation identifier
- * @status:	Response Code sent to the other side for this operation.
- *		0 = success, <=0 error
- * Context: any
- *
- * Finish a RDMA operation. A message is sent to the client and the
- * corresponding memory areas will be released.
- */
+ 
 bool rtrs_srv_resp_rdma(struct rtrs_srv_op *id, int status)
 {
 	struct rtrs_srv_path *srv_path;
@@ -532,11 +500,7 @@ out:
 }
 EXPORT_SYMBOL(rtrs_srv_resp_rdma);
 
-/**
- * rtrs_srv_set_sess_priv() - Set private pointer in rtrs_srv.
- * @srv:	Session pointer
- * @priv:	The private pointer that is associated with the session.
- */
+ 
 void rtrs_srv_set_sess_priv(struct rtrs_srv_sess *srv, void *priv)
 {
 	srv->priv = priv;
@@ -573,15 +537,9 @@ static int map_cont_bufs(struct rtrs_srv_path *srv_path)
 	struct ib_mr *mr;
 	struct sg_table *sgt;
 
-	/*
-	 * Here we map queue_depth chunks to MR.  Firstly we have to
-	 * figure out how many chunks can we map per MR.
-	 */
+	 
 	if (always_invalidate) {
-		/*
-		 * in order to do invalidate for each chunks of memory, we needs
-		 * more memory regions.
-		 */
+		 
 		mrs_num = srv->queue_depth;
 	} else {
 		chunks_per_mr =
@@ -644,7 +602,7 @@ static int map_cont_bufs(struct rtrs_srv_path *srv_path)
 				goto dereg_mr;
 			}
 		}
-		/* Eventually dma addr for each chunk can be cached */
+		 
 		for_each_sg(sgt->sgl, s, nr_sgt, i)
 			srv_path->dma_addr[chunks + i] = sg_dma_address(s);
 
@@ -725,7 +683,7 @@ static int rtrs_srv_path_up(struct rtrs_srv_path *srv_path)
 		ret = ctx->ops.link_ev(srv, RTRS_SRV_LINK_EV_CONNECTED, NULL);
 	mutex_unlock(&srv->paths_ev_mutex);
 
-	/* Mark session as established */
+	 
 	if (!ret)
 		srv_path->established = true;
 
@@ -759,7 +717,7 @@ static bool exist_pathname(struct rtrs_srv_ctx *ctx,
 	list_for_each_entry(srv, &ctx->srv_list, ctx_list) {
 		mutex_lock(&srv->paths_mutex);
 
-		/* when a client with same uuid and same sessname tried to add a path */
+		 
 		if (uuid_equal(&srv->paths_uuid, path_uuid)) {
 			mutex_unlock(&srv->paths_mutex);
 			continue;
@@ -838,9 +796,7 @@ static int process_info_req(struct rtrs_srv_con *con,
 		rsp->desc[mri].key  = cpu_to_le32(mr->rkey);
 		rsp->desc[mri].len  = cpu_to_le32(mr->length);
 
-		/*
-		 * Fill in reg MR request and chain them *backwards*
-		 */
+		 
 		rwr[mri].wr.next = mri ? &rwr[mri - 1].wr : NULL;
 		rwr[mri].wr.opcode = IB_WR_REG_MR;
 		rwr[mri].wr.wr_cqe = &local_reg_cqe;
@@ -866,12 +822,7 @@ static int process_info_req(struct rtrs_srv_con *con,
 
 	rtrs_srv_start_hb(srv_path);
 
-	/*
-	 * We do not account number of established connections at the current
-	 * moment, we rely on the client, which should send info request when
-	 * all connections are successfully established.  Thus, simply notify
-	 * listener with a proper event if we are the first path.
-	 */
+	 
 	err = rtrs_srv_path_up(srv_path);
 	if (err) {
 		rtrs_err(s, "rtrs_srv_path_up(), err: %d\n", err);
@@ -882,7 +833,7 @@ static int process_info_req(struct rtrs_srv_con *con,
 				      tx_iu->dma_addr,
 				      tx_iu->size, DMA_TO_DEVICE);
 
-	/* Send info response */
+	 
 	err = rtrs_iu_post_send(&con->c, tx_iu, tx_sz, reg_wr);
 	if (err) {
 		rtrs_err(s, "rtrs_iu_post_send(), err: %d\n", err);
@@ -951,7 +902,7 @@ static int post_recv_info_req(struct rtrs_srv_con *con)
 			       DMA_FROM_DEVICE, rtrs_srv_info_req_done);
 	if (!rx_iu)
 		return -ENOMEM;
-	/* Prepare for getting info response */
+	 
 	err = rtrs_iu_post_recv(&con->c, rx_iu);
 	if (err) {
 		rtrs_err(s, "rtrs_iu_post_recv(), err: %d\n", err);
@@ -1223,10 +1174,7 @@ static void rtrs_srv_rdma_done(struct ib_cq *cq, struct ib_wc *wc)
 
 	switch (wc->opcode) {
 	case IB_WC_RECV_RDMA_WITH_IMM:
-		/*
-		 * post_recv() RDMA write completions of IO reqs (read/write)
-		 * and hb
-		 */
+		 
 		if (WARN_ON(wc->wr_cqe != &io_comp_cqe))
 			return;
 		err = rtrs_post_recv_empty(&con->c, &io_comp_cqe);
@@ -1277,10 +1225,7 @@ static void rtrs_srv_rdma_done(struct ib_cq *cq, struct ib_wc *wc)
 		break;
 	case IB_WC_RDMA_WRITE:
 	case IB_WC_SEND:
-		/*
-		 * post_send() RDMA write completions of IO reqs (read/write)
-		 * and hb.
-		 */
+		 
 		atomic_add(s->signal_interval, &con->c.sq_wr_avail);
 
 		if (!list_empty_careful(&con->rsp_wr_wait_list))
@@ -1293,12 +1238,7 @@ static void rtrs_srv_rdma_done(struct ib_cq *cq, struct ib_wc *wc)
 	}
 }
 
-/**
- * rtrs_srv_get_path_name() - Get rtrs_srv peer hostname.
- * @srv:	Session
- * @pathname:	Pathname buffer
- * @len:	Length of sessname buffer
- */
+ 
 int rtrs_srv_get_path_name(struct rtrs_srv_sess *srv, char *pathname,
 			   size_t len)
 {
@@ -1320,10 +1260,7 @@ int rtrs_srv_get_path_name(struct rtrs_srv_sess *srv, char *pathname,
 }
 EXPORT_SYMBOL(rtrs_srv_get_path_name);
 
-/**
- * rtrs_srv_get_queue_depth() - Get rtrs_srv qdepth.
- * @srv:	Session
- */
+ 
 int rtrs_srv_get_queue_depth(struct rtrs_srv_sess *srv)
 {
 	return srv->queue_depth;
@@ -1366,7 +1303,7 @@ static void free_srv(struct rtrs_srv_sess *srv)
 	kfree(srv->chunks);
 	mutex_destroy(&srv->paths_mutex);
 	mutex_destroy(&srv->paths_ev_mutex);
-	/* last put to release the srv structure */
+	 
 	put_device(&srv->dev);
 }
 
@@ -1386,16 +1323,13 @@ static struct rtrs_srv_sess *get_or_create_srv(struct rtrs_srv_ctx *ctx,
 		}
 	}
 	mutex_unlock(&ctx->srv_mutex);
-	/*
-	 * If this request is not the first connection request from the
-	 * client for this session then fail and return error.
-	 */
+	 
 	if (!first_conn) {
 		pr_err_ratelimited("Error: Not the first connection request for this session\n");
 		return ERR_PTR(-ENXIO);
 	}
 
-	/* need to allocate a new srv */
+	 
 	srv = kzalloc(sizeof(*srv), GFP_KERNEL);
 	if  (!srv)
 		return ERR_PTR(-ENOMEM);
@@ -1473,7 +1407,7 @@ static void del_path_from_srv(struct rtrs_srv_path *srv_path)
 	mutex_unlock(&srv->paths_mutex);
 }
 
-/* return true if addresses are the same, error other wise */
+ 
 static int sockaddr_cmp(const struct sockaddr *a, const struct sockaddr *b)
 {
 	switch (a->sa_family) {
@@ -1542,18 +1476,15 @@ static void rtrs_srv_close_work(struct work_struct *work)
 		ib_drain_qp(con->c.qp);
 	}
 
-	/*
-	 * Degrade ref count to the usual model with a single shared
-	 * atomic_t counter
-	 */
+	 
 	percpu_ref_kill(&srv_path->ids_inflight_ref);
 
-	/* Wait for all completion */
+	 
 	wait_for_completion(&srv_path->complete_done);
 
 	rtrs_srv_destroy_path_files(srv_path);
 
-	/* Notify upper layer if we are the last path */
+	 
 	rtrs_srv_path_down(srv_path);
 
 	unmap_cont_bufs(srv_path);
@@ -1626,7 +1557,7 @@ static int rtrs_rdma_do_reject(struct rdma_cm_id *cm_id, int errno)
 	if (err)
 		pr_err("rdma_reject(), err: %d\n", err);
 
-	/* Bounce errno back */
+	 
 	return errno;
 }
 
@@ -1669,17 +1600,14 @@ static int create_con(struct rtrs_srv_path *srv_path,
 	wr_limit = srv_path->s.dev->ib_dev->attrs.max_qp_wr;
 
 	if (con->c.cid == 0) {
-		/*
-		 * All receive and all send (each requiring invalidate)
-		 * + 2 for drain and heartbeat
-		 */
+		 
 		max_send_wr = min_t(int, wr_limit,
 				    SERVICE_CON_QUEUE_DEPTH * 2 + 2);
 		max_recv_wr = max_send_wr;
 		s->signal_interval = min_not_zero(srv->queue_depth,
 						  (size_t)SERVICE_CON_QUEUE_DEPTH);
 	} else {
-		/* when always_invlaidate enalbed, we need linv+rinv+mr+imm */
+		 
 		if (always_invalidate)
 			max_send_wr =
 				min_t(int, wr_limit,
@@ -1695,7 +1623,7 @@ static int create_con(struct rtrs_srv_path *srv_path,
 	atomic_set(&con->c.sq_wr_avail, max_send_wr);
 	cq_vector = rtrs_srv_get_next_cq_vector(srv_path);
 
-	/* TODO: SOFTIRQ can be faster, but be careful with softirq context */
+	 
 	err = rtrs_cq_qp_create(&srv_path->s, &con->c, 1, cq_vector, cq_num,
 				 max_send_wr, max_recv_wr,
 				 IB_POLL_WORKQUEUE);
@@ -1711,10 +1639,7 @@ static int create_con(struct rtrs_srv_path *srv_path,
 	WARN_ON(srv_path->s.con[cid]);
 	srv_path->s.con[cid] = &con->c;
 
-	/*
-	 * Change context from server to current connection.  The other
-	 * way is to use cm_id->qp->qp_context, which does not work on OFED.
-	 */
+	 
 	cm_id->context = &con->c;
 
 	return 0;
@@ -1779,7 +1704,7 @@ static struct rtrs_srv_path *__alloc_path(struct rtrs_srv_sess *srv,
 	srv_path->s.dst_addr = cm_id->route.addr.dst_addr;
 	srv_path->s.src_addr = cm_id->route.addr.src_addr;
 
-	/* temporary until receiving session-name from client */
+	 
 	path.src = &srv_path->s.src_addr;
 	path.dst = &srv_path->s.dst_addr;
 	rtrs_addr_to_str(&path, str, sizeof(str));
@@ -1856,13 +1781,13 @@ static int rtrs_rdma_connect(struct rdma_cm_id *cm_id,
 	}
 	con_num = le16_to_cpu(msg->cid_num);
 	if (con_num > 4096) {
-		/* Sanity check */
+		 
 		pr_err("Too many connections requested: %d\n", con_num);
 		goto reject_w_err;
 	}
 	cid = le16_to_cpu(msg->cid);
 	if (cid >= con_num) {
-		/* Sanity check */
+		 
 		pr_err("Incorrect cid: %d >= %d\n", cid, con_num);
 		goto reject_w_err;
 	}
@@ -1878,7 +1803,7 @@ static int rtrs_rdma_connect(struct rdma_cm_id *cm_id,
 	if (srv_path) {
 		struct rtrs_path *s = &srv_path->s;
 
-		/* Session already holds a reference */
+		 
 		put_srv(srv);
 
 		if (srv_path->state != RTRS_SRV_CONNECTING) {
@@ -1887,9 +1812,7 @@ static int rtrs_rdma_connect(struct rdma_cm_id *cm_id,
 			mutex_unlock(&srv->paths_mutex);
 			goto reject_w_err;
 		}
-		/*
-		 * Sanity checks
-		 */
+		 
 		if (con_num != s->con_num || cid >= s->con_num) {
 			rtrs_err(s, "Incorrect request: %d, %d\n",
 				  cid, con_num);
@@ -1917,23 +1840,14 @@ static int rtrs_rdma_connect(struct rdma_cm_id *cm_id,
 	if (err) {
 		rtrs_err((&srv_path->s), "create_con(), error %d\n", err);
 		rtrs_rdma_do_reject(cm_id, err);
-		/*
-		 * Since session has other connections we follow normal way
-		 * through workqueue, but still return an error to tell cma.c
-		 * to call rdma_destroy_id() for current connection.
-		 */
+		 
 		goto close_and_return_err;
 	}
 	err = rtrs_rdma_do_accept(srv_path, cm_id);
 	if (err) {
 		rtrs_err((&srv_path->s), "rtrs_rdma_do_accept(), error %d\n", err);
 		rtrs_rdma_do_reject(cm_id, err);
-		/*
-		 * Since current connection was successfully added to the
-		 * session we follow normal way through workqueue to close the
-		 * session, thus return 0 to tell cma.c we call
-		 * rdma_destroy_id() ourselves.
-		 */
+		 
 		err = 0;
 		goto close_and_return_err;
 	}
@@ -1959,10 +1873,7 @@ static int rtrs_srv_rdma_cm_handler(struct rdma_cm_id *cm_id,
 	struct rtrs_con *c = NULL;
 
 	if (ev->event == RDMA_CM_EVENT_CONNECT_REQUEST)
-		/*
-		 * In case of error cma.c will destroy cm_id,
-		 * see cma_process_remove()
-		 */
+		 
 		return rtrs_rdma_connect(cm_id, ev->param.conn.private_data,
 					  ev->param.conn.private_data_len);
 
@@ -1972,7 +1883,7 @@ static int rtrs_srv_rdma_cm_handler(struct rdma_cm_id *cm_id,
 
 	switch (ev->event) {
 	case RDMA_CM_EVENT_ESTABLISHED:
-		/* Nothing here */
+		 
 		break;
 	case RDMA_CM_EVENT_REJECTED:
 	case RDMA_CM_EVENT_CONNECT_ERROR:
@@ -2047,12 +1958,7 @@ static int rtrs_srv_rdma_init(struct rtrs_srv_ctx *ctx, u16 port)
 	struct rdma_cm_id *cm_ip, *cm_ib;
 	int ret;
 
-	/*
-	 * We accept both IPoIB and IB connections, so we need to keep
-	 * two cm id's, one for each socket type and port space.
-	 * If the cm initialization of one of the id's fails, we abort
-	 * everything.
-	 */
+	 
 	cm_ip = rtrs_srv_cm_init(ctx, (struct sockaddr *)&sin, RDMA_PS_TCP);
 	if (IS_ERR(cm_ip))
 		return PTR_ERR(cm_ip);
@@ -2105,26 +2011,17 @@ static int rtrs_srv_add_one(struct ib_device *device)
 	if (ib_ctx.ib_dev_count)
 		goto out;
 
-	/*
-	 * Since our CM IDs are NOT bound to any ib device we will create them
-	 * only once
-	 */
+	 
 	ctx = ib_ctx.srv_ctx;
 	ret = rtrs_srv_rdma_init(ctx, ib_ctx.port);
 	if (ret) {
-		/*
-		 * We errored out here.
-		 * According to the ib code, if we encounter an error here then the
-		 * error code is ignored, and no more calls to our ops are made.
-		 */
+		 
 		pr_err("Failed to initialize RDMA connection");
 		goto err_out;
 	}
 
 out:
-	/*
-	 * Keep a track on the number of ib devices added
-	 */
+	 
 	ib_ctx.ib_dev_count++;
 
 err_out:
@@ -2142,10 +2039,7 @@ static void rtrs_srv_remove_one(struct ib_device *device, void *client_data)
 	if (ib_ctx.ib_dev_count)
 		goto out;
 
-	/*
-	 * Since our CM IDs are NOT bound to any ib device we will remove them
-	 * only once, when the last device is removed
-	 */
+	 
 	ctx = ib_ctx.srv_ctx;
 	rdma_destroy_id(ctx->cm_id_ip);
 	rdma_destroy_id(ctx->cm_id_ib);
@@ -2160,15 +2054,7 @@ static struct ib_client rtrs_srv_client = {
 	.remove	= rtrs_srv_remove_one
 };
 
-/**
- * rtrs_srv_open() - open RTRS server context
- * @ops:		callback functions
- * @port:               port to listen on
- *
- * Creates server context with specified callbacks.
- *
- * Return a valid pointer on success otherwise PTR_ERR.
- */
+ 
 struct rtrs_srv_ctx *rtrs_srv_open(struct rtrs_srv_ops *ops, u16 port)
 {
 	struct rtrs_srv_ctx *ctx;
@@ -2213,12 +2099,7 @@ static void close_ctx(struct rtrs_srv_ctx *ctx)
 	flush_workqueue(rtrs_wq);
 }
 
-/**
- * rtrs_srv_close() - close RTRS server context
- * @ctx: pointer to server context
- *
- * Closes RTRS server context with all client sessions.
- */
+ 
 void rtrs_srv_close(struct rtrs_srv_ctx *ctx)
 {
 	ib_unregister_client(&rtrs_srv_client);
@@ -2241,10 +2122,7 @@ static int check_module_params(void)
 		return -EINVAL;
 	}
 
-	/*
-	 * Check if IB immediate data size is enough to hold the mem_id and the
-	 * offset inside the memory chunk
-	 */
+	 
 	if ((ilog2(sess_queue_depth - 1) + 1) +
 	    (ilog2(max_chunk_size - 1) + 1) > MAX_IMM_PAYL_BITS) {
 		pr_err("RDMA immediate size (%db) not enough to encode %d buffers of size %dB. Reduce 'sess_queue_depth' or 'max_chunk_size' parameters.\n",

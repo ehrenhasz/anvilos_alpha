@@ -1,50 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * dt282x.c
- * Comedi driver for Data Translation DT2821 series
- *
- * COMEDI - Linux Control and Measurement Device Interface
- * Copyright (C) 1997-8 David A. Schleef <ds@schleef.org>
- */
 
-/*
- * Driver: dt282x
- * Description: Data Translation DT2821 series (including DT-EZ)
- * Author: ds
- * Devices: [Data Translation] DT2821 (dt2821), DT2821-F-16SE (dt2821-f),
- *   DT2821-F-8DI (dt2821-f), DT2821-G-16SE (dt2821-g),
- *   DT2821-G-8DI (dt2821-g), DT2823 (dt2823), DT2824-PGH (dt2824-pgh),
- *   DT2824-PGL (dt2824-pgl), DT2825 (dt2825), DT2827 (dt2827),
- *   DT2828 (dt2828), DT2928 (dt2829), DT21-EZ (dt21-ez), DT23-EZ (dt23-ez),
- *   DT24-EZ (dt24-ez), DT24-EZ-PGL (dt24-ez-pgl)
- * Status: complete
- * Updated: Wed, 22 Aug 2001 17:11:34 -0700
- *
- * Configuration options:
- *   [0] - I/O port base address
- *   [1] - IRQ (optional, required for async command support)
- *   [2] - DMA 1 (optional, required for async command support)
- *   [3] - DMA 2 (optional, required for async command support)
- *   [4] - AI jumpered for 0=single ended, 1=differential
- *   [5] - AI jumpered for 0=straight binary, 1=2's complement
- *   [6] - AO 0 data format (deprecated, see below)
- *   [7] - AO 1 data format (deprecated, see below)
- *   [8] - AI jumpered for 0=[-10,10]V, 1=[0,10], 2=[-5,5], 3=[0,5]
- *   [9] - AO channel 0 range (deprecated, see below)
- *   [10]- AO channel 1 range (deprecated, see below)
- *
- * Notes:
- *   - AO commands might be broken.
- *   - If you try to run a command on both the AI and AO subdevices
- *     simultaneously, bad things will happen.  The driver needs to
- *     be fixed to check for this situation and return an error.
- *   - AO range is not programmable. The AO subdevice has a range_table
- *     containing all the possible analog output ranges. Use the range
- *     that matches your board configuration to convert between data
- *     values and physical units. The format of the data written to the
- *     board is handled automatically based on the unipolar/bipolar
- *     range that is selected.
- */
+ 
+
+ 
 
 #include <linux/module.h>
 #include <linux/delay.h>
@@ -54,9 +11,7 @@
 #include <linux/comedi/comedidev.h>
 #include <linux/comedi/comedi_isadma.h>
 
-/*
- * Register map
- */
+ 
 #define DT2821_ADCSR_REG		0x00
 #define DT2821_ADCSR_ADERR		BIT(15)
 #define DT2821_ADCSR_ADCLK		BIT(9)
@@ -105,8 +60,8 @@
 #define DT2821_TMRCTR_PRESCALE(x)	(((x) & 0xf) << 8)
 #define DT2821_TMRCTR_DIVIDER(x)	((255 - ((x) & 0xff)) << 0)
 
-/* Pacer Clock */
-#define DT2821_OSC_BASE		250	/* 4 MHz (in nanoseconds) */
+ 
+#define DT2821_OSC_BASE		250	 
 #define DT2821_PRESCALE(x)	BIT(x)
 #define DT2821_PRESCALE_MAX	15
 #define DT2821_DIVIDER_MAX	255
@@ -168,11 +123,7 @@ static const struct comedi_lrange range_dt282x_ai_hi_unipolar = {
 	}
 };
 
-/*
- * The Analog Output range is set per-channel using jumpers on the board.
- * All of these ranges may not be available on some DT2821 series boards.
- * The default jumper setting has both channels set for +/-10V output.
- */
+ 
 static const struct comedi_lrange dt282x_ao_range = {
 	5, {
 		BIP_RANGE(10),
@@ -303,7 +254,7 @@ struct dt282x_private {
 	struct comedi_isadma *dma;
 	unsigned int ad_2scomp:1;
 	unsigned int divisor;
-	int dacsr;	/* software copies of registers */
+	int dacsr;	 
 	int adcsr;
 	int supcsr;
 	int ntrig;
@@ -366,7 +317,7 @@ static unsigned int dt282x_ns_to_timer(unsigned int *ns, unsigned int flags)
 	unsigned int prescale, base, divider;
 
 	for (prescale = 0; prescale <= DT2821_PRESCALE_MAX; prescale++) {
-		if (prescale == 1)	/* 0 and 1 are both divide by 1 */
+		if (prescale == 1)	 
 			continue;
 		base = DT2821_OSC_BASE * DT2821_PRESCALE(prescale);
 		switch (flags & CMDF_ROUND_MASK) {
@@ -483,7 +434,7 @@ static void dt282x_ai_dma_interrupt(struct comedi_device *dev,
 		return;
 	}
 
-	/* restart the channel */
+	 
 	dt282x_prep_ai_dma(dev, dma->cur_dma, 0);
 
 	dma->cur_dma = 1 - dma->cur_dma;
@@ -576,12 +527,7 @@ static int dt282x_ai_timeout(struct comedi_device *dev,
 	return -EBUSY;
 }
 
-/*
- *    Performs a single A/D conversion.
- *      - Put channel/gain into channel-gain list
- *      - preload multiplexer
- *      - trigger conversion and wait for it to finish
- */
+ 
 static int dt282x_ai_insn_read(struct comedi_device *dev,
 			       struct comedi_subdevice *s,
 			       struct comedi_insn *insn,
@@ -592,7 +538,7 @@ static int dt282x_ai_insn_read(struct comedi_device *dev,
 	int ret;
 	int i;
 
-	/* XXX should we really be enabling the ad clock here? */
+	 
 	devpriv->adcsr = DT2821_ADCSR_ADCLK;
 	outw(devpriv->adcsr, dev->iobase + DT2821_ADCSR_REG);
 
@@ -634,7 +580,7 @@ static int dt282x_ai_cmdtest(struct comedi_device *dev,
 	int err = 0;
 	unsigned int arg;
 
-	/* Step 1 : check if triggers are trivially valid */
+	 
 
 	err |= comedi_check_trigger_src(&cmd->start_src, TRIG_NOW);
 	err |= comedi_check_trigger_src(&cmd->scan_begin_src,
@@ -646,17 +592,17 @@ static int dt282x_ai_cmdtest(struct comedi_device *dev,
 	if (err)
 		return 1;
 
-	/* Step 2a : make sure trigger sources are unique */
+	 
 
 	err |= comedi_check_trigger_is_unique(cmd->scan_begin_src);
 	err |= comedi_check_trigger_is_unique(cmd->stop_src);
 
-	/* Step 2b : and mutually compatible */
+	 
 
 	if (err)
 		return 2;
 
-	/* Step 3: check if arguments are trivially valid */
+	 
 
 	err |= comedi_check_trigger_arg_is(&cmd->start_arg, 0);
 	err |= comedi_check_trigger_arg_is(&cmd->scan_begin_arg, 0);
@@ -667,13 +613,13 @@ static int dt282x_ai_cmdtest(struct comedi_device *dev,
 
 	if (cmd->stop_src == TRIG_COUNT)
 		err |= comedi_check_trigger_arg_min(&cmd->stop_arg, 1);
-	else	/* TRIG_EXT | TRIG_NONE */
+	else	 
 		err |= comedi_check_trigger_arg_is(&cmd->stop_arg, 0);
 
 	if (err)
 		return 3;
 
-	/* step 4: fix up any arguments */
+	 
 
 	arg = cmd->convert_arg;
 	devpriv->divisor = dt282x_ns_to_timer(&arg, cmd->flags);
@@ -800,7 +746,7 @@ static int dt282x_ao_cmdtest(struct comedi_device *dev,
 	int err = 0;
 	unsigned int arg;
 
-	/* Step 1 : check if triggers are trivially valid */
+	 
 
 	err |= comedi_check_trigger_src(&cmd->start_src, TRIG_INT);
 	err |= comedi_check_trigger_src(&cmd->scan_begin_src, TRIG_TIMER);
@@ -811,16 +757,16 @@ static int dt282x_ao_cmdtest(struct comedi_device *dev,
 	if (err)
 		return 1;
 
-	/* Step 2a : make sure trigger sources are unique */
+	 
 
 	err |= comedi_check_trigger_is_unique(cmd->stop_src);
 
-	/* Step 2b : and mutually compatible */
+	 
 
 	if (err)
 		return 2;
 
-	/* Step 3: check if arguments are trivially valid */
+	 
 
 	err |= comedi_check_trigger_arg_is(&cmd->start_arg, 0);
 	err |= comedi_check_trigger_arg_min(&cmd->scan_begin_arg, 5000);
@@ -830,13 +776,13 @@ static int dt282x_ao_cmdtest(struct comedi_device *dev,
 
 	if (cmd->stop_src == TRIG_COUNT)
 		err |= comedi_check_trigger_arg_min(&cmd->stop_arg, 1);
-	else	/* TRIG_EXT | TRIG_NONE */
+	else	 
 		err |= comedi_check_trigger_arg_is(&cmd->stop_arg, 0);
 
 	if (err)
 		return 3;
 
-	/* step 4: fix up any arguments */
+	 
 
 	arg = cmd->scan_begin_arg;
 	devpriv->divisor = dt282x_ns_to_timer(&arg, cmd->flags);
@@ -896,7 +842,7 @@ static int dt282x_ao_cmd(struct comedi_device *dev, struct comedi_subdevice *s)
 
 	outw(devpriv->divisor, dev->iobase + DT2821_TMRCTR_REG);
 
-	/* clear all bits but the DIO direction bits */
+	 
 	devpriv->dacsr &= (DT2821_DACSR_LBOE | DT2821_DACSR_HBOE);
 
 	devpriv->dacsr |= (DT2821_DACSR_SSEL |
@@ -916,7 +862,7 @@ static int dt282x_ao_cancel(struct comedi_device *dev,
 
 	dt282x_disable_dma(dev);
 
-	/* clear all bits but the DIO direction bits */
+	 
 	devpriv->dacsr &= (DT2821_DACSR_LBOE | DT2821_DACSR_HBOE);
 
 	outw(devpriv->dacsr, dev->iobase + DT2821_DACSR_REG);
@@ -1019,7 +965,7 @@ static void dt282x_alloc_dma(struct comedi_device *dev,
 	if (request_irq(irq_num, dt282x_interrupt, 0, dev->board_name, dev))
 		return;
 
-	/* DMA uses two 4K buffers with separate DMA channels */
+	 
 	devpriv->dma = comedi_isadma_alloc(dev, 2, dma_chan[0], dma_chan[1],
 					   PAGE_SIZE, 0);
 	if (!devpriv->dma)
@@ -1038,14 +984,11 @@ static void dt282x_free_dma(struct comedi_device *dev)
 
 static int dt282x_initialize(struct comedi_device *dev)
 {
-	/* Initialize board */
+	 
 	outw(DT2821_SUPCSR_BDINIT, dev->iobase + DT2821_SUPCSR_REG);
 	inw(dev->iobase + DT2821_ADCSR_REG);
 
-	/*
-	 * At power up, some registers are in a well-known state.
-	 * Check them to see if a DT2821 series board is present.
-	 */
+	 
 	if (((inw(dev->iobase + DT2821_ADCSR_REG) & 0xfff0) != 0x7c00) ||
 	    ((inw(dev->iobase + DT2821_CHANCSR_REG) & 0xf0f0) != 0x70f0) ||
 	    ((inw(dev->iobase + DT2821_DACSR_REG) & 0x7c93) != 0x7c90) ||
@@ -1076,14 +1019,14 @@ static int dt282x_attach(struct comedi_device *dev, struct comedi_devconfig *it)
 	if (!devpriv)
 		return -ENOMEM;
 
-	/* an IRQ and 2 DMA channels are required for async command support */
+	 
 	dt282x_alloc_dma(dev, it);
 
 	ret = comedi_alloc_subdevices(dev, 3);
 	if (ret)
 		return ret;
 
-	/* Analog Input subdevice */
+	 
 	s = &dev->subdevices[0];
 	s->type		= COMEDI_SUBD_AI;
 	s->subdev_flags	= SDF_READABLE;
@@ -1109,14 +1052,14 @@ static int dt282x_attach(struct comedi_device *dev, struct comedi_devconfig *it)
 		s->cancel	= dt282x_ai_cancel;
 	}
 
-	/* Analog Output subdevice */
+	 
 	s = &dev->subdevices[1];
 	if (board->dachan) {
 		s->type		= COMEDI_SUBD_AO;
 		s->subdev_flags	= SDF_WRITABLE;
 		s->n_chan	= board->dachan;
 		s->maxdata	= board->ao_maxdata;
-		/* ranges are per-channel, set by jumpers on the board */
+		 
 		s->range_table	= &dt282x_ao_range;
 		s->insn_write	= dt282x_ao_insn_write;
 		if (dev->irq) {
@@ -1135,7 +1078,7 @@ static int dt282x_attach(struct comedi_device *dev, struct comedi_devconfig *it)
 		s->type		= COMEDI_SUBD_UNUSED;
 	}
 
-	/* Digital I/O subdevice */
+	 
 	s = &dev->subdevices[2];
 	s->type		= COMEDI_SUBD_DIO;
 	s->subdev_flags	= SDF_READABLE | SDF_WRITABLE;

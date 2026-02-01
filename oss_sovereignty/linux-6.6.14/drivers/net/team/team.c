@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * drivers/net/team/team.c - Network team device driver
- * Copyright (c) 2011 Jiri Pirko <jpirko@redhat.com>
- */
+
+ 
 
 #include <linux/ethtool.h>
 #include <linux/kernel.h>
@@ -31,9 +28,7 @@
 #define DRV_NAME "team"
 
 
-/**********
- * Helpers
- **********/
+ 
 
 static struct team_port *team_port_get_rtnl(const struct net_device *dev)
 {
@@ -42,10 +37,7 @@ static struct team_port *team_port_get_rtnl(const struct net_device *dev)
 	return netif_is_team_port(dev) ? port : NULL;
 }
 
-/*
- * Since the ability to change device address for open port device is tested in
- * team_port_add, this function can be called without control of return value
- */
+ 
 static int __set_port_dev_addr(struct net_device *port_dev,
 			       const unsigned char *dev_addr)
 {
@@ -101,11 +93,9 @@ static void team_refresh_port_linkup(struct team_port *port)
 }
 
 
-/*******************
- * Options handling
- *******************/
+ 
 
-struct team_option_inst { /* One for each option instance */
+struct team_option_inst {  
 	struct list_head list;
 	struct list_head tmp_list;
 	struct team_option *option;
@@ -152,7 +142,7 @@ static int __team_option_inst_add(struct team *team, struct team_option *option,
 
 	array_size = option->array_size;
 	if (!array_size)
-		array_size = 1; /* No array but still need one instance */
+		array_size = 1;  
 
 	for (i = 0; i < array_size; i++) {
 		opt_inst = kmalloc(sizeof(*opt_inst), GFP_KERNEL);
@@ -390,9 +380,7 @@ void team_options_change_check(struct team *team)
 EXPORT_SYMBOL(team_options_change_check);
 
 
-/****************
- * Mode handling
- ****************/
+ 
 
 static LIST_HEAD(mode_list);
 static DEFINE_SPINLOCK(mode_list_lock);
@@ -526,10 +514,7 @@ static void team_set_no_mode(struct team *team)
 
 static void team_adjust_ops(struct team *team)
 {
-	/*
-	 * To avoid checks in rx/tx skb paths, ensure here that non-null and
-	 * correct ops are always set.
-	 */
+	 
 
 	if (!team->en_port_count || !team_is_mode_set(team) ||
 	    !team->mode->ops->transmit)
@@ -544,19 +529,15 @@ static void team_adjust_ops(struct team *team)
 		team->ops.receive = team->mode->ops->receive;
 }
 
-/*
- * We can benefit from the fact that it's ensured no port is present
- * at the time of mode change. Therefore no packets are in fly so there's no
- * need to set mode operations in any special way.
- */
+ 
 static int __team_change_mode(struct team *team,
 			      const struct team_mode *new_mode)
 {
-	/* Check if mode was previously set and do cleanup if so */
+	 
 	if (team_is_mode_set(team)) {
 		void (*exit_op)(struct team *team) = team->ops.exit;
 
-		/* Clear ops area so no callback is called any longer */
+		 
 		memset(&team->ops, 0, sizeof(struct team_mode_ops));
 		team_adjust_ops(team);
 
@@ -564,7 +545,7 @@ static int __team_change_mode(struct team *team,
 			exit_op(team);
 		team_mode_put(team->mode);
 		team_set_no_mode(team);
-		/* zero private data area */
+		 
 		memset(&team->mode_priv, 0,
 		       sizeof(struct team) - offsetof(struct team, mode_priv));
 	}
@@ -621,9 +602,7 @@ static int team_change_mode(struct team *team, const char *kind)
 }
 
 
-/*********************
- * Peers notification
- *********************/
+ 
 
 static void team_notify_peers_work(struct work_struct *work)
 {
@@ -667,9 +646,7 @@ static void team_notify_peers_fini(struct team *team)
 }
 
 
-/*******************************
- * Send multicast group rejoins
- *******************************/
+ 
 
 static void team_mcast_rejoin_work(struct work_struct *work)
 {
@@ -713,11 +690,9 @@ static void team_mcast_rejoin_fini(struct team *team)
 }
 
 
-/************************
- * Rx path frame handler
- ************************/
+ 
 
-/* note: already called with rcu_read_lock */
+ 
 static rx_handler_result_t team_handle_frame(struct sk_buff **pskb)
 {
 	struct sk_buff *skb = *pskb;
@@ -735,11 +710,9 @@ static rx_handler_result_t team_handle_frame(struct sk_buff **pskb)
 	team = port->team;
 	if (!team_port_enabled(port)) {
 		if (is_link_local_ether_addr(eth_hdr(skb)->h_dest))
-			/* link-local packets are mostly useful when stack receives them
-			 * with the link they arrive on.
-			 */
+			 
 			return RX_HANDLER_PASS;
-		/* allow exact match delivery for disabled ports */
+		 
 		res = RX_HANDLER_EXACT;
 	} else {
 		res = team->ops.receive(team, port, skb);
@@ -766,9 +739,7 @@ static rx_handler_result_t team_handle_frame(struct sk_buff **pskb)
 }
 
 
-/*************************************
- * Multiqueue Tx port select override
- *************************************/
+ 
 
 static int team_queue_override_init(struct team *team)
 {
@@ -798,9 +769,7 @@ static struct list_head *__team_get_qom_list(struct team *team, u16 queue_id)
 	return &team->qom_lists[queue_id - 1];
 }
 
-/*
- * note: already called with rcu_read_lock
- */
+ 
 static bool team_queue_override_transmit(struct team *team, struct sk_buff *skb)
 {
 	struct list_head *qom_list;
@@ -912,9 +881,7 @@ static void team_queue_override_port_del(struct team *team,
 }
 
 
-/****************
- * Port handling
- ****************/
+ 
 
 static bool team_port_find(const struct team *team,
 			   const struct team_port *port)
@@ -927,12 +894,7 @@ static bool team_port_find(const struct team *team,
 	return false;
 }
 
-/*
- * Enable/disable port by adding to enabled port hashlist and setting
- * port->index (Might be racy so reader could see incorrect ifindex when
- * processing a flying packet, but that is not a problem). Write guarded
- * by team->lock.
- */
+ 
 static void team_port_enable(struct team *team,
 			     struct team_port *port)
 {
@@ -1258,14 +1220,14 @@ static int team_port_add(struct team *team, struct net_device *port_dev,
 		goto err_option_port_add;
 	}
 
-	/* set promiscuity level to new slave */
+	 
 	if (dev->flags & IFF_PROMISC) {
 		err = dev_set_promiscuity(port_dev, 1);
 		if (err)
 			goto err_set_slave_promisc;
 	}
 
-	/* set allmulti level to new slave */
+	 
 	if (dev->flags & IFF_ALLMULTI) {
 		err = dev_set_allmulti(port_dev, 1);
 		if (err) {
@@ -1373,9 +1335,7 @@ static int team_port_del(struct team *team, struct net_device *port_dev)
 }
 
 
-/*****************
- * Net device ops
- *****************/
+ 
 
 static void team_mode_option_get(struct team *team, struct team_gsetter_ctx *ctx)
 {
@@ -1671,7 +1631,7 @@ static void team_uninit(struct net_device *dev)
 	list_for_each_entry_safe(port, tmp, &team->port_list, list)
 		team_port_del(team, port->dev);
 
-	__team_change_mode(team, NULL); /* cleanup */
+	__team_change_mode(team, NULL);  
 	__team_options_unregister(team, team_options, ARRAY_SIZE(team_options));
 	team_mcast_rejoin_fini(team);
 	team_notify_peers_fini(team);
@@ -1706,9 +1666,7 @@ static int team_close(struct net_device *dev)
 	return 0;
 }
 
-/*
- * note: already called with rcu_read_lock
- */
+ 
 static netdev_tx_t team_xmit(struct sk_buff *skb, struct net_device *dev)
 {
 	struct team *team = netdev_priv(dev);
@@ -1736,17 +1694,10 @@ static netdev_tx_t team_xmit(struct sk_buff *skb, struct net_device *dev)
 static u16 team_select_queue(struct net_device *dev, struct sk_buff *skb,
 			     struct net_device *sb_dev)
 {
-	/*
-	 * This helper function exists to help dev_pick_tx get the correct
-	 * destination queue.  Using a helper function skips a call to
-	 * skb_tx_hash and will put the skbs in the queue we expect on their
-	 * way down to the team driver.
-	 */
+	 
 	u16 txq = skb_rx_queue_recorded(skb) ? skb_get_rx_queue(skb) : 0;
 
-	/*
-	 * Save the original txq to restore before passing to the driver
-	 */
+	 
 	qdisc_skb_cb(skb)->slave_dev_queue_mapping = skb->queue_mapping;
 
 	if (unlikely(txq >= dev->real_num_tx_queues)) {
@@ -1813,10 +1764,7 @@ static int team_change_mtu(struct net_device *dev, int new_mtu)
 	struct team_port *port;
 	int err;
 
-	/*
-	 * Alhough this is reader, it's guarded by team lock. It's not possible
-	 * to traverse list in reverse under rcu_read_lock
-	 */
+	 
 	mutex_lock(&team->lock);
 	team->port_mtu_change_allowed = true;
 	list_for_each_entry(port, &team->port_list, list) {
@@ -1869,10 +1817,7 @@ team_get_stats64(struct net_device *dev, struct rtnl_link_stats64 *stats)
 		stats->multicast	+= rx_multicast;
 		stats->tx_packets	+= tx_packets;
 		stats->tx_bytes		+= tx_bytes;
-		/*
-		 * rx_dropped, tx_dropped & rx_nohandler are u32,
-		 * updated without syncp protection.
-		 */
+		 
 		rx_dropped	+= READ_ONCE(p->rx_dropped);
 		tx_dropped	+= READ_ONCE(p->tx_dropped);
 		rx_nohandler	+= READ_ONCE(p->rx_nohandler);
@@ -1888,10 +1833,7 @@ static int team_vlan_rx_add_vid(struct net_device *dev, __be16 proto, u16 vid)
 	struct team_port *port;
 	int err;
 
-	/*
-	 * Alhough this is reader, it's guarded by team lock. It's not possible
-	 * to traverse list in reverse under rcu_read_lock
-	 */
+	 
 	mutex_lock(&team->lock);
 	list_for_each_entry(port, &team->port_list, list) {
 		err = vlan_vid_add(port->dev, proto, vid);
@@ -2066,9 +2008,7 @@ static const struct net_device_ops team_netdev_ops = {
 	.ndo_features_check	= passthru_features_check,
 };
 
-/***********************
- * ethtool interface
- ***********************/
+ 
 
 static void team_ethtool_get_drvinfo(struct net_device *dev,
 				     struct ethtool_drvinfo *drvinfo)
@@ -2110,9 +2050,7 @@ static const struct ethtool_ops team_ethtool_ops = {
 	.get_link_ksettings	= team_ethtool_get_link_ksettings,
 };
 
-/***********************
- * rt netlink interface
- ***********************/
+ 
 
 static void team_setup_by_port(struct net_device *dev,
 			       struct net_device *port_dev)
@@ -2183,17 +2121,13 @@ static void team_setup(struct net_device *dev)
 	dev->priv_flags |= IFF_NO_QUEUE;
 	dev->priv_flags |= IFF_TEAM;
 
-	/*
-	 * Indicate we support unicast address filtering. That way core won't
-	 * bring us to promisc mode in case a unicast addr is added.
-	 * Let this up to underlay drivers.
-	 */
+	 
 	dev->priv_flags |= IFF_UNICAST_FLT | IFF_LIVE_ADDR_CHANGE;
 
 	dev->features |= NETIF_F_LLTX;
 	dev->features |= NETIF_F_GRO;
 
-	/* Don't allow team devices to change network namespaces. */
+	 
 	dev->features |= NETIF_F_NETNS_LOCAL;
 
 	dev->hw_features = TEAM_VLAN_FEATURES |
@@ -2250,9 +2184,7 @@ static struct rtnl_link_ops team_link_ops __read_mostly = {
 };
 
 
-/***********************************
- * Generic netlink custom interface
- ***********************************/
+ 
 
 static struct genl_family team_nl_family;
 
@@ -2304,10 +2236,7 @@ err_msg_put:
 	return err;
 }
 
-/*
- * Netlink cmd functions should be locked by following two functions.
- * Since dev gets held here, that ensures dev won't disappear in between.
- */
+ 
 static struct team *team_nl_team_get(struct genl_info *info)
 {
 	struct net *net = genl_info_net(info);
@@ -2567,7 +2496,7 @@ static int team_nl_cmd_options_set(struct sk_buff *skb, struct genl_info *info)
 		struct nlattr *attr_data;
 		LIST_HEAD(opt_inst_list);
 		enum team_option_type opt_type;
-		int opt_port_ifindex = 0; /* != 0 for per-port options */
+		int opt_port_ifindex = 0;  
 		u32 opt_array_index = 0;
 		bool opt_is_array = false;
 		struct team_option_inst *opt_inst;
@@ -2758,9 +2687,7 @@ start_again:
 	i = 0;
 	incomplete = false;
 
-	/* If one port is selected, called wants to send port list containing
-	 * only this port. Otherwise go through all listed ports and send all
-	 */
+	 
 	if (one_port) {
 		err = team_nl_fill_one_port_get(skb, one_port);
 		if (err)
@@ -2898,9 +2825,7 @@ static void __exit team_nl_fini(void)
 }
 
 
-/******************
- * Change checkers
- ******************/
+ 
 
 static void __team_options_change_check(struct team *team)
 {
@@ -2918,7 +2843,7 @@ static void __team_options_change_check(struct team *team)
 			    err);
 }
 
-/* rtnl lock is held */
+ 
 
 static void __team_port_change_send(struct team_port *port, bool linkup)
 {
@@ -3000,9 +2925,7 @@ static void team_port_change_check(struct team_port *port, bool linkup)
 }
 
 
-/************************************
- * Net device notifier event handler
- ************************************/
+ 
 
 static int team_device_event(struct notifier_block *unused,
 			     unsigned long event, void *ptr)
@@ -3038,15 +2961,15 @@ static int team_device_event(struct notifier_block *unused,
 		}
 		break;
 	case NETDEV_PRECHANGEMTU:
-		/* Forbid to change mtu of underlaying device */
+		 
 		if (!port->team->port_mtu_change_allowed)
 			return NOTIFY_BAD;
 		break;
 	case NETDEV_PRE_TYPE_CHANGE:
-		/* Forbid to change type of underlaying device */
+		 
 		return NOTIFY_BAD;
 	case NETDEV_RESEND_IGMP:
-		/* Propagate to master device */
+		 
 		call_netdevice_notifiers(event, port->team->dev);
 		break;
 	}
@@ -3058,9 +2981,7 @@ static struct notifier_block team_notifier_block __read_mostly = {
 };
 
 
-/***********************
- * Module init and exit
- ***********************/
+ 
 
 static int __init team_module_init(void)
 {

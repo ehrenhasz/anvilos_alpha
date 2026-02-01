@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * exynos-nocp.h - Exynos NoC (Network on Chip) Probe header file
- *
- * Copyright (c) 2016 Samsung Electronics Co., Ltd.
- * Author : Chanwoo Choi <cw00.choi@samsung.com>
- */
+ 
+ 
 
 #ifndef __EXYNOS_NOCP_H__
 #define __EXYNOS_NOCP_H__
@@ -38,7 +33,7 @@ enum nocp_reg {
 	NOCP_COUNTERS_3_VAL		= 0x17C,
 };
 
-/* NOCP_MAIN_CTL register */
+ 
 #define NOCP_MAIN_CTL_ERREN_MASK		BIT(0)
 #define NOCP_MAIN_CTL_TRACEEN_MASK		BIT(1)
 #define NOCP_MAIN_CTL_PAYLOADEN_MASK		BIT(2)
@@ -47,11 +42,11 @@ enum nocp_reg {
 #define NOCP_MAIN_CTL_STATCONDDUMP_MASK	BIT(5)
 #define NOCP_MAIN_CTL_INTRUSIVEMODE_MASK	BIT(6)
 
-/* NOCP_CFG_CTL register */
+ 
 #define NOCP_CFG_CTL_GLOBALEN_MASK		BIT(0)
 #define NOCP_CFG_CTL_ACTIVE_MASK		BIT(1)
 
-/* NOCP_COUNTERS_x_SRC register */
+ 
 #define NOCP_CNT_SRC_INTEVENT_SHIFT		0
 #define NOCP_CNT_SRC_INTEVENT_MASK		(0x1F << NOCP_CNT_SRC_INTEVENT_SHIFT)
 #define NOCP_CNT_SRC_INTEVENT_OFF_MASK		(0x0 << NOCP_CNT_SRC_INTEVENT_SHIFT)
@@ -64,7 +59,7 @@ enum nocp_reg {
 #define NOCP_CNT_SRC_INTEVENT_BYTE_MASK		(0x8 << NOCP_CNT_SRC_INTEVENT_SHIFT)
 #define NOCP_CNT_SRC_INTEVENT_CHAIN_MASK	(0x10 << NOCP_CNT_SRC_INTEVENT_SHIFT)
 
-/* NOCP_COUNTERS_x_ALARM_MODE register */
+ 
 #define NOCP_CNT_ALARM_MODE_SHIFT		0
 #define NOCP_CNT_ALARM_MODE_MASK		(0x3 << NOCP_CNT_ALARM_MODE_SHIFT)
 #define NOCP_CNT_ALARM_MODE_OFF_MASK		(0x0 << NOCP_CNT_ALARM_MODE_SHIFT)
@@ -72,4 +67,4 @@ enum nocp_reg {
 #define NOCP_CNT_ALARM_MODE_MAX_MASK		(0x2 << NOCP_CNT_ALARM_MODE_SHIFT)
 #define NOCP_CNT_ALARM_MODE_MIN_MAX_MASK	(0x3 << NOCP_CNT_ALARM_MODE_SHIFT)
 
-#endif /* __EXYNOS_NOCP_H__ */
+#endif  

@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * This header provides the constants of the standard Chrome OS key matrix
- * for cros-ec keyboard-controller bindings.
- *
- * Copyright (c) 2021 Google, Inc
- */
+ 
+ 
 
 #ifndef _CROS_EC_KEYBOARD_H
 #define _CROS_EC_KEYBOARD_H
@@ -100,4 +95,4 @@
 	MATRIX_KEY(0x07, 0x0b, KEY_UP)		\
 	MATRIX_KEY(0x07, 0x0c, KEY_LEFT)
 
-#endif /* _CROS_EC_KEYBOARD_H */
+#endif  

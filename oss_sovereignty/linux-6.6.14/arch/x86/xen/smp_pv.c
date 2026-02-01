@@ -1,18 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Xen SMP support
- *
- * This file implements the Xen versions of smp_ops.  SMP under Xen is
- * very straightforward.  Bringing a CPU up is simply a matter of
- * loading its initial context and setting it running.
- *
- * IPIs are handled through the Xen event mechanism.
- *
- * Because virtual CPUs can be scheduled onto any real CPU, there's no
- * useful topology information for the kernel to make use of.  As a
- * result, all CPUs are treated as if they're single-core and
- * single-threaded.
- */
+
+ 
 #include <linux/sched.h>
 #include <linux/sched/task_stack.h>
 #include <linux/err.h>
@@ -66,7 +53,7 @@ static void cpu_bringup(void)
 	fpu__init_cpu();
 	touch_softlockup_watchdog();
 
-	/* PVH runs in ring 0 and allows us to do native syscalls. Yay! */
+	 
 	if (!xen_feature(XENFEAT_supervisor_mode_kernel)) {
 		xen_enable_sysenter();
 		xen_enable_syscall();
@@ -86,7 +73,7 @@ static void cpu_bringup(void)
 
 	smp_mb();
 
-	/* We can take interrupts now: we're officially "up". */
+	 
 	local_irq_enable();
 }
 
@@ -171,18 +158,11 @@ static void __init _get_smp_config(unsigned int early)
 		}
 	}
 #ifdef CONFIG_HOTPLUG_CPU
-	/* This is akin to using 'nr_cpus' on the Linux command line.
-	 * Which is OK as when we use 'dom0_max_vcpus=X' we can only
-	 * have up to X, while nr_cpu_ids is greater than X. This
-	 * normally is not a problem, except when CPU hotplugging
-	 * is involved and then there might be more than X CPUs
-	 * in the guest - which will not work as there is no
-	 * hypercall to expand the max number of VCPUs an already
-	 * running guest has. So cap it up to X. */
+	 
 	if (subtract)
 		set_nr_cpu_ids(nr_cpu_ids - subtract);
 #endif
-	/* Pretend to be a proper enumerated system */
+	 
 	smp_found_config = 1;
 }
 
@@ -192,18 +172,12 @@ static void __init xen_pv_smp_prepare_boot_cpu(void)
 	native_smp_prepare_boot_cpu();
 
 	if (!xen_feature(XENFEAT_writable_page_tables))
-		/* We've switched to the "real" per-cpu gdt, so make
-		 * sure the old memory can be recycled. */
+		 
 		make_lowmem_page_readwrite(xen_initial_gdt);
 
 	xen_setup_vcpu_info_placement();
 
-	/*
-	 * The alternative logic (which patches the unlock/lock) runs before
-	 * the smp bootup up code is activated. Hence we need to set this up
-	 * the core kernel is being patched. Otherwise we will have only
-	 * modules patched but not core code.
-	 */
+	 
 	xen_init_spinlocks();
 }
 
@@ -238,7 +212,7 @@ static void __init xen_pv_smp_prepare_cpus(unsigned int max_cpus)
 
 	cpumask_copy(xen_cpu_initialized_map, cpumask_of(0));
 
-	/* Restrict the possible_map according to max_cpus. */
+	 
 	while ((num_possible_cpus() > 1) && (num_possible_cpus() > max_cpus)) {
 		for (cpu = nr_cpu_ids - 1; !cpu_possible(cpu); cpu--)
 			continue;
@@ -267,14 +241,10 @@ cpu_initialize_context(unsigned int cpu, struct task_struct *idle)
 
 	gdt = get_cpu_gdt_rw(cpu);
 
-	/*
-	 * Bring up the CPU in cpu_bringup_and_idle() with the stack
-	 * pointing just below where pt_regs would be if it were a normal
-	 * kernel entry.
-	 */
+	 
 	ctxt->user_regs.eip = (unsigned long)asm_cpu_bringup_and_idle;
 	ctxt->flags = VGCF_IN_KERNEL;
-	ctxt->user_regs.eflags = 0x1000; /* IOPL_RING1 */
+	ctxt->user_regs.eflags = 0x1000;  
 	ctxt->user_regs.ds = __USER_DS;
 	ctxt->user_regs.es = __USER_DS;
 	ctxt->user_regs.ss = __KERNEL_DS;
@@ -292,11 +262,7 @@ cpu_initialize_context(unsigned int cpu, struct task_struct *idle)
 	ctxt->gdt_frames[0] = gdt_mfn;
 	ctxt->gdt_ents      = GDT_ENTRIES;
 
-	/*
-	 * Set SS:SP that Xen will use when entering guest kernel mode
-	 * from guest user mode.  Subsequent calls to load_sp0() can
-	 * change this value.
-	 */
+	 
 	ctxt->kernel_ss = __KERNEL_DS;
 	ctxt->kernel_sp = task_top_of_stack(idle);
 
@@ -325,7 +291,7 @@ static int xen_pv_kick_ap(unsigned int cpu, struct task_struct *idle)
 
 	xen_setup_runstate_info(cpu);
 
-	/* make sure interrupts start blocked */
+	 
 	per_cpu(xen_vcpu, cpu)->evtchn_upcall_mask = 1;
 
 	rc = cpu_initialize_context(cpu, idle);
@@ -334,10 +300,7 @@ static int xen_pv_kick_ap(unsigned int cpu, struct task_struct *idle)
 
 	xen_pmu_init(cpu);
 
-	/*
-	 * Why is this a BUG? If the hypercall fails then everything can be
-	 * rolled back, no?
-	 */
+	 
 	BUG_ON(HYPERVISOR_vcpu_op(VCPUOP_up, xen_vcpu_nr(cpu), NULL));
 
 	return 0;
@@ -377,7 +340,7 @@ static void xen_pv_cleanup_dead_cpu(unsigned int cpu)
 	xen_pmu_finish(cpu);
 }
 
-static void __noreturn xen_pv_play_dead(void) /* used only with HOTPLUG_CPU */
+static void __noreturn xen_pv_play_dead(void)  
 {
 	play_dead_common();
 	HYPERVISOR_vcpu_op(VCPUOP_down, xen_vcpu_nr(smp_processor_id()), NULL);
@@ -385,7 +348,7 @@ static void __noreturn xen_pv_play_dead(void) /* used only with HOTPLUG_CPU */
 	BUG();
 }
 
-#else /* !CONFIG_HOTPLUG_CPU */
+#else  
 static int xen_pv_cpu_disable(void)
 {
 	return -ENOSYS;
@@ -411,9 +374,9 @@ static void stop_self(void *v)
 {
 	int cpu = smp_processor_id();
 
-	/* make sure we're not pinning something down */
+	 
 	load_cr3(swapper_pg_dir);
-	/* should set up a minimal gdt */
+	 
 
 	set_cpu_online(cpu, false);
 
@@ -457,7 +420,7 @@ void __init xen_smp_init(void)
 {
 	smp_ops = xen_smp_ops;
 
-	/* Avoid searching for BIOS MP tables */
+	 
 	x86_init.mpparse.find_smp_config = x86_init_noop;
 	x86_init.mpparse.get_smp_config = _get_smp_config;
 }

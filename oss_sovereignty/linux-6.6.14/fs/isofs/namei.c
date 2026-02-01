@@ -1,20 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *  linux/fs/isofs/namei.c
- *
- *  (C) 1992  Eric Youngdale Modified for ISO 9660 filesystem.
- *
- *  (C) 1991  Linus Torvalds - minix filesystem
- */
+
+ 
 
 #include <linux/gfp.h>
 #include "isofs.h"
 
-/*
- * ok, we cannot use strncmp, as the name is not in our data space.
- * Thus we'll have to use isofs_match. No big problem. Match also makes
- * some sanity tests.
- */
+ 
 static int
 isofs_cmp(struct dentry *dentry, const char *compare, int dlen)
 {
@@ -26,12 +16,7 @@ isofs_cmp(struct dentry *dentry, const char *compare, int dlen)
 	return dentry->d_op->d_compare(NULL, dentry->d_name.len, dentry->d_name.name, &qstr);
 }
 
-/*
- *	isofs_find_entry()
- *
- * finds an entry in the specified directory with the wanted name. It
- * returns the inode number of the found entry, or 0 on error.
- */
+ 
 static unsigned long
 isofs_find_entry(struct inode *dir, struct dentry *dentry,
 	unsigned long *block_rv, unsigned long *offset_rv,
@@ -78,7 +63,7 @@ isofs_find_entry(struct inode *dir, struct dentry *dentry,
 		offset += de_len;
 		f_pos += de_len;
 
-		/* Make sure we have a full directory entry */
+		 
 		if (offset >= bufsize) {
 			int slop = bufsize - offset + de_len;
 			memcpy(tmpde, de, slop);
@@ -97,7 +82,7 @@ isofs_find_entry(struct inode *dir, struct dentry *dentry,
 
 		dlen = de->name_len[0];
 		dpnt = de->name;
-		/* Basic sanity check, whether name doesn't exceed dir entry */
+		 
 		if (de_len < dlen + sizeof(struct iso_directory_record)) {
 			printk(KERN_NOTICE "iso9660: Corrupted directory entry"
 			       " in block %lu of inode %lu\n", block,
@@ -108,7 +93,7 @@ isofs_find_entry(struct inode *dir, struct dentry *dentry,
 
 		if (sbi->s_rock &&
 		    ((i = get_rock_ridge_filename(de, tmpname, dir)))) {
-			dlen = i;	/* possibly -1 */
+			dlen = i;	 
 			dpnt = tmpname;
 #ifdef CONFIG_JOLIET
 		} else if (sbi->s_joliet_level) {
@@ -123,10 +108,7 @@ isofs_find_entry(struct inode *dir, struct dentry *dentry,
 			dpnt = tmpname;
 		}
 
-		/*
-		 * Skip hidden or associated files unless hide or showassoc,
-		 * respectively, is set
-		 */
+		 
 		match = 0;
 		if (dlen > 0 &&
 			(!sbi->s_hide ||

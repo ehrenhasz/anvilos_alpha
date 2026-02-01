@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * PMac Burgundy lowlevel functions
- *
- * Copyright (c) by Takashi Iwai <tiwai@suse.de>
- * code based on dmasound.c.
- */
+
+ 
 
 #include <linux/io.h>
 #include <linux/init.h>
@@ -15,7 +10,7 @@
 #include "burgundy.h"
 
 
-/* Waits for busy flag to clear */
+ 
 static inline void
 snd_pmac_burgundy_busy_wait(struct snd_pmac *chip)
 {
@@ -117,9 +112,7 @@ snd_pmac_burgundy_rcb(struct snd_pmac *chip, unsigned int addr)
 #define BASE2ADDR(base)	((base) << 12)
 #define ADDR2BASE(addr)	((addr) >> 12)
 
-/*
- * Burgundy volume: 0 - 100, stereo, word reg
- */
+ 
 static void
 snd_pmac_burgundy_write_volume(struct snd_pmac *chip, unsigned int address,
 			       long *volume, int shift)
@@ -128,7 +121,7 @@ snd_pmac_burgundy_write_volume(struct snd_pmac *chip, unsigned int address,
 
 	if (volume[0] < 0 || volume[0] > 100 ||
 	    volume[1] < 0 || volume[1] > 100)
-		return; /* -EINVAL */
+		return;  
 	lvolume = volume[0] ? volume[0] + BURGUNDY_VOLUME_OFFSET : 0;
 	rvolume = volume[1] ? volume[1] + BURGUNDY_VOLUME_OFFSET : 0;
 
@@ -202,9 +195,7 @@ static int snd_pmac_burgundy_put_volume(struct snd_kcontrol *kcontrol,
   .put = snd_pmac_burgundy_put_volume,\
   .private_value = ((ADDR2BASE(addr) & 0xff) | ((shift) << 8)) }
 
-/*
- * Burgundy volume: 0 - 100, stereo, 2-byte reg
- */
+ 
 static void
 snd_pmac_burgundy_write_volume_2b(struct snd_pmac *chip, unsigned int address,
 				  long *volume, int off)
@@ -278,9 +269,7 @@ static int snd_pmac_burgundy_put_volume_2b(struct snd_kcontrol *kcontrol,
   .put = snd_pmac_burgundy_put_volume_2b,\
   .private_value = ((ADDR2BASE(addr) & 0xff) | ((off) << 8)) }
 
-/*
- * Burgundy gain/attenuation: 0 - 15, mono/stereo, byte reg
- */
+ 
 static int snd_pmac_burgundy_info_gain(struct snd_kcontrol *kcontrol,
 				       struct snd_ctl_elem_info *uinfo)
 {
@@ -340,9 +329,7 @@ static int snd_pmac_burgundy_put_gain(struct snd_kcontrol *kcontrol,
   .put = snd_pmac_burgundy_put_gain,\
   .private_value = (ADDR2BASE(addr) | ((stereo) << 24) | ((atten) << 25)) }
 
-/*
- * Burgundy switch: 0/1, mono/stereo, word reg
- */
+ 
 static int snd_pmac_burgundy_info_switch_w(struct snd_kcontrol *kcontrol,
 					   struct snd_ctl_elem_info *uinfo)
 {
@@ -396,9 +383,7 @@ static int snd_pmac_burgundy_put_switch_w(struct snd_kcontrol *kcontrol,
   .private_value = ((lbit) | ((rbit) << 8)\
 		| (ADDR2BASE(addr) << 16) | ((stereo) << 24)) }
 
-/*
- * Burgundy switch: 0/1, mono/stereo, byte reg, bit mask
- */
+ 
 static int snd_pmac_burgundy_info_switch_b(struct snd_kcontrol *kcontrol,
 					   struct snd_ctl_elem_info *uinfo)
 {
@@ -452,9 +437,7 @@ static int snd_pmac_burgundy_put_switch_b(struct snd_kcontrol *kcontrol,
   .private_value = ((lmask) | ((rmask) << 8)\
 		| (ADDR2BASE(addr) << 16) | ((stereo) << 24)) }
 
-/*
- * Burgundy mixers
- */
+ 
 static const struct snd_kcontrol_new snd_pmac_burgundy_mixers[] = {
 	BURGUNDY_VOLUME_W("Master Playback Volume", 0,
 			MASK_ADDR_BURGUNDY_MASTER_VOLUME, 8),
@@ -472,15 +455,7 @@ static const struct snd_kcontrol_new snd_pmac_burgundy_mixers[] = {
 			MASK_ADDR_BURGUNDY_CAPTURESELECTS, 0, 16, 1),
 	BURGUNDY_SWITCH_W("CD Playback Switch", 0,
 			MASK_ADDR_BURGUNDY_OUTPUTSELECTS, 0, 16, 1),
-/*	BURGUNDY_SWITCH_W("Loop Capture Switch", 0,
- *		MASK_ADDR_BURGUNDY_CAPTURESELECTS, 8, 24, 1),
- *	BURGUNDY_SWITCH_B("Mixer out Capture Switch", 0,
- *		MASK_ADDR_BURGUNDY_HOSTIFAD, 0x02, 0, 0),
- *	BURGUNDY_SWITCH_B("Mixer Capture Switch", 0,
- *		MASK_ADDR_BURGUNDY_HOSTIFAD, 0x01, 0, 0),
- *	BURGUNDY_SWITCH_B("PCM out Capture Switch", 0,
- *		MASK_ADDR_BURGUNDY_HOSTIFEH, 0x02, 0, 0),
- */	BURGUNDY_SWITCH_B("PCM Capture Switch", 0,
+ 	BURGUNDY_SWITCH_B("PCM Capture Switch", 0,
 			MASK_ADDR_BURGUNDY_HOSTIFEH, 0x01, 0, 0)
 };
 static const struct snd_kcontrol_new snd_pmac_burgundy_mixers_imac[] = {
@@ -522,8 +497,7 @@ static const struct snd_kcontrol_new snd_pmac_burgundy_mixers_pmac[] = {
 			MASK_ADDR_BURGUNDY_CAPTURESELECTS, 2, 18, 1),
 	BURGUNDY_SWITCH_W("Line in Playback Switch", 0,
 			MASK_ADDR_BURGUNDY_OUTPUTSELECTS, 2, 18, 1),
-/*	BURGUNDY_SWITCH_B("Line in Boost Capture Switch", 0,
- *		MASK_ADDR_BURGUNDY_INPBOOST, 0x40, 0x80, 1) */
+ 
 };
 static const struct snd_kcontrol_new snd_pmac_burgundy_master_sw_imac =
 BURGUNDY_SWITCH_B("Master Playback Switch", 0,
@@ -558,9 +532,7 @@ BURGUNDY_SWITCH_B("Headphone Playback Switch", 0,
 
 
 #ifdef PMAC_SUPPORT_AUTOMUTE
-/*
- * auto-mute stuffs
- */
+ 
 static int snd_pmac_burgundy_detect_headphone(struct snd_pmac *chip)
 {
 	return (in_le32(&chip->awacs->codec_stat) & chip->hp_stat_mask) ? 1 : 0;
@@ -599,18 +571,16 @@ static void snd_pmac_burgundy_update_automute(struct snd_pmac *chip, int do_noti
 		}
 	}
 }
-#endif /* PMAC_SUPPORT_AUTOMUTE */
+#endif  
 
 
-/*
- * initialize burgundy
- */
+ 
 int snd_pmac_burgundy_init(struct snd_pmac *chip)
 {
 	int imac = of_machine_is_compatible("iMac");
 	int i, err;
 
-	/* Checks to see the chip is alive and kicking */
+	 
 	if ((in_le32(&chip->awacs->codec_ctrl) & MASK_ERRCODE) == 0xf0000) {
 		printk(KERN_WARNING "pmac burgundy: disabled by MacOS :-(\n");
 		return 1;
@@ -654,7 +624,7 @@ int snd_pmac_burgundy_init(struct snd_pmac *chip)
 			   DEF_BURGUNDY_VOLMIC);
 
 	if (chip->hp_stat_mask == 0) {
-		/* set headphone-jack detection bit */
+		 
 		if (imac)
 			chip->hp_stat_mask = BURGUNDY_HPDETECT_IMAC_UPPER
 				| BURGUNDY_HPDETECT_IMAC_LOWER
@@ -662,9 +632,7 @@ int snd_pmac_burgundy_init(struct snd_pmac *chip)
 		else
 			chip->hp_stat_mask = BURGUNDY_HPDETECT_PMAC_BACK;
 	}
-	/*
-	 * build burgundy mixers
-	 */
+	 
 	strcpy(chip->card->mixername, "PowerMac Burgundy");
 
 	for (i = 0; i < ARRAY_SIZE(snd_pmac_burgundy_mixers); i++) {
@@ -713,7 +681,7 @@ int snd_pmac_burgundy_init(struct snd_pmac *chip)
 
 	chip->detect_headphone = snd_pmac_burgundy_detect_headphone;
 	chip->update_automute = snd_pmac_burgundy_update_automute;
-	snd_pmac_burgundy_update_automute(chip, 0); /* update the status only */
+	snd_pmac_burgundy_update_automute(chip, 0);  
 #endif
 
 	return 0;

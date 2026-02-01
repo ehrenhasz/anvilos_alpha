@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2019, Intel Corporation. */
+
+ 
 
 #include <net/xdp_sock_drv.h>
 #include "ice_base.h"
@@ -7,12 +7,7 @@
 #include "ice_dcb_lib.h"
 #include "ice_sriov.h"
 
-/**
- * __ice_vsi_get_qs_contig - Assign a contiguous chunk of queues to VSI
- * @qs_cfg: gathered variables needed for PF->VSI queues assignment
- *
- * Return 0 on success and -ENOMEM in case of no left space in PF queue bitmap
- */
+ 
 static int __ice_vsi_get_qs_contig(struct ice_qs_cfg *qs_cfg)
 {
 	unsigned int offset, i;
@@ -33,12 +28,7 @@ static int __ice_vsi_get_qs_contig(struct ice_qs_cfg *qs_cfg)
 	return 0;
 }
 
-/**
- * __ice_vsi_get_qs_sc - Assign a scattered queues from PF to VSI
- * @qs_cfg: gathered variables needed for pf->vsi queues assignment
- *
- * Return 0 on success and -ENOMEM in case of no left space in PF queue bitmap
- */
+ 
 static int __ice_vsi_get_qs_sc(struct ice_qs_cfg *qs_cfg)
 {
 	unsigned int i, index = 0;
@@ -65,17 +55,7 @@ err_scatter:
 	return -ENOMEM;
 }
 
-/**
- * ice_pf_rxq_wait - Wait for a PF's Rx queue to be enabled or disabled
- * @pf: the PF being configured
- * @pf_q: the PF queue
- * @ena: enable or disable state of the queue
- *
- * This routine will wait for the given Rx queue of the PF to reach the
- * enabled or disabled state.
- * Returns -ETIMEDOUT in case of failing to reach the requested state after
- * multiple retries; else will return 0 in case of success.
- */
+ 
 static int ice_pf_rxq_wait(struct ice_pf *pf, int pf_q, bool ena)
 {
 	int i;
@@ -91,21 +71,14 @@ static int ice_pf_rxq_wait(struct ice_pf *pf, int pf_q, bool ena)
 	return -ETIMEDOUT;
 }
 
-/**
- * ice_vsi_alloc_q_vector - Allocate memory for a single interrupt vector
- * @vsi: the VSI being configured
- * @v_idx: index of the vector in the VSI struct
- *
- * We allocate one q_vector and set default value for ITR setting associated
- * with this q_vector. If allocation fails we return -ENOMEM.
- */
+ 
 static int ice_vsi_alloc_q_vector(struct ice_vsi *vsi, u16 v_idx)
 {
 	struct ice_pf *pf = vsi->back;
 	struct ice_q_vector *q_vector;
 	int err;
 
-	/* allocate q_vector */
+	 
 	q_vector = kzalloc(sizeof(*q_vector), GFP_KERNEL);
 	if (!q_vector)
 		return -ENOMEM;
@@ -146,19 +119,16 @@ static int ice_vsi_alloc_q_vector(struct ice_vsi *vsi, u16 v_idx)
 skip_alloc:
 	q_vector->reg_idx = q_vector->irq.index;
 
-	/* only set affinity_mask if the CPU is online */
+	 
 	if (cpu_online(v_idx))
 		cpumask_set_cpu(v_idx, &q_vector->affinity_mask);
 
-	/* This will not be called in the driver load path because the netdev
-	 * will not be created yet. All other cases with register the NAPI
-	 * handler here (i.e. resume, reset/rebuild, etc.)
-	 */
+	 
 	if (vsi->netdev)
 		netif_napi_add(vsi->netdev, &q_vector->napi, ice_napi_poll);
 
 out:
-	/* tie q_vector and VSI together */
+	 
 	vsi->q_vectors[v_idx] = q_vector;
 
 	return 0;
@@ -169,11 +139,7 @@ err_free_q_vector:
 	return err;
 }
 
-/**
- * ice_free_q_vector - Free memory allocated for a specific interrupt vector
- * @vsi: VSI having the memory freed
- * @v_idx: index of the vector to be freed
- */
+ 
 static void ice_free_q_vector(struct ice_vsi *vsi, int v_idx)
 {
 	struct ice_q_vector *q_vector;
@@ -194,15 +160,15 @@ static void ice_free_q_vector(struct ice_vsi *vsi, int v_idx)
 	ice_for_each_rx_ring(rx_ring, q_vector->rx)
 		rx_ring->q_vector = NULL;
 
-	/* only VSI with an associated netdev is set up with NAPI */
+	 
 	if (vsi->netdev)
 		netif_napi_del(&q_vector->napi);
 
-	/* release MSIX interrupt if q_vector had interrupt allocated */
+	 
 	if (q_vector->irq.index < 0)
 		goto free_q_vector;
 
-	/* only free last VF ctrl vsi interrupt */
+	 
 	if (vsi->type == ICE_VSI_CTRL && vsi->vf &&
 	    ice_get_vf_ctrl_vsi(pf, vsi))
 		goto free_q_vector;
@@ -214,15 +180,12 @@ free_q_vector:
 	vsi->q_vectors[v_idx] = NULL;
 }
 
-/**
- * ice_cfg_itr_gran - set the ITR granularity to 2 usecs if not already set
- * @hw: board specific structure
- */
+ 
 static void ice_cfg_itr_gran(struct ice_hw *hw)
 {
 	u32 regval = rd32(hw, GLINT_CTL);
 
-	/* no need to update global register if ITR gran is already set */
+	 
 	if (!(regval & GLINT_CTL_DIS_AUTOMASK_M) &&
 	    (((regval & GLINT_CTL_ITR_GRAN_200_M) >>
 	     GLINT_CTL_ITR_GRAN_200_S) == ICE_ITR_GRAN_US) &&
@@ -245,12 +208,7 @@ static void ice_cfg_itr_gran(struct ice_hw *hw)
 	wr32(hw, GLINT_CTL, regval);
 }
 
-/**
- * ice_calc_txq_handle - calculate the queue handle
- * @vsi: VSI that ring belongs to
- * @ring: ring to get the absolute queue index
- * @tc: traffic class number
- */
+ 
 static u16 ice_calc_txq_handle(struct ice_vsi *vsi, struct ice_tx_ring *ring, u8 tc)
 {
 	WARN_ONCE(ice_ring_is_xdp(ring) && tc, "XDP ring can't belong to TC other than 0\n");
@@ -258,24 +216,11 @@ static u16 ice_calc_txq_handle(struct ice_vsi *vsi, struct ice_tx_ring *ring, u8
 	if (ring->ch)
 		return ring->q_index - ring->ch->base_q;
 
-	/* Idea here for calculation is that we subtract the number of queue
-	 * count from TC that ring belongs to from it's absolute queue index
-	 * and as a result we get the queue's index within TC.
-	 */
+	 
 	return ring->q_index - vsi->tc_cfg.tc_info[tc].qoffset;
 }
 
-/**
- * ice_eswitch_calc_txq_handle
- * @ring: pointer to ring which unique index is needed
- *
- * To correctly work with many netdevs ring->q_index of Tx rings on switchdev
- * VSI can repeat. Hardware ring setup requires unique q_index. Calculate it
- * here by finding index in vsi->tx_rings of this ring.
- *
- * Return ICE_INVAL_Q_INDEX when index wasn't found. Should never happen,
- * because VSI is get from ring->vsi, so it has to be present in this VSI.
- */
+ 
 static u16 ice_eswitch_calc_txq_handle(struct ice_tx_ring *ring)
 {
 	struct ice_vsi *vsi = ring->vsi;
@@ -289,19 +234,13 @@ static u16 ice_eswitch_calc_txq_handle(struct ice_tx_ring *ring)
 	return ICE_INVAL_Q_INDEX;
 }
 
-/**
- * ice_cfg_xps_tx_ring - Configure XPS for a Tx ring
- * @ring: The Tx ring to configure
- *
- * This enables/disables XPS for a given Tx descriptor ring
- * based on the TCs enabled for the VSI that ring belongs to.
- */
+ 
 static void ice_cfg_xps_tx_ring(struct ice_tx_ring *ring)
 {
 	if (!ring->q_vector || !ring->netdev)
 		return;
 
-	/* We only initialize XPS once, so as not to overwrite user settings */
+	 
 	if (test_and_set_bit(ICE_TX_XPS_INIT_DONE, ring->xps_state))
 		return;
 
@@ -309,14 +248,7 @@ static void ice_cfg_xps_tx_ring(struct ice_tx_ring *ring)
 			    ring->q_index);
 }
 
-/**
- * ice_setup_tx_ctx - setup a struct ice_tlan_ctx instance
- * @ring: The Tx ring to configure
- * @tlan_ctx: Pointer to the Tx LAN queue context structure to be initialized
- * @pf_q: queue index in the PF space
- *
- * Configure the Tx descriptor ring in TLAN context.
- */
+ 
 static void
 ice_setup_tx_ctx(struct ice_tx_ring *ring, struct ice_tlan_ctx *tlan_ctx, u16 pf_q)
 {
@@ -327,20 +259,15 @@ ice_setup_tx_ctx(struct ice_tx_ring *ring, struct ice_tlan_ctx *tlan_ctx, u16 pf
 
 	tlan_ctx->port_num = vsi->port_info->lport;
 
-	/* Transmit Queue Length */
+	 
 	tlan_ctx->qlen = ring->count;
 
 	ice_set_cgd_num(tlan_ctx, ring->dcb_tc);
 
-	/* PF number */
+	 
 	tlan_ctx->pf_num = hw->pf_id;
 
-	/* queue belongs to a specific VSI type
-	 * VF / VM index should be programmed per vmvf_type setting:
-	 * for vmvf_type = VF, it is VF number between 0-256
-	 * for vmvf_type = VM, it is VM number between 0-767
-	 * for PF or EMP this field should be set to zero
-	 */
+	 
 	switch (vsi->type) {
 	case ICE_VSI_LB:
 	case ICE_VSI_CTRL:
@@ -351,7 +278,7 @@ ice_setup_tx_ctx(struct ice_tx_ring *ring, struct ice_tlan_ctx *tlan_ctx, u16 pf
 			tlan_ctx->vmvf_type = ICE_TLAN_CTX_VMVF_TYPE_PF;
 		break;
 	case ICE_VSI_VF:
-		/* Firmware expects vmvf_num to be absolute VF ID */
+		 
 		tlan_ctx->vmvf_num = hw->func_caps.vf_base_id + vsi->vf->vf_id;
 		tlan_ctx->vmvf_type = ICE_TLAN_CTX_VMVF_TYPE_VF;
 		break;
@@ -362,13 +289,13 @@ ice_setup_tx_ctx(struct ice_tx_ring *ring, struct ice_tlan_ctx *tlan_ctx, u16 pf
 		return;
 	}
 
-	/* make sure the context is associated with the right VSI */
+	 
 	if (ring->ch)
 		tlan_ctx->src_vsi = ring->ch->vsi_num;
 	else
 		tlan_ctx->src_vsi = ice_get_hw_vsi_num(hw, vsi->idx);
 
-	/* Restrict Tx timestamps to the PF VSI */
+	 
 	switch (vsi->type) {
 	case ICE_VSI_PF:
 		tlan_ctx->tsyn_ena = 1;
@@ -380,19 +307,11 @@ ice_setup_tx_ctx(struct ice_tx_ring *ring, struct ice_tlan_ctx *tlan_ctx, u16 pf
 	tlan_ctx->tso_ena = ICE_TX_LEGACY;
 	tlan_ctx->tso_qnum = pf_q;
 
-	/* Legacy or Advanced Host Interface:
-	 * 0: Advanced Host Interface
-	 * 1: Legacy Host Interface
-	 */
+	 
 	tlan_ctx->legacy_int = ICE_TX_LEGACY;
 }
 
-/**
- * ice_rx_offset - Return expected offset into page to access data
- * @rx_ring: Ring we are requesting offset of
- *
- * Returns the offset value for ring into the data buffer.
- */
+ 
 static unsigned int ice_rx_offset(struct ice_rx_ring *rx_ring)
 {
 	if (ice_ring_uses_build_skb(rx_ring))
@@ -400,12 +319,7 @@ static unsigned int ice_rx_offset(struct ice_rx_ring *rx_ring)
 	return 0;
 }
 
-/**
- * ice_setup_rx_ctx - Configure a receive ring context
- * @ring: The Rx ring to configure
- *
- * Configure the Rx descriptor ring in RLAN context.
- */
+ 
 static int ice_setup_rx_ctx(struct ice_rx_ring *ring)
 {
 	struct ice_vsi *vsi = ring->vsi;
@@ -417,42 +331,28 @@ static int ice_setup_rx_ctx(struct ice_rx_ring *ring)
 
 	hw = &vsi->back->hw;
 
-	/* what is Rx queue number in global space of 2K Rx queues */
+	 
 	pf_q = vsi->rxq_map[ring->q_index];
 
-	/* clear the context structure first */
+	 
 	memset(&rlan_ctx, 0, sizeof(rlan_ctx));
 
-	/* Receive Queue Base Address.
-	 * Indicates the starting address of the descriptor queue defined in
-	 * 128 Byte units.
-	 */
+	 
 	rlan_ctx.base = ring->dma >> ICE_RLAN_BASE_S;
 
 	rlan_ctx.qlen = ring->count;
 
-	/* Receive Packet Data Buffer Size.
-	 * The Packet Data Buffer Size is defined in 128 byte units.
-	 */
+	 
 	rlan_ctx.dbuf = DIV_ROUND_UP(ring->rx_buf_len,
 				     BIT_ULL(ICE_RLAN_CTX_DBUF_S));
 
-	/* use 32 byte descriptors */
+	 
 	rlan_ctx.dsize = 1;
 
-	/* Strip the Ethernet CRC bytes before the packet is posted to host
-	 * memory.
-	 */
+	 
 	rlan_ctx.crcstrip = !(ring->flags & ICE_RX_FLAGS_CRC_STRIP_DIS);
 
-	/* L2TSEL flag defines the reported L2 Tags in the receive descriptor
-	 * and it needs to remain 1 for non-DVM capable configurations to not
-	 * break backward compatibility for VF drivers. Setting this field to 0
-	 * will cause the single/outer VLAN tag to be stripped to the L2TAG2_2ND
-	 * field in the Rx descriptor. Setting it to 1 allows the VLAN tag to
-	 * be stripped in L2TAG1 of the Rx descriptor, which is where VFs will
-	 * check for the tag
-	 */
+	 
 	if (ice_is_dvm_ena(hw))
 		if (vsi->type == ICE_VSI_VF &&
 		    ice_vf_is_port_vlan_ena(vsi->vf))
@@ -466,34 +366,24 @@ static int ice_setup_rx_ctx(struct ice_rx_ring *ring)
 	rlan_ctx.hsplit_0 = ICE_RLAN_RX_HSPLIT_0_NO_SPLIT;
 	rlan_ctx.hsplit_1 = ICE_RLAN_RX_HSPLIT_1_NO_SPLIT;
 
-	/* This controls whether VLAN is stripped from inner headers
-	 * The VLAN in the inner L2 header is stripped to the receive
-	 * descriptor if enabled by this flag.
-	 */
+	 
 	rlan_ctx.showiv = 0;
 
-	/* Max packet size for this queue - must not be set to a larger value
-	 * than 5 x DBUF
-	 */
+	 
 	rlan_ctx.rxmax = min_t(u32, vsi->max_frame,
 			       ICE_MAX_CHAINED_RX_BUFS * ring->rx_buf_len);
 
-	/* Rx queue threshold in units of 64 */
+	 
 	rlan_ctx.lrxqthresh = 1;
 
-	/* Enable Flexible Descriptors in the queue context which
-	 * allows this driver to select a specific receive descriptor format
-	 * increasing context priority to pick up profile ID; default is 0x01;
-	 * setting to 0x03 to ensure profile is programming if prev context is
-	 * of same priority
-	 */
+	 
 	if (vsi->type != ICE_VSI_VF)
 		ice_write_qrxflxp_cntxt(hw, pf_q, rxdid, 0x3, true);
 	else
 		ice_write_qrxflxp_cntxt(hw, pf_q, ICE_RXDID_LEGACY_1, 0x3,
 					false);
 
-	/* Absolute queue number out of 2K needs to be passed */
+	 
 	err = ice_write_rxq_ctx(hw, &rlan_ctx, pf_q);
 	if (err) {
 		dev_err(ice_pf_to_dev(vsi->back), "Failed to set LAN Rx queue context for absolute Rx queue %d error: %d\n",
@@ -504,7 +394,7 @@ static int ice_setup_rx_ctx(struct ice_rx_ring *ring)
 	if (vsi->type == ICE_VSI_VF)
 		return 0;
 
-	/* configure Rx buffer alignment */
+	 
 	if (!vsi->netdev || test_bit(ICE_FLAG_LEGACY_RX, vsi->back->flags))
 		ice_clear_ring_build_skb_ena(ring);
 	else
@@ -512,19 +402,14 @@ static int ice_setup_rx_ctx(struct ice_rx_ring *ring)
 
 	ring->rx_offset = ice_rx_offset(ring);
 
-	/* init queue specific tail register */
+	 
 	ring->tail = hw->hw_addr + QRX_TAIL(pf_q);
 	writel(0, ring->tail);
 
 	return 0;
 }
 
-/**
- * ice_vsi_cfg_rxq - Configure an Rx queue
- * @ring: the ring being configured
- *
- * Return 0 on success and a negative value on error.
- */
+ 
 int ice_vsi_cfg_rxq(struct ice_rx_ring *ring)
 {
 	struct device *dev = ice_pf_to_dev(ring->vsi->back);
@@ -535,7 +420,7 @@ int ice_vsi_cfg_rxq(struct ice_rx_ring *ring)
 
 	if (ring->vsi->type == ICE_VSI_PF) {
 		if (!xdp_rxq_info_is_reg(&ring->xdp_rxq))
-			/* coverity[check_return] */
+			 
 			__xdp_rxq_info_reg(&ring->xdp_rxq, ring->netdev,
 					   ring->q_index,
 					   ring->q_vector->napi.napi_id,
@@ -558,7 +443,7 @@ int ice_vsi_cfg_rxq(struct ice_rx_ring *ring)
 				 ring->q_index);
 		} else {
 			if (!xdp_rxq_info_is_reg(&ring->xdp_rxq))
-				/* coverity[check_return] */
+				 
 				__xdp_rxq_info_reg(&ring->xdp_rxq,
 						   ring->netdev,
 						   ring->q_index,
@@ -609,22 +494,14 @@ int ice_vsi_cfg_rxq(struct ice_rx_ring *ring)
 	return 0;
 }
 
-/**
- * __ice_vsi_get_qs - helper function for assigning queues from PF to VSI
- * @qs_cfg: gathered variables needed for pf->vsi queues assignment
- *
- * This function first tries to find contiguous space. If it is not successful,
- * it tries with the scatter approach.
- *
- * Return 0 on success and -ENOMEM in case of no left space in PF queue bitmap
- */
+ 
 int __ice_vsi_get_qs(struct ice_qs_cfg *qs_cfg)
 {
 	int ret = 0;
 
 	ret = __ice_vsi_get_qs_contig(qs_cfg);
 	if (ret) {
-		/* contig failed, so try with scatter approach */
+		 
 		qs_cfg->mapping_mode = ICE_VSI_MAP_SCATTER;
 		qs_cfg->q_count = min_t(unsigned int, qs_cfg->q_count,
 					qs_cfg->scatter_count);
@@ -633,15 +510,7 @@ int __ice_vsi_get_qs(struct ice_qs_cfg *qs_cfg)
 	return ret;
 }
 
-/**
- * ice_vsi_ctrl_one_rx_ring - start/stop VSI's Rx ring with no busy wait
- * @vsi: the VSI being configured
- * @ena: start or stop the Rx ring
- * @rxq_idx: 0-based Rx queue index for the VSI passed in
- * @wait: wait or don't wait for configuration to finish in hardware
- *
- * Return 0 on success and negative on error.
- */
+ 
 int
 ice_vsi_ctrl_one_rx_ring(struct ice_vsi *vsi, bool ena, u16 rxq_idx, bool wait)
 {
@@ -652,11 +521,11 @@ ice_vsi_ctrl_one_rx_ring(struct ice_vsi *vsi, bool ena, u16 rxq_idx, bool wait)
 
 	rx_reg = rd32(hw, QRX_CTRL(pf_q));
 
-	/* Skip if the queue is already in the requested state */
+	 
 	if (ena == !!(rx_reg & QRX_CTRL_QENA_STAT_M))
 		return 0;
 
-	/* turn on/off the queue */
+	 
 	if (ena)
 		rx_reg |= QRX_CTRL_QENA_REQ_M;
 	else
@@ -670,17 +539,7 @@ ice_vsi_ctrl_one_rx_ring(struct ice_vsi *vsi, bool ena, u16 rxq_idx, bool wait)
 	return ice_pf_rxq_wait(pf, pf_q, ena);
 }
 
-/**
- * ice_vsi_wait_one_rx_ring - wait for a VSI's Rx ring to be stopped/started
- * @vsi: the VSI being configured
- * @ena: true/false to verify Rx ring has been enabled/disabled respectively
- * @rxq_idx: 0-based Rx queue index for the VSI passed in
- *
- * This routine will wait for the given Rx queue of the VSI to reach the
- * enabled or disabled state. Returns -ETIMEDOUT in case of failing to reach
- * the requested state after multiple retries; else will return 0 in case of
- * success.
- */
+ 
 int ice_vsi_wait_one_rx_ring(struct ice_vsi *vsi, bool ena, u16 rxq_idx)
 {
 	int pf_q = vsi->rxq_map[rxq_idx];
@@ -689,13 +548,7 @@ int ice_vsi_wait_one_rx_ring(struct ice_vsi *vsi, bool ena, u16 rxq_idx)
 	return ice_pf_rxq_wait(pf, pf_q, ena);
 }
 
-/**
- * ice_vsi_alloc_q_vectors - Allocate memory for interrupt vectors
- * @vsi: the VSI being configured
- *
- * We allocate one q_vector per queue interrupt. If allocation fails we
- * return -ENOMEM.
- */
+ 
 int ice_vsi_alloc_q_vectors(struct ice_vsi *vsi)
 {
 	struct device *dev = ice_pf_to_dev(vsi->back);
@@ -725,21 +578,14 @@ err_out:
 	return err;
 }
 
-/**
- * ice_vsi_map_rings_to_vectors - Map VSI rings to interrupt vectors
- * @vsi: the VSI being configured
- *
- * This function maps descriptor rings to the queue-specific vectors allotted
- * through the MSI-X enabling code. On a constrained vector budget, we map Tx
- * and Rx rings to the vector as "efficiently" as possible.
- */
+ 
 void ice_vsi_map_rings_to_vectors(struct ice_vsi *vsi)
 {
 	int q_vectors = vsi->num_q_vectors;
 	u16 tx_rings_rem, rx_rings_rem;
 	int v_id;
 
-	/* initially assigning remaining rings count to VSIs num queue value */
+	 
 	tx_rings_rem = vsi->num_txq;
 	rx_rings_rem = vsi->num_rxq;
 
@@ -748,7 +594,7 @@ void ice_vsi_map_rings_to_vectors(struct ice_vsi *vsi)
 		u8 tx_rings_per_v, rx_rings_per_v;
 		u16 q_id, q_base;
 
-		/* Tx rings mapping to vector */
+		 
 		tx_rings_per_v = (u8)DIV_ROUND_UP(tx_rings_rem,
 						  q_vectors - v_id);
 		q_vector->num_ring_tx = tx_rings_per_v;
@@ -765,7 +611,7 @@ void ice_vsi_map_rings_to_vectors(struct ice_vsi *vsi)
 		}
 		tx_rings_rem -= tx_rings_per_v;
 
-		/* Rx rings mapping to vector */
+		 
 		rx_rings_per_v = (u8)DIV_ROUND_UP(rx_rings_rem,
 						  q_vectors - v_id);
 		q_vector->num_ring_rx = rx_rings_per_v;
@@ -784,10 +630,7 @@ void ice_vsi_map_rings_to_vectors(struct ice_vsi *vsi)
 	}
 }
 
-/**
- * ice_vsi_free_q_vectors - Free memory allocated for interrupt vectors
- * @vsi: the VSI having memory freed
- */
+ 
 void ice_vsi_free_q_vectors(struct ice_vsi *vsi)
 {
 	int v_idx;
@@ -798,12 +641,7 @@ void ice_vsi_free_q_vectors(struct ice_vsi *vsi)
 	vsi->num_q_vectors = 0;
 }
 
-/**
- * ice_vsi_cfg_txq - Configure single Tx queue
- * @vsi: the VSI that queue belongs to
- * @ring: Tx ring to be configured
- * @qg_buf: queue group buffer
- */
+ 
 int
 ice_vsi_cfg_txq(struct ice_vsi *vsi, struct ice_tx_ring *ring,
 		struct ice_aqc_add_tx_qgrp *qg_buf)
@@ -818,19 +656,17 @@ ice_vsi_cfg_txq(struct ice_vsi *vsi, struct ice_tx_ring *ring,
 	u16 pf_q;
 	u8 tc;
 
-	/* Configure XPS */
+	 
 	ice_cfg_xps_tx_ring(ring);
 
 	pf_q = ring->reg_idx;
 	ice_setup_tx_ctx(ring, &tlan_ctx, pf_q);
-	/* copy context contents into the qg_buf */
+	 
 	qg_buf->txqs[0].txq_id = cpu_to_le16(pf_q);
 	ice_set_ctx(hw, (u8 *)&tlan_ctx, qg_buf->txqs[0].txq_ctx,
 		    ice_tlan_ctx_info);
 
-	/* init queue specific tail reg. It is referred as
-	 * transmit comm scheduler queue doorbell.
-	 */
+	 
 	ring->tail = hw->hw_addr + QTX_COMM_DBELL(pf_q);
 
 	if (IS_ENABLED(CONFIG_DCB))
@@ -838,9 +674,7 @@ ice_vsi_cfg_txq(struct ice_vsi *vsi, struct ice_tx_ring *ring,
 	else
 		tc = 0;
 
-	/* Add unique software queue handle of the Tx queue per
-	 * TC into the VSI Tx ring
-	 */
+	 
 	if (vsi->type == ICE_VSI_SWITCHDEV_CTRL) {
 		ring->q_handle = ice_eswitch_calc_txq_handle(ring);
 
@@ -864,10 +698,7 @@ ice_vsi_cfg_txq(struct ice_vsi *vsi, struct ice_tx_ring *ring,
 		return status;
 	}
 
-	/* Add Tx Queue TEID into the VSI Tx ring from the
-	 * response. This will complete configuring and
-	 * enabling the queue.
-	 */
+	 
 	txq = &qg_buf->txqs[0];
 	if (pf_q == le16_to_cpu(txq->txq_id))
 		ring->txq_teid = le32_to_cpu(txq->q_teid);
@@ -875,14 +706,7 @@ ice_vsi_cfg_txq(struct ice_vsi *vsi, struct ice_tx_ring *ring,
 	return 0;
 }
 
-/**
- * ice_cfg_itr - configure the initial interrupt throttle values
- * @hw: pointer to the HW structure
- * @q_vector: interrupt vector that's being configured
- *
- * Configure interrupt throttling values for the ring containers that are
- * associated with the interrupt vector passed in.
- */
+ 
 void ice_cfg_itr(struct ice_hw *hw, struct ice_q_vector *q_vector)
 {
 	ice_cfg_itr_gran(hw);
@@ -896,16 +720,7 @@ void ice_cfg_itr(struct ice_hw *hw, struct ice_q_vector *q_vector)
 	ice_write_intrl(q_vector, q_vector->intrl);
 }
 
-/**
- * ice_cfg_txq_interrupt - configure interrupt on Tx queue
- * @vsi: the VSI being configured
- * @txq: Tx queue being mapped to MSI-X vector
- * @msix_idx: MSI-X vector index within the function
- * @itr_idx: ITR index of the interrupt cause
- *
- * Configure interrupt on Tx queue by associating Tx queue to MSI-X vector
- * within the function space.
- */
+ 
 void
 ice_cfg_txq_interrupt(struct ice_vsi *vsi, u16 txq, u16 msix_idx, u16 itr_idx)
 {
@@ -928,16 +743,7 @@ ice_cfg_txq_interrupt(struct ice_vsi *vsi, u16 txq, u16 msix_idx, u16 itr_idx)
 	ice_flush(hw);
 }
 
-/**
- * ice_cfg_rxq_interrupt - configure interrupt on Rx queue
- * @vsi: the VSI being configured
- * @rxq: Rx queue being mapped to MSI-X vector
- * @msix_idx: MSI-X vector index within the function
- * @itr_idx: ITR index of the interrupt cause
- *
- * Configure interrupt on Rx queue by associating Rx queue to MSI-X vector
- * within the function space.
- */
+ 
 void
 ice_cfg_rxq_interrupt(struct ice_vsi *vsi, u16 rxq, u16 msix_idx, u16 itr_idx)
 {
@@ -955,11 +761,7 @@ ice_cfg_rxq_interrupt(struct ice_vsi *vsi, u16 rxq, u16 msix_idx, u16 itr_idx)
 	ice_flush(hw);
 }
 
-/**
- * ice_trigger_sw_intr - trigger a software interrupt
- * @hw: pointer to the HW structure
- * @q_vector: interrupt vector to trigger the software interrupt for
- */
+ 
 void ice_trigger_sw_intr(struct ice_hw *hw, struct ice_q_vector *q_vector)
 {
 	wr32(hw, GLINT_DYN_CTL(q_vector->reg_idx),
@@ -968,14 +770,7 @@ void ice_trigger_sw_intr(struct ice_hw *hw, struct ice_q_vector *q_vector)
 	     GLINT_DYN_CTL_INTENA_M);
 }
 
-/**
- * ice_vsi_stop_tx_ring - Disable single Tx ring
- * @vsi: the VSI being configured
- * @rst_src: reset source
- * @rel_vmvf_num: Relative ID of VF/VM
- * @ring: Tx ring to be stopped
- * @txq_meta: Meta data of Tx ring to be stopped
- */
+ 
 int
 ice_vsi_stop_tx_ring(struct ice_vsi *vsi, enum ice_disq_rst_src rst_src,
 		     u16 rel_vmvf_num, struct ice_tx_ring *ring,
@@ -987,17 +782,15 @@ ice_vsi_stop_tx_ring(struct ice_vsi *vsi, enum ice_disq_rst_src rst_src,
 	int status;
 	u32 val;
 
-	/* clear cause_ena bit for disabled queues */
+	 
 	val = rd32(hw, QINT_TQCTL(ring->reg_idx));
 	val &= ~QINT_TQCTL_CAUSE_ENA_M;
 	wr32(hw, QINT_TQCTL(ring->reg_idx), val);
 
-	/* software is expected to wait for 100 ns */
+	 
 	ndelay(100);
 
-	/* trigger a software interrupt for the vector
-	 * associated to the queue to schedule NAPI handler
-	 */
+	 
 	q_vector = ring->q_vector;
 	if (q_vector && !(vsi->vf && ice_is_vf_disabled(vsi->vf)))
 		ice_trigger_sw_intr(hw, q_vector);
@@ -1007,11 +800,7 @@ ice_vsi_stop_tx_ring(struct ice_vsi *vsi, enum ice_disq_rst_src rst_src,
 				 &txq_meta->q_id, &txq_meta->q_teid, rst_src,
 				 rel_vmvf_num, NULL);
 
-	/* if the disable queue command was exercised during an
-	 * active reset flow, -EBUSY is returned.
-	 * This is not an error as the reset operation disables
-	 * queues at the hardware level anyway.
-	 */
+	 
 	if (status == -EBUSY) {
 		dev_dbg(ice_pf_to_dev(vsi->back), "Reset in progress. LAN Tx queues already disabled\n");
 	} else if (status == -ENOENT) {
@@ -1025,15 +814,7 @@ ice_vsi_stop_tx_ring(struct ice_vsi *vsi, enum ice_disq_rst_src rst_src,
 	return 0;
 }
 
-/**
- * ice_fill_txq_meta - Prepare the Tx queue's meta data
- * @vsi: VSI that ring belongs to
- * @ring: ring that txq_meta will be based on
- * @txq_meta: a helper struct that wraps Tx queue's information
- *
- * Set up a helper struct that will contain all the necessary fields that
- * are needed for stopping Tx queue
- */
+ 
 void
 ice_fill_txq_meta(struct ice_vsi *vsi, struct ice_tx_ring *ring,
 		  struct ice_txq_meta *txq_meta)

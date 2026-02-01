@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * dwc3-omap.c - OMAP Specific Glue layer
- *
- * Copyright (C) 2010-2011 Texas Instruments Incorporated - https://www.ti.com
- *
- * Authors: Felipe Balbi <balbi@ti.com>,
- *	    Sebastian Andrzej Siewior <bigeasy@linutronix.de>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -25,10 +18,7 @@
 
 #include <linux/usb/otg.h>
 
-/*
- * All these registers belong to OMAP's Wrapper around the
- * DesignWare USB3 Core.
- */
+ 
 
 #define USBOTGSS_REVISION			0x0000
 #define USBOTGSS_SYSCONFIG			0x0010
@@ -69,16 +59,16 @@
 #define USBOTGSS_DEV_EBC_EN			0x0110
 #define USBOTGSS_DEBUG_OFFSET			0x0600
 
-/* SYSCONFIG REGISTER */
+ 
 #define USBOTGSS_SYSCONFIG_DMADISABLE		BIT(16)
 
-/* IRQ_EOI REGISTER */
+ 
 #define USBOTGSS_IRQ_EOI_LINE_NUMBER		BIT(0)
 
-/* IRQS0 BITS */
+ 
 #define USBOTGSS_IRQO_COREIRQ_ST		BIT(0)
 
-/* IRQMISC BITS */
+ 
 #define USBOTGSS_IRQMISC_DMADISABLECLR		BIT(17)
 #define USBOTGSS_IRQMISC_OEVT			BIT(16)
 #define USBOTGSS_IRQMISC_DRVVBUS_RISE		BIT(13)
@@ -90,13 +80,13 @@
 #define USBOTGSS_IRQMISC_DISCHRGVBUS_FALL		BIT(3)
 #define USBOTGSS_IRQMISC_IDPULLUP_FALL		BIT(0)
 
-/* UTMI_OTG_STATUS REGISTER */
+ 
 #define USBOTGSS_UTMI_OTG_STATUS_DRVVBUS	BIT(5)
 #define USBOTGSS_UTMI_OTG_STATUS_CHRGVBUS	BIT(4)
 #define USBOTGSS_UTMI_OTG_STATUS_DISCHRGVBUS	BIT(3)
 #define USBOTGSS_UTMI_OTG_STATUS_IDPULLUP	BIT(0)
 
-/* UTMI_OTG_CTRL REGISTER */
+ 
 #define USBOTGSS_UTMI_OTG_CTRL_SW_MODE		BIT(31)
 #define USBOTGSS_UTMI_OTG_CTRL_POWERPRESENT	BIT(9)
 #define USBOTGSS_UTMI_OTG_CTRL_TXBITSTUFFENABLE BIT(8)
@@ -271,7 +261,7 @@ static irqreturn_t dwc3_omap_interrupt(int irq, void *_omap)
 
 	if (dwc3_omap_read_irqmisc_status(omap) ||
 	    dwc3_omap_read_irq0_status(omap)) {
-		/* mask irqs */
+		 
 		dwc3_omap_disable_irqs(omap);
 		return IRQ_WAKE_THREAD;
 	}
@@ -284,14 +274,14 @@ static irqreturn_t dwc3_omap_interrupt_thread(int irq, void *_omap)
 	struct dwc3_omap	*omap = _omap;
 	u32			reg;
 
-	/* clear irq status flags */
+	 
 	reg = dwc3_omap_read_irqmisc_status(omap);
 	dwc3_omap_write_irqmisc_status(omap, reg);
 
 	reg = dwc3_omap_read_irq0_status(omap);
 	dwc3_omap_write_irq0_status(omap, reg);
 
-	/* unmask irqs */
+	 
 	dwc3_omap_enable_irqs(omap);
 
 	return IRQ_HANDLED;
@@ -301,7 +291,7 @@ static void dwc3_omap_enable_irqs(struct dwc3_omap *omap)
 {
 	u32			reg;
 
-	/* enable all IRQs */
+	 
 	reg = USBOTGSS_IRQO_COREIRQ_ST;
 	dwc3_omap_write_irq0_set(omap, reg);
 
@@ -322,7 +312,7 @@ static void dwc3_omap_disable_irqs(struct dwc3_omap *omap)
 {
 	u32			reg;
 
-	/* disable all IRQs */
+	 
 	reg = USBOTGSS_IRQO_COREIRQ_ST;
 	dwc3_omap_write_irq0_clr(omap, reg);
 
@@ -369,14 +359,7 @@ static void dwc3_omap_map_offset(struct dwc3_omap *omap)
 {
 	struct device_node	*node = omap->dev->of_node;
 
-	/*
-	 * Differentiate between OMAP5 and AM437x.
-	 *
-	 * For OMAP5(ES2.0) and AM437x wrapper revision is same, even
-	 * though there are changes in wrapper register offsets.
-	 *
-	 * Using dt compatible to differentiate AM437x.
-	 */
+	 
 	if (of_device_is_compatible(node, "ti,am437x-dwc3")) {
 		omap->irq_eoi_offset = USBOTGSS_EOI_OFFSET;
 		omap->irq0_offset = USBOTGSS_IRQ0_OFFSET;
@@ -605,7 +588,7 @@ static const struct dev_pm_ops dwc3_omap_dev_pm_ops = {
 #define DEV_PM_OPS	(&dwc3_omap_dev_pm_ops)
 #else
 #define DEV_PM_OPS	NULL
-#endif /* CONFIG_PM_SLEEP */
+#endif  
 
 static struct platform_driver dwc3_omap_driver = {
 	.probe		= dwc3_omap_probe,

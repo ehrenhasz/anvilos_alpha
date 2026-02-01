@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/ceph/ceph_debug.h>
 #include <linux/ceph/pagelist.h>
 
@@ -26,13 +26,10 @@ static bool ceph_is_valid_xattr(const char *name)
 	       !strncmp(name, XATTR_USER_PREFIX, XATTR_USER_PREFIX_LEN);
 }
 
-/*
- * These define virtual xattrs exposing the recursive directory
- * statistics and layout metadata.
- */
+ 
 struct ceph_vxattr {
 	char *name;
-	size_t name_size;	/* strlen(name) + 1 (for '\0') */
+	size_t name_size;	 
 	ssize_t (*getxattr_cb)(struct ceph_inode_info *ci, char *val,
 			       size_t size);
 	bool (*exists_cb)(struct ceph_inode_info *ci);
@@ -44,7 +41,7 @@ struct ceph_vxattr {
 #define VXATTR_FLAG_RSTAT		(1<<2)
 #define VXATTR_FLAG_DIRSTAT		(1<<3)
 
-/* layouts */
+ 
 
 static bool ceph_vxattrcb_layout_exists(struct ceph_inode_info *ci)
 {
@@ -111,24 +108,19 @@ static ssize_t ceph_vxattrcb_layout(struct ceph_inode_info *ci, char *val,
 	return ret;
 }
 
-/*
- * The convention with strings in xattrs is that they should not be NULL
- * terminated, since we're returning the length with them. snprintf always
- * NULL terminates however, so call it on a temporary buffer and then memcpy
- * the result into place.
- */
+ 
 static __printf(3, 4)
 int ceph_fmt_xattr(char *val, size_t size, const char *fmt, ...)
 {
 	int ret;
 	va_list args;
-	char buf[96]; /* NB: reevaluate size if new vxattrs are added */
+	char buf[96];  
 
 	va_start(args, fmt);
 	ret = vsnprintf(buf, size ? sizeof(buf) : 0, fmt, args);
 	va_end(args);
 
-	/* Sanity check */
+	 
 	if (size && ret + 1 > sizeof(buf)) {
 		WARN_ONCE(true, "Returned length too big (%d)", ret);
 		return -E2BIG;
@@ -194,7 +186,7 @@ static ssize_t ceph_vxattrcb_layout_pool_namespace(struct ceph_inode_info *ci,
 	return ret;
 }
 
-/* directories */
+ 
 
 static ssize_t ceph_vxattrcb_dir_entries(struct ceph_inode_info *ci, char *val,
 					 size_t size)
@@ -252,7 +244,7 @@ static ssize_t ceph_vxattrcb_dir_rctime(struct ceph_inode_info *ci, char *val,
 				ci->i_rctime.tv_nsec);
 }
 
-/* dir pin */
+ 
 static bool ceph_vxattrcb_dir_pin_exists(struct ceph_inode_info *ci)
 {
 	return ci->i_dir_pin != -ENODATA;
@@ -264,7 +256,7 @@ static ssize_t ceph_vxattrcb_dir_pin(struct ceph_inode_info *ci, char *val,
 	return ceph_fmt_xattr(val, size, "%d", (int)ci->i_dir_pin);
 }
 
-/* quotas */
+ 
 static bool ceph_vxattrcb_quota_exists(struct ceph_inode_info *ci)
 {
 	bool ret = false;
@@ -297,7 +289,7 @@ static ssize_t ceph_vxattrcb_quota_max_files(struct ceph_inode_info *ci,
 	return ceph_fmt_xattr(val, size, "%llu", ci->i_max_files);
 }
 
-/* snapshots */
+ 
 static bool ceph_vxattrcb_snap_btime_exists(struct ceph_inode_info *ci)
 {
 	return (ci->i_snap_btime.tv_sec != 0 || ci->i_snap_btime.tv_nsec != 0);
@@ -368,7 +360,7 @@ static ssize_t ceph_vxattrcb_fscrypt_auth(struct ceph_inode_info *ci,
 	}
 	return ci->fscrypt_auth_len;
 }
-#endif /* CONFIG_FS_ENCRYPTION */
+#endif  
 
 #define CEPH_XATTR_NAME(_type, _name)	XATTR_CEPH_PREFIX #_type "." #_name
 #define CEPH_XATTR_NAME2(_type, _name, _name2)	\
@@ -461,10 +453,10 @@ static struct ceph_vxattr ceph_dir_vxattrs[] = {
 		.exists_cb = NULL,
 		.flags = VXATTR_FLAG_HIDDEN,
 	},
-	{ .name = NULL, 0 }	/* Required table terminator */
+	{ .name = NULL, 0 }	 
 };
 
-/* files */
+ 
 
 static struct ceph_vxattr ceph_file_vxattrs[] = {
 	{
@@ -493,7 +485,7 @@ static struct ceph_vxattr ceph_file_vxattrs[] = {
 		.exists_cb = NULL,
 		.flags = VXATTR_FLAG_HIDDEN,
 	},
-	{ .name = NULL, 0 }	/* Required table terminator */
+	{ .name = NULL, 0 }	 
 };
 
 static struct ceph_vxattr ceph_common_vxattrs[] = {
@@ -526,8 +518,8 @@ static struct ceph_vxattr ceph_common_vxattrs[] = {
 		.exists_cb = ceph_vxattrcb_fscrypt_auth_exists,
 		.flags = VXATTR_FLAG_READONLY,
 	},
-#endif /* CONFIG_FS_ENCRYPTION */
-	{ .name = NULL, 0 }	/* Required table terminator */
+#endif  
+	{ .name = NULL, 0 }	 
 };
 
 static struct ceph_vxattr *ceph_inode_vxattrs(struct inode *inode)
@@ -802,12 +794,12 @@ static int __build_xattrs(struct inode *inode)
 	     ci->i_xattrs.blob ? (int)ci->i_xattrs.blob->vec.iov_len : 0);
 
 	if (ci->i_xattrs.index_version >= ci->i_xattrs.version)
-		return 0; /* already built */
+		return 0;  
 
 	__ceph_destroy_xattrs(ci);
 
 start:
-	/* updated internal xattr rb tree */
+	 
 	if (ci->i_xattrs.blob && ci->i_xattrs.blob->vec.iov_len > 4) {
 		p = ci->i_xattrs.blob->vec.iov_base;
 		end = p + ci->i_xattrs.blob->vec.iov_len;
@@ -830,7 +822,7 @@ start:
 
 		spin_lock(&ci->i_ceph_lock);
 		if (ci->i_xattrs.version != xattr_version) {
-			/* lost a race, retry */
+			 
 			for (i = 0; i < numattr; i++)
 				kfree(xattrs[i]);
 			kfree(xattrs);
@@ -874,10 +866,7 @@ bad:
 static int __get_required_blob_size(struct ceph_inode_info *ci, int name_size,
 				    int val_size)
 {
-	/*
-	 * 4 bytes for the length, and additional 4 bytes per each xattr name,
-	 * 4 bytes per each value
-	 */
+	 
 	int size = 4 + ci->i_xattrs.count*(4 + 4) +
 			     ci->i_xattrs.names_size +
 			     ci->i_xattrs.vals_size;
@@ -891,12 +880,7 @@ static int __get_required_blob_size(struct ceph_inode_info *ci, int name_size,
 	return size;
 }
 
-/*
- * If there are dirty xattrs, reencode xattrs into the prealloc_blob
- * and swap into place.  It returns the old i_xattrs.blob (or NULL) so
- * that it can be freed by the caller as the i_ceph_lock is likely to be
- * held.
- */
+ 
 struct ceph_buffer *__ceph_build_xattrs_blob(struct ceph_inode_info *ci)
 {
 	struct rb_node *p;
@@ -927,7 +911,7 @@ struct ceph_buffer *__ceph_build_xattrs_blob(struct ceph_inode_info *ci)
 			p = rb_next(p);
 		}
 
-		/* adjust buffer len; it may be larger than we need */
+		 
 		ci->i_xattrs.prealloc_blob->vec.iov_len =
 			dest - ci->i_xattrs.prealloc_blob->vec.iov_base;
 
@@ -971,7 +955,7 @@ ssize_t __ceph_getxattr(struct inode *inode, const char *name, void *value,
 	if (strncmp(name, XATTR_CEPH_PREFIX, XATTR_CEPH_PREFIX_LEN))
 		goto handle_non_vxattrs;
 
-	/* let's see if a virtual xattr was requested */
+	 
 	vxattr = ceph_match_vxattr(inode, name);
 	if (vxattr) {
 		int mask = 0;
@@ -991,7 +975,7 @@ ssize_t __ceph_getxattr(struct inode *inode, const char *name, void *value,
 		return err;
 	} else {
 		err = ceph_do_getvxattr(inode, name, value, size);
-		/* this would happen with a new client and old server combo */
+		 
 		if (err == -EOPNOTSUPP)
 			err = -ENODATA;
 		return err;
@@ -1008,14 +992,14 @@ handle_non_vxattrs:
 	      __ceph_caps_issued_mask_metric(ci, CEPH_CAP_XATTR_SHARED, 1))) {
 		spin_unlock(&ci->i_ceph_lock);
 
-		/* security module gets xattr while filling trace */
+		 
 		if (current->journal_info) {
 			pr_warn_ratelimited("sync getxattr %p "
 					    "during filling trace\n", inode);
 			return -EBUSY;
 		}
 
-		/* get xattrs from mds (if we don't already have them) */
+		 
 		err = ceph_do_getattr(inode, CEPH_STAT_CAP_XATTR, true);
 		if (err)
 			return err;
@@ -1026,7 +1010,7 @@ handle_non_vxattrs:
 	if (err < 0)
 		goto out;
 
-	err = -ENODATA;  /* == ENOATTR */
+	err = -ENODATA;   
 	xattr = __get_xattr(ci, name);
 	if (!xattr)
 		goto out;
@@ -1075,7 +1059,7 @@ ssize_t ceph_listxattr(struct dentry *dentry, char *names, size_t size)
 	if (err < 0)
 		goto out;
 
-	/* add 1 byte for each xattr due to the null termination */
+	 
 	namelen = ci->i_xattrs.names_size + ci->i_xattrs.count;
 	if (!len_only) {
 		if (namelen > size) {
@@ -1104,7 +1088,7 @@ static int ceph_sync_setxattr(struct inode *inode, const char *name,
 	int err;
 
 	if (size > 0) {
-		/* copy value into pagelist */
+		 
 		pagelist = ceph_pagelist_alloc(GFP_NOFS);
 		if (!pagelist)
 			return -ENOMEM;
@@ -1121,7 +1105,7 @@ static int ceph_sync_setxattr(struct inode *inode, const char *name,
 
 	dout("setxattr value size: %zu\n", size);
 
-	/* do request */
+	 
 	req = ceph_mdsc_create_request(mdsc, op, USE_AUTH_MDS);
 	if (IS_ERR(req)) {
 		err = PTR_ERR(req);
@@ -1190,11 +1174,11 @@ int __ceph_setxattr(struct inode *inode, const char *name,
 			check_realm = true;
 	}
 
-	/* pass any unhandled ceph.* xattrs through to the MDS */
+	 
 	if (!strncmp(name, XATTR_CEPH_PREFIX, XATTR_CEPH_PREFIX_LEN))
 		goto do_sync_unlocked;
 
-	/* preallocate memory for xattr name, value, index node */
+	 
 	err = -ENOMEM;
 	newname = kmemdup(name, name_len + 1, GFP_NOFS);
 	if (!newname)
@@ -1245,13 +1229,13 @@ retry:
 		struct ceph_buffer *blob;
 
 		spin_unlock(&ci->i_ceph_lock);
-		ceph_buffer_put(old_blob); /* Shouldn't be required */
+		ceph_buffer_put(old_blob);  
 		dout(" pre-allocating new blob size=%d\n", required_blob_size);
 		blob = ceph_buffer_new(required_blob_size, GFP_NOFS);
 		if (!blob)
 			goto do_sync_unlocked;
 		spin_lock(&ci->i_ceph_lock);
-		/* prealloc_blob can't be released while holding i_ceph_lock */
+		 
 		if (ci->i_xattrs.prealloc_blob)
 			old_blob = ci->i_xattrs.prealloc_blob;
 		ci->i_xattrs.prealloc_blob = blob;
@@ -1283,7 +1267,7 @@ do_sync_unlocked:
 	if (lock_snap_rwsem)
 		up_read(&mdsc->snap_rwsem);
 
-	/* security module set xattr while filling trace */
+	 
 	if (current->journal_info) {
 		pr_warn_ratelimited("sync setxattr %p "
 				    "during filling trace\n", inode);
@@ -1291,7 +1275,7 @@ do_sync_unlocked:
 	} else {
 		err = ceph_sync_setxattr(inode, name, value, size, flags);
 		if (err >= 0 && check_realm) {
-			/* check if snaprealm was created for quota inode */
+			 
 			spin_lock(&ci->i_ceph_lock);
 			if ((ci->i_max_files || ci->i_max_bytes) &&
 			    !(ci->i_snap_realm &&
@@ -1329,7 +1313,7 @@ static int ceph_set_xattr_handler(const struct xattr_handler *handler,
 }
 
 static const struct xattr_handler ceph_other_xattr_handler = {
-	.prefix = "",  /* match any name => handlers called with full name */
+	.prefix = "",   
 	.get = ceph_get_xattr_handler,
 	.set = ceph_set_xattr_handler,
 };
@@ -1369,7 +1353,7 @@ int ceph_security_init_secctx(struct dentry *dentry, umode_t mode,
 					    &as_ctx->sec_ctxlen);
 	if (err < 0) {
 		WARN_ON_ONCE(err != -EOPNOTSUPP);
-		err = 0; /* do nothing */
+		err = 0;  
 		goto out;
 	}
 
@@ -1384,11 +1368,7 @@ int ceph_security_init_secctx(struct dentry *dentry, umode_t mode,
 		ceph_pagelist_encode_32(pagelist, 1);
 	}
 
-	/*
-	 * FIXME: Make security_dentry_init_security() generic. Currently
-	 * It only supports single security module and only selinux has
-	 * dentry_init_security hook.
-	 */
+	 
 	name_len = strlen(name);
 	err = ceph_pagelist_reserve(pagelist,
 				    4 * 2 + name_len + as_ctx->sec_ctxlen);
@@ -1396,7 +1376,7 @@ int ceph_security_init_secctx(struct dentry *dentry, umode_t mode,
 		goto out;
 
 	if (as_ctx->pagelist) {
-		/* update count of KV pairs */
+		 
 		BUG_ON(pagelist->length <= sizeof(__le32));
 		if (list_is_singular(&pagelist->head)) {
 			le32_add_cpu((__le32*)pagelist->mapped_tail, 1);
@@ -1423,8 +1403,8 @@ out:
 		ceph_pagelist_release(pagelist);
 	return err;
 }
-#endif /* CONFIG_CEPH_FS_SECURITY_LABEL */
-#endif /* CONFIG_SECURITY */
+#endif  
+#endif  
 
 void ceph_release_acl_sec_ctx(struct ceph_acl_sec_ctx *as_ctx)
 {
@@ -1442,10 +1422,7 @@ void ceph_release_acl_sec_ctx(struct ceph_acl_sec_ctx *as_ctx)
 		ceph_pagelist_release(as_ctx->pagelist);
 }
 
-/*
- * List of handlers for synthetic system.* attributes. Other
- * attributes are handled directly.
- */
+ 
 const struct xattr_handler *ceph_xattr_handlers[] = {
 	&ceph_other_xattr_handler,
 	NULL,

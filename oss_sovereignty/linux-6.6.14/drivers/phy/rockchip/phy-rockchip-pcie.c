@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Rockchip PCIe PHY driver
- *
- * Copyright (C) 2016 Shawn Lin <shawn.lin@rock-chips.com>
- * Copyright (C) 2016 ROCKCHIP, Inc.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -19,10 +14,7 @@
 #include <linux/regmap.h>
 #include <linux/reset.h>
 
-/*
- * The higher 16-bit of this register is used for write protection
- * only if BIT(x + 16) set to 1 the BIT(x) can be written.
- */
+ 
 #define HIWORD_UPDATE(val, mask, shift) \
 		((val) << (shift) | (mask) << ((shift) + 16))
 
@@ -187,11 +179,7 @@ static int rockchip_pcie_phy_power_on(struct phy *phy)
 				   PHY_LANE_IDLE_MASK,
 				   PHY_LANE_IDLE_A_SHIFT + inst->index));
 
-	/*
-	 * No documented timeout value for phy operation below,
-	 * so we make it large enough here. And we use loop-break
-	 * method which should not be harmful.
-	 */
+	 
 	timeout = jiffies + msecs_to_jiffies(1000);
 
 	err = -EINVAL;
@@ -387,7 +375,7 @@ static int rockchip_pcie_phy_probe(struct platform_device *pdev)
 		return PTR_ERR(rk_phy->clk_pciephy_ref);
 	}
 
-	/* parse #phy-cells to see if it's legacy PHY model */
+	 
 	if (of_property_read_u32(dev->of_node, "#phy-cells", &phy_num))
 		return -ENOENT;
 

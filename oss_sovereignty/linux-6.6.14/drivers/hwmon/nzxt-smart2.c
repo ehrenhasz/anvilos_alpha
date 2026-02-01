@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Reverse-engineered NZXT RGB & Fan Controller/Smart Device v2 driver.
- *
- * Copyright (c) 2021 Aleksandr Mezin
- */
+
+ 
 
 #include <linux/hid.h>
 #include <linux/hwmon.h>
@@ -16,16 +12,13 @@
 #include <asm/byteorder.h>
 #include <asm/unaligned.h>
 
-/*
- * The device has only 3 fan channels/connectors. But all HID reports have
- * space reserved for up to 8 channels.
- */
+ 
 #define FAN_CHANNELS 3
 #define FAN_CHANNELS_MAX 8
 
 #define UPDATE_INTERVAL_DEFAULT_MS 1000
 
-/* These strings match labels on the device exactly */
+ 
 static const char *const fan_label[] = {
 	"FAN 1",
 	"FAN 2",
@@ -61,77 +54,48 @@ enum {
 };
 
 struct unknown_static_data {
-	/*
-	 * Some configuration data? Stays the same after fan speed changes,
-	 * changes in fan configuration, reboots and driver reloads.
-	 *
-	 * The same data in multiple report types.
-	 *
-	 * Byte 12 seems to be the number of fan channels, but I am not sure.
-	 */
+	 
 	u8 unknown1[14];
 } __packed;
 
-/*
- * The device sends this input report in response to "detect fans" command:
- * a 2-byte output report { 0x60, 0x03 }.
- */
+ 
 struct fan_config_report {
-	/* report_id should be INPUT_REPORT_ID_FAN_CONFIG = 0x61 */
+	 
 	u8 report_id;
-	/* Always 0x03 */
+	 
 	u8 magic;
 	struct unknown_static_data unknown_data;
-	/* Fan type as detected by the device. See FAN_TYPE_* enum. */
+	 
 	u8 fan_type[FAN_CHANNELS_MAX];
 } __packed;
 
-/*
- * The device sends these reports at a fixed interval (update interval) -
- * one report with type = FAN_STATUS_REPORT_SPEED, and one report with type =
- * FAN_STATUS_REPORT_VOLTAGE per update interval.
- */
+ 
 struct fan_status_report {
-	/* report_id should be INPUT_REPORT_ID_STATUS = 0x67 */
+	 
 	u8 report_id;
-	/* FAN_STATUS_REPORT_SPEED = 0x02 or FAN_STATUS_REPORT_VOLTAGE = 0x04 */
+	 
 	u8 type;
 	struct unknown_static_data unknown_data;
-	/* Fan type as detected by the device. See FAN_TYPE_* enum. */
+	 
 	u8 fan_type[FAN_CHANNELS_MAX];
 
 	union {
-		/* When type == FAN_STATUS_REPORT_SPEED */
+		 
 		struct {
-			/*
-			 * Fan speed, in RPM. Zero for channels without fans
-			 * connected.
-			 */
+			 
 			__le16 fan_rpm[FAN_CHANNELS_MAX];
-			/*
-			 * Fan duty cycle, in percent. Non-zero even for
-			 * channels without fans connected.
-			 */
+			 
 			u8 duty_percent[FAN_CHANNELS_MAX];
-			/*
-			 * Exactly the same values as duty_percent[], non-zero
-			 * for disconnected fans too.
-			 */
+			 
 			u8 duty_percent_dup[FAN_CHANNELS_MAX];
-			/* "Case Noise" in db */
+			 
 			u8 noise_db;
 		} __packed fan_speed;
-		/* When type == FAN_STATUS_REPORT_VOLTAGE */
+		 
 		struct {
-			/*
-			 * Voltage, in millivolts. Non-zero even when fan is
-			 * not connected.
-			 */
+			 
 			__le16 fan_in[FAN_CHANNELS_MAX];
-			/*
-			 * Current, in milliamperes. Near-zero when
-			 * disconnected.
-			 */
+			 
 			__le16 fan_current[FAN_CHANNELS_MAX];
 		} __packed fan_voltage;
 	} __packed;
@@ -149,24 +113,15 @@ enum {
 	INIT_COMMAND_DETECT_FANS = 0x03,
 };
 
-/*
- * This output report sets pwm duty cycle/target fan speed for one or more
- * channels.
- */
+ 
 struct set_fan_speed_report {
-	/* report_id should be OUTPUT_REPORT_ID_SET_FAN_SPEED = 0x62 */
+	 
 	u8 report_id;
-	/* Should be 0x01 */
+	 
 	u8 magic;
-	/* To change fan speed on i-th channel, set i-th bit here */
+	 
 	u8 channel_bit_mask;
-	/*
-	 * Fan duty cycle/target speed in percent. For voltage-controlled fans,
-	 * the minimal voltage (duty_percent = 1) is about 9V.
-	 * Setting duty_percent to 0 (if the channel is selected in
-	 * channel_bit_mask) turns off the fan completely (regardless of the
-	 * control mode).
-	 */
+	 
 	u8 duty_percent[FAN_CHANNELS_MAX];
 } __packed;
 
@@ -185,22 +140,9 @@ struct drvdata {
 	u8 fan_type[FAN_CHANNELS];
 	bool fan_config_received;
 
-	/*
-	 * wq is used to wait for *_received flags to become true.
-	 * All accesses to *_received flags and fan_* arrays are performed with
-	 * wq.lock held.
-	 */
+	 
 	wait_queue_head_t wq;
-	/*
-	 * mutex is used to:
-	 * 1) Prevent concurrent conflicting changes to update interval and pwm
-	 * values (after sending an output hid report, the corresponding field
-	 * in drvdata must be updated, and only then new output reports can be
-	 * sent).
-	 * 2) Synchronize access to output_buffer (well, the buffer is here,
-	 * because synchronization is necessary anyway - so why not get rid of
-	 * a kmalloc?).
-	 */
+	 
 	struct mutex mutex;
 	long update_interval;
 	u8 output_buffer[OUTPUT_REPORT_SIZE];
@@ -211,10 +153,7 @@ static long scale_pwm_value(long val, long orig_max, long new_max)
 	if (val <= 0)
 		return 0;
 
-	/*
-	 * Positive values should not become zero: 0 completely turns off the
-	 * fan.
-	 */
+	 
 	return max(1L, DIV_ROUND_CLOSEST(min(val, orig_max) * new_max, orig_max));
 }
 
@@ -249,12 +188,7 @@ static void handle_fan_status_report(struct drvdata *drvdata, void *data, int si
 
 	spin_lock(&drvdata->wq.lock);
 
-	/*
-	 * The device sends INPUT_REPORT_ID_FAN_CONFIG = 0x61 report in response
-	 * to "detect fans" command. Only accept other data after getting 0x61,
-	 * to make sure that fan detection is complete. In particular, fan
-	 * detection resets pwm values.
-	 */
+	 
 	if (!drvdata->fan_config_received) {
 		spin_unlock(&drvdata->wq.lock);
 		return;
@@ -264,13 +198,7 @@ static void handle_fan_status_report(struct drvdata *drvdata, void *data, int si
 		if (drvdata->fan_type[i] == report->fan_type[i])
 			continue;
 
-		/*
-		 * This should not happen (if my expectations about the device
-		 * are correct).
-		 *
-		 * Even if the userspace sends fan detect command through
-		 * hidraw, fan config report should arrive first.
-		 */
+		 
 		hid_warn_once(drvdata->hid,
 			      "Fan %d type changed unexpectedly from %d to %d",
 			      i, drvdata->fan_type[i], report->fan_type[i]);
@@ -356,14 +284,7 @@ static int nzxt_smart2_hwmon_read(struct device *dev, enum hwmon_sensor_types ty
 
 	switch (type) {
 	case hwmon_pwm:
-		/*
-		 * fancontrol:
-		 * 1) remembers pwm* values when it starts
-		 * 2) needs pwm*_enable to be 1 on controlled fans
-		 * So make sure we have correct data before allowing pwm* reads.
-		 * Returning errors for pwm of fan speed read can even cause
-		 * fancontrol to shut down. So the wait is unavoidable.
-		 */
+		 
 		switch (attr) {
 		case hwmon_pwm_enable:
 			res = wait_event_interruptible_locked_irq(drvdata->wq,
@@ -396,11 +317,7 @@ static int nzxt_smart2_hwmon_read(struct device *dev, enum hwmon_sensor_types ty
 		break;
 
 	case hwmon_fan:
-		/*
-		 * It's not strictly necessary to wait for *_received in the
-		 * remaining cases (fancontrol doesn't care about them). But I'm
-		 * doing it to have consistent behavior.
-		 */
+		 
 		if (attr == hwmon_fan_input) {
 			res = wait_event_interruptible_locked_irq(drvdata->wq,
 								  drvdata->pwm_status_received);
@@ -481,17 +398,7 @@ static int set_pwm(struct drvdata *drvdata, int channel, long val)
 	if (ret)
 		goto unlock;
 
-	/*
-	 * pwmconfig and fancontrol scripts expect pwm writes to take effect
-	 * immediately (i. e. read from pwm* sysfs should return the value
-	 * written into it). The device seems to always accept pwm values - even
-	 * when there is no fan connected - so update pwm status without waiting
-	 * for a report, to make pwmconfig and fancontrol happy. Worst case -
-	 * if the device didn't accept new pwm value for some reason (never seen
-	 * this in practice) - it will be reported incorrectly only until next
-	 * update. This avoids "fan stuck" messages from pwmconfig, and
-	 * fancontrol setting fan speed to 100% during shutdown.
-	 */
+	 
 	spin_lock_bh(&drvdata->wq.lock);
 	drvdata->fan_duty_percent[channel] = duty_percent;
 	spin_unlock_bh(&drvdata->wq.lock);
@@ -501,11 +408,7 @@ unlock:
 	return ret;
 }
 
-/*
- * Workaround for fancontrol/pwmconfig trying to write to pwm*_enable even if it
- * already is 1 and read-only. Otherwise, fancontrol won't restore pwm on
- * shutdown properly.
- */
+ 
 static int set_pwm_enable(struct drvdata *drvdata, int channel, long val)
 {
 	long expected_val;
@@ -527,20 +430,7 @@ static int set_pwm_enable(struct drvdata *drvdata, int channel, long val)
 	return (val == expected_val) ? 0 : -EOPNOTSUPP;
 }
 
-/*
- * Control byte	| Actual update interval in seconds
- * 0xff		| 65.5
- * 0xf7		| 63.46
- * 0x7f		| 32.74
- * 0x3f		| 16.36
- * 0x1f		| 8.17
- * 0x0f		| 4.07
- * 0x07		| 2.02
- * 0x03		| 1.00
- * 0x02		| 0.744
- * 0x01		| 0.488
- * 0x00		| 0.25
- */
+ 
 static u8 update_interval_to_control_byte(long interval)
 {
 	if (interval <= 250)
@@ -708,10 +598,7 @@ static int __maybe_unused nzxt_smart2_hid_reset_resume(struct hid_device *hdev)
 {
 	struct drvdata *drvdata = hid_get_drvdata(hdev);
 
-	/*
-	 * Userspace is still frozen (so no concurrent sysfs attribute access
-	 * is possible), but raw_event can already be called concurrently.
-	 */
+	 
 	spin_lock_bh(&drvdata->wq.lock);
 	drvdata->fan_config_received = false;
 	drvdata->pwm_status_received = false;
@@ -791,14 +678,14 @@ static void nzxt_smart2_hid_remove(struct hid_device *hdev)
 }
 
 static const struct hid_device_id nzxt_smart2_hid_id_table[] = {
-	{ HID_USB_DEVICE(0x1e71, 0x2006) }, /* NZXT Smart Device V2 */
-	{ HID_USB_DEVICE(0x1e71, 0x200d) }, /* NZXT Smart Device V2 */
-	{ HID_USB_DEVICE(0x1e71, 0x200f) }, /* NZXT Smart Device V2 */
-	{ HID_USB_DEVICE(0x1e71, 0x2009) }, /* NZXT RGB & Fan Controller */
-	{ HID_USB_DEVICE(0x1e71, 0x200e) }, /* NZXT RGB & Fan Controller */
-	{ HID_USB_DEVICE(0x1e71, 0x2010) }, /* NZXT RGB & Fan Controller */
-	{ HID_USB_DEVICE(0x1e71, 0x2011) }, /* NZXT RGB & Fan Controller (6 RGB) */
-	{ HID_USB_DEVICE(0x1e71, 0x2019) }, /* NZXT RGB & Fan Controller (6 RGB) */
+	{ HID_USB_DEVICE(0x1e71, 0x2006) },  
+	{ HID_USB_DEVICE(0x1e71, 0x200d) },  
+	{ HID_USB_DEVICE(0x1e71, 0x200f) },  
+	{ HID_USB_DEVICE(0x1e71, 0x2009) },  
+	{ HID_USB_DEVICE(0x1e71, 0x200e) },  
+	{ HID_USB_DEVICE(0x1e71, 0x2010) },  
+	{ HID_USB_DEVICE(0x1e71, 0x2011) },  
+	{ HID_USB_DEVICE(0x1e71, 0x2019) },  
 	{},
 };
 
@@ -828,11 +715,6 @@ MODULE_AUTHOR("Aleksandr Mezin <mezin.alexander@gmail.com>");
 MODULE_DESCRIPTION("Driver for NZXT RGB & Fan Controller/Smart Device V2");
 MODULE_LICENSE("GPL");
 
-/*
- * With module_init()/module_hid_driver() and the driver built into the kernel:
- *
- * Driver 'nzxt_smart2' was unable to register with bus_type 'hid' because the
- * bus was not initialized.
- */
+ 
 late_initcall(nzxt_smart2_init);
 module_exit(nzxt_smart2_exit);

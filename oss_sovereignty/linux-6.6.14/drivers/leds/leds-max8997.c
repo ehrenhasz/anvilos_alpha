@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * leds-max8997.c - LED class driver for MAX8997 LEDs.
- *
- * Copyright (C) 2011 Samsung Electronics
- * Donggeun Kim <dg77.kim@samsung.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/err.h>
@@ -252,7 +247,7 @@ static int max8997_led_probe(struct platform_device *pdev)
 	led->cdev.groups = max8997_groups;
 	led->iodev = iodev;
 
-	/* initialize mode and brightness according to platform_data */
+	 
 	if (pdata && pdata->led_pdata) {
 		u8 mode = 0, brightness = 0;
 

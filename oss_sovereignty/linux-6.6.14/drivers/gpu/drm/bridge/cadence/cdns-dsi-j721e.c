@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * TI j721e Cadence DSI wrapper
- *
- * Copyright (C) 2022 Texas Instruments Incorporated - http://www.ti.com/
- * Author: Rahul T R <r-ravikumar@ti.com>
- */
+
+ 
 
 #include <linux/io.h>
 #include <linux/platform_device.h>
@@ -30,17 +25,13 @@ static int cdns_dsi_j721e_init(struct cdns_dsi *dsi)
 
 static void cdns_dsi_j721e_enable(struct cdns_dsi *dsi)
 {
-	/*
-	 * Enable DPI0 as its input. DSS0 DPI2 is connected
-	 * to DSI DPI0. This is the only supported configuration on
-	 * J721E.
-	 */
+	 
 	writel(DSI_WRAP_DPI_0_EN, dsi->j721e_regs + DSI_WRAP_DPI_CONTROL);
 }
 
 static void cdns_dsi_j721e_disable(struct cdns_dsi *dsi)
 {
-	/* Put everything to defaults  */
+	 
 	writel(0, dsi->j721e_regs + DSI_WRAP_DPI_CONTROL);
 }
 

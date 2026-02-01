@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * ADC0831/ADC0832/ADC0834/ADC0838 8-bit ADC driver
- *
- * Copyright (c) 2016 Akinobu Mita <akinobu.mita@gmail.com>
- *
- * Datasheet: https://www.ti.com/lit/ds/symlink/adc0832-n.pdf
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/mod_devicetable.h>
@@ -29,11 +23,7 @@ struct adc0832 {
 	struct regulator *reg;
 	struct mutex lock;
 	u8 mux_bits;
-	/*
-	 * Max size needed: 16x 1 byte ADC data + 8 bytes timestamp
-	 * May be shorter if not all channels are enabled subject
-	 * to the timestamp remaining 8 byte aligned.
-	 */
+	 
 	u8 data[24] __aligned(8);
 
 	u8 tx_buf[2] __aligned(IIO_DMA_MINALIGN);
@@ -126,9 +116,7 @@ static int adc0831_adc_conversion(struct adc0832 *adc)
 	if (ret)
 		return ret;
 
-	/*
-	 * Skip TRI-STATE and a leading zero
-	 */
+	 
 	return (adc->rx_buf[0] << 2 & 0xff) | (adc->rx_buf[1] >> 6);
 }
 
@@ -146,17 +134,17 @@ static int adc0832_adc_conversion(struct adc0832 *adc, int channel,
 	if (!adc->mux_bits)
 		return adc0831_adc_conversion(adc);
 
-	/* start bit */
+	 
 	adc->tx_buf[0] = 1 << (adc->mux_bits + 1);
-	/* single-ended or differential */
+	 
 	adc->tx_buf[0] |= differential ? 0 : (1 << adc->mux_bits);
-	/* odd / sign */
+	 
 	adc->tx_buf[0] |= (channel % 2) << (adc->mux_bits - 1);
-	/* select */
+	 
 	if (adc->mux_bits > 1)
 		adc->tx_buf[0] |= channel / 2;
 
-	/* align Data output BIT7 (MSB) to 8-bit boundary */
+	 
 	adc->tx_buf[0] <<= 1;
 
 	ret = spi_sync_transfer(spi, &xfer, 1);
@@ -187,7 +175,7 @@ static int adc0832_read_raw(struct iio_dev *iio,
 		if (*value < 0)
 			return *value;
 
-		/* convert regulator output voltage to mV */
+		 
 		*value /= 1000;
 		*shift = 8;
 

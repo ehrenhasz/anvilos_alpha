@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * SME code for cfg80211
- * both driver SME event handling and the SME implementation
- * (for nl80211's connect() and wext)
- *
- * Copyright 2009	Johannes Berg <johannes@sipsolutions.net>
- * Copyright (C) 2009, 2020, 2022-2023 Intel Corporation. All rights reserved.
- * Copyright 2017	Intel Deutschland GmbH
- */
+
+ 
 
 #include <linux/etherdevice.h>
 #include <linux/if_arp.h>
@@ -22,15 +14,11 @@
 #include "reg.h"
 #include "rdev-ops.h"
 
-/*
- * Software SME in cfg80211, using auth/assoc/deauth calls to the
- * driver. This is for implementing nl80211's connect/disconnect
- * and wireless extensions (if configured.)
- */
+ 
 
 struct cfg80211_conn {
 	struct cfg80211_connect_params params;
-	/* these are sub-states of the _CONNECTING sme_state */
+	 
 	enum {
 		CFG80211_CONN_SCANNING,
 		CFG80211_CONN_SCAN_AGAIN,
@@ -160,7 +148,7 @@ static int cfg80211_conn_do_work(struct wireless_dev *wdev,
 
 	switch (wdev->conn->state) {
 	case CFG80211_CONN_SCANNING:
-		/* didn't find it during scan ... */
+		 
 		return -ENOENT;
 	case CFG80211_CONN_SCAN_AGAIN:
 		return cfg80211_conn_scan(wdev);
@@ -233,7 +221,7 @@ static int cfg80211_conn_do_work(struct wireless_dev *wdev,
 				     WLAN_REASON_DEAUTH_LEAVING, false);
 		fallthrough;
 	case CFG80211_CONN_ABANDON:
-		/* free directly, disconnected event already sent */
+		 
 		cfg80211_sme_free(wdev);
 		return 0;
 	default:
@@ -294,7 +282,7 @@ static void cfg80211_step_auth_next(struct cfg80211_conn *conn,
 	conn->state = CFG80211_CONN_AUTHENTICATE_NEXT;
 }
 
-/* Returned bss is reference counted and must be cleaned up appropriately. */
+ 
 static struct cfg80211_bss *cfg80211_get_conn_bss(struct wireless_dev *wdev)
 {
 	struct cfg80211_registered_device *rdev = wiphy_to_rdev(wdev->wiphy);
@@ -363,7 +351,7 @@ void cfg80211_sme_rx_auth(struct wireless_dev *wdev, const u8 *buf, size_t len)
 	if (status_code == WLAN_STATUS_NOT_SUPPORTED_AUTH_ALG &&
 	    wdev->conn->auto_auth &&
 	    wdev->conn->params.auth_type != NL80211_AUTHTYPE_NETWORK_EAP) {
-		/* select automatically between only open, shared, leap */
+		 
 		switch (wdev->conn->params.auth_type) {
 		case NL80211_AUTHTYPE_OPEN_SYSTEM:
 			if (wdev->connect_keys)
@@ -378,7 +366,7 @@ void cfg80211_sme_rx_auth(struct wireless_dev *wdev, const u8 *buf, size_t len)
 				NL80211_AUTHTYPE_NETWORK_EAP;
 			break;
 		default:
-			/* huh? */
+			 
 			wdev->conn->params.auth_type =
 				NL80211_AUTHTYPE_OPEN_SYSTEM;
 			break;
@@ -412,11 +400,7 @@ bool cfg80211_sme_rx_assoc_resp(struct wireless_dev *wdev, u16 status)
 	}
 
 	if (wdev->conn->prev_bssid_valid) {
-		/*
-		 * Some stupid APs don't accept reassoc, so we
-		 * need to fall back to trying regular assoc;
-		 * return true so no event is sent to userspace.
-		 */
+		 
 		wdev->conn->prev_bssid_valid = false;
 		wdev->conn->state = CFG80211_CONN_ASSOCIATE_NEXT;
 		schedule_work(&rdev->conn_work);
@@ -530,7 +514,7 @@ static int cfg80211_sme_get_conn_ies(struct wireless_dev *wdev,
 
 	if (ies_len) {
 		static const u8 before_extcapa[] = {
-			/* not listing IEs expected to be created by driver */
+			 
 			WLAN_EID_RSN,
 			WLAN_EID_QOS_CAPA,
 			WLAN_EID_RRM_ENABLED_CAPABILITIES,
@@ -542,14 +526,14 @@ static int cfg80211_sme_get_conn_ies(struct wireless_dev *wdev,
 		offs = ieee80211_ie_split(ies, ies_len, before_extcapa,
 					  ARRAY_SIZE(before_extcapa), 0);
 		memcpy(buf, ies, offs);
-		/* leave a whole for extended capabilities IE */
+		 
 		memcpy(buf + offs + rdev->wiphy.extended_capabilities_len + 2,
 		       ies + offs, ies_len - offs);
 	} else {
 		offs = 0;
 	}
 
-	/* place extended capabilities IE (with only driver capabilities) */
+	 
 	buf[offs] = WLAN_EID_EXT_CAPABILITY;
 	buf[offs + 1] = rdev->wiphy.extended_capabilities_len;
 	memcpy(buf + offs + 2,
@@ -587,9 +571,7 @@ static int cfg80211_sme_connect(struct wireless_dev *wdev,
 	if (!wdev->conn)
 		return -ENOMEM;
 
-	/*
-	 * Copy all parameters, and treat explicitly IEs, BSSID, SSID.
-	 */
+	 
 	memcpy(&wdev->conn->params, connect, sizeof(*connect));
 	if (connect->bssid) {
 		wdev->conn->params.bssid = wdev->conn->bssid;
@@ -607,7 +589,7 @@ static int cfg80211_sme_connect(struct wireless_dev *wdev,
 
 	if (connect->auth_type == NL80211_AUTHTYPE_AUTOMATIC) {
 		wdev->conn->auto_auth = true;
-		/* start with open system ... should mostly work */
+		 
 		wdev->conn->params.auth_type =
 			NL80211_AUTHTYPE_OPEN_SYSTEM;
 	} else {
@@ -617,7 +599,7 @@ static int cfg80211_sme_connect(struct wireless_dev *wdev,
 	wdev->conn->params.ssid = wdev->u.client.ssid;
 	wdev->conn->params.ssid_len = wdev->u.client.ssid_len;
 
-	/* see if we have the bss already */
+	 
 	bss = cfg80211_get_bss(wdev->wiphy, wdev->conn->params.channel,
 			       wdev->conn->params.bssid,
 			       wdev->conn->params.ssid,
@@ -630,7 +612,7 @@ static int cfg80211_sme_connect(struct wireless_dev *wdev,
 		wdev->conn->prev_bssid_valid = true;
 	}
 
-	/* we're good if we have a matching bss struct */
+	 
 	if (bss) {
 		enum nl80211_timeout_reason treason;
 
@@ -638,14 +620,10 @@ static int cfg80211_sme_connect(struct wireless_dev *wdev,
 		err = cfg80211_conn_do_work(wdev, &treason);
 		cfg80211_put_bss(wdev->wiphy, bss);
 	} else {
-		/* otherwise we'll need to scan for the AP first */
+		 
 		err = cfg80211_conn_scan(wdev);
 
-		/*
-		 * If we can't scan right now, then we need to scan again
-		 * after the current scan finished, since the parameters
-		 * changed (unless we find a good AP anyway).
-		 */
+		 
 		if (err == -EBUSY) {
 			err = 0;
 			wdev->conn->state = CFG80211_CONN_SCAN_AGAIN;
@@ -675,7 +653,7 @@ static int cfg80211_sme_disconnect(struct wireless_dev *wdev, u16 reason)
 		goto out;
 	}
 
-	/* wdev->conn->params.bssid must be set if > SCANNING */
+	 
 	err = cfg80211_mlme_deauth(rdev, wdev->netdev,
 				   wdev->conn->params.bssid,
 				   NULL, 0, reason, false);
@@ -684,9 +662,7 @@ static int cfg80211_sme_disconnect(struct wireless_dev *wdev, u16 reason)
 	return err;
 }
 
-/*
- * code shared for in-device and software SME
- */
+ 
 
 static bool cfg80211_is_all_idle(void)
 {
@@ -694,14 +670,7 @@ static bool cfg80211_is_all_idle(void)
 	struct wireless_dev *wdev;
 	bool is_all_idle = true;
 
-	/*
-	 * All devices must be idle as otherwise if you are actively
-	 * scanning some new beacon hints could be learned and would
-	 * count as new regulatory hints.
-	 * Also if there is any other active beaconing interface we
-	 * need not issue a disconnect hint and reset any info such
-	 * as chan dfs state, etc.
-	 */
+	 
 	list_for_each_entry(rdev, &cfg80211_rdev_list, list) {
 		list_for_each_entry(wdev, &rdev->wiphy.wdev_list, list) {
 			wdev_lock(wdev);
@@ -739,12 +708,9 @@ cfg80211_connect_result_release_bsses(struct wireless_dev *wdev,
 	}
 }
 
-/*
- * API calls for drivers implementing connect/disconnect and
- * SME event handling
- */
+ 
 
-/* This method must consume bss one way or another */
+ 
 void __cfg80211_connect_result(struct net_device *dev,
 			       struct cfg80211_connect_resp_params *cr,
 			       bool wextev)
@@ -821,7 +787,7 @@ void __cfg80211_connect_result(struct net_device *dev,
 		}
 
 		for_each_valid_link(cr, link) {
-			/* don't do extra lookups for failures */
+			 
 			if (cr->links[link].status != WLAN_STATUS_SUCCESS)
 				continue;
 
@@ -865,7 +831,7 @@ void __cfg80211_connect_result(struct net_device *dev,
 		if (cr->links[link].status == WLAN_STATUS_SUCCESS)
 			continue;
 		cr->valid_links &= ~BIT(link);
-		/* don't require bss pointer for failed links */
+		 
 		if (!cr->links[link].bss)
 			continue;
 		cfg80211_unhold_bss(bss_from_pub(cr->links[link].bss));
@@ -952,20 +918,10 @@ static void cfg80211_update_link_bss(struct wireless_dev *wdev,
 					 wdev->conn_bss_type,
 					 IEEE80211_PRIVACY_ANY);
 		if (found) {
-			/* The same BSS is already updated so use it
-			 * instead, as it has latest info.
-			 */
+			 
 			*bss = found;
 		} else {
-			/* Update with BSS provided by driver, it will
-			 * be freshly added and ref cnted, we can free
-			 * the old one.
-			 *
-			 * signal_valid can be false, as we are not
-			 * expecting the BSS to be found.
-			 *
-			 * keep the old timestamp to avoid confusion
-			 */
+			 
 			cfg80211_bss_update(rdev, ibss, false,
 					    ibss->ts);
 		}
@@ -974,7 +930,7 @@ static void cfg80211_update_link_bss(struct wireless_dev *wdev,
 	}
 }
 
-/* Consumes bss object(s) one way or another */
+ 
 void cfg80211_connect_done(struct net_device *dev,
 			   struct cfg80211_connect_resp_params *params,
 			   gfp_t gfp)
@@ -1083,7 +1039,7 @@ void cfg80211_connect_done(struct net_device *dev,
 }
 EXPORT_SYMBOL(cfg80211_connect_done);
 
-/* Consumes bss object one way or another */
+ 
 void __cfg80211_roamed(struct wireless_dev *wdev,
 		       struct cfg80211_roam_info *info)
 {
@@ -1171,7 +1127,7 @@ out:
 		cfg80211_put_bss(wdev->wiphy, info->links[link].bss);
 }
 
-/* Consumes info->links.bss object(s) one way or another */
+ 
 void cfg80211_roamed(struct net_device *dev, struct cfg80211_roam_info *info,
 		     gfp_t gfp)
 {
@@ -1332,10 +1288,7 @@ void cfg80211_port_authorized(struct net_device *dev, const u8 *bssid,
 	ev->pa.td_bitmap_len = td_bitmap_len;
 	memcpy((void *)ev->pa.td_bitmap, td_bitmap, td_bitmap_len);
 
-	/*
-	 * Use the wdev event list so that if there are pending
-	 * connected/roamed events, they will be reported first.
-	 */
+	 
 	spin_lock_irqsave(&wdev->event_lock, flags);
 	list_add_tail(&ev->list, &wdev->event_list);
 	spin_unlock_irqrestore(&wdev->event_lock, flags);
@@ -1368,16 +1321,13 @@ void __cfg80211_disconnected(struct net_device *dev, const u8 *ie,
 
 	nl80211_send_disconnected(rdev, dev, reason, ie, ie_len, from_ap);
 
-	/* stop critical protocol if supported */
+	 
 	if (rdev->ops->crit_proto_stop && rdev->crit_proto_nlportid) {
 		rdev->crit_proto_nlportid = 0;
 		rdev_crit_proto_stop(rdev, wdev);
 	}
 
-	/*
-	 * Delete all the keys ... pairwise keys can't really
-	 * exist any more anyway, but default keys might.
-	 */
+	 
 	if (rdev->ops->del_key) {
 		int max_key_idx = 5;
 
@@ -1431,9 +1381,7 @@ void cfg80211_disconnected(struct net_device *dev, u16 reason,
 }
 EXPORT_SYMBOL(cfg80211_disconnected);
 
-/*
- * API calls for nl80211/wext compatibility code
- */
+ 
 int cfg80211_connect(struct cfg80211_registered_device *rdev,
 		     struct net_device *dev,
 		     struct cfg80211_connect_params *connect,
@@ -1445,20 +1393,13 @@ int cfg80211_connect(struct cfg80211_registered_device *rdev,
 
 	ASSERT_WDEV_LOCK(wdev);
 
-	/*
-	 * If we have an ssid_len, we're trying to connect or are
-	 * already connected, so reject a new SSID unless it's the
-	 * same (which is the case for re-association.)
-	 */
+	 
 	if (wdev->u.client.ssid_len &&
 	    (wdev->u.client.ssid_len != connect->ssid_len ||
 	     memcmp(wdev->u.client.ssid, connect->ssid, wdev->u.client.ssid_len)))
 		return -EALREADY;
 
-	/*
-	 * If connected, reject (re-)association unless prev_bssid
-	 * matches the current BSSID.
-	 */
+	 
 	if (wdev->connected) {
 		if (!prev_bssid)
 			return -EALREADY;
@@ -1467,11 +1408,7 @@ int cfg80211_connect(struct cfg80211_registered_device *rdev,
 			return -ENOTCONN;
 	}
 
-	/*
-	 * Reject if we're in the process of connecting with WEP,
-	 * this case isn't very interesting and trying to handle
-	 * it would make the code much more complex.
-	 */
+	 
 	if (wdev->connect_keys)
 		return -EINPROGRESS;
 
@@ -1486,17 +1423,14 @@ int cfg80211_connect(struct cfg80211_registered_device *rdev,
 
 		idx = connkeys->def;
 		cipher = connkeys->params[idx].cipher;
-		/* If given a WEP key we may need it for shared key auth */
+		 
 		if (cipher == WLAN_CIPHER_SUITE_WEP40 ||
 		    cipher == WLAN_CIPHER_SUITE_WEP104) {
 			connect->key_idx = idx;
 			connect->key = connkeys->params[idx].key;
 			connect->key_len = connkeys->params[idx].key_len;
 
-			/*
-			 * If ciphers are not set (e.g. when going through
-			 * iwconfig), we have to set them appropriately here.
-			 */
+			 
 			if (connect->crypto.cipher_group == 0)
 				connect->crypto.cipher_group = cipher;
 
@@ -1509,9 +1443,7 @@ int cfg80211_connect(struct cfg80211_registered_device *rdev,
 		if (WARN_ON(connkeys))
 			return -EINVAL;
 
-		/* connect can point to wdev->wext.connect which
-		 * can hold key data from a previous connection
-		 */
+		 
 		connect->key = NULL;
 		connect->key_len = 0;
 		connect->key_idx = 0;
@@ -1531,10 +1463,7 @@ int cfg80211_connect(struct cfg80211_registered_device *rdev,
 
 	if (err) {
 		wdev->connect_keys = NULL;
-		/*
-		 * This could be reassoc getting refused, don't clear
-		 * ssid_len in that case.
-		 */
+		 
 		if (!wdev->connected)
 			wdev->u.client.ssid_len = 0;
 		return err;
@@ -1563,21 +1492,14 @@ int cfg80211_disconnect(struct cfg80211_registered_device *rdev,
 	else if (wdev->u.client.ssid_len)
 		err = rdev_disconnect(rdev, dev, reason);
 
-	/*
-	 * Clear ssid_len unless we actually were fully connected,
-	 * in which case cfg80211_disconnected() will take care of
-	 * this later.
-	 */
+	 
 	if (!wdev->connected)
 		wdev->u.client.ssid_len = 0;
 
 	return err;
 }
 
-/*
- * Used to clean up after the connection / connection attempt owner socket
- * disconnects
- */
+ 
 void cfg80211_autodisconnect_wk(struct work_struct *work)
 {
 	struct wireless_dev *wdev =
@@ -1601,11 +1523,7 @@ void cfg80211_autodisconnect_wk(struct work_struct *work)
 			break;
 		case NL80211_IFTYPE_STATION:
 		case NL80211_IFTYPE_P2P_CLIENT:
-			/*
-			 * Use disconnect_bssid if still connecting and
-			 * ops->disconnect not implemented.  Otherwise we can
-			 * use cfg80211_disconnect.
-			 */
+			 
 			if (rdev->ops->disconnect || wdev->connected)
 				cfg80211_disconnect(rdev, wdev->netdev,
 						    WLAN_REASON_DEAUTH_LEAVING,

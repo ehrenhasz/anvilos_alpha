@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * LM4857 AMP driver
- *
- * Copyright 2007 Wolfson Microelectronics PLC.
- * Author: Graeme Gregory
- *         graeme.gregory@wolfsonmicro.com
- * Copyright 2011 Lars-Peter Clausen <lars@metafoo.de>
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/module.h>
@@ -25,13 +18,13 @@ static const struct reg_default lm4857_default_regs[] = {
 	{ 0x3, 0x00 },
 };
 
-/* The register offsets in the cache array */
+ 
 #define LM4857_MVOL 0
 #define LM4857_LVOL 1
 #define LM4857_RVOL 2
 #define LM4857_CTRL 3
 
-/* the shifts required to set these bits */
+ 
 #define LM4857_3D 5
 #define LM4857_WAKEUP 5
 #define LM4857_EPGAIN 4

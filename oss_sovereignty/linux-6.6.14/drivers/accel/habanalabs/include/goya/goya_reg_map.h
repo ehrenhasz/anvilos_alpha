@@ -1,16 +1,9 @@
-/* SPDX-License-Identifier: GPL-2.0
- *
- * Copyright 2019 HabanaLabs, Ltd.
- * All Rights Reserved.
- *
- */
+ 
 
 #ifndef GOYA_REG_MAP_H_
 #define GOYA_REG_MAP_H_
 
-/*
- * PSOC scratch-pad registers
- */
+ 
 #define mmCPU_PQ_BASE_ADDR_LOW		mmPSOC_GLOBAL_CONF_SCRATCHPAD_0
 #define mmCPU_PQ_BASE_ADDR_HIGH		mmPSOC_GLOBAL_CONF_SCRATCHPAD_1
 #define mmCPU_EQ_BASE_ADDR_LOW		mmPSOC_GLOBAL_CONF_SCRATCHPAD_2
@@ -40,4 +33,4 @@
 #define mmPSOC_GLOBAL_CONF_KMD_MSG_TO_CPU	mmPSOC_GLOBAL_CONF_UBOOT_MAGIC
 #define mmUPD_PENDING_STS		mmPSOC_GLOBAL_CONF_NON_RST_FLOPS_3
 
-#endif /* GOYA_REG_MAP_H_ */
+#endif  

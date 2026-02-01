@@ -1,14 +1,12 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * Copyright (c) 2022, Google LLC
- */
+ 
+ 
 
 #ifndef _USB_MISC_ONBOARD_USB_HUB_H
 #define _USB_MISC_ONBOARD_USB_HUB_H
 
 struct onboard_hub_pdata {
-	unsigned long reset_us;		/* reset pulse width in us */
-	unsigned int num_supplies;	/* number of supplies */
+	unsigned long reset_us;		 
+	unsigned int num_supplies;	 
 };
 
 static const struct onboard_hub_pdata microchip_usb424_data = {
@@ -73,4 +71,4 @@ static const struct of_device_id onboard_hub_match[] = {
 	{}
 };
 
-#endif /* _USB_MISC_ONBOARD_USB_HUB_H */
+#endif  

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #ifndef __SPRD_MCDT_H
 #define __SPRD_MCDT_H
@@ -22,20 +22,7 @@ struct sprd_mcdt_chan_callback {
 	void *data;
 };
 
-/**
- * struct sprd_mcdt_chan - this struct represents a single channel instance
- * @mcdt: the mcdt controller
- * @id: channel id
- * @fifo_phys: channel fifo physical address which is used for DMA transfer
- * @type: channel type
- * @cb: channel fifo interrupt's callback interface to notify the fifo events
- * @dma_enable: indicate if use DMA mode to transfer data
- * @int_enable: indicate if use interrupt mode to notify users to read or
- * write data manually
- * @list: used to link into the global list
- *
- * Note: users should not modify any members of this structure.
- */
+ 
 struct sprd_mcdt_chan {
 	struct sprd_mcdt_dev *mcdt;
 	u8 id;
@@ -104,4 +91,4 @@ void sprd_mcdt_chan_dma_disable(struct sprd_mcdt_chan *chan)
 
 #endif
 
-#endif /* __SPRD_MCDT_H */
+#endif  

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2016 Free Electrons
- * Copyright (C) 2016 NextThing Co
- *
- * Maxime Ripard <maxime.ripard@free-electrons.com>
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/regmap.h>
@@ -80,13 +75,7 @@ static long sun4i_dclk_round_rate(struct clk_hw *hw, unsigned long rate,
 		u64 ideal = (u64)rate * i;
 		unsigned long rounded;
 
-		/*
-		 * ideal has overflowed the max value that can be stored in an
-		 * unsigned long, and every clk operation we might do on a
-		 * truncated u64 value will give us incorrect results.
-		 * Let's just stop there since bigger dividers will result in
-		 * the same overflow issue.
-		 */
+		 
 		if (ideal > ULONG_MAX)
 			goto out;
 

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2017 Intel Corporation.
- *
- * This file is released under the GPL.
- */
+
+ 
 
 #include "dm.h"
 
@@ -32,10 +28,7 @@ static void cleanup_unstripe(struct unstripe_c *uc, struct dm_target *ti)
 	kfree(uc);
 }
 
-/*
- * Contruct an unstriped mapping.
- * <number of stripes> <chunk size> <stripe #> <dev_path> <offset>
- */
+ 
 static int unstripe_ctr(struct dm_target *ti, unsigned int argc, char **argv)
 {
 	struct unstripe_c *uc;
@@ -120,7 +113,7 @@ static sector_t map_to_core(struct dm_target *ti, struct bio *bio)
 	sector_t sector = bio->bi_iter.bi_sector;
 	sector_t tmp_sector = sector;
 
-	/* Shift us up to the right "row" on the stripe */
+	 
 	if (uc->chunk_shift)
 		tmp_sector >>= uc->chunk_shift;
 	else
@@ -128,7 +121,7 @@ static sector_t map_to_core(struct dm_target *ti, struct bio *bio)
 
 	sector += uc->unstripe_width * tmp_sector;
 
-	/* Account for what stripe we're operating on */
+	 
 	return sector + uc->unstripe_offset;
 }
 

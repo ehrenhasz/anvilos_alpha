@@ -1,18 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Allwinner sun4i low res adc attached tablet keys driver
- *
- * Copyright (C) 2014 Hans de Goede <hdegoede@redhat.com>
- */
 
-/*
- * Allwinnner sunxi SoCs have a lradc which is specifically designed to have
- * various (tablet) keys (ie home, back, search, etc). attached to it using
- * a resistor network. This driver is for the keys on such boards.
- *
- * There are 2 channels, currently this driver only supports channel 0 since
- * there are no boards known to use channel 1.
- */
+ 
+
+ 
 
 #include <linux/clk.h>
 #include <linux/err.h>
@@ -36,19 +25,19 @@
 #define LRADC_DATA0		0x0c
 #define LRADC_DATA1		0x10
 
-/* LRADC_CTRL bits */
-#define FIRST_CONVERT_DLY(x)	((x) << 24) /* 8 bits */
-#define CHAN_SELECT(x)		((x) << 22) /* 2 bits */
-#define CONTINUE_TIME_SEL(x)	((x) << 16) /* 4 bits */
-#define KEY_MODE_SEL(x)		((x) << 12) /* 2 bits */
-#define LEVELA_B_CNT(x)		((x) << 8)  /* 4 bits */
+ 
+#define FIRST_CONVERT_DLY(x)	((x) << 24)  
+#define CHAN_SELECT(x)		((x) << 22)  
+#define CONTINUE_TIME_SEL(x)	((x) << 16)  
+#define KEY_MODE_SEL(x)		((x) << 12)  
+#define LEVELA_B_CNT(x)		((x) << 8)   
 #define HOLD_KEY_EN(x)		((x) << 7)
 #define HOLD_EN(x)		((x) << 6)
-#define LEVELB_VOL(x)		((x) << 4)  /* 2 bits */
-#define SAMPLE_RATE(x)		((x) << 2)  /* 2 bits */
+#define LEVELB_VOL(x)		((x) << 4)   
+#define SAMPLE_RATE(x)		((x) << 2)   
 #define ENABLE(x)		((x) << 0)
 
-/* LRADC_INTC and LRADC_INTS bits */
+ 
 #define CHAN1_KEYUP_IRQ		BIT(12)
 #define CHAN1_ALRDY_HOLD_IRQ	BIT(11)
 #define CHAN1_HOLD_IRQ		BIT(10)
@@ -60,11 +49,7 @@
 #define	CHAN0_KEYDOWN_IRQ	BIT(1)
 #define CHAN0_DATA_IRQ		BIT(0)
 
-/* struct lradc_variant - Describe sun4i-a10-lradc-keys hardware variant
- * @divisor_numerator:		The numerator of lradc Vref internally divisor
- * @divisor_denominator:	The denominator of lradc Vref internally divisor
- * @has_clock_reset:		If the binding requires a clock and reset
- */
+ 
 struct lradc_variant {
 	u8 divisor_numerator;
 	u8 divisor_denominator;
@@ -113,10 +98,7 @@ static irqreturn_t sun4i_lradc_irq(int irq, void *dev_id)
 
 	ints  = readl(lradc->base + LRADC_INTS);
 
-	/*
-	 * lradc supports only one keypress at a time, release does not give
-	 * any info as to which key was released, so we cache the keycode.
-	 */
+	 
 
 	if (ints & CHAN0_KEYUP_IRQ) {
 		input_report_key(lradc->input, lradc->chan0_keycode, 0);
@@ -166,10 +148,7 @@ static int sun4i_lradc_open(struct input_dev *dev)
 	lradc->vref = regulator_get_voltage(lradc->vref_supply) *
 		      lradc->variant->divisor_numerator /
 		      lradc->variant->divisor_denominator;
-	/*
-	 * Set sample time to 4 ms / 250 Hz. Wait 2 * 4 ms for key to
-	 * stabilize on press, wait (1 + 1) * 4 ms for key release
-	 */
+	 
 	writel(FIRST_CONVERT_DLY(2) | LEVELA_B_CNT(1) | HOLD_EN(1) |
 		SAMPLE_RATE(0) | ENABLE(1), lradc->base + LRADC_CTRL);
 
@@ -189,7 +168,7 @@ static void sun4i_lradc_close(struct input_dev *dev)
 {
 	struct sun4i_lradc_data *lradc = input_get_drvdata(dev);
 
-	/* Disable lradc, leave other settings unchanged */
+	 
 	writel(FIRST_CONVERT_DLY(2) | LEVELA_B_CNT(1) | HOLD_EN(1) |
 		SAMPLE_RATE(2), lradc->base + LRADC_CTRL);
 	writel(0, lradc->base + LRADC_INTC);
@@ -345,7 +324,7 @@ static const struct of_device_id sun4i_lradc_of_match[] = {
 		.data = &r_lradc_variant_a83t },
 	{ .compatible = "allwinner,sun50i-r329-lradc",
 		.data = &lradc_variant_r329 },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, sun4i_lradc_of_match);
 

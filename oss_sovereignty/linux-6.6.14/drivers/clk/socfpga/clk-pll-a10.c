@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2015 Altera Corporation. All rights reserved
- */
+
+ 
 #include <linux/slab.h>
 #include <linux/clk-provider.h>
 #include <linux/io.h>
@@ -10,11 +8,11 @@
 
 #include "clk.h"
 
-/* Clock Manager offsets */
+ 
 #define CLK_MGR_PLL_CLK_SRC_SHIFT	8
 #define CLK_MGR_PLL_CLK_SRC_MASK	0x3
 
-/* Clock bypass bits */
+ 
 #define SOCFPGA_PLL_BG_PWRDWN		0
 #define SOCFPGA_PLL_PWR_DOWN		1
 #define SOCFPGA_PLL_EXT_ENA		2
@@ -38,7 +36,7 @@ static unsigned long clk_pll_recalc_rate(struct clk_hw *hwclk,
 	unsigned long divf, divq, reg;
 	unsigned long long vco_freq;
 
-	/* read VCO1 reg for numerator and denominator */
+	 
 	reg = readl(socfpgaclk->hw.reg + 0x4);
 	divf = (reg & SOCFPGA_PLL_DIVF_MASK) >> SOCFPGA_PLL_DIVF_SHIFT;
 	divq = (reg & SOCFPGA_PLL_DIVQ_MASK) >> SOCFPGA_PLL_DIVQ_SHIFT;

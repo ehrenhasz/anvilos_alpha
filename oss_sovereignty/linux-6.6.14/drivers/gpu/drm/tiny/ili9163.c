@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0+
+
 
 #include <linux/backlight.h>
 #include <linux/delay.h>
@@ -53,22 +53,22 @@ static void yx240qv29_enable(struct drm_simple_display_pipe *pipe,
 	if (ret == 1)
 		goto out_enable;
 
-	/* Gamma */
+	 
 	mipi_dbi_command(dbi, MIPI_DCS_SET_GAMMA_CURVE, 0x04);
 	mipi_dbi_command(dbi, ILI9163_EN3GAM, 0x00);
 
-	/* Frame Rate */
+	 
 	mipi_dbi_command(dbi, ILI9163_FRMCTR1, 0x0a, 0x14);
 
-	/* Power Control */
+	 
 	mipi_dbi_command(dbi, ILI9163_PWCTRL1, 0x0a, 0x00);
 	mipi_dbi_command(dbi, ILI9163_PWCTRL2, 0x02);
 
-	/* VCOM */
+	 
 	mipi_dbi_command(dbi, ILI9163_VMCTRL1, 0x2f, 0x3e);
 	mipi_dbi_command(dbi, ILI9163_VMCTRL2, 0x40);
 
-	/* Memory Access Control */
+	 
 	mipi_dbi_command(dbi, MIPI_DCS_SET_PIXEL_FORMAT, MIPI_DCS_PIXEL_FMT_16BIT);
 
 	mipi_dbi_command(dbi, MIPI_DCS_EXIT_SLEEP_MODE);

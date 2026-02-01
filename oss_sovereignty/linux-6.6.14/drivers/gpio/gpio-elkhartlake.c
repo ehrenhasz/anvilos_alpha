@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Intel Elkhart Lake PSE GPIO driver
- *
- * Copyright (c) 2023 Intel Corporation.
- *
- * Authors: Pandith N <pandith.n@intel.com>
- *          Raag Jadav <raag.jadav@intel.com>
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/err.h>
@@ -16,7 +9,7 @@
 
 #include "gpio-tangier.h"
 
-/* Each Intel EHL PSE GPIO Controller has 30 GPIO pins */
+ 
 #define EHL_PSE_NGPIO		30
 
 static int ehl_gpio_probe(struct platform_device *pdev)

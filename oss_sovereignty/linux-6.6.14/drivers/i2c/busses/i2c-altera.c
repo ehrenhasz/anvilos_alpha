@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  Copyright Intel Corporation (C) 2017.
- *
- * Based on the i2c-axxia.c driver.
- */
+
+ 
 #include <linux/clk.h>
 #include <linux/clkdev.h>
 #include <linux/err.h>
@@ -15,62 +11,46 @@
 #include <linux/kernel.h>
 #include <linux/platform_device.h>
 
-#define ALTR_I2C_TFR_CMD	0x00	/* Transfer Command register */
-#define     ALTR_I2C_TFR_CMD_STA	BIT(9)	/* send START before byte */
-#define     ALTR_I2C_TFR_CMD_STO	BIT(8)	/* send STOP after byte */
-#define     ALTR_I2C_TFR_CMD_RW_D	BIT(0)	/* Direction of transfer */
-#define ALTR_I2C_RX_DATA	0x04	/* RX data FIFO register */
-#define ALTR_I2C_CTRL		0x08	/* Control register */
-#define     ALTR_I2C_CTRL_RXT_SHFT	4	/* RX FIFO Threshold */
-#define     ALTR_I2C_CTRL_TCT_SHFT	2	/* TFER CMD FIFO Threshold */
-#define     ALTR_I2C_CTRL_BSPEED	BIT(1)	/* Bus Speed (1=Fast) */
-#define     ALTR_I2C_CTRL_EN	BIT(0)	/* Enable Core (1=Enable) */
-#define ALTR_I2C_ISER		0x0C	/* Interrupt Status Enable register */
-#define     ALTR_I2C_ISER_RXOF_EN	BIT(4)	/* Enable RX OVERFLOW IRQ */
-#define     ALTR_I2C_ISER_ARB_EN	BIT(3)	/* Enable ARB LOST IRQ */
-#define     ALTR_I2C_ISER_NACK_EN	BIT(2)	/* Enable NACK DET IRQ */
-#define     ALTR_I2C_ISER_RXRDY_EN	BIT(1)	/* Enable RX Ready IRQ */
-#define     ALTR_I2C_ISER_TXRDY_EN	BIT(0)	/* Enable TX Ready IRQ */
-#define ALTR_I2C_ISR		0x10	/* Interrupt Status register */
-#define     ALTR_I2C_ISR_RXOF		BIT(4)	/* RX OVERFLOW IRQ */
-#define     ALTR_I2C_ISR_ARB		BIT(3)	/* ARB LOST IRQ */
-#define     ALTR_I2C_ISR_NACK		BIT(2)	/* NACK DET IRQ */
-#define     ALTR_I2C_ISR_RXRDY		BIT(1)	/* RX Ready IRQ */
-#define     ALTR_I2C_ISR_TXRDY		BIT(0)	/* TX Ready IRQ */
-#define ALTR_I2C_STATUS		0x14	/* Status register */
-#define     ALTR_I2C_STAT_CORE		BIT(0)	/* Core Status (0=idle) */
-#define ALTR_I2C_TC_FIFO_LVL	0x18	/* Transfer FIFO LVL register */
-#define ALTR_I2C_RX_FIFO_LVL	0x1C	/* Receive FIFO LVL register */
-#define ALTR_I2C_SCL_LOW	0x20	/* SCL low count register */
-#define ALTR_I2C_SCL_HIGH	0x24	/* SCL high count register */
-#define ALTR_I2C_SDA_HOLD	0x28	/* SDA hold count register */
+#define ALTR_I2C_TFR_CMD	0x00	 
+#define     ALTR_I2C_TFR_CMD_STA	BIT(9)	 
+#define     ALTR_I2C_TFR_CMD_STO	BIT(8)	 
+#define     ALTR_I2C_TFR_CMD_RW_D	BIT(0)	 
+#define ALTR_I2C_RX_DATA	0x04	 
+#define ALTR_I2C_CTRL		0x08	 
+#define     ALTR_I2C_CTRL_RXT_SHFT	4	 
+#define     ALTR_I2C_CTRL_TCT_SHFT	2	 
+#define     ALTR_I2C_CTRL_BSPEED	BIT(1)	 
+#define     ALTR_I2C_CTRL_EN	BIT(0)	 
+#define ALTR_I2C_ISER		0x0C	 
+#define     ALTR_I2C_ISER_RXOF_EN	BIT(4)	 
+#define     ALTR_I2C_ISER_ARB_EN	BIT(3)	 
+#define     ALTR_I2C_ISER_NACK_EN	BIT(2)	 
+#define     ALTR_I2C_ISER_RXRDY_EN	BIT(1)	 
+#define     ALTR_I2C_ISER_TXRDY_EN	BIT(0)	 
+#define ALTR_I2C_ISR		0x10	 
+#define     ALTR_I2C_ISR_RXOF		BIT(4)	 
+#define     ALTR_I2C_ISR_ARB		BIT(3)	 
+#define     ALTR_I2C_ISR_NACK		BIT(2)	 
+#define     ALTR_I2C_ISR_RXRDY		BIT(1)	 
+#define     ALTR_I2C_ISR_TXRDY		BIT(0)	 
+#define ALTR_I2C_STATUS		0x14	 
+#define     ALTR_I2C_STAT_CORE		BIT(0)	 
+#define ALTR_I2C_TC_FIFO_LVL	0x18	 
+#define ALTR_I2C_RX_FIFO_LVL	0x1C	 
+#define ALTR_I2C_SCL_LOW	0x20	 
+#define ALTR_I2C_SCL_HIGH	0x24	 
+#define ALTR_I2C_SDA_HOLD	0x28	 
 
 #define ALTR_I2C_ALL_IRQ	(ALTR_I2C_ISR_RXOF | ALTR_I2C_ISR_ARB | \
 				 ALTR_I2C_ISR_NACK | ALTR_I2C_ISR_RXRDY | \
 				 ALTR_I2C_ISR_TXRDY)
 
-#define ALTR_I2C_THRESHOLD	0	/* IRQ Threshold at 1 element */
+#define ALTR_I2C_THRESHOLD	0	 
 #define ALTR_I2C_DFLT_FIFO_SZ	4
-#define ALTR_I2C_TIMEOUT	100000	/* 100ms */
+#define ALTR_I2C_TIMEOUT	100000	 
 #define ALTR_I2C_XFER_TIMEOUT	(msecs_to_jiffies(250))
 
-/**
- * struct altr_i2c_dev - I2C device context
- * @base: pointer to register struct
- * @msg: pointer to current message
- * @msg_len: number of bytes transferred in msg
- * @msg_err: error code for completed message
- * @msg_complete: xfer completion object
- * @dev: device reference
- * @adapter: core i2c abstraction
- * @i2c_clk: clock reference for i2c input clock
- * @bus_clk_rate: current i2c bus clock rate
- * @buf: ptr to msg buffer for easier use.
- * @fifo_size: size of the FIFO passed in.
- * @isr_mask: cached copy of local ISR enables.
- * @isr_status: cached copy of local ISR status.
- * @isr_mutex: mutex for IRQ thread.
- */
+ 
 struct altr_i2c_dev {
 	void __iomem *base;
 	struct i2c_msg *msg;
@@ -144,12 +124,12 @@ static void altr_i2c_init(struct altr_i2c_dev *idev)
 
 	if (idev->bus_clk_rate <= I2C_MAX_STANDARD_MODE_FREQ) {
 		tmp &= ~ALTR_I2C_CTRL_BSPEED;
-		/* Standard mode SCL 50/50 */
+		 
 		t_high = divisor * 1 / 2;
 		t_low = divisor * 1 / 2;
 	} else {
 		tmp |= ALTR_I2C_CTRL_BSPEED;
-		/* Fast mode SCL 33/66 */
+		 
 		t_high = divisor * 1 / 3;
 		t_low = divisor * 2 / 3;
 	}
@@ -158,37 +138,31 @@ static void altr_i2c_init(struct altr_i2c_dev *idev)
 	dev_dbg(idev->dev, "rate=%uHz per_clk=%uMHz -> ratio=1:%u\n",
 		idev->bus_clk_rate, clk_mhz, divisor);
 
-	/* Reset controller */
+	 
 	altr_i2c_reset(idev);
 
-	/* SCL High Time */
+	 
 	writel(t_high, idev->base + ALTR_I2C_SCL_HIGH);
-	/* SCL Low Time */
+	 
 	writel(t_low, idev->base + ALTR_I2C_SCL_LOW);
-	/* SDA Hold Time, 300ns */
+	 
 	writel(3 * clk_mhz / 10, idev->base + ALTR_I2C_SDA_HOLD);
 
-	/* Mask all master interrupt bits */
+	 
 	altr_i2c_int_enable(idev, ALTR_I2C_ALL_IRQ, false);
 }
 
-/*
- * altr_i2c_transfer - On the last byte to be transmitted, send
- * a Stop bit on the last byte.
- */
+ 
 static void altr_i2c_transfer(struct altr_i2c_dev *idev, u32 data)
 {
-	/* On the last byte to be transmitted, send STOP */
+	 
 	if (idev->msg_len == 1)
 		data |= ALTR_I2C_TFR_CMD_STO;
 	if (idev->msg_len > 0)
 		writel(data, idev->base + ALTR_I2C_TFR_CMD);
 }
 
-/*
- * altr_i2c_empty_rx_fifo - Fetch data from RX FIFO until end of
- * transfer. Send a Stop bit on the last byte.
- */
+ 
 static void altr_i2c_empty_rx_fifo(struct altr_i2c_dev *idev)
 {
 	size_t rx_fifo_avail = readl(idev->base + ALTR_I2C_RX_FIFO_LVL);
@@ -201,9 +175,7 @@ static void altr_i2c_empty_rx_fifo(struct altr_i2c_dev *idev)
 	}
 }
 
-/*
- * altr_i2c_fill_tx_fifo - Fill TX FIFO from current message buffer.
- */
+ 
 static int altr_i2c_fill_tx_fifo(struct altr_i2c_dev *idev)
 {
 	size_t tx_fifo_avail = idev->fifo_size - readl(idev->base +
@@ -224,7 +196,7 @@ static irqreturn_t altr_i2c_isr_quick(int irq, void *_dev)
 	struct altr_i2c_dev *idev = _dev;
 	irqreturn_t ret = IRQ_HANDLED;
 
-	/* Read IRQ status but only interested in Enabled IRQs. */
+	 
 	idev->isr_status = readl(idev->base + ALTR_I2C_ISR) & idev->isr_mask;
 	if (idev->isr_status)
 		ret = IRQ_WAKE_THREAD;
@@ -247,7 +219,7 @@ static irqreturn_t altr_i2c_isr(int irq, void *_dev)
 	}
 	read = (idev->msg->flags & I2C_M_RD) != 0;
 
-	/* handle Lost Arbitration */
+	 
 	if (unlikely(status & ALTR_I2C_ISR_ARB)) {
 		altr_i2c_int_clear(idev, ALTR_I2C_ISR_ARB);
 		idev->msg_err = -EAGAIN;
@@ -259,20 +231,20 @@ static irqreturn_t altr_i2c_isr(int irq, void *_dev)
 		altr_i2c_stop(idev);
 		finish = true;
 	} else if (read && unlikely(status & ALTR_I2C_ISR_RXOF)) {
-		/* handle RX FIFO Overflow */
+		 
 		altr_i2c_empty_rx_fifo(idev);
 		altr_i2c_int_clear(idev, ALTR_I2C_ISR_RXRDY);
 		altr_i2c_stop(idev);
 		dev_err(idev->dev, "RX FIFO Overflow\n");
 		finish = true;
 	} else if (read && (status & ALTR_I2C_ISR_RXRDY)) {
-		/* RX FIFO needs service? */
+		 
 		altr_i2c_empty_rx_fifo(idev);
 		altr_i2c_int_clear(idev, ALTR_I2C_ISR_RXRDY);
 		if (!idev->msg_len)
 			finish = true;
 	} else if (!read && (status & ALTR_I2C_ISR_TXRDY)) {
-		/* TX FIFO needs service? */
+		 
 		altr_i2c_int_clear(idev, ALTR_I2C_ISR_TXRDY);
 		if (idev->msg_len > 0)
 			altr_i2c_fill_tx_fifo(idev);
@@ -284,7 +256,7 @@ static irqreturn_t altr_i2c_isr(int irq, void *_dev)
 	}
 
 	if (finish) {
-		/* Wait for the Core to finish */
+		 
 		ret = readl_poll_timeout_atomic(idev->base + ALTR_I2C_STATUS,
 						status,
 						!(status & ALTR_I2C_STAT_CORE),
@@ -317,7 +289,7 @@ static int altr_i2c_xfer_msg(struct altr_i2c_dev *idev, struct i2c_msg *msg)
 	reinit_completion(&idev->msg_complete);
 	altr_i2c_core_enable(idev);
 
-	/* Make sure RX FIFO is empty */
+	 
 	do {
 		readl(idev->base + ALTR_I2C_RX_DATA);
 	} while (readl(idev->base + ALTR_I2C_RX_FIFO_LVL));
@@ -327,7 +299,7 @@ static int altr_i2c_xfer_msg(struct altr_i2c_dev *idev, struct i2c_msg *msg)
 	if ((msg->flags & I2C_M_RD) != 0) {
 		imask |= ALTR_I2C_ISER_RXOF_EN | ALTR_I2C_ISER_RXRDY_EN;
 		altr_i2c_int_enable(idev, imask, true);
-		/* write the first byte to start the RX */
+		 
 		altr_i2c_transfer(idev, 0);
 	} else {
 		imask |= ALTR_I2C_ISR_TXRDY;
@@ -419,7 +391,7 @@ static int altr_i2c_probe(struct platform_device *pdev)
 				       &idev->bus_clk_rate);
 	if (ret) {
 		dev_err(&pdev->dev, "Default to 100kHz\n");
-		idev->bus_clk_rate = I2C_MAX_STANDARD_MODE_FREQ;	/* default clock rate */
+		idev->bus_clk_rate = I2C_MAX_STANDARD_MODE_FREQ;	 
 	}
 
 	if (idev->bus_clk_rate > I2C_MAX_FAST_MODE_FREQ) {
@@ -473,7 +445,7 @@ static void altr_i2c_remove(struct platform_device *pdev)
 	i2c_del_adapter(&idev->adapter);
 }
 
-/* Match table for of_platform binding */
+ 
 static const struct of_device_id altr_i2c_of_match[] = {
 	{ .compatible = "altr,softip-i2c-v1.0" },
 	{},

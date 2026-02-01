@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 
 #include <generated/compile.h>
 #include <generated/utsrelease.h>
@@ -24,7 +24,7 @@ struct uts_namespace init_uts_ns = {
 #endif
 };
 
-/* FIXED STRINGS! Don't touch! */
+ 
 const char linux_banner[] =
 	"Linux version " UTS_RELEASE " (" LINUX_COMPILE_BY "@"
 	LINUX_COMPILE_HOST ") (" LINUX_COMPILER ") " UTS_VERSION "\n";

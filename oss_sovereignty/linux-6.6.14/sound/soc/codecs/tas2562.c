@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Driver for the Texas Instruments TAS2562 CODEC
-// Copyright (C) 2019 Texas Instruments Inc.
+
+
+
+
 
 
 #include <linux/module.h>
@@ -25,10 +25,7 @@
 #define TAS2562_FORMATS (SNDRV_PCM_FMTBIT_S16_LE | SNDRV_PCM_FMTBIT_S24_LE |\
 			 SNDRV_PCM_FORMAT_S32_LE)
 
-/* DVC equation involves floating point math
- * round(10^(volume in dB/20)*2^30)
- * so create a lookup table for 2dB step
- */
+ 
 static const unsigned int float_vol_db_lookup[] = {
 0x00000d43, 0x000010b2, 0x00001505, 0x00001a67, 0x00002151,
 0x000029f1, 0x000034cd, 0x00004279, 0x000053af, 0x0000695b,
@@ -198,7 +195,7 @@ static int tas2562_set_dai_tdm_slot(struct snd_soc_dai *dai,
 		break;
 
 	case 0:
-		/* Do not change slot width */
+		 
 		break;
 	default:
 		dev_err(tas2562->dev, "slot width not supported");
@@ -498,7 +495,7 @@ static int tas2562_volume_control_put(struct snd_kcontrol *kcontrol,
 	return 0;
 }
 
-/* Digital Volume Control. From 0 dB to -110 dB in 1 dB steps */
+ 
 static const DECLARE_TLV_DB_SCALE(dvc_tlv, -11000, 100, 0);
 
 static DECLARE_TLV_DB_SCALE(tas2562_dac_tlv, 850, 50, 0);
@@ -677,10 +674,7 @@ static int tas2562_parse_dt(struct tas2562_data *tas2562)
 		tas2562->sdz_gpio = NULL;
 	}
 
-	/*
-	 * The shut-down property is deprecated but needs to be checked for
-	 * backwards compatibility.
-	 */
+	 
 	if (tas2562->sdz_gpio == NULL) {
 		tas2562->sdz_gpio = devm_gpiod_get_optional(dev, "shut-down",
 							      GPIOD_OUT_HIGH);

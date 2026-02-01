@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  linux/init/version.c
- *
- *  Copyright (C) 1992  Theodore Ts'o
- *
- *  May be freely distributed as part of Linux.
- */
+
+ 
 
 #include <generated/compile.h>
 #include <linux/build-salt.h>
@@ -40,11 +34,7 @@ const char linux_proc_banner[] =
 BUILD_SALT;
 BUILD_LTO_INFO;
 
-/*
- * init_uts_ns and linux_banner contain the build version and timestamp,
- * which are really fixed at the very last step of build process.
- * They are compiled with __weak first, and without __weak later.
- */
+ 
 
 struct uts_namespace init_uts_ns __weak;
 const char linux_banner[] __weak;

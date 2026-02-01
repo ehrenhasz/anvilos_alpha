@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Rockchip PCIE3.0 phy driver
- *
- * Copyright (C) 2022 Rockchip Electronics Co., Ltd.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -19,7 +15,7 @@
 #include <linux/regmap.h>
 #include <linux/reset.h>
 
-/* Register for RK3568 */
+ 
 #define GRF_PCIE30PHY_CON1			0x4
 #define GRF_PCIE30PHY_CON6			0x18
 #define GRF_PCIE30PHY_CON9			0x24
@@ -30,7 +26,7 @@
 
 #define RK3568_BIFURCATION_LANE_0_1		BIT(0)
 
-/* Register for RK3588 */
+ 
 #define PHP_GRF_PCIESEL_CON			0x100
 #define RK3588_PCIE3PHY_GRF_CMN_CON0		0x0
 #define RK3588_PCIE3PHY_GRF_PHY0_STATUS1	0x904
@@ -46,9 +42,9 @@ struct rockchip_p3phy_ops;
 struct rockchip_p3phy_priv {
 	const struct rockchip_p3phy_ops *ops;
 	void __iomem *mmio;
-	/* mode: RC, EP */
+	 
 	int mode;
-	/* pcie30_phymode: Aggregation, Bifurcation */
+	 
 	int pcie30_phymode;
 	struct regmap *phy_grf;
 	struct regmap *pipe_grf;
@@ -68,7 +64,7 @@ static int rockchip_p3phy_set_mode(struct phy *phy, enum phy_mode mode, int subm
 {
 	struct rockchip_p3phy_priv *priv = phy_get_drvdata(phy);
 
-	/* Actually We don't care EP/RC mode, but just record it */
+	 
 	switch (submode) {
 	case PHY_MODE_PCIE_RC:
 		priv->mode = PHY_MODE_PCIE_RC;
@@ -91,7 +87,7 @@ static int rockchip_p3phy_rk3568_init(struct rockchip_p3phy_priv *priv)
 	int ret;
 	u32 reg;
 
-	/* Deassert PCIe PMA output clamp mode */
+	 
 	regmap_write(priv->phy_grf, GRF_PCIE30PHY_CON9, GRF_PCIE30PHY_DA_OCM);
 
 	for (int i = 0; i < priv->num_lanes; i++) {
@@ -100,7 +96,7 @@ static int rockchip_p3phy_rk3568_init(struct rockchip_p3phy_priv *priv)
 			bifurcation = true;
 	}
 
-	/* Set bifurcation if needed, and it doesn't care RC/EP */
+	 
 	if (bifurcation) {
 		dev_info(&phy->dev, "bifurcation enabled\n");
 		regmap_write(priv->phy_grf, GRF_PCIE30PHY_CON6,
@@ -135,10 +131,10 @@ static int rockchip_p3phy_rk3588_init(struct rockchip_p3phy_priv *priv)
 	u8 mode = 0;
 	int ret;
 
-	/* Deassert PCIe PMA output clamp mode */
+	 
 	regmap_write(priv->phy_grf, RK3588_PCIE3PHY_GRF_CMN_CON0, BIT(8) | BIT(24));
 
-	/* Set bifurcation if needed */
+	 
 	for (int i = 0; i < priv->num_lanes; i++) {
 		if (!priv->lanes[i])
 			mode |= (BIT(i) << 3);
@@ -159,7 +155,7 @@ static int rockchip_p3phy_rk3588_init(struct rockchip_p3phy_priv *priv)
 
 	regmap_write(priv->phy_grf, RK3588_PCIE3PHY_GRF_CMN_CON0, (0x7<<16) | reg);
 
-	/* Set pcie1ln_sel in PHP_GRF_PCIESEL_CON */
+	 
 	if (!IS_ERR(priv->pipe_grf)) {
 		reg = (mode & (BIT(6) | BIT(7))) >> 6;
 		if (reg)
@@ -270,7 +266,7 @@ static int rockchip_p3phy_probe(struct platform_device *pdev)
 							     priv->lanes, 2,
 							     ARRAY_SIZE(priv->lanes));
 
-	/* if no data-lanes assume aggregation */
+	 
 	if (priv->num_lanes == -EINVAL) {
 		dev_dbg(dev, "no data-lanes property found\n");
 		priv->num_lanes = 1;

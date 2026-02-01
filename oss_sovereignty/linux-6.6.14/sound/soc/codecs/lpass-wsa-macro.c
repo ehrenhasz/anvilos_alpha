@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-// Copyright (c) 2018-2020, The Linux Foundation. All rights reserved.
+
+
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -274,14 +274,14 @@ enum {
 };
 
 enum {
-	WSA_MACRO_COMP1, /* SPK_L */
-	WSA_MACRO_COMP2, /* SPK_R */
+	WSA_MACRO_COMP1,  
+	WSA_MACRO_COMP2,  
 	WSA_MACRO_COMP_MAX
 };
 
 enum {
-	WSA_MACRO_SOFTCLIP0, /* RX0 */
-	WSA_MACRO_SOFTCLIP1, /* RX1 */
+	WSA_MACRO_SOFTCLIP0,  
+	WSA_MACRO_SOFTCLIP1,  
 	WSA_MACRO_SOFTCLIP_MAX
 };
 
@@ -309,21 +309,21 @@ struct interp_sample_rate {
 };
 
 static struct interp_sample_rate int_prim_sample_rate_val[] = {
-	{8000, 0x0},	/* 8K */
-	{16000, 0x1},	/* 16K */
-	{24000, -EINVAL},/* 24K */
-	{32000, 0x3},	/* 32K */
-	{48000, 0x4},	/* 48K */
-	{96000, 0x5},	/* 96K */
-	{192000, 0x6},	/* 192K */
-	{384000, 0x7},	/* 384K */
-	{44100, 0x8}, /* 44.1K */
+	{8000, 0x0},	 
+	{16000, 0x1},	 
+	{24000, -EINVAL}, 
+	{32000, 0x3},	 
+	{48000, 0x4},	 
+	{96000, 0x5},	 
+	{192000, 0x6},	 
+	{384000, 0x7},	 
+	{44100, 0x8},  
 };
 
 static struct interp_sample_rate int_mix_sample_rate_val[] = {
-	{48000, 0x4},	/* 48K */
-	{96000, 0x5},	/* 96K */
-	{192000, 0x6},	/* 192K */
+	{48000, 0x4},	 
+	{96000, 0x5},	 
+	{192000, 0x6},	 
 };
 
 enum {
@@ -389,7 +389,7 @@ static const char * const wsa_macro_ear_spkr_pa_gain_text[] = {
 static SOC_ENUM_SINGLE_EXT_DECL(wsa_macro_ear_spkr_pa_gain_enum,
 				wsa_macro_ear_spkr_pa_gain_text);
 
-/* RX INT0 */
+ 
 static const struct soc_enum rx0_prim_inp0_chain_enum =
 	SOC_ENUM_SINGLE(CDC_WSA_RX_INP_MUX_RX_INT0_CFG0,
 		0, 7, rx_text);
@@ -424,7 +424,7 @@ static const struct snd_kcontrol_new rx0_mix_mux =
 static const struct snd_kcontrol_new rx0_sidetone_mix_mux =
 	SOC_DAPM_ENUM("WSA_RX0 SIDETONE MIX Mux", rx0_sidetone_mix_enum);
 
-/* RX INT1 */
+ 
 static const struct soc_enum rx1_prim_inp0_chain_enum =
 	SOC_ENUM_SINGLE(CDC_WSA_RX_INP_MUX_RX_INT1_CFG0,
 		0, 7, rx_text);
@@ -468,7 +468,7 @@ static const struct snd_kcontrol_new rx_mix_ec1_mux =
 	SOC_DAPM_ENUM("WSA RX_MIX EC1_Mux", rx_mix_ec1_enum);
 
 static const struct reg_default wsa_defaults[] = {
-	/* WSA Macro */
+	 
 	{ CDC_WSA_CLK_RST_CTRL_MCLK_CONTROL, 0x00},
 	{ CDC_WSA_CLK_RST_CTRL_FS_CNT_CONTROL, 0x00},
 	{ CDC_WSA_CLK_RST_CTRL_SWR_CONTROL, 0x00},
@@ -770,7 +770,7 @@ static bool wsa_is_readable_register(struct device *dev, unsigned int reg)
 
 static bool wsa_is_volatile_register(struct device *dev, unsigned int reg)
 {
-	/* Update volatile list for rx/tx macros */
+	 
 	switch (reg) {
 	case CDC_WSA_INTR_CTRL_PIN1_STATUS0:
 	case CDC_WSA_INTR_CTRL_PIN2_STATUS0:
@@ -794,7 +794,7 @@ static bool wsa_is_volatile_register(struct device *dev, unsigned int reg)
 static const struct regmap_config wsa_regmap_config = {
 	.name = "wsa_macro",
 	.reg_bits = 16,
-	.val_bits = 32, /* 8 but with 32 bit read/write */
+	.val_bits = 32,  
 	.reg_stride = 4,
 	.cache_type = REGCACHE_FLAT,
 	.reg_defaults = wsa_defaults,
@@ -805,15 +805,7 @@ static const struct regmap_config wsa_regmap_config = {
 	.readable_reg = wsa_is_readable_register,
 };
 
-/**
- * wsa_macro_set_spkr_mode - Configures speaker compander and smartboost
- * settings based on speaker mode.
- *
- * @component: codec instance
- * @mode: Indicates speaker configuration mode.
- *
- * Returns 0 on success or -EINVAL on error.
- */
+ 
 int wsa_macro_set_spkr_mode(struct snd_soc_component *component, int mode)
 {
 	struct wsa_macro *wsa = snd_soc_component_get_drvdata(component);
@@ -864,11 +856,7 @@ static int wsa_macro_set_prim_interpolator_rate(struct snd_soc_dai *dai,
 
 		int_mux_cfg0 = CDC_WSA_RX_INP_MUX_RX_INT0_CFG0;
 
-		/*
-		 * Loop through all interpolator MUX inputs and find out
-		 * to which interpolator input, the cdc_dma rx port
-		 * is connected
-		 */
+		 
 		for (j = 0; j < NUM_INTERPOLATORS; j++) {
 			int_mux_cfg1 = int_mux_cfg0 + WSA_MACRO_MUX_CFG1_OFFSET;
 			inp0_sel = snd_soc_component_read_field(component, int_mux_cfg0, 
@@ -883,7 +871,7 @@ static int wsa_macro_set_prim_interpolator_rate(struct snd_soc_dai *dai,
 			    (inp2_sel == int_1_mix1_inp + INTn_1_INP_SEL_RX0)) {
 				int_fs_reg = CDC_WSA_RX0_RX_PATH_CTL +
 					     WSA_MACRO_RX_PATH_OFFSET * j;
-				/* sample_rate is in Hz */
+				 
 				snd_soc_component_update_bits(component, int_fs_reg,
 							      WSA_MACRO_FS_RATE_MASK,
 							      int_prim_fs_rate_reg_val);
@@ -940,7 +928,7 @@ static int wsa_macro_set_interpolator_rate(struct snd_soc_dai *dai,
 	int rate_val = 0;
 	int i, ret;
 
-	/* set mixing path rate */
+	 
 	for (i = 0; i < ARRAY_SIZE(int_mix_sample_rate_val); i++) {
 		if (sample_rate == int_mix_sample_rate_val[i].sample_rate) {
 			rate_val = int_mix_sample_rate_val[i].rate_val;
@@ -954,7 +942,7 @@ static int wsa_macro_set_interpolator_rate(struct snd_soc_dai *dai,
 	if (ret < 0)
 		return ret;
 prim_rate:
-	/* set primary path sample rate */
+	 
 	for (i = 0; i < ARRAY_SIZE(int_prim_sample_rate_val); i++) {
 		if (sample_rate == int_prim_sample_rate_val[i].sample_rate) {
 			rate_val = int_prim_sample_rate_val[i].rate_val;
@@ -1110,7 +1098,7 @@ static void wsa_macro_mclk_enable(struct wsa_macro *wsa, bool mclk_enable)
 		if (wsa->wsa_mclk_users == 0) {
 			regcache_mark_dirty(regmap);
 			regcache_sync(regmap);
-			/* 9.6MHz MCLK, set value 0x00 if other frequency */
+			 
 			regmap_update_bits(regmap, CDC_WSA_TOP_FREQ_MCLK, 0x01, 0x01);
 			regmap_update_bits(regmap,
 					   CDC_WSA_CLK_RST_CTRL_MCLK_CONTROL,
@@ -1170,7 +1158,7 @@ static int wsa_macro_enable_vi_feedback(struct snd_soc_dapm_widget *w,
 
 	switch (event) {
 	case SND_SOC_DAPM_POST_PMU:
-			/* Enable V&I sensing */
+			 
 		snd_soc_component_update_bits(component, tx_reg0,
 					      CDC_WSA_TX_SPKR_PROT_RESET_MASK,
 					      CDC_WSA_TX_SPKR_PROT_RESET);
@@ -1197,7 +1185,7 @@ static int wsa_macro_enable_vi_feedback(struct snd_soc_dapm_widget *w,
 					      CDC_WSA_TX_SPKR_PROT_NO_RESET);
 		break;
 	case SND_SOC_DAPM_POST_PMD:
-		/* Disable V&I sensing */
+		 
 		snd_soc_component_update_bits(component, tx_reg0,
 					      CDC_WSA_TX_SPKR_PROT_RESET_MASK,
 					      CDC_WSA_TX_SPKR_PROT_RESET);
@@ -1305,7 +1293,7 @@ static int wsa_macro_config_compander(struct snd_soc_component *component,
 					(comp * WSA_MACRO_RX_PATH_OFFSET);
 
 	if (SND_SOC_DAPM_EVENT_ON(event)) {
-		/* Enable Compander Clock */
+		 
 		snd_soc_component_update_bits(component, comp_ctl0_reg,
 					      CDC_WSA_COMPANDER_CLK_EN_MASK,
 					      CDC_WSA_COMPANDER_CLK_ENABLE);
@@ -1395,10 +1383,10 @@ static int wsa_macro_config_softclip(struct snd_soc_component *component,
 				(softclip_path * WSA_MACRO_RX_SOFTCLIP_OFFSET);
 
 	if (SND_SOC_DAPM_EVENT_ON(event)) {
-		/* Enable Softclip clock and mux */
+		 
 		wsa_macro_enable_softclip_clk(component, wsa, softclip_path,
 					      true);
-		/* Enable Softclip control */
+		 
 		snd_soc_component_update_bits(component, softclip_ctrl_reg,
 					      CDC_WSA_SOFTCLIP_EN_MASK,
 					      CDC_WSA_SOFTCLIP_ENABLE);
@@ -1539,11 +1527,11 @@ static int wsa_macro_config_ear_spkr_gain(struct snd_soc_component *component,
 	int comp_gain_offset, val;
 
 	switch (wsa->spkr_mode) {
-	/* Compander gain in WSA_MACRO_SPKR_MODE1 case is 12 dB */
+	 
 	case WSA_MACRO_SPKR_MODE_1:
 		comp_gain_offset = -12;
 		break;
-	/* Default case compander gain is 15 dB */
+	 
 	default:
 		comp_gain_offset = -15;
 		break;
@@ -1551,20 +1539,17 @@ static int wsa_macro_config_ear_spkr_gain(struct snd_soc_component *component,
 
 	switch (event) {
 	case SND_SOC_DAPM_POST_PMU:
-		/* Apply ear spkr gain only if compander is enabled */
+		 
 		if (wsa->comp_enabled[WSA_MACRO_COMP1] &&
 		    (gain_reg == CDC_WSA_RX0_RX_VOL_CTL) &&
 		    (wsa->ear_spkr_gain != 0)) {
-			/* For example, val is -8(-12+5-1) for 4dB of gain */
+			 
 			val = comp_gain_offset + wsa->ear_spkr_gain - 1;
 			snd_soc_component_write(component, gain_reg, val);
 		}
 		break;
 	case SND_SOC_DAPM_POST_PMD:
-		/*
-		 * Reset RX0 volume to 0 dB if compander is enabled and
-		 * ear_spkr_gain is non-zero.
-		 */
+		 
 		if (wsa->comp_enabled[WSA_MACRO_COMP1] &&
 		    (gain_reg == CDC_WSA_RX0_RX_VOL_CTL) &&
 		    (wsa->ear_spkr_gain != 0)) {
@@ -1597,13 +1582,13 @@ static int wsa_macro_enable_interpolator(struct snd_soc_dapm_widget *w,
 
 	switch (event) {
 	case SND_SOC_DAPM_PRE_PMU:
-		/* Reset if needed */
+		 
 		wsa_macro_enable_prim_interpolator(component, reg, event);
 		break;
 	case SND_SOC_DAPM_POST_PMU:
 		wsa_macro_config_compander(component, w->shift, event);
 		wsa_macro_config_softclip(component, w->shift, event);
-		/* apply gain after int clk is enabled */
+		 
 		if ((wsa->spkr_gain_offset == WSA_MACRO_GAIN_OFFSET_M1P5_DB) &&
 		    (wsa->comp_enabled[WSA_MACRO_COMP1] ||
 		     wsa->comp_enabled[WSA_MACRO_COMP2])) {
@@ -1749,7 +1734,7 @@ static int wsa_macro_enable_echo(struct snd_soc_dapm_widget *w,
 					     CDC_WSA_EC_HQ_EC_CLK_EN_MASK,
 					     CDC_WSA_EC_HQ_EC_CLK_ENABLE);
 		ec_hq_reg = CDC_WSA_EC_HQ0_EC_REF_HQ_CFG0 + 0x40 * ec_tx;
-		/* default set to 48k */
+		 
 		snd_soc_component_update_bits(component, ec_hq_reg,
 				      CDC_WSA_EC_HQ_EC_REF_PCM_RATE_MASK,
 				      CDC_WSA_EC_HQ_EC_REF_PCM_RATE_48K);
@@ -2145,7 +2130,7 @@ static const struct snd_soc_dapm_widget wsa_macro_dapm_widgets[] = {
 };
 
 static const struct snd_soc_dapm_route wsa_audio_map[] = {
-	/* VI Feedback */
+	 
 	{"WSA_AIF_VI Mixer", "WSA_SPKR_VI_1", "VIINPUT_WSA"},
 	{"WSA_AIF_VI Mixer", "WSA_SPKR_VI_2", "VIINPUT_WSA"},
 	{"WSA AIF_VI", NULL, "WSA_AIF_VI Mixer"},
@@ -2295,7 +2280,7 @@ static int wsa_macro_component_probe(struct snd_soc_component *comp)
 
 	wsa->spkr_gain_offset = WSA_MACRO_GAIN_OFFSET_M1P5_DB;
 
-	/* set SPKR rate to FS_2P4_3P072 */
+	 
 	snd_soc_component_update_bits(comp, CDC_WSA_RX0_RX_PATH_CFG1,
 				CDC_WSA_RX_PATH_SPKR_RATE_MASK,
 				CDC_WSA_RX_PATH_SPKR_RATE_FS_2P4_3P072);
@@ -2431,7 +2416,7 @@ static int wsa_macro_probe(struct platform_device *pdev)
 
 	wsa->dev = dev;
 
-	/* set MCLK and NPL rates */
+	 
 	clk_set_rate(wsa->mclk, WSA_MACRO_MCLK_FREQ);
 	clk_set_rate(wsa->npl, WSA_MACRO_MCLK_FREQ);
 
@@ -2455,14 +2440,14 @@ static int wsa_macro_probe(struct platform_device *pdev)
 	if (ret)
 		goto err_fsgen;
 
-	/* reset swr ip */
+	 
 	regmap_update_bits(wsa->regmap, CDC_WSA_CLK_RST_CTRL_SWR_CONTROL,
 			   CDC_WSA_SWR_RST_EN_MASK, CDC_WSA_SWR_RST_ENABLE);
 
 	regmap_update_bits(wsa->regmap, CDC_WSA_CLK_RST_CTRL_SWR_CONTROL,
 			   CDC_WSA_SWR_CLK_EN_MASK, CDC_WSA_SWR_CLK_ENABLE);
 
-	/* Bring out of reset */
+	 
 	regmap_update_bits(wsa->regmap, CDC_WSA_CLK_RST_CTRL_SWR_CONTROL,
 			   CDC_WSA_SWR_RST_EN_MASK, CDC_WSA_SWR_RST_DISABLE);
 

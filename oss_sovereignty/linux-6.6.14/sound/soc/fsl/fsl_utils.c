@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Freescale ALSA SoC Machine driver utility
-//
-// Author: Timur Tabi <timur@freescale.com>
-//
-// Copyright 2010 Freescale Semiconductor, Inc.
+
+
+
+
+
+
+
 
 #include <linux/clk.h>
 #include <linux/clk-provider.h>
@@ -14,18 +14,7 @@
 
 #include "fsl_utils.h"
 
-/**
- * fsl_asoc_get_dma_channel - determine the dma channel for a SSI node
- *
- * @ssi_np: pointer to the SSI device tree node
- * @name: name of the phandle pointing to the dma channel
- * @dai: ASoC DAI link pointer to be filled with platform_name
- * @dma_channel_id: dma channel id to be returned
- * @dma_id: dma id to be returned
- *
- * This function determines the dma and channel id for given SSI node.  It
- * also discovers the platform_name for the ASoC DAI link.
- */
+ 
 int fsl_asoc_get_dma_channel(struct device_node *ssi_np,
 			     const char *name,
 			     struct snd_soc_dai_link *dai,
@@ -46,14 +35,7 @@ int fsl_asoc_get_dma_channel(struct device_node *ssi_np,
 		return -EINVAL;
 	}
 
-	/* Determine the dev_name for the device_node.  This code mimics the
-	 * behavior of of_device_make_bus_id(). We need this because ASoC uses
-	 * the dev_name() of the device to match the platform (DMA) device with
-	 * the CPU (SSI) device.  It's all ugly and hackish, but it works (for
-	 * now).
-	 *
-	 * dai->platform name should already point to an allocated buffer.
-	 */
+	 
 	ret = of_address_to_resource(dma_channel_np, 0, &res);
 	if (ret) {
 		of_node_put(dma_channel_np);
@@ -85,15 +67,7 @@ int fsl_asoc_get_dma_channel(struct device_node *ssi_np,
 }
 EXPORT_SYMBOL(fsl_asoc_get_dma_channel);
 
-/**
- * fsl_asoc_get_pll_clocks - get two PLL clock source
- *
- * @dev: device pointer
- * @pll8k_clk: PLL clock pointer for 8kHz
- * @pll11k_clk: PLL clock pointer for 11kHz
- *
- * This function get two PLL clock source
- */
+ 
 void fsl_asoc_get_pll_clocks(struct device *dev, struct clk **pll8k_clk,
 			     struct clk **pll11k_clk)
 {
@@ -107,17 +81,7 @@ void fsl_asoc_get_pll_clocks(struct device *dev, struct clk **pll8k_clk,
 }
 EXPORT_SYMBOL(fsl_asoc_get_pll_clocks);
 
-/**
- * fsl_asoc_reparent_pll_clocks - set clock parent if necessary
- *
- * @dev: device pointer
- * @clk: root clock pointer
- * @pll8k_clk: PLL clock pointer for 8kHz
- * @pll11k_clk: PLL clock pointer for 11kHz
- * @ratio: target requency for root clock
- *
- * This function set root clock parent according to the target ratio
- */
+ 
 void fsl_asoc_reparent_pll_clocks(struct device *dev, struct clk *clk,
 				  struct clk *pll8k_clk,
 				  struct clk *pll11k_clk, u64 ratio)

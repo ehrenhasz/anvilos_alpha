@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- *  Pvpanic Device Support
- *
- *  Copyright (C) 2013 Fujitsu.
- *  Copyright (C) 2018 ZTE.
- *  Copyright (C) 2021 Oracle.
- */
+
+ 
 
 #include <linux/io.h>
 #include <linux/kernel.h>
@@ -57,10 +51,7 @@ pvpanic_panic_notify(struct notifier_block *nb, unsigned long code, void *unused
 	return NOTIFY_DONE;
 }
 
-/*
- * Call our notifier very early on panic, deferring the
- * action taken to the hypervisor.
- */
+ 
 static struct notifier_block pvpanic_panic_nb = {
 	.notifier_call = pvpanic_panic_notify,
 	.priority = INT_MAX,

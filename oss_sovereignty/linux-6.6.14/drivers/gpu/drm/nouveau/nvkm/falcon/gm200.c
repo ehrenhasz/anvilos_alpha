@@ -1,24 +1,4 @@
-/*
- * Copyright 2022 Red Hat Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- */
+ 
 #include "priv.h"
 
 #include <core/memory.h>
@@ -49,7 +29,7 @@ gm200_flcn_pio_dmem_rd(struct nvkm_falcon *falcon, u8 port, const u8 *img, int l
 		len -= 4;
 	}
 
-	/* Sigh.  Tegra PMU FW's init message... */
+	 
 	if (len) {
 		u32 data = nvkm_falcon_rd32(falcon, 0x1c4 + (port * 8));
 
@@ -131,7 +111,7 @@ gm200_flcn_bind_stat(struct nvkm_falcon *falcon, bool intr)
 void
 gm200_flcn_bind_inst(struct nvkm_falcon *falcon, int target, u64 addr)
 {
-	nvkm_falcon_mask(falcon, 0x604, 0x00000007, 0x00000000); /* DMAIDX_VIRT */
+	nvkm_falcon_mask(falcon, 0x604, 0x00000007, 0x00000000);  
 	nvkm_falcon_wr32(falcon, 0x054, (1 << 30) | (target << 28) | (addr >> 12));
 	nvkm_falcon_mask(falcon, 0x090, 0x00010000, 0x00010000);
 	nvkm_falcon_mask(falcon, 0x0a4, 0x00000008, 0x00000008);

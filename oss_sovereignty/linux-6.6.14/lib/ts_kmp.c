@@ -1,30 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * lib/ts_kmp.c		Knuth-Morris-Pratt text search implementation
- *
- * Authors:	Thomas Graf <tgraf@suug.ch>
- *
- * ==========================================================================
- * 
- *   Implements a linear-time string-matching algorithm due to Knuth,
- *   Morris, and Pratt [1]. Their algorithm avoids the explicit
- *   computation of the transition function DELTA altogether. Its
- *   matching time is O(n), for n being length(text), using just an
- *   auxiliary function PI[1..m], for m being length(pattern),
- *   precomputed from the pattern in time O(m). The array PI allows
- *   the transition function DELTA to be computed efficiently
- *   "on the fly" as needed. Roughly speaking, for any state
- *   "q" = 0,1,...,m and any character "a" in SIGMA, the value
- *   PI["q"] contains the information that is independent of "a" and
- *   is needed to compute DELTA("q", "a") [2]. Since the array PI
- *   has only m entries, whereas DELTA has O(m|SIGMA|) entries, we
- *   save a factor of |SIGMA| in the preprocessing time by computing
- *   PI rather than DELTA.
- *
- *   [1] Cormen, Leiserson, Rivest, Stein
- *       Introdcution to Algorithms, 2nd Edition, MIT Press
- *   [2] See finite automaton theory
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/types.h>

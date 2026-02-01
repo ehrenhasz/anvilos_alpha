@@ -1,25 +1,4 @@
-/*
- * Copyright 2020 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 #include "amdgpu.h"
 #include "amdgpu_atombios.h"
 #include "hdp_v6_0.h"
@@ -51,13 +30,12 @@ static void hdp_v6_0_update_clock_gating(struct amdgpu_device *adev,
 	hdp_clk_cntl = hdp_clk_cntl1 = RREG32_SOC15(HDP, 0,regHDP_CLK_CNTL);
 	hdp_mem_pwr_cntl = RREG32_SOC15(HDP, 0, regHDP_MEM_POWER_CTRL);
 
-	/* Before doing clock/power mode switch,
-	 * forced on IPH & RC clock */
+	 
 	hdp_clk_cntl = REG_SET_FIELD(hdp_clk_cntl, HDP_CLK_CNTL,
 				     RC_MEM_CLK_SOFT_OVERRIDE, 1);
 	WREG32_SOC15(HDP, 0, regHDP_CLK_CNTL, hdp_clk_cntl);
 
-	/* disable clock and power gating before any changing */
+	 
 	hdp_mem_pwr_cntl = REG_SET_FIELD(hdp_mem_pwr_cntl, HDP_MEM_POWER_CTRL,
 					 ATOMIC_MEM_POWER_CTRL_EN, 0);
 	hdp_mem_pwr_cntl = REG_SET_FIELD(hdp_mem_pwr_cntl, HDP_MEM_POWER_CTRL,
@@ -76,9 +54,9 @@ static void hdp_v6_0_update_clock_gating(struct amdgpu_device *adev,
 					 RC_MEM_POWER_SD_EN, 0);
 	WREG32_SOC15(HDP, 0, regHDP_MEM_POWER_CTRL, hdp_mem_pwr_cntl);
 
-	/* Already disabled above. The actions below are for "enabled" only */
+	 
 	if (enable) {
-		/* only one clock gating mode (LS/DS/SD) can be enabled */
+		 
 		if (adev->cg_flags & AMD_CG_SUPPORT_HDP_SD) {
 			hdp_mem_pwr_cntl = REG_SET_FIELD(hdp_mem_pwr_cntl,
 							 HDP_MEM_POWER_CTRL,
@@ -102,8 +80,7 @@ static void hdp_v6_0_update_clock_gating(struct amdgpu_device *adev,
 							 RC_MEM_POWER_DS_EN, 1);
 		}
 
-		/* confirmed that IPH_MEM_POWER_CTRL_EN and RC_MEM_POWER_CTRL_EN have to
-		 * be set for SRAM LS/DS/SD */
+		 
 		if (adev->cg_flags & (AMD_CG_SUPPORT_HDP_LS | AMD_CG_SUPPORT_HDP_DS |
 				      AMD_CG_SUPPORT_HDP_SD)) {
 			hdp_mem_pwr_cntl = REG_SET_FIELD(hdp_mem_pwr_cntl, HDP_MEM_POWER_CTRL,
@@ -114,7 +91,7 @@ static void hdp_v6_0_update_clock_gating(struct amdgpu_device *adev,
 		}
 	}
 
-	/* disable IPH & RC clock override after clock/power mode changing */
+	 
 	hdp_clk_cntl = REG_SET_FIELD(hdp_clk_cntl, HDP_CLK_CNTL,
 				     RC_MEM_CLK_SOFT_OVERRIDE, 0);
 	WREG32_SOC15(HDP, 0, regHDP_CLK_CNTL, hdp_clk_cntl);
@@ -125,7 +102,7 @@ static void hdp_v6_0_get_clockgating_state(struct amdgpu_device *adev,
 {
 	uint32_t tmp;
 
-	/* AMD_CG_SUPPORT_HDP_LS/DS/SD */
+	 
 	tmp = RREG32_SOC15(HDP, 0, regHDP_MEM_POWER_CTRL);
 	if (tmp & HDP_MEM_POWER_CTRL__ATOMIC_MEM_POWER_LS_EN_MASK)
 		*flags |= AMD_CG_SUPPORT_HDP_LS;

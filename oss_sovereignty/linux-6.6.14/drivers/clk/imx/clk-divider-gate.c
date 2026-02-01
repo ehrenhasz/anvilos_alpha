@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright 2018 NXP.
- *   Dong Aisheng <aisheng.dong@nxp.com>
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/err.h>
@@ -113,7 +110,7 @@ static int clk_divider_enable(struct clk_hw *hw)
 	}
 
 	spin_lock_irqsave(div->lock, flags);
-	/* restore div val */
+	 
 	val = readl(div->reg);
 	val |= div_gate->cached_val << div->shift;
 	writel(val, div->reg);
@@ -132,7 +129,7 @@ static void clk_divider_disable(struct clk_hw *hw)
 
 	spin_lock_irqsave(div->lock, flags);
 
-	/* store the current div val */
+	 
 	val = readl(div->reg) >> div->shift;
 	val &= clk_div_mask(div->width);
 	div_gate->cached_val = val;
@@ -166,13 +163,7 @@ static const struct clk_ops clk_divider_gate_ops = {
 	.is_enabled = clk_divider_is_enabled,
 };
 
-/*
- * NOTE: In order to reuse the most code from the common divider,
- * we also design our divider following the way that provids an extra
- * clk_divider_flags, however it's fixed to CLK_DIVIDER_ONE_BASED by
- * default as our HW is. Besides that it supports only CLK_DIVIDER_READ_ONLY
- * flag which can be specified by user flexibly.
- */
+ 
 struct clk_hw *imx_clk_hw_divider_gate(const char *name, const char *parent_name,
 				    unsigned long flags, void __iomem *reg,
 				    u8 shift, u8 width, u8 clk_divider_flags,
@@ -205,7 +196,7 @@ struct clk_hw *imx_clk_hw_divider_gate(const char *name, const char *parent_name
 	div_gate->divider.table = table;
 	div_gate->divider.hw.init = &init;
 	div_gate->divider.flags = CLK_DIVIDER_ONE_BASED | clk_divider_flags;
-	/* cache gate status */
+	 
 	val = readl(reg) >> shift;
 	val &= clk_div_mask(width);
 	div_gate->cached_val = val;

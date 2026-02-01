@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #include <linux/sysctl.h>
 #include <net/lwtunnel.h>
@@ -50,4 +50,4 @@ int nf_hooks_lwtunnel_sysctl_handler(struct ctl_table *table, int write,
 	return ret;
 }
 EXPORT_SYMBOL_GPL(nf_hooks_lwtunnel_sysctl_handler);
-#endif /* CONFIG_SYSCTL */
+#endif  

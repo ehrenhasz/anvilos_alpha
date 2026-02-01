@@ -1,36 +1,4 @@
-/*
- * Copyright (c) 2004, 2005 Topspin Communications.  All rights reserved.
- * Copyright (c) 2005 Mellanox Technologies Ltd.  All rights reserved.
- * Copyright (c) 2005 Sun Microsystems, Inc. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 
 #include "core_priv.h"
 
@@ -306,7 +274,7 @@ static ssize_t rate_show(struct ib_device *ibdev, u32 port_num,
 {
 	struct ib_port_attr attr;
 	char *speed = "";
-	int rate;		/* in deci-Gb/sec */
+	int rate;		 
 	ssize_t ret;
 
 	ret = ib_query_port(ibdev, port_num, &attr);
@@ -343,7 +311,7 @@ static ssize_t rate_show(struct ib_device *ibdev, u32 port_num,
 		rate = 1000;
 		break;
 	case IB_SPEED_SDR:
-	default:		/* default to SDR for invalid rates */
+	default:		 
 		speed = " SDR";
 		rate = 25;
 		break;
@@ -466,7 +434,7 @@ static ssize_t _show_port_gid_attr(
 
 	gid_attr = rdma_get_gid_attr(ibdev, port_num, tab_attr->index);
 	if (IS_ERR(gid_attr))
-		/* -EINVAL is returned for user space compatibility reasons. */
+		 
 		return -EINVAL;
 
 	ret = print(gid_attr, buf);
@@ -486,15 +454,7 @@ static ssize_t show_port_gid(struct ib_device *ibdev, u32 port_num,
 	if (IS_ERR(gid_attr)) {
 		const union ib_gid zgid = {};
 
-		/* If reading GID fails, it is likely due to GID entry being
-		 * empty (invalid) or reserved GID in the table.  User space
-		 * expects to read GID table entries as long as it given index
-		 * is within GID table size.  Administrative/debugging tool
-		 * fails to query rest of the GID entries if it hits error
-		 * while querying a GID of the given index.  To avoid user
-		 * space throwing such error on fail to read gid, return zero
-		 * GID as before. This maintains backward compatibility.
-		 */
+		 
 		return sysfs_emit(buf, "%pI6\n", zgid.raw);
 	}
 
@@ -547,10 +507,7 @@ struct port_table_attribute port_pma_attr_ext_##_name = {		\
 	.attr_id = IB_PMA_PORT_COUNTERS_EXT,				\
 }
 
-/*
- * Get a Perfmgmt MAD block of data.
- * Returns error code or the number of bytes retrieved.
- */
+ 
 static int get_perf_mad(struct ib_device *dev, int port_num, __be16 attr,
 		void *data, int offset, size_t size)
 {
@@ -577,7 +534,7 @@ static int get_perf_mad(struct ib_device *dev, int port_num, __be16 attr,
 	in_mad->mad_hdr.attr_id       = attr;
 
 	if (attr != IB_PMA_CLASS_PORT_INFO)
-		in_mad->data[41] = port_num;	/* PortSelect field */
+		in_mad->data[41] = port_num;	 
 
 	if ((dev->ops.process_mad(dev, IB_MAD_IGNORE_MKEY, port_num, NULL, NULL,
 				  in_mad, out_mad, &mad_size,
@@ -654,9 +611,7 @@ static PORT_PMA_ATTR(port_xmit_packets		    , 14, 32, 256);
 static PORT_PMA_ATTR(port_rcv_packets		    , 15, 32, 288);
 static PORT_PMA_ATTR(port_xmit_wait		    ,  0, 32, 320);
 
-/*
- * Counters added by extended set
- */
+ 
 static PORT_PMA_ATTR_EXT(port_xmit_data		    , 64,  64);
 static PORT_PMA_ATTR_EXT(port_rcv_data		    , 64, 128);
 static PORT_PMA_ATTR_EXT(port_xmit_packets	    , 64, 192);
@@ -783,10 +738,7 @@ static struct kobj_type gid_attr_type = {
 	.release        = ib_port_gid_attr_release
 };
 
-/*
- * Figure out which counter table to use depending on
- * the device capabilities.
- */
+ 
 static const struct attribute_group *get_counter_table(struct ib_device *dev,
 						       int port_num)
 {
@@ -795,15 +747,15 @@ static const struct attribute_group *get_counter_table(struct ib_device *dev,
 	if (get_perf_mad(dev, port_num, IB_PMA_CLASS_PORT_INFO,
 				&cpi, 40, sizeof(cpi)) >= 0) {
 		if (cpi.capability_mask & IB_PMA_CLASS_CAP_EXT_WIDTH)
-			/* We have extended counters */
+			 
 			return &pma_group_ext;
 
 		if (cpi.capability_mask & IB_PMA_CLASS_CAP_EXT_WIDTH_NOIETF)
-			/* But not the IETF ones */
+			 
 			return &pma_group_noietf;
 	}
 
-	/* Fall back to normal counters */
+	 
 	return &pma_group;
 }
 
@@ -899,10 +851,7 @@ alloc_hw_stats_device(struct ib_device *ibdev)
 	if (!stats->descs || stats->num_counters <= 0)
 		goto err_free_stats;
 
-	/*
-	 * Two extra attribue elements here, one for the lifespan entry and
-	 * one to NULL terminate the list for the sysfs core code
-	 */
+	 
 	data = kzalloc(struct_size(data, attrs, size_add(stats->num_counters, 1)),
 		       GFP_KERNEL);
 	if (!data)
@@ -1005,10 +954,7 @@ alloc_hw_stats_port(struct ib_port *port, struct attribute_group *group)
 	if (!stats->descs || stats->num_counters <= 0)
 		goto err_free_stats;
 
-	/*
-	 * Two extra attribue elements here, one for the lifespan entry and
-	 * one to NULL terminate the list for the sysfs core code
-	 */
+	 
 	data = kzalloc(struct_size(data, attrs, size_add(stats->num_counters, 1)),
 		       GFP_KERNEL);
 	if (!data)
@@ -1128,11 +1074,7 @@ err:
 	return -EINVAL;
 }
 
-/*
- * Create the sysfs:
- *  ibp0s9/ports/XX/gid_attrs/{ndevs,types}/YYY
- * YYY is the gid table index in decimal
- */
+ 
 static int setup_gid_attrs(struct ib_port *port,
 			   const struct ib_port_attr *attr)
 {
@@ -1191,10 +1133,7 @@ static void destroy_gid_attrs(struct ib_port *port)
 	kobject_put(&gid_attr_group->kobj);
 }
 
-/*
- * Create the sysfs:
- *  ibp0s9/ports/XX/{gids,pkeys,counters}/YYY
- */
+ 
 static struct ib_port *setup_port(struct ib_core_device *coredev, int port_num,
 				  const struct ib_port_attr *attr)
 {
@@ -1232,11 +1171,7 @@ static struct ib_port *setup_port(struct ib_core_device *coredev, int port_num,
 		*cur_group++ = &p->groups[1];
 	}
 
-	/*
-	 * If port == 0, it means hw_counters are per device and not per
-	 * port, so holder should be device. Therefore skip per port
-	 * counter initialization.
-	 */
+	 
 	if (port_num && is_full_dev) {
 		ret = setup_hw_port_stats(p, &p->groups[2]);
 		if (ret && ret != -EOPNOTSUPP)
@@ -1454,15 +1389,7 @@ err_put:
 	return ret;
 }
 
-/**
- * ib_port_register_client_groups - Add an ib_client's attributes to the port
- *
- * @ibdev: IB device to add counters
- * @port_num: valid port number
- * @groups: Group list of attributes
- *
- * Do not use. Only for legacy sysfs compatibility.
- */
+ 
 int ib_port_register_client_groups(struct ib_device *ibdev, u32 port_num,
 				   const struct attribute_group **groups)
 {

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Machine driver for AMD Stoney platform using ES8336 Codec
- *
- * Copyright 2022 Advanced Micro Devices, Inc.
- */
+
+ 
 
 #include <sound/core.h>
 #include <sound/soc.h>

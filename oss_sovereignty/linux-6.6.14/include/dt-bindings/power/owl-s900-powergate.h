@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: (GPL-2.0-or-later OR MIT) */
-/*
- * Actions Semi S900 SPS
- *
- * Copyright (c) 2018 Linaro Ltd.
- */
+ 
+ 
 #ifndef DT_BINDINGS_POWER_OWL_S900_POWERGATE_H
 #define DT_BINDINGS_POWER_OWL_S900_POWERGATE_H
 

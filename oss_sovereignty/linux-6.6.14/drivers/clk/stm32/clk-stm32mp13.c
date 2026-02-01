@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) STMicroelectronics 2022 - All Rights Reserved
- * Author: Gabriel Fernandez <gabriel.fernandez@foss.st.com> for STMicroelectronics.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/module.h>
@@ -14,7 +11,7 @@
 
 #define RCC_CLR_OFFSET		0x4
 
-/* STM32 Gates definition */
+ 
 enum enum_gate_cfg {
 	GATE_MCO1,
 	GATE_MCO2,
@@ -267,7 +264,7 @@ static struct stm32_gate_cfg stm32mp13_gates[] = {
 	CFG_GATE_SETCLR(GATE_MDMA,	RCC_MP_NS_AHB6ENSETR,	0),
 };
 
-/* STM32 Divivers definition */
+ 
 enum enum_div_cfg {
 	DIV_RTC,
 	DIV_HSI,
@@ -304,7 +301,7 @@ static const struct stm32_div_cfg stm32mp13_dividers[DIV_NB] = {
 	CFG_DIV(DIV_ETH2PTP, RCC_ETH12CKSELR, 12, 4, 0, NULL, DIV_NO_RDY),
 };
 
-/* STM32 Muxes definition */
+ 
 enum enum_mux_cfg {
 	MUX_ADC1,
 	MUX_ADC2,
@@ -640,7 +637,7 @@ static const char * const usbphy_src[] = {
 	"ck_hse", "pll4_r", "clk-hse-div2"
 };
 
-/* Timer clocks */
+ 
 static struct clk_stm32_gate tim2_k = {
 	.gate_id = GATE_TIM2,
 	.hw.init = CLK_HW_INIT("tim2_k", "timg1_ck", &clk_stm32_gate_ops, CLK_SET_RATE_PARENT),
@@ -711,7 +708,7 @@ static struct clk_stm32_gate tim17_k = {
 	.hw.init = CLK_HW_INIT("tim17_k", "timg3_ck", &clk_stm32_gate_ops, CLK_SET_RATE_PARENT),
 };
 
-/* Peripheral clocks */
+ 
 static struct clk_stm32_gate sai1 = {
 	.gate_id = GATE_SAI1,
 	.hw.init = CLK_HW_INIT("sai1", "pclk2", &clk_stm32_gate_ops, 0),
@@ -937,7 +934,7 @@ static struct clk_stm32_gate eth2stp = {
 	.hw.init = CLK_HW_INIT("eth2stp", "ck_axi", &clk_stm32_gate_ops, 0),
 };
 
-/* Kernel clocks */
+ 
 static struct clk_stm32_composite sdmmc1_k = {
 	.gate_id = GATE_SDMMC1,
 	.mux_id = MUX_SDMMC1,
@@ -1320,7 +1317,7 @@ static struct clk_stm32_composite ck_mco2 = {
 				       CLK_IGNORE_UNUSED),
 };
 
-/* Debug clocks */
+ 
 static struct clk_stm32_gate ck_sys_dbg = {
 	.gate_id = GATE_DBGCK,
 	.hw.init = CLK_HW_INIT("ck_sys_dbg", "ck_axi", &clk_stm32_gate_ops, CLK_IS_CRITICAL),
@@ -1334,7 +1331,7 @@ static struct clk_stm32_composite ck_trace = {
 };
 
 static const struct clock_config stm32mp13_clock_cfg[] = {
-	/* Timer clocks */
+	 
 	STM32_GATE_CFG(TIM2_K, tim2_k, SECF_NONE),
 	STM32_GATE_CFG(TIM3_K, tim3_k, SECF_NONE),
 	STM32_GATE_CFG(TIM4_K, tim4_k, SECF_NONE),
@@ -1350,7 +1347,7 @@ static const struct clock_config stm32mp13_clock_cfg[] = {
 	STM32_GATE_CFG(TIM16_K, tim16_k, SECF_TIM16),
 	STM32_GATE_CFG(TIM17_K, tim17_k, SECF_TIM17),
 
-	/* Peripheral clocks */
+	 
 	STM32_GATE_CFG(SAI1, sai1, SECF_NONE),
 	STM32_GATE_CFG(SAI2, sai2, SECF_NONE),
 	STM32_GATE_CFG(SYSCFG, syscfg, SECF_NONE),
@@ -1397,7 +1394,7 @@ static const struct clock_config stm32mp13_clock_cfg[] = {
 	STM32_GATE_CFG(ETH1STP, eth1stp, SECF_ETH1STP),
 	STM32_GATE_CFG(ETH2STP, eth2stp, SECF_ETH2STP),
 
-	/* Kernel clocks */
+	 
 	STM32_COMPOSITE_CFG(SDMMC1_K, sdmmc1_k, SECF_SDMMC1),
 	STM32_COMPOSITE_CFG(SDMMC2_K, sdmmc2_k, SECF_SDMMC2),
 	STM32_COMPOSITE_CFG(FMC_K, fmc_k, SECF_FMC),
@@ -1573,7 +1570,7 @@ static int get_clock_deps(struct device *dev)
 			if (PTR_ERR(clk) != -EINVAL && PTR_ERR(clk) != -ENOENT)
 				return PTR_ERR(clk);
 		} else {
-			/* Device gets a reference count on the clock */
+			 
 			clk_deps[i] = devm_clk_get(dev, __clk_get_name(clk));
 			clk_put(clk);
 		}

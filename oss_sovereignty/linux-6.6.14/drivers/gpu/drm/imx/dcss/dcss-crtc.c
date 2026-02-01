@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright 2019 NXP.
- */
+
+ 
 
 #include <drm/drm_atomic.h>
 #include <drm/drm_atomic_helper.h>
@@ -109,7 +107,7 @@ static void dcss_crtc_atomic_enable(struct drm_crtc *crtc,
 
 	dcss_ctxld_enable(dcss->ctxld);
 
-	/* Allow CTXLD kick interrupt to be disabled when VBLANK is disabled. */
+	 
 	dcss_crtc->disable_ctxld_kick_irq = true;
 }
 
@@ -146,10 +144,7 @@ static void dcss_crtc_atomic_disable(struct drm_crtc *crtc,
 						 msecs_to_jiffies(100)))
 			dev_err(dcss->dev, "Shutting off DTG timed out.\n");
 
-	/*
-	 * Do not shut off CTXLD kick interrupt when shutting VBLANK off. It
-	 * will be needed to commit the last changes, before going to suspend.
-	 */
+	 
 	dcss_crtc->disable_ctxld_kick_irq = false;
 
 	drm_crtc_vblank_off(crtc);

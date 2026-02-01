@@ -1,29 +1,4 @@
-/*
- * Copyright 2013 Advanced Micro Devices, Inc.
- * All Rights Reserved.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the
- * "Software"), to deal in the Software without restriction, including
- * without limitation the rights to use, copy, modify, merge, publish,
- * distribute, sub license, and/or sell copies of the Software, and to
- * permit persons to whom the Software is furnished to do so, subject to
- * the following conditions:
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT. IN NO EVENT SHALL
- * THE COPYRIGHT HOLDERS, AUTHORS AND/OR ITS SUPPLIERS BE LIABLE FOR ANY CLAIM,
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
- * USE OR OTHER DEALINGS IN THE SOFTWARE.
- *
- * The above copyright notice and this permission notice (including the
- * next paragraph) shall be included in all copies or substantial portions
- * of the Software.
- *
- * Authors: Christian König <christian.koenig@amd.com>
- */
+ 
 
 #include <linux/firmware.h>
 
@@ -45,13 +20,7 @@
 static void vce_v2_0_set_ring_funcs(struct amdgpu_device *adev);
 static void vce_v2_0_set_irq_funcs(struct amdgpu_device *adev);
 
-/**
- * vce_v2_0_ring_get_rptr - get read pointer
- *
- * @ring: amdgpu_ring pointer
- *
- * Returns the current hardware read pointer
- */
+ 
 static uint64_t vce_v2_0_ring_get_rptr(struct amdgpu_ring *ring)
 {
 	struct amdgpu_device *adev = ring->adev;
@@ -62,13 +31,7 @@ static uint64_t vce_v2_0_ring_get_rptr(struct amdgpu_ring *ring)
 		return RREG32(mmVCE_RB_RPTR2);
 }
 
-/**
- * vce_v2_0_ring_get_wptr - get write pointer
- *
- * @ring: amdgpu_ring pointer
- *
- * Returns the current hardware write pointer
- */
+ 
 static uint64_t vce_v2_0_ring_get_wptr(struct amdgpu_ring *ring)
 {
 	struct amdgpu_device *adev = ring->adev;
@@ -79,13 +42,7 @@ static uint64_t vce_v2_0_ring_get_wptr(struct amdgpu_ring *ring)
 		return RREG32(mmVCE_RB_WPTR2);
 }
 
-/**
- * vce_v2_0_ring_set_wptr - set write pointer
- *
- * @ring: amdgpu_ring pointer
- *
- * Commits the write pointer to the hardware
- */
+ 
 static void vce_v2_0_ring_set_wptr(struct amdgpu_ring *ring)
 {
 	struct amdgpu_device *adev = ring->adev;
@@ -220,19 +177,13 @@ static int vce_v2_0_wait_for_idle(void *handle)
 	return -ETIMEDOUT;
 }
 
-/**
- * vce_v2_0_start - start VCE block
- *
- * @adev: amdgpu_device pointer
- *
- * Setup and start the VCE block
- */
+ 
 static int vce_v2_0_start(struct amdgpu_device *adev)
 {
 	struct amdgpu_ring *ring;
 	int r;
 
-	/* set BUSY flag */
+	 
 	WREG32_P(mmVCE_STATUS, 1, ~1);
 
 	vce_v2_0_init_cg(adev);
@@ -261,7 +212,7 @@ static int vce_v2_0_start(struct amdgpu_device *adev)
 
 	r = vce_v2_0_firmware_loaded(adev);
 
-	/* clear BUSY flag */
+	 
 	WREG32_P(mmVCE_STATUS, 0, ~1);
 
 	if (r) {
@@ -287,7 +238,7 @@ static int vce_v2_0_stop(struct amdgpu_device *adev)
 		return 0;
 	}
 
-	/* Stall UMC and register bus before resetting VCPU */
+	 
 	WREG32_P(mmVCE_LMI_CTRL2, 1 << 8, ~(1 << 8));
 
 	for (i = 0; i < 100; ++i) {
@@ -299,7 +250,7 @@ static int vce_v2_0_stop(struct amdgpu_device *adev)
 
 	WREG32_P(mmVCE_VCPU_CNTL, 0, ~0x80001);
 
-	/* put LMI, VCPU, RBC etc... into reset */
+	 
 	WREG32_P(mmVCE_SOFT_RESET, 1, ~0x1);
 
 	WREG32(mmVCE_STATUS, 0);
@@ -346,13 +297,11 @@ static void vce_v2_0_set_dyn_cg(struct amdgpu_device *adev, bool gated)
 {
 	u32 orig, tmp;
 
-/* LMI_MC/LMI_UMC always set in dynamic,
- * set {CGC_*_GATE_MODE, CGC_*_SW_GATE} = {0, 0}
- */
+ 
 	tmp = RREG32(mmVCE_CLOCK_GATING_B);
 	tmp &= ~0x00060006;
 
-/* Exception for ECPU, IH, SEM, SYS blocks needs to be turned on/off by SW */
+ 
 	if (gated) {
 		tmp |= 0xe10000;
 		WREG32(mmVCE_CLOCK_GATING_B, tmp);
@@ -373,7 +322,7 @@ static void vce_v2_0_set_dyn_cg(struct amdgpu_device *adev, bool gated)
 	if (tmp != orig)
 		WREG32(mmVCE_UENC_REG_CLOCK_GATING, tmp);
 
-	/* set VCE_UENC_REG_CLOCK_GATING always in dynamic mode */
+	 
 	WREG32(mmVCE_UENC_REG_CLOCK_GATING, 0x00);
 
 	if(gated)
@@ -416,7 +365,7 @@ static int vce_v2_0_sw_init(void *handle)
 	int r, i;
 	struct amdgpu_device *adev = (struct amdgpu_device *)handle;
 
-	/* VCE */
+	 
 	r = amdgpu_irq_add_id(adev, AMDGPU_IRQ_CLIENTID_LEGACY, 167, &adev->vce.irq);
 	if (r)
 		return r;
@@ -492,17 +441,7 @@ static int vce_v2_0_suspend(void *handle)
 	struct amdgpu_device *adev = (struct amdgpu_device *)handle;
 
 
-	/*
-	 * Proper cleanups before halting the HW engine:
-	 *   - cancel the delayed idle work
-	 *   - enable powergating
-	 *   - enable clockgating
-	 *   - disable dpm
-	 *
-	 * TODO: to align with the VCN implementation, move the
-	 * jobs for clockgating/powergating/dpm setting to
-	 * ->set_powergating_state().
-	 */
+	 
 	cancel_delayed_work_sync(&adev->vce.idle_work);
 
 	if (adev->pm.dpm_enabled) {
@@ -598,13 +537,7 @@ static int vce_v2_0_set_clockgating_state(void *handle,
 static int vce_v2_0_set_powergating_state(void *handle,
 					  enum amd_powergating_state state)
 {
-	/* This doesn't actually powergate the VCE block.
-	 * That's done in the dpm code via the SMC.  This
-	 * just re-inits the block as necessary.  The actual
-	 * gating still happens in the dpm code.  We should
-	 * revisit this when there is a cleaner line between
-	 * the smc and the hw blocks
-	 */
+	 
 	struct amdgpu_device *adev = (struct amdgpu_device *)handle;
 
 	if (state == AMD_PG_STATE_GATE)
@@ -640,8 +573,8 @@ static const struct amdgpu_ring_funcs vce_v2_0_ring_funcs = {
 	.get_wptr = vce_v2_0_ring_get_wptr,
 	.set_wptr = vce_v2_0_ring_set_wptr,
 	.parse_cs = amdgpu_vce_ring_parse_cs,
-	.emit_frame_size = 6, /* amdgpu_vce_ring_emit_fence  x1 no user fence */
-	.emit_ib_size = 4, /* amdgpu_vce_ring_emit_ib */
+	.emit_frame_size = 6,  
+	.emit_ib_size = 4,  
 	.emit_ib = amdgpu_vce_ring_emit_ib,
 	.emit_fence = amdgpu_vce_ring_emit_fence,
 	.test_ring = amdgpu_vce_ring_test_ring,

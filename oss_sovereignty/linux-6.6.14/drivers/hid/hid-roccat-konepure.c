@@ -1,16 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Roccat KonePure driver for Linux
- *
- * Copyright (c) 2012 Stefan Achatz <erazor_de@users.sourceforge.net>
- */
 
-/*
- */
+ 
 
-/*
- * Roccat KonePure is a smaller version of KoneXTD with less buttons and lights.
- */
+ 
+
+ 
 
 #include <linux/types.h>
 #include <linux/device.h>
@@ -27,7 +20,7 @@ enum {
 };
 
 struct konepure_mouse_report_button {
-	uint8_t report_number; /* always KONEPURE_MOUSE_REPORT_NUMBER_BUTTON */
+	uint8_t report_number;  
 	uint8_t zero;
 	uint8_t type;
 	uint8_t data1;

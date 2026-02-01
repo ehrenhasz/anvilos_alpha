@@ -1,23 +1,4 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
+ 
 
 #if defined(_KERNEL) && defined(HAVE_QAT)
 #include <linux/slab.h>
@@ -29,17 +10,10 @@
 #include <sys/zio.h>
 #include <sys/qat.h>
 
-/*
- * Max instances in a QAT device, each instance is a channel to submit
- * jobs to QAT hardware, this is only for pre-allocating instance and
- * session arrays; the actual number of instances are defined in the
- * QAT driver's configuration file.
- */
+ 
 #define	QAT_DC_MAX_INSTANCES	48
 
-/*
- * ZLIB head and foot size
- */
+ 
 #define	ZLIB_HEAD_SZ		2
 #define	ZLIB_FOOT_SZ		4
 
@@ -76,7 +50,7 @@ qat_dc_clean(void)
 	for (Cpa16U i = 0; i < num_inst; i++) {
 		cpaDcStopInstance(dc_inst_handles[i]);
 		QAT_PHYS_CONTIG_FREE(session_handles[i]);
-		/* free intermediate buffers  */
+		 
 		if (buffer_array[i] != NULL) {
 			cpaDcGetNumIntermediateBuffers(
 			    dc_inst_handles[i], &num_inter_buff_lists);
@@ -119,7 +93,7 @@ qat_dc_init(void)
 	if (status != CPA_STATUS_SUCCESS)
 		return (-1);
 
-	/* if the user has configured no QAT compression units just return */
+	 
 	if (num_inst == 0)
 		return (0);
 
@@ -165,12 +139,7 @@ qat_dc_init(void)
 				    sizeof (CpaFlatBuffer));
 
 			if (status == CPA_STATUS_SUCCESS) {
-				/*
-				 *  implementation requires an intermediate
-				 *  buffer approximately twice the size of
-				 *  output buffer, which is 2x max buffer
-				 *  size here.
-				 */
+				 
 				status = QAT_PHYS_CONTIG_ALLOC(
 				    &buffer_array[i][buff_num]->pBuffers->
 				    pData, 2 * QAT_MAX_BUF_SIZE);
@@ -229,13 +198,7 @@ qat_dc_fini(void)
 	qat_dc_clean();
 }
 
-/*
- * The "add" parameter is an additional buffer which is passed
- * to QAT as a scratch buffer alongside the destination buffer
- * in case the "compressed" data ends up being larger than the
- * original source data. This is necessary to prevent QAT from
- * generating buffer overflow warnings for incompressible data.
- */
+ 
 static int
 qat_compress_impl(qat_compress_dir_t dir, char *src, int src_len,
     char *dst, int dst_len, char *add, int add_len, size_t *c_len)
@@ -269,11 +232,7 @@ qat_compress_impl(qat_compress_dir_t dir, char *src, int src_len,
 	Cpa32U page_num = 0;
 	Cpa16U i;
 
-	/*
-	 * We increment num_src_buf and num_dst_buf by 2 to allow
-	 * us to handle non page-aligned buffer addresses and buffers
-	 * whose sizes are not divisible by PAGE_SIZE.
-	 */
+	 
 	Cpa32U src_buffer_list_mem_size = sizeof (CpaBufferList) +
 	    (num_src_buf * sizeof (CpaFlatBuffer));
 	Cpa32U dst_buffer_list_mem_size = sizeof (CpaBufferList) +
@@ -310,23 +269,23 @@ qat_compress_impl(qat_compress_dir_t dir, char *src, int src_len,
 	if (status != CPA_STATUS_SUCCESS)
 		goto fail;
 
-	/* build source buffer list */
+	 
 	status = QAT_PHYS_CONTIG_ALLOC(&buf_list_src, src_buffer_list_mem_size);
 	if (status != CPA_STATUS_SUCCESS)
 		goto fail;
 
 	flat_buf_src = (CpaFlatBuffer *)(buf_list_src + 1);
 
-	buf_list_src->pBuffers = flat_buf_src; /* always point to first one */
+	buf_list_src->pBuffers = flat_buf_src;  
 
-	/* build destination buffer list */
+	 
 	status = QAT_PHYS_CONTIG_ALLOC(&buf_list_dst, dst_buffer_list_mem_size);
 	if (status != CPA_STATUS_SUCCESS)
 		goto fail;
 
 	flat_buf_dst = (CpaFlatBuffer *)(buf_list_dst + 1);
 
-	buf_list_dst->pBuffers = flat_buf_dst; /* always point to first one */
+	buf_list_dst->pBuffers = flat_buf_dst;  
 
 	buf_list_src->numBuffers = 0;
 	buf_list_src->pPrivateMetaData = buffer_meta_src;
@@ -369,7 +328,7 @@ qat_compress_impl(qat_compress_dir_t dir, char *src, int src_len,
 		dst_pages++;
 	}
 
-	/* map additional scratch pages into the destination buffer list */
+	 
 	bytes_left = add_len;
 	data = add;
 	page_num = 0;
@@ -407,7 +366,7 @@ qat_compress_impl(qat_compress_dir_t dir, char *src, int src_len,
 			goto fail;
 		}
 
-		/* we now wait until the completion of the operation. */
+		 
 		wait_for_completion(&complete);
 
 		if (dc_results.status != CPA_STATUS_SUCCESS) {
@@ -421,7 +380,7 @@ qat_compress_impl(qat_compress_dir_t dir, char *src, int src_len,
 			goto fail;
 		}
 
-		/* get adler32 checksum and append footer */
+		 
 		*(Cpa32U*)(dst + hdr_sz + compressed_sz) =
 		    BSWAP_32(dc_results.checksum);
 
@@ -443,7 +402,7 @@ qat_compress_impl(qat_compress_dir_t dir, char *src, int src_len,
 			goto fail;
 		}
 
-		/* we now wait until the completion of the operation. */
+		 
 		wait_for_completion(&complete);
 
 		if (dc_results.status != CPA_STATUS_SUCCESS) {
@@ -451,7 +410,7 @@ qat_compress_impl(qat_compress_dir_t dir, char *src, int src_len,
 			goto fail;
 		}
 
-		/* verify adler checksum */
+		 
 		adler32 = *(Cpa32U *)(src + dc_results.consumed + ZLIB_HEAD_SZ);
 		if (adler32 != BSWAP_32(dc_results.checksum)) {
 			status = CPA_STATUS_FAIL;
@@ -498,9 +457,7 @@ fail:
 	return (status);
 }
 
-/*
- * Entry point for QAT accelerated compression / decompression.
- */
+ 
 int
 qat_compress(qat_compress_dir_t dir, char *src, int src_len,
     char *dst, int dst_len, size_t *c_len)
@@ -531,10 +488,7 @@ param_set_qat_compress(const char *val, zfs_kernel_param_t *kp)
 	ret = param_set_int(val, kp);
 	if (ret)
 		return (ret);
-	/*
-	 * zfs_qat_compress_disable = 0: enable qat compress
-	 * try to initialize qat instance if it has not been done
-	 */
+	 
 	if (*pvalue == 0 && !qat_dc_init_done) {
 		ret = qat_dc_init();
 		if (ret != 0) {

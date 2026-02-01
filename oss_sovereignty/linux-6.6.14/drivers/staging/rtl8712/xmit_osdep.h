@@ -1,16 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/******************************************************************************
- *
- * Copyright(c) 2007 - 2010 Realtek Corporation. All rights reserved.
- *
- * Modifications for inclusion into the Linux staging tree are
- * Copyright(c) 2010 Larry Finger. All rights reserved.
- *
- * Contact information:
- * WLAN FAE <wlanfae@realtek.com>
- * Larry Finger <Larry.Finger@lwfinger.net>
- *
- ******************************************************************************/
+ 
+ 
 #ifndef __XMIT_OSDEP_H_
 #define __XMIT_OSDEP_H_
 
@@ -19,7 +8,7 @@
 
 struct pkt_file {
 	_pkt	*pkt;
-	u32	pkt_len;	 /*the remainder length of the open_file*/
+	u32	pkt_len;	  
 	_buffer	*cur_buffer;
 	u8	*buf_start;
 	u8	*cur_addr;

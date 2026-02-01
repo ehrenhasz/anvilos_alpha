@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <test_progs.h>
 
 void test_stacktrace_map_raw_tp(void)
@@ -24,7 +24,7 @@ void test_stacktrace_map_raw_tp(void)
 	if (!ASSERT_OK_PTR(link, "attach_raw_tp"))
 		goto close_prog;
 
-	/* find map fds */
+	 
 	control_map_fd = bpf_find_map(__func__, obj, "control_map");
 	if (CHECK_FAIL(control_map_fd < 0))
 		goto close_prog;
@@ -37,17 +37,15 @@ void test_stacktrace_map_raw_tp(void)
 	if (CHECK_FAIL(stackmap_fd < 0))
 		goto close_prog;
 
-	/* give some time for bpf program run */
+	 
 	sleep(1);
 
-	/* disable stack trace collection */
+	 
 	key = 0;
 	val = 1;
 	bpf_map_update_elem(control_map_fd, &key, &val, 0);
 
-	/* for every element in stackid_hmap, we can find a corresponding one
-	 * in stackmap, and vise versa.
-	 */
+	 
 	err = compare_map_keys(stackid_hmap_fd, stackmap_fd);
 	if (CHECK(err, "compare_map_keys stackid_hmap vs. stackmap",
 		  "err %d errno %d\n", err, errno))

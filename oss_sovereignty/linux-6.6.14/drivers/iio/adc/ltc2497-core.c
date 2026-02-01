@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * ltc2497-core.c - Common code for Analog Devices/Linear Technology
- * LTC2496 and LTC2497 ADCs
- *
- * Copyright (C) 2017 Analog Devices Inc.
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/iio/iio.h>
@@ -26,9 +21,7 @@ static int ltc2497core_wait_conv(struct ltc2497core_driverdata *ddata)
 	time_elapsed = ktime_ms_delta(ktime_get(), ddata->time_prev);
 
 	if (time_elapsed < LTC2497_CONVERSION_TIME_MS) {
-		/* delay if conversion time not passed
-		 * since last read or write
-		 */
+		 
 		if (msleep_interruptible(
 		    LTC2497_CONVERSION_TIME_MS - time_elapsed))
 			return -ERESTARTSYS;
@@ -37,9 +30,7 @@ static int ltc2497core_wait_conv(struct ltc2497core_driverdata *ddata)
 	}
 
 	if (time_elapsed - LTC2497_CONVERSION_TIME_MS <= 0) {
-		/* We're in automatic mode -
-		 * so the last reading is still not outdated
-		 */
+		 
 		return 0;
 	}
 
@@ -170,10 +161,7 @@ int ltc2497core_probe(struct device *dev, struct iio_dev *indio_dev)
 	struct ltc2497core_driverdata *ddata = iio_priv(indio_dev);
 	int ret;
 
-	/*
-	 * Keep using dev_name() for the iio_dev's name on some of the parts,
-	 * since updating it would result in a ABI breakage.
-	 */
+	 
 	if (ddata->chip_info->name)
 		indio_dev->name = ddata->chip_info->name;
 	else

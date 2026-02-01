@@ -1,11 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0+
-//
-// MXC GPIO support. (c) 2008 Daniel Mack <daniel@caiaq.de>
-// Copyright 2008 Juergen Beisert, kernel@pengutronix.de
-//
-// Based on code from Freescale Semiconductor,
-// Authors: Daniel Mack, Juergen Beisert.
-// Copyright (C) 2004-2010 Freescale Semiconductor, Inc. All Rights Reserved.
+
+
+
+
+
+
+
+
 
 #include <linux/clk.h>
 #include <linux/err.h>
@@ -31,7 +31,7 @@
 #define IMX_SCU_WAKEUP_RISE_EDGE	6
 #define IMX_SCU_WAKEUP_HIGH_LVL		7
 
-/* device type dependent stuff */
+ 
 struct mxc_gpio_hwdata {
 	unsigned dr_reg;
 	unsigned gdir_reg;
@@ -144,18 +144,14 @@ static const struct of_device_id mxc_gpio_dt_ids[] = {
 	{ .compatible = "fsl,imx8dxl-gpio", .data = &imx35_gpio_hwdata },
 	{ .compatible = "fsl,imx8qm-gpio", .data = &imx35_gpio_hwdata },
 	{ .compatible = "fsl,imx8qxp-gpio", .data = &imx35_gpio_hwdata },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, mxc_gpio_dt_ids);
 
-/*
- * MX2 has one interrupt *for all* gpio ports. The list is used
- * to save the references to all ports, so that mx2_gpio_irq_handler
- * can walk through all interrupt status registers.
- */
+ 
 static LIST_HEAD(mxc_gpio_ports);
 
-/* Note: This driver assumes 32 GPIOs are handled in one register */
+ 
 
 static int gpio_set_irq_type(struct irq_data *d, u32 type)
 {
@@ -213,7 +209,7 @@ static int gpio_set_irq_type(struct irq_data *d, u32 type)
 	}
 
 	if (edge != GPIO_INT_BOTH_EDGES) {
-		reg += GPIO_ICR1 + ((gpio_idx & 0x10) >> 2); /* lower or upper register */
+		reg += GPIO_ICR1 + ((gpio_idx & 0x10) >> 2);  
 		bit = gpio_idx & 0xf;
 		val = readl(reg) & ~(0x3 << (bit << 1));
 		writel(val | (edge << (bit << 1)), reg);
@@ -236,7 +232,7 @@ static void mxc_flip_edge(struct mxc_gpio_port *port, u32 gpio)
 
 	raw_spin_lock_irqsave(&port->gc.bgpio_lock, flags);
 
-	reg += GPIO_ICR1 + ((gpio & 0x10) >> 2); /* lower or upper register */
+	reg += GPIO_ICR1 + ((gpio & 0x10) >> 2);  
 	bit = gpio & 0xf;
 	val = readl(reg);
 	edge = (val >> (bit << 1)) & 3;
@@ -258,7 +254,7 @@ unlock:
 	raw_spin_unlock_irqrestore(&port->gc.bgpio_lock, flags);
 }
 
-/* handle 32 interrupts in one status register */
+ 
 static void mxc_gpio_irq_handler(struct mxc_gpio_port *port, u32 irq_stat)
 {
 	while (irq_stat != 0) {
@@ -273,7 +269,7 @@ static void mxc_gpio_irq_handler(struct mxc_gpio_port *port, u32 irq_stat)
 	}
 }
 
-/* MX1 and MX3 has one interrupt *per* gpio port */
+ 
 static void mx3_gpio_irq_handler(struct irq_desc *desc)
 {
 	u32 irq_stat;
@@ -292,7 +288,7 @@ static void mx3_gpio_irq_handler(struct irq_desc *desc)
 	chained_irq_exit(chip, desc);
 }
 
-/* MX2 has one interrupt *for all* gpio ports */
+ 
 static void mx2_gpio_irq_handler(struct irq_desc *desc)
 {
 	u32 irq_msk, irq_stat;
@@ -301,7 +297,7 @@ static void mx2_gpio_irq_handler(struct irq_desc *desc)
 
 	chained_irq_enter(chip, desc);
 
-	/* walk through all interrupt status registers */
+	 
 	list_for_each_entry(port, &mxc_gpio_ports, node) {
 		irq_msk = readl(port->base + GPIO_IMR);
 		if (!irq_msk)
@@ -314,15 +310,7 @@ static void mx2_gpio_irq_handler(struct irq_desc *desc)
 	chained_irq_exit(chip, desc);
 }
 
-/*
- * Set interrupt number "irq" in the GPIO as a wake-up source.
- * While system is running, all registered GPIO interrupts need to have
- * wake-up enabled. When system is suspended, only selected GPIO interrupts
- * need to have wake-up enabled.
- * @param  irq          interrupt source number
- * @param  enable       enable as wake-up if equal to non-zero
- * @return       This function returns 0 on success.
- */
+ 
 static int gpio_set_wake_irq(struct irq_data *d, u32 enable)
 {
 	struct irq_chip_generic *gc = irq_data_get_irq_chip_data(d);
@@ -407,7 +395,7 @@ static void mxc_update_irq_chained_handler(struct mxc_gpio_port *port, bool enab
 	else
 		irq_set_chained_handler_and_data(port->irq, NULL, NULL);
 
-	/* setup handler for GPIO 16 to 31 */
+	 
 	if (port->irq_high > 0) {
 		if (enable)
 			irq_set_chained_handler_and_data(port->irq_high,
@@ -451,7 +439,7 @@ static int mxc_gpio_probe(struct platform_device *pdev)
 	if (port->irq < 0)
 		return port->irq;
 
-	/* the controller clock is optional */
+	 
 	port->clk = devm_clk_get_optional_enabled(&pdev->dev, NULL);
 	if (IS_ERR(port->clk))
 		return PTR_ERR(port->clk);
@@ -463,16 +451,12 @@ static int mxc_gpio_probe(struct platform_device *pdev)
 	pm_runtime_set_active(&pdev->dev);
 	pm_runtime_enable(&pdev->dev);
 
-	/* disable the interrupt and clear the status */
+	 
 	writel(0, port->base + GPIO_IMR);
 	writel(~0, port->base + GPIO_ISR);
 
 	if (of_device_is_compatible(np, "fsl,imx21-gpio")) {
-		/*
-		 * Setup one handler for all GPIO interrupts. Actually setting
-		 * the handler is needed only once, but doing it for every port
-		 * is more robust and easier.
-		 */
+		 
 		port->irq_high = -1;
 		port->mx_irq_handler = mx2_gpio_irq_handler;
 	} else
@@ -512,7 +496,7 @@ static int mxc_gpio_probe(struct platform_device *pdev)
 
 	irq_domain_set_pm_device(port->domain, &pdev->dev);
 
-	/* gpio-mxc can be a generic irq chip */
+	 
 	err = mxc_gpio_init_gc(port, irq_base);
 	if (err < 0)
 		goto out_irqdomain_remove;
@@ -579,15 +563,15 @@ static bool mxc_gpio_set_pad_wakeup(struct mxc_gpio_port *port, bool enable)
 	int i, type;
 
 	static const u32 pad_type_map[] = {
-		IMX_SCU_WAKEUP_OFF,		/* 0 */
-		IMX_SCU_WAKEUP_RISE_EDGE,	/* IRQ_TYPE_EDGE_RISING */
-		IMX_SCU_WAKEUP_FALL_EDGE,	/* IRQ_TYPE_EDGE_FALLING */
-		IMX_SCU_WAKEUP_FALL_EDGE,	/* IRQ_TYPE_EDGE_BOTH */
-		IMX_SCU_WAKEUP_HIGH_LVL,	/* IRQ_TYPE_LEVEL_HIGH */
-		IMX_SCU_WAKEUP_OFF,		/* 5 */
-		IMX_SCU_WAKEUP_OFF,		/* 6 */
-		IMX_SCU_WAKEUP_OFF,		/* 7 */
-		IMX_SCU_WAKEUP_LOW_LVL,		/* IRQ_TYPE_LEVEL_LOW */
+		IMX_SCU_WAKEUP_OFF,		 
+		IMX_SCU_WAKEUP_RISE_EDGE,	 
+		IMX_SCU_WAKEUP_FALL_EDGE,	 
+		IMX_SCU_WAKEUP_FALL_EDGE,	 
+		IMX_SCU_WAKEUP_HIGH_LVL,	 
+		IMX_SCU_WAKEUP_OFF,		 
+		IMX_SCU_WAKEUP_OFF,		 
+		IMX_SCU_WAKEUP_OFF,		 
+		IMX_SCU_WAKEUP_LOW_LVL,		 
 	};
 
 	for (i = 0; i < 32; i++) {
@@ -665,7 +649,7 @@ static int mxc_gpio_syscore_suspend(void)
 	struct mxc_gpio_port *port;
 	int ret;
 
-	/* walk through all ports */
+	 
 	list_for_each_entry(port, &mxc_gpio_ports, node) {
 		ret = clk_prepare_enable(port->clk);
 		if (ret)
@@ -682,7 +666,7 @@ static void mxc_gpio_syscore_resume(void)
 	struct mxc_gpio_port *port;
 	int ret;
 
-	/* walk through all ports */
+	 
 	list_for_each_entry(port, &mxc_gpio_ports, node) {
 		ret = clk_prepare_enable(port->clk);
 		if (ret) {

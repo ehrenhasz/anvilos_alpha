@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (C) 2019 Oracle.  All Rights Reserved.
- * Author: Darrick J. Wong <darrick.wong@oracle.com>
- */
+
+ 
 #include "xfs.h"
 #include "xfs_fs.h"
 #include "xfs_shared.h"
@@ -15,11 +12,7 @@
 #include "xfs_health.h"
 #include "xfs_ag.h"
 
-/*
- * Warn about metadata corruption that we detected but haven't fixed, and
- * make sure we're not sitting on anything that would get in the way of
- * recovery.
- */
+ 
 void
 xfs_health_unmount(
 	struct xfs_mount	*mp)
@@ -33,7 +26,7 @@ xfs_health_unmount(
 	if (xfs_is_shutdown(mp))
 		return;
 
-	/* Measure AG corruption levels. */
+	 
 	for_each_perag(mp, agno, pag) {
 		xfs_ag_measure_sickness(pag, &sick, &checked);
 		if (sick) {
@@ -42,17 +35,14 @@ xfs_health_unmount(
 		}
 	}
 
-	/* Measure realtime volume corruption levels. */
+	 
 	xfs_rt_measure_sickness(mp, &sick, &checked);
 	if (sick) {
 		trace_xfs_rt_unfixed_corruption(mp, sick);
 		warn = true;
 	}
 
-	/*
-	 * Measure fs corruption and keep the sample around for the warning.
-	 * See the note below for why we exempt FS_COUNTERS.
-	 */
+	 
 	xfs_fs_measure_sickness(mp, &sick, &checked);
 	if (sick & ~XFS_SICK_FS_COUNTERS) {
 		trace_xfs_fs_unfixed_corruption(mp, sick);
@@ -63,31 +53,13 @@ xfs_health_unmount(
 		xfs_warn(mp,
 "Uncorrected metadata errors detected; please run xfs_repair.");
 
-		/*
-		 * We discovered uncorrected metadata problems at some point
-		 * during this filesystem mount and have advised the
-		 * administrator to run repair once the unmount completes.
-		 *
-		 * However, we must be careful -- when FSCOUNTERS are flagged
-		 * unhealthy, the unmount procedure omits writing the clean
-		 * unmount record to the log so that the next mount will run
-		 * recovery and recompute the summary counters.  In other
-		 * words, we leave a dirty log to get the counters fixed.
-		 *
-		 * Unfortunately, xfs_repair cannot recover dirty logs, so if
-		 * there were filesystem problems, FSCOUNTERS was flagged, and
-		 * the administrator takes our advice to run xfs_repair,
-		 * they'll have to zap the log before repairing structures.
-		 * We don't really want to encourage this, so we mark the
-		 * FSCOUNTERS healthy so that a subsequent repair run won't see
-		 * a dirty log.
-		 */
+		 
 		if (sick & XFS_SICK_FS_COUNTERS)
 			xfs_fs_mark_healthy(mp, XFS_SICK_FS_COUNTERS);
 	}
 }
 
-/* Mark unhealthy per-fs metadata. */
+ 
 void
 xfs_fs_mark_sick(
 	struct xfs_mount	*mp,
@@ -102,7 +74,7 @@ xfs_fs_mark_sick(
 	spin_unlock(&mp->m_sb_lock);
 }
 
-/* Mark a per-fs metadata healed. */
+ 
 void
 xfs_fs_mark_healthy(
 	struct xfs_mount	*mp,
@@ -117,7 +89,7 @@ xfs_fs_mark_healthy(
 	spin_unlock(&mp->m_sb_lock);
 }
 
-/* Sample which per-fs metadata are unhealthy. */
+ 
 void
 xfs_fs_measure_sickness(
 	struct xfs_mount	*mp,
@@ -130,7 +102,7 @@ xfs_fs_measure_sickness(
 	spin_unlock(&mp->m_sb_lock);
 }
 
-/* Mark unhealthy realtime metadata. */
+ 
 void
 xfs_rt_mark_sick(
 	struct xfs_mount	*mp,
@@ -145,7 +117,7 @@ xfs_rt_mark_sick(
 	spin_unlock(&mp->m_sb_lock);
 }
 
-/* Mark a realtime metadata healed. */
+ 
 void
 xfs_rt_mark_healthy(
 	struct xfs_mount	*mp,
@@ -160,7 +132,7 @@ xfs_rt_mark_healthy(
 	spin_unlock(&mp->m_sb_lock);
 }
 
-/* Sample which realtime metadata are unhealthy. */
+ 
 void
 xfs_rt_measure_sickness(
 	struct xfs_mount	*mp,
@@ -173,7 +145,7 @@ xfs_rt_measure_sickness(
 	spin_unlock(&mp->m_sb_lock);
 }
 
-/* Mark unhealthy per-ag metadata. */
+ 
 void
 xfs_ag_mark_sick(
 	struct xfs_perag	*pag,
@@ -188,7 +160,7 @@ xfs_ag_mark_sick(
 	spin_unlock(&pag->pag_state_lock);
 }
 
-/* Mark per-ag metadata ok. */
+ 
 void
 xfs_ag_mark_healthy(
 	struct xfs_perag	*pag,
@@ -203,7 +175,7 @@ xfs_ag_mark_healthy(
 	spin_unlock(&pag->pag_state_lock);
 }
 
-/* Sample which per-ag metadata are unhealthy. */
+ 
 void
 xfs_ag_measure_sickness(
 	struct xfs_perag	*pag,
@@ -216,7 +188,7 @@ xfs_ag_measure_sickness(
 	spin_unlock(&pag->pag_state_lock);
 }
 
-/* Mark the unhealthy parts of an inode. */
+ 
 void
 xfs_inode_mark_sick(
 	struct xfs_inode	*ip,
@@ -230,17 +202,13 @@ xfs_inode_mark_sick(
 	ip->i_checked |= mask;
 	spin_unlock(&ip->i_flags_lock);
 
-	/*
-	 * Keep this inode around so we don't lose the sickness report.  Scrub
-	 * grabs inodes with DONTCACHE assuming that most inode are ok, which
-	 * is not the case here.
-	 */
+	 
 	spin_lock(&VFS_I(ip)->i_lock);
 	VFS_I(ip)->i_state &= ~I_DONTCACHE;
 	spin_unlock(&VFS_I(ip)->i_lock);
 }
 
-/* Mark parts of an inode healed. */
+ 
 void
 xfs_inode_mark_healthy(
 	struct xfs_inode	*ip,
@@ -255,7 +223,7 @@ xfs_inode_mark_healthy(
 	spin_unlock(&ip->i_flags_lock);
 }
 
-/* Sample which parts of an inode are unhealthy. */
+ 
 void
 xfs_inode_measure_sickness(
 	struct xfs_inode	*ip,
@@ -268,7 +236,7 @@ xfs_inode_measure_sickness(
 	spin_unlock(&ip->i_flags_lock);
 }
 
-/* Mappings between internal sick masks and ioctl sick masks. */
+ 
 
 struct ioctl_sick_map {
 	unsigned int		sick_mask;
@@ -302,7 +270,7 @@ xfgeo_health_tick(
 		geo->sick |= m->ioctl_mask;
 }
 
-/* Fill out fs geometry health info. */
+ 
 void
 xfs_fsop_geom_health(
 	struct xfs_mount		*mp,
@@ -338,7 +306,7 @@ static const struct ioctl_sick_map ag_map[] = {
 	{ 0, 0 },
 };
 
-/* Fill out ag geometry health info. */
+ 
 void
 xfs_ag_geom_health(
 	struct xfs_perag		*pag,
@@ -372,7 +340,7 @@ static const struct ioctl_sick_map ino_map[] = {
 	{ 0, 0 },
 };
 
-/* Fill out bulkstat health info. */
+ 
 void
 xfs_bulkstat_health(
 	struct xfs_inode		*ip,

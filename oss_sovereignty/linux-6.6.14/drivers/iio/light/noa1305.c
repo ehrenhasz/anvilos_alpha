@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Support for ON Semiconductor NOA1305 ambient light sensor
- *
- * Copyright (C) 2016 Emcraft Systems
- * Copyright (C) 2019 Collabora Ltd.
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/err.h>
@@ -70,12 +65,7 @@ static int noa1305_scale(struct noa1305_priv *priv, int *val, int *val2)
 	if (ret < 0)
 		return ret;
 
-	/*
-	 * Lux = count / (<Integration Constant> * <Integration Time>)
-	 *
-	 * Integration Constant = 7.7
-	 * Integration Time in Seconds
-	 */
+	 
 	switch (data) {
 	case NOA1305_INTEGR_TIME_800MS:
 		*val = 100;

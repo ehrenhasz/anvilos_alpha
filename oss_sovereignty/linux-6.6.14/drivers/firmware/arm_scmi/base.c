@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * System Control and Management Interface (SCMI) Base Protocol
- *
- * Copyright (C) 2018-2021 ARM Ltd.
- */
+
+ 
 
 #define pr_fmt(fmt) "SCMI Notifications BASE - " fmt
 
@@ -53,14 +49,7 @@ struct scmi_base_error_notify_payld {
 	__le64 msg_reports[SCMI_BASE_MAX_CMD_ERR_COUNT];
 };
 
-/**
- * scmi_base_attributes_get() - gets the implementation details
- *	that are associated with the base protocol.
- *
- * @ph: SCMI protocol handle
- *
- * Return: 0 on success, else appropriate SCMI error.
- */
+ 
 static int scmi_base_attributes_get(const struct scmi_protocol_handle *ph)
 {
 	int ret;
@@ -85,14 +74,7 @@ static int scmi_base_attributes_get(const struct scmi_protocol_handle *ph)
 	return ret;
 }
 
-/**
- * scmi_base_vendor_id_get() - gets vendor/subvendor identifier ASCII string.
- *
- * @ph: SCMI protocol handle
- * @sub_vendor: specify true if sub-vendor ID is needed
- *
- * Return: 0 on success, else appropriate SCMI error.
- */
+ 
 static int
 scmi_base_vendor_id_get(const struct scmi_protocol_handle *ph, bool sub_vendor)
 {
@@ -126,15 +108,7 @@ scmi_base_vendor_id_get(const struct scmi_protocol_handle *ph, bool sub_vendor)
 	return ret;
 }
 
-/**
- * scmi_base_implementation_version_get() - gets a vendor-specific
- *	implementation 32-bit version. The format of the version number is
- *	vendor-specific
- *
- * @ph: SCMI protocol handle
- *
- * Return: 0 on success, else appropriate SCMI error.
- */
+ 
 static int
 scmi_base_implementation_version_get(const struct scmi_protocol_handle *ph)
 {
@@ -159,15 +133,7 @@ scmi_base_implementation_version_get(const struct scmi_protocol_handle *ph)
 	return ret;
 }
 
-/**
- * scmi_base_implementation_list_get() - gets the list of protocols it is
- *	OSPM is allowed to access
- *
- * @ph: SCMI protocol handle
- * @protocols_imp: pointer to hold the list of protocol identifiers
- *
- * Return: 0 on success, else appropriate SCMI error.
- */
+ 
 static int
 scmi_base_implementation_list_get(const struct scmi_protocol_handle *ph,
 				  u8 *protocols_imp)
@@ -193,7 +159,7 @@ scmi_base_implementation_list_get(const struct scmi_protocol_handle *ph,
 		size_t real_list_sz;
 		u32 calc_list_sz;
 
-		/* Set the number of protocols to be skipped/already read */
+		 
 		*num_skip = cpu_to_le32(tot_num_ret);
 
 		ret = ph->xops->do_xfer(ph, t);
@@ -224,10 +190,7 @@ scmi_base_implementation_list_get(const struct scmi_protocol_handle *ph,
 			dev_warn(dev,
 				 "Malformed reply - real_sz:%zd  calc_sz:%u  (loop_num_ret:%d)\n",
 				 real_list_sz, calc_list_sz, loop_num_ret);
-			/*
-			 * Bail out if the expected list size is bigger than the
-			 * total payload size of the received reply.
-			 */
+			 
 			if (calc_list_sz > real_list_sz) {
 				ret = -EPROTO;
 				break;
@@ -247,18 +210,7 @@ scmi_base_implementation_list_get(const struct scmi_protocol_handle *ph,
 	return ret;
 }
 
-/**
- * scmi_base_discover_agent_get() - discover the name of an agent
- *
- * @ph: SCMI protocol handle
- * @id: Agent identifier
- * @name: Agent identifier ASCII string
- *
- * An agent id of 0 is reserved to identify the platform itself.
- * Generally operating system is represented as "OSPM"
- *
- * Return: 0 on success, else appropriate SCMI error.
- */
+ 
 static int scmi_base_discover_agent_get(const struct scmi_protocol_handle *ph,
 					int id, char *name)
 {
@@ -327,13 +279,7 @@ static void *scmi_base_fill_custom_report(const struct scmi_protocol_handle *ph,
 	const struct scmi_base_error_notify_payld *p = payld;
 	struct scmi_base_error_report *r = report;
 
-	/*
-	 * BaseError notification payload is variable in size but
-	 * up to a maximum length determined by the struct ponted by p.
-	 * Instead payld_sz is the effective length of this notification
-	 * payload so cannot be greater of the maximum allowed size as
-	 * pointed by p.
-	 */
+	 
 	if (evt_id != SCMI_EVENT_BASE_ERROR_EVENT || sizeof(*p) < payld_sz)
 		return NULL;
 

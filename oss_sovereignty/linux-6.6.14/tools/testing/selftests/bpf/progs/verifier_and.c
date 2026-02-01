@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Converted from tools/testing/selftests/bpf/verifier/and.c */
+
+ 
 
 #include <linux/bpf.h>
 #include <bpf/bpf_helpers.h>
@@ -94,7 +94,7 @@ __naked void known_subreg_with_unknown_reg(void)
 	r0 <<= 32;					\
 	r0 += 1;					\
 	r0 &= 0xFFFF1234;				\
-	/* Upper bits are unknown but AND above masks out 1 zero'ing lower bits */\
+	 \
 	if w0 < 1 goto l0_%=;				\
 	r1 = *(u32*)(r1 + 512);				\
 l0_%=:	r0 = 0;						\

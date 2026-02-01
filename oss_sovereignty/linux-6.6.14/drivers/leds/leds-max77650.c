@@ -1,9 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Copyright (C) 2018 BayLibre SAS
-// Author: Bartosz Golaszewski <bgolaszewski@baylibre.com>
-//
-// LED driver for MAXIM 77650/77651 charger/power-supply.
+
+
+
+
+
+
 
 #include <linux/i2c.h>
 #include <linux/leds.h>
@@ -22,14 +22,14 @@
 
 #define MAX77650_LED_MAX_BRIGHTNESS	MAX77650_LED_BR_MASK
 
-/* Enable EN_LED_MSTR. */
+ 
 #define MAX77650_LED_TOP_DEFAULT	BIT(0)
 
 #define MAX77650_LED_ENABLE		GENMASK(7, 6)
 #define MAX77650_LED_DISABLE		0x00
 
 #define MAX77650_LED_A_DEFAULT		MAX77650_LED_DISABLE
-/* 100% on duty */
+ 
 #define MAX77650_LED_B_DEFAULT		GENMASK(3, 0)
 
 struct max77650_led {
@@ -102,7 +102,7 @@ static int max77650_led_probe(struct platform_device *pdev)
 
 		init_data.fwnode = child;
 		init_data.devicename = "max77650";
-		/* for backwards compatibility if `label` is not present */
+		 
 		init_data.default_label = ":";
 
 		rv = devm_led_classdev_register_ext(dev, &led->cdev,

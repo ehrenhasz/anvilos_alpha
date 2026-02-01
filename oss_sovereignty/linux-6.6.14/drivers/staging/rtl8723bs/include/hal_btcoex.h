@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/******************************************************************************
- *
- * Copyright(c) 2013 Realtek Corporation. All rights reserved.
- *
- ******************************************************************************/
+ 
+ 
 #ifndef __HAL_BTCOEX_H__
 #define __HAL_BTCOEX_H__
 
@@ -11,8 +7,8 @@
 
 #define LPS_RPWM_WAIT_MS	300
 
-/*  Some variables can't get from outsrc BT-Coex, */
-/*  so we need to save here */
+ 
+ 
 struct bt_coexist {
 	u8 bBtExist;
 	u8 btTotalAntNum;
@@ -51,4 +47,4 @@ u8 hal_btcoex_LpsVal(struct adapter *);
 u32 hal_btcoex_GetRaMask(struct adapter *);
 void hal_btcoex_RecordPwrMode(struct adapter *padapter, u8 *pCmdBuf, u8 cmdLen);
 
-#endif /*  !__HAL_BTCOEX_H__ */
+#endif  

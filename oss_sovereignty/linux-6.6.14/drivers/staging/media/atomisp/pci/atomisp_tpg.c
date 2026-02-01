@@ -1,22 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Support for Medifield PNW Camera Imaging ISP subsystem.
- *
- * Copyright (c) 2010 Intel Corporation. All Rights Reserved.
- *
- * Copyright (c) 2010 Silicon Hive www.siliconhive.com.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License version
- * 2 as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- *
- */
+
+ 
 
 #include <media/v4l2-event.h>
 #include <media/v4l2-mediabus.h>
@@ -32,7 +15,7 @@ static int tpg_get_fmt(struct v4l2_subdev *sd,
 		       struct v4l2_subdev_state *sd_state,
 		       struct v4l2_subdev_format *format)
 {
-	/*to fake*/
+	 
 	return 0;
 }
 
@@ -44,7 +27,7 @@ static int tpg_set_fmt(struct v4l2_subdev *sd,
 
 	if (format->pad)
 		return -EINVAL;
-	/* only raw8 grbg is supported by TPG */
+	 
 	fmt->code = MEDIA_BUS_FMT_SGRBG8_1X8;
 	if (format->which == V4L2_SUBDEV_FORMAT_TRY) {
 		sd_state->pads->try_fmt = *fmt;
@@ -55,7 +38,7 @@ static int tpg_set_fmt(struct v4l2_subdev *sd,
 
 static int tpg_log_status(struct v4l2_subdev *sd)
 {
-	/*to fake*/
+	 
 	return 0;
 }
 
@@ -68,7 +51,7 @@ static int tpg_enum_mbus_code(struct v4l2_subdev *sd,
 			      struct v4l2_subdev_state *sd_state,
 			      struct v4l2_subdev_mbus_code_enum *code)
 {
-	/*to fake*/
+	 
 	return 0;
 }
 
@@ -76,7 +59,7 @@ static int tpg_enum_frame_size(struct v4l2_subdev *sd,
 			       struct v4l2_subdev_state *sd_state,
 			       struct v4l2_subdev_frame_size_enum *fse)
 {
-	/*to fake*/
+	 
 	return 0;
 }
 
@@ -84,7 +67,7 @@ static int tpg_enum_frame_ival(struct v4l2_subdev *sd,
 			       struct v4l2_subdev_state *sd_state,
 			       struct v4l2_subdev_frame_interval_enum *fie)
 {
-	/*to fake*/
+	 
 	return 0;
 }
 
@@ -121,7 +104,7 @@ int atomisp_tpg_register_entities(struct atomisp_tpg_device *tpg,
 				  struct v4l2_device *vdev)
 {
 	int ret;
-	/* Register the subdev and video nodes. */
+	 
 	ret = v4l2_device_register_subdev(vdev, &tpg->sd);
 	if (ret < 0)
 		goto error;

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 
 #include "../../kselftest.h"
 #define MAX_VSIZE	(8192 * 32)

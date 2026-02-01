@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _TSTYPE_H_
 #define _TSTYPE_H_
 #include "rtl819x_Qos.h"
@@ -8,7 +8,7 @@
 #define TOTAL_TS_NUM		16
 #define TCLAS_NUM		4
 
-/*  This define the Tx/Rx directions */
+ 
 enum tr_select {
 	TX_DIR = 0,
 	RX_DIR = 1,

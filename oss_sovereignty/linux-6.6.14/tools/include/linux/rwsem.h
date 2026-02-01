@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
+ 
 #ifndef _TOOLS__RWSEM_H
 #define _TOOLS__RWSEM_H
 
@@ -37,4 +37,4 @@ static inline int up_write(struct rw_semaphore *sem)
 {
 	return pthread_rwlock_unlock(&sem->lock);
 }
-#endif /* _TOOLS_RWSEM_H */
+#endif  

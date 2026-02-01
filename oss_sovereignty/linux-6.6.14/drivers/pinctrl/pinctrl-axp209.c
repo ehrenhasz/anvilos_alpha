@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * AXP20x pinctrl and GPIO driver
- *
- * Copyright (C) 2016 Maxime Ripard <maxime.ripard@free-electrons.com>
- * Copyright (C) 2017 Quentin Schulz <quentin.schulz@free-electrons.com>
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/device.h>
@@ -49,9 +44,9 @@
 struct axp20x_pctrl_desc {
 	const struct pinctrl_pin_desc	*pins;
 	unsigned int			npins;
-	/* Stores the pins supporting LDO function. Bit offset is pin number. */
+	 
 	u8				ldo_mask;
-	/* Stores the pins supporting ADC function. Bit offset is pin number. */
+	 
 	u8				adc_mask;
 	u8				gpio_status_offset;
 	u8				adc_mux;
@@ -135,7 +130,7 @@ static int axp20x_gpio_get(struct gpio_chip *chip, unsigned int offset)
 	unsigned int val;
 	int ret;
 
-	/* AXP209 has GPIO3 status sharing the settings register */
+	 
 	if (offset == 3) {
 		ret = regmap_read(pctl->regmap, AXP20X_GPIO3_CTRL, &val);
 		if (ret)
@@ -157,7 +152,7 @@ static int axp20x_gpio_get_direction(struct gpio_chip *chip,
 	unsigned int val;
 	int reg, ret;
 
-	/* AXP209 GPIO3 settings have a different layout */
+	 
 	if (offset == 3) {
 		ret = regmap_read(pctl->regmap, AXP20X_GPIO3_CTRL, &val);
 		if (ret)
@@ -176,18 +171,11 @@ static int axp20x_gpio_get_direction(struct gpio_chip *chip,
 	if (ret)
 		return ret;
 
-	/*
-	 * This shouldn't really happen if the pin is in use already,
-	 * or if it's not in use yet, it doesn't matter since we're
-	 * going to change the value soon anyway. Default to output.
-	 */
+	 
 	if ((val & AXP20X_GPIO_FUNCTIONS) > 2)
 		return GPIO_LINE_DIRECTION_OUT;
 
-	/*
-	 * The GPIO directions are the three lowest values.
-	 * 2 is input, 0 and 1 are output
-	 */
+	 
 	if (val & 2)
 		return GPIO_LINE_DIRECTION_IN;
 
@@ -208,7 +196,7 @@ static void axp20x_gpio_set(struct gpio_chip *chip, unsigned int offset,
 	struct axp20x_pctl *pctl = gpiochip_get_data(chip);
 	int reg;
 
-	/* AXP209 has GPIO3 status sharing the settings register */
+	 
 	if (offset == 3) {
 		regmap_update_bits(pctl->regmap, AXP20X_GPIO3_CTRL,
 				   AXP20X_GPIO3_FUNCTIONS,
@@ -233,7 +221,7 @@ static int axp20x_pmx_set(struct pinctrl_dev *pctldev, unsigned int offset,
 	struct axp20x_pctl *pctl = pinctrl_dev_get_drvdata(pctldev);
 	int reg;
 
-	/* AXP209 GPIO3 settings have a different layout */
+	 
 	if (offset == 3) {
 		return regmap_update_bits(pctl->regmap, AXP20X_GPIO3_CTRL,
 				   AXP20X_GPIO3_FUNCTIONS,
@@ -283,7 +271,7 @@ static int axp20x_pmx_set_mux(struct pinctrl_dev *pctldev,
 	struct axp20x_pctl *pctl = pinctrl_dev_get_drvdata(pctldev);
 	unsigned int mask;
 
-	/* Every pin supports GPIO_OUT and GPIO_IN functions */
+	 
 	if (function <= AXP20X_FUNC_GPIO_IN)
 		return axp20x_pmx_set(pctldev, group,
 				      pctl->funcs[function].muxval);
@@ -296,12 +284,7 @@ static int axp20x_pmx_set_mux(struct pinctrl_dev *pctldev,
 	if (!(BIT(group) & mask))
 		return -EINVAL;
 
-	/*
-	 * We let the regulator framework handle the LDO muxing as muxing bits
-	 * are basically also regulators on/off bits. It's better not to enforce
-	 * any state of the regulator when selecting LDO mux so that we don't
-	 * interfere with the regulator driver.
-	 */
+	 
 	if (function == AXP20X_FUNC_LDO)
 		return 0;
 
@@ -402,14 +385,11 @@ static int axp20x_build_funcs_groups(struct platform_device *pdev)
 	pctl->funcs[AXP20X_FUNC_GPIO_IN].name = "gpio_in";
 	pctl->funcs[AXP20X_FUNC_GPIO_IN].muxval = AXP20X_MUX_GPIO_IN;
 	pctl->funcs[AXP20X_FUNC_LDO].name = "ldo";
-	/*
-	 * Muxval for LDO is useless as we won't use it.
-	 * See comment in axp20x_pmx_set_mux.
-	 */
+	 
 	pctl->funcs[AXP20X_FUNC_ADC].name = "adc";
 	pctl->funcs[AXP20X_FUNC_ADC].muxval = pctl->desc->adc_mux;
 
-	/* Every pin supports GPIO_OUT and GPIO_IN functions */
+	 
 	for (i = 0; i <= AXP20X_FUNC_GPIO_IN; i++) {
 		pctl->funcs[i].ngroups = npins;
 		pctl->funcs[i].groups = devm_kcalloc(&pdev->dev,

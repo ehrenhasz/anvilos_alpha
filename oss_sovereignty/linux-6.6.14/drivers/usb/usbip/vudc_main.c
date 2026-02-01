@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (C) 2015 Karol Kosik <karo9@interia.eu>
- * Copyright (C) 2015-2016 Samsung Electronics
- *               Igor Kotrasinski <i.kotrasinsk@samsung.com>
- *               Krzysztof Opasiak <k.opasiak@samsung.com>
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/list.h>
@@ -61,10 +56,7 @@ static int __init vudc_init(void)
 
 		list_add_tail(&udc_dev->dev_entry, &vudc_devices);
 		if (!platform_get_drvdata(udc_dev->pdev)) {
-			/*
-			 * The udc was added successfully but its probe
-			 * function failed for some reason.
-			 */
+			 
 			retval = -EINVAL;
 			goto cleanup;
 		}
@@ -74,10 +66,7 @@ static int __init vudc_init(void)
 cleanup:
 	list_for_each_entry_safe(udc_dev, udc_dev2, &vudc_devices, dev_entry) {
 		list_del(&udc_dev->dev_entry);
-		/*
-		 * Just do platform_device_del() here, put_vudc_device()
-		 * calls the platform_device_put()
-		 */
+		 
 		platform_device_del(udc_dev->pdev);
 		put_vudc_device(udc_dev);
 	}
@@ -94,10 +83,7 @@ static void __exit vudc_cleanup(void)
 
 	list_for_each_entry_safe(udc_dev, udc_dev2, &vudc_devices, dev_entry) {
 		list_del(&udc_dev->dev_entry);
-		/*
-		 * Just do platform_device_del() here, put_vudc_device()
-		 * calls the platform_device_put()
-		 */
+		 
 		platform_device_del(udc_dev->pdev);
 		put_vudc_device(udc_dev);
 	}

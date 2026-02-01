@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Samsung Exynos PPMU event types for counting in regs
- *
- * Copyright (c) 2019, Samsung Electronics
- * Author: Lukasz Luba <l.luba@partner.samsung.com>
- */
+ 
+ 
 
 #ifndef __DT_BINDINGS_PMU_EXYNOS_PPMU_H
 #define __DT_BINDINGS_PMU_EXYNOS_PPMU_H

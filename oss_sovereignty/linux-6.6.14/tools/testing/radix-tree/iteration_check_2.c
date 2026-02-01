@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * iteration_check_2.c: Check that deleting a tagged entry doesn't cause
- * an RCU walker to finish early.
- * Copyright (c) 2020 Oracle
- * Author: Matthew Wilcox <willy@infradead.org>
- */
+
+ 
 #include <pthread.h>
 #include "test.h"
 

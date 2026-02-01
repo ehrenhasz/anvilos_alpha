@@ -95,4 +95,4 @@ void linkmode_resolve_pause(const unsigned long *local_adv,
 
 void linkmode_set_pause(unsigned long *advertisement, bool tx, bool rx);
 
-#endif /* __LINKMODE_H */
+#endif  

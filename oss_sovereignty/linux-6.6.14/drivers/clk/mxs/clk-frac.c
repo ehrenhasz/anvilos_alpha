@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright 2012 Freescale Semiconductor, Inc.
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/err.h>
@@ -9,17 +7,7 @@
 #include <linux/slab.h>
 #include "clk.h"
 
-/**
- * struct clk_frac - mxs fractional divider clock
- * @hw: clk_hw for the fractional divider clock
- * @reg: register address
- * @shift: the divider bit shift
- * @width: the divider bit width
- * @busy: busy bit shift
- *
- * The clock is an adjustable fractional divider with a busy bit to wait
- * when the divider is adjusted.
- */
+ 
 struct clk_frac {
 	struct clk_hw hw;
 	void __iomem *reg;

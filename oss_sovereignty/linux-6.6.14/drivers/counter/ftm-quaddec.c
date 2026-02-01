@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Flex Timer Module Quadrature decoder
- *
- * This module implements a driver for decoding the FTM quadrature
- * of ex. a LS1021A
- */
+
+ 
 
 #include <linux/fsl/ftm.h>
 #include <linux/module.h>
@@ -48,12 +43,12 @@ static void ftm_write(struct ftm_quaddec *ftm, uint32_t offset, uint32_t data)
 		iowrite32(data, ftm->ftm_base + offset);
 }
 
-/* Hold mutex before modifying write protection state */
+ 
 static void ftm_clear_write_protection(struct ftm_quaddec *ftm)
 {
 	uint32_t flag;
 
-	/* First see if it is enabled */
+	 
 	ftm_read(ftm, FTM_FMS, &flag);
 
 	if (flag & FTM_FMS_WPEN)
@@ -67,7 +62,7 @@ static void ftm_set_write_protection(struct ftm_quaddec *ftm)
 
 static void ftm_reset_counter(struct ftm_quaddec *ftm)
 {
-	/* Reset hardware counter to CNTIN */
+	 
 	ftm_write(ftm, FTM_CNT, 0x0);
 }
 
@@ -75,28 +70,24 @@ static void ftm_quaddec_init(struct ftm_quaddec *ftm)
 {
 	ftm_clear_write_protection(ftm);
 
-	/*
-	 * Do not write in the region from the CNTIN register through the
-	 * PWMLOAD register when FTMEN = 0.
-	 * Also reset other fields to zero
-	 */
+	 
 	ftm_write(ftm, FTM_MODE, FTM_MODE_FTMEN);
 	ftm_write(ftm, FTM_CNTIN, 0x0000);
 	ftm_write(ftm, FTM_MOD, 0xffff);
 	ftm_write(ftm, FTM_CNT, 0x0);
-	/* Set prescaler, reset other fields to zero */
+	 
 	ftm_write(ftm, FTM_SC, FTM_SC_PS_1);
 
-	/* Select quad mode, reset other fields to zero */
+	 
 	ftm_write(ftm, FTM_QDCTRL, FTM_QDCTRL_QUADEN);
 
-	/* Unused features and reset to default section */
+	 
 	ftm_write(ftm, FTM_POL, 0x0);
 	ftm_write(ftm, FTM_FLTCTRL, 0x0);
 	ftm_write(ftm, FTM_SYNCONF, 0x0);
 	ftm_write(ftm, FTM_SYNC, 0xffff);
 
-	/* Lock the FTM */
+	 
 	ftm_set_write_protection(ftm);
 }
 
@@ -107,10 +98,7 @@ static void ftm_quaddec_disable(void *ftm)
 	ftm_clear_write_protection(ftm_qua);
 	ftm_write(ftm_qua, FTM_MODE, 0);
 	ftm_write(ftm_qua, FTM_QDCTRL, 0);
-	/*
-	 * This is enough to disable the counter. No clock has been
-	 * selected by writing to FTM_SC in init()
-	 */
+	 
 	ftm_set_write_protection(ftm_qua);
 }
 
@@ -138,7 +126,7 @@ static int ftm_quaddec_set_prescaler(struct counter_device *counter,
 	FTM_FIELD_UPDATE(ftm, FTM_SC, FTM_SC_PS_MASK, cnt_mode);
 	ftm_set_write_protection(ftm);
 
-	/* Also resets the counter as it is undefined anyway now */
+	 
 	ftm_reset_counter(ftm);
 
 	mutex_unlock(&ftm->ftm_quaddec_mutex);

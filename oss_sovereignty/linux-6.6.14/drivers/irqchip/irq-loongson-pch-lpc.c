@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Loongson LPC Interrupt Controller support
- *
- * Copyright (C) 2020-2022 Loongson Technology Corporation Limited
- */
+
+ 
 
 #define pr_fmt(fmt) "lpc: " fmt
 
@@ -15,7 +11,7 @@
 #include <linux/kernel.h>
 #include <linux/syscore_ops.h>
 
-/* Registers */
+ 
 #define LPC_INT_CTL		0x00
 #define LPC_INT_ENA		0x04
 #define LPC_INT_STS		0x08
@@ -23,7 +19,7 @@
 #define LPC_INT_POL		0x10
 #define LPC_COUNT		16
 
-/* LPC_INT_CTL */
+ 
 #define LPC_INT_CTL_EN		BIT(31)
 
 struct pch_lpc {
@@ -136,10 +132,10 @@ static const struct irq_domain_ops pch_lpc_domain_ops = {
 
 static void pch_lpc_reset(struct pch_lpc *priv)
 {
-	/* Enable the LPC interrupt, bit31: en  bit30: edge */
+	 
 	writel(LPC_INT_CTL_EN, priv->base + LPC_INT_CTL);
 	writel(0, priv->base + LPC_INT_ENA);
-	/* Clear all 18-bit interrpt bit */
+	 
 	writel(GENMASK(17, 0), priv->base + LPC_INT_CLR);
 }
 

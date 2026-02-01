@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2016 National Instruments Corp.
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/bitops.h>
@@ -204,7 +202,7 @@ static int nic7018_probe(struct platform_device *pdev)
 	watchdog_set_nowayout(wdd, nowayout);
 	watchdog_init_timeout(wdd, timeout, dev);
 
-	/* Unlock WDT register */
+	 
 	outb(UNLOCK, wdt->io_base + WDT_REG_LOCK);
 
 	ret = watchdog_register_device(wdd);
@@ -224,7 +222,7 @@ static void nic7018_remove(struct platform_device *pdev)
 
 	watchdog_unregister_device(&wdt->wdd);
 
-	/* Lock WDT register */
+	 
 	outb(LOCK, wdt->io_base + WDT_REG_LOCK);
 }
 

@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2019 MediaTek Inc.
- */
+ 
+ 
 
 #ifndef __RPROC_MTK_COMMON_H
 #define __RPROC_MTK_COMMON_H
@@ -68,7 +66,7 @@ struct scp_run {
 };
 
 struct scp_ipi_desc {
-	/* For protecting handler. */
+	 
 	struct mutex lock;
 	scp_ipi_handler_t handler;
 	void *priv;
@@ -108,7 +106,7 @@ struct mtk_scp {
 	struct mtk_share_obj __iomem *recv_buf;
 	struct mtk_share_obj __iomem *send_buf;
 	struct scp_run run;
-	/* To prevent multiple ipi_send run concurrently. */
+	 
 	struct mutex send_lock;
 	struct scp_ipi_desc ipi_desc[SCP_IPI_MAX];
 	bool ipi_id_ack[SCP_IPI_MAX];
@@ -121,13 +119,7 @@ struct mtk_scp {
 	struct rproc_subdev *rpmsg_subdev;
 };
 
-/**
- * struct mtk_share_obj - SRAM buffer shared with AP and SCP
- *
- * @id:		IPI id
- * @len:	share buffer length
- * @share_buf:	share buffer data
- */
+ 
 struct mtk_share_obj {
 	u32 id;
 	u32 len;

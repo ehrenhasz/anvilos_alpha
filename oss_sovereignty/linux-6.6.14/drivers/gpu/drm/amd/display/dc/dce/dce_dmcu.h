@@ -1,27 +1,4 @@
-/*
- * Copyright 2012-16 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 
 #ifndef _DCE_DMCU_H_
@@ -237,67 +214,51 @@ struct dce_dmcu {
 	const struct dce_dmcu_mask *dmcu_mask;
 };
 
-/*******************************************************************
- *   MASTER_COMM_DATA_REG1   Bit position    Data
- *                           7:0	            hyst_frames[7:0]
- *                           14:8	        hyst_lines[6:0]
- *                           15	            RFB_UPDATE_AUTO_EN
- *                           18:16	        phy_num[2:0]
- *                           21:19	        dcp_sel[2:0]
- *                           22	            phy_type
- *                           23	            frame_cap_ind
- *                           26:24	        aux_chan[2:0]
- *                           30:27	        aux_repeat[3:0]
- *                           31:31	        reserved[31:31]
- ******************************************************************/
+ 
 union dce_dmcu_psr_config_data_reg1 {
 	struct {
-		unsigned int timehyst_frames:8;                  /*[7:0]*/
-		unsigned int hyst_lines:7;                       /*[14:8]*/
-		unsigned int rfb_update_auto_en:1;               /*[15:15]*/
-		unsigned int dp_port_num:3;                      /*[18:16]*/
-		unsigned int dcp_sel:3;                          /*[21:19]*/
-		unsigned int phy_type:1;                         /*[22:22]*/
-		unsigned int frame_cap_ind:1;                    /*[23:23]*/
-		unsigned int aux_chan:3;                         /*[26:24]*/
-		unsigned int aux_repeat:4;                       /*[30:27]*/
-		unsigned int allow_smu_optimizations:1;         /*[31:31]*/
+		unsigned int timehyst_frames:8;                   
+		unsigned int hyst_lines:7;                        
+		unsigned int rfb_update_auto_en:1;                
+		unsigned int dp_port_num:3;                       
+		unsigned int dcp_sel:3;                           
+		unsigned int phy_type:1;                          
+		unsigned int frame_cap_ind:1;                     
+		unsigned int aux_chan:3;                          
+		unsigned int aux_repeat:4;                        
+		unsigned int allow_smu_optimizations:1;          
 	} bits;
 	unsigned int u32All;
 };
 
-/*******************************************************************
- *   MASTER_COMM_DATA_REG2
- *******************************************************************/
+ 
 union dce_dmcu_psr_config_data_reg2 {
 	struct {
-		unsigned int dig_fe:3;                  /*[2:0]*/
-		unsigned int dig_be:3;                  /*[5:3]*/
-		unsigned int skip_wait_for_pll_lock:1;  /*[6:6]*/
-		unsigned int reserved:9;                /*[15:7]*/
-		unsigned int frame_delay:8;             /*[23:16]*/
-		unsigned int smu_phy_id:4;              /*[27:24]*/
-		unsigned int num_of_controllers:4;      /*[31:28]*/
+		unsigned int dig_fe:3;                   
+		unsigned int dig_be:3;                   
+		unsigned int skip_wait_for_pll_lock:1;   
+		unsigned int reserved:9;                 
+		unsigned int frame_delay:8;              
+		unsigned int smu_phy_id:4;               
+		unsigned int num_of_controllers:4;       
 	} bits;
 	unsigned int u32All;
 };
 
-/*******************************************************************
- *   MASTER_COMM_DATA_REG3
- *******************************************************************/
+ 
 union dce_dmcu_psr_config_data_reg3 {
 	struct {
-		unsigned int psr_level:16;      /*[15:0]*/
-		unsigned int link_rate:4;       /*[19:16]*/
-		unsigned int reserved:12;        /*[31:20]*/
+		unsigned int psr_level:16;       
+		unsigned int link_rate:4;        
+		unsigned int reserved:12;         
 	} bits;
 	unsigned int u32All;
 };
 
 union dce_dmcu_psr_config_data_wait_loop_reg1 {
 	struct {
-		unsigned int wait_loop:16; /* [15:0] */
-		unsigned int reserved:16; /* [31:16] */
+		unsigned int wait_loop:16;  
+		unsigned int reserved:16;  
 	} bits;
 	unsigned int u32;
 };
@@ -328,4 +289,4 @@ struct dmcu *dcn21_dmcu_create(
 
 void dce_dmcu_destroy(struct dmcu **dmcu);
 
-#endif /* _DCE_ABM_H_ */
+#endif  

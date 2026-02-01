@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright © 2023 Intel Corporation
- */
+
+ 
 
 #include <linux/pci.h>
 #include <linux/pnp.h>
@@ -32,7 +30,7 @@ int intel_gmch_bridge_setup(struct drm_i915_private *i915)
 					i915->gmch.pdev);
 }
 
-/* Allocate space for the MCH regs if needed, return nonzero on error */
+ 
 static int
 intel_alloc_mchbar_resource(struct drm_i915_private *i915)
 {
@@ -46,12 +44,12 @@ intel_alloc_mchbar_resource(struct drm_i915_private *i915)
 	pci_read_config_dword(i915->gmch.pdev, reg, &temp_lo);
 	mchbar_addr = ((u64)temp_hi << 32) | temp_lo;
 
-	/* If ACPI doesn't have it, assume we need to allocate it ourselves */
+	 
 	if (IS_ENABLED(CONFIG_PNP) && mchbar_addr &&
 	    pnp_range_reserved(mchbar_addr, mchbar_addr + MCHBAR_SIZE))
 		return 0;
 
-	/* Get some space for it */
+	 
 	i915->gmch.mch_res.name = "i915 MCHBAR";
 	i915->gmch.mch_res.flags = IORESOURCE_MEM;
 	ret = pci_bus_alloc_resource(i915->gmch.pdev->bus,
@@ -75,7 +73,7 @@ intel_alloc_mchbar_resource(struct drm_i915_private *i915)
 	return 0;
 }
 
-/* Setup MCHBAR if possible, return true if we should disable it again */
+ 
 void intel_gmch_bar_setup(struct drm_i915_private *i915)
 {
 	int mchbar_reg = GRAPHICS_VER(i915) >= 4 ? MCHBAR_I965 : MCHBAR_I915;
@@ -95,7 +93,7 @@ void intel_gmch_bar_setup(struct drm_i915_private *i915)
 		enabled = temp & 1;
 	}
 
-	/* If it's already enabled, don't have to do anything */
+	 
 	if (enabled)
 		return;
 
@@ -104,7 +102,7 @@ void intel_gmch_bar_setup(struct drm_i915_private *i915)
 
 	i915->gmch.mchbar_need_disable = true;
 
-	/* Space is allocated or reserved, so enable it. */
+	 
 	if (IS_I915G(i915) || IS_I915GM(i915)) {
 		pci_write_config_dword(i915->gmch.pdev, DEVEN,
 				       temp | DEVEN_MCHBAR_EN);

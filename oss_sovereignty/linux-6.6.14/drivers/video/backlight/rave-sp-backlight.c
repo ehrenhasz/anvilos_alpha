@@ -1,11 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0+
 
-/*
- * LCD Backlight driver for RAVE SP
- *
- * Copyright (C) 2018 Zodiac Inflight Innovations
- *
- */
+
+ 
 
 #include <linux/backlight.h>
 #include <linux/kernel.h>
@@ -55,11 +50,7 @@ static int rave_sp_backlight_probe(struct platform_device *pdev)
 	if (IS_ERR(bd))
 		return PTR_ERR(bd);
 
-	/*
-	 * If there is a phandle pointing to the device node we can
-	 * assume that another device will manage the status changes.
-	 * If not we make sure the backlight is in a consistent state.
-	 */
+	 
 	if (!dev->of_node->phandle)
 		backlight_update_status(bd);
 

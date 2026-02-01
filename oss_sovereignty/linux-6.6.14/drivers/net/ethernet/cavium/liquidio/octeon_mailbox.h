@@ -1,24 +1,8 @@
-/**********************************************************************
- * Author: Cavium, Inc.
- *
- * Contact: support@cavium.com
- *          Please include "LiquidIO" in the subject.
- *
- * Copyright (c) 2003-2016 Cavium, Inc.
- *
- * This file is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, Version 2, as
- * published by the Free Software Foundation.
- *
- * This file is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty
- * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more details.
- ***********************************************************************/
+ 
 #ifndef __MAILBOX_H__
 #define __MAILBOX_H__
 
-/* Macros for Mail Box Communication */
+ 
 
 #define OCTEON_MBOX_DATA_MAX		32
 
@@ -27,7 +11,7 @@
 #define OCTEON_PF_CHANGED_VF_MACADDR	0x4
 #define OCTEON_GET_VF_STATS		0x8
 
-/*Macro for Read acknowldgement*/
+ 
 #define OCTEON_PFVFACK			0xffffffffffffffffULL
 #define OCTEON_PFVFSIG			0x1122334455667788ULL
 #define OCTEON_PFVFERR			0xDEADDEADDEADDEADULL
@@ -80,7 +64,7 @@ enum octeon_mbox_state {
 };
 
 struct octeon_mbox {
-	/** A spinlock to protect access to this q_mbox. */
+	 
 	spinlock_t lock;
 
 	struct octeon_device *oct_dev;
@@ -91,15 +75,13 @@ struct octeon_mbox {
 
 	struct cavium_wk mbox_poll_wk;
 
-	/** SLI_MAC_PF_MBOX_INT for PF, SLI_PKT_MBOX_INT for VF. */
+	 
 	void *mbox_int_reg;
 
-	/** SLI_PKT_PF_VF_MBOX_SIG(0) for PF, SLI_PKT_PF_VF_MBOX_SIG(1) for VF.
-	 */
+	 
 	void *mbox_write_reg;
 
-	/** SLI_PKT_PF_VF_MBOX_SIG(1) for PF, SLI_PKT_PF_VF_MBOX_SIG(0) for VF.
-	 */
+	 
 	void *mbox_read_reg;
 
 	struct octeon_mbox_cmd mbox_req;

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * VFIO generic eventfd code for IRQFD support.
- * Derived from drivers/vfio/pci/vfio_pci_intrs.c
- *
- * Copyright (C) 2012 Red Hat, Inc.  All rights reserved.
- *     Author: Alex Williamson <alex.williamson@redhat.com>
- */
+
+ 
 
 #include <linux/vfio.h>
 #include <linux/eventfd.h>
@@ -46,7 +40,7 @@ static int virqfd_wakeup(wait_queue_entry_t *wait, unsigned mode, int sync, void
 		u64 cnt;
 		eventfd_ctx_do_read(virqfd->eventfd, &cnt);
 
-		/* An event has been signaled, call function */
+		 
 		if ((!virqfd->handler ||
 		     virqfd->handler(virqfd->opaque, virqfd->data)) &&
 		    virqfd->thread)
@@ -57,13 +51,7 @@ static int virqfd_wakeup(wait_queue_entry_t *wait, unsigned mode, int sync, void
 		unsigned long flags;
 		spin_lock_irqsave(&virqfd_lock, flags);
 
-		/*
-		 * The eventfd is closing, if the virqfd has not yet been
-		 * queued for release, as determined by testing whether the
-		 * virqfd pointer to it is still valid, queue it now.  As
-		 * with kvm irqfds, we know we won't race against the virqfd
-		 * going away because we hold the lock to get here.
-		 */
+		 
 		if (*(virqfd->pvirqfd) == virqfd) {
 			*(virqfd->pvirqfd) = NULL;
 			virqfd_deactivate(virqfd);
@@ -139,12 +127,7 @@ int vfio_virqfd_enable(void *opaque,
 
 	virqfd->eventfd = ctx;
 
-	/*
-	 * virqfds can be released by closing the eventfd or directly
-	 * through ioctl.  These are both done through a workqueue, so
-	 * we update the pointer to the virqfd under lock to avoid
-	 * pushing multiple jobs to release the same virqfd.
-	 */
+	 
 	spin_lock_irq(&virqfd_lock);
 
 	if (*pvirqfd) {
@@ -156,28 +139,19 @@ int vfio_virqfd_enable(void *opaque,
 
 	spin_unlock_irq(&virqfd_lock);
 
-	/*
-	 * Install our own custom wake-up handling so we are notified via
-	 * a callback whenever someone signals the underlying eventfd.
-	 */
+	 
 	init_waitqueue_func_entry(&virqfd->wait, virqfd_wakeup);
 	init_poll_funcptr(&virqfd->pt, virqfd_ptable_queue_proc);
 
 	events = vfs_poll(irqfd.file, &virqfd->pt);
 
-	/*
-	 * Check if there was an event already pending on the eventfd
-	 * before we registered and trigger it as if we didn't miss it.
-	 */
+	 
 	if (events & EPOLLIN) {
 		if ((!handler || handler(opaque, data)) && thread)
 			schedule_work(&virqfd->inject);
 	}
 
-	/*
-	 * Do not drop the file until the irqfd is fully initialized,
-	 * otherwise we might race against the EPOLLHUP.
-	 */
+	 
 	fdput(irqfd);
 
 	return 0;
@@ -205,11 +179,7 @@ void vfio_virqfd_disable(struct virqfd **pvirqfd)
 
 	spin_unlock_irqrestore(&virqfd_lock, flags);
 
-	/*
-	 * Block until we know all outstanding shutdown jobs have completed.
-	 * Even if we don't queue the job, flush the wq to be sure it's
-	 * been released.
-	 */
+	 
 	flush_workqueue(vfio_irqfd_cleanup_wq);
 }
 EXPORT_SYMBOL_GPL(vfio_virqfd_disable);

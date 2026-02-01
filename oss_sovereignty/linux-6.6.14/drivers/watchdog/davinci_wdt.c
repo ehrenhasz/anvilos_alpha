@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * drivers/char/watchdog/davinci_wdt.c
- *
- * Watchdog driver for DaVinci DM644x/DM646x processors
- *
- * Copyright (C) 2006-2013 Texas Instruments.
- *
- * 2007 (c) MontaVista Software, Inc.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/moduleparam.h>
@@ -24,9 +16,9 @@
 #define MODULE_NAME "DAVINCI-WDT: "
 
 #define DEFAULT_HEARTBEAT 60
-#define MAX_HEARTBEAT     600	/* really the max margin is 264/27MHz*/
+#define MAX_HEARTBEAT     600	 
 
-/* Timer register set definition */
+ 
 #define PID12	(0x0)
 #define EMUMGT	(0x4)
 #define TIM12	(0x10)
@@ -37,17 +29,17 @@
 #define TGCR	(0x24)
 #define WDTCR	(0x28)
 
-/* TCR bit definitions */
+ 
 #define ENAMODE12_DISABLED	(0 << 6)
 #define ENAMODE12_ONESHOT	(1 << 6)
 #define ENAMODE12_PERIODIC	(2 << 6)
 
-/* TGCR bit definitions */
+ 
 #define TIM12RS_UNRESET		(1 << 0)
 #define TIM34RS_UNRESET		(1 << 1)
 #define TIMMODE_64BIT_WDOG      (2 << 2)
 
-/* WDTCR bit definitions */
+ 
 #define WDEN			(1 << 14)
 #define WDFLAG			(1 << 15)
 #define WDKEY_SEQ0		(0xa5c6 << 16)
@@ -55,12 +47,7 @@
 
 static int heartbeat;
 
-/*
- * struct to hold data for each WDT device
- * @base - base io address of WD device
- * @clk - source clock of WDT
- * @wdd - hold watchdog device as is in WDT core
- */
+ 
 struct davinci_wdt_device {
 	void __iomem		*base;
 	struct clk		*clk;
@@ -76,29 +63,26 @@ static int davinci_wdt_start(struct watchdog_device *wdd)
 
 	wdt_freq = clk_get_rate(davinci_wdt->clk);
 
-	/* disable, internal clock source */
+	 
 	iowrite32(0, davinci_wdt->base + TCR);
-	/* reset timer, set mode to 64-bit watchdog, and unreset */
+	 
 	iowrite32(0, davinci_wdt->base + TGCR);
 	tgcr = TIMMODE_64BIT_WDOG | TIM12RS_UNRESET | TIM34RS_UNRESET;
 	iowrite32(tgcr, davinci_wdt->base + TGCR);
-	/* clear counter regs */
+	 
 	iowrite32(0, davinci_wdt->base + TIM12);
 	iowrite32(0, davinci_wdt->base + TIM34);
-	/* set timeout period */
+	 
 	timer_margin = (((u64)wdd->timeout * wdt_freq) & 0xffffffff);
 	iowrite32(timer_margin, davinci_wdt->base + PRD12);
 	timer_margin = (((u64)wdd->timeout * wdt_freq) >> 32);
 	iowrite32(timer_margin, davinci_wdt->base + PRD34);
-	/* enable run continuously */
+	 
 	iowrite32(ENAMODE12_PERIODIC, davinci_wdt->base + TCR);
-	/* Once the WDT is in pre-active state write to
-	 * TIM12, TIM34, PRD12, PRD34, TCR, TGCR, WDTCR are
-	 * write protected (except for the WDKEY field)
-	 */
-	/* put watchdog in pre-active state */
+	 
+	 
 	iowrite32(WDKEY_SEQ0 | WDEN, davinci_wdt->base + WDTCR);
-	/* put watchdog in active state */
+	 
 	iowrite32(WDKEY_SEQ1 | WDEN, davinci_wdt->base + WDTCR);
 	return 0;
 }
@@ -107,9 +91,9 @@ static int davinci_wdt_ping(struct watchdog_device *wdd)
 {
 	struct davinci_wdt_device *davinci_wdt = watchdog_get_drvdata(wdd);
 
-	/* put watchdog in service state */
+	 
 	iowrite32(WDKEY_SEQ0, davinci_wdt->base + WDTCR);
-	/* put watchdog in active state */
+	 
 	iowrite32(WDKEY_SEQ1, davinci_wdt->base + WDTCR);
 	return 0;
 }
@@ -121,7 +105,7 @@ static unsigned int davinci_wdt_get_timeleft(struct watchdog_device *wdd)
 	u32 val;
 	struct davinci_wdt_device *davinci_wdt = watchdog_get_drvdata(wdd);
 
-	/* if timeout has occured then return 0 */
+	 
 	val = ioread32(davinci_wdt->base + WDTCR);
 	if (val & WDFLAG)
 		return 0;
@@ -145,30 +129,30 @@ static int davinci_wdt_restart(struct watchdog_device *wdd,
 	struct davinci_wdt_device *davinci_wdt = watchdog_get_drvdata(wdd);
 	u32 tgcr, wdtcr;
 
-	/* disable, internal clock source */
+	 
 	iowrite32(0, davinci_wdt->base + TCR);
 
-	/* reset timer, set mode to 64-bit watchdog, and unreset */
+	 
 	tgcr = 0;
 	iowrite32(tgcr, davinci_wdt->base + TGCR);
 	tgcr = TIMMODE_64BIT_WDOG | TIM12RS_UNRESET | TIM34RS_UNRESET;
 	iowrite32(tgcr, davinci_wdt->base + TGCR);
 
-	/* clear counter and period regs */
+	 
 	iowrite32(0, davinci_wdt->base + TIM12);
 	iowrite32(0, davinci_wdt->base + TIM34);
 	iowrite32(0, davinci_wdt->base + PRD12);
 	iowrite32(0, davinci_wdt->base + PRD34);
 
-	/* put watchdog in pre-active state */
+	 
 	wdtcr = WDKEY_SEQ0 | WDEN;
 	iowrite32(wdtcr, davinci_wdt->base + WDTCR);
 
-	/* put watchdog in active state */
+	 
 	wdtcr = WDKEY_SEQ1 | WDEN;
 	iowrite32(wdtcr, davinci_wdt->base + WDTCR);
 
-	/* write an invalid value to the WDKEY field to trigger a restart */
+	 
 	wdtcr = 0x00004000;
 	iowrite32(wdtcr, davinci_wdt->base + WDTCR);
 

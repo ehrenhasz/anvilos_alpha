@@ -1,21 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2021, MediaTek Inc.
- * Copyright (c) 2021-2022, Intel Corporation.
- *
- * Authors:
- *  Amir Hanania <amir.hanania@intel.com>
- *  Haijun Liu <haijun.liu@mediatek.com>
- *  Moises Veleta <moises.veleta@intel.com>
- *  Ricardo Martinez <ricardo.martinez@linux.intel.com>
- *
- * Contributors:
- *  Andy Shevchenko <andriy.shevchenko@linux.intel.com>
- *  Chandrashekar Devegowda <chandrashekar.devegowda@intel.com>
- *  Chiranjeevi Rapolu <chiranjeevi.rapolu@intel.com>
- *  Eliot Lee <eliot.lee@intel.com>
- *  Sreehari Kancharla <sreehari.kancharla@intel.com>
- */
+
+ 
 
 #include <linux/bits.h>
 #include <linux/bitfield.h>
@@ -188,15 +172,7 @@ struct sk_buff *t7xx_ctrl_alloc_skb(int payload)
 	return skb;
 }
 
-/**
- * t7xx_port_enqueue_skb() - Enqueue the received skb into the port's rx_skb_list.
- * @port: port context.
- * @skb: received skb.
- *
- * Return:
- * * 0		- Success.
- * * -ENOBUFS	- Not enough buffer space. Caller will try again later, skb is not consumed.
- */
+ 
 int t7xx_port_enqueue_skb(struct t7xx_port *port, struct sk_buff *skb)
 {
 	unsigned long flags;
@@ -350,15 +326,7 @@ static struct t7xx_port *t7xx_port_proxy_find_port(struct t7xx_pci_dev *t7xx_dev
 	return NULL;
 }
 
-/**
- * t7xx_port_proxy_recv_skb() - Dispatch received skb.
- * @queue: CLDMA queue.
- * @skb: Socket buffer.
- *
- * Return:
- ** 0		- Packet consumed.
- ** -ERROR	- Failed to process skb.
- */
+ 
 static int t7xx_port_proxy_recv_skb(struct cldma_queue *queue, struct sk_buff *skb)
 {
 	struct ccci_header *ccci_h = (struct ccci_header *)skb->data;
@@ -387,7 +355,7 @@ static int t7xx_port_proxy_recv_skb(struct cldma_queue *queue, struct sk_buff *s
 	skb_pull(skb, sizeof(*ccci_h));
 
 	ret = port_conf->ops->recv_skb(port, skb);
-	/* Error indicates to try again later */
+	 
 	if (ret) {
 		skb_push(skb, sizeof(*ccci_h));
 		return ret;
@@ -401,14 +369,7 @@ drop_skb:
 	return 0;
 }
 
-/**
- * t7xx_port_proxy_md_status_notify() - Notify all ports of state.
- *@port_prox: The port_proxy pointer.
- *@state: State.
- *
- * Called by t7xx_fsm. Used to dispatch modem status for all ports,
- * which want to know MD state transition.
- */
+ 
 void t7xx_port_proxy_md_status_notify(struct port_proxy *port_prox, unsigned int state)
 {
 	struct t7xx_port *port;
@@ -474,16 +435,7 @@ static int t7xx_proxy_alloc(struct t7xx_modem *md)
 	return 0;
 }
 
-/**
- * t7xx_port_proxy_init() - Initialize ports.
- * @md: Modem.
- *
- * Create all port instances.
- *
- * Return:
- * * 0		- Success.
- * * -ERROR	- Error code from failure sub-initializations.
- */
+ 
 int t7xx_port_proxy_init(struct t7xx_modem *md)
 {
 	int ret;

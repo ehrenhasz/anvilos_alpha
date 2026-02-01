@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/hardirq.h>
 
 #include <asm/x86_init.h>
@@ -14,11 +14,7 @@
 
 #include "xen-ops.h"
 
-/*
- * Force a proper event-channel callback from Xen after clearing the
- * callback mask. We do this in a very simple manner, by making a call
- * down into Xen. The pending flag will be checked by Xen on return.
- */
+ 
 noinstr void xen_force_evtchn_callback(void)
 {
 	(void)HYPERVISOR_xen_version(0, NULL);
@@ -26,7 +22,7 @@ noinstr void xen_force_evtchn_callback(void)
 
 static noinstr void xen_safe_halt(void)
 {
-	/* Blocking includes an implicit local_irq_enable(). */
+	 
 	if (HYPERVISOR_sched_op(SCHEDOP_block, NULL) != 0)
 		BUG();
 }
@@ -42,7 +38,7 @@ static void xen_halt(void)
 
 static const typeof(pv_ops) xen_irq_ops __initconst = {
 	.irq = {
-		/* Initial interrupt flag handling only called while interrupts off. */
+		 
 		.save_fl = __PV_IS_CALLEE_SAVE(paravirt_ret0),
 		.irq_disable = __PV_IS_CALLEE_SAVE(paravirt_nop),
 		.irq_enable = __PV_IS_CALLEE_SAVE(paravirt_BUG),

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *  Block device concurrent positioning ranges.
- *
- *  Copyright (C) 2021 Western Digital Corporation or its Affiliates.
- */
+
+ 
 #include <linux/kernel.h>
 #include <linux/blkdev.h>
 #include <linux/slab.h>
@@ -62,15 +58,7 @@ static const struct sysfs_ops blk_ia_range_sysfs_ops = {
 	.show	= blk_ia_range_sysfs_show,
 };
 
-/*
- * Independent access range entries are not freed individually, but alltogether
- * with struct blk_independent_access_ranges and its array of ranges. Since
- * kobject_add() takes a reference on the parent kobject contained in
- * struct blk_independent_access_ranges, the array of independent access range
- * entries cannot be freed until kobject_del() is called for all entries.
- * So we do not need to do anything here, but still need this no-op release
- * operation to avoid complaints from the kobject code.
- */
+ 
 static void blk_ia_range_sysfs_nop_release(struct kobject *kobj)
 {
 }
@@ -81,11 +69,7 @@ static const struct kobj_type blk_ia_range_ktype = {
 	.release	= blk_ia_range_sysfs_nop_release,
 };
 
-/*
- * This will be executed only after all independent access range entries are
- * removed with kobject_del(), at which point, it is safe to free everything,
- * including the array of ranges.
- */
+ 
 static void blk_ia_ranges_sysfs_release(struct kobject *kobj)
 {
 	struct blk_independent_access_ranges *iars =
@@ -98,13 +82,7 @@ static const struct kobj_type blk_ia_ranges_ktype = {
 	.release	= blk_ia_ranges_sysfs_release,
 };
 
-/**
- * disk_register_independent_access_ranges - register with sysfs a set of
- *		independent access ranges
- * @disk:	Target disk
- *
- * Register with sysfs a set of independent access ranges for @disk.
- */
+ 
 int disk_register_independent_access_ranges(struct gendisk *disk)
 {
 	struct blk_independent_access_ranges *iars = disk->ia_ranges;
@@ -117,10 +95,7 @@ int disk_register_independent_access_ranges(struct gendisk *disk)
 	if (!iars)
 		return 0;
 
-	/*
-	 * At this point, iars is the new set of sector access ranges that needs
-	 * to be registered with sysfs.
-	 */
+	 
 	WARN_ON(iars->sysfs_registered);
 	ret = kobject_init_and_add(&iars->kobj, &blk_ia_ranges_ktype,
 				   &disk->queue_kobj, "%s",
@@ -201,11 +176,7 @@ static bool disk_check_ia_ranges(struct gendisk *disk,
 	if (WARN_ON_ONCE(!iars->nr_ia_ranges))
 		return false;
 
-	/*
-	 * While sorting the ranges in increasing LBA order, check that the
-	 * ranges do not overlap, that there are no sector holes and that all
-	 * sectors belong to one range.
-	 */
+	 
 	for (i = 0; i < iars->nr_ia_ranges; i++) {
 		tmp = disk_find_ia_range(iars, sector);
 		if (!tmp || tmp->sector != sector) {
@@ -251,15 +222,7 @@ static bool disk_ia_ranges_changed(struct gendisk *disk,
 	return false;
 }
 
-/**
- * disk_alloc_independent_access_ranges - Allocate an independent access ranges
- *                                        data structure
- * @disk:		target disk
- * @nr_ia_ranges:	Number of independent access ranges
- *
- * Allocate a struct blk_independent_access_ranges structure with @nr_ia_ranges
- * access range descriptors.
- */
+ 
 struct blk_independent_access_ranges *
 disk_alloc_independent_access_ranges(struct gendisk *disk, int nr_ia_ranges)
 {
@@ -273,17 +236,7 @@ disk_alloc_independent_access_ranges(struct gendisk *disk, int nr_ia_ranges)
 }
 EXPORT_SYMBOL_GPL(disk_alloc_independent_access_ranges);
 
-/**
- * disk_set_independent_access_ranges - Set a disk independent access ranges
- * @disk:	target disk
- * @iars:	independent access ranges structure
- *
- * Set the independent access ranges information of the request queue
- * of @disk to @iars. If @iars is NULL and the independent access ranges
- * structure already set is cleared. If there are no differences between
- * @iars and the independent access ranges structure already set, @iars
- * is freed.
- */
+ 
 void disk_set_independent_access_ranges(struct gendisk *disk,
 				struct blk_independent_access_ranges *iars)
 {
@@ -300,13 +253,7 @@ void disk_set_independent_access_ranges(struct gendisk *disk,
 		goto unlock;
 	}
 
-	/*
-	 * This may be called for a registered queue. E.g. during a device
-	 * revalidation. If that is the case, we need to unregister the old
-	 * set of independent access ranges and register the new set. If the
-	 * queue is not registered, registration of the device request queue
-	 * will register the independent access ranges.
-	 */
+	 
 	disk_unregister_independent_access_ranges(disk);
 	disk->ia_ranges = iars;
 	if (blk_queue_registered(q))

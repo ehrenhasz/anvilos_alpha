@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Generic Counter interface
- * Copyright (C) 2020 William Breathitt Gray
- */
+
+ 
 #include <linux/cdev.h>
 #include <linux/counter.h>
 #include <linux/device.h>
@@ -24,16 +21,13 @@
 
 #define COUNTER_NAME	"counter"
 
-/* Provides a unique ID for each counter device */
+ 
 static DEFINE_IDA(counter_ida);
 
 struct counter_device_allochelper {
 	struct counter_device counter;
 
-	/*
-	 * This is cache line aligned to ensure private data behaves like if it
-	 * were kmalloced separately.
-	 */
+	 
 	unsigned long privdata[] ____cacheline_aligned;
 };
 
@@ -60,12 +54,7 @@ static struct bus_type counter_bus_type = {
 
 static dev_t counter_devt;
 
-/**
- * counter_priv - access counter device private data
- * @counter: counter device
- *
- * Get the counter device private data
- */
+ 
 void *counter_priv(const struct counter_device *const counter)
 {
 	struct counter_device_allochelper *ch =
@@ -75,15 +64,7 @@ void *counter_priv(const struct counter_device *const counter)
 }
 EXPORT_SYMBOL_NS_GPL(counter_priv, COUNTER);
 
-/**
- * counter_alloc - allocate a counter_device
- * @sizeof_priv: size of the driver private data
- *
- * This is part one of counter registration. The structure is allocated
- * dynamically to ensure the right lifetime for the embedded struct device.
- *
- * If this succeeds, call counter_put() to get rid of the counter_device again.
- */
+ 
 struct counter_device *counter_alloc(size_t sizeof_priv)
 {
 	struct counter_device_allochelper *ch;
@@ -98,7 +79,7 @@ struct counter_device *counter_alloc(size_t sizeof_priv)
 	counter = &ch->counter;
 	dev = &counter->dev;
 
-	/* Acquire unique ID */
+	 
 	err = ida_alloc(&counter_ida, GFP_KERNEL);
 	if (err < 0)
 		goto err_ida_alloc;
@@ -141,14 +122,7 @@ void counter_put(struct counter_device *counter)
 }
 EXPORT_SYMBOL_NS_GPL(counter_put, COUNTER);
 
-/**
- * counter_add - complete registration of a counter
- * @counter: the counter to add
- *
- * This is part two of counter registration.
- *
- * If this succeeds, call counter_unregister() to get rid of the counter_device again.
- */
+ 
 int counter_add(struct counter_device *counter)
 {
 	int err;
@@ -163,17 +137,12 @@ int counter_add(struct counter_device *counter)
 	if (err < 0)
 		return err;
 
-	/* implies device_add(dev) */
+	 
 	return cdev_device_add(&counter->chrdev, dev);
 }
 EXPORT_SYMBOL_NS_GPL(counter_add, COUNTER);
 
-/**
- * counter_unregister - unregister Counter from the system
- * @counter:	pointer to Counter to unregister
- *
- * The Counter is unregistered from the system.
- */
+ 
 void counter_unregister(struct counter_device *const counter)
 {
 	if (!counter)
@@ -200,14 +169,7 @@ static void devm_counter_put(void *counter)
 	counter_put(counter);
 }
 
-/**
- * devm_counter_alloc - allocate a counter_device
- * @dev: the device to register the release callback for
- * @sizeof_priv: size of the driver private data
- *
- * This is the device managed version of counter_add(). It registers a cleanup
- * callback to care for calling counter_put().
- */
+ 
 struct counter_device *devm_counter_alloc(struct device *dev, size_t sizeof_priv)
 {
 	struct counter_device *counter;
@@ -225,14 +187,7 @@ struct counter_device *devm_counter_alloc(struct device *dev, size_t sizeof_priv
 }
 EXPORT_SYMBOL_NS_GPL(devm_counter_alloc, COUNTER);
 
-/**
- * devm_counter_add - complete registration of a counter
- * @dev: the device to register the release callback for
- * @counter: the counter to add
- *
- * This is the device managed version of counter_add(). It registers a cleanup
- * callback to care for calling counter_unregister().
- */
+ 
 int devm_counter_add(struct device *dev,
 		     struct counter_device *const counter)
 {

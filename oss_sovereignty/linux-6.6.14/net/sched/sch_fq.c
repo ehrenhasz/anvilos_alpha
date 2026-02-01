@@ -1,34 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * net/sched/sch_fq.c Fair Queue Packet Scheduler (per flow pacing)
- *
- *  Copyright (C) 2013-2015 Eric Dumazet <edumazet@google.com>
- *
- *  Meant to be mostly used for locally generated traffic :
- *  Fast classification depends on skb->sk being set before reaching us.
- *  If not, (router workload), we use rxhash as fallback, with 32 bits wide hash.
- *  All packets belonging to a socket are considered as a 'flow'.
- *
- *  Flows are dynamically allocated and stored in a hash table of RB trees
- *  They are also part of one Round Robin 'queues' (new or old flows)
- *
- *  Burst avoidance (aka pacing) capability :
- *
- *  Transport (eg TCP) can set in sk->sk_pacing_rate a rate, enqueue a
- *  bunch of packets, and this packet scheduler adds delay between
- *  packets to respect rate limitation.
- *
- *  enqueue() :
- *   - lookup one RB tree (out of 1024 or more) to find the flow.
- *     If non existent flow, create it, add it to the tree.
- *     Add skb to the per flow list of skb (fifo).
- *   - Use a special fifo for high prio packets
- *
- *  dequeue() : serves flows in Round Robin
- *  Note : When a flow becomes empty, we do not immediately remove it from
- *  rb trees, for performance reasons (its expected to send additional packets,
- *  or SLAB cache will reuse socket for another flow)
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/types.h>
@@ -60,31 +31,27 @@ static inline struct fq_skb_cb *fq_skb_cb(struct sk_buff *skb)
 	return (struct fq_skb_cb *)qdisc_skb_cb(skb)->data;
 }
 
-/*
- * Per flow structure, dynamically allocated.
- * If packets have monotically increasing time_to_send, they are placed in O(1)
- * in linear list (head,tail), otherwise are placed in a rbtree (t_root).
- */
+ 
 struct fq_flow {
-/* First cache line : used in fq_gc(), fq_enqueue(), fq_dequeue() */
+ 
 	struct rb_root	t_root;
-	struct sk_buff	*head;		/* list of skbs for this flow : first skb */
+	struct sk_buff	*head;		 
 	union {
-		struct sk_buff *tail;	/* last skb in the list */
-		unsigned long  age;	/* (jiffies | 1UL) when flow was emptied, for gc */
+		struct sk_buff *tail;	 
+		unsigned long  age;	 
 	};
-	struct rb_node	fq_node;	/* anchor in fq_root[] trees */
+	struct rb_node	fq_node;	 
 	struct sock	*sk;
-	u32		socket_hash;	/* sk_hash */
-	int		qlen;		/* number of packets in flow queue */
+	u32		socket_hash;	 
+	int		qlen;		 
 
-/* Second cache line, used in fq_dequeue() */
+ 
 	int		credit;
-	/* 32bit hole on 64bit arches */
+	 
 
-	struct fq_flow *next;		/* next pointer in RR lists */
+	struct fq_flow *next;		 
 
-	struct rb_node  rate_node;	/* anchor in q->delayed tree */
+	struct rb_node  rate_node;	 
 	u64		time_next_packet;
 } ____cacheline_aligned_in_smp;
 
@@ -98,20 +65,20 @@ struct fq_sched_data {
 
 	struct fq_flow_head old_flows;
 
-	struct rb_root	delayed;	/* for rate limited flows */
+	struct rb_root	delayed;	 
 	u64		time_next_delayed_flow;
-	u64		ktime_cache;	/* copy of last ktime_get_ns() */
+	u64		ktime_cache;	 
 	unsigned long	unthrottle_latency_ns;
 
-	struct fq_flow	internal;	/* for non classified or high prio packets */
+	struct fq_flow	internal;	 
 	u32		quantum;
 	u32		initial_quantum;
 	u32		flow_refill_delay;
-	u32		flow_plimit;	/* max packets per flow */
-	unsigned long	flow_max_rate;	/* optional max rate per flow */
+	u32		flow_plimit;	 
+	unsigned long	flow_max_rate;	 
 	u64		ce_threshold;
-	u64		horizon;	/* horizon in ns */
-	u32		orphan_mask;	/* mask for orphaned skb */
+	u64		horizon;	 
+	u32		orphan_mask;	 
 	u32		low_rate_threshold;
 	struct rb_root	*fq_root;
 	u8		rate_enable;
@@ -131,16 +98,11 @@ struct fq_sched_data {
 	u64		stat_pkts_too_long;
 	u64		stat_allocation_errors;
 
-	u32		timer_slack; /* hrtimer slack in ns */
+	u32		timer_slack;  
 	struct qdisc_watchdog watchdog;
 };
 
-/*
- * f->tail and f->age share the same location.
- * We can use the low order bit to differentiate if this location points
- * to a sk_buff or contains a jiffies value, if we force this value to be odd.
- * This assumes f->tail low order bit must be 0 since alignof(struct sk_buff) >= 2
- */
+ 
 static void fq_flow_set_detached(struct fq_flow *f)
 {
 	f->age = jiffies | 1UL;
@@ -151,7 +113,7 @@ static bool fq_flow_is_detached(const struct fq_flow *f)
 	return !!(f->age & 1UL);
 }
 
-/* special value to mark a throttled flow (not on old/new list) */
+ 
 static struct fq_flow throttled;
 
 static bool fq_flow_is_throttled(const struct fq_flow *f)
@@ -204,7 +166,7 @@ static void fq_flow_set_throttled(struct fq_sched_data *q, struct fq_flow *f)
 static struct kmem_cache *fq_flow_cachep __read_mostly;
 
 
-/* limit number of collected flows per round */
+ 
 #define FQ_GC_MAX 8
 #define FQ_GC_AGE (3*HZ)
 
@@ -265,37 +227,20 @@ static struct fq_flow *fq_classify(struct sk_buff *skb, struct fq_sched_data *q)
 	struct rb_root *root;
 	struct fq_flow *f;
 
-	/* warning: no starvation prevention... */
+	 
 	if (unlikely((skb->priority & TC_PRIO_MAX) == TC_PRIO_CONTROL))
 		return &q->internal;
 
-	/* SYNACK messages are attached to a TCP_NEW_SYN_RECV request socket
-	 * or a listener (SYNCOOKIE mode)
-	 * 1) request sockets are not full blown,
-	 *    they do not contain sk_pacing_rate
-	 * 2) They are not part of a 'flow' yet
-	 * 3) We do not want to rate limit them (eg SYNFLOOD attack),
-	 *    especially if the listener set SO_MAX_PACING_RATE
-	 * 4) We pretend they are orphaned
-	 */
+	 
 	if (!sk || sk_listener(sk)) {
 		unsigned long hash = skb_get_hash(skb) & q->orphan_mask;
 
-		/* By forcing low order bit to 1, we make sure to not
-		 * collide with a local flow (socket pointers are word aligned)
-		 */
+		 
 		sk = (struct sock *)((hash << 1) | 1UL);
 		skb_orphan(skb);
 	} else if (sk->sk_state == TCP_CLOSE) {
 		unsigned long hash = skb_get_hash(skb) & q->orphan_mask;
-		/*
-		 * Sockets in TCP_CLOSE are non connected.
-		 * Typical use case is UDP sockets, they can send packets
-		 * with sendto() to many different destinations.
-		 * We probably could use a generic bit advertising
-		 * non connected sockets, instead of sk_state == TCP_CLOSE,
-		 * if we care enough.
-		 */
+		 
 		sk = (struct sock *)((hash << 1) | 1UL);
 	}
 
@@ -312,11 +257,7 @@ static struct fq_flow *fq_classify(struct sk_buff *skb, struct fq_sched_data *q)
 
 		f = rb_entry(parent, struct fq_flow, fq_node);
 		if (f->sk == sk) {
-			/* socket might have been reallocated, so check
-			 * if its sk_hash is the same.
-			 * It not, we need to refill credit with
-			 * initial quantum
-			 */
+			 
 			if (unlikely(skb->sk == sk &&
 				     f->socket_hash != sk->sk_hash)) {
 				f->credit = q->initial_quantum;
@@ -341,7 +282,7 @@ static struct fq_flow *fq_classify(struct sk_buff *skb, struct fq_sched_data *q)
 		q->stat_allocation_errors++;
 		return &q->internal;
 	}
-	/* f->t_root is already zeroed after kmem_cache_zalloc() */
+	 
 
 	fq_flow_set_detached(f);
 	f->sk = sk;
@@ -388,9 +329,7 @@ static void fq_erase_head(struct Qdisc *sch, struct fq_flow *flow,
 	}
 }
 
-/* Remove one skb from flow queue.
- * This skb must be the return value of prior fq_peek().
- */
+ 
 static void fq_dequeue_skb(struct Qdisc *sch, struct fq_flow *flow,
 			   struct sk_buff *skb)
 {
@@ -451,12 +390,9 @@ static int fq_enqueue(struct sk_buff *skb, struct Qdisc *sch,
 	if (!skb->tstamp) {
 		fq_skb_cb(skb)->time_to_send = q->ktime_cache = ktime_get_ns();
 	} else {
-		/* Check if packet timestamp is too far in the future.
-		 * Try first if our cached value, to avoid ktime_get_ns()
-		 * cost in most cases.
-		 */
+		 
 		if (fq_packet_beyond_horizon(skb, q)) {
-			/* Refresh our cache and check another time */
+			 
 			q->ktime_cache = ktime_get_ns();
 			if (fq_packet_beyond_horizon(skb, q)) {
 				if (q->horizon_drop) {
@@ -485,7 +421,7 @@ static int fq_enqueue(struct sk_buff *skb, struct Qdisc *sch,
 		q->inactive_flows--;
 	}
 
-	/* Note: this overwrites f->age */
+	 
 	flow_queue_add(f, skb);
 
 	if (unlikely(f == &q->internal)) {
@@ -504,9 +440,7 @@ static void fq_check_throttled(struct fq_sched_data *q, u64 now)
 	if (q->time_next_delayed_flow > now)
 		return;
 
-	/* Update unthrottle latency EWMA.
-	 * This is cheap and can help diagnosing timer/latency problems.
-	 */
+	 
 	sample = (unsigned long)(now - q->time_next_delayed_flow);
 	q->unthrottle_latency_ns -= q->unthrottle_latency_ns >> 3;
 	q->unthrottle_latency_ns += sample >> 3;
@@ -584,7 +518,7 @@ begin:
 		fq_dequeue_skb(sch, f, skb);
 	} else {
 		head->first = f->next;
-		/* force a pass through old_flows to prevent starvation */
+		 
 		if ((head == &q->new_flows) && q->old_flows.first) {
 			fq_flow_add_tail(&q->old_flows, f);
 		} else {
@@ -601,10 +535,7 @@ begin:
 
 	rate = q->flow_max_rate;
 
-	/* If EDT time was provided for this skb, we need to
-	 * update f->time_next_packet only if this qdisc enforces
-	 * a flow max rate.
-	 */
+	 
 	if (!skb->tstamp) {
 		if (skb->sk)
 			rate = min(skb->sk->sk_pacing_rate, rate);
@@ -622,18 +553,12 @@ begin:
 
 		if (likely(rate))
 			len = div64_ul(len, rate);
-		/* Since socket rate can change later,
-		 * clamp the delay to 1 second.
-		 * Really, providers of too big packets should be fixed !
-		 */
+		 
 		if (unlikely(len > NSEC_PER_SEC)) {
 			len = NSEC_PER_SEC;
 			q->stat_pkts_too_long++;
 		}
-		/* Account for schedule/timers drifts.
-		 * f->time_next_packet was set when prior packet was sent,
-		 * and current time (@now) can be too late by tens of us.
-		 */
+		 
 		if (f->time_next_packet)
 			len -= min(len/2, now - f->time_next_packet);
 		f->time_next_packet = now + len;
@@ -754,7 +679,7 @@ static int fq_resize(struct Qdisc *sch, u32 log)
 	if (q->fq_root && log == q->fq_trees_log)
 		return 0;
 
-	/* If XPS was setup, we can allocate memory on right NUMA node */
+	 
 	array = kvmalloc_node(sizeof(struct rb_root) << log, GFP_KERNEL | __GFP_RETRY_MAYFAIL,
 			      netdev_queue_numa_node_read(sch->dev_queue));
 	if (!array)
@@ -946,12 +871,12 @@ static int fq_init(struct Qdisc *sch, struct nlattr *opt,
 	q->orphan_mask		= 1024 - 1;
 	q->low_rate_threshold	= 550000 / 8;
 
-	q->timer_slack = 10 * NSEC_PER_USEC; /* 10 usec of hrtimer slack */
+	q->timer_slack = 10 * NSEC_PER_USEC;  
 
-	q->horizon = 10ULL * NSEC_PER_SEC; /* 10 seconds */
-	q->horizon_drop = 1; /* by default, drop packets beyond horizon */
+	q->horizon = 10ULL * NSEC_PER_SEC;  
+	q->horizon_drop = 1;  
 
-	/* Default ce_threshold of 4294 seconds */
+	 
 	q->ce_threshold		= (u64)NSEC_PER_USEC * ~0U;
 
 	qdisc_watchdog_init_clockid(&q->watchdog, sch, CLOCK_MONOTONIC);
@@ -975,7 +900,7 @@ static int fq_dump(struct Qdisc *sch, struct sk_buff *skb)
 	if (opts == NULL)
 		goto nla_put_failure;
 
-	/* TCA_FQ_FLOW_DEFAULT_RATE is not used anymore */
+	 
 
 	do_div(ce_threshold, NSEC_PER_USEC);
 	do_div(horizon, NSEC_PER_USEC);

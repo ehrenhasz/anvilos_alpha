@@ -1,24 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2017 Joe Lawrence <joe.lawrence@redhat.com>
- */
 
-/*
- * livepatch-callbacks-busymod.c - (un)patching callbacks demo support module
- *
- *
- * Purpose
- * -------
- *
- * Simple module to demonstrate livepatch (un)patching callbacks.
- *
- *
- * Usage
- * -----
- *
- * This module is not intended to be standalone.  See the "Usage"
- * section of livepatch-callbacks-mod.c.
- */
+ 
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 

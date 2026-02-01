@@ -1,8 +1,4 @@
-/*
- * Copyright (C) 2017 Spreadtrum Communications Inc.
- *
- * SPDX-License-Identifier: GPL-2.0
- */
+ 
 
 #include <linux/delay.h>
 #include <linux/hwspinlock.h>
@@ -16,7 +12,7 @@
 #include <linux/spi/spi.h>
 #include <linux/sizes.h>
 
-/* Registers definitions for ADI controller */
+ 
 #define REG_ADI_CTRL0			0x4
 #define REG_ADI_CHN_PRIL		0x8
 #define REG_ADI_CHN_PRIH		0xc
@@ -36,29 +32,20 @@
 #define REG_ADI_CHN_ADDR(id)		(0x44 + (id - 2) * 4)
 #define REG_ADI_CHN_EN1			0x20c
 
-/* Bits definitions for register REG_ADI_GSSI_CFG0 */
+ 
 #define BIT_CLK_ALL_ON			BIT(30)
 
-/* Bits definitions for register REG_ADI_RD_DATA */
+ 
 #define BIT_RD_CMD_BUSY			BIT(31)
 #define RD_ADDR_SHIFT			16
 #define RD_VALUE_MASK			GENMASK(15, 0)
 #define RD_ADDR_MASK			GENMASK(30, 16)
 
-/* Bits definitions for register REG_ADI_ARM_FIFO_STS */
+ 
 #define BIT_FIFO_FULL			BIT(11)
 #define BIT_FIFO_EMPTY			BIT(10)
 
-/*
- * ADI slave devices include RTC, ADC, regulator, charger, thermal and so on.
- * ADI supports 12/14bit address for r2p0, and additional 17bit for r3p0 or
- * later versions. Since bit[1:0] are zero, so the spec describe them as
- * 10/12/15bit address mode.
- * The 10bit mode supports sigle slave, 12/15bit mode supports 3 slave, the
- * high two bits is slave_id.
- * The slave devices address offset is 0x8000 for 10/12bit address mode,
- * and 0x20000 for 15bit mode.
- */
+ 
 #define ADI_10BIT_SLAVE_ADDR_SIZE	SZ_4K
 #define ADI_10BIT_SLAVE_OFFSET		0x8000
 #define ADI_12BIT_SLAVE_ADDR_SIZE	SZ_16K
@@ -66,47 +53,40 @@
 #define ADI_15BIT_SLAVE_ADDR_SIZE	SZ_128K
 #define ADI_15BIT_SLAVE_OFFSET		0x20000
 
-/* Timeout (ms) for the trylock of hardware spinlocks */
+ 
 #define ADI_HWSPINLOCK_TIMEOUT		5000
-/*
- * ADI controller has 50 channels including 2 software channels
- * and 48 hardware channels.
- */
+ 
 #define ADI_HW_CHNS			50
 
 #define ADI_FIFO_DRAIN_TIMEOUT		1000
 #define ADI_READ_TIMEOUT		2000
 
-/*
- * Read back address from REG_ADI_RD_DATA bit[30:16] which maps to:
- * REG_ADI_RD_CMD bit[14:0] for r2p0
- * REG_ADI_RD_CMD bit[16:2] for r3p0
- */
+ 
 #define RDBACK_ADDR_MASK_R2		GENMASK(14, 0)
 #define RDBACK_ADDR_MASK_R3		GENMASK(16, 2)
 #define RDBACK_ADDR_SHIFT_R3		2
 
-/* Registers definitions for PMIC watchdog controller */
+ 
 #define REG_WDG_LOAD_LOW		0x0
 #define REG_WDG_LOAD_HIGH		0x4
 #define REG_WDG_CTRL			0x8
 #define REG_WDG_LOCK			0x20
 
-/* Bits definitions for register REG_WDG_CTRL */
+ 
 #define BIT_WDG_RUN			BIT(1)
 #define BIT_WDG_NEW			BIT(2)
 #define BIT_WDG_RST			BIT(3)
 
-/* Bits definitions for register REG_MODULE_EN */
+ 
 #define BIT_WDG_EN			BIT(2)
 
-/* Registers definitions for PMIC */
+ 
 #define PMIC_RST_STATUS			0xee8
 #define PMIC_MODULE_EN			0xc08
 #define PMIC_CLK_EN			0xc18
 #define PMIC_WDG_BASE			0x80
 
-/* Definition of PMIC reset status register */
+ 
 #define HWRST_STATUS_SECURITY		0x02
 #define HWRST_STATUS_RECOVERY		0x20
 #define HWRST_STATUS_NORMAL		0x40
@@ -122,7 +102,7 @@
 #define HWRST_STATUS_FACTORYTEST	0xe0
 #define HWRST_STATUS_WATCHDOG		0xf0
 
-/* Use default timeout 50 ms that converts to watchdog values */
+ 
 #define WDG_LOAD_VAL			((50 * 32768) / 1000)
 #define WDG_LOAD_MASK			GENMASK(15, 0)
 #define WDG_UNLOCK_KEY			0xe551
@@ -237,18 +217,10 @@ static int sprd_adi_read(struct sprd_adi *sadi, u32 reg, u32 *read_val)
 	if (ret)
 		goto out;
 
-	/*
-	 * Set the slave address offset need to read into RD_CMD register,
-	 * then ADI controller will start to transfer automatically.
-	 */
+	 
 	writel_relaxed(reg, sadi->base + REG_ADI_RD_CMD);
 
-	/*
-	 * Wait read operation complete, the BIT_RD_CMD_BUSY will be set
-	 * simultaneously when writing read command to register, and the
-	 * BIT_RD_CMD_BUSY will be cleared after the read operation is
-	 * completed.
-	 */
+	 
 	do {
 		val = readl_relaxed(sadi->base + REG_ADI_RD_DATA);
 		if (!(val & BIT_RD_CMD_BUSY))
@@ -263,12 +235,7 @@ static int sprd_adi_read(struct sprd_adi *sadi, u32 reg, u32 *read_val)
 		goto out;
 	}
 
-	/*
-	 * The return value before adi r5p0 includes data and read register
-	 * address, from bit 0to bit 15 are data, and from bit 16 to bit 30
-	 * are read register address. Then we can check the returned register
-	 * address to validate data.
-	 */
+	 
 	if (sadi->data->read_check) {
 		ret = sadi->data->read_check(val, reg);
 		if (ret < 0)
@@ -307,13 +274,10 @@ static int sprd_adi_write(struct sprd_adi *sadi, u32 reg, u32 val)
 	if (ret < 0)
 		goto out;
 
-	/*
-	 * we should wait for write fifo is empty before writing data to PMIC
-	 * registers.
-	 */
+	 
 	do {
 		if (!sprd_adi_fifo_is_full(sadi)) {
-			/* we need virtual register address to write. */
+			 
 			writel_relaxed(val, (void __iomem *)(sadi->slave_vbase + reg));
 			break;
 		}
@@ -363,7 +327,7 @@ static void sprd_adi_set_wdt_rst_mode(void *p)
 	u32 val;
 	struct sprd_adi *sadi = (struct sprd_adi *)p;
 
-	/* Init watchdog reset mode */
+	 
 	sprd_adi_read(sadi, PMIC_RST_STATUS, &val);
 	val |= HWRST_STATUS_WATCHDOG;
 	sprd_adi_write(sadi, PMIC_RST_STATUS, val);
@@ -406,40 +370,40 @@ static int sprd_adi_restart(struct notifier_block *this, unsigned long mode,
 	else
 		reboot_mode = HWRST_STATUS_NORMAL;
 
-	/* Record the reboot mode */
+	 
 	sprd_adi_read(sadi, wdg->rst_sts, &val);
 	val &= ~HWRST_STATUS_WATCHDOG;
 	val |= reboot_mode;
 	sprd_adi_write(sadi, wdg->rst_sts, val);
 
-	/* Enable the interface clock of the watchdog */
+	 
 	sprd_adi_read(sadi, wdg->wdg_en, &val);
 	val |= BIT_WDG_EN;
 	sprd_adi_write(sadi, wdg->wdg_en, val);
 
-	/* Enable the work clock of the watchdog */
+	 
 	sprd_adi_read(sadi, wdg->wdg_clk, &val);
 	val |= BIT_WDG_EN;
 	sprd_adi_write(sadi, wdg->wdg_clk, val);
 
-	/* Unlock the watchdog */
+	 
 	sprd_adi_write(sadi, wdg->base + REG_WDG_LOCK, WDG_UNLOCK_KEY);
 
 	sprd_adi_read(sadi, wdg->base + REG_WDG_CTRL, &val);
 	val |= BIT_WDG_NEW;
 	sprd_adi_write(sadi, wdg->base + REG_WDG_CTRL, val);
 
-	/* Load the watchdog timeout value, 50ms is always enough. */
+	 
 	sprd_adi_write(sadi, wdg->base + REG_WDG_LOAD_HIGH, 0);
 	sprd_adi_write(sadi, wdg->base + REG_WDG_LOAD_LOW,
 		       WDG_LOAD_VAL & WDG_LOAD_MASK);
 
-	/* Start the watchdog to reset system */
+	 
 	sprd_adi_read(sadi, wdg->base + REG_WDG_CTRL, &val);
 	val |= BIT_WDG_RUN | BIT_WDG_RST;
 	sprd_adi_write(sadi, wdg->base + REG_WDG_CTRL, val);
 
-	/* Lock the watchdog */
+	 
 	sprd_adi_write(sadi, wdg->base + REG_WDG_LOCK, ~WDG_UNLOCK_KEY);
 
 	mdelay(1000);
@@ -468,16 +432,16 @@ static void sprd_adi_hw_init(struct sprd_adi *sadi)
 	const __be32 *list;
 	u32 tmp;
 
-	/* Set all channels as default priority */
+	 
 	writel_relaxed(0, sadi->base + REG_ADI_CHN_PRIL);
 	writel_relaxed(0, sadi->base + REG_ADI_CHN_PRIH);
 
-	/* Set clock auto gate mode */
+	 
 	tmp = readl_relaxed(sadi->base + REG_ADI_GSSI_CFG0);
 	tmp &= ~BIT_CLK_ALL_ON;
 	writel_relaxed(tmp, sadi->base + REG_ADI_GSSI_CFG0);
 
-	/* Set hardware channels setting */
+	 
 	list = of_get_property(np, "sprd,hw-channels", &size);
 	if (!list || !size) {
 		dev_info(sadi->dev, "no hw channels setting in node\n");
@@ -490,7 +454,7 @@ static void sprd_adi_hw_init(struct sprd_adi *sadi)
 		u32 chn_id = be32_to_cpu(*list++);
 		u32 chn_config = be32_to_cpu(*list++);
 
-		/* Channel 0 and 1 are software channels */
+		 
 		if (chn_id < 2)
 			continue;
 

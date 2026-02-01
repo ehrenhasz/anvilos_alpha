@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * AMD RPL ACP PCI Driver
- *
- * Copyright 2022 Advanced Micro Devices, Inc.
- */
+
+ 
 
 #include <linux/pci.h>
 #include <linux/module.h>
@@ -68,14 +64,14 @@ static int rpl_init(void __iomem *acp_base)
 {
 	int ret;
 
-	/* power on */
+	 
 	ret = rpl_power_on(acp_base);
 	if (ret) {
 		pr_err("ACP power on failed\n");
 		return ret;
 	}
 	rpl_acp_writel(0x01, acp_base + ACP_CONTROL);
-	/* Reset */
+	 
 	ret = rpl_reset(acp_base);
 	if (ret) {
 		pr_err("ACP reset failed\n");
@@ -89,7 +85,7 @@ static int rpl_deinit(void __iomem *acp_base)
 {
 	int ret;
 
-	/* Reset */
+	 
 	ret = rpl_reset(acp_base);
 	if (ret) {
 		pr_err("ACP reset failed\n");
@@ -107,7 +103,7 @@ static int snd_rpl_probe(struct pci_dev *pci,
 	u32 addr;
 	int ret;
 
-	/* RPL device check */
+	 
 	switch (pci->revision) {
 	case 0x62:
 		break;

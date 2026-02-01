@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0+
-//
-// imx27 pinctrl driver based on imx pinmux core
-//
-// Copyright (C) 2013 Pengutronix
-//
-// Author: Markus Pargmann <mpa@pengutronix.de>
+
+
+
+
+
+
+
 
 #include <linux/err.h>
 #include <linux/init.h>
@@ -200,7 +200,7 @@ enum imx27_pads {
 	MX27_PAD_ATA_DATA15 = PAD_ID(PF, 23),
 };
 
-/* Pad names for the pinmux subsystem */
+ 
 static const struct pinctrl_pin_desc imx27_pinctrl_pads[] = {
 	IMX_PINCTRL_PIN(MX27_PAD_USBH2_CLK),
 	IMX_PINCTRL_PIN(MX27_PAD_USBH2_DIR),
@@ -385,7 +385,7 @@ static struct imx1_pinctrl_soc_info imx27_pinctrl_info = {
 
 static const struct of_device_id imx27_pinctrl_of_match[] = {
 	{ .compatible = "fsl,imx27-iomuxc", },
-	{ /* sentinel */ }
+	{   }
 };
 
 static int imx27_pinctrl_probe(struct platform_device *pdev)

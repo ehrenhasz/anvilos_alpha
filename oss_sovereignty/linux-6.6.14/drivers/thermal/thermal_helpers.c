@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *  thermal_helpers.c - helper functions to handle thermal devices
- *
- *  Copyright (C) 2016 Eduardo Valentin <edubezval@gmail.com>
- *
- *  Highly based on original thermal_core.c
- *  Copyright (C) 2008 Intel Corp
- *  Copyright (C) 2008 Zhang Rui <rui.zhang@intel.com>
- *  Copyright (C) 2008 Sujith Thomas <sujith.thomas@intel.com>
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -64,20 +55,7 @@ get_thermal_instance(struct thermal_zone_device *tz,
 }
 EXPORT_SYMBOL(get_thermal_instance);
 
-/**
- * __thermal_zone_get_temp() - returns the temperature of a thermal zone
- * @tz: a valid pointer to a struct thermal_zone_device
- * @temp: a valid pointer to where to store the resulting temperature.
- *
- * When a valid thermal zone reference is passed, it will fetch its
- * temperature and fill @temp.
- *
- * Both tz and tz->ops must be valid pointers when calling this function,
- * and the tz->ops->get_temp callback must be provided.
- * The function must be called under tz->lock.
- *
- * Return: On success returns 0, an error code otherwise
- */
+ 
 int __thermal_zone_get_temp(struct thermal_zone_device *tz, int *temp)
 {
 	int ret = -EINVAL;
@@ -98,11 +76,7 @@ int __thermal_zone_get_temp(struct thermal_zone_device *tz, int *temp)
 			}
 		}
 
-		/*
-		 * Only allow emulating a temperature when the real temperature
-		 * is below the critical temperature so that the emulation code
-		 * cannot hide critical conditions.
-		 */
+		 
 		if (!ret && *temp < crit_temp)
 			*temp = tz->emul_temperature;
 	}
@@ -113,16 +87,7 @@ int __thermal_zone_get_temp(struct thermal_zone_device *tz, int *temp)
 	return ret;
 }
 
-/**
- * thermal_zone_get_temp() - returns the temperature of a thermal zone
- * @tz: a valid pointer to a struct thermal_zone_device
- * @temp: a valid pointer to where to store the resulting temperature.
- *
- * When a valid thermal zone reference is passed, it will fetch its
- * temperature and fill @temp.
- *
- * Return: On success returns 0, an error code otherwise
- */
+ 
 int thermal_zone_get_temp(struct thermal_zone_device *tz, int *temp)
 {
 	int ret;
@@ -164,7 +129,7 @@ void __thermal_cdev_update(struct thermal_cooling_device *cdev)
 	struct thermal_instance *instance;
 	unsigned long target = 0;
 
-	/* Make sure cdev enters the deepest cooling state */
+	 
 	list_for_each_entry(instance, &cdev->thermal_instances, cdev_node) {
 		dev_dbg(&cdev->device, "zone%d->target=%lu\n",
 			instance->tz->id, instance->target);
@@ -180,12 +145,7 @@ void __thermal_cdev_update(struct thermal_cooling_device *cdev)
 	dev_dbg(&cdev->device, "set to state %lu\n", target);
 }
 
-/**
- * thermal_cdev_update - update cooling device state if needed
- * @cdev:	pointer to struct thermal_cooling_device
- *
- * Update the cooling device state if there is a need.
- */
+ 
 void thermal_cdev_update(struct thermal_cooling_device *cdev)
 {
 	mutex_lock(&cdev->lock);
@@ -196,13 +156,7 @@ void thermal_cdev_update(struct thermal_cooling_device *cdev)
 	mutex_unlock(&cdev->lock);
 }
 
-/**
- * thermal_zone_get_slope - return the slope attribute of the thermal zone
- * @tz: thermal zone device with the slope attribute
- *
- * Return: If the thermal zone device has a slope attribute, return it, else
- * return 1.
- */
+ 
 int thermal_zone_get_slope(struct thermal_zone_device *tz)
 {
 	if (tz && tz->tzp)
@@ -211,13 +165,7 @@ int thermal_zone_get_slope(struct thermal_zone_device *tz)
 }
 EXPORT_SYMBOL_GPL(thermal_zone_get_slope);
 
-/**
- * thermal_zone_get_offset - return the offset attribute of the thermal zone
- * @tz: thermal zone device with the offset attribute
- *
- * Return: If the thermal zone device has a offset attribute, return it, else
- * return 0.
- */
+ 
 int thermal_zone_get_offset(struct thermal_zone_device *tz)
 {
 	if (tz && tz->tzp)

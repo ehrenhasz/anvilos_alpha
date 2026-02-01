@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-// Copyright (C) 2014-2015 Broadcom Corporation
+
+
 #include <linux/clk.h>
 #include <linux/delay.h>
 #include <linux/init.h>
@@ -21,7 +21,7 @@
 #define CYGNUS_SSP_TRISTATE_MASK 0x001fff
 #define CYGNUS_PLLCLKSEL_MASK 0xf
 
-/* Used with stream_on field to indicate which streams are active */
+ 
 #define  PLAYBACK_STREAM_MASK   BIT(0)
 #define  CAPTURE_STREAM_MASK    BIT(1)
 
@@ -30,7 +30,7 @@
 #define SPDIF_STREAM_CFG_MASK    0x3ff
 #define CH_GRP_STEREO            0x1
 
-/* Begin register offset defines */
+ 
 #define AUD_MISC_SEROUT_OE_REG_BASE  0x01c
 #define AUD_MISC_SEROUT_SPDIF_OE  12
 #define AUD_MISC_SEROUT_MCLK_OE   3
@@ -38,7 +38,7 @@
 #define AUD_MISC_SEROUT_SCLK_OE   1
 #define AUD_MISC_SEROUT_SDAT_OE   0
 
-/* AUD_FMM_BF_CTRL_xxx regs */
+ 
 #define BF_DST_CFG0_OFFSET  0x100
 #define BF_DST_CFG1_OFFSET  0x104
 #define BF_DST_CFG2_OFFSET  0x108
@@ -66,7 +66,7 @@
 #define BF_SRC_GRP_FLOWON_OFFSET    0x324
 #define BF_SRC_GRP_SYNC_DIS_OFFSET  0x328
 
-/* AUD_FMM_IOP_OUT_I2S_xxx regs */
+ 
 #define OUT_I2S_0_STREAM_CFG_OFFSET 0xa00
 #define OUT_I2S_0_CFG_OFFSET        0xa04
 #define OUT_I2S_0_MCLK_CFG_OFFSET   0xa0c
@@ -79,13 +79,13 @@
 #define OUT_I2S_2_CFG_OFFSET        0xa84
 #define OUT_I2S_2_MCLK_CFG_OFFSET   0xa8c
 
-/* AUD_FMM_IOP_OUT_SPDIF_xxx regs */
+ 
 #define SPDIF_STREAM_CFG_OFFSET  0xac0
 #define SPDIF_CTRL_OFFSET        0xac4
 #define SPDIF_FORMAT_CFG_OFFSET  0xad8
 #define SPDIF_MCLK_CFG_OFFSET    0xadc
 
-/* AUD_FMM_IOP_PLL_0_xxx regs */
+ 
 #define IOP_PLL_0_MACRO_OFFSET    0xb00
 #define IOP_PLL_0_MDIV_Ch0_OFFSET 0xb14
 #define IOP_PLL_0_MDIV_Ch1_OFFSET 0xb18
@@ -95,13 +95,13 @@
 #define IOP_PLL_0_ACTIVE_MDIV_Ch1_OFFSET 0xb34
 #define IOP_PLL_0_ACTIVE_MDIV_Ch2_OFFSET 0xb38
 
-/* AUD_FMM_IOP_xxx regs */
+ 
 #define IOP_PLL_0_CONTROL_OFFSET     0xb04
 #define IOP_PLL_0_USER_NDIV_OFFSET   0xb08
 #define IOP_PLL_0_ACTIVE_NDIV_OFFSET 0xb20
 #define IOP_PLL_0_RESET_OFFSET       0xb5c
 
-/* AUD_FMM_IOP_IN_I2S_xxx regs */
+ 
 #define IN_I2S_0_STREAM_CFG_OFFSET 0x00
 #define IN_I2S_0_CFG_OFFSET        0x04
 #define IN_I2S_1_STREAM_CFG_OFFSET 0x40
@@ -109,28 +109,28 @@
 #define IN_I2S_2_STREAM_CFG_OFFSET 0x80
 #define IN_I2S_2_CFG_OFFSET        0x84
 
-/* AUD_FMM_IOP_MISC_xxx regs */
+ 
 #define IOP_SW_INIT_LOGIC          0x1c0
 
-/* End register offset defines */
+ 
 
 
-/* AUD_FMM_IOP_OUT_I2S_x_MCLK_CFG_0_REG */
+ 
 #define I2S_OUT_MCLKRATE_SHIFT 16
 
-/* AUD_FMM_IOP_OUT_I2S_x_MCLK_CFG_REG */
+ 
 #define I2S_OUT_PLLCLKSEL_SHIFT  0
 
-/* AUD_FMM_IOP_OUT_I2S_x_STREAM_CFG */
+ 
 #define I2S_OUT_STREAM_ENA  31
 #define I2S_OUT_STREAM_CFG_GROUP_ID  20
 #define I2S_OUT_STREAM_CFG_CHANNEL_GROUPING  24
 
-/* AUD_FMM_IOP_IN_I2S_x_CAP */
+ 
 #define I2S_IN_STREAM_CFG_CAP_ENA   31
 #define I2S_IN_STREAM_CFG_0_GROUP_ID 4
 
-/* AUD_FMM_IOP_OUT_I2S_x_I2S_CFG_REG */
+ 
 #define I2S_OUT_CFGX_CLK_ENA         0
 #define I2S_OUT_CFGX_DATA_ENABLE     1
 #define I2S_OUT_CFGX_DATA_ALIGNMENT  6
@@ -141,7 +141,7 @@
 #define I2S_OUT_CFGX_SLAVE_MODE     30
 #define I2S_OUT_CFGX_TDM_MODE       31
 
-/* AUD_FMM_BF_CTRL_SOURCECH_CFGx_REG */
+ 
 #define BF_SRC_CFGX_SFIFO_ENA              0
 #define BF_SRC_CFGX_BUFFER_PAIR_ENABLE     1
 #define BF_SRC_CFGX_SAMPLE_CH_MODE         2
@@ -150,7 +150,7 @@
 #define BF_SRC_CFGX_BIT_RES               20
 #define BF_SRC_CFGX_PROCESS_SEQ_ID_VALID  31
 
-/* AUD_FMM_BF_CTRL_DESTCH_CFGx_REG */
+ 
 #define BF_DST_CFGX_CAP_ENA              0
 #define BF_DST_CFGX_BUFFER_PAIR_ENABLE   1
 #define BF_DST_CFGX_DFIFO_SZ_DOUBLE      2
@@ -159,14 +159,14 @@
 #define BF_DST_CFGX_CAP_MODE            24
 #define BF_DST_CFGX_PROC_SEQ_ID_VALID   31
 
-/* AUD_FMM_IOP_OUT_SPDIF_xxx */
+ 
 #define SPDIF_0_OUT_DITHER_ENA     3
 #define SPDIF_0_OUT_STREAM_ENA    31
 
-/* AUD_FMM_IOP_PLL_0_USER */
+ 
 #define IOP_PLL_0_USER_NDIV_FRAC   10
 
-/* AUD_FMM_IOP_PLL_0_ACTIVE */
+ 
 #define IOP_PLL_0_ACTIVE_NDIV_FRAC 10
 
 
@@ -188,10 +188,7 @@ struct pll_macro_entry {
 	u32 pll_ch_num;
 };
 
-/*
- * PLL has 3 output channels (1x, 2x, and 4x). Below are
- * the common MCLK frequencies used by audio driver
- */
+ 
 static const struct pll_macro_entry pll_predef_mclk[] = {
 	{ 4096000, 0},
 	{ 8192000, 1},
@@ -221,7 +218,7 @@ static const struct pll_macro_entry pll_predef_mclk[] = {
 #define CYGNUS_RATE_MIN     8000
 #define CYGNUS_RATE_MAX   384000
 
-/* List of valid frame sizes for tdm mode */
+ 
 static const int ssp_valid_tdm_framesize[] = {32, 64, 128, 256, 512};
 
 static const unsigned int cygnus_rates[] = {
@@ -251,24 +248,24 @@ static int audio_ssp_init_portregs(struct cygnus_aio_port *aio)
 		value = readl(aio->cygaud->audio + aio->regs.i2s_stream_cfg);
 		value &= ~I2S_STREAM_CFG_MASK;
 
-		/* Set Group ID */
+		 
 		writel(aio->portnum,
 			aio->cygaud->audio + aio->regs.bf_sourcech_grp);
 
-		/* Configure the AUD_FMM_IOP_OUT_I2S_x_STREAM_CFG reg */
+		 
 		value |= aio->portnum << I2S_OUT_STREAM_CFG_GROUP_ID;
-		value |= aio->portnum; /* FCI ID is the port num */
+		value |= aio->portnum;  
 		value |= CH_GRP_STEREO << I2S_OUT_STREAM_CFG_CHANNEL_GROUPING;
 		writel(value, aio->cygaud->audio + aio->regs.i2s_stream_cfg);
 
-		/* Configure the AUD_FMM_BF_CTRL_SOURCECH_CFGX reg */
+		 
 		value = readl(aio->cygaud->audio + aio->regs.bf_sourcech_cfg);
 		value &= ~BIT(BF_SRC_CFGX_NOT_PAUSE_WHEN_EMPTY);
 		value |= BIT(BF_SRC_CFGX_SFIFO_SZ_DOUBLE);
 		value |= BIT(BF_SRC_CFGX_PROCESS_SEQ_ID_VALID);
 		writel(value, aio->cygaud->audio + aio->regs.bf_sourcech_cfg);
 
-		/* Configure the AUD_FMM_IOP_IN_I2S_x_CAP_STREAM_CFG_0 reg */
+		 
 		value = readl(aio->cygaud->i2s_in +
 			aio->regs.i2s_cap_stream_cfg);
 		value &= ~I2S_CAP_STREAM_CFG_MASK;
@@ -276,7 +273,7 @@ static int audio_ssp_init_portregs(struct cygnus_aio_port *aio)
 		writel(value, aio->cygaud->i2s_in +
 			aio->regs.i2s_cap_stream_cfg);
 
-		/* Configure the AUD_FMM_BF_CTRL_DESTCH_CFGX_REG_BASE reg */
+		 
 		fci_id = CAPTURE_FCI_ID_BASE + aio->portnum;
 
 		value = readl(aio->cygaud->audio + aio->regs.bf_destch_cfg);
@@ -286,7 +283,7 @@ static int audio_ssp_init_portregs(struct cygnus_aio_port *aio)
 		value |= BIT(BF_DST_CFGX_PROC_SEQ_ID_VALID);
 		writel(value, aio->cygaud->audio + aio->regs.bf_destch_cfg);
 
-		/* Enable the transmit pin for this port */
+		 
 		value = readl(aio->cygaud->audio + AUD_MISC_SEROUT_OE_REG_BASE);
 		value &= ~BIT((aio->portnum * 4) + AUD_MISC_SEROUT_SDAT_OE);
 		writel(value, aio->cygaud->audio + AUD_MISC_SEROUT_OE_REG_BASE);
@@ -298,10 +295,10 @@ static int audio_ssp_init_portregs(struct cygnus_aio_port *aio)
 		value |= BIT(SPDIF_0_OUT_DITHER_ENA);
 		writel(value, aio->cygaud->audio + SPDIF_CTRL_OFFSET);
 
-		/* Enable and set the FCI ID for the SPDIF channel */
+		 
 		value = readl(aio->cygaud->audio + SPDIF_STREAM_CFG_OFFSET);
 		value &= ~SPDIF_STREAM_CFG_MASK;
-		value |= aio->portnum; /* FCI ID is the port num */
+		value |= aio->portnum;  
 		value |= BIT(SPDIF_0_OUT_STREAM_ENA);
 		writel(value, aio->cygaud->audio + SPDIF_STREAM_CFG_OFFSET);
 
@@ -311,7 +308,7 @@ static int audio_ssp_init_portregs(struct cygnus_aio_port *aio)
 		value |= BIT(BF_SRC_CFGX_PROCESS_SEQ_ID_VALID);
 		writel(value, aio->cygaud->audio + aio->regs.bf_sourcech_cfg);
 
-		/* Enable the spdif output pin */
+		 
 		value = readl(aio->cygaud->audio + AUD_MISC_SEROUT_OE_REG_BASE);
 		value &= ~BIT(AUD_MISC_SEROUT_SPDIF_OE);
 		writel(value, aio->cygaud->audio + AUD_MISC_SEROUT_OE_REG_BASE);
@@ -356,7 +353,7 @@ static void audio_ssp_in_disable(struct cygnus_aio_port *aio)
 
 	aio->streams_on &= ~CAPTURE_STREAM_MASK;
 
-	/* If both playback and capture are off */
+	 
 	if (!aio->streams_on) {
 		value = readl(aio->cygaud->audio + aio->regs.i2s_cfg);
 		value &= ~BIT(I2S_OUT_CFGX_CLK_ENA);
@@ -424,7 +421,7 @@ static int audio_ssp_out_disable(struct cygnus_aio_port *aio)
 	case PORT_TDM:
 		aio->streams_on &= ~PLAYBACK_STREAM_MASK;
 
-		/* If both playback and capture are off */
+		 
 		if (!aio->streams_on) {
 			value = readl(aio->cygaud->audio + aio->regs.i2s_cfg);
 			value &= ~BIT(I2S_OUT_CFGX_CLK_ENA);
@@ -432,7 +429,7 @@ static int audio_ssp_out_disable(struct cygnus_aio_port *aio)
 			writel(value, aio->cygaud->audio + aio->regs.i2s_cfg);
 		}
 
-		/* set group_sync_dis = 1 */
+		 
 		value = readl(aio->cygaud->audio + BF_SRC_GRP_SYNC_DIS_OFFSET);
 		value |= BIT(aio->portnum);
 		writel(value, aio->cygaud->audio + BF_SRC_GRP_SYNC_DIS_OFFSET);
@@ -443,7 +440,7 @@ static int audio_ssp_out_disable(struct cygnus_aio_port *aio)
 		value &= ~BIT(BF_SRC_CFGX_SFIFO_ENA);
 		writel(value, aio->cygaud->audio + aio->regs.bf_sourcech_cfg);
 
-		/* set group_sync_dis = 0 */
+		 
 		value = readl(aio->cygaud->audio + BF_SRC_GRP_SYNC_DIS_OFFSET);
 		value &= ~BIT(aio->portnum);
 		writel(value, aio->cygaud->audio + BF_SRC_GRP_SYNC_DIS_OFFSET);
@@ -452,7 +449,7 @@ static int audio_ssp_out_disable(struct cygnus_aio_port *aio)
 		value &= ~BIT(I2S_OUT_STREAM_ENA);
 		writel(value, aio->cygaud->audio + aio->regs.i2s_stream_cfg);
 
-		/* IOP SW INIT on OUT_I2S_x */
+		 
 		value = readl(aio->cygaud->i2s_in + IOP_SW_INIT_LOGIC);
 		value |= BIT(aio->portnum);
 		writel(value, aio->cygaud->i2s_in + IOP_SW_INIT_LOGIC);
@@ -542,11 +539,7 @@ static int cygnus_ssp_set_clocks(struct cygnus_aio_port *aio)
 
 	bit_rate = aio->bit_per_frame * aio->lrclk;
 
-	/*
-	 * Check if the bit clock can be generated from the given MCLK.
-	 * MCLK must be a perfect multiple of bit clock and must be one of the
-	 * following values... (2,4,6,8,10,12,14)
-	 */
+	 
 	if ((aio->mclk % bit_rate) != 0)
 		return -EINVAL;
 
@@ -570,17 +563,17 @@ static int cygnus_ssp_set_clocks(struct cygnus_aio_port *aio)
 		return -EINVAL;
 	}
 
-	/* Set sclk rate */
+	 
 	switch (aio->port_type) {
 	case PORT_TDM:
 		sclk = aio->bit_per_frame;
 		if (sclk == 512)
 			sclk = 0;
 
-		/* sclks_per_1fs_div = sclk cycles/32 */
+		 
 		sclk /= 32;
 
-		/* Set number of bitclks per frame */
+		 
 		value = readl(aio->cygaud->audio + aio->regs.i2s_cfg);
 		value &= ~(mask << I2S_OUT_CFGX_SCLKS_PER_1FS_DIV32);
 		value |= sclk << I2S_OUT_CFGX_SCLKS_PER_1FS_DIV32;
@@ -595,7 +588,7 @@ static int cygnus_ssp_set_clocks(struct cygnus_aio_port *aio)
 		return -EINVAL;
 	}
 
-	/* Set MCLK_RATE ssp port (spdif and ssp are the same) */
+	 
 	value = readl(aio->cygaud->audio + aio->regs.i2s_mclk_cfg);
 	value &= ~(0xf << I2S_OUT_MCLKRATE_SHIFT);
 	value |= (mclk_rate << I2S_OUT_MCLKRATE_SHIFT);
@@ -634,7 +627,7 @@ static int cygnus_ssp_hw_params(struct snd_pcm_substream *substream,
 		}
 		break;
 	case CYGNUS_SSPMODE_I2S:
-		aio->bit_per_frame = 64; /* I2S must be 64 bit per frame */
+		aio->bit_per_frame = 64;  
 		break;
 	default:
 		dev_err(aio->cygaud->dev,
@@ -654,7 +647,7 @@ static int cygnus_ssp_hw_params(struct snd_pcm_substream *substream,
 			break;
 
 		case SNDRV_PCM_FORMAT_S32_LE:
-			/* 32 bit mode is coded as 0 */
+			 
 			bitres = 0;
 			break;
 
@@ -699,9 +692,7 @@ static int cygnus_ssp_hw_params(struct snd_pcm_substream *substream,
 	return ret;
 }
 
-/*
- * This function sets the mclk frequency for pll clock
- */
+ 
 static int cygnus_ssp_set_sysclk(struct snd_soc_dai *dai,
 			int clk_id, unsigned int freq, int dir)
 {
@@ -786,26 +777,10 @@ static void cygnus_ssp_shutdown(struct snd_pcm_substream *substream,
 	}
 }
 
-/*
- * Bit    Update  Notes
- * 31     Yes     TDM Mode        (1 = TDM, 0 = i2s)
- * 30     Yes     Slave Mode	  (1 = Slave, 0 = Master)
- * 29:26  No      Sclks per frame
- * 25:18  Yes     FS Width
- * 17:14  No      Valid Slots
- * 13     No      Bits		  (1 = 16 bits, 0 = 32 bits)
- * 12:08  No     Bits per samp
- * 07     Yes     Justifcation    (1 = LSB, 0 = MSB)
- * 06     Yes     Alignment       (1 = Delay 1 clk, 0 = no delay
- * 05     Yes     SCLK polarity   (1 = Rising, 0 = Falling)
- * 04     Yes     LRCLK Polarity  (1 = High for left, 0 = Low for left)
- * 03:02  Yes     Reserved - write as zero
- * 01     No      Data Enable
- * 00     No      CLK Enable
- */
+ 
 #define I2S_OUT_CFG_REG_UPDATE_MASK   0x3C03FF03
 
-/* Input cfg is same as output, but the FS width is not a valid field */
+ 
 #define I2S_IN_CFG_REG_UPDATE_MASK  (I2S_OUT_CFG_REG_UPDATE_MASK | 0x03FC0000)
 
 int cygnus_ssp_set_custom_fsync_width(struct snd_soc_dai *cpu_dai, int len)
@@ -862,7 +837,7 @@ static int cygnus_ssp_set_fmt(struct snd_soc_dai *cpu_dai, unsigned int fmt)
 	case SND_SOC_DAIFMT_DSP_B:
 		ssp_newcfg |= BIT(I2S_OUT_CFGX_TDM_MODE);
 
-		/* DSP_A = data after FS, DSP_B = data during FS */
+		 
 		if ((fmt & SND_SOC_DAIFMT_FORMAT_MASK) == SND_SOC_DAIFMT_DSP_A)
 			ssp_newcfg |= BIT(I2S_OUT_CFGX_DATA_ALIGNMENT);
 
@@ -879,38 +854,28 @@ static int cygnus_ssp_set_fmt(struct snd_soc_dai *cpu_dai, unsigned int fmt)
 		return -EINVAL;
 	}
 
-	/*
-	 * SSP out cfg.
-	 * Retain bits we do not want to update, then OR in new bits
-	 */
+	 
 	ssp_curcfg = readl(aio->cygaud->audio + aio->regs.i2s_cfg);
 	ssp_outcfg = (ssp_curcfg & I2S_OUT_CFG_REG_UPDATE_MASK) | ssp_newcfg;
 	writel(ssp_outcfg, aio->cygaud->audio + aio->regs.i2s_cfg);
 
-	/*
-	 * SSP in cfg.
-	 * Retain bits we do not want to update, then OR in new bits
-	 */
+	 
 	ssp_curcfg = readl(aio->cygaud->i2s_in + aio->regs.i2s_cap_cfg);
 	ssp_incfg = (ssp_curcfg & I2S_IN_CFG_REG_UPDATE_MASK) | ssp_newcfg;
 	writel(ssp_incfg, aio->cygaud->i2s_in + aio->regs.i2s_cap_cfg);
 
 	val = readl(aio->cygaud->audio + AUD_MISC_SEROUT_OE_REG_BASE);
 
-	/*
-	 * Configure the word clk and bit clk as output or tristate
-	 * Each port has 4 bits for controlling its pins.
-	 * Shift the mask based upon port number.
-	 */
+	 
 	mask = BIT(AUD_MISC_SEROUT_LRCK_OE)
 			| BIT(AUD_MISC_SEROUT_SCLK_OE)
 			| BIT(AUD_MISC_SEROUT_MCLK_OE);
 	mask = mask << (aio->portnum * 4);
 	if (aio->is_slave)
-		/* Set bit for tri-state */
+		 
 		val |= mask;
 	else
-		/* Clear bit for drive */
+		 
 		val &= ~mask;
 
 	dev_dbg(aio->cygaud->dev, "%s  Set OE bits 0x%x\n", __func__, val);
@@ -962,7 +927,7 @@ static int cygnus_set_dai_tdm_slot(struct snd_soc_dai *cpu_dai,
 {
 	struct cygnus_aio_port *aio = cygnus_dai_get_portinfo(cpu_dai);
 	u32 value;
-	int bits_per_slot = 0;     /* default to 32-bits per slot */
+	int bits_per_slot = 0;      
 	int frame_bits;
 	unsigned int active_slots;
 	bool found = false;
@@ -979,15 +944,15 @@ static int cygnus_set_dai_tdm_slot(struct snd_soc_dai *cpu_dai,
 	if (active_slots > 16)
 		return -EINVAL;
 
-	/* Slot value must be even */
+	 
 	if (active_slots % 2)
 		return -EINVAL;
 
-	/* We encode 16 slots as 0 in the reg */
+	 
 	if (active_slots == 16)
 		active_slots = 0;
 
-	/* Slot Width is either 16 or 32 */
+	 
 	switch (slot_width) {
 	case 16:
 		bits_per_slot = 1;
@@ -1022,7 +987,7 @@ static int cygnus_set_dai_tdm_slot(struct snd_soc_dai *cpu_dai,
 	dev_dbg(aio->cygaud->dev, "%s active_slots %u, bits per frame %d\n",
 			__func__, active_slots, frame_bits);
 
-	/* Set capture side of ssp port */
+	 
 	value = readl(aio->cygaud->i2s_in + aio->regs.i2s_cap_cfg);
 	value &= ~(0xf << I2S_OUT_CFGX_VALID_SLOT);
 	value |= (active_slots << I2S_OUT_CFGX_VALID_SLOT);
@@ -1030,7 +995,7 @@ static int cygnus_set_dai_tdm_slot(struct snd_soc_dai *cpu_dai,
 	value |= (bits_per_slot << I2S_OUT_CFGX_BITS_PER_SLOT);
 	writel(value, aio->cygaud->i2s_in + aio->regs.i2s_cap_cfg);
 
-	/* Set playback side of ssp port */
+	 
 	value = readl(aio->cygaud->audio + aio->regs.i2s_cfg);
 	value &= ~(0xf << I2S_OUT_CFGX_VALID_SLOT);
 	value |= (active_slots << I2S_OUT_CFGX_VALID_SLOT);
@@ -1197,11 +1162,7 @@ static const struct snd_soc_component_driver cygnus_ssp_component = {
 	.legacy_dai_naming	= 1,
 };
 
-/*
- * Return < 0 if error
- * Return 0 if disabled
- * Return 1 if enabled and node is parsed successfully
- */
+ 
 static int parse_ssp_child_node(struct platform_device *pdev,
 				struct device_node *dn,
 				struct cygnus_audio *cygaud,
@@ -1260,7 +1221,7 @@ static int parse_ssp_child_node(struct platform_device *pdev,
 		aio->regs.i2s_stream_cfg = SPDIF_STREAM_CFG_OFFSET;
 		*p_dai = cygnus_spdif_dai_info;
 
-		/* For the purposes of this code SPDIF can be I2S mode */
+		 
 		aio->mode = CYGNUS_SSPMODE_I2S;
 		break;
 	default:
@@ -1318,7 +1279,7 @@ static int cygnus_ssp_probe(struct platform_device *pdev)
 	if (IS_ERR(cygaud->i2s_in))
 		return PTR_ERR(cygaud->i2s_in);
 
-	/* Tri-state all controlable pins until we know that we need them */
+	 
 	writel(CYGNUS_SSP_TRISTATE_MASK,
 			cygaud->audio + AUD_MISC_SEROUT_OE_REG_BASE);
 
@@ -1335,7 +1296,7 @@ static int cygnus_ssp_probe(struct platform_device *pdev)
 		err = parse_ssp_child_node(pdev, child_node, cygaud,
 					&cygnus_ssp_dai[active_port_count]);
 
-		/* negative is err, 0 is active and good, 1 is disabled */
+		 
 		if (err < 0) {
 			of_node_put(child_node);
 			return err;

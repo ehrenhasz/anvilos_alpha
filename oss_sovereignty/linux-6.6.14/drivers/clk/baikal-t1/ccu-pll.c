@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2020 BAIKAL ELECTRONICS, JSC
- *
- * Authors:
- *   Serge Semin <Sergey.Semin@baikalelectronics.ru>
- *   Dmitry Dunaev <dmitry.dunaev@baikalelectronics.ru>
- *
- * Baikal-T1 CCU PLL interface driver
- */
+
+ 
 
 #define pr_fmt(fmt) "bt1-ccu-pll: " fmt
 
@@ -172,39 +164,21 @@ static void ccu_pll_calc_factors(unsigned long rate, unsigned long parent_rate,
 	unsigned long num, denom, n1, d1, nri;
 	unsigned long nr_max, nf_max, od_max;
 
-	/*
-	 * Make sure PLL is working with valid input signal (Fdiv). If
-	 * you want to speed the function up just reduce CCU_PLL_NR_MAX.
-	 * This will cause a worse approximation though.
-	 */
+	 
 	nri = (parent_rate / CCU_PLL_FDIV_MAX) + 1;
 	nr_max = min(parent_rate / CCU_PLL_FDIV_MIN, CCU_PLL_NR_MAX);
 
-	/*
-	 * Find a closest [nr;nf;od] vector taking into account the
-	 * limitations like: 1) 700MHz <= Fvco <= 3.5GHz, 2) PLL Od is
-	 * either 1 or even number within the acceptable range (alas 1s
-	 * is also excluded by the next loop).
-	 */
+	 
 	for (; nri <= nr_max; ++nri) {
-		/* Use Od factor to fulfill the limitation 2). */
+		 
 		num = CCU_PLL_CLKOD_FACTOR * rate;
 		denom = parent_rate / nri;
 
-		/*
-		 * Make sure Fvco is within the acceptable range to fulfill
-		 * the condition 1). Note due to the CCU_PLL_CLKOD_FACTOR value
-		 * the actual upper limit is also divided by that factor.
-		 * It's not big problem for us since practically there is no
-		 * need in clocks with that high frequency.
-		 */
+		 
 		nf_max = min(CCU_PLL_FVCO_MAX / denom, CCU_PLL_NF_MAX);
 		od_max = CCU_PLL_OD_MAX / CCU_PLL_CLKOD_FACTOR;
 
-		/*
-		 * Bypass the out-of-bound values, which can't be properly
-		 * handled by the rational fraction approximation algorithm.
-		 */
+		 
 		if (num / denom >= nf_max) {
 			n1 = nf_max;
 			d1 = 1;
@@ -216,7 +190,7 @@ static void ccu_pll_calc_factors(unsigned long rate, unsigned long parent_rate,
 						    &n1, &d1);
 		}
 
-		/* Select the best approximation of the target rate. */
+		 
 		freq = ccu_pll_calc_freq(parent_rate, nri, n1, d1);
 		err = abs((int64_t)freq - num);
 		if (err < min_err) {
@@ -238,10 +212,7 @@ static long ccu_pll_round_rate(struct clk_hw *hw, unsigned long rate,
 	return ccu_pll_calc_freq(*parent_rate, nr, nf, od);
 }
 
-/*
- * This method is used for PLLs, which support the on-the-fly dividers
- * adjustment. So there is no need in gating such clocks.
- */
+ 
 static int ccu_pll_set_rate_reset(struct clk_hw *hw, unsigned long rate,
 				  unsigned long parent_rate)
 {
@@ -269,10 +240,7 @@ static int ccu_pll_set_rate_reset(struct clk_hw *hw, unsigned long rate,
 	return ret;
 }
 
-/*
- * This method is used for PLLs, which don't support the on-the-fly dividers
- * adjustment. So the corresponding clocks are supposed to be gated first.
- */
+ 
 static int ccu_pll_set_rate_norst(struct clk_hw *hw, unsigned long rate,
 				  unsigned long parent_rate)
 {
@@ -283,10 +251,7 @@ static int ccu_pll_set_rate_norst(struct clk_hw *hw, unsigned long rate,
 
 	ccu_pll_calc_factors(rate, parent_rate, &nr, &nf, &od);
 
-	/*
-	 * Disable PLL if it was enabled by default or left enabled by the
-	 * system bootloader.
-	 */
+	 
 	mask = CCU_PLL_CTL_CLKR_MASK | CCU_PLL_CTL_CLKF_MASK |
 	       CCU_PLL_CTL_CLKOD_MASK | CCU_PLL_CTL_EN;
 	val = FIELD_PREP(CCU_PLL_CTL_CLKR_MASK, nr - 1) |
@@ -358,11 +323,7 @@ static const struct ccu_pll_dbgfs_fld ccu_pll_flds[] = {
 
 #define CCU_PLL_DBGFS_FLD_NUM	ARRAY_SIZE(ccu_pll_flds)
 
-/*
- * It can be dangerous to change the PLL settings behind clock framework back,
- * therefore we don't provide any kernel config based compile time option for
- * this feature to enable.
- */
+ 
 #undef CCU_PLL_ALLOW_WRITE_DEBUGFS
 #ifdef CCU_PLL_ALLOW_WRITE_DEBUGFS
 
@@ -400,13 +361,13 @@ static int ccu_pll_dbgfs_fld_set(void *priv, u64 val)
 
 #define ccu_pll_dbgfs_mode	0644
 
-#else /* !CCU_PLL_ALLOW_WRITE_DEBUGFS */
+#else  
 
 #define ccu_pll_dbgfs_bit_set	NULL
 #define ccu_pll_dbgfs_fld_set	NULL
 #define ccu_pll_dbgfs_mode	0444
 
-#endif /* !CCU_PLL_ALLOW_WRITE_DEBUGFS */
+#endif  
 
 static int ccu_pll_dbgfs_bit_get(void *priv, u64 *val)
 {
@@ -470,11 +431,11 @@ static void ccu_pll_debug_init(struct clk_hw *hw, struct dentry *dentry)
 	}
 }
 
-#else /* !CONFIG_DEBUG_FS */
+#else  
 
 #define ccu_pll_debug_init NULL
 
-#endif /* !CONFIG_DEBUG_FS */
+#endif  
 
 static const struct clk_ops ccu_pll_gate_to_set_ops = {
 	.enable = ccu_pll_enable,
@@ -510,11 +471,7 @@ struct ccu_pll *ccu_pll_hw_register(const struct ccu_pll_init_data *pll_init)
 	if (!pll)
 		return ERR_PTR(-ENOMEM);
 
-	/*
-	 * Note since Baikal-T1 System Controller registers are MMIO-backed
-	 * we won't check the regmap IO operations return status, because it
-	 * must be zero anyway.
-	 */
+	 
 	pll->hw.init = &hw_init;
 	pll->reg_ctl = pll_init->base + CCU_PLL_CTL;
 	pll->reg_ctl1 = pll_init->base + CCU_PLL_CTL1;

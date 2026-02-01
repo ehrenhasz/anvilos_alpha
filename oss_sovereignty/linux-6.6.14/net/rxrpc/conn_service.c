@@ -1,23 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* Service connection management
- *
- * Copyright (C) 2016 Red Hat, Inc. All Rights Reserved.
- * Written by David Howells (dhowells@redhat.com)
- */
+
+ 
 
 #include <linux/slab.h>
 #include "ar-internal.h"
 
-/*
- * Find a service connection under RCU conditions.
- *
- * We could use a hash table, but that is subject to bucket stuffing by an
- * attacker as the client gets to pick the epoch and cid values and would know
- * the hash function.  So, instead, we use a hash table for the peer and from
- * that an rbtree to find the service connection.  Under ordinary circumstances
- * it might be slower than a large hash table, but it is at least limited in
- * depth.
- */
+ 
 struct rxrpc_connection *rxrpc_find_service_conn_rcu(struct rxrpc_peer *peer,
 						     struct sk_buff *skb)
 {
@@ -31,10 +18,7 @@ struct rxrpc_connection *rxrpc_find_service_conn_rcu(struct rxrpc_peer *peer,
 	k.cid	= sp->hdr.cid & RXRPC_CIDMASK;
 
 	do {
-		/* Unfortunately, rbtree walking doesn't give reliable results
-		 * under just the RCU read lock, so we have to check for
-		 * changes.
-		 */
+		 
 		read_seqbegin_or_lock(&peer->service_conn_lock, &seq);
 
 		p = rcu_dereference_raw(peer->service_conns.rb_node);
@@ -56,10 +40,7 @@ struct rxrpc_connection *rxrpc_find_service_conn_rcu(struct rxrpc_peer *peer,
 	return conn;
 }
 
-/*
- * Insert a service connection into a peer's tree, thereby making it a target
- * for incoming packets.
- */
+ 
 static void rxrpc_publish_service_conn(struct rxrpc_peer *peer,
 				       struct rxrpc_connection *conn)
 {
@@ -96,14 +77,11 @@ found_extant_conn:
 	if (refcount_read(&cursor->ref) == 0)
 		goto replace_old_connection;
 	write_sequnlock(&peer->service_conn_lock);
-	/* We should not be able to get here.  rxrpc_incoming_connection() is
-	 * called in a non-reentrant context, so there can't be a race to
-	 * insert a new connection.
-	 */
+	 
 	BUG();
 
 replace_old_connection:
-	/* The old connection is from an outdated epoch. */
+	 
 	_debug("replace conn");
 	rb_replace_node_rcu(&cursor->service_node,
 			    &conn->service_node,
@@ -112,19 +90,14 @@ replace_old_connection:
 	goto conn_published;
 }
 
-/*
- * Preallocate a service connection.  The connection is placed on the proc and
- * reap lists so that we don't have to get the lock from BH context.
- */
+ 
 struct rxrpc_connection *rxrpc_prealloc_service_connection(struct rxrpc_net *rxnet,
 							   gfp_t gfp)
 {
 	struct rxrpc_connection *conn = rxrpc_alloc_connection(rxnet, gfp);
 
 	if (conn) {
-		/* We maintain an extra ref on the connection whilst it is on
-		 * the rxrpc_connections list.
-		 */
+		 
 		conn->state = RXRPC_CONN_SERVICE_PREALLOC;
 		refcount_set(&conn->ref, 2);
 
@@ -140,10 +113,7 @@ struct rxrpc_connection *rxrpc_prealloc_service_connection(struct rxrpc_net *rxn
 	return conn;
 }
 
-/*
- * Set up an incoming connection.  This is called in BH context with the RCU
- * read lock held.
- */
+ 
 void rxrpc_new_incoming_connection(struct rxrpc_sock *rx,
 				   struct rxrpc_connection *conn,
 				   const struct rxrpc_security *sec,
@@ -165,24 +135,18 @@ void rxrpc_new_incoming_connection(struct rxrpc_sock *rx,
 	else
 		conn->state	= RXRPC_CONN_SERVICE;
 
-	/* See if we should upgrade the service.  This can only happen on the
-	 * first packet on a new connection.  Once done, it applies to all
-	 * subsequent calls on that connection.
-	 */
+	 
 	if (sp->hdr.userStatus == RXRPC_USERSTATUS_SERVICE_UPGRADE &&
 	    conn->service_id == rx->service_upgrade.from)
 		conn->service_id = rx->service_upgrade.to;
 
 	atomic_set(&conn->active, 1);
 
-	/* Make the connection a target for incoming packets. */
+	 
 	rxrpc_publish_service_conn(conn->peer, conn);
 }
 
-/*
- * Remove the service connection from the peer's tree, thereby removing it as a
- * target for incoming packets.
- */
+ 
 void rxrpc_unpublish_service_conn(struct rxrpc_connection *conn)
 {
 	struct rxrpc_peer *peer = conn->peer;

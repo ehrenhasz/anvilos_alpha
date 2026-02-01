@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 1992, 1998-2006 Linus Torvalds, Ingo Molnar
- * Copyright (C) 2005-2006, Thomas Gleixner, Russell King
- *
- * This file contains the interrupt descriptor management code. Detailed
- * information is available in Documentation/core-api/genericirq.rst
- *
- */
+
+ 
 #include <linux/irq.h>
 #include <linux/slab.h>
 #include <linux/export.h>
@@ -18,9 +11,7 @@
 
 #include "internals.h"
 
-/*
- * lockdep: we want to handle all irq_desc locks as a single lock-class:
- */
+ 
 static struct lock_class_key irq_desc_lock_class;
 
 #if defined(CONFIG_SMP)
@@ -28,10 +19,7 @@ static int __init irq_affinity_setup(char *str)
 {
 	alloc_bootmem_cpumask_var(&irq_default_affinity);
 	cpulist_parse(str, irq_default_affinity);
-	/*
-	 * Set at least the boot cpu. We don't want to end up with
-	 * bugreports caused by random commandline masks
-	 */
+	 
 	cpumask_set_cpu(smp_processor_id(), irq_default_affinity);
 	return 1;
 }
@@ -318,11 +306,7 @@ static const struct kobj_type irq_kobj_type = {
 static void irq_sysfs_add(int irq, struct irq_desc *desc)
 {
 	if (irq_kobj_base) {
-		/*
-		 * Continue even in case of failure as this is nothing
-		 * crucial and failures in the late irq_sysfs_init()
-		 * cannot be rolled back.
-		 */
+		 
 		if (kobject_add(&desc->kobj, irq_kobj_base, "%d", irq))
 			pr_warn("Failed to add kobject for irq %d\n", irq);
 		else
@@ -332,12 +316,7 @@ static void irq_sysfs_add(int irq, struct irq_desc *desc)
 
 static void irq_sysfs_del(struct irq_desc *desc)
 {
-	/*
-	 * Only invoke kobject_del() when kobject_add() was successfully
-	 * invoked for the descriptor. This covers both early boot, where
-	 * sysfs is not initialized yet, and the case of a failed
-	 * kobject_add() invocation.
-	 */
+	 
 	if (desc->istate & IRQS_SYSFS)
 		kobject_del(&desc->kobj);
 }
@@ -347,7 +326,7 @@ static int __init irq_sysfs_init(void)
 	struct irq_desc *desc;
 	int irq;
 
-	/* Prevent concurrent irq alloc/free */
+	 
 	irq_lock_sparse();
 
 	irq_kobj_base = kobject_create_and_add("irq", kernel_kobj);
@@ -356,7 +335,7 @@ static int __init irq_sysfs_init(void)
 		return -ENOMEM;
 	}
 
-	/* Add the already allocated interrupts */
+	 
 	for_each_irq_desc(irq, desc)
 		irq_sysfs_add(irq, desc);
 	irq_unlock_sparse();
@@ -365,7 +344,7 @@ static int __init irq_sysfs_init(void)
 }
 postcore_initcall(irq_sysfs_init);
 
-#else /* !CONFIG_SYSFS */
+#else  
 
 static const struct kobj_type irq_kobj_type = {
 	.release	= irq_kobj_release,
@@ -374,7 +353,7 @@ static const struct kobj_type irq_kobj_type = {
 static void irq_sysfs_add(int irq, struct irq_desc *desc) {}
 static void irq_sysfs_del(struct irq_desc *desc) {}
 
-#endif /* CONFIG_SYSFS */
+#endif  
 
 struct irq_desc *irq_to_desc(unsigned int irq)
 {
@@ -418,7 +397,7 @@ static struct irq_desc *alloc_desc(int irq, int node, unsigned int flags,
 	desc = kzalloc_node(sizeof(*desc), GFP_KERNEL, node);
 	if (!desc)
 		return NULL;
-	/* allocate based on nr_cpu_ids */
+	 
 	desc->kstat_irqs = alloc_percpu(unsigned int);
 	if (!desc->kstat_irqs)
 		goto err_desc;
@@ -469,24 +448,11 @@ static void free_desc(unsigned int irq)
 	irq_remove_debugfs_entry(desc);
 	unregister_irq_proc(irq, desc);
 
-	/*
-	 * sparse_irq_lock protects also show_interrupts() and
-	 * kstat_irq_usr(). Once we deleted the descriptor from the
-	 * sparse tree we can free it. Access in proc will fail to
-	 * lookup the descriptor.
-	 *
-	 * The sysfs entry must be serialized against a concurrent
-	 * irq_sysfs_init() as well.
-	 */
+	 
 	irq_sysfs_del(desc);
 	delete_irq_desc(irq);
 
-	/*
-	 * We free the descriptor, masks and stat fields via RCU. That
-	 * allows demultiplex interrupts to do rcu based management of
-	 * the child interrupts.
-	 * This also allows us to use rcu in kstat_irqs_usr().
-	 */
+	 
 	call_rcu(&desc->rcu, delayed_free_desc);
 }
 
@@ -497,7 +463,7 @@ static int alloc_descs(unsigned int start, unsigned int cnt, int node,
 	struct irq_desc *desc;
 	int i;
 
-	/* Validate affinity mask(s) */
+	 
 	if (affinity) {
 		for (i = 0; i < cnt; i++) {
 			if (cpumask_empty(&affinity[i].mask))
@@ -549,7 +515,7 @@ int __init early_irq_init(void)
 
 	init_irq_default_affinity();
 
-	/* Let arch update nr_irqs and return the nr of preallocated irqs */
+	 
 	initcnt = arch_probe_nr_irqs();
 	printk(KERN_INFO "NR_IRQS: %d, nr_irqs: %d, preallocated irqs: %d\n",
 	       NR_IRQS, nr_irqs, initcnt);
@@ -570,7 +536,7 @@ int __init early_irq_init(void)
 	return arch_early_irq_init();
 }
 
-#else /* !CONFIG_SPARSE_IRQ */
+#else  
 
 struct irq_desc irq_desc[NR_IRQS] __cacheline_aligned_in_smp = {
 	[0 ... NR_IRQS-1] = {
@@ -656,7 +622,7 @@ void irq_init_desc(unsigned int irq)
 }
 #endif
 
-#endif /* !CONFIG_SPARSE_IRQ */
+#endif  
 
 int handle_irq_desc(struct irq_desc *desc)
 {
@@ -673,32 +639,14 @@ int handle_irq_desc(struct irq_desc *desc)
 	return 0;
 }
 
-/**
- * generic_handle_irq - Invoke the handler for a particular irq
- * @irq:	The irq number to handle
- *
- * Returns:	0 on success, or -EINVAL if conversion has failed
- *
- * 		This function must be called from an IRQ context with irq regs
- * 		initialized.
-  */
+ 
 int generic_handle_irq(unsigned int irq)
 {
 	return handle_irq_desc(irq_to_desc(irq));
 }
 EXPORT_SYMBOL_GPL(generic_handle_irq);
 
-/**
- * generic_handle_irq_safe - Invoke the handler for a particular irq from any
- *			     context.
- * @irq:	The irq number to handle
- *
- * Returns:	0 on success, a negative value on error.
- *
- * This function can be called from any context (IRQ or process context). It
- * will report an error if not invoked from IRQ context and the irq has been
- * marked to enforce IRQ-context only.
- */
+ 
 int generic_handle_irq_safe(unsigned int irq)
 {
 	unsigned long flags;
@@ -712,35 +660,14 @@ int generic_handle_irq_safe(unsigned int irq)
 EXPORT_SYMBOL_GPL(generic_handle_irq_safe);
 
 #ifdef CONFIG_IRQ_DOMAIN
-/**
- * generic_handle_domain_irq - Invoke the handler for a HW irq belonging
- *                             to a domain.
- * @domain:	The domain where to perform the lookup
- * @hwirq:	The HW irq number to convert to a logical one
- *
- * Returns:	0 on success, or -EINVAL if conversion has failed
- *
- * 		This function must be called from an IRQ context with irq regs
- * 		initialized.
- */
+ 
 int generic_handle_domain_irq(struct irq_domain *domain, unsigned int hwirq)
 {
 	return handle_irq_desc(irq_resolve_mapping(domain, hwirq));
 }
 EXPORT_SYMBOL_GPL(generic_handle_domain_irq);
 
- /**
- * generic_handle_irq_safe - Invoke the handler for a HW irq belonging
- *			     to a domain from any context.
- * @domain:	The domain where to perform the lookup
- * @hwirq:	The HW irq number to convert to a logical one
- *
- * Returns:	0 on success, a negative value on error.
- *
- * This function can be called from any context (IRQ or process
- * context). If the interrupt is marked as 'enforce IRQ-context only' then
- * the function must be invoked from hard interrupt context.
- */
+  
 int generic_handle_domain_irq_safe(struct irq_domain *domain, unsigned int hwirq)
 {
 	unsigned long flags;
@@ -753,17 +680,7 @@ int generic_handle_domain_irq_safe(struct irq_domain *domain, unsigned int hwirq
 }
 EXPORT_SYMBOL_GPL(generic_handle_domain_irq_safe);
 
-/**
- * generic_handle_domain_nmi - Invoke the handler for a HW nmi belonging
- *                             to a domain.
- * @domain:	The domain where to perform the lookup
- * @hwirq:	The HW irq number to convert to a logical one
- *
- * Returns:	0 on success, or -EINVAL if conversion has failed
- *
- * 		This function must be called from an NMI context with irq regs
- * 		initialized.
- **/
+ 
 int generic_handle_domain_nmi(struct irq_domain *domain, unsigned int hwirq)
 {
 	WARN_ON_ONCE(!in_nmi());
@@ -771,13 +688,9 @@ int generic_handle_domain_nmi(struct irq_domain *domain, unsigned int hwirq)
 }
 #endif
 
-/* Dynamic interrupt handling */
+ 
 
-/**
- * irq_free_descs - free irq descriptors
- * @from:	Start of descriptor range
- * @cnt:	Number of consecutive irqs to free
- */
+ 
 void irq_free_descs(unsigned int from, unsigned int cnt)
 {
 	int i;
@@ -793,19 +706,7 @@ void irq_free_descs(unsigned int from, unsigned int cnt)
 }
 EXPORT_SYMBOL_GPL(irq_free_descs);
 
-/**
- * __irq_alloc_descs - allocate and initialize a range of irq descriptors
- * @irq:	Allocate for specific irq number if irq >= 0
- * @from:	Start the search from this irq number
- * @cnt:	Number of consecutive irqs to allocate.
- * @node:	Preferred node on which the irq descriptor should be allocated
- * @owner:	Owning module (can be NULL)
- * @affinity:	Optional pointer to an affinity mask array of size @cnt which
- *		hints where the irq descriptors should be allocated and which
- *		default affinities to use
- *
- * Returns the first irq number or error code
- */
+ 
 int __ref
 __irq_alloc_descs(int irq, unsigned int from, unsigned int cnt, int node,
 		  struct module *owner, const struct irq_affinity_desc *affinity)
@@ -820,11 +721,7 @@ __irq_alloc_descs(int irq, unsigned int from, unsigned int cnt, int node,
 			return -EINVAL;
 		from = irq;
 	} else {
-		/*
-		 * For interrupts which are freely allocated the
-		 * architecture can force a lower bound to the @from
-		 * argument. x86 uses this to exclude the GSI space.
-		 */
+		 
 		from = arch_dynirq_lower_bound(from);
 	}
 
@@ -847,12 +744,7 @@ unlock:
 }
 EXPORT_SYMBOL_GPL(__irq_alloc_descs);
 
-/**
- * irq_get_next_irq - get next allocated irq number
- * @offset:	where to start the search
- *
- * Returns next irq number after offset or nr_irqs if none is found.
- */
+ 
 unsigned int irq_get_next_irq(unsigned int offset)
 {
 	return irq_find_at_or_after(offset);
@@ -939,15 +831,7 @@ void kstat_incr_irq_this_cpu(unsigned int irq)
 	kstat_incr_irqs_this_cpu(irq_to_desc(irq));
 }
 
-/**
- * kstat_irqs_cpu - Get the statistics for an interrupt on a cpu
- * @irq:	The interrupt number
- * @cpu:	The cpu number
- *
- * Returns the sum of interrupt counts on @cpu since boot for
- * @irq. The caller must ensure that the interrupt is not removed
- * concurrently.
- */
+ 
 unsigned int kstat_irqs_cpu(unsigned int irq, int cpu)
 {
 	struct irq_desc *desc = irq_to_desc(irq);
@@ -979,16 +863,7 @@ static unsigned int kstat_irqs(unsigned int irq)
 	return sum;
 }
 
-/**
- * kstat_irqs_usr - Get the statistics for an interrupt from thread context
- * @irq:	The interrupt number
- *
- * Returns the sum of interrupt counts on all cpus since boot for @irq.
- *
- * It uses rcu to protect the access since a concurrent removal of an
- * interrupt descriptor is observing an rcu grace period before
- * delayed_free_desc()/irq_kobj_release().
- */
+ 
 unsigned int kstat_irqs_usr(unsigned int irq)
 {
 	unsigned int sum;

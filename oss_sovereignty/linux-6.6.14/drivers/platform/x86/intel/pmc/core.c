@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Intel Core SoC Power Management Controller Driver
- *
- * Copyright (c) 2016, Intel Corporation.
- * All Rights Reserved.
- *
- * Authors: Rajneesh Bhardwaj <rajneesh.bhardwaj@intel.com>
- *          Vishwanath Somayaji <vishwanath.somayaji@intel.com>
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -28,7 +20,7 @@
 
 #include "core.h"
 
-/* Maximum number of modes supported by platfoms that has low power mode capability */
+ 
 const char *pmc_lpm_modes[] = {
 	"S0i2.0",
 	"S0i2.1",
@@ -41,7 +33,7 @@ const char *pmc_lpm_modes[] = {
 	NULL
 };
 
-/* PKGC MSRs are common across Intel Core SoCs */
+ 
 const struct pmc_bit_map msr_map[] = {
 	{"Package C2",                  MSR_PKG_C2_RESIDENCY},
 	{"Package C3",                  MSR_PKG_C3_RESIDENCY},
@@ -66,12 +58,7 @@ static inline void pmc_core_reg_write(struct pmc *pmc, int reg_offset,
 
 static inline u64 pmc_core_adjust_slp_s0_step(struct pmc *pmc, u32 value)
 {
-	/*
-	 * ADL PCH does not have the SLP_S0 counter and LPM Residency counters are
-	 * used as a workaround which uses 30.5 usec tick. All other client
-	 * programs have the legacy SLP_S0 residency counter that is using the 122
-	 * usec tick.
-	 */
+	 
 	const int lpm_adj_x2 = pmc->map->lpm_res_counter_step_x2;
 
 	if (pmc->map == &adl_reg_map)
@@ -92,14 +79,14 @@ static int set_etr3(struct pmc_dev *pmcdev)
 
 	mutex_lock(&pmcdev->lock);
 
-	/* check if CF9 is locked */
+	 
 	reg = pmc_core_reg_read(pmc, map->etr3_offset);
 	if (reg & ETR3_CF9LOCK) {
 		err = -EACCES;
 		goto out_unlock;
 	}
 
-	/* write CF9 global reset bit */
+	 
 	reg |= ETR3_CF9GR;
 	pmc_core_reg_write(pmc, map->etr3_offset, reg);
 
@@ -165,7 +152,7 @@ static ssize_t etr3_store(struct device *dev,
 	if (err)
 		return err;
 
-	/* allow only CF9 writes */
+	 
 	if (reg != ETR3_CF9GR)
 		return -EINVAL;
 
@@ -246,7 +233,7 @@ static int pmc_core_lpm_get_arr_size(const struct pmc_bit_map **maps)
 	int idx;
 
 	for (idx = 0; maps[idx]; idx++)
-		;/* Nothing */
+		; 
 
 	return idx;
 }
@@ -340,7 +327,7 @@ static int pmc_core_ppfear_show(struct seq_file *s, void *unused)
 }
 DEFINE_SHOW_ATTRIBUTE(pmc_core_ppfear);
 
-/* This function should return link status, 0 means ready */
+ 
 static int pmc_core_mtpmc_link_status(struct pmc *pmc)
 {
 	u32 value;
@@ -444,7 +431,7 @@ static int pmc_core_pll_show(struct seq_file *s, void *unused)
 		goto out_unlock;
 	}
 
-	/* Observed PMC HW response latency for MTPMC-MFPMC is ~10 ms */
+	 
 	msleep(10);
 	val = pmc_core_reg_read(pmc, SPT_PMC_MFPMC_OFFSET);
 
@@ -468,10 +455,7 @@ int pmc_core_send_ltr_ignore(struct pmc_dev *pmcdev, u32 value, int ignore)
 	int pmc_index, ltr_index;
 
 	ltr_index = value;
-	/* For platforms with multiple pmcs, ltr index value given by user
-	 * is based on the contiguous indexes from ltr_show output.
-	 * pmc index and ltr index needs to be calculated from it.
-	 */
+	 
 	for (pmc_index = 0; pmc_index < ARRAY_SIZE(pmcdev->pmcs) && ltr_index >= 0; pmc_index++) {
 		pmc = pmcdev->pmcs[pmc_index];
 
@@ -482,11 +466,7 @@ int pmc_core_send_ltr_ignore(struct pmc_dev *pmcdev, u32 value, int ignore)
 		if (ltr_index <= map->ltr_ignore_max)
 			break;
 
-		/* Along with IP names, ltr_show map includes CURRENT_PLATFORM
-		 * and AGGREGATED_SYSTEM values per PMC. Take these two index
-		 * values into account in ltr_index calculation. Also, to start
-		 * ltr index from zero for next pmc, subtract it by 1.
-		 */
+		 
 		ltr_index = ltr_index - (map->ltr_ignore_max + 2) - 1;
 	}
 
@@ -585,30 +565,7 @@ DEFINE_SHOW_ATTRIBUTE(pmc_core_slps0_dbg);
 
 static u32 convert_ltr_scale(u32 val)
 {
-	/*
-	 * As per PCIE specification supporting document
-	 * ECN_LatencyTolnReporting_14Aug08.pdf the Latency
-	 * Tolerance Reporting data payload is encoded in a
-	 * 3 bit scale and 10 bit value fields. Values are
-	 * multiplied by the indicated scale to yield an absolute time
-	 * value, expressible in a range from 1 nanosecond to
-	 * 2^25*(2^10-1) = 34,326,183,936 nanoseconds.
-	 *
-	 * scale encoding is as follows:
-	 *
-	 * ----------------------------------------------
-	 * |scale factor	|	Multiplier (ns)	|
-	 * ----------------------------------------------
-	 * |	0		|	1		|
-	 * |	1		|	32		|
-	 * |	2		|	1024		|
-	 * |	3		|	32768		|
-	 * |	4		|	1048576		|
-	 * |	5		|	33554432	|
-	 * |	6		|	Invalid		|
-	 * |	7		|	Invalid		|
-	 * ----------------------------------------------
-	 */
+	 
 	if (val > 5) {
 		pr_warn("Invalid LTR scale factor.\n");
 		return 0;
@@ -754,42 +711,35 @@ static int pmc_core_substate_req_regs_show(struct seq_file *s, void *unused)
 	u32 *lpm_req_regs = pmc->lpm_req_regs;
 	int mp;
 
-	/* Display the header */
+	 
 	pmc_core_substate_req_header_show(s);
 
-	/* Loop over maps */
+	 
 	for (mp = 0; mp < num_maps; mp++) {
 		u32 req_mask = 0;
 		u32 lpm_status;
 		int mode, idx, i, len = 32;
 
-		/*
-		 * Capture the requirements and create a mask so that we only
-		 * show an element if it's required for at least one of the
-		 * enabled low power modes
-		 */
+		 
 		pmc_for_each_mode(idx, mode, pmcdev)
 			req_mask |= lpm_req_regs[mp + (mode * num_maps)];
 
-		/* Get the last latched status for this map */
+		 
 		lpm_status = pmc_core_reg_read(pmc, sts_offset + (mp * 4));
 
-		/*  Loop over elements in this map */
+		 
 		map = maps[mp];
 		for (i = 0; map[i].name && i < len; i++) {
 			u32 bit_mask = map[i].bit_mask;
 
 			if (!(bit_mask & req_mask))
-				/*
-				 * Not required for any enabled states
-				 * so don't display
-				 */
+				 
 				continue;
 
-			/* Display the element name in the first column */
+			 
 			seq_printf(s, "%30s |", map[i].name);
 
-			/* Loop over the enabled states and display if required */
+			 
 			pmc_for_each_mode(idx, mode, pmcdev) {
 				if (lpm_req_regs[mp + (mode * num_maps)] & bit_mask)
 					seq_printf(s, " %9s |",
@@ -798,7 +748,7 @@ static int pmc_core_substate_req_regs_show(struct seq_file *s, void *unused)
 					seq_printf(s, " %9s |", " ");
 			}
 
-			/* In Status column, show the last captured state of this agent */
+			 
 			if (lpm_status & bit_mask)
 				seq_printf(s, " %9s |", "Yes");
 			else
@@ -859,15 +809,10 @@ static ssize_t pmc_core_lpm_latch_mode_write(struct file *file,
 		return -EFAULT;
 	buf[count] = '\0';
 
-	/*
-	 * Allowed strings are:
-	 *	Any enabled substate, e.g. 'S0i2.0'
-	 *	'c10'
-	 *	'clear'
-	 */
+	 
 	mode = sysfs_match_string(pmc_lpm_modes, buf);
 
-	/* Check string matches enabled mode */
+	 
 	pmc_for_each_mode(idx, m, pmcdev)
 		if (mode == m)
 			break;
@@ -905,10 +850,7 @@ static ssize_t pmc_core_lpm_latch_mode_write(struct file *file,
 		return count;
 	}
 
-	/*
-	 * For LPM mode latching we set the latch enable bit and selected mode
-	 * and clear everything else.
-	 */
+	 
 	reg = LPM_STS_LATCH_MODE | BIT(mode);
 	mutex_lock(&pmcdev->lock);
 	pmc_core_reg_write(pmc, pmc->map->lpm_sts_latch_en_offset, reg);
@@ -945,11 +887,7 @@ static bool pmc_core_pri_verify(u32 lpm_pri, u8 *mode_order)
 
 	if (!lpm_pri)
 		return false;
-	/*
-	 * Each byte contains the priority level for 2 modes (7:4 and 3:0).
-	 * In a 32 bit register this allows for describing 8 modes. Store the
-	 * levels and look for values out of range.
-	 */
+	 
 	for (i = 0; i < 8; i++) {
 		int level = lpm_pri & GENMASK(3, 0);
 
@@ -960,7 +898,7 @@ static bool pmc_core_pri_verify(u32 lpm_pri, u8 *mode_order)
 		lpm_pri >>= 4;
 	}
 
-	/* Check that we have unique values */
+	 
 	for (i = 0; i < LPM_MAX_NUM_MODES - 1; i++)
 		for (j = i + 1; j < LPM_MAX_NUM_MODES; j++)
 			if (mode_order[i] == mode_order[j])
@@ -979,36 +917,27 @@ static void pmc_core_get_low_power_modes(struct platform_device *pdev)
 	u32 lpm_en;
 	int mode, i, p;
 
-	/* Use LPM Maps to indicate support for substates */
+	 
 	if (!pmc->map->lpm_num_maps)
 		return;
 
 	lpm_en = pmc_core_reg_read(pmc, pmc->map->lpm_en_offset);
-	/* For MTL, BIT 31 is not an lpm mode but a enable bit.
-	 * Lower byte is enough to cover the number of lpm modes for all
-	 * platforms and hence mask the upper 3 bytes.
-	 */
+	 
 	pmcdev->num_lpm_modes = hweight32(lpm_en & 0xFF);
 
-	/* Read 32 bit LPM_PRI register */
+	 
 	lpm_pri = pmc_core_reg_read(pmc, pmc->map->lpm_priority_offset);
 
 
-	/*
-	 * If lpm_pri value passes verification, then override the default
-	 * modes here. Otherwise stick with the default.
-	 */
+	 
 	if (pmc_core_pri_verify(lpm_pri, mode_order))
-		/* Get list of modes in priority order */
+		 
 		for (mode = 0; mode < LPM_MAX_NUM_MODES; mode++)
 			pri_order[mode_order[mode]] = mode;
 	else
 		dev_warn(&pdev->dev, "Assuming a default substate order for this platform\n");
 
-	/*
-	 * Loop through all modes from lowest to highest priority,
-	 * and capture all enabled modes in order
-	 */
+	 
 	i = 0;
 	for (p = LPM_MAX_NUM_MODES - 1; p >= 0; p--) {
 		int mode = pri_order[p];
@@ -1142,11 +1071,7 @@ static const struct pci_device_id pmc_pci_ids[] = {
 	{ }
 };
 
-/*
- * This quirk can be used on those platforms where
- * the platform BIOS enforces 24Mhz crystal to shutdown
- * before PMC can assert SLP_S0#.
- */
+ 
 static bool xtal_ignore;
 static int quirk_xtal_ignore(const struct dmi_system_id *id)
 {
@@ -1159,9 +1084,9 @@ static void pmc_core_xtal_ignore(struct pmc *pmc)
 	u32 value;
 
 	value = pmc_core_reg_read(pmc, pmc->map->pm_vric1_offset);
-	/* 24MHz Crystal Shutdown Qualification Disable */
+	 
 	value |= SPT_PMC_VRIC1_XTALSDQDIS;
-	/* Low Voltage Mode Enable */
+	 
 	value &= ~SPT_PMC_VRIC1_SLPS0LVEN;
 	pmc_core_reg_write(pmc, pmc->map->pm_vric1_offset, value);
 }
@@ -1231,17 +1156,13 @@ static int pmc_core_probe(struct platform_device *pdev)
 
 	core_init = (int (*)(struct pmc_dev *))cpu_id->driver_data;
 
-	/* Primary PMC */
+	 
 	primary_pmc = devm_kzalloc(&pdev->dev, sizeof(*primary_pmc), GFP_KERNEL);
 	if (!primary_pmc)
 		return -ENOMEM;
 	pmcdev->pmcs[PMC_IDX_MAIN] = primary_pmc;
 
-	/*
-	 * Coffee Lake has CPU ID of Kaby Lake and Cannon Lake PCH. So here
-	 * Sunrisepoint PCH regmap can't be used. Use Cannon Lake PCH regmap
-	 * in this case.
-	 */
+	 
 	if (core_init == spt_core_init && !pci_dev_present(pmc_pci_ids))
 		core_init = cnp_core_init;
 
@@ -1285,15 +1206,15 @@ static __maybe_unused int pmc_core_suspend(struct device *dev)
 	if (pmcdev->suspend)
 		pmcdev->suspend(pmcdev);
 
-	/* Check if the syspend will actually use S0ix */
+	 
 	if (pm_suspend_via_firmware())
 		return 0;
 
-	/* Save PC10 residency for checking later */
+	 
 	if (rdmsrl_safe(MSR_PKG_C10_RESIDENCY, &pmcdev->pc10_counter))
 		return -EIO;
 
-	/* Save S0ix residency for checking later */
+	 
 	if (pmc_core_dev_state_get(pmc, &pmcdev->s0ix_counter))
 		return -EIO;
 
@@ -1336,7 +1257,7 @@ int pmc_core_resume_common(struct pmc_dev *pmcdev)
 	int offset = pmc->map->lpm_status_offset;
 	int i;
 
-	/* Check if the syspend used S0ix */
+	 
 	if (pm_suspend_via_firmware())
 		return 0;
 
@@ -1347,13 +1268,13 @@ int pmc_core_resume_common(struct pmc_dev *pmcdev)
 		return 0;
 
 	if (pmc_core_is_pc10_failed(pmcdev)) {
-		/* S0ix failed because of PC10 entry failure */
+		 
 		dev_info(dev, "CPU did not enter PC10!!! (PC10 cnt=0x%llx)\n",
 			 pmcdev->pc10_counter);
 		return 0;
 	}
 
-	/* The real interesting case - S0ix failed - lets ask PMC why. */
+	 
 	dev_warn(dev, "CPU did not enter SLP_S0!!! (S0ix cnt=%llu)\n",
 		 pmcdev->s0ix_counter);
 
@@ -1387,7 +1308,7 @@ static const struct dev_pm_ops pmc_core_pm_ops = {
 };
 
 static const struct acpi_device_id pmc_core_acpi_ids[] = {
-	{"INT33A1", 0}, /* _HID for Intel Power Engine, _CID PNP0D80*/
+	{"INT33A1", 0},  
 	{ }
 };
 MODULE_DEVICE_TABLE(acpi, pmc_core_acpi_ids);

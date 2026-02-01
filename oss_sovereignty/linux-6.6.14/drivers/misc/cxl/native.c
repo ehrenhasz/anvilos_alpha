@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright 2014 IBM Corp.
- */
+
+ 
 
 #include <linux/spinlock.h>
 #include <linux/sched.h>
@@ -55,11 +53,7 @@ static int afu_control(struct cxl_afu *afu, u64 command, u64 clear,
 	}
 
 	if (AFU_Cntl & CXL_AFU_Cntl_An_RA) {
-		/*
-		 * Workaround for a bug in the XSL used in the Mellanox CX4
-		 * that fails to clear the RA bit after an AFU reset,
-		 * preventing subsequent AFU resets from working.
-		 */
+		 
 		cxl_p2n_write(afu, CXL_AFU_Cntl_An, AFU_Cntl & ~CXL_AFU_Cntl_An_RA);
 	}
 
@@ -90,7 +84,7 @@ int cxl_afu_disable(struct cxl_afu *afu)
 			   CXL_AFU_Cntl_An_ES_MASK, false);
 }
 
-/* This will disable as well as reset */
+ 
 static int native_afu_reset(struct cxl_afu *afu)
 {
 	int rc;
@@ -103,11 +97,7 @@ static int native_afu_reset(struct cxl_afu *afu)
 			   CXL_AFU_Cntl_An_RS_MASK | CXL_AFU_Cntl_An_ES_MASK,
 			   false);
 
-	/*
-	 * Re-enable any masked interrupts when the AFU is not
-	 * activated to avoid side effects after attaching a process
-	 * in dedicated mode.
-	 */
+	 
 	if (afu->current_mode == 0) {
 		serr = cxl_p1n_read(afu, CXL_PSL_SERR_An);
 		serr &= ~CXL_PSL_SERR_An_IRQ_MASKS;
@@ -204,19 +194,7 @@ out:
 
 static int spa_max_procs(int spa_size)
 {
-	/*
-	 * From the CAIA:
-	 *    end_of_SPA_area = SPA_Base + ((n+4) * 128) + (( ((n*8) + 127) >> 7) * 128) + 255
-	 * Most of that junk is really just an overly-complicated way of saying
-	 * the last 256 bytes are __aligned(128), so it's really:
-	 *    end_of_SPA_area = end_of_PSL_queue_area + __aligned(128) 255
-	 * and
-	 *    end_of_PSL_queue_area = SPA_Base + ((n+4) * 128) + (n*8) - 1
-	 * so
-	 *    sizeof(SPA) = ((n+4) * 128) + (n*8) + __aligned(128) 256
-	 * Ignore the alignment (which is safe in this case as long as we are
-	 * careful with our rounding) and solve for n:
-	 */
+	 
 	return ((spa_size / 8) - 96) / 17;
 }
 
@@ -224,7 +202,7 @@ static int cxl_alloc_spa(struct cxl_afu *afu, int mode)
 {
 	unsigned spa_size;
 
-	/* Work out how many pages to allocate */
+	 
 	afu->native->spa_order = -1;
 	do {
 		afu->native->spa_order++;
@@ -278,10 +256,7 @@ void cxl_release_spa(struct cxl_afu *afu)
 	}
 }
 
-/*
- * Invalidation of all ERAT entries is no longer required by CAIA2. Use
- * only for debug.
- */
+ 
 int cxl_invalidate_all_psl9(struct cxl *adapter)
 {
 	unsigned long timeout = jiffies + (HZ * CXL_TIMEOUT);
@@ -289,7 +264,7 @@ int cxl_invalidate_all_psl9(struct cxl *adapter)
 
 	pr_devel("CXL adapter - invalidation of all ERAT entries\n");
 
-	/* Invalidates all ERAT entries for Radix or HPT */
+	 
 	ierat = CXL_XSL9_IERAT_IALL;
 	if (radix_enabled())
 		ierat |= CXL_XSL9_IERAT_INVR;
@@ -345,11 +320,7 @@ int cxl_data_cache_flush(struct cxl *adapter)
 	u64 reg;
 	unsigned long timeout = jiffies + (HZ * CXL_TIMEOUT);
 
-	/*
-	 * Do a datacache flush only if datacache is available.
-	 * In case of PSL9D datacache absent hence flush operation.
-	 * would timeout.
-	 */
+	 
 	if (adapter->native->no_data_cache) {
 		pr_devel("No PSL data cache. Ignoring cache flush req.\n");
 		return 0;
@@ -384,23 +355,23 @@ static int cxl_write_sstp(struct cxl_afu *afu, u64 sstp0, u64 sstp1)
 {
 	int rc;
 
-	/* 1. Disable SSTP by writing 0 to SSTP1[V] */
+	 
 	cxl_p2n_write(afu, CXL_SSTP1_An, 0);
 
-	/* 2. Invalidate all SLB entries */
+	 
 	if ((rc = cxl_afu_slbia(afu)))
 		return rc;
 
-	/* 3. Set SSTP0_An */
+	 
 	cxl_p2n_write(afu, CXL_SSTP0_An, sstp0);
 
-	/* 4. Set SSTP1_An */
+	 
 	cxl_p2n_write(afu, CXL_SSTP1_An, sstp1);
 
 	return 0;
 }
 
-/* Using per slice version may improve performance here. (ie. SLBIA_An) */
+ 
 static void slb_invalid(struct cxl_context *ctx)
 {
 	struct cxl *adapter = ctx->afu->adapter;
@@ -459,13 +430,7 @@ static int do_process_element_cmd(struct cxl_context *ctx,
 		if ((state & (CXL_SPA_SW_CMD_MASK | CXL_SPA_SW_STATE_MASK  | CXL_SPA_SW_LINK_MASK)) ==
 		    (cmd | (cmd >> 16) | ctx->pe))
 			break;
-		/*
-		 * The command won't finish in the PSL if there are
-		 * outstanding DSIs.  Hence we need to yield here in
-		 * case there are outstanding DSIs that we need to
-		 * service.  Tuning possiblity: we could wait for a
-		 * while before sched
-		 */
+		 
 		schedule();
 
 	}
@@ -491,20 +456,17 @@ static int terminate_process_element(struct cxl_context *ctx)
 {
 	int rc = 0;
 
-	/* fast path terminate if it's already invalid */
+	 
 	if (!(ctx->elem->software_state & cpu_to_be32(CXL_PE_SOFTWARE_STATE_V)))
 		return rc;
 
 	mutex_lock(&ctx->afu->native->spa_mutex);
 	pr_devel("%s Terminate pe: %i started\n", __func__, ctx->pe);
-	/* We could be asked to terminate when the hw is down. That
-	 * should always succeed: it's not running if the hw has gone
-	 * away and is being reset.
-	 */
+	 
 	if (cxl_ops->link_ok(ctx->afu->adapter, ctx->afu))
 		rc = do_process_element_cmd(ctx, CXL_SPA_SW_CMD_TERMINATE,
 					    CXL_PE_SOFTWARE_STATE_V | CXL_PE_SOFTWARE_STATE_T);
-	ctx->elem->software_state = 0;	/* Remove Valid bit */
+	ctx->elem->software_state = 0;	 
 	pr_devel("%s Terminate pe: %i finished\n", __func__, ctx->pe);
 	mutex_unlock(&ctx->afu->native->spa_mutex);
 	return rc;
@@ -517,9 +479,7 @@ static int remove_process_element(struct cxl_context *ctx)
 	mutex_lock(&ctx->afu->native->spa_mutex);
 	pr_devel("%s Remove pe: %i started\n", __func__, ctx->pe);
 
-	/* We could be asked to remove when the hw is down. Again, if
-	 * the hw is down, the PE is gone, so we succeed.
-	 */
+	 
 	if (cxl_ops->link_ok(ctx->afu->adapter, ctx->afu))
 		rc = do_process_element_cmd(ctx, CXL_SPA_SW_CMD_REMOVE, 0);
 
@@ -641,16 +601,7 @@ static void update_ivtes_directed(struct cxl_context *ctx)
 		ctx->elem->ivte_ranges[r] = cpu_to_be16(ctx->irqs.range[r]);
 	}
 
-	/*
-	 * Theoretically we could use the update llcmd, instead of a
-	 * terminate/remove/add (or if an atomic update was required we could
-	 * do a suspend/update/resume), however it seems there might be issues
-	 * with the update llcmd on some cards (including those using an XSL on
-	 * an ASIC) so for now it's safest to go with the commands that are
-	 * known to work. In the future if we come across a situation where the
-	 * card may be performing transactions using the same PE while we are
-	 * doing this update we might need to revisit this.
-	 */
+	 
 	if (need_update)
 		WARN_ON(add_process_element(ctx));
 }
@@ -662,9 +613,9 @@ static int process_element_entry_psl9(struct cxl_context *ctx, u64 wed, u64 amr)
 
 	cxl_assign_psn_space(ctx);
 
-	ctx->elem->ctxtime = 0; /* disable */
+	ctx->elem->ctxtime = 0;  
 	ctx->elem->lpid = cpu_to_be32(mfspr(SPRN_LPID));
-	ctx->elem->haurp = 0; /* disable */
+	ctx->elem->haurp = 0;  
 
 	if (ctx->kernel)
 		pid = 0;
@@ -677,7 +628,7 @@ static int process_element_entry_psl9(struct cxl_context *ctx, u64 wed, u64 amr)
 		pid = ctx->mm->context.id;
 	}
 
-	/* Assign a unique TIDR (thread id) for the current thread */
+	 
 	if (!(ctx->tidr) && (ctx->assign_tidr)) {
 		rc = set_thread_tidr(current);
 		if (rc)
@@ -691,14 +642,11 @@ static int process_element_entry_psl9(struct cxl_context *ctx, u64 wed, u64 amr)
 
 	ctx->elem->sr = cpu_to_be64(calculate_sr(ctx));
 
-	ctx->elem->common.csrp = 0; /* disable */
+	ctx->elem->common.csrp = 0;  
 
 	cxl_prefault(ctx, wed);
 
-	/*
-	 * Ensure we have the multiplexed PSL interrupt set up to take faults
-	 * for kernel contexts that may not have allocated any AFU IRQs at all:
-	 */
+	 
 	if (ctx->irqs.range[0] == 0) {
 		ctx->irqs.offset[0] = ctx->afu->native->psl_hwirq;
 		ctx->irqs.range[0] = 1;
@@ -714,14 +662,14 @@ int cxl_attach_afu_directed_psl9(struct cxl_context *ctx, u64 wed, u64 amr)
 {
 	int result;
 
-	/* fill the process element entry */
+	 
 	result = process_element_entry_psl9(ctx, wed, amr);
 	if (result)
 		return result;
 
 	update_ivtes_directed(ctx);
 
-	/* first guy needs to enable */
+	 
 	result = cxl_ops->afu_check_and_enable(ctx->afu);
 	if (result)
 		return result;
@@ -736,9 +684,9 @@ int cxl_attach_afu_directed_psl8(struct cxl_context *ctx, u64 wed, u64 amr)
 
 	cxl_assign_psn_space(ctx);
 
-	ctx->elem->ctxtime = 0; /* disable */
+	ctx->elem->ctxtime = 0;  
 	ctx->elem->lpid = cpu_to_be32(mfspr(SPRN_LPID));
-	ctx->elem->haurp = 0; /* disable */
+	ctx->elem->haurp = 0;  
 	ctx->elem->u.sdr = cpu_to_be64(mfspr(SPRN_SDR1));
 
 	pid = current->pid;
@@ -749,19 +697,16 @@ int cxl_attach_afu_directed_psl8(struct cxl_context *ctx, u64 wed, u64 amr)
 
 	ctx->elem->sr = cpu_to_be64(calculate_sr(ctx));
 
-	ctx->elem->common.csrp = 0; /* disable */
-	ctx->elem->common.u.psl8.aurp0 = 0; /* disable */
-	ctx->elem->common.u.psl8.aurp1 = 0; /* disable */
+	ctx->elem->common.csrp = 0;  
+	ctx->elem->common.u.psl8.aurp0 = 0;  
+	ctx->elem->common.u.psl8.aurp1 = 0;  
 
 	cxl_prefault(ctx, wed);
 
 	ctx->elem->common.u.psl8.sstp0 = cpu_to_be64(ctx->sstp0);
 	ctx->elem->common.u.psl8.sstp1 = cpu_to_be64(ctx->sstp1);
 
-	/*
-	 * Ensure we have the multiplexed PSL interrupt set up to take faults
-	 * for kernel contexts that may not have allocated any AFU IRQs at all:
-	 */
+	 
 	if (ctx->irqs.range[0] == 0) {
 		ctx->irqs.offset[0] = ctx->afu->native->psl_hwirq;
 		ctx->irqs.range[0] = 1;
@@ -772,7 +717,7 @@ int cxl_attach_afu_directed_psl8(struct cxl_context *ctx, u64 wed, u64 amr)
 	ctx->elem->common.amr = cpu_to_be64(amr);
 	ctx->elem->common.wed = cpu_to_be64(wed);
 
-	/* first guy needs to enable */
+	 
 	if ((result = cxl_ops->afu_check_and_enable(ctx->afu)))
 		return result;
 
@@ -789,31 +734,7 @@ static int deactivate_afu_directed(struct cxl_afu *afu)
 	cxl_sysfs_afu_m_remove(afu);
 	cxl_chardev_afu_remove(afu);
 
-	/*
-	 * The CAIA section 2.2.1 indicates that the procedure for starting and
-	 * stopping an AFU in AFU directed mode is AFU specific, which is not
-	 * ideal since this code is generic and with one exception has no
-	 * knowledge of the AFU. This is in contrast to the procedure for
-	 * disabling a dedicated process AFU, which is documented to just
-	 * require a reset. The architecture does indicate that both an AFU
-	 * reset and an AFU disable should result in the AFU being disabled and
-	 * we do both followed by a PSL purge for safety.
-	 *
-	 * Notably we used to have some issues with the disable sequence on PSL
-	 * cards, which is why we ended up using this heavy weight procedure in
-	 * the first place, however a bug was discovered that had rendered the
-	 * disable operation ineffective, so it is conceivable that was the
-	 * sole explanation for those difficulties. Careful regression testing
-	 * is recommended if anyone attempts to remove or reorder these
-	 * operations.
-	 *
-	 * The XSL on the Mellanox CX4 behaves a little differently from the
-	 * PSL based cards and will time out an AFU reset if the AFU is still
-	 * enabled. That card is special in that we do have a means to identify
-	 * it from this code, so in that case we skip the reset and just use a
-	 * disable/purge to avoid the timeout and corresponding noise in the
-	 * kernel log.
-	 */
+	 
 	if (afu->adapter->native->sl_ops->needs_reset_before_disable)
 		cxl_ops->afu_reset(afu);
 	cxl_afu_disable(afu);
@@ -826,13 +747,7 @@ int cxl_activate_dedicated_process_psl9(struct cxl_afu *afu)
 {
 	dev_info(&afu->dev, "Activating dedicated process mode\n");
 
-	/*
-	 * If XSL is set to dedicated mode (Set in PSL_SCNTL reg), the
-	 * XSL and AFU are programmed to work with a single context.
-	 * The context information should be configured in the SPA area
-	 * index 0 (so PSL_SPAP must be configured before enabling the
-	 * AFU).
-	 */
+	 
 	afu->num_procs = 1;
 	if (afu->native->spa == NULL) {
 		if (cxl_alloc_spa(afu, CXL_MODE_DEDICATED))
@@ -854,16 +769,16 @@ int cxl_activate_dedicated_process_psl8(struct cxl_afu *afu)
 
 	cxl_p1n_write(afu, CXL_PSL_SCNTL_An, CXL_PSL_SCNTL_An_PM_Process);
 
-	cxl_p1n_write(afu, CXL_PSL_CtxTime_An, 0); /* disable */
-	cxl_p1n_write(afu, CXL_PSL_SPAP_An, 0);    /* disable */
+	cxl_p1n_write(afu, CXL_PSL_CtxTime_An, 0);  
+	cxl_p1n_write(afu, CXL_PSL_SPAP_An, 0);     
 	cxl_p1n_write(afu, CXL_PSL_AMOR_An, 0xFFFFFFFFFFFFFFFFULL);
 	cxl_p1n_write(afu, CXL_PSL_LPID_An, mfspr(SPRN_LPID));
-	cxl_p1n_write(afu, CXL_HAURP_An, 0);       /* disable */
+	cxl_p1n_write(afu, CXL_HAURP_An, 0);        
 	cxl_p1n_write(afu, CXL_PSL_SDR_An, mfspr(SPRN_SDR1));
 
-	cxl_p2n_write(afu, CXL_CSRP_An, 0);        /* disable */
-	cxl_p2n_write(afu, CXL_AURP0_An, 0);       /* disable */
-	cxl_p2n_write(afu, CXL_AURP1_An, 0);       /* disable */
+	cxl_p2n_write(afu, CXL_CSRP_An, 0);         
+	cxl_p2n_write(afu, CXL_AURP0_An, 0);        
+	cxl_p2n_write(afu, CXL_AURP1_An, 0);        
 
 	afu->current_mode = CXL_MODE_DEDICATED;
 	afu->num_procs = 1;
@@ -902,7 +817,7 @@ int cxl_attach_dedicated_process_psl9(struct cxl_context *ctx, u64 wed, u64 amr)
 	struct cxl_afu *afu = ctx->afu;
 	int result;
 
-	/* fill the process element entry */
+	 
 	result = process_element_entry_psl9(ctx, wed, amr);
 	if (result)
 		return result;
@@ -911,12 +826,7 @@ int cxl_attach_dedicated_process_psl9(struct cxl_context *ctx, u64 wed, u64 amr)
 		afu->adapter->native->sl_ops->update_dedicated_ivtes(ctx);
 
 	ctx->elem->software_state = cpu_to_be32(CXL_PE_SOFTWARE_STATE_V);
-	/*
-	 * Ideally we should do a wmb() here to make sure the changes to the
-	 * PE are visible to the card before we call afu_enable.
-	 * On ppc64 though all mmios are preceded by a 'sync' instruction hence
-	 * we dont dont need one here.
-	 */
+	 
 
 	result = cxl_ops->afu_reset(afu);
 	if (result)
@@ -948,7 +858,7 @@ int cxl_attach_dedicated_process_psl8(struct cxl_context *ctx, u64 wed, u64 amr)
 
 	cxl_p2n_write(afu, CXL_PSL_AMR_An, amr);
 
-	/* master only context for dedicated */
+	 
 	cxl_assign_psn_space(ctx);
 
 	if ((rc = cxl_ops->afu_reset(afu)))
@@ -1023,22 +933,7 @@ static int native_attach_process(struct cxl_context *ctx, bool kernel,
 
 static inline int detach_process_native_dedicated(struct cxl_context *ctx)
 {
-	/*
-	 * The CAIA section 2.1.1 indicates that we need to do an AFU reset to
-	 * stop the AFU in dedicated mode (we therefore do not make that
-	 * optional like we do in the afu directed path). It does not indicate
-	 * that we need to do an explicit disable (which should occur
-	 * implicitly as part of the reset) or purge, but we do these as well
-	 * to be on the safe side.
-	 *
-	 * Notably we used to have some issues with the disable sequence
-	 * (before the sequence was spelled out in the architecture) which is
-	 * why we were so heavy weight in the first place, however a bug was
-	 * discovered that had rendered the disable operation ineffective, so
-	 * it is conceivable that was the sole explanation for those
-	 * difficulties. Point is, we should be careful and do some regression
-	 * testing if we ever attempt to remove any part of this procedure.
-	 */
+	 
 	cxl_ops->afu_reset(ctx->afu);
 	cxl_afu_disable(ctx->afu);
 	cxl_psl_purge(ctx->afu);
@@ -1079,9 +974,7 @@ static int native_detach_process(struct cxl_context *ctx)
 
 static int native_get_irq_info(struct cxl_afu *afu, struct cxl_irq_info *info)
 {
-	/* If the adapter has gone away, we can't get any meaningful
-	 * information.
-	 */
+	 
 	if (!cxl_ops->link_ok(afu->adapter, afu))
 		return -EIO;
 
@@ -1174,14 +1067,14 @@ static irqreturn_t native_irq_multiplexed(int irq, void *data)
 	u64 phreg = cxl_p2n_read(afu, CXL_PSL_PEHandle_An);
 	int ph, ret = IRQ_HANDLED, res;
 
-	/* check if eeh kicked in while the interrupt was in flight */
+	 
 	if (unlikely(phreg == ~0ULL)) {
 		dev_warn(&afu->dev,
 			 "Ignoring slice interrupt(%d) due to fenced card",
 			 irq);
 		return IRQ_HANDLED;
 	}
-	/* Mask the pe-handle from register value */
+	 
 	ph = phreg & 0xffff;
 	if ((res = native_get_irq_info(afu, &irq_info))) {
 		WARN(1, "Unable to get CXL IRQ Info: %i\n", res);
@@ -1215,10 +1108,7 @@ static void native_irq_wait(struct cxl_context *ctx)
 	int timeout = 1000;
 	int ph;
 
-	/*
-	 * Wait until no further interrupts are presented by the PSL
-	 * for this context.
-	 */
+	 
 	while (timeout--) {
 		ph = cxl_p2n_read(ctx->afu, CXL_PSL_PEHandle_An) & 0xffff;
 		if (ph != ctx->pe)
@@ -1230,10 +1120,7 @@ static void native_irq_wait(struct cxl_context *ctx)
 		if (cxl_is_power9() &&
 		   ((dsisr & CXL_PSL9_DSISR_PENDING) == 0))
 			return;
-		/*
-		 * We are waiting for the workqueue to process our
-		 * irq, so need to let that run here.
-		 */
+		 
 		msleep(1);
 	}
 
@@ -1248,9 +1135,7 @@ static irqreturn_t native_slice_irq_err(int irq, void *data)
 	u64 errstat, serr, afu_error, dsisr;
 	u64 fir_slice, afu_debug, irq_mask;
 
-	/*
-	 * slice err interrupt is only used with full PSL (no XSL)
-	 */
+	 
 	serr = cxl_p1n_read(afu, CXL_PSL_SERR_An);
 	errstat = cxl_p2n_read(afu, CXL_PSL_ErrStat_An);
 	afu_error = cxl_p2n_read(afu, CXL_AFU_ERR_An);
@@ -1267,7 +1152,7 @@ static irqreturn_t native_slice_irq_err(int irq, void *data)
 	dev_crit(&afu->dev, "AFU_ERR_An: 0x%.16llx\n", afu_error);
 	dev_crit(&afu->dev, "PSL_DSISR_An: 0x%.16llx\n", dsisr);
 
-	/* mask off the IRQ so it won't retrigger until the AFU is reset */
+	 
 	irq_mask = (serr & CXL_PSL_SERR_An_IRQS) >> 32;
 	serr |= irq_mask;
 	cxl_p1n_write(afu, CXL_PSL_SERR_An, serr);
@@ -1375,10 +1260,7 @@ int cxl_native_register_serr_irq(struct cxl_afu *afu)
 	if (cxl_is_power8())
 		serr = (serr & 0x00ffffffffff0000ULL) | (afu->serr_hwirq & 0xffff);
 	if (cxl_is_power9()) {
-		/*
-		 * By default, all errors are masked. So don't set all masks.
-		 * Slice errors will be transfered.
-		 */
+		 
 		serr = (serr & ~0xff0000007fffffffULL) | (afu->serr_hwirq & 0xffff);
 	}
 	cxl_p1n_write(afu, CXL_PSL_SERR_An, serr);
@@ -1436,11 +1318,11 @@ static void recover_psl_err(struct cxl_afu *afu, u64 errstat)
 
 	pr_devel("RECOVERING FROM PSL ERROR... (0x%016llx)\n", errstat);
 
-	/* Clear PSL_DSISR[PE] */
+	 
 	dsisr = cxl_p2n_read(afu, CXL_PSL_DSISR_An);
 	cxl_p2n_write(afu, CXL_PSL_DSISR_An, dsisr & ~CXL_PSL_DSISR_An_PE);
 
-	/* Write 1s to clear error status bits */
+	 
 	cxl_p2n_write(afu, CXL_PSL_ErrStat_An, errstat);
 }
 

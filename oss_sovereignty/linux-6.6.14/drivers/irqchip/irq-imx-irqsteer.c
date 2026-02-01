@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright 2017 NXP
- * Copyright (C) 2018 Pengutronix, Lucas Stach <kernel@pengutronix.de>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/interrupt.h>
@@ -170,10 +167,7 @@ static int imx_irqsteer_probe(struct platform_device *pdev)
 	if (ret)
 		return ret;
 
-	/*
-	 * There is one output irq for each group of 64 inputs.
-	 * One register bit map can represent 32 input interrupts.
-	 */
+	 
 	data->irq_count = DIV_ROUND_UP(irqs_num, 64);
 	data->reg_num = irqs_num / 32;
 
@@ -191,7 +185,7 @@ static int imx_irqsteer_probe(struct platform_device *pdev)
 		return ret;
 	}
 
-	/* steer all IRQs into configured channel */
+	 
 	writel_relaxed(BIT(data->channel), data->regs + CHANCTRL);
 
 	data->domain = irq_domain_add_linear(np, data->reg_num * 32,

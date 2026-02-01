@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Nuvoton NPCM7xx Clock Generator
- * All the clocks are initialized by the bootloader, so this driver allow only
- * reading of current settings directly from the hardware.
- *
- * Copyright (C) 2018 Nuvoton Technologies tali.perry@nuvoton.com
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/clk-provider.h>
@@ -137,11 +131,7 @@ struct npcm7xx_clk_mux_data {
 	const char * const *parent_names;
 	u8 num_parents;
 	unsigned long flags;
-	/*
-	 * If this clock is exported via DT, set onecell_idx to constant
-	 * defined in include/dt-bindings/clock/nuvoton, NPCM7XX-clock.h for
-	 * this specific clock.  Otherwise, set to -1.
-	 */
+	 
 	int onecell_idx;
 
 };
@@ -154,11 +144,7 @@ struct npcm7xx_clk_div_data {
 	const char *parent_name;
 	u8 clk_divider_flags;
 	unsigned long flags;
-	/*
-	 * If this clock is exported via DT, set onecell_idx to constant
-	 * defined in include/dt-bindings/clock/nuvoton, NPCM7XX-clock.h for
-	 * this specific clock.  Otherwise, set to -1.
-	 */
+	 
 	int onecell_idx;
 };
 
@@ -167,18 +153,11 @@ struct npcm7xx_clk_pll_data {
 	const char *name;
 	const char *parent_name;
 	unsigned long flags;
-	/*
-	 * If this clock is exported via DT, set onecell_idx to constant
-	 * defined in include/dt-bindings/clock/nuvoton, NPCM7XX-clock.h for
-	 * this specific clock.  Otherwise, set to -1.
-	 */
+	 
 	int onecell_idx;
 };
 
-/*
- * Single copy of strings used to refer to clocks within this driver indexed by
- * above enum.
- */
+ 
 #define NPCM7XX_CLK_S_REFCLK      "refclk"
 #define NPCM7XX_CLK_S_SYSBYPCK    "sysbypck"
 #define NPCM7XX_CLK_S_MCBYPCK     "mcbypck"
@@ -192,10 +171,10 @@ struct npcm7xx_clk_pll_data {
 #define NPCM7XX_CLK_S_PIX_MUX     "gfx_pixel"
 #define NPCM7XX_CLK_S_GPRFSEL_MUX "gprfsel_mux"
 #define NPCM7XX_CLK_S_MC_MUX      "mc_phy"
-#define NPCM7XX_CLK_S_CPU_MUX     "cpu"  /*AKA system clock.*/
+#define NPCM7XX_CLK_S_CPU_MUX     "cpu"   
 #define NPCM7XX_CLK_S_MC          "mc"
-#define NPCM7XX_CLK_S_AXI         "axi"  /*AKA CLK2*/
-#define NPCM7XX_CLK_S_AHB         "ahb"  /*AKA CLK4*/
+#define NPCM7XX_CLK_S_AXI         "axi"   
+#define NPCM7XX_CLK_S_AHB         "ahb"   
 #define NPCM7XX_CLK_S_CLKOUT_MUX  "clkout_mux"
 #define NPCM7XX_CLK_S_UART_MUX    "uart_mux"
 #define NPCM7XX_CLK_S_TIM_MUX     "timer_mux"
@@ -266,7 +245,7 @@ static const char * const clkoutsel_mux_parents[] __initconst = {
 	NPCM7XX_CLK_S_PLL0,
 	NPCM7XX_CLK_S_PLL1_DIV2,
 	NPCM7XX_CLK_S_REFCLK,
-	NPCM7XX_CLK_S_PLL_GFX, // divided by 2
+	NPCM7XX_CLK_S_PLL_GFX, 
 	NPCM7XX_CLK_S_PLL2_DIV2,
 };
 
@@ -332,70 +311,70 @@ static const struct npcm7xx_clk_mux_data npcm7xx_muxes[] __initconst = {
 	dvcssel_mux_parents, ARRAY_SIZE(dvcssel_mux_parents), 0, -1},
 };
 
-/* configurable dividers: */
+ 
 static const struct npcm7xx_clk_div_data npcm7xx_divs[] __initconst = {
 	{NPCM7XX_CLKDIV1, 28, 3, NPCM7XX_CLK_S_ADC,
 	NPCM7XX_CLK_S_TIMER, CLK_DIVIDER_POWER_OF_TWO, 0, NPCM7XX_CLK_ADC},
-	/*30-28 ADCCKDIV*/
+	 
 	{NPCM7XX_CLKDIV1, 26, 2, NPCM7XX_CLK_S_AHB,
 	NPCM7XX_CLK_S_AXI, 0, CLK_IS_CRITICAL, NPCM7XX_CLK_AHB},
-	/*27-26 CLK4DIV*/
+	 
 	{NPCM7XX_CLKDIV1, 21, 5, NPCM7XX_CLK_S_TIMER,
 	NPCM7XX_CLK_S_TIM_MUX, 0, 0, NPCM7XX_CLK_TIMER},
-	/*25-21 TIMCKDIV*/
+	 
 	{NPCM7XX_CLKDIV1, 16, 5, NPCM7XX_CLK_S_UART,
 	NPCM7XX_CLK_S_UART_MUX, 0, 0, NPCM7XX_CLK_UART},
-	/*20-16 UARTDIV*/
+	 
 	{NPCM7XX_CLKDIV1, 11, 5, NPCM7XX_CLK_S_MMC,
 	NPCM7XX_CLK_S_SD_MUX, 0, 0, NPCM7XX_CLK_MMC},
-	/*15-11 MMCCKDIV*/
+	 
 	{NPCM7XX_CLKDIV1, 6, 5, NPCM7XX_CLK_S_SPI3,
 	NPCM7XX_CLK_S_AHB, 0, 0, NPCM7XX_CLK_SPI3},
-	/*10-6 AHB3CKDIV*/
+	 
 	{NPCM7XX_CLKDIV1, 2, 4, NPCM7XX_CLK_S_PCI,
 	NPCM7XX_CLK_S_GFX_MUX, 0, 0, NPCM7XX_CLK_PCI},
-	/*5-2 PCICKDIV*/
+	 
 	{NPCM7XX_CLKDIV1, 0, 1, NPCM7XX_CLK_S_AXI,
 	NPCM7XX_CLK_S_CPU_MUX, CLK_DIVIDER_POWER_OF_TWO, CLK_IS_CRITICAL,
-	NPCM7XX_CLK_AXI},/*0 CLK2DIV*/
+	NPCM7XX_CLK_AXI}, 
 
 	{NPCM7XX_CLKDIV2, 30, 2, NPCM7XX_CLK_S_APB4,
 	NPCM7XX_CLK_S_AHB, CLK_DIVIDER_POWER_OF_TWO, 0, NPCM7XX_CLK_APB4},
-	/*31-30 APB4CKDIV*/
+	 
 	{NPCM7XX_CLKDIV2, 28, 2, NPCM7XX_CLK_S_APB3,
 	NPCM7XX_CLK_S_AHB, CLK_DIVIDER_POWER_OF_TWO, 0, NPCM7XX_CLK_APB3},
-	/*29-28 APB3CKDIV*/
+	 
 	{NPCM7XX_CLKDIV2, 26, 2, NPCM7XX_CLK_S_APB2,
 	NPCM7XX_CLK_S_AHB, CLK_DIVIDER_POWER_OF_TWO, 0, NPCM7XX_CLK_APB2},
-	/*27-26 APB2CKDIV*/
+	 
 	{NPCM7XX_CLKDIV2, 24, 2, NPCM7XX_CLK_S_APB1,
 	NPCM7XX_CLK_S_AHB, CLK_DIVIDER_POWER_OF_TWO, 0, NPCM7XX_CLK_APB1},
-	/*25-24 APB1CKDIV*/
+	 
 	{NPCM7XX_CLKDIV2, 22, 2, NPCM7XX_CLK_S_APB5,
 	NPCM7XX_CLK_S_AHB, CLK_DIVIDER_POWER_OF_TWO, 0, NPCM7XX_CLK_APB5},
-	/*23-22 APB5CKDIV*/
+	 
 	{NPCM7XX_CLKDIV2, 16, 5, NPCM7XX_CLK_S_CLKOUT,
 	NPCM7XX_CLK_S_CLKOUT_MUX, 0, 0, NPCM7XX_CLK_CLKOUT},
-	/*20-16 CLKOUTDIV*/
+	 
 	{NPCM7XX_CLKDIV2, 13, 3, NPCM7XX_CLK_S_GFX,
 	NPCM7XX_CLK_S_GFX_MUX, 0, 0, NPCM7XX_CLK_GFX},
-	/*15-13 GFXCKDIV*/
+	 
 	{NPCM7XX_CLKDIV2, 8, 5, NPCM7XX_CLK_S_USB_BRIDGE,
 	NPCM7XX_CLK_S_SU_MUX, 0, 0, NPCM7XX_CLK_SU},
-	/*12-8 SUCKDIV*/
+	 
 	{NPCM7XX_CLKDIV2, 4, 4, NPCM7XX_CLK_S_USB_HOST,
 	NPCM7XX_CLK_S_SU_MUX, 0, 0, NPCM7XX_CLK_SU48},
-	/*7-4 SU48CKDIV*/
+	 
 	{NPCM7XX_CLKDIV2, 0, 4, NPCM7XX_CLK_S_SDHC,
 	NPCM7XX_CLK_S_SD_MUX, 0, 0, NPCM7XX_CLK_SDHC}
-	,/*3-0 SD1CKDIV*/
+	, 
 
 	{NPCM7XX_CLKDIV3, 6, 5, NPCM7XX_CLK_S_SPI0,
 	NPCM7XX_CLK_S_AHB, 0, 0, NPCM7XX_CLK_SPI0},
-	/*10-6 SPI0CKDV*/
+	 
 	{NPCM7XX_CLKDIV3, 1, 5, NPCM7XX_CLK_S_SPIX,
 	NPCM7XX_CLK_S_AHB, 0, 0, NPCM7XX_CLK_SPIX},
-	/*5-1 SPIXCKDV*/
+	 
 
 };
 
@@ -431,7 +410,7 @@ static void __init npcm7xx_clk_init(struct device_node *clk_np)
 	for (i = 0; i < NPCM7XX_NUM_CLOCKS; i++)
 		npcm7xx_clk_data->hws[i] = ERR_PTR(-EPROBE_DEFER);
 
-	/* Register plls */
+	 
 	for (i = 0; i < ARRAY_SIZE(npcm7xx_plls); i++) {
 		const struct npcm7xx_clk_pll_data *pll_data = &npcm7xx_plls[i];
 
@@ -446,7 +425,7 @@ static void __init npcm7xx_clk_init(struct device_node *clk_np)
 			npcm7xx_clk_data->hws[pll_data->onecell_idx] = hw;
 	}
 
-	/* Register fixed dividers */
+	 
 	hw = clk_hw_register_fixed_factor(NULL, NPCM7XX_CLK_S_PLL1_DIV2,
 			NPCM7XX_CLK_S_PLL1, 0, 1, 2);
 	if (IS_ERR(hw)) {
@@ -461,7 +440,7 @@ static void __init npcm7xx_clk_init(struct device_node *clk_np)
 		goto npcm7xx_init_fail;
 	}
 
-	/* Register muxes */
+	 
 	for (i = 0; i < ARRAY_SIZE(npcm7xx_muxes); i++) {
 		const struct npcm7xx_clk_mux_data *mux_data = &npcm7xx_muxes[i];
 
@@ -481,7 +460,7 @@ static void __init npcm7xx_clk_init(struct device_node *clk_np)
 			npcm7xx_clk_data->hws[mux_data->onecell_idx] = hw;
 	}
 
-	/* Register clock dividers specified in npcm7xx_divs */
+	 
 	for (i = 0; i < ARRAY_SIZE(npcm7xx_divs); i++) {
 		const struct npcm7xx_clk_div_data *div_data = &npcm7xx_divs[i];
 

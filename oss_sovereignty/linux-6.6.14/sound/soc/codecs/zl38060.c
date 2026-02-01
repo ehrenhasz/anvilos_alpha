@@ -1,18 +1,18 @@
-// SPDX-License-Identifier: GPL-2.0-only
-//
-// Codec driver for Microsemi ZL38060 Connected Home Audio Processor.
-//
-// Copyright(c) 2020 Sven Van Asbroeck
 
-// The ZL38060 is very flexible and configurable. This driver implements only a
-// tiny subset of the chip's possible configurations:
-//
-// - DSP block bypassed: DAI        routed straight to DACs
-//                       microphone routed straight to DAI
-// - chip's internal clock is driven by a 12 MHz external crystal
-// - chip's DAI connected to CPU is I2S, and bit + frame clock master
-// - chip must be strapped for "host boot": in this mode, firmware will be
-//   provided by this driver.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 #include <linux/gpio/consumer.h>
 #include <linux/gpio/driver.h>
@@ -150,9 +150,7 @@ zl38_fw_send_data(struct regmap *regmap, u32 addr, const void *data, u16 len)
 
 static int zl38_fw_send_xaddr(struct regmap *regmap, const void *data)
 {
-	/* execution address from ihex: 32-bit little endian.
-	 * device register expects 32-bit big endian.
-	 */
+	 
 	u32 addr = le32_to_cpup(data);
 	__be32 baddr = cpu_to_be32(addr);
 
@@ -167,14 +165,7 @@ static int zl38_load_firmware(struct device *dev, struct regmap *regmap)
 	u16 len;
 	int err;
 
-	/* how to get this firmware:
-	 * 1. request and download chip firmware from Microsemi
-	 *    (provided by Microsemi in srec format)
-	 * 2. convert downloaded firmware from srec to ihex. Simple tool:
-	 *    https://gitlab.com/TheSven73/s3-to-irec
-	 * 3. convert ihex to binary (.fw) using ihex2fw tool which is included
-	 *    with the Linux kernel sources
-	 */
+	 
 	err = request_ihex_firmware(&fw, "zl38060.fw", dev);
 	if (err)
 		return err;
@@ -186,17 +177,17 @@ static int zl38_load_firmware(struct device *dev, struct regmap *regmap)
 		addr = be32_to_cpu(rec->addr);
 		len = be16_to_cpu(rec->len);
 		if (addr) {
-			/* regular data ihex record */
+			 
 			err = zl38_fw_send_data(regmap, addr, rec->data, len);
 		} else if (len == 4) {
-			/* execution address ihex record */
+			 
 			err = zl38_fw_send_xaddr(regmap, rec->data);
 		} else {
 			err = -EINVAL;
 		}
 		if (err)
 			goto out;
-		/* next ! */
+		 
 		rec = ihex_next_binrec(rec);
 	}
 	err = zl38_fw_go(regmap);
@@ -217,11 +208,7 @@ static int zl38_software_reset(struct regmap *regmap)
 	if (err)
 		return err;
 
-	/* wait for host bus interface to settle.
-	 * Not sure if this is required: Microsemi's vendor driver does this,
-	 * but the firmware manual does not mention it. Leave it in, there's
-	 * little downside, apart from a slower reset.
-	 */
+	 
 	msleep(50);
 
 	return regmap_read_poll_timeout(regmap, REG_SEMA_FLAGS, val,
@@ -236,7 +223,7 @@ static int zl38_set_fmt(struct snd_soc_dai *dai, unsigned int fmt)
 
 	switch (fmt & SND_SOC_DAIFMT_FORMAT_MASK) {
 	case SND_SOC_DAIFMT_I2S:
-		/* firmware default is normal i2s */
+		 
 		break;
 	default:
 		return -EINVAL;
@@ -244,7 +231,7 @@ static int zl38_set_fmt(struct snd_soc_dai *dai, unsigned int fmt)
 
 	switch (fmt & SND_SOC_DAIFMT_INV_MASK) {
 	case SND_SOC_DAIFMT_NB_NF:
-		/* firmware default is normal bitclock and frame */
+		 
 		break;
 	default:
 		return -EINVAL;
@@ -252,7 +239,7 @@ static int zl38_set_fmt(struct snd_soc_dai *dai, unsigned int fmt)
 
 	switch (fmt & SND_SOC_DAIFMT_CLOCK_PROVIDER_MASK) {
 	case SND_SOC_DAIFMT_CBP_CFP:
-		/* always 32 bits per frame (= 16 bits/channel, 2 channels) */
+		 
 		err = regmap_update_bits(priv->regmap, REG_TDMA_CFG_CLK,
 					 CFG_CLK_MASTER | CFG_CLK_PCLK_MASK,
 					 CFG_CLK_MASTER | CFG_CLK_PCLK(32));
@@ -275,11 +262,7 @@ static int zl38_hw_params(struct snd_pcm_substream *substream,
 	unsigned int fsrate;
 	int err;
 
-	/* We cannot change hw_params while the dai is already in use - the
-	 * software reset will corrupt the audio. However, this is not required,
-	 * as the chip's TDM buses are fully symmetric, which mandates identical
-	 * rates, channels, and samplebits for record and playback.
-	 */
+	 
 	if (priv->is_stream_in_use[!tx])
 		goto skip_setup;
 
@@ -302,7 +285,7 @@ static int zl38_hw_params(struct snd_pcm_substream *substream,
 	if (err)
 		return err;
 
-	/* chip requires a software reset to apply audio register changes */
+	 
 	err = zl38_software_reset(priv->regmap);
 	if (err)
 		return err;
@@ -324,17 +307,17 @@ static int zl38_hw_free(struct snd_pcm_substream *substream,
 	return 0;
 }
 
-/* stereo bypass with no AEC */
+ 
 static const struct reg_sequence cp_config_stereo_bypass[] = {
-	/* interconnects must be programmed first */
-	{ 0x0210, 0x0005 },	/* DAC1   in <= I2S1-L */
-	{ 0x0212, 0x0006 },	/* DAC2   in <= I2S1-R */
-	{ 0x0214, 0x0001 },	/* I2S1-L in <= MIC1   */
-	{ 0x0216, 0x0001 },	/* I2S1-R in <= MIC1   */
-	{ 0x0224, 0x0000 },	/* AEC-S  in <= n/a    */
-	{ 0x0226, 0x0000 },	/* AEC-R  in <= n/a    */
-	/* output enables must be programmed next */
-	{ 0x0202, 0x000F },	/* enable I2S1 + DAC   */
+	 
+	{ 0x0210, 0x0005 },	 
+	{ 0x0212, 0x0006 },	 
+	{ 0x0214, 0x0001 },	 
+	{ 0x0216, 0x0001 },	 
+	{ 0x0224, 0x0000 },	 
+	{ 0x0226, 0x0000 },	 
+	 
+	{ 0x0202, 0x000F },	 
 };
 
 static const struct snd_soc_dai_ops zl38_dai_ops = {
@@ -552,16 +535,16 @@ static int zl38_spi_probe(struct spi_device *spi)
 	struct gpio_desc *reset_gpio;
 	int err;
 
-	/* get the chip to a known state by putting it in reset */
+	 
 	reset_gpio = devm_gpiod_get_optional(dev, "reset", GPIOD_OUT_HIGH);
 	if (IS_ERR(reset_gpio))
 		return PTR_ERR(reset_gpio);
 	if (reset_gpio) {
-		/* datasheet: need > 10us for a digital + analog reset */
+		 
 		usleep_range(15, 50);
-		/* take the chip out of reset */
+		 
 		gpiod_set_value_cansleep(reset_gpio, 0);
-		/* datasheet: need > 3ms for digital section to become stable */
+		 
 		usleep_range(3000, 10000);
 	}
 
@@ -593,12 +576,12 @@ static int zl38_spi_probe(struct spi_device *spi)
 	if (err)
 		return err;
 
-	/* setup the cross-point switch for stereo bypass */
+	 
 	err = regmap_multi_reg_write(priv->regmap, cp_config_stereo_bypass,
 				     ARRAY_SIZE(cp_config_stereo_bypass));
 	if (err)
 		return err;
-	/* setup for 12MHz crystal connected to the chip */
+	 
 	err = regmap_update_bits(priv->regmap, REG_CLK_CFG, CLK_CFG_SOURCE_XTAL,
 				 CLK_CFG_SOURCE_XTAL);
 	if (err)
@@ -610,13 +593,13 @@ static int zl38_spi_probe(struct spi_device *spi)
 
 static const struct of_device_id zl38_dt_ids[] __maybe_unused = {
 	{ .compatible = "mscc,zl38060", },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, zl38_dt_ids);
 
 static const struct spi_device_id zl38_spi_ids[] = {
 	{ "zl38060", 0 },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(spi, zl38_spi_ids);
 

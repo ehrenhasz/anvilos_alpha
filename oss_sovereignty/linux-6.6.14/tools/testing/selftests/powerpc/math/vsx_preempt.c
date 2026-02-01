@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright 2015, Cyril Bur, IBM Corp.
- *
- * This test attempts to see if the VSX registers change across preemption.
- * There is no way to be sure preemption happened so this test just
- * uses many threads and a long wait. As such, a successful test
- * doesn't mean much but a failure is bad.
- */
+
+ 
 
 #include <stdio.h>
 #include <string.h>
@@ -20,19 +13,12 @@
 
 #include "utils.h"
 
-/* Time to wait for workers to get preempted (seconds) */
+ 
 #define PREEMPT_TIME 20
-/*
- * Factor by which to multiply number of online CPUs for total number of
- * worker threads
- */
+ 
 #define THREAD_FACTOR 8
 
-/*
- * Ensure there is twice the number of non-volatile VMX regs!
- * check_vmx() is going to use the other half as space to put the live
- * registers before calling vsx_memcmp()
- */
+ 
 __thread vector int varray[24] = {
 	{1, 2, 3, 4 }, {5, 6, 7, 8 }, {9, 10,11,12},
 	{13,14,15,16}, {17,18,19,20}, {21,22,23,24},
@@ -77,7 +63,7 @@ void *preempt_vsx_c(void *p)
 	for (i = 0; i < 12; i++)
 		for (j = 0; j < 4; j++) {
 			varray[i][j] = rand();
-			/* Don't want zero because it hides kernel problems */
+			 
 			if (varray[i][j] == 0)
 				j--;
 		}
@@ -106,7 +92,7 @@ int test_preempt_vsx(void)
 	}
 
 	setbuf(stdout, NULL);
-	/* Not really nessesary but nice to wait for every thread to start */
+	 
 	printf("\tWaiting for %d workers to start...", threads_starting);
 	while(threads_starting)
 		asm volatile("": : :"memory");
@@ -117,19 +103,13 @@ int test_preempt_vsx(void)
 	printf("done\n");
 
 	printf("\tStopping workers...");
-	/*
-	 * Working are checking this value every loop. In preempt_vsx 'cmpwi r5,0; bne 2b'.
-	 * r5 will have loaded the value of running.
-	 */
+	 
 	running = 0;
 	for (i = 0; i < threads; i++) {
 		void *rc_p;
 		pthread_join(tids[i], &rc_p);
 
-		/*
-		 * Harness will say the fail was here, look at why preempt_vsx
-		 * returned
-		 */
+		 
 		if ((long) rc_p)
 			printf("oops\n");
 		FAIL_IF((long) rc_p);

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Intel(R) Trace Hub ACPI driver
- *
- * Copyright (C) 2017 Intel Corporation.
- */
+
+ 
 
 #define pr_fmt(fmt)	KBUILD_MODNAME ": " fmt
 

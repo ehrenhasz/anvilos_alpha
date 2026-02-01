@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * aarch32_id_regs - Test for ID register behavior on AArch64-only systems
- *
- * Copyright (c) 2022 Google LLC.
- *
- * Test that KVM handles the AArch64 views of the AArch32 ID registers as RAZ
- * and WI from userspace.
- */
+
+ 
 
 #include <stdint.h>
 
@@ -100,10 +93,7 @@ static void test_user_raz_wi(struct kvm_vcpu *vcpu)
 		vcpu_get_reg(vcpu, reg_id, &val);
 		TEST_ASSERT_EQ(val, 0);
 
-		/*
-		 * Expect the ioctl to succeed with no effect on the register
-		 * value.
-		 */
+		 
 		vcpu_set_reg(vcpu, reg_id, BAD_ID_REG_VAL);
 
 		vcpu_get_reg(vcpu, reg_id, &val);

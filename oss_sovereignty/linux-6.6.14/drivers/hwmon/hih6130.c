@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* Honeywell HIH-6130/HIH-6131 humidity and temperature sensor driver
- *
- * Copyright (C) 2012 Iain Paton <ipaton0@gmail.com>
- *
- * heavily based on the sht21 driver
- * Copyright (C) 2010 Urs Fleisch <urs.fleisch@sensirion.com>
- *
- * Data sheets available (2012-06-22) at
- * http://sensing.honeywell.com/index.php?ci_id=3106&la_id=1&defId=44872
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -22,16 +13,7 @@
 #include <linux/delay.h>
 #include <linux/jiffies.h>
 
-/**
- * struct hih6130 - HIH-6130 device specific data
- * @client: pointer to I2C client device
- * @lock: mutex to protect measurement values
- * @valid: only false before first measurement is taken
- * @last_update: time of last update (jiffies)
- * @temperature: cached temperature measurement value
- * @humidity: cached humidity measurement value
- * @write_length: length for I2C measurement request
- */
+ 
 struct hih6130 {
 	struct i2c_client *client;
 	struct mutex lock;
@@ -42,42 +24,23 @@ struct hih6130 {
 	size_t write_length;
 };
 
-/**
- * hih6130_temp_ticks_to_millicelsius() - convert raw temperature ticks to
- * milli celsius
- * @ticks: temperature ticks value received from sensor
- */
+ 
 static inline int hih6130_temp_ticks_to_millicelsius(int ticks)
 {
 	ticks = ticks >> 2;
-	/*
-	 * from data sheet section 5.0
-	 * Formula T = ( ticks / ( 2^14 - 2 ) ) * 165 -40
-	 */
+	 
 	return (DIV_ROUND_CLOSEST(ticks * 1650, 16382) - 400) * 100;
 }
 
-/**
- * hih6130_rh_ticks_to_per_cent_mille() - convert raw humidity ticks to
- * one-thousandths of a percent relative humidity
- * @ticks: humidity ticks value received from sensor
- */
+ 
 static inline int hih6130_rh_ticks_to_per_cent_mille(int ticks)
 {
-	ticks &= ~0xC000; /* clear status bits */
-	/*
-	 * from data sheet section 4.0
-	 * Formula RH = ( ticks / ( 2^14 -2 ) ) * 100
-	 */
+	ticks &= ~0xC000;  
+	 
 	return DIV_ROUND_CLOSEST(ticks * 1000, 16382) * 100;
 }
 
-/**
- * hih6130_update_measurements() - get updated measurements from device
- * @dev: device
- *
- * Returns 0 on success, else negative errno.
- */
+ 
 static int hih6130_update_measurements(struct device *dev)
 {
 	struct hih6130 *hih6130 = dev_get_drvdata(dev);
@@ -96,32 +59,16 @@ static int hih6130_update_measurements(struct device *dev)
 
 	mutex_lock(&hih6130->lock);
 
-	/*
-	 * While the measurement can be completed in ~40ms the sensor takes
-	 * much longer to react to a change in external conditions. How quickly
-	 * it reacts depends on airflow and other factors outwith our control.
-	 * The datasheet specifies maximum 'Response time' for humidity at 8s
-	 * and temperature at 30s under specified conditions.
-	 * We therefore choose to only read the sensor at most once per second.
-	 * This trades off pointless activity polling the sensor much faster
-	 * than it can react against better response times in conditions more
-	 * favourable than specified in the datasheet.
-	 */
+	 
 	if (time_after(jiffies, hih6130->last_update + HZ) || !hih6130->valid) {
 
-		/*
-		 * Write to slave address to request a measurement.
-		 * According with the datasheet it should be with no data, but
-		 * for systems with I2C bus drivers that do not allow zero
-		 * length packets we write one dummy byte to allow sensor
-		 * measurements on them.
-		 */
+		 
 		tmp[0] = 0;
 		ret = i2c_master_send(client, tmp, hih6130->write_length);
 		if (ret < 0)
 			goto out;
 
-		/* measurement cycle time is ~36.65msec */
+		 
 		msleep(40);
 
 		ret = i2c_transfer(client->adapter, msgs, 1);
@@ -149,15 +96,7 @@ out:
 	return ret >= 0 ? 0 : ret;
 }
 
-/**
- * hih6130_temperature_show() - show temperature measurement value in sysfs
- * @dev: device
- * @attr: device attribute
- * @buf: sysfs buffer (PAGE_SIZE) where measurement values are written to
- *
- * Will be called on read access to temp1_input sysfs attribute.
- * Returns number of bytes written into buffer, negative errno on error.
- */
+ 
 static ssize_t hih6130_temperature_show(struct device *dev,
 					struct device_attribute *attr,
 					char *buf)
@@ -171,15 +110,7 @@ static ssize_t hih6130_temperature_show(struct device *dev,
 	return sprintf(buf, "%d\n", hih6130->temperature);
 }
 
-/**
- * hih6130_humidity_show() - show humidity measurement value in sysfs
- * @dev: device
- * @attr: device attribute
- * @buf: sysfs buffer (PAGE_SIZE) where measurement values are written to
- *
- * Will be called on read access to humidity1_input sysfs attribute.
- * Returns number of bytes written into buffer, negative errno on error.
- */
+ 
 static ssize_t hih6130_humidity_show(struct device *dev,
 				     struct device_attribute *attr, char *buf)
 {
@@ -192,7 +123,7 @@ static ssize_t hih6130_humidity_show(struct device *dev,
 	return sprintf(buf, "%d\n", hih6130->humidity);
 }
 
-/* sysfs attributes */
+ 
 static SENSOR_DEVICE_ATTR_RO(temp1_input, hih6130_temperature, 0);
 static SENSOR_DEVICE_ATTR_RO(humidity1_input, hih6130_humidity, 0);
 
@@ -231,7 +162,7 @@ static int hih6130_probe(struct i2c_client *client)
 	return PTR_ERR_OR_ZERO(hwmon_dev);
 }
 
-/* Device ID table */
+ 
 static const struct i2c_device_id hih6130_id[] = {
 	{ "hih6130", 0 },
 	{ }

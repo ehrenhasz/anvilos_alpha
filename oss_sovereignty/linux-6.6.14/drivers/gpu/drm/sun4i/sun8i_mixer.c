@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2017 Icenowy Zheng <icenowy@aosc.io>
- *
- * Based on sun4i_backend.c, which is:
- *   Copyright (C) 2015 Free Electrons
- *   Copyright (C) 2015 NextThing Co
- */
+
+ 
 
 #include <linux/component.h>
 #include <linux/dma-mapping.h>
@@ -87,7 +81,7 @@ static const struct de2_fmt_info de2_formats[] = {
 		.de2_fmt = SUN8I_MIXER_FBFMT_ARGB4444,
 	},
 	{
-		/* for DE2 VI layer which ignores alpha */
+		 
 		.drm_fmt = DRM_FORMAT_XRGB4444,
 		.de2_fmt = SUN8I_MIXER_FBFMT_ARGB4444,
 	},
@@ -96,7 +90,7 @@ static const struct de2_fmt_info de2_formats[] = {
 		.de2_fmt = SUN8I_MIXER_FBFMT_ABGR4444,
 	},
 	{
-		/* for DE2 VI layer which ignores alpha */
+		 
 		.drm_fmt = DRM_FORMAT_XBGR4444,
 		.de2_fmt = SUN8I_MIXER_FBFMT_ABGR4444,
 	},
@@ -105,7 +99,7 @@ static const struct de2_fmt_info de2_formats[] = {
 		.de2_fmt = SUN8I_MIXER_FBFMT_RGBA4444,
 	},
 	{
-		/* for DE2 VI layer which ignores alpha */
+		 
 		.drm_fmt = DRM_FORMAT_RGBX4444,
 		.de2_fmt = SUN8I_MIXER_FBFMT_RGBA4444,
 	},
@@ -114,7 +108,7 @@ static const struct de2_fmt_info de2_formats[] = {
 		.de2_fmt = SUN8I_MIXER_FBFMT_BGRA4444,
 	},
 	{
-		/* for DE2 VI layer which ignores alpha */
+		 
 		.drm_fmt = DRM_FORMAT_BGRX4444,
 		.de2_fmt = SUN8I_MIXER_FBFMT_BGRA4444,
 	},
@@ -123,7 +117,7 @@ static const struct de2_fmt_info de2_formats[] = {
 		.de2_fmt = SUN8I_MIXER_FBFMT_ARGB1555,
 	},
 	{
-		/* for DE2 VI layer which ignores alpha */
+		 
 		.drm_fmt = DRM_FORMAT_XRGB1555,
 		.de2_fmt = SUN8I_MIXER_FBFMT_ARGB1555,
 	},
@@ -132,7 +126,7 @@ static const struct de2_fmt_info de2_formats[] = {
 		.de2_fmt = SUN8I_MIXER_FBFMT_ABGR1555,
 	},
 	{
-		/* for DE2 VI layer which ignores alpha */
+		 
 		.drm_fmt = DRM_FORMAT_XBGR1555,
 		.de2_fmt = SUN8I_MIXER_FBFMT_ABGR1555,
 	},
@@ -141,7 +135,7 @@ static const struct de2_fmt_info de2_formats[] = {
 		.de2_fmt = SUN8I_MIXER_FBFMT_RGBA5551,
 	},
 	{
-		/* for DE2 VI layer which ignores alpha */
+		 
 		.drm_fmt = DRM_FORMAT_RGBX5551,
 		.de2_fmt = SUN8I_MIXER_FBFMT_RGBA5551,
 	},
@@ -150,7 +144,7 @@ static const struct de2_fmt_info de2_formats[] = {
 		.de2_fmt = SUN8I_MIXER_FBFMT_BGRA5551,
 	},
 	{
-		/* for DE2 VI layer which ignores alpha */
+		 
 		.drm_fmt = DRM_FORMAT_BGRX5551,
 		.de2_fmt = SUN8I_MIXER_FBFMT_BGRA5551,
 	},
@@ -338,7 +332,7 @@ static const struct regmap_config sun8i_mixer_regmap_config = {
 	.reg_bits	= 32,
 	.val_bits	= 32,
 	.reg_stride	= 4,
-	.max_register	= 0xffffc, /* guessed */
+	.max_register	= 0xffffc,  
 };
 
 static int sun8i_mixer_of_get_id(struct device_node *node)
@@ -346,7 +340,7 @@ static int sun8i_mixer_of_get_id(struct device_node *node)
 	struct device_node *ep, *remote;
 	struct of_endpoint of_ep;
 
-	/* Output port is 1, and we want the first endpoint. */
+	 
 	ep = of_graph_get_endpoint_by_regs(node, 1, -1);
 	if (!ep)
 		return -EINVAL;
@@ -373,13 +367,7 @@ static int sun8i_mixer_bind(struct device *dev, struct device *master,
 	int plane_cnt;
 	int i, ret;
 
-	/*
-	 * The mixer uses single 32-bit register to store memory
-	 * addresses, so that it cannot deal with 64-bit memory
-	 * addresses.
-	 * Restrict the DMA mask so that the mixer won't be
-	 * allocated some memory that is too high.
-	 */
+	 
 	ret = dma_set_mask(dev, DMA_BIT_MASK(32));
 	if (ret) {
 		dev_err(dev, "Cannot do 32-bit DMA.\n");
@@ -394,26 +382,13 @@ static int sun8i_mixer_bind(struct device *dev, struct device *master,
 	mixer->engine.node = dev->of_node;
 
 	if (of_property_present(dev->of_node, "iommus")) {
-		/*
-		 * This assume we have the same DMA constraints for
-		 * all our the mixers in our pipeline. This sounds
-		 * bad, but it has always been the case for us, and
-		 * DRM doesn't do per-device allocation either, so we
-		 * would need to fix DRM first...
-		 */
+		 
 		ret = of_dma_configure(drm->dev, dev->of_node, true);
 		if (ret)
 			return ret;
 	}
 
-	/*
-	 * While this function can fail, we shouldn't do anything
-	 * if this happens. Some early DE2 DT entries don't provide
-	 * mixer id but work nevertheless because matching between
-	 * TCON and mixer is done by comparing node pointers (old
-	 * way) instead comparing ids. If this function fails and
-	 * id is needed, it will fail during id matching anyway.
-	 */
+	 
 	mixer->engine.id = sun8i_mixer_of_get_id(dev->of_node);
 
 	mixer->cfg = of_device_get_match_data(dev);
@@ -458,11 +433,7 @@ static int sun8i_mixer_bind(struct device *dev, struct device *master,
 		goto err_disable_bus_clk;
 	}
 
-	/*
-	 * It seems that we need to enforce that rate for whatever
-	 * reason for the mixer to be functional. Make sure it's the
-	 * case.
-	 */
+	 
 	if (mixer->cfg->mod_rate)
 		clk_set_rate(mixer->mod_clk, mixer->cfg->mod_rate);
 
@@ -472,7 +443,7 @@ static int sun8i_mixer_bind(struct device *dev, struct device *master,
 
 	base = sun8i_blender_base(mixer);
 
-	/* Reset registers and disable unused sub-engines */
+	 
 	if (mixer->cfg->is_de3) {
 		for (i = 0; i < DE3_MIXER_UNIT_SIZE; i += 4)
 			regmap_write(mixer->engine.regs, i, 0);
@@ -500,18 +471,15 @@ static int sun8i_mixer_bind(struct device *dev, struct device *master,
 		regmap_write(mixer->engine.regs, SUN8I_MIXER_DCSC_EN, 0);
 	}
 
-	/* Enable the mixer */
+	 
 	regmap_write(mixer->engine.regs, SUN8I_MIXER_GLOBAL_CTL,
 		     SUN8I_MIXER_GLOBAL_CTL_RT_EN);
 
-	/* Set background color to black */
+	 
 	regmap_write(mixer->engine.regs, SUN8I_MIXER_BLEND_BKCOLOR(base),
 		     SUN8I_MIXER_BLEND_COLOR_BLACK);
 
-	/*
-	 * Set fill color of bottom plane to black. Generally not needed
-	 * except when VI plane is at bottom (zpos = 0) and enabled.
-	 */
+	 
 	regmap_write(mixer->engine.regs, SUN8I_MIXER_BLEND_PIPE_CTL(base),
 		     SUN8I_MIXER_BLEND_PIPE_CTL_FC_EN(0));
 	regmap_write(mixer->engine.regs, SUN8I_MIXER_BLEND_ATTR_FCOLOR(base, 0),

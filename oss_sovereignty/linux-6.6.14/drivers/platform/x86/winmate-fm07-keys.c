@@ -1,8 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Driver for the Winmate FM07 front-panel keys
-//
-// Author: Daniel Beer <daniel.beer@tirotech.co.nz>
+
+
+
+
+
 
 #include <linux/init.h>
 #include <linux/module.h>
@@ -23,7 +23,7 @@
 #define BASE_KEY	KEY_F13
 #define NUM_KEYS	5
 
-/* Typically we're done in fewer than 10 iterations */
+ 
 #define LOOP_TIMEOUT	1000
 
 static void fm07keys_poll(struct input_dev *input)
@@ -31,7 +31,7 @@ static void fm07keys_poll(struct input_dev *input)
 	uint8_t k;
 	int i;
 
-	/* Flush output buffer */
+	 
 	i = 0;
 	while (inb(PORT_CMD) & 0x01) {
 		if (++i >= LOOP_TIMEOUT)
@@ -39,7 +39,7 @@ static void fm07keys_poll(struct input_dev *input)
 		inb(PORT_DATA);
 	}
 
-	/* Send request and wait for write completion */
+	 
 	outb(EC_CMD_READ, PORT_CMD);
 	i = 0;
 	while (inb(PORT_CMD) & 0x02)
@@ -52,14 +52,14 @@ static void fm07keys_poll(struct input_dev *input)
 		if (++i >= LOOP_TIMEOUT)
 			goto timeout;
 
-	/* Wait for data ready */
+	 
 	i = 0;
 	while (!(inb(PORT_CMD) & 0x01))
 		if (++i >= LOOP_TIMEOUT)
 			goto timeout;
 	k = inb(PORT_DATA);
 
-	/* Notify of new key states */
+	 
 	for (i = 0; i < NUM_KEYS; i++) {
 		input_report_key(input, BASE_KEY + i, (~k) & 1);
 		k >>= 1;
@@ -109,10 +109,7 @@ static int fm07keys_probe(struct platform_device *pdev)
 		return ret;
 	}
 
-	/* These are silicone buttons. They can't be pressed in rapid
-	 * succession too quickly, and 50 Hz seems to be an adequate
-	 * sampling rate without missing any events when tested.
-	 */
+	 
 	input_set_poll_interval(input, 20);
 
 	ret = input_register_device(input);
@@ -137,7 +134,7 @@ static struct platform_device *dev;
 
 static const struct dmi_system_id fm07keys_dmi_table[] __initconst = {
 	{
-		/* FM07 and FM07P */
+		 
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "Winmate Inc."),
 			DMI_MATCH(DMI_PRODUCT_NAME, "IP30"),

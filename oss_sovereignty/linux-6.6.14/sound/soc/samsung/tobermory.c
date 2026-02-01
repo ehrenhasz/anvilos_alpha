@@ -1,8 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0+
-//
-// Tobermory audio support
-//
-// Copyright 2011 Wolfson Microelectronics
+
+
+
+
+
 
 #include <sound/soc.h>
 #include <sound/soc-dapm.h>
@@ -161,7 +161,7 @@ static const struct snd_soc_dapm_route audio_paths[] = {
 
 static struct snd_soc_jack tobermory_headset;
 
-/* Headset jack detection DAPM pins */
+ 
 static struct snd_soc_jack_pin tobermory_headset_pins[] = {
 	{
 		.pin = "Headset Mic",

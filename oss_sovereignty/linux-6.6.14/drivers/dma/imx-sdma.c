@@ -1,14 +1,14 @@
-// SPDX-License-Identifier: GPL-2.0+
-//
-// drivers/dma/imx-sdma.c
-//
-// This file contains a driver for the Freescale Smart DMA engine
-//
-// Copyright 2010 Sascha Hauer, Pengutronix <s.hauer@pengutronix.de>
-//
-// Based on code from Freescale:
-//
-// Copyright 2004-2009 Freescale Semiconductor, Inc. All Rights Reserved.
+
+
+
+
+
+
+
+
+
+
+
 
 #include <linux/init.h>
 #include <linux/iopoll.h>
@@ -43,7 +43,7 @@
 #include "dmaengine.h"
 #include "virt-dma.h"
 
-/* SDMA registers */
+ 
 #define SDMA_H_C0PTR		0x000
 #define SDMA_H_INTR		0x004
 #define SDMA_H_STATSTOP		0x008
@@ -75,9 +75,7 @@
 #define SDMA_CHNPRI_0		0x100
 #define SDMA_DONE0_CONFIG	0x1000
 
-/*
- * Buffer descriptor status values.
- */
+ 
 #define BD_DONE  0x01
 #define BD_WRAP  0x02
 #define BD_CONT  0x04
@@ -86,29 +84,20 @@
 #define BD_LAST  0x20
 #define BD_EXTD  0x80
 
-/*
- * Data Node descriptor status values.
- */
+ 
 #define DND_END_OF_FRAME  0x80
 #define DND_END_OF_XFER   0x40
 #define DND_DONE          0x20
 #define DND_UNUSED        0x01
 
-/*
- * IPCV2 descriptor status values.
- */
+ 
 #define BD_IPCV2_END_OF_FRAME  0x40
 
 #define IPCV2_MAX_NODES        50
-/*
- * Error bit set in the CCB status field by the SDMA,
- * in setbd routine, in case of a transfer error
- */
+ 
 #define DATA_ERROR  0x10000000
 
-/*
- * Buffer descriptor commands.
- */
+ 
 #define C0_ADDR             0x01
 #define C0_LOAD             0x02
 #define C0_DUMP             0x03
@@ -118,50 +107,10 @@
 #define C0_SETPM            0x04
 #define C0_GETDM            0x02
 #define C0_GETPM            0x08
-/*
- * Change endianness indicator in the BD command field
- */
+ 
 #define CHANGE_ENDIANNESS   0x80
 
-/*
- *  p_2_p watermark_level description
- *	Bits		Name			Description
- *	0-7		Lower WML		Lower watermark level
- *	8		PS			1: Pad Swallowing
- *						0: No Pad Swallowing
- *	9		PA			1: Pad Adding
- *						0: No Pad Adding
- *	10		SPDIF			If this bit is set both source
- *						and destination are on SPBA
- *	11		Source Bit(SP)		1: Source on SPBA
- *						0: Source on AIPS
- *	12		Destination Bit(DP)	1: Destination on SPBA
- *						0: Destination on AIPS
- *	13-15		---------		MUST BE 0
- *	16-23		Higher WML		HWML
- *	24-27		N			Total number of samples after
- *						which Pad adding/Swallowing
- *						must be done. It must be odd.
- *	28		Lower WML Event(LWE)	SDMA events reg to check for
- *						LWML event mask
- *						0: LWE in EVENTS register
- *						1: LWE in EVENTS2 register
- *	29		Higher WML Event(HWE)	SDMA events reg to check for
- *						HWML event mask
- *						0: HWE in EVENTS register
- *						1: HWE in EVENTS2 register
- *	30		---------		MUST BE 0
- *	31		CONT			1: Amount of samples to be
- *						transferred is unknown and
- *						script will keep on
- *						transferring samples as long as
- *						both events are detected and
- *						script must be manually stopped
- *						by the application
- *						0: The amount of samples to be
- *						transferred is equal to the
- *						count field of mode word
- */
+ 
 #define SDMA_WATERMARK_LEVEL_LWML	0xFF
 #define SDMA_WATERMARK_LEVEL_PS		BIT(8)
 #define SDMA_WATERMARK_LEVEL_PA		BIT(9)
@@ -189,12 +138,7 @@
 #define SDMA_DONE0_CONFIG_DONE_SEL	BIT(7)
 #define SDMA_DONE0_CONFIG_DONE_DIS	BIT(6)
 
-/*
- * struct sdma_script_start_addrs - SDMA script start pointers
- *
- * start addresses of the different functions in the physical
- * address space of the SDMA engine.
- */
+ 
 struct sdma_script_start_addrs {
 	s32 ap_2_ap_addr;
 	s32 ap_2_bp_addr;
@@ -231,11 +175,11 @@ struct sdma_script_start_addrs {
 	s32 dptc_dvfs_addr;
 	s32 utra_addr;
 	s32 ram_code_start_addr;
-	/* End of v1 array */
+	 
 	s32 mcu_2_ssish_addr;
 	s32 ssish_2_mcu_addr;
 	s32 hdmi_dma_addr;
-	/* End of v2 array */
+	 
 	s32 zcanfd_2_mcu_addr;
 	s32 zqspi_2_mcu_addr;
 	s32 mcu_2_ecspi_addr;
@@ -243,59 +187,34 @@ struct sdma_script_start_addrs {
 	s32 sai_2_mcu_addr;
 	s32 uart_2_mcu_rom_addr;
 	s32 uartsh_2_mcu_rom_addr;
-	/* End of v3 array */
+	 
 	s32 mcu_2_zqspi_addr;
-	/* End of v4 array */
+	 
 };
 
-/*
- * Mode/Count of data node descriptors - IPCv2
- */
+ 
 struct sdma_mode_count {
 #define SDMA_BD_MAX_CNT	0xffff
-	u32 count   : 16; /* size of the buffer pointed by this BD */
-	u32 status  :  8; /* E,R,I,C,W,D status bits stored here */
-	u32 command :  8; /* command mostly used for channel 0 */
+	u32 count   : 16;  
+	u32 status  :  8;  
+	u32 command :  8;  
 };
 
-/*
- * Buffer descriptor
- */
+ 
 struct sdma_buffer_descriptor {
 	struct sdma_mode_count  mode;
-	u32 buffer_addr;	/* address of the buffer described */
-	u32 ext_buffer_addr;	/* extended buffer address */
+	u32 buffer_addr;	 
+	u32 ext_buffer_addr;	 
 } __attribute__ ((packed));
 
-/**
- * struct sdma_channel_control - Channel control Block
- *
- * @current_bd_ptr:	current buffer descriptor processed
- * @base_bd_ptr:	first element of buffer descriptor array
- * @unused:		padding. The SDMA engine expects an array of 128 byte
- *			control blocks
- */
+ 
 struct sdma_channel_control {
 	u32 current_bd_ptr;
 	u32 base_bd_ptr;
 	u32 unused[2];
 } __attribute__ ((packed));
 
-/**
- * struct sdma_state_registers - SDMA context for a channel
- *
- * @pc:		program counter
- * @unused1:	unused
- * @t:		test bit: status of arithmetic & test instruction
- * @rpc:	return program counter
- * @unused0:	unused
- * @sf:		source fault while loading data
- * @spc:	loop start program counter
- * @unused2:	unused
- * @df:		destination fault while storing data
- * @epc:	loop end program counter
- * @lm:		loop mode
- */
+ 
 struct sdma_state_registers {
 	u32 pc     :14;
 	u32 unused1: 1;
@@ -310,34 +229,7 @@ struct sdma_state_registers {
 	u32 lm     : 2;
 } __attribute__ ((packed));
 
-/**
- * struct sdma_context_data - sdma context specific to a channel
- *
- * @channel_state:	channel state bits
- * @gReg:		general registers
- * @mda:		burst dma destination address register
- * @msa:		burst dma source address register
- * @ms:			burst dma status register
- * @md:			burst dma data register
- * @pda:		peripheral dma destination address register
- * @psa:		peripheral dma source address register
- * @ps:			peripheral dma status register
- * @pd:			peripheral dma data register
- * @ca:			CRC polynomial register
- * @cs:			CRC accumulator register
- * @dda:		dedicated core destination address register
- * @dsa:		dedicated core source address register
- * @ds:			dedicated core status register
- * @dd:			dedicated core data register
- * @scratch0:		1st word of dedicated ram for context switch
- * @scratch1:		2nd word of dedicated ram for context switch
- * @scratch2:		3rd word of dedicated ram for context switch
- * @scratch3:		4th word of dedicated ram for context switch
- * @scratch4:		5th word of dedicated ram for context switch
- * @scratch5:		6th word of dedicated ram for context switch
- * @scratch6:		7th word of dedicated ram for context switch
- * @scratch7:		8th word of dedicated ram for context switch
- */
+ 
 struct sdma_context_data {
 	struct sdma_state_registers  channel_state;
 	u32  gReg[8];
@@ -368,19 +260,7 @@ struct sdma_context_data {
 
 struct sdma_engine;
 
-/**
- * struct sdma_desc - descriptor structor for one transfer
- * @vd:			descriptor for virt dma
- * @num_bd:		number of descriptors currently handling
- * @bd_phys:		physical address of bd
- * @buf_tail:		ID of the buffer that was processed
- * @buf_ptail:		ID of the previous buffer that was processed
- * @period_len:		period length, used in cyclic.
- * @chn_real_count:	the real count updated from bd->mode.count
- * @chn_count:		the transfer count set
- * @sdmac:		sdma_channel pointer
- * @bd:			pointer of allocate bd
- */
+ 
 struct sdma_desc {
 	struct virt_dma_desc	vd;
 	unsigned int		num_bd;
@@ -394,46 +274,7 @@ struct sdma_desc {
 	struct sdma_buffer_descriptor *bd;
 };
 
-/**
- * struct sdma_channel - housekeeping for a SDMA channel
- *
- * @vc:			virt_dma base structure
- * @desc:		sdma description including vd and other special member
- * @sdma:		pointer to the SDMA engine for this channel
- * @channel:		the channel number, matches dmaengine chan_id + 1
- * @direction:		transfer type. Needed for setting SDMA script
- * @slave_config:	Slave configuration
- * @peripheral_type:	Peripheral type. Needed for setting SDMA script
- * @event_id0:		aka dma request line
- * @event_id1:		for channels that use 2 events
- * @word_size:		peripheral access size
- * @pc_from_device:	script address for those device_2_memory
- * @pc_to_device:	script address for those memory_2_device
- * @device_to_device:	script address for those device_2_device
- * @pc_to_pc:		script address for those memory_2_memory
- * @flags:		loop mode or not
- * @per_address:	peripheral source or destination address in common case
- *                      destination address in p_2_p case
- * @per_address2:	peripheral source address in p_2_p case
- * @event_mask:		event mask used in p_2_p script
- * @watermark_level:	value for gReg[7], some script will extend it from
- *			basic watermark such as p_2_p
- * @shp_addr:		value for gReg[6]
- * @per_addr:		value for gReg[2]
- * @status:		status of dma channel
- * @context_loaded:	ensure context is only loaded once
- * @data:		specific sdma interface structure
- * @bd_pool:		dma_pool for bd
- * @terminate_worker:	used to call back into terminate work function
- * @terminated:		terminated list
- * @is_ram_script:	flag for script in ram
- * @n_fifos_src:	number of source device fifos
- * @n_fifos_dst:	number of destination device fifos
- * @sw_done:		software done flag
- * @stride_fifos_src:	stride for source device FIFOs
- * @stride_fifos_dst:	stride for destination device FIFOs
- * @words_per_fifo:	copy number of words one time for one FIFO
- */
+ 
 struct sdma_channel {
 	struct virt_dma_chan		vc;
 	struct sdma_desc		*desc;
@@ -475,20 +316,7 @@ struct sdma_channel {
 
 #define SDMA_FIRMWARE_MAGIC 0x414d4453
 
-/**
- * struct sdma_firmware_header - Layout of the firmware image
- *
- * @magic:		"SDMA"
- * @version_major:	increased whenever layout of struct
- *			sdma_script_start_addrs changes.
- * @version_minor:	firmware minor version (for binary compatible changes)
- * @script_addrs_start:	offset of struct sdma_script_start_addrs in this image
- * @num_script_addrs:	Number of script addresses in this image
- * @ram_code_start:	offset of SDMA ram image in this firmware image
- * @ram_code_size:	size of SDMA ram image
- * @script_addrs:	Stores the start address of the SDMA scripts
- *			(in SDMA memory space)
- */
+ 
 struct sdma_firmware_header {
 	u32	magic;
 	u32	version_major;
@@ -504,12 +332,7 @@ struct sdma_driver_data {
 	int num_events;
 	struct sdma_script_start_addrs	*script_addrs;
 	bool check_ratio;
-	/*
-	 * ecspi ERR009165 fixed should be done in sdma script
-	 * and it has been fixed in soc from i.mx6ul.
-	 * please get more information from the below link:
-	 * https://www.nxp.com/docs/en/errata/IMX6DQCE.pdf
-	 */
+	 
 	bool ecspi_fixed;
 };
 
@@ -532,7 +355,7 @@ struct sdma_engine {
 	unsigned int			irq;
 	dma_addr_t			bd0_phys;
 	struct sdma_buffer_descriptor	*bd0;
-	/* clock ratio for AHB:SDMA core. 1:1 is 1, 2:1 is 0*/
+	 
 	bool				clk_ratio;
 	bool                            fw_loaded;
 };
@@ -673,14 +496,14 @@ static const struct of_device_id sdma_dt_ids[] = {
 	{ .compatible = "fsl,imx7d-sdma", .data = &sdma_imx7d, },
 	{ .compatible = "fsl,imx6ul-sdma", .data = &sdma_imx6ul, },
 	{ .compatible = "fsl,imx8mq-sdma", .data = &sdma_imx8mq, },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, sdma_dt_ids);
 
-#define SDMA_H_CONFIG_DSPDMA	BIT(12) /* indicates if the DSPDMA is used */
-#define SDMA_H_CONFIG_RTD_PINS	BIT(11) /* indicates if Real-Time Debug pins are enabled */
-#define SDMA_H_CONFIG_ACR	BIT(4)  /* indicates if AHB freq /core freq = 2 or 1 */
-#define SDMA_H_CONFIG_CSM	(3)       /* indicates which context switch mode is selected*/
+#define SDMA_H_CONFIG_DSPDMA	BIT(12)  
+#define SDMA_H_CONFIG_RTD_PINS	BIT(11)  
+#define SDMA_H_CONFIG_ACR	BIT(4)   
+#define SDMA_H_CONFIG_CSM	(3)        
 
 static inline u32 chnenbl_ofs(struct sdma_engine *sdma, unsigned int event)
 {
@@ -734,9 +557,7 @@ static void sdma_enable_channel(struct sdma_engine *sdma, int channel)
 	writel(BIT(channel), sdma->regs + SDMA_H_START);
 }
 
-/*
- * sdma_run_channel0 - run a channel and wait till it's done
- */
+ 
 static int sdma_run_channel0(struct sdma_engine *sdma)
 {
 	int ret;
@@ -749,7 +570,7 @@ static int sdma_run_channel0(struct sdma_engine *sdma)
 	if (ret)
 		dev_err(sdma->dev, "Timeout waiting for CH0 ready\n");
 
-	/* Set bits of CONFIG register with dynamic context switching */
+	 
 	reg = readl(sdma->regs + SDMA_H_CONFIG);
 	if ((reg & SDMA_H_CONFIG_CSM) == 0) {
 		reg |= SDMA_H_CONFIG_CSM;
@@ -802,7 +623,7 @@ static void sdma_event_enable(struct sdma_channel *sdmac, unsigned int event)
 	__set_bit(channel, &val);
 	writel_relaxed(val, sdma->regs + chnenbl);
 
-	/* Set SDMA_DONEx_CONFIG is sw_done enabled */
+	 
 	if (sdmac->sw_done) {
 		val = readl_relaxed(sdma->regs + SDMA_DONE0_CONFIG);
 		val |= SDMA_DONE0_CONFIG_DONE_SEL;
@@ -854,10 +675,7 @@ static void sdma_update_channel_loop(struct sdma_channel *sdmac)
 	int error = 0;
 	enum dma_status	old_status = sdmac->status;
 
-	/*
-	 * loop mode. Iterate over descriptors, re-setup them and
-	 * call callback function.
-	 */
+	 
 	while (sdmac->desc) {
 		struct sdma_desc *desc = sdmac->desc;
 
@@ -872,37 +690,26 @@ static void sdma_update_channel_loop(struct sdma_channel *sdmac)
 			error = -EIO;
 		}
 
-	       /*
-		* We use bd->mode.count to calculate the residue, since contains
-		* the number of bytes present in the current buffer descriptor.
-		*/
+	        
 
 		desc->chn_real_count = bd->mode.count;
 		bd->mode.count = desc->period_len;
 		desc->buf_ptail = desc->buf_tail;
 		desc->buf_tail = (desc->buf_tail + 1) % desc->num_bd;
 
-		/*
-		 * The callback is called from the interrupt context in order
-		 * to reduce latency and to avoid the risk of altering the
-		 * SDMA transaction status by the time the client tasklet is
-		 * executed.
-		 */
+		 
 		spin_unlock(&sdmac->vc.lock);
 		dmaengine_desc_get_callback_invoke(&desc->vd.tx, NULL);
 		spin_lock(&sdmac->vc.lock);
 
-		/* Assign buffer ownership to SDMA */
+		 
 		bd->mode.status |= BD_DONE;
 
 		if (error)
 			sdmac->status = old_status;
 	}
 
-	/*
-	 * SDMA stops cyclic channel when DMA request triggers a channel and no SDMA
-	 * owned buffer is available (i.e. BD_DONE was set too late).
-	 */
+	 
 	if (sdmac->desc && !is_sdma_channel_enabled(sdmac->sdma, sdmac->channel)) {
 		dev_warn(sdmac->sdma->dev, "restart cyclic channel %d\n", sdmac->channel);
 		sdma_enable_channel(sdmac->sdma, sdmac->channel);
@@ -916,10 +723,7 @@ static void mxc_sdma_handle_channel_normal(struct sdma_channel *data)
 	int i, error = 0;
 
 	sdmac->desc->chn_real_count = 0;
-	/*
-	 * non loop mode. Iterate over all descriptors, collect
-	 * errors and call callback function
-	 */
+	 
 	for (i = 0; i < sdmac->desc->num_bd; i++) {
 		bd = &sdmac->desc->bd[i];
 
@@ -941,7 +745,7 @@ static irqreturn_t sdma_int_handler(int irq, void *dev_id)
 
 	stat = readl_relaxed(sdma->regs + SDMA_H_INTR);
 	writel_relaxed(stat, sdma->regs + SDMA_H_INTR);
-	/* channel 0 is special and not handled here, see run_channel0() */
+	 
 	stat &= ~1;
 
 	while (stat) {
@@ -971,18 +775,13 @@ static irqreturn_t sdma_int_handler(int irq, void *dev_id)
 	return IRQ_HANDLED;
 }
 
-/*
- * sets the pc of SDMA script according to the peripheral type
- */
+ 
 static int sdma_get_pc(struct sdma_channel *sdmac,
 		enum sdma_peripheral_type peripheral_type)
 {
 	struct sdma_engine *sdma = sdmac->sdma;
 	int per_2_emi = 0, emi_2_per = 0;
-	/*
-	 * These are needed once we start to support transfers between
-	 * two peripherals or memory-to-memory transfers
-	 */
+	 
 	int per_2_per = 0, emi_2_emi = 0;
 
 	sdmac->pc_from_device = 0;
@@ -1018,7 +817,7 @@ static int sdma_get_pc(struct sdma_channel *sdmac,
 	case IMX_DMATYPE_CSPI:
 		per_2_emi = sdma->script_addrs->app_2_mcu_addr;
 
-		/* Use rom script mcu_2_app if ERR009165 fixed */
+		 
 		if (sdmac->sdma->drvdata->ecspi_fixed) {
 			emi_2_per = sdma->script_addrs->mcu_2_app_addr;
 		} else {
@@ -1128,9 +927,7 @@ static int sdma_load_context(struct sdma_channel *sdmac)
 	memset(context, 0, sizeof(*context));
 	context->channel_state.pc = load_address;
 
-	/* Send by context the event mask,base address for peripheral
-	 * and watermark level
-	 */
+	 
 	if (sdmac->peripheral_type == IMX_DMATYPE_HDMI) {
 		context->gReg[4] = sdmac->per_addr;
 		context->gReg[6] = sdmac->shp_addr;
@@ -1174,12 +971,7 @@ static void sdma_channel_terminate_work(struct work_struct *work)
 {
 	struct sdma_channel *sdmac = container_of(work, struct sdma_channel,
 						  terminate_worker);
-	/*
-	 * According to NXP R&D team a delay of one BD SDMA cost time
-	 * (maximum is 1ms) should be added after disable of the channel
-	 * bit, to ensure SDMA core has really been stopped after SDMA
-	 * clients call .device_terminate_all.
-	 */
+	 
 	usleep_range(1000, 2000);
 
 	vchan_dma_desc_free_list(&sdmac->vc, &sdmac->terminated);
@@ -1196,12 +988,7 @@ static int sdma_terminate_all(struct dma_chan *chan)
 
 	if (sdmac->desc) {
 		vchan_terminate_vdesc(&sdmac->desc->vd);
-		/*
-		 * move out current descriptor into terminated list so that
-		 * it could be free in sdma_channel_terminate_work alone
-		 * later without potential involving next descriptor raised
-		 * up before the last descriptor terminated.
-		 */
+		 
 		vchan_get_all_descriptors(&sdmac->vc, &sdmac->terminated);
 		sdmac->desc = NULL;
 		schedule_work(&sdmac->terminate_worker);
@@ -1237,11 +1024,7 @@ static void sdma_set_watermarklevel_for_p2p(struct sdma_channel *sdmac)
 	if (sdmac->event_id1 > 31)
 		sdmac->watermark_level |= SDMA_WATERMARK_LEVEL_HWE;
 
-	/*
-	 * If LWML(src_maxburst) > HWML(dst_maxburst), we need
-	 * swap LWML and HWML of INFO(A.3.2.5.1), also need swap
-	 * r0(event_mask[1]) and r1(event_mask[0]).
-	 */
+	 
 	if (lwml > hwml) {
 		sdmac->watermark_level &= ~(SDMA_WATERMARK_LEVEL_LWML |
 						SDMA_WATERMARK_LEVEL_HWML);
@@ -1319,7 +1102,7 @@ static int sdma_config_channel(struct dma_chan *chan)
 
 	if ((sdmac->peripheral_type != IMX_DMATYPE_MEMORY) &&
 			(sdmac->peripheral_type != IMX_DMATYPE_DSP)) {
-		/* Handle multiple event channels differently */
+		 
 		if (sdmac->event_id1) {
 			if (sdmac->peripheral_type == IMX_DMATYPE_ASRC_SP ||
 			    sdmac->peripheral_type == IMX_DMATYPE_ASRC)
@@ -1332,11 +1115,11 @@ static int sdma_config_channel(struct dma_chan *chan)
 			__set_bit(sdmac->event_id0, sdmac->event_mask);
 		}
 
-		/* Address */
+		 
 		sdmac->shp_addr = sdmac->per_address;
 		sdmac->per_addr = sdmac->per_address2;
 	} else {
-		sdmac->watermark_level = 0; /* FIXME: M3_BASE_ADDRESS */
+		sdmac->watermark_level = 0;  
 	}
 
 	return 0;
@@ -1418,15 +1201,7 @@ static int sdma_alloc_chan_resources(struct dma_chan *chan)
 	struct imx_dma_data mem_data;
 	int prio, ret;
 
-	/*
-	 * MEMCPY may never setup chan->private by filter function such as
-	 * dmatest, thus create 'struct imx_dma_data mem_data' for this case.
-	 * Please note in any other slave case, you have to setup chan->private
-	 * with 'struct imx_dma_data' in your own filter function if you want to
-	 * request dma channel by dma_request_channel() rather than
-	 * dma_request_slave_channel(). Othwise, 'MEMCPY in case?' will appear
-	 * to warn you to correct your filter function.
-	 */
+	 
 	if (!data) {
 		dev_dbg(sdmac->sdma->dev, "MEMCPY in case?\n");
 		mem_data.priority = 2;
@@ -1527,7 +1302,7 @@ static struct sdma_desc *sdma_transfer_init(struct sdma_channel *sdmac,
 	if (bds && sdma_alloc_bd(desc))
 		goto err_desc_out;
 
-	/* No slave_config called in MEMCPY case, so do here */
+	 
 	if (direction == DMA_MEM_TO_MEM)
 		sdma_config_ownership(sdmac, false, true, false);
 
@@ -1582,7 +1357,7 @@ static struct dma_async_tx_descriptor *sdma_prep_memcpy(
 		i++;
 
 		param = BD_DONE | BD_EXTD | BD_CONT;
-		/* last bd */
+		 
 		if (!len) {
 			param |= BD_INTR;
 			param |= BD_LAST;
@@ -1818,7 +1593,7 @@ static int sdma_config(struct dma_chan *chan,
 		sdmac->sw_done = sdmacfg->sw_done;
 	}
 
-	/* Set ENBLn earlier to make sure dma request triggered after that */
+	 
 	if (sdmac->event_id0 >= sdmac->sdma->drvdata->num_events)
 		return -EINVAL;
 	sdma_event_enable(sdmac, sdmac->event_id0);
@@ -1896,7 +1671,7 @@ static void sdma_add_scripts(struct sdma_engine *sdma,
 	s32 *saddr_arr = (u32 *)sdma->script_addrs;
 	int i;
 
-	/* use the default firmware in ROM if missing external firmware */
+	 
 	if (!sdma->script_number)
 		sdma->script_number = SDMA_SCRIPT_ADDRS_ARRAY_SIZE_V1;
 
@@ -1912,12 +1687,7 @@ static void sdma_add_scripts(struct sdma_engine *sdma,
 		if (addr_arr[i] > 0)
 			saddr_arr[i] = addr_arr[i];
 
-	/*
-	 * For compatibility with NXP internal legacy kernel before 4.19 which
-	 * is based on uart ram script and mainline kernel based on uart rom
-	 * script, both uart ram/rom scripts are present in newer sdma
-	 * firmware. Use the rom versions if they are present (V3 or newer).
-	 */
+	 
 	if (sdma->script_number >= SDMA_SCRIPT_ADDRS_ARRAY_SIZE_V3) {
 		if (addr->uart_2_mcu_rom_addr)
 			sdma->script_addrs->uart_2_mcu_addr = addr->uart_2_mcu_rom_addr;
@@ -1935,7 +1705,7 @@ static void sdma_load_firmware(const struct firmware *fw, void *context)
 
 	if (!fw) {
 		dev_info(sdma->dev, "external firmware not found, using ROM firmware\n");
-		/* In this case we just use the ROM firmware. */
+		 
 		return;
 	}
 
@@ -1971,7 +1741,7 @@ static void sdma_load_firmware(const struct firmware *fw, void *context)
 
 	clk_enable(sdma->clk_ipg);
 	clk_enable(sdma->clk_ahb);
-	/* download the RAM image for SDMA */
+	 
 	sdma_load_script(sdma, ram_code,
 			 header->ram_code_size,
 			 addr->ram_code_start_addr);
@@ -2084,7 +1854,7 @@ static int sdma_init(struct sdma_engine *sdma)
 	    (clk_get_rate(sdma->clk_ahb) == clk_get_rate(sdma->clk_ipg)))
 		sdma->clk_ratio = 1;
 
-	/* Be sure SDMA has not started yet */
+	 
 	writel_relaxed(0, sdma->regs + SDMA_H_C0PTR);
 
 	sdma->channel_control = dma_alloc_coherent(sdma->dev,
@@ -2102,11 +1872,11 @@ static int sdma_init(struct sdma_engine *sdma)
 	sdma->context_phys = ccb_phys +
 		MAX_DMA_CHANNELS * sizeof(struct sdma_channel_control);
 
-	/* disable all channels */
+	 
 	for (i = 0; i < sdma->drvdata->num_events; i++)
 		writel_relaxed(0, sdma->regs + chnenbl_ofs(sdma, i));
 
-	/* All channels have priority 0 */
+	 
 	for (i = 0; i < MAX_DMA_CHANNELS; i++)
 		writel_relaxed(0, sdma->regs + SDMA_CHNPRI_0 + i * 4);
 
@@ -2116,10 +1886,10 @@ static int sdma_init(struct sdma_engine *sdma)
 
 	sdma_config_ownership(&sdma->channel[0], false, true, false);
 
-	/* Set Command Channel (Channel Zero) */
+	 
 	writel_relaxed(0x4050, sdma->regs + SDMA_CHN0ADDR);
 
-	/* Set bits of CONFIG register but with static context switching */
+	 
 	if (sdma->clk_ratio)
 		writel_relaxed(SDMA_H_CONFIG_ACR, sdma->regs + SDMA_H_CONFIG);
 	else
@@ -2127,7 +1897,7 @@ static int sdma_init(struct sdma_engine *sdma)
 
 	writel_relaxed(ccb_phys, sdma->regs + SDMA_H_C0PTR);
 
-	/* Initializes channel's priorities */
+	 
 	sdma_set_channel_priority(&sdma->channel[0], 7);
 
 	clk_disable(sdma->clk_ipg);
@@ -2170,13 +1940,7 @@ static struct dma_chan *sdma_xlate(struct of_phandle_args *dma_spec,
 	data.dma_request = dma_spec->args[0];
 	data.peripheral_type = dma_spec->args[1];
 	data.priority = dma_spec->args[2];
-	/*
-	 * init dma_request2 to zero, which is not used by the dts.
-	 * For P2P, dma_request2 is init from dma_request_channel(),
-	 * chan->private will point to the imx_dma_data, and in
-	 * device_alloc_chan_resources(), imx_dma_data.dma_request2 will
-	 * be set to sdmac->event_id1.
-	 */
+	 
 	data.dma_request2 = 0;
 
 	return __dma_request_channel(&mask, sdma_filter_fn, &data,
@@ -2245,7 +2009,7 @@ static int sdma_probe(struct platform_device *pdev)
 		goto err_irq;
 	}
 
-	/* initially no scripts available */
+	 
 	saddr_arr = (s32 *)sdma->script_addrs;
 	for (i = 0; i < sizeof(*sdma->script_addrs) / sizeof(s32); i++)
 		saddr_arr[i] = -EINVAL;
@@ -2256,7 +2020,7 @@ static int sdma_probe(struct platform_device *pdev)
 	dma_cap_set(DMA_PRIVATE, sdma->dma_device.cap_mask);
 
 	INIT_LIST_HEAD(&sdma->dma_device.channels);
-	/* Initialize channel parameters */
+	 
 	for (i = 0; i < MAX_DMA_CHANNELS; i++) {
 		struct sdma_channel *sdmac = &sdma->channel[i];
 
@@ -2267,11 +2031,7 @@ static int sdma_probe(struct platform_device *pdev)
 		INIT_LIST_HEAD(&sdmac->terminated);
 		INIT_WORK(&sdmac->terminate_worker,
 				sdma_channel_terminate_work);
-		/*
-		 * Add the channel to the DMAC list. Do not add channel 0 though
-		 * because we need it internally in the SDMA driver. This also means
-		 * that channel 0 in dmaengine counting matches sdma channel 1.
-		 */
+		 
 		if (i)
 			vchan_init(&sdmac->vc, &sdma->dma_device);
 	}
@@ -2330,11 +2090,7 @@ static int sdma_probe(struct platform_device *pdev)
 		of_node_put(spba_bus);
 	}
 
-	/*
-	 * Because that device tree does not encode ROM script address,
-	 * the RAM script in firmware is mandatory for device tree
-	 * probe, otherwise it fails.
-	 */
+	 
 	ret = of_property_read_string(np, "fsl,sdma-ram-script-name",
 				      &fw_name);
 	if (ret) {
@@ -2368,7 +2124,7 @@ static int sdma_remove(struct platform_device *pdev)
 	kfree(sdma->script_addrs);
 	clk_unprepare(sdma->clk_ahb);
 	clk_unprepare(sdma->clk_ipg);
-	/* Kill the tasklet */
+	 
 	for (i = 0; i < MAX_DMA_CHANNELS; i++) {
 		struct sdma_channel *sdmac = &sdma->channel[i];
 

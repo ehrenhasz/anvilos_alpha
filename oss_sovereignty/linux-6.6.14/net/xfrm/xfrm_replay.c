@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * xfrm_replay.c - xfrm replay detection, derived from xfrm_state.c.
- *
- * Copyright (C) 2010 secunet Security Networks AG
- * Copyright (C) 2010 Steffen Klassert <steffen.klassert@secunet.com>
- */
+
+ 
 
 #include <linux/export.h>
 #include <net/xfrm.h>
@@ -22,11 +17,11 @@ u32 xfrm_replay_seqhi(struct xfrm_state *x, __be32 net_seq)
 	bottom = replay_esn->seq - replay_esn->replay_window + 1;
 
 	if (likely(replay_esn->seq >= replay_esn->replay_window - 1)) {
-		/* A. same subspace */
+		 
 		if (unlikely(seq < bottom))
 			seq_hi++;
 	} else {
-		/* B. window spans two subspaces */
+		 
 		if (unlikely(seq >= bottom))
 			seq_hi--;
 	}
@@ -41,15 +36,7 @@ static void xfrm_replay_notify_esn(struct xfrm_state *x, int event);
 void xfrm_replay_notify(struct xfrm_state *x, int event)
 {
 	struct km_event c;
-	/* we send notify messages in case
-	 *  1. we updated on of the sequence numbers, and the seqno difference
-	 *     is at least x->replay_maxdiff, in this case we also update the
-	 *     timeout of our timer function
-	 *  2. if x->replay_maxage has elapsed since last update,
-	 *     and there were changes
-	 *
-	 *  The state structure must be locked!
-	 */
+	 
 
 	switch (x->repl_mode) {
 	case XFRM_REPLAY_MODE_LEGACY:
@@ -308,15 +295,7 @@ static void xfrm_replay_notify_bmp(struct xfrm_state *x, int event)
 	struct xfrm_replay_state_esn *replay_esn = x->replay_esn;
 	struct xfrm_replay_state_esn *preplay_esn = x->preplay_esn;
 
-	/* we send notify messages in case
-	 *  1. we updated on of the sequence numbers, and the seqno difference
-	 *     is at least x->replay_maxdiff, in this case we also update the
-	 *     timeout of our timer function
-	 *  2. if x->replay_maxage has elapsed since last update,
-	 *     and there were changes
-	 *
-	 *  The state structure must be locked!
-	 */
+	 
 
 	switch (event) {
 	case XFRM_REPLAY_UPDATE:
@@ -360,15 +339,7 @@ static void xfrm_replay_notify_esn(struct xfrm_state *x, int event)
 	struct xfrm_replay_state_esn *replay_esn = x->replay_esn;
 	struct xfrm_replay_state_esn *preplay_esn = x->preplay_esn;
 
-	/* we send notify messages in case
-	 *  1. we updated on of the sequence numbers, and the seqno difference
-	 *     is at least x->replay_maxdiff, in this case we also update the
-	 *     timeout of our timer function
-	 *  2. if x->replay_maxage has elapsed since last update,
-	 *     and there were changes
-	 *
-	 *  The state structure must be locked!
-	 */
+	 
 
 	switch (event) {
 	case XFRM_REPLAY_UPDATE:
@@ -470,11 +441,11 @@ static int xfrm_replay_check_esn(struct xfrm_state *x,
 	diff = top - seq;
 
 	if (likely(top >= wsize - 1)) {
-		/* A. same subspace */
+		 
 		if (likely(seq > top) || seq < bottom)
 			return 0;
 	} else {
-		/* B. window spans two subspaces */
+		 
 		if (likely(seq > top && seq < bottom))
 			return 0;
 		if (seq >= bottom)
@@ -541,7 +512,7 @@ int xfrm_replay_recheck(struct xfrm_state *x,
 	case XFRM_REPLAY_MODE_LEGACY:
 		break;
 	case XFRM_REPLAY_MODE_BMP:
-		/* no special recheck treatment */
+		 
 		return xfrm_replay_check_bmp(x, skb, net_seq);
 	case XFRM_REPLAY_MODE_ESN:
 		return xfrm_replay_recheck_esn(x, skb, net_seq);

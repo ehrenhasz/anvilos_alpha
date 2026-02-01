@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
-  File: linux/posix_acl_xattr.h
-
-  Extended attribute system call representation of Access Control Lists.
-
-  Copyright (C) 2000 by Andreas Gruenbacher <a.gruenbacher@computer.org>
-  Copyright (C) 2002 SGI - Silicon Graphics, Inc <linux-xfs@oss.sgi.com>
- */
+ 
+ 
 #ifndef _POSIX_ACL_XATTR_H
 #define _POSIX_ACL_XATTR_H
 
@@ -68,8 +61,8 @@ static inline int posix_acl_type(const char *name)
 	return -1;
 }
 
-/* These are legacy handlers. Don't use them for new code. */
+ 
 extern const struct xattr_handler nop_posix_acl_access;
 extern const struct xattr_handler nop_posix_acl_default;
 
-#endif	/* _POSIX_ACL_XATTR_H */
+#endif	 

@@ -1,17 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  Copyright (c) 1999-2001 Vojtech Pavlik
- *
- *  Based on the work of:
- *	Teemu Rantanen		Derrick Cole
- *	Peter Cervasio		Christoph Niemann
- *	Philip Blundell		Russell King
- *	Bob Harris
- */
 
-/*
- * Inport (ATI XL and Microsoft) busmouse driver for Linux
- */
+ 
+
+ 
 
 #include <linux/module.h>
 #include <linux/ioport.h>

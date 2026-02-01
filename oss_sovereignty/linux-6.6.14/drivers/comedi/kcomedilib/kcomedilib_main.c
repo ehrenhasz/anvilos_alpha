@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * kcomedilib/kcomedilib.c
- * a comedlib interface for kernel modules
- *
- * COMEDI - Linux Control and Measurement Device Interface
- * Copyright (C) 1997-2000 David A. Schleef <ds@schleef.org>
- */
+
+ 
 
 #include <linux/module.h>
 
@@ -77,7 +71,7 @@ static int comedi_do_insn(struct comedi_device *dev,
 		goto error;
 	}
 
-	/* a subdevice instruction */
+	 
 	if (insn->subdev >= dev->n_subdevices) {
 		ret = -EINVAL;
 		goto error;
@@ -91,7 +85,7 @@ static int comedi_do_insn(struct comedi_device *dev,
 		goto error;
 	}
 
-	/* XXX check lock */
+	 
 
 	ret = comedi_check_chanlist(s, 1, &insn->chanspec);
 	if (ret < 0) {
@@ -111,7 +105,7 @@ static int comedi_do_insn(struct comedi_device *dev,
 		ret = s->insn_bits(dev, s, insn, data);
 		break;
 	case INSN_CONFIG:
-		/* XXX should check instruction length */
+		 
 		ret = s->insn_config(dev, s, insn, data);
 		break;
 	default:
@@ -186,10 +180,7 @@ int comedi_dio_bitfield2(struct comedi_device *dev, unsigned int subdev,
 	data[0] = mask;
 	data[1] = *bits;
 
-	/*
-	 * Most drivers ignore the base channel in insn->chanspec.
-	 * Fix this here if the subdevice has <= 32 channels.
-	 */
+	 
 	if (n_chan <= 32) {
 		shift = base_channel;
 		if (shift) {

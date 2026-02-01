@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * mt8192-afe-common.h  --  Mediatek 8192 audio driver definitions
- *
- * Copyright (c) 2020 MediaTek Inc.
- * Author: Shane Chien <shane.chien@mediatek.com>
- */
+ 
+ 
 
 #ifndef _MT_8192_AFE_COMMON_H_
 #define _MT_8192_AFE_COMMON_H_
@@ -93,7 +88,7 @@ enum {
 	MT8192_IRQ_24,
 	MT8192_IRQ_25,
 	MT8192_IRQ_26,
-	MT8192_IRQ_31,	/* used only for TDM */
+	MT8192_IRQ_31,	 
 	MT8192_IRQ_NUM,
 };
 
@@ -106,10 +101,10 @@ enum {
 enum {
 	MTK_AFE_ADDA_DL_GAIN_MUTE = 0,
 	MTK_AFE_ADDA_DL_GAIN_NORMAL = 0xf74f,
-	/* SA suggest apply -0.3db to audio/speech path */
+	 
 };
 
-/* MCLK */
+ 
 enum {
 	MT8192_I2S0_MCK = 0,
 	MT8192_I2S1_MCK,
@@ -135,11 +130,11 @@ struct mt8192_afe_private {
 	int stf_positive_gain_db;
 	int pm_runtime_bypass_reg_ctl;
 
-	/* dai */
+	 
 	bool dai_on[MT8192_DAI_NUM];
 	void *dai_priv[MT8192_DAI_NUM];
 
-	/* adda */
+	 
 	int mtkaif_protocol;
 	int mtkaif_chosen_phase[4];
 	int mtkaif_phase_cycle[4];
@@ -148,7 +143,7 @@ struct mt8192_afe_private {
 	int mtkaif_dmic_ch34;
 	int mtkaif_adda6_only;
 
-	/* mck */
+	 
 	int mck_rate[MT8192_MCK_NUM];
 };
 

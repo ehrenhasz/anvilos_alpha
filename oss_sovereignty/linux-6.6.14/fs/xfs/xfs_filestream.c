@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2006-2007 Silicon Graphics, Inc.
- * Copyright (c) 2014 Christoph Hellwig.
- * All Rights Reserved.
- */
+
+ 
 #include "xfs.h"
 #include "xfs_shared.h"
 #include "xfs_format.h"
@@ -23,7 +19,7 @@
 
 struct xfs_fstrm_item {
 	struct xfs_mru_cache_elem	mru;
-	struct xfs_perag		*pag; /* AG in use for this directory */
+	struct xfs_perag		*pag;  
 };
 
 enum xfs_fstrm_alloc {
@@ -47,11 +43,7 @@ xfs_fstrm_free_func(
 	kmem_free(item);
 }
 
-/*
- * Scan the AGs starting at start_agno looking for an AG that isn't in use and
- * has at least minlen blocks free. If no AG is found to match the allocation
- * requirements, pick the AG with the most free space in it.
- */
+ 
 static int
 xfs_filestream_pick_ag(
 	struct xfs_alloc_arg	*args,
@@ -69,7 +61,7 @@ xfs_filestream_pick_ag(
 	bool			first_pass = true;
 	int			err;
 
-	/* 2% of an AG's blocks must be free for it to be chosen. */
+	 
 	minfree = mp->m_sb.sb_agblocks / 50;
 
 restart:
@@ -80,12 +72,12 @@ restart:
 		if (err) {
 			if (err != -EAGAIN)
 				break;
-			/* Couldn't lock the AGF, skip this AG. */
+			 
 			err = 0;
 			continue;
 		}
 
-		/* Keep track of the AG with the most free blocks. */
+		 
 		if (pag->pagf_freeblks > maxfree) {
 			maxfree = pag->pagf_freeblks;
 			if (max_pag)
@@ -94,25 +86,20 @@ restart:
 			max_pag = pag;
 		}
 
-		/*
-		 * The AG reference count does two things: it enforces mutual
-		 * exclusion when examining the suitability of an AG in this
-		 * loop, and it guards against two filestreams being established
-		 * in the same AG as each other.
-		 */
+		 
 		if (atomic_inc_return(&pag->pagf_fstrms) <= 1) {
 			if (((minlen && *longest >= minlen) ||
 			     (!minlen && pag->pagf_freeblks >= minfree)) &&
 			    (!xfs_perag_prefers_metadata(pag) ||
 			     !(flags & XFS_PICK_USERDATA) ||
 			     (flags & XFS_PICK_LOWSPACE))) {
-				/* Break out, retaining the reference on the AG. */
+				 
 				free = pag->pagf_freeblks;
 				break;
 			}
 		}
 
-		/* Drop the reference on this AG, it's not usable. */
+		 
 		atomic_dec(&pag->pagf_fstrms);
 	}
 
@@ -124,31 +111,19 @@ restart:
 	}
 
 	if (!pag) {
-		/*
-		 * Allow a second pass to give xfs_bmap_longest_free_extent()
-		 * another attempt at locking AGFs that it might have skipped
-		 * over before we fail.
-		 */
+		 
 		if (first_pass) {
 			first_pass = false;
 			goto restart;
 		}
 
-		/*
-		 * We must be low on data space, so run a final lowspace
-		 * optimised selection pass if we haven't already.
-		 */
+		 
 		if (!(flags & XFS_PICK_LOWSPACE)) {
 			flags |= XFS_PICK_LOWSPACE;
 			goto restart;
 		}
 
-		/*
-		 * No unassociated AGs are available, so select the AG with the
-		 * most free space, regardless of whether it's already in use by
-		 * another filestream. It none suit, just use whatever AG we can
-		 * grab.
-		 */
+		 
 		if (!max_pag) {
 			for_each_perag_wrap(args->mp, 0, start_agno, args->pag)
 				break;
@@ -193,15 +168,7 @@ out:
 	return dir ? XFS_I(dir) : NULL;
 }
 
-/*
- * Lookup the mru cache for an existing association. If one exists and we can
- * use it, return with an active perag reference indicating that the allocation
- * will proceed with that association.
- *
- * If we have no association, or we cannot use the current one and have to
- * destroy it, return with longest = 0 to tell the caller to create a new
- * association.
- */
+ 
 static int
 xfs_filestream_lookup_association(
 	struct xfs_bmalloca	*ap,
@@ -218,12 +185,7 @@ xfs_filestream_lookup_association(
 	mru = xfs_mru_cache_lookup(mp->m_filestream, pino);
 	if (!mru)
 		return 0;
-	/*
-	 * Grab the pag and take an extra active reference for the caller whilst
-	 * the mru item cannot go away. This means we'll pin the perag with
-	 * the reference we get here even if the filestreams association is torn
-	 * down immediately after we mark the lookup as done.
-	 */
+	 
 	pag = container_of(mru, struct xfs_fstrm_item, mru)->pag;
 	atomic_inc(&pag->pag_active_ref);
 	xfs_mru_cache_done(mp->m_filestream);
@@ -233,11 +195,7 @@ xfs_filestream_lookup_association(
 	ap->blkno = XFS_AGB_TO_FSB(args->mp, pag->pag_agno, 0);
 	xfs_bmap_adjacent(ap);
 
-	/*
-	 * If there is very little free space before we start a filestreams
-	 * allocation, we're almost guaranteed to fail to find a large enough
-	 * free space available so just use the cached AG.
-	 */
+	 
 	if (ap->tp->t_flags & XFS_TRANS_LOWMODE) {
 		*longest = 1;
 		goto out_done;
@@ -247,7 +205,7 @@ xfs_filestream_lookup_association(
 	if (error == -EAGAIN)
 		error = 0;
 	if (error || *longest < args->maxlen) {
-		/* We aren't going to use this perag */
+		 
 		*longest = 0;
 		xfs_perag_rele(pag);
 		return error;
@@ -272,7 +230,7 @@ xfs_filestream_create_association(
 	int			flags = 0;
 	int			error;
 
-	/* Changing parent AG association now, so remove the existing one. */
+	 
 	mru = xfs_mru_cache_remove(mp->m_filestream, pino);
 	if (mru) {
 		struct xfs_fstrm_item *item =
@@ -301,18 +259,7 @@ xfs_filestream_create_association(
 	if (error)
 		return error;
 
-	/*
-	 * We are going to use this perag now, so create an assoication for it.
-	 * xfs_filestream_pick_ag() has already bumped the perag fstrms counter
-	 * for us, so all we need to do here is take another active reference to
-	 * the perag for the cached association.
-	 *
-	 * If we fail to store the association, we need to drop the fstrms
-	 * counter as well as drop the perag reference we take here for the
-	 * item. We do not need to return an error for this failure - as long as
-	 * we return a referenced AG, the allocation can still go ahead just
-	 * fine.
-	 */
+	 
 	item = kmem_alloc(sizeof(*item), KM_MAYFAIL);
 	if (!item)
 		goto out_put_fstrms;
@@ -332,15 +279,7 @@ out_put_fstrms:
 	return 0;
 }
 
-/*
- * Search for an allocation group with a single extent large enough for
- * the request. First we look for an existing association and use that if it
- * is found. Otherwise, we create a new association by selecting an AG that fits
- * the allocation criteria.
- *
- * We return with a referenced perag in args->pag to indicate which AG we are
- * allocating into or an error with no references held.
- */
+ 
 int
 xfs_filestream_select_ag(
 	struct xfs_bmalloca	*ap,
@@ -388,13 +327,7 @@ int
 xfs_filestream_mount(
 	xfs_mount_t	*mp)
 {
-	/*
-	 * The filestream timer tunable is currently fixed within the range of
-	 * one second to four minutes, with five seconds being the default.  The
-	 * group count is somewhat arbitrary, but it'd be nice to adhere to the
-	 * timer tunable to within about 10 percent.  This requires at least 10
-	 * groups.
-	 */
+	 
 	return xfs_mru_cache_create(&mp->m_filestream, mp,
 			xfs_fstrm_centisecs * 10, 10, xfs_fstrm_free_func);
 }

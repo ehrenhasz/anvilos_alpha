@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB */
-/* Copyright (c) 2023, NVIDIA CORPORATION & AFFILIATES. All rights reserved. */
+ 
+ 
 
 #ifndef __MLX5_EN_ACT_STATS_H__
 #define __MLX5_EN_ACT_STATS_H__
@@ -24,4 +24,4 @@ int
 mlx5e_tc_act_stats_fill_stats(struct mlx5e_tc_act_stats_handle *handle,
 			      struct flow_offload_action *fl_act);
 
-#endif /* __MLX5_EN_ACT_STATS_H__ */
+#endif  

@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * BCM63XX CFE image tag parser
- *
- * Copyright © 2006-2008  Florian Fainelli <florian@openwrt.org>
- *			  Mike Albon <malbon@openwrt.org>
- * Copyright © 2009-2010  Daniel Dickinson <openwrt@cshore.neomailbox.net>
- * Copyright © 2011-2013  Jonas Gorski <jonas.gorski@gmail.com>
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -21,7 +14,7 @@
 #include <linux/mtd/partitions.h>
 #include <linux/of.h>
 
-/* Ensure strings read from flash structs are null terminated */
+ 
 #define STR_NULL_TERMINATE(x) \
 	do { char *_str = (x); _str[sizeof(x) - 1] = 0; } while (0)
 
@@ -60,7 +53,7 @@ static int bcm963xx_parse_imagetag_partitions(struct mtd_info *master,
 					const struct mtd_partition **pparts,
 					struct mtd_part_parser_data *data)
 {
-	/* CFE, NVRAM and global Linux are always present */
+	 
 	int nrparts = 0, curpart = 0;
 	struct bcm_tag *buf = NULL;
 	struct mtd_partition *parts;
@@ -74,7 +67,7 @@ static int bcm963xx_parse_imagetag_partitions(struct mtd_info *master,
 	if (!buf)
 		return -ENOMEM;
 
-	/* Get the tag */
+	 
 	ret = bcm963xx_read_imagetag(master, "rootfs", 0, buf);
 	if (!ret) {
 		STR_NULL_TERMINATE(buf->flash_image_start);
@@ -115,11 +108,7 @@ static int bcm963xx_parse_imagetag_partitions(struct mtd_info *master,
 			goto out;
 		}
 
-		/*
-		 * Addresses are flash absolute, so convert to partition
-		 * relative addresses. Assume either kernel or rootfs will
-		 * directly follow the image tag.
-		 */
+		 
 		if (rootfsaddr < kerneladdr)
 			offset = rootfsaddr - sizeof(struct bcm_tag);
 		else
@@ -130,11 +119,11 @@ static int bcm963xx_parse_imagetag_partitions(struct mtd_info *master,
 		spareaddr = roundup(totallen, master->erasesize);
 
 		if (rootfsaddr < kerneladdr) {
-			/* default Broadcom layout */
+			 
 			rootfslen = kerneladdr - rootfsaddr;
 			rootfs_first = true;
 		} else {
-			/* OpenWrt layout */
+			 
 			rootfsaddr = kerneladdr + kernellen;
 			rootfslen = spareaddr - rootfsaddr;
 		}
@@ -143,7 +132,7 @@ static int bcm963xx_parse_imagetag_partitions(struct mtd_info *master,
 	}
 	sparelen = master->size - spareaddr;
 
-	/* Determine number of partitions */
+	 
 	if (rootfslen > 0)
 		nrparts++;
 
@@ -156,7 +145,7 @@ static int bcm963xx_parse_imagetag_partitions(struct mtd_info *master,
 		goto out;
 	}
 
-	/* Start building partition list */
+	 
 	if (kernellen > 0) {
 		int kernelpart = curpart;
 

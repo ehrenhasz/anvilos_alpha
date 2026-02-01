@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2017-2018 HUAWEI, Inc.
- *             https://www.huawei.com/
- * Copyright (C) 2022, Alibaba Cloud
- */
+
+ 
 #include "xattr.h"
 #include <trace/events/erofs.h>
 
@@ -12,22 +8,18 @@ struct erofs_qstr {
 	const unsigned char *end;
 };
 
-/* based on the end of qn is accurate and it must have the trailing '\0' */
+ 
 static inline int erofs_dirnamecmp(const struct erofs_qstr *qn,
 				   const struct erofs_qstr *qd,
 				   unsigned int *matched)
 {
 	unsigned int i = *matched;
 
-	/*
-	 * on-disk error, let's only BUG_ON in the debugging mode.
-	 * otherwise, it will return 1 to just skip the invalid name
-	 * and go on (in consideration of the lookup performance).
-	 */
+	 
 	DBG_BUGON(qd->name > qd->end);
 
-	/* qd could not have trailing '\0' */
-	/* However it is absolutely safe if < qd->end */
+	 
+	 
 	while (qd->name + i < qd->end && qd->name[i] != '\0') {
 		if (qn->name[i] != qd->name[i]) {
 			*matched = i;
@@ -36,7 +28,7 @@ static inline int erofs_dirnamecmp(const struct erofs_qstr *qn,
 		++i;
 	}
 	*matched = i;
-	/* See comments in __d_alloc on the terminating NUL character */
+	 
 	return qn->name[i] == '\0' ? 0 : 1;
 }
 
@@ -51,7 +43,7 @@ static struct erofs_dirent *find_target_dirent(struct erofs_qstr *name,
 	unsigned int startprfx, endprfx;
 	struct erofs_dirent *const de = (struct erofs_dirent *)data;
 
-	/* since the 1st dirent has been evaluated previously */
+	 
 	head = 1;
 	back = ndirents - 1;
 	startprfx = endprfx = 0;
@@ -69,7 +61,7 @@ static struct erofs_dirent *find_target_dirent(struct erofs_qstr *name,
 							 dirblksize)
 		};
 
-		/* string comparison without already matched prefix */
+		 
 		int ret = erofs_dirnamecmp(name, &dname, &matched);
 
 		if (!ret) {
@@ -127,7 +119,7 @@ static void *erofs_find_target_block(struct erofs_buf *target,
 				dname.end = (u8 *)de +
 					nameoff_from_disk(de[1].nameoff, bsz);
 
-			/* string comparison without already matched prefix */
+			 
 			diff = erofs_dirnamecmp(name, &dname, &matched);
 
 			if (!diff) {
@@ -150,7 +142,7 @@ static void *erofs_find_target_block(struct erofs_buf *target,
 			}
 			continue;
 		}
-out:		/* free if the candidate is valid */
+out:		 
 		if (!IS_ERR(candidate))
 			erofs_put_metabuf(target);
 		return de;
@@ -206,7 +198,7 @@ static struct dentry *erofs_lookup(struct inode *dir, struct dentry *dentry,
 	err = erofs_namei(dir, &dentry->d_name, &nid, &d_type);
 
 	if (err == -ENOENT)
-		/* negative dentry */
+		 
 		inode = NULL;
 	else if (err)
 		inode = ERR_PTR(err);

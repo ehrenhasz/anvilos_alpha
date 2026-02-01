@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Test that we can't sigreturn to kernel addresses, or to kernel mode.
- */
+
+ 
 
 #define _GNU_SOURCE
 
@@ -68,53 +66,53 @@ int test_sigreturn_kernel(void)
 	FAIL_IF(sigaction(SIGUSR1, &act, NULL));
 
 	for (i = 0; i < 2; i++) {
-		// Return to kernel
+		 
 		sigreturn_addr = 0xcull << 60;
 		pid = fork_child();
 		expect_segv(pid);
 
-		// Return to kernel virtual
+		 
 		sigreturn_addr = 0xc008ull << 48;
 		pid = fork_child();
 		expect_segv(pid);
 
-		// Return out of range
+		 
 		sigreturn_addr = 0xc010ull << 48;
 		pid = fork_child();
 		expect_segv(pid);
 
-		// Return to no-man's land, just below PAGE_OFFSET
+		 
 		sigreturn_addr = (0xcull << 60) - (64 * 1024);
 		pid = fork_child();
 		expect_segv(pid);
 
-		// Return to no-man's land, above TASK_SIZE_4PB
+		
 		sigreturn_addr = 0x1ull << 52;
 		pid = fork_child();
 		expect_segv(pid);
 
-		// Return to 0xd space
+		
 		sigreturn_addr = 0xdull << 60;
 		pid = fork_child();
 		expect_segv(pid);
 
-		// Return to 0xe space
+		
 		sigreturn_addr = 0xeull << 60;
 		pid = fork_child();
 		expect_segv(pid);
 
-		// Return to 0xf space
+		
 		sigreturn_addr = 0xfull << 60;
 		pid = fork_child();
 		expect_segv(pid);
 
-		// Attempt to set PR=0 for 2nd loop (should be blocked by kernel)
+		
 		sigreturn_msr_mask = ~MSR_PR;
 	}
 
 	printf("All children killed as expected\n");
 
-	// Don't change address, just MSR, should return to user as normal
+	
 	sigreturn_addr = 0;
 	sigreturn_msr_mask = ~MSR_PR;
 	pid = fork_child();

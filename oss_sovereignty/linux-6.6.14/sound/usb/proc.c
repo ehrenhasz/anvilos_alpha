@@ -1,6 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/usb.h>
@@ -15,21 +14,19 @@
 #include "endpoint.h"
 #include "proc.h"
 
-/* convert our full speed USB rate into sampling rate in Hz */
+ 
 static inline unsigned get_full_speed_hz(unsigned int usb_rate)
 {
 	return (usb_rate * 125 + (1 << 12)) >> 13;
 }
 
-/* convert our high speed USB rate into sampling rate in Hz */
+ 
 static inline unsigned get_high_speed_hz(unsigned int usb_rate)
 {
 	return (usb_rate * 125 + (1 << 9)) >> 10;
 }
 
-/*
- * common proc files to show the usb device info
- */
+ 
 static void proc_audio_usbbus_read(struct snd_info_entry *entry, struct snd_info_buffer *buffer)
 {
 	struct snd_usb_audio *chip = entry->private_data;
@@ -86,9 +83,7 @@ static const char * const channel_labels[] = {
 	[SNDRV_CHMAP_RRC]	= "RRC",
 };
 
-/*
- * proc interface for list the supported pcm formats
- */
+ 
 static void proc_dump_substream_formats(struct snd_usb_substream *subs, struct snd_info_buffer *buffer)
 {
 	struct audioformat *fp;
@@ -164,8 +159,8 @@ static void proc_dump_substream_formats(struct snd_usb_substream *subs, struct s
 				    fp->implicit_fb ? "Yes" : "No");
 		}
 
-		// snd_iprintf(buffer, "    Max Packet Size = %d\n", fp->maxpacksize);
-		// snd_iprintf(buffer, "    EP Attribute = %#x\n", fp->attributes);
+		
+		
 	}
 }
 

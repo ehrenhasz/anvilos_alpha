@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright(c) 2013-2015 Intel Corporation. All rights reserved.
- */
+
+ 
 #include <linux/kstrtox.h>
 #include <linux/module.h>
 #include <linux/device.h>
@@ -67,11 +65,7 @@ static int is_namespace_uuid_busy(struct device *dev, void *data)
 	return 0;
 }
 
-/**
- * nd_is_uuid_unique - verify that no other namespace has @uuid
- * @dev: any device on a nvdimm_bus
- * @uuid: uuid to check
- */
+ 
 bool nd_is_uuid_unique(struct device *dev, uuid_t *uuid)
 {
 	struct nvdimm_bus *nvdimm_bus = walk_to_nvdimm_bus(dev);
@@ -120,7 +114,7 @@ unsigned int pmem_sector_size(struct nd_namespace_common *ndns)
 
 		nspm = to_nd_namespace_pmem(&ndns->dev);
 		if (nspm->lbasize == 0 || nspm->lbasize == 512)
-			/* default */;
+			 ;
 		else if (nspm->lbasize == 4096)
 			return 4096;
 		else
@@ -128,10 +122,7 @@ unsigned int pmem_sector_size(struct nd_namespace_common *ndns)
 					nspm->lbasize);
 	}
 
-	/*
-	 * There is no namespace label (is_namespace_io()), or the label
-	 * indicates the default sector size.
-	 */
+	 
 	return 512;
 }
 EXPORT_SYMBOL(pmem_sector_size);
@@ -238,16 +229,13 @@ static int nd_namespace_label_update(struct nd_region *nd_region,
 	if (dev->driver || to_ndns(dev)->claim)
 		return 0;
 
-	/*
-	 * Only allow label writes that will result in a valid namespace
-	 * or deletion of an existing namespace.
-	 */
+	 
 	if (is_namespace_pmem(dev)) {
 		struct nd_namespace_pmem *nspm = to_nd_namespace_pmem(dev);
 		resource_size_t size = resource_size(&nspm->nsio.res);
 
 		if (size == 0 && nspm->uuid)
-			/* delete allocation */;
+			 ;
 		else if (!nspm->uuid)
 			return 0;
 
@@ -313,7 +301,7 @@ static int scan_free(struct nd_region *nd_region,
 			n -= resource_size(res);
 			nd_dbg_dpa(nd_region, ndd, res, "delete %d\n", rc);
 			nvdimm_free_dpa(ndd, res);
-			/* retry with last resource deleted */
+			 
 			continue;
 		}
 
@@ -327,17 +315,7 @@ static int scan_free(struct nd_region *nd_region,
 	return rc;
 }
 
-/**
- * shrink_dpa_allocation - for each dimm in region free n bytes for label_id
- * @nd_region: the set of dimms to reclaim @n bytes from
- * @label_id: unique identifier for the namespace consuming this dpa range
- * @n: number of bytes per-dimm to release
- *
- * Assumes resources are ordered.  Starting from the end try to
- * adjust_resource() the allocation to @n, but if @n is larger than the
- * allocation delete it and find the 'new' last allocation in the label
- * set.
- */
+ 
 static int shrink_dpa_allocation(struct nd_region *nd_region,
 		struct nd_label_id *label_id, resource_size_t n)
 {
@@ -363,7 +341,7 @@ static resource_size_t init_dpa_allocation(struct nd_label_id *label_id,
 	struct resource *res;
 	int rc = 0;
 
-	/* first resource allocation for this label-id or dimm */
+	 
 	res = nvdimm_allocate_dpa(ndd, label_id, nd_mapping->start, n);
 	if (!res)
 		rc = -EBUSY;
@@ -373,22 +351,7 @@ static resource_size_t init_dpa_allocation(struct nd_label_id *label_id,
 }
 
 
-/**
- * space_valid() - validate free dpa space against constraints
- * @nd_region: hosting region of the free space
- * @ndd: dimm device data for debug
- * @label_id: namespace id to allocate space
- * @prev: potential allocation that precedes free space
- * @next: allocation that follows the given free space range
- * @exist: first allocation with same id in the mapping
- * @n: range that must satisfied for pmem allocations
- * @valid: free space range to validate
- *
- * BLK-space is valid as long as it does not precede a PMEM
- * allocation in a given region. PMEM-space must be contiguous
- * and adjacent to an existing allocation (if one
- * exists).  If reserving PMEM any space is valid.
- */
+ 
 static void space_valid(struct nd_region *nd_region, struct nvdimm_drvdata *ndd,
 		struct nd_label_id *label_id, struct resource *prev,
 		struct resource *next, struct resource *exist,
@@ -407,21 +370,21 @@ static void space_valid(struct nd_region *nd_region, struct nvdimm_drvdata *ndd,
 	if (is_reserve)
 		return;
 
-	/* allocation needs to be contiguous, so this is all or nothing */
+	 
 	if (resource_size(valid) < n)
 		goto invalid;
 
-	/* we've got all the space we need and no existing allocation */
+	 
 	if (!exist)
 		return;
 
-	/* allocation needs to be contiguous with the existing namespace */
+	 
 	if (valid->start == exist->end + 1
 			|| valid->end == exist->start - 1)
 		return;
 
  invalid:
-	/* truncate @valid size to 0 */
+	 
 	valid->end = valid->start - 1;
 }
 
@@ -455,13 +418,13 @@ static resource_size_t scan_allocate(struct nd_region *nd_region,
 		const char *action;
 		int rc = 0;
 
-		/* ignore resources outside this nd_mapping */
+		 
 		if (res->start > mapping_end)
 			continue;
 		if (res->end < nd_mapping->start)
 			continue;
 
-		/* space at the beginning of the mapping */
+		 
 		if (!first++ && res->start > nd_mapping->start) {
 			valid.start = nd_mapping->start;
 			valid.end = res->start - 1;
@@ -472,7 +435,7 @@ static resource_size_t scan_allocate(struct nd_region *nd_region,
 				loc = ALLOC_BEFORE;
 		}
 
-		/* space between allocations */
+		 
 		if (!loc && next) {
 			valid.start = res->start + resource_size(res);
 			valid.end = min(mapping_end, next->start - 1);
@@ -483,7 +446,7 @@ static resource_size_t scan_allocate(struct nd_region *nd_region,
 				loc = ALLOC_MID;
 		}
 
-		/* space at the end of the mapping */
+		 
 		if (!loc && !next) {
 			valid.start = res->start + resource_size(res);
 			valid.end = mapping_end;
@@ -500,7 +463,7 @@ static resource_size_t scan_allocate(struct nd_region *nd_region,
 		switch (loc) {
 		case ALLOC_BEFORE:
 			if (strcmp(res->name, label_id->id) == 0) {
-				/* adjust current resource up */
+				 
 				rc = adjust_resource(res, res->start - allocate,
 						resource_size(res) + allocate);
 				action = "cur grow up";
@@ -509,7 +472,7 @@ static resource_size_t scan_allocate(struct nd_region *nd_region,
 			break;
 		case ALLOC_MID:
 			if (strcmp(next->name, label_id->id) == 0) {
-				/* adjust next resource up */
+				 
 				rc = adjust_resource(next, next->start
 						- allocate, resource_size(next)
 						+ allocate);
@@ -536,7 +499,7 @@ static resource_size_t scan_allocate(struct nd_region *nd_region,
 			if (!new_res)
 				rc = -EBUSY;
 		} else if (strcmp(action, "grow down") == 0) {
-			/* adjust current resource down */
+			 
 			rc = adjust_resource(res, res->start, resource_size(res)
 					+ allocate);
 			if (rc == 0)
@@ -554,13 +517,7 @@ static resource_size_t scan_allocate(struct nd_region *nd_region,
 
 		n -= allocate;
 		if (n) {
-			/*
-			 * Retry scan with newly inserted resources.
-			 * For example, if we did an ALLOC_BEFORE
-			 * insertion there may also have been space
-			 * available for an ALLOC_AFTER insertion, so we
-			 * need to check this same resource again
-			 */
+			 
 			goto retry;
 		} else
 			return 0;
@@ -650,19 +607,7 @@ void release_free_pmem(struct nvdimm_bus *nvdimm_bus,
 			nvdimm_free_dpa(ndd, res);
 }
 
-/**
- * grow_dpa_allocation - for each dimm allocate n bytes for @label_id
- * @nd_region: the set of dimms to allocate @n more bytes from
- * @label_id: unique identifier for the namespace consuming this dpa range
- * @n: number of bytes per-dimm to add to the existing allocation
- *
- * Assumes resources are ordered.  For BLK regions, first consume
- * BLK-only available DPA free space, then consume PMEM-aliased DPA
- * space starting at the highest DPA.  For PMEM regions start
- * allocations from the start of an interleave set and end at the first
- * BLK allocation or the end of the interleave set, whichever comes
- * first.
- */
+ 
 static int grow_dpa_allocation(struct nd_region *nd_region,
 		struct nd_label_id *label_id, resource_size_t n)
 {
@@ -713,7 +658,7 @@ static void nd_namespace_pmem_set_resource(struct nd_region *nd_region,
 
 		nd_label_gen_id(&label_id, nspm->uuid, 0);
 
-		/* calculate a spa offset from the dpa allocation offset */
+		 
 		for_each_dpa_resource(ndd, res)
 			if (strcmp(res->name, label_id.id) == 0) {
 				offset = (res->start - nd_mapping->start)
@@ -762,10 +707,7 @@ static ssize_t __size_store(struct device *dev, unsigned long long val)
 		id = nspm->id;
 	}
 
-	/*
-	 * We need a uuid for the allocation-label and dimm(s) on which
-	 * to store the label.
-	 */
+	 
 	if (uuid_not_set(uuid, dev, __func__))
 		return -ENXIO;
 	if (nd_region->ndr_mappings == 0) {
@@ -785,10 +727,7 @@ static ssize_t __size_store(struct device *dev, unsigned long long val)
 		nd_mapping = &nd_region->mapping[i];
 		ndd = to_ndd(nd_mapping);
 
-		/*
-		 * All dimms in an interleave set, need to be enabled
-		 * for the size to be changed.
-		 */
+		 
 		if (!ndd)
 			return -ENXIO;
 
@@ -820,12 +759,7 @@ static ssize_t __size_store(struct device *dev, unsigned long long val)
 				val * nd_region->ndr_mappings);
 	}
 
-	/*
-	 * Try to delete the namespace if we deleted all of its
-	 * allocation, this is not the seed or 0th device for the
-	 * region, and it is not actively claimed by a btt, pfn, or dax
-	 * instance.
-	 */
+	 
 	if (val == 0 && id != 0 && nd_region->ns_seed != dev && !ndns->claim)
 		nd_device_unregister(dev, ND_ASYNC);
 
@@ -850,7 +784,7 @@ static ssize_t size_store(struct device *dev,
 	if (rc >= 0)
 		rc = nd_namespace_label_update(nd_region, dev);
 
-	/* setting size zero == 'delete namespace' */
+	 
 	if (rc == 0 && val == 0 && is_namespace_pmem(dev)) {
 		struct nd_namespace_pmem *nspm = to_nd_namespace_pmem(dev);
 
@@ -945,13 +879,7 @@ static ssize_t uuid_show(struct device *dev, struct device_attribute *attr,
 	return sprintf(buf, "\n");
 }
 
-/**
- * namespace_update_uuid - check for a unique uuid and whether we're "renaming"
- * @nd_region: parent region so we can updates all dimms in the set
- * @dev: namespace type for generating label_id
- * @new_uuid: incoming uuid
- * @old_uuid: reference to the uuid storage location in the namespace object
- */
+ 
 static int namespace_update_uuid(struct nd_region *nd_region,
 				 struct device *dev, uuid_t *new_uuid,
 				 uuid_t **old_uuid)
@@ -966,22 +894,11 @@ static int namespace_update_uuid(struct nd_region *nd_region,
 	if (*old_uuid == NULL)
 		goto out;
 
-	/*
-	 * If we've already written a label with this uuid, then it's
-	 * too late to rename because we can't reliably update the uuid
-	 * without losing the old namespace.  Userspace must delete this
-	 * namespace to abandon the old uuid.
-	 */
+	 
 	for (i = 0; i < nd_region->ndr_mappings; i++) {
 		struct nd_mapping *nd_mapping = &nd_region->mapping[i];
 
-		/*
-		 * This check by itself is sufficient because old_uuid
-		 * would be NULL above if this uuid did not exist in the
-		 * currently written set.
-		 *
-		 * FIXME: can we delete uuid with zero dpa allocated?
-		 */
+		 
 		if (list_empty(&nd_mapping->labels))
 			return -EBUSY;
 	}
@@ -1074,7 +991,7 @@ static ssize_t resource_show(struct device *dev,
 	} else
 		return -ENXIO;
 
-	/* no address to convey if the namespace has no allocation */
+	 
 	if (resource_size(res) == 0)
 		return -ENXIO;
 	return sprintf(buf, "%#llx\n", (unsigned long long) res->start);
@@ -1175,10 +1092,7 @@ static int btt_claim_class(struct device *dev)
 		struct nvdimm_drvdata *ndd = to_ndd(nd_mapping);
 		struct nd_namespace_index *nsindex;
 
-		/*
-		 * If any of the DIMMs do not support labels the only
-		 * possible BTT format is v1.
-		 */
+		 
 		if (!ndd) {
 			loop_bitmask = 0;
 			break;
@@ -1188,7 +1102,7 @@ static int btt_claim_class(struct device *dev)
 		if (nsindex == NULL)
 			loop_bitmask |= 1;
 		else {
-			/* check whether existing labels are v1.1 or v1.2 */
+			 
 			if (__le16_to_cpu(nsindex->major) == 1
 					&& __le16_to_cpu(nsindex->minor) == 1)
 				loop_bitmask |= 2;
@@ -1196,24 +1110,7 @@ static int btt_claim_class(struct device *dev)
 				loop_bitmask |= 4;
 		}
 	}
-	/*
-	 * If nsindex is null loop_bitmask's bit 0 will be set, and if an index
-	 * block is found, a v1.1 label for any mapping will set bit 1, and a
-	 * v1.2 label will set bit 2.
-	 *
-	 * At the end of the loop, at most one of the three bits must be set.
-	 * If multiple bits were set, it means the different mappings disagree
-	 * about their labels, and this must be cleaned up first.
-	 *
-	 * If all the label index blocks are found to agree, nsindex of NULL
-	 * implies labels haven't been initialized yet, and when they will,
-	 * they will be of the 1.2 format, so we can assume BTT2.0
-	 *
-	 * If 1.1 labels are found, we enforce BTT1.1, and if 1.2 labels are
-	 * found, we enforce BTT2.0
-	 *
-	 * If the loop was never entered, default to BTT1.1 (legacy namespaces)
-	 */
+	 
 	switch (loop_bitmask) {
 	case 0:
 	case 2:
@@ -1382,7 +1279,7 @@ static umode_t namespace_visible(struct kobject *kobj,
 		return a->mode;
 	}
 
-	/* base is_namespace_io() attributes */
+	 
 	if (a == &dev_attr_nstype.attr || a == &dev_attr_size.attr ||
 	    a == &dev_attr_holder.attr || a == &dev_attr_holder_class.attr ||
 	    a == &dev_attr_force_raw.attr || a == &dev_attr_mode.attr ||
@@ -1445,10 +1342,7 @@ struct nd_namespace_common *nvdimm_namespace_common_probe(struct device *dev)
 		if (!ndns)
 			return ERR_PTR(-ENODEV);
 
-		/*
-		 * Flush any in-progess probes / removals in the driver
-		 * for the raw personality of this namespace.
-		 */
+		 
 		device_lock(&ndns->dev);
 		device_unlock(&ndns->dev);
 		if (ndns->dev.driver) {
@@ -1481,11 +1375,7 @@ struct nd_namespace_common *nvdimm_namespace_common_probe(struct device *dev)
 		return ERR_PTR(-ENODEV);
 	}
 
-	/*
-	 * Note, alignment validation for fsdax and devdax mode
-	 * namespaces happens in nd_pfn_validate() where infoblock
-	 * padding parameters can be applied.
-	 */
+	 
 	if (pmem_should_map_pages(dev)) {
 		struct nd_namespace_io *nsio = to_nd_namespace_io(&ndns->dev);
 		struct resource *res = &nsio->res;
@@ -1629,17 +1519,14 @@ static int select_pmem_id(struct nd_region *nd_region, const uuid_t *pmem_id)
 			return -EINVAL;
 		}
 
-		/*
-		 * Check that this label is compliant with the dpa
-		 * range published in NFIT
-		 */
+		 
 		hw_start = nd_mapping->start;
 		hw_end = hw_start + nd_mapping->size;
 		pmem_start = nsl_get_dpa(ndd, nd_label);
 		pmem_end = pmem_start + nsl_get_rawsize(ndd, nd_label);
 		if (pmem_start >= hw_start && pmem_start < hw_end
 				&& pmem_end <= hw_end && pmem_end > hw_start)
-			/* pass */;
+			 ;
 		else {
 			dev_dbg(&nd_region->dev, "%s invalid label for %pUb\n",
 				dev_name(ndd->dev),
@@ -1647,18 +1534,13 @@ static int select_pmem_id(struct nd_region *nd_region, const uuid_t *pmem_id)
 			return -EINVAL;
 		}
 
-		/* move recently validated label to the front of the list */
+		 
 		list_move(&label_ent->list, &nd_mapping->labels);
 	}
 	return 0;
 }
 
-/**
- * create_namespace_pmem - validate interleave set labelling, retrieve label0
- * @nd_region: region with mappings to validate
- * @nspm: target namespace to create
- * @nd_label: target pmem namespace label to evaluate
- */
+ 
 static struct device *create_namespace_pmem(struct nd_region *nd_region,
 					    struct nd_mapping *nd_mapping,
 					    struct nd_namespace_label *nd_label)
@@ -1716,28 +1598,20 @@ static struct device *create_namespace_pmem(struct nd_region *nd_region,
 	if (i < nd_region->ndr_mappings) {
 		struct nvdimm *nvdimm = nd_region->mapping[i].nvdimm;
 
-		/*
-		 * Give up if we don't find an instance of a uuid at each
-		 * position (from 0 to nd_region->ndr_mappings - 1), or if we
-		 * find a dimm with two instances of the same uuid.
-		 */
+		 
 		dev_err(&nd_region->dev, "%s missing label for %pUb\n",
 			nvdimm_name(nvdimm), nsl_uuid_raw(ndd, nd_label));
 		rc = -EINVAL;
 		goto err;
 	}
 
-	/*
-	 * Fix up each mapping's 'labels' to have the validated pmem label for
-	 * that position at labels[0], and NULL at labels[1].  In the process,
-	 * check that the namespace aligns with interleave-set.
-	 */
+	 
 	nsl_get_uuid(ndd, nd_label, &uuid);
 	rc = select_pmem_id(nd_region, &uuid);
 	if (rc)
 		goto err;
 
-	/* Calculate total size and populate namespace properties from label0 */
+	 
 	for (i = 0; i < nd_region->ndr_mappings; i++) {
 		struct nd_namespace_label *label0;
 		struct nvdimm_drvdata *ndd;
@@ -1832,10 +1706,7 @@ void nd_region_create_ns_seed(struct nd_region *nd_region)
 
 	nd_region->ns_seed = nd_namespace_pmem_create(nd_region);
 
-	/*
-	 * Seed creation failures are not fatal, provisioning is simply
-	 * disabled until memory becomes available
-	 */
+	 
 	if (!nd_region->ns_seed)
 		dev_err(&nd_region->dev, "failed to create namespace\n");
 	else {
@@ -1850,10 +1721,7 @@ void nd_region_create_dax_seed(struct nd_region *nd_region)
 {
 	WARN_ON(!is_nvdimm_bus_locked(&nd_region->dev));
 	nd_region->dax_seed = nd_dax_create(nd_region);
-	/*
-	 * Seed creation failures are not fatal, provisioning is simply
-	 * disabled until memory becomes available
-	 */
+	 
 	if (!nd_region->dax_seed)
 		dev_err(&nd_region->dev, "failed to create dax namespace\n");
 }
@@ -1862,10 +1730,7 @@ void nd_region_create_pfn_seed(struct nd_region *nd_region)
 {
 	WARN_ON(!is_nvdimm_bus_locked(&nd_region->dev));
 	nd_region->pfn_seed = nd_pfn_create(nd_region);
-	/*
-	 * Seed creation failures are not fatal, provisioning is simply
-	 * disabled until memory becomes available
-	 */
+	 
 	if (!nd_region->pfn_seed)
 		dev_err(&nd_region->dev, "failed to create pfn namespace\n");
 }
@@ -1874,10 +1739,7 @@ void nd_region_create_btt_seed(struct nd_region *nd_region)
 {
 	WARN_ON(!is_nvdimm_bus_locked(&nd_region->dev));
 	nd_region->btt_seed = nd_btt_create(nd_region);
-	/*
-	 * Seed creation failures are not fatal, provisioning is simply
-	 * disabled until memory becomes available
-	 */
+	 
 	if (!nd_region->btt_seed)
 		dev_err(&nd_region->dev, "failed to create btt namespace\n");
 }
@@ -1933,7 +1795,7 @@ static struct device **scan_labels(struct nd_region *nd_region)
 	struct nvdimm_drvdata *ndd = to_ndd(nd_mapping);
 	resource_size_t map_end = nd_mapping->start + nd_mapping->size - 1;
 
-	/* "safe" because create_namespace_pmem() might list_move() label_ent */
+	 
 	list_for_each_entry_safe(label_ent, e, &nd_mapping->labels, list) {
 		struct nd_namespace_label *nd_label = label_ent->label;
 		struct device **__devs;
@@ -1941,7 +1803,7 @@ static struct device **scan_labels(struct nd_region *nd_region)
 		if (!nd_label)
 			continue;
 
-		/* skip labels that describe extents outside of the region */
+		 
 		if (nsl_get_dpa(ndd, nd_label) < nd_mapping->start ||
 		    nsl_get_dpa(ndd, nd_label) > map_end)
 			continue;
@@ -1962,10 +1824,10 @@ static struct device **scan_labels(struct nd_region *nd_region)
 		if (IS_ERR(dev)) {
 			switch (PTR_ERR(dev)) {
 			case -EAGAIN:
-				/* skip invalid labels */
+				 
 				continue;
 			case -ENODEV:
-				/* fallthrough to seed creation */
+				 
 				break;
 			default:
 				goto err;
@@ -1981,7 +1843,7 @@ static struct device **scan_labels(struct nd_region *nd_region)
 	if (count == 0) {
 		struct nd_namespace_pmem *nspm;
 
-		/* Publish a zero-sized namespace for userspace to configure. */
+		 
 		nd_mapping_free_labels(nd_mapping);
 
 		devs = kcalloc(2, sizeof(dev), GFP_KERNEL);
@@ -1997,7 +1859,7 @@ static struct device **scan_labels(struct nd_region *nd_region)
 		dev->parent = &nd_region->dev;
 		devs[count++] = dev;
 	} else if (is_memory(&nd_region->dev)) {
-		/* clean unselected labels */
+		 
 		for (i = 0; i < nd_region->ndr_mappings; i++) {
 			struct list_head *l, *e;
 			LIST_HEAD(list);
@@ -2043,7 +1905,7 @@ static struct device **create_namespaces(struct nd_region *nd_region)
 	if (nd_region->ndr_mappings == 0)
 		return NULL;
 
-	/* lock down all mappings while we scan labels */
+	 
 	for (i = 0; i < nd_region->ndr_mappings; i++) {
 		nd_mapping = &nd_region->mapping[i];
 		mutex_lock_nested(&nd_mapping->lock, i);
@@ -2093,15 +1955,12 @@ static int init_active_labels(struct nd_region *nd_region)
 		struct nd_label_ent *label_ent;
 		int count, j;
 
-		/*
-		 * If the dimm is disabled then we may need to prevent
-		 * the region from being activated.
-		 */
+		 
 		if (!ndd) {
 			if (test_bit(NDD_LOCKED, &nvdimm->flags))
-				/* fail, label data may be unreadable */;
+				 ;
 			else if (test_bit(NDD_LABELING, &nvdimm->flags))
-				/* fail, labels needed to disambiguate dpa */;
+				 ;
 			else
 				continue;
 
@@ -2214,10 +2073,7 @@ int nd_region_register_namespaces(struct nd_region *nd_region, int *err)
 			put_device(dev);
 		}
 		*err = j - i;
-		/*
-		 * All of the namespaces we tried to register failed, so
-		 * fail region activation.
-		 */
+		 
 		if (*err == 0)
 			rc = -ENODEV;
 	}

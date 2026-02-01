@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  Driver for the NXP SAA7164 PCIe bridge
- *
- *  Copyright (c) 2010-2015 Steven Toth <stoth@kernellabs.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/moduleparam.h>
@@ -27,11 +23,11 @@ static int i2c_xfer(struct i2c_adapter *i2c_adap, struct i2c_msg *msgs, int num)
 		if (msgs[i].flags & I2C_M_RD) {
 			retval = saa7164_api_i2c_read(bus,
 				msgs[i].addr,
-				0 /* reglen */,
-				NULL /* reg */, msgs[i].len, msgs[i].buf);
+				0  ,
+				NULL  , msgs[i].len, msgs[i].buf);
 		} else if (i + 1 < num && (msgs[i + 1].flags & I2C_M_RD) &&
 			   msgs[i].addr == msgs[i + 1].addr) {
-			/* write then read from same address */
+			 
 
 			retval = saa7164_api_i2c_read(bus, msgs[i].addr,
 				msgs[i].len, msgs[i].buf,
@@ -43,7 +39,7 @@ static int i2c_xfer(struct i2c_adapter *i2c_adap, struct i2c_msg *msgs, int num)
 			if (retval < 0)
 				goto err;
 		} else {
-			/* write */
+			 
 			retval = saa7164_api_i2c_write(bus, msgs[i].addr,
 				msgs[i].len, msgs[i].buf);
 		}
@@ -66,7 +62,7 @@ static const struct i2c_algorithm saa7164_i2c_algo_template = {
 	.functionality	= saa7164_functionality,
 };
 
-/* ----------------------------------------------------------------------- */
+ 
 
 static const struct i2c_adapter saa7164_i2c_adap_template = {
 	.name              = "saa7164",

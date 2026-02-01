@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Random Number Generator driver for the Keystone SOC
- *
- * Copyright (C) 2016 Texas Instruments Incorporated - https://www.ti.com
- *
- * Authors:	Sandeep Nair
- *		Vitaly Andrianov
- */
+
+ 
 
 #include <linux/hw_random.h>
 #include <linux/kernel.h>
@@ -25,49 +18,37 @@
 
 #define SA_CMD_STATUS_OFS			0x8
 
-/* TRNG enable control in SA System module*/
+ 
 #define SA_CMD_STATUS_REG_TRNG_ENABLE		BIT(3)
 
-/* TRNG start control in TRNG module */
+ 
 #define TRNG_CNTL_REG_TRNG_ENABLE		BIT(10)
 
-/* Data ready indicator in STATUS register */
+ 
 #define TRNG_STATUS_REG_READY			BIT(0)
 
-/* Data ready clear control in INTACK register */
+ 
 #define TRNG_INTACK_REG_READY			BIT(0)
 
-/*
- * Number of samples taken to gather entropy during startup.
- * If value is 0, the number of samples is 2^24 else
- * equals value times 2^8.
- */
+ 
 #define TRNG_DEF_STARTUP_CYCLES			0
 #define TRNG_CNTL_REG_STARTUP_CYCLES_SHIFT	16
 
-/*
- * Minimum number of samples taken to regenerate entropy
- * If value is 0, the number of samples is 2^24 else
- * equals value times 2^6.
- */
+ 
 #define TRNG_DEF_MIN_REFILL_CYCLES		1
 #define TRNG_CFG_REG_MIN_REFILL_CYCLES_SHIFT	0
 
-/*
- * Maximum number of samples taken to regenerate entropy
- * If value is 0, the number of samples is 2^24 else
- * equals value times 2^8.
- */
+ 
 #define TRNG_DEF_MAX_REFILL_CYCLES		0
 #define TRNG_CFG_REG_MAX_REFILL_CYCLES_SHIFT	16
 
-/* Number of CLK input cycles between samples */
+ 
 #define TRNG_DEF_CLK_DIV_CYCLES			0
 #define TRNG_CFG_REG_SAMPLE_DIV_SHIFT		8
 
-/* Maximum retries to get rng data */
+ 
 #define SA_MAX_RNG_DATA_RETRIES			5
-/* Delay between retries (in usecs) */
+ 
 #define SA_RNG_DATA_RETRY_DELAY			5
 
 struct trng_regs {
@@ -117,12 +98,12 @@ static int ks_sa_rng_init(struct hwrng *rng)
 	struct ks_sa_rng *ks_sa_rng = dev_get_drvdata(dev);
 	unsigned long clk_rate = clk_get_rate(ks_sa_rng->clk);
 
-	/* Enable RNG module */
+	 
 	regmap_write_bits(ks_sa_rng->regmap_cfg, SA_CMD_STATUS_OFS,
 			  SA_CMD_STATUS_REG_TRNG_ENABLE,
 			  SA_CMD_STATUS_REG_TRNG_ENABLE);
 
-	/* Configure RNG module */
+	 
 	writel(0, &ks_sa_rng->reg_rng->control);
 	value = TRNG_DEF_STARTUP_CYCLES << TRNG_CNTL_REG_STARTUP_CYCLES_SHIFT;
 	writel(value, &ks_sa_rng->reg_rng->control);
@@ -136,10 +117,10 @@ static int ks_sa_rng_init(struct hwrng *rng)
 
 	writel(value, &ks_sa_rng->reg_rng->config);
 
-	/* Disable all interrupts from TRNG */
+	 
 	writel(0, &ks_sa_rng->reg_rng->intmask);
 
-	/* Enable RNG */
+	 
 	value = readl(&ks_sa_rng->reg_rng->control);
 	value |= TRNG_CNTL_REG_TRNG_ENABLE;
 	writel(value, &ks_sa_rng->reg_rng->control);
@@ -156,7 +137,7 @@ static void ks_sa_rng_cleanup(struct hwrng *rng)
 	struct device *dev = (struct device *)rng->priv;
 	struct ks_sa_rng *ks_sa_rng = dev_get_drvdata(dev);
 
-	/* Disable RNG */
+	 
 	writel(0, &ks_sa_rng->reg_rng->control);
 	regmap_write_bits(ks_sa_rng->regmap_cfg, SA_CMD_STATUS_OFS,
 			  SA_CMD_STATUS_REG_TRNG_ENABLE, 0);
@@ -167,7 +148,7 @@ static int ks_sa_rng_data_read(struct hwrng *rng, u32 *data)
 	struct device *dev = (struct device *)rng->priv;
 	struct ks_sa_rng *ks_sa_rng = dev_get_drvdata(dev);
 
-	/* Read random data */
+	 
 	data[0] = readl(&ks_sa_rng->reg_rng->output_l);
 	data[1] = readl(&ks_sa_rng->reg_rng->output_h);
 
@@ -187,7 +168,7 @@ static int ks_sa_rng_data_present(struct hwrng *rng, int wait)
 	int	j;
 
 	if (wait && now < ks_sa_rng->ready_ts) {
-		/* Max delay expected here is 81920000 ns */
+		 
 		unsigned long min_delay =
 			DIV_ROUND_UP((u32)(ks_sa_rng->ready_ts - now), 1000);
 

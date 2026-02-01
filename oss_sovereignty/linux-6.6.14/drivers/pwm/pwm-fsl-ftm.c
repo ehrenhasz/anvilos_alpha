@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  Freescale FlexTimer Module (FTM) PWM Driver
- *
- *  Copyright 2012-2013 Freescale Semiconductor, Inc.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/err.h>
@@ -44,7 +40,7 @@ struct fsl_pwm_chip {
 	struct mutex lock;
 	struct regmap *regmap;
 
-	/* This value is valid iff a pwm is running */
+	 
 	struct fsl_pwm_periodcfg period;
 
 	struct clk *ipg_clk;
@@ -238,12 +234,7 @@ static int fsl_pwm_apply_config(struct fsl_pwm_chip *fpc,
 
 	if (!fsl_pwm_is_any_pwm_enabled(fpc, pwm))
 		do_write_period = true;
-	/*
-	 * The Freescale FTM controller supports only a single period for
-	 * all PWM channels, therefore verify if the newly computed period
-	 * is different than the current period being used. In such case
-	 * we allow to change the period only if no other pwm is running.
-	 */
+	 
 	else if (!fsl_pwm_periodcfg_are_equal(&fpc->period, &periodcfg)) {
 		if (fsl_pwm_is_other_pwm_enabled(fpc, pwm)) {
 			dev_err(fpc->chip.dev,
@@ -300,14 +291,7 @@ static int fsl_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
 	struct pwm_state *oldstate = &pwm->state;
 	int ret = 0;
 
-	/*
-	 * oldstate to newstate : action
-	 *
-	 * disabled to disabled : ignore
-	 * enabled to disabled : disable
-	 * enabled to enabled : update settings
-	 * disabled to enabled : update settings + enable
-	 */
+	 
 
 	mutex_lock(&fpc->lock);
 
@@ -326,7 +310,7 @@ static int fsl_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
 	if (ret)
 		goto end_mutex;
 
-	/* check if need to enable */
+	 
 	if (!oldstate->enabled) {
 		ret = clk_prepare_enable(fpc->clk[fpc->period.clk_select]);
 		if (ret)
@@ -436,10 +420,7 @@ static int fsl_pwm_probe(struct platform_device *pdev)
 	if (IS_ERR(fpc->clk[FSL_PWM_CLK_CNTEN]))
 		return PTR_ERR(fpc->clk[FSL_PWM_CLK_CNTEN]);
 
-	/*
-	 * ipg_clk is the interface clock for the IP. If not provided, use the
-	 * ftm_sys clock as the default.
-	 */
+	 
 	fpc->ipg_clk = devm_clk_get(&pdev->dev, "ipg");
 	if (IS_ERR(fpc->ipg_clk))
 		fpc->ipg_clk = fpc->clk[FSL_PWM_CLK_SYS];
@@ -506,7 +487,7 @@ static int fsl_pwm_resume(struct device *dev)
 		clk_prepare_enable(fpc->clk[FSL_PWM_CLK_CNTEN]);
 	}
 
-	/* restore all registers from cache */
+	 
 	regcache_cache_only(fpc->regmap, false);
 	regcache_sync(fpc->regmap);
 
@@ -529,7 +510,7 @@ static const struct fsl_ftm_soc imx8qm_ftm_pwm = {
 static const struct of_device_id fsl_pwm_dt_ids[] = {
 	{ .compatible = "fsl,vf610-ftm-pwm", .data = &vf610_ftm_pwm },
 	{ .compatible = "fsl,imx8qm-ftm-pwm", .data = &imx8qm_ftm_pwm },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, fsl_pwm_dt_ids);
 

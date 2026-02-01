@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (C) 2019 Spreadtrum Communications Inc.
+
+
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -32,28 +32,17 @@
 
 #define SPRD_EFUSE_MAGIC_NUMBER		0x8810
 
-/* Block width (bytes) definitions */
+ 
 #define SPRD_EFUSE_BLOCK_WIDTH		4
 
-/*
- * The Spreadtrum AP efuse contains 2 parts: normal efuse and secure efuse,
- * and we can only access the normal efuse in kernel. So define the normal
- * block offset index and normal block numbers.
- */
+ 
 #define SPRD_EFUSE_NORMAL_BLOCK_NUMS	24
 #define SPRD_EFUSE_NORMAL_BLOCK_OFFSET	72
 
-/* Timeout (ms) for the trylock of hardware spinlocks */
+ 
 #define SPRD_EFUSE_HWLOCK_TIMEOUT	5000
 
-/*
- * Since different Spreadtrum SoC chip can have different normal block numbers
- * and offset. And some SoC can support block double feature, which means
- * when reading or writing data to efuse memory, the controller can save double
- * data in case one data become incorrect after a long period.
- *
- * Thus we should save them in the device data structure.
- */
+ 
 struct sprd_efuse_variant_data {
 	u32 blk_nums;
 	u32 blk_offset;
@@ -75,11 +64,7 @@ static const struct sprd_efuse_variant_data ums312_data = {
 	.blk_double = false,
 };
 
-/*
- * On Spreadtrum platform, we have multi-subsystems will access the unique
- * efuse controller, so we need one hardware spinlock to synchronize between
- * the multiple subsystems.
- */
+ 
 static int sprd_efuse_lock(struct sprd_efuse *efuse)
 {
 	int ret;
@@ -114,7 +99,7 @@ static void sprd_efuse_set_prog_power(struct sprd_efuse *efuse, bool en)
 
 	writel(val, efuse->base + SPRD_EFUSE_PW_SWT);
 
-	/* Open or close efuse power need wait 1000us to make power stable. */
+	 
 	usleep_range(1000, 1200);
 
 	if (en)
@@ -124,7 +109,7 @@ static void sprd_efuse_set_prog_power(struct sprd_efuse *efuse, bool en)
 
 	writel(val, efuse->base + SPRD_EFUSE_PW_SWT);
 
-	/* Open or close efuse power need wait 1000us to make power stable. */
+	 
 	usleep_range(1000, 1200);
 }
 
@@ -139,7 +124,7 @@ static void sprd_efuse_set_read_power(struct sprd_efuse *efuse, bool en)
 
 	writel(val, efuse->base + SPRD_EFUSE_ENABLE);
 
-	/* Open or close efuse power need wait 1000us to make power stable. */
+	 
 	usleep_range(1000, 1200);
 }
 
@@ -197,40 +182,27 @@ static int sprd_efuse_raw_prog(struct sprd_efuse *efuse, u32 blk, bool doub,
 	u32 status;
 	int ret = 0;
 
-	/*
-	 * We need set the correct magic number before writing the efuse to
-	 * allow programming, and block other programming until we clear the
-	 * magic number.
-	 */
+	 
 	writel(SPRD_EFUSE_MAGIC_NUMBER,
 	       efuse->base + SPRD_EFUSE_MAGIC_NUM);
 
-	/*
-	 * Power on the efuse, enable programme and enable double data
-	 * if asked.
-	 */
+	 
 	sprd_efuse_set_prog_power(efuse, true);
 	sprd_efuse_set_prog_en(efuse, true);
 	sprd_efuse_set_data_double(efuse, doub);
 
-	/*
-	 * Enable the auto-check function to validate if the programming is
-	 * successful.
-	 */
+	 
 	if (lock)
 		sprd_efuse_set_auto_check(efuse, true);
 
 	writel(*data, efuse->base + SPRD_EFUSE_MEM(blk));
 
-	/* Disable auto-check and data double after programming */
+	 
 	if (lock)
 		sprd_efuse_set_auto_check(efuse, false);
 	sprd_efuse_set_data_double(efuse, false);
 
-	/*
-	 * Check the efuse error status, if the programming is successful,
-	 * we should lock this efuse block to avoid programming again.
-	 */
+	 
 	status = readl(efuse->base + SPRD_EFUSE_ERR_FLAG);
 	if (status) {
 		dev_err(efuse->dev,
@@ -256,28 +228,22 @@ static int sprd_efuse_raw_read(struct sprd_efuse *efuse, int blk, u32 *val,
 {
 	u32 status;
 
-	/*
-	 * Need power on the efuse before reading data from efuse, and will
-	 * power off the efuse after reading process.
-	 */
+	 
 	sprd_efuse_set_read_power(efuse, true);
 
-	/* Enable double data if asked */
+	 
 	sprd_efuse_set_data_double(efuse, doub);
 
-	/* Start to read data from efuse block */
+	 
 	*val = readl(efuse->base + SPRD_EFUSE_MEM(blk));
 
-	/* Disable double data */
+	 
 	sprd_efuse_set_data_double(efuse, false);
 
-	/* Power off the efuse */
+	 
 	sprd_efuse_set_read_power(efuse, false);
 
-	/*
-	 * Check the efuse error status and clear them if there are some
-	 * errors occurred.
-	 */
+	 
 	status = readl(efuse->base + SPRD_EFUSE_ERR_FLAG);
 	if (status) {
 		dev_err(efuse->dev,
@@ -336,14 +302,7 @@ static int sprd_efuse_write(void *context, u32 offset, void *val, size_t bytes)
 	if (ret)
 		goto unlock;
 
-	/*
-	 * If the writing bytes are equal with the block width, which means the
-	 * whole block will be programmed. For this case, we should not allow
-	 * this block to be programmed again by locking this block.
-	 *
-	 * If the block was programmed partially, we should allow this block to
-	 * be programmed again.
-	 */
+	 
 	if (bytes < SPRD_EFUSE_BLOCK_WIDTH)
 		lock = false;
 	else

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #include <linux/ceph/ceph_debug.h>
 
@@ -65,10 +65,7 @@ static int build_request(struct ceph_auth_client *ac, void *buf, void *end)
 	return 0;
 }
 
-/*
- * the generic auth code decode the global_id, and we carry no actual
- * authenticate state, so nothing happens here.
- */
+ 
 static int handle_reply(struct ceph_auth_client *ac, u64 global_id,
 			void *buf, void *end, u8 *session_key,
 			int *session_key_len, u8 *con_secret,
@@ -86,10 +83,7 @@ static void ceph_auth_none_destroy_authorizer(struct ceph_authorizer *a)
 	kfree(a);
 }
 
-/*
- * build an 'authorizer' with our entity_name and global_id.  it is
- * identical for all services we connect to.
- */
+ 
 static int ceph_auth_none_create_authorizer(
 	struct ceph_auth_client *ac, int peer_type,
 	struct ceph_auth_handshake *auth)

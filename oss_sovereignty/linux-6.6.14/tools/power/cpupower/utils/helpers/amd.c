@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #if defined(__i386__) || defined(__x86_64__)
 #include <unistd.h>
 #include <errno.h>
@@ -11,13 +11,13 @@
 #include "cpufreq.h"
 #include "acpi_cppc.h"
 
-/* ACPI P-States Helper Functions for AMD Processors ***************/
+ 
 #define MSR_AMD_PSTATE_STATUS	0xc0010063
 #define MSR_AMD_PSTATE		0xc0010064
 #define MSR_AMD_PSTATE_LIMIT	0xc0010061
 
 union core_pstate {
-	/* pre fam 17h: */
+	 
 	struct {
 		unsigned fid:6;
 		unsigned did:3;
@@ -31,7 +31,7 @@ union core_pstate {
 		unsigned res3:21;
 		unsigned en:1;
 	} pstate;
-	/* since fam 17h: */
+	 
 	struct {
 		unsigned fid:8;
 		unsigned did:6;
@@ -77,18 +77,7 @@ static int get_cof(union core_pstate pstate)
 	return cof;
 }
 
-/* Needs:
- * cpu          -> the cpu that gets evaluated
- * boost_states -> how much boost states the machines support
- *
- * Fills up:
- * pstates -> a pointer to an array of size MAX_HW_PSTATES
- *            must be initialized with zeros.
- *            All available  HW pstates (including boost states)
- * no      -> amount of pstates above array got filled up with
- *
- * returns zero on success, -1 on failure
- */
+ 
 int decode_pstates(unsigned int cpu, int boost_states,
 		   unsigned long *pstates, int *no)
 {
@@ -96,9 +85,7 @@ int decode_pstates(unsigned int cpu, int boost_states,
 	union core_pstate pstate;
 	unsigned long long val;
 
-	/* Only read out frequencies from HW if HW Pstate is supported,
-	 * otherwise frequencies are exported via ACPI tables.
-	 */
+	 
 	if (!(cpupower_cpu_info.caps & CPUPOWER_CAP_AMD_HW_PSTATE))
 		return -1;
 
@@ -116,7 +103,7 @@ int decode_pstates(unsigned int cpu, int boost_states,
 		if (read_msr(cpu, MSR_AMD_PSTATE + i, &pstate.val))
 			return -1;
 
-		/* The enabled bit (bit 63) is common for all families */
+		 
 		if (!pstate.pstatedef.en)
 			continue;
 
@@ -150,9 +137,9 @@ int amd_pci_get_num_boost_states(int *active, int *states)
 	return 0;
 }
 
-/* ACPI P-States Helper Functions for AMD Processors ***************/
+ 
 
-/* AMD P-State Helper Functions ************************************/
+ 
 enum amd_pstate_value {
 	AMD_PSTATE_HIGHEST_PERF,
 	AMD_PSTATE_MAX_FREQ,
@@ -197,10 +184,7 @@ void amd_pstate_show_perf_and_freq(unsigned int cpu, int no_rounding)
 {
 	printf(_("    AMD PSTATE Highest Performance: %lu. Maximum Frequency: "),
 	       amd_pstate_get_data(cpu, AMD_PSTATE_HIGHEST_PERF));
-	/*
-	 * If boost isn't active, the cpuinfo_max doesn't indicate real max
-	 * frequency. So we read it back from amd-pstate sysfs entry.
-	 */
+	 
 	print_speed(amd_pstate_get_data(cpu, AMD_PSTATE_MAX_FREQ), no_rounding);
 	printf(".\n");
 
@@ -222,5 +206,5 @@ void amd_pstate_show_perf_and_freq(unsigned int cpu, int no_rounding)
 	printf(".\n");
 }
 
-/* AMD P-State Helper Functions ************************************/
-#endif /* defined(__i386__) || defined(__x86_64__) */
+ 
+#endif  

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/clk.h>
 #include <linux/clk-provider.h>
 #include <linux/clkdev.h>
@@ -18,7 +18,7 @@
 
 static void __iomem *ccm __initdata;
 
-/* Register offsets */
+ 
 #define CCM_CSCR		(ccm + 0x00)
 #define CCM_MPCTL0		(ccm + 0x04)
 #define CCM_MPCTL1		(ccm + 0x08)
@@ -172,7 +172,7 @@ static void __init _mx27_clocks_init(unsigned long fref)
 static void __init mx27_clocks_init_dt(struct device_node *np)
 {
 	struct device_node *refnp;
-	u32 fref = 26000000; /* default */
+	u32 fref = 26000000;  
 
 	for_each_compatible_node(refnp, NULL, "fixed-clock") {
 		if (!of_device_is_compatible(refnp, "fsl,imx-osc26m"))

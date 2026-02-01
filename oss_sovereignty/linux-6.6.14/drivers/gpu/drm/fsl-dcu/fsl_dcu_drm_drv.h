@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copyright 2015 Freescale Semiconductor, Inc.
- *
- * Freescale DCU drm device driver
- */
+ 
+ 
 
 #ifndef __FSL_DCU_DRM_DRV_H__
 #define __FSL_DCU_DRM_DRV_H__
@@ -31,7 +27,7 @@
 
 #define DCU_DISP_SIZE			0x0018
 #define DCU_DISP_SIZE_DELTA_Y(x)	((x) << 16)
-/*Regisiter value 1/16 of horizontal resolution*/
+ 
 #define DCU_DISP_SIZE_DELTA_X(x)	((x) >> 4)
 
 #define DCU_HSYN_PARA			0x001c
@@ -169,9 +165,9 @@ struct drm_device;
 
 struct fsl_dcu_soc_data {
 	const char *name;
-	/*total layer number*/
+	 
 	unsigned int total_layer;
-	/*max layer number DCU supported*/
+	 
 	unsigned int max_layer;
 	unsigned int layer_regs;
 };
@@ -184,7 +180,7 @@ struct fsl_dcu_drm_device {
 	struct clk *clk;
 	struct clk *pix_clk;
 	struct fsl_tcon *tcon;
-	/*protects hardware register*/
+	 
 	spinlock_t irq_lock;
 	struct drm_device *drm;
 	struct drm_crtc crtc;
@@ -195,4 +191,4 @@ struct fsl_dcu_drm_device {
 
 int fsl_dcu_drm_modeset_init(struct fsl_dcu_drm_device *fsl_dev);
 
-#endif /* __FSL_DCU_DRM_DRV_H__ */
+#endif  

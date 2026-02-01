@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* AFS dynamic root handling
- *
- * Copyright (C) 2018 Red Hat, Inc. All Rights Reserved.
- * Written by David Howells (dhowells@redhat.com)
- */
+
+ 
 
 #include <linux/fs.h>
 #include <linux/namei.h>
@@ -12,19 +8,13 @@
 
 static atomic_t afs_autocell_ino;
 
-/*
- * iget5() comparator for inode created by autocell operations
- *
- * These pseudo inodes don't match anything.
- */
+ 
 static int afs_iget5_pseudo_test(struct inode *inode, void *opaque)
 {
 	return 0;
 }
 
-/*
- * iget5() inode initialiser
- */
+ 
 static int afs_iget5_pseudo_set(struct inode *inode, void *opaque)
 {
 	struct afs_super_info *as = AFS_FS_S(inode->i_sb);
@@ -38,10 +28,7 @@ static int afs_iget5_pseudo_set(struct inode *inode, void *opaque)
 	return 0;
 }
 
-/*
- * Create an inode for a dynamic root directory or an autocell dynamic
- * automount dir.
- */
+ 
 struct inode *afs_iget_pseudo_dir(struct super_block *sb, bool root)
 {
 	struct afs_super_info *as = AFS_FS_S(sb);
@@ -73,7 +60,7 @@ struct inode *afs_iget_pseudo_dir(struct super_block *sb, bool root)
 
 	vnode = AFS_FS_I(inode);
 
-	/* there shouldn't be an existing inode */
+	 
 	BUG_ON(!(inode->i_state & I_NEW));
 
 	netfs_inode_init(&vnode->netfs, NULL);
@@ -104,10 +91,7 @@ struct inode *afs_iget_pseudo_dir(struct super_block *sb, bool root)
 	return inode;
 }
 
-/*
- * Probe to see if a cell may exist.  This prevents positive dentries from
- * being created unnecessarily.
- */
+ 
 static int afs_probe_cell_name(struct dentry *dentry)
 {
 	struct afs_cell *cell;
@@ -117,7 +101,7 @@ static int afs_probe_cell_name(struct dentry *dentry)
 	char *result = NULL;
 	int ret;
 
-	/* Names prefixed with a dot are R/W mounts. */
+	 
 	if (name[0] == '.') {
 		if (len == 1)
 			return -EINVAL;
@@ -151,10 +135,7 @@ static int afs_probe_cell_name(struct dentry *dentry)
 	return ret;
 }
 
-/*
- * Try to auto mount the mountpoint with pseudo directory, if the autocell
- * operation is setted.
- */
+ 
 struct inode *afs_try_auto_mntpt(struct dentry *dentry, struct inode *dir)
 {
 	struct afs_vnode *vnode = AFS_FS_I(dir);
@@ -185,10 +166,7 @@ out:
 	return ret == -ENOENT ? NULL : ERR_PTR(ret);
 }
 
-/*
- * Look up @cell in a dynroot directory.  This is a substitution for the
- * local cell name for the net namespace.
- */
+ 
 static struct dentry *afs_lookup_atcell(struct dentry *dentry)
 {
 	struct afs_cell *cell;
@@ -219,9 +197,7 @@ static struct dentry *afs_lookup_atcell(struct dentry *dentry)
 
 	ret = lookup_one_len(name, dentry->d_parent, len);
 
-	/* We don't want to d_add() the @cell dentry here as we don't want to
-	 * the cached dentry to hide changes to the local cell name.
-	 */
+	 
 
 out_n:
 	kfree(name);
@@ -229,9 +205,7 @@ out_p:
 	return ret;
 }
 
-/*
- * Look up an entry in a dynroot directory.
- */
+ 
 static struct dentry *afs_dynroot_lookup(struct inode *dir, struct dentry *dentry,
 					 unsigned int flags)
 {
@@ -258,9 +232,7 @@ const struct inode_operations afs_dynroot_inode_operations = {
 	.lookup		= afs_dynroot_lookup,
 };
 
-/*
- * Dirs in the dynamic root don't need revalidation.
- */
+ 
 static int afs_dynroot_d_revalidate(struct dentry *dentry, unsigned int flags)
 {
 	return 1;
@@ -273,10 +245,7 @@ const struct dentry_operations afs_dynroot_dentry_operations = {
 	.d_automount	= afs_d_automount,
 };
 
-/*
- * Create a manually added cell mount directory.
- * - The caller must hold net->proc_cells_lock
- */
+ 
 int afs_dynroot_mkdir(struct afs_net *net, struct afs_cell *cell)
 {
 	struct super_block *sb = net->dynroot_sb;
@@ -286,7 +255,7 @@ int afs_dynroot_mkdir(struct afs_net *net, struct afs_cell *cell)
 	if (!sb || atomic_read(&sb->s_active) == 0)
 		return 0;
 
-	/* Let the ->lookup op do the creation */
+	 
 	root = sb->s_root;
 	inode_lock(root->d_inode);
 	subdir = lookup_one_len(cell->name, root, cell->name_len);
@@ -295,7 +264,7 @@ int afs_dynroot_mkdir(struct afs_net *net, struct afs_cell *cell)
 		goto unlock;
 	}
 
-	/* Note that we're retaining an extra ref on the dentry */
+	 
 	subdir->d_fsdata = (void *)1UL;
 	ret = 0;
 unlock:
@@ -303,10 +272,7 @@ unlock:
 	return ret;
 }
 
-/*
- * Remove a manually added cell mount directory.
- * - The caller must hold net->proc_cells_lock
- */
+ 
 void afs_dynroot_rmdir(struct afs_net *net, struct afs_cell *cell)
 {
 	struct super_block *sb = net->dynroot_sb;
@@ -318,7 +284,7 @@ void afs_dynroot_rmdir(struct afs_net *net, struct afs_cell *cell)
 	root = sb->s_root;
 	inode_lock(root->d_inode);
 
-	/* Don't want to trigger a lookup call, which will re-add the cell */
+	 
 	subdir = try_lookup_one_len(cell->name, root, cell->name_len);
 	if (IS_ERR_OR_NULL(subdir)) {
 		_debug("lookup %ld", PTR_ERR(subdir));
@@ -338,9 +304,7 @@ no_dentry:
 	_leave("");
 }
 
-/*
- * Populate a newly created dynamic root with cell names.
- */
+ 
 int afs_dynroot_populate(struct super_block *sb)
 {
 	struct afs_cell *cell;
@@ -366,16 +330,13 @@ error:
 	goto out;
 }
 
-/*
- * When a dynamic root that's in the process of being destroyed, depopulate it
- * of pinned directories.
- */
+ 
 void afs_dynroot_depopulate(struct super_block *sb)
 {
 	struct afs_net *net = afs_sb2net(sb);
 	struct dentry *root = sb->s_root, *subdir, *tmp;
 
-	/* Prevent more subdirs from being created */
+	 
 	mutex_lock(&net->proc_cells_lock);
 	if (net->dynroot_sb == sb)
 		net->dynroot_sb = NULL;
@@ -384,7 +345,7 @@ void afs_dynroot_depopulate(struct super_block *sb)
 	if (root) {
 		inode_lock(root->d_inode);
 
-		/* Remove all the pins for dirs created for manually added cells */
+		 
 		list_for_each_entry_safe(subdir, tmp, &root->d_subdirs, d_child) {
 			if (subdir->d_fsdata) {
 				subdir->d_fsdata = NULL;

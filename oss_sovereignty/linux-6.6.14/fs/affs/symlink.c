@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *  linux/fs/affs/symlink.c
- *
- *  1995  Hans-Joachim Widmaier - Modified for affs.
- *
- *  Copyright (C) 1991, 1992  Linus Torvalds
- *
- *  affs symlink handling code
- */
+
+ 
 
 #include "affs.h"
 
@@ -31,7 +23,7 @@ static int affs_symlink_read_folio(struct file *file, struct folio *folio)
 	lf = (struct slink_front *)bh->b_data;
 	lc = 0;
 
-	if (strchr(lf->symname,':')) {	/* Handle assign or volume name */
+	if (strchr(lf->symname,':')) {	 
 		struct affs_sb_info *sbi = AFFS_SB(inode->i_sb);
 		char *pf;
 		spin_lock(&sbi->symlink_lock);
@@ -47,7 +39,7 @@ static int affs_symlink_read_folio(struct file *file, struct folio *folio)
 		lc = '/';
 	}
 	while (i < 1023 && (c = lf->symname[j])) {
-		if (c == '/' && lc == '/' && i < 1020) {	/* parent dir */
+		if (c == '/' && lc == '/' && i < 1020) {	 
 			link[i++] = '.';
 			link[i++] = '.';
 		}

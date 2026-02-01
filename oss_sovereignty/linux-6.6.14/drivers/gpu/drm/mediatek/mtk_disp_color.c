@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2017 MediaTek Inc.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/component.h>
@@ -30,11 +28,7 @@ struct mtk_disp_color_data {
 	unsigned int color_offset;
 };
 
-/*
- * struct mtk_disp_color - DISP_COLOR driver structure
- * @crtc: associated crtc to report irq events to
- * @data: platform colour driver data
- */
+ 
 struct mtk_disp_color {
 	struct drm_crtc				*crtc;
 	struct clk				*clk;

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (c) 2016, Fuzhou Rockchip Electronics Co., Ltd
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/init.h>
@@ -53,12 +51,7 @@ static int reboot_mode_notify(struct notifier_block *this,
 	return NOTIFY_DONE;
 }
 
-/**
- * reboot_mode_register - register a reboot mode driver
- * @reboot: reboot mode driver
- *
- * Returns: 0 on success or a negative error code on failure.
- */
+ 
 int reboot_mode_register(struct reboot_mode_driver *reboot)
 {
 	struct mode_info *info;
@@ -114,10 +107,7 @@ error:
 }
 EXPORT_SYMBOL_GPL(reboot_mode_register);
 
-/**
- * reboot_mode_unregister - unregister a reboot mode driver
- * @reboot: reboot mode driver
- */
+ 
 int reboot_mode_unregister(struct reboot_mode_driver *reboot)
 {
 	struct mode_info *info;
@@ -136,13 +126,7 @@ static void devm_reboot_mode_release(struct device *dev, void *res)
 	reboot_mode_unregister(*(struct reboot_mode_driver **)res);
 }
 
-/**
- * devm_reboot_mode_register() - resource managed reboot_mode_register()
- * @dev: device to associate this resource with
- * @reboot: reboot mode driver
- *
- * Returns: 0 on success or a negative error code on failure.
- */
+ 
 int devm_reboot_mode_register(struct device *dev,
 			      struct reboot_mode_driver *reboot)
 {
@@ -176,11 +160,7 @@ static int devm_reboot_mode_match(struct device *dev, void *res, void *data)
 	return *p == data;
 }
 
-/**
- * devm_reboot_mode_unregister() - resource managed reboot_mode_unregister()
- * @dev: device to associate this resource with
- * @reboot: reboot mode driver
- */
+ 
 void devm_reboot_mode_unregister(struct device *dev,
 				 struct reboot_mode_driver *reboot)
 {

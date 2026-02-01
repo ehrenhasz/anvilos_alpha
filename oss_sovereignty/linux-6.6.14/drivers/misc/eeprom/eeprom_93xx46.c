@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Driver for 93xx46 EEPROMs
- *
- * (C) 2011 DENX Software Engineering, Anatolij Gustschin <agust@denx.de>
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/device.h>
@@ -100,7 +96,7 @@ static int eeprom_93xx46_read(void *priv, unsigned int off,
 	if (edev->pdata->prepare)
 		edev->pdata->prepare(edev);
 
-	/* The opcode in front of the address is three bits. */
+	 
 	bits = edev->addrlen + 3;
 
 	while (count) {
@@ -140,7 +136,7 @@ static int eeprom_93xx46_read(void *priv, unsigned int off,
 		spi_message_add_tail(&t[1], &m);
 
 		err = spi_sync(edev->spi, &m);
-		/* have to wait at least Tcsl ns */
+		 
 		ndelay(250);
 
 		if (err) {
@@ -169,7 +165,7 @@ static int eeprom_93xx46_ew(struct eeprom_93xx46_dev *edev, int is_on)
 	int bits, ret;
 	u16 cmd_addr;
 
-	/* The opcode in front of the address is three bits. */
+	 
 	bits = edev->addrlen + 3;
 
 	cmd_addr = OP_START << edev->addrlen;
@@ -200,7 +196,7 @@ static int eeprom_93xx46_ew(struct eeprom_93xx46_dev *edev, int is_on)
 		edev->pdata->prepare(edev);
 
 	ret = spi_sync(edev->spi, &m);
-	/* have to wait at least Tcsl ns */
+	 
 	ndelay(250);
 	if (ret)
 		dev_err(&edev->spi->dev, "erase/write %sable error %d\n",
@@ -225,7 +221,7 @@ eeprom_93xx46_write_word(struct eeprom_93xx46_dev *edev,
 	if (unlikely(off >= edev->size))
 		return -EINVAL;
 
-	/* The opcode in front of the address is three bits. */
+	 
 	bits = edev->addrlen + 3;
 
 	cmd_addr = OP_WRITE << edev->addrlen;
@@ -254,7 +250,7 @@ eeprom_93xx46_write_word(struct eeprom_93xx46_dev *edev,
 	spi_message_add_tail(&t[1], &m);
 
 	ret = spi_sync(edev->spi, &m);
-	/* have to wait program cycle time Twc ms */
+	 
 	mdelay(6);
 	return ret;
 }
@@ -273,13 +269,13 @@ static int eeprom_93xx46_write(void *priv, unsigned int off,
 	if (unlikely(!count))
 		return count;
 
-	/* only write even number of bytes on 16-bit devices */
+	 
 	if (edev->pdata->flags & EE_ADDR16) {
 		step = 2;
 		count &= ~1;
 	}
 
-	/* erase/write enable */
+	 
 	ret = eeprom_93xx46_ew(edev, 1);
 	if (ret)
 		return ret;
@@ -303,7 +299,7 @@ static int eeprom_93xx46_write(void *priv, unsigned int off,
 
 	mutex_unlock(&edev->lock);
 
-	/* erase/write disable */
+	 
 	eeprom_93xx46_ew(edev, 0);
 	return ret;
 }
@@ -316,7 +312,7 @@ static int eeprom_93xx46_eral(struct eeprom_93xx46_dev *edev)
 	int bits, ret;
 	u16 cmd_addr;
 
-	/* The opcode in front of the address is three bits. */
+	 
 	bits = edev->addrlen + 3;
 
 	cmd_addr = OP_START << edev->addrlen;
@@ -348,7 +344,7 @@ static int eeprom_93xx46_eral(struct eeprom_93xx46_dev *edev)
 	ret = spi_sync(edev->spi, &m);
 	if (ret)
 		dev_err(&edev->spi->dev, "erase error %d\n", ret);
-	/* have to wait erase cycle time Tec ms */
+	 
 	mdelay(6);
 
 	if (pd->finish)

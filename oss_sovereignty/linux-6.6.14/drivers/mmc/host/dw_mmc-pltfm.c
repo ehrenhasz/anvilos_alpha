@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Synopsys DesignWare Multimedia Card Interface driver
- *
- * Copyright (C) 2009 NXP Semiconductors
- * Copyright (C) 2009, 2010 Imagination Technologies Ltd.
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/interrupt.h>
@@ -50,7 +45,7 @@ int dw_mci_pltfm_register(struct platform_device *pdev,
 	if (IS_ERR(host->regs))
 		return PTR_ERR(host->regs);
 
-	/* Get registers' physical base address */
+	 
 	host->phy_regs = regs->start;
 
 	platform_set_drvdata(pdev, host);

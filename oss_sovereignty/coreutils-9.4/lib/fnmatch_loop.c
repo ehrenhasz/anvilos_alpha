@@ -1,33 +1,4 @@
-/* Copyright (C) 1991-2023 Free Software Foundation, Inc.
-   This file is part of the GNU C Library.
-
-   The GNU C Library is free software; you can redistribute it and/or
-   modify it under the terms of the GNU Lesser General Public
-   License as published by the Free Software Foundation; either
-   version 2.1 of the License, or (at your option) any later version.
-
-   The GNU C Library is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   Lesser General Public License for more details.
-
-   You should have received a copy of the GNU Lesser General Public
-   License along with the GNU C Library; if not, see
-   <https://www.gnu.org/licenses/>.  */
-
-#ifdef _LIBC
-# include <stdint.h>
-#endif
-
-struct STRUCT
-{
-  const CHAR *pattern;
-  const CHAR *string;
-  bool no_leading_period;
-};
-
-/* Match STRING against the file name pattern PATTERN, returning zero if
-   it matches, nonzero if not.  */
+ 
 static int FCT (const CHAR *pattern, const CHAR *string,
                 const CHAR *string_end, bool no_leading_period, int flags,
                 struct STRUCT *ends, size_t alloca_used);
@@ -81,7 +52,7 @@ FCT (const CHAR *pattern, const CHAR *string, const CHAR *string_end,
             {
               c = *p++;
               if (c == L_('\0'))
-                /* Trailing \ loses.  */
+                 
                 return FNM_NOMATCH;
               c = FOLD (c);
             }
@@ -115,7 +86,7 @@ FCT (const CHAR *pattern, const CHAR *string, const CHAR *string_end,
                   const CHAR *endp = END (p);
                   if (endp != p)
                     {
-                      /* This is a pattern.  Skip over it.  */
+                       
                       p = endp;
                       continue;
                     }
@@ -123,28 +94,22 @@ FCT (const CHAR *pattern, const CHAR *string, const CHAR *string_end,
 
               if (c == L_('?'))
                 {
-                  /* A ? needs to match one character.  */
+                   
                   if (n == string_end)
-                    /* There isn't another character; no match.  */
+                     
                     return FNM_NOMATCH;
                   else if (*n == L_('/')
                            && __glibc_unlikely (flags & FNM_FILE_NAME))
-                    /* A slash does not match a wildcard under
-                       FNM_FILE_NAME.  */
+                     
                     return FNM_NOMATCH;
                   else
-                    /* One character of the string is consumed in matching
-                       this ? wildcard, so *??? won't match if there are
-                       less than three characters.  */
+                     
                     ++n;
                 }
             }
 
           if (c == L_('\0'))
-            /* The wildcard(s) is/are the last element of the pattern.
-               If the name is a file name and contains another slash
-               this means it cannot match, unless the FNM_LEADING_DIR
-               flag is set.  */
+             
             {
               int result = (flags & FNM_FILE_NAME) == 0 ? 0 : FNM_NOMATCH;
 
@@ -222,12 +187,12 @@ FCT (const CHAR *pattern, const CHAR *string, const CHAR *string_end,
                 }
             }
 
-          /* If we come here no match is possible with the wildcard.  */
+           
           return FNM_NOMATCH;
 
         case L_('['):
           {
-            /* Nonzero if the sense of the character class is inverted.  */
+             
             const CHAR *p_init = p;
             const CHAR *n_init = n;
             bool not;
@@ -244,7 +209,7 @@ FCT (const CHAR *pattern, const CHAR *string, const CHAR *string_end,
               return FNM_NOMATCH;
 
             if (*n == L_('/') && (flags & FNM_FILE_NAME))
-              /* '/' cannot be matched.  */
+               
               return FNM_NOMATCH;
 
             not = (*p == L_('!') || (posixly_correct < 0 && *p == L_('^')));
@@ -267,7 +232,7 @@ FCT (const CHAR *pattern, const CHAR *string, const CHAR *string_end,
                   }
                 else if (c == L_('[') && *p == L_(':'))
                   {
-                    /* Leave room for the null.  */
+                     
                     CHAR str[CHAR_CLASS_MAX_LENGTH + 1];
                     size_t c1 = 0;
                     WCTYPE_T wt;
@@ -276,8 +241,7 @@ FCT (const CHAR *pattern, const CHAR *string, const CHAR *string_end,
                     for (;;)
                       {
                         if (c1 == CHAR_CLASS_MAX_LENGTH)
-                          /* The name is too long and therefore the pattern
-                             is ill-formed.  */
+                           
                           return FNM_NOMATCH;
 
                         c = *++p;
@@ -288,8 +252,7 @@ FCT (const CHAR *pattern, const CHAR *string, const CHAR *string_end,
                           }
                         if (c < L_('a') || c >= L_('z'))
                           {
-                            /* This cannot possibly be a character class name.
-                               Match it as a normal range.  */
+                             
                             p = startp;
                             c = L_('[');
                             goto normal_bracket;
@@ -300,13 +263,11 @@ FCT (const CHAR *pattern, const CHAR *string, const CHAR *string_end,
 
                     wt = IS_CHAR_CLASS (str);
                     if (wt == 0)
-                      /* Invalid character class name.  */
+                       
                       return FNM_NOMATCH;
 
 #if defined _LIBC && ! WIDE_CHAR_VERSION
-                    /* The following code is glibc specific but does
-                       there a good job in speeding up the code since
-                       we can avoid the btowc() call.  */
+                     
                     if (_ISCTYPE ((UCHAR) *n, wt))
                       goto matched;
 #else
@@ -318,11 +279,7 @@ FCT (const CHAR *pattern, const CHAR *string, const CHAR *string_end,
 #ifdef _LIBC
                 else if (c == L_('[') && *p == L_('='))
                   {
-                    /* It's important that STR be a scalar variable rather
-                       than a one-element array, because GCC (at least 4.9.2
-                       -O2 on x86-64) can be confused by the array and
-                       diagnose a "used initialized" in a dead branch in the
-                       findidx function.  */
+                     
                     UCHAR str;
                     uint32_t nrules =
                       _NL_CURRENT_WORD (LC_COLLATE, _NL_COLLATE_NRULES);
@@ -388,9 +345,7 @@ FCT (const CHAR *pattern, const CHAR *string, const CHAR *string_end,
                         idx = FINDIDX (table, indirect, extra, &cp, 1);
                         if (idx != 0)
                           {
-                            /* We found a table entry.  Now see whether the
-                               character we are currently at has the same
-                               equivalence class value.  */
+                             
                             int len = weights[idx & 0xffffff];
                             int32_t idx2;
                             const UCHAR *np = (const UCHAR *) n;
@@ -422,7 +377,7 @@ FCT (const CHAR *pattern, const CHAR *string, const CHAR *string_end,
 #endif
                 else if (c == L_('\0'))
                   {
-                    /* [ unterminated, treat as normal character.  */
+                     
                     p = p_init;
                     n = n_init;
                     c = L_('[');
@@ -455,16 +410,12 @@ FCT (const CHAR *pattern, const CHAR *string, const CHAR *string_end,
                             ++c1;
                           }
 
-                        /* We have to handling the symbols differently in
-                           ranges since then the collation sequence is
-                           important.  */
+                         
                         is_range = *p == L_('-') && p[1] != L_('\0');
 
                         if (nrules == 0)
                           {
-                            /* There are no names defined in the collation
-                               data.  Therefore we only accept the trivial
-                               names consisting of the character itself.  */
+                             
                             if (c1 != 1)
                               return FNM_NOMATCH;
 
@@ -499,40 +450,38 @@ FCT (const CHAR *pattern, const CHAR *string, const CHAR *string_end,
                               if (symb_table[2 * elem] != 0)
                                 {
                                   idx = symb_table[2 * elem + 1];
-                                  /* Skip the name of collating element.  */
+                                   
                                   idx += 1 + extra[idx];
 # if WIDE_CHAR_VERSION
-                                  /* Skip the byte sequence of the
-                                     collating element.  */
+                                   
                                   idx += 1 + extra[idx];
-                                  /* Adjust for the alignment.  */
+                                   
                                   idx = (idx + 3) & ~3;
 
                                   wextra = (CHAR *) &extra[idx + 4];
 
-                                  if (/* Compare the length of the sequence.  */
+                                  if ( 
                                       c1 == wextra[0]
-                                      /* Compare the wide char sequence.  */
+                                       
                                       && (__wmemcmp (startp + 1, &wextra[1],
                                                      c1)
                                           == 0))
-                                    /* Yep, this is the entry.  */
+                                     
                                     break;
 # else
-                                  if (/* Compare the length of the sequence.  */
+                                  if ( 
                                       c1 == extra[idx]
-                                      /* Compare the byte sequence.  */
+                                       
                                       && memcmp (startp + 1,
                                                  &extra[idx + 1], c1) == 0)
-                                    /* Yep, this is the entry.  */
+                                     
                                     break;
 # endif
                                 }
 
                             if (elem < table_size)
                               {
-                                /* Compare the byte sequence but only if
-                                   this is not part of a range.  */
+                                 
                                 if (! is_range
 
 # if WIDE_CHAR_VERSION
@@ -546,13 +495,13 @@ FCT (const CHAR *pattern, const CHAR *string, const CHAR *string_end,
                                     goto matched;
                                   }
 
-                                /* Get the collation sequence value.  */
+                                 
                                 is_seqval = true;
 # if WIDE_CHAR_VERSION
                                 cold = wextra[1 + wextra[0]];
 # else
                                 idx += 1 + extra[idx];
-                                /* Adjust for the alignment.  */
+                                 
                                 idx = (idx + 3) & ~3;
                                 cold = *((int32_t *) &extra[idx]);
 # endif
@@ -561,8 +510,7 @@ FCT (const CHAR *pattern, const CHAR *string, const CHAR *string_end,
                               }
                             else if (c1 == 1)
                               {
-                                /* No valid character.  Match it as a
-                                   single byte.  */
+                                 
                                 if (!is_range && *n == startp[1])
                                   goto matched;
 
@@ -579,9 +527,7 @@ FCT (const CHAR *pattern, const CHAR *string, const CHAR *string_end,
                         c = FOLD (c);
                       normal_bracket:
 
-                        /* We have to handling the symbols differently in
-                           ranges since then the collation sequence is
-                           important.  */
+                         
                         is_range = (*p == L_('-') && p[1] != L_('\0')
                                     && p[1] != L_(']'));
 
@@ -589,8 +535,7 @@ FCT (const CHAR *pattern, const CHAR *string, const CHAR *string_end,
                           goto matched;
 
 #if _LIBC
-                        /* This is needed if we goto normal_bracket; from
-                           outside of is_seqval's scope.  */
+                         
                         is_seqval = false;
 #endif
                         cold = c;
@@ -600,25 +545,16 @@ FCT (const CHAR *pattern, const CHAR *string, const CHAR *string_end,
                     if (c == L_('-') && *p != L_(']'))
                       {
 #if _LIBC
-                        /* We have to find the collation sequence
-                           value for C.  Collation sequence is nothing
-                           we can regularly access.  The sequence
-                           value is defined by the order in which the
-                           definitions of the collation values for the
-                           various characters appear in the source
-                           file.  A strange concept, nowhere
-                           documented.  */
+                         
                         uint32_t fcollseq;
                         uint32_t lcollseq;
                         UCHAR cend = *p++;
 
 # if WIDE_CHAR_VERSION
-                        /* Search in the 'names' array for the characters.  */
+                         
                         fcollseq = __collseq_table_lookup (collseq, fn);
                         if (fcollseq == ~((uint32_t) 0))
-                          /* XXX We don't know anything about the character
-                             we are supposed to match.  This means we are
-                             failing.  */
+                           
                           goto range_not_matched;
 
                         if (is_seqval)
@@ -654,10 +590,7 @@ FCT (const CHAR *pattern, const CHAR *string, const CHAR *string_end,
 
                             if (nrules == 0)
                               {
-                                /* There are no names defined in the
-                                   collation data.  Therefore we only
-                                   accept the trivial names consisting
-                                   of the character itself.  */
+                                 
                                 if (c1 != 1)
                                   return FNM_NOMATCH;
 
@@ -688,48 +621,44 @@ FCT (const CHAR *pattern, const CHAR *string, const CHAR *string_end,
                                   if (symb_table[2 * elem] != 0)
                                     {
                                       idx = symb_table[2 * elem + 1];
-                                      /* Skip the name of collating
-                                         element.  */
+                                       
                                       idx += 1 + extra[idx];
 # if WIDE_CHAR_VERSION
-                                      /* Skip the byte sequence of the
-                                         collating element.  */
+                                       
                                       idx += 1 + extra[idx];
-                                      /* Adjust for the alignment.  */
+                                       
                                       idx = (idx + 3) & ~3;
 
                                       wextra = (CHAR *) &extra[idx + 4];
 
-                                      if (/* Compare the length of the
-                                             sequence.  */
+                                      if ( 
                                           c1 == wextra[0]
-                                          /* Compare the wide char sequence.  */
+                                           
                                           && (__wmemcmp (startp + 1,
                                                          &wextra[1], c1)
                                               == 0))
-                                        /* Yep, this is the entry.  */
+                                         
                                         break;
 # else
-                                      if (/* Compare the length of the
-                                             sequence.  */
+                                      if ( 
                                           c1 == extra[idx]
-                                          /* Compare the byte sequence.  */
+                                           
                                           && memcmp (startp + 1,
                                                      &extra[idx + 1], c1) == 0)
-                                        /* Yep, this is the entry.  */
+                                         
                                         break;
 # endif
                                     }
 
                                 if (elem < table_size)
                                   {
-                                    /* Get the collation sequence value.  */
+                                     
                                     is_seqval = true;
 # if WIDE_CHAR_VERSION
                                     cend = wextra[1 + wextra[0]];
 # else
                                     idx += 1 + extra[idx];
-                                    /* Adjust for the alignment.  */
+                                     
                                     idx = (idx + 3) & ~3;
                                     cend = *((int32_t *) &extra[idx]);
 # endif
@@ -752,16 +681,14 @@ FCT (const CHAR *pattern, const CHAR *string, const CHAR *string_end,
                             cend = FOLD (cend);
                           }
 
-                        /* XXX It is not entirely clear to me how to handle
-                           characters which are not mentioned in the
-                           collation specification.  */
+                         
                         if (
 # if WIDE_CHAR_VERSION
                             lcollseq == 0xffffffff ||
 # endif
                             lcollseq <= fcollseq)
                           {
-                            /* We have to look at the upper bound.  */
+                             
                             uint32_t hcollseq;
 
                             if (is_seqval)
@@ -773,9 +700,7 @@ FCT (const CHAR *pattern, const CHAR *string, const CHAR *string_end,
                                   __collseq_table_lookup (collseq, cend);
                                 if (hcollseq == ~((uint32_t) 0))
                                   {
-                                    /* Hum, no information about the upper
-                                       bound.  The matching succeeds if the
-                                       lower bound is matched exactly.  */
+                                     
                                     if (lcollseq != fcollseq)
                                       goto range_not_matched;
 
@@ -793,10 +718,7 @@ FCT (const CHAR *pattern, const CHAR *string, const CHAR *string_end,
                       range_not_matched:
 # endif
 #else
-                        /* We use a boring value comparison of the character
-                           values.  This is better than comparing using
-                           'strcoll' since the latter would have surprising
-                           and sometimes fatal consequences.  */
+                         
                         UCHAR cend = *p++;
 
                         if (!(flags & FNM_NOESCAPE) && cend == L_('\\'))
@@ -804,7 +726,7 @@ FCT (const CHAR *pattern, const CHAR *string, const CHAR *string_end,
                         if (cend == L_('\0'))
                           return FNM_NOMATCH;
 
-                        /* It is a range.  */
+                         
                         if ((UCHAR) cold <= fn && fn <= cend)
                           goto matched;
 #endif
@@ -822,18 +744,18 @@ FCT (const CHAR *pattern, const CHAR *string, const CHAR *string_end,
             break;
 
           matched:
-            /* Skip the rest of the [...] that already matched.  */
+             
             while ((c = *p++) != L_(']'))
               {
                 if (c == L_('\0'))
-                  /* [... (unterminated) loses.  */
+                   
                   return FNM_NOMATCH;
 
                 if (!(flags & FNM_NOESCAPE) && c == L_('\\'))
                   {
                     if (*p == L_('\0'))
                       return FNM_NOMATCH;
-                    /* XXX 1003.2d11 is unclear if this is right.  */
+                     
                     ++p;
                   }
                 else if (c == L_('[') && *p == L_(':'))
@@ -923,7 +845,7 @@ FCT (const CHAR *pattern, const CHAR *string, const CHAR *string_end,
     return 0;
 
   if ((flags & FNM_LEADING_DIR) && n != string_end && *n == L_('/'))
-    /* The FNM_LEADING_DIR flag says that "foo*" matches "foobar/frobozz".  */
+     
     return 0;
 
   return FNM_NOMATCH;
@@ -937,25 +859,24 @@ END (const CHAR *pattern)
 
   while (1)
     if (*++p == L_('\0'))
-      /* This is an invalid pattern.  */
+       
       return pattern;
     else if (*p == L_('['))
       {
-        /* Handle brackets special.  */
+         
         if (posixly_correct == 0)
           posixly_correct = getenv ("POSIXLY_CORRECT") != NULL ? 1 : -1;
 
-        /* Skip the not sign.  We have to recognize it because of a possibly
-           following ']'.  */
+         
         if (*++p == L_('!') || (posixly_correct < 0 && *p == L_('^')))
           ++p;
-        /* A leading ']' is recognized as such.  */
+         
         if (*p == L_(']'))
           ++p;
-        /* Skip over all characters of the list.  */
+         
         while (*p != L_(']'))
           if (*p++ == L_('\0'))
-            /* This is no valid pattern.  */
+             
             return pattern;
       }
     else if ((*p == L_('?') || *p == L_('*') || *p == L_('+') || *p == L_('@')
@@ -963,7 +884,7 @@ END (const CHAR *pattern)
       {
         p = END (p + 1);
         if (*p == L_('\0'))
-          /* This is an invalid pattern.  */
+           
           return pattern;
       }
     else if (*p == L_(')'))
@@ -992,46 +913,45 @@ EXT (INT opt, const CHAR *pattern, const CHAR *string, const CHAR *string_end,
   const CHAR *rs;
   int retval = 0;
 
-  /* Parse the pattern.  Store the individual parts in the list.  */
+   
   level = 0;
   for (startp = p = pattern + 1; level >= 0; ++p)
     if (*p == L_('\0'))
       {
-        /* This is an invalid pattern.  */
+         
         retval = -1;
         goto out;
       }
     else if (*p == L_('['))
       {
-        /* Handle brackets special.  */
+         
         if (posixly_correct == 0)
           posixly_correct = getenv ("POSIXLY_CORRECT") != NULL ? 1 : -1;
 
-        /* Skip the not sign.  We have to recognize it because of a possibly
-           following ']'.  */
+         
         if (*++p == L_('!') || (posixly_correct < 0 && *p == L_('^')))
           ++p;
-        /* A leading ']' is recognized as such.  */
+         
         if (*p == L_(']'))
           ++p;
-        /* Skip over all characters of the list.  */
+         
         while (*p != L_(']'))
           if (*p++ == L_('\0'))
             {
-              /* This is no valid pattern.  */
+               
               retval = -1;
               goto out;
             }
       }
     else if ((*p == L_('?') || *p == L_('*') || *p == L_('+') || *p == L_('@')
               || *p == L_('!')) && p[1] == L_('('))
-      /* Remember the nesting level.  */
+       
       ++level;
     else if (*p == L_(')'))
       {
         if (level-- == 0)
           {
-            /* This means we found the end of the pattern.  */
+             
 #define NEW_PATTERN \
             struct patternlist *newp;                                         \
             size_t plen = (opt == L_('?') || opt == L_('@')                   \
@@ -1090,20 +1010,18 @@ EXT (INT opt, const CHAR *pattern, const CHAR *string, const CHAR *string_end,
       do
         {
           for (rs = string; rs <= string_end; ++rs)
-            /* First match the prefix with the current pattern with the
-               current pattern.  */
+             
             if (FCT (list->str, string, rs, no_leading_period,
                      flags & FNM_FILE_NAME ? flags : flags & ~FNM_PERIOD,
                      NULL, alloca_used) == 0
-                /* This was successful.  Now match the rest with the rest
-                   of the pattern.  */
+                 
                 && (FCT (p, rs, string_end,
                          rs == string
                          ? no_leading_period
                          : rs[-1] == '/' && NO_LEADING_PERIOD (flags),
                          flags & FNM_FILE_NAME
                          ? flags : flags & ~FNM_PERIOD, NULL, alloca_used) == 0
-                    /* This didn't work.  Try the whole pattern.  */
+                     
                     || (rs != string
                         && FCT (pattern - 1, rs, string_end,
                                 rs == string
@@ -1112,12 +1030,12 @@ EXT (INT opt, const CHAR *pattern, const CHAR *string, const CHAR *string_end,
                                 flags & FNM_FILE_NAME
                                 ? flags : flags & ~FNM_PERIOD, NULL,
                                 alloca_used) == 0)))
-              /* It worked.  Signal success.  */
+               
               goto success;
         }
       while ((list = list->next) != NULL);
 
-      /* None of the patterns lead to a match.  */
+       
       retval = FNM_NOMATCH;
       break;
 
@@ -1128,19 +1046,16 @@ EXT (INT opt, const CHAR *pattern, const CHAR *string, const CHAR *string_end,
       FALLTHROUGH;
     case L_('@'):
       do
-        /* I cannot believe it but 'strcat' is actually acceptable
-           here.  Match the entire string with the prefix from the
-           pattern list and the rest of the pattern following the
-           pattern list.  */
+         
         if (FCT (STRCAT (list->str, p), string, string_end,
                  no_leading_period,
                  flags & FNM_FILE_NAME ? flags : flags & ~FNM_PERIOD,
                  NULL, alloca_used) == 0)
-          /* It worked.  Signal success.  */
+           
           goto success;
       while ((list = list->next) != NULL);
 
-      /* None of the patterns lead to a match.  */
+       
       retval = FNM_NOMATCH;
       break;
 
@@ -1155,7 +1070,7 @@ EXT (INT opt, const CHAR *pattern, const CHAR *string, const CHAR *string_end,
                      NULL, alloca_used) == 0)
               break;
 
-          /* If none of the patterns matched see whether the rest does.  */
+           
           if (runp == NULL
               && (FCT (p, rs, string_end,
                        rs == string
@@ -1163,12 +1078,11 @@ EXT (INT opt, const CHAR *pattern, const CHAR *string, const CHAR *string_end,
                        : rs[-1] == '/' && NO_LEADING_PERIOD (flags),
                        flags & FNM_FILE_NAME ? flags : flags & ~FNM_PERIOD,
                        NULL, alloca_used) == 0))
-            /* This is successful.  */
+             
             goto success;
         }
 
-      /* None of the patterns together with the rest of the pattern
-         lead to a match.  */
+       
       retval = FNM_NOMATCH;
       break;
 

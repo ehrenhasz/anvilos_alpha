@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * SPI controller driver for the Mikrotik RB4xx boards
- *
- * Copyright (C) 2010 Gabor Juhos <juhosg@openwrt.org>
- * Copyright (C) 2015 Bert Vermeulen <bert@biot.com>
- *
- * This file was based on the patches for Linux 2.6.27.39 published by
- * MikroTik for their RouterBoard 4xx series devices.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -53,7 +45,7 @@ static void do_spi_byte(struct rb4xx_spi *rbspi, u32 spi_ioc, u8 byte)
 		do_spi_clk(rbspi, spi_ioc, byte >> i);
 }
 
-/* The CS2 pin is used to clock in a second bit per clock cycle. */
+ 
 static inline void do_spi_clk_two(struct rb4xx_spi *rbspi, u32 spi_ioc,
 				   u8 value)
 {
@@ -69,7 +61,7 @@ static inline void do_spi_clk_two(struct rb4xx_spi *rbspi, u32 spi_ioc,
 	rb4xx_write(rbspi, AR71XX_SPI_REG_IOC, regval | AR71XX_SPI_IOC_CLK);
 }
 
-/* Two bits at a time, msb first */
+ 
 static void do_spi_byte_two(struct rb4xx_spi *rbspi, u32 spi_ioc, u8 byte)
 {
 	do_spi_clk_two(rbspi, spi_ioc, byte >> 6);
@@ -82,11 +74,7 @@ static void rb4xx_set_cs(struct spi_device *spi, bool enable)
 {
 	struct rb4xx_spi *rbspi = spi_controller_get_devdata(spi->controller);
 
-	/*
-	 * Setting CS is done along with bitbanging the actual values,
-	 * since it's all on the same hardware register. However the
-	 * CPLD needs CS deselected after every command.
-	 */
+	 
 	if (enable)
 		rb4xx_write(rbspi, AR71XX_SPI_REG_IOC,
 			    AR71XX_SPI_IOC_CS0 | AR71XX_SPI_IOC_CS1);
@@ -101,24 +89,19 @@ static int rb4xx_transfer_one(struct spi_controller *host,
 	u8 *rx_buf;
 	const u8 *tx_buf;
 
-	/*
-	 * Prime the SPI register with the SPI device selected. The m25p80 boot
-	 * flash and CPLD share the CS0 pin. This works because the CPLD's
-	 * command set was designed to almost not clash with that of the
-	 * boot flash.
-	 */
+	 
 	if (spi_get_chipselect(spi, 0) == 2)
-		/* MMC */
+		 
 		spi_ioc = AR71XX_SPI_IOC_CS0;
 	else
-		/* Boot flash and CPLD */
+		 
 		spi_ioc = AR71XX_SPI_IOC_CS1;
 
 	tx_buf = t->tx_buf;
 	rx_buf = t->rx_buf;
 	for (i = 0; i < t->len; ++i) {
 		if (t->tx_nbits == SPI_NBITS_DUAL)
-			/* CPLD can use two-wire transfers */
+			 
 			do_spi_byte_two(rbspi, spi_ioc, tx_buf[i]);
 		else
 			do_spi_byte(rbspi, spi_ioc, tx_buf[i]);
@@ -175,7 +158,7 @@ static int rb4xx_spi_probe(struct platform_device *pdev)
 	if (err)
 		return err;
 
-	/* Enable SPI */
+	 
 	rb4xx_write(rbspi, AR71XX_SPI_REG_FS, AR71XX_SPI_FS_GPIO);
 
 	return 0;

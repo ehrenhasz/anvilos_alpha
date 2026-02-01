@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * StarFive JH7110 Always-On Clock Driver
- *
- * Copyright (C) 2022 Emil Renner Berthing <kernel@esmil.dk>
- * Copyright (C) 2022 StarFive Technology Co., Ltd.
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/io.h>
@@ -14,7 +9,7 @@
 
 #include "clk-starfive-jh7110.h"
 
-/* external clocks */
+ 
 #define JH7110_AONCLK_OSC		(JH7110_AONCLK_END + 0)
 #define JH7110_AONCLK_GMAC0_RMII_REFIN	(JH7110_AONCLK_END + 1)
 #define JH7110_AONCLK_GMAC0_RGMII_RXIN	(JH7110_AONCLK_END + 2)
@@ -24,12 +19,12 @@
 #define JH7110_AONCLK_RTC_OSC		(JH7110_AONCLK_END + 6)
 
 static const struct jh71x0_clk_data jh7110_aonclk_data[] = {
-	/* source */
+	 
 	JH71X0__DIV(JH7110_AONCLK_OSC_DIV4, "osc_div4", 4, JH7110_AONCLK_OSC),
 	JH71X0__MUX(JH7110_AONCLK_APB_FUNC, "apb_func", 2,
 		    JH7110_AONCLK_OSC_DIV4,
 		    JH7110_AONCLK_OSC),
-	/* gmac0 */
+	 
 	JH71X0_GATE(JH7110_AONCLK_GMAC0_AHB, "gmac0_ahb", 0, JH7110_AONCLK_STG_AXIAHB),
 	JH71X0_GATE(JH7110_AONCLK_GMAC0_AXI, "gmac0_axi", 0, JH7110_AONCLK_STG_AXIAHB),
 	JH71X0__DIV(JH7110_AONCLK_GMAC0_RMII_RTX, "gmac0_rmii_rtx", 30,
@@ -43,9 +38,9 @@ static const struct jh71x0_clk_data jh7110_aonclk_data[] = {
 		    JH7110_AONCLK_GMAC0_RGMII_RXIN,
 		    JH7110_AONCLK_GMAC0_RMII_RTX),
 	JH71X0__INV(JH7110_AONCLK_GMAC0_RX_INV, "gmac0_rx_inv", JH7110_AONCLK_GMAC0_RX),
-	/* otpc */
+	 
 	JH71X0_GATE(JH7110_AONCLK_OTPC_APB, "otpc_apb", 0, JH7110_AONCLK_APB_BUS),
-	/* rtc */
+	 
 	JH71X0_GATE(JH7110_AONCLK_RTC_APB, "rtc_apb", 0, JH7110_AONCLK_APB_BUS),
 	JH71X0__DIV(JH7110_AONCLK_RTC_INTERNAL, "rtc_internal", 1022, JH7110_AONCLK_OSC),
 	JH71X0__MUX(JH7110_AONCLK_RTC_32K, "rtc_32k", 2,
@@ -136,7 +131,7 @@ static int jh7110_aoncrg_probe(struct platform_device *pdev)
 
 static const struct of_device_id jh7110_aoncrg_match[] = {
 	{ .compatible = "starfive,jh7110-aoncrg" },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, jh7110_aoncrg_match);
 

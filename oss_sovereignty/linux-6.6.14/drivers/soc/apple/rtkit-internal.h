@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only OR MIT */
-/*
- * Apple RTKit IPC library
- * Copyright (C) The Asahi Linux Contributors
- */
+ 
+ 
 
 #ifndef _APPLE_RTKIT_INTERAL_H
 #define _APPLE_RTKIT_INTERAL_H

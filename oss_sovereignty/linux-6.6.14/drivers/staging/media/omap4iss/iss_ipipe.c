@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * TI OMAP4 ISS V4L2 Driver - ISP IPIPE module
- *
- * Copyright (C) 2012 Texas Instruments, Inc.
- *
- * Author: Sergio Aguirre <sergio.a.aguirre@gmail.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/uaccess.h>
@@ -32,12 +26,7 @@ static const unsigned int ipipe_fmts[] = {
 	MEDIA_BUS_FMT_SGBRG10_1X10,
 };
 
-/*
- * ipipe_print_status - Print current IPIPE Module register values.
- * @ipipe: Pointer to ISS ISP IPIPE device.
- *
- * Also prints other debug information stored in the IPIPE module.
- */
+ 
 #define IPIPE_PRINT_REGISTER(iss, name)\
 	dev_dbg(iss->dev, "###IPIPE " #name "=0x%08x\n", \
 		iss_reg_read(iss, OMAP4_ISS_MEM_ISP_IPIPE, IPIPE_##name))
@@ -62,11 +51,7 @@ static void ipipe_print_status(struct iss_ipipe_device *ipipe)
 	dev_dbg(iss->dev, "-----------------------------------------------\n");
 }
 
-/*
- * ipipe_enable - Enable/Disable IPIPE.
- * @enable: enable flag
- *
- */
+ 
 static void ipipe_enable(struct iss_ipipe_device *ipipe, u8 enable)
 {
 	struct iss_device *iss = to_iss_device(ipipe);
@@ -75,23 +60,21 @@ static void ipipe_enable(struct iss_ipipe_device *ipipe, u8 enable)
 		       IPIPE_SRC_EN_EN, enable ? IPIPE_SRC_EN_EN : 0);
 }
 
-/* -----------------------------------------------------------------------------
- * Format- and pipeline-related configuration helpers
- */
+ 
 
 static void ipipe_configure(struct iss_ipipe_device *ipipe)
 {
 	struct iss_device *iss = to_iss_device(ipipe);
 	struct v4l2_mbus_framefmt *format;
 
-	/* IPIPE_PAD_SINK */
+	 
 	format = &ipipe->formats[IPIPE_PAD_SINK];
 
-	/* NOTE: Currently just supporting pipeline IN: RGB, OUT: YUV422 */
+	 
 	iss_reg_write(iss, OMAP4_ISS_MEM_ISP_IPIPE, IPIPE_SRC_FMT,
 		      IPIPE_SRC_FMT_RAW2YUV);
 
-	/* Enable YUV444 -> YUV422 conversion */
+	 
 	iss_reg_write(iss, OMAP4_ISS_MEM_ISP_IPIPE, IPIPE_YUV_PHS,
 		      IPIPE_YUV_PHS_LPF);
 
@@ -102,29 +85,23 @@ static void ipipe_configure(struct iss_ipipe_device *ipipe)
 	iss_reg_write(iss, OMAP4_ISS_MEM_ISP_IPIPE, IPIPE_SRC_HSZ,
 		      (format->width - 1) & IPIPE_SRC_HSZ_MASK);
 
-	/* Ignore ipipeif_wrt signal, and operate on-the-fly.  */
+	 
 	iss_reg_clr(iss, OMAP4_ISS_MEM_ISP_IPIPE, IPIPE_SRC_MODE,
 		    IPIPE_SRC_MODE_WRT | IPIPE_SRC_MODE_OST);
 
-	/* HACK: Values tuned for Ducati SW (OV) */
+	 
 	iss_reg_write(iss, OMAP4_ISS_MEM_ISP_IPIPE, IPIPE_SRC_COL,
 		      IPIPE_SRC_COL_EE_B | IPIPE_SRC_COL_EO_GB |
 		      IPIPE_SRC_COL_OE_GR | IPIPE_SRC_COL_OO_R);
 
-	/* IPIPE_PAD_SOURCE_VP */
+	 
 	format = &ipipe->formats[IPIPE_PAD_SOURCE_VP];
-	/* Do nothing? */
+	 
 }
 
-/* -----------------------------------------------------------------------------
- * V4L2 subdev operations
- */
+ 
 
-/*
- * ipipe_set_stream - Enable/Disable streaming on the IPIPE module
- * @sd: ISP IPIPE V4L2 subdevice
- * @enable: Enable/disable stream
- */
+ 
 static int ipipe_set_stream(struct v4l2_subdev *sd, int enable)
 {
 	struct iss_ipipe_device *ipipe = v4l2_get_subdevdata(sd);
@@ -137,11 +114,11 @@ static int ipipe_set_stream(struct v4l2_subdev *sd, int enable)
 
 		omap4iss_isp_subclk_enable(iss, OMAP4_ISS_ISP_SUBCLK_IPIPE);
 
-		/* Enable clk_arm_g0 */
+		 
 		iss_reg_write(iss, OMAP4_ISS_MEM_ISP_IPIPE, IPIPE_GCK_MMR,
 			      IPIPE_GCK_MMR_REG);
 
-		/* Enable clk_pix_g[3:0] */
+		 
 		iss_reg_write(iss, OMAP4_ISS_MEM_ISP_IPIPE, IPIPE_GCK_PIX,
 			      IPIPE_GCK_PIX_G3 | IPIPE_GCK_PIX_G2 |
 			      IPIPE_GCK_PIX_G1 | IPIPE_GCK_PIX_G0);
@@ -186,13 +163,7 @@ __ipipe_get_format(struct iss_ipipe_device *ipipe,
 	return &ipipe->formats[pad];
 }
 
-/*
- * ipipe_try_format - Try video format on a pad
- * @ipipe: ISS IPIPE device
- * @cfg: V4L2 subdev pad config
- * @pad: Pad number
- * @fmt: Format
- */
+ 
 static void
 ipipe_try_format(struct iss_ipipe_device *ipipe,
 		 struct v4l2_subdev_state *sd_state,
@@ -212,11 +183,11 @@ ipipe_try_format(struct iss_ipipe_device *ipipe,
 				break;
 		}
 
-		/* If not found, use SGRBG10 as default */
+		 
 		if (i >= ARRAY_SIZE(ipipe_fmts))
 			fmt->code = MEDIA_BUS_FMT_SGRBG10_1X10;
 
-		/* Clamp the input size. */
+		 
 		fmt->width = clamp_t(u32, width, 1, 8192);
 		fmt->height = clamp_t(u32, height, 1, 8192);
 		fmt->colorspace = V4L2_COLORSPACE_SRGB;
@@ -237,13 +208,7 @@ ipipe_try_format(struct iss_ipipe_device *ipipe,
 	fmt->field = V4L2_FIELD_NONE;
 }
 
-/*
- * ipipe_enum_mbus_code - Handle pixel format enumeration
- * @sd     : pointer to v4l2 subdev structure
- * @cfg    : V4L2 subdev pad config
- * @code   : pointer to v4l2_subdev_mbus_code_enum structure
- * return -EINVAL or zero on success
- */
+ 
 static int ipipe_enum_mbus_code(struct v4l2_subdev *sd,
 				struct v4l2_subdev_state *sd_state,
 				struct v4l2_subdev_mbus_code_enum *code)
@@ -257,7 +222,7 @@ static int ipipe_enum_mbus_code(struct v4l2_subdev *sd,
 		break;
 
 	case IPIPE_PAD_SOURCE_VP:
-		/* FIXME: Forced format conversion inside IPIPE ? */
+		 
 		if (code->index != 0)
 			return -EINVAL;
 
@@ -301,15 +266,7 @@ static int ipipe_enum_frame_size(struct v4l2_subdev *sd,
 	return 0;
 }
 
-/*
- * ipipe_get_format - Retrieve the video format on a pad
- * @sd : ISP IPIPE V4L2 subdevice
- * @cfg: V4L2 subdev pad config
- * @fmt: Format
- *
- * Return 0 on success or -EINVAL if the pad is invalid or doesn't correspond
- * to the format type.
- */
+ 
 static int ipipe_get_format(struct v4l2_subdev *sd,
 			    struct v4l2_subdev_state *sd_state,
 			    struct v4l2_subdev_format *fmt)
@@ -325,15 +282,7 @@ static int ipipe_get_format(struct v4l2_subdev *sd,
 	return 0;
 }
 
-/*
- * ipipe_set_format - Set the video format on a pad
- * @sd : ISP IPIPE V4L2 subdevice
- * @cfg: V4L2 subdev pad config
- * @fmt: Format
- *
- * Return 0 on success or -EINVAL if the pad is invalid or doesn't correspond
- * to the format type.
- */
+ 
 static int ipipe_set_format(struct v4l2_subdev *sd,
 			    struct v4l2_subdev_state *sd_state,
 			    struct v4l2_subdev_format *fmt)
@@ -348,7 +297,7 @@ static int ipipe_set_format(struct v4l2_subdev *sd,
 	ipipe_try_format(ipipe, sd_state, fmt->pad, &fmt->format, fmt->which);
 	*format = fmt->format;
 
-	/* Propagate the format from sink to source */
+	 
 	if (fmt->pad == IPIPE_PAD_SINK) {
 		format = __ipipe_get_format(ipipe, sd_state,
 					    IPIPE_PAD_SOURCE_VP,
@@ -365,7 +314,7 @@ static int ipipe_link_validate(struct v4l2_subdev *sd, struct media_link *link,
 			       struct v4l2_subdev_format *source_fmt,
 			       struct v4l2_subdev_format *sink_fmt)
 {
-	/* Check if the two ends match */
+	 
 	if (source_fmt->format.width != sink_fmt->format.width ||
 	    source_fmt->format.height != sink_fmt->format.height)
 		return -EPIPE;
@@ -376,15 +325,7 @@ static int ipipe_link_validate(struct v4l2_subdev *sd, struct media_link *link,
 	return 0;
 }
 
-/*
- * ipipe_init_formats - Initialize formats on all pads
- * @sd: ISP IPIPE V4L2 subdevice
- * @fh: V4L2 subdev file handle
- *
- * Initialize all pad formats with default values. If fh is not NULL, try
- * formats are initialized on the file handle. Otherwise active formats are
- * initialized on the device.
- */
+ 
 static int ipipe_init_formats(struct v4l2_subdev *sd, struct v4l2_subdev_fh *fh)
 {
 	struct v4l2_subdev_format format;
@@ -400,12 +341,12 @@ static int ipipe_init_formats(struct v4l2_subdev *sd, struct v4l2_subdev_fh *fh)
 	return 0;
 }
 
-/* V4L2 subdev video operations */
+ 
 static const struct v4l2_subdev_video_ops ipipe_v4l2_video_ops = {
 	.s_stream = ipipe_set_stream,
 };
 
-/* V4L2 subdev pad operations */
+ 
 static const struct v4l2_subdev_pad_ops ipipe_v4l2_pad_ops = {
 	.enum_mbus_code = ipipe_enum_mbus_code,
 	.enum_frame_size = ipipe_enum_frame_size,
@@ -414,30 +355,20 @@ static const struct v4l2_subdev_pad_ops ipipe_v4l2_pad_ops = {
 	.link_validate = ipipe_link_validate,
 };
 
-/* V4L2 subdev operations */
+ 
 static const struct v4l2_subdev_ops ipipe_v4l2_ops = {
 	.video = &ipipe_v4l2_video_ops,
 	.pad = &ipipe_v4l2_pad_ops,
 };
 
-/* V4L2 subdev internal operations */
+ 
 static const struct v4l2_subdev_internal_ops ipipe_v4l2_internal_ops = {
 	.open = ipipe_init_formats,
 };
 
-/* -----------------------------------------------------------------------------
- * Media entity operations
- */
+ 
 
-/*
- * ipipe_link_setup - Setup IPIPE connections
- * @entity: IPIPE media entity
- * @local: Pad at the local end of the link
- * @remote: Pad at the remote end of the link
- * @flags: Link flags
- *
- * return -EINVAL or zero on success
- */
+ 
 static int ipipe_link_setup(struct media_entity *entity,
 			    const struct media_pad *local,
 			    const struct media_pad *remote, u32 flags)
@@ -451,7 +382,7 @@ static int ipipe_link_setup(struct media_entity *entity,
 
 	switch (local->index) {
 	case IPIPE_PAD_SINK:
-		/* Read from IPIPEIF. */
+		 
 		if (!(flags & MEDIA_LNK_FL_ENABLED)) {
 			ipipe->input = IPIPE_INPUT_NONE;
 			break;
@@ -466,7 +397,7 @@ static int ipipe_link_setup(struct media_entity *entity,
 		break;
 
 	case IPIPE_PAD_SOURCE_VP:
-		/* Send to RESIZER */
+		 
 		if (flags & MEDIA_LNK_FL_ENABLED) {
 			if (ipipe->output & ~IPIPE_OUTPUT_VP)
 				return -EBUSY;
@@ -483,18 +414,13 @@ static int ipipe_link_setup(struct media_entity *entity,
 	return 0;
 }
 
-/* media operations */
+ 
 static const struct media_entity_operations ipipe_media_ops = {
 	.link_setup = ipipe_link_setup,
 	.link_validate = v4l2_subdev_link_validate,
 };
 
-/*
- * ipipe_init_entities - Initialize V4L2 subdev and media entity
- * @ipipe: ISS ISP IPIPE module
- *
- * Return 0 on success and a negative error code on failure.
- */
+ 
 static int ipipe_init_entities(struct iss_ipipe_device *ipipe)
 {
 	struct v4l2_subdev *sd = &ipipe->subdev;
@@ -507,7 +433,7 @@ static int ipipe_init_entities(struct iss_ipipe_device *ipipe)
 	v4l2_subdev_init(sd, &ipipe_v4l2_ops);
 	sd->internal_ops = &ipipe_v4l2_internal_ops;
 	strscpy(sd->name, "OMAP4 ISS ISP IPIPE", sizeof(sd->name));
-	sd->grp_id = BIT(16);	/* group ID for iss subdevs */
+	sd->grp_id = BIT(16);	 
 	v4l2_set_subdevdata(sd, ipipe);
 	sd->flags |= V4L2_SUBDEV_FL_HAS_DEVNODE;
 
@@ -534,7 +460,7 @@ int omap4iss_ipipe_register_entities(struct iss_ipipe_device *ipipe,
 {
 	int ret;
 
-	/* Register the subdev and video node. */
+	 
 	ret = v4l2_device_register_subdev(vdev, &ipipe->subdev);
 	if (ret < 0)
 		goto error;
@@ -546,18 +472,9 @@ error:
 	return ret;
 }
 
-/* -----------------------------------------------------------------------------
- * ISP IPIPE initialisation and cleanup
- */
+ 
 
-/*
- * omap4iss_ipipe_init - IPIPE module initialization.
- * @iss: Device pointer specific to the OMAP4 ISS.
- *
- * TODO: Get the initialisation values from platform data.
- *
- * Return 0 on success or a negative error code otherwise.
- */
+ 
 int omap4iss_ipipe_init(struct iss_device *iss)
 {
 	struct iss_ipipe_device *ipipe = &iss->ipipe;
@@ -568,10 +485,7 @@ int omap4iss_ipipe_init(struct iss_device *iss)
 	return ipipe_init_entities(ipipe);
 }
 
-/*
- * omap4iss_ipipe_cleanup - IPIPE module cleanup.
- * @iss: Device pointer specific to the OMAP4 ISS.
- */
+ 
 void omap4iss_ipipe_cleanup(struct iss_device *iss)
 {
 	struct iss_ipipe_device *ipipe = &iss->ipipe;

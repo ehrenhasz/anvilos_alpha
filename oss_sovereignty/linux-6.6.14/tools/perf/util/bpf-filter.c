@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #include <stdlib.h>
 
 #include <bpf/bpf.h>
@@ -25,15 +25,15 @@ static const struct perf_sample_info {
 	const char *name;
 	const char *option;
 } sample_table[] = {
-	/* default sample flags */
+	 
 	PERF_SAMPLE_TYPE(IP, NULL),
 	PERF_SAMPLE_TYPE(TID, NULL),
 	PERF_SAMPLE_TYPE(PERIOD, NULL),
-	/* flags mostly set by default, but still have options */
+	 
 	PERF_SAMPLE_TYPE(ID, "--sample-identifier"),
 	PERF_SAMPLE_TYPE(CPU, "--sample-cpu"),
 	PERF_SAMPLE_TYPE(TIME, "-T"),
-	/* optional sample flags */
+	 
 	PERF_SAMPLE_TYPE(ADDR, "-d"),
 	PERF_SAMPLE_TYPE(DATA_SRC, "-d"),
 	PERF_SAMPLE_TYPE(PHYS_ADDR, "--phys-data"),

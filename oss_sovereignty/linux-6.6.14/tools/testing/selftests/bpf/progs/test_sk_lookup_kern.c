@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-// Copyright (c) 2018 Covalent IO, Inc. http://covalent.io
+ 
+
 
 #include <stddef.h>
 #include <stdbool.h>
@@ -17,7 +17,7 @@
 
 char _license[] SEC("license") = "GPL";
 
-/* Fill 'tuple' with L3 info, and attempt to find L4. On fail, return NULL. */
+ 
 static struct bpf_sock_tuple *get_tuple(void *data, __u64 nh_off,
 					void *data_end, __u16 eth_proto,
 					bool *ipv4)

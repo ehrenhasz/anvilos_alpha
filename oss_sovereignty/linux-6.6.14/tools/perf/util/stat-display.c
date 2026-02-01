@@ -490,7 +490,7 @@ static void print_metricgroup_header_csv(struct perf_stat_config *config,
 	int i;
 
 	if (!metricgroup_name) {
-		/* Leave space for running and enabling */
+		 
 		for (i = 0; i < os->nfields - 2; i++)
 			fputs(config->csv_sep, os->fh);
 		return;
@@ -519,7 +519,7 @@ static void print_metricgroup_header_std(struct perf_stat_config *config,
 	fprintf(config->output, "%*s", MGROUP_LEN - n - 1, "");
 }
 
-/* Filter out some columns that don't work well in metrics only mode */
+ 
 
 static bool valid_only_metric(const char *unit)
 {
@@ -624,7 +624,7 @@ static void print_metric_header(struct perf_stat_config *config,
 	struct outstate *os = ctx;
 	char tbuf[1024];
 
-	/* In case of iostat, print metric header for first root port only */
+	 
 	if (config->iostat_run &&
 	    os->evsel->priv != os->evsel->evlist->selected->priv)
 		return;
@@ -735,7 +735,7 @@ static bool is_mixed_hw_group(struct evsel *counter)
 		return false;
 
 	evlist__for_each_entry(evlist, pos) {
-		/* software events can be part of any hardware group */
+		 
 		if (pos->core.attr.type == PERF_TYPE_SOFTWARE)
 			continue;
 		if (pmu_type == PERF_TYPE_SOFTWARE) {
@@ -815,8 +815,8 @@ static void printout(struct perf_stat_config *config, struct outstate *os,
 	if (!config->metric_only && !counter->default_metricgroup) {
 		abs_printout(config, os->id, os->aggr_nr, counter, uval, ok);
 
-		print_noise(config, counter, noise, /*before_metric=*/true);
-		print_running(config, run, ena, /*before_metric=*/true);
+		print_noise(config, counter, noise,  true);
+		print_running(config, run, ena,  true);
 	}
 
 	if (ok) {
@@ -824,11 +824,11 @@ static void printout(struct perf_stat_config *config, struct outstate *os,
 			void *from = NULL;
 
 			aggr_printout(config, os->evsel, os->id, os->aggr_nr);
-			/* Print out all the metricgroup with the same metric event. */
+			 
 			do {
 				int num = 0;
 
-				/* Print out the new line for the next new metricgroup. */
+				 
 				if (from) {
 					if (config->json_output)
 						new_line_json(config, (void *)os);
@@ -836,8 +836,8 @@ static void printout(struct perf_stat_config *config, struct outstate *os,
 						__new_line_std_csv(config, os);
 				}
 
-				print_noise(config, counter, noise, /*before_metric=*/true);
-				print_running(config, run, ena, /*before_metric=*/true);
+				print_noise(config, counter, noise,  true);
+				print_running(config, run, ena,  true);
 				from = perf_stat__print_shadow_stats_metricgroup(config, counter, aggr_idx,
 										 &num, from, &out,
 										 &config->metric_events);
@@ -846,12 +846,12 @@ static void printout(struct perf_stat_config *config, struct outstate *os,
 			perf_stat__print_shadow_stats(config, counter, uval, aggr_idx,
 						      &out, &config->metric_events);
 	} else {
-		pm(config, os, /*color=*/NULL, /*format=*/NULL, /*unit=*/"", /*val=*/0);
+		pm(config, os,  NULL,  NULL,  "",  0);
 	}
 
 	if (!config->metric_only) {
-		print_noise(config, counter, noise, /*before_metric=*/false);
-		print_running(config, run, ena, /*before_metric=*/false);
+		print_noise(config, counter, noise,  false);
+		print_running(config, run, ena,  false);
 	}
 }
 
@@ -902,22 +902,7 @@ static void uniquify_counter(struct perf_stat_config *config, struct evsel *coun
 		uniquify_event_name(counter);
 }
 
-/**
- * should_skip_zero_count() - Check if the event should print 0 values.
- * @config: The perf stat configuration (including aggregation mode).
- * @counter: The evsel with its associated cpumap.
- * @id: The aggregation id that is being queried.
- *
- * Due to mismatch between the event cpumap or thread-map and the
- * aggregation mode, sometimes it'd iterate the counter with the map
- * which does not contain any values.
- *
- * For example, uncore events have dedicated CPUs to manage them,
- * result for other CPUs should be zero and skipped.
- *
- * Return: %true if the value should NOT be printed, %false if the value
- * needs to be printed like "<not counted>" or "<not supported>".
- */
+ 
 static bool should_skip_zero_counter(struct perf_stat_config *config,
 				     struct evsel *counter,
 				     const struct aggr_cpu_id *id)
@@ -925,21 +910,15 @@ static bool should_skip_zero_counter(struct perf_stat_config *config,
 	struct perf_cpu cpu;
 	int idx;
 
-	/*
-	 * Skip value 0 when enabling --per-thread globally,
-	 * otherwise it will have too many 0 output.
-	 */
+	 
 	if (config->aggr_mode == AGGR_THREAD && config->system_wide)
 		return true;
 
-	/* Tool events have the software PMU but are only gathered on 1. */
+	 
 	if (evsel__is_tool(counter))
 		return true;
 
-	/*
-	 * Skip value 0 when it's an uncore event and the given aggr id
-	 * does not belong to the PMU cpumask.
-	 */
+	 
 	if (!counter->pmu || !counter->pmu->is_uncore)
 		return false;
 
@@ -969,7 +948,7 @@ static void print_counter_aggrdata(struct perf_stat_config *config,
 	os->aggr_nr = aggr->nr;
 	os->evsel = counter;
 
-	/* Skip already merged uncore/hybrid events */
+	 
 	if (counter->merged_stat)
 		return;
 
@@ -1053,10 +1032,7 @@ static void print_aggr(struct perf_stat_config *config,
 	if (!config->aggr_map || !config->aggr_get_id)
 		return;
 
-	/*
-	 * With metric_only everything is on a single line.
-	 * Without each counter has its own line.
-	 */
+	 
 	cpu_aggr_map__for_each_idx(aggr_idx, config->aggr_map) {
 		print_metric_begin(config, evlist, os, aggr_idx);
 
@@ -1102,7 +1078,7 @@ static void print_counter(struct perf_stat_config *config,
 {
 	int aggr_idx;
 
-	/* AGGR_THREAD doesn't have config->aggr_get_id */
+	 
 	if (!config->aggr_map)
 		return;
 
@@ -1132,7 +1108,7 @@ static void print_no_aggr_metric(struct perf_stat_config *config,
 				continue;
 
 			os->evsel = counter;
-			os->id = aggr_cpu_id__cpu(cpu, /*data=*/NULL);
+			os->id = aggr_cpu_id__cpu(cpu,  NULL);
 			if (first) {
 				print_metric_begin(config, evlist, os, aggr_idx);
 				first = false;
@@ -1205,7 +1181,7 @@ static void print_metric_headers(struct perf_stat_config *config,
 	if (config->cgroup_list)
 		os.cgrp = evlist__first(evlist)->cgrp;
 
-	/* Print metrics headers only */
+	 
 	evlist__for_each_entry(evlist, counter) {
 		os.evsel = counter;
 
@@ -1427,10 +1403,7 @@ static void print_footer(struct perf_stat_config *config)
 		}
 	} else {
 		double sd = stddev_stats(config->walltime_nsecs_stats) / NSEC_PER_SEC;
-		/*
-		 * Display at most 2 more significant
-		 * digits than the stddev inaccuracy.
-		 */
+		 
 		int precision = get_precision(sd) + 2;
 
 		if (config->walltime_run_table)
@@ -1439,7 +1412,7 @@ static void print_footer(struct perf_stat_config *config)
 		fprintf(output, " %17.*f +- %.*f seconds time elapsed",
 			precision, avg, precision, sd);
 
-		print_noise_pct(config, sd, avg, /*before_metric=*/false);
+		print_noise_pct(config, sd, avg,  false);
 	}
 	fprintf(output, "\n\n");
 
@@ -1470,10 +1443,7 @@ static void print_percore(struct perf_stat_config *config,
 	if (config->percore_show_thread)
 		return print_counter(config, counter, os);
 
-	/*
-	 * core_map will hold the aggr_cpu_id for the cores that have been
-	 * printed so that each core is printed just once.
-	 */
+	 
 	core_map = cpu_aggr_map__empty_new(config->aggr_map->nr);
 	if (core_map == NULL) {
 		fprintf(output, "Cannot allocate per-core aggr map for display\n");
@@ -1515,7 +1485,7 @@ static void print_cgroup_counter(struct perf_stat_config *config, struct evlist 
 				print_metric_end(config, os);
 
 			os->cgrp = counter->cgrp;
-			print_metric_begin(config, evlist, os, /*aggr_idx=*/0);
+			print_metric_begin(config, evlist, os,  0);
 		}
 
 		print_counter(config, counter, os);
@@ -1566,7 +1536,7 @@ void evlist__print_counters(struct evlist *evlist, struct perf_stat_config *conf
 		} else if (config->cgroup_list) {
 			print_cgroup_counter(config, evlist, &os);
 		} else {
-			print_metric_begin(config, evlist, &os, /*aggr_idx=*/0);
+			print_metric_begin(config, evlist, &os,  0);
 			evlist__for_each_entry(evlist, counter) {
 				print_counter(config, counter, &os);
 			}

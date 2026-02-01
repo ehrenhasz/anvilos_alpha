@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/****************************************************************************
- * Driver for Solarflare network controllers and boards
- * Copyright 2005-2018 Solarflare Communications Inc.
- * Copyright 2019-2022 Xilinx Inc.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License version 2 as published
- * by the Free Software Foundation, incorporated herein by reference.
- */
+
+ 
 
 #include "net_driver.h"
 #include <linux/module.h>
@@ -22,14 +14,10 @@
 
 #define EFX_EF100_PCI_DEFAULT_BAR	2
 
-/* Number of bytes at start of vendor specified extended capability that indicate
- * that the capability is vendor specified. i.e. offset from value returned by
- * pci_find_next_ext_capability() to beginning of vendor specified capability
- * header.
- */
+ 
 #define PCI_EXT_CAP_HDR_LENGTH  4
 
-/* Expected size of a Xilinx continuation address table entry. */
+ 
 #define ESE_GZ_CFGBAR_CONT_CAP_MIN_LENGTH      16
 
 struct ef100_func_ctl_window {
@@ -41,7 +29,7 @@ struct ef100_func_ctl_window {
 static int ef100_pci_walk_xilinx_table(struct efx_nic *efx, u64 offset,
 				       struct ef100_func_ctl_window *result);
 
-/* Number of bytes to offset when reading bit position x with dword accessors. */
+ 
 #define ROUND_DOWN_TO_DWORD(x) (((x) & (~31)) >> 3)
 
 #define EXTRACT_BITS(x, lbn, width) \
@@ -101,9 +89,7 @@ static bool ef100_pci_does_bar_overflow(struct efx_nic *efx, int bar,
 					pci_resource_len(efx->pci_dev, bar);
 }
 
-/* Parse a Xilinx capabilities table entry describing a continuation to a new
- * sub-table.
- */
+ 
 static int ef100_pci_parse_continue_entry(struct efx_nic *efx, int entry_location,
 					  struct ef100_func_ctl_window *result)
 {
@@ -140,7 +126,7 @@ static int ef100_pci_parse_continue_entry(struct efx_nic *efx, int entry_locatio
 			return -EINVAL;
 		}
 
-		/* Temporarily map new BAR. */
+		 
 		rc = efx_init_io(efx, bar,
 				 (dma_addr_t)DMA_BIT_MASK(ESF_GZ_TX_SEND_ADDR_WIDTH),
 				 pci_resource_len(efx->pci_dev, bar));
@@ -158,7 +144,7 @@ static int ef100_pci_parse_continue_entry(struct efx_nic *efx, int entry_locatio
 	if (bar != previous_bar) {
 		efx_fini_io(efx);
 
-		/* Put old BAR back. */
+		 
 		rc = efx_init_io(efx, previous_bar,
 				 (dma_addr_t)DMA_BIT_MASK(ESF_GZ_TX_SEND_ADDR_WIDTH),
 				 pci_resource_len(efx->pci_dev, previous_bar));
@@ -172,10 +158,7 @@ static int ef100_pci_parse_continue_entry(struct efx_nic *efx, int entry_locatio
 	return 0;
 }
 
-/* Iterate over the Xilinx capabilities table in the currently mapped BAR and
- * call ef100_pci_parse_ef100_entry() on any EF100 entries and
- * ef100_pci_parse_continue_entry() on any table continuations.
- */
+ 
 static int ef100_pci_walk_xilinx_table(struct efx_nic *efx, u64 offset,
 				       struct ef100_func_ctl_window *result)
 {
@@ -231,7 +214,7 @@ static int ef100_pci_walk_xilinx_table(struct efx_nic *efx, u64 offset,
 				return rc;
 			break;
 		default:
-			/* Ignore unknown table entries. */
+			 
 			break;
 		}
 
@@ -274,9 +257,7 @@ static int _ef100_pci_get_config_bits_with_width(struct efx_nic *efx,
 		 ESF_GZ_VSEC_ ## bitdef ## _LBN,			\
 		 ESF_GZ_VSEC_ ## bitdef ## _WIDTH, result)
 
-/* Call ef100_pci_walk_xilinx_table() for the Xilinx capabilities table pointed
- * to by this PCI_EXT_CAP_ID_VNDR.
- */
+ 
 static int ef100_pci_parse_xilinx_cap(struct efx_nic *efx, int vndr_cap,
 				      bool has_offset_hi,
 				      struct ef100_func_ctl_window *result)
@@ -311,7 +292,7 @@ static int ef100_pci_parse_xilinx_cap(struct efx_nic *efx, int vndr_cap,
 		return rc;
 	}
 
-	/* Get optional extension to 64bit offset. */
+	 
 	if (has_offset_hi) {
 		rc = ef100_pci_get_config_bits(efx, vndr_cap, TBL_OFF_HI, &offset_high);
 		if (rc) {
@@ -332,7 +313,7 @@ static int ef100_pci_parse_xilinx_cap(struct efx_nic *efx, int vndr_cap,
 		return -EINVAL;
 	}
 
-	/* Temporarily map BAR. */
+	 
 	rc = efx_init_io(efx, bar,
 			 (dma_addr_t)DMA_BIT_MASK(ESF_GZ_TX_SEND_ADDR_WIDTH),
 			 pci_resource_len(efx->pci_dev, bar));
@@ -344,14 +325,12 @@ static int ef100_pci_parse_xilinx_cap(struct efx_nic *efx, int vndr_cap,
 
 	rc = ef100_pci_walk_xilinx_table(efx, offset, result);
 
-	/* Unmap temporarily mapped BAR. */
+	 
 	efx_fini_io(efx);
 	return rc;
 }
 
-/* Call ef100_pci_parse_ef100_entry() for each Xilinx PCI_EXT_CAP_ID_VNDR
- * capability.
- */
+ 
 static int ef100_pci_find_func_ctrl_window(struct efx_nic *efx,
 					   struct ef100_func_ctl_window *result)
 {
@@ -385,7 +364,7 @@ static int ef100_pci_find_func_ctrl_window(struct efx_nic *efx,
 			return rc;
 		}
 
-		/* Get length of whole capability - i.e. starting at cap */
+		 
 		rc = ef100_pci_get_config_bits(efx, vndr_cap, LEN, &vsec_len);
 		if (rc) {
 			netif_err(efx, probe, efx->net_dev,
@@ -416,10 +395,7 @@ static int ef100_pci_find_func_ctrl_window(struct efx_nic *efx,
 	return 0;
 }
 
-/* Final NIC shutdown
- * This is called only at module unload (or hotplug removal).  A PF can call
- * this on its VFs to ensure they are unbound first.
- */
+ 
 static void ef100_pci_remove(struct pci_dev *pci_dev)
 {
 	struct efx_nic *efx = pci_get_drvdata(pci_dev);
@@ -452,7 +428,7 @@ static int ef100_pci_probe(struct pci_dev *pci_dev,
 	struct efx_nic *efx;
 	int rc;
 
-	/* Allocate probe data and struct efx_nic */
+	 
 	probe_data = kzalloc(sizeof(*probe_data), GFP_KERNEL);
 	if (!probe_data)
 		return -ENOMEM;
@@ -479,7 +455,7 @@ static int ef100_pci_probe(struct pci_dev *pci_dev,
 	}
 
 	if (!fcw.valid) {
-		/* Extended capability not found - use defaults. */
+		 
 		fcw.bar = EFX_EF100_PCI_DEFAULT_BAR;
 		fcw.offset = 0;
 		fcw.valid = true;
@@ -491,7 +467,7 @@ static int ef100_pci_probe(struct pci_dev *pci_dev,
 		goto fail;
 	}
 
-	/* Set up basic I/O (BAR mappings etc) */
+	 
 	rc = efx_init_io(efx, fcw.bar,
 			 (dma_addr_t)DMA_BIT_MASK(ESF_GZ_TX_SEND_ADDR_WIDTH),
 			 pci_resource_len(efx->pci_dev, fcw.bar));
@@ -535,13 +511,13 @@ static int ef100_pci_sriov_configure(struct pci_dev *dev, int num_vfs)
 }
 #endif
 
-/* PCI device ID table */
+ 
 static const struct pci_device_id ef100_pci_table[] = {
-	{PCI_DEVICE(PCI_VENDOR_ID_XILINX, 0x0100),  /* Riverhead PF */
+	{PCI_DEVICE(PCI_VENDOR_ID_XILINX, 0x0100),   
 		.driver_data = (unsigned long) &ef100_pf_nic_type },
-	{PCI_DEVICE(PCI_VENDOR_ID_XILINX, 0x1100),  /* Riverhead VF */
+	{PCI_DEVICE(PCI_VENDOR_ID_XILINX, 0x1100),   
 		.driver_data = (unsigned long) &ef100_vf_nic_type },
-	{0}                     /* end of list */
+	{0}                      
 };
 
 struct pci_driver ef100_pci_driver = {

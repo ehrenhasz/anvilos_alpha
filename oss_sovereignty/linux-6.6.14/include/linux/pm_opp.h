@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Generic OPP Interface
- *
- * Copyright (C) 2009-2010 Texas Instruments Incorporated.
- *	Nishanth Menon
- *	Romit Dasgupta
- *	Kevin Hilman
- */
+ 
+ 
 
 #ifndef __LINUX_OPP_H__
 #define __LINUX_OPP_H__
@@ -26,17 +19,7 @@ enum dev_pm_opp_event {
 	OPP_EVENT_ADJUST_VOLTAGE,
 };
 
-/**
- * struct dev_pm_opp_supply - Power supply voltage/current values
- * @u_volt:	Target voltage in microvolts corresponding to this OPP
- * @u_volt_min:	Minimum voltage in microvolts corresponding to this OPP
- * @u_volt_max:	Maximum voltage in microvolts corresponding to this OPP
- * @u_amp:	Maximum current drawn by the device in microamperes
- * @u_watt:	Power used by the device in microwatts
- *
- * This structure stores the voltage/current/power values for a single power
- * supply.
- */
+ 
 struct dev_pm_opp_supply {
 	unsigned long u_volt;
 	unsigned long u_volt_min;
@@ -45,13 +28,7 @@ struct dev_pm_opp_supply {
 	unsigned long u_watt;
 };
 
-/**
- * struct dev_pm_opp_icc_bw - Interconnect bandwidth values
- * @avg:	Average bandwidth corresponding to this OPP (in icc units)
- * @peak:	Peak bandwidth corresponding to this OPP (in icc units)
- *
- * This structure stores the bandwidth values for a single interconnect path.
- */
+ 
 struct dev_pm_opp_icc_bw {
 	u32 avg;
 	u32 peak;
@@ -64,23 +41,9 @@ typedef int (*config_regulators_t)(struct device *dev,
 typedef int (*config_clks_t)(struct device *dev, struct opp_table *opp_table,
 			struct dev_pm_opp *opp, void *data, bool scaling_down);
 
-/**
- * struct dev_pm_opp_config - Device OPP configuration values
- * @clk_names: Clk names, NULL terminated array.
- * @config_clks: Custom set clk helper.
- * @prop_name: Name to postfix to properties.
- * @config_regulators: Custom set regulator helper.
- * @supported_hw: Array of hierarchy of versions to match.
- * @supported_hw_count: Number of elements in the array.
- * @regulator_names: Array of pointers to the names of the regulator, NULL terminated.
- * @genpd_names: Null terminated array of pointers containing names of genpd to
- *		 attach.
- * @virt_devs: Pointer to return the array of virtual devices.
- *
- * This structure contains platform specific OPP configurations for the device.
- */
+ 
 struct dev_pm_opp_config {
-	/* NULL terminated */
+	 
 	const char * const *clk_names;
 	config_clks_t config_clks;
 	const char *prop_name;
@@ -427,7 +390,7 @@ static inline int dev_pm_opp_sync_regulators(struct device *dev)
 	return -EOPNOTSUPP;
 }
 
-#endif		/* CONFIG_PM_OPP */
+#endif		 
 
 #if defined(CONFIG_PM_OPP) && defined(CONFIG_OF)
 int dev_pm_opp_of_add_table(struct device *dev);
@@ -517,9 +480,9 @@ static inline int dev_pm_opp_of_find_icc_paths(struct device *dev, struct opp_ta
 }
 #endif
 
-/* OPP Configuration helpers */
+ 
 
-/* Regulators helpers */
+ 
 static inline int dev_pm_opp_set_regulators(struct device *dev,
 					    const char * const names[])
 {
@@ -545,7 +508,7 @@ static inline int devm_pm_opp_set_regulators(struct device *dev,
 	return devm_pm_opp_set_config(dev, &config);
 }
 
-/* Supported-hw helpers */
+ 
 static inline int dev_pm_opp_set_supported_hw(struct device *dev,
 					      const u32 *versions,
 					      unsigned int count)
@@ -575,7 +538,7 @@ static inline int devm_pm_opp_set_supported_hw(struct device *dev,
 	return devm_pm_opp_set_config(dev, &config);
 }
 
-/* clkname helpers */
+ 
 static inline int dev_pm_opp_set_clkname(struct device *dev, const char *name)
 {
 	const char *names[] = { name, NULL };
@@ -601,7 +564,7 @@ static inline int devm_pm_opp_set_clkname(struct device *dev, const char *name)
 	return devm_pm_opp_set_config(dev, &config);
 }
 
-/* config-regulators helpers */
+ 
 static inline int dev_pm_opp_set_config_regulators(struct device *dev,
 						   config_regulators_t helper)
 {
@@ -617,7 +580,7 @@ static inline void dev_pm_opp_put_config_regulators(int token)
 	dev_pm_opp_clear_config(token);
 }
 
-/* genpd helpers */
+ 
 static inline int dev_pm_opp_attach_genpd(struct device *dev,
 					  const char * const *names,
 					  struct device ***virt_devs)
@@ -647,7 +610,7 @@ static inline int devm_pm_opp_attach_genpd(struct device *dev,
 	return devm_pm_opp_set_config(dev, &config);
 }
 
-/* prop-name helpers */
+ 
 static inline int dev_pm_opp_set_prop_name(struct device *dev, const char *name)
 {
 	struct dev_pm_opp_config config = {
@@ -667,4 +630,4 @@ static inline unsigned long dev_pm_opp_get_freq(struct dev_pm_opp *opp)
 	return dev_pm_opp_get_freq_indexed(opp, 0);
 }
 
-#endif		/* __LINUX_OPP_H__ */
+#endif		 

@@ -1,35 +1,8 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
+ 
 
-/*
- * Copyright (c) 2010, Oracle and/or its affiliates. All rights reserved.
- * Copyright 2015 Nexenta Systems, Inc. All rights reserved.
- * Copyright (c) 2015, 2018 by Delphix. All rights reserved.
- * Copyright 2016 Joyent, Inc.
- * Copyright 2016 Igor Kozhukhov <ikozhukhov@gmail.com>
- */
+ 
 
-/*
- * zfs diff support
- */
+ 
 #include <ctype.h>
 #include <errno.h>
 #include <libintl.h>
@@ -60,9 +33,7 @@
 #define	ZDIFF_REMOVED_COLOR  ANSI_RED
 #define	ZDIFF_RENAMED_COLOR  ANSI_BOLD_BLUE
 
-/*
- * Given a {dsname, object id}, get the object path
- */
+ 
 static int
 get_stats_for_obj(differ_info_t *di, const char *dsname, uint64_t obj,
     char *pn, int maxlen, zfs_stat_t *sb)
@@ -77,7 +48,7 @@ get_stats_for_obj(differ_info_t *di, const char *dsname, uint64_t obj,
 	error = zfs_ioctl(di->zhp->zfs_hdl, ZFS_IOC_OBJ_TO_STATS, &zc);
 	di->zerr = errno;
 
-	/* we can get stats even if we failed to get a path */
+	 
 	(void) memcpy(sb, &zc.zc_stat, sizeof (zfs_stat_t));
 	if (error == 0) {
 		ASSERT(di->zerr == 0);
@@ -108,17 +79,7 @@ get_stats_for_obj(differ_info_t *di, const char *dsname, uint64_t obj,
 	}
 }
 
-/*
- * stream_bytes
- *
- * Prints a file name out a character at a time.  If the character is
- * not in the range of what we consider "printable" ASCII, display it
- * as an escaped 4-digit octal value.  ASCII values less than a space
- * are all control characters and we declare the upper end as the
- * DELete character.  This also is the last 7-bit ASCII character.
- * We choose to treat all 8-bit ASCII as not printable for this
- * application.
- */
+ 
 static void
 stream_bytes(FILE *fp, const char *string)
 {
@@ -133,9 +94,7 @@ stream_bytes(FILE *fp, const char *string)
 	}
 }
 
-/*
- * Takes the type of change (like `print_file`), outputs the appropriate color
- */
+ 
 static const char *
 type_to_color(char type)
 {
@@ -271,24 +230,14 @@ write_inuse_diffs_one(FILE *fp, differ_info_t *di, uint64_t dobj)
 	if (dobj == di->shares)
 		return (0);
 
-	/*
-	 * Check the from and to snapshots for info on the object. If
-	 * we get ENOENT, then the object just didn't exist in that
-	 * snapshot.  If we get ENOTSUP, then we tried to get
-	 * info on a non-ZPL object, which we don't care about anyway.
-	 * For any other error we print a warning which includes the
-	 * errno and continue.
-	 */
+	 
 
 	fobjerr = get_stats_for_obj(di, di->fromsnap, dobj, fobjname,
 	    MAXPATHLEN, &fsb);
 	if (fobjerr && di->zerr != ENOTSUP && di->zerr != ENOENT) {
 		zfs_error_aux(di->zhp->zfs_hdl, "%s", strerror(di->zerr));
 		zfs_error(di->zhp->zfs_hdl, di->zerr, di->errbuf);
-		/*
-		 * Let's not print an error for the same object more than
-		 * once if it happens in both snapshots
-		 */
+		 
 		already_logged = B_TRUE;
 	}
 
@@ -302,15 +251,13 @@ write_inuse_diffs_one(FILE *fp, differ_info_t *di, uint64_t dobj)
 			zfs_error(di->zhp->zfs_hdl, di->zerr, di->errbuf);
 		}
 	}
-	/*
-	 * Unallocated object sharing the same meta dnode block
-	 */
+	 
 	if (fobjerr && tobjerr) {
 		di->zerr = 0;
 		return (0);
 	}
 
-	di->zerr = 0; /* negate get_stats_for_obj() from side that failed */
+	di->zerr = 0;  
 	fmode = fsb.zs_mode & S_IFMT;
 	tmode = tsb.zs_mode & S_IFMT;
 	if (fmode == S_IFDIR || tmode == S_IFDIR || fsb.zs_links == 0 ||
@@ -336,11 +283,11 @@ write_inuse_diffs_one(FILE *fp, differ_info_t *di, uint64_t dobj)
 	}
 
 	if (fmode != tmode && fsb.zs_gen == tsb.zs_gen)
-		tsb.zs_gen++;	/* Force a generational difference */
+		tsb.zs_gen++;	 
 
-	/* Simple modification or no change */
+	 
 	if (fsb.zs_gen == tsb.zs_gen) {
-		/* No apparent changes.  Could we assert !this?  */
+		 
 		if (fsb.zs_ctime[0] == tsb.zs_ctime[0] &&
 		    fsb.zs_ctime[1] == tsb.zs_ctime[1])
 			return (0);
@@ -354,7 +301,7 @@ write_inuse_diffs_one(FILE *fp, differ_info_t *di, uint64_t dobj)
 		}
 		return (0);
 	} else {
-		/* file re-created or object re-used */
+		 
 		print_file(fp, di, ZDIFF_REMOVED, fobjname, &fsb);
 		print_file(fp, di, ZDIFF_ADDED, tobjname, &tsb);
 		return (0);
@@ -383,7 +330,7 @@ describe_free(FILE *fp, differ_info_t *di, uint64_t object, char *namebuf,
 	(void) get_stats_for_obj(di, di->fromsnap, object, namebuf,
 	    maxlen, &sb);
 
-	/* Don't print if in the delete queue on from side */
+	 
 	if (di->zerr == ESTALE || di->zerr == ENOENT) {
 		di->zerr = 0;
 		return (0);
@@ -465,7 +412,7 @@ differ(void *arg)
 			di->zerr = EPIPE;
 			break;
 		} else if (rv == 0) {
-			/* end of file at a natural breaking point */
+			 
 			break;
 		}
 
@@ -554,18 +501,9 @@ get_snapshot_names(differ_info_t *di, const char *fromsnap,
 	int fdslen, fsnlen;
 	int tdslen, tsnlen;
 
-	/*
-	 * Can accept
-	 *                                      fdslen fsnlen tdslen tsnlen
-	 *       dataset@snap1
-	 *    0. dataset@snap1 dataset@snap2      >0     >1     >0     >1
-	 *    1. dataset@snap1 @snap2             >0     >1    ==0     >1
-	 *    2. dataset@snap1 dataset            >0     >1     >0    ==0
-	 *    3. @snap1 dataset@snap2            ==0     >1     >0     >1
-	 *    4. @snap1 dataset                  ==0     >1     >0    ==0
-	 */
+	 
 	if (tosnap == NULL) {
-		/* only a from snapshot given, must be valid */
+		 
 		(void) snprintf(di->errbuf, sizeof (di->errbuf),
 		    dgettext(TEXT_DOMAIN,
 		    "Badly formed snapshot name %s"), fromsnap);
@@ -584,7 +522,7 @@ get_snapshot_names(differ_info_t *di, const char *fromsnap,
 		di->ds = zfs_strdup(hdl, fromsnap);
 		di->ds[fdslen] = '\0';
 
-		/* the to snap will be a just-in-time snap of the head */
+		 
 		return (make_temp_snapshot(di));
 	}
 
@@ -596,17 +534,14 @@ get_snapshot_names(differ_info_t *di, const char *fromsnap,
 	atptrt = strchr(tosnap, '@');
 	fdslen = atptrf ? atptrf - fromsnap : strlen(fromsnap);
 	tdslen = atptrt ? atptrt - tosnap : strlen(tosnap);
-	fsnlen = strlen(fromsnap) - fdslen;	/* includes @ sign */
-	tsnlen = strlen(tosnap) - tdslen;	/* includes @ sign */
+	fsnlen = strlen(fromsnap) - fdslen;	 
+	tsnlen = strlen(tosnap) - tdslen;	 
 
 	if (fsnlen <= 1 || tsnlen == 1 || (fdslen == 0 && tdslen == 0)) {
 		return (zfs_error(hdl, EZFS_INVALIDNAME, di->errbuf));
 	} else if ((fdslen > 0 && tdslen > 0) &&
 	    ((tdslen != fdslen || strncmp(fromsnap, tosnap, fdslen) != 0))) {
-		/*
-		 * not the same dataset name, might be okay if
-		 * tosnap is a clone of a fromsnap descendant.
-		 */
+		 
 		char origin[ZFS_MAX_DATASET_NAME_LEN];
 		zprop_source_t src;
 		zfs_handle_t *zhp;
@@ -673,7 +608,7 @@ get_mountpoint(differ_info_t *di, char *dsnm, char **mntpt)
 		return (zfs_error(di->zhp->zfs_hdl, EZFS_BADTYPE, di->errbuf));
 	}
 
-	/* Avoid a double slash at the beginning of root-mounted datasets */
+	 
 	if (**mntpt == '/' && *(*mntpt + 1) == '\0')
 		**mntpt = '\0';
 	return (0);
@@ -685,9 +620,7 @@ get_mountpoints(differ_info_t *di)
 	char *strptr;
 	char *frommntpt;
 
-	/*
-	 * first get the mountpoint for the parent dataset
-	 */
+	 
 	if (get_mountpoint(di, di->ds, &di->dsmnt) != 0)
 		return (-1);
 
@@ -784,7 +717,7 @@ zfs_show_diffs(zfs_handle_t *zhp, int outfd, const char *fromsnap,
 		    EZFS_THREADCREATEFAILED, errbuf));
 	}
 
-	/* do the ioctl() */
+	 
 	(void) strlcpy(zc.zc_value, di.fromsnap, strlen(di.fromsnap) + 1);
 	(void) strlcpy(zc.zc_name, di.tosnap, strlen(di.tosnap) + 1);
 	zc.zc_cookie = pipefd[1];

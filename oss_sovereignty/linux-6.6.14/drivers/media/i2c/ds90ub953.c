@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Driver for the Texas Instruments DS90UB953 video serializer
- *
- * Based on a driver from Luca Ceresoli <luca@lucaceresoli.net>
- *
- * Copyright (c) 2019 Luca Ceresoli <luca@lucaceresoli.net>
- * Copyright (c) 2023 Tomi Valkeinen <tomi.valkeinen@ideasonboard.com>
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/clk.h>
@@ -93,7 +86,7 @@
 #define UB953_REG_FPD3_RX_ID(n)			(0xf0 + (n))
 #define UB953_REG_FPD3_RX_ID_LEN		6
 
-/* Indirect register blocks */
+ 
 #define UB953_IND_TARGET_PAT_GEN		0x00
 #define UB953_IND_TARGET_FPD3_TX		0x01
 #define UB953_IND_TARGET_DIE_ID			0x02
@@ -114,17 +107,17 @@
 #define UB953_IND_PGEN_LINE_PD0			0x0d
 #define UB953_IND_PGEN_VBP			0x0e
 #define UB953_IND_PGEN_VFP			0x0f
-#define UB953_IND_PGEN_COLOR(n)			(0x10 + (n)) /* n <= 15 */
+#define UB953_IND_PGEN_COLOR(n)			(0x10 + (n))  
 
-/* Note: Only sync mode supported for now */
+ 
 enum ub953_mode {
-	/* FPD-Link III CSI-2 synchronous mode */
+	 
 	UB953_MODE_SYNC,
-	/* FPD-Link III CSI-2 non-synchronous mode, external ref clock */
+	 
 	UB953_MODE_NONSYNC_EXT,
-	/* FPD-Link III CSI-2 non-synchronous mode, internal ref clock */
+	 
 	UB953_MODE_NONSYNC_INT,
-	/* FPD-Link III DVP mode */
+	 
 	UB953_MODE_DVP,
 };
 
@@ -162,7 +155,7 @@ struct ub953_data {
 
 	u64			enabled_source_streams;
 
-	/* lock for register access */
+	 
 	struct mutex		reg_lock;
 
 	u8			current_indirect_target;
@@ -179,9 +172,7 @@ static inline struct ub953_data *sd_to_ub953(struct v4l2_subdev *sd)
 	return container_of(sd, struct ub953_data, sd);
 }
 
-/*
- * HW Access
- */
+ 
 
 static int ub953_read(struct ub953_data *priv, u8 reg, u8 *val)
 {
@@ -309,9 +300,7 @@ out_unlock:
 	return ret;
 }
 
-/*
- * GPIO chip
- */
+ 
 static int ub953_gpio_get_direction(struct gpio_chip *gc, unsigned int offset)
 {
 	struct ub953_data *priv = gpiochip_get_data(gc);
@@ -397,7 +386,7 @@ static int ub953_gpiochip_probe(struct ub953_data *priv)
 	struct gpio_chip *gc = &priv->gpio_chip;
 	int ret;
 
-	/* Set all GPIOs to local input mode */
+	 
 	ub953_write(priv, UB953_REG_LOCAL_GPIO_DATA, 0);
 	ub953_write(priv, UB953_REG_GPIO_INPUT_CTRL, 0xf);
 
@@ -429,9 +418,7 @@ static void ub953_gpiochip_remove(struct ub953_data *priv)
 	gpiochip_remove(&priv->gpio_chip);
 }
 
-/*
- * V4L2
- */
+ 
 
 static int _ub953_set_routing(struct v4l2_subdev *sd,
 			      struct v4l2_subdev_state *state,
@@ -449,10 +436,7 @@ static int _ub953_set_routing(struct v4l2_subdev *sd,
 	};
 	int ret;
 
-	/*
-	 * Note: we can only support up to V4L2_FRAME_DESC_ENTRY_MAX, until
-	 * frame desc is made dynamically allocated.
-	 */
+	 
 
 	if (routing->num_routes > V4L2_FRAME_DESC_ENTRY_MAX)
 		return -EINVAL;
@@ -555,11 +539,11 @@ static int ub953_set_fmt(struct v4l2_subdev *sd,
 	    priv->enabled_source_streams)
 		return -EBUSY;
 
-	/* No transcoding, source and sink formats must match. */
+	 
 	if (format->pad == UB953_PAD_SOURCE)
 		return v4l2_subdev_get_fmt(sd, state, format);
 
-	/* Set sink format */
+	 
 	fmt = v4l2_subdev_state_get_stream_format(state, format->pad,
 						  format->stream);
 	if (!fmt)
@@ -567,7 +551,7 @@ static int ub953_set_fmt(struct v4l2_subdev *sd,
 
 	*fmt = format->format;
 
-	/* Propagate to source format */
+	 
 	fmt = v4l2_subdev_state_get_opposite_stream_format(state, format->pad,
 							   format->stream);
 	if (!fmt)
@@ -817,16 +801,14 @@ static void ub953_v4l2_notifier_unregister(struct ub953_data *priv)
 	v4l2_async_nf_cleanup(&priv->notifier);
 }
 
-/*
- * Probing
- */
+ 
 
 static int ub953_i2c_master_init(struct ub953_data *priv)
 {
-	/* i2c fast mode */
+	 
 	u32 ref = 26250000;
-	u32 scl_high = 915; /* ns */
-	u32 scl_low = 1641; /* ns */
+	u32 scl_high = 915;  
+	u32 scl_low = 1641;  
 	int ret;
 
 	scl_high = div64_u64((u64)scl_high * ref, 1000000000) - 5;
@@ -853,11 +835,11 @@ static u64 ub953_get_fc_rate(struct ub953_data *priv)
 			return priv->plat_data->bc_rate / 2 * 160ull;
 
 	case UB953_MODE_NONSYNC_EXT:
-		/* CLKIN_DIV = 1 always */
+		 
 		return clk_get_rate(priv->clkin) * 80ull;
 
 	default:
-		/* Not supported */
+		 
 		return 0;
 	}
 }
@@ -866,24 +848,14 @@ static unsigned long ub953_calc_clkout_ub953(struct ub953_data *priv,
 					     unsigned long target, u64 fc,
 					     u8 *hs_div, u8 *m, u8 *n)
 {
-	/*
-	 * We always use 4 as a pre-divider (HS_CLK_DIV = 2).
-	 *
-	 * According to the datasheet:
-	 * - "HS_CLK_DIV typically should be set to either 16, 8, or 4 (default)."
-	 * - "if it is not possible to have an integer ratio of N/M, it is best to
-	 *    select a smaller value for HS_CLK_DIV.
-	 *
-	 * For above reasons the default HS_CLK_DIV seems the best in the average
-	 * case. Use always that value to keep the code simple.
-	 */
+	 
 	static const unsigned long hs_clk_div = 4;
 
 	u64 fc_divided;
 	unsigned long mul, div;
 	unsigned long res;
 
-	/* clkout = fc / hs_clk_div * m / n */
+	 
 
 	fc_divided = div_u64(fc, hs_clk_div);
 
@@ -907,7 +879,7 @@ static unsigned long ub953_calc_clkout_ub971(struct ub953_data *priv,
 	unsigned long mul, div;
 	unsigned long res;
 
-	/* clkout = fc * m / (8 * n) */
+	 
 
 	fc_divided = div_u64(fc, 8);
 
@@ -1080,7 +1052,7 @@ static int ub953_register_clkout(struct ub953_data *priv)
 	if (!init.name)
 		return -ENOMEM;
 
-	/* Initialize clkout to 25MHz by default */
+	 
 	ub953_calc_clkout_params(priv, UB953_DEFAULT_CLKOUT_RATE, &clkout_data);
 	ub953_write_clkout_regs(priv, &clkout_data);
 
@@ -1314,10 +1286,7 @@ static int ub953_probe(struct i2c_client *client)
 
 	mutex_init(&priv->reg_lock);
 
-	/*
-	 * Initialize to invalid values so that the first reg writes will
-	 * configure the target.
-	 */
+	 
 	priv->current_indirect_target = 0xff;
 
 	priv->regmap = devm_regmap_init_i2c(client, &ub953_regmap_config);

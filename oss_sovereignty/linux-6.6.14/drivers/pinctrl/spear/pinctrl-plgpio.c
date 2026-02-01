@@ -1,13 +1,4 @@
-/*
- * SPEAr platform PLGPIO driver
- *
- * Copyright (C) 2012 ST Microelectronics
- * Viresh Kumar <viresh.kumar@linaro.org>
- *
- * This file is licensed under the terms of the GNU General Public
- * License version 2. This program is licensed "as is" without any
- * warranty of any kind, whether express or implied.
- */
+ 
 
 #include <linux/clk.h>
 #include <linux/err.h>
@@ -28,11 +19,7 @@
 #define REG_OFFSET(base, reg, pin)	(base + reg + (pin / MAX_GPIO_PER_REG) \
 							* sizeof(int *))
 
-/*
- * plgpio pins in all machines are not one to one mapped, bitwise with registers
- * bits. These set of macros define register masks for which below functions
- * (pin_to_offset and offset_to_pin) are required to be called.
- */
+ 
 #define PTO_ENB_REG		0x001
 #define PTO_WDATA_REG		0x002
 #define PTO_DIR_REG		0x004
@@ -41,36 +28,23 @@
 #define PTO_MIS_REG		0x020
 
 struct plgpio_regs {
-	u32 enb;		/* enable register */
-	u32 wdata;		/* write data register */
-	u32 dir;		/* direction set register */
-	u32 rdata;		/* read data register */
-	u32 ie;			/* interrupt enable register */
-	u32 mis;		/* mask interrupt status register */
-	u32 eit;		/* edge interrupt type */
+	u32 enb;		 
+	u32 wdata;		 
+	u32 dir;		 
+	u32 rdata;		 
+	u32 ie;			 
+	u32 mis;		 
+	u32 eit;		 
 };
 
-/*
- * struct plgpio: plgpio driver specific structure
- *
- * lock: lock for guarding gpio registers
- * base: base address of plgpio block
- * chip: gpio framework specific chip information structure
- * p2o: function ptr for pin to offset conversion. This is required only for
- *	machines where mapping b/w pin and offset is not 1-to-1.
- * o2p: function ptr for offset to pin conversion. This is required only for
- *	machines where mapping b/w pin and offset is not 1-to-1.
- * p2o_regs: mask of registers for which p2o and o2p are applicable
- * regs: register offsets
- * csave_regs: context save registers for standby/sleep/hibernate cases
- */
+ 
 struct plgpio {
 	spinlock_t		lock;
 	struct regmap		*regmap;
 	struct clk		*clk;
 	struct gpio_chip	chip;
-	int			(*p2o)(int pin);	/* pin_to_offset */
-	int			(*o2p)(int offset);	/* offset_to_pin */
+	int			(*p2o)(int pin);	 
+	int			(*o2p)(int offset);	 
 	u32			p2o_regs;
 	struct plgpio_regs	regs;
 #ifdef CONFIG_PM_SLEEP
@@ -78,7 +52,7 @@ struct plgpio {
 #endif
 };
 
-/* register manipulation inline functions */
+ 
 static inline u32 is_plgpio_set(struct regmap *regmap, u32 pin, u32 reg)
 {
 	u32 offset = PIN_OFFSET(pin);
@@ -111,13 +85,13 @@ static inline void plgpio_reg_reset(struct regmap *regmap, u32 pin, u32 reg)
 }
 
 
-/* gpio framework specific routines */
+ 
 static int plgpio_direction_input(struct gpio_chip *chip, unsigned offset)
 {
 	struct plgpio *plgpio = gpiochip_get_data(chip);
 	unsigned long flags;
 
-	/* get correct offset for "offset" pin */
+	 
 	if (plgpio->p2o && (plgpio->p2o_regs & PTO_DIR_REG)) {
 		offset = plgpio->p2o(offset);
 		if (offset == -1)
@@ -138,7 +112,7 @@ static int plgpio_direction_output(struct gpio_chip *chip, unsigned offset,
 	unsigned long flags;
 	unsigned dir_offset = offset, wdata_offset = offset, tmp;
 
-	/* get correct offset for "offset" pin */
+	 
 	if (plgpio->p2o && (plgpio->p2o_regs & (PTO_DIR_REG | PTO_WDATA_REG))) {
 		tmp = plgpio->p2o(offset);
 		if (tmp == -1)
@@ -171,7 +145,7 @@ static int plgpio_get_value(struct gpio_chip *chip, unsigned offset)
 	if (offset >= chip->ngpio)
 		return -EINVAL;
 
-	/* get correct offset for "offset" pin */
+	 
 	if (plgpio->p2o && (plgpio->p2o_regs & PTO_RDATA_REG)) {
 		offset = plgpio->p2o(offset);
 		if (offset == -1)
@@ -188,7 +162,7 @@ static void plgpio_set_value(struct gpio_chip *chip, unsigned offset, int value)
 	if (offset >= chip->ngpio)
 		return;
 
-	/* get correct offset for "offset" pin */
+	 
 	if (plgpio->p2o && (plgpio->p2o_regs & PTO_WDATA_REG)) {
 		offset = plgpio->p2o(offset);
 		if (offset == -1)
@@ -224,14 +198,12 @@ static int plgpio_request(struct gpio_chip *chip, unsigned offset)
 	if (plgpio->regs.enb == -1)
 		return 0;
 
-	/*
-	 * put gpio in IN mode before enabling it. This make enabling gpio safe
-	 */
+	 
 	ret = plgpio_direction_input(chip, offset);
 	if (ret)
 		goto err1;
 
-	/* get correct offset for "offset" pin */
+	 
 	if (plgpio->p2o && (plgpio->p2o_regs & PTO_ENB_REG)) {
 		offset = plgpio->p2o(offset);
 		if (offset == -1) {
@@ -265,7 +237,7 @@ static void plgpio_free(struct gpio_chip *chip, unsigned offset)
 	if (plgpio->regs.enb == -1)
 		goto disable_clk;
 
-	/* get correct offset for "offset" pin */
+	 
 	if (plgpio->p2o && (plgpio->p2o_regs & PTO_ENB_REG)) {
 		offset = plgpio->p2o(offset);
 		if (offset == -1)
@@ -283,7 +255,7 @@ disable_clk:
 	pinctrl_gpio_free(gpio);
 }
 
-/* PLGPIO IRQ */
+ 
 static void plgpio_irq_disable(struct irq_data *d)
 {
 	struct gpio_chip *gc = irq_data_get_irq_chip_data(d);
@@ -291,7 +263,7 @@ static void plgpio_irq_disable(struct irq_data *d)
 	int offset = d->hwirq;
 	unsigned long flags;
 
-	/* get correct offset for "offset" pin */
+	 
 	if (plgpio->p2o && (plgpio->p2o_regs & PTO_IE_REG)) {
 		offset = plgpio->p2o(offset);
 		if (offset == -1)
@@ -311,7 +283,7 @@ static void plgpio_irq_enable(struct irq_data *d)
 	int offset = d->hwirq;
 	unsigned long flags;
 
-	/* get correct offset for "offset" pin */
+	 
 	if (plgpio->p2o && (plgpio->p2o_regs & PTO_IE_REG)) {
 		offset = plgpio->p2o(offset);
 		if (offset == -1)
@@ -380,30 +352,24 @@ static void plgpio_irq_handler(struct irq_desc *desc)
 	regs_count = DIV_ROUND_UP(count, MAX_GPIO_PER_REG);
 
 	chained_irq_enter(irqchip, desc);
-	/* check all plgpio MIS registers for a possible interrupt */
+	 
 	for (; i < regs_count; i++) {
 		regmap_read(plgpio->regmap, plgpio->regs.mis +
 			i * sizeof(int *), &pending);
 		if (!pending)
 			continue;
 
-		/* clear interrupts */
+		 
 		regmap_write(plgpio->regmap, plgpio->regs.mis +
 			i * sizeof(int *), ~pending);
-		/*
-		 * clear extra bits in last register having gpios < MAX/REG
-		 * ex: Suppose there are max 102 plgpios. then last register
-		 * must have only (102 - MAX_GPIO_PER_REG * 3) = 6 relevant bits
-		 * so, we must not take other 28 bits into consideration for
-		 * checking interrupt. so clear those bits.
-		 */
+		 
 		count = count - i * MAX_GPIO_PER_REG;
 		if (count < MAX_GPIO_PER_REG)
 			pending &= (1 << count) - 1;
 
 		pendingl = pending;
 		for_each_set_bit(offset, &pendingl, MAX_GPIO_PER_REG) {
-			/* get correct pin for "offset" */
+			 
 			if (plgpio->o2p && (plgpio->p2o_regs & PTO_MIS_REG)) {
 				pin = plgpio->o2p(offset);
 				if (pin == -1)
@@ -411,7 +377,7 @@ static void plgpio_irq_handler(struct irq_desc *desc)
 			} else
 				pin = offset;
 
-			/* get correct irq line number */
+			 
 			pin = i * MAX_GPIO_PER_REG + pin;
 			generic_handle_domain_irq(gc->irq.domain, pin);
 		}
@@ -419,13 +385,7 @@ static void plgpio_irq_handler(struct irq_desc *desc)
 	chained_irq_exit(irqchip, desc);
 }
 
-/*
- * pin to offset and offset to pin converter functions
- *
- * In spear310 there is inconsistency among bit positions in plgpio regiseters,
- * for different plgpio pins. For example: for pin 27, bit offset is 23, pin
- * 28-33 are not supported, pin 95 has offset bit 95, bit 100 has offset bit 1
- */
+ 
 static int spear310_p2o(int pin)
 {
 	int offset = pin;
@@ -657,12 +617,7 @@ static int plgpio_suspend(struct device *dev)
 	return 0;
 }
 
-/*
- * This is used to correct the values in end registers. End registers contain
- * extra bits that might be used for other purpose in platform. So, we shouldn't
- * overwrite these bits. This macro, reads given register again, preserves other
- * bit values (non-plgpio bits), and retain captured value (plgpio bits).
- */
+ 
 #define plgpio_prepare_reg(__reg, _off, _mask, _tmp)		\
 {								\
 	regmap_read(plgpio->regmap, plgpio->regs.__reg + _off, &_tmp); \

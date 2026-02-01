@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-/* Copyright (c) 2020, Mellanox Technologies inc. All rights reserved. */
+
+ 
 
 #include <linux/netdevice.h>
 #include "en.h"
@@ -32,7 +32,7 @@ struct mlx5e_ipsec_tx {
 	u8 allow_tunnel_mode : 1;
 };
 
-/* IPsec RX flow steering */
+ 
 static enum mlx5_traffic_types family2tt(u32 family)
 {
 	if (family == AF_INET)
@@ -80,7 +80,7 @@ ipsec_chains_create(struct mlx5_core_dev *mdev, struct mlx5_flow_table *miss_ft,
 	if (IS_ERR(chains))
 		return chains;
 
-	/* Create chain 0, prio 1, level 0 to connect chains to prev in fs_core */
+	 
 	ft = mlx5_chains_get_table(chains, 0, 1, 0);
 	if (IS_ERR(ft)) {
 		err = PTR_ERR(ft);
@@ -306,7 +306,7 @@ static int ipsec_miss_create(struct mlx5_core_dev *mdev,
 		goto out;
 	}
 
-	/* Create miss_group */
+	 
 	MLX5_SET(create_flow_group_in, flow_group_in, start_flow_index, ft->max_fte - 1);
 	MLX5_SET(create_flow_group_in, flow_group_in, end_flow_index, ft->max_fte - 1);
 	miss->group = mlx5_create_flow_group(ft, flow_group_in);
@@ -317,7 +317,7 @@ static int ipsec_miss_create(struct mlx5_core_dev *mdev,
 		goto out;
 	}
 
-	/* Create miss rule */
+	 
 	miss->rule = mlx5_add_flow_rules(ft, spec, &flow_act, dest, 1);
 	if (IS_ERR(miss->rule)) {
 		mlx5_destroy_flow_group(miss->group);
@@ -342,7 +342,7 @@ static void ipsec_rx_ft_disconnect(struct mlx5e_ipsec *ipsec, u32 family)
 static void rx_destroy(struct mlx5_core_dev *mdev, struct mlx5e_ipsec *ipsec,
 		       struct mlx5e_ipsec_rx *rx, u32 family)
 {
-	/* disconnect */
+	 
 	if (rx != ipsec->rx_esw)
 		ipsec_rx_ft_disconnect(ipsec, family);
 
@@ -371,7 +371,7 @@ static void ipsec_rx_create_attr_set(struct mlx5e_ipsec *ipsec,
 				     struct mlx5e_ipsec_rx_create_attr *attr)
 {
 	if (rx == ipsec->rx_esw) {
-		/* For packet offload in switchdev mode, RX & TX use FDB namespace */
+		 
 		attr->ns = ipsec->tx_esw->ns;
 		mlx5_esw_ipsec_rx_create_attr_set(ipsec, attr);
 		return;
@@ -453,7 +453,7 @@ static int rx_create(struct mlx5_core_dev *mdev, struct mlx5e_ipsec *ipsec,
 	if (err)
 		goto err_add;
 
-	/* Create FT */
+	 
 	if (mlx5_ipsec_device_caps(mdev) & MLX5_IPSEC_CAP_TUNNEL)
 		rx->allow_tunnel_mode = mlx5_eswitch_block_encap(mdev);
 	if (rx->allow_tunnel_mode)
@@ -497,7 +497,7 @@ static int rx_create(struct mlx5_core_dev *mdev, struct mlx5e_ipsec *ipsec,
 		goto err_pol_miss;
 
 connect:
-	/* connect */
+	 
 	if (rx != ipsec->rx_esw)
 		ipsec_rx_ft_connect(ipsec, rx, &attr);
 	return 0;
@@ -632,7 +632,7 @@ static int ipsec_counter_rule_tx(struct mlx5_core_dev *mdev, struct mlx5e_ipsec_
 	if (!spec)
 		return -ENOMEM;
 
-	/* create fte */
+	 
 	flow_act.action = MLX5_FLOW_CONTEXT_ACTION_ALLOW |
 			  MLX5_FLOW_CONTEXT_ACTION_COUNT;
 	dest.type = MLX5_FLOW_DESTINATION_TYPE_COUNTER;
@@ -653,7 +653,7 @@ err_rule:
 	return err;
 }
 
-/* IPsec TX flow steering */
+ 
 static void tx_destroy(struct mlx5e_ipsec *ipsec, struct mlx5e_ipsec_tx *tx,
 		       struct mlx5_ipsec_fs *roce)
 {
@@ -967,7 +967,7 @@ static void setup_fte_addr6(struct mlx5_flow_spec *spec, __be32 *saddr,
 
 static void setup_fte_esp(struct mlx5_flow_spec *spec)
 {
-	/* ESP header */
+	 
 	spec->match_criteria_enable |= MLX5_MATCH_MISC_PARAMETERS;
 
 	MLX5_SET_TO_ONES(fte_match_param, spec->match_criteria, outer_headers.ip_protocol);
@@ -976,7 +976,7 @@ static void setup_fte_esp(struct mlx5_flow_spec *spec)
 
 static void setup_fte_spi(struct mlx5_flow_spec *spec, u32 spi, bool encap)
 {
-	/* SPI number */
+	 
 	spec->match_criteria_enable |= MLX5_MATCH_MISC_PARAMETERS;
 
 	if (encap) {
@@ -994,7 +994,7 @@ static void setup_fte_spi(struct mlx5_flow_spec *spec, u32 spi, bool encap)
 
 static void setup_fte_no_frags(struct mlx5_flow_spec *spec)
 {
-	/* Non fragmented */
+	 
 	spec->match_criteria_enable |= MLX5_MATCH_OUTER_HEADERS;
 
 	MLX5_SET_TO_ONES(fte_match_param, spec->match_criteria, outer_headers.frag);
@@ -1003,7 +1003,7 @@ static void setup_fte_no_frags(struct mlx5_flow_spec *spec)
 
 static void setup_fte_reg_a(struct mlx5_flow_spec *spec)
 {
-	/* Add IPsec indicator in metadata_reg_a */
+	 
 	spec->match_criteria_enable |= MLX5_MATCH_MISC_PARAMETERS_2;
 
 	MLX5_SET(fte_match_param, spec->match_criteria,
@@ -1014,7 +1014,7 @@ static void setup_fte_reg_a(struct mlx5_flow_spec *spec)
 
 static void setup_fte_reg_c4(struct mlx5_flow_spec *spec, u32 reqid)
 {
-	/* Pass policy check before choosing this SA */
+	 
 	spec->match_criteria_enable |= MLX5_MATCH_MISC_PARAMETERS_2;
 
 	MLX5_SET_TO_ONES(fte_match_param, spec->match_criteria,
@@ -1269,7 +1269,7 @@ setup_pkt_transport_reformat(struct mlx5_accel_esp_xfrm_attrs *attrs,
 			hdr += sizeof(*udphdr);
 		}
 
-		/* convert to network format */
+		 
 		spi = htonl(attrs->spi);
 		memcpy(hdr, &spi, sizeof(spi));
 
@@ -1760,7 +1760,7 @@ static int ipsec_fs_init_counters(struct mlx5e_ipsec *ipsec)
 		ipsec->tx_esw->fc = fc;
 	}
 
-	/* Both IPv4 and IPv6 point to same flow counters struct. */
+	 
 	ipsec->rx_ipv6->fc = ipsec->rx_ipv4->fc;
 	return 0;
 

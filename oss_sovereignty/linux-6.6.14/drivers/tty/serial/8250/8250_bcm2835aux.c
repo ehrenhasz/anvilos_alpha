@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Serial port driver for BCM2835AUX UART
- *
- * Copyright (C) 2016 Martin Sperl <kernel@martin.sperl.org>
- *
- * Based on 8250_lpc18xx.c:
- * Copyright (C) 2015 Joachim Eastwood <manabian@gmail.com>
- *
- * The bcm2835aux is capable of RTS auto flow-control, but this driver doesn't
- * take advantage of it yet.  When adding support, be sure not to enable it
- * simultaneously to rs485.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/io.h>
@@ -22,23 +11,18 @@
 #include "8250.h"
 
 #define BCM2835_AUX_UART_CNTL		8
-#define BCM2835_AUX_UART_CNTL_RXEN	0x01 /* Receiver enable */
-#define BCM2835_AUX_UART_CNTL_TXEN	0x02 /* Transmitter enable */
-#define BCM2835_AUX_UART_CNTL_AUTORTS	0x04 /* RTS set by RX fill level */
-#define BCM2835_AUX_UART_CNTL_AUTOCTS	0x08 /* CTS stops transmitter */
-#define BCM2835_AUX_UART_CNTL_RTS3	0x00 /* RTS set until 3 chars left */
-#define BCM2835_AUX_UART_CNTL_RTS2	0x10 /* RTS set until 2 chars left */
-#define BCM2835_AUX_UART_CNTL_RTS1	0x20 /* RTS set until 1 chars left */
-#define BCM2835_AUX_UART_CNTL_RTS4	0x30 /* RTS set until 4 chars left */
-#define BCM2835_AUX_UART_CNTL_RTSINV	0x40 /* Invert auto RTS polarity */
-#define BCM2835_AUX_UART_CNTL_CTSINV	0x80 /* Invert auto CTS polarity */
+#define BCM2835_AUX_UART_CNTL_RXEN	0x01  
+#define BCM2835_AUX_UART_CNTL_TXEN	0x02  
+#define BCM2835_AUX_UART_CNTL_AUTORTS	0x04  
+#define BCM2835_AUX_UART_CNTL_AUTOCTS	0x08  
+#define BCM2835_AUX_UART_CNTL_RTS3	0x00  
+#define BCM2835_AUX_UART_CNTL_RTS2	0x10  
+#define BCM2835_AUX_UART_CNTL_RTS1	0x20  
+#define BCM2835_AUX_UART_CNTL_RTS4	0x30  
+#define BCM2835_AUX_UART_CNTL_RTSINV	0x40  
+#define BCM2835_AUX_UART_CNTL_CTSINV	0x80  
 
-/**
- * struct bcm2835aux_data - driver private data of BCM2835 auxiliary UART
- * @clk: clock producer of the port's uartclk
- * @line: index of the port's serial8250_ports[] entry
- * @cntl: cached copy of CNTL register
- */
+ 
 struct bcm2835aux_data {
 	struct clk *clk;
 	int line;
@@ -58,10 +42,7 @@ static void bcm2835aux_rs485_start_tx(struct uart_8250_port *up)
 		serial_out(up, BCM2835_AUX_UART_CNTL, data->cntl);
 	}
 
-	/*
-	 * On the bcm2835aux, the MCR register contains no other
-	 * flags besides RTS.  So no need for a read-modify-write.
-	 */
+	 
 	if (up->port.rs485.flags & SER_RS485_RTS_ON_SEND)
 		serial8250_out_MCR(up, 0);
 	else
@@ -93,12 +74,12 @@ static int bcm2835aux_serial_probe(struct platform_device *pdev)
 	unsigned int uartclk;
 	int ret;
 
-	/* allocate the custom structure */
+	 
 	data = devm_kzalloc(&pdev->dev, sizeof(*data), GFP_KERNEL);
 	if (!data)
 		return -ENOMEM;
 
-	/* initialize data */
+	 
 	up.capabilities = UART_CAP_FIFO | UART_CAP_MINI;
 	up.port.dev = &pdev->dev;
 	up.port.regshift = 2;
@@ -112,23 +93,23 @@ static int bcm2835aux_serial_probe(struct platform_device *pdev)
 	up.rs485_start_tx = bcm2835aux_rs485_start_tx;
 	up.rs485_stop_tx = bcm2835aux_rs485_stop_tx;
 
-	/* initialize cached copy with power-on reset value */
+	 
 	data->cntl = BCM2835_AUX_UART_CNTL_RXEN | BCM2835_AUX_UART_CNTL_TXEN;
 
 	platform_set_drvdata(pdev, data);
 
-	/* get the clock - this also enables the HW */
+	 
 	data->clk = devm_clk_get_optional(&pdev->dev, NULL);
 	if (IS_ERR(data->clk))
 		return dev_err_probe(&pdev->dev, PTR_ERR(data->clk), "could not get clk\n");
 
-	/* get the interrupt */
+	 
 	ret = platform_get_irq(pdev, 0);
 	if (ret < 0)
 		return ret;
 	up.port.irq = ret;
 
-	/* map the main registers */
+	 
 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 	if (!res) {
 		dev_err(&pdev->dev, "memory resource not found");
@@ -137,28 +118,19 @@ static int bcm2835aux_serial_probe(struct platform_device *pdev)
 
 	bcm_data = device_get_match_data(&pdev->dev);
 
-	/* Some UEFI implementations (e.g. tianocore/edk2 for the Raspberry Pi)
-	 * describe the miniuart with a base address that encompasses the auxiliary
-	 * registers shared between the miniuart and spi.
-	 *
-	 * This is due to historical reasons, see discussion here :
-	 * https://edk2.groups.io/g/devel/topic/87501357#84349
-	 *
-	 * We need to add the offset between the miniuart and auxiliary
-	 * registers to get the real miniuart base address.
-	 */
+	 
 	if (bcm_data)
 		offset = bcm_data->offset;
 
 	up.port.mapbase = res->start + offset;
 	up.port.mapsize = resource_size(res) - offset;
 
-	/* Check for a fixed line number */
+	 
 	ret = of_alias_get_id(pdev->dev.of_node, "serial");
 	if (ret >= 0)
 		up.port.line = ret;
 
-	/* enable the clock as a last step */
+	 
 	ret = clk_prepare_enable(data->clk);
 	if (ret) {
 		dev_err(&pdev->dev, "unable to enable uart clock - %d\n",
@@ -175,14 +147,10 @@ static int bcm2835aux_serial_probe(struct platform_device *pdev)
 		}
 	}
 
-	/* the HW-clock divider for bcm2835aux is 8,
-	 * but 8250 expects a divider of 16,
-	 * so we have to multiply the actual clock by 2
-	 * to get identical baudrates.
-	 */
+	 
 	up.port.uartclk = uartclk * 2;
 
-	/* register the port */
+	 
 	ret = serial8250_register_8250_port(&up);
 	if (ret < 0) {
 		dev_err_probe(&pdev->dev, ret, "unable to register 8250 port\n");

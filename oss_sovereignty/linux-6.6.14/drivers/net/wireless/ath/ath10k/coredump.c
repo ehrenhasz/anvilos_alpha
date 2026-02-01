@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: ISC
-/*
- * Copyright (c) 2011-2017 Qualcomm Atheros, Inc.
- * Copyright (c) 2018, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include "coredump.h"
 
@@ -500,13 +497,7 @@ static const struct ath10k_mem_section qca6174_hw30_sdio_register_sections[] = {
 	{0x23000, 0x233A8},
 	{0x24000, 0x24034},
 
-	/* EFUSE0,1,2 is disabled here
-	 * because its state may be reset
-	 *
-	 * {0x24800, 0x24804},
-	 * {0x25000, 0x25004},
-	 * {0x25800, 0x25804},
-	 */
+	 
 
 	{0x26000, 0x26064},
 	{0x27000, 0x27024},
@@ -523,19 +514,11 @@ static const struct ath10k_mem_section qca6174_hw30_sdio_register_sections[] = {
 	{0x38070, 0x380E0},
 	{0x3A000, 0x3A074},
 
-	/* DBI windows is skipped here, it can be only accessed when pcie
-	 * is active (not in reset) and CORE_CTRL_PCIE_LTSSM_EN = 0 &&
-	 * PCIE_CTRL_APP_LTSSM_ENALBE=0.
-	 * {0x3C000 , 0x3C004},
-	 */
+	 
 
 	{0x40000, 0x400A4},
 
-	/* SI register is skipped here.
-	 * Because it will cause bus hang
-	 *
-	 * {0x50000, 0x50018},
-	 */
+	 
 
 	{0x80000, 0x8000C},
 	{0x80010, 0x80020},
@@ -811,10 +794,10 @@ static const struct ath10k_mem_region qca6174_hw10_mem_regions[] = {
 	{
 		.type = ATH10K_MEM_REGION_TYPE_REG,
 
-		/* RTC_SOC_BASE_ADDRESS */
+		 
 		.start = 0x0,
 
-		/* WLAN_MBOX_BASE_ADDRESS - RTC_SOC_BASE_ADDRESS */
+		 
 		.len = 0x800 - 0x0,
 
 		.name = "REG_PART1",
@@ -826,10 +809,10 @@ static const struct ath10k_mem_region qca6174_hw10_mem_regions[] = {
 	{
 		.type = ATH10K_MEM_REGION_TYPE_REG,
 
-		/* STEREO_BASE_ADDRESS */
+		 
 		.start = 0x27000,
 
-		/* USB_BASE_ADDRESS - STEREO_BASE_ADDRESS */
+		 
 		.len = 0x60000 - 0x27000,
 
 		.name = "REG_PART2",
@@ -958,7 +941,7 @@ static const struct ath10k_mem_region qca6174_hw30_mem_regions[] = {
 		},
 	},
 
-	/* IRAM dump must be put last */
+	 
 	{
 		.type = ATH10K_MEM_REGION_TYPE_IRAM1,
 		.start = 0x00980000,
@@ -1277,7 +1260,7 @@ static const struct ath10k_mem_region qca4019_hw10_mem_regions[] = {
 
 static const struct ath10k_mem_region wcn399x_hw10_mem_regions[] = {
 	{
-		/* MSA region start is not fixed, hence it is assigned at runtime */
+		 
 		.type = ATH10K_MEM_REGION_TYPE_MSA,
 		.len = 0x100000,
 		.name = "DRAM",
@@ -1436,10 +1419,10 @@ static u32 ath10k_coredump_get_ramdump_size(struct ath10k *ar)
 		mem_region++;
 	}
 
-	/* reserve space for the headers */
+	 
 	size += hw->region_table.size * sizeof(struct ath10k_dump_ram_data_hdr);
 
-	/* make sure it is aligned 16 bytes for debug message print out */
+	 
 	size = ALIGN(size, 16);
 
 	return size;
@@ -1478,7 +1461,7 @@ struct ath10k_fw_crash_data *ath10k_coredump_new(struct ath10k *ar)
 	lockdep_assert_held(&ar->dump_mutex);
 
 	if (ath10k_coredump_mask == 0)
-		/* coredump disabled */
+		 
 		return NULL;
 
 	guid_gen(&crash_data->guid);
@@ -1512,9 +1495,7 @@ static struct ath10k_dump_file_data *ath10k_coredump_build(struct ath10k *ar)
 
 	sofar += hdr_len;
 
-	/* This is going to get big when we start dumping FW RAM and such,
-	 * so go ahead and use vmalloc.
-	 */
+	 
 	buf = vzalloc(len);
 	if (!buf)
 		return NULL;
@@ -1576,7 +1557,7 @@ static struct ath10k_dump_file_data *ath10k_coredump_build(struct ath10k *ar)
 			CE_COUNT * sizeof(ce_hdr->entries[0]);
 	}
 
-	/* Gather ram dump */
+	 
 	if (test_bit(ATH10K_FW_CRASH_DUMP_RAM_DATA, &ath10k_coredump_mask)) {
 		dump_tlv = (struct ath10k_tlv_dump_data *)(buf + sofar);
 		dump_tlv->type = cpu_to_le32(ATH10K_FW_CRASH_DUMP_RAM_DATA);
@@ -1598,7 +1579,7 @@ int ath10k_coredump_submit(struct ath10k *ar)
 	struct ath10k_dump_file_data *dump;
 
 	if (ath10k_coredump_mask == 0)
-		/* coredump disabled */
+		 
 		return 0;
 
 	dump = ath10k_coredump_build(ar);
@@ -1615,7 +1596,7 @@ int ath10k_coredump_submit(struct ath10k *ar)
 int ath10k_coredump_create(struct ath10k *ar)
 {
 	if (ath10k_coredump_mask == 0)
-		/* coredump disabled */
+		 
 		return 0;
 
 	ar->coredump.fw_crash_data = vzalloc(sizeof(*ar->coredump.fw_crash_data));

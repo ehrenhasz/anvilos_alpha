@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2022 MediaTek Inc.
- */
+
+ 
 
 #include <dt-bindings/clock/mediatek,mt8365-clk.h>
 #include <linux/clk-provider.h>
@@ -21,7 +19,7 @@ static const struct mtk_gate_regs venc_cg_regs = {
 			 &mtk_clk_gate_ops_setclr_inv)
 
 static const struct mtk_gate venc_clks[] = {
-	/* VENC */
+	 
 	GATE_VENC(CLK_VENC, "venc_fvenc_ck", "mm_sel", 4),
 	GATE_VENC(CLK_VENC_JPGENC, "venc_jpgenc_ck", "mm_sel", 8),
 };
@@ -36,7 +34,7 @@ static const struct of_device_id of_match_clk_mt8365_venc[] = {
 		.compatible = "mediatek,mt8365-vencsys",
 		.data = &venc_desc,
 	}, {
-		/* sentinel */
+		 
 	}
 };
 MODULE_DEVICE_TABLE(of, of_match_clk_mt8365_venc);

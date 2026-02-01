@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* Copyright (C) 2020 IBM Corp. */
+
+ 
 
 #include <kunit/test.h>
 

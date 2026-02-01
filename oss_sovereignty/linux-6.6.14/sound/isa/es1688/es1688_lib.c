@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  Copyright (c) by Jaroslav Kysela <perex@perex.cz>
- *  Routines for control of ESS ES1688/688/488 chip
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/interrupt.h>
@@ -57,7 +54,7 @@ static int snd_es1688_write(struct snd_es1688 *chip,
 
 static int snd_es1688_read(struct snd_es1688 *chip, unsigned char reg)
 {
-	/* Read a byte from an extended mode register of ES1688 */
+	 
 	if (!snd_es1688_dsp_command(chip, 0xc0))
 		return -1;
 	if (!snd_es1688_dsp_command(chip, reg))
@@ -89,7 +86,7 @@ int snd_es1688_reset(struct snd_es1688 *chip)
 {
 	int i;
 
-	outb(3, ES1688P(chip, RESET));		/* valid only for ESS chips, SB -> 1 */
+	outb(3, ES1688P(chip, RESET));		 
 	udelay(10);
 	outb(0, ES1688P(chip, RESET));
 	udelay(30);
@@ -98,7 +95,7 @@ int snd_es1688_reset(struct snd_es1688 *chip)
 		snd_printd("ess_reset at 0x%lx: failed!!!\n", chip->port);
 		return -ENODEV;
 	}
-	snd_es1688_dsp_command(chip, 0xc6);	/* enable extended mode */
+	snd_es1688_dsp_command(chip, 0xc6);	 
 	return 0;
 }
 EXPORT_SYMBOL(snd_es1688_reset);
@@ -109,29 +106,27 @@ static int snd_es1688_probe(struct snd_es1688 *chip)
 	unsigned short major, minor;
 	int i;
 
-	/*
-	 *  initialization sequence
-	 */
+	 
 
-	spin_lock_irqsave(&chip->reg_lock, flags);	/* Some ESS1688 cards need this */
-	inb(ES1688P(chip, ENABLE1));	/* ENABLE1 */
-	inb(ES1688P(chip, ENABLE1));	/* ENABLE1 */
-	inb(ES1688P(chip, ENABLE1));	/* ENABLE1 */
-	inb(ES1688P(chip, ENABLE2));	/* ENABLE2 */
-	inb(ES1688P(chip, ENABLE1));	/* ENABLE1 */
-	inb(ES1688P(chip, ENABLE2));	/* ENABLE2 */
-	inb(ES1688P(chip, ENABLE1));	/* ENABLE1 */
-	inb(ES1688P(chip, ENABLE1));	/* ENABLE1 */
-	inb(ES1688P(chip, ENABLE2));	/* ENABLE2 */
-	inb(ES1688P(chip, ENABLE1));	/* ENABLE1 */
-	inb(ES1688P(chip, ENABLE0));	/* ENABLE0 */
+	spin_lock_irqsave(&chip->reg_lock, flags);	 
+	inb(ES1688P(chip, ENABLE1));	 
+	inb(ES1688P(chip, ENABLE1));	 
+	inb(ES1688P(chip, ENABLE1));	 
+	inb(ES1688P(chip, ENABLE2));	 
+	inb(ES1688P(chip, ENABLE1));	 
+	inb(ES1688P(chip, ENABLE2));	 
+	inb(ES1688P(chip, ENABLE1));	 
+	inb(ES1688P(chip, ENABLE1));	 
+	inb(ES1688P(chip, ENABLE2));	 
+	inb(ES1688P(chip, ENABLE1));	 
+	inb(ES1688P(chip, ENABLE0));	 
 
 	if (snd_es1688_reset(chip) < 0) {
 		snd_printdd("ESS: [0x%lx] reset failed... 0x%x\n", chip->port, inb(ES1688P(chip, READ)));
 		spin_unlock_irqrestore(&chip->reg_lock, flags);
 		return -ENODEV;
 	}
-	snd_es1688_dsp_command(chip, 0xe7);	/* return identification */
+	snd_es1688_dsp_command(chip, 0xe7);	 
 
 	for (i = 1000, major = minor = 0; i; i--) {
 		if (inb(ES1688P(chip, DATA_AVAIL)) & 0x80) {
@@ -149,7 +144,7 @@ static int snd_es1688_probe(struct snd_es1688 *chip)
 
 	chip->version = (major << 8) | minor;
 	if (!chip->version)
-		return -ENODEV;	/* probably SB */
+		return -ENODEV;	 
 
 	switch (chip->version & 0xfff0) {
 	case 0x4880:
@@ -166,11 +161,11 @@ static int snd_es1688_probe(struct snd_es1688 *chip)
 	}
 
 	spin_lock_irqsave(&chip->reg_lock, flags);
-	snd_es1688_write(chip, 0xb1, 0x10);	/* disable IRQ */
-	snd_es1688_write(chip, 0xb2, 0x00);	/* disable DMA */
+	snd_es1688_write(chip, 0xb1, 0x10);	 
+	snd_es1688_write(chip, 0xb2, 0x00);	 
 	spin_unlock_irqrestore(&chip->reg_lock, flags);
 
-	/* enable joystick, but disable OPL3 */
+	 
 	spin_lock_irqsave(&chip->mixer_lock, flags);
 	snd_es1688_mixer_write(chip, 0x40, 0x01);
 	spin_unlock_irqrestore(&chip->mixer_lock, flags);
@@ -184,8 +179,8 @@ static int snd_es1688_init(struct snd_es1688 * chip, int enable)
 	unsigned long flags;
 	int cfg, irq_bits, dma, dma_bits, tmp, tmp1;
 
-	/* ok.. setup MPU-401 port and joystick and OPL3 */
-	cfg = 0x01;		/* enable joystick, but disable OPL3 */
+	 
+	cfg = 0x01;		 
 	if (enable && chip->mpu_port >= 0x300 && chip->mpu_irq > 0 && chip->hardware != ES1688_HW_688) {
 		tmp = (chip->mpu_port & 0x0f0) >> 4;
 		if (tmp <= 3) {
@@ -216,13 +211,13 @@ static int snd_es1688_init(struct snd_es1688 * chip, int enable)
 	spin_lock_irqsave(&chip->reg_lock, flags);
 	snd_es1688_mixer_write(chip, 0x40, cfg);
 	spin_unlock_irqrestore(&chip->reg_lock, flags);
-	/* --- */
+	 
 	spin_lock_irqsave(&chip->reg_lock, flags);
 	snd_es1688_read(chip, 0xb1);
 	snd_es1688_read(chip, 0xb2);
 	spin_unlock_irqrestore(&chip->reg_lock, flags);
 	if (enable) {
-		cfg = 0xf0;	/* enable only DMA counter interrupt */
+		cfg = 0xf0;	 
 		irq_bits = irqs[chip->irq & 0x0f];
 		if (irq_bits < 0) {
 			snd_printk(KERN_ERR "[0x%lx] ESS: bad IRQ %d "
@@ -237,14 +232,14 @@ static int snd_es1688_init(struct snd_es1688 * chip, int enable)
 		spin_lock_irqsave(&chip->reg_lock, flags);
 		snd_es1688_write(chip, 0xb1, cfg | (irq_bits << 2));
 		spin_unlock_irqrestore(&chip->reg_lock, flags);
-		cfg = 0xf0;	/* extended mode DMA enable */
+		cfg = 0xf0;	 
 		dma = chip->dma8;
 		if (dma > 3 || dma == 2) {
 			snd_printk(KERN_ERR "[0x%lx] ESS: bad DMA channel %d "
 				   "for ES1688 chip!!\n", chip->port, dma);
 #if 0
 			dma_bits = 0;
-			cfg = 0x00;	/* disable all DMA */
+			cfg = 0x00;	 
 #endif
 			return -EINVAL;
 		} else {
@@ -257,8 +252,8 @@ static int snd_es1688_init(struct snd_es1688 * chip, int enable)
 		spin_unlock_irqrestore(&chip->reg_lock, flags);
 	} else {
 		spin_lock_irqsave(&chip->reg_lock, flags);
-		snd_es1688_write(chip, 0xb1, 0x10);	/* disable IRQ */
-		snd_es1688_write(chip, 0xb2, 0x00);	/* disable DMA */
+		snd_es1688_write(chip, 0xb1, 0x10);	 
+		snd_es1688_write(chip, 0xb2, 0x00);	 
 		spin_unlock_irqrestore(&chip->reg_lock, flags);
 	}
 	spin_lock_irqsave(&chip->reg_lock, flags);
@@ -269,9 +264,7 @@ static int snd_es1688_init(struct snd_es1688 * chip, int enable)
 	return 0;
 }
 
-/*
-
- */
+ 
 
 static const struct snd_ratnum clocks[2] = {
 	{
@@ -302,9 +295,9 @@ static void snd_es1688_set_rate(struct snd_es1688 *chip, struct snd_pcm_substrea
 		bits = 256 - runtime->rate_den;
 	else
 		bits = 128 - runtime->rate_den;
-	/* set filter register */
+	 
 	divider = 256 - 7160000*20/(8*82*runtime->rate);
-	/* write result to hardware */
+	 
 	snd_es1688_write(chip, 0xa1, bits);
 	snd_es1688_write(chip, 0xa2, divider);
 }
@@ -323,7 +316,7 @@ static int snd_es1688_trigger(struct snd_es1688 *chip, int cmd, unsigned char va
 	val = snd_es1688_read(chip, 0xb8);
 	if ((val < 0) || (val & 0x0f) == value) {
 		spin_unlock(&chip->reg_lock);
-		return -EINVAL;	/* something is wrong */
+		return -EINVAL;	 
 	}
 #if 0
 	printk(KERN_DEBUG "trigger: val = 0x%x, value = 0x%x\n", val, value);
@@ -347,29 +340,29 @@ static int snd_es1688_playback_prepare(struct snd_pcm_substream *substream)
 	spin_lock_irqsave(&chip->reg_lock, flags);
 	snd_es1688_reset(chip);
 	snd_es1688_set_rate(chip, substream);
-	snd_es1688_write(chip, 0xb8, 4);	/* auto init DMA mode */
+	snd_es1688_write(chip, 0xb8, 4);	 
 	snd_es1688_write(chip, 0xa8, (snd_es1688_read(chip, 0xa8) & ~0x03) | (3 - runtime->channels));
-	snd_es1688_write(chip, 0xb9, 2);	/* demand mode (4 bytes/request) */
+	snd_es1688_write(chip, 0xb9, 2);	 
 	if (runtime->channels == 1) {
 		if (snd_pcm_format_width(runtime->format) == 8) {
-			/* 8. bit mono */
+			 
 			snd_es1688_write(chip, 0xb6, 0x80);
 			snd_es1688_write(chip, 0xb7, 0x51);
 			snd_es1688_write(chip, 0xb7, 0xd0);
 		} else {
-			/* 16. bit mono */
+			 
 			snd_es1688_write(chip, 0xb6, 0x00);
 			snd_es1688_write(chip, 0xb7, 0x71);
 			snd_es1688_write(chip, 0xb7, 0xf4);
 		}
 	} else {
 		if (snd_pcm_format_width(runtime->format) == 8) {
-			/* 8. bit stereo */
+			 
 			snd_es1688_write(chip, 0xb6, 0x80);
 			snd_es1688_write(chip, 0xb7, 0x51);
 			snd_es1688_write(chip, 0xb7, 0x98);
 		} else {
-			/* 16. bit stereo */
+			 
 			snd_es1688_write(chip, 0xb6, 0x00);
 			snd_es1688_write(chip, 0xb7, 0x71);
 			snd_es1688_write(chip, 0xb7, 0xbc);
@@ -379,7 +372,7 @@ static int snd_es1688_playback_prepare(struct snd_pcm_substream *substream)
 	snd_es1688_write(chip, 0xb2, (snd_es1688_read(chip, 0xb2) & 0x0f) | 0x50);
 	snd_es1688_dsp_command(chip, ES1688_DSP_CMD_SPKON);
 	spin_unlock_irqrestore(&chip->reg_lock, flags);
-	/* --- */
+	 
 	count = -count;
 	snd_dma_program(chip->dma8, runtime->dma_addr, size, DMA_MODE_WRITE | DMA_AUTOINIT);
 	spin_lock_irqsave(&chip->reg_lock, flags);
@@ -409,26 +402,26 @@ static int snd_es1688_capture_prepare(struct snd_pcm_substream *substream)
 	snd_es1688_reset(chip);
 	snd_es1688_set_rate(chip, substream);
 	snd_es1688_dsp_command(chip, ES1688_DSP_CMD_SPKOFF);
-	snd_es1688_write(chip, 0xb8, 0x0e);	/* auto init DMA mode */
+	snd_es1688_write(chip, 0xb8, 0x0e);	 
 	snd_es1688_write(chip, 0xa8, (snd_es1688_read(chip, 0xa8) & ~0x03) | (3 - runtime->channels));
-	snd_es1688_write(chip, 0xb9, 2);	/* demand mode (4 bytes/request) */
+	snd_es1688_write(chip, 0xb9, 2);	 
 	if (runtime->channels == 1) {
 		if (snd_pcm_format_width(runtime->format) == 8) {
-			/* 8. bit mono */
+			 
 			snd_es1688_write(chip, 0xb7, 0x51);
 			snd_es1688_write(chip, 0xb7, 0xd0);
 		} else {
-			/* 16. bit mono */
+			 
 			snd_es1688_write(chip, 0xb7, 0x71);
 			snd_es1688_write(chip, 0xb7, 0xf4);
 		}
 	} else {
 		if (snd_pcm_format_width(runtime->format) == 8) {
-			/* 8. bit stereo */
+			 
 			snd_es1688_write(chip, 0xb7, 0x51);
 			snd_es1688_write(chip, 0xb7, 0x98);
 		} else {
-			/* 16. bit stereo */
+			 
 			snd_es1688_write(chip, 0xb7, 0x71);
 			snd_es1688_write(chip, 0xb7, 0xbc);
 		}
@@ -436,7 +429,7 @@ static int snd_es1688_capture_prepare(struct snd_pcm_substream *substream)
 	snd_es1688_write(chip, 0xb1, (snd_es1688_read(chip, 0xb1) & 0x0f) | 0x50);
 	snd_es1688_write(chip, 0xb2, (snd_es1688_read(chip, 0xb2) & 0x0f) | 0x50);
 	spin_unlock_irqrestore(&chip->reg_lock, flags);
-	/* --- */
+	 
 	count = -count;
 	snd_dma_program(chip->dma8, runtime->dma_addr, size, DMA_MODE_READ | DMA_AUTOINIT);
 	spin_lock_irqsave(&chip->reg_lock, flags);
@@ -457,12 +450,12 @@ static irqreturn_t snd_es1688_interrupt(int irq, void *dev_id)
 {
 	struct snd_es1688 *chip = dev_id;
 
-	if (chip->trigger_value == 0x05)	/* ok.. playback is active */
+	if (chip->trigger_value == 0x05)	 
 		snd_pcm_period_elapsed(chip->playback_substream);
-	if (chip->trigger_value == 0x0f)	/* ok.. capture is active */
+	if (chip->trigger_value == 0x0f)	 
 		snd_pcm_period_elapsed(chip->capture_substream);
 
-	inb(ES1688P(chip, DATA_AVAIL));	/* ack interrupt */
+	inb(ES1688P(chip, DATA_AVAIL));	 
 	return IRQ_HANDLED;
 }
 
@@ -488,9 +481,7 @@ static snd_pcm_uframes_t snd_es1688_capture_pointer(struct snd_pcm_substream *su
 	return bytes_to_frames(substream->runtime, ptr);
 }
 
-/*
-
- */
+ 
 
 static const struct snd_pcm_hardware snd_es1688_playback =
 {
@@ -528,9 +519,7 @@ static const struct snd_pcm_hardware snd_es1688_capture =
 	.fifo_size =		0,
 };
 
-/*
-
- */
+ 
 
 static int snd_es1688_playback_open(struct snd_pcm_substream *substream)
 {
@@ -665,7 +654,7 @@ int snd_es1688_create(struct snd_card *card,
 	if (err < 0)
 		goto exit;
 
-	/* Register device */
+	 
 	err = snd_device_new(card, SNDRV_DEV_LOWLEVEL, chip, &ops);
 exit:
 	if (err)
@@ -711,9 +700,7 @@ int snd_es1688_pcm(struct snd_card *card, struct snd_es1688 *chip, int device)
 	return 0;
 }
 
-/*
- *  MIXER part
- */
+ 
 
 static int snd_es1688_info_mux(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_info *uinfo)
 {

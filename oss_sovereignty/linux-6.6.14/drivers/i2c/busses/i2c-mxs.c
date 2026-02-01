@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Freescale MXS I2C bus driver
- *
- * Copyright (C) 2012-2013 Marek Vasut <marex@denx.de>
- * Copyright (C) 2011-2012 Wolfram Sang, Pengutronix e.K.
- *
- * based on a (non-working) driver which was:
- *
- * Copyright (C) 2009-2010 Freescale Semiconductor, Inc. All Rights Reserved.
- */
+
+ 
 
 #include <linux/slab.h>
 #include <linux/device.h>
@@ -99,16 +90,7 @@ enum mxs_i2c_devtype {
 	MXS_I2C_V2,
 };
 
-/**
- * struct mxs_i2c_dev - per device, private MXS-I2C data
- *
- * @dev: driver model device node
- * @dev_type: distinguish i.MX23/i.MX28 features
- * @regs: IO registers pointer
- * @cmd_complete: completion object for transaction wait
- * @cmd_err: error code for last transaction
- * @adapter: i2c subsystem adapter node
- */
+ 
 struct mxs_i2c_dev {
 	struct device *dev;
 	enum mxs_i2c_devtype dev_type;
@@ -121,7 +103,7 @@ struct mxs_i2c_dev {
 	uint32_t timing1;
 	uint32_t timing2;
 
-	/* DMA support components */
+	 
 	struct dma_chan			*dmach;
 	uint32_t			pio_data[2];
 	uint32_t			addr_data;
@@ -135,13 +117,7 @@ static int mxs_i2c_reset(struct mxs_i2c_dev *i2c)
 	if (ret)
 		return ret;
 
-	/*
-	 * Configure timing for the I2C block. The I2C TIMING2 register has to
-	 * be programmed with this particular magic number. The rest is derived
-	 * from the XTAL speed and requested I2C speed.
-	 *
-	 * For details, see i.MX233 [25.4.2 - 25.4.4] and i.MX28 [27.5.2 - 27.5.4].
-	 */
+	 
 	writel(i2c->timing0, i2c->regs + MXS_I2C_TIMING0);
 	writel(i2c->timing1, i2c->regs + MXS_I2C_TIMING1);
 	writel(i2c->timing2, i2c->regs + MXS_I2C_TIMING2);
@@ -180,11 +156,9 @@ static int mxs_i2c_dma_setup_xfer(struct i2c_adapter *adap,
 	if (msg->flags & I2C_M_RD) {
 		i2c->dma_read = true;
 
-		/*
-		 * SELECT command.
-		 */
+		 
 
-		/* Queue the PIO register write transfer. */
+		 
 		i2c->pio_data[0] = MXS_CMD_I2C_SELECT;
 		desc = dmaengine_prep_slave_sg(i2c->dmach,
 					(struct scatterlist *)&i2c->pio_data[0],
@@ -195,7 +169,7 @@ static int mxs_i2c_dma_setup_xfer(struct i2c_adapter *adap,
 			goto select_init_pio_fail;
 		}
 
-		/* Queue the DMA data transfer. */
+		 
 		sg_init_one(&i2c->sg_io[0], &i2c->addr_data, 1);
 		dma_map_sg(i2c->dev, &i2c->sg_io[0], 1, DMA_TO_DEVICE);
 		desc = dmaengine_prep_slave_sg(i2c->dmach, &i2c->sg_io[0], 1,
@@ -208,11 +182,9 @@ static int mxs_i2c_dma_setup_xfer(struct i2c_adapter *adap,
 			goto select_init_dma_fail;
 		}
 
-		/*
-		 * READ command.
-		 */
+		 
 
-		/* Queue the PIO register write transfer. */
+		 
 		i2c->pio_data[1] = flags | MXS_CMD_I2C_READ |
 				MXS_I2C_CTRL0_XFER_COUNT(msg->len);
 		desc = dmaengine_prep_slave_sg(i2c->dmach,
@@ -224,7 +196,7 @@ static int mxs_i2c_dma_setup_xfer(struct i2c_adapter *adap,
 			goto select_init_dma_fail;
 		}
 
-		/* Queue the DMA data transfer. */
+		 
 		sg_init_one(&i2c->sg_io[1], buf, msg->len);
 		dma_map_sg(i2c->dev, &i2c->sg_io[1], 1, DMA_FROM_DEVICE);
 		desc = dmaengine_prep_slave_sg(i2c->dmach, &i2c->sg_io[1], 1,
@@ -239,11 +211,9 @@ static int mxs_i2c_dma_setup_xfer(struct i2c_adapter *adap,
 	} else {
 		i2c->dma_read = false;
 
-		/*
-		 * WRITE command.
-		 */
+		 
 
-		/* Queue the PIO register write transfer. */
+		 
 		i2c->pio_data[0] = flags | MXS_CMD_I2C_WRITE |
 				MXS_I2C_CTRL0_XFER_COUNT(msg->len + 1);
 		desc = dmaengine_prep_slave_sg(i2c->dmach,
@@ -255,7 +225,7 @@ static int mxs_i2c_dma_setup_xfer(struct i2c_adapter *adap,
 			goto write_init_pio_fail;
 		}
 
-		/* Queue the DMA data transfer. */
+		 
 		sg_init_table(i2c->sg_io, 2);
 		sg_set_buf(&i2c->sg_io[0], &i2c->addr_data, 1);
 		sg_set_buf(&i2c->sg_io[1], buf, msg->len);
@@ -271,19 +241,16 @@ static int mxs_i2c_dma_setup_xfer(struct i2c_adapter *adap,
 		}
 	}
 
-	/*
-	 * The last descriptor must have this callback,
-	 * to finish the DMA transaction.
-	 */
+	 
 	desc->callback = mxs_i2c_dma_irq_callback;
 	desc->callback_param = i2c;
 
-	/* Start the transfer. */
+	 
 	dmaengine_submit(desc);
 	dma_async_issue_pending(i2c->dmach);
 	return 0;
 
-/* Read failpath. */
+ 
 read_init_dma_fail:
 	dma_unmap_sg(i2c->dev, &i2c->sg_io[1], 1, DMA_FROM_DEVICE);
 select_init_dma_fail:
@@ -292,7 +259,7 @@ select_init_pio_fail:
 	dmaengine_terminate_sync(i2c->dmach);
 	return -EINVAL;
 
-/* Write failpath. */
+ 
 write_init_dma_fail:
 	dma_unmap_sg(i2c->dev, i2c->sg_io, 2, DMA_TO_DEVICE);
 write_init_pio_fail:
@@ -339,20 +306,13 @@ static void mxs_i2c_pio_trigger_cmd(struct mxs_i2c_dev *i2c, u32 cmd)
 
 	writel(cmd, i2c->regs + MXS_I2C_CTRL0);
 
-	/* readback makes sure the write is latched into hardware */
+	 
 	reg = readl(i2c->regs + MXS_I2C_CTRL0);
 	reg |= MXS_I2C_CTRL0_RUN;
 	writel(reg, i2c->regs + MXS_I2C_CTRL0);
 }
 
-/*
- * Start WRITE transaction on the I2C bus. By studying i.MX23 datasheet,
- * CTRL0::PIO_MODE bit description clarifies the order in which the registers
- * must be written during PIO mode operation. First, the CTRL0 register has
- * to be programmed with all the necessary bits but the RUN bit. Then the
- * payload has to be written into the DATA register. Finally, the transmission
- * is executed by setting the RUN bit in CTRL0.
- */
+ 
 static void mxs_i2c_pio_trigger_write_cmd(struct mxs_i2c_dev *i2c, u32 cmd,
 					  u32 data)
 {
@@ -374,42 +334,15 @@ static int mxs_i2c_pio_setup_xfer(struct i2c_adapter *adap,
 	int i, ret, xlen = 0, xmit = 0;
 	uint32_t start;
 
-	/* Mute IRQs coming from this block. */
+	 
 	writel(MXS_I2C_IRQ_MASK << 8, i2c->regs + MXS_I2C_CTRL1_CLR);
 
-	/*
-	 * MX23 idea:
-	 * - Enable CTRL0::PIO_MODE (1 << 24)
-	 * - Enable CTRL1::ACK_MODE (1 << 27)
-	 *
-	 * WARNING! The MX23 is broken in some way, even if it claims
-	 * to support PIO, when we try to transfer any amount of data
-	 * that is not aligned to 4 bytes, the DMA engine will have
-	 * bits in DEBUG1::DMA_BYTES_ENABLES still set even after the
-	 * transfer. This in turn will mess up the next transfer as
-	 * the block it emit one byte write onto the bus terminated
-	 * with a NAK+STOP. A possible workaround is to reset the IP
-	 * block after every PIO transmission, which might just work.
-	 *
-	 * NOTE: The CTRL0::PIO_MODE description is important, since
-	 * it outlines how the PIO mode is really supposed to work.
-	 */
+	 
 	if (msg->flags & I2C_M_RD) {
-		/*
-		 * PIO READ transfer:
-		 *
-		 * This transfer MUST be limited to 4 bytes maximum. It is not
-		 * possible to transfer more than four bytes via PIO, since we
-		 * can not in any way make sure we can read the data from the
-		 * DATA register fast enough. Besides, the RX FIFO is only four
-		 * bytes deep, thus we can only really read up to four bytes at
-		 * time. Finally, there is no bit indicating us that new data
-		 * arrived at the FIFO and can thus be fetched from the DATA
-		 * register.
-		 */
+		 
 		BUG_ON(msg->len > 4);
 
-		/* SELECT command. */
+		 
 		mxs_i2c_pio_trigger_write_cmd(i2c, MXS_CMD_I2C_SELECT,
 					      addr_data);
 
@@ -420,7 +353,7 @@ static int mxs_i2c_pio_setup_xfer(struct i2c_adapter *adap,
 			goto cleanup;
 		}
 
-		/* READ command. */
+		 
 		mxs_i2c_pio_trigger_cmd(i2c,
 					MXS_CMD_I2C_READ | flags |
 					MXS_I2C_CTRL0_XFER_COUNT(msg->len));
@@ -438,27 +371,16 @@ static int mxs_i2c_pio_setup_xfer(struct i2c_adapter *adap,
 			data >>= 8;
 		}
 	} else {
-		/*
-		 * PIO WRITE transfer:
-		 *
-		 * The code below implements clock stretching to circumvent
-		 * the possibility of kernel not being able to supply data
-		 * fast enough. It is possible to transfer arbitrary amount
-		 * of data using PIO write.
-		 */
+		 
 
-		/*
-		 * The LSB of data buffer is the first byte blasted across
-		 * the bus. Higher order bytes follow. Thus the following
-		 * filling schematic.
-		 */
+		 
 
 		data = addr_data << 24;
 
-		/* Start the transfer with START condition. */
+		 
 		start = MXS_I2C_CTRL0_PRE_SEND_START;
 
-		/* If the transfer is long, use clock stretching. */
+		 
 		if (msg->len > 3)
 			start |= MXS_I2C_CTRL0_RETAIN_CLOCK;
 
@@ -468,32 +390,24 @@ static int mxs_i2c_pio_setup_xfer(struct i2c_adapter *adap,
 
 			xmit = 0;
 
-			/* This is the last transfer of the message. */
+			 
 			if (i + 1 == msg->len) {
-				/* Add optional STOP flag. */
+				 
 				start |= flags;
-				/* Remove RETAIN_CLOCK bit. */
+				 
 				start &= ~MXS_I2C_CTRL0_RETAIN_CLOCK;
 				xmit = 1;
 			}
 
-			/* Four bytes are ready in the "data" variable. */
+			 
 			if ((i & 3) == 2)
 				xmit = 1;
 
-			/* Nothing interesting happened, continue stuffing. */
+			 
 			if (!xmit)
 				continue;
 
-			/*
-			 * Compute the size of the transfer and shift the
-			 * data accordingly.
-			 *
-			 * i = (4k + 0) .... xlen = 2
-			 * i = (4k + 1) .... xlen = 3
-			 * i = (4k + 2) .... xlen = 4
-			 * i = (4k + 3) .... xlen = 1
-			 */
+			 
 
 			if ((i % 4) == 3)
 				xlen = 1;
@@ -517,10 +431,10 @@ static int mxs_i2c_pio_setup_xfer(struct i2c_adapter *adap,
 				MXS_I2C_CTRL0_DIRECTION |
 				MXS_I2C_CTRL0_XFER_COUNT(xlen), data);
 
-			/* The START condition is sent only once. */
+			 
 			start &= ~MXS_I2C_CTRL0_PRE_SEND_START;
 
-			/* Wait for the end of the transfer. */
+			 
 			ret = mxs_i2c_pio_wait_xfer_end(i2c);
 			if (ret) {
 				dev_dbg(i2c->dev,
@@ -528,7 +442,7 @@ static int mxs_i2c_pio_setup_xfer(struct i2c_adapter *adap,
 				break;
 			}
 
-			/* Check NAK here. */
+			 
 			ret = readl(i2c->regs + MXS_I2C_STAT) &
 				    MXS_I2C_STAT_GOT_A_NAK;
 			if (ret) {
@@ -538,24 +452,22 @@ static int mxs_i2c_pio_setup_xfer(struct i2c_adapter *adap,
 		}
 	}
 
-	/* make sure we capture any occurred error into cmd_err */
+	 
 	ret = mxs_i2c_pio_check_error_state(i2c);
 
 cleanup:
-	/* Clear any dangling IRQs and re-enable interrupts. */
+	 
 	writel(MXS_I2C_IRQ_MASK, i2c->regs + MXS_I2C_CTRL1_CLR);
 	writel(MXS_I2C_IRQ_MASK << 8, i2c->regs + MXS_I2C_CTRL1_SET);
 
-	/* Clear the PIO_MODE on i.MX23 */
+	 
 	if (i2c->dev_type == MXS_I2C_V1)
 		writel(MXS_I2C_CTRL0_PIO_MODE, i2c->regs + MXS_I2C_CTRL0_CLR);
 
 	return ret;
 }
 
-/*
- * Low level master read/write transaction.
- */
+ 
 static int mxs_i2c_xfer_msg(struct i2c_adapter *adap, struct i2c_msg *msg,
 				int stop)
 {
@@ -571,11 +483,7 @@ static int mxs_i2c_xfer_msg(struct i2c_adapter *adap, struct i2c_msg *msg,
 	dev_dbg(i2c->dev, "addr: 0x%04x, len: %d, flags: 0x%x, stop: %d\n",
 		msg->addr, msg->len, msg->flags, stop);
 
-	/*
-	 * The MX28 I2C IP block can only do PIO READ for transfer of to up
-	 * 4 bytes of length. The write transfer is not limited as it can use
-	 * clock stretching to avoid FIFO underruns.
-	 */
+	 
 	if ((msg->flags & I2C_M_RD) && (msg->len <= 4))
 		use_pio = 1;
 	if (!(msg->flags & I2C_M_RD) && (msg->len < 7))
@@ -584,7 +492,7 @@ static int mxs_i2c_xfer_msg(struct i2c_adapter *adap, struct i2c_msg *msg,
 	i2c->cmd_err = 0;
 	if (use_pio) {
 		ret = mxs_i2c_pio_setup_xfer(adap, msg, flags);
-		/* No need to reset the block if NAK was received. */
+		 
 		if (ret && (ret != -ENXIO))
 			mxs_i2c_reset(i2c);
 	} else {
@@ -609,25 +517,12 @@ static int mxs_i2c_xfer_msg(struct i2c_adapter *adap, struct i2c_msg *msg,
 	}
 
 	if (ret == -ENXIO) {
-		/*
-		 * If the transfer fails with a NAK from the slave the
-		 * controller halts until it gets told to return to idle state.
-		 */
+		 
 		writel(MXS_I2C_CTRL1_CLR_GOT_A_NAK,
 		       i2c->regs + MXS_I2C_CTRL1_SET);
 	}
 
-	/*
-	 * WARNING!
-	 * The i.MX23 is strange. After each and every operation, it's I2C IP
-	 * block must be reset, otherwise the IP block will misbehave. This can
-	 * be observed on the bus by the block sending out one single byte onto
-	 * the bus. In case such an error happens, bit 27 will be set in the
-	 * DEBUG0 register. This bit is not documented in the i.MX23 datasheet
-	 * and is marked as "TBD" instead. To reset this bit to a correct state,
-	 * reset the whole block. Since the block reset does not take long, do
-	 * reset the block after every transfer to play safe.
-	 */
+	 
 	if (i2c->dev_type == MXS_I2C_V1)
 		mxs_i2c_reset(i2c);
 
@@ -678,7 +573,7 @@ static irqreturn_t mxs_i2c_isr(int this_irq, void *dev_id)
 	else if (stat & (MXS_I2C_CTRL1_EARLY_TERM_IRQ |
 		    MXS_I2C_CTRL1_MASTER_LOSS_IRQ |
 		    MXS_I2C_CTRL1_SLAVE_STOP_IRQ | MXS_I2C_CTRL1_SLAVE_IRQ))
-		/* MXS_I2C_CTRL1_OVERSIZE_XFER_TERM_IRQ is only for slaves */
+		 
 		i2c->cmd_err = -EIO;
 
 	writel(stat, i2c->regs + MXS_I2C_CTRL1_CLR);
@@ -697,7 +592,7 @@ static const struct i2c_adapter_quirks mxs_i2c_quirks = {
 
 static void mxs_i2c_derive_timing(struct mxs_i2c_dev *i2c, uint32_t speed)
 {
-	/* The I2C block clock runs at 24MHz */
+	 
 	const uint32_t clk = 24000000;
 	uint32_t divider;
 	uint16_t high_count, low_count, rcv_count, xmit_count;
@@ -707,20 +602,14 @@ static void mxs_i2c_derive_timing(struct mxs_i2c_dev *i2c, uint32_t speed)
 	divider = DIV_ROUND_UP(clk, speed);
 
 	if (divider < 25) {
-		/*
-		 * limit the divider, so that min(low_count, high_count)
-		 * is >= 1
-		 */
+		 
 		divider = 25;
 		dev_warn(dev,
 			"Speed too high (%u.%03u kHz), using %u.%03u kHz\n",
 			speed / 1000, speed % 1000,
 			clk / divider / 1000, clk / divider % 1000);
 	} else if (divider > 1897) {
-		/*
-		 * limit the divider, so that max(low_count, high_count)
-		 * cannot exceed 1023
-		 */
+		 
 		divider = 1897;
 		dev_warn(dev,
 			"Speed too low (%u.%03u kHz), using %u.%03u kHz\n",
@@ -728,28 +617,15 @@ static void mxs_i2c_derive_timing(struct mxs_i2c_dev *i2c, uint32_t speed)
 			clk / divider / 1000, clk / divider % 1000);
 	}
 
-	/*
-	 * The I2C spec specifies the following timing data:
-	 *                          standard mode  fast mode Bitfield name
-	 * tLOW (SCL LOW period)     4700 ns        1300 ns
-	 * tHIGH (SCL HIGH period)   4000 ns         600 ns
-	 * tSU;DAT (data setup time)  250 ns         100 ns
-	 * tHD;STA (START hold time) 4000 ns         600 ns
-	 * tBUF (bus free time)      4700 ns        1300 ns
-	 *
-	 * The hardware (of the i.MX28 at least) seems to add 2 additional
-	 * clock cycles to the low_count and 7 cycles to the high_count.
-	 * This is compensated for by subtracting the respective constants
-	 * from the values written to the timing registers.
-	 */
+	 
 	if (speed > I2C_MAX_STANDARD_MODE_FREQ) {
-		/* fast mode */
+		 
 		low_count = DIV_ROUND_CLOSEST(divider * 13, (13 + 6));
 		high_count = DIV_ROUND_CLOSEST(divider * 6, (13 + 6));
 		leadin = DIV_ROUND_UP(600 * (clk / 1000000), 1000);
 		bus_free = DIV_ROUND_UP(1300 * (clk / 1000000), 1000);
 	} else {
-		/* normal mode */
+		 
 		low_count = DIV_ROUND_CLOSEST(divider * 47, (47 + 40));
 		high_count = DIV_ROUND_CLOSEST(divider * 40, (47 + 40));
 		leadin = DIV_ROUND_UP(4700 * (clk / 1000000), 1000);
@@ -791,7 +667,7 @@ static int mxs_i2c_get_ofdata(struct mxs_i2c_dev *i2c)
 static const struct of_device_id mxs_i2c_dt_ids[] = {
 	{ .compatible = "fsl,imx23-i2c", .data = (void *)MXS_I2C_V1, },
 	{ .compatible = "fsl,imx28-i2c", .data = (void *)MXS_I2C_V2, },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, mxs_i2c_dt_ids);
 
@@ -830,7 +706,7 @@ static int mxs_i2c_probe(struct platform_device *pdev)
 			return err;
 	}
 
-	/* Setup the DMA */
+	 
 	i2c->dmach = dma_request_chan(dev, "rx-tx");
 	if (IS_ERR(i2c->dmach)) {
 		return dev_err_probe(dev, PTR_ERR(i2c->dmach),
@@ -839,7 +715,7 @@ static int mxs_i2c_probe(struct platform_device *pdev)
 
 	platform_set_drvdata(pdev, i2c);
 
-	/* Do reset to enforce correct startup after pinmuxing */
+	 
 	err = mxs_i2c_reset(i2c);
 	if (err)
 		return err;

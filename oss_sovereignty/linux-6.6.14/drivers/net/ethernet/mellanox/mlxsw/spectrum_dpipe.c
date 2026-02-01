@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
-/* Copyright (c) 2017-2018 Mellanox Technologies. All rights reserved */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/mutex.h>
@@ -161,13 +161,13 @@ static int mlxsw_sp_erif_entry_get(struct mlxsw_sp *mlxsw_sp,
 	u64 cnt;
 	int err;
 
-	/* Set Match RIF index */
+	 
 	rif_value = entry->match_values->value;
 	*rif_value = mlxsw_sp_rif_index(rif);
 	entry->match_values->mapping_value = mlxsw_sp_rif_dev_ifindex(rif);
 	entry->match_values->mapping_valid = true;
 
-	/* Set Action Forwarding */
+	 
 	action_value = entry->action_values->value;
 	*action_value = 1;
 
@@ -461,7 +461,7 @@ __mlxsw_sp_dpipe_table_host_entry_fill(struct devlink_dpipe_entry *entry,
 	u32 *rif_value;
 	u8 *ha_value;
 
-	/* Set Match RIF index */
+	 
 	value = &entry->match_values[MLXSW_SP_DPIPE_TABLE_HOST_MATCH_RIF];
 
 	rif_value = value->value;
@@ -469,11 +469,11 @@ __mlxsw_sp_dpipe_table_host_entry_fill(struct devlink_dpipe_entry *entry,
 	value->mapping_value = mlxsw_sp_rif_dev_ifindex(rif);
 	value->mapping_valid = true;
 
-	/* Set Match DIP */
+	 
 	value = &entry->match_values[MLXSW_SP_DPIPE_TABLE_HOST_MATCH_DIP];
 	memcpy(value->value, dip, value->value_size);
 
-	/* Set Action DMAC */
+	 
 	value = entry->action_values;
 	ha_value = value->value;
 	ether_addr_copy(ha_value, ha);

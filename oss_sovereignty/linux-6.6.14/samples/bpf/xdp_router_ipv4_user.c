@@ -1,6 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright (C) 2017 Cavium, Inc.
- */
+
+ 
 #include <linux/bpf.h>
 #include <linux/netlink.h>
 #include <linux/rtnetlink.h>
@@ -85,9 +84,7 @@ static int recv_msg(struct sockaddr_nl sock_addr, int sock)
 	return nll;
 }
 
-/* Function to parse the route entry returned by netlink
- * Updates the route entry related map entries
- */
+ 
 static void read_route(struct nlmsghdr *nh, int nll)
 {
 	char dsts[24], gws[24], ifs[16], dsts_len[24], metrics[24];
@@ -206,11 +203,7 @@ static void read_route(struct nlmsghdr *nh, int nll)
 					assert(bpf_map_delete_elem(lpm_map_fd,
 								   prefix_key
 								   ) == 0);
-					/* Rereading the route table to check if
-					 * there is an entry with the same
-					 * prefix but a different metric as the
-					 * deleted entry.
-					 */
+					 
 					get_route_table(AF_INET);
 				} else if (prefix_key->data[0] ==
 					   prefix_value->prefix[0] &&
@@ -247,7 +240,7 @@ static void read_route(struct nlmsghdr *nh, int nll)
 	}
 }
 
-/* Function to read the existing route table  when the process is launched*/
+ 
 static int get_route_table(int rtm_family)
 {
 	struct sockaddr_nl sa;
@@ -310,9 +303,7 @@ cleanup:
 	return ret;
 }
 
-/* Function to parse the arp entry returned by netlink
- * Updates the arp entry related map entries
- */
+ 
 static void read_arp(struct nlmsghdr *nh, int nll)
 {
 	struct rtattr *rt_attr;
@@ -384,7 +375,7 @@ static void read_arp(struct nlmsghdr *nh, int nll)
 	}
 }
 
-/* Function to read the existing arp table  when the process is launched*/
+ 
 static int get_arp_table(int rtm_family)
 {
 	struct sockaddr_nl sa;
@@ -445,9 +436,7 @@ cleanup:
 	return ret;
 }
 
-/* Function to keep track and update changes in route and arp table
- * Give regular statistics of packets forwarded
- */
+ 
 static void *monitor_routes_thread(void *arg)
 {
 	struct pollfd fds_route, fds_arp;
@@ -493,7 +482,7 @@ static void *monitor_routes_thread(void *arg)
 	fds_arp.fd = sock_arp;
 	fds_arp.events = POLL_IN;
 
-	/* dump route and arp tables */
+	 
 	if (get_arp_table(AF_INET) < 0) {
 		fprintf(stderr, "Failed reading arp table\n");
 		goto cleanup;

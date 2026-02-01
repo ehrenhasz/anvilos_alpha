@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright (C) 2021 Advanced Micro Devices, Inc.
- *
- * Authors: AMD
- */
+
+ 
 
 #include "../dmub_srv.h"
 #include "dmub_reg.h"
@@ -17,7 +13,7 @@
 #define CTX dmub
 #define REGS dmub->regs
 
-/* Registers. */
+ 
 
 const struct dmub_srv_common_regs dmub_srv_dcn303_regs = {
 #define DMUB_SR(reg) REG_OFFSET(reg),
@@ -36,5 +32,5 @@ const struct dmub_srv_common_regs dmub_srv_dcn303_regs = {
 #undef DMUB_SF
 };
 
-/* Shared functions. */
+ 
 

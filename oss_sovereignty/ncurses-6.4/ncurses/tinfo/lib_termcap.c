@@ -1,42 +1,6 @@
-/****************************************************************************
- * Copyright 2018,2020 Thomas E. Dickey                                     *
- * Copyright 1998-2016,2017 Free Software Foundation, Inc.                  *
- *                                                                          *
- * Permission is hereby granted, free of charge, to any person obtaining a  *
- * copy of this software and associated documentation files (the            *
- * "Software"), to deal in the Software without restriction, including      *
- * without limitation the rights to use, copy, modify, merge, publish,      *
- * distribute, distribute with modifications, sublicense, and/or sell       *
- * copies of the Software, and to permit persons to whom the Software is    *
- * furnished to do so, subject to the following conditions:                 *
- *                                                                          *
- * The above copyright notice and this permission notice shall be included  *
- * in all copies or substantial portions of the Software.                   *
- *                                                                          *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS  *
- * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF               *
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.   *
- * IN NO EVENT SHALL THE ABOVE COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,   *
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR    *
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR    *
- * THE USE OR OTHER DEALINGS IN THE SOFTWARE.                               *
- *                                                                          *
- * Except as contained in this notice, the name(s) of the above copyright   *
- * holders shall not be used in advertising or otherwise to promote the     *
- * sale, use or other dealings in this Software without prior written       *
- * authorization.                                                           *
- ****************************************************************************/
+ 
 
-/****************************************************************************
- *  Author: Zeyd M. Ben-Halim <zmbenhal@netcom.com> 1992,1995               *
- *     and: Eric S. Raymond <esr@snark.thyrsus.com>                         *
- *     and: Thomas E. Dickey                        1996-on                 *
- *     and: Juergen Pfeifer                                                 *
- *                                                                          *
- * some of the code in here was contributed by:                             *
- * Magnus Bengtsson, d6mbeng@dtek.chalmers.se (Nov'93)                      *
- * (but it has changed a lot)                                               *
- ****************************************************************************/
+ 
 
 #define __INTERNAL_CAPS_VISIBLE
 #include <curses.priv.h>
@@ -64,29 +28,12 @@ NCURSES_EXPORT_VAR(char *) BC = 0;
 #define LAST_USE MyCache[CacheInx].last_used
 #define LAST_SEQ MyCache[CacheInx].sequence
 
-/*
- * Termcap names are matched only using the first two bytes.
- * Ignore any extended names longer than two bytes, to avoid problems
- * with legacy code which passes in parameters whose use is long forgotten.
- */
+ 
 #define ValidCap(cap) (((cap)[0] != '\0') && ((cap)[1] != '\0'))
 #define SameCap(a,b)  (((a)[0] == (b)[0]) && ((a)[1] == (b)[1]))
 #define ValidExt(ext) (ValidCap(ext) && (ext)[2] == '\0')
 
-/***************************************************************************
- *
- * tgetent(bufp, term)
- *
- * In termcap, this function reads in the entry for terminal `term' into the
- * buffer pointed to by bufp. It must be called before any of the functions
- * below are called.
- * In this terminfo emulation, tgetent() simply calls setupterm() (which
- * does a bit more than tgetent() in termcap does), and returns its return
- * value (1 if successful, 0 if no terminal with the given name could be
- * found, or -1 if no terminal descriptions have been installed on the
- * system).  The bufp argument is ignored.
- *
- ***************************************************************************/
+ 
 
 NCURSES_EXPORT(int)
 NCURSES_SP_NAME(tgetent) (NCURSES_SP_DCLx char *bufp, const char *name)
@@ -109,18 +56,7 @@ NCURSES_SP_NAME(tgetent) (NCURSES_SP_DCLx char *bufp, const char *name)
 	returnCode(rc);
 #endif
 
-    /*
-     * In general we cannot tell if the fixed sgr0 is still used by the
-     * caller, but if tgetent() is called with the same buffer, that is
-     * good enough, since the previous data would be invalidated by the
-     * current call.
-     *
-     * bufp may be a null pointer, e.g., GNU termcap.  That allocates data,
-     * which is good until the next tgetent() call.  The conventional termcap
-     * is inconvenient because of the fixed buffer size, but because it uses
-     * caller-supplied buffers, can have multiple terminal descriptions in
-     * use at a given time.
-     */
+     
     for (n = 0; n < TGETENT_MAX; ++n) {
 	bool same_result = (MyCache[n].last_used && MyCache[n].last_bufp == bufp);
 	if (same_result) {
@@ -128,9 +64,7 @@ NCURSES_SP_NAME(tgetent) (NCURSES_SP_DCLx char *bufp, const char *name)
 	    if (FIX_SGR0 != 0) {
 		FreeAndNull(FIX_SGR0);
 	    }
-	    /*
-	     * Also free the terminfo data that we loaded (much bigger leak).
-	     */
+	     
 	    if (LAST_TRM != 0 && LAST_TRM != TerminalOf(SP_PARM)) {
 		TERMINAL *trm = LAST_TRM;
 		NCURSES_SP_NAME(del_curterm) (NCURSES_SP_ARGx LAST_TRM);
@@ -163,7 +97,7 @@ NCURSES_SP_NAME(tgetent) (NCURSES_SP_DCLx char *bufp, const char *name)
     PC = 0;
     UP = 0;
     BC = 0;
-    FIX_SGR0 = 0;		/* don't free it - application may still use */
+    FIX_SGR0 = 0;		 
 
     if (rc == 1) {
 
@@ -171,7 +105,7 @@ NCURSES_SP_NAME(tgetent) (NCURSES_SP_DCLx char *bufp, const char *name)
 	    if ((backspaces_with_bs = (char) !strcmp(cursor_left, "\b")) == 0)
 		backspace_if_not_bs = cursor_left;
 
-	/* we're required to export these */
+	 
 	if (pad_char != NULL)
 	    PC = pad_char[0];
 	if (cursor_up != NULL)
@@ -192,13 +126,11 @@ NCURSES_SP_NAME(tgetent) (NCURSES_SP_DCLx char *bufp, const char *name)
 	LAST_USE = TRUE;
 
 	SetNoPadding(SP_PARM);
-	(void) NCURSES_SP_NAME(baudrate) (NCURSES_SP_ARG);	/* sets ospeed as a side-effect */
+	(void) NCURSES_SP_NAME(baudrate) (NCURSES_SP_ARG);	 
 
-/* LINT_PREPRO
-#if 0*/
+ 
 #include <capdefaults.c>
-/* LINT_PREPRO
-#endif*/
+ 
 
     }
     returnCode(rc);
@@ -225,19 +157,12 @@ same_tcname(const char *a, const char *b)
 #define same_tcname(a,b) SameCap(a,b)
 #endif
 
-/***************************************************************************
- *
- * tgetflag(str)
- *
- * Look up boolean termcap capability str and return its value (TRUE=1 if
- * present, FALSE=0 if not).
- *
- ***************************************************************************/
+ 
 
 NCURSES_EXPORT(int)
 NCURSES_SP_NAME(tgetflag) (NCURSES_SP_DCLx const char *id)
 {
-    int result = 0;		/* Solaris returns zero for missing flag */
+    int result = 0;		 
 
     T((T_CALLED("tgetflag(%p, %s)"), (void *) SP_PARM, id));
     if (HasTInfoTerminal(SP_PARM) && ValidCap(id)) {
@@ -262,7 +187,7 @@ NCURSES_SP_NAME(tgetflag) (NCURSES_SP_DCLx const char *id)
 	}
 #endif
 	if (j >= 0) {
-	    /* note: setupterm forces invalid booleans to false */
+	     
 	    result = tp->Booleans[j];
 	}
     }
@@ -277,14 +202,7 @@ tgetflag(const char *id)
 }
 #endif
 
-/***************************************************************************
- *
- * tgetnum(str)
- *
- * Look up numeric termcap capability str and return its value, or -1 if
- * not given.
- *
- ***************************************************************************/
+ 
 
 NCURSES_EXPORT(int)
 NCURSES_SP_NAME(tgetnum) (NCURSES_SP_DCLx const char *id)
@@ -329,14 +247,7 @@ tgetnum(const char *id)
 }
 #endif
 
-/***************************************************************************
- *
- * tgetstr(str, area)
- *
- * Look up string termcap capability str and return a pointer to its value,
- * or NULL if not given.
- *
- ***************************************************************************/
+ 
 
 NCURSES_EXPORT(char *)
 NCURSES_SP_NAME(tgetstr) (NCURSES_SP_DCLx const char *id, char **area)
@@ -368,7 +279,7 @@ NCURSES_SP_NAME(tgetstr) (NCURSES_SP_DCLx const char *id, char **area)
 	if (j >= 0) {
 	    result = tp->Strings[j];
 	    TR(TRACE_DATABASE, ("found match %d: %s", j, _nc_visbuf(result)));
-	    /* setupterm forces canceled strings to null */
+	     
 	    if (VALID_STRING(result)) {
 		if (result == exit_attribute_mode
 		    && FIX_SGR0 != 0) {

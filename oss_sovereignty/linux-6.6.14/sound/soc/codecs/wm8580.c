@@ -1,19 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * wm8580.c  --  WM8580 and WM8581 ALSA Soc Audio driver
- *
- * Copyright 2008-12 Wolfson Microelectronics PLC.
- *
- * Notes:
- *  The WM8580 is a multichannel codec with S/PDIF support, featuring six
- *  DAC channels and two ADC channels.
- *
- *  The WM8581 is a multichannel codec with S/PDIF support, featuring eight
- *  DAC channels and two ADC channels.
- *
- *  Currently only the primary audio interface is supported - S/PDIF and
- *  the secondary audio interfaces are not.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/moduleparam.h>
@@ -37,7 +23,7 @@
 
 #include "wm8580.h"
 
-/* WM8580 register space */
+ 
 #define WM8580_PLLA1                         0x00
 #define WM8580_PLLA2                         0x01
 #define WM8580_PLLA3                         0x02
@@ -97,7 +83,7 @@
 
 #define WM8580_DACOSR 0x40
 
-/* PLLB4 (register 7h) */
+ 
 #define WM8580_PLLB4_MCLKOUTSRC_MASK   0x60
 #define WM8580_PLLB4_MCLKOUTSRC_PLLA   0x20
 #define WM8580_PLLB4_MCLKOUTSRC_PLLB   0x40
@@ -108,12 +94,12 @@
 #define WM8580_PLLB4_CLKOUTSRC_PLLBCLK 0x100
 #define WM8580_PLLB4_CLKOUTSRC_OSCCLK  0x180
 
-/* CLKSEL (register 8h) */
+ 
 #define WM8580_CLKSEL_DAC_CLKSEL_MASK 0x03
 #define WM8580_CLKSEL_DAC_CLKSEL_PLLA 0x01
 #define WM8580_CLKSEL_DAC_CLKSEL_PLLB 0x02
 
-/* AIF control 1 (registers 9h-bh) */
+ 
 #define WM8580_AIF_RATE_MASK       0x7
 #define WM8580_AIF_BCLKSEL_MASK   0x18
 
@@ -124,7 +110,7 @@
 #define WM8580_AIF_CLKSRC_PLLB    0x40
 #define WM8580_AIF_CLKSRC_MCLK    0xc0
 
-/* AIF control 2 (registers ch-eh) */
+ 
 #define WM8580_AIF_FMT_MASK    0x03
 #define WM8580_AIF_FMT_RIGHTJ  0x00
 #define WM8580_AIF_FMT_LEFTJ   0x01
@@ -140,11 +126,11 @@
 #define WM8580_AIF_LRP         0x10
 #define WM8580_AIF_BCP         0x20
 
-/* Powerdown Register 1 (register 32h) */
+ 
 #define WM8580_PWRDN1_PWDN     0x001
 #define WM8580_PWRDN1_ALLDACPD 0x040
 
-/* Powerdown Register 2 (register 33h) */
+ 
 #define WM8580_PWRDN2_OSSCPD   0x001
 #define WM8580_PWRDN2_PLLAPD   0x002
 #define WM8580_PWRDN2_PLLBPD   0x004
@@ -154,11 +140,7 @@
 
 #define WM8580_DAC_CONTROL5_MUTEALL 0x10
 
-/*
- * wm8580 register cache
- * We can't read the WM8580 register space when we
- * are using 2 wire for device control, so we cache them instead.
- */
+ 
 static const struct reg_default wm8580_reg_defaults[] = {
 	{  0, 0x0121 },
 	{  1, 0x017e },
@@ -241,7 +223,7 @@ struct wm8580_driver_data {
 	int num_dacs;
 };
 
-/* codec private data */
+ 
 struct wm8580_priv {
 	struct regmap *regmap;
 	struct regulator_bulk_data supplies[WM8580_NUM_SUPPLIES];
@@ -264,7 +246,7 @@ static int wm8580_out_vu(struct snd_kcontrol *kcontrol,
 	unsigned int reg2 = mc->rreg;
 	int ret;
 
-	/* Clear the register cache VU so we write without VU set */
+	 
 	regcache_cache_only(wm8580->regmap, true);
 	regmap_update_bits(wm8580->regmap, reg, 0x100, 0x000);
 	regmap_update_bits(wm8580->regmap, reg2, 0x100, 0x000);
@@ -274,7 +256,7 @@ static int wm8580_out_vu(struct snd_kcontrol *kcontrol,
 	if (ret < 0)
 		return ret;
 
-	/* Now write again with the volume update bit set */
+	 
 	snd_soc_component_update_bits(component, reg, 0x100, 0x100);
 	snd_soc_component_update_bits(component, reg2, 0x100, 0x100);
 
@@ -369,7 +351,7 @@ static const struct snd_soc_dapm_route wm8581_dapm_routes[] = {
 	{ "VOUT4R", NULL, "DAC4" },
 };
 
-/* PLL divisors */
+ 
 struct _pll_div {
 	u32 prescale:1;
 	u32 postscale:1;
@@ -378,10 +360,10 @@ struct _pll_div {
 	u32 k:24;
 };
 
-/* The size in bits of the pll divide */
+ 
 #define FIXED_PLL_SIZE (1 << 22)
 
-/* PLL rate to output rate divisions */
+ 
 static struct {
 	unsigned int div;
 	unsigned int freqmode;
@@ -406,9 +388,7 @@ static int pll_factors(struct _pll_div *pll_div, unsigned int target,
 
 	pr_debug("wm8580: PLL %uHz->%uHz\n", source, target);
 
-	/* Scale the output frequency up; the PLL should run in the
-	 * region of 90-100MHz.
-	 */
+	 
 	for (i = 0; i < ARRAY_SIZE(post_table); i++) {
 		if (target * post_table[i].div >=  90000000 &&
 		    target * post_table[i].div <= 100000000) {
@@ -469,9 +449,7 @@ static int wm8580_set_dai_pll(struct snd_soc_dai *codec_dai, int pll_id,
 	unsigned int pwr_mask;
 	int ret;
 
-	/* GCC isn't able to work out the ifs below for initialising/using
-	 * pll_div so suppress warnings.
-	 */
+	 
 	memset(&pll_div, 0, sizeof(pll_div));
 
 	switch (pll_id) {
@@ -498,9 +476,7 @@ static int wm8580_set_dai_pll(struct snd_soc_dai *codec_dai, int pll_id,
 	state->in = freq_in;
 	state->out = freq_out;
 
-	/* Always disable the PLL - it is not safe to leave it running
-	 * while reprogramming it.
-	 */
+	 
 	snd_soc_component_update_bits(component, WM8580_PWRDN2, pwr_mask, pwr_mask);
 
 	if (!freq_in || !freq_out)
@@ -518,7 +494,7 @@ static int wm8580_set_dai_pll(struct snd_soc_dai *codec_dai, int pll_id,
 
 	snd_soc_component_write(component, WM8580_PLLA4 + offset, reg);
 
-	/* All done, turn it on */
+	 
 	snd_soc_component_update_bits(component, WM8580_PWRDN2, pwr_mask, 0);
 
 	return 0;
@@ -528,9 +504,7 @@ static const int wm8580_sysclk_ratios[] = {
 	128, 192, 256, 384, 512, 768, 1152,
 };
 
-/*
- * Set PCM DAI bit size and sample rate.
- */
+ 
 static int wm8580_paif_hw_params(struct snd_pcm_substream *substream,
 				 struct snd_pcm_hw_params *params,
 				 struct snd_soc_dai *dai)
@@ -541,7 +515,7 @@ static int wm8580_paif_hw_params(struct snd_pcm_substream *substream,
 	u16 paifb = 0;
 	int i, ratio, osr;
 
-	/* bit size */
+	 
 	switch (params_width(params)) {
 	case 16:
 		paifa |= 0x8;
@@ -562,7 +536,7 @@ static int wm8580_paif_hw_params(struct snd_pcm_substream *substream,
 		return -EINVAL;
 	}
 
-	/* Look up the SYSCLK ratio; accept only exact matches */
+	 
 	ratio = wm8580->sysclk[dai->driver->id] / params_rate(params);
 	for (i = 0; i < ARRAY_SIZE(wm8580_sysclk_ratios); i++)
 		if (ratio == wm8580_sysclk_ratios[i])
@@ -694,7 +668,7 @@ static int wm8580_set_dai_clkdiv(struct snd_soc_dai *codec_dai,
 
 		switch (div) {
 		case WM8580_CLKSRC_MCLK:
-			/* Input */
+			 
 			break;
 
 		case WM8580_CLKSRC_PLLA:
@@ -790,7 +764,7 @@ static int wm8580_set_sysclk(struct snd_soc_dai *dai, int clk_id,
 		return -EINVAL;
 	}
 
-	/* We really should validate PLL settings but not yet */
+	 
 	wm8580->sysclk[dai->driver->id] = freq;
 
 	ret = snd_soc_component_update_bits(component, WM8580_CLKSEL, sel_mask, sel);
@@ -827,12 +801,12 @@ static int wm8580_set_bias_level(struct snd_soc_component *component,
 
 	case SND_SOC_BIAS_STANDBY:
 		if (snd_soc_component_get_bias_level(component) == SND_SOC_BIAS_OFF) {
-			/* Power up and get individual control of the DACs */
+			 
 			snd_soc_component_update_bits(component, WM8580_PWRDN1,
 					    WM8580_PWRDN1_PWDN |
 					    WM8580_PWRDN1_ALLDACPD, 0);
 
-			/* Make VMID high impedance */
+			 
 			snd_soc_component_update_bits(component, WM8580_ADC_CONTROL1,
 					    0x100, 0);
 		}
@@ -930,7 +904,7 @@ static int wm8580_probe(struct snd_soc_component *component)
 		goto err_regulator_get;
 	}
 
-	/* Get the codec into a known state */
+	 
 	ret = snd_soc_component_write(component, WM8580_RESET, 0);
 	if (ret != 0) {
 		dev_err(component->dev, "Failed to reset component: %d\n", ret);
@@ -945,7 +919,7 @@ err_regulator_get:
 	return ret;
 }
 
-/* power down chip */
+ 
 static void wm8580_remove(struct snd_soc_component *component)
 {
 	struct wm8580_priv *wm8580 = snd_soc_component_get_drvdata(component);

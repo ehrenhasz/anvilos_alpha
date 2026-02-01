@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * virtio-snd: Virtio sound device
- * Copyright (C) 2021 OpenSynergy GmbH
- */
+ 
+ 
 #ifndef VIRTIO_SND_CARD_H
 #define VIRTIO_SND_CARD_H
 
@@ -21,31 +18,13 @@
 struct virtio_jack;
 struct virtio_pcm_substream;
 
-/**
- * struct virtio_snd_queue - Virtqueue wrapper structure.
- * @lock: Used to synchronize access to a virtqueue.
- * @vqueue: Underlying virtqueue.
- */
+ 
 struct virtio_snd_queue {
 	spinlock_t lock;
 	struct virtqueue *vqueue;
 };
 
-/**
- * struct virtio_snd - VirtIO sound card device.
- * @vdev: Underlying virtio device.
- * @queues: Virtqueue wrappers.
- * @card: ALSA sound card.
- * @ctl_msgs: Pending control request list.
- * @event_msgs: Device events.
- * @pcm_list: VirtIO PCM device list.
- * @jacks: VirtIO jacks.
- * @njacks: Number of jacks.
- * @substreams: VirtIO PCM substreams.
- * @nsubstreams: Number of PCM substreams.
- * @chmaps: VirtIO channel maps.
- * @nchmaps: Number of channel maps.
- */
+ 
 struct virtio_snd {
 	struct virtio_device *vdev;
 	struct virtio_snd_queue queues[VIRTIO_SND_VQ_MAX];
@@ -61,7 +40,7 @@ struct virtio_snd {
 	u32 nchmaps;
 };
 
-/* Message completion timeout in milliseconds (module parameter). */
+ 
 extern u32 virtsnd_msg_timeout_ms;
 
 static inline struct virtio_snd_queue *
@@ -108,4 +87,4 @@ int virtsnd_chmap_parse_cfg(struct virtio_snd *snd);
 
 int virtsnd_chmap_build_devs(struct virtio_snd *snd);
 
-#endif /* VIRTIO_SND_CARD_H */
+#endif  

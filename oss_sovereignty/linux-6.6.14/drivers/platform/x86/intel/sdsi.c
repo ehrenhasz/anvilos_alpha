@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Intel On Demand (Software Defined Silicon) driver
- *
- * Copyright (c) 2022, Intel Corporation.
- * All Rights Reserved.
- *
- * Author: "David E. Box" <david.e.box@linux.intel.com>
- */
+
+ 
 
 #include <linux/auxiliary_bus.h>
 #include <linux/bits.h>
@@ -31,11 +24,7 @@
 #define SDSI_SIZE_REGS			80
 #define SDSI_SIZE_CMD			sizeof(u64)
 
-/*
- * Write messages are currently up to the size of the mailbox
- * while read messages are up to 4 times the size of the
- * mailbox, sent in packets
- */
+ 
 #define SDSI_SIZE_WRITE_MSG		SDSI_SIZE_MAILBOX
 #define SDSI_SIZE_READ_MSG		(SDSI_SIZE_MAILBOX * 4)
 
@@ -103,7 +92,7 @@ struct disc_table {
 };
 
 struct sdsi_priv {
-	struct mutex		mb_lock;	/* Mailbox access lock */
+	struct mutex		mb_lock;	 
 	struct device		*dev;
 	void __iomem		*control_addr;
 	void __iomem		*mbox_addr;
@@ -115,7 +104,7 @@ struct sdsi_priv {
 	u32			features;
 };
 
-/* SDSi mailbox operations must be performed using 64bit mov instructions */
+ 
 static __always_inline void
 sdsi_memcpy64_toio(u64 __iomem *to, const u64 *from, size_t count_bytes)
 {
@@ -166,21 +155,21 @@ static int sdsi_mbox_cmd_read(struct sdsi_priv *priv, struct sdsi_mbox_info *inf
 
 	lockdep_assert_held(&priv->mb_lock);
 
-	/* Format and send the read command */
+	 
 	control = FIELD_PREP(CTRL_EOM, 1) |
 		  FIELD_PREP(CTRL_SOM, 1) |
 		  FIELD_PREP(CTRL_RUN_BUSY, 1) |
 		  FIELD_PREP(CTRL_PACKET_SIZE, info->size);
 	writeq(control, priv->control_addr);
 
-	/* For reads, data sizes that are larger than the mailbox size are read in packets. */
+	 
 	total = 0;
 	loop = 0;
 	do {
 		void *buf = info->buffer + (SDSI_SIZE_MAILBOX * loop);
 		u32 packet_size;
 
-		/* Poll on ready bit */
+		 
 		ret = readq_poll_timeout(priv->control_addr, control, control & CTRL_READY,
 					 MBOX_POLLING_PERIOD_US, MBOX_TIMEOUT_US);
 		if (ret)
@@ -195,7 +184,7 @@ static int sdsi_mbox_cmd_read(struct sdsi_priv *priv, struct sdsi_mbox_info *inf
 		if (ret)
 			break;
 
-		/* Only the last packet can be less than the mailbox size. */
+		 
 		if (!eom && packet_size != SDSI_SIZE_MAILBOX) {
 			dev_err(dev, "Invalid packet size\n");
 			ret = -EPROTO;
@@ -225,7 +214,7 @@ static int sdsi_mbox_cmd_read(struct sdsi_priv *priv, struct sdsi_mbox_info *inf
 		return -EPROTO;
 	}
 
-	/* Message size check is only valid for multi-packet transfers */
+	 
 	if (loop && total != message_size)
 		dev_warn(dev, "Read count %u differs from expected count %u\n",
 			 total, message_size);
@@ -243,11 +232,11 @@ static int sdsi_mbox_cmd_write(struct sdsi_priv *priv, struct sdsi_mbox_info *in
 
 	lockdep_assert_held(&priv->mb_lock);
 
-	/* Write rest of the payload */
+	 
 	sdsi_memcpy64_toio(priv->mbox_addr + SDSI_SIZE_CMD, info->payload + 1,
 			   info->size - SDSI_SIZE_CMD);
 
-	/* Format and send the write command */
+	 
 	control = FIELD_PREP(CTRL_EOM, 1) |
 		  FIELD_PREP(CTRL_SOM, 1) |
 		  FIELD_PREP(CTRL_RUN_BUSY, 1) |
@@ -255,7 +244,7 @@ static int sdsi_mbox_cmd_write(struct sdsi_priv *priv, struct sdsi_mbox_info *in
 		  FIELD_PREP(CTRL_PACKET_SIZE, info->size);
 	writeq(control, priv->control_addr);
 
-	/* Poll on ready bit */
+	 
 	ret = readq_poll_timeout(priv->control_addr, control, control & CTRL_READY,
 				 MBOX_POLLING_PERIOD_US, MBOX_TIMEOUT_US);
 
@@ -279,22 +268,18 @@ static int sdsi_mbox_acquire(struct sdsi_priv *priv, struct sdsi_mbox_info *info
 
 	lockdep_assert_held(&priv->mb_lock);
 
-	/* Check mailbox is available */
+	 
 	control = readq(priv->control_addr);
 	owner = FIELD_GET(CTRL_OWNER, control);
 	if (owner != MBOX_OWNER_NONE)
 		return -EBUSY;
 
-	/*
-	 * If there has been no recent transaction and no one owns the mailbox,
-	 * we should acquire it in under 1ms. However, if we've accessed it
-	 * recently it may take up to 2.1 seconds to acquire it again.
-	 */
+	 
 	do {
-		/* Write first qword of payload */
+		 
 		writeq(info->payload[0], priv->mbox_addr);
 
-		/* Check for ownership */
+		 
 		ret = readq_poll_timeout(priv->control_addr, control,
 			FIELD_GET(CTRL_OWNER, control) == MBOX_OWNER_INBAND,
 			MBOX_POLLING_PERIOD_US, MBOX_TIMEOUT_ACQUIRE_US);
@@ -305,7 +290,7 @@ static int sdsi_mbox_acquire(struct sdsi_priv *priv, struct sdsi_mbox_info *info
 			continue;
 		}
 
-		/* Either we got it or someone else did. */
+		 
 		break;
 	} while (true);
 
@@ -347,17 +332,17 @@ static ssize_t sdsi_provision(struct sdsi_priv *priv, char *buf, size_t count,
 	if (count > (SDSI_SIZE_WRITE_MSG - SDSI_SIZE_CMD))
 		return -EOVERFLOW;
 
-	/* Qword aligned message + command qword */
+	 
 	info.size = round_up(count, SDSI_SIZE_CMD) + SDSI_SIZE_CMD;
 
 	info.payload = kzalloc(info.size, GFP_KERNEL);
 	if (!info.payload)
 		return -ENOMEM;
 
-	/* Copy message to payload buffer */
+	 
 	memcpy(info.payload, buf, count);
 
-	/* Command is last qword of payload buffer */
+	 
 	info.payload[(info.size - SDSI_SIZE_CMD) / SDSI_SIZE_CMD] = command;
 
 	ret = mutex_lock_interruptible(&priv->mb_lock);
@@ -414,7 +399,7 @@ certificate_read(u64 command, struct sdsi_priv *priv, char *buf, loff_t off,
 	if (off)
 		return 0;
 
-	/* Buffer for return data */
+	 
 	info.buffer = kmalloc(SDSI_SIZE_READ_MSG, GFP_KERNEL);
 	if (!info.buffer)
 		return -ENOMEM;
@@ -477,11 +462,7 @@ static ssize_t registers_read(struct file *filp, struct kobject *kobj,
 	void __iomem *addr = priv->regs_addr;
 	int size =  priv->registers_size;
 
-	/*
-	 * The check below is performed by the sysfs caller based on the static
-	 * file size. But this may be greater than the actual size which is based
-	 * on the GUID. So check here again based on actual size before reading.
-	 */
+	 
 	if (off >= size)
 		return 0;
 
@@ -509,11 +490,11 @@ sdsi_battr_is_visible(struct kobject *kobj, struct bin_attribute *attr, int n)
 	struct device *dev = kobj_to_dev(kobj);
 	struct sdsi_priv *priv = dev_get_drvdata(dev);
 
-	/* Registers file is always readable if the device is present */
+	 
 	if (attr == &bin_attr_registers)
 		return attr->attr.mode;
 
-	/* All other attributes not visible if BIOS has not enabled On Demand */
+	 
 	if (!(priv->features & SDSI_FEATURE_SDSI))
 		return 0;
 
@@ -571,7 +552,7 @@ static int sdsi_map_mbox_registers(struct sdsi_priv *priv, struct pci_dev *paren
 	u32 offset = DT_OFFSET(disc_table->offset);
 	struct resource res = {};
 
-	/* Starting location of SDSi MMIO region based on access type */
+	 
 	switch (access_type) {
 	case ACCESS_TYPE_LOCAL:
 		if (tbir) {
@@ -580,10 +561,7 @@ static int sdsi_map_mbox_registers(struct sdsi_priv *priv, struct pci_dev *paren
 			return -EINVAL;
 		}
 
-		/*
-		 * For access_type LOCAL, the base address is as follows:
-		 * base address = end of discovery region + base offset + 1
-		 */
+		 
 		res.start = disc_res->end + offset + 1;
 		break;
 
@@ -628,7 +606,7 @@ static int sdsi_probe(struct auxiliary_device *auxdev, const struct auxiliary_de
 	mutex_init(&priv->mb_lock);
 	auxiliary_set_drvdata(auxdev, priv);
 
-	/* Get the SDSi discovery table */
+	 
 	disc_res = &intel_cap_dev->resource[0];
 	disc_addr = devm_ioremap_resource(&auxdev->dev, disc_res);
 	if (IS_ERR(disc_addr))
@@ -638,12 +616,12 @@ static int sdsi_probe(struct auxiliary_device *auxdev, const struct auxiliary_de
 
 	priv->guid = disc_table.guid;
 
-	/* Get guid based layout info */
+	 
 	ret = sdsi_get_layout(priv, &disc_table);
 	if (ret)
 		return ret;
 
-	/* Map the SDSi mailbox registers */
+	 
 	ret = sdsi_map_mbox_registers(priv, intel_cap_dev->pcidev, &disc_table, disc_res);
 	if (ret)
 		return ret;
@@ -663,7 +641,7 @@ static struct auxiliary_driver sdsi_aux_driver = {
 	},
 	.id_table	= sdsi_aux_id_table,
 	.probe		= sdsi_probe,
-	/* No remove. All resources are handled under devm */
+	 
 };
 module_auxiliary_driver(sdsi_aux_driver);
 

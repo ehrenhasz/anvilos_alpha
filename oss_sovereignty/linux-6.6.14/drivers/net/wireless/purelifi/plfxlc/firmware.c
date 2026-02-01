@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2021 pureLiFi
- */
+
+ 
 
 #include <linux/firmware.h>
 #include <linux/bitrev.h>
@@ -23,7 +21,7 @@ static int send_vendor_command(struct usb_device *udev, int request,
 {
 	return usb_control_msg(udev,
 			       usb_sndctrlpipe(udev, 0),
-			       request, USB_TYPE_VENDOR /*0x40*/, 0, 0,
+			       request, USB_TYPE_VENDOR  , 0, 0,
 			       buffer, buffer_size, PLF_USB_TIMEOUT);
 }
 
@@ -93,7 +91,7 @@ int plfxlc_download_fpga(struct usb_interface *intf)
 		}
 
 		for (tbuf_idx = 0; tbuf_idx < blk_tran_len; tbuf_idx++) {
-			/* u8 bit reverse */
+			 
 			fw_data[tbuf_idx] = bitrev8(fw_data[tbuf_idx]);
 		}
 		r = usb_bulk_msg(udev,
@@ -157,7 +155,7 @@ int plfxlc_download_xl_firmware(struct usb_interface *intf)
 		dev_err(&intf->dev, "vendor command failed (%d)\n", r);
 		return -EINVAL;
 	}
-	/* Code for single pack file download */
+	 
 
 	fw_pack = "plfxlc/lifi-xl.bin";
 
@@ -185,7 +183,7 @@ int plfxlc_download_xl_firmware(struct usb_interface *intf)
 		return -EINVAL;
 	}
 
-	/* Download firmware files in multiple steps */
+	 
 	for (s = 0; s < file.total_files; s++) {
 		buf[0] = s;
 		r = send_vendor_command(udev, PLF_VNDR_XL_FILE_CMD, buf,
@@ -223,7 +221,7 @@ int plfxlc_download_xl_firmware(struct usb_interface *intf)
 	release_firmware(fwp);
 	kfree(buf);
 
-	/* Code for single pack file download ends fw download finish */
+	 
 
 	r = send_vendor_command(udev, PLF_VNDR_XL_EX_CMD, NULL, 0);
 	dev_dbg(&intf->dev, "Download fpga (4) (%d)\n", r);

@@ -1,14 +1,14 @@
-// SPDX-License-Identifier: GPL-2.0-only
-// Copyright (C) 2021 ARM Limited.
-// Original author: Mark Brown <broonie@kernel.org>
-//
-// Scalable Matrix Extension ZA context switch test
-// Repeatedly writes unique test patterns into each ZA tile
-// and reads them back to verify integrity.
-//
-// for x in `seq 1 NR_CPUS`; do sve-test & pids=$pids\ $! ; done
-// (leave it running for as long as you want...)
-// kill $pids
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 
 #include <asm/unistd.h>
 #include "assembler.h"
@@ -20,8 +20,8 @@
 #define MAXVL     2048
 #define MAXVL_B   (MAXVL / 8)
 
-// Declare some storage space to shadow ZA register contents and a
-// scratch buffer for a vector.
+ 
+ 
 .pushsection .text
 .data
 .align 4
@@ -31,8 +31,8 @@ scratch:
 	.space	MAXVL_B
 .popsection
 
-// Trivial memory copy: copy x2 bytes, starting at address x1, to address x0.
-// Clobbers x0-x3
+ 
+ 
 function memcpy
 	cmp	x2, #0
 	b.eq	1f
@@ -43,65 +43,65 @@ function memcpy
 1:	ret
 endfunction
 
-// Generate a test pattern for storage in ZA
-// x0: pid
-// x1: row in ZA
-// x2: generation
+ 
+ 
+ 
+ 
 
-// These values are used to constuct a 32-bit pattern that is repeated in the
-// scratch buffer as many times as will fit:
-// bits 31:28	generation number (increments once per test_loop)
-// bits 27:16	pid
-// bits 15: 8	row number
-// bits  7: 0	32-bit lane index
+ 
+ 
+ 
+ 
+ 
+ 
 
 function pattern
 	mov	w3, wzr
-	bfi	w3, w0, #16, #12	// PID
-	bfi	w3, w1, #8, #8		// Row
-	bfi	w3, w2, #28, #4		// Generation
+	bfi	w3, w0, #16, #12	 
+	bfi	w3, w1, #8, #8		 
+	bfi	w3, w2, #28, #4		 
 
 	ldr	x0, =scratch
 	mov	w1, #MAXVL_B / 4
 
 0:	str	w3, [x0], #4
-	add	w3, w3, #1		// Lane
+	add	w3, w3, #1		 
 	subs	w1, w1, #1
 	b.ne	0b
 
 	ret
 endfunction
 
-// Get the address of shadow data for ZA horizontal vector xn
+ 
 .macro _adrza xd, xn, nrtmp
 	ldr	\xd, =zaref
 	rdsvl	\nrtmp, 1
 	madd	\xd, x\nrtmp, \xn, \xd
 .endm
 
-// Set up test pattern in a ZA horizontal vector
-// x0: pid
-// x1: row number
-// x2: generation
+ 
+ 
+ 
+ 
 function setup_za
 	mov	x4, x30
-	mov	x12, x1			// Use x12 for vector select
+	mov	x12, x1			 
 
-	bl	pattern			// Get pattern in scratch buffer
-	_adrza	x0, x12, 2		// Shadow buffer pointer to x0 and x5
+	bl	pattern			 
+	_adrza	x0, x12, 2		 
 	mov	x5, x0
 	ldr	x1, =scratch
-	bl	memcpy			// length set up in x2 by _adrza
+	bl	memcpy			 
 
-	_ldr_za 12, 5			// load vector w12 from pointer x5
+	_ldr_za 12, 5			 
 
 	ret	x4
 endfunction
 
-// Trivial memory compare: compare x2 bytes starting at address x0 with
-// bytes starting at address x1.
-// Returns only if all bytes match; otherwise, the program is aborted.
-// Clobbers x0-x5.
+ 
+ 
+ 
+ 
 function memcmp
 	cbz	x2, 2f
 
@@ -124,22 +124,22 @@ function memcmp
 2:	ret
 endfunction
 
-// Verify that a ZA vector matches its shadow in memory, else abort
-// x0: row number
-// Clobbers x0-x7 and x12.
+ 
+ 
+ 
 function check_za
 	mov	x3, x30
 
 	mov	x12, x0
-	_adrza	x5, x0, 6		// pointer to expected value in x5
+	_adrza	x5, x0, 6		 
 	mov	x4, x0
-	ldr	x7, =scratch		// x7 is scratch
+	ldr	x7, =scratch		 
 
-	mov	x0, x7			// Poison scratch
+	mov	x0, x7			 
 	mov	x1, x6
 	bl	memfill_ae
 
-	_str_za 12, 7			// save vector w12 to pointer x7
+	_str_za 12, 7			 
 
 	mov	x0, x5
 	mov	x1, x7
@@ -148,15 +148,15 @@ function check_za
 	b	memcmp
 endfunction
 
-// Any SME register modified here can cause corruption in the main
-// thread -- but *only* the locations modified here.
+ 
+ 
 function irritator_handler
-	// Increment the irritation signal count (x23):
+	 
 	ldr	x0, [x2, #ucontext_regs + 8 * 23]
 	add	x0, x0, #1
 	str	x0, [x2, #ucontext_regs + 8 * 23]
 
-	// Corrupt some random ZA data
+	 
 #if 0
 	adr	x0, .text + (irritator_handler - .text) / 16 * 16
 	movi	v0.8b, #1
@@ -168,7 +168,7 @@ function irritator_handler
 endfunction
 
 function tickle_handler
-	// Increment the signal count (x23):
+	 
 	ldr	x0, [x2, #ucontext_regs + 8 * 23]
 	add	x0, x0, #1
 	str	x0, [x2, #ucontext_regs + 8 * 23]
@@ -195,10 +195,10 @@ function terminate_handler
 	svc	#0
 endfunction
 
-// w0: signal number
-// x1: sa_action
-// w2: sa_flags
-// Clobbers x0-x6,x8
+ 
+ 
+ 
+ 
 function setsignal
 	str	x30, [sp, #-((sa_sz + 15) / 16 * 16 + 16)]!
 
@@ -228,10 +228,10 @@ function setsignal
 	ret
 endfunction
 
-// Main program entry point
+ 
 .globl _start
 function _start
-	mov	x23, #0		// signal count
+	mov	x23, #0		 
 
 	mov	w0, #SIGINT
 	adr	x1, terminate_handler
@@ -258,7 +258,7 @@ function _start
 	puts	"Streaming mode "
 	smstart_za
 
-	// Sanity-check and report the vector length
+	 
 
 	rdsvl	19, 8
 	cmp	x19, #128
@@ -278,7 +278,7 @@ function _start
 	bl	putdec
 	puts	" bits\n"
 
-	// Obtain our PID, to ensure test pattern uniqueness between processes
+	 
 	mov	x8, #__NR_getpid
 	svc	#0
 	mov	x20, x0
@@ -287,13 +287,13 @@ function _start
 	mov	x0, x20
 	bl	putdecn
 
-	mov	x22, #0		// generation number, increments per iteration
+	mov	x22, #0		 
 .Ltest_loop:
 	rdsvl	0, 8
 	cmp	x0, x19
 	b.ne	vl_barf
 
-	rdsvl	21, 1		// Set up ZA & shadow with test pattern
+	rdsvl	21, 1		 
 0:	mov	x0, x20
 	sub	x1, x21, #1
 	mov	x2, x22
@@ -301,23 +301,23 @@ function _start
 	subs	x21, x21, #1
 	b.ne	0b
 
-	mov	x8, #__NR_sched_yield	// encourage preemption
+	mov	x8, #__NR_sched_yield	 
 1:
 	svc	#0
 
-	mrs	x0, S3_3_C4_C2_2	// SVCR should have ZA=1,SM=0
+	mrs	x0, S3_3_C4_C2_2	 
 	and	x1, x0, #3
 	cmp	x1, #2
 	b.ne	svcr_barf
 
-	rdsvl	21, 1			// Verify that the data made it through
-	rdsvl	24, 1			// Verify that the data made it through
+	rdsvl	21, 1			 
+	rdsvl	24, 1			 
 0:	sub	x0, x24, x21
 	bl	check_za
 	subs	x21, x21, #1
 	bne	0b
 
-	add	x22, x22, #1	// Everything still working
+	add	x22, x22, #1	 
 	b	.Ltest_loop
 
 .Labort:
@@ -328,15 +328,15 @@ function _start
 endfunction
 
 function barf
-// fpsimd.c acitivty log dump hack
-//	ldr	w0, =0xdeadc0de
-//	mov	w8, #__NR_exit
-//	svc	#0
-// end hack
+ 
+ 
+ 
+ 
+ 
 	smstop
-	mov	x10, x0	// expected data
-	mov	x11, x1	// actual data
-	mov	x12, x2	// data size
+	mov	x10, x0	 
+	mov	x11, x1	 
+	mov	x12, x2	 
 
 	puts	"Mismatch: PID="
 	mov	x0, x20
@@ -359,17 +359,17 @@ function barf
 
 	mov	x8, #__NR_getpid
 	svc	#0
-// fpsimd.c acitivty log dump hack
-//	ldr	w0, =0xdeadc0de
-//	mov	w8, #__NR_exit
-//	svc	#0
-// ^ end of hack
+ 
+ 
+ 
+ 
+ 
 	mov	x1, #SIGABRT
 	mov	x8, #__NR_kill
 	svc	#0
-//	mov	x8, #__NR_exit
-//	mov	x1, #1
-//	svc	#0
+ 
+ 
+ 
 endfunction
 
 function vl_barf

@@ -1,17 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Support for Intel Camera Imaging ISP subsystem.
- * Copyright (c) 2015, Intel Corporation.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms and conditions of the GNU General Public License,
- * version 2, as published by the Free Software Foundation.
- *
- * This program is distributed in the hope it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- * more details.
- */
+ 
+ 
 
 #ifndef __DMA_GLOBAL_H_INCLUDED__
 #define __DMA_GLOBAL_H_INCLUDED__
@@ -27,19 +15,7 @@
 
 #include "dma_v2_defs.h"
 
-/*
- * Command token bit mappings
- *
- * transfer / config
- *    param id[4] channel id[5] cmd id[6]
- *	| b14 .. b11 | b10 ... b6 | b5 ... b0 |
- *
- *
- * fast transfer:
- *    height[5]     width[8]      width[8]  channel id[5] cmd id[6]
- *	| b31 .. b26 | b25 .. b18 | b17 .. b11 | b10 ... b6 | b5 ... b0 |
- *
- */
+ 
 
 #define _DMA_PACKING_SETUP_PARAM	_DMA_V2_PACKING_SETUP_PARAM
 #define _DMA_HEIGHT_PARAM			_DMA_V2_HEIGHT_PARAM
@@ -187,7 +163,7 @@ typedef enum {
 #define	DMA_CFG_CMDBIT		0x20
 #define	DMA_PARAM_CMDBIT	0x01
 
-/* Write complete check not necessary if there's no ack */
+ 
 #define	DMA_NOACK_CMD		(DMA_ACK_CMDBIT | DMA_CHECK_CMDBIT)
 #define	DMA_CFG_CMD			(DMA_CFG_CMDBIT)
 #define	DMA_CFGPARAM_CMD	(DMA_CFG_CMDBIT | DMA_PARAM_CMDBIT)
@@ -200,23 +176,23 @@ typedef enum {
 #define DMA_CMD_IS_CFG(cmd) ((cmd & DMA_CFG_CMDBIT) != 0)
 #define DMA_CMD_IS_PARAMCFG(cmd) ((cmd & DMA_CFGPARAM_CMD) == DMA_CFGPARAM_CMD)
 
-/* As a matter of convention */
+ 
 #define DMA_TRANSFER_READ		DMA_TRANSFER_B2A
 #define DMA_TRANSFER_WRITE		DMA_TRANSFER_A2B
-/* store/load from the PoV of the system(memory) */
+ 
 #define DMA_TRANSFER_STORE		DMA_TRANSFER_B2A
 #define DMA_TRANSFER_LOAD		DMA_TRANSFER_A2B
 #define DMA_TRANSFER_CLEAR		DMA_TRANSFER_CLEAR_A
 
 typedef enum {
-	DMA_TRANSFER_CLEAR_A = DMA_CLEAR_CMDBIT,                                       /* 8 */
-	DMA_TRANSFER_CLEAR_B = DMA_CLEAR_CMDBIT | DMA_RW_CMDBIT,                       /* 12 */
-	DMA_TRANSFER_A2B = DMA_RW_CMDBIT,                                              /* 4 */
-	DMA_TRANSFER_B2A = 0,                                                          /* 0 */
-	DMA_TRANSFER_CLEAR_A_NOACK = DMA_CLEAR_CMDBIT | DMA_NOACK_CMD,                 /* 26 */
-	DMA_TRANSFER_CLEAR_B_NOACK = DMA_CLEAR_CMDBIT | DMA_RW_CMDBIT | DMA_NOACK_CMD, /* 30 */
-	DMA_TRANSFER_A2B_NOACK = DMA_RW_CMDBIT | DMA_NOACK_CMD,                        /* 22 */
-	DMA_TRANSFER_B2A_NOACK = DMA_NOACK_CMD,                                        /* 18 */
+	DMA_TRANSFER_CLEAR_A = DMA_CLEAR_CMDBIT,                                        
+	DMA_TRANSFER_CLEAR_B = DMA_CLEAR_CMDBIT | DMA_RW_CMDBIT,                        
+	DMA_TRANSFER_A2B = DMA_RW_CMDBIT,                                               
+	DMA_TRANSFER_B2A = 0,                                                           
+	DMA_TRANSFER_CLEAR_A_NOACK = DMA_CLEAR_CMDBIT | DMA_NOACK_CMD,                  
+	DMA_TRANSFER_CLEAR_B_NOACK = DMA_CLEAR_CMDBIT | DMA_RW_CMDBIT | DMA_NOACK_CMD,  
+	DMA_TRANSFER_A2B_NOACK = DMA_RW_CMDBIT | DMA_NOACK_CMD,                         
+	DMA_TRANSFER_B2A_NOACK = DMA_NOACK_CMD,                                         
 	DMA_FASTTRANSFER_CLEAR_A = DMA_CLEAR_CMDBIT | DMA_SPECIFIC_CMDBIT,
 	DMA_FASTTRANSFER_CLEAR_B = DMA_CLEAR_CMDBIT | DMA_RW_CMDBIT | DMA_SPECIFIC_CMDBIT,
 	DMA_FASTTRANSFER_A2B = DMA_RW_CMDBIT | DMA_SPECIFIC_CMDBIT,
@@ -244,7 +220,7 @@ struct dma_port_config {
 	u32 stride;
 };
 
-/* Descriptor for dma configuration */
+ 
 struct dma_channel_config {
 	u8  connection;
 	u8  extension;
@@ -252,4 +228,4 @@ struct dma_channel_config {
 	struct dma_port_config a, b;
 };
 
-#endif /* __DMA_GLOBAL_H_INCLUDED__ */
+#endif  

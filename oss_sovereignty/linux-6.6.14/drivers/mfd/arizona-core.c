@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Arizona core driver
- *
- * Copyright 2012 Wolfson Microelectronics plc
- *
- * Author: Mark Brown <broonie@opensource.wolfsonmicro.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -170,9 +164,7 @@ static irqreturn_t arizona_overclocked(int irq, void *data)
 	switch (arizona->type) {
 	case WM8998:
 	case WM1814:
-		/* Some bits are shifted on WM8998,
-		 * rearrange to match the standard bit layout
-		 */
+		 
 		val[0] = ((val[0] & 0x60e0) >> 1) |
 			 ((val[0] & 0x1e00) >> 2) |
 			 (val[0] & 0x000f);
@@ -272,11 +264,7 @@ static int arizona_wait_for_boot(struct arizona *arizona)
 {
 	int ret;
 
-	/*
-	 * We can't use an interrupt as we need to runtime resume to do so,
-	 * we won't race with the interrupt handler as it'll be blocked on
-	 * runtime resume.
-	 */
+	 
 	ret = arizona_poll_reg(arizona, 30, ARIZONA_INTERRUPT_RAW_STATUS_5,
 			       ARIZONA_BOOT_DONE_STS, ARIZONA_BOOT_DONE_STS);
 
@@ -301,7 +289,7 @@ static void arizona_disable_reset(struct arizona *arizona)
 		switch (arizona->type) {
 		case WM5110:
 		case WM8280:
-			/* Meet requirements for minimum reset duration */
+			 
 			usleep_range(5000, 10000);
 			break;
 		default:
@@ -323,7 +311,7 @@ static int arizona_enable_freerun_sysclk(struct arizona *arizona,
 {
 	int ret, err;
 
-	/* Cache existing FLL and SYSCLK settings */
+	 
 	ret = regmap_read(arizona->regmap, ARIZONA_FLL1_CONTROL_1, &state->fll);
 	if (ret) {
 		dev_err(arizona->dev, "Failed to cache FLL settings: %d\n",
@@ -338,7 +326,7 @@ static int arizona_enable_freerun_sysclk(struct arizona *arizona,
 		return ret;
 	}
 
-	/* Start up SYSCLK using the FLL in free running mode */
+	 
 	ret = regmap_write(arizona->regmap, ARIZONA_FLL1_CONTROL_1,
 			ARIZONA_FLL1_ENA | ARIZONA_FLL1_FREERUN);
 	if (ret) {
@@ -402,7 +390,7 @@ static int wm5102_apply_hardware_patch(struct arizona *arizona)
 	if (ret)
 		return ret;
 
-	/* Start the write sequencer and wait for it to finish */
+	 
 	ret = regmap_write(arizona->regmap, ARIZONA_WRITE_SEQUENCER_CTRL_0,
 			   ARIZONA_WSEQ_ENA | ARIZONA_WSEQ_START | 160);
 	if (ret) {
@@ -423,10 +411,7 @@ err:
 	return ret ?: err;
 }
 
-/*
- * Register patch to some of the CODECs internal write sequences
- * to ensure a clean exit from the low power sleep state.
- */
+ 
 static const struct reg_sequence wm5110_sleep_patch[] = {
 	{ 0x337A, 0xC100 },
 	{ 0x337B, 0x0041 },
@@ -593,11 +578,7 @@ static int arizona_runtime_resume(struct device *dev)
 			if (ret != 0)
 				goto err;
 		} else {
-			/*
-			 * As this is only called for the internal regulator
-			 * (where we know voltage ranges available) it is ok
-			 * to request an exact range.
-			 */
+			 
 			ret = regulator_set_voltage(arizona->dcvdd,
 						    1200000, 1200000);
 			if (ret < 0) {
@@ -669,11 +650,7 @@ static int arizona_runtime_suspend(struct device *dev)
 			if (ret != 0)
 				return ret;
 		} else {
-			/*
-			 * As this is only called for the internal regulator
-			 * (where we know voltage ranges available) it is ok
-			 * to request an exact range.
-			 */
+			 
 			ret = regulator_set_voltage(arizona->dcvdd,
 						    1175000, 1175000);
 			if (ret < 0) {
@@ -726,7 +703,7 @@ static int arizona_runtime_suspend(struct device *dev)
 	regcache_mark_dirty(arizona->regmap);
 	regulator_disable(arizona->dcvdd);
 
-	/* Allow us to completely power down if no jack detection */
+	 
 	if (!jd_active) {
 		dev_dbg(arizona->dev, "Fully powering off\n");
 
@@ -796,16 +773,12 @@ static int arizona_of_get_core_pdata(struct arizona *arizona)
 	struct arizona_pdata *pdata = &arizona->pdata;
 	int ret, i;
 
-	/* Handle old non-standard DT binding */
+	 
 	pdata->reset = devm_gpiod_get(arizona->dev, "wlf,reset", GPIOD_OUT_LOW);
 	if (IS_ERR(pdata->reset)) {
 		ret = PTR_ERR(pdata->reset);
 
-		/*
-		 * Reset missing will be caught when other binding is read
-		 * but all other errors imply this binding is in use but has
-		 * encountered a problem so should be handled.
-		 */
+		 
 		if (ret == -EPROBE_DEFER)
 			return ret;
 		else if (ret != -ENOENT && ret != -ENOSYS)
@@ -820,12 +793,7 @@ static int arizona_of_get_core_pdata(struct arizona *arizona)
 					 pdata->gpio_defaults,
 					 ARRAY_SIZE(pdata->gpio_defaults));
 	if (ret >= 0) {
-		/*
-		 * All values are literal except out of range values
-		 * which are chip default, translate into platform
-		 * data which uses 0 as chip default and out of range
-		 * as zero.
-		 */
+		 
 		for (i = 0; i < ARRAY_SIZE(pdata->gpio_defaults); i++) {
 			if (pdata->gpio_defaults[i] > 0xffff)
 				pdata->gpio_defaults[i] = 0;
@@ -985,13 +953,13 @@ int arizona_dev_init(struct arizona *arizona)
 		return -ENODEV;
 	}
 
-	/* Mark DCVDD as external, LDO1 driver will clear if internal */
+	 
 	arizona->external_dcvdd = true;
 
 	switch (arizona->type) {
 	case WM1831:
 	case CS47L24:
-		break; /* No LDO1 regulator */
+		break;  
 	default:
 		ret = mfd_add_devices(arizona->dev, -1, early_devs,
 				      ARRAY_SIZE(early_devs), NULL, 0, NULL);
@@ -1010,12 +978,7 @@ int arizona_dev_init(struct arizona *arizona)
 		goto err_early;
 	}
 
-	/**
-	 * Don't use devres here because the only device we have to get
-	 * against is the MFD device and DCVDD will likely be supplied by
-	 * one of its children. Meaning that the regulator will be
-	 * destroyed by the time devres calls regulator put.
-	 */
+	 
 	arizona->dcvdd = regulator_get(arizona->dev, "DCVDD");
 	if (IS_ERR(arizona->dcvdd)) {
 		ret = PTR_ERR(arizona->dcvdd);
@@ -1024,7 +987,7 @@ int arizona_dev_init(struct arizona *arizona)
 	}
 
 	if (!arizona->pdata.reset) {
-		/* Start out with /RESET low to put the chip into reset */
+		 
 		arizona->pdata.reset = devm_gpiod_get(arizona->dev, "reset",
 						      GPIOD_OUT_LOW);
 		if (IS_ERR(arizona->pdata.reset)) {
@@ -1057,7 +1020,7 @@ int arizona_dev_init(struct arizona *arizona)
 
 	regcache_cache_only(arizona->regmap, false);
 
-	/* Verify that this is a chip we know about */
+	 
 	ret = regmap_read(arizona->regmap, ARIZONA_SOFTWARE_RESET, &reg);
 	if (ret != 0) {
 		dev_err(dev, "Failed to read ID register: %d\n", ret);
@@ -1077,7 +1040,7 @@ int arizona_dev_init(struct arizona *arizona)
 		goto err_reset;
 	}
 
-	/* If we have a /RESET GPIO we'll already be reset */
+	 
 	if (!arizona->pdata.reset) {
 		ret = regmap_write(arizona->regmap, ARIZONA_SOFTWARE_RESET, 0);
 		if (ret != 0) {
@@ -1088,7 +1051,7 @@ int arizona_dev_init(struct arizona *arizona)
 		usleep_range(1000, 5000);
 	}
 
-	/* Ensure device startup is complete */
+	 
 	switch (arizona->type) {
 	case WM5102:
 		ret = regmap_read(arizona->regmap,
@@ -1113,7 +1076,7 @@ int arizona_dev_init(struct arizona *arizona)
 		goto err_reset;
 	}
 
-	/* Read the device ID information & do device specific stuff */
+	 
 	ret = regmap_read(arizona->regmap, ARIZONA_SOFTWARE_RESET, &reg);
 	if (ret != 0) {
 		dev_err(dev, "Failed to read ID register: %d\n", ret);
@@ -1287,7 +1250,7 @@ int arizona_dev_init(struct arizona *arizona)
 			     arizona->pdata.gpio_defaults[i]);
 	}
 
-	/* Chip default */
+	 
 	if (!arizona->pdata.clk32k_src)
 		arizona->pdata.clk32k_src = ARIZONA_32KZ_MCLK2;
 
@@ -1315,7 +1278,7 @@ int arizona_dev_init(struct arizona *arizona)
 		    !arizona->pdata.micbias[i].bypass)
 			continue;
 
-		/* Apply default for bypass mode */
+		 
 		if (!arizona->pdata.micbias[i].mV)
 			arizona->pdata.micbias[i].mV = 2800;
 
@@ -1347,7 +1310,7 @@ int arizona_dev_init(struct arizona *arizona)
 	pm_runtime_set_active(arizona->dev);
 	pm_runtime_enable(arizona->dev);
 
-	/* Set up for interrupts */
+	 
 	ret = arizona_irq_init(arizona);
 	if (ret != 0)
 		goto err_pm;

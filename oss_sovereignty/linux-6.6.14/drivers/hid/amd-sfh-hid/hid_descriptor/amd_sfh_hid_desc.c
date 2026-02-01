@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  AMD SFH Report Descriptor generator
- *  Copyright 2020-2021 Advanced Micro Devices, Inc.
- *  Authors: Nehal Bakulchandra Shah <Nehal-Bakulchandra.Shah@amd.com>
- *	     Sandeep Singh <sandeep.singh@amd.com>
- *	     Basavaraj Natikar <Basavaraj.Natikar@amd.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/string.h>
@@ -23,7 +17,7 @@
 #define HID_DEFAULT_MAX_VALUE					0x80
 #define HID_DEFAULT_SENSITIVITY					0x7F
 #define HID_USAGE_SENSOR_PROPERTY_CONNECTION_TYPE_PC_INTEGRATED_ENUM  0x01
-/* state enums */
+ 
 #define HID_USAGE_SENSOR_STATE_READY_ENUM                             0x02
 #define HID_USAGE_SENSOR_STATE_INITIALIZING_ENUM                      0x05
 #define HID_USAGE_SENSOR_EVENT_DATA_UPDATED_ENUM                      0x04
@@ -32,28 +26,28 @@
 static int get_report_descriptor(int sensor_idx, u8 *rep_desc)
 {
 	switch (sensor_idx) {
-	case accel_idx: /* accel */
+	case accel_idx:  
 		memset(rep_desc, 0, sizeof(accel3_report_descriptor));
 		memcpy(rep_desc, accel3_report_descriptor,
 		       sizeof(accel3_report_descriptor));
 		break;
-	case gyro_idx: /* gyro */
+	case gyro_idx:  
 		memset(rep_desc, 0, sizeof(gyro3_report_descriptor));
 		memcpy(rep_desc, gyro3_report_descriptor,
 		       sizeof(gyro3_report_descriptor));
 		break;
-	case mag_idx: /* Magnetometer */
+	case mag_idx:  
 		memset(rep_desc, 0, sizeof(comp3_report_descriptor));
 		memcpy(rep_desc, comp3_report_descriptor,
 		       sizeof(comp3_report_descriptor));
 		break;
-	case als_idx: /* ambient light sensor */
-	case ACS_IDX: /* ambient color sensor */
+	case als_idx:  
+	case ACS_IDX:  
 		memset(rep_desc, 0, sizeof(als_report_descriptor));
 		memcpy(rep_desc, als_report_descriptor,
 		       sizeof(als_report_descriptor));
 		break;
-	case HPD_IDX: /* HPD sensor */
+	case HPD_IDX:  
 		memset(rep_desc, 0, sizeof(hpd_report_descriptor));
 		memcpy(rep_desc, hpd_report_descriptor,
 		       sizeof(hpd_report_descriptor));
@@ -98,7 +92,7 @@ static u32 get_descr_sz(int sensor_idx, int descriptor_name)
 		}
 		break;
 	case als_idx:
-	case ACS_IDX: /* ambient color sensor */
+	case ACS_IDX:  
 		switch (descriptor_name) {
 		case descr_size:
 			return sizeof(als_report_descriptor);
@@ -148,7 +142,7 @@ static u8 get_feature_report(int sensor_idx, int report_id, u8 *feature_report)
 		return report_size;
 
 	switch (sensor_idx) {
-	case accel_idx: /* accel */
+	case accel_idx:  
 		get_common_features(&acc_feature.common_property, report_id);
 		acc_feature.accel_change_sesnitivity = HID_DEFAULT_SENSITIVITY;
 		acc_feature.accel_sensitivity_min = HID_DEFAULT_MIN_VALUE;
@@ -156,7 +150,7 @@ static u8 get_feature_report(int sensor_idx, int report_id, u8 *feature_report)
 		memcpy(feature_report, &acc_feature, sizeof(acc_feature));
 		report_size = sizeof(acc_feature);
 		break;
-	case gyro_idx: /* gyro */
+	case gyro_idx:  
 		get_common_features(&gyro_feature.common_property, report_id);
 		gyro_feature.gyro_change_sesnitivity = HID_DEFAULT_SENSITIVITY;
 		gyro_feature.gyro_sensitivity_min = HID_DEFAULT_MIN_VALUE;
@@ -164,7 +158,7 @@ static u8 get_feature_report(int sensor_idx, int report_id, u8 *feature_report)
 		memcpy(feature_report, &gyro_feature, sizeof(gyro_feature));
 		report_size = sizeof(gyro_feature);
 		break;
-	case mag_idx: /* Magnetometer */
+	case mag_idx:  
 		get_common_features(&magno_feature.common_property, report_id);
 		magno_feature.magno_headingchange_sensitivity = HID_DEFAULT_SENSITIVITY;
 		magno_feature.heading_min = HID_DEFAULT_MIN_VALUE;
@@ -175,8 +169,8 @@ static u8 get_feature_report(int sensor_idx, int report_id, u8 *feature_report)
 		memcpy(feature_report, &magno_feature, sizeof(magno_feature));
 		report_size = sizeof(magno_feature);
 		break;
-	case als_idx:  /* ambient light sensor */
-	case ACS_IDX: /* ambient color sensor */
+	case als_idx:   
+	case ACS_IDX:  
 		get_common_features(&als_feature.common_property, report_id);
 		als_feature.als_change_sesnitivity = HID_DEFAULT_SENSITIVITY;
 		als_feature.als_sensitivity_min = HID_DEFAULT_MIN_VALUE;
@@ -184,7 +178,7 @@ static u8 get_feature_report(int sensor_idx, int report_id, u8 *feature_report)
 		memcpy(feature_report, &als_feature, sizeof(als_feature));
 		report_size = sizeof(als_feature);
 		break;
-	case HPD_IDX:  /* human presence detection sensor */
+	case HPD_IDX:   
 		get_common_features(&hpd_feature.common_property, report_id);
 		memcpy(feature_report, &hpd_feature, sizeof(hpd_feature));
 		report_size = sizeof(hpd_feature);
@@ -222,7 +216,7 @@ static u8 get_input_report(u8 current_index, int sensor_idx, int report_id,
 		return report_size;
 
 	switch (sensor_idx) {
-	case accel_idx: /* accel */
+	case accel_idx:  
 		get_common_inputs(&acc_input.common_property, report_id);
 		acc_input.in_accel_x_value = (int)sensor_virt_addr[0] / AMD_SFH_FW_MULTIPLIER;
 		acc_input.in_accel_y_value = (int)sensor_virt_addr[1] / AMD_SFH_FW_MULTIPLIER;
@@ -230,7 +224,7 @@ static u8 get_input_report(u8 current_index, int sensor_idx, int report_id,
 		memcpy(input_report, &acc_input, sizeof(acc_input));
 		report_size = sizeof(acc_input);
 		break;
-	case gyro_idx: /* gyro */
+	case gyro_idx:  
 		get_common_inputs(&gyro_input.common_property, report_id);
 		gyro_input.in_angel_x_value = (int)sensor_virt_addr[0] / AMD_SFH_FW_MULTIPLIER;
 		gyro_input.in_angel_y_value = (int)sensor_virt_addr[1] / AMD_SFH_FW_MULTIPLIER;
@@ -238,7 +232,7 @@ static u8 get_input_report(u8 current_index, int sensor_idx, int report_id,
 		memcpy(input_report, &gyro_input, sizeof(gyro_input));
 		report_size = sizeof(gyro_input);
 		break;
-	case mag_idx: /* Magnetometer */
+	case mag_idx:  
 		get_common_inputs(&magno_input.common_property, report_id);
 		magno_input.in_magno_x = (int)sensor_virt_addr[0] / AMD_SFH_FW_MULTIPLIER;
 		magno_input.in_magno_y = (int)sensor_virt_addr[1] / AMD_SFH_FW_MULTIPLIER;
@@ -247,10 +241,10 @@ static u8 get_input_report(u8 current_index, int sensor_idx, int report_id,
 		memcpy(input_report, &magno_input, sizeof(magno_input));
 		report_size = sizeof(magno_input);
 		break;
-	case als_idx: /* Als */
-	case ACS_IDX: /* ambient color sensor */
+	case als_idx:  
+	case ACS_IDX:  
 		get_common_inputs(&als_input.common_property, report_id);
-		/* For ALS ,V2 Platforms uses C2P_MSG5 register instead of DRAM access method */
+		 
 		if (supported_input == V2_STATUS)
 			als_input.illuminance_value =
 				readl(privdata->mmio + AMD_C2P_MSG(5)) & ILLUMINANCE_MASK;
@@ -260,7 +254,7 @@ static u8 get_input_report(u8 current_index, int sensor_idx, int report_id,
 		report_size = sizeof(als_input);
 		memcpy(input_report, &als_input, sizeof(als_input));
 		break;
-	case HPD_IDX: /* hpd */
+	case HPD_IDX:  
 		get_common_inputs(&hpd_input.common_property, report_id);
 		hpdstatus.val = readl(privdata->mmio + AMD_C2P_MSG(4));
 		hpd_input.human_presence = hpdstatus.shpd.human_presence_actual;

@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Driver for the Texas Instruments TAS2764 CODEC
-// Copyright (C) 2020 Texas Instruments Inc.
+
+
+
+
 
 #include <linux/module.h>
 #include <linux/moduleparam.h>
@@ -41,14 +41,14 @@ struct tas2764_priv {
 };
 
 static const char *tas2764_int_ltch0_msgs[8] = {
-	"fault: over temperature", /* INT_LTCH0 & BIT(0) */
+	"fault: over temperature",  
 	"fault: over current",
 	"fault: bad TDM clock",
 	"limiter active",
 	"fault: PVDD below limiter inflection point",
 	"fault: limiter max attenuation",
 	"fault: BOP infinite hold",
-	"fault: BOP mute", /* INT_LTCH0 & BIT(7) */
+	"fault: BOP mute",  
 };
 
 static const unsigned int tas2764_int_readout_regs[6] = {

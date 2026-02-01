@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-/* Copyright (c) 2019 Mellanox Technologies. */
+
+ 
 
 #include <net/netfilter/nf_conntrack.h>
 #include <net/netfilter/nf_conntrack_core.h>
@@ -40,10 +40,7 @@
 #define MLX5_CT_LABELS_BITS MLX5_REG_MAPPING_MBITS(LABELS_TO_REG)
 #define MLX5_CT_LABELS_MASK MLX5_REG_MAPPING_MASK(LABELS_TO_REG)
 
-/* Statically allocate modify actions for
- * ipv6 and port nat (5) + tuple fields (4) + nic mode zone restore (1) = 10.
- * This will be increased dynamically if needed (for the ipv6 snat + dnat).
- */
+ 
 #define MLX5_CT_MIN_MOD_ACTS 10
 
 #define ct_dbg(fmt, args...)\
@@ -70,14 +67,14 @@ struct mlx5_tc_ct_priv {
 	struct mlx5_flow_table *ct;
 	struct mlx5_flow_table *ct_nat;
 	struct mlx5e_post_act *post_act;
-	struct mutex control_lock; /* guards parallel adds/dels */
+	struct mutex control_lock;  
 	struct mapping_ctx *zone_mapping;
 	struct mapping_ctx *labels_mapping;
 	enum mlx5_flow_namespace_type ns_type;
 	struct mlx5_fs_chains *chains;
 	struct mlx5_ct_fs *fs;
 	struct mlx5_ct_fs_ops *fs_ops;
-	spinlock_t ht_lock; /* protects ft entries */
+	spinlock_t ht_lock;  
 	struct workqueue_struct *wq;
 
 	struct mlx5_tc_ct_debugfs debugfs;
@@ -579,10 +576,7 @@ mlx5_tc_ct_entry_set_registers(struct mlx5_tc_ct_priv *ct_priv,
 	if (err)
 		return err;
 
-	/* Make another copy of zone id in reg_b for
-	 * NIC rx flows since we don't copy reg_c1 to
-	 * reg_b upon miss.
-	 */
+	 
 	if (ns != MLX5_FLOW_NAMESPACE_FDB) {
 		err = mlx5e_tc_match_to_reg_set(dev, mod_acts, ns,
 						NIC_ZONE_RESTORE_TO_REG, zone_restore_id);
@@ -690,7 +684,7 @@ mlx5_tc_ct_entry_create_nat(struct mlx5_tc_ct_priv *ct_priv,
 		break;
 
 		case FLOW_ACTION_CT_METADATA:
-			/* Handled earlier */
+			 
 			continue;
 		default:
 			return -EOPNOTSUPP;
@@ -1034,7 +1028,7 @@ mlx5_tc_ct_shared_counter_get(struct mlx5_tc_ct_priv *ct_priv,
 	struct mlx5_ct_counter *shared_counter;
 	struct mlx5_ct_entry *rev_entry;
 
-	/* get the reversed tuple */
+	 
 	swap(rev_tuple.port.src, rev_tuple.port.dst);
 
 	if (rev_tuple.addr_type == FLOW_DISSECTOR_KEY_IPV4_ADDRS) {
@@ -1051,7 +1045,7 @@ mlx5_tc_ct_shared_counter_get(struct mlx5_tc_ct_priv *ct_priv,
 		return ERR_PTR(-EOPNOTSUPP);
 	}
 
-	/* Use the same counter as the reverse direction */
+	 
 	spin_lock_bh(&ct_priv->ht_lock);
 	rev_entry = mlx5_tc_ct_entry_get(ct_priv, &rev_tuple);
 
@@ -1151,9 +1145,7 @@ mlx5_tc_ct_block_flow_offload_replace(struct mlx5_ct_ft *ft, struct flow_rule *f
 	if (!err)
 		return 0;
 
-	/* If failed to update the entry, then look it up again under ht_lock
-	 * protection and properly delete it.
-	 */
+	 
 	spin_lock_bh(&ct_priv->ht_lock);
 	entry = rhashtable_lookup_fast(&ft->ct_entries_ht, &cookie, cts_ht_params);
 	if (entry) {
@@ -1245,7 +1237,7 @@ mlx5_tc_ct_block_flow_offload_add(struct mlx5_ct_ft *ft,
 		goto err_rules;
 
 	set_bit(MLX5_CT_ENTRY_FLAG_VALID, &entry->flags);
-	mlx5_tc_ct_entry_put(entry); /* this function reference */
+	mlx5_tc_ct_entry_put(entry);  
 
 	return 0;
 
@@ -1543,7 +1535,7 @@ mlx5_tc_ct_parse_action(struct mlx5_tc_ct_priv *priv,
 		return -EOPNOTSUPP;
 	}
 
-	attr->ct_attr.ct_action |= act->ct.action; /* So we can have clear + ct */
+	attr->ct_attr.ct_action |= act->ct.action;  
 	attr->ct_attr.zone = act->ct.zone;
 	if (!(act->ct.action & TCA_CT_ACT_CLEAR))
 		attr->ct_attr.nf_ft = act->ct.flow_table;
@@ -1598,7 +1590,7 @@ static int tc_ct_pre_ct_add_rules(struct mlx5_ct_ft *ct_ft,
 	flow_act.modify_hdr = mod_hdr;
 	dest.type = MLX5_FLOW_DESTINATION_TYPE_FLOW_TABLE;
 
-	/* add flow rule */
+	 
 	mlx5e_tc_match_to_reg_match(spec, ZONE_TO_REG,
 				    zone, MLX5_CT_ZONE_MASK);
 	ctstate = MLX5_CT_STATE_TRK_BIT;
@@ -1615,7 +1607,7 @@ static int tc_ct_pre_ct_add_rules(struct mlx5_ct_ft *ct_ft,
 	}
 	pre_ct->flow_rule = rule;
 
-	/* add miss rule */
+	 
 	dest.ft = nat ? ct_priv->ct_nat : ct_priv->ct;
 	rule = mlx5_add_flow_rules(ft, NULL, &flow_act, &dest, 1);
 	if (IS_ERR(rule)) {
@@ -1692,7 +1684,7 @@ mlx5_tc_ct_alloc_pre_ct(struct mlx5_ct_ft *ct_ft,
 	}
 	pre_ct->ft = ft;
 
-	/* create flow group */
+	 
 	MLX5_SET(create_flow_group_in, flow_group_in, start_flow_index, 0);
 	MLX5_SET(create_flow_group_in, flow_group_in, end_flow_index, 0);
 	MLX5_SET(create_flow_group_in, flow_group_in, match_criteria_enable,
@@ -1717,7 +1709,7 @@ mlx5_tc_ct_alloc_pre_ct(struct mlx5_ct_ft *ct_ft,
 	}
 	pre_ct->flow_grp = g;
 
-	/* create miss group */
+	 
 	memset(flow_group_in, 0, inlen);
 	MLX5_SET(create_flow_group_in, flow_group_in, start_flow_index, 1);
 	MLX5_SET(create_flow_group_in, flow_group_in, end_flow_index, 1);
@@ -1784,12 +1776,7 @@ mlx5_tc_ct_free_pre_ct_tables(struct mlx5_ct_ft *ft)
 	mlx5_tc_ct_free_pre_ct(ft, &ft->pre_ct);
 }
 
-/* To avoid false lock dependency warning set the ct_entries_ht lock
- * class different than the lock class of the ht being used when deleting
- * last flow from a group and then deleting a group, we get into del_sw_flow_group()
- * which call rhashtable_destroy on fg->ftes_hash which will take ht->mutex but
- * it's different than the ht->mutex here.
- */
+ 
 static struct lock_class_key ct_entries_ht_lock_key;
 
 static struct mlx5_ct_ft *
@@ -1879,45 +1866,7 @@ mlx5_tc_ct_del_ft_cb(struct mlx5_tc_ct_priv *ct_priv, struct mlx5_ct_ft *ft)
 	kfree(ft);
 }
 
-/* We translate the tc filter with CT action to the following HW model:
- *
- *	+-----------------------+
- *	+ rule (either original +
- *	+ or post_act rule)     +
- *	+-----------------------+
- *		 | set act_miss_cookie mapping
- *		 | set fte_id
- *		 | set tunnel_id
- *		 | rest of actions before the CT action (for this orig/post_act rule)
- *		 |
- * +-------------+
- * | Chain 0	 |
- * | optimization|
- * |		 v
- * |	+---------------------+
- * |	+ pre_ct/pre_ct_nat   +  if matches     +----------------------+
- * |	+ zone+nat match      +---------------->+ post_act (see below) +
- * |	+---------------------+  set zone       +----------------------+
- * |		 |
- * +-------------+ set zone
- *		 |
- *		 v
- *	+--------------------+
- *	+ CT (nat or no nat) +
- *	+ tuple + zone match +
- *	+--------------------+
- *		 | set mark
- *		 | set labels_id
- *		 | set established
- *		 | set zone_restore
- *		 | do nat (if needed)
- *		 v
- *	+--------------+
- *	+ post_act     + rest of parsed filter's actions
- *	+ fte_id match +------------------------>
- *	+--------------+
- *
- */
+ 
 static int
 __mlx5_tc_ct_flow_offload(struct mlx5_tc_ct_priv *ct_priv,
 			  struct mlx5_flow_attr *attr)
@@ -1928,7 +1877,7 @@ __mlx5_tc_ct_flow_offload(struct mlx5_tc_ct_priv *ct_priv,
 	struct mlx5_ct_ft *ft;
 	u16 zone;
 
-	/* Register for CT established events */
+	 
 	ft = mlx5_tc_ct_add_ft_cb(ct_priv, attr->ct_attr.zone,
 				  attr->ct_attr.nf_ft);
 	if (IS_ERR(ft)) {
@@ -1952,9 +1901,7 @@ __mlx5_tc_ct_flow_offload(struct mlx5_tc_ct_priv *ct_priv,
 		goto err_mapping;
 	}
 
-	/* Chain 0 sets the zone and jumps to ct table
-	 * Other chains jump to pre_ct table to align with act_ct cached logic
-	 */
+	 
 	if (!attr->chain) {
 		zone = ft->zone & MLX5_CT_ZONE_MASK;
 		err = mlx5e_tc_match_to_reg_set(priv->mdev, &attr->parse_attr->mod_hdr_acts,
@@ -2003,7 +1950,7 @@ mlx5_tc_ct_flow_offload(struct mlx5_tc_ct_priv *priv, struct mlx5_flow_attr *att
 		attr->action |= MLX5_FLOW_CONTEXT_ACTION_MOD_HDR;
 	}
 
-	if (!attr->ct_attr.nf_ft) { /* means only ct clear action, and not ct_clear,ct() */
+	if (!attr->ct_attr.nf_ft) {  
 		attr->ct_attr.offloaded = true;
 		return 0;
 	}
@@ -2029,9 +1976,9 @@ void
 mlx5_tc_ct_delete_flow(struct mlx5_tc_ct_priv *priv,
 		       struct mlx5_flow_attr *attr)
 {
-	if (!attr->ct_attr.offloaded) /* no ct action, return */
+	if (!attr->ct_attr.offloaded)  
 		return;
-	if (!attr->ct_attr.nf_ft) /* means only ct clear action, and not ct_clear,ct() */
+	if (!attr->ct_attr.nf_ft)  
 		return;
 
 	mutex_lock(&priv->control_lock);
@@ -2076,10 +2023,7 @@ mlx5_tc_ct_init_check_esw_support(struct mlx5_eswitch *esw,
 				  const char **err_msg)
 {
 	if (!mlx5_eswitch_vlan_actions_supported(esw->dev, 1)) {
-		/* vlan workaround should be avoided for multi chain rules.
-		 * This is just a sanity check as pop vlan action should
-		 * be supported by any FW that supports ignore_flow_level
-		 */
+		 
 
 		*err_msg = "firmware vlan actions support is missing";
 		return -EOPNOTSUPP;
@@ -2087,9 +2031,7 @@ mlx5_tc_ct_init_check_esw_support(struct mlx5_eswitch *esw,
 
 	if (!MLX5_CAP_ESW_FLOWTABLE(esw->dev,
 				    fdb_modify_header_fwd_to_table)) {
-		/* CT always writes to registers which are mod header actions.
-		 * Therefore, mod header and goto is required
-		 */
+		 
 
 		*err_msg = "firmware fwd and modify support is missing";
 		return -EOPNOTSUPP;
@@ -2113,9 +2055,7 @@ mlx5_tc_ct_init_check_support(struct mlx5e_priv *priv,
 	int err = 0;
 
 	if (IS_ERR_OR_NULL(post_act)) {
-		/* Ignore_flow_level support isn't supported by default for VFs and so post_act
-		 * won't be supported. Skip showing error msg.
-		 */
+		 
 		if (priv->mdev->coredev_type == MLX5_COREDEV_PF)
 			err_msg = "post action is missing";
 		err = -EOPNOTSUPP;

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2018 MediaTek Inc.
- * Author: Owen Chen <owen.chen@mediatek.com>
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/platform_device.h>
@@ -31,7 +28,7 @@ static const struct mtk_gate_regs audio1_cg_regs = {
 	GATE_MTK(_id, _name, _parent, &audio1_cg_regs, _shift, &mtk_clk_gate_ops_no_setclr)
 
 static const struct mtk_gate audio_clks[] = {
-	/* AUDIO0 */
+	 
 	GATE_AUDIO0(CLK_AUDIO_AFE, "aud_afe", "audio_ck", 2),
 	GATE_AUDIO0(CLK_AUDIO_22M, "aud_22m", "aud_engen1_ck", 8),
 	GATE_AUDIO0(CLK_AUDIO_APLL_TUNER, "aud_apll_tuner",
@@ -41,7 +38,7 @@ static const struct mtk_gate audio_clks[] = {
 	GATE_AUDIO0(CLK_AUDIO_DAC_PREDIS, "aud_dac_predis",
 		    "audio_ck", 26),
 	GATE_AUDIO0(CLK_AUDIO_TML, "aud_tml", "audio_ck", 27),
-	/* AUDIO1 */
+	 
 	GATE_AUDIO1(CLK_AUDIO_I2S1_BCLK, "aud_i2s1_bclk",
 		    "audio_ck", 4),
 	GATE_AUDIO1(CLK_AUDIO_I2S2_BCLK, "aud_i2s2_bclk",
@@ -62,7 +59,7 @@ static const struct of_device_id of_match_clk_mt6765_audio[] = {
 		.compatible = "mediatek,mt6765-audsys",
 		.data = &audio_desc,
 	}, {
-		/* sentinel */
+		 
 	}
 };
 MODULE_DEVICE_TABLE(of, of_match_clk_mt6765_audio);

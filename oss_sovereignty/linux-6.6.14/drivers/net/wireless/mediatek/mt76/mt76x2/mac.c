@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: ISC
-/*
- * Copyright (C) 2016 Felix Fietkau <nbd@nbd.name>
- * Copyright (C) 2018 Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>
- */
+
+ 
 
 #include "mt76x2.h"
 
@@ -20,7 +17,7 @@ void mt76x2_mac_stop(struct mt76x02_dev *dev, bool force)
 	rts_cfg = mt76_rr(dev, MT_TX_RTS_CFG);
 	mt76_wr(dev, MT_TX_RTS_CFG, rts_cfg & ~MT_TX_RTS_CFG_RETRY_LIMIT);
 
-	/* Wait for MAC to become idle */
+	 
 	for (i = 0; i < 300; i++) {
 		if ((mt76_rr(dev, MT_MAC_STATUS) &
 		     (MT_MAC_STATUS_RX | MT_MAC_STATUS_TX)) ||

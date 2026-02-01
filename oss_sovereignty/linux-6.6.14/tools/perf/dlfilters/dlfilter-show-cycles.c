@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * dlfilter-show-cycles.c: Print the number of cycles at the start of each line
- * Copyright (c) 2021, Intel Corporation.
- */
+
+ 
 #include <perf/perf_dlfilter.h>
 #include <string.h>
 #include <stdio.h>

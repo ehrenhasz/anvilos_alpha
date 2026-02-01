@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-/* Copyright (c) 2011-2014 PLUMgrid, http://plumgrid.com
- * Copyright (c) 2016 Facebook
- */
+
+ 
 
 #include <linux/bpf.h>
 
@@ -253,7 +251,7 @@ void print_bpf_insn(const struct bpf_insn_cbs *cbs,
 				bpf_ldst_string[BPF_SIZE(insn->code) >> 3],
 				insn->dst_reg,
 				insn->off, insn->imm);
-		} else if (BPF_MODE(insn->code) == 0xc0 /* BPF_NOSPEC, no UAPI */) {
+		} else if (BPF_MODE(insn->code) == 0xc0  ) {
 			verbose(cbs->private_data, "(%02x) nospec\n", insn->code);
 		} else {
 			verbose(cbs->private_data, "BUG_st_%02x\n", insn->code);
@@ -282,9 +280,7 @@ void print_bpf_insn(const struct bpf_insn_cbs *cbs,
 				insn->src_reg, insn->imm);
 		} else if (BPF_MODE(insn->code) == BPF_IMM &&
 			   BPF_SIZE(insn->code) == BPF_DW) {
-			/* At this point, we already made sure that the second
-			 * part of the ldimm64 insn is accessible.
-			 */
+			 
 			u64 imm = ((u64)(insn + 1)->imm << 32) | (u32)insn->imm;
 			bool is_ptr = insn->src_reg == BPF_PSEUDO_MAP_FD ||
 				      insn->src_reg == BPF_PSEUDO_MAP_VALUE;

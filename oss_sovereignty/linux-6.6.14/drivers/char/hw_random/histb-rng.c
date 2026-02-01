@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later OR MIT
-/*
- * Copyright (c) 2023 David Yang
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/hw_random.h>
@@ -19,18 +17,14 @@
 #define  POST_PROCESS_DEPTH		GENMASK(15, 8)
 #define RNG_NUMBER		0x4
 #define RNG_STAT		0x8
-#define  DATA_COUNT			GENMASK(2, 0)	/* max 4 */
+#define  DATA_COUNT			GENMASK(2, 0)	 
 
 struct histb_rng_priv {
 	struct hwrng rng;
 	void __iomem *base;
 };
 
-/*
- * Observed:
- * depth = 1 -> ~1ms
- * depth = 255 -> ~16ms
- */
+ 
 static int histb_rng_wait(void __iomem *base)
 {
 	u32 val;

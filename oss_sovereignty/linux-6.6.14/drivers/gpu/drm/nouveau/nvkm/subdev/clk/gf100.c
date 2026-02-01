@@ -1,26 +1,4 @@
-/*
- * Copyright 2012 Red Hat Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: Ben Skeggs
- */
+ 
 #define gf100_clk(p) container_of((p), struct gf100_clk, base)
 #include "priv.h"
 #include "pll.h"
@@ -111,7 +89,7 @@ read_div(struct gf100_clk *clk, int doff, u32 dsrc, u32 dctl)
 	case 3:
 		sclk = read_vco(clk, dsrc + (doff * 4));
 
-		/* Memclk has doff of 0 despite its alt. location */
+		 
 		if (doff <= 2) {
 			sctl = nvkm_rd32(device, dctl + (doff * 4));
 
@@ -222,7 +200,7 @@ calc_src(struct gf100_clk *clk, int idx, u32 freq, u32 *dsrc, u32 *ddiv)
 {
 	u32 sclk;
 
-	/* use one of the fixed frequencies if possible */
+	 
 	*ddiv = 0x00000000;
 	switch (freq) {
 	case  27000:
@@ -239,7 +217,7 @@ calc_src(struct gf100_clk *clk, int idx, u32 freq, u32 *dsrc, u32 *ddiv)
 		break;
 	}
 
-	/* otherwise, calculate the closest divider */
+	 
 	sclk = read_vco(clk, 0x137160 + (idx * 4));
 	if (idx < 7)
 		sclk = calc_div(clk, idx, sclk, freq, ddiv);
@@ -278,15 +256,15 @@ calc_clk(struct gf100_clk *clk, struct nvkm_cstate *cstate, int idx, int dom)
 	u32 src0, div0, div1D, div1P = 0;
 	u32 clk0, clk1 = 0;
 
-	/* invalid clock domain */
+	 
 	if (!freq)
 		return 0;
 
-	/* first possible path, using only dividers */
+	 
 	clk0 = calc_src(clk, idx, freq, &src0, &div0);
 	clk0 = calc_div(clk, idx, clk0, freq, &div1D);
 
-	/* see if we can get any closer using PLLs */
+	 
 	if (clk0 != freq && (0x00004387 & (1 << idx))) {
 		if (idx <= 7)
 			clk1 = calc_pll(clk, idx, freq, &info->coef);
@@ -295,7 +273,7 @@ calc_clk(struct gf100_clk *clk, struct nvkm_cstate *cstate, int idx, int dom)
 		clk1 = calc_div(clk, idx, clk1, freq, &div1P);
 	}
 
-	/* select the method which gets closest to target freq */
+	 
 	if (abs((int)freq - clk0) <= abs((int)freq - clk1)) {
 		info->dsrc = src0;
 		if (div0) {
@@ -375,7 +353,7 @@ gf100_clk_prog_2(struct gf100_clk *clk, int idx)
 			nvkm_wr32(device, addr + 0x04, info->coef);
 			nvkm_mask(device, addr + 0x00, 0x00000001, 0x00000001);
 
-			/* Test PLL lock */
+			 
 			nvkm_mask(device, addr + 0x00, 0x00000010, 0x00000000);
 			nvkm_msec(device, 2000,
 				if (nvkm_rd32(device, addr + 0x00) & 0x00020000)
@@ -383,7 +361,7 @@ gf100_clk_prog_2(struct gf100_clk *clk, int idx)
 			);
 			nvkm_mask(device, addr + 0x00, 0x00000010, 0x00000010);
 
-			/* Enable sync mode */
+			 
 			nvkm_mask(device, addr + 0x00, 0x00000004, 0x00000004);
 		}
 	}
@@ -419,11 +397,11 @@ gf100_clk_prog(struct nvkm_clk *base)
 	struct {
 		void (*exec)(struct gf100_clk *, int);
 	} stage[] = {
-		{ gf100_clk_prog_0 }, /* div programming */
-		{ gf100_clk_prog_1 }, /* select div mode */
-		{ gf100_clk_prog_2 }, /* (maybe) program pll */
-		{ gf100_clk_prog_3 }, /* (maybe) select pll mode */
-		{ gf100_clk_prog_4 }, /* final divider */
+		{ gf100_clk_prog_0 },  
+		{ gf100_clk_prog_1 },  
+		{ gf100_clk_prog_2 },  
+		{ gf100_clk_prog_3 },  
+		{ gf100_clk_prog_4 },  
 	};
 	int i, j;
 

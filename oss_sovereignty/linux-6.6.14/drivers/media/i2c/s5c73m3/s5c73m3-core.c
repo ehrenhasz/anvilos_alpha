@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Samsung LSI S5C73M3 8M pixel camera driver
- *
- * Copyright (C) 2012, Samsung Electronics, Co., Ltd.
- * Sylwester Nawrocki <s.nawrocki@samsung.com>
- * Andrzej Hajda <a.hajda@samsung.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -44,14 +38,12 @@ module_param(update_fw, int, 0644);
 #define S5C73M3_CLK_NAME		"cis_extclk"
 
 static const char * const s5c73m3_supply_names[S5C73M3_MAX_SUPPLIES] = {
-	"vdd-int",	/* Digital Core supply (1.2V), CAM_ISP_CORE_1.2V */
-	"vdda",		/* Analog Core supply (1.2V), CAM_SENSOR_CORE_1.2V */
-	"vdd-reg",	/* Regulator input supply (2.8V), CAM_SENSOR_A2.8V */
-	"vddio-host",	/* Digital Host I/O power supply (1.8V...2.8V),
-			   CAM_ISP_SENSOR_1.8V */
-	"vddio-cis",	/* Digital CIS I/O power (1.2V...1.8V),
-			   CAM_ISP_MIPI_1.2V */
-	"vdd-af",	/* Lens, CAM_AF_2.8V */
+	"vdd-int",	 
+	"vdda",		 
+	"vdd-reg",	 
+	"vddio-host",	 
+	"vddio-cis",	 
+	"vdd-af",	 
 };
 
 static const struct s5c73m3_frame_size s5c73m3_isp_resolutions[] = {
@@ -107,7 +99,7 @@ static const struct s5c73m3_interval s5c73m3_intervals[] = {
 	{ COMM_FRAME_RATE_FIXED_30FPS, {33333, 1000000}, {2304, 1296} },
 };
 
-#define S5C73M3_DEFAULT_FRAME_INTERVAL 3 /* 30 fps */
+#define S5C73M3_DEFAULT_FRAME_INTERVAL 3  
 
 static void s5c73m3_fill_mbus_fmt(struct v4l2_mbus_framefmt *mf,
 				  const struct s5c73m3_frame_size *fs,
@@ -152,10 +144,7 @@ static int s5c73m3_i2c_read(struct i2c_client *client, u16 addr, u16 *data)
 			.buf = rbuf
 		}
 	};
-	/*
-	 * Issue repeated START after writing 2 address bytes and
-	 * just one STOP only after reading the data bytes.
-	 */
+	 
 	ret = i2c_transfer(client->adapter, msg, 2);
 	if (ret == 2) {
 		*data = be16_to_cpup((__be16 *)rbuf);
@@ -553,21 +542,21 @@ static int s5c73m3_spi_boot(struct s5c73m3 *state, bool load_fw)
 	struct v4l2_subdev *sd = &state->sensor_sd;
 	int ret;
 
-	/* Run ARM MCU */
+	 
 	ret = s5c73m3_write(state, 0x30000004, 0xffff);
 	if (ret < 0)
 		return ret;
 
 	usleep_range(400, 500);
 
-	/* Check booting status */
+	 
 	ret = s5c73m3_system_status_wait(state, 0x0c, 100, 3);
 	if (ret < 0) {
 		v4l2_err(sd, "booting failed: %d\n", ret);
 		return ret;
 	}
 
-	/* P,M,S and Boot Mode */
+	 
 	ret = s5c73m3_write(state, 0x30100014, 0x2146);
 	if (ret < 0)
 		return ret;
@@ -578,26 +567,26 @@ static int s5c73m3_spi_boot(struct s5c73m3 *state, bool load_fw)
 
 	usleep_range(200, 250);
 
-	/* Check SPI status */
+	 
 	ret = s5c73m3_system_status_wait(state, 0x210d, 100, 300);
 	if (ret < 0)
 		v4l2_err(sd, "SPI not ready: %d\n", ret);
 
-	/* Firmware download over SPI */
+	 
 	if (load_fw)
 		s5c73m3_load_fw(sd);
 
-	/* MCU reset */
+	 
 	ret = s5c73m3_write(state, 0x30000004, 0xfffd);
 	if (ret < 0)
 		return ret;
 
-	/* Remap */
+	 
 	ret = s5c73m3_write(state, 0x301000a4, 0x0183);
 	if (ret < 0)
 		return ret;
 
-	/* MCU restart */
+	 
 	ret = s5c73m3_write(state, 0x30000004, 0xffff);
 	if (ret < 0 || !load_fw)
 		return ret;
@@ -658,13 +647,13 @@ static int s5c73m3_get_fw_version(struct s5c73m3 *state)
 	struct v4l2_subdev *sd = &state->sensor_sd;
 	int ret;
 
-	/* Run ARM MCU */
+	 
 	ret = s5c73m3_write(state, 0x30000004, 0xffff);
 	if (ret < 0)
 		return ret;
 	usleep_range(400, 500);
 
-	/* Check booting status */
+	 
 	ret = s5c73m3_system_status_wait(state, 0x0c, 100, 3);
 	if (ret < 0) {
 
@@ -672,14 +661,14 @@ static int s5c73m3_get_fw_version(struct s5c73m3 *state)
 		return ret;
 	}
 
-	/* Change I/O Driver Current in order to read from F-ROM */
+	 
 	ret = s5c73m3_write(state, 0x30100120, 0x0820);
 	ret = s5c73m3_write(state, 0x30100124, 0x0820);
 
-	/* Offset Setting */
+	 
 	ret = s5c73m3_write(state, 0x00010418, 0x0008);
 
-	/* P,M,S and Boot Mode */
+	 
 	ret = s5c73m3_write(state, 0x30100014, 0x2146);
 	if (ret < 0)
 		return ret;
@@ -689,17 +678,17 @@ static int s5c73m3_get_fw_version(struct s5c73m3 *state)
 
 	usleep_range(200, 250);
 
-	/* Check SPI status */
+	 
 	ret = s5c73m3_system_status_wait(state, 0x230e, 100, 300);
 	if (ret < 0)
 		v4l2_err(sd, "SPI not ready: %d\n", ret);
 
-	/* ARM reset */
+	 
 	ret = s5c73m3_write(state, 0x30000004, 0xfffd);
 	if (ret < 0)
 		return ret;
 
-	/* Remap */
+	 
 	ret = s5c73m3_write(state, 0x301000a4, 0x0183);
 	if (ret < 0)
 		return ret;
@@ -728,13 +717,13 @@ static int s5c73m3_rom_boot(struct s5c73m3 *state, bool load_fw)
 	struct v4l2_subdev *sd = &state->sensor_sd;
 	int i, ret;
 
-	/* Run ARM MCU */
+	 
 	ret = s5c73m3_write(state, 0x30000004, 0xffff);
 	if (ret < 0)
 		return ret;
 	usleep_range(400, 450);
 
-	/* Check booting status */
+	 
 	ret = s5c73m3_system_status_wait(state, 0x0c, 100, 4);
 	if (ret < 0) {
 		v4l2_err(sd, "Booting failed: %d\n", ret);
@@ -748,22 +737,22 @@ static int s5c73m3_rom_boot(struct s5c73m3 *state, bool load_fw)
 	}
 	msleep(200);
 
-	/* Check the binary read status */
+	 
 	ret = s5c73m3_system_status_wait(state, 0x230e, 1000, 150);
 	if (ret < 0) {
 		v4l2_err(sd, "Binary read failed: %d\n", ret);
 		return ret;
 	}
 
-	/* ARM reset */
+	 
 	ret = s5c73m3_write(state, 0x30000004, 0xfffd);
 	if (ret < 0)
 		return ret;
-	/* Remap */
+	 
 	ret = s5c73m3_write(state, 0x301000a4, 0x0183);
 	if (ret < 0)
 		return ret;
-	/* MCU re-start */
+	 
 	ret = s5c73m3_write(state, 0x30000004, 0xffff);
 	if (ret < 0)
 		return ret;
@@ -1543,7 +1532,7 @@ static int s5c73m3_get_dt_data(struct s5c73m3 *state)
 					state->mclk_frequency);
 	}
 
-	/* Request GPIO lines asserted */
+	 
 	state->stby = devm_gpiod_get(dev, "standby", GPIOD_OUT_HIGH);
 	if (IS_ERR(state->stby))
 		return dev_err_probe(dev, PTR_ERR(state->stby),
@@ -1570,10 +1559,7 @@ static int s5c73m3_get_dt_data(struct s5c73m3 *state)
 		dev_err(dev, "unsupported bus type\n");
 		return -EINVAL;
 	}
-	/*
-	 * Number of MIPI CSI-2 data lanes is currently not configurable,
-	 * always a default value of 4 lanes is used.
-	 */
+	 
 	if (ep.bus.mipi_csi2.num_data_lanes != S5C73M3_MIPI_DATA_LANES)
 		dev_info(dev, "falling back to 4 MIPI CSI-2 data lanes\n");
 
@@ -1619,7 +1605,7 @@ static int s5c73m3_probe(struct i2c_client *client)
 		return ret;
 
 	v4l2_i2c_subdev_init(oif_sd, client, &oif_subdev_ops);
-	/* Static name; NEVER use in new drivers! */
+	 
 	strscpy(oif_sd->name, "S5C73M3-OIF", sizeof(oif_sd->name));
 
 	oif_sd->internal_ops = &oif_internal_ops;

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Functions corresponding to SET methods under BIOS attributes interface GUID for use
- * with dell-wmi-sysman
- *
- *  Copyright (c) 2020 Dell Inc.
- */
+
+ 
 
 #include <linux/wmi.h>
 #include "dell-wmi-sysman.h"
@@ -33,20 +28,14 @@ static int call_biosattributes_interface(struct wmi_device *wdev, char *in_args,
 
 	if (wmi_priv.pending_changes == 0) {
 		wmi_priv.pending_changes = 1;
-		/* let userland know it may need to check reboot pending again */
+		 
 		kobject_uevent(&wmi_priv.class_dev->kobj, KOBJ_CHANGE);
 	}
 	kfree(output.pointer);
 	return map_wmi_error(ret);
 }
 
-/**
- * set_attribute() - Update an attribute value
- * @a_name: The attribute name
- * @a_value: The attribute value
- *
- * Sets an attribute to new value
- */
+ 
 int set_attribute(const char *a_name, const char *a_value)
 {
 	size_t security_area_size, buffer_size;
@@ -60,7 +49,7 @@ int set_attribute(const char *a_name, const char *a_value)
 		goto out;
 	}
 
-	/* build/calculate buffer */
+	 
 	security_area_size = calculate_security_buffer(wmi_priv.current_admin_password);
 	a_name_size = calculate_string_buffer(a_name);
 	a_value_size = calculate_string_buffer(a_value);
@@ -71,10 +60,10 @@ int set_attribute(const char *a_name, const char *a_value)
 		goto out;
 	}
 
-	/* build security area */
+	 
 	populate_security_buffer(buffer, wmi_priv.current_admin_password);
 
-	/* build variables to set */
+	 
 	start = buffer + security_area_size;
 	ret = populate_string_buffer(start, a_name_size, a_name);
 	if (ret < 0)
@@ -99,12 +88,7 @@ out:
 	return ret;
 }
 
-/**
- * set_bios_defaults() - Resets BIOS defaults
- * @deftype: the type of BIOS value reset to issue.
- *
- * Resets BIOS defaults
- */
+ 
 int set_bios_defaults(u8 deftype)
 {
 	size_t security_area_size, buffer_size;
@@ -127,7 +111,7 @@ int set_bios_defaults(u8 deftype)
 		goto out;
 	}
 
-	/* build security area */
+	 
 	populate_security_buffer(buffer, wmi_priv.current_admin_password);
 
 	defaultType = buffer + security_area_size;

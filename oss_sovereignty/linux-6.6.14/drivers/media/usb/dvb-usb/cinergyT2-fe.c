@@ -1,30 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * TerraTec Cinergy T2/qanu USB2 DVB-T adapter.
- *
- * Copyright (C) 2007 Tomi Orava (tomimo@ncircle.nullnet.fi)
- *
- * Based on the dvb-usb-framework code and the
- * original Terratec Cinergy T2 driver by:
- *
- * Copyright (C) 2004 Daniel Mack <daniel@qanu.de> and
- *                  Holger Waechtler <holger@qanu.de>
- *
- *  Protocol Spec published on http://qanu.de/specs/terratec_cinergyT2.pdf
- */
+
+ 
 
 #include "cinergyT2.h"
 
 
-/*
- *  convert linux-dvb frontend parameter set into TPS.
- *  See ETSI ETS-300744, section 4.6.2, table 9 for details.
- *
- *  This function is probably reusable and may better get placed in a support
- *  library.
- *
- *  We replace erroneous fields by default TPS fields (the ones with value 0).
- */
+ 
 
 static uint16_t compute_tps(struct dtv_frontend_properties *op)
 {
@@ -46,7 +26,7 @@ static uint16_t compute_tps(struct dtv_frontend_properties *op)
 	case FEC_1_2:
 	case FEC_AUTO:
 	default:
-		/* tps |= (0 << 7) */;
+		 ;
 	}
 
 	switch (op->code_rate_LP) {
@@ -65,7 +45,7 @@ static uint16_t compute_tps(struct dtv_frontend_properties *op)
 	case FEC_1_2:
 	case FEC_AUTO:
 	default:
-		/* tps |= (0 << 4) */;
+		 ;
 	}
 
 	switch (op->modulation) {
@@ -77,7 +57,7 @@ static uint16_t compute_tps(struct dtv_frontend_properties *op)
 		break;
 	case QPSK:
 	default:
-		/* tps |= (0 << 13) */;
+		 ;
 	}
 
 	switch (op->transmission_mode) {
@@ -86,7 +66,7 @@ static uint16_t compute_tps(struct dtv_frontend_properties *op)
 		break;
 	case TRANSMISSION_MODE_2K:
 	default:
-		/* tps |= (0 << 0) */;
+		 ;
 	}
 
 	switch (op->guard_interval) {
@@ -101,7 +81,7 @@ static uint16_t compute_tps(struct dtv_frontend_properties *op)
 		break;
 	case GUARD_INTERVAL_1_32:
 	default:
-		/* tps |= (0 << 2) */;
+		 ;
 	}
 
 	switch (op->hierarchy) {
@@ -116,7 +96,7 @@ static uint16_t compute_tps(struct dtv_frontend_properties *op)
 		break;
 	case HIERARCHY_NONE:
 	default:
-		/* tps |= (0 << 10) */;
+		 ;
 	}
 
 	return tps;

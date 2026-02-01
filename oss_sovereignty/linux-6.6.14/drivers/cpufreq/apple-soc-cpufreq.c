@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Apple SoC CPU cluster performance state driver
- *
- * Copyright The Asahi Linux Contributors
- *
- * Based on scpi-cpufreq.c
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/bitops.h>
@@ -28,12 +22,10 @@
 #define APPLE_DVFS_CMD_PS2		GENMASK(16, 12)
 #define APPLE_DVFS_CMD_PS1		GENMASK(4, 0)
 
-/* Same timebase as CPU counter (24MHz) */
+ 
 #define APPLE_DVFS_LAST_CHG_TIME	0x38
 
-/*
- * Apple ran out of bits and had to shift this in T8112...
- */
+ 
 #define APPLE_DVFS_STATUS			0x50
 #define APPLE_DVFS_STATUS_CUR_PS_T8103		GENMASK(7, 4)
 #define APPLE_DVFS_STATUS_CUR_PS_SHIFT_T8103	4
@@ -42,11 +34,7 @@
 #define APPLE_DVFS_STATUS_CUR_PS_SHIFT_T8112	5
 #define APPLE_DVFS_STATUS_TGT_PS_T8112		GENMASK(4, 0)
 
-/*
- * Div is +1, base clock is 12MHz on existing SoCs.
- * For documentation purposes. We use the OPP table to
- * get the frequency.
- */
+ 
 #define APPLE_DVFS_PLL_STATUS		0xc0
 #define APPLE_DVFS_PLL_FACTOR		0xc8
 #define APPLE_DVFS_PLL_FACTOR_MULT	GENMASK(31, 16)
@@ -82,7 +70,7 @@ static const struct apple_soc_cpufreq_info soc_t8112_info = {
 
 static const struct apple_soc_cpufreq_info soc_default_info = {
 	.max_pstate = 15,
-	.cur_pstate_mask = 0, /* fallback */
+	.cur_pstate_mask = 0,  
 };
 
 static const struct of_device_id apple_soc_cpufreq_of_match[] = {
@@ -113,10 +101,7 @@ static unsigned int apple_soc_cpufreq_get_rate(unsigned int cpu)
 
 		pstate = (reg & priv->info->cur_pstate_mask) >>  priv->info->cur_pstate_shift;
 	} else {
-		/*
-		 * For the fallback case we might not know the layout of DVFS_STATUS,
-		 * so just use the command register value (which ignores boost limitations).
-		 */
+		 
 		u64 reg = readq_relaxed(priv->reg_base + APPLE_DVFS_CMD);
 
 		pstate = FIELD_GET(APPLE_DVFS_CMD_PS1, reg);
@@ -138,7 +123,7 @@ static int apple_soc_cpufreq_set_target(struct cpufreq_policy *policy,
 	unsigned int pstate = policy->freq_table[index].driver_data;
 	u64 reg;
 
-	/* Fallback for newer SoCs */
+	 
 	if (index > priv->info->max_pstate)
 		index = priv->info->max_pstate;
 
@@ -197,7 +182,7 @@ static int apple_soc_cpufreq_find_cluster(struct cpufreq_policy *policy,
 
 static struct freq_attr *apple_soc_cpufreq_hw_attr[] = {
 	&cpufreq_freq_attr_scaling_available_freqs,
-	NULL, /* Filled in below if boost is enabled */
+	NULL,  
 	NULL,
 };
 
@@ -254,7 +239,7 @@ static int apple_soc_cpufreq_init(struct cpufreq_policy *policy)
 		goto out_free_priv;
 	}
 
-	/* Get OPP levels (p-state indexes) and stash them in driver_data */
+	 
 	for (i = 0; freq_table[i].frequency != CPUFREQ_TABLE_END; i++) {
 		unsigned long rate = freq_table[i].frequency * 1000 + 999;
 		struct dev_pm_opp *opp = dev_pm_opp_find_freq_floor(cpu_dev, &rate);

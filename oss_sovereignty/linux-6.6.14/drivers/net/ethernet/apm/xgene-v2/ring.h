@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Applied Micro X-Gene SoC Ethernet v2 Driver
- *
- * Copyright (c) 2017, Applied Micro Circuits Corporation
- * Author(s): Iyappan Subramanian <isubramanian@apm.com>
- *	      Keyur Chudgar <kchudgar@apm.com>
- */
+ 
+ 
 
 #ifndef __XGENE_ENET_V2_RING_H__
 #define __XGENE_ENET_V2_RING_H__
@@ -69,7 +63,7 @@ struct pkt_info {
 	void *pkt_buf;
 };
 
-/* software context of a descriptor ring */
+ 
 struct xge_desc_ring {
 	struct net_device *ndev;
 	dma_addr_t dma_addr;
@@ -104,4 +98,4 @@ void xge_update_rx_desc_addr(struct xge_pdata *pdata);
 void xge_intr_enable(struct xge_pdata *pdata);
 void xge_intr_disable(struct xge_pdata *pdata);
 
-#endif  /* __XGENE_ENET_V2_RING_H__ */
+#endif   

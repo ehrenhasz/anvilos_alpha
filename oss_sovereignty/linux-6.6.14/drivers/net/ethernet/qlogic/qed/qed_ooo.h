@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause) */
-/* QLogic qed NIC Driver
- * Copyright (c) 2015-2017  QLogic Corporation
- * Copyright (c) 2019-2020 Marvell International Ltd.
- */
+ 
+ 
 
 #ifndef _QED_OOO_H
 #define _QED_OOO_H
@@ -109,7 +106,7 @@ void qed_ooo_add_new_buffer(struct qed_hwfn *p_hwfn,
 void qed_ooo_join_isles(struct qed_hwfn *p_hwfn,
 			struct qed_ooo_info *p_ooo_info, u32 cid,
 			u8 left_isle);
-#else /* IS_ENABLED(CONFIG_QED_ISCSI) */
+#else  
 static inline void qed_ooo_save_history_entry(struct qed_hwfn *p_hwfn,
 					      struct qed_ooo_info *p_ooo_info,
 					      struct ooo_opaque *p_cqe) {}
@@ -167,6 +164,6 @@ static inline void qed_ooo_add_new_buffer(struct qed_hwfn *p_hwfn,
 static inline void qed_ooo_join_isles(struct qed_hwfn *p_hwfn,
 				      struct qed_ooo_info *p_ooo_info, u32 cid,
 				      u8 left_isle) {}
-#endif /* IS_ENABLED(CONFIG_QED_ISCSI) */
+#endif  
 
 #endif

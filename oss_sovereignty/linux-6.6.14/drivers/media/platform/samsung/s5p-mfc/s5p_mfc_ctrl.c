@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * linux/drivers/media/platform/samsung/s5p-mfc/s5p_mfc_ctrl.c
- *
- * Copyright (c) 2010 Samsung Electronics Co., Ltd.
- *		http://www.samsung.com/
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/err.h>
@@ -19,7 +14,7 @@
 #include "s5p_mfc_pm.h"
 #include "s5p_mfc_ctrl.h"
 
-/* Allocate memory for firmware */
+ 
 int s5p_mfc_alloc_firmware(struct s5p_mfc_dev *dev)
 {
 	struct s5p_mfc_priv_buf *fw_buf = &dev->fw_buf;
@@ -41,14 +36,13 @@ int s5p_mfc_alloc_firmware(struct s5p_mfc_dev *dev)
 	return 0;
 }
 
-/* Load firmware */
+ 
 int s5p_mfc_load_firmware(struct s5p_mfc_dev *dev)
 {
 	struct firmware *fw_blob;
 	int i, err = -EINVAL;
 
-	/* Firmware has to be present as a separate file or compiled
-	 * into kernel. */
+	 
 	mfc_debug_enter();
 
 	if (dev->fw_get_done)
@@ -82,11 +76,10 @@ int s5p_mfc_load_firmware(struct s5p_mfc_dev *dev)
 	return 0;
 }
 
-/* Release firmware memory */
+ 
 int s5p_mfc_release_firmware(struct s5p_mfc_dev *dev)
 {
-	/* Before calling this function one has to make sure
-	 * that MFC is no longer processing */
+	 
 	s5p_mfc_release_priv_buf(dev, &dev->fw_buf);
 	dev->fw_get_done = false;
 	return 0;
@@ -97,10 +90,10 @@ static int s5p_mfc_bus_reset(struct s5p_mfc_dev *dev)
 	unsigned int status;
 	unsigned long timeout;
 
-	/* Reset */
+	 
 	mfc_write(dev, 0x1, S5P_FIMV_MFC_BUS_RESET_CTRL);
 	timeout = jiffies + msecs_to_jiffies(MFC_BW_TIMEOUT);
-	/* Check bus status */
+	 
 	do {
 		if (time_after(jiffies, timeout)) {
 			mfc_err("Timeout while resetting MFC.\n");
@@ -111,7 +104,7 @@ static int s5p_mfc_bus_reset(struct s5p_mfc_dev *dev)
 	return 0;
 }
 
-/* Reset the device */
+ 
 int s5p_mfc_reset(struct s5p_mfc_dev *dev)
 {
 	unsigned int mc_status;
@@ -121,7 +114,7 @@ int s5p_mfc_reset(struct s5p_mfc_dev *dev)
 	mfc_debug_enter();
 
 	if (IS_MFCV6_PLUS(dev)) {
-		/* Zero Initialization of MFC registers */
+		 
 		mfc_write(dev, 0, S5P_FIMV_RISC2HOST_CMD_V6);
 		mfc_write(dev, 0, S5P_FIMV_HOST2RISC_CMD_V6);
 		mfc_write(dev, 0, S5P_FIMV_FW_VERSION_V6);
@@ -129,29 +122,26 @@ int s5p_mfc_reset(struct s5p_mfc_dev *dev)
 		for (i = 0; i < S5P_FIMV_REG_CLEAR_COUNT_V6; i++)
 			mfc_write(dev, 0, S5P_FIMV_REG_CLEAR_BEGIN_V6 + (i*4));
 
-		/* check bus reset control before reset */
+		 
 		if (dev->risc_on)
 			if (s5p_mfc_bus_reset(dev))
 				return -EIO;
-		/* Reset
-		 * set RISC_ON to 0 during power_on & wake_up.
-		 * V6 needs RISC_ON set to 0 during reset also.
-		 */
+		 
 		if ((!dev->risc_on) || (!IS_MFCV7_PLUS(dev)))
 			mfc_write(dev, 0, S5P_FIMV_RISC_ON_V6);
 
 		mfc_write(dev, 0x1FFF, S5P_FIMV_MFC_RESET_V6);
 		mfc_write(dev, 0, S5P_FIMV_MFC_RESET_V6);
 	} else {
-		/* Stop procedure */
-		/*  reset RISC */
+		 
+		 
 		mfc_write(dev, 0x3f6, S5P_FIMV_SW_RESET);
-		/*  All reset except for MC */
+		 
 		mfc_write(dev, 0x3e2, S5P_FIMV_SW_RESET);
 		mdelay(10);
 
 		timeout = jiffies + msecs_to_jiffies(MFC_BW_TIMEOUT);
-		/* Check MC status */
+		 
 		do {
 			if (time_after(jiffies, timeout)) {
 				mfc_err("Timeout while resetting MFC\n");
@@ -191,8 +181,7 @@ static inline void s5p_mfc_init_memctrl(struct s5p_mfc_dev *dev)
 static inline void s5p_mfc_clear_cmds(struct s5p_mfc_dev *dev)
 {
 	if (IS_MFCV6_PLUS(dev)) {
-		/* Zero initialization should be done before RESET.
-		 * Nothing to do here. */
+		 
 	} else {
 		mfc_write(dev, 0xffffffff, S5P_FIMV_SI_CH0_INST_ID);
 		mfc_write(dev, 0xffffffff, S5P_FIMV_SI_CH1_INST_ID);
@@ -201,7 +190,7 @@ static inline void s5p_mfc_clear_cmds(struct s5p_mfc_dev *dev)
 	}
 }
 
-/* Initialize hardware */
+ 
 int s5p_mfc_init_hw(struct s5p_mfc_dev *dev)
 {
 	unsigned int ver;
@@ -213,7 +202,7 @@ int s5p_mfc_init_hw(struct s5p_mfc_dev *dev)
 		return -EINVAL;
 	}
 
-	/* 0. MFC reset */
+	 
 	mfc_debug(2, "MFC reset..\n");
 	s5p_mfc_clock_on();
 	dev->risc_on = 0;
@@ -223,11 +212,11 @@ int s5p_mfc_init_hw(struct s5p_mfc_dev *dev)
 		return ret;
 	}
 	mfc_debug(2, "Done MFC reset..\n");
-	/* 1. Set DRAM base Addr */
+	 
 	s5p_mfc_init_memctrl(dev);
-	/* 2. Initialize registers of channel I/F */
+	 
 	s5p_mfc_clear_cmds(dev);
-	/* 3. Release reset signal to the RISC */
+	 
 	s5p_mfc_clean_dev_int_flags(dev);
 	if (IS_MFCV6_PLUS(dev)) {
 		dev->risc_on = 1;
@@ -247,7 +236,7 @@ int s5p_mfc_init_hw(struct s5p_mfc_dev *dev)
 		return -EIO;
 	}
 	s5p_mfc_clean_dev_int_flags(dev);
-	/* 4. Initialize firmware */
+	 
 	ret = s5p_mfc_hw_call(dev->mfc_cmds, sys_init_cmd, dev);
 	if (ret) {
 		mfc_err("Failed to send command to MFC - timeout\n");
@@ -265,7 +254,7 @@ int s5p_mfc_init_hw(struct s5p_mfc_dev *dev)
 	dev->int_cond = 0;
 	if (dev->int_err != 0 || dev->int_type !=
 					S5P_MFC_R2H_CMD_SYS_INIT_RET) {
-		/* Failure. */
+		 
 		mfc_err("Failed to init firmware - error: %d int: %d\n",
 						dev->int_err, dev->int_type);
 		s5p_mfc_reset(dev);
@@ -285,7 +274,7 @@ int s5p_mfc_init_hw(struct s5p_mfc_dev *dev)
 }
 
 
-/* Deinitialize hardware */
+ 
 void s5p_mfc_deinit_hw(struct s5p_mfc_dev *dev)
 {
 	s5p_mfc_clock_on();
@@ -316,7 +305,7 @@ int s5p_mfc_sleep(struct s5p_mfc_dev *dev)
 	dev->int_cond = 0;
 	if (dev->int_err != 0 || dev->int_type !=
 						S5P_MFC_R2H_CMD_SLEEP_RET) {
-		/* Failure. */
+		 
 		mfc_err("Failed to sleep - error: %d int: %d\n", dev->int_err,
 								dev->int_type);
 		return -EIO;
@@ -329,7 +318,7 @@ static int s5p_mfc_v8_wait_wakeup(struct s5p_mfc_dev *dev)
 {
 	int ret;
 
-	/* Release reset signal to the RISC */
+	 
 	dev->risc_on = 1;
 	mfc_write(dev, 0x1, S5P_FIMV_RISC_ON_V6);
 
@@ -355,14 +344,14 @@ static int s5p_mfc_wait_wakeup(struct s5p_mfc_dev *dev)
 {
 	int ret;
 
-	/* Send MFC wakeup command */
+	 
 	ret = s5p_mfc_hw_call(dev->mfc_cmds, wakeup_cmd, dev);
 	if (ret) {
 		mfc_err("Failed to send command to MFC - timeout\n");
 		return ret;
 	}
 
-	/* Release reset signal to the RISC */
+	 
 	if (IS_MFCV6_PLUS(dev)) {
 		dev->risc_on = 1;
 		mfc_write(dev, 0x1, S5P_FIMV_RISC_ON_V6);
@@ -382,7 +371,7 @@ int s5p_mfc_wakeup(struct s5p_mfc_dev *dev)
 	int ret;
 
 	mfc_debug_enter();
-	/* 0. MFC reset */
+	 
 	mfc_debug(2, "MFC reset..\n");
 	s5p_mfc_clock_on();
 	dev->risc_on = 0;
@@ -393,12 +382,12 @@ int s5p_mfc_wakeup(struct s5p_mfc_dev *dev)
 		return ret;
 	}
 	mfc_debug(2, "Done MFC reset..\n");
-	/* 1. Set DRAM base Addr */
+	 
 	s5p_mfc_init_memctrl(dev);
-	/* 2. Initialize registers of channel I/F */
+	 
 	s5p_mfc_clear_cmds(dev);
 	s5p_mfc_clean_dev_int_flags(dev);
-	/* 3. Send MFC wakeup command and wait for completion*/
+	 
 	if (IS_MFCV8_PLUS(dev))
 		ret = s5p_mfc_v8_wait_wakeup(dev);
 	else
@@ -411,7 +400,7 @@ int s5p_mfc_wakeup(struct s5p_mfc_dev *dev)
 	dev->int_cond = 0;
 	if (dev->int_err != 0 || dev->int_type !=
 						S5P_MFC_R2H_CMD_WAKEUP_RET) {
-		/* Failure. */
+		 
 		mfc_err("Failed to wakeup - error: %d int: %d\n", dev->int_err,
 								dev->int_type);
 		return -EIO;
@@ -443,7 +432,7 @@ int s5p_mfc_open_mfc_inst(struct s5p_mfc_dev *dev, struct s5p_mfc_ctx *ctx)
 	s5p_mfc_hw_call(dev->mfc_ops, try_run, dev);
 	if (s5p_mfc_wait_for_done_ctx(ctx,
 		S5P_MFC_R2H_CMD_OPEN_INSTANCE_RET, 0)) {
-		/* Error or timeout */
+		 
 		mfc_err("Error getting instance from hardware\n");
 		ret = -EIO;
 		goto err_free_desc_buf;
@@ -466,14 +455,14 @@ void s5p_mfc_close_mfc_inst(struct s5p_mfc_dev *dev, struct s5p_mfc_ctx *ctx)
 	ctx->state = MFCINST_RETURN_INST;
 	set_work_bit_irqsave(ctx);
 	s5p_mfc_hw_call(dev->mfc_ops, try_run, dev);
-	/* Wait until instance is returned or timeout occurred */
+	 
 	if (s5p_mfc_wait_for_done_ctx(ctx,
 				S5P_MFC_R2H_CMD_CLOSE_INSTANCE_RET, 0)){
 		clear_work_bit_irqsave(ctx);
 		mfc_err("Err returning instance\n");
 	}
 
-	/* Free resources */
+	 
 	s5p_mfc_hw_call(dev->mfc_ops, release_codec_buffers, ctx);
 	s5p_mfc_hw_call(dev->mfc_ops, release_instance_buffer, ctx);
 	if (ctx->type == MFCINST_DECODER)

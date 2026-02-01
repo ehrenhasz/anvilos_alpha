@@ -1,79 +1,47 @@
-/*
- * This file is part of the Chelsio T4 Ethernet driver for Linux.
- *
- * Copyright (c) 2009-2016 Chelsio Communications, Inc. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 
 #ifndef _T4FW_INTERFACE_H_
 #define _T4FW_INTERFACE_H_
 
 enum fw_retval {
-	FW_SUCCESS		= 0,	/* completed successfully */
-	FW_EPERM		= 1,	/* operation not permitted */
-	FW_ENOENT		= 2,	/* no such file or directory */
-	FW_EIO			= 5,	/* input/output error; hw bad */
-	FW_ENOEXEC		= 8,	/* exec format error; inv microcode */
-	FW_EAGAIN		= 11,	/* try again */
-	FW_ENOMEM		= 12,	/* out of memory */
-	FW_EFAULT		= 14,	/* bad address; fw bad */
-	FW_EBUSY		= 16,	/* resource busy */
-	FW_EEXIST		= 17,	/* file exists */
-	FW_ENODEV		= 19,	/* no such device */
-	FW_EINVAL		= 22,	/* invalid argument */
-	FW_ENOSPC		= 28,	/* no space left on device */
-	FW_ENOSYS		= 38,	/* functionality not implemented */
-	FW_ENODATA		= 61,	/* no data available */
-	FW_EPROTO		= 71,	/* protocol error */
-	FW_EADDRINUSE		= 98,	/* address already in use */
-	FW_EADDRNOTAVAIL	= 99,	/* cannot assigned requested address */
-	FW_ENETDOWN		= 100,	/* network is down */
-	FW_ENETUNREACH		= 101,	/* network is unreachable */
-	FW_ENOBUFS		= 105,	/* no buffer space available */
-	FW_ETIMEDOUT		= 110,	/* timeout */
-	FW_EINPROGRESS		= 115,	/* fw internal */
-	FW_SCSI_ABORT_REQUESTED	= 128,	/* */
-	FW_SCSI_ABORT_TIMEDOUT	= 129,	/* */
-	FW_SCSI_ABORTED		= 130,	/* */
-	FW_SCSI_CLOSE_REQUESTED	= 131,	/* */
-	FW_ERR_LINK_DOWN	= 132,	/* */
-	FW_RDEV_NOT_READY	= 133,	/* */
-	FW_ERR_RDEV_LOST	= 134,	/* */
-	FW_ERR_RDEV_LOGO	= 135,	/* */
-	FW_FCOE_NO_XCHG		= 136,	/* */
-	FW_SCSI_RSP_ERR		= 137,	/* */
-	FW_ERR_RDEV_IMPL_LOGO	= 138,	/* */
-	FW_SCSI_UNDER_FLOW_ERR  = 139,	/* */
-	FW_SCSI_OVER_FLOW_ERR   = 140,	/* */
-	FW_SCSI_DDP_ERR		= 141,	/* DDP error*/
-	FW_SCSI_TASK_ERR	= 142,	/* No SCSI tasks available */
+	FW_SUCCESS		= 0,	 
+	FW_EPERM		= 1,	 
+	FW_ENOENT		= 2,	 
+	FW_EIO			= 5,	 
+	FW_ENOEXEC		= 8,	 
+	FW_EAGAIN		= 11,	 
+	FW_ENOMEM		= 12,	 
+	FW_EFAULT		= 14,	 
+	FW_EBUSY		= 16,	 
+	FW_EEXIST		= 17,	 
+	FW_ENODEV		= 19,	 
+	FW_EINVAL		= 22,	 
+	FW_ENOSPC		= 28,	 
+	FW_ENOSYS		= 38,	 
+	FW_ENODATA		= 61,	 
+	FW_EPROTO		= 71,	 
+	FW_EADDRINUSE		= 98,	 
+	FW_EADDRNOTAVAIL	= 99,	 
+	FW_ENETDOWN		= 100,	 
+	FW_ENETUNREACH		= 101,	 
+	FW_ENOBUFS		= 105,	 
+	FW_ETIMEDOUT		= 110,	 
+	FW_EINPROGRESS		= 115,	 
+	FW_SCSI_ABORT_REQUESTED	= 128,	 
+	FW_SCSI_ABORT_TIMEDOUT	= 129,	 
+	FW_SCSI_ABORTED		= 130,	 
+	FW_SCSI_CLOSE_REQUESTED	= 131,	 
+	FW_ERR_LINK_DOWN	= 132,	 
+	FW_RDEV_NOT_READY	= 133,	 
+	FW_ERR_RDEV_LOST	= 134,	 
+	FW_ERR_RDEV_LOGO	= 135,	 
+	FW_FCOE_NO_XCHG		= 136,	 
+	FW_SCSI_RSP_ERR		= 137,	 
+	FW_ERR_RDEV_IMPL_LOGO	= 138,	 
+	FW_SCSI_UNDER_FLOW_ERR  = 139,	 
+	FW_SCSI_OVER_FLOW_ERR   = 140,	 
+	FW_SCSI_DDP_ERR		= 141,	 
+	FW_SCSI_TASK_ERR	= 142,	 
 };
 
 #define FW_T4VF_SGE_BASE_ADDR      0x0000
@@ -117,54 +85,52 @@ struct fw_wr_hdr {
 	__be32 lo;
 };
 
-/* work request opcode (hi) */
+ 
 #define FW_WR_OP_S	24
 #define FW_WR_OP_M      0xff
 #define FW_WR_OP_V(x)   ((x) << FW_WR_OP_S)
 #define FW_WR_OP_G(x)   (((x) >> FW_WR_OP_S) & FW_WR_OP_M)
 
-/* atomic flag (hi) - firmware encapsulates CPLs in CPL_BARRIER */
+ 
 #define FW_WR_ATOMIC_S		23
 #define FW_WR_ATOMIC_V(x)	((x) << FW_WR_ATOMIC_S)
 
-/* flush flag (hi) - firmware flushes flushable work request buffered
- * in the flow context.
- */
+ 
 #define FW_WR_FLUSH_S     22
 #define FW_WR_FLUSH_V(x)  ((x) << FW_WR_FLUSH_S)
 
-/* completion flag (hi) - firmware generates a cpl_fw6_ack */
+ 
 #define FW_WR_COMPL_S     21
 #define FW_WR_COMPL_V(x)  ((x) << FW_WR_COMPL_S)
 #define FW_WR_COMPL_F     FW_WR_COMPL_V(1U)
 
-/* work request immediate data length (hi) */
+ 
 #define FW_WR_IMMDLEN_S 0
 #define FW_WR_IMMDLEN_M 0xff
 #define FW_WR_IMMDLEN_V(x)      ((x) << FW_WR_IMMDLEN_S)
 
-/* egress queue status update to associated ingress queue entry (lo) */
+ 
 #define FW_WR_EQUIQ_S           31
 #define FW_WR_EQUIQ_V(x)        ((x) << FW_WR_EQUIQ_S)
 #define FW_WR_EQUIQ_F           FW_WR_EQUIQ_V(1U)
 
-/* egress queue status update to egress queue status entry (lo) */
+ 
 #define FW_WR_EQUEQ_S           30
 #define FW_WR_EQUEQ_V(x)        ((x) << FW_WR_EQUEQ_S)
 #define FW_WR_EQUEQ_F           FW_WR_EQUEQ_V(1U)
 
-/* flow context identifier (lo) */
+ 
 #define FW_WR_FLOWID_S          8
 #define FW_WR_FLOWID_V(x)       ((x) << FW_WR_FLOWID_S)
 
-/* length in units of 16-bytes (lo) */
+ 
 #define FW_WR_LEN16_S           0
 #define FW_WR_LEN16_V(x)        ((x) << FW_WR_LEN16_S)
 
 #define HW_TPL_FR_MT_PR_IV_P_FC         0X32B
 #define HW_TPL_FR_MT_PR_OV_P_FC         0X327
 
-/* filter wr reply code in cookie in CPL_SET_TCB_RPL */
+ 
 enum fw_filter_wr_cookie {
 	FW_FILTER_WR_SUCCESS,
 	FW_FILTER_WR_FLT_ADDED,
@@ -679,37 +645,27 @@ struct fw_ofld_connection_wr {
 	FW_OFLD_CONNECTION_WR_CPLPASSACCEPTRPL_V(1U)
 
 enum fw_flowc_mnem_tcpstate {
-	FW_FLOWC_MNEM_TCPSTATE_CLOSED   = 0, /* illegal */
-	FW_FLOWC_MNEM_TCPSTATE_LISTEN   = 1, /* illegal */
-	FW_FLOWC_MNEM_TCPSTATE_SYNSENT  = 2, /* illegal */
-	FW_FLOWC_MNEM_TCPSTATE_SYNRECEIVED = 3, /* illegal */
-	FW_FLOWC_MNEM_TCPSTATE_ESTABLISHED = 4, /* default */
-	FW_FLOWC_MNEM_TCPSTATE_CLOSEWAIT = 5, /* got peer close already */
-	FW_FLOWC_MNEM_TCPSTATE_FINWAIT1 = 6, /* haven't gotten ACK for FIN and
-					      * will resend FIN - equiv ESTAB
-					      */
-	FW_FLOWC_MNEM_TCPSTATE_CLOSING  = 7, /* haven't gotten ACK for FIN and
-					      * will resend FIN but have
-					      * received FIN
-					      */
-	FW_FLOWC_MNEM_TCPSTATE_LASTACK  = 8, /* haven't gotten ACK for FIN and
-					      * will resend FIN but have
-					      * received FIN
-					      */
-	FW_FLOWC_MNEM_TCPSTATE_FINWAIT2 = 9, /* sent FIN and got FIN + ACK,
-					      * waiting for FIN
-					      */
-	FW_FLOWC_MNEM_TCPSTATE_TIMEWAIT = 10, /* not expected */
+	FW_FLOWC_MNEM_TCPSTATE_CLOSED   = 0,  
+	FW_FLOWC_MNEM_TCPSTATE_LISTEN   = 1,  
+	FW_FLOWC_MNEM_TCPSTATE_SYNSENT  = 2,  
+	FW_FLOWC_MNEM_TCPSTATE_SYNRECEIVED = 3,  
+	FW_FLOWC_MNEM_TCPSTATE_ESTABLISHED = 4,  
+	FW_FLOWC_MNEM_TCPSTATE_CLOSEWAIT = 5,  
+	FW_FLOWC_MNEM_TCPSTATE_FINWAIT1 = 6,  
+	FW_FLOWC_MNEM_TCPSTATE_CLOSING  = 7,  
+	FW_FLOWC_MNEM_TCPSTATE_LASTACK  = 8,  
+	FW_FLOWC_MNEM_TCPSTATE_FINWAIT2 = 9,  
+	FW_FLOWC_MNEM_TCPSTATE_TIMEWAIT = 10,  
 };
 
 enum fw_flowc_mnem_eostate {
-	FW_FLOWC_MNEM_EOSTATE_ESTABLISHED = 1, /* default */
-	/* graceful close, after sending outstanding payload */
+	FW_FLOWC_MNEM_EOSTATE_ESTABLISHED = 1,  
+	 
 	FW_FLOWC_MNEM_EOSTATE_CLOSING = 2,
 };
 
 enum fw_flowc_mnem {
-	FW_FLOWC_MNEM_PFNVFN,		/* PFN [15:8] VFN [7:0] */
+	FW_FLOWC_MNEM_PFNVFN,		 
 	FW_FLOWC_MNEM_CH,
 	FW_FLOWC_MNEM_PORT,
 	FW_FLOWC_MNEM_IQID,
@@ -804,13 +760,7 @@ struct fw_eth_tx_pkt_vm_wr {
 
 #define FW_CMD_MAX_TIMEOUT 10000
 
-/*
- * If a host driver does a HELLO and discovers that there's already a MASTER
- * selected, we may have to wait for that MASTER to finish issuing RESET,
- * configuration and INITIALIZE commands.  Also, there's a possibility that
- * our own HELLO may get lost if it happens right as the MASTER is issuign a
- * RESET command, so we need to be willing to make a few retries of our HELLO.
- */
+ 
 #define FW_CMD_HELLO_TIMEOUT	(3 * FW_CMD_MAX_TIMEOUT)
 #define FW_CMD_HELLO_RETRIES	3
 
@@ -863,9 +813,7 @@ enum fw_cmd_cap {
 	FW_CMD_CAP_VF                  = 0x80,
 };
 
-/*
- * Generic command header flit0
- */
+ 
 struct fw_cmd_hdr {
 	__be32 hi;
 	__be32 lo;
@@ -1258,21 +1206,17 @@ struct fw_caps_config_cmd {
 #define FW_CAPS_CONFIG_CMD_MEMADDR64K_CF_V(x)	\
 	((x) << FW_CAPS_CONFIG_CMD_MEMADDR64K_CF_S)
 
-/*
- * params command mnemonics
- */
+ 
 enum fw_params_mnem {
-	FW_PARAMS_MNEM_DEV		= 1,	/* device params */
-	FW_PARAMS_MNEM_PFVF		= 2,	/* function params */
-	FW_PARAMS_MNEM_REG		= 3,	/* limited register access */
-	FW_PARAMS_MNEM_DMAQ		= 4,	/* dma queue params */
-	FW_PARAMS_MNEM_CHNET            = 5,    /* chnet params */
+	FW_PARAMS_MNEM_DEV		= 1,	 
+	FW_PARAMS_MNEM_PFVF		= 2,	 
+	FW_PARAMS_MNEM_REG		= 3,	 
+	FW_PARAMS_MNEM_DMAQ		= 4,	 
+	FW_PARAMS_MNEM_CHNET            = 5,     
 	FW_PARAMS_MNEM_LAST
 };
 
-/*
- * device parameters
- */
+ 
 
 #define FW_PARAMS_PARAM_FILTER_MODE_S 16
 #define FW_PARAMS_PARAM_FILTER_MODE_M 0xffff
@@ -1291,12 +1235,9 @@ enum fw_params_mnem {
 	FW_PARAMS_PARAM_FILTER_MASK_M)
 
 enum fw_params_param_dev {
-	FW_PARAMS_PARAM_DEV_CCLK	= 0x00, /* chip core clock in khz */
-	FW_PARAMS_PARAM_DEV_PORTVEC	= 0x01, /* the port vector */
-	FW_PARAMS_PARAM_DEV_NTID	= 0x02, /* reads the number of TIDs
-						 * allocated by the device's
-						 * Lookup Engine
-						 */
+	FW_PARAMS_PARAM_DEV_CCLK	= 0x00,  
+	FW_PARAMS_PARAM_DEV_PORTVEC	= 0x01,  
+	FW_PARAMS_PARAM_DEV_NTID	= 0x02,  
 	FW_PARAMS_PARAM_DEV_FLOWC_BUFFIFO_SZ = 0x03,
 	FW_PARAMS_PARAM_DEV_INTVER_NIC	= 0x04,
 	FW_PARAMS_PARAM_DEV_INTVER_VNIC = 0x05,
@@ -1310,8 +1251,8 @@ enum fw_params_param_dev {
 	FW_PARAMS_PARAM_DEV_CF = 0x0D,
 	FW_PARAMS_PARAM_DEV_PHYFW = 0x0F,
 	FW_PARAMS_PARAM_DEV_DIAG = 0x11,
-	FW_PARAMS_PARAM_DEV_MAXORDIRD_QP = 0x13, /* max supported QP IRD/ORD */
-	FW_PARAMS_PARAM_DEV_MAXIRD_ADAPTER = 0x14, /* max supported adap IRD */
+	FW_PARAMS_PARAM_DEV_MAXORDIRD_QP = 0x13,  
+	FW_PARAMS_PARAM_DEV_MAXIRD_ADAPTER = 0x14,  
 	FW_PARAMS_PARAM_DEV_ULPTX_MEMWRITE_DSGL = 0x17,
 	FW_PARAMS_PARAM_DEV_FWCACHE = 0x18,
 	FW_PARAMS_PARAM_DEV_SCFGREV = 0x1A,
@@ -1334,9 +1275,7 @@ enum fw_params_param_dev {
 	FW_PARAMS_PARAM_DEV_KTLS_HW = 0x31,
 };
 
-/*
- * physical and virtual function parameters
- */
+ 
 enum fw_params_param_pfvf {
 	FW_PARAMS_PARAM_PFVF_RWXCAPS	= 0x00,
 	FW_PARAMS_PARAM_PFVF_ROUTE_START = 0x01,
@@ -1393,16 +1332,14 @@ enum fw_params_param_pfvf {
 	FW_PARAMS_PARAM_PFVF_LINK_STATE = 0x40,
 };
 
-/* Virtual link state as seen by the specified VF */
+ 
 enum vf_link_states {
 	FW_VF_LINK_STATE_AUTO		= 0x00,
 	FW_VF_LINK_STATE_ENABLE		= 0x01,
 	FW_VF_LINK_STATE_DISABLE	= 0x02,
 };
 
-/*
- * dma queue parameters
- */
+ 
 enum fw_params_param_dmaq {
 	FW_PARAMS_PARAM_DMAQ_IQ_DCAEN_DCACPU = 0x00,
 	FW_PARAMS_PARAM_DMAQ_IQ_INTCNTTHRESH = 0x01,
@@ -2178,10 +2115,7 @@ struct fw_eq_ofld_cmd {
 #define FW_EQ_OFLD_CMD_EQSIZE_S		0
 #define FW_EQ_OFLD_CMD_EQSIZE_V(x)	((x) << FW_EQ_OFLD_CMD_EQSIZE_S)
 
-/*
- * Macros for VIID parsing:
- * VIID - [10:8] PFN, [7] VI Valid, [6:0] VI number
- */
+ 
 
 #define FW_VIID_PFN_S           8
 #define FW_VIID_PFN_M           0x7
@@ -2256,7 +2190,7 @@ struct fw_vi_cmd {
 #define FW_VI_CMD_RSSSIZE_G(x)	\
 	(((x) >> FW_VI_CMD_RSSSIZE_S) & FW_VI_CMD_RSSSIZE_M)
 
-/* Special VI_MAC command index ids */
+ 
 #define FW_VI_MAC_ADD_MAC		0x3FF
 #define FW_VI_MAC_ADD_PERSIST_MAC	0x3FE
 #define FW_VI_MAC_MAC_BASED_FREE	0x3FD
@@ -2447,7 +2381,7 @@ struct fw_vi_enable_cmd {
 #define FW_VI_ENABLE_CMD_DCB_INFO_S	28
 #define FW_VI_ENABLE_CMD_DCB_INFO_V(x)	((x) << FW_VI_ENABLE_CMD_DCB_INFO_S)
 
-/* VI VF stats offset definitions */
+ 
 #define VI_VF_NUM_STATS	16
 enum fw_vi_stats_vf_index {
 	FW_VI_VF_STAT_TX_BCAST_BYTES_IX,
@@ -2468,7 +2402,7 @@ enum fw_vi_stats_vf_index {
 	FW_VI_VF_STAT_RX_ERR_FRAMES_IX
 };
 
-/* VI PF stats offset definitions */
+ 
 #define VI_PF_NUM_STATS	17
 enum fw_vi_stats_pf_index {
 	FW_VI_PF_STAT_TX_BCAST_BYTES_IX,
@@ -2611,7 +2545,7 @@ struct fw_acl_vlan_cmd {
 	(((x) >> FW_ACL_VLAN_CMD_FM_S) & FW_ACL_VLAN_CMD_FM_M)
 #define FW_ACL_VLAN_CMD_FM_F            FW_ACL_VLAN_CMD_FM_V(1U)
 
-/* old 16-bit port capabilities bitmap (fw_port_cap16_t) */
+ 
 enum fw_port_cap {
 	FW_PORT_CAP_SPEED_100M		= 0x0001,
 	FW_PORT_CAP_SPEED_1G		= 0x0002,
@@ -2647,7 +2581,7 @@ enum fw_port_mdi {
 #define FW_PORT_CAP_MDI_S 9
 #define FW_PORT_CAP_MDI_V(x) ((x) << FW_PORT_CAP_MDI_S)
 
-/* new 32-bit port capabilities bitmap (fw_port_cap32_t) */
+ 
 #define	FW_PORT_CAP32_SPEED_100M	0x00000001UL
 #define	FW_PORT_CAP32_SPEED_1G		0x00000002UL
 #define	FW_PORT_CAP32_SPEED_10G		0x00000004UL
@@ -2719,7 +2653,7 @@ enum fw_port_mdi32 {
 #define FW_PORT_CAP32_FEC_G(x) \
 	(((x) >> FW_PORT_CAP32_FEC_S) & FW_PORT_CAP32_FEC_M)
 
-/* macros to isolate various 32-bit Port Capabilities sub-fields */
+ 
 #define CAP32_SPEED(__cap32) \
 	(FW_PORT_CAP32_SPEED_V(FW_PORT_CAP32_SPEED_M) & __cap32)
 
@@ -3135,10 +3069,7 @@ enum fw_port_mod_sub_type {
 	FW_PORT_MOD_SUB_TYPE_BCM84834 = 0x5,
 	FW_PORT_MOD_SUB_TYPE_BT_VSC8634 = 0x8,
 
-	/* The following will never been in the VPD.  They are TWINAX cable
-	 * lengths decoded from SFP+ module i2c PROMs.  These should
-	 * almost certainly go somewhere else ...
-	 */
+	 
 	FW_PORT_MOD_SUB_TYPE_TWINAX_1 = 0x9,
 	FW_PORT_MOD_SUB_TYPE_TWINAX_3 = 0xA,
 	FW_PORT_MOD_SUB_TYPE_TWINAX_5 = 0xB,
@@ -3204,7 +3135,7 @@ enum fw_port_stat_rx_index {
 	FW_NUM_PORT_RX_STATS
 };
 
-/* port stats */
+ 
 #define FW_NUM_PORT_STATS (FW_NUM_PORT_TX_STATS + FW_NUM_PORT_RX_STATS)
 
 struct fw_port_stats_cmd {
@@ -3280,7 +3211,7 @@ struct fw_port_stats_cmd {
 	} u;
 };
 
-/* port loopback stats */
+ 
 #define FW_NUM_LB_STATS 16
 enum fw_port_lb_stats_index {
 	FW_STAT_LB_PORT_BYTES_IX,
@@ -3336,13 +3267,13 @@ struct fw_port_lb_stats_cmd {
 };
 
 enum fw_ptp_subop {
-	/* none */
+	 
 	FW_PTP_SC_INIT_TIMER            = 0x00,
 	FW_PTP_SC_TX_TYPE               = 0x01,
-	/* init */
+	 
 	FW_PTP_SC_RXTIME_STAMP          = 0x08,
 	FW_PTP_SC_RDRX_TYPE             = 0x09,
-	/* ts */
+	 
 	FW_PTP_SC_ADJ_FREQ              = 0x10,
 	FW_PTP_SC_ADJ_TIME              = 0x11,
 	FW_PTP_SC_ADJ_FTIME             = 0x12,
@@ -3754,9 +3685,9 @@ enum pcie_fw_eval {
 
 struct fw_hdr {
 	u8 ver;
-	u8 chip;			/* terminator chip type */
-	__be16	len512;			/* bin length in units of 512-bytes */
-	__be32	fw_ver;			/* firmware version */
+	u8 chip;			 
+	__be16	len512;			 
+	__be32	fw_ver;			 
 	__be32	tp_microcode_ver;
 	u8 intfver_nic;
 	u8 intfver_vnic;
@@ -3822,13 +3753,13 @@ enum fw_hdr_flags {
 	FW_HDR_FLAGS_RESET_HALT = 0x00000001,
 };
 
-/* length of the formatting string  */
+ 
 #define FW_DEVLOG_FMT_LEN	192
 
-/* maximum number of the formatting string parameters */
+ 
 #define FW_DEVLOG_FMT_PARAMS_NUM 8
 
-/* priority levels */
+ 
 enum fw_devlog_level {
 	FW_DEVLOG_LEVEL_EMERG	= 0x0,
 	FW_DEVLOG_LEVEL_CRIT	= 0x1,
@@ -3839,7 +3770,7 @@ enum fw_devlog_level {
 	FW_DEVLOG_LEVEL_MAX	= 0x5,
 };
 
-/* facilities that may send a log message */
+ 
 enum fw_devlog_facility {
 	FW_DEVLOG_FACILITY_CORE		= 0x00,
 	FW_DEVLOG_FACILITY_CF		= 0x01,
@@ -3869,7 +3800,7 @@ enum fw_devlog_facility {
 	FW_DEVLOG_FACILITY_MAX          = 0x34,
 };
 
-/* log message format */
+ 
 struct fw_devlog_e {
 	__be64	timestamp;
 	__be32	seqno;
@@ -3903,16 +3834,9 @@ struct fw_devlog_cmd {
 	(((x) >> FW_DEVLOG_CMD_MEMADDR16_DEVLOG_S) & \
 	 FW_DEVLOG_CMD_MEMADDR16_DEVLOG_M)
 
-/* P C I E   F W   P F 7   R E G I S T E R */
+ 
 
-/* PF7 stores the Firmware Device Log parameters which allows Host Drivers to
- * access the "devlog" which needing to contact firmware.  The encoding is
- * mostly the same as that returned by the DEVLOG command except for the size
- * which is encoded as the number of entries in multiples-1 of 128 here rather
- * than the memory size as is done in the DEVLOG command.  Thus, 0 means 128
- * and 15 means 2048.  This of course in turn constrains the allowed values
- * for the devlog size ...
- */
+ 
 #define PCIE_FW_PF_DEVLOG		7
 
 #define PCIE_FW_PF_DEVLOG_NENTRIES128_S	28
@@ -4184,4 +4108,4 @@ struct fw_tlstx_data_wr {
 #define FW_TLSTX_DATA_WR_PDUSINPLENMAX_V(x) \
 	((x) << FW_TLSTX_DATA_WR_PDUSINPLENMAX_S)
 
-#endif /* _T4FW_INTERFACE_H_ */
+#endif  

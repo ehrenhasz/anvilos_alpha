@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2022 Collabora Ltd.
- * Author: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
- */
+
+ 
 
 #include <dt-bindings/clock/mt8173-clk.h>
 #include <linux/module.h>
@@ -47,7 +44,7 @@ static const struct mtk_composite peri_clks[] = {
 
 static const struct mtk_gate peri_gates[] = {
 	GATE_DUMMY(CLK_DUMMY, "peri_gate_dummy"),
-	/* PERI0 */
+	 
 	GATE_PERI0(CLK_PERI_NFI, "peri_nfi", "axi_sel", 0),
 	GATE_PERI0(CLK_PERI_THERM, "peri_therm", "axi_sel", 1),
 	GATE_PERI0(CLK_PERI_PWM1, "peri_pwm1", "axi_sel", 2),
@@ -80,7 +77,7 @@ static const struct mtk_gate peri_gates[] = {
 	GATE_PERI0(CLK_PERI_SPI0, "peri_spi0", "spi_sel", 29),
 	GATE_PERI0(CLK_PERI_I2C5, "peri_i2c5", "axi_sel", 30),
 	GATE_PERI0(CLK_PERI_NFIECC, "peri_nfiecc", "axi_sel", 31),
-	/* PERI1 */
+	 
 	GATE_PERI1(CLK_PERI_SPI, "peri_spi", "spi_sel", 0),
 	GATE_PERI1(CLK_PERI_IRRX, "peri_irrx", "spi_sel", 1),
 	GATE_PERI1(CLK_PERI_I2C6, "peri_i2c6", "axi_sel", 2),
@@ -105,7 +102,7 @@ static const struct mtk_clk_desc peri_desc = {
 
 static const struct of_device_id of_match_clk_mt8173_pericfg[] = {
 	{ .compatible = "mediatek,mt8173-pericfg", .data = &peri_desc },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, of_match_clk_mt8173_pericfg);
 

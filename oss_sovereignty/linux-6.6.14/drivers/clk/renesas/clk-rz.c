@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * RZ/A1 Core CPG Clocks
- *
- * Copyright (C) 2013 Ideas On Board SPRL
- * Copyright (C) 2014 Wolfram Sang, Sang Engineering <wsa@sang-engineering.com>
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/clk/renesas.h>
@@ -21,11 +16,9 @@
 #define PPR0		0xFCFE3200
 #define PIBC0		0xFCFE7000
 
-#define MD_CLK(x)	((x >> 2) & 1)	/* P0_2 */
+#define MD_CLK(x)	((x >> 2) & 1)	 
 
-/* -----------------------------------------------------------------------------
- * Initialization
- */
+ 
 
 static u16 __init rz_cpg_read_mode_pins(void)
 {
@@ -35,7 +28,7 @@ static u16 __init rz_cpg_read_mode_pins(void)
 	ppr0 = ioremap(PPR0, 2);
 	pibc0 = ioremap(PIBC0, 2);
 	BUG_ON(!ppr0 || !pibc0);
-	iowrite16(4, pibc0);	/* enable input buffer */
+	iowrite16(4, pibc0);	 
 	modes = ioread16(ppr0);
 	iounmap(ppr0);
 	iounmap(pibc0);
@@ -60,14 +53,11 @@ rz_cpg_register_clock(struct device_node *np, void __iomem *base,
 		return clk_register_fixed_factor(NULL, name, parent_name, 0, mult, 1);
 	}
 
-	/* If mapping regs failed, skip non-pll clocks. System will boot anyhow */
+	 
 	if (!base)
 		return ERR_PTR(-ENXIO);
 
-	/* FIXME:"i" and "g" are variable clocks with non-integer dividers (e.g. 2/3)
-	 * and the constraint that always g <= i. To get the rz platform started,
-	 * let them run at fixed current speed and implement the details later.
-	 */
+	 
 	if (strcmp(name, "i") == 0)
 		val = (readl(base + CPG_FRQCR) >> 8) & 3;
 	else if (strcmp(name, "g") == 0)

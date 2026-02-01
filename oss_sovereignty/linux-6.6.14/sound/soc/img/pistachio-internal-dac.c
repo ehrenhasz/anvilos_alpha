@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Pistachio internal dac driver
- *
- * Copyright (C) 2015 Imagination Technologies Ltd.
- *
- * Author: Damien Horsley <Damien.Horsley@imgtec.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -38,7 +32,7 @@
 #define PISTACHIO_INTERNAL_DAC_FORMATS (SNDRV_PCM_FMTBIT_S24_LE |  \
 					SNDRV_PCM_FMTBIT_S32_LE)
 
-/* codec private data */
+ 
 struct pistachio_internal_dac {
 	struct regmap *regmap;
 	struct regulator *supply;

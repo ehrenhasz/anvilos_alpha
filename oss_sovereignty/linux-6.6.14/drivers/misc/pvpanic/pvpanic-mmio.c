@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- *  Pvpanic MMIO Device Support
- *
- *  Copyright (C) 2013 Fujitsu.
- *  Copyright (C) 2018 ZTE.
- *  Copyright (C) 2021 Oracle.
- */
+
+ 
 
 #include <linux/io.h>
 #include <linux/kernel.h>
@@ -99,7 +93,7 @@ static int pvpanic_mmio_probe(struct platform_device *pdev)
 	pi->base = base;
 	pi->capability = PVPANIC_PANICKED | PVPANIC_CRASH_LOADED;
 
-	/* initialize capability by RDPT */
+	 
 	pi->capability &= ioread8(base);
 	pi->events = pi->capability;
 

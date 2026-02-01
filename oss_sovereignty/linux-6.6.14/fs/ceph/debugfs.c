@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/ceph/ceph_debug.h>
 
 #include <linux/device.h>
@@ -46,9 +46,7 @@ static int mdsmap_show(struct seq_file *s, void *p)
 	return 0;
 }
 
-/*
- * mdsc debugfs
- */
+ 
 static int mdsc_show(struct seq_file *s, void *p)
 {
 	struct ceph_fs_client *fsc = s->private;
@@ -209,7 +207,7 @@ static int metrics_size_show(struct seq_file *s, void *p)
 	seq_printf(s, "----------------------------------------------------------------------------------------\n");
 
 	for (i = 0; i < METRIC_MAX; i++) {
-		/* skip 'metadata' as it doesn't use the size metric */
+		 
 		if (i == METRIC_METADATA)
 			continue;
 		m = &cm->metric[i];
@@ -323,13 +321,13 @@ static int mds_sessions_show(struct seq_file *s, void *ptr)
 
 	mutex_lock(&mdsc->mutex);
 
-	/* The 'num' portion of an 'entity name' */
+	 
 	seq_printf(s, "global_id %llu\n", ac->global_id);
 
-	/* The -o name mount argument */
+	 
 	seq_printf(s, "name \"%s\"\n", opt->name ? opt->name : "");
 
-	/* The list of MDS session rank+state */
+	 
 	for (mds = 0; mds < mdsc->max_sessions; mds++) {
 		struct ceph_mds_session *session =
 			__ceph_lookup_mds_session(mdsc, mds);
@@ -373,9 +371,7 @@ DEFINE_SHOW_ATTRIBUTE(metrics_size);
 DEFINE_SHOW_ATTRIBUTE(metrics_caps);
 
 
-/*
- * debugfs
- */
+ 
 static int congestion_kb_set(void *data, u64 val)
 {
 	struct ceph_fs_client *fsc = (struct ceph_fs_client *)data;
@@ -472,7 +468,7 @@ void ceph_fs_debugfs_init(struct ceph_fs_client *fsc)
 }
 
 
-#else  /* CONFIG_DEBUG_FS */
+#else   
 
 void ceph_fs_debugfs_init(struct ceph_fs_client *fsc)
 {
@@ -482,4 +478,4 @@ void ceph_fs_debugfs_cleanup(struct ceph_fs_client *fsc)
 {
 }
 
-#endif  /* CONFIG_DEBUG_FS */
+#endif   

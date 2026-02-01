@@ -1,21 +1,7 @@
-/*	$OpenBSD: test_helper.c,v 1.13 2021/12/14 21:25:27 deraadt Exp $	*/
-/*
- * Copyright (c) 2011 Damien Miller <djm@mindrot.org>
- *
- * Permission to use, copy, modify, and distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
+ 
+ 
 
-/* Utility functions/framework for regress tests */
+ 
 
 #include "includes.h"
 
@@ -134,7 +120,7 @@ main(int argc, char **argv)
 	ERR_load_crypto_strings();
 #endif
 
-	/* Handle systems without __progname */
+	 
 	if (__progname == NULL) {
 		__progname = strrchr(argv[0], '/');
 		if (__progname == NULL || __progname[1] == '\0')
@@ -301,10 +287,10 @@ ssl_err_check(const char *file, int line)
 
 	fprintf(stderr, "\n%s:%d: uncaught OpenSSL error: %s",
 	    file, line, ERR_error_string(openssl_error, NULL));
-#else /* WITH_OPENSSL */
+#else  
 	fprintf(stderr, "\n%s:%d: uncaught OpenSSL error ",
 	    file, line);
-#endif /* WITH_OPENSSL */
+#endif  
 	abort();
 }
 
@@ -370,7 +356,7 @@ assert_string(const char *file, int line, const char *a1, const char *a2,
 {
 	int r;
 
-	/* Verify pointers are not NULL */
+	 
 	assert_ptr(file, line, a1, "NULL", aa1, NULL, TEST_NE);
 	assert_ptr(file, line, a2, "NULL", aa2, NULL, TEST_NE);
 
@@ -409,7 +395,7 @@ assert_mem(const char *file, int line, const char *a1, const char *a2,
 
 	if (l == 0)
 		return;
-	/* If length is >0, then verify pointers are not NULL */
+	 
 	assert_ptr(file, line, a1, "NULL", aa1, NULL, TEST_NE);
 	assert_ptr(file, line, a2, "NULL", aa2, NULL, TEST_NE);
 
@@ -450,7 +436,7 @@ assert_mem_filled(const char *file, int line, const char *a1,
 
 	if (l == 0)
 		return;
-	/* If length is >0, then verify the pointer is not NULL */
+	 
 	assert_ptr(file, line, a1, "NULL", aa1, NULL, TEST_NE);
 
 	r = memvalcmp(aa1, v, l, &where);

@@ -1,6 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Copyright (c) 2019 MediaTek Inc.
+
+
+
 
 #include <linux/mfd/mt6358/registers.h>
 #include <linux/mfd/mt6397/core.h>
@@ -16,12 +16,7 @@
 #define MT6358_BUCK_MODE_AUTO	0
 #define MT6358_BUCK_MODE_FORCE_PWM	1
 
-/*
- * MT6358 regulators' information
- *
- * @desc: standard fields of regulator description.
- * @qi: Mask for query enable signal status of regulators
- */
+ 
 struct mt6358_regulator_info {
 	struct regulator_desc desc;
 	u32 status_reg;
@@ -496,7 +491,7 @@ static const struct regulator_ops mt6358_volt_fixed_ops = {
 	.get_status = mt6358_get_status,
 };
 
-/* The array is indexed by id(MT6358_ID_XXX) */
+ 
 static const struct mt6358_regulator_info mt6358_regulators[] = {
 	MT6358_BUCK("buck_vdram1", VDRAM1, 500000, 2087500, 12500,
 		    0x7f, MT6358_BUCK_VDRAM1_DBG0, 0x7f, MT6358_VDRAM1_ANA_CON0, 8),
@@ -574,7 +569,7 @@ static const struct mt6358_regulator_info mt6358_regulators[] = {
 		    MT6358_LDO_VSRAM_PROC12_DBG0, 0x7f00, MT6358_LDO_VSRAM_CON1, 0x7f),
 };
 
-/* The array is indexed by id(MT6366_ID_XXX) */
+ 
 static const struct mt6358_regulator_info mt6366_regulators[] = {
 	MT6366_BUCK("buck_vdram1", VDRAM1, 500000, 2087500, 12500,
 		    0x7f, MT6358_BUCK_VDRAM1_DBG0, 0x7f, MT6358_VDRAM1_ANA_CON0, 8),
@@ -647,13 +642,7 @@ static int mt6358_sync_vcn33_setting(struct device *dev)
 	unsigned int val;
 	int ret;
 
-	/*
-	 * VCN33_WIFI and VCN33_BT are two separate enable bits for the same
-	 * regulator. They share the same voltage setting and output pin.
-	 * Instead of having two potentially conflicting regulators, just have
-	 * one VCN33 regulator. Sync the two enable bits and only use one in
-	 * the regulator device.
-	 */
+	 
 	ret = regmap_read(mt6397->regmap, MT6358_LDO_VCN33_CON0_1, &val);
 	if (ret) {
 		dev_err(dev, "Failed to read VCN33_WIFI setting\n");
@@ -663,14 +652,14 @@ static int mt6358_sync_vcn33_setting(struct device *dev)
 	if (!(val & BIT(0)))
 		return 0;
 
-	/* Sync VCN33_WIFI enable status to VCN33_BT */
+	 
 	ret = regmap_update_bits(mt6397->regmap, MT6358_LDO_VCN33_CON0_0, BIT(0), BIT(0));
 	if (ret) {
 		dev_err(dev, "Failed to sync VCN33_WIFI setting to VCN33_BT\n");
 		return ret;
 	}
 
-	/* Disable VCN33_WIFI */
+	 
 	ret = regmap_update_bits(mt6397->regmap, MT6358_LDO_VCN33_CON0_1, BIT(0), 0);
 	if (ret) {
 		dev_err(dev, "Failed to disable VCN33_WIFI\n");
@@ -725,7 +714,7 @@ static int mt6358_regulator_probe(struct platform_device *pdev)
 
 static const struct platform_device_id mt6358_platform_ids[] = {
 	{"mt6358-regulator", 0},
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(platform, mt6358_platform_ids);
 

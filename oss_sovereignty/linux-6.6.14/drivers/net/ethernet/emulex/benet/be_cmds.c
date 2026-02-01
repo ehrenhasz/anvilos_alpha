@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2005 - 2016 Broadcom
- * All rights reserved.
- *
- * Contact Information:
- * linux-drivers@emulex.com
- *
- * Emulex
- * 3333 Susan Street
- * Costa Mesa, CA 92626
- */
+
+ 
 
 #include <linux/module.h>
 #include "be.h"
@@ -133,10 +123,7 @@ static int be_mcc_notify(struct be_adapter *adapter)
 	return 0;
 }
 
-/* To check if valid bit is set, check the entire word as we don't know
- * the endianness of the data (old entry is host endian while a new entry is
- * little endian)
- */
+ 
 static inline bool be_mcc_compl_is_new(struct be_mcc_compl *compl)
 {
 	u32 flags;
@@ -151,7 +138,7 @@ static inline bool be_mcc_compl_is_new(struct be_mcc_compl *compl)
 	return false;
 }
 
-/* Need to reset the entire word that houses the valid bit */
+ 
 static inline void be_mcc_compl_use(struct be_mcc_compl *compl)
 {
 	compl->flags = 0;
@@ -180,9 +167,7 @@ static bool be_skip_err_log(u8 opcode, u16 base_status, u16 addl_status)
 		return false;
 }
 
-/* Place holder for all the async MCC cmds wherein the caller is not in a busy
- * loop (has not issued be_mcc_notify_wait())
- */
+ 
 static void be_async_cmd_process(struct be_adapter *adapter,
 				 struct be_mcc_compl *compl,
 				 struct be_cmd_resp_hdr *resp_hdr)
@@ -248,9 +233,7 @@ static int be_mcc_compl_process(struct be_adapter *adapter,
 	struct be_cmd_resp_hdr *resp_hdr;
 	u8 opcode = 0, subsystem = 0;
 
-	/* Just swap the status to host endian; mcc tag is opaquely copied
-	 * from mcc_wrb
-	 */
+	 
 	be_dws_le_to_cpu(compl, 4);
 
 	base_status = base_status(compl->status);
@@ -280,28 +263,22 @@ static int be_mcc_compl_process(struct be_adapter *adapter,
 	return compl->status;
 }
 
-/* Link state evt is a string of bytes; no need for endian swapping */
+ 
 static void be_async_link_state_process(struct be_adapter *adapter,
 					struct be_mcc_compl *compl)
 {
 	struct be_async_event_link_state *evt =
 			(struct be_async_event_link_state *)compl;
 
-	/* When link status changes, link speed must be re-queried from FW */
+	 
 	adapter->phy.link_speed = -1;
 
-	/* On BEx the FW does not send a separate link status
-	 * notification for physical and logical link.
-	 * On other chips just process the logical link
-	 * status notification
-	 */
+	 
 	if (!BEx_chip(adapter) &&
 	    !(evt->port_link_status & LOGICAL_LINK_STATUS_MASK))
 		return;
 
-	/* For the initial link status do not rely on the ASYNC event as
-	 * it may not be received in some cases.
-	 */
+	 
 	if (adapter->flags & BE_FLAGS_LINK_STATUS_INIT)
 		be_link_status_update(adapter,
 				      evt->port_link_status & LINK_STATUS_MASK);
@@ -328,7 +305,7 @@ static void be_async_port_misconfig_event_process(struct be_adapter *adapter,
 
 	adapter->phy_state = new_phy_state;
 
-	/* for older fw that doesn't populate link effect data */
+	 
 	if (!sfp_misconfig_evt_word2)
 		goto log_message;
 
@@ -343,9 +320,7 @@ static void be_async_port_misconfig_event_process(struct be_adapter *adapter,
 	}
 
 log_message:
-	/* Log an error message that would allow a user to determine
-	 * whether the SFPs have an issue
-	 */
+	 
 	if (be_phy_state_unknown(new_phy_state))
 		dev_printk(be_port_misconfig_evt_severity[msg_severity], dev,
 			   "Port %c: Unrecognized Optics state: 0x%x. %s",
@@ -359,12 +334,12 @@ log_message:
 			   be_misconfig_evt_port_state[new_phy_state],
 			   phy_state_oper_desc[phy_oper_state]);
 
-	/* Log Vendor name and part no. if a misconfigured SFP is detected */
+	 
 	if (be_phy_misconfigured(new_phy_state))
 		adapter->flags |= BE_FLAGS_PHY_MISCONFIGURED;
 }
 
-/* Grp5 CoS Priority evt */
+ 
 static void be_async_grp5_cos_priority_process(struct be_adapter *adapter,
 					       struct be_mcc_compl *compl)
 {
@@ -378,7 +353,7 @@ static void be_async_grp5_cos_priority_process(struct be_adapter *adapter,
 	}
 }
 
-/* Grp5 QOS Speed evt: qos_link_speed is in units of 10 Mbps */
+ 
 static void be_async_grp5_qos_speed_process(struct be_adapter *adapter,
 					    struct be_mcc_compl *compl)
 {
@@ -390,7 +365,7 @@ static void be_async_grp5_qos_speed_process(struct be_adapter *adapter,
 		adapter->phy.link_speed = le16_to_cpu(evt->qos_link_speed) * 10;
 }
 
-/*Grp5 PVID evt*/
+ 
 static void be_async_grp5_pvid_state_process(struct be_adapter *adapter,
 					     struct be_mcc_compl *compl)
 {
@@ -436,7 +411,7 @@ static void be_async_grp5_evt_process(struct be_adapter *adapter,
 	case ASYNC_EVENT_PVID_STATE:
 		be_async_grp5_pvid_state_process(adapter, compl);
 		break;
-	/* Async event to disable/enable os2bmc and/or mac-learning */
+	 
 	case ASYNC_EVENT_FW_CONTROL:
 		be_async_grp5_fw_control_process(adapter, compl);
 		break;
@@ -572,10 +547,10 @@ int be_process_mcc(struct be_adapter *adapter)
 	return status;
 }
 
-/* Wait till no more pending mcc requests are present */
+ 
 static int be_mcc_wait_compl(struct be_adapter *adapter)
 {
-#define mcc_timeout		12000 /* 12s timeout */
+#define mcc_timeout		12000  
 	int i, status = 0;
 	struct be_mcc_obj *mcc_obj = &adapter->mcc_obj;
 
@@ -599,7 +574,7 @@ static int be_mcc_wait_compl(struct be_adapter *adapter)
 	return status;
 }
 
-/* Notify MCC requests and wait for completion */
+ 
 static int be_mcc_notify_wait(struct be_adapter *adapter)
 {
 	int status;
@@ -659,9 +634,7 @@ static int be_mbox_db_ready_wait(struct be_adapter *adapter, void __iomem *db)
 	return 0;
 }
 
-/* Insert the mailbox address into the doorbell in two steps
- * Polls on the mbox doorbell till a command completion (or a timeout) occurs
- */
+ 
 static int be_mbox_notify_wait(struct be_adapter *adapter)
 {
 	int status;
@@ -671,23 +644,23 @@ static int be_mbox_notify_wait(struct be_adapter *adapter)
 	struct be_mcc_mailbox *mbox = mbox_mem->va;
 	struct be_mcc_compl *compl = &mbox->compl;
 
-	/* wait for ready to be set */
+	 
 	status = be_mbox_db_ready_wait(adapter, db);
 	if (status != 0)
 		return status;
 
 	val |= MPU_MAILBOX_DB_HI_MASK;
-	/* at bits 2 - 31 place mbox dma addr msb bits 34 - 63 */
+	 
 	val |= (upper_32_bits(mbox_mem->dma) >> 2) << 2;
 	iowrite32(val, db);
 
-	/* wait for ready to be set */
+	 
 	status = be_mbox_db_ready_wait(adapter, db);
 	if (status != 0)
 		return status;
 
 	val = 0;
-	/* at bits 2 - 31 place mbox dma addr lsb bits 4 - 33 */
+	 
 	val |= (u32)(mbox_mem->dma >> 4) << 2;
 	iowrite32(val, db);
 
@@ -695,7 +668,7 @@ static int be_mbox_notify_wait(struct be_adapter *adapter)
 	if (status != 0)
 		return status;
 
-	/* A cq entry has been made now */
+	 
 	if (be_mcc_compl_is_new(compl)) {
 		status = be_mcc_compl_process(adapter, &mbox->compl);
 		be_mcc_compl_use(compl);
@@ -758,7 +731,7 @@ int be_fw_wait_ready(struct be_adapter *adapter)
 	}
 
 	do {
-		/* There's no means to poll POST state on BE2/3 VFs */
+		 
 		if (BEx_chip(adapter) && be_virtfn(adapter))
 			return 0;
 
@@ -790,8 +763,8 @@ static inline void fill_wrb_tags(struct be_mcc_wrb *wrb, unsigned long addr)
 	wrb->tag1 = upper_32_bits(addr);
 }
 
-/* Don't touch the hdr after it's prepared */
-/* mem will be NULL for embedded commands */
+ 
+ 
 static void be_wrb_cmd_hdr_prepare(struct be_cmd_req_hdr *req_hdr,
 				   u8 subsystem, u8 opcode, int cmd_len,
 				   struct be_mcc_wrb *wrb,
@@ -862,7 +835,7 @@ static bool use_mcc(struct be_adapter *adapter)
 	return adapter->mcc_obj.q.created;
 }
 
-/* Must be used only in process context */
+ 
 static int be_cmd_lock(struct be_adapter *adapter)
 {
 	if (use_mcc(adapter)) {
@@ -873,7 +846,7 @@ static int be_cmd_lock(struct be_adapter *adapter)
 	}
 }
 
-/* Must be used only in process context */
+ 
 static void be_cmd_unlock(struct be_adapter *adapter)
 {
 	if (use_mcc(adapter))
@@ -902,7 +875,7 @@ static struct be_mcc_wrb *be_cmd_copy(struct be_adapter *adapter,
 	return dest_wrb;
 }
 
-/* Must be used only in process context */
+ 
 static int be_cmd_notify_wait(struct be_adapter *adapter,
 			      struct be_mcc_wrb *wrb)
 {
@@ -932,9 +905,7 @@ unlock:
 	return status;
 }
 
-/* Tell fw we're about to start firing cmds by writing a
- * special pattern across the wrb hdr; uses mbox
- */
+ 
 int be_cmd_fw_init(struct be_adapter *adapter)
 {
 	u8 *wrb;
@@ -962,9 +933,7 @@ int be_cmd_fw_init(struct be_adapter *adapter)
 	return status;
 }
 
-/* Tell fw we're done with firing cmds by writing a
- * special pattern across the wrb hdr; uses mbox
- */
+ 
 int be_cmd_fw_clean(struct be_adapter *adapter)
 {
 	u8 *wrb;
@@ -1009,7 +978,7 @@ int be_cmd_eq_create(struct be_adapter *adapter, struct be_eq_obj *eqo)
 			       OPCODE_COMMON_EQ_CREATE, sizeof(*req), wrb,
 			       NULL);
 
-	/* Support for EQ_CREATEv2 available only SH-R onwards */
+	 
 	if (!(BEx_chip(adapter) || lancer_chip(adapter)))
 		ver = 2;
 
@@ -1017,7 +986,7 @@ int be_cmd_eq_create(struct be_adapter *adapter, struct be_eq_obj *eqo)
 	req->num_pages =  cpu_to_le16(PAGES_4K_SPANNED(q_mem->va, q_mem->size));
 
 	AMAP_SET_BITS(struct amap_eq_context, valid, req->context, 1);
-	/* 4byte eqe*/
+	 
 	AMAP_SET_BITS(struct amap_eq_context, size, req->context, 0);
 	AMAP_SET_BITS(struct amap_eq_context, count, req->context,
 		      __ilog2_u32(eqo->q.len / 256));
@@ -1039,7 +1008,7 @@ int be_cmd_eq_create(struct be_adapter *adapter, struct be_eq_obj *eqo)
 	return status;
 }
 
-/* Use MCC */
+ 
 int be_cmd_mac_addr_query(struct be_adapter *adapter, u8 *mac_addr,
 			  bool permanent, u32 if_handle, u32 pmac_id)
 {
@@ -1080,7 +1049,7 @@ err:
 	return status;
 }
 
-/* Uses synchronous MCCQ */
+ 
 int be_cmd_pmac_add(struct be_adapter *adapter, const u8 *mac_addr,
 		    u32 if_id, u32 *pmac_id, u32 domain)
 {
@@ -1121,7 +1090,7 @@ err:
 	return status;
 }
 
-/* Uses synchronous MCCQ */
+ 
 int be_cmd_pmac_del(struct be_adapter *adapter, u32 if_id, int pmac_id, u32 dom)
 {
 	struct be_mcc_wrb *wrb;
@@ -1155,7 +1124,7 @@ err:
 	return status;
 }
 
-/* Uses Mbox */
+ 
 int be_cmd_cq_create(struct be_adapter *adapter, struct be_queue_info *cq,
 		     struct be_queue_info *eq, bool no_delay, int coalesce_wm)
 {
@@ -1190,11 +1159,9 @@ int be_cmd_cq_create(struct be_adapter *adapter, struct be_queue_info *cq,
 		AMAP_SET_BITS(struct amap_cq_context_be, eqid, ctxt, eq->id);
 	} else {
 		req->hdr.version = 2;
-		req->page_size = 1; /* 1 for 4K */
+		req->page_size = 1;  
 
-		/* coalesce-wm field in this cmd is not relevant to Lancer.
-		 * Lancer uses COMMON_MODIFY_CQ to set this field
-		 */
+		 
 		if (!lancer_chip(adapter))
 			AMAP_SET_BITS(struct amap_cq_context_v2, coalescwm,
 				      ctxt, coalesce_wm);
@@ -1226,7 +1193,7 @@ int be_cmd_cq_create(struct be_adapter *adapter, struct be_queue_info *cq,
 
 static u32 be_encoded_q_len(int q_len)
 {
-	u32 len_encoded = fls(q_len); /* log2(len) + 1 */
+	u32 len_encoded = fls(q_len);  
 
 	if (len_encoded == 16)
 		len_encoded = 0;
@@ -1273,9 +1240,7 @@ static int be_cmd_mccq_ext_create(struct be_adapter *adapter,
 			      ctxt, 1);
 	}
 
-	/* Subscribe to Link State, Sliport Event and Group 5 Events
-	 * (bits 1, 5 and 17 set)
-	 */
+	 
 	req->async_event_bitmap[0] =
 			cpu_to_le32(BIT(ASYNC_EVENT_CODE_LINK_STATE) |
 				    BIT(ASYNC_EVENT_CODE_GRP_5) |
@@ -1375,7 +1340,7 @@ int be_cmd_txq_create(struct be_adapter *adapter, struct be_tx_obj *txo)
 	} else if (BEx_chip(adapter)) {
 		if (adapter->function_caps & BE_FUNCTION_CAPS_SUPER_NIC)
 			req->hdr.version = 2;
-	} else { /* For SH */
+	} else {  
 		req->hdr.version = 2;
 	}
 
@@ -1404,7 +1369,7 @@ int be_cmd_txq_create(struct be_adapter *adapter, struct be_tx_obj *txo)
 	return status;
 }
 
-/* Uses MCC */
+ 
 int be_cmd_rxq_create(struct be_adapter *adapter,
 		      struct be_queue_info *rxq, u16 cq_id, u16 frag_size,
 		      u32 if_id, u32 rss, u8 *rss_id)
@@ -1448,9 +1413,7 @@ err:
 	return status;
 }
 
-/* Generic destroyer function for all types of queues
- * Uses Mbox
- */
+ 
 int be_cmd_q_destroy(struct be_adapter *adapter, struct be_queue_info *q,
 		     int queue_type)
 {
@@ -1501,7 +1464,7 @@ int be_cmd_q_destroy(struct be_adapter *adapter, struct be_queue_info *q,
 	return status;
 }
 
-/* Uses MCC */
+ 
 int be_cmd_rxq_destroy(struct be_adapter *adapter, struct be_queue_info *q)
 {
 	struct be_mcc_wrb *wrb;
@@ -1529,9 +1492,7 @@ err:
 	return status;
 }
 
-/* Create an rx filtering policy configuration on an i/f
- * Will use MBOX only if MCCQ has not been created.
- */
+ 
 int be_cmd_if_create(struct be_adapter *adapter, u32 cap_flags, u32 en_flags,
 		     u32 *if_handle, u32 domain)
 {
@@ -1554,14 +1515,14 @@ int be_cmd_if_create(struct be_adapter *adapter, u32 cap_flags, u32 en_flags,
 
 		*if_handle = le32_to_cpu(resp->interface_id);
 
-		/* Hack to retrieve VF's pmac-id on BE3 */
+		 
 		if (BE3_chip(adapter) && be_virtfn(adapter))
 			adapter->pmac_id[0] = le32_to_cpu(resp->pmac_id);
 	}
 	return status;
 }
 
-/* Uses MCCQ if available else MBOX */
+ 
 int be_cmd_if_destroy(struct be_adapter *adapter, int interface_id, u32 domain)
 {
 	struct be_mcc_wrb wrb = {0};
@@ -1583,10 +1544,7 @@ int be_cmd_if_destroy(struct be_adapter *adapter, int interface_id, u32 domain)
 	return status;
 }
 
-/* Get stats is a non embedded command: the request is not embedded inside
- * WRB but is a separate dma memory block
- * Uses asynchronous MCC
- */
+ 
 int be_cmd_get_stats(struct be_adapter *adapter, struct be_dma_mem *nonemb_cmd)
 {
 	struct be_mcc_wrb *wrb;
@@ -1606,7 +1564,7 @@ int be_cmd_get_stats(struct be_adapter *adapter, struct be_dma_mem *nonemb_cmd)
 			       OPCODE_ETH_GET_STATISTICS, nonemb_cmd->size, wrb,
 			       nonemb_cmd);
 
-	/* version 1 of the cmd is not supported only by BE2 */
+	 
 	if (BE2_chip(adapter))
 		hdr->version = 0;
 	if (BE3_chip(adapter) || lancer_chip(adapter))
@@ -1625,7 +1583,7 @@ err:
 	return status;
 }
 
-/* Lancer Stats */
+ 
 int lancer_cmd_get_pport_stats(struct be_adapter *adapter,
 			       struct be_dma_mem *nonemb_cmd)
 {
@@ -1687,9 +1645,7 @@ static int be_mac_to_link_speed(int mac_speed)
 	return 0;
 }
 
-/* Uses synchronous mcc
- * Returns link_speed in Mbps
- */
+ 
 int be_cmd_link_status_query(struct be_adapter *adapter, u16 *link_speed,
 			     u8 *link_status, u32 dom)
 {
@@ -1713,7 +1669,7 @@ int be_cmd_link_status_query(struct be_adapter *adapter, u16 *link_speed,
 			       OPCODE_COMMON_NTWK_LINK_STATUS_QUERY,
 			       sizeof(*req), wrb, NULL);
 
-	/* version 1 of the cmd is not supported only by BE2 */
+	 
 	if (!BE2_chip(adapter))
 		req->hdr.version = 1;
 
@@ -1740,7 +1696,7 @@ err:
 	return status;
 }
 
-/* Uses synchronous mcc */
+ 
 int be_cmd_get_die_temperature(struct be_adapter *adapter)
 {
 	struct be_mcc_wrb *wrb;
@@ -1766,7 +1722,7 @@ err:
 	return status;
 }
 
-/* Uses synchronous mcc */
+ 
 int be_cmd_get_fat_dump_len(struct be_adapter *adapter, u32 *dump_size)
 {
 	struct be_mcc_wrb wrb = {0};
@@ -1855,7 +1811,7 @@ err:
 	return status;
 }
 
-/* Uses synchronous mcc */
+ 
 int be_cmd_get_fw_ver(struct be_adapter *adapter)
 {
 	struct be_mcc_wrb *wrb;
@@ -1889,9 +1845,7 @@ err:
 	return status;
 }
 
-/* set the EQ delay interval of an EQ to specified value
- * Uses async mcc
- */
+ 
 static int __be_cmd_modify_eqd(struct be_adapter *adapter,
 			       struct be_set_eqd *set_eqd, int num)
 {
@@ -1941,7 +1895,7 @@ int be_cmd_modify_eqd(struct be_adapter *adapter, struct be_set_eqd *set_eqd,
 	return 0;
 }
 
-/* Uses sycnhronous mcc */
+ 
 int be_cmd_vlan_config(struct be_adapter *adapter, u32 if_id, u16 *vtag_array,
 		       u32 num, u32 domain)
 {
@@ -2001,9 +1955,7 @@ static int __be_cmd_rx_filter(struct be_adapter *adapter, u32 flags, u32 value)
 	if (flags & BE_IF_FLAGS_MULTICAST) {
 		int i;
 
-		/* Reset mcast promisc mode if already set by setting mask
-		 * and not setting flags field
-		 */
+		 
 		req->if_flags_mask |=
 			cpu_to_le32(BE_IF_FLAGS_MCAST_PROMISCUOUS &
 				    be_if_cap_flags(adapter));
@@ -2035,7 +1987,7 @@ int be_cmd_rx_filter(struct be_adapter *adapter, u32 flags, u32 value)
 	return __be_cmd_rx_filter(adapter, flags, value);
 }
 
-/* Uses synchrounous mcc */
+ 
 int be_cmd_set_flow_control(struct be_adapter *adapter, u32 tx_fc, u32 rx_fc)
 {
 	struct be_mcc_wrb *wrb;
@@ -2074,7 +2026,7 @@ err:
 	return status;
 }
 
-/* Uses sycn mcc */
+ 
 int be_cmd_get_flow_control(struct be_adapter *adapter, u32 *tx_fc, u32 *rx_fc)
 {
 	struct be_mcc_wrb *wrb;
@@ -2112,7 +2064,7 @@ err:
 	return status;
 }
 
-/* Uses mbox */
+ 
 int be_cmd_query_fw_cfg(struct be_adapter *adapter)
 {
 	struct be_mcc_wrb *wrb;
@@ -2146,7 +2098,7 @@ int be_cmd_query_fw_cfg(struct be_adapter *adapter)
 	return status;
 }
 
-/* Uses mbox */
+ 
 int be_cmd_reset_function(struct be_adapter *adapter)
 {
 	struct be_mcc_wrb *wrb;
@@ -2218,7 +2170,7 @@ err:
 	return status;
 }
 
-/* Uses sync mcc */
+ 
 int be_cmd_set_beacon_state(struct be_adapter *adapter, u8 port_num,
 			    u8 bcn, u8 sts, u8 state)
 {
@@ -2251,7 +2203,7 @@ err:
 	return status;
 }
 
-/* Uses sync mcc */
+ 
 int be_cmd_get_beacon_state(struct be_adapter *adapter, u8 port_num, u32 *state)
 {
 	struct be_mcc_wrb *wrb;
@@ -2286,7 +2238,7 @@ err:
 	return status;
 }
 
-/* Uses sync mcc */
+ 
 int be_cmd_read_port_transceiver_data(struct be_adapter *adapter,
 				      u8 page_num, u32 off, u32 len, u8 *data)
 {
@@ -2676,7 +2628,7 @@ static int be_check_flash_crc(struct be_adapter *adapter, const u8 *p,
 
 	crc_offset = hdr_size + img_offset + img_size - 4;
 
-	/* Skip flashing, if crc of flashed region matches */
+	 
 	if (!memcmp(crc, p + crc_offset, 4))
 		*crc_match = true;
 	else
@@ -2729,7 +2681,7 @@ static int be_flash(struct be_adapter *adapter, const u8 *img,
 #define NCSI_UPDATE_LOG	"NCSI section update is not supported in FW ver %s\n"
 static bool be_fw_ncsi_supported(char *ver)
 {
-	int v1[4] = {3, 102, 148, 0}; /* Min ver that supports NCSI FW */
+	int v1[4] = {3, 102, 148, 0};  
 	int v2[4];
 	int i;
 
@@ -2746,7 +2698,7 @@ static bool be_fw_ncsi_supported(char *ver)
 	return true;
 }
 
-/* For BE2, BE3 and BE3-R */
+ 
 static int be_flash_BEx(struct be_adapter *adapter,
 			const struct firmware *fw,
 			struct be_dma_mem *flash_cmd, int num_of_images)
@@ -2812,7 +2764,7 @@ static int be_flash_BEx(struct be_adapter *adapter,
 		img_hdrs_size = 0;
 	}
 
-	/* Get flash section info*/
+	 
 	fsec = get_fsec_info(adapter, filehdr_size + img_hdrs_size, fw);
 	if (!fsec) {
 		dev_err(dev, "Invalid Cookie. FW image may be corrupted\n");
@@ -2954,9 +2906,7 @@ retry_flash:
 		else
 			flash_optype = img_optype;
 
-		/* Don't bother verifying CRC if an old FW image is being
-		 * flashed
-		 */
+		 
 		if (old_fw_img)
 			goto flash;
 
@@ -2966,22 +2916,13 @@ retry_flash:
 					    &crc_match);
 		if (base_status(status) == MCC_STATUS_ILLEGAL_REQUEST ||
 		    base_status(status) == MCC_STATUS_ILLEGAL_FIELD) {
-			/* The current FW image on the card does not support
-			 * OFFSET based flashing. Retry using older mechanism
-			 * of OPTYPE based flashing
-			 */
+			 
 			if (flash_optype == OPTYPE_OFFSET_SPECIFIED) {
 				flash_offset_support = false;
 				goto retry_flash;
 			}
 
-			/* The current FW image on the card does not recognize
-			 * the new FLASH op_type. The FW download is partially
-			 * complete. Reboot the server now to enable FW image
-			 * to recognize the new FLASH op_type. To complete the
-			 * remaining process, download the same FW again after
-			 * the reboot.
-			 */
+			 
 			dev_err(dev, "Flash incomplete. Reset the server\n");
 			dev_err(dev, "Download FW image again after reset\n");
 			return -EAGAIN;
@@ -3002,19 +2943,14 @@ flash:
 		status = be_flash(adapter, p, flash_cmd, flash_optype, img_size,
 				  img_offset);
 
-		/* The current FW image on the card does not support OFFSET
-		 * based flashing. Retry using older mechanism of OPTYPE based
-		 * flashing
-		 */
+		 
 		if (base_status(status) == MCC_STATUS_ILLEGAL_FIELD &&
 		    flash_optype == OPTYPE_OFFSET_SPECIFIED) {
 			flash_offset_support = false;
 			goto retry_flash;
 		}
 
-		/* For old FW images ignore ILLEGAL_FIELD error or errors on
-		 * UFI_DIR region
-		 */
+		 
 		if (old_fw_img &&
 		    (base_status(status) == MCC_STATUS_ILLEGAL_FIELD ||
 		     (img_optype == OPTYPE_UFI_DIR &&
@@ -3076,7 +3012,7 @@ int lancer_fw_download(struct be_adapter *adapter,
 	while (image_size) {
 		chunk_size = min_t(u32, image_size, LANCER_FW_DOWNLOAD_CHUNK);
 
-		/* Copy the image chunk content. */
+		 
 		memcpy(dest_image_ptr, data_ptr, chunk_size);
 
 		status = lancer_cmd_write_object(adapter, &flash_cmd,
@@ -3093,7 +3029,7 @@ int lancer_fw_download(struct be_adapter *adapter,
 	}
 
 	if (!status) {
-		/* Commit the FW written */
+		 
 		status = lancer_cmd_write_object(adapter, &flash_cmd,
 						 0, offset,
 						 LANCER_FW_DOWNLOAD_LOCATION,
@@ -3124,9 +3060,7 @@ int lancer_fw_download(struct be_adapter *adapter,
 	return 0;
 }
 
-/* Check if the flash image file is compatible with the adapter that
- * is being flashed.
- */
+ 
 static bool be_check_ufi_compatibility(struct be_adapter *adapter,
 				       struct flash_file_hdr_g3 *fhdr)
 {
@@ -3135,9 +3069,7 @@ static bool be_check_ufi_compatibility(struct be_adapter *adapter,
 		return false;
 	}
 
-	/* First letter of the build version is used to identify
-	 * which chip this image file is meant for.
-	 */
+	 
 	switch (fhdr->build[0]) {
 	case BLD_STR_UFI_TYPE_SH:
 		if (!skyhawk_chip(adapter))
@@ -3155,11 +3087,7 @@ static bool be_check_ufi_compatibility(struct be_adapter *adapter,
 		return false;
 	}
 
-	/* In BE3 FW images the "asic_type_rev" field doesn't track the
-	 * asic_rev of the chips it is compatible with.
-	 * When asic_type_rev is 0 the image is compatible only with
-	 * pre-BE3-R chips (asic_rev < 0x10)
-	 */
+	 
 	if (BEx_chip(adapter) && fhdr->asic_type_rev == 0)
 		return adapter->asic_rev < 0x10;
 	else
@@ -3547,9 +3475,7 @@ int be_cmd_get_cntl_attributes(struct be_adapter *adapter)
 		for (i = 0; i < CNTL_SERIAL_NUM_WORDS; i++)
 			adapter->serial_num[i] = le32_to_cpu(serial_num[i]) &
 				(BIT_MASK(16) - 1);
-		/* For BEx, since GET_FUNC_CONFIG command is not
-		 * supported, we read funcnum here as a workaround.
-		 */
+		 
 		if (BEx_chip(adapter))
 			adapter->pf_num = attribs->hba_attribs.pci_funcnum;
 	}
@@ -3562,7 +3488,7 @@ err:
 	return status;
 }
 
-/* Uses mbox */
+ 
 int be_cmd_req_native_mode(struct be_adapter *adapter)
 {
 	struct be_mcc_wrb *wrb;
@@ -3603,7 +3529,7 @@ err:
 	return status;
 }
 
-/* Get privilege(s) for a function */
+ 
 int be_cmd_get_fn_privileges(struct be_adapter *adapter, u32 *privilege,
 			     u32 domain)
 {
@@ -3634,9 +3560,7 @@ int be_cmd_get_fn_privileges(struct be_adapter *adapter, u32 *privilege,
 
 		*privilege = le32_to_cpu(resp->privilege_mask);
 
-		/* In UMC mode FW does not return right privileges.
-		 * Override with correct privilege equivalent to PF.
-		 */
+		 
 		if (BEx_chip(adapter) && be_is_mc(adapter) &&
 		    be_physfn(adapter))
 			*privilege = MAX_PRIVILEGES;
@@ -3647,7 +3571,7 @@ err:
 	return status;
 }
 
-/* Set privilege(s) for a function */
+ 
 int be_cmd_set_fn_privileges(struct be_adapter *adapter, u32 privileges,
 			     u32 domain)
 {
@@ -3679,10 +3603,7 @@ err:
 	return status;
 }
 
-/* pmac_id_valid: true => pmac_id is supplied and MAC address is requested.
- * pmac_id_valid: false => pmac_id or MAC address is requested.
- *		  If pmac_id is returned, pmac_id_valid is returned as true
- */
+ 
 int be_cmd_get_mac_from_list(struct be_adapter *adapter, u8 *mac,
 			     bool *pmac_id_valid, u32 *pmac_id, u32 if_handle,
 			     u8 domain)
@@ -3742,11 +3663,7 @@ int be_cmd_get_mac_from_list(struct be_adapter *adapter, u8 *mac,
 		}
 
 		mac_count = resp->true_mac_count + resp->pseudo_mac_count;
-		/* Mac list returned could contain one or more active mac_ids
-		 * or one or more true or pseudo permanent mac addresses.
-		 * If an active mac_id is present, return first active mac_id
-		 * found.
-		 */
+		 
 		for (i = 0; i < mac_count; i++) {
 			struct get_list_macaddr *mac_entry;
 			u16 mac_addr_size;
@@ -3754,9 +3671,7 @@ int be_cmd_get_mac_from_list(struct be_adapter *adapter, u8 *mac,
 
 			mac_entry = &resp->macaddr_list[i];
 			mac_addr_size = le16_to_cpu(mac_entry->mac_addr_size);
-			/* mac_id is a 32 bit value and mac_addr size
-			 * is 6 bytes
-			 */
+			 
 			if (mac_addr_size == sizeof(u32)) {
 				*pmac_id_valid = true;
 				mac_id = mac_entry->mac_addr_id.s_mac_id.mac_id;
@@ -3764,7 +3679,7 @@ int be_cmd_get_mac_from_list(struct be_adapter *adapter, u8 *mac,
 				goto out;
 			}
 		}
-		/* If no active mac_id found, return first mac addr */
+		 
 		*pmac_id_valid = false;
 		memcpy(mac, resp->macaddr_list[0].mac_addr_id.macaddr,
 		       ETH_ALEN);
@@ -3787,7 +3702,7 @@ int be_cmd_get_active_mac(struct be_adapter *adapter, u32 curr_pmac_id,
 		return be_cmd_mac_addr_query(adapter, mac, false,
 					     if_handle, curr_pmac_id);
 	else
-		/* Fetch the MAC address using pmac_id */
+		 
 		return be_cmd_get_mac_from_list(adapter, mac, &active,
 						&curr_pmac_id,
 						if_handle, domain);
@@ -3815,7 +3730,7 @@ int be_cmd_get_perm_mac(struct be_adapter *adapter, u8 *mac)
 	return status;
 }
 
-/* Uses synchronous MCCQ */
+ 
 int be_cmd_set_mac_list(struct be_adapter *adapter, u8 *mac_array,
 			u8 mac_count, u32 domain)
 {
@@ -3857,10 +3772,7 @@ err:
 	return status;
 }
 
-/* Wrapper to delete any active MACs and provision the new mac.
- * Changes to MAC_LIST are allowed iff none of the MAC addresses in the
- * current list are active.
- */
+ 
 int be_cmd_set_mac(struct be_adapter *adapter, u8 *mac, int if_id, u32 dom)
 {
 	bool active_mac = false;
@@ -3918,7 +3830,7 @@ int be_cmd_set_hsw_config(struct be_adapter *adapter, u16 pvid,
 			      ctxt, hsw_mode);
 	}
 
-	/* Enable/disable both mac and vlan spoof checking */
+	 
 	if (!BEx_chip(adapter) && spoofchk) {
 		AMAP_SET_BITS(struct amap_set_hsw_context, mac_spoofchk,
 			      ctxt, spoofchk);
@@ -3934,7 +3846,7 @@ err:
 	return status;
 }
 
-/* Get Hyper switch config */
+ 
 int be_cmd_get_hsw_config(struct be_adapter *adapter, u16 *pvid,
 			  u32 domain, u16 intf_id, u8 *mode, bool *spoofchk)
 {
@@ -4063,7 +3975,7 @@ int be_cmd_get_acpi_wol_cap(struct be_adapter *adapter)
 
 		adapter->wol_cap = resp->wol_settings;
 
-		/* Non-zero macaddr indicates WOL is enabled */
+		 
 		if (adapter->wol_cap & BE_WOL_CAP &&
 		    !is_zero_ether_addr(resp->magic_mac))
 			adapter->wol_en = true;
@@ -4241,14 +4153,7 @@ int be_cmd_query_port_name(struct be_adapter *adapter)
 	return status;
 }
 
-/* When more than 1 NIC descriptor is present in the descriptor list,
- * the caller must specify the pf_num to obtain the NIC descriptor
- * corresponding to its pci function.
- * get_vft must be true when the caller wants the VF-template desc of the
- * PF-pool.
- * The pf_num should be set to PF_NUM_IGNORE when the caller knows
- * that only it's NIC descriptor is present in the descriptor list.
- */
+ 
 static struct be_nic_res_desc *be_get_nic_desc(u8 *buf, u32 desc_count,
 					       bool get_vft, u8 pf_num)
 {
@@ -4333,12 +4238,12 @@ static void be_copy_nic_desc(struct be_resources *res,
 	res->max_cq_count = le16_to_cpu(desc->cq_count);
 	res->max_iface_count = le16_to_cpu(desc->iface_count);
 	res->max_mcc_count = le16_to_cpu(desc->mcc_count);
-	/* Clear flags that driver is not interested in */
+	 
 	res->if_cap_flags = le32_to_cpu(desc->cap_flags) &
 				BE_IF_CAP_FLAGS_WANT;
 }
 
-/* Uses Mbox */
+ 
 int be_cmd_get_func_config(struct be_adapter *adapter, struct be_resources *res)
 {
 	struct be_mcc_wrb *wrb;
@@ -4380,10 +4285,7 @@ int be_cmd_get_func_config(struct be_adapter *adapter, struct be_resources *res)
 		u32 desc_count = le32_to_cpu(resp->desc_count);
 		struct be_nic_res_desc *desc;
 
-		/* GET_FUNC_CONFIG returns resource descriptors of the
-		 * current function only. So, pf_num should be set to
-		 * PF_NUM_IGNORE.
-		 */
+		 
 		desc = be_get_func_nic_desc(resp->func_param, desc_count,
 					    PF_NUM_IGNORE);
 		if (!desc) {
@@ -4391,7 +4293,7 @@ int be_cmd_get_func_config(struct be_adapter *adapter, struct be_resources *res)
 			goto err;
 		}
 
-		/* Store pf_num & vf_num for later use in GET_PROFILE_CONFIG */
+		 
 		adapter->pf_num = desc->pf_num;
 		adapter->vf_num = desc->vf_num;
 
@@ -4406,7 +4308,7 @@ err:
 	return status;
 }
 
-/* This routine returns a list of all the NIC PF_nums in the adapter */
+ 
 static u16 be_get_nic_pf_num_list(u8 *buf, u32 desc_count, u16 *nic_pf_nums)
 {
 	struct be_res_desc_hdr *hdr = (struct be_res_desc_hdr *)buf;
@@ -4430,7 +4332,7 @@ static u16 be_get_nic_pf_num_list(u8 *buf, u32 desc_count, u16 *nic_pf_nums)
 	return nic_pf_count;
 }
 
-/* Will use MBOX only if MCCQ has not been created */
+ 
 int be_cmd_get_profile_config(struct be_adapter *adapter,
 			      struct be_resources *res,
 			      struct be_port_resources *port_res,
@@ -4464,10 +4366,7 @@ int be_cmd_get_profile_config(struct be_adapter *adapter,
 	req->type = profile_type;
 	req->hdr.domain = domain;
 
-	/* When QUERY_MODIFIABLE_FIELDS_TYPE bit is set, cmd returns the
-	 * descriptors with all bits set to "1" for the fields which can be
-	 * modified using SET_PROFILE_CONFIG cmd.
-	 */
+	 
 	if (query == RESOURCE_MODIFIABLE)
 		req->type |= QUERY_MODIFIABLE_FIELDS_TYPE;
 
@@ -4525,7 +4424,7 @@ err:
 	return status;
 }
 
-/* Will use MBOX only if MCCQ has not been created */
+ 
 static int be_cmd_set_profile_config(struct be_adapter *adapter, void *desc,
 				     int size, int count, u8 version, u8 domain)
 {
@@ -4558,7 +4457,7 @@ static int be_cmd_set_profile_config(struct be_adapter *adapter, void *desc,
 	return status;
 }
 
-/* Mark all fields invalid */
+ 
 static void be_reset_nic_desc(struct be_nic_res_desc *nic)
 {
 	memset(nic, 0, sizeof(*nic));
@@ -4584,7 +4483,7 @@ static void be_reset_nic_desc(struct be_nic_res_desc *nic)
 	nic->bw_max = 0xFFFFFFFF;
 }
 
-/* Mark all fields invalid */
+ 
 static void be_reset_pcie_desc(struct be_pcie_res_desc *pcie)
 {
 	memset(pcie, 0, sizeof(*pcie));
@@ -4637,7 +4536,7 @@ int be_cmd_set_sriov_config(struct be_adapter *adapter,
 		struct be_nic_res_desc nic_vft;
 	} __packed desc;
 
-	/* PF PCIE descriptor */
+	 
 	be_reset_pcie_desc(&desc.pcie);
 	desc.pcie.hdr.desc_type = PCIE_RESOURCE_DESC_TYPE_V1;
 	desc.pcie.hdr.desc_len = RESOURCE_DESC_SIZE_V1;
@@ -4646,7 +4545,7 @@ int be_cmd_set_sriov_config(struct be_adapter *adapter,
 	desc.pcie.sriov_state = num_vfs ? 1 : 0;
 	desc.pcie.num_vfs = cpu_to_le16(num_vfs);
 
-	/* VF NIC Template descriptor */
+	 
 	be_reset_nic_desc(&desc.nic_vft);
 	desc.nic_vft.hdr.desc_type = NIC_RESOURCE_DESC_TYPE_V1;
 	desc.nic_vft.hdr.desc_len = RESOURCE_DESC_SIZE_V1;
@@ -4793,7 +4692,7 @@ int lancer_physdev_ctrl(struct be_adapter *adapter, u32 mask)
 	return status;
 }
 
-/* Routine to check whether dump image is present or not */
+ 
 bool dump_present(struct be_adapter *adapter)
 {
 	u32 sliport_status = 0;
@@ -4812,7 +4711,7 @@ int lancer_initiate_dump(struct be_adapter *adapter)
 		return -EEXIST;
 	}
 
-	/* give firmware reset and diagnostic dump */
+	 
 	status = lancer_physdev_ctrl(adapter, PHYSDEV_CONTROL_FW_RESET_MASK |
 				     PHYSDEV_CONTROL_DD_MASK);
 	if (status < 0) {
@@ -4840,7 +4739,7 @@ int lancer_delete_dump(struct be_adapter *adapter)
 	return be_cmd_status(status);
 }
 
-/* Uses sync mcc */
+ 
 int be_cmd_enable_vf(struct be_adapter *adapter, u8 domain)
 {
 	struct be_mcc_wrb *wrb;
@@ -4897,7 +4796,7 @@ int be_cmd_intr_set(struct be_adapter *adapter, bool intr_enable)
 	return status;
 }
 
-/* Uses MBOX */
+ 
 int be_cmd_get_active_profile(struct be_adapter *adapter, u16 *profile_id)
 {
 	struct be_cmd_req_get_active_profile *req;
@@ -4984,9 +4883,7 @@ int be_cmd_set_logical_link_config(struct be_adapter *adapter,
 	status = __be_cmd_set_logical_link_config(adapter, link_state,
 						  2, domain);
 
-	/* Version 2 of the command will not be recognized by older FW.
-	 * On such a failure issue version 1 of the command.
-	 */
+	 
 	if (base_status(status) == MCC_STATUS_ILLEGAL_REQUEST)
 		status = __be_cmd_set_logical_link_config(adapter, link_state,
 							  1, domain);
@@ -5031,9 +4928,7 @@ int be_cmd_set_features(struct be_adapter *adapter)
 		le16_to_cpu(resp->parameter.resp.ue2sr);
 	adapter->error_recovery.recovery_supported = true;
 err:
-	/* Checking "MCC_STATUS_INVALID_LENGTH" for SKH as FW
-	 * returns this error in older firmware versions
-	 */
+	 
 	if (base_status(status) == MCC_STATUS_ILLEGAL_REQUEST ||
 	    base_status(status) == MCC_STATUS_INVALID_LENGTH)
 		dev_info(&adapter->pdev->dev,

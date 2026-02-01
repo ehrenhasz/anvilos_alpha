@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Author: SeongJae Park <sj@kernel.org>
- */
+
+ 
 
 #include <fcntl.h>
 #include <stdlib.h>
@@ -10,7 +8,7 @@
 
 #pragma GCC diagnostic push
 #if __GNUC__ >= 11 && __GNUC_MINOR__ >= 1
-/* Ignore read(2) overflow and write(2) overread compile warnings */
+ 
 #pragma GCC diagnostic ignored "-Wstringop-overread"
 #pragma GCC diagnostic ignored "-Wstringop-overflow"
 #endif

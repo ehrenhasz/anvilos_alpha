@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * mtu3.h - MediaTek USB3 DRD header
- *
- * Copyright (C) 2016 MediaTek Inc.
- *
- * Author: Chunfeng Yun <chunfeng.yun@mediatek.com>
- */
+ 
+ 
 
 #ifndef __MTU3_H__
 #define __MTU3_H__
@@ -65,35 +59,20 @@ struct mtu3_request;
 #define MTU3_U3_IP_SLOT_DEFAULT 2
 #define MTU3_U2_IP_SLOT_DEFAULT 1
 
-/**
- * IP TRUNK version
- * from 0x1003 version, USB3 Gen2 is supported, two changes affect driver:
- * 1. MAXPKT and MULTI bits layout of TXCSR1 and RXCSR1 are adjusted,
- *    but not backward compatible
- * 2. QMU extend buffer length supported
- */
+ 
 #define MTU3_TRUNK_VERS_1003	0x1003
 
-/**
- * Normally the device works on HS or SS, to simplify fifo management,
- * devide fifo into some 512B parts, use bitmap to manage it; And
- * 128 bits size of bitmap is large enough, that means it can manage
- * up to 64KB fifo size.
- * NOTE: MTU3_EP_FIFO_UNIT should be power of two
- */
+ 
 #define MTU3_EP_FIFO_UNIT		(1 << 9)
 #define MTU3_FIFO_BIT_SIZE		128
 #define MTU3_U2_IP_EP0_FIFO_SIZE	64
 
-/**
- * Maximum size of ep0 response buffer for ch9 requests,
- * the SET_SEL request uses 6 so far, and GET_STATUS is 2
- */
+ 
 #define EP0_RESPONSE_BUF  6
 
 #define BULK_CLKS_CNT	6
 
-/* device operated link and speed got from DEVICE_CONF register */
+ 
 enum mtu3_speed {
 	MTU3_SPEED_INACTIVE = 0,
 	MTU3_SPEED_FULL = 1,
@@ -102,16 +81,7 @@ enum mtu3_speed {
 	MTU3_SPEED_SUPER_PLUS = 5,
 };
 
-/**
- * @MU3D_EP0_STATE_SETUP: waits for SETUP or received a SETUP
- *		without data stage.
- * @MU3D_EP0_STATE_TX: IN data stage
- * @MU3D_EP0_STATE_RX: OUT data stage
- * @MU3D_EP0_STATE_TX_END: the last IN data is transferred, and
- *		waits for its completion interrupt
- * @MU3D_EP0_STATE_STALL: ep0 is in stall status, will be auto-cleared
- *		after receives a SETUP.
- */
+ 
 enum mtu3_g_ep0_state {
 	MU3D_EP0_STATE_SETUP = 1,
 	MU3D_EP0_STATE_TX,
@@ -120,57 +90,21 @@ enum mtu3_g_ep0_state {
 	MU3D_EP0_STATE_STALL,
 };
 
-/**
- * MTU3_DR_FORCE_NONE: automatically switch host and periperal mode
- *		by IDPIN signal.
- * MTU3_DR_FORCE_HOST: force to enter host mode and override OTG
- *		IDPIN signal.
- * MTU3_DR_FORCE_DEVICE: force to enter peripheral mode.
- */
+ 
 enum mtu3_dr_force_mode {
 	MTU3_DR_FORCE_NONE = 0,
 	MTU3_DR_FORCE_HOST,
 	MTU3_DR_FORCE_DEVICE,
 };
 
-/**
- * @base: the base address of fifo
- * @limit: the bitmap size in bits
- * @bitmap: fifo bitmap in unit of @MTU3_EP_FIFO_UNIT
- */
+ 
 struct mtu3_fifo_info {
 	u32 base;
 	u32 limit;
 	DECLARE_BITMAP(bitmap, MTU3_FIFO_BIT_SIZE);
 };
 
-/**
- * General Purpose Descriptor (GPD):
- *	The format of TX GPD is a little different from RX one.
- *	And the size of GPD is 16 bytes.
- *
- * @dw0_info:
- *	bit0: Hardware Own (HWO)
- *	bit1: Buffer Descriptor Present (BDP), always 0, BD is not supported
- *	bit2: Bypass (BPS), 1: HW skips this GPD if HWO = 1
- *	bit6: [EL] Zero Length Packet (ZLP), moved from @dw3_info[29]
- *	bit7: Interrupt On Completion (IOC)
- *	bit[31:16]: ([EL] bit[31:12]) allow data buffer length (RX ONLY),
- *		the buffer length of the data to receive
- *	bit[23:16]: ([EL] bit[31:24]) extension address (TX ONLY),
- *		lower 4 bits are extension bits of @buffer,
- *		upper 4 bits are extension bits of @next_gpd
- * @next_gpd: Physical address of the next GPD
- * @buffer: Physical address of the data buffer
- * @dw3_info:
- *	bit[15:0]: ([EL] bit[19:0]) data buffer length,
- *		(TX): the buffer length of the data to transmit
- *		(RX): The total length of data received
- *	bit[23:16]: ([EL] bit[31:24]) extension address (RX ONLY),
- *		lower 4 bits are extension bits of @buffer,
- *		upper 4 bits are extension bits of @next_gpd
- *	bit29: ([EL] abandoned) Zero Length Packet (ZLP) (TX ONLY)
- */
+ 
 struct qmu_gpd {
 	__le32 dw0_info;
 	__le32 next_gpd;
@@ -178,14 +112,7 @@ struct qmu_gpd {
 	__le32 dw3_info;
 } __packed;
 
-/**
-* dma: physical base address of GPD segment
-* start: virtual base address of GPD segment
-* end: the last GPD element
-* enqueue: the first empty GPD to use
-* dequeue: the first completed GPD serviced by ISR
-* NOTE: the size of GPD ring should be >= 2
-*/
+ 
 struct mtu3_gpd_ring {
 	dma_addr_t dma;
 	struct qmu_gpd *start;
@@ -194,20 +121,7 @@ struct mtu3_gpd_ring {
 	struct qmu_gpd *dequeue;
 };
 
-/**
-* @vbus: vbus 5V used by host mode
-* @edev: external connector used to detect vbus and iddig changes
-* @id_nb : notifier for iddig(idpin) detection
-* @dr_work : work for drd mode switch, used to avoid sleep in atomic context
-* @desired_role : role desired to switch
-* @default_role : default mode while usb role is USB_ROLE_NONE
-* @role_sw : use USB Role Switch to support dual-role switch, can't use
-*		extcon at the same time, and extcon is deprecated.
-* @role_sw_used : true when the USB Role Switch is used.
-* @is_u3_drd: whether port0 supports usb3.0 dual-role device or not
-* @manual_drd_enabled: it's true when supports dual-role device by debugfs
-*		to switch host/device modes depending on user input.
-*/
+ 
 struct otg_switch_mtk {
 	struct regulator *vbus;
 	struct extcon_dev *edev;
@@ -221,25 +135,7 @@ struct otg_switch_mtk {
 	bool manual_drd_enabled;
 };
 
-/**
- * @mac_base: register base address of device MAC, exclude xHCI's
- * @ippc_base: register base address of IP Power and Clock interface (IPPC)
- * @vusb33: usb3.3V shared by device/host IP
- * @dr_mode: works in which mode:
- *		host only, device only or dual-role mode
- * @u2_ports: number of usb2.0 host ports
- * @u3_ports: number of usb3.0 host ports
- * @u2p_dis_msk: mask of disabling usb2 ports, e.g. bit0==1 to
- *		disable u2port0, bit1==1 to disable u2port1,... etc,
- *		but when use dual-role mode, can't disable u2port0
- * @u3p_dis_msk: mask of disabling usb3 ports, for example, bit0==1 to
- *		disable u3port0, bit1==1 to disable u3port1,... etc
- * @dbgfs_root: only used when supports manual dual-role switch via debugfs
- * @uwk_en: it's true when supports remote wakeup in host mode
- * @uwk: syscon including usb wakeup glue layer between SSUSB IP and SPM
- * @uwk_reg_base: the base address of the wakeup glue layer in @uwk
- * @uwk_vers: the version of the wakeup glue layer
- */
+ 
 struct ssusb_mtk {
 	struct device *dev;
 	struct mtu3 *u3d;
@@ -248,10 +144,10 @@ struct ssusb_mtk {
 	struct phy **phys;
 	int num_phys;
 	int wakeup_irq;
-	/* common power & clock */
+	 
 	struct regulator *vusb33;
 	struct clk_bulk_data clks[BULK_CLKS_CNT];
-	/* otg */
+	 
 	struct otg_switch_mtk otg_switch;
 	enum usb_dr_mode dr_mode;
 	bool is_host;
@@ -260,17 +156,14 @@ struct ssusb_mtk {
 	int u2p_dis_msk;
 	int u3p_dis_msk;
 	struct dentry *dbgfs_root;
-	/* usb wakeup for host mode */
+	 
 	bool uwk_en;
 	struct regmap *uwk;
 	u32 uwk_reg_base;
 	u32 uwk_vers;
 };
 
-/**
- * @fifo_size: it is (@slot + 1) * @fifo_seg_size
- * @fifo_seg_size: it is roundup_pow_of_two(@maxp)
- */
+ 
 struct mtu3_ep {
 	struct usb_ep ep;
 	char name[12];
@@ -307,19 +200,7 @@ static inline struct ssusb_mtk *dev_to_ssusb(struct device *dev)
 	return dev_get_drvdata(dev);
 }
 
-/**
- * struct mtu3 - device driver instance data.
- * @slot: MTU3_U2_IP_SLOT_DEFAULT for U2 IP only,
- *		MTU3_U3_IP_SLOT_DEFAULT for U3 IP
- * @may_wakeup: means device's remote wakeup is enabled
- * @is_self_powered: is reported in device status and the config descriptor
- * @delayed_status: true when function drivers ask for delayed status
- * @gen2cp: compatible with USB3 Gen2 IP
- * @ep0_req: dummy request used while handling standard USB requests
- *		for GET_STATUS and SET_SEL
- * @setup_buf: ep0 response buffer for GET_STATUS and SET_SEL requests
- * @u3_capable: is capable of supporting USB3
- */
+ 
 struct mtu3 {
 	spinlock_t lock;
 	struct ssusb_mtk *ssusb;
@@ -341,7 +222,7 @@ struct mtu3 {
 
 	struct dma_pool	*qmu_gpd_pool;
 	enum mtu3_g_ep0_state ep0_state;
-	struct usb_gadget g;	/* the gadget */
+	struct usb_gadget g;	 
 	struct usb_gadget_driver *gadget_driver;
 	struct mtu3_request ep0_req;
 	u8 setup_buf[EP0_RESPONSE_BUF];

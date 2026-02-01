@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/**
- * DOC: dwmac-rk.c - Rockchip RK3288 DWMAC specific glue layer
- *
- * Copyright (C) 2014 Chen-Zhi (Roger Chen)
- *
- * Chen-Zhi (Roger Chen)  <roger.chen@rock-chips.com>
- */
+
+ 
 
 #include <linux/stmmac.h>
 #include <linux/bitops.h>
@@ -95,7 +89,7 @@ struct rk_priv_data {
 
 #define PX30_GRF_GMAC_CON1		0x0904
 
-/* PX30_GRF_GMAC_CON1 */
+ 
 #define PX30_GMAC_PHY_INTF_SEL_RMII	(GRF_CLR_BIT(4) | GRF_CLR_BIT(5) | \
 					 GRF_BIT(6))
 #define PX30_GMAC_SPEED_10M		GRF_CLR_BIT(2)
@@ -155,7 +149,7 @@ static const struct rk_gmac_ops px30_ops = {
 #define RK3128_GRF_MAC_CON0	0x0168
 #define RK3128_GRF_MAC_CON1	0x016c
 
-/* RK3128_GRF_MAC_CON0 */
+ 
 #define RK3128_GMAC_TXCLK_DLY_ENABLE   GRF_BIT(14)
 #define RK3128_GMAC_TXCLK_DLY_DISABLE  GRF_CLR_BIT(14)
 #define RK3128_GMAC_RXCLK_DLY_ENABLE   GRF_BIT(15)
@@ -163,7 +157,7 @@ static const struct rk_gmac_ops px30_ops = {
 #define RK3128_GMAC_CLK_RX_DL_CFG(val) HIWORD_UPDATE(val, 0x7F, 7)
 #define RK3128_GMAC_CLK_TX_DL_CFG(val) HIWORD_UPDATE(val, 0x7F, 0)
 
-/* RK3128_GRF_MAC_CON1 */
+ 
 #define RK3128_GMAC_PHY_INTF_SEL_RGMII	\
 		(GRF_BIT(6) | GRF_CLR_BIT(7) | GRF_CLR_BIT(8))
 #define RK3128_GMAC_PHY_INTF_SEL_RMII	\
@@ -268,11 +262,11 @@ static const struct rk_gmac_ops rk3128_ops = {
 
 #define RK3228_GRF_CON_MUX	0x50
 
-/* RK3228_GRF_MAC_CON0 */
+ 
 #define RK3228_GMAC_CLK_RX_DL_CFG(val)	HIWORD_UPDATE(val, 0x7F, 7)
 #define RK3228_GMAC_CLK_TX_DL_CFG(val)	HIWORD_UPDATE(val, 0x7F, 0)
 
-/* RK3228_GRF_MAC_CON1 */
+ 
 #define RK3228_GMAC_PHY_INTF_SEL_RGMII	\
 		(GRF_BIT(4) | GRF_CLR_BIT(5) | GRF_CLR_BIT(6))
 #define RK3228_GMAC_PHY_INTF_SEL_RMII	\
@@ -293,7 +287,7 @@ static const struct rk_gmac_ops rk3128_ops = {
 #define RK3228_GMAC_RXCLK_DLY_ENABLE	GRF_BIT(1)
 #define RK3228_GMAC_RXCLK_DLY_DISABLE	GRF_CLR_BIT(1)
 
-/* RK3228_GRF_COM_MUX */
+ 
 #define RK3228_GRF_CON_MUX_GMAC_INTEGRATED_PHY	GRF_BIT(15)
 
 static void rk3228_set_to_rgmii(struct rk_priv_data *bsp_priv,
@@ -329,7 +323,7 @@ static void rk3228_set_to_rmii(struct rk_priv_data *bsp_priv)
 		     RK3228_GMAC_PHY_INTF_SEL_RMII |
 		     RK3228_GMAC_RMII_MODE);
 
-	/* set MAC to RMII mode */
+	 
 	regmap_write(bsp_priv->grf, RK3228_GRF_MAC_CON1, GRF_BIT(11));
 }
 
@@ -393,7 +387,7 @@ static const struct rk_gmac_ops rk3228_ops = {
 #define RK3288_GRF_SOC_CON1	0x0248
 #define RK3288_GRF_SOC_CON3	0x0250
 
-/*RK3288_GRF_SOC_CON1*/
+ 
 #define RK3288_GMAC_PHY_INTF_SEL_RGMII	(GRF_BIT(6) | GRF_CLR_BIT(7) | \
 					 GRF_CLR_BIT(8))
 #define RK3288_GMAC_PHY_INTF_SEL_RMII	(GRF_CLR_BIT(6) | GRF_CLR_BIT(7) | \
@@ -410,7 +404,7 @@ static const struct rk_gmac_ops rk3228_ops = {
 #define RK3288_GMAC_RMII_MODE		GRF_BIT(14)
 #define RK3288_GMAC_RMII_MODE_CLR	GRF_CLR_BIT(14)
 
-/*RK3288_GRF_SOC_CON3*/
+ 
 #define RK3288_GMAC_TXCLK_DLY_ENABLE	GRF_BIT(14)
 #define RK3288_GMAC_TXCLK_DLY_DISABLE	GRF_CLR_BIT(14)
 #define RK3288_GMAC_RXCLK_DLY_ENABLE	GRF_BIT(15)
@@ -503,7 +497,7 @@ static const struct rk_gmac_ops rk3288_ops = {
 
 #define RK3308_GRF_MAC_CON0		0x04a0
 
-/* RK3308_GRF_MAC_CON0 */
+ 
 #define RK3308_GMAC_PHY_INTF_SEL_RMII	(GRF_CLR_BIT(2) | GRF_CLR_BIT(3) | \
 					GRF_BIT(4))
 #define RK3308_GMAC_FLOW_CTRL		GRF_BIT(3)
@@ -554,11 +548,11 @@ static const struct rk_gmac_ops rk3308_ops = {
 #define RK3328_GRF_MAC_CON2	0x0908
 #define RK3328_GRF_MACPHY_CON1	0xb04
 
-/* RK3328_GRF_MAC_CON0 */
+ 
 #define RK3328_GMAC_CLK_RX_DL_CFG(val)	HIWORD_UPDATE(val, 0x7F, 7)
 #define RK3328_GMAC_CLK_TX_DL_CFG(val)	HIWORD_UPDATE(val, 0x7F, 0)
 
-/* RK3328_GRF_MAC_CON1 */
+ 
 #define RK3328_GMAC_PHY_INTF_SEL_RGMII	\
 		(GRF_BIT(4) | GRF_CLR_BIT(5) | GRF_CLR_BIT(6))
 #define RK3328_GMAC_PHY_INTF_SEL_RMII	\
@@ -579,7 +573,7 @@ static const struct rk_gmac_ops rk3308_ops = {
 #define RK3328_GMAC_RXCLK_DLY_ENABLE	GRF_BIT(1)
 #define RK3328_GMAC_RXCLK_DLY_DISABLE	GRF_CLR_BIT(0)
 
-/* RK3328_GRF_MACPHY_CON1 */
+ 
 #define RK3328_MACPHY_RMII_MODE		GRF_BIT(9)
 
 static void rk3328_set_to_rgmii(struct rk_priv_data *bsp_priv,
@@ -685,7 +679,7 @@ static const struct rk_gmac_ops rk3328_ops = {
 #define RK3366_GRF_SOC_CON6	0x0418
 #define RK3366_GRF_SOC_CON7	0x041c
 
-/* RK3366_GRF_SOC_CON6 */
+ 
 #define RK3366_GMAC_PHY_INTF_SEL_RGMII	(GRF_BIT(9) | GRF_CLR_BIT(10) | \
 					 GRF_CLR_BIT(11))
 #define RK3366_GMAC_PHY_INTF_SEL_RMII	(GRF_CLR_BIT(9) | GRF_CLR_BIT(10) | \
@@ -702,7 +696,7 @@ static const struct rk_gmac_ops rk3328_ops = {
 #define RK3366_GMAC_RMII_MODE		GRF_BIT(6)
 #define RK3366_GMAC_RMII_MODE_CLR	GRF_CLR_BIT(6)
 
-/* RK3366_GRF_SOC_CON7 */
+ 
 #define RK3366_GMAC_TXCLK_DLY_ENABLE	GRF_BIT(7)
 #define RK3366_GMAC_TXCLK_DLY_DISABLE	GRF_CLR_BIT(7)
 #define RK3366_GMAC_RXCLK_DLY_ENABLE	GRF_BIT(15)
@@ -796,7 +790,7 @@ static const struct rk_gmac_ops rk3366_ops = {
 #define RK3368_GRF_SOC_CON15	0x043c
 #define RK3368_GRF_SOC_CON16	0x0440
 
-/* RK3368_GRF_SOC_CON15 */
+ 
 #define RK3368_GMAC_PHY_INTF_SEL_RGMII	(GRF_BIT(9) | GRF_CLR_BIT(10) | \
 					 GRF_CLR_BIT(11))
 #define RK3368_GMAC_PHY_INTF_SEL_RMII	(GRF_CLR_BIT(9) | GRF_CLR_BIT(10) | \
@@ -813,7 +807,7 @@ static const struct rk_gmac_ops rk3366_ops = {
 #define RK3368_GMAC_RMII_MODE		GRF_BIT(6)
 #define RK3368_GMAC_RMII_MODE_CLR	GRF_CLR_BIT(6)
 
-/* RK3368_GRF_SOC_CON16 */
+ 
 #define RK3368_GMAC_TXCLK_DLY_ENABLE	GRF_BIT(7)
 #define RK3368_GMAC_TXCLK_DLY_DISABLE	GRF_CLR_BIT(7)
 #define RK3368_GMAC_RXCLK_DLY_ENABLE	GRF_BIT(15)
@@ -907,7 +901,7 @@ static const struct rk_gmac_ops rk3368_ops = {
 #define RK3399_GRF_SOC_CON5	0xc214
 #define RK3399_GRF_SOC_CON6	0xc218
 
-/* RK3399_GRF_SOC_CON5 */
+ 
 #define RK3399_GMAC_PHY_INTF_SEL_RGMII	(GRF_BIT(9) | GRF_CLR_BIT(10) | \
 					 GRF_CLR_BIT(11))
 #define RK3399_GMAC_PHY_INTF_SEL_RMII	(GRF_CLR_BIT(9) | GRF_CLR_BIT(10) | \
@@ -924,7 +918,7 @@ static const struct rk_gmac_ops rk3368_ops = {
 #define RK3399_GMAC_RMII_MODE		GRF_BIT(6)
 #define RK3399_GMAC_RMII_MODE_CLR	GRF_CLR_BIT(6)
 
-/* RK3399_GRF_SOC_CON6 */
+ 
 #define RK3399_GMAC_TXCLK_DLY_ENABLE	GRF_BIT(7)
 #define RK3399_GMAC_TXCLK_DLY_DISABLE	GRF_CLR_BIT(7)
 #define RK3399_GMAC_RXCLK_DLY_ENABLE	GRF_BIT(15)
@@ -1020,7 +1014,7 @@ static const struct rk_gmac_ops rk3399_ops = {
 #define RK3568_GRF_GMAC1_CON0		0x0388
 #define RK3568_GRF_GMAC1_CON1		0x038c
 
-/* RK3568_GRF_GMAC0_CON1 && RK3568_GRF_GMAC1_CON1 */
+ 
 #define RK3568_GMAC_PHY_INTF_SEL_RGMII	\
 		(GRF_BIT(4) | GRF_CLR_BIT(5) | GRF_CLR_BIT(6))
 #define RK3568_GMAC_PHY_INTF_SEL_RMII	\
@@ -1032,7 +1026,7 @@ static const struct rk_gmac_ops rk3399_ops = {
 #define RK3568_GMAC_TXCLK_DLY_ENABLE		GRF_BIT(0)
 #define RK3568_GMAC_TXCLK_DLY_DISABLE		GRF_CLR_BIT(0)
 
-/* RK3568_GRF_GMAC0_CON0 && RK3568_GRF_GMAC1_CON0 */
+ 
 #define RK3568_GMAC_CLK_RX_DL_CFG(val)	HIWORD_UPDATE(val, 0x7F, 8)
 #define RK3568_GMAC_CLK_TX_DL_CFG(val)	HIWORD_UPDATE(val, 0x7F, 0)
 
@@ -1112,13 +1106,13 @@ static const struct rk_gmac_ops rk3568_ops = {
 	.set_rmii_speed = rk3568_set_gmac_speed,
 	.regs_valid = true,
 	.regs = {
-		0xfe2a0000, /* gmac0 */
-		0xfe010000, /* gmac1 */
-		0x0, /* sentinel */
+		0xfe2a0000,  
+		0xfe010000,  
+		0x0,  
 	},
 };
 
-/* sys_grf */
+ 
 #define RK3588_GRF_GMAC_CON7			0X031c
 #define RK3588_GRF_GMAC_CON8			0X0320
 #define RK3588_GRF_GMAC_CON9			0X0324
@@ -1131,7 +1125,7 @@ static const struct rk_gmac_ops rk3568_ops = {
 #define RK3588_GMAC_CLK_RX_DL_CFG(val)		HIWORD_UPDATE(val, 0xFF, 8)
 #define RK3588_GMAC_CLK_TX_DL_CFG(val)		HIWORD_UPDATE(val, 0xFF, 0)
 
-/* php_grf */
+ 
 #define RK3588_GRF_GMAC_CON0			0X0008
 #define RK3588_GRF_CLK_CON1			0X0070
 
@@ -1259,15 +1253,15 @@ static const struct rk_gmac_ops rk3588_ops = {
 	.set_clock_selection = rk3588_set_clock_selection,
 	.regs_valid = true,
 	.regs = {
-		0xfe1b0000, /* gmac0 */
-		0xfe1c0000, /* gmac1 */
-		0x0, /* sentinel */
+		0xfe1b0000,  
+		0xfe1c0000,  
+		0x0,  
 	},
 };
 
 #define RV1108_GRF_GMAC_CON0		0X0900
 
-/* RV1108_GRF_GMAC_CON0 */
+ 
 #define RV1108_GMAC_PHY_INTF_SEL_RMII	(GRF_CLR_BIT(4) | GRF_CLR_BIT(5) | \
 					GRF_BIT(6))
 #define RV1108_GMAC_FLOW_CTRL		GRF_BIT(3)
@@ -1321,7 +1315,7 @@ static const struct rk_gmac_ops rv1108_ops = {
 #define RV1126_GRF_GMAC_CON1		0X0074
 #define RV1126_GRF_GMAC_CON2		0X0078
 
-/* RV1126_GRF_GMAC_CON0 */
+ 
 #define RV1126_GMAC_PHY_INTF_SEL_RGMII	\
 		(GRF_BIT(4) | GRF_CLR_BIT(5) | GRF_CLR_BIT(6))
 #define RV1126_GMAC_PHY_INTF_SEL_RMII	\
@@ -1337,10 +1331,10 @@ static const struct rk_gmac_ops rv1108_ops = {
 #define RV1126_GMAC_M1_TXCLK_DLY_ENABLE		GRF_BIT(2)
 #define RV1126_GMAC_M1_TXCLK_DLY_DISABLE	GRF_CLR_BIT(2)
 
-/* RV1126_GRF_GMAC_CON1 */
+ 
 #define RV1126_GMAC_M0_CLK_RX_DL_CFG(val)	HIWORD_UPDATE(val, 0x7F, 8)
 #define RV1126_GMAC_M0_CLK_TX_DL_CFG(val)	HIWORD_UPDATE(val, 0x7F, 0)
-/* RV1126_GRF_GMAC_CON2 */
+ 
 #define RV1126_GMAC_M1_CLK_RX_DL_CFG(val)	HIWORD_UPDATE(val, 0x7F, 8)
 #define RV1126_GMAC_M1_CLK_TX_DL_CFG(val)	HIWORD_UPDATE(val, 0x7F, 0)
 
@@ -1467,7 +1461,7 @@ static void rk_gmac_integrated_phy_powerup(struct rk_priv_data *priv)
 	regmap_write(priv->grf, RK_GRF_MACPHY_CON3, RK_GRF_CON3_MACPHY_ID);
 
 	if (priv->phy_reset) {
-		/* PHY needs to be disabled before trying to reset it */
+		 
 		regmap_write(priv->grf, RK_GRF_MACPHY_CON0, RK_MACPHY_DISABLE);
 		if (priv->phy_reset)
 			reset_control_assert(priv->phy_reset);
@@ -1518,7 +1512,7 @@ static int rk_gmac_clk_init(struct plat_stmmacenet_data *plat)
 	if (ret)
 		return dev_err_probe(dev, ret, "Failed to get clocks\n");
 
-	/* "stmmaceth" will be enabled by the core */
+	 
 	bsp_priv->clk_mac = devm_clk_get(dev, "stmmaceth");
 	ret = PTR_ERR_OR_ZERO(bsp_priv->clk_mac);
 	if (ret)
@@ -1617,9 +1611,7 @@ static struct rk_priv_data *rk_gmac_setup(struct platform_device *pdev,
 	of_get_phy_mode(dev->of_node, &bsp_priv->phy_iface);
 	bsp_priv->ops = ops;
 
-	/* Some SoCs have multiple MAC controllers, which need
-	 * to be distinguished.
-	 */
+	 
 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 	if (res && ops->regs_valid) {
 		int i = 0;
@@ -1733,7 +1725,7 @@ static int rk_gmac_powerup(struct rk_priv_data *bsp_priv)
 	if (ret)
 		return ret;
 
-	/*rmii or rgmii*/
+	 
 	switch (bsp_priv->phy_iface) {
 	case PHY_INTERFACE_MODE_RGMII:
 		dev_info(dev, "init for RGMII\n");
@@ -1828,9 +1820,7 @@ static int rk_gmac_probe(struct platform_device *pdev)
 	if (IS_ERR(plat_dat))
 		return PTR_ERR(plat_dat);
 
-	/* If the stmmac is not already selected as gmac4,
-	 * then make sure we fallback to gmac.
-	 */
+	 
 	if (!plat_dat->has_gmac4)
 		plat_dat->has_gmac = true;
 	plat_dat->fix_mac_speed = rk_fix_speed;
@@ -1878,7 +1868,7 @@ static int rk_gmac_suspend(struct device *dev)
 	struct rk_priv_data *bsp_priv = get_stmmac_bsp_priv(dev);
 	int ret = stmmac_suspend(dev);
 
-	/* Keep the PHY up if we use Wake-on-Lan. */
+	 
 	if (!device_may_wakeup(dev)) {
 		rk_gmac_powerdown(bsp_priv);
 		bsp_priv->suspended = true;
@@ -1891,7 +1881,7 @@ static int rk_gmac_resume(struct device *dev)
 {
 	struct rk_priv_data *bsp_priv = get_stmmac_bsp_priv(dev);
 
-	/* The PHY was up for Wake-on-Lan. */
+	 
 	if (bsp_priv->suspended) {
 		rk_gmac_powerup(bsp_priv);
 		bsp_priv->suspended = false;
@@ -1899,7 +1889,7 @@ static int rk_gmac_resume(struct device *dev)
 
 	return stmmac_resume(dev);
 }
-#endif /* CONFIG_PM_SLEEP */
+#endif  
 
 static SIMPLE_DEV_PM_OPS(rk_gmac_pm_ops, rk_gmac_suspend, rk_gmac_resume);
 

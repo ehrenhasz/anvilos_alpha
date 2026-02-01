@@ -1,13 +1,13 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Exynos Generic power domain support.
-//
-// Copyright (c) 2012 Samsung Electronics Co., Ltd.
-//		http://www.samsung.com
-//
-// Implementation of Exynos specific power domain control which is used in
-// conjunction with runtime-pm. Support for both device-tree and non-device-tree
-// based power domain support is included.
+
+
+
+
+
+
+
+
+
+
 
 #include <linux/io.h>
 #include <linux/err.h>
@@ -20,13 +20,11 @@
 #include <linux/pm_runtime.h>
 
 struct exynos_pm_domain_config {
-	/* Value for LOCAL_PWR_CFG and STATUS fields for each domain */
+	 
 	u32 local_pwr_cfg;
 };
 
-/*
- * Exynos specific wrapper around the generic power domain
- */
+ 
 struct exynos_pm_domain {
 	void __iomem *base;
 	struct generic_pm_domain pd;
@@ -46,7 +44,7 @@ static int exynos_pd_power(struct generic_pm_domain *domain, bool power_on)
 	pwr = power_on ? pd->local_pwr_cfg : 0;
 	writel_relaxed(pwr, base);
 
-	/* Wait max 1ms */
+	 
 	timeout = 10;
 
 	while ((readl_relaxed(base + 0x4) & pd->local_pwr_cfg) != pwr) {

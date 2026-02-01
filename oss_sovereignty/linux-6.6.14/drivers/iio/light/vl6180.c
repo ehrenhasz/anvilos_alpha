@@ -1,19 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * vl6180.c - Support for STMicroelectronics VL6180 ALS, range and proximity
- * sensor
- *
- * Copyright 2017 Peter Meerwald-Stadler <pmeerw@pmeerw.net>
- * Copyright 2017 Manivannan Sadhasivam <manivannanece23@gmail.com>
- *
- * IIO driver for VL6180 (7-bit I2C slave address 0x29)
- *
- * Range: 0 to 100mm
- * ALS: < 1 Lux up to 100 kLux
- * IR: 850nm
- *
- * TODO: irq, threshold events, continuous mode, hardware buffer
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/mod_devicetable.h>
@@ -29,11 +15,11 @@
 
 #define VL6180_DRV_NAME "vl6180"
 
-/* Device identification register and value */
+ 
 #define VL6180_MODEL_ID	0x000
 #define VL6180_MODEL_ID_VAL 0xb4
 
-/* Configuration registers */
+ 
 #define VL6180_INTR_CONFIG 0x014
 #define VL6180_INTR_CLEAR 0x015
 #define VL6180_OUT_OF_RESET 0x016
@@ -43,36 +29,36 @@
 #define VL6180_ALS_GAIN 0x03f
 #define VL6180_ALS_IT 0x040
 
-/* Status registers */
+ 
 #define VL6180_RANGE_STATUS 0x04d
 #define VL6180_ALS_STATUS 0x04e
 #define VL6180_INTR_STATUS 0x04f
 
-/* Result value registers */
+ 
 #define VL6180_ALS_VALUE 0x050
 #define VL6180_RANGE_VALUE 0x062
 #define VL6180_RANGE_RATE 0x066
 
-/* bits of the RANGE_START and ALS_START register */
-#define VL6180_MODE_CONT BIT(1) /* continuous mode */
-#define VL6180_STARTSTOP BIT(0) /* start measurement, auto-reset */
+ 
+#define VL6180_MODE_CONT BIT(1)  
+#define VL6180_STARTSTOP BIT(0)  
 
-/* bits of the INTR_STATUS and INTR_CONFIG register */
+ 
 #define VL6180_ALS_READY BIT(5)
 #define VL6180_RANGE_READY BIT(2)
 
-/* bits of the INTR_CLEAR register */
+ 
 #define VL6180_CLEAR_ERROR BIT(2)
 #define VL6180_CLEAR_ALS BIT(1)
 #define VL6180_CLEAR_RANGE BIT(0)
 
-/* bits of the HOLD register */
+ 
 #define VL6180_HOLD_ON BIT(0)
 
-/* default value for the ALS_IT register */
-#define VL6180_ALS_IT_100 0x63 /* 100 ms */
+ 
+#define VL6180_ALS_IT_100 0x63  
 
-/* values for the ALS_GAIN register */
+ 
 #define VL6180_ALS_GAIN_1 0x46
 #define VL6180_ALS_GAIN_1_25 0x45
 #define VL6180_ALS_GAIN_1_67 0x44
@@ -91,13 +77,7 @@ struct vl6180_data {
 
 enum { VL6180_ALS, VL6180_RANGE, VL6180_PROX };
 
-/**
- * struct vl6180_chan_regs - Registers for accessing channels
- * @drdy_mask:			Data ready bit in status register
- * @start_reg:			Conversion start register
- * @value_reg:			Result value register
- * @word:			Register word length
- */
+ 
 struct vl6180_chan_regs {
 	u8 drdy_mask;
 	u16 start_reg, value_reg;
@@ -212,7 +192,7 @@ static int vl6180_measure(struct vl6180_data *data, int addr)
 	u16 value;
 
 	mutex_lock(&data->lock);
-	/* Start single shot measurement */
+	 
 	ret = vl6180_write_byte(client,
 		vl6180_chan_regs_table[addr].start_reg, VL6180_STARTSTOP);
 	if (ret < 0)
@@ -233,7 +213,7 @@ static int vl6180_measure(struct vl6180_data *data, int addr)
 		goto fail;
 	}
 
-	/* Read result value from appropriate registers */
+	 
 	ret = vl6180_chan_regs_table[addr].word ?
 		vl6180_read_word(client, vl6180_chan_regs_table[addr].value_reg) :
 		vl6180_read_byte(client, vl6180_chan_regs_table[addr].value_reg);
@@ -241,7 +221,7 @@ static int vl6180_measure(struct vl6180_data *data, int addr)
 		goto fail;
 	value = ret;
 
-	/* Clear the interrupt flag after data read */
+	 
 	ret = vl6180_write_byte(client, VL6180_INTR_CLEAR,
 		VL6180_CLEAR_ERROR | VL6180_CLEAR_ALS | VL6180_CLEAR_RANGE);
 	if (ret < 0)
@@ -275,10 +255,7 @@ static const struct iio_chan_spec vl6180_channels[] = {
 	}
 };
 
-/*
- * Available Ambient Light Sensor gain settings, 1/1000th, and
- * corresponding setting for the VL6180_ALS_GAIN register
- */
+ 
 static const int vl6180_als_gain_tab[8] = {
 	1000, 1250, 1670, 2500, 5000, 10000, 20000, 40000
 };
@@ -313,14 +290,14 @@ static int vl6180_read_raw(struct iio_dev *indio_dev,
 	case IIO_CHAN_INFO_SCALE:
 		switch (chan->type) {
 		case IIO_LIGHT:
-			/* one ALS count is 0.32 Lux @ gain 1, IT 100 ms */
-			*val = 32000; /* 0.32 * 1000 * 100 */
+			 
+			*val = 32000;  
 			*val2 = data->als_gain_milli * data->als_it_ms;
 
 			return IIO_VAL_FRACTIONAL;
 
 		case IIO_DISTANCE:
-			*val = 0; /* sensor reports mm, scale to meter */
+			*val = 0;  
 			*val2 = 1000;
 			break;
 		default:
@@ -350,7 +327,7 @@ static const struct attribute_group vl6180_attribute_group = {
 	.attrs = vl6180_attributes,
 };
 
-/* HOLD is needed before updating any config registers */
+ 
 static int vl6180_hold(struct vl6180_data *data, bool hold)
 {
 	return vl6180_write_byte(data->client, VL6180_HOLD,
@@ -392,7 +369,7 @@ static int vl6180_set_it(struct vl6180_data *data, int val, int val2)
 {
 	int ret, it_ms;
 
-	it_ms = DIV_ROUND_CLOSEST(val2, 1000); /* round to ms */
+	it_ms = DIV_ROUND_CLOSEST(val2, 1000);  
 	if (val != 0 || it_ms < 1 || it_ms > 512)
 		return -EINVAL;
 
@@ -461,26 +438,23 @@ static int vl6180_init(struct vl6180_data *data)
 	if (ret < 0)
 		return ret;
 
-	/*
-	 * Detect false reset condition here. This bit is always set when the
-	 * system comes out of reset.
-	 */
+	 
 	if (ret != 0x01)
 		dev_info(&client->dev, "device is not fresh out of reset\n");
 
-	/* Enable ALS and Range ready interrupts */
+	 
 	ret = vl6180_write_byte(client, VL6180_INTR_CONFIG,
 				VL6180_ALS_READY | VL6180_RANGE_READY);
 	if (ret < 0)
 		return ret;
 
-	/* ALS integration time: 100ms */
+	 
 	data->als_it_ms = 100;
 	ret = vl6180_write_word(client, VL6180_ALS_IT, VL6180_ALS_IT_100);
 	if (ret < 0)
 		return ret;
 
-	/* ALS gain: 1 */
+	 
 	data->als_gain_milli = 1000;
 	ret = vl6180_write_byte(client, VL6180_ALS_GAIN, VL6180_ALS_GAIN_1);
 	if (ret < 0)

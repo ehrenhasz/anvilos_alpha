@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright(c) 2017 Intel Corporation. All rights reserved.
- */
+
+ 
 #include <linux/libnvdimm.h>
 #include <linux/badblocks.h>
 #include <linux/export.h>
@@ -60,25 +58,17 @@ static int add_badrange(struct badrange *badrange, u64 addr, u64 length)
 		return 0;
 	}
 
-	/*
-	 * There is a chance this is a duplicate, check for those first.
-	 * This will be the common case as ARS_STATUS returns all known
-	 * errors in the SPA space, and we can't query it per region
-	 */
+	 
 	list_for_each_entry(bre, &badrange->list, list)
 		if (bre->start == addr) {
-			/* If length has changed, update this list entry */
+			 
 			if (bre->length != length)
 				bre->length = length;
 			kfree(bre_new);
 			return 0;
 		}
 
-	/*
-	 * If not a duplicate or a simple length update, add the entry as is,
-	 * as any overlapping ranges will get resolved when the list is consumed
-	 * and converted to badblocks
-	 */
+	 
 	if (!bre_new)
 		return -ENOMEM;
 	append_badrange_entry(badrange, bre_new, addr, length);
@@ -107,53 +97,43 @@ void badrange_forget(struct badrange *badrange, phys_addr_t start,
 
 	spin_lock(&badrange->lock);
 
-	/*
-	 * [start, clr_end] is the badrange interval being cleared.
-	 * [bre->start, bre_end] is the badrange_list entry we're comparing
-	 * the above interval against. The badrange list entry may need
-	 * to be modified (update either start or length), deleted, or
-	 * split into two based on the overlap characteristics
-	 */
+	 
 
 	list_for_each_entry_safe(bre, next, badrange_list, list) {
 		u64 bre_end = bre->start + bre->length - 1;
 
-		/* Skip intervals with no intersection */
+		 
 		if (bre_end < start)
 			continue;
 		if (bre->start >  clr_end)
 			continue;
-		/* Delete completely overlapped badrange entries */
+		 
 		if ((bre->start >= start) && (bre_end <= clr_end)) {
 			list_del(&bre->list);
 			kfree(bre);
 			continue;
 		}
-		/* Adjust start point of partially cleared entries */
+		 
 		if ((start <= bre->start) && (clr_end > bre->start)) {
 			bre->length -= clr_end - bre->start + 1;
 			bre->start = clr_end + 1;
 			continue;
 		}
-		/* Adjust bre->length for partial clearing at the tail end */
+		 
 		if ((bre->start < start) && (bre_end <= clr_end)) {
-			/* bre->start remains the same */
+			 
 			bre->length = start - bre->start;
 			continue;
 		}
-		/*
-		 * If clearing in the middle of an entry, we split it into
-		 * two by modifying the current entry to represent one half of
-		 * the split, and adding a new entry for the second half.
-		 */
+		 
 		if ((bre->start < start) && (bre_end > clr_end)) {
 			u64 new_start = clr_end + 1;
 			u64 new_len = bre_end - new_start + 1;
 
-			/* Add new entry covering the right half */
+			 
 			alloc_and_append_badrange_entry(badrange, new_start,
 					new_len, GFP_NOWAIT);
-			/* Adjust this entry to cover the left half */
+			 
 			bre->length = start - bre->start;
 			continue;
 		}
@@ -166,22 +146,13 @@ static void set_badblock(struct badblocks *bb, sector_t s, int num)
 {
 	dev_dbg(bb->dev, "Found a bad range (0x%llx, 0x%llx)\n",
 			(u64) s * 512, (u64) num * 512);
-	/* this isn't an error as the hardware will still throw an exception */
+	 
 	if (badblocks_set(bb, s, num, 1))
 		dev_info_once(bb->dev, "%s: failed for sector %llx\n",
 				__func__, (u64) s);
 }
 
-/**
- * __add_badblock_range() - Convert a physical address range to bad sectors
- * @bb:		badblocks instance to populate
- * @ns_offset:	namespace offset where the error range begins (in bytes)
- * @len:	number of bytes of badrange to be added
- *
- * This assumes that the range provided with (ns_offset, len) is within
- * the bounds of physical addresses for this namespace, i.e. lies in the
- * interval [ns_start, ns_start + ns_size)
- */
+ 
 static void __add_badblock_range(struct badblocks *bb, u64 ns_offset, u64 len)
 {
 	const unsigned int sector_size = 512;
@@ -221,12 +192,12 @@ static void badblocks_populate(struct badrange *badrange,
 	list_for_each_entry(bre, &badrange->list, list) {
 		u64 bre_end = bre->start + bre->length - 1;
 
-		/* Discard intervals with no intersection */
+		 
 		if (bre_end < range->start)
 			continue;
 		if (bre->start > range->end)
 			continue;
-		/* Deal with any overlap after start of the namespace */
+		 
 		if (bre->start >= range->start) {
 			u64 start = bre->start;
 			u64 len;
@@ -239,10 +210,7 @@ static void badblocks_populate(struct badrange *badrange,
 			__add_badblock_range(bb, start - range->start, len);
 			continue;
 		}
-		/*
-		 * Deal with overlap for badrange starting before
-		 * the namespace.
-		 */
+		 
 		if (bre->start < range->start) {
 			u64 len;
 
@@ -255,17 +223,7 @@ static void badblocks_populate(struct badrange *badrange,
 	}
 }
 
-/**
- * nvdimm_badblocks_populate() - Convert a list of badranges to badblocks
- * @region: parent region of the range to interrogate
- * @bb: badblocks instance to populate
- * @res: resource range to consider
- *
- * The badrange list generated during bus initialization may contain
- * multiple, possibly overlapping physical address ranges.  Compare each
- * of these ranges to the resource range currently being initialized,
- * and add badblocks entries for all matching sub-ranges
- */
+ 
 void nvdimm_badblocks_populate(struct nd_region *nd_region,
 		struct badblocks *bb, const struct range *range)
 {

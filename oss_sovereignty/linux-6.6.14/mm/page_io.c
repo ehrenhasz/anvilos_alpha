@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *  linux/mm/page_io.c
- *
- *  Copyright (C) 1991, 1992, 1993, 1994  Linus Torvalds
- *
- *  Swap reorganised 29.12.95, 
- *  Asynchronous swapping added 30.12.95. Stephen Tweedie
- *  Removed race in async swapping. 14.4.1996. Bruno Haible
- *  Add swap of shared pages through the page cache. 20.2.1998. Stephen Tweedie
- *  Always use brw_page, life becomes simpler. 12 May 1998 Eric Biederman
- */
+
+ 
 
 #include <linux/mm.h>
 #include <linux/kernel_stat.h>
@@ -32,14 +22,7 @@ static void __end_swap_bio_write(struct bio *bio)
 	struct folio *folio = bio_first_folio_all(bio);
 
 	if (bio->bi_status) {
-		/*
-		 * We failed to write the page out to swap-space.
-		 * Re-dirty the page in order to avoid it being reclaimed.
-		 * Also print a dire warning that things will go BAD (tm)
-		 * very quickly.
-		 *
-		 * Also clear PG_reclaim to avoid folio_rotate_reclaimable()
-		 */
+		 
 		folio_mark_dirty(folio);
 		pr_alert_ratelimited("Write-error on swap-device (%u:%u:%llu)\n",
 				     MAJOR(bio_dev(bio)), MINOR(bio_dev(bio)),
@@ -94,10 +77,7 @@ int generic_swapfile_activate(struct swap_info_struct *sis,
 	blkbits = inode->i_blkbits;
 	blocks_per_page = PAGE_SIZE >> blkbits;
 
-	/*
-	 * Map all the blocks into the extent tree.  This code doesn't try
-	 * to be very smart.
-	 */
+	 
 	probe_block = 0;
 	page_no = 0;
 	last_block = i_size_read(inode) >> blkbits;
@@ -113,9 +93,7 @@ int generic_swapfile_activate(struct swap_info_struct *sis,
 		if (ret || !first_block)
 			goto bad_bmap;
 
-		/*
-		 * It must be PAGE_SIZE aligned on-disk
-		 */
+		 
 		if (first_block & (blocks_per_page - 1)) {
 			probe_block++;
 			goto reprobe;
@@ -131,23 +109,21 @@ int generic_swapfile_activate(struct swap_info_struct *sis,
 				goto bad_bmap;
 
 			if (block != first_block + block_in_page) {
-				/* Discontiguity */
+				 
 				probe_block++;
 				goto reprobe;
 			}
 		}
 
 		first_block >>= (PAGE_SHIFT - blkbits);
-		if (page_no) {	/* exclude the header page */
+		if (page_no) {	 
 			if (first_block < lowest_block)
 				lowest_block = first_block;
 			if (first_block > highest_block)
 				highest_block = first_block;
 		}
 
-		/*
-		 * We found a PAGE_SIZE-length, PAGE_SIZE-aligned run of blocks
-		 */
+		 
 		ret = add_swap_extent(sis, page_no, 1, first_block);
 		if (ret < 0)
 			goto out;
@@ -160,7 +136,7 @@ reprobe:
 	ret = nr_extents;
 	*span = 1 + highest_block - lowest_block;
 	if (page_no == 0)
-		page_no = 1;	/* force Empty message */
+		page_no = 1;	 
 	sis->max = page_no;
 	sis->pages = page_no - 1;
 	sis->highest_bit = page_no - 1;
@@ -172,10 +148,7 @@ bad_bmap:
 	goto out;
 }
 
-/*
- * We may have stale swap cache pages in memory: notice
- * them here and get rid of the unnecessary final write.
- */
+ 
 int swap_writepage(struct page *page, struct writeback_control *wbc)
 {
 	struct folio *folio = page_folio(page);
@@ -185,10 +158,7 @@ int swap_writepage(struct page *page, struct writeback_control *wbc)
 		folio_unlock(folio);
 		return 0;
 	}
-	/*
-	 * Arch code may have to preserve more data than just the page
-	 * contents, e.g. memory tags.
-	 */
+	 
 	ret = arch_prepare_to_swap(&folio->page);
 	if (ret) {
 		folio_mark_dirty(folio);
@@ -231,7 +201,7 @@ static void bio_associate_blkg_from_page(struct bio *bio, struct folio *folio)
 }
 #else
 #define bio_associate_blkg_from_page(bio, folio)		do { } while (0)
-#endif /* CONFIG_MEMCG && CONFIG_BLK_CGROUP */
+#endif  
 
 struct swap_iocb {
 	struct kiocb		iocb;
@@ -261,16 +231,7 @@ static void sio_write_complete(struct kiocb *iocb, long ret)
 	int p;
 
 	if (ret != sio->len) {
-		/*
-		 * In the case of swap-over-nfs, this can be a
-		 * temporary failure if the system has limited
-		 * memory for allocating transmit buffers.
-		 * Mark the page dirty and avoid
-		 * folio_rotate_reclaimable but rate-limit the
-		 * messages but do not flag PageError like
-		 * the normal direct-to-bio case as it could
-		 * be temporary.
-		 */
+		 
 		pr_err_ratelimited("Write error %ld on dio swapfile (%llu)\n",
 				   ret, page_file_offset(page));
 		for (p = 0; p < sio->pages; p++) {
@@ -373,11 +334,7 @@ void __swap_writepage(struct page *page, struct writeback_control *wbc)
 	struct swap_info_struct *sis = page_swap_info(page);
 
 	VM_BUG_ON_PAGE(!PageSwapCache(page), page);
-	/*
-	 * ->flags can be updated non-atomicially (scan_swap_map_slots),
-	 * but that will never affect SWP_FS_OPS, so the data_race
-	 * is safe.
-	 */
+	 
 	if (data_race(sis->flags & SWP_FS_OPS))
 		swap_writepage_fs(page, wbc);
 	else if (sis->flags & SWP_SYNCHRONOUS_IO)
@@ -466,10 +423,7 @@ static void swap_readpage_bdev_sync(struct page *page,
 	bio_init(&bio, sis->bdev, &bv, 1, REQ_OP_READ);
 	bio.bi_iter.bi_sector = swap_page_sector(page);
 	__bio_add_page(&bio, page, thp_size(page), 0);
-	/*
-	 * Keep this task valid during swap readpage because the oom killer may
-	 * attempt to access it in the page fault retry time check.
-	 */
+	 
 	get_task_struct(current);
 	count_vm_event(PSWPIN);
 	submit_bio_wait(&bio);
@@ -502,11 +456,7 @@ void swap_readpage(struct page *page, bool synchronous, struct swap_iocb **plug)
 	VM_BUG_ON_FOLIO(!folio_test_locked(folio), folio);
 	VM_BUG_ON_FOLIO(folio_test_uptodate(folio), folio);
 
-	/*
-	 * Count submission time as memory stall and delay. When the device
-	 * is congested, or the submitting cgroup IO-throttled, submission
-	 * can be a significant part of overall IO time.
-	 */
+	 
 	if (workingset) {
 		delayacct_thrashing_start(&in_thrashing);
 		psi_memstall_enter(&pflags);

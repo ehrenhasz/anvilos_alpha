@@ -1,8 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-//
-// max77826-regulator.c  - regulator driver for Maxim MAX77826
-//
-// Author: Iskren Chernev <iskren.chernev@gmail.com>
+
+
+
+
+
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -30,13 +30,13 @@ enum max77826_registers {
 	MAX77826_REG_STAT1,
 	MAX77826_REG_STAT2,
 	MAX77826_REG_BB_STAT,
-	/* 0x0E - 0x0F: Reserved */
+	 
 	MAX77826_REG_LDO_OPMD1 = 0x10,
 	MAX77826_REG_LDO_OPMD2,
 	MAX77826_REG_LDO_OPMD3,
 	MAX77826_REG_LDO_OPMD4,
 	MAX77826_REG_B_BB_OPMD,
-	/* 0x15 - 0x1F: Reserved */
+	 
 	MAX77826_REG_LDO1_CFG = 0x20,
 	MAX77826_REG_LDO2_CFG,
 	MAX77826_REG_LDO3_CFG,
@@ -52,15 +52,15 @@ enum max77826_registers {
 	MAX77826_REG_LDO13_CFG,
 	MAX77826_REG_LDO14_CFG,
 	MAX77826_REG_LDO15_CFG,
-	/* 0x2F: Reserved */
+	 
 	MAX77826_REG_BUCK_CFG = 0x30,
 	MAX77826_REG_BUCK_VOUT,
 	MAX77826_REG_BB_CFG,
 	MAX77826_REG_BB_VOUT,
-	/* 0x34 - 0x3F: Reserved */
+	 
 	MAX77826_REG_BUCK_SS_FREQ = 0x40,
 	MAX77826_REG_UVLO_FALL,
-	/* 0x42 - 0xCE: Reserved */
+	 
 	MAX77826_REG_DEVICE_ID = 0xCF,
 };
 
@@ -90,23 +90,23 @@ enum max77826_regulators {
 #define MAX77826_MASK_BUCKBOOST		0x7f
 #define MAX77826_BUCK_RAMP_DELAY	12500
 
-/* values in mV */
-/* for LDO1-3 */
+ 
+ 
 #define MAX77826_NMOS_LDO_VOLT_MIN	600000
 #define MAX77826_NMOS_LDO_VOLT_MAX	2187500
 #define MAX77826_NMOS_LDO_VOLT_STEP	12500
 
-/* for LDO4-15 */
+ 
 #define MAX77826_PMOS_LDO_VOLT_MIN	800000
 #define MAX77826_PMOS_LDO_VOLT_MAX	3975000
 #define MAX77826_PMOS_LDO_VOLT_STEP	25000
 
-/* for BUCK */
+ 
 #define MAX77826_BUCK_VOLT_MIN		500000
 #define MAX77826_BUCK_VOLT_MAX		1800000
 #define MAX77826_BUCK_VOLT_STEP		6250
 
-/* for BUCKBOOST */
+ 
 #define MAX77826_BUCKBOOST_VOLT_MIN	2600000
 #define MAX77826_BUCKBOOST_VOLT_MAX	4187500
 #define MAX77826_BUCKBOOST_VOLT_STEP	12500
@@ -275,13 +275,13 @@ static int max77826_i2c_probe(struct i2c_client *client)
 
 static const struct of_device_id __maybe_unused max77826_of_match[] = {
 	{ .compatible = "maxim,max77826" },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, max77826_of_match);
 
 static const struct i2c_device_id max77826_id[] = {
 	{ "max77826-regulator" },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(i2c, max77826_id);
 

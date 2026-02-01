@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * fs/kernfs/inode.c - kernfs inode implementation
- *
- * Copyright (c) 2001-3 Patrick Mochel
- * Copyright (c) 2007 SUSE Linux Products GmbH
- * Copyright (c) 2007, 2013 Tejun Heo <tj@kernel.org>
- */
+
+ 
 
 #include <linux/pagemap.h>
 #include <linux/backing-dev.h>
@@ -38,7 +32,7 @@ static struct kernfs_iattrs *__kernfs_iattrs(struct kernfs_node *kn, int alloc)
 	if (!kn->iattr)
 		goto out_unlock;
 
-	/* assign default attributes */
+	 
 	kn->iattr->ia_uid = GLOBAL_ROOT_UID;
 	kn->iattr->ia_gid = GLOBAL_ROOT_GID;
 
@@ -89,13 +83,7 @@ int __kernfs_setattr(struct kernfs_node *kn, const struct iattr *iattr)
 	return 0;
 }
 
-/**
- * kernfs_setattr - set iattr on a node
- * @kn: target node
- * @iattr: iattr to set
- *
- * Return: %0 on success, -errno on failure.
- */
+ 
 int kernfs_setattr(struct kernfs_node *kn, const struct iattr *iattr)
 {
 	int ret;
@@ -128,7 +116,7 @@ int kernfs_iop_setattr(struct mnt_idmap *idmap, struct dentry *dentry,
 	if (error)
 		goto out;
 
-	/* this ignores size changes */
+	 
 	setattr_copy(&nop_mnt_idmap, inode, iattr);
 
 out:
@@ -170,10 +158,7 @@ static void kernfs_refresh_inode(struct kernfs_node *kn, struct inode *inode)
 
 	inode->i_mode = kn->mode;
 	if (attrs)
-		/*
-		 * kernfs_node has non-default attributes get them from
-		 * persistent copy in kernfs_node.
-		 */
+		 
 		set_inode_attr(inode, attrs);
 
 	if (kernfs_type(kn) == KERNFS_DIR)
@@ -207,7 +192,7 @@ static void kernfs_init_inode(struct kernfs_node *kn, struct inode *inode)
 	set_default_inode_attr(inode, kn->mode);
 	kernfs_refresh_inode(kn, inode);
 
-	/* initialize inode according to type */
+	 
 	switch (kernfs_type(kn)) {
 	case KERNFS_DIR:
 		inode->i_op = &kernfs_dir_iops;
@@ -229,21 +214,7 @@ static void kernfs_init_inode(struct kernfs_node *kn, struct inode *inode)
 	unlock_new_inode(inode);
 }
 
-/**
- *	kernfs_get_inode - get inode for kernfs_node
- *	@sb: super block
- *	@kn: kernfs_node to allocate inode for
- *
- *	Get inode for @kn.  If such inode doesn't exist, a new inode is
- *	allocated and basics are initialized.  New inode is returned
- *	locked.
- *
- *	Locking:
- *	Kernel thread context (may sleep).
- *
- *	Return:
- *	Pointer to allocated inode on success, %NULL on failure.
- */
+ 
 struct inode *kernfs_get_inode(struct super_block *sb, struct kernfs_node *kn)
 {
 	struct inode *inode;
@@ -255,13 +226,7 @@ struct inode *kernfs_get_inode(struct super_block *sb, struct kernfs_node *kn)
 	return inode;
 }
 
-/*
- * The kernfs_node serves as both an inode and a directory entry for
- * kernfs.  To prevent the kernfs inode numbers from being freed
- * prematurely we take a reference to kernfs_node from the kernfs inode.  A
- * super_operations.evict_inode() implementation is needed to drop that
- * reference upon inode destruction.
- */
+ 
 void kernfs_evict_inode(struct inode *inode)
 {
 	struct kernfs_node *kn = inode->i_private;

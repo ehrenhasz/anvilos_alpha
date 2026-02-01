@@ -1,15 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-/*
- * Copyright (c) 2020 Hewlett Packard Enterprise, Inc. All rights reserved.
- */
 
-/*
- * The rdma_rxe driver supports type 1 or type 2B memory windows.
- * Type 1 MWs are created by ibv_alloc_mw() verbs calls and bound by
- * ibv_bind_mw() calls. Type 2 MWs are also created by ibv_alloc_mw()
- * but bound by bind_mw work requests. The ibv_bind_mw() call is converted
- * by libibverbs to a bind_mw work request.
- */
+ 
+
+ 
 
 #include "rxe.h"
 
@@ -57,7 +49,7 @@ static int rxe_check_bind_mw(struct rxe_qp *qp, struct rxe_send_wqe *wqe,
 			return -EINVAL;
 		}
 
-		/* o10-36.2.2 */
+		 
 		if (unlikely((access & IB_ZERO_BASED))) {
 			rxe_dbg_mw(mw, "attempt to bind a zero based type 1 MW\n");
 			return -EINVAL;
@@ -65,21 +57,21 @@ static int rxe_check_bind_mw(struct rxe_qp *qp, struct rxe_send_wqe *wqe,
 	}
 
 	if (mw->ibmw.type == IB_MW_TYPE_2) {
-		/* o10-37.2.30 */
+		 
 		if (unlikely(mw->state != RXE_MW_STATE_FREE)) {
 			rxe_dbg_mw(mw,
 				"attempt to bind a type 2 MW not in the free state\n");
 			return -EINVAL;
 		}
 
-		/* C10-72 */
+		 
 		if (unlikely(qp->pd != to_rpd(mw->ibmw.pd))) {
 			rxe_dbg_mw(mw,
 				"attempt to bind type 2 MW with qp with different PD\n");
 			return -EINVAL;
 		}
 
-		/* o10-37.2.40 */
+		 
 		if (unlikely(!mr || wqe->wr.wr.mw.length == 0)) {
 			rxe_dbg_mw(mw,
 				"attempt to invalidate type 2 MW by binding with NULL or zero length MR\n");
@@ -87,7 +79,7 @@ static int rxe_check_bind_mw(struct rxe_qp *qp, struct rxe_send_wqe *wqe,
 		}
 	}
 
-	/* remaining checks only apply to a nonzero MR */
+	 
 	if (!mr)
 		return 0;
 
@@ -96,14 +88,14 @@ static int rxe_check_bind_mw(struct rxe_qp *qp, struct rxe_send_wqe *wqe,
 		return -EINVAL;
 	}
 
-	/* C10-73 */
+	 
 	if (unlikely(!(mr->access & IB_ACCESS_MW_BIND))) {
 		rxe_dbg_mw(mw,
 			"attempt to bind an MW to an MR without bind access\n");
 		return -EINVAL;
 	}
 
-	/* C10-74 */
+	 
 	if (unlikely((access &
 		      (IB_ACCESS_REMOTE_WRITE | IB_ACCESS_REMOTE_ATOMIC)) &&
 		     !(mr->access & IB_ACCESS_LOCAL_WRITE))) {
@@ -112,7 +104,7 @@ static int rxe_check_bind_mw(struct rxe_qp *qp, struct rxe_send_wqe *wqe,
 		return -EINVAL;
 	}
 
-	/* C10-75 */
+	 
 	if (access & IB_ZERO_BASED) {
 		if (unlikely(wqe->wr.wr.mw.length > mr->ibmr.length)) {
 			rxe_dbg_mw(mw,
@@ -226,7 +218,7 @@ static int rxe_check_invalidate_mw(struct rxe_qp *qp, struct rxe_mw *mw)
 	if (unlikely(mw->state == RXE_MW_STATE_INVALID))
 		return -EINVAL;
 
-	/* o10-37.2.26 */
+	 
 	if (unlikely(mw->ibmw.type == IB_MW_TYPE_1))
 		return -EINVAL;
 
@@ -238,12 +230,12 @@ static void rxe_do_invalidate_mw(struct rxe_mw *mw)
 	struct rxe_qp *qp;
 	struct rxe_mr *mr;
 
-	/* valid type 2 MW will always have a QP pointer */
+	 
 	qp = mw->qp;
 	mw->qp = NULL;
 	rxe_put(qp);
 
-	/* valid type 2 MW will always have an MR pointer */
+	 
 	mr = mw->mr;
 	mw->mr = NULL;
 	atomic_dec(&mr->num_mw);

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * HiSilicon FMC SPI NOR flash controller driver
- *
- * Copyright (c) 2015-2016 HiSilicon Technologies Co., Ltd.
- */
+
+ 
 #include <linux/bitops.h>
 #include <linux/clk.h>
 #include <linux/dma-mapping.h>
@@ -15,7 +11,7 @@
 #include <linux/platform_device.h>
 #include <linux/slab.h>
 
-/* Hardware register offsets and field definitions */
+ 
 #define FMC_CFG				0x00
 #define FMC_CFG_OP_MODE_MASK		BIT_MASK(0)
 #define FMC_CFG_OP_MODE_BOOT		0
@@ -320,9 +316,7 @@ static const struct spi_nor_controller_ops hisi_controller_ops = {
 	.write = hisi_spi_nor_write,
 };
 
-/*
- * Get spi flash device information and register it as a mtd device.
- */
+ 
 static int hisi_spi_nor_register(struct device_node *np,
 				struct hifmc_host *host)
 {
@@ -479,7 +473,7 @@ static int hisi_spi_nor_remove(struct platform_device *pdev)
 
 static const struct of_device_id hisi_spi_nor_dt_ids[] = {
 	{ .compatible = "hisilicon,fmc-spi-nor"},
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, hisi_spi_nor_dt_ids);
 

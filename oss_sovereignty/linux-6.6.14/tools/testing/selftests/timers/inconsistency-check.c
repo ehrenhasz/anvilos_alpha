@@ -1,22 +1,4 @@
-/* Time inconsistency check test
- *		by: john stultz (johnstul@us.ibm.com)
- *		(C) Copyright IBM 2003, 2004, 2005, 2012
- *		(C) Copyright Linaro Limited 2015
- *		Licensed under the GPLv2
- *
- *  To build:
- *	$ gcc inconsistency-check.c -o inconsistency-check -lrt
- *
- *   This program is free software: you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation, either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
- */
+ 
 
 
 
@@ -76,10 +58,10 @@ char *clockstring(int clockid)
 	return "UNKNOWN_CLOCKID";
 }
 
-/* returns 1 if a <= b, 0 otherwise */
+ 
 static inline int in_order(struct timespec a, struct timespec b)
 {
-	/* use unsigned to avoid false positives on 2038 rollover */
+	 
 	if ((unsigned long)a.tv_sec < (unsigned long)b.tv_sec)
 		return 1;
 	if ((unsigned long)a.tv_sec > (unsigned long)b.tv_sec)
@@ -102,23 +84,23 @@ int consistency_test(int clock_type, unsigned long seconds)
 	clock_gettime(clock_type, &list[0]);
 	now = then = list[0].tv_sec;
 
-	/* timestamp start of test */
+	 
 	t = time(0);
 	start_str = ctime(&t);
 
 	while (seconds == -1 || now - then < seconds) {
 		inconsistent = -1;
 
-		/* Fill list */
+		 
 		for (i = 0; i < CALLS_PER_LOOP; i++)
 			clock_gettime(clock_type, &list[i]);
 
-		/* Check for inconsistencies */
+		 
 		for (i = 0; i < CALLS_PER_LOOP - 1; i++)
 			if (!in_order(list[i], list[i+1]))
 				inconsistent = i;
 
-		/* display inconsistency */
+		 
 		if (inconsistent >= 0) {
 			unsigned long long delta;
 
@@ -137,7 +119,7 @@ int consistency_test(int clock_type, unsigned long seconds)
 			delta -= list[inconsistent+1].tv_nsec;
 			ksft_print_msg("Delta: %llu ns\n", delta);
 			fflush(0);
-			/* timestamp inconsistency*/
+			 
 			t = time(0);
 			ksft_print_msg("%s\n", ctime(&t));
 			return -1;
@@ -156,7 +138,7 @@ int main(int argc, char *argv[])
 	int runtime = 10;
 	struct timespec ts;
 
-	/* Process arguments */
+	 
 	while ((opt = getopt(argc, argv, "t:c:")) != -1) {
 		switch (opt) {
 		case 't':

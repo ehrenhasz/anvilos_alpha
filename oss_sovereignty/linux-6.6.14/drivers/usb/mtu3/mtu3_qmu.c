@@ -1,22 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * mtu3_qmu.c - Queue Management Unit driver for device controller
- *
- * Copyright (C) 2016 MediaTek Inc.
- *
- * Author: Chunfeng Yun <chunfeng.yun@mediatek.com>
- */
 
-/*
- * Queue Management Unit (QMU) is designed to unload SW effort
- * to serve DMA interrupts.
- * By preparing General Purpose Descriptor (GPD) and Buffer Descriptor (BD),
- * SW links data buffers and triggers QMU to send / receive data to
- * host / from device at a time.
- * And now only GPD is supported.
- *
- * For more detailed information, please refer to QMU Programming Guide
- */
+ 
+
+ 
 
 #include <linux/dmapool.h>
 #include <linux/iopoll.h>
@@ -167,7 +152,7 @@ int mtu3_gpd_ring_alloc(struct mtu3_ep *mep)
 	struct qmu_gpd *gpd;
 	struct mtu3_gpd_ring *ring = &mep->gpd_ring;
 
-	/* software own all gpds as default */
+	 
 	gpd = dma_pool_zalloc(mep->mtu->qmu_gpd_pool, GFP_ATOMIC, &ring->dma);
 	if (gpd == NULL)
 		return -ENOMEM;
@@ -210,7 +195,7 @@ static struct qmu_gpd *advance_enq_gpd(struct mtu3_gpd_ring *ring)
 	return ring->enqueue;
 }
 
-/* @dequeue may be NULL if ring is unallocated or freed */
+ 
 static struct qmu_gpd *advance_deq_gpd(struct mtu3_gpd_ring *ring)
 {
 	if (ring->dequeue < ring->end)
@@ -221,7 +206,7 @@ static struct qmu_gpd *advance_deq_gpd(struct mtu3_gpd_ring *ring)
 	return ring->dequeue;
 }
 
-/* check if a ring is emtpy */
+ 
 static bool gpd_ring_empty(struct mtu3_gpd_ring *ring)
 {
 	struct qmu_gpd *enq = ring->enqueue;
@@ -232,7 +217,7 @@ static bool gpd_ring_empty(struct mtu3_gpd_ring *ring)
 	else
 		next = ring->start;
 
-	/* one gpd is reserved to simplify gpd preparation */
+	 
 	return next == ring->dequeue;
 }
 
@@ -251,12 +236,12 @@ static int mtu3_prepare_tx_gpd(struct mtu3_ep *mep, struct mtu3_request *mreq)
 	dma_addr_t enq_dma;
 	u32 ext_addr;
 
-	gpd->dw0_info = 0;	/* SW own it */
+	gpd->dw0_info = 0;	 
 	gpd->buffer = cpu_to_le32(lower_32_bits(req->dma));
 	ext_addr = GPD_EXT_BUF(mtu, upper_32_bits(req->dma));
 	gpd->dw3_info = cpu_to_le32(GPD_DATA_LEN(mtu, req->length));
 
-	/* get the next GPD */
+	 
 	enq = advance_enq_gpd(ring);
 	enq_dma = gpd_virt_to_dma(ring, enq);
 	dev_dbg(mep->mtu->dev, "TX-EP%d queue gpd=%p, enq=%p, qdma=%pad\n",
@@ -274,7 +259,7 @@ static int mtu3_prepare_tx_gpd(struct mtu3_ep *mep, struct mtu3_request *mreq)
 			gpd->dw3_info |= cpu_to_le32(GPD_EXT_FLAG_ZLP);
 	}
 
-	/* prevent reorder, make sure GPD's HWO is set last */
+	 
 	mb();
 	gpd->dw0_info |= cpu_to_le32(GPD_FLAGS_IOC | GPD_FLAGS_HWO);
 
@@ -294,12 +279,12 @@ static int mtu3_prepare_rx_gpd(struct mtu3_ep *mep, struct mtu3_request *mreq)
 	dma_addr_t enq_dma;
 	u32 ext_addr;
 
-	gpd->dw0_info = 0;	/* SW own it */
+	gpd->dw0_info = 0;	 
 	gpd->buffer = cpu_to_le32(lower_32_bits(req->dma));
 	ext_addr = GPD_EXT_BUF(mtu, upper_32_bits(req->dma));
 	gpd->dw0_info = cpu_to_le32(GPD_RX_BUF_LEN(mtu, req->length));
 
-	/* get the next GPD */
+	 
 	enq = advance_enq_gpd(ring);
 	enq_dma = gpd_virt_to_dma(ring, enq);
 	dev_dbg(mep->mtu->dev, "RX-EP%d queue gpd=%p, enq=%p, qdma=%pad\n",
@@ -309,7 +294,7 @@ static int mtu3_prepare_rx_gpd(struct mtu3_ep *mep, struct mtu3_request *mreq)
 	gpd->next_gpd = cpu_to_le32(lower_32_bits(enq_dma));
 	ext_addr |= GPD_EXT_NGP(mtu, upper_32_bits(enq_dma));
 	gpd->dw3_info = cpu_to_le32(ext_addr);
-	/* prevent reorder, make sure GPD's HWO is set last */
+	 
 	mb();
 	gpd->dw0_info |= cpu_to_le32(GPD_FLAGS_IOC | GPD_FLAGS_HWO);
 
@@ -336,10 +321,10 @@ int mtu3_qmu_start(struct mtu3_ep *mep)
 	u8 epnum = mep->epnum;
 
 	if (mep->is_in) {
-		/* set QMU start address */
+		 
 		write_txq_start_addr(mbase, epnum, ring->dma);
 		mtu3_setbits(mbase, MU3D_EP_TXCR0(epnum), TX_DMAREQEN);
-		/* send zero length packet according to ZLP flag in GPD */
+		 
 		mtu3_setbits(mbase, U3D_QCR1, QMU_TX_ZLP(epnum));
 		mtu3_writel(mbase, U3D_TQERRIESR0,
 				QMU_TX_LEN_ERR(epnum) | QMU_TX_CS_ERR(epnum));
@@ -353,9 +338,9 @@ int mtu3_qmu_start(struct mtu3_ep *mep)
 	} else {
 		write_rxq_start_addr(mbase, epnum, ring->dma);
 		mtu3_setbits(mbase, MU3D_EP_RXCR0(epnum), RX_DMAREQEN);
-		/* don't expect ZLP */
+		 
 		mtu3_clrbits(mbase, U3D_QCR3, QMU_RX_ZLP(epnum));
-		/* move to next GPD when receive ZLP */
+		 
 		mtu3_setbits(mbase, U3D_QCR3, QMU_RX_COZ(epnum));
 		mtu3_writel(mbase, U3D_RQERRIESR0,
 				QMU_RX_LEN_ERR(epnum) | QMU_RX_CS_ERR(epnum));
@@ -371,7 +356,7 @@ int mtu3_qmu_start(struct mtu3_ep *mep)
 	return 0;
 }
 
-/* may called in atomic context */
+ 
 void mtu3_qmu_stop(struct mtu3_ep *mep)
 {
 	struct mtu3 *mtu = mep->mtu;
@@ -399,7 +384,7 @@ void mtu3_qmu_stop(struct mtu3_ep *mep)
 		return;
 	}
 
-	/* flush fifo again to make sure the fifo is empty */
+	 
 	if (mep->is_in)
 		mtu3_setbits(mbase, MU3D_EP_TXCR0(epnum), TX_FLUSHFIFO);
 
@@ -412,16 +397,12 @@ void mtu3_qmu_flush(struct mtu3_ep *mep)
 	dev_dbg(mep->mtu->dev, "%s flush QMU %s\n", __func__,
 		((mep->is_in) ? "TX" : "RX"));
 
-	/*Stop QMU */
+	 
 	mtu3_qmu_stop(mep);
 	reset_gpd_list(mep);
 }
 
-/*
- * QMU can't transfer zero length packet directly (a hardware limit
- * on old SoCs), so when needs to send ZLP, we intentionally trigger
- * a length error interrupt, and in the ISR sends a ZLP by BMU.
- */
+ 
 static void qmu_tx_zlp_error_handler(struct mtu3 *mtu, u8 epnum)
 {
 	struct mtu3_ep *mep = mtu->in_eps + epnum;
@@ -457,20 +438,17 @@ static void qmu_tx_zlp_error_handler(struct mtu3 *mtu, u8 epnum)
 		return;
 	}
 	mtu3_setbits(mbase, MU3D_EP_TXCR0(mep->epnum), TX_TXPKTRDY);
-	/* prevent reorder, make sure GPD's HWO is set last */
+	 
 	mb();
-	/* by pass the current GDP */
+	 
 	gpd_current->dw0_info |= cpu_to_le32(GPD_FLAGS_BPS | GPD_FLAGS_HWO);
 
-	/*enable DMAREQEN, switch back to QMU mode */
+	 
 	mtu3_setbits(mbase, MU3D_EP_TXCR0(mep->epnum), TX_DMAREQEN);
 	mtu3_qmu_resume(mep);
 }
 
-/*
- * when rx error happens (except zlperr), QMU will stop, and RQCPR saves
- * the GPD encountered error, Done irq will arise after resuming QMU again.
- */
+ 
 static void qmu_error_rx(struct mtu3 *mtu, u8 epnum)
 {
 	struct mtu3_ep *mep = mtu->out_eps + epnum;
@@ -490,7 +468,7 @@ static void qmu_error_rx(struct mtu3 *mtu, u8 epnum)
 
 	mreq->request.status = -EAGAIN;
 
-	/* by pass the current GDP */
+	 
 	gpd_current->dw0_info |= cpu_to_le32(GPD_FLAGS_BPS | GPD_FLAGS_HWO);
 	mtu3_qmu_resume(mep);
 
@@ -498,13 +476,7 @@ static void qmu_error_rx(struct mtu3 *mtu, u8 epnum)
 		__func__, epnum, gpd_current, mreq);
 }
 
-/*
- * NOTE: request list maybe is already empty as following case:
- * queue_tx --> qmu_interrupt(clear interrupt pending, schedule tasklet)-->
- * queue_tx --> process_tasklet(meanwhile, the second one is transferred,
- * tasklet process both of them)-->qmu_interrupt for second one.
- * To avoid upper case, put qmu_done_tx in ISR directly to process it.
- */
+ 
 static void qmu_done_tx(struct mtu3 *mtu, u8 epnum)
 {
 	struct mtu3_ep *mep = mtu->in_eps + epnum;
@@ -516,7 +488,7 @@ static void qmu_done_tx(struct mtu3 *mtu, u8 epnum)
 	struct mtu3_request *mreq;
 	dma_addr_t cur_gpd_dma;
 
-	/*transfer phy address got from QMU register to virtual address */
+	 
 	cur_gpd_dma = read_txq_cur_addr(mbase, epnum);
 	gpd_current = gpd_dma_to_virt(ring, cur_gpd_dma);
 
@@ -645,13 +617,13 @@ irqreturn_t mtu3_qmu_isr(struct mtu3 *mtu)
 	u32 qmu_status;
 	u32 qmu_done_status;
 
-	/* U3D_QISAR1 is read update */
+	 
 	qmu_status = mtu3_readl(mbase, U3D_QISAR1);
 	qmu_status &= mtu3_readl(mbase, U3D_QIER1);
 
 	qmu_done_status = mtu3_readl(mbase, U3D_QISAR0);
 	qmu_done_status &= mtu3_readl(mbase, U3D_QIER0);
-	mtu3_writel(mbase, U3D_QISAR0, qmu_done_status); /* W1C */
+	mtu3_writel(mbase, U3D_QISAR0, qmu_done_status);  
 	dev_dbg(mtu->dev, "=== QMUdone[tx=%x, rx=%x] QMUexp[%x] ===\n",
 		(qmu_done_status & 0xFFFF), qmu_done_status >> 16,
 		qmu_status);

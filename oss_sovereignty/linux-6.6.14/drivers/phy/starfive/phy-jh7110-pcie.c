@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * StarFive JH7110 PCIe 2.0 PHY driver
- *
- * Copyright (C) 2023 StarFive Technology Co., Ltd.
- * Author: Minda Chen <minda.chen@starfivetech.com>
- */
+
+ 
 
 #include <linux/bits.h>
 #include <linux/clk.h>
@@ -58,11 +53,11 @@ static int phy_usb3_mode_set(struct jh7110_pcie_phy *data)
 	regmap_update_bits(data->stg_syscon, data->stg_pcie_usb,
 			   PCIE_USB3_PHY_ENABLE, PCIE_USB3_PHY_ENABLE);
 
-	/* Connect usb 3.0 phy mode */
+	 
 	regmap_update_bits(data->sys_syscon, data->sys_phy_connect,
 			   USB_PDRSTN_SPLIT, 0);
 
-	/* Configuare spread-spectrum mode: down-spread-spectrum */
+	 
 	writel(PCIE_USB3_PHY_ENABLE, data->regs + PCIE_USB3_PHY_PLL_CTL_OFF);
 
 	return 0;
@@ -72,7 +67,7 @@ static void phy_pcie_mode_set(struct jh7110_pcie_phy *data)
 {
 	u32 val;
 
-	/* default is PCIe mode */
+	 
 	if (!data->stg_syscon || !data->sys_syscon)
 		return;
 
@@ -94,7 +89,7 @@ static void phy_pcie_mode_set(struct jh7110_pcie_phy *data)
 
 static void phy_kvco_gain_set(struct jh7110_pcie_phy *phy)
 {
-	/* PCIe Multi-PHY PLL KVCO Gain fine tune settings: */
+	 
 	writel(PHY_KVCO_FINE_TUNE_LEVEL, phy->regs + PCIE_KVCO_LEVEL_OFF);
 	writel(PHY_KVCO_FINE_TUNE_SIGNALS, phy->regs + PCIE_KVCO_TUNE_SIGNAL_OFF);
 }
@@ -186,7 +181,7 @@ static int jh7110_pcie_phy_probe(struct platform_device *pdev)
 
 static const struct of_device_id jh7110_pcie_phy_of_match[] = {
 	{ .compatible = "starfive,jh7110-pcie-phy" },
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, jh7110_pcie_phy_of_match);
 

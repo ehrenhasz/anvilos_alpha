@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright © 2019 Intel Corporation
- */
+
+ 
 
 #include <linux/prandom.h>
 
@@ -41,7 +39,7 @@ static int __iopagetest(struct intel_memory_region *mem,
 	int byte = get_random_u32_below(pagesize);
 	u8 result[3];
 
-	memset_io(va, value, pagesize); /* or GPF! */
+	memset_io(va, value, pagesize);  
 	wmb();
 
 	result[0] = ioread8(va);
@@ -91,7 +89,7 @@ static int iopagetest(struct intel_memory_region *mem,
 
 static resource_size_t random_page(resource_size_t last)
 {
-	/* Limited to low 44b (16TiB), but should suffice for a spot check */
+	 
 	return get_random_u32_below(last >> PAGE_SHIFT) << PAGE_SHIFT;
 }
 
@@ -107,16 +105,7 @@ static int iomemtest(struct intel_memory_region *mem,
 
 	last = mem->io_size - PAGE_SIZE;
 
-	/*
-	 * Quick test to check read/write access to the iomap (backing store).
-	 *
-	 * Write a byte, read it back. If the iomapping fails, we expect
-	 * a GPF preventing further execution. If the backing store does not
-	 * exist, the read back will return garbage. We check a couple of pages,
-	 * the first and last of the specified region to confirm the backing
-	 * store + iomap does cover the entire memory region; and we check
-	 * a random offset within as a quick spot check for bad memory.
-	 */
+	 
 
 	if (test_all) {
 		for (page = 0; page <= last; page += PAGE_SIZE) {
@@ -148,7 +137,7 @@ intel_memory_region_lookup(struct drm_i915_private *i915,
 	struct intel_memory_region *mr;
 	int id;
 
-	/* XXX: consider maybe converting to an rb tree at some point */
+	 
 	for_each_memory_region(mr, i915, id) {
 		if (mr->type == class && mr->instance == instance)
 			return mr;
@@ -171,14 +160,7 @@ intel_memory_region_by_type(struct drm_i915_private *i915,
 	return NULL;
 }
 
-/**
- * intel_memory_region_reserve - Reserve a memory range
- * @mem: The region for which we want to reserve a range.
- * @offset: Start of the range to reserve.
- * @size: The size of the range to reserve.
- *
- * Return: 0 on success, negative error code on failure.
- */
+ 
 int intel_memory_region_reserve(struct intel_memory_region *mem,
 				resource_size_t offset,
 				resource_size_t size)
@@ -304,7 +286,7 @@ void intel_memory_region_destroy(struct intel_memory_region *mem)
 		kfree(mem);
 }
 
-/* Global memory region registration -- only slight layer inversions! */
+ 
 
 int intel_memory_regions_hw_probe(struct drm_i915_private *i915)
 {

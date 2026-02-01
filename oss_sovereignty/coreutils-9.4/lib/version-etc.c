@@ -1,24 +1,8 @@
-/* Print --version and bug-reporting information in a consistent format.
-   Copyright (C) 1999-2023 Free Software Foundation, Inc.
-
-   This file is free software: you can redistribute it and/or modify
-   it under the terms of the GNU Lesser General Public License as
-   published by the Free Software Foundation, either version 3 of the
-   License, or (at your option) any later version.
-
-   This file is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU Lesser General Public License for more details.
-
-   You should have received a copy of the GNU Lesser General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* Written by Jim Meyering. */
+ 
 
 #include <config.h>
 
-/* Specification.  */
+ 
 #include "version-etc.h"
 
 #include <stdarg.h>
@@ -31,32 +15,16 @@
 #include "gettext.h"
 #define _(msgid) gettext (msgid)
 
-/* If you use AM_INIT_AUTOMAKE's no-define option,
-   PACKAGE is not defined.  Use PACKAGE_TARNAME instead.  */
+ 
 #if ! defined PACKAGE && defined PACKAGE_TARNAME
 # define PACKAGE PACKAGE_TARNAME
 #endif
 
 enum { COPYRIGHT_YEAR = 2023 };
 
-/* The three functions below display the --version information the
-   standard way.
+ 
 
-   If COMMAND_NAME is NULL, the PACKAGE is assumed to be the name of
-   the program.  The formats are therefore:
-
-   PACKAGE VERSION
-
-   or
-
-   COMMAND_NAME (PACKAGE) VERSION.
-
-   The functions differ in the way they are passed author names. */
-
-/* Display the --version information the standard way.
-
-   Author names are given in the array AUTHORS. N_AUTHORS is the
-   number of elements in the array. */
+ 
 void
 version_etc_arn (FILE *stream,
                  const char *command_name, const char *package,
@@ -77,76 +45,63 @@ version_etc_arn (FILE *stream,
 # endif
 #endif
 
-  /* TRANSLATORS: Translate "(C)" to the copyright symbol
-     (C-in-a-circle), if this symbol is available in the user's
-     locale.  Otherwise, do not translate "(C)"; leave it as-is.  */
+   
   fprintf (stream, version_etc_copyright, _("(C)"), COPYRIGHT_YEAR);
 
   fputs ("\n", stream);
 
-  /* TRANSLATORS: The %s placeholder is the web address of the GPL license.  */
+   
   fprintf (stream, _("\
 License GPLv3+: GNU GPL version 3 or later <%s>.\n\
 This is free software: you are free to change and redistribute it.\n\
 There is NO WARRANTY, to the extent permitted by law.\n\
 "),
-           "https://gnu.org/licenses/gpl.html");
+           "https:
 
   fputs ("\n", stream);
 
   switch (n_authors)
     {
     case 0:
-      /* No authors are given.  The caller should output authorship
-         info after calling this function.  */
+       
       break;
     case 1:
-      /* TRANSLATORS: %s denotes an author name.  */
+       
       fprintf (stream, _("Written by %s.\n"), authors[0]);
       break;
     case 2:
-      /* TRANSLATORS: Each %s denotes an author name.  */
+       
       fprintf (stream, _("Written by %s and %s.\n"), authors[0], authors[1]);
       break;
     case 3:
-      /* TRANSLATORS: Each %s denotes an author name.  */
+       
       fprintf (stream, _("Written by %s, %s, and %s.\n"),
                authors[0], authors[1], authors[2]);
       break;
     case 4:
-      /* TRANSLATORS: Each %s denotes an author name.
-         You can use line breaks, estimating that each author name occupies
-         ca. 16 screen columns and that a screen line has ca. 80 columns.  */
+       
       fprintf (stream, _("Written by %s, %s, %s,\nand %s.\n"),
                authors[0], authors[1], authors[2], authors[3]);
       break;
     case 5:
-      /* TRANSLATORS: Each %s denotes an author name.
-         You can use line breaks, estimating that each author name occupies
-         ca. 16 screen columns and that a screen line has ca. 80 columns.  */
+       
       fprintf (stream, _("Written by %s, %s, %s,\n%s, and %s.\n"),
                authors[0], authors[1], authors[2], authors[3], authors[4]);
       break;
     case 6:
-      /* TRANSLATORS: Each %s denotes an author name.
-         You can use line breaks, estimating that each author name occupies
-         ca. 16 screen columns and that a screen line has ca. 80 columns.  */
+       
       fprintf (stream, _("Written by %s, %s, %s,\n%s, %s, and %s.\n"),
                authors[0], authors[1], authors[2], authors[3], authors[4],
                authors[5]);
       break;
     case 7:
-      /* TRANSLATORS: Each %s denotes an author name.
-         You can use line breaks, estimating that each author name occupies
-         ca. 16 screen columns and that a screen line has ca. 80 columns.  */
+       
       fprintf (stream, _("Written by %s, %s, %s,\n%s, %s, %s, and %s.\n"),
                authors[0], authors[1], authors[2], authors[3], authors[4],
                authors[5], authors[6]);
       break;
     case 8:
-      /* TRANSLATORS: Each %s denotes an author name.
-         You can use line breaks, estimating that each author name occupies
-         ca. 16 screen columns and that a screen line has ca. 80 columns.  */
+       
       fprintf (stream, _("\
 Written by %s, %s, %s,\n%s, %s, %s, %s,\nand %s.\n"),
                 authors[0], authors[1], authors[2], authors[3], authors[4],
@@ -255,7 +210,7 @@ emit_bug_reporting_address (void)
   printf (_("%s home page: <%s>\n"), PACKAGE_NAME, PACKAGE_URL);
 #else
   printf (_("%s home page: <%s>\n"),
-          PACKAGE_NAME, "https://www.gnu.org/software/" PACKAGE "/");
+          PACKAGE_NAME, "https:
 #endif
   printf (_("General help using GNU software: <%s>\n"),
           "https://www.gnu.org/gethelp/");

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * QLogic qlcnic NIC Driver
- * Copyright (c)  2009-2013 QLogic Corporation
- */
+
+ 
 
 #include <linux/types.h>
 #include "qlcnic.h"
@@ -89,7 +86,7 @@ struct qlcnic_dcb_param {
 };
 
 struct qlcnic_dcb_mbx_params {
-	/* 1st local, 2nd operational 3rd remote */
+	 
 	struct qlcnic_dcb_param type[3];
 	u32 prio_tc_map;
 };
@@ -129,7 +126,7 @@ struct qlcnic_dcb_prio_cfg {
 
 struct qlcnic_dcb_pg_cfg {
 	bool valid;
-	u8 total_bw_percent;		/* of Link/ port BW */
+	u8 total_bw_percent;		 
 	u8 prio_count;
 	u8 tsa_type;
 };
@@ -137,9 +134,9 @@ struct qlcnic_dcb_pg_cfg {
 struct qlcnic_dcb_tc_cfg {
 	bool valid;
 	struct qlcnic_dcb_prio_cfg prio_cfg[QLC_DCB_MAX_PRIO];
-	enum qlcnic_dcb_prio_type prio_type;	/* always prio_link */
-	u8 link_percent;			/* % of link bandwidth */
-	u8 bwg_percent;				/* % of BWG's bandwidth */
+	enum qlcnic_dcb_prio_type prio_type;	 
+	u8 link_percent;			 
+	u8 bwg_percent;				 
 	u8 up_tc_map;
 	u8 pgid;
 };
@@ -160,7 +157,7 @@ struct qlcnic_dcb_cee {
 };
 
 struct qlcnic_dcb_cfg {
-	/* 0 - local, 1 - operational, 2 - remote */
+	 
 	struct qlcnic_dcb_cee type[QLC_DCB_NUM_PARAM];
 	struct qlcnic_dcb_capability capability;
 	u32 version;
@@ -720,7 +717,7 @@ qlcnic_dcb_fill_cee_app_params(struct qlcnic_adapter *adapter, u8 idx,
 		app = &type->app[i];
 		app->valid = true;
 
-		/* Only for CEE (-1) */
+		 
 		app->selector = QLC_DCB_GET_SELECTOR_APP(each->app[i]) - 1;
 		new_app.selector = app->selector;
 		app->protocol = QLC_DCB_GET_PROTO_ID_APP(each->app[i]);
@@ -893,7 +890,7 @@ static u8 qlcnic_dcb_get_capability(struct net_device *netdev, int capid,
 		break;
 	case DCB_CAP_ATTR_PG_TCS:
 	case DCB_CAP_ATTR_PFC_TCS:
-		*cap = 0x80;	/* 8 priorities for PGs */
+		*cap = 0x80;	 
 		break;
 	case DCB_CAP_ATTR_DCBX:
 		*cap = adapter->dcb->cfg->capability.dcb_capability;

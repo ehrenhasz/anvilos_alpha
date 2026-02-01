@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * The Kyber I/O scheduler. Controls latency by throttling queue depths using
- * scalable techniques.
- *
- * Copyright (C) 2017 Facebook
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/blkdev.h>
@@ -22,10 +17,7 @@
 #define CREATE_TRACE_POINTS
 #include <trace/events/kyber.h>
 
-/*
- * Scheduling domains: the device is divided into multiple domains based on the
- * request type.
- */
+ 
 enum {
 	KYBER_READ,
 	KYBER_WRITE,
@@ -42,21 +34,11 @@ static const char *kyber_domain_names[] = {
 };
 
 enum {
-	/*
-	 * In order to prevent starvation of synchronous requests by a flood of
-	 * asynchronous requests, we reserve 25% of requests for synchronous
-	 * operations.
-	 */
+	 
 	KYBER_ASYNC_PERCENT = 75,
 };
 
-/*
- * Maximum device-wide depth for each scheduling domain.
- *
- * Even for fast devices with lots of tags like NVMe, you can saturate the
- * device with only a fraction of the maximum possible queue depth. So, we cap
- * these to a reasonable value.
- */
+ 
 static const unsigned int kyber_depth[] = {
 	[KYBER_READ] = 256,
 	[KYBER_WRITE] = 128,
@@ -64,19 +46,14 @@ static const unsigned int kyber_depth[] = {
 	[KYBER_OTHER] = 16,
 };
 
-/*
- * Default latency targets for each scheduling domain.
- */
+ 
 static const u64 kyber_latency_targets[] = {
 	[KYBER_READ] = 2ULL * NSEC_PER_MSEC,
 	[KYBER_WRITE] = 10ULL * NSEC_PER_MSEC,
 	[KYBER_DISCARD] = 5ULL * NSEC_PER_SEC,
 };
 
-/*
- * Batch size (number of requests we'll dispatch in a row) for each scheduling
- * domain.
- */
+ 
 static const unsigned int kyber_batch_size[] = {
 	[KYBER_READ] = 16,
 	[KYBER_WRITE] = 8,
@@ -84,38 +61,17 @@ static const unsigned int kyber_batch_size[] = {
 	[KYBER_OTHER] = 1,
 };
 
-/*
- * Requests latencies are recorded in a histogram with buckets defined relative
- * to the target latency:
- *
- * <= 1/4 * target latency
- * <= 1/2 * target latency
- * <= 3/4 * target latency
- * <= target latency
- * <= 1 1/4 * target latency
- * <= 1 1/2 * target latency
- * <= 1 3/4 * target latency
- * > 1 3/4 * target latency
- */
+ 
 enum {
-	/*
-	 * The width of the latency histogram buckets is
-	 * 1 / (1 << KYBER_LATENCY_SHIFT) * target latency.
-	 */
+	 
 	KYBER_LATENCY_SHIFT = 2,
-	/*
-	 * The first (1 << KYBER_LATENCY_SHIFT) buckets are <= target latency,
-	 * thus, "good".
-	 */
+	 
 	KYBER_GOOD_BUCKETS = 1 << KYBER_LATENCY_SHIFT,
-	/* There are also (1 << KYBER_LATENCY_SHIFT) "bad" buckets. */
+	 
 	KYBER_LATENCY_BUCKETS = 2 << KYBER_LATENCY_SHIFT,
 };
 
-/*
- * We measure both the total latency and the I/O latency (i.e., latency after
- * submitting to the device).
- */
+ 
 enum {
 	KYBER_TOTAL_LATENCY,
 	KYBER_IO_LATENCY,
@@ -126,23 +82,14 @@ static const char *kyber_latency_type_names[] = {
 	[KYBER_IO_LATENCY] = "I/O",
 };
 
-/*
- * Per-cpu latency histograms: total latency and I/O latency for each scheduling
- * domain except for KYBER_OTHER.
- */
+ 
 struct kyber_cpu_latency {
 	atomic_t buckets[KYBER_OTHER][2][KYBER_LATENCY_BUCKETS];
 };
 
-/*
- * There is a same mapping between ctx & hctx and kcq & khd,
- * we use request->mq_ctx->index_hw to index the kcq in khd.
- */
+ 
 struct kyber_ctx_queue {
-	/*
-	 * Used to ensure operations on rq_list and kcq_map to be an atmoic one.
-	 * Also protect the rqs on rq_list when merge.
-	 */
+	 
 	spinlock_t lock;
 	struct list_head rq_list[KYBER_NUM_DOMAINS];
 } ____cacheline_aligned_in_smp;
@@ -151,21 +98,15 @@ struct kyber_queue_data {
 	struct request_queue *q;
 	dev_t dev;
 
-	/*
-	 * Each scheduling domain has a limited number of in-flight requests
-	 * device-wide, limited by these tokens.
-	 */
+	 
 	struct sbitmap_queue domain_tokens[KYBER_NUM_DOMAINS];
 
-	/*
-	 * Async request percentage, converted to per-word depth for
-	 * sbitmap_get_shallow().
-	 */
+	 
 	unsigned int async_depth;
 
 	struct kyber_cpu_latency __percpu *cpu_latency;
 
-	/* Timer for stats aggregation and adjusting domain tokens. */
+	 
 	struct timer_list timer;
 
 	unsigned int latency_buckets[KYBER_OTHER][2][KYBER_LATENCY_BUCKETS];
@@ -174,7 +115,7 @@ struct kyber_queue_data {
 
 	int domain_p99[KYBER_OTHER];
 
-	/* Target latencies in nanoseconds. */
+	 
 	u64 latency_targets[KYBER_OTHER];
 };
 
@@ -219,10 +160,7 @@ static void flush_latency_buckets(struct kyber_queue_data *kqd,
 		buckets[bucket] += atomic_xchg(&cpu_buckets[bucket], 0);
 }
 
-/*
- * Calculate the histogram bucket with the given percentile rank, or -1 if there
- * aren't enough samples yet.
- */
+ 
 static int calculate_percentile(struct kyber_queue_data *kqd,
 				unsigned int sched_domain, unsigned int type,
 				unsigned int percentile)
@@ -236,10 +174,7 @@ static int calculate_percentile(struct kyber_queue_data *kqd,
 	if (!samples)
 		return -1;
 
-	/*
-	 * We do the calculation once we have 500 samples or one second passes
-	 * since the first sample was recorded, whichever comes first.
-	 */
+	 
 	if (!kqd->latency_timeout[sched_domain])
 		kqd->latency_timeout[sched_domain] = max(jiffies + HZ, 1UL);
 	if (samples < 500 &&
@@ -281,7 +216,7 @@ static void kyber_timer_fn(struct timer_list *t)
 	int cpu;
 	bool bad = false;
 
-	/* Sum all of the per-cpu latency histograms. */
+	 
 	for_each_online_cpu(cpu) {
 		struct kyber_cpu_latency *cpu_latency;
 
@@ -294,11 +229,7 @@ static void kyber_timer_fn(struct timer_list *t)
 		}
 	}
 
-	/*
-	 * Check if any domains have a high I/O latency, which might indicate
-	 * congestion in the device. Note that we use the p90; we don't want to
-	 * be too sensitive to outliers here.
-	 */
+	 
 	for (sched_domain = 0; sched_domain < KYBER_OTHER; sched_domain++) {
 		int p90;
 
@@ -308,25 +239,14 @@ static void kyber_timer_fn(struct timer_list *t)
 			bad = true;
 	}
 
-	/*
-	 * Adjust the scheduling domain depths. If we determined that there was
-	 * congestion, we throttle all domains with good latencies. Either way,
-	 * we ease up on throttling domains with bad latencies.
-	 */
+	 
 	for (sched_domain = 0; sched_domain < KYBER_OTHER; sched_domain++) {
 		unsigned int orig_depth, depth;
 		int p99;
 
 		p99 = calculate_percentile(kqd, sched_domain,
 					   KYBER_TOTAL_LATENCY, 99);
-		/*
-		 * This is kind of subtle: different domains will not
-		 * necessarily have enough samples to calculate the latency
-		 * percentiles during the same window, so we have to remember
-		 * the p99 for the next time we observe congestion; once we do,
-		 * we don't want to throttle again until we get more data, so we
-		 * reset it to -1.
-		 */
+		 
 		if (bad) {
 			if (p99 < 0)
 				p99 = kqd->domain_p99[sched_domain];
@@ -337,15 +257,7 @@ static void kyber_timer_fn(struct timer_list *t)
 		if (p99 < 0)
 			continue;
 
-		/*
-		 * If this domain has bad latency, throttle less. Otherwise,
-		 * throttle more iff we determined that there is congestion.
-		 *
-		 * The new depth is scaled linearly with the p99 latency vs the
-		 * latency target. E.g., if the p99 is 3/4 of the target, then
-		 * we throttle down to 3/4 of the current depth, and if the p99
-		 * is 2x the target, then we double the depth.
-		 */
+		 
 		if (bad || p99 >= KYBER_GOOD_BUCKETS) {
 			orig_depth = kqd->domain_tokens[sched_domain].sb.depth;
 			depth = (orig_depth * (p99 + 1)) >> KYBER_LATENCY_SHIFT;
@@ -553,10 +465,7 @@ static void rq_clear_domain_token(struct kyber_queue_data *kqd,
 
 static void kyber_limit_depth(blk_opf_t opf, struct blk_mq_alloc_data *data)
 {
-	/*
-	 * We use the scheduler tags as per-hardware queue queueing tokens.
-	 * Async requests can be limited at this stage.
-	 */
+	 
 	if (!op_is_sync(opf)) {
 		struct kyber_queue_data *kqd = data->q->elevator->elevator_data;
 
@@ -715,31 +624,18 @@ static int kyber_get_domain_token(struct kyber_queue_data *kqd,
 
 	nr = __sbitmap_queue_get(domain_tokens);
 
-	/*
-	 * If we failed to get a domain token, make sure the hardware queue is
-	 * run when one becomes available. Note that this is serialized on
-	 * khd->lock, but we still need to be careful about the waker.
-	 */
+	 
 	if (nr < 0 && list_empty_careful(&wait->wait.entry)) {
 		ws = sbq_wait_ptr(domain_tokens,
 				  &khd->wait_index[sched_domain]);
 		khd->domain_ws[sched_domain] = ws;
 		sbitmap_add_wait_queue(domain_tokens, ws, wait);
 
-		/*
-		 * Try again in case a token was freed before we got on the wait
-		 * queue.
-		 */
+		 
 		nr = __sbitmap_queue_get(domain_tokens);
 	}
 
-	/*
-	 * If we got a token while we were on the wait queue, remove ourselves
-	 * from the wait queue to ensure that all wake ups make forward
-	 * progress. It's possible that the waker already deleted the entry
-	 * between the !list_empty_careful() check and us grabbing the lock, but
-	 * list_del_init() is okay with that.
-	 */
+	 
 	if (nr >= 0 && !list_empty_careful(&wait->wait.entry)) {
 		ws = khd->domain_ws[sched_domain];
 		spin_lock_irq(&ws->wait.lock);
@@ -761,14 +657,7 @@ kyber_dispatch_cur_domain(struct kyber_queue_data *kqd,
 
 	rqs = &khd->rqs[khd->cur_domain];
 
-	/*
-	 * If we already have a flushed request, then we just need to get a
-	 * token for it. Otherwise, if there are pending requests in the kcqs,
-	 * flush the kcqs, but only if we can get a token. If not, we should
-	 * leave the requests in the kcqs so that they can be merged. Note that
-	 * khd->lock serializes the flushes, so if we observed any bit set in
-	 * the kcq_map, we will always get a request.
-	 */
+	 
 	rq = list_first_entry_or_null(rqs, struct request, queuelist);
 	if (rq) {
 		nr = kyber_get_domain_token(kqd, khd, hctx);
@@ -796,7 +685,7 @@ kyber_dispatch_cur_domain(struct kyber_queue_data *kqd,
 		}
 	}
 
-	/* There were either no pending requests or no tokens. */
+	 
 	return NULL;
 }
 
@@ -809,25 +698,14 @@ static struct request *kyber_dispatch_request(struct blk_mq_hw_ctx *hctx)
 
 	spin_lock(&khd->lock);
 
-	/*
-	 * First, if we are still entitled to batch, try to dispatch a request
-	 * from the batch.
-	 */
+	 
 	if (khd->batching < kyber_batch_size[khd->cur_domain]) {
 		rq = kyber_dispatch_cur_domain(kqd, khd, hctx);
 		if (rq)
 			goto out;
 	}
 
-	/*
-	 * Either,
-	 * 1. We were no longer entitled to a batch.
-	 * 2. The domain we were batching didn't have any requests.
-	 * 3. The domain we were batching was out of tokens.
-	 *
-	 * Start another batch. Note that this wraps back around to the original
-	 * domain if no other domains have requests or tokens.
-	 */
+	 
 	khd->batching = 0;
 	for (i = 0; i < KYBER_NUM_DOMAINS; i++) {
 		if (khd->cur_domain == KYBER_NUM_DOMAINS - 1)

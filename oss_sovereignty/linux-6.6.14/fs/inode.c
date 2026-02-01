@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * (C) 1997 Linus Torvalds
- * (C) 1999 Andrea Arcangeli <andrea@suse.de> (dynamic inode allocation)
- */
+
+ 
 #include <linux/export.h>
 #include <linux/fs.h>
 #include <linux/filelock.h>
@@ -16,53 +13,21 @@
 #include <linux/fsnotify.h>
 #include <linux/mount.h>
 #include <linux/posix_acl.h>
-#include <linux/buffer_head.h> /* for inode_has_buffers */
+#include <linux/buffer_head.h>  
 #include <linux/ratelimit.h>
 #include <linux/list_lru.h>
 #include <linux/iversion.h>
 #include <trace/events/writeback.h>
 #include "internal.h"
 
-/*
- * Inode locking rules:
- *
- * inode->i_lock protects:
- *   inode->i_state, inode->i_hash, __iget(), inode->i_io_list
- * Inode LRU list locks protect:
- *   inode->i_sb->s_inode_lru, inode->i_lru
- * inode->i_sb->s_inode_list_lock protects:
- *   inode->i_sb->s_inodes, inode->i_sb_list
- * bdi->wb.list_lock protects:
- *   bdi->wb.b_{dirty,io,more_io,dirty_time}, inode->i_io_list
- * inode_hash_lock protects:
- *   inode_hashtable, inode->i_hash
- *
- * Lock ordering:
- *
- * inode->i_sb->s_inode_list_lock
- *   inode->i_lock
- *     Inode LRU list locks
- *
- * bdi->wb.list_lock
- *   inode->i_lock
- *
- * inode_hash_lock
- *   inode->i_sb->s_inode_list_lock
- *   inode->i_lock
- *
- * iunique_lock
- *   inode_hash_lock
- */
+ 
 
 static unsigned int i_hash_mask __read_mostly;
 static unsigned int i_hash_shift __read_mostly;
 static struct hlist_head *inode_hashtable __read_mostly;
 static __cacheline_aligned_in_smp DEFINE_SPINLOCK(inode_hash_lock);
 
-/*
- * Empty aops. Can be used for the cases where the user does not
- * define any of the address_space operations.
- */
+ 
 const struct address_space_operations empty_aops = {
 };
 EXPORT_SYMBOL(empty_aops);
@@ -92,18 +57,14 @@ static inline long get_nr_inodes_unused(void)
 
 long get_nr_dirty_inodes(void)
 {
-	/* not actually dirty inodes, but a wild approximation */
+	 
 	long nr_dirty = get_nr_inodes() - get_nr_inodes_unused();
 	return nr_dirty > 0 ? nr_dirty : 0;
 }
 
-/*
- * Handle nr_inode sysctl
- */
+ 
 #ifdef CONFIG_SYSCTL
-/*
- * Statistics gathering..
- */
+ 
 static struct inodes_stat_t inodes_stat;
 
 static int proc_nr_inodes(struct ctl_table *table, int write, void *buffer,
@@ -145,14 +106,7 @@ static int no_open(struct inode *inode, struct file *file)
 	return -ENXIO;
 }
 
-/**
- * inode_init_always - perform inode structure initialisation
- * @sb: superblock inode belongs to
- * @inode: inode to initialise
- *
- * These are initializations that need to be done on every inode
- * allocation as the fields are not initialised by slab allocation.
- */
+ 
 int inode_init_always(struct super_block *sb, struct inode *inode)
 {
 	static const struct inode_operations empty_iops;
@@ -219,7 +173,7 @@ int inode_init_always(struct super_block *sb, struct inode *inode)
 		mapping_set_stable_writes(mapping);
 	inode->i_private = NULL;
 	inode->i_mapping = mapping;
-	INIT_HLIST_HEAD(&inode->i_dentry);	/* buggered by rcu freeing */
+	INIT_HLIST_HEAD(&inode->i_dentry);	 
 #ifdef CONFIG_FS_POSIX_ACL
 	inode->i_acl = inode->i_default_acl = ACL_NOT_CACHED;
 #endif
@@ -316,17 +270,7 @@ static void destroy_inode(struct inode *inode)
 	call_rcu(&inode->i_rcu, i_callback);
 }
 
-/**
- * drop_nlink - directly drop an inode's link count
- * @inode: inode
- *
- * This is a low-level filesystem helper to replace any
- * direct filesystem manipulation of i_nlink.  In cases
- * where we are attempting to track writes to the
- * filesystem, a decrement to zero means an imminent
- * write when the file is truncated and actually unlinked
- * on the filesystem.
- */
+ 
 void drop_nlink(struct inode *inode)
 {
 	WARN_ON(inode->i_nlink == 0);
@@ -336,14 +280,7 @@ void drop_nlink(struct inode *inode)
 }
 EXPORT_SYMBOL(drop_nlink);
 
-/**
- * clear_nlink - directly zero an inode's link count
- * @inode: inode
- *
- * This is a low-level filesystem helper to replace any
- * direct filesystem manipulation of i_nlink.  See
- * drop_nlink() for why we care about i_nlink hitting zero.
- */
+ 
 void clear_nlink(struct inode *inode)
 {
 	if (inode->i_nlink) {
@@ -353,20 +290,13 @@ void clear_nlink(struct inode *inode)
 }
 EXPORT_SYMBOL(clear_nlink);
 
-/**
- * set_nlink - directly set an inode's link count
- * @inode: inode
- * @nlink: new nlink (should be non-zero)
- *
- * This is a low-level filesystem helper to replace any
- * direct filesystem manipulation of i_nlink.
- */
+ 
 void set_nlink(struct inode *inode, unsigned int nlink)
 {
 	if (!nlink) {
 		clear_nlink(inode);
 	} else {
-		/* Yes, some filesystems do change nlink from zero to one */
+		 
 		if (inode->i_nlink == 0)
 			atomic_long_dec(&inode->i_sb->s_remove_count);
 
@@ -375,14 +305,7 @@ void set_nlink(struct inode *inode, unsigned int nlink)
 }
 EXPORT_SYMBOL(set_nlink);
 
-/**
- * inc_nlink - directly increment an inode's link count
- * @inode: inode
- *
- * This is a low-level filesystem helper to replace any
- * direct filesystem manipulation of i_nlink.  Currently,
- * it is only here for parity with dec_nlink().
- */
+ 
 void inc_nlink(struct inode *inode)
 {
 	if (unlikely(inode->i_nlink == 0)) {
@@ -410,11 +333,7 @@ void address_space_init_once(struct address_space *mapping)
 }
 EXPORT_SYMBOL(address_space_init_once);
 
-/*
- * These are initializations that only need to be done
- * once, because the fields are idempotent across use
- * of the inode, so let the slab aware of that.
- */
+ 
 void inode_init_once(struct inode *inode)
 {
 	memset(inode, 0, sizeof(*inode));
@@ -436,17 +355,13 @@ static void init_once(void *foo)
 	inode_init_once(inode);
 }
 
-/*
- * inode->i_lock must be held
- */
+ 
 void __iget(struct inode *inode)
 {
 	atomic_inc(&inode->i_count);
 }
 
-/*
- * get additional reference to inode; caller must already hold one.
- */
+ 
 void ihold(struct inode *inode)
 {
 	WARN_ON(atomic_inc_return(&inode->i_count) < 2);
@@ -470,11 +385,7 @@ static void __inode_add_lru(struct inode *inode, bool rotate)
 		inode->i_state |= I_REFERENCED;
 }
 
-/*
- * Add inode to LRU if needed (inode is unused and clean).
- *
- * Needs inode->i_lock held.
- */
+ 
 void inode_add_lru(struct inode *inode)
 {
 	__inode_add_lru(inode, false);
@@ -486,10 +397,7 @@ static void inode_lru_list_del(struct inode *inode)
 		this_cpu_dec(nr_unused);
 }
 
-/**
- * inode_sb_list_add - add inode to the superblock list of inodes
- * @inode: inode to add
- */
+ 
 void inode_sb_list_add(struct inode *inode)
 {
 	spin_lock(&inode->i_sb->s_inode_list_lock);
@@ -517,14 +425,7 @@ static unsigned long hash(struct super_block *sb, unsigned long hashval)
 	return tmp & i_hash_mask;
 }
 
-/**
- *	__insert_inode_hash - hash an inode
- *	@inode: unhashed inode
- *	@hashval: unsigned long value used to locate this object in the
- *		inode_hashtable.
- *
- *	Add an inode to the inode hash for this superblock.
- */
+ 
 void __insert_inode_hash(struct inode *inode, unsigned long hashval)
 {
 	struct hlist_head *b = inode_hashtable + hash(inode->i_sb, hashval);
@@ -537,12 +438,7 @@ void __insert_inode_hash(struct inode *inode, unsigned long hashval)
 }
 EXPORT_SYMBOL(__insert_inode_hash);
 
-/**
- *	__remove_inode_hash - remove an inode from the hash
- *	@inode: inode to unhash
- *
- *	Remove an inode from the superblock.
- */
+ 
 void __remove_inode_hash(struct inode *inode)
 {
 	spin_lock(&inode_hash_lock);
@@ -562,10 +458,7 @@ void dump_mapping(const struct address_space *mapping)
 	struct dentry dentry;
 	unsigned long ino;
 
-	/*
-	 * If mapping is an invalid pointer, we don't want to crash
-	 * accessing it, so probe everything depending on it carefully.
-	 */
+	 
 	if (get_kernel_nofault(host, &mapping->host) ||
 	    get_kernel_nofault(a_ops, &mapping->a_ops)) {
 		pr_warn("invalid mapping:%px\n", mapping);
@@ -595,53 +488,27 @@ void dump_mapping(const struct address_space *mapping)
 		return;
 	}
 
-	/*
-	 * if dentry is corrupted, the %pd handler may still crash,
-	 * but it's unlikely that we reach here with a corrupt mapping
-	 */
+	 
 	pr_warn("aops:%ps ino:%lx dentry name:\"%pd\"\n", a_ops, ino, &dentry);
 }
 
 void clear_inode(struct inode *inode)
 {
-	/*
-	 * We have to cycle the i_pages lock here because reclaim can be in the
-	 * process of removing the last page (in __filemap_remove_folio())
-	 * and we must not free the mapping under it.
-	 */
+	 
 	xa_lock_irq(&inode->i_data.i_pages);
 	BUG_ON(inode->i_data.nrpages);
-	/*
-	 * Almost always, mapping_empty(&inode->i_data) here; but there are
-	 * two known and long-standing ways in which nodes may get left behind
-	 * (when deep radix-tree node allocation failed partway; or when THP
-	 * collapse_file() failed). Until those two known cases are cleaned up,
-	 * or a cleanup function is called here, do not BUG_ON(!mapping_empty),
-	 * nor even WARN_ON(!mapping_empty).
-	 */
+	 
 	xa_unlock_irq(&inode->i_data.i_pages);
 	BUG_ON(!list_empty(&inode->i_data.private_list));
 	BUG_ON(!(inode->i_state & I_FREEING));
 	BUG_ON(inode->i_state & I_CLEAR);
 	BUG_ON(!list_empty(&inode->i_wb_list));
-	/* don't need i_lock here, no concurrent mods to i_state */
+	 
 	inode->i_state = I_FREEING | I_CLEAR;
 }
 EXPORT_SYMBOL(clear_inode);
 
-/*
- * Free the inode passed in, removing it from the lists it is still connected
- * to. We remove any pages still attached to the inode and wait for any IO that
- * is still in progress before finally destroying the inode.
- *
- * An inode must already be marked I_FREEING so that we avoid the inode being
- * moved back onto lists if we race with other code that manipulates the lists
- * (e.g. writeback_single_inode). The caller is responsible for setting this.
- *
- * An inode must already be removed from the LRU list before being evicted from
- * the cache. This should occur atomically with setting the I_FREEING state
- * flag, so no inodes here should ever be on the LRU when being evicted.
- */
+ 
 static void evict(struct inode *inode)
 {
 	const struct super_operations *op = inode->i_sb->s_op;
@@ -654,12 +521,7 @@ static void evict(struct inode *inode)
 
 	inode_sb_list_del(inode);
 
-	/*
-	 * Wait for flusher thread to be done with the inode so that filesystem
-	 * does not start destroying it while writeback is still running. Since
-	 * the inode has I_FREEING set, flusher thread won't start new work on
-	 * the inode.  We just have to wait for running writeback to finish.
-	 */
+	 
 	inode_wait_for_writeback(inode);
 
 	if (op->evict_inode) {
@@ -681,13 +543,7 @@ static void evict(struct inode *inode)
 	destroy_inode(inode);
 }
 
-/*
- * dispose_list - dispose of the contents of a local list
- * @head: the head of the list to free
- *
- * Dispose-list gets a local list with local inodes in it, so it doesn't
- * need to worry about list corruption and SMP locks.
- */
+ 
 static void dispose_list(struct list_head *head)
 {
 	while (!list_empty(head)) {
@@ -701,15 +557,7 @@ static void dispose_list(struct list_head *head)
 	}
 }
 
-/**
- * evict_inodes	- evict all evictable inodes for a superblock
- * @sb:		superblock to operate on
- *
- * Make sure that no inodes with zero refcount are retained.  This is
- * called by superblock shutdown after having SB_ACTIVE flag removed,
- * so any inode reaching zero refcount during or after that call will
- * be immediately evicted.
- */
+ 
 void evict_inodes(struct super_block *sb)
 {
 	struct inode *inode, *next;
@@ -732,11 +580,7 @@ again:
 		spin_unlock(&inode->i_lock);
 		list_add(&inode->i_lru, &dispose);
 
-		/*
-		 * We can have a ton of inodes to evict at unmount time given
-		 * enough memory, check to see if we need to go to sleep for a
-		 * bit so we don't livelock.
-		 */
+		 
 		if (need_resched()) {
 			spin_unlock(&sb->s_inode_list_lock);
 			cond_resched();
@@ -750,12 +594,7 @@ again:
 }
 EXPORT_SYMBOL_GPL(evict_inodes);
 
-/**
- * invalidate_inodes	- attempt to free all inodes on a superblock
- * @sb:		superblock to operate on
- *
- * Attempts to free all inodes (including dirty inodes) for a given superblock.
- */
+ 
 void invalidate_inodes(struct super_block *sb)
 {
 	struct inode *inode, *next;
@@ -790,36 +629,18 @@ again:
 	dispose_list(&dispose);
 }
 
-/*
- * Isolate the inode from the LRU in preparation for freeing it.
- *
- * If the inode has the I_REFERENCED flag set, then it means that it has been
- * used recently - the flag is set in iput_final(). When we encounter such an
- * inode, clear the flag and move it to the back of the LRU so it gets another
- * pass through the LRU before it gets reclaimed. This is necessary because of
- * the fact we are doing lazy LRU updates to minimise lock contention so the
- * LRU does not have strict ordering. Hence we don't want to reclaim inodes
- * with this flag set because they are the inodes that are out of order.
- */
+ 
 static enum lru_status inode_lru_isolate(struct list_head *item,
 		struct list_lru_one *lru, spinlock_t *lru_lock, void *arg)
 {
 	struct list_head *freeable = arg;
 	struct inode	*inode = container_of(item, struct inode, i_lru);
 
-	/*
-	 * We are inverting the lru lock/inode->i_lock here, so use a
-	 * trylock. If we fail to get the lock, just skip it.
-	 */
+	 
 	if (!spin_trylock(&inode->i_lock))
 		return LRU_SKIP;
 
-	/*
-	 * Inodes can get referenced, redirtied, or repopulated while
-	 * they're already on the LRU, and this can make them
-	 * unreclaimable for a while. Remove them lazily here; iput,
-	 * sync, or the last page cache deletion will requeue them.
-	 */
+	 
 	if (atomic_read(&inode->i_count) ||
 	    (inode->i_state & ~I_REFERENCED) ||
 	    !mapping_shrinkable(&inode->i_data)) {
@@ -829,18 +650,14 @@ static enum lru_status inode_lru_isolate(struct list_head *item,
 		return LRU_REMOVED;
 	}
 
-	/* Recently referenced inodes get one more pass */
+	 
 	if (inode->i_state & I_REFERENCED) {
 		inode->i_state &= ~I_REFERENCED;
 		spin_unlock(&inode->i_lock);
 		return LRU_ROTATE;
 	}
 
-	/*
-	 * On highmem systems, mapping_shrinkable() permits dropping
-	 * page cache in order to free up struct inodes: lowmem might
-	 * be under pressure before the cache inside the highmem zone.
-	 */
+	 
 	if (inode_has_buffers(inode) || !mapping_empty(&inode->i_data)) {
 		__iget(inode);
 		spin_unlock(&inode->i_lock);
@@ -868,12 +685,7 @@ static enum lru_status inode_lru_isolate(struct list_head *item,
 	return LRU_REMOVED;
 }
 
-/*
- * Walk the superblock inode LRU for freeable inodes and attempt to free them.
- * This is called from the superblock shrinker function with a number of inodes
- * to trim from the LRU. Inodes to be freed are moved to a temporary list and
- * then are freed outside inode_lock by dispose_list().
- */
+ 
 long prune_icache_sb(struct super_block *sb, struct shrink_control *sc)
 {
 	LIST_HEAD(freeable);
@@ -886,9 +698,7 @@ long prune_icache_sb(struct super_block *sb, struct shrink_control *sc)
 }
 
 static void __wait_on_freeing_inode(struct inode *inode);
-/*
- * Called with the inode lock held.
- */
+ 
 static struct inode *find_inode(struct super_block *sb,
 				struct hlist_head *head,
 				int (*test)(struct inode *, void *),
@@ -918,10 +728,7 @@ repeat:
 	return NULL;
 }
 
-/*
- * find_inode_fast is the fast path version of find_inode, see the comment at
- * iget_locked for details.
- */
+ 
 static struct inode *find_inode_fast(struct super_block *sb,
 				struct hlist_head *head, unsigned long ino)
 {
@@ -949,21 +756,7 @@ repeat:
 	return NULL;
 }
 
-/*
- * Each cpu owns a range of LAST_INO_BATCH numbers.
- * 'shared_last_ino' is dirtied only once out of LAST_INO_BATCH allocations,
- * to renew the exhausted range.
- *
- * This does not significantly increase overflow rate because every CPU can
- * consume at most LAST_INO_BATCH-1 unused inode numbers. So there is
- * NR_CPUS*(LAST_INO_BATCH-1) wastage. At 4096 and 1024, this is ~0.1% of the
- * 2^32 range, and is a worst-case. Even a 50% wastage would only increase
- * overflow rate by 2x, which does not seem too significant.
- *
- * On a 32bit, non LFS stat() call, glibc will generate an EOVERFLOW
- * error if st_ino won't fit in target struct field. Use 32bit counter
- * here to attempt to avoid that.
- */
+ 
 #define LAST_INO_BATCH 1024
 static DEFINE_PER_CPU(unsigned int, last_ino);
 
@@ -982,7 +775,7 @@ unsigned int get_next_ino(void)
 #endif
 
 	res++;
-	/* get_next_ino should not provide a 0 inode number */
+	 
 	if (unlikely(!res))
 		res++;
 	*p = res;
@@ -991,16 +784,7 @@ unsigned int get_next_ino(void)
 }
 EXPORT_SYMBOL(get_next_ino);
 
-/**
- *	new_inode_pseudo 	- obtain an inode
- *	@sb: superblock
- *
- *	Allocates a new inode for given superblock.
- *	Inode wont be chained in superblock s_inodes list
- *	This means :
- *	- fs can't be unmount
- *	- quotas, fsnotify, writeback can't work
- */
+ 
 struct inode *new_inode_pseudo(struct super_block *sb)
 {
 	struct inode *inode = alloc_inode(sb);
@@ -1013,18 +797,7 @@ struct inode *new_inode_pseudo(struct super_block *sb)
 	return inode;
 }
 
-/**
- *	new_inode 	- obtain an inode
- *	@sb: superblock
- *
- *	Allocates a new inode for given superblock. The default gfp_mask
- *	for allocations related to inode->i_mapping is GFP_HIGHUSER_MOVABLE.
- *	If HIGHMEM pages are unsuitable or it is known that pages allocated
- *	for the page cache are not reclaimable or migratable,
- *	mapping_set_gfp_mask() must be called with suitable flags on the
- *	newly created inode's mapping
- *
- */
+ 
 struct inode *new_inode(struct super_block *sb)
 {
 	struct inode *inode;
@@ -1042,12 +815,10 @@ void lockdep_annotate_inode_mutex_key(struct inode *inode)
 	if (S_ISDIR(inode->i_mode)) {
 		struct file_system_type *type = inode->i_sb->s_type;
 
-		/* Set new key only if filesystem hasn't already changed it */
+		 
 		if (lockdep_match_class(&inode->i_rwsem, &type->i_mutex_key)) {
-			/*
-			 * ensure nobody is actually holding i_mutex
-			 */
-			// mutex_destroy(&inode->i_mutex);
+			 
+			 
 			init_rwsem(&inode->i_rwsem);
 			lockdep_set_class(&inode->i_rwsem,
 					  &type->i_mutex_dir_key);
@@ -1057,13 +828,7 @@ void lockdep_annotate_inode_mutex_key(struct inode *inode)
 EXPORT_SYMBOL(lockdep_annotate_inode_mutex_key);
 #endif
 
-/**
- * unlock_new_inode - clear the I_NEW state and wake up any waiters
- * @inode:	new inode to unlock
- *
- * Called when the inode is fully initialised to clear the new state of the
- * inode and wake up anyone waiting for the inode to finish initialisation.
- */
+ 
 void unlock_new_inode(struct inode *inode)
 {
 	lockdep_annotate_inode_mutex_key(inode);
@@ -1089,36 +854,18 @@ void discard_new_inode(struct inode *inode)
 }
 EXPORT_SYMBOL(discard_new_inode);
 
-/**
- * lock_two_inodes - lock two inodes (may be regular files but also dirs)
- *
- * Lock any non-NULL argument. The caller must make sure that if he is passing
- * in two directories, one is not ancestor of the other.  Zero, one or two
- * objects may be locked by this function.
- *
- * @inode1: first inode to lock
- * @inode2: second inode to lock
- * @subclass1: inode lock subclass for the first lock obtained
- * @subclass2: inode lock subclass for the second lock obtained
- */
+ 
 void lock_two_inodes(struct inode *inode1, struct inode *inode2,
 		     unsigned subclass1, unsigned subclass2)
 {
 	if (!inode1 || !inode2) {
-		/*
-		 * Make sure @subclass1 will be used for the acquired lock.
-		 * This is not strictly necessary (no current caller cares) but
-		 * let's keep things consistent.
-		 */
+		 
 		if (!inode1)
 			swap(inode1, inode2);
 		goto lock;
 	}
 
-	/*
-	 * If one object is directory and the other is not, we must make sure
-	 * to lock directory first as the other object may be its child.
-	 */
+	 
 	if (S_ISDIR(inode2->i_mode) == S_ISDIR(inode1->i_mode)) {
 		if (inode1 > inode2)
 			swap(inode1, inode2);
@@ -1131,15 +878,7 @@ lock:
 		inode_lock_nested(inode2, subclass2);
 }
 
-/**
- * lock_two_nondirectories - take two i_mutexes on non-directory objects
- *
- * Lock any non-NULL argument. Passed objects must not be directories.
- * Zero, one or two objects may be locked by this function.
- *
- * @inode1: first inode to lock
- * @inode2: second inode to lock
- */
+ 
 void lock_two_nondirectories(struct inode *inode1, struct inode *inode2)
 {
 	if (inode1)
@@ -1150,11 +889,7 @@ void lock_two_nondirectories(struct inode *inode1, struct inode *inode2)
 }
 EXPORT_SYMBOL(lock_two_nondirectories);
 
-/**
- * unlock_two_nondirectories - release locks from lock_two_nondirectories()
- * @inode1: first inode to unlock
- * @inode2: second inode to unlock
- */
+ 
 void unlock_two_nondirectories(struct inode *inode1, struct inode *inode2)
 {
 	if (inode1) {
@@ -1168,26 +903,7 @@ void unlock_two_nondirectories(struct inode *inode1, struct inode *inode2)
 }
 EXPORT_SYMBOL(unlock_two_nondirectories);
 
-/**
- * inode_insert5 - obtain an inode from a mounted file system
- * @inode:	pre-allocated inode to use for insert to cache
- * @hashval:	hash value (usually inode number) to get
- * @test:	callback used for comparisons between inodes
- * @set:	callback used to initialize a new struct inode
- * @data:	opaque data pointer to pass to @test and @set
- *
- * Search for the inode specified by @hashval and @data in the inode cache,
- * and if present it is return it with an increased reference count. This is
- * a variant of iget5_locked() for callers that don't want to fail on memory
- * allocation of inode.
- *
- * If the inode is not in cache, insert the pre-allocated inode to cache and
- * return it locked, hashed, and with the I_NEW flag set. The file system gets
- * to fill it in before unlocking it via unlock_new_inode().
- *
- * Note both @test and @set are called with the inode_hash_lock held, so can't
- * sleep.
- */
+ 
 struct inode *inode_insert5(struct inode *inode, unsigned long hashval,
 			    int (*test)(struct inode *, void *),
 			    int (*set)(struct inode *, void *), void *data)
@@ -1199,10 +915,7 @@ again:
 	spin_lock(&inode_hash_lock);
 	old = find_inode(inode->i_sb, head, test, data);
 	if (unlikely(old)) {
-		/*
-		 * Uhhuh, somebody else created the same inode under us.
-		 * Use the old inode instead of the preallocated one.
-		 */
+		 
 		spin_unlock(&inode_hash_lock);
 		if (IS_ERR(old))
 			return NULL;
@@ -1219,19 +932,13 @@ again:
 		goto unlock;
 	}
 
-	/*
-	 * Return the locked inode with I_NEW set, the
-	 * caller is responsible for filling in the contents
-	 */
+	 
 	spin_lock(&inode->i_lock);
 	inode->i_state |= I_NEW;
 	hlist_add_head_rcu(&inode->i_hash, head);
 	spin_unlock(&inode->i_lock);
 
-	/*
-	 * Add inode to the sb list if it's not already. It has I_NEW at this
-	 * point, so it should be safe to test i_sb_list locklessly.
-	 */
+	 
 	if (list_empty(&inode->i_sb_list))
 		inode_sb_list_add(inode);
 unlock:
@@ -1241,26 +948,7 @@ unlock:
 }
 EXPORT_SYMBOL(inode_insert5);
 
-/**
- * iget5_locked - obtain an inode from a mounted file system
- * @sb:		super block of file system
- * @hashval:	hash value (usually inode number) to get
- * @test:	callback used for comparisons between inodes
- * @set:	callback used to initialize a new struct inode
- * @data:	opaque data pointer to pass to @test and @set
- *
- * Search for the inode specified by @hashval and @data in the inode cache,
- * and if present it is return it with an increased reference count. This is
- * a generalized version of iget_locked() for file systems where the inode
- * number is not sufficient for unique identification of an inode.
- *
- * If the inode is not in cache, allocate a new inode and return it locked,
- * hashed, and with the I_NEW flag set. The file system gets to fill it in
- * before unlocking it via unlock_new_inode().
- *
- * Note both @test and @set are called with the inode_hash_lock held, so can't
- * sleep.
- */
+ 
 struct inode *iget5_locked(struct super_block *sb, unsigned long hashval,
 		int (*test)(struct inode *, void *),
 		int (*set)(struct inode *, void *), void *data)
@@ -1281,19 +969,7 @@ struct inode *iget5_locked(struct super_block *sb, unsigned long hashval,
 }
 EXPORT_SYMBOL(iget5_locked);
 
-/**
- * iget_locked - obtain an inode from a mounted file system
- * @sb:		super block of file system
- * @ino:	inode number to get
- *
- * Search for the inode specified by @ino in the inode cache and if present
- * return it with an increased reference count. This is for file systems
- * where the inode number is sufficient for unique identification of an inode.
- *
- * If the inode is not in cache, allocate a new inode and return it locked,
- * hashed, and with the I_NEW flag set.  The file system gets to fill it in
- * before unlocking it via unlock_new_inode().
- */
+ 
 struct inode *iget_locked(struct super_block *sb, unsigned long ino)
 {
 	struct hlist_head *head = inode_hashtable + hash(sb, ino);
@@ -1318,7 +994,7 @@ again:
 		struct inode *old;
 
 		spin_lock(&inode_hash_lock);
-		/* We released the lock, so.. */
+		 
 		old = find_inode_fast(sb, head, ino);
 		if (!old) {
 			inode->i_ino = ino;
@@ -1329,17 +1005,11 @@ again:
 			inode_sb_list_add(inode);
 			spin_unlock(&inode_hash_lock);
 
-			/* Return the locked inode with I_NEW set, the
-			 * caller is responsible for filling in the contents
-			 */
+			 
 			return inode;
 		}
 
-		/*
-		 * Uhhuh, somebody else created the same inode under
-		 * us. Use the old inode instead of the one we just
-		 * allocated.
-		 */
+		 
 		spin_unlock(&inode_hash_lock);
 		destroy_inode(inode);
 		if (IS_ERR(old))
@@ -1355,13 +1025,7 @@ again:
 }
 EXPORT_SYMBOL(iget_locked);
 
-/*
- * search the inode cache for a matching inode number.
- * If we find one, then the inode number we are trying to
- * allocate is not unique and so we should not use it.
- *
- * Returns 1 if the inode number is unique, 0 if it is not.
- */
+ 
 static int test_inode_iunique(struct super_block *sb, unsigned long ino)
 {
 	struct hlist_head *b = inode_hashtable + hash(sb, ino);
@@ -1374,27 +1038,10 @@ static int test_inode_iunique(struct super_block *sb, unsigned long ino)
 	return 1;
 }
 
-/**
- *	iunique - get a unique inode number
- *	@sb: superblock
- *	@max_reserved: highest reserved inode number
- *
- *	Obtain an inode number that is unique on the system for a given
- *	superblock. This is used by file systems that have no natural
- *	permanent inode numbering system. An inode number is returned that
- *	is higher than the reserved limit but unique.
- *
- *	BUGS:
- *	With a large number of inodes live on the file system this function
- *	currently becomes quite slow.
- */
+ 
 ino_t iunique(struct super_block *sb, ino_t max_reserved)
 {
-	/*
-	 * On a 32bit, non LFS stat() call, glibc will generate an EOVERFLOW
-	 * error if st_ino won't fit in target struct field. Use 32bit counter
-	 * here to attempt to avoid that.
-	 */
+	 
 	static DEFINE_SPINLOCK(iunique_lock);
 	static unsigned int counter;
 	ino_t res;
@@ -1421,33 +1068,14 @@ struct inode *igrab(struct inode *inode)
 		spin_unlock(&inode->i_lock);
 	} else {
 		spin_unlock(&inode->i_lock);
-		/*
-		 * Handle the case where s_op->clear_inode is not been
-		 * called yet, and somebody is calling igrab
-		 * while the inode is getting freed.
-		 */
+		 
 		inode = NULL;
 	}
 	return inode;
 }
 EXPORT_SYMBOL(igrab);
 
-/**
- * ilookup5_nowait - search for an inode in the inode cache
- * @sb:		super block of file system to search
- * @hashval:	hash value (usually inode number) to search for
- * @test:	callback used for comparisons between inodes
- * @data:	opaque data pointer to pass to @test
- *
- * Search for the inode specified by @hashval and @data in the inode cache.
- * If the inode is in the cache, the inode is returned with an incremented
- * reference count.
- *
- * Note: I_NEW is not waited upon so you have to be very careful what you do
- * with the returned inode.  You probably should be using ilookup5() instead.
- *
- * Note2: @test is called with the inode_hash_lock held, so can't sleep.
- */
+ 
 struct inode *ilookup5_nowait(struct super_block *sb, unsigned long hashval,
 		int (*test)(struct inode *, void *), void *data)
 {
@@ -1462,23 +1090,7 @@ struct inode *ilookup5_nowait(struct super_block *sb, unsigned long hashval,
 }
 EXPORT_SYMBOL(ilookup5_nowait);
 
-/**
- * ilookup5 - search for an inode in the inode cache
- * @sb:		super block of file system to search
- * @hashval:	hash value (usually inode number) to search for
- * @test:	callback used for comparisons between inodes
- * @data:	opaque data pointer to pass to @test
- *
- * Search for the inode specified by @hashval and @data in the inode cache,
- * and if the inode is in the cache, return the inode with an incremented
- * reference count.  Waits on I_NEW before returning the inode.
- * returned with an incremented reference count.
- *
- * This is a generalized version of ilookup() for file systems where the
- * inode number is not sufficient for unique identification of an inode.
- *
- * Note: @test is called with the inode_hash_lock held, so can't sleep.
- */
+ 
 struct inode *ilookup5(struct super_block *sb, unsigned long hashval,
 		int (*test)(struct inode *, void *), void *data)
 {
@@ -1496,14 +1108,7 @@ again:
 }
 EXPORT_SYMBOL(ilookup5);
 
-/**
- * ilookup - search for an inode in the inode cache
- * @sb:		super block of file system to search
- * @ino:	inode number to search for
- *
- * Search for the inode @ino in the inode cache, and if the inode is in the
- * cache, the inode is returned with an incremented reference count.
- */
+ 
 struct inode *ilookup(struct super_block *sb, unsigned long ino)
 {
 	struct hlist_head *head = inode_hashtable + hash(sb, ino);
@@ -1526,29 +1131,7 @@ again:
 }
 EXPORT_SYMBOL(ilookup);
 
-/**
- * find_inode_nowait - find an inode in the inode cache
- * @sb:		super block of file system to search
- * @hashval:	hash value (usually inode number) to search for
- * @match:	callback used for comparisons between inodes
- * @data:	opaque data pointer to pass to @match
- *
- * Search for the inode specified by @hashval and @data in the inode
- * cache, where the helper function @match will return 0 if the inode
- * does not match, 1 if the inode does match, and -1 if the search
- * should be stopped.  The @match function must be responsible for
- * taking the i_lock spin_lock and checking i_state for an inode being
- * freed or being initialized, and incrementing the reference count
- * before returning 1.  It also must not sleep, since it is called with
- * the inode_hash_lock spinlock held.
- *
- * This is a even more generalized version of ilookup5() when the
- * function must never block --- find_inode() can block in
- * __wait_on_freeing_inode() --- or when the caller can not increment
- * the reference count because the resulting iput() might cause an
- * inode eviction.  The tradeoff is that the @match funtion must be
- * very carefully implemented.
- */
+ 
 struct inode *find_inode_nowait(struct super_block *sb,
 				unsigned long hashval,
 				int (*match)(struct inode *, unsigned long,
@@ -1576,27 +1159,7 @@ out:
 }
 EXPORT_SYMBOL(find_inode_nowait);
 
-/**
- * find_inode_rcu - find an inode in the inode cache
- * @sb:		Super block of file system to search
- * @hashval:	Key to hash
- * @test:	Function to test match on an inode
- * @data:	Data for test function
- *
- * Search for the inode specified by @hashval and @data in the inode cache,
- * where the helper function @test will return 0 if the inode does not match
- * and 1 if it does.  The @test function must be responsible for taking the
- * i_lock spin_lock and checking i_state for an inode being freed or being
- * initialized.
- *
- * If successful, this will return the inode for which the @test function
- * returned 1 and NULL otherwise.
- *
- * The @test function is not permitted to take a ref on any inode presented.
- * It is also not permitted to sleep.
- *
- * The caller must hold the RCU read lock.
- */
+ 
 struct inode *find_inode_rcu(struct super_block *sb, unsigned long hashval,
 			     int (*test)(struct inode *, void *), void *data)
 {
@@ -1616,25 +1179,7 @@ struct inode *find_inode_rcu(struct super_block *sb, unsigned long hashval,
 }
 EXPORT_SYMBOL(find_inode_rcu);
 
-/**
- * find_inode_by_ino_rcu - Find an inode in the inode cache
- * @sb:		Super block of file system to search
- * @ino:	The inode number to match
- *
- * Search for the inode specified by @hashval and @data in the inode cache,
- * where the helper function @test will return 0 if the inode does not match
- * and 1 if it does.  The @test function must be responsible for taking the
- * i_lock spin_lock and checking i_state for an inode being freed or being
- * initialized.
- *
- * If successful, this will return the inode for which the @test function
- * returned 1 and NULL otherwise.
- *
- * The @test function is not permitted to take a ref on any inode presented.
- * It is also not permitted to sleep.
- *
- * The caller must hold the RCU read lock.
- */
+ 
 struct inode *find_inode_by_ino_rcu(struct super_block *sb,
 				    unsigned long ino)
 {
@@ -1724,16 +1269,7 @@ int generic_delete_inode(struct inode *inode)
 }
 EXPORT_SYMBOL(generic_delete_inode);
 
-/*
- * Called when we're dropping the last reference
- * to an inode.
- *
- * Call the FS "drop_inode()" function, defaulting to
- * the legacy UNIX filesystem behaviour.  If it tells
- * us to evict inode, do so.  Otherwise, retain inode
- * in cache if fs is alive, sync and evict if fs is
- * shutting down.
- */
+ 
 static void iput_final(struct inode *inode)
 {
 	struct super_block *sb = inode->i_sb;
@@ -1777,15 +1313,7 @@ static void iput_final(struct inode *inode)
 	evict(inode);
 }
 
-/**
- *	iput	- put an inode
- *	@inode: inode to put
- *
- *	Puts an inode, dropping its usage count. If the inode use count hits
- *	zero, the inode is then freed and may also be destroyed.
- *
- *	Consequently, iput() can sleep.
- */
+ 
 void iput(struct inode *inode)
 {
 	if (!inode)
@@ -1806,20 +1334,7 @@ retry:
 EXPORT_SYMBOL(iput);
 
 #ifdef CONFIG_BLOCK
-/**
- *	bmap	- find a block number in a file
- *	@inode:  inode owning the block number being requested
- *	@block: pointer containing the block to find
- *
- *	Replaces the value in ``*block`` with the block number on the device holding
- *	corresponding to the requested block number in the file.
- *	That is, asked for block 4 of inode 1 the function will replace the
- *	4 in ``*block``, with disk block relative to the disk start that holds that
- *	block of the file.
- *
- *	Returns -EINVAL in case of error, 0 otherwise. If mapping falls into a
- *	hole, returns 0 and ``*block`` is also set to 0.
- */
+ 
 int bmap(struct inode *inode, sector_t *block)
 {
 	if (!inode->i_mapping->a_ops->bmap)
@@ -1831,11 +1346,7 @@ int bmap(struct inode *inode, sector_t *block)
 EXPORT_SYMBOL(bmap);
 #endif
 
-/*
- * With relative atime, only update atime if the previous atime is
- * earlier than or equal to either the ctime or mtime,
- * or if at least a day has passed since the last atime update.
- */
+ 
 static int relatime_need_update(struct vfsmount *mnt, struct inode *inode,
 			     struct timespec64 now)
 {
@@ -1843,46 +1354,22 @@ static int relatime_need_update(struct vfsmount *mnt, struct inode *inode,
 
 	if (!(mnt->mnt_flags & MNT_RELATIME))
 		return 1;
-	/*
-	 * Is mtime younger than or equal to atime? If yes, update atime:
-	 */
+	 
 	if (timespec64_compare(&inode->i_mtime, &inode->i_atime) >= 0)
 		return 1;
-	/*
-	 * Is ctime younger than or equal to atime? If yes, update atime:
-	 */
+	 
 	ctime = inode_get_ctime(inode);
 	if (timespec64_compare(&ctime, &inode->i_atime) >= 0)
 		return 1;
 
-	/*
-	 * Is the previous atime value older than a day? If yes,
-	 * update atime:
-	 */
+	 
 	if ((long)(now.tv_sec - inode->i_atime.tv_sec) >= 24*60*60)
 		return 1;
-	/*
-	 * Good, we can skip the atime update:
-	 */
+	 
 	return 0;
 }
 
-/**
- * inode_update_timestamps - update the timestamps on the inode
- * @inode: inode to be updated
- * @flags: S_* flags that needed to be updated
- *
- * The update_time function is called when an inode's timestamps need to be
- * updated for a read or write operation. This function handles updating the
- * actual timestamps. It's up to the caller to ensure that the inode is marked
- * dirty appropriately.
- *
- * In the case where any of S_MTIME, S_CTIME, or S_VERSION need to be updated,
- * attempt to update all three of them. S_ATIME updates can be handled
- * independently of the rest.
- *
- * Returns a set of S_* flags indicating which values changed.
- */
+ 
 int inode_update_timestamps(struct inode *inode, int flags)
 {
 	int updated = 0;
@@ -1914,18 +1401,7 @@ int inode_update_timestamps(struct inode *inode, int flags)
 }
 EXPORT_SYMBOL(inode_update_timestamps);
 
-/**
- * generic_update_time - update the timestamps on the inode
- * @inode: inode to be updated
- * @flags: S_* flags that needed to be updated
- *
- * The update_time function is called when an inode's timestamps need to be
- * updated for a read or write operation. In the case where any of S_MTIME, S_CTIME,
- * or S_VERSION need to be updated we attempt to update all three of them. S_ATIME
- * updates can be handled done independently of the rest.
- *
- * Returns a S_* mask indicating which fields were updated.
- */
+ 
 int generic_update_time(struct inode *inode, int flags)
 {
 	int updated = inode_update_timestamps(inode, flags);
@@ -1940,10 +1416,7 @@ int generic_update_time(struct inode *inode, int flags)
 }
 EXPORT_SYMBOL(generic_update_time);
 
-/*
- * This does the actual work of updating an inodes time or version.  Must have
- * had called mnt_want_write() before calling this.
- */
+ 
 int inode_update_time(struct inode *inode, int flags)
 {
 	if (inode->i_op->update_time)
@@ -1953,15 +1426,7 @@ int inode_update_time(struct inode *inode, int flags)
 }
 EXPORT_SYMBOL(inode_update_time);
 
-/**
- *	atime_needs_update	-	update the access time
- *	@path: the &struct path to update
- *	@inode: inode to update
- *
- *	Update the accessed time on an inode and mark it for writeback.
- *	This function automatically handles read only file systems and media,
- *	as well as the "noatime" flag and inode specific "noatime" markers.
- */
+ 
 bool atime_needs_update(const struct path *path, struct inode *inode)
 {
 	struct vfsmount *mnt = path->mnt;
@@ -1970,9 +1435,7 @@ bool atime_needs_update(const struct path *path, struct inode *inode)
 	if (inode->i_flags & S_NOATIME)
 		return false;
 
-	/* Atime updates will likely cause i_uid and i_gid to be written
-	 * back improprely if their true value is unknown to the vfs.
-	 */
+	 
 	if (HAS_UNMAPPED_ID(mnt_idmap(mnt), inode))
 		return false;
 
@@ -2010,15 +1473,7 @@ void touch_atime(const struct path *path)
 
 	if (__mnt_want_write(mnt) != 0)
 		goto skip_update;
-	/*
-	 * File systems can error out when updating inodes if they need to
-	 * allocate new space to modify an inode (such is the case for
-	 * Btrfs), but since we touch atime while walking down the path we
-	 * really don't care if we failed to update the atime of the file,
-	 * so just ignore the return value.
-	 * We may also fail on filesystems that have the ability to make parts
-	 * of the fs read only, e.g. subvolumes in Btrfs.
-	 */
+	 
 	inode_update_time(inode, S_ATIME);
 	__mnt_drop_write(mnt);
 skip_update:
@@ -2026,11 +1481,7 @@ skip_update:
 }
 EXPORT_SYMBOL(touch_atime);
 
-/*
- * Return mask of changes for notify_change() that need to be done as a
- * response to write or truncate. Return 0 if nothing has to be changed.
- * Negative value on error (change should be denied).
- */
+ 
 int dentry_needs_remove_privs(struct mnt_idmap *idmap,
 			      struct dentry *dentry)
 {
@@ -2056,10 +1507,7 @@ static int __remove_privs(struct mnt_idmap *idmap,
 	struct iattr newattrs;
 
 	newattrs.ia_valid = ATTR_FORCE | kill;
-	/*
-	 * Note we call this on write, so notify_change will not
-	 * encounter any conflicting delegations:
-	 */
+	 
 	return notify_change(idmap, dentry, &newattrs, NULL);
 }
 
@@ -2089,15 +1537,7 @@ static int __file_remove_privs(struct file *file, unsigned int flags)
 	return error;
 }
 
-/**
- * file_remove_privs - remove special file privileges (suid, capabilities)
- * @file: file to remove privileges from
- *
- * When file is modified by a write or truncation ensure that special
- * file privileges are removed.
- *
- * Return: 0 on success, negative errno on failure.
- */
+ 
 int file_remove_privs(struct file *file)
 {
 	return __file_remove_privs(file, 0);
@@ -2110,7 +1550,7 @@ static int inode_needs_update_time(struct inode *inode)
 	struct timespec64 now = current_time(inode);
 	struct timespec64 ctime;
 
-	/* First try to exhaust all avenues to not sync */
+	 
 	if (IS_NOCMTIME(inode))
 		return 0;
 
@@ -2132,7 +1572,7 @@ static int __file_update_time(struct file *file, int sync_mode)
 	int ret = 0;
 	struct inode *inode = file_inode(file);
 
-	/* try to update time settings */
+	 
 	if (!__mnt_want_write_file(file)) {
 		ret = inode_update_time(inode, sync_mode);
 		__mnt_drop_write_file(file);
@@ -2141,20 +1581,7 @@ static int __file_update_time(struct file *file, int sync_mode)
 	return ret;
 }
 
-/**
- * file_update_time - update mtime and ctime time
- * @file: file accessed
- *
- * Update the mtime and ctime members of an inode and mark the inode for
- * writeback. Note that this function is meant exclusively for usage in
- * the file write path of filesystems, and filesystems may choose to
- * explicitly ignore updates via this function with the _NOCMTIME inode
- * flag, e.g. for network filesystem where these imestamps are handled
- * by the server. This can return an error for file systems who need to
- * allocate space in order to update an inode.
- *
- * Return: 0 on success, negative errno on failure.
- */
+ 
 int file_update_time(struct file *file)
 {
 	int ret;
@@ -2168,30 +1595,13 @@ int file_update_time(struct file *file)
 }
 EXPORT_SYMBOL(file_update_time);
 
-/**
- * file_modified_flags - handle mandated vfs changes when modifying a file
- * @file: file that was modified
- * @flags: kiocb flags
- *
- * When file has been modified ensure that special
- * file privileges are removed and time settings are updated.
- *
- * If IOCB_NOWAIT is set, special file privileges will not be removed and
- * time settings will not be updated. It will return -EAGAIN.
- *
- * Context: Caller must hold the file's inode lock.
- *
- * Return: 0 on success, negative errno on failure.
- */
+ 
 static int file_modified_flags(struct file *file, int flags)
 {
 	int ret;
 	struct inode *inode = file_inode(file);
 
-	/*
-	 * Clear the security bits if the process is not being run by root.
-	 * This keeps people from modifying setuid and setgid binaries.
-	 */
+	 
 	ret = __file_remove_privs(file, flags);
 	if (ret)
 		return ret;
@@ -2208,34 +1618,14 @@ static int file_modified_flags(struct file *file, int flags)
 	return __file_update_time(file, ret);
 }
 
-/**
- * file_modified - handle mandated vfs changes when modifying a file
- * @file: file that was modified
- *
- * When file has been modified ensure that special
- * file privileges are removed and time settings are updated.
- *
- * Context: Caller must hold the file's inode lock.
- *
- * Return: 0 on success, negative errno on failure.
- */
+ 
 int file_modified(struct file *file)
 {
 	return file_modified_flags(file, 0);
 }
 EXPORT_SYMBOL(file_modified);
 
-/**
- * kiocb_modified - handle mandated vfs changes when modifying a file
- * @iocb: iocb that was modified
- *
- * When file has been modified ensure that special
- * file privileges are removed and time settings are updated.
- *
- * Context: Caller must hold the file's inode lock.
- *
- * Return: 0 on success, negative errno on failure.
- */
+ 
 int kiocb_modified(struct kiocb *iocb)
 {
 	return file_modified_flags(iocb->ki_filp, iocb->ki_flags);
@@ -2252,17 +1642,7 @@ int inode_needs_sync(struct inode *inode)
 }
 EXPORT_SYMBOL(inode_needs_sync);
 
-/*
- * If we try to find an inode in the inode hash while it is being
- * deleted, we have to wait until the filesystem completes its
- * deletion before reporting that it isn't found.  This function waits
- * until the deletion _might_ have completed.  Callers are responsible
- * to recheck inode state.
- *
- * It doesn't matter if I_NEW is not set initially, a call to
- * wake_up_bit(&inode->i_state, __I_NEW) after removing from the hash list
- * will DTRT.
- */
+ 
 static void __wait_on_freeing_inode(struct inode *inode)
 {
 	wait_queue_head_t *wq;
@@ -2286,14 +1666,10 @@ static int __init set_ihash_entries(char *str)
 }
 __setup("ihash_entries=", set_ihash_entries);
 
-/*
- * Initialize the waitqueues and inode hash table.
- */
+ 
 void __init inode_init_early(void)
 {
-	/* If hashes are distributed across NUMA nodes, defer
-	 * hash allocation until vmalloc space is available.
-	 */
+	 
 	if (hashdist)
 		return;
 
@@ -2311,7 +1687,7 @@ void __init inode_init_early(void)
 
 void __init inode_init(void)
 {
-	/* inode slab cache */
+	 
 	inode_cachep = kmem_cache_create("inode_cache",
 					 sizeof(struct inode),
 					 0,
@@ -2319,7 +1695,7 @@ void __init inode_init(void)
 					 SLAB_MEM_SPREAD|SLAB_ACCOUNT),
 					 init_once);
 
-	/* Hash may have been set up in inode_init_early */
+	 
 	if (!hashdist)
 		return;
 
@@ -2348,7 +1724,7 @@ void init_special_inode(struct inode *inode, umode_t mode, dev_t rdev)
 	} else if (S_ISFIFO(mode))
 		inode->i_fop = &pipefifo_fops;
 	else if (S_ISSOCK(mode))
-		;	/* leave it no_open_fops */
+		;	 
 	else
 		printk(KERN_DEBUG "init_special_inode: bogus i_mode (%o) for"
 				  " inode %s:%lu\n", mode, inode->i_sb->s_id,
@@ -2356,19 +1732,7 @@ void init_special_inode(struct inode *inode, umode_t mode, dev_t rdev)
 }
 EXPORT_SYMBOL(init_special_inode);
 
-/**
- * inode_init_owner - Init uid,gid,mode for new inode according to posix standards
- * @idmap: idmap of the mount the inode was created from
- * @inode: New inode
- * @dir: Directory inode
- * @mode: mode of the new inode
- *
- * If the inode has been created through an idmapped mount the idmap of
- * the vfsmount must be passed through @idmap. This function will then take
- * care to map the inode according to @idmap before checking permissions
- * and initializing i_uid and i_gid. On non-idmapped mounts or if permission
- * checking is to be performed on the raw inode simply pass @nop_mnt_idmap.
- */
+ 
 void inode_init_owner(struct mnt_idmap *idmap, struct inode *inode,
 		      const struct inode *dir, umode_t mode)
 {
@@ -2376,7 +1740,7 @@ void inode_init_owner(struct mnt_idmap *idmap, struct inode *inode,
 	if (dir && dir->i_mode & S_ISGID) {
 		inode->i_gid = dir->i_gid;
 
-		/* Directories are special, and always inherit S_ISGID */
+		 
 		if (S_ISDIR(mode))
 			mode |= S_ISGID;
 	} else
@@ -2385,20 +1749,7 @@ void inode_init_owner(struct mnt_idmap *idmap, struct inode *inode,
 }
 EXPORT_SYMBOL(inode_init_owner);
 
-/**
- * inode_owner_or_capable - check current task permissions to inode
- * @idmap: idmap of the mount the inode was found from
- * @inode: inode being checked
- *
- * Return true if current either has CAP_FOWNER in a namespace with the
- * inode owner uid mapped, or owns the file.
- *
- * If the inode has been found through an idmapped mount the idmap of
- * the vfsmount must be passed through @idmap. This function will then take
- * care to map the inode according to @idmap before checking permissions.
- * On non-idmapped mounts or if permission checking is to be performed on the
- * raw inode simply passs @nop_mnt_idmap.
- */
+ 
 bool inode_owner_or_capable(struct mnt_idmap *idmap,
 			    const struct inode *inode)
 {
@@ -2416,9 +1767,7 @@ bool inode_owner_or_capable(struct mnt_idmap *idmap,
 }
 EXPORT_SYMBOL(inode_owner_or_capable);
 
-/*
- * Direct i/o helper functions
- */
+ 
 static void __inode_dio_wait(struct inode *inode)
 {
 	wait_queue_head_t *wq = bit_waitqueue(&inode->i_state, __I_DIO_WAKEUP);
@@ -2432,16 +1781,7 @@ static void __inode_dio_wait(struct inode *inode)
 	finish_wait(wq, &q.wq_entry);
 }
 
-/**
- * inode_dio_wait - wait for outstanding DIO requests to finish
- * @inode: inode to wait for
- *
- * Waits for all pending direct I/O requests to finish so that we can
- * proceed with a truncate or equivalent operation.
- *
- * Must be called under a lock that serializes taking new references
- * to i_dio_count, usually by inode->i_mutex.
- */
+ 
 void inode_dio_wait(struct inode *inode)
 {
 	if (atomic_read(&inode->i_dio_count))
@@ -2449,22 +1789,7 @@ void inode_dio_wait(struct inode *inode)
 }
 EXPORT_SYMBOL(inode_dio_wait);
 
-/*
- * inode_set_flags - atomically set some inode flags
- *
- * Note: the caller should be holding i_mutex, or else be sure that
- * they have exclusive access to the inode structure (i.e., while the
- * inode is being instantiated).  The reason for the cmpxchg() loop
- * --- which wouldn't be necessary if all code paths which modify
- * i_flags actually followed this rule, is that there is at least one
- * code path which doesn't today so we use cmpxchg() out of an abundance
- * of caution.
- *
- * In the long run, i_mutex is overkill, and we should probably look
- * at using the i_lock spinlock to protect i_flags, and then make sure
- * it is so documented in include/linux/fs.h and that all code follows
- * the locking convention!!
- */
+ 
 void inode_set_flags(struct inode *inode, unsigned int flags,
 		     unsigned int mask)
 {
@@ -2479,15 +1804,7 @@ void inode_nohighmem(struct inode *inode)
 }
 EXPORT_SYMBOL(inode_nohighmem);
 
-/**
- * timestamp_truncate - Truncate timespec to a granularity
- * @t: Timespec
- * @inode: inode being updated
- *
- * Truncate a timespec to the granularity supported by the fs
- * containing the inode. Always rounds down. gran must
- * not be 0 nor greater than a second (NSEC_PER_SEC, or 10^9 ns).
- */
+ 
 struct timespec64 timestamp_truncate(struct timespec64 t, struct inode *inode)
 {
 	struct super_block *sb = inode->i_sb;
@@ -2497,9 +1814,9 @@ struct timespec64 timestamp_truncate(struct timespec64 t, struct inode *inode)
 	if (unlikely(t.tv_sec == sb->s_time_max || t.tv_sec == sb->s_time_min))
 		t.tv_nsec = 0;
 
-	/* Avoid division in the common cases 1 ns and 1 s. */
+	 
 	if (gran == 1)
-		; /* nothing */
+		;  
 	else if (gran == NSEC_PER_SEC)
 		t.tv_nsec = 0;
 	else if (gran > 1 && gran < NSEC_PER_SEC)
@@ -2510,16 +1827,7 @@ struct timespec64 timestamp_truncate(struct timespec64 t, struct inode *inode)
 }
 EXPORT_SYMBOL(timestamp_truncate);
 
-/**
- * current_time - Return FS time
- * @inode: inode.
- *
- * Return the current time truncated to the time granularity supported by
- * the fs.
- *
- * Note that inode and inode->sb cannot be NULL.
- * Otherwise, the function warns and returns time without truncation.
- */
+ 
 struct timespec64 current_time(struct inode *inode)
 {
 	struct timespec64 now;
@@ -2529,13 +1837,7 @@ struct timespec64 current_time(struct inode *inode)
 }
 EXPORT_SYMBOL(current_time);
 
-/**
- * inode_set_ctime_current - set the ctime to current_time
- * @inode: inode
- *
- * Set the inode->i_ctime to the current value for the inode. Returns
- * the current value that was assigned to i_ctime.
- */
+ 
 struct timespec64 inode_set_ctime_current(struct inode *inode)
 {
 	struct timespec64 now = current_time(inode);
@@ -2545,18 +1847,7 @@ struct timespec64 inode_set_ctime_current(struct inode *inode)
 }
 EXPORT_SYMBOL(inode_set_ctime_current);
 
-/**
- * in_group_or_capable - check whether caller is CAP_FSETID privileged
- * @idmap:	idmap of the mount @inode was found from
- * @inode:	inode to check
- * @vfsgid:	the new/current vfsgid of @inode
- *
- * Check wether @vfsgid is in the caller's group list or if the caller is
- * privileged with CAP_FSETID over @inode. This can be used to determine
- * whether the setgid bit can be kept or must be dropped.
- *
- * Return: true if the caller is sufficiently privileged, false if not.
- */
+ 
 bool in_group_or_capable(struct mnt_idmap *idmap,
 			 const struct inode *inode, vfsgid_t vfsgid)
 {
@@ -2567,20 +1858,7 @@ bool in_group_or_capable(struct mnt_idmap *idmap,
 	return false;
 }
 
-/**
- * mode_strip_sgid - handle the sgid bit for non-directories
- * @idmap: idmap of the mount the inode was created from
- * @dir: parent directory inode
- * @mode: mode of the file to be created in @dir
- *
- * If the @mode of the new file has both the S_ISGID and S_IXGRP bit
- * raised and @dir has the S_ISGID bit raised ensure that the caller is
- * either in the group of the parent directory or they have CAP_FSETID
- * in their user namespace and are privileged over the parent directory.
- * In all other cases, strip the S_ISGID bit from @mode.
- *
- * Return: the new mode to use for the file
- */
+ 
 umode_t mode_strip_sgid(struct mnt_idmap *idmap,
 			const struct inode *dir, umode_t mode)
 {

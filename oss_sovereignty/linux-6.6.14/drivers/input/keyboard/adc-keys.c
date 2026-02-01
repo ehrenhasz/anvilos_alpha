@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Input driver for resistor ladder connected on ADC
- *
- * Copyright (c) 2016 Alexandre Belloni
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/iio/consumer.h>
@@ -38,7 +34,7 @@ static void adc_keys_poll(struct input_dev *input)
 
 	ret = iio_read_channel_processed(st->channel, &value);
 	if (unlikely(ret < 0)) {
-		/* Forcibly release key if any was pressed */
+		 
 		value = st->keyup_voltage;
 	} else {
 		for (i = 0; i < st->num_keys; i++) {

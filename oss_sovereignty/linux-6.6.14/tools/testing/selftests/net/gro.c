@@ -1,39 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * This testsuite provides conformance testing for GRO coalescing.
- *
- * Test cases:
- * 1.data
- *  Data packets of the same size and same header setup with correct
- *  sequence numbers coalesce. The one exception being the last data
- *  packet coalesced: it can be smaller than the rest and coalesced
- *  as long as it is in the same flow.
- * 2.ack
- *  Pure ACK does not coalesce.
- * 3.flags
- *  Specific test cases: no packets with PSH, SYN, URG, RST set will
- *  be coalesced.
- * 4.tcp
- *  Packets with incorrect checksum, non-consecutive seqno and
- *  different TCP header options shouldn't coalesce. Nit: given that
- *  some extension headers have paddings, such as timestamp, headers
- *  that are padding differently would not be coalesced.
- * 5.ip:
- *  Packets with different (ECN, TTL, TOS) header, ip options or
- *  ip fragments (ipv6) shouldn't coalesce.
- * 6.large:
- *  Packets larger than GRO_MAX_SIZE packets shouldn't coalesce.
- *
- * MSS is defined as 4096 - header because if it is too small
- * (i.e. 1500 MTU - header), it will result in many packets,
- * increasing the "large" test case's flakiness. This is because
- * due to time sensitivity in the coalescing window, the receiver
- * may not coalesce all of the packets.
- *
- * Note the timing issue applies to all of the test cases, so some
- * flakiness is to be expected.
- *
- */
+
+ 
 
 #define _GNU_SOURCE
 
@@ -243,7 +209,7 @@ static void fill_networklayer(void *buf, int payload_len)
 		iph->protocol	= IPPROTO_TCP;
 		iph->tot_len = htons(sizeof(struct tcphdr) +
 				payload_len + sizeof(struct iphdr));
-		iph->frag_off = htons(0x4000); /* DF = 1, MF = 0 */
+		iph->frag_off = htons(0x4000);  
 		if (inet_pton(AF_INET, addr4_src, &iph->saddr) != 1)
 			error(1, errno, "inet_pton source ip");
 		if (inet_pton(AF_INET, addr4_dst, &iph->daddr) != 1)
@@ -293,7 +259,7 @@ static void create_packet(void *buf, int seq_offset, int ack_offset,
 	fill_datalinklayer(buf);
 }
 
-/* send one extra flag, not first and not last pkt */
+ 
 static void send_flags(int fd, struct sockaddr_ll *daddr, int psh, int syn,
 		       int rst, int urg)
 {
@@ -326,9 +292,7 @@ static void send_flags(int fd, struct sockaddr_ll *daddr, int psh, int syn,
 	}
 }
 
-/* Test for data of same length, smaller than previous
- * and of different lengths
- */
+ 
 static void send_data_pkts(int fd, struct sockaddr_ll *daddr,
 			   int payload_len1, int payload_len2)
 {
@@ -340,9 +304,7 @@ static void send_data_pkts(int fd, struct sockaddr_ll *daddr,
 	write_packet(fd, buf, total_hdr_len + payload_len2, daddr);
 }
 
-/* If incoming segments make tracked segment length exceed
- * legal IP datagram length, do not coalesce
- */
+ 
 static void send_large(int fd, struct sockaddr_ll *daddr, int remainder)
 {
 	static char pkts[NUM_LARGE_PKT][TOTAL_HDR_LEN + MSS];
@@ -361,7 +323,7 @@ static void send_large(int fd, struct sockaddr_ll *daddr, int remainder)
 	write_packet(fd, new_seg, total_hdr_len + remainder, daddr);
 }
 
-/* Pure acks and dup acks don't coalesce */
+ 
 static void send_ack(int fd, struct sockaddr_ll *daddr)
 {
 	static char buf[MAX_HDR_LEN];
@@ -432,16 +394,14 @@ static void tcp_write_options(char *buf, int kind, int ts)
 	}
 }
 
-/* TCP with options is always a permutation of {TS, NOP, NOP}.
- * Implement different orders to verify coalescing stops.
- */
+ 
 static void add_standard_tcp_options(char *buf, char *no_ext, int ts, int order)
 {
 	switch (order) {
 	case 0:
 		tcp_write_options(buf + total_hdr_len, TCPOPT_NOP, 0);
 		tcp_write_options(buf + total_hdr_len + 1, TCPOPT_NOP, 0);
-		tcp_write_options(buf + total_hdr_len + 2 /* two NOP opts */,
+		tcp_write_options(buf + total_hdr_len + 2  ,
 				  TCPOPT_TIMESTAMP, ts);
 		break;
 	case 1:
@@ -465,7 +425,7 @@ static void add_standard_tcp_options(char *buf, char *no_ext, int ts, int order)
 	recompute_packet(buf, no_ext, TCPOLEN_TSTAMP_APPA);
 }
 
-/* Packets with invalid checksum don't coalesce. */
+ 
 static void send_changed_checksum(int fd, struct sockaddr_ll *daddr)
 {
 	static char buf[MAX_HDR_LEN + PAYLOAD_LEN];
@@ -480,7 +440,7 @@ static void send_changed_checksum(int fd, struct sockaddr_ll *daddr)
 	write_packet(fd, buf, pkt_size, daddr);
 }
 
- /* Packets with non-consecutive sequence number don't coalesce.*/
+  
 static void send_changed_seq(int fd, struct sockaddr_ll *daddr)
 {
 	static char buf[MAX_HDR_LEN + PAYLOAD_LEN];
@@ -497,9 +457,7 @@ static void send_changed_seq(int fd, struct sockaddr_ll *daddr)
 	write_packet(fd, buf, pkt_size, daddr);
 }
 
- /* Packet with different timestamp option or different timestamps
-  * don't coalesce.
-  */
+  
 static void send_changed_ts(int fd, struct sockaddr_ll *daddr)
 {
 	static char buf[MAX_HDR_LEN + PAYLOAD_LEN];
@@ -527,7 +485,7 @@ static void send_changed_ts(int fd, struct sockaddr_ll *daddr)
 	write_packet(fd, extpkt, pkt_size, daddr);
 }
 
-/* Packet with different tcp options don't coalesce. */
+ 
 static void send_diff_opt(int fd, struct sockaddr_ll *daddr)
 {
 	static char buf[MAX_HDR_LEN + PAYLOAD_LEN];
@@ -576,7 +534,7 @@ static void add_ipv4_ts_option(void *buf, void *optpkt)
 	iph->check = checksum_fold(iph, sizeof(struct iphdr) + optlen, 0);
 }
 
-/* IPv4 options shouldn't coalesce */
+ 
 static void send_ip_options(int fd, struct sockaddr_ll *daddr)
 {
 	static char buf[MAX_HDR_LEN + PAYLOAD_LEN];
@@ -595,7 +553,7 @@ static void send_ip_options(int fd, struct sockaddr_ll *daddr)
 	write_packet(fd, buf, total_hdr_len + PAYLOAD_LEN, daddr);
 }
 
-/*  IPv4 fragments shouldn't coalesce */
+ 
 static void send_fragment4(int fd, struct sockaddr_ll *daddr)
 {
 	static char buf[IP_MAXPACKET];
@@ -605,22 +563,19 @@ static void send_fragment4(int fd, struct sockaddr_ll *daddr)
 	create_packet(buf, 0, 0, PAYLOAD_LEN, 0);
 	write_packet(fd, buf, pkt_size, daddr);
 
-	/* Once fragmented, packet would retain the total_len.
-	 * Tcp header is prepared as if rest of data is in follow-up frags,
-	 * but follow up frags aren't actually sent.
-	 */
+	 
 	memset(buf + total_hdr_len, 'a', PAYLOAD_LEN * 2);
 	fill_transportlayer(buf + tcp_offset, PAYLOAD_LEN, 0, PAYLOAD_LEN * 2, 0);
 	fill_networklayer(buf + ETH_HLEN, PAYLOAD_LEN);
 	fill_datalinklayer(buf);
 
-	iph->frag_off = htons(0x6000); // DF = 1, MF = 1
+	iph->frag_off = htons(0x6000); 
 	iph->check = 0;
 	iph->check = checksum_fold(iph, sizeof(struct iphdr), 0);
 	write_packet(fd, buf, pkt_size, daddr);
 }
 
-/* IPv4 packets with different ttl don't coalesce.*/
+ 
 static void send_changed_ttl(int fd, struct sockaddr_ll *daddr)
 {
 	int pkt_size = total_hdr_len + PAYLOAD_LEN;
@@ -637,7 +592,7 @@ static void send_changed_ttl(int fd, struct sockaddr_ll *daddr)
 	write_packet(fd, buf, pkt_size, daddr);
 }
 
-/* Packets with different tos don't coalesce.*/
+ 
 static void send_changed_tos(int fd, struct sockaddr_ll *daddr)
 {
 	int pkt_size = total_hdr_len + PAYLOAD_LEN;
@@ -659,7 +614,7 @@ static void send_changed_tos(int fd, struct sockaddr_ll *daddr)
 	write_packet(fd, buf, pkt_size, daddr);
 }
 
-/* Packets with different ECN don't coalesce.*/
+ 
 static void send_changed_ECN(int fd, struct sockaddr_ll *daddr)
 {
 	int pkt_size = total_hdr_len + PAYLOAD_LEN;
@@ -671,16 +626,16 @@ static void send_changed_ECN(int fd, struct sockaddr_ll *daddr)
 
 	create_packet(buf, PAYLOAD_LEN, 0, PAYLOAD_LEN, 0);
 	if (proto == PF_INET) {
-		buf[ETH_HLEN + 1] ^= 0x2; // ECN set to 10
+		buf[ETH_HLEN + 1] ^= 0x2;  
 		iph->check = 0;
 		iph->check = checksum_fold(iph, sizeof(struct iphdr), 0);
 	} else {
-		buf[ETH_HLEN + 1] ^= 0x20; // ECN set to 10
+		buf[ETH_HLEN + 1] ^= 0x20;  
 	}
 	write_packet(fd, buf, pkt_size, daddr);
 }
 
-/* IPv6 fragments and packets with extensions don't coalesce.*/
+ 
 static void send_fragment6(int fd, struct sockaddr_ll *daddr)
 {
 	static char buf[MAX_HDR_LEN + PAYLOAD_LEN];
@@ -776,10 +731,7 @@ static void check_recv_pkts(int fd, int *correct_payload,
 
 		tcp_ext_len = (tcph->doff - 5) * 4;
 		data_len = pkt_size - total_hdr_len - tcp_ext_len - ip_ext_len;
-		/* Min ethernet frame payload is 46(ETH_ZLEN - ETH_HLEN) by RFC 802.3.
-		 * Ipv4/tcp packets without at least 6 bytes of data will be padded.
-		 * Packet sockets are protocol agnostic, and will not trim the padding.
-		 */
+		 
 		if (pkt_size == ETH_ZLEN && iph->version == 4) {
 			data_len = ntohs(iph->tot_len)
 				- sizeof(struct tcphdr) - sizeof(struct iphdr);
@@ -862,10 +814,7 @@ static void gro_sender(void)
 		send_changed_tos(txfd, &daddr);
 		write_packet(txfd, fin_pkt, total_hdr_len, &daddr);
 		if (proto == PF_INET) {
-			/* Modified packets may be received out of order.
-			 * Sleep function added to enforce test boundaries
-			 * so that fin pkts are not received prior to other pkts.
-			 */
+			 
 			sleep(1);
 			send_changed_ttl(txfd, &daddr);
 			write_packet(txfd, fin_pkt, total_hdr_len, &daddr);
@@ -884,10 +833,7 @@ static void gro_sender(void)
 			write_packet(txfd, fin_pkt, total_hdr_len, &daddr);
 		}
 	} else if (strcmp(testname, "large") == 0) {
-		/* 20 is the difference between min iphdr size
-		 * and min ipv6hdr size. Like MAX_HDR_SIZE,
-		 * MAX_PAYLOAD is defined with the larger header of the two.
-		 */
+		 
 		int offset = proto == PF_INET ? 20 : 0;
 		int remainder = (MAX_PAYLOAD + offset) % MSS;
 
@@ -992,9 +938,7 @@ static void gro_receiver(void)
 			printf("fragmented ip4 doesn't coalesce: ");
 			check_recv_pkts(rxfd, correct_payload, 2);
 		} else if (proto == PF_INET6) {
-			/* GRO doesn't check for ipv6 hop limit when flushing.
-			 * Hence no corresponding test to the ipv4 case.
-			 */
+			 
 			printf("fragmented ip6 doesn't coalesce: ");
 			correct_payload[0] = PAYLOAD_LEN * 2;
 			check_recv_pkts(rxfd, correct_payload, 2);
@@ -1008,7 +952,7 @@ static void gro_receiver(void)
 		printf("Shouldn't coalesce if exceed IP max pkt size: ");
 		check_recv_pkts(rxfd, correct_payload, 2);
 
-		/* last segment sent individually, doesn't start new segment */
+		 
 		correct_payload[0] = correct_payload[0] - remainder;
 		correct_payload[1] = remainder + 1;
 		correct_payload[2] = remainder + 1;

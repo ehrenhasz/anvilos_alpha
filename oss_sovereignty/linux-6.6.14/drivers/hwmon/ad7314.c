@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * AD7314 digital temperature sensor driver for AD7314, ADT7301 and ADT7302
- *
- * Copyright 2010 Analog Devices Inc.
- *
- * Conversion to hwmon from IIO done by Jonathan Cameron <jic23@cam.ac.uk>
- */
+
+ 
 #include <linux/device.h>
 #include <linux/kernel.h>
 #include <linux/slab.h>
@@ -17,15 +11,11 @@
 #include <linux/hwmon-sysfs.h>
 #include <linux/bitops.h>
 
-/*
- * AD7314 temperature masks
- */
+ 
 #define AD7314_TEMP_MASK		0x7FE0
 #define AD7314_TEMP_SHIFT		5
 
-/*
- * ADT7301 and ADT7302 temperature masks
- */
+ 
 #define ADT7301_TEMP_MASK		0x3FFF
 
 enum ad7314_variant {
@@ -71,11 +61,7 @@ static ssize_t ad7314_temperature_show(struct device *dev,
 		return sprintf(buf, "%d\n", 250 * data);
 	case adt7301:
 	case adt7302:
-		/*
-		 * Documented as a 13 bit twos complement register
-		 * with a sign bit - which is a 14 bit 2's complement
-		 * register.  1lsb - 31.25 milli degrees centigrade
-		 */
+		 
 		data = ret & ADT7301_TEMP_MASK;
 		data = sign_extend32(data, 13);
 

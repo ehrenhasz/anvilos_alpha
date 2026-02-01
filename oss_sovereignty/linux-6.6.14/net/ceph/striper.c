@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 
 #include <linux/ceph/ceph_debug.h>
 
@@ -8,31 +8,18 @@
 #include <linux/ceph/striper.h>
 #include <linux/ceph/types.h>
 
-/*
- * Map a file extent to a stripe unit within an object.
- * Fill in objno, offset into object, and object extent length (i.e. the
- * number of bytes mapped, less than or equal to @l->stripe_unit).
- *
- * Example for stripe_count = 3, stripes_per_object = 4:
- *
- * blockno   |  0  3  6  9 |  1  4  7 10 |  2  5  8 11 | 12 15 18 21 | 13 16 19
- * stripeno  |  0  1  2  3 |  0  1  2  3 |  0  1  2  3 |  4  5  6  7 |  4  5  6
- * stripepos |      0      |      1      |      2      |      0      |      1
- * objno     |      0      |      1      |      2      |      3      |      4
- * objsetno  |                    0                    |                    1
- */
+ 
 void ceph_calc_file_object_mapping(struct ceph_file_layout *l,
 				   u64 off, u64 len,
 				   u64 *objno, u64 *objoff, u32 *xlen)
 {
 	u32 stripes_per_object = l->object_size / l->stripe_unit;
-	u64 blockno;	/* which su in the file (i.e. globally) */
-	u32 blockoff;	/* offset into su */
-	u64 stripeno;	/* which stripe */
-	u32 stripepos;	/* which su in the stripe,
-			   which object in the object set */
-	u64 objsetno;	/* which object set */
-	u32 objsetpos;	/* which stripe in the object set */
+	u64 blockno;	 
+	u32 blockoff;	 
+	u64 stripeno;	 
+	u32 stripepos;	 
+	u64 objsetno;	 
+	u32 objsetpos;	 
 
 	blockno = div_u64_rem(off, l->stripe_unit, &blockoff);
 	stripeno = div_u64_rem(blockno, l->stripe_count, &stripepos);
@@ -44,11 +31,7 @@ void ceph_calc_file_object_mapping(struct ceph_file_layout *l,
 }
 EXPORT_SYMBOL(ceph_calc_file_object_mapping);
 
-/*
- * Return the last extent with given objno (@object_extents is sorted
- * by objno).  If not found, return NULL and set @add_pos so that the
- * new extent can be added with list_add(add_pos, new_ex).
- */
+ 
 static struct ceph_object_extent *
 lookup_last(struct list_head *object_extents, u64 objno,
 	    struct list_head **add_pos)
@@ -79,7 +62,7 @@ lookup_containing(struct list_head *object_extents, u64 objno,
 	list_for_each_entry(ex, object_extents, oe_item) {
 		if (ex->oe_objno == objno &&
 		    ex->oe_off <= objoff &&
-		    ex->oe_off + ex->oe_len >= objoff + xlen) /* paranoia */
+		    ex->oe_off + ex->oe_len >= objoff + xlen)  
 			return ex;
 
 		if (ex->oe_objno > objno)
@@ -89,24 +72,7 @@ lookup_containing(struct list_head *object_extents, u64 objno,
 	return NULL;
 }
 
-/*
- * Map a file extent to a sorted list of object extents.
- *
- * We want only one (or as few as possible) object extents per object.
- * Adjacent object extents will be merged together, each returned object
- * extent may reverse map to multiple different file extents.
- *
- * Call @alloc_fn for each new object extent and @action_fn for each
- * mapped stripe unit, whether it was merged into an already allocated
- * object extent or started a new object extent.
- *
- * Newly allocated object extents are added to @object_extents.
- * To keep @object_extents sorted, successive calls to this function
- * must map successive file extents (i.e. the list of file extents that
- * are mapped using the same @object_extents must be sorted).
- *
- * The caller is responsible for @object_extents.
- */
+ 
 int ceph_file_to_extents(struct ceph_file_layout *l, u64 off, u64 len,
 			 struct list_head *object_extents,
 			 struct ceph_object_extent *alloc_fn(void *arg),
@@ -167,10 +133,7 @@ int ceph_file_to_extents(struct ceph_file_layout *l, u64 off, u64 len,
 }
 EXPORT_SYMBOL(ceph_file_to_extents);
 
-/*
- * A stripped down, non-allocating version of ceph_file_to_extents(),
- * for when @object_extents is already populated.
- */
+ 
 int ceph_iterate_extents(struct ceph_file_layout *l, u64 off, u64 len,
 			 struct list_head *object_extents,
 			 ceph_object_extent_fn_t action_fn,
@@ -201,25 +164,18 @@ int ceph_iterate_extents(struct ceph_file_layout *l, u64 off, u64 len,
 }
 EXPORT_SYMBOL(ceph_iterate_extents);
 
-/*
- * Reverse map an object extent to a sorted list of file extents.
- *
- * On success, the caller is responsible for:
- *
- *     kfree(file_extents)
- */
+ 
 int ceph_extent_to_file(struct ceph_file_layout *l,
 			u64 objno, u64 objoff, u64 objlen,
 			struct ceph_file_extent **file_extents,
 			u32 *num_file_extents)
 {
 	u32 stripes_per_object = l->object_size / l->stripe_unit;
-	u64 blockno;	/* which su */
-	u32 blockoff;	/* offset into su */
-	u64 stripeno;	/* which stripe */
-	u32 stripepos;	/* which su in the stripe,
-			   which object in the object set */
-	u64 objsetno;	/* which object set */
+	u64 blockno;	 
+	u32 blockoff;	 
+	u64 stripeno;	 
+	u32 stripepos;	 
+	u64 objsetno;	 
 	u32 i = 0;
 
 	if (!objlen) {

@@ -124,7 +124,7 @@ struct nv50_head_atom {
 
 	struct nv50_crc_atom crc;
 
-	/* Currently only used for MST */
+	 
 	struct {
 		int pbn;
 		u8 tu:6;
@@ -162,7 +162,7 @@ nv50_head_atom_get_encoder(struct nv50_head_atom *atom)
 {
 	struct drm_encoder *encoder;
 
-	/* We only ever have a single encoder */
+	 
 	drm_for_each_encoder_mask(encoder, atom->state.crtc->dev,
 				  atom->state.encoder_mask)
 		return encoder;

@@ -1,26 +1,4 @@
-/*
- * Copyright 2016 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: Christian König
- */
+ 
 #ifndef __AMDGPU_RING_H__
 #define __AMDGPU_RING_H__
 
@@ -36,7 +14,7 @@ struct amdgpu_cs_parser;
 struct amdgpu_job;
 struct amdgpu_vm;
 
-/* max number of rings */
+ 
 #define AMDGPU_MAX_RINGS		124
 #define AMDGPU_MAX_HWIP_RINGS		64
 #define AMDGPU_MAX_GFX_RINGS		2
@@ -53,7 +31,7 @@ enum amdgpu_ring_priority_level {
 	AMDGPU_RING_PRIO_MAX
 };
 
-/* some special values for the owner field */
+ 
 #define AMDGPU_FENCE_OWNER_UNDEFINED	((void *)0ul)
 #define AMDGPU_FENCE_OWNER_VM		((void *)1ul)
 #define AMDGPU_FENCE_OWNER_KFD		((void *)2ul)
@@ -82,11 +60,11 @@ enum amdgpu_ring_type {
 };
 
 enum amdgpu_ib_pool_type {
-	/* Normal submissions to the top of the pipeline. */
+	 
 	AMDGPU_IB_POOL_DELAYED,
-	/* Immediate submissions to the bottom of the pipeline. */
+	 
 	AMDGPU_IB_POOL_IMMEDIATE,
-	/* Direct submission to the ring buffer during init and reset. */
+	 
 	AMDGPU_IB_POOL_DIRECT,
 
 	AMDGPU_IB_POOL_MAX
@@ -105,13 +83,11 @@ struct amdgpu_sched {
 	struct drm_gpu_scheduler	*sched[AMDGPU_MAX_HWIP_RINGS];
 };
 
-/*
- * Fences.
- */
+ 
 struct amdgpu_fence_driver {
 	uint64_t			gpu_addr;
 	volatile uint32_t		*cpu_addr;
-	/* sync_seq is protected by ring emission lock */
+	 
 	uint32_t			sync_seq;
 	atomic_t			last_seq;
 	bool				initialized;
@@ -154,11 +130,9 @@ u64 amdgpu_fence_last_unsignaled_time_us(struct amdgpu_ring *ring);
 void amdgpu_fence_update_start_timestamp(struct amdgpu_ring *ring, uint32_t seq,
 					 ktime_t timestamp);
 
-/*
- * Rings.
- */
+ 
 
-/* provided by hw blocks that expose a ring buffer for commands */
+ 
 struct amdgpu_ring_funcs {
 	enum amdgpu_ring_type	type;
 	uint32_t		align_mask;
@@ -168,21 +142,21 @@ struct amdgpu_ring_funcs {
 	bool			secure_submission_supported;
 	unsigned		extra_dw;
 
-	/* ring read/write ptr handling */
+	 
 	u64 (*get_rptr)(struct amdgpu_ring *ring);
 	u64 (*get_wptr)(struct amdgpu_ring *ring);
 	void (*set_wptr)(struct amdgpu_ring *ring);
-	/* validating and patching of IBs */
+	 
 	int (*parse_cs)(struct amdgpu_cs_parser *p,
 			struct amdgpu_job *job,
 			struct amdgpu_ib *ib);
 	int (*patch_cs_in_place)(struct amdgpu_cs_parser *p,
 				 struct amdgpu_job *job,
 				 struct amdgpu_ib *ib);
-	/* constants to calculate how many DW are needed for an emit */
+	 
 	unsigned emit_frame_size;
 	unsigned emit_ib_size;
-	/* command emit functions */
+	 
 	void (*emit_ib)(struct amdgpu_ring *ring,
 			struct amdgpu_job *job,
 			struct amdgpu_ib *ib,
@@ -197,18 +171,18 @@ struct amdgpu_ring_funcs {
 				uint32_t gds_base, uint32_t gds_size,
 				uint32_t gws_base, uint32_t gws_size,
 				uint32_t oa_base, uint32_t oa_size);
-	/* testing functions */
+	 
 	int (*test_ring)(struct amdgpu_ring *ring);
 	int (*test_ib)(struct amdgpu_ring *ring, long timeout);
-	/* insert NOP packets */
+	 
 	void (*insert_nop)(struct amdgpu_ring *ring, uint32_t count);
 	void (*insert_start)(struct amdgpu_ring *ring);
 	void (*insert_end)(struct amdgpu_ring *ring);
-	/* pad the indirect buffer to the necessary number of dw */
+	 
 	void (*pad_ib)(struct amdgpu_ring *ring, struct amdgpu_ib *ib);
 	unsigned (*init_cond_exec)(struct amdgpu_ring *ring);
 	void (*patch_cond_exec)(struct amdgpu_ring *ring, unsigned offset);
-	/* note usage for clock and power gating */
+	 
 	void (*begin_use)(struct amdgpu_ring *ring);
 	void (*end_use)(struct amdgpu_ring *ring);
 	void (*emit_switch_buffer) (struct amdgpu_ring *ring);
@@ -225,7 +199,7 @@ struct amdgpu_ring_funcs {
 					uint32_t ref, uint32_t mask);
 	void (*emit_frame_cntl)(struct amdgpu_ring *ring, bool start,
 				bool secure);
-	/* Try to soft recover the ring to make the fence signal */
+	 
 	void (*soft_recovery)(struct amdgpu_ring *ring, unsigned vmid);
 	int (*preempt_ib)(struct amdgpu_ring *ring);
 	void (*emit_mem_sync)(struct amdgpu_ring *ring);
@@ -292,7 +266,7 @@ struct amdgpu_ring {
 	unsigned 		num_hw_submission;
 	atomic_t		*sched_score;
 
-	/* used for mes */
+	 
 	bool			is_mes_queue;
 	uint32_t		hw_queue_id;
 	struct amdgpu_mes_ctx_data *mes_ctx;

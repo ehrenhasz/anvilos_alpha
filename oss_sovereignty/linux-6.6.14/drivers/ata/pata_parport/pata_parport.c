@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright 2023 Ondrej Zary
- * based on paride.c by Grant R. Guenther <grant@torque.net>
- */
+
+ 
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/parport.h>
@@ -19,12 +16,7 @@ static bool probe = true;
 module_param(probe, bool, 0644);
 MODULE_PARM_DESC(probe, "Enable automatic device probing (0=off, 1=on [default])");
 
-/*
- * libata drivers cannot sleep so this driver claims parport before activating
- * the ata host and keeps it claimed (and protocol connected) until the ata
- * host is removed. Unfortunately, this means that you cannot use any chained
- * devices (neither other pata_parport devices nor a printer).
- */
+ 
 static void pi_connect(struct pi_adapter *pi)
 {
 	parport_claim_or_block(pi->pardev);
@@ -92,32 +84,22 @@ static int pata_parport_wait_after_reset(struct ata_link *link,
 
 	ata_msleep(ap, ATA_WAIT_AFTER_RESET);
 
-	/* always check readiness of the master device */
+	 
 	rc = ata_sff_wait_ready(link, deadline);
 	if (rc) {
-		/*
-		 * some adapters return bogus values if master device is not
-		 * present, so don't abort now if a slave device is present
-		 */
+		 
 		if (!dev1)
 			return rc;
 		ret = -ENODEV;
 	}
 
-	/*
-	 * if device 1 was found in ata_devchk, wait for register
-	 * access briefly, then wait for BSY to clear.
-	 */
+	 
 	if (dev1) {
 		int i;
 
 		pata_parport_dev_select(ap, 1);
 
-		/*
-		 * Wait for register access.  Some ATAPI devices fail
-		 * to set nsect/lbal after reset, so don't waste too
-		 * much time on it.  We're gonna wait for !BSY anyway.
-		 */
+		 
 		for (i = 0; i < 2; i++) {
 			u8 nsect, lbal;
 
@@ -125,7 +107,7 @@ static int pata_parport_wait_after_reset(struct ata_link *link,
 			lbal = pi->proto->read_regr(pi, 0, ATA_REG_LBAL);
 			if (nsect == 1 && lbal == 1)
 				break;
-			/* give drive a breather */
+			 
 			ata_msleep(ap, 50);
 		}
 
@@ -151,7 +133,7 @@ static int pata_parport_bus_softreset(struct ata_port *ap, unsigned int devmask,
 {
 	struct pi_adapter *pi = ap->host->private_data;
 
-	/* software reset.  causes dev0 to be selected */
+	 
 	pi->proto->write_regr(pi, 1, 6, ap->ctl);
 	udelay(20);
 	pi->proto->write_regr(pi, 1, 6, ap->ctl | ATA_SRST);
@@ -159,7 +141,7 @@ static int pata_parport_bus_softreset(struct ata_port *ap, unsigned int devmask,
 	pi->proto->write_regr(pi, 1, 6, ap->ctl);
 	ap->last_ctl = ap->ctl;
 
-	/* wait the port to become ready */
+	 
 	return pata_parport_wait_after_reset(&ap->link, devmask, deadline);
 }
 
@@ -171,23 +153,23 @@ static int pata_parport_softreset(struct ata_link *link, unsigned int *classes,
 	int rc;
 	u8 err;
 
-	/* determine if device 0/1 are present */
+	 
 	if (pata_parport_devchk(ap, 0))
 		devmask |= (1 << 0);
 	if (pata_parport_devchk(ap, 1))
 		devmask |= (1 << 1);
 
-	/* select device 0 again */
+	 
 	pata_parport_dev_select(ap, 0);
 
-	/* issue bus reset */
+	 
 	rc = pata_parport_bus_softreset(ap, devmask, deadline);
 	if (rc && rc != -ENODEV) {
 		ata_link_err(link, "SRST failed (errno=%d)\n", rc);
 		return rc;
 	}
 
-	/* determine by signature whether we have ATA or ATAPI devices */
+	 
 	classes[0] = ata_sff_dev_classify(&link->device[0],
 					  devmask & (1 << 0), &err);
 	if (err != 0x81)
@@ -302,13 +284,13 @@ static void pata_parport_drain_fifo(struct ata_queued_cmd *qc)
 	struct pi_adapter *pi;
 	char junk[2];
 
-	/* We only need to flush incoming data when a command was running */
+	 
 	if (qc == NULL || qc->dma_dir == DMA_TO_DEVICE)
 		return;
 
 	ap = qc->ap;
 	pi = ap->host->private_data;
-	/* Drain up to 64K of data before we give up this recovery method */
+	 
 	for (count = 0; (pata_parport_check_status(ap) & ATA_DRQ)
 						&& count < 65536; count += 2) {
 		pi->proto->read_block(pi, junk, 2);
@@ -338,7 +320,7 @@ static struct ata_port_operations pata_parport_port_ops = {
 static const struct ata_port_info pata_parport_port_info = {
 	.flags		= ATA_FLAG_SLAVE_POSS | ATA_FLAG_PIO_POLLING,
 	.pio_mask	= ATA_PIO0,
-	/* No DMA */
+	 
 	.port_ops	= &pata_parport_port_ops,
 };
 
@@ -371,7 +353,7 @@ static int default_test_proto(struct pi_adapter *pi)
 	dev_dbg(&pi->dev, "%s: port 0x%x, mode %d, test=(%d,%d)\n",
 		pi->proto->name, pi->port, pi->mode, e[0], e[1]);
 
-	return e[0] && e[1];	/* not here if both > 0 */
+	return e[0] && e[1];	 
 }
 
 static int pi_test_proto(struct pi_adapter *pi)
@@ -461,7 +443,7 @@ static void pata_parport_dev_release(struct device *dev)
 
 static void pata_parport_bus_release(struct device *dev)
 {
-	/* nothing to do here but required to avoid warning on device removal */
+	 
 }
 
 static struct bus_type pata_parport_bus_type = {
@@ -500,10 +482,7 @@ static struct pi_adapter *pi_init_one(struct parport *parport,
 	struct pi_device_match match = { .parport = parport, .proto = pr };
 	int id;
 
-	/*
-	 * Abort if there's a device already registered on the same parport
-	 * using the same protocol.
-	 */
+	 
 	if (bus_for_each_dev(&pata_parport_bus_type, NULL, &match, pi_find_dev))
 		return NULL;
 
@@ -517,7 +496,7 @@ static struct pi_adapter *pi_init_one(struct parport *parport,
 		return NULL;
 	}
 
-	/* set up pi->dev before pi_probe_unit() so it can use dev_printk() */
+	 
 	pi->dev.parent = &pata_parport_bus;
 	pi->dev.bus = &pata_parport_bus_type;
 	pi->dev.driver = &pr->driver;
@@ -526,7 +505,7 @@ static struct pi_adapter *pi_init_one(struct parport *parport,
 	dev_set_name(&pi->dev, "pata_parport.%u", pi->dev.id);
 	if (device_register(&pi->dev)) {
 		put_device(&pi->dev);
-		/* pata_parport_dev_release will do ida_free(dev->id) and kfree(pi) */
+		 
 		return NULL;
 	}
 
@@ -578,7 +557,7 @@ out_module_put:
 	module_put(pi->proto->owner);
 out_unreg_dev:
 	device_unregister(&pi->dev);
-	/* pata_parport_dev_release will do ida_free(dev->id) and kfree(pi) */
+	 
 	return NULL;
 }
 
@@ -605,7 +584,7 @@ int pata_parport_register_driver(struct pi_protocol *pr)
 	pr_info("pata_parport: protocol %s registered\n", pr->name);
 
 	if (probe) {
-		/* probe all parports using this protocol */
+		 
 		idr_for_each_entry(&parport_list, parport, port_num)
 			pi_init_one(parport, pr, -1, -1, -1);
 	}
@@ -666,7 +645,7 @@ static ssize_t new_device_store(const struct bus_type *bus, const char *buf, siz
 	}
 
 	mutex_lock(&pi_mutex);
-	/* walk all parports */
+	 
 	idr_for_each_entry(&parport_list, parport, port_num) {
 		if (port_num == port_wanted || port_wanted == -1) {
 			parport = parport_find_number(port_num);
@@ -675,7 +654,7 @@ static ssize_t new_device_store(const struct bus_type *bus, const char *buf, siz
 				mutex_unlock(&pi_mutex);
 				return -ENODEV;
 			}
-			/* walk all protocols */
+			 
 			idr_for_each_entry(&protocols, pr, pr_num) {
 				if (pr == pr_wanted || !pr_wanted)
 					if (pi_init_one(parport, pr, mode, unit,
@@ -702,7 +681,7 @@ static void pi_remove_one(struct device *dev)
 	pi_disconnect(pi);
 	pi_release(pi);
 	device_unregister(dev);
-	/* pata_parport_dev_release will do ida_free(dev->id) and kfree(pi) */
+	 
 }
 
 static ssize_t delete_device_store(const struct bus_type *bus, const char *buf, size_t count)
@@ -738,7 +717,7 @@ static void pata_parport_attach(struct parport *port)
 	}
 
 	if (probe) {
-		/* probe this port using all protocols */
+		 
 		idr_for_each_entry(&protocols, pr, pr_num)
 			pi_init_one(port, pr, -1, -1, -1);
 	}

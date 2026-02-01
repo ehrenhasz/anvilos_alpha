@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #define _GNU_SOURCE
 #include <errno.h>
@@ -20,13 +20,13 @@
 	#if defined __alpha__
 		#define __NR_close_range 546
 	#elif defined _MIPS_SIM
-		#if _MIPS_SIM == _MIPS_SIM_ABI32	/* o32 */
+		#if _MIPS_SIM == _MIPS_SIM_ABI32	 
 			#define __NR_close_range (436 + 4000)
 		#endif
-		#if _MIPS_SIM == _MIPS_SIM_NABI32	/* n32 */
+		#if _MIPS_SIM == _MIPS_SIM_NABI32	 
 			#define __NR_close_range (436 + 6000)
 		#endif
-		#if _MIPS_SIM == _MIPS_SIM_ABI64	/* n64 */
+		#if _MIPS_SIM == _MIPS_SIM_ABI64	 
 			#define __NR_close_range (436 + 5000)
 		#endif
 	#elif defined __ia64__
@@ -80,7 +80,7 @@ TEST(core_close_range)
 	for (i = 51; i <= 100; i++)
 		EXPECT_GT(fcntl(open_fds[i], F_GETFL), -1);
 
-	/* create a couple of gaps */
+	 
 	close(57);
 	close(78);
 	close(81);
@@ -96,7 +96,7 @@ TEST(core_close_range)
 	for (i = 93; i <= 100; i++)
 		EXPECT_GT(fcntl(open_fds[i], F_GETFL), -1);
 
-	/* test that the kernel caps and still closes all fds */
+	 
 	EXPECT_EQ(0, sys_close_range(open_fds[93], open_fds[99], 0));
 
 	for (i = 93; i <= 99; i++)
@@ -148,7 +148,7 @@ TEST(close_range_unshare)
 			if (fcntl(open_fds[i], F_GETFL) == -1)
 				exit(EXIT_FAILURE);
 
-		/* create a couple of gaps */
+		 
 		close(57);
 		close(78);
 		close(81);
@@ -169,7 +169,7 @@ TEST(close_range_unshare)
 			if (fcntl(open_fds[i], F_GETFL) == -1)
 				exit(EXIT_FAILURE);
 
-		/* test that the kernel caps and still closes all fds */
+		 
 		ret = sys_close_range(open_fds[93], open_fds[99],
 				      CLOSE_RANGE_UNSHARE);
 		if (ret)
@@ -267,12 +267,12 @@ TEST(close_range_cloexec)
 			SKIP(return, "close_range() doesn't support CLOSE_RANGE_CLOEXEC");
 	}
 
-	/* Ensure the FD_CLOEXEC bit is set also with a resource limit in place.  */
+	 
 	ASSERT_EQ(0, getrlimit(RLIMIT_NOFILE, &rlimit));
 	rlimit.rlim_cur = 25;
 	ASSERT_EQ(0, setrlimit(RLIMIT_NOFILE, &rlimit));
 
-	/* Set close-on-exec for two ranges: [0-50] and [75-100].  */
+	 
 	ret = sys_close_range(open_fds[0], open_fds[50], CLOSE_RANGE_CLOEXEC);
 	ASSERT_EQ(0, ret);
 	ret = sys_close_range(open_fds[75], open_fds[100], CLOSE_RANGE_CLOEXEC);
@@ -299,7 +299,7 @@ TEST(close_range_cloexec)
 		EXPECT_EQ(flags & FD_CLOEXEC, FD_CLOEXEC);
 	}
 
-	/* Test a common pattern.  */
+	 
 	ret = sys_close_range(3, UINT_MAX, CLOSE_RANGE_CLOEXEC);
 	for (i = 0; i <= 100; i++) {
 		int flags = fcntl(open_fds[i], F_GETFD);
@@ -335,12 +335,12 @@ TEST(close_range_cloexec_unshare)
 			SKIP(return, "close_range() doesn't support CLOSE_RANGE_CLOEXEC");
 	}
 
-	/* Ensure the FD_CLOEXEC bit is set also with a resource limit in place.  */
+	 
 	ASSERT_EQ(0, getrlimit(RLIMIT_NOFILE, &rlimit));
 	rlimit.rlim_cur = 25;
 	ASSERT_EQ(0, setrlimit(RLIMIT_NOFILE, &rlimit));
 
-	/* Set close-on-exec for two ranges: [0-50] and [75-100].  */
+	 
 	ret = sys_close_range(open_fds[0], open_fds[50],
 			      CLOSE_RANGE_CLOEXEC | CLOSE_RANGE_UNSHARE);
 	ASSERT_EQ(0, ret);
@@ -369,7 +369,7 @@ TEST(close_range_cloexec_unshare)
 		EXPECT_EQ(flags & FD_CLOEXEC, FD_CLOEXEC);
 	}
 
-	/* Test a common pattern.  */
+	 
 	ret = sys_close_range(3, UINT_MAX,
 			      CLOSE_RANGE_CLOEXEC | CLOSE_RANGE_UNSHARE);
 	for (i = 0; i <= 100; i++) {
@@ -380,9 +380,7 @@ TEST(close_range_cloexec_unshare)
 	}
 }
 
-/*
- * Regression test for syzbot+96cfd2b22b3213646a93@syzkaller.appspotmail.com
- */
+ 
 TEST(close_range_cloexec_syzbot)
 {
 	int fd1, fd2, fd3, flags, ret, status;
@@ -392,7 +390,7 @@ TEST(close_range_cloexec_syzbot)
 		.exit_signal = SIGCHLD,
 	};
 
-	/* Create a huge gap in the fd table. */
+	 
 	fd1 = open("/dev/null", O_RDWR);
 	EXPECT_GT(fd1, 0);
 
@@ -407,11 +405,7 @@ TEST(close_range_cloexec_syzbot)
 		if (ret)
 			exit(EXIT_FAILURE);
 
-		/*
-			 * We now have a private file descriptor table and all
-			 * our open fds should still be open but made
-			 * close-on-exec.
-			 */
+		 
 		flags = fcntl(fd1, F_GETFD);
 		EXPECT_GT(flags, -1);
 		EXPECT_EQ(flags & FD_CLOEXEC, FD_CLOEXEC);
@@ -423,10 +417,7 @@ TEST(close_range_cloexec_syzbot)
 		fd3 = dup2(fd1, 42);
 		EXPECT_GT(fd3, 0);
 
-		/*
-			 * Duplicating the file descriptor must remove the
-			 * FD_CLOEXEC flag.
-			 */
+		 
 		flags = fcntl(fd3, F_GETFD);
 		EXPECT_GT(flags, -1);
 		EXPECT_EQ(flags & FD_CLOEXEC, 0);
@@ -438,10 +429,7 @@ TEST(close_range_cloexec_syzbot)
 	EXPECT_EQ(true, WIFEXITED(status));
 	EXPECT_EQ(0, WEXITSTATUS(status));
 
-	/*
-	 * We had a shared file descriptor table before along with requesting
-	 * close-on-exec so the original fds must not be close-on-exec.
-	 */
+	 
 	flags = fcntl(fd1, F_GETFD);
 	EXPECT_GT(flags, -1);
 	EXPECT_EQ(flags & FD_CLOEXEC, FD_CLOEXEC);
@@ -462,9 +450,7 @@ TEST(close_range_cloexec_syzbot)
 	EXPECT_EQ(close(fd3), 0);
 }
 
-/*
- * Regression test for syzbot+96cfd2b22b3213646a93@syzkaller.appspotmail.com
- */
+ 
 TEST(close_range_cloexec_unshare_syzbot)
 {
 	int i, fd1, fd2, fd3, flags, ret, status;
@@ -474,17 +460,7 @@ TEST(close_range_cloexec_unshare_syzbot)
 		.exit_signal = SIGCHLD,
 	};
 
-	/*
-	 * Create a huge gap in the fd table. When we now call
-	 * CLOSE_RANGE_UNSHARE with a shared fd table and and with ~0U as upper
-	 * bound the kernel will only copy up to fd1 file descriptors into the
-	 * new fd table. If the kernel is buggy and doesn't handle
-	 * CLOSE_RANGE_CLOEXEC correctly it will not have copied all file
-	 * descriptors and we will oops!
-	 *
-	 * On a buggy kernel this should immediately oops. But let's loop just
-	 * to be sure.
-	 */
+	 
 	fd1 = open("/dev/null", O_RDWR);
 	EXPECT_GT(fd1, 0);
 
@@ -502,11 +478,7 @@ TEST(close_range_cloexec_unshare_syzbot)
 			if (ret)
 				exit(EXIT_FAILURE);
 
-			/*
-			 * We now have a private file descriptor table and all
-			 * our open fds should still be open but made
-			 * close-on-exec.
-			 */
+			 
 			flags = fcntl(fd1, F_GETFD);
 			EXPECT_GT(flags, -1);
 			EXPECT_EQ(flags & FD_CLOEXEC, FD_CLOEXEC);
@@ -518,10 +490,7 @@ TEST(close_range_cloexec_unshare_syzbot)
 			fd3 = dup2(fd1, 42);
 			EXPECT_GT(fd3, 0);
 
-			/*
-			 * Duplicating the file descriptor must remove the
-			 * FD_CLOEXEC flag.
-			 */
+			 
 			flags = fcntl(fd3, F_GETFD);
 			EXPECT_GT(flags, -1);
 			EXPECT_EQ(flags & FD_CLOEXEC, 0);
@@ -538,11 +507,7 @@ TEST(close_range_cloexec_unshare_syzbot)
 		EXPECT_EQ(0, WEXITSTATUS(status));
 	}
 
-	/*
-	 * We created a private file descriptor table before along with
-	 * requesting close-on-exec so the original fds must not be
-	 * close-on-exec.
-	 */
+	 
 	flags = fcntl(fd1, F_GETFD);
 	EXPECT_GT(flags, -1);
 	EXPECT_EQ(flags & FD_CLOEXEC, 0);

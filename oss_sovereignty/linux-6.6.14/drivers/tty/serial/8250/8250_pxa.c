@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- *  drivers/tty/serial/8250/8250_pxa.c -- driver for PXA on-board UARTS
- *  Copyright:	(C) 2013 Sergei Ianovich <ynvich@gmail.com>
- *
- *  replaces drivers/serial/pxa.c by Nicolas Pitre
- *  Created:	Feb 20, 2003
- *  Copyright:	(C) 2003 Monta Vista Software, Inc.
- *
- *  Based on drivers/serial/8250.c by Russell King.
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/init.h>
@@ -59,16 +50,13 @@ static const struct of_device_id serial_pxa_dt_ids[] = {
 };
 MODULE_DEVICE_TABLE(of, serial_pxa_dt_ids);
 
-/* Uart divisor latch write */
+ 
 static void serial_pxa_dl_write(struct uart_8250_port *up, u32 value)
 {
 	unsigned int dll;
 
 	serial_out(up, UART_DLL, value & 0xff);
-	/*
-	 * work around Erratum #74 according to Marvel(R) PXA270M Processor
-	 * Specification Update (April 19, 2010)
-	 */
+	 
 	dll = serial_in(up, UART_DLL);
 	WARN_ON(dll != (value & 0xff));
 

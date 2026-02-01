@@ -1,10 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
 
-/*
- * Copyright 2016-2021 HabanaLabs, Ltd.
- * All Rights Reserved.
- *
- */
+
+ 
 
 #define pr_fmt(fmt)		"habanalabs: " fmt
 
@@ -31,8 +27,8 @@ static struct class *hl_class;
 static DEFINE_IDR(hl_devs_idr);
 static DEFINE_MUTEX(hl_devs_idr_lock);
 
-#define HL_DEFAULT_TIMEOUT_LOCKED	30	/* 30 seconds */
-#define GAUDI_DEFAULT_TIMEOUT_LOCKED	600	/* 10 minutes */
+#define HL_DEFAULT_TIMEOUT_LOCKED	30	 
+#define GAUDI_DEFAULT_TIMEOUT_LOCKED	600	 
 
 static int timeout_locked = HL_DEFAULT_TIMEOUT_LOCKED;
 static int reset_on_lockup = 1;
@@ -70,14 +66,7 @@ static const struct pci_device_id ids[] = {
 };
 MODULE_DEVICE_TABLE(pci, ids);
 
-/*
- * get_asic_type - translate device id to asic type
- *
- * @hdev: pointer to habanalabs device structure.
- *
- * Translate device id and revision id to asic type.
- * In case of unidentified device, return -1
- */
+ 
 static enum hl_asic_type get_asic_type(struct hl_device *hdev)
 {
 	struct pci_dev *pdev = hdev->pdev;
@@ -122,14 +111,7 @@ static bool is_asic_secured(enum hl_asic_type asic_type)
 	}
 }
 
-/*
- * hl_device_open - open function for habanalabs device
- *
- * @inode: pointer to inode structure
- * @filp: pointer to file structure
- *
- * Called when process opens an habanalabs device.
- */
+ 
 int hl_device_open(struct inode *inode, struct file *filp)
 {
 	enum hl_device_status status;
@@ -263,9 +245,7 @@ int hl_device_open_ctrl(struct inode *inode, struct file *filp)
 	if (!hpriv)
 		return -ENOMEM;
 
-	/* Prevent other routines from reading partial hpriv data by
-	 * initializing hpriv fields before inserting it to the list
-	 */
+	 
 	hpriv->hdev = hdev;
 	filp->private_data = hpriv;
 	hpriv->filp = filp;
@@ -328,9 +308,7 @@ static void fixup_device_params_per_asic(struct hl_device *hdev, int timeout)
 	switch (hdev->asic_type) {
 	case ASIC_GAUDI:
 	case ASIC_GAUDI_SEC:
-		/* If user didn't request a different timeout than the default one, we have
-		 * a different default timeout for Gaudi
-		 */
+		 
 		if (timeout == HL_DEFAULT_TIMEOUT_LOCKED)
 			hdev->timeout_jiffies = msecs_to_jiffies(GAUDI_DEFAULT_TIMEOUT_LOCKED *
 										MSEC_PER_SEC);
@@ -366,7 +344,7 @@ static int fixup_device_params(struct hl_device *hdev)
 	hdev->reset_info.curr_reset_cause = HL_RESET_CAUSE_UNKNOWN;
 	hdev->reset_info.prev_reset_trigger = HL_RESET_TRIGGER_DEFAULT;
 
-	/* Enable only after the initialization of the device */
+	 
 	hdev->disabled = true;
 
 	if (!(hdev->fw_components & FW_TYPE_PREBOOT_CPU) &&
@@ -375,7 +353,7 @@ static int fixup_device_params(struct hl_device *hdev)
 		return -EINVAL;
 	}
 
-	/* If CPU queues not enabled, no way to do heartbeat */
+	 
 	if (!hdev->cpu_queues_enable)
 		hdev->heartbeat = 0;
 	fixup_device_params_per_asic(hdev, tmp_timeout);
@@ -383,16 +361,7 @@ static int fixup_device_params(struct hl_device *hdev)
 	return 0;
 }
 
-/**
- * create_hdev - create habanalabs device instance
- *
- * @dev: will hold the pointer to the new habanalabs device structure
- * @pdev: pointer to the pci device
- *
- * Allocate memory for habanalabs device and initialize basic fields
- * Identify the ASIC type
- * Allocate ID (minor) for the device (only for real devices)
- */
+ 
 static int create_hdev(struct hl_device **dev, struct pci_dev *pdev)
 {
 	int main_id, ctrl_id = 0, rc = 0;
@@ -404,10 +373,10 @@ static int create_hdev(struct hl_device **dev, struct pci_dev *pdev)
 	if (!hdev)
 		return -ENOMEM;
 
-	/* Will be NULL in case of simulator device */
+	 
 	hdev->pdev = pdev;
 
-	/* Assign status description string */
+	 
 	strncpy(hdev->status[HL_DEVICE_STATUS_OPERATIONAL], "operational", HL_STR_MAX);
 	strncpy(hdev->status[HL_DEVICE_STATUS_IN_RESET], "in reset", HL_STR_MAX);
 	strncpy(hdev->status[HL_DEVICE_STATUS_MALFUNCTION], "disabled", HL_STR_MAX);
@@ -418,9 +387,7 @@ static int create_hdev(struct hl_device **dev, struct pci_dev *pdev)
 					"in reset after device release", HL_STR_MAX);
 
 
-	/* First, we must find out which ASIC are we handling. This is needed
-	 * to configure the behavior of the driver (kernel parameters)
-	 */
+	 
 	hdev->asic_type = get_asic_type(hdev);
 	if (hdev->asic_type == ASIC_INVALID) {
 		dev_err(&pdev->dev, "Unsupported ASIC\n");
@@ -436,9 +403,7 @@ static int create_hdev(struct hl_device **dev, struct pci_dev *pdev)
 
 	mutex_lock(&hl_devs_idr_lock);
 
-	/* Always save 2 numbers, 1 for main device and 1 for control.
-	 * They must be consecutive
-	 */
+	 
 	main_id = idr_alloc(&hl_devs_idr, hdev, 0, HL_MAX_MINORS, GFP_KERNEL);
 
 	if (main_id >= 0)
@@ -473,15 +438,10 @@ free_hdev:
 	return rc;
 }
 
-/*
- * destroy_hdev - destroy habanalabs device instance
- *
- * @dev: pointer to the habanalabs device structure
- *
- */
+ 
 static void destroy_hdev(struct hl_device *hdev)
 {
-	/* Remove device from the device list */
+	 
 	mutex_lock(&hl_devs_idr_lock);
 	idr_remove(&hl_devs_idr, hdev->id);
 	idr_remove(&hl_devs_idr, hdev->id_control);
@@ -518,16 +478,7 @@ static int hl_pmops_resume(struct device *dev)
 	return hl_device_resume(hdev);
 }
 
-/**
- * hl_pci_probe - probe PCI habanalabs devices
- *
- * @pdev: pointer to pci device
- * @id: pointer to pci device id structure
- *
- * Standard PCI probe function for habanalabs device.
- * Create a new habanalabs device and initialize it according to the
- * device's type
- */
+ 
 static int hl_pci_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 {
 	struct hl_device *hdev;
@@ -559,13 +510,7 @@ disable_device:
 	return rc;
 }
 
-/*
- * hl_pci_remove - remove PCI habanalabs devices
- *
- * @pdev: pointer to pci device
- *
- * Standard PCI remove function for habanalabs device
- */
+ 
 static void hl_pci_remove(struct pci_dev *pdev)
 {
 	struct hl_device *hdev;
@@ -579,15 +524,7 @@ static void hl_pci_remove(struct pci_dev *pdev)
 	destroy_hdev(hdev);
 }
 
-/**
- * hl_pci_err_detected - a PCI bus error detected on this device
- *
- * @pdev: pointer to pci device
- * @state: PCI error type
- *
- * Called by the PCI subsystem whenever a non-correctable
- * PCI bus error is detected
- */
+ 
 static pci_ers_result_t
 hl_pci_err_detected(struct pci_dev *pdev, pci_channel_state_t state)
 {
@@ -618,12 +555,7 @@ hl_pci_err_detected(struct pci_dev *pdev, pci_channel_state_t state)
 	return result;
 }
 
-/**
- * hl_pci_err_resume - resume after a PCI slot reset
- *
- * @pdev: pointer to pci device
- *
- */
+ 
 static void hl_pci_err_resume(struct pci_dev *pdev)
 {
 	struct hl_device *hdev = pci_get_drvdata(pdev);
@@ -632,13 +564,7 @@ static void hl_pci_err_resume(struct pci_dev *pdev)
 	hl_device_resume(hdev);
 }
 
-/**
- * hl_pci_err_slot_reset - a PCI slot reset has just happened
- *
- * @pdev: pointer to pci device
- *
- * Determine if the driver can recover from the PCI slot reset
- */
+ 
 static pci_ers_result_t hl_pci_err_slot_reset(struct pci_dev *pdev)
 {
 	struct hl_device *hdev = pci_get_drvdata(pdev);
@@ -673,9 +599,7 @@ static struct pci_driver hl_pci_driver = {
 	.err_handler = &hl_pci_err_handler,
 };
 
-/*
- * hl_init - Initialize the habanalabs kernel driver
- */
+ 
 static int __init hl_init(void)
 {
 	int rc;
@@ -718,18 +642,12 @@ remove_major:
 	return rc;
 }
 
-/*
- * hl_exit - Release all resources of the habanalabs kernel driver
- */
+ 
 static void __exit hl_exit(void)
 {
 	pci_unregister_driver(&hl_pci_driver);
 
-	/*
-	 * Removing debugfs must be after all devices or simulator devices
-	 * have been removed because otherwise we get a bug in the
-	 * debugfs module for referencing NULL objects
-	 */
+	 
 	hl_debugfs_fini();
 
 	class_destroy(hl_class);

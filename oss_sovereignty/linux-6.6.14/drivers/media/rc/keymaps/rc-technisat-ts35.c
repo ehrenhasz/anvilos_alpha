@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* rc-technisat-ts35.c - Keytable for TechniSat TS35 remote
- *
- * Copyright (c) 2013 by Jan Klötzke <jan@kloetzke.net>
- */
+
+ 
 
 #include <media/rc-map.h>
 #include <linux/module.h>

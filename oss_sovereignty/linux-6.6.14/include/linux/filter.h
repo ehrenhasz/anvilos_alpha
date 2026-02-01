@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Linux Socket Filter Data Structures
- */
+ 
+ 
 #ifndef __LINUX_FILTER_H__
 #define __LINUX_FILTER_H__
 
@@ -39,10 +37,7 @@ struct sock_reuseport;
 struct ctl_table;
 struct ctl_table_header;
 
-/* ArgX, context and stack frame pointer register positions. Note,
- * Arg1, Arg2, Arg3, etc are used as argument mappings of function
- * calls in BPF_CALL instruction.
- */
+ 
 #define BPF_REG_ARG1	BPF_REG_1
 #define BPF_REG_ARG2	BPF_REG_2
 #define BPF_REG_ARG3	BPF_REG_3
@@ -51,47 +46,42 @@ struct ctl_table_header;
 #define BPF_REG_CTX	BPF_REG_6
 #define BPF_REG_FP	BPF_REG_10
 
-/* Additional register mappings for converted user programs. */
+ 
 #define BPF_REG_A	BPF_REG_0
 #define BPF_REG_X	BPF_REG_7
-#define BPF_REG_TMP	BPF_REG_2	/* scratch reg */
-#define BPF_REG_D	BPF_REG_8	/* data, callee-saved */
-#define BPF_REG_H	BPF_REG_9	/* hlen, callee-saved */
+#define BPF_REG_TMP	BPF_REG_2	 
+#define BPF_REG_D	BPF_REG_8	 
+#define BPF_REG_H	BPF_REG_9	 
 
-/* Kernel hidden auxiliary/helper register. */
+ 
 #define BPF_REG_AX		MAX_BPF_REG
 #define MAX_BPF_EXT_REG		(MAX_BPF_REG + 1)
 #define MAX_BPF_JIT_REG		MAX_BPF_EXT_REG
 
-/* unused opcode to mark special call to bpf_tail_call() helper */
+ 
 #define BPF_TAIL_CALL	0xf0
 
-/* unused opcode to mark special load instruction. Same as BPF_ABS */
+ 
 #define BPF_PROBE_MEM	0x20
 
-/* unused opcode to mark special ldsx instruction. Same as BPF_IND */
+ 
 #define BPF_PROBE_MEMSX	0x40
 
-/* unused opcode to mark call to interpreter with arguments */
+ 
 #define BPF_CALL_ARGS	0xe0
 
-/* unused opcode to mark speculation barrier for mitigating
- * Speculative Store Bypass
- */
+ 
 #define BPF_NOSPEC	0xc0
 
-/* As per nm, we expose JITed images as text (code) section for
- * kallsyms. That way, tools like perf can find it to match
- * addresses.
- */
+ 
 #define BPF_SYM_ELF_TYPE	't'
 
-/* BPF program can access up to 512 bytes of stack space. */
+ 
 #define MAX_BPF_STACK	512
 
-/* Helper macros for filter block array initializers. */
+ 
 
-/* ALU ops on registers, bpf_add|sub|...: dst_reg += src_reg */
+ 
 
 #define BPF_ALU64_REG_OFF(OP, DST, SRC, OFF)			\
 	((struct bpf_insn) {					\
@@ -115,7 +105,7 @@ struct ctl_table_header;
 #define BPF_ALU32_REG(OP, DST, SRC)				\
 	BPF_ALU32_REG_OFF(OP, DST, SRC, 0)
 
-/* ALU ops on immediates, bpf_add|sub|...: dst_reg += imm32 */
+ 
 
 #define BPF_ALU64_IMM(OP, DST, IMM)				\
 	((struct bpf_insn) {					\
@@ -133,7 +123,7 @@ struct ctl_table_header;
 		.off   = 0,					\
 		.imm   = IMM })
 
-/* Endianess conversion, cpu_to_{l,b}e(), {l,b}e_to_cpu() */
+ 
 
 #define BPF_ENDIAN(TYPE, DST, LEN)				\
 	((struct bpf_insn) {					\
@@ -143,7 +133,7 @@ struct ctl_table_header;
 		.off   = 0,					\
 		.imm   = LEN })
 
-/* Short form of mov, dst_reg = src_reg */
+ 
 
 #define BPF_MOV64_REG(DST, SRC)					\
 	((struct bpf_insn) {					\
@@ -161,7 +151,7 @@ struct ctl_table_header;
 		.off   = 0,					\
 		.imm   = 0 })
 
-/* Short form of mov, dst_reg = imm32 */
+ 
 
 #define BPF_MOV64_IMM(DST, IMM)					\
 	((struct bpf_insn) {					\
@@ -179,7 +169,7 @@ struct ctl_table_header;
 		.off   = 0,					\
 		.imm   = IMM })
 
-/* Special form of mov32, used for doing explicit zero extension on dst. */
+ 
 #define BPF_ZEXT_REG(DST)					\
 	((struct bpf_insn) {					\
 		.code  = BPF_ALU | BPF_MOV | BPF_X,		\
@@ -193,7 +183,7 @@ static inline bool insn_is_zext(const struct bpf_insn *insn)
 	return insn->code == (BPF_ALU | BPF_MOV | BPF_X) && insn->imm == 1;
 }
 
-/* BPF_LD_IMM64 macro encodes single 'load 64-bit immediate' insn */
+ 
 #define BPF_LD_IMM64(DST, IMM)					\
 	BPF_LD_IMM64_RAW(DST, 0, IMM)
 
@@ -205,17 +195,17 @@ static inline bool insn_is_zext(const struct bpf_insn *insn)
 		.off   = 0,					\
 		.imm   = (__u32) (IMM) }),			\
 	((struct bpf_insn) {					\
-		.code  = 0, /* zero is reserved opcode */	\
+		.code  = 0,  	\
 		.dst_reg = 0,					\
 		.src_reg = 0,					\
 		.off   = 0,					\
 		.imm   = ((__u64) (IMM)) >> 32 })
 
-/* pseudo BPF_LD_IMM64 insn used to refer to process-local map_fd */
+ 
 #define BPF_LD_MAP_FD(DST, MAP_FD)				\
 	BPF_LD_IMM64_RAW(DST, BPF_PSEUDO_MAP_FD, MAP_FD)
 
-/* Short form of mov based on type, BPF_X: dst_reg = src_reg, BPF_K: dst_reg = imm32 */
+ 
 
 #define BPF_MOV64_RAW(TYPE, DST, SRC, IMM)			\
 	((struct bpf_insn) {					\
@@ -233,7 +223,7 @@ static inline bool insn_is_zext(const struct bpf_insn *insn)
 		.off   = 0,					\
 		.imm   = IMM })
 
-/* Direct packet access, R0 = *(uint *) (skb->data + imm32) */
+ 
 
 #define BPF_LD_ABS(SIZE, IMM)					\
 	((struct bpf_insn) {					\
@@ -243,7 +233,7 @@ static inline bool insn_is_zext(const struct bpf_insn *insn)
 		.off   = 0,					\
 		.imm   = IMM })
 
-/* Indirect packet access, R0 = *(uint *) (skb->data + src_reg + imm32) */
+ 
 
 #define BPF_LD_IND(SIZE, SRC, IMM)				\
 	((struct bpf_insn) {					\
@@ -253,7 +243,7 @@ static inline bool insn_is_zext(const struct bpf_insn *insn)
 		.off   = 0,					\
 		.imm   = IMM })
 
-/* Memory load, dst_reg = *(uint *) (src_reg + off16) */
+ 
 
 #define BPF_LDX_MEM(SIZE, DST, SRC, OFF)			\
 	((struct bpf_insn) {					\
@@ -263,7 +253,7 @@ static inline bool insn_is_zext(const struct bpf_insn *insn)
 		.off   = OFF,					\
 		.imm   = 0 })
 
-/* Memory store, *(uint *) (dst_reg + off16) = src_reg */
+ 
 
 #define BPF_STX_MEM(SIZE, DST, SRC, OFF)			\
 	((struct bpf_insn) {					\
@@ -274,20 +264,7 @@ static inline bool insn_is_zext(const struct bpf_insn *insn)
 		.imm   = 0 })
 
 
-/*
- * Atomic operations:
- *
- *   BPF_ADD                  *(uint *) (dst_reg + off16) += src_reg
- *   BPF_AND                  *(uint *) (dst_reg + off16) &= src_reg
- *   BPF_OR                   *(uint *) (dst_reg + off16) |= src_reg
- *   BPF_XOR                  *(uint *) (dst_reg + off16) ^= src_reg
- *   BPF_ADD | BPF_FETCH      src_reg = atomic_fetch_add(dst_reg + off16, src_reg);
- *   BPF_AND | BPF_FETCH      src_reg = atomic_fetch_and(dst_reg + off16, src_reg);
- *   BPF_OR | BPF_FETCH       src_reg = atomic_fetch_or(dst_reg + off16, src_reg);
- *   BPF_XOR | BPF_FETCH      src_reg = atomic_fetch_xor(dst_reg + off16, src_reg);
- *   BPF_XCHG                 src_reg = atomic_xchg(dst_reg + off16, src_reg)
- *   BPF_CMPXCHG              r0 = atomic_cmpxchg(dst_reg + off16, r0, src_reg)
- */
+ 
 
 #define BPF_ATOMIC_OP(SIZE, OP, DST, SRC, OFF)			\
 	((struct bpf_insn) {					\
@@ -297,10 +274,10 @@ static inline bool insn_is_zext(const struct bpf_insn *insn)
 		.off   = OFF,					\
 		.imm   = OP })
 
-/* Legacy alias */
+ 
 #define BPF_STX_XADD(SIZE, DST, SRC, OFF) BPF_ATOMIC_OP(SIZE, BPF_ADD, DST, SRC, OFF)
 
-/* Memory store, *(uint *) (dst_reg + off16) = imm32 */
+ 
 
 #define BPF_ST_MEM(SIZE, DST, OFF, IMM)				\
 	((struct bpf_insn) {					\
@@ -310,7 +287,7 @@ static inline bool insn_is_zext(const struct bpf_insn *insn)
 		.off   = OFF,					\
 		.imm   = IMM })
 
-/* Conditional jumps against registers, if (dst_reg 'op' src_reg) goto pc + off16 */
+ 
 
 #define BPF_JMP_REG(OP, DST, SRC, OFF)				\
 	((struct bpf_insn) {					\
@@ -320,7 +297,7 @@ static inline bool insn_is_zext(const struct bpf_insn *insn)
 		.off   = OFF,					\
 		.imm   = 0 })
 
-/* Conditional jumps against immediates, if (dst_reg 'op' imm32) goto pc + off16 */
+ 
 
 #define BPF_JMP_IMM(OP, DST, IMM, OFF)				\
 	((struct bpf_insn) {					\
@@ -330,7 +307,7 @@ static inline bool insn_is_zext(const struct bpf_insn *insn)
 		.off   = OFF,					\
 		.imm   = IMM })
 
-/* Like BPF_JMP_REG, but with 32-bit wide operands for comparison. */
+ 
 
 #define BPF_JMP32_REG(OP, DST, SRC, OFF)			\
 	((struct bpf_insn) {					\
@@ -340,7 +317,7 @@ static inline bool insn_is_zext(const struct bpf_insn *insn)
 		.off   = OFF,					\
 		.imm   = 0 })
 
-/* Like BPF_JMP_IMM, but with 32-bit wide operands for comparison. */
+ 
 
 #define BPF_JMP32_IMM(OP, DST, IMM, OFF)			\
 	((struct bpf_insn) {					\
@@ -350,7 +327,7 @@ static inline bool insn_is_zext(const struct bpf_insn *insn)
 		.off   = OFF,					\
 		.imm   = IMM })
 
-/* Unconditional jumps, goto pc + off16 */
+ 
 
 #define BPF_JMP_A(OFF)						\
 	((struct bpf_insn) {					\
@@ -360,7 +337,7 @@ static inline bool insn_is_zext(const struct bpf_insn *insn)
 		.off   = OFF,					\
 		.imm   = 0 })
 
-/* Relative call */
+ 
 
 #define BPF_CALL_REL(TGT)					\
 	((struct bpf_insn) {					\
@@ -370,7 +347,7 @@ static inline bool insn_is_zext(const struct bpf_insn *insn)
 		.off   = 0,					\
 		.imm   = TGT })
 
-/* Convert function address to BPF immediate */
+ 
 
 #define BPF_CALL_IMM(x)	((void *)(x) - (void *)__bpf_call_base)
 
@@ -382,7 +359,7 @@ static inline bool insn_is_zext(const struct bpf_insn *insn)
 		.off   = 0,					\
 		.imm   = BPF_CALL_IMM(FUNC) })
 
-/* Raw code statement block */
+ 
 
 #define BPF_RAW_INSN(CODE, DST, SRC, OFF, IMM)			\
 	((struct bpf_insn) {					\
@@ -392,7 +369,7 @@ static inline bool insn_is_zext(const struct bpf_insn *insn)
 		.off   = OFF,					\
 		.imm   = IMM })
 
-/* Program exit */
+ 
 
 #define BPF_EXIT_INSN()						\
 	((struct bpf_insn) {					\
@@ -402,7 +379,7 @@ static inline bool insn_is_zext(const struct bpf_insn *insn)
 		.off   = 0,					\
 		.imm   = 0 })
 
-/* Speculation barrier */
+ 
 
 #define BPF_ST_NOSPEC()						\
 	((struct bpf_insn) {					\
@@ -412,7 +389,7 @@ static inline bool insn_is_zext(const struct bpf_insn *insn)
 		.off   = 0,					\
 		.imm   = 0 })
 
-/* Internal classic blocks for direct assignment */
+ 
 
 #define __BPF_STMT(CODE, K)					\
 	((struct sock_filter) BPF_STMT(CODE, K))
@@ -534,7 +511,7 @@ static inline bool insn_is_zext(const struct bpf_insn *insn)
 #else
 # define bpf_ctx_range_ptr(TYPE, MEMBER)					\
 	offsetof(TYPE, MEMBER) ... offsetof(TYPE, MEMBER) + 8 - 1
-#endif /* BITS_PER_LONG == 64 */
+#endif  
 
 #define bpf_target_off(TYPE, MEMBER, SIZE, PTR_SIZE)				\
 	({									\
@@ -543,10 +520,10 @@ static inline bool insn_is_zext(const struct bpf_insn *insn)
 		offsetof(TYPE, MEMBER);						\
 	})
 
-/* A struct sock_filter is architecture independent. */
+ 
 struct compat_sock_fprog {
 	u16		len;
-	compat_uptr_t	filter;	/* struct sock_filter * */
+	compat_uptr_t	filter;	 
 };
 
 struct sock_fprog_kern {
@@ -554,7 +531,7 @@ struct sock_fprog_kern {
 	struct sock_filter	*filter;
 };
 
-/* Some arches need doubleword alignment for their instructions and/or data */
+ 
 #define BPF_IMAGE_ALIGNMENT 8
 
 struct bpf_binary_header {
@@ -616,14 +593,7 @@ static __always_inline u32 bpf_prog_run(const struct bpf_prog *prog, const void 
 	return __bpf_prog_run(prog, ctx, bpf_dispatcher_nop_func);
 }
 
-/*
- * Use in preemptible and therefore migratable context to make sure that
- * the execution of the BPF program runs on one CPU.
- *
- * This uses migrate_disable/enable() explicitly to document that the
- * invocation of a BPF program does not require reentrancy protection
- * against a BPF program which is invoked from a preempting task.
- */
+ 
 static inline u32 bpf_prog_run_pin_on_cpu(const struct bpf_prog *prog,
 					  const void *ctx)
 {
@@ -664,15 +634,10 @@ struct bpf_redirect_info {
 
 DECLARE_PER_CPU(struct bpf_redirect_info, bpf_redirect_info);
 
-/* flags for bpf_redirect_info kern_flags */
-#define BPF_RI_F_RF_NO_DIRECT	BIT(0)	/* no napi_direct on return_frame */
+ 
+#define BPF_RI_F_RF_NO_DIRECT	BIT(0)	 
 
-/* Compute the linear packet data range [data, data_end) which
- * will be accessed by various program types (cls_bpf, act_bpf,
- * lwt, ...). Subsystems allowing direct data access must (!)
- * ensure that cb[] area can be written to when BPF program is
- * invoked (otherwise cb[] save/restore is necessary).
- */
+ 
 static inline void bpf_compute_data_pointers(struct sk_buff *skb)
 {
 	struct bpf_skb_data_end *cb = (struct bpf_skb_data_end *)skb->cb;
@@ -682,9 +647,7 @@ static inline void bpf_compute_data_pointers(struct sk_buff *skb)
 	cb->data_end  = skb->data + skb_headlen(skb);
 }
 
-/* Similar to bpf_compute_data_pointers(), except that save orginal
- * data in cb->data and cb->meta_data for restore.
- */
+ 
 static inline void bpf_compute_and_save_data_end(
 	struct sk_buff *skb, void **saved_data_end)
 {
@@ -694,7 +657,7 @@ static inline void bpf_compute_and_save_data_end(
 	cb->data_end  = skb->data + skb_headlen(skb);
 }
 
-/* Restore data saved by bpf_compute_data_pointers(). */
+ 
 static inline void bpf_restore_data_end(
 	struct sk_buff *skb, void *saved_data_end)
 {
@@ -705,16 +668,7 @@ static inline void bpf_restore_data_end(
 
 static inline u8 *bpf_skb_cb(const struct sk_buff *skb)
 {
-	/* eBPF programs may read/write skb->cb[] area to transfer meta
-	 * data between tail calls. Since this also needs to work with
-	 * tc, that scratch memory is mapped to qdisc_skb_cb's data area.
-	 *
-	 * In some socket filter cases, the cb unfortunately needs to be
-	 * saved/restored so that protocol specific skb->cb[] data won't
-	 * be lost. In any case, due to unpriviledged eBPF programs
-	 * attached to sockets, we need to clear the bpf_skb_cb() area
-	 * to not leak previous contents to user space.
-	 */
+	 
 	BUILD_BUG_ON(sizeof_field(struct __sk_buff, cb) != BPF_SKB_CB_LEN);
 	BUILD_BUG_ON(sizeof_field(struct __sk_buff, cb) !=
 		     sizeof_field(struct qdisc_skb_cb, data));
@@ -722,7 +676,7 @@ static inline u8 *bpf_skb_cb(const struct sk_buff *skb)
 	return qdisc_skb_cb(skb)->data;
 }
 
-/* Must be invoked with migration disabled */
+ 
 static inline u32 __bpf_prog_run_save_cb(const struct bpf_prog *prog,
 					 const void *ctx)
 {
@@ -795,11 +749,7 @@ static inline unsigned int bpf_prog_size(unsigned int proglen)
 
 static inline bool bpf_prog_was_classic(const struct bpf_prog *prog)
 {
-	/* When classic BPF programs have been loaded and the arch
-	 * does not have a classic BPF JIT (anymore), they have been
-	 * converted via bpf_migrate_filter() to eBPF and thus always
-	 * have an unspec program type.
-	 */
+	 
 	return prog->type == BPF_PROG_TYPE_UNSPEC;
 }
 
@@ -916,9 +866,7 @@ bool bpf_helper_changes_pkt_data(void *func);
 
 static inline bool bpf_dump_raw_ok(const struct cred *cred)
 {
-	/* Reconstruction of call-sites is dependent on kallsyms,
-	 * thus make dump the same restriction.
-	 */
+	 
 	return kallsyms_show_value(cred);
 }
 
@@ -964,12 +912,7 @@ static inline int xdp_ok_fwd_dev(const struct net_device *fwd,
 	return 0;
 }
 
-/* The pair of xdp_do_redirect and xdp_do_flush MUST be called in the
- * same cpu context. Further for best results no more than a single map
- * for the do_redirect/do_flush pair should be used. This limitation is
- * because we only track one map and force a flush when the map changes.
- * This does not appear to be a real limitation for existing software.
- */
+ 
 int xdp_do_generic_redirect(struct net_device *dev, struct sk_buff *skb,
 			    struct xdp_buff *xdp, struct bpf_prog *prog);
 int xdp_do_redirect(struct net_device *dev,
@@ -981,10 +924,7 @@ int xdp_do_redirect_frame(struct net_device *dev,
 			  struct bpf_prog *prog);
 void xdp_do_flush(void);
 
-/* The xdp_do_flush_map() helper has been renamed to drop the _map suffix, as
- * it is no longer only flushing maps. Keep this define for compatibility
- * until all drivers are updated - do not use xdp_do_flush_map() in new code!
- */
+ 
 #define xdp_do_flush_map xdp_do_flush
 
 void bpf_warn_invalid_xdp_action(struct net_device *dev, struct bpf_prog *prog, u32 act);
@@ -1091,10 +1031,7 @@ static inline bool bpf_prog_ebpf_jited(const struct bpf_prog *fp)
 
 static inline bool bpf_jit_blinding_enabled(struct bpf_prog *prog)
 {
-	/* These are the prerequisites, should someone ever have the
-	 * idea to call blinding outside of them, we make sure to
-	 * bail out.
-	 */
+	 
 	if (!bpf_jit_is_ebpf())
 		return false;
 	if (!prog->jit_requested)
@@ -1109,9 +1046,7 @@ static inline bool bpf_jit_blinding_enabled(struct bpf_prog *prog)
 
 static inline bool bpf_jit_kallsyms_enabled(void)
 {
-	/* There are a couple of corner cases where kallsyms should
-	 * not be enabled f.e. on hardening.
-	 */
+	 
 	if (bpf_jit_harden)
 		return false;
 	if (!bpf_jit_kallsyms)
@@ -1142,7 +1077,7 @@ bpf_address_lookup(unsigned long addr, unsigned long *size,
 void bpf_prog_kallsyms_add(struct bpf_prog *fp);
 void bpf_prog_kallsyms_del(struct bpf_prog *fp);
 
-#else /* CONFIG_BPF_JIT */
+#else  
 
 static inline bool ebpf_jit_enabled(void)
 {
@@ -1209,7 +1144,7 @@ static inline void bpf_prog_kallsyms_del(struct bpf_prog *fp)
 {
 }
 
-#endif /* CONFIG_BPF_JIT */
+#endif  
 
 void bpf_prog_kallsyms_del_all(struct bpf_prog *fp);
 
@@ -1279,12 +1214,9 @@ static inline int bpf_tell_extensions(void)
 struct bpf_sock_addr_kern {
 	struct sock *sk;
 	struct sockaddr *uaddr;
-	/* Temporary "register" to make indirect stores to nested structures
-	 * defined above. We need three registers to make such a store, but
-	 * only two (src and dst) are available at convert_ctx_access time
-	 */
+	 
 	u64 tmp_reg;
-	void *t_ctx;	/* Attach type specific context. */
+	void *t_ctx;	 
 };
 
 struct bpf_sock_ops_kern {
@@ -1300,15 +1232,7 @@ struct bpf_sock_ops_kern {
 	u8	op;
 	u8	is_fullsock;
 	u8	remaining_opt_len;
-	u64	temp;			/* temp and everything after is not
-					 * initialized to 0 before calling
-					 * the BPF program. New fields that
-					 * should be initialized to 0 should
-					 * be inserted before temp.
-					 * temp is scratch storage used by
-					 * sock_ops_convert_ctx_access
-					 * as temporary storage of a register.
-					 */
+	u64	temp;			 
 };
 
 struct bpf_sysctl_kern {
@@ -1321,7 +1245,7 @@ struct bpf_sysctl_kern {
 	int new_updated;
 	int write;
 	loff_t *ppos;
-	/* Temporary "register" for indirect stores to ppos. */
+	 
 	u64 tmp_reg;
 };
 
@@ -1337,9 +1261,9 @@ struct bpf_sockopt_kern {
 	s32		level;
 	s32		optname;
 	s32		optlen;
-	/* for retval in struct bpf_cg_run_ctx */
+	 
 	struct task_struct *current_task;
-	/* Temporary "register" for indirect stores to ppos. */
+	 
 	u64		tmp_reg;
 };
 
@@ -1365,27 +1289,7 @@ struct bpf_sk_lookup_kern {
 
 extern struct static_key_false bpf_sk_lookup_enabled;
 
-/* Runners for BPF_SK_LOOKUP programs to invoke on socket lookup.
- *
- * Allowed return values for a BPF SK_LOOKUP program are SK_PASS and
- * SK_DROP. Their meaning is as follows:
- *
- *  SK_PASS && ctx.selected_sk != NULL: use selected_sk as lookup result
- *  SK_PASS && ctx.selected_sk == NULL: continue to htable-based socket lookup
- *  SK_DROP                           : terminate lookup with -ECONNREFUSED
- *
- * This macro aggregates return values and selected sockets from
- * multiple BPF programs according to following rules in order:
- *
- *  1. If any program returned SK_PASS and a non-NULL ctx.selected_sk,
- *     macro result is SK_PASS and last ctx.selected_sk is used.
- *  2. If any program returned SK_DROP return value,
- *     macro result is SK_DROP.
- *  3. Otherwise result is SK_PASS and ctx.selected_sk is NULL.
- *
- * Caller must ensure that the prog array is non-NULL, and that the
- * array as well as the programs it contains remain valid.
- */
+ 
 #define BPF_PROG_SK_LOOKUP_RUN_ARRAY(array, ctx, func)			\
 	({								\
 		struct bpf_sk_lookup_kern *_ctx = &(ctx);		\
@@ -1399,13 +1303,13 @@ extern struct static_key_false bpf_sk_lookup_enabled;
 		migrate_disable();					\
 		_item = &(array)->items[0];				\
 		while ((_prog = READ_ONCE(_item->prog))) {		\
-			/* restore most recent selection */		\
+			 		\
 			_ctx->selected_sk = _selected_sk;		\
 			_ctx->no_reuseport = _no_reuseport;		\
 									\
 			_ret = func(_prog, _ctx);			\
 			if (_ret == SK_PASS && _ctx->selected_sk) {	\
-				/* remember last non-NULL socket */	\
+				 	\
 				_selected_sk = _ctx->selected_sk;	\
 				_no_reuseport = _ctx->no_reuseport;	\
 			} else if (_ret == SK_DROP && _all_pass) {	\
@@ -1493,7 +1397,7 @@ static inline bool bpf_sk_lookup_run_v6(struct net *net, int protocol,
 	*psk = selected_sk;
 	return no_reuseport;
 }
-#endif /* IS_ENABLED(CONFIG_IPV6) */
+#endif  
 
 static __always_inline long __bpf_xdp_redirect_map(struct bpf_map *map, u64 index,
 						   u64 flags, const u64 flag_mask,
@@ -1502,18 +1406,14 @@ static __always_inline long __bpf_xdp_redirect_map(struct bpf_map *map, u64 inde
 	struct bpf_redirect_info *ri = this_cpu_ptr(&bpf_redirect_info);
 	const u64 action_mask = XDP_ABORTED | XDP_DROP | XDP_PASS | XDP_TX;
 
-	/* Lower bits of the flags are used as return code on lookup failure */
+	 
 	if (unlikely(flags & ~(action_mask | flag_mask)))
 		return XDP_ABORTED;
 
 	ri->tgt_value = lookup_elem(map, index);
 	if (unlikely(!ri->tgt_value) && !(flags & BPF_F_BROADCAST)) {
-		/* If the lookup fails we want to clear out the state in the
-		 * redirect_info struct completely, so that if an eBPF program
-		 * performs multiple lookups, the last one always takes
-		 * precedence.
-		 */
-		ri->map_id = INT_MAX; /* Valid map id idr range: [1,INT_MAX[ */
+		 
+		ri->map_id = INT_MAX;  
 		ri->map_type = BPF_MAP_TYPE_UNSPEC;
 		return flags & action_mask;
 	}
@@ -1542,7 +1442,7 @@ int __bpf_xdp_store_bytes(struct xdp_buff *xdp, u32 offset, void *buf, u32 len);
 void *bpf_xdp_pointer(struct xdp_buff *xdp, u32 offset, u32 len);
 void bpf_xdp_copy_buf(struct xdp_buff *xdp, unsigned long off,
 		      void *buf, unsigned long len, bool flush);
-#else /* CONFIG_NET */
+#else  
 static inline int __bpf_skb_load_bytes(const struct sk_buff *skb, u32 offset,
 				       void *to, u32 len)
 {
@@ -1576,6 +1476,6 @@ static inline void bpf_xdp_copy_buf(struct xdp_buff *xdp, unsigned long off, voi
 				    unsigned long len, bool flush)
 {
 }
-#endif /* CONFIG_NET */
+#endif  
 
-#endif /* __LINUX_FILTER_H__ */
+#endif  

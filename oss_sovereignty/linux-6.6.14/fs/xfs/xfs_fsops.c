@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2000-2005 Silicon Graphics, Inc.
- * All Rights Reserved.
- */
+
+ 
 #include "xfs.h"
 #include "xfs_fs.h"
 #include "xfs_shared.h"
@@ -22,18 +19,7 @@
 #include "xfs_ag_resv.h"
 #include "xfs_trace.h"
 
-/*
- * Write new AG headers to disk. Non-transactional, but need to be
- * written and completed prior to the growfs transaction being logged.
- * To do this, we use a delayed write buffer list and wait for
- * submission and IO completion of the list as a whole. This allows the
- * IO subsystem to merge all the AG headers in a single AG into a single
- * IO and hide most of the latency of the IO from us.
- *
- * This also means that if we get an error whilst building the buffer
- * list to write, we can cancel the entire list without having written
- * anything.
- */
+ 
 static int
 xfs_resizefs_init_new_ags(
 	struct xfs_trans	*tp,
@@ -79,13 +65,11 @@ xfs_resizefs_init_new_ags(
 	return error;
 }
 
-/*
- * growfs operations
- */
+ 
 static int
 xfs_growfs_data_private(
-	struct xfs_mount	*mp,		/* mount point for filesystem */
-	struct xfs_growfs_data	*in)		/* growfs data input struct */
+	struct xfs_mount	*mp,		 
+	struct xfs_growfs_data	*in)		 
 {
 	struct xfs_buf		*bp;
 	int			error;
@@ -126,22 +110,18 @@ xfs_growfs_data_private(
 	}
 	nagcount = nb_div;
 	delta = nb - mp->m_sb.sb_dblocks;
-	/*
-	 * Reject filesystems with a single AG because they are not
-	 * supported, and reject a shrink operation that would cause a
-	 * filesystem to become unsupported.
-	 */
+	 
 	if (delta < 0 && nagcount < 2)
 		return -EINVAL;
 
 	oagcount = mp->m_sb.sb_agcount;
-	/* allocate the new per-ag structures */
+	 
 	if (nagcount > oagcount) {
 		error = xfs_initialize_perag(mp, nagcount, nb, &nagimax);
 		if (error)
 			return error;
 	} else if (nagcount < oagcount) {
-		/* TODO: shrinking the entire AGs hasn't yet completed */
+		 
 		return -EINVAL;
 	}
 
@@ -169,11 +149,7 @@ xfs_growfs_data_private(
 	if (error)
 		goto out_trans_cancel;
 
-	/*
-	 * Update changed superblock fields transactionally. These are not
-	 * seen by the rest of the world until the transaction commit applies
-	 * them atomically to the superblock.
-	 */
+	 
 	if (nagcount > oagcount)
 		xfs_trans_mod_sb(tp, XFS_TRANS_SB_AGCOUNT, nagcount - oagcount);
 	if (delta)
@@ -181,11 +157,7 @@ xfs_growfs_data_private(
 	if (id.nfree)
 		xfs_trans_mod_sb(tp, XFS_TRANS_SB_FDBLOCKS, id.nfree);
 
-	/*
-	 * Sync sb counters now to reflect the updated values. This is
-	 * particularly important for shrink because the write verifier
-	 * will fail if sb_fdblocks is ever larger than sb_dblocks.
-	 */
+	 
 	if (xfs_has_lazysbcount(mp))
 		xfs_log_sb(tp);
 
@@ -194,17 +166,14 @@ xfs_growfs_data_private(
 	if (error)
 		return error;
 
-	/* New allocation groups fully initialized, so update mount struct */
+	 
 	if (nagimax)
 		mp->m_maxagi = nagimax;
 	xfs_set_low_space_thresholds(mp);
 	mp->m_alloc_set_aside = xfs_alloc_set_aside(mp);
 
 	if (delta > 0) {
-		/*
-		 * If we expanded the last AG, free the per-AG reservation
-		 * so we can reinitialize it with the new size.
-		 */
+		 
 		if (lastag_extended) {
 			struct xfs_perag	*pag;
 
@@ -214,11 +183,7 @@ xfs_growfs_data_private(
 			if (error)
 				return error;
 		}
-		/*
-		 * Reserve AG metadata blocks. ENOSPC here does not mean there
-		 * was a growfs failure, just that there still isn't space for
-		 * new user data after the grow has been run.
-		 */
+		 
 		error = xfs_fs_reserve_ag_blocks(mp);
 		if (error == -ENOSPC)
 			error = 0;
@@ -232,8 +197,8 @@ out_trans_cancel:
 
 static int
 xfs_growfs_log_private(
-	struct xfs_mount	*mp,	/* mount point for filesystem */
-	struct xfs_growfs_log	*in)	/* growfs log input struct */
+	struct xfs_mount	*mp,	 
+	struct xfs_growfs_log	*in)	 
 {
 	xfs_extlen_t		nb;
 
@@ -243,12 +208,7 @@ xfs_growfs_log_private(
 	if (nb == mp->m_sb.sb_logblocks &&
 	    in->isint == (mp->m_sb.sb_logstart != 0))
 		return -EINVAL;
-	/*
-	 * Moving the log is hard, need new interfaces to sync
-	 * the log first, hold off all activity while moving it.
-	 * Can have shorter or longer log in the same space,
-	 * or transform internal to external log or vice versa.
-	 */
+	 
 	return -ENOSYS;
 }
 
@@ -275,11 +235,7 @@ xfs_growfs_imaxpct(
 	return xfs_trans_commit(tp);
 }
 
-/*
- * protected versions of growfs function acquire and release locks on the mount
- * point - exported through ioctls: XFS_IOC_FSGROWFSDATA, XFS_IOC_FSGROWFSLOG,
- * XFS_IOC_FSGROWFSRT
- */
+ 
 int
 xfs_growfs_data(
 	struct xfs_mount	*mp,
@@ -292,7 +248,7 @@ xfs_growfs_data(
 	if (!mutex_trylock(&mp->m_growlock))
 		return -EWOULDBLOCK;
 
-	/* update imaxpct separately to the physical grow of the filesystem */
+	 
 	if (in->imaxpct != mp->m_sb.sb_imax_pct) {
 		error = xfs_growfs_imaxpct(mp, in->imaxpct);
 		if (error)
@@ -305,7 +261,7 @@ xfs_growfs_data(
 			goto out_error;
 	}
 
-	/* Post growfs calculations needed to reflect new state in operations */
+	 
 	if (mp->m_sb.sb_imax_pct) {
 		uint64_t icount = mp->m_sb.sb_dblocks * mp->m_sb.sb_imax_pct;
 		do_div(icount, 100);
@@ -313,15 +269,11 @@ xfs_growfs_data(
 	} else
 		M_IGEO(mp)->maxicount = 0;
 
-	/* Update secondary superblocks now the physical grow has completed */
+	 
 	error = xfs_update_secondary_sbs(mp);
 
 out_error:
-	/*
-	 * Increment the generation unconditionally, the error could be from
-	 * updating the secondary superblocks, in which case the new size
-	 * is live already.
-	 */
+	 
 	mp->m_generation++;
 	mutex_unlock(&mp->m_growlock);
 	return error;
@@ -343,9 +295,7 @@ xfs_growfs_log(
 	return error;
 }
 
-/*
- * exported through ioctl XFS_IOC_FSCOUNTS
- */
+ 
 
 void
 xfs_fs_counts(
@@ -359,20 +309,7 @@ xfs_fs_counts(
 	cnt->freertx = percpu_counter_read_positive(&mp->m_frextents);
 }
 
-/*
- * exported through ioctl XFS_IOC_SET_RESBLKS & XFS_IOC_GET_RESBLKS
- *
- * xfs_reserve_blocks is called to set m_resblks
- * in the in-core mount table. The number of unused reserved blocks
- * is kept in m_resblks_avail.
- *
- * Reserve the requested number of blocks if available. Otherwise return
- * as many as possible to satisfy the request. The actual number
- * reserved are returned in outval
- *
- * A null inval pointer indicates that only the current reserved blocks
- * available  should  be returned no settings are changed.
- */
+ 
 
 int
 xfs_reserve_blocks(
@@ -386,7 +323,7 @@ xfs_reserve_blocks(
 	int64_t			free;
 	int			error = 0;
 
-	/* If inval is null, report current values and return */
+	 
 	if (inval == (uint64_t *)NULL) {
 		if (!outval)
 			return -EINVAL;
@@ -397,27 +334,13 @@ xfs_reserve_blocks(
 
 	request = *inval;
 
-	/*
-	 * With per-cpu counters, this becomes an interesting problem. we need
-	 * to work out if we are freeing or allocation blocks first, then we can
-	 * do the modification as necessary.
-	 *
-	 * We do this under the m_sb_lock so that if we are near ENOSPC, we will
-	 * hold out any changes while we work out what to do. This means that
-	 * the amount of free space can change while we do this, so we need to
-	 * retry if we end up trying to reserve more space than is available.
-	 */
+	 
 	spin_lock(&mp->m_sb_lock);
 
-	/*
-	 * If our previous reservation was larger than the current value,
-	 * then move any unused blocks back to the free pool. Modify the resblks
-	 * counters directly since we shouldn't have any problems unreserving
-	 * space.
-	 */
+	 
 	if (mp->m_resblks > request) {
 		lcounter = mp->m_resblks_avail - request;
-		if (lcounter  > 0) {		/* release unused blocks */
+		if (lcounter  > 0) {		 
 			fdblks_delta = lcounter;
 			mp->m_resblks_avail -= lcounter;
 		}
@@ -431,33 +354,13 @@ xfs_reserve_blocks(
 		goto out;
 	}
 
-	/*
-	 * If the request is larger than the current reservation, reserve the
-	 * blocks before we update the reserve counters. Sample m_fdblocks and
-	 * perform a partial reservation if the request exceeds free space.
-	 *
-	 * The code below estimates how many blocks it can request from
-	 * fdblocks to stash in the reserve pool.  This is a classic TOCTOU
-	 * race since fdblocks updates are not always coordinated via
-	 * m_sb_lock.  Set the reserve size even if there's not enough free
-	 * space to fill it because mod_fdblocks will refill an undersized
-	 * reserve when it can.
-	 */
+	 
 	free = percpu_counter_sum(&mp->m_fdblocks) -
 						xfs_fdblocks_unavailable(mp);
 	delta = request - mp->m_resblks;
 	mp->m_resblks = request;
 	if (delta > 0 && free > 0) {
-		/*
-		 * We'll either succeed in getting space from the free block
-		 * count or we'll get an ENOSPC.  Don't set the reserved flag
-		 * here - we don't want to reserve the extra reserve blocks
-		 * from the reserve.
-		 *
-		 * The desired reserve size can change after we drop the lock.
-		 * Use mod_fdblocks to put the space into the reserve or into
-		 * fdblocks as appropriate.
-		 */
+		 
 		fdblks_delta = min(free, delta);
 		spin_unlock(&mp->m_sb_lock);
 		error = xfs_mod_fdblocks(mp, -fdblks_delta, 0);
@@ -502,17 +405,7 @@ xfs_fs_goingdown(
 	return 0;
 }
 
-/*
- * Force a shutdown of the filesystem instantly while keeping the filesystem
- * consistent. We don't do an unmount here; just shutdown the shop, make sure
- * that absolutely nothing persistent happens to this filesystem after this
- * point.
- *
- * The shutdown state change is atomic, resulting in the first and only the
- * first shutdown call processing the shutdown. This means we only shutdown the
- * log once as it requires, and we don't spam the logs when multiple concurrent
- * shutdowns race to set the shutdown flags.
- */
+ 
 void
 xfs_do_force_shutdown(
 	struct xfs_mount *mp,
@@ -562,9 +455,7 @@ xfs_do_force_shutdown(
 		xfs_stack_trace();
 }
 
-/*
- * Reserve free space for per-AG metadata.
- */
+ 
 int
 xfs_fs_reserve_ag_blocks(
 	struct xfs_mount	*mp)
@@ -590,9 +481,7 @@ xfs_fs_reserve_ag_blocks(
 	return error;
 }
 
-/*
- * Free space reserved for per-AG metadata.
- */
+ 
 int
 xfs_fs_unreserve_ag_blocks(
 	struct xfs_mount	*mp)

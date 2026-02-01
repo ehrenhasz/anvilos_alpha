@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* drivers/media/platform/s5p-cec/s5p_cec.c
- *
- * Samsung S5P CEC driver
- *
- * Copyright (c) 2014 Samsung Electronics Co., Ltd.
- *
- * This driver is based on the "cec interface driver for exynos soc" by
- * SangPil Moon.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/interrupt.h>
@@ -73,10 +65,7 @@ static int s5p_cec_adap_transmit(struct cec_adapter *adap, u8 attempts,
 {
 	struct s5p_cec_dev *cec = cec_get_drvdata(adap);
 
-	/*
-	 * Unclear if 0 retries are allowed by the hardware, so have 1 as
-	 * the minimum.
-	 */
+	 
 	s5p_cec_copy_packet(cec, msg->msg, msg->len, max(1, attempts - 1));
 	return 0;
 }
@@ -123,7 +112,7 @@ static irqreturn_t s5p_cec_irq_handler(int irq, void *priv)
 			cec->rx = STATE_DONE;
 			s5p_cec_enable_rx(cec);
 		}
-		/* Clear interrupt pending bit */
+		 
 		s5p_clr_pending_rx(cec);
 	}
 	return IRQ_WAKE_THREAD;

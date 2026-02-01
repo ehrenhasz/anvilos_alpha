@@ -1,41 +1,4 @@
-/* orinoco_nortel.c
- *
- * Driver for Prism II devices which would usually be driven by orinoco_cs,
- * but are connected to the PCI bus by a PCI-to-PCMCIA adapter used in
- * Nortel emobility, Symbol LA-4113 and Symbol LA-4123.
- *
- * Copyright (C) 2002 Tobias Hoffmann
- *           (C) 2003 Christoph Jungegger <disdos@traum404.de>
- *
- * Some of this code is borrowed from orinoco_plx.c
- *	Copyright (C) 2001 Daniel Barlow
- * Some of this code is borrowed from orinoco_pci.c
- *  Copyright (C) 2001 Jean Tourrilhes
- * Some of this code is "inspired" by linux-wlan-ng-0.1.10, but nothing
- * has been copied from it. linux-wlan-ng-0.1.10 is originally :
- *	Copyright (C) 1999 AbsoluteValue Systems, Inc.  All Rights Reserved.
- *
- * The contents of this file are subject to the Mozilla Public License
- * Version 1.1 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License
- * at http://www.mozilla.org/MPL/
- *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See
- * the License for the specific language governing rights and
- * limitations under the License.
- *
- * Alternatively, the contents of this file may be used under the
- * terms of the GNU General Public License version 2 (the "GPL"), in
- * which case the provisions of the GPL are applicable instead of the
- * above.  If you wish to allow the use of your version of this file
- * only under the terms of the GPL and not to allow others to use your
- * version of this file under the MPL, indicate your decision by
- * deleting the provisions above and replace them with the notice and
- * other provisions required by the GPL.  If you do not delete the
- * provisions above, a recipient may use your version of this file
- * under either the MPL or the GPL.
- */
+ 
 
 #define DRIVER_NAME "orinoco_nortel"
 #define PFX DRIVER_NAME ": "
@@ -50,34 +13,27 @@
 #include "orinoco.h"
 #include "orinoco_pci.h"
 
-#define COR_OFFSET    (0xe0)	/* COR attribute offset of Prism2 PC card */
-#define COR_VALUE     (COR_LEVEL_REQ | COR_FUNC_ENA)	/* Enable PC card with interrupt in level trigger */
+#define COR_OFFSET    (0xe0)	 
+#define COR_VALUE     (COR_LEVEL_REQ | COR_FUNC_ENA)	 
 
 
-/*
- * Do a soft reset of the card using the Configuration Option Register
- * We need this to get going...
- * This is the part of the code that is strongly inspired from wlan-ng
- *
- * Note bis : Don't try to access HERMES_CMD during the reset phase.
- * It just won't work !
- */
+ 
 static int orinoco_nortel_cor_reset(struct orinoco_private *priv)
 {
 	struct orinoco_pci_card *card = priv->card;
 
-	/* Assert the reset until the card notices */
+	 
 	iowrite16(8, card->bridge_io + 2);
 	ioread16(card->attr_io + COR_OFFSET);
 	iowrite16(0x80, card->attr_io + COR_OFFSET);
 	mdelay(1);
 
-	/* Give time for the card to recover from this hard effort */
+	 
 	iowrite16(0, card->attr_io + COR_OFFSET);
 	iowrite16(0, card->attr_io + COR_OFFSET);
 	mdelay(1);
 
-	/* Set COR as usual */
+	 
 	iowrite16(COR_VALUE, card->attr_io + COR_OFFSET);
 	iowrite16(COR_VALUE, card->attr_io + COR_OFFSET);
 	mdelay(1);
@@ -92,7 +48,7 @@ static int orinoco_nortel_hw_init(struct orinoco_pci_card *card)
 	int i;
 	u32 reg;
 
-	/* Setup bridge */
+	 
 	if (ioread16(card->bridge_io) & 1) {
 		printk(KERN_ERR PFX "brg1 answer1 wrong\n");
 		return -EBUSY;
@@ -123,7 +79,7 @@ static int orinoco_nortel_hw_init(struct orinoco_pci_card *card)
 		return -EBUSY;
 	}
 
-	/* Set the PCMCIA COR register */
+	 
 	iowrite16(COR_VALUE, card->attr_io + COR_OFFSET);
 	mdelay(1);
 	reg = ioread16(card->attr_io + COR_OFFSET);
@@ -133,7 +89,7 @@ static int orinoco_nortel_hw_init(struct orinoco_pci_card *card)
 		return -EBUSY;
 	}
 
-	/* Set LEDs */
+	 
 	iowrite16(1, card->bridge_io + 10);
 	return 0;
 }
@@ -179,7 +135,7 @@ static int orinoco_nortel_init_one(struct pci_dev *pdev,
 		goto fail_map_hermes;
 	}
 
-	/* Allocate network device */
+	 
 	priv = alloc_orinocodev(sizeof(*card), &pdev->dev,
 				orinoco_nortel_cor_reset, NULL);
 	if (!priv) {
@@ -261,7 +217,7 @@ static void orinoco_nortel_remove_one(struct pci_dev *pdev)
 	struct orinoco_private *priv = pci_get_drvdata(pdev);
 	struct orinoco_pci_card *card = priv->card;
 
-	/* Clear LEDs */
+	 
 	iowrite16(0, card->bridge_io + 10);
 
 	orinoco_if_del(priv);
@@ -276,9 +232,9 @@ static void orinoco_nortel_remove_one(struct pci_dev *pdev)
 }
 
 static const struct pci_device_id orinoco_nortel_id_table[] = {
-	/* Nortel emobility PCI */
+	 
 	{0x126c, 0x8030, PCI_ANY_ID, PCI_ANY_ID,},
-	/* Symbol LA-4123 PCI */
+	 
 	{0x1562, 0x0001, PCI_ANY_ID, PCI_ANY_ID,},
 	{0,},
 };

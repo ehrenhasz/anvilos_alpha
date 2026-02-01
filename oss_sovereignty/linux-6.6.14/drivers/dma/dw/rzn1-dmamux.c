@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2022 Schneider-Electric
- * Author: Miquel Raynal <miquel.raynal@bootlin.com
- * Based on TI crossbar driver written by Peter Ujfalusi <peter.ujfalusi@ti.com>
- */
+
+ 
 #include <linux/bitops.h>
 #include <linux/of.h>
 #include <linux/of_dma.h>

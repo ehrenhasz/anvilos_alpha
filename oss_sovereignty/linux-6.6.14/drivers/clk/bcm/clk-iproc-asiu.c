@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-// Copyright (C) 2014 Broadcom Corporation
+
+
 
 #include <linux/kernel.h>
 #include <linux/err.h>
@@ -39,7 +39,7 @@ static int iproc_asiu_clk_enable(struct clk_hw *hw)
 	struct iproc_asiu *asiu = clk->asiu;
 	u32 val;
 
-	/* some clocks at the ASIU level are always enabled */
+	 
 	if (clk->gate.offset == IPROC_CLK_INVALID_OFFSET)
 		return 0;
 
@@ -56,7 +56,7 @@ static void iproc_asiu_clk_disable(struct clk_hw *hw)
 	struct iproc_asiu *asiu = clk->asiu;
 	u32 val;
 
-	/* some clocks at the ASIU level are always enabled */
+	 
 	if (clk->gate.offset == IPROC_CLK_INVALID_OFFSET)
 		return;
 
@@ -78,14 +78,14 @@ static unsigned long iproc_asiu_clk_recalc_rate(struct clk_hw *hw,
 		return 0;
 	}
 
-	/* if clock divisor is not enabled, simply return parent rate */
+	 
 	val = readl(asiu->div_base + clk->div.offset);
 	if ((val & (1 << clk->div.en_shift)) == 0) {
 		clk->rate = parent_rate;
 		return parent_rate;
 	}
 
-	/* clock rate = parent rate / (high_div + 1) + (low_div + 1) */
+	 
 	div_h = (val >> clk->div.high_shift) & bit_mask(clk->div.high_width);
 	div_h++;
 	div_l = (val >> clk->div.low_shift) & bit_mask(clk->div.low_width);
@@ -127,7 +127,7 @@ static int iproc_asiu_clk_set_rate(struct clk_hw *hw, unsigned long rate,
 	if (rate == 0 || parent_rate == 0)
 		return -EINVAL;
 
-	/* simply disable the divisor if one wants the same rate as parent */
+	 
 	if (rate == parent_rate) {
 		val = readl(asiu->div_base + clk->div.offset);
 		val &= ~(1 << clk->div.en_shift);

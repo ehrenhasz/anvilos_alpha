@@ -1,14 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Context.c.  Python interfaces for perf script.
- *
- * Copyright (C) 2010 Tom Zanussi <tzanussi@gmail.com>
- */
 
-/*
- * Use Py_ssize_t for '#' formats to avoid DeprecationWarning: PY_SSIZE_T_CLEAN
- * will be required for '#' formats.
- */
+ 
+
+ 
 #define PY_SSIZE_T_CLEAN
 
 #include <Python.h>
@@ -106,7 +99,7 @@ static PyObject *perf_sample_insn(PyObject *obj, PyObject *args)
 		script_fetch_insn(c->sample, c->al->thread, machine);
 	}
 	if (!c->sample->insn_len)
-		Py_RETURN_NONE; /* N.B. This is a return statement */
+		Py_RETURN_NONE;  
 
 	return _PyBytes_FromStringAndSize(c->sample->insn, c->sample->insn_len);
 }
@@ -212,19 +205,19 @@ PyMODINIT_FUNC PyInit_perf_trace_context(void)
 {
 	static struct PyModuleDef moduledef = {
 		PyModuleDef_HEAD_INIT,
-		"perf_trace_context",	/* m_name */
-		"",			/* m_doc */
-		-1,			/* m_size */
-		ContextMethods,		/* m_methods */
-		NULL,			/* m_reload */
-		NULL,			/* m_traverse */
-		NULL,			/* m_clear */
-		NULL,			/* m_free */
+		"perf_trace_context",	 
+		"",			 
+		-1,			 
+		ContextMethods,		 
+		NULL,			 
+		NULL,			 
+		NULL,			 
+		NULL,			 
 	};
 	PyObject *mod;
 
 	mod = PyModule_Create(&moduledef);
-	/* Add perf_script_context to the module so it can be imported */
+	 
 	PyObject_SetAttrString(mod, "perf_script_context", Py_None);
 
 	return mod;

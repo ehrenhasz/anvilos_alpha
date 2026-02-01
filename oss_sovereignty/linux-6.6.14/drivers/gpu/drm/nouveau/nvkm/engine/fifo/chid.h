@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: MIT */
+ 
 #ifndef __NVKM_CHID_H__
 #define __NVKM_CHID_H__
 #include <core/event.h>

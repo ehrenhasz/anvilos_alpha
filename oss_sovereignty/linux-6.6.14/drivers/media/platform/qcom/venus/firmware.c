@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2017 Linaro Ltd.
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/firmware.h>
@@ -43,13 +41,13 @@ static void venus_reset_cpu(struct venus_core *core)
 	writel(fw_size, wrapper_base + WRAPPER_NONPIX_END_ADDR);
 
 	if (IS_IRIS2_1(core)) {
-		/* Bring XTSS out of reset */
+		 
 		writel(0, wrapper_base + WRAPPER_TZ_XTSS_SW_RESET);
 	} else {
 		writel(0x0, wrapper_base + WRAPPER_CPU_CGC_DIS);
 		writel(0x0, wrapper_base + WRAPPER_CPU_CLOCK_CONFIG);
 
-		/* Bring ARM9 out of reset */
+		 
 		writel(0, wrapper_base + WRAPPER_A9SS_SW_RESET);
 	}
 }
@@ -182,12 +180,12 @@ static int venus_shutdown_no_tz(struct venus_core *core)
 	void __iomem *wrapper_tz_base = core->wrapper_tz_base;
 
 	if (IS_IRIS2_1(core)) {
-		/* Assert the reset to XTSS */
+		 
 		reg = readl(wrapper_tz_base + WRAPPER_TZ_XTSS_SW_RESET);
 		reg |= WRAPPER_XTSS_SW_RESET_BIT;
 		writel(reg, wrapper_tz_base + WRAPPER_TZ_XTSS_SW_RESET);
 	} else {
-		/* Assert the reset to ARM9 */
+		 
 		reg = readl(wrapper_base + WRAPPER_A9SS_SW_RESET);
 		reg |= WRAPPER_A9SS_SW_RESET_BIT;
 		writel(reg, wrapper_base + WRAPPER_A9SS_SW_RESET);
@@ -243,16 +241,7 @@ int venus_boot(struct venus_core *core)
 		return ret;
 
 	if (core->use_tz && res->cp_size) {
-		/*
-		 * Clues for porting using downstream data:
-		 * cp_start = 0
-		 * cp_size = venus_ns/virtual-addr-pool[0] - yes, address and not size!
-		 *   This works, as the non-secure context bank is placed
-		 *   contiguously right after the Content Protection region.
-		 *
-		 * cp_nonpixel_start = venus_sec_non_pixel/virtual-addr-pool[0]
-		 * cp_nonpixel_size = venus_sec_non_pixel/virtual-addr-pool[1]
-		 */
+		 
 		ret = qcom_scm_mem_protect_video_var(res->cp_start,
 						     res->cp_size,
 						     res->cp_nonpixel_start,

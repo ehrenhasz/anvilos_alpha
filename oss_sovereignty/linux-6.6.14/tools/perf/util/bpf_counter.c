@@ -1,6 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
 
-/* Copyright (c) 2019 Facebook */
+
+ 
 
 #include <assert.h>
 #include <limits.h>
@@ -224,9 +224,9 @@ static int bpf_program_profiler__disable(struct evsel *evsel)
 
 static int bpf_program_profiler__read(struct evsel *evsel)
 {
-	// BPF_MAP_TYPE_PERCPU_ARRAY uses /sys/devices/system/cpu/possible
-	// Sometimes possible > online, like on a Ryzen 3900X that has 24
-	// threads but its possible showed 0-31 -acme
+	
+	
+	
 	int num_cpu_bpf = libbpf_num_possible_cpus();
 	struct bpf_perf_event_value values[num_cpu_bpf];
 	struct bpf_counter *counter;
@@ -334,7 +334,7 @@ static int bperf_lock_attr_map(struct target *target)
 
 		err = bpf_obj_pin(map_fd, path);
 		if (err) {
-			/* someone pinned the map in parallel? */
+			 
 			close(map_fd);
 			map_fd = bpf_obj_get(path);
 			if (map_fd < 0)
@@ -369,7 +369,7 @@ static int bperf_check_target(struct evsel *evsel,
 		return -1;
 	}
 
-	/* determine filter type based on target */
+	 
 	if (target->system_wide) {
 		*filter_type = BPERF_FILTER_GLOBAL;
 		*filter_entry_cnt = 1;
@@ -428,10 +428,7 @@ static int bperf_reload_leader_program(struct evsel *evsel, int attr_map_fd,
 	evsel->bperf_leader_link_fd = bpf_link_get_fd_by_id(entry->link_id);
 	assert(evsel->bperf_leader_link_fd >= 0);
 
-	/*
-	 * save leader_skel for install_pe, which is called within
-	 * following evsel__open_per_cpu call
-	 */
+	 
 	evsel->leader_skel = skel;
 	evsel__open_per_cpu(evsel, all_cpu_map, -1);
 
@@ -460,12 +457,7 @@ static int bperf__load(struct evsel *evsel, struct target *target)
 	evsel->bperf_leader_prog_fd = -1;
 	evsel->bperf_leader_link_fd = -1;
 
-	/*
-	 * Step 1: hold a fd on the leader program and the bpf_link, if
-	 * the program is not already gone, reload the program.
-	 * Use flock() to ensure exclusive access to the perf_event_attr
-	 * map.
-	 */
+	 
 	attr_map_fd = bperf_lock_attr_map(target);
 	if (attr_map_fd < 0) {
 		pr_err("Failed to lock perf_event_attr map\n");
@@ -485,11 +477,7 @@ static int bperf__load(struct evsel *evsel, struct target *target)
 		err = -1;
 		goto out;
 	}
-	/*
-	 * The bpf_link holds reference to the leader program, and the
-	 * leader program holds reference to the maps. Therefore, if
-	 * link_id is valid, diff_map_id should also be valid.
-	 */
+	 
 	evsel->bperf_leader_prog_fd = bpf_prog_get_fd_by_id(
 		bpf_link_get_prog_id(evsel->bperf_leader_link_fd));
 	assert(evsel->bperf_leader_prog_fd >= 0);
@@ -497,10 +485,7 @@ static int bperf__load(struct evsel *evsel, struct target *target)
 	diff_map_fd = bpf_map_get_fd_by_id(entry.diff_map_id);
 	assert(diff_map_fd >= 0);
 
-	/*
-	 * bperf uses BPF_PROG_TEST_RUN to get accurate reading. Check
-	 * whether the kernel support it
-	 */
+	 
 	err = bperf_trigger_reading(evsel->bperf_leader_prog_fd, 0);
 	if (err) {
 		pr_err("The kernel does not support test_run for raw_tp BPF programs.\n"
@@ -508,7 +493,7 @@ static int bperf__load(struct evsel *evsel, struct target *target)
 		goto out;
 	}
 
-	/* Step 2: load the follower skeleton */
+	 
 	evsel->follower_skel = bperf_follower_bpf__open();
 	if (!evsel->follower_skel) {
 		err = -1;
@@ -516,17 +501,17 @@ static int bperf__load(struct evsel *evsel, struct target *target)
 		goto out;
 	}
 
-	/* attach fexit program to the leader program */
+	 
 	bpf_program__set_attach_target(evsel->follower_skel->progs.fexit_XXX,
 				       evsel->bperf_leader_prog_fd, "on_switch");
 
-	/* connect to leader diff_reading map */
+	 
 	bpf_map__reuse_fd(evsel->follower_skel->maps.diff_readings, diff_map_fd);
 
-	/* set up reading map */
+	 
 	bpf_map__set_max_entries(evsel->follower_skel->maps.accum_readings,
 				 filter_entry_cnt);
-	/* set up follower filter based on target */
+	 
 	bpf_map__set_max_entries(evsel->follower_skel->maps.filter,
 				 filter_entry_cnt);
 	err = bperf_follower_bpf__load(evsel->follower_skel);
@@ -579,10 +564,7 @@ static int bperf__install_pe(struct evsel *evsel, int cpu_map_idx, int fd)
 				   &cpu_map_idx, &fd, BPF_ANY);
 }
 
-/*
- * trigger the leader prog on each cpu, so the accum_reading map could get
- * the latest readings.
- */
+ 
 static int bperf_sync_counters(struct evsel *evsel)
 {
 	int num_cpu, i, cpu;
@@ -675,80 +657,7 @@ static int bperf__destroy(struct evsel *evsel)
 	return 0;
 }
 
-/*
- * bperf: share hardware PMCs with BPF
- *
- * perf uses performance monitoring counters (PMC) to monitor system
- * performance. The PMCs are limited hardware resources. For example,
- * Intel CPUs have 3x fixed PMCs and 4x programmable PMCs per cpu.
- *
- * Modern data center systems use these PMCs in many different ways:
- * system level monitoring, (maybe nested) container level monitoring, per
- * process monitoring, profiling (in sample mode), etc. In some cases,
- * there are more active perf_events than available hardware PMCs. To allow
- * all perf_events to have a chance to run, it is necessary to do expensive
- * time multiplexing of events.
- *
- * On the other hand, many monitoring tools count the common metrics
- * (cycles, instructions). It is a waste to have multiple tools create
- * multiple perf_events of "cycles" and occupy multiple PMCs.
- *
- * bperf tries to reduce such wastes by allowing multiple perf_events of
- * "cycles" or "instructions" (at different scopes) to share PMUs. Instead
- * of having each perf-stat session to read its own perf_events, bperf uses
- * BPF programs to read the perf_events and aggregate readings to BPF maps.
- * Then, the perf-stat session(s) reads the values from these BPF maps.
- *
- *                                ||
- *       shared progs and maps <- || -> per session progs and maps
- *                                ||
- *   ---------------              ||
- *   | perf_events |              ||
- *   ---------------       fexit  ||      -----------------
- *          |             --------||----> | follower prog |
- *       --------------- /        || ---  -----------------
- * cs -> | leader prog |/         ||/        |         |
- *   --> ---------------         /||  --------------  ------------------
- *  /       |         |         / ||  | filter map |  | accum_readings |
- * /  ------------  ------------  ||  --------------  ------------------
- * |  | prev map |  | diff map |  ||                        |
- * |  ------------  ------------  ||                        |
- *  \                             ||                        |
- * = \ ==================================================== | ============
- *    \                                                    /   user space
- *     \                                                  /
- *      \                                                /
- *    BPF_PROG_TEST_RUN                    BPF_MAP_LOOKUP_ELEM
- *        \                                            /
- *         \                                          /
- *          \------  perf-stat ----------------------/
- *
- * The figure above shows the architecture of bperf. Note that the figure
- * is divided into 3 regions: shared progs and maps (top left), per session
- * progs and maps (top right), and user space (bottom).
- *
- * The leader prog is triggered on each context switch (cs). The leader
- * prog reads perf_events and stores the difference (current_reading -
- * previous_reading) to the diff map. For the same metric, e.g. "cycles",
- * multiple perf-stat sessions share the same leader prog.
- *
- * Each perf-stat session creates a follower prog as fexit program to the
- * leader prog. It is possible to attach up to BPF_MAX_TRAMP_PROGS (38)
- * follower progs to the same leader prog. The follower prog checks current
- * task and processor ID to decide whether to add the value from the diff
- * map to its accumulated reading map (accum_readings).
- *
- * Finally, perf-stat user space reads the value from accum_reading map.
- *
- * Besides context switch, it is also necessary to trigger the leader prog
- * before perf-stat reads the value. Otherwise, the accum_reading map may
- * not have the latest reading from the perf_events. This is achieved by
- * triggering the event via sys_bpf(BPF_PROG_TEST_RUN) to each CPU.
- *
- * Comment before the definition of struct perf_event_attr_map_entry
- * describes how different sessions of perf-stat share information about
- * the leader prog.
- */
+ 
 
 struct bpf_counter_ops bperf_ops = {
 	.load       = bperf__load,

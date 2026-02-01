@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Low-level I/O functions.
- *
- * Copyright (c) 2017-2020, Silicon Laboratories, Inc.
- * Copyright (c) 2010, ST-Ericsson
- */
+
+ 
 #include <linux/kernel.h>
 #include <linux/delay.h>
 #include <linux/slab.h>
@@ -22,7 +17,7 @@ static int wfx_read32(struct wfx_dev *wdev, int reg, u32 *val)
 	int ret;
 	__le32 *tmp = kmalloc(sizeof(u32), GFP_KERNEL);
 
-	*val = ~0; /* Never return undefined value */
+	*val = ~0;  
 	if (!tmp)
 		return -ENOMEM;
 	ret = wdev->hwbus_ops->copy_from_io(wdev->hwbus_priv, reg, tmp, sizeof(u32));
@@ -139,7 +134,7 @@ static int wfx_indirect_read(struct wfx_dev *wdev, int reg, u32 addr, void *buf,
 
 err:
 	if (ret < 0)
-		memset(buf, 0xFF, len); /* Never return undefined value */
+		memset(buf, 0xFF, len);  
 	return ret;
 }
 
@@ -315,7 +310,7 @@ int wfx_igpr_reg_read(struct wfx_dev *wdev, int index, u32 *val)
 {
 	int ret;
 
-	*val = ~0; /* Never return undefined value */
+	*val = ~0;  
 	ret = wfx_write32_locked(wdev, WFX_REG_SET_GEN_R_W, IGPR_RW | index << 24);
 	if (ret)
 		return ret;

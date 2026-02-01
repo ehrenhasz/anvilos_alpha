@@ -1,20 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Implementation of the extensible bitmap type.
- *
- * Author : Stephen Smalley, <stephen.smalley.work@gmail.com>
- */
-/*
- * Updated: Hewlett-Packard <paul@paul-moore.com>
- *
- *      Added support to import/export the NetLabel category bitmap
- *
- * (c) Copyright Hewlett-Packard Development Company, L.P., 2006
- */
-/*
- * Updated: KaiGai Kohei <kaigai@ak.jp.nec.com>
- *      Applied standard bit operations to improve bitmap scanning.
- */
+
+ 
+ 
+ 
 
 #include <linux/kernel.h>
 #include <linux/slab.h>
@@ -98,16 +85,7 @@ int ebitmap_and(struct ebitmap *dst, const struct ebitmap *e1, const struct ebit
 
 
 #ifdef CONFIG_NETLABEL
-/**
- * ebitmap_netlbl_export - Export an ebitmap into a NetLabel category bitmap
- * @ebmap: the ebitmap to export
- * @catmap: the NetLabel category bitmap
- *
- * Description:
- * Export a SELinux extensibile bitmap into a NetLabel category bitmap.
- * Returns zero on success, negative values on error.
- *
- */
+ 
 int ebitmap_netlbl_export(struct ebitmap *ebmap,
 			  struct netlbl_lsm_catmap **catmap)
 {
@@ -150,16 +128,7 @@ netlbl_export_failure:
 	return -ENOMEM;
 }
 
-/**
- * ebitmap_netlbl_import - Import a NetLabel category bitmap into an ebitmap
- * @ebmap: the ebitmap to import
- * @catmap: the NetLabel category bitmap
- *
- * Description:
- * Import a NetLabel category bitmap into a SELinux extensibile bitmap.
- * Returns zero on success, negative values on error.
- *
- */
+ 
 int ebitmap_netlbl_import(struct ebitmap *ebmap,
 			  struct netlbl_lsm_catmap *catmap)
 {
@@ -176,7 +145,7 @@ int ebitmap_netlbl_import(struct ebitmap *ebmap,
 		if (offset == (u32)-1)
 			return 0;
 
-		/* don't waste ebitmap space if the netlabel bitmap is empty */
+		 
 		if (bitmap == 0) {
 			offset += EBITMAP_UNIT_SIZE;
 			continue;
@@ -196,28 +165,24 @@ int ebitmap_netlbl_import(struct ebitmap *ebmap,
 			ebmap->highbit = e_iter->startbit + EBITMAP_SIZE;
 		}
 
-		/* offset will always be aligned to an unsigned long */
+		 
 		idx = EBITMAP_NODE_INDEX(e_iter, offset);
 		e_iter->maps[idx] = bitmap;
 
-		/* next */
+		 
 		offset += EBITMAP_UNIT_SIZE;
 	}
 
-	/* NOTE: we should never reach this return */
+	 
 	return 0;
 
 netlbl_import_failure:
 	ebitmap_destroy(ebmap);
 	return -ENOMEM;
 }
-#endif /* CONFIG_NETLABEL */
+#endif  
 
-/*
- * Check to see if all the bits set in e2 are also set in e1. Optionally,
- * if last_e2bit is non-zero, the highest set bit in e2 cannot exceed
- * last_e2bit.
- */
+ 
 int ebitmap_contains(const struct ebitmap *e1, const struct ebitmap *e2, u32 last_e2bit)
 {
 	const struct ebitmap_node *n1, *n2;
@@ -235,7 +200,7 @@ int ebitmap_contains(const struct ebitmap *e1, const struct ebitmap *e2, u32 las
 			continue;
 		}
 		for (i = EBITMAP_UNIT_NUMS - 1; (i >= 0) && !n2->maps[i]; )
-			i--;	/* Skip trailing NULL map entries */
+			i--;	 
 		if (last_e2bit && (i >= 0)) {
 			u32 lastsetbit = n2->startbit + i * EBITMAP_UNIT_SIZE +
 					 __fls(n2->maps[i]);
@@ -295,12 +260,9 @@ int ebitmap_set_bit(struct ebitmap *e, unsigned long bit, int value)
 				if (s < EBITMAP_SIZE)
 					return 0;
 
-				/* drop this node from the bitmap */
+				 
 				if (!n->next) {
-					/*
-					 * this was the highest map
-					 * within the bitmap
-					 */
+					 
 					if (prev)
 						e->highbit = prev->startbit
 							     + EBITMAP_SIZE;
@@ -330,7 +292,7 @@ int ebitmap_set_bit(struct ebitmap *e, unsigned long bit, int value)
 	ebitmap_node_set_bit(new, bit);
 
 	if (!n)
-		/* this node will be the highest map within the bitmap */
+		 
 		e->highbit = new->startbit + EBITMAP_SIZE;
 
 	if (prev) {
@@ -389,7 +351,7 @@ int ebitmap_read(struct ebitmap *e, void *fp)
 		goto bad;
 	}
 
-	/* round up e->highbit */
+	 
 	e->highbit += EBITMAP_SIZE - 1;
 	e->highbit -= (e->highbit % EBITMAP_SIZE);
 
@@ -430,7 +392,7 @@ int ebitmap_read(struct ebitmap *e, void *fp)
 				rc = -ENOMEM;
 				goto bad;
 			}
-			/* round down */
+			 
 			tmp->startbit = startbit - (startbit % EBITMAP_SIZE);
 			if (n)
 				n->next = tmp;
@@ -501,14 +463,14 @@ int ebitmap_write(const struct ebitmap *e, void *fp)
 		if (rounddown(bit, (int)BITS_PER_U64) > last_startbit) {
 			__le64 buf64[1];
 
-			/* this is the very first bit */
+			 
 			if (!map) {
 				last_startbit = rounddown(bit, BITS_PER_U64);
 				map = (u64)1 << (bit - last_startbit);
 				continue;
 			}
 
-			/* write the last node */
+			 
 			buf[0] = cpu_to_le32(last_startbit);
 			rc = put_entry(buf, sizeof(u32), 1, fp);
 			if (rc)
@@ -519,17 +481,17 @@ int ebitmap_write(const struct ebitmap *e, void *fp)
 			if (rc)
 				return rc;
 
-			/* set up for the next node */
+			 
 			map = 0;
 			last_startbit = rounddown(bit, BITS_PER_U64);
 		}
 		map |= (u64)1 << (bit - last_startbit);
 	}
-	/* write the last node */
+	 
 	if (map) {
 		__le64 buf64[1];
 
-		/* write the last node */
+		 
 		buf[0] = cpu_to_le32(last_startbit);
 		rc = put_entry(buf, sizeof(u32), 1, fp);
 		if (rc)
@@ -547,7 +509,7 @@ u32 ebitmap_hash(const struct ebitmap *e, u32 hash)
 {
 	struct ebitmap_node *node;
 
-	/* need to change hash even if ebitmap is empty */
+	 
 	hash = jhash_1word(e->highbit, hash);
 	for (node = e->node; node; node = node->next) {
 		hash = jhash_1word(node->startbit, hash);

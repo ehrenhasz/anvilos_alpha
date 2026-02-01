@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- *  Watchdog driver for Broadcom BCM47XX
- *
- *  Copyright (C) 2008 Aleksandar Radovanovic <biblbroks@sezampro.rs>
- *  Copyright (C) 2009 Matthieu CASTET <castet.matthieu@free.fr>
- *  Copyright (C) 2012-2013 Hauke Mehrtens <hauke@hauke-m.de>
- *
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -24,9 +17,9 @@
 
 #define DRV_NAME		"bcm47xx_wdt"
 
-#define WDT_DEFAULT_TIME	30	/* seconds */
-#define WDT_SOFTTIMER_MAX	255	/* seconds */
-#define WDT_SOFTTIMER_THRESHOLD	60	/* seconds */
+#define WDT_DEFAULT_TIME	30	 
+#define WDT_SOFTTIMER_MAX	255	 
+#define WDT_SOFTTIMER_THRESHOLD	60	 
 
 static int timeout = WDT_DEFAULT_TIME;
 static bool nowayout = WATCHDOG_NOWAYOUT;

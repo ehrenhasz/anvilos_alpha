@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*******************************************************************************
-* Filename: target_core_fabric_configfs.c
- *
- * This file contains generic fabric module configfs infrastructure for
- * TCM v4.x code
- *
- * (c) Copyright 2010-2013 Datera, Inc.
- *
- * Nicholas A. Bellinger <nab@linux-iscsi.org>
-*
- ****************************************************************************/
+
+ 
 
 #include <linux/kstrtox.h>
 #include <linux/module.h>
@@ -61,7 +51,7 @@ static void target_fabric_setup_##_name##_cit(struct target_fabric_configfs *tf)
 
 static struct configfs_item_operations target_fabric_port_item_ops;
 
-/* Start of tfc_tpg_mappedlun_cit */
+ 
 
 static int target_fabric_mappedlun_link(
 	struct config_item *lun_acl_ci,
@@ -82,9 +72,7 @@ static int target_fabric_mappedlun_link(
 	}
 	lun = container_of(to_config_group(lun_ci), struct se_lun, lun_group);
 
-	/*
-	 * Ensure that the source port exists
-	 */
+	 
 	if (!lun->lun_se_dev) {
 		pr_err("Source se_lun->lun_se_dev does not exist\n");
 		return -EINVAL;
@@ -101,9 +89,7 @@ static int target_fabric_mappedlun_link(
 	wwn_ci = &tpg_ci->ci_group->cg_item;
 	tpg_ci_s = &lun_ci->ci_parent->ci_group->cg_item;
 	wwn_ci_s = &tpg_ci_s->ci_group->cg_item;
-	/*
-	 * Make sure the SymLink is going to the same $FABRIC/$WWN/tpgt_$TPGT
-	 */
+	 
 	if (strcmp(config_item_name(wwn_ci), config_item_name(wwn_ci_s))) {
 		pr_err("Illegal Initiator ACL SymLink outside of %s\n",
 			config_item_name(wwn_ci));
@@ -115,12 +101,7 @@ static int target_fabric_mappedlun_link(
 			config_item_name(tpg_ci));
 		return -EINVAL;
 	}
-	/*
-	 * If this struct se_node_acl was dynamically generated with
-	 * tpg_1/attrib/generate_node_acls=1, use the existing
-	 * deve->lun_access_ro value, which will be true when
-	 * tpg_1/attrib/demo_mode_write_protect=1
-	 */
+	 
 	rcu_read_lock();
 	deve = target_nacl_find_deve(lacl->se_lun_nacl, lacl->mapped_lun);
 	if (deve)
@@ -130,12 +111,7 @@ static int target_fabric_mappedlun_link(
 			(se_tpg->se_tpg_tfo->tpg_check_prod_mode_write_protect(
 				se_tpg)) ? true : false;
 	rcu_read_unlock();
-	/*
-	 * Determine the actual mapped LUN value user wants..
-	 *
-	 * This value is what the SCSI Initiator actually sees the
-	 * $FABRIC/$WWPN/$TPGT/lun/lun_* as on their SCSI Initiator Ports.
-	 */
+	 
 	return core_dev_add_initiator_node_lun_acl(se_tpg, lacl, lun, lun_access_ro);
 }
 
@@ -191,7 +167,7 @@ static ssize_t target_fabric_mappedlun_write_protect_store(
 	if ((wp != 1) && (wp != 0))
 		return -EINVAL;
 
-	/* wp=1 means lun_access_ro=true */
+	 
 	core_update_device_list_access(lacl->mapped_lun, wp, lacl->se_lun_nacl);
 
 	pr_debug("%s_ConfigFS: Changed Initiator ACL: %s"
@@ -228,9 +204,9 @@ static struct configfs_item_operations target_fabric_mappedlun_item_ops = {
 TF_CIT_SETUP(tpg_mappedlun, &target_fabric_mappedlun_item_ops, NULL,
 		target_fabric_mappedlun_attrs);
 
-/* End of tfc_tpg_mappedlun_cit */
+ 
 
-/* Start of tfc_tpg_mappedlun_port_cit */
+ 
 
 static struct config_group *target_core_mappedlun_stat_mkdir(
 	struct config_group *group,
@@ -254,13 +230,13 @@ static struct configfs_group_operations target_fabric_mappedlun_stat_group_ops =
 TF_CIT_SETUP(tpg_mappedlun_stat, NULL, &target_fabric_mappedlun_stat_group_ops,
 		NULL);
 
-/* End of tfc_tpg_mappedlun_port_cit */
+ 
 
 TF_CIT_SETUP_DRV(tpg_nacl_attrib, NULL, NULL);
 TF_CIT_SETUP_DRV(tpg_nacl_auth, NULL, NULL);
 TF_CIT_SETUP_DRV(tpg_nacl_param, NULL, NULL);
 
-/* Start of tfc_tpg_nacl_base_cit */
+ 
 
 static struct config_group *target_fabric_make_mappedlun(
 	struct config_group *group,
@@ -281,19 +257,14 @@ static struct config_group *target_fabric_make_mappedlun(
 		return ERR_PTR(-ENOMEM);
 	}
 	snprintf(buf, strlen(name) + 1, "%s", name);
-	/*
-	 * Make sure user is creating iscsi/$IQN/$TPGT/acls/$INITIATOR/lun_$ID.
-	 */
+	 
 	if (strstr(buf, "lun_") != buf) {
 		pr_err("Unable to locate \"lun_\" from buf: %s"
 			" name: %s\n", buf, name);
 		ret = -EINVAL;
 		goto out;
 	}
-	/*
-	 * Determine the Mapped LUN value.  This is what the SCSI Initiator
-	 * Port will actually see.
-	 */
+	 
 	ret = kstrtoull(buf + 4, 0, &mapped_lun);
 	if (ret)
 		goto out;
@@ -357,18 +328,15 @@ static struct configfs_group_operations target_fabric_nacl_base_group_ops = {
 TF_CIT_SETUP_DRV(tpg_nacl_base, &target_fabric_nacl_base_item_ops,
 		&target_fabric_nacl_base_group_ops);
 
-/* End of tfc_tpg_nacl_base_cit */
+ 
 
-/* Start of tfc_node_fabric_stats_cit */
-/*
- * This is used as a placeholder for struct se_node_acl->acl_fabric_stat_group
- * to allow fabrics access to ->acl_fabric_stat_group->default_groups[]
- */
+ 
+ 
 TF_CIT_SETUP(tpg_nacl_stat, NULL, NULL, NULL);
 
-/* End of tfc_wwn_fabric_stats_cit */
+ 
 
-/* Start of tfc_tpg_nacl_cit */
+ 
 
 static struct config_group *target_fabric_make_nodeacl(
 	struct config_group *group,
@@ -427,9 +395,7 @@ static void target_fabric_drop_nodeacl(
 
 	configfs_remove_default_groups(&se_nacl->acl_group);
 
-	/*
-	 * struct se_node_acl free is done in target_fabric_nacl_base_release()
-	 */
+	 
 	config_item_put(item);
 }
 
@@ -440,9 +406,9 @@ static struct configfs_group_operations target_fabric_nacl_group_ops = {
 
 TF_CIT_SETUP(tpg_nacl, NULL, &target_fabric_nacl_group_ops, NULL);
 
-/* End of tfc_tpg_nacl_cit */
+ 
 
-/* Start of tfc_tpg_np_base_cit */
+ 
 
 static void target_fabric_np_base_release(struct config_item *item)
 {
@@ -460,9 +426,9 @@ static struct configfs_item_operations target_fabric_np_base_item_ops = {
 
 TF_CIT_SETUP_DRV(tpg_np_base, &target_fabric_np_base_item_ops, NULL);
 
-/* End of tfc_tpg_np_base_cit */
+ 
 
-/* Start of tfc_tpg_np_cit */
+ 
 
 static struct config_group *target_fabric_make_np(
 	struct config_group *group,
@@ -493,9 +459,7 @@ static void target_fabric_drop_np(
 	struct config_group *group,
 	struct config_item *item)
 {
-	/*
-	 * struct se_tpg_np is released via target_fabric_np_base_release()
-	 */
+	 
 	config_item_put(item);
 }
 
@@ -506,9 +470,9 @@ static struct configfs_group_operations target_fabric_np_group_ops = {
 
 TF_CIT_SETUP(tpg_np, NULL, &target_fabric_np_group_ops, NULL);
 
-/* End of tfc_tpg_np_cit */
+ 
 
-/* Start of tfc_tpg_port_cit */
+ 
 
 static struct se_lun *item_to_lun(struct config_item *item)
 {
@@ -658,11 +622,7 @@ static int target_fabric_port_link(
 	}
 
 	if (tf->tf_ops->fabric_post_link) {
-		/*
-		 * Call the optional fabric_post_link() to allow a
-		 * fabric module to setup any additional state once
-		 * core_dev_add_lun() has been called..
-		 */
+		 
 		tf->tf_ops->fabric_post_link(se_tpg, lun);
 	}
 
@@ -681,11 +641,7 @@ static void target_fabric_port_unlink(
 	struct target_fabric_configfs *tf = se_tpg->se_tpg_wwn->wwn_tf;
 
 	if (tf->tf_ops->fabric_pre_unlink) {
-		/*
-		 * Call the optional fabric_pre_unlink() to allow a
-		 * fabric module to release any additional stat before
-		 * core_dev_del_lun() is called.
-		*/
+		 
 		tf->tf_ops->fabric_pre_unlink(se_tpg, lun);
 	}
 
@@ -708,9 +664,9 @@ static struct configfs_item_operations target_fabric_port_item_ops = {
 
 TF_CIT_SETUP(tpg_port, &target_fabric_port_item_ops, NULL, target_fabric_port_attrs);
 
-/* End of tfc_tpg_port_cit */
+ 
 
-/* Start of tfc_tpg_port_stat_cit */
+ 
 
 static struct config_group *target_core_port_stat_mkdir(
 	struct config_group *group,
@@ -733,9 +689,9 @@ static struct configfs_group_operations target_fabric_port_stat_group_ops = {
 
 TF_CIT_SETUP(tpg_port_stat, NULL, &target_fabric_port_stat_group_ops, NULL);
 
-/* End of tfc_tpg_port_stat_cit */
+ 
 
-/* Start of tfc_tpg_lun_cit */
+ 
 
 static struct config_group *target_fabric_make_lun(
 	struct config_group *group,
@@ -794,13 +750,13 @@ static struct configfs_group_operations target_fabric_lun_group_ops = {
 
 TF_CIT_SETUP(tpg_lun, NULL, &target_fabric_lun_group_ops, NULL);
 
-/* End of tfc_tpg_lun_cit */
+ 
 
 TF_CIT_SETUP_DRV(tpg_attrib, NULL, NULL);
 TF_CIT_SETUP_DRV(tpg_auth, NULL, NULL);
 TF_CIT_SETUP_DRV(tpg_param, NULL, NULL);
 
-/* Start of tfc_tpg_base_cit */
+ 
 
 static void target_fabric_tpg_release(struct config_item *item)
 {
@@ -895,10 +851,10 @@ target_fabric_setup_tpg_base_cit(struct target_fabric_configfs *tf)
 	if (tf->tf_ops->fabric_enable_tpg)
 		nr_attrs++;
 
-	/* + 1 for target_fabric_tpg_base_attr_rtpi */
+	 
 	nr_attrs++;
 
-	/* + 1 for final NULL in the array */
+	 
 	attrs = kcalloc(nr_attrs + 1, sizeof(*attrs), GFP_KERNEL);
 	if (!attrs)
 		return -ENOMEM;
@@ -919,9 +875,9 @@ target_fabric_setup_tpg_base_cit(struct target_fabric_configfs *tf)
 
 	return 0;
 }
-/* End of tfc_tpg_base_cit */
+ 
 
-/* Start of tfc_tpg_cit */
+ 
 
 static struct config_group *target_fabric_make_tpg(
 	struct config_group *group,
@@ -1010,16 +966,13 @@ static struct configfs_group_operations target_fabric_tpg_group_ops = {
 TF_CIT_SETUP(tpg, &target_fabric_tpg_item_ops, &target_fabric_tpg_group_ops,
 		NULL);
 
-/* End of tfc_tpg_cit */
+ 
 
-/* Start of tfc_wwn_fabric_stats_cit */
-/*
- * This is used as a placeholder for struct se_wwn->fabric_stat_group
- * to allow fabrics access to ->fabric_stat_group->default_groups[]
- */
+ 
+ 
 TF_CIT_SETUP(wwn_fabric_stats, NULL, NULL, NULL);
 
-/* End of tfc_wwn_fabric_stats_cit */
+ 
 
 static ssize_t
 target_fabric_wwn_cmd_completion_affinity_show(struct config_item *item,
@@ -1072,7 +1025,7 @@ static struct configfs_attribute *target_fabric_wwn_param_attrs[] = {
 
 TF_CIT_SETUP(wwn_param, NULL, NULL, target_fabric_wwn_param_attrs);
 
-/* Start of tfc_wwn_cit */
+ 
 
 static struct config_group *target_fabric_make_wwn(
 	struct config_group *group,

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <malloc.h>
 #include <stdlib.h>
 #include <string.h>
@@ -15,7 +15,7 @@
 #define LARGE_MAX_OFFSET 32
 #define LARGE_SIZE_START 4096
 
-/* This is big enough to fit LARGE_SIZE and works on 4K & 64K kernels */
+ 
 #define MAP_SIZE (64 * 1024)
 
 #define MAX_OFFSET_DIFF_S1_S2 48
@@ -33,7 +33,7 @@ void exit_vmx_ops(void)
 }
 int test_memcmp(const void *s1, const void *s2, size_t n);
 
-/* test all offsets and lengths */
+ 
 static void test_one(char *s1, char *s2, unsigned long max_offset,
 		unsigned long size_start, unsigned long max_size)
 {
@@ -47,8 +47,8 @@ static void test_one(char *s1, char *s2, unsigned long max_offset,
 			y = memcmp(s1+offset, s2+offset, size);
 			x = test_memcmp(s1+offset, s2+offset, size);
 
-			if (((x ^ y) < 0) &&	/* Trick to compare sign */
-				((x | y) != 0)) { /* check for zero */
+			if (((x ^ y) < 0) &&	 
+				((x | y) != 0)) {  
 				printf("memcmp returned %d, should have returned %d (offset %ld size %ld)\n", x, y, offset, size);
 
 				for (i = offset; i < offset+size; i++)
@@ -85,11 +85,11 @@ static int testcase(bool islarge)
 		 MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);
 	FAIL_IF(p == MAP_FAILED);
 
-	/* Put s1/s2 at the end of a page */
+	 
 	s1 = p + MAP_SIZE - alloc_size;
 	s2 = p + 3 * MAP_SIZE - alloc_size;
 
-	/* And unmap the subsequent page to force a fault if we overread */
+	 
 	munmap(p + MAP_SIZE, MAP_SIZE);
 	munmap(p + 3 * MAP_SIZE, MAP_SIZE);
 
@@ -108,7 +108,7 @@ static int testcase(bool islarge)
 		rand_s2 += random() % MAX_OFFSET_DIFF_S1_S2;
 		memcpy(rand_s2, rand_s1, comp_size);
 
-		/* change one byte */
+		 
 		change = random() % comp_size;
 		rand_s2[change] = random() & 0xff;
 
@@ -134,7 +134,7 @@ static int testcase(bool islarge)
 		rand_s2 += random() % MAX_OFFSET_DIFF_S1_S2;
 		memcpy(rand_s2, rand_s1, comp_size);
 
-		/* change multiple bytes, 1/8 of total */
+		 
 		for (j = 0; j < comp_size / 8; j++) {
 			change = random() % comp_size;
 			s2[change] = random() & 0xff;
@@ -153,7 +153,7 @@ static int testcase(bool islarge)
 static int testcases(void)
 {
 #ifdef __powerpc64__
-	// vcmpequd used in memcmp_64.S is v2.07
+	
 	SKIP_IF(!have_hwcap2(PPC_FEATURE2_ARCH_2_07));
 #endif
 

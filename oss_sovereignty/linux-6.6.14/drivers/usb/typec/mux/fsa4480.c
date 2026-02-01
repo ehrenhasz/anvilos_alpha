@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2021-2022 Linaro Ltd.
- * Copyright (C) 2018-2020 The Linux Foundation
- */
+
+ 
 
 #include <linux/bits.h>
 #include <linux/i2c.h>
@@ -47,7 +44,7 @@
 struct fsa4480 {
 	struct i2c_client *client;
 
-	/* used to serialize concurrent change requests */
+	 
 	struct mutex lock;
 
 	struct typec_switch_dev *sw;
@@ -66,7 +63,7 @@ static const struct regmap_config fsa4480_regmap_config = {
 	.reg_bits = 8,
 	.val_bits = 8,
 	.max_register = FSA4480_MAX_REGISTER,
-	/* Accesses only done under fsa4480->lock */
+	 
 	.disable_locking = true,
 };
 
@@ -76,7 +73,7 @@ static int fsa4480_set(struct fsa4480 *fsa)
 	u8 enable = FSA4480_ENABLE_DEVICE;
 	u8 sel = 0;
 
-	/* USB Mode */
+	 
 	if (fsa->mode < TYPEC_STATE_MODAL ||
 	    (!fsa->svid && (fsa->mode == TYPEC_MODE_USB2 ||
 			    fsa->mode == TYPEC_MODE_USB3))) {
@@ -84,7 +81,7 @@ static int fsa4480_set(struct fsa4480 *fsa)
 		sel = FSA4480_SEL_USB;
 	} else if (fsa->svid) {
 		switch (fsa->mode) {
-		/* DP Only */
+		 
 		case TYPEC_DP_STATE_C:
 		case TYPEC_DP_STATE_E:
 			enable |= FSA4480_ENABLE_SBU;
@@ -92,7 +89,7 @@ static int fsa4480_set(struct fsa4480 *fsa)
 				sel = FSA4480_SEL_SBU_REVERSE;
 			break;
 
-		/* DP + USB */
+		 
 		case TYPEC_DP_STATE_D:
 		case TYPEC_DP_STATE_F:
 			enable |= FSA4480_ENABLE_USB | FSA4480_ENABLE_SBU;
@@ -105,30 +102,30 @@ static int fsa4480_set(struct fsa4480 *fsa)
 			return -EOPNOTSUPP;
 		}
 	} else if (fsa->mode == TYPEC_MODE_AUDIO) {
-		/* Audio Accessory Mode, setup to auto Jack Detection */
+		 
 		enable |= FSA4480_ENABLE_USB | FSA4480_ENABLE_AGND;
 	} else
 		return -EOPNOTSUPP;
 
 	if (fsa->cur_enable & FSA4480_ENABLE_SBU) {
-		/* Disable SBU output while re-configuring the switch */
+		 
 		regmap_write(fsa->regmap, FSA4480_SWITCH_ENABLE,
 			     fsa->cur_enable & ~FSA4480_ENABLE_SBU);
 
-		/* 35us to allow the SBU switch to turn off */
+		 
 		usleep_range(35, 1000);
 	}
 
 	regmap_write(fsa->regmap, FSA4480_SWITCH_SELECT, sel);
 	regmap_write(fsa->regmap, FSA4480_SWITCH_ENABLE, enable);
 
-	/* Start AUDIO JACK DETECTION to setup MIC, AGND & Sense muxes */
+	 
 	if (enable & FSA4480_ENABLE_AGND)
 		regmap_write(fsa->regmap, FSA4480_FUNCTION_ENABLE,
 			     FSA4480_ENABLE_AUTO_JACK_DETECT);
 
 	if (enable & FSA4480_ENABLE_SBU) {
-		/* 15us to allow the SBU switch to turn on again */
+		 
 		usleep_range(15, 1000);
 	}
 
@@ -169,7 +166,7 @@ static int fsa4480_mux_set(struct typec_mux_dev *mux, struct typec_mux_state *st
 		if (state->alt)
 			fsa->svid = state->alt->svid;
 		else
-			fsa->svid = 0; // No SVID
+			fsa->svid = 0; 
 
 		ret = fsa4480_set(fsa);
 	}
@@ -197,12 +194,12 @@ static int fsa4480_probe(struct i2c_client *client)
 	if (IS_ERR(fsa->regmap))
 		return dev_err_probe(dev, PTR_ERR(fsa->regmap), "failed to initialize regmap\n");
 
-	/* Safe mode */
+	 
 	fsa->cur_enable = FSA4480_ENABLE_DEVICE | FSA4480_ENABLE_USB;
 	fsa->mode = TYPEC_STATE_SAFE;
 	fsa->orientation = TYPEC_ORIENTATION_NONE;
 
-	/* set default settings */
+	 
 	regmap_write(fsa->regmap, FSA4480_SLOW_L, 0x00);
 	regmap_write(fsa->regmap, FSA4480_SLOW_R, 0x00);
 	regmap_write(fsa->regmap, FSA4480_SLOW_MIC, 0x00);

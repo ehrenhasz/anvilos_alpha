@@ -1,27 +1,4 @@
-/*
- * Copyright 2012 Red Hat Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: Ben Skeggs
- * 	    Martin Peres
- */
+ 
 #include "priv.h"
 
 enum nv40_sensor_style { INVALID_STYLE = -1, OLD_STYLE = 0, NEW_STYLE = 1 };
@@ -55,15 +32,15 @@ nv40_sensor_setup(struct nvkm_therm *therm)
 	struct nvkm_device *device = therm->subdev.device;
 	enum nv40_sensor_style style = nv40_sensor_style(therm);
 
-	/* enable ADC readout and disable the ALARM threshold */
+	 
 	if (style == NEW_STYLE) {
 		nvkm_mask(device, 0x15b8, 0x80000000, 0);
 		nvkm_wr32(device, 0x15b0, 0x80003fff);
-		mdelay(20); /* wait for the temperature to stabilize */
+		mdelay(20);  
 		return nvkm_rd32(device, 0x15b4) & 0x3fff;
 	} else if (style == OLD_STYLE) {
 		nvkm_wr32(device, 0x15b0, 0xff);
-		mdelay(20); /* wait for the temperature to stabilize */
+		mdelay(20);  
 		return nvkm_rd32(device, 0x15b4) & 0xff;
 	} else
 		return -ENODEV;
@@ -86,7 +63,7 @@ nv40_temp_get(struct nvkm_therm *therm)
 	} else
 		return -ENODEV;
 
-	/* if the slope or the offset is unset, do no use the sensor */
+	 
 	if (!sensor->slope_div || !sensor->slope_mult ||
 	    !sensor->offset_num || !sensor->offset_den)
 	    return -ENODEV;
@@ -95,7 +72,7 @@ nv40_temp_get(struct nvkm_therm *therm)
 	core_temp = core_temp + sensor->offset_num / sensor->offset_den;
 	core_temp = core_temp + sensor->offset_constant - 8;
 
-	/* reserve negative temperatures for errors */
+	 
 	if (core_temp < 0)
 		core_temp = 0;
 
@@ -171,9 +148,9 @@ nv40_therm_intr(struct nvkm_therm *therm)
 	struct nvkm_device *device = subdev->device;
 	uint32_t stat = nvkm_rd32(device, 0x1100);
 
-	/* traitement */
+	 
 
-	/* ack all IRQs */
+	 
 	nvkm_wr32(device, 0x1100, 0x70000);
 
 	nvkm_error(subdev, "THERM received an IRQ: stat = %x\n", stat);

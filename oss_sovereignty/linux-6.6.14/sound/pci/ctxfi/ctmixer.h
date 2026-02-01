@@ -1,15 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2008, Creative Technology Ltd. All Rights Reserved.
- *
- * @File	ctmixer.h
- *
- * @Brief
- * This file contains the definition of the mixer device functions.
- *
- * @Author	Liu Chun
- * @Date 	Mar 28 2008
- */
+ 
+ 
 
 #ifndef CTMIXER_H
 #define CTMIXER_H
@@ -37,13 +27,13 @@ enum MIXER_PORT_T {
 	NUM_MIX_PORTS
 };
 
-/* alsa mixer descriptor */
+ 
 struct ct_mixer {
 	struct ct_atc *atc;
 
-	void **amixers;		/* amixer resources for volume control */
-	void **sums;		/* sum resources for signal collection */
-	unsigned int switch_state; /* A bit-map to indicate state of switches */
+	void **amixers;		 
+	void **sums;		 
+	unsigned int switch_state;  
 
 	int (*get_output_ports)(struct ct_mixer *mixer, enum MIXER_PORT_T type,
 				  struct rsc **rleft, struct rsc **rright);
@@ -63,4 +53,4 @@ int ct_alsa_mix_create(struct ct_atc *atc,
 int ct_mixer_create(struct ct_atc *atc, struct ct_mixer **rmixer);
 int ct_mixer_destroy(struct ct_mixer *mixer);
 
-#endif /* CTMIXER_H */
+#endif  

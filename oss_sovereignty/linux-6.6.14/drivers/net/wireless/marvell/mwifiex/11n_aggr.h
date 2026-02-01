@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * NXP Wireless LAN device driver: 802.11n Aggregation
- *
- * Copyright 2011-2020 NXP
- */
+ 
+ 
 
 #ifndef _MWIFIEX_11N_AGGR_H_
 #define _MWIFIEX_11N_AGGR_H_
@@ -18,4 +14,4 @@ int mwifiex_11n_aggregate_pkt(struct mwifiex_private *priv,
 			      int ptr_index)
 			      __releases(&priv->wmm.ra_list_spinlock);
 
-#endif /* !_MWIFIEX_11N_AGGR_H_ */
+#endif  

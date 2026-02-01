@@ -1,8 +1,6 @@
-/*
- * Placed in the public domain
- */
+ 
 
-/* $OpenBSD: modpipe.c,v 1.6 2013/11/21 03:16:47 djm Exp $ */
+ 
 
 #include "includes.h"
 
@@ -30,7 +28,7 @@ fatal(const char *fmt, ...)
 	va_end(args);
 	exit(1);
 }
-/* Based on session.c. NB. keep tests in sync */
+ 
 static void
 safely_chroot(const char *path, uid_t uid)
 {
@@ -43,10 +41,7 @@ safely_chroot(const char *path, uid_t uid)
 	if (strlen(path) >= sizeof(component))
 		fatal("chroot path too long");
 
-	/*
-	 * Descend the path, checking that each component is a
-	 * root-owned directory with strict permissions.
-	 */
+	 
 	for (cp = path; cp != NULL;) {
 		if ((cp = strchr(cp, '/')) == NULL)
 			strlcpy(component, path, sizeof(component));
@@ -56,7 +51,7 @@ safely_chroot(const char *path, uid_t uid)
 			component[cp - path] = '\0';
 		}
 
-		/* debug3("%s: checking '%s'", __func__, component); */
+		 
 
 		if (stat(component, &st) != 0)
 			fatal("%s: stat(\"%s\"): %s", __func__,
@@ -76,7 +71,7 @@ safely_chroot(const char *path, uid_t uid)
 		    "%s", path, strerror(errno));
 }
 
-/* from platform.c */
+ 
 int
 platform_sys_dir_uid(uid_t uid)
 {
@@ -89,7 +84,7 @@ platform_sys_dir_uid(uid_t uid)
 	return 0;
 }
 
-/* from auth.c */
+ 
 int
 auth_secure_path(const char *name, struct stat *stp, const char *pw_dir,
     uid_t uid, char *err, size_t errlen)
@@ -118,7 +113,7 @@ auth_secure_path(const char *name, struct stat *stp, const char *pw_dir,
 		return -1;
 	}
 
-	/* for each component of the canonical path, walking upwards */
+	 
 	for (;;) {
 		if ((cp = dirname(buf)) == NULL) {
 			snprintf(err, errlen, "dirname() failed");
@@ -134,14 +129,11 @@ auth_secure_path(const char *name, struct stat *stp, const char *pw_dir,
 			return -1;
 		}
 
-		/* If are past the homedir then we can stop */
+		 
 		if (comparehome && strcmp(homedir, buf) == 0)
 			break;
 
-		/*
-		 * dirname should always complete with a "/" path,
-		 * but we can be paranoid and check for "." too
-		 */
+		 
 		if ((strcmp("/", buf) == 0) || (strcmp(".", buf) == 0))
 			break;
 	}

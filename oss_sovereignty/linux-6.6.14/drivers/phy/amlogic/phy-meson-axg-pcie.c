@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Amlogic AXG PCIE PHY driver
- *
- * Copyright (C) 2020 Remi Pommarel <repk@triplefau.lt>
- */
+
+ 
 #include <linux/mod_devicetable.h>
 #include <linux/module.h>
 #include <linux/phy/phy.h>

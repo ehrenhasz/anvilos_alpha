@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright 2019 Advanced Micro Devices, Inc.
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/tee.h>
@@ -26,7 +24,7 @@ static int tee_params_to_amd_params(struct tee_param *tee, u32 count,
 
 	amd->param_types = 0;
 	for (i = 0; i < count; i++) {
-		/* AMD TEE does not support meta parameter */
+		 
 		if (tee[i].attr > TEE_IOCTL_PARAM_ATTR_TYPE_MEMREF_INOUT)
 			return -EINVAL;
 
@@ -43,7 +41,7 @@ static int tee_params_to_amd_params(struct tee_param *tee, u32 count,
 		if (type == TEE_OP_PARAM_TYPE_NONE)
 			continue;
 
-		/* It is assumed that all values are within 2^32-1 */
+		 
 		if (type > TEE_OP_PARAM_TYPE_VALUE_INOUT) {
 			u32 buf_id = get_buffer_id(tee[i].u.memref.shm);
 
@@ -81,7 +79,7 @@ static int amd_params_to_tee_params(struct tee_param *tee, u32 count,
 	if (!tee || !amd || count > TEE_MAX_PARAMS)
 		return -EINVAL;
 
-	/* Assumes amd->param_types is valid */
+	 
 	for (i = 0; i < count; i++) {
 		type = TEE_PARAM_TYPE_GET(amd->param_types, i);
 		pr_debug("%s: type[%d] = 0x%x\n", __func__, i, type);
@@ -95,10 +93,7 @@ static int amd_params_to_tee_params(struct tee_param *tee, u32 count,
 		    type == TEE_OP_PARAM_TYPE_MEMREF_INPUT)
 			continue;
 
-		/*
-		 * It is assumed that buf_id remains unchanged for
-		 * both open_session and invoke_cmd call
-		 */
+		 
 		if (type > TEE_OP_PARAM_TYPE_MEMREF_INPUT) {
 			tee[i].u.memref.shm_offs = amd->params[i].mref.offset;
 			tee[i].u.memref.size = amd->params[i].mref.size;
@@ -108,7 +103,7 @@ static int amd_params_to_tee_params(struct tee_param *tee, u32 count,
 				 i, amd->params[i].mref.offset,
 				 i, amd->params[i].mref.size);
 		} else {
-			/* field 'c' not supported by AMD TEE */
+			 
 			tee[i].u.value.a = amd->params[i].val.a;
 			tee[i].u.value.b = amd->params[i].val.b;
 			tee[i].u.value.c = 0;
@@ -129,7 +124,7 @@ static u32 get_ta_refcount(u32 ta_handle)
 	struct amdtee_ta_data *ta_data;
 	u32 count = 0;
 
-	/* Caller must hold a mutex */
+	 
 	list_for_each_entry(ta_data, &ta_list, list_node)
 		if (ta_data->ta_handle == ta_handle)
 			return ++ta_data->refcount;
@@ -150,7 +145,7 @@ static u32 put_ta_refcount(u32 ta_handle)
 	struct amdtee_ta_data *ta_data;
 	u32 count = 0;
 
-	/* Caller must hold a mutex */
+	 
 	list_for_each_entry(ta_data, &ta_list, list_node)
 		if (ta_data->ta_handle == ta_handle) {
 			count = --ta_data->refcount;
@@ -297,7 +292,7 @@ int handle_map_shmem(u32 count, struct shmem_desc *start, u32 *buf_id)
 	if (!cmd)
 		return -ENOMEM;
 
-	/* Size must be page aligned */
+	 
 	for (i = 0; i < count ; i++) {
 		if (!start[i].kaddr || (start[i].size & (PAGE_SIZE - 1))) {
 			ret = -EINVAL;
@@ -314,7 +309,7 @@ int handle_map_shmem(u32 count, struct shmem_desc *start, u32 *buf_id)
 
 	cmd->sg_list.count = count;
 
-	/* Create buffer list */
+	 
 	for (i = 0; i < count ; i++) {
 		paddr = __psp_pa(start[i].kaddr);
 		cmd->sg_list.buf[i].hi_addr = upper_32_bits(paddr);
@@ -432,7 +427,7 @@ int handle_load_ta(void *data, u32 size, struct tee_ioctl_open_session_arg *arg)
 				arg->ret_origin = TEEC_ORIGIN_COMMS;
 				arg->ret = TEEC_ERROR_OUT_OF_MEMORY;
 
-				/* Unload the TA on error */
+				 
 				unload_cmd.ta_handle = load_cmd.ta_handle;
 				psp_tee_process_cmd(TEE_CMD_ID_UNLOAD_TA,
 						    (void *)&unload_cmd,

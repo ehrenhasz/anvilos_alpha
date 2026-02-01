@@ -1,16 +1,5 @@
-/*
- * This file and its contents are supplied under the terms of the
- * Common Development and Distribution License ("CDDL"), version 1.0.
- * You may only use this file in accordance with the terms of version
- * 1.0 of the CDDL.
- *
- * A full copy of the text of the CDDL should have accompanied this
- * source.  A copy of the CDDL is also available via the Internet at
- * http://www.illumos.org/license/CDDL.
- */
-/*
- * Copyright 2020 Toomas Soome <tsoome@me.com>
- */
+ 
+ 
 
 #include <sys/types.h>
 #include <string.h>
@@ -19,10 +8,7 @@
 #include <sys/zfs_bootenv.h>
 #include <sys/vdev_impl.h>
 
-/*
- * Get or create nvlist. If key is not NULL, get nvlist from bootenv,
- * otherwise return bootenv.
- */
+ 
 int
 lzbe_nvlist_get(const char *pool, const char *key, void **ptr)
 {
@@ -95,17 +81,13 @@ lzbe_nvlist_set(const char *pool, const char *key, void *ptr)
 	if (key != NULL) {
 		rv = zpool_get_bootenv(zphdl, &nv);
 		if (rv == 0) {
-			/*
-			 * We got the nvlist, check for version.
-			 * if version is missing or is not VB_NVLIST,
-			 * create new list.
-			 */
+			 
 			rv = nvlist_lookup_uint64(nv, BOOTENV_VERSION,
 			    &version);
 			if (rv != 0 || version != VB_NVLIST) {
-				/* Drop this nvlist */
+				 
 				fnvlist_free(nv);
-				/* Create and prepare new nvlist */
+				 
 				nv = fnvlist_alloc();
 				fnvlist_add_uint64(nv, BOOTENV_VERSION,
 				    VB_NVLIST);
@@ -124,9 +106,7 @@ lzbe_nvlist_set(const char *pool, const char *key, void *ptr)
 	return (rv);
 }
 
-/*
- * free nvlist we got via lzbe_nvlist_get()
- */
+ 
 void
 lzbe_nvlist_free(void *ptr)
 {
@@ -175,9 +155,7 @@ nvpair_type_from_name(const char *name)
 	return (0);
 }
 
-/*
- * Add pair defined by key, type and value into nvlist.
- */
+ 
 int
 lzbe_add_pair(void *ptr, const char *key, const char *type, void *value,
     size_t size)

@@ -1,38 +1,6 @@
-/* $OpenBSD: log.c,v 1.61 2023/12/06 21:06:48 djm Exp $ */
-/*
- * Author: Tatu Ylonen <ylo@cs.hut.fi>
- * Copyright (c) 1995 Tatu Ylonen <ylo@cs.hut.fi>, Espoo, Finland
- *                    All rights reserved
- *
- * As far as I am concerned, the code I have written for this software
- * can be used freely for any purpose.  Any derived versions of this
- * software must be clearly marked as such, and if the derived work is
- * incompatible with the protocol description in the RFC file, it must be
- * called by a name other than "ssh" or "Secure Shell".
- */
-/*
- * Copyright (c) 2000 Markus Friedl.  All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- *
- * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
- * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
- * IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
- * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
- * NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
- * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+ 
+ 
+ 
 
 #include "includes.h"
 
@@ -68,7 +36,7 @@ extern char *__progname;
 #define LOG_SYSLOG_VIS	(VIS_CSTYLE|VIS_NL|VIS_TAB|VIS_OCTAL)
 #define LOG_STDERR_VIS	(VIS_SAFE|VIS_OCTAL)
 
-/* textual representation of log-facilities/levels */
+ 
 
 static struct {
 	const char *name;
@@ -165,7 +133,7 @@ log_verbose_add(const char *s)
 {
 	char **tmp;
 
-	/* Ignore failures here */
+	 
 	if ((tmp = recallocarray(log_verbose, nlog_verbose, nlog_verbose + 1,
 	    sizeof(*log_verbose))) != NULL) {
 		log_verbose = tmp;
@@ -186,9 +154,7 @@ log_verbose_reset(void)
 	nlog_verbose = 0;
 }
 
-/*
- * Initialize the log.
- */
+ 
 
 void
 log_init(const char *av0, LogLevel level, SyslogFacility facility,
@@ -259,11 +225,7 @@ log_init(const char *av0, LogLevel level, SyslogFacility facility,
 		exit(1);
 	}
 
-	/*
-	 * If an external library (eg libwrap) attempts to use syslog
-	 * immediately after reexec, syslog may be pointing to the wrong
-	 * facility, so we force an open/close of syslog here.
-	 */
+	 
 #if defined(HAVE_OPENLOG_R) && defined(SYSLOG_DATA_INIT)
 	openlog_r(argv0 ? argv0 : __progname, LOG_PID, log_facility, &sdata);
 	closelog_r(&sdata);
@@ -276,7 +238,7 @@ log_init(const char *av0, LogLevel level, SyslogFacility facility,
 int
 log_change_level(LogLevel new_log_level)
 {
-	/* no-op if log_init has not been called */
+	 
 	if (argv0 == NULL)
 		return 0;
 
@@ -302,7 +264,7 @@ log_is_on_stderr(void)
 	return log_on_stderr && log_stderr_fd == STDERR_FILENO;
 }
 
-/* redirect what would usually get written to stderr to specified file */
+ 
 void
 log_redirect_stderr_to(const char *logfile)
 {
@@ -398,7 +360,7 @@ do_log(LogLevel level, int force, const char *suffix, const char *fmt,
 	strnvis(fmtbuf, msgbuf, sizeof(fmtbuf),
 	    log_on_stderr ? LOG_STDERR_VIS : LOG_SYSLOG_VIS);
 	if (log_handler != NULL) {
-		/* Avoid recursion */
+		 
 		tmp_handler = log_handler;
 		log_handler = NULL;
 		tmp_handler(level, force, fmtbuf, log_handler_ctx);
@@ -469,7 +431,7 @@ sshlogv(const char *file, const char *func, int line, int showfunc,
 	const char *cp;
 	size_t i;
 
-	/* short circuit processing early if we're not going to log anything */
+	 
 	if (nlog_verbose == 0 && level > log_level)
 		return;
 

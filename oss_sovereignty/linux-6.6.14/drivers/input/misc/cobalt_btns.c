@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  Cobalt button interface driver.
- *
- *  Copyright (C) 2007-2008  Yoichi Yuasa <yuasa@linux-mips.org>
- */
+
+ 
 #include <linux/input.h>
 #include <linux/io.h>
 #include <linux/ioport.h>
@@ -11,7 +7,7 @@
 #include <linux/platform_device.h>
 #include <linux/slab.h>
 
-#define BUTTONS_POLL_INTERVAL	30	/* msec */
+#define BUTTONS_POLL_INTERVAL	30	 
 #define BUTTONS_COUNT_THRESHOLD	3
 #define BUTTONS_STATUS_MASK	0xfe000000
 
@@ -116,7 +112,7 @@ static int cobalt_buttons_probe(struct platform_device *pdev)
 MODULE_AUTHOR("Yoichi Yuasa <yuasa@linux-mips.org>");
 MODULE_DESCRIPTION("Cobalt button interface driver");
 MODULE_LICENSE("GPL");
-/* work with hotplug and coldplug */
+ 
 MODULE_ALIAS("platform:Cobalt buttons");
 
 static struct platform_driver cobalt_buttons_driver = {

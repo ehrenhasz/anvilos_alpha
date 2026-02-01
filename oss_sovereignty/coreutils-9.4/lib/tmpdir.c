@@ -1,25 +1,8 @@
-/* Copyright (C) 1999, 2001-2002, 2006, 2009-2023 Free Software Foundation,
-   Inc.
-   This file is part of the GNU C Library.
-
-   This file is free software: you can redistribute it and/or modify
-   it under the terms of the GNU Lesser General Public License as
-   published by the Free Software Foundation, either version 3 of the
-   License, or (at your option) any later version.
-
-   This file is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU Lesser General Public License for more details.
-
-   You should have received a copy of the GNU Lesser General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* Extracted from sysdeps/posix/tempname.c.  */
+ 
 
 #include <config.h>
 
-/* Specification.  */
+ 
 #include "tmpdir.h"
 
 #include <stdlib.h>
@@ -32,7 +15,7 @@
 
 #include <stdio.h>
 #ifndef P_tmpdir
-# ifdef _P_tmpdir /* native Windows */
+# ifdef _P_tmpdir  
 #  define P_tmpdir _P_tmpdir
 # else
 #  define P_tmpdir "/tmp"
@@ -42,14 +25,14 @@
 #include <sys/stat.h>
 
 #if defined _WIN32 && ! defined __CYGWIN__
-# define WIN32_LEAN_AND_MEAN  /* avoid including junk */
+# define WIN32_LEAN_AND_MEAN   
 # include <windows.h>
 #endif
 
 #include "pathmax.h"
 
 #if defined _WIN32 && ! defined __CYGWIN__
-/* Don't assume that UNICODE is not defined.  */
+ 
 # undef GetTempPath
 # define GetTempPath GetTempPathA
 #endif
@@ -62,19 +45,17 @@
 # define __xstat64(version, path, buf) stat (path, buf)
 #endif
 
-/* Pathname support.
-   ISSLASH(C)           tests whether C is a directory separator character.
- */
+ 
 #if defined _WIN32 || defined __CYGWIN__ || defined __EMX__ || defined __DJGPP__
-  /* Native Windows, Cygwin, OS/2, DOS */
+   
 # define ISSLASH(C) ((C) == '/' || (C) == '\\')
 #else
-  /* Unix */
+   
 # define ISSLASH(C) ((C) == '/')
 #endif
 
 
-/* Return nonzero if DIR is an existent directory.  */
+ 
 static bool
 direxists (const char *dir)
 {
@@ -82,12 +63,7 @@ direxists (const char *dir)
   return __xstat64 (_STAT_VER, dir, &buf) == 0 && S_ISDIR (buf.st_mode);
 }
 
-/* Path search algorithm, for tmpnam, tmpfile, etc.  If DIR is
-   non-null and exists, uses it; otherwise uses the first of $TMPDIR,
-   P_tmpdir, /tmp that exists.  Copies into TMPL a template suitable
-   for use with mk[s]temp.  Will fail (-1) if DIR is non-null and
-   doesn't exist, none of the searched dirs exists, or there's not
-   enough space in TMPL. */
+ 
 int
 path_search (char *tmpl, size_t tmpl_len, const char *dir, const char *pfx,
              bool try_tmpdir)
@@ -114,7 +90,7 @@ path_search (char *tmpl, size_t tmpl_len, const char *dir, const char *pfx,
       if (d != NULL && direxists (d))
         dir = d;
       else if (dir != NULL && direxists (dir))
-        /* nothing */ ;
+          ;
       else
         dir = NULL;
     }
@@ -124,10 +100,7 @@ path_search (char *tmpl, size_t tmpl_len, const char *dir, const char *pfx,
       char dirbuf[PATH_MAX];
       DWORD retval;
 
-      /* Find Windows temporary file directory.
-         We try this before P_tmpdir because Windows defines P_tmpdir to "\\"
-         and will therefore try to put all temporary files in the root
-         directory (unless $TMPDIR is set).  */
+       
       retval = GetTempPath (PATH_MAX, dirbuf);
       if (retval > 0 && retval < PATH_MAX && direxists (dirbuf))
         dir = dirbuf;
@@ -151,7 +124,7 @@ path_search (char *tmpl, size_t tmpl_len, const char *dir, const char *pfx,
   add_slash = dlen != 0 && !ISSLASH (dir[dlen - 1]);
 #endif
 
-  /* check we have room for "${dir}/${pfx}XXXXXX\0" */
+   
   if (tmpl_len < dlen + add_slash + plen + 6 + 1)
     {
       __set_errno (EINVAL);

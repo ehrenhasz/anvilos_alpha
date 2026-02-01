@@ -1,6 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0+
-//
-// Copyright 2012 Freescale Semiconductor, Inc.
+
+
+
 
 #include <linux/err.h>
 #include <linux/init.h>
@@ -74,7 +74,7 @@ static int mxs_dt_node_to_map(struct pinctrl_dev *pctldev,
 	u32 val, reg;
 	int ret, i = 0;
 
-	/* Check for pin config node which has no 'reg' property */
+	 
 	if (of_property_read_u32(np, "reg", &reg))
 		purecfg = true;
 
@@ -88,7 +88,7 @@ static int mxs_dt_node_to_map(struct pinctrl_dev *pctldev,
 	if (!ret)
 		config |= val << PULL_SHIFT | PULL_PRESENT;
 
-	/* Check for group node which has both mux and config settings */
+	 
 	if (!purecfg && config)
 		new_num = 2;
 
@@ -100,7 +100,7 @@ static int mxs_dt_node_to_map(struct pinctrl_dev *pctldev,
 		new_map[i].type = PIN_MAP_TYPE_MUX_GROUP;
 		new_map[i].data.mux.function = np->name;
 
-		/* Compose group name */
+		 
 		group = kzalloc(length, GFP_KERNEL);
 		if (!group) {
 			ret = -ENOMEM;
@@ -277,17 +277,17 @@ static int mxs_pinconf_group_set(struct pinctrl_dev *pctldev,
 			bank = PINID_TO_BANK(g->pins[i]);
 			pin = PINID_TO_PIN(g->pins[i]);
 
-			/* drive */
+			 
 			reg = d->base + d->soc->regs->drive;
 			reg += bank * 0x40 + pin / 8 * 0x10;
 
-			/* mA */
+			 
 			if (config & MA_PRESENT) {
 				shift = pin % 8 * 4;
 				mxs_pinctrl_rmwl(ma, 0x3, shift, reg);
 			}
 
-			/* vol */
+			 
 			if (config & VOL_PRESENT) {
 				shift = pin % 8 * 4 + 2;
 				if (vol)
@@ -296,7 +296,7 @@ static int mxs_pinconf_group_set(struct pinctrl_dev *pctldev,
 					writel(1 << shift, reg + CLR);
 			}
 
-			/* pull */
+			 
 			if (config & PULL_PRESENT) {
 				reg = d->base + d->soc->regs->pull;
 				reg += bank * 0x10;
@@ -308,10 +308,10 @@ static int mxs_pinconf_group_set(struct pinctrl_dev *pctldev,
 			}
 		}
 
-		/* cache the config value for mxs_pinconf_group_get() */
+		 
 		g->config = config;
 
-	} /* for each config */
+	}  
 
 	return 0;
 }
@@ -319,7 +319,7 @@ static int mxs_pinconf_group_set(struct pinctrl_dev *pctldev,
 static void mxs_pinconf_dbg_show(struct pinctrl_dev *pctldev,
 				 struct seq_file *s, unsigned pin)
 {
-	/* Not support */
+	 
 }
 
 static void mxs_pinconf_group_dbg_show(struct pinctrl_dev *pctldev,
@@ -414,13 +414,13 @@ static int mxs_pinctrl_probe_dt(struct platform_device *pdev,
 		return -ENOENT;
 	}
 
-	/* Count total functions and groups */
+	 
 	fn = fnull;
 	for_each_child_of_node(np, child) {
 		if (of_device_is_compatible(child, gpio_compat))
 			continue;
 		soc->ngroups++;
-		/* Skip pure pinconf node */
+		 
 		if (of_property_read_u32(child, "reg", &val))
 			continue;
 		if (strcmp(fn, child->name)) {
@@ -442,7 +442,7 @@ static int mxs_pinctrl_probe_dt(struct platform_device *pdev,
 	if (!soc->groups)
 		return -ENOMEM;
 
-	/* Count groups for each function */
+	 
 	fn = fnull;
 	f = &soc->functions[idxf];
 	for_each_child_of_node(np, child) {
@@ -453,20 +453,10 @@ static int mxs_pinctrl_probe_dt(struct platform_device *pdev,
 		if (strcmp(fn, child->name)) {
 			struct device_node *child2;
 
-			/*
-			 * This reference is dropped by
-			 * of_get_next_child(np, * child)
-			 */
+			 
 			of_node_get(child);
 
-			/*
-			 * The logic parsing the functions from dt currently
-			 * doesn't handle if functions with the same name are
-			 * not grouped together. Only the first contiguous
-			 * cluster is usable for each function name. This is a
-			 * bug that is not trivial to fix, but at least warn
-			 * about it.
-			 */
+			 
 			for (child2 = of_get_next_child(np, child);
 			     child2 != NULL;
 			     child2 = of_get_next_child(np, child2)) {
@@ -482,7 +472,7 @@ static int mxs_pinctrl_probe_dt(struct platform_device *pdev,
 		f->ngroups++;
 	}
 
-	/* Get groups for each function */
+	 
 	idxf = 0;
 	fn = fnull;
 	for_each_child_of_node(np, child) {

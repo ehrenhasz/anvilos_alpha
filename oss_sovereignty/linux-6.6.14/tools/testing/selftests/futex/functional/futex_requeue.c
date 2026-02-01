@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright Collabora Ltd., 2021
- *
- * futex cmp requeue test by André Almeida <andrealmeid@collabora.com>
- */
+
+ 
 
 #include <pthread.h>
 #include <limits.h>
@@ -70,9 +66,7 @@ int main(int argc, char *argv[])
 	ksft_print_msg("%s: Test futex_requeue\n",
 		       basename(argv[0]));
 
-	/*
-	 * Requeue a waiter from f1 to f2, and wake f2.
-	 */
+	 
 	if (pthread_create(&waiter[0], NULL, waiterfn, NULL))
 		error("pthread_create failed\n", errno);
 
@@ -100,10 +94,7 @@ int main(int argc, char *argv[])
 	}
 
 
-	/*
-	 * Create 10 waiters at f1. At futex_requeue, wake 3 and requeue 7.
-	 * At futex_wake, wake INT_MAX (should be exactly 7).
-	 */
+	 
 	for (i = 0; i < 10; i++) {
 		if (pthread_create(&waiter[i], NULL, waiterfn, NULL))
 			error("pthread_create failed\n", errno);

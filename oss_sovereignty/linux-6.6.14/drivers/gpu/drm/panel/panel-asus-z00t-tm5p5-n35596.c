@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 
 #include <linux/backlight.h>
 #include <linux/delay.h>
@@ -320,7 +320,7 @@ static void tm5p5_nt35596_remove(struct mipi_dsi_device *dsi)
 
 static const struct of_device_id tm5p5_nt35596_of_match[] = {
 	{ .compatible = "asus,z00t-tm5p5-n35596" },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, tm5p5_nt35596_of_match);
 

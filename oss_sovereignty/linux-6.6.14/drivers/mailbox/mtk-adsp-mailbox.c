@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2022 MediaTek Corporation. All rights reserved.
- * Author: Allen-KH Cheng <allen-kh.cheng@mediatek.com>
- */
+
+ 
 
 #include <linux/interrupt.h>
 #include <linux/io.h>
@@ -63,7 +60,7 @@ static int mtk_adsp_mbox_startup(struct mbox_chan *chan)
 {
 	struct mtk_adsp_mbox_priv *priv = get_mtk_adsp_mbox_priv(chan->mbox);
 
-	/* Clear ADSP mbox command */
+	 
 	writel(0xFFFFFFFF, priv->va_mboxreg + priv->cfg->clr_in);
 	writel(0xFFFFFFFF, priv->va_mboxreg + priv->cfg->clr_out);
 
@@ -74,7 +71,7 @@ static void mtk_adsp_mbox_shutdown(struct mbox_chan *chan)
 {
 	struct mtk_adsp_mbox_priv *priv = get_mtk_adsp_mbox_priv(chan->mbox);
 
-	/* Clear ADSP mbox command */
+	 
 	writel(0xFFFFFFFF, priv->va_mboxreg + priv->cfg->clr_in);
 	writel(0xFFFFFFFF, priv->va_mboxreg + priv->cfg->clr_out);
 }

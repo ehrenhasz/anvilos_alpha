@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) Microsoft Corporation
- *
- * Implements a firmware TPM as described here:
- * https://www.microsoft.com/en-us/research/publication/ftpm-software-implementation-tpm-chip/
- *
- * A reference implementation is available here:
- * https://github.com/microsoft/ms-tpm-20-ref/tree/master/Samples/ARM32-FirmwareTPM/optee_ta/fTPM
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/of.h>
@@ -19,27 +11,12 @@
 #include "tpm.h"
 #include "tpm_ftpm_tee.h"
 
-/*
- * TA_FTPM_UUID: BC50D971-D4C9-42C4-82CB-343FB7F37896
- *
- * Randomly generated, and must correspond to the GUID on the TA side.
- * Defined here in the reference implementation:
- * https://github.com/microsoft/ms-tpm-20-ref/blob/master/Samples/ARM32-FirmwareTPM/optee_ta/fTPM/include/fTPM.h#L42
- */
+ 
 static const uuid_t ftpm_ta_uuid =
 	UUID_INIT(0xBC50D971, 0xD4C9, 0x42C4,
 		  0x82, 0xCB, 0x34, 0x3F, 0xB7, 0xF3, 0x78, 0x96);
 
-/**
- * ftpm_tee_tpm_op_recv() - retrieve fTPM response.
- * @chip:	the tpm_chip description as specified in driver/char/tpm/tpm.h.
- * @buf:	the buffer to store data.
- * @count:	the number of bytes to read.
- *
- * Return:
- *	In case of success the number of bytes received.
- *	On failure, -errno.
- */
+ 
 static int ftpm_tee_tpm_op_recv(struct tpm_chip *chip, u8 *buf, size_t count)
 {
 	struct ftpm_tee_private *pvt_data = dev_get_drvdata(chip->dev.parent);
@@ -59,16 +36,7 @@ static int ftpm_tee_tpm_op_recv(struct tpm_chip *chip, u8 *buf, size_t count)
 	return len;
 }
 
-/**
- * ftpm_tee_tpm_op_send() - send TPM commands through the TEE shared memory.
- * @chip:	the tpm_chip description as specified in driver/char/tpm/tpm.h
- * @buf:	the buffer to send.
- * @len:	the number of bytes to send.
- *
- * Return:
- *	In case of success, returns 0.
- *	On failure, -errno
- */
+ 
 static int ftpm_tee_tpm_op_send(struct tpm_chip *chip, u8 *buf, size_t len)
 {
 	struct ftpm_tee_private *pvt_data = dev_get_drvdata(chip->dev.parent);
@@ -91,14 +59,14 @@ static int ftpm_tee_tpm_op_send(struct tpm_chip *chip, u8 *buf, size_t len)
 	memset(command_params, 0, sizeof(command_params));
 	pvt_data->resp_len = 0;
 
-	/* Invoke FTPM_OPTEE_TA_SUBMIT_COMMAND function of fTPM TA */
+	 
 	transceive_args = (struct tee_ioctl_invoke_arg) {
 		.func = FTPM_OPTEE_TA_SUBMIT_COMMAND,
 		.session = pvt_data->session,
 		.num_params = 4,
 	};
 
-	/* Fill FTPM_OPTEE_TA_SUBMIT_COMMAND parameters */
+	 
 	command_params[0] = (struct tee_param) {
 		.attr = TEE_IOCTL_PARAM_ATTR_TYPE_MEMREF_INPUT,
 		.u.memref = {
@@ -144,7 +112,7 @@ static int ftpm_tee_tpm_op_send(struct tpm_chip *chip, u8 *buf, size_t len)
 	resp_header = (struct tpm_header *)temp_buf;
 	resp_len = be32_to_cpu(resp_header->length);
 
-	/* sanity check resp_len */
+	 
 	if (resp_len < TPM_HEADER_SIZE) {
 		dev_err(&chip->dev, "%s: tpm response header too small\n",
 			__func__);
@@ -157,7 +125,7 @@ static int ftpm_tee_tpm_op_send(struct tpm_chip *chip, u8 *buf, size_t len)
 		return -EIO;
 	}
 
-	/* sanity checks look good, cache the response */
+	 
 	memcpy(pvt_data->resp_buf, temp_buf, resp_len);
 	pvt_data->resp_len = resp_len;
 
@@ -166,7 +134,7 @@ static int ftpm_tee_tpm_op_send(struct tpm_chip *chip, u8 *buf, size_t len)
 
 static void ftpm_tee_tpm_op_cancel(struct tpm_chip *chip)
 {
-	/* not supported */
+	 
 }
 
 static u8 ftpm_tee_tpm_op_status(struct tpm_chip *chip)
@@ -190,15 +158,10 @@ static const struct tpm_class_ops ftpm_tee_tpm_ops = {
 	.req_canceled = ftpm_tee_tpm_req_canceled,
 };
 
-/*
- * Check whether this driver supports the fTPM TA in the TEE instance
- * represented by the params (ver/data) to this function.
- */
+ 
 static int ftpm_tee_match(struct tee_ioctl_version_data *ver, const void *data)
 {
-	/*
-	 * Currently this driver only support GP Complaint OPTEE based fTPM TA
-	 */
+	 
 	if ((ver->impl_id == TEE_IMPL_ID_OPTEE) &&
 		(ver->gen_caps & TEE_GEN_CAP_GP))
 		return 1;
@@ -206,13 +169,7 @@ static int ftpm_tee_match(struct tee_ioctl_version_data *ver, const void *data)
 		return 0;
 }
 
-/**
- * ftpm_tee_probe() - initialize the fTPM
- * @pdev: the platform_device description.
- *
- * Return:
- *	On success, 0. On failure, -errno.
- */
+ 
 static int ftpm_tee_probe(struct device *dev)
 {
 	int rc;
@@ -227,7 +184,7 @@ static int ftpm_tee_probe(struct device *dev)
 
 	dev_set_drvdata(dev, pvt_data);
 
-	/* Open context with TEE driver */
+	 
 	pvt_data->ctx = tee_client_open_context(NULL, ftpm_tee_match, NULL,
 						NULL);
 	if (IS_ERR(pvt_data->ctx)) {
@@ -237,7 +194,7 @@ static int ftpm_tee_probe(struct device *dev)
 		return PTR_ERR(pvt_data->ctx);
 	}
 
-	/* Open a session with fTPM TA */
+	 
 	memset(&sess_arg, 0, sizeof(sess_arg));
 	export_uuid(sess_arg.uuid, &ftpm_ta_uuid);
 	sess_arg.clnt_login = TEE_IOCTL_LOGIN_PUBLIC;
@@ -252,7 +209,7 @@ static int ftpm_tee_probe(struct device *dev)
 	}
 	pvt_data->session = sess_arg.session;
 
-	/* Allocate dynamic shared memory with fTPM TA */
+	 
 	pvt_data->shm = tee_shm_alloc_kernel_buf(pvt_data->ctx,
 						 MAX_COMMAND_SIZE +
 						 MAX_RESPONSE_SIZE);
@@ -262,7 +219,7 @@ static int ftpm_tee_probe(struct device *dev)
 		goto out_shm_alloc;
 	}
 
-	/* Allocate new struct tpm_chip instance */
+	 
 	chip = tpm_chip_alloc(dev, &ftpm_tee_tpm_ops);
 	if (IS_ERR(chip)) {
 		dev_err(dev, "%s: tpm_chip_alloc failed\n", __func__);
@@ -273,7 +230,7 @@ static int ftpm_tee_probe(struct device *dev)
 	pvt_data->chip = chip;
 	pvt_data->chip->flags |= TPM_CHIP_FLAG_TPM2;
 
-	/* Create a character device for the fTPM */
+	 
 	rc = tpm_chip_register(pvt_data->chip);
 	if (rc) {
 		dev_err(dev, "%s: tpm_chip_register failed with rc=%d\n",
@@ -302,33 +259,27 @@ static int ftpm_plat_tee_probe(struct platform_device *pdev)
 	return ftpm_tee_probe(dev);
 }
 
-/**
- * ftpm_tee_remove() - remove the TPM device
- * @pdev: the platform_device description.
- *
- * Return:
- *	0 always.
- */
+ 
 static int ftpm_tee_remove(struct device *dev)
 {
 	struct ftpm_tee_private *pvt_data = dev_get_drvdata(dev);
 
-	/* Release the chip */
+	 
 	tpm_chip_unregister(pvt_data->chip);
 
-	/* frees chip */
+	 
 	put_device(&pvt_data->chip->dev);
 
-	/* Free the shared memory pool */
+	 
 	tee_shm_free(pvt_data->shm);
 
-	/* close the existing session with fTPM TA*/
+	 
 	tee_client_close_session(pvt_data->ctx, pvt_data->session);
 
-	/* close the context with TEE driver */
+	 
 	tee_client_close_context(pvt_data->ctx);
 
-	/* memory allocated with devm_kzalloc() is freed automatically */
+	 
 
 	return 0;
 }
@@ -340,10 +291,7 @@ static void ftpm_plat_tee_remove(struct platform_device *pdev)
 	ftpm_tee_remove(dev);
 }
 
-/**
- * ftpm_tee_shutdown() - shutdown the TPM device
- * @pdev: the platform_device description.
- */
+ 
 static void ftpm_plat_tee_shutdown(struct platform_device *pdev)
 {
 	struct ftpm_tee_private *pvt_data = dev_get_drvdata(&pdev->dev);
@@ -369,7 +317,7 @@ static struct platform_driver ftpm_tee_plat_driver = {
 	.remove_new = ftpm_plat_tee_remove,
 };
 
-/* UUID of the fTPM TA */
+ 
 static const struct tee_client_device_id optee_ftpm_id_table[] = {
 	{UUID_INIT(0xbc50d971, 0xd4c9, 0x42c4,
 		   0x82, 0xcb, 0x34, 0x3f, 0xb7, 0xf3, 0x78, 0x96)},

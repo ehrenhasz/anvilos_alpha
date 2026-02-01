@@ -1,26 +1,4 @@
-/*
- * Copyright 2012 Red Hat Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: Ben Skeggs
- */
+ 
 #include "priv.h"
 #include "cgrp.h"
 #include "chan.h"
@@ -109,7 +87,7 @@ nv50_chan_ramfc_write(struct nvkm_chan *chan, u64 offset, u64 length, u32 devm, 
 	nvkm_wo32(chan->ramfc, 0x78, 0x00000000);
 	nvkm_wo32(chan->ramfc, 0x7c, 0x30000000 | devm);
 	nvkm_wo32(chan->ramfc, 0x80, ((chan->ramht->bits - 9) << 27) |
-				     (4 << 24) /* SEARCH_FULL */ |
+				     (4 << 24)   |
 				     (chan->ramht->gpuobj->node->offset >> 4));
 	nvkm_done(chan->ramfc);
 	return 0;
@@ -163,21 +141,10 @@ nv50_ectx_bind(struct nvkm_engn *engn, struct nvkm_cctx *cctx, struct nvkm_chan 
 	}
 
 	if (!cctx) {
-		/* HW bug workaround:
-		 *
-		 * PFIFO will hang forever if the connected engines don't report
-		 * that they've processed the context switch request.
-		 *
-		 * In order for the kickoff to work, we need to ensure all the
-		 * connected engines are in a state where they can answer.
-		 *
-		 * Newer chipsets don't seem to suffer from this issue, and well,
-		 * there's also a "ignore these engines" bitmask reg we can use
-		 * if we hit the issue there..
-		 */
+		 
 		save = nvkm_mask(device, 0x00b860, 0x00000001, 0x00000001);
 
-		/* Tell engines to save out contexts. */
+		 
 		nvkm_wr32(device, 0x0032fc, chan->inst->addr >> 12);
 		nvkm_msec(device, 2000,
 			if (nvkm_rd32(device, 0x0032fc) != 0xffffffff)
@@ -289,7 +256,7 @@ nv50_runl_update(struct nvkm_runl *runl)
 	struct nvkm_chan *chan;
 	u32 start, offset, count;
 
-	/*TODO: prio, interleaving. */
+	 
 
 	RUNL_TRACE(runl, "RAMRL: update cgrps:%d chans:%d", runl->cgrp_nr, runl->chan_nr);
 	memory = nv50_runl_alloc(runl, &start);
@@ -315,7 +282,7 @@ nv50_runl_update(struct nvkm_runl *runl)
 	}
 	nvkm_done(memory);
 
-	/*TODO: look into using features on newer HW to guarantee forward progress. */
+	 
 	list_rotate_left(&runl->cgrps);
 
 	count = (offset - start) / runl->func->size;
@@ -364,7 +331,7 @@ nv50_fifo_init(struct nvkm_fifo *fifo)
 int
 nv50_fifo_chid_ctor(struct nvkm_fifo *fifo, int nr)
 {
-	/* CHID 0 is unusable (some kind of PIO channel?), 127 is "channel invalid". */
+	 
 	return nvkm_chid_new(&nvkm_chan_event, &fifo->engine.subdev, nr, 1, nr - 2, &fifo->chid);
 }
 

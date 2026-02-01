@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Pinctrl / GPIO driver for StarFive JH7110 SoC aon controller
- *
- * Copyright (C) 2022 StarFive Technology Co., Ltd.
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/gpio/driver.h>
@@ -33,7 +29,7 @@
 
 #define JH7110_AON_REGS_NUM		37
 
-/* registers */
+ 
 #define JH7110_AON_DOEN			0x0
 #define JH7110_AON_DOUT			0x4
 #define JH7110_AON_GPI			0x8
@@ -114,12 +110,12 @@ static int jh7110_aon_init_hw(struct gpio_chip *gc)
 	struct jh7110_pinctrl *sfp = container_of(gc,
 			struct jh7110_pinctrl, gc);
 
-	/* mask all GPIO interrupts */
+	 
 	writel_relaxed(0, sfp->base + JH7110_AON_GPIOIE);
-	/* clear edge interrupt flags */
+	 
 	writel_relaxed(0, sfp->base + JH7110_AON_GPIOIC);
 	writel_relaxed(0x0f, sfp->base + JH7110_AON_GPIOIC);
-	/* enable GPIO interrupts */
+	 
 	writel_relaxed(1, sfp->base + JH7110_AON_GPIOEN);
 	return 0;
 }
@@ -159,7 +155,7 @@ static const struct of_device_id jh7110_aon_pinctrl_of_match[] = {
 		.compatible = "starfive,jh7110-aon-pinctrl",
 		.data = &jh7110_aon_pinctrl_info,
 	},
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, jh7110_aon_pinctrl_of_match);
 

@@ -1,62 +1,18 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * COMEDI driver for the ADLINK PCI-723x/743x series boards.
- * Copyright (C) 2012 H Hartley Sweeten <hsweeten@visionengravers.com>
- *
- * Based on the adl_pci7230 driver written by:
- *	David Fernandez <dfcastelao@gmail.com>
- * and the adl_pci7432 driver written by:
- *	Michel Lachaine <mike@mikelachaine.ca>
- *
- * COMEDI - Linux Control and Measurement Device Interface
- * Copyright (C) 2000 David A. Schleef <ds@schleef.org>
- */
 
-/*
- * Driver: adl_pci7x3x
- * Description: 32/64-Channel Isolated Digital I/O Boards
- * Devices: [ADLink] PCI-7230 (adl_pci7230), PCI-7233 (adl_pci7233),
- *   PCI-7234 (adl_pci7234), PCI-7432 (adl_pci7432), PCI-7433 (adl_pci7433),
- *   PCI-7434 (adl_pci7434)
- * Author: H Hartley Sweeten <hsweeten@visionengravers.com>
- * Updated: Fri, 20 Nov 2020 14:49:36 +0000
- * Status: works (tested on PCI-7230)
- *
- * One or two subdevices are setup by this driver depending on
- * the number of digital inputs and/or outputs provided by the
- * board. Each subdevice has a maximum of 32 channels.
- *
- *	PCI-7230 - 4 subdevices: 0 - 16 input, 1 - 16 output,
- *	                         2 - IRQ_IDI0, 3 - IRQ_IDI1
- *	PCI-7233 - 1 subdevice: 0 - 32 input
- *	PCI-7234 - 1 subdevice: 0 - 32 output
- *	PCI-7432 - 2 subdevices: 0 - 32 input, 1 - 32 output
- *	PCI-7433 - 2 subdevices: 0 - 32 input, 1 - 32 input
- *	PCI-7434 - 2 subdevices: 0 - 32 output, 1 - 32 output
- *
- * The PCI-7230, PCI-7432 and PCI-7433 boards also support external
- * interrupt signals on digital input channels 0 and 1. The PCI-7233
- * has dual-interrupt sources for change-of-state (COS) on any 16
- * digital input channels of LSB and for COS on any 16 digital input
- * lines of MSB.
- *
- * Currently, this driver only supports interrupts for PCI-7230.
- *
- * Configuration Options: not applicable, uses comedi PCI auto config
- */
+ 
+
+ 
 
 #include <linux/module.h>
 #include <linux/comedi/comedi_pci.h>
 
 #include "plx9052.h"
 
-/*
- * Register I/O map (32-bit access only)
- */
-#define PCI7X3X_DIO_REG		0x0000	/* in the DigIO Port area */
+ 
+#define PCI7X3X_DIO_REG		0x0000	 
 #define PCI743X_DIO_REG		0x0004
 
-#define ADL_PT_CLRIRQ		0x0040	/* in the DigIO Port area */
+#define ADL_PT_CLRIRQ		0x0040	 
 
 #define LINTI1_EN_ACT_IDI0 (PLX9052_INTCSR_LI1ENAB | PLX9052_INTCSR_LI1STAT)
 #define LINTI2_EN_ACT_IDI1 (PLX9052_INTCSR_LI2ENAB | PLX9052_INTCSR_LI2STAT)
@@ -83,7 +39,7 @@ struct adl_pci7x3x_boardinfo {
 static const struct adl_pci7x3x_boardinfo adl_pci7x3x_boards[] = {
 	[BOARD_PCI7230] = {
 		.name		= "adl_pci7230",
-		.nsubdevs	= 4,  /* IDI, IDO, IRQ_IDI0, IRQ_IDI1 */
+		.nsubdevs	= 4,   
 		.di_nchan	= 16,
 		.do_nchan	= 16,
 		.irq_nchan	= 2,
@@ -122,7 +78,7 @@ struct adl_pci7x3x_dev_private_data {
 };
 
 struct adl_pci7x3x_sd_private_data {
-	spinlock_t subd_slock;		/* spin-lock for cmd_running */
+	spinlock_t subd_slock;		 
 	unsigned long port_offset;
 	short int cmd_running;
 };
@@ -155,29 +111,29 @@ static irqreturn_t adl_pci7x3x_interrupt(int irq, void *p_device)
 	bool li1stat, li2stat;
 
 	if (!dev->attached) {
-		/* Ignore interrupt before device fully attached. */
-		/* Might not even have allocated subdevices yet! */
+		 
+		 
 		return IRQ_NONE;
 	}
 
-	/* Check if we are source of interrupt */
+	 
 	spin_lock_irqsave(&dev->spinlock, cpu_flags);
 	intcsr = inl(dev_private->lcr_io_base + PLX9052_INTCSR);
 	li1stat = (intcsr & LINTI1_EN_ACT_IDI0) == LINTI1_EN_ACT_IDI0;
 	li2stat = (intcsr & LINTI2_EN_ACT_IDI1) == LINTI2_EN_ACT_IDI1;
 	if (li1stat || li2stat) {
-		/* clear all current interrupt flags */
-		/* Fixme: Reset all 2 Int Flags */
+		 
+		 
 		outb(0x00, dev->iobase + ADL_PT_CLRIRQ);
 	}
 	spin_unlock_irqrestore(&dev->spinlock, cpu_flags);
 
-	/* SubDev 2, 3 = Isolated DigIn , on "SCSI2" jack!*/
+	 
 
-	if (li1stat)	/* 0x0005 LINTi1 is Enabled && IDI0 is 1 */
+	if (li1stat)	 
 		process_irq(dev, 2, intcsr);
 
-	if (li2stat)	/* 0x0028 LINTi2 is Enabled && IDI1 is 1 */
+	if (li2stat)	 
 		process_irq(dev, 3, intcsr);
 
 	return IRQ_RETVAL(li1stat || li2stat);
@@ -189,7 +145,7 @@ static int adl_pci7x3x_asy_cmdtest(struct comedi_device *dev,
 {
 	int err = 0;
 
-	/* Step 1 : check if triggers are trivially valid */
+	 
 
 	err |= comedi_check_trigger_src(&cmd->start_src, TRIG_NOW);
 	err |= comedi_check_trigger_src(&cmd->scan_begin_src, TRIG_EXT);
@@ -200,10 +156,10 @@ static int adl_pci7x3x_asy_cmdtest(struct comedi_device *dev,
 	if (err)
 		return 1;
 
-	/* Step 2a : make sure trigger sources are unique */
-	/* Step 2b : and mutually compatible */
+	 
+	 
 
-	/* Step 3: check if arguments are trivially valid */
+	 
 
 	err |= comedi_check_trigger_arg_is(&cmd->start_arg, 0);
 	err |= comedi_check_trigger_arg_is(&cmd->scan_begin_arg, 0);
@@ -215,9 +171,9 @@ static int adl_pci7x3x_asy_cmdtest(struct comedi_device *dev,
 	if (err)
 		return 3;
 
-	/* Step 4: fix up any arguments */
+	 
 
-	/* Step 5: check channel list if it exists */
+	 
 
 	return 0;
 }
@@ -231,10 +187,10 @@ static int adl_pci7x3x_asy_cmd(struct comedi_device *dev,
 	unsigned int int_enab;
 
 	if (s->index == 2) {
-		/* enable LINTi1 == IDI sdi[0] Ch 0 IRQ ActHigh */
+		 
 		int_enab = PLX9052_INTCSR_LI1ENAB;
 	} else {
-		/* enable LINTi2 == IDI sdi[0] Ch 1 IRQ ActHigh */
+		 
 		int_enab = PLX9052_INTCSR_LI2ENAB;
 	}
 
@@ -261,7 +217,7 @@ static int adl_pci7x3x_asy_cancel(struct comedi_device *dev,
 	spin_lock_irqsave(&sd_priv->subd_slock, cpu_flags);
 	sd_priv->cmd_running = 0;
 	spin_unlock_irqrestore(&sd_priv->subd_slock, cpu_flags);
-	/* disable Interrupts */
+	 
 	if (s->index == 2)
 		int_enab = PLX9052_INTCSR_LI1ENAB;
 	else
@@ -274,7 +230,7 @@ static int adl_pci7x3x_asy_cancel(struct comedi_device *dev,
 	return 0;
 }
 
-/* same as _di_insn_bits because the IRQ-pins are the DI-ports  */
+ 
 static int adl_pci7x3x_dirq_insn_bits(struct comedi_device *dev,
 				      struct comedi_subdevice *s,
 				      struct comedi_insn *insn,
@@ -299,12 +255,7 @@ static int adl_pci7x3x_do_insn_bits(struct comedi_device *dev,
 		unsigned int val = s->state;
 
 		if (s->n_chan == 16) {
-			/*
-			 * It seems the PCI-7230 needs the 16-bit DO state
-			 * to be shifted left by 16 bits before being written
-			 * to the 32-bit register.  Set the value in both
-			 * halves of the register to be sure.
-			 */
+			 
 			val |= val << 16;
 		}
 		outl(val, dev->iobase + reg);
@@ -331,8 +282,8 @@ static int adl_pci7x3x_reset(struct comedi_device *dev)
 {
 	struct adl_pci7x3x_dev_private_data *dev_private = dev->private;
 
-	/* disable Interrupts */
-	dev_private->int_ctrl = 0x00;  /* Disable PCI + LINTi2 + LINTi1 */
+	 
+	dev_private->int_ctrl = 0x00;   
 	outl(dev_private->int_ctrl, dev_private->lcr_io_base + PLX9052_INTCSR);
 
 	return 0;
@@ -370,7 +321,7 @@ static int adl_pci7x3x_auto_attach(struct comedi_device *dev,
 	adl_pci7x3x_reset(dev);
 
 	if (board->irq_nchan) {
-		/* discard all evtl. old IRQs */
+		 
 		outb(0x00, dev->iobase + ADL_PT_CLRIRQ);
 
 		if (pcidev->irq) {
@@ -378,7 +329,7 @@ static int adl_pci7x3x_auto_attach(struct comedi_device *dev,
 					  IRQF_SHARED, dev->board_name, dev);
 			if (ret == 0) {
 				dev->irq = pcidev->irq;
-				/* 0x52 PCI + IDI Ch 1 Ch 0 IRQ Off ActHigh */
+				 
 				dev_private->int_ctrl = EN_PCI_LINT2H_LINT1H;
 				outl(dev_private->int_ctrl,
 				     dev_private->lcr_io_base + PLX9052_INTCSR);
@@ -396,7 +347,7 @@ static int adl_pci7x3x_auto_attach(struct comedi_device *dev,
 		nchan = min(board->di_nchan, 32);
 
 		s = &dev->subdevices[subdev];
-		/* Isolated digital inputs 0 to 15/31 */
+		 
 		s->type		= COMEDI_SUBD_DI;
 		s->subdev_flags	= SDF_READABLE;
 		s->n_chan	= nchan;
@@ -411,7 +362,7 @@ static int adl_pci7x3x_auto_attach(struct comedi_device *dev,
 		nchan = board->di_nchan - nchan;
 		if (nchan) {
 			s = &dev->subdevices[subdev];
-			/* Isolated digital inputs 32 to 63 */
+			 
 			s->type		= COMEDI_SUBD_DI;
 			s->subdev_flags	= SDF_READABLE;
 			s->n_chan	= nchan;
@@ -429,7 +380,7 @@ static int adl_pci7x3x_auto_attach(struct comedi_device *dev,
 		nchan = min(board->do_nchan, 32);
 
 		s = &dev->subdevices[subdev];
-		/* Isolated digital outputs 0 to 15/31 */
+		 
 		s->type		= COMEDI_SUBD_DO;
 		s->subdev_flags	= SDF_WRITABLE;
 		s->n_chan	= nchan;
@@ -444,7 +395,7 @@ static int adl_pci7x3x_auto_attach(struct comedi_device *dev,
 		nchan = board->do_nchan - nchan;
 		if (nchan) {
 			s = &dev->subdevices[subdev];
-			/* Isolated digital outputs 32 to 63 */
+			 
 			s->type		= COMEDI_SUBD_DO;
 			s->subdev_flags	= SDF_WRITABLE;
 			s->n_chan	= nchan;
@@ -464,7 +415,7 @@ static int adl_pci7x3x_auto_attach(struct comedi_device *dev,
 		nchan = 1;
 
 		s = &dev->subdevices[subdev];
-		/* Isolated digital inputs 0 or 1 */
+		 
 		s->type		= COMEDI_SUBD_DI;
 		s->subdev_flags	= SDF_READABLE;
 		s->n_chan	= nchan;

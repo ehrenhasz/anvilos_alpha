@@ -1,11 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// mt8186-mt6366-da7219-max98357.c
-//	--  MT8186-MT6366-DA7219-MAX98357 ALSA SoC machine driver
-//
-// Copyright (c) 2022 MediaTek Inc.
-// Author: Jiaxin Yu <jiaxin.yu@mediatek.com>
-//
+
+
+
+
+
+
+
+
 
 #include <linux/input.h>
 #include <linux/module.h>
@@ -36,7 +36,7 @@ struct mt8186_mt6366_da7219_max98357_priv {
 	struct snd_soc_jack headset_jack, hdmi_jack;
 };
 
-/* Headset jack detection DAPM pins */
+ 
 static struct snd_soc_jack_pin mt8186_jack_pins[] = {
 	{
 		.pin = "Headphones",
@@ -86,7 +86,7 @@ static int mt8186_da7219_init(struct snd_soc_pcm_runtime *rtd)
 		return ret;
 	}
 
-	/* Enable Headset and 4 Buttons Jack detection */
+	 
 	ret = snd_soc_card_jack_new_pins(rtd->card, "Headset Jack",
 				    SND_JACK_HEADSET | SND_JACK_BTN_0 |
 				    SND_JACK_BTN_1 | SND_JACK_BTN_2 |
@@ -219,11 +219,11 @@ static int mt8186_hw_params_fixup(struct snd_soc_pcm_runtime *rtd,
 
 	dev_dbg(rtd->dev, "%s(), fix format to %d\n", __func__, fmt);
 
-	/* fix BE i2s channel to 2 channel */
+	 
 	channels->min = 2;
 	channels->max = 2;
 
-	/* clean param mask first */
+	 
 	snd_mask_reset_range(hw_param_mask(params, SNDRV_PCM_HW_PARAM_FORMAT),
 			     0, (__force unsigned int)SNDRV_PCM_FORMAT_LAST);
 
@@ -244,7 +244,7 @@ static int mt8186_anx7625_i2s_hw_params_fixup(struct snd_soc_pcm_runtime *rtd,
 	return mt8186_hw_params_fixup(rtd, params, SNDRV_PCM_FORMAT_S24_LE);
 }
 
-/* fixup the BE DAI link to match any values from topology */
+ 
 static int mt8186_sof_dai_link_fixup(struct snd_soc_pcm_runtime *rtd,
 				     struct snd_pcm_hw_params *params)
 {
@@ -354,7 +354,7 @@ static const struct snd_soc_ops mt8186_mt6366_da7219_max98357_capture_ops = {
 	.startup = mt8186_mt6366_da7219_max98357_capture_startup,
 };
 
-/* FE */
+ 
 SND_SOC_DAILINK_DEFS(playback1,
 		     DAILINK_COMP_ARRAY(COMP_CPU("DL1")),
 		     DAILINK_COMP_ARRAY(COMP_DUMMY()),
@@ -435,7 +435,7 @@ SND_SOC_DAILINK_DEFS(capture7,
 		     DAILINK_COMP_ARRAY(COMP_DUMMY()),
 		     DAILINK_COMP_ARRAY(COMP_EMPTY()));
 
-/* hostless */
+ 
 SND_SOC_DAILINK_DEFS(hostless_lpbk,
 		     DAILINK_COMP_ARRAY(COMP_CPU("Hostless LPBK DAI")),
 		     DAILINK_COMP_ARRAY(COMP_DUMMY()),
@@ -453,7 +453,7 @@ SND_SOC_DAILINK_DEFS(hostless_src_bargein,
 		     DAILINK_COMP_ARRAY(COMP_DUMMY()),
 		     DAILINK_COMP_ARRAY(COMP_EMPTY()));
 
-/* BE */
+ 
 SND_SOC_DAILINK_DEFS(adda,
 		     DAILINK_COMP_ARRAY(COMP_CPU("ADDA")),
 		     DAILINK_COMP_ARRAY(COMP_CODEC("mt6358-sound",
@@ -506,7 +506,7 @@ SND_SOC_DAILINK_DEFS(tdm_in,
 		     DAILINK_COMP_ARRAY(COMP_DUMMY()),
 		     DAILINK_COMP_ARRAY(COMP_EMPTY()));
 
-/* hostless */
+ 
 SND_SOC_DAILINK_DEFS(hostless_ul1,
 		     DAILINK_COMP_ARRAY(COMP_CPU("Hostless_UL1 DAI")),
 		     DAILINK_COMP_ARRAY(COMP_DUMMY()),
@@ -563,7 +563,7 @@ static const struct sof_conn_stream g_sof_conn_streams[] = {
 };
 
 static struct snd_soc_dai_link mt8186_mt6366_da7219_max98357_dai_links[] = {
-	/* Front End DAI links */
+	 
 	{
 		.name = "Playback_1",
 		.stream_name = "Playback_1",
@@ -795,7 +795,7 @@ static struct snd_soc_dai_link mt8186_mt6366_da7219_max98357_dai_links[] = {
 		.ignore_suspend = 1,
 		SND_SOC_DAILINK_REG(hostless_src_aaudio),
 	},
-	/* Back End DAI links */
+	 
 	{
 		.name = "Primary Codec",
 		.no_pcm = 1,
@@ -900,7 +900,7 @@ static struct snd_soc_dai_link mt8186_mt6366_da7219_max98357_dai_links[] = {
 		.ignore_suspend = 1,
 		SND_SOC_DAILINK_REG(tdm_in),
 	},
-	/* dummy BE for ul memif to record from dl memif */
+	 
 	{
 		.name = "Hostless_UL1",
 		.no_pcm = 1,
@@ -936,7 +936,7 @@ static struct snd_soc_dai_link mt8186_mt6366_da7219_max98357_dai_links[] = {
 		.ignore_suspend = 1,
 		SND_SOC_DAILINK_REG(hostless_ul6),
 	},
-	/* SOF BE */
+	 
 	{
 		.name = "AFE_SOF_DL1",
 		.no_pcm = 1,
@@ -978,20 +978,20 @@ mt8186_mt6366_da7219_max98357_widgets[] = {
 
 static const struct snd_soc_dapm_route
 mt8186_mt6366_da7219_max98357_routes[] = {
-	/* SPK */
+	 
 	{ "Speakers", NULL, "Speaker"},
-	/* Headset */
+	 
 	{ "Headphones", NULL, "HPL" },
 	{ "Headphones", NULL, "HPR" },
 	{ "MIC", NULL, "Headset Mic" },
-	/* HDMI */
+	 
 	{ "HDMI1", NULL, "TX"},
-	/* SOF Uplink */
+	 
 	{SOF_DMA_UL1, NULL, "UL1_CH1"},
 	{SOF_DMA_UL1, NULL, "UL1_CH2"},
 	{SOF_DMA_UL2, NULL, "UL2_CH1"},
 	{SOF_DMA_UL2, NULL, "UL2_CH2"},
-	/* SOF Downlink */
+	 
 	{"DSP_DL1_VIRT", NULL, SOF_DMA_DL1},
 	{"DSP_DL2_VIRT", NULL, SOF_DMA_DL2},
 };
@@ -1182,7 +1182,7 @@ static struct platform_driver mt8186_mt6366_da7219_max98357_driver = {
 
 module_platform_driver(mt8186_mt6366_da7219_max98357_driver);
 
-/* Module information */
+ 
 MODULE_DESCRIPTION("MT8186-MT6366-DA7219-MAX98357 ALSA SoC machine driver");
 MODULE_AUTHOR("Jiaxin Yu <jiaxin.yu@mediatek.com>");
 MODULE_LICENSE("GPL v2");

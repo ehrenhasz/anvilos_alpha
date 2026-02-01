@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause) */
-/*
- * This file is provided under a dual BSD/GPLv2 license. When using or
- * redistributing this file, you may do so under either license.
- *
- * Copyright(c) 2021 Advanced Micro Devices, Inc. All rights reserved.
- *
- * Author: Ajit Kumar Pandey <AjitKumar.Pandey@amd.com>
- */
+ 
+ 
 
 #ifndef _ACP_IP_OFFSET_HEADER
 #define _ACP_IP_OFFSET_HEADER
@@ -28,7 +21,7 @@
 #define ACP_EXTERNAL_INTR_STAT(adata, ctrl) ACP_EXTERNAL_INTR_REG_ADDR(adata, \
 	(0x4 + (adata->rsrc->no_of_ctrls * 0x04)), ctrl)
 
-/* Registers from ACP_AUDIO_BUFFERS block */
+ 
 
 #define ACP_I2S_RX_RINGBUFADDR                        0x2000
 #define ACP_I2S_RX_RINGBUFSIZE                        0x2004
@@ -91,7 +84,7 @@
 #define ACP_I2STDM_ITER                               0x240C
 #define ACP_I2STDM_TXFRMT                             0x2410
 
-/* Registers from ACP_BT_TDM block */
+ 
 
 #define ACP_BTTDM_IER                                 0x2800
 #define ACP_BTTDM_IRER                                0x2804
@@ -99,14 +92,14 @@
 #define ACP_BTTDM_ITER                                0x280C
 #define ACP_BTTDM_TXFRMT                              0x2810
 
-/* Registers from ACP_HS_TDM block */
+ 
 #define ACP_HSTDM_IER                                 0x2814
 #define ACP_HSTDM_IRER                                0x2818
 #define ACP_HSTDM_RXFRMT                              0x281C
 #define ACP_HSTDM_ITER                                0x2820
 #define ACP_HSTDM_TXFRMT                              0x2824
 
-/* Registers from ACP_WOV_PDM block */
+ 
 
 #define ACP_WOV_PDM_ENABLE                            0x2C04
 #define ACP_WOV_PDM_DMA_ENABLE                        0x2C08

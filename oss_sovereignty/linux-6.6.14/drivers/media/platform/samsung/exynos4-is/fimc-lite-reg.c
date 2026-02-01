@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Register interface file for EXYNOS FIMC-LITE (camera interface) driver
- *
- * Copyright (C) 2012 Samsung Electronics Co., Ltd.
- * Author: Sylwester Nawrocki <s.nawrocki@samsung.com>
-*/
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/delay.h>
@@ -15,7 +10,7 @@
 #include "fimc-lite.h"
 #include "fimc-core.h"
 
-#define FLITE_RESET_TIMEOUT 50 /* in ms */
+#define FLITE_RESET_TIMEOUT 50  
 
 void flite_hw_reset(struct fimc_lite *dev)
 {
@@ -62,14 +57,14 @@ void flite_hw_set_interrupt_mask(struct fimc_lite *dev)
 {
 	u32 cfg, intsrc;
 
-	/* Select interrupts to be enabled for each output mode */
+	 
 	if (atomic_read(&dev->out_path) == FIMC_IO_DMA) {
 		intsrc = FLITE_REG_CIGCTRL_IRQ_OVFEN |
 			 FLITE_REG_CIGCTRL_IRQ_LASTEN |
 			 FLITE_REG_CIGCTRL_IRQ_STARTEN |
 			 FLITE_REG_CIGCTRL_IRQ_ENDEN;
 	} else {
-		/* An output to the FIMC-IS */
+		 
 		intsrc = FLITE_REG_CIGCTRL_IRQ_OVFEN |
 			 FLITE_REG_CIGCTRL_IRQ_LASTEN;
 	}
@@ -94,10 +89,7 @@ void flite_hw_capture_stop(struct fimc_lite *dev)
 	writel(cfg, dev->regs + FLITE_REG_CIIMGCPT);
 }
 
-/*
- * Test pattern (color bars) enable/disable. External sensor
- * pixel clock must be active for the test pattern to work.
- */
+ 
 void flite_hw_set_test_pattern(struct fimc_lite *dev, bool on)
 {
 	u32 cfg = readl(dev->regs + FLITE_REG_CIGCTRL);
@@ -123,7 +115,7 @@ static const u32 src_pixfmt_map[8][3] = {
 	{ MEDIA_BUS_FMT_JPEG_1X8, 0, FLITE_REG_CIGCTRL_USER(1) },
 };
 
-/* Set camera input pixel format and resolution */
+ 
 void flite_hw_set_source_format(struct fimc_lite *dev, struct flite_frame *f)
 {
 	u32 pixelcode = f->fmt->mbus_code;
@@ -154,7 +146,7 @@ void flite_hw_set_source_format(struct fimc_lite *dev, struct flite_frame *f)
 	writel(cfg, dev->regs + FLITE_REG_CISRCSIZE);
 }
 
-/* Set the camera host input window offsets (cropping) */
+ 
 void flite_hw_set_window_offset(struct fimc_lite *dev, struct flite_frame *f)
 {
 	u32 hoff2, voff2;
@@ -173,7 +165,7 @@ void flite_hw_set_window_offset(struct fimc_lite *dev, struct flite_frame *f)
 	writel(cfg, dev->regs + FLITE_REG_CIWDOFST2);
 }
 
-/* Select camera port (A, B) */
+ 
 static void flite_hw_set_camera_port(struct fimc_lite *dev, int id)
 {
 	u32 cfg = readl(dev->regs + FLITE_REG_CIGENERAL);
@@ -184,7 +176,7 @@ static void flite_hw_set_camera_port(struct fimc_lite *dev, int id)
 	writel(cfg, dev->regs + FLITE_REG_CIGENERAL);
 }
 
-/* Select serial or parallel bus, camera port (A,B) and set signals polarity */
+ 
 void flite_hw_set_camera_bus(struct fimc_lite *dev,
 			     struct fimc_source_info *si)
 {
@@ -248,13 +240,13 @@ void flite_hw_set_dma_window(struct fimc_lite *dev, struct flite_frame *f)
 {
 	u32 cfg;
 
-	/* Maximum output pixel size */
+	 
 	cfg = readl(dev->regs + FLITE_REG_CIOCAN);
 	cfg &= ~FLITE_REG_CIOCAN_MASK;
 	cfg |= (f->f_height << 16) | f->f_width;
 	writel(cfg, dev->regs + FLITE_REG_CIOCAN);
 
-	/* DMA offsets */
+	 
 	cfg = readl(dev->regs + FLITE_REG_CIOOFF);
 	cfg &= ~FLITE_REG_CIOOFF_MASK;
 	cfg |= (f->rect.top << 16) | f->rect.left;
@@ -293,7 +285,7 @@ void flite_hw_mask_dma_buffer(struct fimc_lite *dev, u32 index)
 	writel(cfg, dev->regs + FLITE_REG_CIFCNTSEQ);
 }
 
-/* Enable/disable output DMA, set output pixel size and offsets (composition) */
+ 
 void flite_hw_set_output_dma(struct fimc_lite *dev, struct flite_frame *f,
 			     bool enable)
 {

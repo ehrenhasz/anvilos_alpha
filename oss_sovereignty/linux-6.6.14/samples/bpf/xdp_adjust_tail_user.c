@@ -1,10 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0
- * Copyright (c) 2018 Facebook
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of version 2 of the GNU General Public
- * License as published by the Free Software Foundation.
- */
+ 
 #include <linux/bpf.h>
 #include <linux/if_link.h>
 #include <assert.h>
@@ -47,8 +41,7 @@ static void int_exit(int sig)
 	exit(0);
 }
 
-/* simple "icmp packet too big sent" counter
- */
+ 
 static void poll_stats(unsigned int map_fd, unsigned int kill_after_s)
 {
 	time_t started_at = time(NULL);
@@ -116,7 +109,7 @@ int main(int argc, char **argv)
 			xdp_flags |= XDP_FLAGS_SKB_MODE;
 			break;
 		case 'N':
-			/* default, set below */
+			 
 			break;
 		case 'F':
 			xdp_flags &= ~XDP_FLAGS_UPDATE_IF_NOEXIST;
@@ -159,7 +152,7 @@ int main(int argc, char **argv)
 
 	prog_fd = bpf_program__fd(prog);
 
-	/* static global var 'max_pcktsz' is accessible from .data section */
+	 
 	if (max_pckt_size) {
 		map_fd = bpf_object__find_map_fd_by_name(obj, "xdp_adju.data");
 		if (map_fd < 0) {
@@ -169,7 +162,7 @@ int main(int argc, char **argv)
 		bpf_map_update_elem(map_fd, &key, &max_pckt_size, BPF_ANY);
 	}
 
-	/* fetch icmpcnt map */
+	 
 	map_fd = bpf_object__find_map_fd_by_name(obj, "icmpcnt");
 	if (map_fd < 0) {
 		printf("finding a icmpcnt map in obj file failed\n");

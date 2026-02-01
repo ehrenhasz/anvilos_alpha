@@ -1,10 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
 
-/* net/sched/sch_etf.c  Earliest TxTime First queueing discipline.
- *
- * Authors:	Jesus Sanchez-Palencia <jesus.sanchez-palencia@intel.com>
- *		Vinicius Costa Gomes <vinicius.gomes@intel.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/types.h>
@@ -30,8 +26,8 @@ struct etf_sched_data {
 	bool skip_sock_check;
 	int clockid;
 	int queue;
-	s32 delta; /* in ns */
-	ktime_t last; /* The txtime of the last skb sent to the netdevice. */
+	s32 delta;  
+	ktime_t last;  
 	struct rb_root_cached head;
 	struct qdisc_watchdog watchdog;
 	ktime_t (*get_time)(void);
@@ -44,16 +40,7 @@ static const struct nla_policy etf_policy[TCA_ETF_MAX + 1] = {
 static inline int validate_input_params(struct tc_etf_qopt *qopt,
 					struct netlink_ext_ack *extack)
 {
-	/* Check if params comply to the following rules:
-	 *	* Clockid and delta must be valid.
-	 *
-	 *	* Dynamic clockids are not supported.
-	 *
-	 *	* Delta must be a positive integer.
-	 *
-	 * Also note that for the HW offload case, we must
-	 * expect that system clocks have been synchronized to PHC.
-	 */
+	 
 	if (qopt->clockid < 0) {
 		NL_SET_ERR_MSG(extack, "Dynamic clockids are not supported");
 		return -ENOTSUPP;
@@ -88,9 +75,7 @@ static bool is_packet_valid(struct Qdisc *sch, struct sk_buff *nskb)
 	if (!sock_flag(sk, SOCK_TXTIME))
 		return false;
 
-	/* We don't perform crosstimestamping.
-	 * Drop if packet's clockid differs from qdisc's.
-	 */
+	 
 	if (sk->sk_clockid != q->clockid)
 		return false;
 
@@ -152,8 +137,8 @@ static void report_sock_error(struct sk_buff *skb, u32 err, u8 code)
 	serr->ee.ee_type = 0;
 	serr->ee.ee_code = code;
 	serr->ee.ee_pad = 0;
-	serr->ee.ee_data = (txtime >> 32); /* high part of tstamp */
-	serr->ee.ee_info = txtime; /* low part of tstamp */
+	serr->ee.ee_data = (txtime >> 32);  
+	serr->ee.ee_info = txtime;  
 
 	if (sock_queue_err_skb(sk, clone))
 		kfree_skb(clone);
@@ -191,7 +176,7 @@ static int etf_enqueue_timesortedlist(struct sk_buff *nskb, struct Qdisc *sch,
 	qdisc_qstats_backlog_inc(sch, nskb);
 	sch->q.qlen++;
 
-	/* Now we may need to re-arm the qdisc watchdog for the next packet. */
+	 
 	reset_watchdog(sch);
 
 	return NET_XMIT_SUCCESS;
@@ -210,9 +195,7 @@ static void timesortedlist_drop(struct Qdisc *sch, struct sk_buff *skb,
 
 		rb_erase_cached(&skb->rbnode, &q->head);
 
-		/* The rbnode field in the skb re-uses these fields, now that
-		 * we are done with the rbnode, reset them.
-		 */
+		 
 		skb->next = NULL;
 		skb->prev = NULL;
 		skb->dev = qdisc_dev(sch);
@@ -234,9 +217,7 @@ static void timesortedlist_remove(struct Qdisc *sch, struct sk_buff *skb)
 
 	rb_erase_cached(&skb->rbnode, &q->head);
 
-	/* The rbnode field in the skb re-uses these fields, now that
-	 * we are done with the rbnode, reset them.
-	 */
+	 
 	skb->next = NULL;
 	skb->prev = NULL;
 	skb->dev = qdisc_dev(sch);
@@ -262,16 +243,14 @@ static struct sk_buff *etf_dequeue_timesortedlist(struct Qdisc *sch)
 
 	now = q->get_time();
 
-	/* Drop if packet has expired while in queue. */
+	 
 	if (ktime_before(skb->tstamp, now)) {
 		timesortedlist_drop(sch, skb, now);
 		skb = NULL;
 		goto out;
 	}
 
-	/* When in deadline mode, dequeue as soon as possible and change the
-	 * txtime from deadline to (now + delta).
-	 */
+	 
 	if (q->deadline_mode) {
 		timesortedlist_remove(sch, skb);
 		skb->tstamp = now;
@@ -280,14 +259,14 @@ static struct sk_buff *etf_dequeue_timesortedlist(struct Qdisc *sch)
 
 	next = ktime_sub_ns(skb->tstamp, q->delta);
 
-	/* Dequeue only if now is within the [txtime - delta, txtime] range. */
+	 
 	if (ktime_after(now, next))
 		timesortedlist_remove(sch, skb);
 	else
 		skb = NULL;
 
 out:
-	/* Now we may need to re-arm the qdisc watchdog for the next packet. */
+	 
 	reset_watchdog(sch);
 
 	return skb;
@@ -384,7 +363,7 @@ static int etf_init(struct Qdisc *sch, struct nlattr *opt,
 			return err;
 	}
 
-	/* Everything went OK, save the parameters used. */
+	 
 	q->delta = qopt->delta;
 	q->clockid = qopt->clockid;
 	q->offload = OFFLOAD_IS_ON(qopt);
@@ -434,11 +413,11 @@ static void etf_reset(struct Qdisc *sch)
 {
 	struct etf_sched_data *q = qdisc_priv(sch);
 
-	/* Only cancel watchdog if it's been initialized. */
+	 
 	if (q->watchdog.qdisc == sch)
 		qdisc_watchdog_cancel(&q->watchdog);
 
-	/* No matter which mode we are on, it's safe to clear both lists. */
+	 
 	timesortedlist_clear(sch);
 	__qdisc_reset_queue(&sch->q);
 
@@ -450,7 +429,7 @@ static void etf_destroy(struct Qdisc *sch)
 	struct etf_sched_data *q = qdisc_priv(sch);
 	struct net_device *dev = qdisc_dev(sch);
 
-	/* Only cancel watchdog if it's been initialized. */
+	 
 	if (q->watchdog.qdisc == sch)
 		qdisc_watchdog_cancel(&q->watchdog);
 

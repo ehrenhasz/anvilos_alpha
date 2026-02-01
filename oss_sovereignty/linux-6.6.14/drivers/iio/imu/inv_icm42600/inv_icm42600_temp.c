@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2020 Invensense, Inc.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/device.h>
@@ -65,12 +63,7 @@ int inv_icm42600_temp_read_raw(struct iio_dev *indio_dev,
 			return ret;
 		*val = temp;
 		return IIO_VAL_INT;
-	/*
-	 * T°C = (temp / 132.48) + 25
-	 * Tm°C = 1000 * ((temp * 100 / 13248) + 25)
-	 * scale: 100000 / 13248 ~= 7.548309
-	 * offset: 25000
-	 */
+	 
 	case IIO_CHAN_INFO_SCALE:
 		*val = 7;
 		*val2 = 548309;

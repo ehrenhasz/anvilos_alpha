@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Pid namespaces
- *
- * Authors:
- *    (C) 2007 Pavel Emelyanov <xemul@openvz.org>, OpenVZ, SWsoft Inc.
- *    (C) 2007 Sukadev Bhattiprolu <sukadev@us.ibm.com>, IBM
- *     Many thanks to Oleg Nesterov for comments and help
- *
- */
+
+ 
 
 #include <linux/pid.h>
 #include <linux/pid_namespace.h>
@@ -27,17 +19,14 @@
 
 static DEFINE_MUTEX(pid_caches_mutex);
 static struct kmem_cache *pid_ns_cachep;
-/* Write once array, filled from the beginning. */
+ 
 static struct kmem_cache *pid_cache[MAX_PID_NS_LEVEL];
 
-/*
- * creates the kmem cache to allocate pids from.
- * @level: pid namespace level
- */
+ 
 
 static struct kmem_cache *create_pid_cachep(unsigned int level)
 {
-	/* Level 0 is init_pid_ns.pid_cachep */
+	 
 	struct kmem_cache **pkc = &pid_cache[level - 1];
 	struct kmem_cache *kc;
 	char name[4 + 10 + 1];
@@ -50,12 +39,12 @@ static struct kmem_cache *create_pid_cachep(unsigned int level)
 	snprintf(name, sizeof(name), "pid_%u", level + 1);
 	len = struct_size_t(struct pid, numbers, level + 1);
 	mutex_lock(&pid_caches_mutex);
-	/* Name collision forces to do allocation under mutex. */
+	 
 	if (!*pkc)
 		*pkc = kmem_cache_create(name, len, 0,
 					 SLAB_HWCACHE_ALIGN | SLAB_ACCOUNT, NULL);
 	mutex_unlock(&pid_caches_mutex);
-	/* current can fail, but someone else can succeed. */
+	 
 	return READ_ONCE(*pkc);
 }
 
@@ -174,31 +163,15 @@ void zap_pid_ns_processes(struct pid_namespace *pid_ns)
 	int init_pids = thread_group_leader(me) ? 1 : 2;
 	struct pid *pid;
 
-	/* Don't allow any more processes into the pid namespace */
+	 
 	disable_pid_allocation(pid_ns);
 
-	/*
-	 * Ignore SIGCHLD causing any terminated children to autoreap.
-	 * This speeds up the namespace shutdown, plus see the comment
-	 * below.
-	 */
+	 
 	spin_lock_irq(&me->sighand->siglock);
 	me->sighand->action[SIGCHLD - 1].sa.sa_handler = SIG_IGN;
 	spin_unlock_irq(&me->sighand->siglock);
 
-	/*
-	 * The last thread in the cgroup-init thread group is terminating.
-	 * Find remaining pid_ts in the namespace, signal and wait for them
-	 * to exit.
-	 *
-	 * Note:  This signals each threads in the namespace - even those that
-	 * 	  belong to the same thread group, To avoid this, we would have
-	 * 	  to walk the entire tasklist looking a processes in this
-	 * 	  namespace, but that could be unnecessarily expensive if the
-	 * 	  pid namespace has just a few processes. Or we need to
-	 * 	  maintain a tasklist for each pid namespace.
-	 *
-	 */
+	 
 	rcu_read_lock();
 	read_lock(&tasklist_lock);
 	nr = 2;
@@ -210,58 +183,18 @@ void zap_pid_ns_processes(struct pid_namespace *pid_ns)
 	read_unlock(&tasklist_lock);
 	rcu_read_unlock();
 
-	/*
-	 * Reap the EXIT_ZOMBIE children we had before we ignored SIGCHLD.
-	 * kernel_wait4() will also block until our children traced from the
-	 * parent namespace are detached and become EXIT_DEAD.
-	 */
+	 
 	do {
 		clear_thread_flag(TIF_SIGPENDING);
 		rc = kernel_wait4(-1, NULL, __WALL, NULL);
 	} while (rc != -ECHILD);
 
-	/*
-	 * kernel_wait4() misses EXIT_DEAD children, and EXIT_ZOMBIE
-	 * process whose parents processes are outside of the pid
-	 * namespace.  Such processes are created with setns()+fork().
-	 *
-	 * If those EXIT_ZOMBIE processes are not reaped by their
-	 * parents before their parents exit, they will be reparented
-	 * to pid_ns->child_reaper.  Thus pidns->child_reaper needs to
-	 * stay valid until they all go away.
-	 *
-	 * The code relies on the pid_ns->child_reaper ignoring
-	 * SIGCHILD to cause those EXIT_ZOMBIE processes to be
-	 * autoreaped if reparented.
-	 *
-	 * Semantically it is also desirable to wait for EXIT_ZOMBIE
-	 * processes before allowing the child_reaper to be reaped, as
-	 * that gives the invariant that when the init process of a
-	 * pid namespace is reaped all of the processes in the pid
-	 * namespace are gone.
-	 *
-	 * Once all of the other tasks are gone from the pid_namespace
-	 * free_pid() will awaken this task.
-	 */
+	 
 	for (;;) {
 		set_current_state(TASK_INTERRUPTIBLE);
 		if (pid_ns->pid_allocated == init_pids)
 			break;
-		/*
-		 * Release tasks_rcu_exit_srcu to avoid following deadlock:
-		 *
-		 * 1) TASK A unshare(CLONE_NEWPID)
-		 * 2) TASK A fork() twice -> TASK B (child reaper for new ns)
-		 *    and TASK C
-		 * 3) TASK B exits, kills TASK C, waits for TASK A to reap it
-		 * 4) TASK A calls synchronize_rcu_tasks()
-		 *                   -> synchronize_srcu(tasks_rcu_exit_srcu)
-		 * 5) *DEADLOCK*
-		 *
-		 * It is considered safe to release tasks_rcu_exit_srcu here
-		 * because we assume the current task can not be concurrently
-		 * reaped at this point.
-		 */
+		 
 		exit_tasks_rcu_stop();
 		schedule();
 		exit_tasks_rcu_start();
@@ -286,11 +219,7 @@ static int pid_ns_ctl_handler(struct ctl_table *table, int write,
 	if (write && !checkpoint_restore_ns_capable(pid_ns->user_ns))
 		return -EPERM;
 
-	/*
-	 * Writing directly to ns' last_pid field is OK, since this field
-	 * is volatile in a living namespace anyway and a code writing to
-	 * it should synchronize its usage with external means.
-	 */
+	 
 
 	next = idr_get_cursor(&pid_ns->idr) - 1;
 
@@ -307,14 +236,14 @@ static struct ctl_table pid_ns_ctl_table[] = {
 	{
 		.procname = "ns_last_pid",
 		.maxlen = sizeof(int),
-		.mode = 0666, /* permissions are checked in the handler */
+		.mode = 0666,  
 		.proc_handler = pid_ns_ctl_handler,
 		.extra1 = SYSCTL_ZERO,
 		.extra2 = &pid_max,
 	},
 	{ }
 };
-#endif	/* CONFIG_CHECKPOINT_RESTORE */
+#endif	 
 
 int reboot_pid_ns(struct pid_namespace *pid_ns, int cmd)
 {
@@ -341,7 +270,7 @@ int reboot_pid_ns(struct pid_namespace *pid_ns, int cmd)
 
 	do_exit(0);
 
-	/* Not reached */
+	 
 	return 0;
 }
 
@@ -401,14 +330,7 @@ static int pidns_install(struct nsset *nsset, struct ns_common *ns)
 	    !ns_capable(nsset->cred->user_ns, CAP_SYS_ADMIN))
 		return -EPERM;
 
-	/*
-	 * Only allow entering the current active pid namespace
-	 * or a child of the current active pid namespace.
-	 *
-	 * This is required for fork to return a usable pid value and
-	 * this maintains the property that processes and their
-	 * children can not escape their current pid namespace.
-	 */
+	 
 	if (new->level < active->level)
 		return -EINVAL;
 
@@ -428,7 +350,7 @@ static struct ns_common *pidns_get_parent(struct ns_common *ns)
 	struct pid_namespace *active = task_active_pid_ns(current);
 	struct pid_namespace *pid_ns, *p;
 
-	/* See if the parent is in the current namespace */
+	 
 	pid_ns = p = to_pid_ns(ns)->parent;
 	for (;;) {
 		if (!p)

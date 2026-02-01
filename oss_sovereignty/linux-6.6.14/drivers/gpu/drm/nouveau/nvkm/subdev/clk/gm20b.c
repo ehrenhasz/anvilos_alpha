@@ -1,24 +1,4 @@
-/*
- * Copyright (c) 2016, NVIDIA CORPORATION. All rights reserved.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
- * DEALINGS IN THE SOFTWARE.
- */
+ 
 
 #include <subdev/clk.h>
 #include <subdev/volt.h>
@@ -86,8 +66,8 @@
 #define GPCPLL_CFG3_PLL_DFS_TESTOUT_SHIFT	24
 #define GPCPLL_CFG3_PLL_DFS_TESTOUT_WIDTH	7
 
-#define DFS_DET_RANGE	6	/* -2^6 ... 2^6-1 */
-#define SDM_DIN_RANGE	12	/* -2^12 ... 2^12-1 */
+#define DFS_DET_RANGE	6	 
+#define SDM_DIN_RANGE	12	 
 
 struct gm20b_clk_dvfs_params {
 	s32 coeff_slope;
@@ -101,10 +81,7 @@ static const struct gm20b_clk_dvfs_params gm20b_dvfs_params = {
 	.vco_ctrl = 0x7 << 3,
 };
 
-/*
- * base.n is now the *integer* part of the N factor.
- * sdm_din contains n's decimal part.
- */
+ 
 struct gm20b_pll {
 	struct gk20a_pll base;
 	u32 sdm_din;
@@ -117,23 +94,23 @@ struct gm20b_clk_dvfs {
 };
 
 struct gm20b_clk {
-	/* currently applied parameters */
+	 
 	struct gk20a_clk base;
 	struct gm20b_clk_dvfs dvfs;
 	u32 uv;
 
-	/* new parameters to apply */
+	 
 	struct gk20a_pll new_pll;
 	struct gm20b_clk_dvfs new_dvfs;
 	u32 new_uv;
 
 	const struct gm20b_clk_dvfs_params *dvfs_params;
 
-	/* fused parameters */
+	 
 	s32 uvdet_slope;
 	s32 uvdet_offs;
 
-	/* safe frequency we can use at minimum voltage */
+	 
 	u32 safe_fmax_vmin;
 };
 #define gm20b_clk(p) container_of((gk20a_clk(p)), struct gm20b_clk, base)
@@ -179,12 +156,7 @@ gm20b_pllg_write_mnp(struct gm20b_clk *clk, const struct gm20b_pll *pll)
 	gk20a_pllg_write_mnp(&clk->base, &pll->base);
 }
 
-/*
- * Determine DFS_COEFF for the requested voltage. Always select external
- * calibration override equal to the voltage, and set maximum detection
- * limit "0" (to make sure that PLL output remains under F/V curve when
- * voltage increases).
- */
+ 
 static void
 gm20b_dvfs_calc_det_coeff(struct gm20b_clk *clk, s32 uv,
 			  struct gm20b_clk_dvfs *dvfs)
@@ -192,17 +164,17 @@ gm20b_dvfs_calc_det_coeff(struct gm20b_clk *clk, s32 uv,
 	struct nvkm_subdev *subdev = &clk->base.base.subdev;
 	const struct gm20b_clk_dvfs_params *p = clk->dvfs_params;
 	u32 coeff;
-	/* Work with mv as uv would likely trigger an overflow */
+	 
 	s32 mv = DIV_ROUND_CLOSEST(uv, 1000);
 
-	/* coeff = slope * voltage + offset */
+	 
 	coeff = DIV_ROUND_CLOSEST(mv * p->coeff_slope, 1000) + p->coeff_offs;
 	coeff = DIV_ROUND_CLOSEST(coeff, 1000);
 	dvfs->dfs_coeff = min_t(u32, coeff, MASK(GPCPLL_DVFS0_DFS_COEFF_WIDTH));
 
 	dvfs->dfs_ext_cal = DIV_ROUND_CLOSEST(uv - clk->uvdet_offs,
 					     clk->uvdet_slope);
-	/* should never happen */
+	 
 	if (abs(dvfs->dfs_ext_cal) >= BIT(DFS_DET_RANGE))
 		nvkm_error(subdev, "dfs_ext_cal overflow!\n");
 
@@ -213,14 +185,7 @@ gm20b_dvfs_calc_det_coeff(struct gm20b_clk *clk, s32 uv,
 		   dvfs->dfs_det_max);
 }
 
-/*
- * Solve equation for integer and fractional part of the effective NDIV:
- *
- * n_eff = n_int + 1/2 + (SDM_DIN / 2^(SDM_DIN_RANGE + 1)) +
- *         (DVFS_COEFF * DVFS_DET_DELTA) / 2^DFS_DET_RANGE
- *
- * The SDM_DIN LSB is finally shifted out, since it is not accessible by sw.
- */
+ 
 static void
 gm20b_dvfs_calc_ndiv(struct gm20b_clk *clk, u32 n_eff, u32 *n_int, u32 *sdm_din)
 {
@@ -230,16 +195,16 @@ gm20b_dvfs_calc_ndiv(struct gm20b_clk *clk, u32 n_eff, u32 *n_int, u32 *sdm_din)
 	s32 det_delta;
 	u32 rem, rem_range;
 
-	/* calculate current ext_cal and subtract previous one */
+	 
 	det_delta = DIV_ROUND_CLOSEST(((s32)clk->uv) - clk->uvdet_offs,
 				      clk->uvdet_slope);
 	det_delta -= clk->dvfs.dfs_ext_cal;
 	det_delta = min(det_delta, clk->dvfs.dfs_det_max);
 	det_delta *= clk->dvfs.dfs_coeff;
 
-	/* integer part of n */
+	 
 	n = (n_eff << DFS_DET_RANGE) - det_delta;
-	/* should never happen! */
+	 
 	if (n <= 0) {
 		nvkm_error(subdev, "ndiv <= 0 - setting to 1...\n");
 		n = 1 << DFS_DET_RANGE;
@@ -250,12 +215,12 @@ gm20b_dvfs_calc_ndiv(struct gm20b_clk *clk, u32 n_eff, u32 *n_int, u32 *sdm_din)
 	}
 	*n_int = n >> DFS_DET_RANGE;
 
-	/* fractional part of n */
+	 
 	rem = ((u32)n) & MASK(DFS_DET_RANGE);
 	rem_range = SDM_DIN_RANGE + 1 - DFS_DET_RANGE;
-	/* subtract 2^SDM_DIN_RANGE to account for the 1/2 of the equation */
+	 
 	rem = (rem << rem_range) - BIT(SDM_DIN_RANGE);
-	/* lose 8 LSB and clip - sdm_din only keeps the most significant byte */
+	 
 	*sdm_din = (rem >> BITS_PER_BYTE) & MASK(GPCPLL_CFG2_SDM_DIN_WIDTH);
 
 	nvkm_debug(subdev, "%s n_eff: %d, n_int: %d, sdm_din: %d\n", __func__,
@@ -271,45 +236,45 @@ gm20b_pllg_slide(struct gm20b_clk *clk, u32 n)
 	u32 n_int, sdm_din;
 	int ret = 0;
 
-	/* calculate the new n_int/sdm_din for this n/uv */
+	 
 	gm20b_dvfs_calc_ndiv(clk, n, &n_int, &sdm_din);
 
-	/* get old coefficients */
+	 
 	gm20b_pllg_read_mnp(clk, &pll);
-	/* do nothing if NDIV is the same */
+	 
 	if (n_int == pll.base.n && sdm_din == pll.sdm_din)
 		return 0;
 
-	/* pll slowdown mode */
+	 
 	nvkm_mask(device, GPCPLL_NDIV_SLOWDOWN,
 		BIT(GPCPLL_NDIV_SLOWDOWN_SLOWDOWN_USING_PLL_SHIFT),
 		BIT(GPCPLL_NDIV_SLOWDOWN_SLOWDOWN_USING_PLL_SHIFT));
 
-	/* new ndiv ready for ramp */
-	/* in DVFS mode SDM is updated via "new" field */
+	 
+	 
 	nvkm_mask(device, GPCPLL_CFG2, GPCPLL_CFG2_SDM_DIN_NEW_MASK,
 		  sdm_din << GPCPLL_CFG2_SDM_DIN_NEW_SHIFT);
 	pll.base.n = n_int;
 	udelay(1);
 	gk20a_pllg_write_mnp(&clk->base, &pll.base);
 
-	/* dynamic ramp to new ndiv */
+	 
 	udelay(1);
 	nvkm_mask(device, GPCPLL_NDIV_SLOWDOWN,
 		  BIT(GPCPLL_NDIV_SLOWDOWN_EN_DYNRAMP_SHIFT),
 		  BIT(GPCPLL_NDIV_SLOWDOWN_EN_DYNRAMP_SHIFT));
 
-	/* wait for ramping to complete */
+	 
 	if (nvkm_wait_usec(device, 500, GPC_BCAST_NDIV_SLOWDOWN_DEBUG,
 		GPC_BCAST_NDIV_SLOWDOWN_DEBUG_PLL_DYNRAMP_DONE_SYNCED_MASK,
 		GPC_BCAST_NDIV_SLOWDOWN_DEBUG_PLL_DYNRAMP_DONE_SYNCED_MASK) < 0)
 		ret = -ETIMEDOUT;
 
-	/* in DVFS mode complete SDM update */
+	 
 	nvkm_mask(device, GPCPLL_CFG2, GPCPLL_CFG2_SDM_DIN_MASK,
 		  sdm_din << GPCPLL_CFG2_SDM_DIN_SHIFT);
 
-	/* exit slowdown mode */
+	 
 	nvkm_mask(device, GPCPLL_NDIV_SLOWDOWN,
 		BIT(GPCPLL_NDIV_SLOWDOWN_SLOWDOWN_USING_PLL_SHIFT) |
 		BIT(GPCPLL_NDIV_SLOWDOWN_EN_DYNRAMP_SHIFT), 0);
@@ -326,15 +291,15 @@ gm20b_pllg_enable(struct gm20b_clk *clk)
 	nvkm_mask(device, GPCPLL_CFG, GPCPLL_CFG_ENABLE, GPCPLL_CFG_ENABLE);
 	nvkm_rd32(device, GPCPLL_CFG);
 
-	/* In DVFS mode lock cannot be used - so just delay */
+	 
 	udelay(40);
 
-	/* set SYNC_MODE for glitchless switch out of bypass */
+	 
 	nvkm_mask(device, GPCPLL_CFG, GPCPLL_CFG_SYNC_MODE,
 		       GPCPLL_CFG_SYNC_MODE);
 	nvkm_rd32(device, GPCPLL_CFG);
 
-	/* switch to VCO mode */
+	 
 	nvkm_mask(device, SEL_VCO, BIT(SEL_VCO_GPC2CLK_OUT_SHIFT),
 		  BIT(SEL_VCO_GPC2CLK_OUT_SHIFT));
 
@@ -346,10 +311,10 @@ gm20b_pllg_disable(struct gm20b_clk *clk)
 {
 	struct nvkm_device *device = clk->base.base.subdev.device;
 
-	/* put PLL in bypass before disabling it */
+	 
 	nvkm_mask(device, SEL_VCO, BIT(SEL_VCO_GPC2CLK_OUT_SHIFT), 0);
 
-	/* clear SYNC_MODE before disabling PLL */
+	 
 	nvkm_mask(device, GPCPLL_CFG, GPCPLL_CFG_SYNC_MODE, 0);
 
 	nvkm_mask(device, GPCPLL_CFG, GPCPLL_CFG_ENABLE, 0);
@@ -363,7 +328,7 @@ gm20b_pllg_program_mnp(struct gm20b_clk *clk, const struct gk20a_pll *pll)
 	struct nvkm_device *device = subdev->device;
 	struct gm20b_pll cur_pll;
 	u32 n_int, sdm_din;
-	/* if we only change pdiv, we can do a glitchless transition */
+	 
 	bool pdiv_only;
 	int ret;
 
@@ -372,14 +337,14 @@ gm20b_pllg_program_mnp(struct gm20b_clk *clk, const struct gk20a_pll *pll)
 	pdiv_only = cur_pll.base.n == n_int && cur_pll.sdm_din == sdm_din &&
 		    cur_pll.base.m == pll->m;
 
-	/* need full sequence if clock not enabled yet */
+	 
 	if (!gk20a_pllg_is_enabled(&clk->base))
 		pdiv_only = false;
 
-	/* split VCO-to-bypass jump in half by setting out divider 1:2 */
+	 
 	nvkm_mask(device, GPC2CLK_OUT, GPC2CLK_OUT_VCODIV_MASK,
 		  GPC2CLK_OUT_VCODIV2 << GPC2CLK_OUT_VCODIV_SHIFT);
-	/* Intentional 2nd write to assure linear divider operation */
+	 
 	nvkm_mask(device, GPC2CLK_OUT, GPC2CLK_OUT_VCODIV_MASK,
 		  GPC2CLK_OUT_VCODIV2 << GPC2CLK_OUT_VCODIV_SHIFT);
 	nvkm_rd32(device, GPC2CLK_OUT);
@@ -389,12 +354,7 @@ gm20b_pllg_program_mnp(struct gm20b_clk *clk, const struct gk20a_pll *pll)
 		u32 old = cur_pll.base.pl;
 		u32 new = pll->pl;
 
-		/*
-		 * we can do a glitchless transition only if the old and new PL
-		 * parameters share at least one bit set to 1. If this is not
-		 * the case, calculate and program an interim PL that will allow
-		 * us to respect that rule.
-		 */
+		 
 		if ((old & new) == 0) {
 			cur_pll.base.pl = min(old | BIT(ffs(new) - 1),
 					      new | BIT(ffs(old) - 1));
@@ -404,7 +364,7 @@ gm20b_pllg_program_mnp(struct gm20b_clk *clk, const struct gk20a_pll *pll)
 		cur_pll.base.pl = new;
 		gk20a_pllg_write_mnp(&clk->base, &cur_pll.base);
 	} else {
-		/* disable before programming if more than pdiv changes */
+		 
 		gm20b_pllg_disable(clk);
 
 		cur_pll.base = *pll;
@@ -417,11 +377,11 @@ gm20b_pllg_program_mnp(struct gm20b_clk *clk, const struct gk20a_pll *pll)
 			return ret;
 	}
 
-	/* restore out divider 1:1 */
+	 
 	udelay(2);
 	nvkm_mask(device, GPC2CLK_OUT, GPC2CLK_OUT_VCODIV_MASK,
 		  GPC2CLK_OUT_VCODIV1 << GPC2CLK_OUT_VCODIV_SHIFT);
-	/* Intentional 2nd write to assure linear divider operation */
+	 
 	nvkm_mask(device, GPC2CLK_OUT, GPC2CLK_OUT_VCODIV_MASK,
 		  GPC2CLK_OUT_VCODIV1 << GPC2CLK_OUT_VCODIV_SHIFT);
 	nvkm_rd32(device, GPC2CLK_OUT);
@@ -438,25 +398,25 @@ gm20b_pllg_program_mnp_slide(struct gm20b_clk *clk, const struct gk20a_pll *pll)
 	if (gk20a_pllg_is_enabled(&clk->base)) {
 		gk20a_pllg_read_mnp(&clk->base, &cur_pll);
 
-		/* just do NDIV slide if there is no change to M and PL */
+		 
 		if (pll->m == cur_pll.m && pll->pl == cur_pll.pl)
 			return gm20b_pllg_slide(clk, pll->n);
 
-		/* slide down to current NDIV_LO */
+		 
 		cur_pll.n = gk20a_pllg_n_lo(&clk->base, &cur_pll);
 		ret = gm20b_pllg_slide(clk, cur_pll.n);
 		if (ret)
 			return ret;
 	}
 
-	/* program MNP with the new clock parameters and new NDIV_LO */
+	 
 	cur_pll = *pll;
 	cur_pll.n = gk20a_pllg_n_lo(&clk->base, &cur_pll);
 	ret = gm20b_pllg_program_mnp(clk, &cur_pll);
 	if (ret)
 		return ret;
 
-	/* slide up to new NDIV */
+	 
 	return gm20b_pllg_slide(clk, pll->n);
 }
 
@@ -481,9 +441,7 @@ gm20b_clk_calc(struct nvkm_clk *base, struct nvkm_cstate *cstate)
 	return 0;
 }
 
-/*
- * Compute PLL parameters that are always safe for the current voltage
- */
+ 
 static void
 gm20b_dvfs_calc_safe_pll(struct gm20b_clk *clk, struct gk20a_pll *pll)
 {
@@ -491,11 +449,11 @@ gm20b_dvfs_calc_safe_pll(struct gm20b_clk *clk, struct gk20a_pll *pll)
 	u32 parent_rate = clk->base.parent_rate / KHZ;
 	u32 nmin, nsafe;
 
-	/* remove a safe margin of 10% */
+	 
 	if (rate > clk->safe_fmax_vmin)
 		rate = rate * (100 - 10) / 100;
 
-	/* gpc2clk */
+	 
 	rate *= 2;
 
 	nmin = DIV_ROUND_UP(pll->m * clk->base.params->min_vco, parent_rate);
@@ -514,7 +472,7 @@ gm20b_dvfs_program_coeff(struct gm20b_clk *clk, u32 coeff)
 {
 	struct nvkm_device *device = clk->base.base.subdev.device;
 
-	/* strobe to read external DFS coefficient */
+	 
 	nvkm_mask(device, GPC_BCAST_GPCPLL_DVFS2,
 		  GPC_BCAST_GPCPLL_DVFS2_DFS_EXT_STROBE_BIT,
 		  GPC_BCAST_GPCPLL_DVFS2_DFS_EXT_STROBE_BIT);
@@ -539,7 +497,7 @@ gm20b_dvfs_program_ext_cal(struct gm20b_clk *clk, u32 dfs_det_cal)
 
 	val = nvkm_rd32(device, GPCPLL_DVFS1);
 	if (!(val & BIT(25))) {
-		/* Use external value to overwrite calibration value */
+		 
 		val |= BIT(25) | BIT(16);
 		nvkm_wr32(device, GPCPLL_DVFS1, val);
 	}
@@ -551,7 +509,7 @@ gm20b_dvfs_program_dfs_detection(struct gm20b_clk *clk,
 {
 	struct nvkm_device *device = clk->base.base.subdev.device;
 
-	/* strobe to read external DFS coefficient */
+	 
 	nvkm_mask(device, GPC_BCAST_GPCPLL_DVFS2,
 		  GPC_BCAST_GPCPLL_DVFS2_DFS_EXT_STROBE_BIT,
 		  GPC_BCAST_GPCPLL_DVFS2_DFS_EXT_STROBE_BIT);
@@ -575,38 +533,20 @@ gm20b_clk_prog(struct nvkm_clk *base)
 	u32 cur_freq;
 	int ret;
 
-	/* No change in DVFS settings? */
+	 
 	if (clk->uv == clk->new_uv)
 		goto prog;
 
-	/*
-	 * Interim step for changing DVFS detection settings: low enough
-	 * frequency to be safe at DVFS coeff = 0.
-	 *
-	 * 1. If voltage is increasing:
-	 * - safe frequency target matches the lowest - old - frequency
-	 * - DVFS settings are still old
-	 * - Voltage already increased to new level by volt, but maximum
-	 *   detection limit assures PLL output remains under F/V curve
-	 *
-	 * 2. If voltage is decreasing:
-	 * - safe frequency target matches the lowest - new - frequency
-	 * - DVFS settings are still old
-	 * - Voltage is also old, it will be lowered by volt afterwards
-	 *
-	 * Interim step can be skipped if old frequency is below safe minimum,
-	 * i.e., it is low enough to be safe at any voltage in operating range
-	 * with zero DVFS coefficient.
-	 */
+	 
 	cur_freq = nvkm_clk_read(&clk->base.base, nv_clk_src_gpc);
 	if (cur_freq > clk->safe_fmax_vmin) {
 		struct gk20a_pll pll_safe;
 
 		if (clk->uv < clk->new_uv)
-			/* voltage will raise: safe frequency is current one */
+			 
 			pll_safe = clk->base.pll;
 		else
-			/* voltage will drop: safe frequency is new one */
+			 
 			pll_safe = clk->new_pll;
 
 		gm20b_dvfs_calc_safe_pll(clk, &pll_safe);
@@ -615,12 +555,7 @@ gm20b_clk_prog(struct nvkm_clk *base)
 			return ret;
 	}
 
-	/*
-	 * DVFS detection settings transition:
-	 * - Set DVFS coefficient zero
-	 * - Set calibration level to new voltage
-	 * - Set DVFS coefficient to match new voltage
-	 */
+	 
 	gm20b_dvfs_program_coeff(clk, 0);
 	gm20b_dvfs_program_ext_cal(clk, clk->new_dvfs.dfs_ext_cal);
 	gm20b_dvfs_program_coeff(clk, clk->new_dvfs.dfs_coeff);
@@ -722,7 +657,7 @@ gm20b_clk_fini(struct nvkm_clk *base)
 	struct nvkm_device *device = base->subdev.device;
 	struct gm20b_clk *clk = gm20b_clk(base);
 
-	/* slide to VCO min */
+	 
 	if (gk20a_pllg_is_enabled(&clk->base)) {
 		struct gk20a_pll pll;
 		u32 n_lo;
@@ -734,7 +669,7 @@ gm20b_clk_fini(struct nvkm_clk *base)
 
 	gm20b_pllg_disable(clk);
 
-	/* set IDDQ */
+	 
 	nvkm_mask(device, GPCPLL_CFG, GPCPLL_CFG_IDDQ, 1);
 }
 
@@ -744,37 +679,33 @@ gm20b_clk_init_dvfs(struct gm20b_clk *clk)
 	struct nvkm_subdev *subdev = &clk->base.base.subdev;
 	struct nvkm_device *device = subdev->device;
 	bool fused = clk->uvdet_offs && clk->uvdet_slope;
-	static const s32 ADC_SLOPE_UV = 10000; /* default ADC detection slope */
+	static const s32 ADC_SLOPE_UV = 10000;  
 	u32 data;
 	int ret;
 
-	/* Enable NA DVFS */
+	 
 	nvkm_mask(device, GPCPLL_DVFS1, GPCPLL_DVFS1_EN_DFS_BIT,
 		  GPCPLL_DVFS1_EN_DFS_BIT);
 
-	/* Set VCO_CTRL */
+	 
 	if (clk->dvfs_params->vco_ctrl)
 		nvkm_mask(device, GPCPLL_CFG3, GPCPLL_CFG3_VCO_CTRL_MASK,
 		      clk->dvfs_params->vco_ctrl << GPCPLL_CFG3_VCO_CTRL_SHIFT);
 
 	if (fused) {
-		/* Start internal calibration, but ignore results */
+		 
 		nvkm_mask(device, GPCPLL_DVFS1, GPCPLL_DVFS1_EN_DFS_CAL_BIT,
 			  GPCPLL_DVFS1_EN_DFS_CAL_BIT);
 
-		/* got uvdev parameters from fuse, skip calibration */
+		 
 		goto calibrated;
 	}
 
-	/*
-	 * If calibration parameters are not fused, start internal calibration,
-	 * wait for completion, and use results along with default slope to
-	 * calculate ADC offset during boot.
-	 */
+	 
 	nvkm_mask(device, GPCPLL_DVFS1, GPCPLL_DVFS1_EN_DFS_CAL_BIT,
 			  GPCPLL_DVFS1_EN_DFS_CAL_BIT);
 
-	/* Wait for internal calibration done (spec < 2us). */
+	 
 	ret = nvkm_wait_usec(device, 10, GPCPLL_DVFS1,
 			     GPCPLL_DVFS1_DFS_CAL_DONE_BIT,
 			     GPCPLL_DVFS1_DFS_CAL_DONE_BIT);
@@ -794,7 +725,7 @@ gm20b_clk_init_dvfs(struct gm20b_clk *clk)
 		   clk->uvdet_offs, clk->uvdet_slope);
 
 calibrated:
-	/* Compute and apply initial DVFS parameters */
+	 
 	gm20b_dvfs_calc_det_coeff(clk, clk->uv, &clk->dvfs);
 	gm20b_dvfs_program_coeff(clk, 0);
 	gm20b_dvfs_program_ext_cal(clk, clk->dvfs.dfs_ext_cal);
@@ -804,7 +735,7 @@ calibrated:
 	return 0;
 }
 
-/* Forward declaration to detect speedo >=1 in gm20b_clk_init() */
+ 
 static const struct nvkm_clk_func gm20b_clk;
 
 static int
@@ -816,7 +747,7 @@ gm20b_clk_init(struct nvkm_clk *base)
 	int ret;
 	u32 data;
 
-	/* get out from IDDQ */
+	 
 	nvkm_mask(device, GPCPLL_CFG, GPCPLL_CFG_IDDQ, 0);
 	nvkm_rd32(device, GPCPLL_CFG);
 	udelay(5);
@@ -824,7 +755,7 @@ gm20b_clk_init(struct nvkm_clk *base)
 	nvkm_mask(device, GPC2CLK_OUT, GPC2CLK_OUT_INIT_MASK,
 		  GPC2CLK_OUT_INIT_VAL);
 
-	/* Set the global bypass control to VCO */
+	 
 	nvkm_mask(device, BYPASSCTRL_SYS,
 	       MASK(BYPASSCTRL_SYS_GPCPLL_WIDTH) << BYPASSCTRL_SYS_GPCPLL_SHIFT,
 	       0);
@@ -833,7 +764,7 @@ gm20b_clk_init(struct nvkm_clk *base)
 	if (ret)
 		return ret;
 
-	/* If not fused, set RAM SVOP PDP data 0x2, and enable fuse override */
+	 
 	data = nvkm_rd32(device, 0x021944);
 	if (!(data & 0x3)) {
 		data |= 0x2;
@@ -844,24 +775,24 @@ gm20b_clk_init(struct nvkm_clk *base)
 		nvkm_wr32(device, 0x021948, data);
 	}
 
-	/* Disable idle slow down  */
+	 
 	nvkm_mask(device, 0x20160, 0x003f0000, 0x0);
 
-	/* speedo >= 1? */
+	 
 	if (clk->base.func == &gm20b_clk) {
 		struct gm20b_clk *_clk = gm20b_clk(base);
 		struct nvkm_volt *volt = device->volt;
 
-		/* Get current voltage */
+		 
 		_clk->uv = nvkm_volt_get(volt);
 
-		/* Initialize DVFS */
+		 
 		ret = gm20b_clk_init_dvfs(_clk);
 		if (ret)
 			return ret;
 	}
 
-	/* Start with lowest frequency */
+	 
 	base->func->calc(base, &base->func->pstates[0].base);
 	ret = base->func->prog(base);
 	if (ret) {
@@ -881,7 +812,7 @@ gm20b_clk_speedo0 = {
 	.prog = gk20a_clk_prog,
 	.tidy = gk20a_clk_tidy,
 	.pstates = gm20b_pstates,
-	/* Speedo 0 only supports 12 voltages */
+	 
 	.nr_pstates = ARRAY_SIZE(gm20b_pstates) - 1,
 	.domains = {
 		{ nv_clk_src_crystal, 0xff },
@@ -925,7 +856,7 @@ gm20b_clk_new_speedo0(struct nvkm_device *device, enum nvkm_subdev_type type, in
 	return ret;
 }
 
-/* FUSE register */
+ 
 #define FUSE_RESERVED_CALIB0	0x204
 #define FUSE_RESERVED_CALIB0_INTERCEPT_FRAC_SHIFT	0
 #define FUSE_RESERVED_CALIB0_INTERCEPT_FRAC_WIDTH	4
@@ -951,17 +882,17 @@ gm20b_clk_init_fused_params(struct gm20b_clk *clk)
 	      MASK(FUSE_RESERVED_CALIB0_FUSE_REV_WIDTH);
 #endif
 
-	/* No fused parameters, we will calibrate later */
+	 
 	if (rev == 0)
 		return -EINVAL;
 
-	/* Integer part in mV + fractional part in uV */
+	 
 	clk->uvdet_slope = ((val >> FUSE_RESERVED_CALIB0_SLOPE_INT_SHIFT) &
 			MASK(FUSE_RESERVED_CALIB0_SLOPE_INT_WIDTH)) * 1000 +
 			((val >> FUSE_RESERVED_CALIB0_SLOPE_FRAC_SHIFT) &
 			MASK(FUSE_RESERVED_CALIB0_SLOPE_FRAC_WIDTH));
 
-	/* Integer part in mV + fractional part in 100uV */
+	 
 	clk->uvdet_offs = ((val >> FUSE_RESERVED_CALIB0_INTERCEPT_INT_SHIFT) &
 			MASK(FUSE_RESERVED_CALIB0_INTERCEPT_INT_WIDTH)) * 1000 +
 			((val >> FUSE_RESERVED_CALIB0_INTERCEPT_FRAC_SHIFT) &
@@ -983,7 +914,7 @@ gm20b_clk_init_safe_fmax(struct gm20b_clk *clk)
 	u32 fmax = 0;
 	int i;
 
-	/* find lowest voltage we can use */
+	 
 	vmin = volt->vid[0].uv;
 	for (i = 1; i < volt->vid_nr; i++) {
 		if (volt->vid[i].uv <= vmin) {
@@ -992,7 +923,7 @@ gm20b_clk_init_safe_fmax(struct gm20b_clk *clk)
 		}
 	}
 
-	/* find max frequency at this voltage */
+	 
 	for (i = 0; i < nr_pstates; i++)
 		if (pstates[i].base.voltage == id)
 			fmax = max(fmax,
@@ -1003,7 +934,7 @@ gm20b_clk_init_safe_fmax(struct gm20b_clk *clk)
 		return -EINVAL;
 	}
 
-	/* we are safe at 90% of the max frequency */
+	 
 	clk->safe_fmax_vmin = fmax * (100 - 10) / 100;
 	nvkm_debug(subdev, "safe fmax @ vmin = %u Khz\n", clk->safe_fmax_vmin);
 
@@ -1020,28 +951,25 @@ gm20b_clk_new(struct nvkm_device *device, enum nvkm_subdev_type type, int inst,
 	struct gk20a_clk_pllg_params *clk_params;
 	int ret;
 
-	/* Speedo 0 GPUs cannot use noise-aware PLL */
+	 
 	if (tdev->gpu_speedo_id == 0)
 		return gm20b_clk_new_speedo0(device, type, inst, pclk);
 
-	/* Speedo >= 1, use NAPLL */
+	 
 	clk = kzalloc(sizeof(*clk) + sizeof(*clk_params), GFP_KERNEL);
 	if (!clk)
 		return -ENOMEM;
 	*pclk = &clk->base.base;
 	subdev = &clk->base.base.subdev;
 
-	/* duplicate the clock parameters since we will patch them below */
+	 
 	clk_params = (void *) (clk + 1);
 	*clk_params = gm20b_pllg_params;
 	ret = gk20a_clk_ctor(device, type, inst, &gm20b_clk, clk_params, &clk->base);
 	if (ret)
 		return ret;
 
-	/*
-	 * NAPLL can only work with max_u, clamp the m range so
-	 * gk20a_pllg_calc_mnp always uses it
-	 */
+	 
 	clk_params->max_m = clk_params->min_m = DIV_ROUND_UP(clk_params->max_u,
 						(clk->base.parent_rate / KHZ));
 	if (clk_params->max_m == 0) {
@@ -1056,10 +984,7 @@ gm20b_clk_new(struct nvkm_device *device, enum nvkm_subdev_type type, int inst,
 	clk->dvfs_params = &gm20b_dvfs_params;
 
 	ret = gm20b_clk_init_fused_params(clk);
-	/*
-	 * we will calibrate during init - should never happen on
-	 * prod parts
-	 */
+	 
 	if (ret)
 		nvkm_warn(subdev, "no fused calibration parameters\n");
 

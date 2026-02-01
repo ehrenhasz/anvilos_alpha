@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: LGPL-2.1
-/*
- *
- *   vfs operations that deal with io control
- *
- *   Copyright (C) International Business Machines  Corp., 2005,2013
- *   Author(s): Steve French (sfrench@us.ibm.com)
- *
- */
+
+ 
 
 #include <linux/fs.h>
 #include <linux/file.h>
@@ -76,13 +69,13 @@ static long cifs_ioctl_copychunk(unsigned int xid, struct file *dst_file,
 	struct inode *src_inode;
 
 	cifs_dbg(FYI, "ioctl copychunk range\n");
-	/* the destination must be opened for writing */
+	 
 	if (!(dst_file->f_mode & FMODE_WRITE)) {
 		cifs_dbg(FYI, "file target not open for write\n");
 		return -EINVAL;
 	}
 
-	/* check if target volume is readonly and take reference */
+	 
 	rc = mnt_want_write_file(dst_file);
 	if (rc) {
 		cifs_dbg(FYI, "mnt_want_write failed with rc %d\n", rc);
@@ -184,28 +177,15 @@ static int cifs_shutdown(struct super_block *sb, unsigned long arg)
 		return 0;
 
 	cifs_dbg(VFS, "shut down requested (%d)", flags);
-/*	trace_cifs_shutdown(sb, flags);*/
+ 
 
-	/*
-	 * see:
-	 *   https://man7.org/linux/man-pages/man2/ioctl_xfs_goingdown.2.html
-	 * for more information and description of original intent of the flags
-	 */
+	 
 	switch (flags) {
-	/*
-	 * We could add support later for default flag which requires:
-	 *     "Flush all dirty data and metadata to disk"
-	 * would need to call syncfs or equivalent to flush page cache for
-	 * the mount and then issue fsync to server (if nostrictsync not set)
-	 */
+	 
 	case CIFS_GOING_FLAGS_DEFAULT:
 		cifs_dbg(FYI, "shutdown with default flag not supported\n");
 		return -EINVAL;
-	/*
-	 * FLAGS_LOGFLUSH is easy since it asks to write out metadata (not
-	 * data) but metadata writes are not cached on the client, so can treat
-	 * it similarly to NOLOGFLUSH
-	 */
+	 
 	case CIFS_GOING_FLAGS_LOGFLUSH:
 	case CIFS_GOING_FLAGS_NOLOGFLUSH:
 		sbi->mnt_cifs_flags |= CIFS_MOUNT_SHUTDOWN;
@@ -229,17 +209,17 @@ static int cifs_dump_full_key(struct cifs_tcon *tcon, struct smb3_full_key_debug
 		goto out;
 	}
 
-	/* copy user input into our output buffer */
+	 
 	if (copy_from_user(&out, in, sizeof(out))) {
 		rc = -EINVAL;
 		goto out;
 	}
 
 	if (!out.session_id) {
-		/* if ses id is 0, use current user session */
+		 
 		ses = tcon->ses;
 	} else {
-		/* otherwise if a session id is given, look for it in all our sessions */
+		 
 		struct cifs_ses *ses_it = NULL;
 		struct TCP_Server_Info *server_it = NULL;
 
@@ -248,11 +228,7 @@ static int cifs_dump_full_key(struct cifs_tcon *tcon, struct smb3_full_key_debug
 			list_for_each_entry(ses_it, &server_it->smb_ses_list, smb_ses_list) {
 				if (ses_it->Suid == out.session_id) {
 					ses = ses_it;
-					/*
-					 * since we are using the session outside the crit
-					 * section, we need to make sure it won't be released
-					 * so increment its refcount
-					 */
+					 
 					cifs_smb_ses_inc_refcount(ses);
 					found = true;
 					goto search_end;
@@ -283,7 +259,7 @@ search_end:
 		goto out;
 	}
 
-	/* check if user buffer is big enough to store all the keys */
+	 
 	if (out.in_size < sizeof(out) + out.session_key_length + out.server_in_key_length
 	    + out.server_out_key_length) {
 		rc = -ENOBUFS;
@@ -293,13 +269,13 @@ search_end:
 	out.session_id = ses->Suid;
 	out.cipher_type = le16_to_cpu(ses->server->cipher_type);
 
-	/* overwrite user input with our output */
+	 
 	if (copy_to_user(in, &out, sizeof(out))) {
 		rc = -EINVAL;
 		goto out;
 	}
 
-	/* append all the keys at the end of the user buffer */
+	 
 	end = in->data;
 	if (copy_to_user(end, ses->auth_key.response, out.session_key_length)) {
 		rc = -EINVAL;
@@ -328,7 +304,7 @@ long cifs_ioctl(struct file *filep, unsigned int command, unsigned long arg)
 {
 	struct inode *inode = file_inode(filep);
 	struct smb3_key_debug_info pkey_inf;
-	int rc = -ENOTTY; /* strange error - but the precedent */
+	int rc = -ENOTTY;  
 	unsigned int xid;
 	struct cifsFileInfo *pSMBFile = filep->private_data;
 	struct cifs_tcon *tcon;
@@ -338,8 +314,8 @@ long cifs_ioctl(struct file *filep, unsigned int command, unsigned long arg)
 #ifdef CONFIG_CIFS_POSIX
 #ifdef CONFIG_CIFS_ALLOW_INSECURE_LEGACY
 	__u64   caps;
-#endif /* CONFIG_CIFS_ALLOW_INSECURE_LEGACY */
-#endif /* CONFIG_CIFS_POSIX */
+#endif  
+#endif  
 
 	xid = get_xid();
 
@@ -364,11 +340,11 @@ long cifs_ioctl(struct file *filep, unsigned int command, unsigned long arg)
 				if (rc != -EOPNOTSUPP)
 					break;
 			}
-#endif /* CONFIG_CIFS_ALLOW_INSECURE_LEGACY */
-#endif /* CONFIG_CIFS_POSIX */
+#endif  
+#endif  
 			rc = 0;
 			if (CIFS_I(inode)->cifsAttrs & ATTR_COMPRESSED) {
-				/* add in the compressed bit */
+				 
 				ExtAttrBits = FS_COMPR_FL;
 				rc = put_user(ExtAttrBits & FS_FL_USER_VISIBLE,
 					      (int __user *)arg);
@@ -378,28 +354,20 @@ long cifs_ioctl(struct file *filep, unsigned int command, unsigned long arg)
 			if (pSMBFile == NULL)
 				break;
 			tcon = tlink_tcon(pSMBFile->tlink);
-			/* caps = le64_to_cpu(tcon->fsUnixInfo.Capability); */
+			 
 
 			if (get_user(ExtAttrBits, (int __user *)arg)) {
 				rc = -EFAULT;
 				break;
 			}
 
-			/*
-			 * if (CIFS_UNIX_EXTATTR_CAP & caps)
-			 *	rc = CIFSSetExtAttr(xid, tcon,
-			 *		       pSMBFile->fid.netfid,
-			 *		       extAttrBits,
-			 *		       &ExtAttrMask);
-			 * if (rc != -EOPNOTSUPP)
-			 *	break;
-			 */
+			 
 
-			/* Currently only flag we can set is compressed flag */
+			 
 			if ((ExtAttrBits & FS_COMPR_FL) == 0)
 				break;
 
-			/* Try to set compress flag */
+			 
 			if (tcon->ses->server->ops->set_compression) {
 				rc = tcon->ses->server->ops->set_compression(
 							xid, tcon, pSMBFile);
@@ -454,10 +422,7 @@ long cifs_ioctl(struct file *filep, unsigned int command, unsigned long arg)
 				rc = -EOPNOTSUPP;
 			break;
 		case CIFS_DUMP_KEY:
-			/*
-			 * Dump encryption keys. This is an old ioctl that only
-			 * handles AES-128-{CCM,GCM}.
-			 */
+			 
 			if (!capable(CAP_SYS_ADMIN)) {
 				rc = -EACCES;
 				break;
@@ -479,7 +444,7 @@ long cifs_ioctl(struct file *filep, unsigned int command, unsigned long arg)
 				le16_to_cpu(tcon->ses->server->cipher_type);
 			pkey_inf.Suid = tcon->ses->Suid;
 			memcpy(pkey_inf.auth_key, tcon->ses->auth_key.response,
-					16 /* SMB2_NTLMV2_SESSKEY_SIZE */);
+					16  );
 			memcpy(pkey_inf.smb3decryptionkey,
 			      tcon->ses->smb3decryptionkey, SMB3_SIGN_KEY_SIZE);
 			memcpy(pkey_inf.smb3encryptionkey,
@@ -492,9 +457,7 @@ long cifs_ioctl(struct file *filep, unsigned int command, unsigned long arg)
 			cifs_put_tlink(tlink);
 			break;
 		case CIFS_DUMP_FULL_KEY:
-			/*
-			 * Dump encryption keys (handles any key sizes)
-			 */
+			 
 			if (pSMBFile == NULL)
 				break;
 			if (!capable(CAP_SYS_ADMIN)) {
@@ -514,7 +477,7 @@ long cifs_ioctl(struct file *filep, unsigned int command, unsigned long arg)
 			break;
 		case CIFS_IOC_NOTIFY:
 			if (!S_ISDIR(inode->i_mode)) {
-				/* Notify can only be done on directories */
+				 
 				rc = -EOPNOTSUPP;
 				break;
 			}
@@ -528,7 +491,7 @@ long cifs_ioctl(struct file *filep, unsigned int command, unsigned long arg)
 			if (tcon && tcon->ses->server->ops->notify) {
 				rc = tcon->ses->server->ops->notify(xid,
 						filep, (void __user *)arg,
-						false /* no ret data */);
+						false  );
 				cifs_dbg(FYI, "ioctl notify rc %d\n", rc);
 			} else
 				rc = -EOPNOTSUPP;
@@ -536,7 +499,7 @@ long cifs_ioctl(struct file *filep, unsigned int command, unsigned long arg)
 			break;
 		case CIFS_IOC_NOTIFY_INFO:
 			if (!S_ISDIR(inode->i_mode)) {
-				/* Notify can only be done on directories */
+				 
 				rc = -EOPNOTSUPP;
 				break;
 			}
@@ -550,7 +513,7 @@ long cifs_ioctl(struct file *filep, unsigned int command, unsigned long arg)
 			if (tcon && tcon->ses->server->ops->notify) {
 				rc = tcon->ses->server->ops->notify(xid,
 						filep, (void __user *)arg,
-						true /* return details */);
+						true  );
 				cifs_dbg(FYI, "ioctl notify info rc %d\n", rc);
 			} else
 				rc = -EOPNOTSUPP;

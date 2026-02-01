@@ -1,8 +1,4 @@
-/*
- * SPDX-License-Identifier: MIT
- *
- * Copyright © 2018 Intel Corporation
- */
+ 
 #include "gt/intel_gpu_commands.h"
 #include "gt/intel_gt.h"
 
@@ -190,7 +186,7 @@ igt_spinner_create_request(struct igt_spinner *spin,
 	*batch++ = lower_32_bits(i915_vma_offset(vma));
 	*batch++ = upper_32_bits(i915_vma_offset(vma));
 
-	*batch++ = MI_BATCH_BUFFER_END; /* not reached */
+	*batch++ = MI_BATCH_BUFFER_END;  
 
 	intel_gt_chipset_flush(engine->gt);
 

@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0+
-//
-// Power Button driver for RAVE SP
-//
-// Copyright (C) 2017 Zodiac Inflight Innovations
-//
-//
+
+
+
+
+
+
+
 
 #include <linux/input.h>
 #include <linux/kernel.h>

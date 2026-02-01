@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0+
+
 
 #include <linux/bitops.h>
 #include <linux/i2c.h>
@@ -62,7 +62,7 @@ enum {
 
 struct rtq2134_regulator_desc {
 	struct regulator_desc desc;
-	/* Extension for proprietary register and mask */
+	 
 	unsigned int mode_reg;
 	unsigned int mode_mask;
 	unsigned int suspend_enable_reg;

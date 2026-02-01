@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2014-2018 The Linux Foundation. All rights reserved.
- * Copyright (C) 2013 Red Hat
- * Author: Rob Clark <robdclark@gmail.com>
- */
+
+ 
 
 #define pr_fmt(fmt)	"[drm:%s:%d] " fmt, __func__, __LINE__
 
@@ -45,9 +41,7 @@
 #define DPU_PLANE_COLOR_FILL_FLAG	BIT(31)
 #define DPU_ZPOS_MAX 255
 
-/*
- * Default Preload Values
- */
+ 
 #define DPU_QSEED3_DEFAULT_PRELOAD_H 0x4
 #define DPU_QSEED3_DEFAULT_PRELOAD_V 0x3
 #define DPU_QSEED4_DEFAULT_PRELOAD_V 0x2
@@ -68,13 +62,7 @@ static const uint32_t qcom_compressed_supported_formats[] = {
 	DRM_FORMAT_P010,
 };
 
-/*
- * struct dpu_plane - local dpu plane structure
- * @aspace: address space pointer
- * @csc_ptr: Points to dpu_csc_cfg structure to use for current
- * @catalog: Points to dpu catalog structure
- * @revalidate: force revalidation of all the plane properties
- */
+ 
 struct dpu_plane {
 	struct drm_plane base;
 
@@ -103,16 +91,7 @@ static struct dpu_kms *_dpu_plane_get_kms(struct drm_plane *plane)
 	return to_dpu_kms(priv->kms);
 }
 
-/**
- * _dpu_plane_calc_bw - calculate bandwidth required for a plane
- * @catalog: Points to dpu catalog structure
- * @fmt: Pointer to source buffer format
- * @mode: Pointer to drm display mode
- * @pipe_cfg: Pointer to pipe configuration
- * Result: Updates calculated bandwidth in the plane state.
- * BW Equation: src_w * src_h * bpp * fps * (v_total / v_dest)
- * Prefill BW Equation: line src bytes * line_time
- */
+ 
 static u64 _dpu_plane_calc_bw(const struct dpu_mdss_cfg *catalog,
 	const struct dpu_format *fmt,
 	const struct drm_display_mode *mode,
@@ -155,13 +134,7 @@ static u64 _dpu_plane_calc_bw(const struct dpu_mdss_cfg *catalog,
 	return max(plane_bw, plane_prefill_bw);
 }
 
-/**
- * _dpu_plane_calc_clk - calculate clock required for a plane
- * @mode: Pointer to drm display mode
- * @pipe_cfg: Pointer to pipe configuration
- * Result: Updates calculated clock in the plane state.
- * Clock equation: dst_w * v_total * fps * (src_h / dst_h)
- */
+ 
 static u64 _dpu_plane_calc_clk(const struct drm_display_mode *mode,
 		struct dpu_sw_pipe_cfg *pipe_cfg)
 {
@@ -184,15 +157,7 @@ static u64 _dpu_plane_calc_clk(const struct drm_display_mode *mode,
 	return plane_clk;
 }
 
-/**
- * _dpu_plane_calc_fill_level - calculate fill level of the given source format
- * @plane:		Pointer to drm plane
- * @pipe:		Pointer to software pipe
- * @lut_usage:		LUT usecase
- * @fmt:		Pointer to source buffer format
- * @src_width:		width of source buffer
- * Return: fill level corresponding to the source buffer/format or 0 if error
- */
+ 
 static int _dpu_plane_calc_fill_level(struct drm_plane *plane,
 		struct dpu_sw_pipe *pipe,
 		enum dpu_qos_lut_usage lut_usage,
@@ -213,15 +178,15 @@ static int _dpu_plane_calc_fill_level(struct drm_plane *plane,
 	pdpu = to_dpu_plane(plane);
 	fixed_buff_size = pdpu->catalog->caps->pixel_ram_size;
 
-	/* FIXME: in multirect case account for the src_width of all the planes */
+	 
 
 	if (fmt->fetch_planes == DPU_PLANE_PSEUDO_PLANAR) {
 		if (fmt->chroma_sample == DPU_CHROMA_420) {
-			/* NV12 */
+			 
 			total_fl = (fixed_buff_size / 2) /
 				((src_width + 32) * fmt->bpp);
 		} else {
-			/* non NV12 */
+			 
 			total_fl = (fixed_buff_size / 2) * 2 /
 				((src_width + 32) * fmt->bpp);
 		}
@@ -243,13 +208,7 @@ static int _dpu_plane_calc_fill_level(struct drm_plane *plane,
 	return total_fl;
 }
 
-/**
- * _dpu_plane_set_qos_lut - set QoS LUT of the given plane
- * @plane:		Pointer to drm plane
- * @pipe:		Pointer to software pipe
- * @fmt:		Pointer to source buffer format
- * @pipe_cfg:		Pointer to pipe configuration
- */
+ 
 static void _dpu_plane_set_qos_lut(struct drm_plane *plane,
 		struct dpu_sw_pipe *pipe,
 		const struct dpu_format *fmt, struct dpu_sw_pipe_cfg *pipe_cfg)
@@ -309,12 +268,7 @@ static void _dpu_plane_set_qos_lut(struct drm_plane *plane,
 	pipe->sspp->ops.setup_qos_lut(pipe->sspp, &cfg);
 }
 
-/**
- * _dpu_plane_set_qos_ctrl - set QoS control of the given plane
- * @plane:		Pointer to drm plane
- * @pipe:		Pointer to software pipe
- * @enable:		true to enable QoS control
- */
+ 
 static void _dpu_plane_set_qos_ctrl(struct drm_plane *plane,
 	struct dpu_sw_pipe *pipe,
 	bool enable)
@@ -333,13 +287,7 @@ static void _dpu_plane_set_qos_ctrl(struct drm_plane *plane,
 				       enable);
 }
 
-/**
- * _dpu_plane_set_ot_limit - set OT limit for the given plane
- * @plane:		Pointer to drm plane
- * @pipe:		Pointer to software pipe
- * @pipe_cfg:		Pointer to pipe configuration
- * @frame_rate:		CRTC's frame rate
- */
+ 
 static void _dpu_plane_set_ot_limit(struct drm_plane *plane,
 		struct dpu_sw_pipe *pipe,
 		struct dpu_sw_pipe_cfg *pipe_cfg,
@@ -363,11 +311,7 @@ static void _dpu_plane_set_ot_limit(struct drm_plane *plane,
 	dpu_vbif_set_ot_limit(dpu_kms, &ot_params);
 }
 
-/**
- * _dpu_plane_set_qos_remap - set vbif QoS for the given plane
- * @plane:		Pointer to drm plane
- * @pipe:		Pointer to software pipe
- */
+ 
 static void _dpu_plane_set_qos_remap(struct drm_plane *plane,
 		struct dpu_sw_pipe *pipe)
 {
@@ -401,11 +345,7 @@ static void _dpu_plane_setup_scaler3(struct dpu_hw_sspp *pipe_hw,
 	uint32_t i;
 	bool inline_rotation = rotation & DRM_MODE_ROTATE_90;
 
-	/*
-	 * For inline rotation cases, scaler config is post-rotation,
-	 * so swap the dimensions here. However, pixel extension will
-	 * need pre-rotation settings.
-	 */
+	 
 	if (inline_rotation)
 		swap(src_w, src_h);
 
@@ -481,30 +421,30 @@ static void _dpu_plane_setup_pixel_ext(struct dpu_hw_scaler3_cfg *scale_cfg,
 
 static const struct dpu_csc_cfg dpu_csc_YUV2RGB_601L = {
 	{
-		/* S15.16 format */
+		 
 		0x00012A00, 0x00000000, 0x00019880,
 		0x00012A00, 0xFFFF9B80, 0xFFFF3000,
 		0x00012A00, 0x00020480, 0x00000000,
 	},
-	/* signed bias */
+	 
 	{ 0xfff0, 0xff80, 0xff80,},
 	{ 0x0, 0x0, 0x0,},
-	/* unsigned clamp */
+	 
 	{ 0x10, 0xeb, 0x10, 0xf0, 0x10, 0xf0,},
 	{ 0x00, 0xff, 0x00, 0xff, 0x00, 0xff,},
 };
 
 static const struct dpu_csc_cfg dpu_csc10_YUV2RGB_601L = {
 	{
-		/* S15.16 format */
+		 
 		0x00012A00, 0x00000000, 0x00019880,
 		0x00012A00, 0xFFFF9B80, 0xFFFF3000,
 		0x00012A00, 0x00020480, 0x00000000,
 		},
-	/* signed bias */
+	 
 	{ 0xffc0, 0xfe00, 0xfe00,},
 	{ 0x0, 0x0, 0x0,},
-	/* unsigned clamp */
+	 
 	{ 0x40, 0x3ac, 0x40, 0x3c0, 0x40, 0x3c0,},
 	{ 0x00, 0x3ff, 0x00, 0x3ff, 0x00, 0x3ff,},
 };
@@ -542,8 +482,8 @@ static void _dpu_plane_setup_scaler(struct dpu_sw_pipe *pipe,
 	memset(&scaler3_cfg, 0, sizeof(scaler3_cfg));
 	memset(&pixel_ext, 0, sizeof(pixel_ext));
 
-	/* don't chroma subsample if decimating */
-	/* update scaler. calculate default config for QSEED3 */
+	 
+	 
 	_dpu_plane_setup_scaler3(pipe_hw,
 			src_width,
 			src_height,
@@ -553,7 +493,7 @@ static void _dpu_plane_setup_scaler(struct dpu_sw_pipe *pipe,
 			info->hsub, info->vsub,
 			rotation);
 
-	/* configure pixel extension based on scalar config */
+	 
 	_dpu_plane_setup_pixel_ext(&scaler3_cfg, &pixel_ext,
 			src_width, src_height, info->hsub, info->vsub);
 
@@ -561,11 +501,7 @@ static void _dpu_plane_setup_scaler(struct dpu_sw_pipe *pipe,
 		pipe_hw->ops.setup_pe(pipe_hw,
 				&pixel_ext);
 
-	/**
-	 * when programmed in multirect mode, scalar block will be
-	 * bypassed. Still we need to update alpha and bitwidth
-	 * ONLY for RECT0
-	 */
+	 
 	if (pipe_hw->ops.setup_scaler &&
 			pipe->multirect_index != DPU_SSPP_RECT_1)
 		pipe_hw->ops.setup_scaler(pipe_hw,
@@ -581,13 +517,13 @@ static void _dpu_plane_color_fill_pipe(struct dpu_plane_state *pstate,
 {
 	struct dpu_sw_pipe_cfg pipe_cfg;
 
-	/* update sspp */
+	 
 	if (!pipe->sspp->ops.setup_solidfill)
 		return;
 
 	pipe->sspp->ops.setup_solidfill(pipe, fill_color);
 
-	/* override scaler/decimation if solid fill */
+	 
 	pipe_cfg.dst_rect = *dst_rect;
 
 	pipe_cfg.src_rect.x1 = 0;
@@ -606,12 +542,7 @@ static void _dpu_plane_color_fill_pipe(struct dpu_plane_state *pstate,
 	_dpu_plane_setup_scaler(pipe, fmt, true, &pipe_cfg, pstate->rotation);
 }
 
-/**
- * _dpu_plane_color_fill - enables color fill on plane
- * @pdpu:   Pointer to DPU plane object
- * @color:  RGB fill color value, [23..16] Blue, [15..8] Green, [7..0] Red
- * @alpha:  8-bit fill alpha value, 255 selects 100% alpha
- */
+ 
 static void _dpu_plane_color_fill(struct dpu_plane *pdpu,
 		uint32_t color, uint32_t alpha)
 {
@@ -622,16 +553,13 @@ static void _dpu_plane_color_fill(struct dpu_plane *pdpu,
 
 	DPU_DEBUG_PLANE(pdpu, "\n");
 
-	/*
-	 * select fill format to match user property expectation,
-	 * h/w only supports RGB variants
-	 */
+	 
 	fmt = dpu_get_dpu_format(DRM_FORMAT_ABGR8888);
-	/* should not happen ever */
+	 
 	if (!fmt)
 		return;
 
-	/* update sspp */
+	 
 	_dpu_plane_color_fill_pipe(pstate, &pstate->pipe, &pstate->pipe_cfg.dst_rect,
 				   fill_color, fmt);
 
@@ -655,14 +583,10 @@ static int dpu_plane_prepare_fb(struct drm_plane *plane,
 
 	DPU_DEBUG_PLANE(pdpu, "FB[%u]\n", fb->base.id);
 
-	/* cache aspace */
+	 
 	pstate->aspace = kms->base.aspace;
 
-	/*
-	 * TODO: Need to sort out the msm_framebuffer_prepare() call below so
-	 *       we can use msm_atomic_prepare_fb() instead of doing the
-	 *       implicit fence and fb prepare by hand here.
-	 */
+	 
 	drm_gem_plane_helper_prepare_fb(plane, new_state);
 
 	if (pstate->aspace) {
@@ -674,7 +598,7 @@ static int dpu_plane_prepare_fb(struct drm_plane *plane,
 		}
 	}
 
-	/* validate framebuffer layout before commit */
+	 
 	ret = dpu_format_populate_layout(pstate->aspace,
 			new_state->fb, &layout);
 	if (ret) {
@@ -749,7 +673,7 @@ static int dpu_plane_atomic_check_pipe(struct dpu_plane *pdpu,
 		return -EINVAL;
 	}
 
-	/* check src bounds */
+	 
 	if (drm_rect_width(&pipe_cfg->src_rect) < min_src_size ||
 	    drm_rect_height(&pipe_cfg->src_rect) < min_src_size) {
 		DPU_DEBUG_PLANE(pdpu, "invalid source " DRM_RECT_FMT "\n",
@@ -757,7 +681,7 @@ static int dpu_plane_atomic_check_pipe(struct dpu_plane *pdpu,
 		return -E2BIG;
 	}
 
-	/* valid yuv image */
+	 
 	if (DPU_FORMAT_IS_YUV(fmt) &&
 	    (pipe_cfg->src_rect.x1 & 0x1 ||
 	     pipe_cfg->src_rect.y1 & 0x1 ||
@@ -768,7 +692,7 @@ static int dpu_plane_atomic_check_pipe(struct dpu_plane *pdpu,
 		return -EINVAL;
 	}
 
-	/* min dst support */
+	 
 	if (drm_rect_width(&pipe_cfg->dst_rect) < 0x1 ||
 	    drm_rect_height(&pipe_cfg->dst_rect) < 0x1) {
 		DPU_DEBUG_PLANE(pdpu, "invalid dest rect " DRM_RECT_FMT "\n",
@@ -776,7 +700,7 @@ static int dpu_plane_atomic_check_pipe(struct dpu_plane *pdpu,
 		return -EINVAL;
 	}
 
-	/* max clk check */
+	 
 	if (_dpu_plane_calc_clk(mode, pipe_cfg) > kms->perf.max_core_clk_rate) {
 		DPU_DEBUG_PLANE(pdpu, "plane exceeds max mdp core clk limits\n");
 		return -E2BIG;
@@ -837,7 +761,7 @@ static int dpu_plane_atomic_check(struct drm_plane *plane,
 
 	pipe_cfg->src_rect = new_plane_state->src;
 
-	/* state->src is 16.16, src_rect is not */
+	 
 	pipe_cfg->src_rect.x1 >>= 16;
 	pipe_cfg->src_rect.x2 >>= 16;
 	pipe_cfg->src_rect.y1 >>= 16;
@@ -848,7 +772,7 @@ static int dpu_plane_atomic_check(struct drm_plane *plane,
 	fb_rect.x2 = new_plane_state->fb->width;
 	fb_rect.y2 = new_plane_state->fb->height;
 
-	/* Ensure fb size is supported */
+	 
 	if (drm_rect_width(&fb_rect) > MAX_IMG_WIDTH ||
 	    drm_rect_height(&fb_rect) > MAX_IMG_HEIGHT) {
 		DPU_DEBUG_PLANE(pdpu, "invalid framebuffer " DRM_RECT_FMT "\n",
@@ -861,12 +785,7 @@ static int dpu_plane_atomic_check(struct drm_plane *plane,
 	max_linewidth = pdpu->catalog->caps->max_linewidth;
 
 	if (drm_rect_width(&pipe_cfg->src_rect) > max_linewidth) {
-		/*
-		 * In parallel multirect case only the half of the usual width
-		 * is supported for tiled formats. If we are here, we know that
-		 * full width is more than max_linewidth, thus each rect is
-		 * wider than allowed.
-		 */
+		 
 		if (DPU_FORMAT_IS_UBWC(fmt)) {
 			DPU_DEBUG_PLANE(pdpu, "invalid src " DRM_RECT_FMT " line:%u, tiled format\n",
 					DRM_RECT_ARG(&pipe_cfg->src_rect), max_linewidth);
@@ -889,10 +808,7 @@ static int dpu_plane_atomic_check(struct drm_plane *plane,
 			return -E2BIG;
 		}
 
-		/*
-		 * Use multirect for wide plane. We do not support dynamic
-		 * assignment of SSPPs, so we know the configuration.
-		 */
+		 
 		pipe->multirect_index = DPU_SSPP_RECT_0;
 		pipe->multirect_mode = DPU_SSPP_MULTIRECT_PARALLEL;
 
@@ -974,31 +890,24 @@ void dpu_plane_flush(struct drm_plane *plane)
 	pdpu = to_dpu_plane(plane);
 	pstate = to_dpu_plane_state(plane->state);
 
-	/*
-	 * These updates have to be done immediately before the plane flush
-	 * timing, and may not be moved to the atomic_update/mode_set functions.
-	 */
+	 
 	if (pdpu->is_error)
-		/* force white frame with 100% alpha pipe output on error */
+		 
 		_dpu_plane_color_fill(pdpu, 0xFFFFFF, 0xFF);
 	else if (pdpu->color_fill & DPU_PLANE_COLOR_FILL_FLAG)
-		/* force 100% alpha */
+		 
 		_dpu_plane_color_fill(pdpu, pdpu->color_fill, 0xFF);
 	else {
 		dpu_plane_flush_csc(pdpu, &pstate->pipe);
 		dpu_plane_flush_csc(pdpu, &pstate->r_pipe);
 	}
 
-	/* flag h/w flush complete */
+	 
 	if (plane->state)
 		pstate->pending = false;
 }
 
-/**
- * dpu_plane_set_error: enable/disable error condition
- * @plane: pointer to drm_plane structure
- * @error: error value to set
- */
+ 
 void dpu_plane_set_error(struct drm_plane *plane, bool error)
 {
 	struct dpu_plane *pdpu;
@@ -1027,11 +936,11 @@ static void dpu_plane_sspp_update_pipe(struct drm_plane *plane,
 		pipe->sspp->ops.setup_sourceaddress(pipe, layout);
 	}
 
-	/* override for color fill */
+	 
 	if (pdpu->color_fill & DPU_PLANE_COLOR_FILL_FLAG) {
 		_dpu_plane_set_qos_ctrl(plane, pipe, false);
 
-		/* skip remaining processing on color fill */
+		 
 		return;
 	}
 
@@ -1060,7 +969,7 @@ static void dpu_plane_sspp_update_pipe(struct drm_plane *plane,
 		if (rotation & DRM_MODE_ROTATE_90)
 			src_flags |= DPU_SSPP_ROT_90;
 
-		/* update format */
+		 
 		pipe->sspp->ops.setup_format(pipe, fmt, src_flags);
 
 		if (pipe->sspp->ops.setup_cdp) {
@@ -1197,7 +1106,7 @@ static void dpu_plane_destroy(struct drm_plane *plane)
 
 		mutex_destroy(&pdpu->lock);
 
-		/* this will destroy the states as well */
+		 
 		drm_plane_cleanup(plane);
 
 		kfree(pdpu);
@@ -1314,7 +1223,7 @@ static void dpu_plane_reset(struct drm_plane *plane)
 	pdpu = to_dpu_plane(plane);
 	DPU_DEBUG_PLANE(pdpu, "\n");
 
-	/* remove previous state, if present */
+	 
 	if (plane->state) {
 		dpu_plane_destroy_state(plane, plane->state);
 		plane->state = NULL;
@@ -1326,10 +1235,7 @@ static void dpu_plane_reset(struct drm_plane *plane)
 		return;
 	}
 
-	/*
-	 * Set the SSPP here until we have proper virtualized DPU planes.
-	 * This is the place where the state is allocated, so fill it fully.
-	 */
+	 
 	pstate->pipe.sspp = dpu_rm_get_sspp(&dpu_kms->rm, pdpu->pipe);
 	pstate->pipe.multirect_index = DPU_SSPP_RECT_SOLO;
 	pstate->pipe.multirect_mode = DPU_SSPP_MULTIRECT_NONE;
@@ -1388,7 +1294,7 @@ static const struct drm_plane_helper_funcs dpu_plane_helper_funcs = {
 		.atomic_update = dpu_plane_atomic_update,
 };
 
-/* initialize plane */
+ 
 struct drm_plane *dpu_plane_init(struct drm_device *dev,
 		uint32_t pipe, enum drm_plane_type type,
 		unsigned long possible_crtcs)
@@ -1403,7 +1309,7 @@ struct drm_plane *dpu_plane_init(struct drm_device *dev,
 	uint32_t supported_rotations;
 	int ret = -EINVAL;
 
-	/* create and zero local structure */
+	 
 	pdpu = kzalloc(sizeof(*pdpu), GFP_KERNEL);
 	if (!pdpu) {
 		DPU_ERROR("[%u]failed to allocate local plane struct\n", pipe);
@@ -1411,11 +1317,11 @@ struct drm_plane *dpu_plane_init(struct drm_device *dev,
 		return ERR_PTR(ret);
 	}
 
-	/* cache local stuff for later */
+	 
 	plane = &pdpu->base;
 	pdpu->pipe = pipe;
 
-	/* initialize underlying h/w driver */
+	 
 	pipe_hw = dpu_rm_get_sspp(&kms->rm, pipe);
 	if (!pipe_hw || !pipe_hw->cap || !pipe_hw->cap->sblk) {
 		DPU_ERROR("[%u]SSPP is invalid\n", pipe);
@@ -1453,7 +1359,7 @@ struct drm_plane *dpu_plane_init(struct drm_device *dev,
 
 	drm_plane_enable_fb_damage_clips(plane);
 
-	/* success! finalize initialization */
+	 
 	drm_plane_helper_add(plane, &dpu_plane_helper_funcs);
 
 	mutex_init(&pdpu->lock);

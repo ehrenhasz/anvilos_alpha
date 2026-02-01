@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause */
-/*
- * Copyright (C) 2012-2014, 2018-2023 Intel Corporation
- * Copyright (C) 2013-2015 Intel Mobile Communications GmbH
- * Copyright (C) 2016-2017 Intel Deutschland GmbH
- */
+ 
+ 
 #ifndef __IWL_MVM_H__
 #define __IWL_MVM_H__
 
@@ -38,55 +34,36 @@
 #include <linux/average.h>
 
 #define IWL_MVM_MAX_ADDRESSES		5
-/* RSSI offset for WkP */
+ 
 #define IWL_RSSI_OFFSET 50
 #define IWL_MVM_MISSED_BEACONS_THRESHOLD 8
 #define IWL_MVM_MISSED_BEACONS_THRESHOLD_LONG 16
 
-/* A TimeUnit is 1024 microsecond */
+ 
 #define MSEC_TO_TU(_msec)	(_msec*1000/1024)
 
-/* For GO, this value represents the number of TUs before CSA "beacon
- * 0" TBTT when the CSA time-event needs to be scheduled to start.  It
- * must be big enough to ensure that we switch in time.
- */
+ 
 #define IWL_MVM_CHANNEL_SWITCH_TIME_GO		40
 
-/* For client, this value represents the number of TUs before CSA
- * "beacon 1" TBTT, instead.  This is because we don't know when the
- * GO/AP will be in the new channel, so we switch early enough.
- */
+ 
 #define IWL_MVM_CHANNEL_SWITCH_TIME_CLIENT	10
 
-/*
- * This value (in TUs) is used to fine tune the CSA NoA end time which should
- * be just before "beacon 0" TBTT.
- */
+ 
 #define IWL_MVM_CHANNEL_SWITCH_MARGIN 4
 
-/*
- * Number of beacons to transmit on a new channel until we unblock tx to
- * the stations, even if we didn't identify them on a new channel
- */
+ 
 #define IWL_MVM_CS_UNBLOCK_TX_TIMEOUT 3
 
-/* offchannel queue towards mac80211 */
+ 
 #define IWL_MVM_OFFCHANNEL_QUEUE 0
 
-/* invalid value for FW link id */
+ 
 #define IWL_MVM_FW_LINK_ID_INVALID 0xff
 
 extern const struct ieee80211_ops iwl_mvm_hw_ops;
 extern const struct ieee80211_ops iwl_mvm_mld_hw_ops;
 
-/**
- * struct iwl_mvm_mod_params - module parameters for iwlmvm
- * @init_dbg: if true, then the NIC won't be stopped if the INIT fw asserted.
- *	We will register to mac80211 to have testmode working. The NIC must not
- *	be up'ed after the INIT fw asserted. This is useful to be able to use
- *	proprietary tools over testmode to debug the INIT fw.
- * @power_scheme: one of enum iwl_power_scheme
- */
+ 
 struct iwl_mvm_mod_params {
 	bool init_dbg;
 	int power_scheme;
@@ -102,7 +79,7 @@ struct iwl_mvm_phy_ctxt {
 
 	struct ieee80211_channel *channel;
 
-	/* track for RLC config command */
+	 
 	u32 center_freq1;
 	bool rlc_disabled;
 };
@@ -115,22 +92,13 @@ struct iwl_mvm_time_event_data {
 	bool running;
 	u32 uid;
 
-	/*
-	 * The access to the 'id' field must be done when the
-	 * mvm->time_event_lock is held, as it value is used to indicate
-	 * if the te is in the time event list or not (when id == TE_MAX)
-	 */
+	 
 	u32 id;
 };
 
- /* Power management */
+  
 
-/**
- * enum iwl_power_scheme
- * @IWL_POWER_LEVEL_CAM - Continuously Active Mode
- * @IWL_POWER_LEVEL_BPS - Balanced Power Save (default)
- * @IWL_POWER_LEVEL_LP  - Low Power
- */
+ 
 enum iwl_power_scheme {
 	IWL_POWER_SCHEME_CAM = 1,
 	IWL_POWER_SCHEME_BPS,
@@ -168,7 +136,7 @@ struct iwl_dbgfs_pm {
 	int mask;
 };
 
-/* beacon filtering */
+ 
 
 enum iwl_dbgfs_bf_mask {
 	MVM_DEBUGFS_BF_ENERGY_DELTA = BIT(0),
@@ -217,13 +185,7 @@ enum iwl_bt_force_ant_mode {
 	BT_FORCE_ANT_MAX,
 };
 
-/**
- * struct iwl_mvm_low_latency_force - low latency force mode set by debugfs
- * @LOW_LATENCY_FORCE_UNSET: unset force mode
- * @LOW_LATENCY_FORCE_ON: for low latency on
- * @LOW_LATENCY_FORCE_OFF: for low latency off
- * @NUM_LOW_LATENCY_FORCE: max num of modes
- */
+ 
 enum iwl_mvm_low_latency_force {
 	LOW_LATENCY_FORCE_UNSET,
 	LOW_LATENCY_FORCE_ON,
@@ -231,18 +193,7 @@ enum iwl_mvm_low_latency_force {
 	NUM_LOW_LATENCY_FORCE
 };
 
-/**
-* struct iwl_mvm_low_latency_cause - low latency set causes
-* @LOW_LATENCY_TRAFFIC: indicates low latency traffic was detected
-* @LOW_LATENCY_DEBUGFS: low latency mode set from debugfs
-* @LOW_LATENCY_VCMD: low latency mode set from vendor command
-* @LOW_LATENCY_VIF_TYPE: low latency mode set because of vif type (ap)
-* @LOW_LATENCY_DEBUGFS_FORCE_ENABLE: indicate that force mode is enabled
-*	the actual set/unset is done with LOW_LATENCY_DEBUGFS_FORCE
-* @LOW_LATENCY_DEBUGFS_FORCE: low latency force mode from debugfs
-*	set this with LOW_LATENCY_DEBUGFS_FORCE_ENABLE flag
-*	in low_latency.
-*/
+ 
 enum iwl_mvm_low_latency_cause {
 	LOW_LATENCY_TRAFFIC = BIT(0),
 	LOW_LATENCY_DEBUGFS = BIT(1),
@@ -252,16 +203,7 @@ enum iwl_mvm_low_latency_cause {
 	LOW_LATENCY_DEBUGFS_FORCE = BIT(5),
 };
 
-/**
-* struct iwl_mvm_vif_bf_data - beacon filtering related data
-* @bf_enabled: indicates if beacon filtering is enabled
-* @ba_enabled: indicated if beacon abort is enabled
-* @ave_beacon_signal: average beacon signal
-* @last_cqm_event: rssi of the last cqm event
-* @bt_coex_min_thold: minimum threshold for BT coex
-* @bt_coex_max_thold: maximum threshold for BT coex
-* @last_bt_coex_event: rssi of the last BT coex event
-*/
+ 
 struct iwl_mvm_vif_bf_data {
 	bool bf_enabled;
 	bool ba_enabled;
@@ -272,38 +214,14 @@ struct iwl_mvm_vif_bf_data {
 	int last_bt_coex_event;
 };
 
-/**
- * struct iwl_probe_resp_data - data for NoA/CSA updates
- * @rcu_head: used for freeing the data on update
- * @notif: notification data
- * @noa_len: length of NoA attribute, calculated from the notification
- */
+ 
 struct iwl_probe_resp_data {
 	struct rcu_head rcu_head;
 	struct iwl_probe_resp_data_notif notif;
 	int noa_len;
 };
 
-/**
- * struct iwl_mvm_vif_link_info - per link data in Virtual Interface
- * @ap_sta_id: the sta_id of the AP - valid only if VIF type is STA
- * @fw_link_id: the id of the link according to the FW API
- * @bssid: BSSID for this (client) interface
- * @bcast_sta: station used for broadcast packets. Used by the following
- *	vifs: P2P_DEVICE, GO and AP.
- * @beacon_stats: beacon statistics, containing the # of received beacons,
- *	# of received beacons accumulated over FW restart, and the current
- *	average signal of beacons retrieved from the firmware
- * @smps_requests: the SMPS requests of different parts of the driver,
- *	combined on update to yield the overall request to mac80211.
- * @probe_resp_data: data from FW notification to store NOA and CSA related
- *	data to be inserted into probe response.
- * @he_ru_2mhz_block: 26-tone RU OFDMA transmissions should be blocked
- * @queue_params: QoS params for this MAC
- * @mgmt_queue: queue number for unbufferable management frames
- * @igtk: the current IGTK programmed into the firmware
- * @listen_lmac: indicates this link is allocated to the listen LMAC
- */
+ 
 struct iwl_mvm_vif_link_info {
 	u8 bssid[ETH_ALEN];
 	u8 ap_sta_id;
@@ -327,44 +245,15 @@ struct iwl_mvm_vif_link_info {
 	bool listen_lmac;
 
 	u16 cab_queue;
-	/* Assigned while mac80211 has the link in a channel context,
-	 * or, for P2P Device, while it exists.
-	 */
+	 
 	struct iwl_mvm_phy_ctxt *phy_ctxt;
-	/* QoS data from mac80211, need to store this here
-	 * as mac80211 has a separate callback but we need
-	 * to have the data for the MAC context
-	 */
+	 
 	struct ieee80211_tx_queue_params queue_params[IEEE80211_NUM_ACS];
 
 	u16 mgmt_queue;
 };
 
-/**
- * struct iwl_mvm_vif - data per Virtual Interface, it is a MAC context
- * @id: between 0 and 3
- * @color: to solve races upon MAC addition and removal
- * @associated: indicates that we're currently associated, used only for
- *	managing the firmware state in iwl_mvm_bss_info_changed_station()
- * @ap_assoc_sta_count: count of stations associated to us - valid only
- *	if VIF type is AP
- * @uploaded: indicates the MAC context has been added to the device
- * @ap_ibss_active: indicates that AP/IBSS is configured and that the interface
- *	should get quota etc.
- * @pm_enabled - indicate if MAC power management is allowed
- * @monitor_active: indicates that monitor context is configured, and that the
- *	interface should get quota etc.
- * @low_latency: bit flags for low latency
- *	see enum &iwl_mvm_low_latency_cause for causes.
- * @low_latency_actual: boolean, indicates low latency is set,
- *	as a result from low_latency bit flags and takes force into account.
- * @authorized: indicates the AP station was set to authorized
- * @ps_disabled: indicates that this interface requires PS to be disabled
- * @csa_countdown: indicates that CSA countdown may be started
- * @csa_failed: CSA failed to schedule time event, report an error later
- * @csa_bcn_pending: indicates that we are waiting for a beacon on a new channel
- * @features: hw features active for this vif
- */
+ 
 struct iwl_mvm_vif {
 	struct iwl_mvm *mvm;
 	u16 id;
@@ -388,7 +277,7 @@ struct iwl_mvm_vif {
 	struct iwl_mvm_vif_bf_data bf_data;
 
 #ifdef CONFIG_PM
-	/* WoWLAN GTK rekey data */
+	 
 	struct {
 		u8 kck[NL80211_KCK_EXT_LEN];
 		u8 kek[NL80211_KEK_EXT_LEN];
@@ -406,7 +295,7 @@ struct iwl_mvm_vif {
 #endif
 
 #if IS_ENABLED(CONFIG_IPV6)
-	/* IPv6 addresses for WoWLAN */
+	 
 	struct in6_addr target_ipv6_addrs[IWL_PROTO_OFFLOAD_NUM_IPV6_ADDRS_MAX];
 	unsigned long tentative_addrs[BITS_TO_LONGS(IWL_PROTO_OFFLOAD_NUM_IPV6_ADDRS_MAX)];
 	int num_target_ipv6_addrs;
@@ -421,7 +310,7 @@ struct iwl_mvm_vif {
 	int dbgfs_quota_min;
 #endif
 
-	/* FW identified misbehaving AP */
+	 
 	u8 uapsd_misbehaving_ap_addr[ETH_ALEN] __aligned(2);
 	struct delayed_work uapsd_nonagg_detected_wk;
 
@@ -438,12 +327,12 @@ struct iwl_mvm_vif {
 	struct iwl_mvm_time_event_data time_event_data;
 	struct iwl_mvm_time_event_data hs_time_event_data;
 
-	/* TCP Checksum Offload */
+	 
 	netdev_features_t features;
 
 	struct ieee80211_sta *ap_sta;
 
-	/* we can only have 2 GTK + 2 IGTK active at a time */
+	 
 	struct ieee80211_key_conf *ap_early_keys[4];
 
 	struct {
@@ -505,15 +394,7 @@ enum iwl_mvm_sched_scan_pass_all_states {
 	SCHED_SCAN_PASS_ALL_FOUND,
 };
 
-/**
- * struct iwl_mvm_tt_mgnt - Thermal Throttling Management structure
- * @ct_kill_exit: worker to exit thermal kill
- * @dynamic_smps: Is thermal throttling enabled dynamic_smps?
- * @tx_backoff: The current thremal throttling tx backoff in uSec.
- * @min_backoff: The minimal tx backoff due to power restrictions
- * @params: Parameters to configure the thermal throttling algorithm.
- * @throttle: Is thermal throttling is active?
- */
+ 
 struct iwl_mvm_tt_mgmt {
 	struct delayed_work ct_kill_exit;
 	bool dynamic_smps;
@@ -524,23 +405,14 @@ struct iwl_mvm_tt_mgmt {
 };
 
 #ifdef CONFIG_THERMAL
-/**
- *struct iwl_mvm_thermal_device - thermal zone related data
- * @temp_trips: temperature thresholds for report
- * @fw_trips_index: keep indexes to original array - temp_trips
- * @tzone: thermal zone device data
-*/
+ 
 struct iwl_mvm_thermal_device {
 	struct thermal_trip trips[IWL_MAX_DTS_TRIPS];
 	u8 fw_trips_index[IWL_MAX_DTS_TRIPS];
 	struct thermal_zone_device *tzone;
 };
 
-/*
- * struct iwl_mvm_cooling_device
- * @cur_state: current state
- * @cdev: struct thermal cooling device
- */
+ 
 struct iwl_mvm_cooling_device {
 	u32 cur_state;
 	struct thermal_cooling_device *cdev;
@@ -600,7 +472,7 @@ struct iwl_mvm_tcm_mac {
 		u32 last_ampdu_ref;
 	} rx;
 	struct {
-		/* track AP's transfer in client mode */
+		 
 		u64 rx_bytes;
 		struct ewma_rate rate;
 		bool detected;
@@ -610,14 +482,14 @@ struct iwl_mvm_tcm_mac {
 
 struct iwl_mvm_tcm {
 	struct delayed_work work;
-	spinlock_t lock; /* used when time elapsed */
-	unsigned long ts; /* timestamp when period ends */
+	spinlock_t lock;  
+	unsigned long ts;  
 	unsigned long ll_ts;
 	unsigned long uapsd_nonagg_ts;
 	bool paused;
 	struct iwl_mvm_tcm_mac data[NUM_MAC_INDEX_DRIVER];
 	struct {
-		u32 elapsed; /* milliseconds for this TCM period */
+		u32 elapsed;  
 		u32 airtime[NUM_MAC_INDEX_DRIVER];
 		enum iwl_mvm_traffic_load load[NUM_MAC_INDEX_DRIVER];
 		enum iwl_mvm_traffic_load band_load[NUM_NL80211_BANDS];
@@ -627,27 +499,7 @@ struct iwl_mvm_tcm {
 	} result;
 };
 
-/**
- * struct iwl_mvm_reorder_buffer - per ra/tid/queue reorder buffer
- * @head_sn: reorder window head sn
- * @num_stored: number of mpdus stored in the buffer
- * @buf_size: the reorder buffer size as set by the last addba request
- * @queue: queue of this reorder buffer
- * @last_amsdu: track last ASMDU SN for duplication detection
- * @last_sub_index: track ASMDU sub frame index for duplication detection
- * @reorder_timer: timer for frames are in the reorder buffer. For AMSDU
- *	it is the time of last received sub-frame
- * @removed: prevent timer re-arming
- * @valid: reordering is valid for this queue
- * @lock: protect reorder buffer internal state
- * @mvm: mvm pointer, needed for frame timer context
- * @consec_oldsn_drops: consecutive drops due to old SN
- * @consec_oldsn_ampdu_gp2: A-MPDU GP2 timestamp to track
- *	when to apply old SN consecutive drop workaround
- * @consec_oldsn_prev_drop: track whether or not an MPDU
- *	that was single/part of the previous A-MPDU was
- *	dropped due to old SN
- */
+ 
 struct iwl_mvm_reorder_buffer {
 	u16 head_sn;
 	u16 num_stored;
@@ -665,40 +517,23 @@ struct iwl_mvm_reorder_buffer {
 	unsigned int consec_oldsn_prev_drop:1;
 } ____cacheline_aligned_in_smp;
 
-/**
- * struct _iwl_mvm_reorder_buf_entry - reorder buffer entry per-queue/per-seqno
- * @frames: list of skbs stored
- * @reorder_time: time the packet was stored in the reorder buffer
- */
+ 
 struct _iwl_mvm_reorder_buf_entry {
 	struct sk_buff_head frames;
 	unsigned long reorder_time;
 };
 
-/* make this indirection to get the aligned thing */
+ 
 struct iwl_mvm_reorder_buf_entry {
 	struct _iwl_mvm_reorder_buf_entry e;
 }
 #ifndef __CHECKER__
-/* sparse doesn't like this construct: "bad integer constant expression" */
+ 
 __aligned(roundup_pow_of_two(sizeof(struct _iwl_mvm_reorder_buf_entry)))
 #endif
 ;
 
-/**
- * struct iwl_mvm_baid_data - BA session data
- * @sta_mask: current station mask for the BAID
- * @tid: tid of the session
- * @baid baid of the session
- * @timeout: the timeout set in the addba request
- * @entries_per_queue: # of buffers per queue, this actually gets
- *	aligned up to avoid cache line sharing between queues
- * @last_rx: last rx jiffies, updated only if timeout passed from last update
- * @session_timer: timer to check if BA session expired, runs at 2 * timeout
- * @mvm: mvm pointer, needed for timer context
- * @reorder_buf: reorder buffer, allocated per queue
- * @reorder_buf_data: data
- */
+ 
 struct iwl_mvm_baid_data {
 	struct rcu_head rcu_head;
 	u32 sta_mask;
@@ -722,26 +557,7 @@ iwl_mvm_baid_data_from_reorder_buf(struct iwl_mvm_reorder_buffer *buf)
 			sizeof(*buf) * buf->queue);
 }
 
-/*
- * enum iwl_mvm_queue_status - queue status
- * @IWL_MVM_QUEUE_FREE: the queue is not allocated nor reserved
- *	Basically, this means that this queue can be used for any purpose
- * @IWL_MVM_QUEUE_RESERVED: queue is reserved but not yet in use
- *	This is the state of a queue that has been dedicated for some RATID
- *	(agg'd or not), but that hasn't yet gone through the actual enablement
- *	of iwl_mvm_enable_txq(), and therefore no traffic can go through it yet.
- *	Note that in this state there is no requirement to already know what TID
- *	should be used with this queue, it is just marked as a queue that will
- *	be used, and shouldn't be allocated to anyone else.
- * @IWL_MVM_QUEUE_READY: queue is ready to be used
- *	This is the state of a queue that has been fully configured (including
- *	SCD pointers, etc), has a specific RA/TID assigned to it, and can be
- *	used to send traffic.
- * @IWL_MVM_QUEUE_SHARED: queue is shared, or in a process of becoming shared
- *	This is a state in which a single queue serves more than one TID, all of
- *	which are not aggregated. Note that the queue is only associated to one
- *	RA.
- */
+ 
 enum iwl_mvm_queue_status {
 	IWL_MVM_QUEUE_FREE,
 	IWL_MVM_QUEUE_RESERVED,
@@ -780,24 +596,19 @@ iwl_mvm_txq_from_tid(struct ieee80211_sta *sta, u8 tid)
 	return (void *)sta->txq[tid]->drv_priv;
 }
 
-/**
- * struct iwl_mvm_tvqm_txq_info - maps TVQM hw queue to tid
- *
- * @sta_id: sta id
- * @txq_tid: txq tid
- */
+ 
 struct iwl_mvm_tvqm_txq_info {
 	u8 sta_id;
 	u8 txq_tid;
 };
 
 struct iwl_mvm_dqa_txq_info {
-	u8 ra_sta_id; /* The RA this queue is mapped to, if exists */
-	bool reserved; /* Is this the TXQ reserved for a STA */
-	u8 mac80211_ac; /* The mac80211 AC this queue is mapped to */
-	u8 txq_tid; /* The TID "owner" of this queue*/
-	u16 tid_bitmap; /* Bitmap of the TIDs mapped to this queue */
-	/* Timestamp for inactivation per TID of this queue */
+	u8 ra_sta_id;  
+	bool reserved;  
+	u8 mac80211_ac;  
+	u8 txq_tid;  
+	u16 tid_bitmap;  
+	 
 	unsigned long last_frame_time[IWL_MAX_TID_COUNT + 1];
 	enum iwl_mvm_queue_status status;
 };
@@ -808,22 +619,22 @@ struct ptp_data {
 
 	struct delayed_work dwork;
 
-	/* The last GP2 reading from the hw */
+	 
 	u32 last_gp2;
 
-	/* number of wraparounds since scale_update_adj_time_ns */
+	 
 	u32 wrap_counter;
 
-	/* GP2 time when the scale was last updated */
+	 
 	u32 scale_update_gp2;
 
-	/* Adjusted time when the scale was last updated in nanoseconds */
+	 
 	u64 scale_update_adj_time_ns;
 
-	/* clock frequency offset, scaled to 65536000000 */
+	 
 	u64 scaled_freq;
 
-	/* Delta between hardware clock and ptp clock in nanoseconds */
+	 
 	s64 delta;
 };
 
@@ -840,7 +651,7 @@ struct iwl_mei_scan_filter {
 };
 
 struct iwl_mvm {
-	/* for logger access */
+	 
 	struct device *dev;
 
 	struct iwl_trans *trans;
@@ -849,7 +660,7 @@ struct iwl_mvm {
 	struct iwl_phy_db *phy_db;
 	struct ieee80211_hw *hw;
 
-	/* for protecting access to iwl_mvm */
+	 
 	struct mutex mutex;
 	struct list_head async_handlers_list;
 	spinlock_t async_handlers_lock;
@@ -863,10 +674,7 @@ struct iwl_mvm {
 
 	u32 queue_sync_cookie;
 	unsigned long queue_sync_state;
-	/*
-	 * for beacon filtering -
-	 * currently only one interface can be supported
-	 */
+	 
 	struct iwl_mvm_vif *bf_allowed_vif;
 
 	bool hw_registered;
@@ -896,7 +704,7 @@ struct iwl_mvm {
 		struct iwl_mvm_dqa_txq_info queue_info[IWL_MAX_HW_QUEUES];
 		struct iwl_mvm_tvqm_txq_info tvqm_info[IWL_MAX_TVQM_QUEUES];
 	};
-	struct work_struct add_stream_wk; /* To add streams to queues */
+	struct work_struct add_stream_wk;  
 	spinlock_t add_stream_lock;
 
 	const char *nvm_file_name;
@@ -907,73 +715,67 @@ struct iwl_mvm {
 	bool mei_registered;
 	struct work_struct sap_connected_wk;
 
-	/*
-	 * NVM built based on the SAP data but that we can't free even after
-	 * we get ownership because it contains the cfg80211's channel.
-	 */
+	 
 	struct iwl_nvm_data *temp_nvm_data;
 
-	/* NVM sections */
+	 
 	struct iwl_nvm_section nvm_sections[NVM_MAX_NUM_SECTIONS];
 
 	struct iwl_fw_runtime fwrt;
 
-	/* EEPROM MAC addresses */
+	 
 	struct mac_address addresses[IWL_MVM_MAX_ADDRESSES];
 
-	/* data related to data path */
+	 
 	struct iwl_rx_phy_info last_phy_info;
 	struct ieee80211_sta __rcu *fw_id_to_mac_id[IWL_MVM_STATION_COUNT_MAX];
 	struct ieee80211_link_sta __rcu *fw_id_to_link_sta[IWL_MVM_STATION_COUNT_MAX];
 	unsigned long fw_link_ids_map;
 	u8 rx_ba_sessions;
 
-	/* configured by mac80211 */
+	 
 	u32 rts_threshold;
 
-	/* Scan status, cmd (pre-allocated) and auxiliary station */
+	 
 	unsigned int scan_status;
 	size_t scan_cmd_size;
 	void *scan_cmd;
 	struct iwl_mcast_filter_cmd *mcast_filter_cmd;
-	/* For CDB this is low band scan type, for non-CDB - type. */
+	 
 	enum iwl_mvm_scan_type scan_type;
 	enum iwl_mvm_scan_type hb_scan_type;
 
 	enum iwl_mvm_sched_scan_pass_all_states sched_scan_pass_all;
 	struct delayed_work scan_timeout_dwork;
 
-	/* max number of simultaneous scans the FW supports */
+	 
 	unsigned int max_scans;
 
-	/* UMAC scan tracking */
+	 
 	u32 scan_uid_status[IWL_MVM_MAX_UMAC_SCANS];
 
-	/* start time of last scan in TSF of the mac that requested the scan */
+	 
 	u64 scan_start;
 
-	/* the vif that requested the current scan */
+	 
 	struct iwl_mvm_vif *scan_vif;
 
-	/* rx chain antennas set through debugfs for the scan command */
+	 
 	u8 scan_rx_ant;
 
-	/* Internal station */
+	 
 	struct iwl_mvm_int_sta aux_sta;
 	struct iwl_mvm_int_sta snif_sta;
 
 	bool last_ebs_successful;
 
-	u8 scan_last_antenna_idx; /* to toggle TX between antennas */
+	u8 scan_last_antenna_idx;  
 	u8 mgmt_last_antenna_idx;
 
-	/* last smart fifo state that was successfully sent to firmware */
+	 
 	enum iwl_sf_state sf_state;
 
-	/*
-	 * Leave this pointer outside the ifdef below so that it can be
-	 * assigned without ifdef in the source code.
-	 */
+	 
 	struct dentry *debugfs_dir;
 #ifdef CONFIG_IWLWIFI_DEBUGFS
 	u32 dbgfs_sram_offset, dbgfs_sram_len;
@@ -1001,10 +803,7 @@ struct iwl_mvm {
 	struct list_head time_event_list;
 	spinlock_t time_event_lock;
 
-	/*
-	 * A bitmap indicating the index of the key in use. The firmware
-	 * can hold 16 keys at most. Reflect this fact.
-	 */
+	 
 	unsigned long fw_key_table[BITS_TO_LONGS(STA_KEY_MAX_NUM)];
 	u8 fw_key_deleted[STA_KEY_MAX_NUM];
 
@@ -1012,7 +811,7 @@ struct iwl_mvm {
 
 	struct ieee80211_bss_conf __rcu *link_id_to_link_conf[IWL_MVM_FW_MAX_LINK_ID + 1];
 
-	/* -1 for always, 0 for never, >0 for that many times */
+	 
 	s8 fw_restart;
 	u8 *error_recovery_buf;
 
@@ -1026,7 +825,7 @@ struct iwl_mvm {
 	struct wiphy_wowlan_support wowlan;
 	int gtk_ivlen, gtk_icvlen, ptk_ivlen, ptk_icvlen;
 
-	/* sched scan settings for net detect */
+	 
 	struct ieee80211_scan_ies nd_ies;
 	struct cfg80211_match_set *nd_match_sets;
 	int n_nd_match_sets;
@@ -1039,36 +838,32 @@ struct iwl_mvm {
 	bool d3_test_active;
 	u32 d3_test_pme_ptr;
 	struct ieee80211_vif *keep_vif;
-	u32 last_netdetect_scans; /* no. of scans in the last net-detect wake */
+	u32 last_netdetect_scans;  
 #endif
 #endif
 
 	wait_queue_head_t rx_sync_waitq;
 
-	/* BT-Coex */
+	 
 	struct iwl_bt_coex_profile_notif last_bt_notif;
 	struct iwl_bt_coex_ci_cmd last_bt_ci_cmd;
 
 	u8 bt_tx_prio;
 	enum iwl_bt_force_ant_mode bt_force_ant_mode;
 
-	/* Aux ROC */
+	 
 	struct list_head aux_roc_te_list;
 
-	/* Thermal Throttling and CTkill */
+	 
 	struct iwl_mvm_tt_mgmt thermal_throttle;
 #ifdef CONFIG_THERMAL
 	struct iwl_mvm_thermal_device tz_device;
 	struct iwl_mvm_cooling_device cooling_dev;
 #endif
 
-	s32 temperature;	/* Celsius */
-	/*
-	 * Debug option to set the NIC temperature. This option makes the
-	 * driver think this is the actual NIC temperature, and ignore the
-	 * real temperature that is received from the fw
-	 */
-	bool temperature_test;  /* Debug test temperature is enabled */
+	s32 temperature;	 
+	 
+	bool temperature_test;   
 
 	bool fw_static_smps_request;
 
@@ -1086,53 +881,50 @@ struct iwl_mvm {
 	struct ieee80211_vif *noa_vif;
 #endif
 
-	/* Tx queues */
+	 
 	u16 aux_queue;
 	u16 snif_queue;
 	u16 probe_queue;
 	u16 p2p_dev_queue;
 
-	/* Indicate if device power save is allowed */
-	u8 ps_disabled; /* u8 instead of bool to ease debugfs_create_* usage */
-	/* Indicate if 32Khz external clock is valid */
+	 
+	u8 ps_disabled;  
+	 
 	u32 ext_clock_valid;
 
-	/* This vif used by CSME to send / receive traffic */
+	 
 	struct ieee80211_vif *csme_vif;
 	struct ieee80211_vif __rcu *csa_vif;
 	struct ieee80211_vif __rcu *csa_tx_blocked_vif;
 	u8 csa_tx_block_bcn_timeout;
 
-	/* system time of last beacon (for AP/GO interface) */
+	 
 	u32 ap_last_beacon_gp2;
 
-	/* indicates that we transmitted the last beacon */
+	 
 	bool ibss_manager;
 
 	bool lar_regdom_set;
 	enum iwl_mcc_source mcc_src;
 
-	/* TDLS channel switch data */
+	 
 	struct {
 		struct delayed_work dwork;
 		enum iwl_mvm_tdls_cs_state state;
 
-		/*
-		 * Current cs sta - might be different from periodic cs peer
-		 * station. Value is meaningless when the cs-state is idle.
-		 */
+		 
 		u8 cur_sta_id;
 
-		/* TDLS periodic channel-switch peer */
+		 
 		struct {
 			u8 sta_id;
 			u8 op_class;
-			bool initiator; /* are we the link initiator */
+			bool initiator;  
 			struct cfg80211_chan_def chandef;
-			struct sk_buff *skb; /* ch sw template */
+			struct sk_buff *skb;  
 			u32 ch_sw_tm_ie;
 
-			/* timestamp of last ch-sw request sent (GP2 time) */
+			 
 			u32 sent_timestamp;
 		} peer;
 	} tdls_cs;
@@ -1163,23 +955,17 @@ struct iwl_mvm {
 	struct ieee80211_vif *nan_vif;
 	struct iwl_mvm_baid_data __rcu *baid_map[IWL_MAX_BAID];
 
-	/*
-	 * Drop beacons from other APs in AP mode when there are no connected
-	 * clients.
-	 */
+	 
 	bool drop_bcn_ap_mode;
 
 	struct delayed_work cs_tx_unblock_dwork;
 
-	/* does a monitor vif exist (only one can exist hence bool) */
+	 
 	bool monitor_on;
-	/*
-	 * primary channel position relative to he whole bandwidth,
-	 * in steps of 80 MHz
-	 */
+	 
 	u8 monitor_p80;
 
-	/* sniffer data to include in radiotap */
+	 
 	__le16 cur_aid;
 	u8 cur_bssid[ETH_ALEN];
 
@@ -1200,29 +986,14 @@ struct iwl_mvm {
 	struct iwl_mei_scan_filter mei_scan_filter;
 };
 
-/* Extract MVM priv from op_mode and _hw */
+ 
 #define IWL_OP_MODE_GET_MVM(_iwl_op_mode)		\
 	((struct iwl_mvm *)(_iwl_op_mode)->op_mode_specific)
 
 #define IWL_MAC80211_GET_MVM(_hw)			\
 	IWL_OP_MODE_GET_MVM((struct iwl_op_mode *)((_hw)->priv))
 
-/**
- * enum iwl_mvm_status - MVM status bits
- * @IWL_MVM_STATUS_HW_RFKILL: HW RF-kill is asserted
- * @IWL_MVM_STATUS_HW_CTKILL: CT-kill is active
- * @IWL_MVM_STATUS_ROC_RUNNING: remain-on-channel is running
- * @IWL_MVM_STATUS_HW_RESTART_REQUESTED: HW restart was requested
- * @IWL_MVM_STATUS_IN_HW_RESTART: HW restart is active
- * @IWL_MVM_STATUS_ROC_AUX_RUNNING: AUX remain-on-channel is running
- * @IWL_MVM_STATUS_FIRMWARE_RUNNING: firmware is running
- * @IWL_MVM_STATUS_NEED_FLUSH_P2P: need to flush P2P bcast STA
- * @IWL_MVM_STATUS_IN_D3: in D3 (or at least about to go into it)
- * @IWL_MVM_STATUS_SUPPRESS_ERROR_LOG_ONCE: suppress one error log
- *	if this is set, when intentionally triggered
- * @IWL_MVM_STATUS_STARTING: starting mac,
- *	used to disable restart flow while in STARTING state
- */
+ 
 enum iwl_mvm_status {
 	IWL_MVM_STATUS_HW_RFKILL,
 	IWL_MVM_STATUS_HW_CTKILL,
@@ -1242,7 +1013,7 @@ struct iwl_mvm_csme_conn_info {
 	struct iwl_mei_conn_info conn_info;
 };
 
-/* Keep track of completed init configuration */
+ 
 enum iwl_mvm_init_status {
 	IWL_MVM_INIT_STATUS_THERMAL_INIT_COMPLETE = BIT(0),
 	IWL_MVM_INIT_STATUS_LEDS_INIT_COMPLETE = BIT(1),
@@ -1264,9 +1035,7 @@ static inline bool iwl_mvm_firmware_running(struct iwl_mvm *mvm)
 	return test_bit(IWL_MVM_STATUS_FIRMWARE_RUNNING, &mvm->status);
 }
 
-/* Must be called with rcu_read_lock() held and it can only be
- * released when mvmsta is not needed anymore.
- */
+ 
 static inline struct iwl_mvm_sta *
 iwl_mvm_sta_from_staid_rcu(struct iwl_mvm *mvm, u8 sta_id)
 {
@@ -1277,7 +1046,7 @@ iwl_mvm_sta_from_staid_rcu(struct iwl_mvm *mvm, u8 sta_id)
 
 	sta = rcu_dereference(mvm->fw_id_to_mac_id[sta_id]);
 
-	/* This can happen if the station has been removed right now */
+	 
 	if (IS_ERR_OR_NULL(sta))
 		return NULL;
 
@@ -1295,7 +1064,7 @@ iwl_mvm_sta_from_staid_protected(struct iwl_mvm *mvm, u8 sta_id)
 	sta = rcu_dereference_protected(mvm->fw_id_to_mac_id[sta_id],
 					lockdep_is_held(&mvm->mutex));
 
-	/* This can happen if the station has been removed right now */
+	 
 	if (IS_ERR_OR_NULL(sta))
 		return NULL;
 
@@ -1348,7 +1117,7 @@ static inline bool iwl_mvm_is_adwell_hb_ap_num_supported(struct iwl_mvm *mvm)
 
 static inline bool iwl_mvm_is_oce_supported(struct iwl_mvm *mvm)
 {
-	/* OCE should never be enabled for LMAC scan FWs */
+	 
 	return fw_has_api(&mvm->fw->ucode_capa, IWL_UCODE_TLV_API_OCE);
 }
 
@@ -1381,10 +1150,7 @@ static inline bool iwl_mvm_is_lar_supported(struct iwl_mvm *mvm)
 	bool tlv_lar = fw_has_capa(&mvm->fw->ucode_capa,
 				   IWL_UCODE_TLV_CAPA_LAR_SUPPORT);
 
-	/*
-	 * Enable LAR only if it is supported by the FW (TLV) &&
-	 * enabled in the NVM
-	 */
+	 
 	if (mvm->cfg->nvm_type == IWL_NVM_EXT)
 		return nvm_lar && tlv_lar;
 	else
@@ -1449,38 +1215,26 @@ static inline bool iwl_mvm_has_new_station_api(const struct iwl_fw *fw)
 
 static inline bool iwl_mvm_has_new_tx_api(struct iwl_mvm *mvm)
 {
-	/* TODO - replace with TLV once defined */
+	 
 	return mvm->trans->trans_cfg->gen2;
 }
 
 static inline bool iwl_mvm_has_unified_ucode(struct iwl_mvm *mvm)
 {
-	/* TODO - better define this */
+	 
 	return mvm->trans->trans_cfg->device_family >= IWL_DEVICE_FAMILY_22000;
 }
 
 static inline bool iwl_mvm_is_cdb_supported(struct iwl_mvm *mvm)
 {
-	/*
-	 * TODO:
-	 * The issue of how to determine CDB APIs and usage is still not fully
-	 * defined.
-	 * There is a compilation for CDB and non-CDB FW, but there may
-	 * be also runtime check.
-	 * For now there is a TLV for checking compilation mode, but a
-	 * runtime check will also have to be here - once defined.
-	 */
+	 
 	return fw_has_capa(&mvm->fw->ucode_capa,
 			   IWL_UCODE_TLV_CAPA_CDB_SUPPORT);
 }
 
 static inline bool iwl_mvm_cdb_scan_api(struct iwl_mvm *mvm)
 {
-	/*
-	 * TODO: should this be the same as iwl_mvm_is_cdb_supported()?
-	 * but then there's a little bit of code in scan that won't make
-	 * any sense...
-	 */
+	 
 	return mvm->trans->trans_cfg->device_family >= IWL_DEVICE_FAMILY_22000;
 }
 
@@ -1532,10 +1286,7 @@ iwl_mvm_get_agg_status(struct iwl_mvm *mvm, void *tx_resp)
 
 static inline bool iwl_mvm_is_tt_in_fw(struct iwl_mvm *mvm)
 {
-	/* these two TLV are redundant since the responsibility to CT-kill by
-	 * FW happens only after we send at least one command of
-	 * temperature THs report.
-	 */
+	 
 	return fw_has_capa(&mvm->fw->ucode_capa,
 			   IWL_UCODE_TLV_CAPA_CT_KILL_BY_FW) &&
 	       fw_has_capa(&mvm->fw->ucode_capa,
@@ -1552,7 +1303,7 @@ static inline bool iwl_mvm_is_esr_supported(struct iwl_trans *trans)
 {
 	if ((CSR_HW_RFID_TYPE(trans->hw_rf_id) == IWL_CFG_RF_TYPE_FM) &&
 	    !CSR_HW_RFID_IS_CDB(trans->hw_rf_id))
-		/* Step A doesn't support eSR */
+		 
 		return CSR_HW_RFID_STEP(trans->hw_rf_id);
 
 	return false;
@@ -1585,23 +1336,21 @@ static inline u8 iwl_mvm_mac_ac_to_tx_fifo(struct iwl_mvm *mvm,
 }
 
 struct iwl_rate_info {
-	u8 plcp;	/* uCode API:  IWL_RATE_6M_PLCP, etc. */
-	u8 plcp_siso;	/* uCode API:  IWL_RATE_SISO_6M_PLCP, etc. */
-	u8 plcp_mimo2;	/* uCode API:  IWL_RATE_MIMO2_6M_PLCP, etc. */
-	u8 plcp_mimo3;  /* uCode API:  IWL_RATE_MIMO3_6M_PLCP, etc. */
-	u8 ieee;	/* MAC header:  IWL_RATE_6M_IEEE, etc. */
+	u8 plcp;	 
+	u8 plcp_siso;	 
+	u8 plcp_mimo2;	 
+	u8 plcp_mimo3;   
+	u8 ieee;	 
 };
 
 void __iwl_mvm_mac_stop(struct iwl_mvm *mvm);
 int __iwl_mvm_mac_start(struct iwl_mvm *mvm);
 
-/******************
- * MVM Methods
- ******************/
-/* uCode */
+ 
+ 
 int iwl_run_init_mvm_ucode(struct iwl_mvm *mvm);
 
-/* Utils */
+ 
 int iwl_mvm_legacy_hw_idx_to_mac80211_idx(u32 rate_n_flags,
 					  enum nl80211_band band);
 int iwl_mvm_legacy_rate_to_mac80211_idx(u32 rate_n_flags,
@@ -1627,7 +1376,7 @@ void iwl_mvm_get_sync_time(struct iwl_mvm *mvm, int clock_type, u32 *gp2,
 			   u64 *boottime, ktime_t *realtime);
 u32 iwl_mvm_get_systime(struct iwl_mvm *mvm);
 
-/* Tx / Host Commands */
+ 
 int __must_check iwl_mvm_send_cmd(struct iwl_mvm *mvm,
 				  struct iwl_host_cmd *cmd);
 int __must_check iwl_mvm_send_cmd_pdu(struct iwl_mvm *mvm, u32 id,
@@ -1661,7 +1410,7 @@ int iwl_mvm_flush_tx_path(struct iwl_mvm *mvm, u32 tfd_msk);
 int iwl_mvm_flush_sta(struct iwl_mvm *mvm, u32 sta_id, u32 tfd_queue_mask);
 int iwl_mvm_flush_sta_tids(struct iwl_mvm *mvm, u32 sta_id, u16 tids);
 
-/* Utils to extract sta related data */
+ 
 __le32 iwl_mvm_get_sta_htc_flags(struct ieee80211_sta *sta,
 				 struct ieee80211_link_sta *link_sta);
 u8 iwl_mvm_get_sta_uapsd_acs(struct ieee80211_sta *sta);
@@ -1688,7 +1437,7 @@ static inline void iwl_mvm_wait_for_async_handlers(struct iwl_mvm *mvm)
 	flush_work(&mvm->async_handlers_wk);
 }
 
-/* Statistics */
+ 
 void iwl_mvm_handle_rx_statistics(struct iwl_mvm *mvm,
 				  struct iwl_rx_packet *pkt);
 void iwl_mvm_rx_statistics(struct iwl_mvm *mvm,
@@ -1696,7 +1445,7 @@ void iwl_mvm_rx_statistics(struct iwl_mvm *mvm,
 int iwl_mvm_request_statistics(struct iwl_mvm *mvm, bool clear);
 void iwl_mvm_accu_radio_stats(struct iwl_mvm *mvm);
 
-/* NVM */
+ 
 int iwl_nvm_init(struct iwl_mvm *mvm);
 int iwl_mvm_load_nvm_to_nic(struct iwl_mvm *mvm);
 
@@ -1737,10 +1486,7 @@ int iwl_mvm_load_d3_fw(struct iwl_mvm *mvm);
 
 int iwl_mvm_mac_setup_register(struct iwl_mvm *mvm);
 
-/*
- * FW notifications / CMD responses handlers
- * Convention: iwl_mvm_rx_<NAME OF THE CMD>
- */
+ 
 void iwl_mvm_rx_mq(struct iwl_op_mode *op_mode,
 		   struct napi_struct *napi,
 		   struct iwl_rx_cmd_buffer *rxb);
@@ -1770,7 +1516,7 @@ void iwl_mvm_rx_mfuart_notif(struct iwl_mvm *mvm,
 void iwl_mvm_rx_shared_mem_cfg_notif(struct iwl_mvm *mvm,
 				     struct iwl_rx_cmd_buffer *rxb);
 
-/* MVM PHY */
+ 
 struct iwl_mvm_phy_ctxt *iwl_mvm_get_free_phy_ctxt(struct iwl_mvm *mvm);
 int iwl_mvm_phy_ctxt_add(struct iwl_mvm *mvm, struct iwl_mvm_phy_ctxt *ctxt,
 			 struct cfg80211_chan_def *chandef,
@@ -1788,7 +1534,7 @@ u8 iwl_mvm_get_ctrl_pos(struct cfg80211_chan_def *chandef);
 int iwl_mvm_phy_send_rlc(struct iwl_mvm *mvm, struct iwl_mvm_phy_ctxt *ctxt,
 			 u8 chains_static, u8 chains_dynamic);
 
-/* MAC (virtual interface) programming */
+ 
 
 void iwl_mvm_prepare_mac_removal(struct iwl_mvm *mvm,
 				 struct ieee80211_vif *vif);
@@ -1869,12 +1615,12 @@ void iwl_mvm_channel_switch_start_notif(struct iwl_mvm *mvm,
 					struct iwl_rx_cmd_buffer *rxb);
 void iwl_mvm_channel_switch_error_notif(struct iwl_mvm *mvm,
 					struct iwl_rx_cmd_buffer *rxb);
-/* Bindings */
+ 
 int iwl_mvm_binding_add_vif(struct iwl_mvm *mvm, struct ieee80211_vif *vif);
 int iwl_mvm_binding_remove_vif(struct iwl_mvm *mvm, struct ieee80211_vif *vif);
 u32 iwl_mvm_get_lmac_id(struct iwl_mvm *mvm, enum nl80211_band band);
 
-/* Links */
+ 
 int iwl_mvm_add_link(struct iwl_mvm *mvm, struct ieee80211_vif *vif,
 		     struct ieee80211_bss_conf *link_conf);
 int iwl_mvm_link_changed(struct iwl_mvm *mvm, struct ieee80211_vif *vif,
@@ -1885,26 +1631,14 @@ int iwl_mvm_remove_link(struct iwl_mvm *mvm, struct ieee80211_vif *vif,
 int iwl_mvm_disable_link(struct iwl_mvm *mvm, struct ieee80211_vif *vif,
 			 struct ieee80211_bss_conf *link_conf);
 
-/* AP and IBSS */
+ 
 bool iwl_mvm_start_ap_ibss_common(struct ieee80211_hw *hw,
 				  struct ieee80211_vif *vif, int *ret);
 void iwl_mvm_stop_ap_ibss_common(struct iwl_mvm *mvm,
 				 struct ieee80211_vif *vif);
 
-/* BSS Info */
-/**
- * struct iwl_mvm_bss_info_changed_ops - callbacks for the bss_info_changed()
- *
- * Since the only difference between both MLD and
- * non-MLD versions of bss_info_changed() is these function calls,
- * each version will send its specific function calls to
- * %iwl_mvm_bss_info_changed_common().
- *
- * @bss_info_changed_sta: pointer to the function that handles changes
- *	in bss_info in sta mode
- * @bss_info_changed_ap_ibss: pointer to the function that handles changes
- *	in bss_info in ap and ibss modes
- */
+ 
+ 
 struct iwl_mvm_bss_info_changed_ops {
 	void (*bss_info_changed_sta)(struct iwl_mvm *mvm,
 				     struct ieee80211_vif *vif,
@@ -1931,20 +1665,8 @@ void iwl_mvm_bss_info_changed_station_assoc(struct iwl_mvm *mvm,
 					    struct ieee80211_vif *vif,
 					    u64 changes);
 
-/* ROC */
-/**
- * struct iwl_mvm_roc_ops - callbacks for the remain_on_channel()
- *
- * Since the only difference between both MLD and
- * non-MLD versions of remain_on_channel() is these function calls,
- * each version will send its specific function calls to
- * %iwl_mvm_roc_common().
- *
- * @add_aux_sta_for_hs20: pointer to the function that adds an aux sta
- *	for Hot Spot 2.0
- * @link: For a P2P Device interface, pointer to a function that links the
- *      MAC/Link to the PHY context
- */
+ 
+ 
 struct iwl_mvm_roc_ops {
 	int (*add_aux_sta_for_hs20)(struct iwl_mvm *mvm, u32 lmac_id);
 	int (*link)(struct iwl_mvm *mvm, struct ieee80211_vif *vif);
@@ -1956,11 +1678,11 @@ int iwl_mvm_roc_common(struct ieee80211_hw *hw, struct ieee80211_vif *vif,
 		       const struct iwl_mvm_roc_ops *ops);
 int iwl_mvm_cancel_roc(struct ieee80211_hw *hw,
 		       struct ieee80211_vif *vif);
-/*Session Protection */
+ 
 void iwl_mvm_protect_assoc(struct iwl_mvm *mvm, struct ieee80211_vif *vif,
 			   u32 duration_override);
 
-/* Quota management */
+ 
 static inline size_t iwl_mvm_quota_cmd_size(struct iwl_mvm *mvm)
 {
 	return iwl_mvm_has_quota_low_latency(mvm) ?
@@ -1985,7 +1707,7 @@ static inline struct iwl_time_quota_data
 int iwl_mvm_update_quotas(struct iwl_mvm *mvm, bool force_upload,
 			  struct ieee80211_vif *disabled_vif);
 
-/* Scanning */
+ 
 int iwl_mvm_reg_scan_start(struct iwl_mvm *mvm, struct ieee80211_vif *vif,
 			   struct cfg80211_scan_request *req,
 			   struct ieee80211_scan_ies *ies);
@@ -1995,7 +1717,7 @@ int iwl_mvm_max_scan_ie_len(struct iwl_mvm *mvm);
 void iwl_mvm_report_scan_aborted(struct iwl_mvm *mvm);
 void iwl_mvm_scan_timeout_wk(struct work_struct *work);
 
-/* Scheduled scan */
+ 
 void iwl_mvm_rx_lmac_scan_complete_notif(struct iwl_mvm *mvm,
 					 struct iwl_rx_cmd_buffer *rxb);
 void iwl_mvm_rx_lmac_scan_iter_complete_notif(struct iwl_mvm *mvm,
@@ -2008,14 +1730,14 @@ int iwl_mvm_sched_scan_start(struct iwl_mvm *mvm,
 void iwl_mvm_rx_scan_match_found(struct iwl_mvm *mvm,
 				 struct iwl_rx_cmd_buffer *rxb);
 
-/* UMAC scan */
+ 
 int iwl_mvm_config_scan(struct iwl_mvm *mvm);
 void iwl_mvm_rx_umac_scan_complete_notif(struct iwl_mvm *mvm,
 					 struct iwl_rx_cmd_buffer *rxb);
 void iwl_mvm_rx_umac_scan_iter_complete_notif(struct iwl_mvm *mvm,
 					      struct iwl_rx_cmd_buffer *rxb);
 
-/* MVM debugfs */
+ 
 #ifdef CONFIG_IWLWIFI_DEBUGFS
 void iwl_mvm_dbgfs_register(struct iwl_mvm *mvm);
 void iwl_mvm_vif_dbgfs_register(struct iwl_mvm *mvm, struct ieee80211_vif *vif);
@@ -2032,9 +1754,9 @@ static inline void
 iwl_mvm_vif_dbgfs_clean(struct iwl_mvm *mvm, struct ieee80211_vif *vif)
 {
 }
-#endif /* CONFIG_IWLWIFI_DEBUGFS */
+#endif  
 
-/* rate scaling */
+ 
 int iwl_mvm_send_lq_cmd(struct iwl_mvm *mvm, struct iwl_lq_cmd *lq);
 void iwl_mvm_update_frame_stats(struct iwl_mvm *mvm, u32 rate, bool agg);
 int rs_pretty_print_rate_v1(char *buf, int bufsz, const u32 rate);
@@ -2042,7 +1764,7 @@ void rs_update_last_rssi(struct iwl_mvm *mvm,
 			 struct iwl_mvm_sta *mvmsta,
 			 struct ieee80211_rx_status *rx_status);
 
-/* power management */
+ 
 int iwl_mvm_power_update_device(struct iwl_mvm *mvm);
 int iwl_mvm_power_update_mac(struct iwl_mvm *mvm);
 int iwl_mvm_power_update_ps(struct iwl_mvm *mvm);
@@ -2070,7 +1792,7 @@ static inline void iwl_mvm_leds_sync(struct iwl_mvm *mvm)
 }
 #endif
 
-/* D3 (WoWLAN, NetDetect) */
+ 
 int iwl_mvm_suspend(struct ieee80211_hw *hw, struct cfg80211_wowlan *wowlan);
 int iwl_mvm_resume(struct ieee80211_hw *hw);
 void iwl_mvm_set_wakeup(struct ieee80211_hw *hw, bool enabled);
@@ -2100,7 +1822,7 @@ int iwl_mvm_send_proto_offload(struct iwl_mvm *mvm,
 			       bool offload_ns,
 			       u32 cmd_flags);
 
-/* BT Coex */
+ 
 int iwl_mvm_send_bt_init_conf(struct iwl_mvm *mvm);
 void iwl_mvm_rx_bt_coex_notif(struct iwl_mvm *mvm,
 			      struct iwl_rx_cmd_buffer *rxb);
@@ -2119,7 +1841,7 @@ u8 iwl_mvm_bt_coex_get_single_ant_msk(struct iwl_mvm *mvm, u8 enabled_ants);
 u8 iwl_mvm_bt_coex_tx_prio(struct iwl_mvm *mvm, struct ieee80211_hdr *hdr,
 			   struct ieee80211_tx_info *info, u8 ac);
 
-/* beacon filtering */
+ 
 #ifdef CONFIG_IWLWIFI_DEBUGFS
 void
 iwl_mvm_beacon_filter_debugfs_parameters(struct ieee80211_vif *vif,
@@ -2136,7 +1858,7 @@ int iwl_mvm_enable_beacon_filter(struct iwl_mvm *mvm,
 int iwl_mvm_disable_beacon_filter(struct iwl_mvm *mvm,
 				  struct ieee80211_vif *vif,
 				  u32 flags);
-/* SMPS */
+ 
 void iwl_mvm_update_smps(struct iwl_mvm *mvm, struct ieee80211_vif *vif,
 				enum iwl_mvm_smps_type_request req_type,
 				enum ieee80211_smps_mode smps_request,
@@ -2151,29 +1873,20 @@ bool iwl_mvm_rx_diversity_allowed(struct iwl_mvm *mvm,
 void iwl_mvm_update_link_smps(struct ieee80211_vif *vif,
 			      struct ieee80211_bss_conf *link_conf);
 
-/* Low latency */
+ 
 int iwl_mvm_update_low_latency(struct iwl_mvm *mvm, struct ieee80211_vif *vif,
 			      bool low_latency,
 			      enum iwl_mvm_low_latency_cause cause);
-/* get SystemLowLatencyMode - only needed for beacon threshold? */
+ 
 bool iwl_mvm_low_latency(struct iwl_mvm *mvm);
 bool iwl_mvm_low_latency_band(struct iwl_mvm *mvm, enum nl80211_band band);
 void iwl_mvm_send_low_latency_cmd(struct iwl_mvm *mvm, bool low_latency,
 				  u16 mac_id);
 
-/* get VMACLowLatencyMode */
+ 
 static inline bool iwl_mvm_vif_low_latency(struct iwl_mvm_vif *mvmvif)
 {
-	/*
-	 * should this consider associated/active/... state?
-	 *
-	 * Normally low-latency should only be active on interfaces
-	 * that are active, but at least with debugfs it can also be
-	 * enabled on interfaces that aren't active. However, when
-	 * interface aren't active then they aren't added into the
-	 * binding, so this has no real impact. For now, just return
-	 * the current desired low-latency state.
-	 */
+	 
 	return mvmvif->low_latency_actual;
 }
 
@@ -2188,24 +1901,17 @@ void iwl_mvm_vif_set_low_latency(struct iwl_mvm_vif *mvmvif, bool set,
 	else
 		mvmvif->low_latency &= ~cause;
 
-	/*
-	 * if LOW_LATENCY_DEBUGFS_FORCE_ENABLE is enabled no changes are
-	 * allowed to actual mode.
-	 */
+	 
 	if (mvmvif->low_latency & LOW_LATENCY_DEBUGFS_FORCE_ENABLE &&
 	    cause != LOW_LATENCY_DEBUGFS_FORCE_ENABLE)
 		return;
 
 	if (cause == LOW_LATENCY_DEBUGFS_FORCE_ENABLE && set)
-		/*
-		 * We enter force state
-		 */
+		 
 		new_state = !!(mvmvif->low_latency &
 			       LOW_LATENCY_DEBUGFS_FORCE);
 	else
-		/*
-		 * Check if any other one set low latency
-		 */
+		 
 		new_state = !!(mvmvif->low_latency &
 				  ~(LOW_LATENCY_DEBUGFS_FORCE_ENABLE |
 				    LOW_LATENCY_DEBUGFS_FORCE));
@@ -2213,9 +1919,7 @@ void iwl_mvm_vif_set_low_latency(struct iwl_mvm_vif *mvmvif, bool set,
 	mvmvif->low_latency_actual = new_state;
 }
 
-/* Return a bitmask with all the hw supported queues, except for the
- * command queue, which can't be flushed.
- */
+ 
 static inline u32 iwl_mvm_flushable_queues(struct iwl_mvm *mvm)
 {
 	return ((BIT(mvm->trans->trans_cfg->base_params->num_of_queues) - 1) &
@@ -2224,7 +1928,7 @@ static inline u32 iwl_mvm_flushable_queues(struct iwl_mvm *mvm)
 
 void iwl_mvm_stop_device(struct iwl_mvm *mvm);
 
-/* Thermal management and CT-kill */
+ 
 void iwl_mvm_tt_tx_backoff(struct iwl_mvm *mvm, u32 backoff);
 void iwl_mvm_temp_notif(struct iwl_mvm *mvm,
 			struct iwl_rx_cmd_buffer *rxb);
@@ -2240,7 +1944,7 @@ int iwl_mvm_ctdp_command(struct iwl_mvm *mvm, u32 op, u32 budget);
 
 #if IS_ENABLED(CONFIG_IWLMEI)
 
-/* vendor commands */
+ 
 void iwl_mvm_vendor_cmds_register(struct iwl_mvm *mvm);
 
 #else
@@ -2249,7 +1953,7 @@ static inline void iwl_mvm_vendor_cmds_register(struct iwl_mvm *mvm) {}
 
 #endif
 
-/* Location Aware Regulatory */
+ 
 struct iwl_mcc_update_resp_v8 *
 iwl_mvm_update_mcc(struct iwl_mvm *mvm, const char *alpha2,
 		   enum iwl_mcc_source src_id);
@@ -2265,11 +1969,11 @@ struct ieee80211_regdomain *iwl_mvm_get_current_regdomain(struct iwl_mvm *mvm,
 int iwl_mvm_init_fw_regd(struct iwl_mvm *mvm);
 void iwl_mvm_update_changed_regdom(struct iwl_mvm *mvm);
 
-/* smart fifo */
+ 
 int iwl_mvm_sf_update(struct iwl_mvm *mvm, struct ieee80211_vif *vif,
 		      bool added_vif);
 
-/* FTM responder */
+ 
 int iwl_mvm_ftm_start_responder(struct iwl_mvm *mvm, struct ieee80211_vif *vif,
 				struct ieee80211_bss_conf *bss_conf);
 void iwl_mvm_ftm_restart_responder(struct iwl_mvm *mvm,
@@ -2286,7 +1990,7 @@ int iwl_mvm_ftm_respoder_add_pasn_sta(struct iwl_mvm *mvm,
 void iwl_mvm_ftm_responder_clear(struct iwl_mvm *mvm,
 				 struct ieee80211_vif *vif);
 
-/* FTM initiator */
+ 
 void iwl_mvm_ftm_restart(struct iwl_mvm *mvm);
 void iwl_mvm_ftm_range_resp(struct iwl_mvm *mvm,
 			    struct iwl_rx_cmd_buffer *rxb);
@@ -2302,12 +2006,9 @@ int iwl_mvm_ftm_add_pasn_sta(struct iwl_mvm *mvm, struct ieee80211_vif *vif,
 			     u8 *hltk, u32 hltk_len);
 void iwl_mvm_ftm_remove_pasn_sta(struct iwl_mvm *mvm, u8 *addr);
 
-/* TDLS */
+ 
 
-/*
- * We use TID 4 (VI) as a FW-used-only TID when TDLS connections are present.
- * This TID is marked as used vs the AP and all connected TDLS peers.
- */
+ 
 #define IWL_MVM_TDLS_FW_TID 4
 
 int iwl_mvm_tdls_sta_count(struct iwl_mvm *mvm, struct ieee80211_vif *vif);
@@ -2376,7 +2077,7 @@ void iwl_mvm_link_sta_add_debugfs(struct ieee80211_hw *hw,
 				  struct dentry *dir);
 #endif
 
-/* new MLD related APIs */
+ 
 int iwl_mvm_sec_key_add(struct iwl_mvm *mvm,
 			struct ieee80211_vif *vif,
 			struct ieee80211_sta *sta,
@@ -2423,25 +2124,13 @@ static inline u8 iwl_mvm_phy_band_from_nl80211(enum nl80211_band band)
 	}
 }
 
-/* Channel Switch */
+ 
 void iwl_mvm_channel_switch_disconnect_wk(struct work_struct *wk);
 int iwl_mvm_post_channel_switch(struct ieee80211_hw *hw,
 				struct ieee80211_vif *vif);
 
-/* Channel Context */
-/**
- * struct iwl_mvm_switch_vif_chanctx_ops - callbacks for switch_vif_chanctx()
- *
- * Since the only difference between both MLD and
- * non-MLD versions of switch_vif_chanctx() is these function calls,
- * each version will send its specific function calls to
- * %iwl_mvm_switch_vif_chanctx_common().
- *
- * @__assign_vif_chanctx: pointer to the function that assigns a chanctx to
- *	a given vif
- * @__unassign_vif_chanctx: pointer to the function that unassigns a chanctx to
- *	a given vif
- */
+ 
+ 
 struct iwl_mvm_switch_vif_chanctx_ops {
 	int (*__assign_vif_chanctx)(struct iwl_mvm *mvm,
 				    struct ieee80211_vif *vif,
@@ -2462,7 +2151,7 @@ iwl_mvm_switch_vif_chanctx_common(struct ieee80211_hw *hw,
 				  enum ieee80211_chanctx_switch_mode mode,
 				  const struct iwl_mvm_switch_vif_chanctx_ops *ops);
 
-/* Channel info utils */
+ 
 static inline bool iwl_mvm_has_ultra_hb_channel(struct iwl_mvm *mvm)
 {
 	return fw_has_capa(&mvm->fw->ucode_capa,
@@ -2600,7 +2289,7 @@ void iwl_mvm_send_roaming_forbidden_event(struct iwl_mvm *mvm,
 					  bool forbidden);
 bool iwl_mvm_is_vendor_in_approved_list(void);
 
-/* Callbacks for ieee80211_ops */
+ 
 void iwl_mvm_mac_tx(struct ieee80211_hw *hw,
 		    struct ieee80211_tx_control *control, struct sk_buff *skb);
 void iwl_mvm_mac_wake_tx_queue(struct ieee80211_hw *hw,
@@ -2724,4 +2413,4 @@ int iwl_mvm_set_hw_timestamp(struct ieee80211_hw *hw,
 			     struct ieee80211_vif *vif,
 			     struct cfg80211_set_hw_timestamp *hwts);
 int iwl_mvm_update_mu_groups(struct iwl_mvm *mvm, struct ieee80211_vif *vif);
-#endif /* __IWL_MVM_H__ */
+#endif  

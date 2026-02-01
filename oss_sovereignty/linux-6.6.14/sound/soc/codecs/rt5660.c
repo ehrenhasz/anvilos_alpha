@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * rt5660.c  --  RT5660 ALSA SoC audio codec driver
- *
- * Copyright 2016 Realtek Semiconductor Corp.
- * Author: Oder Chiou <oder_chiou@realtek.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/moduleparam.h>
@@ -300,24 +295,24 @@ static const DECLARE_TLV_DB_SCALE(rt5660_adc_bst_tlv, 0, 1200, 0);
 static const DECLARE_TLV_DB_SCALE(rt5660_bst_tlv, -1200, 75, 0);
 
 static const struct snd_kcontrol_new rt5660_snd_controls[] = {
-	/* Speaker Output Volume */
+	 
 	SOC_SINGLE("Speaker Playback Switch", RT5660_SPK_VOL, RT5660_L_MUTE_SFT,
 		1, 1),
 	SOC_SINGLE_TLV("Speaker Playback Volume", RT5660_SPK_VOL,
 		RT5660_L_VOL_SFT, 39, 1, rt5660_out_vol_tlv),
 
-	/* OUTPUT Control */
+	 
 	SOC_DOUBLE("OUT Playback Switch", RT5660_LOUT_VOL, RT5660_L_MUTE_SFT,
 		RT5660_R_MUTE_SFT, 1, 1),
 	SOC_DOUBLE_TLV("OUT Playback Volume", RT5660_LOUT_VOL, RT5660_L_VOL_SFT,
 		RT5660_R_VOL_SFT, 39, 1, rt5660_out_vol_tlv),
 
-	/* DAC Digital Volume */
+	 
 	SOC_DOUBLE_TLV("DAC1 Playback Volume", RT5660_DAC1_DIG_VOL,
 		RT5660_DAC_L1_VOL_SFT, RT5660_DAC_R1_VOL_SFT, 87, 0,
 		rt5660_dac_vol_tlv),
 
-	/* IN1/IN2/IN3 Control */
+	 
 	SOC_SINGLE_TLV("IN1 Boost Volume", RT5660_IN1_IN2, RT5660_BST_SFT1, 69,
 		0, rt5660_bst_tlv),
 	SOC_SINGLE_TLV("IN2 Boost Volume", RT5660_IN1_IN2, RT5660_BST_SFT2, 69,
@@ -325,27 +320,20 @@ static const struct snd_kcontrol_new rt5660_snd_controls[] = {
 	SOC_SINGLE_TLV("IN3 Boost Volume", RT5660_IN3_IN4, RT5660_BST_SFT3, 69,
 		0, rt5660_bst_tlv),
 
-	/* ADC Digital Volume Control */
+	 
 	SOC_DOUBLE("ADC Capture Switch", RT5660_STO1_ADC_DIG_VOL,
 		RT5660_L_MUTE_SFT, RT5660_R_MUTE_SFT, 1, 1),
 	SOC_DOUBLE_TLV("ADC Capture Volume", RT5660_STO1_ADC_DIG_VOL,
 		RT5660_ADC_L_VOL_SFT, RT5660_ADC_R_VOL_SFT, 63, 0,
 		rt5660_adc_vol_tlv),
 
-	/* ADC Boost Volume Control */
+	 
 	SOC_DOUBLE_TLV("STO1 ADC Boost Gain Volume", RT5660_ADC_BST_VOL1,
 		RT5660_STO1_ADC_L_BST_SFT, RT5660_STO1_ADC_R_BST_SFT, 3, 0,
 		rt5660_adc_bst_tlv),
 };
 
-/**
- * rt5660_set_dmic_clk - Set parameter of dmic.
- *
- * @w: DAPM widget.
- * @kcontrol: The kcontrol of this widget.
- * @event: Event id.
- *
- */
+ 
 static int rt5660_set_dmic_clk(struct snd_soc_dapm_widget *w,
 	struct snd_kcontrol *kcontrol, int event)
 {
@@ -379,7 +367,7 @@ static int rt5660_is_sys_clk_from_pll(struct snd_soc_dapm_widget *source,
 		return 0;
 }
 
-/* Digital Mixer */
+ 
 static const struct snd_kcontrol_new rt5660_sto1_adc_l_mix[] = {
 	SOC_DAPM_SINGLE("ADC1 Switch", RT5660_STO1_ADC_MIXER,
 			RT5660_M_ADC_L1_SFT, 1, 1),
@@ -422,7 +410,7 @@ static const struct snd_kcontrol_new rt5660_sto_dac_r_mix[] = {
 			RT5660_M_DAC_L1_STO_R_SFT, 1, 1),
 };
 
-/* Analog Input Mixer */
+ 
 static const struct snd_kcontrol_new rt5660_rec_l_mix[] = {
 	SOC_DAPM_SINGLE("BST3 Switch", RT5660_REC_L2_MIXER,
 			RT5660_M_BST3_RM_L_SFT, 1, 1),
@@ -516,7 +504,7 @@ static const struct snd_kcontrol_new lout_r_vol_control =
 	SOC_DAPM_SINGLE("Switch", RT5660_LOUT_VOL,
 		RT5660_VOL_R_SFT, 1, 1);
 
-/* Interface data select */
+ 
 static const char * const rt5660_data_select[] = {
 	"L/R", "R/L", "L/L", "R/R"
 };
@@ -564,14 +552,14 @@ static const struct snd_soc_dapm_widget rt5660_dapm_widgets[] = {
 	SND_SOC_DAPM_SUPPLY("PLL1", RT5660_PWR_ANLG2,
 		RT5660_PWR_PLL_BIT, 0, NULL, 0),
 
-	/* MICBIAS */
+	 
 	SND_SOC_DAPM_SUPPLY("MICBIAS1", RT5660_PWR_ANLG2,
 			RT5660_PWR_MB1_BIT, 0, NULL, 0),
 	SND_SOC_DAPM_SUPPLY("MICBIAS2", RT5660_PWR_ANLG2,
 			RT5660_PWR_MB2_BIT, 0, NULL, 0),
 
-	/* Input Side */
-	/* Input Lines */
+	 
+	 
 	SND_SOC_DAPM_INPUT("DMIC L1"),
 	SND_SOC_DAPM_INPUT("DMIC R1"),
 
@@ -586,7 +574,7 @@ static const struct snd_soc_dapm_widget rt5660_dapm_widgets[] = {
 	SND_SOC_DAPM_SUPPLY("DMIC Power", RT5660_DMIC_CTRL1,
 		RT5660_DMIC_1_EN_SFT, 0, NULL, 0),
 
-	/* Boost */
+	 
 	SND_SOC_DAPM_PGA("BST1", RT5660_PWR_ANLG2, RT5660_PWR_BST1_BIT, 0,
 		NULL, 0),
 	SND_SOC_DAPM_PGA("BST2", RT5660_PWR_ANLG2, RT5660_PWR_BST2_BIT, 0,
@@ -594,13 +582,13 @@ static const struct snd_soc_dapm_widget rt5660_dapm_widgets[] = {
 	SND_SOC_DAPM_PGA("BST3", RT5660_PWR_ANLG2, RT5660_PWR_BST3_BIT, 0,
 		NULL, 0),
 
-	/* REC Mixer */
+	 
 	SND_SOC_DAPM_MIXER("RECMIXL", RT5660_PWR_MIXER, RT5660_PWR_RM_L_BIT,
 			0, rt5660_rec_l_mix, ARRAY_SIZE(rt5660_rec_l_mix)),
 	SND_SOC_DAPM_MIXER("RECMIXR", RT5660_PWR_MIXER, RT5660_PWR_RM_R_BIT,
 			0, rt5660_rec_r_mix, ARRAY_SIZE(rt5660_rec_r_mix)),
 
-	/* ADCs */
+	 
 	SND_SOC_DAPM_ADC("ADC L", NULL, SND_SOC_NOPM, 0, 0),
 	SND_SOC_DAPM_ADC("ADC R", NULL, SND_SOC_NOPM, 0, 0),
 
@@ -611,7 +599,7 @@ static const struct snd_soc_dapm_widget rt5660_dapm_widgets[] = {
 	SND_SOC_DAPM_SUPPLY("ADC clock", RT5660_PR_BASE + RT5660_CHOP_DAC_ADC,
 			12, 0, NULL, 0),
 
-	/* ADC Mixer */
+	 
 	SND_SOC_DAPM_SUPPLY("adc stereo1 filter", RT5660_PWR_DIG2,
 		RT5660_PWR_ADC_S1F_BIT, 0, NULL, 0),
 	SND_SOC_DAPM_MIXER("Sto1 ADC MIXL", SND_SOC_NOPM, 0, 0,
@@ -619,13 +607,13 @@ static const struct snd_soc_dapm_widget rt5660_dapm_widgets[] = {
 	SND_SOC_DAPM_MIXER("Sto1 ADC MIXR", SND_SOC_NOPM, 0, 0,
 		rt5660_sto1_adc_r_mix, ARRAY_SIZE(rt5660_sto1_adc_r_mix)),
 
-	/* ADC */
+	 
 	SND_SOC_DAPM_ADC("Stereo1 ADC MIXL", NULL, RT5660_STO1_ADC_DIG_VOL,
 		RT5660_L_MUTE_SFT, 1),
 	SND_SOC_DAPM_ADC("Stereo1 ADC MIXR", NULL, RT5660_STO1_ADC_DIG_VOL,
 		RT5660_R_MUTE_SFT, 1),
 
-	/* Digital Interface */
+	 
 	SND_SOC_DAPM_SUPPLY("I2S1", RT5660_PWR_DIG1, RT5660_PWR_I2S1_BIT, 0,
 		NULL, 0),
 	SND_SOC_DAPM_PGA("IF1 DAC", SND_SOC_NOPM, 0, 0, NULL, 0),
@@ -637,18 +625,18 @@ static const struct snd_soc_dapm_widget rt5660_dapm_widgets[] = {
 	SND_SOC_DAPM_MUX("IF1 ADC Swap Mux", SND_SOC_NOPM, 0, 0,
 			&rt5660_if1_adc_swap_mux),
 
-	/* Audio Interface */
+	 
 	SND_SOC_DAPM_AIF_IN("AIF1RX", "AIF1 Playback", 0, SND_SOC_NOPM, 0, 0),
 	SND_SOC_DAPM_AIF_OUT("AIF1TX", "AIF1 Capture", 0, SND_SOC_NOPM, 0, 0),
 
-	/* Output Side */
-	/* DAC mixer before sound effect  */
+	 
+	 
 	SND_SOC_DAPM_MIXER("DAC1 MIXL", SND_SOC_NOPM, 0, 0, rt5660_dac_l_mix,
 		ARRAY_SIZE(rt5660_dac_l_mix)),
 	SND_SOC_DAPM_MIXER("DAC1 MIXR", SND_SOC_NOPM, 0, 0, rt5660_dac_r_mix,
 		ARRAY_SIZE(rt5660_dac_r_mix)),
 
-	/* DAC Mixer */
+	 
 	SND_SOC_DAPM_SUPPLY("dac stereo1 filter", RT5660_PWR_DIG2,
 		RT5660_PWR_DAC_S1F_BIT, 0, NULL, 0),
 	SND_SOC_DAPM_MIXER("Stereo DAC MIXL", SND_SOC_NOPM, 0, 0,
@@ -656,13 +644,13 @@ static const struct snd_soc_dapm_widget rt5660_dapm_widgets[] = {
 	SND_SOC_DAPM_MIXER("Stereo DAC MIXR", SND_SOC_NOPM, 0, 0,
 		rt5660_sto_dac_r_mix, ARRAY_SIZE(rt5660_sto_dac_r_mix)),
 
-	/* DACs */
+	 
 	SND_SOC_DAPM_DAC("DAC L1", NULL, RT5660_PWR_DIG1,
 			RT5660_PWR_DAC_L1_BIT, 0),
 	SND_SOC_DAPM_DAC("DAC R1", NULL, RT5660_PWR_DIG1,
 			RT5660_PWR_DAC_R1_BIT, 0),
 
-	/* OUT Mixer */
+	 
 	SND_SOC_DAPM_MIXER("SPK MIX", RT5660_PWR_MIXER, RT5660_PWR_SM_BIT,
 		0, rt5660_spk_mix, ARRAY_SIZE(rt5660_spk_mix)),
 	SND_SOC_DAPM_MIXER("OUT MIXL", RT5660_PWR_MIXER, RT5660_PWR_OM_L_BIT,
@@ -670,7 +658,7 @@ static const struct snd_soc_dapm_widget rt5660_dapm_widgets[] = {
 	SND_SOC_DAPM_MIXER("OUT MIXR", RT5660_PWR_MIXER, RT5660_PWR_OM_R_BIT,
 		0, rt5660_out_r_mix, ARRAY_SIZE(rt5660_out_r_mix)),
 
-	/* Output Volume */
+	 
 	SND_SOC_DAPM_SWITCH("SPKVOL", RT5660_PWR_VOL,
 		RT5660_PWR_SV_BIT, 0, &spk_vol_control),
 	SND_SOC_DAPM_PGA("DAC 1", SND_SOC_NOPM,
@@ -682,7 +670,7 @@ static const struct snd_soc_dapm_widget rt5660_dapm_widgets[] = {
 	SND_SOC_DAPM_SWITCH("LOUTVOL R", SND_SOC_NOPM,
 		RT5660_PWR_LV_R_BIT, 0, &lout_r_vol_control),
 
-	/* HPO/LOUT/Mono Mixer */
+	 
 	SND_SOC_DAPM_MIXER("SPO MIX", SND_SOC_NOPM, 0,
 		0, rt5660_spo_mix, ARRAY_SIZE(rt5660_spo_mix)),
 	SND_SOC_DAPM_MIXER("LOUT MIX", SND_SOC_NOPM, 0, 0,
@@ -695,7 +683,7 @@ static const struct snd_soc_dapm_widget rt5660_dapm_widgets[] = {
 	SND_SOC_DAPM_PGA_S("SPK amp", 1, RT5660_PWR_DIG1,
 		RT5660_PWR_CLS_D_BIT, 0, NULL, 0),
 
-	/* Output Lines */
+	 
 	SND_SOC_DAPM_OUTPUT("LOUTL"),
 	SND_SOC_DAPM_OUTPUT("LOUTR"),
 	SND_SOC_DAPM_OUTPUT("SPO"),
@@ -1276,7 +1264,7 @@ static int rt5660_i2c_probe(struct i2c_client *i2c)
 	if (rt5660 == NULL)
 		return -ENOMEM;
 
-	/* Check if MCLK provided */
+	 
 	rt5660->mclk = devm_clk_get(&i2c->dev, "mclk");
 	if (PTR_ERR(rt5660->mclk) == -EPROBE_DEFER)
 		return -EPROBE_DEFER;

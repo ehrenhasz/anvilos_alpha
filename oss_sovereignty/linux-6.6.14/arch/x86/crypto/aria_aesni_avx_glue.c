@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Glue Code for the AVX/AES-NI/GFNI assembler implementation of the ARIA Cipher
- *
- * Copyright (c) 2022 Taehee Yoo <ap420073@gmail.com>
- */
+ 
+ 
 
 #include <crypto/algapi.h>
 #include <crypto/internal/simd.h>
@@ -37,7 +33,7 @@ asmlinkage void aria_aesni_avx_gfni_ctr_crypt_16way(const void *ctx, u8 *dst,
 						    const u8 *src,
 						    u8 *keystream, u8 *iv);
 EXPORT_SYMBOL_GPL(aria_aesni_avx_gfni_ctr_crypt_16way);
-#endif /* CONFIG_AS_GFNI */
+#endif  
 
 static struct aria_avx_ops aria_ops;
 

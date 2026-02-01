@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * lm75.c - Part of lm_sensors, Linux kernel modules for hardware
- *	 monitoring
- * Copyright (c) 1998, 1999  Frodo Looijaard <frodol@dds.nl>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -19,11 +15,9 @@
 #include <linux/regulator/consumer.h>
 #include "lm75.h"
 
-/*
- * This driver handles the LM75 and compatible digital temperature sensors.
- */
+ 
 
-enum lm75_type {		/* keep sorted in alphabetical order */
+enum lm75_type {		 
 	adt75,
 	at30ts74,
 	ds1775,
@@ -53,29 +47,7 @@ enum lm75_type {		/* keep sorted in alphabetical order */
 	tmp1075,
 };
 
-/**
- * struct lm75_params - lm75 configuration parameters.
- * @set_mask:		Bits to set in configuration register when configuring
- *			the chip.
- * @clr_mask:		Bits to clear in configuration register when configuring
- *			the chip.
- * @default_resolution:	Default number of bits to represent the temperature
- *			value.
- * @resolution_limits:	Limit register resolution. Optional. Should be set if
- *			the resolution of limit registers does not match the
- *			resolution of the temperature register.
- * @resolutions:	List of resolutions associated with sample times.
- *			Optional. Should be set if num_sample_times is larger
- *			than 1, and if the resolution changes with sample times.
- *			If set, number of entries must match num_sample_times.
- * @default_sample_time:Sample time to be set by default.
- * @num_sample_times:	Number of possible sample times to be set. Optional.
- *			Should be set if the number of sample times is larger
- *			than one.
- * @sample_times:	All the possible sample times to be set. Mandatory if
- *			num_sample_times is larger than 1. If set, number of
- *			entries must match num_sample_times.
- */
+ 
 
 struct lm75_params {
 	u8			set_mask;
@@ -88,48 +60,45 @@ struct lm75_params {
 	const unsigned int	*sample_times;
 };
 
-/* Addresses scanned */
+ 
 static const unsigned short normal_i2c[] = { 0x48, 0x49, 0x4a, 0x4b, 0x4c,
 					0x4d, 0x4e, 0x4f, I2C_CLIENT_END };
 
-/* The LM75 registers */
+ 
 #define LM75_REG_TEMP		0x00
 #define LM75_REG_CONF		0x01
 #define LM75_REG_HYST		0x02
 #define LM75_REG_MAX		0x03
 #define PCT2075_REG_IDLE	0x04
 
-/* Each client has this additional data */
+ 
 struct lm75_data {
 	struct i2c_client		*client;
 	struct regmap			*regmap;
 	struct regulator		*vs;
 	u8				orig_conf;
 	u8				current_conf;
-	u8				resolution;	/* In bits, 9 to 16 */
-	unsigned int			sample_time;	/* In ms */
+	u8				resolution;	 
+	unsigned int			sample_time;	 
 	enum lm75_type			kind;
 	const struct lm75_params	*params;
 };
 
-/*-----------------------------------------------------------------------*/
+ 
 
 static const u8 lm75_sample_set_masks[] = { 0 << 5, 1 << 5, 2 << 5, 3 << 5 };
 
 #define LM75_SAMPLE_CLEAR_MASK	(3 << 5)
 
-/* The structure below stores the configuration values of the supported devices.
- * In case of being supported multiple configurations, the default one must
- * always be the first element of the array
- */
+ 
 static const struct lm75_params device_params[] = {
 	[adt75] = {
-		.clr_mask = 1 << 5,	/* not one-shot mode */
+		.clr_mask = 1 << 5,	 
 		.default_resolution = 12,
 		.default_sample_time = MSEC_PER_SEC / 10,
 	},
 	[at30ts74] = {
-		.set_mask = 3 << 5,	/* 12-bit mode*/
+		.set_mask = 3 << 5,	 
 		.default_resolution = 12,
 		.default_sample_time = 200,
 		.num_sample_times = 4,
@@ -138,7 +107,7 @@ static const struct lm75_params device_params[] = {
 	},
 	[ds1775] = {
 		.clr_mask = 3 << 5,
-		.set_mask = 2 << 5,	/* 11-bit mode */
+		.set_mask = 2 << 5,	 
 		.default_resolution = 11,
 		.default_sample_time = 500,
 		.num_sample_times = 4,
@@ -147,7 +116,7 @@ static const struct lm75_params device_params[] = {
 	},
 	[ds75] = {
 		.clr_mask = 3 << 5,
-		.set_mask = 2 << 5,	/* 11-bit mode */
+		.set_mask = 2 << 5,	 
 		.default_resolution = 11,
 		.default_sample_time = 600,
 		.num_sample_times = 4,
@@ -156,7 +125,7 @@ static const struct lm75_params device_params[] = {
 	},
 	[stds75] = {
 		.clr_mask = 3 << 5,
-		.set_mask = 2 << 5,	/* 11-bit mode */
+		.set_mask = 2 << 5,	 
 		.default_resolution = 11,
 		.default_sample_time = 600,
 		.num_sample_times = 4,
@@ -168,7 +137,7 @@ static const struct lm75_params device_params[] = {
 		.default_sample_time = MSEC_PER_SEC / 6,
 	},
 	[ds7505] = {
-		.set_mask = 3 << 5,	/* 12-bit mode*/
+		.set_mask = 3 << 5,	 
 		.default_resolution = 12,
 		.default_sample_time = 200,
 		.num_sample_times = 4,
@@ -218,8 +187,8 @@ static const struct lm75_params device_params[] = {
 		2800, 2900, 3000, 3100 },
 	},
 	[mcp980x] = {
-		.set_mask = 3 << 5,	/* 12-bit mode */
-		.clr_mask = 1 << 7,	/* not one-shot mode */
+		.set_mask = 3 << 5,	 
+		.clr_mask = 1 << 7,	 
 		.default_resolution = 12,
 		.resolution_limits = 9,
 		.default_sample_time = 240,
@@ -228,8 +197,8 @@ static const struct lm75_params device_params[] = {
 		.resolutions = (u8 []) {9, 10, 11, 12 },
 	},
 	[tmp100] = {
-		.set_mask = 3 << 5,	/* 12-bit mode */
-		.clr_mask = 1 << 7,	/* not one-shot mode */
+		.set_mask = 3 << 5,	 
+		.clr_mask = 1 << 7,	 
 		.default_resolution = 12,
 		.default_sample_time = 320,
 		.num_sample_times = 4,
@@ -237,8 +206,8 @@ static const struct lm75_params device_params[] = {
 		.resolutions = (u8 []) {9, 10, 11, 12 },
 	},
 	[tmp101] = {
-		.set_mask = 3 << 5,	/* 12-bit mode */
-		.clr_mask = 1 << 7,	/* not one-shot mode */
+		.set_mask = 3 << 5,	 
+		.clr_mask = 1 << 7,	 
 		.default_resolution = 12,
 		.default_sample_time = 320,
 		.num_sample_times = 4,
@@ -246,8 +215,8 @@ static const struct lm75_params device_params[] = {
 		.resolutions = (u8 []) {9, 10, 11, 12 },
 	},
 	[tmp105] = {
-		.set_mask = 3 << 5,	/* 12-bit mode */
-		.clr_mask = 1 << 7,	/* not one-shot mode*/
+		.set_mask = 3 << 5,	 
+		.clr_mask = 1 << 7,	 
 		.default_resolution = 12,
 		.default_sample_time = 220,
 		.num_sample_times = 4,
@@ -255,16 +224,16 @@ static const struct lm75_params device_params[] = {
 		.resolutions = (u8 []) {9, 10, 11, 12 },
 	},
 	[tmp112] = {
-		.set_mask = 3 << 5,	/* 8 samples / second */
-		.clr_mask = 1 << 7,	/* no one-shot mode*/
+		.set_mask = 3 << 5,	 
+		.clr_mask = 1 << 7,	 
 		.default_resolution = 12,
 		.default_sample_time = 125,
 		.num_sample_times = 4,
 		.sample_times = (unsigned int []){ 125, 250, 1000, 4000 },
 	},
 	[tmp175] = {
-		.set_mask = 3 << 5,	/* 12-bit mode */
-		.clr_mask = 1 << 7,	/* not one-shot mode*/
+		.set_mask = 3 << 5,	 
+		.clr_mask = 1 << 7,	 
 		.default_resolution = 12,
 		.default_sample_time = 220,
 		.num_sample_times = 4,
@@ -272,8 +241,8 @@ static const struct lm75_params device_params[] = {
 		.resolutions = (u8 []) {9, 10, 11, 12 },
 	},
 	[tmp275] = {
-		.set_mask = 3 << 5,	/* 12-bit mode */
-		.clr_mask = 1 << 7,	/* not one-shot mode*/
+		.set_mask = 3 << 5,	 
+		.clr_mask = 1 << 7,	 
 		.default_resolution = 12,
 		.default_sample_time = 220,
 		.num_sample_times = 4,
@@ -281,15 +250,15 @@ static const struct lm75_params device_params[] = {
 		.resolutions = (u8 []) {9, 10, 11, 12 },
 	},
 	[tmp75] = {
-		.set_mask = 3 << 5,	/* 12-bit mode */
-		.clr_mask = 1 << 7,	/* not one-shot mode*/
+		.set_mask = 3 << 5,	 
+		.clr_mask = 1 << 7,	 
 		.default_resolution = 12,
 		.default_sample_time = 220,
 		.num_sample_times = 4,
 		.sample_times = (unsigned int []){ 28, 55, 110, 220 },
 		.resolutions = (u8 []) {9, 10, 11, 12 },
 	},
-	[tmp75b] = { /* not one-shot mode, Conversion rate 37Hz */
+	[tmp75b] = {  
 		.clr_mask = 1 << 7 | 3 << 5,
 		.default_resolution = 12,
 		.default_sample_time = MSEC_PER_SEC / 37,
@@ -299,11 +268,11 @@ static const struct lm75_params device_params[] = {
 		.num_sample_times = 4,
 	},
 	[tmp75c] = {
-		.clr_mask = 1 << 5,	/*not one-shot mode*/
+		.clr_mask = 1 << 5,	 
 		.default_resolution = 12,
 		.default_sample_time = MSEC_PER_SEC / 12,
 	},
-	[tmp1075] = { /* not one-shot mode, 27.5 ms sample rate */
+	[tmp1075] = {  
 		.clr_mask = 1 << 5 | 1 << 6 | 1 << 7,
 		.default_resolution = 12,
 		.default_sample_time = 28,
@@ -398,10 +367,7 @@ static int lm75_write_temp(struct device *dev, u32 attr, long temp)
 		return -EINVAL;
 	}
 
-	/*
-	 * Resolution of limit registers is assumed to be the same as the
-	 * temperature input register resolution unless given explicitly.
-	 */
+	 
 	if (data->params->resolution_limits)
 		resolution = data->params->resolution_limits;
 	else
@@ -601,17 +567,15 @@ static int lm75_probe(struct i2c_client *client)
 	if (IS_ERR(data->regmap))
 		return PTR_ERR(data->regmap);
 
-	/* Set to LM75 resolution (9 bits, 1/2 degree C) and range.
-	 * Then tweak to be more precise when appropriate.
-	 */
+	 
 
 	data->params = &device_params[data->kind];
 
-	/* Save default sample time and resolution*/
+	 
 	data->sample_time = data->params->default_sample_time;
 	data->resolution = data->params->default_resolution;
 
-	/* Enable the power */
+	 
 	err = regulator_enable(data->vs);
 	if (err) {
 		dev_err(dev, "failed to enable regulator: %d\n", err);
@@ -622,7 +586,7 @@ static int lm75_probe(struct i2c_client *client)
 	if (err)
 		return err;
 
-	/* Cache original configuration */
+	 
 	status = i2c_smbus_read_byte_data(client, LM75_REG_CONF);
 	if (status < 0) {
 		dev_dbg(dev, "Can't read config? %d\n", status);
@@ -680,7 +644,7 @@ static const struct i2c_device_id lm75_ids[] = {
 	{ "tmp75b", tmp75b, },
 	{ "tmp75c", tmp75c, },
 	{ "tmp1075", tmp1075, },
-	{ /* LIST END */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(i2c, lm75_ids);
 
@@ -803,7 +767,7 @@ MODULE_DEVICE_TABLE(of, lm75_of_match);
 
 #define LM75A_ID 0xA1
 
-/* Return 0 if detection is successful, -ENODEV otherwise */
+ 
 static int lm75_detect(struct i2c_client *new_client,
 		       struct i2c_board_info *info)
 {
@@ -816,42 +780,16 @@ static int lm75_detect(struct i2c_client *new_client,
 				     I2C_FUNC_SMBUS_WORD_DATA))
 		return -ENODEV;
 
-	/*
-	 * Now, we do the remaining detection. There is no identification-
-	 * dedicated register so we have to rely on several tricks:
-	 * unused bits, registers cycling over 8-address boundaries,
-	 * addresses 0x04-0x07 returning the last read value.
-	 * The cycling+unused addresses combination is not tested,
-	 * since it would significantly slow the detection down and would
-	 * hardly add any value.
-	 *
-	 * The National Semiconductor LM75A is different than earlier
-	 * LM75s.  It has an ID byte of 0xaX (where X is the chip
-	 * revision, with 1 being the only revision in existence) in
-	 * register 7, and unused registers return 0xff rather than the
-	 * last read value.
-	 *
-	 * Note that this function only detects the original National
-	 * Semiconductor LM75 and the LM75A. Clones from other vendors
-	 * aren't detected, on purpose, because they are typically never
-	 * found on PC hardware. They are found on embedded designs where
-	 * they can be instantiated explicitly so detection is not needed.
-	 * The absence of identification registers on all these clones
-	 * would make their exhaustive detection very difficult and weak,
-	 * and odds are that the driver would bind to unsupported devices.
-	 */
+	 
 
-	/* Unused bits */
+	 
 	conf = i2c_smbus_read_byte_data(new_client, 1);
 	if (conf & 0xe0)
 		return -ENODEV;
 
-	/* First check for LM75A */
+	 
 	if (i2c_smbus_read_byte_data(new_client, 7) == LM75A_ID) {
-		/*
-		 * LM75A returns 0xff on unused registers so
-		 * just to be sure we check for that too.
-		 */
+		 
 		if (i2c_smbus_read_byte_data(new_client, 4) != 0xff
 		 || i2c_smbus_read_byte_data(new_client, 5) != 0xff
 		 || i2c_smbus_read_byte_data(new_client, 6) != 0xff)
@@ -859,8 +797,8 @@ static int lm75_detect(struct i2c_client *new_client,
 		is_lm75a = 1;
 		hyst = i2c_smbus_read_byte_data(new_client, 2);
 		os = i2c_smbus_read_byte_data(new_client, 3);
-	} else { /* Traditional style LM75 detection */
-		/* Unused addresses */
+	} else {  
+		 
 		hyst = i2c_smbus_read_byte_data(new_client, 2);
 		if (i2c_smbus_read_byte_data(new_client, 4) != hyst
 		 || i2c_smbus_read_byte_data(new_client, 5) != hyst
@@ -874,14 +812,11 @@ static int lm75_detect(struct i2c_client *new_client,
 		 || i2c_smbus_read_byte_data(new_client, 7) != os)
 			return -ENODEV;
 	}
-	/*
-	 * It is very unlikely that this is a LM75 if both
-	 * hysteresis and temperature limit registers are 0.
-	 */
+	 
 	if (hyst == 0 && os == 0)
 		return -ENODEV;
 
-	/* Addresses cycling */
+	 
 	for (i = 8; i <= 248; i += 40) {
 		if (i2c_smbus_read_byte_data(new_client, i + 1) != conf
 		 || i2c_smbus_read_byte_data(new_client, i + 2) != hyst
@@ -935,7 +870,7 @@ static const struct dev_pm_ops lm75_dev_pm_ops = {
 #define LM75_DEV_PM_OPS (&lm75_dev_pm_ops)
 #else
 #define LM75_DEV_PM_OPS NULL
-#endif /* CONFIG_PM */
+#endif  
 
 static struct i2c_driver lm75_driver = {
 	.class		= I2C_CLASS_HWMON,

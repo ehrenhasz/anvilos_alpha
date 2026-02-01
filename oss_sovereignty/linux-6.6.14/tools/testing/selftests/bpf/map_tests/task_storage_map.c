@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (C) 2022. Huawei Technologies Co., Ltd */
+
+ 
 #define _GNU_SOURCE
 #include <sched.h>
 #include <unistd.h>
@@ -76,7 +76,7 @@ void test_task_storage_map_stress_lookup(void)
 	err = libbpf_get_error(skel);
 	CHECK(err, "open_and_load", "error %d\n", err);
 
-	/* Only for a fully preemptible kernel */
+	 
 	if (!skel->kconfig->CONFIG_PREEMPT) {
 		printf("%s SKIP (no CONFIG_PREEMPT)\n", __func__);
 		read_bpf_task_storage_busy__destroy(skel);
@@ -84,10 +84,10 @@ void test_task_storage_map_stress_lookup(void)
 		return;
 	}
 
-	/* Save the old affinity setting */
+	 
 	sched_getaffinity(getpid(), sizeof(old), &old);
 
-	/* Pinned on a specific CPU */
+	 
 	CPU_ZERO(&new);
 	CPU_SET(cpu, &new);
 	sched_setaffinity(getpid(), sizeof(new), &new);
@@ -114,14 +114,14 @@ void test_task_storage_map_stress_lookup(void)
 	err = read_bpf_task_storage_busy__attach(skel);
 	CHECK(err, "attach", "error %d\n", err);
 
-	/* Trigger program */
+	 
 	syscall(SYS_gettid);
 	skel->bss->pid = 0;
 
 	CHECK(skel->bss->busy != 0, "bad bpf_task_storage_busy", "got %d\n", skel->bss->busy);
 out:
 	read_bpf_task_storage_busy__destroy(skel);
-	/* Restore affinity setting */
+	 
 	sched_setaffinity(getpid(), sizeof(old), &old);
 	printf("%s:PASS\n", __func__);
 }

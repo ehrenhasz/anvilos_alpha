@@ -1,15 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * mt8183-afe-clk.h  --  Mediatek 8183 afe clock ctrl definition
- *
- * Copyright (c) 2018 MediaTek Inc.
- * Author: KaiChieh Chuang <kaichieh.chuang@mediatek.com>
- */
+ 
+ 
 
 #ifndef _MT8183_AFE_CLK_H_
 #define _MT8183_AFE_CLK_H_
 
-/* APLL */
+ 
 #define APLL1_W_NAME "APLL1"
 #define APLL2_W_NAME "APLL2"
 enum {

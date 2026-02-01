@@ -1,26 +1,4 @@
-/*
- * Copyright 2018 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- *
- */
+ 
 #include <linux/list.h>
 #include "amdgpu.h"
 #include "amdgpu_xgmi.h"
@@ -65,7 +43,7 @@ static const int xgmi_pcs_err_status_reg_arct[] = {
 	smnXGMI0_PCS_GOPX16_PCS_ERROR_STATUS + 0x800000,
 };
 
-/* same as vg20*/
+ 
 static const int wafl_pcs_err_status_reg_arct[] = {
 	smnPCS_GOPX1_0_PCS_GOPX1_PCS_ERROR_STATUS,
 	smnPCS_GOPX1_0_PCS_GOPX1_PCS_ERROR_STATUS + 0x100000,
@@ -242,32 +220,7 @@ static const struct amdgpu_pcs_ras_field xgmi3x16_pcs_ras_fields[] = {
 	 SOC15_REG_FIELD(PCS_XGMI3X16_PCS_ERROR_STATUS, RxCMDPktErr)},
 };
 
-/**
- * DOC: AMDGPU XGMI Support
- *
- * XGMI is a high speed interconnect that joins multiple GPU cards
- * into a homogeneous memory space that is organized by a collective
- * hive ID and individual node IDs, both of which are 64-bit numbers.
- *
- * The file xgmi_device_id contains the unique per GPU device ID and
- * is stored in the /sys/class/drm/card${cardno}/device/ directory.
- *
- * Inside the device directory a sub-directory 'xgmi_hive_info' is
- * created which contains the hive ID and the list of nodes.
- *
- * The hive ID is stored in:
- *   /sys/class/drm/card${cardno}/device/xgmi_hive_info/xgmi_hive_id
- *
- * The node information is stored in numbered directories:
- *   /sys/class/drm/card${cardno}/device/xgmi_hive_info/node${nodeno}/xgmi_device_id
- *
- * Each device has their own xgmi_hive_info direction with a mirror
- * set of node sub-directories.
- *
- * The XGMI memory space is built by contiguously adding the power of
- * two padded VRAM space from each node to each other.
- *
- */
+ 
 
 static struct attribute amdgpu_xgmi_hive_id = {
 	.name = "xgmi_hive_id",
@@ -400,29 +353,29 @@ static int amdgpu_xgmi_sysfs_add_dev_info(struct amdgpu_device *adev,
 	int ret = 0;
 	char node[10] = { 0 };
 
-	/* Create xgmi device id file */
+	 
 	ret = device_create_file(adev->dev, &dev_attr_xgmi_device_id);
 	if (ret) {
 		dev_err(adev->dev, "XGMI: Failed to create device file xgmi_device_id\n");
 		return ret;
 	}
 
-	/* Create xgmi error file */
+	 
 	ret = device_create_file(adev->dev, &dev_attr_xgmi_error);
 	if (ret)
 		pr_err("failed to create xgmi_error\n");
 
-	/* Create xgmi num hops file */
+	 
 	ret = device_create_file(adev->dev, &dev_attr_xgmi_num_hops);
 	if (ret)
 		pr_err("failed to create xgmi_num_hops\n");
 
-	/* Create xgmi num links file */
+	 
 	ret = device_create_file(adev->dev, &dev_attr_xgmi_num_links);
 	if (ret)
 		pr_err("failed to create xgmi_num_links\n");
 
-	/* Create sysfs link to hive info folder on the first device */
+	 
 	if (hive->kobj.parent != (&adev->dev->kobj)) {
 		ret = sysfs_create_link(&adev->dev->kobj, &hive->kobj,
 					"xgmi_hive_info");
@@ -433,7 +386,7 @@ static int amdgpu_xgmi_sysfs_add_dev_info(struct amdgpu_device *adev,
 	}
 
 	sprintf(node, "node%d", atomic_read(&hive->number_devices));
-	/* Create sysfs link form the hive folder to yourself */
+	 
 	ret = sysfs_create_link(&hive->kobj, &adev->dev->kobj, node);
 	if (ret) {
 		dev_err(adev->dev, "XGMI: Failed to create link from hive info");
@@ -505,7 +458,7 @@ struct amdgpu_hive_info *amdgpu_get_xgmi_hive(struct amdgpu_device *adev)
 		goto pro_end;
 	}
 
-	/* initialize new hive if not exist */
+	 
 	ret = kobject_init_and_add(&hive->kobj,
 			&amdgpu_xgmi_hive_type,
 			&adev->dev->kobj,
@@ -517,18 +470,9 @@ struct amdgpu_hive_info *amdgpu_get_xgmi_hive(struct amdgpu_device *adev)
 		goto pro_end;
 	}
 
-	/**
-	 * Only init hive->reset_domain for none SRIOV configuration. For SRIOV,
-	 * Host driver decide how to reset the GPU either through FLR or chain reset.
-	 * Guest side will get individual notifications from the host for the FLR
-	 * if necessary.
-	 */
+	 
 	if (!amdgpu_sriov_vf(adev)) {
-	/**
-	 * Avoid recreating reset domain when hive is reconstructed for the case
-	 * of reset the devices in the XGMI hive during probe for passthrough GPU
-	 * See https://www.spinics.net/lists/amd-gfx/msg58836.html
-	 */
+	 
 		if (adev->reset_domain->type != XGMI_HIVE) {
 			hive->reset_domain =
 				amdgpu_reset_create_reset_domain(XGMI_HIVE, "amdgpu-reset-hive");
@@ -554,10 +498,7 @@ struct amdgpu_hive_info *amdgpu_get_xgmi_hive(struct amdgpu_device *adev)
 	hive->pstate = AMDGPU_XGMI_PSTATE_UNKNOWN;
 	hive->hi_req_gpu = NULL;
 
-	/*
-	 * hive pstate on boot is high in vega20 so we have to go to low
-	 * pstate on after boot.
-	 */
+	 
 	hive->hi_req_count = AMDGPU_MAX_XGMI_DEVICE_PER_HIVE;
 	list_add_tail(&hive->node, &xgmi_hive_list);
 
@@ -589,7 +530,7 @@ int amdgpu_xgmi_set_pstate(struct amdgpu_device *adev, int pstate)
 	request_adev = hive->hi_req_gpu ? hive->hi_req_gpu : adev;
 	init_low = hive->pstate == AMDGPU_XGMI_PSTATE_UNKNOWN;
 	amdgpu_put_xgmi_hive(hive);
-	/* fw bug so temporarily disable pstate switching */
+	 
 	return 0;
 
 	if (!hive || adev->asic_type != CHIP_VEGA20)
@@ -602,10 +543,7 @@ int amdgpu_xgmi_set_pstate(struct amdgpu_device *adev, int pstate)
 	else
 		hive->hi_req_count--;
 
-	/*
-	 * Vega20 only needs single peer to request pstate high for the hive to
-	 * go high but all peers must request pstate low for the hive to go low
-	 */
+	 
 	if (hive->pstate == pstate ||
 			(!is_hi_req && hive->hi_req_count && !init_low))
 		goto out;
@@ -641,7 +579,7 @@ int amdgpu_xgmi_update_topology(struct amdgpu_hive_info *hive, struct amdgpu_dev
 	if (amdgpu_sriov_vf(adev))
 		return 0;
 
-	/* Each psp need to set the latest topology */
+	 
 	ret = psp_xgmi_set_topology_info(&adev->psp,
 					 atomic_read(&hive->number_devices),
 					 &adev->psp.xgmi_context.top_info);
@@ -655,12 +593,7 @@ int amdgpu_xgmi_update_topology(struct amdgpu_hive_info *hive, struct amdgpu_dev
 }
 
 
-/*
- * NOTE psp_xgmi_node_info.num_hops layout is as follows:
- * num_hops[7:6] = link type (0 = xGMI2, 1 = xGMI3, 2/3 = reserved)
- * num_hops[5:3] = reserved
- * num_hops[2:0] = number of hops
- */
+ 
 int amdgpu_xgmi_get_hops_count(struct amdgpu_device *adev,
 		struct amdgpu_device *peer_adev)
 {
@@ -686,12 +619,7 @@ int amdgpu_xgmi_get_num_links(struct amdgpu_device *adev,
 	return	-EINVAL;
 }
 
-/*
- * Devices that support extended data require the entire hive to initialize with
- * the shared memory buffer flag set.
- *
- * Hive locks and conditions apply - see amdgpu_xgmi_add_device
- */
+ 
 static int amdgpu_xgmi_initialize_hive_get_data_partition(struct amdgpu_hive_info *hive,
 							bool set_extended_data)
 {
@@ -774,7 +702,7 @@ int amdgpu_xgmi_add_device(struct amdgpu_device *adev)
 	if (!adev->gmc.xgmi.pending_reset &&
 	    amdgpu_device_ip_get_ip_block(adev, AMD_IP_BLOCK_TYPE_PSP)) {
 		list_for_each_entry(tmp_adev, &hive->device_list, gmc.xgmi.head) {
-			/* update node list for other device in the hive */
+			 
 			if (tmp_adev != adev) {
 				top_info = &tmp_adev->psp.xgmi_context.top_info;
 				top_info->nodes[count - 1].node_id =
@@ -786,7 +714,7 @@ int amdgpu_xgmi_add_device(struct amdgpu_device *adev)
 				goto exit_unlock;
 		}
 
-		/* get latest topology info for each device from psp */
+		 
 		list_for_each_entry(tmp_adev, &hive->device_list, gmc.xgmi.head) {
 			ret = psp_xgmi_get_topology_info(&tmp_adev->psp, count,
 					&tmp_adev->psp.xgmi_context.top_info, false);
@@ -795,20 +723,20 @@ int amdgpu_xgmi_add_device(struct amdgpu_device *adev)
 					"XGMI: Get topology failure on device %llx, hive %llx, ret %d",
 					tmp_adev->gmc.xgmi.node_id,
 					tmp_adev->gmc.xgmi.hive_id, ret);
-				/* To do : continue with some node failed or disable the whole hive */
+				 
 				goto exit_unlock;
 			}
 		}
 
-		/* get topology again for hives that support extended data */
+		 
 		if (adev->psp.xgmi_context.supports_extended_data) {
 
-			/* initialize the hive to get extended data.  */
+			 
 			ret = amdgpu_xgmi_initialize_hive_get_data_partition(hive, true);
 			if (ret)
 				goto exit_unlock;
 
-			/* get the extended data. */
+			 
 			list_for_each_entry(tmp_adev, &hive->device_list, gmc.xgmi.head) {
 				ret = psp_xgmi_get_topology_info(&tmp_adev->psp, count,
 						&tmp_adev->psp.xgmi_context.top_info, true);
@@ -821,7 +749,7 @@ int amdgpu_xgmi_add_device(struct amdgpu_device *adev)
 				}
 			}
 
-			/* initialize the hive to get non-extended data for the next round. */
+			 
 			ret = amdgpu_xgmi_initialize_hive_get_data_partition(hive, false);
 			if (ret)
 				goto exit_unlock;
@@ -871,7 +799,7 @@ int amdgpu_xgmi_remove_device(struct amdgpu_device *adev)
 	adev->hive = NULL;
 
 	if (atomic_dec_return(&hive->number_devices) == 0) {
-		/* Remove the hive from global hive list */
+		 
 		mutex_lock(&xgmi_mutex);
 		list_del(&hive->node);
 		mutex_unlock(&xgmi_mutex);
@@ -963,8 +891,7 @@ static int amdgpu_xgmi_query_pcs_error_status(struct amdgpu_device *adev,
 	if (check_mask)
 		value = value & ~mask_value;
 
-	/* query xgmi/walf pcs error status,
-	 * only ue is supported */
+	 
 	for (i = 0; value && i < field_array_size; i++) {
 		ue_cnt = (value &
 				pcs_ras_fields[i].pcs_err_mask) >>
@@ -975,7 +902,7 @@ static int amdgpu_xgmi_query_pcs_error_status(struct amdgpu_device *adev,
 			*ue_count += ue_cnt;
 		}
 
-		/* reset bit value if the bit is checked */
+		 
 		value &= ~(pcs_ras_fields[i].pcs_err_mask);
 	}
 
@@ -998,14 +925,14 @@ static void amdgpu_xgmi_query_ras_error_count(struct amdgpu_device *adev,
 
 	switch (adev->asic_type) {
 	case CHIP_ARCTURUS:
-		/* check xgmi pcs error */
+		 
 		for (i = 0; i < ARRAY_SIZE(xgmi_pcs_err_status_reg_arct); i++) {
 			data = RREG32_PCIE(xgmi_pcs_err_status_reg_arct[i]);
 			if (data)
 				amdgpu_xgmi_query_pcs_error_status(adev, data,
 						mask_data, &ue_cnt, &ce_cnt, true, false);
 		}
-		/* check wafl pcs error */
+		 
 		for (i = 0; i < ARRAY_SIZE(wafl_pcs_err_status_reg_arct); i++) {
 			data = RREG32_PCIE(wafl_pcs_err_status_reg_arct[i]);
 			if (data)
@@ -1014,14 +941,14 @@ static void amdgpu_xgmi_query_ras_error_count(struct amdgpu_device *adev,
 		}
 		break;
 	case CHIP_VEGA20:
-		/* check xgmi pcs error */
+		 
 		for (i = 0; i < ARRAY_SIZE(xgmi_pcs_err_status_reg_vg20); i++) {
 			data = RREG32_PCIE(xgmi_pcs_err_status_reg_vg20[i]);
 			if (data)
 				amdgpu_xgmi_query_pcs_error_status(adev, data,
 						mask_data, &ue_cnt, &ce_cnt, true, false);
 		}
-		/* check wafl pcs error */
+		 
 		for (i = 0; i < ARRAY_SIZE(wafl_pcs_err_status_reg_vg20); i++) {
 			data = RREG32_PCIE(wafl_pcs_err_status_reg_vg20[i]);
 			if (data)
@@ -1030,7 +957,7 @@ static void amdgpu_xgmi_query_ras_error_count(struct amdgpu_device *adev,
 		}
 		break;
 	case CHIP_ALDEBARAN:
-		/* check xgmi3x16 pcs error */
+		 
 		for (i = 0; i < ARRAY_SIZE(xgmi3x16_pcs_err_status_reg_aldebaran); i++) {
 			data = RREG32_PCIE(xgmi3x16_pcs_err_status_reg_aldebaran[i]);
 			mask_data =
@@ -1039,7 +966,7 @@ static void amdgpu_xgmi_query_ras_error_count(struct amdgpu_device *adev,
 				amdgpu_xgmi_query_pcs_error_status(adev, data,
 						mask_data, &ue_cnt, &ce_cnt, true, true);
 		}
-		/* check wafl pcs error */
+		 
 		for (i = 0; i < ARRAY_SIZE(walf_pcs_err_status_reg_aldebaran); i++) {
 			data = RREG32_PCIE(walf_pcs_err_status_reg_aldebaran[i]);
 			mask_data =
@@ -1060,7 +987,7 @@ static void amdgpu_xgmi_query_ras_error_count(struct amdgpu_device *adev,
 	err_data->ce_count += ce_cnt;
 }
 
-/* Trigger XGMI/WAFL error */
+ 
 static int amdgpu_ras_error_inject_xgmi(struct amdgpu_device *adev,
 			void *inject_if, uint32_t instance_mask)
 {

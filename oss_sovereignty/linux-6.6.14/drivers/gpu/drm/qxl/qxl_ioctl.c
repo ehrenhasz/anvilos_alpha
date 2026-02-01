@@ -1,27 +1,4 @@
-/*
- * Copyright 2013 Red Hat Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: Dave Airlie
- *          Alon Levy
- */
+ 
 
 #include <linux/pci.h>
 #include <linux/uaccess.h>
@@ -29,10 +6,7 @@
 #include "qxl_drv.h"
 #include "qxl_object.h"
 
-/*
- * TODO: allocating a new gem(in qxl_bo) for each request.
- * This is wasteful since bo's are page aligned.
- */
+ 
 int qxl_alloc_ioctl(struct drm_device *dev, void *data, struct drm_file *file_priv)
 {
 	struct qxl_device *qdev = to_qxl(dev);
@@ -76,11 +50,7 @@ struct qxl_reloc_info {
 	int src_offset;
 };
 
-/*
- * dst must be validated, i.e. whole bo on vram/surfacesram (right now all bo's
- * are on vram).
- * *(dst + dst_off) = qxl_bo_physical_address(src, src_off)
- */
+ 
 static void
 apply_reloc(struct qxl_device *qdev, struct qxl_reloc_info *info)
 {
@@ -107,7 +77,7 @@ apply_surf_reloc(struct qxl_device *qdev, struct qxl_reloc_info *info)
 	qxl_bo_kunmap_atomic_page(qdev, info->dst_bo, reloc_page);
 }
 
-/* return holding the reference to this object */
+ 
 static int qxlhw_handle_to_bo(struct drm_file *file_priv, uint64_t handle,
 			      struct qxl_release *release, struct qxl_bo **qbo_p)
 {
@@ -130,12 +100,7 @@ static int qxlhw_handle_to_bo(struct drm_file *file_priv, uint64_t handle,
 	return 0;
 }
 
-/*
- * Usage of execbuffer:
- * Relocations need to take into account the full QXLDrawable size.
- * However, the command as passed from user space must *not* contain the initial
- * QXLReleaseInfo struct (first XXX bytes)
- */
+ 
 static int qxl_process_single_command(struct qxl_device *qdev,
 				      struct drm_qxl_command *cmd,
 				      struct drm_file *file_priv)
@@ -180,7 +145,7 @@ static int qxl_process_single_command(struct qxl_device *qdev,
 	if (ret)
 		goto out_free_reloc;
 
-	/* TODO copy slow path code from i915 */
+	 
 	fb_cmd = qxl_bo_kmap_atomic_page(qdev, cmd_bo, (release->release_offset & PAGE_MASK));
 	unwritten = __copy_from_user_inatomic_nocache
 		(fb_cmd + sizeof(union qxl_release_info) + (release->release_offset & ~PAGE_MASK),
@@ -199,7 +164,7 @@ static int qxl_process_single_command(struct qxl_device *qdev,
 		goto out_free_release;
 	}
 
-	/* fill out reloc info structs */
+	 
 	num_relocs = 0;
 	for (i = 0; i < cmd->relocs_num; ++i) {
 		struct drm_qxl_reloc reloc;
@@ -210,8 +175,7 @@ static int qxl_process_single_command(struct qxl_device *qdev,
 			goto out_free_bos;
 		}
 
-		/* add the bos to the list of bos to validate -
-		   need to validate first then process relocs? */
+		 
 		if (reloc.reloc_type != QXL_RELOC_TYPE_BO && reloc.reloc_type != QXL_RELOC_TYPE_SURF) {
 			DRM_DEBUG("unknown reloc type %d\n", reloc.reloc_type);
 
@@ -232,7 +196,7 @@ static int qxl_process_single_command(struct qxl_device *qdev,
 		}
 		num_relocs++;
 
-		/* reserve and validate the reloc dst bo */
+		 
 		if (reloc.reloc_type == QXL_RELOC_TYPE_BO || reloc.src_handle) {
 			ret = qxlhw_handle_to_bo(file_priv, reloc.src_handle, release,
 						 &reloc_info[i].src_bo);
@@ -245,7 +209,7 @@ static int qxl_process_single_command(struct qxl_device *qdev,
 		}
 	}
 
-	/* validate all buffers */
+	 
 	ret = qxl_release_reserve_list(release, false);
 	if (ret)
 		goto out_free_bos;
@@ -390,7 +354,7 @@ int qxl_alloc_surf_ioctl(struct drm_device *dev, void *data, struct drm_file *fi
 	int size, actual_stride;
 	struct qxl_surface surf;
 
-	/* work out size allocate bo with handle */
+	 
 	actual_stride = param->stride < 0 ? -param->stride : param->stride;
 	size = actual_stride * param->height + actual_stride;
 

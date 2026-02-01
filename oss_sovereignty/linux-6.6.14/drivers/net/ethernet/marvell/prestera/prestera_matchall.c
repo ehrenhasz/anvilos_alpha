@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
-/* Copyright (c) 2019-2022 Marvell International Ltd. All rights reserved */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/list.h>
@@ -21,7 +21,7 @@ static int prestera_mall_prio_check(struct prestera_flow_block *block,
 	err = prestera_flower_prio_get(block, f->common.chain_index,
 				       &flower_prio_min, &flower_prio_max);
 	if (err == -ENOENT)
-		/* No flower filters installed on this chain. */
+		 
 		return 0;
 
 	if (err) {

@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2012 Samsung Electronics Co., Ltd.
- */
+ 
+ 
 
 #ifndef FIMC_LITE_H_
 #define FIMC_LITE_H_
@@ -29,7 +27,7 @@
 #define FLITE_DEFAULT_WIDTH	640
 #define FLITE_DEFAULT_HEIGHT	480
 
-/* Bit index definitions for struct fimc_lite::state */
+ 
 enum {
 	ST_FLITE_LPM,
 	ST_FLITE_PENDING,
@@ -47,18 +45,7 @@ enum {
 #define FLITE_SD_PAD_SOURCE_ISP	2
 #define FLITE_SD_PADS_NUM	3
 
-/**
- * struct flite_drvdata - FIMC-LITE IP variant data structure
- * @max_width: maximum camera interface input width in pixels
- * @max_height: maximum camera interface input height in pixels
- * @out_width_align: minimum output width alignment in pixels
- * @win_hor_offs_align: minimum camera interface crop window horizontal
- *			offset alignment in pixels
- * @out_hor_offs_align: minimum output DMA compose rectangle horizontal
- *			offset alignment in pixels
- * @max_dma_bufs: number of output DMA buffer start address registers
- * @num_instances: total number of FIMC-LITE IP instances available
- */
+ 
 struct flite_drvdata {
 	unsigned short max_width;
 	unsigned short max_height;
@@ -75,13 +62,7 @@ struct fimc_lite_events {
 
 #define FLITE_MAX_PLANES	1
 
-/**
- * struct flite_frame - source/target frame properties
- * @f_width: full pixel width
- * @f_height: full pixel height
- * @rect: crop/composition rectangle
- * @fmt: pointer to pixel format description data structure
- */
+ 
 struct flite_frame {
 	u16 f_width;
 	u16 f_height;
@@ -89,13 +70,7 @@ struct flite_frame {
 	const struct fimc_fmt *fmt;
 };
 
-/**
- * struct flite_buffer - video buffer structure
- * @vb:    vb2 buffer
- * @list:  list head for the buffers queue
- * @addr: DMA buffer start address
- * @index: DMA start address register's index
- */
+ 
 struct flite_buffer {
 	struct vb2_v4l2_buffer vb;
 	struct list_head list;
@@ -103,43 +78,7 @@ struct flite_buffer {
 	unsigned short index;
 };
 
-/**
- * struct fimc_lite - fimc lite structure
- * @pdev: pointer to FIMC-LITE platform device
- * @dd: SoC specific driver data structure
- * @ve: exynos video device entity structure
- * @v4l2_dev: pointer to top the level v4l2_device
- * @fh: v4l2 file handle
- * @subdev: FIMC-LITE subdev
- * @vd_pad: media (sink) pad for the capture video node
- * @subdev_pads: the subdev media pads
- * @sensor: sensor subdev attached to FIMC-LITE directly or through MIPI-CSIS
- * @ctrl_handler: v4l2 control handler
- * @test_pattern: test pattern controls
- * @index: FIMC-LITE platform device index
- * @pipeline: video capture pipeline data structure
- * @pipeline_ops: media pipeline ops for the video node driver
- * @slock: spinlock protecting this data structure and the hw registers
- * @lock: mutex serializing video device and the subdev operations
- * @clock: FIMC-LITE gate clock
- * @regs: memory mapped io registers
- * @irq_queue: interrupt handler waitqueue
- * @payload: image size in bytes (w x h x bpp)
- * @inp_frame: camera input frame structure
- * @out_frame: DMA output frame structure
- * @out_path: output data path (DMA or FIFO)
- * @source_subdev_grp_id: source subdev group id
- * @state: driver state flags
- * @pending_buf_q: pending buffers queue head
- * @active_buf_q: the queue head of buffers scheduled in hardware
- * @vb_queue: vb2 buffers queue
- * @buf_index: helps to keep track of the DMA start address register index
- * @active_buf_count: number of video buffers scheduled in hardware
- * @frame_count: the captured frames counter
- * @reqbufs_count: the number of buffers requested with REQBUFS ioctl
- * @events: event info
- * @streaming: is streaming in progress?
- */
+ 
 struct fimc_lite {
 	struct platform_device	*pdev;
 	struct flite_drvdata	*dd;
@@ -221,4 +160,4 @@ static inline struct flite_buffer *fimc_lite_pending_queue_pop(
 	return buf;
 }
 
-#endif /* FIMC_LITE_H_ */
+#endif  

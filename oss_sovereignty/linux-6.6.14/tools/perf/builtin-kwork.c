@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * builtin-kwork.c
- *
- * Copyright (c) 2022  Huawei Inc,  Yang Jihong <yangjihong1@huawei.com>
- */
+
+ 
 
 #include "builtin.h"
 
@@ -32,9 +28,7 @@
 #include <linux/time64.h>
 #include <linux/zalloc.h>
 
-/*
- * report header elements width
- */
+ 
 #define PRINT_CPU_WIDTH 4
 #define PRINT_COUNT_WIDTH 9
 #define PRINT_RUNTIME_WIDTH 10
@@ -209,9 +203,7 @@ static struct kwork_atom *atom_new(struct perf_kwork *kwork,
 		}
 	}
 
-	/*
-	 * new page
-	 */
+	 
 	page = zalloc(sizeof(*page));
 	if (page == NULL) {
 		pr_err("Failed to zalloc kwork atom page\n");
@@ -596,7 +588,7 @@ static void timehist_save_callchain(struct perf_kwork *kwork,
 	if (!kwork->show_callchain || sample->callchain == NULL)
 		return;
 
-	/* want main thread for process - has maps */
+	 
 	thread = machine__findnew_thread(machine, sample->pid, sample->pid);
 	if (thread == NULL) {
 		pr_debug("Failed to get thread for pid %d\n", sample->pid);
@@ -641,28 +633,20 @@ static void timehist_print_event(struct perf_kwork *kwork,
 	char entrytime[32], exittime[32];
 	char kwork_name[PRINT_KWORK_NAME_WIDTH];
 
-	/*
-	 * runtime start
-	 */
+	 
 	timestamp__scnprintf_usec(atom->time,
 				  entrytime, sizeof(entrytime));
 	printf(" %*s ", PRINT_TIMESTAMP_WIDTH, entrytime);
 
-	/*
-	 * runtime end
-	 */
+	 
 	timestamp__scnprintf_usec(sample->time,
 				  exittime, sizeof(exittime));
 	printf(" %*s ", PRINT_TIMESTAMP_WIDTH, exittime);
 
-	/*
-	 * cpu
-	 */
+	 
 	printf(" [%0*d] ", PRINT_CPU_WIDTH, work->cpu);
 
-	/*
-	 * kwork name
-	 */
+	 
 	if (work->class && work->class->work_name) {
 		work->class->work_name(work, kwork_name,
 				       PRINT_KWORK_NAME_WIDTH);
@@ -670,25 +654,19 @@ static void timehist_print_event(struct perf_kwork *kwork,
 	} else
 		printf(" %-*s ", PRINT_KWORK_NAME_WIDTH, "");
 
-	/*
-	 *runtime
-	 */
+	 
 	printf(" %*.*f ",
 	       PRINT_RUNTIME_WIDTH, RPINT_DECIMAL_WIDTH,
 	       (double)(sample->time - atom->time) / NSEC_PER_MSEC);
 
-	/*
-	 * delaytime
-	 */
+	 
 	if (atom->prev != NULL)
 		printf(" %*.*f ", PRINT_LATENCY_WIDTH, RPINT_DECIMAL_WIDTH,
 		       (double)(atom->time - atom->prev->time) / NSEC_PER_MSEC);
 	else
 		printf(" %*s ", PRINT_LATENCY_WIDTH, " ");
 
-	/*
-	 * callchain
-	 */
+	 
 	if (kwork->show_callchain) {
 		struct callchain_cursor *cursor = get_tls_callchain_cursor();
 
@@ -920,7 +898,7 @@ static char *evsel__softirq_name(struct evsel *evsel, u64 num)
 	if ((args == NULL) || (args->next == NULL))
 		return NULL;
 
-	/* skip softirq field: "REC->vec" */
+	 
 	for (sym = args->next->symbol.symbols; sym != NULL; sym = sym->next) {
 		if ((eval_flag(sym->value) == (unsigned long long)num) &&
 		    (strlen(sym->str) != 0)) {
@@ -1086,9 +1064,7 @@ static int report_print_work(struct perf_kwork *kwork, struct kwork_work *work)
 
 	printf(" ");
 
-	/*
-	 * kwork name
-	 */
+	 
 	if (work->class && work->class->work_name) {
 		work->class->work_name(work, kwork_name,
 				       PRINT_KWORK_NAME_WIDTH);
@@ -1097,33 +1073,25 @@ static int report_print_work(struct perf_kwork *kwork, struct kwork_work *work)
 		ret += printf(" %-*s |", PRINT_KWORK_NAME_WIDTH, "");
 	}
 
-	/*
-	 * cpu
-	 */
+	 
 	ret += printf(" %0*d |", PRINT_CPU_WIDTH, work->cpu);
 
-	/*
-	 * total runtime
-	 */
+	 
 	if (kwork->report == KWORK_REPORT_RUNTIME) {
 		ret += printf(" %*.*f ms |",
 			      PRINT_RUNTIME_WIDTH, RPINT_DECIMAL_WIDTH,
 			      (double)work->total_runtime / NSEC_PER_MSEC);
-	} else if (kwork->report == KWORK_REPORT_LATENCY) { // avg delay
+	} else if (kwork->report == KWORK_REPORT_LATENCY) { 
 		ret += printf(" %*.*f ms |",
 			      PRINT_LATENCY_WIDTH, RPINT_DECIMAL_WIDTH,
 			      (double)work->total_latency /
 			      work->nr_atoms / NSEC_PER_MSEC);
 	}
 
-	/*
-	 * count
-	 */
+	 
 	ret += printf(" %*" PRIu64 " |", PRINT_COUNT_WIDTH, work->nr_atoms);
 
-	/*
-	 * max runtime, max runtime start, max runtime end
-	 */
+	 
 	if (kwork->report == KWORK_REPORT_RUNTIME) {
 		timestamp__scnprintf_usec(work->max_runtime_start,
 					  max_runtime_start,
@@ -1137,9 +1105,7 @@ static int report_print_work(struct perf_kwork *kwork, struct kwork_work *work)
 			      PRINT_TIMESTAMP_WIDTH, max_runtime_start,
 			      PRINT_TIMESTAMP_WIDTH, max_runtime_end);
 	}
-	/*
-	 * max delay, max delay start, max delay end
-	 */
+	 
 	else if (kwork->report == KWORK_REPORT_LATENCY) {
 		timestamp__scnprintf_usec(work->max_latency_start,
 					  max_latency_start,
@@ -1196,9 +1162,7 @@ static int report_print_header(struct perf_kwork *kwork)
 
 static void timehist_print_header(void)
 {
-	/*
-	 * header row
-	 */
+	 
 	printf(" %-*s  %-*s  %-*s  %-*s  %-*s  %-*s\n",
 	       PRINT_TIMESTAMP_WIDTH, "Runtime start",
 	       PRINT_TIMESTAMP_WIDTH, "Runtime end",
@@ -1207,9 +1171,7 @@ static void timehist_print_header(void)
 	       PRINT_RUNTIME_WIDTH, "Runtime",
 	       PRINT_RUNTIME_WIDTH, "Delaytime");
 
-	/*
-	 * units row
-	 */
+	 
 	printf(" %-*s  %-*s  %-*s  %-*s  %-*s  %-*s\n",
 	       PRINT_TIMESTAMP_WIDTH, "",
 	       PRINT_TIMESTAMP_WIDTH, "",
@@ -1218,9 +1180,7 @@ static void timehist_print_header(void)
 	       PRINT_RUNTIME_WIDTH, "(msec)",
 	       PRINT_RUNTIME_WIDTH, "(msec)");
 
-	/*
-	 * separator
-	 */
+	 
 	printf(" %.*s  %.*s  %.*s  %.*s  %.*s  %.*s\n",
 	       PRINT_TIMESTAMP_WIDTH, graph_dotted_line,
 	       PRINT_TIMESTAMP_WIDTH, graph_dotted_line,
@@ -1467,10 +1427,7 @@ struct kwork_work *perf_kwork_add_work(struct perf_kwork *kwork,
 
 static void sig_handler(int sig)
 {
-	/*
-	 * Simply capture termination signal so that
-	 * the program can continue after pause returns
-	 */
+	 
 	pr_debug("Captuer signal %d\n", sig);
 }
 
@@ -1489,9 +1446,7 @@ static int perf_kwork__report_bpf(struct perf_kwork *kwork)
 
 	perf_kwork__trace_start();
 
-	/*
-	 * a simple pause, wait here for stop signal
-	 */
+	 
 	pause();
 
 	perf_kwork__trace_finish();
@@ -1574,9 +1529,7 @@ static int perf_kwork__process_tracepoint_sample(struct perf_tool *tool,
 
 static int perf_kwork__timehist(struct perf_kwork *kwork)
 {
-	/*
-	 * event handlers for timehist option
-	 */
+	 
 	kwork->tool.comm	 = perf_event__process_comm;
 	kwork->tool.exit	 = perf_event__process_exit;
 	kwork->tool.fork	 = perf_event__process_fork;
@@ -1626,9 +1579,7 @@ static void setup_event_list(struct perf_kwork *kwork,
 	free(str);
 
 null_event_list_str:
-	/*
-	 * config all kwork events if not specified
-	 */
+	 
 	if (list_empty(&kwork->class_list)) {
 		for (i = 0; i < KWORK_CLASS_MAX; i++) {
 			list_add_tail(&kwork_class_supported_list[i]->list,

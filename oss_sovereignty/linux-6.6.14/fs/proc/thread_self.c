@@ -1,13 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/cache.h>
 #include <linux/sched.h>
 #include <linux/slab.h>
 #include <linux/pid_namespace.h>
 #include "internal.h"
 
-/*
- * /proc/thread_self:
- */
+ 
 static const char *proc_thread_self_get_link(struct dentry *dentry,
 					     struct inode *inode,
 					     struct delayed_call *done)

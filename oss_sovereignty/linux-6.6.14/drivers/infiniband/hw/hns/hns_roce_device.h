@@ -1,34 +1,4 @@
-/*
- * Copyright (c) 2016 Hisilicon Limited.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 
 #ifndef _HNS_ROCE_DEVICE_H
 #define _HNS_ROCE_DEVICE_H
@@ -87,7 +57,7 @@
 #define NODE_DESC_SIZE				64
 #define DB_REG_OFFSET				0x1000
 
-/* Configure to HW for PAGE_SIZE larger than 4KB */
+ 
 #define PG_SHIFT_OFFSET				(PAGE_SHIFT - 12)
 
 #define HNS_ROCE_IDX_QUE_ENTRY_SZ		4
@@ -122,7 +92,7 @@ enum hns_roce_event {
 	HNS_ROCE_EVENT_TYPE_CQ_OVERFLOW               = 0x0c,
 	HNS_ROCE_EVENT_TYPE_CQ_ID_INVALID             = 0x0d,
 	HNS_ROCE_EVENT_TYPE_PORT_CHANGE               = 0x0f,
-	/* 0x10 and 0x11 is unused in currently application case */
+	 
 	HNS_ROCE_EVENT_TYPE_DB_OVERFLOW               = 0x12,
 	HNS_ROCE_EVENT_TYPE_MB                        = 0x13,
 	HNS_ROCE_EVENT_TYPE_FLR			      = 0x15,
@@ -177,7 +147,7 @@ enum {
 
 #define HNS_ROCE_CMD_SUCCESS			1
 
-/* The minimum page size is 4K for hardware */
+ 
 #define HNS_HW_PAGE_SHIFT			12
 #define HNS_HW_PAGE_SIZE			(1 << HNS_HW_PAGE_SHIFT)
 
@@ -218,7 +188,7 @@ struct hns_roce_xrcd {
 };
 
 struct hns_roce_bitmap {
-	/* Bitmap Traversal last a bit which is 1 */
+	 
 	unsigned long		last;
 	unsigned long		top;
 	unsigned long		max;
@@ -230,17 +200,17 @@ struct hns_roce_bitmap {
 
 struct hns_roce_ida {
 	struct ida ida;
-	u32 min; /* Lowest ID to allocate.  */
-	u32 max; /* Highest ID to allocate. */
+	u32 min;  
+	u32 max;  
 };
 
-/* For Hardware Entry Memory */
+ 
 struct hns_roce_hem_table {
-	/* HEM type: 0 = qpc, 1 = mtt, 2 = cqc, 3 = srq, 4 = other */
+	 
 	u32		type;
-	/* HEM array elment num */
+	 
 	unsigned long	num_hem;
-	/* Single obj size */
+	 
 	unsigned long	obj_size;
 	unsigned long	table_chunk_size;
 	struct mutex	mutex;
@@ -252,55 +222,55 @@ struct hns_roce_hem_table {
 };
 
 struct hns_roce_buf_region {
-	u32 offset; /* page offset */
-	u32 count; /* page count */
-	int hopnum; /* addressing hop num */
+	u32 offset;  
+	u32 count;  
+	int hopnum;  
 };
 
 #define HNS_ROCE_MAX_BT_REGION	3
 #define HNS_ROCE_MAX_BT_LEVEL	3
 struct hns_roce_hem_list {
 	struct list_head root_bt;
-	/* link all bt dma mem by hop config */
+	 
 	struct list_head mid_bt[HNS_ROCE_MAX_BT_REGION][HNS_ROCE_MAX_BT_LEVEL];
-	struct list_head btm_bt; /* link all bottom bt in @mid_bt */
-	dma_addr_t root_ba; /* pointer to the root ba table */
+	struct list_head btm_bt;  
+	dma_addr_t root_ba;  
 };
 
 struct hns_roce_buf_attr {
 	struct {
-		size_t	size;  /* region size */
-		int	hopnum; /* multi-hop addressing hop num */
+		size_t	size;   
+		int	hopnum;  
 	} region[HNS_ROCE_MAX_BT_REGION];
-	unsigned int region_count; /* valid region count */
-	unsigned int page_shift;  /* buffer page shift */
-	unsigned int user_access; /* umem access flag */
-	bool mtt_only; /* only alloc buffer-required MTT memory */
+	unsigned int region_count;  
+	unsigned int page_shift;   
+	unsigned int user_access;  
+	bool mtt_only;  
 };
 
 struct hns_roce_hem_cfg {
-	dma_addr_t	root_ba; /* root BA table's address */
-	bool		is_direct; /* addressing without BA table */
-	unsigned int	ba_pg_shift; /* BA table page shift */
-	unsigned int	buf_pg_shift; /* buffer page shift */
-	unsigned int	buf_pg_count;  /* buffer page count */
+	dma_addr_t	root_ba;  
+	bool		is_direct;  
+	unsigned int	ba_pg_shift;  
+	unsigned int	buf_pg_shift;  
+	unsigned int	buf_pg_count;   
 	struct hns_roce_buf_region region[HNS_ROCE_MAX_BT_REGION];
 	unsigned int	region_count;
 };
 
-/* memory translate region */
+ 
 struct hns_roce_mtr {
-	struct hns_roce_hem_list hem_list; /* multi-hop addressing resource */
-	struct ib_umem		*umem; /* user space buffer */
-	struct hns_roce_buf	*kmem; /* kernel space buffer */
-	struct hns_roce_hem_cfg  hem_cfg; /* config for hardware addressing */
+	struct hns_roce_hem_list hem_list;  
+	struct ib_umem		*umem;  
+	struct hns_roce_buf	*kmem;  
+	struct hns_roce_hem_cfg  hem_cfg;  
 };
 
 struct hns_roce_mw {
 	struct ib_mw		ibmw;
 	u32			pdn;
 	u32			rkey;
-	int			enabled; /* MW's active status */
+	int			enabled;  
 	u32			pbl_hop_num;
 	u32			pbl_ba_pg_sz;
 	u32			pbl_buf_pg_sz;
@@ -308,14 +278,14 @@ struct hns_roce_mw {
 
 struct hns_roce_mr {
 	struct ib_mr		ibmr;
-	u64			iova; /* MR's virtual original addr */
-	u64			size; /* Address range of MR */
-	u32			key; /* Key of MR */
-	u32			pd;   /* PD num of MR */
-	u32			access; /* Access permission of MR */
-	int			enabled; /* MR's active status */
-	int			type; /* MR's register type */
-	u32			pbl_hop_num; /* multi-hop number */
+	u64			iova;  
+	u64			size;  
+	u32			key;  
+	u32			pd;    
+	u32			access;  
+	int			enabled;  
+	int			type;  
+	u32			pbl_hop_num;  
 	struct hns_roce_mtr	pbl_mtr;
 	u32			npages;
 	dma_addr_t		*page_list;
@@ -327,13 +297,13 @@ struct hns_roce_mr_table {
 };
 
 struct hns_roce_wq {
-	u64		*wrid;     /* Work request ID */
+	u64		*wrid;      
 	spinlock_t	lock;
-	u32		wqe_cnt;  /* WQE num */
+	u32		wqe_cnt;   
 	u32		max_gs;
 	u32		rsv_sge;
 	u32		offset;
-	u32		wqe_shift; /* WQE size */
+	u32		wqe_shift;  
 	u32		head;
 	u32		tail;
 	void __iomem	*db_reg;
@@ -341,9 +311,9 @@ struct hns_roce_wq {
 };
 
 struct hns_roce_sge {
-	unsigned int	sge_cnt; /* SGE num */
+	unsigned int	sge_cnt;  
 	u32		offset;
-	u32		sge_shift; /* SGE size */
+	u32		sge_shift;  
 };
 
 struct hns_roce_buf_list {
@@ -351,15 +321,7 @@ struct hns_roce_buf_list {
 	dma_addr_t	map;
 };
 
-/*
- * %HNS_ROCE_BUF_DIRECT indicates that the all memory must be in a continuous
- * dma address range.
- *
- * %HNS_ROCE_BUF_NOSLEEP indicates that the caller cannot sleep.
- *
- * %HNS_ROCE_BUF_NOFAIL allocation only failed when allocated size is zero, even
- * the allocated size is smaller than the required size.
- */
+ 
 enum {
 	HNS_ROCE_BUF_DIRECT = BIT(0),
 	HNS_ROCE_BUF_NOSLEEP = BIT(1),
@@ -418,10 +380,10 @@ struct hns_roce_cq {
 	u32				vector;
 	refcount_t			refcount;
 	struct completion		free;
-	struct list_head		sq_list; /* all qps on this send cq */
-	struct list_head		rq_list; /* all qps on this recv cq */
-	int				is_armed; /* cq is armed */
-	struct list_head		node; /* all armed cqs are on a list */
+	struct list_head		sq_list;  
+	struct list_head		rq_list;  
+	int				is_armed;  
+	struct list_head		node;  
 };
 
 struct hns_roce_idx_que {
@@ -461,10 +423,10 @@ struct hns_roce_uar_table {
 
 struct hns_roce_bank {
 	struct ida ida;
-	u32 inuse; /* Number of IDs allocated */
-	u32 min; /* Lowest ID to allocate.  */
-	u32 max; /* Highest ID to allocate. */
-	u32 next; /* Next ID to allocate. */
+	u32 inuse;  
+	u32 min;  
+	u32 max;  
+	u32 next;  
 };
 
 struct hns_roce_idx_table {
@@ -534,21 +496,13 @@ enum hns_roce_cmdq_state {
 struct hns_roce_cmdq {
 	struct dma_pool		*pool;
 	struct semaphore	poll_sem;
-	/*
-	 * Event mode: cmd register mutex protection,
-	 * ensure to not exceed max_cmds and user use limit region
-	 */
+	 
 	struct semaphore	event_sem;
 	int			max_cmds;
 	spinlock_t		context_lock;
 	int			free_head;
 	struct hns_roce_cmd_context *context;
-	/*
-	 * Process whether use event mode, init default non-zero
-	 * After the event queue of cmd event ready,
-	 * can switch into event mode
-	 * close device, switch into poll mode(non event mode)
-	 */
+	 
 	u8			use_events;
 	enum hns_roce_cmdq_state state;
 };
@@ -616,12 +570,12 @@ struct hns_roce_qp {
 	u32			max_inline_data;
 	u8			free_mr_en;
 
-	/* 0: flush needed, 1: unneeded */
+	 
 	unsigned long		flush_flag;
 	struct hns_roce_work	flush_work;
-	struct list_head	node; /* all qps are on a list */
-	struct list_head	rq_node; /* all recv qps are on a list */
-	struct list_head	sq_node; /* all send qps are on a list */
+	struct list_head	node;  
+	struct list_head	rq_node;  
+	struct list_head	sq_node;  
 	struct hns_user_mmap_entry *dwqe_mmap_entry;
 	u32			config;
 };
@@ -673,7 +627,7 @@ struct hns_roce_eq {
 	struct hns_roce_dev		*hr_dev;
 	void __iomem			*db_reg;
 
-	int				type_flag; /* Aeq:1 ceq:0 */
+	int				type_flag;  
 	int				eqn;
 	u32				entries;
 	int				eqe_size;
@@ -804,7 +758,7 @@ struct hns_roce_caps {
 	u32		cqc_timer_ba_pg_sz;
 	u32		cqc_timer_buf_pg_sz;
 	u32		cqc_timer_hop_num;
-	u32		cqe_ba_pg_sz; /* page_size = 4K*(2^cqe_ba_pg_sz) */
+	u32		cqe_ba_pg_sz;  
 	u32		cqe_buf_pg_sz;
 	u32		cqe_hop_num;
 	u32		srqwqe_ba_pg_sz;
@@ -823,7 +777,7 @@ struct hns_roce_caps {
 	u32		gmv_hop_num;
 	u32		sl_num;
 	u32		llm_buf_pg_sz;
-	u32		chunk_sz; /* chunk size in non multihop mode */
+	u32		chunk_sz;  
 	u64		flags;
 	u16		default_ceq_max_cnt;
 	u16		default_ceq_period;
@@ -927,10 +881,10 @@ struct hns_roce_dev {
 	unsigned long		reset_cnt;
 	struct hns_roce_ib_iboe iboe;
 	enum hns_roce_device_state state;
-	struct list_head	qp_list; /* list of all qps on this dev */
-	spinlock_t		qp_list_lock; /* protect qp_list */
-	struct list_head	dip_list; /* list of all dest ips on this dev */
-	spinlock_t		dip_list_lock; /* protect dip_list */
+	struct list_head	qp_list;  
+	spinlock_t		qp_list_lock;  
+	struct list_head	dip_list;  
+	spinlock_t		dip_list_lock;  
 
 	struct list_head        pgdir_list;
 	struct mutex            pgdir_mutex;
@@ -958,9 +912,7 @@ struct hns_roce_dev {
 	struct hns_roce_eq_table  eq_table;
 	struct hns_roce_hem_table  qpc_timer_table;
 	struct hns_roce_hem_table  cqc_timer_table;
-	/* GMV is the memory area that the driver allocates for the hardware
-	 * to store SGID, SMAC and VLAN information.
-	 */
+	 
 	struct hns_roce_hem_table  gmv_table;
 
 	int			cmd_mod;
@@ -1120,7 +1072,7 @@ void hns_roce_cmd_event(struct hns_roce_dev *hr_dev, u16 token, u8 status,
 int hns_roce_cmd_use_events(struct hns_roce_dev *hr_dev);
 void hns_roce_cmd_use_polling(struct hns_roce_dev *hr_dev);
 
-/* hns roce hw need current block and next block addr from mtt */
+ 
 #define MTT_MIN_COUNT	 2
 int hns_roce_mtr_find(struct hns_roce_dev *hr_dev, struct hns_roce_mtr *mtr,
 		      u32 offset, u64 *mtt_buf, int mtt_max, u64 *base_addr);
@@ -1243,4 +1195,4 @@ struct hns_user_mmap_entry *
 hns_roce_user_mmap_entry_insert(struct ib_ucontext *ucontext, u64 address,
 				size_t length,
 				enum hns_roce_mmap_type mmap_type);
-#endif /* _HNS_ROCE_DEVICE_H */
+#endif  

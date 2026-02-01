@@ -1,16 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/******************************************************************************
- *
- * Copyright(c) 2007 - 2010 Realtek Corporation. All rights reserved.
- *
- * Modifications for inclusion into the Linux staging tree are
- * Copyright(c) 2010 Larry Finger. All rights reserved.
- *
- * Contact information:
- * WLAN FAE <wlanfae@realtek.com>
- * Larry Finger <Larry.Finger@lwfinger.net>
- *
- ******************************************************************************/
+ 
+ 
 #ifndef _RTL871X_XMIT_H_
 #define _RTL871X_XMIT_H_
 
@@ -27,7 +16,7 @@
 #define NR_XMITBUFF     (4)
 
 #ifdef CONFIG_R8712_TX_AGGR
-#define AGGR_NR_HIGH_BOUND      (4) /*(8) */
+#define AGGR_NR_HIGH_BOUND      (4)  
 #define AGGR_NR_LOW_BOUND       (2)
 #endif
 
@@ -35,7 +24,7 @@
 #define TX_GUARD_BAND		5
 #define MAX_NUMBLKS		(1)
 
-/* Fixed the Big Endian bug when using the software driver encryption.*/
+ 
 #define WEP_IV(pattrib_iv, txpn, keyidx)\
 do { \
 	pattrib_iv[0] = txpn._byte_.TSC0;\
@@ -45,9 +34,7 @@ do { \
 	txpn.val = (txpn.val == 0xffffff) ? 0 : (txpn.val + 1);\
 } while (0)
 
-/* Fixed the Big Endian bug when doing the Tx.
- * The Linksys WRH54G will check this.
- */
+ 
 #define TKIP_IV(pattrib_iv, txpn, keyidx)\
 do { \
 	pattrib_iv[0] = txpn._byte_.TSC1;\
@@ -93,29 +80,25 @@ struct pkt_attrib {
 
 	u16	seqnum;
 	u16	ether_type;
-	u16	pktlen;		/* the original 802.3 pkt raw_data len
-				 * (not include ether_hdr data)
-				 */
+	u16	pktlen;		 
 	u16	last_txcmdsz;
 
-	u8	pkt_hdrlen;	/*the original 802.3 pkt header len*/
-	u8	hdrlen;		/*the WLAN Header Len*/
+	u8	pkt_hdrlen;	 
+	u8	hdrlen;		 
 	u8	nr_frags;
 	u8	ack_policy;
 	u8	mac_id;
-	u8	vcs_mode;	/*virtual carrier sense method*/
-	u8	pctrl;/*per packet txdesc control enable*/
+	u8	vcs_mode;	 
+	u8	pctrl; 
 	u8	qsel;
 
 	u8	priority;
-	u8	encrypt;	/* when 0 indicate no encrypt. when non-zero,
-				 * indicate the encrypt algorithm
-				 */
+	u8	encrypt;	 
 	u8	iv_len;
 	u8	icv_len;
 	unsigned char iv[8];
 	unsigned char icv[8];
-	u8	dst[ETH_ALEN] __aligned(2);	/* for ether_addr_copy */
+	u8	dst[ETH_ALEN] __aligned(2);	 
 	u8	src[ETH_ALEN];
 	u8	ta[ETH_ALEN];
 	u8	ra[ETH_ALEN];
@@ -166,13 +149,11 @@ struct tx_servq {
 struct sta_xmit_priv {
 	spinlock_t lock;
 	sint	option;
-	sint	apsd_setting;	/* When bit mask is on, the associated edca
-				 * queue supports APSD.
-				 */
-	struct tx_servq	be_q;	/* priority == 0,3 */
-	struct tx_servq	bk_q;	/* priority == 1,2*/
-	struct tx_servq	vi_q;	/*priority == 4,5*/
-	struct tx_servq	vo_q;	/*priority == 6,7*/
+	sint	apsd_setting;	 
+	struct tx_servq	be_q;	 
+	struct tx_servq	bk_q;	 
+	struct tx_servq	vi_q;	 
+	struct tx_servq	vo_q;	 
 	struct list_head  legacy_dz;
 	struct list_head apsd;
 	u16 txseq_tid[16];
@@ -184,7 +165,7 @@ struct sta_xmit_priv {
 struct	hw_txqueue {
 	sint	head;
 	sint	tail;
-	sint	free_sz;	/* in units of 64 bytes */
+	sint	free_sz;	 
 	sint	free_cmdsz;
 	sint	txsz[8];
 	uint	ff_hwaddr;
@@ -228,7 +209,7 @@ struct	xmit_priv {
 	struct work_struct xmit_pipe4_reset_wi;
 	struct work_struct xmit_pipe6_reset_wi;
 	struct work_struct xmit_piped_reset_wi;
-	/*per AC pending irp*/
+	 
 	int beq_cnt;
 	int bkq_cnt;
 	int viq_cnt;
@@ -284,5 +265,5 @@ void xmitframe_xmitbuf_attach(struct xmit_frame *pxmitframe,
 
 #include "rtl8712_xmit.h"
 
-#endif	/*_RTL871X_XMIT_H_*/
+#endif	 
 

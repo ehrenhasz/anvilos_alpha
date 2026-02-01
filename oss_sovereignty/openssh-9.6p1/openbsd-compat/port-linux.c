@@ -1,23 +1,6 @@
-/*
- * Copyright (c) 2005 Daniel Walsh <dwalsh@redhat.com>
- * Copyright (c) 2006 Damien Miller <djm@openbsd.org>
- *
- * Permission to use, copy, modify, and distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
+ 
 
-/*
- * Linux-specific portability code - just SELinux support at present
- */
+ 
 
 #include "includes.h"
 
@@ -41,7 +24,7 @@
 # define SSH_SELINUX_UNCONFINED_TYPE ":unconfined_t:"
 #endif
 
-/* Wrapper around is_selinux_enabled() to log its return value once only */
+ 
 int
 ssh_selinux_enabled(void)
 {
@@ -55,7 +38,7 @@ ssh_selinux_enabled(void)
 	return (enabled);
 }
 
-/* Return the default security context for the given username */
+ 
 static char *
 ssh_selinux_getctxbyname(char *pwname)
 {
@@ -101,7 +84,7 @@ ssh_selinux_getctxbyname(char *pwname)
 	return sc;
 }
 
-/* Set the execution context to the default for the specified user */
+ 
 void
 ssh_selinux_setup_exec_context(char *pwname)
 {
@@ -132,7 +115,7 @@ ssh_selinux_setup_exec_context(char *pwname)
 	debug3("%s: done", __func__);
 }
 
-/* Set the TTY context for the specified user */
+ 
 void
 ssh_selinux_setup_pty(char *pwname, const char *tty)
 {
@@ -146,7 +129,7 @@ ssh_selinux_setup_pty(char *pwname, const char *tty)
 
 	user_ctx = ssh_selinux_getctxbyname(pwname);
 
-	/* XXX: should these calls fatal() upon failure in enforcing mode? */
+	 
 
 	if (getfilecon(tty, &old_tty_ctx) == -1) {
 		error("%s: getfilecon: %s", __func__, strerror(errno));
@@ -195,10 +178,7 @@ ssh_selinux_change_context(const char *newname)
 		return;
 	}
 
-	/*
-	 * Check whether we are attempting to switch away from an unconfined
-	 * security context.
-	 */
+	 
 	if (strncmp(cx, SSH_SELINUX_UNCONFINED_TYPE,
 	    sizeof(SSH_SELINUX_UNCONFINED_TYPE) - 1) == 0)
 		log_level = SYSLOG_LEVEL_DEBUG3;
@@ -236,14 +216,10 @@ ssh_selinux_setfscreatecon(const char *path)
 	selabel_close(shandle);
 }
 
-#endif /* WITH_SELINUX */
+#endif  
 
 #ifdef LINUX_OOM_ADJUST
-/*
- * The magic "don't kill me" values, old and new, as documented in eg:
- * http://lxr.linux.no/#linux+v2.6.32/Documentation/filesystems/proc.txt
- * http://lxr.linux.no/#linux+v2.6.36/Documentation/filesystems/proc.txt
- */
+ 
 
 static int oom_adj_save = INT_MIN;
 static char *oom_adj_path = NULL;
@@ -251,15 +227,12 @@ struct {
 	char *path;
 	int value;
 } oom_adjust[] = {
-	{"/proc/self/oom_score_adj", -1000},	/* kernels >= 2.6.36 */
-	{"/proc/self/oom_adj", -17},		/* kernels <= 2.6.35 */
+	{"/proc/self/oom_score_adj", -1000},	 
+	{"/proc/self/oom_adj", -17},		 
 	{NULL, 0},
 };
 
-/*
- * Tell the kernel's out-of-memory killer to avoid sshd.
- * Returns the previous oom_adj value or zero.
- */
+ 
 void
 oom_adjust_setup(void)
 {
@@ -290,7 +263,7 @@ oom_adjust_setup(void)
 	oom_adj_path = NULL;
 }
 
-/* Restore the saved OOM adjustment */
+ 
 void
 oom_adjust_restore(void)
 {
@@ -309,5 +282,5 @@ oom_adjust_restore(void)
 	fclose(fp);
 	return;
 }
-#endif /* LINUX_OOM_ADJUST */
-#endif /* WITH_SELINUX || LINUX_OOM_ADJUST */
+#endif  
+#endif  

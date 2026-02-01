@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) STMicroelectronics SA 2015
- * Authors: Yannick Fertre <yannick.fertre@st.com>
- *          Hugues Fruchet <hugues.fruchet@st.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/mod_devicetable.h>
@@ -24,7 +20,7 @@
 #define HVA_MIN_HEIGHT	32
 #define HVA_MAX_HEIGHT	1920
 
-/* HVA requires a 16x16 pixels alignment for frames */
+ 
 #define HVA_WIDTH_ALIGNMENT	16
 #define HVA_HEIGHT_ALIGNMENT	16
 
@@ -38,7 +34,7 @@
 
 #define fh_to_ctx(f)    (container_of(f, struct hva_ctx, fh))
 
-/* registry of available encoders */
+ 
 static const struct hva_enc *hva_encoders[] = {
 	&nv12h264enc,
 	&nv21h264enc,
@@ -71,7 +67,7 @@ static inline int frame_alignment(u32 fmt)
 	switch (fmt) {
 	case V4L2_PIX_FMT_NV12:
 	case V4L2_PIX_FMT_NV21:
-		/* multiple of 2 */
+		 
 		return 2;
 	default:
 		return 1;
@@ -80,11 +76,7 @@ static inline int frame_alignment(u32 fmt)
 
 static inline int estimated_stream_size(u32 w, u32 h)
 {
-	/*
-	 * HVA only encodes in YUV420 format, whatever the frame format.
-	 * A compression ratio of 2 is assumed: thus, the maximum size
-	 * of a stream is estimated to ((width x height x 3 / 2) / 2)
-	 */
+	 
 	return (w * h * 3) / 4;
 }
 
@@ -194,7 +186,7 @@ static int hva_open_encoder(struct hva_ctx *ctx, u32 streamformat,
 	struct hva_enc *enc;
 	int ret;
 
-	/* find an encoder which can deal with these formats */
+	 
 	enc = (struct hva_enc *)hva_find_encoder(ctx, pixelformat,
 						 streamformat);
 	if (!enc) {
@@ -206,11 +198,11 @@ static int hva_open_encoder(struct hva_ctx *ctx, u32 streamformat,
 	dev_dbg(dev, "%s one encoder matching %4.4s => %4.4s\n",
 		ctx->name, (char *)&pixelformat, (char *)&streamformat);
 
-	/* update instance name */
+	 
 	snprintf(ctx->name, sizeof(ctx->name), "[%3d:%4.4s]",
 		 hva->instance_id, (char *)&streamformat);
 
-	/* open encoder instance */
+	 
 	ret = enc->open(ctx);
 	if (ret) {
 		dev_err(dev, "%s failed to open encoder instance (%d)\n",
@@ -247,9 +239,7 @@ static void hva_dbg_summary(struct hva_ctx *ctx)
 		ctx->frame_errors);
 }
 
-/*
- * V4L2 ioctl operations
- */
+ 
 
 static int hva_querycap(struct file *file, void *priv,
 			struct v4l2_capability *cap)
@@ -354,10 +344,7 @@ static int hva_try_fmt_stream(struct file *file, void *priv,
 	width = pix->width;
 	height = pix->height;
 	if (ctx->flags & HVA_FLAG_FRAMEINFO) {
-		/*
-		 * if the frame resolution is already fixed, only allow the
-		 * same stream resolution
-		 */
+		 
 		pix->width = ctx->frameinfo.width;
 		pix->height = ctx->frameinfo.height;
 		if ((pix->width != width) || (pix->height != height))
@@ -366,7 +353,7 @@ static int hva_try_fmt_stream(struct file *file, void *priv,
 				ctx->name, width, height,
 				pix->width, pix->height);
 	} else {
-		/* adjust width & height */
+		 
 		v4l_bound_align_image(&pix->width,
 				      HVA_MIN_WIDTH, enc->max_width,
 				      0,
@@ -414,7 +401,7 @@ static int hva_try_fmt_frame(struct file *file, void *priv,
 		return -EINVAL;
 	}
 
-	/* adjust width & height */
+	 
 	width = pix->width;
 	height = pix->height;
 	v4l_bound_align_image(&pix->width,
@@ -557,13 +544,7 @@ static int hva_qbuf(struct file *file, void *priv, struct v4l2_buffer *buf)
 	struct device *dev = ctx_to_dev(ctx);
 
 	if (buf->type == V4L2_BUF_TYPE_VIDEO_CAPTURE) {
-		/*
-		 * depending on the targeted compressed video format, the
-		 * capture buffer might contain headers (e.g. H.264 SPS/PPS)
-		 * filled in by the driver client; the size of these data is
-		 * copied from the bytesused field of the V4L2 buffer in the
-		 * payload field of the hva stream buffer
-		 */
+		 
 		struct vb2_queue *vq;
 		struct hva_stream *stream;
 		struct vb2_buffer *vb2_buf;
@@ -584,7 +565,7 @@ static int hva_qbuf(struct file *file, void *priv, struct v4l2_buffer *buf)
 	return v4l2_m2m_qbuf(file, ctx->fh.m2m_ctx, buf);
 }
 
-/* V4L2 ioctl ops */
+ 
 static const struct v4l2_ioctl_ops hva_ioctl_ops = {
 	.vidioc_querycap		= hva_querycap,
 	.vidioc_enum_fmt_vid_cap	= hva_enum_fmt_stream,
@@ -609,9 +590,7 @@ static const struct v4l2_ioctl_ops hva_ioctl_ops = {
 	.vidioc_unsubscribe_event	= v4l2_event_unsubscribe,
 };
 
-/*
- * V4L2 control operations
- */
+ 
 
 static int hva_s_ctrl(struct v4l2_ctrl *ctrl)
 {
@@ -685,7 +664,7 @@ static int hva_s_ctrl(struct v4l2_ctrl *ctrl)
 	return 0;
 }
 
-/* V4L2 control ops */
+ 
 static const struct v4l2_ctrl_ops hva_ctrl_ops = {
 	.s_ctrl = hva_s_ctrl,
 };
@@ -791,16 +770,14 @@ static int hva_ctrls_setup(struct hva_ctx *ctx)
 
 	v4l2_ctrl_handler_setup(&ctx->ctrl_handler);
 
-	/* set default time per frame */
+	 
 	ctx->ctrls.time_per_frame.numerator = HVA_DEFAULT_FRAME_NUM;
 	ctx->ctrls.time_per_frame.denominator = HVA_DEFAULT_FRAME_DEN;
 
 	return 0;
 }
 
-/*
- * mem-to-mem operations
- */
+ 
 
 static void hva_run_work(struct work_struct *work)
 {
@@ -811,7 +788,7 @@ static void hva_run_work(struct work_struct *work)
 	struct hva_stream *stream;
 	int ret;
 
-	/* protect instance against reentrancy */
+	 
 	mutex_lock(&ctx->lock);
 
 #ifdef CONFIG_VIDEO_STI_HVA_DEBUGFS
@@ -832,7 +809,7 @@ static void hva_run_work(struct work_struct *work)
 		v4l2_m2m_buf_done(src_buf, VB2_BUF_STATE_ERROR);
 		v4l2_m2m_buf_done(dst_buf, VB2_BUF_STATE_ERROR);
 	} else {
-		/* propagate frame timestamp */
+		 
 		dst_buf->vb2_buf.timestamp = src_buf->vb2_buf.timestamp;
 		dst_buf->field = V4L2_FIELD_NONE;
 		dst_buf->sequence = ctx->stream_num - 1;
@@ -895,16 +872,14 @@ static int hva_job_ready(void *priv)
 	return 1;
 }
 
-/* mem-to-mem ops */
+ 
 static const struct v4l2_m2m_ops hva_m2m_ops = {
 	.device_run	= hva_device_run,
 	.job_abort	= hva_job_abort,
 	.job_ready	= hva_job_ready,
 };
 
-/*
- * VB2 queue operations
- */
+ 
 
 static int hva_queue_setup(struct vb2_queue *vq,
 			   unsigned int *num_buffers, unsigned int *num_planes,
@@ -923,7 +898,7 @@ static int hva_queue_setup(struct vb2_queue *vq,
 	if (*num_planes)
 		return sizes[0] < size ? -EINVAL : 0;
 
-	/* only one plane supported */
+	 
 	*num_planes = 1;
 	sizes[0] = size;
 
@@ -949,7 +924,7 @@ static int hva_buf_prepare(struct vb2_buffer *vb)
 		}
 
 		if (!frame->prepared) {
-			/* get memory addresses */
+			 
 			frame->vaddr = vb2_plane_vaddr(&vbuf->vb2_buf, 0);
 			frame->paddr = vb2_dma_contig_plane_dma_addr(
 					&vbuf->vb2_buf, 0);
@@ -965,7 +940,7 @@ static int hva_buf_prepare(struct vb2_buffer *vb)
 		struct hva_stream *stream = to_hva_stream(vbuf);
 
 		if (!stream->prepared) {
-			/* get memory addresses */
+			 
 			stream->vaddr = vb2_plane_vaddr(&vbuf->vb2_buf, 0);
 			stream->paddr = vb2_dma_contig_plane_dma_addr(
 					&vbuf->vb2_buf, 0);
@@ -1004,7 +979,7 @@ static int hva_start_streaming(struct vb2_queue *vq, unsigned int count)
 	dev_dbg(dev, "%s %s start streaming\n", ctx->name,
 		to_type_str(vq->type));
 
-	/* open encoder when both start_streaming have been called */
+	 
 	if (V4L2_TYPE_IS_OUTPUT(vq->type)) {
 		if (!vb2_start_streaming_called(&ctx->fh.m2m_ctx->cap_q_ctx.q))
 			return 0;
@@ -1013,11 +988,11 @@ static int hva_start_streaming(struct vb2_queue *vq, unsigned int count)
 			return 0;
 	}
 
-	/* store the instance context in the instances array */
+	 
 	for (i = 0; i < HVA_MAX_INSTANCES; i++) {
 		if (!hva->instances[i]) {
 			hva->instances[i] = ctx;
-			/* save the context identifier in the context */
+			 
 			ctx->id = i;
 			found = true;
 			break;
@@ -1048,11 +1023,11 @@ err_ctx:
 	hva->nb_of_instances--;
 err:
 	if (vq->type == V4L2_BUF_TYPE_VIDEO_OUTPUT) {
-		/* return of all pending buffers to vb2 (in queued state) */
+		 
 		while ((vbuf = v4l2_m2m_src_buf_remove(ctx->fh.m2m_ctx)))
 			v4l2_m2m_buf_done(vbuf, VB2_BUF_STATE_QUEUED);
 	} else {
-		/* return of all pending buffers to vb2 (in queued state) */
+		 
 		while ((vbuf = v4l2_m2m_dst_buf_remove(ctx->fh.m2m_ctx)))
 			v4l2_m2m_buf_done(vbuf, VB2_BUF_STATE_QUEUED);
 	}
@@ -1074,12 +1049,12 @@ static void hva_stop_streaming(struct vb2_queue *vq)
 		to_type_str(vq->type));
 
 	if (vq->type == V4L2_BUF_TYPE_VIDEO_OUTPUT) {
-		/* return of all pending buffers to vb2 (in error state) */
+		 
 		ctx->frame_num = 0;
 		while ((vbuf = v4l2_m2m_src_buf_remove(ctx->fh.m2m_ctx)))
 			v4l2_m2m_buf_done(vbuf, VB2_BUF_STATE_ERROR);
 	} else {
-		/* return of all pending buffers to vb2 (in error state) */
+		 
 		ctx->stream_num = 0;
 		while ((vbuf = v4l2_m2m_dst_buf_remove(ctx->fh.m2m_ctx)))
 			v4l2_m2m_buf_done(vbuf, VB2_BUF_STATE_ERROR);
@@ -1096,13 +1071,13 @@ static void hva_stop_streaming(struct vb2_queue *vq)
 		return;
 	}
 
-	/* close encoder when both stop_streaming have been called */
+	 
 	if (enc) {
 		dev_dbg(dev, "%s %s encoder closed\n", ctx->name, enc->name);
 		enc->close(ctx);
 		ctx->enc = NULL;
 
-		/* clear instance context in instances array */
+		 
 		hva->instances[ctx->id] = NULL;
 		hva->nb_of_instances--;
 	}
@@ -1110,7 +1085,7 @@ static void hva_stop_streaming(struct vb2_queue *vq)
 	ctx->aborting = false;
 }
 
-/* VB2 queue ops */
+ 
 static const struct vb2_ops hva_qops = {
 	.queue_setup		= hva_queue_setup,
 	.buf_prepare		= hva_buf_prepare,
@@ -1121,9 +1096,7 @@ static const struct vb2_ops hva_qops = {
 	.wait_finish		= vb2_ops_wait_finish,
 };
 
-/*
- * V4L2 file operations
- */
+ 
 
 static int queue_init(struct hva_ctx *ctx, struct vb2_queue *vq)
 {
@@ -1200,14 +1173,14 @@ static int hva_open(struct file *file)
 		goto err_ctrls;
 	}
 
-	/* set the instance name */
+	 
 	mutex_lock(&hva->lock);
 	hva->instance_id++;
 	snprintf(ctx->name, sizeof(ctx->name), "[%3d:----]",
 		 hva->instance_id);
 	mutex_unlock(&hva->lock);
 
-	/* default parameters for frame and stream */
+	 
 	set_default_params(ctx);
 
 #ifdef CONFIG_VIDEO_STI_HVA_DEBUGFS
@@ -1240,12 +1213,12 @@ static int hva_release(struct file *file)
 		enc->close(ctx);
 		ctx->enc = NULL;
 
-		/* clear instance context in instances array */
+		 
 		hva->instances[ctx->id] = NULL;
 		hva->nb_of_instances--;
 	}
 
-	/* trace a summary of instance before closing (debug purpose) */
+	 
 	hva_dbg_summary(ctx);
 
 	v4l2_m2m_ctx_release(ctx->fh.m2m_ctx);
@@ -1266,7 +1239,7 @@ static int hva_release(struct file *file)
 	return 0;
 }
 
-/* V4L2 file ops */
+ 
 static const struct v4l2_file_operations hva_fops = {
 	.owner			= THIS_MODULE,
 	.open			= hva_open,
@@ -1276,9 +1249,7 @@ static const struct v4l2_file_operations hva_fops = {
 	.poll			= v4l2_m2m_fop_poll,
 };
 
-/*
- * Platform device operations
- */
+ 
 
 static int hva_register_device(struct hva_dev *hva)
 {
@@ -1368,18 +1339,18 @@ static int hva_probe(struct platform_device *pdev)
 
 	mutex_init(&hva->lock);
 
-	/* probe hardware */
+	 
 	ret = hva_hw_probe(pdev, hva);
 	if (ret)
 		goto err;
 
-	/* register all available encoders */
+	 
 	register_encoders(hva);
 
-	/* register all supported formats */
+	 
 	register_formats(hva);
 
-	/* register on V4L2 */
+	 
 	ret = v4l2_device_register(dev, &hva->v4l2_dev);
 	if (ret) {
 		dev_err(dev, "%s %s failed to register V4L2 device\n",
@@ -1399,7 +1370,7 @@ static int hva_probe(struct platform_device *pdev)
 		goto err_v4l2;
 	}
 
-	/* register device */
+	 
 	ret = hva_register_device(hva);
 	if (ret)
 		goto err_work_queue;
@@ -1442,7 +1413,7 @@ static void hva_remove(struct platform_device *pdev)
 	dev_info(dev, "%s %s removed\n", HVA_PREFIX, pdev->name);
 }
 
-/* PM ops */
+ 
 static const struct dev_pm_ops hva_pm_ops = {
 	.runtime_suspend	= hva_hw_runtime_suspend,
 	.runtime_resume		= hva_hw_runtime_resume,
@@ -1452,7 +1423,7 @@ static const struct of_device_id hva_match_types[] = {
 	{
 	 .compatible = "st,st-hva",
 	},
-	{ /* end node */ }
+	{   }
 };
 
 MODULE_DEVICE_TABLE(of, hva_match_types);

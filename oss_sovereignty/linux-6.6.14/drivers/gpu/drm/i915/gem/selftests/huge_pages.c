@@ -1,8 +1,4 @@
-/*
- * SPDX-License-Identifier: MIT
- *
- * Copyright © 2017 Intel Corporation
- */
+ 
 
 #include <linux/prime_numbers.h>
 #include <linux/string_helpers.h>
@@ -84,7 +80,7 @@ static int get_huge_pages(struct drm_i915_gem_object *obj)
 	unsigned int sg_page_sizes;
 	u64 rem;
 
-	/* restricted by sg_alloc_table */
+	 
 	if (overflows_type(obj->base.size >> PAGE_SHIFT, unsigned int))
 		return -E2BIG;
 
@@ -102,11 +98,7 @@ static int get_huge_pages(struct drm_i915_gem_object *obj)
 	st->nents = 0;
 	sg_page_sizes = 0;
 
-	/*
-	 * Our goal here is simple, we want to greedily fill the object from
-	 * largest to smallest page-size, while ensuring that we use *every*
-	 * page-size as per the given page-mask.
-	 */
+	 
 	do {
 		unsigned int bit = ilog2(page_mask);
 		unsigned int page_size = BIT(bit);
@@ -216,7 +208,7 @@ static int fake_get_huge_pages(struct drm_i915_gem_object *obj)
 	struct scatterlist *sg;
 	u64 rem;
 
-	/* restricted by sg_alloc_table */
+	 
 	if (overflows_type(obj->base.size >> PAGE_SHIFT, unsigned int))
 		return -E2BIG;
 
@@ -229,7 +221,7 @@ static int fake_get_huge_pages(struct drm_i915_gem_object *obj)
 		return -ENOMEM;
 	}
 
-	/* Use optimal page sized chunks to fill in the sg table */
+	 
 	rem = obj->base.size;
 	sg = st->sgl;
 	st->nents = 0;
@@ -366,7 +358,7 @@ static int igt_check_page_sizes(struct i915_vma *vma)
 	struct drm_i915_gem_object *obj = vma->obj;
 	int err;
 
-	/* We have to wait for the async bind to complete before our asserts */
+	 
 	err = i915_vma_sync(vma);
 	if (err)
 		return err;
@@ -395,18 +387,7 @@ static int igt_check_page_sizes(struct i915_vma *vma)
 		err = -EINVAL;
 	}
 
-	/*
-	 * The dma-api is like a box of chocolates when it comes to the
-	 * alignment of dma addresses, however for LMEM we have total control
-	 * and so can guarantee alignment, likewise when we allocate our blocks
-	 * they should appear in descending order, and if we know that we align
-	 * to the largest page size for the GTT address, we should be able to
-	 * assert that if we see 2M physical pages then we should also get 2M
-	 * GTT pages. If we don't then something might be wrong in our
-	 * construction of the backing pages.
-	 *
-	 * Maintaining alignment is required to utilise huge pages in the ppGGT.
-	 */
+	 
 	if (i915_gem_object_is_lmem(obj) &&
 	    IS_ALIGNED(i915_vma_offset(vma), SZ_2M) &&
 	    vma->page_sizes.sg & SZ_2M &&
@@ -429,13 +410,10 @@ static int igt_mock_exhaust_device_supported_pages(void *arg)
 	int i, j, single;
 	int err;
 
-	/*
-	 * Sanity check creating objects with every valid page support
-	 * combination for our mock device.
-	 */
+	 
 
 	for (i = 1; i < BIT(ARRAY_SIZE(page_sizes)); i++) {
-		unsigned int combination = SZ_4K; /* Required for ppGTT */
+		unsigned int combination = SZ_4K;  
 
 		for (j = 0; j < ARRAY_SIZE(page_sizes); j++) {
 			if (i & BIT(j))
@@ -582,11 +560,7 @@ static int igt_mock_ppgtt_misaligned_dma(void *arg)
 	int bit;
 	int err;
 
-	/*
-	 * Sanity check dma misalignment for huge pages -- the dma addresses we
-	 * insert into the paging structures need to always respect the page
-	 * size alignment.
-	 */
+	 
 
 	bit = ilog2(I915_GTT_PAGE_SIZE_64K);
 
@@ -615,7 +589,7 @@ static int igt_mock_ppgtt_misaligned_dma(void *arg)
 		if (err)
 			goto out_put;
 
-		/* Force the page size for this object */
+		 
 		obj->mm.page_sizes.sg = page_size;
 
 		vma = i915_vma_instance(obj, &ppgtt->vm, NULL);
@@ -642,11 +616,7 @@ static int igt_mock_ppgtt_misaligned_dma(void *arg)
 		if (err)
 			goto out_unpin;
 
-		/*
-		 * Try all the other valid offsets until the next
-		 * boundary -- should always fall back to using 4K
-		 * pages.
-		 */
+		 
 		for (offset = 4096; offset < page_size; offset += 4096) {
 			err = i915_vma_unbind_unlocked(vma);
 			if (err)
@@ -774,7 +744,7 @@ static int igt_ppgtt_huge_fill(void *arg)
 			break;
 		}
 
-		/* vma start must be aligned to BIT(21) to allow 2M PTEs */
+		 
 		err = i915_vma_pin(vma, 0, BIT(21), PIN_USER);
 		if (err)
 			break;
@@ -785,11 +755,7 @@ static int igt_ppgtt_huge_fill(void *arg)
 			break;
 		}
 
-		/*
-		 * Figure out the expected gtt page size knowing that we go from
-		 * largest to smallest page size sg chunks, and that we align to
-		 * the largest page size.
-		 */
+		 
 		for (i = 0; i < ARRAY_SIZE(page_sizes); ++i) {
 			unsigned int page_size = page_sizes[i];
 
@@ -867,7 +833,7 @@ static int igt_ppgtt_64K(void *arg)
 		unsigned int gtt;
 		unsigned int offset;
 	} objects[] = {
-		/* Cases with forced padding/alignment */
+		 
 		{
 			.size = SZ_64K,
 			.gtt = I915_GTT_PAGE_SIZE_64K,
@@ -908,7 +874,7 @@ static int igt_ppgtt_64K(void *arg)
 			.gtt = I915_GTT_PAGE_SIZE_64K,
 			.offset = 0,
 		},
-		/* Try without any forced padding/alignment */
+		 
 		{
 			.size = SZ_64K,
 			.offset = SZ_2M,
@@ -924,11 +890,7 @@ static int igt_ppgtt_64K(void *arg)
 	int i, single;
 	int err;
 
-	/*
-	 * Sanity check some of the trickiness with 64K pages -- either we can
-	 * safely mark the whole page-table(2M block) as 64K, or we have to
-	 * always fallback to 4K.
-	 */
+	 
 
 	if (!HAS_PAGE_SIZES(i915, I915_GTT_PAGE_SIZE_64K))
 		return 0;
@@ -950,10 +912,7 @@ static int igt_ppgtt_64K(void *arg)
 		unsigned int offset = objects[i].offset;
 		unsigned int flags = PIN_USER;
 
-		/*
-		 * For modern GTT models, the requirements for marking a page-table
-		 * as 64K have been relaxed.  Account for this.
-		 */
+		 
 		if (has_pte64) {
 			expected_gtt = 0;
 			if (size >= SZ_64K)
@@ -973,10 +932,7 @@ static int igt_ppgtt_64K(void *arg)
 			if (err)
 				goto out_object_put;
 
-			/*
-			 * Disable 2M pages -- We only want to use 64K/4K pages
-			 * for this test.
-			 */
+			 
 			obj->mm.page_sizes.sg &= ~I915_GTT_PAGE_SIZE_2M;
 
 			vma = i915_vma_instance(obj, vm, NULL);
@@ -1158,10 +1114,7 @@ static int __igt_write_huge(struct intel_context *ce,
 
 	err = i915_vma_pin(vma, size, 0, flags | offset);
 	if (err) {
-		/*
-		 * The ggtt may have some pages reserved so
-		 * refrain from erroring out.
-		 */
+		 
 		if (err == -ENOSPC && i915_is_ggtt(ce->vm))
 			err = 0;
 
@@ -1240,11 +1193,7 @@ static int igt_write_huge(struct drm_i915_private *i915,
 	if (!n)
 		goto out;
 
-	/*
-	 * To keep things interesting when alternating between engines in our
-	 * randomized order, lets also make feeding to the same engine a few
-	 * times in succession a possibility by enlarging the permutation array.
-	 */
+	 
 	order = i915_random_order(count * count, &prng);
 	if (!order) {
 		err = -ENOMEM;
@@ -1254,11 +1203,7 @@ static int igt_write_huge(struct drm_i915_private *i915,
 	max_page_size = rounddown_pow_of_two(obj->mm.page_sizes.sg);
 	max = div_u64(max - size, max_page_size);
 
-	/*
-	 * Try various offsets in an ascending/descending fashion until we
-	 * timeout -- we want to avoid issues hidden by effectively always using
-	 * offset = 0.
-	 */
+	 
 	i = 0;
 	engines = i915_gem_context_lock_engines(ctx);
 	for_each_prime_number_from(num, 0, max) {
@@ -1272,16 +1217,7 @@ static int igt_write_huge(struct drm_i915_private *i915,
 		if (!ce || !intel_engine_can_store_dword(ce->engine))
 			continue;
 
-		/*
-		 * In order to utilize 64K pages we need to both pad the vma
-		 * size and ensure the vma offset is at the start of the pt
-		 * boundary, however to improve coverage we opt for testing both
-		 * aligned and unaligned offsets.
-		 *
-		 * With PS64 this is no longer the case, but to ensure we
-		 * sometimes get the compact layout for smaller objects, apply
-		 * the round_up anyway.
-		 */
+		 
 		if (obj->mm.page_sizes.sg & I915_GTT_PAGE_SIZE_64K)
 			offset_low = round_down(offset_low,
 						I915_GTT_PAGE_SIZE_2M);
@@ -1385,10 +1321,7 @@ static int igt_ppgtt_smoke_huge(void *arg)
 	int err;
 	int i;
 
-	/*
-	 * Sanity check that the HW uses huge pages correctly through our
-	 * various backends -- ensure that our writes land in the right place.
-	 */
+	 
 
 	for (i = 0; i < ARRAY_SIZE(backends); ++i) {
 		u32 min = backends[i].min;
@@ -1486,13 +1419,7 @@ static int igt_ppgtt_sanity_check(void *arg)
 	if (supported == I915_GTT_PAGE_SIZE_4K)
 		return 0;
 
-	/*
-	 * Sanity check that the HW behaves with a limited set of combinations.
-	 * We already have a bunch of randomised testing, which should give us
-	 * a decent amount of variation between runs, however we should keep
-	 * this to limit the chances of introducing a temporary regression, by
-	 * testing the most obvious cases that might make something blow up.
-	 */
+	 
 
 	for (i = 0; i < ARRAY_SIZE(backends); ++i) {
 		for (j = 0; j < ARRAY_SIZE(combos); ++j) {
@@ -1555,13 +1482,7 @@ static int igt_ppgtt_compact(void *arg)
 	struct drm_i915_gem_object *obj;
 	int err;
 
-	/*
-	 * Simple test to catch issues with compact 64K pages -- since the pt is
-	 * compacted to 256B that gives us 32 entries per pt, however since the
-	 * backing page for the pt is 4K, any extra entries we might incorrectly
-	 * write out should be ignored by the HW. If ever hit such a case this
-	 * test should catch it since some of our writes would land in scratch.
-	 */
+	 
 
 	if (!HAS_64K_PAGES(i915)) {
 		pr_info("device lacks compact 64K page support, skipping\n");
@@ -1573,7 +1494,7 @@ static int igt_ppgtt_compact(void *arg)
 		return 0;
 	}
 
-	/* We want the range to cover multiple page-table boundaries. */
+	 
 	obj = i915_gem_object_create_lmem(i915, SZ_4M, 0);
 	if (IS_ERR(obj))
 		return PTR_ERR(obj);
@@ -1587,10 +1508,7 @@ static int igt_ppgtt_compact(void *arg)
 		goto out_unpin;
 	}
 
-	/*
-	 * Disable 2M GTT pages by forcing the page-size to 64K for the GTT
-	 * insertion.
-	 */
+	 
 	obj->mm.page_sizes.sg = I915_GTT_PAGE_SIZE_64K;
 
 	err = igt_write_huge(i915, obj);
@@ -1628,10 +1546,7 @@ static int igt_ppgtt_mixed(void *arg)
 	int *order;
 	int n, err;
 
-	/*
-	 * Sanity check mixing 4K and 64K pages within the same page-table via
-	 * the new PS64 TLB hint.
-	 */
+	 
 
 	if (!HAS_64K_PAGES(i915)) {
 		pr_info("device lacks PS64, skipping\n");
@@ -1779,11 +1694,7 @@ static int igt_tmpfs_fallback(void *arg)
 	}
 	vm = i915_gem_context_get_eb_vm(ctx);
 
-	/*
-	 * Make sure that we don't burst into a ball of flames upon falling back
-	 * to tmpfs, which we rely on if on the off-chance we encouter a failure
-	 * when setting up gemfs.
-	 */
+	 
 
 	i915->mm.gemfs = NULL;
 
@@ -1859,10 +1770,7 @@ static int igt_shrink_thp(void *arg)
 	}
 	vm = i915_gem_context_get_eb_vm(ctx);
 
-	/*
-	 * Sanity check shrinking huge-paged object -- make sure nothing blows
-	 * up.
-	 */
+	 
 
 	obj = i915_gem_object_create_shmem(i915, SZ_2M);
 	if (IS_ERR(obj)) {
@@ -1876,7 +1784,7 @@ static int igt_shrink_thp(void *arg)
 		goto out_put;
 	}
 
-	wf = intel_runtime_pm_get(&i915->runtime_pm); /* active shrink */
+	wf = intel_runtime_pm_get(&i915->runtime_pm);  
 
 	err = i915_vma_pin(vma, 0, 0, flags);
 	if (err)
@@ -1902,11 +1810,7 @@ static int igt_shrink_thp(void *arg)
 			break;
 	}
 	i915_gem_context_unlock_engines(ctx);
-	/*
-	 * Nuke everything *before* we unpin the pages so we can be reasonably
-	 * sure that when later checking get_nr_swap_pages() that some random
-	 * leftover object doesn't steal the remaining swap space.
-	 */
+	 
 	i915_gem_shrink(NULL, i915, -1UL, NULL,
 			I915_SHRINK_BOUND |
 			I915_SHRINK_UNBOUND |
@@ -1915,10 +1819,7 @@ static int igt_shrink_thp(void *arg)
 	if (err)
 		goto out_wf;
 
-	/*
-	 * Now that the pages are *unpinned* shrinking should invoke
-	 * shmem to truncate our pages, if we have available swap.
-	 */
+	 
 	should_swap = get_nr_swap_pages() > 0;
 	i915_gem_shrink(NULL, i915, -1UL, NULL,
 			I915_SHRINK_BOUND |
@@ -1977,7 +1878,7 @@ int i915_gem_huge_page_mock_selftests(void)
 	if (!dev_priv)
 		return -ENOMEM;
 
-	/* Pretend to be a device which supports the 48b PPGTT */
+	 
 	RUNTIME_INFO(dev_priv)->ppgtt_type = INTEL_PPGTT_FULL;
 	RUNTIME_INFO(dev_priv)->ppgtt_size = 48;
 
@@ -1993,7 +1894,7 @@ int i915_gem_huge_page_mock_selftests(void)
 		goto out_put;
 	}
 
-	/* If we were ever hit this then it's time to mock the 64K scratch */
+	 
 	if (!i915_vm_has_scratch_64K(&ppgtt->vm)) {
 		pr_err("PPGTT missing 64K scratch page\n");
 		err = -EINVAL;

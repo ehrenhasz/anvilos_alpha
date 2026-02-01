@@ -1,8 +1,4 @@
-/*
- * SPDX-License-Identifier: MIT
- *
- * (C) Copyright 2016 Intel Corporation
- */
+ 
 
 #include <linux/slab.h>
 #include <linux/dma-fence.h>
@@ -25,7 +21,7 @@ static DEFINE_SPINLOCK(i915_sw_fence_lock);
 #define WQ_FLAG_BITS \
 	BITS_PER_TYPE(typeof_member(struct wait_queue_entry, flags))
 
-/* after WQ_FLAG_* for safety */
+ 
 #define I915_SW_FENCE_FLAG_FENCE BIT(WQ_FLAG_BITS - 1)
 #define I915_SW_FENCE_FLAG_ALLOC BIT(WQ_FLAG_BITS - 2)
 
@@ -80,7 +76,7 @@ static inline void debug_fence_destroy(struct i915_sw_fence *fence)
 static inline void debug_fence_free(struct i915_sw_fence *fence)
 {
 	debug_object_free(fence, &i915_sw_fence_debug_descr);
-	smp_wmb(); /* flush the change in state before reallocation */
+	smp_wmb();  
 }
 
 static inline void debug_fence_assert(struct i915_sw_fence *fence)
@@ -146,14 +142,9 @@ static void __i915_sw_fence_wake_up_all(struct i915_sw_fence *fence,
 	unsigned long flags;
 
 	debug_fence_deactivate(fence);
-	atomic_set_release(&fence->pending, -1); /* 0 -> -1 [done] */
+	atomic_set_release(&fence->pending, -1);  
 
-	/*
-	 * To prevent unbounded recursion as we traverse the graph of
-	 * i915_sw_fences, we move the entry list from this, the next ready
-	 * fence, to the tail of the original fence's entry list
-	 * (and so added to the list to be woken).
-	 */
+	 
 
 	spin_lock_irqsave_nested(&x->lock, flags, 1 + !!continuation);
 	if (continuation) {
@@ -223,10 +214,7 @@ bool i915_sw_fence_await(struct i915_sw_fence *fence)
 {
 	int pending;
 
-	/*
-	 * It is only safe to add a new await to the fence while it has
-	 * not yet been signaled (i.e. there are still existing signalers).
-	 */
+	 
 	pending = atomic_read(&fence->pending);
 	do {
 		if (pending < 1)
@@ -354,7 +342,7 @@ static int __i915_sw_fence_await_sw_fence(struct i915_sw_fence *fence,
 
 	debug_fence_assert(signaler);
 
-	/* The dependency graph must be acyclic. */
+	 
 	if (unlikely(i915_sw_fence_check_if_after(fence, signaler)))
 		return -EINVAL;
 
@@ -527,7 +515,7 @@ int i915_sw_fence_await_dma_fence(struct i915_sw_fence *fence,
 		ret = 1;
 	} else {
 		func(dma, &cb->base);
-		if (ret == -ENOENT) /* fence already signaled */
+		if (ret == -ENOENT)  
 			ret = 0;
 	}
 
@@ -561,7 +549,7 @@ int __i915_sw_fence_await_dma_fence(struct i915_sw_fence *fence,
 
 	ret = 1;
 	if (dma_fence_add_callback(dma, &cb->base, __dma_i915_sw_fence_wake)) {
-		/* fence already signaled */
+		 
 		__dma_i915_sw_fence_wake(dma, &cb->base);
 		ret = 0;
 	}

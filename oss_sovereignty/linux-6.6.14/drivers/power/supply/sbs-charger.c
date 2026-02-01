@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (c) 2016, Prodys S.L.
- *
- * This adds support for sbs-charger compilant chips as defined here:
- * http://sbs-forum.org/specs/sbc110.pdf
- *
- * Implemetation based on sbs-battery.c
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/module.h>
@@ -151,7 +144,7 @@ static const struct regmap_config sbs_regmap = {
 	.max_register	= SBS_CHARGER_REG_ALARM_WARNING,
 	.readable_reg	= sbs_readable_reg,
 	.volatile_reg	= sbs_volatile_reg,
-	.val_format_endian = REGMAP_ENDIAN_LITTLE, /* since based on SMBus */
+	.val_format_endian = REGMAP_ENDIAN_LITTLE,  
 };
 
 static const struct power_supply_desc sbs_desc = {
@@ -182,10 +175,7 @@ static int sbs_probe(struct i2c_client *client)
 	if (IS_ERR(chip->regmap))
 		return PTR_ERR(chip->regmap);
 
-	/*
-	 * Before we register, we need to make sure we can actually talk
-	 * to the battery.
-	 */
+	 
 	ret = regmap_read(chip->regmap, SBS_CHARGER_REG_STATUS, &val);
 	if (ret)
 		return dev_err_probe(&client->dev, ret, "Failed to get device status\n");
@@ -196,11 +186,7 @@ static int sbs_probe(struct i2c_client *client)
 		return dev_err_probe(&client->dev, PTR_ERR(chip->power_supply),
 				     "Failed to register power supply\n");
 
-	/*
-	 * The sbs-charger spec doesn't impose the use of an interrupt. So in
-	 * the case it wasn't provided we use polling in order get the charger's
-	 * status.
-	 */
+	 
 	if (client->irq) {
 		ret = devm_request_threaded_irq(&client->dev, client->irq,
 					NULL, sbs_irq_thread,

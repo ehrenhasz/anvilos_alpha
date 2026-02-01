@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: (GPL-2.0 OR CDDL-1.0) */
-/*
- * vboxguest vmm-req and hgcm-call code, VBoxGuestR0LibHGCMInternal.cpp,
- * VBoxGuestR0LibGenericRequest.cpp and RTErrConvertToErrno.cpp in vbox svn.
- *
- * Copyright (C) 2006-2016 Oracle Corporation
- */
+ 
+ 
 
 #include <linux/errno.h>
 #include <linux/io.h>
@@ -19,19 +14,19 @@
 #include <linux/vbox_utils.h>
 #include "vboxguest_core.h"
 
-/* Get the pointer to the first parameter of a HGCM call request. */
+ 
 #define VMMDEV_HGCM_CALL_PARMS(a) \
 	((struct vmmdev_hgcm_function_parameter *)( \
 		(u8 *)(a) + sizeof(struct vmmdev_hgcm_call)))
 
-/* The max parameter buffer size for a user request. */
+ 
 #define VBG_MAX_HGCM_USER_PARM		(24 * SZ_1M)
-/* The max parameter buffer size for a kernel request. */
+ 
 #define VBG_MAX_HGCM_KERNEL_PARM	(16 * SZ_1M)
 
 #define VBG_DEBUG_PORT			0x504
 
-/* This protects vbg_log_buf and serializes VBG_DEBUG_PORT accesses */
+ 
 static DEFINE_SPINLOCK(vbg_log_lock);
 static char vbg_log_buf[128];
 
@@ -94,16 +89,13 @@ void vbg_req_free(void *req, size_t len)
 	free_pages((unsigned long)req, get_order(PAGE_ALIGN(len)));
 }
 
-/* Note this function returns a VBox status code, not a negative errno!! */
+ 
 int vbg_req_perform(struct vbg_dev *gdev, void *req)
 {
 	unsigned long phys_req = virt_to_phys(req);
 
 	outl(phys_req, gdev->io_port + VMMDEV_PORT_OFF_REQUEST);
-	/*
-	 * The host changes the request as a result of the outl, make sure
-	 * the outl and any reads of the req happen in the correct order.
-	 */
+	 
 	mb();
 
 	return ((struct vmmdev_request_header *)req)->rc;
@@ -236,16 +228,7 @@ static int hgcm_call_preprocess_linaddr(
 	return 0;
 }
 
-/**
- * Preprocesses the HGCM call, validate parameters, alloc bounce buffers and
- * figure out how much extra storage we need for page lists.
- * Return: 0 or negative errno value.
- * @src_parm:         Pointer to source function call parameters
- * @parm_count:       Number of function call parameters.
- * @bounce_bufs_ret:  Where to return the allocated bouncebuffer array
- * @extra:            Where to return the extra request space needed for
- *                    physical page lists.
- */
+ 
 static int hgcm_call_preprocess(
 	const struct vmmdev_hgcm_function_parameter *src_parm,
 	u32 parm_count, void ***bounce_bufs_ret, size_t *extra)
@@ -300,12 +283,7 @@ static int hgcm_call_preprocess(
 	return 0;
 }
 
-/**
- * Translates linear address types to page list direction flags.
- *
- * Return: page list flags.
- * @type:  The type.
- */
+ 
 static u32 hgcm_call_linear_addr_type_to_pagelist_flags(
 	enum vmmdev_hgcm_function_parameter_type type)
 {
@@ -368,15 +346,7 @@ static void hgcm_call_init_linaddr(struct vmmdev_hgcm_call *call,
 	*off_extra += offsetof(struct vmmdev_hgcm_pagelist, pages[page_count]);
 }
 
-/**
- * Initializes the call request that we're sending to the host.
- * @call:            The call to initialize.
- * @client_id:       The client ID of the caller.
- * @function:        The function number of the function to call.
- * @src_parm:        Pointer to source function call parameters.
- * @parm_count:      Number of function call parameters.
- * @bounce_bufs:     The bouncebuffer array.
- */
+ 
 static void hgcm_call_init_call(
 	struct vmmdev_hgcm_call *call, u32 client_id, u32 function,
 	const struct vmmdev_hgcm_function_parameter *src_parm,
@@ -424,20 +394,12 @@ static void hgcm_call_init_call(
 	}
 }
 
-/**
- * Tries to cancel a pending HGCM call.
- *
- * Return: VBox status code
- */
+ 
 static int hgcm_cancel_call(struct vbg_dev *gdev, struct vmmdev_hgcm_call *call)
 {
 	int rc;
 
-	/*
-	 * We use a pre-allocated request for cancellations, which is
-	 * protected by cancel_req_mutex. This means that all cancellations
-	 * get serialized, this should be fine since they should be rare.
-	 */
+	 
 	mutex_lock(&gdev->cancel_req_mutex);
 	gdev->cancel_req->phys_req_to_cancel = virt_to_phys(call);
 	rc = vbg_req_perform(gdev, gdev->cancel_req);
@@ -458,15 +420,7 @@ static int hgcm_cancel_call(struct vbg_dev *gdev, struct vmmdev_hgcm_call *call)
 	return rc;
 }
 
-/**
- * Performs the call and completion wait.
- * Return: 0 or negative errno value.
- * @gdev:        The VBoxGuest device extension.
- * @call:        The call to execute.
- * @timeout_ms:  Timeout in ms.
- * @leak_it:     Where to return the leak it / free it, indicator.
- *               Cancellation fun.
- */
+ 
 static int vbg_hgcm_do_call(struct vbg_dev *gdev, struct vmmdev_hgcm_call *call,
 			    u32 timeout_ms, bool interruptible, bool *leak_it)
 {
@@ -477,10 +431,7 @@ static int vbg_hgcm_do_call(struct vbg_dev *gdev, struct vmmdev_hgcm_call *call,
 
 	rc = vbg_req_perform(gdev, call);
 
-	/*
-	 * If the call failed, then pretend success. Upper layers will
-	 * interpret the result code in the packet.
-	 */
+	 
 	if (rc < 0) {
 		call->header.result = rc;
 		return 0;
@@ -489,7 +440,7 @@ static int vbg_hgcm_do_call(struct vbg_dev *gdev, struct vmmdev_hgcm_call *call,
 	if (rc != VINF_HGCM_ASYNC_EXECUTE)
 		return 0;
 
-	/* Host decided to process the request asynchronously, wait for it */
+	 
 	if (timeout_ms == U32_MAX)
 		timeout = MAX_SCHEDULE_TIMEOUT;
 	else
@@ -505,7 +456,7 @@ static int vbg_hgcm_do_call(struct vbg_dev *gdev, struct vmmdev_hgcm_call *call,
 					     timeout);
 	}
 
-	/* timeout > 0 means hgcm_req_done has returned true, so success */
+	 
 	if (timeout > 0)
 		return 0;
 
@@ -514,15 +465,12 @@ static int vbg_hgcm_do_call(struct vbg_dev *gdev, struct vmmdev_hgcm_call *call,
 	else
 		ret = -EINTR;
 
-	/* Cancel the request */
+	 
 	cancel_rc = hgcm_cancel_call(gdev, call);
 	if (cancel_rc >= 0)
 		return ret;
 
-	/*
-	 * Failed to cancel, this should mean that the cancel has lost the
-	 * race with normal completion, wait while the host completes it.
-	 */
+	 
 	if (cancel_rc == VERR_NOT_FOUND || cancel_rc == VERR_SEM_DESTROYED)
 		timeout = msecs_to_jiffies(500);
 	else
@@ -533,26 +481,18 @@ static int vbg_hgcm_do_call(struct vbg_dev *gdev, struct vmmdev_hgcm_call *call,
 				     timeout);
 
 	if (WARN_ON(timeout == 0)) {
-		/* We really should never get here */
+		 
 		vbg_err("%s: Call timedout and cancellation failed, leaking the request\n",
 			__func__);
 		*leak_it = true;
 		return ret;
 	}
 
-	/* The call has completed normally after all */
+	 
 	return 0;
 }
 
-/**
- * Copies the result of the call back to the caller info structure and user
- * buffers.
- * Return: 0 or negative errno value.
- * @call:            HGCM call request.
- * @dst_parm:        Pointer to function call parameters destination.
- * @parm_count:      Number of function call parameters.
- * @bounce_bufs:     The bouncebuffer array.
- */
+ 
 static int hgcm_call_copy_back_result(
 	const struct vmmdev_hgcm_call *call,
 	struct vmmdev_hgcm_function_parameter *dst_parm,
@@ -564,7 +504,7 @@ static int hgcm_call_copy_back_result(
 	int ret;
 	u32 i;
 
-	/* Copy back parameters. */
+	 
 	for (i = 0; i < parm_count; i++, src_parm++, dst_parm++) {
 		switch (dst_parm->type) {
 		case VMMDEV_HGCM_PARM_TYPE_32BIT:
@@ -617,13 +557,10 @@ int vbg_hgcm_call(struct vbg_dev *gdev, u32 requestor, u32 client_id,
 
 	size = sizeof(struct vmmdev_hgcm_call) +
 		   parm_count * sizeof(struct vmmdev_hgcm_function_parameter);
-	/*
-	 * Validate and buffer the parameters for the call. This also increases
-	 * call_size with the amount of extra space needed for page lists.
-	 */
+	 
 	ret = hgcm_call_preprocess(parms, parm_count, &bounce_bufs, &size);
 	if (ret) {
-		/* Even on error bounce bufs may still have been allocated */
+		 
 		goto free_bounce_bufs;
 	}
 
@@ -668,7 +605,7 @@ int vbg_hgcm_call32(
 	u32 i, size;
 	int ret = 0;
 
-	/* KISS allocate a temporary request and convert the parameters. */
+	 
 	size = parm_count * sizeof(struct vmmdev_hgcm_function_parameter);
 	parm64 = kzalloc(size, GFP_KERNEL);
 	if (!parm64)
@@ -707,7 +644,7 @@ int vbg_hgcm_call32(
 	if (ret < 0)
 		goto out_free;
 
-	/* Copy back. */
+	 
 	for (i = 0; i < parm_count; i++, parm32++, parm64++) {
 		switch (parm64[i].type) {
 		case VMMDEV_HGCM_PARM_TYPE_32BIT:

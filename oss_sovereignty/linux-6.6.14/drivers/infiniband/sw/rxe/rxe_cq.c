@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-/*
- * Copyright (c) 2016 Mellanox Technologies Ltd. All rights reserved.
- * Copyright (c) 2015 System Fabric Works, Inc. All rights reserved.
- */
+
+ 
 #include <linux/vmalloc.h>
 #include "rxe.h"
 #include "rxe_loc.h"
@@ -84,7 +81,7 @@ int rxe_cq_resize_queue(struct rxe_cq *cq, int cqe,
 	return err;
 }
 
-/* caller holds reference to cq */
+ 
 int rxe_cq_post(struct rxe_cq *cq, struct rxe_cqe *cqe, int solicited)
 {
 	struct ib_event ev;

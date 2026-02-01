@@ -1,32 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * zfcp device driver
- *
- * Module interface and handling of zfcp data structures.
- *
- * Copyright IBM Corp. 2002, 2020
- */
 
-/*
- * Driver authors:
- *            Martin Peschke (originator of the driver)
- *            Raimund Schroeder
- *            Aron Zeh
- *            Wolfgang Taphorn
- *            Stefan Bader
- *            Heiko Carstens (kernel 2.6 port of the driver)
- *            Andreas Herrmann
- *            Maxim Shchetynin
- *            Volker Sameske
- *            Ralph Wuerthner
- *            Michael Loehr
- *            Swen Schillig
- *            Christof Schmitt
- *            Martin Petermann
- *            Sven Schuetz
- *            Steffen Maier
- *	      Benjamin Block
- */
+ 
+
+ 
 
 #define KMSG_COMPONENT "zfcp"
 #define pr_fmt(fmt) KMSG_COMPONENT ": " fmt
@@ -94,7 +69,7 @@ static void __init zfcp_init_device_setup(char *devstr)
 	char busid[ZFCP_BUS_ID_SIZE];
 	u64 wwpn, lun;
 
-	/* duplicate devstr and keep the original for sysfs presentation*/
+	 
 	str_saved = kstrdup(devstr, GFP_KERNEL);
 	str = str_saved;
 	if (!str)
@@ -179,13 +154,7 @@ static void __exit zfcp_module_exit(void)
 
 module_exit(zfcp_module_exit);
 
-/**
- * zfcp_get_port_by_wwpn - find port in port list of adapter by wwpn
- * @adapter: pointer to adapter to search for port
- * @wwpn: wwpn to search for
- *
- * Returns: pointer to zfcp_port or NULL
- */
+ 
 struct zfcp_port *zfcp_get_port_by_wwpn(struct zfcp_adapter *adapter,
 					u64 wwpn)
 {
@@ -262,20 +231,12 @@ static void zfcp_free_low_mem_buffers(struct zfcp_adapter *adapter)
 	mempool_destroy(adapter->pool.gid_pn);
 }
 
-/**
- * zfcp_status_read_refill - refill the long running status_read_requests
- * @adapter: ptr to struct zfcp_adapter for which the buffers should be refilled
- *
- * Return:
- * * 0 on success meaning at least one status read is pending
- * * 1 if posting failed and not a single status read buffer is pending,
- *     also triggers adapter reopen recovery
- */
+ 
 int zfcp_status_read_refill(struct zfcp_adapter *adapter)
 {
 	while (atomic_add_unless(&adapter->stat_miss, -1, 0))
 		if (zfcp_fsf_status_read(adapter->qdio)) {
-			atomic_inc(&adapter->stat_miss); /* undo add -1 */
+			atomic_inc(&adapter->stat_miss);  
 			if (atomic_read(&adapter->stat_miss) >=
 			    adapter->stat_read_buf_num) {
 				zfcp_erp_adapter_reopen(adapter, 0, "axsref1");
@@ -331,15 +292,7 @@ static void zfcp_destroy_adapter_work_queue(struct zfcp_adapter *adapter)
 
 }
 
-/**
- * zfcp_adapter_enqueue - enqueue a new adapter to the list
- * @ccw_device: pointer to the struct cc_device
- *
- * Returns:	struct zfcp_adapter*
- * Enqueues an adapter at the end of the adapter list in the driver data.
- * All adapter internal structures are set up.
- * Proc-fs entries are also created.
- */
+ 
 struct zfcp_adapter *zfcp_adapter_enqueue(struct ccw_device *ccw_device)
 {
 	struct zfcp_adapter *adapter;
@@ -416,7 +369,7 @@ struct zfcp_adapter *zfcp_adapter_enqueue(struct ccw_device *ccw_device)
 	if (device_add_groups(&ccw_device->dev, zfcp_sysfs_adapter_attr_groups))
 		goto err_sysfs;
 
-	/* report size limit per scatter-gather segment */
+	 
 	adapter->ccw_device->dev.dma_parms = &adapter->dma_parms;
 
 	adapter->stat_read_buf_num = FSF_STATUS_READS_RECOM;
@@ -425,7 +378,7 @@ struct zfcp_adapter *zfcp_adapter_enqueue(struct ccw_device *ccw_device)
 
 err_sysfs:
 failed:
-	/* TODO: make this more fine-granular */
+	 
 	cancel_delayed_work_sync(&adapter->scan_work);
 	cancel_work_sync(&adapter->stat_work);
 	cancel_work_sync(&adapter->ns_up_work);
@@ -439,7 +392,7 @@ failed:
 	zfcp_dbf_adapter_unregister(adapter);
 	zfcp_qdio_destroy(adapter->qdio);
 
-	zfcp_ccw_adapter_put(adapter); /* final put to release */
+	zfcp_ccw_adapter_put(adapter);  
 	return ERR_PTR(-ENOMEM);
 }
 
@@ -461,14 +414,10 @@ void zfcp_adapter_unregister(struct zfcp_adapter *adapter)
 	zfcp_dbf_adapter_unregister(adapter);
 	zfcp_qdio_destroy(adapter->qdio);
 
-	zfcp_ccw_adapter_put(adapter); /* final put to release */
+	zfcp_ccw_adapter_put(adapter);  
 }
 
-/**
- * zfcp_adapter_release - remove the adapter from the resource list
- * @ref: pointer to struct kref
- * locks:	adapter list write lock is assumed to be held by caller
- */
+ 
 void zfcp_adapter_release(struct kref *ref)
 {
 	struct zfcp_adapter *adapter = container_of(ref, struct zfcp_adapter,
@@ -494,18 +443,7 @@ static void zfcp_port_release(struct device *dev)
 	kfree(port);
 }
 
-/**
- * zfcp_port_enqueue - enqueue port to port list of adapter
- * @adapter: adapter where remote port is added
- * @wwpn: WWPN of the remote port to be enqueued
- * @status: initial status for the port
- * @d_id: destination id of the remote port to be enqueued
- * Returns: pointer to enqueued port on success, ERR_PTR on error
- *
- * All port internal structures are set up and the sysfs entry is generated.
- * d_id is used to enqueue ports with a well known address like the Directory
- * Service for nameserver lookup.
- */
+ 
 struct zfcp_port *zfcp_port_enqueue(struct zfcp_adapter *adapter, u64 wwpn,
 				     u32 status, u32 d_id)
 {

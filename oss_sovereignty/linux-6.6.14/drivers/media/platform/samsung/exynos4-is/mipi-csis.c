@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Samsung S5P/EXYNOS SoC series MIPI-CSI receiver driver
- *
- * Copyright (C) 2011 - 2013 Samsung Electronics Co., Ltd.
- * Author: Sylwester Nawrocki <s.nawrocki@samsung.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -36,9 +31,9 @@ static int debug;
 module_param(debug, int, 0644);
 MODULE_PARM_DESC(debug, "Debug level (0-2)");
 
-/* Register map definition */
+ 
 
-/* CSIS global control */
+ 
 #define S5PCSIS_CTRL			0x00
 #define S5PCSIS_CTRL_DPDN_DEFAULT	(0 << 31)
 #define S5PCSIS_CTRL_DPDN_SWAP		(1UL << 31)
@@ -48,7 +43,7 @@ MODULE_PARM_DESC(debug, "Debug level (0-2)");
 #define S5PCSIS_CTRL_RESET		(1 << 4)
 #define S5PCSIS_CTRL_ENABLE		(1 << 0)
 
-/* D-PHY control */
+ 
 #define S5PCSIS_DPHYCTRL		0x04
 #define S5PCSIS_DPHYCTRL_HSS_MASK	(0x1f << 27)
 #define S5PCSIS_DPHYCTRL_ENABLE		(0x1f << 0)
@@ -58,12 +53,12 @@ MODULE_PARM_DESC(debug, "Debug level (0-2)");
 #define S5PCSIS_CFG_FMT_RAW8		(0x2a << 2)
 #define S5PCSIS_CFG_FMT_RAW10		(0x2b << 2)
 #define S5PCSIS_CFG_FMT_RAW12		(0x2c << 2)
-/* User defined formats, x = 1...4 */
+ 
 #define S5PCSIS_CFG_FMT_USER(x)		((0x30 + x - 1) << 2)
 #define S5PCSIS_CFG_FMT_MASK		(0x3f << 2)
 #define S5PCSIS_CFG_NR_LANE_MASK	3
 
-/* Interrupt mask */
+ 
 #define S5PCSIS_INTMSK			0x10
 #define S5PCSIS_INTMSK_EVEN_BEFORE	(1UL << 31)
 #define S5PCSIS_INTMSK_EVEN_AFTER	(1 << 30)
@@ -81,7 +76,7 @@ MODULE_PARM_DESC(debug, "Debug level (0-2)");
 #define S5PCSIS_INTMSK_EXYNOS4_EN_ALL	0xf000103f
 #define S5PCSIS_INTMSK_EXYNOS5_EN_ALL	0xfc00103f
 
-/* Interrupt source */
+ 
 #define S5PCSIS_INTSRC			0x14
 #define S5PCSIS_INTSRC_EVEN_BEFORE	(1UL << 31)
 #define S5PCSIS_INTSRC_EVEN_AFTER	(1 << 30)
@@ -101,12 +96,12 @@ MODULE_PARM_DESC(debug, "Debug level (0-2)");
 #define S5PCSIS_INTSRC_ERR_UNKNOWN	(1 << 0)
 #define S5PCSIS_INTSRC_ERRORS		0xf03f
 
-/* Pixel resolution */
+ 
 #define S5PCSIS_RESOL			0x2c
 #define CSIS_MAX_PIX_WIDTH		0xffff
 #define CSIS_MAX_PIX_HEIGHT		0xffff
 
-/* Non-image packet data buffers */
+ 
 #define S5PCSIS_PKTDATA_ODD		0x2000
 #define S5PCSIS_PKTDATA_EVEN		0x3000
 #define S5PCSIS_PKTDATA_SIZE		SZ_4K
@@ -124,8 +119,8 @@ static char *csi_clock_name[] = {
 #define DEFAULT_SCLK_CSIS_FREQ	166000000UL
 
 static const char * const csis_supply_name[] = {
-	"vddcore",  /* CSIS Core (1.0V, 1.1V or 1.2V) supply */
-	"vddio",    /* CSIS I/O and PLL (1.8V) supply */
+	"vddcore",   
+	"vddio",     
 };
 #define CSIS_NUM_SUPPLIES ARRAY_SIZE(csis_supply_name)
 
@@ -142,7 +137,7 @@ struct s5pcsis_event {
 };
 
 static const struct s5pcsis_event s5pcsis_events[] = {
-	/* Errors */
+	 
 	{ S5PCSIS_INTSRC_ERR_SOT_HS,	"SOT Error" },
 	{ S5PCSIS_INTSRC_ERR_LOST_FS,	"Lost Frame Start Error" },
 	{ S5PCSIS_INTSRC_ERR_LOST_FE,	"Lost Frame End Error" },
@@ -150,12 +145,12 @@ static const struct s5pcsis_event s5pcsis_events[] = {
 	{ S5PCSIS_INTSRC_ERR_ECC,	"ECC Error" },
 	{ S5PCSIS_INTSRC_ERR_CRC,	"CRC Error" },
 	{ S5PCSIS_INTSRC_ERR_UNKNOWN,	"Unknown Error" },
-	/* Non-image data receive events */
+	 
 	{ S5PCSIS_INTSRC_EVEN_BEFORE,	"Non-image data before even frame" },
 	{ S5PCSIS_INTSRC_EVEN_AFTER,	"Non-image data after even frame" },
 	{ S5PCSIS_INTSRC_ODD_BEFORE,	"Non-image data before odd frame" },
 	{ S5PCSIS_INTSRC_ODD_AFTER,	"Non-image data after odd frame" },
-	/* Frame start/end */
+	 
 	{ S5PCSIS_INTSRC_FRAME_START,	"Frame Start" },
 	{ S5PCSIS_INTSRC_FRAME_END,	"Frame End" },
 };
@@ -167,36 +162,11 @@ struct csis_pktbuf {
 };
 
 struct csis_drvdata {
-	/* Mask of all used interrupts in S5PCSIS_INTMSK register */
+	 
 	u32 interrupt_mask;
 };
 
-/**
- * struct csis_state - the driver's internal state data structure
- * @lock: mutex serializing the subdev and power management operations,
- *        protecting @format and @flags members
- * @pads: CSIS pads array
- * @sd: v4l2_subdev associated with CSIS device instance
- * @index: the hardware instance index
- * @pdev: CSIS platform device
- * @phy: pointer to the CSIS generic PHY
- * @regs: mmapped I/O registers memory
- * @supplies: CSIS regulator supplies
- * @clock: CSIS clocks
- * @irq: requested s5p-mipi-csis irq number
- * @interrupt_mask: interrupt mask of the all used interrupts
- * @flags: the state variable for power and streaming control
- * @clk_frequency: device bus clock frequency
- * @hs_settle: HS-RX settle time
- * @num_lanes: number of MIPI-CSI data lanes used
- * @max_num_lanes: maximum number of MIPI-CSI data lanes supported
- * @wclk_ext: CSI wrapper clock: 0 - bus clock, 1 - external SCLK_CAM
- * @csis_fmt: current CSIS pixel format
- * @format: common media bus format for the source and sink pad
- * @slock: spinlock protecting structure members below
- * @pkt_buf: the frame embedded (non-image) data buffer
- * @events: MIPI-CSIS event (error) counters
- */
+ 
 struct csis_state {
 	struct mutex lock;
 	struct media_pad pads[CSIS_PADS_NUM];
@@ -225,14 +195,7 @@ struct csis_state {
 	struct s5pcsis_event events[S5PCSIS_NUM_EVENTS];
 };
 
-/**
- * struct csis_pix_format - CSIS pixel format description
- * @pix_width_alignment: horizontal pixel alignment, width will be
- *                       multiple of 2^pix_width_alignment
- * @code: corresponding media bus code
- * @fmt_reg: S5PCSIS_CONFIG register value
- * @data_alignment: MIPI-CSI data alignment in bits
- */
+ 
 struct csis_pix_format {
 	unsigned int pix_width_alignment;
 	u32 code;
@@ -325,7 +288,7 @@ static void s5pcsis_system_enable(struct csis_state *state, int on)
 	s5pcsis_write(state, S5PCSIS_DPHYCTRL, val);
 }
 
-/* Called with the state.lock mutex held */
+ 
 static void __s5pcsis_set_format(struct csis_state *state)
 {
 	struct v4l2_mbus_framefmt *mf = &state->format;
@@ -334,12 +297,12 @@ static void __s5pcsis_set_format(struct csis_state *state)
 	v4l2_dbg(1, debug, &state->sd, "fmt: %#x, %d x %d\n",
 		 mf->code, mf->width, mf->height);
 
-	/* Color format */
+	 
 	val = s5pcsis_read(state, S5PCSIS_CONFIG);
 	val = (val & ~S5PCSIS_CFG_FMT_MASK) | state->csis_fmt->fmt_reg;
 	s5pcsis_write(state, S5PCSIS_CONFIG, val);
 
-	/* Pixel resolution */
+	 
 	val = (mf->width << 16) | mf->height;
 	s5pcsis_write(state, S5PCSIS_RESOL, val);
 }
@@ -366,7 +329,7 @@ static void s5pcsis_set_params(struct csis_state *state)
 	val = s5pcsis_read(state, S5PCSIS_CTRL);
 	if (state->csis_fmt->data_alignment == 32)
 		val |= S5PCSIS_CTRL_ALIGN_32BIT;
-	else /* 24-bits */
+	else  
 		val &= ~S5PCSIS_CTRL_ALIGN_32BIT;
 
 	val &= ~S5PCSIS_CTRL_WCLK_EXTCLK;
@@ -374,7 +337,7 @@ static void s5pcsis_set_params(struct csis_state *state)
 		val |= S5PCSIS_CTRL_WCLK_EXTCLK;
 	s5pcsis_write(state, S5PCSIS_CTRL, val);
 
-	/* Update the shadow register. */
+	 
 	val = s5pcsis_read(state, S5PCSIS_CTRL);
 	s5pcsis_write(state, S5PCSIS_CTRL, val | S5PCSIS_CTRL_UPDATE_SHADOW);
 }
@@ -485,9 +448,7 @@ static void s5pcsis_log_counters(struct csis_state *state, bool non_errors)
 	spin_unlock_irqrestore(&state->slock, flags);
 }
 
-/*
- * V4L2 subdev operations
- */
+ 
 static int s5pcsis_s_power(struct v4l2_subdev *sd, int on)
 {
 	struct csis_state *state = sd_to_csis_state(sd);
@@ -695,7 +656,7 @@ static irqreturn_t s5pcsis_irq_handler(int irq, void *dev_id)
 		rmb();
 	}
 
-	/* Update the event/error counters */
+	 
 	if ((status & S5PCSIS_INTSRC_ERRORS) || debug) {
 		int i;
 		for (i = 0; i < S5PCSIS_NUM_EVENTS; i++) {
@@ -734,7 +695,7 @@ static int s5pcsis_parse_dt(struct platform_device *pdev,
 				pdev->dev.of_node);
 		return -EINVAL;
 	}
-	/* Get port node and validate MIPI-CSI channel id. */
+	 
 	ret = v4l2_fwnode_endpoint_parse(of_fwnode_handle(node), &endpoint);
 	if (ret)
 		goto err;
@@ -745,7 +706,7 @@ static int s5pcsis_parse_dt(struct platform_device *pdev,
 		goto err;
 	}
 
-	/* Get MIPI CSI-2 bus configuration from the endpoint node. */
+	 
 	of_property_read_u32(node, "samsung,csis-hs-settle",
 					&state->hs_settle);
 	state->wclk_ext = of_property_read_bool(node,
@@ -857,10 +818,10 @@ static int s5pcsis_probe(struct platform_device *pdev)
 	if (ret < 0)
 		goto e_clkdis;
 
-	/* This allows to retrieve the platform device id by the host driver */
+	 
 	v4l2_set_subdevdata(&state->sd, pdev);
 
-	/* .. and a pointer to the subdev. */
+	 
 	platform_set_drvdata(pdev, &state->sd);
 	memcpy(state->events, s5pcsis_events, sizeof(state->events));
 
@@ -1014,7 +975,7 @@ static const struct of_device_id s5pcsis_of_match[] = {
 		.compatible = "samsung,exynos5250-csis",
 		.data = &exynos5_csis_drvdata,
 	},
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, s5pcsis_of_match);
 

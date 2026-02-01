@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Amlogic Meson-AXG Clock Controller Driver
- *
- * Copyright (c) 2016 Baylibre SAS.
- * Author: Michael Turquette <mturquette@baylibre.com>
- *
- * Copyright (c) 2019 Baylibre SAS.
- * Author: Neil Armstrong <narmstrong@baylibre.com>
- */
+
+ 
 #include <linux/clk-provider.h>
 #include <linux/platform_device.h>
 #include <linux/reset-controller.h>
@@ -21,10 +13,7 @@
 #include <dt-bindings/clock/g12a-aoclkc.h>
 #include <dt-bindings/reset/g12a-aoclkc.h>
 
-/*
- * AO Configuration Clock registers offsets
- * Register offsets from the data sheet must be multiplied by 4.
- */
+ 
 #define AO_RTI_STATUS_REG3	0x0C
 #define AO_RTI_PWR_CNTL_REG0	0x10
 #define AO_RTI_GEN_CNTL_REG0	0x40
@@ -37,12 +26,7 @@
 #define AO_RTC_ALT_CLK_CNTL0	0x94
 #define AO_RTC_ALT_CLK_CNTL1	0x98
 
-/*
- * Like every other peripheral clock gate in Amlogic Clock drivers,
- * we are using CLK_IGNORE_UNUSED here, so we keep the state of the
- * bootloader. The goal is to remove this flag at some point.
- * Actually removing it will require some extensive test to be done safely.
- */
+ 
 #define AXG_AO_GATE(_name, _reg, _bit)					\
 static struct clk_regmap g12a_aoclk_##_name = {				\
 	.data = &(struct clk_regmap_gate_data) {			\
@@ -101,7 +85,7 @@ static const struct meson_clk_dualdiv_param g12a_32k_div_table[] = {
 	}, {}
 };
 
-/* 32k_by_oscin clock */
+ 
 
 static struct clk_regmap g12a_aoclk_32k_by_oscin_pre = {
 	.data = &(struct clk_regmap_gate_data){
@@ -192,7 +176,7 @@ static struct clk_regmap g12a_aoclk_32k_by_oscin = {
 	},
 };
 
-/* cec clock */
+ 
 
 static struct clk_regmap g12a_aoclk_cec_pre = {
 	.data = &(struct clk_regmap_gate_data){

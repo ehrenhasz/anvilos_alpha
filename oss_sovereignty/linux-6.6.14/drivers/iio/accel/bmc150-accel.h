@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _BMC150_ACCEL_H_
 #define _BMC150_ACCEL_H_
 
@@ -13,17 +13,7 @@ struct i2c_client;
 struct bmc150_accel_chip_info;
 struct bmc150_accel_interrupt_info;
 
-/*
- * We can often guess better than "UNKNOWN" based on the device IDs
- * but unfortunately this information is not always accurate. There are some
- * devices where ACPI firmware specifies an ID like "BMA250E" when the device
- * actually has a BMA222E. The driver attempts to detect those by reading the
- * chip ID from the registers but this information is not always enough either.
- *
- * Therefore, this enum should be only used when the chip ID detection is not
- * enough and we can be reasonably sure that the device IDs are reliable
- * in practice (e.g. for device tree platforms).
- */
+ 
 enum bmc150_type {
 	BOSCH_UNKNOWN,
 	BOSCH_BMC156,
@@ -63,10 +53,7 @@ struct bmc150_accel_data {
 	struct mutex mutex;
 	u8 fifo_mode, watermark;
 	s16 buffer[8];
-	/*
-	 * Ensure there is sufficient space and correct alignment for
-	 * the timestamp if enabled
-	 */
+	 
 	struct {
 		__le16 channels[3];
 		s64 ts __aligned(8);
@@ -76,7 +63,7 @@ struct bmc150_accel_data {
 	u32 slope_thres;
 	u32 range;
 	int ev_enable_state;
-	int64_t timestamp, old_timestamp; /* Only used in hw fifo mode. */
+	int64_t timestamp, old_timestamp;  
 	const struct bmc150_accel_chip_info *chip_info;
 	enum bmc150_type type;
 	struct i2c_client *second_device;
@@ -92,4 +79,4 @@ void bmc150_accel_core_remove(struct device *dev);
 extern const struct dev_pm_ops bmc150_accel_pm_ops;
 extern const struct regmap_config bmc150_regmap_conf;
 
-#endif  /* _BMC150_ACCEL_H_ */
+#endif   

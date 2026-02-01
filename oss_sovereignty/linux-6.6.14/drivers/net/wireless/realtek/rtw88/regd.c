@@ -1,6 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
-/* Copyright(c) 2018-2019  Realtek Corporation
- */
+
+ 
 
 #include "main.h"
 #include "regd.h"
@@ -27,9 +26,7 @@ do {								\
 		__r->dfs_region);				\
 } while (0)
 
-/* If country code is not correctly defined in efuse,
- * use worldwide country code and txpwr regd.
- */
+ 
 static const struct rtw_regulatory rtw_reg_ww =
 	COUNTRY_REGD_ENT("00", RTW_REGD_WW, RTW_REGD_WW);
 
@@ -332,7 +329,7 @@ static const struct rtw_regulatory *rtw_reg_find_by_name(const char *alpha2)
 static
 void rtw_regd_notifier(struct wiphy *wiphy, struct regulatory_request *request);
 
-/* call this before ieee80211_register_hw() */
+ 
 int rtw_regd_init(struct rtw_dev *rtwdev)
 {
 	struct wiphy *wiphy = rtwdev->hw->wiphy;
@@ -347,10 +344,7 @@ int rtw_regd_init(struct rtw_dev *rtwdev)
 	if (!rtw_reg_is_ww(chip_reg)) {
 		rtwdev->regd.state = RTW_REGD_STATE_PROGRAMMED;
 
-		/* Set REGULATORY_STRICT_REG before ieee80211_register_hw(),
-		 * stack will wait for regulatory_hint() and consider it
-		 * as the superset for our regulatory rule.
-		 */
+		 
 		wiphy->regulatory_flags |= REGULATORY_STRICT_REG;
 		wiphy->regulatory_flags |= REGULATORY_COUNTRY_IE_IGNORE;
 	} else {
@@ -365,7 +359,7 @@ int rtw_regd_init(struct rtw_dev *rtwdev)
 	return 0;
 }
 
-/* call this after ieee80211_register_hw() */
+ 
 int rtw_regd_hint(struct rtw_dev *rtwdev)
 {
 	struct wiphy *wiphy = rtwdev->hw->wiphy;

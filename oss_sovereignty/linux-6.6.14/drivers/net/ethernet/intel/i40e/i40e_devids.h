@@ -1,10 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright(c) 2013 - 2018 Intel Corporation. */
+ 
+ 
 
 #ifndef _I40E_DEVIDS_H_
 #define _I40E_DEVIDS_H_
 
-/* Device IDs */
+ 
 #define I40E_DEV_ID_X710_N3000		0x0CF8
 #define I40E_DEV_ID_XXV710_N3000	0x0D58
 #define I40E_DEV_ID_SFP_XL710		0x1572
@@ -38,4 +38,4 @@
 #define I40E_DEV_ID_SFP_X722_A		0x0DDA
 
 
-#endif /* _I40E_DEVIDS_H_ */
+#endif  

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) IBM Corporation 2020
- */
+
+ 
 
 #include <linux/i2c.h>
 #include <linux/init.h>
@@ -19,7 +17,7 @@ struct ibm_panel {
 	u8 idx;
 	u8 command[11];
 	u32 keycodes[PANEL_KEYCODES_COUNT];
-	spinlock_t lock;	/* protects writes to idx and command */
+	spinlock_t lock;	 
 	struct input_dev *input;
 };
 
@@ -99,11 +97,7 @@ static int ibm_panel_i2c_slave_cb(struct i2c_client *client,
 		if (panel->idx < sizeof(panel->command))
 			panel->command[panel->idx++] = *val;
 		else
-			/*
-			 * The command is too long and therefore invalid, so set the index
-			 * to it's largest possible value. When a STOP is finally received,
-			 * the command will be rejected upon processing.
-			 */
+			 
 			panel->idx = U8_MAX;
 		break;
 	case I2C_SLAVE_READ_REQUESTED:
@@ -143,10 +137,7 @@ static int ibm_panel_probe(struct i2c_client *client)
 					       panel->keycodes,
 					       PANEL_KEYCODES_COUNT);
 	if (error) {
-		/*
-		 * Use gamepad buttons as defaults for compatibility with
-		 * existing applications.
-		 */
+		 
 		panel->keycodes[0] = BTN_NORTH;
 		panel->keycodes[1] = BTN_SOUTH;
 		panel->keycodes[2] = BTN_SELECT;

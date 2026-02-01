@@ -1,38 +1,6 @@
-/*
- *  linux/net/sunrpc/gss_krb5_crypto.c
- *
- *  Copyright (c) 2000-2008 The Regents of the University of Michigan.
- *  All rights reserved.
- *
- *  Andy Adamson   <andros@umich.edu>
- *  Bruce Fields   <bfields@umich.edu>
- */
+ 
 
-/*
- * Copyright (C) 1998 by the FundsXpress, INC.
- *
- * All rights reserved.
- *
- * Export of this software from the United States of America may require
- * a specific license from the United States Government.  It is the
- * responsibility of any person or organization contemplating export to
- * obtain such a license before exporting.
- *
- * WITHIN THAT CONSTRAINT, permission to use, copy, modify, and
- * distribute this software and its documentation for any purpose and
- * without fee is hereby granted, provided that the above copyright
- * notice appear in all copies and that both that copyright notice and
- * this permission notice appear in supporting documentation, and that
- * the name of FundsXpress. not be used in advertising or publicity pertaining
- * to distribution of the software without specific, written prior
- * permission.  FundsXpress makes no representations about the suitability of
- * this software for any purpose.  It is provided "as is" without express
- * or implied warranty.
- *
- * THIS SOFTWARE IS PROVIDED ``AS IS'' AND WITHOUT ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, WITHOUT LIMITATION, THE IMPLIED
- * WARRANTIES OF MERCHANTIBILITY AND FITNESS FOR A PARTICULAR PURPOSE.
- */
+ 
 
 #include <crypto/algapi.h>
 #include <crypto/hash.h>
@@ -54,51 +22,13 @@
 # define RPCDBG_FACILITY        RPCDBG_AUTH
 #endif
 
-/**
- * krb5_make_confounder - Generate a confounder string
- * @p: memory location into which to write the string
- * @conflen: string length to write, in octets
- *
- * RFCs 1964 and 3961 mention only "a random confounder" without going
- * into detail about its function or cryptographic requirements. The
- * assumed purpose is to prevent repeated encryption of a plaintext with
- * the same key from generating the same ciphertext. It is also used to
- * pad minimum plaintext length to at least a single cipher block.
- *
- * However, in situations like the GSS Kerberos 5 mechanism, where the
- * encryption IV is always all zeroes, the confounder also effectively
- * functions like an IV. Thus, not only must it be unique from message
- * to message, but it must also be difficult to predict. Otherwise an
- * attacker can correlate the confounder to previous or future values,
- * making the encryption easier to break.
- *
- * Given that the primary consumer of this encryption mechanism is a
- * network storage protocol, a type of traffic that often carries
- * predictable payloads (eg, all zeroes when reading unallocated blocks
- * from a file), our confounder generation has to be cryptographically
- * strong.
- */
+ 
 void krb5_make_confounder(u8 *p, int conflen)
 {
 	get_random_bytes(p, conflen);
 }
 
-/**
- * krb5_encrypt - simple encryption of an RPCSEC GSS payload
- * @tfm: initialized cipher transform
- * @iv: pointer to an IV
- * @in: plaintext to encrypt
- * @out: OUT: ciphertext
- * @length: length of input and output buffers, in bytes
- *
- * @iv may be NULL to force the use of an all-zero IV.
- * The buffer containing the IV must be as large as the
- * cipher's ivsize.
- *
- * Return values:
- *   %0: @in successfully encrypted into @out
- *   negative errno: @in not encrypted
- */
+ 
 u32
 krb5_encrypt(
 	struct crypto_sync_skcipher *tfm,
@@ -138,22 +68,7 @@ out:
 	return ret;
 }
 
-/**
- * krb5_decrypt - simple decryption of an RPCSEC GSS payload
- * @tfm: initialized cipher transform
- * @iv: pointer to an IV
- * @in: ciphertext to decrypt
- * @out: OUT: plaintext
- * @length: length of input and output buffers, in bytes
- *
- * @iv may be NULL to force the use of an all-zero IV.
- * The buffer containing the IV must be as large as the
- * cipher's ivsize.
- *
- * Return values:
- *   %0: @in successfully decrypted into @out
- *   negative errno: @in not decrypted
- */
+ 
 u32
 krb5_decrypt(
      struct crypto_sync_skcipher *tfm,
@@ -202,11 +117,7 @@ checksummer(struct scatterlist *sg, void *data)
 	return crypto_ahash_update(req);
 }
 
-/*
- * checksum the plaintext data and hdrlen bytes of the token header
- * The checksum is performed over the first 8 bytes of the
- * gss token header and then over the data body
- */
+ 
 u32
 make_checksum(struct krb5_ctx *kctx, char *header, int hdrlen,
 	      struct xdr_buf *body, int body_offset, u8 *cksumkey,
@@ -292,24 +203,7 @@ out_free_cksum:
 	return err ? GSS_S_FAILURE : 0;
 }
 
-/**
- * gss_krb5_checksum - Compute the MAC for a GSS Wrap or MIC token
- * @tfm: an initialized hash transform
- * @header: pointer to a buffer containing the token header, or NULL
- * @hdrlen: number of octets in @header
- * @body: xdr_buf containing an RPC message (body.len is the message length)
- * @body_offset: byte offset into @body to start checksumming
- * @cksumout: OUT: a buffer to be filled in with the computed HMAC
- *
- * Usually expressed as H = HMAC(K, message)[1..h] .
- *
- * Caller provides the truncation length of the output token (h) in
- * cksumout.len.
- *
- * Return values:
- *   %GSS_S_COMPLETE: Digest computed, @cksumout filled in
- *   %GSS_S_FAILURE: Call failed
- */
+ 
 u32
 gss_krb5_checksum(struct crypto_ahash *tfm, char *header, int hdrlen,
 		  const struct xdr_buf *body, int body_offset,
@@ -331,10 +225,7 @@ gss_krb5_checksum(struct crypto_ahash *tfm, char *header, int hdrlen,
 	if (err)
 		goto out_free_ahash;
 
-	/*
-	 * Per RFC 4121 Section 4.2.4, the checksum is performed over the
-	 * data body first, then over the octets in "header".
-	 */
+	 
 	err = xdr_process_buf(body, body_offset, body->len - body_offset,
 			      checksummer, req);
 	if (err)
@@ -389,13 +280,12 @@ encryptor(struct scatterlist *sg, void *data)
 	int fraglen, ret;
 	int page_pos;
 
-	/* Worst case is 4 fragments: head, end of page 1, start
-	 * of page 2, tail.  Anything more is a bug. */
+	 
 	BUG_ON(desc->fragno > 3);
 
 	page_pos = desc->pos - outbuf->head[0].iov_len;
 	if (page_pos >= 0 && page_pos < outbuf->page_len) {
-		/* pages are not in place: */
+		 
 		int i = (page_pos + outbuf->page_base) >> PAGE_SHIFT;
 		in_page = desc->pages[i];
 	} else {
@@ -488,8 +378,7 @@ decryptor(struct scatterlist *sg, void *data)
 		crypto_sync_skcipher_reqtfm(desc->req);
 	int fraglen, ret;
 
-	/* Worst case is 4 fragments: head, end of page 1, start
-	 * of page 2, tail.  Anything more is a bug. */
+	 
 	BUG_ON(desc->fragno > 3);
 	sg_set_page(&desc->frags[desc->fragno], sg_page(sg), sg->length,
 		    sg->offset);
@@ -533,7 +422,7 @@ gss_decrypt_xdr_buf(struct crypto_sync_skcipher *tfm, struct xdr_buf *buf,
 	struct decryptor_desc desc;
 	SYNC_SKCIPHER_REQUEST_ON_STACK(req, tfm);
 
-	/* XXXJBF: */
+	 
 	BUG_ON((buf->len - offset) % crypto_sync_skcipher_blocksize(tfm) != 0);
 
 	skcipher_request_set_sync_tfm(req, tfm);
@@ -551,22 +440,7 @@ gss_decrypt_xdr_buf(struct crypto_sync_skcipher *tfm, struct xdr_buf *buf,
 	return ret;
 }
 
-/*
- * This function makes the assumption that it was ultimately called
- * from gss_wrap().
- *
- * The client auth_gss code moves any existing tail data into a
- * separate page before calling gss_wrap.
- * The server svcauth_gss code ensures that both the head and the
- * tail have slack space of RPC_MAX_AUTH_SIZE before calling gss_wrap.
- *
- * Even with that guarantee, this function may be called more than
- * once in the processing of gss_wrap().  The best we can do is
- * verify at compile-time (see GSS_KRB5_SLACK_CHECK) that the
- * largest expected shift will fit within RPC_MAX_AUTH_SIZE.
- * At run-time we can verify that a single invocation of this
- * function doesn't attempt to use more the RPC_MAX_AUTH_SIZE.
- */
+ 
 
 int
 xdr_extend_head(struct xdr_buf *buf, unsigned int base, unsigned int shiftlen)
@@ -607,11 +481,7 @@ gss_krb5_cts_crypt(struct crypto_sync_skcipher *cipher, struct xdr_buf *buf,
 	if (!data)
 		return -ENOMEM;
 
-	/*
-	 * For encryption, we want to read from the cleartext
-	 * page cache pages, and write the encrypted data to
-	 * the supplied xdr_buf pages.
-	 */
+	 
 	save_pages = buf->pages;
 	if (encrypt)
 		buf->pages = pages;
@@ -640,11 +510,7 @@ gss_krb5_cts_crypt(struct crypto_sync_skcipher *cipher, struct xdr_buf *buf,
 	ret = write_bytes_to_xdr_buf(buf, offset, data, len);
 
 #if IS_ENABLED(CONFIG_KUNIT)
-	/*
-	 * CBC-CTS does not define an output IV but RFC 3962 defines it as the
-	 * penultimate block of ciphertext, so copy that into the IV buffer
-	 * before returning.
-	 */
+	 
 	if (encrypt)
 		memcpy(iv, data, crypto_sync_skcipher_ivsize(cipher));
 #endif
@@ -654,23 +520,7 @@ out:
 	return ret;
 }
 
-/**
- * krb5_cbc_cts_encrypt - encrypt in CBC mode with CTS
- * @cts_tfm: CBC cipher with CTS
- * @cbc_tfm: base CBC cipher
- * @offset: starting byte offset for plaintext
- * @buf: OUT: output buffer
- * @pages: plaintext
- * @iv: output CBC initialization vector, or NULL
- * @ivsize: size of @iv, in octets
- *
- * To provide confidentiality, encrypt using cipher block chaining
- * with ciphertext stealing. Message integrity is handled separately.
- *
- * Return values:
- *   %0: encryption successful
- *   negative errno: encryption could not be completed
- */
+ 
 VISIBLE_IF_KUNIT
 int krb5_cbc_cts_encrypt(struct crypto_sync_skcipher *cts_tfm,
 			 struct crypto_sync_skcipher *cbc_tfm,
@@ -690,7 +540,7 @@ int krb5_cbc_cts_encrypt(struct crypto_sync_skcipher *cts_tfm,
 
 	memset(desc.iv, 0, sizeof(desc.iv));
 
-	/* Handle block-sized chunks of plaintext with CBC. */
+	 
 	if (cbcbytes) {
 		SYNC_SKCIPHER_REQUEST_ON_STACK(req, cbc_tfm);
 
@@ -713,7 +563,7 @@ int krb5_cbc_cts_encrypt(struct crypto_sync_skcipher *cts_tfm,
 			return err;
 	}
 
-	/* Remaining plaintext is handled with CBC-CTS. */
+	 
 	err = gss_krb5_cts_crypt(cts_tfm, buf, offset + cbcbytes,
 				 desc.iv, pages, 1);
 	if (err)
@@ -725,17 +575,7 @@ int krb5_cbc_cts_encrypt(struct crypto_sync_skcipher *cts_tfm,
 }
 EXPORT_SYMBOL_IF_KUNIT(krb5_cbc_cts_encrypt);
 
-/**
- * krb5_cbc_cts_decrypt - decrypt in CBC mode with CTS
- * @cts_tfm: CBC cipher with CTS
- * @cbc_tfm: base CBC cipher
- * @offset: starting byte offset for plaintext
- * @buf: OUT: output buffer
- *
- * Return values:
- *   %0: decryption successful
- *   negative errno: decryption could not be completed
- */
+ 
 VISIBLE_IF_KUNIT
 int krb5_cbc_cts_decrypt(struct crypto_sync_skcipher *cts_tfm,
 			 struct crypto_sync_skcipher *cbc_tfm,
@@ -753,7 +593,7 @@ int krb5_cbc_cts_decrypt(struct crypto_sync_skcipher *cts_tfm,
 
 	memset(desc.iv, 0, sizeof(desc.iv));
 
-	/* Handle block-sized chunks of plaintext with CBC. */
+	 
 	if (cbcbytes) {
 		SYNC_SKCIPHER_REQUEST_ON_STACK(req, cbc_tfm);
 
@@ -772,7 +612,7 @@ int krb5_cbc_cts_decrypt(struct crypto_sync_skcipher *cts_tfm,
 			return err;
 	}
 
-	/* Remaining plaintext is handled with CBC-CTS. */
+	 
 	return gss_krb5_cts_crypt(cts_tfm, buf, cbcbytes, desc.iv, NULL, 0);
 }
 EXPORT_SYMBOL_IF_KUNIT(krb5_cbc_cts_decrypt);
@@ -800,7 +640,7 @@ gss_krb5_aes_encrypt(struct krb5_ctx *kctx, u32 offset,
 	}
 	conflen = crypto_sync_skcipher_blocksize(cipher);
 
-	/* hide the gss token header and insert the confounder */
+	 
 	offset += GSS_KRB5_TOK_HDR_LEN;
 	if (xdr_extend_head(buf, offset, conflen))
 		return GSS_S_FAILURE;
@@ -816,7 +656,7 @@ gss_krb5_aes_encrypt(struct krb5_ctx *kctx, u32 offset,
 		ecptr = buf->tail[0].iov_base;
 	}
 
-	/* copy plaintext gss token header after filler (if any) */
+	 
 	memcpy(ecptr, buf->head[0].iov_base + offset, GSS_KRB5_TOK_HDR_LEN);
 	buf->tail[0].iov_len += GSS_KRB5_TOK_HDR_LEN;
 	buf->len += GSS_KRB5_TOK_HDR_LEN;
@@ -824,13 +664,7 @@ gss_krb5_aes_encrypt(struct krb5_ctx *kctx, u32 offset,
 	hmac.len = kctx->gk5e->cksumlength;
 	hmac.data = buf->tail[0].iov_base + buf->tail[0].iov_len;
 
-	/*
-	 * When we are called, pages points to the real page cache
-	 * data -- which we can't go and encrypt!  buf->pages points
-	 * to scratch pages which we are going to send off to the
-	 * client/server.  Swap in the plaintext pages to calculate
-	 * the hmac.
-	 */
+	 
 	save_pages = buf->pages;
 	buf->pages = pages;
 
@@ -846,7 +680,7 @@ gss_krb5_aes_encrypt(struct krb5_ctx *kctx, u32 offset,
 	if (err)
 		return GSS_S_FAILURE;
 
-	/* Now update buf to account for HMAC */
+	 
 	buf->tail[0].iov_len += kctx->gk5e->cksumlength;
 	buf->len += kctx->gk5e->cksumlength;
 
@@ -875,7 +709,7 @@ gss_krb5_aes_decrypt(struct krb5_ctx *kctx, u32 offset, u32 len,
 		ahash = kctx->initiator_integ;
 	}
 
-	/* create a segment skipping the header and leaving out the checksum */
+	 
 	xdr_buf_subsegment(buf, &subbuf, offset + GSS_KRB5_TOK_HDR_LEN,
 				    (len - offset - GSS_KRB5_TOK_HDR_LEN -
 				     kctx->gk5e->cksumlength));
@@ -890,7 +724,7 @@ gss_krb5_aes_decrypt(struct krb5_ctx *kctx, u32 offset, u32 len,
 	if (ret)
 		goto out_err;
 
-	/* Get the packet's hmac value */
+	 
 	ret = read_bytes_from_xdr_buf(buf, len - kctx->gk5e->cksumlength,
 				      pkt_hmac, kctx->gk5e->cksumlength);
 	if (ret)
@@ -908,23 +742,7 @@ out_err:
 	return ret;
 }
 
-/**
- * krb5_etm_checksum - Compute a MAC for a GSS Wrap token
- * @cipher: an initialized cipher transform
- * @tfm: an initialized hash transform
- * @body: xdr_buf containing an RPC message (body.len is the message length)
- * @body_offset: byte offset into @body to start checksumming
- * @cksumout: OUT: a buffer to be filled in with the computed HMAC
- *
- * Usually expressed as H = HMAC(K, IV | ciphertext)[1..h] .
- *
- * Caller provides the truncation length of the output token (h) in
- * cksumout.len.
- *
- * Return values:
- *   %GSS_S_COMPLETE: Digest computed, @cksumout filled in
- *   %GSS_S_FAILURE: Call failed
- */
+ 
 VISIBLE_IF_KUNIT
 u32 krb5_etm_checksum(struct crypto_sync_skcipher *cipher,
 		      struct crypto_ahash *tfm, const struct xdr_buf *body,
@@ -939,7 +757,7 @@ u32 krb5_etm_checksum(struct crypto_sync_skcipher *cipher,
 	checksumdata = kmalloc(crypto_ahash_digestsize(tfm), GFP_KERNEL);
 	if (!checksumdata)
 		return GSS_S_FAILURE;
-	/* For RPCSEC, the "initial cipher state" is always all zeroes. */
+	 
 	iv = kzalloc(ivsize, GFP_KERNEL);
 	if (!iv)
 		goto out_free_mem;
@@ -977,37 +795,7 @@ out_free_mem:
 }
 EXPORT_SYMBOL_IF_KUNIT(krb5_etm_checksum);
 
-/**
- * krb5_etm_encrypt - Encrypt using the RFC 8009 rules
- * @kctx: Kerberos context
- * @offset: starting offset of the payload, in bytes
- * @buf: OUT: send buffer to contain the encrypted payload
- * @pages: plaintext payload
- *
- * The main difference with aes_encrypt is that "The HMAC is
- * calculated over the cipher state concatenated with the AES
- * output, instead of being calculated over the confounder and
- * plaintext.  This allows the message receiver to verify the
- * integrity of the message before decrypting the message."
- *
- * RFC 8009 Section 5:
- *
- * encryption function: as follows, where E() is AES encryption in
- * CBC-CS3 mode, and h is the size of truncated HMAC (128 bits or
- * 192 bits as described above).
- *
- *    N = random value of length 128 bits (the AES block size)
- *    IV = cipher state
- *    C = E(Ke, N | plaintext, IV)
- *    H = HMAC(Ki, IV | C)
- *    ciphertext = C | H[1..h]
- *
- * This encryption formula provides AEAD EtM with key separation.
- *
- * Return values:
- *   %GSS_S_COMPLETE: Encryption successful
- *   %GSS_S_FAILURE: Encryption failed
- */
+ 
 u32
 krb5_etm_encrypt(struct krb5_ctx *kctx, u32 offset,
 		 struct xdr_buf *buf, struct page **pages)
@@ -1070,32 +858,7 @@ out_err:
 	return GSS_S_FAILURE;
 }
 
-/**
- * krb5_etm_decrypt - Decrypt using the RFC 8009 rules
- * @kctx: Kerberos context
- * @offset: starting offset of the ciphertext, in bytes
- * @len:
- * @buf:
- * @headskip: OUT: the enctype's confounder length, in octets
- * @tailskip: OUT: the enctype's HMAC length, in octets
- *
- * RFC 8009 Section 5:
- *
- * decryption function: as follows, where D() is AES decryption in
- * CBC-CS3 mode, and h is the size of truncated HMAC.
- *
- *    (C, H) = ciphertext
- *        (Note: H is the last h bits of the ciphertext.)
- *    IV = cipher state
- *    if H != HMAC(Ki, IV | C)[1..h]
- *        stop, report error
- *    (N, P) = D(Ke, C, IV)
- *
- * Return values:
- *   %GSS_S_COMPLETE: Decryption successful
- *   %GSS_S_BAD_SIG: computed HMAC != received HMAC
- *   %GSS_S_FAILURE: Decryption failed
- */
+ 
 u32
 krb5_etm_decrypt(struct krb5_ctx *kctx, u32 offset, u32 len,
 		 struct xdr_buf *buf, u32 *headskip, u32 *tailskip)
@@ -1118,7 +881,7 @@ krb5_etm_decrypt(struct krb5_ctx *kctx, u32 offset, u32 len,
 		ahash = kctx->initiator_integ;
 	}
 
-	/* Extract the ciphertext into @subbuf. */
+	 
 	xdr_buf_subsegment(buf, &subbuf, offset + GSS_KRB5_TOK_HDR_LEN,
 			   (len - offset - GSS_KRB5_TOK_HDR_LEN -
 			    kctx->gk5e->cksumlength));

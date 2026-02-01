@@ -1,6 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
 
-/* Copyright (C) 2022 Linaro Ltd. */
+
+ 
 
 #include <linux/log2.h>
 
@@ -9,43 +9,43 @@
 #include "../ipa_endpoint.h"
 #include "../ipa_mem.h"
 
-/** enum ipa_resource_type - IPA resource types for an SoC having IPA v4.7 */
+ 
 enum ipa_resource_type {
-	/* Source resource types; first must have value 0 */
+	 
 	IPA_RESOURCE_TYPE_SRC_PKT_CONTEXTS		= 0,
 	IPA_RESOURCE_TYPE_SRC_DESCRIPTOR_LISTS,
 	IPA_RESOURCE_TYPE_SRC_DESCRIPTOR_BUFF,
 	IPA_RESOURCE_TYPE_SRC_HPS_DMARS,
 	IPA_RESOURCE_TYPE_SRC_ACK_ENTRIES,
 
-	/* Destination resource types; first must have value 0 */
+	 
 	IPA_RESOURCE_TYPE_DST_DATA_SECTORS		= 0,
 	IPA_RESOURCE_TYPE_DST_DPS_DMARS,
 };
 
-/* Resource groups used for an SoC having IPA v4.7 */
+ 
 enum ipa_rsrc_group_id {
-	/* Source resource group identifiers */
+	 
 	IPA_RSRC_GROUP_SRC_UL_DL			= 0,
 	IPA_RSRC_GROUP_SRC_UC_RX_Q,
-	IPA_RSRC_GROUP_SRC_COUNT,	/* Last in set; not a source group */
+	IPA_RSRC_GROUP_SRC_COUNT,	 
 
-	/* Destination resource group identifiers */
+	 
 	IPA_RSRC_GROUP_DST_UL_DL_DPL			= 0,
 	IPA_RSRC_GROUP_DST_UNUSED_1,
-	IPA_RSRC_GROUP_DST_COUNT,	/* Last; not a destination group */
+	IPA_RSRC_GROUP_DST_COUNT,	 
 };
 
-/* QSB configuration data for an SoC having IPA v4.7 */
+ 
 static const struct ipa_qsb_data ipa_qsb_data[] = {
 	[IPA_QSB_MASTER_DDR] = {
 		.max_writes		= 8,
-		.max_reads		= 0,	/* no limit (hardware max) */
+		.max_reads		= 0,	 
 		.max_reads_beats	= 120,
 	},
 };
 
-/* Endpoint configuration data for an SoC having IPA v4.7 */
+ 
 static const struct ipa_gsi_endpoint_data ipa_gsi_endpoint_data[] = {
 	[IPA_ENDPOINT_AP_COMMAND_TX] = {
 		.ee_id		= GSI_EE_AP,
@@ -164,7 +164,7 @@ static const struct ipa_gsi_endpoint_data ipa_gsi_endpoint_data[] = {
 	},
 };
 
-/* Source resource configuration data for an SoC having IPA v4.7 */
+ 
 static const struct ipa_resource ipa_resource_src[] = {
 	[IPA_RESOURCE_TYPE_SRC_PKT_CONTEXTS] = {
 		.limits[IPA_RSRC_GROUP_SRC_UL_DL] = {
@@ -193,7 +193,7 @@ static const struct ipa_resource ipa_resource_src[] = {
 	},
 };
 
-/* Destination resource configuration data for an SoC having IPA v4.7 */
+ 
 static const struct ipa_resource ipa_resource_dst[] = {
 	[IPA_RESOURCE_TYPE_DST_DATA_SECTORS] = {
 		.limits[IPA_RSRC_GROUP_DST_UL_DL_DPL] = {
@@ -207,7 +207,7 @@ static const struct ipa_resource ipa_resource_dst[] = {
 	},
 };
 
-/* Resource configuration data for an SoC having IPA v4.7 */
+ 
 static const struct ipa_resource_data ipa_resource_data = {
 	.rsrc_group_dst_count	= IPA_RSRC_GROUP_DST_COUNT,
 	.rsrc_group_src_count	= IPA_RSRC_GROUP_SRC_COUNT,
@@ -217,7 +217,7 @@ static const struct ipa_resource_data ipa_resource_data = {
 	.resource_dst		= ipa_resource_dst,
 };
 
-/* IPA-resident memory region data for an SoC having IPA v4.7 */
+ 
 static const struct ipa_mem ipa_mem_local_data[] = {
 	{
 		.id		= IPA_MEM_UC_SHARED,
@@ -353,7 +353,7 @@ static const struct ipa_mem ipa_mem_local_data[] = {
 	},
 };
 
-/* Memory configuration data for an SoC having IPA v4.7 */
+ 
 static const struct ipa_mem_data ipa_mem_data = {
 	.local_count	= ARRAY_SIZE(ipa_mem_local_data),
 	.local		= ipa_mem_local_data,
@@ -363,35 +363,35 @@ static const struct ipa_mem_data ipa_mem_data = {
 	.smem_size	= 0x00009000,
 };
 
-/* Interconnect rates are in 1000 byte/second units */
+ 
 static const struct ipa_interconnect_data ipa_interconnect_data[] = {
 	{
 		.name			= "memory",
-		.peak_bandwidth		= 600000,	/* 600 MBps */
-		.average_bandwidth	= 150000,	/* 150 MBps */
+		.peak_bandwidth		= 600000,	 
+		.average_bandwidth	= 150000,	 
 	},
-	/* Average rate is unused for the next two interconnects */
+	 
 	{
 		.name			= "imem",
-		.peak_bandwidth		= 450000,	/* 450 MBps */
-		.average_bandwidth	= 75000,	/* 75 MBps (unused?) */
+		.peak_bandwidth		= 450000,	 
+		.average_bandwidth	= 75000,	 
 	},
 	{
 		.name			= "config",
-		.peak_bandwidth		= 171400,	/* 171.4 MBps */
-		.average_bandwidth	= 0,		/* unused */
+		.peak_bandwidth		= 171400,	 
+		.average_bandwidth	= 0,		 
 	},
 };
 
-/* Clock and interconnect configuration data for an SoC having IPA v4.7 */
+ 
 static const struct ipa_power_data ipa_power_data = {
-	/* XXX Downstream code says 150 MHz (DT SVS2), 60 MHz (code) */
-	.core_clock_rate	= 100 * 1000 * 1000,	/* Hz (150?  60?) */
+	 
+	.core_clock_rate	= 100 * 1000 * 1000,	 
 	.interconnect_count	= ARRAY_SIZE(ipa_interconnect_data),
 	.interconnect_data	= ipa_interconnect_data,
 };
 
-/* Configuration data for an SoC having IPA v4.7 */
+ 
 const struct ipa_data ipa_data_v4_7 = {
 	.version		= IPA_VERSION_4_7,
 	.qsb_count		= ARRAY_SIZE(ipa_qsb_data),

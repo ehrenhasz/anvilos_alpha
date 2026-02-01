@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * fs/sysfs/dir.c - sysfs core and dir operation implementation
- *
- * Copyright (c) 2001-3 Patrick Mochel
- * Copyright (c) 2007 SUSE Linux Products GmbH
- * Copyright (c) 2007 Tejun Heo <teheo@suse.de>
- *
- * Please see Documentation/filesystems/sysfs.rst for more information.
- */
+
+ 
 
 #define pr_fmt(fmt)	"sysfs: " fmt
 
@@ -32,11 +24,7 @@ void sysfs_warn_dup(struct kernfs_node *parent, const char *name)
 	kfree(buf);
 }
 
-/**
- * sysfs_create_dir_ns - create a directory for an object with a namespace tag
- * @kobj: object we're creating directory for
- * @ns: the namespace tag to use
- */
+ 
 int sysfs_create_dir_ns(struct kobject *kobj, const void *ns)
 {
 	struct kernfs_node *parent, *kn;
@@ -68,30 +56,12 @@ int sysfs_create_dir_ns(struct kobject *kobj, const void *ns)
 	return 0;
 }
 
-/**
- *	sysfs_remove_dir - remove an object's directory.
- *	@kobj:	object.
- *
- *	The only thing special about this is that we remove any files in
- *	the directory before we remove the directory, and we've inlined
- *	what used to be sysfs_rmdir() below, instead of calling separately.
- */
+ 
 void sysfs_remove_dir(struct kobject *kobj)
 {
 	struct kernfs_node *kn = kobj->sd;
 
-	/*
-	 * In general, kboject owner is responsible for ensuring removal
-	 * doesn't race with other operations and sysfs doesn't provide any
-	 * protection; however, when @kobj is used as a symlink target, the
-	 * symlinking entity usually doesn't own @kobj and thus has no
-	 * control over removal.  @kobj->sd may be removed anytime
-	 * and symlink code may end up dereferencing an already freed node.
-	 *
-	 * sysfs_symlink_target_lock synchronizes @kobj->sd
-	 * disassociation against symlink operations so that symlink code
-	 * can safely dereference @kobj->sd.
-	 */
+	 
 	spin_lock(&sysfs_symlink_target_lock);
 	kobj->sd = NULL;
 	spin_unlock(&sysfs_symlink_target_lock);
@@ -126,11 +96,7 @@ int sysfs_move_dir_ns(struct kobject *kobj, struct kobject *new_parent_kobj,
 	return kernfs_rename_ns(kn, new_parent, kn->name, new_ns);
 }
 
-/**
- * sysfs_create_mount_point - create an always empty directory
- * @parent_kobj:  kobject that will contain this always empty directory
- * @name: The name of the always empty directory to add
- */
+ 
 int sysfs_create_mount_point(struct kobject *parent_kobj, const char *name)
 {
 	struct kernfs_node *kn, *parent = parent_kobj->sd;
@@ -146,12 +112,7 @@ int sysfs_create_mount_point(struct kobject *parent_kobj, const char *name)
 }
 EXPORT_SYMBOL_GPL(sysfs_create_mount_point);
 
-/**
- *	sysfs_remove_mount_point - remove an always empty directory.
- *	@parent_kobj: kobject that will contain this always empty directory
- *	@name: The name of the always empty directory to remove
- *
- */
+ 
 void sysfs_remove_mount_point(struct kobject *parent_kobj, const char *name)
 {
 	struct kernfs_node *parent = parent_kobj->sd;

@@ -1,12 +1,12 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
-//
-// This file is provided under a dual BSD/GPLv2 license.  When using or
-// redistributing this file, you may do so under either license.
-//
-// Copyright(c) 2018 Intel Corporation. All rights reserved.
-//
-// Author: Liam Girdwood <liam.r.girdwood@linux.intel.com>
-//
+
+
+
+
+
+
+
+
+
 
 #include <linux/pci.h>
 #include "ops.h"
@@ -86,7 +86,7 @@ bool snd_sof_dsp_update_bits64_unlocked(struct snd_sof_dev *sdev, u32 bar,
 }
 EXPORT_SYMBOL(snd_sof_dsp_update_bits64_unlocked);
 
-/* This is for registers bits with attribute RWC */
+ 
 bool snd_sof_dsp_update_bits(struct snd_sof_dev *sdev, u32 bar, u32 offset,
 			     u32 mask, u32 value)
 {
@@ -130,7 +130,7 @@ void snd_sof_dsp_update_bits_forced_unlocked(struct snd_sof_dev *sdev, u32 bar,
 	snd_sof_dsp_write(sdev, bar, offset, new);
 }
 
-/* This is for registers bits with attribute RWC */
+ 
 void snd_sof_dsp_update_bits_forced(struct snd_sof_dev *sdev, u32 bar,
 				    u32 offset, u32 mask, u32 value)
 {
@@ -142,36 +142,20 @@ void snd_sof_dsp_update_bits_forced(struct snd_sof_dev *sdev, u32 bar,
 }
 EXPORT_SYMBOL(snd_sof_dsp_update_bits_forced);
 
-/**
- * snd_sof_dsp_panic - handle a received DSP panic message
- * @sdev: Pointer to the device's sdev
- * @offset: offset of panic information
- * @non_recoverable: the panic is fatal, no recovery will be done by the caller
- */
+ 
 void snd_sof_dsp_panic(struct snd_sof_dev *sdev, u32 offset, bool non_recoverable)
 {
-	/*
-	 * if DSP is not ready and the dsp_oops_offset is not yet set, use the
-	 * offset from the panic message.
-	 */
+	 
 	if (!sdev->dsp_oops_offset)
 		sdev->dsp_oops_offset = offset;
 
-	/*
-	 * Print warning if the offset from the panic message differs from
-	 * dsp_oops_offset
-	 */
+	 
 	if (sdev->dsp_oops_offset != offset)
 		dev_warn(sdev->dev,
 			 "%s: dsp_oops_offset %zu differs from panic offset %u\n",
 			 __func__, sdev->dsp_oops_offset, offset);
 
-	/*
-	 * Set the fw_state to crashed only in case of non recoverable DSP panic
-	 * event.
-	 * Use different message within the snd_sof_dsp_dbg_dump() depending on
-	 * the non_recoverable flag.
-	 */
+	 
 	sdev->dbg_dump_printed = false;
 	if (non_recoverable) {
 		snd_sof_dsp_dbg_dump(sdev, "DSP panic!",

@@ -1,11 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0-only
-// NXP Wireless LAN device driver: PCIE and platform specific quirks
+
+
 
 #include <linux/dmi.h>
 
 #include "pcie_quirks.h"
 
-/* quirk table based on DMI matching */
+ 
 static const struct dmi_system_id mwifiex_quirk_table[] = {
 	{
 		.ident = "Surface Pro 4",
@@ -18,7 +18,7 @@ static const struct dmi_system_id mwifiex_quirk_table[] = {
 	{
 		.ident = "Surface Pro 5",
 		.matches = {
-			/* match for SKU here due to generic product name "Surface Pro" */
+			 
 			DMI_EXACT_MATCH(DMI_SYS_VENDOR, "Microsoft Corporation"),
 			DMI_EXACT_MATCH(DMI_PRODUCT_SKU, "Surface_Pro_1796"),
 		},
@@ -27,7 +27,7 @@ static const struct dmi_system_id mwifiex_quirk_table[] = {
 	{
 		.ident = "Surface Pro 5 (LTE)",
 		.matches = {
-			/* match for SKU here due to generic product name "Surface Pro" */
+			 
 			DMI_EXACT_MATCH(DMI_SYS_VENDOR, "Microsoft Corporation"),
 			DMI_EXACT_MATCH(DMI_PRODUCT_SKU, "Surface_Pro_1807"),
 		},
@@ -123,16 +123,10 @@ int mwifiex_pcie_reset_d3cold_quirk(struct pci_dev *pdev)
 	struct pci_dev *parent_pdev = pci_upstream_bridge(pdev);
 	int ret;
 
-	/* Power-cycle (put into D3cold then D0) */
+	 
 	dev_info(&pdev->dev, "Using reset_d3cold quirk to perform FW reset\n");
 
-	/* We need to perform power-cycle also for bridge of wifi because
-	 * on some devices (e.g. Surface Book 1), the OS for some reasons
-	 * can't know the real power state of the bridge.
-	 * When tried to power-cycle only wifi, the reset failed with the
-	 * following dmesg log:
-	 * "Cannot transition to power state D0 for parent in D3hot".
-	 */
+	 
 	mwifiex_pcie_set_power_d3cold(pdev);
 	mwifiex_pcie_set_power_d3cold(parent_pdev);
 

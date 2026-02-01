@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Elan I2C/SMBus Touchpad driver - SMBus interface
- *
- * Copyright (c) 2013 ELAN Microelectronics Corp.
- *
- * Author: 林政維 (Duson Lin) <dusonlin@emc.com.tw>
- *
- * Based on cyapa driver:
- * copyright (c) 2011-2012 Cypress Semiconductor, Inc.
- * copyright (c) 2011-2012 Google, Inc.
- *
- * Trademarks are the property of their respective owners.
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/i2c.h>
@@ -20,7 +8,7 @@
 
 #include "elan_i2c.h"
 
-/* Elan SMbus commands */
+ 
 #define ETP_SMBUS_IAP_CMD		0x00
 #define ETP_SMBUS_ENABLE_TP		0x20
 #define ETP_SMBUS_SLEEP_CMD		0x21
@@ -57,7 +45,7 @@ static int elan_smbus_initialize(struct i2c_client *client)
 	u8 values[I2C_SMBUS_BLOCK_MAX] = {0};
 	int len, error;
 
-	/* Get hello packet */
+	 
 	len = i2c_smbus_read_block_data(client,
 					ETP_SMBUS_HELLOPACKET_CMD, values);
 	if (len != ETP_SMBUS_HELLOPACKET_LEN) {
@@ -66,14 +54,14 @@ static int elan_smbus_initialize(struct i2c_client *client)
 		return error;
 	}
 
-	/* compare hello packet */
+	 
 	if (memcmp(values, check, ETP_SMBUS_HELLOPACKET_LEN)) {
 		dev_err(&client->dev, "hello packet fail [%*ph]\n",
 			ETP_SMBUS_HELLOPACKET_LEN, values);
 		return -ENXIO;
 	}
 
-	/* enable tp */
+	 
 	error = i2c_smbus_write_byte(client, ETP_SMBUS_ENABLE_TP);
 	if (error) {
 		dev_err(&client->dev, "failed to enable touchpad: %d\n", error);
@@ -96,12 +84,12 @@ static int elan_smbus_sleep_control(struct i2c_client *client, bool sleep)
 	if (sleep)
 		return i2c_smbus_write_byte(client, ETP_SMBUS_SLEEP_CMD);
 	else
-		return 0; /* XXX should we send ETP_SMBUS_ENABLE_TP here? */
+		return 0;  
 }
 
 static int elan_smbus_power_control(struct i2c_client *client, bool enable)
 {
-	return 0; /* A no-op */
+	return 0;  
 }
 
 static int elan_smbus_calibrate(struct i2c_client *client)
@@ -351,19 +339,19 @@ static int elan_smbus_prepare_fw_update(struct i2c_client *client, u16 ic_type,
 	u8 cmd[4] = {0x0F, 0x78, 0x00, 0x06};
 	u16 password;
 
-	/* Get FW in which mode	(IAP_MODE/MAIN_MODE)  */
+	 
 	error = elan_smbus_iap_get_mode(client, &mode);
 	if (error)
 		return error;
 
 	if (mode == MAIN_MODE) {
 
-		/* set flash key */
+		 
 		error = elan_smbus_set_flash_key(client);
 		if (error)
 			return error;
 
-		/* write iap password */
+		 
 		if (i2c_smbus_write_byte(client,
 					 ETP_SMBUS_IAP_PASSWORD_WRITE) < 0) {
 			dev_err(dev, "cannot write iap password\n");
@@ -378,10 +366,7 @@ static int elan_smbus_prepare_fw_update(struct i2c_client *client, u16 ic_type,
 			return error;
 		}
 
-		/*
-		 * Read back password to make sure we enabled flash
-		 * successfully.
-		 */
+		 
 		len = i2c_smbus_read_block_data(client,
 						ETP_SMBUS_IAP_PASSWORD_READ,
 						val);
@@ -398,7 +383,7 @@ static int elan_smbus_prepare_fw_update(struct i2c_client *client, u16 ic_type,
 			return -EIO;
 		}
 
-		/* Wait 30ms for MAIN_MODE change to IAP_MODE */
+		 
 		msleep(30);
 	}
 
@@ -406,7 +391,7 @@ static int elan_smbus_prepare_fw_update(struct i2c_client *client, u16 ic_type,
 	if (error)
 		return error;
 
-	/* Reset IC */
+	 
 	error = elan_smbus_iap_reset(client);
 	if (error)
 		return error;
@@ -423,11 +408,7 @@ static int elan_smbus_write_fw_block(struct i2c_client *client, u16 fw_page_size
 	u16 result;
 	u8 val[I2C_SMBUS_BLOCK_MAX] = {0};
 
-	/*
-	 * Due to the limitation of smbus protocol limiting
-	 * transfer to 32 bytes at a time, we must split block
-	 * in 2 transfers.
-	 */
+	 
 	error = i2c_smbus_write_block_data(client,
 					   ETP_SMBUS_WRITE_FW_BLOCK,
 					   fw_page_size / 2,
@@ -449,7 +430,7 @@ static int elan_smbus_write_fw_block(struct i2c_client *client, u16 fw_page_size
 	}
 
 
-	/* Wait for F/W to update one page ROM data. */
+	 
 	usleep_range(8000, 10000);
 
 	error = i2c_smbus_read_block_data(client,
@@ -474,10 +455,7 @@ static int elan_smbus_get_report_features(struct i2c_client *client, u8 pattern,
 					  unsigned int *features,
 					  unsigned int *report_len)
 {
-	/*
-	 * SMBus controllers with pattern 2 lack area info, as newer
-	 * high-precision packets use that space for coordinates.
-	 */
+	 
 	*features = pattern <= 0x01 ? ETP_FEATURE_REPORT_MK : 0;
 	*report_len = ETP_SMBUS_REPORT_LEN;
 	return 0;
@@ -514,7 +492,7 @@ static int elan_smbus_get_report(struct i2c_client *client,
 static int elan_smbus_finish_fw_update(struct i2c_client *client,
 				       struct completion *fw_completion)
 {
-	/* No special handling unlike I2C transport */
+	 
 	return 0;
 }
 

@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-/* Copyright (C) 2015-2018 Netronome Systems, Inc. */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/device.h>
@@ -44,18 +44,18 @@ static bool nfp_mutex_is_unlocked(u32 val)
 	return (val & 0xffff) == 0000;
 }
 
-/* If you need more than 65536 recursive locks, please rethink your code. */
+ 
 #define NFP_MUTEX_DEPTH_MAX         0xffff
 
 static int
 nfp_cpp_mutex_validate(u16 interface, int *target, unsigned long long address)
 {
-	/* Not permitted on invalid interfaces */
+	 
 	if (NFP_CPP_INTERFACE_TYPE_of(interface) ==
 	    NFP_CPP_INTERFACE_TYPE_INVALID)
 		return -EINVAL;
 
-	/* Address must be 64-bit aligned */
+	 
 	if (address & 7)
 		return -EINVAL;
 
@@ -65,28 +65,11 @@ nfp_cpp_mutex_validate(u16 interface, int *target, unsigned long long address)
 	return 0;
 }
 
-/**
- * nfp_cpp_mutex_init() - Initialize a mutex location
- * @cpp:	NFP CPP handle
- * @target:	NFP CPP target ID (ie NFP_CPP_TARGET_CLS or NFP_CPP_TARGET_MU)
- * @address:	Offset into the address space of the NFP CPP target ID
- * @key:	Unique 32-bit value for this mutex
- *
- * The CPP target:address must point to a 64-bit aligned location, and
- * will initialize 64 bits of data at the location.
- *
- * This creates the initial mutex state, as locked by this
- * nfp_cpp_interface().
- *
- * This function should only be called when setting up
- * the initial lock state upon boot-up of the system.
- *
- * Return: 0 on success, or -errno on failure
- */
+ 
 int nfp_cpp_mutex_init(struct nfp_cpp *cpp,
 		       int target, unsigned long long address, u32 key)
 {
-	const u32 muw = NFP_CPP_ID(target, 4, 0);    /* atomic_write */
+	const u32 muw = NFP_CPP_ID(target, 4, 0);     
 	u16 interface = nfp_cpp_interface(cpp);
 	int err;
 
@@ -105,25 +88,11 @@ int nfp_cpp_mutex_init(struct nfp_cpp *cpp,
 	return 0;
 }
 
-/**
- * nfp_cpp_mutex_alloc() - Create a mutex handle
- * @cpp:	NFP CPP handle
- * @target:	NFP CPP target ID (ie NFP_CPP_TARGET_CLS or NFP_CPP_TARGET_MU)
- * @address:	Offset into the address space of the NFP CPP target ID
- * @key:	32-bit unique key (must match the key at this location)
- *
- * The CPP target:address must point to a 64-bit aligned location, and
- * reserve 64 bits of data at the location for use by the handle.
- *
- * Only target/address pairs that point to entities that support the
- * MU Atomic Engine's CmpAndSwap32 command are supported.
- *
- * Return:	A non-NULL struct nfp_cpp_mutex * on success, NULL on failure.
- */
+ 
 struct nfp_cpp_mutex *nfp_cpp_mutex_alloc(struct nfp_cpp *cpp, int target,
 					  unsigned long long address, u32 key)
 {
-	const u32 mur = NFP_CPP_ID(target, 3, 0);    /* atomic_read */
+	const u32 mur = NFP_CPP_ID(target, 3, 0);     
 	u16 interface = nfp_cpp_interface(cpp);
 	struct nfp_cpp_mutex *mutex;
 	int err;
@@ -153,21 +122,13 @@ struct nfp_cpp_mutex *nfp_cpp_mutex_alloc(struct nfp_cpp *cpp, int target,
 	return mutex;
 }
 
-/**
- * nfp_cpp_mutex_free() - Free a mutex handle - does not alter the lock state
- * @mutex:	NFP CPP Mutex handle
- */
+ 
 void nfp_cpp_mutex_free(struct nfp_cpp_mutex *mutex)
 {
 	kfree(mutex);
 }
 
-/**
- * nfp_cpp_mutex_lock() - Lock a mutex handle, using the NFP MU Atomic Engine
- * @mutex:	NFP CPP Mutex handle
- *
- * Return: 0 on success, or -errno on failure
- */
+ 
 int nfp_cpp_mutex_lock(struct nfp_cpp_mutex *mutex)
 {
 	unsigned long warn_at = jiffies + NFP_MUTEX_WAIT_FIRST_WARN * HZ;
@@ -175,11 +136,7 @@ int nfp_cpp_mutex_lock(struct nfp_cpp_mutex *mutex)
 	unsigned int timeout_ms = 1;
 	int err;
 
-	/* We can't use a waitqueue here, because the unlocker
-	 * might be on a separate CPU.
-	 *
-	 * So just wait for now.
-	 */
+	 
 	for (;;) {
 		err = nfp_cpp_mutex_trylock(mutex);
 		if (err != -EBUSY)
@@ -208,16 +165,11 @@ int nfp_cpp_mutex_lock(struct nfp_cpp_mutex *mutex)
 	return err;
 }
 
-/**
- * nfp_cpp_mutex_unlock() - Unlock a mutex handle, using the MU Atomic Engine
- * @mutex:	NFP CPP Mutex handle
- *
- * Return: 0 on success, or -errno on failure
- */
+ 
 int nfp_cpp_mutex_unlock(struct nfp_cpp_mutex *mutex)
 {
-	const u32 muw = NFP_CPP_ID(mutex->target, 4, 0);    /* atomic_write */
-	const u32 mur = NFP_CPP_ID(mutex->target, 3, 0);    /* atomic_read */
+	const u32 muw = NFP_CPP_ID(mutex->target, 4, 0);     
+	const u32 mur = NFP_CPP_ID(mutex->target, 3, 0);     
 	struct nfp_cpp *cpp = mutex->cpp;
 	u32 key, value;
 	u16 interface;
@@ -253,17 +205,12 @@ int nfp_cpp_mutex_unlock(struct nfp_cpp_mutex *mutex)
 	return 0;
 }
 
-/**
- * nfp_cpp_mutex_trylock() - Attempt to lock a mutex handle
- * @mutex:	NFP CPP Mutex handle
- *
- * Return:      0 if the lock succeeded, -errno on failure
- */
+ 
 int nfp_cpp_mutex_trylock(struct nfp_cpp_mutex *mutex)
 {
-	const u32 muw = NFP_CPP_ID(mutex->target, 4, 0);    /* atomic_write */
-	const u32 mus = NFP_CPP_ID(mutex->target, 5, 3);    /* test_set_imm */
-	const u32 mur = NFP_CPP_ID(mutex->target, 3, 0);    /* atomic_read */
+	const u32 muw = NFP_CPP_ID(mutex->target, 4, 0);     
+	const u32 mus = NFP_CPP_ID(mutex->target, 5, 3);     
+	const u32 mur = NFP_CPP_ID(mutex->target, 3, 0);     
 	struct nfp_cpp *cpp = mutex->cpp;
 	u32 key, value, tmp;
 	int err;
@@ -275,7 +222,7 @@ int nfp_cpp_mutex_trylock(struct nfp_cpp_mutex *mutex)
 		return 0;
 	}
 
-	/* Verify that the lock marker is not damaged */
+	 
 	err = nfp_cpp_readl(cpp, mur, mutex->address + 4, &key);
 	if (err < 0)
 		return err;
@@ -283,39 +230,19 @@ int nfp_cpp_mutex_trylock(struct nfp_cpp_mutex *mutex)
 	if (key != mutex->key)
 		return -EPERM;
 
-	/* Compare against the unlocked state, and if true,
-	 * write the interface id into the top 16 bits, and
-	 * mark as locked.
-	 */
+	 
 	value = nfp_mutex_locked(nfp_cpp_interface(cpp));
 
-	/* We use test_set_imm here, as it implies a read
-	 * of the current state, and sets the bits in the
-	 * bytemask of the command to 1s. Since the mutex
-	 * is guaranteed to be 64-bit aligned, the bytemask
-	 * of this 32-bit command is ensured to be 8'b00001111,
-	 * which implies that the lower 4 bits will be set to
-	 * ones regardless of the initial state.
-	 *
-	 * Since this is a 'Readback' operation, with no Pull
-	 * data, we can treat this as a normal Push (read)
-	 * atomic, which returns the original value.
-	 */
+	 
 	err = nfp_cpp_readl(cpp, mus, mutex->address, &tmp);
 	if (err < 0)
 		return err;
 
-	/* Was it unlocked? */
+	 
 	if (nfp_mutex_is_unlocked(tmp)) {
-		/* The read value can only be 0x....0000 in the unlocked state.
-		 * If there was another contending for this lock, then
-		 * the lock state would be 0x....000f
-		 */
+		 
 
-		/* Write our owner ID into the lock
-		 * While not strictly necessary, this helps with
-		 * debug and bookkeeping.
-		 */
+		 
 		err = nfp_cpp_writel(cpp, muw, mutex->address, value);
 		if (err < 0)
 			return err;
@@ -327,22 +254,12 @@ int nfp_cpp_mutex_trylock(struct nfp_cpp_mutex *mutex)
 	return nfp_mutex_is_locked(tmp) ? -EBUSY : -EINVAL;
 }
 
-/**
- * nfp_cpp_mutex_reclaim() - Unlock mutex if held by local endpoint
- * @cpp:	NFP CPP handle
- * @target:	NFP CPP target ID (ie NFP_CPP_TARGET_CLS or NFP_CPP_TARGET_MU)
- * @address:	Offset into the address space of the NFP CPP target ID
- *
- * Release lock if held by local system.  Extreme care is advised, call only
- * when no local lock users can exist.
- *
- * Return:      0 if the lock was OK, 1 if locked by us, -errno on invalid mutex
- */
+ 
 int nfp_cpp_mutex_reclaim(struct nfp_cpp *cpp, int target,
 			  unsigned long long address)
 {
-	const u32 mur = NFP_CPP_ID(target, 3, 0);	/* atomic_read */
-	const u32 muw = NFP_CPP_ID(target, 4, 0);	/* atomic_write */
+	const u32 mur = NFP_CPP_ID(target, 3, 0);	 
+	const u32 muw = NFP_CPP_ID(target, 4, 0);	 
 	u16 interface = nfp_cpp_interface(cpp);
 	int err;
 	u32 tmp;
@@ -351,7 +268,7 @@ int nfp_cpp_mutex_reclaim(struct nfp_cpp *cpp, int target,
 	if (err)
 		return err;
 
-	/* Check lock */
+	 
 	err = nfp_cpp_readl(cpp, mur, address, &tmp);
 	if (err < 0)
 		return err;
@@ -359,7 +276,7 @@ int nfp_cpp_mutex_reclaim(struct nfp_cpp *cpp, int target,
 	if (nfp_mutex_is_unlocked(tmp) || nfp_mutex_owner(tmp) != interface)
 		return 0;
 
-	/* Bust the lock */
+	 
 	err = nfp_cpp_writel(cpp, muw, address, nfp_mutex_unlocked(interface));
 	if (err < 0)
 		return err;

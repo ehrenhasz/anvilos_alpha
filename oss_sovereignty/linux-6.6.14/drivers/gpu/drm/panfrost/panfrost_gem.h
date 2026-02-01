@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright 2019 Linaro, Ltd, Rob Herring <robh@kernel.org> */
+ 
+ 
 
 #ifndef __PANFROST_GEM_H__
 #define __PANFROST_GEM_H__
@@ -13,27 +13,13 @@ struct panfrost_gem_object {
 	struct drm_gem_shmem_object base;
 	struct sg_table *sgts;
 
-	/*
-	 * Use a list for now. If searching a mapping ever becomes the
-	 * bottleneck, we should consider using an RB-tree, or even better,
-	 * let the core store drm_gem_object_mapping entries (where we
-	 * could place driver specific data) instead of drm_gem_object ones
-	 * in its drm_file->object_idr table.
-	 *
-	 * struct drm_gem_object_mapping {
-	 *	struct drm_gem_object *obj;
-	 *	void *driver_priv;
-	 * };
-	 */
+	 
 	struct {
 		struct list_head list;
 		struct mutex lock;
 	} mappings;
 
-	/*
-	 * Count the number of jobs referencing this BO so we don't let the
-	 * shrinker reclaim this object prematurely.
-	 */
+	 
 	atomic_t gpu_usecount;
 
 	bool noexec		:1;
@@ -84,4 +70,4 @@ void panfrost_gem_teardown_mappings_locked(struct panfrost_gem_object *bo);
 void panfrost_gem_shrinker_init(struct drm_device *dev);
 void panfrost_gem_shrinker_cleanup(struct drm_device *dev);
 
-#endif /* __PANFROST_GEM_H__ */
+#endif  

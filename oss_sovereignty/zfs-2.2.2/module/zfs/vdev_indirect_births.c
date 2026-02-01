@@ -1,21 +1,6 @@
-/*
- * CDDL HEADER START
- *
- * This file and its contents are supplied under the terms of the
- * Common Development and Distribution License ("CDDL"), version 1.0.
- * You may only use this file in accordance with the terms of version
- * 1.0 of the CDDL.
- *
- * A full copy of the text of the CDDL should have accompanied this
- * source.  A copy of the CDDL is also available via the Internet at
- * http://www.illumos.org/license/CDDL.
- *
- * CDDL HEADER END
- */
+ 
 
-/*
- * Copyright (c) 2015 by Delphix. All rights reserved.
- */
+ 
 
 #include <sys/dmu_tx.h>
 #include <sys/spa.h>
@@ -170,19 +155,7 @@ vdev_indirect_births_last_entry_txg(vdev_indirect_births_t *vib)
 	return (last->vibe_phys_birth_txg);
 }
 
-/*
- * Return the txg in which the given range was copied (i.e. its physical
- * birth txg).  The specified offset+asize must be contiguously mapped
- * (i.e. not a split block).
- *
- * The entries are sorted by increasing phys_birth, and also by increasing
- * offset.  We find the specified offset by binary search.  Note that we
- * can not use bsearch() because looking at each entry independently is
- * insufficient to find the correct entry.  Each entry implicitly relies
- * on the previous entry: an entry indicates that the offsets from the
- * end of the previous entry to the end of this entry were written in the
- * specified txg.
- */
+ 
 uint64_t
 vdev_indirect_births_physbirth(vdev_indirect_births_t *vib, uint64_t offset,
     uint64_t asize)

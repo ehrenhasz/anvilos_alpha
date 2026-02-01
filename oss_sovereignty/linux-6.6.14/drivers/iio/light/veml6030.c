@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * VEML6030 Ambient Light Sensor
- *
- * Copyright (c) 2019, Rishi Gupta <gupt21@gmail.com>
- *
- * Datasheet: https://www.vishay.com/docs/84366/veml6030.pdf
- * Appnote-84367: https://www.vishay.com/docs/84367/designingveml6030.pdf
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/i2c.h>
@@ -18,7 +11,7 @@
 #include <linux/iio/sysfs.h>
 #include <linux/iio/events.h>
 
-/* Device registers */
+ 
 #define VEML6030_REG_ALS_CONF   0x00
 #define VEML6030_REG_ALS_WH     0x01
 #define VEML6030_REG_ALS_WL     0x02
@@ -27,7 +20,7 @@
 #define VEML6030_REG_WH_DATA    0x05
 #define VEML6030_REG_ALS_INT    0x06
 
-/* Bit masks for specific functionality */
+ 
 #define VEML6030_ALS_IT       GENMASK(9, 6)
 #define VEML6030_PSM          GENMASK(2, 1)
 #define VEML6030_ALS_PERS     GENMASK(5, 4)
@@ -38,17 +31,7 @@
 #define VEML6030_ALS_INT_EN   BIT(1)
 #define VEML6030_ALS_SD       BIT(0)
 
-/*
- * The resolution depends on both gain and integration time. The
- * cur_resolution stores one of the resolution mentioned in the
- * table during startup and gets updated whenever integration time
- * or gain is changed.
- *
- * Table 'resolution and maximum detection range' in appnote 84367
- * is visualized as a 2D array. The cur_gain stores index of gain
- * in this table (0-3) while the cur_integration_time holds index
- * of integration time (0-5).
- */
+ 
 struct veml6030_data {
 	struct i2c_client *client;
 	struct regmap *regmap;
@@ -57,14 +40,11 @@ struct veml6030_data {
 	int cur_integration_time;
 };
 
-/* Integration time available in seconds */
+ 
 static IIO_CONST_ATTR(in_illuminance_integration_time_available,
 				"0.025 0.05 0.1 0.2 0.4 0.8");
 
-/*
- * Scale is 1/gain. Value 0.125 is ALS gain x (1/8), 0.25 is
- * ALS gain x (1/4), 1.0 = ALS gain x 1 and 2.0 is ALS gain x 2.
- */
+ 
 static IIO_CONST_ATTR(in_illuminance_scale_available,
 				"0.125 0.25 1.0 2.0");
 
@@ -78,11 +58,7 @@ static const struct attribute_group veml6030_attr_group = {
 	.attrs = veml6030_attributes,
 };
 
-/*
- * Persistence = 1/2/4/8 x integration time
- * Minimum time for which light readings must stay above configured
- * threshold to assert the interrupt.
- */
+ 
 static const char * const period_values[] = {
 		"0.1 0.2 0.4 0.8",
 		"0.2 0.4 0.8 1.6",
@@ -92,10 +68,7 @@ static const char * const period_values[] = {
 		"0.025 0.050 0.1 0.2"
 };
 
-/*
- * Return list of valid period values in seconds corresponding to
- * the currently active integration time.
- */
+ 
 static ssize_t in_illuminance_period_available_show(struct device *dev,
 				struct device_attribute *attr, char *buf)
 {
@@ -176,7 +149,7 @@ static const struct iio_event_spec veml6030_event_spec[] = {
 	},
 };
 
-/* Channel number */
+ 
 enum veml6030_chan {
 	CH_ALS,
 	CH_WHITE,
@@ -297,11 +270,7 @@ static int veml6030_set_intgrn_tm(struct iio_dev *indio_dev,
 		return ret;
 	}
 
-	/*
-	 * Cache current integration time and update resolution. For every
-	 * increase in integration time to next level, resolution is halved
-	 * and vice-versa.
-	 */
+	 
 	if (data->cur_integration_time < int_idx)
 		data->cur_resolution <<= int_idx - data->cur_integration_time;
 	else if (data->cur_integration_time > int_idx)
@@ -328,7 +297,7 @@ static int veml6030_read_persistence(struct iio_dev *indio_dev,
 				"can't read als conf register %d\n", ret);
 	}
 
-	/* integration time multiplied by 1/2/4/8 */
+	 
 	period = y * (1 << ((reg >> 4) & 0x03));
 
 	*val = period / 1000000;
@@ -379,7 +348,7 @@ static int veml6030_set_als_gain(struct iio_dev *indio_dev,
 	struct veml6030_data *data = iio_priv(indio_dev);
 
 	if (val == 0 && val2 == 125000) {
-		new_gain = 0x1000; /* 0x02 << 11 */
+		new_gain = 0x1000;  
 		gain_idx = 3;
 	} else if (val == 0 && val2 == 250000) {
 		new_gain = 0x1800;
@@ -402,11 +371,7 @@ static int veml6030_set_als_gain(struct iio_dev *indio_dev,
 		return ret;
 	}
 
-	/*
-	 * Cache currently set gain & update resolution. For every
-	 * increase in the gain to next level, resolution is halved
-	 * and vice-versa.
-	 */
+	 
 	if (data->cur_gain < gain_idx)
 		data->cur_resolution <<= gain_idx - data->cur_gain;
 	else if (data->cur_gain > gain_idx)
@@ -498,10 +463,7 @@ static int veml6030_write_thresh(struct iio_dev *indio_dev,
 	return ret;
 }
 
-/*
- * Provide both raw as well as light reading in lux.
- * light (in lux) = resolution * raw reading
- */
+ 
 static int veml6030_read_raw(struct iio_dev *indio_dev,
 			    struct iio_chan_spec const *chan, int *val,
 			    int *val2, long mask)
@@ -638,13 +600,7 @@ static int veml6030_read_interrupt_config(struct iio_dev *indio_dev,
 		return 0;
 }
 
-/*
- * Sensor should not be measuring light when interrupt is configured.
- * Therefore correct sequence to configure interrupt functionality is:
- * shut down -> enable/disable interrupt -> power on
- *
- * state = 1 enables interrupt, state = 0 disables interrupt
- */
+ 
 static int veml6030_write_interrupt_config(struct iio_dev *indio_dev,
 		const struct iio_chan_spec *chan, enum iio_event_type type,
 		enum iio_event_direction dir, int state)
@@ -662,7 +618,7 @@ static int veml6030_write_interrupt_config(struct iio_dev *indio_dev,
 		return ret;
 	}
 
-	/* enable interrupt + power on */
+	 
 	ret = regmap_update_bits(data->regmap, VEML6030_REG_ALS_CONF,
 			VEML6030_ALS_INT_EN | VEML6030_ALS_SD, state << 1);
 	if (ret)
@@ -702,7 +658,7 @@ static irqreturn_t veml6030_event_handler(int irq, void *private)
 		return IRQ_HANDLED;
 	}
 
-	/* Spurious interrupt handling */
+	 
 	if (!(reg & (VEML6030_INT_TH_HIGH | VEML6030_INT_TH_LOW)))
 		return IRQ_NONE;
 
@@ -718,12 +674,7 @@ static irqreturn_t veml6030_event_handler(int irq, void *private)
 	return IRQ_HANDLED;
 }
 
-/*
- * Set ALS gain to 1/8, integration time to 100 ms, PSM to mode 2,
- * persistence to 1 x integration time and the threshold
- * interrupt disabled by default. First shutdown the sensor,
- * update registers and then power on the sensor.
- */
+ 
 static int veml6030_hw_init(struct iio_dev *indio_dev)
 {
 	int ret, val;
@@ -767,10 +718,10 @@ static int veml6030_hw_init(struct iio_dev *indio_dev)
 		return ret;
 	}
 
-	/* Wait 4 ms to let processor & oscillator start correctly */
+	 
 	usleep_range(4000, 4002);
 
-	/* Clear stale interrupt status bits if any during start */
+	 
 	ret = regmap_read(data->regmap, VEML6030_REG_ALS_INT, &val);
 	if (ret < 0) {
 		dev_err(&client->dev,
@@ -778,7 +729,7 @@ static int veml6030_hw_init(struct iio_dev *indio_dev)
 		return ret;
 	}
 
-	/* Cache currently active measurement parameters */
+	 
 	data->cur_gain = 3;
 	data->cur_resolution = 4608;
 	data->cur_integration_time = 3;

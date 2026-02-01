@@ -1,20 +1,4 @@
-/* Test of conversion of wide character to multibyte character.
-   Copyright (C) 2008-2023 Free Software Foundation, Inc.
-
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* Written by Bruno Haible <bruno@clisp.org>, 2008.  */
+ 
 
 #include <config.h>
 
@@ -29,7 +13,7 @@ SIGNATURE_CHECK (c32rtomb, size_t, (char *, char32_t, mbstate_t *));
 
 #include "macros.h"
 
-/* Check the multibyte character s[0..n-1].  */
+ 
 static void
 check_character (const char *s, size_t n)
 {
@@ -48,7 +32,7 @@ check_character (const char *s, size_t n)
   ASSERT (ret == n);
   ASSERT (memcmp (buf, s, n) == 0);
 
-  /* Test special calling convention, passing a NULL pointer.  */
+   
   ret = c32rtomb (NULL, wc, NULL);
   ASSERT (ret == 1);
 }
@@ -59,11 +43,11 @@ main (int argc, char *argv[])
   char buf[64];
   size_t ret;
 
-  /* configure should already have checked that the locale is supported.  */
+   
   if (setlocale (LC_ALL, "") == NULL)
     return 1;
 
-  /* Test NUL character.  */
+   
   {
     buf[0] = 'x';
     ret = c32rtomb (buf, 0, NULL);
@@ -71,7 +55,7 @@ main (int argc, char *argv[])
     ASSERT (buf[0] == '\0');
   }
 
-  /* Test single bytes.  */
+   
   {
     int c;
 
@@ -99,7 +83,7 @@ main (int argc, char *argv[])
         case 'p': case 'q': case 'r': case 's': case 't':
         case 'u': case 'v': case 'w': case 'x': case 'y':
         case 'z': case '{': case '|': case '}': case '~':
-          /* c is in the ISO C "basic character set".  */
+           
           ret = c32rtomb (buf, btoc32 (c), NULL);
           ASSERT (ret == 1);
           ASSERT (buf[0] == (char) c);
@@ -107,7 +91,7 @@ main (int argc, char *argv[])
         }
   }
 
-  /* Test special calling convention, passing a NULL pointer.  */
+   
   {
     ret = c32rtomb (NULL, '\0', NULL);
     ASSERT (ret == 1);
@@ -119,13 +103,13 @@ main (int argc, char *argv[])
     switch (argv[1][0])
       {
       case '1':
-        /* C locale; tested above.  */
+         
         return 0;
 
       case '2':
-        /* Locale encoding is ISO-8859-1 or ISO-8859-15.  */
+         
         {
-          const char input[] = "B\374\337er"; /* "Büßer" */
+          const char input[] = "B\374\337er";  
 
           check_character (input + 1, 1);
           check_character (input + 2, 1);
@@ -133,9 +117,9 @@ main (int argc, char *argv[])
         return 0;
 
       case '3':
-        /* Locale encoding is UTF-8.  */
+         
         {
-          const char input[] = "s\303\274\303\237\360\237\230\213!"; /* "süß😋!" */
+          const char input[] = "s\303\274\303\237\360\237\230\213!";  
 
           check_character (input + 1, 2);
           check_character (input + 3, 2);
@@ -144,9 +128,9 @@ main (int argc, char *argv[])
         return 0;
 
       case '4':
-        /* Locale encoding is EUC-JP.  */
+         
         {
-          const char input[] = "<\306\374\313\334\270\354>"; /* "<日本語>" */
+          const char input[] = "<\306\374\313\334\270\354>";  
 
           check_character (input + 1, 2);
           check_character (input + 3, 2);
@@ -155,13 +139,13 @@ main (int argc, char *argv[])
         return 0;
 
       case '5':
-        /* Locale encoding is GB18030.  */
+         
         #if (defined __GLIBC__ && __GLIBC__ == 2 && __GLIBC_MINOR__ >= 13 && __GLIBC_MINOR__ <= 15) || (GL_CHAR32_T_IS_UNICODE && (defined __NetBSD__ || defined __sun))
         fputs ("Skipping test: The GB18030 converter in this system's iconv is broken.\n", stderr);
         return 77;
         #endif
         {
-          const char input[] = "s\250\271\201\060\211\070\224\071\375\067!"; /* "süß😋!" */
+          const char input[] = "s\250\271\201\060\211\070\224\071\375\067!";  
 
           check_character (input + 1, 2);
           check_character (input + 3, 4);

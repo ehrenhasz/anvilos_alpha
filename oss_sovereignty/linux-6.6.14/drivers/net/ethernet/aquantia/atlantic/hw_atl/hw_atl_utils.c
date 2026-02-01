@@ -1,13 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Atlantic Network Driver
- *
- * Copyright (C) 2014-2019 aQuantia Corporation
- * Copyright (C) 2019-2020 Marvell International Ltd.
- */
 
-/* File hw_atl_utils.c: Definition of common functions for Atlantic hardware
- * abstraction layer.
- */
+ 
+
+ 
 
 #include "../aq_nic.h"
 #include "../aq_hw_utils.h"
@@ -100,23 +94,23 @@ static int hw_atl_utils_soft_reset_flb(struct aq_hw_s *self)
 	aq_hw_write_reg(self, 0x404, 0x40e1);
 	AQ_HW_SLEEP(50);
 
-	/* Cleanup SPI */
+	 
 	val = aq_hw_read_reg(self, 0x53C);
 	aq_hw_write_reg(self, 0x53C, val | 0x10);
 
 	gsr = aq_hw_read_reg(self, HW_ATL_GLB_SOFT_RES_ADR);
 	aq_hw_write_reg(self, HW_ATL_GLB_SOFT_RES_ADR, (gsr & 0xBFFF) | 0x8000);
 
-	/* Kickstart MAC */
+	 
 	aq_hw_write_reg(self, 0x404, 0x80e0);
 	aq_hw_write_reg(self, 0x32a8, 0x0);
 	aq_hw_write_reg(self, 0x520, 0x1);
 
-	/* Reset SPI again because of possible interrupted SPI burst */
+	 
 	val = aq_hw_read_reg(self, 0x53C);
 	aq_hw_write_reg(self, 0x53C, val | 0x10);
 	AQ_HW_SLEEP(10);
-	/* Clear SPI reset state */
+	 
 	aq_hw_write_reg(self, 0x53C, val & ~0x10);
 
 	aq_hw_write_reg(self, 0x404, 0x180e0);
@@ -135,14 +129,14 @@ static int hw_atl_utils_soft_reset_flb(struct aq_hw_s *self)
 		return -EIO;
 	}
 
-	/* FW reset */
+	 
 	aq_hw_write_reg(self, 0x404, 0x80e0);
 	AQ_HW_SLEEP(50);
 	aq_hw_write_reg(self, 0x3a0, 0x1);
 
-	/* Kickstart PHY - skipped */
+	 
 
-	/* Global software reset*/
+	 
 	hw_atl_rx_rx_reg_res_dis_set(self, 0U);
 	hw_atl_tx_tx_reg_res_dis_set(self, 0U);
 	aq_hw_write_reg_bit(self, HW_ATL_MAC_PHY_CONTROL,
@@ -162,7 +156,7 @@ static int hw_atl_utils_soft_reset_flb(struct aq_hw_s *self)
 		aq_pr_err("FW kickstart failed\n");
 		return -EIO;
 	}
-	/* Old FW requires fixed delay after init */
+	 
 	AQ_HW_SLEEP(15);
 
 	return 0;
@@ -177,14 +171,14 @@ static int hw_atl_utils_soft_reset_rbl(struct aq_hw_s *self)
 	aq_hw_write_reg(self, 0x3a0, 0x1);
 	aq_hw_write_reg(self, 0x32a8, 0x0);
 
-	/* Alter RBL status */
+	 
 	aq_hw_write_reg(self, 0x388, 0xDEAD);
 
-	/* Cleanup SPI */
+	 
 	val = aq_hw_read_reg(self, 0x53C);
 	aq_hw_write_reg(self, 0x53C, val | 0x10);
 
-	/* Global software reset*/
+	 
 	hw_atl_rx_rx_reg_res_dis_set(self, 0U);
 	hw_atl_tx_tx_reg_res_dis_set(self, 0U);
 	aq_hw_write_reg_bit(self, HW_ATL_MAC_PHY_CONTROL,
@@ -199,7 +193,7 @@ static int hw_atl_utils_soft_reset_rbl(struct aq_hw_s *self)
 
 	aq_hw_write_reg(self, 0x404, 0x40e0);
 
-	/* Wait for RBL boot */
+	 
 	for (k = 0; k < 1000; k++) {
 		rbl_status = aq_hw_read_reg(self, 0x388) & 0xFFFF;
 		if (rbl_status && rbl_status != 0xDEAD)
@@ -211,7 +205,7 @@ static int hw_atl_utils_soft_reset_rbl(struct aq_hw_s *self)
 		return -EIO;
 	}
 
-	/* Restore NVR */
+	 
 	if (FORCE_FLASHLESS)
 		aq_hw_write_reg(self, 0x534, 0xA0);
 
@@ -231,7 +225,7 @@ static int hw_atl_utils_soft_reset_rbl(struct aq_hw_s *self)
 		aq_pr_err("FW kickstart failed\n");
 		return -EIO;
 	}
-	/* Old FW requires fixed delay after init */
+	 
 	AQ_HW_SLEEP(15);
 
 	return 0;
@@ -263,9 +257,7 @@ int hw_atl_utils_soft_reset(struct aq_hw_s *self)
 	if (hw_atl_utils_ver_match(HW_ATL_FW_VER_1X, ver)) {
 		int err = 0;
 
-		/* FW 1.x may bootup in an invalid POWER state (WOL feature).
-		 * We should work around this by forcing its state back to DEINIT
-		 */
+		 
 		hw_atl_utils_mpi_set_state(self, MPI_DEINIT);
 		err = readx_poll_timeout_atomic(hw_atl_utils_mpi_get_state,
 						self, val,
@@ -277,7 +269,7 @@ int hw_atl_utils_soft_reset(struct aq_hw_s *self)
 	} else if (hw_atl_utils_ver_match(HW_ATL_FW_VER_4X, ver)) {
 		u64 sem_timeout = aq_hw_read_reg(self, HW_ATL_MIF_RESET_TIMEOUT_ADR);
 
-		/* Acquire 2 semaphores before issuing reset for FW 4.x */
+		 
 		if (sem_timeout > 3000)
 			sem_timeout = 3000;
 		sem_timeout = sem_timeout * 1000;
@@ -374,7 +366,7 @@ static int hw_atl_utils_write_b1_mbox(struct aq_hw_s *self, u32 addr,
 		aq_hw_write_reg(self, 0x32C,
 				(area | (0xFFFF & (offset * 4))));
 		hw_atl_mcp_up_force_intr_set(self, 1);
-		/* 1000 times by 10us = 10ms */
+		 
 		err = readx_poll_timeout_atomic(hw_atl_scrpad12_get,
 						self, val,
 						(val & 0xF0000000) !=
@@ -487,7 +479,7 @@ static int hw_atl_utils_init_ucp(struct aq_hw_s *self,
 
 	hw_atl_reg_glb_cpu_scratch_scp_set(self, 0x00000000U, 25U);
 
-	/* check 10 times by 1ms */
+	 
 	err = readx_poll_timeout_atomic(hw_atl_scrpad25_get,
 					self, self->mbox_addr,
 					self->mbox_addr != 0U,
@@ -678,15 +670,13 @@ static int hw_atl_utils_mpi_set_state(struct aq_hw_s *self,
 		if (err < 0)
 			goto err_exit;
 	}
-	/* On interface DEINIT we disable DW (raise bit)
-	 * Otherwise enable DW (clear bit)
-	 */
+	 
 	if (state == MPI_DEINIT || state == MPI_POWER)
 		val |= HW_ATL_MPI_DIRTY_WAKE_MSK;
 	else
 		val &= ~HW_ATL_MPI_DIRTY_WAKE_MSK;
 
-	/* Set new state bits */
+	 
 	val = val & ~HW_ATL_MPI_STATE_MSK;
 	val |= state & HW_ATL_MPI_STATE_MSK;
 
@@ -774,7 +764,7 @@ int hw_atl_utils_get_mac_permanent(struct aq_hw_s *self,
 	ether_addr_copy(mac, (u8 *)mac_addr);
 
 	if ((mac[0] & 0x01U) || ((mac[0] | mac[1] | mac[2]) == 0x00U)) {
-		/* chip revision */
+		 
 		l = 0xE3000000U |
 		    (0xFFFFU & aq_hw_read_reg(self, HW_ATL_UCP_0X370_REG)) |
 		    (0x00 << 16);

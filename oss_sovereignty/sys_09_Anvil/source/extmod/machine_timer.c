@@ -1,28 +1,4 @@
-/*
- * This file is part of the MicroPython project, http://micropython.org/
- *
- * The MIT License (MIT)
- *
- * Copyright (c) 2019 Damien P. George
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
+ 
 
 #include "py/runtime.h"
 #include "py/mphal.h"
@@ -51,7 +27,7 @@ static mp_obj_t machine_timer_init_helper(machine_timer_obj_t *self, size_t n_ar
         { MP_QSTR_freq,         MP_ARG_KW_ONLY | MP_ARG_OBJ, {.u_rom_obj = MP_ROM_NONE} },
     };
 
-    // Parse args
+    
     mp_arg_val_t args[MP_ARRAY_SIZE(allowed_args)];
     mp_arg_parse_all(n_args, pos_args, kw_args, MP_ARRAY_SIZE(allowed_args), allowed_args, args);
 
@@ -59,14 +35,14 @@ static mp_obj_t machine_timer_init_helper(machine_timer_obj_t *self, size_t n_ar
 
     uint64_t delta_ms = self->delta_ms;
     if (args[ARG_freq].u_obj != mp_const_none) {
-        // Frequency specified in Hz
+        
         #if MICROPY_PY_BUILTINS_FLOAT
         delta_ms = (uint32_t)(MICROPY_FLOAT_CONST(1000.0) / mp_obj_get_float(args[ARG_freq].u_obj));
         #else
         delta_ms = 1000 / mp_obj_get_int(args[ARG_freq].u_obj);
         #endif
     } else if (args[ARG_period].u_int != 0xffffffff) {
-        // Period specified
+        
         delta_ms = (uint64_t)args[ARG_period].u_int * 1000 / args[ARG_tick_hz].u_int;
     }
 
@@ -95,7 +71,7 @@ static mp_obj_t machine_timer_make_new(const mp_obj_type_t *type, size_t n_args,
     self->delta_ms = 1000;
     self->py_callback = mp_const_none;
 
-    // Get timer id (only soft timer (-1) supported at the moment)
+    
     mp_int_t id = -1;
     if (n_args > 0) {
         id = mp_obj_get_int(args[0]);
@@ -107,7 +83,7 @@ static mp_obj_t machine_timer_make_new(const mp_obj_type_t *type, size_t n_args,
     }
 
     if (n_args > 0 || n_kw > 0) {
-        // Start the timer
+        
         mp_map_t kw_args;
         mp_map_init_fixed_table(&kw_args, n_kw, args + n_args);
         machine_timer_init_helper(self, n_args, args, &kw_args);
@@ -148,4 +124,4 @@ MP_DEFINE_CONST_OBJ_TYPE(
     locals_dict, &machine_timer_locals_dict
     );
 
-#endif // MICROPY_PY_MACHINE_TIMER
+#endif 

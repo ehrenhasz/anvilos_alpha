@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copyright © 2003-2010 David Woodhouse <dwmw2@infradead.org>
- */
+ 
+ 
 
 #ifndef __MTD_TRANS_H__
 #define __MTD_TRANS_H__
@@ -44,7 +42,7 @@ struct mtd_blktrans_ops {
 	int blksize;
 	int blkshift;
 
-	/* Access functions */
+	 
 	int (*readsect)(struct mtd_blktrans_dev *dev,
 		    unsigned long block, char *buffer);
 	int (*writesect)(struct mtd_blktrans_dev *dev,
@@ -53,16 +51,15 @@ struct mtd_blktrans_ops {
 		       unsigned long block, unsigned nr_blocks);
 	void (*background)(struct mtd_blktrans_dev *dev);
 
-	/* Block layer ioctls */
+	 
 	int (*getgeo)(struct mtd_blktrans_dev *dev, struct hd_geometry *geo);
 	int (*flush)(struct mtd_blktrans_dev *dev);
 
-	/* Called with mtd_table_mutex held; no race with add/remove */
+	 
 	int (*open)(struct mtd_blktrans_dev *dev);
 	void (*release)(struct mtd_blktrans_dev *dev);
 
-	/* Called on {de,}registration and on subsequent addition/removal
-	   of devices, with mtd_table_mutex held. */
+	 
 	void (*add_mtd)(struct mtd_blktrans_ops *tr, struct mtd_info *mtd);
 	void (*remove_dev)(struct mtd_blktrans_dev *dev);
 
@@ -77,16 +74,9 @@ extern int add_mtd_blktrans_dev(struct mtd_blktrans_dev *dev);
 extern int del_mtd_blktrans_dev(struct mtd_blktrans_dev *dev);
 extern int mtd_blktrans_cease_background(struct mtd_blktrans_dev *dev);
 
-/**
- * module_mtd_blktrans() - Helper macro for registering a mtd blktrans driver
- * @__mtd_blktrans: mtd_blktrans_ops struct
- *
- * Helper macro for mtd blktrans drivers which do not do anything special in
- * module init/exit. This eliminates a lot of boilerplate. Each module may only
- * use this macro once, and calling it replaces module_init() and module_exit()
- */
+ 
 #define module_mtd_blktrans(__mtd_blktrans) \
 	module_driver(__mtd_blktrans, register_mtd_blktrans, \
 					deregister_mtd_blktrans)
 
-#endif /* __MTD_TRANS_H__ */
+#endif  

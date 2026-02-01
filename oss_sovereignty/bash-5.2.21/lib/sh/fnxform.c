@@ -1,22 +1,6 @@
-/* fnxform - use iconv(3) to transform strings to and from "filename" format */
+ 
 
-/* Copyright (C) 2009-2020 Free Software Foundation, Inc.
-
-   This file is part of GNU Bash, the Bourne Again SHell.
-
-   Bash is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   Bash is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with Bash.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ 
 
 #include <config.h>
 #if defined (HAVE_UNISTD_H)
@@ -109,7 +93,7 @@ fnx_tofs (string, len)
   if (conv_tofs == (iconv_t)-1)
     return string;
 
-  /* Free and reallocate outbuf if it's *too* big */
+   
   if (outlen >= OUTLEN_MAX && len < OUTLEN_MAX - 8)
     {
       free (outbuf);
@@ -153,7 +137,7 @@ fnx_fromfs (string, len)
   if (conv_fromfs == (iconv_t)-1)
     return string;
 
-  /* Free and reallocate outbuf if it's *too* big */
+   
   if (outlen >= OUTLEN_MAX && len < OUTLEN_MAX - 8)
     {
       free (outbuf);

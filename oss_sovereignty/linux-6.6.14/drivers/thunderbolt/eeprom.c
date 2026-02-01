@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Thunderbolt driver - eeprom access
- *
- * Copyright (c) 2014 Andreas Noever <andreas.noever@gmail.com>
- * Copyright (C) 2018, Intel Corporation
- */
+
+ 
 
 #include <linux/crc32.h>
 #include <linux/delay.h>
@@ -12,17 +7,13 @@
 #include <linux/slab.h>
 #include "tb.h"
 
-/*
- * tb_eeprom_ctl_write() - write control word
- */
+ 
 static int tb_eeprom_ctl_write(struct tb_switch *sw, struct tb_eeprom_ctl *ctl)
 {
 	return tb_sw_write(sw, ctl, TB_CFG_SWITCH, sw->cap_plug_events + ROUTER_CS_4, 1);
 }
 
-/*
- * tb_eeprom_ctl_write() - read control word
- */
+ 
 static int tb_eeprom_ctl_read(struct tb_switch *sw, struct tb_eeprom_ctl *ctl)
 {
 	return tb_sw_read(sw, ctl, TB_CFG_SWITCH, sw->cap_plug_events + ROUTER_CS_4, 1);
@@ -33,12 +24,7 @@ enum tb_eeprom_transfer {
 	TB_EEPROM_OUT,
 };
 
-/*
- * tb_eeprom_active - enable rom access
- *
- * WARNING: Always disable access after usage. Otherwise the controller will
- * fail to reprobe.
- */
+ 
 static int tb_eeprom_active(struct tb_switch *sw, bool enable)
 {
 	struct tb_eeprom_ctl ctl;
@@ -62,12 +48,7 @@ static int tb_eeprom_active(struct tb_switch *sw, bool enable)
 	}
 }
 
-/*
- * tb_eeprom_transfer - transfer one bit
- *
- * If TB_EEPROM_IN is passed, then the bit can be retrieved from ctl->fl_do.
- * If TB_EEPROM_OUT is passed, then ctl->fl_di will be written.
- */
+ 
 static int tb_eeprom_transfer(struct tb_switch *sw, struct tb_eeprom_ctl *ctl,
 			      enum tb_eeprom_transfer direction)
 {
@@ -90,9 +71,7 @@ static int tb_eeprom_transfer(struct tb_switch *sw, struct tb_eeprom_ctl *ctl,
 	return tb_eeprom_ctl_write(sw, ctl);
 }
 
-/*
- * tb_eeprom_out - write one byte to the bus
- */
+ 
 static int tb_eeprom_out(struct tb_switch *sw, u8 val)
 {
 	struct tb_eeprom_ctl ctl;
@@ -110,9 +89,7 @@ static int tb_eeprom_out(struct tb_switch *sw, u8 val)
 	return 0;
 }
 
-/*
- * tb_eeprom_in - read one byte from the bus
- */
+ 
 static int tb_eeprom_in(struct tb_switch *sw, u8 *val)
 {
 	struct tb_eeprom_ctl ctl;
@@ -131,9 +108,7 @@ static int tb_eeprom_in(struct tb_switch *sw, u8 *val)
 	return 0;
 }
 
-/*
- * tb_eeprom_get_drom_offset - get drom offset within eeprom
- */
+ 
 static int tb_eeprom_get_drom_offset(struct tb_switch *sw, u16 *offset)
 {
 	struct tb_cap_plug_events cap;
@@ -162,9 +137,7 @@ static int tb_eeprom_get_drom_offset(struct tb_switch *sw, u16 *offset)
 	return 0;
 }
 
-/*
- * tb_eeprom_read_n - read count bytes from offset into val
- */
+ 
 static int tb_eeprom_read_n(struct tb_switch *sw, u16 offset, u8 *val,
 		size_t count)
 {
@@ -219,17 +192,17 @@ static u32 tb_crc32(void *data, size_t len)
 #define USB4_DROM_HEADER_SIZE		16
 
 struct tb_drom_header {
-	/* BYTE 0 */
-	u8 uid_crc8; /* checksum for uid */
-	/* BYTES 1-8 */
+	 
+	u8 uid_crc8;  
+	 
 	u64 uid;
-	/* BYTES 9-12 */
-	u32 data_crc32; /* checksum for data_len bytes starting at byte 13 */
-	/* BYTE 13 */
-	u8 device_rom_revision; /* should be <= 1 */
+	 
+	u32 data_crc32;  
+	 
+	u8 device_rom_revision;  
 	u16 data_len:12;
 	u8 reserved:4;
-	/* BYTES 16-21 - Only for TBT DROM, nonexistent in USB4 DROM */
+	 
 	u16 vendor_id;
 	u16 model_id;
 	u8 model_rev;
@@ -237,7 +210,7 @@ struct tb_drom_header {
 } __packed;
 
 enum tb_drom_entry_type {
-	/* force unsigned to prevent "one-bit signed bitfield" warning */
+	 
 	TB_DROM_ENTRY_GENERIC = 0U,
 	TB_DROM_ENTRY_PORT,
 };
@@ -245,7 +218,7 @@ enum tb_drom_entry_type {
 struct tb_drom_entry_header {
 	u8 len;
 	u8 index:6;
-	bool port_disabled:1; /* only valid if type is TB_DROM_ENTRY_PORT */
+	bool port_disabled:1;  
 	enum tb_drom_entry_type type:1;
 } __packed;
 
@@ -255,24 +228,24 @@ struct tb_drom_entry_generic {
 } __packed;
 
 struct tb_drom_entry_port {
-	/* BYTES 0-1 */
+	 
 	struct tb_drom_entry_header header;
-	/* BYTE 2 */
+	 
 	u8 dual_link_port_rid:4;
 	u8 link_nr:1;
 	u8 unknown1:2;
 	bool has_dual_link_port:1;
 
-	/* BYTE 3 */
+	 
 	u8 dual_link_port_nr:6;
 	u8 unknown2:2;
 
-	/* BYTES 4 - 5 TODO decode */
+	 
 	u8 micro2:4;
 	u8 micro1:4;
 	u8 micro3;
 
-	/* BYTES 6-7, TODO: verify (find hardware that has these set) */
+	 
 	u8 peer_port_rid:4;
 	u8 unknown3:3;
 	bool has_peer_port:1;
@@ -280,7 +253,7 @@ struct tb_drom_entry_port {
 	u8 unknown4:2;
 } __packed;
 
-/* USB4 product descriptor */
+ 
 struct tb_drom_entry_desc {
 	struct tb_drom_entry_header header;
 	u16 bcdUSBSpec;
@@ -291,21 +264,14 @@ struct tb_drom_entry_desc {
 	u8 productHWRevision;
 };
 
-/**
- * tb_drom_read_uid_only() - Read UID directly from DROM
- * @sw: Router whose UID to read
- * @uid: UID is placed here
- *
- * Does not use the cached copy in sw->drom. Used during resume to check switch
- * identity.
- */
+ 
 int tb_drom_read_uid_only(struct tb_switch *sw, u64 *uid)
 {
 	u8 data[9];
 	u8 crc;
 	int res;
 
-	/* read uid */
+	 
 	res = tb_eeprom_read_n(sw, 0, data, 9);
 	if (res)
 		return res;
@@ -329,7 +295,7 @@ static int tb_drom_parse_entry_generic(struct tb_switch *sw,
 
 	switch (header->index) {
 	case 1:
-		/* Length includes 2 bytes header so remove it before copy */
+		 
 		sw->vendor_name = kstrndup(entry->data,
 			header->len - sizeof(*header), GFP_KERNEL);
 		if (!sw->vendor_name)
@@ -364,10 +330,7 @@ static int tb_drom_parse_entry_port(struct tb_switch *sw,
 	int res;
 	enum tb_port_type type;
 
-	/*
-	 * Some DROMs list more ports than the controller actually has
-	 * so we skip those but allow the parser to continue.
-	 */
+	 
 	if (header->index > sw->config.max_port_number) {
 		dev_info_once(&sw->dev, "ignoring unnecessary extra entries in DROM\n");
 		return 0;
@@ -399,11 +362,7 @@ static int tb_drom_parse_entry_port(struct tb_switch *sw,
 	return 0;
 }
 
-/*
- * tb_drom_parse_entries - parse the linked list of drom entries
- *
- * Drom must have been copied to sw->drom.
- */
+ 
 static int tb_drom_parse_entries(struct tb_switch *sw, size_t header_size)
 {
 	struct tb_drom_header *header = (void *) sw->drom;
@@ -435,9 +394,7 @@ static int tb_drom_parse_entries(struct tb_switch *sw, size_t header_size)
 	return 0;
 }
 
-/*
- * tb_drom_copy_efi - copy drom supplied by EFI to sw->drom if present
- */
+ 
 static int tb_drom_copy_efi(struct tb_switch *sw, u16 *size)
 {
 	struct device *dev = &sw->tb->nhi->pdev->dev;
@@ -489,7 +446,7 @@ static int tb_drom_copy_nvm(struct tb_switch *sw, u16 *size)
 	if (ret)
 		return ret;
 
-	/* Size includes CRC8 + UID + CRC32 */
+	 
 	*size += 1 + 8 + 4;
 	sw->drom = kzalloc(*size, GFP_KERNEL);
 	if (!sw->drom)
@@ -499,10 +456,7 @@ static int tb_drom_copy_nvm(struct tb_switch *sw, u16 *size)
 	if (ret)
 		goto err_free;
 
-	/*
-	 * Read UID from the minimal DROM because the one in NVM is just
-	 * a placeholder.
-	 */
+	 
 	tb_drom_read_uid_only(sw, &sw->uid);
 	return 0;
 
@@ -520,7 +474,7 @@ static int usb4_copy_drom(struct tb_switch *sw, u16 *size)
 	if (ret)
 		return ret;
 
-	/* Size includes CRC8 + UID + CRC32 */
+	 
 	*size += 1 + 8 + 4;
 	sw->drom = kzalloc(*size, GFP_KERNEL);
 	if (!sw->drom)
@@ -691,16 +645,7 @@ static int tb_drom_device_read(struct tb_switch *sw)
 	return tb_drom_parse(sw, size);
 }
 
-/**
- * tb_drom_read() - Copy DROM to sw->drom and parse it
- * @sw: Router whose DROM to read and parse
- *
- * This function reads router DROM and if successful parses the entries and
- * populates the fields in @sw accordingly. Can be called for any router
- * generation.
- *
- * Returns %0 in case of success and negative errno otherwise.
- */
+ 
 int tb_drom_read(struct tb_switch *sw)
 {
 	if (sw->drom)

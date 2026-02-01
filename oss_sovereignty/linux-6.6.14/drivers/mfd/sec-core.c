@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0+
-//
-// Copyright (c) 2012 Samsung Electronics Co., Ltd
-//              http://www.samsung.com
+
+
+
+
 
 #include <linux/module.h>
 #include <linux/moduleparam.h>
@@ -102,7 +102,7 @@ static const struct of_device_id sec_dt_match[] = {
 		.compatible = "samsung,s2mpu02-pmic",
 		.data = (void *)S2MPU02,
 	}, {
-		/* Sentinel */
+		 
 	},
 };
 MODULE_DEVICE_TABLE(of, sec_dt_match);
@@ -215,7 +215,7 @@ static void sec_pmic_dump_rev(struct sec_pmic_dev *sec_pmic)
 {
 	unsigned int val;
 
-	/* For each device type, the REG_ID is always the first register */
+	 
 	if (!regmap_read(sec_pmic->regmap_pmic, S2MPS11_REG_ID, &val))
 		dev_dbg(sec_pmic->dev, "Revision: 0x%x\n", val);
 }
@@ -228,11 +228,7 @@ static void sec_pmic_configure(struct sec_pmic_dev *sec_pmic)
 		return;
 
 	if (sec_pmic->pdata->disable_wrstbi) {
-		/*
-		 * If WRSTBI pin is pulled down this feature must be disabled
-		 * because each Suspend to RAM will trigger buck voltage reset
-		 * to default values.
-		 */
+		 
 		err = regmap_update_bits(sec_pmic->regmap_pmic,
 					 S2MPS13_REG_WRSTBI,
 					 S2MPS13_REG_WRSTBI_MASK, 0x0);
@@ -243,15 +239,7 @@ static void sec_pmic_configure(struct sec_pmic_dev *sec_pmic)
 	}
 }
 
-/*
- * Only the common platform data elements for s5m8767 are parsed here from the
- * device tree. Other sub-modules of s5m8767 such as pmic, rtc , charger and
- * others have to parse their own platform data elements from device tree.
- *
- * The s5m8767 platform data structure is instantiated here and the drivers for
- * the sub-modules need not instantiate another instance while parsing their
- * platform data.
- */
+ 
 static struct sec_platform_data *
 sec_pmic_i2c_parse_dt_pdata(struct device *dev)
 {
@@ -393,10 +381,7 @@ static void sec_pmic_shutdown(struct i2c_client *i2c)
 		mask = S2MPS11_CTRL1_PWRHOLD_MASK;
 		break;
 	default:
-		/*
-		 * Currently only one board with S2MPS11 needs this, so just
-		 * ignore the rest.
-		 */
+		 
 		dev_warn(sec_pmic->dev,
 			"Unsupported device %lu for manual power off\n",
 			sec_pmic->device_type);
@@ -413,15 +398,7 @@ static int sec_pmic_suspend(struct device *dev)
 
 	if (device_may_wakeup(dev))
 		enable_irq_wake(sec_pmic->irq);
-	/*
-	 * PMIC IRQ must be disabled during suspend for RTC alarm
-	 * to work properly.
-	 * When device is woken up from suspend, an
-	 * interrupt occurs before resuming I2C bus controller.
-	 * The interrupt is handled by regmap_irq_thread which tries
-	 * to read RTC registers. This read fails (I2C is still
-	 * suspended) and RTC Alarm interrupt is disabled.
-	 */
+	 
 	disable_irq(sec_pmic->irq);
 
 	return 0;

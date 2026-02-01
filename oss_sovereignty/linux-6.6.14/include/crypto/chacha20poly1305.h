@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR MIT */
-/*
- * Copyright (C) 2015-2019 Jason A. Donenfeld <Jason@zx2c4.com>. All Rights Reserved.
- */
+ 
+ 
 
 #ifndef __CHACHA20POLY1305_H
 #define __CHACHA20POLY1305_H
@@ -47,4 +45,4 @@ bool chacha20poly1305_decrypt_sg_inplace(struct scatterlist *src, size_t src_len
 
 bool chacha20poly1305_selftest(void);
 
-#endif /* __CHACHA20POLY1305_H */
+#endif  

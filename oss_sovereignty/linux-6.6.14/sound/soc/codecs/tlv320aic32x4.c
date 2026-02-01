@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * linux/sound/soc/codecs/tlv320aic32x4.c
- *
- * Copyright 2011 Vista Silicon S.L.
- *
- * Author: Javier Martin <javier.martin@vista-silicon.com>
- *
- * Based on sound/soc/codecs/wm8974 and TI driver for kernel 2.6.27.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/moduleparam.h>
@@ -59,11 +51,7 @@ static int aic32x4_reset_adc(struct snd_soc_dapm_widget *w,
 	struct snd_soc_component *component = snd_soc_dapm_to_component(w->dapm);
 	u32 adc_reg;
 
-	/*
-	 * Workaround: the datasheet does not mention a required programming
-	 * sequence but experiments show the ADC needs to be reset after each
-	 * capture to avoid audible artifacts.
-	 */
+	 
 	switch (event) {
 	case SND_SOC_DAPM_POST_PMD:
 		adc_reg = snd_soc_component_read(component, AIC32X4_ADCSETUP);
@@ -82,7 +70,7 @@ static int mic_bias_event(struct snd_soc_dapm_widget *w,
 
 	switch (event) {
 	case SND_SOC_DAPM_POST_PMU:
-		/* Change Mic Bias Registor */
+		 
 		snd_soc_component_update_bits(component, AIC32X4_MICBIAS,
 				AIC32x4_MICBIAS_MASK,
 				AIC32X4_MICBIAS_LDOIN |
@@ -244,15 +232,15 @@ static const struct snd_kcontrol_new aic32x4_mfp5[] = {
 		aic32x4_set_mfp5_gpio),
 };
 
-/* 0dB min, 0.5dB steps */
+ 
 static DECLARE_TLV_DB_SCALE(tlv_step_0_5, 0, 50, 0);
-/* -63.5dB min, 0.5dB steps */
+ 
 static DECLARE_TLV_DB_SCALE(tlv_pcm, -6350, 50, 0);
-/* -6dB min, 1dB steps */
+ 
 static DECLARE_TLV_DB_SCALE(tlv_driver_gain, -600, 100, 0);
-/* -12dB min, 0.5dB steps */
+ 
 static DECLARE_TLV_DB_SCALE(tlv_adc_vol, -1200, 50, 0);
-/* -6dB min, 1dB steps */
+ 
 static DECLARE_TLV_DB_SCALE(tlv_tas_driver_gain, -5850, 50, 0);
 static DECLARE_TLV_DB_SCALE(tlv_amp_vol, 0, 600, 1);
 
@@ -342,7 +330,7 @@ static const char * const resistor_text[] = {
 	"Off", "10 kOhm", "20 kOhm", "40 kOhm",
 };
 
-/* Left mixer pins */
+ 
 static SOC_ENUM_SINGLE_DECL(in1l_lpga_p_enum, AIC32X4_LMICPGAPIN, 6, resistor_text);
 static SOC_ENUM_SINGLE_DECL(in2l_lpga_p_enum, AIC32X4_LMICPGAPIN, 4, resistor_text);
 static SOC_ENUM_SINGLE_DECL(in3l_lpga_p_enum, AIC32X4_LMICPGAPIN, 2, resistor_text);
@@ -374,7 +362,7 @@ static const struct snd_kcontrol_new in3r_to_lmixer_controls[] = {
 	SOC_DAPM_ENUM("IN3_R L- Switch", in3r_lpga_n_enum),
 };
 
-/*	Right mixer pins */
+ 
 static SOC_ENUM_SINGLE_DECL(in1r_rpga_p_enum, AIC32X4_RMICPGAPIN, 6, resistor_text);
 static SOC_ENUM_SINGLE_DECL(in2r_rpga_p_enum, AIC32X4_RMICPGAPIN, 4, resistor_text);
 static SOC_ENUM_SINGLE_DECL(in3r_rpga_p_enum, AIC32X4_RMICPGAPIN, 2, resistor_text);
@@ -479,7 +467,7 @@ static const struct snd_soc_dapm_widget aic32x4_dapm_widgets[] = {
 };
 
 static const struct snd_soc_dapm_route aic32x4_dapm_routes[] = {
-	/* Left Output */
+	 
 	{"HPL Output Mixer", "L_DAC Switch", "Left DAC"},
 	{"HPL Output Mixer", "IN1_L Switch", "IN1_L"},
 
@@ -491,7 +479,7 @@ static const struct snd_soc_dapm_route aic32x4_dapm_routes[] = {
 	{"LOL Power", NULL, "LOL Output Mixer"},
 	{"LOL", NULL, "LOL Power"},
 
-	/* Right Output */
+	 
 	{"HPR Output Mixer", "R_DAC Switch", "Right DAC"},
 	{"HPR Output Mixer", "IN1_R Switch", "IN1_R"},
 
@@ -503,7 +491,7 @@ static const struct snd_soc_dapm_route aic32x4_dapm_routes[] = {
 	{"LOR Power", NULL, "LOR Output Mixer"},
 	{"LOR", NULL, "LOR Power"},
 
-	/* Right Input */
+	 
 	{"Right ADC", NULL, "IN1_R to Right Mixer Positive Resistor"},
 	{"IN1_R to Right Mixer Positive Resistor", "10 kOhm", "IN1_R"},
 	{"IN1_R to Right Mixer Positive Resistor", "20 kOhm", "IN1_R"},
@@ -539,7 +527,7 @@ static const struct snd_soc_dapm_route aic32x4_dapm_routes[] = {
 	{"IN3_L to Right Mixer Negative Resistor", "20 kOhm", "IN3_L"},
 	{"IN3_L to Right Mixer Negative Resistor", "40 kOhm", "IN3_L"},
 
-	/* Left Input */
+	 
 	{"Left ADC", NULL, "IN1_L to Left Mixer Positive Resistor"},
 	{"IN1_L to Left Mixer Positive Resistor", "10 kOhm", "IN1_L"},
 	{"IN1_L to Left Mixer Positive Resistor", "20 kOhm", "IN1_L"},
@@ -635,13 +623,13 @@ static int aic32x4_set_dai_fmt(struct snd_soc_dai *codec_dai, unsigned int fmt)
 	case SND_SOC_DAIFMT_DSP_A:
 		iface_reg_1 |= (AIC32X4_DSP_MODE <<
 				AIC32X4_IFACE1_DATATYPE_SHIFT);
-		iface_reg_3 |= AIC32X4_BCLKINV_MASK; /* invert bit clock */
-		iface_reg_2 = 0x01; /* add offset 1 */
+		iface_reg_3 |= AIC32X4_BCLKINV_MASK;  
+		iface_reg_2 = 0x01;  
 		break;
 	case SND_SOC_DAIFMT_DSP_B:
 		iface_reg_1 |= (AIC32X4_DSP_MODE <<
 				AIC32X4_IFACE1_DATATYPE_SHIFT);
-		iface_reg_3 |= AIC32X4_BCLKINV_MASK; /* invert bit clock */
+		iface_reg_3 |= AIC32X4_BCLKINV_MASK;  
 		break;
 	case SND_SOC_DAIFMT_RIGHT_J:
 		iface_reg_1 |= (AIC32X4_RIGHT_JUSTIFIED_MODE <<
@@ -693,7 +681,7 @@ static int aic32x4_set_processing_blocks(struct snd_soc_component *component,
 			return -EINVAL;
 
 		snd_soc_component_write(component, AIC32X4_DACSPB, p_block);
-	} else { /* AIC32x4 */
+	} else {  
 		if (r_block > 18 || p_block > 25)
 			return -EINVAL;
 
@@ -762,7 +750,7 @@ static int aic32x4_setup_clocks(struct snd_soc_component *component,
 		return -EINVAL;
 	}
 
-	/* PCM over I2S is always 2-channel */
+	 
 	if ((aic32x4->fmt & SND_SOC_DAIFMT_FORMAT_MASK) == SND_SOC_DAIFMT_I2S)
 		channels = 2;
 
@@ -907,7 +895,7 @@ static int aic32x4_set_bias_level(struct snd_soc_component *component,
 	case SND_SOC_BIAS_PREPARE:
 		break;
 	case SND_SOC_BIAS_STANDBY:
-		/* Initial cold start */
+		 
 		if (snd_soc_component_get_bias_level(component) == SND_SOC_BIAS_OFF)
 			break;
 
@@ -954,8 +942,8 @@ static void aic32x4_setup_gpios(struct snd_soc_component *component)
 {
 	struct aic32x4_priv *aic32x4 = snd_soc_component_get_drvdata(component);
 
-	/* setup GPIO functions */
-	/* MFP1 */
+	 
+	 
 	if (aic32x4->setup->gpio_func[0] != AIC32X4_MFPX_DEFAULT_VALUE) {
 		snd_soc_component_write(component, AIC32X4_DINCTL,
 			  aic32x4->setup->gpio_func[0]);
@@ -963,7 +951,7 @@ static void aic32x4_setup_gpios(struct snd_soc_component *component)
 			ARRAY_SIZE(aic32x4_mfp1));
 	}
 
-	/* MFP2 */
+	 
 	if (aic32x4->setup->gpio_func[1] != AIC32X4_MFPX_DEFAULT_VALUE) {
 		snd_soc_component_write(component, AIC32X4_DOUTCTL,
 			  aic32x4->setup->gpio_func[1]);
@@ -971,7 +959,7 @@ static void aic32x4_setup_gpios(struct snd_soc_component *component)
 			ARRAY_SIZE(aic32x4_mfp2));
 	}
 
-	/* MFP3 */
+	 
 	if (aic32x4->setup->gpio_func[2] != AIC32X4_MFPX_DEFAULT_VALUE) {
 		snd_soc_component_write(component, AIC32X4_SCLKCTL,
 			  aic32x4->setup->gpio_func[2]);
@@ -979,7 +967,7 @@ static void aic32x4_setup_gpios(struct snd_soc_component *component)
 			ARRAY_SIZE(aic32x4_mfp3));
 	}
 
-	/* MFP4 */
+	 
 	if (aic32x4->setup->gpio_func[3] != AIC32X4_MFPX_DEFAULT_VALUE) {
 		snd_soc_component_write(component, AIC32X4_MISOCTL,
 			  aic32x4->setup->gpio_func[3]);
@@ -987,7 +975,7 @@ static void aic32x4_setup_gpios(struct snd_soc_component *component)
 			ARRAY_SIZE(aic32x4_mfp4));
 	}
 
-	/* MFP5 */
+	 
 	if (aic32x4->setup->gpio_func[4] != AIC32X4_MFPX_DEFAULT_VALUE) {
 		snd_soc_component_write(component, AIC32X4_GPIOCTL,
 			  aic32x4->setup->gpio_func[4]);
@@ -1019,7 +1007,7 @@ static int aic32x4_component_probe(struct snd_soc_component *component)
 	clk_set_parent(clocks[0].clk, clocks[1].clk);
 	clk_set_parent(clocks[2].clk, clocks[3].clk);
 
-	/* Power platform configuration */
+	 
 	if (aic32x4->power_cfg & AIC32X4_PWR_MICBIAS_2075_LDOIN) {
 		snd_soc_component_write(component, AIC32X4_MICBIAS,
 				AIC32X4_MICBIAS_LDOIN | AIC32X4_MICBIAS_2075V);
@@ -1038,7 +1026,7 @@ static int aic32x4_component_probe(struct snd_soc_component *component)
 		tmp_reg |= AIC32X4_LDOIN2HP;
 	snd_soc_component_write(component, AIC32X4_CMMODE, tmp_reg);
 
-	/* Mic PGA routing */
+	 
 	if (aic32x4->micpga_routing & AIC32X4_MICPGA_ROUTE_LMIC_IN2R_10K)
 		snd_soc_component_write(component, AIC32X4_LMICPGANIN,
 				AIC32X4_LMICPGANIN_IN2R_10K);
@@ -1052,20 +1040,13 @@ static int aic32x4_component_probe(struct snd_soc_component *component)
 		snd_soc_component_write(component, AIC32X4_RMICPGANIN,
 				AIC32X4_RMICPGANIN_CM1R_10K);
 
-	/*
-	 * Workaround: for an unknown reason, the ADC needs to be powered up
-	 * and down for the first capture to work properly. It seems related to
-	 * a HW BUG or some kind of behavior not documented in the datasheet.
-	 */
+	 
 	tmp_reg = snd_soc_component_read(component, AIC32X4_ADCSETUP);
 	snd_soc_component_write(component, AIC32X4_ADCSETUP, tmp_reg |
 				AIC32X4_LADC_EN | AIC32X4_RADC_EN);
 	snd_soc_component_write(component, AIC32X4_ADCSETUP, tmp_reg);
 
-	/*
-	 * Enable the fast charging feature and ensure the needed 40ms ellapsed
-	 * before using the analog circuits.
-	 */
+	 
 	snd_soc_component_write(component, AIC32X4_REFPOWERUP,
 				AIC32X4_REFPOWERUP_40MS);
 	msleep(40);
@@ -1123,7 +1104,7 @@ static const struct snd_soc_dapm_widget aic32x4_tas2505_dapm_widgets[] = {
 };
 
 static const struct snd_soc_dapm_route aic32x4_tas2505_dapm_routes[] = {
-	/* Left Output */
+	 
 	{"HP Output Mixer", "DAC Switch", "DAC"},
 
 	{"HP Power", NULL, "HP Output Mixer"},
@@ -1168,7 +1149,7 @@ static int aic32x4_tas2505_component_probe(struct snd_soc_component *component)
 	clk_set_parent(clocks[0].clk, clocks[1].clk);
 	clk_set_parent(clocks[2].clk, clocks[3].clk);
 
-	/* Power platform configuration */
+	 
 	if (aic32x4->power_cfg & AIC32X4_PWR_AVDD_DVDD_WEAK_DISABLE)
 		snd_soc_component_write(component, AIC32X4_PWRCFG, AIC32X4_AVDDWEAKDISABLE);
 
@@ -1183,10 +1164,7 @@ static int aic32x4_tas2505_component_probe(struct snd_soc_component *component)
 		tmp_reg |= AIC32X4_LDOIN2HP;
 	snd_soc_component_write(component, AIC32X4_CMMODE, tmp_reg);
 
-	/*
-	 * Enable the fast charging feature and ensure the needed 40ms ellapsed
-	 * before using the analog circuits.
-	 */
+	 
 	snd_soc_component_write(component, TAS2505_REFPOWERUP,
 				AIC32X4_REFPOWERUP_40MS);
 	msleep(40);
@@ -1259,7 +1237,7 @@ static int aic32x4_setup_regulators(struct device *dev,
 	aic32x4->supply_dv = devm_regulator_get_optional(dev, "dv");
 	aic32x4->supply_av = devm_regulator_get_optional(dev, "av");
 
-	/* Check if the regulator requirements are fulfilled */
+	 
 
 	if (IS_ERR(aic32x4->supply_iov)) {
 		dev_err(dev, "Missing supply 'iov'\n");

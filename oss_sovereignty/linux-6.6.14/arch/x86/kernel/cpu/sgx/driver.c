@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*  Copyright(c) 2016-20 Intel Corporation. */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/miscdevice.h>
@@ -46,12 +46,7 @@ static int sgx_release(struct inode *inode, struct file *file)
 	struct sgx_encl *encl = file->private_data;
 	struct sgx_encl_mm *encl_mm;
 
-	/*
-	 * Drain the remaining mm_list entries. At this point the list contains
-	 * entries for processes, which have closed the enclave file but have
-	 * not exited yet. The processes, which have exited, are gone from the
-	 * list by sgx_mmu_notifier_release().
-	 */
+	 
 	for ( ; ; )  {
 		spin_lock(&encl->mm_lock);
 
@@ -65,7 +60,7 @@ static int sgx_release(struct inode *inode, struct file *file)
 
 		spin_unlock(&encl->mm_lock);
 
-		/* The enclave is no longer mapped by any mm. */
+		 
 		if (!encl_mm)
 			break;
 
@@ -73,7 +68,7 @@ static int sgx_release(struct inode *inode, struct file *file)
 		mmu_notifier_unregister(&encl_mm->mmu_notifier, encl_mm->mm);
 		kfree(encl_mm);
 
-		/* 'encl_mm' is gone, put encl_mm->encl reference: */
+		 
 		kref_put(&encl->refcount, sgx_encl_release);
 	}
 

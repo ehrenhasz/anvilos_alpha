@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-/* Copyright (C) 2017-2018 Netronome Systems, Inc. */
+
+ 
 
 #include <linux/hash.h>
 #include <linux/hashtable.h>
@@ -43,11 +43,11 @@ static int nfp_release_stats_entry(struct nfp_app *app, u32 stats_context_id)
 	struct circ_buf *ring;
 
 	ring = &priv->stats_ids.free_list;
-	/* Check if buffer is full, stats_ring_size must be power of 2 */
+	 
 	if (!CIRC_SPACE(ring->head, ring->tail, priv->stats_ring_size))
 		return -ENOBUFS;
 
-	/* Each increment of head represents size of NFP_FL_STATS_ELEM_RS */
+	 
 	memcpy(&ring->buf[ring->head * NFP_FL_STATS_ELEM_RS],
 	       &stats_context_id, NFP_FL_STATS_ELEM_RS);
 	ring->head = (ring->head + 1) & (priv->stats_ring_size - 1);
@@ -63,7 +63,7 @@ static int nfp_get_stats_entry(struct nfp_app *app, u32 *stats_context_id)
 
 	ring = &priv->stats_ids.free_list;
 	freed_stats_id = priv->stats_ring_size;
-	/* Check for unallocated entries first. */
+	 
 	if (priv->stats_ids.init_unalloc > 0) {
 		*stats_context_id =
 			FIELD_PREP(NFP_FL_STAT_ID_STAT,
@@ -79,25 +79,25 @@ static int nfp_get_stats_entry(struct nfp_app *app, u32 *stats_context_id)
 		return 0;
 	}
 
-	/* Check if buffer is empty. */
+	 
 	if (ring->head == ring->tail) {
 		*stats_context_id = freed_stats_id;
 		return -ENOENT;
 	}
 
-	/* Each increment of tail represents size of NFP_FL_STATS_ELEM_RS */
+	 
 	memcpy(&temp_stats_id, &ring->buf[ring->tail * NFP_FL_STATS_ELEM_RS],
 	       NFP_FL_STATS_ELEM_RS);
 	*stats_context_id = temp_stats_id;
 	memcpy(&ring->buf[ring->tail * NFP_FL_STATS_ELEM_RS], &freed_stats_id,
 	       NFP_FL_STATS_ELEM_RS);
-	/* stats_ring_size must be power of 2 */
+	 
 	ring->tail = (ring->tail + 1) & (priv->stats_ring_size - 1);
 
 	return 0;
 }
 
-/* Must be called with either RTNL or rcu_read_lock */
+ 
 struct nfp_fl_payload *
 nfp_flower_search_fl_table(struct nfp_app *app, unsigned long tc_flower_cookie,
 			   struct net_device *netdev)
@@ -140,15 +140,11 @@ static int nfp_release_mask_id(struct nfp_app *app, u8 mask_id)
 	struct circ_buf *ring;
 
 	ring = &priv->mask_ids.mask_id_free_list;
-	/* Checking if buffer is full,
-	 * NFP_FLOWER_MASK_ENTRY_RS must be power of 2
-	 */
+	 
 	if (CIRC_SPACE(ring->head, ring->tail, NFP_FLOWER_MASK_ENTRY_RS) == 0)
 		return -ENOBUFS;
 
-	/* Each increment of head represents size of
-	 * NFP_FLOWER_MASK_ELEMENT_RS
-	 */
+	 
 	memcpy(&ring->buf[ring->head * NFP_FLOWER_MASK_ELEMENT_RS], &mask_id,
 	       NFP_FLOWER_MASK_ELEMENT_RS);
 	ring->head = (ring->head + 1) & (NFP_FLOWER_MASK_ENTRY_RS - 1);
@@ -167,20 +163,18 @@ static int nfp_mask_alloc(struct nfp_app *app, u8 *mask_id)
 
 	ring = &priv->mask_ids.mask_id_free_list;
 	freed_id = NFP_FLOWER_MASK_ENTRY_RS - 1;
-	/* Checking for unallocated entries first. */
+	 
 	if (priv->mask_ids.init_unallocated > 0) {
 		*mask_id = priv->mask_ids.init_unallocated;
 		priv->mask_ids.init_unallocated--;
 		return 0;
 	}
 
-	/* Checking if buffer is empty. */
+	 
 	if (ring->head == ring->tail)
 		goto err_not_found;
 
-	/* Each increment of tail represents size of
-	 * NFP_FLOWER_MASK_ELEMENT_RS
-	 */
+	 
 	memcpy(&temp_id, &ring->buf[ring->tail * NFP_FLOWER_MASK_ELEMENT_RS],
 	       NFP_FLOWER_MASK_ELEMENT_RS);
 	*mask_id = temp_id;
@@ -193,7 +187,7 @@ static int nfp_mask_alloc(struct nfp_app *app, u8 *mask_id)
 
 	memcpy(&ring->buf[ring->tail * NFP_FLOWER_MASK_ELEMENT_RS], &freed_id,
 	       NFP_FLOWER_MASK_ELEMENT_RS);
-	/* NFP_FLOWER_MASK_ENTRY_RS must be power of 2 */
+	 
 	ring->tail = (ring->tail + 1) & (NFP_FLOWER_MASK_ENTRY_RS - 1);
 
 	return 0;
@@ -257,7 +251,7 @@ nfp_find_in_mask_table(struct nfp_app *app, char *mask_data, u32 mask_len)
 
 	mask_entry->ref_cnt++;
 
-	/* Casting u8 to int for later use. */
+	 
 	return mask_entry->mask_id;
 }
 
@@ -339,11 +333,7 @@ int nfp_compile_flow_metadata(struct nfp_app *app, u32 cookie,
 		goto err_free_ctx_entry;
 	}
 
-	/* Do not allocate a mask-id for pre_tun_rules. These flows are used to
-	 * configure the pre_tun table and are never actually send to the
-	 * firmware as an add-flow message. This causes the mask-id allocation
-	 * on the firmware to get out of sync if allocated here.
-	 */
+	 
 	new_mask_id = 0;
 	if (!nfp_flow->pre_tun_rule.dev &&
 	    !nfp_check_mask_add(app, nfp_flow->mask_data,
@@ -357,7 +347,7 @@ int nfp_compile_flow_metadata(struct nfp_app *app, u32 cookie,
 	nfp_flow->meta.flow_version = cpu_to_be64(priv->flower_version);
 	priv->flower_version++;
 
-	/* Update flow payload with mask ids. */
+	 
 	nfp_flow->unmasked_data[NFP_FL_MASK_ID_LOCATION] = new_mask_id;
 	priv->stats[stats_cxt].pkts = 0;
 	priv->stats[stats_cxt].bytes = 0;
@@ -412,10 +402,10 @@ int nfp_modify_flow_metadata(struct nfp_app *app,
 				      nfp_flow->meta.mask_len, &nfp_flow->meta.flags,
 				      &new_mask_id);
 
-	/* Update flow payload with mask ids. */
+	 
 	nfp_flow->unmasked_data[NFP_FL_MASK_ID_LOCATION] = new_mask_id;
 
-	/* Release the stats ctx id and ctx to flow table entry. */
+	 
 	temp_ctx_id = be32_to_cpu(nfp_flow->meta.host_ctx_id);
 
 	ctx_entry = rhashtable_lookup_fast(&priv->stats_ctx_table, &temp_ctx_id,
@@ -546,7 +536,7 @@ int nfp_flower_metadata_init(struct nfp_app *app, u64 host_ctx_count,
 
 	get_random_bytes(&priv->mask_id_seed, sizeof(priv->mask_id_seed));
 
-	/* Init ring buffer and unallocated mask_ids. */
+	 
 	priv->mask_ids.mask_id_free_list.buf =
 		kmalloc_array(NFP_FLOWER_MASK_ENTRY_RS,
 			      NFP_FLOWER_MASK_ELEMENT_RS, GFP_KERNEL);
@@ -555,14 +545,14 @@ int nfp_flower_metadata_init(struct nfp_app *app, u64 host_ctx_count,
 
 	priv->mask_ids.init_unallocated = NFP_FLOWER_MASK_ENTRY_RS - 1;
 
-	/* Init timestamps for mask id*/
+	 
 	priv->mask_ids.last_used =
 		kmalloc_array(NFP_FLOWER_MASK_ENTRY_RS,
 			      sizeof(*priv->mask_ids.last_used), GFP_KERNEL);
 	if (!priv->mask_ids.last_used)
 		goto err_free_mask_id;
 
-	/* Init ring buffer and unallocated stats_ids. */
+	 
 	priv->stats_ids.free_list.buf =
 		vmalloc(array_size(NFP_FL_STATS_ELEM_RS,
 				   priv->stats_ring_size));

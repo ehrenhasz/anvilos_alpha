@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *  R-Car Gen3 THS thermal sensor driver
- *  Based on rcar_thermal.c and work from Hien Dang and Khiem Nguyen.
- *
- * Copyright (C) 2016 Renesas Electronics Corporation.
- * Copyright (C) 2016 Sang Engineering
- */
+
+ 
 #include <linux/delay.h>
 #include <linux/err.h>
 #include <linux/interrupt.h>
@@ -18,7 +12,7 @@
 
 #include "thermal_hwmon.h"
 
-/* Register offsets */
+ 
 #define REG_GEN3_IRQSTR		0x04
 #define REG_GEN3_IRQMSK		0x08
 #define REG_GEN3_IRQCTL		0x0C
@@ -42,7 +36,7 @@
 #define REG_GEN4_THSFMON16	0x1C0
 #define REG_GEN4_THSFMON17	0x1C4
 
-/* IRQ{STR,MSK,EN} bits */
+ 
 #define IRQ_TEMP1		BIT(0)
 #define IRQ_TEMP2		BIT(1)
 #define IRQ_TEMP3		BIT(2)
@@ -50,11 +44,11 @@
 #define IRQ_TEMPD2		BIT(4)
 #define IRQ_TEMPD3		BIT(5)
 
-/* THCTR bits */
+ 
 #define THCTR_PONM	BIT(6)
 #define THCTR_THSST	BIT(0)
 
-/* THSCP bits */
+ 
 #define THSCP_COR_PARA_VLD	(BIT(15) | BIT(14))
 
 #define CTEMP_MASK	0xFFF
@@ -65,7 +59,7 @@
 
 #define TSC_MAX_NUM	5
 
-/* Structure for thermal temperature calculation */
+ 
 struct equation_coefs {
 	int a1;
 	int b1;
@@ -108,22 +102,7 @@ static inline void rcar_gen3_thermal_write(struct rcar_gen3_thermal_tsc *tsc,
 	iowrite32(data, tsc->base + reg);
 }
 
-/*
- * Linear approximation for temperature
- *
- * [reg] = [temp] * a + b => [temp] = ([reg] - b) / a
- *
- * The constants a and b are calculated using two triplets of int values PTAT
- * and THCODE. PTAT and THCODE can either be read from hardware or use hard
- * coded values from driver. The formula to calculate a and b are taken from
- * BSP and sparsely documented and understood.
- *
- * Examining the linear formula and the formula used to calculate constants a
- * and b while knowing that the span for PTAT and THCODE values are between
- * 0x000 and 0xfff the largest integer possible is 0xfff * 0xfff == 0xffe001.
- * Integer also needs to be signed so that leaves 7 bits for binary
- * fixed point scaling.
- */
+ 
 
 #define FIXPT_SHIFT 7
 #define FIXPT_INT(_x) ((_x) << FIXPT_SHIFT)
@@ -131,21 +110,18 @@ static inline void rcar_gen3_thermal_write(struct rcar_gen3_thermal_tsc *tsc,
 #define FIXPT_DIV(_a, _b) DIV_ROUND_CLOSEST(((_a) << FIXPT_SHIFT), (_b))
 #define FIXPT_TO_MCELSIUS(_x) ((_x) * 1000 >> FIXPT_SHIFT)
 
-#define RCAR3_THERMAL_GRAN 500 /* mili Celsius */
+#define RCAR3_THERMAL_GRAN 500  
 
-/* no idea where these constants come from */
+ 
 #define TJ_3 -41
 
 static void rcar_gen3_thermal_calc_coefs(struct rcar_gen3_thermal_priv *priv,
 					 struct rcar_gen3_thermal_tsc *tsc,
 					 int ths_tj_1)
 {
-	/* TODO: Find documentation and document constant calculation formula */
+	 
 
-	/*
-	 * Division is not scaled in BSP and if scaled it might overflow
-	 * the dividend (4095 * 4095 << 14 > INT_MAX) so keep it unscaled
-	 */
+	 
 	tsc->tj_t = (FIXPT_INT((priv->ptat[1] - priv->ptat[2]) * (ths_tj_1 - TJ_3))
 		     / (priv->ptat[0] - priv->ptat[2])) + FIXPT_INT(TJ_3);
 
@@ -174,7 +150,7 @@ static int rcar_gen3_thermal_get_temp(struct thermal_zone_device *tz, int *temp)
 	int mcelsius, val;
 	int reg;
 
-	/* Read register and convert to mili Celsius */
+	 
 	reg = rcar_gen3_thermal_read(tsc, REG_GEN3_TEMP) & CTEMP_MASK;
 
 	if (reg <= tsc->thcode[1])
@@ -185,9 +161,9 @@ static int rcar_gen3_thermal_get_temp(struct thermal_zone_device *tz, int *temp)
 				tsc->coef.a2);
 	mcelsius = FIXPT_TO_MCELSIUS(val);
 
-	/* Guaranteed operating range is -40C to 125C. */
+	 
 
-	/* Round value to device granularity setting */
+	 
 	*temp = rcar_gen3_thermal_round(mcelsius);
 
 	return 0;
@@ -255,11 +231,7 @@ static void rcar_gen3_thermal_read_fuses_gen3(struct rcar_gen3_thermal_priv *pri
 {
 	unsigned int i;
 
-	/*
-	 * Set the pseudo calibration points with fused values.
-	 * PTAT is shared between all TSCs but only fused for the first
-	 * TSC while THCODEs are fused for each TSC.
-	 */
+	 
 	priv->ptat[0] = rcar_gen3_thermal_read(priv->tscs[0], REG_GEN3_PTAT1) &
 		GEN3_FUSE_MASK;
 	priv->ptat[1] = rcar_gen3_thermal_read(priv->tscs[0], REG_GEN3_PTAT2) &
@@ -283,11 +255,7 @@ static void rcar_gen3_thermal_read_fuses_gen4(struct rcar_gen3_thermal_priv *pri
 {
 	unsigned int i;
 
-	/*
-	 * Set the pseudo calibration points with fused values.
-	 * PTAT is shared between all TSCs but only fused for the first
-	 * TSC while THCODEs are fused for each TSC.
-	 */
+	 
 	priv->ptat[0] = rcar_gen3_thermal_read(priv->tscs[0], REG_GEN4_THSFMON16) &
 		GEN4_FUSE_MASK;
 	priv->ptat[1] = rcar_gen3_thermal_read(priv->tscs[0], REG_GEN4_THSFMON17) &
@@ -312,11 +280,11 @@ static bool rcar_gen3_thermal_read_fuses(struct rcar_gen3_thermal_priv *priv)
 	unsigned int i;
 	u32 thscp;
 
-	/* If fuses are not set, fallback to pseudo values. */
+	 
 	thscp = rcar_gen3_thermal_read(priv->tscs[0], REG_GEN3_THSCP);
 	if (!priv->info->read_fuses ||
 	    (thscp & THSCP_COR_PARA_VLD) != THSCP_COR_PARA_VLD) {
-		/* Default THCODE values in case FUSEs are not set. */
+		 
 		static const int thcodes[TSC_MAX_NUM][3] = {
 			{ 3397, 2800, 2221 },
 			{ 3393, 2795, 2216 },

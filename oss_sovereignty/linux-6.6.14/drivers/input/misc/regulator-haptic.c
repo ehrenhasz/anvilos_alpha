@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Regulator haptic driver
- *
- * Copyright (c) 2014 Samsung Electronics Co., Ltd.
- * Author: Jaewon Kim <jaewon02.kim@samsung.com>
- * Author: Hyunhee Kim <hyunhee.kim@samsung.com>
- */
+
+ 
 
 #include <linux/input.h>
 #include <linux/module.h>
@@ -244,7 +238,7 @@ static DEFINE_SIMPLE_DEV_PM_OPS(regulator_haptic_pm_ops,
 
 static const struct of_device_id regulator_haptic_dt_match[] = {
 	{ .compatible = "regulator-haptic" },
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, regulator_haptic_dt_match);
 

@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 or BSD-3-Clause */
-/*
- * Copyright(c) 2016 Intel Corporation.
- */
+ 
+ 
 
 #ifndef DEF_RDMAVTMMAP_H
 #define DEF_RDMAVTMMAP_H
@@ -16,4 +14,4 @@ struct rvt_mmap_info *rvt_create_mmap_info(struct rvt_dev_info *rdi, u32 size,
 void rvt_update_mmap_info(struct rvt_dev_info *rdi, struct rvt_mmap_info *ip,
 			  u32 size, void *obj);
 
-#endif          /* DEF_RDMAVTMMAP_H */
+#endif           

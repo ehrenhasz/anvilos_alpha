@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2005-2007 by Texas Instruments
- * Some code has been taken from tusb6010.c
- * Copyrights for that are attributable to:
- * Copyright (C) 2006 Nokia Corporation
- * Tony Lindgren <tony@atomide.com>
- *
- * This file is part of the Inventra Controller Driver for Linux.
- */
+
+ 
 #include <linux/module.h>
 #include <linux/kernel.h>
 #include <linux/sched.h>
@@ -46,9 +38,9 @@ static inline void omap2430_low_level_exit(struct musb *musb)
 {
 	u32 l;
 
-	/* in any role */
+	 
 	l = musb_readl(musb->mregs, OTG_FORCESTDBY);
-	l |= ENABLEFORCE;	/* enable MSTANDBY */
+	l |= ENABLEFORCE;	 
 	musb_writel(musb->mregs, OTG_FORCESTDBY, l);
 }
 
@@ -57,7 +49,7 @@ static inline void omap2430_low_level_init(struct musb *musb)
 	u32 l;
 
 	l = musb_readl(musb->mregs, OTG_FORCESTDBY);
-	l &= ~ENABLEFORCE;	/* disable MSTANDBY */
+	l &= ~ENABLEFORCE;	 
 	musb_writel(musb->mregs, OTG_FORCESTDBY, l);
 }
 
@@ -81,13 +73,7 @@ static int omap2430_musb_mailbox(enum musb_vbus_id_status status)
 	return 0;
 }
 
-/*
- * HDRC controls CPEN, but beware current surges during device connect.
- * They can trigger transient overcurrent conditions that must be ignored.
- *
- * Note that we're skipping A_WAIT_VFALL -> A_IDLE and jumping right to B_IDLE
- * as set by musb_set_peripheral().
- */
+ 
 static void omap_musb_set_mailbox(struct omap2430_glue *glue)
 {
 	struct musb *musb = glue_to_musb(glue);
@@ -112,10 +98,7 @@ static void omap_musb_set_mailbox(struct omap2430_glue *glue)
 		case OTG_STATE_A_WAIT_VRISE:
 		case OTG_STATE_A_WAIT_BCON:
 		case OTG_STATE_A_HOST:
-			/*
-			 * On multiple ID ground interrupts just keep enabling
-			 * VBUS. At least cpcap VBUS shuts down otherwise.
-			 */
+			 
 			otg_set_vbus(musb->xceiv->otg, 1);
 			break;
 		default:
@@ -194,18 +177,10 @@ static int omap2430_musb_init(struct musb *musb)
 	struct musb_hdrc_platform_data *plat = dev_get_platdata(dev);
 	struct omap_musb_board_data *data = plat->board_data;
 
-	/* We require some kind of external transceiver, hooked
-	 * up through ULPI.  TWL4030-family PMICs include one,
-	 * which needs a driver, drivers aren't always needed.
-	 */
+	 
 	musb->phy = devm_phy_get(dev->parent, "usb2-phy");
 
-	/* We can't totally remove musb->xceiv as of now because
-	 * musb core uses xceiv.state and xceiv.otg. Once we have
-	 * a separate state machine to handle otg, these can be moved
-	 * out of xceiv and then we can start using the generic PHY
-	 * framework
-	 */
+	 
 	musb->xceiv = devm_usb_get_phy_by_phandle(dev->parent, "usb-phy", 0);
 
 	if (IS_ERR(musb->xceiv)) {
@@ -229,9 +204,9 @@ static int omap2430_musb_init(struct musb *musb)
 	l = musb_readl(musb->mregs, OTG_INTERFSEL);
 
 	if (data->interface_type == MUSB_INTERFACE_UTMI) {
-		/* OMAP4 uses Internal PHY GS70 which uses UTMI interface */
-		l &= ~ULPI_12PIN;       /* Disable ULPI */
-		l |= UTMI_8BIT;         /* Enable UTMI  */
+		 
+		l &= ~ULPI_12PIN;        
+		l |= UTMI_8BIT;          
 	} else {
 		l |= ULPI_12PIN;
 	}
@@ -330,10 +305,7 @@ static int omap2430_probe(struct platform_device *pdev)
 	musb->dev.dma_mask		= &omap2430_dmamask;
 	musb->dev.coherent_dma_mask	= omap2430_dmamask;
 
-	/*
-	 * Legacy SoCs using omap_device get confused if node is moved
-	 * because of interconnect properties mixed into the node.
-	 */
+	 
 	if (of_property_present(np, "ti,hwmods")) {
 		dev_warn(&pdev->dev, "please update to probe with ti-sysc\n");
 		populate_irqs = true;
@@ -389,10 +361,7 @@ static int omap2430_probe(struct platform_device *pdev)
 
 	platform_set_drvdata(pdev, glue);
 
-	/*
-	 * REVISIT if we ever have two instances of the wrapper, we will be
-	 * in big trouble
-	 */
+	 
 	_glue	= glue;
 
 	INIT_WORK(&glue->omap_musb_mailbox_work, omap_musb_mailbox_work);
@@ -521,7 +490,7 @@ static int omap2430_runtime_resume(struct device *dev)
 	musb_writel(musb->mregs, OTG_INTERFSEL,
 		    musb->context.otg_interfsel);
 
-	/* Wait for musb to get oriented. Otherwise we can get babble */
+	 
 	usleep_range(200000, 250000);
 
 	glue->is_runtime_suspended = 0;
@@ -529,7 +498,7 @@ static int omap2430_runtime_resume(struct device *dev)
 	return 0;
 }
 
-/* I2C and SPI PHYs need to be suspended before the glue layer */
+ 
 static int omap2430_suspend(struct device *dev)
 {
 	struct omap2430_glue *glue = dev_get_drvdata(dev);
@@ -542,7 +511,7 @@ static int omap2430_suspend(struct device *dev)
 	return 0;
 }
 
-/* Glue layer needs to be suspended after musb_suspend() */
+ 
 static int omap2430_suspend_late(struct device *dev)
 {
 	struct omap2430_glue *glue = dev_get_drvdata(dev);

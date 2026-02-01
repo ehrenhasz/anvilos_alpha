@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * GPIO character device helper for reading chip information.
- *
- * Copyright (C) 2021 Bartosz Golaszewski <brgl@bgdev.pl>
- */
+
+ 
 
 #include <fcntl.h>
 #include <linux/gpio.h>

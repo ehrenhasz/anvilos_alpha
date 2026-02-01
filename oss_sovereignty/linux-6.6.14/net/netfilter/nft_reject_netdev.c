@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2020 Laura Garcia Liebana <nevola@gmail.com>
- * Copyright (c) 2020 Jose M. Guisado <guigom@riseup.net>
- */
+
+ 
 
 #include <linux/etherdevice.h>
 #include <linux/kernel.h>
@@ -137,7 +134,7 @@ static void nft_reject_netdev_eval(const struct nft_expr *expr,
 		}
 		break;
 	default:
-		/* No explicit way to reject this protocol, drop it. */
+		 
 		break;
 	}
 out:

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
+
 
 #include <kunit/test.h>
 #include <linux/etherdevice.h>
@@ -99,9 +99,7 @@ static void dev_addr_test_sync_one(struct kunit *test)
 	datp->addr_seen = 0;
 	__hw_addr_sync_dev(&netdev->dev_addrs, netdev, dev_addr_test_sync,
 			   dev_addr_test_unsync);
-	/* It's not going to sync anything because the main address is
-	 * considered synced and we overwrite in place.
-	 */
+	 
 	KUNIT_EXPECT_EQ(test, 0, datp->addr_seen);
 }
 
@@ -119,7 +117,7 @@ static void dev_addr_test_add_del(struct kunit *test)
 		KUNIT_EXPECT_EQ(test, 0, dev_addr_add(netdev, addr,
 						      NETDEV_HW_ADDR_T_LAN));
 	}
-	/* Add 3 again */
+	 
 	KUNIT_EXPECT_EQ(test, 0, dev_addr_add(netdev, addr,
 					      NETDEV_HW_ADDR_T_LAN));
 
@@ -172,9 +170,7 @@ static void dev_addr_test_add_set(struct kunit *test)
 
 	datp = netdev_priv(netdev);
 
-	/* There is no external API like dev_addr_add_excl(),
-	 * so shuffle the tree a little bit and exploit aliasing.
-	 */
+	 
 	for (i = 1; i < 16; i++) {
 		memset(addr, i, sizeof(addr));
 		KUNIT_EXPECT_EQ(test, 0, dev_addr_add(netdev, addr,

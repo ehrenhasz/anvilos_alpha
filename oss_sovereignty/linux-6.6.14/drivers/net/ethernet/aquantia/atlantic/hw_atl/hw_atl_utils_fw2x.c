@@ -1,13 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Atlantic Network Driver
- *
- * Copyright (C) 2014-2019 aQuantia Corporation
- * Copyright (C) 2019-2020 Marvell International Ltd.
- */
 
-/* File hw_atl_utils_fw2x.c: Definition of firmware 2.x functions for
- * Atlantic hardware abstraction layer.
- */
+ 
+
+ 
 
 #include "../aq_hw.h"
 #include "../aq_hw_utils.h"
@@ -96,7 +90,7 @@ static int aq_fw2x_init(struct aq_hw_s *self)
 {
 	int err = 0;
 
-	/* check 10 times by 1ms */
+	 
 	err = readx_poll_timeout_atomic(aq_fw2x_mbox_get,
 					self, self->mbox_addr,
 					self->mbox_addr != 0U,
@@ -192,10 +186,7 @@ static void aq_fw2x_upd_flow_control_bits(struct aq_hw_s *self,
 			HW_ATL_FW2X_CTRL_ASYMMETRIC_PAUSE);
 
 	switch (fc) {
-	/* There is not explicit mode of RX only pause frames,
-	 * thus, we join this mode with FC full.
-	 * FC full is either Rx, either Tx, or both.
-	 */
+	 
 	case AQ_NIC_FC_FULL:
 	case AQ_NIC_FC_RX:
 		*mpi_state |= HW_ATL_FW2X_CTRL_PAUSE |
@@ -236,7 +227,7 @@ static int aq_fw2x_set_state(struct aq_hw_s *self,
 		break;
 	case MPI_RESET:
 	case MPI_POWER:
-		/* No actions */
+		 
 		break;
 	}
 	aq_hw_write_reg(self, HW_ATL_FW2X_MPI_CONTROL2_ADDR, mpi_state);
@@ -305,11 +296,11 @@ static int aq_fw2x_update_stats(struct aq_hw_s *self)
 	u32 stats_val;
 	int err = 0;
 
-	/* Toggle statistics bit for FW to update */
+	 
 	mpi_opts = mpi_opts ^ BIT(CAPS_HI_STATISTICS);
 	aq_hw_write_reg(self, HW_ATL_FW2X_MPI_CONTROL2_ADDR, mpi_opts);
 
-	/* Wait FW to report back */
+	 
 	err = readx_poll_timeout_atomic(aq_fw2x_state2_get,
 					self, stats_val,
 					orig_stats_val != (stats_val &
@@ -333,10 +324,10 @@ static int aq_fw2x_get_phy_temp(struct aq_hw_s *self, int *temp)
 	phy_temp_offset = self->mbox_addr + offsetof(struct hw_atl_utils_mbox,
 						     info.phy_temperature);
 
-	/* Toggle statistics bit for FW to 0x36C.18 (CTRL_TEMPERATURE) */
+	 
 	mpi_opts = mpi_opts ^ HW_ATL_FW2X_CTRL_TEMPERATURE;
 	aq_hw_write_reg(self, HW_ATL_FW2X_MPI_CONTROL2_ADDR, mpi_opts);
-	/* Wait FW to report back */
+	 
 	err = readx_poll_timeout_atomic(aq_fw2x_state2_get, self, val,
 					temp_val !=
 					(val & HW_ATL_FW2X_CTRL_TEMPERATURE),
@@ -347,9 +338,7 @@ static int aq_fw2x_get_phy_temp(struct aq_hw_s *self, int *temp)
 	if (err)
 		return err;
 
-	/* Convert PHY temperature from 1/256 degree Celsius
-	 * to 1/1000 degree Celsius.
-	 */
+	 
 	*temp = (int16_t)(temp_res & 0xFFFF) * 1000 / 256;
 
 	return 0;
@@ -420,7 +409,7 @@ static int aq_fw2x_send_fw_request(struct aq_hw_s *self,
 	int err = 0;
 	u32 val;
 
-	/* Write data to drvIface Mailbox */
+	 
 	dword_cnt = size / sizeof(u32);
 	if (size % sizeof(u32))
 		dword_cnt++;
@@ -428,13 +417,13 @@ static int aq_fw2x_send_fw_request(struct aq_hw_s *self,
 	if (err < 0)
 		goto err_exit;
 
-	/* Toggle statistics bit for FW to update */
+	 
 	ctrl2 = aq_hw_read_reg(self, HW_ATL_FW2X_MPI_CONTROL2_ADDR);
 	orig_ctrl2 = ctrl2 & BIT(CAPS_HI_FW_REQUEST);
 	ctrl2 = ctrl2 ^ BIT(CAPS_HI_FW_REQUEST);
 	aq_hw_write_reg(self, HW_ATL_FW2X_MPI_CONTROL2_ADDR, ctrl2);
 
-	/* Wait FW to report back */
+	 
 	err = readx_poll_timeout_atomic(aq_fw2x_state2_get, self, val,
 					orig_ctrl2 != (val &
 						       BIT(CAPS_HI_FW_REQUEST)),
@@ -678,24 +667,24 @@ static int aq_fw2x_send_macsec_req(struct aq_hw_s *hw,
 	if (!(caps_lo & BIT(CAPS_LO_MACSEC)))
 		return -EOPNOTSUPP;
 
-	/* Write macsec request to cfg memory */
+	 
 	dword_cnt = (sizeof(*req) + sizeof(u32) - 1) / sizeof(u32);
 	err = hw_atl_write_fwcfg_dwords(hw, (void *)req, dword_cnt);
 	if (err < 0)
 		return err;
 
-	/* Toggle 0x368.CAPS_LO_MACSEC bit */
+	 
 	low_req = aq_hw_read_reg(hw, HW_ATL_FW2X_MPI_CONTROL_ADDR);
 	low_req ^= HW_ATL_FW2X_CAP_MACSEC;
 	aq_hw_write_reg(hw, HW_ATL_FW2X_MPI_CONTROL_ADDR, low_req);
 
-	/* Wait FW to report back */
+	 
 	err = readx_poll_timeout_atomic(aq_fw2x_state_get, hw, low_status,
 		low_req != (low_status & BIT(CAPS_LO_MACSEC)), 1U, 10000U);
 	if (err)
 		return -EIO;
 
-	/* Read status of write operation */
+	 
 	offset = hw->rpc_addr + sizeof(u32);
 	err = hw_atl_utils_fw_downld_dwords(hw, offset, (u32 *)(void *)response,
 					    sizeof(*response) / sizeof(u32));

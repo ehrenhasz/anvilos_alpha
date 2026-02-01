@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *    Copyright IBM Corp. 2007, 2009
- *    Author(s): Utz Bacher <utz.bacher@de.ibm.com>,
- *		 Frank Pavlic <fpavlic@de.ibm.com>,
- *		 Thomas Spatzier <tspat@de.ibm.com>,
- *		 Frank Blaschka <frank.blaschka@de.ibm.com>
- */
+
+ 
 
 #define KMSG_COMPONENT "qeth"
 #define pr_fmt(fmt) KMSG_COMPONENT ": " fmt
@@ -172,7 +166,7 @@ static void qeth_l2_fill_header(struct qeth_qdio_out_q *queue,
 			qeth_tx_csum(skb, &hdr->hdr.l2.flags[1], proto);
 	}
 
-	/* set byte byte 3 to casting flags */
+	 
 	if (cast_type == RTN_MULTICAST)
 		hdr->hdr.l2.flags[2] |= QETH_LAYER2_FLAG_MULTICAST;
 	else if (cast_type == RTN_BROADCAST)
@@ -180,9 +174,7 @@ static void qeth_l2_fill_header(struct qeth_qdio_out_q *queue,
 	else
 		hdr->hdr.l2.flags[2] |= QETH_LAYER2_FLAG_UNICAST;
 
-	/* VSWITCH relies on the VLAN
-	 * information to be present in
-	 * the QDIO header */
+	 
 	if (veth->h_vlan_proto == htons(ETH_P_8021Q)) {
 		hdr->hdr.l2.flags[2] |= QETH_LAYER2_FLAG_VLAN;
 		hdr->hdr.l2.vlan_id = ntohs(veth->h_vlan_TCI);
@@ -284,7 +276,7 @@ static void qeth_l2_dev2br_fdb_flush(struct qeth_card *card)
 	QETH_CARD_TEXT(card, 2, "fdbflush");
 
 	info.addr = NULL;
-	/* flush all VLANs: */
+	 
 	info.vid = 0;
 	info.added_by_user = false;
 	info.offloaded = true;
@@ -306,7 +298,7 @@ static int qeth_l2_request_initial_mac(struct qeth_card *card)
 		QETH_DBF_MESSAGE(2, "z/VM MAC Service failed on device %x: %#x\n",
 				 CARD_DEVID(card), rc);
 		QETH_CARD_TEXT_(card, 2, "err%04x", rc);
-		/* fall back to alternative mechanism: */
+		 
 	}
 
 	rc = qeth_setadpparms_change_macaddr(card);
@@ -316,9 +308,7 @@ static int qeth_l2_request_initial_mac(struct qeth_card *card)
 			 CARD_DEVID(card), rc);
 	QETH_CARD_TEXT_(card, 2, "1err%04x", rc);
 
-	/* Fall back once more, but some devices don't support a custom MAC
-	 * address:
-	 */
+	 
 	if (IS_OSM(card) || IS_OSX(card))
 		return (rc) ? rc : -EADDRNOTAVAIL;
 	eth_hw_addr_random(card->dev);
@@ -367,12 +357,12 @@ static int qeth_l2_set_mac_address(struct net_device *dev, void *p)
 	if (!is_valid_ether_addr(addr->sa_data))
 		return -EADDRNOTAVAIL;
 
-	/* don't register the same address twice */
+	 
 	if (ether_addr_equal_64bits(dev->dev_addr, addr->sa_data) &&
 	    card->info.dev_addr_is_registered)
 		return 0;
 
-	/* add the new address, switch over, drop the old */
+	 
 	rc = qeth_l2_send_setmac(card, addr->sa_data);
 	if (rc)
 		return rc;
@@ -425,10 +415,7 @@ static void qeth_l2_set_promisc_mode(struct qeth_card *card)
 	}
 }
 
-/* New MAC address is added to the hash table and marked to be written on card
- * only if there is not in the hash table storage already
- *
-*/
+ 
 static void qeth_l2_add_mac(struct qeth_card *card, struct netdev_hw_addr *ha)
 {
 	u32 mac_hash = get_unaligned((u32 *)(&ha->addr[2]));
@@ -487,7 +474,7 @@ static void qeth_l2_rx_mode_work(struct work_struct *work)
 			}
 			fallthrough;
 		default:
-			/* for next call to set_rx_mode(): */
+			 
 			mac->disp_flag = QETH_DISP_ADDR_DELETE;
 		}
 	}
@@ -533,20 +520,7 @@ static void qeth_l2_set_rx_mode(struct net_device *dev)
 	schedule_work(&card->rx_mode_work);
 }
 
-/**
- *	qeth_l2_pnso() - perform network subchannel operation
- *	@card: qeth_card structure pointer
- *	@oc: Operation Code
- *	@cnc: Boolean Change-Notification Control
- *	@cb: Callback function will be executed for each element
- *		of the address list
- *	@priv: Pointer to pass to the callback function.
- *
- *	Collects network information in a network address list and calls the
- *	callback function for every entry in the list. If "change-notification-
- *	control" is set, further changes in the address list will be reported
- *	via the IPA command.
- */
+ 
 static int qeth_l2_pnso(struct qeth_card *card, u8 oc, int cnc,
 			void (*cb)(void *priv, struct chsc_pnso_naid_l2 *entry),
 			void *priv)
@@ -563,7 +537,7 @@ static int qeth_l2_pnso(struct qeth_card *card, u8 oc, int cnc,
 		return -ENOMEM;
 	do {
 		QETH_CARD_TEXT(card, 2, "PNSO");
-		/* on the first iteration, naihdr.resume_token will be zero */
+		 
 		rc = ccw_device_pnso(ddev, rr, oc, rr->naihdr.resume_token,
 				     cnc);
 		if (rc)
@@ -581,8 +555,8 @@ static int qeth_l2_pnso(struct qeth_card *card, u8 oc, int cnc,
 			 sizeof(struct chsc_pnso_naihdr)) / size;
 
 		if (!isfirstblock && (rr->naihdr.instance != prev_instance)) {
-			/* Inform the caller that they need to scrap */
-			/* the data that was already reported via cb */
+			 
+			 
 			rc = -EAGAIN;
 			break;
 		}
@@ -590,8 +564,8 @@ static int qeth_l2_pnso(struct qeth_card *card, u8 oc, int cnc,
 		prev_instance = rr->naihdr.instance;
 		for (i = 0; i < elems; i++)
 			(*cb)(priv, &rr->entries[i]);
-	} while ((rc == -EBUSY) || (!rc && /* list stored */
-		   /* resume token is non-zero => list incomplete */
+	} while ((rc == -EBUSY) || (!rc &&  
+		    
 		   (rr->naihdr.resume_token.t1 || rr->naihdr.resume_token.t2)));
 
 	if (rc)
@@ -612,18 +586,7 @@ static bool qeth_is_my_net_if_token(struct qeth_card *card,
 		(card->info.chid == token->chid));
 }
 
-/**
- *	qeth_l2_dev2br_fdb_notify() - update fdb of master bridge
- *	@card:	qeth_card structure pointer
- *	@code:	event bitmask: high order bit 0x80 set to
- *				1 - removal of an object
- *				0 - addition of an object
- *			       Object type(s):
- *				0x01 - VLAN, 0x02 - MAC, 0x03 - VLAN and MAC
- *	@token: "network token" structure identifying 'physical' location
- *		of the target
- *	@addr_lnid: structure with MAC address and VLAN ID of the target
- */
+ 
 static void qeth_l2_dev2br_fdb_notify(struct qeth_card *card, u8 code,
 				      struct net_if_token *token,
 				      struct mac_addr_lnid *addr_lnid)
@@ -632,18 +595,18 @@ static void qeth_l2_dev2br_fdb_notify(struct qeth_card *card, u8 code,
 	u8 ntfy_mac[ETH_ALEN];
 
 	ether_addr_copy(ntfy_mac, addr_lnid->mac);
-	/* Ignore VLAN only changes */
+	 
 	if (!(code & IPA_ADDR_CHANGE_CODE_MACADDR))
 		return;
-	/* Ignore mcast entries */
+	 
 	if (is_multicast_ether_addr(ntfy_mac))
 		return;
-	/* Ignore my own addresses */
+	 
 	if (qeth_is_my_net_if_token(card, token))
 		return;
 
 	info.addr = ntfy_mac;
-	/* don't report VLAN IDs */
+	 
 	info.vid = 0;
 	info.added_by_user = false;
 	info.offloaded = true;
@@ -676,17 +639,7 @@ static void qeth_l2_dev2br_an_set_cb(void *priv,
 				  (struct mac_addr_lnid *)&entry->addr_lnid);
 }
 
-/**
- *	qeth_l2_dev2br_an_set() -
- *	Enable or disable 'dev to bridge network address notification'
- *	@card: qeth_card structure pointer
- *	@enable: Enable or disable 'dev to bridge network address notification'
- *
- *	Returns negative errno-compatible error indication or 0 on success.
- *
- *	On enable, emits a series of address notifications for all
- *	currently registered hosts.
- */
+ 
 static int qeth_l2_dev2br_an_set(struct qeth_card *card, bool enable)
 {
 	int rc;
@@ -696,9 +649,7 @@ static int qeth_l2_dev2br_an_set(struct qeth_card *card, bool enable)
 		rc = qeth_l2_pnso(card, PNSO_OC_NET_ADDR_INFO, 1,
 				  qeth_l2_dev2br_an_set_cb, card);
 		if (rc == -EAGAIN)
-			/* address notification enabled, but inconsistent
-			 * addresses reported -> disable address notification
-			 */
+			 
 			qeth_l2_pnso(card, PNSO_OC_NET_ADDR_INFO, 0,
 				     NULL, NULL);
 	} else {
@@ -735,15 +686,7 @@ static bool qeth_l2_must_learn(struct net_device *netdev,
 		 netdev->netdev_ops == &qeth_l2_osa_netdev_ops));
 }
 
-/**
- *	qeth_l2_br2dev_worker() - update local MACs
- *	@work: bridge to device FDB update
- *
- *	Update local MACs of a learning_sync bridgeport so it can receive
- *	messages for a destination port.
- *	In case of an isolated learning_sync port, also update its isolated
- *	siblings.
- */
+ 
 static void qeth_l2_br2dev_worker(struct work_struct *work)
 {
 	struct qeth_l2_br2dev_event_work *br2dev_event_work =
@@ -762,7 +705,7 @@ static void qeth_l2_br2dev_worker(struct work_struct *work)
 	QETH_CARD_TEXT_(card, 4, "ma%012llx", ether_addr_to_u64(addr));
 
 	rcu_read_lock();
-	/* Verify preconditions are still valid: */
+	 
 	if (!netif_is_bridge_port(lsyncdev) ||
 	    brdev != netdev_master_upper_dev_get_rcu(lsyncdev))
 		goto unlock;
@@ -770,7 +713,7 @@ static void qeth_l2_br2dev_worker(struct work_struct *work)
 		goto unlock;
 
 	if (br_port_flag_is_set(lsyncdev, BR_ISOLATED)) {
-		/* Update lsyncdev and its isolated sibling(s): */
+		 
 		iter = &brdev->adj_list.lower;
 		lowerdev = netdev_next_lower_dev_rcu(brdev, &iter);
 		while (lowerdev) {
@@ -837,7 +780,7 @@ static int qeth_l2_br2dev_queue_work(struct net_device *brdev,
 	ether_addr_copy(worker_data->addr, addr);
 
 	card = lsyncdev->ml_priv;
-	/* Take a reference on the sw port devices and the bridge */
+	 
 	dev_hold(brdev);
 	dev_hold(lsyncdev);
 	dev_hold(dstdev);
@@ -845,7 +788,7 @@ static int qeth_l2_br2dev_queue_work(struct net_device *brdev,
 	return 0;
 }
 
-/* Called under rtnl_lock */
+ 
 static int qeth_l2_switchdev_event(struct notifier_block *unused,
 				   unsigned long event, void *ptr)
 {
@@ -892,7 +835,7 @@ static struct notifier_block qeth_l2_sw_notifier = {
 
 static refcount_t qeth_l2_switchdev_notify_refcnt;
 
-/* Called under rtnl_lock */
+ 
 static void qeth_l2_br2dev_get(void)
 {
 	int rc;
@@ -912,7 +855,7 @@ static void qeth_l2_br2dev_get(void)
 		       qeth_l2_switchdev_notify_refcnt.refs.counter);
 }
 
-/* Called under rtnl_lock */
+ 
 static void qeth_l2_br2dev_put(void)
 {
 	int rc;
@@ -940,7 +883,7 @@ static int qeth_l2_bridge_getlink(struct sk_buff *skb, u32 pid, u32 seq,
 	struct qeth_card *card = dev->ml_priv;
 	u16 mode = BRIDGE_MODE_UNDEF;
 
-	/* Do not even show qeth devs that cannot do bridge_setlink */
+	 
 	if (!priv->brport_hw_features || !netif_device_present(dev) ||
 	    qeth_bridgeport_is_in_use(card))
 		return -EOPNOTSUPP;
@@ -955,15 +898,7 @@ static const struct nla_policy qeth_brport_policy[IFLA_BRPORT_MAX + 1] = {
 	[IFLA_BRPORT_LEARNING_SYNC]	= { .type = NLA_U8 },
 };
 
-/**
- *	qeth_l2_bridge_setlink() - set bridgeport attributes
- *	@dev: netdevice
- *	@nlh: netlink message header
- *	@flags: bridge flags (here: BRIDGE_FLAGS_SELF)
- *	@extack: extended ACK report struct
- *
- *	Called under rtnl_lock
- */
+ 
 static int qeth_l2_bridge_setlink(struct net_device *dev, struct nlmsghdr *nlh,
 				  u16 flags, struct netlink_ext_ack *extack)
 {
@@ -1018,7 +953,7 @@ static int qeth_l2_bridge_setlink(struct net_device *dev, struct nlmsghdr *nlh,
 		return 0;
 
 	mutex_lock(&card->sbp_lock);
-	/* do not change anything if BridgePort is enabled */
+	 
 	if (qeth_bridgeport_is_in_use(card)) {
 		NL_SET_ERR_MSG(extack, "n/a (BridgePort)");
 		rc = -EBUSY;
@@ -1102,7 +1037,7 @@ static int qeth_l2_setup_netdev(struct qeth_card *card)
 
 	if (IS_OSD(card) && !IS_VM_NIC(card)) {
 		card->dev->features |= NETIF_F_SG;
-		/* OSA 3S and earlier has no RX/TX support */
+		 
 		if (qeth_is_supported(card, IPA_OUTBOUND_CHECKSUM)) {
 			card->dev->hw_features |= NETIF_F_IP_CSUM;
 			card->dev->vlan_features |= NETIF_F_IP_CSUM;
@@ -1139,11 +1074,11 @@ static int qeth_l2_setup_netdev(struct qeth_card *card)
 
 static void qeth_l2_trace_features(struct qeth_card *card)
 {
-	/* Set BridgePort features */
+	 
 	QETH_CARD_TEXT(card, 2, "featuSBP");
 	QETH_CARD_HEX(card, 2, &card->options.sbp.supported_funcs,
 		      sizeof(card->options.sbp.supported_funcs));
-	/* VNIC Characteristics features */
+	 
 	QETH_CARD_TEXT(card, 2, "feaVNICC");
 	QETH_CARD_HEX(card, 2, &card->options.vnicc.sup_chars,
 		      sizeof(card->options.vnicc.sup_chars));
@@ -1153,9 +1088,9 @@ static void qeth_l2_setup_bridgeport_attrs(struct qeth_card *card)
 {
 	if (!card->options.sbp.reflect_promisc &&
 	    card->options.sbp.role != QETH_SBP_ROLE_NONE) {
-		/* Conditional to avoid spurious error messages */
+		 
 		qeth_bridgeport_setrole(card, card->options.sbp.role);
-		/* Let the callback function refresh the stored role value. */
+		 
 		qeth_bridgeport_query_ports(card, &card->options.sbp.role,
 					    NULL);
 	}
@@ -1165,13 +1100,7 @@ static void qeth_l2_setup_bridgeport_attrs(struct qeth_card *card)
 	}
 }
 
-/**
- *	qeth_l2_detect_dev2br_support() -
- *	Detect whether this card supports 'dev to bridge fdb network address
- *	change notification' and thus can support the learning_sync bridgeport
- *	attribute
- *	@card: qeth_card structure pointer
- */
+ 
 static void qeth_l2_detect_dev2br_support(struct qeth_card *card)
 {
 	struct qeth_priv *priv = netdev_priv(card->dev);
@@ -1181,7 +1110,7 @@ static void qeth_l2_detect_dev2br_support(struct qeth_card *card)
 	if (!IS_IQD(card))
 		return;
 
-	/* dev2br requires valid cssid,iid,chid */
+	 
 	dev2br_supported = card->info.ids_valid &&
 			   css_general_characteristics.enarf;
 	QETH_CARD_TEXT_(card, 2, "D2Bsup%02x", dev2br_supported);
@@ -1202,7 +1131,7 @@ static void qeth_l2_enable_brport_features(struct qeth_card *card)
 			qeth_l2_set_pnso_mode(card, QETH_PNSO_ADDR_INFO);
 			rc = qeth_l2_dev2br_an_set(card, true);
 			if (rc == -EAGAIN) {
-				/* Recoverable error, retry once */
+				 
 				qeth_l2_set_pnso_mode(card, QETH_PNSO_NONE);
 				qeth_l2_dev2br_fdb_flush(card);
 				qeth_l2_set_pnso_mode(card, QETH_PNSO_ADDR_INFO);
@@ -1224,25 +1153,11 @@ static void qeth_l2_enable_brport_features(struct qeth_card *card)
 	}
 }
 
-/* SETBRIDGEPORT support, async notifications */
+ 
 
 enum qeth_an_event_type {anev_reg_unreg, anev_abort, anev_reset};
 
-/**
- * qeth_bridge_emit_host_event() - bridgeport address change notification
- * @card:  qeth_card structure pointer, for udev events.
- * @evtype:  "normal" register/unregister, or abort, or reset. For abort
- *	      and reset token and addr_lnid are unused and may be NULL.
- * @code:  event bitmask: high order bit 0x80 value 1 means removal of an
- *			  object, 0 - addition of an object.
- *			  0x01 - VLAN, 0x02 - MAC, 0x03 - VLAN and MAC.
- * @token: "network token" structure identifying physical address of the port.
- * @addr_lnid: pointer to structure with MAC address and VLAN ID.
- *
- * This function is called when registrations and deregistrations are
- * reported by the hardware, and also when notifications are enabled -
- * for all currently registered addresses.
- */
+ 
 static void qeth_bridge_emit_host_event(struct qeth_card *card,
 					enum qeth_an_event_type evtype,
 					u8 code,
@@ -1354,7 +1269,7 @@ static void qeth_bridge_state_change(struct qeth_card *card,
 	}
 	INIT_WORK(&data->worker, qeth_bridge_state_change_worker);
 	data->card = card;
-	/* Information for the local port: */
+	 
 	data->role = qports->entry[0].role;
 	data->state = qports->entry[0].state;
 
@@ -1386,7 +1301,7 @@ static void qeth_l2_dev2br_worker(struct work_struct *work)
 		goto free;
 
 	if (data->ac_event.lost_event_mask) {
-		/* Potential re-config in progress, try again later: */
+		 
 		if (!rtnl_trylock()) {
 			queue_delayed_work(card->event_wq, dwork,
 					   msecs_to_jiffies(100));
@@ -1401,25 +1316,17 @@ static void qeth_l2_dev2br_worker(struct work_struct *work)
 		QETH_DBF_MESSAGE(3,
 				 "Address change notification overflow on device %x\n",
 				 CARD_DEVID(card));
-		/* Card fdb and bridge fdb are out of sync, card has stopped
-		 * notifications (no need to drain_workqueue). Purge all
-		 * 'extern_learn' entries from the parent bridge and restart
-		 * the notifications.
-		 */
+		 
 		qeth_l2_dev2br_fdb_flush(card);
 		rc = qeth_l2_dev2br_an_set(card, true);
 		if (rc) {
-			/* TODO: if we want to retry after -EAGAIN, be
-			 * aware there could be stale entries in the
-			 * workqueue now, that need to be drained.
-			 * For now we give up:
-			 */
+			 
 			netdev_err(card->dev,
 				   "bridge learning_sync failed to recover: %d\n",
 				   rc);
 			WRITE_ONCE(card->info.pnso_mode,
 				   QETH_PNSO_NONE);
-			/* To remove fdb entries reported by an_set: */
+			 
 			qeth_l2_dev2br_fdb_flush(card);
 			priv->brport_features ^= BR_LEARNING_SYNC;
 		} else {
@@ -1460,7 +1367,7 @@ static void qeth_addr_change_event_worker(struct work_struct *work)
 		goto free;
 
 	if (data->ac_event.lost_event_mask) {
-		/* Potential re-config in progress, try again later: */
+		 
 		if (!mutex_trylock(&card->sbp_lock)) {
 			queue_delayed_work(card->event_wq, dwork,
 					   msecs_to_jiffies(100));
@@ -1536,7 +1443,7 @@ static void qeth_addr_change_event(struct qeth_card *card,
 	queue_delayed_work(card->event_wq, &data->dwork, 0);
 }
 
-/* SETBRIDGEPORT support; sending commands */
+ 
 
 struct _qeth_sbp_cbctl {
 	union {
@@ -1572,7 +1479,7 @@ static int qeth_bridgeport_makerc(struct qeth_card *card,
 			break;
 		case IPA_RC_SBP_OSA_NOT_CONFIGURED:
 		case IPA_RC_SBP_IQD_NOT_CONFIGURED:
-			rc = -ENODEV; /* maybe not the best code here? */
+			rc = -ENODEV;  
 			dev_err(&card->gdev->dev,
 	"The device is not configured as a Bridge Port\n");
 			break;
@@ -1687,13 +1594,7 @@ static int qeth_bridgeport_query_support_cb(struct qeth_card *card,
 	return 0;
 }
 
-/**
- * qeth_bridgeport_query_support() - store bitmask of supported subfunctions.
- * @card:			     qeth_card structure pointer.
- *
- * Sets bitmask of supported setbridgeport subfunctions in the qeth_card
- * strucutre: card->options.sbp.supported_funcs.
- */
+ 
 static void qeth_bridgeport_query_support(struct qeth_card *card)
 {
 	struct qeth_cmd_buffer *iob;
@@ -1732,7 +1633,7 @@ static int qeth_bridgeport_query_ports_cb(struct qeth_card *card,
 		QETH_CARD_TEXT_(card, 2, "SBPs%04x", qports->entry_length);
 		return -EINVAL;
 	}
-	/* first entry contains the state of the local port */
+	 
 	if (qports->num_entries > 0) {
 		if (cbctl->data.qports.role)
 			*cbctl->data.qports.role = qports->entry[0].role;
@@ -1742,16 +1643,7 @@ static int qeth_bridgeport_query_ports_cb(struct qeth_card *card,
 	return 0;
 }
 
-/**
- * qeth_bridgeport_query_ports() - query local bridgeport status.
- * @card:			   qeth_card structure pointer.
- * @role:   Role of the port: 0-none, 1-primary, 2-secondary.
- * @state:  State of the port: 0-inactive, 1-standby, 2-active.
- *
- * Returns negative errno-compatible error indication or 0 on success.
- *
- * 'role' and 'state' are not updated in case of hardware operation failure.
- */
+ 
 int qeth_bridgeport_query_ports(struct qeth_card *card,
 	enum qeth_sbp_roles *role, enum qeth_sbp_states *state)
 {
@@ -1785,13 +1677,7 @@ static int qeth_bridgeport_set_cb(struct qeth_card *card,
 	return qeth_bridgeport_makerc(card, cmd);
 }
 
-/**
- * qeth_bridgeport_setrole() - Assign primary role to the port.
- * @card:		       qeth_card structure pointer.
- * @role:		       Role to assign.
- *
- * Returns negative errno-compatible error indication or 0 on success.
- */
+ 
 int qeth_bridgeport_setrole(struct qeth_card *card, enum qeth_sbp_roles role)
 {
 	struct qeth_cmd_buffer *iob;
@@ -1836,16 +1722,7 @@ static void qeth_bridgeport_an_set_cb(void *priv,
 				    (struct mac_addr_lnid *)&entry->addr_lnid);
 }
 
-/**
- * qeth_bridgeport_an_set() - Enable or disable bridgeport address notification
- * @card:		      qeth_card structure pointer.
- * @enable:		      0 - disable, non-zero - enable notifications
- *
- * Returns negative errno-compatible error indication or 0 on success.
- *
- * On enable, emits a series of address notifications udev events for all
- * currently registered hosts.
- */
+ 
 int qeth_bridgeport_an_set(struct qeth_card *card, int enable)
 {
 	int rc;
@@ -1867,9 +1744,9 @@ int qeth_bridgeport_an_set(struct qeth_card *card, int enable)
 	return rc;
 }
 
-/* VNIC Characteristics support */
+ 
 
-/* handle VNICC IPA command return codes; convert to error codes */
+ 
 static int qeth_l2_vnicc_makerc(struct qeth_card *card, u16 ipa_rc)
 {
 	int rc;
@@ -1901,7 +1778,7 @@ static int qeth_l2_vnicc_makerc(struct qeth_card *card, u16 ipa_rc)
 	return rc;
 }
 
-/* generic VNICC request call back */
+ 
 static int qeth_l2_vnicc_request_cb(struct qeth_card *card,
 				    struct qeth_reply *reply,
 				    unsigned long data)
@@ -1913,7 +1790,7 @@ static int qeth_l2_vnicc_request_cb(struct qeth_card *card,
 	QETH_CARD_TEXT(card, 2, "vniccrcb");
 	if (cmd->hdr.return_code)
 		return qeth_l2_vnicc_makerc(card, cmd->hdr.return_code);
-	/* return results to caller */
+	 
 	card->options.vnicc.sup_chars = rep->vnicc_cmds.supported;
 	card->options.vnicc.cur_chars = rep->vnicc_cmds.enabled;
 
@@ -1944,7 +1821,7 @@ static struct qeth_cmd_buffer *qeth_l2_vnicc_build_cmd(struct qeth_card *card,
 	return iob;
 }
 
-/* VNICC query VNIC characteristics request */
+ 
 static int qeth_l2_vnicc_query_chars(struct qeth_card *card)
 {
 	struct qeth_cmd_buffer *iob;
@@ -1957,7 +1834,7 @@ static int qeth_l2_vnicc_query_chars(struct qeth_card *card)
 	return qeth_send_ipa_cmd(card, iob, qeth_l2_vnicc_request_cb, NULL);
 }
 
-/* VNICC query sub commands request */
+ 
 static int qeth_l2_vnicc_query_cmds(struct qeth_card *card, u32 vnic_char,
 				    u32 *sup_cmds)
 {
@@ -1974,7 +1851,7 @@ static int qeth_l2_vnicc_query_cmds(struct qeth_card *card, u32 vnic_char,
 	return qeth_send_ipa_cmd(card, iob, qeth_l2_vnicc_request_cb, sup_cmds);
 }
 
-/* VNICC enable/disable characteristic request */
+ 
 static int qeth_l2_vnicc_set_char(struct qeth_card *card, u32 vnic_char,
 				      u32 cmd)
 {
@@ -1990,7 +1867,7 @@ static int qeth_l2_vnicc_set_char(struct qeth_card *card, u32 vnic_char,
 	return qeth_send_ipa_cmd(card, iob, qeth_l2_vnicc_request_cb, NULL);
 }
 
-/* VNICC get/set timeout for characteristic request */
+ 
 static int qeth_l2_vnicc_getset_timeout(struct qeth_card *card, u32 vnicc,
 					u32 cmd, u32 *timeout)
 {
@@ -2012,7 +1889,7 @@ static int qeth_l2_vnicc_getset_timeout(struct qeth_card *card, u32 vnicc,
 	return qeth_send_ipa_cmd(card, iob, qeth_l2_vnicc_request_cb, timeout);
 }
 
-/* recover user timeout setting */
+ 
 static bool qeth_l2_vnicc_recover_timeout(struct qeth_card *card, u32 vnicc,
 					  u32 *timeout)
 {
@@ -2025,7 +1902,7 @@ static bool qeth_l2_vnicc_recover_timeout(struct qeth_card *card, u32 vnicc,
 	return true;
 }
 
-/* set current VNICC flag state; called from sysfs store function */
+ 
 int qeth_l2_vnicc_set_state(struct qeth_card *card, u32 vnicc, bool state)
 {
 	int rc = 0;
@@ -2033,7 +1910,7 @@ int qeth_l2_vnicc_set_state(struct qeth_card *card, u32 vnicc, bool state)
 
 	QETH_CARD_TEXT(card, 2, "vniccsch");
 
-	/* check if characteristic and enable/disable are supported */
+	 
 	if (!(card->options.vnicc.sup_chars & vnicc) ||
 	    !(card->options.vnicc.set_char_sup & vnicc))
 		return -EOPNOTSUPP;
@@ -2041,7 +1918,7 @@ int qeth_l2_vnicc_set_state(struct qeth_card *card, u32 vnicc, bool state)
 	if (qeth_bridgeport_is_in_use(card))
 		return -EBUSY;
 
-	/* set enable/disable command and store wanted characteristic */
+	 
 	if (state) {
 		cmd = IPA_VNICC_ENABLE;
 		card->options.vnicc.wanted_chars |= vnicc;
@@ -2050,11 +1927,11 @@ int qeth_l2_vnicc_set_state(struct qeth_card *card, u32 vnicc, bool state)
 		card->options.vnicc.wanted_chars &= ~vnicc;
 	}
 
-	/* do we need to do anything? */
+	 
 	if (card->options.vnicc.cur_chars == card->options.vnicc.wanted_chars)
 		return rc;
 
-	/* if card is not ready, simply stop here */
+	 
 	if (!qeth_card_hw_is_reachable(card)) {
 		if (state)
 			card->options.vnicc.cur_chars |= vnicc;
@@ -2068,7 +1945,7 @@ int qeth_l2_vnicc_set_state(struct qeth_card *card, u32 vnicc, bool state)
 		card->options.vnicc.wanted_chars =
 			card->options.vnicc.cur_chars;
 	else {
-		/* successful online VNICC change; handle special cases */
+		 
 		if (state && vnicc == QETH_VNICC_RX_BCAST)
 			card->options.vnicc.rx_bcast_enabled = true;
 		if (!state && vnicc == QETH_VNICC_LEARNING)
@@ -2079,21 +1956,21 @@ int qeth_l2_vnicc_set_state(struct qeth_card *card, u32 vnicc, bool state)
 	return rc;
 }
 
-/* get current VNICC flag state; called from sysfs show function */
+ 
 int qeth_l2_vnicc_get_state(struct qeth_card *card, u32 vnicc, bool *state)
 {
 	int rc = 0;
 
 	QETH_CARD_TEXT(card, 2, "vniccgch");
 
-	/* check if characteristic is supported */
+	 
 	if (!(card->options.vnicc.sup_chars & vnicc))
 		return -EOPNOTSUPP;
 
 	if (qeth_bridgeport_is_in_use(card))
 		return -EBUSY;
 
-	/* if card is ready, query current VNICC state */
+	 
 	if (qeth_card_hw_is_reachable(card))
 		rc = qeth_l2_vnicc_query_chars(card);
 
@@ -2101,16 +1978,14 @@ int qeth_l2_vnicc_get_state(struct qeth_card *card, u32 vnicc, bool *state)
 	return rc;
 }
 
-/* set VNICC timeout; called from sysfs store function. Currently, only learning
- * supports timeout
- */
+ 
 int qeth_l2_vnicc_set_timeout(struct qeth_card *card, u32 timeout)
 {
 	int rc = 0;
 
 	QETH_CARD_TEXT(card, 2, "vniccsto");
 
-	/* check if characteristic and set_timeout are supported */
+	 
 	if (!(card->options.vnicc.sup_chars & QETH_VNICC_LEARNING) ||
 	    !(card->options.vnicc.getset_timeout_sup & QETH_VNICC_LEARNING))
 		return -EOPNOTSUPP;
@@ -2118,17 +1993,17 @@ int qeth_l2_vnicc_set_timeout(struct qeth_card *card, u32 timeout)
 	if (qeth_bridgeport_is_in_use(card))
 		return -EBUSY;
 
-	/* do we need to do anything? */
+	 
 	if (card->options.vnicc.learning_timeout == timeout)
 		return rc;
 
-	/* if card is not ready, simply store the value internally and return */
+	 
 	if (!qeth_card_hw_is_reachable(card)) {
 		card->options.vnicc.learning_timeout = timeout;
 		return rc;
 	}
 
-	/* send timeout value to card; if successful, store value internally */
+	 
 	rc = qeth_l2_vnicc_getset_timeout(card, QETH_VNICC_LEARNING,
 					  IPA_VNICC_SET_TIMEOUT, &timeout);
 	if (!rc)
@@ -2137,16 +2012,14 @@ int qeth_l2_vnicc_set_timeout(struct qeth_card *card, u32 timeout)
 	return rc;
 }
 
-/* get current VNICC timeout; called from sysfs show function. Currently, only
- * learning supports timeout
- */
+ 
 int qeth_l2_vnicc_get_timeout(struct qeth_card *card, u32 *timeout)
 {
 	int rc = 0;
 
 	QETH_CARD_TEXT(card, 2, "vniccgto");
 
-	/* check if characteristic and get_timeout are supported */
+	 
 	if (!(card->options.vnicc.sup_chars & QETH_VNICC_LEARNING) ||
 	    !(card->options.vnicc.getset_timeout_sup & QETH_VNICC_LEARNING))
 		return -EOPNOTSUPP;
@@ -2154,7 +2027,7 @@ int qeth_l2_vnicc_get_timeout(struct qeth_card *card, u32 *timeout)
 	if (qeth_bridgeport_is_in_use(card))
 		return -EBUSY;
 
-	/* if card is ready, get timeout. Otherwise, just return stored value */
+	 
 	*timeout = card->options.vnicc.learning_timeout;
 	if (qeth_card_hw_is_reachable(card))
 		rc = qeth_l2_vnicc_getset_timeout(card, QETH_VNICC_LEARNING,
@@ -2164,14 +2037,12 @@ int qeth_l2_vnicc_get_timeout(struct qeth_card *card, u32 *timeout)
 	return rc;
 }
 
-/* check if VNICC is currently enabled */
+ 
 static bool _qeth_l2_vnicc_is_in_use(struct qeth_card *card)
 {
 	if (!card->options.vnicc.sup_chars)
 		return false;
-	/* default values are only OK if rx_bcast was not enabled by user
-	 * or the card is offline.
-	 */
+	 
 	if (card->options.vnicc.cur_chars == QETH_VNICC_DEFAULT) {
 		if (!card->options.vnicc.rx_bcast_enabled ||
 		    !qeth_card_hw_is_reachable(card))
@@ -2180,13 +2051,7 @@ static bool _qeth_l2_vnicc_is_in_use(struct qeth_card *card)
 	return true;
 }
 
-/**
- *	qeth_bridgeport_allowed - are any qeth_bridgeport functions allowed?
- *	@card: qeth_card structure pointer
- *
- *	qeth_bridgeport functionality is mutually exclusive with usage of the
- *	VNIC Characteristics and dev2br address notifications
- */
+ 
 bool qeth_bridgeport_allowed(struct qeth_card *card)
 {
 	struct qeth_priv *priv = netdev_priv(card->dev);
@@ -2195,7 +2060,7 @@ bool qeth_bridgeport_allowed(struct qeth_card *card)
 		!(priv->brport_features & BR_LEARNING_SYNC));
 }
 
-/* recover user characteristic setting */
+ 
 static bool qeth_l2_vnicc_recover_char(struct qeth_card *card, u32 vnicc,
 				       bool enable)
 {
@@ -2210,7 +2075,7 @@ static bool qeth_l2_vnicc_recover_char(struct qeth_card *card, u32 vnicc,
 	return true;
 }
 
-/* (re-)initialize VNICC */
+ 
 static void qeth_l2_vnicc_init(struct qeth_card *card)
 {
 	u32 *timeout = &card->options.vnicc.learning_timeout;
@@ -2220,20 +2085,20 @@ static void qeth_l2_vnicc_init(struct qeth_card *card)
 	u32 sup_cmds, vnicc;
 
 	QETH_CARD_TEXT(card, 2, "vniccini");
-	/* reset rx_bcast */
+	 
 	card->options.vnicc.rx_bcast_enabled = 0;
-	/* initial query and storage of VNIC characteristics */
+	 
 	if (qeth_l2_vnicc_query_chars(card)) {
 		if (card->options.vnicc.wanted_chars != QETH_VNICC_DEFAULT ||
 		    *timeout != QETH_VNICC_DEFAULT_TIMEOUT)
 			dev_err(&card->gdev->dev, "Configuring the VNIC characteristics failed\n");
-		/* fail quietly if user didn't change the default config */
+		 
 		card->options.vnicc.sup_chars = 0;
 		card->options.vnicc.cur_chars = 0;
 		card->options.vnicc.wanted_chars = QETH_VNICC_DEFAULT;
 		return;
 	}
-	/* get supported commands for each supported characteristic */
+	 
 	chars_tmp = card->options.vnicc.sup_chars;
 	chars_len = sizeof(card->options.vnicc.sup_chars) * BITS_PER_BYTE;
 	for_each_set_bit(i, &chars_tmp, chars_len) {
@@ -2253,10 +2118,10 @@ static void qeth_l2_vnicc_init(struct qeth_card *card)
 		else
 			card->options.vnicc.set_char_sup &= ~vnicc;
 	}
-	/* enforce assumed default values and recover settings, if changed  */
+	 
 	error |= qeth_l2_vnicc_recover_timeout(card, QETH_VNICC_LEARNING,
 					       timeout);
-	/* Change chars, if necessary  */
+	 
 	chars_tmp = card->options.vnicc.wanted_chars ^
 		    card->options.vnicc.cur_chars;
 	chars_len = sizeof(card->options.vnicc.wanted_chars) * BITS_PER_BYTE;
@@ -2269,17 +2134,17 @@ static void qeth_l2_vnicc_init(struct qeth_card *card)
 		dev_err(&card->gdev->dev, "Configuring the VNIC characteristics failed\n");
 }
 
-/* configure default values of VNIC characteristics */
+ 
 static void qeth_l2_vnicc_set_defaults(struct qeth_card *card)
 {
-	/* characteristics values */
+	 
 	card->options.vnicc.sup_chars = QETH_VNICC_ALL;
 	card->options.vnicc.cur_chars = QETH_VNICC_DEFAULT;
 	card->options.vnicc.learning_timeout = QETH_VNICC_DEFAULT_TIMEOUT;
-	/* supported commands */
+	 
 	card->options.vnicc.set_char_sup = QETH_VNICC_ALL;
 	card->options.vnicc.getset_timeout_sup = QETH_VNICC_LEARNING;
-	/* settings wanted by users */
+	 
 	card->options.vnicc.wanted_chars = QETH_VNICC_DEFAULT;
 }
 
@@ -2351,12 +2216,12 @@ static int qeth_l2_set_online(struct qeth_card *card, bool carrier_ok)
 
 	qeth_l2_register_dev_addr(card);
 
-	/* for the rx_bcast characteristic, init VNICC after setmac */
+	 
 	qeth_l2_vnicc_init(card);
 
 	qeth_l2_trace_features(card);
 
-	/* softsetup */
+	 
 	QETH_CARD_TEXT(card, 2, "softsetp");
 
 	card->state = CARD_STATE_SOFTSETUP;
@@ -2391,7 +2256,7 @@ static int qeth_l2_set_online(struct qeth_card *card, bool carrier_ok)
 		if (netif_running(dev)) {
 			local_bh_disable();
 			napi_schedule(&card->napi);
-			/* kick-start the NAPI softirq: */
+			 
 			local_bh_enable();
 			qeth_l2_set_rx_mode(dev);
 		}
@@ -2421,7 +2286,7 @@ static void qeth_l2_set_offline(struct qeth_card *card)
 		qeth_l2_dev2br_fdb_flush(card);
 }
 
-/* Returns zero if the command is successfully "consumed" */
+ 
 static int qeth_l2_control_event(struct qeth_card *card,
 				 struct qeth_ipa_cmd *cmd)
 {

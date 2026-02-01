@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2000-2001,2005 Silicon Graphics, Inc.
- * All Rights Reserved.
- */
+
+ 
 #include "xfs.h"
 #include "xfs_shared.h"
 #include "xfs_format.h"
@@ -46,7 +43,7 @@ static unsigned int xfs_errortag_random_default[] = {
 	XFS_RANDOM_REFCOUNT_FINISH_ONE,
 	XFS_RANDOM_BMAP_FINISH_ONE,
 	XFS_RANDOM_AG_RESV_CRITICAL,
-	0, /* XFS_RANDOM_DROP_WRITES has been removed */
+	0,  
 	XFS_RANDOM_LOG_BAD_CRC,
 	XFS_RANDOM_LOG_ITEM_PIN,
 	XFS_RANDOM_BUF_LRU_REF,
@@ -267,7 +264,7 @@ xfs_errortag_valid(
 	if (error_tag >= XFS_ERRTAG_MAX)
 		return false;
 
-	/* Error out removed injection types */
+	 
 	if (error_tag == XFS_ERRTAG_DROP_WRITES)
 		return false;
 	return true;
@@ -296,14 +293,7 @@ xfs_errortag_test(
 {
 	unsigned int		randfactor;
 
-	/*
-	 * To be able to use error injection anywhere, we need to ensure error
-	 * injection mechanism is already initialized.
-	 *
-	 * Code paths like I/O completion can be called before the
-	 * initialization is complete, but be able to inject errors in such
-	 * places is still useful.
-	 */
+	 
 	if (!mp->m_errortag)
 		return false;
 
@@ -365,7 +355,7 @@ xfs_errortag_clearall(
 	memset(mp->m_errortag, 0, sizeof(unsigned int) * XFS_ERRTAG_MAX);
 	return 0;
 }
-#endif /* DEBUG */
+#endif  
 
 void
 xfs_error_report(
@@ -402,13 +392,7 @@ xfs_corruption_error(
 	xfs_alert(mp, "Corruption detected. Unmount and run xfs_repair");
 }
 
-/*
- * Complain about the kinds of metadata corruption that we can't detect from a
- * verifier, such as incorrect inter-block relationship data.  Does not set
- * bp->b_error.
- *
- * Call xfs_buf_mark_corrupt, not this function.
- */
+ 
 void
 xfs_buf_corruption_error(
 	struct xfs_buf		*bp,
@@ -426,10 +410,7 @@ xfs_buf_corruption_error(
 		xfs_stack_trace();
 }
 
-/*
- * Warnings specifically for verifier errors.  Differentiate CRC vs. invalid
- * values, and omit the stack trace unless the error level is tuned high.
- */
+ 
 void
 xfs_buf_verifier_error(
 	struct xfs_buf		*bp,
@@ -464,10 +445,7 @@ xfs_buf_verifier_error(
 		xfs_stack_trace();
 }
 
-/*
- * Warnings specifically for verifier errors.  Differentiate CRC vs. invalid
- * values, and omit the stack trace unless the error level is tuned high.
- */
+ 
 void
 xfs_verifier_error(
 	struct xfs_buf		*bp,
@@ -478,10 +456,7 @@ xfs_verifier_error(
 			XFS_CORRUPTION_DUMP_LEN, failaddr);
 }
 
-/*
- * Warnings for inode corruption problems.  Don't bother with the stack
- * trace unless the error level is turned up high.
- */
+ 
 void
 xfs_inode_verifier_error(
 	struct xfs_inode	*ip,

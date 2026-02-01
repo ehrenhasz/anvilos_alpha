@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Samsung S3C64XX/S5PC1XX OneNAND driver
- *
- *  Copyright © 2008-2010 Samsung Electronics
- *  Kyungmin Park <kyungmin.park@samsung.com>
- *  Marek Szyprowski <m.szyprowski@samsung.com>
- *
- * Implementation:
- *	S3C64XX: emulate the pseudo BufferRAM
- *	S5PC110: use DMA
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/platform_device.h>
@@ -62,7 +52,7 @@ enum soc_type {
 #define S3C6410_FPA_SHIFT		6
 #define S3C6410_FSA_SHIFT		4
 
-/* S5PC110 specific definitions */
+ 
 #define S5PC110_DMA_SRC_ADDR		0x400
 #define S5PC110_DMA_SRC_CFG		0x404
 #define S5PC110_DMA_DST_ADDR		0x408
@@ -207,9 +197,9 @@ static void s3c_onenand_reset(void)
 	stat = s3c_read_reg(INT_ERR_STAT_OFFSET);
 	s3c_write_reg(stat, INT_ERR_ACK_OFFSET);
 
-	/* Clear interrupt */
+	 
 	s3c_write_reg(0x0, INT_ERR_ACK_OFFSET);
-	/* Clear the ECC status */
+	 
 	s3c_write_reg(0x0, ECC_ERR_STAT_OFFSET);
 }
 
@@ -221,7 +211,7 @@ static unsigned short s3c_onenand_readw(void __iomem *addr)
 	int word_addr = reg >> 1;
 	int value;
 
-	/* It's used for probing time */
+	 
 	switch (reg) {
 	case ONENAND_REG_MANUFACTURER_ID:
 		return s3c_read_reg(MANUFACT_ID_OFFSET);
@@ -236,7 +226,7 @@ static unsigned short s3c_onenand_readw(void __iomem *addr)
 	case ONENAND_REG_SYS_CFG1:
 		return s3c_read_reg(MEM_CFG_OFFSET);
 
-	/* Used at unlock all status */
+	 
 	case ONENAND_REG_CTRL_STATUS:
 		return 0;
 
@@ -247,7 +237,7 @@ static unsigned short s3c_onenand_readw(void __iomem *addr)
 		break;
 	}
 
-	/* BootRAM access control */
+	 
 	if ((unsigned long)addr < ONENAND_DATARAM && onenand->bootram_command) {
 		if (word_addr == 0)
 			return s3c_read_reg(MANUFACT_ID_OFFSET);
@@ -270,7 +260,7 @@ static void s3c_onenand_writew(unsigned short value, void __iomem *addr)
 	unsigned int reg = addr - this->base;
 	unsigned int word_addr = reg >> 1;
 
-	/* It's used for probing time */
+	 
 	switch (reg) {
 	case ONENAND_REG_SYS_CFG1:
 		s3c_write_reg(value, MEM_CFG_OFFSET);
@@ -280,7 +270,7 @@ static void s3c_onenand_writew(unsigned short value, void __iomem *addr)
 	case ONENAND_REG_START_ADDRESS2:
 		return;
 
-	/* Lock/lock-tight/unlock/unlock_all */
+	 
 	case ONENAND_REG_START_BLOCK_ADDRESS:
 		return;
 
@@ -288,7 +278,7 @@ static void s3c_onenand_writew(unsigned short value, void __iomem *addr)
 		break;
 	}
 
-	/* BootRAM access control */
+	 
 	if ((unsigned long)addr < ONENAND_DATARAM) {
 		if (value == ONENAND_CMD_READID) {
 			onenand->bootram_command = 1;
@@ -331,7 +321,7 @@ static int s3c_onenand_wait(struct mtd_info *mtd, int state)
 		break;
 	}
 
-	/* The 20 msec is enough */
+	 
 	timeout = jiffies + msecs_to_jiffies(20);
 	while (time_before(jiffies, timeout)) {
 		stat = s3c_read_reg(INT_ERR_STAT_OFFSET);
@@ -341,15 +331,11 @@ static int s3c_onenand_wait(struct mtd_info *mtd, int state)
 		if (state != FL_READING)
 			cond_resched();
 	}
-	/* To get correct interrupt status in timeout case */
+	 
 	stat = s3c_read_reg(INT_ERR_STAT_OFFSET);
 	s3c_write_reg(stat, INT_ERR_ACK_OFFSET);
 
-	/*
-	 * In the Spec. it checks the controller status first
-	 * However if you get the correct information in case of
-	 * power off recovery (POR) test, it should read ECC status first
-	 */
+	 
 	if (stat & LOAD_CMP) {
 		ecc = s3c_read_reg(ECC_ERR_STAT_OFFSET);
 		if (ecc & ONENAND_ECC_4BIT_UNCORRECTABLE) {
@@ -403,9 +389,7 @@ static int s3c_onenand_command(struct mtd_info *mtd, int cmd, loff_t addr,
 
 	index = ONENAND_CURRENT_BUFFERRAM(this);
 
-	/*
-	 * Emulate Two BufferRAMs and access with 4 bytes pointer
-	 */
+	 
 	m = onenand->page_buf;
 	s = onenand->oob_buf;
 
@@ -419,18 +403,18 @@ static int s3c_onenand_command(struct mtd_info *mtd, int cmd, loff_t addr,
 
 	switch (cmd) {
 	case ONENAND_CMD_READ:
-		/* Main */
+		 
 		for (i = 0; i < mcount; i++)
 			*m++ = s3c_read_cmd(cmd_map_01);
 		return 0;
 
 	case ONENAND_CMD_READOOB:
 		s3c_write_reg(TSRF, TRANS_SPARE_OFFSET);
-		/* Main */
+		 
 		for (i = 0; i < mcount; i++)
 			*m++ = s3c_read_cmd(cmd_map_01);
 
-		/* Spare */
+		 
 		for (i = 0; i < scount; i++)
 			*s++ = s3c_read_cmd(cmd_map_01);
 
@@ -438,7 +422,7 @@ static int s3c_onenand_command(struct mtd_info *mtd, int cmd, loff_t addr,
 		return 0;
 
 	case ONENAND_CMD_PROG:
-		/* Main */
+		 
 		for (i = 0; i < mcount; i++)
 			s3c_write_cmd(*m++, cmd_map_01);
 		return 0;
@@ -446,11 +430,11 @@ static int s3c_onenand_command(struct mtd_info *mtd, int cmd, loff_t addr,
 	case ONENAND_CMD_PROGOOB:
 		s3c_write_reg(TSRF, TRANS_SPARE_OFFSET);
 
-		/* Main - dummy write */
+		 
 		for (i = 0; i < mcount; i++)
 			s3c_write_cmd(0xffffffff, cmd_map_01);
 
-		/* Spare */
+		 
 		for (i = 0; i < scount; i++)
 			s3c_write_cmd(*s++, cmd_map_01);
 
@@ -537,11 +521,7 @@ static int s5pc110_dma_poll(dma_addr_t dst, dma_addr_t src, size_t count, int di
 
 	writel(S5PC110_DMA_TRANS_CMD_TR, base + S5PC110_DMA_TRANS_CMD);
 
-	/*
-	 * There's no exact timeout values at Spec.
-	 * In real case it takes under 1 msec.
-	 * So 20 msecs are enough.
-	 */
+	 
 	timeout = jiffies + msecs_to_jiffies(20);
 
 	do {
@@ -635,7 +615,7 @@ static int s5pc110_read_bufferram(struct mtd_info *mtd, int area,
 		!onenand->dma_addr || count != mtd->writesize)
 		goto normal;
 
-	/* Handle vmalloc address */
+	 
 	if (buf >= high_memory) {
 		struct page *page;
 
@@ -646,15 +626,15 @@ static int s5pc110_read_bufferram(struct mtd_info *mtd, int area,
 		if (!page)
 			goto normal;
 
-		/* Page offset */
+		 
 		ofs = ((size_t) buf & ~PAGE_MASK);
 		page_dma = 1;
 
-		/* DMA routine */
+		 
 		dma_src = onenand->phys_base + (p - this->base);
 		dma_dst = dma_map_page(dev, page, ofs, count, DMA_FROM_DEVICE);
 	} else {
-		/* DMA routine */
+		 
 		dma_src = onenand->phys_base + (p - this->base);
 		dma_dst = dma_map_single(dev, buf, count, DMA_FROM_DEVICE);
 	}
@@ -675,7 +655,7 @@ static int s5pc110_read_bufferram(struct mtd_info *mtd, int area,
 
 normal:
 	if (count != mtd->writesize) {
-		/* Copy the bufferram to memory to prevent unaligned access */
+		 
 		memcpy_fromio(this->page_buf, p, mtd->writesize);
 		memcpy(buffer, this->page_buf + offset, count);
 	} else {
@@ -687,7 +667,7 @@ normal:
 
 static int s5pc110_chip_probe(struct mtd_info *mtd)
 {
-	/* Now just return 0 */
+	 
 	return 0;
 }
 
@@ -697,14 +677,14 @@ static int s3c_onenand_bbt_wait(struct mtd_info *mtd, int state)
 	unsigned int stat;
 	unsigned long timeout;
 
-	/* The 20 msec is enough */
+	 
 	timeout = jiffies + msecs_to_jiffies(20);
 	while (time_before(jiffies, timeout)) {
 		stat = s3c_read_reg(INT_ERR_STAT_OFFSET);
 		if (stat & flags)
 			break;
 	}
-	/* To get correct interrupt status in timeout case */
+	 
 	stat = s3c_read_reg(INT_ERR_STAT_OFFSET);
 	s3c_write_reg(stat, INT_ERR_ACK_OFFSET);
 
@@ -776,19 +756,19 @@ static void s3c_unlock_all(struct mtd_info *mtd)
 	size_t len = this->chipsize;
 
 	if (this->options & ONENAND_HAS_UNLOCK_ALL) {
-		/* Write unlock command */
+		 
 		this->command(mtd, ONENAND_CMD_UNLOCK_ALL, 0, 0);
 
-		/* No need to check return value */
+		 
 		this->wait(mtd, FL_LOCKING);
 
-		/* Workaround for all block unlock in DDP */
+		 
 		if (!ONENAND_IS_DDP(this)) {
 			s3c_onenand_check_lock_status(mtd);
 			return;
 		}
 
-		/* All blocks on another chip */
+		 
 		ofs = this->chipsize >> 1;
 		len = this->chipsize >> 1;
 	}
@@ -811,7 +791,7 @@ static void s3c_onenand_setup(struct mtd_info *mtd)
 		onenand->mem_addr = s3c6410_mem_addr;
 		onenand->cmd_map = s3c64xx_cmd_map;
 	} else if (onenand->type == TYPE_S5PC110) {
-		/* Use generic onenand functions */
+		 
 		this->read_bufferram = s5pc110_read_bufferram;
 		this->chip_probe = s5pc110_chip_probe;
 		return;
@@ -840,7 +820,7 @@ static int s3c_onenand_probe(struct platform_device *pdev)
 	int size, err;
 
 	pdata = dev_get_platdata(&pdev->dev);
-	/* No need to check pdata. the platform data is optional */
+	 
 
 	size = sizeof(struct mtd_info) + sizeof(struct onenand_chip);
 	mtd = devm_kzalloc(&pdev->dev, size, GFP_KERNEL);
@@ -866,10 +846,10 @@ static int s3c_onenand_probe(struct platform_device *pdev)
 
 	onenand->phys_base = r->start;
 
-	/* Set onenand_chip also */
+	 
 	this->base = onenand->base;
 
-	/* Use runtime badblock check */
+	 
 	this->options |= ONENAND_SKIP_UNLOCK_CHECK;
 
 	if (onenand->type != TYPE_S5PC110) {
@@ -877,28 +857,28 @@ static int s3c_onenand_probe(struct platform_device *pdev)
 		if (IS_ERR(onenand->ahb_addr))
 			return PTR_ERR(onenand->ahb_addr);
 
-		/* Allocate 4KiB BufferRAM */
+		 
 		onenand->page_buf = devm_kzalloc(&pdev->dev, SZ_4K,
 						 GFP_KERNEL);
 		if (!onenand->page_buf)
 			return -ENOMEM;
 
-		/* Allocate 128 SpareRAM */
+		 
 		onenand->oob_buf = devm_kzalloc(&pdev->dev, 128, GFP_KERNEL);
 		if (!onenand->oob_buf)
 			return -ENOMEM;
 
-		/* S3C doesn't handle subpage write */
+		 
 		mtd->subpage_sft = 0;
 		this->subpagesize = mtd->writesize;
 
-	} else { /* S5PC110 */
+	} else {  
 		onenand->dma_addr = devm_platform_ioremap_resource(pdev, 1);
 		if (IS_ERR(onenand->dma_addr))
 			return PTR_ERR(onenand->dma_addr);
 
 		s5pc110_dma_ops = s5pc110_dma_poll;
-		/* Interrupt support */
+		 
 		r = platform_get_resource(pdev, IORESOURCE_IRQ, 0);
 		if (r) {
 			init_completion(&onenand->complete);
@@ -919,7 +899,7 @@ static int s3c_onenand_probe(struct platform_device *pdev)
 		return err;
 
 	if (onenand->type != TYPE_S5PC110) {
-		/* S3C doesn't handle subpage write */
+		 
 		mtd->subpage_sft = 0;
 		this->subpagesize = mtd->writesize;
 	}

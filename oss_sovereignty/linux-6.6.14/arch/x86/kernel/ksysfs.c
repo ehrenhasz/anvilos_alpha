@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Architecture specific sysfs attributes in /sys/kernel
- *
- * Copyright (C) 2007, Intel Corp.
- *      Huang Ying <ying.huang@intel.com>
- * Copyright (C) 2013, 2013 Red Hat, Inc.
- *      Dave Young <dyoung@redhat.com>
- */
+
+ 
 
 #include <linux/kobject.h>
 #include <linux/string.h>
@@ -206,11 +199,7 @@ static ssize_t setup_data_data_read(struct file *fp,
 			paddr = indirect->addr;
 			len = indirect->len;
 		} else {
-			/*
-			 * Even though this is technically undefined, return
-			 * the data as though it is a normal setup_data struct.
-			 * This will at least allow it to be inspected.
-			 */
+			 
 			paddr += sizeof(*data);
 			len = data->len;
 		}
@@ -274,7 +263,7 @@ static int __init create_setup_data_node(struct kobject *parent,
 	int ret = 0;
 	size_t size;
 	struct kobject *kobj;
-	char name[16]; /* should be enough for setup_data nodes numbers */
+	char name[16];  
 	snprintf(name, 16, "%d", nr);
 
 	kobj = kobject_create_and_add(name, parent);

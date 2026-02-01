@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2020 Intel Corporation
- */
+ 
+ 
 
 #ifndef __GEN6_ENGINE_CS_H__
 #define __GEN6_ENGINE_CS_H__
@@ -36,4 +34,4 @@ void gen6_irq_disable(struct intel_engine_cs *engine);
 void hsw_irq_enable_vecs(struct intel_engine_cs *engine);
 void hsw_irq_disable_vecs(struct intel_engine_cs *engine);
 
-#endif /* __GEN6_ENGINE_CS_H__ */
+#endif  

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 #ifndef XDP_SAMPLE_USER_H
 #define XDP_SAMPLE_USER_H
 
@@ -22,7 +22,7 @@ enum stats_mask {
 	SAMPLE_SKIP_HEADING	     = 1U << 9,
 };
 
-/* Exit return codes */
+ 
 #define EXIT_OK			0
 #define EXIT_FAIL		1
 #define EXIT_FAIL_OPTION	2

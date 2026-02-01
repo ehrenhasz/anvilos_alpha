@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * vivid-rds-gen.c - rds (radio data system) generator support functions.
- *
- * Copyright 2014 Cisco Systems, Inc. and/or its affiliates. All rights reserved.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/ktime.h>
@@ -27,18 +23,7 @@ static u8 vivid_get_di(const struct vivid_rds_gen *rds, unsigned grp)
 	return 0;
 }
 
-/*
- * This RDS generator creates 57 RDS groups (one group == four RDS blocks).
- * Groups 0-3, 22-25 and 44-47 (spaced 22 groups apart) are filled with a
- * standard 0B group containing the PI code and PS name.
- *
- * Groups 4-19 and 26-41 use group 2A for the radio text.
- *
- * Group 56 contains the time (group 4A).
- *
- * All remaining groups use a filler group 15B block that just repeats
- * the PI and PTY codes.
- */
+ 
 void vivid_rds_generate(struct vivid_rds_gen *rds)
 {
 	struct v4l2_rds_data *data = rds->data;
@@ -61,7 +46,7 @@ void vivid_rds_generate(struct vivid_rds_gen *rds)
 		switch (grp) {
 		case 0 ... 3:
 		case 22 ... 25:
-		case 44 ... 47: /* Group 0B */
+		case 44 ... 47:  
 			idx = (grp % 22) % 4;
 			data[1].lsb |= (rds->ta << 4) | (rds->ms << 3);
 			data[1].lsb |= vivid_get_di(rds, idx);
@@ -73,7 +58,7 @@ void vivid_rds_generate(struct vivid_rds_gen *rds)
 			data[3].msb = rds->psname[2 * idx];
 			break;
 		case 4 ... 19:
-		case 26 ... 41: /* Group 2A */
+		case 26 ... 41:  
 			idx = ((grp - 4) % 22) % 16;
 			data[1].lsb |= idx;
 			data[1].msb |= 4 << 3;
@@ -84,13 +69,7 @@ void vivid_rds_generate(struct vivid_rds_gen *rds)
 			data[3].lsb = rds->radiotext[4 * idx + 3];
 			break;
 		case 56:
-			/*
-			 * Group 4A
-			 *
-			 * Uses the algorithm from Annex G of the RDS standard
-			 * EN 50067:1998 to convert a UTC date to an RDS Modified
-			 * Julian Day.
-			 */
+			 
 			time64_to_tm(ktime_get_real_seconds(), 0, &tm);
 			l = tm.tm_mon <= 1;
 			date = 14956 + tm.tm_mday + ((tm.tm_year - l) * 1461) / 4 +
@@ -109,7 +88,7 @@ void vivid_rds_generate(struct vivid_rds_gen *rds)
 			data[3].lsb = time & 0xff;
 			data[3].msb = (time >> 8) & 0xff;
 			break;
-		default: /* Group 15B */
+		default:  
 			data[1].lsb |= (rds->ta << 4) | (rds->ms << 3);
 			data[1].lsb |= vivid_get_di(rds, grp % 22);
 			data[1].msb |= 0x1f << 3;
@@ -129,9 +108,9 @@ void vivid_rds_generate(struct vivid_rds_gen *rds)
 void vivid_rds_gen_fill(struct vivid_rds_gen *rds, unsigned freq,
 			  bool alt)
 {
-	/* Alternate PTY between Info and Weather */
+	 
 	if (rds->use_rbds) {
-		rds->picode = 0x2e75; /* 'KLNX' call sign */
+		rds->picode = 0x2e75;  
 		rds->pty = alt ? 29 : 2;
 	} else {
 		rds->picode = 0x8088;

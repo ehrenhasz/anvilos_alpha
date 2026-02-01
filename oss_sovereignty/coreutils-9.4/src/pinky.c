@@ -1,20 +1,6 @@
-/* GNU's pinky.
-   Copyright (C) 1992-2023 Free Software Foundation, Inc.
+ 
 
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* Created by hacking who.c by Kaveh Ghazi ghazi@caip.rutgers.edu */
+ 
 
 #include <config.h>
 #include <getopt.h>
@@ -29,7 +15,7 @@
 #include "hard-locale.h"
 #include "readutmp.h"
 
-/* The official name of this program (e.g., no 'g' prefix).  */
+ 
 #define PROGRAM_NAME "pinky"
 
 #define AUTHORS \
@@ -37,37 +23,33 @@
   proper_name ("David MacKenzie"), \
   proper_name ("Kaveh Ghazi")
 
-/* If true, display the hours:minutes since each user has touched
-   the keyboard, or blank if within the last minute, or days followed
-   by a 'd' if not within the last day. */
+ 
 static bool include_idle = true;
 
-/* If true, display a line at the top describing each field. */
+ 
 static bool include_heading = true;
 
-/* if true, display the user's full name from pw_gecos. */
+ 
 static bool include_fullname = true;
 
-/* if true, display the user's ~/.project file when doing long format. */
+ 
 static bool include_project = true;
 
-/* if true, display the user's ~/.plan file when doing long format. */
+ 
 static bool include_plan = true;
 
-/* if true, display the user's home directory and shell
-   when doing long format. */
+ 
 static bool include_home_and_shell = true;
 
-/* if true, use the "short" output format. */
+ 
 static bool do_short_format = true;
 
-/* if true, display the ut_host field. */
+ 
 #if HAVE_STRUCT_XTMP_UT_HOST
 static bool include_where = true;
 #endif
 
-/* The strftime format to use for login times, and its expected
-   output width.  */
+ 
 static char const *time_format;
 static int time_format_width;
 
@@ -78,7 +60,7 @@ static struct option const longopts[] =
   {nullptr, 0, nullptr, 0}
 };
 
-/* Count and return the number of ampersands in STR.  */
+ 
 
 ATTRIBUTE_PURE
 static size_t
@@ -93,11 +75,7 @@ count_ampersands (char const *str)
   return count;
 }
 
-/* Create a string (via xmalloc) which contains a full name by substituting
-   for each ampersand in GECOS_NAME the USER_NAME string with its first
-   character capitalized.  The caller must ensure that GECOS_NAME contains
-   no ','s.  The caller also is responsible for free'ing the return value of
-   this function.  */
+ 
 
 static char *
 create_fullname (char const *gecos_name, char const *user_name)
@@ -140,8 +118,7 @@ create_fullname (char const *gecos_name, char const *user_name)
   return result;
 }
 
-/* Return a string representing the time between WHEN and the time
-   that this function is first run. */
+ 
 
 static char const *
 idle_string (time_t when)
@@ -154,9 +131,9 @@ idle_string (time_t when)
     time (&now);
 
   seconds_idle = now - when;
-  if (seconds_idle < 60)	/* One minute. */
+  if (seconds_idle < 60)	 
     return "     ";
-  if (seconds_idle < (24 * 60 * 60))	/* One day. */
+  if (seconds_idle < (24 * 60 * 60))	 
     {
       int hours = seconds_idle / (60 * 60);
       int minutes = (seconds_idle % (60 * 60)) / 60;
@@ -170,7 +147,7 @@ idle_string (time_t when)
   return buf;
 }
 
-/* Return a time string.  */
+ 
 static char const *
 time_string (struct gl_utmp const *utmp_ent)
 {
@@ -186,7 +163,7 @@ time_string (struct gl_utmp const *utmp_ent)
     return timetostr (utmp_ent->ut_ts.tv_sec, buf);
 }
 
-/* Display a line of information about UTMP_ENT. */
+ 
 
 static void
 print_entry (struct gl_utmp const *utmp_ent)
@@ -195,7 +172,7 @@ print_entry (struct gl_utmp const *utmp_ent)
   time_t last_change;
   char mesg;
 
-  /* If ut_line contains a space, the device name starts after the space.  */
+   
   char *line = utmp_ent->ut_line;
   char *space = strchr (line, ' ');
   line = space ? space + 1 : line;
@@ -236,7 +213,7 @@ print_entry (struct gl_utmp const *utmp_ent)
     {
       struct passwd *pw = getpwnam (ut_user);
       if (pw == nullptr)
-        /* TRANSLATORS: Real name is unknown; at most 19 characters. */
+         
         printf (" %19s", _("        ???"));
       else
         {
@@ -264,7 +241,7 @@ print_entry (struct gl_utmp const *utmp_ent)
       if (last_change)
         printf (" %-6s", idle_string (last_change));
       else
-        /* TRANSLATORS: Idle time is unknown; at most 5 characters. */
+         
         printf (" %-6s", _("?????"));
     }
 
@@ -277,13 +254,13 @@ print_entry (struct gl_utmp const *utmp_ent)
       char *display = nullptr;
       char *ut_host = utmp_ent->ut_host;
 
-      /* Look for an X display.  */
+       
       display = strchr (ut_host, ':');
       if (display)
         *display++ = '\0';
 
       if (*ut_host)
-        /* See if we can canonicalize it.  */
+         
         host = canon_host (ut_host);
       if ( ! host)
         host = ut_host;
@@ -304,7 +281,7 @@ print_entry (struct gl_utmp const *utmp_ent)
   putchar ('\n');
 }
 
-/* Display a verbose line of information about UTMP_ENT. */
+ 
 
 static void
 print_long_entry (const char name[])
@@ -319,7 +296,7 @@ print_long_entry (const char name[])
   printf (_("In real life: "));
   if (pw == nullptr)
     {
-      /* TRANSLATORS: Real name is unknown; no hard limit. */
+       
       printf (" %s", _("???\n"));
       return;
     }
@@ -398,8 +375,7 @@ print_long_entry (const char name[])
   putchar ('\n');
 }
 
-/* Print the username of each valid entry and the number of valid entries
-   in UTMP_BUF, which should have N elements. */
+ 
 
 static void
 print_heading (void)
@@ -418,7 +394,7 @@ print_heading (void)
   putchar ('\n');
 }
 
-/* Display UTMP_BUF, which should have N entries. */
+ 
 
 static void
 scan_entries (idx_t n, struct gl_utmp const *utmp_buf,
@@ -458,7 +434,7 @@ scan_entries (idx_t n, struct gl_utmp const *utmp_buf,
     }
 }
 
-/* Display a list of who is on the system, according to utmp file FILENAME. */
+ 
 
 static void
 short_pinky (char const *filename,

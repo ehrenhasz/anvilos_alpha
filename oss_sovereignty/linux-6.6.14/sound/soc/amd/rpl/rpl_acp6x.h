@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * AMD ACP Driver
- *
- * Copyright (C) 2021 Advanced Micro Devices, Inc. All rights reserved.
- */
+ 
+ 
 
 #include "rpl_acp6x_chip_offset_byte.h"
 
@@ -22,7 +18,7 @@
 #define DELAY_US        5
 #define ACP_COUNTER     20000
 
-/* time in ms for runtime suspend delay */
+ 
 #define ACP_SUSPEND_DELAY_MS    2000
 
 static inline u32 rpl_acp_readl(void __iomem *base_addr)

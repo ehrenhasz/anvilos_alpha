@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-// Copyright (c) 2022, Huawei
+
+
 
 #include "vmlinux.h"
 #include <bpf/bpf_helpers.h>
@@ -8,9 +8,7 @@
 #define KWORK_COUNT 100
 #define MAX_KWORKNAME 128
 
-/*
- * This should be in sync with "util/kwork.h"
- */
+ 
 enum kwork_class_type {
 	KWORK_CLASS_IRQ,
 	KWORK_CLASS_SOFTIRQ,

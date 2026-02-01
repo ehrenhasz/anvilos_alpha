@@ -1,17 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Support for Intel Camera Imaging ISP subsystem.
- * Copyright (c) 2015, Intel Corporation.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms and conditions of the GNU General Public License,
- * version 2, as published by the Free Software Foundation.
- *
- * This program is distributed in the hope it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- * more details.
- */
+ 
+ 
 
 #ifndef _SH_CSS_SP_H_
 #define _SH_CSS_SP_H_
@@ -26,7 +14,7 @@
 #include "ia_css_types.h"
 #include "ia_css_pipeline.h"
 
-/* Function to initialize the data and bss section descr of the binary */
+ 
 void
 sh_css_sp_store_init_dmem(const struct ia_css_fw_info *fw);
 
@@ -40,7 +28,7 @@ sh_css_stage_write_binary_info(struct ia_css_binary_info *info);
 void
 store_sp_group_data(void);
 
-/* Start binary (jpeg) copy on the SP */
+ 
 void
 sh_css_sp_start_binary_copy(unsigned int pipe_num,
 			    struct ia_css_frame *out_frame,
@@ -49,7 +37,7 @@ sh_css_sp_start_binary_copy(unsigned int pipe_num,
 unsigned int
 sh_css_sp_get_binary_copy_size(void);
 
-/* Return the value of a SW interrupt */
+ 
 unsigned int
 sh_css_sp_get_sw_interrupt_value(unsigned int irq);
 
@@ -79,53 +67,30 @@ sh_css_read_host2sp_command(void);
 void
 sh_css_init_host2sp_frame_data(void);
 
-/**
- * @brief Update the offline frame information in host_sp_communication.
- *
- * @param[in] frame_num The offline frame number.
- * @param[in] frame The pointer to the offline frame.
- */
+ 
 void
 sh_css_update_host2sp_offline_frame(
     unsigned int frame_num,
     struct ia_css_frame *frame,
     struct ia_css_metadata *metadata);
 
-/**
- * @brief Update the mipi frame information in host_sp_communication.
- *
- * @param[in] frame_num The mipi frame number.
- * @param[in] frame The pointer to the mipi frame.
- */
+ 
 void
 sh_css_update_host2sp_mipi_frame(
     unsigned int frame_num,
     struct ia_css_frame *frame);
 
-/**
- * @brief Update the mipi metadata information in host_sp_communication.
- *
- * @param[in] frame_num The mipi frame number.
- * @param[in] metadata The pointer to the mipi metadata.
- */
+ 
 void
 sh_css_update_host2sp_mipi_metadata(
     unsigned int frame_num,
     struct ia_css_metadata *metadata);
 
-/**
- * @brief Update the nr of mipi frames to use in host_sp_communication.
- *
- * @param[in] num_frames The number of mipi frames to use.
- */
+ 
 void
 sh_css_update_host2sp_num_mipi_frames(unsigned int num_frames);
 
-/**
- * @brief Update the nr of offline frames to use in host_sp_communication.
- *
- * @param[in] num_frames The number of raw frames to use.
- */
+ 
 void
 sh_css_update_host2sp_cont_num_raw_frames(unsigned int num_frames,
 	bool set_avail);
@@ -190,43 +155,11 @@ sh_css_sp_set_disable_continuous_viewfinder(bool flag);
 void
 sh_css_sp_reset_global_vars(void);
 
-/**
- * @brief Initialize the DMA software-mask in the debug mode.
- * This API should be ONLY called in the debugging mode.
- * And it should be always called before the first call of
- * "sh_css_set_dma_sw_reg(...)".
- *
- * @param[in]	dma_id		The ID of the target DMA.
- *
- * @return
- *	- true, if it is successful.
- *	- false, otherwise.
- */
+ 
 bool
 sh_css_sp_init_dma_sw_reg(int dma_id);
 
-/**
- * @brief Set the DMA software-mask in the debug mode.
- * This API should be ONLYL called in the debugging mode. Must
- * call "sh_css_set_dma_sw_reg(...)" before this
- * API is called for the first time.
- *
- * @param[in]	dma_id		The ID of the target DMA.
- * @param[in]	channel_id	The ID of the target DMA channel.
- * @param[in]	request_type	The type of the DMA request.
- *				For example:
- *				- "0" indicates the writing request.
- *				- "1" indicates the reading request.
- *
- * @param[in]	enable		If it is "true", the target DMA
- *				channel is enabled in the software.
- *				Otherwise, the target DMA channel
- *				is disabled in the software.
- *
- * @return
- *	- true, if it is successful.
- *	- false, otherwise.
- */
+ 
 bool
 sh_css_sp_set_dma_sw_reg(int dma_id,
 			 int channel_id,
@@ -237,4 +170,4 @@ extern struct sh_css_sp_group sh_css_sp_group;
 extern struct sh_css_sp_stage sh_css_sp_stage;
 extern struct sh_css_isp_stage sh_css_isp_stage;
 
-#endif /* _SH_CSS_SP_H_ */
+#endif  

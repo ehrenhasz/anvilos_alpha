@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2020 Facebook
+
+
 
 #include <linux/bpf.h>
 #include <bpf/bpf_helpers.h>
@@ -12,7 +12,7 @@ _Static_assert(MAX_ENTRIES < LOOP_BOUND, "MAX_ENTRIES must be < LOOP_BOUND");
 
 enum bpf_map_type g_map_type = BPF_MAP_TYPE_UNSPEC;
 __u32 g_line = 0;
-int page_size = 0; /* userspace should set it */
+int page_size = 0;  
 
 #define VERIFY_TYPE(type, func) ({	\
 	g_map_type = type;		\
@@ -97,7 +97,7 @@ struct bpf_htab {
 
 struct {
 	__uint(type, BPF_MAP_TYPE_HASH);
-	__uint(map_flags, BPF_F_NO_PREALLOC); /* to test bpf_htab.count */
+	__uint(map_flags, BPF_F_NO_PREALLOC);  
 	__uint(max_entries, MAX_ENTRIES);
 	__type(key, __u32);
 	__type(value, __u32);

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- *  Copyright (C) 2019 Microchip Technology Inc.
- *
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/clk.h>
@@ -100,7 +97,7 @@ static int sam9x60_frac_pll_set(struct sam9x60_pll_core *core)
 	    (cmul == frac->mul && cfrac == frac->frac))
 		goto unlock;
 
-	/* Recommended value for PMC_PLL_ACR */
+	 
 	if (core->characteristics->upll)
 		val = AT91_PMC_PLL_ACR_DEFAULT_UPLL;
 	else
@@ -112,13 +109,13 @@ static int sam9x60_frac_pll_set(struct sam9x60_pll_core *core)
 		     (frac->frac << core->layout->frac_shift));
 
 	if (core->characteristics->upll) {
-		/* Enable the UTMI internal bandgap */
+		 
 		val |= AT91_PMC_PLL_ACR_UTMIBG;
 		regmap_write(regmap, AT91_PMC_PLL_ACR, val);
 
 		udelay(10);
 
-		/* Enable the UTMI internal regulator */
+		 
 		val |= AT91_PMC_PLL_ACR_UTMIVR;
 		regmap_write(regmap, AT91_PMC_PLL_ACR, val);
 
@@ -197,10 +194,7 @@ static long sam9x60_frac_pll_compute_mul_frac(struct sam9x60_pll_core *core,
 	if (rate < FCORE_MIN || rate > FCORE_MAX)
 		return -ERANGE;
 
-	/*
-	 * Calculate the multiplier associated with the current
-	 * divider that provide the closest rate to the requested one.
-	 */
+	 
 	nmul = mult_frac(rate, 1, parent_rate);
 	tmprate = mult_frac(parent_rate, nmul, 1);
 	remainder = rate - tmprate;
@@ -213,7 +207,7 @@ static long sam9x60_frac_pll_compute_mul_frac(struct sam9x60_pll_core *core,
 						 (1 << 22));
 	}
 
-	/* Check if resulted rate is a valid.  */
+	 
 	if (tmprate < FCORE_MIN || tmprate > FCORE_MAX)
 		return -ERANGE;
 
@@ -333,7 +327,7 @@ static const struct clk_ops sam9x60_frac_pll_ops_chg = {
 	.restore_context = sam9x60_frac_pll_restore_context,
 };
 
-/* This function should be called with spinlock acquired. */
+ 
 static void sam9x60_div_pll_set_div(struct sam9x60_pll_core *core, u32 div,
 				    bool enable)
 {
@@ -366,7 +360,7 @@ static int sam9x60_div_pll_set(struct sam9x60_pll_core *core)
 	regmap_read(regmap, AT91_PMC_PLL_CTRL0, &val);
 	cdiv = (val & core->layout->div_mask) >> core->layout->div_shift;
 
-	/* Stop if enabled an nothing changed. */
+	 
 	if (!!(val & core->layout->endiv_mask) && cdiv == div->div)
 		goto unlock;
 
@@ -512,7 +506,7 @@ static int sam9x60_div_pll_set_rate_chg(struct clk_hw *hw, unsigned long rate,
 	regmap_read(regmap, AT91_PMC_PLL_CTRL0, &val);
 	cdiv = (val & core->layout->div_mask) >> core->layout->div_shift;
 
-	/* Stop if nothing changed. */
+	 
 	if (cdiv == div->div)
 		goto unlock;
 
@@ -556,10 +550,7 @@ static int sam9x60_div_pll_notifier_fn(struct notifier_block *notifier,
 	if (code != PRE_RATE_CHANGE)
 		return ret;
 
-	/*
-	 * We switch to safe divider to avoid overclocking of other domains
-	 * feed by us while the frac PLL (our parent) is changed.
-	 */
+	 
 	div->div = div->safe_div;
 
 	spin_lock_irqsave(core.lock, irqflags);
@@ -568,7 +559,7 @@ static int sam9x60_div_pll_notifier_fn(struct notifier_block *notifier,
 	regmap_read(regmap, AT91_PMC_PLL_CTRL0, &val);
 	cdiv = (val & core.layout->div_mask) >> core.layout->div_shift;
 
-	/* Stop if nothing changed. */
+	 
 	if (cdiv == div->safe_div)
 		goto unlock;
 
@@ -656,13 +647,7 @@ sam9x60_clk_register_frac_pll(struct regmap *regmap, spinlock_t *lock,
 		frac->mul = FIELD_GET(PMC_PLL_CTRL1_MUL_MSK, val);
 		frac->frac = FIELD_GET(PMC_PLL_CTRL1_FRACR_MSK, val);
 	} else {
-		/*
-		 * This means the PLL is not setup by bootloaders. In this
-		 * case we need to set the minimum rate for it. Otherwise
-		 * a clock child of this PLL may be enabled before setting
-		 * its rate leading to enabling this PLL with unsupported
-		 * rate. This will lead to PLL not being locked at all.
-		 */
+		 
 		parent_rate = clk_hw_get_rate(parent_hw);
 		if (!parent_rate) {
 			hw = ERR_PTR(-EINVAL);
@@ -708,7 +693,7 @@ sam9x60_clk_register_div_pll(struct regmap *regmap, spinlock_t *lock,
 	unsigned int val;
 	int ret;
 
-	/* We only support one changeable PLL. */
+	 
 	if (id > PLL_MAX_ID || !lock || (safe_div && notifier_div))
 		return ERR_PTR(-EINVAL);
 

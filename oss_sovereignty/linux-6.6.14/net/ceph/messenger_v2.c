@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Ceph msgr2 protocol implementation
- *
- * Copyright (C) 2020 Ilya Dryomov <idryomov@gmail.com>
- */
+
+ 
 
 #include <linux/ceph/ceph_debug.h>
 
@@ -25,7 +21,7 @@
 #include <linux/ceph/libceph.h>
 #include <linux/ceph/messenger.h>
 
-#include "crypto.h"  /* for CEPH_KEY_LEN and CEPH_MAX_CON_SECRET_LEN */
+#include "crypto.h"   
 
 #define FRAME_TAG_HELLO			1
 #define FRAME_TAG_AUTH_REQUEST		2
@@ -98,14 +94,7 @@ static int do_recvmsg(struct socket *sock, struct iov_iter *it)
 	return 1;
 }
 
-/*
- * Read as much as possible.
- *
- * Return:
- *   1 - done, nothing (else) to read
- *   0 - socket is empty, need to wait
- *  <0 - error
- */
+ 
 static int ceph_tcp_recv(struct ceph_connection *con)
 {
 	int ret;
@@ -150,21 +139,13 @@ static int do_try_sendpage(struct socket *sock, struct iov_iter *it)
 		return -EINVAL;
 
 	while (iov_iter_count(it)) {
-		/* iov_iter_iovec() for ITER_BVEC */
+		 
 		bvec_set_page(&bv, it->bvec->bv_page,
 			      min(iov_iter_count(it),
 				  it->bvec->bv_len - it->iov_offset),
 			      it->bvec->bv_offset + it->iov_offset);
 
-		/*
-		 * MSG_SPLICE_PAGES cannot properly handle pages with
-		 * page_count == 0, we need to fall back to sendmsg if
-		 * that's the case.
-		 *
-		 * Same goes for slab pages: skb_can_coalesce() allows
-		 * coalescing neighboring slab objects into a single frag
-		 * which triggers one of hardened usercopy checks.
-		 */
+		 
 		if (sendpage_ok(bv.bv_page))
 			msg.msg_flags |= MSG_SPLICE_PAGES;
 		else
@@ -184,15 +165,7 @@ static int do_try_sendpage(struct socket *sock, struct iov_iter *it)
 	return 1;
 }
 
-/*
- * Write as much as possible.  The socket is expected to be corked,
- * so we don't bother with MSG_MORE here.
- *
- * Return:
- *   1 - done, nothing (else) to write
- *   0 - socket is full, need to wait
- *  <0 - error
- */
+ 
 static int ceph_tcp_send(struct ceph_connection *con)
 {
 	int ret;
@@ -386,7 +359,7 @@ static int padding_len(int len)
 	return padded_len(len) - len;
 }
 
-/* preamble + control segment */
+ 
 static int head_onwire_len(int ctrl_len, bool secure)
 {
 	int head_len;
@@ -408,7 +381,7 @@ static int head_onwire_len(int ctrl_len, bool secure)
 	return head_len;
 }
 
-/* front, middle and data segments + epilogue */
+ 
 static int __tail_onwire_len(int front_len, int middle_len, int data_len,
 			     bool secure)
 {
@@ -433,7 +406,7 @@ static int tail_onwire_len(const struct ceph_msg *msg, bool secure)
 				 data_len(msg), secure);
 }
 
-/* head_onwire_len(sizeof(struct ceph_msg_header2), false) */
+ 
 #define MESSAGE_HEAD_PLAIN_LEN	(CEPH_PREAMBLE_PLAIN_LEN +		\
 				 sizeof(struct ceph_msg_header2) +	\
 				 CEPH_CRC_LEN)
@@ -445,10 +418,7 @@ static const int frame_aligns[] = {
 	PAGE_SIZE
 };
 
-/*
- * Discards trailing empty segments, unless there is just one segment.
- * A frame always has at least one (possibly empty) segment.
- */
+ 
 static int calc_segment_count(const int *lens, int len_cnt)
 {
 	int i;
@@ -477,11 +447,7 @@ static void init_frame_desc(struct ceph_frame_desc *desc, int tag,
 	}
 }
 
-/*
- * Preamble crc covers everything up to itself (28 bytes) and
- * is calculated and verified irrespective of the connection mode
- * (i.e. even if the frame is encrypted).
- */
+ 
 static void encode_preamble(const struct ceph_frame_desc *desc, void *p)
 {
 	void *crcp = p + CEPH_PREAMBLE_LEN - CEPH_CRC_LEN;
@@ -549,10 +515,7 @@ static int decode_preamble(void *p, struct ceph_frame_desc *desc)
 		return -EINVAL;
 	}
 
-	/*
-	 * This would fire for FRAME_TAG_WAIT (it has one empty
-	 * segment), but we should never get it as client.
-	 */
+	 
 	if (!desc->fd_lens[desc->fd_seg_cnt - 1]) {
 		pr_err("last segment empty, segment count %d\n",
 		       desc->fd_seg_cnt);
@@ -586,7 +549,7 @@ static int decode_epilogue(void *p, u32 *front_crc, u32 *middle_crc,
 	late_status = ceph_decode_8(&p);
 	if ((late_status & FRAME_LATE_STATUS_ABORTED_MASK) !=
 			FRAME_LATE_STATUS_COMPLETE) {
-		/* we should never get an aborted message as client */
+		 
 		pr_err("bad late_status 0x%x\n", late_status);
 		return -EINVAL;
 	}
@@ -720,7 +683,7 @@ static int setup_crypto(struct ceph_connection *con,
 	if (!session_key_len) {
 		WARN_ON(con->v2.con_mode != CEPH_CON_MODE_CRC);
 		WARN_ON(con_secret_len);
-		return 0;  /* auth_none */
+		return 0;   
 	}
 
 	noio_flag = memalloc_noio_save();
@@ -744,7 +707,7 @@ static int setup_crypto(struct ceph_connection *con,
 
 	if (con->v2.con_mode == CEPH_CON_MODE_CRC) {
 		WARN_ON(con_secret_len);
-		return 0;  /* auth_x, plain mode */
+		return 0;   
 	}
 
 	if (con_secret_len < CEPH_GCM_KEY_LEN + 2 * CEPH_GCM_IV_LEN) {
@@ -792,13 +755,13 @@ static int setup_crypto(struct ceph_connection *con,
 	memcpy(&con->v2.out_gcm_nonce,
 	       con_secret + CEPH_GCM_KEY_LEN + CEPH_GCM_IV_LEN,
 	       CEPH_GCM_IV_LEN);
-	return 0;  /* auth_x, secure mode */
+	return 0;   
 }
 
 static int hmac_sha256(struct ceph_connection *con, const struct kvec *kvecs,
 		       int kvec_cnt, u8 *hmac)
 {
-	SHASH_DESC_ON_STACK(desc, con->v2.hmac_tfm);  /* tfm arg is ignored */
+	SHASH_DESC_ON_STACK(desc, con->v2.hmac_tfm);   
 	int ret;
 	int i;
 
@@ -807,7 +770,7 @@ static int hmac_sha256(struct ceph_connection *con, const struct kvec *kvecs,
 
 	if (!con->v2.hmac_tfm) {
 		memset(hmac, 0, SHA256_DIGEST_SIZE);
-		return 0;  /* auth_none */
+		return 0;   
 	}
 
 	desc->tfm = con->v2.hmac_tfm;
@@ -828,7 +791,7 @@ static int hmac_sha256(struct ceph_connection *con, const struct kvec *kvecs,
 
 out:
 	shash_desc_zero(desc);
-	return ret;  /* auth_x, both plain and secure modes */
+	return ret;   
 }
 
 static void gcm_inc_nonce(struct ceph_gcm_nonce *nonce)
@@ -848,7 +811,7 @@ static int gcm_crypt(struct ceph_connection *con, bool encrypt,
 
 	nonce = encrypt ? &con->v2.out_gcm_nonce : &con->v2.in_gcm_nonce;
 
-	aead_request_set_ad(con->v2.gcm_req, 0);  /* no AAD */
+	aead_request_set_ad(con->v2.gcm_req, 0);   
 	aead_request_set_crypt(con->v2.gcm_req, src, dst, src_len, (u8 *)nonce);
 	ret = crypto_wait_req(encrypt ? crypto_aead_encrypt(con->v2.gcm_req) :
 					crypto_aead_decrypt(con->v2.gcm_req),
@@ -868,11 +831,11 @@ static void get_bvec_at(struct ceph_msg_data_cursor *cursor,
 
 	WARN_ON(!cursor->total_resid);
 
-	/* skip zero-length data items */
+	 
 	while (!cursor->resid)
 		ceph_msg_data_advance(cursor, 0);
 
-	/* get a piece of data, cursor isn't advanced */
+	 
 	page = ceph_msg_data_next(cursor, &off, &len);
 	bvec_set_page(bv, page, len, off);
 }
@@ -969,17 +932,7 @@ static void init_sgs_cursor(struct scatterlist **sg,
 	}
 }
 
-/**
- * init_sgs_pages: set up scatterlist on an array of page pointers
- * @sg:		scatterlist to populate
- * @pages:	pointer to page array
- * @dpos:	position in the array to start (bytes)
- * @dlen:	len to add to sg (bytes)
- * @pad:	pointer to pad destination (if any)
- *
- * Populate the scatterlist from the page array, starting at an arbitrary
- * byte in the array and running for a specified length.
- */
+ 
 static void init_sgs_pages(struct scatterlist **sg, struct page **pages,
 			   int dpos, int dlen, u8 *pad)
 {
@@ -1017,7 +970,7 @@ static int setup_message_sgs(struct sg_table *sgt, struct ceph_msg *msg,
 	if (!front_len(msg) && !middle_len(msg) && !data_len(msg))
 		return 0;
 
-	sg_cnt = 1;  /* epilogue + [auth tag] */
+	sg_cnt = 1;   
 	if (front_len(msg))
 		sg_cnt += calc_sg_cnt(msg->front.iov_base,
 				      front_len(msg));
@@ -1087,7 +1040,7 @@ static int decrypt_control_remainder(struct ceph_connection *con)
 			 padded_len(rem_len) + CEPH_GCM_TAG_LEN);
 }
 
-/* Process sparse read data that lives in a buffer */
+ 
 static int process_v2_sparse_read(struct ceph_connection *con,
 				  struct page **pages, int spos)
 {
@@ -1201,23 +1154,7 @@ static int prepare_banner(struct ceph_connection *con)
 	return 0;
 }
 
-/*
- * base:
- *   preamble
- *   control body (ctrl_len bytes)
- *   space for control crc
- *
- * extdata (optional):
- *   control body (extdata_len bytes)
- *
- * Compute control crc and gather base and extdata into:
- *
- *   preamble
- *   control body (ctrl_len + extdata_len bytes)
- *   control crc
- *
- * Preamble should already be encoded at the start of base.
- */
+ 
 static void prepare_head_plain(struct ceph_connection *con, void *base,
 			       int ctrl_len, void *extdata, int extdata_len,
 			       bool to_be_signed)
@@ -1254,7 +1191,7 @@ static int prepare_head_secure_small(struct ceph_connection *con,
 	struct scatterlist sg;
 	int ret;
 
-	/* inline buffer padding? */
+	 
 	if (ctrl_len < CEPH_PREAMBLE_INLINE_LEN)
 		memset(CTRL_BODY(base) + ctrl_len, 0,
 		       CEPH_PREAMBLE_INLINE_LEN - ctrl_len);
@@ -1269,26 +1206,7 @@ static int prepare_head_secure_small(struct ceph_connection *con,
 	return 0;
 }
 
-/*
- * base:
- *   preamble
- *   control body (ctrl_len bytes)
- *   space for padding, if needed
- *   space for control remainder auth tag
- *   space for preamble auth tag
- *
- * Encrypt preamble and the inline portion, then encrypt the remainder
- * and gather into:
- *
- *   preamble
- *   control body (48 bytes)
- *   preamble auth tag
- *   control body (ctrl_len - 48 bytes)
- *   zero padding, if needed
- *   control remainder auth tag
- *
- * Preamble should already be encoded at the start of base.
- */
+ 
 static int prepare_head_secure_big(struct ceph_connection *con,
 				   void *base, int ctrl_len)
 {
@@ -1306,7 +1224,7 @@ static int prepare_head_secure_big(struct ceph_connection *con,
 	if (ret)
 		return ret;
 
-	/* control remainder padding? */
+	 
 	if (need_padding(rem_len))
 		memset(rem + rem_len, 0, padding_len(rem_len));
 
@@ -1332,7 +1250,7 @@ static int __prepare_control(struct ceph_connection *con, int tag,
 	dout("%s con %p tag %d len %d (%d+%d)\n", __func__, con, tag,
 	     total_len, ctrl_len, extdata_len);
 
-	/* extdata may be vmalloc'ed but not base */
+	 
 	if (WARN_ON(is_vmalloc_addr(base) || !ctrl_len))
 		return -EINVAL;
 
@@ -1344,10 +1262,10 @@ static int __prepare_control(struct ceph_connection *con, int tag,
 			return -EINVAL;
 
 		if (ctrl_len <= CEPH_PREAMBLE_INLINE_LEN)
-			/* fully inlined, inline buffer may need padding */
+			 
 			ret = prepare_head_secure_small(con, base, ctrl_len);
 		else
-			/* partially inlined, inline buffer is full */
+			 
 			ret = prepare_head_secure_big(con, base, ctrl_len);
 		if (ret)
 			return ret;
@@ -1385,7 +1303,7 @@ static int prepare_hello(struct ceph_connection *con)
 				 NULL, 0, true);
 }
 
-/* so that head_onwire_len(AUTH_BUF_LEN, false) is 512 */
+ 
 #define AUTH_BUF_LEN	(512 - CEPH_CRC_LEN - CEPH_PREAMBLE_PLAIN_LEN)
 
 static int prepare_auth_request(struct ceph_connection *con)
@@ -1512,15 +1430,15 @@ static int prepare_client_ident(struct ceph_connection *con)
 		return -ENOMEM;
 
 	p = CTRL_BODY(buf);
-	ceph_encode_8(&p, 2);  /* addrvec marker */
-	ceph_encode_32(&p, 1);  /* addr_cnt */
+	ceph_encode_8(&p, 2);   
+	ceph_encode_32(&p, 1);   
 	ceph_encode_entity_addr(&p, my_addr);
 	ceph_encode_entity_addr(&p, &con->peer_addr);
 	ceph_encode_64(&p, global_id);
 	ceph_encode_64(&p, con->v2.global_seq);
 	ceph_encode_64(&p, client->supported_features);
 	ceph_encode_64(&p, client->required_features);
-	ceph_encode_64(&p, 0);  /* flags */
+	ceph_encode_64(&p, 0);   
 	ceph_encode_64(&p, con->v2.client_cookie);
 	WARN_ON(p != CTRL_BODY(buf) + ctrl_len);
 
@@ -1549,8 +1467,8 @@ static int prepare_session_reconnect(struct ceph_connection *con)
 		return -ENOMEM;
 
 	p = CTRL_BODY(buf);
-	ceph_encode_8(&p, 2);  /* entity_addrvec_t marker */
-	ceph_encode_32(&p, 1);  /* my_addrs len */
+	ceph_encode_8(&p, 2);   
+	ceph_encode_32(&p, 1);   
 	ceph_encode_entity_addr(&p, my_addr);
 	ceph_encode_64(&p, con->v2.client_cookie);
 	ceph_encode_64(&p, con->v2.server_cookie);
@@ -1603,10 +1521,7 @@ static void prepare_epilogue_plain(struct ceph_connection *con, bool aborted)
 	add_out_kvec(con, &con->v2.out_epil, CEPH_EPILOGUE_PLAIN_LEN);
 }
 
-/*
- * For "used" empty segments, crc is -1.  For unused (trailing)
- * segments, crc is 0.
- */
+ 
 static void prepare_message_plain(struct ceph_connection *con)
 {
 	struct ceph_msg *msg = con->out_msg;
@@ -1616,10 +1531,7 @@ static void prepare_message_plain(struct ceph_connection *con)
 
 	if (!front_len(msg) && !middle_len(msg)) {
 		if (!data_len(msg)) {
-			/*
-			 * Empty message: once the head is written,
-			 * we are done -- there is no epilogue.
-			 */
+			 
 			con->v2.out_state = OUT_S_FINISH_MESSAGE;
 			return;
 		}
@@ -1635,7 +1547,7 @@ static void prepare_message_plain(struct ceph_connection *con)
 						    front_len(msg));
 		add_out_kvec(con, msg->front.iov_base, front_len(msg));
 	} else {
-		/* middle (at least) is there, checked above */
+		 
 		con->v2.out_epil.front_crc = -1;
 	}
 
@@ -1656,13 +1568,7 @@ static void prepare_message_plain(struct ceph_connection *con)
 	}
 }
 
-/*
- * Unfortunately the kernel crypto API doesn't support streaming
- * (piecewise) operation for AEAD algorithms, so we can't get away
- * with a fixed size buffer and a couple sgs.  Instead, we have to
- * allocate pages for the entire tail of the message (currently up
- * to ~32M) and two sgs arrays (up to ~256K each)...
- */
+ 
 static int prepare_message_secure(struct ceph_connection *con)
 {
 	void *zerop = page_address(ceph_zero_page);
@@ -1680,10 +1586,7 @@ static int prepare_message_secure(struct ceph_connection *con)
 
 	tail_len = tail_onwire_len(con->out_msg, true);
 	if (!tail_len) {
-		/*
-		 * Empty message: once the head is written,
-		 * we are done -- there is no epilogue.
-		 */
+		 
 		con->v2.out_state = OUT_S_FINISH_MESSAGE;
 		return 0;
 	}
@@ -1819,7 +1722,7 @@ static int prepare_read_control(struct ceph_connection *con)
 		if (!buf)
 			return -ENOMEM;
 
-		/* preserve preamble */
+		 
 		memcpy(buf, con->v2.in_buf, CEPH_PREAMBLE_LEN);
 
 		add_in_kvec(con, CTRL_BODY(buf), ctrl_len);
@@ -1919,9 +1822,7 @@ static void prepare_read_data_cont(struct ceph_connection *con)
 		return;
 	}
 
-	/*
-	 * We've read all data.  Prepare to read epilogue.
-	 */
+	 
 	reset_in_kvecs(con);
 	add_in_kvec(con, con->v2.in_buf, CEPH_EPILOGUE_PLAIN_LEN);
 	con->v2.in_state = IN_S_HANDLE_EPILOGUE;
@@ -1970,7 +1871,7 @@ static int prepare_sparse_read_cont(struct ceph_connection *con)
 			return 0;
 		}
 	} else if (iov_iter_is_kvec(&con->v2.in_iter)) {
-		/* On first call, we have no kvec so don't compute crc */
+		 
 		if (con->v2.in_kvec_cnt) {
 			WARN_ON_ONCE(con->v2.in_kvec_cnt > 1);
 			con->in_data_crc = crc32c(con->in_data_crc,
@@ -1981,7 +1882,7 @@ static int prepare_sparse_read_cont(struct ceph_connection *con)
 		return -EIO;
 	}
 
-	/* get next extent */
+	 
 	ret = con->ops->sparse_read(con, cursor, &buf);
 	if (ret <= 0) {
 		if (ret < 0)
@@ -1994,7 +1895,7 @@ static int prepare_sparse_read_cont(struct ceph_connection *con)
 	}
 
 	if (buf) {
-		/* receive into buffer */
+		 
 		reset_in_kvecs(con);
 		add_in_kvec(con, buf, ret);
 		con->v2.data_len_remain -= ret;
@@ -2095,10 +1996,7 @@ static void prepare_read_enc_page(struct ceph_connection *con)
 		return;
 	}
 
-	/*
-	 * We are set to read the last piece of ciphertext (ending
-	 * with epilogue) + auth tag.
-	 */
+	 
 	WARN_ON(con->v2.in_enc_i != con->v2.in_enc_page_cnt);
 	con->v2.in_state = IN_S_HANDLE_EPILOGUE;
 }
@@ -2203,7 +2101,7 @@ static int process_banner_payload(struct ceph_connection *con)
 		return -EINVAL;
 	}
 
-	/* no reset_out_kvecs() as our banner may still be pending */
+	 
 	ret = prepare_hello(con);
 	if (ret) {
 		pr_err("prepare_hello failed: %d\n", ret);
@@ -2248,12 +2146,7 @@ static int process_hello(struct ceph_connection *con, void *p, void *end)
 		return -EINVAL;
 	}
 
-	/*
-	 * Set our address to the address our first peer (i.e. monitor)
-	 * sees that we are connecting from.  If we are behind some sort
-	 * of NAT and want to be identified by some private (not NATed)
-	 * address, ip option should be used.
-	 */
+	 
 	if (ceph_addr_is_blank(my_addr)) {
 		memcpy(&my_addr->in_addr, &addr_for_me.in_addr,
 		       sizeof(my_addr->in_addr));
@@ -2270,7 +2163,7 @@ static int process_hello(struct ceph_connection *con, void *p, void *end)
 	WARN_ON(my_addr->type != CEPH_ENTITY_ADDR_TYPE_ANY);
 	WARN_ON(!my_addr->nonce);
 
-	/* no reset_out_kvecs() as our hello may still be pending */
+	 
 	ret = prepare_auth_request(con);
 	if (ret) {
 		if (ret != -EAGAIN)
@@ -2379,12 +2272,7 @@ bad:
 	return -EINVAL;
 }
 
-/*
- * Align session_key and con_secret to avoid GFP_ATOMIC allocation
- * inside crypto_shash_setkey() and crypto_aead_setkey() called from
- * setup_crypto().  __aligned(16) isn't guaranteed to work for stack
- * objects, so do it by hand.
- */
+ 
 static int process_auth_done(struct ceph_connection *con, void *p, void *end)
 {
 	u8 session_key_buf[CEPH_KEY_LEN + 16];
@@ -2474,7 +2362,7 @@ static int process_auth_signature(struct ceph_connection *con,
 
 	dout("%s con %p auth signature ok\n", __func__, con);
 
-	/* no reset_out_kvecs() as our auth_signature may still be pending */
+	 
 	if (!con->v2.server_cookie) {
 		ret = prepare_client_ident(con);
 		if (ret) {
@@ -2534,7 +2422,7 @@ static int process_server_ident(struct ceph_connection *con,
 	     __func__, con, ceph_pr_addr(&addr), le32_to_cpu(addr.nonce),
 	     global_id, global_seq, features, required_features, flags, cookie);
 
-	/* is this who we intended to talk to? */
+	 
 	if (memcmp(&addr, &con->peer_addr, sizeof(con->peer_addr))) {
 		pr_err("bad peer addr/nonce, want %s/%u, got %s/%u\n",
 		       ceph_pr_addr(&con->peer_addr),
@@ -2551,11 +2439,7 @@ static int process_server_ident(struct ceph_connection *con,
 		return -EINVAL;
 	}
 
-	/*
-	 * Both name->type and name->num are set in ceph_con_open() but
-	 * name->num may be bogus in the initial monmap.  name->type is
-	 * verified in handle_hello().
-	 */
+	 
 	WARN_ON(!con->peer_name.type);
 	con->peer_name.num = cpu_to_le64(global_id);
 	con->v2.peer_global_seq = global_seq;
@@ -2573,7 +2457,7 @@ static int process_server_ident(struct ceph_connection *con,
 	clear_in_sign_kvecs(con);
 	clear_out_sign_kvecs(con);
 	free_conn_bufs(con);
-	con->delay = 0;  /* reset backoff memory */
+	con->delay = 0;   
 
 	con->state = CEPH_CON_S_OPEN;
 	con->v2.out_state = OUT_S_GET_NEXT;
@@ -2624,7 +2508,7 @@ static int process_session_reconnect_ok(struct ceph_connection *con,
 	clear_in_sign_kvecs(con);
 	clear_out_sign_kvecs(con);
 	free_conn_bufs(con);
-	con->delay = 0;  /* reset backoff memory */
+	con->delay = 0;   
 
 	con->state = CEPH_CON_S_OPEN;
 	con->v2.out_state = OUT_S_GET_NEXT;
@@ -2851,12 +2735,7 @@ static int process_control(struct ceph_connection *con, void *p, void *end)
 	return 0;
 }
 
-/*
- * Return:
- *   1 - con->in_msg set, read message
- *   0 - skip message
- *  <0 - error
- */
+ 
 static int process_message_header(struct ceph_connection *con,
 				  void *p, void *end)
 {
@@ -2867,7 +2746,7 @@ static int process_message_header(struct ceph_connection *con,
 	int ret;
 	u64 seq;
 
-	/* verify seq# */
+	 
 	seq = le64_to_cpu(hdr2->seq);
 	if ((s64)seq - (s64)con->in_seq < 1) {
 		pr_info("%s%lld %s skipping old message: seq %llu, expected %llu\n",
@@ -2903,10 +2782,7 @@ static int process_message(struct ceph_connection *con)
 {
 	ceph_con_process_message(con);
 
-	/*
-	 * We could have been closed by ceph_con_close() because
-	 * ceph_con_process_message() temporarily drops con->mutex.
-	 */
+	 
 	if (con->state != CEPH_CON_S_OPEN) {
 		dout("%s con %p state changed to %d\n", __func__, con,
 		     con->state);
@@ -2934,7 +2810,7 @@ static int __handle_control(struct ceph_connection *con, void *p)
 		return 0;
 	}
 
-	msg = con->in_msg;  /* set in process_message_header() */
+	msg = con->in_msg;   
 	if (front_len(msg)) {
 		WARN_ON(front_len(msg) > msg->front_alloc_len);
 		msg->front.iov_len = front_len(msg);
@@ -3049,7 +2925,7 @@ static int handle_epilogue(struct ceph_connection *con)
 			return ret;
 		}
 
-		/* just late_status */
+		 
 		ret = decode_epilogue(con->v2.in_buf, NULL, NULL, NULL);
 		if (ret) {
 			con->error_msg = "protocol error, bad epilogue";
@@ -3163,11 +3039,7 @@ int ceph_con_v2_try_read(struct ceph_connection *con)
 	if (con->state == CEPH_CON_S_PREOPEN)
 		return 0;
 
-	/*
-	 * We should always have something pending here.  If not,
-	 * avoid calling populate_in_iter() as if we read something
-	 * (ceph_tcp_recv() would immediately return 1).
-	 */
+	 
 	if (WARN_ON(!iov_iter_count(&con->v2.in_iter)))
 		return -ENODATA;
 
@@ -3214,10 +3086,7 @@ static void queue_data_cont(struct ceph_connection *con)
 		return;
 	}
 
-	/*
-	 * We've written all data.  Queue epilogue.  Once it's written,
-	 * we are done.
-	 */
+	 
 	reset_out_kvecs(con);
 	prepare_epilogue_plain(con, false);
 	con->v2.out_state = OUT_S_FINISH_MESSAGE;
@@ -3243,10 +3112,7 @@ static void queue_enc_page(struct ceph_connection *con)
 		return;
 	}
 
-	/*
-	 * We've queued the last piece of ciphertext (ending with
-	 * epilogue) + auth tag.  Once it's written, we are done.
-	 */
+	 
 	WARN_ON(con->v2.out_enc_i != con->v2.out_enc_page_cnt);
 	con->v2.out_state = OUT_S_FINISH_MESSAGE;
 }
@@ -3262,11 +3128,7 @@ static void queue_zeros(struct ceph_connection *con)
 		return;
 	}
 
-	/*
-	 * We've zero-filled everything up to epilogue.  Queue epilogue
-	 * with late_status set to ABORTED and crcs adjusted for zeros.
-	 * Once it's written, we are done patching up for the revoke.
-	 */
+	 
 	reset_out_kvecs(con);
 	prepare_epilogue_plain(con, true);
 	con->v2.out_state = OUT_S_FINISH_MESSAGE;
@@ -3276,7 +3138,7 @@ static void finish_message(struct ceph_connection *con)
 {
 	dout("%s con %p msg %p\n", __func__, con, con->out_msg);
 
-	/* we end up here both plain and secure modes */
+	 
 	if (con->v2.out_enc_pages) {
 		WARN_ON(!con->v2.out_enc_page_cnt);
 		ceph_release_page_vector(con->v2.out_enc_pages,
@@ -3284,7 +3146,7 @@ static void finish_message(struct ceph_connection *con)
 		con->v2.out_enc_pages = NULL;
 		con->v2.out_enc_page_cnt = 0;
 	}
-	/* message may have been revoked */
+	 
 	if (con->out_msg) {
 		ceph_msg_put(con->out_msg);
 		con->out_msg = NULL;
@@ -3320,7 +3182,7 @@ static int populate_out_iter(struct ceph_connection *con)
 		queue_enc_page(con);
 		goto populated;
 	case OUT_S_QUEUE_ZEROS:
-		WARN_ON(con->out_msg);  /* revoked */
+		WARN_ON(con->out_msg);   
 		queue_zeros(con);
 		goto populated;
 	case OUT_S_FINISH_MESSAGE:
@@ -3378,15 +3240,11 @@ int ceph_con_v2_try_write(struct ceph_connection *con)
 	dout("%s con %p state %d have %zu\n", __func__, con, con->state,
 	     iov_iter_count(&con->v2.out_iter));
 
-	/* open the socket first? */
+	 
 	if (con->state == CEPH_CON_S_PREOPEN) {
 		WARN_ON(con->peer_addr.type != CEPH_ENTITY_ADDR_TYPE_MSGR2);
 
-		/*
-		 * Always bump global_seq.  Bump connect_seq only if
-		 * there is a session (i.e. we are reconnecting and will
-		 * send session_reconnect instead of client_ident).
-		 */
+		 
 		con->v2.global_seq = ceph_get_global_seq(con->msgr, 0);
 		if (con->v2.server_cookie)
 			con->v2.connect_seq++;
@@ -3548,7 +3406,7 @@ static void revoke_at_queue_data(struct ceph_connection *con)
 
 static void revoke_at_queue_data_cont(struct ceph_connection *con)
 {
-	int sent, resid;  /* current piece of data */
+	int sent, resid;   
 
 	WARN_ON(!data_len(con->out_msg));
 	WARN_ON(!iov_iter_is_bvec(&con->v2.out_iter));
@@ -3678,7 +3536,7 @@ static void revoke_at_prepare_read_data(struct ceph_connection *con)
 
 static void revoke_at_prepare_read_data_cont(struct ceph_connection *con)
 {
-	int recved, resid;  /* current piece of data */
+	int recved, resid;   
 	int remaining;
 
 	WARN_ON(con_secure(con));
@@ -3703,7 +3561,7 @@ static void revoke_at_prepare_read_data_cont(struct ceph_connection *con)
 
 static void revoke_at_prepare_read_enc_page(struct ceph_connection *con)
 {
-	int resid;  /* current enc page (not necessarily data) */
+	int resid;   
 
 	WARN_ON(!con_secure(con));
 	WARN_ON(!iov_iter_is_bvec(&con->v2.in_iter));
@@ -3719,7 +3577,7 @@ static void revoke_at_prepare_read_enc_page(struct ceph_connection *con)
 
 static void revoke_at_prepare_sparse_data(struct ceph_connection *con)
 {
-	int resid;  /* current piece of data */
+	int resid;   
 	int remaining;
 
 	WARN_ON(con_secure(con));

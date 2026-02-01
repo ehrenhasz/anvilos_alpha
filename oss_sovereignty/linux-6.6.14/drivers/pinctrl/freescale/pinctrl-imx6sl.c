@@ -1,9 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Freescale imx6sl pinctrl driver
-//
-// Author: Shawn Guo <shawn.guo@linaro.org>
-// Copyright (C) 2013 Freescale Semiconductor, Inc.
+
+
+
+
+
+
 
 #include <linux/err.h>
 #include <linux/init.h>
@@ -186,7 +186,7 @@ enum imx6sl_pads {
 	MX6SL_PAD_WDOG_B = 168,
 };
 
-/* Pad names for the pinmux subsystem */
+ 
 static const struct pinctrl_pin_desc imx6sl_pinctrl_pads[] = {
 	IMX_PINCTRL_PIN(MX6SL_PAD_RESERVE0),
 	IMX_PINCTRL_PIN(MX6SL_PAD_RESERVE1),
@@ -367,7 +367,7 @@ static const struct imx_pinctrl_soc_info imx6sl_pinctrl_info = {
 
 static const struct of_device_id imx6sl_pinctrl_of_match[] = {
 	{ .compatible = "fsl,imx6sl-iomuxc", },
-	{ /* sentinel */ }
+	{   }
 };
 
 static int imx6sl_pinctrl_probe(struct platform_device *pdev)

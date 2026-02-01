@@ -1,33 +1,6 @@
-/*
- * Copyright © 2015 Intel Corporation
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice (including the next
- * paragraph) shall be included in all copies or substantial portions of the
- * Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
- * DEALINGS IN THE SOFTWARE.
- */
+ 
 
-/**
- * DOC: atomic modeset support
- *
- * The functions here implement the state management and hardware programming
- * dispatch required by the atomic modeset infrastructure.
- * See intel_atomic_plane.c for the plane-specific atomic functionality.
- */
+ 
 
 #include <drm/drm_atomic.h>
 #include <drm/drm_atomic_helper.h>
@@ -44,15 +17,7 @@
 #include "intel_fb.h"
 #include "skl_universal_plane.h"
 
-/**
- * intel_digital_connector_atomic_get_property - hook for connector->atomic_get_property.
- * @connector: Connector to get the property for.
- * @state: Connector state to retrieve the property from.
- * @property: Property to retrieve.
- * @val: Return value for the property.
- *
- * Returns the atomic property value for a digital connector.
- */
+ 
 int intel_digital_connector_atomic_get_property(struct drm_connector *connector,
 						const struct drm_connector_state *state,
 						struct drm_property *property,
@@ -77,15 +42,7 @@ int intel_digital_connector_atomic_get_property(struct drm_connector *connector,
 	return 0;
 }
 
-/**
- * intel_digital_connector_atomic_set_property - hook for connector->atomic_set_property.
- * @connector: Connector to set the property for.
- * @state: Connector state to set the property on.
- * @property: Property to set.
- * @val: New value for the property.
- *
- * Sets the atomic property value for a digital connector.
- */
+ 
 int intel_digital_connector_atomic_set_property(struct drm_connector *connector,
 						struct drm_connector_state *state,
 						struct drm_property *property,
@@ -131,10 +88,7 @@ int intel_digital_connector_atomic_check(struct drm_connector *conn,
 
 	crtc_state = drm_atomic_get_new_crtc_state(state, new_state->crtc);
 
-	/*
-	 * These properties are handled by fastset, and might not end
-	 * up in a modeset.
-	 */
+	 
 	if (new_conn_state->force_audio != old_conn_state->force_audio ||
 	    new_conn_state->broadcast_rgb != old_conn_state->broadcast_rgb ||
 	    new_conn_state->base.colorspace != old_conn_state->base.colorspace ||
@@ -148,15 +102,7 @@ int intel_digital_connector_atomic_check(struct drm_connector *conn,
 	return 0;
 }
 
-/**
- * intel_digital_connector_duplicate_state - duplicate connector state
- * @connector: digital connector
- *
- * Allocates and returns a copy of the connector state (both common and
- * digital connector specific) for the specified connector.
- *
- * Returns: The newly allocated connector state, or NULL on failure.
- */
+ 
 struct drm_connector_state *
 intel_digital_connector_duplicate_state(struct drm_connector *connector)
 {
@@ -170,11 +116,7 @@ intel_digital_connector_duplicate_state(struct drm_connector *connector)
 	return &state->base;
 }
 
-/**
- * intel_connector_needs_modeset - check if connector needs a modeset
- * @state: the atomic state corresponding to this modeset
- * @connector: the connector
- */
+ 
 bool
 intel_connector_needs_modeset(struct intel_atomic_state *state,
 			      struct drm_connector *connector)
@@ -190,12 +132,7 @@ intel_connector_needs_modeset(struct intel_atomic_state *state,
 									    new_conn_state->crtc)));
 }
 
-/**
- * intel_any_crtc_needs_modeset - check if any CRTC needs a modeset
- * @state: the atomic state corresponding to this modeset
- *
- * Returns true if any CRTC in @state needs a modeset.
- */
+ 
 bool intel_any_crtc_needs_modeset(struct intel_atomic_state *state)
 {
 	struct intel_crtc *crtc;
@@ -224,15 +161,7 @@ intel_atomic_get_digital_connector_state(struct intel_atomic_state *state,
 	return to_intel_digital_connector_state(conn_state);
 }
 
-/**
- * intel_crtc_duplicate_state - duplicate crtc state
- * @crtc: drm crtc
- *
- * Allocates and returns a copy of the crtc state (both common and
- * Intel-specific) for the specified crtc.
- *
- * Returns: The newly allocated crtc state, or NULL on failure.
- */
+ 
 struct drm_crtc_state *
 intel_crtc_duplicate_state(struct drm_crtc *crtc)
 {
@@ -245,7 +174,7 @@ intel_crtc_duplicate_state(struct drm_crtc *crtc)
 
 	__drm_atomic_helper_crtc_duplicate_state(crtc, &crtc_state->uapi);
 
-	/* copy color blobs */
+	 
 	if (crtc_state->hw.degamma_lut)
 		drm_property_blob_get(crtc_state->hw.degamma_lut);
 	if (crtc_state->hw.ctm)
@@ -289,14 +218,7 @@ void intel_crtc_free_hw_state(struct intel_crtc_state *crtc_state)
 	intel_crtc_put_color_blobs(crtc_state);
 }
 
-/**
- * intel_crtc_destroy_state - destroy crtc state
- * @crtc: drm crtc
- * @state: the state to destroy
- *
- * Destroys the crtc state (both common and Intel-specific) for the
- * specified crtc.
- */
+ 
 void
 intel_crtc_destroy_state(struct drm_crtc *crtc,
 			 struct drm_crtc_state *state)
@@ -342,7 +264,7 @@ void intel_atomic_state_clear(struct drm_atomic_state *s)
 	drm_atomic_state_default_clear(&state->base);
 	intel_atomic_clear_global_state(state);
 
-	/* state->internal not reset on purpose */
+	 
 
 	state->dpll_set = state->modeset = false;
 }

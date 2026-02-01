@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * ADXL355 3-Axis Digital Accelerometer I2C driver
- *
- * Copyright (c) 2021 Puranjay Mohan <puranjay12@gmail.com>
- */
+
+ 
 
 #include <linux/i2c.h>
 #include <linux/module.h>

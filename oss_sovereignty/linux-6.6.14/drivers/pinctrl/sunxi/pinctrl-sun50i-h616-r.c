@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Allwinner H616 R_PIO pin controller driver
- *
- * Copyright (C) 2020 Arm Ltd.
- * Based on former work, which is:
- *   Copyright (C) 2017 Icenowy Zheng <icenowy@aosc.io>
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/platform_device.h>
@@ -18,13 +12,13 @@ static const struct sunxi_desc_pin sun50i_h616_r_pins[] = {
 	SUNXI_PIN(SUNXI_PINCTRL_PIN(L, 0),
 		  SUNXI_FUNCTION(0x0, "gpio_in"),
 		  SUNXI_FUNCTION(0x1, "gpio_out"),
-		  SUNXI_FUNCTION(0x2, "s_rsb"),		/* SCK */
-		  SUNXI_FUNCTION(0x3, "s_i2c")),	/* SCK */
+		  SUNXI_FUNCTION(0x2, "s_rsb"),		 
+		  SUNXI_FUNCTION(0x3, "s_i2c")),	 
 	SUNXI_PIN(SUNXI_PINCTRL_PIN(L, 1),
 		  SUNXI_FUNCTION(0x0, "gpio_in"),
 		  SUNXI_FUNCTION(0x1, "gpio_out"),
-		  SUNXI_FUNCTION(0x2, "s_rsb"),		/* SDA */
-		  SUNXI_FUNCTION(0x3, "s_i2c")),	/* SDA */
+		  SUNXI_FUNCTION(0x2, "s_rsb"),		 
+		  SUNXI_FUNCTION(0x3, "s_i2c")),	 
 };
 
 static const struct sunxi_pinctrl_desc sun50i_h616_r_pinctrl_data = {

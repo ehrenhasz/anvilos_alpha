@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: MIT
-/* Copyright (C) 2006-2017 Oracle Corporation */
+
+ 
 
 #include <linux/vbox_err.h>
 #include "vbox_drv.h"
@@ -8,13 +8,7 @@
 #include "hgsmi_channels.h"
 #include "hgsmi_ch_setup.h"
 
-/**
- * hgsmi_report_flags_location - Inform the host of the location of
- *                               the host flags in VRAM via an HGSMI cmd.
- * Return: 0 or negative errno value.
- * @ctx:        The context of the guest heap to use.
- * @location:   The offset chosen for the flags within guest VRAM.
- */
+ 
 int hgsmi_report_flags_location(struct gen_pool *ctx, u32 location)
 {
 	struct hgsmi_buffer_location *p;
@@ -33,13 +27,7 @@ int hgsmi_report_flags_location(struct gen_pool *ctx, u32 location)
 	return 0;
 }
 
-/**
- * hgsmi_send_caps_info - Notify the host of HGSMI-related guest capabilities
- *                        via an HGSMI command.
- * Return: 0 or negative errno value.
- * @ctx:        The context of the guest heap to use.
- * @caps:       The capabilities to report, see vbva_caps.
- */
+ 
 int hgsmi_send_caps_info(struct gen_pool *ctx, u32 caps)
 {
 	struct vbva_caps *p;
@@ -72,14 +60,7 @@ int hgsmi_test_query_conf(struct gen_pool *ctx)
 	return value == U32_MAX ? 0 : -EIO;
 }
 
-/**
- * hgsmi_query_conf - Query the host for an HGSMI configuration
- *                    parameter via an HGSMI command.
- * Return: 0 or negative errno value.
- * @ctx:        The context containing the heap used.
- * @index:      The index of the parameter to query.
- * @value_ret:  Where to store the value of the parameter on success.
- */
+ 
 int hgsmi_query_conf(struct gen_pool *ctx, u32 index, u32 *value_ret)
 {
 	struct vbva_conf32 *p;
@@ -101,19 +82,7 @@ int hgsmi_query_conf(struct gen_pool *ctx, u32 index, u32 *value_ret)
 	return 0;
 }
 
-/**
- * hgsmi_update_pointer_shape - Pass the host a new mouse pointer shape
- *                              via an HGSMI command.
- * Return: 0 or negative errno value.
- * @ctx:        The context containing the heap to be used.
- * @flags:      Cursor flags.
- * @hot_x:      Horizontal position of the hot spot.
- * @hot_y:      Vertical position of the hot spot.
- * @width:      Width in pixels of the cursor.
- * @height:     Height in pixels of the cursor.
- * @pixels:     Pixel data, @see VMMDevReqMousePointer for the format.
- * @len:        Size in bytes of the pixel data.
- */
+ 
 int hgsmi_update_pointer_shape(struct gen_pool *ctx, u32 flags,
 			       u32 hot_x, u32 hot_y, u32 width, u32 height,
 			       u8 *pixels, u32 len)
@@ -123,19 +92,13 @@ int hgsmi_update_pointer_shape(struct gen_pool *ctx, u32 flags,
 	int rc;
 
 	if (flags & VBOX_MOUSE_POINTER_SHAPE) {
-		/*
-		 * Size of the pointer data:
-		 * sizeof (AND mask) + sizeof (XOR_MASK)
-		 */
+		 
 		pixel_len = ((((width + 7) / 8) * height + 3) & ~3) +
 			 width * 4 * height;
 		if (pixel_len > len)
 			return -EINVAL;
 
-		/*
-		 * If shape is supplied, then always create the pointer visible.
-		 * See comments in 'vboxUpdatePointerShape'
-		 */
+		 
 		flags |= VBOX_MOUSE_POINTER_VISIBLE;
 	}
 
@@ -174,19 +137,7 @@ int hgsmi_update_pointer_shape(struct gen_pool *ctx, u32 flags,
 	return rc;
 }
 
-/**
- * hgsmi_cursor_position - Report the guest cursor position.  The host may
- *                         wish to use this information to re-position its
- *                         own cursor (though this is currently unlikely).
- *                         The current host cursor position is returned.
- * Return: 0 or negative errno value.
- * @ctx:              The context containing the heap used.
- * @report_position:  Are we reporting a position?
- * @x:                Guest cursor X position.
- * @y:                Guest cursor Y position.
- * @x_host:           Host cursor X position is stored here.  Optional.
- * @y_host:           Host cursor Y position is stored here.  Optional.
- */
+ 
 int hgsmi_cursor_position(struct gen_pool *ctx, bool report_position,
 			  u32 x, u32 y, u32 *x_host, u32 *y_host)
 {

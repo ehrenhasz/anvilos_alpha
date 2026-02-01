@@ -1,36 +1,4 @@
-/*
- * Copyright(c) 2011-2016 Intel Corporation. All rights reserved.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice (including the next
- * paragraph) shall be included in all copies or substantial portions of the
- * Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- *
- * Authors:
- *    Ke Yu
- *    Zhiyuan Lv <zhiyuan.lv@intel.com>
- *
- * Contributors:
- *    Terrence Xu <terrence.xu@intel.com>
- *    Changbin Du <changbin.du@intel.com>
- *    Bing Niu <bing.niu@intel.com>
- *    Zhi Wang <zhi.a.wang@intel.com>
- *
- */
+ 
 
 #include "display/intel_dp_aux_regs.h"
 #include "display/intel_gmbus_regs.h"
@@ -46,7 +14,7 @@
 #define gmbus1_slave_index(v) (((v) >> 8) & 0xff)
 #define gmbus1_bus_cycle(v) (((v) >> 25) & 0x7)
 
-/* GMBUS0 bits definitions */
+ 
 #define _GMBUS_PIN_SEL_MASK     (0x7)
 
 static unsigned char edid_get_byte(struct intel_vgpu *vgpu)
@@ -134,7 +102,7 @@ static void reset_gmbus_controller(struct intel_vgpu *vgpu)
 	vgpu->display.i2c_edid.gmbus.phase = GMBUS_IDLE_PHASE;
 }
 
-/* GMBUS0 */
+ 
 static int gmbus0_mmio_write(struct intel_vgpu *vgpu,
 			unsigned int offset, void *p_data, unsigned int bytes)
 {
@@ -187,24 +155,15 @@ static int gmbus1_mmio_write(struct intel_vgpu *vgpu, unsigned int offset,
 			vgpu_vreg(vgpu, offset) &= ~GMBUS_SW_CLR_INT;
 			reset_gmbus_controller(vgpu);
 		}
-		/*
-		 * TODO: "This bit is cleared to zero when an event
-		 * causes the HW_RDY bit transition to occur "
-		 */
+		 
 	} else {
-		/*
-		 * per bspec setting this bit can cause:
-		 * 1) INT status bit cleared
-		 * 2) HW_RDY bit asserted
-		 */
+		 
 		if (wvalue & GMBUS_SW_CLR_INT) {
 			vgpu_vreg_t(vgpu, PCH_GMBUS2) &= ~GMBUS_INT;
 			vgpu_vreg_t(vgpu, PCH_GMBUS2) |= GMBUS_HW_RDY;
 		}
 
-		/* For virtualization, we suppose that HW is always ready,
-		 * so GMBUS_SW_RDY should always be cleared
-		 */
+		 
 		if (wvalue & GMBUS_SW_RDY)
 			wvalue &= ~GMBUS_SW_RDY;
 
@@ -212,7 +171,7 @@ static int gmbus1_mmio_write(struct intel_vgpu *vgpu, unsigned int offset,
 			gmbus1_total_byte_count(wvalue);
 		slave_addr = gmbus1_slave_addr(wvalue);
 
-		/* vgpu gmbus only support EDID */
+		 
 		if (slave_addr == EDID_ADDR) {
 			i2c_edid->slave_selected = true;
 		} else if (slave_addr != 0) {
@@ -231,21 +190,11 @@ static int gmbus1_mmio_write(struct intel_vgpu *vgpu, unsigned int offset,
 		case GMBUS_NOCYCLE:
 			break;
 		case GMBUS_STOP:
-			/* From spec:
-			 * This can only cause a STOP to be generated
-			 * if a GMBUS cycle is generated, the GMBUS is
-			 * currently in a data/wait/idle phase, or it is in a
-			 * WAIT phase
-			 */
+			 
 			if (gmbus1_bus_cycle(vgpu_vreg(vgpu, offset))
 				!= GMBUS_NOCYCLE) {
 				intel_vgpu_init_i2c_edid(vgpu);
-				/* After the 'stop' cycle, hw state would become
-				 * 'stop phase' and then 'idle phase' after a
-				 * few milliseconds. In emulation, we just set
-				 * it as 'idle phase' ('stop phase' is not
-				 * visible in gmbus interface)
-				 */
+				 
 				i2c_edid->gmbus.phase = GMBUS_IDLE_PHASE;
 				vgpu_vreg_t(vgpu, PCH_GMBUS2) &= ~GMBUS_ACTIVE;
 			}
@@ -254,10 +203,7 @@ static int gmbus1_mmio_write(struct intel_vgpu *vgpu, unsigned int offset,
 		case IDX_NS_W:
 		case NIDX_STOP:
 		case IDX_STOP:
-			/* From hw spec the GMBUS phase
-			 * transition like this:
-			 * START (-->INDEX) -->DATA
-			 */
+			 
 			i2c_edid->gmbus.phase = GMBUS_DATA_PHASE;
 			vgpu_vreg_t(vgpu, PCH_GMBUS2) |= GMBUS_ACTIVE;
 			break;
@@ -265,12 +211,7 @@ static int gmbus1_mmio_write(struct intel_vgpu *vgpu, unsigned int offset,
 			gvt_vgpu_err("Unknown/reserved GMBUS cycle detected!\n");
 			break;
 		}
-		/*
-		 * From hw spec the WAIT state will be
-		 * cleared:
-		 * (1) in a new GMBUS cycle
-		 * (2) by generating a stop
-		 */
+		 
 		vgpu_vreg(vgpu, offset) = wvalue;
 	}
 	return 0;
@@ -296,7 +237,7 @@ static int gmbus3_mmio_read(struct intel_vgpu *vgpu, unsigned int offset,
 	int byte_count = byte_left;
 	u32 reg_data = 0;
 
-	/* Data can only be recevied if previous settings correct */
+	 
 	if (vgpu_vreg_t(vgpu, PCH_GMBUS1) & GMBUS_SLAVE_READ) {
 		if (byte_left <= 0) {
 			memcpy(p_data, &vgpu_vreg(vgpu, offset), bytes);
@@ -327,10 +268,7 @@ static int gmbus3_mmio_read(struct intel_vgpu *vgpu, unsigned int offset,
 			}
 			intel_vgpu_init_i2c_edid(vgpu);
 		}
-		/*
-		 * Read GMBUS3 during send operation,
-		 * return the latest written value
-		 */
+		 
 	} else {
 		memcpy(p_data, &vgpu_vreg(vgpu, offset), bytes);
 		gvt_vgpu_err("warning: gmbus3 read with nothing returned\n");
@@ -356,23 +294,11 @@ static int gmbus2_mmio_write(struct intel_vgpu *vgpu, unsigned int offset,
 
 	if (wvalue & GMBUS_INUSE)
 		vgpu_vreg(vgpu, offset) &= ~GMBUS_INUSE;
-	/* All other bits are read-only */
+	 
 	return 0;
 }
 
-/**
- * intel_gvt_i2c_handle_gmbus_read - emulate gmbus register mmio read
- * @vgpu: a vGPU
- * @offset: reg offset
- * @p_data: data return buffer
- * @bytes: access data length
- *
- * This function is used to emulate gmbus register mmio read
- *
- * Returns:
- * Zero on success, negative error code if failed.
- *
- */
+ 
 int intel_gvt_i2c_handle_gmbus_read(struct intel_vgpu *vgpu,
 	unsigned int offset, void *p_data, unsigned int bytes)
 {
@@ -390,19 +316,7 @@ int intel_gvt_i2c_handle_gmbus_read(struct intel_vgpu *vgpu,
 	return 0;
 }
 
-/**
- * intel_gvt_i2c_handle_gmbus_write - emulate gmbus register mmio write
- * @vgpu: a vGPU
- * @offset: reg offset
- * @p_data: data return buffer
- * @bytes: access data length
- *
- * This function is used to emulate gmbus register mmio write
- *
- * Returns:
- * Zero on success, negative error code if failed.
- *
- */
+ 
 int intel_gvt_i2c_handle_gmbus_write(struct intel_vgpu *vgpu,
 		unsigned int offset, void *p_data, unsigned int bytes)
 {
@@ -463,16 +377,7 @@ static inline int get_aux_ch_reg(unsigned int offset)
 	return reg;
 }
 
-/**
- * intel_gvt_i2c_handle_aux_ch_write - emulate AUX channel register write
- * @vgpu: a vGPU
- * @port_idx: port index
- * @offset: reg offset
- * @p_data: write ptr
- *
- * This function is used to emulate AUX channel register write
- *
- */
+ 
 void intel_gvt_i2c_handle_aux_ch_write(struct intel_vgpu *vgpu,
 				int port_idx,
 				unsigned int offset,
@@ -493,17 +398,17 @@ void intel_gvt_i2c_handle_aux_ch_write(struct intel_vgpu *vgpu,
 
 	msg_length = REG_FIELD_GET(DP_AUX_CH_CTL_MESSAGE_SIZE_MASK, value);
 
-	// check the msg in DATA register.
+	
 	msg = vgpu_vreg(vgpu, offset + 4);
 	addr = (msg >> 8) & 0xffff;
 	ctrl = (msg >> 24) & 0xff;
 	op = ctrl >> 4;
 	if (!(value & DP_AUX_CH_CTL_SEND_BUSY)) {
-		/* The ctl write to clear some states */
+		 
 		return;
 	}
 
-	/* Always set the wanted value for vms. */
+	 
 	ret_msg_size = (((op & 0x1) == GVT_AUX_I2C_READ) ? 2 : 1);
 	vgpu_vreg(vgpu, offset) =
 		DP_AUX_CH_CTL_DONE |
@@ -511,14 +416,14 @@ void intel_gvt_i2c_handle_aux_ch_write(struct intel_vgpu *vgpu,
 
 	if (msg_length == 3) {
 		if (!(op & GVT_AUX_I2C_MOT)) {
-			/* stop */
+			 
 			intel_vgpu_init_i2c_edid(vgpu);
 		} else {
-			/* start or restart */
+			 
 			i2c_edid->aux_ch.i2c_over_aux_ch = true;
 			i2c_edid->aux_ch.aux_ch_mot = true;
 			if (addr == 0) {
-				/* reset the address */
+				 
 				intel_vgpu_init_i2c_edid(vgpu);
 			} else if (addr == EDID_ADDR) {
 				i2c_edid->state = I2C_AUX_CH;
@@ -531,12 +436,7 @@ void intel_gvt_i2c_handle_aux_ch_write(struct intel_vgpu *vgpu,
 			}
 		}
 	} else if ((op & 0x1) == GVT_AUX_I2C_WRITE) {
-		/* TODO
-		 * We only support EDID reading from I2C_over_AUX. And
-		 * we do not expect the index mode to be used. Right now
-		 * the WRITE operation is ignored. It is good enough to
-		 * support the gfx driver to do EDID access.
-		 */
+		 
 	} else {
 		if (drm_WARN_ON(&i915->drm, (op & 0x1) != GVT_AUX_I2C_READ))
 			return;
@@ -549,21 +449,12 @@ void intel_gvt_i2c_handle_aux_ch_write(struct intel_vgpu *vgpu,
 		} else
 			aux_data_for_write = (0xff << 16);
 	}
-	/* write the return value in AUX_CH_DATA reg which includes:
-	 * ACK of I2C_WRITE
-	 * returned byte if it is READ
-	 */
+	 
 	aux_data_for_write |= GVT_AUX_I2C_REPLY_ACK << 24;
 	vgpu_vreg(vgpu, offset + 4) = aux_data_for_write;
 }
 
-/**
- * intel_vgpu_init_i2c_edid - initialize vGPU i2c edid emulation
- * @vgpu: a vGPU
- *
- * This function is used to initialize vGPU i2c edid emulation stuffs
- *
- */
+ 
 void intel_vgpu_init_i2c_edid(struct intel_vgpu *vgpu)
 {
 	struct intel_vgpu_i2c_edid *edid = &vgpu->display.i2c_edid;

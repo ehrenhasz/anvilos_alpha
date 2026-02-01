@@ -1,14 +1,14 @@
-// SPDX-License-Identifier: GPL-2.0+
-//
-// Core driver for the imx pin controller in imx1/21/27
-//
-// Copyright (C) 2013 Pengutronix
-// Author: Markus Pargmann <mpa@pengutronix.de>
-//
-// Based on pinctrl-imx.c:
-//	Author: Dong Aisheng <dong.aisheng@linaro.org>
-//	Copyright (C) 2012 Freescale Semiconductor, Inc.
-//	Copyright (C) 2012 Linaro Ltd.
+
+
+
+
+
+
+
+
+
+
+
 
 #include <linux/bitops.h>
 #include <linux/err.h>
@@ -35,9 +35,7 @@ struct imx1_pinctrl {
 	const struct imx1_pinctrl_soc_info *info;
 };
 
-/*
- * MX1 register offsets
- */
+ 
 
 #define MX1_DDIR 0x00
 #define MX1_OCR 0x04
@@ -50,9 +48,7 @@ struct imx1_pinctrl {
 #define MX1_PORT_STRIDE 0x100
 
 
-/*
- * MUX_ID format defines
- */
+ 
 #define MX1_MUX_FUNCTION(val) (BIT(0) & val)
 #define MX1_MUX_GPIO(val) ((BIT(1) & val) >> 1)
 #define MX1_MUX_DIR(val) ((BIT(2) & val) >> 2)
@@ -61,53 +57,39 @@ struct imx1_pinctrl {
 #define MX1_MUX_ICONFB(val) (((BIT(10) | BIT(11)) & val) >> 10)
 
 
-/*
- * IMX1 IOMUXC manages the pins based on ports. Each port has 32 pins. IOMUX
- * control registers are separated into function, output configuration, input
- * configuration A, input configuration B, GPIO in use and data direction.
- *
- * Those controls that are represented by 1 bit have a direct mapping between
- * bit position and pin id. If they are represented by 2 bit, the lower 16 pins
- * are in the first register and the upper 16 pins in the second (next)
- * register. pin_id is stored in bit (pin_id%16)*2 and the bit above.
- */
+ 
 
-/*
- * Calculates the register offset from a pin_id
- */
+ 
 static void __iomem *imx1_mem(struct imx1_pinctrl *ipctl, unsigned int pin_id)
 {
 	unsigned int port = pin_id / 32;
 	return ipctl->base + port * MX1_PORT_STRIDE;
 }
 
-/*
- * Write to a register with 2 bits per pin. The function will automatically
- * use the next register if the pin is managed in the second register.
- */
+ 
 static void imx1_write_2bit(struct imx1_pinctrl *ipctl, unsigned int pin_id,
 		u32 value, u32 reg_offset)
 {
 	void __iomem *reg = imx1_mem(ipctl, pin_id) + reg_offset;
-	int offset = (pin_id % 16) * 2; /* offset, regardless of register used */
-	int mask = ~(0x3 << offset); /* Mask for 2 bits at offset */
+	int offset = (pin_id % 16) * 2;  
+	int mask = ~(0x3 << offset);  
 	u32 old_val;
 	u32 new_val;
 
-	/* Use the next register if the pin's port pin number is >=16 */
+	 
 	if (pin_id % 32 >= 16)
 		reg += 0x04;
 
 	dev_dbg(ipctl->dev, "write: register 0x%p offset %d value 0x%x\n",
 			reg, offset, value);
 
-	/* Get current state of pins */
+	 
 	old_val = readl(reg);
 	old_val &= mask;
 
-	new_val = value & 0x3; /* Make sure value is really 2 bit */
+	new_val = value & 0x3;  
 	new_val <<= offset;
-	new_val |= old_val;/* Set new state for pin_id */
+	new_val |= old_val; 
 
 	writel(new_val, reg);
 }
@@ -121,13 +103,13 @@ static void imx1_write_bit(struct imx1_pinctrl *ipctl, unsigned int pin_id,
 	u32 old_val;
 	u32 new_val;
 
-	/* Get current state of pins */
+	 
 	old_val = readl(reg);
 	old_val &= mask;
 
-	new_val = value & 0x1; /* Make sure value is really 1 bit */
+	new_val = value & 0x1;  
 	new_val <<= offset;
-	new_val |= old_val;/* Set new state for pin_id */
+	new_val |= old_val; 
 
 	writel(new_val, reg);
 }
@@ -138,7 +120,7 @@ static int imx1_read_2bit(struct imx1_pinctrl *ipctl, unsigned int pin_id,
 	void __iomem *reg = imx1_mem(ipctl, pin_id) + reg_offset;
 	int offset = (pin_id % 16) * 2;
 
-	/* Use the next register if the pin's port pin number is >=16 */
+	 
 	if (pin_id % 32 >= 16)
 		reg += 0x04;
 
@@ -230,10 +212,7 @@ static int imx1_dt_node_to_map(struct pinctrl_dev *pctldev,
 	int map_num = 1;
 	int i, j;
 
-	/*
-	 * first find the group of this node and check if we need create
-	 * config maps for pins
-	 */
+	 
 	grp = imx1_pinctrl_find_group_by_name(info, np->name);
 	if (!grp) {
 		dev_err(info->dev, "unable to find group for node %pOFn\n",
@@ -252,7 +231,7 @@ static int imx1_dt_node_to_map(struct pinctrl_dev *pctldev,
 	*map = new_map;
 	*num_maps = map_num;
 
-	/* create mux map */
+	 
 	parent = of_get_parent(np);
 	if (!parent) {
 		kfree(new_map);
@@ -263,7 +242,7 @@ static int imx1_dt_node_to_map(struct pinctrl_dev *pctldev,
 	new_map[0].data.mux.group = np->name;
 	of_node_put(parent);
 
-	/* create config map */
+	 
 	new_map++;
 	for (i = j = 0; i < grp->npins; i++) {
 		new_map[j].type = PIN_MAP_TYPE_CONFIGS_PIN;
@@ -304,10 +283,7 @@ static int imx1_pmx_set(struct pinctrl_dev *pctldev, unsigned selector,
 	unsigned int npins;
 	int i;
 
-	/*
-	 * Configure the mux mode for each pin in the group for a specific
-	 * function.
-	 */
+	 
 	pins = info->groups[group].pins;
 	npins = info->groups[group].npins;
 
@@ -470,14 +446,12 @@ static int imx1_pinctrl_parse_groups(struct device_node *np,
 
 	dev_dbg(info->dev, "group(%d): %pOFn\n", index, np);
 
-	/* Initialise group */
+	 
 	grp->name = np->name;
 
-	/*
-	 * the binding format is fsl,pins = <PIN MUX_ID CONFIG>
-	 */
+	 
 	list = of_get_property(np, "fsl,pins", &size);
-	/* we do not check return since it's safe node passed down */
+	 
 	if (!size || size % 12) {
 		dev_notice(info->dev, "Not a valid fsl,pins property (%pOFn)\n",
 				np);
@@ -519,7 +493,7 @@ static int imx1_pinctrl_parse_functions(struct device_node *np,
 
 	func = &info->functions[index];
 
-	/* Initialise function */
+	 
 	func->name = np->name;
 	func->num_groups = of_get_child_count(np);
 	if (func->num_groups == 0)
@@ -604,7 +578,7 @@ int imx1_pinctrl_core_probe(struct platform_device *pdev,
 	}
 	info->dev = &pdev->dev;
 
-	/* Create state holders etc for this driver */
+	 
 	ipctl = devm_kzalloc(&pdev->dev, sizeof(*ipctl), GFP_KERNEL);
 	if (!ipctl)
 		return -ENOMEM;

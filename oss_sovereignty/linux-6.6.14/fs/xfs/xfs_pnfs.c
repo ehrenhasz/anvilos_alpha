@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2014 Christoph Hellwig.
- */
+
+ 
 #include "xfs.h"
 #include "xfs_shared.h"
 #include "xfs_format.h"
@@ -14,16 +12,7 @@
 #include "xfs_iomap.h"
 #include "xfs_pnfs.h"
 
-/*
- * Ensure that we do not have any outstanding pNFS layouts that can be used by
- * clients to directly read from or write to this inode.  This must be called
- * before every operation that can remove blocks from the extent map.
- * Additionally we call it during the write operation, where aren't concerned
- * about exposing unallocated blocks but just want to provide basic
- * synchronization between a local writer and pNFS clients.  mmap writes would
- * also benefit from this sort of synchronization, but due to the tricky locking
- * rules in the page fault path we don't bother.
- */
+ 
 int
 xfs_break_leased_layouts(
 	struct inode		*inode,
@@ -45,10 +34,7 @@ xfs_break_leased_layouts(
 	return error;
 }
 
-/*
- * Get a unique ID including its location so that the client can identify
- * the exported device.
- */
+ 
 int
 xfs_fs_get_uuid(
 	struct super_block	*sb,
@@ -70,15 +56,7 @@ xfs_fs_get_uuid(
 	return 0;
 }
 
-/*
- * We cannot use file based VFS helpers such as file_modified() to update
- * inode state as we modify the data/metadata in the inode here. Hence we have
- * to open code the timestamp updates and SUID/SGID stripping. We also need
- * to set the inode prealloc flag to ensure that the extents we allocate are not
- * removed if the inode is reclaimed from memory before xfs_fs_block_commit()
- * is from the client to indicate that data has been written and the file size
- * can be extended.
- */
+ 
 static int
 xfs_fs_map_update_inode(
 	struct xfs_inode	*ip)
@@ -104,9 +82,7 @@ xfs_fs_map_update_inode(
 	return xfs_trans_commit(tp);
 }
 
-/*
- * Get a layout for the pNFS client.
- */
+ 
 int
 xfs_fs_map_blocks(
 	struct inode		*inode,
@@ -130,28 +106,15 @@ xfs_fs_map_blocks(
 	if (xfs_is_shutdown(mp))
 		return -EIO;
 
-	/*
-	 * We can't export inodes residing on the realtime device.  The realtime
-	 * device doesn't have a UUID to identify it, so the client has no way
-	 * to find it.
-	 */
+	 
 	if (XFS_IS_REALTIME_INODE(ip))
 		return -ENXIO;
 
-	/*
-	 * The pNFS block layout spec actually supports reflink like
-	 * functionality, but the Linux pNFS server doesn't implement it yet.
-	 */
+	 
 	if (xfs_is_reflink_inode(ip))
 		return -ENXIO;
 
-	/*
-	 * Lock out any other I/O before we flush and invalidate the pagecache,
-	 * and then hand out a layout to the remote system.  This is very
-	 * similar to direct I/O, except that the synchronization is much more
-	 * complicated.  See the comment near xfs_break_leased_layouts
-	 * for a detailed explanation.
-	 */
+	 
 	xfs_ilock(ip, XFS_IOLOCK_EXCL);
 
 	error = -EINVAL;
@@ -195,11 +158,7 @@ xfs_fs_map_blocks(
 		if (error)
 			goto out_unlock;
 
-		/*
-		 * Ensure the next transaction is committed synchronously so
-		 * that the blocks allocated and handed out to the client are
-		 * guaranteed to be present even after a server crash.
-		 */
+		 
 		error = xfs_fs_map_update_inode(ip);
 		if (!error)
 			error = xfs_log_force_inode(ip);
@@ -219,9 +178,7 @@ out_unlock:
 	return error;
 }
 
-/*
- * Ensure the size update falls into a valid allocated block.
- */
+ 
 static int
 xfs_pnfs_validate_isize(
 	struct xfs_inode	*ip,
@@ -245,16 +202,7 @@ xfs_pnfs_validate_isize(
 	return 0;
 }
 
-/*
- * Make sure the blocks described by maps are stable on disk.  This includes
- * converting any unwritten extents, flushing the disk cache and updating the
- * time stamps.
- *
- * Note that we rely on the caller to always send us a timestamp update so that
- * we always commit a transaction here.  If that stops being true we will have
- * to manually flush the cache here similar to what the fsync code path does
- * for datasyncs on files that have no dirty metadata.
- */
+ 
 int
 xfs_fs_commit_blocks(
 	struct inode		*inode,
@@ -294,9 +242,7 @@ xfs_fs_commit_blocks(
 		if (!length)
 			continue;
 
-		/*
-		 * Make sure reads through the pagecache see the new data.
-		 */
+		 
 		error = invalidate_inode_pages2_range(inode->i_mapping,
 					start >> PAGE_SHIFT,
 					(end - 1) >> PAGE_SHIFT);

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Xilinx Zynq UltraScale+ MPSoC Quad-SPI (QSPI) controller driver
- * (master mode only)
- *
- * Copyright (C) 2009 - 2015 Xilinx, Inc.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -22,7 +17,7 @@
 #include <linux/workqueue.h>
 #include <linux/spi/spi-mem.h>
 
-/* Generic QSPI register offsets */
+ 
 #define GQSPI_CONFIG_OFST		0x00000100
 #define GQSPI_ISR_OFST			0x00000104
 #define GQSPI_IDR_OFST			0x0000010C
@@ -50,7 +45,7 @@
 #define GQSPI_QSPIDMA_DST_ADDR_MSB_OFST 0x00000828
 #define GQSPI_DATA_DLY_ADJ_OFST         0x000001F8
 
-/* GQSPI register bit masks */
+ 
 #define GQSPI_SEL_MASK				0x00000001
 #define GQSPI_EN_MASK				0x00000001
 #define GQSPI_LPBK_DLY_ADJ_USE_LPBK_MASK	0x00000020
@@ -127,15 +122,15 @@
 #define GQSPI_SELECT_FLASH_BUS_LOWER		0x1
 #define GQSPI_SELECT_FLASH_BUS_UPPER		0x2
 #define GQSPI_SELECT_FLASH_BUS_BOTH		0x3
-#define GQSPI_BAUD_DIV_MAX	7	/* Baud rate divisor maximum */
-#define GQSPI_BAUD_DIV_SHIFT	2	/* Baud rate divisor shift */
+#define GQSPI_BAUD_DIV_MAX	7	 
+#define GQSPI_BAUD_DIV_SHIFT	2	 
 #define GQSPI_SELECT_MODE_SPI		0x1
 #define GQSPI_SELECT_MODE_DUALSPI	0x2
 #define GQSPI_SELECT_MODE_QUADSPI	0x4
 #define GQSPI_DMA_UNALIGN		0x3
-#define GQSPI_DEFAULT_NUM_CS	1	/* Default number of chip selects */
+#define GQSPI_DEFAULT_NUM_CS	1	 
 
-#define GQSPI_MAX_NUM_CS	2	/* Maximum number of chip selects */
+#define GQSPI_MAX_NUM_CS	2	 
 
 #define GQSPI_USE_DATA_DLY		0x1
 #define GQSPI_USE_DATA_DLY_SHIFT	31
@@ -146,7 +141,7 @@
 #define TAP_DLY_BYPASS_LQSPI_RX_VALUE	0x1
 #define TAP_DLY_BYPASS_LQSPI_RX_SHIFT	0x2
 
-/* set to differentiate versal from zynqmp, 1=versal, 0=zynqmp */
+ 
 #define QSPI_QUIRK_HAS_TAPDELAY		BIT(0)
 
 #define GQSPI_FREQ_37_5MHZ	37500000
@@ -157,37 +152,12 @@
 #define SPI_AUTOSUSPEND_TIMEOUT		3000
 enum mode_type {GQSPI_MODE_IO, GQSPI_MODE_DMA};
 
-/**
- * struct qspi_platform_data - zynqmp qspi platform data structure
- * @quirks:    Flags is used to identify the platform
- */
+ 
 struct qspi_platform_data {
 	u32 quirks;
 };
 
-/**
- * struct zynqmp_qspi - Defines qspi driver instance
- * @ctlr:		Pointer to the spi controller information
- * @regs:		Virtual address of the QSPI controller registers
- * @refclk:		Pointer to the peripheral clock
- * @pclk:		Pointer to the APB clock
- * @irq:		IRQ number
- * @dev:		Pointer to struct device
- * @txbuf:		Pointer to the TX buffer
- * @rxbuf:		Pointer to the RX buffer
- * @bytes_to_transfer:	Number of bytes left to transfer
- * @bytes_to_receive:	Number of bytes left to receive
- * @genfifocs:		Used for chip select
- * @genfifobus:		Used to select the upper or lower bus
- * @dma_rx_bytes:	Remaining bytes to receive by DMA mode
- * @dma_addr:		DMA address after mapping the kernel buffer
- * @genfifoentry:	Used for storing the genfifoentry instruction.
- * @mode:		Defines the mode in which QSPI is operating
- * @data_completion:	completion structure
- * @op_lock:		Operational lock
- * @speed_hz:          Current SPI bus clock speed in hz
- * @has_tapdelay:	Used for tapdelay register available in qspi
- */
+ 
 struct zynqmp_qspi {
 	struct spi_controller *ctlr;
 	void __iomem *regs;
@@ -211,44 +181,26 @@ struct zynqmp_qspi {
 	bool has_tapdelay;
 };
 
-/**
- * zynqmp_gqspi_read - For GQSPI controller read operation
- * @xqspi:	Pointer to the zynqmp_qspi structure
- * @offset:	Offset from where to read
- * Return:      Value at the offset
- */
+ 
 static u32 zynqmp_gqspi_read(struct zynqmp_qspi *xqspi, u32 offset)
 {
 	return readl_relaxed(xqspi->regs + offset);
 }
 
-/**
- * zynqmp_gqspi_write - For GQSPI controller write operation
- * @xqspi:	Pointer to the zynqmp_qspi structure
- * @offset:	Offset where to write
- * @val:	Value to be written
- */
+ 
 static inline void zynqmp_gqspi_write(struct zynqmp_qspi *xqspi, u32 offset,
 				      u32 val)
 {
 	writel_relaxed(val, (xqspi->regs + offset));
 }
 
-/**
- * zynqmp_gqspi_selectslave - For selection of slave device
- * @instanceptr:	Pointer to the zynqmp_qspi structure
- * @slavecs:	For chip select
- * @slavebus:	To check which bus is selected- upper or lower
- */
+ 
 static void zynqmp_gqspi_selectslave(struct zynqmp_qspi *instanceptr,
 				     u8 slavecs, u8 slavebus)
 {
-	/*
-	 * Bus and CS lines selected here will be updated in the instance and
-	 * used for subsequent GENFIFO entries during transfer.
-	 */
+	 
 
-	/* Choose slave select line */
+	 
 	switch (slavecs) {
 	case GQSPI_SELECT_FLASH_CS_BOTH:
 		instanceptr->genfifocs = GQSPI_GENFIFO_CS_LOWER |
@@ -264,7 +216,7 @@ static void zynqmp_gqspi_selectslave(struct zynqmp_qspi *instanceptr,
 		dev_warn(instanceptr->dev, "Invalid slave select\n");
 	}
 
-	/* Choose the bus */
+	 
 	switch (slavebus) {
 	case GQSPI_SELECT_FLASH_BUS_BOTH:
 		instanceptr->genfifobus = GQSPI_GENFIFO_BUS_LOWER |
@@ -281,11 +233,7 @@ static void zynqmp_gqspi_selectslave(struct zynqmp_qspi *instanceptr,
 	}
 }
 
-/**
- * zynqmp_qspi_set_tapdelay:   To configure qspi tap delays
- * @xqspi:             Pointer to the zynqmp_qspi structure
- * @baudrateval:       Buadrate to configure
- */
+ 
 static void zynqmp_qspi_set_tapdelay(struct zynqmp_qspi *xqspi, u32 baudrateval)
 {
 	u32 tapdlybypass = 0, lpbkdlyadj = 0, datadlyadj = 0, clk_rate;
@@ -331,38 +279,19 @@ static void zynqmp_qspi_set_tapdelay(struct zynqmp_qspi *xqspi, u32 baudrateval)
 	zynqmp_gqspi_write(xqspi, GQSPI_DATA_DLY_ADJ_OFST, datadlyadj);
 }
 
-/**
- * zynqmp_qspi_init_hw - Initialize the hardware
- * @xqspi:	Pointer to the zynqmp_qspi structure
- *
- * The default settings of the QSPI controller's configurable parameters on
- * reset are
- *	- Master mode
- *	- TX threshold set to 1
- *	- RX threshold set to 1
- *	- Flash memory interface mode enabled
- * This function performs the following actions
- *	- Disable and clear all the interrupts
- *	- Enable manual slave select
- *	- Enable manual start
- *	- Deselect all the chip select lines
- *	- Set the little endian mode of TX FIFO
- *	- Set clock phase
- *	- Set clock polarity and
- *	- Enable the QSPI controller
- */
+ 
 static void zynqmp_qspi_init_hw(struct zynqmp_qspi *xqspi)
 {
 	u32 config_reg, baud_rate_val = 0;
 	ulong clk_rate;
 
-	/* Select the GQSPI mode */
+	 
 	zynqmp_gqspi_write(xqspi, GQSPI_SEL_OFST, GQSPI_SEL_MASK);
-	/* Clear and disable interrupts */
+	 
 	zynqmp_gqspi_write(xqspi, GQSPI_ISR_OFST,
 			   zynqmp_gqspi_read(xqspi, GQSPI_ISR_OFST) |
 			   GQSPI_ISR_WR_TO_CLR_MASK);
-	/* Clear the DMA STS */
+	 
 	zynqmp_gqspi_write(xqspi, GQSPI_QSPIDMA_DST_I_STS_OFST,
 			   zynqmp_gqspi_read(xqspi,
 					     GQSPI_QSPIDMA_DST_I_STS_OFST));
@@ -374,32 +303,32 @@ static void zynqmp_qspi_init_hw(struct zynqmp_qspi *xqspi)
 	zynqmp_gqspi_write(xqspi,
 			   GQSPI_QSPIDMA_DST_I_DIS_OFST,
 			   GQSPI_QSPIDMA_DST_INTR_ALL_MASK);
-	/* Disable the GQSPI */
+	 
 	zynqmp_gqspi_write(xqspi, GQSPI_EN_OFST, 0x0);
 	config_reg = zynqmp_gqspi_read(xqspi, GQSPI_CONFIG_OFST);
 	config_reg &= ~GQSPI_CFG_MODE_EN_MASK;
-	/* Manual start */
+	 
 	config_reg |= GQSPI_CFG_GEN_FIFO_START_MODE_MASK;
-	/* Little endian by default */
+	 
 	config_reg &= ~GQSPI_CFG_ENDIAN_MASK;
-	/* Disable poll time out */
+	 
 	config_reg &= ~GQSPI_CFG_EN_POLL_TO_MASK;
-	/* Set hold bit */
+	 
 	config_reg |= GQSPI_CFG_WP_HOLD_MASK;
-	/* Clear pre-scalar by default */
+	 
 	config_reg &= ~GQSPI_CFG_BAUD_RATE_DIV_MASK;
-	/* Set CPHA */
+	 
 	if (xqspi->ctlr->mode_bits & SPI_CPHA)
 		config_reg |= GQSPI_CFG_CLK_PHA_MASK;
 	else
 		config_reg &= ~GQSPI_CFG_CLK_PHA_MASK;
-	/* Set CPOL */
+	 
 	if (xqspi->ctlr->mode_bits & SPI_CPOL)
 		config_reg |= GQSPI_CFG_CLK_POL_MASK;
 	else
 		config_reg &= ~GQSPI_CFG_CLK_POL_MASK;
 
-	/* Set the clock frequency */
+	 
 	clk_rate = clk_get_rate(xqspi->refclk);
 	while ((baud_rate_val < GQSPI_BAUD_DIV_MAX) &&
 	       (clk_rate /
@@ -411,15 +340,15 @@ static void zynqmp_qspi_init_hw(struct zynqmp_qspi *xqspi)
 
 	zynqmp_gqspi_write(xqspi, GQSPI_CONFIG_OFST, config_reg);
 
-	/* Set the tapdelay for clock frequency */
+	 
 	zynqmp_qspi_set_tapdelay(xqspi, baud_rate_val);
 
-	/* Clear the TX and RX FIFO */
+	 
 	zynqmp_gqspi_write(xqspi, GQSPI_FIFO_CTRL_OFST,
 			   GQSPI_FIFO_CTRL_RST_RX_FIFO_MASK |
 			   GQSPI_FIFO_CTRL_RST_TX_FIFO_MASK |
 			   GQSPI_FIFO_CTRL_RST_GEN_FIFO_MASK);
-	/* Reset thresholds */
+	 
 	zynqmp_gqspi_write(xqspi, GQSPI_TX_THRESHOLD_OFST,
 			   GQSPI_TX_FIFO_THRESHOLD_RESET_VAL);
 	zynqmp_gqspi_write(xqspi, GQSPI_RX_THRESHOLD_OFST,
@@ -429,21 +358,16 @@ static void zynqmp_qspi_init_hw(struct zynqmp_qspi *xqspi)
 	zynqmp_gqspi_selectslave(xqspi,
 				 GQSPI_SELECT_FLASH_CS_LOWER,
 				 GQSPI_SELECT_FLASH_BUS_LOWER);
-	/* Initialize DMA */
+	 
 	zynqmp_gqspi_write(xqspi,
 			   GQSPI_QSPIDMA_DST_CTRL_OFST,
 			   GQSPI_QSPIDMA_DST_CTRL_RESET_VAL);
 
-	/* Enable the GQSPI */
+	 
 	zynqmp_gqspi_write(xqspi, GQSPI_EN_OFST, GQSPI_EN_MASK);
 }
 
-/**
- * zynqmp_qspi_copy_read_data - Copy data to RX buffer
- * @xqspi:	Pointer to the zynqmp_qspi structure
- * @data:	The variable where data is stored
- * @size:	Number of bytes to be copied from data to RX buffer
- */
+ 
 static void zynqmp_qspi_copy_read_data(struct zynqmp_qspi *xqspi,
 				       ulong data, u8 size)
 {
@@ -452,11 +376,7 @@ static void zynqmp_qspi_copy_read_data(struct zynqmp_qspi *xqspi,
 	xqspi->bytes_to_receive -= size;
 }
 
-/**
- * zynqmp_qspi_chipselect - Select or deselect the chip select line
- * @qspi:	Pointer to the spi_device structure
- * @is_high:	Select(0) or deselect (1) the chip select line
- */
+ 
 static void zynqmp_qspi_chipselect(struct spi_device *qspi, bool is_high)
 {
 	struct zynqmp_qspi *xqspi = spi_master_get_devdata(qspi->master);
@@ -482,14 +402,14 @@ static void zynqmp_qspi_chipselect(struct spi_device *qspi, bool is_high)
 
 	zynqmp_gqspi_write(xqspi, GQSPI_GEN_FIFO_OFST, genfifoentry);
 
-	/* Manually start the generic FIFO command */
+	 
 	zynqmp_gqspi_write(xqspi, GQSPI_CONFIG_OFST,
 			   zynqmp_gqspi_read(xqspi, GQSPI_CONFIG_OFST) |
 			   GQSPI_CFG_START_GEN_FIFO_MASK);
 
 	timeout = jiffies + msecs_to_jiffies(1000);
 
-	/* Wait until the generic FIFO command is empty */
+	 
 	do {
 		statusreg = zynqmp_gqspi_read(xqspi, GQSPI_ISR_OFST);
 
@@ -503,12 +423,7 @@ static void zynqmp_qspi_chipselect(struct spi_device *qspi, bool is_high)
 		dev_err(xqspi->dev, "Chip select timed out\n");
 }
 
-/**
- * zynqmp_qspi_selectspimode - Selects SPI mode - x1 or x2 or x4.
- * @xqspi:	xqspi is a pointer to the GQSPI instance
- * @spimode:	spimode - SPI or DUAL or QUAD.
- * Return:	Mask to set desired SPI mode in GENFIFO entry.
- */
+ 
 static inline u32 zynqmp_qspi_selectspimode(struct zynqmp_qspi *xqspi,
 					    u8 spimode)
 {
@@ -531,27 +446,7 @@ static inline u32 zynqmp_qspi_selectspimode(struct zynqmp_qspi *xqspi,
 	return mask;
 }
 
-/**
- * zynqmp_qspi_config_op - Configure QSPI controller for specified
- *				transfer
- * @xqspi:	Pointer to the zynqmp_qspi structure
- * @qspi:	Pointer to the spi_device structure
- *
- * Sets the operational mode of QSPI controller for the next QSPI transfer and
- * sets the requested clock frequency.
- *
- * Return:	Always 0
- *
- * Note:
- *	If the requested frequency is not an exact match with what can be
- *	obtained using the pre-scalar value, the driver sets the clock
- *	frequency which is lower than the requested frequency (maximum lower)
- *	for the transfer.
- *
- *	If the requested frequency is higher or lower than that is supported
- *	by the QSPI controller the driver will set the highest or lowest
- *	frequency supported by controller.
- */
+ 
 static int zynqmp_qspi_config_op(struct zynqmp_qspi *xqspi,
 				 struct spi_device *qspi)
 {
@@ -563,8 +458,8 @@ static int zynqmp_qspi_config_op(struct zynqmp_qspi *xqspi,
 	if (xqspi->speed_hz != req_speed_hz) {
 		xqspi->speed_hz = req_speed_hz;
 
-		/* Set the clock frequency */
-		/* If req_speed_hz == 0, default to lowest speed */
+		 
+		 
 		clk_rate = clk_get_rate(xqspi->refclk);
 
 		while ((baud_rate_val < GQSPI_BAUD_DIV_MAX) &&
@@ -583,15 +478,7 @@ static int zynqmp_qspi_config_op(struct zynqmp_qspi *xqspi,
 	return 0;
 }
 
-/**
- * zynqmp_qspi_setup_op - Configure the QSPI controller
- * @qspi:	Pointer to the spi_device structure
- *
- * Sets the operational mode of QSPI controller for the next QSPI transfer,
- * baud rate and divisor value to setup the requested qspi clock.
- *
- * Return:	0 on success; error value otherwise.
- */
+ 
 static int zynqmp_qspi_setup_op(struct spi_device *qspi)
 {
 	struct spi_controller *ctlr = qspi->master;
@@ -605,13 +492,7 @@ static int zynqmp_qspi_setup_op(struct spi_device *qspi)
 	return 0;
 }
 
-/**
- * zynqmp_qspi_filltxfifo - Fills the TX FIFO as long as there is room in
- *				the FIFO or the bytes required to be
- *				transmitted.
- * @xqspi:	Pointer to the zynqmp_qspi structure
- * @size:	Number of bytes to be copied from TX buffer to TX FIFO
- */
+ 
 static void zynqmp_qspi_filltxfifo(struct zynqmp_qspi *xqspi, int size)
 {
 	u32 count = 0, intermediate;
@@ -633,12 +514,7 @@ static void zynqmp_qspi_filltxfifo(struct zynqmp_qspi *xqspi, int size)
 	}
 }
 
-/**
- * zynqmp_qspi_readrxfifo - Fills the RX FIFO as long as there is room in
- *				the FIFO.
- * @xqspi:	Pointer to the zynqmp_qspi structure
- * @size:	Number of bytes to be copied from RX buffer to RX FIFO
- */
+ 
 static void zynqmp_qspi_readrxfifo(struct zynqmp_qspi *xqspi, u32 size)
 {
 	ulong data;
@@ -661,12 +537,7 @@ static void zynqmp_qspi_readrxfifo(struct zynqmp_qspi *xqspi, u32 size)
 	}
 }
 
-/**
- * zynqmp_qspi_fillgenfifo - Fills the GENFIFO.
- * @xqspi:	Pointer to the zynqmp_qspi structure
- * @nbits:	Transfer/Receive buswidth.
- * @genfifoentry:       Variable in which GENFIFO mask is saved
- */
+ 
 static void zynqmp_qspi_fillgenfifo(struct zynqmp_qspi *xqspi, u8 nbits,
 				    u32 genfifoentry)
 {
@@ -686,7 +557,7 @@ static void zynqmp_qspi_fillgenfifo(struct zynqmp_qspi *xqspi, u8 nbits,
 		else
 			transfer_len = xqspi->bytes_to_receive;
 	} else {
-		/* Sending dummy circles here */
+		 
 		genfifoentry &= ~(GQSPI_GENFIFO_TX | GQSPI_GENFIFO_RX);
 		genfifoentry |= GQSPI_GENFIFO_DATA_XFER;
 		transfer_len = xqspi->bytes_to_transfer;
@@ -700,13 +571,13 @@ static void zynqmp_qspi_fillgenfifo(struct zynqmp_qspi *xqspi, u8 nbits,
 		zynqmp_gqspi_write(xqspi, GQSPI_GEN_FIFO_OFST, genfifoentry);
 	} else {
 		int tempcount = transfer_len;
-		u32 exponent = 8;	/* 2^8 = 256 */
+		u32 exponent = 8;	 
 		u8 imm_data = tempcount & 0xFF;
 
 		tempcount &= ~(tempcount & 0xFF);
-		/* Immediate entry */
+		 
 		if (tempcount != 0) {
-			/* Exponent entries */
+			 
 			genfifoentry |= GQSPI_GENFIFO_EXP;
 			while (tempcount != 0) {
 				if (tempcount & GQSPI_GENFIFO_EXP_START) {
@@ -730,18 +601,12 @@ static void zynqmp_qspi_fillgenfifo(struct zynqmp_qspi *xqspi, u8 nbits,
 		}
 	}
 	if (xqspi->mode == GQSPI_MODE_IO && xqspi->rxbuf) {
-		/* Dummy generic FIFO entry */
+		 
 		zynqmp_gqspi_write(xqspi, GQSPI_GEN_FIFO_OFST, 0x0);
 	}
 }
 
-/**
- * zynqmp_process_dma_irq - Handler for DMA done interrupt of QSPI
- *				controller
- * @xqspi:	zynqmp_qspi instance pointer
- *
- * This function handles DMA interrupt only.
- */
+ 
 static void zynqmp_process_dma_irq(struct zynqmp_qspi *xqspi)
 {
 	u32 config_reg, genfifoentry;
@@ -752,31 +617,31 @@ static void zynqmp_process_dma_irq(struct zynqmp_qspi *xqspi)
 	xqspi->bytes_to_receive -= xqspi->dma_rx_bytes;
 	xqspi->dma_rx_bytes = 0;
 
-	/* Disabling the DMA interrupts */
+	 
 	zynqmp_gqspi_write(xqspi, GQSPI_QSPIDMA_DST_I_DIS_OFST,
 			   GQSPI_QSPIDMA_DST_I_EN_DONE_MASK);
 
 	if (xqspi->bytes_to_receive > 0) {
-		/* Switch to IO mode,for remaining bytes to receive */
+		 
 		config_reg = zynqmp_gqspi_read(xqspi, GQSPI_CONFIG_OFST);
 		config_reg &= ~GQSPI_CFG_MODE_EN_MASK;
 		zynqmp_gqspi_write(xqspi, GQSPI_CONFIG_OFST, config_reg);
 
-		/* Initiate the transfer of remaining bytes */
+		 
 		genfifoentry = xqspi->genfifoentry;
 		genfifoentry |= xqspi->bytes_to_receive;
 		zynqmp_gqspi_write(xqspi, GQSPI_GEN_FIFO_OFST, genfifoentry);
 
-		/* Dummy generic FIFO entry */
+		 
 		zynqmp_gqspi_write(xqspi, GQSPI_GEN_FIFO_OFST, 0x0);
 
-		/* Manual start */
+		 
 		zynqmp_gqspi_write(xqspi, GQSPI_CONFIG_OFST,
 				   (zynqmp_gqspi_read(xqspi,
 						      GQSPI_CONFIG_OFST) |
 				   GQSPI_CFG_START_GEN_FIFO_MASK));
 
-		/* Enable the RX interrupts for IO mode */
+		 
 		zynqmp_gqspi_write(xqspi, GQSPI_IER_OFST,
 				   GQSPI_IER_GENFIFOEMPTY_MASK |
 				   GQSPI_IER_RXNEMPTY_MASK |
@@ -784,18 +649,7 @@ static void zynqmp_process_dma_irq(struct zynqmp_qspi *xqspi)
 	}
 }
 
-/**
- * zynqmp_qspi_irq - Interrupt service routine of the QSPI controller
- * @irq:	IRQ number
- * @dev_id:	Pointer to the xqspi structure
- *
- * This function handles TX empty only.
- * On TX empty interrupt this function reads the received data from RX FIFO
- * and fills the TX FIFO if there is any data remaining to be transferred.
- *
- * Return:	IRQ_HANDLED when interrupt is handled
- *		IRQ_NONE otherwise.
- */
+ 
 static irqreturn_t zynqmp_qspi_irq(int irq, void *dev_id)
 {
 	struct zynqmp_qspi *xqspi = (struct zynqmp_qspi *)dev_id;
@@ -806,7 +660,7 @@ static irqreturn_t zynqmp_qspi_irq(int irq, void *dev_id)
 	zynqmp_gqspi_write(xqspi, GQSPI_ISR_OFST, status);
 	mask = (status & ~(zynqmp_gqspi_read(xqspi, GQSPI_IMASK_OFST)));
 
-	/* Read and clear DMA status */
+	 
 	if (xqspi->mode == GQSPI_MODE_DMA) {
 		dma_status =
 			zynqmp_gqspi_read(xqspi, GQSPI_QSPIDMA_DST_I_STS_OFST);
@@ -837,12 +691,7 @@ static irqreturn_t zynqmp_qspi_irq(int irq, void *dev_id)
 	return ret;
 }
 
-/**
- * zynqmp_qspi_setuprxdma - This function sets up the RX DMA operation
- * @xqspi:	xqspi is a pointer to the GQSPI instance.
- *
- * Return:	0 on success; error value otherwise.
- */
+ 
 static int zynqmp_qspi_setuprxdma(struct zynqmp_qspi *xqspi)
 {
 	u32 rx_bytes, rx_rem, config_reg;
@@ -851,7 +700,7 @@ static int zynqmp_qspi_setuprxdma(struct zynqmp_qspi *xqspi)
 
 	if (xqspi->bytes_to_receive < 8 ||
 	    ((dma_align & GQSPI_DMA_UNALIGN) != 0x0)) {
-		/* Setting to IO mode */
+		 
 		config_reg = zynqmp_gqspi_read(xqspi, GQSPI_CONFIG_OFST);
 		config_reg &= ~GQSPI_CFG_MODE_EN_MASK;
 		zynqmp_gqspi_write(xqspi, GQSPI_CONFIG_OFST, config_reg);
@@ -878,30 +727,22 @@ static int zynqmp_qspi_setuprxdma(struct zynqmp_qspi *xqspi)
 	zynqmp_gqspi_write(xqspi, GQSPI_QSPIDMA_DST_ADDR_MSB_OFST,
 			   ((u32)addr) & 0xfff);
 
-	/* Enabling the DMA mode */
+	 
 	config_reg = zynqmp_gqspi_read(xqspi, GQSPI_CONFIG_OFST);
 	config_reg &= ~GQSPI_CFG_MODE_EN_MASK;
 	config_reg |= GQSPI_CFG_MODE_EN_DMA_MASK;
 	zynqmp_gqspi_write(xqspi, GQSPI_CONFIG_OFST, config_reg);
 
-	/* Switch to DMA mode */
+	 
 	xqspi->mode = GQSPI_MODE_DMA;
 
-	/* Write the number of bytes to transfer */
+	 
 	zynqmp_gqspi_write(xqspi, GQSPI_QSPIDMA_DST_SIZE_OFST, rx_bytes);
 
 	return 0;
 }
 
-/**
- * zynqmp_qspi_write_op - This function sets up the GENFIFO entries,
- *			TX FIFO, and fills the TX FIFO with as many
- *			bytes as possible.
- * @xqspi:	Pointer to the GQSPI instance.
- * @tx_nbits:	Transfer buswidth.
- * @genfifoentry:	Variable in which GENFIFO mask is returned
- *			to calling function
- */
+ 
 static void zynqmp_qspi_write_op(struct zynqmp_qspi *xqspi, u8 tx_nbits,
 				 u32 genfifoentry)
 {
@@ -919,16 +760,7 @@ static void zynqmp_qspi_write_op(struct zynqmp_qspi *xqspi, u8 tx_nbits,
 	}
 }
 
-/**
- * zynqmp_qspi_read_op - This function sets up the GENFIFO entries and
- *				RX DMA operation.
- * @xqspi:	xqspi is a pointer to the GQSPI instance.
- * @rx_nbits:	Receive buswidth.
- * @genfifoentry:	genfifoentry is pointer to the variable in which
- *			GENFIFO	mask is returned to calling function
- *
- * Return:	0 on success; error value otherwise.
- */
+ 
 static int zynqmp_qspi_read_op(struct zynqmp_qspi *xqspi, u8 rx_nbits,
 				u32 genfifoentry)
 {
@@ -942,14 +774,7 @@ static int zynqmp_qspi_read_op(struct zynqmp_qspi *xqspi, u8 rx_nbits,
 	return 0;
 }
 
-/**
- * zynqmp_qspi_suspend - Suspend method for the QSPI driver
- * @dev:	Address of the platform_device structure
- *
- * This function stops the QSPI driver queue and disables the QSPI controller
- *
- * Return:	Always 0
- */
+ 
 static int __maybe_unused zynqmp_qspi_suspend(struct device *dev)
 {
 	struct zynqmp_qspi *xqspi = dev_get_drvdata(dev);
@@ -965,15 +790,7 @@ static int __maybe_unused zynqmp_qspi_suspend(struct device *dev)
 	return 0;
 }
 
-/**
- * zynqmp_qspi_resume - Resume method for the QSPI driver
- * @dev:	Address of the platform_device structure
- *
- * The function starts the QSPI driver queue and initializes the QSPI
- * controller
- *
- * Return:	0 on success; error value otherwise
- */
+ 
 static int __maybe_unused zynqmp_qspi_resume(struct device *dev)
 {
 	struct zynqmp_qspi *xqspi = dev_get_drvdata(dev);
@@ -986,14 +803,7 @@ static int __maybe_unused zynqmp_qspi_resume(struct device *dev)
 	return 0;
 }
 
-/**
- * zynqmp_runtime_suspend - Runtime suspend method for the SPI driver
- * @dev:	Address of the platform_device structure
- *
- * This function disables the clocks
- *
- * Return:	Always 0
- */
+ 
 static int __maybe_unused zynqmp_runtime_suspend(struct device *dev)
 {
 	struct zynqmp_qspi *xqspi = dev_get_drvdata(dev);
@@ -1004,14 +814,7 @@ static int __maybe_unused zynqmp_runtime_suspend(struct device *dev)
 	return 0;
 }
 
-/**
- * zynqmp_runtime_resume - Runtime resume method for the SPI driver
- * @dev:	Address of the platform_device structure
- *
- * This function enables the clocks
- *
- * Return:	0 on success and error value on error
- */
+ 
 static int __maybe_unused zynqmp_runtime_resume(struct device *dev)
 {
 	struct zynqmp_qspi *xqspi = dev_get_drvdata(dev);
@@ -1033,17 +836,7 @@ static int __maybe_unused zynqmp_runtime_resume(struct device *dev)
 	return 0;
 }
 
-/**
- * zynqmp_qspi_exec_op() - Initiates the QSPI transfer
- * @mem: The SPI memory
- * @op: The memory operation to execute
- *
- * Executes a memory operation.
- *
- * This function first selects the chip and starts the memory operation.
- *
- * Return: 0 in case of success, a negative error code otherwise.
- */
+ 
 static int zynqmp_qspi_exec_op(struct spi_mem *mem,
 			       const struct spi_mem_op *op)
 {
@@ -1114,16 +907,10 @@ static int zynqmp_qspi_exec_op(struct spi_mem *mem,
 	if (op->dummy.nbytes) {
 		xqspi->txbuf = NULL;
 		xqspi->rxbuf = NULL;
-		/*
-		 * xqspi->bytes_to_transfer here represents the dummy circles
-		 * which need to be sent.
-		 */
+		 
 		xqspi->bytes_to_transfer = op->dummy.nbytes * 8 / op->dummy.buswidth;
 		xqspi->bytes_to_receive = 0;
-		/*
-		 * Using op->data.buswidth instead of op->dummy.buswidth here because
-		 * we need to use it to configure the correct SPI mode.
-		 */
+		 
 		zynqmp_qspi_write_op(xqspi, op->data.buswidth,
 				     genfifoentry);
 		zynqmp_gqspi_write(xqspi, GQSPI_CONFIG_OFST,
@@ -1199,21 +986,14 @@ static const struct qspi_platform_data versal_qspi_def = {
 static const struct of_device_id zynqmp_qspi_of_match[] = {
 	{ .compatible = "xlnx,zynqmp-qspi-1.0"},
 	{ .compatible = "xlnx,versal-qspi-1.0", .data = &versal_qspi_def },
-	{ /* End of table */ }
+	{   }
 };
 
 static const struct spi_controller_mem_ops zynqmp_qspi_mem_ops = {
 	.exec_op = zynqmp_qspi_exec_op,
 };
 
-/**
- * zynqmp_qspi_probe - Probe method for the QSPI driver
- * @pdev:	Pointer to the platform_device structure
- *
- * This function initializes the driver data structures and the hardware.
- *
- * Return:	0 on success; error value otherwise
- */
+ 
 static int zynqmp_qspi_probe(struct platform_device *pdev)
 {
 	int ret = 0;
@@ -1289,7 +1069,7 @@ static int zynqmp_qspi_probe(struct platform_device *pdev)
 	ctlr->max_speed_hz = clk_get_rate(xqspi->refclk) / 2;
 	xqspi->speed_hz = ctlr->max_speed_hz;
 
-	/* QSPI controller initializations */
+	 
 	zynqmp_qspi_init_hw(xqspi);
 
 	xqspi->irq = platform_get_irq(pdev, 0);
@@ -1352,16 +1132,7 @@ remove_master:
 	return ret;
 }
 
-/**
- * zynqmp_qspi_remove - Remove method for the QSPI driver
- * @pdev:	Pointer to the platform_device structure
- *
- * This function is called if a device is physically removed from the system or
- * if the driver module is being unloaded. It frees all resources allocated to
- * the device.
- *
- * Return:	0 Always
- */
+ 
 static void zynqmp_qspi_remove(struct platform_device *pdev)
 {
 	struct zynqmp_qspi *xqspi = platform_get_drvdata(pdev);

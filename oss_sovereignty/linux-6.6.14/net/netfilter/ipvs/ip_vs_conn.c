@@ -1,21 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * IPVS         An implementation of the IP virtual server support for the
- *              LINUX operating system.  IPVS is now implemented as a module
- *              over the Netfilter framework. IPVS can be used to build a
- *              high-performance and highly available server based on a
- *              cluster of servers.
- *
- * Authors:     Wensong Zhang <wensong@linuxvirtualserver.org>
- *              Peter Kese <peter.kese@ijs.si>
- *              Julian Anastasov <ja@ssi.bg>
- *
- * The IPVS code for kernel 2.2 was done by Wensong Zhang and Peter Kese,
- * with changes/fixes from Julian Anastasov, Lars Marowsky-Bree, Horms
- * and others. Many code here is taken from IP MASQ code of kernel 2.2.
- *
- * Changes:
- */
+
+ 
 
 #define KMSG_COMPONENT "IPVS"
 #define pr_fmt(fmt) KMSG_COMPONENT ": " fmt
@@ -26,7 +10,7 @@
 #include <linux/net.h>
 #include <linux/kernel.h>
 #include <linux/module.h>
-#include <linux/proc_fs.h>		/* for proc_net_* */
+#include <linux/proc_fs.h>		 
 #include <linux/slab.h>
 #include <linux/seq_file.h>
 #include <linux/jhash.h>
@@ -40,39 +24,33 @@
 #define CONFIG_IP_VS_TAB_BITS	12
 #endif
 
-/*
- * Connection hash size. Default is what was selected at compile time.
-*/
+ 
 static int ip_vs_conn_tab_bits = CONFIG_IP_VS_TAB_BITS;
 module_param_named(conn_tab_bits, ip_vs_conn_tab_bits, int, 0444);
 MODULE_PARM_DESC(conn_tab_bits, "Set connections' hash size");
 
-/* size and mask values */
+ 
 int ip_vs_conn_tab_size __read_mostly;
 static int ip_vs_conn_tab_mask __read_mostly;
 
-/*
- *  Connection hash table: for input and output packets lookups of IPVS
- */
+ 
 static struct hlist_head *ip_vs_conn_tab __read_mostly;
 
-/*  SLAB cache for IPVS connections */
+ 
 static struct kmem_cache *ip_vs_conn_cachep __read_mostly;
 
-/*  counter for no client port connections */
+ 
 static atomic_t ip_vs_conn_no_cport_cnt = ATOMIC_INIT(0);
 
-/* random value for IPVS connection hash */
+ 
 static unsigned int ip_vs_conn_rnd __read_mostly;
 
-/*
- *  Fine locking granularity for big connection hash table
- */
+ 
 #define CT_LOCKARRAY_BITS  5
 #define CT_LOCKARRAY_SIZE  (1<<CT_LOCKARRAY_BITS)
 #define CT_LOCKARRAY_MASK  (CT_LOCKARRAY_SIZE-1)
 
-/* We need an addrstrlen that works with or without v6 */
+ 
 #ifdef CONFIG_IP_VS_IPV6
 #define IP_VS_ADDRSTRLEN INET6_ADDRSTRLEN
 #else
@@ -84,7 +62,7 @@ struct ip_vs_aligned_lock
 	spinlock_t	l;
 } __attribute__((__aligned__(SMP_CACHE_BYTES)));
 
-/* lock array for conn table */
+ 
 static struct ip_vs_aligned_lock
 __ip_vs_conntbl_lock_array[CT_LOCKARRAY_SIZE] __cacheline_aligned;
 
@@ -100,9 +78,7 @@ static inline void ct_write_unlock_bh(unsigned int key)
 
 static void ip_vs_conn_expire(struct timer_list *t);
 
-/*
- *	Returns hash value for IPVS connection entry
- */
+ 
 static unsigned int ip_vs_conn_hashkey(struct netns_ipvs *ipvs, int af, unsigned int proto,
 				       const union nf_inet_addr *addr,
 				       __be16 port)
@@ -155,10 +131,7 @@ static unsigned int ip_vs_conn_hashkey_conn(const struct ip_vs_conn *cp)
 	return ip_vs_conn_hashkey_param(&p, false);
 }
 
-/*
- *	Hashes ip_vs_conn in ip_vs_conn_tab by netns,proto,addr,port.
- *	returns bool success.
- */
+ 
 static inline int ip_vs_conn_hash(struct ip_vs_conn *cp)
 {
 	unsigned int hash;
@@ -167,7 +140,7 @@ static inline int ip_vs_conn_hash(struct ip_vs_conn *cp)
 	if (cp->flags & IP_VS_CONN_F_ONE_PACKET)
 		return 0;
 
-	/* Hash by protocol, client address and port */
+	 
 	hash = ip_vs_conn_hashkey_conn(cp);
 
 	ct_write_lock_bh(hash);
@@ -191,16 +164,13 @@ static inline int ip_vs_conn_hash(struct ip_vs_conn *cp)
 }
 
 
-/*
- *	UNhashes ip_vs_conn from ip_vs_conn_tab.
- *	returns bool success. Caller should hold conn reference.
- */
+ 
 static inline int ip_vs_conn_unhash(struct ip_vs_conn *cp)
 {
 	unsigned int hash;
 	int ret;
 
-	/* unhash it and decrease its reference counter */
+	 
 	hash = ip_vs_conn_hashkey_conn(cp);
 
 	ct_write_lock_bh(hash);
@@ -220,9 +190,7 @@ static inline int ip_vs_conn_unhash(struct ip_vs_conn *cp)
 	return ret;
 }
 
-/* Try to unlink ip_vs_conn from ip_vs_conn_tab.
- * returns bool success.
- */
+ 
 static inline bool ip_vs_conn_unlink(struct ip_vs_conn *cp)
 {
 	unsigned int hash;
@@ -237,7 +205,7 @@ static inline bool ip_vs_conn_unlink(struct ip_vs_conn *cp)
 	spin_lock(&cp->lock);
 
 	if (cp->flags & IP_VS_CONN_F_HASHED) {
-		/* Decrease refcnt and unlink conn only if we are last user */
+		 
 		if (refcount_dec_if_one(&cp->refcnt)) {
 			hlist_del_rcu(&cp->c_list);
 			cp->flags &= ~IP_VS_CONN_F_HASHED;
@@ -252,12 +220,7 @@ static inline bool ip_vs_conn_unlink(struct ip_vs_conn *cp)
 }
 
 
-/*
- *  Gets ip_vs_conn associated with supplied parameters in the ip_vs_conn_tab.
- *  Called for pkts coming from OUTside-to-INside.
- *	p->caddr, p->cport: pkt source address (foreign host)
- *	p->vaddr, p->vport: pkt dest address (load balancer)
- */
+ 
 static inline struct ip_vs_conn *
 __ip_vs_conn_in_get(const struct ip_vs_conn_param *p)
 {
@@ -278,7 +241,7 @@ __ip_vs_conn_in_get(const struct ip_vs_conn_param *p)
 		    cp->ipvs == p->ipvs) {
 			if (!__ip_vs_conn_get(cp))
 				continue;
-			/* HIT */
+			 
 			rcu_read_unlock();
 			return cp;
 		}
@@ -344,7 +307,7 @@ ip_vs_conn_in_get_proto(struct netns_ipvs *ipvs, int af,
 }
 EXPORT_SYMBOL_GPL(ip_vs_conn_in_get_proto);
 
-/* Get reference to connection template */
+ 
 struct ip_vs_conn *ip_vs_ct_in_get(const struct ip_vs_conn_param *p)
 {
 	unsigned int hash;
@@ -367,8 +330,7 @@ struct ip_vs_conn *ip_vs_ct_in_get(const struct ip_vs_conn_param *p)
 
 		if (cp->af == p->af &&
 		    ip_vs_addr_equal(p->af, p->caddr, &cp->caddr) &&
-		    /* protocol should only be IPPROTO_IP if
-		     * p->vaddr is a fwmark */
+		     
 		    ip_vs_addr_equal(p->protocol == IPPROTO_IP ? AF_UNSPEC :
 				     p->af, p->vaddr, &cp->vaddr) &&
 		    p->vport == cp->vport && p->cport == cp->cport &&
@@ -393,10 +355,7 @@ struct ip_vs_conn *ip_vs_ct_in_get(const struct ip_vs_conn_param *p)
 	return cp;
 }
 
-/* Gets ip_vs_conn associated with supplied parameters in the ip_vs_conn_tab.
- * Called for pkts coming from inside-to-OUTside.
- *	p->caddr, p->cport: pkt source address (inside host)
- *	p->vaddr, p->vport: pkt dest address (foreign host) */
+ 
 struct ip_vs_conn *ip_vs_conn_out_get(const struct ip_vs_conn_param *p)
 {
 	unsigned int hash;
@@ -404,9 +363,7 @@ struct ip_vs_conn *ip_vs_conn_out_get(const struct ip_vs_conn_param *p)
 	const union nf_inet_addr *saddr;
 	__be16 sport;
 
-	/*
-	 *	Check for "full" addressed entries
-	 */
+	 
 	hash = ip_vs_conn_hashkey_param(p, true);
 
 	rcu_read_lock();
@@ -430,7 +387,7 @@ struct ip_vs_conn *ip_vs_conn_out_get(const struct ip_vs_conn_param *p)
 		    cp->ipvs == p->ipvs) {
 			if (!__ip_vs_conn_get(cp))
 				continue;
-			/* HIT */
+			 
 			ret = cp;
 			break;
 		}
@@ -461,9 +418,7 @@ ip_vs_conn_out_get_proto(struct netns_ipvs *ipvs, int af,
 }
 EXPORT_SYMBOL_GPL(ip_vs_conn_out_get_proto);
 
-/*
- *      Put back the conn and restart its timer with its timeout
- */
+ 
 static void __ip_vs_conn_put_timer(struct ip_vs_conn *cp)
 {
 	unsigned long t = (cp->flags & IP_VS_CONN_F_ONE_PACKET) ?
@@ -478,15 +433,13 @@ void ip_vs_conn_put(struct ip_vs_conn *cp)
 	if ((cp->flags & IP_VS_CONN_F_ONE_PACKET) &&
 	    (refcount_read(&cp->refcnt) == 1) &&
 	    !timer_pending(&cp->timer))
-		/* expire connection immediately */
+		 
 		ip_vs_conn_expire(&cp->timer);
 	else
 		__ip_vs_conn_put_timer(cp);
 }
 
-/*
- *	Fill a no_client_port connection with a client port number
- */
+ 
 void ip_vs_conn_fill_cport(struct ip_vs_conn *cp, __be16 cport)
 {
 	if (ip_vs_conn_unhash(cp)) {
@@ -498,16 +451,13 @@ void ip_vs_conn_fill_cport(struct ip_vs_conn *cp, __be16 cport)
 		}
 		spin_unlock_bh(&cp->lock);
 
-		/* hash on new dport */
+		 
 		ip_vs_conn_hash(cp);
 	}
 }
 
 
-/*
- *	Bind a connection entry with the corresponding packet_xmit.
- *	Called by ip_vs_conn_new.
- */
+ 
 static inline void ip_vs_bind_xmit(struct ip_vs_conn *cp)
 {
 	switch (IP_VS_FWD_METHOD(cp)) {
@@ -575,35 +525,30 @@ static inline int ip_vs_dest_totalconns(struct ip_vs_dest *dest)
 		+ atomic_read(&dest->inactconns);
 }
 
-/*
- *	Bind a connection entry with a virtual service destination
- *	Called just after a new connection entry is created.
- */
+ 
 static inline void
 ip_vs_bind_dest(struct ip_vs_conn *cp, struct ip_vs_dest *dest)
 {
 	unsigned int conn_flags;
 	__u32 flags;
 
-	/* if dest is NULL, then return directly */
+	 
 	if (!dest)
 		return;
 
-	/* Increase the refcnt counter of the dest */
+	 
 	ip_vs_dest_hold(dest);
 
 	conn_flags = atomic_read(&dest->conn_flags);
 	if (cp->protocol != IPPROTO_UDP)
 		conn_flags &= ~IP_VS_CONN_F_ONE_PACKET;
 	flags = cp->flags;
-	/* Bind with the destination and its corresponding transmitter */
+	 
 	if (flags & IP_VS_CONN_F_SYNC) {
-		/* if the connection is not template and is created
-		 * by sync, preserve the activity flag.
-		 */
+		 
 		if (!(flags & IP_VS_CONN_F_TEMPLATE))
 			conn_flags &= ~IP_VS_CONN_F_INACTIVE;
-		/* connections inherit forwarding method from dest */
+		 
 		flags &= ~(IP_VS_CONN_F_FWD_MASK | IP_VS_CONN_F_NOOUTPUT);
 	}
 	flags |= conn_flags;
@@ -621,19 +566,15 @@ ip_vs_bind_dest(struct ip_vs_conn *cp, struct ip_vs_dest *dest)
 		      cp->flags, refcount_read(&cp->refcnt),
 		      refcount_read(&dest->refcnt));
 
-	/* Update the connection counters */
+	 
 	if (!(flags & IP_VS_CONN_F_TEMPLATE)) {
-		/* It is a normal connection, so modify the counters
-		 * according to the flags, later the protocol can
-		 * update them on state change
-		 */
+		 
 		if (!(flags & IP_VS_CONN_F_INACTIVE))
 			atomic_inc(&dest->activeconns);
 		else
 			atomic_inc(&dest->inactconns);
 	} else {
-		/* It is a persistent connection/template, so increase
-		   the persistent connection counter */
+		 
 		atomic_inc(&dest->persistconns);
 	}
 
@@ -643,21 +584,14 @@ ip_vs_bind_dest(struct ip_vs_conn *cp, struct ip_vs_dest *dest)
 }
 
 
-/*
- * Check if there is a destination for the connection, if so
- * bind the connection to the destination.
- */
+ 
 void ip_vs_try_bind_dest(struct ip_vs_conn *cp)
 {
 	struct ip_vs_dest *dest;
 
 	rcu_read_lock();
 
-	/* This function is only invoked by the synchronization code. We do
-	 * not currently support heterogeneous pools with synchronization,
-	 * so we can make the assumption that the svc_af is the same as the
-	 * dest_af
-	 */
+	 
 	dest = ip_vs_find_dest(cp->ipvs, cp->af, cp->af, &cp->daddr,
 			       cp->dport, &cp->vaddr, cp->vport,
 			       cp->protocol, cp->fwmark, cp->flags);
@@ -671,15 +605,14 @@ void ip_vs_try_bind_dest(struct ip_vs_conn *cp)
 			return;
 		}
 
-		/* Applications work depending on the forwarding method
-		 * but better to reassign them always when binding dest */
+		 
 		if (cp->app)
 			ip_vs_unbind_app(cp);
 
 		ip_vs_bind_dest(cp, dest);
 		spin_unlock_bh(&cp->lock);
 
-		/* Update its packet transmitter */
+		 
 		cp->packet_xmit = NULL;
 #ifdef CONFIG_IP_VS_IPV6
 		if (cp->af == AF_INET6)
@@ -696,10 +629,7 @@ void ip_vs_try_bind_dest(struct ip_vs_conn *cp)
 }
 
 
-/*
- *	Unbind a connection entry with its VS destination
- *	Called by the ip_vs_conn_expire function.
- */
+ 
 static inline void ip_vs_unbind_dest(struct ip_vs_conn *cp)
 {
 	struct ip_vs_dest *dest = cp->dest;
@@ -718,18 +648,16 @@ static inline void ip_vs_unbind_dest(struct ip_vs_conn *cp)
 		      cp->flags, refcount_read(&cp->refcnt),
 		      refcount_read(&dest->refcnt));
 
-	/* Update the connection counters */
+	 
 	if (!(cp->flags & IP_VS_CONN_F_TEMPLATE)) {
-		/* It is a normal connection, so decrease the inactconns
-		   or activeconns counter */
+		 
 		if (cp->flags & IP_VS_CONN_F_INACTIVE) {
 			atomic_dec(&dest->inactconns);
 		} else {
 			atomic_dec(&dest->activeconns);
 		}
 	} else {
-		/* It is a persistent connection/template, so decrease
-		   the persistent connection counter */
+		 
 		atomic_dec(&dest->persistconns);
 	}
 
@@ -758,19 +686,13 @@ static int expire_quiescent_template(struct netns_ipvs *ipvs,
 #endif
 }
 
-/*
- *	Checking if the destination of a connection template is available.
- *	If available, return 1, otherwise invalidate this connection
- *	template and return 0.
- */
+ 
 int ip_vs_check_template(struct ip_vs_conn *ct, struct ip_vs_dest *cdest)
 {
 	struct ip_vs_dest *dest = ct->dest;
 	struct netns_ipvs *ipvs = ct->ipvs;
 
-	/*
-	 * Checking the dest server status.
-	 */
+	 
 	if ((dest == NULL) ||
 	    !(dest->flags & IP_VS_DEST_F_AVAILABLE) ||
 	    expire_quiescent_template(ipvs, dest) ||
@@ -786,9 +708,7 @@ int ip_vs_check_template(struct ip_vs_conn *ct, struct ip_vs_dest *cdest)
 			      IP_VS_DBG_ADDR(ct->daf, &ct->daddr),
 			      ntohs(ct->dport));
 
-		/*
-		 * Invalidate the connection template
-		 */
+		 
 		if (ct->vport != htons(0xffff)) {
 			if (ip_vs_conn_unhash(ct)) {
 				ct->dport = htons(0xffff);
@@ -798,10 +718,7 @@ int ip_vs_check_template(struct ip_vs_conn *ct, struct ip_vs_dest *cdest)
 			}
 		}
 
-		/*
-		 * Simply decrease the refcnt of the template,
-		 * don't restart its timer.
-		 */
+		 
 		__ip_vs_conn_put(ct);
 		return 0;
 	}
@@ -818,22 +735,22 @@ static void ip_vs_conn_rcu_free(struct rcu_head *head)
 	kmem_cache_free(ip_vs_conn_cachep, cp);
 }
 
-/* Try to delete connection while not holding reference */
+ 
 static void ip_vs_conn_del(struct ip_vs_conn *cp)
 {
 	if (del_timer(&cp->timer)) {
-		/* Drop cp->control chain too */
+		 
 		if (cp->control)
 			cp->timeout = 0;
 		ip_vs_conn_expire(&cp->timer);
 	}
 }
 
-/* Try to delete connection while holding reference */
+ 
 static void ip_vs_conn_del_put(struct ip_vs_conn *cp)
 {
 	if (del_timer(&cp->timer)) {
-		/* Drop cp->control chain too */
+		 
 		if (cp->control)
 			cp->timeout = 0;
 		__ip_vs_conn_put(cp);
@@ -848,25 +765,23 @@ static void ip_vs_conn_expire(struct timer_list *t)
 	struct ip_vs_conn *cp = from_timer(cp, t, timer);
 	struct netns_ipvs *ipvs = cp->ipvs;
 
-	/*
-	 *	do I control anybody?
-	 */
+	 
 	if (atomic_read(&cp->n_control))
 		goto expire_later;
 
-	/* Unlink conn if not referenced anymore */
+	 
 	if (likely(ip_vs_conn_unlink(cp))) {
 		struct ip_vs_conn *ct = cp->control;
 
-		/* delete the timer if it is activated by other users */
+		 
 		del_timer(&cp->timer);
 
-		/* does anybody control me? */
+		 
 		if (ct) {
 			bool has_ref = !cp->timeout && __ip_vs_conn_get(ct);
 
 			ip_vs_control_del(cp);
-			/* Drop CTL or non-assured TPL if not used anymore */
+			 
 			if (has_ref && !atomic_read(&ct->n_control) &&
 			    (!(ct->flags & IP_VS_CONN_F_TEMPLATE) ||
 			     !(ct->state & IP_VS_CTPL_S_ASSURED))) {
@@ -879,10 +794,7 @@ static void ip_vs_conn_expire(struct timer_list *t)
 
 		if ((cp->flags & IP_VS_CONN_F_NFCT) &&
 		    !(cp->flags & IP_VS_CONN_F_ONE_PACKET)) {
-			/* Do not access conntracks during subsys cleanup
-			 * because nf_conntrack_find_get can not be used after
-			 * conntrack cleanup for the net.
-			 */
+			 
 			smp_rmb();
 			if (ipvs->enable)
 				ip_vs_conn_drop_conntrack(cp);
@@ -915,27 +827,17 @@ static void ip_vs_conn_expire(struct timer_list *t)
 	__ip_vs_conn_put_timer(cp);
 }
 
-/* Modify timer, so that it expires as soon as possible.
- * Can be called without reference only if under RCU lock.
- * We can have such chain of conns linked with ->control: DATA->CTL->TPL
- * - DATA (eg. FTP) and TPL (persistence) can be present depending on setup
- * - cp->timeout=0 indicates all conns from chain should be dropped but
- * TPL is not dropped if in assured state
- */
+ 
 void ip_vs_conn_expire_now(struct ip_vs_conn *cp)
 {
-	/* Using mod_timer_pending will ensure the timer is not
-	 * modified after the final del_timer in ip_vs_conn_expire.
-	 */
+	 
 	if (timer_pending(&cp->timer) &&
 	    time_after(cp->timer.expires, jiffies))
 		mod_timer_pending(&cp->timer, jiffies);
 }
 
 
-/*
- *	Create a new connection entry and hash it into the ip_vs_conn_tab
- */
+ 
 struct ip_vs_conn *
 ip_vs_conn_new(const struct ip_vs_conn_param *p, int dest_af,
 	       const union nf_inet_addr *daddr, __be16 dport, unsigned int flags,
@@ -960,7 +862,7 @@ ip_vs_conn_new(const struct ip_vs_conn_param *p, int dest_af,
 	cp->protocol	   = p->protocol;
 	ip_vs_addr_set(p->af, &cp->caddr, p->caddr);
 	cp->cport	   = p->cport;
-	/* proto should only be IPPROTO_IP if p->vaddr is a fwmark */
+	 
 	ip_vs_addr_set(p->protocol == IPPROTO_IP ? AF_UNSPEC : p->af,
 		       &cp->vaddr, p->vaddr);
 	cp->vport	   = p->vport;
@@ -980,11 +882,7 @@ ip_vs_conn_new(const struct ip_vs_conn_param *p, int dest_af,
 	}
 	spin_lock_init(&cp->lock);
 
-	/*
-	 * Set the entry is referenced by the current thread before hashing
-	 * it in the table, so that other thread run ip_vs_random_dropentry
-	 * but cannot drop this entry.
-	 */
+	 
 	refcount_set(&cp->refcnt, 1);
 
 	cp->control = NULL;
@@ -994,7 +892,7 @@ ip_vs_conn_new(const struct ip_vs_conn_param *p, int dest_af,
 	cp->packet_xmit = NULL;
 	cp->app = NULL;
 	cp->app_data = NULL;
-	/* reset struct ip_vs_seq */
+	 
 	cp->in_seq.delta = 0;
 	cp->out_seq.delta = 0;
 
@@ -1002,17 +900,17 @@ ip_vs_conn_new(const struct ip_vs_conn_param *p, int dest_af,
 	if (flags & IP_VS_CONN_F_NO_CPORT)
 		atomic_inc(&ip_vs_conn_no_cport_cnt);
 
-	/* Bind the connection with a destination server */
+	 
 	cp->dest = NULL;
 	ip_vs_bind_dest(cp, dest);
 
-	/* Set its state and timeout */
+	 
 	cp->state = 0;
 	cp->old_state = 0;
 	cp->timeout = 3*HZ;
 	cp->sync_endtime = jiffies & ~3UL;
 
-	/* Bind its packet transmitter */
+	 
 #ifdef CONFIG_IP_VS_IPV6
 	if (p->af == AF_INET6)
 		ip_vs_bind_xmit_v6(cp);
@@ -1023,25 +921,18 @@ ip_vs_conn_new(const struct ip_vs_conn_param *p, int dest_af,
 	if (unlikely(pd && atomic_read(&pd->appcnt)))
 		ip_vs_bind_app(cp, pd->pp);
 
-	/*
-	 * Allow conntrack to be preserved. By default, conntrack
-	 * is created and destroyed for every packet.
-	 * Sometimes keeping conntrack can be useful for
-	 * IP_VS_CONN_F_ONE_PACKET too.
-	 */
+	 
 
 	if (ip_vs_conntrack_enabled(ipvs))
 		cp->flags |= IP_VS_CONN_F_NFCT;
 
-	/* Hash it in the ip_vs_conn_tab finally */
+	 
 	ip_vs_conn_hash(cp);
 
 	return cp;
 }
 
-/*
- *	/proc/net/ip_vs_conn entries
- */
+ 
 #ifdef CONFIG_PROC_FS
 struct ip_vs_iter_state {
 	struct seq_net_private	p;
@@ -1056,9 +947,7 @@ static void *ip_vs_conn_array(struct seq_file *seq, loff_t pos)
 
 	for (idx = 0; idx < ip_vs_conn_tab_size; idx++) {
 		hlist_for_each_entry_rcu(cp, &ip_vs_conn_tab[idx], c_list) {
-			/* __ip_vs_conn_get() is not needed by
-			 * ip_vs_conn_seq_show and ip_vs_conn_sync_seq_show
-			 */
+			 
 			if (pos-- == 0) {
 				iter->l = &ip_vs_conn_tab[idx];
 				return cp;
@@ -1092,7 +981,7 @@ static void *ip_vs_conn_seq_next(struct seq_file *seq, void *v, loff_t *pos)
 	if (v == SEQ_START_TOKEN)
 		return ip_vs_conn_array(seq, 0);
 
-	/* more on same hash chain? */
+	 
 	e = rcu_dereference(hlist_next_rcu(&cp->c_list));
 	if (e)
 		return hlist_entry(e, struct ip_vs_conn, c_list);
@@ -1252,30 +1141,19 @@ static const struct seq_operations ip_vs_conn_sync_seq_ops = {
 #endif
 
 
-/* Randomly drop connection entries before running out of memory
- * Can be used for DATA and CTL conns. For TPL conns there are exceptions:
- * - traffic for services in OPS mode increases ct->in_pkts, so it is supported
- * - traffic for services not in OPS mode does not increase ct->in_pkts in
- * all cases, so it is not supported
- */
+ 
 static inline int todrop_entry(struct ip_vs_conn *cp)
 {
-	/*
-	 * The drop rate array needs tuning for real environments.
-	 * Called from timer bh only => no locking
-	 */
+	 
 	static const signed char todrop_rate[9] = {0, 1, 2, 3, 4, 5, 6, 7, 8};
 	static signed char todrop_counter[9] = {0};
 	int i;
 
-	/* if the conn entry hasn't lasted for 60 seconds, don't drop it.
-	   This will leave enough time for normal connection to get
-	   through. */
+	 
 	if (time_before(cp->timeout + jiffies, cp->timer.expires + 60*HZ))
 		return 0;
 
-	/* Don't drop the entry if its number of incoming packets is not
-	   located in [0, 8] */
+	 
 	i = atomic_read(&cp->in_pkts);
 	if (i > 8 || i < 0) return 0;
 
@@ -1296,16 +1174,14 @@ static inline bool ip_vs_conn_ops_mode(struct ip_vs_conn *cp)
 	return svc && (svc->flags & IP_VS_SVC_F_ONEPACKET);
 }
 
-/* Called from keventd and must protect itself from softirqs */
+ 
 void ip_vs_random_dropentry(struct netns_ipvs *ipvs)
 {
 	int idx;
 	struct ip_vs_conn *cp;
 
 	rcu_read_lock();
-	/*
-	 * Randomly scan 1/32 of the whole table every second
-	 */
+	 
 	for (idx = 0; idx < (ip_vs_conn_tab_size>>5); idx++) {
 		unsigned int hash = get_random_u32() & ip_vs_conn_tab_mask;
 
@@ -1315,7 +1191,7 @@ void ip_vs_random_dropentry(struct netns_ipvs *ipvs)
 			if (atomic_read(&cp->n_control))
 				continue;
 			if (cp->flags & IP_VS_CONN_F_TEMPLATE) {
-				/* connection template of OPS */
+				 
 				if (ip_vs_conn_ops_mode(cp))
 					goto try_drop;
 				if (!(cp->state & IP_VS_CTPL_S_ASSURED))
@@ -1364,9 +1240,7 @@ drop:
 }
 
 
-/*
- *      Flush all the connection entries in the ip_vs_conn_tab
- */
+ 
 static void ip_vs_conn_flush(struct netns_ipvs *ipvs)
 {
 	int idx;
@@ -1393,8 +1267,7 @@ flush_again:
 	}
 	rcu_read_unlock();
 
-	/* the counter may be not NULL, because maybe some conn entries
-	   are run by slow timer handler or unhashed but still referred */
+	 
 	if (atomic_read(&ipvs->conn_count) != 0) {
 		schedule();
 		goto flush_again;
@@ -1431,7 +1304,7 @@ void ip_vs_expire_nodest_conn_flush(struct netns_ipvs *ipvs)
 		}
 		cond_resched_rcu();
 
-		/* netns clean up started, abort delayed work */
+		 
 		if (!ipvs->enable)
 			break;
 	}
@@ -1439,9 +1312,7 @@ void ip_vs_expire_nodest_conn_flush(struct netns_ipvs *ipvs)
 }
 #endif
 
-/*
- * per netns init and exit
- */
+ 
 int __net_init ip_vs_conn_net_init(struct netns_ipvs *ipvs)
 {
 	atomic_set(&ipvs->conn_count, 0);
@@ -1470,7 +1341,7 @@ err_conn:
 
 void __net_exit ip_vs_conn_net_cleanup(struct netns_ipvs *ipvs)
 {
-	/* flush all the connection entries first */
+	 
 	ip_vs_conn_flush(ipvs);
 #ifdef CONFIG_PROC_FS
 	remove_proc_entry("ip_vs_conn", ipvs->net->proc_net);
@@ -1491,17 +1362,15 @@ int __init ip_vs_conn_init(void)
 	int idx;
 
 	max_avail = order_base_2(totalram_pages()) + PAGE_SHIFT;
-	max_avail -= 2;		/* ~4 in hash row */
-	max_avail -= 1;		/* IPVS up to 1/2 of mem */
+	max_avail -= 2;		 
+	max_avail -= 1;		 
 	max_avail -= order_base_2(sizeof(struct ip_vs_conn));
 	max = clamp(max, min, max_avail);
 	ip_vs_conn_tab_bits = clamp_val(ip_vs_conn_tab_bits, min, max);
 	ip_vs_conn_tab_size = 1 << ip_vs_conn_tab_bits;
 	ip_vs_conn_tab_mask = ip_vs_conn_tab_size - 1;
 
-	/*
-	 * Allocate the connection hash table and initialize its list heads
-	 */
+	 
 	tab_array_size = array_size(ip_vs_conn_tab_size,
 				    sizeof(*ip_vs_conn_tab));
 	ip_vs_conn_tab = kvmalloc_array(ip_vs_conn_tab_size,
@@ -1509,7 +1378,7 @@ int __init ip_vs_conn_init(void)
 	if (!ip_vs_conn_tab)
 		return -ENOMEM;
 
-	/* Allocate ip_vs_conn slab cache */
+	 
 	ip_vs_conn_cachep = kmem_cache_create("ip_vs_conn",
 					      sizeof(struct ip_vs_conn), 0,
 					      SLAB_HWCACHE_ALIGN, NULL);
@@ -1530,7 +1399,7 @@ int __init ip_vs_conn_init(void)
 		spin_lock_init(&__ip_vs_conntbl_lock_array[idx].l);
 	}
 
-	/* calculate the random value for connection hash */
+	 
 	get_random_bytes(&ip_vs_conn_rnd, sizeof(ip_vs_conn_rnd));
 
 	return 0;
@@ -1538,9 +1407,9 @@ int __init ip_vs_conn_init(void)
 
 void ip_vs_conn_cleanup(void)
 {
-	/* Wait all ip_vs_conn_rcu_free() callbacks to complete */
+	 
 	rcu_barrier();
-	/* Release the empty cache */
+	 
 	kmem_cache_destroy(ip_vs_conn_cachep);
 	kvfree(ip_vs_conn_tab);
 }

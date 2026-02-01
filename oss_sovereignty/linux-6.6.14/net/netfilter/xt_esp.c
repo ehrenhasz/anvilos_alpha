@@ -1,8 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Kernel module to match ESP parameters. */
 
-/* (C) 1999-2000 Yon Uriarte <yon@astaro.de>
- */
+ 
+
+ 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 #include <linux/module.h>
 #include <linux/skbuff.h>
@@ -21,7 +20,7 @@ MODULE_DESCRIPTION("Xtables: IPsec-ESP packet match");
 MODULE_ALIAS("ipt_esp");
 MODULE_ALIAS("ip6t_esp");
 
-/* Returns 1 if the spi is matched by the range, 0 otherwise */
+ 
 static inline bool
 spi_match(u_int32_t min, u_int32_t max, u_int32_t spi, bool invert)
 {
@@ -39,15 +38,13 @@ static bool esp_mt(const struct sk_buff *skb, struct xt_action_param *par)
 	struct ip_esp_hdr _esp;
 	const struct xt_esp *espinfo = par->matchinfo;
 
-	/* Must not be a fragment. */
+	 
 	if (par->fragoff != 0)
 		return false;
 
 	eh = skb_header_pointer(skb, par->thoff, sizeof(_esp), &_esp);
 	if (eh == NULL) {
-		/* We've been asked to examine this packet, and we
-		 * can't.  Hence, no choice but to drop.
-		 */
+		 
 		pr_debug("Dropping evil ESP tinygram.\n");
 		par->hotdrop = true;
 		return false;

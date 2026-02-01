@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: MIT */
+ 
 #ifndef __NVKM_BUS_HWSQ_H__
 #define __NVKM_BUS_HWSQ_H__
 #include <subdev/bus.h>
@@ -13,7 +13,7 @@ struct hwsq_reg {
 	int sequence;
 	bool force;
 	u32 addr;
-	u32 stride; /* in bytes */
+	u32 stride;  
 	u32 mask;
 	u32 data;
 };

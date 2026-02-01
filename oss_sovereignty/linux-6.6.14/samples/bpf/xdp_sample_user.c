@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 #define _GNU_SOURCE
 
 #include <arpa/inet.h>
@@ -64,7 +64,7 @@
 #define XMIT(xmit) xmit, "xmit/s"
 #define PASS(pass) pass, "pass/s"
 #define REDIR(redir) redir, "redir/s"
-#define NANOSEC_PER_SEC 1000000000 /* 10^9 */
+#define NANOSEC_PER_SEC 1000000000  
 
 #define XDP_UNKNOWN (XDP_REDIRECT + 1)
 #define XDP_ACTION_MAX (XDP_UNKNOWN + 1)
@@ -160,7 +160,7 @@ int sample_sig_fd;
 int sample_mask;
 
 static const char *xdp_redirect_err_names[XDP_REDIRECT_ERR_MAX] = {
-	/* Key=1 keeps unknown errors */
+	 
 	"Success",
 	"Unknown",
 	"EINVAL",
@@ -170,7 +170,7 @@ static const char *xdp_redirect_err_names[XDP_REDIRECT_ERR_MAX] = {
 	"ENOSPC",
 };
 
-/* Keyed from Unknown */
+ 
 static const char *xdp_redirect_err_help[XDP_REDIRECT_ERR_MAX - 1] = {
 	"Unknown error",
 	"Invalid redirection",
@@ -339,7 +339,7 @@ static int map_entry_init(struct map_entry *e, __u64 pair)
 
 static void map_collect_percpu(struct datarec *values, struct record *rec)
 {
-	/* For percpu maps, userspace gets a value per possible CPU */
+	 
 	unsigned int nr_cpus = libbpf_num_possible_cpus();
 	__u64 sum_xdp_redirect = 0;
 	__u64 sum_processed = 0;
@@ -349,10 +349,10 @@ static void map_collect_percpu(struct datarec *values, struct record *rec)
 	__u64 sum_issue = 0;
 	int i;
 
-	/* Get time as close as possible to reading map contents */
+	 
 	rec->timestamp = gettime();
 
-	/* Record and sum values from each CPU */
+	 
 	for (i = 0; i < nr_cpus; i++) {
 		rec->cpu[i].processed = READ_ONCE(values[i].processed);
 		rec->cpu[i].dropped = READ_ONCE(values[i].dropped);
@@ -696,7 +696,7 @@ static void stats_get_cpumap_enqueue(struct stats_record *stats_rec,
 	double t, pps, drop, err;
 	int i, to_cpu;
 
-	/* cpumap enqueue stats */
+	 
 	for (to_cpu = 0; to_cpu < sample_n_cpus; to_cpu++) {
 		rec = &stats_rec->enq[to_cpu];
 		prev = &stats_prev->enq[to_cpu];
@@ -712,7 +712,7 @@ static void stats_get_cpumap_enqueue(struct stats_record *stats_rec,
 			snprintf(str, sizeof(str), "enqueue to cpu %d", to_cpu);
 
 			if (err > 0)
-				err = pps / err; /* calc average bulk size */
+				err = pps / err;  
 
 			print_err(drop,
 				  "  %-20s " FMT_COLUMNf FMT_COLUMNf __COLUMN(
@@ -733,7 +733,7 @@ static void stats_get_cpumap_enqueue(struct stats_record *stats_rec,
 
 			snprintf(str, sizeof(str), "cpu:%d->%d", i, to_cpu);
 			if (err > 0)
-				err = pps / err; /* calc average bulk size */
+				err = pps / err;  
 			print_default(
 				"    %-18s " FMT_COLUMNf FMT_COLUMNf __COLUMN(
 					".2f") "\n",
@@ -915,7 +915,7 @@ static void stats_get_exception_cnt(struct stats_record *stats_rec,
 		t = calc_period(rec, prev);
 
 		drop = calc_drop_pps(&rec->total, &prev->total, t);
-		/* Fold out errors after heading */
+		 
 		sum += drop;
 
 		if (drop > 0 && !out) {
@@ -973,7 +973,7 @@ static void stats_get_devmap_xmit(struct stats_record *stats_rec,
 		snprintf(str, sizeof(str), "cpu:%d", i);
 		info = calc_info_pps(r, p, t);
 		if (info > 0)
-			info = (pps + drop) / info; /* calc avg bulk */
+			info = (pps + drop) / info;  
 		print_default("     %-18s" FMT_COLUMNf FMT_COLUMNf FMT_COLUMNf
 				      __COLUMN(".2f") "\n",
 			      str, XMIT(pps), DROP(drop), err, "drv_err/s",
@@ -984,7 +984,7 @@ static void stats_get_devmap_xmit(struct stats_record *stats_rec,
 		drop = calc_drop_pps(&rec->total, &prev->total, t);
 		info = calc_info_pps(&rec->total, &prev->total, t);
 		if (info > 0)
-			info = (pps + drop) / info; /* calc avg bulk */
+			info = (pps + drop) / info;  
 		err = calc_errs_pps(&rec->total, &prev->total, t);
 
 		out->xmit_cnt.pps = pps;
@@ -1030,7 +1030,7 @@ static void stats_get_devmap_xmit_multi(struct stats_record *stats_rec,
 		r = &entry->val;
 		beg.timestamp = r->timestamp - prev_time;
 
-		/* Find matching entry from stats_prev map */
+		 
 		hash_for_each_possible(stats_prev->xmit_map, e, node, pair) {
 			if (e->pair == pair) {
 				x = e;
@@ -1046,11 +1046,11 @@ static void stats_get_devmap_xmit_multi(struct stats_record *stats_rec,
 		drop = calc_drop_pps(&r->total, &p->total, t);
 		info = calc_info_pps(&r->total, &p->total, t);
 		if (info > 0)
-			info = (pps + drop) / info; /* calc avg bulk */
+			info = (pps + drop) / info;  
 		err = calc_errs_pps(&r->total, &p->total, t);
 
 		if (out) {
-			/* We are responsible for filling out totals */
+			 
 			out->totals.xmit += pps;
 			out->totals.drop_xmit += drop;
 			out->totals.err += err;
@@ -1065,7 +1065,7 @@ static void stats_get_devmap_xmit_multi(struct stats_record *stats_rec,
 
 		snprintf(str, sizeof(str), "xmit %s->%s", fstr ?: "?",
 			 tstr ?: "?");
-		/* Skip idle streams of redirection */
+		 
 		if (pps || drop || err) {
 			print_err(drop,
 				  "  %-20s " FMT_COLUMNf FMT_COLUMNf FMT_COLUMNf
@@ -1090,7 +1090,7 @@ static void stats_get_devmap_xmit_multi(struct stats_record *stats_rec,
 			snprintf(str, sizeof(str), "cpu:%d", i);
 			info = calc_info_pps(rc, pc, t);
 			if (info > 0)
-				info = (pps + drop) / info; /* calc avg bulk */
+				info = (pps + drop) / info;  
 
 			print_default("     %-18s" FMT_COLUMNf FMT_COLUMNf FMT_COLUMNf
 				      __COLUMN(".2f") "\n", str, XMIT(pps),
@@ -1484,7 +1484,7 @@ static int sample_signal_cb(void)
 	return 0;
 }
 
-/* Pointer swap trick */
+ 
 static void swap(struct stats_record **a, struct stats_record **b)
 {
 	struct stats_record *tmp;
@@ -1541,7 +1541,7 @@ int sample_run(int interval, void (*post_cb)(void *), void *ctx)
 		return -EINVAL;
 	}
 	sample_interval = interval;
-	/* Pretty print numbers */
+	 
 	setlocale(LC_NUMERIC, "en_US.UTF-8");
 
 	timerfd = timerfd_create(CLOCK_MONOTONIC, TFD_CLOEXEC | TFD_NONBLOCK);
@@ -1667,7 +1667,7 @@ __attribute__((constructor)) static void sample_ctor(void)
 	if (libbpf_set_strict_mode(LIBBPF_STRICT_ALL) < 0) {
 		fprintf(stderr, "Failed to set libbpf strict mode: %s\n",
 			strerror(errno));
-		/* Just exit, nothing to cleanup right now */
+		 
 		exit(EXIT_FAIL_BPF);
 	}
 }

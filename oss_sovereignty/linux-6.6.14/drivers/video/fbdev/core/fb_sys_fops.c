@@ -1,14 +1,4 @@
-/*
- * linux/drivers/video/fb_sys_read.c - Generic file operations where
- * framebuffer is in system RAM
- *
- * Copyright (C) 2007 Antonino Daplas <adaplas@pol.net>
- *
- * This file is subject to the terms and conditions of the GNU General Public
- * License.  See the file COPYING in the main directory of this archive
- * for more details.
- *
- */
+ 
 #include <linux/fb.h>
 #include <linux/module.h>
 #include <linux/uaccess.h>

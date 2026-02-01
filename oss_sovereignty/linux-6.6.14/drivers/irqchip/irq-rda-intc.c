@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * RDA8810PL SoC irqchip driver
- *
- * Copyright RDA Microelectronics Company Limited
- * Copyright (c) 2017 Andreas Färber
- * Copyright (c) 2018 Manivannan Sadhasivam
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/interrupt.h>
@@ -39,7 +33,7 @@ static void rda_intc_unmask_irq(struct irq_data *d)
 
 static int rda_intc_set_type(struct irq_data *data, unsigned int flow_type)
 {
-	/* Hardware supports only level triggered interrupts */
+	 
 	if ((flow_type & (IRQF_TRIGGER_HIGH | IRQF_TRIGGER_LOW)) == flow_type)
 		return 0;
 
@@ -88,7 +82,7 @@ static int __init rda8810_intc_init(struct device_node *node,
 	if (IS_ERR(rda_intc_base))
 		return PTR_ERR(rda_intc_base);
 
-	/* Mask all interrupt sources */
+	 
 	writel_relaxed(RDA_IRQ_MASK_ALL, rda_intc_base + RDA_INTC_MASK_CLR);
 
 	rda_irq_domain = irq_domain_create_linear(&node->fwnode, RDA_NR_IRQS,

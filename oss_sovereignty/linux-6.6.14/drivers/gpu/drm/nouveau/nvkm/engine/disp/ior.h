@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: MIT */
+ 
 #ifndef __NVKM_DISP_IOR_H__
 #define __NVKM_DISP_IOR_H__
 #include "priv.h"
@@ -35,7 +35,7 @@ struct nvkm_ior {
 		unsigned head:8;
 	} arm, asy;
 
-	/* Armed DP state. */
+	 
 	struct {
 		bool mst;
 		bool ef;
@@ -43,7 +43,7 @@ struct nvkm_ior {
 		u8 bw;
 	} dp;
 
-	/* Armed TMDS state. */
+	 
 	struct {
 		bool high_speed;
 	} tmds;

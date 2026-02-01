@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: ((GPL-2.0 WITH Linux-syscall-note) OR BSD-3-Clause)
-/* Do not edit directly, auto-generated from: */
-/*	Documentation/netlink/specs/fou.yaml */
-/* YNL-GEN kernel source */
+
+ 
+ 
+ 
 
 #include <net/netlink.h>
 #include <net/genetlink.h>
@@ -10,7 +10,7 @@
 
 #include <uapi/linux/fou.h>
 
-/* Global operation policy for fou */
+ 
 const struct nla_policy fou_nl_policy[FOU_ATTR_IFINDEX + 1] = {
 	[FOU_ATTR_PORT] = { .type = NLA_U16, },
 	[FOU_ATTR_AF] = { .type = NLA_U8, },
@@ -25,7 +25,7 @@ const struct nla_policy fou_nl_policy[FOU_ATTR_IFINDEX + 1] = {
 	[FOU_ATTR_IFINDEX] = { .type = NLA_S32, },
 };
 
-/* Ops table for fou */
+ 
 const struct genl_small_ops fou_nl_ops[3] = {
 	{
 		.cmd		= FOU_CMD_ADD,

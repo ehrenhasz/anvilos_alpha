@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Driver for the National Semiconductor DP83640 PHYTER
- *
- * Copyright (C) 2010 OMICRON electronics GmbH
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -59,10 +55,10 @@
 				   MII_DP83640_MISR_SPD_INT |\
 				   MII_DP83640_MISR_LINK_INT)
 
-/* phyter seems to miss the mark by 16 ns */
+ 
 #define ADJTIME_FIX	16
 
-#define SKB_TIMESTAMP_TIMEOUT	2 /* jiffies */
+#define SKB_TIMESTAMP_TIMEOUT	2  
 
 #if defined(__BIG_ENDIAN)
 #define ENDIAN_FLAG	0
@@ -76,19 +72,19 @@ struct dp83640_skb_info {
 };
 
 struct phy_rxts {
-	u16 ns_lo;   /* ns[15:0] */
-	u16 ns_hi;   /* overflow[1:0], ns[29:16] */
-	u16 sec_lo;  /* sec[15:0] */
-	u16 sec_hi;  /* sec[31:16] */
-	u16 seqid;   /* sequenceId[15:0] */
-	u16 msgtype; /* messageType[3:0], hash[11:0] */
+	u16 ns_lo;    
+	u16 ns_hi;    
+	u16 sec_lo;   
+	u16 sec_hi;   
+	u16 seqid;    
+	u16 msgtype;  
 };
 
 struct phy_txts {
-	u16 ns_lo;   /* ns[15:0] */
-	u16 ns_hi;   /* overflow[1:0], ns[29:16] */
-	u16 sec_lo;  /* sec[15:0] */
-	u16 sec_hi;  /* sec[31:16] */
+	u16 ns_lo;    
+	u16 ns_hi;    
+	u16 sec_lo;   
+	u16 sec_hi;   
 };
 
 struct rxts {
@@ -112,43 +108,43 @@ struct dp83640_private {
 	int hwts_rx_en;
 	int layer;
 	int version;
-	/* remember state of cfg0 during calibration */
+	 
 	int cfg0;
-	/* remember the last event time stamp */
+	 
 	struct phy_txts edata;
-	/* list of rx timestamps */
+	 
 	struct list_head rxts;
 	struct list_head rxpool;
 	struct rxts rx_pool_data[MAX_RXTS];
-	/* protects above three fields from concurrent access */
+	 
 	spinlock_t rx_lock;
-	/* queues of incoming and outgoing packets */
+	 
 	struct sk_buff_head rx_queue;
 	struct sk_buff_head tx_queue;
 };
 
 struct dp83640_clock {
-	/* keeps the instance in the 'phyter_clocks' list */
+	 
 	struct list_head list;
-	/* we create one clock instance per MII bus */
+	 
 	struct mii_bus *bus;
-	/* protects extended registers from concurrent access */
+	 
 	struct mutex extreg_lock;
-	/* remembers which page was last selected */
+	 
 	int page;
-	/* our advertised capabilities */
+	 
 	struct ptp_clock_info caps;
-	/* protects the three fields below from concurrent access */
+	 
 	struct mutex clock_lock;
-	/* the one phyter from which we shall read */
+	 
 	struct dp83640_private *chosen;
-	/* list of the other attached phyters, not chosen */
+	 
 	struct list_head phylist;
-	/* reference to our PTP hardware clock */
+	 
 	struct ptp_clock *ptp_clock;
 };
 
-/* globals */
+ 
 
 enum {
 	CALIBRATE_GPIO,
@@ -206,13 +202,13 @@ static void dp83640_gpio_defaults(struct ptp_pin_desc *pd)
 	}
 }
 
-/* a list of clocks and a mutex to protect it */
+ 
 static LIST_HEAD(phyter_clocks);
 static DEFINE_MUTEX(phyter_clocks_lock);
 
 static void rx_timestamp_work(struct work_struct *work);
 
-/* extended register access functions */
+ 
 
 #define BROADCAST_ADDR 31
 
@@ -222,7 +218,7 @@ static inline int broadcast_write(struct phy_device *phydev, u32 regnum,
 	return mdiobus_write(phydev->mdio.bus, BROADCAST_ADDR, regnum, val);
 }
 
-/* Caller must hold extreg_lock. */
+ 
 static int ext_read(struct phy_device *phydev, int page, u32 regnum)
 {
 	struct dp83640_private *dp83640 = phydev->priv;
@@ -237,7 +233,7 @@ static int ext_read(struct phy_device *phydev, int page, u32 regnum)
 	return val;
 }
 
-/* Caller must hold extreg_lock. */
+ 
 static void ext_write(int broadcast, struct phy_device *phydev,
 		      int page, u32 regnum, u16 val)
 {
@@ -253,21 +249,21 @@ static void ext_write(int broadcast, struct phy_device *phydev,
 		phy_write(phydev, regnum, val);
 }
 
-/* Caller must hold extreg_lock. */
+ 
 static int tdr_write(int bc, struct phy_device *dev,
 		     const struct timespec64 *ts, u16 cmd)
 {
-	ext_write(bc, dev, PAGE4, PTP_TDR, ts->tv_nsec & 0xffff);/* ns[15:0]  */
-	ext_write(bc, dev, PAGE4, PTP_TDR, ts->tv_nsec >> 16);   /* ns[31:16] */
-	ext_write(bc, dev, PAGE4, PTP_TDR, ts->tv_sec & 0xffff); /* sec[15:0] */
-	ext_write(bc, dev, PAGE4, PTP_TDR, ts->tv_sec >> 16);    /* sec[31:16]*/
+	ext_write(bc, dev, PAGE4, PTP_TDR, ts->tv_nsec & 0xffff); 
+	ext_write(bc, dev, PAGE4, PTP_TDR, ts->tv_nsec >> 16);    
+	ext_write(bc, dev, PAGE4, PTP_TDR, ts->tv_sec & 0xffff);  
+	ext_write(bc, dev, PAGE4, PTP_TDR, ts->tv_sec >> 16);     
 
 	ext_write(bc, dev, PAGE4, PTP_CTL, cmd);
 
 	return 0;
 }
 
-/* convert phy timestamps into driver timestamps */
+ 
 
 static void phy2rxts(struct phy_rxts *p, struct rxts *rxts)
 {
@@ -345,22 +341,22 @@ static int periodic_output(struct dp83640_clock *clock,
 
 	ext_write(0, phydev, PAGE5, PTP_TRIG, ptp_trig);
 
-	/*load trigger*/
+	 
 	val |= TRIG_LOAD;
 	ext_write(0, phydev, PAGE4, PTP_CTL, val);
-	ext_write(0, phydev, PAGE4, PTP_TDR, nsec & 0xffff);   /* ns[15:0] */
-	ext_write(0, phydev, PAGE4, PTP_TDR, nsec >> 16);      /* ns[31:16] */
-	ext_write(0, phydev, PAGE4, PTP_TDR, sec & 0xffff);    /* sec[15:0] */
-	ext_write(0, phydev, PAGE4, PTP_TDR, sec >> 16);       /* sec[31:16] */
-	ext_write(0, phydev, PAGE4, PTP_TDR, pwidth & 0xffff); /* ns[15:0] */
-	ext_write(0, phydev, PAGE4, PTP_TDR, pwidth >> 16);    /* ns[31:16] */
-	/* Triggers 0 and 1 has programmable pulsewidth2 */
+	ext_write(0, phydev, PAGE4, PTP_TDR, nsec & 0xffff);    
+	ext_write(0, phydev, PAGE4, PTP_TDR, nsec >> 16);       
+	ext_write(0, phydev, PAGE4, PTP_TDR, sec & 0xffff);     
+	ext_write(0, phydev, PAGE4, PTP_TDR, sec >> 16);        
+	ext_write(0, phydev, PAGE4, PTP_TDR, pwidth & 0xffff);  
+	ext_write(0, phydev, PAGE4, PTP_TDR, pwidth >> 16);     
+	 
 	if (trigger < 2) {
 		ext_write(0, phydev, PAGE4, PTP_TDR, pwidth & 0xffff);
 		ext_write(0, phydev, PAGE4, PTP_TDR, pwidth >> 16);
 	}
 
-	/*enable trigger*/
+	 
 	val &= ~TRIG_LOAD;
 	val |= TRIG_EN;
 	ext_write(0, phydev, PAGE4, PTP_CTL, val);
@@ -369,7 +365,7 @@ static int periodic_output(struct dp83640_clock *clock,
 	return 0;
 }
 
-/* ptp clock methods */
+ 
 
 static int ptp_dp83640_adjfine(struct ptp_clock_info *ptp, long scaled_ppm)
 {
@@ -437,10 +433,10 @@ static int ptp_dp83640_gettime(struct ptp_clock_info *ptp,
 
 	ext_write(0, phydev, PAGE4, PTP_CTL, PTP_RD_CLK);
 
-	val[0] = ext_read(phydev, PAGE4, PTP_TDR); /* ns[15:0] */
-	val[1] = ext_read(phydev, PAGE4, PTP_TDR); /* ns[31:16] */
-	val[2] = ext_read(phydev, PAGE4, PTP_TDR); /* sec[15:0] */
-	val[3] = ext_read(phydev, PAGE4, PTP_TDR); /* sec[31:16] */
+	val[0] = ext_read(phydev, PAGE4, PTP_TDR);  
+	val[1] = ext_read(phydev, PAGE4, PTP_TDR);  
+	val[2] = ext_read(phydev, PAGE4, PTP_TDR);  
+	val[3] = ext_read(phydev, PAGE4, PTP_TDR);  
 
 	mutex_unlock(&clock->extreg_lock);
 
@@ -478,14 +474,14 @@ static int ptp_dp83640_enable(struct ptp_clock_info *ptp,
 
 	switch (rq->type) {
 	case PTP_CLK_REQ_EXTTS:
-		/* Reject requests with unsupported flags */
+		 
 		if (rq->extts.flags & ~(PTP_ENABLE_FEATURE |
 					PTP_RISING_EDGE |
 					PTP_FALLING_EDGE |
 					PTP_STRICT_FLAGS))
 			return -EOPNOTSUPP;
 
-		/* Reject requests to enable time stamping on both edges. */
+		 
 		if ((rq->extts.flags & PTP_STRICT_FLAGS) &&
 		    (rq->extts.flags & PTP_ENABLE_FEATURE) &&
 		    (rq->extts.flags & PTP_EXTTS_EDGES) == PTP_EXTTS_EDGES)
@@ -513,7 +509,7 @@ static int ptp_dp83640_enable(struct ptp_clock_info *ptp,
 		return 0;
 
 	case PTP_CLK_REQ_PEROUT:
-		/* Reject requests with unsupported flags */
+		 
 		if (rq->perout.flags)
 			return -EOPNOTSUPP;
 		if (rq->perout.index >= N_PER_OUT)
@@ -595,7 +591,7 @@ static int expired(struct rxts *rxts)
 	return time_after(jiffies, rxts->tmo);
 }
 
-/* Caller must hold rx_lock. */
+ 
 static void prune_rx_ts(struct dp83640_private *dp83640)
 {
 	struct list_head *this, *next;
@@ -610,7 +606,7 @@ static void prune_rx_ts(struct dp83640_private *dp83640)
 	}
 }
 
-/* synchronize the phyters so they act as one clock */
+ 
 
 static void enable_broadcast(struct phy_device *phydev, int init_page, int on)
 {
@@ -644,9 +640,7 @@ static void recalibrate(struct dp83640_clock *clock)
 
 	mutex_lock(&clock->extreg_lock);
 
-	/*
-	 * enable broadcast, disable status frames, enable ptp clock
-	 */
+	 
 	list_for_each_entry(tmp, &clock->phylist, list) {
 		enable_broadcast(tmp->phydev, clock->page, 1);
 		tmp->cfg0 = ext_read(tmp->phydev, PAGE5, PSF_CFG0);
@@ -658,9 +652,7 @@ static void recalibrate(struct dp83640_clock *clock)
 	ext_write(0, master, PAGE5, PSF_CFG0, 0);
 	ext_write(0, master, PAGE4, PTP_CTL, PTP_ENABLE);
 
-	/*
-	 * enable an event timestamp
-	 */
+	 
 	evnt = EVNT_WR | EVNT_RISE | EVNT_SINGLE;
 	evnt |= (CAL_EVENT & EVNT_SEL_MASK) << EVNT_SEL_SHIFT;
 	evnt |= (cal_gpio & EVNT_GPIO_MASK) << EVNT_GPIO_SHIFT;
@@ -669,32 +661,28 @@ static void recalibrate(struct dp83640_clock *clock)
 		ext_write(0, tmp->phydev, PAGE5, PTP_EVNT, evnt);
 	ext_write(0, master, PAGE5, PTP_EVNT, evnt);
 
-	/*
-	 * configure a trigger
-	 */
+	 
 	ptp_trig = TRIG_WR | TRIG_IF_LATE | TRIG_PULSE;
 	ptp_trig |= (trigger  & TRIG_CSEL_MASK) << TRIG_CSEL_SHIFT;
 	ptp_trig |= (cal_gpio & TRIG_GPIO_MASK) << TRIG_GPIO_SHIFT;
 	ext_write(0, master, PAGE5, PTP_TRIG, ptp_trig);
 
-	/* load trigger */
+	 
 	val = (trigger & TRIG_SEL_MASK) << TRIG_SEL_SHIFT;
 	val |= TRIG_LOAD;
 	ext_write(0, master, PAGE4, PTP_CTL, val);
 
-	/* enable trigger */
+	 
 	val &= ~TRIG_LOAD;
 	val |= TRIG_EN;
 	ext_write(0, master, PAGE4, PTP_CTL, val);
 
-	/* disable trigger */
+	 
 	val = (trigger & TRIG_SEL_MASK) << TRIG_SEL_SHIFT;
 	val |= TRIG_DIS;
 	ext_write(0, master, PAGE4, PTP_CTL, val);
 
-	/*
-	 * read out and correct offsets
-	 */
+	 
 	val = ext_read(master, PAGE4, PTP_STS);
 	phydev_info(master, "master PTP_STS  0x%04hx\n", val);
 	val = ext_read(master, PAGE4, PTP_ESTS);
@@ -722,9 +710,7 @@ static void recalibrate(struct dp83640_clock *clock)
 		tdr_write(0, tmp->phydev, &ts, PTP_STEP_CLK);
 	}
 
-	/*
-	 * restore status frames
-	 */
+	 
 	list_for_each_entry(tmp, &clock->phylist, list)
 		ext_write(0, tmp->phydev, PAGE5, PSF_CFG0, tmp->cfg0);
 	ext_write(0, master, PAGE5, PSF_CFG0, cfg0);
@@ -732,7 +718,7 @@ static void recalibrate(struct dp83640_clock *clock)
 	mutex_unlock(&clock->extreg_lock);
 }
 
-/* time stamping methods */
+ 
 
 static inline u16 exts_chan_to_edata(int ch)
 {
@@ -748,13 +734,13 @@ static int decode_evnt(struct dp83640_private *dp83640,
 	int words = (ests >> EVNT_TS_LEN_SHIFT) & EVNT_TS_LEN_MASK;
 	u16 ext_status = 0;
 
-	/* calculate length of the event timestamp status message */
+	 
 	if (ests & MULT_EVNT)
 		parsed = (words + 2) * sizeof(u16);
 	else
 		parsed = (words + 1) * sizeof(u16);
 
-	/* check if enough data is available */
+	 
 	if (len < parsed)
 		return len;
 
@@ -787,7 +773,7 @@ static int decode_evnt(struct dp83640_private *dp83640,
 	event.type = PTP_CLOCK_EXTTS;
 	event.timestamp = phy2txts(&dp83640->edata);
 
-	/* Compensate for input path and synchronization delays */
+	 
 	event.timestamp -= 35;
 
 	for (i = 0; i < N_EXT_TS; i++) {
@@ -809,7 +795,7 @@ static int match(struct sk_buff *skb, unsigned int type, struct rxts *rxts)
 	u16 seqid;
 	u16 hash;
 
-	/* check sequenceID, messageType, 12 bit hash of offset 20-29 */
+	 
 
 	hdr = ptp_parse_header(skb, type);
 	if (!hdr)
@@ -891,7 +877,7 @@ static void decode_txts(struct dp83640_private *dp83640,
 	u8 overflow;
 	u64 ns;
 
-	/* We must already have the skb that triggered this. */
+	 
 again:
 	skb = skb_dequeue(&dp83640->tx_queue);
 	if (!skb) {
@@ -1008,13 +994,9 @@ static void dp83640_clock_init(struct dp83640_clock *clock, struct mii_bus *bus)
 	clock->caps.settime64	= ptp_dp83640_settime;
 	clock->caps.enable	= ptp_dp83640_enable;
 	clock->caps.verify	= ptp_dp83640_verify;
-	/*
-	 * Convert the module param defaults into a dynamic pin configuration.
-	 */
+	 
 	dp83640_gpio_defaults(clock->caps.pin_config);
-	/*
-	 * Get a reference to this bus instance.
-	 */
+	 
 	get_device(&bus->dev);
 }
 
@@ -1037,10 +1019,7 @@ static struct dp83640_clock *dp83640_clock_get(struct dp83640_clock *clock)
 	return clock;
 }
 
-/*
- * Look up and lock a clock by bus instance.
- * If there is no clock for this bus, then create it first.
- */
+ 
 static struct dp83640_clock *dp83640_clock_get_bus(struct mii_bus *bus)
 {
 	struct dp83640_clock *clock = NULL, *tmp;
@@ -1091,11 +1070,8 @@ static int dp83640_soft_reset(struct phy_device *phydev)
 	if (ret < 0)
 		return ret;
 
-	/* From DP83640 datasheet: "Software driver code must wait 3 us
-	 * following a software reset before allowing further serial MII
-	 * operations with the DP83640."
-	 */
-	udelay(10);		/* Taking udelay inaccuracy into account */
+	 
+	udelay(10);		 
 
 	return 0;
 }
@@ -1301,7 +1277,7 @@ static void rx_timestamp_work(struct work_struct *work)
 		container_of(work, struct dp83640_private, ts_work.work);
 	struct sk_buff *skb;
 
-	/* Deliver expired packets. */
+	 
 	while ((skb = skb_dequeue(&dp83640->rx_queue))) {
 		struct dp83640_skb_info *skb_info;
 
@@ -1521,7 +1497,7 @@ static struct phy_driver dp83640_driver = {
 	.phy_id		= DP83640_PHY_ID,
 	.phy_id_mask	= 0xfffffff0,
 	.name		= "NatSemi DP83640",
-	/* PHY_BASIC_FEATURES */
+	 
 	.probe		= dp83640_probe,
 	.remove		= dp83640_remove,
 	.soft_reset	= dp83640_soft_reset,

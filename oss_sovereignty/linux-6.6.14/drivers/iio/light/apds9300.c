@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * apds9300.c - IIO driver for Avago APDS9300 ambient light sensor
- *
- * Copyright 2013 Oleksandr Kravchenko <o.v.kravchenko@globallogic.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/slab.h>
@@ -19,29 +15,29 @@
 #define APDS9300_DRV_NAME "apds9300"
 #define APDS9300_IRQ_NAME "apds9300_event"
 
-/* Command register bits */
-#define APDS9300_CMD	BIT(7) /* Select command register. Must write as 1 */
-#define APDS9300_WORD	BIT(5) /* I2C write/read: if 1 word, if 0 byte */
-#define APDS9300_CLEAR	BIT(6) /* Interrupt clear. Clears pending interrupt */
+ 
+#define APDS9300_CMD	BIT(7)  
+#define APDS9300_WORD	BIT(5)  
+#define APDS9300_CLEAR	BIT(6)  
 
-/* Register set */
-#define APDS9300_CONTROL	0x00 /* Control of basic functions */
-#define APDS9300_THRESHLOWLOW	0x02 /* Low byte of low interrupt threshold */
-#define APDS9300_THRESHHIGHLOW	0x04 /* Low byte of high interrupt threshold */
-#define APDS9300_INTERRUPT	0x06 /* Interrupt control */
-#define APDS9300_DATA0LOW	0x0c /* Low byte of ADC channel 0 */
-#define APDS9300_DATA1LOW	0x0e /* Low byte of ADC channel 1 */
+ 
+#define APDS9300_CONTROL	0x00  
+#define APDS9300_THRESHLOWLOW	0x02  
+#define APDS9300_THRESHHIGHLOW	0x04  
+#define APDS9300_INTERRUPT	0x06  
+#define APDS9300_DATA0LOW	0x0c  
+#define APDS9300_DATA1LOW	0x0e  
 
-/* Power on/off value for APDS9300_CONTROL register */
+ 
 #define APDS9300_POWER_ON	0x03
 #define APDS9300_POWER_OFF	0x00
 
-/* Interrupts */
+ 
 #define APDS9300_INTR_ENABLE	0x10
-/* Interrupt Persist Function: Any value outside of threshold range */
+ 
 #define APDS9300_THRESH_INTR	0x01
 
-#define APDS9300_THRESH_MAX	0xffff /* Max threshold value */
+#define APDS9300_THRESH_MAX	0xffff  
 
 struct apds9300_data {
 	struct i2c_client *client;
@@ -52,9 +48,9 @@ struct apds9300_data {
 	int intr_en;
 };
 
-/* Lux calculation */
+ 
 
-/* Calculated values 1000 * (CH1/CH0)^1.4 for CH1/CH0 from 0 to 0.52 */
+ 
 static const u16 apds9300_lux_ratio[] = {
 	0, 2, 4, 7, 11, 15, 19, 24, 29, 34, 40, 45, 51, 57, 64, 70, 77, 84, 91,
 	98, 105, 112, 120, 128, 136, 144, 152, 160, 168, 177, 185, 194, 203,
@@ -66,7 +62,7 @@ static unsigned long apds9300_calculate_lux(u16 ch0, u16 ch1)
 {
 	unsigned long lux, tmp;
 
-	/* avoid division by zero */
+	 
 	if (ch0 == 0)
 		return 0;
 
@@ -95,7 +91,7 @@ static int apds9300_get_adc_val(struct apds9300_data *data, int adc_number)
 	if (!data->power_state)
 		return -EBUSY;
 
-	/* Select ADC0 or ADC1 data register */
+	 
 	flags |= adc_number ? APDS9300_DATA1LOW : APDS9300_DATA0LOW;
 
 	ret = i2c_smbus_read_word_data(data->client, flags);
@@ -200,14 +196,11 @@ static int apds9300_chip_init(struct apds9300_data *data)
 {
 	int ret;
 
-	/* Need to set power off to ensure that the chip is off */
+	 
 	ret = apds9300_set_power_state(data, 0);
 	if (ret < 0)
 		goto err;
-	/*
-	 * Probe the chip. To do so we try to power up the device and then to
-	 * read back the 0x03 code
-	 */
+	 
 	ret = apds9300_set_power_state(data, 1);
 	if (ret < 0)
 		goto err;
@@ -217,10 +210,7 @@ static int apds9300_chip_init(struct apds9300_data *data)
 		ret = -ENODEV;
 		goto err;
 	}
-	/*
-	 * Disable interrupt to ensure thai it is doesn't enable
-	 * i.e. after device soft reset
-	 */
+	 
 	ret = apds9300_set_intr_state(data, 0);
 	if (ret < 0)
 		goto err;
@@ -446,7 +436,7 @@ static int apds9300_probe(struct i2c_client *client)
 	return 0;
 
 err:
-	/* Ensure that power off in case of error */
+	 
 	apds9300_set_power_state(data, 0);
 	return ret;
 }
@@ -458,7 +448,7 @@ static void apds9300_remove(struct i2c_client *client)
 
 	iio_device_unregister(indio_dev);
 
-	/* Ensure that power off and interrupts are disabled */
+	 
 	apds9300_set_intr_state(data, 0);
 	apds9300_set_power_state(data, 0);
 }

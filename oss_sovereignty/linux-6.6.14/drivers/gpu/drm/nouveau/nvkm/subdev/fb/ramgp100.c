@@ -1,26 +1,4 @@
-/*
- * Copyright 2013 Red Hat Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: Ben Skeggs
- */
+ 
 #include "ram.h"
 
 #include <subdev/bios.h>
@@ -37,23 +15,13 @@ gp100_ram_init(struct nvkm_ram *ram)
 	u32 data;
 	int i;
 
-	/* run a bunch of tables from rammap table.  there's actually
-	 * individual pointers for each rammap entry too, but, nvidia
-	 * seem to just run the last two entries' scripts early on in
-	 * their init, and never again.. we'll just run 'em all once
-	 * for now.
-	 *
-	 * i strongly suspect that each script is for a separate mode
-	 * (likely selected by 0x9a065c's lower bits?), and the
-	 * binary driver skips the one that's already been setup by
-	 * the init tables.
-	 */
+	 
 	data = nvbios_rammapTe(bios, &ver, &hdr, &cnt, &len, &snr, &ssz);
 	if (!data || hdr < 0x15)
 		return -EINVAL;
 
-	cnt  = nvbios_rd08(bios, data + 0x14); /* guess at count */
-	data = nvbios_rd32(bios, data + 0x10); /* guess u32... */
+	cnt  = nvbios_rd08(bios, data + 0x14);  
+	data = nvbios_rd32(bios, data + 0x10);  
 	if (cnt) {
 		u32 save = nvkm_rd32(device, 0x9a065c) & 0x000000f0;
 		for (i = 0; i < cnt; i++, data += 4) {

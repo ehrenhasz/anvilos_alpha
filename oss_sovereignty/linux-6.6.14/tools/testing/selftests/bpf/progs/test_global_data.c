@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2019 Isovalent, Inc.
+
+
 
 #include <linux/bpf.h>
 #include <linux/pkt_cls.h>
@@ -34,7 +34,7 @@ struct {
 	__type(value, struct foo);
 } result_struct SEC(".maps");
 
-/* Relocation tests for __u64s. */
+ 
 static       __u64 num0;
 static       __u64 num1 = 42;
 static const __u64 num2 = 24;
@@ -43,12 +43,12 @@ static       __u64 num4 = 0xffeeff;
 static const __u64 num5 = 0xabab;
 static const __u64 num6 = 0xab;
 
-/* Relocation tests for strings. */
+ 
 static const char str0[32] = "abcdefghijklmnopqrstuvwxyz";
 static       char str1[32] = "abcdefghijklmnopqrstuvwxyz";
 static       char str2[32];
 
-/* Relocation tests for structs. */
+ 
 static const struct foo struct0 = {
 	.a = 42,
 	.b = 0xfefeefef,

@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-// Definitions for PCM1789 audio driver
-// Copyright (C) 2018 Bootlin
-// Mylène Josserand <mylene.josserand@bootlin.com>
+
+
+
+
 
 #ifndef __PCM1789_H__
 #define __PCM1789_H__

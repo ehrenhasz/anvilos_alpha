@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * kirkwood-dma.c
- *
- * (c) 2010 Arnaud Patard <apatard@mandriva.com>
- * (c) 2010 Arnaud Patard <arnaud.patard@rtp-net.org>
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/module.h>
@@ -53,7 +48,7 @@ static irqreturn_t kirkwood_dma_irq(int irq, void *dev_id)
 		writel(cause, priv->io + KIRKWOOD_ERR_CAUSE);
 	}
 
-	/* we've enabled only bytes interrupts ... */
+	 
 	if (status & ~(KIRKWOOD_INT_CAUSE_PLAY_BYTES | \
 			KIRKWOOD_INT_CAUSE_REC_BYTES)) {
 		printk(KERN_WARNING "%s: unexpected interrupt %lx\n",
@@ -61,7 +56,7 @@ static irqreturn_t kirkwood_dma_irq(int irq, void *dev_id)
 		return IRQ_NONE;
 	}
 
-	/* ack int */
+	 
 	writel(status, priv->io + KIRKWOOD_INT_CAUSE);
 
 	if (status & KIRKWOOD_INT_CAUSE_PLAY_BYTES)
@@ -80,11 +75,11 @@ kirkwood_dma_conf_mbus_windows(void __iomem *base, int win,
 {
 	int i;
 
-	/* First disable and clear windows */
+	 
 	writel(0, base + KIRKWOOD_AUDIO_WIN_CTRL_REG(win));
 	writel(0, base + KIRKWOOD_AUDIO_WIN_BASE_REG(win));
 
-	/* try to find matching cs for current dma address */
+	 
 	for (i = 0; i < dram->num_cs; i++) {
 		const struct mbus_dram_window *cs = &dram->cs[i];
 		if ((cs->base & 0xffff0000) < (dma & 0xffff0000)) {
@@ -107,7 +102,7 @@ static int kirkwood_dma_open(struct snd_soc_component *component,
 
 	snd_soc_set_runtime_hwparams(substream, &kirkwood_dma_snd_hw);
 
-	/* Ensure that all constraints linked to dma burst are fulfilled */
+	 
 	err = snd_pcm_hw_constraint_minmax(runtime,
 			SNDRV_PCM_HW_PARAM_BUFFER_BYTES,
 			priv->burst * 2,
@@ -133,10 +128,7 @@ static int kirkwood_dma_open(struct snd_soc_component *component,
 		if (err)
 			return err;
 
-		/*
-		 * Enable Error interrupts. We're only ack'ing them but
-		 * it's useful for diagnostics
-		 */
+		 
 		writel((unsigned int)-1, priv->io + KIRKWOOD_ERR_MASK);
 	}
 
@@ -198,7 +190,7 @@ static int kirkwood_dma_prepare(struct snd_soc_component *component,
 	struct kirkwood_dma_data *priv = kirkwood_priv(substream);
 	unsigned long size, count;
 
-	/* compute buffer size in term of "words" as requested in specs */
+	 
 	size = frames_to_bytes(runtime, runtime->buffer_size);
 	size = (size>>2)-1;
 	count = snd_pcm_lib_period_bytes(substream);

@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * PCI Hot Plug Controller Driver for System z
- *
- * Copyright 2012 IBM Corp.
- *
- * Author(s):
- *   Jan Glauber <jang@linux.vnet.ibm.com>
- */
+
+ 
 
 #define KMSG_COMPONENT "zpci"
 #define pr_fmt(fmt) KMSG_COMPONENT ": " fmt
@@ -64,16 +57,9 @@ static int reset_slot(struct hotplug_slot *hotplug_slot, bool probe)
 
 	if (zdev->state != ZPCI_FN_STATE_CONFIGURED)
 		return -EIO;
-	/*
-	 * We can't take the zdev->lock as reset_slot may be called during
-	 * probing and/or device removal which already happens under the
-	 * zdev->lock. Instead the user should use the higher level
-	 * pci_reset_function() or pci_bus_reset() which hold the PCI device
-	 * lock preventing concurrent removal. If not using these functions
-	 * holding the PCI device lock is required.
-	 */
+	 
 
-	/* As long as the function is configured we can reset */
+	 
 	if (probe)
 		return 0;
 
@@ -91,7 +77,7 @@ static int get_power_status(struct hotplug_slot *hotplug_slot, u8 *value)
 
 static int get_adapter_status(struct hotplug_slot *hotplug_slot, u8 *value)
 {
-	/* if the slot exits it always contains a function */
+	 
 	*value = 1;
 	return 0;
 }

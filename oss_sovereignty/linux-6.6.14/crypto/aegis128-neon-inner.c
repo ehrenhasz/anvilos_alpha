@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2019 Linaro, Ltd. <ard.biesheuvel@linaro.org>
- */
+
+ 
 
 #ifdef CONFIG_ARM64
 #include <asm/neon-intrinsics.h>
@@ -65,10 +63,10 @@ uint8x16_t aegis_aes_round(uint8x16_t w)
 		};
 		uint8x16_t v;
 
-		// shift rows
+		
 		w = vqtbl1q_u8(w, vld1q_u8(shift_rows));
 
-		// sub bytes
+		
 #ifndef CONFIG_CC_IS_GCC
 		v = vqtbl4q_u8(vld1q_u8_x4(crypto_aes_sbox), w);
 		v = vqtbx4q_u8(v, vld1q_u8_x4(crypto_aes_sbox + 0x40), w - 0x40);
@@ -84,7 +82,7 @@ uint8x16_t aegis_aes_round(uint8x16_t w)
 		asm("tbx %0.16b, {v28.16b-v31.16b}, %1.16b" : "+w"(v) : "w"(w));
 #endif
 
-		// mix columns
+		
 		w = (v << 1) ^ (uint8x16_t)(((int8x16_t)v >> 7) & 0x1b);
 		w ^= (uint8x16_t)vrev32q_u16((uint16x8_t)v);
 		w ^= vqtbl1q_u8(v ^ w, vld1q_u8(ror32by8));
@@ -93,12 +91,7 @@ uint8x16_t aegis_aes_round(uint8x16_t w)
 	}
 #endif
 
-	/*
-	 * We use inline asm here instead of the vaeseq_u8/vaesmcq_u8 intrinsics
-	 * to force the compiler to issue the aese/aesmc instructions in pairs.
-	 * This is much faster on many cores, where the instruction pair can
-	 * execute in a single cycle.
-	 */
+	 
 	asm(AES_ROUND : "+w"(w) : "w"(z));
 	return w;
 }
@@ -174,11 +167,7 @@ void crypto_aegis128_update_neon(void *state, const void *msg)
 }
 
 #ifdef CONFIG_ARM
-/*
- * AArch32 does not provide these intrinsics natively because it does not
- * implement the underlying instructions. AArch32 only provides 64-bit
- * wide vtbl.8/vtbx.8 instruction, so use those instead.
- */
+ 
 static uint8x16_t vqtbl1q_u8(uint8x16_t a, uint8x16_t b)
 {
 	union {

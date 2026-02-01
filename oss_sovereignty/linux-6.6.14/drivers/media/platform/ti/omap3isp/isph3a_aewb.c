@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * isph3a.c
- *
- * TI OMAP3 ISP - H3A module
- *
- * Copyright (C) 2010 Nokia Corporation
- * Copyright (C) 2009 Texas Instruments, Inc.
- *
- * Contacts: David Cohen <dacohen@gmail.com>
- *	     Laurent Pinchart <laurent.pinchart@ideasonboard.com>
- *	     Sakari Ailus <sakari.ailus@iki.fi>
- */
+
+ 
 
 #include <linux/slab.h>
 #include <linux/uaccess.h>
@@ -19,9 +8,7 @@
 #include "isph3a.h"
 #include "ispstat.h"
 
-/*
- * h3a_aewb_update_regs - Helper function to update h3a registers.
- */
+ 
 static void h3a_aewb_setup_regs(struct ispstat *aewb, void *priv)
 {
 	struct omap3isp_h3a_aewb_config *conf = priv;
@@ -40,7 +27,7 @@ static void h3a_aewb_setup_regs(struct ispstat *aewb, void *priv)
 	if (!aewb->update)
 		return;
 
-	/* Converting config metadata into reg values */
+	 
 	pcr = conf->saturation_limit << ISPH3A_PCR_AEW_AVE2LMT_SHIFT;
 	pcr |= !!conf->alaw_enable << ISPH3A_PCR_AEW_ALAW_EN_SHIFT;
 
@@ -96,14 +83,10 @@ static int h3a_aewb_busy(struct ispstat *aewb)
 
 static u32 h3a_aewb_get_buf_size(struct omap3isp_h3a_aewb_config *conf)
 {
-	/* Number of configured windows + extra row for black data */
+	 
 	u32 win_count = (conf->ver_win_count + 1) * conf->hor_win_count;
 
-	/*
-	 * Unsaturated block counts for each 8 windows.
-	 * 1 extra for the last (win_count % 8) windows if win_count is not
-	 * divisible by 8.
-	 */
+	 
 	win_count += (win_count + 7) / 8;
 
 	return win_count * AEWB_PACKET_SIZE;
@@ -169,13 +152,7 @@ static int h3a_aewb_validate_params(struct ispstat *aewb, void *new_conf)
 	return 0;
 }
 
-/*
- * h3a_aewb_set_params - Helper function to check & store user given params.
- * @new_conf: Pointer to AE and AWB parameters struct.
- *
- * As most of them are busy-lock registers, need to wait until AEW_BUSY = 0 to
- * program them during ISR.
- */
+ 
 static void h3a_aewb_set_params(struct ispstat *aewb, void *new_conf)
 {
 	struct omap3isp_h3a_aewb_config *user_cfg = new_conf;
@@ -281,9 +258,7 @@ static const struct v4l2_subdev_ops h3a_aewb_subdev_ops = {
 	.video = &h3a_aewb_subdev_video_ops,
 };
 
-/*
- * omap3isp_h3a_aewb_init - Module Initialisation.
- */
+ 
 int omap3isp_h3a_aewb_init(struct isp_device *isp)
 {
 	struct ispstat *aewb = &isp->isp_aewb;
@@ -300,7 +275,7 @@ int omap3isp_h3a_aewb_init(struct isp_device *isp)
 	aewb->event_type = V4L2_EVENT_OMAP3ISP_AEWB;
 	aewb->isp = isp;
 
-	/* Set recover state configuration */
+	 
 	aewb_recover_cfg = kzalloc(sizeof(*aewb_recover_cfg), GFP_KERNEL);
 	if (!aewb_recover_cfg) {
 		dev_err(aewb->isp->dev,
@@ -341,9 +316,7 @@ err:
 	return ret;
 }
 
-/*
- * omap3isp_h3a_aewb_cleanup - Module exit.
- */
+ 
 void omap3isp_h3a_aewb_cleanup(struct isp_device *isp)
 {
 	omap3isp_stat_cleanup(&isp->isp_aewb);

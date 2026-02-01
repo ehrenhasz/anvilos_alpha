@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2022 Intel Corporation
- */
+ 
+ 
 
 #ifndef __VLV_DSI_PLL_REGS_H__
 #define __VLV_DSI_PLL_REGS_H__
@@ -22,7 +20,7 @@
 			_MIPI_PORT(port, BXT_MIPI1_DIV_SHIFT, \
 					BXT_MIPI2_DIV_SHIFT)
 
-/* TX control divider to select actual TX clock output from (8x/var) */
+ 
 #define  BXT_MIPI1_TX_ESCLK_SHIFT		26
 #define  BXT_MIPI2_TX_ESCLK_SHIFT		10
 #define  BXT_MIPI_TX_ESCLK_SHIFT(port)		\
@@ -35,7 +33,7 @@
 					BXT_MIPI2_TX_ESCLK_FIXDIV_MASK)
 #define  BXT_MIPI_TX_ESCLK_DIVIDER(port, val)	\
 		(((val) & 0x3F) << BXT_MIPI_TX_ESCLK_SHIFT(port))
-/* RX upper control divider to select actual RX clock output from 8x */
+ 
 #define  BXT_MIPI1_RX_ESCLK_UPPER_SHIFT		21
 #define  BXT_MIPI2_RX_ESCLK_UPPER_SHIFT		5
 #define  BXT_MIPI_RX_ESCLK_UPPER_SHIFT(port)		\
@@ -48,7 +46,7 @@
 					BXT_MIPI2_RX_ESCLK_UPPER_FIXDIV_MASK)
 #define  BXT_MIPI_RX_ESCLK_UPPER_DIVIDER(port, val)	\
 		(((val) & 3) << BXT_MIPI_RX_ESCLK_UPPER_SHIFT(port))
-/* 8/3X divider to select the actual 8/3X clock output from 8x */
+ 
 #define  BXT_MIPI1_8X_BY3_SHIFT                19
 #define  BXT_MIPI2_8X_BY3_SHIFT                3
 #define  BXT_MIPI_8X_BY3_SHIFT(port)          \
@@ -61,7 +59,7 @@
 						BXT_MIPI2_8X_BY3_DIVIDER_MASK)
 #define  BXT_MIPI_8X_BY3_DIVIDER(port, val)    \
 			(((val) & 3) << BXT_MIPI_8X_BY3_SHIFT(port))
-/* RX lower control divider to select actual RX clock output from 8x */
+ 
 #define  BXT_MIPI1_RX_ESCLK_LOWER_SHIFT		16
 #define  BXT_MIPI2_RX_ESCLK_LOWER_SHIFT		0
 #define  BXT_MIPI_RX_ESCLK_LOWER_SHIFT(port)		\
@@ -106,4 +104,4 @@
 #define  BXT_DSI_PLL_DO_ENABLE		(1 << 31)
 #define  BXT_DSI_PLL_LOCKED		(1 << 30)
 
-#endif /* __VLV_DSI_PLL_REGS_H__ */
+#endif  

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2015-2019 Jason A. Donenfeld <Jason@zx2c4.com>. All Rights Reserved.
- */
+
+ 
 
 #include "netlink.h"
 #include "device.h"
@@ -255,11 +253,7 @@ static int wg_get_device_dump(struct sk_buff *skb, struct netlink_callback *cb)
 	if (!peers_nest)
 		goto out;
 	ret = 0;
-	/* If the last cursor was removed via list_del_init in peer_remove, then
-	 * we just treat this the same as there being no more peers left. The
-	 * reason is that seq_nr should indicate to userspace that this isn't a
-	 * coherent dump anyway, so they'll try again.
-	 */
+	 
 	if (list_empty(&wg->peer_list) ||
 	    (ctx->next_peer && list_empty(&ctx->next_peer->peer_list))) {
 		nla_nest_cancel(skb, peers_nest);
@@ -295,10 +289,7 @@ out:
 	ctx->next_peer = next_peer_cursor;
 	return skb->len;
 
-	/* At this point, we can't really deal ourselves with safely zeroing out
-	 * the private key material after usage. This will need an additional API
-	 * in the kernel for marking skbs as zero_on_free.
-	 */
+	 
 }
 
 static int wg_get_device_done(struct netlink_callback *cb)
@@ -386,11 +377,11 @@ static int set_peer(struct wg_device *wg, struct nlattr **attrs)
 	peer = wg_pubkey_hashtable_lookup(wg->peer_hashtable,
 					  nla_data(attrs[WGPEER_A_PUBLIC_KEY]));
 	ret = 0;
-	if (!peer) { /* Peer doesn't exist yet. Add a new one. */
+	if (!peer) {  
 		if (flags & (WGPEER_F_REMOVE_ME | WGPEER_F_UPDATE_ONLY))
 			goto out;
 
-		/* The peer is new, so there aren't allowed IPs to remove. */
+		 
 		flags &= ~WGPEER_F_REPLACE_ALLOWEDIPS;
 
 		down_read(&wg->static_identity.lock);
@@ -398,11 +389,7 @@ static int set_peer(struct wg_device *wg, struct nlattr **attrs)
 		    !memcmp(nla_data(attrs[WGPEER_A_PUBLIC_KEY]),
 			    wg->static_identity.static_public,
 			    NOISE_PUBLIC_KEY_LEN)) {
-			/* We silently ignore peers that have the same public
-			 * key as the device. The reason we do it silently is
-			 * that we'd like for people to be able to reuse the
-			 * same set of API calls across peers.
-			 */
+			 
 			up_read(&wg->static_identity.lock);
 			ret = 0;
 			goto out;
@@ -415,9 +402,7 @@ static int set_peer(struct wg_device *wg, struct nlattr **attrs)
 			peer = NULL;
 			goto out;
 		}
-		/* Take additional reference, as though we've just been
-		 * looked up.
-		 */
+		 
 		wg_peer_get(peer);
 	}
 
@@ -552,9 +537,7 @@ static int wg_set_device(struct sk_buff *skb, struct genl_info *info)
 				   private_key, NOISE_PUBLIC_KEY_LEN))
 			goto skip_set_private_key;
 
-		/* We remove before setting, to prevent race, which means doing
-		 * two 25519-genpub ops.
-		 */
+		 
 		if (curve25519_generate_public(public_key, private_key)) {
 			peer = wg_pubkey_hashtable_lookup(wg->peer_hashtable,
 							  public_key);

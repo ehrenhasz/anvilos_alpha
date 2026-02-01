@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright(c) 2022 Intel Corporation. All rights reserved. */
+
+ 
 #include <linux/libnvdimm.h>
 #include <asm/unaligned.h>
 #include <linux/module.h>
@@ -34,7 +34,7 @@ static unsigned long cxl_pmem_get_security_flags(struct nvdimm *nvdimm,
 		return 0;
 
 	sec_out = le32_to_cpu(out.flags);
-	/* cache security state */
+	 
 	mds->security.state = sec_out;
 
 	if (ptype == NVDIMM_MASTER) {

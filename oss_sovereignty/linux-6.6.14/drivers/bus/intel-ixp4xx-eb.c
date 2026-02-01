@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Intel IXP4xx Expansion Bus Controller
- * Copyright (C) 2021 Linaro Ltd.
- *
- * Author: Linus Walleij <linus.walleij@linaro.org>
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/bits.h>
@@ -29,10 +24,10 @@
 #define IXP4XX_EXP_TIMING_CS6		0x18
 #define IXP4XX_EXP_TIMING_CS7		0x1c
 
-/* Bits inside each CS timing register */
+ 
 #define IXP4XX_EXP_TIMING_STRIDE	0x04
 #define IXP4XX_EXP_CS_EN		BIT(31)
-#define IXP456_EXP_PAR_EN		BIT(30) /* Only on IXP45x and IXP46x */
+#define IXP456_EXP_PAR_EN		BIT(30)  
 #define IXP4XX_EXP_T1_MASK		GENMASK(29, 28)
 #define IXP4XX_EXP_T1_SHIFT		28
 #define IXP4XX_EXP_T2_MASK		GENMASK(27, 26)
@@ -47,14 +42,14 @@
 #define IXP4XX_EXP_CYC_TYPE_SHIFT	14
 #define IXP4XX_EXP_SIZE_MASK		GENMASK(13, 10)
 #define IXP4XX_EXP_SIZE_SHIFT		10
-#define IXP4XX_EXP_CNFG_0		BIT(9) /* Always zero */
-#define IXP43X_EXP_SYNC_INTEL		BIT(8) /* Only on IXP43x */
-#define IXP43X_EXP_EXP_CHIP		BIT(7) /* Only on IXP43x, dangerous to touch on IXP42x */
+#define IXP4XX_EXP_CNFG_0		BIT(9)  
+#define IXP43X_EXP_SYNC_INTEL		BIT(8)  
+#define IXP43X_EXP_EXP_CHIP		BIT(7)  
 #define IXP4XX_EXP_BYTE_RD16		BIT(6)
-#define IXP4XX_EXP_HRDY_POL		BIT(5) /* Only on IXP42x */
+#define IXP4XX_EXP_HRDY_POL		BIT(5)  
 #define IXP4XX_EXP_MUX_EN		BIT(4)
 #define IXP4XX_EXP_SPLT_EN		BIT(3)
-#define IXP4XX_EXP_WORD			BIT(2) /* Always zero */
+#define IXP4XX_EXP_WORD			BIT(2)  
 #define IXP4XX_EXP_WR_EN		BIT(1)
 #define IXP4XX_EXP_BYTE_EN		BIT(0)
 
@@ -66,11 +61,11 @@
 #define IXP4XX_EXP_NORMAL_BASE		0x50000000
 #define IXP4XX_EXP_STRIDE		0x01000000
 
-/* Fuses on the IXP43x */
+ 
 #define IXP43X_EXP_UNIT_FUSE_RESET	0x28
 #define IXP43x_EXP_FUSE_SPEED_MASK	GENMASK(23, 22)
 
-/* Number of device tree values in "reg" */
+ 
 #define IXP4XX_OF_REG_SIZE		3
 
 struct ixp4xx_eb {
@@ -176,25 +171,21 @@ static void ixp4xx_exp_setup_chipselect(struct ixp4xx_eb *eb,
 		return;
 	}
 
-	/* Several chip selects can be joined into one device */
+	 
 	if (cs_size > IXP4XX_EXP_STRIDE)
 		cur_cssize = IXP4XX_EXP_STRIDE;
 	else
 		cur_cssize = cs_size;
 
 
-	/*
-	 * The following will read/modify/write the configuration for one
-	 * chipselect, attempting to leave the boot defaults in place unless
-	 * something is explicitly defined.
-	 */
+	 
 	regmap_read(eb->rmap, IXP4XX_EXP_TIMING_CS0 +
 		    IXP4XX_EXP_TIMING_STRIDE * cs_index, &cs_cfg);
 	dev_info(eb->dev, "CS%d at %#08x, size %#08x, config before: %#08x\n",
 		 cs_index, eb->bus_base + IXP4XX_EXP_STRIDE * cs_index,
 		 cur_cssize, cs_cfg);
 
-	/* Size set-up first align to 2^9 .. 2^24 */
+	 
 	cur_cssize = roundup_pow_of_two(cur_cssize);
 	if (cur_cssize < 512)
 		cur_cssize = 512;
@@ -210,12 +201,12 @@ static void ixp4xx_exp_setup_chipselect(struct ixp4xx_eb *eb,
 	for (i = 0; i < ARRAY_SIZE(ixp4xx_exp_tim_props); i++) {
 		const struct ixp4xx_exp_tim_prop *ip = &ixp4xx_exp_tim_props[i];
 
-		/* All are regular u32 values */
+		 
 		ret = of_property_read_u32(np, ip->prop, &val);
 		if (ret)
 			continue;
 
-		/* Handle bools (single bits) first */
+		 
 		if (ip->max == 1) {
 			if (val)
 				cs_cfg |= ip->mask;
@@ -233,7 +224,7 @@ static void ixp4xx_exp_setup_chipselect(struct ixp4xx_eb *eb,
 				cs_index, ip->prop, val, ip->max);
 			val = ip->max;
 		}
-		/* This assumes max value fills all the assigned bits (and it does) */
+		 
 		cs_cfg &= ~ip->mask;
 		cs_cfg |= (val << ip->shift);
 		dev_info(eb->dev, "CS%d set %s to %u\n", cs_index, ip->prop, val);
@@ -251,12 +242,9 @@ static void ixp4xx_exp_setup_chipselect(struct ixp4xx_eb *eb,
 	}
 
 	if (eb->is_43x) {
-		/* Should always be zero */
+		 
 		cs_cfg &= ~IXP4XX_EXP_WORD;
-		/*
-		 * This bit for Intel strata flash is currently unused, but let's
-		 * report it if we find one.
-		 */
+		 
 		if (cs_cfg & IXP43X_EXP_SYNC_INTEL)
 			dev_info(eb->dev, "claims to be Intel strata flash\n");
 	}
@@ -267,12 +255,7 @@ static void ixp4xx_exp_setup_chipselect(struct ixp4xx_eb *eb,
 		     cs_cfg);
 	dev_info(eb->dev, "CS%d wrote %#08x into CS config\n", cs_index, cs_cfg);
 
-	/*
-	 * If several chip selects are joined together into one big
-	 * device area, we call ourselves recursively for each successive
-	 * chip select. For a 32MB flash chip this results in two calls
-	 * for example.
-	 */
+	 
 	if (cs_size > IXP4XX_EXP_STRIDE)
 		ixp4xx_exp_setup_chipselect(eb, np,
 					    cs_index + 1,
@@ -318,14 +301,7 @@ static void ixp4xx_exp_setup_child(struct ixp4xx_eb *eb,
 			dev_err(eb->dev, "illegal CS %d\n", csindex);
 			continue;
 		}
-		/*
-		 * The memory window always starts from CS base so we need to add
-		 * the start and size to get to the size from the start of the CS
-		 * base. For example if CS0 is at 0x50000000 and the reg is
-		 * <0 0xe40000 0x40000> the size is e80000.
-		 *
-		 * Roof this if we have several regs setting the same CS.
-		 */
+		 
 		cssize = rbase + rsize;
 		dev_dbg(eb->dev, "CS%d size %#08x\n", csindex, cssize);
 		if (cs_sizes[csindex] < cssize)
@@ -336,7 +312,7 @@ static void ixp4xx_exp_setup_child(struct ixp4xx_eb *eb,
 		cssize = cs_sizes[csindex];
 		if (!cssize)
 			continue;
-		/* Just this one, so set it up and return */
+		 
 		ixp4xx_exp_setup_chipselect(eb, np, csindex, cssize);
 	}
 }
@@ -363,7 +339,7 @@ static int ixp4xx_exp_probe(struct platform_device *pdev)
 	if (IS_ERR(eb->rmap))
 		return dev_err_probe(dev, PTR_ERR(eb->rmap), "no regmap\n");
 
-	/* We check that the regmap work only on first read */
+	 
 	ret = regmap_read(eb->rmap, IXP4XX_EXP_CNFG0, &val);
 	if (ret)
 		return dev_err_probe(dev, ret, "cannot read regmap\n");
@@ -374,7 +350,7 @@ static int ixp4xx_exp_probe(struct platform_device *pdev)
 	dev_info(dev, "expansion bus at %08x\n", eb->bus_base);
 
 	if (eb->is_43x) {
-		/* Check some fuses */
+		 
 		regmap_read(eb->rmap, IXP43X_EXP_UNIT_FUSE_RESET, &val);
 		switch (FIELD_GET(IXP43x_EXP_FUSE_SPEED_MASK, val)) {
 		case 0:
@@ -392,10 +368,10 @@ static int ixp4xx_exp_probe(struct platform_device *pdev)
 		}
 	}
 
-	/* Walk over the child nodes and see what chipselects we use */
+	 
 	for_each_available_child_of_node(np, child) {
 		ixp4xx_exp_setup_child(eb, child);
-		/* We have at least one child */
+		 
 		have_children = true;
 	}
 

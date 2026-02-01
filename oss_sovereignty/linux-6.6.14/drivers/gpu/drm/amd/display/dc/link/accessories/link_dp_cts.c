@@ -1,27 +1,4 @@
-/*
- * Copyright 2022 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 #include "link_dp_cts.h"
 #include "link/link_resource.h"
 #include "link/protocols/link_dpcd.h"
@@ -119,7 +96,7 @@ static void dp_test_send_link_training(struct dc_link *link)
 			1);
 	link_settings.link_rate = get_link_rate_from_test_link_rate(test_rate);
 
-	/* Set preferred link settings */
+	 
 	link->verified_link_cap.lane_count = link_settings.lane_count;
 	link->verified_link_cap.link_rate = link_settings.link_rate;
 
@@ -140,7 +117,7 @@ static void dp_test_get_audio_test_data(struct dc_link *link, bool disable_video
 	unsigned int modes = 0;
 	unsigned int sampling_rate_in_hz = 0;
 
-	// get audio test mode and test pattern parameters
+	
 	core_link_read_dpcd(
 		link,
 		DP_TEST_AUDIO_MODE,
@@ -155,13 +132,13 @@ static void dp_test_get_audio_test_data(struct dc_link *link, bool disable_video
 
 	channel_count = min(dpcd_test_mode.bits.channel_count + 1, AUDIO_CHANNELS_COUNT);
 
-	// read pattern periods for requested channels when sawTooth pattern is requested
+	
 	if (dpcd_pattern_type.value == AUDIO_TEST_PATTERN_SAWTOOTH ||
 			dpcd_pattern_type.value == AUDIO_TEST_PATTERN_OPERATOR_DEFINED) {
 
 		test_pattern = (dpcd_pattern_type.value == AUDIO_TEST_PATTERN_SAWTOOTH) ?
 				DP_TEST_PATTERN_AUDIO_SAWTOOTH : DP_TEST_PATTERN_AUDIO_OPERATOR_DEFINED;
-		// read period for each channel
+		
 		for (channel = 0; channel < channel_count; channel++) {
 			core_link_read_dpcd(
 							link,
@@ -171,7 +148,7 @@ static void dp_test_get_audio_test_data(struct dc_link *link, bool disable_video
 		}
 	}
 
-	// translate sampling rate
+	
 	switch (dpcd_test_mode.bits.sampling_rate) {
 	case AUDIO_SAMPLING_RATE_32KHZ:
 		sampling_rate_in_hz = 32000;
@@ -212,10 +189,7 @@ static void dp_test_get_audio_test_data(struct dc_link *link, bool disable_video
 	}
 }
 
-/* TODO Raven hbr2 compliance eye output is unstable
- * (toggling on and off) with debugger break
- * This caueses intermittent PHY automation failure
- * Need to look into the root cause */
+ 
 static void dp_test_send_phy_test_pattern(struct dc_link *link)
 {
 	union phy_test_pattern dpcd_test_pattern;
@@ -236,7 +210,7 @@ static void dp_test_send_phy_test_pattern(struct dc_link *link)
 	memset(dpcd_lane_adjustment, 0, sizeof(dpcd_lane_adjustment));
 	memset(&link_training_settings, 0, sizeof(link_training_settings));
 
-	/* get phy test pattern and pattern parameters from DP receiver */
+	 
 	core_link_read_dpcd(
 			link,
 			DP_PHY_TEST_PATTERN,
@@ -248,7 +222,7 @@ static void dp_test_send_phy_test_pattern(struct dc_link *link)
 			&dpcd_lane_adjustment[0].raw,
 			sizeof(dpcd_lane_adjustment));
 
-	/* prepare link training settings */
+	 
 	link_training_settings.link_settings = link->cur_link_settings;
 
 	link_training_settings.lttpr_mode = dp_decide_lttpr_mode(link, &link->cur_link_settings);
@@ -259,19 +233,14 @@ static void dp_test_send_phy_test_pattern(struct dc_link *link)
 				link,
 				link_training_settings.dpcd_lane_settings);
 
-	/*get post cursor 2 parameters
-	 * For DP 1.1a or eariler, this DPCD register's value is 0
-	 * For DP 1.2 or later:
-	 * Bits 1:0 = POST_CURSOR2_LANE0; Bits 3:2 = POST_CURSOR2_LANE1
-	 * Bits 5:4 = POST_CURSOR2_LANE2; Bits 7:6 = POST_CURSOR2_LANE3
-	 */
+	 
 	core_link_read_dpcd(
 			link,
 			DP_ADJUST_REQUEST_POST_CURSOR2,
 			&dpcd_post_cursor_2_adjustment,
 			sizeof(dpcd_post_cursor_2_adjustment));
 
-	/* translate request */
+	 
 	switch (dpcd_test_pattern.bits.PATTERN) {
 	case PHY_TEST_PATTERN_D10_2:
 		test_pattern = DP_TEST_PATTERN_D102;
@@ -286,13 +255,13 @@ static void dp_test_send_phy_test_pattern(struct dc_link *link)
 		test_pattern = DP_TEST_PATTERN_80BIT_CUSTOM;
 		break;
 	case PHY_TEST_PATTERN_CP2520_1:
-		/* CP2520 pattern is unstable, temporarily use TPS4 instead */
+		 
 		test_pattern = (link->dc->caps.force_dp_tps4_for_cp2520 == 1) ?
 				DP_TEST_PATTERN_TRAINING_PATTERN4 :
 				DP_TEST_PATTERN_HBR2_COMPLIANCE_EYE;
 		break;
 	case PHY_TEST_PATTERN_CP2520_2:
-		/* CP2520 pattern is unstable, temporarily use TPS4 instead */
+		 
 		test_pattern = (link->dc->caps.force_dp_tps4_for_cp2520 == 1) ?
 				DP_TEST_PATTERN_TRAINING_PATTERN4 :
 				DP_TEST_PATTERN_HBR2_COMPLIANCE_EYE;
@@ -356,7 +325,7 @@ static void dp_test_send_phy_test_pattern(struct dc_link *link)
 	}
 
 	if (is_dp_phy_sqaure_pattern(test_pattern)) {
-		test_pattern_size = 1; // Square pattern data is 1 byte (DP spec)
+		test_pattern_size = 1;  
 		core_link_read_dpcd(
 				link,
 				DP_PHY_SQUARE_PATTERN,
@@ -402,13 +371,7 @@ static void dp_test_send_phy_test_pattern(struct dc_link *link)
 	dp_hw_to_dpcd_lane_settings(&link_training_settings,
 			link_training_settings.hw_lane_settings,
 			link_training_settings.dpcd_lane_settings);
-	/*Usage: Measure DP physical lane signal
-	 * by DP SI test equipment automatically.
-	 * PHY test pattern request is generated by equipment via HPD interrupt.
-	 * HPD needs to be active all the time. HPD should be active
-	 * all the time. Do not touch it.
-	 * forward request to DS
-	 */
+	 
 	dp_set_test_pattern(
 		link,
 		test_pattern,
@@ -480,7 +443,7 @@ static void set_crtc_test_pattern(struct dc_link *link,
 	case DP_TEST_PATTERN_HORIZONTAL_BARS:
 	case DP_TEST_PATTERN_COLOR_RAMP:
 	{
-		/* disable bit depth reduction */
+		 
 		pipe_ctx->stream->bit_depth_params = params;
 		if (pipe_ctx->stream_res.tg->funcs->set_test_pattern) {
 			opp->funcs->opp_program_bit_depth_reduction(opp, &params);
@@ -540,7 +503,7 @@ static void set_crtc_test_pattern(struct dc_link *link,
 	break;
 	case DP_TEST_PATTERN_VIDEO_MODE:
 	{
-		/* restore bitdepth reduction */
+		 
 		resource_build_bit_depth_reduction_params(pipe_ctx->stream, &params);
 		pipe_ctx->stream->bit_depth_params = params;
 		if (pipe_ctx->stream_res.tg->funcs->set_test_pattern) {
@@ -601,7 +564,7 @@ void dp_handle_automated_test(struct dc_link *link)
 		&test_request.raw,
 		sizeof(union test_request));
 	if (test_request.bits.LINK_TRAINING) {
-		/* ACK first to let DP RX test box monitor LT sequence */
+		 
 		test_response.bits.ACK = 1;
 		core_link_write_dpcd(
 			link,
@@ -609,7 +572,7 @@ void dp_handle_automated_test(struct dc_link *link)
 			&test_response.raw,
 			sizeof(test_response));
 		dp_test_send_link_training(link);
-		/* no acknowledge request is needed again */
+		 
 		test_response.bits.ACK = 0;
 	}
 	if (test_request.bits.LINK_TEST_PATTRN) {
@@ -619,7 +582,7 @@ void dp_handle_automated_test(struct dc_link *link)
 		memset(&dpcd_test_pattern, 0, sizeof(dpcd_test_pattern));
 		memset(&dpcd_test_params, 0, sizeof(dpcd_test_params));
 
-		/* get link test pattern and pattern parameters */
+		 
 		core_link_read_dpcd(
 				link,
 				DP_TEST_PATTERN,
@@ -644,7 +607,7 @@ void dp_handle_automated_test(struct dc_link *link)
 		test_response.bits.ACK = 1;
 	}
 
-	/* send request acknowledgment */
+	 
 	if (test_response.bits.ACK)
 		core_link_write_dpcd(
 			link,
@@ -685,33 +648,31 @@ bool dp_set_test_pattern(
 	if (pipe_ctx == NULL)
 		return false;
 
-	/* Reset CRTC Test Pattern if it is currently running and request is VideoMode */
+	 
 	if (link->test_pattern_enabled && test_pattern ==
 			DP_TEST_PATTERN_VIDEO_MODE) {
-		/* Set CRTC Test Pattern */
+		 
 		set_crtc_test_pattern(link, pipe_ctx, test_pattern, test_pattern_color_space);
 		dp_set_hw_test_pattern(link, &pipe_ctx->link_res, test_pattern,
 				(uint8_t *)p_custom_pattern,
 				(uint32_t)cust_pattern_size);
 
-		/* Unblank Stream */
+		 
 		link->dc->hwss.unblank_stream(
 			pipe_ctx,
 			&link->verified_link_cap);
-		/* TODO:m_pHwss->MuteAudioEndpoint
-		 * (pPathMode->pDisplayPath, false);
-		 */
+		 
 
-		/* Reset Test Pattern state */
+		 
 		link->test_pattern_enabled = false;
 		link->current_test_pattern = test_pattern;
 
 		return true;
 	}
 
-	/* Check for PHY Test Patterns */
+	 
 	if (is_dp_phy_pattern(test_pattern)) {
-		/* Set DPCD Lane Settings before running test pattern */
+		 
 		if (p_link_settings != NULL) {
 			if ((link->chip_caps & EXT_DISPLAY_PATH_CAPS__DP_FIXED_VS_EN) &&
 					p_link_settings->lttpr_mode == LTTPR_MODE_TRANSPARENT) {
@@ -725,13 +686,10 @@ bool dp_set_test_pattern(
 			dpcd_set_lane_settings(link, p_link_settings, DPRX);
 		}
 
-		/* Blank stream if running test pattern */
+		 
 		if (test_pattern != DP_TEST_PATTERN_VIDEO_MODE) {
-			/*TODO:
-			 * m_pHwss->
-			 * MuteAudioEndpoint(pPathMode->pDisplayPath, true);
-			 */
-			/* Blank stream */
+			 
+			 
 			link->dc->hwss.blank_stream(pipe_ctx);
 		}
 
@@ -740,7 +698,7 @@ bool dp_set_test_pattern(
 				(uint32_t)cust_pattern_size);
 
 		if (test_pattern != DP_TEST_PATTERN_VIDEO_MODE) {
-			/* Set Test Pattern state */
+			 
 			link->test_pattern_enabled = true;
 			link->current_test_pattern = test_pattern;
 			if (p_link_settings != NULL)
@@ -814,7 +772,7 @@ bool dp_set_test_pattern(
 		}
 
 		if (test_pattern == DP_TEST_PATTERN_VIDEO_MODE
-		/*TODO:&& !pPathMode->pDisplayPath->IsTargetPoweredOn()*/)
+		 )
 			return false;
 
 		if (link->dpcd_caps.dpcd_rev.raw >= DPCD_REV_12) {
@@ -824,11 +782,7 @@ bool dp_set_test_pattern(
 						p_custom_pattern,
 						1);
 
-			/* tell receiver that we are sending qualification
-			 * pattern DP 1.2 or later - DP receiver's link quality
-			 * pattern is set using DPCD LINK_QUAL_LANEx_SET
-			 * register (0x10B~0x10E)\
-			 */
+			 
 			for (lane = 0; lane < LANE_COUNT_DP_MAX; lane++)
 				link_qual_pattern[lane] =
 						(unsigned char)(pattern);
@@ -839,13 +793,7 @@ bool dp_set_test_pattern(
 					sizeof(link_qual_pattern));
 		} else if (link->dpcd_caps.dpcd_rev.raw >= DPCD_REV_10 ||
 			   link->dpcd_caps.dpcd_rev.raw == 0) {
-			/* tell receiver that we are sending qualification
-			 * pattern DP 1.1a or earlier - DP receiver's link
-			 * quality pattern is set using
-			 * DPCD TRAINING_PATTERN_SET -> LINK_QUAL_PATTERN_SET
-			 * register (0x102). We will use v_1.3 when we are
-			 * setting test pattern for DP 1.1.
-			 */
+			 
 			core_link_read_dpcd(link, DP_TRAINING_PATTERN_SET,
 					    &training_pattern.raw,
 					    sizeof(training_pattern));
@@ -896,7 +844,7 @@ bool dp_set_test_pattern(
 		}
 
 		pipe_ctx->stream_res.tg->funcs->lock(pipe_ctx->stream_res.tg);
-		/* update MSA to requested color space */
+		 
 		pipe_ctx->stream_res.stream_enc->funcs->dp_set_stream_attribute(pipe_ctx->stream_res.stream_enc,
 				&pipe_ctx->stream->timing,
 				color_space,
@@ -905,14 +853,14 @@ bool dp_set_test_pattern(
 
 		if (pipe_ctx->stream->use_vsc_sdp_for_colorimetry) {
 			if (test_pattern == DP_TEST_PATTERN_COLOR_SQUARES_CEA)
-				pipe_ctx->stream->vsc_infopacket.sb[17] |= (1 << 7); // sb17 bit 7 Dynamic Range: 0 = VESA range, 1 = CTA range
+				pipe_ctx->stream->vsc_infopacket.sb[17] |= (1 << 7); 
 			else
 				pipe_ctx->stream->vsc_infopacket.sb[17] &= ~(1 << 7);
 			resource_build_info_frame(pipe_ctx);
 			link->dc->hwss.update_info_frame(pipe_ctx);
 		}
 
-		/* CRTC Patterns */
+		 
 		set_crtc_test_pattern(link, pipe_ctx, test_pattern, test_pattern_color_space);
 		pipe_ctx->stream_res.tg->funcs->unlock(pipe_ctx->stream_res.tg);
 		pipe_ctx->stream_res.tg->funcs->wait_for_state(pipe_ctx->stream_res.tg,
@@ -939,7 +887,7 @@ bool dp_set_test_pattern(
 						pipe_ctx->stream_res.tg);
 		}
 
-		/* Set Test Pattern state */
+		 
 		link->test_pattern_enabled = true;
 		link->current_test_pattern = test_pattern;
 	}
@@ -958,10 +906,7 @@ void dp_set_preferred_link_settings(struct dc *dc,
 
 	link->preferred_link_setting = store_settings;
 
-	/* Retrain with preferred link settings only relevant for
-	 * DP signal type
-	 * Check for non-DP signal or if passive dongle present
-	 */
+	 
 	if (!dc_is_dp_signal(link->connector_signal) ||
 		link->dongle_max_pix_clk > 0)
 		return;
@@ -976,11 +921,11 @@ void dp_set_preferred_link_settings(struct dc *dc,
 		}
 	}
 
-	/* Stream not found */
+	 
 	if (i == MAX_PIPES)
 		return;
 
-	/* Cannot retrain link if backend is off */
+	 
 	if (link_stream->dpms_off)
 		return;
 
@@ -1010,7 +955,7 @@ void dp_set_preferred_training_settings(struct dc *dc,
 			link->type == dc_connection_mst_branch)
 		dm_helpers_dp_mst_update_branch_bandwidth(dc->ctx, link);
 
-	/* Retrain now, or wait until next stream update to apply */
+	 
 	if (skip_immediate_retrain == false)
 		dp_set_preferred_link_settings(dc, &link->preferred_link_setting, link);
 }

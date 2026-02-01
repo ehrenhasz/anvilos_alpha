@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Functions for accessing OPL4 devices
- * Copyright (c) 2003 by Clemens Ladisch <clemens@ladisch.de>
- */
+
+ 
 
 #include "opl4_local.h"
 #include <sound/initval.h>
@@ -230,7 +227,7 @@ int snd_opl4_create(struct snd_card *card,
 		return err;
 	}
 
-	/* opl3 initialization disabled opl4, so reenable */
+	 
 	snd_opl4_enable_opl4(opl4);
 
 	snd_opl4_create_mixer(opl4);

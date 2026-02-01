@@ -1,34 +1,4 @@
-/*
- * Copyright (c) 2009-2010 Chelsio, Inc. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *	  copyright notice, this list of conditions and the following
- *	  disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *	  copyright notice, this list of conditions and the following
- *	  disclaimer in the documentation and/or other materials
- *	  provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 
 #include <rdma/uverbs_ioctl.h>
 
@@ -113,7 +83,7 @@ static int create_cq(struct c4iw_rdev *rdev, struct t4_cq *cq,
 		 sizeof(*cq->queue)))->qp_err;
 	}
 
-	/* build fw_ri_res_wr */
+	 
 	wr_len = sizeof(*res_wr) + sizeof(*res);
 
 	skb = alloc_skb(wr_len, GFP_KERNEL);
@@ -280,9 +250,7 @@ static void flush_completed_wrs(struct t4_wq *wq, struct t4_cq *cq)
 				cidx = 0;
 		} else if (swsqe->complete) {
 
-			/*
-			 * Insert this completed cqe into the swcq.
-			 */
+			 
 			pr_debug("moving cqe into swcq sq idx %u cq idx %u\n",
 				 cidx, cq->sw_pidx);
 			swsqe->cqe.header |= htonl(CQE_SWCQE_V(1));
@@ -327,11 +295,7 @@ static void advance_oldest_read(struct t4_wq *wq)
 	wq->sq.oldest_read = NULL;
 }
 
-/*
- * Move all CQEs from the HWCQ into the SWCQ.
- * Deal with out-of-order and/or completions that complete
- * prior unsignalled WRs.
- */
+ 
 void c4iw_flush_hw_cq(struct c4iw_cq *chp, struct c4iw_qp *flush_qhp)
 {
 	struct t4_cqe *hw_cqe, *swcqe, read_cqe;
@@ -342,17 +306,11 @@ void c4iw_flush_hw_cq(struct c4iw_cq *chp, struct c4iw_qp *flush_qhp)
 	pr_debug("cqid 0x%x\n", chp->cq.cqid);
 	ret = t4_next_hw_cqe(&chp->cq, &hw_cqe);
 
-	/*
-	 * This logic is similar to poll_cq(), but not quite the same
-	 * unfortunately.  Need to move pertinent HW CQEs to the SW CQ but
-	 * also do any translation magic that poll_cq() normally does.
-	 */
+	 
 	while (!ret) {
 		qhp = get_qhp(chp->rhp, CQE_QPID(hw_cqe));
 
-		/*
-		 * drop CQEs with no associated QP
-		 */
+		 
 		if (qhp == NULL)
 			goto next_cqe;
 
@@ -368,38 +326,27 @@ void c4iw_flush_hw_cq(struct c4iw_cq *chp, struct c4iw_qp *flush_qhp)
 
 		if (CQE_OPCODE(hw_cqe) == FW_RI_READ_RESP) {
 
-			/* If we have reached here because of async
-			 * event or other error, and have egress error
-			 * then drop
-			 */
+			 
 			if (CQE_TYPE(hw_cqe) == 1)
 				goto next_cqe;
 
-			/* drop peer2peer RTR reads.
-			 */
+			 
 			if (CQE_WRID_STAG(hw_cqe) == 1)
 				goto next_cqe;
 
-			/*
-			 * Eat completions for unsignaled read WRs.
-			 */
+			 
 			if (!qhp->wq.sq.oldest_read->signaled) {
 				advance_oldest_read(&qhp->wq);
 				goto next_cqe;
 			}
 
-			/*
-			 * Don't write to the HWCQ, create a new read req CQE
-			 * in local memory and move it into the swcq.
-			 */
+			 
 			create_read_req_cqe(&qhp->wq, hw_cqe, &read_cqe);
 			hw_cqe = &read_cqe;
 			advance_oldest_read(&qhp->wq);
 		}
 
-		/* if its a SQ completion, then do the magic to move all the
-		 * unsignaled and now in-order completions into the swcq.
-		 */
+		 
 		if (SQ_TYPE(hw_cqe)) {
 			swsqe = &qhp->wq.sq.sw_sq[CQE_WRID_SQ_IDX(hw_cqe)];
 			swsqe->cqe = *hw_cqe;
@@ -525,22 +472,7 @@ static u64 reap_srq_cqe(struct t4_cqe *hw_cqe, struct t4_srq *srq)
 	return wr_id;
 }
 
-/*
- * poll_cq
- *
- * Caller must:
- *     check the validity of the first CQE,
- *     supply the wq assicated with the qpid.
- *
- * credit: cq credit to return to sge.
- * cqe_flushed: 1 iff the CQE is flushed.
- * cqe: copy of the polled CQE.
- *
- * return value:
- *    0		    CQE returned ok.
- *    -EAGAIN       CQE skipped, try again.
- *    -EOVERFLOW    CQ overflow detected.
- */
+ 
 static int poll_cq(struct t4_wq *wq, struct t4_cq *cq, struct t4_cqe *cqe,
 		   u8 *cqe_flushed, u64 *cookie, u32 *credit,
 		   struct t4_srq *srq)
@@ -560,52 +492,35 @@ static int poll_cq(struct t4_wq *wq, struct t4_cq *cq, struct t4_cqe *cqe,
 		 CQE_OPCODE(hw_cqe), CQE_LEN(hw_cqe), CQE_WRID_HI(hw_cqe),
 		 CQE_WRID_LOW(hw_cqe));
 
-	/*
-	 * skip cqe's not affiliated with a QP.
-	 */
+	 
 	if (wq == NULL) {
 		ret = -EAGAIN;
 		goto skip_cqe;
 	}
 
-	/*
-	* skip hw cqe's if the wq is flushed.
-	*/
+	 
 	if (wq->flushed && !SW_CQE(hw_cqe)) {
 		ret = -EAGAIN;
 		goto skip_cqe;
 	}
 
-	/*
-	 * skip TERMINATE cqes...
-	 */
+	 
 	if (CQE_OPCODE(hw_cqe) == FW_RI_TERMINATE) {
 		ret = -EAGAIN;
 		goto skip_cqe;
 	}
 
-	/*
-	 * Special cqe for drain WR completions...
-	 */
+	 
 	if (DRAIN_CQE(hw_cqe)) {
 		*cookie = CQE_DRAIN_COOKIE(hw_cqe);
 		*cqe = *hw_cqe;
 		goto skip_cqe;
 	}
 
-	/*
-	 * Gotta tweak READ completions:
-	 *	1) the cqe doesn't contain the sq_wptr from the wr.
-	 *	2) opcode not reflected from the wr.
-	 *	3) read_len not reflected from the wr.
-	 *	4) cq_type is RQ_TYPE not SQ_TYPE.
-	 */
+	 
 	if (RQ_TYPE(hw_cqe) && (CQE_OPCODE(hw_cqe) == FW_RI_READ_RESP)) {
 
-		/* If we have reached here because of async
-		 * event or other error, and have egress error
-		 * then drop
-		 */
+		 
 		if (CQE_TYPE(hw_cqe) == 1) {
 			if (CQE_STATUS(hw_cqe))
 				t4_set_wq_in_error(wq, 0);
@@ -613,10 +528,7 @@ static int poll_cq(struct t4_wq *wq, struct t4_cq *cq, struct t4_cqe *cqe,
 			goto skip_cqe;
 		}
 
-		/* If this is an unsolicited read response, then the read
-		 * was generated by the kernel driver as part of peer-2-peer
-		 * connection setup.  So ignore the completion.
-		 */
+		 
 		if (CQE_WRID_STAG(hw_cqe) == 1) {
 			if (CQE_STATUS(hw_cqe))
 				t4_set_wq_in_error(wq, 0);
@@ -624,19 +536,14 @@ static int poll_cq(struct t4_wq *wq, struct t4_cq *cq, struct t4_cqe *cqe,
 			goto skip_cqe;
 		}
 
-		/*
-		 * Eat completions for unsignaled read WRs.
-		 */
+		 
 		if (!wq->sq.oldest_read->signaled) {
 			advance_oldest_read(wq);
 			ret = -EAGAIN;
 			goto skip_cqe;
 		}
 
-		/*
-		 * Don't write to the HWCQ, so create a new read req CQE
-		 * in local memory.
-		 */
+		 
 		create_read_req_cqe(wq, hw_cqe, &read_cqe);
 		hw_cqe = &read_cqe;
 		advance_oldest_read(wq);
@@ -647,17 +554,10 @@ static int poll_cq(struct t4_wq *wq, struct t4_cq *cq, struct t4_cqe *cqe,
 		t4_set_wq_in_error(wq, 0);
 	}
 
-	/*
-	 * RECV completion.
-	 */
+	 
 	if (RQ_TYPE(hw_cqe)) {
 
-		/*
-		 * HW only validates 4 bits of MSN.  So we must validate that
-		 * the MSN in the SEND is the next expected MSN.  If its not,
-		 * then we complete this with T4_ERR_MSN and mark the wq in
-		 * error.
-		 */
+		 
 		if (unlikely(!CQE_STATUS(hw_cqe) &&
 			     CQE_WRID_MSN(hw_cqe) != wq->rq.msn)) {
 			t4_set_wq_in_error(wq, 0);
@@ -666,17 +566,7 @@ static int poll_cq(struct t4_wq *wq, struct t4_cq *cq, struct t4_cqe *cqe,
 		goto proc_cqe;
 	}
 
-	/*
-	 * If we get here its a send completion.
-	 *
-	 * Handle out of order completion. These get stuffed
-	 * in the SW SQ. Then the SW SQ is walked to move any
-	 * now in-order completions into the SW CQ.  This handles
-	 * 2 cases:
-	 *	1) reaping unsignaled WRs when the first subsequent
-	 *	   signaled WR is completed.
-	 *	2) out of order read completions.
-	 */
+	 
 	if (!SW_CQE(hw_cqe) && (CQE_WRID_SQ_IDX(hw_cqe) != wq->sq.cidx)) {
 		struct t4_swsqe *swsqe;
 
@@ -692,21 +582,11 @@ static int poll_cq(struct t4_wq *wq, struct t4_cq *cq, struct t4_cqe *cqe,
 proc_cqe:
 	*cqe = *hw_cqe;
 
-	/*
-	 * Reap the associated WR(s) that are freed up with this
-	 * completion.
-	 */
+	 
 	if (SQ_TYPE(hw_cqe)) {
 		int idx = CQE_WRID_SQ_IDX(hw_cqe);
 
-		/*
-		* Account for any unsignaled completions completed by
-		* this signaled completion.  In this case, cidx points
-		* to the first unsignaled one, and idx points to the
-		* signaled one.  So adjust in_use based on this delta.
-		* if this is not completing any unsigned wrs, then the
-		* delta will be 0. Handle wrapping also!
-		*/
+		 
 		if (idx < wq->sq.cidx)
 			wq->sq.in_use -= wq->sq.size + idx - wq->sq.cidx;
 		else
@@ -733,9 +613,7 @@ proc_cqe:
 	}
 
 flush_wq:
-	/*
-	 * Flush any completed cqes that are now in-order.
-	 */
+	 
 	flush_completed_wrs(wq, cq);
 
 skip_cqe:
@@ -771,9 +649,7 @@ static int __c4iw_poll_cq_one(struct c4iw_cq *chp, struct c4iw_qp *qhp,
 	wc->vendor_err = CQE_STATUS(&cqe);
 	wc->wc_flags = 0;
 
-	/*
-	 * Simulate a SRQ_LIMIT_REACHED HW notification if required.
-	 */
+	 
 	if (srq && !(srq->flags & T4_SRQ_LIMIT_SUPPORT) && srq->armed &&
 	    srq->wq.in_use < srq->srq_limit)
 		c4iw_dispatch_srq_limit_reached_event(srq);
@@ -839,7 +715,7 @@ static int __c4iw_poll_cq_one(struct c4iw_cq *chp, struct c4iw_qp *qhp,
 		case FW_RI_FAST_REGISTER:
 			wc->opcode = IB_WC_REG_MR;
 
-			/* Invalidate the MR if the fastreg failed */
+			 
 			if (CQE_STATUS(&cqe) != T4_ERR_SUCCESS)
 				c4iw_invalidate_mr(qhp->rhp,
 						   CQE_WRID_FR_STAG(&cqe));
@@ -909,15 +785,7 @@ out:
 	return ret;
 }
 
-/*
- * Get one cq entry from c4iw and map it to openib.
- *
- * Returns:
- *	0			cqe returned
- *	-ENODATA		EMPTY;
- *	-EAGAIN			caller must try again
- *	any other -errno	fatal error
- */
+ 
 static int c4iw_poll_cq_one(struct c4iw_cq *chp, struct ib_wc *wc)
 {
 	struct c4iw_srq *srq = NULL;
@@ -1039,35 +907,26 @@ int c4iw_create_cq(struct ib_cq *ibcq, const struct ib_cq_init_attr *attr,
 		goto err_free_wr_wait;
 	}
 
-	/* account for the status page. */
+	 
 	entries++;
 
-	/* IQ needs one extra entry to differentiate full vs empty. */
+	 
 	entries++;
 
-	/*
-	 * entries must be multiple of 16 for HW.
-	 */
+	 
 	entries = roundup(entries, 16);
 
-	/*
-	 * Make actual HW queue 2x to avoid cdix_inc overflows.
-	 */
+	 
 	hwentries = min(entries * 2, rhp->rdev.hw_queue.t4_max_iq_size);
 
-	/*
-	 * Make HW queue at least 64 entries so GTS updates aren't too
-	 * frequent.
-	 */
+	 
 	if (hwentries < 64)
 		hwentries = 64;
 
 	memsize = hwentries * ((ucontext && ucontext->is_32b_cqe) ?
 			(sizeof(*chp->cq.queue) / 2) : sizeof(*chp->cq.queue));
 
-	/*
-	 * memsize must be a multiple of the page size if its a user cq.
-	 */
+	 
 	if (udata)
 		memsize = roundup(memsize, PAGE_SIZE);
 
@@ -1082,7 +941,7 @@ int c4iw_create_cq(struct ib_cq *ibcq, const struct ib_cq_init_attr *attr,
 		goto err_free_skb;
 
 	chp->rhp = rhp;
-	chp->cq.size--;				/* status page */
+	chp->cq.size--;				 
 	chp->ibcq.cqe = entries - 2;
 	spin_lock_init(&chp->lock);
 	spin_lock_init(&chp->comp_handler_lock);
@@ -1111,9 +970,7 @@ int c4iw_create_cq(struct ib_cq *ibcq, const struct ib_cq_init_attr *attr,
 		ucontext->key += PAGE_SIZE;
 		uresp.gts_key = ucontext->key;
 		ucontext->key += PAGE_SIZE;
-		/* communicate to the userspace that
-		 * kernel driver supports 64B CQE
-		 */
+		 
 		uresp.flags |= C4IW_64B_CQE;
 
 		spin_unlock(&ucontext->mmap_lock);
@@ -1178,11 +1035,11 @@ void c4iw_flush_srqidx(struct c4iw_qp *qhp, u32 srqidx)
 	struct c4iw_cq *rchp = to_c4iw_cq(qhp->ibqp.recv_cq);
 	unsigned long flag;
 
-	/* locking heirarchy: cq lock first, then qp lock. */
+	 
 	spin_lock_irqsave(&rchp->lock, flag);
 	spin_lock(&qhp->lock);
 
-	/* create a SRQ RECV CQE for srqidx */
+	 
 	insert_recv_cqe(&qhp->wq, &rchp->cq, srqidx);
 
 	spin_unlock(&qhp->lock);

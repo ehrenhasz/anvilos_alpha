@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * tools/testing/selftests/kvm/lib/x86_64/processor.c
- *
- * Copyright (C) 2018, Google LLC.
- */
+
+ 
 
 #include "linux/bitmap.h"
 #include "test_util.h"
@@ -127,7 +123,7 @@ void virt_arch_pgd_alloc(struct kvm_vm *vm)
 	TEST_ASSERT(vm->mode == VM_MODE_PXXV48_4K, "Attempt to use "
 		"unknown or unsupported guest mode, mode: 0x%x", vm->mode);
 
-	/* If needed, create page map l4 table. */
+	 
 	if (!vm->pgd_created) {
 		vm->pgd = vm_alloc_page_table(vm);
 		vm->pgd_created = true;
@@ -164,11 +160,7 @@ static uint64_t *virt_create_upper_pte(struct kvm_vm *vm,
 		else
 			*pte |= vm_alloc_page_table(vm) & PHYSICAL_PAGE_MASK;
 	} else {
-		/*
-		 * Entry already present.  Assert that the caller doesn't want
-		 * a hugepage at this level, and that there isn't a hugepage at
-		 * this level.
-		 */
+		 
 		TEST_ASSERT(current_level != target_level,
 			    "Cannot create hugepage at level: %u, vaddr: 0x%lx\n",
 			    current_level, vaddr);
@@ -201,10 +193,7 @@ void __virt_pg_map(struct kvm_vm *vm, uint64_t vaddr, uint64_t paddr, int level)
 		    "  paddr: 0x%lx vm->max_gfn: 0x%lx vm->page_size: 0x%x",
 		    paddr, vm->max_gfn, vm->page_size);
 
-	/*
-	 * Allocate upper level page tables, if not already present.  Return
-	 * early if a hugepage was created.
-	 */
+	 
 	pml4e = virt_create_upper_pte(vm, &vm->pgd, vaddr, paddr, PG_LEVEL_512G, level);
 	if (*pml4e & PTE_LARGE_MASK)
 		return;
@@ -217,7 +206,7 @@ void __virt_pg_map(struct kvm_vm *vm, uint64_t vaddr, uint64_t paddr, int level)
 	if (*pde & PTE_LARGE_MASK)
 		return;
 
-	/* Fill in page table entry. */
+	 
 	pte = virt_get_pte(vm, pde, vaddr, PG_LEVEL_4K);
 	TEST_ASSERT(!(*pte & PTE_PRESENT_MASK),
 		    "PTE already present for 4k page at vaddr: 0x%lx\n", vaddr);
@@ -274,10 +263,7 @@ uint64_t *__vm_get_page_table_entry(struct kvm_vm *vm, uint64_t vaddr,
 		(vaddr >> vm->page_shift)),
 		"Invalid virtual address, vaddr: 0x%lx",
 		vaddr);
-	/*
-	 * Based on the mode check above there are 48 bits in the vaddr, so
-	 * shift 16 to sign extend the last bit (bit-47),
-	 */
+	 
 	TEST_ASSERT(vaddr == (((int64_t)vaddr << 16) >> 16),
 		"Canonical check failed.  The virtual address is invalid.");
 
@@ -380,18 +366,7 @@ void virt_arch_dump(FILE *stream, struct kvm_vm *vm, uint8_t indent)
 	}
 }
 
-/*
- * Set Unusable Segment
- *
- * Input Args: None
- *
- * Output Args:
- *   segp - Pointer to segment register
- *
- * Return: None
- *
- * Sets the segment register pointed to by @segp to an unusable state.
- */
+ 
 static void kvm_seg_set_unusable(struct kvm_segment *segp)
 {
 	memset(segp, 0, sizeof(*segp));
@@ -421,31 +396,15 @@ static void kvm_seg_fill_gdt_64bit(struct kvm_vm *vm, struct kvm_segment *segp)
 }
 
 
-/*
- * Set Long Mode Flat Kernel Code Segment
- *
- * Input Args:
- *   vm - VM whose GDT is being filled, or NULL to only write segp
- *   selector - selector value
- *
- * Output Args:
- *   segp - Pointer to KVM segment
- *
- * Return: None
- *
- * Sets up the KVM segment pointed to by @segp, to be a code segment
- * with the selector value given by @selector.
- */
+ 
 static void kvm_seg_set_kernel_code_64bit(struct kvm_vm *vm, uint16_t selector,
 	struct kvm_segment *segp)
 {
 	memset(segp, 0, sizeof(*segp));
 	segp->selector = selector;
 	segp->limit = 0xFFFFFFFFu;
-	segp->s = 0x1; /* kTypeCodeData */
-	segp->type = 0x08 | 0x01 | 0x02; /* kFlagCode | kFlagCodeAccessed
-					  * | kFlagCodeReadable
-					  */
+	segp->s = 0x1;  
+	segp->type = 0x08 | 0x01 | 0x02;  
 	segp->g = true;
 	segp->l = true;
 	segp->present = 1;
@@ -453,31 +412,15 @@ static void kvm_seg_set_kernel_code_64bit(struct kvm_vm *vm, uint16_t selector,
 		kvm_seg_fill_gdt_64bit(vm, segp);
 }
 
-/*
- * Set Long Mode Flat Kernel Data Segment
- *
- * Input Args:
- *   vm - VM whose GDT is being filled, or NULL to only write segp
- *   selector - selector value
- *
- * Output Args:
- *   segp - Pointer to KVM segment
- *
- * Return: None
- *
- * Sets up the KVM segment pointed to by @segp, to be a data segment
- * with the selector value given by @selector.
- */
+ 
 static void kvm_seg_set_kernel_data_64bit(struct kvm_vm *vm, uint16_t selector,
 	struct kvm_segment *segp)
 {
 	memset(segp, 0, sizeof(*segp));
 	segp->selector = selector;
 	segp->limit = 0xFFFFFFFFu;
-	segp->s = 0x1; /* kTypeCodeData */
-	segp->type = 0x00 | 0x01 | 0x02; /* kFlagData | kFlagDataAccessed
-					  * | kFlagDataWritable
-					  */
+	segp->s = 0x1;  
+	segp->type = 0x00 | 0x01 | 0x02;  
 	segp->g = true;
 	segp->present = true;
 	if (vm)
@@ -492,10 +435,7 @@ vm_paddr_t addr_arch_gva2gpa(struct kvm_vm *vm, vm_vaddr_t gva)
 	TEST_ASSERT(*pte & PTE_PRESENT_MASK,
 		    "Leaf PTE not PRESENT for gva: 0x%08lx", gva);
 
-	/*
-	 * No need for a hugepage mask on the PTE, x86-64 requires the "unused"
-	 * address bits to be zero.
-	 */
+	 
 	return PTE_GET_PA(*pte) | (gva & ~HUGEPAGE_MASK(level));
 }
 
@@ -527,7 +467,7 @@ static void vcpu_setup(struct kvm_vm *vm, struct kvm_vcpu *vcpu)
 {
 	struct kvm_sregs sregs;
 
-	/* Set mode specific system register values. */
+	 
 	vcpu_sregs_get(vcpu, &sregs);
 
 	sregs.idt.limit = 0;
@@ -576,15 +516,7 @@ struct kvm_vcpu *vm_arch_vcpu_add(struct kvm_vm *vm, uint32_t vcpu_id,
 
 	stack_vaddr += DEFAULT_STACK_PGS * getpagesize();
 
-	/*
-	 * Align stack to match calling sequence requirements in section "The
-	 * Stack Frame" of the System V ABI AMD64 Architecture Processor
-	 * Supplement, which requires the value (%rsp + 8) to be a multiple of
-	 * 16 when control is transferred to the function entry point.
-	 *
-	 * If this code is ever used to launch a vCPU with 32-bit entry point it
-	 * may need to subtract 4 bytes instead of 8 bytes.
-	 */
+	 
 	TEST_ASSERT(IS_ALIGNED(stack_vaddr, PAGE_SIZE),
 		    "__vm_vaddr_alloc() did not provide a page-aligned address");
 	stack_vaddr -= 8;
@@ -593,14 +525,14 @@ struct kvm_vcpu *vm_arch_vcpu_add(struct kvm_vm *vm, uint32_t vcpu_id,
 	vcpu_init_cpuid(vcpu, kvm_get_supported_cpuid());
 	vcpu_setup(vm, vcpu);
 
-	/* Setup guest general purpose registers */
+	 
 	vcpu_regs_get(vcpu, &regs);
 	regs.rflags = regs.rflags | 0x2;
 	regs.rsp = stack_vaddr;
 	regs.rip = (unsigned long) guest_code;
 	vcpu_regs_set(vcpu, &regs);
 
-	/* Setup the MP state */
+	 
 	mp_state.mp_state = 0;
 	vcpu_mp_state_set(vcpu, &mp_state);
 
@@ -622,7 +554,7 @@ void vcpu_arch_free(struct kvm_vcpu *vcpu)
 		free(vcpu->cpuid);
 }
 
-/* Do not use kvm_supported_cpuid directly except for validity checks. */
+ 
 static void *kvm_supported_cpuid;
 
 const struct kvm_cpuid2 *kvm_get_supported_cpuid(void)
@@ -652,11 +584,7 @@ static uint32_t __kvm_cpu_has(const struct kvm_cpuid2 *cpuid,
 	for (i = 0; i < cpuid->nent; i++) {
 		entry = &cpuid->entries[i];
 
-		/*
-		 * The output registers in kvm_cpuid_entry2 are in alphabetical
-		 * order, but kvm_x86_cpu_feature matches that mess, so yay
-		 * pointer shenanigans!
-		 */
+		 
 		if (entry->function == function && entry->index == index)
 			return ((&entry->eax)[reg] & GENMASK(hi, lo)) >> lo;
 	}
@@ -739,7 +667,7 @@ void vcpu_init_cpuid(struct kvm_vcpu *vcpu, const struct kvm_cpuid2 *cpuid)
 {
 	TEST_ASSERT(cpuid != vcpu->cpuid, "@cpuid can't be the vCPU's CPUID");
 
-	/* Allow overriding the default CPUID. */
+	 
 	if (vcpu->cpuid && vcpu->cpuid->nent < cpuid->nent) {
 		free(vcpu->cpuid);
 		vcpu->cpuid = NULL;
@@ -964,12 +892,7 @@ struct kvm_x86_state *vcpu_save_state(struct kvm_vcpu *vcpu)
 			    nested_size, sizeof(state->nested_));
 	}
 
-	/*
-	 * When KVM exits to userspace with KVM_EXIT_IO, KVM guarantees
-	 * guest state is consistent only after userspace re-enters the
-	 * kernel with KVM_RUN.  Complete IO prior to migrating state
-	 * to a new VM.
-	 */
+	 
 	vcpu_run_complete_io(vcpu);
 
 	state = malloc(sizeof(*state) + msr_list->nmsrs * sizeof(state->msrs.entries[0]));
@@ -1100,7 +1023,7 @@ void vm_init_descriptor_tables(struct kvm_vm *vm)
 
 	vm->idt = __vm_vaddr_alloc_page(vm, MEM_REGION_DATA);
 	vm->handlers = __vm_vaddr_alloc_page(vm, MEM_REGION_DATA);
-	/* Handlers have the same address in both address spaces.*/
+	 
 	for (i = 0; i < NUM_INTERRUPTS; i++)
 		set_idt_entry(vm, i, (unsigned long)(&idt_handlers)[i], 0,
 			DEFAULT_CODE_SELECTOR);
@@ -1218,7 +1141,7 @@ void vcpu_set_hv_cpuid(struct kvm_vcpu *vcpu)
 			abort();
 		}
 
-		/* Need to skip KVM CPUID leaves 0x400000xx */
+		 
 		for (i = 0; i < cpuid_sys->nent; i++) {
 			if (cpuid_sys->entries[i].function >= 0x40000000 &&
 			    cpuid_sys->entries[i].function < 0x40000100)
@@ -1246,30 +1169,26 @@ const struct kvm_cpuid2 *vcpu_get_supported_hv_cpuid(struct kvm_vcpu *vcpu)
 
 unsigned long vm_compute_max_gfn(struct kvm_vm *vm)
 {
-	const unsigned long num_ht_pages = 12 << (30 - vm->page_shift); /* 12 GiB */
+	const unsigned long num_ht_pages = 12 << (30 - vm->page_shift);  
 	unsigned long ht_gfn, max_gfn, max_pfn;
 	uint8_t maxphyaddr;
 
 	max_gfn = (1ULL << (vm->pa_bits - vm->page_shift)) - 1;
 
-	/* Avoid reserved HyperTransport region on AMD processors.  */
+	 
 	if (!host_cpu_is_amd)
 		return max_gfn;
 
-	/* On parts with <40 physical address bits, the area is fully hidden */
+	 
 	if (vm->pa_bits < 40)
 		return max_gfn;
 
-	/* Before family 17h, the HyperTransport area is just below 1T.  */
+	 
 	ht_gfn = (1 << 28) - num_ht_pages;
 	if (this_cpu_family() < 0x17)
 		goto done;
 
-	/*
-	 * Otherwise it's at the top of the physical address space, possibly
-	 * reduced due to SME by bits 11:6 of CPUID[0x8000001f].EBX.  Use
-	 * the old conservative value if MAXPHYADDR is not enumerated.
-	 */
+	 
 	if (!this_cpu_has_p(X86_PROPERTY_MAX_PHY_ADDR))
 		goto done;
 
@@ -1284,10 +1203,10 @@ done:
 	return min(max_gfn, ht_gfn - 1);
 }
 
-/* Returns true if kvm_intel was loaded with unrestricted_guest=1. */
+ 
 bool vm_is_unrestricted_guest(struct kvm_vm *vm)
 {
-	/* Ensure that a KVM vendor-specific module is loaded. */
+	 
 	if (vm == NULL)
 		close(open_kvm_dev_path_or_exit());
 

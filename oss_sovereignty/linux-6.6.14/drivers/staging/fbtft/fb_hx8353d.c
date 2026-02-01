@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * FB driver for the HX8353D LCD Controller
- *
- * Copyright (c) 2014 Petr Olivka
- * Copyright (c) 2013 Noralf Tronnes
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -22,32 +17,32 @@ static int init_display(struct fbtft_par *par)
 	par->fbtftops.reset(par);
 	mdelay(150);
 
-	/* SETEXTC */
+	 
 	write_reg(par, 0xB9, 0xFF, 0x83, 0x53);
 
-	/* RADJ */
+	 
 	write_reg(par, 0xB0, 0x3C, 0x01);
 
-	/* VCOM */
+	 
 	write_reg(par, 0xB6, 0x94, 0x6C, 0x50);
 
-	/* PWR */
+	 
 	write_reg(par, 0xB1, 0x00, 0x01, 0x1B, 0x03, 0x01, 0x08, 0x77, 0x89);
 
-	/* COLMOD */
+	 
 	write_reg(par, 0x3A, 0x05);
 
-	/* MEM ACCESS */
+	 
 	write_reg(par, MIPI_DCS_SET_ADDRESS_MODE, 0xC0);
 
-	/* SLPOUT - Sleep out & booster on */
+	 
 	write_reg(par, MIPI_DCS_EXIT_SLEEP_MODE);
 	mdelay(150);
 
-	/* DISPON - Display On */
+	 
 	write_reg(par, MIPI_DCS_SET_DISPLAY_ON);
 
-	/* RGBSET */
+	 
 	write_reg(par, MIPI_DCS_WRITE_LUT,
 		  0,  2,  4,  6,  8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30,
 		32, 34, 36, 38, 40, 42, 44, 46, 48, 50, 52, 54, 56, 58, 60, 62,
@@ -63,13 +58,13 @@ static int init_display(struct fbtft_par *par)
 
 static void set_addr_win(struct fbtft_par *par, int xs, int ys, int xe, int ye)
 {
-	/* column address */
+	 
 	write_reg(par, 0x2a, xs >> 8, xs & 0xff, xe >> 8, xe & 0xff);
 
-	/* Row address */
+	 
 	write_reg(par, 0x2b, ys >> 8, ys & 0xff, ye >> 8, ye & 0xff);
 
-	/* memory write */
+	 
 	write_reg(par, 0x2c);
 }
 
@@ -78,14 +73,7 @@ static void set_addr_win(struct fbtft_par *par, int xs, int ys, int xe, int ye)
 #define mv BIT(5)
 static int set_var(struct fbtft_par *par)
 {
-	/*
-	 * madctl - memory data access control
-	 *   rgb/bgr:
-	 *   1. mode selection pin srgb
-	 *	rgb h/w pin for color filter setting: 0=rgb, 1=bgr
-	 *   2. madctl rgb bit
-	 *	rgb-bgr order color filter panel: 0=rgb, 1=bgr
-	 */
+	 
 	switch (par->info->var.rotate) {
 	case 0:
 		write_reg(par, MIPI_DCS_SET_ADDRESS_MODE,
@@ -108,7 +96,7 @@ static int set_var(struct fbtft_par *par)
 	return 0;
 }
 
-/* gamma string format: */
+ 
 static int set_gamma(struct fbtft_par *par, u32 *curves)
 {
 	write_reg(par, 0xE0,

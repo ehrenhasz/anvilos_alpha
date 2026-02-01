@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-/* Copyright (c) 2019 Mellanox Technologies. */
+
+ 
 
 #include "setup.h"
 #include "en/params.h"
@@ -19,29 +19,25 @@ static int mlx5e_legacy_rq_validate_xsk(struct mlx5_core_dev *mdev,
 	return 0;
 }
 
-/* The limitation of 2048 can be altered, but shouldn't go beyond the minimal
- * stride size of striding RQ.
- */
+ 
 #define MLX5E_MIN_XSK_CHUNK_SIZE max(2048, XDP_UMEM_MIN_CHUNK_SIZE)
 
 bool mlx5e_validate_xsk_param(struct mlx5e_params *params,
 			      struct mlx5e_xsk_param *xsk,
 			      struct mlx5_core_dev *mdev)
 {
-	/* AF_XDP doesn't support frames larger than PAGE_SIZE. */
+	 
 	if (xsk->chunk_size > PAGE_SIZE || xsk->chunk_size < MLX5E_MIN_XSK_CHUNK_SIZE) {
 		mlx5_core_err(mdev, "XSK chunk size %u out of bounds [%u, %lu]\n", xsk->chunk_size,
 			      MLX5E_MIN_XSK_CHUNK_SIZE, PAGE_SIZE);
 		return false;
 	}
 
-	/* frag_sz is different for regular and XSK RQs, so ensure that linear
-	 * SKB mode is possible.
-	 */
+	 
 	switch (params->rq_wq_type) {
 	case MLX5_WQ_TYPE_LINKED_LIST_STRIDING_RQ:
 		return !mlx5e_mpwrq_validate_xsk(mdev, params, xsk);
-	default: /* MLX5_WQ_TYPE_CYCLIC */
+	default:  
 		return !mlx5e_legacy_rq_validate_xsk(mdev, params, xsk);
 	}
 }
@@ -141,12 +137,7 @@ int mlx5e_open_xsk(struct mlx5e_priv *priv, struct mlx5e_params *params,
 	if (unlikely(err))
 		goto err_close_rq;
 
-	/* Create a separate SQ, so that when the buff pool is disabled, we could
-	 * close this SQ safely and stop receiving CQEs. In other case, e.g., if
-	 * the XDPSQ was used instead, we might run into trouble when the buff pool
-	 * is disabled and then re-enabled, but the SQ continues receiving CQEs
-	 * from the old buff pool.
-	 */
+	 
 	err = mlx5e_open_xdpsq(c, params, &cparam->xdp_sq, pool, &c->xsksq, true);
 	if (unlikely(err))
 		goto err_close_tx_cq;
@@ -175,7 +166,7 @@ err_free_cparam:
 void mlx5e_close_xsk(struct mlx5e_channel *c)
 {
 	clear_bit(MLX5E_CHANNEL_STATE_XSK, c->state);
-	synchronize_net(); /* Sync with NAPI. */
+	synchronize_net();  
 
 	mlx5e_close_rq(&c->xskrq);
 	mlx5e_close_cq(&c->xskrq.cq);
@@ -188,25 +179,21 @@ void mlx5e_close_xsk(struct mlx5e_channel *c)
 
 void mlx5e_activate_xsk(struct mlx5e_channel *c)
 {
-	/* ICOSQ recovery deactivates RQs. Suspend the recovery to avoid
-	 * activating XSKRQ in the middle of recovery.
-	 */
+	 
 	mlx5e_reporter_icosq_suspend_recovery(c);
 	set_bit(MLX5E_RQ_STATE_ENABLED, &c->xskrq.state);
 	mlx5e_reporter_icosq_resume_recovery(c);
 
-	/* TX queue is created active. */
+	 
 }
 
 void mlx5e_deactivate_xsk(struct mlx5e_channel *c)
 {
-	/* ICOSQ recovery may reactivate XSKRQ if clear_bit is called in the
-	 * middle of recovery. Suspend the recovery to avoid it.
-	 */
+	 
 	mlx5e_reporter_icosq_suspend_recovery(c);
 	clear_bit(MLX5E_RQ_STATE_ENABLED, &c->xskrq.state);
 	mlx5e_reporter_icosq_resume_recovery(c);
-	synchronize_net(); /* Sync with NAPI to prevent mlx5e_post_rx_wqes. */
+	synchronize_net();  
 
-	/* TX queue is disabled on close. */
+	 
 }

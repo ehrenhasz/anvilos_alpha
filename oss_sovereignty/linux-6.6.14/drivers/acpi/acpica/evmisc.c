@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
-/******************************************************************************
- *
- * Module Name: evmisc - Miscellaneous event manager support functions
- *
- * Copyright (C) 2000 - 2023, Intel Corp.
- *
- *****************************************************************************/
+
+ 
 
 #include <acpi/acpi.h>
 #include "accommon.h"
@@ -15,22 +9,10 @@
 #define _COMPONENT          ACPI_EVENTS
 ACPI_MODULE_NAME("evmisc")
 
-/* Local prototypes */
+ 
 static void ACPI_SYSTEM_XFACE acpi_ev_notify_dispatch(void *context);
 
-/*******************************************************************************
- *
- * FUNCTION:    acpi_ev_is_notify_object
- *
- * PARAMETERS:  node            - Node to check
- *
- * RETURN:      TRUE if notifies allowed on this object
- *
- * DESCRIPTION: Check type of node for a object that supports notifies.
- *
- *              TBD: This could be replaced by a flag bit in the node.
- *
- ******************************************************************************/
+ 
 
 u8 acpi_ev_is_notify_object(struct acpi_namespace_node *node)
 {
@@ -39,9 +21,7 @@ u8 acpi_ev_is_notify_object(struct acpi_namespace_node *node)
 	case ACPI_TYPE_DEVICE:
 	case ACPI_TYPE_PROCESSOR:
 	case ACPI_TYPE_THERMAL:
-		/*
-		 * These are the ONLY objects that can receive ACPI notifications
-		 */
+		 
 		return (TRUE);
 
 	default:
@@ -50,19 +30,7 @@ u8 acpi_ev_is_notify_object(struct acpi_namespace_node *node)
 	}
 }
 
-/*******************************************************************************
- *
- * FUNCTION:    acpi_ev_queue_notify_request
- *
- * PARAMETERS:  node            - NS node for the notified object
- *              notify_value    - Value from the Notify() request
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Dispatch a device notification event to a previously
- *              installed handler.
- *
- ******************************************************************************/
+ 
 
 acpi_status
 acpi_ev_queue_notify_request(struct acpi_namespace_node *node, u32 notify_value)
@@ -75,13 +43,13 @@ acpi_ev_queue_notify_request(struct acpi_namespace_node *node, u32 notify_value)
 
 	ACPI_FUNCTION_NAME(ev_queue_notify_request);
 
-	/* Are Notifies allowed on this object? */
+	 
 
 	if (!acpi_ev_is_notify_object(node)) {
 		return (AE_TYPE);
 	}
 
-	/* Get the correct notify list type (System or Device) */
+	 
 
 	if (notify_value <= ACPI_MAX_SYS_NOTIFY) {
 		handler_list_id = ACPI_SYSTEM_HANDLER_LIST;
@@ -89,21 +57,18 @@ acpi_ev_queue_notify_request(struct acpi_namespace_node *node, u32 notify_value)
 		handler_list_id = ACPI_DEVICE_HANDLER_LIST;
 	}
 
-	/* Get the notify object attached to the namespace Node */
+	 
 
 	obj_desc = acpi_ns_get_attached_object(node);
 	if (obj_desc) {
 
-		/* We have an attached object, Get the correct handler list */
+		 
 
 		handler_list_head =
 		    obj_desc->common_notify.notify_list[handler_list_id];
 	}
 
-	/*
-	 * If there is no notify handler (Global or Local)
-	 * for this object, just ignore the notify
-	 */
+	 
 	if (!acpi_gbl_global_notify[handler_list_id].handler
 	    && !handler_list_head) {
 		ACPI_DEBUG_PRINT((ACPI_DB_INFO,
@@ -114,7 +79,7 @@ acpi_ev_queue_notify_request(struct acpi_namespace_node *node, u32 notify_value)
 		return (AE_OK);
 	}
 
-	/* Setup notify info and schedule the notify dispatcher */
+	 
 
 	info = acpi_ut_create_generic_state();
 	if (!info) {
@@ -145,18 +110,7 @@ acpi_ev_queue_notify_request(struct acpi_namespace_node *node, u32 notify_value)
 	return (status);
 }
 
-/*******************************************************************************
- *
- * FUNCTION:    acpi_ev_notify_dispatch
- *
- * PARAMETERS:  context         - To be passed to the notify handler
- *
- * RETURN:      None.
- *
- * DESCRIPTION: Dispatch a device notification event to a previously
- *              installed handler.
- *
- ******************************************************************************/
+ 
 
 static void ACPI_SYSTEM_XFACE acpi_ev_notify_dispatch(void *context)
 {
@@ -165,7 +119,7 @@ static void ACPI_SYSTEM_XFACE acpi_ev_notify_dispatch(void *context)
 
 	ACPI_FUNCTION_ENTRY();
 
-	/* Invoke a global notify handler if installed */
+	 
 
 	if (info->notify.global->handler) {
 		info->notify.global->handler(info->notify.node,
@@ -173,7 +127,7 @@ static void ACPI_SYSTEM_XFACE acpi_ev_notify_dispatch(void *context)
 					     info->notify.global->context);
 	}
 
-	/* Now invoke the local notify handler(s) if any are installed */
+	 
 
 	handler_obj = info->notify.handler_list_head;
 	while (handler_obj) {
@@ -185,23 +139,13 @@ static void ACPI_SYSTEM_XFACE acpi_ev_notify_dispatch(void *context)
 		    handler_obj->notify.next[info->notify.handler_list_id];
 	}
 
-	/* All done with the info object */
+	 
 
 	acpi_ut_delete_generic_state(info);
 }
 
 #if (!ACPI_REDUCED_HARDWARE)
-/******************************************************************************
- *
- * FUNCTION:    acpi_ev_terminate
- *
- * PARAMETERS:  none
- *
- * RETURN:      none
- *
- * DESCRIPTION: Disable events and free memory allocated for table storage.
- *
- ******************************************************************************/
+ 
 
 void acpi_ev_terminate(void)
 {
@@ -211,12 +155,9 @@ void acpi_ev_terminate(void)
 	ACPI_FUNCTION_TRACE(ev_terminate);
 
 	if (acpi_gbl_events_initialized) {
-		/*
-		 * Disable all event-related functionality. In all cases, on error,
-		 * print a message but obviously we don't abort.
-		 */
+		 
 
-		/* Disable all fixed events */
+		 
 
 		for (i = 0; i < ACPI_NUM_FIXED_EVENTS; i++) {
 			status = acpi_disable_event(i, 0);
@@ -227,7 +168,7 @@ void acpi_ev_terminate(void)
 			}
 		}
 
-		/* Disable all GPEs in all GPE blocks */
+		 
 
 		status = acpi_ev_walk_gpe_list(acpi_hw_disable_gpe_block, NULL);
 		if (ACPI_FAILURE(status)) {
@@ -244,14 +185,14 @@ void acpi_ev_terminate(void)
 		acpi_gbl_events_initialized = FALSE;
 	}
 
-	/* Remove SCI handlers */
+	 
 
 	status = acpi_ev_remove_all_sci_handlers();
 	if (ACPI_FAILURE(status)) {
 		ACPI_ERROR((AE_INFO, "Could not remove SCI handler"));
 	}
 
-	/* Deallocate all handler objects installed within GPE info structs */
+	 
 
 	status = acpi_ev_walk_gpe_list(acpi_ev_delete_gpe_handlers, NULL);
 	if (ACPI_FAILURE(status)) {
@@ -259,7 +200,7 @@ void acpi_ev_terminate(void)
 				"Could not delete GPE handlers"));
 	}
 
-	/* Return to original mode if necessary */
+	 
 
 	if (acpi_gbl_original_mode == ACPI_SYS_MODE_LEGACY) {
 		status = acpi_disable();
@@ -270,4 +211,4 @@ void acpi_ev_terminate(void)
 	return_VOID;
 }
 
-#endif				/* !ACPI_REDUCED_HARDWARE */
+#endif				 

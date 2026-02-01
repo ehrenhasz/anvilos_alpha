@@ -1,11 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0 or BSD-3-Clause
-/*
- * Copyright(c) 2017 - 2018 Intel Corporation.
- */
 
-/*
- * This file contains HFI1 support for VNIC SDMA functionality
- */
+ 
+
+ 
 
 #include "sdma.h"
 #include "vnic.h"
@@ -16,15 +12,7 @@
 #define HFI1_VNIC_TXREQ_NAME_LEN   32
 #define HFI1_VNIC_SDMA_DESC_WTRMRK 64
 
-/*
- * struct vnic_txreq - VNIC transmit descriptor
- * @txreq: sdma transmit request
- * @sdma: vnic sdma pointer
- * @skb: skb to send
- * @pad: pad buffer
- * @plen: pad length
- * @pbc_val: pbc value
- */
+ 
 struct vnic_txreq {
 	struct sdma_txreq       txreq;
 	struct hfi1_vnic_sdma   *sdma;
@@ -62,7 +50,7 @@ static noinline int build_vnic_ulp_payload(struct sdma_engine *sde,
 	for (i = 0; i < skb_shinfo(tx->skb)->nr_frags; i++) {
 		skb_frag_t *frag = &skb_shinfo(tx->skb)->frags[i];
 
-		/* combine physically continuous fragments later? */
+		 
 		ret = sdma_txadd_page(sde->dd,
 				      &tx->txreq,
 				      skb_frag_page(frag),
@@ -87,7 +75,7 @@ static int build_vnic_tx_desc(struct sdma_engine *sde,
 			      u64 pbc)
 {
 	int ret = 0;
-	u16 hdrbytes = 2 << 2;  /* PBC */
+	u16 hdrbytes = 2 << 2;   
 
 	ret = sdma_txinit_ahg(
 		&tx->txreq,
@@ -101,7 +89,7 @@ static int build_vnic_tx_desc(struct sdma_engine *sde,
 	if (unlikely(ret))
 		goto bail_txadd;
 
-	/* add pbc */
+	 
 	tx->pbc_val = cpu_to_le64(pbc);
 	ret = sdma_txadd_kvaddr(
 		sde->dd,
@@ -111,13 +99,13 @@ static int build_vnic_tx_desc(struct sdma_engine *sde,
 	if (unlikely(ret))
 		goto bail_txadd;
 
-	/* add the ulp payload */
+	 
 	ret = build_vnic_ulp_payload(sde, tx);
 bail_txadd:
 	return ret;
 }
 
-/* setup the last plen bypes of pad */
+ 
 static inline void hfi1_vnic_update_pad(unsigned char *pad, u8 plen)
 {
 	pad[HFI1_VNIC_MAX_PAD - 1] = plen - OPA_VNIC_ICRC_TAIL_LEN;
@@ -154,7 +142,7 @@ int hfi1_vnic_send_dma(struct hfi1_devdata *dd, u8 q_idx,
 
 	ret = sdma_send_txreq(sde, iowait_get_ib_work(&vnic_sdma->wait),
 			      &tx->txreq, vnic_sdma->pkts_sent);
-	/* When -ECOMM, sdma callback will be called with ABORT status */
+	 
 	if (unlikely(ret && unlikely(ret != -ECOMM)))
 		goto free_desc;
 
@@ -175,14 +163,7 @@ tx_err:
 	return ret;
 }
 
-/*
- * hfi1_vnic_sdma_sleep - vnic sdma sleep function
- *
- * This function gets called from sdma_send_txreq() when there are not enough
- * sdma descriptors available to send the packet. It adds Tx queue's wait
- * structure to sdma engine's dmawait list to be woken up when descriptors
- * become available.
- */
+ 
 static int hfi1_vnic_sdma_sleep(struct sdma_engine *sde,
 				struct iowait_work *wait,
 				struct sdma_txreq *txreq,
@@ -207,13 +188,7 @@ static int hfi1_vnic_sdma_sleep(struct sdma_engine *sde,
 	return -EBUSY;
 }
 
-/*
- * hfi1_vnic_sdma_wakeup - vnic sdma wakeup function
- *
- * This function gets called when SDMA descriptors becomes available and Tx
- * queue's wait structure was previously added to sdma engine's dmawait list.
- * It notifies the upper driver about Tx queue wakeup.
- */
+ 
 static void hfi1_vnic_sdma_wakeup(struct iowait *wait, int reason)
 {
 	struct hfi1_vnic_sdma *vnic_sdma =
@@ -249,7 +224,7 @@ void hfi1_vnic_sdma_init(struct hfi1_vnic_vport_info *vinfo)
 		vnic_sdma->q_idx = i;
 		vnic_sdma->state = HFI1_VNIC_SDMA_Q_ACTIVE;
 
-		/* Add a free descriptor watermark for wakeups */
+		 
 		if (vnic_sdma->sde->descq_cnt > HFI1_VNIC_SDMA_DESC_WTRMRK) {
 			struct iowait_work *work;
 

@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2021 pureLiFi
- */
+ 
+ 
 
 #define PURELIFI_BYTE_NUM_ALIGNMENT 4
 #define ETH_ALEN 6
@@ -45,7 +43,7 @@ enum plf_usb_req_enum {
 };
 
 struct plf_usb_req {
-	__be32         id; /* should be plf_usb_req_enum */
+	__be32         id;  
 	__be32	       len;
 	u8             buf[512];
 };

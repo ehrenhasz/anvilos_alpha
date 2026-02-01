@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
-/* Copyright (c) 2017-2020 Mellanox Technologies. All rights reserved */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/errno.h>
@@ -233,7 +233,7 @@ int mlxsw_sp_mall_replace(struct mlxsw_sp *mlxsw_sp,
 			return err;
 		}
 		flower_prio_valid = false;
-		/* No flower filters are installed in specified chain. */
+		 
 	} else {
 		flower_prio_valid = true;
 	}
@@ -327,7 +327,7 @@ void mlxsw_sp_mall_destroy(struct mlxsw_sp_flow_block *block,
 	block->rule_count--;
 	list_for_each_entry(binding, &block->binding_list, list)
 		mlxsw_sp_mall_port_rule_del(binding->mlxsw_sp_port, mall_entry);
-	kfree_rcu(mall_entry, rcu); /* sample RX packets may be in-flight */
+	kfree_rcu(mall_entry, rcu);  
 	mlxsw_sp_mall_prio_update(block);
 }
 
@@ -366,10 +366,7 @@ int mlxsw_sp_mall_prio_get(struct mlxsw_sp_flow_block *block, u32 chain_index,
 			   unsigned int *p_min_prio, unsigned int *p_max_prio)
 {
 	if (chain_index || list_empty(&block->mall.list))
-		/* In case there are no matchall rules, the caller
-		 * receives -ENOENT to indicate there is no need
-		 * to check the priorities.
-		 */
+		 
 		return -ENOENT;
 	*p_min_prio = block->mall.min_prio;
 	*p_max_prio = block->mall.max_prio;
@@ -415,7 +412,7 @@ static int mlxsw_sp2_mall_sample_add(struct mlxsw_sp *mlxsw_sp,
 {
 	struct mlxsw_sp_span_trigger_parms trigger_parms = {};
 	struct mlxsw_sp_span_agent_parms agent_parms = {
-		.to_dev = NULL,	/* Mirror to CPU. */
+		.to_dev = NULL,	 
 		.session_id = MLXSW_SP_SPAN_SESSION_ID_SAMPLING,
 	};
 	u32 rate = mall_entry->sample.params.rate;

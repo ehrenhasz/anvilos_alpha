@@ -1,18 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*******************************************************************************
-  This is the driver for the MAC 10/100 on-chip Ethernet controller
-  currently tested on all the ST boards based on STb7109 and stx7200 SoCs.
 
-  DWC Ether MAC 10/100 Universal version 4.0 has been used for developing
-  this code.
-
-  This contains the functions to handle the dma.
-
-  Copyright (C) 2007-2009  STMicroelectronics Ltd
-
-
-  Author: Giuseppe Cavallaro <peppe.cavallaro@st.com>
-*******************************************************************************/
+ 
 
 #include <asm/io.h>
 #include "dwmac100.h"
@@ -21,11 +8,11 @@
 static void dwmac100_dma_init(void __iomem *ioaddr,
 			      struct stmmac_dma_cfg *dma_cfg, int atds)
 {
-	/* Enable Application Access by writing to DMA CSR0 */
+	 
 	writel(DMA_BUS_MODE_DEFAULT | (dma_cfg->pbl << DMA_BUS_MODE_PBL_SHIFT),
 	       ioaddr + DMA_BUS_MODE);
 
-	/* Mask interrupts by writing to CSR7 */
+	 
 	writel(DMA_INTR_DEFAULT_MASK, ioaddr + DMA_INTR_ENA);
 }
 
@@ -33,7 +20,7 @@ static void dwmac100_dma_init_rx(struct stmmac_priv *priv, void __iomem *ioaddr,
 				 struct stmmac_dma_cfg *dma_cfg,
 				 dma_addr_t dma_rx_phy, u32 chan)
 {
-	/* RX descriptor base addr lists must be written into DMA CSR3 */
+	 
 	writel(lower_32_bits(dma_rx_phy), ioaddr + DMA_RCV_BASE_ADDR);
 }
 
@@ -41,15 +28,11 @@ static void dwmac100_dma_init_tx(struct stmmac_priv *priv, void __iomem *ioaddr,
 				 struct stmmac_dma_cfg *dma_cfg,
 				 dma_addr_t dma_tx_phy, u32 chan)
 {
-	/* TX descriptor base addr lists must be written into DMA CSR4 */
+	 
 	writel(lower_32_bits(dma_tx_phy), ioaddr + DMA_TX_BASE_ADDR);
 }
 
-/* Store and Forward capability is not used at all.
- *
- * The transmit threshold can be programmed by setting the TTC bits in the DMA
- * control register.
- */
+ 
 static void dwmac100_dma_operation_mode_tx(struct stmmac_priv *priv,
 					   void __iomem *ioaddr, int mode,
 					   u32 channel, int fifosz, u8 qmode)
@@ -81,7 +64,7 @@ static void dwmac100_dump_dma_regs(struct stmmac_priv *priv,
 		readl(ioaddr + DMA_CUR_RX_BUF_ADDR);
 }
 
-/* DMA controller has two counters to track the number of the missed frames. */
+ 
 static void dwmac100_dma_diagnostic_fr(struct stmmac_extra_stats *x,
 				       void __iomem *ioaddr)
 {

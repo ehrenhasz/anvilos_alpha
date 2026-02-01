@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
+ 
 #ifndef __ASM_X86_SHMBUF_H
 #define __ASM_X86_SHMBUF_H
 
@@ -9,23 +9,17 @@
 #include <asm/ipcbuf.h>
 #include <asm/posix_types.h>
 
-/*
- * The shmid64_ds structure for x86 architecture with x32 ABI.
- *
- * On x86-32 and x86-64 we can just use the generic definition, but
- * x32 uses the same binary layout as x86_64, which is different
- * from other 32-bit architectures.
- */
+ 
 
 struct shmid64_ds {
-	struct ipc64_perm	shm_perm;	/* operation perms */
-	__kernel_size_t		shm_segsz;	/* size of segment (bytes) */
-	__kernel_long_t		shm_atime;	/* last attach time */
-	__kernel_long_t		shm_dtime;	/* last detach time */
-	__kernel_long_t		shm_ctime;	/* last change time */
-	__kernel_pid_t		shm_cpid;	/* pid of creator */
-	__kernel_pid_t		shm_lpid;	/* pid of last operator */
-	__kernel_ulong_t	shm_nattch;	/* no. of current attaches */
+	struct ipc64_perm	shm_perm;	 
+	__kernel_size_t		shm_segsz;	 
+	__kernel_long_t		shm_atime;	 
+	__kernel_long_t		shm_dtime;	 
+	__kernel_long_t		shm_ctime;	 
+	__kernel_pid_t		shm_cpid;	 
+	__kernel_pid_t		shm_lpid;	 
+	__kernel_ulong_t	shm_nattch;	 
 	__kernel_ulong_t	__unused4;
 	__kernel_ulong_t	__unused5;
 };
@@ -44,4 +38,4 @@ struct shminfo64 {
 
 #endif
 
-#endif /* __ASM_X86_SHMBUF_H */
+#endif  

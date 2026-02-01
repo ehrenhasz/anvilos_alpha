@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Functions corresponding to enumeration type attributes under
- * BIOS Enumeration GUID for use with dell-wmi-sysman
- *
- *  Copyright (c) 2020 Dell Inc.
- */
+
+ 
 
 #include "dell-wmi-sysman.h"
 
@@ -19,7 +14,7 @@ static ssize_t current_value_show(struct kobject *kobj, struct kobj_attribute *a
 	if (instance_id < 0)
 		return instance_id;
 
-	/* need to use specific instance_id and guid combination to get right data */
+	 
 	obj = get_wmiobj_pointer(instance_id, DELL_WMI_BIOS_ENUMERATION_ATTRIBUTE_GUID);
 	if (!obj)
 		return -EIO;
@@ -32,11 +27,7 @@ static ssize_t current_value_show(struct kobject *kobj, struct kobj_attribute *a
 	return ret;
 }
 
-/**
- * validate_enumeration_input() - Validate input of current_value against possible values
- * @instance_id: The instance on which input is validated
- * @buf: Input value
- */
+ 
 static int validate_enumeration_input(int instance_id, const char *buf)
 {
 	char *options, *tmp, *p;
@@ -127,13 +118,7 @@ int alloc_enum_data(void)
 	return ret;
 }
 
-/**
- * populate_enum_data() - Populate all properties of an instance under enumeration attribute
- * @enumeration_obj: ACPI object with enumeration data
- * @instance_id: The instance to enumerate
- * @attr_name_kobj: The parent kernel object
- * @enum_property_count: Total properties count under enumeration type
- */
+ 
 int populate_enum_data(union acpi_object *enumeration_obj, int instance_id,
 			struct kobject *attr_name_kobj, u32 enum_property_count)
 {
@@ -200,11 +185,7 @@ int populate_enum_data(union acpi_object *enumeration_obj, int instance_id,
 	return sysfs_create_group(attr_name_kobj, &enumeration_attr_group);
 }
 
-/**
- * exit_enum_attributes() - Clear all attribute data
- *
- * Clears all data allocated for this group of attributes
- */
+ 
 void exit_enum_attributes(void)
 {
 	int instance_id;

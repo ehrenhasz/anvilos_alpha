@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Marvell Orion SoC timer handling.
- *
- * Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>
- *
- * Timer 0 is used as free-running clocksource, while timer 1 is
- * used as clock_event_device.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/bitops.h>
@@ -49,23 +42,19 @@ static void orion_delay_timer_init(unsigned long rate)
 	register_current_timer_delay(&orion_delay_timer);
 }
 
-/*
- * Free-running clocksource handling.
- */
+ 
 static u64 notrace orion_read_sched_clock(void)
 {
 	return ~readl(timer_base + TIMER0_VAL);
 }
 
-/*
- * Clockevent handling.
- */
+ 
 static u32 ticks_per_jiffy;
 
 static int orion_clkevt_next_event(unsigned long delta,
 				   struct clock_event_device *dev)
 {
-	/* setup and enable one-shot timer */
+	 
 	writel(delta, timer_base + TIMER1_VAL);
 	atomic_io_modify(timer_base + TIMER_CTRL,
 		TIMER1_RELOAD_EN | TIMER1_EN, TIMER1_EN);
@@ -75,7 +64,7 @@ static int orion_clkevt_next_event(unsigned long delta,
 
 static int orion_clkevt_shutdown(struct clock_event_device *dev)
 {
-	/* disable timer */
+	 
 	atomic_io_modify(timer_base + TIMER_CTRL,
 			 TIMER1_RELOAD_EN | TIMER1_EN, 0);
 	return 0;
@@ -83,7 +72,7 @@ static int orion_clkevt_shutdown(struct clock_event_device *dev)
 
 static int orion_clkevt_set_periodic(struct clock_event_device *dev)
 {
-	/* setup and enable periodic timer at 1/HZ intervals */
+	 
 	writel(ticks_per_jiffy - 1, timer_base + TIMER1_RELOAD);
 	writel(ticks_per_jiffy - 1, timer_base + TIMER1_VAL);
 	atomic_io_modify(timer_base + TIMER_CTRL,
@@ -117,7 +106,7 @@ static int __init orion_timer_init(struct device_node *np)
 	struct clk *clk;
 	int irq, ret;
 
-	/* timer registers are shared with watchdog timer */
+	 
 	timer_base = of_iomap(np, 0);
 	if (!timer_base) {
 		pr_err("%pOFn: unable to map resource\n", np);
@@ -136,7 +125,7 @@ static int __init orion_timer_init(struct device_node *np)
 		return ret;
 	}
 
-	/* we are only interested in timer1 irq */
+	 
 	irq = irq_of_parse_and_map(np, 1);
 	if (irq <= 0) {
 		pr_err("%pOFn: unable to parse timer1 irq\n", np);
@@ -146,7 +135,7 @@ static int __init orion_timer_init(struct device_node *np)
 
 	rate = clk_get_rate(clk);
 
-	/* setup timer0 as free-running clocksource */
+	 
 	writel(~0, timer_base + TIMER0_VAL);
 	writel(~0, timer_base + TIMER0_RELOAD);
 	atomic_io_modify(timer_base + TIMER_CTRL,
@@ -163,7 +152,7 @@ static int __init orion_timer_init(struct device_node *np)
 
 	sched_clock_register(orion_read_sched_clock, 32, rate);
 
-	/* setup timer1 as clockevent timer */
+	 
 	ret = request_irq(irq, orion_clkevt_irq_handler, IRQF_TIMER,
 			  "orion_event", NULL);
 	if (ret) {

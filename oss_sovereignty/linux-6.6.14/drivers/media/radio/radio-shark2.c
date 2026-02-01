@@ -1,25 +1,4 @@
-/*
- * Linux V4L2 radio driver for the Griffin radioSHARK2 USB radio receiver
- *
- * Note the radioSHARK2 offers the audio through a regular USB audio device,
- * this driver only handles the tuning.
- *
- * The info necessary to drive the shark2 was taken from the small userspace
- * shark2.c program by Hisaaki Shibata, which he kindly placed in the Public
- * Domain.
- *
- * Copyright (c) 2012 Hans de Goede <hdegoede@redhat.com>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- */
+ 
 
 #include <linux/init.h>
 #include <linux/kernel.h>
@@ -78,7 +57,7 @@ static int shark_write_reg(struct radio_tea5777 *tea, u64 reg)
 	int i, res, actual_len;
 
 	memset(shark->transfer_buffer, 0, TB_LEN);
-	shark->transfer_buffer[0] = 0x81; /* Write register command */
+	shark->transfer_buffer[0] = 0x81;  
 	for (i = 0; i < 6; i++)
 		shark->transfer_buffer[i + 1] = (reg >> (40 - i * 8)) & 0xff;
 
@@ -287,7 +266,7 @@ static int usb_shark_probe(struct usb_interface *intf,
 		SHARK_OUT_EP | USB_DIR_OUT,
 		0};
 
-	/* Are the expected endpoints present? */
+	 
 	if (!usb_check_int_endpoints(intf, ep_addresses)) {
 		dev_err(&intf->dev, "Invalid radioSHARK2 device\n");
 		return -EINVAL;
@@ -367,7 +346,7 @@ static int usb_shark_resume(struct usb_interface *intf)
 }
 #endif
 
-/* Specify the bcdDevice value, as the radioSHARK and radioSHARK2 share ids */
+ 
 static const struct usb_device_id usb_shark_device_table[] = {
 	{ .match_flags = USB_DEVICE_ID_MATCH_DEVICE_AND_VERSION |
 			 USB_DEVICE_ID_MATCH_INT_CLASS,

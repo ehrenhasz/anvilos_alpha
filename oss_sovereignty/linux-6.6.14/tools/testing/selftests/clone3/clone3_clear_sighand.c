@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 
 #define _GNU_SOURCE
 #include <errno.h>
@@ -50,10 +50,7 @@ static void test_clone3_clear_sighand(void)
 	struct __clone_args args = {};
 	struct sigaction act;
 
-	/*
-	 * Check that CLONE_CLEAR_SIGHAND and CLONE_SIGHAND are mutually
-	 * exclusive.
-	 */
+	 
 	args.flags |= CLONE_CLEAR_SIGHAND | CLONE_SIGHAND;
 	args.exit_signal = SIGCHLD;
 	pid = sys_clone3(&args, sizeof(args));
@@ -69,21 +66,21 @@ static void test_clone3_clear_sighand(void)
 
 	act.sa_flags = 0;
 
-	/* Register signal handler for SIGUSR1 */
+	 
 	ret = sigaction(SIGUSR1, &act, NULL);
 	if (ret < 0)
 		ksft_exit_fail_msg(
 			"%s - sigaction(SIGUSR1, &act, NULL) failed\n",
 			strerror(errno));
 
-	/* Register signal handler for SIGUSR2 */
+	 
 	ret = sigaction(SIGUSR2, &act, NULL);
 	if (ret < 0)
 		ksft_exit_fail_msg(
 			"%s - sigaction(SIGUSR2, &act, NULL) failed\n",
 			strerror(errno));
 
-	/* Check that CLONE_CLEAR_SIGHAND works. */
+	 
 	args.flags = CLONE_CLEAR_SIGHAND;
 	pid = sys_clone3(&args, sizeof(args));
 	if (pid < 0)

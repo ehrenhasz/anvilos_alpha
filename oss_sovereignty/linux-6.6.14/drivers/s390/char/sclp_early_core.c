@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *    Copyright IBM Corp. 2015
- *    Author(s): Martin Schwidefsky <schwidefsky@de.ibm.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <asm/processor.h>
@@ -19,10 +16,7 @@ static struct read_info_sccb __bootdata(sclp_info_sccb);
 static int __bootdata(sclp_info_sccb_valid);
 char *__bootdata_preserved(sclp_early_sccb);
 int sclp_init_state = sclp_init_state_uninitialized;
-/*
- * Used to keep track of the size of the event masks. Qemu until version 2.11
- * only supports 4 and needs a workaround.
- */
+ 
 bool sclp_mask_compat_mode;
 
 void sclp_early_wait_irq(void)
@@ -81,7 +75,7 @@ struct write_sccb {
 	struct msg_buf msg;
 } __packed;
 
-/* Output multi-line text using SCLP Message interface. */
+ 
 static void sclp_early_print_lm(const char *str, unsigned int len)
 {
 	unsigned char *ptr, *end, ch;
@@ -135,7 +129,7 @@ struct vt220_sccb {
 	} msg;
 } __packed;
 
-/* Output multi-line text using SCLP VT220 interface. */
+ 
 static void sclp_early_print_vt220(const char *str, unsigned int len)
 {
 	struct vt220_sccb *sccb;
@@ -216,10 +210,7 @@ void sclp_early_set_buffer(void *sccb)
 	sclp_early_sccb = sccb;
 }
 
-/*
- * Output one or more lines of text on the SCLP console (VT220 and /
- * or line-mode).
- */
+ 
 void __sclp_early_printk(const char *str, unsigned int len)
 {
 	int have_linemode, have_vt220;
@@ -240,39 +231,21 @@ void sclp_early_printk(const char *str)
 	__sclp_early_printk(str, strlen(str));
 }
 
-/*
- * Use sclp_emergency_printk() to print a string when the system is in a
- * state where regular console drivers cannot be assumed to work anymore.
- *
- * Callers must make sure that no concurrent SCLP requests are outstanding
- * and all other CPUs are stopped, or at least disabled for external
- * interrupts.
- */
+ 
 void sclp_emergency_printk(const char *str)
 {
 	int have_linemode, have_vt220;
 	unsigned int len;
 
 	len = strlen(str);
-	/*
-	 * Don't care about return values; if requests fail, just ignore and
-	 * continue to have a rather high chance that anything is printed.
-	 */
+	 
 	sclp_early_setup(0, &have_linemode, &have_vt220);
 	sclp_early_print_lm(str, len);
 	sclp_early_print_vt220(str, len);
 	sclp_early_setup(1, &have_linemode, &have_vt220);
 }
 
-/*
- * We can't pass sclp_info_sccb to sclp_early_cmd() here directly,
- * because it might not fulfil the requiremets for a SCLP communication buffer:
- *   - lie below 2G in memory
- *   - be page-aligned
- * Therefore, we use the buffer sclp_early_sccb (which fulfils all those
- * requirements) temporarily for communication and copy a received response
- * back into the buffer sclp_info_sccb upon successful completion.
- */
+ 
 int __init sclp_early_read_info(void)
 {
 	int i;

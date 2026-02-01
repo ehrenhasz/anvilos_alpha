@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: BSD-3-Clause-Clear
-/*
- * Copyright (c) 2018-2021 The Linux Foundation. All rights reserved.
- * Copyright (c) 2021-2022 Qualcomm Innovation Center, Inc. All rights reserved.
- */
+
+ 
 #include <linux/skbuff.h>
 #include <linux/ctype.h>
 #include <net/mac80211.h>
@@ -185,7 +182,7 @@ void ath12k_wmi_init_qcn9274(struct ath12k_base *ab,
 		config->num_peers = TARGET_NUM_PEERS(DBS_SBS);
 		config->num_tids = TARGET_NUM_TIDS(DBS_SBS);
 	} else {
-		/* Control should not reach here */
+		 
 		config->num_peers = TARGET_NUM_PEERS(SINGLE);
 		config->num_tids = TARGET_NUM_TIDS(SINGLE);
 	}
@@ -222,7 +219,7 @@ void ath12k_wmi_init_qcn9274(struct ath12k_base *ab,
 	config->num_msdu_desc = TARGET_NUM_MSDU_DESC;
 	config->beacon_tx_offload_max_vdev = ab->num_radios * TARGET_MAX_BCN_OFFLD;
 	config->rx_batchmode = TARGET_RX_BATCHMODE;
-	/* Indicates host supports peer map v3 and unmap v2 support */
+	 
 	config->peer_map_unmap_version = 0x32;
 	config->twt_ap_pdev_count = ab->num_radios;
 	config->twt_ap_sta_count = 1000;
@@ -284,7 +281,7 @@ static const int ath12k_hw_mode_pri_map[] = {
 	PRIMAP(WMI_HOST_HW_MODE_SBS),
 	PRIMAP(WMI_HOST_HW_MODE_DBS_SBS),
 	PRIMAP(WMI_HOST_HW_MODE_DBS_OR_SBS),
-	/* keep last */
+	 
 	PRIMAP(WMI_HOST_HW_MODE_MAX),
 };
 
@@ -436,7 +433,7 @@ static int ath12k_pull_svc_ready_ext(struct ath12k_wmi_pdev *wmi_handle,
 	if (!ev)
 		return -EINVAL;
 
-	/* Move this to host based bitmap */
+	 
 	arg->default_conc_scan_config_bits =
 		le32_to_cpu(ev->default_conc_scan_config_bits);
 	arg->default_fw_config_bits = le32_to_cpu(ev->default_fw_config_bits);
@@ -501,10 +498,7 @@ ath12k_pull_mac_phy_cap_svc_ready_ext(struct ath12k_wmi_pdev *wmi_handle,
 	fw_pdev->phy_id = le32_to_cpu(mac_caps->phy_id);
 	ab->fw_pdev_count++;
 
-	/* Take non-zero tx/rx chainmask. If tx/rx chainmask differs from
-	 * band to band for a single radio, need to see how this should be
-	 * handled.
-	 */
+	 
 	if (le32_to_cpu(mac_caps->supported_bands) & WMI_HOST_WLAN_2G_CAP) {
 		pdev_cap->tx_chain_mask = le32_to_cpu(mac_caps->tx_chain_mask_2g);
 		pdev_cap->rx_chain_mask = le32_to_cpu(mac_caps->rx_chain_mask_2g);
@@ -518,14 +512,7 @@ ath12k_pull_mac_phy_cap_svc_ready_ext(struct ath12k_wmi_pdev *wmi_handle,
 		return -EINVAL;
 	}
 
-	/* tx/rx chainmask reported from fw depends on the actual hw chains used,
-	 * For example, for 4x4 capable macphys, first 4 chains can be used for first
-	 * mac and the remaining 4 chains can be used for the second mac or vice-versa.
-	 * In this case, tx/rx chainmask 0xf will be advertised for first mac and 0xf0
-	 * will be advertised for second mac or vice-versa. Compute the shift value
-	 * for tx/rx chainmask which will be used to advertise supported ht/vht rates to
-	 * mac80211.
-	 */
+	 
 	pdev_cap->tx_chain_mask_shift =
 			find_first_bit((unsigned long *)&pdev_cap->tx_chain_mask, 32);
 	pdev_cap->rx_chain_mask_shift =
@@ -616,7 +603,7 @@ ath12k_pull_reg_cap_svc_rdy_ext(struct ath12k_wmi_pdev *wmi_handle,
 		le32_to_cpu(ext_reg_cap->eeprom_reg_domain_ext);
 	param->regcap1 = le32_to_cpu(ext_reg_cap->regcap1);
 	param->regcap2 = le32_to_cpu(ext_reg_cap->regcap2);
-	/* check if param->wireless_mode is needed */
+	 
 	param->low_2ghz_chan = le32_to_cpu(ext_reg_cap->low_2ghz_chan);
 	param->high_2ghz_chan = le32_to_cpu(ext_reg_cap->high_2ghz_chan);
 	param->low_5ghz_chan = le32_to_cpu(ext_reg_cap->low_5ghz_chan);
@@ -658,10 +645,7 @@ static int ath12k_pull_service_ready_tlv(struct ath12k_base *ab,
 	return 0;
 }
 
-/* Save the wmi_service_bitmap into a linear bitmap. The wmi_services in
- * wmi_service ready event are advertised in b0-b3 (LSB 4-bits) of each
- * 4-byte word.
- */
+ 
 static void ath12k_wmi_service_bitmap_copy(struct ath12k_wmi_pdev *wmi,
 					   const u32 *wmi_svc_bm)
 {
@@ -801,10 +785,7 @@ int ath12k_wmi_vdev_create(struct ath12k *ar, u8 *macaddr,
 	int ret, len;
 	void *ptr;
 
-	/* It can be optimized my sending tx/rx chain configuration
-	 * only for supported bands instead of always sending it for
-	 * both the bands.
-	 */
+	 
 	len = sizeof(*cmd) + TLV_HDR_SIZE +
 		(WMI_NUM_SUPPORTED_BAND_MAX * sizeof(*txrx_streams));
 
@@ -1048,9 +1029,7 @@ int ath12k_wmi_vdev_start(struct ath12k *ar, struct wmi_vdev_start_req_arg *arg,
 	tlv = ptr;
 	tlv->header = ath12k_wmi_tlv_hdr(WMI_TAG_ARRAY_STRUCT, 0);
 
-	/* Note: This is a nested TLV containing:
-	 * [wmi_tlv][wmi_p2p_noa_descriptor][wmi_tlv]..
-	 */
+	 
 
 	ptr += sizeof(*tlv);
 
@@ -1480,10 +1459,7 @@ int ath12k_wmi_pdev_resume(struct ath12k *ar, u32 pdev_id)
 	return ret;
 }
 
-/* TODO FW Support for the cmd is not available yet.
- * Can be tested once the command and corresponding
- * event is implemented in FW
- */
+ 
 int ath12k_wmi_pdev_bss_chan_info_request(struct ath12k *ar,
 					  enum wmi_bss_chan_info_req_type type)
 {
@@ -1769,9 +1745,7 @@ int ath12k_wmi_vdev_install_key(struct ath12k *ar,
 	struct sk_buff *skb;
 	int ret, len, key_len_aligned;
 
-	/* WMI_TAG_ARRAY_BYTE needs to be aligned with 4, the actual key
-	 * length is specified in cmd->key_len.
-	 */
+	 
 	key_len_aligned = roundup(arg->key_len, 4);
 
 	len = sizeof(*cmd) + TLV_HDR_SIZE + key_len_aligned;
@@ -1836,15 +1810,11 @@ static void ath12k_wmi_copy_peer_flags(struct wmi_peer_assoc_complete_cmd *cmd,
 		if (arg->bw_320)
 			cmd->peer_flags |= cpu_to_le32(WMI_PEER_EXT_320MHZ);
 
-		/* Typically if STBC is enabled for VHT it should be enabled
-		 * for HT as well
-		 **/
+		 
 		if (arg->stbc_flag)
 			cmd->peer_flags |= cpu_to_le32(WMI_PEER_STBC);
 
-		/* Typically if LDPC is enabled for VHT it should be enabled
-		 * for HT as well
-		 **/
+		 
 		if (arg->ldpc_flag)
 			cmd->peer_flags |= cpu_to_le32(WMI_PEER_LDPC);
 
@@ -1866,10 +1836,7 @@ static void ath12k_wmi_copy_peer_flags(struct wmi_peer_assoc_complete_cmd *cmd,
 			cmd->peer_flags_ext |= cpu_to_le32(WMI_PEER_EXT_EHT);
 	}
 
-	/* Suppress authorization for all AUTH modes that need 4-way handshake
-	 * (during re-association).
-	 * Authorization will be done for these modes on key installation.
-	 */
+	 
 	if (arg->auth_flag)
 		cmd->peer_flags |= cpu_to_le32(WMI_PEER_AUTH);
 	if (arg->need_ptk_4_way) {
@@ -1879,7 +1846,7 @@ static void ath12k_wmi_copy_peer_flags(struct wmi_peer_assoc_complete_cmd *cmd,
 	}
 	if (arg->need_gtk_2_way)
 		cmd->peer_flags |= cpu_to_le32(WMI_PEER_NEED_GTK_2_WAY);
-	/* safe mode bypass the 4-way handshake */
+	 
 	if (arg->safe_mode_enabled)
 		cmd->peer_flags &= cpu_to_le32(~(WMI_PEER_NEED_PTK_4_WAY |
 						 WMI_PEER_NEED_GTK_2_WAY));
@@ -1887,16 +1854,10 @@ static void ath12k_wmi_copy_peer_flags(struct wmi_peer_assoc_complete_cmd *cmd,
 	if (arg->is_pmf_enabled)
 		cmd->peer_flags |= cpu_to_le32(WMI_PEER_PMF);
 
-	/* Disable AMSDU for station transmit, if user configures it */
-	/* Disable AMSDU for AP transmit to 11n Stations, if user configures
-	 * it
-	 * if (arg->amsdu_disable) Add after FW support
-	 **/
+	 
+	 
 
-	/* Target asserts if node is marked HT and all MCS is set to 0.
-	 * Mark the node as non-HT if all the mcs rates are disabled through
-	 * iwpriv
-	 **/
+	 
 	if (arg->peer_ht_rates.num_rates == 0)
 		cmd->peer_flags &= cpu_to_le32(~WMI_PEER_HT);
 }
@@ -1960,7 +1921,7 @@ int ath12k_wmi_send_peer_assoc_cmd(struct ath12k *ar,
 	cmd->peer_vht_caps = cpu_to_le32(arg->peer_vht_caps);
 	cmd->peer_phymode = cpu_to_le32(arg->peer_phymode);
 
-	/* Update 11ax capabilities */
+	 
 	cmd->peer_he_cap_info = cpu_to_le32(arg->peer_he_cap_macinfo[0]);
 	cmd->peer_he_cap_info_ext = cpu_to_le32(arg->peer_he_cap_macinfo[1]);
 	cmd->peer_he_cap_info_internal = cpu_to_le32(arg->peer_he_cap_macinfo_internal);
@@ -1975,7 +1936,7 @@ int ath12k_wmi_send_peer_assoc_cmd(struct ath12k *ar,
 		cmd->peer_ppet.ppet16_ppet8_ru3_ru0[i] =
 			cpu_to_le32(arg->peer_ppet.ppet16_ppet8_ru3_ru0[i]);
 
-	/* Update 11be capabilities */
+	 
 	memcpy_and_pad(cmd->peer_eht_cap_mac, sizeof(cmd->peer_eht_cap_mac),
 		       arg->peer_eht_cap_mac, sizeof(arg->peer_eht_cap_mac),
 		       0);
@@ -1985,7 +1946,7 @@ int ath12k_wmi_send_peer_assoc_cmd(struct ath12k *ar,
 	memcpy_and_pad(&cmd->peer_eht_ppet, sizeof(cmd->peer_eht_ppet),
 		       &arg->peer_eht_ppet, sizeof(arg->peer_eht_ppet), 0);
 
-	/* Update peer legacy rate information */
+	 
 	ptr += sizeof(*cmd);
 
 	tlv = ptr;
@@ -1997,7 +1958,7 @@ int ath12k_wmi_send_peer_assoc_cmd(struct ath12k *ar,
 	memcpy(ptr, arg->peer_legacy_rates.rates,
 	       arg->peer_legacy_rates.num_rates);
 
-	/* Update peer HT rate information */
+	 
 	ptr += peer_legacy_rates_align;
 
 	tlv = ptr;
@@ -2007,7 +1968,7 @@ int ath12k_wmi_send_peer_assoc_cmd(struct ath12k *ar,
 	memcpy(ptr, arg->peer_ht_rates.rates,
 	       arg->peer_ht_rates.num_rates);
 
-	/* VHT Rates */
+	 
 	ptr += peer_ht_rates_align;
 
 	mcs = ptr;
@@ -2017,7 +1978,7 @@ int ath12k_wmi_send_peer_assoc_cmd(struct ath12k *ar,
 
 	cmd->peer_nss = cpu_to_le32(arg->peer_nss);
 
-	/* Update bandwidth-NSS mapping */
+	 
 	cmd->peer_bw_rxnss_override = 0;
 	cmd->peer_bw_rxnss_override |= cpu_to_le32(arg->peer_bw_rxnss_override);
 
@@ -2028,7 +1989,7 @@ int ath12k_wmi_send_peer_assoc_cmd(struct ath12k *ar,
 		mcs->tx_mcs_set = cpu_to_le32(arg->tx_mcs_set);
 	}
 
-	/* HE Rates */
+	 
 	cmd->peer_he_mcs = cpu_to_le32(arg->peer_he_mcs_count);
 	cmd->min_data_rate = cpu_to_le32(arg->min_data_rate);
 
@@ -2040,7 +2001,7 @@ int ath12k_wmi_send_peer_assoc_cmd(struct ath12k *ar,
 	tlv->header = ath12k_wmi_tlv_hdr(WMI_TAG_ARRAY_STRUCT, len);
 	ptr += TLV_HDR_SIZE;
 
-	/* Loop through the HE rate set */
+	 
 	for (i = 0; i < arg->peer_he_mcs_count; i++) {
 		he_mcs = ptr;
 		he_mcs->tlv_header = ath12k_wmi_tlv_cmd_hdr(WMI_TAG_HE_RATE_SET,
@@ -2051,13 +2012,13 @@ int ath12k_wmi_send_peer_assoc_cmd(struct ath12k *ar,
 		ptr += sizeof(*he_mcs);
 	}
 
-	/* MLO header tag with 0 length */
+	 
 	len = 0;
 	tlv = ptr;
 	tlv->header = ath12k_wmi_tlv_hdr(WMI_TAG_ARRAY_STRUCT, len);
 	ptr += TLV_HDR_SIZE;
 
-	/* Loop through the EHT rate set */
+	 
 	len = arg->peer_eht_mcs_count * sizeof(*eht_mcs);
 	tlv = ptr;
 	tlv->header = ath12k_wmi_tlv_hdr(WMI_TAG_ARRAY_STRUCT, len);
@@ -2073,7 +2034,7 @@ int ath12k_wmi_send_peer_assoc_cmd(struct ath12k *ar,
 		ptr += sizeof(*eht_mcs);
 	}
 
-	/* ML partner links tag with 0 length */
+	 
 	len = 0;
 	tlv = ptr;
 	tlv->header = ath12k_wmi_tlv_hdr(WMI_TAG_ARRAY_STRUCT, len);
@@ -2108,7 +2069,7 @@ int ath12k_wmi_send_peer_assoc_cmd(struct ath12k *ar,
 void ath12k_wmi_start_scan_init(struct ath12k *ar,
 				struct ath12k_wmi_scan_req_arg *arg)
 {
-	/* setup commonly used values */
+	 
 	arg->scan_req_id = 1;
 	arg->scan_priority = WMI_SCAN_PRIORITY_LOW;
 	arg->dwell_time_active = 50;
@@ -2131,16 +2092,14 @@ void ath12k_wmi_start_scan_init(struct ath12k *ar,
 	arg->scan_flags |= WMI_SCAN_CHAN_STAT_EVENT;
 	arg->num_bssid = 1;
 
-	/* fill bssid_list[0] with 0xff, otherwise bssid and RA will be
-	 * ZEROs in probe request
-	 */
+	 
 	eth_broadcast_addr(arg->bssid_list[0].addr);
 }
 
 static void ath12k_wmi_copy_scan_event_cntrl_flags(struct wmi_start_scan_cmd *cmd,
 						   struct ath12k_wmi_scan_req_arg *arg)
 {
-	/* Scan events subscription */
+	 
 	if (arg->scan_ev_started)
 		cmd->notify_scan_events |= cpu_to_le32(WMI_SCAN_EVENT_STARTED);
 	if (arg->scan_ev_completed)
@@ -2164,7 +2123,7 @@ static void ath12k_wmi_copy_scan_event_cntrl_flags(struct wmi_start_scan_cmd *cm
 	if (arg->scan_ev_resumed)
 		cmd->notify_scan_events |= cpu_to_le32(WMI_SCAN_EVENT_RESUMED);
 
-	/** Set scan control flags */
+	 
 	cmd->scan_ctrl_flags = 0;
 	if (arg->scan_f_passive)
 		cmd->scan_ctrl_flags |= cpu_to_le32(WMI_SCAN_FLAG_PASSIVE);
@@ -2414,15 +2373,15 @@ int ath12k_wmi_send_scan_stop_cmd(struct ath12k *ar,
 	cmd->requestor = cpu_to_le32(arg->requester);
 	cmd->scan_id = cpu_to_le32(arg->scan_id);
 	cmd->pdev_id = cpu_to_le32(arg->pdev_id);
-	/* stop the scan with the corresponding scan_id */
+	 
 	if (arg->req_type == WLAN_SCAN_CANCEL_PDEV_ALL) {
-		/* Cancelling all scans */
+		 
 		cmd->req_type = cpu_to_le32(WMI_SCAN_STOP_ALL);
 	} else if (arg->req_type == WLAN_SCAN_CANCEL_VDEV_ALL) {
-		/* Cancelling VAP scans */
+		 
 		cmd->req_type = cpu_to_le32(WMI_SCAN_STOP_VAP_ALL);
 	} else if (arg->req_type == WLAN_SCAN_CANCEL_SINGLE) {
-		/* Cancelling specific scan */
+		 
 		cmd->req_type = WMI_SCAN_STOP_ONE;
 	} else {
 		ath12k_warn(ar->ab, "invalid scan cancel req_type %d",
@@ -2890,7 +2849,7 @@ ath12k_wmi_send_twt_enable_cmd(struct ath12k *ar, u32 pdev_id)
 	cmd->add_sta_slot_interval = cpu_to_le32(ATH12K_TWT_DEF_ADD_STA_SLOT_INTERVAL);
 	cmd->remove_sta_slot_interval =
 		cpu_to_le32(ATH12K_TWT_DEF_REMOVE_STA_SLOT_INTERVAL);
-	/* TODO add MBSSID support */
+	 
 	cmd->mbss_support = 0;
 
 	ret = ath12k_wmi_cmd_send(wmi, skb,
@@ -3329,7 +3288,7 @@ static int ath12k_init_cmd_send(struct ath12k_wmi_pdev *wmi,
 	cmd->num_host_mem_chunks = cpu_to_le32(arg->num_mem_chunks);
 	len = sizeof(struct ath12k_wmi_host_mem_chunk_params) * arg->num_mem_chunks;
 
-	/* num_mem_chunks is zero */
+	 
 	tlv = ptr;
 	tlv->header = ath12k_wmi_tlv_hdr(WMI_TAG_ARRAY_STRUCT, len);
 	ptr += TLV_HDR_SIZE + len;
@@ -3918,15 +3877,13 @@ static int ath12k_wmi_ext_soc_hal_reg_caps_parse(struct ath12k_base *soc,
 
 		soc->num_radios++;
 
-		/* For single_pdev_only targets,
-		 * save mac_phy capability in the same pdev
-		 */
+		 
 		if (soc->hw_params->single_pdev_only)
 			pdev_index = 0;
 		else
 			pdev_index = soc->num_radios;
 
-		/* TODO: mac_phy_cap prints */
+		 
 		phy_id_map >>= 1;
 	}
 
@@ -4299,10 +4256,7 @@ static int ath12k_wmi_svc_rdy_ext2_parse(struct ath12k_base *ab,
 
 			parse->dma_ring_cap_done = true;
 		} else if (!parse->spectral_bin_scaling_done) {
-			/* TODO: This is a place-holder as WMI tag for
-			 * spectral scaling is before
-			 * WMI_TAG_MAC_PHY_CAPABILITIES_EXT
-			 */
+			 
 			parse->spectral_bin_scaling_done = true;
 		} else if (!parse->mac_phy_caps_ext_done) {
 			ret = ath12k_wmi_tlv_iter(ab, ptr, len,
@@ -4520,15 +4474,7 @@ static int ath12k_pull_reg_chan_list_ext_update_ev(struct ath12k_base *ab,
 
 	memcpy(reg_info->alpha2, &ev->alpha2, REG_ALPHA2_LEN);
 
-	/* FIXME: Currently FW includes 6G reg rule also in 5G rule
-	 * list for country US.
-	 * Having same 6G reg rule in 5G and 6G rules list causes
-	 * intersect check to be true, and same rules will be shown
-	 * multiple times in iw cmd. So added hack below to avoid
-	 * parsing 6G rule from 5G reg rule list, and this can be
-	 * removed later, after FW updates to remove 6G reg rule
-	 * from 5G rules list.
-	 */
+	 
 	if (memcmp(reg_info->alpha2, "US", 2) == 0) {
 		reg_info->num_5g_reg_rules = REG_US_5G_NUM_REG_RULES;
 		num_5g_reg_rules = reg_info->num_5g_reg_rules;
@@ -4890,7 +4836,7 @@ static int ath12k_pull_mgmt_rx_params_tlv(struct ath12k_base *ab,
 		return -EPROTO;
 	}
 
-	/* shift the sk_buff to point to `frame` */
+	 
 	skb_trim(skb, 0);
 	skb_put(skb, frame - skb->data);
 	skb_pull(skb, frame - skb->data);
@@ -4931,7 +4877,7 @@ static int wmi_process_mgmt_tx_comp(struct ath12k *ar, u32 desc_id,
 
 	num_mgmt = atomic_dec_if_positive(&ar->num_pending_mgmt_tx);
 
-	/* WARN when we received this event without doing any mgmt tx */
+	 
 	if (num_mgmt < 0)
 		WARN_ON_ONCE(1);
 
@@ -5016,14 +4962,7 @@ static void ath12k_wmi_event_scan_completed(struct ath12k *ar)
 	switch (ar->scan.state) {
 	case ATH12K_SCAN_IDLE:
 	case ATH12K_SCAN_STARTING:
-		/* One suspected reason scan can be completed while starting is
-		 * if firmware fails to deliver all scan events to the host,
-		 * e.g. when transport pipe is full. This has been observed
-		 * with spectral scan phyerr events starving wmi transport
-		 * pipe. In such case the "scan completed" event should be (and
-		 * is) ignored by the host as it may be just firmware's scan
-		 * state machine recovering.
-		 */
+		 
 		ath12k_warn(ar->ab, "received scan completed event in an invalid scan state: %s (%d)\n",
 			    ath12k_scan_state_str(ar->scan.state),
 			    ar->scan.state);
@@ -5389,7 +5328,7 @@ ath12k_pull_pdev_temp_ev(struct ath12k_base *ab, u8 *evt_buf,
 
 static void ath12k_wmi_op_ep_tx_credits(struct ath12k_base *ab)
 {
-	/* try to send pending beacons first. they take priority */
+	 
 	wake_up(&ab->wmi_ab.tx_credits_wq);
 }
 
@@ -5426,10 +5365,7 @@ static int ath12k_reg_chan_list_event(struct ath12k_base *ab, struct sk_buff *sk
 	}
 
 	if (reg_info->status_code != REG_SET_CC_STATUS_PASS) {
-		/* In case of failure to set the requested ctry,
-		 * fw retains the current regd. We print a failure info
-		 * and return from here.
-		 */
+		 
 		ath12k_warn(ab, "Failed to set the requested Country regulatory setting\n");
 		goto mem_free;
 	}
@@ -5437,10 +5373,7 @@ static int ath12k_reg_chan_list_event(struct ath12k_base *ab, struct sk_buff *sk
 	pdev_idx = reg_info->phy_id;
 
 	if (pdev_idx >= ab->num_radios) {
-		/* Process the event for phy0 only if single_pdev_only
-		 * is true. If pdev_idx is valid but not 0, discard the
-		 * event. Otherwise, it goes to fallback.
-		 */
+		 
 		if (ab->hw_params->single_pdev_only &&
 		    pdev_idx < ab->hw_params->num_rxmda_per_pdev)
 			goto mem_free;
@@ -5448,18 +5381,13 @@ static int ath12k_reg_chan_list_event(struct ath12k_base *ab, struct sk_buff *sk
 			goto fallback;
 	}
 
-	/* Avoid multiple overwrites to default regd, during core
-	 * stop-start after mac registration.
-	 */
+	 
 	if (ab->default_regd[pdev_idx] && !ab->new_regd[pdev_idx] &&
 	    !memcmp(ab->default_regd[pdev_idx]->alpha2,
 		    reg_info->alpha2, 2))
 		goto mem_free;
 
-	/* Intersect new rules with default regd if a new country setting was
-	 * requested, i.e a default regd was already set during initialization
-	 * and the regd coming from this event has a valid country info.
-	 */
+	 
 	if (ab->default_regd[pdev_idx] &&
 	    !ath12k_reg_is_world_alpha((char *)
 		ab->default_regd[pdev_idx]->alpha2) &&
@@ -5474,25 +5402,15 @@ static int ath12k_reg_chan_list_event(struct ath12k_base *ab, struct sk_buff *sk
 
 	spin_lock(&ab->base_lock);
 	if (test_bit(ATH12K_FLAG_REGISTERED, &ab->dev_flags)) {
-		/* Once mac is registered, ar is valid and all CC events from
-		 * fw is considered to be received due to user requests
-		 * currently.
-		 * Free previously built regd before assigning the newly
-		 * generated regd to ar. NULL pointer handling will be
-		 * taken care by kfree itself.
-		 */
+		 
 		ar = ab->pdevs[pdev_idx].ar;
 		kfree(ab->new_regd[pdev_idx]);
 		ab->new_regd[pdev_idx] = regd;
 		queue_work(ab->workqueue, &ar->regd_update_work);
 	} else {
-		/* Multiple events for the same *ar is not expected. But we
-		 * can still clear any previously stored default_regd if we
-		 * are receiving this event for the same radio by mistake.
-		 * NULL pointer handling will be taken care by kfree itself.
-		 */
+		 
 		kfree(ab->default_regd[pdev_idx]);
-		/* This regd would be applied during mac registration */
+		 
 		ab->default_regd[pdev_idx] = regd;
 	}
 	ab->dfs_region = reg_info->dfs_region;
@@ -5501,14 +5419,8 @@ static int ath12k_reg_chan_list_event(struct ath12k_base *ab, struct sk_buff *sk
 	goto mem_free;
 
 fallback:
-	/* Fallback to older reg (by sending previous country setting
-	 * again if fw has succeeded and we failed to process here.
-	 * The Regdomain should be uniform across driver and fw. Since the
-	 * FW has processed the command and sent a success status, we expect
-	 * this function to succeed as well. If it doesn't, CTRY needs to be
-	 * reverted at the fw and the old SCAN_CHAN_LIST cmd needs to be sent.
-	 */
-	/* TODO: This is rare, but still should also be handled */
+	 
+	 
 	WARN_ON(1);
 mem_free:
 	if (reg_info) {
@@ -5779,9 +5691,7 @@ static void ath12k_mgmt_rx_event(struct ath12k_base *ab, struct sk_buff *skb)
 	} else if (rx_ev.channel >= 36 && rx_ev.channel <= ATH12K_MAX_5G_CHAN) {
 		status->band = NL80211_BAND_5GHZ;
 	} else {
-		/* Shouldn't happen unless list of advertised channels to
-		 * mac80211 has been changed.
-		 */
+		 
 		WARN_ON_ONCE(1);
 		dev_kfree_skb(skb);
 		goto exit;
@@ -5802,15 +5712,10 @@ static void ath12k_mgmt_rx_event(struct ath12k_base *ab, struct sk_buff *skb)
 	hdr = (struct ieee80211_hdr *)skb->data;
 	fc = le16_to_cpu(hdr->frame_control);
 
-	/* Firmware is guaranteed to report all essential management frames via
-	 * WMI while it can deliver some extra via HTT. Since there can be
-	 * duplicates split the reporting wrt monitor/sniffing.
-	 */
+	 
 	status->flag |= RX_FLAG_SKIP_MONITOR;
 
-	/* In case of PMF, FW delivers decrypted frames with Protected Bit set
-	 * including group privacy action frames.
-	 */
+	 
 	if (ieee80211_has_protected(hdr->frame_control)) {
 		status->flag |= RX_FLAG_DECRYPTED;
 
@@ -5822,10 +5727,7 @@ static void ath12k_mgmt_rx_event(struct ath12k_base *ab, struct sk_buff *skb)
 		}
 	}
 
-	/* TODO: Pending handle beacon implementation
-	 *if (ieee80211_is_beacon(hdr->frame_control))
-	 *	ath12k_mac_handle_beacon(ar, skb);
-	 */
+	 
 
 	ath12k_dbg(ab, ATH12K_DBG_MGMT,
 		   "event mgmt rx skb %pK len %d ftype %02x stype %02x\n",
@@ -5909,12 +5811,7 @@ static void ath12k_scan_event(struct ath12k_base *ab, struct sk_buff *skb)
 
 	rcu_read_lock();
 
-	/* In case the scan was cancelled, ex. during interface teardown,
-	 * the interface will not be found in active interfaces.
-	 * Rather, in such scenarios, iterate over the active pdev's to
-	 * search 'ar' if the corresponding 'ar' scan is ABORTING and the
-	 * aborting scan's vdev id matches this event info.
-	 */
+	 
 	if (le32_to_cpu(scan_ev.event_type) == WMI_SCAN_EVENT_COMPLETED &&
 	    le32_to_cpu(scan_ev.reason) == WMI_SCAN_REASON_CANCELLED)
 		ar = ath12k_get_ar_on_scan_abort(ab, le32_to_cpu(scan_ev.vdev_id));
@@ -6051,10 +5948,7 @@ static void ath12k_roam_event(struct ath12k_base *ab, struct sk_buff *skb)
 
 	switch (le32_to_cpu(roam_ev.reason)) {
 	case WMI_ROAM_REASON_BEACON_MISS:
-		/* TODO: Pending beacon miss and connection_loss_work
-		 * implementation
-		 * ath12k_mac_handle_beacon_miss(ar, vdev_id);
-		 */
+		 
 		break;
 	case WMI_ROAM_REASON_BETTER_AP:
 	case WMI_ROAM_REASON_LOW_RSSI:
@@ -6074,7 +5968,7 @@ static void ath12k_chan_info_event(struct ath12k_base *ab, struct sk_buff *skb)
 	struct ath12k *ar;
 	struct survey_info *survey;
 	int idx;
-	/* HW channel counters frequency value in hertz */
+	 
 	u32 cc_freq_hz = ab->cc_freq_hz;
 
 	if (ath12k_pull_chan_info_ev(ab, skb->data, skb->len, &ch_info_ev) != 0) {
@@ -6121,9 +6015,7 @@ static void ath12k_chan_info_event(struct ath12k_base *ab, struct sk_buff *skb)
 		goto exit;
 	}
 
-	/* If FW provides MAC clock frequency in Mhz, overriding the initialized
-	 * HW channel counters frequency value
-	 */
+	 
 	if (ch_info_ev.mac_clk_mhz)
 		cc_freq_hz = (le32_to_cpu(ch_info_ev.mac_clk_mhz) * 1000);
 
@@ -6352,9 +6244,7 @@ static void ath12k_update_stats_event(struct ath12k_base *ab, struct sk_buff *sk
 {
 }
 
-/* PDEV_CTL_FAILSAFE_CHECK_EVENT is received from FW when the frequency scanned
- * is not part of BDF CTL(Conformance test limits) table entries.
- */
+ 
 static void ath12k_pdev_ctl_failsafe_check_event(struct ath12k_base *ab,
 						 struct sk_buff *skb)
 {
@@ -6380,9 +6270,7 @@ static void ath12k_pdev_ctl_failsafe_check_event(struct ath12k_base *ab,
 		   "pdev ctl failsafe check ev status %d\n",
 		   ev->ctl_failsafe_status);
 
-	/* If ctl_failsafe_status is set to 1 FW will max out the Transmit power
-	 * to 10 dBm else the CTL power entry in the BDF would be picked up.
-	 */
+	 
 	if (ev->ctl_failsafe_status != 0)
 		ath12k_warn(ab, "pdev ctl failsafe failure status %d",
 			    ev->ctl_failsafe_status);
@@ -6398,7 +6286,7 @@ ath12k_wmi_process_csa_switch_count_event(struct ath12k_base *ab,
 	int i;
 	struct ath12k_vif *arvif;
 
-	/* Finish CSA once the switch count becomes NULL */
+	 
 	if (ev->current_switch_count)
 		return;
 
@@ -6607,7 +6495,7 @@ static void ath12k_wmi_op_rx(struct ath12k_base *ab, struct sk_buff *skb)
 		goto out;
 
 	switch (id) {
-		/* Process all the WMI events here */
+		 
 	case WMI_SERVICE_READY_EVENTID:
 		ath12k_service_ready_event(ab, skb);
 		break;
@@ -6637,7 +6525,7 @@ static void ath12k_wmi_op_rx(struct ath12k_base *ab, struct sk_buff *skb)
 		break;
 	case WMI_MGMT_RX_EVENTID:
 		ath12k_mgmt_rx_event(ab, skb);
-		/* mgmt_rx_event() owns the skb now! */
+		 
 		return;
 	case WMI_MGMT_TX_COMPLETION_EVENTID:
 		ath12k_mgmt_tx_compl_event(ab, skb);
@@ -6687,7 +6575,7 @@ static void ath12k_wmi_op_rx(struct ath12k_base *ab, struct sk_buff *skb)
 	case WMI_OFFLOAD_PROB_RESP_TX_STATUS_EVENTID:
 		ath12k_probe_resp_tx_status_event(ab, skb);
 		break;
-	/* add Unsupported events here */
+	 
 	case WMI_TBTTOFFSET_EXT_UPDATE_EVENTID:
 	case WMI_PEER_OPER_MODE_CHANGE_EVENTID:
 	case WMI_TWT_ENABLE_EVENTID:
@@ -6702,7 +6590,7 @@ static void ath12k_wmi_op_rx(struct ath12k_base *ab, struct sk_buff *skb)
 	case WMI_VDEV_DELETE_RESP_EVENTID:
 		ath12k_vdev_delete_resp_event(ab, skb);
 		break;
-	/* TODO: Add remaining events */
+	 
 	default:
 		ath12k_dbg(ab, ATH12K_DBG_WMI, "Unknown eventid: 0x%x\n", id);
 		break;
@@ -6722,12 +6610,12 @@ static int ath12k_connect_pdev_htc_service(struct ath12k_base *ab,
 	struct ath12k_htc_svc_conn_req conn_req = {};
 	struct ath12k_htc_svc_conn_resp conn_resp = {};
 
-	/* these fields are the same for all service endpoints */
+	 
 	conn_req.ep_ops.ep_tx_complete = ath12k_wmi_htc_tx_complete;
 	conn_req.ep_ops.ep_rx_complete = ath12k_wmi_op_rx;
 	conn_req.ep_ops.ep_tx_credits = ath12k_wmi_op_ep_tx_credits;
 
-	/* connect to control service */
+	 
 	conn_req.service_id = svc_id[pdev_idx];
 
 	status = ath12k_htc_connect_service(&ab->htc, &conn_req, &conn_resp);
@@ -6821,10 +6709,7 @@ int ath12k_wmi_simulate_radar(struct ath12k *ar)
 
 	dfs_args[DFS_TEST_CMDID] = 0;
 	dfs_args[DFS_TEST_PDEV_ID] = ar->pdev->pdev_id;
-	/* Currently we could pass segment_id(b0 - b1), chirp(b2)
-	 * freq offset (b3 - b10) to unit test. For simulation
-	 * purpose this can be set to 0 which is valid.
-	 */
+	 
 	dfs_args[DFS_TEST_RADAR_PARAM] = 0;
 
 	wmi_ut.vdev_id = cpu_to_le32(arvif->vdev_id);
@@ -6857,7 +6742,7 @@ static void ath12k_wmi_pdev_detach(struct ath12k_base *ab, u8 pdev_id)
 	if (WARN_ON(pdev_id >= MAX_RADIOS))
 		return;
 
-	/* TODO: Deinit any pdev specific wmi resource */
+	 
 }
 
 int ath12k_wmi_pdev_attach(struct ath12k_base *ab,
@@ -6873,7 +6758,7 @@ int ath12k_wmi_pdev_attach(struct ath12k_base *ab,
 	wmi_handle->wmi_ab = &ab->wmi_ab;
 
 	ab->wmi_ab.ab = ab;
-	/* TODO: Init remaining resource specific to pdev */
+	 
 
 	return 0;
 }
@@ -6889,11 +6774,11 @@ int ath12k_wmi_attach(struct ath12k_base *ab)
 	ab->wmi_ab.ab = ab;
 	ab->wmi_ab.preferred_hw_mode = WMI_HOST_HW_MODE_MAX;
 
-	/* It's overwritten when service_ext_ready is handled */
+	 
 	if (ab->hw_params->single_pdev_only)
 		ab->wmi_ab.preferred_hw_mode = WMI_HOST_HW_MODE_SINGLE;
 
-	/* TODO: Init remaining wmi soc resources required */
+	 
 	init_completion(&ab->wmi_ab.service_ready);
 	init_completion(&ab->wmi_ab.unified_ready);
 
@@ -6904,7 +6789,7 @@ void ath12k_wmi_detach(struct ath12k_base *ab)
 {
 	int i;
 
-	/* TODO: Deinit wmi resource specific to SOC as required */
+	 
 
 	for (i = 0; i < ab->htc.wmi_ep_count; i++)
 		ath12k_wmi_pdev_detach(ab, i);

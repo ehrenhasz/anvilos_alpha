@@ -1,27 +1,23 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Handlers for board audio hooks, split from bttv-cards
- *
- * Copyright (c) 2006 Mauro Carvalho Chehab <mchehab@kernel.org>
- */
+
+ 
 
 #include "bttv-audio-hook.h"
 
 #include <linux/delay.h>
 
-/* ----------------------------------------------------------------------- */
-/* winview                                                                 */
+ 
+ 
 
 void winview_volume(struct bttv *btv, __u16 volume)
 {
-	/* PT2254A programming Jon Tombs, jon@gte.esi.us.es */
+	 
 	int bits_out, loops, vol, data;
 
-	/* 32 levels logarithmic */
+	 
 	vol = 32 - ((volume>>11));
-	/* units */
+	 
 	bits_out = (PT2254_DBS_IN_2>>(vol%5));
-	/* tens */
+	 
 	bits_out |= (PT2254_DBS_IN_10>>(vol/5));
 	bits_out |= PT2254_L_CHANNEL | PT2254_R_CHANNEL;
 	data = gpio_read();
@@ -48,16 +44,16 @@ void winview_volume(struct bttv *btv, __u16 volume)
 	gpio_write(data);
 }
 
-/* ----------------------------------------------------------------------- */
-/* mono/stereo control for various cards (which don't use i2c chips but    */
-/* connect something to the GPIO pins                                      */
+ 
+ 
+ 
 
 void gvbctv3pci_audio(struct bttv *btv, struct v4l2_tuner *t, int set)
 {
 	unsigned int con;
 
 	if (!set) {
-		/* Not much to do here */
+		 
 		t->audmode = V4L2_TUNER_MODE_LANG1;
 		t->rxsubchans = V4L2_TUNER_SUB_MONO |
 				V4L2_TUNER_SUB_STEREO |
@@ -140,26 +136,14 @@ void gvbctv5pci_audio(struct bttv *btv, struct v4l2_tuner *t, int set)
 	}
 }
 
-/*
- * Mario Medina Nussbaum <medisoft@alohabbs.org.mx>
- *  I discover that on BT848_GPIO_DATA address a byte 0xcce enable stereo,
- *  0xdde enables mono and 0xccd enables sap
- *
- * Petr Vandrovec <VANDROVE@vc.cvut.cz>
- *  P.S.: At least mask in line above is wrong - GPIO pins 3,2 select
- *  input/output sound connection, so both must be set for output mode.
- *
- * Looks like it's needed only for the "tvphone", the "tvphone 98"
- * handles this with a tda9840
- *
- */
+ 
 
 void avermedia_tvphone_audio(struct bttv *btv, struct v4l2_tuner *t, int set)
 {
 	int val;
 
 	if (!set) {
-		/* Not much to do here */
+		 
 		t->audmode = V4L2_TUNER_MODE_LANG1;
 		t->rxsubchans = V4L2_TUNER_SUB_MONO |
 				V4L2_TUNER_SUB_STEREO |
@@ -170,7 +154,7 @@ void avermedia_tvphone_audio(struct bttv *btv, struct v4l2_tuner *t, int set)
 	}
 
 	switch (t->audmode) {
-	case V4L2_TUNER_MODE_LANG2:   /* SAP */
+	case V4L2_TUNER_MODE_LANG2:    
 		val = 0x02;
 		break;
 	case V4L2_TUNER_MODE_STEREO:
@@ -190,7 +174,7 @@ void avermedia_tv_stereo_audio(struct bttv *btv, struct v4l2_tuner *t, int set)
 	int val = 0;
 
 	if (!set) {
-		/* Not much to do here */
+		 
 		t->audmode = V4L2_TUNER_MODE_LANG1;
 		t->rxsubchans = V4L2_TUNER_SUB_MONO |
 				V4L2_TUNER_SUB_STEREO |
@@ -201,7 +185,7 @@ void avermedia_tv_stereo_audio(struct bttv *btv, struct v4l2_tuner *t, int set)
 	}
 
 	switch (t->audmode) {
-	case V4L2_TUNER_MODE_LANG2:   /* SAP */
+	case V4L2_TUNER_MODE_LANG2:    
 		val = 0x01;
 		break;
 	case V4L2_TUNER_MODE_STEREO:
@@ -216,7 +200,7 @@ void avermedia_tv_stereo_audio(struct bttv *btv, struct v4l2_tuner *t, int set)
 		bttv_gpio_tracking(btv, "avermedia");
 }
 
-/* Lifetec 9415 handling */
+ 
 
 void lt9415_audio(struct bttv *btv, struct v4l2_tuner *t, int set)
 {
@@ -228,7 +212,7 @@ void lt9415_audio(struct bttv *btv, struct v4l2_tuner *t, int set)
 	}
 
 	if (!set) {
-		/* Not much to do here */
+		 
 		t->audmode = V4L2_TUNER_MODE_LANG1;
 		t->rxsubchans = V4L2_TUNER_SUB_MONO |
 				V4L2_TUNER_SUB_STEREO |
@@ -239,10 +223,10 @@ void lt9415_audio(struct bttv *btv, struct v4l2_tuner *t, int set)
 	}
 
 	switch (t->audmode) {
-	case V4L2_TUNER_MODE_LANG2:	/* A2 SAP */
+	case V4L2_TUNER_MODE_LANG2:	 
 		val = 0x0080;
 		break;
-	case V4L2_TUNER_MODE_STEREO:	/* A2 stereo */
+	case V4L2_TUNER_MODE_STEREO:	 
 		val = 0x0880;
 		break;
 	default:
@@ -255,13 +239,13 @@ void lt9415_audio(struct bttv *btv, struct v4l2_tuner *t, int set)
 		bttv_gpio_tracking(btv, "lt9415");
 }
 
-/* TDA9821 on TerraTV+ Bt848, Bt878 */
+ 
 void terratv_audio(struct bttv *btv,  struct v4l2_tuner *t, int set)
 {
 	unsigned int con = 0;
 
 	if (!set) {
-		/* Not much to do here */
+		 
 		t->audmode = V4L2_TUNER_MODE_LANG1;
 		t->rxsubchans = V4L2_TUNER_SUB_MONO |
 				V4L2_TUNER_SUB_STEREO |
@@ -296,13 +280,13 @@ void winfast2000_audio(struct bttv *btv, struct v4l2_tuner *t, int set)
 	if (!set)
 		return;
 
-	/*btor (0xc32000, BT848_GPIO_OUT_EN);*/
+	 
 	switch (t->audmode) {
 	case V4L2_TUNER_MODE_MONO:
 	case V4L2_TUNER_MODE_LANG1:
 		val = 0x420000;
 		break;
-	case V4L2_TUNER_MODE_LANG2: /* SAP */
+	case V4L2_TUNER_MODE_LANG2:  
 		val = 0x410000;
 		break;
 	case V4L2_TUNER_MODE_STEREO:
@@ -317,14 +301,7 @@ void winfast2000_audio(struct bttv *btv, struct v4l2_tuner *t, int set)
 		bttv_gpio_tracking(btv, "winfast2000");
 }
 
-/*
- * Dariusz Kowalewski <darekk@automex.pl>
- * sound control for Prolink PV-BT878P+9B (PixelView PlayTV Pro FM+NICAM
- * revision 9B has on-board TDA9874A sound decoder).
- *
- * Note: There are card variants without tda9874a. Forcing the "stereo sound route"
- *       will mute this cards.
- */
+ 
 void pvbt878p9b_audio(struct bttv *btv, struct v4l2_tuner *t, int set)
 {
 	unsigned int val = 0;
@@ -333,7 +310,7 @@ void pvbt878p9b_audio(struct bttv *btv, struct v4l2_tuner *t, int set)
 		return;
 
 	if (!set) {
-		/* Not much to do here */
+		 
 		t->audmode = V4L2_TUNER_MODE_LANG1;
 		t->rxsubchans = V4L2_TUNER_SUB_MONO |
 				V4L2_TUNER_SUB_STEREO |
@@ -361,11 +338,7 @@ void pvbt878p9b_audio(struct bttv *btv, struct v4l2_tuner *t, int set)
 		bttv_gpio_tracking(btv, "pvbt878p9b");
 }
 
-/*
- * Dariusz Kowalewski <darekk@automex.pl>
- * sound control for FlyVideo 2000S (with tda9874 decoder)
- * based on pvbt878p9b_audio() - this is not tested, please fix!!!
- */
+ 
 void fv2000s_audio(struct bttv *btv, struct v4l2_tuner *t, int set)
 {
 	unsigned int val;
@@ -374,7 +347,7 @@ void fv2000s_audio(struct bttv *btv, struct v4l2_tuner *t, int set)
 		return;
 
 	if (!set) {
-		/* Not much to do here */
+		 
 		t->audmode = V4L2_TUNER_MODE_LANG1;
 		t->rxsubchans = V4L2_TUNER_SUB_MONO |
 				V4L2_TUNER_SUB_STEREO |
@@ -391,7 +364,7 @@ void fv2000s_audio(struct bttv *btv, struct v4l2_tuner *t, int set)
 	case V4L2_TUNER_MODE_LANG1:
 	case V4L2_TUNER_MODE_LANG2:
 	case V4L2_TUNER_MODE_STEREO:
-		val = 0x1080; /*-dk-???: 0x0880, 0x0080, 0x1800 ... */
+		val = 0x1080;  
 		break;
 	default:
 		return;
@@ -401,16 +374,13 @@ void fv2000s_audio(struct bttv *btv, struct v4l2_tuner *t, int set)
 		bttv_gpio_tracking(btv, "fv2000s");
 }
 
-/*
- * sound control for Canopus WinDVR PCI
- * Masaki Suzuki <masaki@btree.org>
- */
+ 
 void windvr_audio(struct bttv *btv, struct v4l2_tuner *t, int set)
 {
 	unsigned long val;
 
 	if (!set) {
-		/* Not much to do here */
+		 
 		t->audmode = V4L2_TUNER_MODE_LANG1;
 		t->rxsubchans = V4L2_TUNER_SUB_MONO |
 				V4L2_TUNER_SUB_STEREO |
@@ -436,18 +406,15 @@ void windvr_audio(struct bttv *btv, struct v4l2_tuner *t, int set)
 		bttv_gpio_tracking(btv, "windvr");
 }
 
-/*
- * sound control for AD-TVK503
- * Hiroshi Takekawa <sian@big.or.jp>
- */
+ 
 void adtvk503_audio(struct bttv *btv, struct v4l2_tuner *t, int set)
 {
 	unsigned int con = 0xffffff;
 
-	/* btaor(0x1e0000, ~0x1e0000, BT848_GPIO_OUT_EN); */
+	 
 
 	if (!set) {
-		/* Not much to do here */
+		 
 		t->audmode = V4L2_TUNER_MODE_LANG1;
 		t->rxsubchans = V4L2_TUNER_SUB_MONO |
 				V4L2_TUNER_SUB_STEREO |
@@ -457,7 +424,7 @@ void adtvk503_audio(struct bttv *btv, struct v4l2_tuner *t, int set)
 		return;
 	}
 
-	/* btor(***, BT848_GPIO_OUT_EN); */
+	 
 	switch (t->audmode) {
 	case V4L2_TUNER_MODE_LANG1:
 		con = 0x00000000;

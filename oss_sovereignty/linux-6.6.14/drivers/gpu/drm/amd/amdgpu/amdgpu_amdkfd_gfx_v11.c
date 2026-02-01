@@ -1,24 +1,4 @@
-/*
- * Copyright 2021 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- */
+ 
 #include <linux/mmu_context.h>
 #include "amdgpu.h"
 #include "amdgpu_amdkfd.h"
@@ -94,7 +74,7 @@ static int set_pasid_vmid_mapping_v11(struct amdgpu_device *adev, unsigned int p
 {
 	uint32_t value = pasid << IH_VMID_0_LUT__PASID__SHIFT;
 
-	/* Mapping vmid to pasid also for IH block */
+	 
 	pr_debug("mapping vmid %d -> pasid %d in IH block for GFX client\n",
 			vmid, pasid);
 	WREG32(SOC15_REG_OFFSET(OSSSYS, 0, regIH_VMID_0_LUT) + vmid, value);
@@ -175,7 +155,7 @@ static int hqd_load_v11(struct amdgpu_device *adev, void *mqd, uint32_t pipe_id,
 	pr_debug("Load hqd of pipe %d queue %d\n", pipe_id, queue_id);
 	acquire_queue(adev, pipe_id, queue_id);
 
-	/* HIQ is set during driver init period with vmid set to 0*/
+	 
 	if (m->cp_hqd_vmid == 0) {
 		uint32_t value, mec, pipe;
 
@@ -190,7 +170,7 @@ static int hqd_load_v11(struct amdgpu_device *adev, void *mqd, uint32_t pipe_id,
 		WREG32(SOC15_REG_OFFSET(GC, 0, regRLC_CP_SCHEDULERS), value);
 	}
 
-	/* HQD registers extend from CP_MQD_BASE_ADDR to CP_HQD_EOP_WPTR_MEM. */
+	 
 	mqd_hqd = &m->cp_mqd_base_addr_lo;
 	hqd_base = SOC15_REG_OFFSET(GC, 0, regCP_MQD_BASE_ADDR);
 
@@ -199,28 +179,13 @@ static int hqd_load_v11(struct amdgpu_device *adev, void *mqd, uint32_t pipe_id,
 		WREG32(reg, mqd_hqd[reg - hqd_base]);
 
 
-	/* Activate doorbell logic before triggering WPTR poll. */
+	 
 	data = REG_SET_FIELD(m->cp_hqd_pq_doorbell_control,
 			     CP_HQD_PQ_DOORBELL_CONTROL, DOORBELL_EN, 1);
 	WREG32(SOC15_REG_OFFSET(GC, 0, regCP_HQD_PQ_DOORBELL_CONTROL), data);
 
 	if (wptr) {
-		/* Don't read wptr with get_user because the user
-		 * context may not be accessible (if this function
-		 * runs in a work queue). Instead trigger a one-shot
-		 * polling read from memory in the CP. This assumes
-		 * that wptr is GPU-accessible in the queue's VMID via
-		 * ATC or SVM. WPTR==RPTR before starting the poll so
-		 * the CP starts fetching new commands from the right
-		 * place.
-		 *
-		 * Guessing a 64-bit WPTR from a 32-bit RPTR is a bit
-		 * tricky. Assume that the queue didn't overflow. The
-		 * number of valid bits in the 32-bit RPTR depends on
-		 * the queue size. The remaining bits are taken from
-		 * the saved 64-bit WPTR. If the WPTR wrapped, add the
-		 * queue size.
-		 */
+		 
 		uint32_t queue_size =
 			2 << REG_GET_FIELD(m->cp_hqd_pq_control,
 					   CP_HQD_PQ_CONTROL, QUEUE_SIZE);
@@ -245,7 +210,7 @@ static int hqd_load_v11(struct amdgpu_device *adev, void *mqd, uint32_t pipe_id,
 		       (uint32_t)get_queue_mask(adev, pipe_id, queue_id));
 	}
 
-	/* Start the EOP fetcher */
+	 
 	WREG32(SOC15_REG_OFFSET(GC, 0, regCP_HQD_EOP_RPTR),
 	       REG_SET_FIELD(m->cp_hqd_eop_rptr,
 			     CP_HQD_EOP_RPTR, INIT_FETCHER, 1));
@@ -286,15 +251,15 @@ static int hiq_mqd_load_v11(struct amdgpu_device *adev, void *mqd,
 
 	amdgpu_ring_write(kiq_ring, PACKET3(PACKET3_MAP_QUEUES, 5));
 	amdgpu_ring_write(kiq_ring,
-			  PACKET3_MAP_QUEUES_QUEUE_SEL(0) | /* Queue_Sel */
-			  PACKET3_MAP_QUEUES_VMID(m->cp_hqd_vmid) | /* VMID */
+			  PACKET3_MAP_QUEUES_QUEUE_SEL(0) |  
+			  PACKET3_MAP_QUEUES_VMID(m->cp_hqd_vmid) |  
 			  PACKET3_MAP_QUEUES_QUEUE(queue_id) |
 			  PACKET3_MAP_QUEUES_PIPE(pipe) |
 			  PACKET3_MAP_QUEUES_ME((mec - 1)) |
-			  PACKET3_MAP_QUEUES_QUEUE_TYPE(0) | /*queue_type: normal compute queue */
-			  PACKET3_MAP_QUEUES_ALLOC_FORMAT(0) | /* alloc format: all_on_one_pipe */
-			  PACKET3_MAP_QUEUES_ENGINE_SEL(1) | /* engine_sel: hiq */
-			  PACKET3_MAP_QUEUES_NUM_QUEUES(1)); /* num_queues: must be 1 */
+			  PACKET3_MAP_QUEUES_QUEUE_TYPE(0) |  
+			  PACKET3_MAP_QUEUES_ALLOC_FORMAT(0) |  
+			  PACKET3_MAP_QUEUES_ENGINE_SEL(1) |  
+			  PACKET3_MAP_QUEUES_NUM_QUEUES(1));  
 	amdgpu_ring_write(kiq_ring,
 			PACKET3_MAP_QUEUES_DOORBELL_OFFSET(doorbell_off));
 	amdgpu_ring_write(kiq_ring, m->cp_mqd_base_addr_lo);
@@ -604,19 +569,11 @@ static void set_vm_context_page_table_base_v11(struct amdgpu_device *adev,
 		return;
 	}
 
-	/* SDMA is on gfxhub as well for gfx11 adapters */
+	 
 	adev->gfxhub.funcs->setup_vm_pt_regs(adev, vmid, page_table_base);
 }
 
-/*
- * Returns TRAP_EN, EXCP_EN and EXCP_REPLACE.
- *
- * restore_dbg_registers is ignored here but is a general interface requirement
- * for devices that support GFXOFF and where the RLC save/restore list
- * does not support hw registers for debugging i.e. the driver has to manually
- * initialize the debug mode registers after it has disabled GFX off during the
- * debug session.
- */
+ 
 static uint32_t kgd_gfx_v11_enable_debug_trap(struct amdgpu_device *adev,
 					    bool restore_dbg_registers,
 					    uint32_t vmid)
@@ -630,7 +587,7 @@ static uint32_t kgd_gfx_v11_enable_debug_trap(struct amdgpu_device *adev,
 	return data;
 }
 
-/* Returns TRAP_EN, EXCP_EN and EXCP_REPLACE. */
+ 
 static uint32_t kgd_gfx_v11_disable_debug_trap(struct amdgpu_device *adev,
 						bool keep_trap_enabled,
 						uint32_t vmid)
@@ -704,7 +661,7 @@ static uint32_t trap_mask_map_hw_to_sw(uint32_t mask)
 	return ret;
 }
 
-/* Returns TRAP_EN, EXCP_EN and EXCP_REPLACE. */
+ 
 static uint32_t kgd_gfx_v11_set_wave_launch_trap_override(struct amdgpu_device *adev,
 					uint32_t vmid,
 					uint32_t trap_override,

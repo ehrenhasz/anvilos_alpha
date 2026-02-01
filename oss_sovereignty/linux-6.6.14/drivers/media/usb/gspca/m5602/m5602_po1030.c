@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Driver for the po1030 sensor
- *
- * Copyright (c) 2008 Erik Andrén
- * Copyright (c) 2007 Ilyes Gouta. Based on the m5603x Linux Driver Project.
- * Copyright (c) 2005 m5603x Linux Driver Project <m5602@x3ng.com.br>
- *
- * Portions of code to USB interface and ALi driver software,
- * Copyright (c) 2006 Willem Duinker
- * v4l2 interface modeled after the V4L2 driver
- * for SN9C10x PC Camera Controllers
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -96,24 +85,23 @@ static const unsigned char init_po1030[][3] = {
 	{SENSOR, PO1030_GC6, 0xc0},
 	{SENSOR, PO1030_GC7, 0xff},
 
-	/* Set the width to 751 */
+	 
 	{SENSOR, PO1030_FRAMEWIDTH_H, 0x02},
 	{SENSOR, PO1030_FRAMEWIDTH_L, 0xef},
 
-	/* Set the height to 540 */
+	 
 	{SENSOR, PO1030_FRAMEHEIGHT_H, 0x02},
 	{SENSOR, PO1030_FRAMEHEIGHT_L, 0x1c},
 
-	/* Set the x window to 1 */
+	 
 	{SENSOR, PO1030_WINDOWX_H, 0x00},
 	{SENSOR, PO1030_WINDOWX_L, 0x01},
 
-	/* Set the y window to 1 */
+	 
 	{SENSOR, PO1030_WINDOWY_H, 0x00},
 	{SENSOR, PO1030_WINDOWY_L, 0x01},
 
-	/* with a very low lighted environment increase the exposure but
-	 * decrease the FPS (Frame Per Second) */
+	 
 	{BRIDGE, M5602_XB_SEN_CLK_DIV, 0x00},
 	{BRIDGE, M5602_XB_SEN_CLK_CTRL, 0xb0},
 
@@ -163,14 +151,13 @@ int po1030_probe(struct sd *sd)
 			pr_info("Forcing a %s sensor\n", po1030.name);
 			goto sensor_found;
 		}
-		/* If we want to force another sensor, don't try to probe this
-		 * one */
+		 
 		return -ENODEV;
 	}
 
 	gspca_dbg(gspca_dev, D_PROBE, "Probing for a po1030 sensor\n");
 
-	/* Run the pre-init to actually probe the unit */
+	 
 	for (i = 0; i < ARRAY_SIZE(preinit_po1030); i++) {
 		u8 data = preinit_po1030[i][2];
 		if (preinit_po1030[i][0] == SENSOR)
@@ -203,7 +190,7 @@ int po1030_init(struct sd *sd)
 {
 	int i, err = 0;
 
-	/* Init the sensor */
+	 
 	for (i = 0; i < ARRAY_SIZE(init_po1030) && !err; i++) {
 		u8 data[2] = {0x00, 0x00};
 
@@ -617,7 +604,7 @@ static void po1030_dump_registers(struct sd *sd)
 		else
 			pr_info("register 0x%x is read only\n", address);
 
-		/* Restore original value */
+		 
 		m5602_write_sensor(sd, address, &old_value, 1);
 	}
 }

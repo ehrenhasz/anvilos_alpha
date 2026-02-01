@@ -1,25 +1,4 @@
-/*
- * Copyright 2012 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 #ifndef __SI_DPM_H__
 #define __SI_DPM_H__
 
@@ -48,8 +27,8 @@
 #define PCIE_PERF_REQ_PECI_GEN1         2
 #define PCIE_PERF_REQ_PECI_GEN2         3
 #define PCIE_PERF_REQ_PECI_GEN3         4
-#define RV770_DEFAULT_VCLK_FREQ  53300 /* 10 khz */
-#define RV770_DEFAULT_DCLK_FREQ  40000 /* 10 khz */
+#define RV770_DEFAULT_VCLK_FREQ  53300  
+#define RV770_DEFAULT_DCLK_FREQ  40000  
 
 #define SMC_EVERGREEN_MC_REGISTER_ARRAY_SIZE 16
 
@@ -192,7 +171,7 @@
 #define SI_PM_NUMBER_OF_VOLTAGE_LEVELS 4
 #define SI_PM_NUMBER_OF_ACTIVITY_LEVELS 3
 
-/* XXX are these ok? */
+ 
 #define SI_TEMP_RANGE_MIN (90 * 1000)
 #define SI_TEMP_RANGE_MAX (120 * 1000)
 
@@ -529,13 +508,13 @@ union r7xx_clock_registers {
 };
 
 struct rv7xx_power_info {
-	/* flags */
+	 
 	bool mem_gddr5;
 	bool pcie_gen2;
 	bool dynamic_pcie_gen2;
 	bool acpi_pcie_gen2;
 	bool boot_in_gen2;
-	bool voltage_control; /* vddc */
+	bool voltage_control;  
 	bool mvdd_control;
 	bool sclk_ss;
 	bool mclk_ss;
@@ -548,10 +527,10 @@ struct rv7xx_power_info {
 	bool display_gap;
 	bool dcodt;
 	bool ulps;
-	/* registers */
+	 
 	union r7xx_clock_registers clk_regs;
 	u32 s0_vid_lower_smio_cntl;
-	/* voltage */
+	 
 	u32 vddc_mask_low;
 	u32 mvdd_mask_low;
 	u32 mvdd_split_frequency;
@@ -561,11 +540,11 @@ struct rv7xx_power_info {
 	u16 min_vddc_in_table;
 	struct vddc_table_entry vddc_table[MAX_NO_VREG_STEPS];
 	u8 valid_vddc_entries;
-	/* dc odt */
+	 
 	u32 mclk_odt_threshold;
 	u8 odt_value_0[2];
 	u8 odt_value_1[2];
-	/* stored values */
+	 
 	u32 boot_sclk;
 	u16 acpi_vddc;
 	u32 ref_div;
@@ -587,11 +566,11 @@ struct rv7xx_power_info {
 	u32 rmp;
 	u32 lhp;
 	u32 lmp;
-	/* smc offsets */
+	 
 	u16 state_table_start;
 	u16 soft_regs_start;
 	u16 sram_end;
-	/* scratch structs */
+	 
 	RV770_SMC_STATETABLE smc_statetable;
 };
 
@@ -606,9 +585,9 @@ struct rv7xx_pl {
 	u32 sclk;
 	u32 mclk;
 	u16 vddc;
-	u16 vddci; /* eg+ only */
+	u16 vddci;  
 	u32 flags;
-	enum si_pcie_gen pcie_gen; /* si+ only */
+	enum si_pcie_gen pcie_gen;  
 };
 
 struct rv7xx_ps {
@@ -650,9 +629,9 @@ struct ni_cac_data
 };
 
 struct evergreen_power_info {
-	/* must be first! */
+	 
 	struct rv7xx_power_info rv7xx;
-	/* flags */
+	 
 	bool vddci_control;
 	bool dynamic_ac_timing;
 	bool abm;
@@ -666,7 +645,7 @@ struct evergreen_power_info {
 	bool ls_clock_gating;
 	bool smu_uvd_hs;
 	bool uvd_enabled;
-	/* stored values */
+	 
 	u16 acpi_vddci;
 	u8 mvdd_high_index;
 	u8 mvdd_low_index;
@@ -677,7 +656,7 @@ struct evergreen_power_info {
 	struct evergreen_arb_registers bootup_arb_registers;
 	struct evergreen_ulv_param ulv;
 	struct at ats[2];
-	/* smc offsets */
+	 
 	u16 mc_reg_table_start;
 	struct amdgpu_ps current_rps;
 	struct rv7xx_ps current_ps;
@@ -823,12 +802,12 @@ struct NISLANDS_SMC_STATETABLE
 typedef struct NISLANDS_SMC_STATETABLE NISLANDS_SMC_STATETABLE;
 
 struct ni_power_info {
-	/* must be first! */
+	 
 	struct evergreen_power_info eg;
 	struct ni_clock_registers clock_registers;
 	struct ni_mc_reg_table mc_reg_table;
 	u32 mclk_rtt_mode_threshold;
-	/* flags */
+	 
 	bool use_power_boost_limit;
 	bool support_cac_long_term_average;
 	bool cac_enabled;
@@ -838,12 +817,12 @@ struct ni_power_info {
 	bool enable_power_containment;
 	bool enable_cac;
 	bool enable_sq_ramping;
-	/* smc offsets */
+	 
 	u16 arb_table_start;
 	u16 fan_table_start;
 	u16 cac_table_start;
 	u16 spll_table_start;
-	/* CAC stuff */
+	 
 	struct ni_cac_data cac_data;
 	u32 dc_cac_table[NISLANDS_DCCAC_MAX_LEVELS];
 	const struct ni_cac_weights *cac_weights;
@@ -851,7 +830,7 @@ struct ni_power_info {
 	u8 lts_truncate;
 	struct si_ps current_ps;
 	struct si_ps requested_ps;
-	/* scratch structs */
+	 
 	SMC_NIslands_MCRegisters smc_mc_reg_table;
 	NISLANDS_SMC_STATETABLE smc_statetable;
 };
@@ -963,7 +942,7 @@ struct si_ulv_param {
 };
 
 struct si_power_info {
-	/* must be first! */
+	 
 	struct ni_power_info ni;
 	struct si_clock_registers clock_registers;
 	struct si_mc_reg_table mc_reg_table;
@@ -973,12 +952,12 @@ struct si_power_info {
 	u16 mvdd_bootup_value;
 	struct si_ulv_param ulv;
 	u32 max_cu;
-	/* pcie gen */
+	 
 	enum si_pcie_gen force_pcie_gen;
 	enum si_pcie_gen boot_pcie_gen;
 	enum si_pcie_gen acpi_pcie_gen;
 	u32 sys_pcie_mask;
-	/* flags */
+	 
 	bool enable_dte;
 	bool enable_ppm;
 	bool vddc_phase_shed_control;
@@ -986,7 +965,7 @@ struct si_power_info {
 	bool sclk_deep_sleep_above_low;
 	bool voltage_control_svi2;
 	bool vddci_control_svi2;
-	/* smc offsets */
+	 
 	u32 sram_end;
 	u32 state_table_start;
 	u32 soft_regs_start;
@@ -997,22 +976,22 @@ struct si_power_info {
 	u32 spll_table_start;
 	u32 papm_cfg_table_start;
 	u32 fan_table_start;
-	/* CAC stuff */
+	 
 	const struct si_cac_config_reg *cac_weights;
 	const struct si_cac_config_reg *lcac_config;
 	const struct si_cac_config_reg *cac_override;
 	const struct si_powertune_data *powertune_data;
 	struct si_dyn_powertune_data dyn_powertune_data;
-	/* DTE stuff */
+	 
 	struct si_dte_data dte_data;
-	/* scratch structs */
+	 
 	SMC_SIslands_MCRegisters smc_mc_reg_table;
 	SISLANDS_SMC_STATETABLE smc_statetable;
 	PP_SIslands_PAPMParameters papm_parm;
-	/* SVI2 */
+	 
 	u8 svd_gpio_id;
 	u8 svc_gpio_id;
-	/* fan control */
+	 
 	bool fan_ctrl_is_in_default_mode;
 	u32 t_min;
 	u32 fan_ctrl_default_mode;

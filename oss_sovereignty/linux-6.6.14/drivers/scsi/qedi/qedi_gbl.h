@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * QLogic iSCSI Offload Driver
- * Copyright (c) 2016 Cavium Inc.
- */
+ 
+ 
 
 #ifndef _QEDI_GBL_H_
 #define _QEDI_GBL_H_

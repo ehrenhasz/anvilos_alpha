@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (c) Vaisala Oyj. All rights reserved.
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/module.h>

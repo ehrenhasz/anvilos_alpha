@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef HOSTAP_H
 #define HOSTAP_H
 
@@ -14,7 +14,7 @@ static const long __maybe_unused freq_list[] = {
 };
 #define FREQ_COUNT ARRAY_SIZE(freq_list)
 
-/* hostap.c */
+ 
 
 extern struct proc_dir_entry *hostap_proc;
 
@@ -58,7 +58,7 @@ int prism2_wds_del(local_info_t *local, u8 *remote_addr,
 		   int rtnl_locked, int do_not_remove);
 
 
-/* hostap_ap.c */
+ 
 
 int ap_control_add_mac(struct mac_restrictions *mac_restrictions, u8 *mac);
 int ap_control_del_mac(struct mac_restrictions *mac_restrictions, u8 *mac);
@@ -75,19 +75,19 @@ int prism2_ap_translate_scan(struct net_device *dev,
 int prism2_hostapd(struct ap_data *ap, struct prism2_hostapd_param *param);
 
 
-/* hostap_proc.c */
+ 
 
 void hostap_init_proc(local_info_t *local);
 void hostap_remove_proc(local_info_t *local);
 
 
-/* hostap_info.c */
+ 
 
 void hostap_info_init(local_info_t *local);
 void hostap_info_process(local_info_t *local, struct sk_buff *skb);
 
 
-/* hostap_ioctl.c */
+ 
 
 extern const struct iw_handler_def hostap_iw_handler_def;
 extern const struct ethtool_ops prism2_ethtool_ops;
@@ -96,4 +96,4 @@ int hostap_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd);
 int hostap_siocdevprivate(struct net_device *dev, struct ifreq *ifr,
 			  void __user *data, int cmd);
 
-#endif /* HOSTAP_H */
+#endif  

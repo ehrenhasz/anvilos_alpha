@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
-/*
- * dw-hdmi-gp-audio.c
- *
- * Copyright 2020-2022 NXP
- */
+
+ 
 #include <linux/io.h>
 #include <linux/interrupt.h>
 #include <linux/module.h>
@@ -39,37 +35,15 @@ struct dw_hdmi_channel_conf {
 	u8 ca;
 };
 
-/*
- * The default mapping of ALSA channels to HDMI channels and speaker
- * allocation bits.  Note that we can't do channel remapping here -
- * channels must be in the same order.
- *
- * Mappings for alsa-lib pcm/surround*.conf files:
- *
- *		Front	Sur4.0	Sur4.1	Sur5.0	Sur5.1	Sur7.1
- * Channels	2	4	6	6	6	8
- *
- * Our mapping from ALSA channel to CEA686D speaker name and HDMI channel:
- *
- *				Number of ALSA channels
- * ALSA Channel	2	3	4	5	6	7	8
- * 0		FL:0	=	=	=	=	=	=
- * 1		FR:1	=	=	=	=	=	=
- * 2			FC:3	RL:4	LFE:2	=	=	=
- * 3				RR:5	RL:4	FC:3	=	=
- * 4					RR:5	RL:4	=	=
- * 5						RR:5	=	=
- * 6							RC:6	=
- * 7							RLC/FRC	RLC/FRC
- */
+ 
 static struct dw_hdmi_channel_conf default_hdmi_channel_config[7] = {
-	{ 0x03, 0x00 },	/* FL,FR */
-	{ 0x0b, 0x02 },	/* FL,FR,FC */
-	{ 0x33, 0x08 },	/* FL,FR,RL,RR */
-	{ 0x37, 0x09 },	/* FL,FR,LFE,RL,RR */
-	{ 0x3f, 0x0b },	/* FL,FR,LFE,FC,RL,RR */
-	{ 0x7f, 0x0f },	/* FL,FR,LFE,FC,RL,RR,RC */
-	{ 0xff, 0x13 },	/* FL,FR,LFE,FC,RL,RR,[FR]RC,[FR]LC */
+	{ 0x03, 0x00 },	 
+	{ 0x0b, 0x02 },	 
+	{ 0x33, 0x08 },	 
+	{ 0x37, 0x09 },	 
+	{ 0x3f, 0x0b },	 
+	{ 0x7f, 0x0f },	 
+	{ 0xff, 0x13 },	 
 };
 
 static int audio_hw_params(struct device *dev,  void *data,
@@ -120,7 +94,7 @@ static int audio_get_eld(struct device *dev, void *data,
 	if (eld)
 		memcpy(buf, eld, min_t(size_t, MAX_ELD_BYTES, len));
 	else
-		/* Pass en empty ELD if connector not available */
+		 
 		memset(buf, 0, len);
 
 	return 0;

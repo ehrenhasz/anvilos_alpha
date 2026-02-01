@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Marvell Octeon EP (EndPoint) Ethernet Driver
- *
- * Copyright (C) 2020 Marvell.
- *
- */
+
+ 
 
 #include <linux/pci.h>
 #include <linux/netdevice.h>
@@ -204,7 +200,7 @@ octep_get_ethtool_stats(struct net_device *netdev,
 	data[i++] = iface_rx_stats->dropped_octets_fifo_full;
 	data[i++] = iface_rx_stats->err_pkts;
 
-	/* Per Tx Queue stats */
+	 
 	for (q = 0; q < oct->num_iqs; q++) {
 		struct octep_iq *iq = oct->iq[q];
 
@@ -214,7 +210,7 @@ octep_get_ethtool_stats(struct net_device *netdev,
 		data[i++] = iq->stats.tx_busy;
 	}
 
-	/* Per Rx Queue stats */
+	 
 	for (q = 0; q < oct->num_oqs; q++) {
 		struct octep_oq *oq = oct->oq[q];
 
@@ -342,9 +338,7 @@ static int octep_set_link_ksettings(struct net_device *netdev,
 	link_info = &oct->link_info;
 	memcpy(&link_info_new, link_info, sizeof(struct octep_iface_link_info));
 
-	/* Only Full duplex is supported;
-	 * Assume full duplex when duplex is unknown.
-	 */
+	 
 	if (cmd->base.duplex != DUPLEX_FULL &&
 	    cmd->base.duplex != DUPLEX_UNKNOWN)
 		return -EOPNOTSUPP;

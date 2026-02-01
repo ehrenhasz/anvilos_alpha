@@ -1,26 +1,4 @@
-/*
- *  Copyright (C) 2007-2010 Lawrence Livermore National Security, LLC.
- *  Copyright (C) 2007 The Regents of the University of California.
- *  Copyright (c) 2015 by Chunwei Chen. All rights reserved.
- *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
- *  Written by Brian Behlendorf <behlendorf1@llnl.gov>.
- *  UCRL-CODE-235197
- *
- *  This file is part of the SPL, Solaris Porting Layer.
- *
- *  The SPL is free software; you can redistribute it and/or modify it
- *  under the terms of the GNU General Public License as published by the
- *  Free Software Foundation; either version 2 of the License, or (at your
- *  option) any later version.
- *
- *  The SPL is distributed in the hope that it will be useful, but WITHOUT
- *  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- *  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
- *  for more details.
- *
- *  You should have received a copy of the GNU General Public License along
- *  with the SPL.  If not, see <http://www.gnu.org/licenses/>.
- */
+ 
 
 #ifndef _SPL_UIO_H
 #define	_SPL_UIO_H
@@ -122,7 +100,7 @@ zfs_uio_iovec_init(zfs_uio_t *uio, const struct iovec *iov,
 static inline void
 zfs_uio_bvec_init(zfs_uio_t *uio, struct bio *bio, struct request *rq)
 {
-	/* Either bio or rq will be set, but not both */
+	 
 	ASSERT3P(uio, !=, bio);
 
 	if (bio) {
@@ -177,4 +155,4 @@ zfs_uio_iov_iter_init(zfs_uio_t *uio, struct iov_iter *iter, offset_t offset,
 #define	zfs_uio_iov_iter_type(iter)	(iter)->type
 #endif
 
-#endif /* SPL_UIO_H */
+#endif  

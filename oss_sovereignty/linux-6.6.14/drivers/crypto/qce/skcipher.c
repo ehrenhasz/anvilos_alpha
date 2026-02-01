@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2010-2014, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/dma-mapping.h>
@@ -179,10 +177,7 @@ static int qce_skcipher_setkey(struct crypto_skcipher *ablk, const u8 *key,
 	if (!key || !keylen)
 		return -EINVAL;
 
-	/*
-	 * AES XTS key1 = key2 not supported by crypto engine.
-	 * Revisit to request a fallback cipher in this case.
-	 */
+	 
 	if (IS_XTS(flags)) {
 		__keylen = keylen >> 1;
 		if (!memcmp(key, key + __keylen, __keylen))
@@ -234,14 +229,7 @@ static int qce_des3_setkey(struct crypto_skcipher *ablk, const u8 *key,
 	if (err)
 		return err;
 
-	/*
-	 * The crypto engine does not support any two keys
-	 * being the same for triple des algorithms. The
-	 * verify_skcipher_des3_key does not check for all the
-	 * below conditions. Return -ENOKEY in case any two keys
-	 * are the same. Revisit to see if a fallback cipher
-	 * is needed to handle this condition.
-	 */
+	 
 	memcpy(_key, key, DES3_EDE_KEY_SIZE);
 	if (!((_key[0] ^ _key[2]) | (_key[1] ^ _key[3])) ||
 	    !((_key[2] ^ _key[4]) | (_key[3] ^ _key[5])) ||
@@ -267,26 +255,16 @@ static int qce_skcipher_crypt(struct skcipher_request *req, int encrypt)
 	rctx->flags |= encrypt ? QCE_ENCRYPT : QCE_DECRYPT;
 	keylen = IS_XTS(rctx->flags) ? ctx->enc_keylen >> 1 : ctx->enc_keylen;
 
-	/* CE does not handle 0 length messages */
+	 
 	if (!req->cryptlen)
 		return 0;
 
-	/*
-	 * ECB and CBC algorithms require message lengths to be
-	 * multiples of block size.
-	 */
+	 
 	if (IS_ECB(rctx->flags) || IS_CBC(rctx->flags))
 		if (!IS_ALIGNED(req->cryptlen, blocksize))
 			return -EINVAL;
 
-	/*
-	 * Conditions for requesting a fallback cipher
-	 * AES-192 (not supported by crypto engine (CE))
-	 * AES-XTS request with len <= 512 byte (not recommended to use CE)
-	 * AES-XTS request with len > QCE_SECTOR_SIZE and
-	 * is not a multiple of it.(Revisit this condition to check if it is
-	 * needed in all versions of CE)
-	 */
+	 
 	if (IS_AES(rctx->flags) &&
 	    ((keylen != AES_KEYSIZE_128 && keylen != AES_KEYSIZE_256) ||
 	    (IS_XTS(rctx->flags) && ((req->cryptlen <= aes_sw_max_len) ||
@@ -319,7 +297,7 @@ static int qce_skcipher_decrypt(struct skcipher_request *req)
 
 static int qce_skcipher_init(struct crypto_skcipher *tfm)
 {
-	/* take the size without the fallback skcipher_request at the end */
+	 
 	crypto_skcipher_set_reqsize(tfm, offsetof(struct qce_cipher_reqctx,
 						  fallback_req));
 	return 0;

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2022 Baylibre, SAS.
- * Author: Jerome Brunet <jbrunet@baylibre.com>
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/delay.h>
@@ -46,7 +44,7 @@ static void gxl_enable_internal_mdio(struct gxl_mdio_mux *priv)
 {
 	u32 val;
 
-	/* Setup the internal phy */
+	 
 	val = (REG3_ENH |
 	       FIELD_PREP(REG3_CFGMODE, 0x7) |
 	       REG3_AUTOMDIX |
@@ -60,26 +58,22 @@ static void gxl_enable_internal_mdio(struct gxl_mdio_mux *priv)
 	writel(val, priv->regs + ETH_REG3);
 	mdelay(10);
 
-	/* NOTE: The HW kept the phy id configurable at runtime.
-	 * The id below is arbitrary. It is the one used in the vendor code.
-	 * The only constraint is that it must match the one in
-	 * drivers/net/phy/meson-gxl.c to properly match the PHY.
-	 */
+	 
 	writel(FIELD_PREP(REG2_PHYID, EPHY_GXL_ID),
 	       priv->regs + ETH_REG2);
 
-	/* Enable the internal phy */
+	 
 	val |= REG3_PHYEN;
 	writel(val, priv->regs + ETH_REG3);
 	writel(0, priv->regs + ETH_REG4);
 
-	/* The phy needs a bit of time to power up */
+	 
 	mdelay(10);
 }
 
 static void gxl_enable_external_mdio(struct gxl_mdio_mux *priv)
 {
-	/* Reset the mdio bus mux to the external phy */
+	 
 	writel(0, priv->regs + ETH_REG3);
 }
 

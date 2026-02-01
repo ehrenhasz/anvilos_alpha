@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: BSD-3-Clause-Clear */
-/*
- * Copyright (c) 2018-2019 The Linux Foundation. All rights reserved.
- * Copyright (c) 2022, Qualcomm Innovation Center, Inc. All rights reserved.
- */
+ 
+ 
 
 #ifndef ATH11K_QMI_H
 #define ATH11K_QMI_H
@@ -131,7 +128,7 @@ struct ath11k_qmi {
 	struct work_struct event_work;
 	struct workqueue_struct *event_wq;
 	struct list_head event_list;
-	spinlock_t event_lock; /* spinlock for qmi event list */
+	spinlock_t event_lock;  
 	struct ath11k_qmi_ce_cfg ce_cfg;
 	struct target_mem_chunk target_mem[ATH11K_QMI_WLANFW_MAX_NUM_MEM_SEG_V01];
 	u32 mem_seg_count;
@@ -411,9 +408,7 @@ struct qmi_wlanfw_device_info_resp_msg_v01 {
 #define QMI_WLANFW_BDF_DOWNLOAD_RESP_MSG_V01_MAX_LEN	7
 #define QMI_WLANFW_BDF_DOWNLOAD_RESP_V01		0x0025
 #define QMI_WLANFW_BDF_DOWNLOAD_REQ_V01			0x0025
-/* TODO: Need to check with MCL and FW team that data can be pointer and
- * can be last element in structure
- */
+ 
 struct qmi_wlanfw_bdf_download_req_msg_v01 {
 	u8 valid;
 	u8 file_id_valid;
@@ -502,7 +497,7 @@ struct qmi_wlanfw_wlan_cfg_resp_msg_v01 {
 };
 
 struct qmi_wlanfw_wlan_ini_req_msg_v01 {
-	/* Must be set to true if enablefwlog is being passed */
+	 
 	u8 enablefwlog_valid;
 	u8 enablefwlog;
 };

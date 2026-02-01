@@ -1,18 +1,4 @@
-/*
- * builtin-trace.c
- *
- * Builtin 'trace' command:
- *
- * Display a continuously updated trace of any workload, CPU, specific PID,
- * system wide, etc.  Default format is loosely strace like, but any other
- * event may be specified using --event.
- *
- * Copyright (C) 2012, 2013, 2014, 2015 Red Hat Inc, Arnaldo Carvalho de Melo <acme@redhat.com>
- *
- * Initially based on the 'trace' prototype by Thomas Gleixner:
- *
- * http://lwn.net/Articles/415728/ ("Announcing a new utility: 'trace'")
- */
+ 
 
 #include "util/record.h"
 #include <api/fs/tracing_path.h>
@@ -98,16 +84,14 @@
 
 #define RAW_SYSCALL_ARGS_NUM	6
 
-/*
- * strtoul: Go from a string to a value, i.e. for msr: MSR_FS_BASE to 0xc0000100
- */
+ 
 struct syscall_arg_fmt {
 	size_t	   (*scnprintf)(char *bf, size_t size, struct syscall_arg *arg);
 	bool	   (*strtoul)(char *bf, size_t size, struct syscall_arg *arg, u64 *val);
 	unsigned long (*mask_val)(struct syscall_arg *arg, unsigned long val);
 	void	   *parm;
 	const char *name;
-	u16	   nr_entries; // for arrays
+	u16	   nr_entries; 
 	bool	   show_zero;
 };
 
@@ -289,11 +273,7 @@ struct syscall_tp {
 	};
 };
 
-/*
- * The evsel->priv as used by 'perf trace'
- * sc:	for raw_syscalls:sys_{enter,exit} and syscalls:sys_{enter,exit}_SYSCALLNAME
- * fmt: for all the other tracepoints
- */
+ 
 struct evsel_trace {
 	struct syscall_tp	sc;
 	struct syscall_arg_fmt  *fmt;
@@ -313,10 +293,7 @@ static void evsel_trace__delete(struct evsel_trace *et)
 	free(et);
 }
 
-/*
- * Used with raw_syscalls:sys_{enter,exit} and with the
- * syscalls:sys_{enter,exit}_SYSCALL tracepoints
- */
+ 
 static inline struct syscall_tp *__evsel__syscall_tp(struct evsel *evsel)
 {
 	struct evsel_trace *et = evsel->priv;
@@ -335,9 +312,7 @@ static struct syscall_tp *evsel__syscall_tp(struct evsel *evsel)
 	return __evsel__syscall_tp(evsel);
 }
 
-/*
- * Used with all the other tracepoints.
- */
+ 
 static inline struct syscall_arg_fmt *__evsel__syscall_arg_fmt(struct evsel *evsel)
 {
 	struct evsel_trace *et = evsel->priv;
@@ -468,7 +443,7 @@ static struct evsel *perf_evsel__raw_syscall_newtp(const char *direction, void *
 {
 	struct evsel *evsel = evsel__newtp("raw_syscalls", direction);
 
-	/* older kernel (e.g., RHEL6) use syscalls:{enter,exit} */
+	 
 	if (IS_ERR(evsel))
 		evsel = evsel__newtp("syscalls", direction);
 
@@ -699,9 +674,9 @@ size_t syscall_arg__scnprintf_long(char *bf, size_t size, struct syscall_arg *ar
 
 static size_t syscall_arg__scnprintf_char_array(char *bf, size_t size, struct syscall_arg *arg)
 {
-	// XXX Hey, maybe for sched:sched_switch prev/next comm fields we can
-	//     fill missing comms using thread__set_comm()...
-	//     here or in a special syscall_arg__scnprintf_pid_sched_tp...
+	
+	
+	
 	return scnprintf(bf, size, "\"%-.*s\"", arg->fmt->nr_entries ?: arg->len, arg->val);
 }
 
@@ -803,7 +778,7 @@ static size_t syscall_arg__scnprintf_access_mode(char *bf, size_t size,
 	size_t printed = 0;
 	int mode = arg->val;
 
-	if (mode == F_OK) /* 0 */
+	if (mode == F_OK)  
 		return scnprintf(bf, size, "F%s", show_prefix ? suffix : "");
 #define	P_MODE(n) \
 	if (mode & n##_OK) { \
@@ -914,22 +889,22 @@ static size_t syscall_arg__scnprintf_getrandom_flags(char *bf, size_t size,
 
 static const struct syscall_fmt syscall_fmts[] = {
 	{ .name	    = "access",
-	  .arg = { [1] = { .scnprintf = SCA_ACCMODE,  /* mode */ }, }, },
+	  .arg = { [1] = { .scnprintf = SCA_ACCMODE,    }, }, },
 	{ .name	    = "arch_prctl",
-	  .arg = { [0] = { .scnprintf = SCA_X86_ARCH_PRCTL_CODE, /* code */ },
-		   [1] = { .scnprintf = SCA_PTR, /* arg2 */ }, }, },
+	  .arg = { [0] = { .scnprintf = SCA_X86_ARCH_PRCTL_CODE,   },
+		   [1] = { .scnprintf = SCA_PTR,   }, }, },
 	{ .name	    = "bind",
-	  .arg = { [0] = { .scnprintf = SCA_INT, /* fd */ },
-		   [1] = { .scnprintf = SCA_SOCKADDR, /* umyaddr */ },
-		   [2] = { .scnprintf = SCA_INT, /* addrlen */ }, }, },
+	  .arg = { [0] = { .scnprintf = SCA_INT,   },
+		   [1] = { .scnprintf = SCA_SOCKADDR,   },
+		   [2] = { .scnprintf = SCA_INT,   }, }, },
 	{ .name	    = "bpf",
 	  .arg = { [0] = STRARRAY(cmd, bpf_cmd), }, },
 	{ .name	    = "brk",	    .hexret = true,
-	  .arg = { [0] = { .scnprintf = SCA_PTR, /* brk */ }, }, },
+	  .arg = { [0] = { .scnprintf = SCA_PTR,   }, }, },
 	{ .name     = "clock_gettime",
 	  .arg = { [0] = STRARRAY(clk_id, clockid), }, },
 	{ .name	    = "clock_nanosleep",
-	  .arg = { [2] = { .scnprintf = SCA_TIMESPEC,  /* rqtp */ }, }, },
+	  .arg = { [2] = { .scnprintf = SCA_TIMESPEC,    }, }, },
 	{ .name	    = "clone",	    .errpid = true, .nr_args = 5,
 	  .arg = { [0] = { .name = "flags",	    .scnprintf = SCA_CLONE_FLAGS, },
 		   [1] = { .name = "child_stack",   .scnprintf = SCA_HEX, },
@@ -937,50 +912,50 @@ static const struct syscall_fmt syscall_fmts[] = {
 		   [3] = { .name = "child_tidptr",  .scnprintf = SCA_HEX, },
 		   [4] = { .name = "tls",	    .scnprintf = SCA_HEX, }, }, },
 	{ .name	    = "close",
-	  .arg = { [0] = { .scnprintf = SCA_CLOSE_FD, /* fd */ }, }, },
+	  .arg = { [0] = { .scnprintf = SCA_CLOSE_FD,   }, }, },
 	{ .name	    = "connect",
-	  .arg = { [0] = { .scnprintf = SCA_INT, /* fd */ },
-		   [1] = { .scnprintf = SCA_SOCKADDR, /* servaddr */ },
-		   [2] = { .scnprintf = SCA_INT, /* addrlen */ }, }, },
+	  .arg = { [0] = { .scnprintf = SCA_INT,   },
+		   [1] = { .scnprintf = SCA_SOCKADDR,   },
+		   [2] = { .scnprintf = SCA_INT,   }, }, },
 	{ .name	    = "epoll_ctl",
 	  .arg = { [1] = STRARRAY(op, epoll_ctl_ops), }, },
 	{ .name	    = "eventfd2",
-	  .arg = { [1] = { .scnprintf = SCA_EFD_FLAGS, /* flags */ }, }, },
+	  .arg = { [1] = { .scnprintf = SCA_EFD_FLAGS,   }, }, },
 	{ .name	    = "fchmodat",
-	  .arg = { [0] = { .scnprintf = SCA_FDAT, /* fd */ }, }, },
+	  .arg = { [0] = { .scnprintf = SCA_FDAT,   }, }, },
 	{ .name	    = "fchownat",
-	  .arg = { [0] = { .scnprintf = SCA_FDAT, /* fd */ }, }, },
+	  .arg = { [0] = { .scnprintf = SCA_FDAT,   }, }, },
 	{ .name	    = "fcntl",
-	  .arg = { [1] = { .scnprintf = SCA_FCNTL_CMD,  /* cmd */
+	  .arg = { [1] = { .scnprintf = SCA_FCNTL_CMD,   
 			   .strtoul   = STUL_STRARRAYS,
 			   .parm      = &strarrays__fcntl_cmds_arrays,
 			   .show_zero = true, },
-		   [2] = { .scnprintf =  SCA_FCNTL_ARG, /* arg */ }, }, },
+		   [2] = { .scnprintf =  SCA_FCNTL_ARG,   }, }, },
 	{ .name	    = "flock",
-	  .arg = { [1] = { .scnprintf = SCA_FLOCK, /* cmd */ }, }, },
+	  .arg = { [1] = { .scnprintf = SCA_FLOCK,   }, }, },
 	{ .name     = "fsconfig",
 	  .arg = { [1] = STRARRAY(cmd, fsconfig_cmds), }, },
 	{ .name     = "fsmount",
 	  .arg = { [1] = STRARRAY_FLAGS(flags, fsmount_flags),
-		   [2] = { .scnprintf = SCA_FSMOUNT_ATTR_FLAGS, /* attr_flags */ }, }, },
+		   [2] = { .scnprintf = SCA_FSMOUNT_ATTR_FLAGS,   }, }, },
 	{ .name     = "fspick",
-	  .arg = { [0] = { .scnprintf = SCA_FDAT,	  /* dfd */ },
-		   [1] = { .scnprintf = SCA_FILENAME,	  /* path */ },
-		   [2] = { .scnprintf = SCA_FSPICK_FLAGS, /* flags */ }, }, },
+	  .arg = { [0] = { .scnprintf = SCA_FDAT,	    },
+		   [1] = { .scnprintf = SCA_FILENAME,	    },
+		   [2] = { .scnprintf = SCA_FSPICK_FLAGS,   }, }, },
 	{ .name	    = "fstat", .alias = "newfstat", },
 	{ .name	    = "fstatat", .alias = "newfstatat", },
 	{ .name	    = "futex",
-	  .arg = { [1] = { .scnprintf = SCA_FUTEX_OP, /* op */ },
-		   [5] = { .scnprintf = SCA_FUTEX_VAL3, /* val3 */ }, }, },
+	  .arg = { [1] = { .scnprintf = SCA_FUTEX_OP,   },
+		   [5] = { .scnprintf = SCA_FUTEX_VAL3,   }, }, },
 	{ .name	    = "futimesat",
-	  .arg = { [0] = { .scnprintf = SCA_FDAT, /* fd */ }, }, },
+	  .arg = { [0] = { .scnprintf = SCA_FDAT,   }, }, },
 	{ .name	    = "getitimer",
 	  .arg = { [0] = STRARRAY(which, itimers), }, },
 	{ .name	    = "getpid",	    .errpid = true, },
 	{ .name	    = "getpgid",    .errpid = true, },
 	{ .name	    = "getppid",    .errpid = true, },
 	{ .name	    = "getrandom",
-	  .arg = { [2] = { .scnprintf = SCA_GETRANDOM_FLAGS, /* flags */ }, }, },
+	  .arg = { [2] = { .scnprintf = SCA_GETRANDOM_FLAGS,   }, }, },
 	{ .name	    = "getrlimit",
 	  .arg = { [0] = STRARRAY(resource, rlimit_resources), }, },
 	{ .name	    = "getsockopt",
@@ -989,13 +964,11 @@ static const struct syscall_fmt syscall_fmts[] = {
 	{ .name	    = "ioctl",
 	  .arg = {
 #if defined(__i386__) || defined(__x86_64__)
-/*
- * FIXME: Make this available to all arches.
- */
-		   [1] = { .scnprintf = SCA_IOCTL_CMD, /* cmd */ },
-		   [2] = { .scnprintf = SCA_HEX, /* arg */ }, }, },
+ 
+		   [1] = { .scnprintf = SCA_IOCTL_CMD,   },
+		   [2] = { .scnprintf = SCA_HEX,   }, }, },
 #else
-		   [2] = { .scnprintf = SCA_HEX, /* arg */ }, }, },
+		   [2] = { .scnprintf = SCA_HEX,   }, }, },
 #endif
 	{ .name	    = "kcmp",	    .nr_args = 5,
 	  .arg = { [0] = { .name = "pid1",	.scnprintf = SCA_PID, },
@@ -1006,123 +979,123 @@ static const struct syscall_fmt syscall_fmts[] = {
 	{ .name	    = "keyctl",
 	  .arg = { [0] = STRARRAY(option, keyctl_options), }, },
 	{ .name	    = "kill",
-	  .arg = { [1] = { .scnprintf = SCA_SIGNUM, /* sig */ }, }, },
+	  .arg = { [1] = { .scnprintf = SCA_SIGNUM,   }, }, },
 	{ .name	    = "linkat",
-	  .arg = { [0] = { .scnprintf = SCA_FDAT, /* fd */ }, }, },
+	  .arg = { [0] = { .scnprintf = SCA_FDAT,   }, }, },
 	{ .name	    = "lseek",
 	  .arg = { [2] = STRARRAY(whence, whences), }, },
 	{ .name	    = "lstat", .alias = "newlstat", },
 	{ .name     = "madvise",
-	  .arg = { [0] = { .scnprintf = SCA_HEX,      /* start */ },
-		   [2] = { .scnprintf = SCA_MADV_BHV, /* behavior */ }, }, },
+	  .arg = { [0] = { .scnprintf = SCA_HEX,        },
+		   [2] = { .scnprintf = SCA_MADV_BHV,   }, }, },
 	{ .name	    = "mkdirat",
-	  .arg = { [0] = { .scnprintf = SCA_FDAT, /* fd */ }, }, },
+	  .arg = { [0] = { .scnprintf = SCA_FDAT,   }, }, },
 	{ .name	    = "mknodat",
-	  .arg = { [0] = { .scnprintf = SCA_FDAT, /* fd */ }, }, },
+	  .arg = { [0] = { .scnprintf = SCA_FDAT,   }, }, },
 	{ .name	    = "mmap",	    .hexret = true,
-/* The standard mmap maps to old_mmap on s390x */
+ 
 #if defined(__s390x__)
 	.alias = "old_mmap",
 #endif
-	  .arg = { [2] = { .scnprintf = SCA_MMAP_PROT,	/* prot */ },
-		   [3] = { .scnprintf = SCA_MMAP_FLAGS,	/* flags */
+	  .arg = { [2] = { .scnprintf = SCA_MMAP_PROT,	  },
+		   [3] = { .scnprintf = SCA_MMAP_FLAGS,	 
 			   .strtoul   = STUL_STRARRAY_FLAGS,
 			   .parm      = &strarray__mmap_flags, },
-		   [5] = { .scnprintf = SCA_HEX,	/* offset */ }, }, },
+		   [5] = { .scnprintf = SCA_HEX,	  }, }, },
 	{ .name	    = "mount",
-	  .arg = { [0] = { .scnprintf = SCA_FILENAME, /* dev_name */ },
-		   [3] = { .scnprintf = SCA_MOUNT_FLAGS, /* flags */
-			   .mask_val  = SCAMV_MOUNT_FLAGS, /* flags */ }, }, },
+	  .arg = { [0] = { .scnprintf = SCA_FILENAME,   },
+		   [3] = { .scnprintf = SCA_MOUNT_FLAGS,  
+			   .mask_val  = SCAMV_MOUNT_FLAGS,   }, }, },
 	{ .name	    = "move_mount",
-	  .arg = { [0] = { .scnprintf = SCA_FDAT,	/* from_dfd */ },
-		   [1] = { .scnprintf = SCA_FILENAME, /* from_pathname */ },
-		   [2] = { .scnprintf = SCA_FDAT,	/* to_dfd */ },
-		   [3] = { .scnprintf = SCA_FILENAME, /* to_pathname */ },
-		   [4] = { .scnprintf = SCA_MOVE_MOUNT_FLAGS, /* flags */ }, }, },
+	  .arg = { [0] = { .scnprintf = SCA_FDAT,	  },
+		   [1] = { .scnprintf = SCA_FILENAME,   },
+		   [2] = { .scnprintf = SCA_FDAT,	  },
+		   [3] = { .scnprintf = SCA_FILENAME,   },
+		   [4] = { .scnprintf = SCA_MOVE_MOUNT_FLAGS,   }, }, },
 	{ .name	    = "mprotect",
-	  .arg = { [0] = { .scnprintf = SCA_HEX,	/* start */ },
-		   [2] = { .scnprintf = SCA_MMAP_PROT,	/* prot */ }, }, },
+	  .arg = { [0] = { .scnprintf = SCA_HEX,	  },
+		   [2] = { .scnprintf = SCA_MMAP_PROT,	  }, }, },
 	{ .name	    = "mq_unlink",
-	  .arg = { [0] = { .scnprintf = SCA_FILENAME, /* u_name */ }, }, },
+	  .arg = { [0] = { .scnprintf = SCA_FILENAME,   }, }, },
 	{ .name	    = "mremap",	    .hexret = true,
-	  .arg = { [3] = { .scnprintf = SCA_MREMAP_FLAGS, /* flags */ }, }, },
+	  .arg = { [3] = { .scnprintf = SCA_MREMAP_FLAGS,   }, }, },
 	{ .name	    = "name_to_handle_at",
-	  .arg = { [0] = { .scnprintf = SCA_FDAT, /* dfd */ }, }, },
+	  .arg = { [0] = { .scnprintf = SCA_FDAT,   }, }, },
 	{ .name	    = "newfstatat",
-	  .arg = { [0] = { .scnprintf = SCA_FDAT, /* dfd */ }, }, },
+	  .arg = { [0] = { .scnprintf = SCA_FDAT,   }, }, },
 	{ .name	    = "open",
-	  .arg = { [1] = { .scnprintf = SCA_OPEN_FLAGS, /* flags */ }, }, },
+	  .arg = { [1] = { .scnprintf = SCA_OPEN_FLAGS,   }, }, },
 	{ .name	    = "open_by_handle_at",
-	  .arg = { [0] = { .scnprintf = SCA_FDAT,	/* dfd */ },
-		   [2] = { .scnprintf = SCA_OPEN_FLAGS, /* flags */ }, }, },
+	  .arg = { [0] = { .scnprintf = SCA_FDAT,	  },
+		   [2] = { .scnprintf = SCA_OPEN_FLAGS,   }, }, },
 	{ .name	    = "openat",
-	  .arg = { [0] = { .scnprintf = SCA_FDAT,	/* dfd */ },
-		   [2] = { .scnprintf = SCA_OPEN_FLAGS, /* flags */ }, }, },
+	  .arg = { [0] = { .scnprintf = SCA_FDAT,	  },
+		   [2] = { .scnprintf = SCA_OPEN_FLAGS,   }, }, },
 	{ .name	    = "perf_event_open",
-	  .arg = { [0] = { .scnprintf = SCA_PERF_ATTR,  /* attr */ },
-		   [2] = { .scnprintf = SCA_INT,	/* cpu */ },
-		   [3] = { .scnprintf = SCA_FD,		/* group_fd */ },
-		   [4] = { .scnprintf = SCA_PERF_FLAGS, /* flags */ }, }, },
+	  .arg = { [0] = { .scnprintf = SCA_PERF_ATTR,    },
+		   [2] = { .scnprintf = SCA_INT,	  },
+		   [3] = { .scnprintf = SCA_FD,		  },
+		   [4] = { .scnprintf = SCA_PERF_FLAGS,   }, }, },
 	{ .name	    = "pipe2",
-	  .arg = { [1] = { .scnprintf = SCA_PIPE_FLAGS, /* flags */ }, }, },
+	  .arg = { [1] = { .scnprintf = SCA_PIPE_FLAGS,   }, }, },
 	{ .name	    = "pkey_alloc",
-	  .arg = { [1] = { .scnprintf = SCA_PKEY_ALLOC_ACCESS_RIGHTS,	/* access_rights */ }, }, },
+	  .arg = { [1] = { .scnprintf = SCA_PKEY_ALLOC_ACCESS_RIGHTS,	  }, }, },
 	{ .name	    = "pkey_free",
-	  .arg = { [0] = { .scnprintf = SCA_INT,	/* key */ }, }, },
+	  .arg = { [0] = { .scnprintf = SCA_INT,	  }, }, },
 	{ .name	    = "pkey_mprotect",
-	  .arg = { [0] = { .scnprintf = SCA_HEX,	/* start */ },
-		   [2] = { .scnprintf = SCA_MMAP_PROT,	/* prot */ },
-		   [3] = { .scnprintf = SCA_INT,	/* pkey */ }, }, },
+	  .arg = { [0] = { .scnprintf = SCA_HEX,	  },
+		   [2] = { .scnprintf = SCA_MMAP_PROT,	  },
+		   [3] = { .scnprintf = SCA_INT,	  }, }, },
 	{ .name	    = "poll", .timeout = true, },
 	{ .name	    = "ppoll", .timeout = true, },
 	{ .name	    = "prctl",
-	  .arg = { [0] = { .scnprintf = SCA_PRCTL_OPTION, /* option */
+	  .arg = { [0] = { .scnprintf = SCA_PRCTL_OPTION,  
 			   .strtoul   = STUL_STRARRAY,
 			   .parm      = &strarray__prctl_options, },
-		   [1] = { .scnprintf = SCA_PRCTL_ARG2, /* arg2 */ },
-		   [2] = { .scnprintf = SCA_PRCTL_ARG3, /* arg3 */ }, }, },
+		   [1] = { .scnprintf = SCA_PRCTL_ARG2,   },
+		   [2] = { .scnprintf = SCA_PRCTL_ARG3,   }, }, },
 	{ .name	    = "pread", .alias = "pread64", },
 	{ .name	    = "preadv", .alias = "pread", },
 	{ .name	    = "prlimit64",
 	  .arg = { [1] = STRARRAY(resource, rlimit_resources), }, },
 	{ .name	    = "pwrite", .alias = "pwrite64", },
 	{ .name	    = "readlinkat",
-	  .arg = { [0] = { .scnprintf = SCA_FDAT, /* dfd */ }, }, },
+	  .arg = { [0] = { .scnprintf = SCA_FDAT,   }, }, },
 	{ .name	    = "recvfrom",
-	  .arg = { [3] = { .scnprintf = SCA_MSG_FLAGS, /* flags */ }, }, },
+	  .arg = { [3] = { .scnprintf = SCA_MSG_FLAGS,   }, }, },
 	{ .name	    = "recvmmsg",
-	  .arg = { [3] = { .scnprintf = SCA_MSG_FLAGS, /* flags */ }, }, },
+	  .arg = { [3] = { .scnprintf = SCA_MSG_FLAGS,   }, }, },
 	{ .name	    = "recvmsg",
-	  .arg = { [2] = { .scnprintf = SCA_MSG_FLAGS, /* flags */ }, }, },
+	  .arg = { [2] = { .scnprintf = SCA_MSG_FLAGS,   }, }, },
 	{ .name	    = "renameat",
-	  .arg = { [0] = { .scnprintf = SCA_FDAT, /* olddirfd */ },
-		   [2] = { .scnprintf = SCA_FDAT, /* newdirfd */ }, }, },
+	  .arg = { [0] = { .scnprintf = SCA_FDAT,   },
+		   [2] = { .scnprintf = SCA_FDAT,   }, }, },
 	{ .name	    = "renameat2",
-	  .arg = { [0] = { .scnprintf = SCA_FDAT, /* olddirfd */ },
-		   [2] = { .scnprintf = SCA_FDAT, /* newdirfd */ },
-		   [4] = { .scnprintf = SCA_RENAMEAT2_FLAGS, /* flags */ }, }, },
+	  .arg = { [0] = { .scnprintf = SCA_FDAT,   },
+		   [2] = { .scnprintf = SCA_FDAT,   },
+		   [4] = { .scnprintf = SCA_RENAMEAT2_FLAGS,   }, }, },
 	{ .name	    = "rt_sigaction",
-	  .arg = { [0] = { .scnprintf = SCA_SIGNUM, /* sig */ }, }, },
+	  .arg = { [0] = { .scnprintf = SCA_SIGNUM,   }, }, },
 	{ .name	    = "rt_sigprocmask",
 	  .arg = { [0] = STRARRAY(how, sighow), }, },
 	{ .name	    = "rt_sigqueueinfo",
-	  .arg = { [1] = { .scnprintf = SCA_SIGNUM, /* sig */ }, }, },
+	  .arg = { [1] = { .scnprintf = SCA_SIGNUM,   }, }, },
 	{ .name	    = "rt_tgsigqueueinfo",
-	  .arg = { [2] = { .scnprintf = SCA_SIGNUM, /* sig */ }, }, },
+	  .arg = { [2] = { .scnprintf = SCA_SIGNUM,   }, }, },
 	{ .name	    = "sched_setscheduler",
-	  .arg = { [1] = { .scnprintf = SCA_SCHED_POLICY, /* policy */ }, }, },
+	  .arg = { [1] = { .scnprintf = SCA_SCHED_POLICY,   }, }, },
 	{ .name	    = "seccomp",
-	  .arg = { [0] = { .scnprintf = SCA_SECCOMP_OP,	   /* op */ },
-		   [1] = { .scnprintf = SCA_SECCOMP_FLAGS, /* flags */ }, }, },
+	  .arg = { [0] = { .scnprintf = SCA_SECCOMP_OP,	     },
+		   [1] = { .scnprintf = SCA_SECCOMP_FLAGS,   }, }, },
 	{ .name	    = "select", .timeout = true, },
 	{ .name	    = "sendfile", .alias = "sendfile64", },
 	{ .name	    = "sendmmsg",
-	  .arg = { [3] = { .scnprintf = SCA_MSG_FLAGS, /* flags */ }, }, },
+	  .arg = { [3] = { .scnprintf = SCA_MSG_FLAGS,   }, }, },
 	{ .name	    = "sendmsg",
-	  .arg = { [2] = { .scnprintf = SCA_MSG_FLAGS, /* flags */ }, }, },
+	  .arg = { [2] = { .scnprintf = SCA_MSG_FLAGS,   }, }, },
 	{ .name	    = "sendto",
-	  .arg = { [3] = { .scnprintf = SCA_MSG_FLAGS, /* flags */ },
-		   [4] = { .scnprintf = SCA_SOCKADDR, /* addr */ }, }, },
+	  .arg = { [3] = { .scnprintf = SCA_MSG_FLAGS,   },
+		   [4] = { .scnprintf = SCA_SOCKADDR,   }, }, },
 	{ .name	    = "set_tid_address", .errpid = true, },
 	{ .name	    = "setitimer",
 	  .arg = { [0] = STRARRAY(which, itimers), }, },
@@ -1132,40 +1105,40 @@ static const struct syscall_fmt syscall_fmts[] = {
 	  .arg = { [1] = STRARRAY(level, socket_level), }, },
 	{ .name	    = "socket",
 	  .arg = { [0] = STRARRAY(family, socket_families),
-		   [1] = { .scnprintf = SCA_SK_TYPE, /* type */ },
-		   [2] = { .scnprintf = SCA_SK_PROTO, /* protocol */ }, }, },
+		   [1] = { .scnprintf = SCA_SK_TYPE,   },
+		   [2] = { .scnprintf = SCA_SK_PROTO,   }, }, },
 	{ .name	    = "socketpair",
 	  .arg = { [0] = STRARRAY(family, socket_families),
-		   [1] = { .scnprintf = SCA_SK_TYPE, /* type */ },
-		   [2] = { .scnprintf = SCA_SK_PROTO, /* protocol */ }, }, },
+		   [1] = { .scnprintf = SCA_SK_TYPE,   },
+		   [2] = { .scnprintf = SCA_SK_PROTO,   }, }, },
 	{ .name	    = "stat", .alias = "newstat", },
 	{ .name	    = "statx",
-	  .arg = { [0] = { .scnprintf = SCA_FDAT,	 /* fdat */ },
-		   [2] = { .scnprintf = SCA_STATX_FLAGS, /* flags */ } ,
-		   [3] = { .scnprintf = SCA_STATX_MASK,	 /* mask */ }, }, },
+	  .arg = { [0] = { .scnprintf = SCA_FDAT,	   },
+		   [2] = { .scnprintf = SCA_STATX_FLAGS,   } ,
+		   [3] = { .scnprintf = SCA_STATX_MASK,	   }, }, },
 	{ .name	    = "swapoff",
-	  .arg = { [0] = { .scnprintf = SCA_FILENAME, /* specialfile */ }, }, },
+	  .arg = { [0] = { .scnprintf = SCA_FILENAME,   }, }, },
 	{ .name	    = "swapon",
-	  .arg = { [0] = { .scnprintf = SCA_FILENAME, /* specialfile */ }, }, },
+	  .arg = { [0] = { .scnprintf = SCA_FILENAME,   }, }, },
 	{ .name	    = "symlinkat",
-	  .arg = { [0] = { .scnprintf = SCA_FDAT, /* dfd */ }, }, },
+	  .arg = { [0] = { .scnprintf = SCA_FDAT,   }, }, },
 	{ .name	    = "sync_file_range",
-	  .arg = { [3] = { .scnprintf = SCA_SYNC_FILE_RANGE_FLAGS, /* flags */ }, }, },
+	  .arg = { [3] = { .scnprintf = SCA_SYNC_FILE_RANGE_FLAGS,   }, }, },
 	{ .name	    = "tgkill",
-	  .arg = { [2] = { .scnprintf = SCA_SIGNUM, /* sig */ }, }, },
+	  .arg = { [2] = { .scnprintf = SCA_SIGNUM,   }, }, },
 	{ .name	    = "tkill",
-	  .arg = { [1] = { .scnprintf = SCA_SIGNUM, /* sig */ }, }, },
+	  .arg = { [1] = { .scnprintf = SCA_SIGNUM,   }, }, },
 	{ .name     = "umount2", .alias = "umount",
-	  .arg = { [0] = { .scnprintf = SCA_FILENAME, /* name */ }, }, },
+	  .arg = { [0] = { .scnprintf = SCA_FILENAME,   }, }, },
 	{ .name	    = "uname", .alias = "newuname", },
 	{ .name	    = "unlinkat",
-	  .arg = { [0] = { .scnprintf = SCA_FDAT, /* dfd */ }, }, },
+	  .arg = { [0] = { .scnprintf = SCA_FDAT,   }, }, },
 	{ .name	    = "utimensat",
-	  .arg = { [0] = { .scnprintf = SCA_FDAT, /* dirfd */ }, }, },
+	  .arg = { [0] = { .scnprintf = SCA_FDAT,   }, }, },
 	{ .name	    = "wait4",	    .errpid = true,
-	  .arg = { [2] = { .scnprintf = SCA_WAITID_OPTIONS, /* options */ }, }, },
+	  .arg = { [2] = { .scnprintf = SCA_WAITID_OPTIONS,   }, }, },
 	{ .name	    = "waitid",	    .errpid = true,
-	  .arg = { [3] = { .scnprintf = SCA_WAITID_OPTIONS, /* options */ }, }, },
+	  .arg = { [3] = { .scnprintf = SCA_WAITID_OPTIONS,   }, }, },
 };
 
 static int syscall_fmt__cmp(const void *name, const void *fmtp)
@@ -1206,12 +1179,7 @@ static const struct syscall_fmt *syscall_fmt__find_by_alias(const char *alias)
 	return __syscall_fmt__find_by_alias(syscall_fmts, nmemb, alias);
 }
 
-/*
- * is_exit: is this "exit" or "exit_group"?
- * is_open: is this "open" or "openat"? To associate the fd returned in sys_exit with the pathname in sys_enter.
- * args_size: sum of the sizes of the syscall arguments, anything after that is augmented stuff: pathname for openat, etc.
- * nonexistent: Just a hole in the syscall table, syscall id not allocated
- */
+ 
 struct syscall {
 	struct tep_event    *tp_format;
 	int		    nr_args;
@@ -1229,13 +1197,7 @@ struct syscall {
 	struct syscall_arg_fmt *arg_fmt;
 };
 
-/*
- * We need to have this 'calculated' boolean because in some cases we really
- * don't know what is the duration of a syscall, for instance, when we start
- * a session and some threads are waiting for a syscall to finish, say 'poll',
- * in which case all we can do is to print "( ? ) for duration and for the
- * start timestamp.
- */
+ 
 static size_t fprintf_duration(unsigned long t, bool calculated, FILE *fp)
 {
 	double duration = (double)t / NSEC_PER_MSEC;
@@ -1252,13 +1214,7 @@ static size_t fprintf_duration(unsigned long t, bool calculated, FILE *fp)
 	return printed + fprintf(fp, "): ");
 }
 
-/**
- * filename.ptr: The filename char pointer that will be vfs_getname'd
- * filename.entry_str_pos: Where to insert the string translated from
- *                         filename.ptr by the vfs_getname tracepoint/kprobe.
- * ret_scnprintf: syscall args may set this to a different syscall return
- *                formatter, for instance, fcntl may return fds, file flags, etc.
- */
+ 
 struct thread_trace {
 	u64		  entry_time;
 	bool		  entry_pending;
@@ -1509,10 +1465,7 @@ static size_t syscall_arg__scnprintf_augmented_string(struct syscall_arg *arg, c
 {
 	struct augmented_arg *augmented_arg = arg->augmented.args;
 	size_t printed = scnprintf(bf, size, "\"%.*s\"", augmented_arg->size, augmented_arg->value);
-	/*
-	 * So that the next arg with a payload can consume its augmented arg, i.e. for rename* syscalls
-	 * we would have two strings, each prefixed by its size.
-	 */
+	 
 	int consumed = sizeof(*augmented_arg) + augmented_arg->size;
 
 	arg->augmented.args = ((void *)arg->augmented.args) + consumed;
@@ -1548,12 +1501,7 @@ static size_t __trace__fprintf_tstamp(struct trace *trace, u64 tstamp, FILE *fp)
 	return fprintf(fp, "%10.3f ", ts);
 }
 
-/*
- * We're handling tstamp=0 as an undefined tstamp, i.e. like when we are
- * using ttrace->entry_time for a thread that receives a sys_exit without
- * first having received a sys_enter ("poll" issued before tracing session
- * starts, lost sys_enter exit due to ring buffer overflow).
- */
+ 
 static size_t trace__fprintf_tstamp(struct trace *trace, u64 tstamp, FILE *fp)
 {
 	if (tstamp > 0)
@@ -1759,13 +1707,7 @@ syscall_arg_fmt__init_array(struct syscall_arg_fmt *arg, struct tep_format_field
 			  strcmp(field->type, "unsigned int") == 0 ||
 			  strcmp(field->type, "long") == 0) &&
 			 len >= 2 && strcmp(field->name + len - 2, "fd") == 0) {
-			/*
-			 * /sys/kernel/tracing/events/syscalls/sys_enter*
-			 * grep -E 'field:.*fd;' .../format|sed -r 's/.*field:([a-z ]+) [a-z_]*fd.+/\1/g'|sort|uniq -c
-			 * 65 int
-			 * 23 unsigned int
-			 * 7 unsigned long
-			 */
+			 
 			arg->scnprintf = SCA_FD;
 		} else {
 			const struct syscall_arg_fmt *fmt =
@@ -1805,13 +1747,13 @@ static int trace__read_syscall_info(struct trace *trace, int id)
 	}
 #else
 	if (id > trace->sctbl->syscalls.max_id || (id == 0 && trace->syscalls.table == NULL)) {
-		// When using libaudit we don't know beforehand what is the max syscall id
+		 
 		struct syscall *table = realloc(trace->syscalls.table, (id + 1) * sizeof(*sc));
 
 		if (table == NULL)
 			return -ENOMEM;
 
-		// Need to memset from offset 0 and +1 members if brand new
+		
 		if (trace->syscalls.table == NULL)
 			memset(table, 0, (id + 1) * sizeof(*sc));
 		else
@@ -1841,10 +1783,7 @@ static int trace__read_syscall_info(struct trace *trace, int id)
 		sc->tp_format = trace_event__tp_format("syscalls", tp_name);
 	}
 
-	/*
-	 * Fails to read trace point format via sysfs node, so the trace point
-	 * doesn't exist.  Set the 'nonexistent' flag as true.
-	 */
+	 
 	if (IS_ERR(sc->tp_format)) {
 		sc->nonexistent = true;
 		return PTR_ERR(sc->tp_format);
@@ -1855,11 +1794,7 @@ static int trace__read_syscall_info(struct trace *trace, int id)
 		return -ENOMEM;
 
 	sc->args = sc->tp_format->format.fields;
-	/*
-	 * We need to check and discard the first variable '__syscall_nr'
-	 * or 'nr' that mean the syscall number. It is needless here.
-	 * So drop '__syscall_nr' or 'nr' field but does not exist on older kernels.
-	 */
+	 
 	if (sc->args && (!strcmp(sc->args->name, "__syscall_nr") || !strcmp(sc->args->name, "nr"))) {
 		sc->args = sc->args->next;
 		--sc->nr_args;
@@ -1980,14 +1915,7 @@ static __maybe_unused bool trace__syscall_enabled(struct trace *trace, int id)
 	return trace->not_ev_qualifier;
 }
 
-/*
- * args is to be interpreted as a series of longs but we need to handle
- * 8-byte unaligned accesses. args points to raw_data within the event
- * and raw_data is guaranteed to be 8-byte unaligned because it is
- * preceded by raw_size which is a u32. So we need to copy args to a temp
- * variable to read it. Most notably this avoids extended load instructions
- * on unaligned addresses
- */
+ 
 unsigned long syscall_arg__val(struct syscall_arg *arg, u8 idx)
 {
 	unsigned long val;
@@ -2006,11 +1934,7 @@ static size_t syscall__scnprintf_name(struct syscall *sc, char *bf, size_t size,
 	return scnprintf(bf, size, "arg%d: ", arg->idx);
 }
 
-/*
- * Check if the value is in fact zero, i.e. mask whatever needs masking, such
- * as mount 'flags' argument that needs ignoring some magic flag, see comment
- * in tools/perf/trace/beauty/mount_flags.c
- */
+ 
 static unsigned long syscall_arg_fmt__mask_val(struct syscall_arg_fmt *fmt, struct syscall_arg *arg, unsigned long val)
 {
 	if (fmt && fmt->mask_val)
@@ -2052,11 +1976,7 @@ static size_t syscall__scnprintf_args(struct syscall *sc, char *bf, size_t size,
 	};
 	struct thread_trace *ttrace = thread__priv(thread);
 
-	/*
-	 * Things like fcntl will set this in its 'cmd' formatter to pick the
-	 * right formatter for the return value (an fd? file flags?), which is
-	 * not needed for syscalls that always return a given type, say an fd.
-	 */
+	 
 	ttrace->ret_scnprintf = NULL;
 
 	if (sc->args != NULL) {
@@ -2069,17 +1989,10 @@ static size_t syscall__scnprintf_args(struct syscall *sc, char *bf, size_t size,
 
 			arg.fmt = &sc->arg_fmt[arg.idx];
 			val = syscall_arg__val(&arg, arg.idx);
-			/*
-			 * Some syscall args need some mask, most don't and
-			 * return val untouched.
-			 */
+			 
 			val = syscall_arg_fmt__mask_val(&sc->arg_fmt[arg.idx], &arg, val);
 
-			/*
- 			 * Suppress this argument if its value is zero and
- 			 * and we don't have a string associated in an
- 			 * strarray for it.
- 			 */
+			 
 			if (val == 0 &&
 			    !trace->show_zeros &&
 			    !(sc->arg_fmt &&
@@ -2098,11 +2011,7 @@ static size_t syscall__scnprintf_args(struct syscall *sc, char *bf, size_t size,
 								  bf + printed, size - printed, &arg, val);
 		}
 	} else if (IS_ERR(sc->tp_format)) {
-		/*
-		 * If we managed to read the tracepoint /format file, then we
-		 * may end up not having any args, like with gettid(), so only
-		 * print the raw args when we didn't manage to read it.
-		 */
+		 
 		while (arg.idx < sc->nr_args) {
 			if (arg.mask & bit)
 				goto next_arg;
@@ -2131,16 +2040,7 @@ static struct syscall *trace__syscall_info(struct trace *trace,
 
 	if (id < 0) {
 
-		/*
-		 * XXX: Noticed on x86_64, reproduced as far back as 3.0.36, haven't tried
-		 * before that, leaving at a higher verbosity level till that is
-		 * explained. Reproduced with plain ftrace with:
-		 *
-		 * echo 1 > /t/events/raw_syscalls/sys_exit/enable
-		 * grep "NR -1 " /t/trace_pipe
-		 *
-		 * After generating some load on the machine.
- 		 */
+		 
 		if (verbose > 1) {
 			static u64 n;
 			fprintf(trace->output, "Invalid syscall %d id, skipping (%s, %" PRIu64 ") ...\n",
@@ -2155,11 +2055,7 @@ static struct syscall *trace__syscall_info(struct trace *trace,
 	if (id > trace->sctbl->syscalls.max_id) {
 #else
 	if (id >= trace->sctbl->syscalls.max_id) {
-		/*
-		 * With libaudit we don't know beforehand what is the max_id,
-		 * so we let trace__read_syscall_info() figure that out as we
-		 * go on reading syscalls.
-		 */
+		 
 		err = trace__read_syscall_info(trace, id);
 		if (err)
 #endif
@@ -2294,20 +2190,7 @@ static int trace__fprintf_sample(struct trace *trace, struct evsel *evsel,
 static void *syscall__augmented_args(struct syscall *sc, struct perf_sample *sample, int *augmented_args_size, int raw_augmented_args_size)
 {
 	void *augmented_args = NULL;
-	/*
-	 * For now with BPF raw_augmented we hook into raw_syscalls:sys_enter
-	 * and there we get all 6 syscall args plus the tracepoint common fields
-	 * that gets calculated at the start and the syscall_nr (another long).
-	 * So we check if that is the case and if so don't look after the
-	 * sc->args_size but always after the full raw_syscalls:sys_enter payload,
-	 * which is fixed.
-	 *
-	 * We'll revisit this later to pass s->args_size to the BPF augmenter
-	 * (now tools/perf/examples/bpf/augmented_raw_syscalls.c, so that it
-	 * copies only what we need for each syscall, like what happens when we
-	 * use syscalls:sys_enter_NAME, so that we reduce the kernel/userspace
-	 * traffic to just what is needed for each syscall.
-	 */
+	 
 	int args_size = raw_augmented_args_size ?: sc->args_size;
 
 	*augmented_args_size = sample->raw_size - args_size;
@@ -2359,16 +2242,7 @@ static int trace__sys_enter(struct trace *trace, struct evsel *evsel,
 
 	if (!(trace->duration_filter || trace->summary_only || trace->min_stack))
 		trace__printf_interrupted_entry(trace);
-	/*
-	 * If this is raw_syscalls.sys_enter, then it always comes with the 6 possible
-	 * arguments, even if the syscall being handled, say "openat", uses only 4 arguments
-	 * this breaks syscall__augmented_args() check for augmented args, as we calculate
-	 * syscall->args_size using each syscalls:sys_enter_NAME tracefs format file,
-	 * so when handling, say the openat syscall, we end up getting 6 args for the
-	 * raw_syscalls:sys_enter event, when we expected just 4, we end up mistakenly
-	 * thinking that the extra 2 u64 args are the augmented filename, so just check
-	 * here and avoid using augmented syscalls when the evsel is the raw_syscalls one.
-	 */
+	 
 	if (evsel != trace->syscalls.events.sys_enter)
 		augmented_args = syscall__augmented_args(sc, sample, &augmented_args_size, trace->raw_augmented_syscalls_args_size);
 	ttrace->entry_time = sample->time;
@@ -2390,7 +2264,7 @@ static int trace__sys_enter(struct trace *trace, struct evsel *evsel,
 		}
 	} else {
 		ttrace->entry_pending = true;
-		/* See trace__vfs_getname & trace__sys_exit */
+		 
 		ttrace->filename.pending_open = false;
 	}
 
@@ -2420,10 +2294,7 @@ static int trace__fprintf_sys_enter(struct trace *trace, struct evsel *evsel,
 
 	thread = machine__findnew_thread(trace->host, sample->pid, sample->tid);
 	ttrace = thread__trace(thread, trace->output);
-	/*
-	 * We need to get ttrace just to make sure it is there when syscall__scnprintf_args()
-	 * and the rest of the beautifiers accessing it via struct syscall_arg touches it.
-	 */
+	 
 	if (ttrace == NULL)
 		goto out_put;
 
@@ -2459,7 +2330,7 @@ out:
 
 static int trace__fprintf_callchain(struct trace *trace, struct perf_sample *sample)
 {
-	/* TODO: user-configurable print_opts */
+	 
 	const unsigned int print_opts = EVSEL__PRINT_SYM |
 				        EVSEL__PRINT_DSO |
 				        EVSEL__PRINT_UNKNOWN_AS_ADDR;
@@ -2542,7 +2413,7 @@ static int trace__sys_exit(struct trace *trace, struct evsel *evsel,
 		printed += fprintf(trace->output, "]: %s()", sc->name);
 	}
 
-	printed++; /* the closing ')' */
+	printed++;  
 
 	if (alignment > printed)
 		alignment -= printed;
@@ -2592,10 +2463,7 @@ errno_print: {
 
 	fputc('\n', trace->output);
 
-	/*
-	 * We only consider an 'event' for the sake of --max-events a non-filtered
-	 * sys_enter + sys_exit and other tracepoint events.
-	 */
+	 
 	if (++trace->nr_events_printed == trace->max_events && trace->max_events != ULONG_MAX)
 		interrupted = true;
 
@@ -2650,7 +2518,7 @@ static int trace__vfs_getname(struct trace *trace, struct evsel *evsel,
 		goto out_put;
 
 	entry_str_len = strlen(ttrace->entry_str);
-	remaining_space = trace__entry_str_size - entry_str_len - 1; /* \0 */
+	remaining_space = trace__entry_str_size - entry_str_len - 1;  
 	if (remaining_space <= 0)
 		goto out_put;
 
@@ -2659,7 +2527,7 @@ static int trace__vfs_getname(struct trace *trace, struct evsel *evsel,
 		filename_len = remaining_space;
 	}
 
-	to_move = entry_str_len - ttrace->filename.entry_str_pos + 1; /* \0 */
+	to_move = entry_str_len - ttrace->filename.entry_str_pos + 1;  
 	pos = ttrace->entry_str + ttrace->filename.entry_str_pos;
 	memmove(pos + filename_len, pos, to_move);
 	memcpy(pos, filename, filename_len);
@@ -2776,17 +2644,10 @@ static size_t trace__fprintf_tp_fields(struct trace *trace, struct evsel *evsel,
 			val = (uintptr_t)(sample->raw_data + offset);
 		} else
 			val = format_field__intval(field, sample, evsel->needs_swap);
-		/*
-		 * Some syscall args need some mask, most don't and
-		 * return val untouched.
-		 */
+		 
 		val = syscall_arg_fmt__mask_val(arg, &syscall_arg, val);
 
-		/*
-		 * Suppress this argument if its value is zero and
-		 * we don't have a string associated in an
-		 * strarray for it.
-		 */
+		 
 		if (val == 0 &&
 		    !trace->show_zeros &&
 		    !((arg->show_zero ||
@@ -2812,12 +2673,7 @@ static int trace__event_handler(struct trace *trace, struct evsel *evsel,
 {
 	struct thread *thread;
 	int callchain_ret = 0;
-	/*
-	 * Check if we called perf_evsel__disable(evsel) due to, for instance,
-	 * this event's max_events having been hit and this is an entry coming
-	 * from the ring buffer that we should discard, since the max events
-	 * have already been considered/printed.
-	 */
+	 
 	if (evsel->disabled)
 		return 0;
 
@@ -2854,11 +2710,7 @@ static int trace__event_handler(struct trace *trace, struct evsel *evsel,
 			goto newline;
 		}
 
-		/*
-		 * XXX: Not having the associated syscall info or not finding/adding
-		 * 	the thread should never happen, but if it does...
-		 * 	fall thru and print it as a bpf_output event.
-		 */
+		 
 	}
 
 	fprintf(trace->output, "%s(", evsel->name);
@@ -2997,14 +2849,7 @@ static void trace__set_base_time(struct trace *trace,
 				 struct evsel *evsel,
 				 struct perf_sample *sample)
 {
-	/*
-	 * BPF events were not setting PERF_SAMPLE_TIME, so be more robust
-	 * and don't use sample->time unconditionally, we may end up having
-	 * some other event in the future without PERF_SAMPLE_TIME for good
-	 * reason, i.e. we may not be interested in its timestamps, just in
-	 * it taking place, picking some piece of information when it
-	 * appears in our event stream (vfs_getname comes to mind).
-	 */
+	 
 	if (trace->base_time == 0 && !trace->full_time &&
 	    (evsel->core.attr.sample_type & PERF_SAMPLE_TIME))
 		trace->base_time = sample->time;
@@ -3057,7 +2902,7 @@ static int trace__record(struct trace *trace, int argc, const char **argv)
 	unsigned int minpf_args_nr = ARRAY_SIZE(minpf_args);
 	int err = -1;
 
-	/* +3 is for the event string below and the pid filter */
+	 
 	rec_argc = ARRAY_SIZE(record_args) + sc_args_nr + 3 +
 		majpf_args_nr + minpf_args_nr + argc;
 	rec_argv = calloc(rec_argc + 1, sizeof(char *));
@@ -3073,7 +2918,7 @@ static int trace__record(struct trace *trace, int argc, const char **argv)
 		for (i = 0; i < sc_args_nr; i++)
 			rec_argv[j++] = sc_args[i];
 
-		/* event string may be different for older kernels - e.g., RHEL6 */
+		 
 		if (is_valid_tracepoint("raw_syscalls:sys_enter"))
 			rec_argv[j++] = "raw_syscalls:sys_enter,raw_syscalls:sys_exit";
 		else if (is_valid_tracepoint("syscalls:sys_enter"))
@@ -3230,11 +3075,7 @@ static int trace__add_syscall_newtp(struct trace *trace)
 	evlist__add(evlist, sys_exit);
 
 	if (callchain_param.enabled && !trace->kernel_syscallchains) {
-		/*
-		 * We're interested only in the user space callchain
-		 * leading to the syscall, allow overriding that for
-		 * debugging reasons using --kernel_syscall_callchains
-		 */
+		 
 		sys_exit->core.attr.exclude_callchain_kernel = 1;
 	}
 
@@ -3357,9 +3198,7 @@ static struct bpf_program *trace__find_usable_bpf_prog_entry(struct trace *trace
 	struct tep_format_field *field, *candidate_field;
 	int id;
 
-	/*
-	 * We're only interested in syscalls that have a pointer:
-	 */
+	 
 	for (field = sc->args; field; field = field->next) {
 		if (field->flags & TEP_FIELD_IS_POINTER)
 			goto try_to_find_pair;
@@ -3384,12 +3223,12 @@ try_to_find_pair:
 
 			if (is_pointer) {
 			       if (!candidate_is_pointer) {
-					// The candidate just doesn't copies our pointer arg, might copy other pointers we want.
+					 
 					continue;
 			       }
 			} else {
 				if (candidate_is_pointer) {
-					// The candidate might copy a pointer we don't have, skip it.
+					
 					goto next_candidate;
 				}
 				continue;
@@ -3398,11 +3237,7 @@ try_to_find_pair:
 			if (strcmp(field->type, candidate_field->type))
 				goto next_candidate;
 
-			/*
-			 * This is limited in the BPF program but sys_write
-			 * uses "const char *" for its "buf" arg so we need to
-			 * use some heuristic that is kinda future proof...
-			 */
+			 
 			if (strcmp(field->type, "const char *") == 0 &&
 			    !(strstr(field->name, "name") ||
 			      strstr(field->name, "path") ||
@@ -3417,11 +3252,7 @@ try_to_find_pair:
 		if (!is_candidate)
 			goto next_candidate;
 
-		/*
-		 * Check if the tentative pair syscall augmenter has more pointers, if it has,
-		 * then it may be collecting that and we then can't use it, as it would collect
-		 * more than what is common to the two syscalls.
-		 */
+		 
 		if (candidate_field) {
 			for (candidate_field = candidate_field->next; candidate_field; candidate_field = candidate_field->next)
 				if (candidate_field->flags & TEP_FIELD_IS_POINTER)
@@ -3429,15 +3260,7 @@ try_to_find_pair:
 		}
 
 		pair_prog = pair->bpf_prog.sys_enter;
-		/*
-		 * If the pair isn't enabled, then its bpf_prog.sys_enter will not
-		 * have been searched for, so search it here and if it returns the
-		 * unaugmented one, then ignore it, otherwise we'll reuse that BPF
-		 * program for a filtered syscall on a non-filtered one.
-		 *
-		 * For instance, we have "!syscalls:sys_enter_renameat" and that is
-		 * useful for "renameat2".
-		 */
+		 
 		if (pair_prog == NULL) {
 			pair_prog = trace__find_syscall_bpf_prog(trace, pair, pair->fmt ? pair->fmt->bpf_prog_name.sys_enter : NULL, "enter");
 			if (pair_prog == trace->skel->progs.syscall_unaugmented)
@@ -3467,7 +3290,7 @@ static int trace__init_syscalls_bpf_prog_array_maps(struct trace *trace)
 
 		trace__init_syscall_bpf_progs(trace, key);
 
-		// It'll get at least the "!raw_syscalls:unaugmented"
+		 
 		prog_fd = trace__bpf_prog_sys_enter_fd(trace, key);
 		err = bpf_map_update_elem(map_enter_fd, &key, &prog_fd, BPF_ANY);
 		if (err)
@@ -3478,34 +3301,7 @@ static int trace__init_syscalls_bpf_prog_array_maps(struct trace *trace)
 			break;
 	}
 
-	/*
-	 * Now lets do a second pass looking for enabled syscalls without
-	 * an augmenter that have a signature that is a superset of another
-	 * syscall with an augmenter so that we can auto-reuse it.
-	 *
-	 * I.e. if we have an augmenter for the "open" syscall that has
-	 * this signature:
-	 *
-	 *   int open(const char *pathname, int flags, mode_t mode);
-	 *
-	 * I.e. that will collect just the first string argument, then we
-	 * can reuse it for the 'creat' syscall, that has this signature:
-	 *
-	 *   int creat(const char *pathname, mode_t mode);
-	 *
-	 * and for:
-	 *
-	 *   int stat(const char *pathname, struct stat *statbuf);
-	 *   int lstat(const char *pathname, struct stat *statbuf);
-	 *
-	 * Because the 'open' augmenter will collect the first arg as a string,
-	 * and leave alone all the other args, which already helps with
-	 * beautifying 'stat' and 'lstat''s pathname arg.
-	 *
-	 * Then, in time, when 'stat' gets an augmenter that collects both
-	 * first and second arg (this one on the raw_syscalls:sys_exit prog
-	 * array tail call, then that one will be used.
-	 */
+	 
 	for (key = 0; key < trace->sctbl->syscalls.nr_entries; ++key) {
 		struct syscall *sc = trace__syscall_info(trace, NULL, key);
 		struct bpf_program *pair_prog;
@@ -3514,27 +3310,18 @@ static int trace__init_syscalls_bpf_prog_array_maps(struct trace *trace)
 		if (sc == NULL || sc->bpf_prog.sys_enter == NULL)
 			continue;
 
-		/*
-		 * For now we're just reusing the sys_enter prog, and if it
-		 * already has an augmenter, we don't need to find one.
-		 */
+		 
 		if (sc->bpf_prog.sys_enter != trace->skel->progs.syscall_unaugmented)
 			continue;
 
-		/*
-		 * Look at all the other syscalls for one that has a signature
-		 * that is close enough that we can share:
-		 */
+		 
 		pair_prog = trace__find_usable_bpf_prog_entry(trace, sc);
 		if (pair_prog == NULL)
 			continue;
 
 		sc->bpf_prog.sys_enter = pair_prog;
 
-		/*
-		 * Update the BPF_MAP_TYPE_PROG_SHARED for raw_syscalls:sys_enter
-		 * with the fd for the program we're reusing:
-		 */
+		 
 		prog_fd = bpf_program__fd(sc->bpf_prog.sys_enter);
 		err = bpf_map_update_elem(map_enter_fd, &key, &prog_fd, BPF_ANY);
 		if (err)
@@ -3543,7 +3330,7 @@ static int trace__init_syscalls_bpf_prog_array_maps(struct trace *trace)
 
 	return err;
 }
-#endif // HAVE_BPF_SKEL
+#endif 
 
 static int trace__set_ev_qualifier_filter(struct trace *trace)
 {
@@ -3604,12 +3391,7 @@ static int trace__set_filter_loop_pids(struct trace *trace)
 static int trace__set_filter_pids(struct trace *trace)
 {
 	int err = 0;
-	/*
-	 * Better not use !target__has_task() here because we need to cover the
-	 * case where no threads were specified in the command line, but a
-	 * workload was, and in that case we will fill in the thread_map when
-	 * we fork the workload in evlist__prepare_workload.
-	 */
+	 
 	if (trace->filter_pids.nr > 0) {
 		err = evlist__append_tp_filter_pids(trace->evlist, trace->filter_pids.nr,
 						    trace->filter_pids.entries);
@@ -3643,7 +3425,7 @@ static int __trace__flush_events(struct trace *trace)
 	u64 first = ordered_events__first_time(&trace->oe.data);
 	u64 flush = trace->oe.last - NSEC_PER_SEC;
 
-	/* Is there some thing to flush.. */
+	 
 	if (first && first < flush)
 		return ordered_events__flush_time(&trace->oe.data, flush);
 
@@ -3714,10 +3496,7 @@ static int trace__expand_filter(struct trace *trace __maybe_unused, struct evsel
 
 		while (!isalpha(*left))
 			if (++left == tok) {
-				/*
-				 * Bail out, can't find the name of the argument that is being
-				 * used in the filter, let it try to set this filter, will fail later.
-				 */
+				 
 				return 0;
 			}
 
@@ -3847,37 +3626,13 @@ static int trace__run(struct trace *trace, int argc, const char **argv)
 		evlist__add(evlist, pgfault_min);
 	}
 
-	/* Enable ignoring missing threads when -u/-p option is defined. */
+	 
 	trace->opts.ignore_missing_thread = trace->opts.target.uid != UINT_MAX || trace->opts.target.pid;
 
 	if (trace->sched &&
 	    evlist__add_newtp(evlist, "sched", "sched_stat_runtime", trace__sched_stat_runtime))
 		goto out_error_sched_stat_runtime;
-	/*
-	 * If a global cgroup was set, apply it to all the events without an
-	 * explicit cgroup. I.e.:
-	 *
-	 * 	trace -G A -e sched:*switch
-	 *
-	 * Will set all raw_syscalls:sys_{enter,exit}, pgfault, vfs_getname, etc
-	 * _and_ sched:sched_switch to the 'A' cgroup, while:
-	 *
-	 * trace -e sched:*switch -G A
-	 *
-	 * will only set the sched:sched_switch event to the 'A' cgroup, all the
-	 * other events (raw_syscalls:sys_{enter,exit}, etc are left "without"
-	 * a cgroup (on the root cgroup, sys wide, etc).
-	 *
-	 * Multiple cgroups:
-	 *
-	 * trace -G A -e sched:*switch -G B
-	 *
-	 * the syscall ones go to the 'A' cgroup, the sched:sched_switch goes
-	 * to the 'B' cgroup.
-	 *
-	 * evlist__set_default_cgroup() grabs a reference of the passed cgroup
-	 * only for the evsels still without a cgroup, i.e. evsel->cgroup == NULL.
-	 */
+	 
 	if (trace->cgroup)
 		evlist__set_default_cgroup(trace->evlist, trace->cgroup);
 
@@ -3911,10 +3666,7 @@ static int trace__run(struct trace *trace, int argc, const char **argv)
 	if (trace->syscalls.events.bpf_output) {
 		struct perf_cpu cpu;
 
-		/*
-		 * Set up the __augmented_syscalls__ BPF map to hold for each
-		 * CPU the bpf-output event's file descriptor.
-		 */
+		 
 		perf_cpu_map__for_each_cpu(cpu, i, trace->syscalls.events.bpf_output->core.cpus) {
 			bpf_map__update_elem(trace->skel->maps.__augmented_syscalls__,
 					&cpu.cpu, sizeof(int),
@@ -3944,17 +3696,7 @@ static int trace__run(struct trace *trace, int argc, const char **argv)
 		}
 	}
 
-	/*
-	 * If the "close" syscall is not traced, then we will not have the
-	 * opportunity to, in syscall_arg__scnprintf_close_fd() invalidate the
-	 * fd->pathname table and were ending up showing the last value set by
-	 * syscalls opening a pathname and associating it with a descriptor or
-	 * reading it from /proc/pid/fd/ in cases where that doesn't make
-	 * sense.
-	 *
-	 *  So just disable this beautifier (SCA_FD, SCA_FDAT) when 'close' is
-	 *  not in use.
-	 */
+	 
 	trace->fd_path_disabled = !trace__syscall_enabled(trace, syscalltbl__id(trace->sctbl, "close"));
 
 	err = trace__expand_filters(trace, &evsel);
@@ -3983,12 +3725,7 @@ static int trace__run(struct trace *trace, int argc, const char **argv)
 		perf_thread_map__nr(evlist->core.threads) > 1 ||
 		evlist__first(evlist)->core.attr.inherit;
 
-	/*
-	 * Now that we already used evsel->core.attr to ask the kernel to setup the
-	 * events, lets reuse evsel->core.attr.sample_max_stack as the limit in
-	 * trace__resolve_callchain(), allowing per-event max-stack settings
-	 * to override an explicitly set --max-stack global setting.
-	 */
+	 
 	evlist__for_each_entry(evlist, evsel) {
 		if (evsel__has_callchain(evsel) &&
 		    evsel->core.attr.sample_max_stack == 0)
@@ -4136,7 +3873,7 @@ static int trace__replay(struct trace *trace)
 	trace->tool.ordered_events = true;
 	trace->tool.ordering_requires_timestamps = true;
 
-	/* add tid to output */
+	 
 	trace->multiple_threads = true;
 
 	session = perf_session__new(&data, &trace->tool);
@@ -4160,7 +3897,7 @@ static int trace__replay(struct trace *trace)
 
 	evsel = evlist__find_tracepoint_by_name(session->evlist, "raw_syscalls:sys_enter");
 	trace->syscalls.events.sys_enter = evsel;
-	/* older kernels have syscalls tp versus raw_syscalls */
+	 
 	if (evsel == NULL)
 		evsel = evlist__find_tracepoint_by_name(session->evlist, "syscalls:sys_enter");
 
@@ -4360,10 +4097,7 @@ static int trace__set_filter_pids_from_option(const struct option *opt, const ch
 	int ret = -1;
 	size_t i;
 	struct trace *trace = opt->value;
-	/*
-	 * FIXME: introduce a intarray class, plain parse csv and create a
-	 * { int nr, int entries[] } struct...
-	 */
+	 
 	struct intlist *list = intlist__new(str);
 
 	if (list == NULL)
@@ -4485,14 +4219,7 @@ static int evlist__set_syscall_tp_fields(struct evlist *evlist)
 	return 0;
 }
 
-/*
- * XXX: Hackish, just splitting the combined -e+--event (syscalls
- * (raw_syscalls:{sys_{enter,exit}} + events (tracepoints, HW, SW, etc) to use
- * existing facilities unchanged (trace->ev_qualifier + parse_options()).
- *
- * It'd be better to introduce a parse_options() variant that would return a
- * list with the terms it didn't match to an event...
- */
+ 
 static int trace__parse_events_option(const struct option *opt, const char *str,
 				      int unset __maybe_unused)
 {
@@ -4808,13 +4535,7 @@ int cmd_trace(int argc, const char **argv)
 		goto out;
 	}
 
-	/*
-	 * Parsing .perfconfig may entail creating a BPF event, that may need
-	 * to create BPF maps, so bump RLIM_MEMLOCK as the default 64K setting
-	 * is too small. This affects just this process, not touching the
-	 * global setting. If it fails we'll get something in 'perf trace -v'
-	 * to help diagnose the problem.
-	 */
+	 
 	rlimit__bump_memlock();
 
 	err = perf_config(trace__config, &trace);
@@ -4824,27 +4545,12 @@ int cmd_trace(int argc, const char **argv)
 	argc = parse_options_subcommand(argc, argv, trace_options, trace_subcommands,
 				 trace_usage, PARSE_OPT_STOP_AT_NON_OPTION);
 
-	/*
-	 * Here we already passed thru trace__parse_events_option() and it has
-	 * already figured out if -e syscall_name, if not but if --event
-	 * foo:bar was used, the user is interested _just_ in those, say,
-	 * tracepoint events, not in the strace-like syscall-name-based mode.
-	 *
-	 * This is important because we need to check if strace-like mode is
-	 * needed to decided if we should filter out the eBPF
-	 * __augmented_syscalls__ code, if it is in the mix, say, via
-	 * .perfconfig trace.add_events, and filter those out.
-	 */
+	 
 	if (!trace.trace_syscalls && !trace.trace_pgfaults &&
-	    trace.evlist->core.nr_entries == 0 /* Was --events used? */) {
+	    trace.evlist->core.nr_entries == 0  ) {
 		trace.trace_syscalls = true;
 	}
-	/*
-	 * Now that we have --verbose figured out, lets see if we need to parse
-	 * events from .perfconfig, so that if those events fail parsing, say some
-	 * BPF program fails, then we'll be able to use --verbose to see what went
-	 * wrong in more detail.
-	 */
+	 
 	if (trace.perfconfig_events != NULL) {
 		struct parse_events_error parse_err;
 
@@ -4870,15 +4576,12 @@ int cmd_trace(int argc, const char **argv)
 	if (!trace.skel) {
 		pr_debug("Failed to open augmented syscalls BPF skeleton");
 	} else {
-		/*
-		 * Disable attaching the BPF programs except for sys_enter and
-		 * sys_exit that tail call into this as necessary.
-		 */
+		 
 		struct bpf_program *prog;
 
 		bpf_object__for_each_program(prog, trace.skel->obj) {
 			if (prog != trace.skel->progs.sys_enter && prog != trace.skel->progs.sys_exit)
-				bpf_program__set_autoattach(prog, /*autoattach=*/false);
+				bpf_program__set_autoattach(prog,  false);
 		}
 
 		err = augmented_raw_syscalls_bpf__load(trace.skel);
@@ -4943,17 +4646,7 @@ skip_augmentation:
 		ordered_events__set_copy_on_queue(&trace.oe.data, true);
 	}
 
-	/*
-	 * If we are augmenting syscalls, then combine what we put in the
-	 * __augmented_syscalls__ BPF map with what is in the
-	 * syscalls:sys_exit_FOO tracepoints, i.e. just like we do without BPF,
-	 * combining raw_syscalls:sys_enter with raw_syscalls:sys_exit.
-	 *
-	 * We'll switch to look at two BPF maps, one for sys_enter and the
-	 * other for sys_exit when we start augmenting the sys_exit paths with
-	 * buffers that are being copied from kernel to userspace, think 'read'
-	 * syscall.
-	 */
+	 
 	if (trace.syscalls.events.bpf_output) {
 		evlist__for_each_entry(trace.evlist, evsel) {
 			bool raw_syscalls_sys_exit = strcmp(evsel__name(evsel), "raw_syscalls:sys_exit") == 0;
@@ -4969,18 +4662,9 @@ skip_augmentation:
 				if (evsel__init_augmented_syscall_tp(augmented, evsel) ||
 				    evsel__init_augmented_syscall_tp_args(augmented))
 					goto out;
-				/*
-				 * Augmented is __augmented_syscalls__ BPF_OUTPUT event
-				 * Above we made sure we can get from the payload the tp fields
-				 * that we get from syscalls:sys_enter tracefs format file.
-				 */
+				 
 				augmented->handler = trace__sys_enter;
-				/*
-				 * Now we do the same for the *syscalls:sys_enter event so that
-				 * if we handle it directly, i.e. if the BPF prog returns 0 so
-				 * as not to filter it, then we'll handle it just like we would
-				 * for the BPF_OUTPUT one:
-				 */
+				 
 				if (evsel__init_augmented_syscall_tp(evsel, evsel) ||
 				    evsel__init_augmented_syscall_tp_args(evsel))
 					goto out;
@@ -4993,25 +4677,7 @@ init_augmented_syscall_tp:
 				if (evsel__init_augmented_syscall_tp(evsel, evsel))
 					goto out;
 				sc = __evsel__syscall_tp(evsel);
-				/*
-				 * For now with BPF raw_augmented we hook into
-				 * raw_syscalls:sys_enter and there we get all
-				 * 6 syscall args plus the tracepoint common
-				 * fields and the syscall_nr (another long).
-				 * So we check if that is the case and if so
-				 * don't look after the sc->args_size but
-				 * always after the full raw_syscalls:sys_enter
-				 * payload, which is fixed.
-				 *
-				 * We'll revisit this later to pass
-				 * s->args_size to the BPF augmenter (now
-				 * tools/perf/examples/bpf/augmented_raw_syscalls.c,
-				 * so that it copies only what we need for each
-				 * syscall, like what happens when we use
-				 * syscalls:sys_enter_NAME, so that we reduce
-				 * the kernel/userspace traffic to just what is
-				 * needed for each syscall.
-				 */
+				 
 				if (trace.raw_augmented_syscalls)
 					trace.raw_augmented_syscalls_args_size = (6 + 1) * sizeof(long) + sc->id.offset;
 				evsel__init_augmented_syscall_tp_ret(evsel);
@@ -5023,11 +4689,11 @@ init_augmented_syscall_tp:
 	if ((argc >= 1) && (strcmp(argv[0], "record") == 0))
 		return trace__record(&trace, argc-1, &argv[1]);
 
-	/* Using just --errno-summary will trigger --summary */
+	 
 	if (trace.errno_summary && !trace.summary && !trace.summary_only)
 		trace.summary_only = true;
 
-	/* summary_only implies summary option, but don't overwrite summary if set */
+	 
 	if (trace.summary_only)
 		trace.summary = trace.summary_only;
 

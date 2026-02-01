@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * HiSilicon SoC DDRC uncore Hardware event counters support
- *
- * Copyright (C) 2017 HiSilicon Limited
- * Author: Shaokun Zhang <zhangshaokun@hisilicon.com>
- *         Anurup M <anurup.m@huawei.com>
- *
- * This code is based on the uncore PMUs like arm-cci and arm-ccn.
- */
+
+ 
 #include <linux/acpi.h>
 #include <linux/bug.h>
 #include <linux/cpuhotplug.h>
@@ -18,7 +10,7 @@
 
 #include "hisi_uncore_pmu.h"
 
-/* DDRC register definition in v1 */
+ 
 #define DDRC_PERF_CTRL		0x010
 #define DDRC_FLUX_WR		0x380
 #define DDRC_FLUX_RD		0x384
@@ -34,7 +26,7 @@
 #define DDRC_INT_CLEAR		0x6d0
 #define DDRC_VERSION		0x710
 
-/* DDRC register definition in v2 */
+ 
 #define DDRC_V2_INT_MASK	0x528
 #define DDRC_V2_INT_STATUS	0x52c
 #define DDRC_V2_INT_CLEAR	0x530
@@ -43,19 +35,14 @@
 #define DDRC_V2_EVENT_TYPE	0xe74
 #define DDRC_V2_PERF_CTRL	0xeA0
 
-/* DDRC has 8-counters */
+ 
 #define DDRC_NR_COUNTERS	0x8
 #define DDRC_V1_PERF_CTRL_EN	0x2
 #define DDRC_V2_PERF_CTRL_EN	0x1
 #define DDRC_V1_NR_EVENTS	0x7
 #define DDRC_V2_NR_EVENTS	0x90
 
-/*
- * For PMU v1, there are eight-events and every event has been mapped
- * to fixed-purpose counters which register offset is not consistent.
- * Therefore there is no write event type and we assume that event
- * code (0 to 7) is equal to counter index in PMU driver.
- */
+ 
 #define GET_DDRC_EVENTID(hwc)	(hwc->config_base & 0x7)
 
 static const u32 ddrc_reg_off[] = {
@@ -63,11 +50,7 @@ static const u32 ddrc_reg_off[] = {
 	DDRC_PRE_CMD, DDRC_ACT_CMD, DDRC_RNK_CHG, DDRC_RW_CHG
 };
 
-/*
- * Select the counter register offset using the counter index.
- * In PMU v1, there are no programmable counter, the count
- * is read form the statistics counter register itself.
- */
+ 
 static u32 hisi_ddrc_pmu_v1_get_counter_offset(int cntr_idx)
 {
 	return ddrc_reg_off[cntr_idx];
@@ -106,11 +89,7 @@ static void hisi_ddrc_pmu_v2_write_counter(struct hisi_pmu *ddrc_pmu,
 	       ddrc_pmu->base + hisi_ddrc_pmu_v2_get_counter_offset(hwc->idx));
 }
 
-/*
- * For DDRC PMU v1, event has been mapped to fixed-purpose counter by hardware,
- * so there is no need to write event type, while it is programmable counter in
- * PMU v2.
- */
+ 
 static void hisi_ddrc_pmu_write_evtype(struct hisi_pmu *hha_pmu, int idx,
 				       u32 type)
 {
@@ -126,7 +105,7 @@ static void hisi_ddrc_pmu_v1_start_counters(struct hisi_pmu *ddrc_pmu)
 {
 	u32 val;
 
-	/* Set perf_enable in DDRC_PERF_CTRL to start event counting */
+	 
 	val = readl(ddrc_pmu->base + DDRC_PERF_CTRL);
 	val |= DDRC_V1_PERF_CTRL_EN;
 	writel(val, ddrc_pmu->base + DDRC_PERF_CTRL);
@@ -136,7 +115,7 @@ static void hisi_ddrc_pmu_v1_stop_counters(struct hisi_pmu *ddrc_pmu)
 {
 	u32 val;
 
-	/* Clear perf_enable in DDRC_PERF_CTRL to stop event counting */
+	 
 	val = readl(ddrc_pmu->base + DDRC_PERF_CTRL);
 	val &= ~DDRC_V1_PERF_CTRL_EN;
 	writel(val, ddrc_pmu->base + DDRC_PERF_CTRL);
@@ -147,7 +126,7 @@ static void hisi_ddrc_pmu_v1_enable_counter(struct hisi_pmu *ddrc_pmu,
 {
 	u32 val;
 
-	/* Set counter index(event code) in DDRC_EVENT_CTRL register */
+	 
 	val = readl(ddrc_pmu->base + DDRC_EVENT_CTRL);
 	val |= (1 << GET_DDRC_EVENTID(hwc));
 	writel(val, ddrc_pmu->base + DDRC_EVENT_CTRL);
@@ -158,7 +137,7 @@ static void hisi_ddrc_pmu_v1_disable_counter(struct hisi_pmu *ddrc_pmu,
 {
 	u32 val;
 
-	/* Clear counter index(event code) in DDRC_EVENT_CTRL register */
+	 
 	val = readl(ddrc_pmu->base + DDRC_EVENT_CTRL);
 	val &= ~(1 << GET_DDRC_EVENTID(hwc));
 	writel(val, ddrc_pmu->base + DDRC_EVENT_CTRL);
@@ -169,7 +148,7 @@ static int hisi_ddrc_pmu_v1_get_event_idx(struct perf_event *event)
 	struct hisi_pmu *ddrc_pmu = to_hisi_pmu(event->pmu);
 	unsigned long *used_mask = ddrc_pmu->pmu_events.used_mask;
 	struct hw_perf_event *hwc = &event->hw;
-	/* For DDRC PMU, we use event code as counter index */
+	 
 	int idx = GET_DDRC_EVENTID(hwc);
 
 	if (test_bit(idx, used_mask))
@@ -228,7 +207,7 @@ static void hisi_ddrc_pmu_v1_enable_counter_int(struct hisi_pmu *ddrc_pmu,
 {
 	u32 val;
 
-	/* Write 0 to enable interrupt */
+	 
 	val = readl(ddrc_pmu->base + DDRC_INT_MASK);
 	val &= ~(1 << hwc->idx);
 	writel(val, ddrc_pmu->base + DDRC_INT_MASK);
@@ -239,7 +218,7 @@ static void hisi_ddrc_pmu_v1_disable_counter_int(struct hisi_pmu *ddrc_pmu,
 {
 	u32 val;
 
-	/* Write 1 to mask interrupt */
+	 
 	val = readl(ddrc_pmu->base + DDRC_INT_MASK);
 	val |= 1 << hwc->idx;
 	writel(val, ddrc_pmu->base + DDRC_INT_MASK);
@@ -297,10 +276,7 @@ MODULE_DEVICE_TABLE(acpi, hisi_ddrc_pmu_acpi_match);
 static int hisi_ddrc_pmu_init_data(struct platform_device *pdev,
 				   struct hisi_pmu *ddrc_pmu)
 {
-	/*
-	 * Use the SCCL_ID and DDRC channel ID to identify the
-	 * DDRC PMU, while SCCL_ID is in MPIDR[aff2].
-	 */
+	 
 	if (device_property_read_u32(&pdev->dev, "hisilicon,ch-id",
 				     &ddrc_pmu->index_id)) {
 		dev_err(&pdev->dev, "Can not read ddrc channel-id!\n");
@@ -312,7 +288,7 @@ static int hisi_ddrc_pmu_init_data(struct platform_device *pdev,
 		dev_err(&pdev->dev, "Can not read ddrc sccl-id!\n");
 		return -EINVAL;
 	}
-	/* DDRC PMUs only share the same SCCL */
+	 
 	ddrc_pmu->ccl_id = -1;
 
 	ddrc_pmu->base = devm_platform_ioremap_resource(pdev, 0);

@@ -1,18 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/******************************************************************************
- * rtl871x_ioctl_set.c
- *
- * Copyright(c) 2007 - 2010 Realtek Corporation. All rights reserved.
- * Linux device driver for RTL8192SU
- *
- * Modifications for inclusion into the Linux staging tree are
- * Copyright(c) 2010 Larry Finger. All rights reserved.
- *
- * Contact information:
- * WLAN FAE <wlanfae@realtek.com>
- * Larry Finger <Larry.Finger@lwfinger.net>
- *
- ******************************************************************************/
+
+ 
 
 #define _RTL871X_IOCTL_SET_C_
 
@@ -29,7 +16,7 @@ static u8 validate_ssid(struct ndis_802_11_ssid *ssid)
 	if (ssid->SsidLength > 32)
 		return false;
 	for (i = 0; i < ssid->SsidLength; i++) {
-		/* wifi, printable ascii code must be supported */
+		 
 		if (!((ssid->Ssid[i] >= 0x20) && (ssid->Ssid[i] <= 0x7e)))
 			return false;
 	}
@@ -51,14 +38,12 @@ static u8 do_join(struct _adapter *padapter)
 	pmlmepriv->pscanned = plist;
 	pmlmepriv->to_join = true;
 
-	/* adhoc mode will start with an empty queue, but skip checking */
+	 
 	if (!check_fwstate(pmlmepriv, WIFI_ADHOC_STATE) &&
 	    list_empty(&queue->queue)) {
 		if (pmlmepriv->fw_state & _FW_UNDER_LINKING)
 			pmlmepriv->fw_state ^= _FW_UNDER_LINKING;
-		/* when set_ssid/set_bssid for do_join(), but scanning queue
-		 * is empty we try to issue sitesurvey firstly
-		 */
+		 
 		if (!pmlmepriv->sitesurveyctrl.traffic_busy)
 			r8712_sitesurvey_cmd(padapter, &pmlmepriv->assoc_ssid);
 		return true;
@@ -70,10 +55,7 @@ static u8 do_join(struct _adapter *padapter)
 			  jiffies + msecs_to_jiffies(MAX_JOIN_TIMEOUT));
 	} else {
 		if (check_fwstate(pmlmepriv, WIFI_ADHOC_STATE)) {
-			/* submit r8712_createbss_cmd to change to an
-			 * ADHOC_MASTER pmlmepriv->lock has been
-			 * acquired by caller...
-			 */
+			 
 			struct wlan_bssid_ex *pdev_network =
 				&padapter->registrypriv.dev_network;
 			pmlmepriv->fw_state = WIFI_ADHOC_MASTER_STATE;
@@ -87,14 +69,11 @@ static u8 do_join(struct _adapter *padapter)
 				return false;
 			pmlmepriv->to_join = false;
 		} else {
-			/* can't associate ; reset under-linking */
+			 
 			if (pmlmepriv->fw_state & _FW_UNDER_LINKING)
 				pmlmepriv->fw_state ^=
 					_FW_UNDER_LINKING;
-			/* when set_ssid/set_bssid for do_join(), but
-			 * there are no desired bss in scanning queue
-			 * we try to issue sitesurvey first
-			 */
+			 
 			if (!pmlmepriv->sitesurveyctrl.traffic_busy)
 				r8712_sitesurvey_cmd(padapter,
 						     &pmlmepriv->assoc_ssid);
@@ -124,9 +103,7 @@ u8 r8712_set_802_11_bssid(struct _adapter *padapter, u8 *bssid)
 		if (!memcmp(&pmlmepriv->cur_network.network.MacAddress, bssid,
 		    ETH_ALEN)) {
 			if (!check_fwstate(pmlmepriv, WIFI_STATION_STATE))
-				/* driver is in
-				 * WIFI_ADHOC_MASTER_STATE
-				 */
+				 
 				goto _Abort_Set_BSSID;
 		} else {
 			r8712_disassoc_cmd(padapter);
@@ -172,10 +149,7 @@ void r8712_set_802_11_ssid(struct _adapter *padapter,
 			if (!check_fwstate(pmlmepriv, WIFI_STATION_STATE)) {
 				if (!r8712_is_same_ibss(padapter,
 				     pnetwork)) {
-					/* if in WIFI_ADHOC_MASTER_STATE or
-					 *  WIFI_ADHOC_STATE, create bss or
-					 * rejoin again
-					 */
+					 
 					r8712_disassoc_cmd(padapter);
 					if (check_fwstate(pmlmepriv,
 					    _FW_LINKED))
@@ -189,9 +163,7 @@ void r8712_set_802_11_ssid(struct _adapter *padapter,
 							    WIFI_ADHOC_STATE);
 					}
 				} else {
-					/* driver is in
-					 * WIFI_ADHOC_MASTER_STATE
-					 */
+					 
 					goto _Abort_Set_SSID;
 				}
 			}
@@ -241,16 +213,11 @@ void r8712_set_802_11_infrastructure_mode(struct _adapter *padapter,
 		if (check_fwstate(pmlmepriv, _FW_LINKED) ||
 		    (*pold_state == Ndis802_11Infrastructure) ||
 		    (*pold_state == Ndis802_11IBSS)) {
-			/* will clr Linked_state before this function,
-			 * we must have checked whether issue dis-assoc_cmd or
-			 * not
-			 */
+			 
 			r8712_ind_disconnect(padapter);
 		}
 		*pold_state = networktype;
-		/* clear WIFI_STATION_STATE; WIFI_AP_STATE; WIFI_ADHOC_STATE;
-		 * WIFI_ADHOC_MASTER_STATE
-		 */
+		 
 		_clr_fwstate_(pmlmepriv, WIFI_STATION_STATE | WIFI_AP_STATE |
 			      WIFI_ADHOC_STATE | WIFI_ADHOC_MASTER_STATE);
 		switch (networktype) {
@@ -300,7 +267,7 @@ u8 r8712_set_802_11_bssid_list_scan(struct _adapter *padapter)
 	spin_lock_irqsave(&pmlmepriv->lock, irqL);
 	if (check_fwstate(pmlmepriv, _FW_UNDER_SURVEY | _FW_UNDER_LINKING) ||
 	    pmlmepriv->sitesurveyctrl.traffic_busy) {
-		/* Scan or linking is in progress, do nothing. */
+		 
 		ret = (u8)check_fwstate(pmlmepriv, _FW_UNDER_SURVEY);
 	} else {
 		r8712_free_network_queue(padapter);
@@ -318,7 +285,7 @@ u8 r8712_set_802_11_authentication_mode(struct _adapter *padapter,
 
 	psecuritypriv->ndisauthtype = authmode;
 	if (psecuritypriv->ndisauthtype > 3)
-		psecuritypriv->AuthAlgrthm = 2; /* 802.1x */
+		psecuritypriv->AuthAlgrthm = 2;  
 	if (r8712_set_auth(padapter, psecuritypriv))
 		ret = false;
 	else

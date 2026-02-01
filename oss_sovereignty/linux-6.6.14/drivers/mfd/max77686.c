@@ -1,12 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0+
-//
-// max77686.c - mfd core driver for the Maxim 77686/802
-//
-// Copyright (C) 2012 Samsung Electronics
-// Chiwoong Byun <woong.byun@samsung.com>
-// Jonghwa Lee <jonghwa3.lee@samsung.com>
-//
-//This driver is based on max8997.c
+
+
+
+
+
+
+
+
+
 
 #include <linux/export.h>
 #include <linux/slab.h>
@@ -112,7 +112,7 @@ static const struct regmap_config max77802_regmap_config = {
 };
 
 static const struct regmap_irq max77686_irqs[] = {
-	/* INT1 interrupts */
+	 
 	{ .reg_offset = 0, .mask = MAX77686_INT1_PWRONF_MSK, },
 	{ .reg_offset = 0, .mask = MAX77686_INT1_PWRONR_MSK, },
 	{ .reg_offset = 0, .mask = MAX77686_INT1_JIGONBF_MSK, },
@@ -121,7 +121,7 @@ static const struct regmap_irq max77686_irqs[] = {
 	{ .reg_offset = 0, .mask = MAX77686_INT1_ACOKBR_MSK, },
 	{ .reg_offset = 0, .mask = MAX77686_INT1_ONKEY1S_MSK, },
 	{ .reg_offset = 0, .mask = MAX77686_INT1_MRSTB_MSK, },
-	/* INT2 interrupts */
+	 
 	{ .reg_offset = 1, .mask = MAX77686_INT2_140C_MSK, },
 	{ .reg_offset = 1, .mask = MAX77686_INT2_120C_MSK, },
 };
@@ -140,7 +140,7 @@ static const struct regmap_irq_chip max77802_irq_chip = {
 	.status_base		= MAX77802_REG_INT1,
 	.mask_base		= MAX77802_REG_INT1MSK,
 	.num_regs		= 2,
-	.irqs			= max77686_irqs, /* same masks as 77686 */
+	.irqs			= max77686_irqs,  
 	.num_irqs		= ARRAY_SIZE(max77686_irqs),
 };
 
@@ -233,15 +233,7 @@ static int max77686_suspend(struct device *dev)
 	if (device_may_wakeup(dev))
 		enable_irq_wake(max77686->irq);
 
-	/*
-	 * IRQ must be disabled during suspend because if it happens
-	 * while suspended it will be handled before resuming I2C.
-	 *
-	 * When device is woken up from suspend (e.g. by RTC wake alarm),
-	 * an interrupt occurs before resuming I2C bus controller.
-	 * Interrupt handler tries to read registers but this read
-	 * will fail because I2C is still suspended.
-	 */
+	 
 	disable_irq(max77686->irq);
 
 	return 0;

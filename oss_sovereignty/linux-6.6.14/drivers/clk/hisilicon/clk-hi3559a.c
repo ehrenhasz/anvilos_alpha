@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Hisilicon Hi3559A clock driver
- *
- * Copyright (c) 2019-2020, Huawei Tech. Co., Ltd.
- *
- * Author: Dongjiu Geng <gengdongjiu@huawei.com>
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/module.h>
@@ -57,7 +51,7 @@ struct hi3559av100_clk_pll {
 	u8	refdiv_width;
 };
 
-/* soc clk config */
+ 
 static const struct hisi_fixed_rate_clock hi3559av100_fixed_rate_clks_crg[] = {
 	{ HI3559AV100_FIXED_1188M, "1188m", NULL, 0, 1188000000, },
 	{ HI3559AV100_FIXED_1000M, "1000m", NULL, 0, 1000000000, },
@@ -437,7 +431,7 @@ static unsigned long clk_pll_recalc_rate(struct clk_hw *hw,
 	val &= ((1 << clk->refdiv_width) - 1);
 	refdiv_val = val;
 
-	/* rate = 24000000 * (fbdiv + frac / (1<<24) ) / refdiv  */
+	 
 	rate = 0;
 	tmp = 24000000 * fbdiv_val + (24000000 * frac_val) / (1 << 24);
 	rate += tmp;
@@ -584,7 +578,7 @@ static struct hisi_fixed_rate_clock hi3559av100_shub_fixed_rate_clks[] = {
 	{ HI3559AV100_SHUB_UART_CLK_32K, "clk_uart_32K", NULL, 0, 32000UL, },
 };
 
-/* shub mux clk */
+ 
 static u32 shub_source_clk_mux_table[] = {0, 1, 2, 3};
 static const char *shub_source_clk_mux_p[] = {
 	"clk_source_24M", "clk_source_200M", "clk_source_300M", "clk_source_PLL"
@@ -610,9 +604,9 @@ static struct hisi_mux_clock hi3559av100_shub_mux_clks[] = {
 };
 
 
-/* shub div clk */
-static struct clk_div_table shub_spi_clk_table[] = {{0, 8}, {1, 4}, {2, 2}, {/*sentinel*/}};
-static struct clk_div_table shub_uart_div_clk_table[] = {{1, 8}, {2, 4}, {/*sentinel*/}};
+ 
+static struct clk_div_table shub_spi_clk_table[] = {{0, 8}, {1, 4}, {2, 2}, { }};
+static struct clk_div_table shub_uart_div_clk_table[] = {{1, 8}, {2, 4}, { }};
 
 static struct hisi_divider_clock hi3559av100_shub_div_clks[] = {
 	{ HI3559AV100_SHUB_SPI_SOURCE_CLK, "clk_spi_clk", "shub_clk", 0, 0x20, 24, 2,
@@ -623,7 +617,7 @@ static struct hisi_divider_clock hi3559av100_shub_div_clks[] = {
 	},
 };
 
-/* shub gate clk */
+ 
 static struct hisi_gate_clock hi3559av100_shub_gate_clks[] = {
 	{
 		HI3559AV100_SHUB_SPI0_CLK, "clk_shub_spi0", "clk_spi_clk",
@@ -680,12 +674,12 @@ static int hi3559av100_shub_default_clk_set(void)
 
 	crg_base = ioremap(CRG_BASE_ADDR, SZ_4K);
 
-	/* SSP: 192M/2 */
+	 
 	val = readl_relaxed(crg_base + 0x20);
 	val |= (0x2 << 24);
 	writel_relaxed(val, crg_base + 0x20);
 
-	/* UART: 192M/8 */
+	 
 	val = readl_relaxed(crg_base + 0x1C);
 	val |= (0x1 << 28);
 	writel_relaxed(val, crg_base + 0x1C);

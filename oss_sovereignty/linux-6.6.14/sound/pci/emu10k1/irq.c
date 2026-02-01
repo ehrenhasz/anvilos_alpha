@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  Copyright (c) by Jaroslav Kysela <perex@perex.cz>
- *                   Creative Labs, Inc.
- *  Routines for IRQ control of EMU10K1 chips
- */
+
+ 
 
 #include <linux/time.h>
 #include <sound/core.h>
@@ -155,7 +151,7 @@ irqreturn_t snd_emu10k1_interrupt(int irq, void *dev_id)
 			dev_err(emu->card->dev,
 				"unhandled interrupt: 0x%08x\n", status);
 		}
-		outl(orig_status, emu->port + IPR); /* ack all */
+		outl(orig_status, emu->port + IPR);  
 	}
 
 	return IRQ_RETVAL(handled);

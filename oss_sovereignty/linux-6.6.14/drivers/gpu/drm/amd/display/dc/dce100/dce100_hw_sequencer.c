@@ -1,27 +1,4 @@
-/*
- * Copyright 2015 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 #include "dm_services.h"
 #include "dc.h"
 #include "core_types.h"
@@ -31,7 +8,7 @@
 
 #include "dce110/dce110_hw_sequencer.h"
 
-/* include DCE10 register header files */
+ 
 #include "dce/dce_10_0_d.h"
 #include "dce/dce_10_0_sh_mask.h"
 
@@ -64,10 +41,8 @@ static const struct dce100_hw_seq_reg_offsets reg_offsets[] = {
 #define HW_REG_CRTC(reg, id)\
 	(reg + reg_offsets[id].crtc)
 
-/*******************************************************************************
- * Private definitions
- ******************************************************************************/
-/***************************PIPE_CONTROL***********************************/
+ 
+ 
 
 bool dce100_enable_display_power_gating(
 	struct dc *dc,
@@ -91,9 +66,7 @@ bool dce100_enable_display_power_gating(
 		bp_result = dcb->funcs->enable_disp_power_gating(
 						dcb, controller_id + 1, cntl);
 
-		/* Revert MASTER_UPDATE_MODE to 0 because bios sets it 2
-		 * by default when command table is called
-		 */
+		 
 		dm_write_reg(ctx,
 			HW_REG_CRTC(mmMASTER_UPDATE_MODE, controller_id),
 			0);
@@ -129,7 +102,7 @@ void dce100_optimize_bandwidth(
 			true);
 }
 
-/**************************************************************************/
+ 
 
 void dce100_hw_sequencer_construct(struct dc *dc)
 {

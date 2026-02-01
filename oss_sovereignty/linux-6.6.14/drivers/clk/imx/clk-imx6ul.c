@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2015 Freescale Semiconductor, Inc.
- */
+
+ 
 
 #include <dt-bindings/clock/imx6ul-clock.h>
 #include <linux/clk.h>
@@ -57,7 +55,7 @@ static const char *perclk_sels[] = { "ipg", "osc", };
 static const char *lcdif_sels[] = { "lcdif_podf", "ipp_di0", "ipp_di1", "ldb_di0", "ldb_di1", };
 static const char *csi_sels[] = { "osc", "pll2_pfd2_396m", "pll3_120m", "pll3_pfd1_540m", };
 static const char *sim_sels[] = { "sim_podf", "ipp_di0", "ipp_di1", "ldb_di0", "ldb_di1", };
-/* epdc_pre_sels, epdc_sels, esai_sels only exists on i.MX6ULL */
+ 
 static const char *epdc_pre_sels[] = { "pll2_bus", "pll3_usb_otg", "pll5_video_div", "pll2_pfd0_352m", "pll2_pfd2_396m", "pll3_pfd2_508m", };
 static const char *esai_sels[] = { "pll4_audio_div", "pll3_pfd2_508m", "pll5_video_div", "pll3_usb_otg", };
 static const char *epdc_sels[] = { "epdc_podf", "ipp_di0", "ipp_di1", "ldb_di0", "ldb_di1", };
@@ -143,7 +141,7 @@ static void __init imx6ul_clocks_init(struct device_node *ccm_node)
 	hws[IMX6UL_CLK_CKIL] = imx_get_clk_hw_by_name(ccm_node, "ckil");
 	hws[IMX6UL_CLK_OSC] = imx_get_clk_hw_by_name(ccm_node, "osc");
 
-	/* ipp_di clock is external input */
+	 
 	hws[IMX6UL_CLK_IPP_DI0] = imx_get_clk_hw_by_name(ccm_node, "ipp_di0");
 	hws[IMX6UL_CLK_IPP_DI1] = imx_get_clk_hw_by_name(ccm_node, "ipp_di1");
 
@@ -176,7 +174,7 @@ static void __init imx6ul_clocks_init(struct device_node *ccm_node)
 	hws[IMX6UL_PLL6_BYPASS] = imx_clk_hw_mux_flags("pll6_bypass", base + 0xe0, 16, 1, pll6_bypass_sels, ARRAY_SIZE(pll6_bypass_sels), CLK_SET_RATE_PARENT);
 	hws[IMX6UL_PLL7_BYPASS] = imx_clk_hw_mux_flags("pll7_bypass", base + 0x20, 16, 1, pll7_bypass_sels, ARRAY_SIZE(pll7_bypass_sels), CLK_SET_RATE_PARENT);
 
-	/* Do not bypass PLLs initially */
+	 
 	clk_set_parent(hws[IMX6UL_PLL1_BYPASS]->clk, hws[IMX6UL_CLK_PLL1]->clk);
 	clk_set_parent(hws[IMX6UL_PLL2_BYPASS]->clk, hws[IMX6UL_CLK_PLL2]->clk);
 	clk_set_parent(hws[IMX6UL_PLL3_BYPASS]->clk, hws[IMX6UL_CLK_PLL3]->clk);
@@ -193,23 +191,15 @@ static void __init imx6ul_clocks_init(struct device_node *ccm_node)
 	hws[IMX6UL_CLK_PLL6_ENET]	= imx_clk_hw_fixed_factor("pll6_enet",	"pll6_bypass", 1, 1);
 	hws[IMX6UL_CLK_PLL7_USB_HOST]	= imx_clk_hw_gate("pll7_usb_host",	"pll7_bypass", base + 0x20, 13);
 
-	/*
-	 * Bit 20 is the reserved and read-only bit, we do this only for:
-	 * - Do nothing for usbphy clk_enable/disable
-	 * - Keep refcount when do usbphy clk_enable/disable, in that case,
-	 * the clk framework many need to enable/disable usbphy's parent
-	 */
+	 
 	hws[IMX6UL_CLK_USBPHY1] = imx_clk_hw_gate("usbphy1", "pll3_usb_otg",  base + 0x10, 20);
 	hws[IMX6UL_CLK_USBPHY2] = imx_clk_hw_gate("usbphy2", "pll7_usb_host", base + 0x20, 20);
 
-	/*
-	 * usbphy*_gate needs to be on after system boots up, and software
-	 * never needs to control it anymore.
-	 */
+	 
 	hws[IMX6UL_CLK_USBPHY1_GATE] = imx_clk_hw_gate("usbphy1_gate", "dummy", base + 0x10, 6);
 	hws[IMX6UL_CLK_USBPHY2_GATE] = imx_clk_hw_gate("usbphy2_gate", "dummy", base + 0x20, 6);
 
-	/*					name		   parent_name	   reg		idx */
+	 
 	hws[IMX6UL_CLK_PLL2_PFD0] = imx_clk_hw_pfd("pll2_pfd0_352m", "pll2_bus",	   base + 0x100, 0);
 	hws[IMX6UL_CLK_PLL2_PFD1] = imx_clk_hw_pfd("pll2_pfd1_594m", "pll2_bus",	   base + 0x100, 1);
 	hws[IMX6UL_CLK_PLL2_PFD2] = imx_clk_hw_pfd("pll2_pfd2_396m", "pll2_bus",	   base + 0x100, 2);
@@ -238,7 +228,7 @@ static void __init imx6ul_clocks_init(struct device_node *ccm_node)
 	hws[IMX6UL_CLK_PLL5_VIDEO_DIV] = clk_hw_register_divider_table(NULL, "pll5_video_div", "pll5_post_div",
 		 CLK_SET_RATE_PARENT | CLK_SET_RATE_GATE, base + 0x170, 30, 2, 0, video_div_table, &imx_ccm_lock);
 
-	/*						   name		parent_name	 mult  div */
+	 
 	hws[IMX6UL_CLK_PLL2_198M] = imx_clk_hw_fixed_factor("pll2_198m", "pll2_pfd2_396m", 1,	2);
 	hws[IMX6UL_CLK_PLL3_80M]  = imx_clk_hw_fixed_factor("pll3_80m",  "pll3_usb_otg",   1,	6);
 	hws[IMX6UL_CLK_PLL3_60M]  = imx_clk_hw_fixed_factor("pll3_60m",  "pll3_usb_otg",   1,	8);
@@ -344,7 +334,7 @@ static void __init imx6ul_clocks_init(struct device_node *ccm_node)
 	hws[IMX6UL_CLK_AXI_PODF]	= imx_clk_hw_busy_divider("axi_podf",  "axi_sel",	base +  0x14, 16, 3,  base + 0x48, 0);
 	hws[IMX6UL_CLK_AHB]		= imx_clk_hw_busy_divider("ahb",	    "periph",	base +  0x14, 10, 3,  base + 0x48, 1);
 
-	/* CCGR0 */
+	 
 	hws[IMX6UL_CLK_AIPSTZ1]	= imx_clk_hw_gate2_flags("aips_tz1", "ahb", base + 0x68, 0, CLK_IS_CRITICAL);
 	hws[IMX6UL_CLK_AIPSTZ2]	= imx_clk_hw_gate2_flags("aips_tz2", "ahb", base + 0x68, 2, CLK_IS_CRITICAL);
 	hws[IMX6UL_CLK_APBHDMA]	= imx_clk_hw_gate2("apbh_dma",	"bch_podf",	base + 0x68,	4);
@@ -371,7 +361,7 @@ static void __init imx6ul_clocks_init(struct device_node *ccm_node)
 		hws[IMX6UL_CLK_AIPSTZ3]	= imx_clk_hw_gate2("aips_tz3",	"ahb",		 base + 0x80,	18);
 	hws[IMX6UL_CLK_GPIO2]		= imx_clk_hw_gate2("gpio2",	"ipg",		base + 0x68,	30);
 
-	/* CCGR1 */
+	 
 	hws[IMX6UL_CLK_ECSPI1]		= imx_clk_hw_gate2("ecspi1",	"ecspi_podf",	base + 0x6c,	0);
 	hws[IMX6UL_CLK_ECSPI2]		= imx_clk_hw_gate2("ecspi2",	"ecspi_podf",	base + 0x6c,	2);
 	hws[IMX6UL_CLK_ECSPI3]		= imx_clk_hw_gate2("ecspi3",	"ecspi_podf",	base + 0x6c,	4);
@@ -389,7 +379,7 @@ static void __init imx6ul_clocks_init(struct device_node *ccm_node)
 	hws[IMX6UL_CLK_GPIO1]		= imx_clk_hw_gate2("gpio1",	"ipg",		base + 0x6c,	26);
 	hws[IMX6UL_CLK_GPIO5]		= imx_clk_hw_gate2("gpio5",	"ipg",		base + 0x6c,	30);
 
-	/* CCGR2 */
+	 
 	if (clk_on_imx6ull()) {
 		hws[IMX6ULL_CLK_ESAI_EXTAL]	= imx_clk_hw_gate2_shared("esai_extal",	"esai_podf",	base + 0x70,	0, &share_count_esai);
 		hws[IMX6ULL_CLK_ESAI_IPG]	= imx_clk_hw_gate2_shared("esai_ipg",	"ahb",		base + 0x70,	0, &share_count_esai);
@@ -404,12 +394,8 @@ static void __init imx6ul_clocks_init(struct device_node *ccm_node)
 	hws[IMX6UL_CLK_LCDIF_APB]	= imx_clk_hw_gate2("lcdif_apb",	"axi",		base + 0x70,	28);
 	hws[IMX6UL_CLK_PXP]		= imx_clk_hw_gate2("pxp",		"axi",		base + 0x70,	30);
 
-	/* CCGR3 */
-	/*
-	 * Although the imx6ull reference manual lists CCGR2 as the csi clk
-	 * gate register, tests have shown that it is actually the CCGR3
-	 * register bit 0/1, same as for the imx6ul.
-	 */
+	 
+	 
 	hws[IMX6UL_CLK_CSI]		= imx_clk_hw_gate2("csi",	"csi_podf",	base + 0x74,	0);
 	hws[IMX6UL_CLK_UART5_IPG]	= imx_clk_hw_gate2("uart5_ipg",	"ipg",		base + 0x74,	2);
 	hws[IMX6UL_CLK_UART5_SERIAL]	= imx_clk_hw_gate2("uart5_serial",	"uart_podf",	base + 0x74,	2);
@@ -431,7 +417,7 @@ static void __init imx6ul_clocks_init(struct device_node *ccm_node)
 	hws[IMX6UL_CLK_MMDC_P1_IPG]	= imx_clk_hw_gate2_flags("mmdc_p1_ipg",	"ipg",		base + 0x74,	26, CLK_IS_CRITICAL);
 	hws[IMX6UL_CLK_AXI]		= imx_clk_hw_gate_flags("axi",	"axi_podf",	base + 0x74,	28, CLK_IS_CRITICAL);
 
-	/* CCGR4 */
+	 
 	hws[IMX6UL_CLK_PER_BCH]	= imx_clk_hw_gate2("per_bch",	"bch_podf",	base + 0x78,	12);
 	hws[IMX6UL_CLK_PWM1]		= imx_clk_hw_gate2("pwm1",		"perclk",	base + 0x78,	16);
 	hws[IMX6UL_CLK_PWM2]		= imx_clk_hw_gate2("pwm2",		"perclk",	base + 0x78,	18);
@@ -442,7 +428,7 @@ static void __init imx6ul_clocks_init(struct device_node *ccm_node)
 	hws[IMX6UL_CLK_GPMI_IO]	= imx_clk_hw_gate2("gpmi_io",	"enfc_podf",	base + 0x78,	28);
 	hws[IMX6UL_CLK_GPMI_APB]	= imx_clk_hw_gate2("gpmi_apb",	"bch_podf",	base + 0x78,	30);
 
-	/* CCGR5 */
+	 
 	hws[IMX6UL_CLK_ROM]		= imx_clk_hw_gate2_flags("rom",	"ahb",		base + 0x7c,	0,	CLK_IS_CRITICAL);
 	hws[IMX6UL_CLK_SDMA]		= imx_clk_hw_gate2("sdma",		"ahb",		base + 0x7c,	6);
 	hws[IMX6UL_CLK_KPP]		= imx_clk_hw_gate2("kpp",		"ipg",		base + 0x7c,	8);
@@ -461,7 +447,7 @@ static void __init imx6ul_clocks_init(struct device_node *ccm_node)
 	hws[IMX6UL_CLK_SAI2]		= imx_clk_hw_gate2_shared("sai2",		"sai2_podf",	base + 0x7c,	30, &share_count_sai2);
 	hws[IMX6UL_CLK_SAI2_IPG]	= imx_clk_hw_gate2_shared("sai2_ipg",	"ipg",		base + 0x7c,	30, &share_count_sai2);
 
-	/* CCGR6 */
+	 
 	hws[IMX6UL_CLK_USBOH3]		= imx_clk_hw_gate2("usboh3",	"ipg",		 base + 0x80,	0);
 	hws[IMX6UL_CLK_USDHC1]		= imx_clk_hw_gate2("usdhc1",	"usdhc1_podf",	 base + 0x80,	2);
 	hws[IMX6UL_CLK_USDHC2]		= imx_clk_hw_gate2("usdhc2",	"usdhc2_podf",	 base + 0x80,	4);
@@ -479,11 +465,11 @@ static void __init imx6ul_clocks_init(struct device_node *ccm_node)
 	hws[IMX6UL_CLK_PWM6]		= imx_clk_hw_gate2("pwm6",		"perclk",	 base +	0x80,	28);
 	hws[IMX6UL_CLK_PWM7]		= imx_clk_hw_gate2("pwm7",		"perclk",	 base + 0x80,	30);
 
-	/* CCOSR */
+	 
 	hws[IMX6UL_CLK_CKO1]		= imx_clk_hw_gate("cko1",		"cko1_podf",	 base + 0x60,	7);
 	hws[IMX6UL_CLK_CKO2]		= imx_clk_hw_gate("cko2",		"cko2_podf",	 base + 0x60,	24);
 
-	/* mask handshake of mmdc */
+	 
 	imx_mmdc_mask_handshake(base, 0);
 
 	hws[IMX6UL_CLK_ENET1_REF_PAD] = imx_obtain_fixed_of_clock(ccm_node, "enet1_ref_pad", 0);
@@ -501,25 +487,19 @@ static void __init imx6ul_clocks_init(struct device_node *ccm_node)
 
 	of_clk_add_hw_provider(np, of_clk_hw_onecell_get, clk_hw_data);
 
-	/*
-	 * Lower the AHB clock rate before changing the parent clock source,
-	 * as AHB clock rate can NOT be higher than 133MHz, but its parent
-	 * will be switched from 396MHz PFD to 528MHz PLL in order to increase
-	 * AXI clock rate, so we need to lower AHB rate first to make sure at
-	 * any time, AHB rate is <= 133MHz.
-	 */
+	 
 	clk_set_rate(hws[IMX6UL_CLK_AHB]->clk, 99000000);
 
-	/* Change periph_pre clock to pll2_bus to adjust AXI rate to 264MHz */
+	 
 	clk_set_parent(hws[IMX6UL_CLK_PERIPH_CLK2_SEL]->clk, hws[IMX6UL_CLK_OSC]->clk);
 	clk_set_parent(hws[IMX6UL_CLK_PERIPH]->clk, hws[IMX6UL_CLK_PERIPH_CLK2]->clk);
 	clk_set_parent(hws[IMX6UL_CLK_PERIPH_PRE]->clk, hws[IMX6UL_CLK_PLL2_BUS]->clk);
 	clk_set_parent(hws[IMX6UL_CLK_PERIPH]->clk, hws[IMX6UL_CLK_PERIPH_PRE]->clk);
 
-	/* Make sure AHB rate is 132MHz  */
+	 
 	clk_set_rate(hws[IMX6UL_CLK_AHB]->clk, 132000000);
 
-	/* set perclk to from OSC */
+	 
 	clk_set_parent(hws[IMX6UL_CLK_PERCLK_SEL]->clk, hws[IMX6UL_CLK_OSC]->clk);
 
 	clk_set_rate(hws[IMX6UL_CLK_ENET_REF]->clk, 50000000);

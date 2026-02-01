@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * selftest for sparc64's privileged ADI driver
- *
- * Author: Tom Hromatka <tom.hromatka@oracle.com>
- */
+
+ 
 #include <linux/kernel.h>
 #include <errno.h>
 #include <fcntl.h>
@@ -24,7 +20,7 @@
 #define DEBUG_LEVEL_4_BIT	(0x0008)
 #define DEBUG_TIMING_BIT	(0x1000)
 
-/* bit mask of enabled bits to print */
+ 
 #define DEBUG 0x0001
 
 #define DEBUG_PRINT_L1(...)	debug_print(DEBUG_LEVEL_1_BIT, __VA_ARGS__)
@@ -149,10 +145,7 @@ static int build_memory_map(void)
 		if (strstr(line, system_ram_str)) {
 			char *dash, *end_ptr;
 
-			/* Given a line like this:
-			 * d0400000-10ffaffff : System RAM
-			 * replace the "-" with a space
-			 */
+			 
 			dash = strstr(line, "-");
 			dash[0] = 0x20;
 
@@ -312,7 +305,7 @@ out:
 
 static int test0_prpw_aligned_1byte(int fd)
 {
-	/* somewhat arbitrarily chosen address */
+	 
 	unsigned long paddr =
 		(end_addr[range_count - 1] - 0x1000) & ~(ADI_BLKSZ - 1);
 	unsigned char version[1], expected_version;
@@ -346,7 +339,7 @@ out:
 #define TEST1_VERSION_SZ	4096
 static int test1_prpw_aligned_4096bytes(int fd)
 {
-	/* somewhat arbitrarily chosen address */
+	 
 	unsigned long paddr =
 		(end_addr[range_count - 1] - 0x6000) & ~(ADI_BLKSZ - 1);
 	unsigned char version[TEST1_VERSION_SZ],
@@ -386,7 +379,7 @@ out:
 #define TEST2_VERSION_SZ	10327
 static int test2_prpw_aligned_10327bytes(int fd)
 {
-	/* somewhat arbitrarily chosen address */
+	 
 	unsigned long paddr =
 		(start_addr[0] + 0x6000) & ~(ADI_BLKSZ - 1);
 	unsigned char version[TEST2_VERSION_SZ],
@@ -426,7 +419,7 @@ out:
 #define TEST3_VERSION_SZ	12541
 static int test3_prpw_unaligned_12541bytes(int fd)
 {
-	/* somewhat arbitrarily chosen address */
+	 
 	unsigned long paddr =
 		((start_addr[0] + 0xC000) & ~(ADI_BLKSZ - 1)) + 17;
 	unsigned char version[TEST3_VERSION_SZ],
@@ -479,7 +472,7 @@ static int test4_lseek(int fd)
 		TEST_STEP_FAILURE(ret);
 	}
 
-	/* seek to the current offset.  this should return EINVAL */
+	 
 	offset_out = seek_adi(fd, offset_in, SEEK_SET);
 	if (offset_out < 0 && errno == EINVAL)
 		DEBUG_PRINT_L2(
@@ -514,7 +507,7 @@ out:
 
 static int test5_rw_aligned_1byte(int fd)
 {
-	/* somewhat arbitrarily chosen address */
+	 
 	unsigned long paddr =
 		(end_addr[range_count - 1] - 0xF000) & ~(ADI_BLKSZ - 1);
 	unsigned char version, expected_version;
@@ -559,7 +552,7 @@ out:
 #define TEST6_VERSION_SZ        9434
 static int test6_rw_aligned_9434bytes(int fd)
 {
-	/* somewhat arbitrarily chosen address */
+	 
 	unsigned long paddr =
 		(end_addr[range_count - 1] - 0x5F000) & ~(ADI_BLKSZ - 1);
 	unsigned char version[TEST6_VERSION_SZ],
@@ -611,7 +604,7 @@ out:
 #define TEST7_VERSION_SZ        14963
 static int test7_rw_aligned_14963bytes(int fd)
 {
-	/* somewhat arbitrarily chosen address */
+	 
 	unsigned long paddr =
 	  ((start_addr[range_count - 1] + 0xF000) & ~(ADI_BLKSZ - 1)) + 39;
 	unsigned char version[TEST7_VERSION_SZ],
@@ -710,8 +703,6 @@ int main(int argc, char *argv[])
 	else
 		ksft_exit_pass();
 
-	/* it's impossible to get here, but the compiler throws a warning
-	 * about control reaching the end of non-void function.  bah.
-	 */
+	 
 	return 0;
 }

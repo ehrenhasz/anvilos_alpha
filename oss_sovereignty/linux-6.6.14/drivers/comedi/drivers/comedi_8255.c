@@ -1,32 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * comedi_8255.c
- * Generic 8255 digital I/O support
- *
- * Split from the Comedi "8255" driver module.
- *
- * COMEDI - Linux Control and Measurement Device Interface
- * Copyright (C) 1998 David A. Schleef <ds@schleef.org>
- */
 
-/*
- * Module: comedi_8255
- * Description: Generic 8255 support
- * Author: ds
- * Updated: Fri, 22 May 2015 12:14:17 +0000
- * Status: works
- *
- * This module is not used directly by end-users.  Rather, it is used by
- * other drivers to provide support for an 8255 "Programmable Peripheral
- * Interface" (PPI) chip.
- *
- * The classic in digital I/O.  The 8255 appears in Comedi as a single
- * digital I/O subdevice with 24 channels.  The channel 0 corresponds to
- * the 8255's port A, bit 0; channel 23 corresponds to port C, bit 7.
- * Direction configuration is done in blocks, with channels 0-7, 8-15,
- * 16-19, and 20-23 making up the 4 blocks.  The only 8255 mode
- * supported is mode 0.
- */
+ 
+
+ 
 
 #include <linux/module.h>
 #include <linux/comedi/comedidev.h>
@@ -98,7 +73,7 @@ static void subdev_8255_do_config(struct comedi_device *dev,
 	int config;
 
 	config = I8255_CTRL_CW;
-	/* 1 in io_bits indicates output, 1 in config indicates input */
+	 
 	if (!(s->io_bits & 0x0000ff))
 		config |= I8255_CTRL_A_IO;
 	if (!(s->io_bits & 0x00ff00))
@@ -173,32 +148,7 @@ static int __subdev_8255_init(struct comedi_device *dev,
 	return 0;
 }
 
-/**
- * subdev_8255_init - initialize DIO subdevice for driving I/O mapped 8255
- * @dev: comedi device owning subdevice
- * @s: comedi subdevice to initialize
- * @io: (optional) register I/O call-back function
- * @regbase: offset of 8255 registers from dev->iobase, or call-back context
- *
- * Initializes a comedi subdevice as a DIO subdevice driving an 8255 chip.
- *
- * If the optional I/O call-back function is provided, its prototype is of
- * the following form:
- *
- *   int my_8255_callback(struct comedi_device *dev, int dir, int port,
- *                        int data, unsigned long regbase);
- *
- * where 'dev', and 'regbase' match the values passed to this function,
- * 'port' is the 8255 port number 0 to 3 (including the control port), 'dir'
- * is the direction (0 for read, 1 for write) and 'data' is the value to be
- * written.  It should return 0 if writing or the value read if reading.
- *
- * If the optional I/O call-back function is not provided, an internal
- * call-back function is used which uses consecutive I/O port addresses
- * starting at dev->iobase + regbase.
- *
- * Return: -ENOMEM if failed to allocate memory, zero on success.
- */
+ 
 int subdev_8255_init(struct comedi_device *dev, struct comedi_subdevice *s,
 		     int (*io)(struct comedi_device *dev, int dir, int port,
 			       int data, unsigned long regbase),
@@ -208,32 +158,7 @@ int subdev_8255_init(struct comedi_device *dev, struct comedi_subdevice *s,
 }
 EXPORT_SYMBOL_GPL(subdev_8255_init);
 
-/**
- * subdev_8255_mm_init - initialize DIO subdevice for driving mmio-mapped 8255
- * @dev: comedi device owning subdevice
- * @s: comedi subdevice to initialize
- * @io: (optional) register I/O call-back function
- * @regbase: offset of 8255 registers from dev->mmio, or call-back context
- *
- * Initializes a comedi subdevice as a DIO subdevice driving an 8255 chip.
- *
- * If the optional I/O call-back function is provided, its prototype is of
- * the following form:
- *
- *   int my_8255_callback(struct comedi_device *dev, int dir, int port,
- *                        int data, unsigned long regbase);
- *
- * where 'dev', and 'regbase' match the values passed to this function,
- * 'port' is the 8255 port number 0 to 3 (including the control port), 'dir'
- * is the direction (0 for read, 1 for write) and 'data' is the value to be
- * written.  It should return 0 if writing or the value read if reading.
- *
- * If the optional I/O call-back function is not provided, an internal
- * call-back function is used which uses consecutive MMIO virtual addresses
- * starting at dev->mmio + regbase.
- *
- * Return: -ENOMEM if failed to allocate memory, zero on success.
- */
+ 
 int subdev_8255_mm_init(struct comedi_device *dev, struct comedi_subdevice *s,
 			int (*io)(struct comedi_device *dev, int dir, int port,
 				  int data, unsigned long regbase),
@@ -243,14 +168,7 @@ int subdev_8255_mm_init(struct comedi_device *dev, struct comedi_subdevice *s,
 }
 EXPORT_SYMBOL_GPL(subdev_8255_mm_init);
 
-/**
- * subdev_8255_regbase - get offset of 8255 registers or call-back context
- * @s: comedi subdevice
- *
- * Returns the 'regbase' parameter that was previously passed to
- * subdev_8255_init() or subdev_8255_mm_init() to set up the subdevice.
- * Only valid if the subdevice was set up successfully.
- */
+ 
 unsigned long subdev_8255_regbase(struct comedi_subdevice *s)
 {
 	struct subdev_8255_private *spriv = s->private;

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Benchmark of /proc/kallsyms parsing.
- *
- * Copyright 2020 Google LLC.
- */
+
+ 
 #include <stdlib.h>
 #include "bench.h"
 #include "../util/stat.h"

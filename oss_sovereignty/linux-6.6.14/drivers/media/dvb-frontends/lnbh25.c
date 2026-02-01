@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * lnbh25.c
- *
- * Driver for LNB supply and control IC LNBH25
- *
- * Copyright (C) 2014 NetUP Inc.
- * Copyright (C) 2014 Sergey Kozlov <serjk@netup.ru>
- * Copyright (C) 2014 Abylay Ospan <aospan@netup.ru>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -17,15 +9,7 @@
 #include <media/dvb_frontend.h>
 #include "lnbh25.h"
 
-/**
- * struct lnbh25_priv - LNBH25 driver private data
- * @i2c:		pointer to the I2C adapter structure
- * @i2c_address:	I2C address of LNBH25 SEC chip
- * @config:		Registers configuration:
- *			offset 0: 1st register address, always 0x02 (DATA1)
- *			offset 1: DATA1 register value
- *			offset 2: DATA2 register value
- */
+ 
 struct lnbh25_priv {
 	struct i2c_adapter	*i2c;
 	u8			i2c_address;

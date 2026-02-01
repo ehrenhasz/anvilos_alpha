@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) STMicroelectronics SA 2013
- * Author: Hugues Fruchet <hugues.fruchet@st.com> for STMicroelectronics.
- */
+ 
+ 
 
 #ifndef DELTA_MJPEG_H
 #define DELTA_MJPEG_H
@@ -10,7 +7,7 @@
 #include "delta.h"
 
 struct mjpeg_component {
-	unsigned int id;/* 1=Y, 2=Cb, 3=Cr, 4=L, 5=Q */
+	unsigned int id; 
 	unsigned int h_sampling_factor;
 	unsigned int v_sampling_factor;
 	unsigned int quant_table_index;
@@ -32,4 +29,4 @@ int delta_mjpeg_read_header(struct delta_ctx *pctx,
 			    struct mjpeg_header *header,
 			    unsigned int *data_offset);
 
-#endif /* DELTA_MJPEG_H */
+#endif  

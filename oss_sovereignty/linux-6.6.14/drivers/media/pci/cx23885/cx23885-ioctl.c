@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  Driver for the Conexant CX23885/7/8 PCIe bridge
- *
- *  Various common ioctl() support functions
- *
- *  Copyright (c) 2009 Andy Walls <awalls@md.metrocast.net>
- */
+
+ 
 
 #include "cx23885.h"
 #include "cx23885-ioctl.h"
@@ -40,7 +34,7 @@ static int cx23417_g_register(struct cx23885_dev *dev,
 		return -EINVAL;
 
 	if (mc417_register_read(dev, (u16) reg->reg, &value))
-		return -EINVAL; /* V4L2 spec, but -EREMOTEIO really */
+		return -EINVAL;  
 
 	reg->size = 4;
 	reg->val = value;
@@ -75,7 +69,7 @@ static int cx23417_s_register(struct cx23885_dev *dev,
 		return -EINVAL;
 
 	if (mc417_register_write(dev, (u16) reg->reg, (u32) reg->val))
-		return -EINVAL; /* V4L2 spec, but -EREMOTEIO really */
+		return -EINVAL;  
 	return 0;
 }
 

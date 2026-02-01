@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2016 Texas Instruments Incorporated - https://www.ti.com/
- * Author: Tomi Valkeinen <tomi.valkeinen@ti.com>
- */
+ 
+ 
 
 #ifndef __OMAP_DRM_DSS_H
 #define __OMAP_DRM_DSS_H
@@ -148,7 +145,7 @@ struct omap_dss_cpr_coefs {
 
 struct omap_overlay_info {
 	dma_addr_t paddr;
-	dma_addr_t p_uv_addr;  /* for NV12 format */
+	dma_addr_t p_uv_addr;   
 	u16 screen_width;
 	u16 width;
 	u16 height;
@@ -158,8 +155,8 @@ struct omap_overlay_info {
 
 	u16 pos_x;
 	u16 pos_y;
-	u16 out_width;	/* if 0, out_width == width */
-	u16 out_height;	/* if 0, out_height == height */
+	u16 out_width;	 
+	u16 out_height;	 
 	u8 global_alpha;
 	u8 pre_mult_alpha;
 	u8 zorder;
@@ -208,11 +205,7 @@ struct omap_dss_device {
 
 	struct list_head list;
 
-	/*
-	 * DSS type that this device generates (for DSS internal devices) or
-	 * requires (for external encoders, connectors and panels). Must be a
-	 * non-zero (different than OMAP_DISPLAY_TYPE_NONE) value.
-	 */
+	 
 	enum omap_display_type type;
 
 	const char *name;
@@ -220,15 +213,15 @@ struct omap_dss_device {
 	const struct omapdss_dsi_ops *dsi_ops;
 	u32 bus_flags;
 
-	/* OMAP DSS output specific fields */
+	 
 
-	/* DISPC channel for this output */
+	 
 	enum omap_channel dispc_channel;
 
-	/* output instance */
+	 
 	enum omap_dss_output_id id;
 
-	/* port number in DT */
+	 
 	unsigned int of_port;
 };
 
@@ -314,4 +307,4 @@ void omapdss_gather_components(struct device *dev);
 int omap_dss_init(void);
 void omap_dss_exit(void);
 
-#endif /* __OMAP_DRM_DSS_H */
+#endif  

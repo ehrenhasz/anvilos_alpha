@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef __CAP_HELPERS_H
 #define __CAP_HELPERS_H
 

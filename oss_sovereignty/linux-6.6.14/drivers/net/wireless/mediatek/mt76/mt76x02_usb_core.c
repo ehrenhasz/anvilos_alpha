@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: ISC
-/*
- * Copyright (C) 2018 Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>
- */
+
+ 
 
 #include "mt76x02_usb.h"
 
@@ -47,12 +45,7 @@ int mt76x02u_skb_dma_info(struct sk_buff *skb, int port, u32 flags)
 {
 	u32 info, pad;
 
-	/* Buffer layout:
-	 *	|   4B   | xfer len |      pad       |  4B  |
-	 *	| TXINFO | pkt/cmd  | zero pad to 4B | zero |
-	 *
-	 * length field of TXINFO should be set to 'xfer len'.
-	 */
+	 
 	info = FIELD_PREP(MT_TXD_INFO_LEN, round_up(skb->len, 4)) |
 	       FIELD_PREP(MT_TXD_INFO_DPORT, port) | flags;
 	put_unaligned_le32(info, skb_push(skb, sizeof(info)));
@@ -82,7 +75,7 @@ int mt76x02u_tx_prepare_skb(struct mt76_dev *mdev, void *data,
 
 	pid = mt76_tx_status_skb_add(mdev, wcid, tx_info->skb);
 
-	/* encode packet rate for no-skb packet id to fix up status reporting */
+	 
 	if (pid == MT_PACKET_ID_NO_SKB)
 		pid = MT_PACKET_ID_HAS_RATE |
 		      (le16_to_cpu(txwi->rate) & MT_PKTID_RATE) |
@@ -109,20 +102,17 @@ int mt76x02u_tx_prepare_skb(struct mt76_dev *mdev, void *data,
 
 	err = mt76x02u_skb_dma_info(tx_info->skb, WLAN_PORT, flags);
 	if (err && wcid)
-		/* Release pktid in case of error. */
+		 
 		idr_remove(&wcid->pktid, pid);
 
 	return err;
 }
 EXPORT_SYMBOL_GPL(mt76x02u_tx_prepare_skb);
 
-/* Trigger pre-TBTT event 8 ms before TBTT */
+ 
 #define PRE_TBTT_USEC 8000
 
-/* Beacon SRAM memory is limited to 8kB. We need to send PS buffered frames
- * (which can be 1500 bytes big) via beacon memory. That make limit of number
- * of slots to 5. TODO: dynamically calculate offsets in beacon SRAM.
- */
+ 
 #define N_BCN_SLOTS 5
 
 static void mt76x02u_start_pre_tbtt_timer(struct mt76x02_dev *dev)
@@ -130,7 +120,7 @@ static void mt76x02u_start_pre_tbtt_timer(struct mt76x02_dev *dev)
 	u64 time;
 	u32 tbtt;
 
-	/* Get remaining TBTT in usec */
+	 
 	tbtt = mt76_get_field(dev, MT_TBTT_TIMER, MT_TBTT_TIMER_VAL);
 	tbtt *= 32;
 
@@ -148,7 +138,7 @@ static void mt76x02u_restart_pre_tbtt_timer(struct mt76x02_dev *dev)
 	u32 tbtt, dw0, dw1;
 	u64 tsf, time;
 
-	/* Get remaining TBTT in usec */
+	 
 	tbtt = mt76_get_field(dev, MT_TBTT_TIMER, MT_TBTT_TIMER_VAL);
 	tbtt *= 32;
 
@@ -157,10 +147,10 @@ static void mt76x02u_restart_pre_tbtt_timer(struct mt76x02_dev *dev)
 	tsf = (u64)dw0 << 32 | dw1;
 	dev_dbg(dev->mt76.dev, "TSF: %llu us TBTT %u us\n", tsf, tbtt);
 
-	/* Convert beacon interval in TU (1024 usec) to nsec */
+	 
 	time = ((1000000000ull * dev->mt76.beacon_int) >> 10);
 
-	/* Adjust time to trigger hrtimer 8ms before TBTT */
+	 
 	if (tbtt < PRE_TBTT_USEC)
 		time -= (PRE_TBTT_USEC - tbtt) * 1000ull;
 	else
@@ -174,7 +164,7 @@ static void mt76x02u_stop_pre_tbtt_timer(struct mt76x02_dev *dev)
 	do {
 		hrtimer_cancel(&dev->pre_tbtt_timer);
 		cancel_work_sync(&dev->pre_tbtt_work);
-		/* Timer can be rearmed by work. */
+		 
 	} while (hrtimer_active(&dev->pre_tbtt_timer));
 }
 
@@ -194,7 +184,7 @@ static void mt76x02u_pre_tbtt_work(struct work_struct *work)
 
 	mt76x02_resync_beacon_timer(dev);
 
-	/* Prevent corrupt transmissions during update */
+	 
 	mt76_set(dev, MT_BCN_BYPASS_MASK, 0xffff);
 	dev->beacon_data_count = 0;
 

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <errno.h>
 #include <linux/err.h>
 #include <inttypes.h>
@@ -38,22 +38,7 @@ double avg_stats(struct stats *stats)
 	return stats->mean;
 }
 
-/*
- * http://en.wikipedia.org/wiki/Algorithms_for_calculating_variance
- *
- *       (\Sum n_i^2) - ((\Sum n_i)^2)/n
- * s^2 = -------------------------------
- *                  n - 1
- *
- * http://en.wikipedia.org/wiki/Stddev
- *
- * The std dev of the mean is related to the std dev by:
- *
- *             s
- * s_mean = -------
- *          sqrt(n)
- *
- */
+ 
 double stddev_stats(struct stats *stats)
 {
 	double variance, variance_mean;
@@ -268,10 +253,7 @@ static void evsel__copy_res_stats(struct evsel *evsel)
 {
 	struct perf_stat_evsel *ps = evsel->stats;
 
-	/*
-	 * For GLOBAL aggregation mode, it updates the counts for each run
-	 * in the evsel->stats.res_stats.  See perf_stat_process_counter().
-	 */
+	 
 	*ps->aggr[0].counts.values = avg_stats(&ps->res_stats);
 }
 
@@ -326,14 +308,7 @@ static int check_per_pkg(struct evsel *counter, struct perf_counts_values *vals,
 		counter->per_pkg_mask = mask;
 	}
 
-	/*
-	 * we do not consider an event that has not run as a good
-	 * instance to mark a package as used (skip=1). Otherwise
-	 * we may run into a situation where the first CPU in a package
-	 * is not running anything, yet the second is, and this function
-	 * would mark the package as used after the first CPU and would
-	 * not read the values from the second CPU.
-	 */
+	 
 	if (!(vals->run && vals->ena))
 		return 0;
 
@@ -341,10 +316,7 @@ static int check_per_pkg(struct evsel *counter, struct perf_counts_values *vals,
 	if (s < 0)
 		return -1;
 
-	/*
-	 * On multi-die system, die_id > 0. On no-die system, die_id = 0.
-	 * We use hashmap(socket, die) to check the used socket+die pair.
-	 */
+	 
 	d = cpu__get_die_id(cpu);
 	if (d < 0)
 		return -1;
@@ -367,15 +339,15 @@ static bool evsel__count_has_error(struct evsel *evsel,
 				   struct perf_counts_values *count,
 				   struct perf_stat_config *config)
 {
-	/* the evsel was failed already */
+	 
 	if (evsel->err || evsel->counts->scaled == -1)
 		return true;
 
-	/* this is meaningful for CPU aggregation modes only */
+	 
 	if (config->aggr_mode == AGGR_GLOBAL)
 		return false;
 
-	/* it's considered ok when it actually ran */
+	 
 	if (count->ena != 0 && count->run != 0)
 		return false;
 
@@ -406,10 +378,7 @@ process_counter_values(struct perf_stat_config *config, struct evsel *evsel,
 	if (config->aggr_mode == AGGR_THREAD) {
 		struct perf_counts_values *aggr_counts = &ps->aggr[thread].counts;
 
-		/*
-		 * Skip value 0 when enabling --per-thread globally,
-		 * otherwise too many 0 output.
-		 */
+		 
 		if (count->val == 0 && config->system_wide)
 			return 0;
 
@@ -434,11 +403,7 @@ process_counter_values(struct perf_stat_config *config, struct evsel *evsel,
 			ps_aggr = &ps->aggr[i];
 			ps_aggr->nr++;
 
-			/*
-			 * When any result is bad, make them all to give consistent output
-			 * in interval mode.  But per-task counters can have 0 enabled time
-			 * when some tasks are idle.
-			 */
+			 
 			if (evsel__count_has_error(evsel, count, config) && !ps_aggr->failed) {
 				ps_aggr->counts.val = 0;
 				ps_aggr->counts.ena = 0;
@@ -493,10 +458,7 @@ int perf_stat_process_counter(struct perf_stat_config *config,
 	if (config->aggr_mode != AGGR_GLOBAL)
 		return 0;
 
-	/*
-	 * GLOBAL aggregation mode only has a single aggr counts,
-	 * so we can use ps->aggr[0] as the actual output.
-	 */
+	 
 	count = ps->aggr[0].counts.values;
 	update_stats(&ps->res_stats, *count);
 
@@ -526,7 +488,7 @@ static int evsel__merge_aggr_counters(struct evsel *evsel, struct evsel *alias)
 		struct perf_counts_values *aggr_counts_a = &ps_a->aggr[i].counts;
 		struct perf_counts_values *aggr_counts_b = &ps_b->aggr[i].counts;
 
-		/* NB: don't increase aggr.nr for aliases */
+		 
 
 		aggr_counts_a->val += aggr_counts_b->val;
 		aggr_counts_a->ena += aggr_counts_b->ena;
@@ -535,7 +497,7 @@ static int evsel__merge_aggr_counters(struct evsel *evsel, struct evsel *alias)
 
 	return 0;
 }
-/* events should have the same name, scale, unit, cgroup but on different PMUs */
+ 
 static bool evsel__is_alias(struct evsel *evsel_a, struct evsel *evsel_b)
 {
 	if (strcmp(evsel__name(evsel_a), evsel__name(evsel_b)))
@@ -563,7 +525,7 @@ static void evsel__merge_aliases(struct evsel *evsel)
 
 	alias = list_prepare_entry(evsel, &(evlist->core.entries), core.node);
 	list_for_each_entry_continue(alias, &evlist->core.entries, core.node) {
-		/* Merge the same events on different PMUs. */
+		 
 		if (evsel__is_alias(evsel, alias)) {
 			evsel__merge_aggr_counters(evsel, alias);
 			alias->merged_stat = true;
@@ -579,7 +541,7 @@ static bool evsel__should_merge_hybrid(const struct evsel *evsel,
 
 static void evsel__merge_stats(struct evsel *evsel, struct perf_stat_config *config)
 {
-	/* this evsel is already merged */
+	 
 	if (evsel->merged_stat)
 		return;
 
@@ -587,7 +549,7 @@ static void evsel__merge_stats(struct evsel *evsel, struct perf_stat_config *con
 		evsel__merge_aliases(evsel);
 }
 
-/* merge the same uncore and hybrid events if requested */
+ 
 void perf_stat_merge_counters(struct perf_stat_config *config, struct evlist *evlist)
 {
 	struct evsel *evsel;
@@ -607,7 +569,7 @@ static void evsel__update_percore_stats(struct evsel *evsel, struct aggr_cpu_id 
 	struct perf_cpu cpu;
 	int idx;
 
-	/* collect per-core counts */
+	 
 	perf_cpu_map__for_each_cpu(cpu, idx, evsel->core.cpus) {
 		struct perf_stat_aggr *aggr = &ps->aggr[idx];
 
@@ -620,7 +582,7 @@ static void evsel__update_percore_stats(struct evsel *evsel, struct aggr_cpu_id 
 		counts.run += aggr->counts.run;
 	}
 
-	/* update aggregated per-core counts for each CPU */
+	 
 	perf_cpu_map__for_each_cpu(cpu, idx, evsel->core.cpus) {
 		struct perf_stat_aggr *aggr = &ps->aggr[idx];
 
@@ -636,7 +598,7 @@ static void evsel__update_percore_stats(struct evsel *evsel, struct aggr_cpu_id 
 	}
 }
 
-/* we have an aggr_map for cpu, but want to aggregate the counters per-core */
+ 
 static void evsel__process_percore(struct evsel *evsel)
 {
 	struct perf_stat_evsel *ps = evsel->stats;
@@ -658,7 +620,7 @@ static void evsel__process_percore(struct evsel *evsel)
 	}
 }
 
-/* process cpu stats on per-core events */
+ 
 void perf_stat_process_percore(struct perf_stat_config *config, struct evlist *evlist)
 {
 	struct evsel *evsel;
@@ -753,20 +715,13 @@ int create_perf_stat_counter(struct evsel *evsel,
 	attr->read_format = PERF_FORMAT_TOTAL_TIME_ENABLED |
 			    PERF_FORMAT_TOTAL_TIME_RUNNING;
 
-	/*
-	 * The event is part of non trivial group, let's enable
-	 * the group read (for leader) and ID retrieval for all
-	 * members.
-	 */
+	 
 	if (leader->core.nr_members > 1)
 		attr->read_format |= PERF_FORMAT_ID|PERF_FORMAT_GROUP;
 
 	attr->inherit = !config->no_inherit && list_empty(&evsel->bpf_counter_list);
 
-	/*
-	 * Some events get initialized with sample_(period/type) set,
-	 * like tracepoints. Clear it up for counting.
-	 */
+	 
 	attr->sample_period = 0;
 
 	if (config->identifier)
@@ -782,11 +737,7 @@ int create_perf_stat_counter(struct evsel *evsel,
 		attr->exclude_user   = 1;
 	}
 
-	/*
-	 * Disabling all counters initially, they will be enabled
-	 * either manually by us or by kernel via enable_on_exec
-	 * set later.
-	 */
+	 
 	if (evsel__is_group_leader(evsel)) {
 		attr->disabled = 1;
 

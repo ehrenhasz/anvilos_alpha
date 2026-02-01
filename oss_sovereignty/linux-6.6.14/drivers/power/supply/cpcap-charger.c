@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Motorola CPCAP PMIC battery charger driver
- *
- * Copyright (C) 2017 Tony Lindgren <tony@atomide.com>
- *
- * Rewritten for Linux power framework with some parts based on
- * earlier driver found in the Motorola Linux kernel:
- *
- * Copyright (C) 2009-2010 Motorola, Inc.
- */
+
+ 
 
 #include <linux/atomic.h>
 #include <linux/init.h>
@@ -30,43 +21,32 @@
 #include <linux/iio/consumer.h>
 #include <linux/mfd/motorola-cpcap.h>
 
-/*
- * CPCAP_REG_CRM register bits. For documentation of somewhat similar hardware,
- * see NXP "MC13783 Power Management and Audio Circuit Users's Guide"
- * MC13783UG.pdf chapter "8.5 Battery Interface Register Summary". The registers
- * and values for CPCAP are different, but some of the internal components seem
- * similar. Also see the Motorola Linux kernel cpcap-regbits.h. CPCAP_REG_CHRGR_1
- * bits that seem to describe the CRM register.
- */
-#define CPCAP_REG_CRM_UNUSED_641_15	BIT(15)	/* 641 = register number */
-#define CPCAP_REG_CRM_UNUSED_641_14	BIT(14)	/* 641 = register number */
-#define CPCAP_REG_CRM_CHRG_LED_EN	BIT(13)	/* Charger LED */
-#define CPCAP_REG_CRM_RVRSMODE		BIT(12)	/* USB VBUS output enable */
-#define CPCAP_REG_CRM_ICHRG_TR1		BIT(11)	/* Trickle charge current */
+ 
+#define CPCAP_REG_CRM_UNUSED_641_15	BIT(15)	 
+#define CPCAP_REG_CRM_UNUSED_641_14	BIT(14)	 
+#define CPCAP_REG_CRM_CHRG_LED_EN	BIT(13)	 
+#define CPCAP_REG_CRM_RVRSMODE		BIT(12)	 
+#define CPCAP_REG_CRM_ICHRG_TR1		BIT(11)	 
 #define CPCAP_REG_CRM_ICHRG_TR0		BIT(10)
-#define CPCAP_REG_CRM_FET_OVRD		BIT(9)	/* 0 = hardware, 1 = FET_CTRL */
-#define CPCAP_REG_CRM_FET_CTRL		BIT(8)	/* BPFET 1 if FET_OVRD set */
-#define CPCAP_REG_CRM_VCHRG3		BIT(7)	/* Charge voltage bits */
+#define CPCAP_REG_CRM_FET_OVRD		BIT(9)	 
+#define CPCAP_REG_CRM_FET_CTRL		BIT(8)	 
+#define CPCAP_REG_CRM_VCHRG3		BIT(7)	 
 #define CPCAP_REG_CRM_VCHRG2		BIT(6)
 #define CPCAP_REG_CRM_VCHRG1		BIT(5)
 #define CPCAP_REG_CRM_VCHRG0		BIT(4)
-#define CPCAP_REG_CRM_ICHRG3		BIT(3)	/* Charge current bits */
+#define CPCAP_REG_CRM_ICHRG3		BIT(3)	 
 #define CPCAP_REG_CRM_ICHRG2		BIT(2)
 #define CPCAP_REG_CRM_ICHRG1		BIT(1)
 #define CPCAP_REG_CRM_ICHRG0		BIT(0)
 
-/* CPCAP_REG_CRM trickle charge voltages */
+ 
 #define CPCAP_REG_CRM_TR(val)		(((val) & 0x3) << 10)
 #define CPCAP_REG_CRM_TR_0A00		CPCAP_REG_CRM_TR(0x0)
 #define CPCAP_REG_CRM_TR_0A24		CPCAP_REG_CRM_TR(0x1)
 #define CPCAP_REG_CRM_TR_0A48		CPCAP_REG_CRM_TR(0x2)
 #define CPCAP_REG_CRM_TR_0A72		CPCAP_REG_CRM_TR(0x4)
 
-/*
- * CPCAP_REG_CRM charge voltages based on the ADC channel 1 values.
- * Note that these register bits don't match MC13783UG.pdf VCHRG
- * register bits.
- */
+ 
 #define CPCAP_REG_CRM_VCHRG(val)	(((val) & 0xf) << 4)
 #define CPCAP_REG_CRM_VCHRG_3V80	CPCAP_REG_CRM_VCHRG(0x0)
 #define CPCAP_REG_CRM_VCHRG_4V10	CPCAP_REG_CRM_VCHRG(0x1)
@@ -85,13 +65,7 @@
 #define CPCAP_REG_CRM_VCHRG_4V42	CPCAP_REG_CRM_VCHRG(0xe)
 #define CPCAP_REG_CRM_VCHRG_4V44	CPCAP_REG_CRM_VCHRG(0xf)
 
-/*
- * CPCAP_REG_CRM charge currents. These seem to match MC13783UG.pdf
- * values in "Table 8-3. Charge Path Regulator Current Limit
- * Characteristics" for the nominal values.
- *
- * Except 70mA and 1.596A and unlimited, these are simply 88.7mA / step.
- */
+ 
 #define CPCAP_REG_CRM_ICHRG(val)	(((val) & 0xf) << 0)
 #define CPCAP_REG_CRM_ICHRG_0A000	CPCAP_REG_CRM_ICHRG(0x0)
 #define CPCAP_REG_CRM_ICHRG_0A070	CPCAP_REG_CRM_ICHRG(0x1)
@@ -110,8 +84,8 @@
 #define CPCAP_REG_CRM_ICHRG_1A596	CPCAP_REG_CRM_ICHRG(0xe)
 #define CPCAP_REG_CRM_ICHRG_NO_LIMIT	CPCAP_REG_CRM_ICHRG(0xf)
 
-/* CPCAP_REG_VUSBC register bits needed for VBUS */
-#define CPCAP_BIT_VBUS_SWITCH		BIT(0)	/* VBUS boost to 5V */
+ 
+#define CPCAP_BIT_VBUS_SWITCH		BIT(0)	 
 
 enum {
 	CPCAP_CHARGER_IIO_BATTDET,
@@ -128,13 +102,13 @@ struct cpcap_charger_ddata {
 	struct list_head irq_list;
 	struct delayed_work detect_work;
 	struct delayed_work vbus_work;
-	struct gpio_desc *gpio[2];		/* gpio_reven0 & 1 */
+	struct gpio_desc *gpio[2];		 
 
 	struct iio_channel *channels[CPCAP_CHARGER_IIO_NR];
 
 	struct power_supply *usb;
 
-	struct phy_companion comparator;	/* For USB VBUS */
+	struct phy_companion comparator;	 
 	unsigned int vbus_enabled:1;
 	unsigned int feeding_vbus:1;
 	atomic_t active;
@@ -455,7 +429,7 @@ static bool cpcap_charger_vbus_valid(struct cpcap_charger_ddata *ddata)
 	return false;
 }
 
-/* VBUS control functions for the USB PHY companion */
+ 
 static void cpcap_charger_vbus_work(struct work_struct *work)
 {
 	struct cpcap_charger_ddata *ddata;
@@ -532,7 +506,7 @@ static int cpcap_charger_set_vbus(struct phy_companion *comparator,
 	return 0;
 }
 
-/* Charger interrupt handling functions */
+ 
 
 static int cpcap_charger_get_ints_state(struct cpcap_charger_ddata *ddata,
 					struct cpcap_charger_ints_state *s)
@@ -597,7 +571,7 @@ static void cpcap_charger_disconnect(struct cpcap_charger_ddata *ddata,
 {
 	int error;
 
-	/* Update battery state before disconnecting the charger */
+	 
 	switch (state) {
 	case POWER_SUPPLY_STATUS_DISCHARGING:
 	case POWER_SUPPLY_STATUS_FULL:
@@ -631,7 +605,7 @@ static void cpcap_usb_detect(struct work_struct *work)
 	if (error)
 		return;
 
-	/* Just init the state if a charger is connected with no chrg_det set */
+	 
 	if (!s.chrg_det && s.chrgcurr1 && s.vbusvld) {
 		cpcap_charger_update_state(ddata,
 					   POWER_SUPPLY_STATUS_NOT_CHARGING);
@@ -639,10 +613,7 @@ static void cpcap_usb_detect(struct work_struct *work)
 		return;
 	}
 
-	/*
-	 * If battery voltage is higher than charge voltage, it may have been
-	 * charged to 4.35V by Android. Try again in 10 minutes.
-	 */
+	 
 	if (cpcap_charger_get_charge_voltage(ddata) > ddata->voltage) {
 		cpcap_charger_disconnect(ddata,
 					 POWER_SUPPLY_STATUS_NOT_CHARGING,
@@ -651,10 +622,10 @@ static void cpcap_usb_detect(struct work_struct *work)
 		return;
 	}
 
-	/* Delay for 80ms to avoid vbus bouncing when usb cable is plugged in */
+	 
 	usleep_range(80000, 120000);
 
-	/* Throttle chrgcurr2 interrupt for charger done and retry */
+	 
 	switch (ddata->status) {
 	case POWER_SUPPLY_STATUS_CHARGING:
 		if (s.chrgcurr2)
@@ -781,13 +752,13 @@ static int cpcap_usb_init_irq(struct platform_device *pdev,
 }
 
 static const char * const cpcap_charger_irqs[] = {
-	/* REG_INT_0 */
+	 
 	"chrg_det", "rvrs_chrg",
 
-	/* REG_INT1 */
+	 
 	"chrg_se1b", "se0conn", "rvrs_mode", "chrgcurr2", "chrgcurr1", "vbusvld",
 
-	/* REG_INT_3 */
+	 
 	"battdetb",
 };
 

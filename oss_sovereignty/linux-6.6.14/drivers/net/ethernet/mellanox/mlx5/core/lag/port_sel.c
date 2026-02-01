@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-/* Copyright (c) 2021, NVIDIA CORPORATION & AFFILIATES. */
+
+ 
 
 #include <linux/netdevice.h>
 #include "lag.h"

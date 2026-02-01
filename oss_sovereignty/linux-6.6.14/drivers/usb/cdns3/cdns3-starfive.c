@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/**
- * cdns3-starfive.c - StarFive specific Glue layer for Cadence USB Controller
- *
- * Copyright (C) 2023 StarFive Technology Co., Ltd.
- *
- * Author:	Minda Chen <minda.chen@starfivetech.com>
- */
+
+ 
 
 #include <linux/bits.h>
 #include <linux/clk.h>
@@ -50,7 +44,7 @@ static void cdns_mode_init(struct platform_device *pdev,
 			   USB_MISC_CFG_MASK,
 			   USB_SUSPENDM_BYPS | USB_PLL_EN | USB_REFCLK_MODE);
 
-	/* dr mode setting */
+	 
 	mode = usb_get_dr_mode(&pdev->dev);
 
 	switch (mode) {
@@ -224,7 +218,7 @@ static const struct dev_pm_ops cdns_starfive_pm_ops = {
 
 static const struct of_device_id cdns_starfive_of_match[] = {
 	{ .compatible = "starfive,jh7110-usb", },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, cdns_starfive_of_match);
 

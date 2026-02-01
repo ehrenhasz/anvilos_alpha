@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2017 Free Electrons
- * Copyright (C) 2017 NextThing Co
- *
- * Author: Boris Brezillon <boris.brezillon@free-electrons.com>
- */
+
+ 
 
 #include <linux/slab.h>
 #include "linux/delay.h"
@@ -79,7 +74,7 @@ static int macronix_nand_randomizer_check_enable(struct nand_chip *chip)
 	if (ret < 0)
 		return ret;
 
-	/* RANDEN and RANDOPT OTP bits are programmed */
+	 
 	feature[0] = 0x0;
 	ret = nand_prog_page_op(chip, 0, 0, feature, 1);
 	if (ret < 0)
@@ -113,7 +108,7 @@ static void macronix_nand_onfi_init(struct nand_chip *chip)
 	rand_otp = of_property_read_bool(dn, "mxic,enable-randomizer-otp");
 
 	mxic = (struct nand_onfi_vendor_macronix *)p->onfi->vendor;
-	/* Subpage write is prohibited in randomizer operatoin */
+	 
 	if (rand_otp && chip->options & NAND_NO_SUBPAGE_WRITE &&
 	    mxic->reliability_func & MACRONIX_RANDOMIZER_BIT) {
 		if (p->supports_set_get_features) {
@@ -150,11 +145,7 @@ static void macronix_nand_onfi_init(struct nand_chip *chip)
 	}
 }
 
-/*
- * Macronix AC series does not support using SET/GET_FEATURES to change
- * the timings unlike what is declared in the parameter page. Unflag
- * this feature to avoid unnecessary downturns.
- */
+ 
 static void macronix_nand_fix_broken_get_timings(struct nand_chip *chip)
 {
 	int i;
@@ -189,12 +180,7 @@ static void macronix_nand_fix_broken_get_timings(struct nand_chip *chip)
 		     ONFI_FEATURE_ADDR_TIMING_MODE, 1);
 }
 
-/*
- * Macronix NAND supports Block Protection by Protectoin(PT) pin;
- * active high at power-on which protects the entire chip even the #WP is
- * disabled. Lock/unlock protection area can be partition according to
- * protection bits, i.e. upper 1/2 locked, upper 1/4 locked and so on.
- */
+ 
 static int mxic_nand_lock(struct nand_chip *chip, loff_t ofs, uint64_t len)
 {
 	u8 feature[ONFI_SUBFEATURE_PARAM_LEN];
@@ -293,17 +279,10 @@ static int mxic_nand_suspend(struct nand_chip *chip)
 
 static void mxic_nand_resume(struct nand_chip *chip)
 {
-	/*
-	 * Toggle #CS pin to resume NAND device and don't care
-	 * of the others CLE, #WE, #RE pins status.
-	 * A NAND controller ensure it is able to assert/de-assert #CS
-	 * by sending any byte over the NAND bus.
-	 * i.e.,
-	 * NAND power down command or reset command w/o R/B# status checking.
-	 */
+	 
 	nand_select_target(chip, 0);
 	nand_power_down_op(chip);
-	/* The minimum of a recovery time tRDP is 35 us */
+	 
 	usleep_range(35, 100);
 	nand_deselect_target(chip);
 }
@@ -333,15 +312,7 @@ static int macronix_30lfxg18ac_get_otp_info(struct mtd_info *mtd, size_t len,
 	if (len < sizeof(*buf))
 		return -EINVAL;
 
-	/* Always report that OTP is unlocked. Reason is that this
-	 * type of flash chip doesn't provide way to check that OTP
-	 * is locked or not: subfeature parameter is implemented as
-	 * volatile register. Technically OTP region could be locked
-	 * and become readonly, but as there is no way to check it,
-	 * don't allow to lock it ('_lock_user_prot_reg' callback
-	 * always returns -EOPNOTSUPP) and thus we report that OTP
-	 * is unlocked.
-	 */
+	 
 	buf->locked = 0;
 	buf->start = 0;
 	buf->length = MACRONIX_30LFXG18AC_OTP_SIZE_BYTES;
@@ -387,7 +358,7 @@ static int __macronix_30lfxg18ac_rw_otp(struct mtd_info *mtd,
 		goto out_otp;
 
 	page = offs_in_flash;
-	/* 'page' will be result of division. */
+	 
 	offs_in_page = do_div(page, MACRONIX_30LFXG18AC_OTP_PAGE_SIZE);
 	bytes_handled = 0;
 
@@ -448,7 +419,7 @@ static int macronix_30lfxg18ac_read_otp(struct mtd_info *mtd, loff_t from,
 static int macronix_30lfxg18ac_lock_otp(struct mtd_info *mtd, loff_t from,
 					size_t len)
 {
-	/* See comment in 'macronix_30lfxg18ac_get_otp_info()'. */
+	 
 	return -EOPNOTSUPP;
 }
 

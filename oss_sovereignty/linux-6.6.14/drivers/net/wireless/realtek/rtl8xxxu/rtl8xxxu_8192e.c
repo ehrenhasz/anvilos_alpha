@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * RTL8XXXU mac80211 USB driver - 8192e specific subdriver
- *
- * Copyright (c) 2014 - 2017 Jes Sorensen <Jes.Sorensen@gmail.com>
- *
- * Portions, notably calibration code:
- * Copyright(c) 2007 - 2011 Realtek Corporation. All rights reserved.
- *
- * This driver was written as a replacement for the vendor provided
- * rtl8723au driver. As the Realtek 8xxx chips are very similar in
- * their programming interface, I have started adding support for
- * additional 8xxx chips like the 8192cu, 8188cus, etc.
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/kernel.h>
@@ -112,14 +100,14 @@ static const struct rtl8xxxu_reg32val rtl8192eu_phy_init_table[] = {
 	{0xc44, 0x000100b7}, {0xc48, 0xec020107},
 	{0xc4c, 0x007f037f},
 #ifdef EXT_PA_8192EU
-	/* External PA or external LNA */
+	 
 	{0xc50, 0x00340220},
 #else
 	{0xc50, 0x00340020},
 #endif
 	{0xc54, 0x0080801f},
 #ifdef EXT_PA_8192EU
-	/* External PA or external LNA */
+	 
 	{0xc58, 0x00000220},
 #else
 	{0xc58, 0x00000020},
@@ -130,14 +118,14 @@ static const struct rtl8xxxu_reg32val rtl8192eu_phy_init_table[] = {
 	{0xc74, 0x02013169}, {0xc78, 0x0000001f},
 	{0xc7c, 0x00b91612},
 #ifdef EXT_PA_8192EU
-	/* External PA or external LNA */
+	 
 	{0xc80, 0x2d4000b5},
 #else
 	{0xc80, 0x40000100},
 #endif
 	{0xc84, 0x21f60000},
 #ifdef EXT_PA_8192EU
-	/* External PA or external LNA */
+	 
 	{0xc88, 0x2d4000b5},
 #else
 	{0xc88, 0x40000100},
@@ -361,7 +349,7 @@ static const struct rtl8xxxu_rfregval rtl8192eu_radioa_init_table[] = {
 	{0x18, 0x00000c07}, {0x5a, 0x00048000},
 	{0x19, 0x000739d0},
 #ifdef EXT_PA_8192EU
-	/* External PA or external LNA */
+	 
 	{0x34, 0x0000a093}, {0x34, 0x0000908f},
 	{0x34, 0x0000808c}, {0x34, 0x0000704d},
 	{0x34, 0x0000604a}, {0x34, 0x00005047},
@@ -369,7 +357,7 @@ static const struct rtl8xxxu_rfregval rtl8192eu_radioa_init_table[] = {
 	{0x34, 0x00002004}, {0x34, 0x00001001},
 	{0x34, 0x00000000},
 #else
-	/* Regular */
+	 
 	{0x34, 0x0000add7}, {0x34, 0x00009dd4},
 	{0x34, 0x00008dd1}, {0x34, 0x00007dce},
 	{0x34, 0x00006dcb}, {0x34, 0x00005dc8},
@@ -385,7 +373,7 @@ static const struct rtl8xxxu_rfregval rtl8192eu_radioa_init_table[] = {
 	{0x8f, 0x00088000},
 	{0xef, 0x000020a0},
 #ifdef EXT_PA_8192EU
-	/* External PA or external LNA */
+	 
 	{0x3b, 0x000f07b0},
 #else
 	{0x3b, 0x000f02b0},
@@ -395,7 +383,7 @@ static const struct rtl8xxxu_rfregval rtl8192eu_radioa_init_table[] = {
 	{0x3b, 0x000a0080}, {0x3b, 0x00090080},
 	{0x3b, 0x0008f780},
 #ifdef EXT_PA_8192EU
-	/* External PA or external LNA */
+	 
 	{0x3b, 0x000787b0},
 #else
 	{0x3b, 0x00078730},
@@ -431,7 +419,7 @@ static const struct rtl8xxxu_rfregval rtl8192eu_radiob_init_table[] = {
 	{0x36, 0x00019c24}, {0x18, 0x00000c07},
 	{0x5a, 0x00048000}, {0x19, 0x000739d0},
 #ifdef EXT_PA_8192EU
-	/* External PA or external LNA */
+	 
 	{0x34, 0x0000a093}, {0x34, 0x0000908f},
 	{0x34, 0x0000808c}, {0x34, 0x0000704d},
 	{0x34, 0x0000604a}, {0x34, 0x00005047},
@@ -451,7 +439,7 @@ static const struct rtl8xxxu_rfregval rtl8192eu_radiob_init_table[] = {
 	{0x8e, 0x00065540}, {0x8f, 0x00088000},
 	{0xef, 0x000020a0},
 #ifdef EXT_PA_8192EU
-	/* External PA or external LNA */
+	 
 	{0x3b, 0x000f07b0},
 #else
 	{0x3b, 0x000f02b0},
@@ -462,7 +450,7 @@ static const struct rtl8xxxu_rfregval rtl8192eu_radiob_init_table[] = {
 	{0x3b, 0x000a0080}, {0x3b, 0x00090080},
 	{0x3b, 0x0008f780},
 #ifdef EXT_PA_8192EU
-	/* External PA or external LNA */
+	 
 	{0x3b, 0x000787b0},
 #else
 	{0x3b, 0x00078730},
@@ -515,9 +503,7 @@ static int rtl8192eu_identify_chip(struct rtl8xxxu_priv *priv)
 
 	rtl8xxxu_config_endpoints_sie(priv);
 
-	/*
-	 * Fallback for devices that do not provide REG_NORMAL_SIE_EP_TX
-	 */
+	 
 	if (!priv->ep_tx_count)
 		ret = rtl8xxxu_config_endpoints_no_sie(priv);
 
@@ -674,7 +660,7 @@ static void rtl8192eu_init_phy_bb(struct rtl8xxxu_priv *priv)
 	val16 |= SYS_FUNC_BB_GLB_RSTN | SYS_FUNC_BBRSTB | SYS_FUNC_DIO_RF;
 	rtl8xxxu_write16(priv, REG_SYS_FUNC, val16);
 
-	/* 6. 0x1f[7:0] = 0x07 */
+	 
 	val8 = RF_ENABLE | RF_RSTB | RF_SDMRSTB;
 	rtl8xxxu_write8(priv, REG_RF_CTRL, val8);
 
@@ -711,10 +697,7 @@ static int rtl8192eu_iqk_path_a(struct rtl8xxxu_priv *priv)
 	u32 reg_eac, reg_e94, reg_e9c;
 	int result = 0;
 
-	/*
-	 * TX IQK
-	 * PA/PAD controlled by 0x0
-	 */
+	 
 	rtl8xxxu_write32(priv, REG_FPGA0_IQK, 0x00000000);
 	rtl8xxxu_write_rfreg(priv, RF_A, RF6052_REG_GAIN_CCA, 0x00180);
 
@@ -725,7 +708,7 @@ static int rtl8192eu_iqk_path_a(struct rtl8xxxu_priv *priv)
 
 	rtl8xxxu_write32(priv, REG_FPGA0_IQK, 0x80800000);
 
-	/* Path A IQK setting */
+	 
 	rtl8xxxu_write32(priv, REG_TX_IQK_TONE_A, 0x18008c1c);
 	rtl8xxxu_write32(priv, REG_RX_IQK_TONE_A, 0x38008c1c);
 	rtl8xxxu_write32(priv, REG_TX_IQK_TONE_B, 0x38008c1c);
@@ -734,16 +717,16 @@ static int rtl8192eu_iqk_path_a(struct rtl8xxxu_priv *priv)
 	rtl8xxxu_write32(priv, REG_TX_IQK_PI_A, 0x82140303);
 	rtl8xxxu_write32(priv, REG_RX_IQK_PI_A, 0x68160000);
 
-	/* LO calibration setting */
+	 
 	rtl8xxxu_write32(priv, REG_IQK_AGC_RSP, 0x00462911);
 
-	/* One shot, path A LOK & IQK */
+	 
 	rtl8xxxu_write32(priv, REG_IQK_AGC_PTS, 0xf9000000);
 	rtl8xxxu_write32(priv, REG_IQK_AGC_PTS, 0xf8000000);
 
 	mdelay(10);
 
-	/* Check failed */
+	 
 	reg_eac = rtl8xxxu_read32(priv, REG_RX_POWER_AFTER_IQK_A_2);
 	reg_e94 = rtl8xxxu_read32(priv, REG_TX_POWER_BEFORE_IQK_A);
 	reg_e9c = rtl8xxxu_read32(priv, REG_TX_POWER_AFTER_IQK_A);
@@ -761,10 +744,10 @@ static int rtl8192eu_rx_iqk_path_a(struct rtl8xxxu_priv *priv)
 	u32 reg_ea4, reg_eac, reg_e94, reg_e9c, val32;
 	int result = 0;
 
-	/* Leave IQK mode */
+	 
 	rtl8xxxu_write32(priv, REG_FPGA0_IQK, 0x00);
 
-	/* Enable path A PA in TX IQK mode */
+	 
 	rtl8xxxu_write_rfreg(priv, RF_A, RF6052_REG_WE_LUT, 0x800a0);
 	rtl8xxxu_write_rfreg(priv, RF_A, RF6052_REG_RCK_OS, 0x30000);
 	rtl8xxxu_write_rfreg(priv, RF_A, RF6052_REG_TXPA_G1, 0x0000f);
@@ -775,18 +758,18 @@ static int rtl8192eu_rx_iqk_path_a(struct rtl8xxxu_priv *priv)
 	rtl8xxxu_write_rfreg(priv, RF_B, RF6052_REG_TXPA_G1, 0x0000f);
 	rtl8xxxu_write_rfreg(priv, RF_B, RF6052_REG_TXPA_G2, 0xf1173);
 
-	/* PA/PAD control by 0x56, and set = 0x0 */
+	 
 	rtl8xxxu_write_rfreg(priv, RF_A, RF6052_REG_GAIN_CCA, 0x00980);
 	rtl8xxxu_write_rfreg(priv, RF_A, RF6052_REG_PAD_TXG, 0x511e0);
 
-	/* Enter IQK mode */
+	 
 	rtl8xxxu_write32(priv, REG_FPGA0_IQK, 0x80800000);
 
-	/* TX IQK setting */
+	 
 	rtl8xxxu_write32(priv, REG_TX_IQK, 0x01007c00);
 	rtl8xxxu_write32(priv, REG_RX_IQK, 0x01004800);
 
-	/* path-A IQK setting */
+	 
 	rtl8xxxu_write32(priv, REG_TX_IQK_TONE_A, 0x18008c1c);
 	rtl8xxxu_write32(priv, REG_RX_IQK_TONE_A, 0x38008c1c);
 	rtl8xxxu_write32(priv, REG_TX_IQK_TONE_B, 0x38008c1c);
@@ -795,16 +778,16 @@ static int rtl8192eu_rx_iqk_path_a(struct rtl8xxxu_priv *priv)
 	rtl8xxxu_write32(priv, REG_TX_IQK_PI_A, 0x8216031f);
 	rtl8xxxu_write32(priv, REG_RX_IQK_PI_A, 0x6816031f);
 
-	/* LO calibration setting */
+	 
 	rtl8xxxu_write32(priv, REG_IQK_AGC_RSP, 0x0046a911);
 
-	/* One shot, path A LOK & IQK */
+	 
 	rtl8xxxu_write32(priv, REG_IQK_AGC_PTS, 0xf9000000);
 	rtl8xxxu_write32(priv, REG_IQK_AGC_PTS, 0xf8000000);
 
 	mdelay(10);
 
-	/* Check failed */
+	 
 	reg_eac = rtl8xxxu_read32(priv, REG_RX_POWER_AFTER_IQK_A_2);
 	reg_e94 = rtl8xxxu_read32(priv, REG_TX_POWER_BEFORE_IQK_A);
 	reg_e9c = rtl8xxxu_read32(priv, REG_TX_POWER_AFTER_IQK_A);
@@ -814,7 +797,7 @@ static int rtl8192eu_rx_iqk_path_a(struct rtl8xxxu_priv *priv)
 	    ((reg_e9c & 0x03ff0000) != 0x00420000)) {
 		result |= 0x01;
 	} else {
-		/* PA/PAD controlled by 0x0 */
+		 
 		rtl8xxxu_write32(priv, REG_FPGA0_IQK, 0x00000000);
 		rtl8xxxu_write_rfreg(priv, RF_A, RF6052_REG_GAIN_CCA, 0x180);
 		goto out;
@@ -824,7 +807,7 @@ static int rtl8192eu_rx_iqk_path_a(struct rtl8xxxu_priv *priv)
 		(reg_e94 & 0x03ff0000) | ((reg_e9c >> 16) & 0x03ff);
 	rtl8xxxu_write32(priv, REG_TX_IQK, val32);
 
-	/* Modify RX IQK mode table */
+	 
 	rtl8xxxu_write32(priv, REG_FPGA0_IQK, 0x00000000);
 
 	rtl8xxxu_write_rfreg(priv, RF_A, RF6052_REG_WE_LUT, 0x800a0);
@@ -837,17 +820,17 @@ static int rtl8192eu_rx_iqk_path_a(struct rtl8xxxu_priv *priv)
 	rtl8xxxu_write_rfreg(priv, RF_B, RF6052_REG_TXPA_G1, 0x0000f);
 	rtl8xxxu_write_rfreg(priv, RF_B, RF6052_REG_TXPA_G2, 0xf7ff2);
 
-	/* PA/PAD control by 0x56, and set = 0x0 */
+	 
 	rtl8xxxu_write_rfreg(priv, RF_A, RF6052_REG_GAIN_CCA, 0x00980);
 	rtl8xxxu_write_rfreg(priv, RF_A, RF6052_REG_PAD_TXG, 0x510e0);
 
-	/* Enter IQK mode */
+	 
 	rtl8xxxu_write32(priv, REG_FPGA0_IQK, 0x80800000);
 
-	/* IQK setting */
+	 
 	rtl8xxxu_write32(priv, REG_RX_IQK, 0x01004800);
 
-	/* Path A IQK setting */
+	 
 	rtl8xxxu_write32(priv, REG_TX_IQK_TONE_A, 0x38008c1c);
 	rtl8xxxu_write32(priv, REG_RX_IQK_TONE_A, 0x18008c1c);
 	rtl8xxxu_write32(priv, REG_TX_IQK_TONE_B, 0x38008c1c);
@@ -856,10 +839,10 @@ static int rtl8192eu_rx_iqk_path_a(struct rtl8xxxu_priv *priv)
 	rtl8xxxu_write32(priv, REG_TX_IQK_PI_A, 0x821608ff);
 	rtl8xxxu_write32(priv, REG_RX_IQK_PI_A, 0x281608ff);
 
-	/* LO calibration setting */
+	 
 	rtl8xxxu_write32(priv, REG_IQK_AGC_RSP, 0x0046a891);
 
-	/* One shot, path A LOK & IQK */
+	 
 	rtl8xxxu_write32(priv, REG_IQK_AGC_PTS, 0xf9000000);
 	rtl8xxxu_write32(priv, REG_IQK_AGC_PTS, 0xf8000000);
 
@@ -898,7 +881,7 @@ static int rtl8192eu_iqk_path_b(struct rtl8xxxu_priv *priv)
 
 	rtl8xxxu_write32(priv, REG_FPGA0_IQK, 0x80800000);
 
-	/* Path B IQK setting */
+	 
 	rtl8xxxu_write32(priv, REG_TX_IQK_TONE_A, 0x38008c1c);
 	rtl8xxxu_write32(priv, REG_RX_IQK_TONE_A, 0x38008c1c);
 	rtl8xxxu_write32(priv, REG_TX_IQK_TONE_B, 0x18008c1c);
@@ -907,16 +890,16 @@ static int rtl8192eu_iqk_path_b(struct rtl8xxxu_priv *priv)
 	rtl8xxxu_write32(priv, REG_TX_IQK_PI_B, 0x82140303);
 	rtl8xxxu_write32(priv, REG_RX_IQK_PI_B, 0x68160000);
 
-	/* LO calibration setting */
+	 
 	rtl8xxxu_write32(priv, REG_IQK_AGC_RSP, 0x00462911);
 
-	/* One shot, path A LOK & IQK */
+	 
 	rtl8xxxu_write32(priv, REG_IQK_AGC_PTS, 0xfa000000);
 	rtl8xxxu_write32(priv, REG_IQK_AGC_PTS, 0xf8000000);
 
 	mdelay(1);
 
-	/* Check failed */
+	 
 	reg_eac = rtl8xxxu_read32(priv, REG_RX_POWER_AFTER_IQK_A_2);
 	reg_eb4 = rtl8xxxu_read32(priv, REG_TX_POWER_BEFORE_IQK_B);
 	reg_ebc = rtl8xxxu_read32(priv, REG_TX_POWER_AFTER_IQK_B);
@@ -937,10 +920,10 @@ static int rtl8192eu_rx_iqk_path_b(struct rtl8xxxu_priv *priv)
 	u32 reg_eac, reg_eb4, reg_ebc, reg_ec4, reg_ecc, val32;
 	int result = 0;
 
-	/* Leave IQK mode */
+	 
 	rtl8xxxu_write32(priv, REG_FPGA0_IQK, 0x00000000);
 
-	/* Enable path A PA in TX IQK mode */
+	 
 	rtl8xxxu_write_rfreg(priv, RF_B, RF6052_REG_WE_LUT, 0x800a0);
 	rtl8xxxu_write_rfreg(priv, RF_B, RF6052_REG_RCK_OS, 0x30000);
 	rtl8xxxu_write_rfreg(priv, RF_B, RF6052_REG_TXPA_G1, 0x0000f);
@@ -951,18 +934,18 @@ static int rtl8192eu_rx_iqk_path_b(struct rtl8xxxu_priv *priv)
 	rtl8xxxu_write_rfreg(priv, RF_A, RF6052_REG_TXPA_G1, 0x0000f);
 	rtl8xxxu_write_rfreg(priv, RF_A, RF6052_REG_TXPA_G2, 0xf1173);
 
-	/* PA/PAD control by 0x56, and set = 0x0 */
+	 
 	rtl8xxxu_write_rfreg(priv, RF_B, RF6052_REG_GAIN_CCA, 0x00980);
 	rtl8xxxu_write_rfreg(priv, RF_B, RF6052_REG_PAD_TXG, 0x511e0);
 
-	/* Enter IQK mode */
+	 
 	rtl8xxxu_write32(priv, REG_FPGA0_IQK, 0x80800000);
 
-	/* TX IQK setting */
+	 
 	rtl8xxxu_write32(priv, REG_TX_IQK, 0x01007c00);
 	rtl8xxxu_write32(priv, REG_RX_IQK, 0x01004800);
 
-	/* path-A IQK setting */
+	 
 	rtl8xxxu_write32(priv, REG_TX_IQK_TONE_A, 0x38008c1c);
 	rtl8xxxu_write32(priv, REG_RX_IQK_TONE_A, 0x38008c1c);
 	rtl8xxxu_write32(priv, REG_TX_IQK_TONE_B, 0x18008c1c);
@@ -971,16 +954,16 @@ static int rtl8192eu_rx_iqk_path_b(struct rtl8xxxu_priv *priv)
 	rtl8xxxu_write32(priv, REG_TX_IQK_PI_B, 0x8216031f);
 	rtl8xxxu_write32(priv, REG_RX_IQK_PI_B, 0x6816031f);
 
-	/* LO calibration setting */
+	 
 	rtl8xxxu_write32(priv, REG_IQK_AGC_RSP, 0x0046a911);
 
-	/* One shot, path A LOK & IQK */
+	 
 	rtl8xxxu_write32(priv, REG_IQK_AGC_PTS, 0xfa000000);
 	rtl8xxxu_write32(priv, REG_IQK_AGC_PTS, 0xf8000000);
 
 	mdelay(10);
 
-	/* Check failed */
+	 
 	reg_eac = rtl8xxxu_read32(priv, REG_RX_POWER_AFTER_IQK_A_2);
 	reg_eb4 = rtl8xxxu_read32(priv, REG_TX_POWER_BEFORE_IQK_B);
 	reg_ebc = rtl8xxxu_read32(priv, REG_TX_POWER_AFTER_IQK_B);
@@ -990,10 +973,7 @@ static int rtl8192eu_rx_iqk_path_b(struct rtl8xxxu_priv *priv)
 	    ((reg_ebc & 0x03ff0000) != 0x00420000)) {
 		result |= 0x01;
 	} else {
-		/*
-		 * PA/PAD controlled by 0x0
-		 * Vendor driver restores RF_A here which I believe is a bug
-		 */
+		 
 		rtl8xxxu_write32(priv, REG_FPGA0_IQK, 0x00000000);
 		rtl8xxxu_write_rfreg(priv, RF_B, RF6052_REG_GAIN_CCA, 0x180);
 		goto out;
@@ -1003,7 +983,7 @@ static int rtl8192eu_rx_iqk_path_b(struct rtl8xxxu_priv *priv)
 		(reg_eb4 & 0x03ff0000) | ((reg_ebc >> 16) & 0x03ff);
 	rtl8xxxu_write32(priv, REG_TX_IQK, val32);
 
-	/* Modify RX IQK mode table */
+	 
 	rtl8xxxu_write32(priv, REG_FPGA0_IQK, 0x00000000);
 
 	rtl8xxxu_write_rfreg(priv, RF_B, RF6052_REG_WE_LUT, 0x800a0);
@@ -1016,17 +996,17 @@ static int rtl8192eu_rx_iqk_path_b(struct rtl8xxxu_priv *priv)
 	rtl8xxxu_write_rfreg(priv, RF_A, RF6052_REG_TXPA_G1, 0x0000f);
 	rtl8xxxu_write_rfreg(priv, RF_A, RF6052_REG_TXPA_G2, 0xf7ff2);
 
-	/* PA/PAD control by 0x56, and set = 0x0 */
+	 
 	rtl8xxxu_write_rfreg(priv, RF_B, RF6052_REG_GAIN_CCA, 0x00980);
 	rtl8xxxu_write_rfreg(priv, RF_B, RF6052_REG_PAD_TXG, 0x510e0);
 
-	/* Enter IQK mode */
+	 
 	rtl8xxxu_write32(priv, REG_FPGA0_IQK, 0x80800000);
 
-	/* IQK setting */
+	 
 	rtl8xxxu_write32(priv, REG_RX_IQK, 0x01004800);
 
-	/* Path A IQK setting */
+	 
 	rtl8xxxu_write32(priv, REG_TX_IQK_TONE_A, 0x38008c1c);
 	rtl8xxxu_write32(priv, REG_RX_IQK_TONE_A, 0x38008c1c);
 	rtl8xxxu_write32(priv, REG_TX_IQK_TONE_B, 0x38008c1c);
@@ -1035,10 +1015,10 @@ static int rtl8192eu_rx_iqk_path_b(struct rtl8xxxu_priv *priv)
 	rtl8xxxu_write32(priv, REG_TX_IQK_PI_A, 0x821608ff);
 	rtl8xxxu_write32(priv, REG_RX_IQK_PI_A, 0x281608ff);
 
-	/* LO calibration setting */
+	 
 	rtl8xxxu_write32(priv, REG_IQK_AGC_RSP, 0x0046a891);
 
-	/* One shot, path A LOK & IQK */
+	 
 	rtl8xxxu_write32(priv, REG_IQK_AGC_PTS, 0xfa000000);
 	rtl8xxxu_write32(priv, REG_IQK_AGC_PTS, 0xf8000000);
 
@@ -1093,13 +1073,10 @@ static void rtl8192eu_phy_iqcalibrate(struct rtl8xxxu_priv *priv,
 	u8 xa_agc = rtl8xxxu_read32(priv, REG_OFDM0_XA_AGC_CORE1) & 0xff;
 	u8 xb_agc = rtl8xxxu_read32(priv, REG_OFDM0_XB_AGC_CORE1) & 0xff;
 
-	/*
-	 * Note: IQ calibration must be performed after loading
-	 *       PHY_REG.txt , and radio_a, radio_b.txt
-	 */
+	 
 
 	if (t == 0) {
-		/* Save ADDA parameters, turn Path A ADDA on */
+		 
 		rtl8xxxu_save_regs(priv, adda_regs, priv->adda_backup,
 				   RTL8XXXU_ADDA_REGS);
 		rtl8xxxu_save_mac_regs(priv, iqk_mac_regs, priv->mac_backup);
@@ -1109,7 +1086,7 @@ static void rtl8192eu_phy_iqcalibrate(struct rtl8xxxu_priv *priv,
 
 	rtl8xxxu_path_adda_on(priv, adda_regs, true);
 
-	/* MAC settings */
+	 
 	rtl8xxxu_mac_calibration(priv, iqk_mac_regs, priv->mac_backup);
 
 	val32 = rtl8xxxu_read32(priv, REG_CCK0_AFE_SETTING);
@@ -1170,12 +1147,12 @@ static void rtl8192eu_phy_iqcalibrate(struct rtl8xxxu_priv *priv,
 		dev_dbg(dev, "%s: Path A RX IQK failed!\n", __func__);
 
 	if (priv->rf_paths > 1) {
-		/* Path A into standby */
+		 
 		rtl8xxxu_write32(priv, REG_FPGA0_IQK, 0x00000000);
 		rtl8xxxu_write_rfreg(priv, RF_A, RF6052_REG_AC, 0x10000);
 		rtl8xxxu_write32(priv, REG_FPGA0_IQK, 0x80800000);
 
-		/* Turn Path B ADDA on */
+		 
 		rtl8xxxu_path_adda_on(priv, adda_regs, false);
 
 		rtl8xxxu_write32(priv, REG_FPGA0_IQK, 0x80800000);
@@ -1213,22 +1190,22 @@ static void rtl8192eu_phy_iqcalibrate(struct rtl8xxxu_priv *priv,
 			dev_dbg(dev, "%s: Path B RX IQK failed!\n", __func__);
 	}
 
-	/* Back to BB mode, load original value */
+	 
 	rtl8xxxu_write32(priv, REG_FPGA0_IQK, 0x00000000);
 
 	if (t) {
-		/* Reload ADDA power saving parameters */
+		 
 		rtl8xxxu_restore_regs(priv, adda_regs, priv->adda_backup,
 				      RTL8XXXU_ADDA_REGS);
 
-		/* Reload MAC parameters */
+		 
 		rtl8xxxu_restore_mac_regs(priv, iqk_mac_regs, priv->mac_backup);
 
-		/* Reload BB parameters */
+		 
 		rtl8xxxu_restore_regs(priv, iqk_bb_regs,
 				      priv->bb_backup, RTL8XXXU_BB_REGS);
 
-		/* Restore RX initial gain */
+		 
 		val32 = rtl8xxxu_read32(priv, REG_OFDM0_XA_AGC_CORE1);
 		val32 &= 0xffffff00;
 		rtl8xxxu_write32(priv, REG_OFDM0_XA_AGC_CORE1, val32 | 0x50);
@@ -1243,7 +1220,7 @@ static void rtl8192eu_phy_iqcalibrate(struct rtl8xxxu_priv *priv,
 					 val32 | xb_agc);
 		}
 
-		/* Load 0xe30 IQC default value */
+		 
 		rtl8xxxu_write32(priv, REG_TX_IQK_TONE_A, 0x01008c00);
 		rtl8xxxu_write32(priv, REG_RX_IQK_TONE_A, 0x01008c00);
 	}
@@ -1252,7 +1229,7 @@ static void rtl8192eu_phy_iqcalibrate(struct rtl8xxxu_priv *priv,
 static void rtl8192eu_phy_iq_calibrate(struct rtl8xxxu_priv *priv)
 {
 	struct device *dev = &priv->udev->dev;
-	int result[4][8];	/* last is final result */
+	int result[4][8];	 
 	int i, candidate;
 	bool path_a_ok, path_b_ok;
 	u32 reg_e94, reg_e9c, reg_ea4, reg_eac;
@@ -1340,17 +1317,13 @@ static void rtl8192eu_phy_iq_calibrate(struct rtl8xxxu_priv *priv)
 			   priv->bb_recovery_backup, RTL8XXXU_BB_REGS);
 }
 
-/*
- * This is needed for 8723bu as well, presumable
- */
+ 
 static void rtl8192e_crystal_afe_adjust(struct rtl8xxxu_priv *priv)
 {
 	u8 val8;
 	u32 val32;
 
-	/*
-	 * 40Mhz crystal source, MAC 0x28[2]=0
-	 */
+	 
 	val8 = rtl8xxxu_read8(priv, REG_AFE_PLL_CTRL);
 	val8 &= 0xfb;
 	rtl8xxxu_write8(priv, REG_AFE_PLL_CTRL, val8);
@@ -1359,17 +1332,12 @@ static void rtl8192e_crystal_afe_adjust(struct rtl8xxxu_priv *priv)
 	val32 &= 0xfffffc7f;
 	rtl8xxxu_write32(priv, REG_AFE_CTRL4, val32);
 
-	/*
-	 * 92e AFE parameter
-	 * AFE PLL KVCO selection, MAC 0x28[6]=1
-	 */
+	 
 	val8 = rtl8xxxu_read8(priv, REG_AFE_PLL_CTRL);
 	val8 &= 0xbf;
 	rtl8xxxu_write8(priv, REG_AFE_PLL_CTRL, val8);
 
-	/*
-	 * AFE PLL KVCO selection, MAC 0x78[21]=0
-	 */
+	 
 	val32 = rtl8xxxu_read32(priv, REG_AFE_CTRL4);
 	val32 &= 0xffdfffff;
 	rtl8xxxu_write32(priv, REG_AFE_CTRL4, val32);
@@ -1379,7 +1347,7 @@ static void rtl8192e_disabled_to_emu(struct rtl8xxxu_priv *priv)
 {
 	u8 val8;
 
-	/* Clear suspend enable and power down enable*/
+	 
 	val8 = rtl8xxxu_read8(priv, REG_APS_FSMCO + 1);
 	val8 &= ~(BIT(3) | BIT(4));
 	rtl8xxxu_write8(priv, REG_APS_FSMCO + 1, val8);
@@ -1391,22 +1359,22 @@ static int rtl8192e_emu_to_active(struct rtl8xxxu_priv *priv)
 	u32 val32;
 	int count, ret = 0;
 
-	/* disable HWPDN 0x04[15]=0*/
+	 
 	val8 = rtl8xxxu_read8(priv, REG_APS_FSMCO + 1);
 	val8 &= ~BIT(7);
 	rtl8xxxu_write8(priv, REG_APS_FSMCO + 1, val8);
 
-	/* disable SW LPS 0x04[10]= 0 */
+	 
 	val8 = rtl8xxxu_read8(priv, REG_APS_FSMCO + 1);
 	val8 &= ~BIT(2);
 	rtl8xxxu_write8(priv, REG_APS_FSMCO + 1, val8);
 
-	/* disable WL suspend*/
+	 
 	val8 = rtl8xxxu_read8(priv, REG_APS_FSMCO + 1);
 	val8 &= ~(BIT(3) | BIT(4));
 	rtl8xxxu_write8(priv, REG_APS_FSMCO + 1, val8);
 
-	/* wait till 0x04[17] = 1 power ready*/
+	 
 	for (count = RTL8XXXU_MAX_REG_POLL; count; count--) {
 		val32 = rtl8xxxu_read32(priv, REG_APS_FSMCO);
 		if (val32 & BIT(17))
@@ -1420,14 +1388,14 @@ static int rtl8192e_emu_to_active(struct rtl8xxxu_priv *priv)
 		goto exit;
 	}
 
-	/* We should be able to optimize the following three entries into one */
+	 
 
-	/* release WLON reset 0x04[16]= 1*/
+	 
 	val8 = rtl8xxxu_read8(priv, REG_APS_FSMCO + 2);
 	val8 |= BIT(0);
 	rtl8xxxu_write8(priv, REG_APS_FSMCO + 2, val8);
 
-	/* set, then poll until 0 */
+	 
 	val32 = rtl8xxxu_read32(priv, REG_APS_FSMCO);
 	val32 |= APS_FSMCO_MAC_ENABLE;
 	rtl8xxxu_write32(priv, REG_APS_FSMCO, val32);
@@ -1462,9 +1430,7 @@ static int rtl8192eu_active_to_lps(struct rtl8xxxu_priv *priv)
 
 	retry = 100;
 	retval = -EBUSY;
-	/*
-	 * Poll 32 bit wide 0x05f8 for 0x00000000 to ensure no TX is pending.
-	 */
+	 
 	do {
 		val32 = rtl8xxxu_read32(priv, REG_SCH_TX_CMD);
 		if (!val32) {
@@ -1479,19 +1445,19 @@ static int rtl8192eu_active_to_lps(struct rtl8xxxu_priv *priv)
 		goto out;
 	}
 
-	/* Disable CCK and OFDM, clock gated */
+	 
 	val8 = rtl8xxxu_read8(priv, REG_SYS_FUNC);
 	val8 &= ~SYS_FUNC_BBRSTB;
 	rtl8xxxu_write8(priv, REG_SYS_FUNC, val8);
 
 	udelay(2);
 
-	/* Reset whole BB */
+	 
 	val8 = rtl8xxxu_read8(priv, REG_SYS_FUNC);
 	val8 &= ~SYS_FUNC_BB_GLB_RSTN;
 	rtl8xxxu_write8(priv, REG_SYS_FUNC, val8);
 
-	/* Reset MAC TRX */
+	 
 	val16 = rtl8xxxu_read16(priv, REG_CR);
 	val16 &= 0xff00;
 	val16 |= (CR_HCI_TXDMA_ENABLE | CR_HCI_RXDMA_ENABLE);
@@ -1514,17 +1480,17 @@ static int rtl8192eu_active_to_emu(struct rtl8xxxu_priv *priv)
 	u8 val8;
 	int count, ret = 0;
 
-	/* Turn off RF */
+	 
 	val8 = rtl8xxxu_read8(priv, REG_RF_CTRL);
 	val8 &= ~RF_ENABLE;
 	rtl8xxxu_write8(priv, REG_RF_CTRL, val8);
 
-	/* Switch DPDT_SEL_P output from register 0x65[2] */
+	 
 	val8 = rtl8xxxu_read8(priv, REG_LEDCFG2);
 	val8 &= ~LEDCFG2_DPDT_SELECT;
 	rtl8xxxu_write8(priv, REG_LEDCFG2, val8);
 
-	/* 0x0005[1] = 1 turn off MAC by HW state machine*/
+	 
 	val8 = rtl8xxxu_read8(priv, REG_APS_FSMCO + 1);
 	val8 |= BIT(1);
 	rtl8xxxu_write8(priv, REG_APS_FSMCO + 1, val8);
@@ -1551,7 +1517,7 @@ static int rtl8192eu_emu_to_disabled(struct rtl8xxxu_priv *priv)
 {
 	u8 val8;
 
-	/* 0x04[12:11] = 01 enable WL suspend */
+	 
 	val8 = rtl8xxxu_read8(priv, REG_APS_FSMCO + 1);
 	val8 &= ~(BIT(3) | BIT(4));
 	val8 |= BIT(3);
@@ -1570,9 +1536,7 @@ static int rtl8192eu_power_on(struct rtl8xxxu_priv *priv)
 	if (val32 & SYS_CFG_SPS_LDO_SEL) {
 		rtl8xxxu_write8(priv, REG_LDO_SW_CTRL, 0xc3);
 	} else {
-		/*
-		 * Raise 1.2V voltage
-		 */
+		 
 		val32 = rtl8xxxu_read32(priv, REG_8192E_LDOV12_CTRL);
 		val32 &= 0xff0fffff;
 		val32 |= 0x00500000;
@@ -1580,9 +1544,7 @@ static int rtl8192eu_power_on(struct rtl8xxxu_priv *priv)
 		rtl8xxxu_write8(priv, REG_LDO_SW_CTRL, 0x83);
 	}
 
-	/*
-	 * Adjust AFE before enabling PLL
-	 */
+	 
 	rtl8192e_crystal_afe_adjust(priv);
 	rtl8192e_disabled_to_emu(priv);
 
@@ -1592,10 +1554,7 @@ static int rtl8192eu_power_on(struct rtl8xxxu_priv *priv)
 
 	rtl8xxxu_write16(priv, REG_CR, 0x0000);
 
-	/*
-	 * Enable MAC DMA/WMAC/SCHEDULE/SEC block
-	 * Set CR bit10 to enable 32k calibration.
-	 */
+	 
 	val16 = rtl8xxxu_read16(priv, REG_CR);
 	val16 |= (CR_HCI_TXDMA_ENABLE | CR_HCI_RXDMA_ENABLE |
 		  CR_TXDMA_ENABLE | CR_RXDMA_ENABLE |
@@ -1619,21 +1578,21 @@ static void rtl8192eu_power_off(struct rtl8xxxu_priv *priv)
 	val8 &= ~TX_REPORT_CTRL_TIMER_ENABLE;
 	rtl8xxxu_write8(priv, REG_TX_REPORT_CTRL, val8);
 
-	/* Turn off RF */
+	 
 	rtl8xxxu_write8(priv, REG_RF_CTRL, 0x00);
 
 	rtl8192eu_active_to_lps(priv);
 
-	/* Reset Firmware if running in RAM */
+	 
 	if (rtl8xxxu_read8(priv, REG_MCU_FW_DL) & MCU_FW_RAM_SEL)
 		rtl8xxxu_firmware_self_reset(priv);
 
-	/* Reset MCU */
+	 
 	val16 = rtl8xxxu_read16(priv, REG_SYS_FUNC);
 	val16 &= ~SYS_FUNC_CPU_ENABLE;
 	rtl8xxxu_write16(priv, REG_SYS_FUNC, val16);
 
-	/* Reset MCU ready status */
+	 
 	rtl8xxxu_write8(priv, REG_MCU_FW_DL, 0x00);
 
 	rtl8xxxu_reset_8051(priv);
@@ -1655,9 +1614,7 @@ static void rtl8192e_enable_rf(struct rtl8xxxu_priv *priv)
 	val8 |= BIT(5);
 	rtl8xxxu_write8(priv, REG_GPIO_MUXCFG, val8);
 
-	/*
-	 * WLAN action by PTA
-	 */
+	 
 	rtl8xxxu_write8(priv, REG_WLAN_ACT_CONTROL_8723B, 0x04);
 
 	val32 = rtl8xxxu_read32(priv, REG_PWR_DATA);
@@ -1675,16 +1632,12 @@ static void rtl8192e_enable_rf(struct rtl8xxxu_priv *priv)
 	val32 |= BIT(23);
 	rtl8xxxu_write32(priv, REG_LEDCFG0, val32);
 
-	/*
-	 * Fix external switch Main->S1, Aux->S0
-	 */
+	 
 	val8 = rtl8xxxu_read8(priv, REG_PAD_CTRL1);
 	val8 &= ~BIT(0);
 	rtl8xxxu_write8(priv, REG_PAD_CTRL1, val8);
 
-	/*
-	 * Fix transmission failure of rtl8192e.
-	 */
+	 
 	rtl8xxxu_write8(priv, REG_TXPAUSE, 0x00);
 }
 

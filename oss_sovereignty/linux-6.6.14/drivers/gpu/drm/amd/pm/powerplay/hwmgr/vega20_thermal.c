@@ -1,25 +1,4 @@
-/*
- * Copyright 2018 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 
 #include "vega20_thermal.h"
 #include "vega20_hwmgr.h"
@@ -210,11 +189,7 @@ int vega20_fan_ctrl_set_fan_speed_rpm(struct pp_hwmgr *hwmgr, uint32_t speed)
 	return vega20_fan_ctrl_set_static_mode(hwmgr, FDO_PWM_MODE_STATIC_RPM);
 }
 
-/**
- * vega20_thermal_get_temperature - Reads the remote temperature from the SIslands thermal controller.
- *
- * @hwmgr: The address of the hardware manager.
- */
+ 
 int vega20_thermal_get_temperature(struct pp_hwmgr *hwmgr)
 {
 	struct amdgpu_device *adev = hwmgr->adev;
@@ -231,13 +206,7 @@ int vega20_thermal_get_temperature(struct pp_hwmgr *hwmgr)
 	return temp;
 }
 
-/**
- * vega20_thermal_set_temperature_range - Set the requested temperature range for high and low alert signals
- *
- * @hwmgr: The address of the hardware manager.
- * @range: Temperature range to be programmed for high and low alert signals
- * Exception: PP_Result_BadInput if the input data is not valid.
- */
+ 
 static int vega20_thermal_set_temperature_range(struct pp_hwmgr *hwmgr,
 		struct PP_TemperatureRange *range)
 {
@@ -248,7 +217,7 @@ static int vega20_thermal_set_temperature_range(struct pp_hwmgr *hwmgr,
 	int high = VEGA20_THERMAL_MAXIMUM_ALERT_TEMP;
 	uint32_t val;
 
-	/* compare them in unit celsius degree */
+	 
 	if (low < range->min / PP_TEMPERATURE_UNITS_PER_CENTIGRADES)
 		low = range->min / PP_TEMPERATURE_UNITS_PER_CENTIGRADES;
 	if (high > pptable_information->us_software_shutdown_temp)
@@ -272,11 +241,7 @@ static int vega20_thermal_set_temperature_range(struct pp_hwmgr *hwmgr,
 	return 0;
 }
 
-/**
- * vega20_thermal_enable_alert - Enable thermal alerts on the RV770 thermal controller.
- *
- * @hwmgr: The address of the hardware manager.
- */
+ 
 static int vega20_thermal_enable_alert(struct pp_hwmgr *hwmgr)
 {
 	struct amdgpu_device *adev = hwmgr->adev;
@@ -291,10 +256,7 @@ static int vega20_thermal_enable_alert(struct pp_hwmgr *hwmgr)
 	return 0;
 }
 
-/**
- * vega20_thermal_disable_alert - Disable thermal alerts on the RV770 thermal controller.
- * @hwmgr: The address of the hardware manager.
- */
+ 
 int vega20_thermal_disable_alert(struct pp_hwmgr *hwmgr)
 {
 	struct amdgpu_device *adev = hwmgr->adev;
@@ -304,11 +266,7 @@ int vega20_thermal_disable_alert(struct pp_hwmgr *hwmgr)
 	return 0;
 }
 
-/**
- * vega20_thermal_stop_thermal_controller - Uninitialize the thermal controller.
- * Currently just disables alerts.
- * @hwmgr: The address of the hardware manager.
- */
+ 
 int vega20_thermal_stop_thermal_controller(struct pp_hwmgr *hwmgr)
 {
 	int result = vega20_thermal_disable_alert(hwmgr);
@@ -316,10 +274,7 @@ int vega20_thermal_stop_thermal_controller(struct pp_hwmgr *hwmgr)
 	return result;
 }
 
-/**
- * vega20_thermal_setup_fan_table - Set up the fan table to control the fan using the SMC.
- * @hwmgr:  the address of the powerplay hardware manager.
- */
+ 
 static int vega20_thermal_setup_fan_table(struct pp_hwmgr *hwmgr)
 {
 	int ret;

@@ -1,23 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * CPU-agnostic ARM page table allocator.
- *
- * ARMv7 Short-descriptor format, supporting
- * - Basic memory attributes
- * - Simplified access permissions (AP[2:1] model)
- * - Backwards-compatible TEX remap
- * - Large pages/supersections (if indicated by the caller)
- *
- * Not supporting:
- * - Legacy access permissions (AP[2:0] model)
- *
- * Almost certainly never supporting:
- * - PXN
- * - Domains
- *
- * Copyright (C) 2014-2015 ARM Limited
- * Copyright (c) 2014-2015 MediaTek Inc.
- */
+
+ 
 
 #define pr_fmt(fmt)	"arm-v7s io-pgtable: " fmt
 
@@ -35,18 +17,14 @@
 
 #include <asm/barrier.h>
 
-/* Struct accessors */
+ 
 #define io_pgtable_to_data(x)						\
 	container_of((x), struct arm_v7s_io_pgtable, iop)
 
 #define io_pgtable_ops_to_data(x)					\
 	io_pgtable_to_data(io_pgtable_ops_to_pgtable(x))
 
-/*
- * We have 32 bits total; 12 bits resolved at level 1, 8 bits at level 2,
- * and 12 bits in a page.
- * MediaTek extend 2 bits to reach 34bits, 14 bits at lvl1 and 8 bits at lvl2.
- */
+ 
 #define ARM_V7S_ADDR_BITS		32
 #define _ARM_V7S_LVL_BITS(lvl, cfg)	((lvl) == 1 ? ((cfg)->ias - 20) : 8)
 #define ARM_V7S_LVL_SHIFT(lvl)		((lvl) == 1 ? 20 : 12)
@@ -65,17 +43,10 @@
 	((addr) >> ARM_V7S_LVL_SHIFT(_l)) & _ARM_V7S_IDX_MASK(_l, cfg); \
 })
 
-/*
- * Large page/supersection entries are effectively a block of 16 page/section
- * entries, along the lines of the LPAE contiguous hint, but all with the
- * same output address. For want of a better common name we'll call them
- * "contiguous" versions of their respective page/section entries here, but
- * noting the distinction (WRT to TLB maintenance) that they represent *one*
- * entry repeated 16 times, not 16 separate entries (as in the LPAE case).
- */
+ 
 #define ARM_V7S_CONT_PAGES		16
 
-/* PTE type bits: these are all mixed up with XN/PXN bits in most cases */
+ 
 #define ARM_V7S_PTE_TYPE_TABLE		0x1
 #define ARM_V7S_PTE_TYPE_PAGE		0x2
 #define ARM_V7S_PTE_TYPE_CONT_PAGE	0x1
@@ -84,7 +55,7 @@
 #define ARM_V7S_PTE_IS_TABLE(pte, lvl) \
 	((lvl) == 1 && (((pte) & 0x3) == ARM_V7S_PTE_TYPE_TABLE))
 
-/* Page table bits */
+ 
 #define ARM_V7S_ATTR_XN(lvl)		BIT(4 * (2 - (lvl)))
 #define ARM_V7S_ATTR_B			BIT(2)
 #define ARM_V7S_ATTR_C			BIT(3)
@@ -94,11 +65,7 @@
 #define ARM_V7S_CONT_SECTION		BIT(18)
 #define ARM_V7S_CONT_PAGE_XN_SHIFT	15
 
-/*
- * The attribute bits are consistently ordered*, but occupy bits [17:10] of
- * a level 1 PTE vs. bits [11:4] at level 2. Thus we define the individual
- * fields relative to that 8-bit block, plus a total shift relative to the PTE.
- */
+ 
 #define ARM_V7S_ATTR_SHIFT(lvl)		(16 - (lvl) * 6)
 
 #define ARM_V7S_ATTR_MASK		0xff
@@ -111,21 +78,21 @@
 #define ARM_V7S_TEX_MASK		0x7
 #define ARM_V7S_ATTR_TEX(val)		(((val) & ARM_V7S_TEX_MASK) << ARM_V7S_TEX_SHIFT)
 
-/* MediaTek extend the bits below for PA 32bit/33bit/34bit */
+ 
 #define ARM_V7S_ATTR_MTK_PA_BIT32	BIT(9)
 #define ARM_V7S_ATTR_MTK_PA_BIT33	BIT(4)
 #define ARM_V7S_ATTR_MTK_PA_BIT34	BIT(5)
 
-/* *well, except for TEX on level 2 large pages, of course :( */
+ 
 #define ARM_V7S_CONT_PAGE_TEX_SHIFT	6
 #define ARM_V7S_CONT_PAGE_TEX_MASK	(ARM_V7S_TEX_MASK << ARM_V7S_CONT_PAGE_TEX_SHIFT)
 
-/* Simplified access permissions */
+ 
 #define ARM_V7S_PTE_AF			ARM_V7S_ATTR_AP0
 #define ARM_V7S_PTE_AP_UNPRIV		ARM_V7S_ATTR_AP1
 #define ARM_V7S_PTE_AP_RDONLY		ARM_V7S_ATTR_AP2
 
-/* Register bits */
+ 
 #define ARM_V7S_RGN_NC			0
 #define ARM_V7S_RGN_WBWA		1
 #define ARM_V7S_RGN_WT			2
@@ -247,10 +214,7 @@ static void *__arm_v7s_alloc_table(int lvl, gfp_t gfp,
 	void *table = NULL;
 	gfp_t gfp_l1;
 
-	/*
-	 * ARM_MTK_TTBR_EXT extend the translation table base support larger
-	 * memory address.
-	 */
+	 
 	gfp_l1 = cfg->quirks & IO_PGTABLE_QUIRK_ARM_MTK_TTBR_EXT ?
 		 GFP_KERNEL : ARM_V7S_TABLE_GFP_DMA;
 
@@ -265,7 +229,7 @@ static void *__arm_v7s_alloc_table(int lvl, gfp_t gfp,
 	phys = virt_to_phys(table);
 	if (cfg->quirks & IO_PGTABLE_QUIRK_ARM_MTK_TTBR_EXT ?
 	    phys >= (1ULL << cfg->oas) : phys != (arm_v7s_iopte)phys) {
-		/* Doesn't fit in PTE */
+		 
 		dev_err(dev, "Page table does not fit in PTE: %pa", &phys);
 		goto out_free;
 	}
@@ -273,11 +237,7 @@ static void *__arm_v7s_alloc_table(int lvl, gfp_t gfp,
 		dma = dma_map_single(dev, table, size, DMA_TO_DEVICE);
 		if (dma_mapping_error(dev, dma))
 			goto out_free;
-		/*
-		 * We depend on the IOMMU being able to work with any physical
-		 * address directly, so if the DMA layer suggests otherwise by
-		 * translating or truncating them, that bodes very badly...
-		 */
+		 
 		if (dma != phys)
 			goto out_unmap;
 	}
@@ -438,10 +398,7 @@ static int arm_v7s_init_pte(struct arm_v7s_io_pgtable *data,
 
 	for (i = 0; i < num_entries; i++)
 		if (ARM_V7S_PTE_IS_TABLE(ptep[i], lvl)) {
-			/*
-			 * We need to unmap and free the old table before
-			 * overwriting it with a block entry.
-			 */
+			 
 			arm_v7s_iopte *tblp;
 			size_t sz = ARM_V7S_BLOCK_SIZE(lvl);
 
@@ -450,7 +407,7 @@ static int arm_v7s_init_pte(struct arm_v7s_io_pgtable *data,
 						    sz, lvl, tblp) != sz))
 				return -EINVAL;
 		} else if (ptep[i]) {
-			/* We require an unmap first */
+			 
 			WARN_ON(!selftest_running);
 			return -EEXIST;
 		}
@@ -481,11 +438,7 @@ static arm_v7s_iopte arm_v7s_install_table(arm_v7s_iopte *table,
 	if (cfg->quirks & IO_PGTABLE_QUIRK_ARM_NS)
 		new |= ARM_V7S_ATTR_NS_TABLE;
 
-	/*
-	 * Ensure the table itself is visible before its PTE can be.
-	 * Whilst we could get away with cmpxchg64_release below, this
-	 * doesn't have any ordering semantics when !CONFIG_SMP.
-	 */
+	 
 	dma_wmb();
 
 	old = cmpxchg_relaxed(ptep, curr, new);
@@ -502,19 +455,19 @@ static int __arm_v7s_map(struct arm_v7s_io_pgtable *data, unsigned long iova,
 	arm_v7s_iopte pte, *cptep;
 	int num_entries = size >> ARM_V7S_LVL_SHIFT(lvl);
 
-	/* Find our entry at the current level */
+	 
 	ptep += ARM_V7S_LVL_IDX(iova, lvl, cfg);
 
-	/* If we can install a leaf entry at this level, then do so */
+	 
 	if (num_entries)
 		return arm_v7s_init_pte(data, iova, paddr, prot,
 					lvl, num_entries, ptep);
 
-	/* We can't allocate tables at the final level */
+	 
 	if (WARN_ON(lvl == 2))
 		return -EINVAL;
 
-	/* Grab a pointer to the next level */
+	 
 	pte = READ_ONCE(*ptep);
 	if (!pte) {
 		cptep = __arm_v7s_alloc_table(lvl + 1, gfp, data);
@@ -525,19 +478,19 @@ static int __arm_v7s_map(struct arm_v7s_io_pgtable *data, unsigned long iova,
 		if (pte)
 			__arm_v7s_free_table(cptep, lvl + 1, data);
 	} else {
-		/* We've no easy way of knowing if it's synced yet, so... */
+		 
 		__arm_v7s_pte_sync(ptep, 1, cfg);
 	}
 
 	if (ARM_V7S_PTE_IS_TABLE(pte, lvl)) {
 		cptep = iopte_deref(pte, lvl, data);
 	} else if (pte) {
-		/* We require an unmap first */
+		 
 		WARN_ON(!selftest_running);
 		return -EEXIST;
 	}
 
-	/* Rinse, repeat */
+	 
 	return __arm_v7s_map(data, iova, paddr, size, prot, lvl + 1, cptep, gfp);
 }
 
@@ -552,7 +505,7 @@ static int arm_v7s_map_pages(struct io_pgtable_ops *ops, unsigned long iova,
 		    paddr >= (1ULL << data->iop.cfg.oas)))
 		return -ERANGE;
 
-	/* If no access, then nothing to do */
+	 
 	if (!(prot & (IOMMU_READ | IOMMU_WRITE)))
 		return 0;
 
@@ -566,10 +519,7 @@ static int arm_v7s_map_pages(struct io_pgtable_ops *ops, unsigned long iova,
 		paddr += pgsize;
 		*mapped += pgsize;
 	}
-	/*
-	 * Synchronise all PTE updates for the new mapping before there's
-	 * a chance for anything to kick off a table walk for the new iova.
-	 */
+	 
 	wmb();
 
 	return ret;
@@ -601,7 +551,7 @@ static arm_v7s_iopte arm_v7s_split_cont(struct arm_v7s_io_pgtable *data,
 	size_t size = ARM_V7S_BLOCK_SIZE(lvl);
 	int i;
 
-	/* Check that we didn't lose a race to get the lock */
+	 
 	pte = *ptep;
 	if (!arm_v7s_pte_is_cont(pte, lvl))
 		return pte;
@@ -630,7 +580,7 @@ static size_t arm_v7s_split_blk_unmap(struct arm_v7s_io_pgtable *data,
 
 	tablep = __arm_v7s_alloc_table(2, GFP_ATOMIC, data);
 	if (!tablep)
-		return 0; /* Bytes unmapped */
+		return 0;  
 
 	num_ptes = ARM_V7S_PTES_PER_LVL(2, cfg);
 	num_entries = size >> ARM_V7S_LVL_SHIFT(2);
@@ -641,7 +591,7 @@ static size_t arm_v7s_split_blk_unmap(struct arm_v7s_io_pgtable *data,
 		pte = arm_v7s_pte_to_cont(pte, 2);
 
 	for (i = 0; i < num_ptes; i += num_entries, pte += size) {
-		/* Unmap! */
+		 
 		if (i == unmap_idx)
 			continue;
 
@@ -672,7 +622,7 @@ static size_t __arm_v7s_unmap(struct arm_v7s_io_pgtable *data,
 	struct io_pgtable *iop = &data->iop;
 	int idx, i = 0, num_entries = size >> ARM_V7S_LVL_SHIFT(lvl);
 
-	/* Something went horribly wrong and we ran out of page table */
+	 
 	if (WARN_ON(lvl > 2))
 		return 0;
 
@@ -684,16 +634,7 @@ static size_t __arm_v7s_unmap(struct arm_v7s_io_pgtable *data,
 			return 0;
 	} while (++i < num_entries);
 
-	/*
-	 * If we've hit a contiguous 'large page' entry at this level, it
-	 * needs splitting first, unless we're unmapping the whole lot.
-	 *
-	 * For splitting, we can't rewrite 16 PTEs atomically, and since we
-	 * can't necessarily assume TEX remap we don't have a software bit to
-	 * mark live entries being split. In practice (i.e. DMA API code), we
-	 * will never be splitting large pages anyway, so just wrap this edge
-	 * case in a lock for the sake of correctness and be done with it.
-	 */
+	 
 	if (num_entries <= 1 && arm_v7s_pte_is_cont(pte[0], lvl)) {
 		unsigned long flags;
 
@@ -702,7 +643,7 @@ static size_t __arm_v7s_unmap(struct arm_v7s_io_pgtable *data,
 		spin_unlock_irqrestore(&data->split_lock, flags);
 	}
 
-	/* If the size matches this level, we're in the right place */
+	 
 	if (num_entries) {
 		size_t blk_size = ARM_V7S_BLOCK_SIZE(lvl);
 
@@ -710,7 +651,7 @@ static size_t __arm_v7s_unmap(struct arm_v7s_io_pgtable *data,
 
 		for (i = 0; i < num_entries; i++) {
 			if (ARM_V7S_PTE_IS_TABLE(pte[i], lvl)) {
-				/* Also flush any partial walks */
+				 
 				io_pgtable_tlb_flush_walk(iop, iova, blk_size,
 						ARM_V7S_BLOCK_SIZE(lvl + 1));
 				ptep = iopte_deref(pte[i], lvl, data);
@@ -722,15 +663,12 @@ static size_t __arm_v7s_unmap(struct arm_v7s_io_pgtable *data,
 		}
 		return size;
 	} else if (lvl == 1 && !ARM_V7S_PTE_IS_TABLE(pte[0], lvl)) {
-		/*
-		 * Insert a table at the next level to map the old region,
-		 * minus the part we want to unmap
-		 */
+		 
 		return arm_v7s_split_blk_unmap(data, gather, iova, size, pte[0],
 					       ptep);
 	}
 
-	/* Keep on walkin' */
+	 
 	ptep = iopte_deref(pte[0], lvl, data);
 	return __arm_v7s_unmap(data, gather, iova, size, lvl + 1, ptep);
 }
@@ -799,7 +737,7 @@ static struct io_pgtable *arm_v7s_alloc_pgtable(struct io_pgtable_cfg *cfg,
 			    IO_PGTABLE_QUIRK_ARM_MTK_TTBR_EXT))
 		return NULL;
 
-	/* If ARM_MTK_4GB is enabled, the NO_PERMS is also expected. */
+	 
 	if (cfg->quirks & IO_PGTABLE_QUIRK_ARM_MTK_EXT &&
 	    !(cfg->quirks & IO_PGTABLE_QUIRK_NO_PERMS))
 			return NULL;
@@ -814,10 +752,7 @@ static struct io_pgtable *arm_v7s_alloc_pgtable(struct io_pgtable_cfg *cfg,
 
 	spin_lock_init(&data->split_lock);
 
-	/*
-	 * ARM_MTK_TTBR_EXT extend the translation table base support larger
-	 * memory address.
-	 */
+	 
 	slab_flag = cfg->quirks & IO_PGTABLE_QUIRK_ARM_MTK_TTBR_EXT ?
 		    0 : ARM_V7S_TABLE_SLAB_FLAGS;
 
@@ -834,23 +769,16 @@ static struct io_pgtable *arm_v7s_alloc_pgtable(struct io_pgtable_cfg *cfg,
 		.iova_to_phys	= arm_v7s_iova_to_phys,
 	};
 
-	/* We have to do this early for __arm_v7s_alloc_table to work... */
+	 
 	data->iop.cfg = *cfg;
 
-	/*
-	 * Unless the IOMMU driver indicates supersection support by
-	 * having SZ_16M set in the initial bitmap, they won't be used.
-	 */
+	 
 	cfg->pgsize_bitmap &= SZ_4K | SZ_64K | SZ_1M | SZ_16M;
 
-	/* TCR: T0SZ=0, EAE=0 (if applicable) */
+	 
 	cfg->arm_v7s_cfg.tcr = 0;
 
-	/*
-	 * TEX remap: the indices used map to the closest equivalent types
-	 * under the non-TEX-remap interpretation of those attribute bits,
-	 * excepting various implementation-defined aspects of shareability.
-	 */
+	 
 	cfg->arm_v7s_cfg.prrr = ARM_V7S_PRRR_TR(1, ARM_V7S_PRRR_TYPE_DEVICE) |
 				ARM_V7S_PRRR_TR(4, ARM_V7S_PRRR_TYPE_NORMAL) |
 				ARM_V7S_PRRR_TR(7, ARM_V7S_PRRR_TYPE_NORMAL) |
@@ -859,15 +787,15 @@ static struct io_pgtable *arm_v7s_alloc_pgtable(struct io_pgtable_cfg *cfg,
 	cfg->arm_v7s_cfg.nmrr = ARM_V7S_NMRR_IR(7, ARM_V7S_RGN_WBWA) |
 				ARM_V7S_NMRR_OR(7, ARM_V7S_RGN_WBWA);
 
-	/* Looking good; allocate a pgd */
+	 
 	data->pgd = __arm_v7s_alloc_table(1, GFP_KERNEL, data);
 	if (!data->pgd)
 		goto out_free_data;
 
-	/* Ensure the empty pgd is visible before any actual TTBR write */
+	 
 	wmb();
 
-	/* TTBR */
+	 
 	paddr = virt_to_phys(data->pgd);
 	if (arm_v7s_is_mtk_enabled(cfg))
 		cfg->arm_v7s_cfg.ttbr = paddr | upper_32_bits(paddr);
@@ -951,10 +879,7 @@ static int __init arm_v7s_do_selftests(void)
 		return -EINVAL;
 	}
 
-	/*
-	 * Initial sanity checks.
-	 * Empty page tables shouldn't provide any translations.
-	 */
+	 
 	if (ops->iova_to_phys(ops, 42))
 		return __FAIL(ops);
 
@@ -964,9 +889,7 @@ static int __init arm_v7s_do_selftests(void)
 	if (ops->iova_to_phys(ops, SZ_2G + 42))
 		return __FAIL(ops);
 
-	/*
-	 * Distinct mappings of different granule sizes.
-	 */
+	 
 	iova = 0;
 	for_each_set_bit(i, &cfg.pgsize_bitmap, BITS_PER_LONG) {
 		size = 1UL << i;
@@ -976,7 +899,7 @@ static int __init arm_v7s_do_selftests(void)
 				   GFP_KERNEL, &mapped))
 			return __FAIL(ops);
 
-		/* Overlapping mappings */
+		 
 		if (!ops->map_pages(ops, iova, iova + size, size, 1,
 				    IOMMU_READ | IOMMU_NOEXEC, GFP_KERNEL,
 				    &mapped))
@@ -989,7 +912,7 @@ static int __init arm_v7s_do_selftests(void)
 		loopnr++;
 	}
 
-	/* Partial unmap */
+	 
 	i = 1;
 	size = 1UL << __ffs(cfg.pgsize_bitmap);
 	while (i < loopnr) {
@@ -997,7 +920,7 @@ static int __init arm_v7s_do_selftests(void)
 		if (ops->unmap_pages(ops, iova_start + size, size, 1, NULL) != size)
 			return __FAIL(ops);
 
-		/* Remap of partial unmap */
+		 
 		if (ops->map_pages(ops, iova_start + size, size, size, 1,
 				   IOMMU_READ, GFP_KERNEL, &mapped))
 			return __FAIL(ops);
@@ -1008,7 +931,7 @@ static int __init arm_v7s_do_selftests(void)
 		i++;
 	}
 
-	/* Full unmap */
+	 
 	iova = 0;
 	for_each_set_bit(i, &cfg.pgsize_bitmap, BITS_PER_LONG) {
 		size = 1UL << i;
@@ -1019,7 +942,7 @@ static int __init arm_v7s_do_selftests(void)
 		if (ops->iova_to_phys(ops, iova + 42))
 			return __FAIL(ops);
 
-		/* Remap full block */
+		 
 		if (ops->map_pages(ops, iova, iova, size, 1, IOMMU_WRITE,
 				   GFP_KERNEL, &mapped))
 			return __FAIL(ops);

@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2021 Facebook */
+
+ 
 #include <test_progs.h>
 #include "get_branch_snapshot.skel.h"
 
@@ -35,7 +35,7 @@ static int create_perf_events(void)
 	struct perf_event_attr attr = {0};
 	int cpu;
 
-	/* create perf event */
+	 
 	attr.size = sizeof(attr);
 	attr.type = PERF_TYPE_HARDWARE;
 	attr.config = PERF_COUNT_HW_CPU_CYCLES;
@@ -78,14 +78,14 @@ void serial_test_get_branch_snapshot(void)
 	struct get_branch_snapshot *skel = NULL;
 	int err;
 
-	/* Skip the test before we fix LBR snapshot for hypervisor. */
+	 
 	if (is_hypervisor()) {
 		test__skip();
 		return;
 	}
 
 	if (create_perf_events()) {
-		test__skip();  /* system doesn't support LBR */
+		test__skip();   
 		goto cleanup;
 	}
 
@@ -97,9 +97,7 @@ void serial_test_get_branch_snapshot(void)
 	if (!ASSERT_OK(err, "kallsyms_find"))
 		goto cleanup;
 
-	/* Just a guess for the end of this function, as module functions
-	 * in /proc/kallsyms could come in any order.
-	 */
+	 
 	skel->bss->address_high = skel->bss->address_low + 128;
 
 	err = get_branch_snapshot__attach(skel);
@@ -109,19 +107,14 @@ void serial_test_get_branch_snapshot(void)
 	trigger_module_test_read(100);
 
 	if (skel->bss->total_entries < 16) {
-		/* too few entries for the hit/waste test */
+		 
 		test__skip();
 		goto cleanup;
 	}
 
 	ASSERT_GT(skel->bss->test1_hits, 6, "find_looptest_in_lbr");
 
-	/* Given we stop LBR in software, we will waste a few entries.
-	 * But we should try to waste as few as possible entries. We are at
-	 * about 7 on x86_64 systems.
-	 * Add a check for < 10 so that we get heads-up when something
-	 * changes and wastes too many entries.
-	 */
+	 
 	ASSERT_LT(skel->bss->wasted_entries, 10, "check_wasted_entries");
 
 cleanup:

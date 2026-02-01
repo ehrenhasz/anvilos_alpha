@@ -1,25 +1,4 @@
-/*
- * Copyright 2020 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 
 #define SWSMU_CODE_LAYER_L2
 
@@ -32,11 +11,7 @@
 #include "smu_v13_0_5_pmfw.h"
 #include "smu_cmn.h"
 
-/*
- * DO NOT use these for err/warn/info/debug messages.
- * Use dev_err, dev_warn, dev_info and dev_dbg instead.
- * They are more MGPU friendly.
- */
+ 
 #undef pr_err
 #undef pr_warn
 #undef pr_info
@@ -197,7 +172,7 @@ static int smu_v13_0_5_dpm_set_vcn_enable(struct smu_context *smu, bool enable)
 {
 	int ret = 0;
 
-	/* vcn dpm on is a prerequisite for vcn power gate messages */
+	 
 	if (enable)
 		ret = smu_cmn_send_smc_msg_with_param(smu, SMU_MSG_PowerUpVcn,
 						      0, NULL);
@@ -443,7 +418,7 @@ static int smu_v13_0_5_set_watermarks_table(struct smu_context *smu,
 		smu->watermarks_bitmap |= WATERMARKS_EXIST;
 	}
 
-	/* pass data to smu controller */
+	 
 	if ((smu->watermarks_bitmap & WATERMARKS_EXIST) &&
 	     !(smu->watermarks_bitmap & WATERMARKS_LOADED)) {
 		ret = smu_cmn_write_watermarks_table(smu);
@@ -508,7 +483,7 @@ static int smu_v13_0_5_od_edit_dpm_table(struct smu_context *smu, enum PP_OD_DPM
 	struct smu_dpm_context *smu_dpm = &(smu->smu_dpm);
 	int ret = 0;
 
-	/* Only allowed in manual mode */
+	 
 	if (smu_dpm->dpm_level != AMD_DPM_FORCED_LEVEL_MANUAL)
 		return -EINVAL;
 
@@ -753,7 +728,7 @@ static int smu_v13_0_5_get_dpm_ultimate_freq(struct smu_context *smu,
 			break;
 		}
 
-		/* clock in Mhz unit */
+		 
 		if (min)
 			*min = clock_limit / 100;
 		if (max)

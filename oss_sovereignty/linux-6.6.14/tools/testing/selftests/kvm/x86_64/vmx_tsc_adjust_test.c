@@ -1,22 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * vmx_tsc_adjust_test
- *
- * Copyright (C) 2018, Google LLC.
- *
- * IA32_TSC_ADJUST test
- *
- * According to the SDM, "if an execution of WRMSR to the
- * IA32_TIME_STAMP_COUNTER MSR adds (or subtracts) value X from the TSC,
- * the logical processor also adds (or subtracts) value X from the
- * IA32_TSC_ADJUST MSR.
- *
- * Note that when L1 doesn't intercept writes to IA32_TSC, a
- * WRMSR(IA32_TSC) from L2 sets L1's TSC value, not L2's perceived TSC
- * value.
- *
- * This test verifies that this unusual case is handled correctly.
- */
+
+ 
 
 #include "test_util.h"
 #include "kvm_util.h"
@@ -49,7 +32,7 @@ enum {
 	NUM_VMX_PAGES,
 };
 
-/* The virtual machine object. */
+ 
 static struct kvm_vm *vm;
 
 static void check_ia32_tsc_adjust(int64_t max)
@@ -68,7 +51,7 @@ static void l2_guest_code(void)
 	wrmsr(MSR_IA32_TSC, l1_tsc - TSC_ADJUST_VALUE);
 	check_ia32_tsc_adjust(-2 * TSC_ADJUST_VALUE);
 
-	/* Exit to L1 */
+	 
 	__asm__ __volatile__("vmcall");
 }
 
@@ -86,7 +69,7 @@ static void l1_guest_code(struct vmx_pages *vmx_pages)
 	GUEST_ASSERT(prepare_for_vmx_operation(vmx_pages));
 	GUEST_ASSERT(load_vmcs(vmx_pages));
 
-	/* Prepare the VMCS for L2 execution. */
+	 
 	prepare_vmcs(vmx_pages, l2_guest_code,
 		     &l2_guest_stack[L2_GUEST_STACK_SIZE]);
 	control = vmreadz(CPU_BASED_VM_EXEC_CONTROL);
@@ -94,7 +77,7 @@ static void l1_guest_code(struct vmx_pages *vmx_pages)
 	vmwrite(CPU_BASED_VM_EXEC_CONTROL, control);
 	vmwrite(TSC_OFFSET, TSC_OFFSET_VALUE);
 
-	/* Jump into L2.  First, test failure to load guest CR3.  */
+	 
 	save_cr3 = vmreadz(GUEST_CR3);
 	vmwrite(GUEST_CR3, -1ull);
 	GUEST_ASSERT(!vmlaunch());
@@ -126,7 +109,7 @@ int main(int argc, char *argv[])
 
 	vm = vm_create_with_one_vcpu(&vcpu, (void *) l1_guest_code);
 
-	/* Allocate VMX pages and shared descriptors (vmx_pages). */
+	 
 	vcpu_alloc_vmx(vm, &vmx_pages_gva);
 	vcpu_args_set(vcpu, 1, vmx_pages_gva);
 
@@ -139,7 +122,7 @@ int main(int argc, char *argv[])
 		switch (get_ucall(vcpu, &uc)) {
 		case UCALL_ABORT:
 			REPORT_GUEST_ASSERT(uc);
-			/* NOT REACHED */
+			 
 		case UCALL_SYNC:
 			report(uc.args[1]);
 			break;

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * PCM179X ASoC I2C driver
- *
- * Copyright (c) Teenage Engineering AB 2016
- *
- *     Jacob Siverskog <jacob@teenage.engineering>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/of.h>

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * NXP Wireless LAN device driver: USB specific handling
- *
- * Copyright 2011-2020 NXP
- */
+
+ 
 
 #include "main.h"
 #include "usb.h"
@@ -13,36 +9,34 @@
 static struct mwifiex_if_ops usb_ops;
 
 static const struct usb_device_id mwifiex_usb_table[] = {
-	/* 8766 */
+	 
 	{USB_DEVICE(USB8XXX_VID, USB8766_PID_1)},
 	{USB_DEVICE_AND_INTERFACE_INFO(USB8XXX_VID, USB8766_PID_2,
 				       USB_CLASS_VENDOR_SPEC,
 				       USB_SUBCLASS_VENDOR_SPEC, 0xff)},
-	/* 8797 */
+	 
 	{USB_DEVICE(USB8XXX_VID, USB8797_PID_1)},
 	{USB_DEVICE_AND_INTERFACE_INFO(USB8XXX_VID, USB8797_PID_2,
 				       USB_CLASS_VENDOR_SPEC,
 				       USB_SUBCLASS_VENDOR_SPEC, 0xff)},
-	/* 8801 */
+	 
 	{USB_DEVICE(USB8XXX_VID, USB8801_PID_1)},
 	{USB_DEVICE_AND_INTERFACE_INFO(USB8XXX_VID, USB8801_PID_2,
 				       USB_CLASS_VENDOR_SPEC,
 				       USB_SUBCLASS_VENDOR_SPEC, 0xff)},
-	/* 8997 */
+	 
 	{USB_DEVICE(USB8XXX_VID, USB8997_PID_1)},
 	{USB_DEVICE_AND_INTERFACE_INFO(USB8XXX_VID, USB8997_PID_2,
 				       USB_CLASS_VENDOR_SPEC,
 				       USB_SUBCLASS_VENDOR_SPEC, 0xff)},
-	{ }	/* Terminating entry */
+	{ }	 
 };
 
 MODULE_DEVICE_TABLE(usb, mwifiex_usb_table);
 
 static int mwifiex_usb_submit_rx_urb(struct urb_context *ctx, int size);
 
-/* This function handles received packet. Necessary action is taken based on
- * cmd/event/data.
- */
+ 
 static int mwifiex_usb_recv(struct mwifiex_adapter *adapter,
 			    struct sk_buff *skb, u8 ep)
 {
@@ -143,7 +137,7 @@ static int mwifiex_usb_recv(struct mwifiex_adapter *adapter,
 	return -EINPROGRESS;
 
 exit_restore_skb:
-	/* The buffer will be reused for further cmds/events */
+	 
 	skb_push(skb, INTF_HEADER_LEN);
 
 	return ret;
@@ -174,7 +168,7 @@ static void mwifiex_usb_rx_complete(struct urb *urb)
 		    test_bit(MWIFIEX_SURPRISE_REMOVED, &adapter->work_flags)) {
 			mwifiex_dbg(adapter, ERROR,
 				    "URB status is failed: %d\n", urb->status);
-			/* Do not free skb in case of command ep */
+			 
 			if (card->rx_cmd_ep != context->ep)
 				dev_kfree_skb_any(skb);
 			goto setup_for_next;
@@ -192,10 +186,7 @@ static void mwifiex_usb_rx_complete(struct urb *urb)
 		if (status == -EINPROGRESS) {
 			mwifiex_queue_main_work(adapter);
 
-			/* urb for data_ep is re-submitted now;
-			 * urb for cmd_ep will be re-submitted in callback
-			 * mwifiex_usb_recv_complete
-			 */
+			 
 			if (card->rx_cmd_ep == context->ep)
 				return;
 		} else {
@@ -203,7 +194,7 @@ static void mwifiex_usb_rx_complete(struct urb *urb)
 				mwifiex_dbg(adapter, ERROR,
 					    "received data processing failed!\n");
 
-			/* Do not free skb in case of command ep */
+			 
 			if (card->rx_cmd_ep != context->ep)
 				dev_kfree_skb_any(skb);
 		}
@@ -216,11 +207,11 @@ static void mwifiex_usb_rx_complete(struct urb *urb)
 		dev_kfree_skb_any(skb);
 		return;
 	} else {
-		/* Do not free skb in case of command ep */
+		 
 		if (card->rx_cmd_ep != context->ep)
 			dev_kfree_skb_any(skb);
 
-		/* fall through setup_for_next */
+		 
 	}
 
 setup_for_next:
@@ -378,10 +369,7 @@ static void mwifiex_usb_free(struct usb_card_rec *card)
 	return;
 }
 
-/* This function probes an mwifiex device and registers it. It allocates
- * the card structure, initiates the device registration and initialization
- * procedure by adding a logical interface.
- */
+ 
 static int mwifiex_usb_probe(struct usb_interface *intf,
 			     const struct usb_device_id *id)
 {
@@ -404,7 +392,7 @@ static int mwifiex_usb_probe(struct usb_interface *intf,
 	pr_debug("info: VID/PID = %X/%X, Boot2 version = %X\n",
 		 id_vendor, id_product, bcd_device);
 
-	/* PID_1 is used for firmware downloading only */
+	 
 	switch (id_product) {
 	case USB8766_PID_1:
 	case USB8797_PID_1:
@@ -496,14 +484,14 @@ static int mwifiex_usb_probe(struct usb_interface *intf,
 
 	switch (card->usb_boot_state) {
 	case USB8XXX_FW_DNLD:
-		/* Reject broken descriptors. */
+		 
 		if (!card->rx_cmd_ep || !card->tx_cmd_ep)
 			return -ENODEV;
 		if (card->bulk_out_maxpktsize == 0)
 			return -ENODEV;
 		break;
 	case USB8XXX_FW_READY:
-		/* Assume the driver can handle missing endpoints for now. */
+		 
 		break;
 	default:
 		WARN_ON(1);
@@ -525,13 +513,7 @@ static int mwifiex_usb_probe(struct usb_interface *intf,
 	return 0;
 }
 
-/* Kernel needs to suspend all functions separately. Therefore all
- * registered functions must have drivers with suspend and resume
- * methods. Failing that the kernel simply removes the whole card.
- *
- * If already not suspended, this function allocates and sends a
- * 'host sleep activate' request to the firmware and turns off the traffic.
- */
+ 
 static int mwifiex_usb_suspend(struct usb_interface *intf, pm_message_t message)
 {
 	struct usb_card_rec *card = usb_get_intfdata(intf);
@@ -539,7 +521,7 @@ static int mwifiex_usb_suspend(struct usb_interface *intf, pm_message_t message)
 	struct usb_tx_data_port *port;
 	int i, j;
 
-	/* Might still be loading firmware */
+	 
 	wait_for_completion(&card->fw_done);
 
 	adapter = card->adapter;
@@ -552,7 +534,7 @@ static int mwifiex_usb_suspend(struct usb_interface *intf, pm_message_t message)
 		mwifiex_dbg(adapter, WARN,
 			    "Device already suspended\n");
 
-	/* Enable the Host Sleep */
+	 
 	if (!mwifiex_enable_hs(adapter)) {
 		mwifiex_dbg(adapter, ERROR,
 			    "cmd: failed to suspend\n");
@@ -561,12 +543,7 @@ static int mwifiex_usb_suspend(struct usb_interface *intf, pm_message_t message)
 	}
 
 
-	/* 'MWIFIEX_IS_SUSPENDED' bit indicates device is suspended.
-	 * It must be set here before the usb_kill_urb() calls. Reason
-	 * is in the complete handlers, urb->status(= -ENOENT) and
-	 * this flag is used in combination to distinguish between a
-	 * 'suspended' state and a 'disconnect' one.
-	 */
+	 
 	set_bit(MWIFIEX_IS_SUSPENDED, &adapter->work_flags);
 	clear_bit(MWIFIEX_IS_HS_ENABLING, &adapter->work_flags);
 
@@ -592,13 +569,7 @@ static int mwifiex_usb_suspend(struct usb_interface *intf, pm_message_t message)
 	return 0;
 }
 
-/* Kernel needs to suspend all functions separately. Therefore all
- * registered functions must have drivers with suspend and resume
- * methods. Failing that the kernel simply removes the whole card.
- *
- * If already not resumed, this function turns on the traffic and
- * sends a 'host sleep cancel' request to the firmware.
- */
+ 
 static int mwifiex_usb_resume(struct usb_interface *intf)
 {
 	struct usb_card_rec *card = usb_get_intfdata(intf);
@@ -618,9 +589,7 @@ static int mwifiex_usb_resume(struct usb_interface *intf)
 		return 0;
 	}
 
-	/* Indicate device resumed. The netdev queue will be resumed only
-	 * after the urbs have been re-submitted
-	 */
+	 
 	clear_bit(MWIFIEX_IS_SUSPENDED, &adapter->work_flags);
 
 	if (!atomic_read(&card->rx_data_urb_pending))
@@ -635,7 +604,7 @@ static int mwifiex_usb_resume(struct usb_interface *intf)
 						  MWIFIEX_RX_CMD_BUF_SIZE);
 	}
 
-	/* Disable Host Sleep */
+	 
 	if (adapter->hs_activated)
 		mwifiex_cancel_hs(mwifiex_get_priv(adapter,
 						   MWIFIEX_BSS_ROLE_ANY),
@@ -701,7 +670,7 @@ static int mwifiex_write_data_sync(struct mwifiex_adapter *adapter, u8 *pbuf,
 	if (!(*len % card->bulk_out_maxpktsize))
 		(*len)++;
 
-	/* Send the data block */
+	 
 	ret = usb_bulk_msg(card->udev, usb_sndbulkpipe(card->udev, ep), pbuf,
 			   *len, &actual_length, timeout);
 	if (ret) {
@@ -721,7 +690,7 @@ static int mwifiex_read_data_sync(struct mwifiex_adapter *adapter, u8 *pbuf,
 	struct usb_card_rec *card = adapter->card;
 	int actual_length, ret;
 
-	/* Receive the data response */
+	 
 	ret = usb_bulk_msg(card->udev, usb_rcvbulkpipe(card->udev, ep), pbuf,
 			   *len, &actual_length, timeout);
 	if (ret) {
@@ -878,9 +847,7 @@ static int mwifiex_usb_prepare_tx_aggr_skb(struct mwifiex_adapter *adapter,
 	struct mwifiex_txinfo *tx_info = NULL;
 	bool is_txinfo_set = false;
 
-	/* Packets in aggr_list will be send in either skb_aggr or
-	 * write complete, delete the tx_aggr timer
-	 */
+	 
 	if (port->tx_aggr.timer_cnxt.is_hold_timer_set) {
 		del_timer(&port->tx_aggr.timer_cnxt.hold_timer);
 		port->tx_aggr.timer_cnxt.is_hold_timer_set = false;
@@ -905,18 +872,18 @@ static int mwifiex_usb_prepare_tx_aggr_skb(struct mwifiex_adapter *adapter,
 	memset(tx_info, 0, sizeof(*tx_info));
 
 	while ((skb_tmp = skb_dequeue(&port->tx_aggr.aggr_list))) {
-		/* padding for aligning next packet header*/
+		 
 		pad = (align - (skb_tmp->len & (align - 1))) % align;
 		payload = skb_put(skb_aggr, skb_tmp->len + pad);
 		memcpy(payload, skb_tmp->data, skb_tmp->len);
 		if (skb_queue_empty(&port->tx_aggr.aggr_list)) {
-			/* do not padding for last packet*/
+			 
 			*(__le16 *)payload = cpu_to_le16(skb_tmp->len);
 			*(__le16 *)&payload[2] =
 				cpu_to_le16(MWIFIEX_TYPE_AGGR_DATA_V2 | 0x80);
 			skb_trim(skb_aggr, skb_aggr->len - pad);
 		} else {
-			/* add aggregation interface header */
+			 
 			*(__le16 *)payload = cpu_to_le16(skb_tmp->len + pad);
 			*(__le16 *)&payload[2] =
 				cpu_to_le16(MWIFIEX_TYPE_AGGR_DATA_V2);
@@ -944,15 +911,7 @@ static int mwifiex_usb_prepare_tx_aggr_skb(struct mwifiex_adapter *adapter,
 	return 0;
 }
 
-/* This function prepare data packet to be send under usb tx aggregation
- * protocol, check current usb aggregation status, link packet to aggrgation
- * list if possible, work flow as below:
- * (1) if only 1 packet available, add usb tx aggregation header and send.
- * (2) if packet is able to aggregated, link it to current aggregation list.
- * (3) if packet is not able to aggregated, aggregate and send exist packets
- *     in aggrgation list. Then, link packet in the list if there is more
- *     packet in transmit queue, otherwise try to transmit single packet.
- */
+ 
 static int mwifiex_usb_aggr_tx_data(struct mwifiex_adapter *adapter, u8 ep,
 				    struct sk_buff *skb,
 				    struct mwifiex_tx_param *tx_param,
@@ -971,17 +930,17 @@ static int mwifiex_usb_aggr_tx_data(struct mwifiex_adapter *adapter, u8 ep,
 	u32 timeout;
 	int ret;
 
-	/* padding to ensure each packet alginment */
+	 
 	pad = (align - (skb->len & (align - 1))) % align;
 
 	if (tx_param && tx_param->next_pkt_len) {
-		/* next packet available in tx queue*/
+		 
 		if (port->tx_aggr.aggr_len + skb->len + pad >
 		    adapter->bus_aggr.tx_aggr_max_size) {
 			f_send_aggr_buf = 1;
 			f_postcopy_cur_buf = 1;
 		} else {
-			/* current packet could be aggregated*/
+			 
 			f_precopy_cur_buf = 1;
 
 			if (port->tx_aggr.aggr_len + skb->len + pad +
@@ -989,38 +948,32 @@ static int mwifiex_usb_aggr_tx_data(struct mwifiex_adapter *adapter, u8 ep,
 			    adapter->bus_aggr.tx_aggr_max_size ||
 			    port->tx_aggr.aggr_num + 2 >
 			    adapter->bus_aggr.tx_aggr_max_num) {
-			    /* next packet could not be aggregated
-			     * send current aggregation buffer
-			     */
+			     
 				f_send_aggr_buf = 1;
 			}
 		}
 	} else {
-		/* last packet in tx queue */
+		 
 		if (port->tx_aggr.aggr_num > 0) {
-			/* pending packets in aggregation buffer*/
+			 
 			if (port->tx_aggr.aggr_len + skb->len + pad >
 			    adapter->bus_aggr.tx_aggr_max_size) {
-				/* current packet not be able to aggregated,
-				 * send aggr buffer first, then send packet.
-				 */
+				 
 				f_send_cur_buf = 1;
 			} else {
-				/* last packet, Aggregation and send */
+				 
 				f_precopy_cur_buf = 1;
 			}
 
 			f_send_aggr_buf = 1;
 		} else {
-			/* no pending packets in aggregation buffer,
-			 * send current packet immediately
-			 */
+			 
 			 f_send_cur_buf = 1;
 		}
 	}
 
 	if (local_tx_pd->flags & MWIFIEX_TxPD_POWER_MGMT_NULL_PACKET) {
-		/* Send NULL packet immediately*/
+		 
 		if (f_precopy_cur_buf) {
 			if (skb_queue_empty(&port->tx_aggr.aggr_list)) {
 				f_precopy_cur_buf = 0;
@@ -1042,11 +995,7 @@ static int mwifiex_usb_aggr_tx_data(struct mwifiex_adapter *adapter, u8 ep,
 		if (f_send_aggr_buf)
 			goto send_aggr_buf;
 
-		/* packet will not been send immediately,
-		 * set a timer to make sure it will be sent under
-		 * strict time limit. Dynamically fit the timeout
-		 * value, according to packets number in aggr_list
-		 */
+		 
 		if (!port->tx_aggr.timer_cnxt.is_hold_timer_set) {
 			port->tx_aggr.timer_cnxt.hold_tmo_msecs =
 					MWIFIEX_USB_TX_AGGR_TMO_MIN;
@@ -1058,7 +1007,7 @@ static int mwifiex_usb_aggr_tx_data(struct mwifiex_adapter *adapter, u8 ep,
 		} else {
 			if (port->tx_aggr.timer_cnxt.hold_tmo_msecs <
 			    MWIFIEX_USB_TX_AGGR_TMO_MAX) {
-				/* Dyanmic fit timeout */
+				 
 				timeout =
 				++port->tx_aggr.timer_cnxt.hold_tmo_msecs;
 				mod_timer(&port->tx_aggr.timer_cnxt.hold_timer,
@@ -1087,7 +1036,7 @@ send_aggr_buf:
 				port->block_status = true;
 				adapter->data_sent =
 					mwifiex_usb_data_sent(adapter);
-				/* no available urb, postcopy packet*/
+				 
 				f_postcopy_cur_buf = 1;
 				goto postcopy_cur_buf;
 			}
@@ -1111,7 +1060,7 @@ postcopy_cur_buf:
 		skb_queue_tail(&port->tx_aggr.aggr_list, skb);
 		port->tx_aggr.aggr_len += (skb->len + pad);
 		port->tx_aggr.aggr_num++;
-		/* New aggregation begin, start timer */
+		 
 		if (!port->tx_aggr.timer_cnxt.is_hold_timer_set) {
 			port->tx_aggr.timer_cnxt.hold_tmo_msecs =
 					MWIFIEX_USB_TX_AGGR_TMO_MIN;
@@ -1165,7 +1114,7 @@ unlock:
 	spin_unlock_bh(&port->tx_aggr_lock);
 }
 
-/* This function write a command/data packet to card. */
+ 
 static int mwifiex_usb_host_to_card(struct mwifiex_adapter *adapter, u8 ep,
 				    struct sk_buff *skb,
 				    struct mwifiex_tx_param *tx_param)
@@ -1191,7 +1140,7 @@ static int mwifiex_usb_host_to_card(struct mwifiex_adapter *adapter, u8 ep,
 	if (ep == card->tx_cmd_ep) {
 		context = &card->tx_cmd;
 	} else {
-		/* get the data port structure for endpoint */
+		 
 		for (idx = 0; idx < MWIFIEX_TX_DATA_PORT; idx++) {
 			if (ep == card->port[idx].tx_data_ep) {
 				port = &card->port[idx];
@@ -1304,7 +1253,7 @@ static int mwifiex_usb_rx_init(struct mwifiex_adapter *adapter)
 	return 0;
 }
 
-/* This function register usb device and initialize parameter. */
+ 
 static int mwifiex_register_dev(struct mwifiex_adapter *adapter)
 {
 	struct usb_card_rec *card = (struct usb_card_rec *)adapter->card;
@@ -1395,14 +1344,14 @@ static int mwifiex_prog_fw_w_helper(struct mwifiex_adapter *adapter,
 		goto fw_exit;
 	}
 
-	/* Allocate memory for transmit */
+	 
 	fwdata = kzalloc(FW_DNLD_TX_BUF_SIZE, GFP_KERNEL);
 	if (!fwdata) {
 		ret = -ENOMEM;
 		goto fw_exit;
 	}
 
-	/* Allocate memory for receive */
+	 
 	recv_buff = kzalloc(FW_DNLD_RX_BUF_SIZE, GFP_KERNEL);
 	if (!recv_buff) {
 		ret = -ENOMEM;
@@ -1410,12 +1359,12 @@ static int mwifiex_prog_fw_w_helper(struct mwifiex_adapter *adapter,
 	}
 
 	do {
-		/* Send pseudo data to check winner status first */
+		 
 		if (check_winner) {
 			memset(&fwdata->fw_hdr, 0, sizeof(struct fw_header));
 			dlen = 0;
 		} else {
-			/* copy the header of the fw_data to get the length */
+			 
 			memcpy(&fwdata->fw_hdr, &firmware[tlen],
 			       sizeof(struct fw_header));
 
@@ -1423,7 +1372,7 @@ static int mwifiex_prog_fw_w_helper(struct mwifiex_adapter *adapter,
 			dnld_cmd = le32_to_cpu(fwdata->fw_hdr.dnld_cmd);
 			tlen += sizeof(struct fw_header);
 
-			/* Command 7 doesn't have data length field */
+			 
 			if (dnld_cmd == FW_CMD_7)
 				dlen = 0;
 
@@ -1433,12 +1382,12 @@ static int mwifiex_prog_fw_w_helper(struct mwifiex_adapter *adapter,
 			tlen += dlen;
 		}
 
-		/* If the send/receive fails or CRC occurs then retry */
+		 
 		while (--retries) {
 			u8 *buf = (u8 *)fwdata;
 			u32 len = FW_DATA_XMIT_SIZE;
 
-			/* send the firmware block */
+			 
 			ret = mwifiex_write_data_sync(adapter, buf, &len,
 						MWIFIEX_USB_EP_CMD_EVENT,
 						MWIFIEX_USB_TIMEOUT);
@@ -1452,7 +1401,7 @@ static int mwifiex_prog_fw_w_helper(struct mwifiex_adapter *adapter,
 			buf = recv_buff;
 			len = FW_DNLD_RX_BUF_SIZE;
 
-			/* Receive the firmware block response */
+			 
 			ret = mwifiex_read_data_sync(adapter, buf, &len,
 						MWIFIEX_USB_EP_CMD_EVENT,
 						MWIFIEX_USB_TIMEOUT);
@@ -1466,14 +1415,14 @@ static int mwifiex_prog_fw_w_helper(struct mwifiex_adapter *adapter,
 			memcpy(&sync_fw, recv_buff,
 			       sizeof(struct fw_sync_header));
 
-			/* check 1st firmware block resp for highest bit set */
+			 
 			if (check_winner) {
 				if (le32_to_cpu(sync_fw.cmd) & 0x80000000) {
 					mwifiex_dbg(adapter, WARN,
 						    "USB is not the winner %#x\n",
 						    sync_fw.cmd);
 
-					/* returning success */
+					 
 					ret = 0;
 					goto cleanup;
 				}
@@ -1485,7 +1434,7 @@ static int mwifiex_prog_fw_w_helper(struct mwifiex_adapter *adapter,
 				break;
 			}
 
-			/* check the firmware block response for CRC errors */
+			 
 			if (sync_fw.cmd) {
 				mwifiex_dbg(adapter, ERROR,
 					    "FW received block with CRC %#x\n",
@@ -1524,7 +1473,7 @@ static int mwifiex_usb_dnld_fw(struct mwifiex_adapter *adapter,
 		if (ret)
 			return -1;
 
-		/* Boot state changes after successful firmware download */
+		 
 		if (card->usb_boot_state == USB8XXX_FW_DNLD)
 			return -1;
 	}
@@ -1557,10 +1506,10 @@ static int mwifiex_usb_cmd_event_complete(struct mwifiex_adapter *adapter,
 	return 0;
 }
 
-/* This function wakes up the card. */
+ 
 static int mwifiex_pm_wakeup_card(struct mwifiex_adapter *adapter)
 {
-	/* Simulation of HS_AWAKE event */
+	 
 	adapter->pm_wakeup_fw_try = false;
 	del_timer(&adapter->wakeup_timer);
 	adapter->pm_wakeup_card_req = false;
@@ -1583,7 +1532,7 @@ static void mwifiex_usb_submit_rem_rx_urbs(struct mwifiex_adapter *adapter)
 	}
 }
 
-/* This function is called after the card has woken up. */
+ 
 static inline int
 mwifiex_pm_wakeup_card_complete(struct mwifiex_adapter *adapter)
 {
@@ -1596,7 +1545,7 @@ static struct mwifiex_if_ops usb_ops = {
 	.wakeup =		mwifiex_pm_wakeup_card,
 	.wakeup_complete =	mwifiex_pm_wakeup_card_complete,
 
-	/* USB specific */
+	 
 	.dnld_fw =		mwifiex_usb_dnld_fw,
 	.cmdrsp_complete =	mwifiex_usb_cmd_event_complete,
 	.event_complete =	mwifiex_usb_cmd_event_complete,

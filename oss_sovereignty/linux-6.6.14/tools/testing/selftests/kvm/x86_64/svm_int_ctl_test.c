@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * svm_int_ctl_test
- *
- * Copyright (C) 2021, Red Hat, Inc.
- *
- * Nested SVM testing: test simultaneous use of V_IRQ from L1 and L0.
- */
+
+ 
 
 #include "test_util.h"
 #include "kvm_util.h"
@@ -32,13 +26,7 @@ static void intr_irq_handler(struct ex_regs *regs)
 
 static void l2_guest_code(struct svm_test_data *svm)
 {
-	/* This code raises interrupt INTR_IRQ_NUMBER in the L1's LAPIC,
-	 * and since L1 didn't enable virtual interrupt masking,
-	 * L2 should receive it and not L1.
-	 *
-	 * L2 also has virtual interrupt 'VINTR_IRQ_NUMBER' pending in V_IRQ
-	 * so it should also receive it after the following 'sti'.
-	 */
+	 
 	x2apic_write_reg(APIC_ICR,
 		APIC_DEST_SELF | APIC_INT_ASSERT | INTR_IRQ_NUMBER);
 
@@ -63,17 +51,17 @@ static void l1_guest_code(struct svm_test_data *svm)
 
 	x2apic_enable();
 
-	/* Prepare for L2 execution. */
+	 
 	generic_svm_setup(svm, l2_guest_code,
 			  &l2_guest_stack[L2_GUEST_STACK_SIZE]);
 
-	/* No virtual interrupt masking */
+	 
 	vmcb->control.int_ctl &= ~V_INTR_MASKING_MASK;
 
-	/* No intercepts for real and virtual interrupts */
+	 
 	vmcb->control.intercept &= ~(BIT(INTERCEPT_INTR) | BIT(INTERCEPT_VINTR));
 
-	/* Make a virtual interrupt VINTR_IRQ_NUMBER pending */
+	 
 	vmcb->control.int_ctl |= V_IRQ_MASK | (0x1 << V_INTR_PRIO_SHIFT);
 	vmcb->control.int_vector = VINTR_IRQ_NUMBER;
 
@@ -109,7 +97,7 @@ int main(int argc, char *argv[])
 	case UCALL_ABORT:
 		REPORT_GUEST_ASSERT(uc);
 		break;
-		/* NOT REACHED */
+		 
 	case UCALL_DONE:
 		goto done;
 	default:

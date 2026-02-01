@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2011 Red Hat, Inc.
- *
- * This file is released under the GPL.
- */
+
+ 
 #include "dm-block-manager.h"
 #include "dm-persistent-data-internal.h"
 
@@ -18,21 +14,11 @@
 
 #define DM_MSG_PREFIX "block manager"
 
-/*----------------------------------------------------------------*/
+ 
 
 #ifdef CONFIG_DM_DEBUG_BLOCK_MANAGER_LOCKING
 
-/*
- * This is a read/write semaphore with a couple of differences.
- *
- * i) There is a restriction on the number of concurrent read locks that
- * may be held at once.  This is just an implementation detail.
- *
- * ii) Recursive locking attempts are detected and return EINVAL.  A stack
- * trace is also emitted for the previous lock acquisition.
- *
- * iii) Priority is given to write locks.
- */
+ 
 #define MAX_HOLDERS 4
 #define MAX_STACK 10
 
@@ -71,7 +57,7 @@ static unsigned int __find_holder(struct block_lock *lock,
 	return i;
 }
 
-/* call this *after* you increment lock->count */
+ 
 static void __add_holder(struct block_lock *lock, struct task_struct *task)
 {
 	unsigned int h = __find_holder(lock, NULL);
@@ -88,7 +74,7 @@ static void __add_holder(struct block_lock *lock, struct task_struct *task)
 #endif
 }
 
-/* call this *before* you decrement lock->count */
+ 
 static void __del_holder(struct block_lock *lock, struct task_struct *task)
 {
 	unsigned int h = __find_holder(lock, task);
@@ -144,9 +130,7 @@ static void __wake_waiter(struct waiter *w)
 	wake_up_process(task);
 }
 
-/*
- * We either wake a few readers or a single writer.
- */
+ 
 static void __wake_many(struct block_lock *lock)
 {
 	struct waiter *w, *tmp;
@@ -158,7 +142,7 @@ static void __wake_many(struct block_lock *lock)
 
 		if (w->wants_write) {
 			if (lock->count > 0)
-				return; /* still read locked */
+				return;  
 
 			lock->count = -1;
 			__add_holder(lock, w->task);
@@ -276,10 +260,7 @@ static int bl_down_write(struct block_lock *lock)
 	w.task = current;
 	w.wants_write = 1;
 
-	/*
-	 * Writers given priority. We know there's only one mutator in the
-	 * system, so ignoring the ordering reversal.
-	 */
+	 
 	list_add(&w.list, &lock->waiters);
 	spin_unlock(&lock->lock);
 
@@ -306,7 +287,7 @@ static void report_recursive_bug(dm_block_t b, int r)
 		      (unsigned long long) b);
 }
 
-#else  /* !CONFIG_DM_DEBUG_BLOCK_MANAGER_LOCKING */
+#else   
 
 #define bl_init(x) do { } while (0)
 #define bl_down_read(x) 0
@@ -316,17 +297,11 @@ static void report_recursive_bug(dm_block_t b, int r)
 #define bl_up_write(x) do { } while (0)
 #define report_recursive_bug(x, y) do { } while (0)
 
-#endif /* CONFIG_DM_DEBUG_BLOCK_MANAGER_LOCKING */
+#endif  
 
-/*----------------------------------------------------------------*/
+ 
 
-/*
- * Block manager is currently implemented using dm-bufio.  struct
- * dm_block_manager and struct dm_block map directly onto a couple of
- * structs in the bufio interface.  I want to retain the freedom to move
- * away from bufio in the future.  So these structs are just cast within
- * this .c file, rather than making it through to the public interface.
- */
+ 
 static struct dm_buffer *to_buffer(struct dm_block *b)
 {
 	return (struct dm_buffer *) b;
@@ -371,11 +346,7 @@ static void dm_block_manager_write_callback(struct dm_buffer *buf)
 	}
 }
 
-/*
- * -------------------------------------------------------------
- * Public interface
- *--------------------------------------------------------------
- */
+ 
 struct dm_block_manager {
 	struct dm_bufio_client *bufio;
 	bool read_only:1;
@@ -653,10 +624,10 @@ u32 dm_bm_checksum(const void *data, size_t len, u32 init_xor)
 }
 EXPORT_SYMBOL_GPL(dm_bm_checksum);
 
-/*----------------------------------------------------------------*/
+ 
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Joe Thornber <dm-devel@redhat.com>");
 MODULE_DESCRIPTION("Immutable metadata library for dm");
 
-/*----------------------------------------------------------------*/
+ 

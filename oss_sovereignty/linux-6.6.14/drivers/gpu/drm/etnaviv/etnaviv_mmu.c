@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2015-2018 Etnaviv Project
- */
+
+ 
 
 #include <linux/dma-mapping.h>
 #include <linux/scatterlist.h>
@@ -62,7 +60,7 @@ static int etnaviv_context_map(struct etnaviv_iommu_context *context,
 		size -= pgsize;
 	}
 
-	/* unroll mapping in case something went wrong */
+	 
 	if (ret)
 		etnaviv_context_unmap(context, orig_iova, orig_size - size);
 
@@ -168,20 +166,17 @@ static int etnaviv_iommu_find_iova(struct etnaviv_iommu_context *context,
 		if (ret != -ENOSPC)
 			break;
 
-		/* Try to retire some entries */
+		 
 		drm_mm_scan_init(&scan, &context->mm, size, 0, 0, mode);
 
 		found = 0;
 		INIT_LIST_HEAD(&list);
 		list_for_each_entry(free, &context->mappings, mmu_node) {
-			/* If this vram node has not been used, skip this. */
+			 
 			if (!free->vram_node.mm)
 				continue;
 
-			/*
-			 * If the iova is pinned, then it's in-use,
-			 * so we must keep its mapping.
-			 */
+			 
 			if (free->use)
 				continue;
 
@@ -193,27 +188,18 @@ static int etnaviv_iommu_find_iova(struct etnaviv_iommu_context *context,
 		}
 
 		if (!found) {
-			/* Nothing found, clean up and fail */
+			 
 			list_for_each_entry_safe(m, n, &list, scan_node)
 				BUG_ON(drm_mm_scan_remove_block(&scan, &m->vram_node));
 			break;
 		}
 
-		/*
-		 * drm_mm does not allow any other operations while
-		 * scanning, so we have to remove all blocks first.
-		 * If drm_mm_scan_remove_block() returns false, we
-		 * can leave the block pinned.
-		 */
+		 
 		list_for_each_entry_safe(m, n, &list, scan_node)
 			if (!drm_mm_scan_remove_block(&scan, &m->vram_node))
 				list_del_init(&m->scan_node);
 
-		/*
-		 * Unmap the blocks which need to be reaped from the MMU.
-		 * Clear the mmu pointer to prevent the mapping_get finding
-		 * this mapping.
-		 */
+		 
 		list_for_each_entry_safe(m, n, &list, scan_node) {
 			etnaviv_iommu_reap_mapping(m);
 			list_del_init(&m->scan_node);
@@ -221,10 +207,7 @@ static int etnaviv_iommu_find_iova(struct etnaviv_iommu_context *context,
 
 		mode = DRM_MM_INSERT_EVICT;
 
-		/*
-		 * We removed enough mappings so that the new allocation will
-		 * succeed, retry the allocation one more time.
-		 */
+		 
 	}
 
 	return ret;
@@ -245,16 +228,7 @@ static int etnaviv_iommu_insert_exact(struct etnaviv_iommu_context *context,
 	if (ret != -ENOSPC)
 		return ret;
 
-	/*
-	 * When we can't insert the node, due to a existing mapping blocking
-	 * the address space, there are two possible reasons:
-	 * 1. Userspace genuinely messed up and tried to reuse address space
-	 * before the last job using this VMA has finished executing.
-	 * 2. The existing buffer mappings are idle, but the buffers are not
-	 * destroyed yet (likely due to being referenced by another context) in
-	 * which case the mappings will not be cleaned up and we must reap them
-	 * here to make space for the new mapping.
-	 */
+	 
 
 	drm_mm_for_each_node_in_range(scan_node, &context->mm, va, va + size) {
 		m = container_of(scan_node, struct etnaviv_vram_mapping,
@@ -287,7 +261,7 @@ int etnaviv_iommu_map_gem(struct etnaviv_iommu_context *context,
 
 	mutex_lock(&context->lock);
 
-	/* v1 MMU can optimize single entry (contiguous) scatterlists */
+	 
 	if (context->global->version == ETNAVIV_IOMMU_V1 &&
 	    sgt->nents == 1 && !(etnaviv_obj->flags & ETNA_BO_FORCE_MMU)) {
 		u32 iova;
@@ -337,13 +311,13 @@ void etnaviv_iommu_unmap_gem(struct etnaviv_iommu_context *context,
 
 	mutex_lock(&context->lock);
 
-	/* Bail if the mapping has been reaped by another thread */
+	 
 	if (!mapping->context) {
 		mutex_unlock(&context->lock);
 		return;
 	}
 
-	/* If the vram node is on the mm, unmap and remove the node */
+	 
 	if (mapping->vram_node.mm == &context->mm)
 		etnaviv_iommu_remove_mapping(context, mapping);
 
@@ -421,12 +395,7 @@ int etnaviv_iommu_get_suballoc_va(struct etnaviv_iommu_context *context,
 		return 0;
 	}
 
-	/*
-	 * For MMUv1 we don't add the suballoc region to the pagetables, as
-	 * those GPUs can only work with cmdbufs accessed through the linear
-	 * window. Instead we manufacture a mapping to make it look uniform
-	 * to the upper layers.
-	 */
+	 
 	if (context->global->version == ETNAVIV_IOMMU_V1) {
 		mapping->iova = paddr - memory_base;
 	} else {

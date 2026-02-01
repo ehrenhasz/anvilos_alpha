@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright (C) 2020 Texas Instruments Incorporated - http://www.ti.com/
- *
- */
+ 
+ 
 
 #ifndef AM65_CPSW_NUSS_H_
 #define AM65_CPSW_NUSS_H_
@@ -56,7 +54,7 @@ struct am65_cpsw_port {
 	bool				rx_ts_enabled;
 	struct am65_cpsw_qos		qos;
 	struct devlink_port		devlink_port;
-	/* Only for suspend resume context */
+	 
 	u32				vid_context;
 };
 
@@ -64,7 +62,7 @@ struct am65_cpsw_host {
 	struct am65_cpsw_common		*common;
 	void __iomem			*port_base;
 	void __iomem			*stat_base;
-	/* Only for suspend resume context */
+	 
 	u32				vid_context;
 };
 
@@ -74,7 +72,7 @@ struct am65_cpsw_tx_chn {
 	struct am65_cpsw_common	*common;
 	struct k3_cppi_desc_pool *desc_pool;
 	struct k3_udma_glue_tx_channel *tx_chn;
-	spinlock_t lock; /* protect TX rings in multi-port mode */
+	spinlock_t lock;  
 	int irq;
 	u32 id;
 	u32 descs_num;
@@ -124,7 +122,7 @@ struct am65_cpsw_common {
 	u32			disabled_ports_mask;
 	struct net_device	*dma_ndev;
 
-	int			usage_count; /* number of opened ports */
+	int			usage_count;  
 	struct cpsw_ale		*ale;
 	int			tx_ch_num;
 	u32			tx_ch_rate_msk;
@@ -153,7 +151,7 @@ struct am65_cpsw_common {
 	struct net_device *hw_bridge_dev;
 	struct notifier_block am65_cpsw_netdevice_nb;
 	unsigned char switch_id[MAX_PHYS_ITEM_ID_LEN];
-	/* only for suspend/resume context restore */
+	 
 	u32			*ale_context;
 };
 
@@ -198,4 +196,4 @@ int am65_cpsw_nuss_update_tx_chns(struct am65_cpsw_common *common, int num_tx);
 
 bool am65_cpsw_port_dev_check(const struct net_device *dev);
 
-#endif /* AM65_CPSW_NUSS_H_ */
+#endif  

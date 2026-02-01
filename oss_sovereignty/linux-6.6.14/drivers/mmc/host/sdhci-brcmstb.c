@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * sdhci-brcmstb.c Support for SDHCI on Broadcom BRCMSTB SoC's
- *
- * Copyright (C) 2015 Broadcom Corporation
- */
+
+ 
 
 #include <linux/io.h>
 #include <linux/mmc/host.h>
@@ -58,7 +54,7 @@ static void brcmstb_reset(struct sdhci_host *host, u8 mask)
 
 	sdhci_and_cqhci_reset(host, mask);
 
-	/* Reset will clear this, so re-enable it */
+	 
 	if (priv->flags & BRCMSTB_PRIV_FLAGS_GATE_CLOCK)
 		enable_clock_gating(host);
 }
@@ -102,7 +98,7 @@ static void sdhci_brcmstb_set_uhs_signaling(struct sdhci_host *host,
 	dev_dbg(mmc_dev(host->mmc), "%s: Setting UHS signaling for %d timing\n",
 		__func__, timing);
 	ctrl_2 = sdhci_readw(host, SDHCI_HOST_CONTROL2);
-	/* Select Bus Speed Mode for host */
+	 
 	ctrl_2 &= ~SDHCI_CTRL_UHS_MASK;
 	if ((timing == MMC_TIMING_MMC_HS200) ||
 	    (timing == MMC_TIMING_UHS_SDR104))
@@ -119,7 +115,7 @@ static void sdhci_brcmstb_set_uhs_signaling(struct sdhci_host *host,
 		 (timing == MMC_TIMING_MMC_DDR52))
 		ctrl_2 |= SDHCI_CTRL_UHS_DDR50;
 	else if (timing == MMC_TIMING_MMC_HS400)
-		ctrl_2 |= SDHCI_CTRL_HS400; /* Non-standard */
+		ctrl_2 |= SDHCI_CTRL_HS400;  
 	sdhci_writew(host, ctrl_2, SDHCI_HOST_CONTROL2);
 }
 
@@ -283,7 +279,7 @@ static int sdhci_brcmstb_probe(struct platform_device *pdev)
 		match_priv->ops->irq = sdhci_brcmstb_cqhci_irq;
 	}
 
-	/* Map in the non-standard CFG registers */
+	 
 	priv->cfg_regs = devm_platform_get_and_ioremap_resource(pdev, 1, NULL);
 	if (IS_ERR(priv->cfg_regs)) {
 		res = PTR_ERR(priv->cfg_regs);
@@ -295,27 +291,17 @@ static int sdhci_brcmstb_probe(struct platform_device *pdev)
 	if (res)
 		goto err;
 
-	/*
-	 * Automatic clock gating does not work for SD cards that may
-	 * voltage switch so only enable it for non-removable devices.
-	 */
+	 
 	if ((match_priv->flags & BRCMSTB_MATCH_FLAGS_HAS_CLOCK_GATE) &&
 	    (host->mmc->caps & MMC_CAP_NONREMOVABLE))
 		priv->flags |= BRCMSTB_PRIV_FLAGS_GATE_CLOCK;
 
-	/*
-	 * If the chip has enhanced strobe and it's enabled, add
-	 * callback
-	 */
+	 
 	if (match_priv->hs400es &&
 	    (host->mmc->caps2 & MMC_CAP2_HS400_ES))
 		host->mmc_host_ops.hs400_enhanced_strobe = match_priv->hs400es;
 
-	/*
-	 * Supply the existing CAPS, but clear the UHS modes. This
-	 * will allow these modes to be specified by device tree
-	 * properties through mmc_of_parse().
-	 */
+	 
 	sdhci_read_caps(host);
 	if (match_priv->flags & BRCMSTB_MATCH_FLAGS_NO_64BIT)
 		host->caps &= ~SDHCI_CAN_64BIT;
@@ -325,7 +311,7 @@ static int sdhci_brcmstb_probe(struct platform_device *pdev)
 	if (match_priv->flags & BRCMSTB_MATCH_FLAGS_BROKEN_TIMEOUT)
 		host->quirks |= SDHCI_QUIRK_BROKEN_TIMEOUT_VAL;
 
-	/* Change the base clock frequency if the DT property exists */
+	 
 	if (device_property_read_u32(&pdev->dev, "clock-frequency",
 				     &priv->base_freq_hz) != 0)
 		goto add_host;
@@ -340,13 +326,13 @@ static int sdhci_brcmstb_probe(struct platform_device *pdev)
 	if (res)
 		goto err;
 
-	/* set improved clock rate */
+	 
 	clk_set_rate(base_clk, priv->base_freq_hz);
 	actual_clock_mhz = clk_get_rate(base_clk) / 1000000;
 
 	host->caps &= ~SDHCI_CLOCK_V3_BASE_MASK;
 	host->caps |= (actual_clock_mhz << SDHCI_CLOCK_BASE_SHIFT);
-	/* Disable presets because they are now incorrect */
+	 
 	host->quirks2 |= SDHCI_QUIRK2_PRESET_VALUE_BROKEN;
 
 	dev_dbg(&pdev->dev, "Base Clock Frequency changed to %dMHz\n",
@@ -395,12 +381,7 @@ static int sdhci_brcmstb_resume(struct device *dev)
 	ret = sdhci_pltfm_resume(dev);
 	if (!ret && priv->base_freq_hz) {
 		ret = clk_prepare_enable(priv->base_clk);
-		/*
-		 * Note: using clk_get_rate() below as clk_get_rate()
-		 * honors CLK_GET_RATE_NOCACHE attribute, but clk_set_rate()
-		 * may do implicit get_rate() calls that do not honor
-		 * CLK_GET_RATE_NOCACHE.
-		 */
+		 
 		if (!ret &&
 		    (clk_get_rate(priv->base_clk) != priv->base_freq_hz))
 			ret = clk_set_rate(priv->base_clk, priv->base_freq_hz);

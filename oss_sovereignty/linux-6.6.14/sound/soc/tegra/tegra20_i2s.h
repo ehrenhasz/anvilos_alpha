@@ -1,25 +1,12 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * tegra20_i2s.h - Definitions for Tegra20 I2S driver
- *
- * Author: Stephen Warren <swarren@nvidia.com>
- * Copyright (C) 2010,2012 - NVIDIA, Inc.
- *
- * Based on code copyright/by:
- *
- * Copyright (c) 2009-2010, NVIDIA Corporation.
- * Scott Peterson <speterson@nvidia.com>
- *
- * Copyright (C) 2010 Google, Inc.
- * Iliyan Malchev <malchev@google.com>
- */
+ 
+ 
 
 #ifndef __TEGRA20_I2S_H__
 #define __TEGRA20_I2S_H__
 
 #include "tegra_pcm.h"
 
-/* Register offsets from TEGRA20_I2S1_BASE and TEGRA20_I2S2_BASE */
+ 
 
 #define TEGRA20_I2S_CTRL				0x00
 #define TEGRA20_I2S_STATUS				0x04
@@ -32,7 +19,7 @@
 #define TEGRA20_I2S_FIFO1				0x40
 #define TEGRA20_I2S_FIFO2				0x80
 
-/* Fields in TEGRA20_I2S_CTRL */
+ 
 
 #define TEGRA20_I2S_CTRL_FIFO2_TX_ENABLE		(1 << 30)
 #define TEGRA20_I2S_CTRL_FIFO1_ENABLE			(1 << 29)
@@ -92,7 +79,7 @@
 #define TEGRA20_I2S_CTRL_QE_FIFO1			(1 << 1)
 #define TEGRA20_I2S_CTRL_QE_FIFO2			(1 << 0)
 
-/* Fields in TEGRA20_I2S_STATUS */
+ 
 
 #define TEGRA20_I2S_STATUS_FIFO1_RDY			(1 << 31)
 #define TEGRA20_I2S_STATUS_FIFO2_RDY			(1 << 30)
@@ -103,14 +90,14 @@
 #define TEGRA20_I2S_STATUS_QS_FIFO1			(1 << 1)
 #define TEGRA20_I2S_STATUS_QS_FIFO2			(1 << 0)
 
-/* Fields in TEGRA20_I2S_TIMING */
+ 
 
 #define TEGRA20_I2S_TIMING_NON_SYM_ENABLE		(1 << 12)
 #define TEGRA20_I2S_TIMING_CHANNEL_BIT_COUNT_SHIFT	0
 #define TEGRA20_I2S_TIMING_CHANNEL_BIT_COUNT_MASK_US	0x7ff
 #define TEGRA20_I2S_TIMING_CHANNEL_BIT_COUNT_MASK	(TEGRA20_I2S_TIMING_CHANNEL_BIT_COUNT_MASK_US << TEGRA20_I2S_TIMING_CHANNEL_BIT_COUNT_SHIFT)
 
-/* Fields in TEGRA20_I2S_FIFO_SCR */
+ 
 
 #define TEGRA20_I2S_FIFO_SCR_FIFO2_FULL_EMPTY_COUNT_SHIFT	24
 #define TEGRA20_I2S_FIFO_SCR_FIFO1_FULL_EMPTY_COUNT_SHIFT	16

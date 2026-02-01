@@ -1,19 +1,4 @@
-/* Synopsys DesignWare Core Enterprise Ethernet (XLGMAC) Driver
- *
- * Copyright (c) 2017 Synopsys, Inc. (www.synopsys.com)
- *
- * This program is dual-licensed; you may select either version 2 of
- * the GNU General Public License ("GPL") or BSD license ("BSD").
- *
- * This Synopsys DWC XLGMAC software driver and associated documentation
- * (hereinafter the "Software") is an unsupported proprietary work of
- * Synopsys, Inc. unless otherwise expressly agreed to in writing between
- * Synopsys and you. The Software IS NOT an item of Licensed Software or a
- * Licensed Product under any End User Software License Agreement or
- * Agreement for Licensed Products with Synopsys or any supplement thereto.
- * Synopsys is a registered trademark of Synopsys, Inc. Other names included
- * in the SOFTWARE may be the trademarks of their respective owners.
- */
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -35,7 +20,7 @@ static void xlgmac_read_mac_addr(struct xlgmac_pdata *pdata)
 {
 	struct net_device *netdev = pdata->netdev;
 
-	/* Currently it uses a static mac address for test */
+	 
 	memcpy(pdata->mac_addr, dev_addr, netdev->addr_len);
 }
 
@@ -71,28 +56,28 @@ static int xlgmac_init(struct xlgmac_pdata *pdata)
 	unsigned int i;
 	int ret;
 
-	/* Set default configuration data */
+	 
 	xlgmac_default_config(pdata);
 
-	/* Set irq, base_addr, MAC address, */
+	 
 	netdev->irq = pdata->dev_irq;
 	netdev->base_addr = (unsigned long)pdata->mac_regs;
 	xlgmac_read_mac_addr(pdata);
 	eth_hw_addr_set(netdev, pdata->mac_addr);
 
-	/* Set all the function pointers */
+	 
 	xlgmac_init_all_ops(pdata);
 
-	/* Issue software reset to device */
+	 
 	hw_ops->exit(pdata);
 
-	/* Populate the hardware features */
+	 
 	xlgmac_get_all_hw_features(pdata);
 	xlgmac_print_all_hw_features(pdata);
 
-	/* TODO: Set the PHY mode to XLGMII */
+	 
 
-	/* Set the DMA mask */
+	 
 	ret = dma_set_mask_and_coherent(pdata->dev,
 					DMA_BIT_MASK(pdata->hw_feat.dma_width));
 	if (ret) {
@@ -100,13 +85,7 @@ static int xlgmac_init(struct xlgmac_pdata *pdata)
 		return ret;
 	}
 
-	/* Channel and ring params initializtion
-	 *  pdata->channel_count;
-	 *  pdata->tx_ring_count;
-	 *  pdata->rx_ring_count;
-	 *  pdata->tx_desc_count;
-	 *  pdata->rx_desc_count;
-	 */
+	 
 	BUILD_BUG_ON_NOT_POWER_OF_2(XLGMAC_TX_DESC_CNT);
 	pdata->tx_desc_count = XLGMAC_TX_DESC_CNT;
 	if (pdata->tx_desc_count & (pdata->tx_desc_count - 1)) {
@@ -150,7 +129,7 @@ static int xlgmac_init(struct xlgmac_pdata *pdata)
 	pdata->channel_count =
 		max_t(unsigned int, pdata->tx_ring_count, pdata->rx_ring_count);
 
-	/* Initialize RSS hash key and lookup table */
+	 
 	netdev_rss_key_fill(pdata->rss_key, sizeof(pdata->rss_key));
 
 	for (i = 0; i < XLGMAC_RSS_MAX_TABLE_SIZE; i++)
@@ -173,11 +152,11 @@ static int xlgmac_init(struct xlgmac_pdata *pdata)
 				MAC_RSSCR_UDP4TE_POS,
 				MAC_RSSCR_UDP4TE_LEN, 1);
 
-	/* Set device operations */
+	 
 	netdev->netdev_ops = xlgmac_get_netdev_ops();
 	netdev->ethtool_ops = xlgmac_get_ethtool_ops();
 
-	/* Set device features */
+	 
 	if (pdata->hw_feat.tso) {
 		netdev->hw_features = NETIF_F_TSO;
 		netdev->hw_features |= NETIF_F_TSO6;
@@ -210,14 +189,14 @@ static int xlgmac_init(struct xlgmac_pdata *pdata)
 
 	netdev->priv_flags |= IFF_UNICAST_FLT;
 
-	/* Use default watchdog timeout */
+	 
 	netdev->watchdog_timeo = 0;
 
-	/* Tx coalesce parameters initialization */
+	 
 	pdata->tx_usecs = XLGMAC_INIT_DMA_TX_USECS;
 	pdata->tx_frames = XLGMAC_INIT_DMA_TX_FRAMES;
 
-	/* Rx coalesce parameters initialization */
+	 
 	pdata->rx_riwt = hw_ops->usec_to_riwt(pdata, XLGMAC_INIT_DMA_RX_USECS);
 	pdata->rx_usecs = XLGMAC_INIT_DMA_RX_USECS;
 	pdata->rx_frames = XLGMAC_INIT_DMA_RX_FRAMES;
@@ -369,7 +348,7 @@ void xlgmac_get_all_hw_features(struct xlgmac_pdata *pdata)
 
 	hw_feat->version = readl(pdata->mac_regs + MAC_VR);
 
-	/* Hardware feature register 0 */
+	 
 	hw_feat->phyifsel    = XLGMAC_GET_REG_BITS(mac_hfr0,
 						MAC_HWF0R_PHYIFSEL_POS,
 						MAC_HWF0R_PHYIFSEL_LEN);
@@ -413,7 +392,7 @@ void xlgmac_get_all_hw_features(struct xlgmac_pdata *pdata)
 						MAC_HWF0R_SAVLANINS_POS,
 						MAC_HWF0R_SAVLANINS_LEN);
 
-	/* Hardware feature register 1 */
+	 
 	hw_feat->rx_fifo_size  = XLGMAC_GET_REG_BITS(mac_hfr1,
 						MAC_HWF1R_RXFIFOSIZE_POS,
 						MAC_HWF1R_RXFIFOSIZE_LEN);
@@ -451,7 +430,7 @@ void xlgmac_get_all_hw_features(struct xlgmac_pdata *pdata)
 						MAC_HWF1R_L3L4FNUM_POS,
 						MAC_HWF1R_L3L4FNUM_LEN);
 
-	/* Hardware feature register 2 */
+	 
 	hw_feat->rx_q_cnt     = XLGMAC_GET_REG_BITS(mac_hfr2,
 						MAC_HWF2R_RXQCNT_POS,
 						MAC_HWF2R_RXQCNT_LEN);
@@ -471,7 +450,7 @@ void xlgmac_get_all_hw_features(struct xlgmac_pdata *pdata)
 						MAC_HWF2R_AUXSNAPNUM_POS,
 						MAC_HWF2R_AUXSNAPNUM_LEN);
 
-	/* Translate the Hash Table size into actual number */
+	 
 	switch (hw_feat->hash_table_size) {
 	case 0:
 		break;
@@ -486,7 +465,7 @@ void xlgmac_get_all_hw_features(struct xlgmac_pdata *pdata)
 		break;
 	}
 
-	/* Translate the address width setting into actual number */
+	 
 	switch (hw_feat->dma_width) {
 	case 0:
 		hw_feat->dma_width = 32;
@@ -501,9 +480,7 @@ void xlgmac_get_all_hw_features(struct xlgmac_pdata *pdata)
 		hw_feat->dma_width = 32;
 	}
 
-	/* The Queue, Channel and TC counts are zero based so increment them
-	 * to get the actual number
-	 */
+	 
 	hw_feat->rx_q_cnt++;
 	hw_feat->tx_q_cnt++;
 	hw_feat->rx_ch_cnt++;
@@ -520,7 +497,7 @@ void xlgmac_print_all_hw_features(struct xlgmac_pdata *pdata)
 	XLGMAC_PR("\n");
 	XLGMAC_PR("HW support following features\n");
 	XLGMAC_PR("\n");
-	/* HW Feature Register0 */
+	 
 	XLGMAC_PR("VLAN Hash Filter Selected                   : %s\n",
 		  pdata->hw_feat.vlhash ? "YES" : "NO");
 	XLGMAC_PR("SMA (MDIO) Interface                        : %s\n",
@@ -563,7 +540,7 @@ void xlgmac_print_all_hw_features(struct xlgmac_pdata *pdata)
 	XLGMAC_PR("Source Address or VLAN Insertion Enable     : %s\n",
 		  pdata->hw_feat.sa_vlan_ins ? "YES" : "NO");
 
-	/* HW Feature Register1 */
+	 
 	switch (pdata->hw_feat.rx_fifo_size) {
 	case 0:
 		str = "128 bytes";
@@ -669,7 +646,7 @@ void xlgmac_print_all_hw_features(struct xlgmac_pdata *pdata)
 	XLGMAC_PR("Total number of L3 or L4 Filters            : %u\n",
 		  pdata->hw_feat.l3l4_filter_num);
 
-	/* HW Feature Register2 */
+	 
 	XLGMAC_PR("Number of MTL Receive Queues                : %u\n",
 		  pdata->hw_feat.rx_q_cnt);
 	XLGMAC_PR("Number of MTL Transmit Queues               : %u\n",

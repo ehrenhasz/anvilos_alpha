@@ -1,43 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * The R_INTC in Allwinner A31 and newer SoCs manages several types of
- * interrupts, as shown below:
- *
- *             NMI IRQ                DIRECT IRQs           MUXED IRQs
- *              bit 0                  bits 1-15^           bits 19-31
- *
- *   +---------+                      +---------+    +---------+  +---------+
- *   | NMI Pad |                      |  IRQ d  |    |  IRQ m  |  | IRQ m+7 |
- *   +---------+                      +---------+    +---------+  +---------+
- *        |                             |     |         |    |      |    |
- *        |                             |     |         |    |......|    |
- * +------V------+ +------------+       |     |         | +--V------V--+ |
- * |   Invert/   | | Write 1 to |       |     |         | |  AND with  | |
- * | Edge Detect | | PENDING[0] |       |     |         | |  MUX[m/8]  | |
- * +-------------+ +------------+       |     |         | +------------+ |
- *            |       |                 |     |         |       |        |
- *         +--V-------V--+           +--V--+  |      +--V--+    |     +--V--+
- *         | Set    Reset|           | GIC |  |      | GIC |    |     | GIC |
- *         |    Latch    |           | SPI |  |      | SPI |... |  ...| SPI |
- *         +-------------+           | N+d |  |      |  m  |    |     | m+7 |
- *             |     |               +-----+  |      +-----+    |     +-----+
- *             |     |                        |                 |
- *     +-------V-+ +-V----------+   +---------V--+     +--------V--------+
- *     | GIC SPI | |  AND with  |   |  AND with  |     |    AND with     |
- *     | N (=32) | |  ENABLE[0] |   |  ENABLE[d] |     |  ENABLE[19+m/8] |
- *     +---------+ +------------+   +------------+     +-----------------+
- *                        |                |                    |
- *                 +------V-----+   +------V-----+     +--------V--------+
- *                 |    Read    |   |    Read    |     |     Read        |
- *                 | PENDING[0] |   | PENDING[d] |     | PENDING[19+m/8] |
- *                 +------------+   +------------+     +-----------------+
- *
- * ^ bits 16-18 are direct IRQs for peripherals with banked interrupts, such as
- *   the MSGBOX. These IRQs do not map to any GIC SPI.
- *
- * The H6 variant adds two more (banked) direct IRQs and implements the full
- * set of 128 mux bits. This requires a second set of top-level registers.
- */
+
+ 
 
 #include <linux/bitmap.h>
 #include <linux/interrupt.h>
@@ -96,7 +58,7 @@ static void sun6i_r_intc_nmi_ack(struct irq_data *data)
 
 static void sun6i_r_intc_nmi_eoi(struct irq_data *data)
 {
-	/* For oneshot IRQs, delay the ack until the IRQ is unmasked. */
+	 
 	if (data->chip_data == SUN6I_NMI_NEEDS_ACK && !irqd_irq_masked(data)) {
 		data->chip_data = NULL;
 		sun6i_r_intc_ack_nmi();
@@ -138,11 +100,7 @@ static int sun6i_r_intc_nmi_set_type(struct irq_data *data, unsigned int type)
 
 	writel_relaxed(nmi_src_type, base + SUN6I_NMI_CTRL);
 
-	/*
-	 * The "External NMI" GIC input connects to a latch inside R_INTC, not
-	 * directly to the pin. So the GIC trigger type does not depend on the
-	 * NMI pin trigger type.
-	 */
+	 
 	return irq_chip_set_type_parent(data, IRQ_TYPE_LEVEL_HIGH);
 }
 
@@ -165,7 +123,7 @@ static int sun6i_r_intc_irq_set_wake(struct irq_data *data, unsigned int on)
 	else if (test_bit(data->hwirq, wake_mux_valid))
 		assign_bit(data->hwirq, wake_mux_enabled, on);
 	else
-		/* Not wakeup capable. */
+		 
 		return -EPERM;
 
 	return 0;
@@ -200,14 +158,14 @@ static int sun6i_r_intc_domain_translate(struct irq_domain *domain,
 					 unsigned long *hwirq,
 					 unsigned int *type)
 {
-	/* Accept the old two-cell binding for the NMI only. */
+	 
 	if (fwspec->param_count == 2 && fwspec->param[0] == 0) {
 		*hwirq = nmi_hwirq;
 		*type  = fwspec->param[1] & IRQ_TYPE_SENSE_MASK;
 		return 0;
 	}
 
-	/* Otherwise this binding should match the GIC SPI binding. */
+	 
 	if (fwspec->param_count < 3)
 		return -EINVAL;
 	if (fwspec->param[0] != GIC_SPI)
@@ -235,7 +193,7 @@ static int sun6i_r_intc_domain_alloc(struct irq_domain *domain,
 	if (hwirq + nr_irqs > SUN6I_NR_MUX_BITS)
 		return -EINVAL;
 
-	/* Construct a GIC-compatible fwspec from this fwspec. */
+	 
 	gic_fwspec = (struct irq_fwspec) {
 		.fwnode      = domain->parent->fwnode,
 		.param_count = 3,
@@ -273,7 +231,7 @@ static int sun6i_r_intc_suspend(void)
 	u32 buf[BITS_TO_U32(max(SUN6I_NR_TOP_LEVEL_IRQS, SUN6I_NR_MUX_BITS))];
 	int i;
 
-	/* Wake IRQs are enabled during system sleep and shutdown. */
+	 
 	bitmap_to_arr32(buf, wake_irq_enabled, SUN6I_NR_TOP_LEVEL_IRQS);
 	for (i = 0; i < BITS_TO_U32(SUN6I_NR_TOP_LEVEL_IRQS); ++i)
 		writel_relaxed(buf[i], base + SUN6I_IRQ_ENABLE(i));
@@ -288,7 +246,7 @@ static void sun6i_r_intc_resume(void)
 {
 	int i;
 
-	/* Only the NMI is relevant during normal operation. */
+	 
 	writel_relaxed(SUN6I_NMI_BIT, base + SUN6I_IRQ_ENABLE(0));
 	for (i = 1; i < BITS_TO_U32(SUN6I_NR_TOP_LEVEL_IRQS); ++i)
 		writel_relaxed(0, base + SUN6I_IRQ_ENABLE(i));
@@ -313,7 +271,7 @@ static int __init sun6i_r_intc_init(struct device_node *node,
 	struct of_phandle_args nmi_parent;
 	int ret;
 
-	/* Extract the NMI hwirq number from the OF node. */
+	 
 	ret = of_irq_parse_one(node, 0, &nmi_parent);
 	if (ret)
 		return ret;

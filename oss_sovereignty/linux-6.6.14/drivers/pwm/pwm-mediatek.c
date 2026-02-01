@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * MediaTek Pulse Width Modulator driver
- *
- * Copyright (C) 2015 John Crispin <blogic@openwrt.org>
- * Copyright (C) 2017 Zhi Mao <zhi.mao@mediatek.com>
- *
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/io.h>
@@ -19,7 +13,7 @@
 #include <linux/slab.h>
 #include <linux/types.h>
 
-/* PWM registers and bits definitions */
+ 
 #define PWMCON			0x00
 #define PWMHDUR			0x04
 #define PWMLDUR			0x08
@@ -40,16 +34,7 @@ struct pwm_mediatek_of_data {
 	const unsigned int *reg_offset;
 };
 
-/**
- * struct pwm_mediatek_chip - struct representing PWM chip
- * @chip: linux PWM chip representation
- * @regs: base address of PWM chip
- * @clk_top: the top clock generator
- * @clk_main: the clock used by PWM core
- * @clk_pwms: the clock used by each PWM channel
- * @clk_freq: the fix clock frequency of legacy MIPS SoC
- * @soc: pointer to chip's platform data
- */
+ 
 struct pwm_mediatek_chip {
 	struct pwm_chip chip;
 	void __iomem *regs;
@@ -132,11 +117,11 @@ static int pwm_mediatek_config(struct pwm_chip *chip, struct pwm_device *pwm,
 	if (ret < 0)
 		return ret;
 
-	/* Make sure we use the bus clock and not the 26MHz clock */
+	 
 	if (pc->soc->has_ck_26m_sel)
 		writel(0, pc->regs + PWM_CK_26M_SEL);
 
-	/* Using resolution in picosecond gets accuracy higher */
+	 
 	resolution = (u64)NSEC_PER_SEC * 1000;
 	do_div(resolution, clk_get_rate(pc->clk_pwms[pwm->hwpwm]));
 
@@ -155,10 +140,7 @@ static int pwm_mediatek_config(struct pwm_chip *chip, struct pwm_device *pwm,
 	}
 
 	if (pc->soc->pwm45_fixup && pwm->hwpwm > 2) {
-		/*
-		 * PWM[4,5] has distinct offset for PWMDWIDTH and PWMTHRES
-		 * from the other PWMs on MT7623.
-		 */
+		 
 		reg_width = PWM45DWIDTH_FIXUP;
 		reg_thres = PWM45THRES_FIXUP;
 	}

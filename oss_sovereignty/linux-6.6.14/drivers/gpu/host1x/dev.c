@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Tegra host1x driver
- *
- * Copyright (c) 2010-2013, NVIDIA Corporation.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -143,13 +139,13 @@ static const struct host1x_info host1x05_info = {
 
 static const struct host1x_sid_entry tegra186_sid_table[] = {
 	{
-		/* VIC */
+		 
 		.base = 0x1af0,
 		.offset = 0x30,
 		.limit = 0x34
 	},
 	{
-		/* NVDEC */
+		 
 		.base = 0x1b00,
 		.offset = 0x30,
 		.limit = 0x34
@@ -173,19 +169,19 @@ static const struct host1x_info host1x06_info = {
 
 static const struct host1x_sid_entry tegra194_sid_table[] = {
 	{
-		/* VIC */
+		 
 		.base = 0x1af0,
 		.offset = 0x30,
 		.limit = 0x34
 	},
 	{
-		/* NVDEC */
+		 
 		.base = 0x1b00,
 		.offset = 0x30,
 		.limit = 0x34
 	},
 	{
-		/* NVDEC1 */
+		 
 		.base = 0x1bc0,
 		.offset = 0x30,
 		.limit = 0x34
@@ -207,33 +203,28 @@ static const struct host1x_info host1x07_info = {
 	.reserve_vblank_syncpts = false,
 };
 
-/*
- * Tegra234 has two stream ID protection tables, one for setting stream IDs
- * through the channel path via SETSTREAMID, and one for setting them via
- * MMIO. We program each engine's data stream ID in the channel path table
- * and firmware stream ID in the MMIO path table.
- */
+ 
 static const struct host1x_sid_entry tegra234_sid_table[] = {
 	{
-		/* VIC channel */
+		 
 		.base = 0x17b8,
 		.offset = 0x30,
 		.limit = 0x30
 	},
 	{
-		/* VIC MMIO */
+		 
 		.base = 0x1688,
 		.offset = 0x34,
 		.limit = 0x34
 	},
 	{
-		/* NVDEC channel */
+		 
 		.base = 0x17c8,
 		.offset = 0x30,
 		.limit = 0x30,
 	},
 	{
-		/* NVDEC MMIO */
+		 
 		.base = 0x1698,
 		.offset = 0x34,
 		.limit = 0x34,
@@ -288,52 +279,28 @@ static void host1x_setup_virtualization_tables(struct host1x *host)
 	}
 
 	for (i = 0; i < info->streamid_vm_table.count; i++) {
-		/* Allow access to all stream IDs to all VMs. */
+		 
 		host1x_hypervisor_writel(host, 0xff, info->streamid_vm_table.base + 4 * i);
 	}
 
 	for (i = 0; i < info->classid_vm_table.count; i++) {
-		/* Allow access to all classes to all VMs. */
+		 
 		host1x_hypervisor_writel(host, 0xff, info->classid_vm_table.base + 4 * i);
 	}
 
 	for (i = 0; i < info->mmio_vm_table.count; i++) {
-		/* Use VM1 (that's us) as originator VMID for engine MMIO accesses. */
+		 
 		host1x_hypervisor_writel(host, 0x1, info->mmio_vm_table.base + 4 * i);
 	}
 }
 
 static bool host1x_wants_iommu(struct host1x *host1x)
 {
-	/* Our IOMMU usage policy doesn't currently play well with GART */
+	 
 	if (of_machine_is_compatible("nvidia,tegra20"))
 		return false;
 
-	/*
-	 * If we support addressing a maximum of 32 bits of physical memory
-	 * and if the host1x firewall is enabled, there's no need to enable
-	 * IOMMU support. This can happen for example on Tegra20, Tegra30
-	 * and Tegra114.
-	 *
-	 * Tegra124 and later can address up to 34 bits of physical memory and
-	 * many platforms come equipped with more than 2 GiB of system memory,
-	 * which requires crossing the 4 GiB boundary. But there's a catch: on
-	 * SoCs before Tegra186 (i.e. Tegra124 and Tegra210), the host1x can
-	 * only address up to 32 bits of memory in GATHER opcodes, which means
-	 * that command buffers need to either be in the first 2 GiB of system
-	 * memory (which could quickly lead to memory exhaustion), or command
-	 * buffers need to be treated differently from other buffers (which is
-	 * not possible with the current ABI).
-	 *
-	 * A third option is to use the IOMMU in these cases to make sure all
-	 * buffers will be mapped into a 32-bit IOVA space that host1x can
-	 * address. This allows all of the system memory to be used and works
-	 * within the limitations of the host1x on these SoCs.
-	 *
-	 * In summary, default to enable IOMMU on Tegra124 and later. For any
-	 * of the earlier SoCs, only use the IOMMU for additional safety when
-	 * the host1x firewall is disabled.
-	 */
+	 
 	if (host1x->info->dma_mask <= DMA_BIT_MASK(32)) {
 		if (IS_ENABLED(CONFIG_TEGRA_HOST1X_FIREWALL))
 			return false;
@@ -358,14 +325,7 @@ static struct iommu_domain *host1x_iommu_attach(struct host1x *host)
 	}
 #endif
 
-	/*
-	 * We may not always want to enable IOMMU support (for example if the
-	 * host1x firewall is already enabled and we don't support addressing
-	 * more than 32 bits of physical memory), so check for that first.
-	 *
-	 * Similarly, if host1x is already attached to an IOMMU (via the DMA
-	 * API), don't try to attach again.
-	 */
+	 
 	if (!host1x_wants_iommu(host) || domain)
 		return domain;
 
@@ -431,14 +391,7 @@ static int host1x_iommu_init(struct host1x *host)
 		return err;
 	}
 
-	/*
-	 * If we're not behind an IOMMU make sure we don't get push buffers
-	 * that are allocated outside of the range addressable by the GATHER
-	 * opcode.
-	 *
-	 * Newer generations of Tegra (Tegra186 and later) support a wide
-	 * variant of the GATHER opcode that allows addressing more bits.
-	 */
+	 
 	if (!domain && !host->info->has_wide_gather)
 		mask = DMA_BIT_MASK(32);
 
@@ -525,7 +478,7 @@ static int host1x_probe(struct platform_device *pdev)
 	INIT_LIST_HEAD(&host->list);
 	host->dev = &pdev->dev;
 
-	/* set common host1x device data */
+	 
 	platform_set_drvdata(pdev, host);
 
 	host->dev->dma_parms = &host->dma_parms;
@@ -590,7 +543,7 @@ static int host1x_probe(struct platform_device *pdev)
 	if (err)
 		goto pm_disable;
 
-	/* the driver's code isn't ready yet for the dynamic RPM */
+	 
 	err = pm_runtime_resume_and_get(&pdev->dev);
 	if (err)
 		goto pm_disable;
@@ -719,7 +672,7 @@ release_reset:
 static const struct dev_pm_ops host1x_pm_ops = {
 	SET_RUNTIME_PM_OPS(host1x_runtime_suspend, host1x_runtime_resume,
 			   NULL)
-	/* TODO: add system suspend-resume once driver will be ready for that */
+	 
 };
 
 static struct platform_driver tegra_host1x_driver = {
@@ -760,13 +713,7 @@ static void __exit tegra_host1x_exit(void)
 }
 module_exit(tegra_host1x_exit);
 
-/**
- * host1x_get_dma_mask() - query the supported DMA mask for host1x
- * @host1x: host1x instance
- *
- * Note that this returns the supported DMA mask for host1x, which can be
- * different from the applicable DMA mask under certain circumstances.
- */
+ 
 u64 host1x_get_dma_mask(struct host1x *host1x)
 {
 	return host1x->info->dma_mask;

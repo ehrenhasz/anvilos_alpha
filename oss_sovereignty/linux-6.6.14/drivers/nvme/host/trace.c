@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * NVM Express device driver tracepoints
- * Copyright (c) 2018 Johannes Thumshirn, SUSE Linux GmbH
- */
+
+ 
 
 #include <asm/unaligned.h>
 #include "trace.h"

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2016 IBM Corp.
- */
+
+ 
 #include <linux/bitops.h>
 #include <linux/init.h>
 #include <linux/io.h>
@@ -21,56 +19,32 @@
 #include "pinmux-aspeed.h"
 #include "pinctrl-aspeed.h"
 
-/* Wrap some of the common macros for clarity */
+ 
 #define SIG_EXPR_DECL_SINGLE(sig, func, ...) \
 	SIG_EXPR_DECL(sig, func, func, __VA_ARGS__)
 
 #define SIG_EXPR_LIST_DECL_SINGLE SIG_EXPR_LIST_DECL_SESG
 #define SIG_EXPR_LIST_DECL_DUAL SIG_EXPR_LIST_DECL_DESG
 
-/*
- * The "Multi-function Pins Mapping and Control" table in the SoC datasheet
- * references registers by the device/offset mnemonic. The register macros
- * below are named the same way to ease transcription and verification (as
- * opposed to naming them e.g. PINMUX_CTRL_[0-9]). Further, signal expressions
- * reference registers beyond those dedicated to pinmux, such as the system
- * reset control and MAC clock configuration registers.
- */
-#define SCU2C           0x2C /* Misc. Control Register */
-#define SCU3C           0x3C /* System Reset Control/Status Register */
-#define SCU48           0x48 /* MAC Interface Clock Delay Setting */
-#define HW_STRAP1       0x70 /* AST2400 strapping is 33 bits, is split */
-#define HW_REVISION_ID  0x7C /* Silicon revision ID register */
-#define SCU80           0x80 /* Multi-function Pin Control #1 */
-#define SCU84           0x84 /* Multi-function Pin Control #2 */
-#define SCU88           0x88 /* Multi-function Pin Control #3 */
-#define SCU8C           0x8C /* Multi-function Pin Control #4 */
-#define SCU90           0x90 /* Multi-function Pin Control #5 */
-#define SCU94           0x94 /* Multi-function Pin Control #6 */
-#define SCUA0           0xA0 /* Multi-function Pin Control #7 */
-#define SCUA4           0xA4 /* Multi-function Pin Control #8 */
-#define SCUA8           0xA8 /* Multi-function Pin Control #9 */
-#define SCUAC           0xAC /* Multi-function Pin Control #10 */
-#define HW_STRAP2       0xD0 /* Strapping */
+ 
+#define SCU2C           0x2C  
+#define SCU3C           0x3C  
+#define SCU48           0x48  
+#define HW_STRAP1       0x70  
+#define HW_REVISION_ID  0x7C  
+#define SCU80           0x80  
+#define SCU84           0x84  
+#define SCU88           0x88  
+#define SCU8C           0x8C  
+#define SCU90           0x90  
+#define SCU94           0x94  
+#define SCUA0           0xA0  
+#define SCUA4           0xA4  
+#define SCUA8           0xA8  
+#define SCUAC           0xAC  
+#define HW_STRAP2       0xD0  
 
-/*
- * Uses undefined macros for symbol naming and references, eg GPIOA0, MAC1LINK,
- * TIMER3 etc.
- *
- * Pins are defined in GPIO bank order:
- *
- * GPIOA0: 0
- * ...
- * GPIOA7: 7
- * GPIOB0: 8
- * ...
- * GPIOZ7: 207
- * GPIOAA0: 208
- * ...
- * GPIOAB3: 219
- *
- * Not all pins have their signals defined (yet).
- */
+ 
 
 #define D6 0
 SSSF_PIN_DECL(D6, GPIOA0, MAC1LINK, SIG_DESC_SET(SCU80, 0));
@@ -1087,14 +1061,7 @@ PIN_DECL_1(H3, GPIOQ5, SDA14);
 
 FUNC_GROUP_DECL(I2C14, H4, H3);
 
-/*
- * There are several opportunities to document USB port 4 in the datasheet, but
- * it is only mentioned in one location. Particularly, the Multi-function Pins
- * Mapping and Control table in the datasheet elides the signal names,
- * suggesting that port 4 may not actually be functional. As such we define the
- * signal names and control bit, but don't export the capability's function or
- * group.
- */
+ 
 #define USB11H3_DESC	SIG_DESC_SET(SCU90, 28)
 
 #define H2 134
@@ -1897,12 +1864,10 @@ PIN_DECL_(AB20, SIG_EXPR_LIST_PTR(AB20, USB2HDN1),
 FUNC_GROUP_DECL(USB2H1, AB21, AB20);
 FUNC_GROUP_DECL(USB2D1, AB21, AB20);
 
-/* Note we account for GPIOY4-GPIOY7 even though they're not valid, thus 216
- * pins becomes 220. Four additional non-GPIO-capable pins are present for USB.
- */
+ 
 #define ASPEED_G4_NR_PINS 224
 
-/* Pins, groups and functions are sort(1):ed alphabetically for sanity */
+ 
 
 static struct pinctrl_pin_desc aspeed_g4_pins[ASPEED_G4_NR_PINS] = {
 	ASPEED_PINCTRL_PIN(A1),
@@ -2438,7 +2403,7 @@ static const struct aspeed_pin_function aspeed_g4_functions[] = {
 };
 
 static const struct aspeed_pin_config aspeed_g4_configs[] = {
-	/* GPIO banks ranges [A, B], [D, J], [M, R] */
+	 
 	ASPEED_SB_PINCONF(PIN_CONFIG_BIAS_PULL_DOWN, D6,  D5,  SCU8C, 16),
 	ASPEED_SB_PINCONF(PIN_CONFIG_BIAS_DISABLE,   D6,  D5,  SCU8C, 16),
 	ASPEED_SB_PINCONF(PIN_CONFIG_BIAS_PULL_DOWN, J21, E18, SCU8C, 17),
@@ -2470,25 +2435,25 @@ static const struct aspeed_pin_config aspeed_g4_configs[] = {
 	ASPEED_SB_PINCONF(PIN_CONFIG_BIAS_PULL_DOWN, V20, A5,  SCU8C, 31),
 	ASPEED_SB_PINCONF(PIN_CONFIG_BIAS_DISABLE,   V20, A5,  SCU8C, 31),
 
-	/* GPIOs T[0-5] (RGMII1 Tx pins) */
+	 
 	ASPEED_SB_PINCONF(PIN_CONFIG_DRIVE_STRENGTH, A12, A13, SCU90, 9),
 	ASPEED_SB_PINCONF(PIN_CONFIG_BIAS_PULL_DOWN, A12, A13, SCU90, 12),
 	ASPEED_SB_PINCONF(PIN_CONFIG_BIAS_DISABLE,   A12, A13, SCU90, 12),
 
-	/* GPIOs T[6-7], U[0-3] (RGMII2 TX pins) */
+	 
 	ASPEED_SB_PINCONF(PIN_CONFIG_DRIVE_STRENGTH, D9,  D10, SCU90, 11),
 	ASPEED_SB_PINCONF(PIN_CONFIG_BIAS_PULL_DOWN, D9,  D10, SCU90, 14),
 	ASPEED_SB_PINCONF(PIN_CONFIG_BIAS_DISABLE,   D9,  D10, SCU90, 14),
 
-	/* GPIOs U[4-7], V[0-1] (RGMII1 Rx pins) */
+	 
 	ASPEED_SB_PINCONF(PIN_CONFIG_BIAS_PULL_DOWN, E11, E10, SCU90, 13),
 	ASPEED_SB_PINCONF(PIN_CONFIG_BIAS_DISABLE,   E11, E10, SCU90, 13),
 
-	/* GPIOs V[2-7] (RGMII2 Rx pins) */
+	 
 	ASPEED_SB_PINCONF(PIN_CONFIG_BIAS_PULL_DOWN, C9,  C8,  SCU90, 15),
 	ASPEED_SB_PINCONF(PIN_CONFIG_BIAS_DISABLE,   C9,  C8,  SCU90, 15),
 
-	/* ADC pull-downs (SCUA8[19:4]) */
+	 
 	ASPEED_SB_PINCONF(PIN_CONFIG_BIAS_PULL_DOWN, L5,  L5,  SCUA8, 4),
 	ASPEED_SB_PINCONF(PIN_CONFIG_BIAS_DISABLE,   L5,  L5,  SCUA8, 4),
 	ASPEED_SB_PINCONF(PIN_CONFIG_BIAS_PULL_DOWN, L4,  L4,  SCUA8, 5),
@@ -2522,15 +2487,7 @@ static const struct aspeed_pin_config aspeed_g4_configs[] = {
 	ASPEED_SB_PINCONF(PIN_CONFIG_BIAS_PULL_DOWN, P5,  P5,  SCUA8, 19),
 	ASPEED_SB_PINCONF(PIN_CONFIG_BIAS_DISABLE,   P5,  P5,  SCUA8, 19),
 
-	/*
-	 * Debounce settings for GPIOs D and E passthrough mode are in
-	 * SCUA8[27:20] and so are managed by pinctrl. Normal GPIO debounce for
-	 * banks D and E is handled by the GPIO driver - GPIO passthrough is
-	 * treated like any other non-GPIO mux function. There is a catch
-	 * however, in that the debounce period is configured in the GPIO
-	 * controller. Due to this tangle between GPIO and pinctrl we don't yet
-	 * fully support pass-through debounce.
-	 */
+	 
 	ASPEED_SB_PINCONF(PIN_CONFIG_INPUT_DEBOUNCE, A18, D16, SCUA8, 20),
 	ASPEED_SB_PINCONF(PIN_CONFIG_INPUT_DEBOUNCE, B17, A17, SCUA8, 21),
 	ASPEED_SB_PINCONF(PIN_CONFIG_INPUT_DEBOUNCE, C16, B16, SCUA8, 22),
@@ -2556,20 +2513,7 @@ static int aspeed_g4_sig_expr_set(struct aspeed_pinmux_data *ctx,
 		if (!ctx->maps[desc->ip])
 			return -ENODEV;
 
-		/*
-		 * Strap registers are configured in hardware or by early-boot
-		 * firmware. Treat them as read-only despite that we can write
-		 * them. This may mean that certain functions cannot be
-		 * deconfigured and is the reason we re-evaluate after writing
-		 * all descriptor bits.
-		 *
-		 * Port D and port E GPIO loopback modes are the only exception
-		 * as those are commonly used with front-panel buttons to allow
-		 * normal operation of the host when the BMC is powered off or
-		 * fails to boot. Once the BMC has booted, the loopback mode
-		 * must be disabled for the BMC to control host power-on and
-		 * reset.
-		 */
+		 
 		if (desc->ip == ASPEED_IP_SCU && desc->reg == HW_STRAP1 &&
 		    !(desc->mask & (BIT(21) | BIT(22))))
 			continue;
@@ -2670,10 +2614,7 @@ static int aspeed_g4_pinctrl_probe(struct platform_device *pdev)
 
 static const struct of_device_id aspeed_g4_pinctrl_of_match[] = {
 	{ .compatible = "aspeed,ast2400-pinctrl", },
-	/*
-	 * The aspeed,g4-pinctrl compatible has been removed the from the
-	 * bindings, but keep the match in case of old devicetrees.
-	 */
+	 
 	{ .compatible = "aspeed,g4-pinctrl", },
 	{ },
 };

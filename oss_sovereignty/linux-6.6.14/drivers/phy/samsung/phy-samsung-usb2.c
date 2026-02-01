@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Samsung SoC USB 1.1/2.0 PHY driver
- *
- * Copyright (C) 2013 Samsung Electronics Co., Ltd.
- * Author: Kamil Debski <k.debski@samsung.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/mfd/syscon.h>

@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _FS_CEPH_OSDMAP_H
 #define _FS_CEPH_OSDMAP_H
 
@@ -7,18 +7,7 @@
 #include <linux/ceph/decode.h>
 #include <linux/crush/crush.h>
 
-/*
- * The osd map describes the current membership of the osd cluster and
- * specifies the mapping of objects to placement groups and placement
- * groups to (sets of) osds.  That is, it completely specifies the
- * (desired) distribution of all data objects in the system at some
- * point in time.
- *
- * Each map version is identified by an epoch, which increases monotonically.
- *
- * The map can be updated either via an incremental map (diff) describing
- * the change between two successive epochs, or as a fully encoded map.
- */
+ 
 struct ceph_pg {
 	uint64_t pool;
 	uint32_t seed;
@@ -34,17 +23,15 @@ struct ceph_spg {
 int ceph_pg_compare(const struct ceph_pg *lhs, const struct ceph_pg *rhs);
 int ceph_spg_compare(const struct ceph_spg *lhs, const struct ceph_spg *rhs);
 
-#define CEPH_POOL_FLAG_HASHPSPOOL	(1ULL << 0) /* hash pg seed and pool id
-						       together */
-#define CEPH_POOL_FLAG_FULL		(1ULL << 1) /* pool is full */
-#define CEPH_POOL_FLAG_FULL_QUOTA	(1ULL << 10) /* pool ran out of quota,
-							will set FULL too */
-#define CEPH_POOL_FLAG_NEARFULL		(1ULL << 11) /* pool is nearfull */
+#define CEPH_POOL_FLAG_HASHPSPOOL	(1ULL << 0)  
+#define CEPH_POOL_FLAG_FULL		(1ULL << 1)  
+#define CEPH_POOL_FLAG_FULL_QUOTA	(1ULL << 10)  
+#define CEPH_POOL_FLAG_NEARFULL		(1ULL << 11)  
 
 struct ceph_pg_pool_info {
 	struct rb_node node;
 	s64 id;
-	u8 type; /* CEPH_POOL_TYPE_* */
+	u8 type;  
 	u8 size;
 	u8 min_size;
 	u8 crush_ruleset;
@@ -53,11 +40,11 @@ struct ceph_pg_pool_info {
 	u32 pg_num, pgp_num;
 	int pg_num_mask, pgp_num_mask;
 	s64 read_tier;
-	s64 write_tier; /* wins for read+write ops */
-	u64 flags; /* CEPH_POOL_FLAG_* */
+	s64 write_tier;  
+	u64 flags;  
 	char *name;
 
-	bool was_full;  /* for handle_one_map() */
+	bool was_full;   
 };
 
 static inline bool ceph_can_shift_osds(struct ceph_pg_pool_info *pool)
@@ -92,21 +79,10 @@ void ceph_oloc_copy(struct ceph_object_locator *dest,
 		    const struct ceph_object_locator *src);
 void ceph_oloc_destroy(struct ceph_object_locator *oloc);
 
-/*
- * 51-char inline_name is long enough for all cephfs and all but one
- * rbd requests: <imgname> in "<imgname>.rbd"/"rbd_id.<imgname>" can be
- * arbitrarily long (~PAGE_SIZE).  It's done once during rbd map; all
- * other rbd requests fit into inline_name.
- *
- * Makes ceph_object_id 64 bytes on 64-bit.
- */
+ 
 #define CEPH_OID_INLINE_LEN 52
 
-/*
- * Both inline and external buffers have space for a NUL-terminator,
- * which is carried around.  It's not required though - RADOS object
- * names don't have to be NUL-terminated and may contain NULs.
- */
+ 
 struct ceph_object_id {
 	char *name;
 	char inline_name[CEPH_OID_INLINE_LEN];
@@ -140,11 +116,11 @@ void ceph_oid_destroy(struct ceph_object_id *oid);
 struct workspace_manager {
 	struct list_head idle_ws;
 	spinlock_t ws_lock;
-	/* Number of free workspaces */
+	 
 	int free_ws;
-	/* Total number of allocated workspaces */
+	 
 	atomic_t total_ws;
-	/* Waiters for a free workspace */
+	 
 	wait_queue_head_t ws_wait;
 };
 
@@ -172,27 +148,26 @@ struct ceph_osdmap {
 	u32 epoch;
 	struct ceph_timespec created, modified;
 
-	u32 flags;         /* CEPH_OSDMAP_* */
+	u32 flags;          
 
-	u32 max_osd;       /* size of osd_state, _offload, _addr arrays */
-	u32 *osd_state;    /* CEPH_OSD_* */
-	u32 *osd_weight;   /* 0 = failed, 0x10000 = 100% normal */
+	u32 max_osd;        
+	u32 *osd_state;     
+	u32 *osd_weight;    
 	struct ceph_entity_addr *osd_addr;
 
 	struct rb_root pg_temp;
 	struct rb_root primary_temp;
 
-	/* remap (post-CRUSH, pre-up) */
-	struct rb_root pg_upmap;	/* PG := raw set */
-	struct rb_root pg_upmap_items;	/* from -> to within raw set */
+	 
+	struct rb_root pg_upmap;	 
+	struct rb_root pg_upmap_items;	 
 
 	u32 *osd_primary_affinity;
 
 	struct rb_root pg_pools;
 	u32 pool_max;
 
-	/* the CRUSH map specifies the mapping of placement groups to
-	 * the list of osds that store+replicate them. */
+	 
 	struct crush_map *crush;
 
 	struct workspace_manager crush_wsm;
@@ -245,7 +220,7 @@ static inline int ceph_decode_pgid(void **p, void *end, struct ceph_pg *pgid)
 
 	pgid->pool = ceph_decode_64(p);
 	pgid->seed = ceph_decode_32(p);
-	*p += 4;	/* skip deprecated preferred value */
+	*p += 4;	 
 
 	return 0;
 }
@@ -259,7 +234,7 @@ extern void ceph_osdmap_destroy(struct ceph_osdmap *map);
 struct ceph_osds {
 	int osds[CEPH_PG_MAX_SIZE];
 	int size;
-	int primary; /* id, NOT index */
+	int primary;  
 };
 
 static inline void ceph_osds_init(struct ceph_osds *set)
@@ -319,7 +294,7 @@ struct crush_loc {
 
 struct crush_loc_node {
 	struct rb_node cl_node;
-	struct crush_loc cl_loc;  /* pointers into cl_data */
+	struct crush_loc cl_loc;   
 	char cl_data[];
 };
 

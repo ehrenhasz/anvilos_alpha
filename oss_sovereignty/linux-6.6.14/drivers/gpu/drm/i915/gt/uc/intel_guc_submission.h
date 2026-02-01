@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2014-2019 Intel Corporation
- */
+ 
+ 
 
 #ifndef _INTEL_GUC_SUBMISSION_H_
 #define _INTEL_GUC_SUBMISSION_H_

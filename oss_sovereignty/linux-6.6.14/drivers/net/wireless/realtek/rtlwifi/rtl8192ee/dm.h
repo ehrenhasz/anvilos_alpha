@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright(c) 2009-2014  Realtek Corporation.*/
+ 
+ 
 
 #ifndef	__RTL92E_DM_H__
 #define __RTL92E_DM_H__
@@ -18,7 +18,7 @@
 #define	MAIN_ANT_CGCS_RX			0
 #define	AUX_ANT_CGCS_RX				1
 
-/*RF REG LIST*/
+ 
 #define	DM_REG_RF_MODE_11N			0x00
 #define	DM_REG_RF_0B_11N			0x0B
 #define	DM_REG_CHNBW_11N			0x18
@@ -32,8 +32,8 @@
 #define	DM_REG_T_METER_92D_11N			0x42
 #define	DM_REG_T_METER_92E_11N			0x42
 
-/*BB REG LIST*/
-/*PAGE 8 */
+ 
+ 
 #define	DM_REG_BB_CTRL_11N			0x800
 #define	DM_REG_RF_PIN_11N			0x804
 #define	DM_REG_PSD_CTRL_11N			0x808
@@ -51,10 +51,10 @@
 #define	DM_REG_BB_3WIRE_11N			0x88C
 #define	DM_REG_SC_CNT_11N			0x8C4
 #define	DM_REG_PSD_DATA_11N			0x8B4
-/*PAGE 9*/
+ 
 #define	DM_REG_ANT_MAPPING1_11N			0x914
 #define	DM_REG_ANT_MAPPING2_11N			0x918
-/*PAGE A*/
+ 
 #define	DM_REG_CCK_ANTDIV_PARA1_11N		0xA00
 #define	DM_REG_CCK_CCA_11N			0xA0A
 #define	DM_REG_CCK_ANTDIV_PARA2_11N		0xA0C
@@ -73,13 +73,13 @@
 #define	DM_REG_CCK_FA_LSB_11N			0xA5C
 #define	DM_REG_CCK_CCA_CNT_11N			0xA60
 #define	DM_REG_BB_PWR_SAV4_11N			0xA74
-/*PAGE B */
+ 
 #define	DM_REG_LNA_SWITCH_11N			0xB2C
 #define	DM_REG_PATH_SWITCH_11N			0xB30
 #define	DM_REG_RSSI_CTRL_11N			0xB38
 #define	DM_REG_CONFIG_ANTA_11N			0xB68
 #define	DM_REG_RSSI_BT_11N			0xB9C
-/*PAGE C */
+ 
 #define	DM_REG_OFDM_FA_HOLDC_11N		0xC00
 #define	DM_REG_RX_PATH_11N			0xC04
 #define	DM_REG_TRMUX_11N			0xC08
@@ -100,12 +100,12 @@
 #define	DM_REG_RXIQK_MATRIX_LSB_11N		0xCA0
 #define	DM_REG_ANTDIV_PARA1_11N			0xCA4
 #define	DM_REG_OFDM_FA_TYPE1_11N		0xCF0
-/*PAGE D */
+ 
 #define	DM_REG_OFDM_FA_RSTD_11N			0xD00
 #define	DM_REG_OFDM_FA_TYPE2_11N		0xDA0
 #define	DM_REG_OFDM_FA_TYPE3_11N		0xDA4
 #define	DM_REG_OFDM_FA_TYPE4_11N		0xDA8
-/*PAGE E */
+ 
 #define	DM_REG_TXAGC_A_6_18_11N			0xE00
 #define	DM_REG_TXAGC_A_24_54_11N		0xE04
 #define	DM_REG_TXAGC_A_1_MCS32_11N		0xE08
@@ -138,7 +138,7 @@
 #define	DM_REG_SLEEP_11N			0xEE0
 #define	DM_REG_PMPD_ANAEN_11N			0xEEC
 
-/*MAC REG LIST*/
+ 
 #define	DM_REG_BB_RST_11N			0x02
 #define	DM_REG_ANTSEL_PIN_11N			0x4C
 #define	DM_REG_EARLY_MODE_11N			0x4D0
@@ -152,7 +152,7 @@
 #define	DM_REG_ANT_TRAIN_PARA1_11N		0x7b0
 #define	DM_REG_ANT_TRAIN_PARA2_11N		0x7b4
 
-/*DIG Related*/
+ 
 #define	DM_BIT_IGI_11N				0x0000007F
 
 #define HAL_DM_DIG_DISABLE			BIT(0)
@@ -199,13 +199,13 @@
 #define TX_POWER_NEAR_FIELD_THRESH_LVL1		67
 #define TXPWRTRACK_MAX_IDX			6
 
-/* Dynamic ATC switch */
-#define ATC_STATUS_OFF				0x0	/* enable */
-#define	ATC_STATUS_ON				0x1	/* disable */
-#define	CFO_THRESHOLD_XTAL			10	/* kHz */
-#define	CFO_THRESHOLD_ATC			80	/* kHz */
+ 
+#define ATC_STATUS_OFF				0x0	 
+#define	ATC_STATUS_ON				0x1	 
+#define	CFO_THRESHOLD_XTAL			10	 
+#define	CFO_THRESHOLD_ATC			80	 
 
-/* RSSI Dump Message */
+ 
 #define RA_RSSIDUMP				0xcb0
 #define RB_RSSIDUMP				0xcb1
 #define RS1_RXEVMDUMP				0xcb2

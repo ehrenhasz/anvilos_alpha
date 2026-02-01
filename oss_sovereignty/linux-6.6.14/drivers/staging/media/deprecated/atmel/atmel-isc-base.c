@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Microchip Image Sensor Controller (ISC) common driver base
- *
- * Copyright (C) 2016-2019 Microchip Technology, Inc.
- *
- * Author: Songjun Wu
- * Author: Eugen Hristev <eugen.hristev@microchip.com>
- *
- */
+
+ 
 #include <linux/delay.h>
 #include <linux/interrupt.h>
 #include <linux/math64.h>
@@ -52,7 +44,7 @@ static inline void isc_update_v4l2_ctrls(struct isc_device *isc)
 {
 	struct isc_ctrls *ctrls = &isc->ctrls;
 
-	/* In here we set the v4l2 controls w.r.t. our pipeline config */
+	 
 	v4l2_ctrl_s_ctrl(isc->r_gain_ctrl, ctrls->gain[ISC_HIS_CFG_MODE_R]);
 	v4l2_ctrl_s_ctrl(isc->b_gain_ctrl, ctrls->gain[ISC_HIS_CFG_MODE_B]);
 	v4l2_ctrl_s_ctrl(isc->gr_gain_ctrl, ctrls->gain[ISC_HIS_CFG_MODE_GR]);
@@ -68,7 +60,7 @@ static inline void isc_update_awb_ctrls(struct isc_device *isc)
 {
 	struct isc_ctrls *ctrls = &isc->ctrls;
 
-	/* In here we set our actual hw pipeline config */
+	 
 
 	regmap_write(isc->regmap, ISC_WB_O_RGR,
 		     ((ctrls->offset[ISC_HIS_CFG_MODE_R])) |
@@ -89,9 +81,9 @@ static inline void isc_reset_awb_ctrls(struct isc_device *isc)
 	unsigned int c;
 
 	for (c = ISC_HIS_CFG_MODE_GR; c <= ISC_HIS_CFG_MODE_B; c++) {
-		/* gains have a fixed point at 9 decimals */
+		 
 		isc->ctrls.gain[c] = 1 << 9;
-		/* offsets are in 2's complements */
+		 
 		isc->ctrls.offset[c] = 0;
 	}
 }
@@ -140,24 +132,13 @@ static void isc_crop_pfe(struct isc_device *isc)
 	h = isc->fmt.fmt.pix.height;
 	w = isc->fmt.fmt.pix.width;
 
-	/*
-	 * In case the sensor is not RAW, it will output a pixel (12-16 bits)
-	 * with two samples on the ISC Data bus (which is 8-12)
-	 * ISC will count each sample, so, we need to multiply these values
-	 * by two, to get the real number of samples for the required pixels.
-	 */
+	 
 	if (!ISC_IS_FORMAT_RAW(isc->config.sd_format->mbus_code)) {
 		h <<= 1;
 		w <<= 1;
 	}
 
-	/*
-	 * We limit the column/row count that the ISC will output according
-	 * to the configured resolution that we want.
-	 * This will avoid the situation where the sensor is misconfigured,
-	 * sending more data, and the ISC will just take it and DMA to memory,
-	 * causing corruption.
-	 */
+	 
 	regmap_write(regmap, ISC_PFE_CFG1,
 		     (ISC_PFE_CFG1_COLMIN(0) & ISC_PFE_CFG1_COLMIN_MASK) |
 		     (ISC_PFE_CFG1_COLMAX(w - 1) & ISC_PFE_CFG1_COLMAX_MASK));
@@ -215,7 +196,7 @@ static void isc_set_pipeline(struct isc_device *isc, u32 pipeline)
 	const u32 *gamma;
 	unsigned int i;
 
-	/* WB-->CFA-->CC-->GAM-->CSC-->CBC-->SUB422-->SUB420 */
+	 
 	for (i = 0; i < ISC_PIPE_LINE_NODE_NUM; i++) {
 		val = pipeline & BIT(i) ? 1 : 0;
 		regmap_field_write(isc->pipeline[i], val);
@@ -317,20 +298,17 @@ static int isc_configure(struct isc_device *isc)
 
 	regmap_write(regmap, ISC_DCFG + isc->offsets.dma, dcfg);
 
-	/* Set the pipeline */
+	 
 	isc_set_pipeline(isc, pipeline);
 
-	/*
-	 * The current implemented histogram is available for RAW R, B, GB, GR
-	 * channels. We need to check if sensor is outputting RAW BAYER
-	 */
+	 
 	if (isc->ctrls.awb &&
 	    ISC_IS_FORMAT_RAW(isc->config.sd_format->mbus_code))
 		isc_set_histogram(isc, true);
 	else
 		isc_set_histogram(isc, false);
 
-	/* Update profile */
+	 
 	return isc_update_profile(isc);
 }
 
@@ -342,7 +320,7 @@ static int isc_start_streaming(struct vb2_queue *vq, unsigned int count)
 	unsigned long flags;
 	int ret;
 
-	/* Enable stream on the sub device */
+	 
 	ret = v4l2_subdev_call(isc->current_subdev->sd, video, s_stream, 1);
 	if (ret && ret != -ENOIOCTLCMD) {
 		v4l2_err(&isc->v4l2_dev, "stream on failed in subdev %d\n",
@@ -361,7 +339,7 @@ static int isc_start_streaming(struct vb2_queue *vq, unsigned int count)
 	if (unlikely(ret))
 		goto err_configure;
 
-	/* Enable DMA interrupt */
+	 
 	regmap_write(regmap, ISC_INTEN, ISC_INT_DDONE);
 
 	spin_lock_irqsave(&isc->dma_queue_lock, flags);
@@ -379,7 +357,7 @@ static int isc_start_streaming(struct vb2_queue *vq, unsigned int count)
 
 	spin_unlock_irqrestore(&isc->dma_queue_lock, flags);
 
-	/* if we streaming from RAW, we can do one-shot white balance adj */
+	 
 	if (ISC_IS_FORMAT_RAW(isc->config.sd_format->mbus_code))
 		v4l2_ctrl_activate(isc->do_wb_ctrl, true);
 
@@ -412,24 +390,24 @@ static void isc_stop_streaming(struct vb2_queue *vq)
 
 	isc->stop = true;
 
-	/* Wait until the end of the current frame */
+	 
 	if (isc->cur_frm && !wait_for_completion_timeout(&isc->comp, 5 * HZ))
 		v4l2_err(&isc->v4l2_dev,
 			 "Timeout waiting for end of the capture\n");
 
 	mutex_unlock(&isc->awb_mutex);
 
-	/* Disable DMA interrupt */
+	 
 	regmap_write(isc->regmap, ISC_INTDIS, ISC_INT_DDONE);
 
 	pm_runtime_put_sync(isc->dev);
 
-	/* Disable stream on the sub device */
+	 
 	ret = v4l2_subdev_call(isc->current_subdev->sd, video, s_stream, 0);
 	if (ret && ret != -ENOIOCTLCMD)
 		v4l2_err(&isc->v4l2_dev, "stream off failed in subdev\n");
 
-	/* Release all active buffers */
+	 
 	spin_lock_irqsave(&isc->dma_queue_lock, flags);
 	if (unlikely(isc->cur_frm)) {
 		vb2_buffer_done(&isc->cur_frm->vb.vb2_buf,
@@ -538,16 +516,13 @@ static int isc_g_fmt_vid_cap(struct file *file, void *priv,
 	return 0;
 }
 
-/*
- * Checks the current configured format, if ISC can output it,
- * considering which type of format the ISC receives from the sensor
- */
+ 
 static int isc_try_validate_formats(struct isc_device *isc)
 {
 	int ret;
 	bool bayer = false, yuv = false, rgb = false, grey = false;
 
-	/* all formats supported by the RLP module are OK */
+	 
 	switch (isc->try_config.fourcc) {
 	case V4L2_PIX_FMT_SBGGR8:
 	case V4L2_PIX_FMT_SGBRG8:
@@ -589,18 +564,18 @@ static int isc_try_validate_formats(struct isc_device *isc)
 		grey = true;
 		break;
 	default:
-	/* any other different formats are not supported */
+	 
 		ret = -EINVAL;
 	}
 	v4l2_dbg(1, debug, &isc->v4l2_dev,
 		 "Format validation, requested rgb=%u, yuv=%u, grey=%u, bayer=%u\n",
 		 rgb, yuv, grey, bayer);
 
-	/* we cannot output RAW if we do not receive RAW */
+	 
 	if ((bayer) && !ISC_IS_FORMAT_RAW(isc->try_config.sd_format->mbus_code))
 		return -EINVAL;
 
-	/* we cannot output GREY if we do not receive RAW/GREY */
+	 
 	if (grey && !ISC_IS_FORMAT_RAW(isc->try_config.sd_format->mbus_code) &&
 	    !ISC_IS_FORMAT_GREY(isc->try_config.sd_format->mbus_code))
 		return -EINVAL;
@@ -608,11 +583,7 @@ static int isc_try_validate_formats(struct isc_device *isc)
 	return ret;
 }
 
-/*
- * Configures the RLP and DMA modules, depending on the output format
- * configured for the ISC.
- * If direct_dump == true, just dump raw data 8/16 bits depending on format.
- */
+ 
 static int isc_try_configure_rlp_dma(struct isc_device *isc, bool direct_dump)
 {
 	isc->try_config.rlp_cfg_mode = 0;
@@ -682,14 +653,14 @@ static int isc_try_configure_rlp_dma(struct isc_device *isc, bool direct_dump)
 		isc->try_config.dcfg_imode = ISC_DCFG_IMODE_YC420P;
 		isc->try_config.dctrl_dview = ISC_DCTRL_DVIEW_PLANAR;
 		isc->try_config.bpp = 12;
-		isc->try_config.bpp_v4l2 = 8; /* only first plane */
+		isc->try_config.bpp_v4l2 = 8;  
 		break;
 	case V4L2_PIX_FMT_YUV422P:
 		isc->try_config.rlp_cfg_mode = ISC_RLP_CFG_MODE_YYCC;
 		isc->try_config.dcfg_imode = ISC_DCFG_IMODE_YC422P;
 		isc->try_config.dctrl_dview = ISC_DCTRL_DVIEW_PLANAR;
 		isc->try_config.bpp = 16;
-		isc->try_config.bpp_v4l2 = 8; /* only first plane */
+		isc->try_config.bpp_v4l2 = 8;  
 		break;
 	case V4L2_PIX_FMT_YUYV:
 		isc->try_config.rlp_cfg_mode = ISC_RLP_CFG_MODE_YCYC | ISC_RLP_CFG_YMODE_YUYV;
@@ -743,10 +714,7 @@ static int isc_try_configure_rlp_dma(struct isc_device *isc, bool direct_dump)
 	return 0;
 }
 
-/*
- * Configuring pipeline modules, depending on which format the ISC outputs
- * and considering which format it has as input from the sensor.
- */
+ 
 static int isc_try_configure_pipeline(struct isc_device *isc)
 {
 	switch (isc->try_config.fourcc) {
@@ -755,7 +723,7 @@ static int isc_try_configure_pipeline(struct isc_device *isc)
 	case V4L2_PIX_FMT_ARGB444:
 	case V4L2_PIX_FMT_ABGR32:
 	case V4L2_PIX_FMT_XBGR32:
-		/* if sensor format is RAW, we convert inside ISC */
+		 
 		if (ISC_IS_FORMAT_RAW(isc->try_config.sd_format->mbus_code)) {
 			isc->try_config.bits_pipeline = CFA_ENABLE |
 				WB_ENABLE | GAM_ENABLES | DPC_BLCENABLE |
@@ -765,7 +733,7 @@ static int isc_try_configure_pipeline(struct isc_device *isc)
 		}
 		break;
 	case V4L2_PIX_FMT_YUV420:
-		/* if sensor format is RAW, we convert inside ISC */
+		 
 		if (ISC_IS_FORMAT_RAW(isc->try_config.sd_format->mbus_code)) {
 			isc->try_config.bits_pipeline = CFA_ENABLE |
 				CSC_ENABLE | GAM_ENABLES | WB_ENABLE |
@@ -776,7 +744,7 @@ static int isc_try_configure_pipeline(struct isc_device *isc)
 		}
 		break;
 	case V4L2_PIX_FMT_YUV422P:
-		/* if sensor format is RAW, we convert inside ISC */
+		 
 		if (ISC_IS_FORMAT_RAW(isc->try_config.sd_format->mbus_code)) {
 			isc->try_config.bits_pipeline = CFA_ENABLE |
 				CSC_ENABLE | WB_ENABLE | GAM_ENABLES |
@@ -788,7 +756,7 @@ static int isc_try_configure_pipeline(struct isc_device *isc)
 	case V4L2_PIX_FMT_YUYV:
 	case V4L2_PIX_FMT_UYVY:
 	case V4L2_PIX_FMT_VYUY:
-		/* if sensor format is RAW, we convert inside ISC */
+		 
 		if (ISC_IS_FORMAT_RAW(isc->try_config.sd_format->mbus_code)) {
 			isc->try_config.bits_pipeline = CFA_ENABLE |
 				CSC_ENABLE | WB_ENABLE | GAM_ENABLES |
@@ -799,7 +767,7 @@ static int isc_try_configure_pipeline(struct isc_device *isc)
 		break;
 	case V4L2_PIX_FMT_GREY:
 	case V4L2_PIX_FMT_Y16:
-		/* if sensor format is RAW, we convert inside ISC */
+		 
 		if (ISC_IS_FORMAT_RAW(isc->try_config.sd_format->mbus_code)) {
 			isc->try_config.bits_pipeline = CFA_ENABLE |
 				CSC_ENABLE | WB_ENABLE | GAM_ENABLES |
@@ -815,7 +783,7 @@ static int isc_try_configure_pipeline(struct isc_device *isc)
 			isc->try_config.bits_pipeline = 0x0;
 	}
 
-	/* Tune the pipeline to product specific */
+	 
 	isc->adapt_pipeline(isc);
 
 	return 0;
@@ -829,10 +797,7 @@ static void isc_try_fse(struct isc_device *isc,
 	};
 	int ret;
 
-	/*
-	 * If we do not know yet which format the subdev is using, we cannot
-	 * do anything.
-	 */
+	 
 	if (!isc->try_config.sd_format)
 		return;
 
@@ -840,10 +805,7 @@ static void isc_try_fse(struct isc_device *isc,
 
 	ret = v4l2_subdev_call(isc->current_subdev->sd, pad, enum_frame_size,
 			       sd_state, &fse);
-	/*
-	 * Attempt to obtain format size from subdev. If not available,
-	 * just use the maximum ISC can receive.
-	 */
+	 
 	if (ret) {
 		sd_state->pads->try_crop.width = isc->max_width;
 		sd_state->pads->try_crop.height = isc->max_height;
@@ -873,38 +835,29 @@ static int isc_try_fmt(struct isc_device *isc, struct v4l2_format *f,
 	if (f->type != V4L2_BUF_TYPE_VIDEO_CAPTURE)
 		return -EINVAL;
 
-	/* Step 1: find a RAW format that is supported */
+	 
 	for (i = 0; i < isc->num_user_formats; i++) {
 		if (ISC_IS_FORMAT_RAW(isc->user_formats[i]->mbus_code)) {
 			sd_fmt = isc->user_formats[i];
 			break;
 		}
 	}
-	/* Step 2: We can continue with this RAW format, or we can look
-	 * for better: maybe sensor supports directly what we need.
-	 */
+	 
 	direct_fmt = find_format_by_fourcc(isc, pixfmt->pixelformat);
 
-	/* Step 3: We have both. We decide given the module parameter which
-	 * one to use.
-	 */
+	 
 	if (direct_fmt && sd_fmt && sensor_preferred)
 		sd_fmt = direct_fmt;
 
-	/* Step 4: we do not have RAW but we have a direct format. Use it. */
+	 
 	if (direct_fmt && !sd_fmt)
 		sd_fmt = direct_fmt;
 
-	/* Step 5: if we are using a direct format, we need to package
-	 * everything as 8 bit data and just dump it
-	 */
+	 
 	if (sd_fmt == direct_fmt)
 		rlp_dma_direct_dump = true;
 
-	/* Step 6: We have no format. This can happen if the userspace
-	 * requests some weird/invalid format.
-	 * In this case, default to whatever we have
-	 */
+	 
 	if (!sd_fmt && !direct_fmt) {
 		sd_fmt = isc->user_formats[isc->num_user_formats - 1];
 		v4l2_dbg(1, debug, &isc->v4l2_dev,
@@ -917,35 +870,30 @@ static int isc_try_fmt(struct isc_device *isc, struct v4l2_format *f,
 		goto isc_try_fmt_err;
 	}
 
-	/* Step 7: Print out what we decided for debugging */
+	 
 	v4l2_dbg(1, debug, &isc->v4l2_dev,
 		 "Preferring to have sensor using format %.4s\n",
 		 (char *)&sd_fmt->fourcc);
 
-	/* Step 8: at this moment we decided which format the subdev will use */
+	 
 	isc->try_config.sd_format = sd_fmt;
 
-	/* Limit to Atmel ISC hardware capabilities */
+	 
 	if (pixfmt->width > isc->max_width)
 		pixfmt->width = isc->max_width;
 	if (pixfmt->height > isc->max_height)
 		pixfmt->height = isc->max_height;
 
-	/*
-	 * The mbus format is the one the subdev outputs.
-	 * The pixels will be transferred in this format Sensor -> ISC
-	 */
+	 
 	mbus_code = sd_fmt->mbus_code;
 
-	/*
-	 * Validate formats. If the required format is not OK, default to raw.
-	 */
+	 
 
 	isc->try_config.fourcc = pixfmt->pixelformat;
 
 	if (isc_try_validate_formats(isc)) {
 		pixfmt->pixelformat = isc->try_config.fourcc = sd_fmt->fourcc;
-		/* Re-try to validate the new format */
+		 
 		ret = isc_try_validate_formats(isc);
 		if (ret)
 			goto isc_try_fmt_err;
@@ -959,7 +907,7 @@ static int isc_try_fmt(struct isc_device *isc, struct v4l2_format *f,
 	if (ret)
 		goto isc_try_fmt_err;
 
-	/* Obtain frame sizes if possible to have crop requirements ready */
+	 
 	isc_try_fse(isc, &pad_state);
 
 	v4l2_fill_mbus_format(&format.format, pixfmt, mbus_code);
@@ -970,7 +918,7 @@ static int isc_try_fmt(struct isc_device *isc, struct v4l2_format *f,
 
 	v4l2_fill_pix_format(pixfmt, &format.format);
 
-	/* Limit to Atmel ISC hardware capabilities */
+	 
 	if (pixfmt->width > isc->max_width)
 		pixfmt->width = isc->max_width;
 	if (pixfmt->height > isc->max_height)
@@ -1012,7 +960,7 @@ static int isc_set_fmt(struct isc_device *isc, struct v4l2_format *f)
 	if (ret < 0)
 		return ret;
 
-	/* Limit to Atmel ISC hardware capabilities */
+	 
 	if (f->fmt.pix.width > isc->max_width)
 		f->fmt.pix.width = isc->max_width;
 	if (f->fmt.pix.height > isc->max_height)
@@ -1026,7 +974,7 @@ static int isc_set_fmt(struct isc_device *isc, struct v4l2_format *f)
 		isc_reset_awb_ctrls(isc);
 		isc_update_v4l2_ctrls(isc);
 	}
-	/* make the try configuration active */
+	 
 	isc->config = isc->try_config;
 
 	v4l2_dbg(1, debug, &isc->v4l2_dev, "New ISC configuration in place\n");
@@ -1285,10 +1233,7 @@ static void isc_hist_count(struct isc_device *isc, u32 *min, u32 *max)
 			 hist_entry, HIST_ENTRIES);
 
 	*hist_count = 0;
-	/*
-	 * we deliberately ignore the end of the histogram,
-	 * the most white pixels
-	 */
+	 
 	for (i = 1; i < HIST_ENTRIES; i++) {
 		if (*hist_entry && !*min)
 			*min = i;
@@ -1311,15 +1256,10 @@ static void isc_wb_update(struct isc_ctrls *ctrls)
 	u32 *hist_count = &ctrls->hist_count[0];
 	u32 c, offset[4];
 	u64 avg = 0;
-	/* We compute two gains, stretch gain and grey world gain */
+	 
 	u32 s_gain[4], gw_gain[4];
 
-	/*
-	 * According to Grey World, we need to set gains for R/B to normalize
-	 * them towards the green channel.
-	 * Thus we want to keep Green as fixed and adjust only Red/Blue
-	 * Compute the average of the both green channels first
-	 */
+	 
 	avg = (u64)hist_count[ISC_HIS_CFG_MODE_GR] +
 		(u64)hist_count[ISC_HIS_CFG_MODE_GB];
 	avg >>= 1;
@@ -1327,53 +1267,25 @@ static void isc_wb_update(struct isc_ctrls *ctrls)
 	v4l2_dbg(1, debug, &isc->v4l2_dev,
 		 "isc wb: green components average %llu\n", avg);
 
-	/* Green histogram is null, nothing to do */
+	 
 	if (!avg)
 		return;
 
 	for (c = ISC_HIS_CFG_MODE_GR; c <= ISC_HIS_CFG_MODE_B; c++) {
-		/*
-		 * the color offset is the minimum value of the histogram.
-		 * we stretch this color to the full range by substracting
-		 * this value from the color component.
-		 */
+		 
 		offset[c] = ctrls->hist_minmax[c][HIST_MIN_INDEX];
-		/*
-		 * The offset is always at least 1. If the offset is 1, we do
-		 * not need to adjust it, so our result must be zero.
-		 * the offset is computed in a histogram on 9 bits (0..512)
-		 * but the offset in register is based on
-		 * 12 bits pipeline (0..4096).
-		 * we need to shift with the 3 bits that the histogram is
-		 * ignoring
-		 */
+		 
 		ctrls->offset[c] = (offset[c] - 1) << 3;
 
-		/*
-		 * the offset is then taken and converted to 2's complements,
-		 * and must be negative, as we subtract this value from the
-		 * color components
-		 */
+		 
 		ctrls->offset[c] = -ctrls->offset[c];
 
-		/*
-		 * the stretch gain is the total number of histogram bins
-		 * divided by the actual range of color component (Max - Min)
-		 * If we compute gain like this, the actual color component
-		 * will be stretched to the full histogram.
-		 * We need to shift 9 bits for precision, we have 9 bits for
-		 * decimals
-		 */
+		 
 		s_gain[c] = (HIST_ENTRIES << 9) /
 			(ctrls->hist_minmax[c][HIST_MAX_INDEX] -
 			ctrls->hist_minmax[c][HIST_MIN_INDEX] + 1);
 
-		/*
-		 * Now we have to compute the gain w.r.t. the average.
-		 * Add/lose gain to the component towards the average.
-		 * If it happens that the component is zero, use the
-		 * fixed point value : 1.0 gain.
-		 */
+		 
 		if (hist_count[c])
 			gw_gain[c] = div_u64(avg << 9, hist_count[c]);
 		else
@@ -1382,11 +1294,11 @@ static void isc_wb_update(struct isc_ctrls *ctrls)
 		v4l2_dbg(1, debug, &isc->v4l2_dev,
 			 "isc wb: component %d, s_gain %u, gw_gain %u\n",
 			 c, s_gain[c], gw_gain[c]);
-		/* multiply both gains and adjust for decimals */
+		 
 		ctrls->gain[c] = s_gain[c] * gw_gain[c];
 		ctrls->gain[c] >>= 9;
 
-		/* make sure we are not out of range */
+		 
 		ctrls->gain[c] = clamp_val(ctrls->gain[c], 0, GENMASK(12, 0));
 
 		v4l2_dbg(1, debug, &isc->v4l2_dev,
@@ -1432,29 +1344,18 @@ static void isc_awb_work(struct work_struct *w)
 	if (ret < 0)
 		return;
 
-	/*
-	 * only update if we have all the required histograms and controls
-	 * if awb has been disabled, we need to reset registers as well.
-	 */
+	 
 	if (hist_id == ISC_HIS_CFG_MODE_GR || ctrls->awb == ISC_WB_NONE) {
-		/*
-		 * It may happen that DMA Done IRQ will trigger while we are
-		 * updating white balance registers here.
-		 * In that case, only parts of the controls have been updated.
-		 * We can avoid that by locking the section.
-		 */
+		 
 		spin_lock_irqsave(&isc->awb_lock, flags);
 		isc_update_awb_ctrls(isc);
 		spin_unlock_irqrestore(&isc->awb_lock, flags);
 
-		/*
-		 * if we are doing just the one time white balance adjustment,
-		 * we are basically done.
-		 */
+		 
 		if (ctrls->awb == ISC_WB_ONETIME) {
 			v4l2_info(&isc->v4l2_dev,
 				  "Completed one time white-balance adjustment.\n");
-			/* update the v4l2 controls values */
+			 
 			isc_update_v4l2_ctrls(isc);
 			ctrls->awb = ISC_WB_NONE;
 		}
@@ -1462,14 +1363,10 @@ static void isc_awb_work(struct work_struct *w)
 	regmap_write(regmap, ISC_HIS_CFG + isc->offsets.his,
 		     hist_id | baysel | ISC_HIS_CFG_RAR);
 
-	/*
-	 * We have to make sure the streaming has not stopped meanwhile.
-	 * ISC requires a frame to clock the internal profile update.
-	 * To avoid issues, lock the sequence with a mutex
-	 */
+	 
 	mutex_lock(&isc->awb_mutex);
 
-	/* streaming is not active anymore */
+	 
 	if (isc->stop) {
 		mutex_unlock(&isc->awb_mutex);
 		return;
@@ -1479,7 +1376,7 @@ static void isc_awb_work(struct work_struct *w)
 
 	mutex_unlock(&isc->awb_mutex);
 
-	/* if awb has been disabled, we don't need to start another histogram */
+	 
 	if (ctrls->awb)
 		regmap_write(regmap, ISC_CTRLEN, ISC_CTRL_HISREQ);
 
@@ -1532,7 +1429,7 @@ static int isc_s_awb_ctrl(struct v4l2_ctrl *ctrl)
 		else
 			ctrls->awb = ISC_WB_NONE;
 
-		/* configure the controls with new values from v4l2 */
+		 
 		if (ctrl->cluster[ISC_CTRL_R_GAIN]->is_new)
 			ctrls->gain[ISC_HIS_CFG_MODE_R] = isc->r_gain_ctrl->val;
 		if (ctrl->cluster[ISC_CTRL_B_GAIN]->is_new)
@@ -1555,31 +1452,21 @@ static int isc_s_awb_ctrl(struct v4l2_ctrl *ctrl)
 
 		mutex_lock(&isc->awb_mutex);
 		if (vb2_is_streaming(&isc->vb2_vidq)) {
-			/*
-			 * If we are streaming, we can update profile to
-			 * have the new settings in place.
-			 */
+			 
 			isc_update_profile(isc);
 		} else {
-			/*
-			 * The auto cluster will activate automatically this
-			 * control. This has to be deactivated when not
-			 * streaming.
-			 */
+			 
 			v4l2_ctrl_activate(isc->do_wb_ctrl, false);
 		}
 		mutex_unlock(&isc->awb_mutex);
 
-		/* if we have autowhitebalance on, start histogram procedure */
+		 
 		if (ctrls->awb == ISC_WB_AUTO &&
 		    vb2_is_streaming(&isc->vb2_vidq) &&
 		    ISC_IS_FORMAT_RAW(isc->config.sd_format->mbus_code))
 			isc_set_histogram(isc, true);
 
-		/*
-		 * for one time whitebalance adjustment, check the button,
-		 * if it's pressed, perform the one time operation.
-		 */
+		 
 		if (ctrls->awb == ISC_WB_NONE &&
 		    ctrl->cluster[ISC_CTRL_DO_WB]->is_new &&
 		    !(ctrl->cluster[ISC_CTRL_DO_WB]->flags &
@@ -1601,7 +1488,7 @@ static int isc_g_volatile_awb_ctrl(struct v4l2_ctrl *ctrl)
 	struct isc_ctrls *ctrls = &isc->ctrls;
 
 	switch (ctrl->id) {
-	/* being a cluster, this id will be called for every control */
+	 
 	case V4L2_CID_AUTO_WHITE_BALANCE:
 		ctrl->cluster[ISC_CTRL_R_GAIN]->val =
 					ctrls->gain[ISC_HIS_CFG_MODE_R];
@@ -1680,7 +1567,7 @@ static int isc_ctrl_init(struct isc_device *isc)
 	if (ret < 0)
 		return ret;
 
-	/* Initialize product specific controls. For example, contrast */
+	 
 	isc->config_ctrls(isc, ops);
 
 	ctrls->brightness = 0;
@@ -1692,7 +1579,7 @@ static int isc_ctrl_init(struct isc_device *isc)
 					  V4L2_CID_AUTO_WHITE_BALANCE,
 					  0, 1, 1, 1);
 
-	/* do_white_balance is a button, so min,max,step,default are ignored */
+	 
 	isc->do_wb_ctrl = v4l2_ctrl_new_std(hdl, &isc_awb_ops,
 					    V4L2_CID_DO_WHITE_BALANCE,
 					    0, 0, 0, 0);
@@ -1714,10 +1601,7 @@ static int isc_ctrl_init(struct isc_device *isc)
 	isc->gr_off_ctrl = v4l2_ctrl_new_custom(hdl, &isc_gr_off_ctrl, NULL);
 	isc->gb_off_ctrl = v4l2_ctrl_new_custom(hdl, &isc_gb_off_ctrl, NULL);
 
-	/*
-	 * The cluster is in auto mode with autowhitebalance enabled
-	 * and manual mode otherwise.
-	 */
+	 
 	v4l2_ctrl_auto_cluster(10, &isc->awb_ctrl, 0, true);
 
 	v4l2_ctrl_handler_setup(hdl);
@@ -1864,7 +1748,7 @@ static int isc_async_complete(struct v4l2_async_notifier *notifier)
 
 	init_completion(&isc->comp);
 
-	/* Initialize videobuf2 queue */
+	 
 	q->type			= V4L2_BUF_TYPE_VIDEO_CAPTURE;
 	q->io_modes		= VB2_MMAP | VB2_DMABUF | VB2_READ;
 	q->drv_priv		= isc;
@@ -1883,7 +1767,7 @@ static int isc_async_complete(struct v4l2_async_notifier *notifier)
 		goto isc_async_complete_err;
 	}
 
-	/* Init video dma queues */
+	 
 	INIT_LIST_HEAD(&isc->dma_queue);
 	spin_lock_init(&isc->dma_queue_lock);
 	spin_lock_init(&isc->awb_lock);
@@ -1907,7 +1791,7 @@ static int isc_async_complete(struct v4l2_async_notifier *notifier)
 		goto isc_async_complete_err;
 	}
 
-	/* Register video device */
+	 
 	strscpy(vdev->name, KBUILD_MODNAME, sizeof(vdev->name));
 	vdev->release		= video_device_release_empty;
 	vdev->fops		= &isc_fops;
@@ -1962,10 +1846,7 @@ int atmel_isc_pipeline_init(struct isc_device *isc)
 	struct regmap_field *regs;
 	unsigned int i;
 
-	/*
-	 * DPCEN-->GDCEN-->BLCEN-->WB-->CFA-->CC-->
-	 * GAM-->VHXS-->CSC-->CBC-->SUB422-->SUB420
-	 */
+	 
 	const struct reg_field regfields[ISC_PIPE_LINE_NODE_NUM] = {
 		REG_FIELD(ISC_DPC_CTRL, 0, 0),
 		REG_FIELD(ISC_DPC_CTRL, 1, 1),
@@ -1996,7 +1877,7 @@ int atmel_isc_pipeline_init(struct isc_device *isc)
 }
 EXPORT_SYMBOL_GPL(atmel_isc_pipeline_init);
 
-/* regmap configuration */
+ 
 #define ATMEL_ISC_REG_MAX    0xd5c
 const struct regmap_config atmel_isc_regmap_config = {
 	.reg_bits       = 32,

@@ -1,34 +1,4 @@
-/*
- * Copyright (c) 2017, Mellanox Technologies, Ltd.  All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 
 #include "lib/events.h"
 #include "en.h"
@@ -103,7 +73,7 @@ void mlx5e_stats_fill_strings(struct mlx5e_priv *priv, u8 *data)
 		idx = stats_grps[i]->fill_strings(priv, data, idx);
 }
 
-/* Concrete NIC Stats */
+ 
 
 static const struct counter_desc sw_stats_desc[] = {
 	{ MLX5E_DECLARE_STAT(struct mlx5e_sw_stats, rx_packets) },
@@ -454,74 +424,14 @@ static void mlx5e_stats_grp_sw_update_stats_ptp(struct mlx5e_priv *priv,
 		for (i = 0; i < priv->max_opened_tc; i++) {
 			mlx5e_stats_grp_sw_update_stats_sq(s, &priv->ptp_stats.sq[i]);
 
-			/* https://gcc.gnu.org/bugzilla/show_bug.cgi?id=92657 */
-			barrier();
-		}
-	}
-	if (priv->rx_ptp_opened) {
-		mlx5e_stats_grp_sw_update_stats_rq_stats(s, &priv->ptp_stats.rq);
-
-		/* https://gcc.gnu.org/bugzilla/show_bug.cgi?id=92657 */
-		barrier();
-	}
-}
-
-static void mlx5e_stats_grp_sw_update_stats_qos(struct mlx5e_priv *priv,
-						struct mlx5e_sw_stats *s)
-{
-	struct mlx5e_sq_stats **stats;
-	u16 max_qos_sqs;
-	int i;
-
-	/* Pairs with smp_store_release in mlx5e_open_qos_sq. */
+			 
 	max_qos_sqs = smp_load_acquire(&priv->htb_max_qos_sqs);
 	stats = READ_ONCE(priv->htb_qos_sq_stats);
 
 	for (i = 0; i < max_qos_sqs; i++) {
 		mlx5e_stats_grp_sw_update_stats_sq(s, READ_ONCE(stats[i]));
 
-		/* https://gcc.gnu.org/bugzilla/show_bug.cgi?id=92657 */
-		barrier();
-	}
-}
-
-#ifdef CONFIG_PAGE_POOL_STATS
-static void mlx5e_stats_update_stats_rq_page_pool(struct mlx5e_channel *c)
-{
-	struct mlx5e_rq_stats *rq_stats = c->rq.stats;
-	struct page_pool *pool = c->rq.page_pool;
-	struct page_pool_stats stats = { 0 };
-
-	if (!page_pool_get_stats(pool, &stats))
-		return;
-
-	rq_stats->pp_alloc_fast = stats.alloc_stats.fast;
-	rq_stats->pp_alloc_slow = stats.alloc_stats.slow;
-	rq_stats->pp_alloc_slow_high_order = stats.alloc_stats.slow_high_order;
-	rq_stats->pp_alloc_empty = stats.alloc_stats.empty;
-	rq_stats->pp_alloc_waive = stats.alloc_stats.waive;
-	rq_stats->pp_alloc_refill = stats.alloc_stats.refill;
-
-	rq_stats->pp_recycle_cached = stats.recycle_stats.cached;
-	rq_stats->pp_recycle_cache_full = stats.recycle_stats.cache_full;
-	rq_stats->pp_recycle_ring = stats.recycle_stats.ring;
-	rq_stats->pp_recycle_ring_full = stats.recycle_stats.ring_full;
-	rq_stats->pp_recycle_released_ref = stats.recycle_stats.released_refcnt;
-}
-#else
-static void mlx5e_stats_update_stats_rq_page_pool(struct mlx5e_channel *c)
-{
-}
-#endif
-
-static MLX5E_DECLARE_STATS_GRP_OP_UPDATE_STATS(sw)
-{
-	struct mlx5e_sw_stats *s = &priv->stats.sw;
-	int i;
-
-	memset(s, 0, sizeof(*s));
-
-	for (i = 0; i < priv->channels.num; i++) /* for active channels only */
+		 
 		mlx5e_stats_update_stats_rq_page_pool(priv->channels.c[i]);
 
 	for (i = 0; i < priv->stats_nch; i++) {
@@ -533,655 +443,16 @@ static MLX5E_DECLARE_STATS_GRP_OP_UPDATE_STATS(sw)
 		mlx5e_stats_grp_sw_update_stats_rq_stats(s, &channel_stats->rq);
 		mlx5e_stats_grp_sw_update_stats_xdpsq(s, &channel_stats->rq_xdpsq);
 		mlx5e_stats_grp_sw_update_stats_ch_stats(s, &channel_stats->ch);
-		/* xdp redirect */
+		 
 		mlx5e_stats_grp_sw_update_stats_xdp_red(s, &channel_stats->xdpsq);
-		/* AF_XDP zero-copy */
+		 
 		mlx5e_stats_grp_sw_update_stats_xskrq(s, &channel_stats->xskrq);
 		mlx5e_stats_grp_sw_update_stats_xsksq(s, &channel_stats->xsksq);
 
 		for (j = 0; j < priv->max_opened_tc; j++) {
 			mlx5e_stats_grp_sw_update_stats_sq(s, &channel_stats->sq[j]);
 
-			/* https://gcc.gnu.org/bugzilla/show_bug.cgi?id=92657 */
-			barrier();
-		}
-	}
-	mlx5e_stats_grp_sw_update_stats_ptp(priv, s);
-	mlx5e_stats_grp_sw_update_stats_qos(priv, s);
-}
-
-static const struct counter_desc q_stats_desc[] = {
-	{ MLX5E_DECLARE_STAT(struct mlx5e_qcounter_stats, rx_out_of_buffer) },
-};
-
-static const struct counter_desc drop_rq_stats_desc[] = {
-	{ MLX5E_DECLARE_STAT(struct mlx5e_qcounter_stats, rx_if_down_packets) },
-};
-
-#define NUM_Q_COUNTERS			ARRAY_SIZE(q_stats_desc)
-#define NUM_DROP_RQ_COUNTERS		ARRAY_SIZE(drop_rq_stats_desc)
-
-static MLX5E_DECLARE_STATS_GRP_OP_NUM_STATS(qcnt)
-{
-	int num_stats = 0;
-
-	if (priv->q_counter)
-		num_stats += NUM_Q_COUNTERS;
-
-	if (priv->drop_rq_q_counter)
-		num_stats += NUM_DROP_RQ_COUNTERS;
-
-	return num_stats;
-}
-
-static MLX5E_DECLARE_STATS_GRP_OP_FILL_STRS(qcnt)
-{
-	int i;
-
-	for (i = 0; i < NUM_Q_COUNTERS && priv->q_counter; i++)
-		strcpy(data + (idx++) * ETH_GSTRING_LEN,
-		       q_stats_desc[i].format);
-
-	for (i = 0; i < NUM_DROP_RQ_COUNTERS && priv->drop_rq_q_counter; i++)
-		strcpy(data + (idx++) * ETH_GSTRING_LEN,
-		       drop_rq_stats_desc[i].format);
-
-	return idx;
-}
-
-static MLX5E_DECLARE_STATS_GRP_OP_FILL_STATS(qcnt)
-{
-	int i;
-
-	for (i = 0; i < NUM_Q_COUNTERS && priv->q_counter; i++)
-		data[idx++] = MLX5E_READ_CTR32_CPU(&priv->stats.qcnt,
-						   q_stats_desc, i);
-	for (i = 0; i < NUM_DROP_RQ_COUNTERS && priv->drop_rq_q_counter; i++)
-		data[idx++] = MLX5E_READ_CTR32_CPU(&priv->stats.qcnt,
-						   drop_rq_stats_desc, i);
-	return idx;
-}
-
-static MLX5E_DECLARE_STATS_GRP_OP_UPDATE_STATS(qcnt)
-{
-	struct mlx5e_qcounter_stats *qcnt = &priv->stats.qcnt;
-	u32 out[MLX5_ST_SZ_DW(query_q_counter_out)] = {};
-	u32 in[MLX5_ST_SZ_DW(query_q_counter_in)] = {};
-	int ret;
-
-	MLX5_SET(query_q_counter_in, in, opcode, MLX5_CMD_OP_QUERY_Q_COUNTER);
-
-	if (priv->q_counter) {
-		MLX5_SET(query_q_counter_in, in, counter_set_id,
-			 priv->q_counter);
-		ret = mlx5_cmd_exec_inout(priv->mdev, query_q_counter, in, out);
-		if (!ret)
-			qcnt->rx_out_of_buffer = MLX5_GET(query_q_counter_out,
-							  out, out_of_buffer);
-	}
-
-	if (priv->drop_rq_q_counter) {
-		MLX5_SET(query_q_counter_in, in, counter_set_id,
-			 priv->drop_rq_q_counter);
-		ret = mlx5_cmd_exec_inout(priv->mdev, query_q_counter, in, out);
-		if (!ret)
-			qcnt->rx_if_down_packets = MLX5_GET(query_q_counter_out,
-							    out, out_of_buffer);
-	}
-}
-
-#define VNIC_ENV_OFF(c) MLX5_BYTE_OFF(query_vnic_env_out, c)
-static const struct counter_desc vnic_env_stats_steer_desc[] = {
-	{ "rx_steer_missed_packets",
-		VNIC_ENV_OFF(vport_env.nic_receive_steering_discard) },
-};
-
-static const struct counter_desc vnic_env_stats_dev_oob_desc[] = {
-	{ "dev_internal_queue_oob",
-		VNIC_ENV_OFF(vport_env.internal_rq_out_of_buffer) },
-};
-
-static const struct counter_desc vnic_env_stats_drop_desc[] = {
-	{ "rx_oversize_pkts_buffer",
-		VNIC_ENV_OFF(vport_env.eth_wqe_too_small) },
-};
-
-#define NUM_VNIC_ENV_STEER_COUNTERS(dev) \
-	(MLX5_CAP_GEN(dev, nic_receive_steering_discard) ? \
-	 ARRAY_SIZE(vnic_env_stats_steer_desc) : 0)
-#define NUM_VNIC_ENV_DEV_OOB_COUNTERS(dev) \
-	(MLX5_CAP_GEN(dev, vnic_env_int_rq_oob) ? \
-	 ARRAY_SIZE(vnic_env_stats_dev_oob_desc) : 0)
-#define NUM_VNIC_ENV_DROP_COUNTERS(dev) \
-	(MLX5_CAP_GEN(dev, eth_wqe_too_small) ? \
-	 ARRAY_SIZE(vnic_env_stats_drop_desc) : 0)
-
-static MLX5E_DECLARE_STATS_GRP_OP_NUM_STATS(vnic_env)
-{
-	return NUM_VNIC_ENV_STEER_COUNTERS(priv->mdev) +
-	       NUM_VNIC_ENV_DEV_OOB_COUNTERS(priv->mdev) +
-	       NUM_VNIC_ENV_DROP_COUNTERS(priv->mdev);
-}
-
-static MLX5E_DECLARE_STATS_GRP_OP_FILL_STRS(vnic_env)
-{
-	int i;
-
-	for (i = 0; i < NUM_VNIC_ENV_STEER_COUNTERS(priv->mdev); i++)
-		strcpy(data + (idx++) * ETH_GSTRING_LEN,
-		       vnic_env_stats_steer_desc[i].format);
-
-	for (i = 0; i < NUM_VNIC_ENV_DEV_OOB_COUNTERS(priv->mdev); i++)
-		strcpy(data + (idx++) * ETH_GSTRING_LEN,
-		       vnic_env_stats_dev_oob_desc[i].format);
-
-	for (i = 0; i < NUM_VNIC_ENV_DROP_COUNTERS(priv->mdev); i++)
-		strcpy(data + (idx++) * ETH_GSTRING_LEN,
-		       vnic_env_stats_drop_desc[i].format);
-
-	return idx;
-}
-
-static MLX5E_DECLARE_STATS_GRP_OP_FILL_STATS(vnic_env)
-{
-	int i;
-
-	for (i = 0; i < NUM_VNIC_ENV_STEER_COUNTERS(priv->mdev); i++)
-		data[idx++] = MLX5E_READ_CTR64_BE(priv->stats.vnic.query_vnic_env_out,
-						  vnic_env_stats_steer_desc, i);
-
-	for (i = 0; i < NUM_VNIC_ENV_DEV_OOB_COUNTERS(priv->mdev); i++)
-		data[idx++] = MLX5E_READ_CTR32_BE(priv->stats.vnic.query_vnic_env_out,
-						  vnic_env_stats_dev_oob_desc, i);
-
-	for (i = 0; i < NUM_VNIC_ENV_DROP_COUNTERS(priv->mdev); i++)
-		data[idx++] = MLX5E_READ_CTR32_BE(priv->stats.vnic.query_vnic_env_out,
-						  vnic_env_stats_drop_desc, i);
-
-	return idx;
-}
-
-static MLX5E_DECLARE_STATS_GRP_OP_UPDATE_STATS(vnic_env)
-{
-	u32 *out = (u32 *)priv->stats.vnic.query_vnic_env_out;
-	u32 in[MLX5_ST_SZ_DW(query_vnic_env_in)] = {};
-	struct mlx5_core_dev *mdev = priv->mdev;
-
-	if (!mlx5e_stats_grp_vnic_env_num_stats(priv))
-		return;
-
-	MLX5_SET(query_vnic_env_in, in, opcode, MLX5_CMD_OP_QUERY_VNIC_ENV);
-	mlx5_cmd_exec_inout(mdev, query_vnic_env, in, out);
-}
-
-#define VPORT_COUNTER_OFF(c) MLX5_BYTE_OFF(query_vport_counter_out, c)
-static const struct counter_desc vport_stats_desc[] = {
-	{ "rx_vport_unicast_packets",
-		VPORT_COUNTER_OFF(received_eth_unicast.packets) },
-	{ "rx_vport_unicast_bytes",
-		VPORT_COUNTER_OFF(received_eth_unicast.octets) },
-	{ "tx_vport_unicast_packets",
-		VPORT_COUNTER_OFF(transmitted_eth_unicast.packets) },
-	{ "tx_vport_unicast_bytes",
-		VPORT_COUNTER_OFF(transmitted_eth_unicast.octets) },
-	{ "rx_vport_multicast_packets",
-		VPORT_COUNTER_OFF(received_eth_multicast.packets) },
-	{ "rx_vport_multicast_bytes",
-		VPORT_COUNTER_OFF(received_eth_multicast.octets) },
-	{ "tx_vport_multicast_packets",
-		VPORT_COUNTER_OFF(transmitted_eth_multicast.packets) },
-	{ "tx_vport_multicast_bytes",
-		VPORT_COUNTER_OFF(transmitted_eth_multicast.octets) },
-	{ "rx_vport_broadcast_packets",
-		VPORT_COUNTER_OFF(received_eth_broadcast.packets) },
-	{ "rx_vport_broadcast_bytes",
-		VPORT_COUNTER_OFF(received_eth_broadcast.octets) },
-	{ "tx_vport_broadcast_packets",
-		VPORT_COUNTER_OFF(transmitted_eth_broadcast.packets) },
-	{ "tx_vport_broadcast_bytes",
-		VPORT_COUNTER_OFF(transmitted_eth_broadcast.octets) },
-	{ "rx_vport_rdma_unicast_packets",
-		VPORT_COUNTER_OFF(received_ib_unicast.packets) },
-	{ "rx_vport_rdma_unicast_bytes",
-		VPORT_COUNTER_OFF(received_ib_unicast.octets) },
-	{ "tx_vport_rdma_unicast_packets",
-		VPORT_COUNTER_OFF(transmitted_ib_unicast.packets) },
-	{ "tx_vport_rdma_unicast_bytes",
-		VPORT_COUNTER_OFF(transmitted_ib_unicast.octets) },
-	{ "rx_vport_rdma_multicast_packets",
-		VPORT_COUNTER_OFF(received_ib_multicast.packets) },
-	{ "rx_vport_rdma_multicast_bytes",
-		VPORT_COUNTER_OFF(received_ib_multicast.octets) },
-	{ "tx_vport_rdma_multicast_packets",
-		VPORT_COUNTER_OFF(transmitted_ib_multicast.packets) },
-	{ "tx_vport_rdma_multicast_bytes",
-		VPORT_COUNTER_OFF(transmitted_ib_multicast.octets) },
-};
-
-static const struct counter_desc vport_loopback_stats_desc[] = {
-	{ "vport_loopback_packets",
-		VPORT_COUNTER_OFF(local_loopback.packets) },
-	{ "vport_loopback_bytes",
-		VPORT_COUNTER_OFF(local_loopback.octets) },
-};
-
-#define NUM_VPORT_COUNTERS		ARRAY_SIZE(vport_stats_desc)
-#define NUM_VPORT_LOOPBACK_COUNTERS(dev) \
-	(MLX5_CAP_GEN(dev, vport_counter_local_loopback) ? \
-	 ARRAY_SIZE(vport_loopback_stats_desc) : 0)
-
-static MLX5E_DECLARE_STATS_GRP_OP_NUM_STATS(vport)
-{
-	return NUM_VPORT_COUNTERS +
-		NUM_VPORT_LOOPBACK_COUNTERS(priv->mdev);
-}
-
-static MLX5E_DECLARE_STATS_GRP_OP_FILL_STRS(vport)
-{
-	int i;
-
-	for (i = 0; i < NUM_VPORT_COUNTERS; i++)
-		strcpy(data + (idx++) * ETH_GSTRING_LEN, vport_stats_desc[i].format);
-
-	for (i = 0; i < NUM_VPORT_LOOPBACK_COUNTERS(priv->mdev); i++)
-		strcpy(data + (idx++) * ETH_GSTRING_LEN,
-		       vport_loopback_stats_desc[i].format);
-
-	return idx;
-}
-
-static MLX5E_DECLARE_STATS_GRP_OP_FILL_STATS(vport)
-{
-	int i;
-
-	for (i = 0; i < NUM_VPORT_COUNTERS; i++)
-		data[idx++] = MLX5E_READ_CTR64_BE(priv->stats.vport.query_vport_out,
-						  vport_stats_desc, i);
-
-	for (i = 0; i < NUM_VPORT_LOOPBACK_COUNTERS(priv->mdev); i++)
-		data[idx++] = MLX5E_READ_CTR64_BE(priv->stats.vport.query_vport_out,
-						  vport_loopback_stats_desc, i);
-
-	return idx;
-}
-
-static MLX5E_DECLARE_STATS_GRP_OP_UPDATE_STATS(vport)
-{
-	u32 *out = (u32 *)priv->stats.vport.query_vport_out;
-	u32 in[MLX5_ST_SZ_DW(query_vport_counter_in)] = {};
-	struct mlx5_core_dev *mdev = priv->mdev;
-
-	MLX5_SET(query_vport_counter_in, in, opcode, MLX5_CMD_OP_QUERY_VPORT_COUNTER);
-	mlx5_cmd_exec_inout(mdev, query_vport_counter, in, out);
-}
-
-#define PPORT_802_3_OFF(c) \
-	MLX5_BYTE_OFF(ppcnt_reg, \
-		      counter_set.eth_802_3_cntrs_grp_data_layout.c##_high)
-static const struct counter_desc pport_802_3_stats_desc[] = {
-	{ "tx_packets_phy", PPORT_802_3_OFF(a_frames_transmitted_ok) },
-	{ "rx_packets_phy", PPORT_802_3_OFF(a_frames_received_ok) },
-	{ "rx_crc_errors_phy", PPORT_802_3_OFF(a_frame_check_sequence_errors) },
-	{ "tx_bytes_phy", PPORT_802_3_OFF(a_octets_transmitted_ok) },
-	{ "rx_bytes_phy", PPORT_802_3_OFF(a_octets_received_ok) },
-	{ "tx_multicast_phy", PPORT_802_3_OFF(a_multicast_frames_xmitted_ok) },
-	{ "tx_broadcast_phy", PPORT_802_3_OFF(a_broadcast_frames_xmitted_ok) },
-	{ "rx_multicast_phy", PPORT_802_3_OFF(a_multicast_frames_received_ok) },
-	{ "rx_broadcast_phy", PPORT_802_3_OFF(a_broadcast_frames_received_ok) },
-	{ "rx_in_range_len_errors_phy", PPORT_802_3_OFF(a_in_range_length_errors) },
-	{ "rx_out_of_range_len_phy", PPORT_802_3_OFF(a_out_of_range_length_field) },
-	{ "rx_oversize_pkts_phy", PPORT_802_3_OFF(a_frame_too_long_errors) },
-	{ "rx_symbol_err_phy", PPORT_802_3_OFF(a_symbol_error_during_carrier) },
-	{ "tx_mac_control_phy", PPORT_802_3_OFF(a_mac_control_frames_transmitted) },
-	{ "rx_mac_control_phy", PPORT_802_3_OFF(a_mac_control_frames_received) },
-	{ "rx_unsupported_op_phy", PPORT_802_3_OFF(a_unsupported_opcodes_received) },
-	{ "rx_pause_ctrl_phy", PPORT_802_3_OFF(a_pause_mac_ctrl_frames_received) },
-	{ "tx_pause_ctrl_phy", PPORT_802_3_OFF(a_pause_mac_ctrl_frames_transmitted) },
-};
-
-#define NUM_PPORT_802_3_COUNTERS	ARRAY_SIZE(pport_802_3_stats_desc)
-
-static MLX5E_DECLARE_STATS_GRP_OP_NUM_STATS(802_3)
-{
-	return NUM_PPORT_802_3_COUNTERS;
-}
-
-static MLX5E_DECLARE_STATS_GRP_OP_FILL_STRS(802_3)
-{
-	int i;
-
-	for (i = 0; i < NUM_PPORT_802_3_COUNTERS; i++)
-		strcpy(data + (idx++) * ETH_GSTRING_LEN, pport_802_3_stats_desc[i].format);
-	return idx;
-}
-
-static MLX5E_DECLARE_STATS_GRP_OP_FILL_STATS(802_3)
-{
-	int i;
-
-	for (i = 0; i < NUM_PPORT_802_3_COUNTERS; i++)
-		data[idx++] = MLX5E_READ_CTR64_BE(&priv->stats.pport.IEEE_802_3_counters,
-						  pport_802_3_stats_desc, i);
-	return idx;
-}
-
-#define MLX5_BASIC_PPCNT_SUPPORTED(mdev) \
-	(MLX5_CAP_GEN(mdev, pcam_reg) ? MLX5_CAP_PCAM_REG(mdev, ppcnt) : 1)
-
-static MLX5E_DECLARE_STATS_GRP_OP_UPDATE_STATS(802_3)
-{
-	struct mlx5e_pport_stats *pstats = &priv->stats.pport;
-	struct mlx5_core_dev *mdev = priv->mdev;
-	u32 in[MLX5_ST_SZ_DW(ppcnt_reg)] = {0};
-	int sz = MLX5_ST_SZ_BYTES(ppcnt_reg);
-	void *out;
-
-	if (!MLX5_BASIC_PPCNT_SUPPORTED(mdev))
-		return;
-
-	MLX5_SET(ppcnt_reg, in, local_port, 1);
-	out = pstats->IEEE_802_3_counters;
-	MLX5_SET(ppcnt_reg, in, grp, MLX5_IEEE_802_3_COUNTERS_GROUP);
-	mlx5_core_access_reg(mdev, in, sz, out, sz, MLX5_REG_PPCNT, 0, 0);
-}
-
-#define MLX5E_READ_CTR64_BE_F(ptr, set, c)		\
-	be64_to_cpu(*(__be64 *)((char *)ptr +		\
-		MLX5_BYTE_OFF(ppcnt_reg,		\
-			      counter_set.set.c##_high)))
-
-static int mlx5e_stats_get_ieee(struct mlx5_core_dev *mdev,
-				u32 *ppcnt_ieee_802_3)
-{
-	u32 in[MLX5_ST_SZ_DW(ppcnt_reg)] = {};
-	int sz = MLX5_ST_SZ_BYTES(ppcnt_reg);
-
-	if (!MLX5_BASIC_PPCNT_SUPPORTED(mdev))
-		return -EOPNOTSUPP;
-
-	MLX5_SET(ppcnt_reg, in, local_port, 1);
-	MLX5_SET(ppcnt_reg, in, grp, MLX5_IEEE_802_3_COUNTERS_GROUP);
-	return mlx5_core_access_reg(mdev, in, sz, ppcnt_ieee_802_3,
-				    sz, MLX5_REG_PPCNT, 0, 0);
-}
-
-void mlx5e_stats_pause_get(struct mlx5e_priv *priv,
-			   struct ethtool_pause_stats *pause_stats)
-{
-	u32 ppcnt_ieee_802_3[MLX5_ST_SZ_DW(ppcnt_reg)];
-	struct mlx5_core_dev *mdev = priv->mdev;
-
-	if (mlx5e_stats_get_ieee(mdev, ppcnt_ieee_802_3))
-		return;
-
-	pause_stats->tx_pause_frames =
-		MLX5E_READ_CTR64_BE_F(ppcnt_ieee_802_3,
-				      eth_802_3_cntrs_grp_data_layout,
-				      a_pause_mac_ctrl_frames_transmitted);
-	pause_stats->rx_pause_frames =
-		MLX5E_READ_CTR64_BE_F(ppcnt_ieee_802_3,
-				      eth_802_3_cntrs_grp_data_layout,
-				      a_pause_mac_ctrl_frames_received);
-}
-
-void mlx5e_stats_eth_phy_get(struct mlx5e_priv *priv,
-			     struct ethtool_eth_phy_stats *phy_stats)
-{
-	u32 ppcnt_ieee_802_3[MLX5_ST_SZ_DW(ppcnt_reg)];
-	struct mlx5_core_dev *mdev = priv->mdev;
-
-	if (mlx5e_stats_get_ieee(mdev, ppcnt_ieee_802_3))
-		return;
-
-	phy_stats->SymbolErrorDuringCarrier =
-		MLX5E_READ_CTR64_BE_F(ppcnt_ieee_802_3,
-				      eth_802_3_cntrs_grp_data_layout,
-				      a_symbol_error_during_carrier);
-}
-
-void mlx5e_stats_eth_mac_get(struct mlx5e_priv *priv,
-			     struct ethtool_eth_mac_stats *mac_stats)
-{
-	u32 ppcnt_ieee_802_3[MLX5_ST_SZ_DW(ppcnt_reg)];
-	struct mlx5_core_dev *mdev = priv->mdev;
-
-	if (mlx5e_stats_get_ieee(mdev, ppcnt_ieee_802_3))
-		return;
-
-#define RD(name)							\
-	MLX5E_READ_CTR64_BE_F(ppcnt_ieee_802_3,				\
-			      eth_802_3_cntrs_grp_data_layout,		\
-			      name)
-
-	mac_stats->FramesTransmittedOK	= RD(a_frames_transmitted_ok);
-	mac_stats->FramesReceivedOK	= RD(a_frames_received_ok);
-	mac_stats->FrameCheckSequenceErrors = RD(a_frame_check_sequence_errors);
-	mac_stats->OctetsTransmittedOK	= RD(a_octets_transmitted_ok);
-	mac_stats->OctetsReceivedOK	= RD(a_octets_received_ok);
-	mac_stats->MulticastFramesXmittedOK = RD(a_multicast_frames_xmitted_ok);
-	mac_stats->BroadcastFramesXmittedOK = RD(a_broadcast_frames_xmitted_ok);
-	mac_stats->MulticastFramesReceivedOK = RD(a_multicast_frames_received_ok);
-	mac_stats->BroadcastFramesReceivedOK = RD(a_broadcast_frames_received_ok);
-	mac_stats->InRangeLengthErrors	= RD(a_in_range_length_errors);
-	mac_stats->OutOfRangeLengthField = RD(a_out_of_range_length_field);
-	mac_stats->FrameTooLongErrors	= RD(a_frame_too_long_errors);
-#undef RD
-}
-
-void mlx5e_stats_eth_ctrl_get(struct mlx5e_priv *priv,
-			      struct ethtool_eth_ctrl_stats *ctrl_stats)
-{
-	u32 ppcnt_ieee_802_3[MLX5_ST_SZ_DW(ppcnt_reg)];
-	struct mlx5_core_dev *mdev = priv->mdev;
-
-	if (mlx5e_stats_get_ieee(mdev, ppcnt_ieee_802_3))
-		return;
-
-	ctrl_stats->MACControlFramesTransmitted =
-		MLX5E_READ_CTR64_BE_F(ppcnt_ieee_802_3,
-				      eth_802_3_cntrs_grp_data_layout,
-				      a_mac_control_frames_transmitted);
-	ctrl_stats->MACControlFramesReceived =
-		MLX5E_READ_CTR64_BE_F(ppcnt_ieee_802_3,
-				      eth_802_3_cntrs_grp_data_layout,
-				      a_mac_control_frames_received);
-	ctrl_stats->UnsupportedOpcodesReceived =
-		MLX5E_READ_CTR64_BE_F(ppcnt_ieee_802_3,
-				      eth_802_3_cntrs_grp_data_layout,
-				      a_unsupported_opcodes_received);
-}
-
-#define PPORT_2863_OFF(c) \
-	MLX5_BYTE_OFF(ppcnt_reg, \
-		      counter_set.eth_2863_cntrs_grp_data_layout.c##_high)
-static const struct counter_desc pport_2863_stats_desc[] = {
-	{ "rx_discards_phy", PPORT_2863_OFF(if_in_discards) },
-	{ "tx_discards_phy", PPORT_2863_OFF(if_out_discards) },
-	{ "tx_errors_phy", PPORT_2863_OFF(if_out_errors) },
-};
-
-#define NUM_PPORT_2863_COUNTERS		ARRAY_SIZE(pport_2863_stats_desc)
-
-static MLX5E_DECLARE_STATS_GRP_OP_NUM_STATS(2863)
-{
-	return NUM_PPORT_2863_COUNTERS;
-}
-
-static MLX5E_DECLARE_STATS_GRP_OP_FILL_STRS(2863)
-{
-	int i;
-
-	for (i = 0; i < NUM_PPORT_2863_COUNTERS; i++)
-		strcpy(data + (idx++) * ETH_GSTRING_LEN, pport_2863_stats_desc[i].format);
-	return idx;
-}
-
-static MLX5E_DECLARE_STATS_GRP_OP_FILL_STATS(2863)
-{
-	int i;
-
-	for (i = 0; i < NUM_PPORT_2863_COUNTERS; i++)
-		data[idx++] = MLX5E_READ_CTR64_BE(&priv->stats.pport.RFC_2863_counters,
-						  pport_2863_stats_desc, i);
-	return idx;
-}
-
-static MLX5E_DECLARE_STATS_GRP_OP_UPDATE_STATS(2863)
-{
-	struct mlx5e_pport_stats *pstats = &priv->stats.pport;
-	struct mlx5_core_dev *mdev = priv->mdev;
-	u32 in[MLX5_ST_SZ_DW(ppcnt_reg)] = {0};
-	int sz = MLX5_ST_SZ_BYTES(ppcnt_reg);
-	void *out;
-
-	MLX5_SET(ppcnt_reg, in, local_port, 1);
-	out = pstats->RFC_2863_counters;
-	MLX5_SET(ppcnt_reg, in, grp, MLX5_RFC_2863_COUNTERS_GROUP);
-	mlx5_core_access_reg(mdev, in, sz, out, sz, MLX5_REG_PPCNT, 0, 0);
-}
-
-#define PPORT_2819_OFF(c) \
-	MLX5_BYTE_OFF(ppcnt_reg, \
-		      counter_set.eth_2819_cntrs_grp_data_layout.c##_high)
-static const struct counter_desc pport_2819_stats_desc[] = {
-	{ "rx_undersize_pkts_phy", PPORT_2819_OFF(ether_stats_undersize_pkts) },
-	{ "rx_fragments_phy", PPORT_2819_OFF(ether_stats_fragments) },
-	{ "rx_jabbers_phy", PPORT_2819_OFF(ether_stats_jabbers) },
-	{ "rx_64_bytes_phy", PPORT_2819_OFF(ether_stats_pkts64octets) },
-	{ "rx_65_to_127_bytes_phy", PPORT_2819_OFF(ether_stats_pkts65to127octets) },
-	{ "rx_128_to_255_bytes_phy", PPORT_2819_OFF(ether_stats_pkts128to255octets) },
-	{ "rx_256_to_511_bytes_phy", PPORT_2819_OFF(ether_stats_pkts256to511octets) },
-	{ "rx_512_to_1023_bytes_phy", PPORT_2819_OFF(ether_stats_pkts512to1023octets) },
-	{ "rx_1024_to_1518_bytes_phy", PPORT_2819_OFF(ether_stats_pkts1024to1518octets) },
-	{ "rx_1519_to_2047_bytes_phy", PPORT_2819_OFF(ether_stats_pkts1519to2047octets) },
-	{ "rx_2048_to_4095_bytes_phy", PPORT_2819_OFF(ether_stats_pkts2048to4095octets) },
-	{ "rx_4096_to_8191_bytes_phy", PPORT_2819_OFF(ether_stats_pkts4096to8191octets) },
-	{ "rx_8192_to_10239_bytes_phy", PPORT_2819_OFF(ether_stats_pkts8192to10239octets) },
-};
-
-#define NUM_PPORT_2819_COUNTERS		ARRAY_SIZE(pport_2819_stats_desc)
-
-static MLX5E_DECLARE_STATS_GRP_OP_NUM_STATS(2819)
-{
-	return NUM_PPORT_2819_COUNTERS;
-}
-
-static MLX5E_DECLARE_STATS_GRP_OP_FILL_STRS(2819)
-{
-	int i;
-
-	for (i = 0; i < NUM_PPORT_2819_COUNTERS; i++)
-		strcpy(data + (idx++) * ETH_GSTRING_LEN, pport_2819_stats_desc[i].format);
-	return idx;
-}
-
-static MLX5E_DECLARE_STATS_GRP_OP_FILL_STATS(2819)
-{
-	int i;
-
-	for (i = 0; i < NUM_PPORT_2819_COUNTERS; i++)
-		data[idx++] = MLX5E_READ_CTR64_BE(&priv->stats.pport.RFC_2819_counters,
-						  pport_2819_stats_desc, i);
-	return idx;
-}
-
-static MLX5E_DECLARE_STATS_GRP_OP_UPDATE_STATS(2819)
-{
-	struct mlx5e_pport_stats *pstats = &priv->stats.pport;
-	struct mlx5_core_dev *mdev = priv->mdev;
-	u32 in[MLX5_ST_SZ_DW(ppcnt_reg)] = {0};
-	int sz = MLX5_ST_SZ_BYTES(ppcnt_reg);
-	void *out;
-
-	if (!MLX5_BASIC_PPCNT_SUPPORTED(mdev))
-		return;
-
-	MLX5_SET(ppcnt_reg, in, local_port, 1);
-	out = pstats->RFC_2819_counters;
-	MLX5_SET(ppcnt_reg, in, grp, MLX5_RFC_2819_COUNTERS_GROUP);
-	mlx5_core_access_reg(mdev, in, sz, out, sz, MLX5_REG_PPCNT, 0, 0);
-}
-
-static const struct ethtool_rmon_hist_range mlx5e_rmon_ranges[] = {
-	{    0,    64 },
-	{   65,   127 },
-	{  128,   255 },
-	{  256,   511 },
-	{  512,  1023 },
-	{ 1024,  1518 },
-	{ 1519,  2047 },
-	{ 2048,  4095 },
-	{ 4096,  8191 },
-	{ 8192, 10239 },
-	{}
-};
-
-void mlx5e_stats_rmon_get(struct mlx5e_priv *priv,
-			  struct ethtool_rmon_stats *rmon,
-			  const struct ethtool_rmon_hist_range **ranges)
-{
-	u32 ppcnt_RFC_2819_counters[MLX5_ST_SZ_DW(ppcnt_reg)];
-	struct mlx5_core_dev *mdev = priv->mdev;
-	u32 in[MLX5_ST_SZ_DW(ppcnt_reg)] = {0};
-	int sz = MLX5_ST_SZ_BYTES(ppcnt_reg);
-
-	MLX5_SET(ppcnt_reg, in, local_port, 1);
-	MLX5_SET(ppcnt_reg, in, grp, MLX5_RFC_2819_COUNTERS_GROUP);
-	if (mlx5_core_access_reg(mdev, in, sz, ppcnt_RFC_2819_counters,
-				 sz, MLX5_REG_PPCNT, 0, 0))
-		return;
-
-#define RD(name)						\
-	MLX5E_READ_CTR64_BE_F(ppcnt_RFC_2819_counters,		\
-			      eth_2819_cntrs_grp_data_layout,	\
-			      name)
-
-	rmon->undersize_pkts	= RD(ether_stats_undersize_pkts);
-	rmon->fragments		= RD(ether_stats_fragments);
-	rmon->jabbers		= RD(ether_stats_jabbers);
-
-	rmon->hist[0]		= RD(ether_stats_pkts64octets);
-	rmon->hist[1]		= RD(ether_stats_pkts65to127octets);
-	rmon->hist[2]		= RD(ether_stats_pkts128to255octets);
-	rmon->hist[3]		= RD(ether_stats_pkts256to511octets);
-	rmon->hist[4]		= RD(ether_stats_pkts512to1023octets);
-	rmon->hist[5]		= RD(ether_stats_pkts1024to1518octets);
-	rmon->hist[6]		= RD(ether_stats_pkts1519to2047octets);
-	rmon->hist[7]		= RD(ether_stats_pkts2048to4095octets);
-	rmon->hist[8]		= RD(ether_stats_pkts4096to8191octets);
-	rmon->hist[9]		= RD(ether_stats_pkts8192to10239octets);
-#undef RD
-
-	*ranges = mlx5e_rmon_ranges;
-}
-
-#define PPORT_PHY_STATISTICAL_OFF(c) \
-	MLX5_BYTE_OFF(ppcnt_reg, \
-		      counter_set.phys_layer_statistical_cntrs.c##_high)
-static const struct counter_desc pport_phy_statistical_stats_desc[] = {
-	{ "rx_pcs_symbol_err_phy", PPORT_PHY_STATISTICAL_OFF(phy_symbol_errors) },
-	{ "rx_corrected_bits_phy", PPORT_PHY_STATISTICAL_OFF(phy_corrected_bits) },
-};
-
-static const struct counter_desc
-pport_phy_statistical_err_lanes_stats_desc[] = {
-	{ "rx_err_lane_0_phy", PPORT_PHY_STATISTICAL_OFF(phy_corrected_bits_lane0) },
-	{ "rx_err_lane_1_phy", PPORT_PHY_STATISTICAL_OFF(phy_corrected_bits_lane1) },
-	{ "rx_err_lane_2_phy", PPORT_PHY_STATISTICAL_OFF(phy_corrected_bits_lane2) },
-	{ "rx_err_lane_3_phy", PPORT_PHY_STATISTICAL_OFF(phy_corrected_bits_lane3) },
-};
-
-#define NUM_PPORT_PHY_STATISTICAL_COUNTERS \
-	ARRAY_SIZE(pport_phy_statistical_stats_desc)
-#define NUM_PPORT_PHY_STATISTICAL_PER_LANE_COUNTERS \
-	ARRAY_SIZE(pport_phy_statistical_err_lanes_stats_desc)
-
-static MLX5E_DECLARE_STATS_GRP_OP_NUM_STATS(phy)
-{
-	struct mlx5_core_dev *mdev = priv->mdev;
-	int num_stats;
-
-	/* "1" for link_down_events special counter */
+			 
 	num_stats = 1;
 
 	num_stats += MLX5_CAP_PCAM_FEATURE(mdev, ppcnt_statistical_group) ?
@@ -1220,7 +491,7 @@ static MLX5E_DECLARE_STATS_GRP_OP_FILL_STATS(phy)
 	struct mlx5_core_dev *mdev = priv->mdev;
 	int i;
 
-	/* link_down_events_phy has special handling since it is not stored in __be64 format */
+	 
 	data[idx++] = MLX5_GET(ppcnt_reg, priv->stats.pport.phy_counters,
 			       counter_set.phys_layer_cntrs.link_down_events);
 
@@ -1318,13 +589,13 @@ static int fec_active_mode(struct mlx5_core_dev *mdev)
 static void fec_set_fc_stats(struct ethtool_fec_stats *fec_stats,
 			     u32 *ppcnt, u8 lanes)
 {
-	if (lanes > 3) { /* 4 lanes */
+	if (lanes > 3) {  
 		MLX5E_STATS_SET_FEC_BLOCK(3);
 		MLX5E_STATS_SET_FEC_BLOCK(2);
 	}
-	if (lanes > 1) /* 2 lanes */
+	if (lanes > 1)  
 		MLX5E_STATS_SET_FEC_BLOCK(1);
-	if (lanes > 0) /* 1 lane */
+	if (lanes > 0)  
 		MLX5E_STATS_SET_FEC_BLOCK(0);
 }
 
@@ -1743,7 +1014,7 @@ static int mlx5e_grp_per_prio_traffic_fill_stats(struct mlx5e_priv *priv,
 }
 
 static const struct counter_desc pport_per_prio_pfc_stats_desc[] = {
-	/* %s is "global" or "prio{i}" */
+	 
 	{ "rx_%s_pause", PPORT_PER_PRIO_OFF(rx_pause) },
 	{ "rx_%s_pause_duration", PPORT_PER_PRIO_OFF(rx_pause_duration) },
 	{ "tx_%s_pause", PPORT_PER_PRIO_OFF(tx_pause) },
@@ -2235,13 +1506,13 @@ static const struct counter_desc qos_sq_stats_desc[] = {
 
 static MLX5E_DECLARE_STATS_GRP_OP_NUM_STATS(qos)
 {
-	/* Pairs with smp_store_release in mlx5e_open_qos_sq. */
+	 
 	return NUM_QOS_SQ_STATS * smp_load_acquire(&priv->htb_max_qos_sqs);
 }
 
 static MLX5E_DECLARE_STATS_GRP_OP_FILL_STRS(qos)
 {
-	/* Pairs with smp_store_release in mlx5e_open_qos_sq. */
+	 
 	u16 max_qos_sqs = smp_load_acquire(&priv->htb_max_qos_sqs);
 	int i, qid;
 
@@ -2259,7 +1530,7 @@ static MLX5E_DECLARE_STATS_GRP_OP_FILL_STATS(qos)
 	u16 max_qos_sqs;
 	int i, qid;
 
-	/* Pairs with smp_store_release in mlx5e_open_qos_sq. */
+	 
 	max_qos_sqs = smp_load_acquire(&priv->htb_max_qos_sqs);
 	stats = READ_ONCE(priv->htb_qos_sq_stats);
 
@@ -2479,7 +1750,7 @@ static MLX5E_DEFINE_STATS_GRP(tls, 0);
 MLX5E_DEFINE_STATS_GRP(ptp, 0);
 static MLX5E_DEFINE_STATS_GRP(qos, 0);
 
-/* The stats groups order is opposite to the update_stats() order calls */
+ 
 mlx5e_stats_grp_t mlx5e_nic_stats_grps[] = {
 	&MLX5E_STATS_GRP(sw),
 	&MLX5E_STATS_GRP(qcnt),

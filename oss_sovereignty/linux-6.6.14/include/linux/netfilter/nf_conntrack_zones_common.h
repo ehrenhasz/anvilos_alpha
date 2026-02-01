@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _NF_CONNTRACK_ZONES_COMMON_H
 #define _NF_CONNTRACK_ZONES_COMMON_H
 
@@ -21,4 +21,4 @@ struct nf_conntrack_zone {
 
 extern const struct nf_conntrack_zone nf_ct_zone_dflt;
 
-#endif /* _NF_CONNTRACK_ZONES_COMMON_H */
+#endif  

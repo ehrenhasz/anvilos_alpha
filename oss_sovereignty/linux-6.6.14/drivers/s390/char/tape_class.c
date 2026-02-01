@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright IBM Corp. 2004
- *
- * Tape class device support
- *
- * Author: Stefan Bader <shbader@de.ibm.com>
- * Based on simple class device code by Greg K-H
- */
+
+ 
 
 #define KMSG_COMPONENT "tape"
 #define pr_fmt(fmt) KMSG_COMPONENT ": " fmt
@@ -24,21 +17,7 @@ MODULE_LICENSE("GPL");
 
 static struct class *tape_class;
 
-/*
- * Register a tape device and return a pointer to the cdev structure.
- *
- * device
- *	The pointer to the struct device of the physical (base) device.
- * drivername
- *	The pointer to the drivers name for it's character devices.
- * dev
- *	The intended major/minor number. The major number may be 0 to
- *	get a dynamic major number.
- * fops
- *	The pointer to the drivers file operations for the tape device.
- * devname
- *	The pointer to the name of the character device.
- */
+ 
 struct tape_class_device *register_tape_dev(
 	struct device *		device,
 	dev_t			dev,

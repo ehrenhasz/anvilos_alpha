@@ -1,24 +1,12 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright (C) 2020 ROHM Semiconductors */
+ 
+ 
 
 #ifndef LINEAR_RANGE_H
 #define LINEAR_RANGE_H
 
 #include <linux/types.h>
 
-/**
- * struct linear_range - table of selector - value pairs
- *
- * Define a lookup-table for range of values. Intended to help when looking
- * for a register value matching certaing physical measure (like voltage).
- * Usable when increment of one in register always results a constant increment
- * of the physical measure (like voltage).
- *
- * @min:  Lowest value in range
- * @min_sel: Lowest selector for range
- * @max_sel: Highest selector for range
- * @step: Value step size
- */
+ 
 struct linear_range {
 	unsigned int min;
 	unsigned int min_sel;

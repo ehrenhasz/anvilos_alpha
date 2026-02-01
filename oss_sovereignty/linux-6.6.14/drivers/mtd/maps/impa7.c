@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Handle mapping of the NOR flash on implementa A7 boards
- *
- * Copyright 2002 SYSGO Real-Time Solutions GmbH
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/types.h>
@@ -14,15 +10,15 @@
 #include <linux/mtd/map.h>
 #include <linux/mtd/partitions.h>
 
-#define WINDOW_ADDR0 0x00000000      /* physical properties of flash */
+#define WINDOW_ADDR0 0x00000000       
 #define WINDOW_SIZE0 0x00800000
-#define WINDOW_ADDR1 0x10000000      /* physical properties of flash */
+#define WINDOW_ADDR1 0x10000000       
 #define WINDOW_SIZE1 0x00800000
 #define NUM_FLASHBANKS 2
 #define BUSWIDTH     4
 
-#define MSG_PREFIX "impA7:"   /* prefix for our printk()'s */
-#define MTDID      "impa7-%d"  /* for mtdparts= partitioning */
+#define MSG_PREFIX "impA7:"    
+#define MTDID      "impa7-%d"   
 
 static struct mtd_info *impa7_mtd[NUM_FLASHBANKS];
 
@@ -41,9 +37,7 @@ static struct map_info impa7_map[NUM_FLASHBANKS] = {
 	},
 };
 
-/*
- * MTD partitioning stuff
- */
+ 
 static const struct mtd_partition partitions[] =
 {
 	{

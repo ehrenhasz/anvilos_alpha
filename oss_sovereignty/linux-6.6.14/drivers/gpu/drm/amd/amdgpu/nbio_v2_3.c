@@ -1,25 +1,4 @@
-/*
- * Copyright 2019 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 #include "amdgpu.h"
 #include "amdgpu_atombios.h"
 #include "nbio_v2_3.h"
@@ -54,7 +33,7 @@
 
 #define smnPCIE_LC_LINK_WIDTH_CNTL		0x11140288
 
-#define GPU_HDP_FLUSH_DONE__RSVD_ENG0_MASK	0x00001000L /* Don't use.  Firmware uses this bit internally */
+#define GPU_HDP_FLUSH_DONE__RSVD_ENG0_MASK	0x00001000L  
 #define GPU_HDP_FLUSH_DONE__RSVD_ENG1_MASK	0x00002000L
 #define GPU_HDP_FLUSH_DONE__RSVD_ENG2_MASK	0x00004000L
 #define GPU_HDP_FLUSH_DONE__RSVD_ENG3_MASK	0x00008000L
@@ -76,10 +55,7 @@ static u32 nbio_v2_3_get_rev_id(struct amdgpu_device *adev)
 {
 	u32 tmp;
 
-	/*
-	 * guest vm gets 0xffffffff when reading RCC_DEV0_EPF0_STRAP0,
-	 * therefore we force rev_id to 0 (which is the default value)
-	 */
+	 
 	if (amdgpu_sriov_vf(adev)) {
 		return 0;
 	}
@@ -208,18 +184,15 @@ static void nbio_v2_3_ih_control(struct amdgpu_device *adev)
 {
 	u32 interrupt_cntl;
 
-	/* setup interrupt control */
+	 
 	WREG32_SOC15(NBIO, 0, mmINTERRUPT_CNTL2, adev->dummy_page_addr >> 8);
 
 	interrupt_cntl = RREG32_SOC15(NBIO, 0, mmINTERRUPT_CNTL);
-	/*
-	 * INTERRUPT_CNTL__IH_DUMMY_RD_OVERRIDE_MASK=0 - dummy read disabled with msi, enabled without msi
-	 * INTERRUPT_CNTL__IH_DUMMY_RD_OVERRIDE_MASK=1 - dummy read controlled by IH_DUMMY_RD_EN
-	 */
+	 
 	interrupt_cntl = REG_SET_FIELD(interrupt_cntl, INTERRUPT_CNTL,
 				       IH_DUMMY_RD_OVERRIDE, 0);
 
-	/* INTERRUPT_CNTL__IH_REQ_NONSNOOP_EN_MASK=1 if ring is in non-cacheable memory, e.g., vram */
+	 
 	interrupt_cntl = REG_SET_FIELD(interrupt_cntl, INTERRUPT_CNTL,
 				       IH_REQ_NONSNOOP_EN, 0);
 
@@ -283,12 +256,12 @@ static void nbio_v2_3_get_clockgating_state(struct amdgpu_device *adev,
 {
 	int data;
 
-	/* AMD_CG_SUPPORT_BIF_MGCG */
+	 
 	data = RREG32_PCIE(smnCPM_CONTROL);
 	if (data & CPM_CONTROL__LCLK_DYN_GATE_ENABLE_MASK)
 		*flags |= AMD_CG_SUPPORT_BIF_MGCG;
 
-	/* AMD_CG_SUPPORT_BIF_LS */
+	 
 	data = RREG32_PCIE(smnPCIE_CNTL2);
 	if (data & PCIE_CNTL2__SLV_MEM_LS_EN_MASK)
 		*flags |= AMD_CG_SUPPORT_BIF_LS;
@@ -345,9 +318,9 @@ static void nbio_v2_3_init_registers(struct amdgpu_device *adev)
 			mmBIF_BX_DEV0_EPF0_VF0_HDP_MEM_COHERENCY_FLUSH_CNTL) << 2;
 }
 
-#define NAVI10_PCIE__LC_L0S_INACTIVITY_DEFAULT		0x00000000 // off by default, no gains over L1
-#define NAVI10_PCIE__LC_L1_INACTIVITY_DEFAULT		0x0000000A // 1=1us, 9=1ms, 10=4ms
-#define NAVI10_PCIE__LC_L1_INACTIVITY_TBT_DEFAULT	0x0000000E // 400ms
+#define NAVI10_PCIE__LC_L0S_INACTIVITY_DEFAULT		0x00000000  
+#define NAVI10_PCIE__LC_L1_INACTIVITY_DEFAULT		0x0000000A  
+#define NAVI10_PCIE__LC_L1_INACTIVITY_TBT_DEFAULT	0x0000000E  
 
 static void nbio_v2_3_enable_aspm(struct amdgpu_device *adev,
 				  bool enable)
@@ -357,7 +330,7 @@ static void nbio_v2_3_enable_aspm(struct amdgpu_device *adev,
 	def = data = RREG32_PCIE(smnPCIE_LC_CNTL);
 
 	if (enable) {
-		/* Disable ASPM L0s/L1 first */
+		 
 		data &= ~(PCIE_LC_CNTL__LC_L0S_INACTIVITY_MASK | PCIE_LC_CNTL__LC_L1_INACTIVITY_MASK);
 
 		data |= NAVI10_PCIE__LC_L0S_INACTIVITY_DEFAULT << PCIE_LC_CNTL__LC_L0S_INACTIVITY__SHIFT;
@@ -369,11 +342,11 @@ static void nbio_v2_3_enable_aspm(struct amdgpu_device *adev,
 
 		data &= ~PCIE_LC_CNTL__LC_PMI_TO_L1_DIS_MASK;
 	} else {
-		/* Disbale ASPM L1 */
+		 
 		data &= ~PCIE_LC_CNTL__LC_L1_INACTIVITY_MASK;
-		/* Disable ASPM TxL0s */
+		 
 		data &= ~PCIE_LC_CNTL__LC_L0S_INACTIVITY_MASK;
-		/* Disable ACPI L1 */
+		 
 		data |= PCIE_LC_CNTL__LC_PMI_TO_L1_DIS_MASK;
 	}
 
@@ -463,8 +436,7 @@ static void nbio_v2_3_program_aspm(struct amdgpu_device *adev)
 	if (def != data)
 		WREG32_PCIE(smnPCIE_LC_CNTL6, data);
 
-	/* Don't bother about LTR if LTR is not enabled
-	 * in the path */
+	 
 	if (adev->pdev->ltr_path)
 		nbio_v2_3_program_ltr(adev);
 
@@ -509,10 +481,7 @@ static void nbio_v2_3_apply_lc_spc_mode_wa(struct amdgpu_device *adev)
 	link_width = (reg_data & PCIE_LC_LINK_WIDTH_CNTL__LC_LINK_WIDTH_RD_MASK)
 		>> PCIE_LC_LINK_WIDTH_CNTL__LC_LINK_WIDTH_RD__SHIFT;
 
-	/*
-	 * Program PCIE_LC_CNTL6.LC_SPC_MODE_8GT to 0x2 (4 symbols per clock data)
-	 * if link_width is 0x3 (x4)
-	 */
+	 
 	if (0x3 == link_width) {
 		reg_data = RREG32_PCIE(smnPCIE_LC_CNTL6);
 		reg_data &= ~PCIE_LC_CNTL6__LC_SPC_MODE_8GT_MASK;
@@ -542,8 +511,7 @@ static void nbio_v2_3_clear_doorbell_interrupt(struct amdgpu_device *adev)
 
 	reg = RREG32_SOC15(NBIO, 0, mmBIF_RB_CNTL);
 
-	/* Clear Interrupt Status
-	 */
+	 
 	if ((reg & BIF_RB_CNTL__RB_ENABLE_MASK) == 0) {
 		reg = RREG32_SOC15(NBIO, 0, mmBIF_DOORBELL_INT_CNTL);
 		if (reg & BIF_DOORBELL_INT_CNTL__DOORBELL_INTERRUPT_STATUS_MASK) {

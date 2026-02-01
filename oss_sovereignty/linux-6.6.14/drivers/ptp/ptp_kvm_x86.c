@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Virtual PTP 1588 clock for use with KVM guests
- *
- * Copyright (C) 2017 Red Hat Inc.
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/kernel.h>
@@ -102,13 +98,7 @@ int kvm_arch_ptp_get_crosststamp(u64 *cycle, struct timespec64 *tspec,
 	src = this_cpu_pvti();
 
 	do {
-		/*
-		 * We are using a TSC value read in the hosts
-		 * kvm_hc_clock_pairing handling.
-		 * So any changes to tsc_to_system_mul
-		 * and tsc_shift or any other pvclock
-		 * data invalidate that measurement.
-		 */
+		 
 		version = pvclock_read_begin(src);
 
 		ret = kvm_hypercall2(KVM_HC_CLOCK_PAIRING,

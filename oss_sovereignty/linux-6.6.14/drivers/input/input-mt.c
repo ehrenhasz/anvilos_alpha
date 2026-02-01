@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Input Multitouch Library
- *
- * Copyright (c) 2008-2010 Henrik Rydberg
- */
+
+ 
 
 #include <linux/input/mt.h>
 #include <linux/export.h>
@@ -21,21 +17,7 @@ static void copy_abs(struct input_dev *dev, unsigned int dst, unsigned int src)
 	}
 }
 
-/**
- * input_mt_init_slots() - initialize MT input slots
- * @dev: input device supporting MT events and finger tracking
- * @num_slots: number of slots used by the device
- * @flags: mt tasks to handle in core
- *
- * This function allocates all necessary memory for MT slot handling
- * in the input device, prepares the ABS_MT_SLOT and
- * ABS_MT_TRACKING_ID events for use and sets up appropriate buffers.
- * Depending on the flags set, it also performs pointer emulation and
- * frame synchronization.
- *
- * May be called repeatedly. Returns -EINVAL if attempting to
- * reinitialize with a different number of slots.
- */
+ 
 int input_mt_init_slots(struct input_dev *dev, unsigned int num_slots,
 			unsigned int flags)
 {
@@ -86,11 +68,11 @@ int input_mt_init_slots(struct input_dev *dev, unsigned int num_slots,
 			goto err_mem;
 	}
 
-	/* Mark slots as 'inactive' */
+	 
 	for (i = 0; i < num_slots; i++)
 		input_mt_set_value(&mt->slots[i], ABS_MT_TRACKING_ID, -1);
 
-	/* Mark slots as 'unused' */
+	 
 	mt->frame = 1;
 
 	dev->mt = mt;
@@ -101,13 +83,7 @@ err_mem:
 }
 EXPORT_SYMBOL(input_mt_init_slots);
 
-/**
- * input_mt_destroy_slots() - frees the MT slots of the input device
- * @dev: input device with allocated MT slots
- *
- * This function is only needed in error path as the input core will
- * automatically free the MT slots when the device is destroyed.
- */
+ 
 void input_mt_destroy_slots(struct input_dev *dev)
 {
 	if (dev->mt) {
@@ -118,20 +94,7 @@ void input_mt_destroy_slots(struct input_dev *dev)
 }
 EXPORT_SYMBOL(input_mt_destroy_slots);
 
-/**
- * input_mt_report_slot_state() - report contact state
- * @dev: input device with allocated MT slots
- * @tool_type: the tool type to use in this slot
- * @active: true if contact is active, false otherwise
- *
- * Reports a contact via ABS_MT_TRACKING_ID, and optionally
- * ABS_MT_TOOL_TYPE. If active is true and the slot is currently
- * inactive, or if the tool type is changed, a new tracking id is
- * assigned to the slot. The tool type is only reported if the
- * corresponding absbit field is set.
- *
- * Returns true if contact is active.
- */
+ 
 bool input_mt_report_slot_state(struct input_dev *dev,
 				unsigned int tool_type, bool active)
 {
@@ -161,17 +124,7 @@ bool input_mt_report_slot_state(struct input_dev *dev,
 }
 EXPORT_SYMBOL(input_mt_report_slot_state);
 
-/**
- * input_mt_report_finger_count() - report contact count
- * @dev: input device with allocated MT slots
- * @count: the number of contacts
- *
- * Reports the contact count via BTN_TOOL_FINGER, BTN_TOOL_DOUBLETAP,
- * BTN_TOOL_TRIPLETAP and BTN_TOOL_QUADTAP.
- *
- * The input core ensures only the KEY events already setup for
- * this device will produce output.
- */
+ 
 void input_mt_report_finger_count(struct input_dev *dev, int count)
 {
 	input_event(dev, EV_KEY, BTN_TOOL_FINGER, count == 1);
@@ -182,17 +135,7 @@ void input_mt_report_finger_count(struct input_dev *dev, int count)
 }
 EXPORT_SYMBOL(input_mt_report_finger_count);
 
-/**
- * input_mt_report_pointer_emulation() - common pointer emulation
- * @dev: input device with allocated MT slots
- * @use_count: report number of active contacts as finger count
- *
- * Performs legacy pointer emulation via BTN_TOUCH, ABS_X, ABS_Y and
- * ABS_PRESSURE. Touchpad finger count is emulated if use_count is true.
- *
- * The input core ensures only the KEY and ABS axes already setup for
- * this device will produce output.
- */
+ 
 void input_mt_report_pointer_emulation(struct input_dev *dev, bool use_count)
 {
 	struct input_mt *mt = dev->mt;
@@ -226,12 +169,7 @@ void input_mt_report_pointer_emulation(struct input_dev *dev, bool use_count)
 		    !test_bit(ABS_MT_DISTANCE, dev->absbit) &&
 		    test_bit(ABS_DISTANCE, dev->absbit) &&
 		    input_abs_get_val(dev, ABS_DISTANCE) != 0) {
-			/*
-			 * Force reporting BTN_TOOL_FINGER for devices that
-			 * only report general hover (and not per-contact
-			 * distance) when contact is in proximity but not
-			 * on the surface.
-			 */
+			 
 			count = 1;
 		}
 
@@ -271,12 +209,7 @@ static void __input_mt_drop_unused(struct input_dev *dev, struct input_mt *mt)
 	}
 }
 
-/**
- * input_mt_drop_unused() - Inactivate slots not seen in this frame
- * @dev: input device with allocated MT slots
- *
- * Lift all slots not seen since the last call to this function.
- */
+ 
 void input_mt_drop_unused(struct input_dev *dev)
 {
 	struct input_mt *mt = dev->mt;
@@ -294,12 +227,7 @@ void input_mt_drop_unused(struct input_dev *dev)
 }
 EXPORT_SYMBOL(input_mt_drop_unused);
 
-/**
- * input_mt_release_slots() - Deactivate all slots
- * @dev: input device with allocated MT slots
- *
- * Lift all active slots.
- */
+ 
 void input_mt_release_slots(struct input_dev *dev)
 {
 	struct input_mt *mt = dev->mt;
@@ -307,7 +235,7 @@ void input_mt_release_slots(struct input_dev *dev)
 	lockdep_assert_held(&dev->event_lock);
 
 	if (mt) {
-		/* This will effectively mark all slots unused. */
+		 
 		mt->frame++;
 
 		__input_mt_drop_unused(dev, mt);
@@ -319,14 +247,7 @@ void input_mt_release_slots(struct input_dev *dev)
 	}
 }
 
-/**
- * input_mt_sync_frame() - synchronize mt frame
- * @dev: input device with allocated MT slots
- *
- * Close the frame and prepare the internal state for a new one.
- * Depending on the flags, marks unused slots as inactive and performs
- * pointer emulation.
- */
+ 
 void input_mt_sync_frame(struct input_dev *dev)
 {
 	struct input_mt *mt = dev->mt;
@@ -375,7 +296,7 @@ static int adjust_dual(int *begin, int step, int *end, int eq, int mu)
 	c = (f + s + 1) / 2;
 	if (c == 0 || (c > mu && (!eq || mu > 0)))
 		return 0;
-	/* Improve convergence for positive matrices by penalizing overcovers */
+	 
 	if (s < 0 && mu <= 0)
 		c *= 2;
 
@@ -459,24 +380,7 @@ static void input_mt_set_slots(struct input_mt *mt,
 	}
 }
 
-/**
- * input_mt_assign_slots() - perform a best-match assignment
- * @dev: input device with allocated MT slots
- * @slots: the slot assignment to be filled
- * @pos: the position array to match
- * @num_pos: number of positions
- * @dmax: maximum ABS_MT_POSITION displacement (zero for infinite)
- *
- * Performs a best match against the current contacts and returns
- * the slot assignment list. New contacts are assigned to unused
- * slots.
- *
- * The assignments are balanced so that all coordinate displacements are
- * below the euclidian distance dmax. If no such assignment can be found,
- * some contacts are assigned to unused slots.
- *
- * Returns zero on success, or negative error in case of failure.
- */
+ 
 int input_mt_assign_slots(struct input_dev *dev, int *slots,
 			  const struct input_mt_pos *pos, int num_pos,
 			  int dmax)
@@ -500,18 +404,7 @@ int input_mt_assign_slots(struct input_dev *dev, int *slots,
 }
 EXPORT_SYMBOL(input_mt_assign_slots);
 
-/**
- * input_mt_get_slot_by_key() - return slot matching key
- * @dev: input device with allocated MT slots
- * @key: the key of the sought slot
- *
- * Returns the slot of the given key, if it exists, otherwise
- * set the key on the first unused slot and return.
- *
- * If no available slot can be found, -1 is returned.
- * Note that for this function to work properly, input_mt_sync_frame() has
- * to be called at each frame.
- */
+ 
 int input_mt_get_slot_by_key(struct input_dev *dev, int key)
 {
 	struct input_mt *mt = dev->mt;

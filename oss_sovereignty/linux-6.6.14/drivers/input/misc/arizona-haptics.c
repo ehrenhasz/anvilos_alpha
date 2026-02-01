@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Arizona haptics driver
- *
- * Copyright 2012 Wolfson Microelectronics plc
- *
- * Author: Mark Brown <broonie@opensource.wolfsonmicro.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/platform_device.h>
@@ -54,7 +48,7 @@ static void arizona_haptics_work(struct work_struct *work)
 			return;
 		}
 
-		/* This enable sequence will be a noop if already enabled */
+		 
 		ret = regmap_update_bits(arizona->regmap,
 					 ARIZONA_HAPTICS_CONTROL_1,
 					 ARIZONA_HAP_CTRL_MASK,
@@ -79,7 +73,7 @@ static void arizona_haptics_work(struct work_struct *work)
 			return;
 		}
 	} else {
-		/* This disable sequence will be a noop if already enabled */
+		 
 		ret = snd_soc_component_disable_pin(component, "HAPTICS");
 		if (ret != 0) {
 			dev_err(arizona->dev, "Failed to disable HAPTICS: %d\n",
@@ -117,7 +111,7 @@ static int arizona_haptics_play(struct input_dev *input, void *data,
 	}
 
 	if (effect->u.rumble.strong_magnitude) {
-		/* Scale the magnitude into the range the device supports */
+		 
 		if (arizona->pdata.hap_act) {
 			haptics->intensity =
 				effect->u.rumble.strong_magnitude >> 9;

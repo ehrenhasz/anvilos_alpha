@@ -1,13 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * NETjet common header file
- *
- * Author	Karsten Keil
- *              based on work of Matt Henderson and Daniel Potts,
- *              Traverse Technologies P/L www.traverse.com.au
- *
- * Copyright 2009  by Karsten Keil <keil@isdn4linux.de>
- */
+ 
+ 
 
 #define NJ_CTRL			0x00
 #define NJ_DMACTRL		0x01
@@ -37,8 +29,8 @@
 #define NJ_IRQM0_WR_IRQ		0x04
 #define NJ_IRQM0_WR_END		0x08
 
-/* one page here is no need to be smaller */
+ 
 #define NJ_DMA_SIZE		4096
-/* 2 * 64 byte is a compromise between IRQ count and latency */
-#define NJ_DMA_RXSIZE		128  /* 2 * 64 */
-#define NJ_DMA_TXSIZE		128  /* 2 * 64 */
+ 
+#define NJ_DMA_RXSIZE		128   
+#define NJ_DMA_TXSIZE		128   

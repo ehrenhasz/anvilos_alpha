@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2018 MediaTek Inc.
- * Author: Owen Chen <owen.chen@mediatek.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/clk-provider.h>
@@ -43,11 +40,7 @@ static int mtk_clk_mux_enable_setclr(struct clk_hw *hw)
 	regmap_write(mux->regmap, mux->data->clr_ofs,
 		     BIT(mux->data->gate_shift));
 
-	/*
-	 * If the parent has been changed when the clock was disabled, it will
-	 * not be effective yet. Set the update bit to ensure the mux gets
-	 * updated.
-	 */
+	 
 	if (mux->reparent && mux->data->upd_shift >= 0) {
 		regmap_write(mux->regmap, mux->data->upd_ofs,
 			     BIT(mux->data->upd_shift));
@@ -272,12 +265,7 @@ void mtk_clk_unregister_muxes(const struct mtk_mux *muxes, int num,
 }
 EXPORT_SYMBOL_GPL(mtk_clk_unregister_muxes);
 
-/*
- * This clock notifier is called when the frequency of the parent
- * PLL clock is to be changed. The idea is to switch the parent to a
- * stable clock, such as the main oscillator, while the PLL frequency
- * stabilizes.
- */
+ 
 static int mtk_clk_mux_notifier_cb(struct notifier_block *nb,
 				   unsigned long event, void *_data)
 {

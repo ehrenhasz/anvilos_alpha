@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-// Copyright (c) 2018 Mellanox Technologies
+
+
 
 #include <linux/hyperv.h>
 #include "mlx5_core.h"
@@ -24,7 +24,7 @@ static int mlx5_hv_config_common(struct mlx5_core_dev *dev, void *buf, int len,
 	     hyperv_write_cfg_blk(dev->pdev, buf,
 				  HV_CONFIG_BLOCK_SIZE_MAX, block_id);
 
-	/* Make sure len bytes were read successfully  */
+	 
 	if (read && !rc && len != bytes_returned)
 		rc = -EIO;
 

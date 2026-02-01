@@ -1,150 +1,11 @@
-/* Multibyte character data type.
-   Copyright (C) 2001, 2005-2007, 2009-2023 Free Software Foundation, Inc.
+ 
 
-   This file is free software: you can redistribute it and/or modify
-   it under the terms of the GNU Lesser General Public License as
-   published by the Free Software Foundation; either version 2.1 of the
-   License, or (at your option) any later version.
-
-   This file is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU Lesser General Public License for more details.
-
-   You should have received a copy of the GNU Lesser General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* Written by Bruno Haible <bruno@clisp.org>.  */
-
-/* A multibyte character is a short subsequence of a char* string,
-   representing a single 32-bit wide character.
-
-   We use multibyte characters instead of 32-bit wide characters because
-   of the following goals:
-   1) correct multibyte handling, i.e. operate according to the LC_CTYPE
-      locale,
-   2) ease of maintenance, i.e. the maintainer needs not know all details
-      of the ISO C 99 standard,
-   3) don't fail grossly if the input is not in the encoding set by the
-      locale, because often different encodings are in use in the same
-      countries (ISO-8859-1/UTF-8, EUC-JP/Shift_JIS, ...),
-   4) fast in the case of ASCII characters.
-
-   Multibyte characters are only accessed through the mb* macros.
-
-   mb_ptr (mbc)
-     return a pointer to the beginning of the multibyte sequence.
-
-   mb_len (mbc)
-     returns the number of bytes occupied by the multibyte sequence.
-     Always > 0.
-
-   mb_iseq (mbc, sc)
-     returns true if mbc is the standard ASCII character sc.
-
-   mb_isnul (mbc)
-     returns true if mbc is the nul character.
-
-   mb_cmp (mbc1, mbc2)
-     returns a positive, zero, or negative value depending on whether mbc1
-     sorts after, same or before mbc2.
-
-   mb_casecmp (mbc1, mbc2)
-     returns a positive, zero, or negative value depending on whether mbc1
-     sorts after, same or before mbc2, modulo upper/lowercase conversion.
-
-   mb_equal (mbc1, mbc2)
-     returns true if mbc1 and mbc2 are equal.
-
-   mb_caseequal (mbc1, mbc2)
-     returns true if mbc1 and mbc2 are equal modulo upper/lowercase conversion.
-
-   mb_isalnum (mbc)
-     returns true if mbc is alphanumeric.
-
-   mb_isalpha (mbc)
-     returns true if mbc is alphabetic.
-
-   mb_isascii(mbc)
-     returns true if mbc is plain ASCII.
-
-   mb_isblank (mbc)
-     returns true if mbc is a blank.
-
-   mb_iscntrl (mbc)
-     returns true if mbc is a control character.
-
-   mb_isdigit (mbc)
-     returns true if mbc is a decimal digit.
-
-   mb_isgraph (mbc)
-     returns true if mbc is a graphic character.
-
-   mb_islower (mbc)
-     returns true if mbc is lowercase.
-
-   mb_isprint (mbc)
-     returns true if mbc is a printable character.
-
-   mb_ispunct (mbc)
-     returns true if mbc is a punctuation character.
-
-   mb_isspace (mbc)
-     returns true if mbc is a space character.
-
-   mb_isupper (mbc)
-     returns true if mbc is uppercase.
-
-   mb_isxdigit (mbc)
-     returns true if mbc is a hexadecimal digit.
-
-   mb_width (mbc)
-     returns the number of columns on the output device occupied by mbc.
-     Always >= 0.
-
-   mb_putc (mbc, stream)
-     outputs mbc on stream, a byte oriented FILE stream opened for output.
-
-   mb_setascii (&mbc, sc)
-     assigns the standard ASCII character sc to mbc.
-     (Only available if the 'mbfile' module is in use.)
-
-   mb_copy (&destmbc, &srcmbc)
-     copies srcmbc to destmbc.
-
-   Here are the function prototypes of the macros.
-
-   extern const char *  mb_ptr (const mbchar_t mbc);
-   extern size_t        mb_len (const mbchar_t mbc);
-   extern bool          mb_iseq (const mbchar_t mbc, char sc);
-   extern bool          mb_isnul (const mbchar_t mbc);
-   extern int           mb_cmp (const mbchar_t mbc1, const mbchar_t mbc2);
-   extern int           mb_casecmp (const mbchar_t mbc1, const mbchar_t mbc2);
-   extern bool          mb_equal (const mbchar_t mbc1, const mbchar_t mbc2);
-   extern bool          mb_caseequal (const mbchar_t mbc1, const mbchar_t mbc2);
-   extern bool          mb_isalnum (const mbchar_t mbc);
-   extern bool          mb_isalpha (const mbchar_t mbc);
-   extern bool          mb_isascii (const mbchar_t mbc);
-   extern bool          mb_isblank (const mbchar_t mbc);
-   extern bool          mb_iscntrl (const mbchar_t mbc);
-   extern bool          mb_isdigit (const mbchar_t mbc);
-   extern bool          mb_isgraph (const mbchar_t mbc);
-   extern bool          mb_islower (const mbchar_t mbc);
-   extern bool          mb_isprint (const mbchar_t mbc);
-   extern bool          mb_ispunct (const mbchar_t mbc);
-   extern bool          mb_isspace (const mbchar_t mbc);
-   extern bool          mb_isupper (const mbchar_t mbc);
-   extern bool          mb_isxdigit (const mbchar_t mbc);
-   extern int           mb_width (const mbchar_t mbc);
-   extern void          mb_putc (const mbchar_t mbc, FILE *stream);
-   extern void          mb_setascii (mbchar_t *new, char sc);
-   extern void          mb_copy (mbchar_t *new, const mbchar_t *old);
- */
+ 
 
 #ifndef _MBCHAR_H
 #define _MBCHAR_H 1
 
-/* This file uses _GL_INLINE_HEADER_BEGIN, _GL_INLINE.  */
+ 
 #if !_GL_CONFIG_H_INCLUDED
  #error "Please include config.h first."
 #endif
@@ -157,31 +18,29 @@ _GL_INLINE_HEADER_BEGIN
 # define MBCHAR_INLINE _GL_INLINE
 #endif
 
-/* The longest multibyte characters, nowadays, are 4 bytes long.
-   Regardless of the values of MB_CUR_MAX and MB_LEN_MAX.  */
+ 
 #define MBCHAR_BUF_SIZE 4
 
 struct mbchar
 {
-  const char *ptr;      /* pointer to current character */
-  size_t bytes;         /* number of bytes of current character, > 0 */
-  bool wc_valid;        /* true if wc is a valid 32-bit wide character */
-  char32_t wc;          /* if wc_valid: the current character */
+  const char *ptr;       
+  size_t bytes;          
+  bool wc_valid;         
+  char32_t wc;           
 #if defined GNULIB_MBFILE
-  char buf[MBCHAR_BUF_SIZE]; /* room for the bytes, used for file input only */
+  char buf[MBCHAR_BUF_SIZE];  
 #endif
 };
 
-/* EOF (not a real character) is represented with bytes = 0 and
-   wc_valid = false.  */
+ 
 
 typedef struct mbchar mbchar_t;
 
-/* Access the current character.  */
+ 
 #define mb_ptr(mbc) ((mbc).ptr)
 #define mb_len(mbc) ((mbc).bytes)
 
-/* Comparison of characters.  */
+ 
 #define mb_iseq(mbc, sc) ((mbc).wc_valid && (mbc).wc == (sc))
 #define mb_isnul(mbc) ((mbc).wc_valid && (mbc).wc == 0)
 #define mb_cmp(mbc1, mbc2) \
@@ -219,7 +78,7 @@ typedef struct mbchar mbchar_t;
    : (mbc1).bytes == (mbc2).bytes                                       \
      && memcmp ((mbc1).ptr, (mbc2).ptr, (mbc1).bytes) == 0)
 
-/* <ctype.h>, <wctype.h> classification.  */
+ 
 #define mb_isascii(mbc) \
   ((mbc).wc_valid && (mbc).wc >= 0 && (mbc).wc <= 127)
 #define mb_isalnum(mbc) ((mbc).wc_valid && c32isalnum ((mbc).wc))
@@ -235,34 +94,33 @@ typedef struct mbchar mbchar_t;
 #define mb_isupper(mbc) ((mbc).wc_valid && c32isupper ((mbc).wc))
 #define mb_isxdigit(mbc) ((mbc).wc_valid && c32isxdigit ((mbc).wc))
 
-/* Extra <wchar.h> function.  */
+ 
 
-/* Unprintable characters appear as a small box of width 1.  */
+ 
 #define MB_UNPRINTABLE_WIDTH 1
 
 MBCHAR_INLINE int
 mb_width_aux (char32_t wc)
 {
   int w = c32width (wc);
-  /* For unprintable characters, arbitrarily return 0 for control characters
-     and MB_UNPRINTABLE_WIDTH otherwise.  */
+   
   return (w >= 0 ? w : c32iscntrl (wc) ? 0 : MB_UNPRINTABLE_WIDTH);
 }
 
 #define mb_width(mbc) \
   ((mbc).wc_valid ? mb_width_aux ((mbc).wc) : MB_UNPRINTABLE_WIDTH)
 
-/* Output.  */
+ 
 #define mb_putc(mbc, stream)  fwrite ((mbc).ptr, 1, (mbc).bytes, (stream))
 
 #if defined GNULIB_MBFILE
-/* Assignment.  */
+ 
 # define mb_setascii(mbc, sc) \
    ((mbc)->ptr = (mbc)->buf, (mbc)->bytes = 1, (mbc)->wc_valid = 1, \
     (mbc)->wc = (mbc)->buf[0] = (sc))
 #endif
 
-/* Copying a character.  */
+ 
 MBCHAR_INLINE void
 mb_copy (mbchar_t *new_mbc, const mbchar_t *old_mbc)
 {
@@ -281,16 +139,7 @@ mb_copy (mbchar_t *new_mbc, const mbchar_t *old_mbc)
 }
 
 
-/* is_basic(c) tests whether the single-byte character c is
-   - in the ISO C "basic character set" or is one of '@', '$', and '`'
-     which ISO C 23 § 5.2.1.1.(1) guarantees to be single-byte and in
-     practice are safe to treat as basic in the execution character set,
-     or
-   - in the POSIX "portable character set", which
-     <https://pubs.opengroup.org/onlinepubs/9699919799/basedefs/V1_chap06.html>
-     equally guarantees to be single-byte.
-   This is a convenience function, and is in this file only to share code
-   between mbiter.h, mbuiter.h, and mbfile.h.  */
+ 
 #if (' ' == 32) && ('!' == 33) && ('"' == 34) && ('#' == 35) \
     && ('$' == 36) && ('%' == 37) && ('&' == 38) && ('\'' == 39) \
     && ('(' == 40) && (')' == 41) && ('*' == 42) && ('+' == 43) \
@@ -315,19 +164,10 @@ mb_copy (mbchar_t *new_mbc, const mbchar_t *old_mbc)
     && ('t' == 116) && ('u' == 117) && ('v' == 118) && ('w' == 119) \
     && ('x' == 120) && ('y' == 121) && ('z' == 122) && ('{' == 123) \
     && ('|' == 124) && ('}' == 125) && ('~' == 126)
-/* The character set is ISO-646, not EBCDIC. */
+ 
 # define IS_BASIC_ASCII 1
 
-/* All locale encodings (see localcharset.h) map the characters 0x00..0x7F
-   to U+0000..U+007F, like ASCII, except for
-     CP864      different mapping of '%'
-     SHIFT_JIS  different mappings of 0x5C, 0x7E
-     JOHAB      different mapping of 0x5C
-   However, these characters in the range 0x20..0x7E are in the ISO C
-   "basic character set" and in the POSIX "portable character set", which
-   ISO C and POSIX guarantee to be single-byte.  Thus, locales with these
-   encodings are not POSIX compliant.  And they are most likely not in use
-   any more (as of 2023).  */
+ 
 # define is_basic(c) ((unsigned char) (c) < 0x80)
 
 #else
@@ -370,4 +210,4 @@ is_basic (char c)
 
 _GL_INLINE_HEADER_END
 
-#endif /* _MBCHAR_H */
+#endif  

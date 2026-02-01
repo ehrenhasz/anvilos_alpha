@@ -1,27 +1,10 @@
-/* GNU test program (ksb and mjb) */
+ 
 
-/* Modified to run with the GNU shell by bfox. */
+ 
 
-/* Copyright (C) 1987-2023 Free Software Foundation, Inc.
+ 
 
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* Define TEST_STANDALONE to get the /bin/test version.  Otherwise, you get
-   the shell builtin version. */
-
-/* Without this pragma, gcc 4.6.2 20111027 mistakenly suggests that
-   the advance function might be candidate for attribute 'pure'.  */
+ 
 #if (__GNUC__ == 4 && 6 <= __GNUC_MINOR__) || 4 < __GNUC__
 # pragma GCC diagnostic ignored "-Wsuggest-attribute=pure"
 #endif
@@ -36,7 +19,7 @@
 # define LBRACKET 0
 #endif
 
-/* The official name of this program (e.g., no 'g' prefix).  */
+ 
 #if LBRACKET
 # define PROGRAM_NAME "["
 #else
@@ -56,7 +39,7 @@
 # include <sys/param.h>
 #endif
 
-/* Exit status for syntax errors, etc.  */
+ 
 enum { TEST_TRUE, TEST_FALSE, TEST_FAILURE };
 
 #if defined TEST_STANDALONE
@@ -67,11 +50,11 @@ enum { TEST_TRUE, TEST_FALSE, TEST_FAILURE };
    static int test_error_return = 0;
 # define test_exit(val) test_error_return = val, longjmp (test_exit_buf, 1)
 # define test_main_return(val) test_exit (val)
-#endif /* !TEST_STANDALONE */
+#endif  
 
-static int pos;		/* The offset of the current argument in ARGV. */
-static int argc;	/* The number of arguments present in ARGV. */
-static char **argv;	/* The argument list. */
+static int pos;		 
+static int argc;	 
+static char **argv;	 
 
 static bool unary_operator (void);
 static bool binary_operator (bool);
@@ -96,9 +79,7 @@ test_syntax_error (char const *format, ...)
   test_exit (TEST_FAILURE);
 }
 
-/* Increment our position in the argument list.  Check that we're not
-   past the end of the argument list.  This check is suppressed if the
-   argument is false.  */
+ 
 
 static void
 advance (bool f)
@@ -116,19 +97,14 @@ unary_advance (void)
   ++pos;
 }
 
-/*
- * beyond - call when we're beyond the end of the argument list (an
- *	error condition)
- */
+ 
 static _Noreturn void
 beyond (void)
 {
   test_syntax_error (_("missing argument after %s"), quote (argv[argc - 1]));
 }
 
-/* If the characters pointed to by STRING constitute a valid number,
-   return a pointer to the start of the number, skipping any blanks or
-   leading '+'.  Otherwise, report an error and exit.  */
+ 
 static char const *
 find_int (char const *string)
 {
@@ -162,8 +138,7 @@ find_int (char const *string)
   test_syntax_error (_("invalid integer %s"), quote (string));
 }
 
-/* Find the modification time of FILE, and stuff it into *MTIME.
-   Return true if successful.  */
+ 
 static bool
 get_mtime (char const *filename, struct timespec *mtime)
 {
@@ -174,7 +149,7 @@ get_mtime (char const *filename, struct timespec *mtime)
   return ok;
 }
 
-/* Return true if S is one of the test command's binary operators.  */
+ 
 static bool
 binop (char const *s)
 {
@@ -185,31 +160,14 @@ binop (char const *s)
           (STREQ (s, "-gt")) || (STREQ (s, "-ge")));
 }
 
-/*
- * term - parse a term and return 1 or 0 depending on whether the term
- *	evaluates to true or false, respectively.
- *
- * term ::=
- *	'-'('h'|'d'|'f'|'r'|'s'|'w'|'c'|'b'|'p'|'u'|'g'|'k') filename
- *	'-'('L'|'x') filename
- *	'-t' int
- *	'-'('z'|'n') string
- *	string
- *	string ('!='|'=') string
- *	<int> '-'(eq|ne|le|lt|ge|gt) <int>
- *	file '-'(nt|ot|ef) file
- *	'(' <expr> ')'
- * int ::=
- *	'-l' string
- *	positive and negative integers
- */
+ 
 static bool
 term (void)
 {
   bool value;
   bool negated = false;
 
-  /* Deal with leading 'not's.  */
+   
   while (pos < argc && argv[pos][0] == '!' && argv[pos][1] == '\0')
     {
       advance (true);
@@ -219,7 +177,7 @@ term (void)
   if (pos >= argc)
     beyond ();
 
-  /* A paren-bracketed argument. */
+   
   if (argv[pos][0] == '(' && argv[pos][1] == '\0')
     {
       int nargs;
@@ -245,13 +203,13 @@ term (void)
       advance (false);
     }
 
-  /* Are there enough arguments left that this could be dyadic?  */
+   
   else if (4 <= argc - pos && STREQ (argv[pos], "-l") && binop (argv[pos + 2]))
     value = binary_operator (true);
   else if (3 <= argc - pos && binop (argv[pos + 1]))
     value = binary_operator (false);
 
-  /* It might be a switch type argument.  */
+   
   else if (argv[pos][0] == '-' && argv[pos][1] && argv[pos][2] == '\0')
     value = unary_operator ();
   else
@@ -268,7 +226,7 @@ binary_operator (bool l_is_l)
 {
   int op;
   struct stat stat_buf, stat_spare;
-  /* Is the right integer expression of the form '-l string'? */
+   
   bool r_is_l;
 
   if (l_is_l)
@@ -285,7 +243,7 @@ binary_operator (bool l_is_l)
 
   if (argv[op][0] == '-')
     {
-      /* check for eq, nt, and stuff */
+       
       if ((((argv[op][1] == 'l' || argv[op][1] == 'g')
             && (argv[op][2] == 'e' || argv[op][2] == 't'))
            || (argv[op][1] == 'e' && argv[op][2] == 'q')
@@ -316,7 +274,7 @@ binary_operator (bool l_is_l)
         case 'n':
           if (argv[op][2] == 't' && !argv[op][3])
             {
-              /* nt - newer than */
+               
               struct timespec lt, rt;
               bool le, re;
               pos += 3;
@@ -331,7 +289,7 @@ binary_operator (bool l_is_l)
         case 'e':
           if (argv[op][2] == 'f' && !argv[op][3])
             {
-              /* ef - hard link? */
+               
               pos += 3;
               if (l_is_l || r_is_l)
                 test_syntax_error (_("-ef does not accept -l"));
@@ -345,7 +303,7 @@ binary_operator (bool l_is_l)
         case 'o':
           if ('t' == argv[op][2] && '\000' == argv[op][3])
             {
-              /* ot - older than */
+               
               struct timespec lt, rt;
               bool le, re;
               pos += 3;
@@ -358,7 +316,7 @@ binary_operator (bool l_is_l)
           break;
         }
 
-      /* FIXME: is this dead code? */
+       
       test_syntax_error (_("%s: unknown binary operator"), quote (argv[op]));
     }
 
@@ -377,7 +335,7 @@ binary_operator (bool l_is_l)
       return value;
     }
 
-  /* Not reached.  */
+   
   affirm (false);
 }
 
@@ -391,28 +349,25 @@ unary_operator (void)
     default:
       test_syntax_error (_("%s: unary operator expected"), quote (argv[pos]));
 
-      /* All of the following unary operators use unary_advance (), which
-         checks to make sure that there is an argument, and then advances
-         pos right past it.  This means that pos - 1 is the location of the
-         argument. */
+       
 
-    case 'e':			/* file exists in the file system? */
+    case 'e':			 
       unary_advance ();
       return stat (argv[pos - 1], &stat_buf) == 0;
 
-    case 'r':			/* file is readable? */
+    case 'r':			 
       unary_advance ();
       return euidaccess (argv[pos - 1], R_OK) == 0;
 
-    case 'w':			/* File is writable? */
+    case 'w':			 
       unary_advance ();
       return euidaccess (argv[pos - 1], W_OK) == 0;
 
-    case 'x':			/* File is executable? */
+    case 'x':			 
       unary_advance ();
       return euidaccess (argv[pos - 1], X_OK) == 0;
 
-    case 'N':  /* File exists and has been modified since it was last read? */
+    case 'N':   
       {
         unary_advance ();
         if (stat (argv[pos - 1], &stat_buf) != 0)
@@ -422,7 +377,7 @@ unary_operator (void)
         return (timespec_cmp (mtime, atime) > 0);
       }
 
-    case 'O':			/* File is owned by you? */
+    case 'O':			 
       {
         unary_advance ();
         if (stat (argv[pos - 1], &stat_buf) != 0)
@@ -433,7 +388,7 @@ unary_operator (void)
         return ! (euid == NO_UID && errno) && euid == stat_buf.st_uid;
       }
 
-    case 'G':			/* File is owned by your group? */
+    case 'G':			 
       {
         unary_advance ();
         if (stat (argv[pos - 1], &stat_buf) != 0)
@@ -444,67 +399,66 @@ unary_operator (void)
         return ! (egid == NO_GID && errno) && egid == stat_buf.st_gid;
       }
 
-    case 'f':			/* File is a file? */
+    case 'f':			 
       unary_advance ();
-      /* Under POSIX, -f is true if the given file exists
-         and is a regular file. */
+       
       return (stat (argv[pos - 1], &stat_buf) == 0
               && S_ISREG (stat_buf.st_mode));
 
-    case 'd':			/* File is a directory? */
+    case 'd':			 
       unary_advance ();
       return (stat (argv[pos - 1], &stat_buf) == 0
               && S_ISDIR (stat_buf.st_mode));
 
-    case 's':			/* File has something in it? */
+    case 's':			 
       unary_advance ();
       return (stat (argv[pos - 1], &stat_buf) == 0
               && 0 < stat_buf.st_size);
 
-    case 'S':			/* File is a socket? */
+    case 'S':			 
       unary_advance ();
       return (stat (argv[pos - 1], &stat_buf) == 0
               && S_ISSOCK (stat_buf.st_mode));
 
-    case 'c':			/* File is character special? */
+    case 'c':			 
       unary_advance ();
       return (stat (argv[pos - 1], &stat_buf) == 0
               && S_ISCHR (stat_buf.st_mode));
 
-    case 'b':			/* File is block special? */
+    case 'b':			 
       unary_advance ();
       return (stat (argv[pos - 1], &stat_buf) == 0
               && S_ISBLK (stat_buf.st_mode));
 
-    case 'p':			/* File is a named pipe? */
+    case 'p':			 
       unary_advance ();
       return (stat (argv[pos - 1], &stat_buf) == 0
               && S_ISFIFO (stat_buf.st_mode));
 
-    case 'L':			/* Same as -h  */
-      /*FALLTHROUGH*/
+    case 'L':			 
+       
 
-    case 'h':			/* File is a symbolic link? */
+    case 'h':			 
       unary_advance ();
       return (lstat (argv[pos - 1], &stat_buf) == 0
               && S_ISLNK (stat_buf.st_mode));
 
-    case 'u':			/* File is setuid? */
+    case 'u':			 
       unary_advance ();
       return (stat (argv[pos - 1], &stat_buf) == 0
               && (stat_buf.st_mode & S_ISUID));
 
-    case 'g':			/* File is setgid? */
+    case 'g':			 
       unary_advance ();
       return (stat (argv[pos - 1], &stat_buf) == 0
               && (stat_buf.st_mode & S_ISGID));
 
-    case 'k':			/* File has sticky bit set? */
+    case 'k':			 
       unary_advance ();
       return (stat (argv[pos - 1], &stat_buf) == 0
               && (stat_buf.st_mode & S_ISVTX));
 
-    case 't':			/* File (fd) is a terminal? */
+    case 't':			 
       {
         long int fd;
         char const *arg;
@@ -515,21 +469,17 @@ unary_operator (void)
         return (errno != ERANGE && 0 <= fd && fd <= INT_MAX && isatty (fd));
       }
 
-    case 'n':			/* True if arg has some length. */
+    case 'n':			 
       unary_advance ();
       return argv[pos - 1][0] != 0;
 
-    case 'z':			/* True if arg has no length. */
+    case 'z':			 
       unary_advance ();
       return argv[pos - 1][0] == '\0';
     }
 }
 
-/*
- * and:
- *	term
- *	term '-a' and
- */
+ 
 static bool
 and (void)
 {
@@ -544,11 +494,7 @@ and (void)
     }
 }
 
-/*
- * or:
- *	and
- *	and '-o' or
- */
+ 
 static bool
 or (void)
 {
@@ -563,17 +509,14 @@ or (void)
     }
 }
 
-/*
- * expr:
- *	or
- */
+ 
 static bool
 expr (void)
 {
   if (pos >= argc)
     beyond ();
 
-  return or ();		/* Same with this. */
+  return or ();		 
 }
 
 static bool
@@ -629,7 +572,7 @@ three_arguments (void)
   return (value);
 }
 
-/* This is an implementation of a Posix.2 proposal by David Korn. */
+ 
 static bool
 posixtest (int nargs)
 {
@@ -780,7 +723,7 @@ test treats each of those as it treats any other nonempty STRING.\n\
     }
   exit (status);
 }
-#endif /* TEST_STANDALONE */
+#endif  
 
 #if !defined TEST_STANDALONE
 # define main test_command
@@ -790,12 +733,7 @@ test treats each of those as it treats any other nonempty STRING.\n\
   proper_name ("Kevin Braunsdorf"), \
   proper_name ("Matthew Bradburn")
 
-/*
- * [:
- *	'[' expr ']'
- * test:
- *	test expr
- */
+ 
 int
 main (int margc, char **margv)
 {
@@ -808,7 +746,7 @@ main (int margc, char **margv)
 
   if (code)
     return (test_error_return);
-#else /* TEST_STANDALONE */
+#else  
   initialize_main (&margc, &margv);
   set_program_name (margv[0]);
   setlocale (LC_ALL, "");
@@ -817,18 +755,13 @@ main (int margc, char **margv)
 
   initialize_exit_failure (TEST_FAILURE);
   atexit (close_stdout);
-#endif /* TEST_STANDALONE */
+#endif  
 
   argv = margv;
 
   if (LBRACKET)
     {
-      /* Recognize --help or --version, but only when invoked in the
-         "[" form, when the last argument is not "]".  Use direct
-         parsing, rather than parse_long_options, to avoid accepting
-         abbreviations.  POSIX allows "[ --help" and "[ --version" to
-         have the usual GNU behavior, but it requires "test --help"
-         and "test --version" to exit silently with status 0.  */
+       
       if (margc == 2)
         {
           if (STREQ (margv[1], "--help"))

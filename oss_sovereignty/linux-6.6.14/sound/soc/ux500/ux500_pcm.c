@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) ST-Ericsson SA 2012
- *
- * Author: Ola Lilja <ola.o.lilja@stericsson.com>,
- *         Roger Nilsson <roger.xr.nilsson@stericsson.com>
- *         for ST-Ericsson.
- */
+
+ 
 
 #include <asm/page.h>
 

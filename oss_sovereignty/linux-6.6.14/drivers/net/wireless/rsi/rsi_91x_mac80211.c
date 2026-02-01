@@ -1,18 +1,4 @@
-/*
- * Copyright (c) 2014 Redpine Signals Inc.
- *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
+ 
 
 #include <linux/etherdevice.h>
 #include "rsi_debugfs.h"
@@ -23,84 +9,84 @@
 
 static const struct ieee80211_channel rsi_2ghz_channels[] = {
 	{ .band = NL80211_BAND_2GHZ, .center_freq = 2412,
-	  .hw_value = 1 }, /* Channel 1 */
+	  .hw_value = 1 },  
 	{ .band = NL80211_BAND_2GHZ, .center_freq = 2417,
-	  .hw_value = 2 }, /* Channel 2 */
+	  .hw_value = 2 },  
 	{ .band = NL80211_BAND_2GHZ, .center_freq = 2422,
-	  .hw_value = 3 }, /* Channel 3 */
+	  .hw_value = 3 },  
 	{ .band = NL80211_BAND_2GHZ, .center_freq = 2427,
-	  .hw_value = 4 }, /* Channel 4 */
+	  .hw_value = 4 },  
 	{ .band = NL80211_BAND_2GHZ, .center_freq = 2432,
-	  .hw_value = 5 }, /* Channel 5 */
+	  .hw_value = 5 },  
 	{ .band = NL80211_BAND_2GHZ, .center_freq = 2437,
-	  .hw_value = 6 }, /* Channel 6 */
+	  .hw_value = 6 },  
 	{ .band = NL80211_BAND_2GHZ, .center_freq = 2442,
-	  .hw_value = 7 }, /* Channel 7 */
+	  .hw_value = 7 },  
 	{ .band = NL80211_BAND_2GHZ, .center_freq = 2447,
-	  .hw_value = 8 }, /* Channel 8 */
+	  .hw_value = 8 },  
 	{ .band = NL80211_BAND_2GHZ, .center_freq = 2452,
-	  .hw_value = 9 }, /* Channel 9 */
+	  .hw_value = 9 },  
 	{ .band = NL80211_BAND_2GHZ, .center_freq = 2457,
-	  .hw_value = 10 }, /* Channel 10 */
+	  .hw_value = 10 },  
 	{ .band = NL80211_BAND_2GHZ, .center_freq = 2462,
-	  .hw_value = 11 }, /* Channel 11 */
+	  .hw_value = 11 },  
 	{ .band = NL80211_BAND_2GHZ, .center_freq = 2467,
-	  .hw_value = 12 }, /* Channel 12 */
+	  .hw_value = 12 },  
 	{ .band = NL80211_BAND_2GHZ, .center_freq = 2472,
-	  .hw_value = 13 }, /* Channel 13 */
+	  .hw_value = 13 },  
 	{ .band = NL80211_BAND_2GHZ, .center_freq = 2484,
-	  .hw_value = 14 }, /* Channel 14 */
+	  .hw_value = 14 },  
 };
 
 static const struct ieee80211_channel rsi_5ghz_channels[] = {
 	{ .band = NL80211_BAND_5GHZ, .center_freq = 5180,
-	  .hw_value = 36,  }, /* Channel 36 */
+	  .hw_value = 36,  },  
 	{ .band = NL80211_BAND_5GHZ, .center_freq = 5200,
-	  .hw_value = 40, }, /* Channel 40 */
+	  .hw_value = 40, },  
 	{ .band = NL80211_BAND_5GHZ, .center_freq = 5220,
-	  .hw_value = 44, }, /* Channel 44 */
+	  .hw_value = 44, },  
 	{ .band = NL80211_BAND_5GHZ, .center_freq = 5240,
-	  .hw_value = 48, }, /* Channel 48 */
+	  .hw_value = 48, },  
 	{ .band = NL80211_BAND_5GHZ, .center_freq = 5260,
-	  .hw_value = 52, }, /* Channel 52 */
+	  .hw_value = 52, },  
 	{ .band = NL80211_BAND_5GHZ, .center_freq = 5280,
-	  .hw_value = 56, }, /* Channel 56 */
+	  .hw_value = 56, },  
 	{ .band = NL80211_BAND_5GHZ, .center_freq = 5300,
-	  .hw_value = 60, }, /* Channel 60 */
+	  .hw_value = 60, },  
 	{ .band = NL80211_BAND_5GHZ, .center_freq = 5320,
-	  .hw_value = 64, }, /* Channel 64 */
+	  .hw_value = 64, },  
 	{ .band = NL80211_BAND_5GHZ, .center_freq = 5500,
-	  .hw_value = 100, }, /* Channel 100 */
+	  .hw_value = 100, },  
 	{ .band = NL80211_BAND_5GHZ, .center_freq = 5520,
-	  .hw_value = 104, }, /* Channel 104 */
+	  .hw_value = 104, },  
 	{ .band = NL80211_BAND_5GHZ, .center_freq = 5540,
-	  .hw_value = 108, }, /* Channel 108 */
+	  .hw_value = 108, },  
 	{ .band = NL80211_BAND_5GHZ, .center_freq = 5560,
-	  .hw_value = 112, }, /* Channel 112 */
+	  .hw_value = 112, },  
 	{ .band = NL80211_BAND_5GHZ, .center_freq = 5580,
-	  .hw_value = 116, }, /* Channel 116 */
+	  .hw_value = 116, },  
 	{ .band = NL80211_BAND_5GHZ, .center_freq = 5600,
-	  .hw_value = 120, }, /* Channel 120 */
+	  .hw_value = 120, },  
 	{ .band = NL80211_BAND_5GHZ, .center_freq = 5620,
-	  .hw_value = 124, }, /* Channel 124 */
+	  .hw_value = 124, },  
 	{ .band = NL80211_BAND_5GHZ, .center_freq = 5640,
-	  .hw_value = 128, }, /* Channel 128 */
+	  .hw_value = 128, },  
 	{ .band = NL80211_BAND_5GHZ, .center_freq = 5660,
-	  .hw_value = 132, }, /* Channel 132 */
+	  .hw_value = 132, },  
 	{ .band = NL80211_BAND_5GHZ, .center_freq = 5680,
-	  .hw_value = 136, }, /* Channel 136 */
+	  .hw_value = 136, },  
 	{ .band = NL80211_BAND_5GHZ, .center_freq = 5700,
-	  .hw_value = 140, }, /* Channel 140 */
+	  .hw_value = 140, },  
 	{ .band = NL80211_BAND_5GHZ, .center_freq = 5745,
-	  .hw_value = 149, }, /* Channel 149 */
+	  .hw_value = 149, },  
 	{ .band = NL80211_BAND_5GHZ, .center_freq = 5765,
-	  .hw_value = 153, }, /* Channel 153 */
+	  .hw_value = 153, },  
 	{ .band = NL80211_BAND_5GHZ, .center_freq = 5785,
-	  .hw_value = 157, }, /* Channel 157 */
+	  .hw_value = 157, },  
 	{ .band = NL80211_BAND_5GHZ, .center_freq = 5805,
-	  .hw_value = 161, }, /* Channel 161 */
+	  .hw_value = 161, },  
 	{ .band = NL80211_BAND_5GHZ, .center_freq = 5825,
-	  .hw_value = 165, }, /* Channel 165 */
+	  .hw_value = 165, },  
 };
 
 struct ieee80211_rate rsi_rates[12] = {
@@ -124,20 +110,20 @@ const u16 rsi_mcsrates[8] = {
 };
 
 static const u32 rsi_max_ap_stas[16] = {
-	32,	/* 1 - Wi-Fi alone */
-	0,	/* 2 */
-	0,	/* 3 */
-	0,	/* 4 - BT EDR alone */
-	4,	/* 5 - STA + BT EDR */
-	32,	/* 6 - AP + BT EDR */
-	0,	/* 7 */
-	0,	/* 8 - BT LE alone */
-	4,	/* 9 - STA + BE LE */
-	0,	/* 10 */
-	0,	/* 11 */
-	0,	/* 12 */
-	1,	/* 13 - STA + BT Dual */
-	4,	/* 14 - AP + BT Dual */
+	32,	 
+	0,	 
+	0,	 
+	0,	 
+	4,	 
+	32,	 
+	0,	 
+	0,	 
+	4,	 
+	0,	 
+	0,	 
+	0,	 
+	1,	 
+	4,	 
 };
 
 static const struct ieee80211_iface_limit rsi_iface_limits[] = {
@@ -166,12 +152,7 @@ static const struct ieee80211_iface_combination rsi_iface_combinations[] = {
 	},
 };
 
-/**
- * rsi_is_cipher_wep() -  This function determines if the cipher is WEP or not.
- * @common: Pointer to the driver private structure.
- *
- * Return: If cipher type is WEP, a value of 1 is returned, else 0.
- */
+ 
 
 bool rsi_is_cipher_wep(struct rsi_common *common)
 {
@@ -183,13 +164,7 @@ bool rsi_is_cipher_wep(struct rsi_common *common)
 		return false;
 }
 
-/**
- * rsi_register_rates_channels() - This function registers channels and rates.
- * @adapter: Pointer to the adapter structure.
- * @band: Operating band to be set.
- *
- * Return: int - 0 on success, negative error on failure.
- */
+ 
 static int rsi_register_rates_channels(struct rsi_hw *adapter, int band)
 {
 	struct ieee80211_supported_band *sbands = &adapter->sbands[band];
@@ -226,7 +201,7 @@ static int rsi_register_rates_channels(struct rsi_hw *adapter, int band)
 	sbands->ht_cap.ampdu_density = IEEE80211_HT_MPDU_DENSITY_NONE;
 	sbands->ht_cap.mcs.rx_mask[0] = 0xff;
 	sbands->ht_cap.mcs.tx_params = IEEE80211_HT_MCS_TX_DEFINED;
-	/* sbands->ht_cap.mcs.rx_highest = 0x82; */
+	 
 	return 0;
 }
 
@@ -248,13 +223,11 @@ static int rsi_mac80211_hw_scan_start(struct ieee80211_hw *hw,
 	    scan_req->n_channels == 0)
 		return -EINVAL;
 
-	/* Scan already in progress. So return */
+	 
 	if (common->bgscan_en)
 		return -EBUSY;
 
-	/* If STA is not connected, return with special value 1, in order
-	 * to start sw_scan in mac80211
-	 */
+	 
 	if (!vif->cfg.assoc)
 		return 1;
 
@@ -292,13 +265,7 @@ static void rsi_mac80211_cancel_hw_scan(struct ieee80211_hw *hw,
 	mutex_unlock(&common->mutex);
 }
 
-/**
- * rsi_mac80211_detach() - This function is used to de-initialize the
- *			   Mac80211 stack.
- * @adapter: Pointer to the adapter structure.
- *
- * Return: None.
- */
+ 
 void rsi_mac80211_detach(struct rsi_hw *adapter)
 {
 	struct ieee80211_hw *hw = adapter->hw;
@@ -325,14 +292,7 @@ void rsi_mac80211_detach(struct rsi_hw *adapter)
 }
 EXPORT_SYMBOL_GPL(rsi_mac80211_detach);
 
-/**
- * rsi_indicate_tx_status() - This function indicates the transmit status.
- * @adapter: Pointer to the adapter structure.
- * @skb: Pointer to the socket buffer structure.
- * @status: Status
- *
- * Return: None.
- */
+ 
 void rsi_indicate_tx_status(struct rsi_hw *adapter,
 			    struct sk_buff *skb,
 			    int status)
@@ -355,16 +315,7 @@ void rsi_indicate_tx_status(struct rsi_hw *adapter,
 	ieee80211_tx_status_irqsafe(adapter->hw, skb);
 }
 
-/**
- * rsi_mac80211_tx() - This is the handler that 802.11 module calls for each
- *		       transmitted frame.SKB contains the buffer starting
- *		       from the IEEE 802.11 header.
- * @hw: Pointer to the ieee80211_hw structure.
- * @control: Pointer to the ieee80211_tx_control structure
- * @skb: Pointer to the socket buffer structure.
- *
- * Return: None
- */
+ 
 static void rsi_mac80211_tx(struct ieee80211_hw *hw,
 			    struct ieee80211_tx_control *control,
 			    struct sk_buff *skb)
@@ -379,14 +330,7 @@ static void rsi_mac80211_tx(struct ieee80211_hw *hw,
 	rsi_core_xmit(common, skb);
 }
 
-/**
- * rsi_mac80211_start() - This is first handler that 802.11 module calls, since
- *			  the driver init is complete by then, just
- *			  returns success.
- * @hw: Pointer to the ieee80211_hw structure.
- *
- * Return: 0 as success.
- */
+ 
 static int rsi_mac80211_start(struct ieee80211_hw *hw)
 {
 	struct rsi_hw *adapter = hw->priv;
@@ -407,12 +351,7 @@ static int rsi_mac80211_start(struct ieee80211_hw *hw)
 	return 0;
 }
 
-/**
- * rsi_mac80211_stop() - This is the last handler that 802.11 module calls.
- * @hw: Pointer to the ieee80211_hw structure.
- *
- * Return: None.
- */
+ 
 static void rsi_mac80211_stop(struct ieee80211_hw *hw)
 {
 	struct rsi_hw *adapter = hw->priv;
@@ -423,7 +362,7 @@ static void rsi_mac80211_stop(struct ieee80211_hw *hw)
 	common->iface_down = true;
 	wiphy_rfkill_stop_polling(hw->wiphy);
 
-	/* Block all rx frames */
+	 
 	rsi_send_rx_filter_frame(common, 0xffff);
 
 	mutex_unlock(&common->mutex);
@@ -447,14 +386,7 @@ static int rsi_map_intf_mode(enum nl80211_iftype vif_type)
 	}
 }
 
-/**
- * rsi_mac80211_add_interface() - This function is called when a netdevice
- *				  attached to the hardware is enabled.
- * @hw: Pointer to the ieee80211_hw structure.
- * @vif: Pointer to the ieee80211_vif structure.
- *
- * Return: ret: 0 on success, negative error code on failure.
- */
+ 
 static int rsi_mac80211_add_interface(struct ieee80211_hw *hw,
 				      struct ieee80211_vif *vif)
 {
@@ -481,7 +413,7 @@ static int rsi_mac80211_add_interface(struct ieee80211_hw *hw,
 	    (vif->type == NL80211_IFTYPE_P2P_GO))
 		common->p2p_enabled = true;
 
-	/* Get free vap index */
+	 
 	for (i = 0; i < RSI_MAX_VIFS; i++) {
 		if (!adapter->vifs[i] ||
 		    !memcmp(vif->addr, adapter->vifs[i]->addr, ETH_ALEN)) {
@@ -518,14 +450,7 @@ static int rsi_mac80211_add_interface(struct ieee80211_hw *hw,
 	return 0;
 }
 
-/**
- * rsi_mac80211_remove_interface() - This function notifies driver that an
- *				     interface is going down.
- * @hw: Pointer to the ieee80211_hw structure.
- * @vif: Pointer to the ieee80211_vif structure.
- *
- * Return: None.
- */
+ 
 static void rsi_mac80211_remove_interface(struct ieee80211_hw *hw,
 					  struct ieee80211_vif *vif)
 {
@@ -562,14 +487,7 @@ static void rsi_mac80211_remove_interface(struct ieee80211_hw *hw,
 	mutex_unlock(&common->mutex);
 }
 
-/**
- * rsi_channel_change() - This function is a performs the checks
- *			  required for changing a channel and sets
- *			  the channel accordingly.
- * @hw: Pointer to the ieee80211_hw structure.
- *
- * Return: 0 on success, negative error code on failure.
- */
+ 
 static int rsi_channel_change(struct ieee80211_hw *hw)
 {
 	struct rsi_hw *adapter = hw->priv;
@@ -622,12 +540,7 @@ static int rsi_channel_change(struct ieee80211_hw *hw)
 	return status;
 }
 
-/**
- * rsi_config_power() - This function configures tx power to device
- * @hw: Pointer to the ieee80211_hw structure.
- *
- * Return: 0 on success, negative error code on failure.
- */
+ 
 static int rsi_config_power(struct ieee80211_hw *hw)
 {
 	struct rsi_hw *adapter = hw->priv;
@@ -650,15 +563,7 @@ static int rsi_config_power(struct ieee80211_hw *hw)
 	return rsi_send_radio_params_update(common);
 }
 
-/**
- * rsi_mac80211_config() - This function is a handler for configuration
- *			   requests. The stack calls this function to
- *			   change hardware configuration, e.g., channel.
- * @hw: Pointer to the ieee80211_hw structure.
- * @changed: Changed flags set.
- *
- * Return: 0 on success, negative error code on failure.
- */
+ 
 static int rsi_mac80211_config(struct ieee80211_hw *hw,
 			       u32 changed)
 {
@@ -672,13 +577,13 @@ static int rsi_mac80211_config(struct ieee80211_hw *hw,
 	if (changed & IEEE80211_CONF_CHANGE_CHANNEL)
 		status = rsi_channel_change(hw);
 
-	/* tx power */
+	 
 	if (changed & IEEE80211_CONF_CHANGE_POWER) {
 		rsi_dbg(INFO_ZONE, "%s: Configuring Power\n", __func__);
 		status = rsi_config_power(hw);
 	}
 
-	/* Power save parameters */
+	 
 	if ((changed & IEEE80211_CONF_CHANGE_PS) &&
 	    !common->mac_ops_resumed) {
 		struct ieee80211_vif *vif, *sta_vif = NULL;
@@ -689,7 +594,7 @@ static int rsi_mac80211_config(struct ieee80211_hw *hw,
 			vif = adapter->vifs[i];
 			if (!vif)
 				continue;
-			/* Don't go to power save if AP vap exists */
+			 
 			if ((vif->type == NL80211_IFTYPE_AP) ||
 			    (vif->type == NL80211_IFTYPE_P2P_GO)) {
 				set_ps = 0;
@@ -710,7 +615,7 @@ static int rsi_mac80211_config(struct ieee80211_hw *hw,
 		}
 	}
 
-	/* RTS threshold */
+	 
 	if (changed & WIPHY_PARAM_RTS_THRESHOLD) {
 		rsi_dbg(INFO_ZONE, "RTS threshold\n");
 		if ((common->rts_threshold) <= IEEE80211_MAX_RTS_THRESHOLD) {
@@ -724,13 +629,7 @@ static int rsi_mac80211_config(struct ieee80211_hw *hw,
 	return status;
 }
 
-/**
- * rsi_get_connected_channel() - This function is used to get the current
- *				 connected channel number.
- * @vif: Pointer to the ieee80211_vif structure.
- *
- * Return: Current connected AP's channel number is returned.
- */
+ 
 u16 rsi_get_connected_channel(struct ieee80211_vif *vif)
 {
 	struct ieee80211_bss_conf *bss;
@@ -769,17 +668,7 @@ static void rsi_switch_channel(struct rsi_hw *adapter,
 	rsi_dbg(INFO_ZONE, "Switched to channel - %d\n", channel->hw_value);
 }
 
-/**
- * rsi_mac80211_bss_info_changed() - This function is a handler for config
- *				     requests related to BSS parameters that
- *				     may vary during BSS's lifespan.
- * @hw: Pointer to the ieee80211_hw structure.
- * @vif: Pointer to the ieee80211_vif structure.
- * @bss_conf: Pointer to the ieee80211_bss_conf structure.
- * @changed: Changed flags set.
- *
- * Return: None.
- */
+ 
 static void rsi_mac80211_bss_info_changed(struct ieee80211_hw *hw,
 					  struct ieee80211_vif *vif,
 					  struct ieee80211_bss_conf *bss_conf,
@@ -796,7 +685,7 @@ static void rsi_mac80211_bss_info_changed(struct ieee80211_hw *hw,
 		rsi_dbg(INFO_ZONE, "%s: Changed Association status: %d\n",
 			__func__, vif->cfg.assoc);
 		if (vif->cfg.assoc) {
-			/* Send the RX filter frame */
+			 
 			rx_filter_word = (ALLOW_DATA_ASSOC_PEER |
 					  ALLOW_CTRL_ASSOC_PEER |
 					  ALLOW_MGMT_ASSOC_PEER);
@@ -813,7 +702,7 @@ static void rsi_mac80211_bss_info_changed(struct ieee80211_hw *hw,
 		adapter->ps_info.dtim_interval_duration = bss->dtim_period;
 		adapter->ps_info.listen_interval = conf->listen_interval;
 
-		/* If U-APSD is updated, send ps parameters to firmware */
+		 
 		if (vif->cfg.assoc) {
 			if (common->uapsd_bitmap) {
 				rsi_dbg(INFO_ZONE, "Configuring UAPSD\n");
@@ -865,36 +754,17 @@ static void rsi_mac80211_bss_info_changed(struct ieee80211_hw *hw,
 	mutex_unlock(&common->mutex);
 }
 
-/**
- * rsi_mac80211_conf_filter() - This function configure the device's RX filter.
- * @hw: Pointer to the ieee80211_hw structure.
- * @changed_flags: Changed flags set.
- * @total_flags: Total initial flags set.
- * @multicast: Multicast.
- *
- * Return: None.
- */
+ 
 static void rsi_mac80211_conf_filter(struct ieee80211_hw *hw,
 				     u32 changed_flags,
 				     u32 *total_flags,
 				     u64 multicast)
 {
-	/* Not doing much here as of now */
+	 
 	*total_flags &= RSI_SUPP_FILTERS;
 }
 
-/**
- * rsi_mac80211_conf_tx() - This function configures TX queue parameters
- *			    (EDCF (aifs, cw_min, cw_max), bursting)
- *			    for a hardware TX queue.
- * @hw: Pointer to the ieee80211_hw structure
- * @vif: Pointer to the ieee80211_vif structure.
- * @link_id: the link ID if MLO is used, otherwise 0
- * @queue: Queue number.
- * @params: Pointer to ieee80211_tx_queue_params structure.
- *
- * Return: 0 on success, negative error code on failure.
- */
+ 
 static int rsi_mac80211_conf_tx(struct ieee80211_hw *hw,
 				struct ieee80211_vif *vif,
 				unsigned int link_id, u16 queue,
@@ -913,7 +783,7 @@ static int rsi_mac80211_conf_tx(struct ieee80211_hw *hw,
 		params->cw_min, params->cw_max, params->txop);
 
 	mutex_lock(&common->mutex);
-	/* Map into the way the f/w expects */
+	 
 	switch (queue) {
 	case IEEE80211_AC_VO:
 		idx = VO_Q;
@@ -946,15 +816,7 @@ static int rsi_mac80211_conf_tx(struct ieee80211_hw *hw,
 	return 0;
 }
 
-/**
- * rsi_hal_key_config() - This function loads the keys into the firmware.
- * @hw: Pointer to the ieee80211_hw structure.
- * @vif: Pointer to the ieee80211_vif structure.
- * @key: Pointer to the ieee80211_key_conf structure.
- * @sta: Pointer to the ieee80211_sta structure.
- *
- * Return: status: 0 on success, negative error codes on failure.
- */
+ 
 static int rsi_hal_key_config(struct ieee80211_hw *hw,
 			      struct ieee80211_vif *vif,
 			      struct ieee80211_key_conf *key,
@@ -1019,16 +881,7 @@ static int rsi_hal_key_config(struct ieee80211_hw *hw,
 	return 0;
 }
 
-/**
- * rsi_mac80211_set_key() - This function sets type of key to be loaded.
- * @hw: Pointer to the ieee80211_hw structure.
- * @cmd: enum set_key_cmd.
- * @vif: Pointer to the ieee80211_vif structure.
- * @sta: Pointer to the ieee80211_sta structure.
- * @key: Pointer to the ieee80211_key_conf structure.
- *
- * Return: status: 0 on success, negative error code on failure.
- */
+ 
 static int rsi_mac80211_set_key(struct ieee80211_hw *hw,
 				enum set_key_cmd cmd,
 				struct ieee80211_vif *vif,
@@ -1075,16 +928,7 @@ static int rsi_mac80211_set_key(struct ieee80211_hw *hw,
 	return status;
 }
 
-/**
- * rsi_mac80211_ampdu_action() - This function selects the AMPDU action for
- *				 the corresponding mlme_action flag and
- *				 informs the f/w regarding this.
- * @hw: Pointer to the ieee80211_hw structure.
- * @vif: Pointer to the ieee80211_vif structure.
- * @params: Pointer to A-MPDU action parameters
- *
- * Return: status: 0 on success, negative error code on failure.
- */
+ 
 static int rsi_mac80211_ampdu_action(struct ieee80211_hw *hw,
 				     struct ieee80211_vif *vif,
 				     struct ieee80211_ampdu_params *params)
@@ -1197,13 +1041,7 @@ unlock:
 	return status;
 }
 
-/**
- * rsi_mac80211_set_rts_threshold() - This function sets rts threshold value.
- * @hw: Pointer to the ieee80211_hw structure.
- * @value: Rts threshold value.
- *
- * Return: 0 on success.
- */
+ 
 static int rsi_mac80211_set_rts_threshold(struct ieee80211_hw *hw,
 					  u32 value)
 {
@@ -1217,14 +1055,7 @@ static int rsi_mac80211_set_rts_threshold(struct ieee80211_hw *hw,
 	return 0;
 }
 
-/**
- * rsi_mac80211_set_rate_mask() - This function sets bitrate_mask to be used.
- * @hw: Pointer to the ieee80211_hw structure
- * @vif: Pointer to the ieee80211_vif structure.
- * @mask: Pointer to the cfg80211_bitrate_mask structure.
- *
- * Return: 0 on success.
- */
+ 
 static int rsi_mac80211_set_rate_mask(struct ieee80211_hw *hw,
 				      struct ieee80211_vif *vif,
 				      const struct cfg80211_bitrate_mask *mask)
@@ -1241,7 +1072,7 @@ static int rsi_mac80211_set_rate_mask(struct ieee80211_hw *hw,
 		u32 bm;
 
 		bm = mask->control[i].legacy | (mask->control[i].ht_mcs[0] << mcs_offset);
-		if (hweight32(bm) == 1) { /* single rate */
+		if (hweight32(bm) == 1) {  
 			int rate_index = ffs(bm) - 1;
 
 			if (rate_index < mcs_offset)
@@ -1260,13 +1091,7 @@ static int rsi_mac80211_set_rate_mask(struct ieee80211_hw *hw,
 	return 0;
 }
 
-/**
- * rsi_perform_cqm() - This function performs cqm.
- * @common: Pointer to the driver private structure.
- * @bssid: pointer to the bssid.
- * @rssi: RSSI value.
- * @vif: Pointer to the ieee80211_vif structure.
- */
+ 
 static void rsi_perform_cqm(struct rsi_common *common,
 			    u8 *bssid,
 			    s8 rssi,
@@ -1292,16 +1117,7 @@ static void rsi_perform_cqm(struct rsi_common *common,
 	return;
 }
 
-/**
- * rsi_fill_rx_status() - This function fills rx status in
- *			  ieee80211_rx_status structure.
- * @hw: Pointer to the ieee80211_hw structure.
- * @skb: Pointer to the socket buffer structure.
- * @common: Pointer to the driver private structure.
- * @rxs: Pointer to the ieee80211_rx_status structure.
- *
- * Return: None.
- */
+ 
 static void rsi_fill_rx_status(struct ieee80211_hw *hw,
 			       struct sk_buff *skb,
 			       struct rsi_common *common,
@@ -1357,7 +1173,7 @@ static void rsi_fill_rx_status(struct ieee80211_hw *hw,
 	}
 	if (!bss)
 		return;
-	/* CQM only for connected AP beacons, the RSSI is a weighted avg */
+	 
 	if (vif->cfg.assoc && !(memcmp(bss->bssid, hdr->addr2, ETH_ALEN))) {
 		if (ieee80211_is_beacon(hdr->frame_control))
 			rsi_perform_cqm(common, hdr->addr2, rxs->signal, vif);
@@ -1366,13 +1182,7 @@ static void rsi_fill_rx_status(struct ieee80211_hw *hw,
 	return;
 }
 
-/**
- * rsi_indicate_pkt_to_os() - This function sends received packet to mac80211.
- * @common: Pointer to the driver private structure.
- * @skb: Pointer to the socket buffer structure.
- *
- * Return: None.
- */
+ 
 void rsi_indicate_pkt_to_os(struct rsi_common *common,
 			    struct sk_buff *skb)
 {
@@ -1385,21 +1195,13 @@ void rsi_indicate_pkt_to_os(struct rsi_common *common,
 		return;
 	}
 
-	/* filling in the ieee80211_rx_status flags */
+	 
 	rsi_fill_rx_status(hw, skb, common, rx_status);
 
 	ieee80211_rx_irqsafe(hw, skb);
 }
 
-/**
- * rsi_mac80211_sta_add() - This function notifies driver about a peer getting
- *			    connected.
- * @hw: pointer to the ieee80211_hw structure.
- * @vif: Pointer to the ieee80211_vif structure.
- * @sta: Pointer to the ieee80211_sta structure.
- *
- * Return: 0 on success, negative error codes on failure.
- */
+ 
 static int rsi_mac80211_sta_add(struct ieee80211_hw *hw,
 				struct ieee80211_vif *vif,
 				struct ieee80211_sta *sta)
@@ -1420,7 +1222,7 @@ static int rsi_mac80211_sta_add(struct ieee80211_hw *hw,
 		int sta_idx = -1;
 		int free_index = -1;
 
-		/* Check if max stations reached */
+		 
 		if (common->num_stations >= common->max_stations) {
 			rsi_dbg(ERR_ZONE, "Reject: Max Stations exists\n");
 			status = -EOPNOTSUPP;
@@ -1462,7 +1264,7 @@ static int rsi_mac80211_sta_add(struct ieee80211_hw *hw,
 		if (!sta_exist) {
 			rsi_dbg(INFO_ZONE, "New Station\n");
 
-			/* Send peer notify to device */
+			 
 			rsi_dbg(INFO_ZONE, "Indicate bss status to device\n");
 			rsi_inform_bss_status(common, RSI_OPMODE_AP, 1,
 					      sta->addr, sta->wme, sta->aid,
@@ -1507,15 +1309,7 @@ unlock:
 	return status;
 }
 
-/**
- * rsi_mac80211_sta_remove() - This function notifies driver about a peer
- *			       getting disconnected.
- * @hw: Pointer to the ieee80211_hw structure.
- * @vif: Pointer to the ieee80211_vif structure.
- * @sta: Pointer to the ieee80211_sta structure.
- *
- * Return: 0 on success, negative error codes on failure.
- */
+ 
 static int rsi_mac80211_sta_remove(struct ieee80211_hw *hw,
 				   struct ieee80211_vif *vif,
 				   struct ieee80211_sta *sta)
@@ -1533,7 +1327,7 @@ static int rsi_mac80211_sta_remove(struct ieee80211_hw *hw,
 	    (vif->type == NL80211_IFTYPE_P2P_GO)) {
 		u8 sta_idx, cnt;
 
-		/* Send peer notify to device */
+		 
 		rsi_dbg(INFO_ZONE, "Indicate bss status to device\n");
 		for (sta_idx = 0; sta_idx < common->max_stations; sta_idx++) {
 			rsta = &common->stations[sta_idx];
@@ -1560,7 +1354,7 @@ static int rsi_mac80211_sta_remove(struct ieee80211_hw *hw,
 
 	if ((vif->type == NL80211_IFTYPE_STATION) ||
 	    (vif->type == NL80211_IFTYPE_P2P_CLIENT)) {
-		/* Resetting all the fields to default values */
+		 
 		memcpy((u8 *)bss->bssid, (u8 *)sta->addr, ETH_ALEN);
 		bss->qos = sta->wme;
 		common->bitrate_mask[NL80211_BAND_2GHZ] = 0;
@@ -1578,15 +1372,7 @@ static int rsi_mac80211_sta_remove(struct ieee80211_hw *hw,
 	return 0;
 }
 
-/**
- * rsi_mac80211_set_antenna() - This function is used to configure
- *				tx and rx antennas.
- * @hw: Pointer to the ieee80211_hw structure.
- * @tx_ant: Bitmap for tx antenna
- * @rx_ant: Bitmap for rx antenna
- *
- * Return: 0 on success, Negative error code on failure.
- */
+ 
 static int rsi_mac80211_set_antenna(struct ieee80211_hw *hw,
 				    u32 tx_ant, u32 rx_ant)
 {
@@ -1628,16 +1414,7 @@ fail_set_antenna:
 	return -EINVAL;
 }
 
-/**
- * rsi_mac80211_get_antenna() - This function is used to configure 
- * 				tx and rx antennas.
- *
- * @hw: Pointer to the ieee80211_hw structure.
- * @tx_ant: Bitmap for tx antenna
- * @rx_ant: Bitmap for rx antenna
- * 
- * Return: 0 on success, negative error codes on failure.
- */
+ 
 static int rsi_mac80211_get_antenna(struct ieee80211_hw *hw,
 				    u32 *tx_ant, u32 *rx_ant)
 {
@@ -1780,14 +1557,14 @@ static int rsi_mac80211_roc(struct ieee80211_hw *hw, struct ieee80211_vif *vif,
 	common->roc_timer.expires = msecs_to_jiffies(duration) + jiffies;
 	add_timer(&common->roc_timer);
 
-	/* Configure band */
+	 
 	if (rsi_band_check(common, chan)) {
 		rsi_dbg(ERR_ZONE, "Failed to set band\n");
 		status = -EINVAL;
 		goto out;
 	}
 
-	/* Configure channel */
+	 
 	if (rsi_set_channel(common, chan)) {
 		rsi_dbg(ERR_ZONE, "Failed to set the channel\n");
 		status = -EINVAL;
@@ -1894,10 +1671,7 @@ int rsi_config_wowlan(struct rsi_hw *adapter, struct cfg80211_wowlan *wowlan)
 
 	rsi_send_wowlan_request(common, triggers, 1);
 
-	/**
-	 * Increase the beacon_miss threshold & keep-alive timers in
-	 * vap_update frame
-	 */
+	 
 	rsi_send_vap_dynamic_update(common);
 
 	rx_filter_word = (ALLOW_DATA_ASSOC_PEER | DISALLOW_BEACONS);
@@ -1937,9 +1711,7 @@ static int rsi_mac80211_resume(struct ieee80211_hw *hw)
 
 	if (common->hibernate_resume) {
 		common->mac_ops_resumed = true;
-		/* Device need a complete restart of all MAC operations.
-		 * returning 1 will serve this purpose.
-		 */
+		 
 		return 1;
 	}
 
@@ -1986,12 +1758,7 @@ static const struct ieee80211_ops mac80211_ops = {
 	.cancel_hw_scan = rsi_mac80211_cancel_hw_scan,
 };
 
-/**
- * rsi_mac80211_attach() - This function is used to initialize Mac80211 stack.
- * @common: Pointer to the driver private structure.
- *
- * Return: 0 on success, negative error codes on failure.
- */
+ 
 int rsi_mac80211_attach(struct rsi_common *common)
 {
 	int status = 0;
@@ -2066,7 +1833,7 @@ int rsi_mac80211_attach(struct rsi_common *common)
 			&adapter->sbands[NL80211_BAND_5GHZ];
 	}
 
-	/* AP Parameters */
+	 
 	wiphy->max_ap_assoc_sta = rsi_max_ap_stas[common->oper_mode - 1];
 	common->max_stations = wiphy->max_ap_assoc_sta;
 	rsi_dbg(ERR_ZONE, "Max Stations Allowed = %d\n", common->max_stations);
@@ -2085,7 +1852,7 @@ int rsi_mac80211_attach(struct rsi_common *common)
 
 	wiphy_ext_feature_set(wiphy, NL80211_EXT_FEATURE_CQM_RSSI_LIST);
 
-	/* Wi-Fi direct parameters */
+	 
 	wiphy->flags |= WIPHY_FLAG_HAS_REMAIN_ON_CHANNEL;
 	wiphy->flags |= WIPHY_FLAG_OFFCHAN_TX;
 	wiphy->max_remain_on_channel_duration = 10000;

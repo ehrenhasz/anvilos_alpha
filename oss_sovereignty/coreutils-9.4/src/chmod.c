@@ -1,20 +1,4 @@
-/* chmod -- change permission modes of files
-   Copyright (C) 1989-2023 Free Software Foundation, Inc.
-
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* Written by David MacKenzie <djm@gnu.ai.mit.edu> */
+ 
 
 #include <config.h>
 #include <stdio.h>
@@ -31,7 +15,7 @@
 #include "root-dev-ino.h"
 #include "xfts.h"
 
-/* The official name of this program (e.g., no 'g' prefix).  */
+ 
 #define PROGRAM_NAME "chmod"
 
 #define AUTHORS \
@@ -55,42 +39,38 @@ struct change_status
 
 enum Verbosity
 {
-  /* Print a message for each file that is processed.  */
+   
   V_high,
 
-  /* Print a message for each file whose attributes we change.  */
+   
   V_changes_only,
 
-  /* Do not be verbose.  This is the default. */
+   
   V_off
 };
 
-/* The desired change to the mode.  */
+ 
 static struct mode_change *change;
 
-/* The initial umask value, if it might be needed.  */
+ 
 static mode_t umask_value;
 
-/* If true, change the modes of directories recursively. */
+ 
 static bool recurse;
 
-/* If true, force silence (suppress most of error messages). */
+ 
 static bool force_silent;
 
-/* If true, diagnose surprises from naive misuses like "chmod -r file".
-   POSIX allows diagnostics here, as portable code is supposed to use
-   "chmod -- -r file".  */
+ 
 static bool diagnose_surprises;
 
-/* Level of verbosity.  */
+ 
 static enum Verbosity verbosity = V_off;
 
-/* Pointer to the device and inode numbers of '/', when --recursive.
-   Otherwise nullptr.  */
+ 
 static struct dev_ino *root_dev_ino;
 
-/* For long options that have no equivalent short option, use a
-   non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
+ 
 enum
 {
   NO_PRESERVE_ROOT = CHAR_MAX + 1,
@@ -113,8 +93,7 @@ static struct option const long_options[] =
   {nullptr, 0, nullptr, 0}
 };
 
-/* Return true if the chmodable permission bits of FILE changed.
-   The old mode was OLD_MODE, but it was changed to NEW_MODE.  */
+ 
 
 static bool
 mode_changed (int dir_fd, char const *file, char const *file_full_name,
@@ -122,8 +101,7 @@ mode_changed (int dir_fd, char const *file, char const *file_full_name,
 {
   if (new_mode & (S_ISUID | S_ISGID | S_ISVTX))
     {
-      /* The new mode contains unusual bits that the call to chmod may
-         have silently cleared.  Check whether they actually changed.  */
+       
 
       struct stat new_stats;
 
@@ -141,13 +119,12 @@ mode_changed (int dir_fd, char const *file, char const *file_full_name,
   return ((old_mode ^ new_mode) & CHMOD_MODE_BITS) != 0;
 }
 
-/* Tell the user how/if the MODE of FILE has been changed.
-   CH describes what (if anything) has happened. */
+ 
 
 static void
 describe_change (char const *file, struct change_status const *ch)
 {
-  char perms[12];		/* "-rwxrwxrwx" ls-style modes. */
+  char perms[12];		 
   char old_perms[12];
   char const *fmt;
   char const *quoted_file = quoteaf (file);
@@ -172,10 +149,10 @@ describe_change (char const *file, struct change_status const *ch)
     m = ch->new_mode & CHMOD_MODE_BITS;
 
   strmode (ch->new_mode, perms);
-  perms[10] = '\0';		/* Remove trailing space.  */
+  perms[10] = '\0';		 
 
   strmode (ch->old_mode, old_perms);
-  old_perms[10] = '\0';		/* Remove trailing space.  */
+  old_perms[10] = '\0';		 
 
   switch (ch->status)
     {
@@ -195,9 +172,7 @@ describe_change (char const *file, struct change_status const *ch)
   printf (fmt, quoted_file, old_m, &old_perms[1], m, &perms[1]);
 }
 
-/* Change the mode of FILE.
-   Return true if successful.  This function is called
-   once for every file system object that fts encounters.  */
+ 
 
 static bool
 process_file (FTS *fts, FTSENT *ent)
@@ -214,13 +189,7 @@ process_file (FTS *fts, FTSENT *ent)
       return true;
 
     case FTS_NS:
-      /* For a top-level file or directory, this FTS_NS (stat failed)
-         indicator is determined at the time of the initial fts_open call.
-         With programs like chmod, chown, and chgrp, that modify
-         permissions, it is possible that the file in question is
-         accessible when control reaches this point.  So, if this is
-         the first time we've seen the FTS_NS for this file, tell
-         fts_read to stat it "again".  */
+       
       if (ent->fts_level == 0 && ent->fts_number == 0)
         {
           ent->fts_number = 1;
@@ -249,7 +218,7 @@ process_file (FTS *fts, FTSENT *ent)
                quoteaf (file_full_name));
       break;
 
-    case FTS_DC:		/* directory that causes cycles */
+    case FTS_DC:		 
       if (cycle_warning_required (fts, ent))
         {
           emit_cycle_warning (file_full_name);
@@ -265,9 +234,9 @@ process_file (FTS *fts, FTSENT *ent)
       && ROOT_DEV_INO_CHECK (root_dev_ino, file_stats))
     {
       ROOT_DEV_INO_WARN (file_full_name);
-      /* Tell fts not to traverse into this hierarchy.  */
+       
       fts_set (fts, ent, FTS_SKIP);
-      /* Ensure that we do not process "/" on the second visit.  */
+       
       ignore_value (fts_read (fts));
       return false;
     }
@@ -325,9 +294,7 @@ process_file (FTS *fts, FTSENT *ent)
   return CH_NOT_APPLIED <= ch.status;
 }
 
-/* Recursively change the modes of the specified FILES (the last entry
-   of which is null).  BIT_FLAGS controls how fts works.
-   Return true if successful.  */
+ 
 
 static bool
 process_files (char **files, int bit_flags)
@@ -345,7 +312,7 @@ process_files (char **files, int bit_flags)
         {
           if (errno != 0)
             {
-              /* FIXME: try to give a better message  */
+               
               if (! force_silent)
                 error (0, errno, _("fts_read failed"));
               ok = false;

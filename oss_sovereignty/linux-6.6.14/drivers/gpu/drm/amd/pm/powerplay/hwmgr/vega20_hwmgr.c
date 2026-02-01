@@ -1,25 +1,4 @@
-/*
- * Copyright 2018 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 
 #include <linux/delay.h>
 #include <linux/module.h>
@@ -84,18 +63,9 @@ static void vega20_set_default_registry_data(struct pp_hwmgr *hwmgr)
 	data->phy_clk_quad_eqn_b = PPREGKEY_VEGA20QUADRATICEQUATION_DFLT;
 	data->phy_clk_quad_eqn_c = PPREGKEY_VEGA20QUADRATICEQUATION_DFLT;
 
-	/*
-	 * Disable the following features for now:
-	 *   GFXCLK DS
-	 *   SOCLK DS
-	 *   LCLK DS
-	 *   DCEFCLK DS
-	 *   FCLK DS
-	 *   MP1CLK DS
-	 *   MP0CLK DS
-	 */
+	 
 	data->registry_data.disallowed_features = 0xE0041C00;
-	/* ECC feature should be disabled on old SMUs */
+	 
 	smum_send_msg_to_smc(hwmgr, PPSMC_MSG_GetSmuVersion, &hwmgr->smu_version);
 	if (hwmgr->smu_version < 0x282100)
 		data->registry_data.disallowed_features |= FEATURE_ECC_MASK;
@@ -242,8 +212,8 @@ static int vega20_set_features_platform_caps(struct pp_hwmgr *hwmgr)
 		phm_cap_set(hwmgr->platform_descriptor.platformCaps,
 				PHM_PlatformCaps_SclkThrottleLowNotification);
 
-	/* power tune caps */
-	/* assume disabled */
+	 
+	 
 	phm_cap_unset(hwmgr->platform_descriptor.platformCaps,
 			PHM_PlatformCaps_PowerContainment);
 	phm_cap_unset(hwmgr->platform_descriptor.platformCaps,
@@ -403,7 +373,7 @@ static void vega20_init_dpm_defaults(struct pp_hwmgr *hwmgr)
 			false : true;
 	}
 
-	/* Get the SN to turn into a Unique ID */
+	 
 	smum_send_msg_to_smc(hwmgr, PPSMC_MSG_ReadSerialNumTop32, &top32);
 	smum_send_msg_to_smc(hwmgr, PPSMC_MSG_ReadSerialNumBottom32, &bottom32);
 
@@ -442,7 +412,7 @@ static int vega20_hwmgr_backend_init(struct pp_hwmgr *hwmgr)
 
 	data->disable_dpm_mask = 0xff;
 
-	/* need to set voltage control types before EVV patching */
+	 
 	data->vddc_control = VEGA20_VOLTAGE_CONTROL_NONE;
 	data->mvdd_control = VEGA20_VOLTAGE_CONTROL_NONE;
 	data->vddci_control = VEGA20_VOLTAGE_CONTROL_NONE;
@@ -454,7 +424,7 @@ static int vega20_hwmgr_backend_init(struct pp_hwmgr *hwmgr)
 
 	vega20_init_dpm_defaults(hwmgr);
 
-	/* Parse pptable data read from VBIOS */
+	 
 	vega20_set_private_data_based_on_pptable(hwmgr);
 
 	data->is_tlu_enabled = false;
@@ -464,8 +434,8 @@ static int vega20_hwmgr_backend_init(struct pp_hwmgr *hwmgr)
 	hwmgr->platform_descriptor.hardwarePerformanceLevels = 2;
 	hwmgr->platform_descriptor.minimumClocksReductionPercentage = 50;
 
-	hwmgr->platform_descriptor.vbiosInterruptId = 0x20000400; /* IRQ_SOURCE1_SW_INT */
-	/* The true clock step depends on the frequency, typically 4.5 or 9 MHz. Here we use 5. */
+	hwmgr->platform_descriptor.vbiosInterruptId = 0x20000400;  
+	 
 	hwmgr->platform_descriptor.clockStep.engineClock = 500;
 	hwmgr->platform_descriptor.clockStep.memoryClock = 500;
 
@@ -507,13 +477,7 @@ static int vega20_setup_asic_task(struct pp_hwmgr *hwmgr)
 	return ret;
 }
 
-/*
- * @fn vega20_init_dpm_state
- * @brief Function to initialize all Soft Min/Max and Hard Min/Max to 0xff.
- *
- * @param    dpm_state - the address of the DPM Table to initiailize.
- * @return   None.
- */
+ 
 static void vega20_init_dpm_state(struct vega20_dpm_state *dpm_state)
 {
 	dpm_state->soft_min_level = 0x0;
@@ -621,14 +585,7 @@ static int vega20_setup_memclk_dpm_table(struct pp_hwmgr *hwmgr)
 	return ret;
 }
 
-/*
- * This function is to initialize all DPM state tables
- * for SMU based on the dependency table.
- * Dynamic state patching function will then trim these
- * state tables to the allowed range based
- * on the power policy or external client requests,
- * such as UVD request, etc.
- */
+ 
 static int vega20_setup_default_dpm_tables(struct pp_hwmgr *hwmgr)
 {
 	struct vega20_hwmgr *data =
@@ -638,7 +595,7 @@ static int vega20_setup_default_dpm_tables(struct pp_hwmgr *hwmgr)
 
 	memset(&data->dpm_table, 0, sizeof(data->dpm_table));
 
-	/* socclk */
+	 
 	dpm_table = &(data->dpm_table.soc_table);
 	if (data->smu_features[GNLD_DPM_SOCCLK].enabled) {
 		ret = vega20_setup_single_dpm_table(hwmgr, dpm_table, PPCLK_SOCCLK);
@@ -651,21 +608,21 @@ static int vega20_setup_default_dpm_tables(struct pp_hwmgr *hwmgr)
 	}
 	vega20_init_dpm_state(&(dpm_table->dpm_state));
 
-	/* gfxclk */
+	 
 	dpm_table = &(data->dpm_table.gfx_table);
 	ret = vega20_setup_gfxclk_dpm_table(hwmgr);
 	if (ret)
 		return ret;
 	vega20_init_dpm_state(&(dpm_table->dpm_state));
 
-	/* memclk */
+	 
 	dpm_table = &(data->dpm_table.mem_table);
 	ret = vega20_setup_memclk_dpm_table(hwmgr);
 	if (ret)
 		return ret;
 	vega20_init_dpm_state(&(dpm_table->dpm_state));
 
-	/* eclk */
+	 
 	dpm_table = &(data->dpm_table.eclk_table);
 	if (data->smu_features[GNLD_DPM_VCE].enabled) {
 		ret = vega20_setup_single_dpm_table(hwmgr, dpm_table, PPCLK_ECLK);
@@ -678,7 +635,7 @@ static int vega20_setup_default_dpm_tables(struct pp_hwmgr *hwmgr)
 	}
 	vega20_init_dpm_state(&(dpm_table->dpm_state));
 
-	/* vclk */
+	 
 	dpm_table = &(data->dpm_table.vclk_table);
 	if (data->smu_features[GNLD_DPM_UVD].enabled) {
 		ret = vega20_setup_single_dpm_table(hwmgr, dpm_table, PPCLK_VCLK);
@@ -691,7 +648,7 @@ static int vega20_setup_default_dpm_tables(struct pp_hwmgr *hwmgr)
 	}
 	vega20_init_dpm_state(&(dpm_table->dpm_state));
 
-	/* dclk */
+	 
 	dpm_table = &(data->dpm_table.dclk_table);
 	if (data->smu_features[GNLD_DPM_UVD].enabled) {
 		ret = vega20_setup_single_dpm_table(hwmgr, dpm_table, PPCLK_DCLK);
@@ -704,7 +661,7 @@ static int vega20_setup_default_dpm_tables(struct pp_hwmgr *hwmgr)
 	}
 	vega20_init_dpm_state(&(dpm_table->dpm_state));
 
-	/* dcefclk */
+	 
 	dpm_table = &(data->dpm_table.dcef_table);
 	if (data->smu_features[GNLD_DPM_DCEFCLK].enabled) {
 		ret = vega20_setup_single_dpm_table(hwmgr, dpm_table, PPCLK_DCEFCLK);
@@ -717,7 +674,7 @@ static int vega20_setup_default_dpm_tables(struct pp_hwmgr *hwmgr)
 	}
 	vega20_init_dpm_state(&(dpm_table->dpm_state));
 
-	/* pixclk */
+	 
 	dpm_table = &(data->dpm_table.pixel_table);
 	if (data->smu_features[GNLD_DPM_DCEFCLK].enabled) {
 		ret = vega20_setup_single_dpm_table(hwmgr, dpm_table, PPCLK_PIXCLK);
@@ -728,7 +685,7 @@ static int vega20_setup_default_dpm_tables(struct pp_hwmgr *hwmgr)
 		dpm_table->count = 0;
 	vega20_init_dpm_state(&(dpm_table->dpm_state));
 
-	/* dispclk */
+	 
 	dpm_table = &(data->dpm_table.display_table);
 	if (data->smu_features[GNLD_DPM_DCEFCLK].enabled) {
 		ret = vega20_setup_single_dpm_table(hwmgr, dpm_table, PPCLK_DISPCLK);
@@ -739,7 +696,7 @@ static int vega20_setup_default_dpm_tables(struct pp_hwmgr *hwmgr)
 		dpm_table->count = 0;
 	vega20_init_dpm_state(&(dpm_table->dpm_state));
 
-	/* phyclk */
+	 
 	dpm_table = &(data->dpm_table.phy_table);
 	if (data->smu_features[GNLD_DPM_DCEFCLK].enabled) {
 		ret = vega20_setup_single_dpm_table(hwmgr, dpm_table, PPCLK_PHYCLK);
@@ -750,7 +707,7 @@ static int vega20_setup_default_dpm_tables(struct pp_hwmgr *hwmgr)
 		dpm_table->count = 0;
 	vega20_init_dpm_state(&(dpm_table->dpm_state));
 
-	/* fclk */
+	 
 	dpm_table = &(data->dpm_table.fclk_table);
 	if (data->smu_features[GNLD_DPM_FCLK].enabled) {
 		ret = vega20_setup_single_dpm_table(hwmgr, dpm_table, PPCLK_FCLK);
@@ -763,19 +720,14 @@ static int vega20_setup_default_dpm_tables(struct pp_hwmgr *hwmgr)
 	}
 	vega20_init_dpm_state(&(dpm_table->dpm_state));
 
-	/* save a copy of the default DPM table */
+	 
 	memcpy(&(data->golden_dpm_table), &(data->dpm_table),
 			sizeof(struct vega20_dpm_table));
 
 	return 0;
 }
 
-/**
- * vega20_init_smc_table - Initializes the SMC table and uploads it
- *
- * @hwmgr:  the address of the powerplay hardware manager.
- * return:  always 0
- */
+ 
 static int vega20_init_smc_table(struct pp_hwmgr *hwmgr)
 {
 	int result;
@@ -820,12 +772,7 @@ static int vega20_init_smc_table(struct pp_hwmgr *hwmgr)
 	return 0;
 }
 
-/*
- * Override PCIe link speed and link width for DPM Level 1. PPTable entries
- * reflect the ASIC capabilities and not the system capabilities. For e.g.
- * Vega20 board in a PCI Gen3 system. In this case, when SMU's tries to switch
- * to DPM1, it fails as system doesn't support Gen4.
- */
+ 
 static int vega20_override_pcie_parameters(struct pp_hwmgr *hwmgr)
 {
 	struct amdgpu_device *adev = (struct amdgpu_device *)(hwmgr->adev);
@@ -858,10 +805,7 @@ static int vega20_override_pcie_parameters(struct pp_hwmgr *hwmgr)
 	else if (adev->pm.pcie_mlw_mask & CAIL_PCIE_LINK_WIDTH_SUPPORT_X1)
 		pcie_width = 1;
 
-	/* Bit 31:16: LCLK DPM level. 0 is DPM0, and 1 is DPM1
-	 * Bit 15:8:  PCIE GEN, 0 to 3 corresponds to GEN1 to GEN4
-	 * Bit 7:0:   PCIE lane width, 1 to 7 corresponds is x1 to x32
-	 */
+	 
 	for (i = 0; i < NUM_LINK_LEVELS; i++) {
 		pcie_gen_arg = (pp_table->PcieGenSpeed[i] > pcie_gen) ? pcie_gen :
 			pp_table->PcieGenSpeed[i];
@@ -879,12 +823,12 @@ static int vega20_override_pcie_parameters(struct pp_hwmgr *hwmgr)
 				return ret);
 		}
 
-		/* update the pptable */
+		 
 		pp_table->PcieGenSpeed[i] = pcie_gen_arg;
 		pp_table->PcieLaneCount[i] = pcie_width_arg;
 	}
 
-	/* override to the highest if it's disabled from ppfeaturmask */
+	 
 	if (data->registry_data.pcie_dpm_key_disabled) {
 		for (i = 0; i < NUM_LINK_LEVELS; i++) {
 			smu_pcie_arg = (i << 16) | (pcie_gen << 8) | pcie_width;
@@ -1243,13 +1187,13 @@ static int vega20_od8_initialize_default_settings(
 	OverDriveTable_t *od_table = &(data->smc_state_table.overdrive_table);
 	int i, ret = 0;
 
-	/* Set Feature Capabilities */
+	 
 	vega20_od8_set_feature_capabilities(hwmgr);
 
-	/* Map FeatureID to individual settings */
+	 
 	vega20_od8_set_feature_id(hwmgr);
 
-	/* Set default values */
+	 
 	ret = smum_smc_table_manager(hwmgr, (uint8_t *)od_table, TABLE_OVERDRIVE, true);
 	PP_ASSERT_WITH_CODE(!ret,
 			"Failed to export over drive table!",
@@ -1474,7 +1418,7 @@ static int vega20_get_sclk_od(
 	int golden_value = golden_sclk_table->dpm_levels
 			[golden_sclk_table->count - 1].value;
 
-	/* od percentage */
+	 
 	value -= golden_value;
 	value = DIV_ROUND_UP(value * 100, golden_value);
 
@@ -1499,7 +1443,7 @@ static int vega20_set_sclk_od(
 			"[SetSclkOD] failed to set od gfxclk!",
 			return ret);
 
-	/* retrieve updated gfxclk table */
+	 
 	ret = vega20_setup_gfxclk_dpm_table(hwmgr);
 	PP_ASSERT_WITH_CODE(!ret,
 			"[SetSclkOD] failed to refresh gfxclk table!",
@@ -1520,7 +1464,7 @@ static int vega20_get_mclk_od(
 	int golden_value = golden_mclk_table->dpm_levels
 			[golden_mclk_table->count - 1].value;
 
-	/* od percentage */
+	 
 	value -= golden_value;
 	value = DIV_ROUND_UP(value * 100, golden_value);
 
@@ -1545,7 +1489,7 @@ static int vega20_set_mclk_od(
 			"[SetMclkOD] failed to set od memclk!",
 			return ret);
 
-	/* retrieve updated memclk table */
+	 
 	ret = vega20_setup_memclk_dpm_table(hwmgr);
 	PP_ASSERT_WITH_CODE(!ret,
 			"[SetMclkOD] failed to refresh memclk table!",
@@ -1585,7 +1529,7 @@ static int vega20_get_max_sustainable_clock(struct pp_hwmgr *hwmgr,
 			"[GetMaxSustainableClock] Failed to get max DC clock from SMC!",
 			return ret);
 
-	/* if DC limit is zero, return AC limit */
+	 
 	if (*clock == 0) {
 		PP_ASSERT_WITH_CODE((ret = smum_send_msg_to_smc_with_parameter(hwmgr,
 			PPSMC_MSG_GetMaxDpmFreq,
@@ -1726,7 +1670,7 @@ static int vega20_enable_dpm_tasks(struct pp_hwmgr *hwmgr)
 			"[EnableDPMTasks] Failed to send clock ratio!",
 			return result);
 
-	/* Initialize UVD/VCE powergating state */
+	 
 	vega20_init_powergate_state(hwmgr);
 
 	result = vega20_setup_default_dpm_tables(hwmgr);
@@ -2139,7 +2083,7 @@ static int vega20_get_gpu_power(struct pp_hwmgr *hwmgr, int idx,
 	if (ret)
 		return ret;
 
-	/* For the 40.46 release, they changed the value name */
+	 
 	switch (idx) {
 	case AMDGPU_PP_SENSOR_GPU_AVG_POWER:
 		if (hwmgr->smu_version == 0x282e00)
@@ -2469,7 +2413,7 @@ static int vega20_unforce_dpm_levels(struct pp_hwmgr *hwmgr)
 	uint32_t soft_min_level, soft_max_level;
 	int ret = 0;
 
-	/* gfxclk soft min/max settings */
+	 
 	soft_min_level =
 		vega20_find_lowest_dpm_level(&(data->dpm_table.gfx_table));
 	soft_max_level =
@@ -2480,7 +2424,7 @@ static int vega20_unforce_dpm_levels(struct pp_hwmgr *hwmgr)
 	data->dpm_table.gfx_table.dpm_state.soft_max_level =
 		data->dpm_table.gfx_table.dpm_levels[soft_max_level].value;
 
-	/* uclk soft min/max settings */
+	 
 	soft_min_level =
 		vega20_find_lowest_dpm_level(&(data->dpm_table.mem_table));
 	soft_max_level =
@@ -2491,7 +2435,7 @@ static int vega20_unforce_dpm_levels(struct pp_hwmgr *hwmgr)
 	data->dpm_table.mem_table.dpm_state.soft_max_level =
 		data->dpm_table.mem_table.dpm_levels[soft_max_level].value;
 
-	/* socclk soft min/max settings */
+	 
 	soft_min_level =
 		vega20_find_lowest_dpm_level(&(data->dpm_table.soc_table));
 	soft_max_level =
@@ -2689,7 +2633,7 @@ static int vega20_force_clock_level(struct pp_hwmgr *hwmgr,
 			"Failed to upload boot level to lowest!",
 			return ret);
 
-		//TODO: Setting DCEFCLK max dpm level is not supported
+		 
 
 		break;
 
@@ -3140,7 +3084,7 @@ static int vega20_odn_edit_dpm_table(struct pp_hwmgr *hwmgr,
 				"Failed to import overdrive table!",
 				return ret);
 
-		/* retrieve updated gfxclk table */
+		 
 		if (data->gfxclk_overdrive) {
 			data->gfxclk_overdrive = false;
 
@@ -3149,7 +3093,7 @@ static int vega20_odn_edit_dpm_table(struct pp_hwmgr *hwmgr,
 				return ret;
 		}
 
-		/* retrieve updated memclk table */
+		 
 		if (data->memclk_overdrive) {
 			data->memclk_overdrive = false;
 
@@ -3297,7 +3241,7 @@ static int vega20_set_ppfeature_status(struct pp_hwmgr *hwmgr, uint64_t new_ppfe
 			return ret;
 	}
 
-	/* Update the cached feature enablement state */
+	 
 	ret = vega20_get_enabled_smc_features(hwmgr, &features_enabled);
 	if (ret)
 		return ret;
@@ -3739,7 +3683,7 @@ static int vega20_apply_clocks_adjust_rules(struct pp_hwmgr *hwmgr)
 				vblank_too_short;
 	latency = hwmgr->display_config->dce_tolerable_mclk_in_active_latency;
 
-	/* gfxclk */
+	 
 	dpm_table = &(data->dpm_table.gfx_table);
 	dpm_table->dpm_state.soft_min_level = dpm_table->dpm_levels[0].value;
 	dpm_table->dpm_state.soft_max_level = VG20_CLOCK_MAX_DEFAULT;
@@ -3763,7 +3707,7 @@ static int vega20_apply_clocks_adjust_rules(struct pp_hwmgr *hwmgr)
 		}
 	}
 
-	/* memclk */
+	 
 	dpm_table = &(data->dpm_table.mem_table);
 	dpm_table->dpm_state.soft_min_level = dpm_table->dpm_levels[0].value;
 	dpm_table->dpm_state.soft_max_level = VG20_CLOCK_MAX_DEFAULT;
@@ -3787,11 +3731,11 @@ static int vega20_apply_clocks_adjust_rules(struct pp_hwmgr *hwmgr)
 		}
 	}
 
-	/* honour DAL's UCLK Hardmin */
+	 
 	if (dpm_table->dpm_state.hard_min_level < (hwmgr->display_config->min_mem_set_clock / 100))
 		dpm_table->dpm_state.hard_min_level = hwmgr->display_config->min_mem_set_clock / 100;
 
-	/* Hardmin is dependent on displayconfig */
+	 
 	if (disable_mclk_switching) {
 		dpm_table->dpm_state.hard_min_level = dpm_table->dpm_levels[dpm_table->count - 1].value;
 		for (i = 0; i < data->mclk_latency_table.count - 1; i++) {
@@ -3814,7 +3758,7 @@ static int vega20_apply_clocks_adjust_rules(struct pp_hwmgr *hwmgr)
 	else
 		disable_fclk_switching = false;
 
-	/* fclk */
+	 
 	dpm_table = &(data->dpm_table.fclk_table);
 	dpm_table->dpm_state.soft_min_level = dpm_table->dpm_levels[0].value;
 	dpm_table->dpm_state.soft_max_level = VG20_CLOCK_MAX_DEFAULT;
@@ -3823,7 +3767,7 @@ static int vega20_apply_clocks_adjust_rules(struct pp_hwmgr *hwmgr)
 	if (hwmgr->display_config->nb_pstate_switch_disable || disable_fclk_switching)
 		dpm_table->dpm_state.soft_min_level = dpm_table->dpm_levels[dpm_table->count - 1].value;
 
-	/* vclk */
+	 
 	dpm_table = &(data->dpm_table.vclk_table);
 	dpm_table->dpm_state.soft_min_level = dpm_table->dpm_levels[0].value;
 	dpm_table->dpm_state.soft_max_level = VG20_CLOCK_MAX_DEFAULT;
@@ -3842,7 +3786,7 @@ static int vega20_apply_clocks_adjust_rules(struct pp_hwmgr *hwmgr)
 		}
 	}
 
-	/* dclk */
+	 
 	dpm_table = &(data->dpm_table.dclk_table);
 	dpm_table->dpm_state.soft_min_level = dpm_table->dpm_levels[0].value;
 	dpm_table->dpm_state.soft_max_level = VG20_CLOCK_MAX_DEFAULT;
@@ -3861,7 +3805,7 @@ static int vega20_apply_clocks_adjust_rules(struct pp_hwmgr *hwmgr)
 		}
 	}
 
-	/* socclk */
+	 
 	dpm_table = &(data->dpm_table.soc_table);
 	dpm_table->dpm_state.soft_min_level = dpm_table->dpm_levels[0].value;
 	dpm_table->dpm_state.soft_max_level = VG20_CLOCK_MAX_DEFAULT;
@@ -3880,7 +3824,7 @@ static int vega20_apply_clocks_adjust_rules(struct pp_hwmgr *hwmgr)
 		}
 	}
 
-	/* eclk */
+	 
 	dpm_table = &(data->dpm_table.eclk_table);
 	dpm_table->dpm_state.soft_min_level = dpm_table->dpm_levels[0].value;
 	dpm_table->dpm_state.soft_max_level = VG20_CLOCK_MAX_DEFAULT;
@@ -4006,7 +3950,7 @@ static int vega20_get_power_profile_mode(struct pp_hwmgr *hwmgr, char *buf)
 			title[6], title[7], title[8], title[9], title[10]);
 
 	for (i = 0; i <= PP_SMC_POWER_PROFILE_CUSTOM; i++) {
-		/* conv PP_SMC_POWER_PROFILE* to WORKLOAD_PPLIB_*_BIT */
+		 
 		workload_type = conv_power_profile_to_pplib_workload(i);
 		result = vega20_get_activity_monitor_coeff(hwmgr,
 				(uint8_t *)(&activity_monitor), workload_type);
@@ -4103,15 +4047,12 @@ static int vega20_set_power_profile_mode(struct pp_hwmgr *hwmgr, long *input, ui
 				"[SetPowerProfile] Failed to get activity monitor!",
 				return result);
 
-		/* If size==0, then we want to apply the already-configured
-		 * CUSTOM profile again. Just apply it, since we checked its
-		 * validity above
-		 */
+		 
 		if (size == 0)
 			goto out;
 
 		switch (input[0]) {
-		case 0: /* Gfxclk */
+		case 0:  
 			activity_monitor.Gfx_FPS = input[1];
 			activity_monitor.Gfx_UseRlcBusy = input[2];
 			activity_monitor.Gfx_MinActiveFreqType = input[3];
@@ -4122,7 +4063,7 @@ static int vega20_set_power_profile_mode(struct pp_hwmgr *hwmgr, long *input, ui
 			activity_monitor.Gfx_PD_Data_error_coeff = input[8];
 			activity_monitor.Gfx_PD_Data_error_rate_coeff = input[9];
 			break;
-		case 1: /* Socclk */
+		case 1:  
 			activity_monitor.Soc_FPS = input[1];
 			activity_monitor.Soc_UseRlcBusy = input[2];
 			activity_monitor.Soc_MinActiveFreqType = input[3];
@@ -4133,7 +4074,7 @@ static int vega20_set_power_profile_mode(struct pp_hwmgr *hwmgr, long *input, ui
 			activity_monitor.Soc_PD_Data_error_coeff = input[8];
 			activity_monitor.Soc_PD_Data_error_rate_coeff = input[9];
 			break;
-		case 2: /* Uclk */
+		case 2:  
 			activity_monitor.Mem_FPS = input[1];
 			activity_monitor.Mem_UseRlcBusy = input[2];
 			activity_monitor.Mem_MinActiveFreqType = input[3];
@@ -4144,7 +4085,7 @@ static int vega20_set_power_profile_mode(struct pp_hwmgr *hwmgr, long *input, ui
 			activity_monitor.Mem_PD_Data_error_coeff = input[8];
 			activity_monitor.Mem_PD_Data_error_rate_coeff = input[9];
 			break;
-		case 3: /* Fclk */
+		case 3:  
 			activity_monitor.Fclk_FPS = input[1];
 			activity_monitor.Fclk_UseRlcBusy = input[2];
 			activity_monitor.Fclk_MinActiveFreqType = input[3];
@@ -4167,7 +4108,7 @@ static int vega20_set_power_profile_mode(struct pp_hwmgr *hwmgr, long *input, ui
 	}
 
 out:
-	/* conv PP_SMC_POWER_PROFILE* to WORKLOAD_PPLIB_*_BIT */
+	 
 	workload_type =
 		conv_power_profile_to_pplib_workload(power_profile_mode);
 	smum_send_msg_to_smc_with_parameter(hwmgr, PPSMC_MSG_SetWorkloadMask,
@@ -4244,7 +4185,7 @@ static int vega20_smu_i2c_bus_access(struct pp_hwmgr *hwmgr, bool acquire)
 {
 	int res;
 
-	/* I2C bus access can happen very early, when SMU not loaded yet */
+	 
 	if (!vega20_is_smc_ram_running(hwmgr))
 		return 0;
 
@@ -4264,7 +4205,7 @@ static int vega20_set_df_cstate(struct pp_hwmgr *hwmgr,
 {
 	int ret;
 
-	/* PPSMC_MSG_DFCstateControl is supported with 40.50 and later fws */
+	 
 	if (hwmgr->smu_version < 0x283200) {
 		pr_err("Df cstate control is supported with 40.50 and later SMC fw!\n");
 		return -EINVAL;
@@ -4360,14 +4301,14 @@ static ssize_t vega20_get_gpu_metrics(struct pp_hwmgr *hwmgr,
 }
 
 static const struct pp_hwmgr_func vega20_hwmgr_funcs = {
-	/* init/fini related */
+	 
 	.backend_init = vega20_hwmgr_backend_init,
 	.backend_fini = vega20_hwmgr_backend_fini,
 	.asic_setup = vega20_setup_asic_task,
 	.power_off_asic = vega20_power_off_asic,
 	.dynamic_state_management_enable = vega20_enable_dpm_tasks,
 	.dynamic_state_management_disable = vega20_disable_dpm_tasks,
-	/* power state related */
+	 
 	.apply_clocks_adjust_rules = vega20_apply_clocks_adjust_rules,
 	.pre_display_config_changed = vega20_pre_display_configuration_changed_task,
 	.display_config_changed = vega20_display_configuration_changed_task,
@@ -4375,7 +4316,7 @@ static const struct pp_hwmgr_func vega20_hwmgr_funcs = {
 		vega20_check_smc_update_required_for_display_configuration,
 	.notify_smc_display_config_after_ps_adjustment =
 		vega20_notify_smc_display_config_after_ps_adjustment,
-	/* export to DAL */
+	 
 	.get_sclk = vega20_dpm_get_sclk,
 	.get_mclk = vega20_dpm_get_mclk,
 	.get_dal_power_level = vega20_get_dal_power_level,
@@ -4384,33 +4325,33 @@ static const struct pp_hwmgr_func vega20_hwmgr_funcs = {
 	.set_watermarks_for_clocks_ranges = vega20_set_watermarks_for_clocks_ranges,
 	.display_clock_voltage_request = vega20_display_clock_voltage_request,
 	.get_performance_level = vega20_get_performance_level,
-	/* UMD pstate, profile related */
+	 
 	.force_dpm_level = vega20_dpm_force_dpm_level,
 	.get_power_profile_mode = vega20_get_power_profile_mode,
 	.set_power_profile_mode = vega20_set_power_profile_mode,
-	/* od related */
+	 
 	.set_power_limit = vega20_set_power_limit,
 	.get_sclk_od = vega20_get_sclk_od,
 	.set_sclk_od = vega20_set_sclk_od,
 	.get_mclk_od = vega20_get_mclk_od,
 	.set_mclk_od = vega20_set_mclk_od,
 	.odn_edit_dpm_table = vega20_odn_edit_dpm_table,
-	/* for sysfs to retrive/set gfxclk/memclk */
+	 
 	.force_clock_level = vega20_force_clock_level,
 	.print_clock_levels = vega20_print_clock_levels,
 	.read_sensor = vega20_read_sensor,
 	.get_ppfeature_status = vega20_get_ppfeature_status,
 	.set_ppfeature_status = vega20_set_ppfeature_status,
-	/* powergate related */
+	 
 	.powergate_uvd = vega20_power_gate_uvd,
 	.powergate_vce = vega20_power_gate_vce,
-	/* thermal related */
+	 
 	.start_thermal_controller = vega20_start_thermal_controller,
 	.stop_thermal_controller = vega20_thermal_stop_thermal_controller,
 	.get_thermal_temperature_range = vega20_get_thermal_temperature_range,
 	.register_irq_handlers = smu9_register_irq_handlers,
 	.disable_smc_firmware_ctf = vega20_thermal_disable_alert,
-	/* fan control related */
+	 
 	.get_fan_speed_pwm = vega20_fan_ctrl_get_fan_speed_pwm,
 	.set_fan_speed_pwm = vega20_fan_ctrl_set_fan_speed_pwm,
 	.get_fan_speed_info = vega20_fan_ctrl_get_fan_speed_info,
@@ -4418,10 +4359,10 @@ static const struct pp_hwmgr_func vega20_hwmgr_funcs = {
 	.set_fan_speed_rpm = vega20_fan_ctrl_set_fan_speed_rpm,
 	.get_fan_control_mode = vega20_get_fan_control_mode,
 	.set_fan_control_mode = vega20_set_fan_control_mode,
-	/* smu memory related */
+	 
 	.notify_cac_buffer_info = vega20_notify_cac_buffer_info,
 	.enable_mgpu_fan_boost = vega20_enable_mgpu_fan_boost,
-	/* BACO related */
+	 
 	.get_asic_baco_capability = vega20_baco_get_capability,
 	.get_asic_baco_state = vega20_baco_get_state,
 	.set_asic_baco_state = vega20_baco_set_state,

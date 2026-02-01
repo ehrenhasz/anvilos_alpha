@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2012 Russell King
- *  Rewritten from the dovefb driver, and Armada510 manuals.
- */
+
+ 
 
 #include <linux/ctype.h>
 #include <linux/module.h>

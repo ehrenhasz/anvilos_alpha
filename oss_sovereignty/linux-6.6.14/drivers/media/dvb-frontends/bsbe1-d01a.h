@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * bsbe1-d01a.h - ALPS BSBE1-D01A tuner support
- *
- * Copyright (C) 2011 Oliver Endriss <o.endriss@gmx.de>
- *
- * the project's page is at https://linuxtv.org
- */
+ 
+ 
 
 #ifndef BSBE1_D01A_H
 #define BSBE1_D01A_H

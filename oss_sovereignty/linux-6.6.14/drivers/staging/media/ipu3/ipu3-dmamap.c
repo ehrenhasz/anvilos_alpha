@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2018 Intel Corporation
- * Copyright 2018 Google LLC.
- *
- * Author: Tomasz Figa <tfiga@chromium.org>
- * Author: Yong Zhi <yong.zhi@intel.com>
- */
+
+ 
 
 #include <linux/vmalloc.h>
 
@@ -14,9 +8,7 @@
 #include "ipu3-mmu.h"
 #include "ipu3-dmamap.h"
 
-/*
- * Free a buffer allocated by imgu_dmamap_alloc_buffer()
- */
+ 
 static void imgu_dmamap_free_buffer(struct page **pages,
 				    size_t size)
 {
@@ -27,10 +19,7 @@ static void imgu_dmamap_free_buffer(struct page **pages,
 	kvfree(pages);
 }
 
-/*
- * Based on the implementation of __iommu_dma_alloc_pages()
- * defined in drivers/iommu/dma-iommu.c
- */
+ 
 static struct page **imgu_dmamap_alloc_buffer(size_t size, gfp_t gfp)
 {
 	struct page **pages;
@@ -38,7 +27,7 @@ static struct page **imgu_dmamap_alloc_buffer(size_t size, gfp_t gfp)
 	unsigned int order_mask = 1;
 	const gfp_t high_order_gfp = __GFP_NOWARN | __GFP_NORETRY;
 
-	/* Allocate mem for array of page ptrs */
+	 
 	pages = kvmalloc_array(count, sizeof(*pages), GFP_KERNEL);
 
 	if (!pages)
@@ -80,16 +69,7 @@ static struct page **imgu_dmamap_alloc_buffer(size_t size, gfp_t gfp)
 	return pages;
 }
 
-/**
- * imgu_dmamap_alloc - allocate and map a buffer into KVA
- * @imgu: struct device pointer
- * @map: struct to store mapping variables
- * @len: size required
- *
- * Returns:
- *  KVA on success
- *  %NULL on failure
- */
+ 
 void *imgu_dmamap_alloc(struct imgu_device *imgu, struct imgu_css_map *map,
 			size_t len)
 {
@@ -113,7 +93,7 @@ void *imgu_dmamap_alloc(struct imgu_device *imgu, struct imgu_css_map *map,
 	if (!pages)
 		goto out_free_iova;
 
-	/* Call IOMMU driver to setup pgt */
+	 
 	iovaddr = iova_dma_addr(&imgu->iova_domain, iova);
 	for (i = 0; i < count; ++i) {
 		rval = imgu_mmu_map(imgu->mmu, iovaddr,
@@ -163,9 +143,7 @@ void imgu_dmamap_unmap(struct imgu_device *imgu, struct imgu_css_map *map)
 	__free_iova(&imgu->iova_domain, iova);
 }
 
-/*
- * Counterpart of imgu_dmamap_alloc
- */
+ 
 void imgu_dmamap_free(struct imgu_device *imgu, struct imgu_css_map *map)
 {
 	dev_dbg(&imgu->pci_dev->dev, "%s: freeing %zu @ IOVA %pad @ VA %p\n",

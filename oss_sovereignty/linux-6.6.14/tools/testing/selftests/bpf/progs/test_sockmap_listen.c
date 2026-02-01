@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2020 Cloudflare
+
+
 
 #include <errno.h>
 #include <stdbool.h>
@@ -35,8 +35,8 @@ struct {
 	__type(value, int);
 } parser_map SEC(".maps");
 
-bool test_sockmap = false; /* toggled by user-space */
-bool test_ingress = false; /* toggled by user-space */
+bool test_sockmap = false;  
+bool test_ingress = false;  
 
 SEC("sk_skb/stream_parser")
 int prog_stream_parser(struct __sk_buff *skb)

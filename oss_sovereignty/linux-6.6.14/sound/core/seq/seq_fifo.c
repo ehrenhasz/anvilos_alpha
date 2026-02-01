@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *   ALSA sequencer FIFO
- *   Copyright (c) 1998 by Frank van de Pol <fvdpol@coil.demon.nl>
- */
+
+ 
 
 #include <sound/core.h>
 #include <linux/slab.h>
@@ -12,9 +9,9 @@
 #include "seq_lock.h"
 
 
-/* FIFO */
+ 
 
-/* create new fifo */
+ 
 struct snd_seq_fifo *snd_seq_fifo_new(int poolsize)
 {
 	struct snd_seq_fifo *f;
@@ -62,12 +59,12 @@ void snd_seq_fifo_delete(struct snd_seq_fifo **fifo)
 
 	snd_seq_fifo_clear(f);
 
-	/* wake up clients if any */
+	 
 	if (waitqueue_active(&f->input_sleep))
 		wake_up(&f->input_sleep);
 
-	/* release resources...*/
-	/*....................*/
+	 
+	 
 
 	if (f->pool) {
 		snd_seq_pool_done(f->pool);
@@ -79,17 +76,17 @@ void snd_seq_fifo_delete(struct snd_seq_fifo **fifo)
 
 static struct snd_seq_event_cell *fifo_cell_out(struct snd_seq_fifo *f);
 
-/* clear queue */
+ 
 void snd_seq_fifo_clear(struct snd_seq_fifo *f)
 {
 	struct snd_seq_event_cell *cell;
 
-	/* clear overflow flag */
+	 
 	atomic_set(&f->overflow, 0);
 
 	snd_use_lock_sync(&f->use_lock);
 	spin_lock_irq(&f->lock);
-	/* drain the fifo */
+	 
 	while ((cell = fifo_cell_out(f)) != NULL) {
 		snd_seq_cell_free(cell);
 	}
@@ -97,7 +94,7 @@ void snd_seq_fifo_clear(struct snd_seq_fifo *f)
 }
 
 
-/* enqueue event to fifo */
+ 
 int snd_seq_fifo_event_in(struct snd_seq_fifo *f,
 			  struct snd_seq_event *event)
 {
@@ -109,7 +106,7 @@ int snd_seq_fifo_event_in(struct snd_seq_fifo *f,
 		return -EINVAL;
 
 	snd_use_lock_use(&f->use_lock);
-	err = snd_seq_event_dup(f->pool, event, &cell, 1, NULL, NULL); /* always non-blocking */
+	err = snd_seq_event_dup(f->pool, event, &cell, 1, NULL, NULL);  
 	if (err < 0) {
 		if ((err == -ENOMEM) || (err == -EAGAIN))
 			atomic_inc(&f->overflow);
@@ -117,7 +114,7 @@ int snd_seq_fifo_event_in(struct snd_seq_fifo *f,
 		return err;
 	}
 		
-	/* append new cells to fifo */
+	 
 	spin_lock_irqsave(&f->lock, flags);
 	if (f->tail != NULL)
 		f->tail->next = cell;
@@ -128,17 +125,17 @@ int snd_seq_fifo_event_in(struct snd_seq_fifo *f,
 	f->cells++;
 	spin_unlock_irqrestore(&f->lock, flags);
 
-	/* wakeup client */
+	 
 	if (waitqueue_active(&f->input_sleep))
 		wake_up(&f->input_sleep);
 
 	snd_use_lock_free(&f->use_lock);
 
-	return 0; /* success */
+	return 0;  
 
 }
 
-/* dequeue cell from fifo */
+ 
 static struct snd_seq_event_cell *fifo_cell_out(struct snd_seq_fifo *f)
 {
 	struct snd_seq_event_cell *cell;
@@ -147,7 +144,7 @@ static struct snd_seq_event_cell *fifo_cell_out(struct snd_seq_fifo *f)
 	if (cell) {
 		f->head = cell->next;
 
-		/* reset tail if this was the last element */
+		 
 		if (f->tail == cell)
 			f->tail = NULL;
 
@@ -158,7 +155,7 @@ static struct snd_seq_event_cell *fifo_cell_out(struct snd_seq_fifo *f)
 	return cell;
 }
 
-/* dequeue cell from fifo and copy on user space */
+ 
 int snd_seq_fifo_cell_out(struct snd_seq_fifo *f,
 			  struct snd_seq_event_cell **cellp, int nonblock)
 {
@@ -174,7 +171,7 @@ int snd_seq_fifo_cell_out(struct snd_seq_fifo *f,
 	spin_lock_irqsave(&f->lock, flags);
 	while ((cell = fifo_cell_out(f)) == NULL) {
 		if (nonblock) {
-			/* non-blocking - return immediately */
+			 
 			spin_unlock_irqrestore(&f->lock, flags);
 			return -EAGAIN;
 		}
@@ -213,7 +210,7 @@ void snd_seq_fifo_cell_putback(struct snd_seq_fifo *f,
 }
 
 
-/* polling; return non-zero if queue is available */
+ 
 int snd_seq_fifo_poll_wait(struct snd_seq_fifo *f, struct file *file,
 			   poll_table *wait)
 {
@@ -221,7 +218,7 @@ int snd_seq_fifo_poll_wait(struct snd_seq_fifo *f, struct file *file,
 	return (f->cells > 0);
 }
 
-/* change the size of pool; all old events are removed */
+ 
 int snd_seq_fifo_resize(struct snd_seq_fifo *f, int poolsize)
 {
 	struct snd_seq_pool *newpool, *oldpool;
@@ -230,7 +227,7 @@ int snd_seq_fifo_resize(struct snd_seq_fifo *f, int poolsize)
 	if (snd_BUG_ON(!f || !f->pool))
 		return -EINVAL;
 
-	/* allocate new pool */
+	 
 	newpool = snd_seq_pool_new(poolsize);
 	if (newpool == NULL)
 		return -ENOMEM;
@@ -240,22 +237,22 @@ int snd_seq_fifo_resize(struct snd_seq_fifo *f, int poolsize)
 	}
 
 	spin_lock_irq(&f->lock);
-	/* remember old pool */
+	 
 	oldpool = f->pool;
 	oldhead = f->head;
-	/* exchange pools */
+	 
 	f->pool = newpool;
 	f->head = NULL;
 	f->tail = NULL;
 	f->cells = 0;
-	/* NOTE: overflow flag is not cleared */
+	 
 	spin_unlock_irq(&f->lock);
 
-	/* close the old pool and wait until all users are gone */
+	 
 	snd_seq_pool_mark_closing(oldpool);
 	snd_use_lock_sync(&f->use_lock);
 
-	/* release cells in old pool */
+	 
 	for (cell = oldhead; cell; cell = next) {
 		next = cell->next;
 		snd_seq_cell_free(cell);
@@ -265,7 +262,7 @@ int snd_seq_fifo_resize(struct snd_seq_fifo *f, int poolsize)
 	return 0;
 }
 
-/* get the number of unused cells safely */
+ 
 int snd_seq_fifo_unused_cells(struct snd_seq_fifo *f)
 {
 	unsigned long flags;

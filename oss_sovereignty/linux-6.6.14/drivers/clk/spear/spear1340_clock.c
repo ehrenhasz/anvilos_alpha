@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * arch/arm/mach-spear13xx/spear1340_clock.c
- *
- * SPEAr1340 machine clock framework source file
- *
- * Copyright (C) 2012 ST Microelectronics
- * Viresh Kumar <vireshk@kernel.org>
- */
+
+ 
 
 #include <linux/clkdev.h>
 #include <linux/clk/spear.h>
@@ -15,16 +8,16 @@
 #include <linux/spinlock_types.h>
 #include "clk.h"
 
-/* Clock Configuration Registers */
+ 
 #define SPEAR1340_SYS_CLK_CTRL			(misc_base + 0x200)
 	#define SPEAR1340_HCLK_SRC_SEL_SHIFT	27
 	#define SPEAR1340_HCLK_SRC_SEL_MASK	1
 	#define SPEAR1340_SCLK_SRC_SEL_SHIFT	23
 	#define SPEAR1340_SCLK_SRC_SEL_MASK	3
 
-/* PLL related registers and bit values */
+ 
 #define SPEAR1340_PLL_CFG			(misc_base + 0x210)
-	/* PLL_CFG bit values */
+	 
 	#define SPEAR1340_CLCD_SYNT_CLK_MASK		1
 	#define SPEAR1340_CLCD_SYNT_CLK_SHIFT		31
 	#define SPEAR1340_GEN_SYNT2_3_CLK_SHIFT		29
@@ -44,7 +37,7 @@
 #define SPEAR1340_PLL4_CTR			(misc_base + 0x238)
 #define SPEAR1340_PLL4_FRQ			(misc_base + 0x23C)
 #define SPEAR1340_PERIP_CLK_CFG			(misc_base + 0x244)
-	/* PERIP_CLK_CFG bit values */
+	 
 	#define SPEAR1340_SPDIF_CLK_MASK		1
 	#define SPEAR1340_SPDIF_OUT_CLK_SHIFT		15
 	#define SPEAR1340_SPDIF_IN_CLK_SHIFT		14
@@ -68,7 +61,7 @@
 	#define SPEAR1340_GMAC_PHY_INPUT_CLK_SHIFT	0
 
 #define SPEAR1340_I2S_CLK_CFG			(misc_base + 0x24C)
-	/* I2S_CLK_CFG register mask */
+	 
 	#define SPEAR1340_I2S_SCLK_X_MASK		0x1F
 	#define SPEAR1340_I2S_SCLK_X_SHIFT		27
 	#define SPEAR1340_I2S_SCLK_Y_MASK		0x1F
@@ -159,83 +152,38 @@
 
 static DEFINE_SPINLOCK(_lock);
 
-/* pll rate configuration table, in ascending order of rates */
+ 
 static struct pll_rate_tbl pll_rtbl[] = {
-	/* PCLK 24MHz */
-	{.mode = 0, .m = 0x83, .n = 0x04, .p = 0x5}, /* vco 1572, pll 49.125 MHz */
-	{.mode = 0, .m = 0x7D, .n = 0x06, .p = 0x3}, /* vco 1000, pll 125 MHz */
-	{.mode = 0, .m = 0x64, .n = 0x06, .p = 0x1}, /* vco 800, pll 400 MHz */
-	{.mode = 0, .m = 0x7D, .n = 0x06, .p = 0x1}, /* vco 1000, pll 500 MHz */
-	{.mode = 0, .m = 0xA6, .n = 0x06, .p = 0x1}, /* vco 1328, pll 664 MHz */
-	{.mode = 0, .m = 0xC8, .n = 0x06, .p = 0x1}, /* vco 1600, pll 800 MHz */
-	{.mode = 0, .m = 0x7D, .n = 0x06, .p = 0x0}, /* vco 1, pll 1 GHz */
-	{.mode = 0, .m = 0x96, .n = 0x06, .p = 0x0}, /* vco 1200, pll 1200 MHz */
+	 
+	{.mode = 0, .m = 0x83, .n = 0x04, .p = 0x5},  
+	{.mode = 0, .m = 0x7D, .n = 0x06, .p = 0x3},  
+	{.mode = 0, .m = 0x64, .n = 0x06, .p = 0x1},  
+	{.mode = 0, .m = 0x7D, .n = 0x06, .p = 0x1},  
+	{.mode = 0, .m = 0xA6, .n = 0x06, .p = 0x1},  
+	{.mode = 0, .m = 0xC8, .n = 0x06, .p = 0x1},  
+	{.mode = 0, .m = 0x7D, .n = 0x06, .p = 0x0},  
+	{.mode = 0, .m = 0x96, .n = 0x06, .p = 0x0},  
 };
 
-/* vco-pll4 rate configuration table, in ascending order of rates */
+ 
 static struct pll_rate_tbl pll4_rtbl[] = {
-	{.mode = 0, .m = 0x7D, .n = 0x06, .p = 0x2}, /* vco 1000, pll 250 MHz */
-	{.mode = 0, .m = 0xA6, .n = 0x06, .p = 0x2}, /* vco 1328, pll 332 MHz */
-	{.mode = 0, .m = 0xC8, .n = 0x06, .p = 0x2}, /* vco 1600, pll 400 MHz */
-	{.mode = 0, .m = 0x7D, .n = 0x06, .p = 0x0}, /* vco 1, pll 1 GHz */
+	{.mode = 0, .m = 0x7D, .n = 0x06, .p = 0x2},  
+	{.mode = 0, .m = 0xA6, .n = 0x06, .p = 0x2},  
+	{.mode = 0, .m = 0xC8, .n = 0x06, .p = 0x2},  
+	{.mode = 0, .m = 0x7D, .n = 0x06, .p = 0x0},  
 };
 
-/*
- * All below entries generate 166 MHz for
- * different values of vco1div2
- */
+ 
 static struct frac_rate_tbl amba_synth_rtbl[] = {
-	{.div = 0x073A8}, /* for vco1div2 = 600 MHz */
-	{.div = 0x06062}, /* for vco1div2 = 500 MHz */
-	{.div = 0x04D1B}, /* for vco1div2 = 400 MHz */
-	{.div = 0x04000}, /* for vco1div2 = 332 MHz */
-	{.div = 0x03031}, /* for vco1div2 = 250 MHz */
-	{.div = 0x0268D}, /* for vco1div2 = 200 MHz */
+	{.div = 0x073A8},  
+	{.div = 0x06062},  
+	{.div = 0x04D1B},  
+	{.div = 0x04000},  
+	{.div = 0x03031},  
+	{.div = 0x0268D},  
 };
 
-/*
- * Synthesizer Clock derived from vcodiv2. This clock is one of the
- * possible clocks to feed cpu directly.
- * We can program this synthesizer to make cpu run on different clock
- * frequencies.
- * Following table provides configuration values to let cpu run on 200,
- * 250, 332, 400 or 500 MHz considering different possibilites of input
- * (vco1div2) clock.
- *
- * --------------------------------------------------------------------
- * vco1div2(Mhz)	fout(Mhz)	cpuclk = fout/2		div
- * --------------------------------------------------------------------
- * 400			200		100			0x04000
- * 400			250		125			0x03333
- * 400			332		166			0x0268D
- * 400			400		200			0x02000
- * --------------------------------------------------------------------
- * 500			200		100			0x05000
- * 500			250		125			0x04000
- * 500			332		166			0x03031
- * 500			400		200			0x02800
- * 500			500		250			0x02000
- * --------------------------------------------------------------------
- * 600			200		100			0x06000
- * 600			250		125			0x04CCE
- * 600			332		166			0x039D5
- * 600			400		200			0x03000
- * 600			500		250			0x02666
- * --------------------------------------------------------------------
- * 664			200		100			0x06a38
- * 664			250		125			0x054FD
- * 664			332		166			0x04000
- * 664			400		200			0x0351E
- * 664			500		250			0x02A7E
- * --------------------------------------------------------------------
- * 800			200		100			0x08000
- * 800			250		125			0x06666
- * 800			332		166			0x04D18
- * 800			400		200			0x04000
- * 800			500		250			0x03333
- * --------------------------------------------------------------------
- * sys rate configuration table is in descending order of divisor.
- */
+ 
 static struct frac_rate_tbl sys_synth_rtbl[] = {
 	{.div = 0x08000},
 	{.div = 0x06a38},
@@ -258,68 +206,68 @@ static struct frac_rate_tbl sys_synth_rtbl[] = {
 	{.div = 0x02000},
 };
 
-/* aux rate configuration table, in ascending order of rates */
+ 
 static struct aux_rate_tbl aux_rtbl[] = {
-	/* 12.29MHz for vic1div2=600MHz and 10.24MHz for VCO1div2=500MHz */
+	 
 	{.xscale = 5, .yscale = 122, .eq = 0},
-	/* 14.70MHz for vic1div2=600MHz and 12.29MHz for VCO1div2=500MHz */
+	 
 	{.xscale = 10, .yscale = 204, .eq = 0},
-	/* 48MHz for vic1div2=600MHz and 40 MHz for VCO1div2=500MHz */
+	 
 	{.xscale = 4, .yscale = 25, .eq = 0},
-	/* 57.14MHz for vic1div2=600MHz and 48 MHz for VCO1div2=500MHz */
+	 
 	{.xscale = 4, .yscale = 21, .eq = 0},
-	/* 83.33MHz for vic1div2=600MHz and 69.44MHz for VCO1div2=500MHz */
+	 
 	{.xscale = 5, .yscale = 18, .eq = 0},
-	/* 100MHz for vic1div2=600MHz and 83.33 MHz for VCO1div2=500MHz */
+	 
 	{.xscale = 2, .yscale = 6, .eq = 0},
-	/* 125MHz for vic1div2=600MHz and 104.1MHz for VCO1div2=500MHz */
+	 
 	{.xscale = 5, .yscale = 12, .eq = 0},
-	/* 150MHz for vic1div2=600MHz and 125MHz for VCO1div2=500MHz */
+	 
 	{.xscale = 2, .yscale = 4, .eq = 0},
-	/* 166MHz for vic1div2=600MHz and 138.88MHz for VCO1div2=500MHz */
+	 
 	{.xscale = 5, .yscale = 18, .eq = 1},
-	/* 200MHz for vic1div2=600MHz and 166MHz for VCO1div2=500MHz */
+	 
 	{.xscale = 1, .yscale = 3, .eq = 1},
-	/* 250MHz for vic1div2=600MHz and 208.33MHz for VCO1div2=500MHz */
+	 
 	{.xscale = 5, .yscale = 12, .eq = 1},
-	/* 300MHz for vic1div2=600MHz and 250MHz for VCO1div2=500MHz */
+	 
 	{.xscale = 1, .yscale = 2, .eq = 1},
 };
 
-/* gmac rate configuration table, in ascending order of rates */
+ 
 static struct aux_rate_tbl gmac_rtbl[] = {
-	/* For gmac phy input clk */
-	{.xscale = 2, .yscale = 6, .eq = 0}, /* divided by 6 */
-	{.xscale = 2, .yscale = 4, .eq = 0}, /* divided by 4 */
-	{.xscale = 1, .yscale = 3, .eq = 1}, /* divided by 3 */
-	{.xscale = 1, .yscale = 2, .eq = 1}, /* divided by 2 */
+	 
+	{.xscale = 2, .yscale = 6, .eq = 0},  
+	{.xscale = 2, .yscale = 4, .eq = 0},  
+	{.xscale = 1, .yscale = 3, .eq = 1},  
+	{.xscale = 1, .yscale = 2, .eq = 1},  
 };
 
-/* clcd rate configuration table, in ascending order of rates */
+ 
 static struct frac_rate_tbl clcd_rtbl[] = {
-	{.div = 0x18000}, /* 25 Mhz , for vc01div4 = 300 MHz*/
-	{.div = 0x1638E}, /* 27 Mhz , for vc01div4 = 300 MHz*/
-	{.div = 0x14000}, /* 25 Mhz , for vc01div4 = 250 MHz*/
-	{.div = 0x1284B}, /* 27 Mhz , for vc01div4 = 250 MHz*/
-	{.div = 0x0D8D3}, /* 58 Mhz , for vco1div4 = 393 MHz */
-	{.div = 0x0B72C}, /* 58 Mhz , for vco1div4 = 332 MHz */
-	{.div = 0x0A584}, /* 58 Mhz , for vco1div4 = 300 MHz */
-	{.div = 0x093B1}, /* 65 Mhz , for vc01div4 = 300 MHz*/
-	{.div = 0x089EE}, /* 58 Mhz , for vc01div4 = 250 MHz*/
-	{.div = 0x081BA}, /* 74 Mhz , for vc01div4 = 300 MHz*/
-	{.div = 0x07BA0}, /* 65 Mhz , for vc01div4 = 250 MHz*/
-	{.div = 0x06f1C}, /* 72 Mhz , for vc01div4 = 250 MHz*/
-	{.div = 0x06E58}, /* 58 Mhz , for vco1div4 = 200 MHz */
-	{.div = 0x06c1B}, /* 74 Mhz , for vc01div4 = 250 MHz*/
-	{.div = 0x058E3}, /* 108 Mhz , for vc01div4 = 300 MHz*/
-	{.div = 0x04A12}, /* 108 Mhz , for vc01div4 = 250 MHz*/
-	{.div = 0x040A5}, /* 148.5 Mhz , for vc01div4 = 300 MHz*/
-	{.div = 0x0378E}, /* 144 Mhz , for vc01div4 = 250 MHz*/
-	{.div = 0x0360D}, /* 148 Mhz , for vc01div4 = 250 MHz*/
-	{.div = 0x035E0}, /* 148.5 MHz, for vc01div4 = 250 MHz*/
+	{.div = 0x18000},  
+	{.div = 0x1638E},  
+	{.div = 0x14000},  
+	{.div = 0x1284B},  
+	{.div = 0x0D8D3},  
+	{.div = 0x0B72C},  
+	{.div = 0x0A584},  
+	{.div = 0x093B1},  
+	{.div = 0x089EE},  
+	{.div = 0x081BA},  
+	{.div = 0x07BA0},  
+	{.div = 0x06f1C},  
+	{.div = 0x06E58},  
+	{.div = 0x06c1B},  
+	{.div = 0x058E3},  
+	{.div = 0x04A12},  
+	{.div = 0x040A5},  
+	{.div = 0x0378E},  
+	{.div = 0x0360D},  
+	{.div = 0x035E0},  
 };
 
-/* i2s prescaler1 masks */
+ 
 static const struct aux_clk_masks i2s_prs1_masks = {
 	.eq_sel_mask = AUX_EQ_SEL_MASK,
 	.eq_sel_shift = SPEAR1340_I2S_PRS1_EQ_SEL_SHIFT,
@@ -331,7 +279,7 @@ static const struct aux_clk_masks i2s_prs1_masks = {
 	.yscale_sel_shift = SPEAR1340_I2S_PRS1_CLK_Y_SHIFT,
 };
 
-/* i2s sclk (bit clock) syynthesizers masks */
+ 
 static const struct aux_clk_masks i2s_sclk_masks = {
 	.eq_sel_mask = AUX_EQ_SEL_MASK,
 	.eq_sel_shift = SPEAR1340_I2S_SCLK_EQ_SEL_SHIFT,
@@ -344,72 +292,69 @@ static const struct aux_clk_masks i2s_sclk_masks = {
 	.enable_bit = SPEAR1340_I2S_SCLK_SYNTH_ENB,
 };
 
-/* i2s prs1 aux rate configuration table, in ascending order of rates */
+ 
 static struct aux_rate_tbl i2s_prs1_rtbl[] = {
-	/* For parent clk = 49.152 MHz */
-	{.xscale = 1, .yscale = 12, .eq = 0}, /* 2.048 MHz, smp freq = 8Khz */
-	{.xscale = 11, .yscale = 96, .eq = 0}, /* 2.816 MHz, smp freq = 11Khz */
-	{.xscale = 1, .yscale = 6, .eq = 0}, /* 4.096 MHz, smp freq = 16Khz */
-	{.xscale = 11, .yscale = 48, .eq = 0}, /* 5.632 MHz, smp freq = 22Khz */
+	 
+	{.xscale = 1, .yscale = 12, .eq = 0},  
+	{.xscale = 11, .yscale = 96, .eq = 0},  
+	{.xscale = 1, .yscale = 6, .eq = 0},  
+	{.xscale = 11, .yscale = 48, .eq = 0},  
 
-	/*
-	 * with parent clk = 49.152, freq gen is 8.192 MHz, smp freq = 32Khz
-	 * with parent clk = 12.288, freq gen is 2.048 MHz, smp freq = 8Khz
-	 */
+	 
 	{.xscale = 1, .yscale = 3, .eq = 0},
 
-	/* For parent clk = 49.152 MHz */
-	{.xscale = 17, .yscale = 37, .eq = 0}, /* 11.289 MHz, smp freq = 44Khz*/
-	{.xscale = 1, .yscale = 2, .eq = 0}, /* 12.288 MHz, smp freq = 48Khz*/
+	 
+	{.xscale = 17, .yscale = 37, .eq = 0},  
+	{.xscale = 1, .yscale = 2, .eq = 0},  
 };
 
-/* i2s sclk aux rate configuration table, in ascending order of rates */
+ 
 static struct aux_rate_tbl i2s_sclk_rtbl[] = {
-	/* For sclk = ref_clk * x/2/y */
+	 
 	{.xscale = 1, .yscale = 4, .eq = 0},
 	{.xscale = 1, .yscale = 2, .eq = 0},
 };
 
-/* adc rate configuration table, in ascending order of rates */
-/* possible adc range is 2.5 MHz to 20 MHz. */
+ 
+ 
 static struct aux_rate_tbl adc_rtbl[] = {
-	/* For ahb = 166.67 MHz */
-	{.xscale = 1, .yscale = 31, .eq = 0}, /* 2.68 MHz */
-	{.xscale = 2, .yscale = 21, .eq = 0}, /* 7.94 MHz */
-	{.xscale = 4, .yscale = 21, .eq = 0}, /* 15.87 MHz */
-	{.xscale = 10, .yscale = 42, .eq = 0}, /* 19.84 MHz */
+	 
+	{.xscale = 1, .yscale = 31, .eq = 0},  
+	{.xscale = 2, .yscale = 21, .eq = 0},  
+	{.xscale = 4, .yscale = 21, .eq = 0},  
+	{.xscale = 10, .yscale = 42, .eq = 0},  
 };
 
-/* General synth rate configuration table, in ascending order of rates */
+ 
 static struct frac_rate_tbl gen_rtbl[] = {
-	{.div = 0x1A92B}, /* 22.5792 MHz for vco1div4=300 MHz*/
-	{.div = 0x186A0}, /* 24.576 MHz for vco1div4=300 MHz*/
-	{.div = 0x18000}, /* 25 MHz for vco1div4=300 MHz*/
-	{.div = 0x1624E}, /* 22.5792 MHz for vco1div4=250 MHz*/
-	{.div = 0x14585}, /* 24.576 MHz for vco1div4=250 MHz*/
-	{.div = 0x14000}, /* 25 MHz for vco1div4=250 MHz*/
-	{.div = 0x0D495}, /* 45.1584 MHz for vco1div4=300 MHz*/
-	{.div = 0x0C000}, /* 50 MHz for vco1div4=300 MHz*/
-	{.div = 0x0B127}, /* 45.1584 MHz for vco1div4=250 MHz*/
-	{.div = 0x0A000}, /* 50 MHz for vco1div4=250 MHz*/
-	{.div = 0x07530}, /* 81.92 MHz for vco1div4=300 MHz*/
-	{.div = 0x061A8}, /* 81.92 MHz for vco1div4=250 MHz*/
-	{.div = 0x06000}, /* 100 MHz for vco1div4=300 MHz*/
-	{.div = 0x05000}, /* 100 MHz for vco1div4=250 MHz*/
-	{.div = 0x03000}, /* 200 MHz for vco1div4=300 MHz*/
-	{.div = 0x02DB6}, /* 210 MHz for vco1div4=300 MHz*/
-	{.div = 0x02BA2}, /* 220 MHz for vco1div4=300 MHz*/
-	{.div = 0x029BD}, /* 230 MHz for vco1div4=300 MHz*/
-	{.div = 0x02800}, /* 200 MHz for vco1div4=250 MHz*/
-	{.div = 0x02666}, /* 250 MHz for vco1div4=300 MHz*/
-	{.div = 0x02620}, /* 210 MHz for vco1div4=250 MHz*/
-	{.div = 0x02460}, /* 220 MHz for vco1div4=250 MHz*/
-	{.div = 0x022C0}, /* 230 MHz for vco1div4=250 MHz*/
-	{.div = 0x02160}, /* 240 MHz for vco1div4=250 MHz*/
-	{.div = 0x02000}, /* 250 MHz for vco1div4=250 MHz*/
+	{.div = 0x1A92B},  
+	{.div = 0x186A0},  
+	{.div = 0x18000},  
+	{.div = 0x1624E},  
+	{.div = 0x14585},  
+	{.div = 0x14000},  
+	{.div = 0x0D495},  
+	{.div = 0x0C000},  
+	{.div = 0x0B127},  
+	{.div = 0x0A000},  
+	{.div = 0x07530},  
+	{.div = 0x061A8},  
+	{.div = 0x06000},  
+	{.div = 0x05000},  
+	{.div = 0x03000},  
+	{.div = 0x02DB6},  
+	{.div = 0x02BA2},  
+	{.div = 0x029BD},  
+	{.div = 0x02800},  
+	{.div = 0x02666},  
+	{.div = 0x02620},  
+	{.div = 0x02460},  
+	{.div = 0x022C0},  
+	{.div = 0x02160},  
+	{.div = 0x02000},  
 };
 
-/* clock parents */
+ 
 static const char *vco_parents[] = { "osc_24m_clk", "osc_25m_clk", };
 static const char *sys_parents[] = { "pll1_clk", "pll1_clk", "pll1_clk",
 	"pll1_clk", "sys_syn_clk", "sys_syn_clk", "pll2_clk", "pll3_clk", };
@@ -456,14 +401,14 @@ void __init spear1340_clk_init(void __iomem *misc_base)
 				      12288000);
 	clk_register_clkdev(clk, "i2s_src_pad_clk", NULL);
 
-	/* clock derived from 32 KHz osc clk */
+	 
 	clk = clk_register_gate(NULL, "rtc-spear", "osc_32k_clk", 0,
 			SPEAR1340_PERIP1_CLK_ENB, SPEAR1340_RTC_CLK_ENB, 0,
 			&_lock);
 	clk_register_clkdev(clk, NULL, "e0580000.rtc");
 
-	/* clock derived from 24 or 25 MHz osc clk */
-	/* vco-pll */
+	 
+	 
 	clk = clk_register_mux(NULL, "vco1_mclk", vco_parents,
 			ARRAY_SIZE(vco_parents), CLK_SET_RATE_NO_REPARENT,
 			SPEAR1340_PLL_CFG, SPEAR1340_PLL1_CLK_SHIFT,
@@ -511,7 +456,7 @@ void __init spear1340_clk_init(void __iomem *misc_base)
 			25000000);
 	clk_register_clkdev(clk, "pll6_clk", NULL);
 
-	/* vco div n clocks */
+	 
 	clk = clk_register_fixed_factor(NULL, "vco1div2_clk", "vco1_clk", 0, 1,
 			2);
 	clk_register_clkdev(clk, "vco1div2_clk", NULL);
@@ -528,7 +473,7 @@ void __init spear1340_clk_init(void __iomem *misc_base)
 			2);
 	clk_register_clkdev(clk, "vco3div2_clk", NULL);
 
-	/* peripherals */
+	 
 	clk_register_fixed_factor(NULL, "thermal_clk", "osc_24m_clk", 0, 1,
 			128);
 	clk = clk_register_gate(NULL, "thermal_gclk", "thermal_clk", 0,
@@ -536,12 +481,12 @@ void __init spear1340_clk_init(void __iomem *misc_base)
 			&_lock);
 	clk_register_clkdev(clk, NULL, "e07008c4.thermal");
 
-	/* clock derived from pll4 clk */
+	 
 	clk = clk_register_fixed_factor(NULL, "ddr_clk", "pll4_clk", 0, 1,
 			1);
 	clk_register_clkdev(clk, "ddr_clk", NULL);
 
-	/* clock derived from pll1 clk */
+	 
 	clk = clk_register_frac("sys_syn_clk", "vco1div2_clk", 0,
 			SPEAR1340_SYS_CLK_SYNT, sys_synth_rtbl,
 			ARRAY_SIZE(sys_synth_rtbl), &_lock);
@@ -584,7 +529,7 @@ void __init spear1340_clk_init(void __iomem *misc_base)
 			2);
 	clk_register_clkdev(clk, "apb_clk", NULL);
 
-	/* gpt clocks */
+	 
 	clk = clk_register_mux(NULL, "gpt0_mclk", gpt_parents,
 			ARRAY_SIZE(gpt_parents), CLK_SET_RATE_NO_REPARENT,
 			SPEAR1340_PERIP_CLK_CFG, SPEAR1340_GPT0_CLK_SHIFT,
@@ -625,7 +570,7 @@ void __init spear1340_clk_init(void __iomem *misc_base)
 			&_lock);
 	clk_register_clkdev(clk, NULL, "gpt3");
 
-	/* others */
+	 
 	clk = clk_register_aux("uart0_syn_clk", "uart0_syn_gclk",
 			"vco1div2_clk", 0, SPEAR1340_UART0_CLK_SYNT, NULL,
 			aux_rtbl, ARRAY_SIZE(aux_rtbl), &_lock, &clk1);
@@ -702,7 +647,7 @@ void __init spear1340_clk_init(void __iomem *misc_base)
 			&_lock);
 	clk_register_clkdev(clk, NULL, "e1800000.c3");
 
-	/* gmac */
+	 
 	clk = clk_register_mux(NULL, "phy_input_mclk", gmac_phy_input_parents,
 			ARRAY_SIZE(gmac_phy_input_parents),
 			CLK_SET_RATE_NO_REPARENT, SPEAR1340_GMAC_CLK_CFG,
@@ -722,7 +667,7 @@ void __init spear1340_clk_init(void __iomem *misc_base)
 			SPEAR1340_GMAC_PHY_CLK_MASK, 0, &_lock);
 	clk_register_clkdev(clk, "stmmacphy.0", NULL);
 
-	/* clcd */
+	 
 	clk = clk_register_mux(NULL, "clcd_syn_mclk", clcd_synth_parents,
 			ARRAY_SIZE(clcd_synth_parents),
 			CLK_SET_RATE_NO_REPARENT, SPEAR1340_CLCD_CLK_SYNT,
@@ -747,7 +692,7 @@ void __init spear1340_clk_init(void __iomem *misc_base)
 			&_lock);
 	clk_register_clkdev(clk, NULL, "e1000000.clcd");
 
-	/* i2s */
+	 
 	clk = clk_register_mux(NULL, "i2s_src_mclk", i2s_src_parents,
 			ARRAY_SIZE(i2s_src_parents), CLK_SET_RATE_NO_REPARENT,
 			SPEAR1340_I2S_CLK_CFG, SPEAR1340_I2S_SRC_CLK_SHIFT,
@@ -779,7 +724,7 @@ void __init spear1340_clk_init(void __iomem *misc_base)
 	clk_register_clkdev(clk, "i2s_sclk_clk", NULL);
 	clk_register_clkdev(clk1, "i2s_sclk_gclk", NULL);
 
-	/* clock derived from ahb clk */
+	 
 	clk = clk_register_gate(NULL, "i2c0_clk", "ahb_clk", 0,
 			SPEAR1340_PERIP1_CLK_ENB, SPEAR1340_I2C0_CLK_ENB, 0,
 			&_lock);
@@ -855,7 +800,7 @@ void __init spear1340_clk_init(void __iomem *misc_base)
 			SPEAR1340_ADC_CLK_ENB, 0, &_lock);
 	clk_register_clkdev(clk, NULL, "e0080000.adc");
 
-	/* clock derived from apb clk */
+	 
 	clk = clk_register_gate(NULL, "ssp_clk", "apb_clk", 0,
 			SPEAR1340_PERIP1_CLK_ENB, SPEAR1340_SSP_CLK_ENB, 0,
 			&_lock);
@@ -886,7 +831,7 @@ void __init spear1340_clk_init(void __iomem *misc_base)
 			&_lock);
 	clk_register_clkdev(clk, NULL, "e0300000.kbd");
 
-	/* RAS clks */
+	 
 	clk = clk_register_mux(NULL, "gen_syn0_1_mclk", gen_synth0_1_parents,
 			ARRAY_SIZE(gen_synth0_1_parents),
 			CLK_SET_RATE_NO_REPARENT, SPEAR1340_PLL_CFG,

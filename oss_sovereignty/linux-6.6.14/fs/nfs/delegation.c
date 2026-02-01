@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * linux/fs/nfs/delegation.c
- *
- * Copyright (C) 2004 Trond Myklebust
- *
- * NFS file delegation management
- *
- */
+
+ 
 #include <linux/completion.h>
 #include <linux/kthread.h>
 #include <linux/module.h>
@@ -65,11 +58,7 @@ static void nfs_free_delegation(struct nfs_delegation *delegation)
 	nfs_put_delegation(delegation);
 }
 
-/**
- * nfs_mark_delegation_referenced - set delegation's REFERENCED flag
- * @delegation: delegation to process
- *
- */
+ 
 void nfs_mark_delegation_referenced(struct nfs_delegation *delegation)
 {
 	set_bit(NFS_DELEGATION_REFERENCED, &delegation->flags);
@@ -120,23 +109,13 @@ nfs4_do_check_delegation(struct inode *inode, fmode_t flags, bool mark)
 	rcu_read_unlock();
 	return ret;
 }
-/**
- * nfs4_have_delegation - check if inode has a delegation, mark it
- * NFS_DELEGATION_REFERENCED if there is one.
- * @inode: inode to check
- * @flags: delegation types to check for
- *
- * Returns one if inode has the indicated delegation, otherwise zero.
- */
+ 
 int nfs4_have_delegation(struct inode *inode, fmode_t flags)
 {
 	return nfs4_do_check_delegation(inode, flags, true);
 }
 
-/*
- * nfs4_check_delegation - check if inode has a delegation, do not mark
- * NFS_DELEGATION_REFERENCED if it has one.
- */
+ 
 int nfs4_check_delegation(struct inode *inode, fmode_t flags)
 {
 	return nfs4_do_check_delegation(inode, flags, false);
@@ -200,7 +179,7 @@ again:
 			continue;
 		rcu_read_unlock();
 		sp = state->owner;
-		/* Block nfs4_proc_unlck */
+		 
 		mutex_lock(&sp->so_delegreturn_mutex);
 		seq = raw_seqcount_begin(&sp->so_reclaim_seqcount);
 		err = nfs4_open_delegation_recall(ctx, state, stateid);
@@ -218,15 +197,7 @@ again:
 	return 0;
 }
 
-/**
- * nfs_inode_reclaim_delegation - process a delegation reclaim request
- * @inode: inode to process
- * @cred: credential to use for request
- * @type: delegation type
- * @stateid: delegation stateid
- * @pagemod_limit: write delegation "space_limit"
- *
- */
+ 
 void nfs_inode_reclaim_delegation(struct inode *inode, const struct cred *cred,
 				  fmode_t type, const nfs4_stateid *stateid,
 				  unsigned long pagemod_limit)
@@ -299,7 +270,7 @@ nfs_start_delegation_return_locked(struct nfs_inode *nfsi)
 	spin_lock(&delegation->lock);
 	if (!test_and_set_bit(NFS_DELEGATION_RETURNING, &delegation->flags)) {
 		clear_bit(NFS_DELEGATION_RETURN_DELAYED, &delegation->flags);
-		/* Refcount matched in nfs_end_delegation_return() */
+		 
 		ret = nfs_get_delegation(delegation);
 	}
 	spin_unlock(&delegation->lock);
@@ -408,23 +379,14 @@ nfs_update_inplace_delegation(struct nfs_delegation *delegation,
 		if (test_bit(NFS_DELEGATION_REVOKED, &delegation->flags)) {
 			delegation->change_attr = update->change_attr;
 			nfs_update_delegation_cred(delegation, update->cred);
-			/* smp_mb__before_atomic() is implicit due to xchg() */
+			 
 			clear_bit(NFS_DELEGATION_REVOKED, &delegation->flags);
 			atomic_long_inc(&nfs_active_delegations);
 		}
 	}
 }
 
-/**
- * nfs_inode_set_delegation - set up a delegation on an inode
- * @inode: inode to which delegation applies
- * @cred: cred to use for subsequent delegation processing
- * @type: delegation type
- * @stateid: delegation stateid
- * @pagemod_limit: write delegation "space_limit"
- *
- * Returns zero on success, or a negative errno value.
- */
+ 
 int nfs_inode_set_delegation(struct inode *inode, const struct cred *cred,
 				  fmode_t type,
 				  const nfs4_stateid *stateid,
@@ -455,7 +417,7 @@ int nfs_inode_set_delegation(struct inode *inode, const struct cred *cred,
 					lockdep_is_held(&clp->cl_lock));
 	if (old_delegation == NULL)
 		goto add_new;
-	/* Is this an update of the existing delegation? */
+	 
 	if (nfs4_stateid_match_other(&old_delegation->stateid,
 				&delegation->stateid)) {
 		spin_lock(&old_delegation->lock);
@@ -465,12 +427,7 @@ int nfs_inode_set_delegation(struct inode *inode, const struct cred *cred,
 		goto out;
 	}
 	if (!test_bit(NFS_DELEGATION_REVOKED, &old_delegation->flags)) {
-		/*
-		 * Deal with broken servers that hand out two
-		 * delegations for the same file.
-		 * Allow for upgrades to a WRITE delegation, but
-		 * nothing else.
-		 */
+		 
 		dfprintk(FILE, "%s: server %s handed out "
 				"a duplicate delegation!\n",
 				__func__, clp->cl_hostname);
@@ -488,11 +445,7 @@ int nfs_inode_set_delegation(struct inode *inode, const struct cred *cred,
 	if (freeme == NULL)
 		goto out;
 add_new:
-	/*
-	 * If we didn't revalidate the change attribute before setting
-	 * the delegation, then pre-emptively ask for a full attribute
-	 * cache revalidation.
-	 */
+	 
 	spin_lock(&inode->i_lock);
 	if (NFS_I(inode)->cache_validity & NFS_INO_INVALID_CHANGE)
 		nfs_set_cache_invalid(inode,
@@ -522,9 +475,7 @@ out:
 	return status;
 }
 
-/*
- * Basic procedure for returning a delegation to the server
- */
+ 
 static int nfs_end_delegation_return(struct inode *inode, struct nfs_delegation *delegation, int issync)
 {
 	struct nfs_client *clp = NFS_SERVER(inode)->nfs_client;
@@ -536,7 +487,7 @@ static int nfs_end_delegation_return(struct inode *inode, struct nfs_delegation 
 
 	if (!issync)
 		mode |= O_NONBLOCK;
-	/* Recall of any remaining application leases */
+	 
 	err = break_lease(inode, mode);
 
 	while (err == 0) {
@@ -546,9 +497,7 @@ static int nfs_end_delegation_return(struct inode *inode, struct nfs_delegation 
 				delegation->type);
 		if (!issync || err != -EAGAIN)
 			break;
-		/*
-		 * Guard against state recovery
-		 */
+		 
 		err = nfs4_wait_clnt_recover(clp);
 	}
 
@@ -559,7 +508,7 @@ static int nfs_end_delegation_return(struct inode *inode, struct nfs_delegation 
 
 	err = nfs_do_return_delegation(inode, delegation, issync);
 out:
-	/* Refcount matched in nfs_start_delegation_return_locked() */
+	 
 	nfs_put_delegation(delegation);
 	return err;
 }
@@ -600,15 +549,7 @@ static int nfs_server_return_marked_delegations(struct nfs_server *server,
 	int err = 0;
 
 restart:
-	/*
-	 * To avoid quadratic looping we hold a reference
-	 * to an inode place_holder.  Each time we restart, we
-	 * list delegation in the server from the delegations
-	 * of that inode.
-	 * prev is an RCU-protected pointer to a delegation which
-	 * wasn't marked for return and might be a good choice for
-	 * the next place_holder.
-	 */
+	 
 	prev = NULL;
 	delegation = NULL;
 	rcu_read_lock();
@@ -694,36 +635,20 @@ out:
 	return ret;
 }
 
-/**
- * nfs_client_return_marked_delegations - return previously marked delegations
- * @clp: nfs_client to process
- *
- * Note that this function is designed to be called by the state
- * manager thread. For this reason, it cannot flush the dirty data,
- * since that could deadlock in case of a state recovery error.
- *
- * Returns zero on success, or a negative errno value.
- */
+ 
 int nfs_client_return_marked_delegations(struct nfs_client *clp)
 {
 	int err = nfs_client_for_each_server(
 		clp, nfs_server_return_marked_delegations, NULL);
 	if (err)
 		return err;
-	/* If a return was delayed, sleep to prevent hard looping */
+	 
 	if (nfs_client_clear_delayed_delegations(clp))
 		ssleep(1);
 	return 0;
 }
 
-/**
- * nfs_inode_evict_delegation - return delegation, don't reclaim opens
- * @inode: inode to process
- *
- * Does not protect against delegation reclaims, therefore really only safe
- * to be called from nfs4_clear_inode(). Guaranteed to always free
- * the delegation structure.
- */
+ 
 void nfs_inode_evict_delegation(struct inode *inode)
 {
 	struct nfs_delegation *delegation;
@@ -737,16 +662,7 @@ void nfs_inode_evict_delegation(struct inode *inode)
 	}
 }
 
-/**
- * nfs4_inode_return_delegation - synchronously return a delegation
- * @inode: inode to process
- *
- * This routine will always flush any dirty data to disk on the
- * assumption that if we need to return the delegation, then
- * we should stop caching.
- *
- * Returns zero on success, or a negative errno value.
- */
+ 
 int nfs4_inode_return_delegation(struct inode *inode)
 {
 	struct nfs_inode *nfsi = NFS_I(inode);
@@ -754,7 +670,7 @@ int nfs4_inode_return_delegation(struct inode *inode)
 
 	delegation = nfs_start_delegation_return(nfsi);
 	if (delegation != NULL) {
-		/* Synchronous recall of any application leases */
+		 
 		break_lease(inode, O_WRONLY | O_RDWR);
 		if (S_ISREG(inode->i_mode))
 			nfs_wb_all(inode);
@@ -763,13 +679,7 @@ int nfs4_inode_return_delegation(struct inode *inode)
 	return 0;
 }
 
-/**
- * nfs4_inode_return_delegation_on_close - asynchronously return a delegation
- * @inode: inode to process
- *
- * This routine is called on file close in order to determine if the
- * inode delegation needs to be returned immediately.
- */
+ 
 void nfs4_inode_return_delegation_on_close(struct inode *inode)
 {
 	struct nfs_delegation *delegation;
@@ -788,7 +698,7 @@ void nfs4_inode_return_delegation_on_close(struct inode *inode)
 		    list_empty(&NFS_I(inode)->open_files) &&
 		    !test_and_set_bit(NFS_DELEGATION_RETURNING, &delegation->flags)) {
 			clear_bit(NFS_DELEGATION_RETURN_IF_CLOSED, &delegation->flags);
-			/* Refcount matched in nfs_end_delegation_return() */
+			 
 			ret = nfs_get_delegation(delegation);
 		}
 		spin_unlock(&delegation->lock);
@@ -800,14 +710,7 @@ out:
 	nfs_end_delegation_return(inode, ret, 0);
 }
 
-/**
- * nfs4_inode_make_writeable
- * @inode: pointer to inode
- *
- * Make the inode writeable by returning the delegation if necessary
- *
- * Returns zero on success, or a negative errno value.
- */
+ 
 int nfs4_inode_make_writeable(struct inode *inode)
 {
 	struct nfs_delegation *delegation;
@@ -859,22 +762,14 @@ static void nfs_delegation_run_state_manager(struct nfs_client *clp)
 		nfs4_schedule_state_manager(clp);
 }
 
-/**
- * nfs_expire_all_delegations
- * @clp: client to process
- *
- */
+ 
 void nfs_expire_all_delegations(struct nfs_client *clp)
 {
 	nfs_client_mark_return_all_delegations(clp);
 	nfs_delegation_run_state_manager(clp);
 }
 
-/**
- * nfs_server_return_all_delegations - return delegations for one superblock
- * @server: pointer to nfs_server to process
- *
- */
+ 
 void nfs_server_return_all_delegations(struct nfs_server *server)
 {
 	struct nfs_client *clp = server->nfs_client;
@@ -976,7 +871,7 @@ void nfs_delegation_mark_returned(struct inode *inode,
 	if (!nfs4_stateid_match_other(stateid, &delegation->stateid))
 		goto out_spin_unlock;
 	if (stateid->seqid) {
-		/* If delegation->stateid is newer, dont mark as returned */
+		 
 		if (nfs4_stateid_is_newer(&delegation->stateid, stateid))
 			goto out_clear_returning;
 		if (delegation->stateid.seqid != stateid->seqid)
@@ -995,12 +890,7 @@ out_rcu_unlock:
 	nfs_inode_find_state_and_recover(inode, stateid);
 }
 
-/**
- * nfs_expire_unused_delegation_types
- * @clp: client to process
- * @flags: delegation types to expire
- *
- */
+ 
 void nfs_expire_unused_delegation_types(struct nfs_client *clp, fmode_t flags)
 {
 	nfs_client_mark_return_unused_delegation_types(clp, flags);
@@ -1018,11 +908,7 @@ static void nfs_mark_return_unreferenced_delegations(struct nfs_server *server)
 	}
 }
 
-/**
- * nfs_expire_unreferenced_delegations - Eliminate unused delegations
- * @clp: nfs_client to process
- *
- */
+ 
 void nfs_expire_unreferenced_delegations(struct nfs_client *clp)
 {
 	struct nfs_server *server;
@@ -1035,13 +921,7 @@ void nfs_expire_unreferenced_delegations(struct nfs_client *clp)
 	nfs_delegation_run_state_manager(clp);
 }
 
-/**
- * nfs_async_inode_return_delegation - asynchronously return a delegation
- * @inode: inode to process
- * @stateid: state ID information
- *
- * Returns zero on success, or a negative errno value.
- */
+ 
 int nfs_async_inode_return_delegation(struct inode *inode,
 				      const nfs4_stateid *stateid)
 {
@@ -1059,7 +939,7 @@ int nfs_async_inode_return_delegation(struct inode *inode,
 	nfs_mark_return_delegation(server, delegation);
 	rcu_read_unlock();
 
-	/* If there are any application leases or delegations, recall them */
+	 
 	break_lease(inode, O_WRONLY | O_RDWR | O_NONBLOCK);
 
 	nfs_delegation_run_state_manager(clp);
@@ -1101,14 +981,7 @@ nfs_delegation_find_inode_server(struct nfs_server *server,
 	return ERR_PTR(-ENOENT);
 }
 
-/**
- * nfs_delegation_find_inode - retrieve the inode associated with a delegation
- * @clp: client state handle
- * @fhandle: filehandle from a delegation recall
- *
- * Returns pointer to inode matching "fhandle," or NULL if a matching inode
- * cannot be found.
- */
+ 
 struct inode *nfs_delegation_find_inode(struct nfs_client *clp,
 					const struct nfs_fh *fhandle)
 {
@@ -1132,21 +1005,14 @@ static void nfs_delegation_mark_reclaim_server(struct nfs_server *server)
 	struct nfs_delegation *delegation;
 
 	list_for_each_entry_rcu(delegation, &server->delegations, super_list) {
-		/*
-		 * If the delegation may have been admin revoked, then we
-		 * cannot reclaim it.
-		 */
+		 
 		if (test_bit(NFS_DELEGATION_TEST_EXPIRED, &delegation->flags))
 			continue;
 		set_bit(NFS_DELEGATION_NEED_RECLAIM, &delegation->flags);
 	}
 }
 
-/**
- * nfs_delegation_mark_reclaim - mark all delegations as needing to be reclaimed
- * @clp: nfs_client to process
- *
- */
+ 
 void nfs_delegation_mark_reclaim(struct nfs_client *clp)
 {
 	struct nfs_server *server;
@@ -1182,7 +1048,7 @@ restart_locked:
 			if (nfs_detach_delegation(NFS_I(inode), delegation,
 						server) != NULL)
 				nfs_free_delegation(delegation);
-			/* Match nfs_start_delegation_return_locked */
+			 
 			nfs_put_delegation(delegation);
 		}
 		iput(inode);
@@ -1193,11 +1059,7 @@ restart_locked:
 	return 0;
 }
 
-/**
- * nfs_delegation_reap_unclaimed - reap unclaimed delegations after reboot recovery is done
- * @clp: nfs_client to process
- *
- */
+ 
 void nfs_delegation_reap_unclaimed(struct nfs_client *clp)
 {
 	nfs_client_for_each_server(clp, nfs_server_reap_unclaimed_delegations,
@@ -1242,13 +1104,7 @@ static void nfs_delegation_mark_test_expired_server(struct nfs_server *server)
 		nfs_mark_test_expired_delegation(server, delegation);
 }
 
-/**
- * nfs_mark_test_expired_all_delegations - mark all delegations for testing
- * @clp: nfs_client to process
- *
- * Iterates through all the delegations associated with this server and
- * marks them as needing to be checked for validity.
- */
+ 
 void nfs_mark_test_expired_all_delegations(struct nfs_client *clp)
 {
 	struct nfs_server *server;
@@ -1259,12 +1115,7 @@ void nfs_mark_test_expired_all_delegations(struct nfs_client *clp)
 	rcu_read_unlock();
 }
 
-/**
- * nfs_test_expired_all_delegations - test all delegations for a client
- * @clp: nfs_client to process
- *
- * Helper for handling "recallable state revoked" status from server.
- */
+ 
 void nfs_test_expired_all_delegations(struct nfs_client *clp)
 {
 	nfs_mark_test_expired_all_delegations(clp);
@@ -1329,15 +1180,7 @@ restart_locked:
 	return 0;
 }
 
-/**
- * nfs_reap_expired_delegations - reap expired delegations
- * @clp: nfs_client to process
- *
- * Iterates through all the delegations associated with this server and
- * checks if they have may have been revoked. This function is usually
- * expected to be called in cases where the server may have lost its
- * lease.
- */
+ 
 void nfs_reap_expired_delegations(struct nfs_client *clp)
 {
 	nfs_client_for_each_server(clp, nfs_server_reap_expired_delegations,
@@ -1364,13 +1207,7 @@ void nfs_inode_find_delegation_state_and_recover(struct inode *inode,
 		nfs4_schedule_state_manager(clp);
 }
 
-/**
- * nfs_delegations_present - check for existence of delegations
- * @clp: client state handle
- *
- * Returns one if there are any nfs_delegation structures attached
- * to this nfs_client.
- */
+ 
 int nfs_delegations_present(struct nfs_client *clp)
 {
 	struct nfs_server *server;
@@ -1386,14 +1223,7 @@ int nfs_delegations_present(struct nfs_client *clp)
 	return ret;
 }
 
-/**
- * nfs4_refresh_delegation_stateid - Update delegation stateid seqid
- * @dst: stateid to refresh
- * @inode: inode to check
- *
- * Returns "true" and updates "dst->seqid" * if inode had a delegation
- * that matches our delegation stateid. Otherwise "false" is returned.
- */
+ 
 bool nfs4_refresh_delegation_stateid(nfs4_stateid *dst, struct inode *inode)
 {
 	struct nfs_delegation *delegation;
@@ -1415,16 +1245,7 @@ out:
 	return ret;
 }
 
-/**
- * nfs4_copy_delegation_stateid - Copy inode's state ID information
- * @inode: inode to check
- * @flags: delegation type requirement
- * @dst: stateid data structure to fill in
- * @cred: optional argument to retrieve credential
- *
- * Returns "true" and fills in "dst->data" * if inode had a delegation,
- * otherwise "false" is returned.
- */
+ 
 bool nfs4_copy_delegation_stateid(struct inode *inode, fmode_t flags,
 		nfs4_stateid *dst, const struct cred **cred)
 {
@@ -1451,14 +1272,7 @@ out:
 	return ret;
 }
 
-/**
- * nfs4_delegation_flush_on_close - Check if we must flush file on close
- * @inode: inode to check
- *
- * This function checks the number of outstanding writes to the file
- * against the delegation 'space_limit' field to see if
- * the spec requires us to flush the file on close.
- */
+ 
 bool nfs4_delegation_flush_on_close(const struct inode *inode)
 {
 	struct nfs_inode *nfsi = NFS_I(inode);

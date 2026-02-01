@@ -1,28 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Support for Intel Camera Imaging ISP subsystem.
- * Copyright (c) 2015, Intel Corporation.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms and conditions of the GNU General Public License,
- * version 2, as published by the Free Software Foundation.
- *
- * This program is distributed in the hope it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- * more details.
- */
+ 
+ 
 
 #ifndef _HIVE_ISP_CSS_IRQ_TYPES_HRT_H_
 #define _HIVE_ISP_CSS_IRQ_TYPES_HRT_H_
 
-/*
- * These are the indices of each interrupt in the interrupt
- * controller's registers. these can be used as the irq_id
- * argument to the hrt functions irq_controller.h.
- *
- * The definitions are taken from <system>_defs.h
- */
+ 
 typedef enum hrt_isp_css_irq {
 	hrt_isp_css_irq_gpio_pin_0           = HIVE_GP_DEV_IRQ_GPIO_PIN_0_BIT_ID,
 	hrt_isp_css_irq_gpio_pin_1           = HIVE_GP_DEV_IRQ_GPIO_PIN_1_BIT_ID,
@@ -56,7 +38,7 @@ typedef enum hrt_isp_css_irq {
 	hrt_isp_css_irq_sw_pin_1             = HIVE_GP_DEV_IRQ_SW_PIN_1_BIT_ID,
 	hrt_isp_css_irq_dma                  = HIVE_GP_DEV_IRQ_DMA_BIT_ID,
 	hrt_isp_css_irq_sp_stream_mon_b      = HIVE_GP_DEV_IRQ_SP_STREAM_MON_B_BIT_ID,
-	/* this must (obviously) be the last on in the enum */
+	 
 	hrt_isp_css_irq_num_irqs
 } hrt_isp_css_irq_t;
 
@@ -66,4 +48,4 @@ typedef enum hrt_isp_css_irq_status {
 	hrt_isp_css_irq_status_success
 } hrt_isp_css_irq_status_t;
 
-#endif /* _HIVE_ISP_CSS_IRQ_TYPES_HRT_H_ */
+#endif  

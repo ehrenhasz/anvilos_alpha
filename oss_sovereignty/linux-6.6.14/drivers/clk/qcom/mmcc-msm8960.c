@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2013, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/bitops.h>
@@ -553,14 +551,7 @@ static int pix_rdi_set_parent(struct clk_hw *hw, u8 index)
 	struct clk_pix_rdi *rdi = to_clk_pix_rdi(hw);
 	int num_parents = clk_hw_get_num_parents(hw);
 
-	/*
-	 * These clocks select three inputs via two muxes. One mux selects
-	 * between csi0 and csi1 and the second mux selects between that mux's
-	 * output and csi2. The source and destination selections for each
-	 * mux must be clocking for the switch to succeed so just turn on
-	 * all three sources because it's easier than figuring out what source
-	 * needs to be on at what time.
-	 */
+	 
 	for (i = 0; i < num_parents; i++) {
 		struct clk_hw *p = clk_hw_get_parent_by_index(hw, i);
 		ret = clk_prepare_enable(p->clk);
@@ -573,10 +564,7 @@ static int pix_rdi_set_parent(struct clk_hw *hw, u8 index)
 	else
 		val = 0;
 	regmap_update_bits(rdi->clkr.regmap, rdi->s2_reg, rdi->s2_mask, val);
-	/*
-	 * Wait at least 6 cycles of slowest clock
-	 * for the glitch-free MUX to fully switch sources.
-	 */
+	 
 	udelay(1);
 
 	if (index == 1)
@@ -584,10 +572,7 @@ static int pix_rdi_set_parent(struct clk_hw *hw, u8 index)
 	else
 		val = 0;
 	regmap_update_bits(rdi->clkr.regmap, rdi->s_reg, rdi->s_mask, val);
-	/*
-	 * Wait at least 6 cycles of slowest clock
-	 * for the glitch-free MUX to fully switch sources.
-	 */
+	 
 	udelay(1);
 
 err:

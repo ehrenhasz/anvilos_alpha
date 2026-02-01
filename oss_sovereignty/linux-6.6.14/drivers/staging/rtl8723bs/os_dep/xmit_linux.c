@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/******************************************************************************
- *
- * Copyright(c) 2007 - 2012 Realtek Corporation. All rights reserved.
- *
- ******************************************************************************/
+
+ 
 #include <drv_types.h>
 #include <rtw_debug.h>
 
@@ -109,7 +105,7 @@ static void rtw_check_xmit_resource(struct adapter *padapter, struct sk_buff *pk
 
 	queue = skb_get_queue_mapping(pkt);
 	if (padapter->registrypriv.wifi_spec) {
-		/* No free space for Tx, tx_worker is too slow */
+		 
 		if (pxmitpriv->hwxmits[queue].accnt > WMM_XMIT_THRESHOLD)
 			netif_stop_subqueue(padapter->pnetdev, queue);
 	} else {
@@ -137,7 +133,7 @@ static int rtw_mlcst2unicst(struct adapter *padapter, struct sk_buff *skb)
 
 	spin_lock_bh(&pstapriv->asoc_list_lock);
 	phead = &pstapriv->asoc_list;
-	/* free sta asoc_queue */
+	 
 	list_for_each(plist, phead) {
 		int stainfo_offset;
 
@@ -155,7 +151,7 @@ static int rtw_mlcst2unicst(struct adapter *padapter, struct sk_buff *skb)
 		if (!(psta->state & _FW_LINKED))
 			continue;
 
-		/* avoid come from STA1 and send back STA1 */
+		 
 		if (!memcmp(psta->hwaddr, &skb->data[6], 6) ||
 		    !memcmp(psta->hwaddr, null_addr, 6) ||
 		    !memcmp(psta->hwaddr, bc_addr, 6))
@@ -172,8 +168,8 @@ static int rtw_mlcst2unicst(struct adapter *padapter, struct sk_buff *skb)
 			}
 		} else {
 			pxmitpriv->tx_drop++;
-			/* dev_kfree_skb_any(skb); */
-			return false;	/*  Caller shall tx this multicast frame via normal way. */
+			 
+			return false;	 
 		}
 	}
 

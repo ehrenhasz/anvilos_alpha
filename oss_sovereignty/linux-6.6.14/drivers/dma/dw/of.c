@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Platform driver for the Synopsys DesignWare DMA Controller
- *
- * Copyright (C) 2007-2008 Atmel Corporation
- * Copyright (C) 2010-2011 ST Microelectronics
- * Copyright (C) 2013 Intel Corporation
- */
+
+ 
 
 #include <linux/of.h>
 #include <linux/of_dma.h>
@@ -42,7 +36,7 @@ static struct dma_chan *dw_dma_of_xlate(struct of_phandle_args *dma_spec,
 	dma_cap_zero(cap);
 	dma_cap_set(DMA_SLAVE, cap);
 
-	/* TODO: there should be a simpler way to do this */
+	 
 	return dma_request_channel(cap, dw_dma_filter, &slave);
 }
 
@@ -76,13 +70,13 @@ struct dw_dma_platform_data *dw_dma_parse_dt(struct platform_device *pdev)
 
 	of_property_read_u32(np, "block_size", &pdata->block_size);
 
-	/* Try deprecated property first */
+	 
 	if (!of_property_read_u32_array(np, "data_width", arr, nr_masters)) {
 		for (tmp = 0; tmp < nr_masters; tmp++)
 			pdata->data_width[tmp] = BIT(arr[tmp] & 0x07);
 	}
 
-	/* If "data_width" and "data-width" both provided use the latter one */
+	 
 	of_property_read_u32_array(np, "data-width", pdata->data_width, nr_masters);
 
 	memset32(pdata->multi_block, 1, nr_channels);

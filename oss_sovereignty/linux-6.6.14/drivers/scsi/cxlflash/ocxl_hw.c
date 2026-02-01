@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * CXL Flash Device Driver
- *
- * Written by: Matthew R. Ochs <mrochs@linux.vnet.ibm.com>, IBM Corporation
- *             Uma Krishnan <ukrishn@linux.vnet.ibm.com>, IBM Corporation
- *
- * Copyright (C) 2018 IBM Corporation
- */
+
+ 
 
 #include <linux/file.h>
 #include <linux/idr.h>
@@ -25,9 +18,7 @@
 #include "backend.h"
 #include "ocxl_hw.h"
 
-/*
- * Pseudo-filesystem to allocate inodes.
- */
+ 
 
 #define OCXLFLASH_FS_MAGIC      0x1697698f
 
@@ -46,10 +37,7 @@ static struct file_system_type ocxlflash_fs_type = {
 	.kill_sb	= kill_anon_super,
 };
 
-/*
- * ocxlflash_release_mapping() - release the memory mapping
- * @ctx:	Context whose mapping is to be released.
- */
+ 
 static void ocxlflash_release_mapping(struct ocxlflash_context *ctx)
 {
 	if (ctx->mapping)
@@ -57,16 +45,7 @@ static void ocxlflash_release_mapping(struct ocxlflash_context *ctx)
 	ctx->mapping = NULL;
 }
 
-/*
- * ocxlflash_getfile() - allocate pseudo filesystem, inode, and the file
- * @dev:	Generic device of the host.
- * @name:	Name of the pseudo filesystem.
- * @fops:	File operations.
- * @priv:	Private data.
- * @flags:	Flags for the file.
- *
- * Return: pointer to the file on success, ERR_PTR on failure
- */
+ 
 static struct file *ocxlflash_getfile(struct device *dev, const char *name,
 				      const struct file_operations *fops,
 				      void *priv, int flags)
@@ -120,12 +99,7 @@ err1:
 	goto out;
 }
 
-/**
- * ocxlflash_psa_map() - map the process specific MMIO space
- * @ctx_cookie:	Adapter context for which the mapping needs to be done.
- *
- * Return: MMIO pointer of the mapped region
- */
+ 
 static void __iomem *ocxlflash_psa_map(void *ctx_cookie)
 {
 	struct ocxlflash_context *ctx = ctx_cookie;
@@ -143,21 +117,13 @@ static void __iomem *ocxlflash_psa_map(void *ctx_cookie)
 	return ioremap(ctx->psn_phys, ctx->psn_size);
 }
 
-/**
- * ocxlflash_psa_unmap() - unmap the process specific MMIO space
- * @addr:	MMIO pointer to unmap.
- */
+ 
 static void ocxlflash_psa_unmap(void __iomem *addr)
 {
 	iounmap(addr);
 }
 
-/**
- * ocxlflash_process_element() - get process element of the adapter context
- * @ctx_cookie:	Adapter context associated with the process element.
- *
- * Return: process element of the adapter context
- */
+ 
 static int ocxlflash_process_element(void *ctx_cookie)
 {
 	struct ocxlflash_context *ctx = ctx_cookie;
@@ -165,17 +131,7 @@ static int ocxlflash_process_element(void *ctx_cookie)
 	return ctx->pe;
 }
 
-/**
- * afu_map_irq() - map the interrupt of the adapter context
- * @flags:	Flags.
- * @ctx:	Adapter context.
- * @num:	Per-context AFU interrupt number.
- * @handler:	Interrupt handler to register.
- * @cookie:	Interrupt handler private data.
- * @name:	Name of the interrupt.
- *
- * Return: 0 on success, -errno on failure
- */
+ 
 static int afu_map_irq(u64 flags, struct ocxlflash_context *ctx, int num,
 		       irq_handler_t handler, void *cookie, char *name)
 {
@@ -224,16 +180,7 @@ err1:
 	goto out;
 }
 
-/**
- * ocxlflash_map_afu_irq() - map the interrupt of the adapter context
- * @ctx_cookie:	Adapter context.
- * @num:	Per-context AFU interrupt number.
- * @handler:	Interrupt handler to register.
- * @cookie:	Interrupt handler private data.
- * @name:	Name of the interrupt.
- *
- * Return: 0 on success, -errno on failure
- */
+ 
 static int ocxlflash_map_afu_irq(void *ctx_cookie, int num,
 				 irq_handler_t handler, void *cookie,
 				 char *name)
@@ -241,13 +188,7 @@ static int ocxlflash_map_afu_irq(void *ctx_cookie, int num,
 	return afu_map_irq(0, ctx_cookie, num, handler, cookie, name);
 }
 
-/**
- * afu_unmap_irq() - unmap the interrupt
- * @flags:	Flags.
- * @ctx:	Adapter context.
- * @num:	Per-context AFU interrupt number.
- * @cookie:	Interrupt handler private data.
- */
+ 
 static void afu_unmap_irq(u64 flags, struct ocxlflash_context *ctx, int num,
 			  void *cookie)
 {
@@ -270,24 +211,13 @@ static void afu_unmap_irq(u64 flags, struct ocxlflash_context *ctx, int num,
 	memset(irq, 0, sizeof(*irq));
 }
 
-/**
- * ocxlflash_unmap_afu_irq() - unmap the interrupt
- * @ctx_cookie:	Adapter context.
- * @num:	Per-context AFU interrupt number.
- * @cookie:	Interrupt handler private data.
- */
+ 
 static void ocxlflash_unmap_afu_irq(void *ctx_cookie, int num, void *cookie)
 {
 	return afu_unmap_irq(0, ctx_cookie, num, cookie);
 }
 
-/**
- * ocxlflash_get_irq_objhndl() - get the object handle for an interrupt
- * @ctx_cookie:	Context associated with the interrupt.
- * @irq:	Interrupt number.
- *
- * Return: effective address of the mapped region
- */
+ 
 static u64 ocxlflash_get_irq_objhndl(void *ctx_cookie, int irq)
 {
 	struct ocxlflash_context *ctx = ctx_cookie;
@@ -298,12 +228,7 @@ static u64 ocxlflash_get_irq_objhndl(void *ctx_cookie, int irq)
 	return (__force u64)ctx->irqs[irq].vtrig;
 }
 
-/**
- * ocxlflash_xsl_fault() - callback when translation error is triggered
- * @data:	Private data provided at callback registration, the context.
- * @addr:	Address that triggered the error.
- * @dsisr:	Value of dsisr register.
- */
+ 
 static void ocxlflash_xsl_fault(void *data, u64 addr, u64 dsisr)
 {
 	struct ocxlflash_context *ctx = data;
@@ -317,14 +242,7 @@ static void ocxlflash_xsl_fault(void *data, u64 addr, u64 dsisr)
 	wake_up_all(&ctx->wq);
 }
 
-/**
- * start_context() - local routine to start a context
- * @ctx:	Adapter context to be started.
- *
- * Assign the context specific MMIO space, add and enable the PE.
- *
- * Return: 0 on success, -errno on failure
- */
+ 
 static int start_context(struct ocxlflash_context *ctx)
 {
 	struct ocxl_hw_afu *afu = ctx->hw_afu;
@@ -353,7 +271,7 @@ static int start_context(struct ocxlflash_context *ctx)
 		ctx->psn_phys = afu->ppmmio_phys + (ctx->pe * ctx->psn_size);
 	}
 
-	/* pid and mm not set for master contexts */
+	 
 	if (master) {
 		pid = 0;
 		mm = NULL;
@@ -377,12 +295,7 @@ out:
 	return rc;
 }
 
-/**
- * ocxlflash_start_context() - start a kernel context
- * @ctx_cookie:	Adapter context to be started.
- *
- * Return: 0 on success, -errno on failure
- */
+ 
 static int ocxlflash_start_context(void *ctx_cookie)
 {
 	struct ocxlflash_context *ctx = ctx_cookie;
@@ -390,12 +303,7 @@ static int ocxlflash_start_context(void *ctx_cookie)
 	return start_context(ctx);
 }
 
-/**
- * ocxlflash_stop_context() - stop a context
- * @ctx_cookie:	Adapter context to be stopped.
- *
- * Return: 0 on success, -errno on failure
- */
+ 
 static int ocxlflash_stop_context(void *ctx_cookie)
 {
 	struct ocxlflash_context *ctx = ctx_cookie;
@@ -418,7 +326,7 @@ static int ocxlflash_stop_context(void *ctx_cookie)
 	if (unlikely(rc)) {
 		dev_err(dev, "%s: ocxl_config_terminate_pasid failed rc=%d\n",
 			__func__, rc);
-		/* If EBUSY, PE could be referenced in future by the AFU */
+		 
 		if (rc == -EBUSY)
 			goto out;
 	}
@@ -433,26 +341,20 @@ out:
 	return rc;
 }
 
-/**
- * ocxlflash_afu_reset() - reset the AFU
- * @ctx_cookie:	Adapter context.
- */
+ 
 static int ocxlflash_afu_reset(void *ctx_cookie)
 {
 	struct ocxlflash_context *ctx = ctx_cookie;
 	struct device *dev = ctx->hw_afu->dev;
 
-	/* Pending implementation from OCXL transport services */
+	 
 	dev_err_once(dev, "%s: afu_reset() fop not supported\n", __func__);
 
-	/* Silently return success until it is implemented */
+	 
 	return 0;
 }
 
-/**
- * ocxlflash_set_master() - sets the context as master
- * @ctx_cookie:	Adapter context to set as master.
- */
+ 
 static void ocxlflash_set_master(void *ctx_cookie)
 {
 	struct ocxlflash_context *ctx = ctx_cookie;
@@ -460,13 +362,7 @@ static void ocxlflash_set_master(void *ctx_cookie)
 	ctx->master = true;
 }
 
-/**
- * ocxlflash_get_context() - obtains the context associated with the host
- * @pdev:	PCI device associated with the host.
- * @afu_cookie:	Hardware AFU associated with the host.
- *
- * Return: returns the pointer to host adapter context
- */
+ 
 static void *ocxlflash_get_context(struct pci_dev *pdev, void *afu_cookie)
 {
 	struct ocxl_hw_afu *afu = afu_cookie;
@@ -474,13 +370,7 @@ static void *ocxlflash_get_context(struct pci_dev *pdev, void *afu_cookie)
 	return afu->ocxl_ctx;
 }
 
-/**
- * ocxlflash_dev_context_init() - allocate and initialize an adapter context
- * @pdev:	PCI device associated with the host.
- * @afu_cookie:	Hardware AFU associated with the host.
- *
- * Return: returns the adapter context on success, ERR_PTR on failure
- */
+ 
 static void *ocxlflash_dev_context_init(struct pci_dev *pdev, void *afu_cookie)
 {
 	struct ocxl_hw_afu *afu = afu_cookie;
@@ -524,12 +414,7 @@ err1:
 	goto out;
 }
 
-/**
- * ocxlflash_release_context() - releases an adapter context
- * @ctx_cookie:	Adapter context to be released.
- *
- * Return: 0 on success, -errno on failure
- */
+ 
 static int ocxlflash_release_context(void *ctx_cookie)
 {
 	struct ocxlflash_context *ctx = ctx_cookie;
@@ -557,11 +442,7 @@ out:
 	return rc;
 }
 
-/**
- * ocxlflash_perst_reloads_same_image() - sets the image reload policy
- * @afu_cookie:	Hardware AFU associated with the host.
- * @image:	Whether to load the same image on PERST.
- */
+ 
 static void ocxlflash_perst_reloads_same_image(void *afu_cookie, bool image)
 {
 	struct ocxl_hw_afu *afu = afu_cookie;
@@ -569,24 +450,14 @@ static void ocxlflash_perst_reloads_same_image(void *afu_cookie, bool image)
 	afu->perst_same_image = image;
 }
 
-/**
- * ocxlflash_read_adapter_vpd() - reads the adapter VPD
- * @pdev:	PCI device associated with the host.
- * @buf:	Buffer to get the VPD data.
- * @count:	Size of buffer (maximum bytes that can be read).
- *
- * Return: size of VPD on success, -errno on failure
- */
+ 
 static ssize_t ocxlflash_read_adapter_vpd(struct pci_dev *pdev, void *buf,
 					  size_t count)
 {
 	return pci_read_vpd(pdev, 0, count, buf);
 }
 
-/**
- * free_afu_irqs() - internal service to free interrupts
- * @ctx:	Adapter context.
- */
+ 
 static void free_afu_irqs(struct ocxlflash_context *ctx)
 {
 	struct ocxl_hw_afu *afu = ctx->hw_afu;
@@ -605,13 +476,7 @@ static void free_afu_irqs(struct ocxlflash_context *ctx)
 	ctx->irqs = NULL;
 }
 
-/**
- * alloc_afu_irqs() - internal service to allocate interrupts
- * @ctx:	Context associated with the request.
- * @num:	Number of interrupts requested.
- *
- * Return: 0 on success, -errno on failure
- */
+ 
 static int alloc_afu_irqs(struct ocxlflash_context *ctx, int num)
 {
 	struct ocxl_hw_afu *afu = ctx->hw_afu;
@@ -662,31 +527,19 @@ err:
 	goto out;
 }
 
-/**
- * ocxlflash_allocate_afu_irqs() - allocates the requested number of interrupts
- * @ctx_cookie:	Context associated with the request.
- * @num:	Number of interrupts requested.
- *
- * Return: 0 on success, -errno on failure
- */
+ 
 static int ocxlflash_allocate_afu_irqs(void *ctx_cookie, int num)
 {
 	return alloc_afu_irqs(ctx_cookie, num);
 }
 
-/**
- * ocxlflash_free_afu_irqs() - frees the interrupts of an adapter context
- * @ctx_cookie:	Adapter context.
- */
+ 
 static void ocxlflash_free_afu_irqs(void *ctx_cookie)
 {
 	free_afu_irqs(ctx_cookie);
 }
 
-/**
- * ocxlflash_unconfig_afu() - unconfigure the AFU
- * @afu: AFU associated with the host.
- */
+ 
 static void ocxlflash_unconfig_afu(struct ocxl_hw_afu *afu)
 {
 	if (afu->gmmio_virt) {
@@ -695,10 +548,7 @@ static void ocxlflash_unconfig_afu(struct ocxl_hw_afu *afu)
 	}
 }
 
-/**
- * ocxlflash_destroy_afu() - destroy the AFU structure
- * @afu_cookie:	AFU to be freed.
- */
+ 
 static void ocxlflash_destroy_afu(void *afu_cookie)
 {
 	struct ocxl_hw_afu *afu = afu_cookie;
@@ -710,7 +560,7 @@ static void ocxlflash_destroy_afu(void *afu_cookie)
 	ocxlflash_release_context(afu->ocxl_ctx);
 	idr_destroy(&afu->idr);
 
-	/* Disable the AFU */
+	 
 	pos = afu->acfg.dvsec_afu_control_pos;
 	ocxl_config_set_afu_state(afu->pdev, pos, 0);
 
@@ -718,13 +568,7 @@ static void ocxlflash_destroy_afu(void *afu_cookie)
 	kfree(afu);
 }
 
-/**
- * ocxlflash_config_fn() - configure the host function
- * @pdev:	PCI device associated with the host.
- * @afu:	AFU associated with the host.
- *
- * Return: 0 on success, -errno on failure
- */
+ 
 static int ocxlflash_config_fn(struct pci_dev *pdev, struct ocxl_hw_afu *afu)
 {
 	struct ocxl_fn_config *fcfg = &afu->fcfg;
@@ -732,7 +576,7 @@ static int ocxlflash_config_fn(struct pci_dev *pdev, struct ocxl_hw_afu *afu)
 	u16 base, enabled, supported;
 	int rc = 0;
 
-	/* Read DVSEC config of the function */
+	 
 	rc = ocxl_config_read_function(pdev, fcfg);
 	if (unlikely(rc)) {
 		dev_err(dev, "%s: ocxl_config_read_function failed rc=%d\n",
@@ -740,7 +584,7 @@ static int ocxlflash_config_fn(struct pci_dev *pdev, struct ocxl_hw_afu *afu)
 		goto out;
 	}
 
-	/* Check if function has AFUs defined, only 1 per function supported */
+	 
 	if (fcfg->max_afu_index >= 0) {
 		afu->is_present = true;
 		if (fcfg->max_afu_index != 0)
@@ -782,22 +626,13 @@ err:
 	goto out;
 }
 
-/**
- * ocxlflash_unconfig_fn() - unconfigure the host function
- * @pdev:	PCI device associated with the host.
- * @afu:	AFU associated with the host.
- */
+ 
 static void ocxlflash_unconfig_fn(struct pci_dev *pdev, struct ocxl_hw_afu *afu)
 {
 	ocxl_link_release(pdev, afu->link_token);
 }
 
-/**
- * ocxlflash_map_mmio() - map the AFU MMIO space
- * @afu: AFU associated with the host.
- *
- * Return: 0 on success, -errno on failure
- */
+ 
 static int ocxlflash_map_mmio(struct ocxl_hw_afu *afu)
 {
 	struct ocxl_afu_config *acfg = &afu->acfg;
@@ -842,15 +677,7 @@ err1:
 	goto out;
 }
 
-/**
- * ocxlflash_config_afu() - configure the host AFU
- * @pdev:	PCI device associated with the host.
- * @afu:	AFU associated with the host.
- *
- * Must be called _after_ host function configuration.
- *
- * Return: 0 on success, -errno on failure
- */
+ 
 static int ocxlflash_config_afu(struct pci_dev *pdev, struct ocxl_hw_afu *afu)
 {
 	struct ocxl_afu_config *acfg = &afu->acfg;
@@ -861,11 +688,11 @@ static int ocxlflash_config_afu(struct pci_dev *pdev, struct ocxl_hw_afu *afu)
 	int pos;
 	int rc = 0;
 
-	/* This HW AFU function does not have any AFUs defined */
+	 
 	if (!afu->is_present)
 		goto out;
 
-	/* Read AFU config at index 0 */
+	 
 	rc = ocxl_config_read_afu(pdev, fcfg, acfg, 0);
 	if (unlikely(rc)) {
 		dev_err(dev, "%s: ocxl_config_read_afu failed rc=%d\n",
@@ -873,7 +700,7 @@ static int ocxlflash_config_afu(struct pci_dev *pdev, struct ocxl_hw_afu *afu)
 		goto out;
 	}
 
-	/* Only one AFU per function is supported, so actag_base is same */
+	 
 	base = afu->fn_actag_base;
 	count = min_t(int, acfg->actag_supported, afu->fn_actag_enabled);
 	pos = acfg->dvsec_afu_control_pos;
@@ -893,18 +720,13 @@ static int ocxlflash_config_afu(struct pci_dev *pdev, struct ocxl_hw_afu *afu)
 		goto out;
 	}
 
-	/* Enable the AFU */
+	 
 	ocxl_config_set_afu_state(pdev, acfg->dvsec_afu_control_pos, 1);
 out:
 	return rc;
 }
 
-/**
- * ocxlflash_create_afu() - create the AFU for OCXL
- * @pdev:	PCI device associated with the host.
- *
- * Return: AFU on success, NULL on failure
- */
+ 
 static void *ocxlflash_create_afu(struct pci_dev *pdev)
 {
 	struct device *dev = &pdev->dev;
@@ -958,12 +780,7 @@ err1:
 	goto out;
 }
 
-/**
- * ctx_event_pending() - check for any event pending on the context
- * @ctx:	Context to be checked.
- *
- * Return: true if there is an event pending, false if none pending
- */
+ 
 static inline bool ctx_event_pending(struct ocxlflash_context *ctx)
 {
 	if (ctx->pending_irq || ctx->pending_fault)
@@ -972,13 +789,7 @@ static inline bool ctx_event_pending(struct ocxlflash_context *ctx)
 	return false;
 }
 
-/**
- * afu_poll() - poll the AFU for events on the context
- * @file:	File associated with the adapter context.
- * @poll:	Poll structure from the user.
- *
- * Return: poll mask
- */
+ 
 static unsigned int afu_poll(struct file *file, struct poll_table_struct *poll)
 {
 	struct ocxlflash_context *ctx = file->private_data;
@@ -1001,15 +812,7 @@ static unsigned int afu_poll(struct file *file, struct poll_table_struct *poll)
 	return mask;
 }
 
-/**
- * afu_read() - perform a read on the context for any event
- * @file:	File associated with the adapter context.
- * @buf:	Buffer to receive the data.
- * @count:	Size of buffer (maximum bytes that can be read).
- * @off:	Offset.
- *
- * Return: size of the data read on success, -errno on failure
- */
+ 
 static ssize_t afu_read(struct file *file, char __user *buf, size_t count,
 			loff_t *off)
 {
@@ -1096,19 +899,13 @@ err:
 	goto out;
 }
 
-/**
- * afu_release() - release and free the context
- * @inode:	File inode pointer.
- * @file:	File associated with the context.
- *
- * Return: 0 on success, -errno on failure
- */
+ 
 static int afu_release(struct inode *inode, struct file *file)
 {
 	struct ocxlflash_context *ctx = file->private_data;
 	int i;
 
-	/* Unmap and free the interrupts associated with the context */
+	 
 	for (i = ctx->num_irqs; i >= 0; i--)
 		afu_unmap_irq(0, ctx, i, ctx);
 	free_afu_irqs(ctx);
@@ -1116,12 +913,7 @@ static int afu_release(struct inode *inode, struct file *file)
 	return ocxlflash_release_context(ctx);
 }
 
-/**
- * ocxlflash_mmap_fault() - mmap fault handler
- * @vmf:	VM fault associated with current fault.
- *
- * Return: 0 on success, -errno on failure
- */
+ 
 static vm_fault_t ocxlflash_mmap_fault(struct vm_fault *vmf)
 {
 	struct vm_area_struct *vma = vmf->vma;
@@ -1152,13 +944,7 @@ static const struct vm_operations_struct ocxlflash_vmops = {
 	.fault = ocxlflash_mmap_fault,
 };
 
-/**
- * afu_mmap() - map the fault handler operations
- * @file:	File associated with the context.
- * @vma:	VM area associated with mapping.
- *
- * Return: 0 on success, -errno on failure
- */
+ 
 static int afu_mmap(struct file *file, struct vm_area_struct *vma)
 {
 	struct ocxlflash_context *ctx = file->private_data;
@@ -1184,14 +970,7 @@ static const struct file_operations ocxl_afu_fops = {
 #define PATCH_FOPS(NAME)						\
 	do { if (!fops->NAME) fops->NAME = ocxl_afu_fops.NAME; } while (0)
 
-/**
- * ocxlflash_get_fd() - get file descriptor for an adapter context
- * @ctx_cookie:	Adapter context.
- * @fops:	File operations to be associated.
- * @fd:		File descriptor to be returned back.
- *
- * Return: pointer to the file on success, ERR_PTR on failure
- */
+ 
 static struct file *ocxlflash_get_fd(void *ctx_cookie,
 				     struct file_operations *fops, int *fd)
 {
@@ -1202,7 +981,7 @@ static struct file *ocxlflash_get_fd(void *ctx_cookie,
 	int rc = 0;
 	char *name = NULL;
 
-	/* Only allow one fd per context */
+	 
 	if (ctx->mapping) {
 		dev_err(dev, "%s: Context is already mapped to an fd\n",
 			__func__);
@@ -1212,7 +991,7 @@ static struct file *ocxlflash_get_fd(void *ctx_cookie,
 
 	flags = O_RDWR | O_CLOEXEC;
 
-	/* This code is similar to anon_inode_getfd() */
+	 
 	rc = get_unused_fd_flags(flags);
 	if (unlikely(rc < 0)) {
 		dev_err(dev, "%s: get_unused_fd_flags failed rc=%d\n",
@@ -1221,13 +1000,13 @@ static struct file *ocxlflash_get_fd(void *ctx_cookie,
 	}
 	fdtmp = rc;
 
-	/* Patch the file ops that are not defined */
+	 
 	if (fops) {
 		PATCH_FOPS(poll);
 		PATCH_FOPS(read);
 		PATCH_FOPS(release);
 		PATCH_FOPS(mmap);
-	} else /* Use default ops */
+	} else  
 		fops = (struct file_operations *)&ocxl_afu_fops;
 
 	name = kasprintf(GFP_KERNEL, "ocxlflash:%d", ctx->pe);
@@ -1251,24 +1030,13 @@ err1:
 	goto out;
 }
 
-/**
- * ocxlflash_fops_get_context() - get the context associated with the file
- * @file:	File associated with the adapter context.
- *
- * Return: pointer to the context
- */
+ 
 static void *ocxlflash_fops_get_context(struct file *file)
 {
 	return file->private_data;
 }
 
-/**
- * ocxlflash_afu_irq() - interrupt handler for user contexts
- * @irq:	Interrupt number.
- * @data:	Private data provided at interrupt registration, the context.
- *
- * Return: Always return IRQ_HANDLED.
- */
+ 
 static irqreturn_t ocxlflash_afu_irq(int irq, void *data)
 {
 	struct ocxlflash_context *ctx = data;
@@ -1297,13 +1065,7 @@ out:
 	return IRQ_HANDLED;
 }
 
-/**
- * ocxlflash_start_work() - start a user context
- * @ctx_cookie:	Context to be started.
- * @num_irqs:	Number of interrupts requested.
- *
- * Return: 0 on success, -errno on failure
- */
+ 
 static int ocxlflash_start_work(void *ctx_cookie, u64 num_irqs)
 {
 	struct ocxlflash_context *ctx = ctx_cookie;
@@ -1345,31 +1107,19 @@ err:
 	goto out;
 };
 
-/**
- * ocxlflash_fd_mmap() - mmap handler for adapter file descriptor
- * @file:	File installed with adapter file descriptor.
- * @vma:	VM area associated with mapping.
- *
- * Return: 0 on success, -errno on failure
- */
+ 
 static int ocxlflash_fd_mmap(struct file *file, struct vm_area_struct *vma)
 {
 	return afu_mmap(file, vma);
 }
 
-/**
- * ocxlflash_fd_release() - release the context associated with the file
- * @inode:	File inode pointer.
- * @file:	File associated with the adapter context.
- *
- * Return: 0 on success, -errno on failure
- */
+ 
 static int ocxlflash_fd_release(struct inode *inode, struct file *file)
 {
 	return afu_release(inode, file);
 }
 
-/* Backend ops to ocxlflash services */
+ 
 const struct cxlflash_backend_ops cxlflash_ocxl_ops = {
 	.module			= THIS_MODULE,
 	.psa_map		= ocxlflash_psa_map,

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2017, 2019, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -31,18 +29,18 @@
 #define QUSB2PHY_PLL_AUTOPGM_CTL1	0x1c
 #define QUSB2PHY_PLL_PWR_CTRL		0x18
 
-/* QUSB2PHY_PLL_STATUS register bits */
+ 
 #define PLL_LOCKED			BIT(5)
 
-/* QUSB2PHY_PLL_COMMON_STATUS_ONE register bits */
+ 
 #define CORE_READY_STATUS		BIT(0)
 
-/* QUSB2PHY_PORT_POWERDOWN register bits */
+ 
 #define CLAMP_N_EN			BIT(5)
 #define FREEZIO_N			BIT(1)
 #define POWER_DOWN			BIT(0)
 
-/* QUSB2PHY_PWR_CTRL1 register bits */
+ 
 #define PWR_CTRL1_VREF_SUPPLY_TRIM	BIT(5)
 #define PWR_CTRL1_CLAMP_N_EN		BIT(1)
 
@@ -50,38 +48,38 @@
 
 #define PHY_CLK_SCHEME_SEL		BIT(0)
 
-/* QUSB2PHY_INTR_CTRL register bits */
+ 
 #define DMSE_INTR_HIGH_SEL			BIT(4)
 #define DPSE_INTR_HIGH_SEL			BIT(3)
 #define CHG_DET_INTR_EN				BIT(2)
 #define DMSE_INTR_EN				BIT(1)
 #define DPSE_INTR_EN				BIT(0)
 
-/* QUSB2PHY_PLL_CORE_INPUT_OVERRIDE register bits */
+ 
 #define CORE_PLL_EN_FROM_RESET			BIT(4)
 #define CORE_RESET				BIT(5)
 #define CORE_RESET_MUX				BIT(6)
 
-/* QUSB2PHY_IMP_CTRL1 register bits */
+ 
 #define IMP_RES_OFFSET_MASK			GENMASK(5, 0)
 #define IMP_RES_OFFSET_SHIFT			0x0
 
-/* QUSB2PHY_PLL_BIAS_CONTROL_2 register bits */
+ 
 #define BIAS_CTRL2_RES_OFFSET_MASK		GENMASK(5, 0)
 #define BIAS_CTRL2_RES_OFFSET_SHIFT		0x0
 
-/* QUSB2PHY_CHG_CONTROL_2 register bits */
+ 
 #define CHG_CTRL2_OFFSET_MASK			GENMASK(5, 4)
 #define CHG_CTRL2_OFFSET_SHIFT			0x4
 
-/* QUSB2PHY_PORT_TUNE1 register bits */
+ 
 #define HSTX_TRIM_MASK				GENMASK(7, 4)
 #define HSTX_TRIM_SHIFT				0x4
 #define PREEMPH_WIDTH_HALF_BIT			BIT(2)
 #define PREEMPHASIS_EN_MASK			GENMASK(1, 0)
 #define PREEMPHASIS_EN_SHIFT			0x0
 
-/* QUSB2PHY_PORT_TUNE2 register bits */
+ 
 #define HSDISC_TRIM_MASK			GENMASK(1, 0)
 #define HSDISC_TRIM_SHIFT			0x0
 
@@ -100,10 +98,7 @@
 struct qusb2_phy_init_tbl {
 	unsigned int offset;
 	unsigned int val;
-	/*
-	 * register part of layout ?
-	 * if yes, then offset gives index in the reg-layout
-	 */
+	 
 	int in_layout;
 };
 
@@ -120,7 +115,7 @@ struct qusb2_phy_init_tbl {
 		.in_layout = 1,	\
 	}
 
-/* set of registers with offsets different per-PHY */
+ 
 enum qusb2phy_reg_layout {
 	QUSB2PHY_PLL_CORE_INPUT_OVERRIDE,
 	QUSB2PHY_PLL_STATUS,
@@ -271,27 +266,27 @@ static const struct qusb2_phy_init_tbl qusb2_v2_init_tbl[] = {
 
 struct qusb2_phy_cfg {
 	const struct qusb2_phy_init_tbl *tbl;
-	/* number of entries in the table */
+	 
 	unsigned int tbl_num;
-	/* offset to PHY_CLK_SCHEME register in TCSR map */
+	 
 	unsigned int clk_scheme_offset;
 
-	/* array of registers with different offsets */
+	 
 	const unsigned int *regs;
 	unsigned int mask_core_ready;
 	unsigned int disable_ctrl;
 	unsigned int autoresume_en;
 
-	/* true if PHY has PLL_TEST register to select clk_scheme */
+	 
 	bool has_pll_test;
 
-	/* true if TUNE1 register must be updated by fused value, else TUNE2 */
+	 
 	bool update_tune1_with_efuse;
 
-	/* true if PHY has PLL_CORE_INPUT_OVERRIDE register to reset PLL */
+	 
 	bool has_pll_override;
 
-	/* true if PHY default clk scheme is single-ended */
+	 
 	bool se_clk_scheme_default;
 };
 
@@ -327,7 +322,7 @@ static const struct qusb2_phy_cfg ipq6018_phy_cfg = {
 
 	.disable_ctrl   = POWER_DOWN,
 	.mask_core_ready = PLL_LOCKED,
-	/* autoresume not used */
+	 
 	.autoresume_en   = BIT(0),
 };
 
@@ -375,24 +370,13 @@ static const char * const qusb2_phy_vreg_names[] = {
 
 #define QUSB2_NUM_VREGS		ARRAY_SIZE(qusb2_phy_vreg_names)
 
-/* struct override_param - structure holding qusb2 v2 phy overriding param
- * set override true if the  device tree property exists and read and assign
- * to value
- */
+ 
 struct override_param {
 	bool override;
 	u8 value;
 };
 
-/*struct override_params - structure holding qusb2 v2 phy overriding params
- * @imp_res_offset: rescode offset to be updated in IMP_CTRL1 register
- * @hstx_trim: HSTX_TRIM to be updated in TUNE1 register
- * @preemphasis: Amplitude Pre-Emphasis to be updated in TUNE1 register
- * @preemphasis_width: half/full-width Pre-Emphasis updated via TUNE1
- * @bias_ctrl: bias ctrl to be updated in BIAS_CONTROL_2 register
- * @charge_ctrl: charge ctrl to be updated in CHG_CTRL2 register
- * @hsdisc_trim: disconnect threshold to be updated in TUNE2 register
- */
+ 
 struct override_params {
 	struct override_param imp_res_offset;
 	struct override_param hstx_trim;
@@ -403,28 +387,7 @@ struct override_params {
 	struct override_param hsdisc_trim;
 };
 
-/**
- * struct qusb2_phy - structure holding qusb2 phy attributes
- *
- * @phy: generic phy
- * @base: iomapped memory space for qubs2 phy
- *
- * @cfg_ahb_clk: AHB2PHY interface clock
- * @ref_clk: phy reference clock
- * @iface_clk: phy interface clock
- * @phy_reset: phy reset control
- * @vregs: regulator supplies bulk data
- *
- * @tcsr: TCSR syscon register map
- * @cell: nvmem cell containing phy tuning value
- *
- * @overrides: pointer to structure for all overriding tuning params
- *
- * @cfg: phy config data
- * @has_se_clk_scheme: indicate if PHY has single-ended ref clock scheme
- * @phy_initialized: indicate if PHY has been initialized
- * @mode: current PHY mode
- */
+ 
 struct qusb2_phy {
 	struct phy *phy;
 	void __iomem *base;
@@ -456,7 +419,7 @@ static inline void qusb2_write_mask(void __iomem *base, u32 offset,
 	reg |= val & mask;
 	writel(reg, base + offset);
 
-	/* Ensure above write is completed */
+	 
 	readl(base + offset);
 }
 
@@ -468,7 +431,7 @@ static inline void qusb2_setbits(void __iomem *base, u32 offset, u32 val)
 	reg |= val;
 	writel(reg, base + offset);
 
-	/* Ensure above write is completed */
+	 
 	readl(base + offset);
 }
 
@@ -480,7 +443,7 @@ static inline void qusb2_clrbits(void __iomem *base, u32 offset, u32 val)
 	reg &= ~val;
 	writel(reg, base + offset);
 
-	/* Ensure above write is completed */
+	 
 	readl(base + offset);
 }
 
@@ -499,10 +462,7 @@ void qcom_qusb2_phy_configure(void __iomem *base,
 	}
 }
 
-/*
- * Update board specific PHY tuning override values if specified from
- * device tree.
- */
+ 
 static void qusb2_phy_override_phy_params(struct qusb2_phy *qphy)
 {
 	const struct qusb2_phy_cfg *cfg = qphy->cfg;
@@ -551,28 +511,18 @@ static void qusb2_phy_override_phy_params(struct qusb2_phy *qphy)
 				 HSDISC_TRIM_MASK);
 }
 
-/*
- * Fetches HS Tx tuning value from nvmem and sets the
- * QUSB2PHY_PORT_TUNE1/2 register.
- * For error case, skip setting the value and use the default value.
- */
+ 
 static void qusb2_phy_set_tune2_param(struct qusb2_phy *qphy)
 {
 	struct device *dev = &qphy->phy->dev;
 	const struct qusb2_phy_cfg *cfg = qphy->cfg;
 	u8 *val, hstx_trim;
 
-	/* efuse register is optional */
+	 
 	if (!qphy->cell)
 		return;
 
-	/*
-	 * Read efuse register having TUNE2/1 parameter's high nibble.
-	 * If efuse register shows value as 0x0 (indicating value is not
-	 * fused), or if we fail to find a valid efuse register setting,
-	 * then use default value for high nibble that we have already
-	 * set while configuring the phy.
-	 */
+	 
 	val = nvmem_cell_read(qphy->cell, NULL);
 	if (IS_ERR(val)) {
 		dev_dbg(dev, "failed to read a valid hs-tx trim value\n");
@@ -585,7 +535,7 @@ static void qusb2_phy_set_tune2_param(struct qusb2_phy *qphy)
 		return;
 	}
 
-	/* Fused TUNE1/2 value is the higher nibble only */
+	 
 	if (cfg->update_tune1_with_efuse)
 		qusb2_write_mask(qphy->base, cfg->regs[QUSB2PHY_PORT_TUNE1],
 				 hstx_trim << HSTX_TRIM_SHIFT, HSTX_TRIM_MASK);
@@ -617,12 +567,7 @@ static int __maybe_unused qusb2_phy_runtime_suspend(struct device *dev)
 		return 0;
 	}
 
-	/*
-	 * Enable DP/DM interrupts to detect line state changes based on current
-	 * speed. In other words, enable the triggers _opposite_ of what the
-	 * current D+/D- levels are e.g. if currently D+ high, D- low
-	 * (HS 'J'/Suspend), configure the mask to trigger on D+ low OR D- high
-	 */
+	 
 	intr_mask = DPSE_INTR_EN | DMSE_INTR_EN;
 	switch (qphy->mode) {
 	case PHY_MODE_USB_HOST_HS:
@@ -636,7 +581,7 @@ static int __maybe_unused qusb2_phy_runtime_suspend(struct device *dev)
 		intr_mask |= DPSE_INTR_HIGH_SEL;
 		break;
 	default:
-		/* No device connected, enable both DP/DM high interrupt */
+		 
 		intr_mask |= DMSE_INTR_HIGH_SEL;
 		intr_mask |= DPSE_INTR_HIGH_SEL;
 		break;
@@ -644,7 +589,7 @@ static int __maybe_unused qusb2_phy_runtime_suspend(struct device *dev)
 
 	writel(intr_mask, qphy->base + cfg->regs[QUSB2PHY_INTR_CTRL]);
 
-	/* hold core PLL into reset */
+	 
 	if (cfg->has_pll_override) {
 		qusb2_setbits(qphy->base,
 			      cfg->regs[QUSB2PHY_PLL_CORE_INPUT_OVERRIDE],
@@ -652,11 +597,11 @@ static int __maybe_unused qusb2_phy_runtime_suspend(struct device *dev)
 			      CORE_RESET_MUX);
 	}
 
-	/* enable phy auto-resume only if device is connected on bus */
+	 
 	if (qphy->mode != PHY_MODE_INVALID) {
 		qusb2_setbits(qphy->base, cfg->regs[QUSB2PHY_PORT_TEST1],
 			      cfg->autoresume_en);
-		/* Autoresume bit has to be toggled in order to enable it */
+		 
 		qusb2_clrbits(qphy->base, cfg->regs[QUSB2PHY_PORT_TEST1],
 			      cfg->autoresume_en);
 	}
@@ -705,7 +650,7 @@ static int __maybe_unused qusb2_phy_runtime_resume(struct device *dev)
 
 	writel(0x0, qphy->base + cfg->regs[QUSB2PHY_INTR_CTRL]);
 
-	/* bring core PLL out of reset */
+	 
 	if (cfg->has_pll_override) {
 		qusb2_clrbits(qphy->base,
 			      cfg->regs[QUSB2PHY_PLL_CORE_INPUT_OVERRIDE],
@@ -732,7 +677,7 @@ static int qusb2_phy_init(struct phy *phy)
 
 	dev_vdbg(&phy->dev, "%s(): Initializing QUSB2 phy\n", __func__);
 
-	/* turn on regulator supplies */
+	 
 	ret = regulator_bulk_enable(ARRAY_SIZE(qphy->vregs), qphy->vregs);
 	if (ret)
 		return ret;
@@ -743,21 +688,21 @@ static int qusb2_phy_init(struct phy *phy)
 		goto poweroff_phy;
 	}
 
-	/* enable ahb interface clock to program phy */
+	 
 	ret = clk_prepare_enable(qphy->cfg_ahb_clk);
 	if (ret) {
 		dev_err(&phy->dev, "failed to enable cfg ahb clock, %d\n", ret);
 		goto disable_iface_clk;
 	}
 
-	/* Perform phy reset */
+	 
 	ret = reset_control_assert(qphy->phy_reset);
 	if (ret) {
 		dev_err(&phy->dev, "failed to assert phy_reset, %d\n", ret);
 		goto disable_ahb_clk;
 	}
 
-	/* 100 us delay to keep PHY in reset mode */
+	 
 	usleep_range(100, 150);
 
 	ret = reset_control_deassert(qphy->phy_reset);
@@ -766,44 +711,35 @@ static int qusb2_phy_init(struct phy *phy)
 		goto disable_ahb_clk;
 	}
 
-	/* Disable the PHY */
+	 
 	qusb2_setbits(qphy->base, cfg->regs[QUSB2PHY_PORT_POWERDOWN],
 		      qphy->cfg->disable_ctrl);
 
 	if (cfg->has_pll_test) {
-		/* save reset value to override reference clock scheme later */
+		 
 		val = readl(qphy->base + QUSB2PHY_PLL_TEST);
 	}
 
 	qcom_qusb2_phy_configure(qphy->base, cfg->regs, cfg->tbl,
 				 cfg->tbl_num);
 
-	/* Override board specific PHY tuning values */
+	 
 	qusb2_phy_override_phy_params(qphy);
 
-	/* Set efuse value for tuning the PHY */
+	 
 	qusb2_phy_set_tune2_param(qphy);
 
-	/* Enable the PHY */
+	 
 	qusb2_clrbits(qphy->base, cfg->regs[QUSB2PHY_PORT_POWERDOWN],
 		      POWER_DOWN);
 
-	/* Required to get phy pll lock successfully */
+	 
 	usleep_range(150, 160);
 
-	/*
-	 * Not all the SoCs have got a readable TCSR_PHY_CLK_SCHEME
-	 * register in the TCSR so, if there's none, use the default
-	 * value hardcoded in the configuration.
-	 */
+	 
 	qphy->has_se_clk_scheme = cfg->se_clk_scheme_default;
 
-	/*
-	 * read TCSR_PHY_CLK_SCHEME register to check if single-ended
-	 * clock scheme is selected. If yes, then disable differential
-	 * ref_clk and use single-ended clock, otherwise use differential
-	 * ref_clk only.
-	 */
+	 
 	if (qphy->tcsr) {
 		ret = regmap_read(qphy->tcsr, qphy->cfg->clk_scheme_offset,
 				  &clk_scheme);
@@ -812,7 +748,7 @@ static int qusb2_phy_init(struct phy *phy)
 			goto assert_phy_reset;
 		}
 
-		/* is it a differential clock scheme ? */
+		 
 		if (!(clk_scheme & PHY_CLK_SCHEME_SEL)) {
 			dev_vdbg(&phy->dev, "%s(): select differential clk\n",
 				 __func__);
@@ -840,11 +776,11 @@ static int qusb2_phy_init(struct phy *phy)
 
 		writel(val, qphy->base + QUSB2PHY_PLL_TEST);
 
-		/* ensure above write is through */
+		 
 		readl(qphy->base + QUSB2PHY_PLL_TEST);
 	}
 
-	/* Required to get phy pll lock successfully */
+	 
 	usleep_range(100, 110);
 
 	val = readb(qphy->base + cfg->regs[QUSB2PHY_PLL_STATUS]);
@@ -877,7 +813,7 @@ static int qusb2_phy_exit(struct phy *phy)
 {
 	struct qusb2_phy *qphy = phy_get_drvdata(phy);
 
-	/* Disable the PHY */
+	 
 	qusb2_setbits(qphy->base, qphy->cfg->regs[QUSB2PHY_PORT_POWERDOWN],
 		      qphy->cfg->disable_ctrl);
 
@@ -935,10 +871,7 @@ static const struct of_device_id qusb2_phy_of_match_table[] = {
 		.compatible	= "qcom,sm6115-qusb2-phy",
 		.data		= &sm6115_phy_cfg,
 	}, {
-		/*
-		 * Deprecated. Only here to support legacy device
-		 * trees that didn't include "qcom,qusb2-v2-phy"
-		 */
+		 
 		.compatible	= "qcom,sdm845-qusb2-phy",
 		.data		= &qusb2_v2_phy_cfg,
 	}, {
@@ -1003,7 +936,7 @@ static int qusb2_phy_probe(struct platform_device *pdev)
 		return dev_err_probe(dev, ret,
 				     "failed to get regulator supplies\n");
 
-	/* Get the specific init parameters of QMP phy */
+	 
 	qphy->cfg = of_device_get_match_data(dev);
 
 	qphy->tcsr = syscon_regmap_lookup_by_phandle(dev->of_node,
@@ -1065,10 +998,7 @@ static int qusb2_phy_probe(struct platform_device *pdev)
 
 	pm_runtime_set_active(dev);
 	pm_runtime_enable(dev);
-	/*
-	 * Prevent runtime pm from being ON by default. Users can enable
-	 * it using power/control in sysfs.
-	 */
+	 
 	pm_runtime_forbid(dev);
 
 	generic_phy = devm_phy_create(dev, NULL, &qusb2_phy_gen_ops);

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * STM32 Factory-programmed memory read access driver
- *
- * Copyright (C) 2017, STMicroelectronics - All Rights Reserved
- * Author: Fabrice Gasnier <fabrice.gasnier@st.com> for STMicroelectronics.
- */
+
+ 
 
 #include <linux/arm-smccc.h>
 #include <linux/io.h>
@@ -15,14 +10,14 @@
 
 #include "stm32-bsec-optee-ta.h"
 
-/* BSEC secure service access from non-secure */
+ 
 #define STM32_SMC_BSEC			0x82001003
 #define STM32_SMC_READ_SHADOW		0x01
 #define STM32_SMC_PROG_OTP		0x02
 #define STM32_SMC_WRITE_SHADOW		0x03
 #define STM32_SMC_READ_OTP		0x04
 
-/* shadow registers offset */
+ 
 #define STM32MP15_BSEC_DATA0		0x200
 
 struct stm32_romem_cfg {
@@ -78,7 +73,7 @@ static int stm32_bsec_read(void *context, unsigned int offset, void *buf,
 	u8 *buf8 = buf, *val8 = (u8 *)&val;
 	int i, j = 0, ret, skip_bytes, size;
 
-	/* Round unaligned access to 32-bits */
+	 
 	roffset = rounddown(offset, 4);
 	skip_bytes = offset & 0x3;
 	rbytes = roundup(bytes + skip_bytes, 4);
@@ -90,7 +85,7 @@ static int stm32_bsec_read(void *context, unsigned int offset, void *buf,
 		u32 otp = i >> 2;
 
 		if (otp < priv->lower) {
-			/* read lower data from shadow registers */
+			 
 			val = readl_relaxed(
 				priv->base + STM32MP15_BSEC_DATA0 + i);
 		} else {
@@ -102,7 +97,7 @@ static int stm32_bsec_read(void *context, unsigned int offset, void *buf,
 				return ret;
 			}
 		}
-		/* skip first bytes in case of unaligned read */
+		 
 		if (skip_bytes)
 			size = min(bytes, (size_t)(4 - skip_bytes));
 		else
@@ -124,7 +119,7 @@ static int stm32_bsec_write(void *context, unsigned int offset, void *buf,
 	u32 *buf32 = buf;
 	int ret, i;
 
-	/* Allow only writing complete 32-bits aligned words */
+	 
 	if ((bytes % 4) || (offset % 4))
 		return -EINVAL;
 
@@ -164,7 +159,7 @@ static bool stm32_bsec_smc_check(void)
 	u32 val;
 	int ret;
 
-	/* check that the OP-TEE support the BSEC SMC (legacy mode) */
+	 
 	ret = stm32_bsec_smc(STM32_SMC_READ_SHADOW, 0, 0, &val);
 
 	return !ret;
@@ -175,7 +170,7 @@ static bool optee_presence_check(void)
 	struct device_node *np;
 	bool tee_detected = false;
 
-	/* check that the OP-TEE node is present and available. */
+	 
 	np = of_find_compatible_node(NULL, NULL, "linaro,optee-tz");
 	if (np && of_device_is_available(np))
 		tee_detected = true;
@@ -222,10 +217,10 @@ static int stm32_romem_probe(struct platform_device *pdev)
 		if (cfg->ta || optee_presence_check()) {
 			rc = stm32_bsec_optee_ta_open(&priv->ctx);
 			if (rc) {
-				/* wait for OP-TEE client driver to be up and ready */
+				 
 				if (rc == -EPROBE_DEFER)
 					return -EPROBE_DEFER;
-				/* BSEC PTA is required or SMC not supported */
+				 
 				if (cfg->ta || !stm32_bsec_smc_check())
 					return rc;
 			}
@@ -247,14 +242,7 @@ static int stm32_romem_probe(struct platform_device *pdev)
 	return PTR_ERR_OR_ZERO(devm_nvmem_register(dev, &priv->cfg));
 }
 
-/*
- * STM32MP15/13 BSEC OTP regions: 4096 OTP bits (with 3072 effective bits)
- * => 96 x 32-bits data words
- * - Lower: 1K bits, 2:1 redundancy, incremental bit programming
- *   => 32 (x 32-bits) lower shadow registers = words 0 to 31
- * - Upper: 2K bits, ECC protection, word programming only
- *   => 64 (x 32-bits) = words 32 to 95
- */
+ 
 static const struct stm32_romem_cfg stm32mp15_bsec_cfg = {
 	.size = 384,
 	.lower = 32,
@@ -275,7 +263,7 @@ static const struct of_device_id stm32_romem_of_match[] __maybe_unused = {
 		.compatible = "st,stm32mp13-bsec",
 		.data = (void *)&stm32mp13_bsec_cfg,
 	},
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, stm32_romem_of_match);
 

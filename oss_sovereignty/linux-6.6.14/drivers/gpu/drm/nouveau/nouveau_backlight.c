@@ -1,34 +1,6 @@
-/*
- * Copyright (C) 2009 Red Hat <mjg@redhat.com>
- *
- * Permission is hereby granted, free of charge, to any person obtaining
- * a copy of this software and associated documentation files (the
- * "Software"), to deal in the Software without restriction, including
- * without limitation the rights to use, copy, modify, merge, publish,
- * distribute, sublicense, and/or sell copies of the Software, and to
- * permit persons to whom the Software is furnished to do so, subject to
- * the following conditions:
- *
- * The above copyright notice and this permission notice (including the
- * next paragraph) shall be included in all copies or substantial
- * portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
- * IN NO EVENT SHALL THE COPYRIGHT OWNER(S) AND/OR ITS SUPPLIERS BE
- * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
- * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
- * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 
-/*
- * Authors:
- *  Matthew Garrett <mjg@redhat.com>
- *
- * Register locations derived from NVClock by Roderick Colenbrander
- */
+ 
 
 #include <linux/apple-gmux.h>
 #include <linux/backlight.h>
@@ -42,7 +14,7 @@
 #include "nouveau_acpi.h"
 
 static struct ida bl_ida;
-#define BL_NAME_SIZE 15 // 12 for name + 2 for digits + 1 for '\0'
+#define BL_NAME_SIZE 15 
 
 static bool
 nouveau_get_backlight_name(char backlight_name[BL_NAME_SIZE],
@@ -145,10 +117,7 @@ static const struct backlight_ops nv50_bl_ops = {
 	.update_status = nv50_set_intensity,
 };
 
-/*
- * eDP brightness callbacks need to happen under lock, since we need to
- * enable/disable the backlight ourselves for modesets
- */
+ 
 static int
 nv50_edp_get_brightness(struct backlight_device *bd)
 {
@@ -287,9 +256,7 @@ static const struct backlight_ops nva3_bl_ops = {
 	.update_status = nva3_set_intensity,
 };
 
-/* FIXME: perform backlight probing for eDP _before_ this, this only gets called after connector
- * registration which happens after the initial modeset
- */
+ 
 static int
 nv50_backlight_init(struct nouveau_backlight *bl,
 		    struct nouveau_connector *nv_conn,
@@ -300,10 +267,7 @@ nv50_backlight_init(struct nouveau_backlight *bl,
 	struct nouveau_drm *drm = nouveau_drm(nv_encoder->base.base.dev);
 	struct nvif_object *device = &drm->client.device.object;
 
-	/*
-	 * Note when this runs the connectors have not been probed yet,
-	 * so nv_conn->base.status is not set yet.
-	 */
+	 
 	if (!nvif_rd32(device, NV50_PDISP_SOR_PWM_CTL(ffs(nv_encoder->dcb->or) - 1)) ||
 	    drm_helper_probe_detect(&nv_conn->base, NULL, false) != connector_status_connected)
 		return -ENODEV;
@@ -319,7 +283,7 @@ nv50_backlight_init(struct nouveau_backlight *bl,
 		if (ret < 0)
 			return ret;
 
-		/* TODO: Add support for hybrid PWM/DPCD panels */
+		 
 		if (drm_edp_backlight_supported(edp_dpcd) &&
 		    (edp_dpcd[1] & DP_EDP_BACKLIGHT_AUX_ENABLE_CAP) &&
 		    (edp_dpcd[2] & DP_EDP_BACKLIGHT_BRIGHTNESS_AUX_SET_CAP)) {
@@ -400,7 +364,7 @@ nouveau_backlight_init(struct drm_connector *connector)
 	case NV_DEVICE_INFO_V0_PASCAL:
 	case NV_DEVICE_INFO_V0_VOLTA:
 	case NV_DEVICE_INFO_V0_TURING:
-	case NV_DEVICE_INFO_V0_AMPERE: //XXX: not confirmed
+	case NV_DEVICE_INFO_V0_AMPERE: 
 		ret = nv50_backlight_init(bl, nouveau_connector(connector),
 					  nv_encoder, &props, &ops);
 		break;
@@ -445,10 +409,7 @@ nouveau_backlight_init(struct drm_connector *connector)
 
 fail_alloc:
 	kfree(bl);
-	/*
-	 * If we get here we have an internal panel, but no nv_backlight,
-	 * try registering an ACPI video backlight device instead.
-	 */
+	 
 	if (ret == 0)
 		nouveau_acpi_video_register_backlight();
 

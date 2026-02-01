@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2012 ARM Ltd.
- * Copyright (C) 2020 Google LLC
- */
+
+ 
 #include <linux/cma.h>
 #include <linux/debugfs.h>
 #include <linux/dma-map-ops.h>
@@ -20,10 +17,10 @@ static unsigned long pool_size_dma32;
 static struct gen_pool *atomic_pool_kernel __ro_after_init;
 static unsigned long pool_size_kernel;
 
-/* Size can be defined by the coherent_pool command line */
+ 
 static size_t atomic_pool_size;
 
-/* Dynamic background expansion when the atomic pool is near capacity */
+ 
 static struct work_struct atomic_pool_work;
 
 static int __init early_coherent_pool(char *p)
@@ -67,7 +64,7 @@ static bool cma_in_zone(gfp_t gfp)
 	if (!size)
 		return false;
 
-	/* CMA can't cross zone boundaries, see cma_activate_area() */
+	 
 	end = cma_get_base(cma) + size - 1;
 	if (IS_ENABLED(CONFIG_ZONE_DMA) && (gfp & GFP_DMA))
 		return end <= DMA_BIT_MASK(zone_dma_bits);
@@ -84,7 +81,7 @@ static int atomic_pool_expand(struct gen_pool *pool, size_t pool_size,
 	void *addr;
 	int ret = -ENOMEM;
 
-	/* Cannot allocate larger than MAX_ORDER */
+	 
 	order = min(get_order(pool_size), MAX_ORDER);
 
 	do {
@@ -109,10 +106,7 @@ static int atomic_pool_expand(struct gen_pool *pool, size_t pool_size,
 #else
 	addr = page_to_virt(page);
 #endif
-	/*
-	 * Memory in the atomic DMA pools must be unencrypted, the pools do not
-	 * shrink so no re-encryption occurs in dma_direct_free().
-	 */
+	 
 	ret = set_memory_decrypted((unsigned long)page_to_virt(page),
 				   1 << order);
 	if (ret)
@@ -129,7 +123,7 @@ encrypt_mapping:
 	ret = set_memory_encrypted((unsigned long)page_to_virt(page),
 				   1 << order);
 	if (WARN_ON_ONCE(ret)) {
-		/* Decrypt succeeded but encrypt failed, purposely leak */
+		 
 		goto out;
 	}
 remove_mapping:
@@ -188,10 +182,7 @@ static int __init dma_atomic_pool_init(void)
 {
 	int ret = 0;
 
-	/*
-	 * If coherent_pool was not used on the command line, default the pool
-	 * sizes to 128KB per 1GB of memory, min 128KB, max MAX_ORDER.
-	 */
+	 
 	if (!atomic_pool_size) {
 		unsigned long pages = totalram_pages() / (SZ_1G / SZ_128K);
 		pages = min_t(unsigned long, pages, MAX_ORDER_NR_PAGES);

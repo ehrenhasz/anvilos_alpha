@@ -1,65 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * addi_apci_1032.c
- * Copyright (C) 2004,2005  ADDI-DATA GmbH for the source code of this module.
- * Project manager: Eric Stolz
- *
- *	ADDI-DATA GmbH
- *	Dieselstrasse 3
- *	D-77833 Ottersweier
- *	Tel: +19(0)7223/9493-0
- *	Fax: +49(0)7223/9493-92
- *	http://www.addi-data.com
- *	info@addi-data.com
- */
 
-/*
- * Driver: addi_apci_1032
- * Description: ADDI-DATA APCI-1032 Digital Input Board
- * Author: ADDI-DATA GmbH <info@addi-data.com>,
- *   H Hartley Sweeten <hsweeten@visionengravers.com>
- * Status: untested
- * Devices: [ADDI-DATA] APCI-1032 (addi_apci_1032)
- *
- * Configuration options:
- *   None; devices are configured automatically.
- *
- * This driver models the APCI-1032 as a 32-channel, digital input subdevice
- * plus an additional digital input subdevice to handle change-of-state (COS)
- * interrupts (if an interrupt handler can be set up successfully).
- *
- * The COS subdevice supports comedi asynchronous read commands.
- *
- * Change-Of-State (COS) interrupt configuration:
- *
- * Channels 0 to 15 are interruptible. These channels can be configured
- * to generate interrupts based on AND/OR logic for the desired channels.
- *
- *   OR logic:
- *   - reacts to rising or falling edges
- *   - interrupt is generated when any enabled channel meets the desired
- *     interrupt condition
- *
- *   AND logic:
- *   - reacts to changes in level of the selected inputs
- *   - interrupt is generated when all enabled channels meet the desired
- *     interrupt condition
- *   - after an interrupt, a change in level must occur on the selected
- *     inputs to release the IRQ logic
- *
- * The COS subdevice must be configured before setting up a comedi
- * asynchronous command:
- *
- *   data[0] : INSN_CONFIG_DIGITAL_TRIG
- *   data[1] : trigger number (= 0)
- *   data[2] : configuration operation:
- *             - COMEDI_DIGITAL_TRIG_DISABLE = no interrupts
- *             - COMEDI_DIGITAL_TRIG_ENABLE_EDGES = OR (edge) interrupts
- *             - COMEDI_DIGITAL_TRIG_ENABLE_LEVELS = AND (level) interrupts
- *   data[3] : left-shift for data[4] and data[5]
- *   data[4] : rising-edge/high level channels
- *   data[5] : falling-edge/low level channels
- */
+ 
+
+ 
 
 #include <linux/module.h>
 #include <linux/interrupt.h>
@@ -67,9 +9,7 @@
 
 #include "amcc_s5933.h"
 
-/*
- * I/O Register Map
- */
+ 
 #define APCI1032_DI_REG			0x00
 #define APCI1032_MODE1_REG		0x04
 #define APCI1032_MODE2_REG		0x08
@@ -81,19 +21,19 @@
 #define APCI1032_CTRL_INT_ENA		BIT(2)
 
 struct apci1032_private {
-	unsigned long amcc_iobase;	/* base of AMCC I/O registers */
-	unsigned int mode1;	/* rising-edge/high level channels */
-	unsigned int mode2;	/* falling-edge/low level channels */
-	unsigned int ctrl;	/* interrupt mode OR (edge) . AND (level) */
+	unsigned long amcc_iobase;	 
+	unsigned int mode1;	 
+	unsigned int mode2;	 
+	unsigned int ctrl;	 
 };
 
 static int apci1032_reset(struct comedi_device *dev)
 {
-	/* disable the interrupts */
+	 
 	outl(0x0, dev->iobase + APCI1032_CTRL_REG);
-	/* Reset the interrupt status register */
+	 
 	inl(dev->iobase + APCI1032_STATUS_REG);
-	/* Disable the and/or interrupt */
+	 
 	outl(0x0, dev->iobase + APCI1032_MODE1_REG);
 	outl(0x0, dev->iobase + APCI1032_MODE2_REG);
 
@@ -132,36 +72,36 @@ static int apci1032_cos_insn_config(struct comedi_device *dev,
 		case COMEDI_DIGITAL_TRIG_ENABLE_EDGES:
 			if (devpriv->ctrl != (APCI1032_CTRL_INT_ENA |
 					      APCI1032_CTRL_INT_OR)) {
-				/* switching to 'OR' mode */
+				 
 				devpriv->ctrl = APCI1032_CTRL_INT_ENA |
 						APCI1032_CTRL_INT_OR;
-				/* wipe old channels */
+				 
 				devpriv->mode1 = 0;
 				devpriv->mode2 = 0;
 			} else {
-				/* preserve unspecified channels */
+				 
 				devpriv->mode1 &= oldmask;
 				devpriv->mode2 &= oldmask;
 			}
-			/* configure specified channels */
+			 
 			devpriv->mode1 |= himask;
 			devpriv->mode2 |= lomask;
 			break;
 		case COMEDI_DIGITAL_TRIG_ENABLE_LEVELS:
 			if (devpriv->ctrl != (APCI1032_CTRL_INT_ENA |
 					      APCI1032_CTRL_INT_AND)) {
-				/* switching to 'AND' mode */
+				 
 				devpriv->ctrl = APCI1032_CTRL_INT_ENA |
 						APCI1032_CTRL_INT_AND;
-				/* wipe old channels */
+				 
 				devpriv->mode1 = 0;
 				devpriv->mode2 = 0;
 			} else {
-				/* preserve unspecified channels */
+				 
 				devpriv->mode1 &= oldmask;
 				devpriv->mode2 &= oldmask;
 			}
-			/* configure specified channels */
+			 
 			devpriv->mode1 |= himask;
 			devpriv->mode2 |= lomask;
 			break;
@@ -192,7 +132,7 @@ static int apci1032_cos_cmdtest(struct comedi_device *dev,
 {
 	int err = 0;
 
-	/* Step 1 : check if triggers are trivially valid */
+	 
 
 	err |= comedi_check_trigger_src(&cmd->start_src, TRIG_NOW);
 	err |= comedi_check_trigger_src(&cmd->scan_begin_src, TRIG_EXT);
@@ -203,10 +143,10 @@ static int apci1032_cos_cmdtest(struct comedi_device *dev,
 	if (err)
 		return 1;
 
-	/* Step 2a : make sure trigger sources are unique */
-	/* Step 2b : and mutually compatible */
+	 
+	 
 
-	/* Step 3: check if arguments are trivially valid */
+	 
 
 	err |= comedi_check_trigger_arg_is(&cmd->start_arg, 0);
 	err |= comedi_check_trigger_arg_is(&cmd->scan_begin_arg, 0);
@@ -218,18 +158,14 @@ static int apci1032_cos_cmdtest(struct comedi_device *dev,
 	if (err)
 		return 3;
 
-	/* Step 4: fix up any arguments */
+	 
 
-	/* Step 5: check channel list if it exists */
+	 
 
 	return 0;
 }
 
-/*
- * Change-Of-State (COS) 'do_cmd' operation
- *
- * Enable the COS interrupt as configured by apci1032_cos_insn_config().
- */
+ 
 static int apci1032_cos_cmd(struct comedi_device *dev,
 			    struct comedi_subdevice *s)
 {
@@ -262,17 +198,17 @@ static irqreturn_t apci1032_interrupt(int irq, void *d)
 	unsigned int ctrl;
 	unsigned short val;
 
-	/* check interrupt is from this device */
+	 
 	if ((inl(devpriv->amcc_iobase + AMCC_OP_REG_INTCSR) &
 	     INTCSR_INTR_ASSERTED) == 0)
 		return IRQ_NONE;
 
-	/* check interrupt is enabled */
+	 
 	ctrl = inl(dev->iobase + APCI1032_CTRL_REG);
 	if ((ctrl & APCI1032_CTRL_INT_ENA) == 0)
 		return IRQ_HANDLED;
 
-	/* disable the interrupt */
+	 
 	outl(ctrl & ~APCI1032_CTRL_INT_ENA, dev->iobase + APCI1032_CTRL_REG);
 
 	s->state = inl(dev->iobase + APCI1032_STATUS_REG) & 0xffff;
@@ -280,7 +216,7 @@ static irqreturn_t apci1032_interrupt(int irq, void *d)
 	comedi_buf_write_samples(s, &val, 1);
 	comedi_handle_events(dev, s);
 
-	/* enable the interrupt */
+	 
 	outl(ctrl, dev->iobase + APCI1032_CTRL_REG);
 
 	return IRQ_HANDLED;
@@ -326,7 +262,7 @@ static int apci1032_auto_attach(struct comedi_device *dev,
 	if (ret)
 		return ret;
 
-	/*  Allocate and Initialise DI Subdevice Structures */
+	 
 	s = &dev->subdevices[0];
 	s->type		= COMEDI_SUBD_DI;
 	s->subdev_flags	= SDF_READABLE;
@@ -335,7 +271,7 @@ static int apci1032_auto_attach(struct comedi_device *dev,
 	s->range_table	= &range_digital;
 	s->insn_bits	= apci1032_di_insn_bits;
 
-	/* Change-Of-State (COS) interrupt subdevice */
+	 
 	s = &dev->subdevices[1];
 	if (dev->irq) {
 		dev->read_subdev = s;

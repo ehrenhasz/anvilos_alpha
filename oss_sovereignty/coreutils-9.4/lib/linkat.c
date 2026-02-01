@@ -1,20 +1,4 @@
-/* Create a hard link relative to open directories.
-   Copyright (C) 2009-2023 Free Software Foundation, Inc.
-
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* written by Eric Blake */
+ 
 
 #include <config.h>
 
@@ -35,8 +19,7 @@
 
 #if !HAVE_LINKAT || LINKAT_SYMLINK_NOTSUP
 
-/* Create a link.  If FILE1 is a symlink, either create a hardlink to
-   that symlink, or fake it by creating an identical symlink.  */
+ 
 # if LINK_FOLLOWS_SYMLINKS == 0
 #  define link_immediate link
 # else
@@ -46,10 +29,7 @@ link_immediate (char const *file1, char const *file2)
   char *target = areadlink (file1);
   if (target)
     {
-      /* A symlink cannot be modified in-place.  Therefore, creating
-         an identical symlink behaves like a hard link to a symlink,
-         except for incorrect st_ino and st_nlink.  However, we must
-         be careful of EXDEV.  */
+       
       struct stat st1;
       struct stat st2;
       char *dir = mdir_name (file2);
@@ -80,10 +60,9 @@ link_immediate (char const *file1, char const *file2)
     return -1;
   return link (file1, file2);
 }
-# endif /* LINK_FOLLOWS_SYMLINKS == 0 */
+# endif  
 
-/* Create a link.  If FILE1 is a symlink, create a hardlink to the
-   canonicalized file.  */
+ 
 # if 0 < LINK_FOLLOWS_SYMLINKS
 #  define link_follow link
 # else
@@ -95,9 +74,7 @@ link_follow (char const *file1, char const *file2)
   int result;
   int i = __eloop_threshold ();
 
-  /* Using realpath or canonicalize_file_name is too heavy-handed: we
-     don't need an absolute name, and we don't need to resolve
-     intermediate symlinks, just the basename of each iteration.  */
+   
   while (i-- && (target = areadlink (name)))
     {
       if (IS_ABSOLUTE_FILE_NAME (target))
@@ -143,15 +120,12 @@ link_follow (char const *file1, char const *file2)
     free (name);
   return result;
 }
-# endif /* 0 < LINK_FOLLOWS_SYMLINKS */
+# endif  
 
-/* On Solaris, link() doesn't follow symlinks by default, but does so as soon
-   as a library or executable takes part in the program that has been compiled
-   with "c99" or "cc -xc99=all" or "cc ... /usr/lib/values-xpg4.o ...".  */
+ 
 # if LINK_FOLLOWS_SYMLINKS == -1
 
-/* Reduce the penalty of link_immediate and link_follow by incorporating the
-   knowledge that link()'s behaviour depends on the __xpg4 variable.  */
+ 
 extern int __xpg4;
 
 static int
@@ -175,16 +149,11 @@ solaris_optimized_link_follow (char const *file1, char const *file2)
 
 # endif
 
-#endif /* !HAVE_LINKAT || LINKAT_SYMLINK_NOTSUP  */
+#endif  
 
 #if !HAVE_LINKAT
 
-/* Create a link to FILE1, in the directory open on descriptor FD1, to FILE2,
-   in the directory open on descriptor FD2.  If FILE1 is a symlink, FLAG
-   controls whether to dereference FILE1 first.  If possible, do it without
-   changing the working directory.  Otherwise, resort to using
-   save_cwd/fchdir, then rename/restore_cwd.  If either the save_cwd or
-   the restore_cwd fails, then give a diagnostic and exit nonzero.  */
+ 
 
 int
 linkat (int fd1, char const *file1, int fd2, char const *file2, int flag)
@@ -198,12 +167,11 @@ linkat (int fd1, char const *file1, int fd2, char const *file2, int flag)
                    flag ? link_follow : link_immediate);
 }
 
-#else /* HAVE_LINKAT */
+#else  
 
 # undef linkat
 
-/* Create a link.  If FILE1 is a symlink, create a hardlink to the
-   canonicalized file.  */
+ 
 
 static int
 linkat_follow (int fd1, char const *file1, int fd2, char const *file2)
@@ -213,7 +181,7 @@ linkat_follow (int fd1, char const *file1, int fd2, char const *file2)
   int result;
   int i = __eloop_threshold ();
 
-  /* There is no realpathat.  */
+   
   while (i-- && (target = areadlinkat (fd1, name)))
     {
       if (IS_ABSOLUTE_FILE_NAME (target))
@@ -261,8 +229,7 @@ linkat_follow (int fd1, char const *file1, int fd2, char const *file2)
 }
 
 
-/* Like linkat, but guarantee that AT_SYMLINK_FOLLOW works even on
-   older Linux kernels.  */
+ 
 
 int
 rpl_linkat (int fd1, char const *file1, int fd2, char const *file2, int flag)
@@ -274,16 +241,14 @@ rpl_linkat (int fd1, char const *file1, int fd2, char const *file2, int flag)
     }
 
 # if LINKAT_TRAILING_SLASH_BUG
-  /* Reject trailing slashes on non-directories.  */
+   
   {
     size_t len1 = strlen (file1);
     size_t len2 = strlen (file2);
     if ((len1 && file1[len1 - 1] == '/')
         || (len2 && file2[len2 - 1] == '/'))
       {
-        /* Let linkat() decide whether hard-linking directories is legal.
-           If fstatat() fails, then linkat() should fail for the same reason;
-           if fstatat() succeeds, require a directory.  */
+         
         struct stat st;
         if (fstatat (fd1, file1, &st, flag ? 0 : AT_SYMLINK_NOFOLLOW))
           return -1;
@@ -300,18 +265,16 @@ rpl_linkat (int fd1, char const *file1, int fd2, char const *file2, int flag)
     {
       int result = linkat (fd1, file1, fd2, file2, flag);
 # if LINKAT_SYMLINK_NOTSUP
-      /* OS X 10.10 has linkat() but it doesn't support
-         hardlinks to symlinks.  Fallback to our emulation
-         in that case.  */
+       
       if (result == -1 && (errno == ENOTSUP || errno == EOPNOTSUPP))
         return at_func2 (fd1, file1, fd2, file2, link_immediate);
 # endif
       return result;
     }
 
-  /* Cache the information on whether the system call really works.  */
+   
   {
-    static int have_follow_really; /* 0 = unknown, 1 = yes, -1 = no */
+    static int have_follow_really;  
     if (0 <= have_follow_really)
     {
       int result = linkat (fd1, file1, fd2, file2, flag);
@@ -326,4 +289,4 @@ rpl_linkat (int fd1, char const *file1, int fd2, char const *file2, int flag)
   return linkat_follow (fd1, file1, fd2, file2);
 }
 
-#endif /* HAVE_LINKAT */
+#endif  

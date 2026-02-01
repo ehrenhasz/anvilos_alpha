@@ -1,11 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// cs35l41-lib.c -- CS35L41 Common functions for HDA and ASoC Audio drivers
-//
-// Copyright 2017-2021 Cirrus Logic, Inc.
-//
-// Author: David Rhodes <david.rhodes@cirrus.com>
-// Author: Lucas Tanure <lucas.tanure@cirrus.com>
+
+
+
+
+
+
+
+
 
 #include <linux/dev_printk.h>
 #include <linux/module.h>
@@ -344,7 +344,7 @@ static bool cs35l41_readable_reg(struct device *dev, unsigned int reg)
 	case CS35L41_DSP1_YMEM_UNPACK32_0 ... CS35L41_DSP1_YMEM_UNPACK32_1022:
 	case CS35L41_DSP1_YMEM_UNPACK24_0 ... CS35L41_DSP1_YMEM_UNPACK24_2045:
 	case CS35L41_DSP1_PMEM_0 ... CS35L41_DSP1_PMEM_5114:
-	/*test regs*/
+	 
 	case CS35L41_PLL_OVR:
 	case CS35L41_BST_TEST_DUTY:
 	case CS35L41_DIGPWM_IOCTRL:
@@ -424,209 +424,209 @@ static bool cs35l41_volatile_reg(struct device *dev, unsigned int reg)
 }
 
 static const struct cs35l41_otp_packed_element_t otp_map_1[] = {
-	/* addr         shift   size */
-	{ 0x00002030,	0,	4 }, /*TRIM_OSC_FREQ_TRIM*/
-	{ 0x00002030,	7,	1 }, /*TRIM_OSC_TRIM_DONE*/
-	{ 0x0000208c,	24,	6 }, /*TST_DIGREG_VREF_TRIM*/
-	{ 0x00002090,	14,	4 }, /*TST_REF_TRIM*/
-	{ 0x00002090,	10,	4 }, /*TST_REF_TEMPCO_TRIM*/
-	{ 0x0000300C,	11,	4 }, /*PLL_LDOA_TST_VREF_TRIM*/
-	{ 0x0000394C,	23,	2 }, /*BST_ATEST_CM_VOFF*/
-	{ 0x00003950,	0,	7 }, /*BST_ATRIM_IADC_OFFSET*/
-	{ 0x00003950,	8,	7 }, /*BST_ATRIM_IADC_GAIN1*/
-	{ 0x00003950,	16,	8 }, /*BST_ATRIM_IPKCOMP_OFFSET1*/
-	{ 0x00003950,	24,	8 }, /*BST_ATRIM_IPKCOMP_GAIN1*/
-	{ 0x00003954,	0,	7 }, /*BST_ATRIM_IADC_OFFSET2*/
-	{ 0x00003954,	8,	7 }, /*BST_ATRIM_IADC_GAIN2*/
-	{ 0x00003954,	16,	8 }, /*BST_ATRIM_IPKCOMP_OFFSET2*/
-	{ 0x00003954,	24,	8 }, /*BST_ATRIM_IPKCOMP_GAIN2*/
-	{ 0x00003958,	0,	7 }, /*BST_ATRIM_IADC_OFFSET3*/
-	{ 0x00003958,	8,	7 }, /*BST_ATRIM_IADC_GAIN3*/
-	{ 0x00003958,	16,	8 }, /*BST_ATRIM_IPKCOMP_OFFSET3*/
-	{ 0x00003958,	24,	8 }, /*BST_ATRIM_IPKCOMP_GAIN3*/
-	{ 0x0000395C,	0,	7 }, /*BST_ATRIM_IADC_OFFSET4*/
-	{ 0x0000395C,	8,	7 }, /*BST_ATRIM_IADC_GAIN4*/
-	{ 0x0000395C,	16,	8 }, /*BST_ATRIM_IPKCOMP_OFFSET4*/
-	{ 0x0000395C,	24,	8 }, /*BST_ATRIM_IPKCOMP_GAIN4*/
-	{ 0x0000416C,	0,	8 }, /*VMON_GAIN_OTP_VAL*/
-	{ 0x00004160,	0,	7 }, /*VMON_OFFSET_OTP_VAL*/
-	{ 0x0000416C,	8,	8 }, /*IMON_GAIN_OTP_VAL*/
-	{ 0x00004160,	16,	10 }, /*IMON_OFFSET_OTP_VAL*/
-	{ 0x0000416C,	16,	12 }, /*VMON_CM_GAIN_OTP_VAL*/
-	{ 0x0000416C,	28,	1 }, /*VMON_CM_GAIN_SIGN_OTP_VAL*/
-	{ 0x00004170,	0,	6 }, /*IMON_CAL_TEMPCO_OTP_VAL*/
-	{ 0x00004170,	6,	1 }, /*IMON_CAL_TEMPCO_SIGN_OTP*/
-	{ 0x00004170,	8,	6 }, /*IMON_CAL_TEMPCO2_OTP_VAL*/
-	{ 0x00004170,	14,	1 }, /*IMON_CAL_TEMPCO2_DN_UPB_OTP_VAL*/
-	{ 0x00004170,	16,	9 }, /*IMON_CAL_TEMPCO_TBASE_OTP_VAL*/
-	{ 0x00004360,	0,	5 }, /*TEMP_GAIN_OTP_VAL*/
-	{ 0x00004360,	6,	9 }, /*TEMP_OFFSET_OTP_VAL*/
-	{ 0x00004448,	0,	8 }, /*VP_SARADC_OFFSET*/
-	{ 0x00004448,	8,	8 }, /*VP_GAIN_INDEX*/
-	{ 0x00004448,	16,	8 }, /*VBST_SARADC_OFFSET*/
-	{ 0x00004448,	24,	8 }, /*VBST_GAIN_INDEX*/
-	{ 0x0000444C,	0,	3 }, /*ANA_SELINVREF*/
-	{ 0x00006E30,	0,	5 }, /*GAIN_ERR_COEFF_0*/
-	{ 0x00006E30,	8,	5 }, /*GAIN_ERR_COEFF_1*/
-	{ 0x00006E30,	16,	5 }, /*GAIN_ERR_COEFF_2*/
-	{ 0x00006E30,	24,	5 }, /*GAIN_ERR_COEFF_3*/
-	{ 0x00006E34,	0,	5 }, /*GAIN_ERR_COEFF_4*/
-	{ 0x00006E34,	8,	5 }, /*GAIN_ERR_COEFF_5*/
-	{ 0x00006E34,	16,	5 }, /*GAIN_ERR_COEFF_6*/
-	{ 0x00006E34,	24,	5 }, /*GAIN_ERR_COEFF_7*/
-	{ 0x00006E38,	0,	5 }, /*GAIN_ERR_COEFF_8*/
-	{ 0x00006E38,	8,	5 }, /*GAIN_ERR_COEFF_9*/
-	{ 0x00006E38,	16,	5 }, /*GAIN_ERR_COEFF_10*/
-	{ 0x00006E38,	24,	5 }, /*GAIN_ERR_COEFF_11*/
-	{ 0x00006E3C,	0,	5 }, /*GAIN_ERR_COEFF_12*/
-	{ 0x00006E3C,	8,	5 }, /*GAIN_ERR_COEFF_13*/
-	{ 0x00006E3C,	16,	5 }, /*GAIN_ERR_COEFF_14*/
-	{ 0x00006E3C,	24,	5 }, /*GAIN_ERR_COEFF_15*/
-	{ 0x00006E40,	0,	5 }, /*GAIN_ERR_COEFF_16*/
-	{ 0x00006E40,	8,	5 }, /*GAIN_ERR_COEFF_17*/
-	{ 0x00006E40,	16,	5 }, /*GAIN_ERR_COEFF_18*/
-	{ 0x00006E40,	24,	5 }, /*GAIN_ERR_COEFF_19*/
-	{ 0x00006E44,	0,	5 }, /*GAIN_ERR_COEFF_20*/
-	{ 0x00006E48,	0,	10 }, /*VOFF_GAIN_0*/
-	{ 0x00006E48,	10,	10 }, /*VOFF_GAIN_1*/
-	{ 0x00006E48,	20,	10 }, /*VOFF_GAIN_2*/
-	{ 0x00006E4C,	0,	10 }, /*VOFF_GAIN_3*/
-	{ 0x00006E4C,	10,	10 }, /*VOFF_GAIN_4*/
-	{ 0x00006E4C,	20,	10 }, /*VOFF_GAIN_5*/
-	{ 0x00006E50,	0,	10 }, /*VOFF_GAIN_6*/
-	{ 0x00006E50,	10,	10 }, /*VOFF_GAIN_7*/
-	{ 0x00006E50,	20,	10 }, /*VOFF_GAIN_8*/
-	{ 0x00006E54,	0,	10 }, /*VOFF_GAIN_9*/
-	{ 0x00006E54,	10,	10 }, /*VOFF_GAIN_10*/
-	{ 0x00006E54,	20,	10 }, /*VOFF_GAIN_11*/
-	{ 0x00006E58,	0,	10 }, /*VOFF_GAIN_12*/
-	{ 0x00006E58,	10,	10 }, /*VOFF_GAIN_13*/
-	{ 0x00006E58,	20,	10 }, /*VOFF_GAIN_14*/
-	{ 0x00006E5C,	0,	10 }, /*VOFF_GAIN_15*/
-	{ 0x00006E5C,	10,	10 }, /*VOFF_GAIN_16*/
-	{ 0x00006E5C,	20,	10 }, /*VOFF_GAIN_17*/
-	{ 0x00006E60,	0,	10 }, /*VOFF_GAIN_18*/
-	{ 0x00006E60,	10,	10 }, /*VOFF_GAIN_19*/
-	{ 0x00006E60,	20,	10 }, /*VOFF_GAIN_20*/
-	{ 0x00006E64,	0,	10 }, /*VOFF_INT1*/
-	{ 0x00007418,	7,	5 }, /*DS_SPK_INT1_CAP_TRIM*/
-	{ 0x0000741C,	0,	5 }, /*DS_SPK_INT2_CAP_TRIM*/
-	{ 0x0000741C,	11,	4 }, /*DS_SPK_LPF_CAP_TRIM*/
-	{ 0x0000741C,	19,	4 }, /*DS_SPK_QUAN_CAP_TRIM*/
-	{ 0x00007434,	17,	1 }, /*FORCE_CAL*/
-	{ 0x00007434,	18,	7 }, /*CAL_OVERRIDE*/
-	{ 0x00007068,	0,	9 }, /*MODIX*/
-	{ 0x0000410C,	7,	1 }, /*VIMON_DLY_NOT_COMB*/
-	{ 0x0000400C,	0,	7 }, /*VIMON_DLY*/
-	{ 0x00000000,	0,	1 }, /*extra bit*/
-	{ 0x00017040,	0,	8 }, /*X_COORDINATE*/
-	{ 0x00017040,	8,	8 }, /*Y_COORDINATE*/
-	{ 0x00017040,	16,	8 }, /*WAFER_ID*/
-	{ 0x00017040,	24,	8 }, /*DVS*/
-	{ 0x00017044,	0,	24 }, /*LOT_NUMBER*/
+	 
+	{ 0x00002030,	0,	4 },  
+	{ 0x00002030,	7,	1 },  
+	{ 0x0000208c,	24,	6 },  
+	{ 0x00002090,	14,	4 },  
+	{ 0x00002090,	10,	4 },  
+	{ 0x0000300C,	11,	4 },  
+	{ 0x0000394C,	23,	2 },  
+	{ 0x00003950,	0,	7 },  
+	{ 0x00003950,	8,	7 },  
+	{ 0x00003950,	16,	8 },  
+	{ 0x00003950,	24,	8 },  
+	{ 0x00003954,	0,	7 },  
+	{ 0x00003954,	8,	7 },  
+	{ 0x00003954,	16,	8 },  
+	{ 0x00003954,	24,	8 },  
+	{ 0x00003958,	0,	7 },  
+	{ 0x00003958,	8,	7 },  
+	{ 0x00003958,	16,	8 },  
+	{ 0x00003958,	24,	8 },  
+	{ 0x0000395C,	0,	7 },  
+	{ 0x0000395C,	8,	7 },  
+	{ 0x0000395C,	16,	8 },  
+	{ 0x0000395C,	24,	8 },  
+	{ 0x0000416C,	0,	8 },  
+	{ 0x00004160,	0,	7 },  
+	{ 0x0000416C,	8,	8 },  
+	{ 0x00004160,	16,	10 },  
+	{ 0x0000416C,	16,	12 },  
+	{ 0x0000416C,	28,	1 },  
+	{ 0x00004170,	0,	6 },  
+	{ 0x00004170,	6,	1 },  
+	{ 0x00004170,	8,	6 },  
+	{ 0x00004170,	14,	1 },  
+	{ 0x00004170,	16,	9 },  
+	{ 0x00004360,	0,	5 },  
+	{ 0x00004360,	6,	9 },  
+	{ 0x00004448,	0,	8 },  
+	{ 0x00004448,	8,	8 },  
+	{ 0x00004448,	16,	8 },  
+	{ 0x00004448,	24,	8 },  
+	{ 0x0000444C,	0,	3 },  
+	{ 0x00006E30,	0,	5 },  
+	{ 0x00006E30,	8,	5 },  
+	{ 0x00006E30,	16,	5 },  
+	{ 0x00006E30,	24,	5 },  
+	{ 0x00006E34,	0,	5 },  
+	{ 0x00006E34,	8,	5 },  
+	{ 0x00006E34,	16,	5 },  
+	{ 0x00006E34,	24,	5 },  
+	{ 0x00006E38,	0,	5 },  
+	{ 0x00006E38,	8,	5 },  
+	{ 0x00006E38,	16,	5 },  
+	{ 0x00006E38,	24,	5 },  
+	{ 0x00006E3C,	0,	5 },  
+	{ 0x00006E3C,	8,	5 },  
+	{ 0x00006E3C,	16,	5 },  
+	{ 0x00006E3C,	24,	5 },  
+	{ 0x00006E40,	0,	5 },  
+	{ 0x00006E40,	8,	5 },  
+	{ 0x00006E40,	16,	5 },  
+	{ 0x00006E40,	24,	5 },  
+	{ 0x00006E44,	0,	5 },  
+	{ 0x00006E48,	0,	10 },  
+	{ 0x00006E48,	10,	10 },  
+	{ 0x00006E48,	20,	10 },  
+	{ 0x00006E4C,	0,	10 },  
+	{ 0x00006E4C,	10,	10 },  
+	{ 0x00006E4C,	20,	10 },  
+	{ 0x00006E50,	0,	10 },  
+	{ 0x00006E50,	10,	10 },  
+	{ 0x00006E50,	20,	10 },  
+	{ 0x00006E54,	0,	10 },  
+	{ 0x00006E54,	10,	10 },  
+	{ 0x00006E54,	20,	10 },  
+	{ 0x00006E58,	0,	10 },  
+	{ 0x00006E58,	10,	10 },  
+	{ 0x00006E58,	20,	10 },  
+	{ 0x00006E5C,	0,	10 },  
+	{ 0x00006E5C,	10,	10 },  
+	{ 0x00006E5C,	20,	10 },  
+	{ 0x00006E60,	0,	10 },  
+	{ 0x00006E60,	10,	10 },  
+	{ 0x00006E60,	20,	10 },  
+	{ 0x00006E64,	0,	10 },  
+	{ 0x00007418,	7,	5 },  
+	{ 0x0000741C,	0,	5 },  
+	{ 0x0000741C,	11,	4 },  
+	{ 0x0000741C,	19,	4 },  
+	{ 0x00007434,	17,	1 },  
+	{ 0x00007434,	18,	7 },  
+	{ 0x00007068,	0,	9 },  
+	{ 0x0000410C,	7,	1 },  
+	{ 0x0000400C,	0,	7 },  
+	{ 0x00000000,	0,	1 },  
+	{ 0x00017040,	0,	8 },  
+	{ 0x00017040,	8,	8 },  
+	{ 0x00017040,	16,	8 },  
+	{ 0x00017040,	24,	8 },  
+	{ 0x00017044,	0,	24 },  
 };
 
 static const struct cs35l41_otp_packed_element_t otp_map_2[] = {
-	/* addr         shift   size */
-	{ 0x00002030,	0,	4 }, /*TRIM_OSC_FREQ_TRIM*/
-	{ 0x00002030,	7,	1 }, /*TRIM_OSC_TRIM_DONE*/
-	{ 0x0000208c,	24,	6 }, /*TST_DIGREG_VREF_TRIM*/
-	{ 0x00002090,	14,	4 }, /*TST_REF_TRIM*/
-	{ 0x00002090,	10,	4 }, /*TST_REF_TEMPCO_TRIM*/
-	{ 0x0000300C,	11,	4 }, /*PLL_LDOA_TST_VREF_TRIM*/
-	{ 0x0000394C,	23,	2 }, /*BST_ATEST_CM_VOFF*/
-	{ 0x00003950,	0,	7 }, /*BST_ATRIM_IADC_OFFSET*/
-	{ 0x00003950,	8,	7 }, /*BST_ATRIM_IADC_GAIN1*/
-	{ 0x00003950,	16,	8 }, /*BST_ATRIM_IPKCOMP_OFFSET1*/
-	{ 0x00003950,	24,	8 }, /*BST_ATRIM_IPKCOMP_GAIN1*/
-	{ 0x00003954,	0,	7 }, /*BST_ATRIM_IADC_OFFSET2*/
-	{ 0x00003954,	8,	7 }, /*BST_ATRIM_IADC_GAIN2*/
-	{ 0x00003954,	16,	8 }, /*BST_ATRIM_IPKCOMP_OFFSET2*/
-	{ 0x00003954,	24,	8 }, /*BST_ATRIM_IPKCOMP_GAIN2*/
-	{ 0x00003958,	0,	7 }, /*BST_ATRIM_IADC_OFFSET3*/
-	{ 0x00003958,	8,	7 }, /*BST_ATRIM_IADC_GAIN3*/
-	{ 0x00003958,	16,	8 }, /*BST_ATRIM_IPKCOMP_OFFSET3*/
-	{ 0x00003958,	24,	8 }, /*BST_ATRIM_IPKCOMP_GAIN3*/
-	{ 0x0000395C,	0,	7 }, /*BST_ATRIM_IADC_OFFSET4*/
-	{ 0x0000395C,	8,	7 }, /*BST_ATRIM_IADC_GAIN4*/
-	{ 0x0000395C,	16,	8 }, /*BST_ATRIM_IPKCOMP_OFFSET4*/
-	{ 0x0000395C,	24,	8 }, /*BST_ATRIM_IPKCOMP_GAIN4*/
-	{ 0x0000416C,	0,	8 }, /*VMON_GAIN_OTP_VAL*/
-	{ 0x00004160,	0,	7 }, /*VMON_OFFSET_OTP_VAL*/
-	{ 0x0000416C,	8,	8 }, /*IMON_GAIN_OTP_VAL*/
-	{ 0x00004160,	16,	10 }, /*IMON_OFFSET_OTP_VAL*/
-	{ 0x0000416C,	16,	12 }, /*VMON_CM_GAIN_OTP_VAL*/
-	{ 0x0000416C,	28,	1 }, /*VMON_CM_GAIN_SIGN_OTP_VAL*/
-	{ 0x00004170,	0,	6 }, /*IMON_CAL_TEMPCO_OTP_VAL*/
-	{ 0x00004170,	6,	1 }, /*IMON_CAL_TEMPCO_SIGN_OTP*/
-	{ 0x00004170,	8,	6 }, /*IMON_CAL_TEMPCO2_OTP_VAL*/
-	{ 0x00004170,	14,	1 }, /*IMON_CAL_TEMPCO2_DN_UPB_OTP_VAL*/
-	{ 0x00004170,	16,	9 }, /*IMON_CAL_TEMPCO_TBASE_OTP_VAL*/
-	{ 0x00004360,	0,	5 }, /*TEMP_GAIN_OTP_VAL*/
-	{ 0x00004360,	6,	9 }, /*TEMP_OFFSET_OTP_VAL*/
-	{ 0x00004448,	0,	8 }, /*VP_SARADC_OFFSET*/
-	{ 0x00004448,	8,	8 }, /*VP_GAIN_INDEX*/
-	{ 0x00004448,	16,	8 }, /*VBST_SARADC_OFFSET*/
-	{ 0x00004448,	24,	8 }, /*VBST_GAIN_INDEX*/
-	{ 0x0000444C,	0,	3 }, /*ANA_SELINVREF*/
-	{ 0x00006E30,	0,	5 }, /*GAIN_ERR_COEFF_0*/
-	{ 0x00006E30,	8,	5 }, /*GAIN_ERR_COEFF_1*/
-	{ 0x00006E30,	16,	5 }, /*GAIN_ERR_COEFF_2*/
-	{ 0x00006E30,	24,	5 }, /*GAIN_ERR_COEFF_3*/
-	{ 0x00006E34,	0,	5 }, /*GAIN_ERR_COEFF_4*/
-	{ 0x00006E34,	8,	5 }, /*GAIN_ERR_COEFF_5*/
-	{ 0x00006E34,	16,	5 }, /*GAIN_ERR_COEFF_6*/
-	{ 0x00006E34,	24,	5 }, /*GAIN_ERR_COEFF_7*/
-	{ 0x00006E38,	0,	5 }, /*GAIN_ERR_COEFF_8*/
-	{ 0x00006E38,	8,	5 }, /*GAIN_ERR_COEFF_9*/
-	{ 0x00006E38,	16,	5 }, /*GAIN_ERR_COEFF_10*/
-	{ 0x00006E38,	24,	5 }, /*GAIN_ERR_COEFF_11*/
-	{ 0x00006E3C,	0,	5 }, /*GAIN_ERR_COEFF_12*/
-	{ 0x00006E3C,	8,	5 }, /*GAIN_ERR_COEFF_13*/
-	{ 0x00006E3C,	16,	5 }, /*GAIN_ERR_COEFF_14*/
-	{ 0x00006E3C,	24,	5 }, /*GAIN_ERR_COEFF_15*/
-	{ 0x00006E40,	0,	5 }, /*GAIN_ERR_COEFF_16*/
-	{ 0x00006E40,	8,	5 }, /*GAIN_ERR_COEFF_17*/
-	{ 0x00006E40,	16,	5 }, /*GAIN_ERR_COEFF_18*/
-	{ 0x00006E40,	24,	5 }, /*GAIN_ERR_COEFF_19*/
-	{ 0x00006E44,	0,	5 }, /*GAIN_ERR_COEFF_20*/
-	{ 0x00006E48,	0,	10 }, /*VOFF_GAIN_0*/
-	{ 0x00006E48,	10,	10 }, /*VOFF_GAIN_1*/
-	{ 0x00006E48,	20,	10 }, /*VOFF_GAIN_2*/
-	{ 0x00006E4C,	0,	10 }, /*VOFF_GAIN_3*/
-	{ 0x00006E4C,	10,	10 }, /*VOFF_GAIN_4*/
-	{ 0x00006E4C,	20,	10 }, /*VOFF_GAIN_5*/
-	{ 0x00006E50,	0,	10 }, /*VOFF_GAIN_6*/
-	{ 0x00006E50,	10,	10 }, /*VOFF_GAIN_7*/
-	{ 0x00006E50,	20,	10 }, /*VOFF_GAIN_8*/
-	{ 0x00006E54,	0,	10 }, /*VOFF_GAIN_9*/
-	{ 0x00006E54,	10,	10 }, /*VOFF_GAIN_10*/
-	{ 0x00006E54,	20,	10 }, /*VOFF_GAIN_11*/
-	{ 0x00006E58,	0,	10 }, /*VOFF_GAIN_12*/
-	{ 0x00006E58,	10,	10 }, /*VOFF_GAIN_13*/
-	{ 0x00006E58,	20,	10 }, /*VOFF_GAIN_14*/
-	{ 0x00006E5C,	0,	10 }, /*VOFF_GAIN_15*/
-	{ 0x00006E5C,	10,	10 }, /*VOFF_GAIN_16*/
-	{ 0x00006E5C,	20,	10 }, /*VOFF_GAIN_17*/
-	{ 0x00006E60,	0,	10 }, /*VOFF_GAIN_18*/
-	{ 0x00006E60,	10,	10 }, /*VOFF_GAIN_19*/
-	{ 0x00006E60,	20,	10 }, /*VOFF_GAIN_20*/
-	{ 0x00006E64,	0,	10 }, /*VOFF_INT1*/
-	{ 0x00007418,	7,	5 }, /*DS_SPK_INT1_CAP_TRIM*/
-	{ 0x0000741C,	0,	5 }, /*DS_SPK_INT2_CAP_TRIM*/
-	{ 0x0000741C,	11,	4 }, /*DS_SPK_LPF_CAP_TRIM*/
-	{ 0x0000741C,	19,	4 }, /*DS_SPK_QUAN_CAP_TRIM*/
-	{ 0x00007434,	17,	1 }, /*FORCE_CAL*/
-	{ 0x00007434,	18,	7 }, /*CAL_OVERRIDE*/
-	{ 0x00007068,	0,	9 }, /*MODIX*/
-	{ 0x0000410C,	7,	1 }, /*VIMON_DLY_NOT_COMB*/
-	{ 0x0000400C,	0,	7 }, /*VIMON_DLY*/
-	{ 0x00004000,	11,	1 }, /*VMON_POL*/
-	{ 0x00017040,	0,	8 }, /*X_COORDINATE*/
-	{ 0x00017040,	8,	8 }, /*Y_COORDINATE*/
-	{ 0x00017040,	16,	8 }, /*WAFER_ID*/
-	{ 0x00017040,	24,	8 }, /*DVS*/
-	{ 0x00017044,	0,	24 }, /*LOT_NUMBER*/
+	 
+	{ 0x00002030,	0,	4 },  
+	{ 0x00002030,	7,	1 },  
+	{ 0x0000208c,	24,	6 },  
+	{ 0x00002090,	14,	4 },  
+	{ 0x00002090,	10,	4 },  
+	{ 0x0000300C,	11,	4 },  
+	{ 0x0000394C,	23,	2 },  
+	{ 0x00003950,	0,	7 },  
+	{ 0x00003950,	8,	7 },  
+	{ 0x00003950,	16,	8 },  
+	{ 0x00003950,	24,	8 },  
+	{ 0x00003954,	0,	7 },  
+	{ 0x00003954,	8,	7 },  
+	{ 0x00003954,	16,	8 },  
+	{ 0x00003954,	24,	8 },  
+	{ 0x00003958,	0,	7 },  
+	{ 0x00003958,	8,	7 },  
+	{ 0x00003958,	16,	8 },  
+	{ 0x00003958,	24,	8 },  
+	{ 0x0000395C,	0,	7 },  
+	{ 0x0000395C,	8,	7 },  
+	{ 0x0000395C,	16,	8 },  
+	{ 0x0000395C,	24,	8 },  
+	{ 0x0000416C,	0,	8 },  
+	{ 0x00004160,	0,	7 },  
+	{ 0x0000416C,	8,	8 },  
+	{ 0x00004160,	16,	10 },  
+	{ 0x0000416C,	16,	12 },  
+	{ 0x0000416C,	28,	1 },  
+	{ 0x00004170,	0,	6 },  
+	{ 0x00004170,	6,	1 },  
+	{ 0x00004170,	8,	6 },  
+	{ 0x00004170,	14,	1 },  
+	{ 0x00004170,	16,	9 },  
+	{ 0x00004360,	0,	5 },  
+	{ 0x00004360,	6,	9 },  
+	{ 0x00004448,	0,	8 },  
+	{ 0x00004448,	8,	8 },  
+	{ 0x00004448,	16,	8 },  
+	{ 0x00004448,	24,	8 },  
+	{ 0x0000444C,	0,	3 },  
+	{ 0x00006E30,	0,	5 },  
+	{ 0x00006E30,	8,	5 },  
+	{ 0x00006E30,	16,	5 },  
+	{ 0x00006E30,	24,	5 },  
+	{ 0x00006E34,	0,	5 },  
+	{ 0x00006E34,	8,	5 },  
+	{ 0x00006E34,	16,	5 },  
+	{ 0x00006E34,	24,	5 },  
+	{ 0x00006E38,	0,	5 },  
+	{ 0x00006E38,	8,	5 },  
+	{ 0x00006E38,	16,	5 },  
+	{ 0x00006E38,	24,	5 },  
+	{ 0x00006E3C,	0,	5 },  
+	{ 0x00006E3C,	8,	5 },  
+	{ 0x00006E3C,	16,	5 },  
+	{ 0x00006E3C,	24,	5 },  
+	{ 0x00006E40,	0,	5 },  
+	{ 0x00006E40,	8,	5 },  
+	{ 0x00006E40,	16,	5 },  
+	{ 0x00006E40,	24,	5 },  
+	{ 0x00006E44,	0,	5 },  
+	{ 0x00006E48,	0,	10 },  
+	{ 0x00006E48,	10,	10 },  
+	{ 0x00006E48,	20,	10 },  
+	{ 0x00006E4C,	0,	10 },  
+	{ 0x00006E4C,	10,	10 },  
+	{ 0x00006E4C,	20,	10 },  
+	{ 0x00006E50,	0,	10 },  
+	{ 0x00006E50,	10,	10 },  
+	{ 0x00006E50,	20,	10 },  
+	{ 0x00006E54,	0,	10 },  
+	{ 0x00006E54,	10,	10 },  
+	{ 0x00006E54,	20,	10 },  
+	{ 0x00006E58,	0,	10 },  
+	{ 0x00006E58,	10,	10 },  
+	{ 0x00006E58,	20,	10 },  
+	{ 0x00006E5C,	0,	10 },  
+	{ 0x00006E5C,	10,	10 },  
+	{ 0x00006E5C,	20,	10 },  
+	{ 0x00006E60,	0,	10 },  
+	{ 0x00006E60,	10,	10 },  
+	{ 0x00006E60,	20,	10 },  
+	{ 0x00006E64,	0,	10 },  
+	{ 0x00007418,	7,	5 },  
+	{ 0x0000741C,	0,	5 },  
+	{ 0x0000741C,	11,	4 },  
+	{ 0x0000741C,	19,	4 },  
+	{ 0x00007434,	17,	1 },  
+	{ 0x00007434,	18,	7 },  
+	{ 0x00007068,	0,	9 },  
+	{ 0x0000410C,	7,	1 },  
+	{ 0x0000400C,	0,	7 },  
+	{ 0x00004000,	11,	1 },  
+	{ 0x00017040,	0,	8 },  
+	{ 0x00017040,	8,	8 },  
+	{ 0x00017040,	16,	8 },  
+	{ 0x00017040,	24,	8 },  
+	{ 0x00017044,	0,	24 },  
 };
 
 static const struct reg_sequence cs35l41_reva0_errata_patch[] = {
@@ -808,7 +808,7 @@ int cs35l41_test_key_lock(struct device *dev, struct regmap *regmap)
 }
 EXPORT_SYMBOL_GPL(cs35l41_test_key_lock);
 
-/* Must be called with the TEST_KEY unlocked */
+ 
 int cs35l41_otp_unpack(struct device *dev, struct regmap *regmap)
 {
 	const struct cs35l41_otp_map_element_t *otp_map_match;
@@ -862,7 +862,7 @@ int cs35l41_otp_unpack(struct device *dev, struct regmap *regmap)
 				   GENMASK(bit_offset + otp_map[i].size - 1, bit_offset)
 				  ) >> bit_offset;
 			bit_offset += otp_map[i].size;
-		} else /* both bit_offset and otp_map[i].size are 0 */
+		} else  
 			otp_val = 0;
 
 		bit_sum += otp_map[i].size;
@@ -893,7 +893,7 @@ err_otp_unpack:
 }
 EXPORT_SYMBOL_GPL(cs35l41_otp_unpack);
 
-/* Must be called with the TEST_KEY unlocked */
+ 
 int cs35l41_register_errata_patch(struct device *dev, struct regmap *reg, unsigned int reg_revid)
 {
 	char *rev;
@@ -989,16 +989,16 @@ static int cs35l41_boost_config(struct device *dev, struct regmap *regmap, int b
 	int ret;
 
 	switch (boost_ind) {
-	case 1000:	/* 1.0 uH */
+	case 1000:	 
 		bst_lbst_val = 0;
 		break;
-	case 1200:	/* 1.2 uH */
+	case 1200:	 
 		bst_lbst_val = 1;
 		break;
-	case 1500:	/* 1.5 uH */
+	case 1500:	 
 		bst_lbst_val = 2;
 		break;
-	case 2200:	/* 2.2 uH */
+	case 2200:	 
 		bst_lbst_val = 3;
 		break;
 	default:
@@ -1024,7 +1024,7 @@ static int cs35l41_boost_config(struct device *dev, struct regmap *regmap, int b
 			dev_err(dev, "Invalid boost capacitor value: %d nH\n", boost_cap);
 			return -EINVAL;
 		}
-		/* 201 uF and greater */
+		 
 		bst_cbst_range = 4;
 	}
 
@@ -1100,7 +1100,7 @@ static const struct reg_sequence cs35l41_safe_to_active_start[] = {
 	{ 0x0000742C,			0x0000000F },
 	{ 0x0000742C,			0x00000079 },
 	{ 0x00007438,			0x00585941 },
-	{ CS35L41_PWR_CTRL1,		0x00000001 }, // GLOBAL_EN = 1
+	{ CS35L41_PWR_CTRL1,		0x00000001 }, 
 };
 
 static const struct reg_sequence cs35l41_safe_to_active_en_spk[] = {
@@ -1119,18 +1119,18 @@ static const struct reg_sequence cs35l41_reset_to_safe[] = {
 };
 
 static const struct reg_sequence cs35l41_actv_seq[] = {
-	/* SYNC_BST_CTL_RX_EN = 1; SYNC_BST_CTL_TX_EN = 1 */
+	 
 	{CS35L41_MDSYNC_EN,        0x00003000},
-	/* BST_CTL_SEL = MDSYNC */
+	 
 	{CS35L41_BSTCVRT_VCTRL2,    0x00000002},
 };
 
 static const struct reg_sequence cs35l41_pass_seq[] = {
-	/* SYNC_BST_CTL_RX_EN = 0; SYNC_BST_CTL_TX_EN = 1 */
+	 
 	{CS35L41_MDSYNC_EN,        0x00001000},
-	/* BST_EN = 0 */
+	 
 	{CS35L41_PWR_CTRL2,        0x00003300},
-	/* BST_CTL_SEL = MDSYNC */
+	 
 	{CS35L41_BSTCVRT_VCTRL2,    0x00000002},
 };
 
@@ -1151,10 +1151,7 @@ int cs35l41_init_boost(struct device *dev, struct regmap *regmap,
 		break;
 	case CS35L41_EXT_BOOST:
 	case CS35L41_EXT_BOOST_NO_VSPK_SWITCH:
-		/* Only CLSA0100 doesn't use GPIO as VSPK switch, but even on that laptop we can
-		 * toggle GPIO1 as is not connected to anything.
-		 * There will be no other device without VSPK switch.
-		 */
+		 
 		regmap_write(regmap, CS35L41_GPIO1_CTRL1, 0x00000001);
 		regmap_multi_reg_write(regmap, cs35l41_reset_to_safe,
 				       ARRAY_SIZE(cs35l41_reset_to_safe));
@@ -1178,7 +1175,7 @@ EXPORT_SYMBOL_GPL(cs35l41_init_boost);
 bool cs35l41_safe_reset(struct regmap *regmap, enum cs35l41_boost_type b_type)
 {
 	switch (b_type) {
-	/* There is only one laptop that doesn't have VSPK switch. */
+	 
 	case CS35L41_EXT_BOOST_NO_VSPK_SWITCH:
 		return false;
 	case CS35L41_EXT_BOOST:
@@ -1192,26 +1189,7 @@ bool cs35l41_safe_reset(struct regmap *regmap, enum cs35l41_boost_type b_type)
 }
 EXPORT_SYMBOL_GPL(cs35l41_safe_reset);
 
-/*
- * Enabling the CS35L41_SHD_BOOST_ACTV and CS35L41_SHD_BOOST_PASS shared boosts
- * does also require a call to cs35l41_mdsync_up(), but not before getting the
- * PLL Lock signal.
- *
- * PLL Lock seems to be triggered soon after snd_pcm_start() is executed and
- * SNDRV_PCM_TRIGGER_START command is processed, which happens (long) after the
- * SND_SOC_DAPM_PRE_PMU event handler is invoked as part of snd_pcm_prepare().
- *
- * This event handler is where cs35l41_global_enable() is normally called from,
- * but waiting for PLL Lock here will time out. Increasing the wait duration
- * will not help, as the only consequence of it would be to add an unnecessary
- * delay in the invocation of snd_pcm_start().
- *
- * Trying to move the wait in the SNDRV_PCM_TRIGGER_START callback is not a
- * solution either, as the trigger is executed in an IRQ-off atomic context.
- *
- * The current approach is to invoke cs35l41_mdsync_up() right after receiving
- * the PLL Lock interrupt, in the IRQ handler.
- */
+ 
 int cs35l41_global_enable(struct device *dev, struct regmap *regmap, enum cs35l41_boost_type b_type,
 			  int enable, bool firmware_running)
 {
@@ -1259,7 +1237,7 @@ int cs35l41_global_enable(struct device *dev, struct regmap *regmap, enum cs35l4
 
 		ret = regmap_multi_reg_write(regmap, cs35l41_mdsync_down_seq,
 					     ARRAY_SIZE(cs35l41_mdsync_down_seq));
-		/* Activation to be completed later via cs35l41_mdsync_up() */
+		 
 		if (ret || enable)
 			return ret;
 
@@ -1269,7 +1247,7 @@ int cs35l41_global_enable(struct device *dev, struct regmap *regmap, enum cs35l4
 		if (ret)
 			dev_err(dev, "Enable(%d) failed: %d\n", enable, ret);
 
-		/* Clear PUP/PDN status */
+		 
 		regmap_write(regmap, CS35L41_IRQ1_STATUS1, pup_pdn_mask);
 		break;
 	case CS35L41_INT_BOOST:
@@ -1286,13 +1264,13 @@ int cs35l41_global_enable(struct device *dev, struct regmap *regmap, enum cs35l4
 		if (ret)
 			dev_err(dev, "Enable(%d) failed: %d\n", enable, ret);
 
-		/* Clear PUP/PDN status */
+		 
 		regmap_write(regmap, CS35L41_IRQ1_STATUS1, pup_pdn_mask);
 		break;
 	case CS35L41_EXT_BOOST:
 	case CS35L41_EXT_BOOST_NO_VSPK_SWITCH:
 		if (enable) {
-			/* Test Key is unlocked here */
+			 
 			ret = regmap_multi_reg_write(regmap, cs35l41_safe_to_active_start,
 						     ARRAY_SIZE(cs35l41_safe_to_active_start));
 			if (ret)
@@ -1302,7 +1280,7 @@ int cs35l41_global_enable(struct device *dev, struct regmap *regmap, enum cs35l4
 				       int_status & CS35L41_PUP_DONE_MASK, 1000, 100000);
 			if (ret) {
 				dev_err(dev, "Failed waiting for CS35L41_PUP_DONE_MASK: %d\n", ret);
-				/* Lock the test key, it was unlocked during the multi_reg_write */
+				 
 				cs35l41_test_key_lock(dev, regmap);
 				return ret;
 			}
@@ -1315,14 +1293,14 @@ int cs35l41_global_enable(struct device *dev, struct regmap *regmap, enum cs35l4
 				ret = regmap_multi_reg_write(regmap, cs35l41_safe_to_active_en_spk,
 							ARRAY_SIZE(cs35l41_safe_to_active_en_spk));
 
-			/* Lock the test key, it was unlocked during the multi_reg_write */
+			 
 			cs35l41_test_key_lock(dev, regmap);
 		} else {
-			/* Test Key is unlocked here */
+			 
 			ret = regmap_multi_reg_write(regmap, cs35l41_active_to_safe_start,
 						     ARRAY_SIZE(cs35l41_active_to_safe_start));
 			if (ret) {
-				/* Lock the test key, it was unlocked during the multi_reg_write */
+				 
 				cs35l41_test_key_lock(dev, regmap);
 				return ret;
 			}
@@ -1331,13 +1309,13 @@ int cs35l41_global_enable(struct device *dev, struct regmap *regmap, enum cs35l4
 				       int_status & CS35L41_PDN_DONE_MASK, 1000, 100000);
 			if (ret) {
 				dev_err(dev, "Failed waiting for CS35L41_PDN_DONE_MASK: %d\n", ret);
-				/* Lock the test key, it was unlocked during the multi_reg_write */
+				 
 				cs35l41_test_key_lock(dev, regmap);
 				return ret;
 			}
 			regmap_write(regmap, CS35L41_IRQ1_STATUS1, CS35L41_PDN_DONE_MASK);
 
-			/* Test Key is locked here */
+			 
 			ret = regmap_multi_reg_write(regmap, cs35l41_active_to_safe_end,
 						     ARRAY_SIZE(cs35l41_active_to_safe_end));
 		}
@@ -1351,10 +1329,7 @@ int cs35l41_global_enable(struct device *dev, struct regmap *regmap, enum cs35l4
 }
 EXPORT_SYMBOL_GPL(cs35l41_global_enable);
 
-/*
- * To be called after receiving the IRQ Lock interrupt, in order to complete
- * any shared boost activation initiated by cs35l41_global_enable().
- */
+ 
 int cs35l41_mdsync_up(struct regmap *regmap)
 {
 	return regmap_update_bits(regmap, CS35L41_PWR_CTRL3,
@@ -1455,7 +1430,7 @@ int cs35l41_set_cspl_mbox_cmd(struct device *dev, struct regmap *regmap,
 	unsigned int sts = 0, i;
 	int ret;
 
-	// Set mailbox cmd
+	
 	ret = regmap_write(regmap, CS35L41_DSP_VIRT1_MBOX_1, cmd);
 	if (ret < 0) {
 		if (cmd != CSPL_MBOX_CMD_OUT_OF_HIBERNATE)
@@ -1463,7 +1438,7 @@ int cs35l41_set_cspl_mbox_cmd(struct device *dev, struct regmap *regmap,
 		return ret;
 	}
 
-	// Read mailbox status and verify it is appropriate for the given cmd
+	
 	for (i = 0; i < 5; i++) {
 		usleep_range(1000, 1100);
 
@@ -1511,7 +1486,7 @@ int cs35l41_enter_hibernate(struct device *dev, struct regmap *regmap,
 	regmap_write(regmap, CS35L41_WAKESRC_CTL, 0x0088);
 	regmap_write(regmap, CS35L41_WAKESRC_CTL, 0x0188);
 
-	// Don't wait for ACK since bus activity would wake the device
+	
 	regmap_write(regmap, CS35L41_DSP_VIRT1_MBOX_1, CSPL_MBOX_CMD_HIBERNATE);
 
 	return 0;

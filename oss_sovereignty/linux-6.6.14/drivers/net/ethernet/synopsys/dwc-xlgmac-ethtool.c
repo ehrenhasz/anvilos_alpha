@@ -1,19 +1,4 @@
-/* Synopsys DesignWare Core Enterprise Ethernet (XLGMAC) Driver
- *
- * Copyright (c) 2017 Synopsys, Inc. (www.synopsys.com)
- *
- * This program is dual-licensed; you may select either version 2 of
- * the GNU General Public License ("GPL") or BSD license ("BSD").
- *
- * This Synopsys DWC XLGMAC software driver and associated documentation
- * (hereinafter the "Software") is an unsupported proprietary work of
- * Synopsys, Inc. unless otherwise expressly agreed to in writing between
- * Synopsys and you. The Software IS NOT an item of Licensed Software or a
- * Licensed Product under any End User Software License Agreement or
- * Agreement for Licensed Products with Synopsys or any supplement thereto.
- * Synopsys is a registered trademark of Synopsys, Inc. Other names included
- * in the SOFTWARE may be the trademarks of their respective owners.
- */
+ 
 
 #include <linux/ethtool.h>
 #include <linux/kernel.h>
@@ -34,7 +19,7 @@ struct xlgmac_stats_desc {
 	}
 
 static const struct xlgmac_stats_desc xlgmac_gstring_stats[] = {
-	/* MMC TX counters */
+	 
 	XLGMAC_STAT("tx_bytes", txoctetcount_gb),
 	XLGMAC_STAT("tx_bytes_good", txoctetcount_g),
 	XLGMAC_STAT("tx_packets", txframecount_gb),
@@ -54,7 +39,7 @@ static const struct xlgmac_stats_desc xlgmac_gstring_stats[] = {
 	XLGMAC_STAT("tx_underflow_errors", txunderflowerror),
 	XLGMAC_STAT("tx_pause_frames", txpauseframes),
 
-	/* MMC RX counters */
+	 
 	XLGMAC_STAT("rx_bytes", rxoctetcount_gb),
 	XLGMAC_STAT("rx_bytes_good", rxoctetcount_g),
 	XLGMAC_STAT("rx_packets", rxframecount_gb),
@@ -79,7 +64,7 @@ static const struct xlgmac_stats_desc xlgmac_gstring_stats[] = {
 	XLGMAC_STAT("rx_watchdog_errors", rxwatchdogerror),
 	XLGMAC_STAT("rx_pause_frames", rxpauseframes),
 
-	/* Extra counters */
+	 
 	XLGMAC_STAT("tx_tso_packets", tx_tso_packets),
 	XLGMAC_STAT("rx_split_header_packets", rx_split_header_packets),
 	XLGMAC_STAT("tx_process_stopped", tx_process_stopped),
@@ -106,10 +91,7 @@ static void xlgmac_ethtool_get_drvinfo(struct net_device *netdev,
 	strscpy(drvinfo->version, pdata->drv_ver, sizeof(drvinfo->version));
 	strscpy(drvinfo->bus_info, dev_name(pdata->dev),
 		sizeof(drvinfo->bus_info));
-	/* S|SNPSVER: Synopsys-defined Version
-	 * D|DEVID: Indicates the Device family
-	 * U|USERVER: User-defined Version
-	 */
+	 
 	snpsver = XLGMAC_GET_REG_BITS(ver, MAC_VR_SNPSVER_POS,
 				      MAC_VR_SNPSVER_LEN);
 	devid = XLGMAC_GET_REG_BITS(ver, MAC_VR_DEVID_POS,

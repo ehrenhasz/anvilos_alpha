@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * IBM PowerNV platform sensors for temperature/fan/voltage/power
- * Copyright (C) 2014 IBM
- */
+
+ 
 
 #define DRVNAME		"ibmpowernv"
 #define pr_fmt(fmt)	DRVNAME ": " fmt
@@ -24,15 +21,12 @@
 #define MAX_ATTR_LEN	32
 #define MAX_LABEL_LEN	64
 
-/* Sensor suffix name from DT */
+ 
 #define DT_FAULT_ATTR_SUFFIX		"faulted"
 #define DT_DATA_ATTR_SUFFIX		"data"
 #define DT_THRESHOLD_ATTR_SUFFIX	"thrs"
 
-/*
- * Enumerates all the types of sensors in the POWERNV platform and does index
- * into 'struct sensor_group'
- */
+ 
 enum sensors {
 	FAN,
 	TEMP,
@@ -45,10 +39,7 @@ enum sensors {
 
 #define INVALID_INDEX (-1U)
 
-/*
- * 'compatible' string properties for sensor types as defined in old
- * PowerNV firmware (skiboot). These are ordered as 'enum sensors'.
- */
+ 
 static const char * const legacy_compatibles[] = {
 	"ibm,opal-sensor-cooling-fan",
 	"ibm,opal-sensor-amb-temp",
@@ -57,7 +48,7 @@ static const char * const legacy_compatibles[] = {
 };
 
 static struct sensor_group {
-	const char *name; /* matches property 'sensor-type' */
+	const char *name;  
 	struct attribute_group group;
 	u32 attr_count;
 	u32 hwmon_index;
@@ -71,7 +62,7 @@ static struct sensor_group {
 };
 
 struct sensor_data {
-	u32 id; /* An opaque id of the firmware for each sensor */
+	u32 id;  
 	u32 hwmon_index;
 	u32 opal_index;
 	enum sensors type;
@@ -90,8 +81,8 @@ struct sensor_group_data {
 struct platform_data {
 	const struct attribute_group *attr_groups[MAX_SENSOR_TYPE + 1];
 	struct sensor_group_data *sgrp_data;
-	u32 sensors_count; /* Total count of sensors from each group */
-	u32 nr_sensor_groups; /* Total number of sensor groups */
+	u32 sensors_count;  
+	u32 nr_sensor_groups;  
 };
 
 static ssize_t show_sensor(struct device *dev, struct device_attribute *devattr,
@@ -110,10 +101,10 @@ static ssize_t show_sensor(struct device *dev, struct device_attribute *devattr,
 	if (ret)
 		return ret;
 
-	/* Convert temperature to milli-degrees */
+	 
 	if (sdata->type == TEMP)
 		x *= 1000;
-	/* Convert power to micro-watts */
+	 
 	else if (sdata->type == POWER_INPUT)
 		x *= 1000000;
 
@@ -188,17 +179,12 @@ static void make_sensor_label(struct device_node *np,
 
 	n = scnprintf(sdata->label, sizeof(sdata->label), "%s", label);
 
-	/*
-	 * Core temp pretty print
-	 */
+	 
 	if (!of_property_read_u32(np, "ibm,pir", &id)) {
 		int cpuid = get_logical_cpu(id);
 
 		if (cpuid >= 0)
-			/*
-			 * The digital thermal sensors are associated
-			 * with a core.
-			 */
+			 
 			n += scnprintf(sdata->label + n,
 				      sizeof(sdata->label) - n, " %d",
 				      cpuid);
@@ -207,9 +193,7 @@ static void make_sensor_label(struct device_node *np,
 				      sizeof(sdata->label) - n, " phy%d", id);
 	}
 
-	/*
-	 * Membuffer pretty print
-	 */
+	 
 	if (!of_property_read_u32(np, "ibm,chip-id", &id))
 		n += scnprintf(sdata->label + n, sizeof(sdata->label) - n,
 			      " %d", id & 0xffff);
@@ -264,12 +248,7 @@ static const char *convert_opal_attr_name(enum sensors type,
 	return attr_name;
 }
 
-/*
- * This function translates the DT node name into the 'hwmon' attribute name.
- * IBMPOWERNV device node appear like cooling-fan#2-data, amb-temp#1-thrs etc.
- * which need to be mapped as fan2_input, temp1_max respectively before
- * populating them inside hwmon device class.
- */
+ 
 static const char *parse_opal_node_name(const char *node_name,
 					enum sensors type, u32 *index)
 {
@@ -298,9 +277,7 @@ static int get_sensor_type(struct device_node *np)
 			return type;
 	}
 
-	/*
-	 * Let's check if we have a newer device tree
-	 */
+	 
 	if (!of_device_is_compatible(np, "ibm,opal-sensor"))
 		return MAX_SENSOR_TYPE;
 
@@ -319,9 +296,7 @@ static u32 get_sensor_hwmon_index(struct sensor_data *sdata,
 {
 	int i;
 
-	/*
-	 * We don't use the OPAL index on newer device trees
-	 */
+	 
 	if (sdata->opal_index != INVALID_INDEX) {
 		for (i = 0; i < count; i++)
 			if (sdata_table[i].opal_index == sdata->opal_index &&
@@ -451,9 +426,7 @@ static int populate_attr_groups(struct platform_device *pdev)
 
 		sensor_groups[type].attr_count++;
 
-		/*
-		 * add attributes for labels, min and max
-		 */
+		 
 		if (!of_property_read_string(np, "label", &label))
 			sensor_groups[type].attr_count++;
 		if (of_property_present(np, "sensor-data-min"))
@@ -543,12 +516,7 @@ static char *get_min_attr(enum sensors type)
 	}
 }
 
-/*
- * Iterate through the device tree for each child of 'sensors' node, create
- * a sysfs attribute file, the file is named by translating the DT node name
- * to the name required by the higher 'hwmon' driver like fan1_input, temp1_max
- * etc..
- */
+ 
 static int create_device_attrs(struct platform_device *pdev)
 {
 	struct platform_data *pdata = platform_get_drvdata(pdev);
@@ -577,10 +545,7 @@ static int create_device_attrs(struct platform_device *pdev)
 		if (type == MAX_SENSOR_TYPE)
 			continue;
 
-		/*
-		 * Newer device trees use a "sensor-data" property
-		 * name for input.
-		 */
+		 
 		if (of_property_read_u32(np, "sensor-id", &sensor_id) &&
 		    of_property_read_u32(np, "sensor-data", &sensor_id)) {
 			dev_info(&pdev->dev,
@@ -592,12 +557,7 @@ static int create_device_attrs(struct platform_device *pdev)
 		sdata[count].id = sensor_id;
 		sdata[count].type = type;
 
-		/*
-		 * If we can not parse the node name, it means we are
-		 * running on a newer device tree. We can just forget
-		 * about the OPAL index and use a defaut value for the
-		 * hwmon attribute name
-		 */
+		 
 		attr_name = parse_opal_node_name(np->name, type, &opal_index);
 		if (IS_ERR(attr_name)) {
 			attr_name = "input";
@@ -612,12 +572,7 @@ static int create_device_attrs(struct platform_device *pdev)
 		count++;
 
 		if (!of_property_read_string(np, "label", &label)) {
-			/*
-			 * For the label attribute, we can reuse the
-			 * "properties" of the previous "input"
-			 * attribute. They are related to the same
-			 * sensor.
-			 */
+			 
 
 			make_sensor_label(np, &sdata[count], label);
 			populate_sensor(&sdata[count], opal_index, hw_id,
@@ -676,12 +631,12 @@ static int ibmpowernv_probe(struct platform_device *pdev)
 	if (err)
 		return err;
 
-	/* Create sysfs attribute data for each sensor found in the DT */
+	 
 	err = create_device_attrs(pdev);
 	if (err)
 		return err;
 
-	/* Finally, register with hwmon */
+	 
 	hwmon_dev = devm_hwmon_device_register_with_groups(&pdev->dev, DRVNAME,
 							   pdata,
 							   pdata->attr_groups);

@@ -1,27 +1,4 @@
-/*
- * Copyright 2018 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 #ifndef __DAL_CLK_MGR_INTERNAL_H__
 #define __DAL_CLK_MGR_INTERNAL_H__
@@ -29,14 +6,11 @@
 #include "clk_mgr.h"
 #include "dc.h"
 
-/*
- * only thing needed from here is MEMORY_TYPE_MULTIPLIER_CZ, which is also
- * used in resource, perhaps this should be defined somewhere more common.
- */
+ 
 #include "resource.h"
 
 
-/* Starting DID for each range */
+ 
 enum dentist_base_divider_id {
 	DENTIST_BASE_DID_1 = 0x08,
 	DENTIST_BASE_DID_2 = 0x40,
@@ -45,26 +19,22 @@ enum dentist_base_divider_id {
 	DENTIST_MAX_DID = 0x7f
 };
 
-/* Starting point and step size for each divider range.*/
+ 
 enum dentist_divider_range {
-	DENTIST_DIVIDER_RANGE_1_START = 8,   /* 2.00  */
-	DENTIST_DIVIDER_RANGE_1_STEP  = 1,   /* 0.25  */
-	DENTIST_DIVIDER_RANGE_2_START = 64,  /* 16.00 */
-	DENTIST_DIVIDER_RANGE_2_STEP  = 2,   /* 0.50  */
-	DENTIST_DIVIDER_RANGE_3_START = 128, /* 32.00 */
-	DENTIST_DIVIDER_RANGE_3_STEP  = 4,   /* 1.00  */
-	DENTIST_DIVIDER_RANGE_4_START = 248, /* 62.00 */
-	DENTIST_DIVIDER_RANGE_4_STEP  = 264, /* 66.00 */
+	DENTIST_DIVIDER_RANGE_1_START = 8,    
+	DENTIST_DIVIDER_RANGE_1_STEP  = 1,    
+	DENTIST_DIVIDER_RANGE_2_START = 64,   
+	DENTIST_DIVIDER_RANGE_2_STEP  = 2,    
+	DENTIST_DIVIDER_RANGE_3_START = 128,  
+	DENTIST_DIVIDER_RANGE_3_STEP  = 4,    
+	DENTIST_DIVIDER_RANGE_4_START = 248,  
+	DENTIST_DIVIDER_RANGE_4_STEP  = 264,  
 	DENTIST_DIVIDER_RANGE_SCALE_FACTOR = 4
 };
 
-/*
- ***************************************************************************************
- ****************** Clock Manager Private Macros and Defines ***************************
- ***************************************************************************************
- */
+ 
 
-/* Macros */
+ 
 
 #define TO_CLK_MGR_INTERNAL(clk_mgr)\
 	container_of(clk_mgr, struct clk_mgr_internal, base)
@@ -190,11 +160,7 @@ enum dentist_divider_range {
 	type DENTIST_DISPCLK_WDIVIDER; \
 	type DENTIST_DISPCLK_CHG_DONE;
 
-/*
- ***************************************************************************************
- ****************** Clock Manager Private Structures ***********************************
- ***************************************************************************************
- */
+ 
 #define CLK20_REG_FIELD_LIST(type) \
 	type DENTIST_DPPCLK_WDIVIDER; \
 	type DENTIST_DPPCLK_CHG_DONE; \
@@ -273,62 +239,33 @@ struct clk_mgr_internal {
 
 	struct dccg *dccg;
 
-	/*
-	 * For backwards compatbility with previous implementation
-	 * TODO: remove these after everything transitions to new pattern
-	 * Rationale is that clk registers change a lot across DCE versions
-	 * and a shared data structure doesn't really make sense.
-	 */
+	 
 	const struct clk_mgr_registers *regs;
 	const struct clk_mgr_shift *clk_mgr_shift;
 	const struct clk_mgr_mask *clk_mgr_mask;
 
 	struct state_dependent_clocks max_clks_by_state[DM_PP_CLOCKS_MAX_STATES];
 
-	/*TODO: figure out which of the below fields should be here vs in asic specific portion */
-	/* Cache the status of DFS-bypass feature*/
+	 
+	 
 	bool dfs_bypass_enabled;
-	/* True if the DFS-bypass feature is enabled and active. */
+	 
 	bool dfs_bypass_active;
 
 	uint32_t dfs_ref_freq_khz;
-	/*
-	 * Cache the display clock returned by VBIOS if DFS-bypass is enabled.
-	 * This is basically "Crystal Frequency In KHz" (XTALIN) frequency
-	 */
+	 
 	int dfs_bypass_disp_clk;
 
-	/**
-	 * @ss_on_dprefclk:
-	 *
-	 * True if spread spectrum is enabled on the DP ref clock.
-	 */
+	 
 	bool ss_on_dprefclk;
 
-	/**
-	 * @xgmi_enabled:
-	 *
-	 * True if xGMI is enabled. On VG20, both audio and display clocks need
-	 * to be adjusted with the WAFL link's SS info if xGMI is enabled.
-	 */
+	 
 	bool xgmi_enabled;
 
-	/**
-	 * @dprefclk_ss_percentage:
-	 *
-	 * DPREFCLK SS percentage (if down-spread enabled).
-	 *
-	 * Note that if XGMI is enabled, the SS info (percentage and divider)
-	 * from the WAFL link is used instead. This is decided during
-	 * dce_clk_mgr initialization.
-	 */
+	 
 	int dprefclk_ss_percentage;
 
-	/**
-	 * @dprefclk_ss_divider:
-	 *
-	 * DPREFCLK SS percentage Divider (100 or 1000).
-	 */
+	 
 	int dprefclk_ss_divider;
 
 	enum dm_pp_clocks_state max_clks_state;
@@ -350,11 +287,7 @@ struct clk_mgr_internal_funcs {
 };
 
 
-/*
- ***************************************************************************************
- ****************** Clock Manager Level Helper functions *******************************
- ***************************************************************************************
- */
+ 
 
 
 static inline bool should_set_clock(bool safe_to_lower, int calc_clk, int cur_clk)
@@ -389,4 +322,4 @@ int clk_mgr_helper_get_active_plane_cnt(
 
 
 
-#endif //__DAL_CLK_MGR_INTERNAL_H__
+#endif 

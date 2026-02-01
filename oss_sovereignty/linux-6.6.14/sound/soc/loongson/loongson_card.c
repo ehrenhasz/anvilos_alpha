@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Loongson ASoC Audio Machine driver
-//
-// Copyright (C) 2023 Loongson Technology Corporation Limited
-// Author: Yingkun Meng <mengyingkun@loongson.cn>
-//
+
+
+
+
+
+
+
 
 #include <linux/module.h>
 #include <sound/soc.h>
@@ -78,7 +78,7 @@ static int loongson_card_parse_acpi(struct loongson_card_data *data)
 	struct device *phy_dev;
 	int ret, i;
 
-	/* fixup platform name based on reference node */
+	 
 	memset(&args, 0, sizeof(args));
 	ret = acpi_node_get_property_reference(fwnode, "cpu", 0, &args);
 	if (ret || !is_acpi_device_node(args.fwnode)) {
@@ -92,7 +92,7 @@ static int loongson_card_parse_acpi(struct loongson_card_data *data)
 	for (i = 0; i < card->num_links; i++)
 		loongson_dai_links[i].platforms->name = dev_name(phy_dev);
 
-	/* fixup codec name based on reference node */
+	 
 	memset(&args, 0, sizeof(args));
 	ret = acpi_node_get_property_reference(fwnode, "codec", 0, &args);
 	if (ret || !is_acpi_device_node(args.fwnode)) {
@@ -199,7 +199,7 @@ static int loongson_asoc_card_probe(struct platform_device *pdev)
 
 static const struct of_device_id loongson_asoc_dt_ids[] = {
 	{ .compatible = "loongson,ls-audio-card" },
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, loongson_asoc_dt_ids);
 

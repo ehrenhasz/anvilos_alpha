@@ -1,25 +1,4 @@
-/*
- * Copyright 2014 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 
 #include <linux/firmware.h>
 #include <linux/module.h>
@@ -93,14 +72,14 @@ static void gmc_v7_0_mc_stop(struct amdgpu_device *adev)
 
 	blackout = RREG32(mmMC_SHARED_BLACKOUT_CNTL);
 	if (REG_GET_FIELD(blackout, MC_SHARED_BLACKOUT_CNTL, BLACKOUT_MODE) != 1) {
-		/* Block CPU access */
+		 
 		WREG32(mmBIF_FB_EN, 0);
-		/* blackout the MC */
+		 
 		blackout = REG_SET_FIELD(blackout,
 					 MC_SHARED_BLACKOUT_CNTL, BLACKOUT_MODE, 0);
 		WREG32(mmMC_SHARED_BLACKOUT_CNTL, blackout | 1);
 	}
-	/* wait for the MC to settle */
+	 
 	udelay(100);
 }
 
@@ -108,25 +87,17 @@ static void gmc_v7_0_mc_resume(struct amdgpu_device *adev)
 {
 	u32 tmp;
 
-	/* unblackout the MC */
+	 
 	tmp = RREG32(mmMC_SHARED_BLACKOUT_CNTL);
 	tmp = REG_SET_FIELD(tmp, MC_SHARED_BLACKOUT_CNTL, BLACKOUT_MODE, 0);
 	WREG32(mmMC_SHARED_BLACKOUT_CNTL, tmp);
-	/* allow CPU access */
+	 
 	tmp = REG_SET_FIELD(0, BIF_FB_EN, FB_READ_EN, 1);
 	tmp = REG_SET_FIELD(tmp, BIF_FB_EN, FB_WRITE_EN, 1);
 	WREG32(mmBIF_FB_EN, tmp);
 }
 
-/**
- * gmc_v7_0_init_microcode - load ucode images from disk
- *
- * @adev: amdgpu_device pointer
- *
- * Use the firmware interface to load the ucode images into
- * the driver (not loaded into hw).
- * Returns 0 on success, error on failure.
- */
+ 
 static int gmc_v7_0_init_microcode(struct amdgpu_device *adev)
 {
 	const char *chip_name;
@@ -163,14 +134,7 @@ static int gmc_v7_0_init_microcode(struct amdgpu_device *adev)
 	return err;
 }
 
-/**
- * gmc_v7_0_mc_load_microcode - load MC ucode into the hw
- *
- * @adev: amdgpu_device pointer
- *
- * Load the GDDR MC ucode into the hw (CIK).
- * Returns 0 on success, error on failure.
- */
+ 
 static int gmc_v7_0_mc_load_microcode(struct amdgpu_device *adev)
 {
 	const struct mc_firmware_header_v1_0 *hdr;
@@ -196,25 +160,25 @@ static int gmc_v7_0_mc_load_microcode(struct amdgpu_device *adev)
 	running = REG_GET_FIELD(RREG32(mmMC_SEQ_SUP_CNTL), MC_SEQ_SUP_CNTL, RUN);
 
 	if (running == 0) {
-		/* reset the engine and set to writable */
+		 
 		WREG32(mmMC_SEQ_SUP_CNTL, 0x00000008);
 		WREG32(mmMC_SEQ_SUP_CNTL, 0x00000010);
 
-		/* load mc io regs */
+		 
 		for (i = 0; i < regs_size; i++) {
 			WREG32(mmMC_SEQ_IO_DEBUG_INDEX, le32_to_cpup(io_mc_regs++));
 			WREG32(mmMC_SEQ_IO_DEBUG_DATA, le32_to_cpup(io_mc_regs++));
 		}
-		/* load the MC ucode */
+		 
 		for (i = 0; i < ucode_size; i++)
 			WREG32(mmMC_SEQ_SUP_PGM, le32_to_cpup(fw_data++));
 
-		/* put the engine back into the active state */
+		 
 		WREG32(mmMC_SEQ_SUP_CNTL, 0x00000008);
 		WREG32(mmMC_SEQ_SUP_CNTL, 0x00000004);
 		WREG32(mmMC_SEQ_SUP_CNTL, 0x00000001);
 
-		/* wait for training to complete */
+		 
 		for (i = 0; i < adev->usec_timeout; i++) {
 			if (REG_GET_FIELD(RREG32(mmMC_SEQ_TRAIN_WAKEUP_CNTL),
 					  MC_SEQ_TRAIN_WAKEUP_CNTL, TRAIN_DONE_D0))
@@ -243,20 +207,13 @@ static void gmc_v7_0_vram_gtt_location(struct amdgpu_device *adev,
 	amdgpu_gmc_gart_location(adev, mc);
 }
 
-/**
- * gmc_v7_0_mc_program - program the GPU memory controller
- *
- * @adev: amdgpu_device pointer
- *
- * Set the location of vram, gart, and AGP in the GPU's
- * physical address space (CIK).
- */
+ 
 static void gmc_v7_0_mc_program(struct amdgpu_device *adev)
 {
 	u32 tmp;
 	int i, j;
 
-	/* Initialize HDP */
+	 
 	for (i = 0, j = 0; i < 32; i++, j += 0x6) {
 		WREG32((0xb05 + j), 0x00000000);
 		WREG32((0xb06 + j), 0x00000000);
@@ -270,17 +227,17 @@ static void gmc_v7_0_mc_program(struct amdgpu_device *adev)
 		dev_warn(adev->dev, "Wait for MC idle timedout !\n");
 
 	if (adev->mode_info.num_crtc) {
-		/* Lockout access through VGA aperture*/
+		 
 		tmp = RREG32(mmVGA_HDP_CONTROL);
 		tmp = REG_SET_FIELD(tmp, VGA_HDP_CONTROL, VGA_MEMORY_DISABLE, 1);
 		WREG32(mmVGA_HDP_CONTROL, tmp);
 
-		/* disable VGA render */
+		 
 		tmp = RREG32(mmVGA_RENDER_CONTROL);
 		tmp = REG_SET_FIELD(tmp, VGA_RENDER_CONTROL, VGA_VSTATUS_CNTL, 0);
 		WREG32(mmVGA_RENDER_CONTROL, tmp);
 	}
-	/* Update configuration */
+	 
 	WREG32(mmMC_VM_SYSTEM_APERTURE_LOW_ADDR,
 	       adev->gmc.vram_start >> 12);
 	WREG32(mmMC_VM_SYSTEM_APERTURE_HIGH_ADDR,
@@ -303,15 +260,7 @@ static void gmc_v7_0_mc_program(struct amdgpu_device *adev)
 	WREG32(mmHDP_HOST_PATH_CNTL, tmp);
 }
 
-/**
- * gmc_v7_0_mc_init - initialize the memory controller driver params
- *
- * @adev: amdgpu_device pointer
- *
- * Look up the amount of vram, vram width, and decide how to place
- * vram and gart within the GPU's physical address space (CIK).
- * Returns 0 for success.
- */
+ 
 static int gmc_v7_0_mc_init(struct amdgpu_device *adev)
 {
 	int r;
@@ -321,7 +270,7 @@ static int gmc_v7_0_mc_init(struct amdgpu_device *adev)
 		u32 tmp;
 		int chansize, numchan;
 
-		/* Get VRAM informations */
+		 
 		tmp = RREG32(mmMC_ARB_RAMCFG);
 		if (REG_GET_FIELD(tmp, MC_ARB_RAMCFG, CHANSIZE))
 			chansize = 64;
@@ -361,7 +310,7 @@ static int gmc_v7_0_mc_init(struct amdgpu_device *adev)
 		}
 		adev->gmc.vram_width = numchan * chansize;
 	}
-	/* size in MB on si */
+	 
 	adev->gmc.mc_vram_size = RREG32(mmCONFIG_MEMSIZE) * 1024ULL * 1024ULL;
 	adev->gmc.real_vram_size = RREG32(mmCONFIG_MEMSIZE) * 1024ULL * 1024ULL;
 
@@ -384,19 +333,19 @@ static int gmc_v7_0_mc_init(struct amdgpu_device *adev)
 
 	adev->gmc.visible_vram_size = adev->gmc.aper_size;
 
-	/* set the gart size */
+	 
 	if (amdgpu_gart_size == -1) {
 		switch (adev->asic_type) {
-		case CHIP_TOPAZ:     /* no MM engines */
+		case CHIP_TOPAZ:      
 		default:
 			adev->gmc.gart_size = 256ULL << 20;
 			break;
 #ifdef CONFIG_DRM_AMDGPU_CIK
-		case CHIP_BONAIRE: /* UVD, VCE do not support GPUVM */
-		case CHIP_HAWAII:  /* UVD, VCE do not support GPUVM */
-		case CHIP_KAVERI:  /* UVD, VCE do not support GPUVM */
-		case CHIP_KABINI:  /* UVD, VCE do not support GPUVM */
-		case CHIP_MULLINS: /* UVD, VCE do not support GPUVM */
+		case CHIP_BONAIRE:  
+		case CHIP_HAWAII:   
+		case CHIP_KAVERI:   
+		case CHIP_KABINI:   
+		case CHIP_MULLINS:  
 			adev->gmc.gart_size = 1024ULL << 20;
 			break;
 #endif
@@ -411,17 +360,7 @@ static int gmc_v7_0_mc_init(struct amdgpu_device *adev)
 	return 0;
 }
 
-/**
- * gmc_v7_0_flush_gpu_tlb_pasid - tlb flush via pasid
- *
- * @adev: amdgpu_device pointer
- * @pasid: pasid to be flush
- * @flush_type: type of flush
- * @all_hub: flush all hubs
- * @inst: is used to select which instance of KIQ to use for the invalidation
- *
- * Flush the TLB for the requested pasid.
- */
+ 
 static int gmc_v7_0_flush_gpu_tlb_pasid(struct amdgpu_device *adev,
 					uint16_t pasid, uint32_t flush_type,
 					bool all_hub, uint32_t inst)
@@ -446,27 +385,13 @@ static int gmc_v7_0_flush_gpu_tlb_pasid(struct amdgpu_device *adev,
 	return 0;
 }
 
-/*
- * GART
- * VMID 0 is the physical GPU addresses as used by the kernel.
- * VMIDs 1-15 are used for userspace clients and are handled
- * by the amdgpu vm/hsa code.
- */
+ 
 
-/**
- * gmc_v7_0_flush_gpu_tlb - gart tlb flush callback
- *
- * @adev: amdgpu_device pointer
- * @vmid: vm instance to flush
- * @vmhub: which hub to flush
- * @flush_type: type of flush
- * *
- * Flush the TLB for the requested page table (CIK).
- */
+ 
 static void gmc_v7_0_flush_gpu_tlb(struct amdgpu_device *adev, uint32_t vmid,
 					uint32_t vmhub, uint32_t flush_type)
 {
-	/* bits 0-15 are the VM contexts0-15 */
+	 
 	WREG32(mmVM_INVALIDATE_REQUEST, 1 << vmid);
 }
 
@@ -481,7 +406,7 @@ static uint64_t gmc_v7_0_emit_flush_gpu_tlb(struct amdgpu_ring *ring,
 		reg = mmVM_CONTEXT8_PAGE_TABLE_BASE_ADDR + vmid - 8;
 	amdgpu_ring_emit_wreg(ring, reg, pd_addr >> 12);
 
-	/* bits 0-15 are the VM contexts0-15 */
+	 
 	amdgpu_ring_emit_wreg(ring, mmVM_INVALIDATE_REQUEST, 1 << vmid);
 
 	return pd_addr;
@@ -507,12 +432,7 @@ static void gmc_v7_0_get_vm_pte(struct amdgpu_device *adev,
 	*flags &= ~AMDGPU_PTE_PRT;
 }
 
-/**
- * gmc_v7_0_set_fault_enable_default - update VM fault handling
- *
- * @adev: amdgpu_device pointer
- * @value: true redirects VM faults to the default page
- */
+ 
 static void gmc_v7_0_set_fault_enable_default(struct amdgpu_device *adev,
 					      bool value)
 {
@@ -534,12 +454,7 @@ static void gmc_v7_0_set_fault_enable_default(struct amdgpu_device *adev,
 	WREG32(mmVM_CONTEXT1_CNTL, tmp);
 }
 
-/**
- * gmc_v7_0_set_prt - set PRT VM fault
- *
- * @adev: amdgpu_device pointer
- * @enable: enable/disable VM fault handling for PRT
- */
+ 
 static void gmc_v7_0_set_prt(struct amdgpu_device *adev, bool enable)
 {
 	uint32_t tmp;
@@ -591,17 +506,7 @@ static void gmc_v7_0_set_prt(struct amdgpu_device *adev, bool enable)
 	}
 }
 
-/**
- * gmc_v7_0_gart_enable - gart enable
- *
- * @adev: amdgpu_device pointer
- *
- * This sets up the TLBs, programs the page tables for VMID0,
- * sets up the hw for VMIDs 1-15 which are allocated on
- * demand, and sets up the global locations for the LDS, GDS,
- * and GPUVM for FSA64 clients (CIK).
- * Returns 0 for success, errors for failure.
- */
+ 
 static int gmc_v7_0_gart_enable(struct amdgpu_device *adev)
 {
 	uint64_t table_addr;
@@ -615,7 +520,7 @@ static int gmc_v7_0_gart_enable(struct amdgpu_device *adev)
 	amdgpu_gtt_mgr_recover(&adev->mman.gtt_mgr);
 	table_addr = amdgpu_bo_gpu_offset(adev->gart.bo);
 
-	/* Setup TLB control */
+	 
 	tmp = RREG32(mmMC_VM_MX_L1_TLB_CNTL);
 	tmp = REG_SET_FIELD(tmp, MC_VM_MX_L1_TLB_CNTL, ENABLE_L1_TLB, 1);
 	tmp = REG_SET_FIELD(tmp, MC_VM_MX_L1_TLB_CNTL, ENABLE_L1_FRAGMENT_PROCESSING, 1);
@@ -623,7 +528,7 @@ static int gmc_v7_0_gart_enable(struct amdgpu_device *adev)
 	tmp = REG_SET_FIELD(tmp, MC_VM_MX_L1_TLB_CNTL, ENABLE_ADVANCED_DRIVER_MODEL, 1);
 	tmp = REG_SET_FIELD(tmp, MC_VM_MX_L1_TLB_CNTL, SYSTEM_APERTURE_UNMAPPED_ACCESS, 0);
 	WREG32(mmMC_VM_MX_L1_TLB_CNTL, tmp);
-	/* Setup L2 cache */
+	 
 	tmp = RREG32(mmVM_L2_CNTL);
 	tmp = REG_SET_FIELD(tmp, VM_L2_CNTL, ENABLE_L2_CACHE, 1);
 	tmp = REG_SET_FIELD(tmp, VM_L2_CNTL, ENABLE_L2_FRAGMENT_PROCESSING, 1);
@@ -643,7 +548,7 @@ static int gmc_v7_0_gart_enable(struct amdgpu_device *adev)
 	tmp = REG_SET_FIELD(tmp, VM_L2_CNTL3, BANK_SELECT, field);
 	tmp = REG_SET_FIELD(tmp, VM_L2_CNTL3, L2_CACHE_BIGK_FRAGMENT_SIZE, field);
 	WREG32(mmVM_L2_CNTL3, tmp);
-	/* setup context0 */
+	 
 	WREG32(mmVM_CONTEXT0_PAGE_TABLE_START_ADDR, adev->gmc.gart_start >> 12);
 	WREG32(mmVM_CONTEXT0_PAGE_TABLE_END_ADDR, adev->gmc.gart_end >> 12);
 	WREG32(mmVM_CONTEXT0_PAGE_TABLE_BASE_ADDR, table_addr >> 12);
@@ -660,11 +565,9 @@ static int gmc_v7_0_gart_enable(struct amdgpu_device *adev)
 	WREG32(0x576, 0);
 	WREG32(0x577, 0);
 
-	/* empty context1-15 */
-	/* FIXME start with 4G, once using 2 level pt switch to full
-	 * vm size space
-	 */
-	/* set vm size, must be a multiple of 4 */
+	 
+	 
+	 
 	WREG32(mmVM_CONTEXT1_PAGE_TABLE_START_ADDR, 0);
 	WREG32(mmVM_CONTEXT1_PAGE_TABLE_END_ADDR, adev->vm_manager.max_pfn - 1);
 	for (i = 1; i < AMDGPU_NUM_VMID; i++) {
@@ -676,7 +579,7 @@ static int gmc_v7_0_gart_enable(struct amdgpu_device *adev)
 			       table_addr >> 12);
 	}
 
-	/* enable context1-15 */
+	 
 	WREG32(mmVM_CONTEXT1_PROTECTION_FAULT_DEFAULT_ADDR,
 	       (u32)(adev->dummy_page_addr >> 12));
 	WREG32(mmVM_CONTEXT1_CNTL2, 4);
@@ -712,7 +615,7 @@ static int gmc_v7_0_gart_init(struct amdgpu_device *adev)
 		WARN(1, "R600 PCIE GART already initialized\n");
 		return 0;
 	}
-	/* Initialize common gart structure */
+	 
 	r = amdgpu_gart_init(adev);
 	if (r)
 		return r;
@@ -721,44 +624,28 @@ static int gmc_v7_0_gart_init(struct amdgpu_device *adev)
 	return amdgpu_gart_table_vram_alloc(adev);
 }
 
-/**
- * gmc_v7_0_gart_disable - gart disable
- *
- * @adev: amdgpu_device pointer
- *
- * This disables all VM page table (CIK).
- */
+ 
 static void gmc_v7_0_gart_disable(struct amdgpu_device *adev)
 {
 	u32 tmp;
 
-	/* Disable all tables */
+	 
 	WREG32(mmVM_CONTEXT0_CNTL, 0);
 	WREG32(mmVM_CONTEXT1_CNTL, 0);
-	/* Setup TLB control */
+	 
 	tmp = RREG32(mmMC_VM_MX_L1_TLB_CNTL);
 	tmp = REG_SET_FIELD(tmp, MC_VM_MX_L1_TLB_CNTL, ENABLE_L1_TLB, 0);
 	tmp = REG_SET_FIELD(tmp, MC_VM_MX_L1_TLB_CNTL, ENABLE_L1_FRAGMENT_PROCESSING, 0);
 	tmp = REG_SET_FIELD(tmp, MC_VM_MX_L1_TLB_CNTL, ENABLE_ADVANCED_DRIVER_MODEL, 0);
 	WREG32(mmMC_VM_MX_L1_TLB_CNTL, tmp);
-	/* Setup L2 cache */
+	 
 	tmp = RREG32(mmVM_L2_CNTL);
 	tmp = REG_SET_FIELD(tmp, VM_L2_CNTL, ENABLE_L2_CACHE, 0);
 	WREG32(mmVM_L2_CNTL, tmp);
 	WREG32(mmVM_L2_CNTL2, 0);
 }
 
-/**
- * gmc_v7_0_vm_decode_fault - print human readable fault info
- *
- * @adev: amdgpu_device pointer
- * @status: VM_CONTEXT1_PROTECTION_FAULT_STATUS register value
- * @addr: VM_CONTEXT1_PROTECTION_FAULT_ADDR register value
- * @mc_client: VM_CONTEXT1_PROTECTION_FAULT_MCCLIENT register value
- * @pasid: debug logging only - no functional use
- *
- * Print human readable fault information (CIK).
- */
+ 
 static void gmc_v7_0_vm_decode_fault(struct amdgpu_device *adev, u32 status,
 				     u32 addr, u32 mc_client, unsigned int pasid)
 {
@@ -998,17 +885,11 @@ static int gmc_v7_0_sw_init(void *handle)
 	if (r)
 		return r;
 
-	/* Adjust VM size here.
-	 * Currently set to 4GB ((1 << 20) 4k pages).
-	 * Max GPUVM size for cayman and SI is 40 bits.
-	 */
+	 
 	amdgpu_vm_adjust_size(adev, 64, 9, 1, 40);
 
-	/* Set the internal MC address mask
-	 * This is the max address of the GPU's
-	 * internal address space.
-	 */
-	adev->gmc.mc_mask = 0xffffffffffULL; /* 40 bit MC */
+	 
+	adev->gmc.mc_mask = 0xffffffffffULL;  
 
 	r = dma_set_mask_and_coherent(adev->dev, DMA_BIT_MASK(40));
 	if (r) {
@@ -1029,7 +910,7 @@ static int gmc_v7_0_sw_init(void *handle)
 
 	amdgpu_gmc_get_vbios_allocations(adev);
 
-	/* Memory manager */
+	 
 	r = amdgpu_bo_init(adev);
 	if (r)
 		return r;
@@ -1038,16 +919,11 @@ static int gmc_v7_0_sw_init(void *handle)
 	if (r)
 		return r;
 
-	/*
-	 * number of VMs
-	 * VMID 0 is reserved for System
-	 * amdgpu graphics/compute will use VMIDs 1-7
-	 * amdkfd will use VMIDs 8-15
-	 */
+	 
 	adev->vm_manager.first_kfd_vmid = 8;
 	amdgpu_vm_manager_init(adev);
 
-	/* base offset of vram pages */
+	 
 	if (adev->flags & AMD_IS_APU) {
 		u64 tmp = RREG32(mmMC_VM_FB_OFFSET);
 
@@ -1159,7 +1035,7 @@ static int gmc_v7_0_wait_for_idle(void *handle)
 	struct amdgpu_device *adev = (struct amdgpu_device *)handle;
 
 	for (i = 0; i < adev->usec_timeout; i++) {
-		/* read MC_STATUS */
+		 
 		tmp = RREG32(mmSRBM_STATUS) & (SRBM_STATUS__MCB_BUSY_MASK |
 					       SRBM_STATUS__MCB_NON_DISPLAY_BUSY_MASK |
 					       SRBM_STATUS__MCC_BUSY_MASK |
@@ -1207,7 +1083,7 @@ static int gmc_v7_0_soft_reset(void *handle)
 		WREG32(mmSRBM_SOFT_RESET, tmp);
 		tmp = RREG32(mmSRBM_SOFT_RESET);
 
-		/* Wait a little for things to settle down */
+		 
 		udelay(50);
 
 		gmc_v7_0_mc_resume(adev);
@@ -1232,21 +1108,21 @@ static int gmc_v7_0_vm_fault_interrupt_state(struct amdgpu_device *adev,
 
 	switch (state) {
 	case AMDGPU_IRQ_STATE_DISABLE:
-		/* system context */
+		 
 		tmp = RREG32(mmVM_CONTEXT0_CNTL);
 		tmp &= ~bits;
 		WREG32(mmVM_CONTEXT0_CNTL, tmp);
-		/* VMs */
+		 
 		tmp = RREG32(mmVM_CONTEXT1_CNTL);
 		tmp &= ~bits;
 		WREG32(mmVM_CONTEXT1_CNTL, tmp);
 		break;
 	case AMDGPU_IRQ_STATE_ENABLE:
-		/* system context */
+		 
 		tmp = RREG32(mmVM_CONTEXT0_CNTL);
 		tmp |= bits;
 		WREG32(mmVM_CONTEXT0_CNTL, tmp);
-		/* VMs */
+		 
 		tmp = RREG32(mmVM_CONTEXT1_CNTL);
 		tmp |= bits;
 		WREG32(mmVM_CONTEXT1_CNTL, tmp);
@@ -1267,7 +1143,7 @@ static int gmc_v7_0_process_interrupt(struct amdgpu_device *adev,
 	addr = RREG32(mmVM_CONTEXT1_PROTECTION_FAULT_ADDR);
 	status = RREG32(mmVM_CONTEXT1_PROTECTION_FAULT_STATUS);
 	mc_client = RREG32(mmVM_CONTEXT1_PROTECTION_FAULT_MCCLIENT);
-	/* reset addr and status */
+	 
 	WREG32_P(mmVM_CONTEXT1_CNTL2, 1, ~1);
 
 	if (!addr && !status)

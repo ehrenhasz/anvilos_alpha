@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2023 Qualcomm Innovation Center, Inc. All rights reserved.
- */
+
+ 
 
 #include <linux/amba/bus.h>
 #include <linux/bitmap.h>
@@ -24,18 +22,18 @@ static void tpdm_enable_dsb(struct tpdm_drvdata *drvdata)
 {
 	u32 val;
 
-	/* Set the enable bit of DSB control register to 1 */
+	 
 	val = readl_relaxed(drvdata->base + TPDM_DSB_CR);
 	val |= TPDM_DSB_CR_ENA;
 	writel_relaxed(val, drvdata->base + TPDM_DSB_CR);
 }
 
-/* TPDM enable operations */
+ 
 static void __tpdm_enable(struct tpdm_drvdata *drvdata)
 {
 	CS_UNLOCK(drvdata->base);
 
-	/* Check if DSB datasets is present for TPDM. */
+	 
 	if (drvdata->datasets & TPDM_PIDR0_DS_DSB)
 		tpdm_enable_dsb(drvdata);
 
@@ -65,18 +63,18 @@ static void tpdm_disable_dsb(struct tpdm_drvdata *drvdata)
 {
 	u32 val;
 
-	/* Set the enable bit of DSB control register to 0 */
+	 
 	val = readl_relaxed(drvdata->base + TPDM_DSB_CR);
 	val &= ~TPDM_DSB_CR_ENA;
 	writel_relaxed(val, drvdata->base + TPDM_DSB_CR);
 }
 
-/* TPDM disable operations */
+ 
 static void __tpdm_disable(struct tpdm_drvdata *drvdata)
 {
 	CS_UNLOCK(drvdata->base);
 
-	/* Check if DSB datasets is present for TPDM. */
+	 
 	if (drvdata->datasets & TPDM_PIDR0_DS_DSB)
 		tpdm_disable_dsb(drvdata);
 
@@ -115,16 +113,13 @@ static void tpdm_init_default_data(struct tpdm_drvdata *drvdata)
 	u32 pidr;
 
 	CS_UNLOCK(drvdata->base);
-	/*  Get the datasets present on the TPDM. */
+	 
 	pidr = readl_relaxed(drvdata->base + CORESIGHT_PERIPHIDR0);
 	drvdata->datasets |= pidr & GENMASK(TPDM_DATASETS - 1, 0);
 	CS_LOCK(drvdata->base);
 }
 
-/*
- * value 1: 64 bits test data
- * value 2: 32 bits test data
- */
+ 
 static ssize_t integration_test_store(struct device *dev,
 					  struct device_attribute *attr,
 					  const char *buf,
@@ -187,7 +182,7 @@ static int tpdm_probe(struct amba_device *adev, const struct amba_id *id)
 		return PTR_ERR(pdata);
 	adev->dev.platform_data = pdata;
 
-	/* driver data*/
+	 
 	drvdata = devm_kzalloc(dev, sizeof(*drvdata), GFP_KERNEL);
 	if (!drvdata)
 		return -ENOMEM;
@@ -200,7 +195,7 @@ static int tpdm_probe(struct amba_device *adev, const struct amba_id *id)
 
 	drvdata->base = base;
 
-	/* Set up coresight component description */
+	 
 	desc.name = coresight_alloc_device_name(&tpdm_devs, dev);
 	if (!desc.name)
 		return -ENOMEM;
@@ -217,7 +212,7 @@ static int tpdm_probe(struct amba_device *adev, const struct amba_id *id)
 
 	spin_lock_init(&drvdata->spinlock);
 	tpdm_init_default_data(drvdata);
-	/* Decrease pm refcount when probe is done.*/
+	 
 	pm_runtime_put(&adev->dev);
 
 	return 0;
@@ -230,10 +225,7 @@ static void tpdm_remove(struct amba_device *adev)
 	coresight_unregister(drvdata->csdev);
 }
 
-/*
- * Different TPDM has different periph id.
- * The difference is 0-7 bits' value. So ignore 0-7 bits.
- */
+ 
 static struct amba_id tpdm_ids[] = {
 	{
 		.id = 0x000f0e00,

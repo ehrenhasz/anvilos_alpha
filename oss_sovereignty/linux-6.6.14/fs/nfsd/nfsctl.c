@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Syscall interface to knfsd.
- *
- * Copyright (C) 1995, 1996 Olaf Kirch <okir@monad.swb.de>
- */
+
+ 
 
 #include <linux/slab.h>
 #include <linux/namei.h>
@@ -27,9 +23,7 @@
 #include "filecache.h"
 #include "trace.h"
 
-/*
- *	We have a single directory with several nodes in it.
- */
+ 
 enum {
 	NFSD_Root = 1,
 	NFSD_List,
@@ -47,10 +41,7 @@ enum {
 	NFSD_MaxBlkSize,
 	NFSD_MaxConnections,
 	NFSD_Filecache,
-	/*
-	 * The below MUST come last.  Otherwise we leave a hole in nfsd_files[]
-	 * with !CONFIG_NFSD_V4 and simple_fill_super() goes oops
-	 */
+	 
 #ifdef CONFIG_NFSD_V4
 	NFSD_Leasetime,
 	NFSD_Gracetime,
@@ -60,9 +51,7 @@ enum {
 	NFSD_MaxReserved
 };
 
-/*
- * write() for these nodes.
- */
+ 
 static ssize_t write_filehandle(struct file *file, char *buf, size_t size);
 static ssize_t write_unlock_ip(struct file *file, char *buf, size_t size);
 static ssize_t write_unlock_fs(struct file *file, char *buf, size_t size);
@@ -121,10 +110,7 @@ static ssize_t nfsctl_transaction_write(struct file *file, const char __user *bu
 static ssize_t nfsctl_transaction_read(struct file *file, char __user *buf, size_t size, loff_t *pos)
 {
 	if (! file->private_data) {
-		/* An attempt to read a transaction file without writing
-		 * causes a 0-byte write so that the file can return
-		 * state information
-		 */
+		 
 		ssize_t rv = nfsctl_transaction_write(file, buf, 0, pos);
 		if (rv < 0)
 			return rv;
@@ -185,30 +171,15 @@ DEFINE_SHOW_ATTRIBUTE(nfsd_reply_cache_stats);
 
 DEFINE_SHOW_ATTRIBUTE(nfsd_file_cache_stats);
 
-/*----------------------------------------------------------------------------*/
-/*
- * payload - write methods
- */
+ 
+ 
 
 static inline struct net *netns(struct file *file)
 {
 	return file_inode(file)->i_sb->s_fs_info;
 }
 
-/*
- * write_unlock_ip - Release all locks used by a client
- *
- * Experimental.
- *
- * Input:
- *			buf:	'\n'-terminated C string containing a
- *				presentation format IP address
- *			size:	length of C string in @buf
- * Output:
- *	On success:	returns zero if all specified locks were released;
- *			returns one if one or more locks were not released
- *	On error:	return code is negative errno value
- */
+ 
 static ssize_t write_unlock_ip(struct file *file, char *buf, size_t size)
 {
 	struct sockaddr_storage address;
@@ -217,7 +188,7 @@ static ssize_t write_unlock_ip(struct file *file, char *buf, size_t size)
 	char *fo_path;
 	struct net *net = netns(file);
 
-	/* sanity check */
+	 
 	if (size == 0)
 		return -EINVAL;
 
@@ -235,27 +206,14 @@ static ssize_t write_unlock_ip(struct file *file, char *buf, size_t size)
 	return nlmsvc_unlock_all_by_ip(sap);
 }
 
-/*
- * write_unlock_fs - Release all locks on a local file system
- *
- * Experimental.
- *
- * Input:
- *			buf:	'\n'-terminated C string containing the
- *				absolute pathname of a local file system
- *			size:	length of C string in @buf
- * Output:
- *	On success:	returns zero if all specified locks were released;
- *			returns one if one or more locks were not released
- *	On error:	return code is negative errno value
- */
+ 
 static ssize_t write_unlock_fs(struct file *file, char *buf, size_t size)
 {
 	struct path path;
 	char *fo_path;
 	int error;
 
-	/* sanity check */
+	 
 	if (size == 0)
 		return -EINVAL;
 
@@ -270,42 +228,14 @@ static ssize_t write_unlock_fs(struct file *file, char *buf, size_t size)
 	if (error)
 		return error;
 
-	/*
-	 * XXX: Needs better sanity checking.  Otherwise we could end up
-	 * releasing locks on the wrong file system.
-	 *
-	 * For example:
-	 * 1.  Does the path refer to a directory?
-	 * 2.  Is that directory a mount point, or
-	 * 3.  Is that directory the root of an exported file system?
-	 */
+	 
 	error = nlmsvc_unlock_all_by_sb(path.dentry->d_sb);
 
 	path_put(&path);
 	return error;
 }
 
-/*
- * write_filehandle - Get a variable-length NFS file handle by path
- *
- * On input, the buffer contains a '\n'-terminated C string comprised of
- * three alphanumeric words separated by whitespace.  The string may
- * contain escape sequences.
- *
- * Input:
- *			buf:
- *				domain:		client domain name
- *				path:		export pathname
- *				maxsize:	numeric maximum size of
- *						@buf
- *			size:	length of C string in @buf
- * Output:
- *	On success:	passed-in buffer filled with '\n'-terminated C
- *			string containing a ASCII hex text version
- *			of the NFS file handle;
- *			return code is the size in bytes of the string
- *	On error:	return code is negative errno value
- */
+ 
 static ssize_t write_filehandle(struct file *file, char *buf, size_t size)
 {
 	char *dname, *path;
@@ -345,7 +275,7 @@ static ssize_t write_filehandle(struct file *file, char *buf, size_t size)
 
 	trace_nfsd_ctl_filehandle(netns(file), dname, path, maxsize);
 
-	/* we have all the words, they are in buf.. */
+	 
 	dom = unix_domain_find(dname);
 	if (!dom)
 		return -ENOMEM;
@@ -362,34 +292,7 @@ static ssize_t write_filehandle(struct file *file, char *buf, size_t size)
 	return mesg - buf;
 }
 
-/*
- * write_threads - Start NFSD, or report the current number of running threads
- *
- * Input:
- *			buf:		ignored
- *			size:		zero
- * Output:
- *	On success:	passed-in buffer filled with '\n'-terminated C
- *			string numeric value representing the number of
- *			running NFSD threads;
- *			return code is the size in bytes of the string
- *	On error:	return code is zero
- *
- * OR
- *
- * Input:
- *			buf:		C string containing an unsigned
- *					integer value representing the
- *					number of NFSD threads to start
- *			size:		non-zero length of C string in @buf
- * Output:
- *	On success:	NFS service is started;
- *			passed-in buffer filled with '\n'-terminated C
- *			string numeric value representing the number of
- *			running NFSD threads;
- *			return code is the size in bytes of the string
- *	On error:	return code is zero or a negative errno value
- */
+ 
 static ssize_t write_threads(struct file *file, char *buf, size_t size)
 {
 	char *mesg = buf;
@@ -413,33 +316,10 @@ static ssize_t write_threads(struct file *file, char *buf, size_t size)
 	return scnprintf(buf, SIMPLE_TRANSACTION_LIMIT, "%d\n", rv);
 }
 
-/*
- * write_pool_threads - Set or report the current number of threads per pool
- *
- * Input:
- *			buf:		ignored
- *			size:		zero
- *
- * OR
- *
- * Input:
- *			buf:		C string containing whitespace-
- *					separated unsigned integer values
- *					representing the number of NFSD
- *					threads to start in each pool
- *			size:		non-zero length of C string in @buf
- * Output:
- *	On success:	passed-in buffer filled with '\n'-terminated C
- *			string containing integer values representing the
- *			number of NFSD threads in each pool;
- *			return code is the size in bytes of the string
- *	On error:	return code is zero or a negative errno value
- */
+ 
 static ssize_t write_pool_threads(struct file *file, char *buf, size_t size)
 {
-	/* if size > 0, look for an array of number of threads per node
-	 * and apply them  then write out number of threads per node as reply
-	 */
+	 
 	char *mesg = buf;
 	int i;
 	int rv;
@@ -451,11 +331,7 @@ static ssize_t write_pool_threads(struct file *file, char *buf, size_t size)
 	mutex_lock(&nfsd_mutex);
 	npools = nfsd_nrpools(net);
 	if (npools == 0) {
-		/*
-		 * NFS is shut down.  The admin can start it by
-		 * writing to the threads file but NOT the pool_threads
-		 * file, sorry.  Report zero threads.
-		 */
+		 
 		mutex_unlock(&nfsd_mutex);
 		strcpy(buf, "0\n");
 		return strlen(buf);
@@ -470,9 +346,9 @@ static ssize_t write_pool_threads(struct file *file, char *buf, size_t size)
 		for (i = 0; i < npools; i++) {
 			rv = get_int(&mesg, &nthreads[i]);
 			if (rv == -ENOENT)
-				break;		/* fewer numbers than pools */
+				break;		 
 			if (rv)
-				goto out_free;	/* syntax error */
+				goto out_free;	 
 			rv = -EINVAL;
 			if (nthreads[i] < 0)
 				goto out_free;
@@ -513,11 +389,7 @@ nfsd_print_version_support(struct nfsd_net *nn, char *buf, int remaining,
 	    !nfsd_minorversion(nn, minor, NFSD_TEST))
 		supported = false;
 	if (minor == 0 && supported)
-		/*
-		 * special case for backward compatability.
-		 * +4.0 is never reported, it is implied by
-		 * +4, unless -4.0 is present.
-		 */
+		 
 		return 0;
 	return snprintf(buf, remaining, format, sep,
 			supported ? '+' : '-', vers, minor);
@@ -534,10 +406,7 @@ static ssize_t __write_versions(struct file *file, char *buf, size_t size)
 
 	if (size > 0) {
 		if (nn->nfsd_serv)
-			/* Cannot change versions without updating
-			 * nn->nfsd_serv->sv_xdrsize, and reallocing
-			 * rq_argp and rq_resp
-			 */
+			 
 			return -EBUSY;
 		if (buf[size-1] != '\n')
 			return -EINVAL;
@@ -575,30 +444,24 @@ static ssize_t __write_versions(struct file *file, char *buf, size_t size)
 					if (nfsd_minorversion(nn, minor, cmd) < 0)
 						return -EINVAL;
 				} else if ((cmd == NFSD_SET) != nfsd_vers(nn, num, NFSD_TEST)) {
-					/*
-					 * Either we have +4 and no minors are enabled,
-					 * or we have -4 and at least one minor is enabled.
-					 * In either case, propagate 'cmd' to all minors.
-					 */
+					 
 					minor = 0;
 					while (nfsd_minorversion(nn, minor, cmd) >= 0)
 						minor++;
 				}
 				break;
 			default:
-				/* Ignore requests to disable non-existent versions */
+				 
 				if (cmd == NFSD_SET)
 					return -EINVAL;
 			}
 			vers += len + 1;
 		} while ((len = qword_get(&mesg, vers, size)) > 0);
-		/* If all get turned off, turn them back on, as
-		 * having no versions is BAD
-		 */
+		 
 		nfsd_reset_versions(nn);
 	}
 
-	/* Now write current state into reply buffer */
+	 
 	sep = "";
 	remaining = SIMPLE_TRANSACTION_LIMIT;
 	for (num=2 ; num <= 4 ; num++) {
@@ -627,38 +490,7 @@ out:
 	return tlen + len;
 }
 
-/*
- * write_versions - Set or report the available NFS protocol versions
- *
- * Input:
- *			buf:		ignored
- *			size:		zero
- * Output:
- *	On success:	passed-in buffer filled with '\n'-terminated C
- *			string containing positive or negative integer
- *			values representing the current status of each
- *			protocol version;
- *			return code is the size in bytes of the string
- *	On error:	return code is zero or a negative errno value
- *
- * OR
- *
- * Input:
- *			buf:		C string containing whitespace-
- *					separated positive or negative
- *					integer values representing NFS
- *					protocol versions to enable ("+n")
- *					or disable ("-n")
- *			size:		non-zero length of C string in @buf
- * Output:
- *	On success:	status of zero or more protocol versions has
- *			been updated; passed-in buffer filled with
- *			'\n'-terminated C string containing positive
- *			or negative integer values representing the
- *			current status of each protocol version;
- *			return code is the size in bytes of the string
- *	On error:	return code is zero or a negative errno value
- */
+ 
 static ssize_t write_versions(struct file *file, char *buf, size_t size)
 {
 	ssize_t rv;
@@ -669,10 +501,7 @@ static ssize_t write_versions(struct file *file, char *buf, size_t size)
 	return rv;
 }
 
-/*
- * Zero-length write.  Return a list of NFSD's current listener
- * transports.
- */
+ 
 static ssize_t __write_ports_names(char *buf, struct net *net)
 {
 	struct nfsd_net *nn = net_generic(net, nfsd_net_id);
@@ -682,11 +511,7 @@ static ssize_t __write_ports_names(char *buf, struct net *net)
 	return svc_xprt_names(nn->nfsd_serv, buf, SIMPLE_TRANSACTION_LIMIT);
 }
 
-/*
- * A single 'fd' number was written, in which case it must be for
- * a socket of a supported family/protocol, and we use it as an
- * nfsd listener.
- */
+ 
 static ssize_t __write_ports_addfd(char *buf, struct net *net, const struct cred *cred)
 {
 	char *mesg = buf;
@@ -715,10 +540,7 @@ static ssize_t __write_ports_addfd(char *buf, struct net *net, const struct cred
 	return err;
 }
 
-/*
- * A transport listener is added by writing its transport name and
- * a port number.
- */
+ 
 static ssize_t __write_ports_addxprt(char *buf, struct net *net, const struct cred *cred)
 {
 	char transport[16];
@@ -783,49 +605,7 @@ static ssize_t __write_ports(struct file *file, char *buf, size_t size,
 	return -EINVAL;
 }
 
-/*
- * write_ports - Pass a socket file descriptor or transport name to listen on
- *
- * Input:
- *			buf:		ignored
- *			size:		zero
- * Output:
- *	On success:	passed-in buffer filled with a '\n'-terminated C
- *			string containing a whitespace-separated list of
- *			named NFSD listeners;
- *			return code is the size in bytes of the string
- *	On error:	return code is zero or a negative errno value
- *
- * OR
- *
- * Input:
- *			buf:		C string containing an unsigned
- *					integer value representing a bound
- *					but unconnected socket that is to be
- *					used as an NFSD listener; listen(3)
- *					must be called for a SOCK_STREAM
- *					socket, otherwise it is ignored
- *			size:		non-zero length of C string in @buf
- * Output:
- *	On success:	NFS service is started;
- *			passed-in buffer filled with a '\n'-terminated C
- *			string containing a unique alphanumeric name of
- *			the listener;
- *			return code is the size in bytes of the string
- *	On error:	return code is a negative errno value
- *
- * OR
- *
- * Input:
- *			buf:		C string containing a transport
- *					name and an unsigned integer value
- *					representing the port to listen on,
- *					separated by whitespace
- *			size:		non-zero length of C string in @buf
- * Output:
- *	On success:	returns zero; NFS service is started
- *	On error:	return code is a negative errno value
- */
+ 
 static ssize_t write_ports(struct file *file, char *buf, size_t size)
 {
 	ssize_t rv;
@@ -839,27 +619,7 @@ static ssize_t write_ports(struct file *file, char *buf, size_t size)
 
 int nfsd_max_blksize;
 
-/*
- * write_maxblksize - Set or report the current NFS blksize
- *
- * Input:
- *			buf:		ignored
- *			size:		zero
- *
- * OR
- *
- * Input:
- *			buf:		C string containing an unsigned
- *					integer value representing the new
- *					NFS blksize
- *			size:		non-zero length of C string in @buf
- * Output:
- *	On success:	passed-in buffer filled with '\n'-terminated C string
- *			containing numeric value of the current NFS blksize
- *			setting;
- *			return code is the size in bytes of the string
- *	On error:	return code is zero or a negative errno value
- */
+ 
 static ssize_t write_maxblksize(struct file *file, char *buf, size_t size)
 {
 	char *mesg = buf;
@@ -872,9 +632,7 @@ static ssize_t write_maxblksize(struct file *file, char *buf, size_t size)
 			return rv;
 		trace_nfsd_ctl_maxblksize(netns(file), bsize);
 
-		/* force bsize into allowed range and
-		 * required alignment.
-		 */
+		 
 		bsize = max_t(int, bsize, 1024);
 		bsize = min_t(int, bsize, NFSSVC_MAXBLKSIZE);
 		bsize &= ~(1024-1);
@@ -891,26 +649,7 @@ static ssize_t write_maxblksize(struct file *file, char *buf, size_t size)
 							nfsd_max_blksize);
 }
 
-/*
- * write_maxconn - Set or report the current max number of connections
- *
- * Input:
- *			buf:		ignored
- *			size:		zero
- * OR
- *
- * Input:
- *			buf:		C string containing an unsigned
- *					integer value representing the new
- *					number of max connections
- *			size:		non-zero length of C string in @buf
- * Output:
- *	On success:	passed-in buffer filled with '\n'-terminated C string
- *			containing numeric value of max_connections setting
- *			for this net namespace;
- *			return code is the size in bytes of the string
- *	On error:	return code is zero or a negative errno value
- */
+ 
 static ssize_t write_maxconn(struct file *file, char *buf, size_t size)
 {
 	char *mesg = buf;
@@ -946,18 +685,7 @@ static ssize_t __nfsd4_write_time(struct file *file, char *buf, size_t size,
 		trace_nfsd_ctl_time(netns(file), dentry->d_name.name,
 				    dentry->d_name.len, i);
 
-		/*
-		 * Some sanity checking.  We don't have a reason for
-		 * these particular numbers, but problems with the
-		 * extremes are:
-		 *	- Too short: the briefest network outage may
-		 *	  cause clients to lose all their locks.  Also,
-		 *	  the frequent polling may be wasteful.
-		 *	- Too long: do you really want reboot recovery
-		 *	  to take more than an hour?  Or to make other
-		 *	  clients wait an hour before being able to
-		 *	  revoke a dead client's locks?
-		 */
+		 
 		if (i < 10 || i > 3600)
 			return -EINVAL;
 		*time = i;
@@ -977,43 +705,14 @@ static ssize_t nfsd4_write_time(struct file *file, char *buf, size_t size,
 	return rv;
 }
 
-/*
- * write_leasetime - Set or report the current NFSv4 lease time
- *
- * Input:
- *			buf:		ignored
- *			size:		zero
- *
- * OR
- *
- * Input:
- *			buf:		C string containing an unsigned
- *					integer value representing the new
- *					NFSv4 lease expiry time
- *			size:		non-zero length of C string in @buf
- * Output:
- *	On success:	passed-in buffer filled with '\n'-terminated C
- *			string containing unsigned integer value of the
- *			current lease expiry time;
- *			return code is the size in bytes of the string
- *	On error:	return code is zero or a negative errno value
- */
+ 
 static ssize_t write_leasetime(struct file *file, char *buf, size_t size)
 {
 	struct nfsd_net *nn = net_generic(netns(file), nfsd_net_id);
 	return nfsd4_write_time(file, buf, size, &nn->nfsd4_lease, nn);
 }
 
-/*
- * write_gracetime - Set or report current NFSv4 grace period time
- *
- * As above, but sets the time of the NFSv4 grace period.
- *
- * Note this should never be set to less than the *previous*
- * lease-period time, but we don't try to enforce this.  (In the common
- * case (a new boot), we don't know what the previous lease time was
- * anyway.)
- */
+ 
 static ssize_t write_gracetime(struct file *file, char *buf, size_t size)
 {
 	struct nfsd_net *nn = net_generic(netns(file), nfsd_net_id);
@@ -1049,27 +748,7 @@ static ssize_t __write_recoverydir(struct file *file, char *buf, size_t size,
 							nfs4_recoverydir());
 }
 
-/*
- * write_recoverydir - Set or report the pathname of the recovery directory
- *
- * Input:
- *			buf:		ignored
- *			size:		zero
- *
- * OR
- *
- * Input:
- *			buf:		C string containing the pathname
- *					of the directory on a local file
- *					system containing permanent NFSv4
- *					recovery data
- *			size:		non-zero length of C string in @buf
- * Output:
- *	On success:	passed-in buffer filled with '\n'-terminated C string
- *			containing the current recovery pathname setting;
- *			return code is the size in bytes of the string
- *	On error:	return code is zero or a negative errno value
- */
+ 
 static ssize_t write_recoverydir(struct file *file, char *buf, size_t size)
 {
 	ssize_t rv;
@@ -1081,26 +760,7 @@ static ssize_t write_recoverydir(struct file *file, char *buf, size_t size)
 	return rv;
 }
 
-/*
- * write_v4_end_grace - release grace period for nfsd's v4.x lock manager
- *
- * Input:
- *			buf:		ignored
- *			size:		zero
- * OR
- *
- * Input:
- *			buf:		any value
- *			size:		non-zero length of C string in @buf
- * Output:
- *			passed-in buffer filled with "Y" or "N" with a newline
- *			and NULL-terminated C string. This indicates whether
- *			the grace period has ended in the current net
- *			namespace. Return code is the size in bytes of the
- *			string. Writing a string that starts with 'Y', 'y', or
- *			'1' to the file will end the grace period for nfsd's v4
- *			lock manager.
- */
+ 
 static ssize_t write_v4_end_grace(struct file *file, char *buf, size_t size)
 {
 	struct nfsd_net *nn = net_generic(netns(file), nfsd_net_id);
@@ -1126,18 +786,16 @@ static ssize_t write_v4_end_grace(struct file *file, char *buf, size_t size)
 
 #endif
 
-/*----------------------------------------------------------------------------*/
-/*
- *	populating the filesystem.
- */
+ 
+ 
 
-/* Basically copying rpc_get_inode. */
+ 
 static struct inode *nfsd_get_inode(struct super_block *sb, umode_t mode)
 {
 	struct inode *inode = new_inode(sb);
 	if (!inode)
 		return NULL;
-	/* Following advice from simple_fill_super documentation: */
+	 
 	inode->i_ino = iunique(sb, NFSD_MaxReserved);
 	inode->i_mode = mode;
 	inode->i_atime = inode->i_mtime = inode_set_ctime_current(inode);
@@ -1214,10 +872,7 @@ static int __nfsd_symlink(struct inode *dir, struct dentry *dentry,
 	return 0;
 }
 
-/*
- * @content is assumed to be a NUL-terminated string that lives
- * longer than the symlink itself.
- */
+ 
 static void _nfsd_symlink(struct dentry *parent, const char *name,
 			  const char *content)
 {
@@ -1269,7 +924,7 @@ struct nfsdfs_client *get_nfsdfs_client(struct inode *inode)
 	inode_unlock_shared(inode);
 	return nc;
 }
-/* from __rpc_unlink */
+ 
 static void nfsdfs_remove_file(struct inode *dir, struct dentry *dentry)
 {
 	int ret;
@@ -1289,15 +944,14 @@ static void nfsdfs_remove_files(struct dentry *root)
 
 	list_for_each_entry_safe(dentry, tmp, &root->d_subdirs, d_child) {
 		if (!simple_positive(dentry)) {
-			WARN_ON_ONCE(1); /* I think this can't happen? */
+			WARN_ON_ONCE(1);  
 			continue;
 		}
 		nfsdfs_remove_file(d_inode(root), dentry);
 	}
 }
 
-/* XXX: cut'n'paste from simple_fill_super; figure out if we could share
- * code instead. */
+ 
 static  int nfsdfs_create_files(struct dentry *root,
 				const struct tree_descr *files,
 				struct dentry **fdentries)
@@ -1333,7 +987,7 @@ out:
 	return -ENOMEM;
 }
 
-/* on success, returns positive number unique to that client. */
+ 
 struct dentry *nfsd_client_mkdir(struct nfsd_net *nn,
 				 struct nfsdfs_client *ncl, u32 id,
 				 const struct tree_descr *files,
@@ -1346,7 +1000,7 @@ struct dentry *nfsd_client_mkdir(struct nfsd_net *nn,
 	sprintf(name, "%u", id);
 
 	dentry = nfsd_mkdir(nn->nfsd_client_dir, ncl, name);
-	if (IS_ERR(dentry)) /* XXX: tossing errors? */
+	if (IS_ERR(dentry))  
 		return NULL;
 	ret = nfsdfs_create_files(dentry, files, fdentries);
 	if (ret) {
@@ -1356,7 +1010,7 @@ struct dentry *nfsd_client_mkdir(struct nfsd_net *nn,
 	return dentry;
 }
 
-/* Taken from __rpc_rmdir: */
+ 
 void nfsd_client_rmdir(struct dentry *dentry)
 {
 	struct inode *dir = d_inode(dentry->d_parent);
@@ -1384,7 +1038,7 @@ static int nfsd_fill_super(struct super_block *sb, struct fs_context *fc)
 
 	static const struct tree_descr nfsd_files[] = {
 		[NFSD_List] = {"exports", &exports_nfsd_operations, S_IRUGO},
-		/* Per-export io stats use same ops as exports file */
+		 
 		[NFSD_Export_Stats] = {"export_stats", &exports_nfsd_operations, S_IRUGO},
 		[NFSD_Export_features] = {"export_features",
 					&export_features_fops, S_IRUGO},
@@ -1409,7 +1063,7 @@ static int nfsd_fill_super(struct super_block *sb, struct fs_context *fc)
 		[NFSD_RecoveryDir] = {"nfsv4recoverydir", &transaction_ops, S_IWUSR|S_IRUSR},
 		[NFSD_V4EndGrace] = {"v4_end_grace", &transaction_ops, S_IWUSR|S_IRUGO},
 #endif
-		/* last one */ {""}
+		  {""}
 	};
 
 	ret = simple_fill_super(sb, 0x6e667364, nfsd_files);
@@ -1494,7 +1148,7 @@ static int create_proc_exports_entry(void)
 	}
 	return 0;
 }
-#else /* CONFIG_PROC_FS */
+#else  
 static int create_proc_exports_entry(void)
 {
 	return 0;
@@ -1503,16 +1157,7 @@ static int create_proc_exports_entry(void)
 
 unsigned int nfsd_net_id;
 
-/**
- * nfsd_net_init - Prepare the nfsd_net portion of a new net namespace
- * @net: a freshly-created network namespace
- *
- * This information stays around as long as the network namespace is
- * alive whether or not there is an NFSD instance running in the
- * namespace.
- *
- * Returns zero on success, or a negative errno otherwise.
- */
+ 
 static __net_init int nfsd_net_init(struct net *net)
 {
 	int retval;
@@ -1543,11 +1188,7 @@ out_export_error:
 	return retval;
 }
 
-/**
- * nfsd_net_exit - Release the nfsd_net portion of a net namespace
- * @net: a network namespace that is about to be destroyed
- *
- */
+ 
 static __net_exit void nfsd_net_exit(struct net *net)
 {
 	struct nfsd_net *nn = net_generic(net, nfsd_net_id);
@@ -1575,13 +1216,13 @@ static int __init init_nfsd(void)
 	retval = nfsd4_init_pnfs();
 	if (retval)
 		goto out_free_slabs;
-	retval = nfsd_stat_init();	/* Statistics */
+	retval = nfsd_stat_init();	 
 	if (retval)
 		goto out_free_pnfs;
 	retval = nfsd_drc_slab_create();
 	if (retval)
 		goto out_free_stat;
-	nfsd_lockd_init();	/* lockd->nfsd callbacks */
+	nfsd_lockd_init();	 
 	retval = create_proc_exports_entry();
 	if (retval)
 		goto out_free_lockd;

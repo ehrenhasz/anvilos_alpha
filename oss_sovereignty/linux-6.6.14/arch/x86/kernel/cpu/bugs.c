@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *  Copyright (C) 1994  Linus Torvalds
- *
- *  Cyrix stuff, June 1998 by:
- *	- Rafael R. Reilova (moved everything from head.S),
- *        <rreilova@ececs.uc.edu>
- *	- Channing Corn (tests & fixes),
- *	- Andrew D. Balsa (code cleanup).
- */
+
+ 
 #include <linux/init.h>
 #include <linux/cpu.h>
 #include <linux/module.h>
@@ -50,11 +42,11 @@ static void __init l1d_flush_select_mitigation(void);
 static void __init srso_select_mitigation(void);
 static void __init gds_select_mitigation(void);
 
-/* The base value of the SPEC_CTRL MSR without task-specific bits set */
+ 
 u64 x86_spec_ctrl_base;
 EXPORT_SYMBOL_GPL(x86_spec_ctrl_base);
 
-/* The current value of the SPEC_CTRL MSR with task-specific bits set */
+ 
 DEFINE_PER_CPU(u64, x86_spec_ctrl_current);
 EXPORT_SYMBOL_GPL(x86_spec_ctrl_current);
 
@@ -65,17 +57,14 @@ static DEFINE_MUTEX(spec_ctrl_mutex);
 
 void (*x86_return_thunk)(void) __ro_after_init = &__x86_return_thunk;
 
-/* Update SPEC_CTRL MSR and its cached copy unconditionally */
+ 
 static void update_spec_ctrl(u64 val)
 {
 	this_cpu_write(x86_spec_ctrl_current, val);
 	wrmsrl(MSR_IA32_SPEC_CTRL, val);
 }
 
-/*
- * Keep track of the SPEC_CTRL MSR value for the current task, which may differ
- * from x86_spec_ctrl_base due to STIBP/SSB in __speculation_ctrl_update().
- */
+ 
 void update_spec_ctrl_cond(u64 val)
 {
 	if (this_cpu_read(x86_spec_ctrl_current) == val)
@@ -83,10 +72,7 @@ void update_spec_ctrl_cond(u64 val)
 
 	this_cpu_write(x86_spec_ctrl_current, val);
 
-	/*
-	 * When KERNEL_IBRS this MSR is written on return-to-user, unless
-	 * forced the update can be delayed until that time.
-	 */
+	 
 	if (!cpu_feature_enabled(X86_FEATURE_KERNEL_IBRS))
 		wrmsrl(MSR_IA32_SPEC_CTRL, val);
 }
@@ -97,70 +83,47 @@ noinstr u64 spec_ctrl_current(void)
 }
 EXPORT_SYMBOL_GPL(spec_ctrl_current);
 
-/*
- * AMD specific MSR info for Speculative Store Bypass control.
- * x86_amd_ls_cfg_ssbd_mask is initialized in identify_boot_cpu().
- */
+ 
 u64 __ro_after_init x86_amd_ls_cfg_base;
 u64 __ro_after_init x86_amd_ls_cfg_ssbd_mask;
 
-/* Control conditional STIBP in switch_to() */
+ 
 DEFINE_STATIC_KEY_FALSE(switch_to_cond_stibp);
-/* Control conditional IBPB in switch_mm() */
+ 
 DEFINE_STATIC_KEY_FALSE(switch_mm_cond_ibpb);
-/* Control unconditional IBPB in switch_mm() */
+ 
 DEFINE_STATIC_KEY_FALSE(switch_mm_always_ibpb);
 
-/* Control MDS CPU buffer clear before returning to user space */
+ 
 DEFINE_STATIC_KEY_FALSE(mds_user_clear);
 EXPORT_SYMBOL_GPL(mds_user_clear);
-/* Control MDS CPU buffer clear before idling (halt, mwait) */
+ 
 DEFINE_STATIC_KEY_FALSE(mds_idle_clear);
 EXPORT_SYMBOL_GPL(mds_idle_clear);
 
-/*
- * Controls whether l1d flush based mitigations are enabled,
- * based on hw features and admin setting via boot parameter
- * defaults to false
- */
+ 
 DEFINE_STATIC_KEY_FALSE(switch_mm_cond_l1d_flush);
 
-/* Controls CPU Fill buffer clear before KVM guest MMIO accesses */
+ 
 DEFINE_STATIC_KEY_FALSE(mmio_stale_data_clear);
 EXPORT_SYMBOL_GPL(mmio_stale_data_clear);
 
 void __init cpu_select_mitigations(void)
 {
-	/*
-	 * Read the SPEC_CTRL MSR to account for reserved bits which may
-	 * have unknown values. AMD64_LS_CFG MSR is cached in the early AMD
-	 * init code as it is not enumerated and depends on the family.
-	 */
+	 
 	if (cpu_feature_enabled(X86_FEATURE_MSR_SPEC_CTRL)) {
 		rdmsrl(MSR_IA32_SPEC_CTRL, x86_spec_ctrl_base);
 
-		/*
-		 * Previously running kernel (kexec), may have some controls
-		 * turned ON. Clear them and let the mitigations setup below
-		 * rediscover them based on configuration.
-		 */
+		 
 		x86_spec_ctrl_base &= ~SPEC_CTRL_MITIGATIONS_MASK;
 	}
 
-	/* Select the proper CPU mitigations before patching alternatives: */
+	 
 	spectre_v1_select_mitigation();
 	spectre_v2_select_mitigation();
-	/*
-	 * retbleed_select_mitigation() relies on the state set by
-	 * spectre_v2_select_mitigation(); specifically it wants to know about
-	 * spectre_v2=ibrs.
-	 */
+	 
 	retbleed_select_mitigation();
-	/*
-	 * spectre_v2_user_select_mitigation() relies on the state set by
-	 * retbleed_select_mitigation(); specifically the STIBP selection is
-	 * forced for UNRET or IBPB.
-	 */
+	 
 	spectre_v2_user_select_mitigation();
 	ssb_select_mitigation();
 	l1tf_select_mitigation();
@@ -168,43 +131,30 @@ void __init cpu_select_mitigations(void)
 	srbds_select_mitigation();
 	l1d_flush_select_mitigation();
 
-	/*
-	 * srso_select_mitigation() depends and must run after
-	 * retbleed_select_mitigation().
-	 */
+	 
 	srso_select_mitigation();
 	gds_select_mitigation();
 }
 
-/*
- * NOTE: This function is *only* called for SVM, since Intel uses
- * MSR_IA32_SPEC_CTRL for SSBD.
- */
+ 
 void
 x86_virt_spec_ctrl(u64 guest_virt_spec_ctrl, bool setguest)
 {
 	u64 guestval, hostval;
 	struct thread_info *ti = current_thread_info();
 
-	/*
-	 * If SSBD is not handled in MSR_SPEC_CTRL on AMD, update
-	 * MSR_AMD64_L2_CFG or MSR_VIRT_SPEC_CTRL if supported.
-	 */
+	 
 	if (!static_cpu_has(X86_FEATURE_LS_CFG_SSBD) &&
 	    !static_cpu_has(X86_FEATURE_VIRT_SSBD))
 		return;
 
-	/*
-	 * If the host has SSBD mitigation enabled, force it in the host's
-	 * virtual MSR value. If its not permanently enabled, evaluate
-	 * current's TIF_SSBD thread flag.
-	 */
+	 
 	if (static_cpu_has(X86_FEATURE_SPEC_STORE_BYPASS_DISABLE))
 		hostval = SPEC_CTRL_SSBD;
 	else
 		hostval = ssbd_tif_to_spec_ctrl(ti->flags);
 
-	/* Sanitize the guest value */
+	 
 	guestval = guest_virt_spec_ctrl & SPEC_CTRL_SSBD;
 
 	if (hostval != guestval) {
@@ -231,7 +181,7 @@ static void x86_amd_ssb_disable(void)
 #undef pr_fmt
 #define pr_fmt(fmt)	"MDS: " fmt
 
-/* Default mitigation for MDS-affected CPUs */
+ 
 static enum mds_mitigations mds_mitigation __ro_after_init = MDS_MITIGATION_FULL;
 static bool mds_nosmt __ro_after_init = false;
 
@@ -291,7 +241,7 @@ enum taa_mitigations {
 	TAA_MITIGATION_TSX_DISABLED,
 };
 
-/* Default mitigation for TAA-affected CPUs */
+ 
 static enum taa_mitigations taa_mitigation __ro_after_init = TAA_MITIGATION_VERW;
 static bool taa_nosmt __ro_after_init;
 
@@ -311,7 +261,7 @@ static void __init taa_select_mitigation(void)
 		return;
 	}
 
-	/* TSX previously disabled by tsx=off */
+	 
 	if (!boot_cpu_has(X86_FEATURE_RTM)) {
 		taa_mitigation = TAA_MITIGATION_TSX_DISABLED;
 		return;
@@ -322,10 +272,7 @@ static void __init taa_select_mitigation(void)
 		return;
 	}
 
-	/*
-	 * TAA mitigation via VERW is turned off if both
-	 * tsx_async_abort=off and mds=off are specified.
-	 */
+	 
 	if (taa_mitigation == TAA_MITIGATION_OFF &&
 	    mds_mitigation == MDS_MITIGATION_OFF)
 		return;
@@ -335,27 +282,13 @@ static void __init taa_select_mitigation(void)
 	else
 		taa_mitigation = TAA_MITIGATION_UCODE_NEEDED;
 
-	/*
-	 * VERW doesn't clear the CPU buffers when MD_CLEAR=1 and MDS_NO=1.
-	 * A microcode update fixes this behavior to clear CPU buffers. It also
-	 * adds support for MSR_IA32_TSX_CTRL which is enumerated by the
-	 * ARCH_CAP_TSX_CTRL_MSR bit.
-	 *
-	 * On MDS_NO=1 CPUs if ARCH_CAP_TSX_CTRL_MSR is not set, microcode
-	 * update is required.
-	 */
+	 
 	ia32_cap = x86_read_arch_cap_msr();
 	if ( (ia32_cap & ARCH_CAP_MDS_NO) &&
 	    !(ia32_cap & ARCH_CAP_TSX_CTRL_MSR))
 		taa_mitigation = TAA_MITIGATION_UCODE_NEEDED;
 
-	/*
-	 * TSX is enabled, select alternate mitigation for TAA which is
-	 * the same as MDS. Enable MDS static branch to clear CPU buffers.
-	 *
-	 * For guests that can't determine whether the correct microcode is
-	 * present on host, enable the mitigation for UCODE_NEEDED as well.
-	 */
+	 
 	static_branch_enable(&mds_user_clear);
 
 	if (taa_nosmt || cpu_mitigations_auto_nosmt())
@@ -392,7 +325,7 @@ enum mmio_mitigations {
 	MMIO_MITIGATION_VERW,
 };
 
-/* Default mitigation for Processor MMIO Stale Data vulnerabilities */
+ 
 static enum mmio_mitigations mmio_mitigation __ro_after_init = MMIO_MITIGATION_VERW;
 static bool mmio_nosmt __ro_after_init = false;
 
@@ -418,31 +351,18 @@ static void __init mmio_select_mitigation(void)
 
 	ia32_cap = x86_read_arch_cap_msr();
 
-	/*
-	 * Enable CPU buffer clear mitigation for host and VMM, if also affected
-	 * by MDS or TAA. Otherwise, enable mitigation for VMM only.
-	 */
+	 
 	if (boot_cpu_has_bug(X86_BUG_MDS) || (boot_cpu_has_bug(X86_BUG_TAA) &&
 					      boot_cpu_has(X86_FEATURE_RTM)))
 		static_branch_enable(&mds_user_clear);
 	else
 		static_branch_enable(&mmio_stale_data_clear);
 
-	/*
-	 * If Processor-MMIO-Stale-Data bug is present and Fill Buffer data can
-	 * be propagated to uncore buffers, clearing the Fill buffers on idle
-	 * is required irrespective of SMT state.
-	 */
+	 
 	if (!(ia32_cap & ARCH_CAP_FBSDP_NO))
 		static_branch_enable(&mds_idle_clear);
 
-	/*
-	 * Check if the system has the right microcode.
-	 *
-	 * CPU Fill buffer clear mitigation is enumerated by either an explicit
-	 * FB_CLEAR or by the presence of both MD_CLEAR and L1D_FLUSH on MDS
-	 * affected systems.
-	 */
+	 
 	if ((ia32_cap & ARCH_CAP_FB_CLEAR) ||
 	    (boot_cpu_has(X86_FEATURE_MD_CLEAR) &&
 	     boot_cpu_has(X86_FEATURE_FLUSH_L1D) &&
@@ -487,10 +407,7 @@ static void __init md_clear_update_mitigation(void)
 	if (!static_key_enabled(&mds_user_clear))
 		goto out;
 
-	/*
-	 * mds_user_clear is now enabled. Update MDS, TAA and MMIO Stale Data
-	 * mitigation, if necessary.
-	 */
+	 
 	if (mds_mitigation == MDS_MITIGATION_OFF &&
 	    boot_cpu_has_bug(X86_BUG_MDS)) {
 		mds_mitigation = MDS_MITIGATION_FULL;
@@ -523,11 +440,7 @@ static void __init md_clear_select_mitigation(void)
 	taa_select_mitigation();
 	mmio_select_mitigation();
 
-	/*
-	 * As MDS, TAA and MMIO Stale Data mitigations are inter-related, update
-	 * and print their mitigation after MDS, TAA and MMIO Stale Data
-	 * mitigation selection is done.
-	 */
+	 
 	md_clear_update_mitigation();
 }
 
@@ -567,10 +480,7 @@ void update_srbds_msr(void)
 	if (srbds_mitigation == SRBDS_MITIGATION_UCODE_NEEDED)
 		return;
 
-	/*
-	 * A MDS_NO CPU for which SRBDS mitigation is not needed due to TSX
-	 * being disabled and it hasn't received the SRBDS MSR microcode.
-	 */
+	 
 	if (!boot_cpu_has(X86_FEATURE_SRBDS_CTRL))
 		return;
 
@@ -598,11 +508,7 @@ static void __init srbds_select_mitigation(void)
 	if (!boot_cpu_has_bug(X86_BUG_SRBDS))
 		return;
 
-	/*
-	 * Check to see if this is one of the MDS_NO systems supporting TSX that
-	 * are only exposed to SRBDS when TSX is enabled or when CPU is affected
-	 * by Processor MMIO Stale Data vulnerability.
-	 */
+	 
 	ia32_cap = x86_read_arch_cap_msr();
 	if ((ia32_cap & ARCH_CAP_MDS_NO) && !boot_cpu_has(X86_FEATURE_RTM) &&
 	    !boot_cpu_has_bug(X86_BUG_MMIO_STALE_DATA))
@@ -704,11 +610,7 @@ void update_gds_msr(void)
 		mcu_ctrl |= GDS_MITG_DIS;
 		break;
 	case GDS_MITIGATION_FULL_LOCKED:
-		/*
-		 * The LOCKED state comes from the boot CPU. APs might not have
-		 * the same state. Make sure the mitigation is enabled on all
-		 * CPUs.
-		 */
+		 
 	case GDS_MITIGATION_FULL:
 		rdmsrl(MSR_IA32_MCU_OPT_CTRL, mcu_ctrl);
 		mcu_ctrl &= ~GDS_MITG_DIS;
@@ -721,11 +623,7 @@ void update_gds_msr(void)
 
 	wrmsrl(MSR_IA32_MCU_OPT_CTRL, mcu_ctrl);
 
-	/*
-	 * Check to make sure that the WRMSR value was not ignored. Writes to
-	 * GDS_MITG_DIS will be ignored if this processor is locked but the boot
-	 * processor was not.
-	 */
+	 
 	rdmsrl(MSR_IA32_MCU_OPT_CTRL, mcu_ctrl_after);
 	WARN_ON_ONCE(mcu_ctrl != mcu_ctrl_after);
 }
@@ -744,15 +642,12 @@ static void __init gds_select_mitigation(void)
 
 	if (cpu_mitigations_off())
 		gds_mitigation = GDS_MITIGATION_OFF;
-	/* Will verify below that mitigation _can_ be disabled */
+	 
 
-	/* No microcode */
+	 
 	if (!(x86_read_arch_cap_msr() & ARCH_CAP_GDS_CTRL)) {
 		if (gds_mitigation == GDS_MITIGATION_FORCE) {
-			/*
-			 * This only needs to be done on the boot CPU so do it
-			 * here rather than in update_gds_msr()
-			 */
+			 
 			setup_clear_cpu_cap(X86_FEATURE_AVX);
 			pr_warn("Microcode update needed! Disabling AVX as mitigation.\n");
 		} else {
@@ -761,7 +656,7 @@ static void __init gds_select_mitigation(void)
 		goto out;
 	}
 
-	/* Microcode has mitigation, use it */
+	 
 	if (gds_mitigation == GDS_MITIGATION_FORCE)
 		gds_mitigation = GDS_MITIGATION_FULL;
 
@@ -770,13 +665,7 @@ static void __init gds_select_mitigation(void)
 		if (gds_mitigation == GDS_MITIGATION_OFF)
 			pr_warn("Mitigation locked. Disable failed.\n");
 
-		/*
-		 * The mitigation is selected from the boot CPU. All other CPUs
-		 * _should_ have the same state. If the boot CPU isn't locked
-		 * but others are then update_gds_msr() will WARN() of the state
-		 * mismatch. If the boot CPU is locked update_gds_msr() will
-		 * ensure the other CPUs have the mitigation enabled.
-		 */
+		 
 		gds_mitigation = GDS_MITIGATION_FULL_LOCKED;
 	}
 
@@ -818,21 +707,13 @@ static const char * const spectre_v1_strings[] = {
 	[SPECTRE_V1_MITIGATION_AUTO] = "Mitigation: usercopy/swapgs barriers and __user pointer sanitization",
 };
 
-/*
- * Does SMAP provide full mitigation against speculative kernel access to
- * userspace?
- */
+ 
 static bool smap_works_speculatively(void)
 {
 	if (!boot_cpu_has(X86_FEATURE_SMAP))
 		return false;
 
-	/*
-	 * On CPUs which are vulnerable to Meltdown, SMAP does not
-	 * prevent speculative access to user data in the L1 cache.
-	 * Consider SMAP to be non-functional as a mitigation on these
-	 * CPUs.
-	 */
+	 
 	if (boot_cpu_has(X86_BUG_CPU_MELTDOWN))
 		return false;
 
@@ -847,37 +728,15 @@ static void __init spectre_v1_select_mitigation(void)
 	}
 
 	if (spectre_v1_mitigation == SPECTRE_V1_MITIGATION_AUTO) {
-		/*
-		 * With Spectre v1, a user can speculatively control either
-		 * path of a conditional swapgs with a user-controlled GS
-		 * value.  The mitigation is to add lfences to both code paths.
-		 *
-		 * If FSGSBASE is enabled, the user can put a kernel address in
-		 * GS, in which case SMAP provides no protection.
-		 *
-		 * If FSGSBASE is disabled, the user can only put a user space
-		 * address in GS.  That makes an attack harder, but still
-		 * possible if there's no SMAP protection.
-		 */
+		 
 		if (boot_cpu_has(X86_FEATURE_FSGSBASE) ||
 		    !smap_works_speculatively()) {
-			/*
-			 * Mitigation can be provided from SWAPGS itself or
-			 * PTI as the CR3 write in the Meltdown mitigation
-			 * is serializing.
-			 *
-			 * If neither is there, mitigate with an LFENCE to
-			 * stop speculation through swapgs.
-			 */
+			 
 			if (boot_cpu_has_bug(X86_BUG_SWAPGS) &&
 			    !boot_cpu_has(X86_FEATURE_PTI))
 				setup_force_cpu_cap(X86_FEATURE_FENCE_SWAPGS_USER);
 
-			/*
-			 * Enable lfences in the kernel entry (non-swapgs)
-			 * paths, to prevent user entry from speculatively
-			 * skipping swapgs.
-			 */
+			 
 			setup_force_cpu_cap(X86_FEATURE_FENCE_SWAPGS_KERNEL);
 		}
 	}
@@ -1028,11 +887,7 @@ do_cmd_auto:
 				retbleed_mitigation = RETBLEED_MITIGATION_IBPB;
 		}
 
-		/*
-		 * The Intel mitigation (IBRS or eIBRS) was already selected in
-		 * spectre_v2_select_mitigation().  'retbleed_mitigation' will
-		 * be set accordingly below.
-		 */
+		 
 
 		break;
 	}
@@ -1072,10 +927,7 @@ do_cmd_auto:
 	    (retbleed_nosmt || cpu_mitigations_auto_nosmt()))
 		cpu_smt_disable(false);
 
-	/*
-	 * Let IBRS trump all on Intel without affecting the effects of the
-	 * retbleed= cmdline option except for call depth based stuffing
-	 */
+	 
 	if (boot_cpu_data.x86_vendor == X86_VENDOR_INTEL) {
 		switch (spectre_v2_enabled) {
 		case SPECTRE_V2_IBRS:
@@ -1135,7 +987,7 @@ void unpriv_ebpf_notify(int new_state)
 	if (new_state)
 		return;
 
-	/* Unprivileged eBPF is enabled */
+	 
 
 	switch (spectre_v2_enabled) {
 	case SPECTRE_V2_EIBRS:
@@ -1158,7 +1010,7 @@ static inline bool match_option(const char *arg, int arglen, const char *opt)
 	return len == arglen && !strncmp(arg, opt, len);
 }
 
-/* The kernel command line selection for spectre v2 */
+ 
 enum spectre_v2_mitigation_cmd {
 	SPECTRE_V2_CMD_NONE,
 	SPECTRE_V2_CMD_AUTO,
@@ -1284,7 +1136,7 @@ spectre_v2_user_select_mitigation(void)
 		break;
 	}
 
-	/* Initialize Indirect Branch Prediction Barrier */
+	 
 	if (boot_cpu_has(X86_FEATURE_IBPB)) {
 		setup_force_cpu_cap(X86_FEATURE_USE_IBPB);
 
@@ -1310,29 +1162,14 @@ spectre_v2_user_select_mitigation(void)
 			"always-on" : "conditional");
 	}
 
-	/*
-	 * If no STIBP, Intel enhanced IBRS is enabled, or SMT impossible, STIBP
-	 * is not required.
-	 *
-	 * Intel's Enhanced IBRS also protects against cross-thread branch target
-	 * injection in user-mode as the IBRS bit remains always set which
-	 * implicitly enables cross-thread protections.  However, in legacy IBRS
-	 * mode, the IBRS bit is set only on kernel entry and cleared on return
-	 * to userspace.  AMD Automatic IBRS also does not protect userspace.
-	 * These modes therefore disable the implicit cross-thread protection,
-	 * so allow for STIBP to be selected in those cases.
-	 */
+	 
 	if (!boot_cpu_has(X86_FEATURE_STIBP) ||
 	    !smt_possible ||
 	    (spectre_v2_in_eibrs_mode(spectre_v2_enabled) &&
 	     !boot_cpu_has(X86_FEATURE_AUTOIBRS)))
 		return;
 
-	/*
-	 * At this point, an STIBP mode other than "off" has been set.
-	 * If STIBP support is not being forced, check if STIBP always-on
-	 * is preferred.
-	 */
+	 
 	if (mode != SPECTRE_V2_USER_STRICT &&
 	    boot_cpu_has(X86_FEATURE_AMD_STIBP_ALWAYS_ON))
 		mode = SPECTRE_V2_USER_STRICT_PREFERRED;
@@ -1478,7 +1315,7 @@ static enum spectre_v2_mitigation __init spectre_v2_select_retpoline(void)
 	return SPECTRE_V2_RETPOLINE;
 }
 
-/* Disable in-kernel use of non-RSB RET predictors */
+ 
 static void __init spec_ctrl_disable_kernel_rrsba(void)
 {
 	u64 ia32_cap;
@@ -1496,26 +1333,7 @@ static void __init spec_ctrl_disable_kernel_rrsba(void)
 
 static void __init spectre_v2_determine_rsb_fill_type_at_vmexit(enum spectre_v2_mitigation mode)
 {
-	/*
-	 * Similar to context switches, there are two types of RSB attacks
-	 * after VM exit:
-	 *
-	 * 1) RSB underflow
-	 *
-	 * 2) Poisoned RSB entry
-	 *
-	 * When retpoline is enabled, both are mitigated by filling/clearing
-	 * the RSB.
-	 *
-	 * When IBRS is enabled, while #1 would be mitigated by the IBRS branch
-	 * prediction isolation protections, RSB still needs to be cleared
-	 * because of #2.  Note that SMEP provides no protection here, unlike
-	 * user-space-poisoned RSB entries.
-	 *
-	 * eIBRS should protect against RSB poisoning, but if the EIBRS_PBRSB
-	 * bug is present then a LITE version of RSB protection is required,
-	 * just a single call needs to retire before a RET is executed.
-	 */
+	 
 	switch (mode) {
 	case SPECTRE_V2_NONE:
 		return;
@@ -1546,10 +1364,7 @@ static void __init spectre_v2_select_mitigation(void)
 	enum spectre_v2_mitigation_cmd cmd = spectre_v2_parse_cmdline();
 	enum spectre_v2_mitigation mode = SPECTRE_V2_NONE;
 
-	/*
-	 * If the CPU is not affected and the command line mode is NONE or AUTO
-	 * then nothing to do.
-	 */
+	 
 	if (!boot_cpu_has_bug(X86_BUG_SPECTRE_V2) &&
 	    (cmd == SPECTRE_V2_CMD_NONE || cmd == SPECTRE_V2_CMD_AUTO))
 		return;
@@ -1642,11 +1457,7 @@ static void __init spectre_v2_select_mitigation(void)
 		break;
 	}
 
-	/*
-	 * Disable alternate RSB predictions in kernel when indirect CALLs and
-	 * JMPs gets protection against BHI and Intramode-BTI, but RET
-	 * prediction from a non-RSB predictor is still a risk.
-	 */
+	 
 	if (mode == SPECTRE_V2_EIBRS_LFENCE ||
 	    mode == SPECTRE_V2_EIBRS_RETPOLINE ||
 	    mode == SPECTRE_V2_RETPOLINE)
@@ -1655,60 +1466,13 @@ static void __init spectre_v2_select_mitigation(void)
 	spectre_v2_enabled = mode;
 	pr_info("%s\n", spectre_v2_strings[mode]);
 
-	/*
-	 * If Spectre v2 protection has been enabled, fill the RSB during a
-	 * context switch.  In general there are two types of RSB attacks
-	 * across context switches, for which the CALLs/RETs may be unbalanced.
-	 *
-	 * 1) RSB underflow
-	 *
-	 *    Some Intel parts have "bottomless RSB".  When the RSB is empty,
-	 *    speculated return targets may come from the branch predictor,
-	 *    which could have a user-poisoned BTB or BHB entry.
-	 *
-	 *    AMD has it even worse: *all* returns are speculated from the BTB,
-	 *    regardless of the state of the RSB.
-	 *
-	 *    When IBRS or eIBRS is enabled, the "user -> kernel" attack
-	 *    scenario is mitigated by the IBRS branch prediction isolation
-	 *    properties, so the RSB buffer filling wouldn't be necessary to
-	 *    protect against this type of attack.
-	 *
-	 *    The "user -> user" attack scenario is mitigated by RSB filling.
-	 *
-	 * 2) Poisoned RSB entry
-	 *
-	 *    If the 'next' in-kernel return stack is shorter than 'prev',
-	 *    'next' could be tricked into speculating with a user-poisoned RSB
-	 *    entry.
-	 *
-	 *    The "user -> kernel" attack scenario is mitigated by SMEP and
-	 *    eIBRS.
-	 *
-	 *    The "user -> user" scenario, also known as SpectreBHB, requires
-	 *    RSB clearing.
-	 *
-	 * So to mitigate all cases, unconditionally fill RSB on context
-	 * switches.
-	 *
-	 * FIXME: Is this pointless for retbleed-affected AMD?
-	 */
+	 
 	setup_force_cpu_cap(X86_FEATURE_RSB_CTXSW);
 	pr_info("Spectre v2 / SpectreRSB mitigation: Filling RSB on context switch\n");
 
 	spectre_v2_determine_rsb_fill_type_at_vmexit(mode);
 
-	/*
-	 * Retpoline protects the kernel, but doesn't protect firmware.  IBRS
-	 * and Enhanced IBRS protect firmware too, so enable IBRS around
-	 * firmware calls only when IBRS / Enhanced / Automatic IBRS aren't
-	 * otherwise enabled.
-	 *
-	 * Use "mode" to check Enhanced IBRS instead of boot_cpu_has(), because
-	 * the user might select retpoline on the kernel command line and if
-	 * the CPU supports Enhanced IBRS, kernel might un-intentionally not
-	 * enable IBRS around firmware calls.
-	 */
+	 
 	if (boot_cpu_has_bug(X86_BUG_RETBLEED) &&
 	    boot_cpu_has(X86_FEATURE_IBPB) &&
 	    (boot_cpu_data.x86_vendor == X86_VENDOR_AMD ||
@@ -1724,7 +1488,7 @@ static void __init spectre_v2_select_mitigation(void)
 		pr_info("Enabling Restricted Speculation for firmware calls\n");
 	}
 
-	/* Set up IBPB and STIBP depending on the general spectre V2 command */
+	 
 	spectre_v2_cmd = cmd;
 }
 
@@ -1734,7 +1498,7 @@ static void update_stibp_msr(void * __unused)
 	update_spec_ctrl(val);
 }
 
-/* Update x86_spec_ctrl_base in case SMT state changed. */
+ 
 static void update_stibp_strict(void)
 {
 	u64 mask = x86_spec_ctrl_base & ~SPEC_CTRL_STIBP;
@@ -1751,7 +1515,7 @@ static void update_stibp_strict(void)
 	on_each_cpu(update_stibp_msr, NULL, 1);
 }
 
-/* Update the static key controlling the evaluation of TIF_SPEC_IB */
+ 
 static void update_indir_branch_cond(void)
 {
 	if (sched_smt_active())
@@ -1763,19 +1527,12 @@ static void update_indir_branch_cond(void)
 #undef pr_fmt
 #define pr_fmt(fmt) fmt
 
-/* Update the static key controlling the MDS CPU buffer clear in idle */
+ 
 static void update_mds_branch_idle(void)
 {
 	u64 ia32_cap = x86_read_arch_cap_msr();
 
-	/*
-	 * Enable the idle clearing if SMT is active on CPUs which are
-	 * affected only by MSBDS and not any other MDS variant.
-	 *
-	 * The other variants cannot be mitigated when SMT is enabled, so
-	 * clearing the buffers on idle just to prevent the Store Buffer
-	 * repartitioning leak would be a window dressing exercise.
-	 */
+	 
 	if (!boot_cpu_has_bug(X86_BUG_MSBDS_ONLY))
 		return;
 
@@ -1852,7 +1609,7 @@ void cpu_bugs_smt_update(void)
 
 static enum ssb_mitigation ssb_mode __ro_after_init = SPEC_STORE_BYPASS_NONE;
 
-/* The kernel command line selection */
+ 
 enum ssb_mitigation_cmd {
 	SPEC_STORE_BYPASS_CMD_NONE,
 	SPEC_STORE_BYPASS_CMD_AUTO,
@@ -1872,11 +1629,11 @@ static const struct {
 	const char *option;
 	enum ssb_mitigation_cmd cmd;
 } ssb_mitigation_options[]  __initconst = {
-	{ "auto",	SPEC_STORE_BYPASS_CMD_AUTO },    /* Platform decides */
-	{ "on",		SPEC_STORE_BYPASS_CMD_ON },      /* Disable Speculative Store Bypass */
-	{ "off",	SPEC_STORE_BYPASS_CMD_NONE },    /* Don't touch Speculative Store Bypass */
-	{ "prctl",	SPEC_STORE_BYPASS_CMD_PRCTL },   /* Disable Speculative Store Bypass via prctl */
-	{ "seccomp",	SPEC_STORE_BYPASS_CMD_SECCOMP }, /* Disable Speculative Store Bypass via prctl and seccomp */
+	{ "auto",	SPEC_STORE_BYPASS_CMD_AUTO },     
+	{ "on",		SPEC_STORE_BYPASS_CMD_ON },       
+	{ "off",	SPEC_STORE_BYPASS_CMD_NONE },     
+	{ "prctl",	SPEC_STORE_BYPASS_CMD_PRCTL },    
+	{ "seccomp",	SPEC_STORE_BYPASS_CMD_SECCOMP },  
 };
 
 static enum ssb_mitigation_cmd __init ssb_parse_cmdline(void)
@@ -1927,10 +1684,7 @@ static enum ssb_mitigation __init __ssb_select_mitigation(void)
 
 	switch (cmd) {
 	case SPEC_STORE_BYPASS_CMD_SECCOMP:
-		/*
-		 * Choose prctl+seccomp as the default mode if seccomp is
-		 * enabled.
-		 */
+		 
 		if (IS_ENABLED(CONFIG_SECCOMP))
 			mode = SPEC_STORE_BYPASS_SECCOMP;
 		else
@@ -1947,18 +1701,10 @@ static enum ssb_mitigation __init __ssb_select_mitigation(void)
 		break;
 	}
 
-	/*
-	 * We have three CPU feature flags that are in play here:
-	 *  - X86_BUG_SPEC_STORE_BYPASS - CPU is susceptible.
-	 *  - X86_FEATURE_SSBD - CPU is able to turn off speculative store bypass
-	 *  - X86_FEATURE_SPEC_STORE_BYPASS_DISABLE - engage the mitigation
-	 */
+	 
 	if (mode == SPEC_STORE_BYPASS_DISABLE) {
 		setup_force_cpu_cap(X86_FEATURE_SPEC_STORE_BYPASS_DISABLE);
-		/*
-		 * Intel uses the SPEC CTRL MSR Bit(2) for this, while AMD may
-		 * use a completely different MSR and bit dependent on family.
-		 */
+		 
 		if (!static_cpu_has(X86_FEATURE_SPEC_CTRL_SSBD) &&
 		    !static_cpu_has(X86_FEATURE_AMD_SSBD)) {
 			x86_amd_ssb_disable();
@@ -1984,17 +1730,10 @@ static void ssb_select_mitigation(void)
 
 static void task_update_spec_tif(struct task_struct *tsk)
 {
-	/* Force the update of the real TIF bits */
+	 
 	set_tsk_thread_flag(tsk, TIF_SPEC_FORCE_UPDATE);
 
-	/*
-	 * Immediately update the speculation control MSRs for the current
-	 * task, but for a non-current task delay setting the CPU
-	 * mitigation until it is scheduled next.
-	 *
-	 * This can only happen for SECCOMP mitigation. For PRCTL it's
-	 * always the current task.
-	 */
+	 
 	if (tsk == current)
 		speculation_ctrl_update_current();
 }
@@ -2025,7 +1764,7 @@ static int ssb_prctl_set(struct task_struct *task, unsigned long ctrl)
 
 	switch (ctrl) {
 	case PR_SPEC_ENABLE:
-		/* If speculation is force disabled, enable is not allowed */
+		 
 		if (task_spec_ssb_force_disable(task))
 			return -EPERM;
 		task_clear_spec_ssb_disable(task);
@@ -2072,21 +1811,7 @@ static int ib_prctl_set(struct task_struct *task, unsigned long ctrl)
 		    spectre_v2_user_stibp == SPECTRE_V2_USER_NONE)
 			return 0;
 
-		/*
-		 * With strict mode for both IBPB and STIBP, the instruction
-		 * code paths avoid checking this task flag and instead,
-		 * unconditionally run the instruction. However, STIBP and IBPB
-		 * are independent and either can be set to conditionally
-		 * enabled regardless of the mode of the other.
-		 *
-		 * If either is set to conditional, allow the task flag to be
-		 * updated, unless it was force-disabled by a previous prctl
-		 * call. Currently, this is possible on an AMD CPU which has the
-		 * feature X86_FEATURE_AMD_STIBP_ALWAYS_ON. In this case, if the
-		 * kernel is booted with 'spectre_v2_user=seccomp', then
-		 * spectre_v2_user_ibpb == SPECTRE_V2_USER_SECCOMP and
-		 * spectre_v2_user_stibp == SPECTRE_V2_USER_STRICT_PREFERRED.
-		 */
+		 
 		if (!is_spec_ib_user_controlled() ||
 		    task_spec_ib_force_disable(task))
 			return -EPERM;
@@ -2096,10 +1821,7 @@ static int ib_prctl_set(struct task_struct *task, unsigned long ctrl)
 		break;
 	case PR_SPEC_DISABLE:
 	case PR_SPEC_FORCE_DISABLE:
-		/*
-		 * Indirect branch speculation is always allowed when
-		 * mitigation is force disabled.
-		 */
+		 
 		if (spectre_v2_user_ibpb == SPECTRE_V2_USER_NONE &&
 		    spectre_v2_user_stibp == SPECTRE_V2_USER_NONE)
 			return -EPERM;
@@ -2229,7 +1951,7 @@ EXPORT_SYMBOL_GPL(itlb_multihit_kvm_mitigation);
 #undef pr_fmt
 #define pr_fmt(fmt)	"L1TF: " fmt
 
-/* Default mitigation for L1TF-affected CPUs */
+ 
 enum l1tf_mitigations l1tf_mitigation __ro_after_init = L1TF_MITIGATION_FLUSH;
 #if IS_ENABLED(CONFIG_KVM_INTEL)
 EXPORT_SYMBOL_GPL(l1tf_mitigation);
@@ -2237,20 +1959,7 @@ EXPORT_SYMBOL_GPL(l1tf_mitigation);
 enum vmx_l1d_flush_state l1tf_vmx_mitigation = VMENTER_L1D_FLUSH_AUTO;
 EXPORT_SYMBOL_GPL(l1tf_vmx_mitigation);
 
-/*
- * These CPUs all support 44bits physical address space internally in the
- * cache but CPUID can report a smaller number of physical address bits.
- *
- * The L1TF mitigation uses the top most address bit for the inversion of
- * non present PTEs. When the installed memory reaches into the top most
- * address bit due to memory holes, which has been observed on machines
- * which report 36bits physical address bits and have 32G RAM installed,
- * then the mitigation range check in l1tf_select_mitigation() triggers.
- * This is a false positive because the mitigation is still possible due to
- * the fact that the cache uses 44bit internally. Use the cache bits
- * instead of the reported physical bits and adjust them on the affected
- * machines to 44bit if the reported bits are less than 44.
- */
+ 
 static void override_cache_bits(struct cpuinfo_x86 *c)
 {
 	if (c->x86 != 6)
@@ -2414,10 +2123,7 @@ static void __init srso_select_mitigation(void)
 		goto pred_cmd;
 
 	if (has_microcode) {
-		/*
-		 * Zen1/2 with SMT off aren't vulnerable after the right
-		 * IBPB microcode has been applied.
-		 */
+		 
 		if (boot_cpu_data.x86 < 0x19 && !cpu_smt_possible()) {
 			setup_force_cpu_cap(X86_FEATURE_SRSO_NO);
 			return;
@@ -2431,7 +2137,7 @@ static void __init srso_select_mitigation(void)
 		pr_warn("IBPB-extending microcode not applied!\n");
 		pr_warn(SRSO_NOTICE);
 
-		/* may be overwritten by SRSO_CMD_SAFE_RET below */
+		 
 		srso_mitigation = SRSO_MITIGATION_UCODE_NEEDED;
 	}
 
@@ -2448,10 +2154,7 @@ static void __init srso_select_mitigation(void)
 
 	case SRSO_CMD_SAFE_RET:
 		if (IS_ENABLED(CONFIG_CPU_SRSO)) {
-			/*
-			 * Enable the return thunk for generated code
-			 * like ftrace, static_call, etc.
-			 */
+			 
 			setup_force_cpu_cap(X86_FEATURE_RETHUNK);
 			setup_force_cpu_cap(X86_FEATURE_UNRET);
 

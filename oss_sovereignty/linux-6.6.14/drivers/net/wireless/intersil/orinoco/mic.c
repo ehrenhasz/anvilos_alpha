@@ -1,7 +1,4 @@
-/* Orinoco MIC helpers
- *
- * See copyright notice in main.c
- */
+ 
 #include <linux/kernel.h>
 #include <linux/string.h>
 #include <linux/if_ether.h>
@@ -11,9 +8,9 @@
 #include "orinoco.h"
 #include "mic.h"
 
-/********************************************************************/
-/* Michael MIC crypto setup                                         */
-/********************************************************************/
+ 
+ 
+ 
 int orinoco_mic_init(struct orinoco_private *priv)
 {
 	priv->tx_tfm_mic = crypto_alloc_shash("michael_mic", 0, 0);
@@ -48,7 +45,7 @@ int orinoco_mic(struct crypto_shash *tfm_michael, u8 *key,
 		u8 *data, size_t data_len, u8 *mic)
 {
 	SHASH_DESC_ON_STACK(desc, tfm_michael);
-	u8 hdr[ETH_HLEN + 2]; /* size of header + padding */
+	u8 hdr[ETH_HLEN + 2];  
 	int err;
 
 	if (tfm_michael == NULL) {
@@ -56,7 +53,7 @@ int orinoco_mic(struct crypto_shash *tfm_michael, u8 *key,
 		return -1;
 	}
 
-	/* Copy header into buffer. We need the padding on the end zeroed */
+	 
 	memcpy(&hdr[0], da, ETH_ALEN);
 	memcpy(&hdr[ETH_ALEN], sa, ETH_ALEN);
 	hdr[ETH_ALEN * 2] = priority;

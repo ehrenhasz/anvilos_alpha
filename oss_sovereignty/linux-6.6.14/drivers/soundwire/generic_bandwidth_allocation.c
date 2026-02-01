@@ -1,10 +1,7 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
-// Copyright(c) 2015-2020 Intel Corporation.
 
-/*
- * Bandwidth management algorithm based on 2^n gears
- *
- */
+
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/device.h>
@@ -69,12 +66,7 @@ void sdw_compute_slave_ports(struct sdw_master_runtime *m_rt,
 
 		if (m_rt->direction == SDW_DATA_DIR_TX &&
 		    m_rt->ch_count == slave_total_ch) {
-			/*
-			 * Slave devices were configured to access all channels
-			 * of the stream, which indicates that they operate in
-			 * 'mirror mode'. Make sure we reset the port offset for
-			 * the next device in the list
-			 */
+			 
 			port_bo = t_data->block_offset;
 		}
 	}
@@ -116,7 +108,7 @@ static void sdw_compute_master_ports(struct sdw_master_runtime *m_rt,
 				     SDW_PORT_FLOW_MODE_ISOCH,
 				     b_params->m_data_mode);
 
-		/* Check for first entry */
+		 
 		if (!(p_rt == list_first_entry(&m_rt->port_list,
 					       struct sdw_port_runtime,
 					       port_node))) {
@@ -141,7 +133,7 @@ static void _sdw_compute_port_params(struct sdw_bus *bus,
 	int hstop = bus->params.col - 1;
 	int port_bo, i;
 
-	/* Run loop for all groups to compute transport parameters */
+	 
 	for (i = 0; i < count; i++) {
 		port_bo = 1;
 
@@ -164,7 +156,7 @@ static int sdw_compute_group_params(struct sdw_bus *bus,
 	unsigned int rate, bps, ch;
 	int i, column_needed = 0;
 
-	/* Calculate bandwidth per group */
+	 
 	for (i = 0; i < count; i++) {
 		params[i].rate = rates[i];
 		params[i].full_bw = bus->params.curr_dr_freq / params[i].rate;
@@ -258,11 +250,7 @@ static int sdw_get_group_count(struct sdw_bus *bus,
 	return ret;
 }
 
-/**
- * sdw_compute_port_params: Compute transport and port parameters
- *
- * @bus: SDW Bus instance
- */
+ 
 static int sdw_compute_port_params(struct sdw_bus *bus)
 {
 	struct sdw_group_params *params = NULL;
@@ -282,7 +270,7 @@ static int sdw_compute_port_params(struct sdw_bus *bus)
 		goto out;
 	}
 
-	/* Compute transport parameters for grouped streams */
+	 
 	ret = sdw_compute_group_params(bus, params,
 				       &group.rates[0], group.count);
 	if (ret < 0)
@@ -326,11 +314,7 @@ static int sdw_select_row_col(struct sdw_bus *bus, int clk_freq)
 	return -EINVAL;
 }
 
-/**
- * sdw_compute_bus_params: Compute bus parameters
- *
- * @bus: SDW Bus instance
- */
+ 
 static int sdw_compute_bus_params(struct sdw_bus *bus)
 {
 	unsigned int max_dr_freq, curr_dr_freq = 0;
@@ -366,11 +350,7 @@ static int sdw_compute_bus_params(struct sdw_bus *bus)
 
 		break;
 
-		/*
-		 * TODO: Check all the Slave(s) port(s) audio modes and find
-		 * whether given clock rate is supported with glitchless
-		 * transition.
-		 */
+		 
 	}
 
 	if (i == clk_values) {
@@ -390,21 +370,17 @@ static int sdw_compute_bus_params(struct sdw_bus *bus)
 	return 0;
 }
 
-/**
- * sdw_compute_params: Compute bus, transport and port parameters
- *
- * @bus: SDW Bus instance
- */
+ 
 int sdw_compute_params(struct sdw_bus *bus)
 {
 	int ret;
 
-	/* Computes clock frequency, frame shape and frame frequency */
+	 
 	ret = sdw_compute_bus_params(bus);
 	if (ret < 0)
 		return ret;
 
-	/* Compute transport and port params */
+	 
 	ret = sdw_compute_port_params(bus);
 	if (ret < 0) {
 		dev_err(bus->dev, "Compute transport params failed: %d\n", ret);

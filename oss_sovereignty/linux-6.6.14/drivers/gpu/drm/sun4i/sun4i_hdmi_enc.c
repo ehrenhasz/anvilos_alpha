@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2016 Maxime Ripard
- *
- * Maxime Ripard <maxime.ripard@free-electrons.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/component.h>
@@ -130,27 +126,18 @@ static void sun4i_hdmi_mode_set(struct drm_encoder *encoder,
 	clk_set_rate(hdmi->mod_clk, mode->crtc_clock * 1000);
 	clk_set_rate(hdmi->tmds_clk, mode->crtc_clock * 1000);
 
-	/* Set input sync enable */
+	 
 	writel(SUN4I_HDMI_UNKNOWN_INPUT_SYNC,
 	       hdmi->base + SUN4I_HDMI_UNKNOWN_REG);
 
-	/*
-	 * Setup output pad (?) controls
-	 *
-	 * This is done here instead of at probe/bind time because
-	 * the controller seems to toggle some of the bits on its own.
-	 *
-	 * We can't just initialize the register there, we need to
-	 * protect the clock bits that have already been read out and
-	 * cached by the clock framework.
-	 */
+	 
 	val = readl(hdmi->base + SUN4I_HDMI_PAD_CTRL1_REG);
 	val &= SUN4I_HDMI_PAD_CTRL1_HALVE_CLK;
 	val |= hdmi->variant->pad_ctrl1_init_val;
 	writel(val, hdmi->base + SUN4I_HDMI_PAD_CTRL1_REG);
 	val = readl(hdmi->base + SUN4I_HDMI_PAD_CTRL1_REG);
 
-	/* Setup timing registers */
+	 
 	writel(SUN4I_HDMI_VID_TIMING_X(mode->hdisplay) |
 	       SUN4I_HDMI_VID_TIMING_Y(mode->vdisplay),
 	       hdmi->base + SUN4I_HDMI_VID_TIMING_ACT_REG);
@@ -185,10 +172,10 @@ static enum drm_mode_status sun4i_hdmi_mode_valid(struct drm_encoder *encoder,
 {
 	struct sun4i_hdmi *hdmi = drm_encoder_to_sun4i_hdmi(encoder);
 	unsigned long rate = mode->clock * 1000;
-	unsigned long diff = rate / 200; /* +-0.5% allowed by HDMI spec */
+	unsigned long diff = rate / 200;  
 	long rounded_rate;
 
-	/* 165 MHz is the typical max pixelclock frequency for HDMI <= 1.2 */
+	 
 	if (rate > 165000000)
 		return MODE_CLOCK_HIGH;
 	rounded_rate = clk_round_rate(hdmi->tmds_clk, rate);
@@ -290,7 +277,7 @@ static void sun4i_hdmi_cec_pin_low(struct cec_adapter *adap)
 {
 	struct sun4i_hdmi *hdmi = cec_get_drvdata(adap);
 
-	/* Start driving the CEC pin low */
+	 
 	writel(SUN4I_HDMI_CEC_ENABLE, hdmi->base + SUN4I_HDMI_CEC);
 }
 
@@ -298,10 +285,7 @@ static void sun4i_hdmi_cec_pin_high(struct cec_adapter *adap)
 {
 	struct sun4i_hdmi *hdmi = cec_get_drvdata(adap);
 
-	/*
-	 * Stop driving the CEC pin, the pull up will take over
-	 * unless another CEC device is driving the pin low.
-	 */
+	 
 	writel(0, hdmi->base + SUN4I_HDMI_CEC);
 }
 
@@ -315,7 +299,7 @@ static const struct cec_pin_ops sun4i_hdmi_cec_pin_ops = {
 #define SUN4I_HDMI_PAD_CTRL1_MASK	(GENMASK(24, 7) | GENMASK(5, 0))
 #define SUN4I_HDMI_PLL_CTRL_MASK	(GENMASK(31, 8) | GENMASK(3, 0))
 
-/* Only difference from sun5i is AMP is 4 instead of 6 */
+ 
 static const struct sun4i_hdmi_variant sun4i_variant = {
 	.pad_ctrl0_init_val	= SUN4I_HDMI_PAD_CTRL0_TXEN |
 				  SUN4I_HDMI_PAD_CTRL0_CKEN |
@@ -644,7 +628,7 @@ static int sun4i_hdmi_bind(struct device *dev, struct device *master,
 	cec_fill_conn_info_from_drm(&conn_info, &hdmi->connector);
 	cec_s_conn_info(hdmi->cec_adap, &conn_info);
 
-	/* There is no HPD interrupt, so we need to poll the controller */
+	 
 	hdmi->connector.polled = DRM_CONNECTOR_POLL_CONNECT |
 		DRM_CONNECTOR_POLL_DISCONNECT;
 

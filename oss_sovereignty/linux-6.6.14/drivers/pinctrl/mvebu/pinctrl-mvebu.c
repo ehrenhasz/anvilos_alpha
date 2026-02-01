@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Marvell MVEBU pinctrl core driver
- *
- * Authors: Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>
- *          Thomas Petazzoni <thomas.petazzoni@free-electrons.com>
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/gpio/driver.h>
@@ -196,7 +191,7 @@ static int mvebu_pinconf_group_set(struct pinctrl_dev *pctldev,
 		ret = grp->ctrl->mpp_set(grp->data, grp->pins[0], configs[i]);
 		if (ret)
 			return ret;
-	} /* for each config */
+	}  
 
 	return 0;
 }
@@ -237,7 +232,7 @@ static void mvebu_pinconf_group_dbg_show(struct pinctrl_dev *pctldev,
 			if (curr == &grp->settings[n])
 				continue;
 
-			/* skip unsupported settings for this variant */
+			 
 			if (pctl->variant &&
 			    !(pctl->variant & grp->settings[n].variant))
 				continue;
@@ -482,7 +477,7 @@ static int _add_function(struct mvebu_pinctrl_function *funcs, int *funcsize,
 		return -EOVERFLOW;
 
 	while (funcs->num_groups) {
-		/* function already there */
+		 
 		if (strcmp(funcs->name, name) == 0) {
 			funcs->num_groups++;
 			return -EEXIST;
@@ -490,7 +485,7 @@ static int _add_function(struct mvebu_pinctrl_function *funcs, int *funcsize,
 		funcs++;
 	}
 
-	/* append new unique function */
+	 
 	funcs->name = name;
 	funcs->num_groups = 1;
 	(*funcsize)--;
@@ -505,8 +500,7 @@ static int mvebu_pinctrl_build_functions(struct platform_device *pdev,
 	int num = 0, funcsize = pctl->desc.npins;
 	int n, s;
 
-	/* we allocate functions for number of pins and hope
-	 * there are fewer unique functions than pins available */
+	 
 	funcs = devm_kcalloc(&pdev->dev,
 			     funcsize, sizeof(struct mvebu_pinctrl_function),
 			     GFP_KERNEL);
@@ -518,12 +512,12 @@ static int mvebu_pinctrl_build_functions(struct platform_device *pdev,
 		for (s = 0; s < grp->num_settings; s++) {
 			int ret;
 
-			/* skip unsupported settings on this variant */
+			 
 			if (pctl->variant &&
 			    !(pctl->variant & grp->settings[s].variant))
 				continue;
 
-			/* check for unique functions and count groups */
+			 
 			ret = _add_function(funcs, &funcsize,
 					    grp->settings[s].name);
 			if (ret == -EOVERFLOW)
@@ -546,7 +540,7 @@ static int mvebu_pinctrl_build_functions(struct platform_device *pdev,
 			struct mvebu_pinctrl_function *f;
 			const char **groups;
 
-			/* skip unsupported settings on this variant */
+			 
 			if (pctl->variant &&
 			    !(pctl->variant & grp->settings[s].variant))
 				continue;
@@ -554,7 +548,7 @@ static int mvebu_pinctrl_build_functions(struct platform_device *pdev,
 			f = mvebu_pinctrl_find_function_by_name(pctl,
 							grp->settings[s].name);
 
-			/* allocate group name array if not done already */
+			 
 			if (!f->groups) {
 				f->groups = devm_kcalloc(&pdev->dev,
 						 f->num_groups,
@@ -564,7 +558,7 @@ static int mvebu_pinctrl_build_functions(struct platform_device *pdev,
 					return -ENOMEM;
 			}
 
-			/* find next free group name and assign current name */
+			 
 			groups = f->groups;
 			while (*groups)
 				groups++;
@@ -605,23 +599,18 @@ int mvebu_pinctrl_probe(struct platform_device *pdev)
 	pctl->dev = &pdev->dev;
 	platform_set_drvdata(pdev, pctl);
 
-	/* count controls and create names for mvebu generic
-	   register controls; also does sanity checks */
+	 
 	pctl->num_groups = 0;
 	pctl->desc.npins = 0;
 	for (n = 0; n < soc->ncontrols; n++) {
 		const struct mvebu_mpp_ctrl *ctrl = &soc->controls[n];
 
 		pctl->desc.npins += ctrl->npins;
-		/* initialize control's pins[] array */
+		 
 		for (k = 0; k < ctrl->npins; k++)
 			ctrl->pins[k] = ctrl->pid + k;
 
-		/*
-		 * We allow to pass controls with NULL name that we treat
-		 * as a range of one-pin groups with generic mvebu register
-		 * controls.
-		 */
+		 
 		if (!ctrl->name) {
 			pctl->num_groups += ctrl->npins;
 			noname += ctrl->npins;
@@ -641,9 +630,7 @@ int mvebu_pinctrl_probe(struct platform_device *pdev)
 		pdesc[n].number = n;
 	pctl->desc.pins = pdesc;
 
-	/*
-	 * allocate groups and name buffers for unnamed groups.
-	 */
+	 
 	size = pctl->num_groups * sizeof(*pctl->groups) + noname * 8;
 	p = devm_kzalloc(&pdev->dev, size, GFP_KERNEL);
 	if (!p)
@@ -652,7 +639,7 @@ int mvebu_pinctrl_probe(struct platform_device *pdev)
 	pctl->groups = p;
 	noname_buf = p + pctl->num_groups * sizeof(*pctl->groups);
 
-	/* assign mpp controls to groups */
+	 
 	gid = 0;
 	for (n = 0; n < soc->ncontrols; n++) {
 		const struct mvebu_mpp_ctrl *ctrl = &soc->controls[n];
@@ -666,11 +653,7 @@ int mvebu_pinctrl_probe(struct platform_device *pdev)
 		pctl->groups[gid].pins = ctrl->pins;
 		pctl->groups[gid].npins = ctrl->npins;
 
-		/*
-		 * We treat unnamed controls as a range of one-pin groups
-		 * with generic mvebu register controls. Use one group for
-		 * each in this range and assign a default group name.
-		 */
+		 
 		if (!ctrl->name) {
 			pctl->groups[gid].name = noname_buf;
 			pctl->groups[gid].npins = 1;
@@ -692,7 +675,7 @@ int mvebu_pinctrl_probe(struct platform_device *pdev)
 		gid++;
 	}
 
-	/* assign mpp modes to groups */
+	 
 	for (n = 0; n < soc->nmodes; n++) {
 		struct mvebu_mpp_mode *mode = &soc->modes[n];
 		struct mvebu_mpp_ctrl_setting *set = &mode->settings[0];
@@ -706,13 +689,13 @@ int mvebu_pinctrl_probe(struct platform_device *pdev)
 
 			num_settings++;
 
-			/* skip unsupported settings for this variant */
+			 
 			if (pctl->variant && !(pctl->variant & set->variant))
 				continue;
 
 			supp_settings++;
 
-			/* find gpio/gpo/gpi settings */
+			 
 			if (strcmp(set->name, "gpio") == 0)
 				set->flags = MVEBU_SETTING_GPI |
 					MVEBU_SETTING_GPO;
@@ -722,7 +705,7 @@ int mvebu_pinctrl_probe(struct platform_device *pdev)
 				set->flags = MVEBU_SETTING_GPI;
 		}
 
-		/* skip modes with no settings for this variant */
+		 
 		if (!supp_settings)
 			continue;
 
@@ -751,20 +734,14 @@ int mvebu_pinctrl_probe(struct platform_device *pdev)
 
 	dev_info(&pdev->dev, "registered pinctrl driver\n");
 
-	/* register gpio ranges */
+	 
 	for (n = 0; n < soc->ngpioranges; n++)
 		pinctrl_add_gpio_range(pctl->pctldev, &soc->gpioranges[n]);
 
 	return 0;
 }
 
-/*
- * mvebu_pinctrl_simple_mmio_probe - probe a simple mmio pinctrl
- * @pdev: platform device (with platform data already attached)
- *
- * Initialise a simple (single base address) mmio pinctrl driver,
- * assigning the MMIO base address to all mvebu mpp ctrl instances.
- */
+ 
 int mvebu_pinctrl_simple_mmio_probe(struct platform_device *pdev)
 {
 	struct mvebu_pinctrl_soc_info *soc = dev_get_platdata(&pdev->dev);

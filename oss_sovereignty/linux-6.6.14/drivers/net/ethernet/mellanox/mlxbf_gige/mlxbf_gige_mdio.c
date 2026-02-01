@@ -1,9 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0-only OR BSD-3-Clause
 
-/* MDIO support for Mellanox Gigabit Ethernet driver
- *
- * Copyright (C) 2020-2021 NVIDIA CORPORATION & AFFILIATES
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/bitfield.h>
@@ -105,12 +102,12 @@ static struct mlxbf_gige_mdio_gw mlxbf_gige_mdio_gw_t[] = {
 #define MLXBF_GIGE_MDIO_CORE_OD_SHIFT  0
 #define MLXBF_GIGE_MDIO_CORE_OD_MASK   GENMASK(3, 0)
 
-/* Support clause 22 */
+ 
 #define MLXBF_GIGE_MDIO_CL22_ST1	0x1
 #define MLXBF_GIGE_MDIO_CL22_WRITE	0x1
 #define MLXBF_GIGE_MDIO_CL22_READ	0x2
 
-/* Busy bit is set by software and cleared by hardware */
+ 
 #define MLXBF_GIGE_MDIO_SET_BUSY	0x1
 
 #define MLXBF_GIGE_BF2_COREPLL_ADDR 0x02800c30
@@ -131,7 +128,7 @@ static struct resource corepll_params[] = {
 	}
 };
 
-/* Returns core clock i1clk in Hz */
+ 
 static u64 calculate_i1clk(struct mlxbf_gige *priv)
 {
 	u8 core_od, core_r;
@@ -149,12 +146,7 @@ static u64 calculate_i1clk(struct mlxbf_gige *priv)
 	core_od = (reg2 & MLXBF_GIGE_MDIO_CORE_OD_MASK) >>
 		MLXBF_GIGE_MDIO_CORE_OD_SHIFT;
 
-	/* Compute PLL output frequency as follow:
-	 *
-	 *                                     CORE_F / 16384
-	 * freq_output = freq_reference * ----------------------------
-	 *                              (CORE_R + 1) * (CORE_OD + 1)
-	 */
+	 
 	freq_output = div_u64((MLXBF_GIGE_MDIO_FREQ_REFERENCE * core_f),
 			      MLXBF_GIGE_MDIO_COREPLL_CONST);
 	freq_output = div_u64(freq_output, (core_r + 1) * (core_od + 1));
@@ -162,17 +154,7 @@ static u64 calculate_i1clk(struct mlxbf_gige *priv)
 	return freq_output;
 }
 
-/* Formula for encoding the MDIO period. The encoded value is
- * passed to the MDIO config register.
- *
- * mdc_clk = 2*(val + 1)*(core clock in sec)
- *
- * i1clk is in Hz:
- * 400 ns = 2*(val + 1)*(1/i1clk)
- *
- * val = (((400/10^9) / (1/i1clk) / 2) - 1)
- * val = (400/2 * i1clk)/10^9 - 1
- */
+ 
 static u8 mdio_period_map(struct mlxbf_gige *priv)
 {
 	u8 mdio_period;
@@ -213,7 +195,7 @@ static int mlxbf_gige_mdio_read(struct mii_bus *bus, int phy_add, int phy_reg)
 	int ret;
 	u32 val;
 
-	/* Send mdio read request */
+	 
 	cmd = mlxbf_gige_mdio_create_cmd(priv->mdio_gw, 0, phy_add, phy_reg,
 					 MLXBF_GIGE_MDIO_CL22_READ);
 
@@ -229,10 +211,10 @@ static int mlxbf_gige_mdio_read(struct mii_bus *bus, int phy_add, int phy_reg)
 	}
 
 	ret = readl(priv->mdio_io + priv->mdio_gw->read_data_address);
-	/* Only return ad bits of the gw register */
+	 
 	ret &= priv->mdio_gw->read_data.mask;
 
-	/* The MDIO lock is set on read. To release it, clear gw register */
+	 
 	writel(0, priv->mdio_io + priv->mdio_gw->gw_address);
 
 	return ret;
@@ -246,17 +228,17 @@ static int mlxbf_gige_mdio_write(struct mii_bus *bus, int phy_add,
 	u32 cmd;
 	int ret;
 
-	/* Send mdio write request */
+	 
 	cmd = mlxbf_gige_mdio_create_cmd(priv->mdio_gw, val, phy_add, phy_reg,
 					 MLXBF_GIGE_MDIO_CL22_WRITE);
 	writel(cmd, priv->mdio_io + priv->mdio_gw->gw_address);
 
-	/* If the poll timed out, drop the request */
+	 
 	ret = readl_poll_timeout_atomic(priv->mdio_io + priv->mdio_gw->gw_address,
 					temp, !(temp & priv->mdio_gw->busy.mask),
 					5, 1000000);
 
-	/* The MDIO lock is set on read. To release it, clear gw register */
+	 
 	writel(0, priv->mdio_io + priv->mdio_gw->gw_address);
 
 	return ret;
@@ -298,14 +280,10 @@ int mlxbf_gige_mdio_probe(struct platform_device *pdev, struct mlxbf_gige *priv)
 	if (IS_ERR(priv->mdio_io))
 		return PTR_ERR(priv->mdio_io);
 
-	/* clk resource shared with other drivers so cannot use
-	 * devm_platform_ioremap_resource
-	 */
+	 
 	res = platform_get_resource(pdev, IORESOURCE_MEM, MLXBF_GIGE_RES_CLK);
 	if (!res) {
-		/* For backward compatibility with older ACPI tables, also keep
-		 * CLK resource internal to the driver.
-		 */
+		 
 		res = &corepll_params[priv->hw_version];
 	}
 

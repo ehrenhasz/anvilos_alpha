@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) STMicroelectronics SA 2015
- * Authors: Yannick Fertre <yannick.fertre@st.com>
- *          Hugues Fruchet <hugues.fruchet@st.com>
- */
+
+ 
 
 #include "hva.h"
 #include "hva-mem.h"
@@ -41,7 +37,7 @@ int hva_mem_alloc(struct hva_ctx *ctx, u32 size, const char *name,
 		"%s allocate %d bytes of HW memory @(virt=%p, phy=%pad): %s\n",
 		ctx->name, size, b->vaddr, &b->paddr, b->name);
 
-	/* return  hva buffer to user */
+	 
 	*buf = b;
 
 	return 0;

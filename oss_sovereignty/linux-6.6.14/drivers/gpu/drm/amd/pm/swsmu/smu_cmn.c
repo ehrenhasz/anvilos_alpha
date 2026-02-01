@@ -1,24 +1,4 @@
-/*
- * Copyright 2020 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- */
+ 
 
 #define SWSMU_CODE_LAYER_L4
 
@@ -27,11 +7,7 @@
 #include "smu_cmn.h"
 #include "soc15_common.h"
 
-/*
- * DO NOT use these for err/warn/info/debug messages.
- * Use dev_err, dev_warn, dev_info and dev_dbg instead.
- * They are more MGPU friendly.
- */
+ 
 #undef pr_err
 #undef pr_warn
 #undef pr_info
@@ -70,14 +46,7 @@ static void smu_cmn_read_arg(struct smu_context *smu,
 	*arg = RREG32(smu->param_reg);
 }
 
-/* Redefine the SMU error codes here.
- *
- * Note that these definitions are redundant and should be removed
- * when the SMU has exported a unified header file containing these
- * macros, which header file we can just include and use the SMU's
- * macros. At the moment, these error codes are defined by the SMU
- * per-ASIC unfortunately, yet we're a one driver for all ASICs.
- */
+ 
 #define SMU_RESP_NONE           0
 #define SMU_RESP_OK             1
 #define SMU_RESP_CMD_FAIL       0xFF
@@ -86,26 +55,7 @@ static void smu_cmn_read_arg(struct smu_context *smu,
 #define SMU_RESP_BUSY_OTHER     0xFC
 #define SMU_RESP_DEBUG_END      0xFB
 
-/**
- * __smu_cmn_poll_stat -- poll for a status from the SMU
- * @smu: a pointer to SMU context
- *
- * Returns the status of the SMU, which could be,
- *    0, the SMU is busy with your command;
- *    1, execution status: success, execution result: success;
- * 0xFF, execution status: success, execution result: failure;
- * 0xFE, unknown command;
- * 0xFD, valid command, but bad (command) prerequisites;
- * 0xFC, the command was rejected as the SMU is busy;
- * 0xFB, "SMC_Result_DebugDataDumpEnd".
- *
- * The values here are not defined by macros, because I'd rather we
- * include a single header file which defines them, which is
- * maintained by the SMU FW team, so that we're impervious to firmware
- * changes. At the moment those values are defined in various header
- * files, one for each ASIC, yet here we're a single ASIC-agnostic
- * interface. Such a change can be followed-up by a subsequent patch.
- */
+ 
 static u32 __smu_cmn_poll_stat(struct smu_context *smu)
 {
 	struct amdgpu_device *adev = smu->adev;
@@ -143,14 +93,10 @@ static void __smu_cmn_reg_print_error(struct smu_context *smu,
 		}
 		break;
 	case SMU_RESP_OK:
-		/* The SMU executed the command. It completed with a
-		 * successful result.
-		 */
+		 
 		break;
 	case SMU_RESP_CMD_FAIL:
-		/* The SMU executed the command. It completed with an
-		 * unsuccessful result.
-		 */
+		 
 		break;
 	case SMU_RESP_CMD_UNKNOWN:
 		dev_err_ratelimited(adev->dev,
@@ -185,38 +131,30 @@ static int __smu_cmn_reg2errno(struct smu_context *smu, u32 reg_c2pmsg_90)
 
 	switch (reg_c2pmsg_90) {
 	case SMU_RESP_NONE:
-		/* The SMU is busy--still executing your command.
-		 */
+		 
 		res = -ETIME;
 		break;
 	case SMU_RESP_OK:
 		res = 0;
 		break;
 	case SMU_RESP_CMD_FAIL:
-		/* Command completed successfully, but the command
-		 * status was failure.
-		 */
+		 
 		res = -EIO;
 		break;
 	case SMU_RESP_CMD_UNKNOWN:
-		/* Unknown command--ignored by the SMU.
-		 */
+		 
 		res = -EOPNOTSUPP;
 		break;
 	case SMU_RESP_CMD_BAD_PREREQ:
-		/* Valid command--bad prerequisites.
-		 */
+		 
 		res = -EINVAL;
 		break;
 	case SMU_RESP_BUSY_OTHER:
-		/* The SMU is busy with other commands. The client
-		 * should retry in 10 us.
-		 */
+		 
 		res = -EBUSY;
 		break;
 	default:
-		/* Unknown or debug response from the SMU.
-		 */
+		 
 		res = -EREMOTEIO;
 		break;
 	}
@@ -247,19 +185,7 @@ static int __smu_cmn_send_debug_msg(struct smu_context *smu,
 
 	return 0;
 }
-/**
- * smu_cmn_send_msg_without_waiting -- send the message; don't wait for status
- * @smu: pointer to an SMU context
- * @msg_index: message index
- * @param: message parameter to send to the SMU
- *
- * Send a message to the SMU with the parameter passed. Do not wait
- * for status/result of the message, thus the "without_waiting".
- *
- * Return 0 on success, -errno on error if we weren't able to _send_
- * the message for some reason. See __smu_cmn_reg2errno() for details
- * of the -errno.
- */
+ 
 int smu_cmn_send_msg_without_waiting(struct smu_context *smu,
 				     uint16_t msg_index,
 				     uint32_t param)
@@ -288,16 +214,7 @@ Out:
 	return res;
 }
 
-/**
- * smu_cmn_wait_for_response -- wait for response from the SMU
- * @smu: pointer to an SMU context
- *
- * Wait for status from the SMU.
- *
- * Return 0 on success, -errno on error, indicating the execution
- * status and result of the message being waited for. See
- * __smu_cmn_reg2errno() for details of the -errno.
- */
+ 
 int smu_cmn_wait_for_response(struct smu_context *smu)
 {
 	u32 reg;
@@ -315,38 +232,7 @@ int smu_cmn_wait_for_response(struct smu_context *smu)
 	return res;
 }
 
-/**
- * smu_cmn_send_smc_msg_with_param -- send a message with parameter
- * @smu: pointer to an SMU context
- * @msg: message to send
- * @param: parameter to send to the SMU
- * @read_arg: pointer to u32 to return a value from the SMU back
- *            to the caller
- *
- * Send the message @msg with parameter @param to the SMU, wait for
- * completion of the command, and return back a value from the SMU in
- * @read_arg pointer.
- *
- * Return 0 on success, -errno when a problem is encountered sending
- * message or receiving reply. If there is a PCI bus recovery or
- * the destination is a virtual GPU which does not allow this message
- * type, the message is simply dropped and success is also returned.
- * See __smu_cmn_reg2errno() for details of the -errno.
- *
- * If we weren't able to send the message to the SMU, we also print
- * the error to the standard log.
- *
- * Command completion status is printed only if the -errno is
- * -EREMOTEIO, indicating that the SMU returned back an
- * undefined/unknown/unspecified result. All other cases are
- * well-defined, not printed, but instead given back to the client to
- * decide what further to do.
- *
- * The return value, @read_arg is read back regardless, to give back
- * more information to the client, which on error would most likely be
- * @param, but we can't assume that. This also eliminates more
- * conditionals.
- */
+ 
 int smu_cmn_send_smc_msg_with_param(struct smu_context *smu,
 				    enum smu_message_type msg,
 				    uint32_t param,
@@ -530,11 +416,7 @@ int smu_cmn_feature_is_enabled(struct smu_context *smu,
 		return 0;
 	}
 
-	/*
-	 * For Renoir and Cyan Skillfish, they are assumed to have all features
-	 * enabled. Also considering they have no feature_map available, the
-	 * check here can avoid unwanted feature_map check below.
-	 */
+	 
 	if (enabled_features == ULLONG_MAX)
 		return 1;
 
@@ -783,19 +665,7 @@ int smu_cmn_set_pp_feature_mask(struct smu_context *smu,
 	return ret;
 }
 
-/**
- * smu_cmn_disable_all_features_with_exception - disable all dpm features
- *                                               except this specified by
- *                                               @mask
- *
- * @smu:               smu_context pointer
- * @mask:              the dpm feature which should not be disabled
- *                     SMU_FEATURE_COUNT: no exception, all dpm features
- *                     to disable
- *
- * Returns:
- * 0 on success or a negative error code on failure.
- */
+ 
 int smu_cmn_disable_all_features_with_exception(struct smu_context *smu,
 						enum smu_feature_mask mask)
 {
@@ -877,10 +747,7 @@ int smu_cmn_update_table(struct smu_context *smu,
 
 	if (drv2smu) {
 		memcpy(table->cpu_addr, table_data, table_size);
-		/*
-		 * Flush hdp cache: to guard the content seen by
-		 * GPU is consitent with CPU.
-		 */
+		 
 		amdgpu_asic_flush_hdp(adev, NULL);
 	}
 
@@ -1048,10 +915,7 @@ bool smu_cmn_is_audio_func_enabled(struct amdgpu_device *adev)
 	struct pci_dev *p = NULL;
 	bool snd_driver_loaded;
 
-	/*
-	 * If the ASIC comes with no audio function, we always assume
-	 * it is "enabled".
-	 */
+	 
 	p = pci_get_domain_bus_and_slot(pci_domain_nr(adev->pdev->bus),
 			adev->pdev->bus->number, 1);
 	if (!p)

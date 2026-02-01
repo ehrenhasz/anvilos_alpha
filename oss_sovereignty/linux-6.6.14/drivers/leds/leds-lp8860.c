@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * TI LP8860 4-Channel LED Driver
- *
- * Copyright (C) 2014 Texas Instruments
- *
- * Author: Dan Murphy <dmurphy@ti.com>
- */
+
+ 
 
 #include <linux/i2c.h>
 #include <linux/init.h>
@@ -83,16 +77,7 @@
 
 #define LP8860_NAME			"lp8860"
 
-/**
- * struct lp8860_led
- * @lock: Lock for reading/writing the device
- * @client: Pointer to the I2C client
- * @led_dev: led class device pointer
- * @regmap: Devices register map
- * @eeprom_regmap: EEPROM register map
- * @enable_gpio: VDDIO/EN gpio to enable communication interface
- * @regulator: LED supply regulator pointer
- */
+ 
 struct lp8860_led {
 	struct mutex lock;
 	struct i2c_client *client;
@@ -193,7 +178,7 @@ static int lp8860_fault_check(struct lp8860_led *led)
 
 	fault |= read_buf;
 
-	/* Attempt to clear any faults */
+	 
 	if (fault)
 		ret = regmap_write(led->regmap, LP8860_FAULT_CLEAR,
 			LP8860_CLEAR_FAULTS);

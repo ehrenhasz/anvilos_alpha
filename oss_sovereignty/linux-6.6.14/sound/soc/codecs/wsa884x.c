@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2015-2021, The Linux Foundation. All rights reserved.
- * Copyright (c) 2023, Linaro Ltd.
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/device.h>
@@ -682,7 +679,7 @@
 			SNDRV_PCM_RATE_32000 | SNDRV_PCM_RATE_48000 |\
 			SNDRV_PCM_RATE_96000 | SNDRV_PCM_RATE_192000 |\
 			SNDRV_PCM_RATE_384000)
-/* Fractional Rates */
+ 
 #define WSA884X_FRAC_RATES (SNDRV_PCM_RATE_44100 | SNDRV_PCM_RATE_88200 |\
 				SNDRV_PCM_RATE_176400 | SNDRV_PCM_RATE_352800)
 
@@ -1336,10 +1333,7 @@ static const struct reg_sequence wsa884x_reg_init[] = {
 			     FIELD_PREP_CONST(WSA884X_BOP2_PROG_BOP2_HYST_MASK, 0x6) },
 	{ WSA884X_REF_CTRL, (0xd2 & ~WSA884X_REF_CTRL_BG_RDY_SEL_MASK) |
 			    FIELD_PREP_CONST(WSA884X_REF_CTRL_BG_RDY_SEL_MASK, 0x1) },
-	/*
-	 * Downstream suggests for batteries different than 1-Stacked (1S):
-	 * { WSA884X_TOP_CTRL1, 0xd3 & ~WSA884X_TOP_CTRL1_OCP_LOWVBAT_ITH_EN_MASK },
-	 */
+	 
 	{ WSA884X_STB_CTRL1, (0x42 & ~WSA884X_STB_CTRL1_SLOPE_COMP_CURRENT_MASK) |
 			     FIELD_PREP_CONST(WSA884X_STB_CTRL1_SLOPE_COMP_CURRENT_MASK, 0xd) },
 	{ WSA884X_CURRENT_LIMIT, (0x54 & ~WSA884X_CURRENT_LIMIT_CURRENT_LIMIT_MASK) |
@@ -1351,7 +1345,7 @@ static const struct reg_sequence wsa884x_reg_init[] = {
 	{ WSA884X_CKWD_CTL_1, FIELD_PREP_CONST(WSA884X_CKWD_CTL_1_VPP_SW_CTL_MASK, 0x0) |
 			      FIELD_PREP_CONST(WSA884X_CKWD_CTL_1_CKWD_VCOMP_VREF_SEL_MASK, 0x13) },
 	{ WSA884X_PA_FSM_CTL1, (0xfe & ~WSA884X_PA_FSM_CTL1_NOISE_GATE_BLOCK_MASK) |
-			       FIELD_PREP_CONST(WSA884X_PA_FSM_CTL1_NOISE_GATE_BLOCK_MASK, 0x4) }, /* == 0xfe */
+			       FIELD_PREP_CONST(WSA884X_PA_FSM_CTL1_NOISE_GATE_BLOCK_MASK, 0x4) },  
 	{ WSA884X_VBAT_THRM_FLT_CTL, (0x7f & ~WSA884X_VBAT_THRM_FLT_CTL_VBAT_COEF_SEL_MASK) |
 				     FIELD_PREP_CONST(WSA884X_VBAT_THRM_FLT_CTL_VBAT_COEF_SEL_MASK, 0x4) },
 	{ WSA884X_VBAT_CAL_CTL, FIELD_PREP_CONST(WSA884X_VBAT_CAL_CTL_RESERVE_MASK, 0x2) |
@@ -1377,14 +1371,11 @@ static const struct reg_sequence wsa884x_reg_init[] = {
 	{ WSA884X_CDC_SPK_DSM_R5, 0x8b },
 	{ WSA884X_CDC_SPK_DSM_R6, 0x9b },
 	{ WSA884X_CDC_SPK_DSM_R7, 0x3f },
-	/* Speaker mode by default */
+	 
 	{ WSA884X_DRE_CTL_0, FIELD_PREP_CONST(WSA884X_DRE_CTL_0_PROG_DELAY_MASK, 0x7) },
 	{ WSA884X_CLSH_CTL_0, (0x37 & ~WSA884X_CLSH_CTL_0_DLY_CODE_MASK) |
 			      FIELD_PREP_CONST(WSA884X_CLSH_CTL_0_DLY_CODE_MASK, 0x6) },
-	/*
-	 * WSA884X_CLSH_VTH values for speaker mode with G_21_DB system gain,
-	 * battery 1S and rload 8 Ohms.
-	 */
+	 
 	{ WSA884X_CLSH_VTH1, WSA884X_VTH_TO_REG(863), },
 	{ WSA884X_CLSH_VTH2, WSA884X_VTH_TO_REG(918), },
 	{ WSA884X_CLSH_VTH3, WSA884X_VTH_TO_REG(980), },
@@ -1410,22 +1401,14 @@ static void wsa884x_set_gain_parameters(struct wsa884x_priv *wsa884x)
 	struct regmap *regmap = wsa884x->regmap;
 	unsigned int min_gain, igain, vgain, comp_offset;
 
-	/*
-	 * Downstream sets gain parameters customized per boards per use-case.
-	 * Choose here some sane values matching knowon users, like QRD8550
-	 * board:.
-	 *
-	 * Values match here downstream:
-	 * For WSA884X_RECEIVER - G_7P5_DB system gain
-	 * For WSA884X_SPEAKER - G_21_DB system gain
-	 */
+	 
 	if (wsa884x->dev_mode == WSA884X_RECEIVER) {
 		comp_offset = COMP_OFFSET4;
 		min_gain = G_M6_DB;
 		igain = ISENSE_18_DB;
 		vgain = VSENSE_M12_DB;
 	} else {
-		/* WSA884X_SPEAKER */
+		 
 		comp_offset = COMP_OFFSET0;
 		min_gain = G_0_DB;
 		igain = ISENSE_12_DB;
@@ -1471,7 +1454,7 @@ static void wsa884x_init(struct wsa884x_priv *wsa884x)
 	wo_ctl_0 = 0xc;
 	wo_ctl_0 |= FIELD_PREP(WSA884X_ANA_WO_CTL_0_DAC_CM_CLAMP_EN_MASK,
 			       WSA884X_ANA_WO_CTL_0_DAC_CM_CLAMP_EN_MODE_SPEAKER);
-	/* Assume that compander is enabled by default unless it is haptics sku */
+	 
 	if (wsa884x->variant == WSA884X_OTP_ID_WSA8845H)
 		wo_ctl_0 |= FIELD_PREP(WSA884X_ANA_WO_CTL_0_PA_AUX_GAIN_MASK,
 				       WSA884X_ANA_WO_CTL_0_PA_AUX_18_DB);
@@ -1618,7 +1601,7 @@ static void wsa884x_spkr_post_pmu(struct snd_soc_component *component,
 					      WSA884X_PWM_CLK_CTL_PWM_CLK_FREQ_SEL_MASK,
 					      0x1);
 	} else {
-		/* WSA884X_SPEAKER */
+		 
 		snd_soc_component_write_field(component, WSA884X_DRE_CTL_0,
 					      WSA884X_DRE_CTL_0_PROG_DELAY_MASK, 0xf);
 	}
@@ -1863,7 +1846,7 @@ static int wsa884x_probe(struct sdw_slave *pdev,
 	pdev->prop.sink_dpn_prop = wsa884x_sink_dpn_prop;
 	pdev->prop.scp_int1_mask = SDW_SCP_INT1_BUS_CLASH | SDW_SCP_INT1_PARITY;
 
-	/* Bring out of reset */
+	 
 	gpiod_direction_output(wsa884x->sd_n, 0);
 	ret = devm_add_action_or_reset(dev, wsa884x_gpio_powerdown, wsa884x->sd_n);
 	if (ret)
@@ -1874,7 +1857,7 @@ static int wsa884x_probe(struct sdw_slave *pdev,
 		return dev_err_probe(dev, PTR_ERR(wsa884x->regmap),
 				     "regmap_init failed\n");
 
-	/* Start in cache-only until device is enumerated */
+	 
 	regcache_cache_only(wsa884x->regmap, true);
 	wsa884x->hw_init = true;
 

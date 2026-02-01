@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2016-2018 Etnaviv Project
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/dma-mapping.h>
@@ -30,10 +28,10 @@
 struct etnaviv_iommuv2_context {
 	struct etnaviv_iommu_context base;
 	unsigned short id;
-	/* M(aster) TLB aka first level pagetable */
+	 
 	u32 *mtlb_cpu;
 	dma_addr_t mtlb_dma;
-	/* S(lave) TLB aka second level pagetable */
+	 
 	u32 *stlb_cpu[MMUv2_MAX_STLB_ENTRIES];
 	dma_addr_t stlb_dma[MMUv2_MAX_STLB_ENTRIES];
 };
@@ -168,7 +166,7 @@ static void etnaviv_iommuv2_restore_nonsec(struct etnaviv_gpu *gpu,
 	struct etnaviv_iommuv2_context *v2_context = to_v2_context(context);
 	u16 prefetch;
 
-	/* If the MMU is already enabled the state is still there. */
+	 
 	if (gpu_read(gpu, VIVS_MMUv2_CONTROL) & VIVS_MMUv2_CONTROL_ENABLE)
 		return;
 
@@ -192,7 +190,7 @@ static void etnaviv_iommuv2_restore_sec(struct etnaviv_gpu *gpu,
 	struct etnaviv_iommuv2_context *v2_context = to_v2_context(context);
 	u16 prefetch;
 
-	/* If the MMU is already enabled the state is still there. */
+	 
 	if (gpu_read(gpu, VIVS_MMUv2_SEC_CONTROL) & VIVS_MMUv2_SEC_CONTROL_ENABLE)
 		return;
 
@@ -219,7 +217,7 @@ static void etnaviv_iommuv2_restore_sec(struct etnaviv_gpu *gpu,
 	context->global->v2.pta_cpu[v2_context->id] = v2_context->mtlb_dma |
 				 	 VIVS_MMUv2_CONFIGURATION_MODE_MODE4_K;
 
-	/* trigger a PTA load through the FE */
+	 
 	prefetch = etnaviv_buffer_config_pta(gpu, v2_context->id);
 	etnaviv_gpu_start_fe(gpu, (u32)etnaviv_cmdbuf_get_pa(&gpu->buffer),
 			     prefetch);

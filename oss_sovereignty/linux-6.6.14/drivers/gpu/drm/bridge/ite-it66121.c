@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2020 BayLibre, SAS
- * Author: Phong LE <ple@baylibre.com>
- * Copyright (C) 2018-2019, Artem Mygaiev
- * Copyright (C) 2017, Fresco Logic, Incorporated.
- *
- */
+
+ 
 
 #include <linux/media-bus-format.h>
 #include <linux/module.h>
@@ -282,7 +276,7 @@
 #define IT66121_AUD_SWL_16BIT			0x2
 #define IT66121_AUD_SWL_NOT_INDICATED		0x0
 
-#define IT66121_AFE_CLK_HIGH			80000 /* Khz */
+#define IT66121_AFE_CLK_HIGH			80000  
 
 enum chip_id {
 	ID_IT6610,
@@ -303,7 +297,7 @@ struct it66121_ctx {
 	struct gpio_desc *gpio_reset;
 	struct i2c_client *client;
 	u32 bus_width;
-	struct mutex lock; /* Protects fields below and device registers */
+	struct mutex lock;  
 	struct hdmi_avi_infoframe hdmi_avi_infoframe;
 	struct {
 		struct platform_device *pdev;
@@ -353,7 +347,7 @@ static inline int it66121_fire_afe(struct it66121_ctx *ctx)
 	return regmap_write(ctx->regmap, IT66121_AFE_DRV_REG, 0);
 }
 
-/* TOFIX: Handle YCbCr Input & Output */
+ 
 static int it66121_configure_input(struct it66121_ctx *ctx)
 {
 	int ret;
@@ -369,14 +363,7 @@ static int it66121_configure_input(struct it66121_ctx *ctx)
 	return regmap_write(ctx->regmap, IT66121_INPUT_CSC_REG, IT66121_INPUT_CSC_NO_CONV);
 }
 
-/**
- * it66121_configure_afe() - Configure the analog front end
- * @ctx: it66121_ctx object
- * @mode: mode to configure
- *
- * RETURNS:
- * zero if success, a negative error code otherwise.
- */
+ 
 static int it66121_configure_afe(struct it66121_ctx *ctx,
 				 const struct drm_display_mode *mode)
 {
@@ -443,7 +430,7 @@ static int it66121_configure_afe(struct it66121_ctx *ctx,
 		}
 	}
 
-	/* Clear reset flags */
+	 
 	ret = regmap_write_bits(ctx->regmap, IT66121_SW_RST_REG,
 				IT66121_SW_RST_REF | IT66121_SW_RST_VID, 0);
 	if (ret)
@@ -646,7 +633,7 @@ static int it66121_bridge_attach(struct drm_bridge *bridge,
 	if (ret)
 		return ret;
 
-	/* Per programming manual, sleep here for bridge to settle */
+	 
 	msleep(50);
 
 	return 0;
@@ -683,7 +670,7 @@ static u32 *it66121_bridge_atomic_get_output_bus_fmts(struct drm_bridge *bridge,
 	if (!output_fmts)
 		return NULL;
 
-	/* TOFIX handle more than MEDIA_BUS_FMT_RGB888_1X24 as output format */
+	 
 	output_fmts[0] =  MEDIA_BUS_FMT_RGB888_1X24;
 	*num_output_fmts = 1;
 
@@ -710,10 +697,10 @@ static u32 *it66121_bridge_atomic_get_input_bus_fmts(struct drm_bridge *bridge,
 		return NULL;
 
 	if (ctx->bus_width == 12)
-		/* IT66121FN Datasheet specifies Little-Endian ordering */
+		 
 		input_fmts[0] = MEDIA_BUS_FMT_RGB888_2X12_LE;
 	else
-		/* TOFIX support more input bus formats in 24bit width */
+		 
 		input_fmts[0] = MEDIA_BUS_FMT_RGB888_1X24;
 	*num_input_fmts = 1;
 
@@ -749,7 +736,7 @@ static int it66121_bridge_check(struct drm_bridge *bridge,
 	struct it66121_ctx *ctx = container_of(bridge, struct it66121_ctx, bridge);
 
 	if (ctx->info->id == ID_IT6610) {
-		/* The IT6610 only supports these settings */
+		 
 		bridge_state->input_bus_cfg.flags |= DRM_BUS_FLAG_DE_HIGH |
 			DRM_BUS_FLAG_PIXDATA_DRIVE_NEGEDGE;
 		bridge_state->input_bus_cfg.flags &=
@@ -785,7 +772,7 @@ void it66121_bridge_mode_set(struct drm_bridge *bridge,
 		goto unlock;
 	}
 
-	/* Write new AVI infoframe packet */
+	 
 	ret = regmap_bulk_write(ctx->regmap, IT66121_AVIINFO_DB1_REG,
 				&buf[HDMI_INFOFRAME_HEADER_SIZE],
 				HDMI_AVI_INFOFRAME_SIZE);
@@ -795,12 +782,12 @@ void it66121_bridge_mode_set(struct drm_bridge *bridge,
 	if (regmap_write(ctx->regmap, IT66121_AVIINFO_CSUM_REG, buf[3]))
 		goto unlock;
 
-	/* Enable AVI infoframe */
+	 
 	if (regmap_write(ctx->regmap, IT66121_AVI_INFO_PKT_REG,
 			 IT66121_AVI_INFO_PKT_ON | IT66121_AVI_INFO_PKT_RPT))
 		goto unlock;
 
-	/* Set TX mode to HDMI */
+	 
 	if (regmap_write(ctx->regmap, IT66121_HDMI_MODE_REG, IT66121_HDMI_MODE_HDMI))
 		goto unlock;
 
@@ -1253,7 +1240,7 @@ static int it66121_audio_hw_params(struct device *dev, void *data,
 		goto out;
 	}
 
-	// Set audio clock recovery (N/CTS)
+	
 	ret = regmap_write(ctx->regmap, IT66121_CLK_CTRL0_REG,
 			   IT66121_CLK_CTRL0_AUTO_OVER_SAMPLING |
 			   IT66121_CLK_CTRL0_EXT_MCLK_256FS |
@@ -1262,7 +1249,7 @@ static int it66121_audio_hw_params(struct device *dev, void *data,
 		goto out;
 
 	ret = regmap_write_bits(ctx->regmap, IT66121_AUD_CTRL0_REG,
-				IT66121_AUD_CTRL0_AUD_SEL, 0); // remove spdif selection
+				IT66121_AUD_CTRL0_AUD_SEL, 0); 
 	if (ret)
 		goto out;
 
@@ -1303,14 +1290,14 @@ static int it66121_audio_hw_params(struct device *dev, void *data,
 		goto out;
 	}
 
-	// Set audio format register (except audio channel enable)
+	
 	ret = it661221_set_lpcm_audio(ctx, (channels + 1) / 2, sample_width);
 	if (ret) {
 		dev_err(dev, "Failed to set LPCM audio: %d\n", ret);
 		goto out;
 	}
 
-	// Set audio channel status
+	
 	iec60958_chstat[0] = 0;
 	if ((channels + 1) / 2 == 1)
 		iec60958_chstat[0] |= 0x1;
@@ -1360,7 +1347,7 @@ static int it66121_audio_hw_params(struct device *dev, void *data,
 		goto out;
 	}
 
-	// Enable audio channel enable while input clock stable (if SPDIF).
+	
 	ret = it661221_audio_ch_enable(ctx, true);
 	if (ret) {
 		dev_err(dev, "Failed to enable audio channel: %d\n", ret);
@@ -1448,7 +1435,7 @@ static int it66121_audio_get_eld(struct device *dev, void *data,
 
 	mutex_lock(&ctx->lock);
 	if (!ctx->connector) {
-		/* Pass en empty ELD if connector not available */
+		 
 		dev_dbg(dev, "No connector present, passing empty EDID data");
 		memset(buf, 0, len);
 	} else {
@@ -1473,7 +1460,7 @@ static int it66121_audio_codec_init(struct it66121_ctx *ctx, struct device *dev)
 {
 	struct hdmi_codec_pdata codec_data = {
 		.ops = &it66121_audio_codec_ops,
-		.i2s = 1, /* Only i2s support for now */
+		.i2s = 1,  
 		.spdif = 0,
 		.max_i2s_channels = 8,
 	};
@@ -1575,7 +1562,7 @@ static int it66121_probe(struct i2c_client *client)
 	regmap_read(ctx->regmap, IT66121_DEVICE_ID0_REG, &device_ids[0]);
 	regmap_read(ctx->regmap, IT66121_DEVICE_ID1_REG, &device_ids[1]);
 
-	/* Revision is shared with DEVICE_ID1 */
+	 
 	revision_id = FIELD_GET(IT66121_REVISION_MASK, device_ids[1]);
 	device_ids[1] &= IT66121_DEVICE_ID1_MASK;
 

@@ -1,26 +1,4 @@
-/* Provide a sys/socket header file for systems lacking it (read: MinGW)
-   and for systems where it is incomplete.
-   Copyright (C) 2005-2023 Free Software Foundation, Inc.
-   Written by Simon Josefsson.
-
-   This file is free software: you can redistribute it and/or modify
-   it under the terms of the GNU Lesser General Public License as
-   published by the Free Software Foundation; either version 2.1 of the
-   License, or (at your option) any later version.
-
-   This file is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU Lesser General Public License for more details.
-
-   You should have received a copy of the GNU Lesser General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* This file is supposed to be used on platforms that lack <sys/socket.h>,
-   on platforms where <sys/socket.h> cannot be included standalone, and on
-   platforms where <sys/socket.h> does not provide all necessary definitions.
-   It is intended to provide definitions and prototypes needed by an
-   application.  */
+ 
 
 #if __GNUC__ >= 3
 @PRAGMA_SYSTEM_HEADER@
@@ -28,16 +6,12 @@
 @PRAGMA_COLUMNS@
 
 #if defined _GL_ALREADY_INCLUDING_SYS_SOCKET_H
-/* Special invocation convention:
-   - On Cygwin 1.5.x we have a sequence of nested includes
-     <sys/socket.h> -> <cygwin/socket.h> -> <asm/socket.h> -> <cygwin/if.h>,
-     and the latter includes <sys/socket.h>.  In this situation, the functions
-     are not yet declared, therefore we cannot provide the C++ aliases.  */
+ 
 
 #@INCLUDE_NEXT@ @NEXT_SYS_SOCKET_H@
 
 #else
-/* Normal invocation convention.  */
+ 
 
 #ifndef _@GUARD_PREFIX@_SYS_SOCKET_H
 
@@ -45,15 +19,13 @@
 
 # define _GL_ALREADY_INCLUDING_SYS_SOCKET_H
 
-/* On many platforms, <sys/socket.h> assumes prior inclusion of
-   <sys/types.h>.  */
+ 
 # include <sys/types.h>
 
-/* On FreeBSD 6.4, <sys/socket.h> defines some macros that assume that NULL
-   is defined.  */
+ 
 # include <stddef.h>
 
-/* The include_next requires a split double-inclusion guard.  */
+ 
 # @INCLUDE_NEXT@ @NEXT_SYS_SOCKET_H@
 
 # undef _GL_ALREADY_INCLUDING_SYS_SOCKET_H
@@ -63,8 +35,7 @@
 #ifndef _@GUARD_PREFIX@_SYS_SOCKET_H
 #define _@GUARD_PREFIX@_SYS_SOCKET_H
 
-/* This file uses _GL_INLINE_HEADER_BEGIN, _GL_INLINE, GNULIB_POSIXCHECK,
-   HAVE_RAW_DECL_*, alignof.  */
+ 
 #if !_GL_CONFIG_H_INCLUDED
  #error "Please include config.h first."
 #endif
@@ -74,15 +45,15 @@ _GL_INLINE_HEADER_BEGIN
 # define _GL_SYS_SOCKET_INLINE _GL_INLINE
 #endif
 
-/* The definitions of _GL_FUNCDECL_RPL etc. are copied here.  */
+ 
 
-/* The definition of _GL_ARG_NONNULL is copied here.  */
+ 
 
-/* The definition of _GL_WARN_ON_USE is copied here.  */
+ 
 
 #if !@HAVE_SA_FAMILY_T@
 # if !GNULIB_defined_sa_family_t
-/* On OS/2 kLIBC, sa_family_t is unsigned char unless TCPV40HDRS is defined. */
+ 
 #  if !defined __KLIBC__ || defined TCPV40HDRS
 typedef unsigned short  sa_family_t;
 #  else
@@ -93,15 +64,14 @@ typedef unsigned char   sa_family_t;
 #endif
 
 #if @HAVE_STRUCT_SOCKADDR_STORAGE@
-/* Make the 'struct sockaddr_storage' field 'ss_family' visible on AIX 7.1.  */
+ 
 # if !@HAVE_STRUCT_SOCKADDR_STORAGE_SS_FAMILY@
 #  ifndef ss_family
 #   define ss_family __ss_family
 #  endif
 # endif
 #else
-/* Code taken from glibc sysdeps/unix/sysv/linux/bits/socket.h on
-   2009-05-08, licensed under LGPLv2.1+, plus portability fixes. */
+ 
 # define __ss_aligntype unsigned long int
 # define _SS_SIZE 256
 # define _SS_PADSIZE \
@@ -113,8 +83,8 @@ typedef unsigned char   sa_family_t;
 # if !GNULIB_defined_struct_sockaddr_storage
 struct sockaddr_storage
 {
-  sa_family_t ss_family;      /* Address family, etc.  */
-  __ss_aligntype __ss_align;  /* Force desired alignment.  */
+  sa_family_t ss_family;       
+  __ss_aligntype __ss_align;   
   char __ss_padding[_SS_PADSIZE];
 };
 #  define GNULIB_defined_struct_sockaddr_storage 1
@@ -122,17 +92,17 @@ struct sockaddr_storage
 
 #endif
 
-/* Get struct iovec.  */
-/* But avoid namespace pollution on glibc systems.  */
+ 
+ 
 #if ! defined __GLIBC__
 # include <sys/uio.h>
 #endif
 
 #if @HAVE_SYS_SOCKET_H@
 
-/* A platform that has <sys/socket.h>.  */
+ 
 
-/* For shutdown().  */
+ 
 # if !defined SHUT_RD
 #  define SHUT_RD 0
 # endif
@@ -143,7 +113,7 @@ struct sockaddr_storage
 #  define SHUT_RDWR 2
 # endif
 
-# ifdef __VMS                        /* OpenVMS */
+# ifdef __VMS                         
 #  ifndef CMSG_SPACE
 #   define CMSG_SPACE(length) _CMSG_SPACE(length)
 #  endif
@@ -158,22 +128,7 @@ struct sockaddr_storage
 #  error "Cygwin does have a sys/socket.h, doesn't it?!?"
 # endif
 
-/* A platform that lacks <sys/socket.h>.
-
-   Currently only MinGW is supported.  See the gnulib manual regarding
-   Windows sockets.  MinGW has the header files winsock2.h and
-   ws2tcpip.h that declare the sys/socket.h definitions we need.  Note
-   that you can influence which definitions you get by setting the
-   WINVER symbol before including these two files.  For example,
-   getaddrinfo is only available if _WIN32_WINNT >= 0x0501 (that
-   symbol is set indirectly through WINVER).  You can set this by
-   adding AC_DEFINE(WINVER, 0x0501) to configure.ac.  Note that your
-   code may not run on older Windows releases then.  My Windows 2000
-   box was not able to run the code, for example.  The situation is
-   slightly confusing because
-   <https://docs.microsoft.com/en-us/windows/desktop/api/ws2tcpip/nf-ws2tcpip-getaddrinfo>
-   suggests that getaddrinfo should be available on all Windows
-   releases. */
+ 
 
 # if @HAVE_WINSOCK2_H@
 #  include <winsock2.h>
@@ -182,7 +137,7 @@ struct sockaddr_storage
 #  include <ws2tcpip.h>
 # endif
 
-/* For shutdown(). */
+ 
 # if !defined SHUT_RD && defined SD_RECEIVE
 #  define SHUT_RD SD_RECEIVE
 # endif
@@ -194,14 +149,13 @@ struct sockaddr_storage
 # endif
 
 # if @HAVE_WINSOCK2_H@
-/* Include headers needed by the emulation code.  */
+ 
 #  include <sys/types.h>
 #  include <io.h>
-/* If these headers don't define socklen_t, <config.h> does.  */
+ 
 # endif
 
-/* Rudimentary 'struct msghdr'; this works as long as you don't try to
-   access msg_control or msg_controllen.  */
+ 
 struct msghdr {
   void *msg_name;
   socklen_t msg_namelen;
@@ -212,23 +166,19 @@ struct msghdr {
 
 #endif
 
-/* Ensure SO_REUSEPORT is defined.  */
-/* For the subtle differences between SO_REUSEPORT and SO_REUSEADDR, see
-   https://stackoverflow.com/questions/14388706/socket-options-so-reuseaddr-and-so-reuseport-how-do-they-differ-do-they-mean-t
-   and https://lwn.net/Articles/542629/
- */
+ 
+ 
 #ifndef SO_REUSEPORT
 # define SO_REUSEPORT SO_REUSEADDR
 #endif
 
-/* Fix some definitions from <winsock2.h>.  */
+ 
 
 #if @HAVE_WINSOCK2_H@
 
 # if !GNULIB_defined_rpl_fd_isset
 
-/* Re-define FD_ISSET to avoid a WSA call while we are not using
-   network sockets.  */
+ 
 _GL_SYS_SOCKET_INLINE int
 rpl_fd_isset (SOCKET fd, fd_set * set)
 {
@@ -251,7 +201,7 @@ rpl_fd_isset (SOCKET fd, fd_set * set)
 
 #endif
 
-/* Hide some function declarations from <winsock2.h>.  */
+ 
 
 #if @HAVE_WINSOCK2_H@
 # if !defined _@GUARD_PREFIX@_UNISTD_H
@@ -281,7 +231,7 @@ rpl_fd_isset (SOCKET fd, fd_set * set)
 # endif
 #endif
 
-/* Wrap everything else to use libc file descriptors for sockets.  */
+ 
 
 #if @GNULIB_SOCKET@
 # if @HAVE_WINSOCK2_H@
@@ -318,8 +268,7 @@ _GL_FUNCDECL_RPL (connect, int,
 _GL_CXXALIAS_RPL (connect, int,
                   (int fd, const struct sockaddr *addr, socklen_t addrlen));
 # else
-/* Need to cast, because on NonStop Kernel, the third parameter is
-                                                     size_t addrlen.  */
+ 
 _GL_CXXALIAS_SYS_CAST (connect, int,
                        (int fd,
                         const struct sockaddr *addr, socklen_t addrlen));
@@ -351,8 +300,7 @@ _GL_CXXALIAS_RPL (accept, int,
                    struct sockaddr *restrict addr,
                    socklen_t *restrict addrlen));
 # else
-/* Need to cast, because on Solaris 10 systems, the third parameter is
-                        void *addrlen.  */
+ 
 _GL_CXXALIAS_SYS_CAST (accept, int,
                        (int fd,
                         struct sockaddr *restrict addr,
@@ -384,8 +332,7 @@ _GL_FUNCDECL_RPL (bind, int,
 _GL_CXXALIAS_RPL (bind, int,
                   (int fd, const struct sockaddr *addr, socklen_t addrlen));
 # else
-/* Need to cast, because on NonStop Kernel, the third parameter is
-                                                     size_t addrlen.  */
+ 
 _GL_CXXALIAS_SYS_CAST (bind, int,
                        (int fd,
                         const struct sockaddr *addr, socklen_t addrlen));
@@ -416,8 +363,7 @@ _GL_CXXALIAS_RPL (getpeername, int,
                   (int fd, struct sockaddr *restrict addr,
                    socklen_t *restrict addrlen));
 # else
-/* Need to cast, because on Solaris 10 systems, the third parameter is
-                        void *addrlen.  */
+ 
 _GL_CXXALIAS_SYS_CAST (getpeername, int,
                        (int fd, struct sockaddr *restrict addr,
                         socklen_t *restrict addrlen));
@@ -450,8 +396,7 @@ _GL_CXXALIAS_RPL (getsockname, int,
                   (int fd, struct sockaddr *restrict addr,
                    socklen_t *restrict addrlen));
 # else
-/* Need to cast, because on Solaris 10 systems, the third parameter is
-                        void *addrlen.  */
+ 
 _GL_CXXALIAS_SYS_CAST (getsockname, int,
                        (int fd, struct sockaddr *restrict addr,
                         socklen_t *restrict addrlen));
@@ -484,8 +429,7 @@ _GL_CXXALIAS_RPL (getsockopt, int,
                   (int fd, int level, int optname,
                    void *restrict optval, socklen_t *restrict optlen));
 # else
-/* Need to cast, because on Solaris 10 systems, the fifth parameter is
-                                                       void *optlen.  */
+ 
 _GL_CXXALIAS_SYS_CAST (getsockopt, int,
                        (int fd, int level, int optname,
                         void *restrict optval, socklen_t *restrict optlen));
@@ -535,9 +479,7 @@ _GL_FUNCDECL_RPL (recv, ssize_t, (int fd, void *buf, size_t len, int flags)
                                  _GL_ARG_NONNULL ((2)));
 _GL_CXXALIAS_RPL (recv, ssize_t, (int fd, void *buf, size_t len, int flags));
 # else
-/* Need to cast, because on HP-UX 11.31 the return type may be
-                             int,
-   depending on compiler options.  */
+ 
 _GL_CXXALIAS_SYS_CAST (recv, ssize_t, (int fd, void *buf, size_t len, int flags));
 # endif
 _GL_CXXALIASWARN (recv);
@@ -564,9 +506,7 @@ _GL_FUNCDECL_RPL (send, ssize_t,
 _GL_CXXALIAS_RPL (send, ssize_t,
                   (int fd, const void *buf, size_t len, int flags));
 # else
-/* Need to cast, because on HP-UX 11.31 the return type may be
-                             int,
-   depending on compiler options.  */
+ 
 _GL_CXXALIAS_SYS_CAST (send, ssize_t,
                        (int fd, const void *buf, size_t len, int flags));
 # endif
@@ -598,8 +538,7 @@ _GL_CXXALIAS_RPL (recvfrom, ssize_t,
                    struct sockaddr *restrict from,
                    socklen_t *restrict fromlen));
 # else
-/* Need to cast, because on Solaris 10 systems, the sixth parameter is
-                                               void *fromlen.  */
+ 
 _GL_CXXALIAS_SYS_CAST (recvfrom, ssize_t,
                        (int fd, void *restrict buf, size_t len, int flags,
                         struct sockaddr *restrict from,
@@ -633,8 +572,7 @@ _GL_CXXALIAS_RPL (sendto, ssize_t,
                   (int fd, const void *buf, size_t len, int flags,
                    const struct sockaddr *to, socklen_t tolen));
 # else
-/* Need to cast, because on NonStop Kernel, the sixth parameter is
-                                                   size_t tolen.  */
+ 
 _GL_CXXALIAS_SYS_CAST (sendto, ssize_t,
                        (int fd, const void *buf, size_t len, int flags,
                         const struct sockaddr *to, socklen_t tolen));
@@ -663,8 +601,7 @@ _GL_FUNCDECL_RPL (setsockopt, int, (int fd, int level, int optname,
 _GL_CXXALIAS_RPL (setsockopt, int, (int fd, int level, int optname,
                                     const void * optval, socklen_t optlen));
 # else
-/* Need to cast, because on NonStop Kernel, the fifth parameter is
-                                             size_t optlen.  */
+ 
 _GL_CXXALIAS_SYS_CAST (setsockopt, int,
                        (int fd, int level, int optname,
                         const void * optval, socklen_t optlen));
@@ -705,40 +642,6 @@ _GL_WARN_ON_USE (shutdown, "shutdown is not always POSIX compliant - "
 #endif
 
 #if @GNULIB_ACCEPT4@
-/* Accept a connection on a socket, with specific opening flags.
-   The flags are a bitmask, possibly including O_CLOEXEC (defined in <fcntl.h>)
-   and O_TEXT, O_BINARY (defined in "binary-io.h").
-   See also the Linux man page at
-   <https://www.kernel.org/doc/man-pages/online/pages/man2/accept4.2.html>.  */
-# if @HAVE_ACCEPT4@
-#  if !(defined __cplusplus && defined GNULIB_NAMESPACE)
-#   define accept4 rpl_accept4
-#  endif
-_GL_FUNCDECL_RPL (accept4, int,
-                  (int sockfd, struct sockaddr *addr, socklen_t *addrlen,
-                   int flags));
-_GL_CXXALIAS_RPL (accept4, int,
-                  (int sockfd, struct sockaddr *addr, socklen_t *addrlen,
-                   int flags));
-# else
-_GL_FUNCDECL_SYS (accept4, int,
-                  (int sockfd, struct sockaddr *addr, socklen_t *addrlen,
-                   int flags));
-_GL_CXXALIAS_SYS (accept4, int,
-                  (int sockfd, struct sockaddr *addr, socklen_t *addrlen,
-                   int flags));
-# endif
-_GL_CXXALIASWARN (accept4);
-#elif defined GNULIB_POSIXCHECK
-# undef accept4
-# if HAVE_RAW_DECL_ACCEPT4
-_GL_WARN_ON_USE (accept4, "accept4 is unportable - "
-                 "use gnulib module accept4 for portability");
-# endif
-#endif
-
-_GL_INLINE_HEADER_END
-
-#endif /* _@GUARD_PREFIX@_SYS_SOCKET_H */
-#endif /* _@GUARD_PREFIX@_SYS_SOCKET_H */
+ 
+#endif  
 #endif

@@ -1,10 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * aQuantia Corporation Network Driver
- * Copyright (C) 2014-2017 aQuantia Corporation. All rights reserved
- */
+ 
+ 
 
-/* File aq_utils.h: Useful macro and structures used in all layers of driver. */
+ 
 
 #ifndef AQ_UTILS_H
 #define AQ_UTILS_H
@@ -36,4 +33,4 @@ static inline bool aq_utils_obj_test(atomic_t *flags, u32 mask)
 	return atomic_read(flags) & mask;
 }
 
-#endif /* AQ_UTILS_H */
+#endif  

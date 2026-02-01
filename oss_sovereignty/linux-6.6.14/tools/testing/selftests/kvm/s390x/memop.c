@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Test for s390x KVM_S390_MEM_OP
- *
- * Copyright (C) 2019, Red Hat, Inc.
- */
+
+ 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -256,15 +252,15 @@ static struct test_default test_default_init(void *guest_code)
 }
 
 enum stage {
-	/* Synced state set by host, e.g. DAT */
+	 
 	STAGE_INITED,
-	/* Guest did nothing */
+	 
 	STAGE_IDLED,
-	/* Guest set storage keys (specifics up to test case) */
+	 
 	STAGE_SKEYS_SET,
-	/* Guest copied memory (locations up to test case) */
+	 
 	STAGE_COPIED,
-	/* End of guest code reached */
+	 
 	STAGE_DONE,
 };
 
@@ -416,25 +412,21 @@ static void test_copy_key(void)
 
 	HOST_SYNC(t.vcpu, STAGE_SKEYS_SET);
 
-	/* vm, no key */
+	 
 	default_write_read(t.vcpu, t.vm, ABSOLUTE, t.size, NO_KEY);
 
-	/* vm/vcpu, machting key or key 0 */
+	 
 	default_write_read(t.vcpu, t.vcpu, LOGICAL, t.size, 0);
 	default_write_read(t.vcpu, t.vcpu, LOGICAL, t.size, 9);
 	default_write_read(t.vcpu, t.vm, ABSOLUTE, t.size, 0);
 	default_write_read(t.vcpu, t.vm, ABSOLUTE, t.size, 9);
-	/*
-	 * There used to be different code paths for key handling depending on
-	 * if the region crossed a page boundary.
-	 * There currently are not, but the more tests the merrier.
-	 */
+	 
 	default_write_read(t.vcpu, t.vcpu, LOGICAL, 1, 0);
 	default_write_read(t.vcpu, t.vcpu, LOGICAL, 1, 9);
 	default_write_read(t.vcpu, t.vm, ABSOLUTE, 1, 0);
 	default_write_read(t.vcpu, t.vm, ABSOLUTE, 1, 9);
 
-	/* vm/vcpu, mismatching keys on read, but no fetch protection */
+	 
 	default_read(t.vcpu, t.vcpu, LOGICAL, t.size, 2);
 	default_read(t.vcpu, t.vm, ABSOLUTE, t.size, 2);
 
@@ -685,12 +677,9 @@ static void test_cmpxchg_key_concurrent(void)
 
 static void guest_copy_key_fetch_prot(void)
 {
-	/*
-	 * For some reason combining the first sync with override enablement
-	 * results in an exception when calling HOST_SYNC.
-	 */
+	 
 	GUEST_SYNC(STAGE_INITED);
-	/* Storage protection override applies to both store and fetch. */
+	 
 	set_storage_key_range(mem1, sizeof(mem1), 0x98);
 	set_storage_key_range(mem2, sizeof(mem2), 0x98);
 	GUEST_SYNC(STAGE_SKEYS_SET);
@@ -710,7 +699,7 @@ static void test_copy_key_storage_prot_override(void)
 	t.run->kvm_dirty_regs = KVM_SYNC_CRS;
 	HOST_SYNC(t.vcpu, STAGE_SKEYS_SET);
 
-	/* vcpu, mismatching keys, storage protection override in effect */
+	 
 	default_write_read(t.vcpu, t.vcpu, LOGICAL, t.size, 2);
 
 	kvm_vm_free(t.kvm_vm);
@@ -723,7 +712,7 @@ static void test_copy_key_fetch_prot(void)
 	HOST_SYNC(t.vcpu, STAGE_INITED);
 	HOST_SYNC(t.vcpu, STAGE_SKEYS_SET);
 
-	/* vm/vcpu, matching key, fetch protection in effect */
+	 
 	default_read(t.vcpu, t.vcpu, LOGICAL, t.size, 9);
 	default_read(t.vcpu, t.vm, ABSOLUTE, t.size, 9);
 
@@ -754,7 +743,7 @@ static void test_errors_key(void)
 	HOST_SYNC(t.vcpu, STAGE_INITED);
 	HOST_SYNC(t.vcpu, STAGE_SKEYS_SET);
 
-	/* vm/vcpu, mismatching keys, fetch protection in effect */
+	 
 	CHECK_N_DO(ERR_PROT_MOP, t.vcpu, LOGICAL, WRITE, mem1, t.size, GADDR_V(mem1), KEY(2));
 	CHECK_N_DO(ERR_PROT_MOP, t.vcpu, LOGICAL, READ, mem2, t.size, GADDR_V(mem1), KEY(2));
 	CHECK_N_DO(ERR_PROT_MOP, t.vm, ABSOLUTE, WRITE, mem1, t.size, GADDR_V(mem1), KEY(2));
@@ -792,21 +781,16 @@ static void test_termination(void)
 	HOST_SYNC(t.vcpu, STAGE_INITED);
 	HOST_SYNC(t.vcpu, STAGE_SKEYS_SET);
 
-	/* vcpu, mismatching keys after first page */
+	 
 	ERR_PROT_MOP(t.vcpu, LOGICAL, WRITE, mem1, t.size, GADDR_V(mem1), KEY(1), INJECT);
-	/*
-	 * The memop injected a program exception and the test needs to check the
-	 * Translation-Exception Identification (TEID). It is necessary to run
-	 * the guest in order to be able to read the TEID from guest memory.
-	 * Set the guest program new PSW, so the guest state is not clobbered.
-	 */
+	 
 	prefix = t.run->s.regs.prefix;
 	psw[0] = t.run->psw_mask;
 	psw[1] = t.run->psw_addr;
 	MOP(t.vm, ABSOLUTE, WRITE, psw, sizeof(psw), GADDR(prefix + 464));
 	HOST_SYNC(t.vcpu, STAGE_IDLED);
 	MOP(t.vm, ABSOLUTE, READ, &teid, sizeof(teid), GADDR(prefix + 168));
-	/* Bits 56, 60, 61 form a code, 0 being the only one allowing for termination */
+	 
 	TEST_ASSERT_EQ(teid & teid_mask, 0);
 
 	kvm_vm_free(t.kvm_vm);
@@ -821,7 +805,7 @@ static void test_errors_key_storage_prot_override(void)
 	t.run->kvm_dirty_regs = KVM_SYNC_CRS;
 	HOST_SYNC(t.vcpu, STAGE_SKEYS_SET);
 
-	/* vm, mismatching keys, storage protection override not applicable to vm */
+	 
 	CHECK_N_DO(ERR_PROT_MOP, t.vm, ABSOLUTE, WRITE, mem1, t.size, GADDR_V(mem1), KEY(2));
 	CHECK_N_DO(ERR_PROT_MOP, t.vm, ABSOLUTE, READ, mem2, t.size, GADDR_V(mem2), KEY(2));
 
@@ -865,17 +849,14 @@ static void test_copy_key_fetch_prot_override(void)
 	t.run->kvm_dirty_regs = KVM_SYNC_CRS;
 	HOST_SYNC(t.vcpu, STAGE_SKEYS_SET);
 
-	/* vcpu, mismatching keys on fetch, fetch protection override applies */
+	 
 	prepare_mem12();
 	MOP(t.vcpu, LOGICAL, WRITE, mem1, PAGE_SIZE, GADDR_V(mem1));
 	HOST_SYNC(t.vcpu, STAGE_COPIED);
 	CHECK_N_DO(MOP, t.vcpu, LOGICAL, READ, mem2, 2048, GADDR_V(guest_0_page), KEY(2));
 	ASSERT_MEM_EQ(mem1, mem2, 2048);
 
-	/*
-	 * vcpu, mismatching keys on fetch, fetch protection override applies,
-	 * wraparound
-	 */
+	 
 	prepare_mem12();
 	MOP(t.vcpu, LOGICAL, WRITE, mem1, 2 * PAGE_SIZE, GADDR_V(guest_last_page));
 	HOST_SYNC(t.vcpu, STAGE_COPIED);
@@ -901,7 +882,7 @@ static void test_errors_key_fetch_prot_override_not_enabled(void)
 	HOST_SYNC(t.vcpu, STAGE_INITED);
 	HOST_SYNC(t.vcpu, STAGE_SKEYS_SET);
 
-	/* vcpu, mismatching keys on fetch, fetch protection override not enabled */
+	 
 	CHECK_N_DO(ERR_PROT_MOP, t.vcpu, LOGICAL, READ, mem2, 2048, GADDR_V(0), KEY(2));
 
 out:
@@ -924,14 +905,11 @@ static void test_errors_key_fetch_prot_override_enabled(void)
 	t.run->kvm_dirty_regs = KVM_SYNC_CRS;
 	HOST_SYNC(t.vcpu, STAGE_SKEYS_SET);
 
-	/*
-	 * vcpu, mismatching keys on fetch,
-	 * fetch protection override does not apply because memory range exceeded
-	 */
+	 
 	CHECK_N_DO(ERR_PROT_MOP, t.vcpu, LOGICAL, READ, mem2, 2048 + 1, GADDR_V(0), KEY(2));
 	CHECK_N_DO(ERR_PROT_MOP, t.vcpu, LOGICAL, READ, mem2, PAGE_SIZE + 2048 + 1,
 		   GADDR_V(guest_last_page), KEY(2));
-	/* vm, fetch protected override does not apply */
+	 
 	CHECK_N_DO(ERR_PROT_MOP, t.vm, ABSOLUTE, READ, mem2, 2048, GADDR(0), KEY(2));
 	CHECK_N_DO(ERR_PROT_MOP, t.vm, ABSOLUTE, READ, mem2, 2048, GADDR_V(guest_0_page), KEY(2));
 
@@ -941,7 +919,7 @@ out:
 
 static void guest_idle(void)
 {
-	GUEST_SYNC(STAGE_INITED); /* for consistency's sake */
+	GUEST_SYNC(STAGE_INITED);  
 	for (;;)
 		GUEST_SYNC(STAGE_IDLED);
 }
@@ -950,31 +928,31 @@ static void _test_errors_common(struct test_info info, enum mop_target target, i
 {
 	int rv;
 
-	/* Bad size: */
+	 
 	rv = ERR_MOP(info, target, WRITE, mem1, -1, GADDR_V(mem1));
 	TEST_ASSERT(rv == -1 && errno == E2BIG, "ioctl allows insane sizes");
 
-	/* Zero size: */
+	 
 	rv = ERR_MOP(info, target, WRITE, mem1, 0, GADDR_V(mem1));
 	TEST_ASSERT(rv == -1 && (errno == EINVAL || errno == ENOMEM),
 		    "ioctl allows 0 as size");
 
-	/* Bad flags: */
+	 
 	rv = ERR_MOP(info, target, WRITE, mem1, size, GADDR_V(mem1), SET_FLAGS(-1));
 	TEST_ASSERT(rv == -1 && errno == EINVAL, "ioctl allows all flags");
 
-	/* Bad guest address: */
+	 
 	rv = ERR_MOP(info, target, WRITE, mem1, size, GADDR((void *)~0xfffUL), CHECK_ONLY);
 	TEST_ASSERT(rv > 0, "ioctl does not report bad guest memory address with CHECK_ONLY");
 	rv = ERR_MOP(info, target, WRITE, mem1, size, GADDR((void *)~0xfffUL));
 	TEST_ASSERT(rv > 0, "ioctl does not report bad guest memory address on write");
 
-	/* Bad host address: */
+	 
 	rv = ERR_MOP(info, target, WRITE, 0, size, GADDR_V(mem1));
 	TEST_ASSERT(rv == -1 && errno == EFAULT,
 		    "ioctl does not report bad host memory address");
 
-	/* Bad key: */
+	 
 	rv = ERR_MOP(info, target, WRITE, mem1, size, GADDR_V(mem1), KEY(17));
 	TEST_ASSERT(rv == -1 && errno == EINVAL, "ioctl allows invalid key");
 }
@@ -989,23 +967,23 @@ static void test_errors(void)
 	_test_errors_common(t.vcpu, LOGICAL, t.size);
 	_test_errors_common(t.vm, ABSOLUTE, t.size);
 
-	/* Bad operation: */
+	 
 	rv = ERR_MOP(t.vcpu, INVALID, WRITE, mem1, t.size, GADDR_V(mem1));
 	TEST_ASSERT(rv == -1 && errno == EINVAL, "ioctl allows bad operations");
-	/* virtual addresses are not translated when passing INVALID */
+	 
 	rv = ERR_MOP(t.vm, INVALID, WRITE, mem1, PAGE_SIZE, GADDR(0));
 	TEST_ASSERT(rv == -1 && errno == EINVAL, "ioctl allows bad operations");
 
-	/* Bad access register: */
+	 
 	t.run->psw_mask &= ~(3UL << (63 - 17));
-	t.run->psw_mask |= 1UL << (63 - 17);  /* Enable AR mode */
-	HOST_SYNC(t.vcpu, STAGE_IDLED); /* To sync new state to SIE block */
+	t.run->psw_mask |= 1UL << (63 - 17);   
+	HOST_SYNC(t.vcpu, STAGE_IDLED);  
 	rv = ERR_MOP(t.vcpu, LOGICAL, WRITE, mem1, t.size, GADDR_V(mem1), AR(17));
 	TEST_ASSERT(rv == -1 && errno == EINVAL, "ioctl allows ARs > 15");
-	t.run->psw_mask &= ~(3UL << (63 - 17));   /* Disable AR mode */
-	HOST_SYNC(t.vcpu, STAGE_IDLED); /* Run to sync new state */
+	t.run->psw_mask &= ~(3UL << (63 - 17));    
+	HOST_SYNC(t.vcpu, STAGE_IDLED);  
 
-	/* Check that the SIDA calls are rejected for non-protected guests */
+	 
 	rv = ERR_MOP(t.vcpu, SIDA, READ, mem1, 8, GADDR(0), SIDA_OFFSET(0x1c0));
 	TEST_ASSERT(rv == -1 && errno == EINVAL,
 		    "ioctl does not reject SIDA_READ in non-protected mode");
@@ -1151,5 +1129,5 @@ int main(int argc, char *argv[])
 		}
 	}
 
-	ksft_finished();	/* Print results and exit() accordingly */
+	ksft_finished();	 
 }

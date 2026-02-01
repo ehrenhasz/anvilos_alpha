@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-// Copyright (C) 2016 Broadcom
+
+
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -52,7 +52,7 @@ static void iproc_pwmc_enable(struct iproc_pwmc *ip, unsigned int channel)
 	value |= 1 << IPROC_PWM_CTRL_EN_SHIFT(channel);
 	writel(value, ip->base + IPROC_PWM_CTRL_OFFSET);
 
-	/* must be a 400 ns delay between clearing and setting enable bit */
+	 
 	ndelay(400);
 }
 
@@ -64,7 +64,7 @@ static void iproc_pwmc_disable(struct iproc_pwmc *ip, unsigned int channel)
 	value &= ~(1 << IPROC_PWM_CTRL_EN_SHIFT(channel));
 	writel(value, ip->base + IPROC_PWM_CTRL_OFFSET);
 
-	/* must be a 400 ns delay between clearing and setting enable bit */
+	 
 	ndelay(400);
 }
 
@@ -121,16 +121,7 @@ static int iproc_pwmc_apply(struct pwm_chip *chip, struct pwm_device *pwm,
 
 	rate = clk_get_rate(ip->clk);
 
-	/*
-	 * Find period count, duty count and prescale to suit duty_cycle and
-	 * period. This is done according to formulas described below:
-	 *
-	 * period_ns = 10^9 * (PRESCALE + 1) * PC / PWM_CLK_RATE
-	 * duty_ns = 10^9 * (PRESCALE + 1) * DC / PWM_CLK_RATE
-	 *
-	 * PC = (PWM_CLK_RATE * period_ns) / (10^9 * (PRESCALE + 1))
-	 * DC = (PWM_CLK_RATE * duty_ns) / (10^9 * (PRESCALE + 1))
-	 */
+	 
 	while (1) {
 		u64 value, div;
 
@@ -147,24 +138,24 @@ static int iproc_pwmc_apply(struct pwm_chip *chip, struct pwm_device *pwm,
 		     duty <= IPROC_PWM_DUTY_CYCLE_MAX)
 			break;
 
-		/* Otherwise, increase prescale and recalculate counts */
+		 
 		if (++prescale > IPROC_PWM_PRESCALE_MAX)
 			return -EINVAL;
 	}
 
 	iproc_pwmc_disable(ip, pwm->hwpwm);
 
-	/* Set prescale */
+	 
 	value = readl(ip->base + IPROC_PWM_PRESCALE_OFFSET);
 	value &= ~IPROC_PWM_PRESCALE_MASK(pwm->hwpwm);
 	value |= prescale << IPROC_PWM_PRESCALE_SHIFT(pwm->hwpwm);
 	writel(value, ip->base + IPROC_PWM_PRESCALE_OFFSET);
 
-	/* set period and duty cycle */
+	 
 	writel(period, ip->base + IPROC_PWM_PERIOD_OFFSET(pwm->hwpwm));
 	writel(duty, ip->base + IPROC_PWM_DUTY_CYCLE_OFFSET(pwm->hwpwm));
 
-	/* set polarity */
+	 
 	value = readl(ip->base + IPROC_PWM_CTRL_OFFSET);
 
 	if (state->polarity == PWM_POLARITY_NORMAL)
@@ -220,7 +211,7 @@ static int iproc_pwmc_probe(struct platform_device *pdev)
 		return ret;
 	}
 
-	/* Set full drive and normal polarity for all channels */
+	 
 	value = readl(ip->base + IPROC_PWM_CTRL_OFFSET);
 
 	for (i = 0; i < ip->chip.npwm; i++) {

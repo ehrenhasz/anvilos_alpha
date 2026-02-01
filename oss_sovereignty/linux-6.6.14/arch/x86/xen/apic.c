@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/init.h>
 #include <linux/thread_info.h>
 
@@ -24,7 +24,7 @@ static unsigned int xen_io_apic_read(unsigned apic, unsigned reg)
 	if (!ret)
 		return apic_op.value;
 
-	/* fallback to return an emulated IO_APIC values */
+	 
 	if (reg == 0x1)
 		return 0x00170020;
 	else if (reg == 0x0)
@@ -53,8 +53,7 @@ static u32 xen_apic_read(u32 reg)
 	};
 	int ret;
 
-	/* Shouldn't need this as APIC is turned off for PV, and we only
-	 * get called on the bootup processor. But just in case. */
+	 
 	if (!xen_initial_domain() || smp_processor_id())
 		return 0;
 
@@ -77,7 +76,7 @@ static void xen_apic_write(u32 reg, u32 val)
 		return;
 	}
 
-	/* Warn to see if there's any stray references */
+	 
 	WARN(1,"register: %x, value: %x\n", reg, val);
 }
 
@@ -93,7 +92,7 @@ static u64 xen_apic_icr_read(void)
 
 static void xen_apic_icr_write(u32 low, u32 id)
 {
-	/* Warn to see if there's any stray references */
+	 
 	WARN_ON(1);
 }
 
@@ -128,12 +127,12 @@ static struct apic xen_pv_apic __ro_after_init = {
 	.probe				= xen_apic_probe_pv,
 	.acpi_madt_oem_check		= xen_madt_oem_check,
 
-	/* .delivery_mode and .dest_mode_logical not used by XENPV */
+	 
 
 	.disable_esr			= 0,
 
 	.cpu_present_to_apicid		= xen_cpu_present_to_apicid,
-	.phys_pkg_id			= xen_phys_pkg_id, /* detect_ht */
+	.phys_pkg_id			= xen_phys_pkg_id,  
 
 	.max_apic_id			= UINT_MAX,
 	.get_apic_id			= xen_get_apic_id,

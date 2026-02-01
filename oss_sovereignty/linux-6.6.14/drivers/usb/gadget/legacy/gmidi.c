@@ -1,22 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * gmidi.c -- USB MIDI Gadget Driver
- *
- * Copyright (C) 2006 Thumtronics Pty Ltd.
- * Developed for Thumtronics by Grey Innovation
- * Ben Williamson <ben.williamson@greyinnovation.com>
- *
- * This code is based in part on:
- *
- * Gadget Zero driver, Copyright (C) 2003-2004 David Brownell.
- * USB Audio driver, Copyright (C) 2002 by Takashi Iwai.
- * USB MIDI driver, Copyright (C) 2002-2005 Clemens Ladisch.
- *
- * Refer to the USB Device Class Definition for MIDI Devices:
- * http://www.usb.org/developers/devclass_docs/midi10.pdf
- */
 
-/* #define VERBOSE_DEBUG */
+ 
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -28,7 +13,7 @@
 
 #include "u_midi.h"
 
-/*-------------------------------------------------------------------------*/
+ 
 
 MODULE_AUTHOR("Ben Williamson");
 MODULE_LICENSE("GPL v2");
@@ -61,27 +46,23 @@ static unsigned int out_ports = 1;
 module_param(out_ports, uint, S_IRUGO);
 MODULE_PARM_DESC(out_ports, "Number of MIDI output ports");
 
-/* Thanks to Grey Innovation for donating this product ID.
- *
- * DO NOT REUSE THESE IDs with a protocol-incompatible driver!!  Ever!!
- * Instead:  allocate your own, using normal USB-IF procedures.
- */
-#define DRIVER_VENDOR_NUM	0x17b3		/* Grey Innovation */
-#define DRIVER_PRODUCT_NUM	0x0004		/* Linux-USB "MIDI Gadget" */
+ 
+#define DRIVER_VENDOR_NUM	0x17b3		 
+#define DRIVER_PRODUCT_NUM	0x0004		 
 
-/* string IDs are assigned dynamically */
+ 
 
 #define STRING_DESCRIPTION_IDX		USB_GADGET_FIRST_AVAIL_IDX
 
 static struct usb_device_descriptor device_desc = {
 	.bLength =		USB_DT_DEVICE_SIZE,
 	.bDescriptorType =	USB_DT_DEVICE,
-	/* .bcdUSB = DYNAMIC */
+	 
 	.bDeviceClass =		USB_CLASS_PER_INTERFACE,
 	.idVendor =		cpu_to_le16(DRIVER_VENDOR_NUM),
 	.idProduct =		cpu_to_le16(DRIVER_PRODUCT_NUM),
-	/* .iManufacturer =	DYNAMIC */
-	/* .iProduct =		DYNAMIC */
+	 
+	 
 	.bNumConfigurations =	1,
 };
 
@@ -90,11 +71,11 @@ static struct usb_string strings_dev[] = {
 	[USB_GADGET_PRODUCT_IDX].s	= "MIDI Gadget",
 	[USB_GADGET_SERIAL_IDX].s	= "",
 	[STRING_DESCRIPTION_IDX].s	= "MIDI",
-	{  } /* end of list */
+	{  }  
 };
 
 static struct usb_gadget_strings stringtab_dev = {
-	.language	= 0x0409,	/* en-us */
+	.language	= 0x0409,	 
 	.strings	= strings_dev,
 };
 
@@ -116,7 +97,7 @@ static int midi_unbind(struct usb_composite_dev *dev)
 static struct usb_configuration midi_config = {
 	.label		= "MIDI Gadget",
 	.bConfigurationValue = 1,
-	/* .iConfiguration = DYNAMIC */
+	 
 	.bmAttributes	= USB_CONFIG_ATT_ONE,
 	.MaxPower	= CONFIG_USB_GADGET_VBUS_DRAW,
 };

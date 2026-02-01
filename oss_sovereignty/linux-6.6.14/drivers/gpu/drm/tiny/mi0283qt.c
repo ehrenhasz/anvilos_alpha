@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * DRM driver for Multi-Inno MI0283QT panels
- *
- * Copyright 2016 Noralf Trønnes
- */
+
+ 
 
 #include <linux/backlight.h>
 #include <linux/delay.h>
@@ -77,20 +73,20 @@ static void mi0283qt_enable(struct drm_simple_display_pipe *pipe,
 	mipi_dbi_command(dbi, ILI9341_PUMPCTRL, 0x20);
 	mipi_dbi_command(dbi, ILI9341_DTCTRLB, 0x00, 0x00);
 
-	/* Power Control */
+	 
 	mipi_dbi_command(dbi, ILI9341_PWCTRL1, 0x26);
 	mipi_dbi_command(dbi, ILI9341_PWCTRL2, 0x11);
-	/* VCOM */
+	 
 	mipi_dbi_command(dbi, ILI9341_VMCTRL1, 0x35, 0x3e);
 	mipi_dbi_command(dbi, ILI9341_VMCTRL2, 0xbe);
 
-	/* Memory Access Control */
+	 
 	mipi_dbi_command(dbi, MIPI_DCS_SET_PIXEL_FORMAT, MIPI_DCS_PIXEL_FMT_16BIT);
 
-	/* Frame Rate */
+	 
 	mipi_dbi_command(dbi, ILI9341_FRMCTR1, 0x00, 0x1b);
 
-	/* Gamma */
+	 
 	mipi_dbi_command(dbi, ILI9341_EN3GAM, 0x08);
 	mipi_dbi_command(dbi, MIPI_DCS_SET_GAMMA_CURVE, 0x01);
 	mipi_dbi_command(dbi, ILI9341_PGAMCTRL,
@@ -100,10 +96,10 @@ static void mi0283qt_enable(struct drm_simple_display_pipe *pipe,
 		       0x00, 0x25, 0x27, 0x05, 0x10, 0x09, 0x3a, 0x78,
 		       0x4d, 0x05, 0x18, 0x0d, 0x38, 0x3a, 0x1f);
 
-	/* DDRAM */
+	 
 	mipi_dbi_command(dbi, ILI9341_ETMOD, 0x07);
 
-	/* Display */
+	 
 	mipi_dbi_command(dbi, ILI9341_DISCTRL, 0x0a, 0x82, 0x27, 0x00);
 	mipi_dbi_command(dbi, MIPI_DCS_EXIT_SLEEP_MODE);
 	msleep(100);
@@ -112,12 +108,7 @@ static void mi0283qt_enable(struct drm_simple_display_pipe *pipe,
 	msleep(100);
 
 out_enable:
-	/* The PiTFT (ili9340) has a hardware reset circuit that
-	 * resets only on power-on and not on each reboot through
-	 * a gpio like the rpi-display does.
-	 * As a result, we need to always apply the rotation value
-	 * regardless of the display "on/off" state.
-	 */
+	 
 	switch (dbidev->rotation) {
 	default:
 		addr_mode = ILI9341_MADCTL_MV | ILI9341_MADCTL_MY |

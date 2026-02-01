@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: MIT */
+ 
 #ifndef __NVBIOS_THERM_H__
 #define __NVBIOS_THERM_H__
 struct nvbios_therm_threshold {
@@ -7,14 +7,14 @@ struct nvbios_therm_threshold {
 };
 
 struct nvbios_therm_sensor {
-	/* diode */
+	 
 	s16 slope_mult;
 	s16 slope_div;
 	s16 offset_num;
 	s16 offset_den;
 	s8 offset_constant;
 
-	/* thresholds */
+	 
 	struct nvbios_therm_threshold thrs_fan_boost;
 	struct nvbios_therm_threshold thrs_down_clock;
 	struct nvbios_therm_threshold thrs_critical;
@@ -27,7 +27,7 @@ enum nvbios_therm_fan_type {
 	NVBIOS_THERM_FAN_PWM = 2,
 };
 
-/* no vbios have more than 6 */
+ 
 #define NVKM_TEMP_FAN_TRIP_MAX 10
 struct nvbios_therm_trip_point {
 	int fan_duty;

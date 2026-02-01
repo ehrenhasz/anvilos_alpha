@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef __USBAUDIO_ENDPOINT_H
 #define __USBAUDIO_ENDPOINT_H
 
@@ -54,4 +54,4 @@ int snd_usb_endpoint_next_packet_size(struct snd_usb_endpoint *ep,
 int snd_usb_queue_pending_output_urbs(struct snd_usb_endpoint *ep,
 				      bool in_stream_lock);
 
-#endif /* __USBAUDIO_ENDPOINT_H */
+#endif  

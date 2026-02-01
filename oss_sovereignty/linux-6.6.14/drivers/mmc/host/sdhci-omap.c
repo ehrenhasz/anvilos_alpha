@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/**
- * SDHCI Controller driver for TI's OMAP SoCs
- *
- * Copyright (C) 2017 Texas Instruments
- * Author: Kishon Vijay Abraham I <kishon@ti.com>
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/mmc/mmc.h>
@@ -22,11 +17,7 @@
 
 #include "sdhci-pltfm.h"
 
-/*
- * Note that the register offsets used here are from omap_regs
- * base which is 0x100 for omap4 and later, and 0 for omap3 and
- * earlier.
- */
+ 
 #define SDHCI_OMAP_SYSCONFIG	0x10
 
 #define SDHCI_OMAP_CON		0x2c
@@ -84,23 +75,23 @@
 #define SDHCI_OMAP_CAPA2	0x144
 #define CAPA2_TSDR50		BIT(13)
 
-#define SDHCI_OMAP_TIMEOUT	1		/* 1 msec */
+#define SDHCI_OMAP_TIMEOUT	1		 
 
 #define SYSCTL_CLKD_MAX		0x3FF
 
-#define IOV_1V8			1800000		/* 180000 uV */
-#define IOV_3V0			3000000		/* 300000 uV */
-#define IOV_3V3			3300000		/* 330000 uV */
+#define IOV_1V8			1800000		 
+#define IOV_3V0			3000000		 
+#define IOV_3V3			3300000		 
 
 #define MAX_PHASE_DELAY		0x7C
 
-/* sdhci-omap controller flags */
+ 
 #define SDHCI_OMAP_REQUIRE_IODELAY	BIT(0)
 #define SDHCI_OMAP_SPECIAL_RESET	BIT(1)
 
 struct sdhci_omap_data {
-	int omap_offset;	/* Offset for omap regs from base */
-	u32 offset;		/* Offset for SDHCI regs from base */
+	int omap_offset;	 
+	u32 offset;		 
 	u8 flags;
 };
 
@@ -121,10 +112,10 @@ struct sdhci_omap_host {
 	int			wakeirq;
 	bool			is_tuning;
 
-	/* Offset for omap specific registers from base */
+	 
 	int			omap_offset;
 
-	/* Omap specific context save */
+	 
 	u32			con;
 	u32			hctl;
 	u32			sysctl;
@@ -201,7 +192,7 @@ static int sdhci_omap_enable_iov(struct sdhci_omap_host *omap_host,
 		return ret;
 
 	if (!IS_ERR(mmc->supply.vqmmc)) {
-		/* Pick the right voltage to allow 3.0V for 3.3V nominal PBIAS */
+		 
 		ret = mmc_regulator_set_vqmmc(mmc, &mmc->ios);
 		if (ret < 0) {
 			dev_err(mmc_dev(mmc), "vqmmc set voltage failed\n");
@@ -247,7 +238,7 @@ static void sdhci_omap_conf_bus_power(struct sdhci_omap_host *omap_host,
 	reg |= HCTL_SDBP;
 	sdhci_omap_writel(omap_host, SDHCI_OMAP_HCTL, reg);
 
-	/* wait 1ms */
+	 
 	timeout = ktime_add_ms(ktime_get(), SDHCI_OMAP_TIMEOUT);
 	while (1) {
 		bool timedout = ktime_after(ktime_get(), timeout);
@@ -332,7 +323,7 @@ static int sdhci_omap_execute_tuning(struct mmc_host *mmc, u32 opcode)
 	u32 reg;
 	int i;
 
-	/* clock tuning is not needed for upto 52MHz */
+	 
 	if (ios->clock <= 52000000)
 		return 0;
 
@@ -354,12 +345,7 @@ static int sdhci_omap_execute_tuning(struct mmc_host *mmc, u32 opcode)
 	reg |= DLL_SWT;
 	sdhci_omap_writel(omap_host, SDHCI_OMAP_DLL, reg);
 
-	/*
-	 * OMAP5/DRA74X/DRA72x Errata i802:
-	 * DCRC error interrupts (MMCHS_STAT[21] DCRC=0x1) can occur
-	 * during the tuning procedure. So disable it during the
-	 * tuning procedure.
-	 */
+	 
 	if (host->ier & SDHCI_INT_DATA_CRC) {
 		host->ier &= ~SDHCI_INT_DATA_CRC;
 		dcrc_was_enabled = true;
@@ -367,11 +353,7 @@ static int sdhci_omap_execute_tuning(struct mmc_host *mmc, u32 opcode)
 
 	omap_host->is_tuning = true;
 
-	/*
-	 * Stage 1: Search for a maximum pass window ignoring any
-	 * single point failures. If the tuning value ends up
-	 * near it, move away from it in stage 2 below
-	 */
+	 
 	while (phase_delay <= MAX_PHASE_DELAY) {
 		sdhci_omap_set_dll(omap_host, phase_delay);
 
@@ -380,7 +362,7 @@ static int sdhci_omap_execute_tuning(struct mmc_host *mmc, u32 opcode)
 			if (prev_match) {
 				length++;
 			} else if (single_point_failure) {
-				/* ignore single point failure */
+				 
 				length++;
 			} else {
 				start_window = phase_delay;
@@ -405,10 +387,7 @@ static int sdhci_omap_execute_tuning(struct mmc_host *mmc, u32 opcode)
 		goto tuning_error;
 	}
 
-	/*
-	 * Assign tuning value as a ratio of maximum pass window based
-	 * on temperature
-	 */
+	 
 	if (temperature < -20000)
 		phase_delay = min(max_window + 4 * (max_len - 1) - 24,
 				  max_window +
@@ -426,12 +405,7 @@ static int sdhci_omap_execute_tuning(struct mmc_host *mmc, u32 opcode)
 	else
 		phase_delay = max_window + DIV_ROUND_UP(3 * max_len, 16) * 4;
 
-	/*
-	 * Stage 2: Search for a single point failure near the chosen tuning
-	 * value in two steps. First in the +3 to +10 range and then in the
-	 * +2 to -10 range. If found, move away from it in the appropriate
-	 * direction by the appropriate amount depending on the temperature.
-	 */
+	 
 	for (i = 3; i <= 10; i++) {
 		sdhci_omap_set_dll(omap_host, phase_delay + i);
 
@@ -488,7 +462,7 @@ tuning_error:
 
 ret:
 	sdhci_reset(host, SDHCI_RESET_CMD | SDHCI_RESET_DATA);
-	/* Reenable forbidden interrupt */
+	 
 	if (dcrc_was_enabled)
 		host->ier |= SDHCI_INT_DATA_CRC;
 	sdhci_writel(host, host->ier, SDHCI_INT_ENABLE);
@@ -521,10 +495,7 @@ static int sdhci_omap_card_busy(struct mmc_host *mmc)
 	sdhci_writel(host, ier, SDHCI_INT_ENABLE);
 	sdhci_writel(host, ier, SDHCI_SIGNAL_ENABLE);
 
-	/*
-	 * Delay is required for PSTATE to correctly reflect
-	 * DLEV/CLEV values after PADEN is set.
-	 */
+	 
 	usleep_range(50, 100);
 	reg = sdhci_omap_readl(omap_host, SDHCI_OMAP_PSTATE);
 	if ((reg & PSTATE_DATI) || !(reg & PSTATE_DLEV_DAT0))
@@ -721,16 +692,10 @@ static void sdhci_omap_set_power(struct sdhci_host *host, unsigned char mode,
 		mmc_regulator_set_ocr(mmc, mmc->supply.vmmc, vdd);
 }
 
-/*
- * MMCHS_HL_HWINFO has the MADMA_EN bit set if the controller instance
- * is connected to L3 interconnect and is bus master capable. Note that
- * the MMCHS_HL_HWINFO register is in the module registers before the
- * omap registers and sdhci registers. The offset can vary for omap
- * registers depending on the SoC. Do not use sdhci_omap_readl() here.
- */
+ 
 static bool sdhci_omap_has_adma(struct sdhci_omap_host *omap_host, int offset)
 {
-	/* MMCHS_HL_HWINFO register is only available on omap4 and later */
+	 
 	if (offset < 0x200)
 		return false;
 
@@ -745,7 +710,7 @@ static int sdhci_omap_enable_dma(struct sdhci_host *host)
 
 	reg = sdhci_omap_readl(omap_host, SDHCI_OMAP_CON);
 	reg &= ~CON_DMA_MASTER;
-	/* Switch to DMA slave mode when using external DMA */
+	 
 	if (!host->use_external_dma)
 		reg |= CON_DMA_MASTER;
 
@@ -797,7 +762,7 @@ static void sdhci_omap_init_74_clocks(struct sdhci_host *host, u8 power_mode)
 	sdhci_omap_writel(omap_host, SDHCI_OMAP_CON, reg);
 	sdhci_omap_writel(omap_host, SDHCI_OMAP_CMD, 0x0);
 
-	/* wait 1ms */
+	 
 	timeout = ktime_add_ms(ktime_get(), SDHCI_OMAP_TIMEOUT);
 	while (1) {
 		bool timedout = ktime_after(ktime_get(), timeout);
@@ -837,7 +802,7 @@ static void sdhci_omap_set_uhs_signaling(struct sdhci_host *host,
 	sdhci_omap_start_clock(omap_host);
 }
 
-#define MMC_TIMEOUT_US		20000		/* 20000 micro Sec */
+#define MMC_TIMEOUT_US		20000		 
 static void sdhci_omap_reset(struct sdhci_host *host, u8 mask)
 {
 	struct sdhci_pltfm_host *pltfm_host = sdhci_priv(host);
@@ -846,11 +811,11 @@ static void sdhci_omap_reset(struct sdhci_host *host, u8 mask)
 	unsigned long i = 0;
 	u32 sysc;
 
-	/* Save target module sysconfig configured by SoC PM layer */
+	 
 	if (mask & SDHCI_RESET_ALL)
 		sysc = sdhci_omap_readl(omap_host, SDHCI_OMAP_SYSCONFIG);
 
-	/* Don't reset data lines during tuning operation */
+	 
 	if (omap_host->is_tuning)
 		mask &= ~SDHCI_RESET_DATA;
 
@@ -891,12 +856,7 @@ static u32 sdhci_omap_irq(struct sdhci_host *host, u32 intmask)
 	if (omap_host->is_tuning && host->cmd && !host->data_early &&
 	    (intmask & CMD_ERR_MASK)) {
 
-		/*
-		 * Since we are not resetting data lines during tuning
-		 * operation, data error or data complete interrupts
-		 * might still arrive. Mark this request as a failure
-		 * but still wait for the data interrupt
-		 */
+		 
 		if (intmask & SDHCI_INT_TIMEOUT)
 			host->cmd->error = -ETIMEDOUT;
 		else
@@ -904,11 +864,7 @@ static u32 sdhci_omap_irq(struct sdhci_host *host, u32 intmask)
 
 		host->cmd = NULL;
 
-		/*
-		 * Sometimes command error interrupts and command complete
-		 * interrupt will arrive together. Clear all command related
-		 * interrupts here.
-		 */
+		 
 		sdhci_writel(host, intmask & CMD_MASK, SDHCI_INT_STATUS);
 		intmask &= ~CMD_MASK;
 	}
@@ -979,15 +935,12 @@ static int sdhci_omap_set_capabilities(struct sdhci_host *host)
 	else if (caps == ~0U)
 		return 0;
 
-	/*
-	 * Quirk handling to allow 3.0V vqmmc with a valid 3.3V PBIAS. This is
-	 * needed for 3.0V ldo9_reg on omap5 at least.
-	 */
+	 
 	if (pbias != ~0U && (pbias & SDHCI_CAN_VDD_330) &&
 	    (vqmmc & SDHCI_CAN_VDD_300))
 		caps |= SDHCI_CAN_VDD_330;
 
-	/* voltage capabilities might be set by boot loader, clear it */
+	 
 	reg = sdhci_omap_readl(omap_host, SDHCI_OMAP_CAPA);
 	reg &= ~(CAPA_VS18 | CAPA_VS30 | CAPA_VS33);
 
@@ -1205,7 +1158,7 @@ static const struct soc_device_attribute sdhci_omap_soc_devices[] = {
 		.revision = "ES1.[01]",
 	},
 	{
-		/* sentinel */
+		 
 	}
 };
 
@@ -1249,7 +1202,7 @@ static int sdhci_omap_probe(struct platform_device *pdev)
 	omap_host->timing = MMC_TIMING_LEGACY;
 	omap_host->flags = data->flags;
 	omap_host->omap_offset = data->omap_offset;
-	omap_host->con = -EINVAL; /* Prevent invalid restore on first resume */
+	omap_host->con = -EINVAL;  
 	host->ioaddr += offset;
 	host->mapbase = regs->start + offset;
 
@@ -1294,13 +1247,7 @@ static int sdhci_omap_probe(struct platform_device *pdev)
 	}
 	omap_host->pbias_enabled = false;
 
-	/*
-	 * omap_device_pm_domain has callbacks to enable the main
-	 * functional clock, interface clock and also configure the
-	 * SYSCONFIG register to clear any boot loader set voltage
-	 * capabilities before calling sdhci_setup_host(). The
-	 * callback will be invoked as part of pm_runtime_get_sync.
-	 */
+	 
 	pm_runtime_use_autosuspend(dev);
 	pm_runtime_set_autosuspend_delay(dev, 50);
 	pm_runtime_enable(dev);
@@ -1323,10 +1270,7 @@ static int sdhci_omap_probe(struct platform_device *pdev)
 	host->mmc_host_ops.execute_tuning = sdhci_omap_execute_tuning;
 	host->mmc_host_ops.enable_sdio_irq = sdhci_omap_enable_sdio_irq;
 
-	/*
-	 * Switch to external DMA only if there is the "dmas" property and
-	 * ADMA is not available on the controller instance.
-	 */
+	 
 	if (device_property_present(dev, "dmas") &&
 	    !sdhci_omap_has_adma(omap_host, offset))
 		sdhci_switch_external_dma(host, true);
@@ -1336,10 +1280,10 @@ static int sdhci_omap_probe(struct platform_device *pdev)
 		mmc->caps |= MMC_CAP_NONREMOVABLE;
 	}
 
-	/* R1B responses is required to properly manage HW busy detection. */
+	 
 	mmc->caps |= MMC_CAP_NEED_RSP_BUSY;
 
-	/* Allow card power off and runtime PM for eMMC/SD card devices */
+	 
 	mmc->caps |= MMC_CAP_POWER_OFF_CARD | MMC_CAP_AGGRESSIVE_PM;
 
 	ret = sdhci_setup_host(host);
@@ -1354,10 +1298,7 @@ static int sdhci_omap_probe(struct platform_device *pdev)
 	if (ret)
 		goto err_cleanup_host;
 
-	/*
-	 * SDIO devices can use the dat1 pin as a wake-up interrupt. Some
-	 * devices like wl1xxx, use an out-of-band GPIO interrupt instead.
-	 */
+	 
 	omap_host->wakeirq = of_irq_get_byname(dev->of_node, "wakeup");
 	if (omap_host->wakeirq == -EPROBE_DEFER) {
 		ret = -EPROBE_DEFER;
@@ -1404,7 +1345,7 @@ static void sdhci_omap_remove(struct platform_device *pdev)
 	dev_pm_clear_wake_irq(dev);
 	pm_runtime_dont_use_autosuspend(dev);
 	pm_runtime_put_sync(dev);
-	/* Ensure device gets disabled despite userspace sysfs config */
+	 
 	pm_runtime_force_suspend(dev);
 	sdhci_pltfm_free(pdev);
 }
@@ -1420,7 +1361,7 @@ static void __maybe_unused sdhci_omap_context_save(struct sdhci_omap_host *omap_
 	omap_host->ise = sdhci_omap_readl(omap_host, SDHCI_OMAP_ISE);
 }
 
-/* Order matters here, HCTL must be restored in two phases */
+ 
 static void __maybe_unused sdhci_omap_context_restore(struct sdhci_omap_host *omap_host)
 {
 	sdhci_omap_writel(omap_host, SDHCI_OMAP_HCTL, omap_host->hctl);

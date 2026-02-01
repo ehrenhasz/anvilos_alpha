@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * FB driver for the ILI9163 LCD Controller
- *
- * Copyright (C) 2015 Kozhevnikov Anatoly
- *
- * Based on ili9325.c by Noralf Tronnes and
- * .S.U.M.O.T.O.Y. by Max MC Costa (https://github.com/sumotoy/TFT_ILI9163C).
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -28,82 +21,70 @@
 #define DEFAULT_GAMMA	"36 29 12 22 1C 15 42 B7 2F 13 12 0A 11 0B 06\n"
 #endif
 
-/* ILI9163C commands */
-#define CMD_FRMCTR1	0xB1 /* Frame Rate Control */
-			     /*	(In normal mode/Full colors) */
-#define CMD_FRMCTR2	0xB2 /* Frame Rate Control (In Idle mode/8-colors) */
-#define CMD_FRMCTR3	0xB3 /* Frame Rate Control */
-			     /*	(In Partial mode/full colors) */
-#define CMD_DINVCTR	0xB4 /* Display Inversion Control */
-#define CMD_RGBBLK	0xB5 /* RGB Interface Blanking Porch setting */
-#define CMD_DFUNCTR	0xB6 /* Display Function set 5 */
-#define CMD_SDRVDIR	0xB7 /* Source Driver Direction Control */
-#define CMD_GDRVDIR	0xB8 /* Gate Driver Direction Control  */
+ 
+#define CMD_FRMCTR1	0xB1  
+			      
+#define CMD_FRMCTR2	0xB2  
+#define CMD_FRMCTR3	0xB3  
+			      
+#define CMD_DINVCTR	0xB4  
+#define CMD_RGBBLK	0xB5  
+#define CMD_DFUNCTR	0xB6  
+#define CMD_SDRVDIR	0xB7  
+#define CMD_GDRVDIR	0xB8  
 
-#define CMD_PWCTR1	0xC0 /* Power_Control1 */
-#define CMD_PWCTR2	0xC1 /* Power_Control2 */
-#define CMD_PWCTR3	0xC2 /* Power_Control3 */
-#define CMD_PWCTR4	0xC3 /* Power_Control4 */
-#define CMD_PWCTR5	0xC4 /* Power_Control5 */
-#define CMD_VCOMCTR1	0xC5 /* VCOM_Control 1 */
-#define CMD_VCOMCTR2	0xC6 /* VCOM_Control 2 */
-#define CMD_VCOMOFFS	0xC7 /* VCOM Offset Control */
-#define CMD_PGAMMAC	0xE0 /* Positive Gamma Correction Setting */
-#define CMD_NGAMMAC	0xE1 /* Negative Gamma Correction Setting */
-#define CMD_GAMRSEL	0xF2 /* GAM_R_SEL */
+#define CMD_PWCTR1	0xC0  
+#define CMD_PWCTR2	0xC1  
+#define CMD_PWCTR3	0xC2  
+#define CMD_PWCTR4	0xC3  
+#define CMD_PWCTR5	0xC4  
+#define CMD_VCOMCTR1	0xC5  
+#define CMD_VCOMCTR2	0xC6  
+#define CMD_VCOMOFFS	0xC7  
+#define CMD_PGAMMAC	0xE0  
+#define CMD_NGAMMAC	0xE1  
+#define CMD_GAMRSEL	0xF2  
 
-/*
- * This display:
- * http://www.ebay.com/itm/Replace-Nokia-5110-LCD-1-44-Red-Serial-128X128-SPI-
- * Color-TFT-LCD-Display-Module-/271422122271
- * This particular display has a design error! The controller has 3 pins to
- * configure to constrain the memory and resolution to a fixed dimension (in
- * that case 128x128) but they leaved those pins configured for 128x160 so
- * there was several pixel memory addressing problems.
- * I solved by setup several parameters that dinamically fix the resolution as
- * needit so below the parameters for this display. If you have a strain or a
- * correct display (can happen with chinese) you can copy those parameters and
- * create setup for different displays.
- */
+ 
 
 #ifdef RED
-#define __OFFSET		32 /*see note 2 - this is the red version */
+#define __OFFSET		32  
 #else
-#define __OFFSET		0  /*see note 2 - this is the black version */
+#define __OFFSET		0   
 #endif
 
 static int init_display(struct fbtft_par *par)
 {
 	par->fbtftops.reset(par);
 
-	write_reg(par, MIPI_DCS_SOFT_RESET); /* software reset */
+	write_reg(par, MIPI_DCS_SOFT_RESET);  
 	mdelay(500);
-	write_reg(par, MIPI_DCS_EXIT_SLEEP_MODE); /* exit sleep */
+	write_reg(par, MIPI_DCS_EXIT_SLEEP_MODE);  
 	mdelay(5);
 	write_reg(par, MIPI_DCS_SET_PIXEL_FORMAT, MIPI_DCS_PIXEL_FMT_16BIT);
-	/* default gamma curve 3 */
+	 
 	write_reg(par, MIPI_DCS_SET_GAMMA_CURVE, 0x02);
 #ifdef GAMMA_ADJ
-	write_reg(par, CMD_GAMRSEL, 0x01); /* Enable Gamma adj */
+	write_reg(par, CMD_GAMRSEL, 0x01);  
 #endif
 	write_reg(par, MIPI_DCS_ENTER_NORMAL_MODE);
 	write_reg(par, CMD_DFUNCTR, 0xff, 0x06);
-	/* Frame Rate Control (In normal mode/Full colors) */
+	 
 	write_reg(par, CMD_FRMCTR1, 0x08, 0x02);
-	write_reg(par, CMD_DINVCTR, 0x07); /* display inversion  */
-	/* Set VRH1[4:0] & VC[2:0] for VCI1 & GVDD */
+	write_reg(par, CMD_DINVCTR, 0x07);  
+	 
 	write_reg(par, CMD_PWCTR1, 0x0A, 0x02);
-	/* Set BT[2:0] for AVDD & VCL & VGH & VGL  */
+	 
 	write_reg(par, CMD_PWCTR2, 0x02);
-	/* Set VMH[6:0] & VML[6:0] for VOMH & VCOML */
+	 
 	write_reg(par, CMD_VCOMCTR1, 0x50, 0x63);
 	write_reg(par, CMD_VCOMOFFS, 0);
 
 	write_reg(par, MIPI_DCS_SET_COLUMN_ADDRESS, 0, 0, 0, WIDTH);
 	write_reg(par, MIPI_DCS_SET_PAGE_ADDRESS, 0, 0, 0, HEIGHT);
 
-	write_reg(par, MIPI_DCS_SET_DISPLAY_ON); /* display ON */
-	write_reg(par, MIPI_DCS_WRITE_MEMORY_START); /* Memory Write */
+	write_reg(par, MIPI_DCS_SET_DISPLAY_ON);  
+	write_reg(par, MIPI_DCS_WRITE_MEMORY_START);  
 
 	return 0;
 }
@@ -134,35 +115,16 @@ static void set_addr_win(struct fbtft_par *par, int xs, int ys,
 			  ys >> 8, ys & 0xff, ye >> 8, ye & 0xff);
 		break;
 	default:
-		/* Fix incorrect setting */
+		 
 		par->info->var.rotate = 0;
 	}
 	write_reg(par, MIPI_DCS_WRITE_MEMORY_START);
 }
 
-/*
- * 7) MY:  1(bottom to top),	0(top to bottom)    Row Address Order
- * 6) MX:  1(R to L),		0(L to R)	    Column Address Order
- * 5) MV:  1(Exchanged),	0(normal)	    Row/Column exchange
- * 4) ML:  1(bottom to top),	0(top to bottom)    Vertical Refresh Order
- * 3) RGB: 1(BGR),		0(RGB)		    Color Space
- * 2) MH:  1(R to L),		0(L to R)	    Horizontal Refresh Order
- * 1)
- * 0)
- *
- *	MY, MX, MV, ML,RGB, MH, D1, D0
- *	0 | 0 | 0 | 0 | 1 | 0 | 0 | 0	//normal
- *	1 | 0 | 0 | 0 | 1 | 0 | 0 | 0	//Y-Mirror
- *	0 | 1 | 0 | 0 | 1 | 0 | 0 | 0	//X-Mirror
- *	1 | 1 | 0 | 0 | 1 | 0 | 0 | 0	//X-Y-Mirror
- *	0 | 0 | 1 | 0 | 1 | 0 | 0 | 0	//X-Y Exchange
- *	1 | 0 | 1 | 0 | 1 | 0 | 0 | 0	//X-Y Exchange, Y-Mirror
- *	0 | 1 | 1 | 0 | 1 | 0 | 0 | 0	//XY exchange
- *	1 | 1 | 1 | 0 | 1 | 0 | 0 | 0
- */
+ 
 static int set_var(struct fbtft_par *par)
 {
-	u8 mactrl_data = 0; /* Avoid compiler warning */
+	u8 mactrl_data = 0;  
 
 	switch (par->info->var.rotate) {
 	case 0:
@@ -179,7 +141,7 @@ static int set_var(struct fbtft_par *par)
 		break;
 	}
 
-	/* Colorspcae */
+	 
 	if (par->bgr)
 		mactrl_data |= BIT(2);
 	write_reg(par, MIPI_DCS_SET_ADDRESS_MODE, mactrl_data);
@@ -218,7 +180,7 @@ static int gamma_adj(struct fbtft_par *par, u32 *curves)
 		  CURVE(0, 14),
 		  CURVE(0, 15));
 
-	/* Write Data to GRAM mode */
+	 
 	write_reg(par, MIPI_DCS_WRITE_MEMORY_START);
 
 	return 0;

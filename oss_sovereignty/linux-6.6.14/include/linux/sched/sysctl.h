@@ -1,14 +1,14 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _LINUX_SCHED_SYSCTL_H
 #define _LINUX_SCHED_SYSCTL_H
 
 #include <linux/types.h>
 
 #ifdef CONFIG_DETECT_HUNG_TASK
-/* used for hung_task and block/ */
+ 
 extern unsigned long sysctl_hung_task_timeout_secs;
 #else
-/* Avoid need for ifdefs elsewhere in the code */
+ 
 enum { sysctl_hung_task_timeout_secs = 0 };
 #endif
 
@@ -29,4 +29,4 @@ extern int sysctl_numa_balancing_mode;
 #define sysctl_numa_balancing_mode	0
 #endif
 
-#endif /* _LINUX_SCHED_SYSCTL_H */
+#endif  

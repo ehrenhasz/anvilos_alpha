@@ -1,8 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Socionext MN88443x series demodulator driver for ISDB-S/ISDB-T.
-//
-// Copyright (c) 2018 Socionext Inc.
+
+
+
+
+
 
 #include <linux/bitfield.h>
 #include <linux/clk.h>
@@ -14,7 +14,7 @@
 
 #include "mn88443x.h"
 
-/* ISDB-S registers */
+ 
 #define ATSIDU_S                                    0x2f
 #define ATSIDL_S                                    0x30
 #define TSSET_S                                     0x31
@@ -40,7 +40,7 @@
 #define BERVRDL_S                                   0x72
 #define DOSET1_S                                    0x73
 
-/* Primary ISDB-T */
+ 
 #define PLLASET1                                    0x00
 #define PLLASET2                                    0x01
 #define PLLBSET1                                    0x02
@@ -55,7 +55,7 @@
 #define HIZSET1                                     0x0a
 #define HIZSET2                                     0x0b
 
-/* Secondary ISDB-T (for MN884434 only) */
+ 
 #define RCVSET                                      0x00
 #define TSSET1_M                                    0x01
 #define TSSET2_M                                    0x02
@@ -63,7 +63,7 @@
 #define INTACSET                                    0x08
 #define HIZSET3                                     0x0b
 
-/* ISDB-T registers */
+ 
 #define TSSET1                                      0x05
 #define   TSSET1_TSASEL_MASK                          GENMASK(4, 3)
 #define   TSSET1_TSASEL_ISDBT                         (0x0 << 3)
@@ -177,7 +177,7 @@
 #define CLK_DIRECT         20200000
 #define CLK_MAX            25410000
 
-#define S_T_FREQ           8126984 /* 512 / 63 MHz */
+#define S_T_FREQ           8126984  
 
 struct mn88443x_spec {
 	bool primary;
@@ -192,14 +192,14 @@ struct mn88443x_priv {
 	u32 clk_freq;
 	u32 if_freq;
 
-	/* Common */
+	 
 	bool use_clkbuf;
 
-	/* ISDB-S */
+	 
 	struct i2c_client *client_s;
 	struct regmap *regmap_s;
 
-	/* ISDB-T */
+	 
 	struct i2c_client *client_t;
 	struct regmap *regmap_t;
 };
@@ -273,7 +273,7 @@ static int mn88443x_s_read_status(struct mn88443x_priv *chip,
 	u32 cpmon, tmpu, tmpl, flg;
 	u64 tmp;
 
-	/* Sync detection */
+	 
 	regmap_read(r_s, CPMON1_S, &cpmon);
 
 	*status = 0;
@@ -282,7 +282,7 @@ static int mn88443x_s_read_status(struct mn88443x_priv *chip,
 	if (cpmon & CPMON1_S_W2LOCK)
 		*status |= FE_HAS_SIGNAL | FE_HAS_CARRIER;
 
-	/* Signal strength */
+	 
 	c->strength.stat[0].scale = FE_SCALE_NOT_AVAILABLE;
 
 	if (*status & FE_HAS_SIGNAL) {
@@ -296,7 +296,7 @@ static int mn88443x_s_read_status(struct mn88443x_priv *chip,
 		c->strength.stat[0].uvalue = agc;
 	}
 
-	/* C/N rate */
+	 
 	c->cnr.stat[0].scale = FE_SCALE_NOT_AVAILABLE;
 
 	if (*status & FE_HAS_VITERBI) {
@@ -310,12 +310,12 @@ static int mn88443x_s_read_status(struct mn88443x_priv *chip,
 		regmap_read(r_s, CNRDYL_S, &tmpl);
 		y = (tmpu << 8) | tmpl;
 
-		/* CNR[dB]: 10 * log10(D) - 30.74 / D^3 - 3 */
-		/*   D = x^2 / (2^15 * y - x^2) */
+		 
+		 
 		d = (y << 15) - x * x;
 		if (d > 0) {
-			/* (2^4 * D)^3 = 2^12 * D^3 */
-			/* 3.074 * 2^(12 + 24) = 211243671486 */
+			 
+			 
 			d_3 = div_u64(16 * x * x, d);
 			d_3 = d_3 * d_3 * d_3;
 			if (d_3)
@@ -323,7 +323,7 @@ static int mn88443x_s_read_status(struct mn88443x_priv *chip,
 		}
 
 		if (d_3) {
-			/* 0.3 * 2^24 = 5033164 */
+			 
 			tmp = (s64)2 * intlog10(x) - intlog10(abs(d)) - d_3
 				- 5033164;
 			cnr = div_u64(tmp * 10000, 1 << 24);
@@ -336,7 +336,7 @@ static int mn88443x_s_read_status(struct mn88443x_priv *chip,
 		}
 	}
 
-	/* BER */
+	 
 	c->post_bit_error.stat[0].scale = FE_SCALE_NOT_AVAILABLE;
 	c->post_bit_count.stat[0].scale = FE_SCALE_NOT_AVAILABLE;
 
@@ -403,7 +403,7 @@ static int mn88443x_t_set_freq(struct mn88443x_priv *chip)
 	s64 adckt, nco, ad_t;
 	u32 m, v;
 
-	/* Clock buffer (but not supported) or XTAL */
+	 
 	if (chip->clk_freq >= CLK_LOW && chip->clk_freq < CLK_DIRECT) {
 		chip->use_clkbuf = true;
 		regmap_write(r_t, CLKSET1_T, 0x07);
@@ -421,7 +421,7 @@ static int mn88443x_t_set_freq(struct mn88443x_priv *chip)
 		return -EINVAL;
 	}
 
-	/* Direct IF or Low IF */
+	 
 	if (chip->if_freq == DIRECT_IF_57MHZ ||
 	    chip->if_freq == DIRECT_IF_44MHZ)
 		nco = adckt * 2 - chip->if_freq;
@@ -437,16 +437,16 @@ static int mn88443x_t_set_freq(struct mn88443x_priv *chip)
 	regmap_write(r_t, FADM_T, ad_t >> 8);
 	regmap_write(r_t, FADL_T, ad_t);
 
-	/* Level of IF */
+	 
 	m = ADCSET1_T_REFSEL_MASK;
 	v = ADCSET1_T_REFSEL_1_5V;
 	regmap_update_bits(r_t, ADCSET1_T, m, v);
 
-	/* Polarity of AGC */
+	 
 	v = AGCSET2_T_IFPOLINV_INC | AGCSET2_T_RFPOLINV_INC;
 	regmap_update_bits(r_t, AGCSET2_T, v, v);
 
-	/* Lower output level of AGC */
+	 
 	regmap_write(r_t, AGCV3_T, 0x00);
 
 	regmap_write(r_t, MDSET_T, 0xfa);
@@ -475,7 +475,7 @@ static int mn88443x_t_read_status(struct mn88443x_priv *chip,
 	u32 seqrd, st, flg, tmpu, tmpm, tmpl;
 	u64 tmp;
 
-	/* Sync detection */
+	 
 	regmap_read(r_t, SSEQRD_T, &seqrd);
 	st = seqrd & SSEQRD_T_SSEQSTRD_MASK;
 
@@ -485,7 +485,7 @@ static int mn88443x_t_read_status(struct mn88443x_priv *chip,
 	if (st >= SSEQRD_T_SSEQSTRD_FRAME_SYNC)
 		*status |= FE_HAS_SIGNAL | FE_HAS_CARRIER;
 
-	/* Signal strength */
+	 
 	c->strength.stat[0].scale = FE_SCALE_NOT_AVAILABLE;
 
 	if (*status & FE_HAS_SIGNAL) {
@@ -500,7 +500,7 @@ static int mn88443x_t_read_status(struct mn88443x_priv *chip,
 		c->strength.stat[0].uvalue = agc;
 	}
 
-	/* C/N rate */
+	 
 	c->cnr.stat[0].scale = FE_SCALE_NOT_AVAILABLE;
 
 	if (*status & FE_HAS_VITERBI) {
@@ -510,8 +510,8 @@ static int mn88443x_t_read_status(struct mn88443x_priv *chip,
 		regmap_read(r_t, CNRDL_T, &tmpl);
 
 		if (tmpu || tmpl) {
-			/* CNR[dB]: 10 * (log10(65536 / value) + 0.2) */
-			/* intlog10(65536) = 80807124, 0.2 * 2^24 = 3355443 */
+			 
+			 
 			tmp = (u64)80807124 - intlog10((tmpu << 8) | tmpl)
 				+ 3355443;
 			cnr = div_u64(tmp * 10000, 1 << 24);
@@ -524,7 +524,7 @@ static int mn88443x_t_read_status(struct mn88443x_priv *chip,
 		c->cnr.stat[0].uvalue = cnr;
 	}
 
-	/* BER */
+	 
 	c->post_bit_error.stat[0].scale = FE_SCALE_NOT_AVAILABLE;
 	c->post_bit_count.stat[0].scale = FE_SCALE_NOT_AVAILABLE;
 
@@ -727,10 +727,7 @@ static int mn88443x_probe(struct i2c_client *client)
 	if (IS_ERR(chip->regmap_s))
 		return PTR_ERR(chip->regmap_s);
 
-	/*
-	 * Chip has two I2C addresses for each satellite/terrestrial system.
-	 * ISDB-T uses address ISDB-S + 4, so we register a dummy client.
-	 */
+	 
 	chip->client_t = i2c_new_dummy_device(client->adapter, client->addr + 4);
 	if (IS_ERR(chip->client_t))
 		return PTR_ERR(chip->client_t);

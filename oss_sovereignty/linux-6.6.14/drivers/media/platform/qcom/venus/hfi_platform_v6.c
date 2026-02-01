@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2020, The Linux Foundation. All rights reserved.
- */
+
+ 
 #include "hfi_platform.h"
 
 static const struct hfi_plat_caps caps[] = {
@@ -11,7 +9,7 @@ static const struct hfi_plat_caps caps[] = {
 	.cap_bufs_mode_dynamic = true,
 	.caps[0] = {HFI_CAPABILITY_FRAME_WIDTH, 128, 8192, 1},
 	.caps[1] = {HFI_CAPABILITY_FRAME_HEIGHT, 128, 8192, 1},
-	/* ((5760 * 2880) / 256) */
+	 
 	.caps[2] = {HFI_CAPABILITY_MBS_PER_FRAME, 64, 138240, 1},
 	.caps[3] = {HFI_CAPABILITY_BITRATE, 1, 220000000, 1},
 	.caps[4] = {HFI_CAPABILITY_SCALE_X, 65536, 65536, 1},

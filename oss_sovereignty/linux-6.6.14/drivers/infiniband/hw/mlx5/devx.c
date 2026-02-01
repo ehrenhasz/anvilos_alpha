@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-/*
- * Copyright (c) 2018, Mellanox Technologies inc.  All rights reserved.
- */
+
+ 
 
 #include <rdma/ib_user_verbs.h>
 #include <rdma/ib_verbs.h>
@@ -35,38 +33,32 @@ struct devx_async_data {
 	struct devx_async_cmd_event_file *ev_file;
 	struct mlx5_async_work cb_work;
 	u16 cmd_out_len;
-	/* must be last field in this structure */
+	 
 	struct mlx5_ib_uapi_devx_async_cmd_hdr hdr;
 };
 
 struct devx_async_event_data {
-	struct list_head list; /* headed in ev_file->event_list */
+	struct list_head list;  
 	struct mlx5_ib_uapi_devx_async_event_hdr hdr;
 };
 
-/* first level XA value data structure */
+ 
 struct devx_event {
-	struct xarray object_ids; /* second XA level, Key = object id */
+	struct xarray object_ids;  
 	struct list_head unaffiliated_list;
 };
 
-/* second level XA value data structure */
+ 
 struct devx_obj_event {
 	struct rcu_head rcu;
 	struct list_head obj_sub_list;
 };
 
 struct devx_event_subscription {
-	struct list_head file_list; /* headed in ev_file->
-				     * subscribed_events_list
-				     */
-	struct list_head xa_list; /* headed in devx_event->unaffiliated_list or
-				   * devx_obj_event->obj_sub_list
-				   */
-	struct list_head obj_list; /* headed in devx_object */
-	struct list_head event_list; /* headed in ev_file->event_list or in
-				      * temp list via subscription
-				      */
+	struct list_head file_list;  
+	struct list_head xa_list;  
+	struct list_head obj_list;  
+	struct list_head event_list;  
 
 	u8 is_cleaned:1;
 	u32 xa_key_level1;
@@ -79,7 +71,7 @@ struct devx_event_subscription {
 
 struct devx_async_event_file {
 	struct ib_uobject uobj;
-	/* Head of events that are subscribed to this FD */
+	 
 	struct list_head subscribed_events_list;
 	spinlock_t lock;
 	wait_queue_head_t poll_wait;
@@ -118,7 +110,7 @@ int mlx5_ib_devx_create(struct mlx5_ib_dev *dev, bool is_user)
 	u16 uid;
 	u32 cap = 0;
 
-	/* 0 means not supported */
+	 
 	if (!MLX5_CAP_GEN(dev->mdev, log_max_uctx))
 		return -EINVAL;
 
@@ -278,11 +270,7 @@ static u32 get_dec_obj_id(u64 obj_id)
 	return (obj_id & 0xffffffff);
 }
 
-/*
- * As the obj_id in the firmware is not globally unique the object type
- * must be considered upon checking for a valid object id.
- * For that the opcode of the creator command is encoded as part of the obj_id.
- */
+ 
 static u64 get_enc_obj_id(u32 opcode, u32 obj_id)
 {
 	return ((u64)opcode << 32) | obj_id;
@@ -356,7 +344,7 @@ static u32 devx_get_created_obj_id(const void *in, const void *out, u16 opcode)
 	case MLX5_CMD_OP_CREATE_PSV:
 		return MLX5_GET(create_psv_out, out, psv0_index);
 	default:
-		/* The entry must match to one of the devx_is_obj_create_cmd */
+		 
 		WARN_ON(true);
 		return 0;
 	}
@@ -953,7 +941,7 @@ static bool devx_is_general_cmd(void *in, struct mlx5_ib_dev *dev)
 {
 	u16 opcode = MLX5_GET(general_obj_in_cmd_hdr, in, opcode);
 
-	/* Pass all cmds for vhca_tunnel as general, tracking is done in FW */
+	 
 	if ((MLX5_CAP_GEN_64(dev->mdev, vhca_tunnel_commands) &&
 	     MLX5_GET(general_obj_in_cmd_hdr, in, vhca_tunnel_id)) ||
 	    (opcode >= MLX5_CMD_OP_GENERAL_START &&
@@ -1013,26 +1001,7 @@ static int UVERBS_HANDLER(MLX5_IB_METHOD_DEVX_QUERY_EQN)(
 	return 0;
 }
 
-/*
- *Security note:
- * The hardware protection mechanism works like this: Each device object that
- * is subject to UAR doorbells (QP/SQ/CQ) gets a UAR ID (called uar_page in
- * the device specification manual) upon its creation. Then upon doorbell,
- * hardware fetches the object context for which the doorbell was rang, and
- * validates that the UAR through which the DB was rang matches the UAR ID
- * of the object.
- * If no match the doorbell is silently ignored by the hardware. Of course,
- * the user cannot ring a doorbell on a UAR that was not mapped to it.
- * Now in devx, as the devx kernel does not manipulate the QP/SQ/CQ command
- * mailboxes (except tagging them with UID), we expose to the user its UAR
- * ID, so it can embed it in these objects in the expected specification
- * format. So the only thing the user can do is hurt itself by creating a
- * QP/SQ/CQ with a UAR ID other than his, and then in this case other users
- * may ring a doorbell on its objects.
- * The consequence of that will be that another user can schedule a QP/SQ
- * of the buggy user for execution (just insert it to the hardware schedule
- * queue or arm its CQ for event generation), no further harm is expected.
- */
+ 
 static int UVERBS_HANDLER(MLX5_IB_METHOD_DEVX_QUERY_UAR)(
 	struct uverbs_attr_bundle *attrs)
 {
@@ -1083,7 +1052,7 @@ static int UVERBS_HANDLER(MLX5_IB_METHOD_DEVX_OTHER)(
 	if (uid < 0)
 		return uid;
 
-	/* Only white list of some general HCA commands are allowed for this method. */
+	 
 	if (!devx_is_general_cmd(cmd_in, dev))
 		return -EINVAL;
 
@@ -1300,7 +1269,7 @@ static void devx_obj_build_destroy_cmd(void *in, void *out, void *din,
 		MLX5_SET(destroy_psv_in, din, psvn, *obj_id);
 		break;
 	default:
-		/* The entry must match to one of the devx_is_obj_create_cmd */
+		 
 		WARN_ON(true);
 		break;
 	}
@@ -1370,7 +1339,7 @@ static void devx_cleanup_subscription(struct mlx5_ib_dev *dev,
 		return;
 
 	list_del_rcu(&sub->obj_list);
-	/* check whether key level 1 for this obj_sub_list is empty */
+	 
 	event = xa_load(&dev->devx_event_table.event_xa,
 			sub->xa_key_level1);
 	WARN_ON(!event);
@@ -1398,11 +1367,7 @@ static int devx_obj_cleanup(struct ib_uobject *uobject,
 	if (obj->flags & DEVX_OBJ_FLAGS_INDIRECT_MKEY &&
 	    xa_erase(&obj->ib_dev->odp_mkeys,
 		     mlx5_base_mkey(obj->mkey.key)))
-		/*
-		 * The pagefault_single_data_segment() does commands against
-		 * the mmkey, we must wait for that to stop before freeing the
-		 * mkey, as another allocation could get the same mkey #.
-		 */
+		 
 		mlx5r_deref_wait_odp_mkey(&obj->mkey);
 
 	if (obj->flags & DEVX_OBJ_FLAGS_DCT)
@@ -1750,11 +1715,7 @@ static void devx_query_callback(int status, struct mlx5_async_work *context)
 	struct devx_async_event_queue *ev_queue = &ev_file->ev_queue;
 	unsigned long flags;
 
-	/*
-	 * Note that if the struct devx_async_cmd_event_file uobj begins to be
-	 * destroyed it will block at mlx5_cmd_cleanup_async_ctx() until this
-	 * routine returns, ensuring that it always remains valid here.
-	 */
+	 
 	spin_lock_irqsave(&ev_queue->lock, flags);
 	list_add_tail(&async_data->list, &ev_queue->event_list);
 	spin_unlock_irqrestore(&ev_queue->lock, flags);
@@ -1762,7 +1723,7 @@ static void devx_query_callback(int status, struct mlx5_async_work *context)
 	wake_up_interruptible(&ev_queue->poll_wait);
 }
 
-#define MAX_ASYNC_BYTES_IN_USE (1024 * 1024) /* 1MB */
+#define MAX_ASYNC_BYTES_IN_USE (1024 * 1024)  
 
 static int UVERBS_HANDLER(MLX5_IB_METHOD_DEVX_OBJ_ASYNC_QUERY)(
 	struct uverbs_attr_bundle *attrs)
@@ -1859,7 +1820,7 @@ subscribe_event_xa_dealloc(struct mlx5_devx_event_table *devx_event_table,
 	struct devx_event *event;
 	struct devx_obj_event *xa_val_level2;
 
-	/* Level 1 is valid for future use, no need to free */
+	 
 	if (!is_level2)
 		return;
 
@@ -1911,7 +1872,7 @@ subscribe_event_xa_alloc(struct mlx5_devx_event_table *devx_event_table,
 	if (!obj_event) {
 		obj_event = kzalloc(sizeof(*obj_event), GFP_KERNEL);
 		if (!obj_event)
-			/* Level1 is valid for future use, no need to free */
+			 
 			return -ENOMEM;
 
 		err = xa_insert(&event->object_ids,
@@ -1975,7 +1936,7 @@ static bool is_valid_events(struct mlx5_core_dev *dev,
 		mask_bit = event_type_num_list[i] % 64;
 
 		if (obj) {
-			/* CQ completion */
+			 
 			if (event_type_num_list[i] == 0)
 				continue;
 
@@ -2076,9 +2037,7 @@ static int UVERBS_HANDLER(MLX5_IB_METHOD_DEVX_SUBSCRIBE_EVENT)(
 
 	INIT_LIST_HEAD(&sub_list);
 
-	/* Protect from concurrent subscriptions to same XA entries to allow
-	 * both to succeed
-	 */
+	 
 	mutex_lock(&devx_event_table->event_xa_lock);
 	for (i = 0; i < num_events; i++) {
 		u32 key_level1;
@@ -2116,16 +2075,13 @@ static int UVERBS_HANDLER(MLX5_IB_METHOD_DEVX_SUBSCRIBE_EVENT)(
 
 		event_sub->cookie = cookie;
 		event_sub->ev_file = ev_file;
-		/* May be needed upon cleanup the devx object/subscription */
+		 
 		event_sub->xa_key_level1 = key_level1;
 		event_sub->xa_key_level2 = obj_id;
 		INIT_LIST_HEAD(&event_sub->obj_list);
 	}
 
-	/* Once all the allocations and the XA data insertions were done we
-	 * can go ahead and add all the subscriptions to the relevant lists
-	 * without concern of a failure.
-	 */
+	 
 	list_for_each_entry_safe(event_sub, tmp_sub, &sub_list, event_list) {
 		struct devx_event *event;
 		struct devx_obj_event *obj_event;
@@ -2220,9 +2176,7 @@ static unsigned int devx_umem_find_best_pgsize(struct ib_umem *umem,
 {
 	unsigned long page_size;
 
-	/* Don't bother checking larger page sizes as offset must be zero and
-	 * total DEVX umem length must be equal to total umem length.
-	 */
+	 
 	pgsz_bitmap &= GENMASK_ULL(max_t(u64, order_base_2(umem->length),
 					 PAGE_SHIFT),
 				   MLX5_ADAPTER_PAGE_SHIFT);
@@ -2233,12 +2187,7 @@ static unsigned int devx_umem_find_best_pgsize(struct ib_umem *umem,
 	if (!page_size)
 		return 0;
 
-	/* If the page_size is less than the CPU page size then we can use the
-	 * offset and create a umem which is a subset of the page list.
-	 * For larger page sizes we can't be sure the DMA  list reflects the
-	 * VA so we must ensure that the umem extent is exactly equal to the
-	 * page list. Reduce the page size until one of these cases is true.
-	 */
+	 
 	while ((ib_umem_dma_offset(umem, page_size) != 0 ||
 		(umem->length % page_size) != 0) &&
 		page_size > PAGE_SIZE)
@@ -2259,18 +2208,7 @@ static int devx_umem_reg_cmd_alloc(struct mlx5_ib_dev *dev,
 	void *umem;
 	int ret;
 
-	/*
-	 * If the user does not pass in pgsz_bitmap then the user promises not
-	 * to use umem_offset!=0 in any commands that allocate on top of the
-	 * umem.
-	 *
-	 * If the user wants to use a umem_offset then it must pass in
-	 * pgsz_bitmap which guides the maximum page size and thus maximum
-	 * object alignment inside the umem. See the PRM.
-	 *
-	 * Users are not allowed to use IOVA here, mkeys are not supported on
-	 * umem.
-	 */
+	 
 	ret = uverbs_get_const_default(&pgsz_bitmap, attrs,
 			MLX5_IB_ATTR_DEVX_UMEM_REG_PGSZ_BITMAP,
 			GENMASK_ULL(63,
@@ -2515,7 +2453,7 @@ static int devx_event_notifier(struct notifier_block *nb,
 	bool is_unaffiliated;
 	u32 obj_id;
 
-	/* Explicit filtering to kernel events which may occur frequently */
+	 
 	if (event_type == MLX5_EVENT_TYPE_CMD ||
 	    event_type == MLX5_EVENT_TYPE_PAGE_REQUEST)
 		return NOTIFY_OK;
@@ -2744,7 +2682,7 @@ static ssize_t devx_async_event_read(struct file *filp, char __user *buf,
 	spin_unlock_irq(&ev_file->lock);
 
 	if (copy_to_user(buf, event_data, eventsz))
-		/* This points to an application issue, not a kernel concern */
+		 
 		ret = -EFAULT;
 	else
 		ret = eventsz;
@@ -2828,7 +2766,7 @@ static void devx_async_event_destroy_uobj(struct ib_uobject *uobj,
 	spin_lock_irq(&ev_file->lock);
 	ev_file->is_destroyed = 1;
 
-	/* free the pending events allocation */
+	 
 	if (ev_file->omit_data) {
 		struct devx_event_subscription *event_sub, *tmp;
 
@@ -2850,12 +2788,12 @@ static void devx_async_event_destroy_uobj(struct ib_uobject *uobj,
 	wake_up_interruptible(&ev_file->poll_wait);
 
 	mutex_lock(&dev->devx_event_table.event_xa_lock);
-	/* delete the subscriptions which are related to this FD */
+	 
 	list_for_each_entry_safe(event_sub, event_sub_tmp,
 				 &ev_file->subscribed_events_list, file_list) {
 		devx_cleanup_subscription(dev, event_sub);
 		list_del_rcu(&event_sub->file_list);
-		/* subscription may not be used by the read API any more */
+		 
 		call_rcu(&event_sub->rcu, devx_free_subscription);
 	}
 	mutex_unlock(&dev->devx_event_table.event_xa_lock);

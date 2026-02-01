@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/smp.h>
 #include <linux/cpu.h>
 #include <linux/slab.h>
@@ -19,9 +19,7 @@ static DEFINE_PER_CPU(struct xen_common_irq, xen_debug_irq) = { .irq = -1 };
 static irqreturn_t xen_call_function_interrupt(int irq, void *dev_id);
 static irqreturn_t xen_call_function_single_interrupt(int irq, void *dev_id);
 
-/*
- * Reschedule call back.
- */
+ 
 static irqreturn_t xen_reschedule_interrupt(int irq, void *dev_id)
 {
 	inc_irq_stat(irq_resched_count);
@@ -147,7 +145,7 @@ void xen_smp_send_call_function_ipi(const struct cpumask *mask)
 
 	__xen_send_IPI_mask(mask, XEN_CALL_FUNCTION_VECTOR);
 
-	/* Make sure other vcpus get a chance to run if they need to. */
+	 
 	for_each_cpu(cpu, mask) {
 		if (xen_vcpu_stolen(cpu)) {
 			HYPERVISOR_sched_op(SCHEDOP_yield, NULL);
@@ -181,7 +179,7 @@ static inline int xen_map_vector(int vector)
 		break;
 #ifdef CONFIG_X86_64
 	case NMI_VECTOR:
-	case APIC_DM_NMI: /* Some use that instead of NMI_VECTOR */
+	case APIC_DM_NMI:  
 		xen_vector = XEN_NMI_VECTOR;
 		break;
 #endif

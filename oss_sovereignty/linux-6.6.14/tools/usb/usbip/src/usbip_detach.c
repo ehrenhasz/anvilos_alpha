@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2011 matt mooney <mfm@muteddisk.com>
- *               2005-2007 Takahiro Hirofuchi
- */
+
+ 
 
 #include <ctype.h>
 #include <limits.h>
@@ -54,7 +51,7 @@ static int detach_port(char *port)
 		return -1;
 	}
 
-	/* check for invalid port */
+	 
 	for (i = 0; i < vhci_driver->nports; i++) {
 		idev = &vhci_driver->idev[i];
 
@@ -73,7 +70,7 @@ static int detach_port(char *port)
 		goto call_driver_close;
 	}
 
-	/* remove the port state file */
+	 
 	snprintf(path, PATH_MAX, VHCI_STATE_PATH"/port%d", portnum);
 
 	remove(path);

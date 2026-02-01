@@ -1,14 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0
- *
- * Copyright 2016-2020 HabanaLabs, Ltd.
- * All Rights Reserved.
- *
- */
+ 
 
-/************************************
- ** This is an auto-generated file **
- **       DO NOT EDIT BELOW        **
- ************************************/
+ 
 
 #ifndef GAUDI2_CORESIGHT_H
 #define GAUDI2_CORESIGHT_H
@@ -981,4 +973,4 @@ enum gaudi2_debug_spmu_regs_index {
 	GAUDI2_SPMU_LAST = GAUDI2_SPMU_NIC11_DBG_1
 };
 
-#endif /* GAUDI2_CORESIGHT_H */
+#endif  

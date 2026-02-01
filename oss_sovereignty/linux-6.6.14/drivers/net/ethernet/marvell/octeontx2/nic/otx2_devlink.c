@@ -1,12 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Marvell RVU PF/VF Netdev Devlink
- *
- * Copyright (C) 2021 Marvell.
- */
+
+ 
 
 #include "otx2_common.h"
 
-/* Devlink Params APIs */
+ 
 static int otx2_dl_mcam_count_validate(struct devlink *devlink, u32 id,
 				       union devlink_param_value val,
 				       struct netlink_ext_ack *extack)

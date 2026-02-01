@@ -1,34 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *	sp5100_tco :	TCO timer driver for sp5100 chipsets
- *
- *	(c) Copyright 2009 Google Inc., All Rights Reserved.
- *
- *	Based on i8xx_tco.c:
- *	(c) Copyright 2000 kernel concepts <nils@kernelconcepts.de>, All Rights
- *	Reserved.
- *				https://www.kernelconcepts.de
- *
- *	See AMD Publication 43009 "AMD SB700/710/750 Register Reference Guide",
- *	    AMD Publication 44413 "AMD SP5100 Register Reference Guide"
- *	    AMD Publication 45482 "AMD SB800-Series Southbridges Register
- *	                                                      Reference Guide"
- *	    AMD Publication 48751 "BIOS and Kernel Developer’s Guide (BKDG)
- *				for AMD Family 16h Models 00h-0Fh Processors"
- *	    AMD Publication 51192 "AMD Bolton FCH Register Reference Guide"
- *	    AMD Publication 52740 "BIOS and Kernel Developer’s Guide (BKDG)
- *				for AMD Family 16h Models 30h-3Fh Processors"
- *	    AMD Publication 55570-B1-PUB "Processor Programming Reference (PPR)
- *				for AMD Family 17h Model 18h, Revision B1
- *				Processors (PUB)
- *	    AMD Publication 55772-A1-PUB "Processor Programming Reference (PPR)
- *				for AMD Family 17h Model 20h, Revision A1
- *				Processors (PUB)
- */
 
-/*
- *	Includes, defines, variables, module parameters, ...
- */
+ 
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -46,7 +19,7 @@
 
 #define TCO_DRIVER_NAME	"sp5100-tco"
 
-/* internal variables */
+ 
 
 enum tco_reg_layout {
 	sp5100, sb800, efch, efch_mmio
@@ -58,12 +31,12 @@ struct sp5100_tco {
 	enum tco_reg_layout tco_reg_layout;
 };
 
-/* the watchdog platform device */
+ 
 static struct platform_device *sp5100_tco_platform_device;
-/* the associated PCI device */
+ 
 static struct pci_dev *sp5100_tco_pci;
 
-/* module parameters */
+ 
 
 #define WATCHDOG_ACTION 0
 static bool action = WATCHDOG_ACTION;
@@ -71,8 +44,8 @@ module_param(action, bool, 0);
 MODULE_PARM_DESC(action, "Action taken when watchdog expires, 0 to reset, 1 to poweroff (default="
 		 __MODULE_STRING(WATCHDOG_ACTION) ")");
 
-#define WATCHDOG_HEARTBEAT 60	/* 60 sec default heartbeat. */
-static int heartbeat = WATCHDOG_HEARTBEAT;  /* in seconds */
+#define WATCHDOG_HEARTBEAT 60	 
+static int heartbeat = WATCHDOG_HEARTBEAT;   
 module_param(heartbeat, int, 0);
 MODULE_PARM_DESC(heartbeat, "Watchdog heartbeat in seconds. (default="
 		 __MODULE_STRING(WATCHDOG_HEARTBEAT) ")");
@@ -82,9 +55,7 @@ module_param(nowayout, bool, 0);
 MODULE_PARM_DESC(nowayout, "Watchdog cannot be stopped once started."
 		" (default=" __MODULE_STRING(WATCHDOG_NOWAYOUT) ")");
 
-/*
- * Some TCO specific functions
- */
+ 
 
 static enum tco_reg_layout tco_reg_layout(struct pci_dev *dev)
 {
@@ -115,7 +86,7 @@ static int tco_timer_start(struct watchdog_device *wdd)
 	val |= SP5100_WDT_START_STOP_BIT;
 	writel(val, SP5100_WDT_CONTROL(tco->tcobase));
 
-	/* This must be a distinct write. */
+	 
 	val |= SP5100_WDT_TRIGGER_BIT;
 	writel(val, SP5100_WDT_CONTROL(tco->tcobase));
 
@@ -151,7 +122,7 @@ static int tco_timer_set_timeout(struct watchdog_device *wdd,
 {
 	struct sp5100_tco *tco = watchdog_get_drvdata(wdd);
 
-	/* Write new heartbeat to watchdog */
+	 
 	writel(t, SP5100_WDT_COUNT(tco->tcobase));
 
 	wdd->timeout = t;
@@ -189,19 +160,19 @@ static void tco_timer_enable(struct sp5100_tco *tco)
 
 	switch (tco->tco_reg_layout) {
 	case sb800:
-		/* For SB800 or later */
-		/* Set the Watchdog timer resolution to 1 sec */
+		 
+		 
 		sp5100_tco_update_pm_reg8(SB800_PM_WATCHDOG_CONFIG,
 					  0xff, SB800_PM_WATCHDOG_SECOND_RES);
 
-		/* Enable watchdog decode bit and watchdog timer */
+		 
 		sp5100_tco_update_pm_reg8(SB800_PM_WATCHDOG_CONTROL,
 					  ~SB800_PM_WATCHDOG_DISABLE,
 					  SB800_PCI_WATCHDOG_DECODE_EN);
 		break;
 	case sp5100:
-		/* For SP5100 or SB7x0 */
-		/* Enable watchdog decode bit */
+		 
+		 
 		pci_read_config_dword(sp5100_tco_pci,
 				      SP5100_PCI_WATCHDOG_MISC_REG,
 				      &val);
@@ -212,13 +183,13 @@ static void tco_timer_enable(struct sp5100_tco *tco)
 				       SP5100_PCI_WATCHDOG_MISC_REG,
 				       val);
 
-		/* Enable Watchdog timer and set the resolution to 1 sec */
+		 
 		sp5100_tco_update_pm_reg8(SP5100_PM_WATCHDOG_CONTROL,
 					  ~SP5100_PM_WATCHDOG_DISABLE,
 					  SP5100_PM_WATCHDOG_SECOND_RES);
 		break;
 	case efch:
-		/* Set the Watchdog timer resolution to 1 sec and enable */
+		 
 		sp5100_tco_update_pm_reg8(EFCH_PM_DECODEEN3,
 					  ~EFCH_PM_WATCHDOG_DISABLE,
 					  EFCH_PM_DECODEEN_SECOND_RES);
@@ -264,7 +235,7 @@ static u32 sp5100_tco_prepare_base(struct sp5100_tco *tco,
 	if (!mmio_addr && !alt_mmio_addr)
 		return -ENODEV;
 
-	/* Check for MMIO address and alternate MMIO address conflicts */
+	 
 	if (mmio_addr)
 		mmio_addr = sp5100_tco_request_region(dev, mmio_addr, dev_name);
 
@@ -300,27 +271,21 @@ static int sp5100_tco_timer_init(struct sp5100_tco *tco)
 		return -ENODEV;
 	}
 
-	/*
-	 * Save WatchDogFired status, because WatchDogFired flag is
-	 * cleared here.
-	 */
+	 
 	if (val & SP5100_WDT_FIRED)
 		wdd->bootstatus = WDIOF_CARDRESET;
 
-	/* Set watchdog action */
+	 
 	if (action)
 		val |= SP5100_WDT_ACTION_RESET;
 	else
 		val &= ~SP5100_WDT_ACTION_RESET;
 	writel(val, SP5100_WDT_CONTROL(tco->tcobase));
 
-	/* Set a reasonable heartbeat before we stop the timer */
+	 
 	tco_timer_set_timeout(wdd, wdd->timeout);
 
-	/*
-	 * Stop the TCO before we change anything so we don't race with
-	 * a zeroed timer.
-	 */
+	 
 	tco_timer_stop(wdd);
 
 	return 0;
@@ -377,18 +342,14 @@ static int sp5100_tco_setupdevice_mmio(struct device *dev,
 		goto out;
 	}
 
-	/*
-	 * EFCH_PM_DECODEEN_WDT_TMREN is dual purpose. This bitfield
-	 * enables sp5100_tco register MMIO space decoding. The bitfield
-	 * also starts the timer operation. Enable if not already enabled.
-	 */
+	 
 	val = efch_read_pm_reg8(addr, EFCH_PM_DECODEEN);
 	if (!(val & EFCH_PM_DECODEEN_WDT_TMREN)) {
 		efch_update_pm_reg8(addr, EFCH_PM_DECODEEN, 0xff,
 				    EFCH_PM_DECODEEN_WDT_TMREN);
 	}
 
-	/* Error if the timer could not be enabled */
+	 
 	val = efch_read_pm_reg8(addr, EFCH_PM_DECODEEN);
 	if (!(val & EFCH_PM_DECODEEN_WDT_TMREN)) {
 		dev_err(dev, "Failed to enable the timer\n");
@@ -398,7 +359,7 @@ static int sp5100_tco_setupdevice_mmio(struct device *dev,
 
 	mmio_addr = EFCH_PM_WDT_ADDR;
 
-	/* Determine alternate MMIO base address */
+	 
 	val = efch_read_pm_reg8(addr, EFCH_PM_ISACONTROL);
 	if (val & EFCH_PM_ISACONTROL_MMIOEN)
 		alt_mmio_addr = EFCH_PM_ACPI_MMIO_ADDR +
@@ -432,7 +393,7 @@ static int sp5100_tco_setupdevice(struct device *dev,
 	if (tco->tco_reg_layout == efch_mmio)
 		return sp5100_tco_setupdevice_mmio(dev, wdd);
 
-	/* Request the IO ports used by this driver */
+	 
 	if (!request_muxed_region(SP5100_IO_PM_INDEX_REG,
 				  SP5100_PM_IOPORTS_SIZE, "sp5100_tco")) {
 		dev_err(dev, "I/O address 0x%04x already in use\n",
@@ -440,26 +401,21 @@ static int sp5100_tco_setupdevice(struct device *dev,
 		return -EBUSY;
 	}
 
-	/*
-	 * Determine type of southbridge chipset.
-	 */
+	 
 	switch (tco->tco_reg_layout) {
 	case sp5100:
 		dev_name = SP5100_DEVNAME;
 		mmio_addr = sp5100_tco_read_pm_reg32(SP5100_PM_WATCHDOG_BASE) &
 								0xfffffff8;
 
-		/*
-		 * Secondly, find the watchdog timer MMIO address
-		 * from SBResource_MMIO register.
-		 */
+		 
 
-		/* Read SBResource_MMIO from PCI config(PCI_Reg: 9Ch) */
+		 
 		pci_read_config_dword(sp5100_tco_pci,
 				      SP5100_SB_RESOURCE_MMIO_BASE,
 				      &val);
 
-		/* Verify MMIO is enabled and using bar0 */
+		 
 		if ((val & SB800_ACPI_MMIO_MASK) == SB800_ACPI_MMIO_DECODE_EN)
 			alt_mmio_addr = (val & ~0xfff) + SB800_PM_WDT_MMIO_OFFSET;
 		break;
@@ -468,10 +424,10 @@ static int sp5100_tco_setupdevice(struct device *dev,
 		mmio_addr = sp5100_tco_read_pm_reg32(SB800_PM_WATCHDOG_BASE) &
 								0xfffffff8;
 
-		/* Read SBResource_MMIO from AcpiMmioEn(PM_Reg: 24h) */
+		 
 		val = sp5100_tco_read_pm_reg32(SB800_PM_ACPI_MMIO_EN);
 
-		/* Verify MMIO is enabled and using bar0 */
+		 
 		if ((val & SB800_ACPI_MMIO_MASK) == SB800_ACPI_MMIO_DECODE_EN)
 			alt_mmio_addr = (val & ~0xfff) + SB800_PM_WDT_MMIO_OFFSET;
 		break;
@@ -492,7 +448,7 @@ static int sp5100_tco_setupdevice(struct device *dev,
 
 	ret = sp5100_tco_prepare_base(tco, mmio_addr, alt_mmio_addr, dev_name);
 	if (!ret) {
-		/* Setup the watchdog timer */
+		 
 		tco_timer_enable(tco);
 		ret = sp5100_tco_timer_init(tco);
 	}
@@ -550,7 +506,7 @@ static int sp5100_tco_probe(struct platform_device *pdev)
 	if (ret)
 		return ret;
 
-	/* Show module parameters */
+	 
 	dev_info(dev, "initialized. heartbeat=%d sec (nowayout=%d)\n",
 		 wdd->timeout, nowayout);
 
@@ -564,14 +520,7 @@ static struct platform_driver sp5100_tco_driver = {
 	},
 };
 
-/*
- * Data for PCI driver interface
- *
- * This data only exists for exporting the supported
- * PCI ids via MODULE_DEVICE_TABLE.  We do not actually
- * register a pci_driver, because someone else might
- * want to register another driver on the same PCI id.
- */
+ 
 static const struct pci_device_id sp5100_tco_pci_tbl[] = {
 	{ PCI_VENDOR_ID_ATI, PCI_DEVICE_ID_ATI_SBX00_SMBUS, PCI_ANY_ID,
 	  PCI_ANY_ID, },
@@ -581,7 +530,7 @@ static const struct pci_device_id sp5100_tco_pci_tbl[] = {
 	  PCI_ANY_ID, },
 	{ PCI_VENDOR_ID_HYGON, PCI_DEVICE_ID_AMD_KERNCZ_SMBUS, PCI_ANY_ID,
 	  PCI_ANY_ID, },
-	{ 0, },			/* End of list */
+	{ 0, },			 
 };
 MODULE_DEVICE_TABLE(pci, sp5100_tco_pci_tbl);
 
@@ -590,7 +539,7 @@ static int __init sp5100_tco_init(void)
 	struct pci_dev *dev = NULL;
 	int err;
 
-	/* Match the PCI device */
+	 
 	for_each_pci_dev(dev) {
 		if (pci_match_id(sp5100_tco_pci_tbl, dev) != NULL) {
 			sp5100_tco_pci = dev;

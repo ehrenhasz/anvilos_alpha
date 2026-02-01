@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * xpress_decompress.c - A decompressor for the XPRESS compression format
- * (Huffman variant), which can be used in "System Compressed" files.  This is
- * based on the code from wimlib.
- *
- * Copyright (C) 2015 Eric Biggers
- */
+
+ 
 
 #include "decompress_common.h"
 #include "lib.h"
@@ -14,46 +8,30 @@
 #define XPRESS_MAX_CODEWORD_LEN	15
 #define XPRESS_MIN_MATCH_LEN	3
 
-/* This value is chosen for fast decompression.  */
+ 
 #define XPRESS_TABLEBITS 12
 
-/* Reusable heap-allocated memory for XPRESS decompression  */
+ 
 struct xpress_decompressor {
 
-	/* The Huffman decoding table  */
+	 
 	u16 decode_table[(1 << XPRESS_TABLEBITS) + 2 * XPRESS_NUM_SYMBOLS];
 
-	/* An array that maps symbols to codeword lengths  */
+	 
 	u8 lens[XPRESS_NUM_SYMBOLS];
 
-	/* Temporary space for make_huffman_decode_table()  */
+	 
 	u16 working_space[2 * (1 + XPRESS_MAX_CODEWORD_LEN) +
 			  XPRESS_NUM_SYMBOLS];
 };
 
-/*
- * xpress_allocate_decompressor - Allocate an XPRESS decompressor
- *
- * Return the pointer to the decompressor on success, or return NULL and set
- * errno on failure.
- */
+ 
 struct xpress_decompressor *xpress_allocate_decompressor(void)
 {
 	return kmalloc(sizeof(struct xpress_decompressor), GFP_NOFS);
 }
 
-/*
- * xpress_decompress - Decompress a buffer of XPRESS-compressed data
- *
- * @decompressor:       A decompressor that was allocated with
- *			xpress_allocate_decompressor()
- * @compressed_data:	The buffer of data to decompress
- * @compressed_size:	Number of bytes of compressed data
- * @uncompressed_data:	The buffer in which to store the decompressed data
- * @uncompressed_size:	The number of bytes the data decompresses into
- *
- * Return 0 on success, or return -1 and set errno on failure.
- */
+ 
 int xpress_decompress(struct xpress_decompressor *decompressor,
 		      const void *compressed_data, size_t compressed_size,
 		      void *uncompressed_data, size_t uncompressed_size)
@@ -66,7 +44,7 @@ int xpress_decompress(struct xpress_decompressor *decompressor,
 	struct input_bitstream is;
 	u32 i;
 
-	/* Read the Huffman codeword lengths.  */
+	 
 	if (compressed_size < XPRESS_NUM_SYMBOLS / 2)
 		goto invalid;
 	for (i = 0; i < XPRESS_NUM_SYMBOLS / 2; i++) {
@@ -74,14 +52,14 @@ int xpress_decompress(struct xpress_decompressor *decompressor,
 		d->lens[i*2 + 1] = in_begin[i] >> 4;
 	}
 
-	/* Build a decoding table for the Huffman code.  */
+	 
 	if (make_huffman_decode_table(d->decode_table, XPRESS_NUM_SYMBOLS,
 				      XPRESS_TABLEBITS, d->lens,
 				      XPRESS_MAX_CODEWORD_LEN,
 				      d->working_space))
 		goto invalid;
 
-	/* Decode the matches and literals.  */
+	 
 
 	init_input_bitstream(&is, in_begin + XPRESS_NUM_SYMBOLS / 2,
 			     compressed_size - XPRESS_NUM_SYMBOLS / 2);
@@ -95,10 +73,10 @@ int xpress_decompress(struct xpress_decompressor *decompressor,
 		sym = read_huffsym(&is, d->decode_table,
 				   XPRESS_TABLEBITS, XPRESS_MAX_CODEWORD_LEN);
 		if (sym < 256) {
-			/* Literal  */
+			 
 			*out_next++ = sym;
 		} else {
-			/* Match  */
+			 
 			length = sym & 0xf;
 			log2_offset = (sym >> 4) & 0xf;
 
@@ -130,12 +108,7 @@ invalid:
 	return -1;
 }
 
-/*
- * xpress_free_decompressor - Free an XPRESS decompressor
- *
- * @decompressor:       A decompressor that was allocated with
- *			xpress_allocate_decompressor(), or NULL.
- */
+ 
 void xpress_free_decompressor(struct xpress_decompressor *decompressor)
 {
 	kfree(decompressor);

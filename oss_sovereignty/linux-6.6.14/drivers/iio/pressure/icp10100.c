@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2020 InvenSense, Inc.
- *
- * Driver for InvenSense ICP-1010xx barometric pressure and temperature sensor.
- *
- * Datasheet:
- * http://www.invensense.com/wp-content/uploads/2018/01/DS-000186-ICP-101xx-v1.2.pdf
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/module.h>
@@ -29,10 +22,10 @@
 #define ICP10100_CRC8_INIT		0xFF
 
 enum icp10100_mode {
-	ICP10100_MODE_LP,	/* Low power mode: 1x sampling */
-	ICP10100_MODE_N,	/* Normal mode: 2x sampling */
-	ICP10100_MODE_LN,	/* Low noise mode: 4x sampling */
-	ICP10100_MODE_ULN,	/* Ultra low noise mode: 8x sampling */
+	ICP10100_MODE_LP,	 
+	ICP10100_MODE_N,	 
+	ICP10100_MODE_LN,	 
+	ICP10100_MODE_ULN,	 
 	ICP10100_MODE_NB,
 };
 
@@ -152,19 +145,19 @@ static int icp10100_send_cmd(struct icp10100_state *st,
 	dev_dbg(&st->client->dev, "sending cmd %#x\n", be16_to_cpu(cmd->cmd));
 
 	if (cmd->response_word_nb > 0 && cmd->wait_us == 0) {
-		/* direct command-response without waiting */
+		 
 		ret = icp10100_i2c_xfer(st->client->adapter, msgs,
 					ARRAY_SIZE(msgs));
 		if (ret)
 			return ret;
 	} else {
-		/* transfer command write */
+		 
 		ret = icp10100_i2c_xfer(st->client->adapter, &msgs[0], 1);
 		if (ret)
 			return ret;
 		if (cmd->wait_us > 0)
 			usleep_range(cmd->wait_us, cmd->wait_max_us);
-		/* transfer response read if needed */
+		 
 		if (cmd->response_word_nb > 0) {
 			ret = icp10100_i2c_xfer(st->client->adapter, &msgs[1], 1);
 			if (ret)
@@ -174,7 +167,7 @@ static int icp10100_send_cmd(struct icp10100_state *st,
 		}
 	}
 
-	/* process read words with crc checking */
+	 
 	for (i = 0; i < cmd->response_word_nb; ++i) {
 		ptr = &data[i * ICP10100_RESPONSE_WORD_LENGTH];
 		crc = crc8(icp10100_crc8_table, ptr, ICP10100_CRC8_WORD_LENGTH,
@@ -197,7 +190,7 @@ static int icp10100_read_cal_otp(struct icp10100_state *st)
 	int i;
 	int ret;
 
-	/* switch into OTP read mode */
+	 
 	ret = i2c_master_send(st->client, icp10100_switch_mode_otp,
 			      ARRAY_SIZE(icp10100_switch_mode_otp));
 	if (ret < 0)
@@ -205,7 +198,7 @@ static int icp10100_read_cal_otp(struct icp10100_state *st)
 	if (ret != ARRAY_SIZE(icp10100_switch_mode_otp))
 		return -EIO;
 
-	/* read 4 calibration values */
+	 
 	for (i = 0; i < 4; ++i) {
 		ret = icp10100_send_cmd(st, &icp10100_cmd_read_otp,
 					&val, sizeof(val));
@@ -224,7 +217,7 @@ static int icp10100_init_chip(struct icp10100_state *st)
 	uint16_t id;
 	int ret;
 
-	/* read and check id */
+	 
 	ret = icp10100_send_cmd(st, &icp10100_cmd_read_id, &val, sizeof(val));
 	if (ret)
 		return ret;
@@ -234,12 +227,12 @@ static int icp10100_init_chip(struct icp10100_state *st)
 		return -ENODEV;
 	}
 
-	/* read calibration data from OTP */
+	 
 	ret = icp10100_read_cal_otp(st);
 	if (ret)
 		return ret;
 
-	/* reset chip */
+	 
 	return icp10100_send_cmd(st, &icp10100_cmd_soft_reset, NULL, 0);
 }
 
@@ -288,7 +281,7 @@ static uint32_t icp10100_get_pressure(struct icp10100_state *st,
 	dev_dbg(&st->client->dev, "raw: pressure = %u, temp = %u\n",
 		raw_pressure, raw_temp);
 
-	/* compute p_lut values */
+	 
 	t = (int32_t)raw_temp - 32768;
 	t_square = t * t;
 	val1 = (int64_t)st->cal[0] * (int64_t)t_square;
@@ -301,7 +294,7 @@ static uint32_t icp10100_get_pressure(struct icp10100_state *st,
 	dev_dbg(&st->client->dev, "p_lut = [%d, %d, %d]\n",
 		p_lut[0], p_lut[1], p_lut[2]);
 
-	/* compute a, b, c factors */
+	 
 	val1 = (int64_t)p_lut[0] * (int64_t)p_lut[1] *
 			(int64_t)(p_calib[0] - p_calib[1]) +
 		(int64_t)p_lut[1] * (int64_t)p_lut[2] *
@@ -324,10 +317,7 @@ static uint32_t icp10100_get_pressure(struct icp10100_state *st,
 	b = ((int64_t)p_calib[0] - a) * ((int64_t)p_lut[0] + c);
 	dev_dbg(&st->client->dev, "b = %lld\n", b);
 
-	/*
-	 * pressure_Pa = a + (b / (c + raw_pressure))
-	 * pressure_mPa = 1000 * pressure_Pa
-	 */
+	 
 	pressure_mPa = 1000LL * a + div64_s64(1000LL * b, c + raw_pressure);
 
 	return pressure_mPa;
@@ -355,7 +345,7 @@ static int icp10100_read_raw_measures(struct iio_dev *indio_dev,
 	case IIO_PRESSURE:
 		pressure_mPa = icp10100_get_pressure(st, raw_pressure,
 						     raw_temp);
-		/* mPa to kPa */
+		 
 		*val = pressure_mPa / 1000000;
 		*val2 = pressure_mPa % 1000000;
 		ret = IIO_VAL_INT_PLUS_MICRO;
@@ -387,7 +377,7 @@ static int icp10100_read_raw(struct iio_dev *indio_dev,
 	case IIO_CHAN_INFO_SCALE:
 		switch (chan->type) {
 		case IIO_TEMP:
-			/* 1000 * 175°C / 65536 in m°C */
+			 
 			*val = 2;
 			*val2 = 670288;
 			return IIO_VAL_INT_PLUS_MICRO;
@@ -398,7 +388,7 @@ static int icp10100_read_raw(struct iio_dev *indio_dev,
 	case IIO_CHAN_INFO_OFFSET:
 		switch (chan->type) {
 		case IIO_TEMP:
-			/* 1000 * -45°C in m°C */
+			 
 			*val = -45000;
 			return IIO_VAL_INT;
 		default:
@@ -443,7 +433,7 @@ static int icp10100_write_raw(struct iio_dev *indio_dev,
 
 	switch (mask) {
 	case IIO_CHAN_INFO_OVERSAMPLING_RATIO:
-		/* oversampling is always positive and a power of 2 */
+		 
 		if (val <= 0 || !is_power_of_2(val))
 			return -EINVAL;
 		mode = ilog2(val);
@@ -570,7 +560,7 @@ static int icp10100_probe(struct i2c_client *client)
 	if (ret)
 		return ret;
 
-	/* has to be done before the first i2c communication */
+	 
 	crc8_populate_msb(icp10100_crc8_table, ICP10100_CRC8_POLYNOMIAL);
 
 	ret = icp10100_init_chip(st);
@@ -579,7 +569,7 @@ static int icp10100_probe(struct i2c_client *client)
 		return ret;
 	}
 
-	/* enable runtime pm with autosuspend delay of 2s */
+	 
 	pm_runtime_get_noresume(&client->dev);
 	pm_runtime_set_active(&client->dev);
 	pm_runtime_enable(&client->dev);
@@ -617,7 +607,7 @@ static int icp10100_resume(struct device *dev)
 	if (ret)
 		goto out_unlock;
 
-	/* reset chip */
+	 
 	ret = icp10100_send_cmd(st, &icp10100_cmd_soft_reset, NULL, 0);
 
 out_unlock:

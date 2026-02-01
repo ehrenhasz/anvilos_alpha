@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _ASM_X86_PAGE_DEFS_H
 #define _ASM_X86_PAGE_DEFS_H
 
@@ -6,16 +6,14 @@
 #include <linux/types.h>
 #include <linux/mem_encrypt.h>
 
-/* PAGE_SHIFT determines the page size */
+ 
 #define PAGE_SHIFT		12
 #define PAGE_SIZE		(_AC(1,UL) << PAGE_SHIFT)
 #define PAGE_MASK		(~(PAGE_SIZE-1))
 
 #define __VIRTUAL_MASK		((1UL << __VIRTUAL_MASK_SHIFT) - 1)
 
-/* Cast P*D_MASK to a signed type so that it is sign-extended if
-   virtual addresses are 32-bits but physical addresses are larger
-   (ie, 32-bit PAE). */
+ 
 #define PHYSICAL_PAGE_MASK	(((signed long)PAGE_MASK) & __PHYSICAL_MASK)
 #define PHYSICAL_PMD_PAGE_MASK	(((signed long)PMD_MASK) & __PHYSICAL_MASK)
 #define PHYSICAL_PUD_PAGE_MASK	(((signed long)PUD_MASK) & __PHYSICAL_MASK)
@@ -42,7 +40,7 @@
 #else
 #include <asm/page_32_types.h>
 #define IOREMAP_MAX_ORDER       (PMD_SHIFT)
-#endif	/* CONFIG_X86_64 */
+#endif	 
 
 #ifndef __ASSEMBLY__
 
@@ -67,6 +65,6 @@ bool pfn_range_is_mapped(unsigned long start_pfn, unsigned long end_pfn);
 
 extern void initmem_init(void);
 
-#endif	/* !__ASSEMBLY__ */
+#endif	 
 
-#endif	/* _ASM_X86_PAGE_DEFS_H */
+#endif	 

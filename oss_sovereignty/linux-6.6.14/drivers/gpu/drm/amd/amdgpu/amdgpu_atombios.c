@@ -1,28 +1,4 @@
-/*
- * Copyright 2007-8 Advanced Micro Devices, Inc.
- * Copyright 2008 Red Hat Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: Dave Airlie
- *          Alex Deucher
- */
+ 
 
 #include <drm/amdgpu_drm.h>
 #include "amdgpu.h"
@@ -342,7 +318,7 @@ bool amdgpu_atombios_get_connector_info_from_object_table(struct amdgpu_device *
 			    (le16_to_cpu(path->usConnObjectId) & OBJECT_ID_MASK)
 			    >> OBJECT_ID_SHIFT;
 
-			/* Skip TV/CV support */
+			 
 			if ((le16_to_cpu(path->usDeviceTag) ==
 			     ATOM_DEVICE_TV1_SUPPORT) ||
 			    (le16_to_cpu(path->usDeviceTag) ==
@@ -467,7 +443,7 @@ bool amdgpu_atombios_get_connector_info_from_object_table(struct amdgpu_device *
 				}
 			}
 
-			/* look up gpio for ddc, hpd */
+			 
 			ddc_bus.valid = false;
 			hpd.hpd = AMDGPU_HPD_NONE;
 			if ((le16_to_cpu(path->usDeviceTag) &
@@ -525,7 +501,7 @@ bool amdgpu_atombios_get_connector_info_from_object_table(struct amdgpu_device *
 				}
 			}
 
-			/* needed for aux chan transactions */
+			 
 			ddc_bus.hpd = hpd.hpd;
 
 			conn_id = le16_to_cpu(path->usConnObjectId);
@@ -572,7 +548,7 @@ int amdgpu_atombios_get_clock_info(struct amdgpu_device *adev)
 		union firmware_info *firmware_info =
 			(union firmware_info *)(mode_info->atom_context->bios +
 						data_offset);
-		/* pixel clocks */
+		 
 		ppll->reference_freq =
 		    le16_to_cpu(firmware_info->info.usReferenceClock);
 		ppll->reference_div = 0;
@@ -612,7 +588,7 @@ int amdgpu_atombios_get_clock_info(struct amdgpu_device *adev)
 		for (i = 1; i < AMDGPU_MAX_PPLL; i++)
 			adev->clock.ppll[i] = *ppll;
 
-		/* system clock */
+		 
 		spll->reference_freq =
 			le16_to_cpu(firmware_info->info_21.usCoreReferenceClock);
 		spll->reference_div = 0;
@@ -622,7 +598,7 @@ int amdgpu_atombios_get_clock_info(struct amdgpu_device *adev)
 		spll->pll_out_max =
 		    le32_to_cpu(firmware_info->info.ulMaxEngineClockPLL_Output);
 
-		/* ??? */
+		 
 		if (spll->pll_out_min == 0)
 			spll->pll_out_min = 64800;
 
@@ -639,7 +615,7 @@ int amdgpu_atombios_get_clock_info(struct amdgpu_device *adev)
 		spll->max_feedback_div = 0xff;
 		spll->best_vco = 0;
 
-		/* memory clock */
+		 
 		mpll->reference_freq =
 			le16_to_cpu(firmware_info->info_21.usMemoryReferenceClock);
 		mpll->reference_div = 0;
@@ -649,7 +625,7 @@ int amdgpu_atombios_get_clock_info(struct amdgpu_device *adev)
 		mpll->pll_out_max =
 		    le32_to_cpu(firmware_info->info.ulMaxMemoryClockPLL_Output);
 
-		/* ??? */
+		 
 		if (mpll->pll_out_min == 0)
 			mpll->pll_out_min = 64800;
 
@@ -671,10 +647,10 @@ int amdgpu_atombios_get_clock_info(struct amdgpu_device *adev)
 		mpll->max_feedback_div = 0xff;
 		mpll->best_vco = 0;
 
-		/* disp clock */
+		 
 		adev->clock.default_dispclk =
 			le32_to_cpu(firmware_info->info_21.ulDefaultDispEngineClkFreq);
-		/* set a reasonable default for DP */
+		 
 		if (adev->clock.default_dispclk < 53900) {
 			DRM_DEBUG("Changing default dispclk from %dMhz to 600Mhz\n",
 				  adev->clock.default_dispclk / 100);
@@ -692,7 +668,7 @@ int amdgpu_atombios_get_clock_info(struct amdgpu_device *adev)
 		if (adev->clock.max_pixel_clock == 0)
 			adev->clock.max_pixel_clock = 40000;
 
-		/* not technically a clock, but... */
+		 
 		adev->mode_info.firmware_flags =
 			le16_to_cpu(firmware_info->info.usFirmwareCapability.susAccess);
 
@@ -744,10 +720,7 @@ union igp_info {
 	struct _ATOM_INTEGRATED_SYSTEM_INFO_V1_9 info_9;
 };
 
-/*
- * Return vram width from integrated system info table, if available,
- * or 0 if not.
- */
+ 
 int amdgpu_atombios_get_vram_width(struct amdgpu_device *adev)
 {
 	struct amdgpu_mode_info *mode_info = &adev->mode_info;
@@ -756,7 +729,7 @@ int amdgpu_atombios_get_vram_width(struct amdgpu_device *adev)
 	union igp_info *igp_info;
 	u8 frev, crev;
 
-	/* get any igp specific overrides */
+	 
 	if (amdgpu_atom_parse_data_header(mode_info->atom_context, index, &size,
 				   &frev, &crev, &data_offset)) {
 		igp_info = (union igp_info *)
@@ -784,7 +757,7 @@ static void amdgpu_atombios_get_igp_ss_overrides(struct amdgpu_device *adev,
 	u8 frev, crev;
 	u16 percentage = 0, rate = 0;
 
-	/* get any igp specific overrides */
+	 
 	if (amdgpu_atom_parse_data_header(mode_info->atom_context, index, &size,
 				   &frev, &crev, &data_offset)) {
 		igp_info = (union igp_info *)
@@ -1013,8 +986,7 @@ int amdgpu_atombios_get_clock_dividers(struct amdgpu_device *adev,
 	case 2:
 	case 3:
 	case 5:
-		/* r6xx, r7xx, evergreen, ni, si.
-		 * TODO: add support for asic_type <= CHIP_RV770*/
+		 
 		if (clock_type == COMPUTE_ENGINE_PLL_PARAM) {
 			args.v3.ulClockParams = cpu_to_le32((clock_type << 24) | clock);
 
@@ -1031,7 +1003,7 @@ int amdgpu_atombios_get_clock_dividers(struct amdgpu_device *adev,
 			dividers->vco_mode = (args.v3.ucCntlFlag &
 					      ATOM_PLL_CNTL_FLAG_MPLL_VCO_MODE) ? 1 : 0;
 		} else {
-			/* for SI we use ComputeMemoryClockParam for memory plls */
+			 
 			if (adev->asic_type >= CHIP_TAHITI)
 				return -EINVAL;
 			args.v5.ulClockParams = cpu_to_le32((clock_type << 24) | clock);
@@ -1053,8 +1025,8 @@ int amdgpu_atombios_get_clock_dividers(struct amdgpu_device *adev,
 		}
 		break;
 	case 4:
-		/* fusion */
-		args.v4.ulClock = cpu_to_le32(clock);	/* 10 khz */
+		 
+		args.v4.ulClock = cpu_to_le32(clock);	 
 
 		amdgpu_atom_execute_table(adev->mode_info.atom_context, index, (uint32_t *)&args);
 
@@ -1062,10 +1034,10 @@ int amdgpu_atombios_get_clock_dividers(struct amdgpu_device *adev,
 		dividers->real_clock = le32_to_cpu(args.v4.ulClock);
 		break;
 	case 6:
-		/* CI */
-		/* COMPUTE_GPUCLK_INPUT_FLAG_DEFAULT_GPUCLK, COMPUTE_GPUCLK_INPUT_FLAG_SCLK */
+		 
+		 
 		args.v6_in.ulClock.ulComputeClockFlag = clock_type;
-		args.v6_in.ulClock.ulClockFreq = cpu_to_le32(clock);	/* 10 khz */
+		args.v6_in.ulClock.ulClockFreq = cpu_to_le32(clock);	 
 
 		amdgpu_atom_execute_table(adev->mode_info.atom_context, index, (uint32_t *)&args);
 
@@ -1103,8 +1075,8 @@ int amdgpu_atombios_get_memory_pll_dividers(struct amdgpu_device *adev,
 	case 2:
 		switch (crev) {
 		case 1:
-			/* SI */
-			args.ulClock = cpu_to_le32(clock);	/* 10 khz */
+			 
+			args.ulClock = cpu_to_le32(clock);	 
 			args.ucInputFlag = 0;
 			if (strobe_mode)
 				args.ucInputFlag |= MPLL_INPUT_FLAG_STROBE_MODE_EN;
@@ -1545,13 +1517,13 @@ static void amdgpu_atombios_scratch_regs_init(struct amdgpu_device *adev)
 	bios_2_scratch = RREG32(adev->bios_scratch_reg_offset + 2);
 	bios_6_scratch = RREG32(adev->bios_scratch_reg_offset + 6);
 
-	/* let the bios control the backlight */
+	 
 	bios_2_scratch &= ~ATOM_S2_VRI_BRIGHT_ENABLE;
 
-	/* tell the bios not to handle mode switching */
+	 
 	bios_6_scratch |= ATOM_S6_ACC_BLOCK_DISPLAY_SWITCH;
 
-	/* clear the vbios dpms state */
+	 
 	bios_2_scratch &= ~ATOM_S2_DEVICE_DPMS_STATE;
 
 	WREG32(adev->bios_scratch_reg_offset + 2, bios_2_scratch);
@@ -1593,15 +1565,7 @@ bool amdgpu_atombios_scratch_need_asic_init(struct amdgpu_device *adev)
 		return true;
 }
 
-/* Atom needs data in little endian format so swap as appropriate when copying
- * data to or from atom. Note that atom operates on dw units.
- *
- * Use to_le=true when sending data to atom and provide at least
- * ALIGN(num_bytes,4) bytes in the dst buffer.
- *
- * Use to_le=false when receiving data from atom and provide ALIGN(num_bytes,4)
- * byes in the src buffer.
- */
+ 
 void amdgpu_atombios_copy_swap(u8 *dst, u8 *src, u8 num_bytes, bool to_le)
 {
 #ifdef __BIG_ENDIAN
@@ -1648,11 +1612,11 @@ static int amdgpu_atombios_allocate_fb_scratch(struct amdgpu_device *adev)
 		if ((uint32_t)(start_addr & ATOM_VRAM_OPERATION_FLAGS_MASK) ==
 			(uint32_t)(ATOM_VRAM_BLOCK_SRIOV_MSG_SHARE_RESERVATION <<
 			ATOM_VRAM_OPERATION_FLAGS_SHIFT)) {
-			/* Firmware request VRAM reservation for SR-IOV */
+			 
 			adev->mman.fw_vram_usage_start_offset = (start_addr &
 				(~ATOM_VRAM_OPERATION_FLAGS_MASK)) << 10;
 			adev->mman.fw_vram_usage_size = size << 10;
-			/* Use the default scratch size */
+			 
 			usage_bytes = 0;
 		} else {
 			usage_bytes = le16_to_cpu(firmware_usage->asFirmwareVramReserveInfo[0].usFirmwareUseInKb) * 1024;
@@ -1661,7 +1625,7 @@ static int amdgpu_atombios_allocate_fb_scratch(struct amdgpu_device *adev)
 	ctx->scratch_size_bytes = 0;
 	if (usage_bytes == 0)
 		usage_bytes = 20 * 1024;
-	/* allocate some scratch memory */
+	 
 	ctx->scratch = kzalloc(usage_bytes, GFP_KERNEL);
 	if (!ctx->scratch)
 		return -ENOMEM;
@@ -1669,80 +1633,34 @@ static int amdgpu_atombios_allocate_fb_scratch(struct amdgpu_device *adev)
 	return 0;
 }
 
-/* ATOM accessor methods */
-/*
- * ATOM is an interpreted byte code stored in tables in the vbios.  The
- * driver registers callbacks to access registers and the interpreter
- * in the driver parses the tables and executes then to program specific
- * actions (set display modes, asic init, etc.).  See amdgpu_atombios.c,
- * atombios.h, and atom.c
- */
+ 
+ 
 
-/**
- * cail_pll_read - read PLL register
- *
- * @info: atom card_info pointer
- * @reg: PLL register offset
- *
- * Provides a PLL register accessor for the atom interpreter (r4xx+).
- * Returns the value of the PLL register.
- */
+ 
 static uint32_t cail_pll_read(struct card_info *info, uint32_t reg)
 {
 	return 0;
 }
 
-/**
- * cail_pll_write - write PLL register
- *
- * @info: atom card_info pointer
- * @reg: PLL register offset
- * @val: value to write to the pll register
- *
- * Provides a PLL register accessor for the atom interpreter (r4xx+).
- */
+ 
 static void cail_pll_write(struct card_info *info, uint32_t reg, uint32_t val)
 {
 
 }
 
-/**
- * cail_mc_read - read MC (Memory Controller) register
- *
- * @info: atom card_info pointer
- * @reg: MC register offset
- *
- * Provides an MC register accessor for the atom interpreter (r4xx+).
- * Returns the value of the MC register.
- */
+ 
 static uint32_t cail_mc_read(struct card_info *info, uint32_t reg)
 {
 	return 0;
 }
 
-/**
- * cail_mc_write - write MC (Memory Controller) register
- *
- * @info: atom card_info pointer
- * @reg: MC register offset
- * @val: value to write to the pll register
- *
- * Provides a MC register accessor for the atom interpreter (r4xx+).
- */
+ 
 static void cail_mc_write(struct card_info *info, uint32_t reg, uint32_t val)
 {
 
 }
 
-/**
- * cail_reg_write - write MMIO register
- *
- * @info: atom card_info pointer
- * @reg: MMIO register offset
- * @val: value to write to the pll register
- *
- * Provides a MMIO register accessor for the atom interpreter (r4xx+).
- */
+ 
 static void cail_reg_write(struct card_info *info, uint32_t reg, uint32_t val)
 {
 	struct amdgpu_device *adev = drm_to_adev(info->dev);
@@ -1750,15 +1668,7 @@ static void cail_reg_write(struct card_info *info, uint32_t reg, uint32_t val)
 	WREG32(reg, val);
 }
 
-/**
- * cail_reg_read - read MMIO register
- *
- * @info: atom card_info pointer
- * @reg: MMIO register offset
- *
- * Provides an MMIO register accessor for the atom interpreter (r4xx+).
- * Returns the value of the MMIO register.
- */
+ 
 static uint32_t cail_reg_read(struct card_info *info, uint32_t reg)
 {
 	struct amdgpu_device *adev = drm_to_adev(info->dev);
@@ -1800,15 +1710,7 @@ int amdgpu_atombios_sysfs_init(struct amdgpu_device *adev)
 	return 0;
 }
 
-/**
- * amdgpu_atombios_fini - free the driver info and callbacks for atombios
- *
- * @adev: amdgpu_device pointer
- *
- * Frees the driver info and register access callbacks for the ATOM
- * interpreter (r4xx+).
- * Called at driver shutdown.
- */
+ 
 void amdgpu_atombios_fini(struct amdgpu_device *adev)
 {
 	if (adev->mode_info.atom_context) {
@@ -1821,16 +1723,7 @@ void amdgpu_atombios_fini(struct amdgpu_device *adev)
 	adev->mode_info.atom_card_info = NULL;
 }
 
-/**
- * amdgpu_atombios_init - init the driver info and callbacks for atombios
- *
- * @adev: amdgpu_device pointer
- *
- * Initializes the driver info and register access callbacks for the
- * ATOM interpreter (r4xx+).
- * Returns 0 on sucess, -ENOMEM on failure.
- * Called at driver startup.
- */
+ 
 int amdgpu_atombios_init(struct amdgpu_device *adev)
 {
 	struct card_info *atom_card_info =
@@ -1858,7 +1751,7 @@ int amdgpu_atombios_init(struct amdgpu_device *adev)
 	if (adev->is_atom_fw) {
 		amdgpu_atomfirmware_scratch_regs_init(adev);
 		amdgpu_atomfirmware_allocate_fb_scratch(adev);
-		/* cached firmware_flags for further usage */
+		 
 		adev->mode_info.firmware_flags =
 			amdgpu_atomfirmware_query_firmware_capability(adev);
 	} else {

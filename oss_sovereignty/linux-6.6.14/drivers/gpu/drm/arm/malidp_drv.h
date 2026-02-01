@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * (C) COPYRIGHT 2016 ARM Limited. All rights reserved.
- * Author: Liviu Dudau <Liviu.Dudau@arm.com>
- *
- * ARM Mali DP500/DP550/DP650 KMS/DRM driver structures
- */
+ 
+ 
 
 #ifndef __MALIDP_DRV_H__
 #define __MALIDP_DRV_H__
@@ -40,7 +35,7 @@ struct malidp_drm {
 #ifdef CONFIG_DEBUG_FS
 	struct malidp_error_stats de_errors;
 	struct malidp_error_stats se_errors;
-	/* Protects errors stats */
+	 
 	spinlock_t errors_lock;
 #endif
 };
@@ -63,9 +58,9 @@ enum mmu_prefetch_mode {
 struct malidp_plane_state {
 	struct drm_plane_state base;
 
-	/* size of the required rotation memory if plane is rotated */
+	 
 	u32 rotmem_size;
-	/* internal format ID */
+	 
 	u8 format;
 	u8 n_planes;
 	enum mmu_prefetch_mode mmu_prefetch_mode;
@@ -80,7 +75,7 @@ struct malidp_crtc_state {
 	u32 gamma_coeffs[MALIDP_COEFFTAB_NUM_COEFFS];
 	u32 coloradj_coeffs[MALIDP_COLORADJ_NUM_COEFFS];
 	struct malidp_se_config scaler_config;
-	/* Bitfield of all the planes that have requested a scaled output. */
+	 
 	u8 scaled_planes_mask;
 };
 
@@ -101,7 +96,7 @@ void malidp_error(struct malidp_drm *malidp,
 		  u64 vblank);
 #endif
 
-/* often used combination of rotational bits */
+ 
 #define MALIDP_ROTATED_MASK	(DRM_MODE_ROTATE_90 | DRM_MODE_ROTATE_270)
 
-#endif  /* __MALIDP_DRV_H__ */
+#endif   

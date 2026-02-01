@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * DPAA2 Ethernet Switch ethtool support
- *
- * Copyright 2014-2016 Freescale Semiconductor Inc.
- * Copyright 2017-2018 NXP
- *
- */
+
+ 
 
 #include <linux/ethtool.h>
 
@@ -82,10 +76,7 @@ dpaa2_switch_get_link_ksettings(struct net_device *netdev,
 		goto out;
 	}
 
-	/* At the moment, we have no way of interrogating the DPMAC
-	 * from the DPSW side or there may not exist a DPMAC at all.
-	 * Report only autoneg state, duplexity and speed.
-	 */
+	 
 	if (state.options & DPSW_LINK_OPT_AUTONEG)
 		link_ksettings->base.autoneg = AUTONEG_ENABLE;
 	if (!(state.options & DPSW_LINK_OPT_HALF_DUPLEX))
@@ -117,7 +108,7 @@ dpaa2_switch_set_link_ksettings(struct net_device *netdev,
 
 	mutex_unlock(&port_priv->mac_lock);
 
-	/* Interface needs to be down to change link settings */
+	 
 	if_running = netif_running(netdev);
 	if (if_running) {
 		err = dpsw_if_disable(ethsw->mc_io, 0,

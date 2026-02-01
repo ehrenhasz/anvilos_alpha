@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  bytcht_nocodec.c - ASoc Machine driver for MinnowBoard Max and Up
- *  to make I2S signals observable on the Low-Speed connector. Audio codec
- *  is not managed by ASoC/DAPM
- *
- *  Copyright (C) 2015-2017 Intel Corp
- *
- *  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- *
- * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- */
+
+ 
 
 #include <linux/module.h>
 #include <sound/pcm.h>
@@ -46,18 +36,14 @@ static int codec_fixup(struct snd_soc_pcm_runtime *rtd,
 						SNDRV_PCM_HW_PARAM_CHANNELS);
 	int ret;
 
-	/* The DSP will convert the FE rate to 48k, stereo, 24bits */
+	 
 	rate->min = rate->max = 48000;
 	channels->min = channels->max = 2;
 
-	/* set SSP2 to 24-bit */
+	 
 	params_set_format(params, SNDRV_PCM_FORMAT_S24_LE);
 
-	/*
-	 * Default mode for SSP configuration is TDM 4 slot, override config
-	 * with explicit setting to I2S 2ch 24-bit. The word length is set with
-	 * dai_set_tdm_slot() since there is no other API exposed
-	 */
+	 
 	ret = snd_soc_dai_set_fmt(asoc_rtd_to_cpu(rtd, 0),
 				  SND_SOC_DAIFMT_I2S     |
 				  SND_SOC_DAIFMT_NB_NF   |
@@ -134,8 +120,8 @@ static struct snd_soc_dai_link dais[] = {
 		.ops = &aif1_ops,
 		SND_SOC_DAILINK_REG(deepbuffer, dummy, platform),
 	},
-	/* CODEC<->CODEC link */
-	/* back ends */
+	 
+	 
 	{
 		.name = "SSP2-LowSpeed Connector",
 		.id = 0,
@@ -150,7 +136,7 @@ static struct snd_soc_dai_link dais[] = {
 	},
 };
 
-/* SoC card */
+ 
 static struct snd_soc_card bytcht_nocodec_card = {
 	.name = "bytcht-nocodec",
 	.owner = THIS_MODULE,
@@ -169,7 +155,7 @@ static int snd_bytcht_nocodec_mc_probe(struct platform_device *pdev)
 {
 	int ret_val = 0;
 
-	/* register the soc card */
+	 
 	bytcht_nocodec_card.dev = &pdev->dev;
 
 	ret_val = devm_snd_soc_register_card(&pdev->dev, &bytcht_nocodec_card);

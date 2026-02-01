@@ -1,34 +1,7 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
-/*
- * Copyright (c) 2005, 2010, Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2011, 2018 by Delphix. All rights reserved.
- * Copyright (c) 2013 by Saso Kiselkov. All rights reserved.
- * Copyright 2016, Joyent, Inc.
- * Copyright (c) 2019, Klara Inc.
- * Copyright (c) 2019, Allan Jude
- * Copyright (c) 2022 Hewlett Packard Enterprise Development LP.
- */
+ 
+ 
 
-/* Portions Copyright 2010 Robert Milkowski */
+ 
 
 #if defined(_KERNEL)
 #include <sys/simd.h>
@@ -54,7 +27,7 @@
 
 static zprop_desc_t zfs_prop_table[ZFS_NUM_PROPS];
 
-/* Note this is indexed by zfs_userquota_prop_t, keep the order the same */
+ 
 const char *const zfs_userquota_prop_prefixes[] = {
 	"userused@",
 	"userquota@",
@@ -118,7 +91,7 @@ zfs_prop_init(void)
 		{ "on",		ZIO_COMPRESS_ON },
 		{ "off",	ZIO_COMPRESS_OFF },
 		{ "lzjb",	ZIO_COMPRESS_LZJB },
-		{ "gzip",	ZIO_COMPRESS_GZIP_6 },	/* gzip default */
+		{ "gzip",	ZIO_COMPRESS_GZIP_6 },	 
 		{ "gzip-1",	ZIO_COMPRESS_GZIP_1 },
 		{ "gzip-2",	ZIO_COMPRESS_GZIP_2 },
 		{ "gzip-3",	ZIO_COMPRESS_GZIP_3 },
@@ -134,18 +107,7 @@ zfs_prop_init(void)
 		{ "zstd-fast",
 		    ZIO_COMPLEVEL_ZSTD(ZIO_ZSTD_LEVEL_FAST_DEFAULT) },
 
-		/*
-		 * ZSTD 1-19 are synthetic. We store the compression level in a
-		 * separate hidden property to avoid wasting a large amount of
-		 * space in the ZIO_COMPRESS enum.
-		 *
-		 * The compression level is also stored within the header of the
-		 * compressed block since we may need it for later recompression
-		 * to avoid checksum errors (L2ARC).
-		 *
-		 * Note that the level here is defined as bit shifted mask on
-		 * top of the method.
-		 */
+		 
 		{ "zstd-1",	ZIO_COMPLEVEL_ZSTD(ZIO_ZSTD_LEVEL_1) },
 		{ "zstd-2",	ZIO_COMPLEVEL_ZSTD(ZIO_ZSTD_LEVEL_2) },
 		{ "zstd-3",	ZIO_COMPLEVEL_ZSTD(ZIO_ZSTD_LEVEL_3) },
@@ -166,9 +128,7 @@ zfs_prop_init(void)
 		{ "zstd-18",	ZIO_COMPLEVEL_ZSTD(ZIO_ZSTD_LEVEL_18) },
 		{ "zstd-19",	ZIO_COMPLEVEL_ZSTD(ZIO_ZSTD_LEVEL_19) },
 
-		/*
-		 * The ZSTD-Fast levels are also synthetic.
-		 */
+		 
 		{ "zstd-fast-1",
 		    ZIO_COMPLEVEL_ZSTD(ZIO_ZSTD_LEVEL_FAST_1) },
 		{ "zstd-fast-2",
@@ -258,9 +218,9 @@ zfs_prop_init(void)
 		{ "off",	ZFS_ACLTYPE_OFF },
 		{ "posix",	ZFS_ACLTYPE_POSIX },
 		{ "nfsv4",	ZFS_ACLTYPE_NFSV4 },
-		{ "disabled",	ZFS_ACLTYPE_OFF }, /* bkwrd compatibility */
-		{ "noacl",	ZFS_ACLTYPE_OFF }, /* bkwrd compatibility */
-		{ "posixacl",	ZFS_ACLTYPE_POSIX }, /* bkwrd compatibility */
+		{ "disabled",	ZFS_ACLTYPE_OFF },  
+		{ "noacl",	ZFS_ACLTYPE_OFF },  
+		{ "posixacl",	ZFS_ACLTYPE_POSIX },  
 		{ NULL }
 	};
 
@@ -269,7 +229,7 @@ zfs_prop_init(void)
 		{ "noallow",	ZFS_ACL_NOALLOW },
 		{ "restricted",	ZFS_ACL_RESTRICTED },
 		{ "passthrough", ZFS_ACL_PASSTHROUGH },
-		{ "secure",	ZFS_ACL_RESTRICTED }, /* bkwrd compatibility */
+		{ "secure",	ZFS_ACL_RESTRICTED },  
 		{ "passthrough-x", ZFS_ACL_PASSTHROUGH_X },
 		{ NULL }
 	};
@@ -288,11 +248,7 @@ zfs_prop_init(void)
 		{ NULL }
 	};
 
-	/*
-	 * Use the unique flags we have to send to u8_strcmp() and/or
-	 * u8_textprep() to represent the various normalization property
-	 * values.
-	 */
+	 
 	static const zprop_index_t normalize_table[] = {
 		{ "none",	0 },
 		{ "formD",	U8_TEXTPREP_NFD },
@@ -391,7 +347,7 @@ zfs_prop_init(void)
 	struct zfs_mod_supported_features *sfeatures =
 	    zfs_mod_list_supported(ZFS_SYSFS_DATASET_PROPERTIES);
 
-	/* inherit index properties */
+	 
 	zprop_register_index(ZFS_PROP_REDUNDANT_METADATA, "redundant_metadata",
 	    ZFS_REDUNDANT_METADATA_ALL,
 	    PROP_INHERIT, ZFS_TYPE_FILESYSTEM | ZFS_TYPE_VOLUME,
@@ -431,7 +387,7 @@ zfs_prop_init(void)
 	    acl_mode_table, sfeatures);
 	zprop_register_index(ZFS_PROP_ACLTYPE, "acltype",
 #ifdef __linux__
-	    /* Linux doesn't natively support ZFS's NFSv4-style ACLs. */
+	     
 	    ZFS_ACLTYPE_OFF,
 #else
 	    ZFS_ACLTYPE_NFSV4,
@@ -469,7 +425,7 @@ zfs_prop_init(void)
 	    "default | full | geom | dev | none", "VOLMODE", volmode_table,
 	    sfeatures);
 
-	/* inherit index (boolean) properties */
+	 
 	zprop_register_index(ZFS_PROP_ATIME, "atime", 1, PROP_INHERIT,
 	    ZFS_TYPE_FILESYSTEM, "on | off", "ATIME", boolean_table, sfeatures);
 	zprop_register_index(ZFS_PROP_RELATIME, "relatime", 1, PROP_INHERIT,
@@ -504,7 +460,7 @@ zfs_prop_init(void)
 	    ZFS_TYPE_FILESYSTEM, "on | off", "OVERLAY", boolean_table,
 	    sfeatures);
 
-	/* default index properties */
+	 
 	zprop_register_index(ZFS_PROP_VERSION, "version", 0, PROP_DEFAULT,
 	    ZFS_TYPE_FILESYSTEM | ZFS_TYPE_SNAPSHOT,
 	    "1 | 2 | 3 | 4 | 5 | current", "VERSION", version_table, sfeatures);
@@ -512,7 +468,7 @@ zfs_prop_init(void)
 	    PROP_DEFAULT, ZFS_TYPE_FILESYSTEM, "on | off | noauto",
 	    "CANMOUNT", canmount_table, sfeatures);
 
-	/* readonly index properties */
+	 
 	zprop_register_index(ZFS_PROP_MOUNTED, "mounted", 0, PROP_READONLY,
 	    ZFS_TYPE_FILESYSTEM, "yes | no", "MOUNTED", boolean_table,
 	    sfeatures);
@@ -524,7 +480,7 @@ zfs_prop_init(void)
 	    "none | unavailable | available",
 	    "KEYSTATUS", keystatus_table, sfeatures);
 
-	/* set once index properties */
+	 
 	zprop_register_index(ZFS_PROP_NORMALIZE, "normalization", 0,
 	    PROP_ONETIME, ZFS_TYPE_FILESYSTEM | ZFS_TYPE_SNAPSHOT,
 	    "none | formC | formD | formKC | formKD", "NORMALIZATION",
@@ -544,12 +500,12 @@ zfs_prop_init(void)
 	    "aes-128-gcm | aes-192-gcm | aes-256-gcm", "ENCRYPTION",
 	    crypto_table, sfeatures);
 
-	/* set once index (boolean) properties */
+	 
 	zprop_register_index(ZFS_PROP_UTF8ONLY, "utf8only", 0, PROP_ONETIME,
 	    ZFS_TYPE_FILESYSTEM | ZFS_TYPE_SNAPSHOT,
 	    "on | off", "UTF8ONLY", boolean_table, sfeatures);
 
-	/* string properties */
+	 
 	zprop_register_string(ZFS_PROP_ORIGIN, "origin", NULL, PROP_READONLY,
 	    ZFS_TYPE_FILESYSTEM | ZFS_TYPE_VOLUME, "<snapshot>", "ORIGIN",
 	    sfeatures);
@@ -598,7 +554,7 @@ zfs_prop_init(void)
 	    ZFS_TYPE_DATASET | ZFS_TYPE_BOOKMARK, "<snapshot>[,...]",
 	    "RSNAPS", sfeatures);
 
-	/* readonly number properties */
+	 
 	zprop_register_number(ZFS_PROP_USED, "used", 0, PROP_READONLY,
 	    ZFS_TYPE_DATASET, "<size>", "USED", B_FALSE, sfeatures);
 	zprop_register_number(ZFS_PROP_AVAILABLE, "available", 0, PROP_READONLY,
@@ -659,7 +615,7 @@ zfs_prop_init(void)
 	    PROP_READONLY, ZFS_TYPE_DATASET, "<uint64>", "OBJSETID", B_TRUE,
 	    sfeatures);
 
-	/* default number properties */
+	 
 	zprop_register_number(ZFS_PROP_QUOTA, "quota", 0, PROP_DEFAULT,
 	    ZFS_TYPE_FILESYSTEM, "<size> | none", "QUOTA", B_FALSE, sfeatures);
 	zprop_register_number(ZFS_PROP_RESERVATION, "reservation", 0,
@@ -681,7 +637,7 @@ zfs_prop_init(void)
 	    UINT64_MAX, PROP_DEFAULT, ZFS_TYPE_FILESYSTEM | ZFS_TYPE_VOLUME,
 	    "<count> | none", "SSLIMIT", B_FALSE, sfeatures);
 
-	/* inherit number properties */
+	 
 	zprop_register_number(ZFS_PROP_RECORDSIZE, "recordsize",
 	    SPA_OLD_MAXBLOCKSIZE, PROP_INHERIT,
 	    ZFS_TYPE_FILESYSTEM, "512 to 1M, power of 2", "RECSIZE", B_FALSE,
@@ -691,7 +647,7 @@ zfs_prop_init(void)
 	    "zero or 512 to 1M, power of 2", "SPECIAL_SMALL_BLOCKS", B_FALSE,
 	    sfeatures);
 
-	/* hidden properties */
+	 
 	zprop_register_hidden(ZFS_PROP_NUMCLONES, "numclones", PROP_TYPE_NUMBER,
 	    PROP_READONLY, ZFS_TYPE_SNAPSHOT, "NUMCLONES", B_FALSE, sfeatures);
 	zprop_register_hidden(ZFS_PROP_NAME, "name", PROP_TYPE_STRING,
@@ -727,16 +683,12 @@ zfs_prop_init(void)
 	zprop_register_hidden(ZFS_PROP_REDACTED, "redacted", PROP_TYPE_NUMBER,
 	    PROP_READONLY, ZFS_TYPE_DATASET, "REDACTED", B_FALSE, sfeatures);
 
-	/*
-	 * Properties that are obsolete and not used.  These are retained so
-	 * that we don't have to change the values of the zfs_prop_t enum, or
-	 * have NULL pointers in the zfs_prop_table[].
-	 */
+	 
 	zprop_register_hidden(ZFS_PROP_REMAPTXG, "remaptxg", PROP_TYPE_NUMBER,
 	    PROP_READONLY, ZFS_TYPE_DATASET, "REMAPTXG", B_FALSE, sfeatures);
 
-	/* oddball properties */
-	/* 'creation' is a number but displayed as human-readable => flex */
+	 
+	 
 	zprop_register_impl(ZFS_PROP_CREATION, "creation", PROP_TYPE_NUMBER, 0,
 	    NULL, PROP_READONLY, ZFS_TYPE_DATASET | ZFS_TYPE_BOOKMARK,
 	    "<date>", "CREATION", B_FALSE, B_TRUE, B_TRUE, NULL, sfeatures);
@@ -756,25 +708,21 @@ zfs_prop_delegatable(zfs_prop_t prop)
 	ASSERT3S(prop, <, ZFS_NUM_PROPS);
 	zprop_desc_t *pd = &zfs_prop_table[prop];
 
-	/* The mlslabel property is never delegatable. */
+	 
 	if (prop == ZFS_PROP_MLSLABEL)
 		return (B_FALSE);
 
 	return (pd->pd_attr != PROP_READONLY);
 }
 
-/*
- * Given a zfs dataset property name, returns the corresponding property ID.
- */
+ 
 zfs_prop_t
 zfs_name_to_prop(const char *propname)
 {
 	return (zprop_name_to_prop(propname, ZFS_TYPE_DATASET));
 }
 
-/*
- * Returns true if this is a valid user-defined property (one with a ':').
- */
+ 
 boolean_t
 zfs_prop_user(const char *name)
 {
@@ -796,11 +744,7 @@ zfs_prop_user(const char *name)
 	return (B_TRUE);
 }
 
-/*
- * Returns true if this is a valid userspace-type property (one with a '@').
- * Note that after the @, any character is valid (eg, another @, for SID
- * user@domain).
- */
+ 
 boolean_t
 zfs_prop_userquota(const char *name)
 {
@@ -816,11 +760,7 @@ zfs_prop_userquota(const char *name)
 	return (B_FALSE);
 }
 
-/*
- * Returns true if this is a valid written@ property.
- * Note that after the @, any character is valid (eg, another @, for
- * written@pool/fs@origin).
- */
+ 
 boolean_t
 zfs_prop_written(const char *name)
 {
@@ -830,10 +770,7 @@ zfs_prop_written(const char *name)
 	    strncmp(name, book_prefix, strlen(book_prefix)) == 0);
 }
 
-/*
- * Tables of index types, plus functions to convert between the user view
- * (strings) and internal representation (uint64_t).
- */
+ 
 int
 zfs_prop_string_to_index(zfs_prop_t prop, const char *string, uint64_t *index)
 {
@@ -852,9 +789,7 @@ zfs_prop_random_value(zfs_prop_t prop, uint64_t seed)
 	return (zprop_random_value(prop, seed, ZFS_TYPE_DATASET));
 }
 
-/*
- * Returns TRUE if the property applies to any of the given dataset types.
- */
+ 
 boolean_t
 zfs_prop_valid_for_type(int prop, zfs_type_t types, boolean_t headcheck)
 {
@@ -869,9 +804,7 @@ zfs_prop_get_type(zfs_prop_t prop)
 	return (zfs_prop_table[prop].pd_proptype);
 }
 
-/*
- * Returns TRUE if the property is readonly.
- */
+ 
 boolean_t
 zfs_prop_readonly(zfs_prop_t prop)
 {
@@ -882,9 +815,7 @@ zfs_prop_readonly(zfs_prop_t prop)
 	    zfs_prop_table[prop].pd_attr == PROP_ONETIME_DEFAULT);
 }
 
-/*
- * Returns TRUE if the property is visible (not hidden).
- */
+ 
 boolean_t
 zfs_prop_visible(zfs_prop_t prop)
 {
@@ -894,9 +825,7 @@ zfs_prop_visible(zfs_prop_t prop)
 	    zfs_prop_table[prop].pd_zfs_mod_supported);
 }
 
-/*
- * Returns TRUE if the property is only allowed to be set once.
- */
+ 
 boolean_t
 zfs_prop_setonce(zfs_prop_t prop)
 {
@@ -922,10 +851,7 @@ zfs_prop_default_numeric(zfs_prop_t prop)
 	return (zfs_prop_table[prop].pd_numdefault);
 }
 
-/*
- * Given a dataset property ID, returns the corresponding name.
- * Assuming the zfs dataset property ID is valid.
- */
+ 
 const char *
 zfs_prop_to_name(zfs_prop_t prop)
 {
@@ -934,9 +860,7 @@ zfs_prop_to_name(zfs_prop_t prop)
 	return (zfs_prop_table[prop].pd_name);
 }
 
-/*
- * Returns TRUE if the property is inheritable.
- */
+ 
 boolean_t
 zfs_prop_inheritable(zfs_prop_t prop)
 {
@@ -946,26 +870,16 @@ zfs_prop_inheritable(zfs_prop_t prop)
 	    zfs_prop_table[prop].pd_attr == PROP_ONETIME);
 }
 
-/*
- * Returns TRUE if property is one of the encryption properties that requires
- * a loaded encryption key to modify.
- */
+ 
 boolean_t
 zfs_prop_encryption_key_param(zfs_prop_t prop)
 {
-	/*
-	 * keylocation does not count as an encryption property. It can be
-	 * changed at will without needing the master keys.
-	 */
+	 
 	return (prop == ZFS_PROP_PBKDF2_SALT || prop == ZFS_PROP_PBKDF2_ITERS ||
 	    prop == ZFS_PROP_KEYFORMAT);
 }
 
-/*
- * Helper function used by both kernelspace and userspace to check the
- * keylocation property. If encrypted is set, the keylocation must be valid
- * for an encrypted dataset.
- */
+ 
 boolean_t
 zfs_prop_valid_keylocation(const char *str, boolean_t encrypted)
 {
@@ -987,10 +901,7 @@ zfs_prop_valid_keylocation(const char *str, boolean_t encrypted)
 #ifndef _KERNEL
 #include <libzfs.h>
 
-/*
- * Returns a string describing the set of acceptable values for the given
- * zfs property, or NULL if it cannot be set.
- */
+ 
 const char *
 zfs_prop_values(zfs_prop_t prop)
 {
@@ -999,11 +910,7 @@ zfs_prop_values(zfs_prop_t prop)
 	return (zfs_prop_table[prop].pd_values);
 }
 
-/*
- * Returns TRUE if this property is a string type.  Note that index types
- * (compression, checksum) are treated as strings in userland, even though they
- * are stored numerically on disk.
- */
+ 
 int
 zfs_prop_is_string(zfs_prop_t prop)
 {
@@ -1013,10 +920,7 @@ zfs_prop_is_string(zfs_prop_t prop)
 	    zfs_prop_table[prop].pd_proptype == PROP_TYPE_INDEX);
 }
 
-/*
- * Returns the column header for the given property.  Used only in
- * 'zfs list -o', but centralized here with the other property information.
- */
+ 
 const char *
 zfs_prop_column_name(zfs_prop_t prop)
 {
@@ -1025,10 +929,7 @@ zfs_prop_column_name(zfs_prop_t prop)
 	return (zfs_prop_table[prop].pd_colname);
 }
 
-/*
- * Returns whether the given property should be displayed right-justified for
- * 'zfs list'.
- */
+ 
 boolean_t
 zfs_prop_align_right(zfs_prop_t prop)
 {
@@ -1044,7 +945,7 @@ zfs_prop_align_right(zfs_prop_t prop)
 #if defined(HAVE_KERNEL_FPU_INTERNAL)
 uint8_t **zfs_kfpu_fpregs;
 EXPORT_SYMBOL(zfs_kfpu_fpregs);
-#endif /* defined(HAVE_KERNEL_FPU_INTERNAL) */
+#endif  
 
 extern int __init zcommon_init(void);
 extern void zcommon_fini(void);
@@ -1075,7 +976,7 @@ module_exit(zcommon_fini);
 
 #endif
 
-/* zfs dataset property functions */
+ 
 EXPORT_SYMBOL(zfs_userquota_prop_prefixes);
 EXPORT_SYMBOL(zfs_prop_init);
 EXPORT_SYMBOL(zfs_prop_get_type);
@@ -1083,7 +984,7 @@ EXPORT_SYMBOL(zfs_prop_get_table);
 EXPORT_SYMBOL(zfs_prop_delegatable);
 EXPORT_SYMBOL(zfs_prop_visible);
 
-/* Dataset property functions shared between libzfs and kernel. */
+ 
 EXPORT_SYMBOL(zfs_prop_default_string);
 EXPORT_SYMBOL(zfs_prop_default_numeric);
 EXPORT_SYMBOL(zfs_prop_readonly);

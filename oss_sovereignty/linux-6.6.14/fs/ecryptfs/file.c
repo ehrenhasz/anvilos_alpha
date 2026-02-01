@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * eCryptfs: Linux filesystem encryption layer
- *
- * Copyright (C) 1997-2004 Erez Zadok
- * Copyright (C) 2001-2004 Stony Brook University
- * Copyright (C) 2004-2007 International Business Machines Corp.
- *   Author(s): Michael A. Halcrow <mhalcrow@us.ibm.com>
- *   		Michael C. Thompson <mcthomps@us.ibm.com>
- */
+
+ 
 
 #include <linux/file.h>
 #include <linux/poll.h>
@@ -19,16 +11,7 @@
 #include <linux/fs_stack.h>
 #include "ecryptfs_kernel.h"
 
-/*
- * ecryptfs_read_update_atime
- *
- * generic_file_read updates the atime of upper layer inode.  But, it
- * doesn't give us a chance to update the atime of the lower layer
- * inode.  This function is a wrapper to generic_file_read.  It
- * updates the atime of the lower level inode if generic_file_read
- * returns without any errors. This is to be used only for file reads.
- * The function to be used for directory reads is ecryptfs_read.
- */
+ 
 static ssize_t ecryptfs_read_update_atime(struct kiocb *iocb,
 				struct iov_iter *to)
 {
@@ -44,16 +27,7 @@ static ssize_t ecryptfs_read_update_atime(struct kiocb *iocb,
 	return rc;
 }
 
-/*
- * ecryptfs_splice_read_update_atime
- *
- * filemap_splice_read updates the atime of upper layer inode.  But, it
- * doesn't give us a chance to update the atime of the lower layer inode.  This
- * function is a wrapper to generic_file_read.  It updates the atime of the
- * lower level inode if generic_file_read returns without any errors. This is
- * to be used only for file reads.  The function to be used for directory reads
- * is ecryptfs_read.
- */
+ 
 static ssize_t ecryptfs_splice_read_update_atime(struct file *in, loff_t *ppos,
 						 struct pipe_inode_info *pipe,
 						 size_t len, unsigned int flags)
@@ -77,7 +51,7 @@ struct ecryptfs_getdents_callback {
 	int entries_written;
 };
 
-/* Inspired by generic filldir in fs/readdir.c */
+ 
 static bool
 ecryptfs_filldir(struct dir_context *ctx, const char *lower_name,
 		 int lower_namelen, loff_t offset, u64 ino, unsigned int d_type)
@@ -101,12 +75,7 @@ ecryptfs_filldir(struct dir_context *ctx, const char *lower_name,
 			return false;
 		}
 
-		/* Mask -EINVAL errors as these are most likely due a plaintext
-		 * filename present in the lower filesystem despite filename
-		 * encryption being enabled. One unavoidable example would be
-		 * the "lost+found" dentry in the root directory of an Ext4
-		 * filesystem.
-		 */
+		 
 		return true;
 	}
 
@@ -118,11 +87,7 @@ ecryptfs_filldir(struct dir_context *ctx, const char *lower_name,
 	return res;
 }
 
-/**
- * ecryptfs_readdir
- * @file: The eCryptfs directory file
- * @ctx: The actor to feed the entries to
- */
+ 
 static int ecryptfs_readdir(struct file *file, struct dir_context *ctx)
 {
 	int rc;
@@ -188,35 +153,22 @@ out:
 static int ecryptfs_mmap(struct file *file, struct vm_area_struct *vma)
 {
 	struct file *lower_file = ecryptfs_file_to_lower(file);
-	/*
-	 * Don't allow mmap on top of file systems that don't support it
-	 * natively.  If FILESYSTEM_MAX_STACK_DEPTH > 2 or ecryptfs
-	 * allows recursive mounting, this will need to be extended.
-	 */
+	 
 	if (!lower_file->f_op->mmap)
 		return -ENODEV;
 	return generic_file_mmap(file, vma);
 }
 
-/**
- * ecryptfs_open
- * @inode: inode specifying file to open
- * @file: Structure to return filled in
- *
- * Opens the file specified by inode.
- *
- * Returns zero on success; non-zero otherwise
- */
+ 
 static int ecryptfs_open(struct inode *inode, struct file *file)
 {
 	int rc = 0;
 	struct ecryptfs_crypt_stat *crypt_stat = NULL;
 	struct dentry *ecryptfs_dentry = file->f_path.dentry;
-	/* Private value of ecryptfs_dentry allocated in
-	 * ecryptfs_lookup() */
+	 
 	struct ecryptfs_file_info *file_info;
 
-	/* Released in ecryptfs_release or end of function if failure */
+	 
 	file_info = kmem_cache_zalloc(ecryptfs_file_info_cache, GFP_KERNEL);
 	ecryptfs_set_file_private(file, file_info);
 	if (!file_info) {
@@ -229,7 +181,7 @@ static int ecryptfs_open(struct inode *inode, struct file *file)
 	mutex_lock(&crypt_stat->cs_mutex);
 	if (!(crypt_stat->flags & ECRYPTFS_POLICY_APPLIED)) {
 		ecryptfs_printk(KERN_DEBUG, "Setting flags for stat...\n");
-		/* Policy code enabled in future release */
+		 
 		crypt_stat->flags |= (ECRYPTFS_POLICY_APPLIED
 				      | ECRYPTFS_ENCRYPTED);
 	}
@@ -267,24 +219,15 @@ out:
 	return rc;
 }
 
-/**
- * ecryptfs_dir_open
- * @inode: inode specifying file to open
- * @file: Structure to return filled in
- *
- * Opens the file specified by inode.
- *
- * Returns zero on success; non-zero otherwise
- */
+ 
 static int ecryptfs_dir_open(struct inode *inode, struct file *file)
 {
 	struct dentry *ecryptfs_dentry = file->f_path.dentry;
-	/* Private value of ecryptfs_dentry allocated in
-	 * ecryptfs_lookup() */
+	 
 	struct ecryptfs_file_info *file_info;
 	struct file *lower_file;
 
-	/* Released in ecryptfs_release or end of function if failure */
+	 
 	file_info = kmem_cache_zalloc(ecryptfs_file_info_cache, GFP_KERNEL);
 	ecryptfs_set_file_private(file, file_info);
 	if (unlikely(!file_info)) {

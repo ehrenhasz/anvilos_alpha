@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * linux/sound/wm2200.h -- Platform data for WM2200
- *
- * Copyright 2012 Wolfson Microelectronics. PLC.
- */
+ 
+ 
 
 #ifndef __LINUX_SND_WM2200_H
 #define __LINUX_SND_WM2200_H
@@ -35,15 +31,15 @@ enum wm2200_mbias_lvl {
 };
 
 struct wm2200_micbias {
-	enum wm2200_mbias_lvl mb_lvl;      /** Regulated voltage */
-	unsigned int discharge:1;          /** Actively discharge */
-	unsigned int fast_start:1;         /** Enable aggressive startup ramp rate */
-	unsigned int bypass:1;             /** Use bypass mode */
+	enum wm2200_mbias_lvl mb_lvl;       
+	unsigned int discharge:1;           
+	unsigned int fast_start:1;          
+	unsigned int bypass:1;              
 };
 
 struct wm2200_pdata {
-	int reset;      /** GPIO controlling /RESET, if any */
-	int ldo_ena;    /** GPIO controlling LODENA, if any */
+	int reset;       
+	int ldo_ena;     
 	int irq_flags;
 
 	int gpio_defaults[4];
@@ -51,7 +47,7 @@ struct wm2200_pdata {
 	enum wm2200_in_mode in_mode[3];
 	enum wm2200_dmic_sup dmic_sup[3];
 
-	/** MICBIAS configurations */
+	 
 	struct wm2200_micbias micbias[WM2200_MAX_MICBIAS];
 };
 

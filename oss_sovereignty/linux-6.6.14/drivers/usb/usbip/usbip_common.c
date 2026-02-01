@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (C) 2003-2008 Takahiro Hirofuchi
- * Copyright (C) 2015-2016 Samsung Electronics
- *               Krzysztof Opasiak <k.opasiak@samsung.com>
- */
+
+ 
 
 #include <asm/byteorder.h>
 #include <linux/file.h>
@@ -29,7 +25,7 @@ EXPORT_SYMBOL_GPL(usbip_debug_flag);
 module_param(usbip_debug_flag, ulong, S_IRUGO|S_IWUSR);
 MODULE_PARM_DESC(usbip_debug_flag, "debug flags (defined in usbip_common.h)");
 
-/* FIXME */
+ 
 struct device_attribute dev_attr_usbip_debug;
 EXPORT_SYMBOL_GPL(dev_attr_usbip_debug);
 
@@ -291,14 +287,14 @@ void usbip_dump_header(struct usbip_header *pdu)
 			 pdu->u.ret_unlink.status);
 		break;
 	default:
-		/* NOT REACHED */
+		 
 		pr_err("unknown command\n");
 		break;
 	}
 }
 EXPORT_SYMBOL_GPL(usbip_dump_header);
 
-/* Receive data over TCP/IP. */
+ 
 int usbip_recv(struct socket *sock, void *buf, int size)
 {
 	int result;
@@ -338,44 +334,14 @@ err:
 }
 EXPORT_SYMBOL_GPL(usbip_recv);
 
-/* there may be more cases to tweak the flags. */
+ 
 static unsigned int tweak_transfer_flags(unsigned int flags)
 {
 	flags &= ~URB_NO_TRANSFER_DMA_MAP;
 	return flags;
 }
 
-/*
- * USBIP driver packs URB transfer flags in PDUs that are exchanged
- * between Server (usbip_host) and Client (vhci_hcd). URB_* flags
- * are internal to kernel and could change. Where as USBIP URB flags
- * exchanged in PDUs are USBIP user API must not change.
- *
- * USBIP_URB* flags are exported as explicit API and client and server
- * do mapping from kernel flags to USBIP_URB*. Details as follows:
- *
- * Client tx path (USBIP_CMD_SUBMIT):
- * - Maps URB_* to USBIP_URB_* when it sends USBIP_CMD_SUBMIT packet.
- *
- * Server rx path (USBIP_CMD_SUBMIT):
- * - Maps USBIP_URB_* to URB_* when it receives USBIP_CMD_SUBMIT packet.
- *
- * Flags aren't included in USBIP_CMD_UNLINK and USBIP_RET_SUBMIT packets
- * and no special handling is needed for them in the following cases:
- * - Server rx path (USBIP_CMD_UNLINK)
- * - Client rx path & Server tx path (USBIP_RET_SUBMIT)
- *
- * Code paths:
- * usbip_pack_pdu() is the common routine that handles packing pdu from
- * urb and unpack pdu to an urb.
- *
- * usbip_pack_cmd_submit() and usbip_pack_ret_submit() handle
- * USBIP_CMD_SUBMIT and USBIP_RET_SUBMIT respectively.
- *
- * usbip_map_urb_to_usbip() and usbip_map_usbip_to_urb() are used
- * by usbip_pack_cmd_submit() and usbip_pack_ret_submit() to map
- * flags.
- */
+ 
 
 struct urb_to_usbip_flags {
 	u32 urb_flag;
@@ -435,12 +401,9 @@ static void usbip_pack_cmd_submit(struct usbip_header *pdu, struct urb *urb,
 {
 	struct usbip_header_cmd_submit *spdu = &pdu->u.cmd_submit;
 
-	/*
-	 * Some members are not still implemented in usbip. I hope this issue
-	 * will be discussed when usbip is ported to other operating systems.
-	 */
+	 
 	if (pack) {
-		/* map after tweaking the urb flags */
+		 
 		spdu->transfer_flags = urb_to_usbip(tweak_transfer_flags(urb->transfer_flags));
 		spdu->transfer_buffer_length	= urb->transfer_buffer_length;
 		spdu->start_frame		= urb->start_frame;
@@ -486,7 +449,7 @@ void usbip_pack_pdu(struct usbip_header *pdu, struct urb *urb, int cmd,
 		usbip_pack_ret_submit(pdu, urb, pack);
 		break;
 	default:
-		/* NOT REACHED */
+		 
 		pr_err("unknown command\n");
 		break;
 	}
@@ -592,7 +555,7 @@ void usbip_header_correct_endian(struct usbip_header *pdu, int send)
 		correct_endian_ret_unlink(&pdu->u.ret_unlink, send);
 		break;
 	default:
-		/* NOT REACHED */
+		 
 		pr_err("unknown command\n");
 		break;
 	}
@@ -602,7 +565,7 @@ EXPORT_SYMBOL_GPL(usbip_header_correct_endian);
 static void usbip_iso_packet_correct_endian(
 		struct usbip_iso_packet_descriptor *iso, int send)
 {
-	/* does not need all members. but copy all simply. */
+	 
 	if (send) {
 		iso->offset	= cpu_to_be32(iso->offset);
 		iso->length	= cpu_to_be32(iso->length);
@@ -632,7 +595,7 @@ static void usbip_pack_iso(struct usbip_iso_packet_descriptor *iso,
 	}
 }
 
-/* must free buffer */
+ 
 struct usbip_iso_packet_descriptor*
 usbip_alloc_iso_desc_pdu(struct urb *urb, ssize_t *bufflen)
 {
@@ -656,7 +619,7 @@ usbip_alloc_iso_desc_pdu(struct urb *urb, ssize_t *bufflen)
 }
 EXPORT_SYMBOL_GPL(usbip_alloc_iso_desc_pdu);
 
-/* some members of urb must be substituted before. */
+ 
 int usbip_recv_iso(struct usbip_device *ud, struct urb *urb)
 {
 	void *buff;
@@ -670,7 +633,7 @@ int usbip_recv_iso(struct usbip_device *ud, struct urb *urb)
 	if (!usb_pipeisoc(urb->pipe))
 		return 0;
 
-	/* my Bluetooth dongle gets ISO URBs which are np = 0 */
+	 
 	if (np == 0)
 		return 0;
 
@@ -718,13 +681,7 @@ int usbip_recv_iso(struct usbip_device *ud, struct urb *urb)
 }
 EXPORT_SYMBOL_GPL(usbip_recv_iso);
 
-/*
- * This functions restores the padding which was removed for optimizing
- * the bandwidth during transfer over tcp/ip
- *
- * buffer and iso packets need to be stored and be in propeper endian in urb
- * before calling this function
- */
+ 
 void usbip_pad_iso(struct usbip_device *ud, struct urb *urb)
 {
 	int np = urb->number_of_packets;
@@ -734,21 +691,15 @@ void usbip_pad_iso(struct usbip_device *ud, struct urb *urb)
 	if (!usb_pipeisoc(urb->pipe))
 		return;
 
-	/* if no packets or length of data is 0, then nothing to unpack */
+	 
 	if (np == 0 || urb->actual_length == 0)
 		return;
 
-	/*
-	 * if actual_length is transfer_buffer_length then no padding is
-	 * present.
-	 */
+	 
 	if (urb->actual_length == urb->transfer_buffer_length)
 		return;
 
-	/*
-	 * loop over all packets from last to first (to prevent overwriting
-	 * memory when padding) and move them into the proper place
-	 */
+	 
 	for (i = np-1; i > 0; i--) {
 		actualoffset -= urb->iso_frame_desc[i].actual_length;
 		memmove(urb->transfer_buffer + urb->iso_frame_desc[i].offset,
@@ -758,7 +709,7 @@ void usbip_pad_iso(struct usbip_device *ud, struct urb *urb)
 }
 EXPORT_SYMBOL_GPL(usbip_pad_iso);
 
-/* some members of urb must be substituted before. */
+ 
 int usbip_recv_xbuff(struct usbip_device *ud, struct urb *urb)
 {
 	struct scatterlist *sg;
@@ -769,25 +720,25 @@ int usbip_recv_xbuff(struct usbip_device *ud, struct urb *urb)
 	int i;
 
 	if (ud->side == USBIP_STUB || ud->side == USBIP_VUDC) {
-		/* the direction of urb must be OUT. */
+		 
 		if (usb_pipein(urb->pipe))
 			return 0;
 
 		size = urb->transfer_buffer_length;
 	} else {
-		/* the direction of urb must be IN. */
+		 
 		if (usb_pipeout(urb->pipe))
 			return 0;
 
 		size = urb->actual_length;
 	}
 
-	/* no need to recv xbuff */
+	 
 	if (!(size > 0))
 		return 0;
 
 	if (size > urb->transfer_buffer_length)
-		/* should not happen, probably malicious packet */
+		 
 		goto error;
 
 	if (urb->num_sgs) {

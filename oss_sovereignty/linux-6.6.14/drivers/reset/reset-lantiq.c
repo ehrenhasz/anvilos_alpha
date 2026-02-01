@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *
- *  Copyright (C) 2010 John Crispin <blogic@phrozen.org>
- *  Copyright (C) 2013-2015 Lantiq Beteiligungs-GmbH & Co.KG
- *  Copyright (C) 2016 Martin Blumenstingl <martin.blumenstingl@googlemail.com>
- *  Copyright (C) 2017 Hauke Mehrtens <hauke@hauke-m.de>
- */
+
+ 
 
 #include <linux/mfd/syscon.h>
 #include <linux/module.h>

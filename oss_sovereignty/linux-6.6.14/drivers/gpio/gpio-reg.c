@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * gpio-reg: single register individually fixed-direction GPIOs
- *
- * Copyright (C) 2016 Russell King
- */
+
+ 
 #include <linux/bits.h>
 #include <linux/container_of.h>
 #include <linux/device.h>
@@ -80,10 +76,7 @@ static int gpio_reg_get(struct gpio_chip *gc, unsigned offset)
 	u32 val, mask = BIT(offset);
 
 	if (r->direction & mask) {
-		/*
-		 * double-read the value, some registers latch after the
-		 * first read.
-		 */
+		 
 		readl_relaxed(r->reg);
 		val = readl_relaxed(r->reg);
 	} else {
@@ -115,27 +108,7 @@ static int gpio_reg_to_irq(struct gpio_chip *gc, unsigned offset)
 	return irq;
 }
 
-/**
- * gpio_reg_init - add a fixed in/out register as gpio
- * @dev: optional struct device associated with this register
- * @base: start gpio number, or -1 to allocate
- * @num: number of GPIOs, maximum 32
- * @label: GPIO chip label
- * @direction: bitmask of fixed direction, one per GPIO signal, 1 = in
- * @def_out: initial GPIO output value
- * @names: array of %num strings describing each GPIO signal or %NULL
- * @irqdom: irq domain or %NULL
- * @irqs: array of %num ints describing the interrupt mapping for each
- *        GPIO signal, or %NULL.  If @irqdom is %NULL, then this
- *        describes the Linux interrupt number, otherwise it describes
- *        the hardware interrupt number in the specified irq domain.
- *
- * Add a single-register GPIO device containing up to 32 GPIO signals,
- * where each GPIO has a fixed input or output configuration.  Only
- * input GPIOs are assumed to be readable from the register, and only
- * then after a double-read.  Output values are assumed not to be
- * readable.
- */
+ 
 struct gpio_chip *gpio_reg_init(struct device *dev, void __iomem *reg,
 	int base, int num, const char *label, u32 direction, u32 def_out,
 	const char *const *names, struct irq_domain *irqdom, const int *irqs)

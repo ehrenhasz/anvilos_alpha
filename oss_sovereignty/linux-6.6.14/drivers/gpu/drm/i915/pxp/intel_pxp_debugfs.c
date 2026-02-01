@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright © 2021 Intel Corporation
- */
+
+ 
 
 #include <linux/debugfs.h>
 #include <linux/string_helpers.h>
@@ -38,7 +36,7 @@ DEFINE_SHOW_ATTRIBUTE(pxp_info);
 
 static int pxp_terminate_get(void *data, u64 *val)
 {
-	/* nothing to read */
+	 
 	return -EPERM;
 }
 
@@ -51,7 +49,7 @@ static int pxp_terminate_set(void *data, u64 val)
 	if (!intel_pxp_is_active(pxp))
 		return -ENODEV;
 
-	/* simulate a termination interrupt */
+	 
 	spin_lock_irq(gt->irq_lock);
 	intel_pxp_irq_handler(pxp, GEN12_DISPLAY_PXP_STATE_TERMINATED_INTERRUPT);
 	spin_unlock_irq(gt->irq_lock);

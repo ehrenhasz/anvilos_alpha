@@ -1,18 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
-/*
- * Microsemi Switchtec PCIe Driver
- * Copyright (c) 2017, Microsemi Corporation
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms and conditions of the GNU General Public License,
- * version 2, as published by the Free Software Foundation.
- *
- * This program is distributed in the hope it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- * more details.
- *
- */
+ 
+ 
 
 #ifndef _UAPI_LINUX_SWITCHTEC_IOCTL_H
 #define _UAPI_LINUX_SWITCHTEC_IOCTL_H
@@ -42,7 +29,7 @@
 #define SWITCHTEC_NUM_PARTITIONS_GEN3	13
 #define SWITCHTEC_NUM_PARTITIONS_GEN4	19
 
-/* obsolete: for compatibility with old userspace software */
+ 
 #define SWITCHTEC_IOCTL_NUM_PARTITIONS	SWITCHTEC_NUM_PARTITIONS_GEN3
 
 struct switchtec_ioctl_flash_info {

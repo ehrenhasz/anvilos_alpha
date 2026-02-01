@@ -1,46 +1,8 @@
-/*
- * Qualcomm Technologies HIDMA DMA engine interface
- *
- * Copyright (c) 2015-2017, The Linux Foundation. All rights reserved.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 and
- * only version 2 as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- */
+ 
 
-/*
- * Copyright (C) Freescale Semicondutor, Inc. 2007, 2008.
- * Copyright (C) Semihalf 2009
- * Copyright (C) Ilya Yanok, Emcraft Systems 2010
- * Copyright (C) Alexander Popov, Promcontroller 2014
- *
- * Written by Piotr Ziecik <kosmo@semihalf.com>. Hardware description
- * (defines, structures and comments) was taken from MPC5121 DMA driver
- * written by Hongjun Chen <hong-jun.chen@freescale.com>.
- *
- * Approved as OSADL project by a majority of OSADL members and funded
- * by OSADL membership fees in 2009;  for details see www.osadl.org.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option)
- * any later version.
- *
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- * more details.
- *
- * The full GNU General Public License is included in this distribution in the
- * file called COPYING.
- */
+ 
 
-/* Linux Foundation elects GPLv2 license only. */
+ 
 
 #include <linux/dmaengine.h>
 #include <linux/dma-mapping.h>
@@ -62,12 +24,7 @@
 #include "../dmaengine.h"
 #include "hidma.h"
 
-/*
- * Default idle time is 2 seconds. This parameter can
- * be overridden by changing the following
- * /sys/bus/platform/devices/QCOM8061:<xy>/power/autosuspend_delay_ms
- * during kernel boot.
- */
+ 
 #define HIDMA_AUTOSUSPEND_TIMEOUT		2000
 #define HIDMA_ERR_INFO_SW			0xFF
 #define HIDMA_ERR_CODE_UNEXPECTED_TERMINATE	0x0
@@ -104,7 +61,7 @@ enum hidma_cap {
 	HIDMA_IDENTITY_CAP,
 };
 
-/* process completed descriptors */
+ 
 static void hidma_process_completed(struct hidma_chan *mchan)
 {
 	struct dma_device *ddev = mchan->chan.device;
@@ -118,12 +75,12 @@ static void hidma_process_completed(struct hidma_chan *mchan)
 
 	INIT_LIST_HEAD(&list);
 
-	/* Get all completed descriptors */
+	 
 	spin_lock_irqsave(&mchan->lock, irqflags);
 	list_splice_tail_init(&mchan->completed, &list);
 	spin_unlock_irqrestore(&mchan->lock, irqflags);
 
-	/* Execute callbacks and run dependencies */
+	 
 	list_for_each_entry_safe(mdesc, next, &list, node) {
 		enum dma_status llstat;
 		struct dmaengine_desc_callback cb;
@@ -157,11 +114,7 @@ static void hidma_process_completed(struct hidma_chan *mchan)
 	}
 }
 
-/*
- * Called once for each submitted descriptor.
- * PM is locked once for each descriptor that is currently
- * in execution.
- */
+ 
 static void hidma_callback(void *data)
 {
 	struct hidma_desc *mdesc = data;
@@ -173,11 +126,11 @@ static void hidma_callback(void *data)
 
 	spin_lock_irqsave(&mchan->lock, irqflags);
 	if (mdesc->node.next) {
-		/* Delete from the active list, add to completed list */
+		 
 		list_move_tail(&mdesc->node, &mchan->completed);
 		queued = true;
 
-		/* calculate the next running descriptor */
+		 
 		mchan->running = list_first_entry(&mchan->active,
 						  struct hidma_desc, node);
 	}
@@ -247,7 +200,7 @@ static void hidma_issue_pending(struct dma_chan *dmach)
 	}
 	spin_unlock_irqrestore(&mchan->lock, flags);
 
-	/* PM will be released in hidma_callback function. */
+	 
 	status = pm_runtime_get(dmadev->ddev.dev);
 	if (status < 0)
 		tasklet_schedule(&dmadev->task);
@@ -303,10 +256,7 @@ static enum dma_status hidma_tx_status(struct dma_chan *dmach,
 	return ret;
 }
 
-/*
- * Submit descriptor to hardware.
- * Lock the PM for each descriptor we are sending.
- */
+ 
 static dma_cookie_t hidma_tx_submit(struct dma_async_tx_descriptor *txd)
 {
 	struct hidma_chan *mchan = to_hidma_chan(txd->chan);
@@ -327,10 +277,10 @@ static dma_cookie_t hidma_tx_submit(struct dma_async_tx_descriptor *txd)
 	mdesc = container_of(txd, struct hidma_desc, desc);
 	spin_lock_irqsave(&mchan->lock, irqflags);
 
-	/* Move descriptor to queued */
+	 
 	list_move_tail(&mdesc->node, &mchan->queued);
 
-	/* Update cookie */
+	 
 	cookie = dma_cookie_assign(txd);
 
 	spin_unlock_irqrestore(&mchan->lock, irqflags);
@@ -351,7 +301,7 @@ static int hidma_alloc_chan_resources(struct dma_chan *dmach)
 	if (mchan->allocated)
 		return 0;
 
-	/* Alloc descriptors for this channel */
+	 
 	for (i = 0; i < dmadev->nr_descriptors; i++) {
 		mdesc = kzalloc(sizeof(struct hidma_desc), GFP_NOWAIT);
 		if (!mdesc) {
@@ -374,7 +324,7 @@ static int hidma_alloc_chan_resources(struct dma_chan *dmach)
 	}
 
 	if (rc) {
-		/* return the allocated descriptors */
+		 
 		list_for_each_entry_safe(mdesc, tmp, &descs, node) {
 			hidma_ll_free(dmadev->lldev, mdesc->tre_ch);
 			kfree(mdesc);
@@ -398,7 +348,7 @@ hidma_prep_dma_memcpy(struct dma_chan *dmach, dma_addr_t dest, dma_addr_t src,
 	struct hidma_dev *mdma = mchan->dmadev;
 	unsigned long irqflags;
 
-	/* Get free descriptor */
+	 
 	spin_lock_irqsave(&mchan->lock, irqflags);
 	if (!list_empty(&mchan->free)) {
 		mdesc = list_first_entry(&mchan->free, struct hidma_desc, node);
@@ -414,7 +364,7 @@ hidma_prep_dma_memcpy(struct dma_chan *dmach, dma_addr_t dest, dma_addr_t src,
 				     src, dest, len, flags,
 				     HIDMA_TRE_MEMCPY);
 
-	/* Place descriptor in prepared list */
+	 
 	spin_lock_irqsave(&mchan->lock, irqflags);
 	list_add_tail(&mdesc->node, &mchan->prepared);
 	spin_unlock_irqrestore(&mchan->lock, irqflags);
@@ -432,7 +382,7 @@ hidma_prep_dma_memset(struct dma_chan *dmach, dma_addr_t dest, int value,
 	unsigned long irqflags;
 	u64 byte_pattern, fill_pattern;
 
-	/* Get free descriptor */
+	 
 	spin_lock_irqsave(&mchan->lock, irqflags);
 	if (!list_empty(&mchan->free)) {
 		mdesc = list_first_entry(&mchan->free, struct hidma_desc, node);
@@ -458,7 +408,7 @@ hidma_prep_dma_memset(struct dma_chan *dmach, dma_addr_t dest, int value,
 				     fill_pattern, dest, len, flags,
 				     HIDMA_TRE_MEMSET);
 
-	/* Place descriptor in prepared list */
+	 
 	spin_lock_irqsave(&mchan->lock, irqflags);
 	list_add_tail(&mdesc->node, &mchan->prepared);
 	spin_unlock_irqrestore(&mchan->lock, irqflags);
@@ -476,7 +426,7 @@ static int hidma_terminate_channel(struct dma_chan *chan)
 	int rc;
 
 	pm_runtime_get_sync(dmadev->ddev.dev);
-	/* give completed requests a chance to finish */
+	 
 	hidma_process_completed(mchan);
 
 	spin_lock_irqsave(&mchan->lock, irqflags);
@@ -487,14 +437,14 @@ static int hidma_terminate_channel(struct dma_chan *chan)
 	list_splice_init(&mchan->queued, &list);
 	spin_unlock_irqrestore(&mchan->lock, irqflags);
 
-	/* this suspends the existing transfer */
+	 
 	rc = hidma_ll_disable(dmadev->lldev);
 	if (rc) {
 		dev_err(dmadev->ddev.dev, "channel did not pause\n");
 		goto out;
 	}
 
-	/* return all user requests */
+	 
 	list_for_each_entry_safe(mdesc, tmp, &list, node) {
 		struct dma_async_tx_descriptor *txd = &mdesc->desc;
 
@@ -502,7 +452,7 @@ static int hidma_terminate_channel(struct dma_chan *chan)
 		dmaengine_desc_get_callback_invoke(txd, NULL);
 		dma_run_dependencies(txd);
 
-		/* move myself to free_list */
+		 
 		list_move(&mdesc->node, &mchan->free);
 	}
 
@@ -523,7 +473,7 @@ static int hidma_terminate_all(struct dma_chan *chan)
 	if (rc)
 		return rc;
 
-	/* reinitialize the hardware */
+	 
 	pm_runtime_get_sync(dmadev->ddev.dev);
 	rc = hidma_ll_setup(dmadev->lldev);
 	pm_runtime_mark_last_busy(dmadev->ddev.dev);
@@ -539,15 +489,15 @@ static void hidma_free_chan_resources(struct dma_chan *dmach)
 	unsigned long irqflags;
 	LIST_HEAD(descs);
 
-	/* terminate running transactions and free descriptors */
+	 
 	hidma_terminate_channel(dmach);
 
 	spin_lock_irqsave(&mchan->lock, irqflags);
 
-	/* Move data */
+	 
 	list_splice_tail_init(&mchan->free, &descs);
 
-	/* Free descriptors */
+	 
 	list_for_each_entry_safe(mdesc, tmp, &descs, node) {
 		hidma_ll_free(mdma->lldev, mdesc->tre_ch);
 		list_del(&mdesc->node);
@@ -602,10 +552,7 @@ static irqreturn_t hidma_chirq_handler(int chirq, void *arg)
 {
 	struct hidma_lldev *lldev = arg;
 
-	/*
-	 * All interrupts are request driven.
-	 * HW doesn't send an interrupt by itself.
-	 */
+	 
 	return hidma_ll_inthandler(chirq, lldev);
 }
 
@@ -724,7 +671,7 @@ static int hidma_request_msi(struct hidma_dev *dmadev,
 	}
 
 	if (rc) {
-		/* free allocated MSI interrupts above */
+		 
 		for (--i; i >= 0; i--) {
 			virq = msi_get_virq(&pdev->dev, i);
 			devm_free_irq(&pdev->dev, virq, &dmadev->lldev);
@@ -732,7 +679,7 @@ static int hidma_request_msi(struct hidma_dev *dmadev,
 		dev_warn(&pdev->dev,
 			 "failed to request MSI irq, falling back to wired IRQ\n");
 	} else {
-		/* Add callback to free MSIs on teardown */
+		 
 		hidma_ll_setup_irq(dmadev->lldev, true);
 	}
 	return rc;
@@ -777,10 +724,7 @@ static int hidma_probe(struct platform_device *pdev)
 		goto bailout;
 	}
 
-	/*
-	 * This driver only handles the channel IRQs.
-	 * Common IRQ is handled by the management driver.
-	 */
+	 
 	chirq = platform_get_irq(pdev, 0);
 	if (chirq < 0) {
 		rc = chirq;
@@ -820,10 +764,7 @@ static int hidma_probe(struct platform_device *pdev)
 	dmadev->ddev.device_terminate_all = hidma_terminate_all;
 	dmadev->ddev.copy_align = 8;
 
-	/*
-	 * Determine the MSI capability of the platform. Old HW doesn't
-	 * support MSI.
-	 */
+	 
 	msi = hidma_test_capability(&pdev->dev, HIDMA_MSI_CAP);
 	device_property_read_u32(&pdev->dev, "desc-count",
 				 &dmadev->nr_descriptors);
@@ -842,7 +783,7 @@ static int hidma_probe(struct platform_device *pdev)
 	else
 		dmadev->chidx = readl(dmadev->dev_trca + 0x28);
 
-	/* Set DMA mask to 64 bits. */
+	 
 	rc = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(64));
 	if (rc) {
 		dev_warn(&pdev->dev, "unable to set coherent mask to 64");

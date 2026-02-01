@@ -1,11 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0-only
-//
-// aw88395_reg.h --  AW88395 chip register file
-//
-// Copyright (c) 2022-2023 AWINIC Technology CO., LTD
-//
-// Author: Bruce zhao <zhaolei@awinic.com>
-//
+
+
+
+
+
+
+
+
 
 #ifndef __AW88395_REG_H__
 #define __AW88395_REG_H__

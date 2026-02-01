@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM tlb
 
@@ -15,10 +15,7 @@
 	EM(  TLB_LOCAL_MM_SHOOTDOWN,	"local mm shootdown" )		\
 	EMe( TLB_REMOTE_SEND_IPI,	"remote ipi send" )
 
-/*
- * First define the enums in TLB_FLUSH_REASON to be exported to userspace
- * via TRACE_DEFINE_ENUM().
- */
+ 
 #undef EM
 #undef EMe
 #define EM(a,b)		TRACE_DEFINE_ENUM(a);
@@ -26,10 +23,7 @@
 
 TLB_FLUSH_REASON
 
-/*
- * Now redefine the EM() and EMe() macros to map the enums to the strings
- * that will be printed in the output.
- */
+ 
 #undef EM
 #undef EMe
 #define EM(a,b)		{ a, b },
@@ -56,7 +50,7 @@ TRACE_EVENT(tlb_flush,
 		__entry->reason)
 );
 
-#endif /* _TRACE_TLB_H */
+#endif  
 
-/* This part must be outside protection */
+ 
 #include <trace/define_trace.h>

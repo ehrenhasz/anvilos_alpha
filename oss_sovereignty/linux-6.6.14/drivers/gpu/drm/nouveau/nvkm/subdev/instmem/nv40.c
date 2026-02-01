@@ -1,26 +1,4 @@
-/*
- * Copyright 2012 Red Hat Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: Ben Skeggs
- */
+ 
 #define nv40_instmem(p) container_of((p), struct nv40_instmem, base)
 #include "priv.h"
 
@@ -33,9 +11,7 @@ struct nv40_instmem {
 	void __iomem *iomem;
 };
 
-/******************************************************************************
- * instmem object implementation
- *****************************************************************************/
+ 
 #define nv40_instobj(p) container_of((p), struct nv40_instobj, base.memory)
 
 struct nv40_instobj {
@@ -138,9 +114,7 @@ nv40_instobj_new(struct nvkm_instmem *base, u32 size, u32 align, bool zero,
 	return ret;
 }
 
-/******************************************************************************
- * instmem subdev implementation
- *****************************************************************************/
+ 
 
 static u32
 nv40_instmem_rd32(struct nvkm_instmem *base, u32 addr)
@@ -161,47 +135,40 @@ nv40_instmem_oneinit(struct nvkm_instmem *base)
 	struct nvkm_device *device = imem->base.subdev.device;
 	int ret, vs;
 
-	/* PRAMIN aperture maps over the end of vram, reserve enough space
-	 * to fit graphics contexts for every channel, the magics come
-	 * from engine/gr/nv40.c
-	 */
+	 
 	vs = hweight8((nvkm_rd32(device, 0x001540) & 0x0000ff00) >> 8);
 	if      (device->chipset == 0x40) imem->base.reserved = 0x6aa0 * vs;
 	else if (device->chipset  < 0x43) imem->base.reserved = 0x4f00 * vs;
 	else if (nv44_gr_class(device))   imem->base.reserved = 0x4980 * vs;
 	else				  imem->base.reserved = 0x4a40 * vs;
 	imem->base.reserved += 16 * 1024;
-	imem->base.reserved *= 32;		/* per-channel */
-	imem->base.reserved += 512 * 1024;	/* pci(e)gart table */
-	imem->base.reserved += 512 * 1024;	/* object storage */
+	imem->base.reserved *= 32;		 
+	imem->base.reserved += 512 * 1024;	 
+	imem->base.reserved += 512 * 1024;	 
 	imem->base.reserved = round_up(imem->base.reserved, 4096);
 
 	ret = nvkm_mm_init(&imem->heap, 0, 0, imem->base.reserved, 1);
 	if (ret)
 		return ret;
 
-	/* 0x00000-0x10000: reserve for probable vbios image */
+	 
 	ret = nvkm_memory_new(device, NVKM_MEM_TARGET_INST, 0x10000, 0, false,
 			      &imem->base.vbios);
 	if (ret)
 		return ret;
 
-	/* 0x10000-0x18000: reserve for RAMHT */
+	 
 	ret = nvkm_ramht_new(device, 0x08000, 0, NULL, &imem->base.ramht);
 	if (ret)
 		return ret;
 
-	/* 0x18000-0x18200: reserve for RAMRO
-	 * 0x18200-0x20000: padding
-	 */
+	 
 	ret = nvkm_memory_new(device, NVKM_MEM_TARGET_INST, 0x08000, 0, false,
 			      &imem->base.ramro);
 	if (ret)
 		return ret;
 
-	/* 0x20000-0x21000: reserve for RAMFC
-	 * 0x21000-0x40000: padding and some unknown crap
-	 */
+	 
 	ret = nvkm_memory_new(device, NVKM_MEM_TARGET_INST, 0x20000, 0, true,
 			      &imem->base.ramfc);
 	if (ret)
@@ -246,7 +213,7 @@ nv40_instmem_new(struct nvkm_device *device, enum nvkm_subdev_type type, int ins
 	nvkm_instmem_ctor(&nv40_instmem, device, type, inst, &imem->base);
 	*pimem = &imem->base;
 
-	/* map bar */
+	 
 	if (device->func->resource_size(device, 2))
 		bar = 2;
 	else

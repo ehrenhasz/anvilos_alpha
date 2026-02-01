@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *  linux/fs/nfs/symlink.c
- *
- *  Copyright (C) 1992  Rick Sladkey
- *
- *  Optimization changes Copyright (C) 1994 Florian La Roche
- *
- *  Jun 7 1999, cache symlink lookups in the page cache.  -DaveM
- *
- *  nfs symlink handling code
- */
+
+ 
 
 #include <linux/time.h>
 #include <linux/errno.h>
@@ -22,9 +12,7 @@
 #include <linux/mm.h>
 #include <linux/string.h>
 
-/* Symlink caching in the page cache is even more simplistic
- * and straight-forward than readdir caching.
- */
+ 
 
 static int nfs_symlink_filler(struct file *file, struct folio *folio)
 {
@@ -75,9 +63,7 @@ static const char *nfs_get_link(struct dentry *dentry,
 	return page_address(page);
 }
 
-/*
- * symlinks can't do much...
- */
+ 
 const struct inode_operations nfs_symlink_inode_operations = {
 	.get_link	= nfs_get_link,
 	.getattr	= nfs_getattr,

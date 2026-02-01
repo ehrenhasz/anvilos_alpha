@@ -1,9 +1,5 @@
-/* 	$OpenBSD: test_sshkey.c,v 1.23 2023/01/04 22:48:57 tb Exp $ */
-/*
- * Regress test for sshkey.h key management API
- *
- * Placed in the public domain
- */
+ 
+ 
 
 #include "includes.h"
 
@@ -28,7 +24,7 @@
 
 #include "ssherr.h"
 #include "sshbuf.h"
-#define SSHBUF_INTERNAL 1	/* access internals for testing */
+#define SSHBUF_INTERNAL 1	 
 #include "sshkey.h"
 
 #include "authfile.h"
@@ -65,10 +61,7 @@ build_cert(struct sshbuf *b, struct sshkey *k, const char *type,
 	ASSERT_PTR_NE(ca_buf, NULL);
 	ASSERT_INT_EQ(sshkey_putb(ca_key, ca_buf), 0);
 
-	/*
-	 * Get the public key serialisation by rendering the key and skipping
-	 * the type string. This is a bit of a hack :/
-	 */
+	 
 	pk = sshbuf_new();
 	ASSERT_PTR_NE(pk, NULL);
 	ASSERT_INT_EQ(sshkey_putb_plain(k, pk), 0);
@@ -89,21 +82,21 @@ build_cert(struct sshbuf *b, struct sshkey *k, const char *type,
 	put_opt(critopts, "permit-X11-forwarding", NULL);
 
 	ASSERT_INT_EQ(sshbuf_put_cstring(b, type), 0);
-	ASSERT_INT_EQ(sshbuf_put_cstring(b, "noncenoncenonce!"), 0); /* nonce */
-	ASSERT_INT_EQ(sshbuf_putb(b, pk), 0); /* public key serialisation */
-	ASSERT_INT_EQ(sshbuf_put_u64(b, 1234), 0); /* serial */
-	ASSERT_INT_EQ(sshbuf_put_u32(b, SSH2_CERT_TYPE_USER), 0); /* type */
-	ASSERT_INT_EQ(sshbuf_put_cstring(b, "gregor"), 0); /* key ID */
-	ASSERT_INT_EQ(sshbuf_put_stringb(b, principals), 0); /* principals */
-	ASSERT_INT_EQ(sshbuf_put_u64(b, 0), 0); /* start */
-	ASSERT_INT_EQ(sshbuf_put_u64(b, 0xffffffffffffffffULL), 0); /* end */
-	ASSERT_INT_EQ(sshbuf_put_stringb(b, critopts), 0); /* options */
-	ASSERT_INT_EQ(sshbuf_put_stringb(b, exts), 0); /* extensions */
-	ASSERT_INT_EQ(sshbuf_put_string(b, NULL, 0), 0); /* reserved */
-	ASSERT_INT_EQ(sshbuf_put_stringb(b, ca_buf), 0); /* signature key */
+	ASSERT_INT_EQ(sshbuf_put_cstring(b, "noncenoncenonce!"), 0);  
+	ASSERT_INT_EQ(sshbuf_putb(b, pk), 0);  
+	ASSERT_INT_EQ(sshbuf_put_u64(b, 1234), 0);  
+	ASSERT_INT_EQ(sshbuf_put_u32(b, SSH2_CERT_TYPE_USER), 0);  
+	ASSERT_INT_EQ(sshbuf_put_cstring(b, "gregor"), 0);  
+	ASSERT_INT_EQ(sshbuf_put_stringb(b, principals), 0);  
+	ASSERT_INT_EQ(sshbuf_put_u64(b, 0), 0);  
+	ASSERT_INT_EQ(sshbuf_put_u64(b, 0xffffffffffffffffULL), 0);  
+	ASSERT_INT_EQ(sshbuf_put_stringb(b, critopts), 0);  
+	ASSERT_INT_EQ(sshbuf_put_stringb(b, exts), 0);  
+	ASSERT_INT_EQ(sshbuf_put_string(b, NULL, 0), 0);  
+	ASSERT_INT_EQ(sshbuf_put_stringb(b, ca_buf), 0);  
 	ASSERT_INT_EQ(sshkey_sign(sign_key, &sigblob, &siglen,
 	    sshbuf_ptr(b), sshbuf_len(b), sig_alg, NULL, NULL, 0), 0);
-	ASSERT_INT_EQ(sshbuf_put_string(b, sigblob, siglen), 0); /* signature */
+	ASSERT_INT_EQ(sshbuf_put_string(b, sigblob, siglen), 0);  
 
 	free(sigblob);
 	sshbuf_free(ca_buf);
@@ -112,7 +105,7 @@ build_cert(struct sshbuf *b, struct sshkey *k, const char *type,
 	sshbuf_free(principals);
 	sshbuf_free(pk);
 }
-#endif /* WITH_OPENSSL */
+#endif  
 
 static void
 signature_test(struct sshkey *k, struct sshkey *bad, const char *sig_alg,
@@ -127,7 +120,7 @@ signature_test(struct sshkey *k, struct sshkey *bad, const char *sig_alg,
 	ASSERT_PTR_NE(sig, NULL);
 	ASSERT_INT_EQ(sshkey_verify(k, sig, len, d, l, NULL, 0, NULL), 0);
 	ASSERT_INT_NE(sshkey_verify(bad, sig, len, d, l, NULL, 0, NULL), 0);
-	/* Fuzz test is more comprehensive, this is just a smoke test */
+	 
 	sig[len - 5] ^= 0x10;
 	ASSERT_INT_NE(sshkey_verify(k, sig, len, d, l, NULL, 0, NULL), 0);
 	free(sig);
@@ -185,8 +178,8 @@ sshkey_tests(void)
 	struct sshkey *k4, *kr, *kd;
 #ifdef OPENSSL_HAS_ECC
 	struct sshkey *ke;
-#endif /* OPENSSL_HAS_ECC */
-#endif /* WITH_OPENSSL */
+#endif  
+#endif  
 	struct sshbuf *b;
 
 	TEST_START("new invalid");
@@ -219,7 +212,7 @@ sshkey_tests(void)
 	TEST_START("new/free KEY_ECDSA");
 	k1 = sshkey_new(KEY_ECDSA);
 	ASSERT_PTR_NE(k1, NULL);
-	ASSERT_PTR_EQ(k1->ecdsa, NULL);  /* Can't allocate without NID */
+	ASSERT_PTR_EQ(k1->ecdsa, NULL);   
 	sshkey_free(k1);
 	TEST_DONE();
 #endif
@@ -227,7 +220,7 @@ sshkey_tests(void)
 	TEST_START("new/free KEY_ED25519");
 	k1 = sshkey_new(KEY_ED25519);
 	ASSERT_PTR_NE(k1, NULL);
-	/* These should be blank until key loaded or generated */
+	 
 	ASSERT_PTR_EQ(k1->ed25519_sk, NULL);
 	ASSERT_PTR_EQ(k1->ed25519_pk, NULL);
 	sshkey_free(k1);
@@ -289,8 +282,8 @@ sshkey_tests(void)
 	ASSERT_PTR_NE(EC_KEY_get0_public_key(ke->ecdsa), NULL);
 	ASSERT_PTR_NE(EC_KEY_get0_private_key(ke->ecdsa), NULL);
 	TEST_DONE();
-#endif /* OPENSSL_HAS_ECC */
-#endif /* WITH_OPENSSL */
+#endif  
+#endif  
 
 	TEST_START("generate KEY_ED25519");
 	ASSERT_INT_EQ(sshkey_generate(KEY_ED25519, 256, &kf), 0);
@@ -348,8 +341,8 @@ sshkey_tests(void)
 	ASSERT_INT_EQ(sshkey_equal(ke, k1), 1);
 	sshkey_free(k1);
 	TEST_DONE();
-#endif /* OPENSSL_HAS_ECC */
-#endif /* WITH_OPENSSL */
+#endif  
+#endif  
 
 	TEST_START("demote KEY_ED25519");
 	ASSERT_INT_EQ(sshkey_from_private(kf, &k1), 0);
@@ -372,10 +365,10 @@ sshkey_tests(void)
 	ASSERT_INT_EQ(sshkey_equal(kd, ke), 0);
 	ASSERT_INT_EQ(sshkey_equal(kr, ke), 0);
 	ASSERT_INT_EQ(sshkey_equal(ke, kf), 0);
-#endif /* OPENSSL_HAS_ECC */
+#endif  
 	ASSERT_INT_EQ(sshkey_equal(kd, kf), 0);
 	TEST_DONE();
-#endif /* WITH_OPENSSL */
+#endif  
 
 	TEST_START("equal different keys");
 #ifdef WITH_OPENSSL
@@ -389,8 +382,8 @@ sshkey_tests(void)
 	ASSERT_INT_EQ(sshkey_generate(KEY_ECDSA, 256, &k1), 0);
 	ASSERT_INT_EQ(sshkey_equal(ke, k1), 0);
 	sshkey_free(k1);
-#endif /* OPENSSL_HAS_ECC */
-#endif /* WITH_OPENSSL */
+#endif  
+#endif  
 	ASSERT_INT_EQ(sshkey_generate(KEY_ED25519, 256, &k1), 0);
 	ASSERT_INT_EQ(sshkey_equal(kf, k1), 0);
 	sshkey_free(k1);
@@ -401,8 +394,8 @@ sshkey_tests(void)
 	sshkey_free(kd);
 #ifdef OPENSSL_HAS_ECC
 	sshkey_free(ke);
-#endif /* OPENSSL_HAS_ECC */
-#endif /* WITH_OPENSSL */
+#endif  
+#endif  
 	sshkey_free(kf);
 
 	TEST_START("certify key");
@@ -497,8 +490,8 @@ sshkey_tests(void)
 	sshkey_free(k1);
 	sshkey_free(k2);
 	TEST_DONE();
-#endif /* OPENSSL_HAS_ECC */
-#endif /* WITH_OPENSSL */
+#endif  
+#endif  
 
 	TEST_START("sign and verify ED25519");
 	k1 = get_private("ed25519_1");
@@ -524,5 +517,5 @@ sshkey_tests(void)
 	sshkey_free(k3);
 	sshbuf_free(b);
 	TEST_DONE();
-#endif /* WITH_OPENSSL */
+#endif  
 }

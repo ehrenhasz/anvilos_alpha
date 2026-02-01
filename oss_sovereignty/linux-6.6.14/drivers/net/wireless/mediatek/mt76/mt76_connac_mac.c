@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: ISC
-/* Copyright (C) 2020 MediaTek Inc. */
+
+ 
 
 #include "mt76_connac.h"
 #include "mt76_connac2_mac.h"
@@ -12,7 +12,7 @@
 void mt76_connac_gen_ppe_thresh(u8 *he_ppet, int nss)
 {
 	static const u8 ppet16_ppet8_ru3_ru0[] = { 0x1c, 0xc7, 0x71 };
-	u8 i, ppet_bits, ppet_size, ru_bit_mask = 0x7; /* HE80 */
+	u8 i, ppet_bits, ppet_size, ru_bit_mask = 0x7;  
 
 	he_ppet[0] = FIELD_PREP(IEEE80211_PPE_THRES_NSS_MASK, nss - 1) |
 		     FIELD_PREP(IEEE80211_PPE_THRES_RU_INDEX_BITMASK_MASK,
@@ -508,7 +508,7 @@ void mt76_connac2_mac_write_txwi(struct mt76_dev *dev, __le32 *txwi,
 		q_idx = wmm_idx * MT76_CONNAC_MAX_WMM_SETS +
 			mt76_connac_lmac_mapping(skb_get_queue_mapping(skb));
 
-		/* mt7915 WA only counts WED path */
+		 
 		if (is_mt7915(dev) && mtk_wed_device_active(&dev->mmio.wed))
 			wcid->stats.tx_packets++;
 	}
@@ -556,7 +556,7 @@ void mt76_connac2_mac_write_txwi(struct mt76_dev *dev, __le32 *txwi,
 		mt76_connac2_mac_write_txwi_80211(dev, txwi, skb, key);
 
 	if (txwi[2] & cpu_to_le32(MT_TXD2_FIX_RATE)) {
-		/* Fixed rata is available just for 802.11 txd */
+		 
 		struct ieee80211_hdr *hdr = (struct ieee80211_hdr *)skb->data;
 		bool multicast = ieee80211_is_data(hdr->frame_control) &&
 				 is_multicast_ether_addr(hdr->addr1);
@@ -564,7 +564,7 @@ void mt76_connac2_mac_write_txwi(struct mt76_dev *dev, __le32 *txwi,
 							multicast);
 		u32 val = MT_TXD6_FIXED_BW;
 
-		/* hardware won't add HTC for mgmt/ctrl frame */
+		 
 		txwi[2] |= cpu_to_le32(MT_TXD2_HTC_VLD);
 
 		val |= FIELD_PREP(MT_TXD6_TX_RATE, rate);
@@ -594,7 +594,7 @@ bool mt76_connac2_mac_fill_txs(struct mt76_dev *dev, struct mt76_wcid *wcid,
 
 	txs = le32_to_cpu(txs_data[0]);
 
-	/* PPDU based reporting */
+	 
 	if (mtk_wed_device_active(&dev->mmio.wed) &&
 	    FIELD_GET(MT_TXS0_TXS_FORMAT, txs) > 1) {
 		stats->tx_bytes +=
@@ -918,7 +918,7 @@ void mt76_connac2_mac_decode_he_radiotap(struct mt76_dev *dev,
 }
 EXPORT_SYMBOL_GPL(mt76_connac2_mac_decode_he_radiotap);
 
-/* The HW does not translate the mac header to 802.3 for mesh point */
+ 
 int mt76_connac2_reverse_frag0_hdr_trans(struct ieee80211_vif *vif,
 					 struct sk_buff *skb, u16 hdr_offset)
 {
@@ -938,7 +938,7 @@ int mt76_connac2_reverse_frag0_hdr_trans(struct ieee80211_vif *vif,
 
 	sta = container_of((void *)status->wcid, struct ieee80211_sta, drv_priv);
 
-	/* store the info from RXD and ethhdr to avoid being overridden */
+	 
 	frame_control = le32_get_bits(rxd[6], MT_RXD6_FRAME_CONTROL);
 	hdr.frame_control = cpu_to_le16(frame_control);
 	hdr.seq_ctrl = cpu_to_le16(le32_get_bits(rxd[8], MT_RXD8_SEQ_CTRL));
@@ -1110,7 +1110,7 @@ void mt76_connac2_tx_check_aggr(struct ieee80211_sta *sta, __le32 *txwi)
 		return;
 
 	tid = le32_get_bits(txwi[1], MT_TXD1_TID);
-	if (tid >= 6) /* skip VO queue */
+	if (tid >= 6)  
 		return;
 
 	val = le32_to_cpu(txwi[2]);

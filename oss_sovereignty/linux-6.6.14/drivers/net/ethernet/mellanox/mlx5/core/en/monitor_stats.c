@@ -1,21 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright (c) 2018 Mellanox Technologies. */
+ 
+ 
 
 #include "en.h"
 #include "monitor_stats.h"
 #include "lib/eq.h"
 
-/* Driver will set the following watch counters list:
- * Ppcnt.802_3:
- * a_in_range_length_errors      Type: 0x0, Counter:  0x0, group_id = N/A
- * a_out_of_range_length_field   Type: 0x0, Counter:  0x1, group_id = N/A
- * a_frame_too_long_errors       Type: 0x0, Counter:  0x2, group_id = N/A
- * a_frame_check_sequence_errors Type: 0x0, Counter:  0x3, group_id = N/A
- * a_alignment_errors            Type: 0x0, Counter:  0x4, group_id = N/A
- * if_out_discards               Type: 0x0, Counter:  0x5, group_id = N/A
- * Q_Counters:
- * Q[index].rx_out_of_buffer   Type: 0x1, Counter:  0x4, group_id = counter_ix
- */
+ 
 
 #define NUM_REQ_PPCNT_COUNTER_S1 MLX5_CMD_SET_MONITOR_NUM_PPCNT_COUNTER_SET1
 #define NUM_REQ_Q_COUNTERS_S1    MLX5_CMD_SET_MONITOR_NUM_Q_COUNTERS_SET1
@@ -96,7 +86,7 @@ static int fill_monitor_counter_q_counter_set1(int cnt, int q_counter, u32 *in)
 	return 1;
 }
 
-/* check if mlx5e_monitor_counter_supported before calling this function*/
+ 
 static void mlx5e_set_monitor_counter(struct mlx5e_priv *priv)
 {
 	struct mlx5_core_dev *mdev = priv->mdev;
@@ -124,7 +114,7 @@ static void mlx5e_set_monitor_counter(struct mlx5e_priv *priv)
 	mlx5_cmd_exec_in(mdev, set_monitor_counter, in);
 }
 
-/* check if mlx5e_monitor_counter_supported before calling this function*/
+ 
 void mlx5e_monitor_counter_init(struct mlx5e_priv *priv)
 {
 	INIT_WORK(&priv->monitor_counters_work, mlx5e_monitor_counters_work);
@@ -137,7 +127,7 @@ void mlx5e_monitor_counter_init(struct mlx5e_priv *priv)
 	queue_work(priv->wq, &priv->update_stats_work);
 }
 
-/* check if mlx5e_monitor_counter_supported before calling this function*/
+ 
 void mlx5e_monitor_counter_cleanup(struct mlx5e_priv *priv)
 {
 	u32 in[MLX5_ST_SZ_DW(set_monitor_counter_in)] = {};

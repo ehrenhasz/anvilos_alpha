@@ -1,55 +1,32 @@
-/* Parse printf format string.
-   Copyright (C) 1999, 2002-2003, 2005, 2007, 2010-2023 Free Software
-   Foundation, Inc.
-
-   This file is free software: you can redistribute it and/or modify
-   it under the terms of the GNU Lesser General Public License as
-   published by the Free Software Foundation; either version 2.1 of the
-   License, or (at your option) any later version.
-
-   This file is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU Lesser General Public License for more details.
-
-   You should have received a copy of the GNU Lesser General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-#ifndef _PRINTF_PARSE_H
-#define _PRINTF_PARSE_H
-
-/* This file can be parametrized with the following macros:
-     ENABLE_UNISTDIO    Set to 1 to enable the unistdio extensions.
-     STATIC             Set to 'static' to declare the function static.  */
+ 
 
 #if HAVE_FEATURES_H
-# include <features.h> /* for __GLIBC__, __UCLIBC__ */
+# include <features.h>  
 #endif
 
 #include "printf-args.h"
 
 
-/* Flags */
-#define FLAG_GROUP       1      /* ' flag */
-#define FLAG_LEFT        2      /* - flag */
-#define FLAG_SHOWSIGN    4      /* + flag */
-#define FLAG_SPACE       8      /* space flag */
-#define FLAG_ALT        16      /* # flag */
+ 
+#define FLAG_GROUP       1       
+#define FLAG_LEFT        2       
+#define FLAG_SHOWSIGN    4       
+#define FLAG_SPACE       8       
+#define FLAG_ALT        16       
 #define FLAG_ZERO       32
 #if __GLIBC__ >= 2 && !defined __UCLIBC__
-# define FLAG_LOCALIZED 64      /* I flag, uses localized digits */
+# define FLAG_LOCALIZED 64       
 #endif
 
-/* arg_index value indicating that no argument is consumed.  */
+ 
 #define ARG_NONE        (~(size_t)0)
 
-/* xxx_directive: A parsed directive.
-   xxx_directives: A parsed format string.  */
+ 
 
-/* Number of directly allocated directives (no malloc() needed).  */
+ 
 #define N_DIRECT_ALLOC_DIRECTIVES 7
 
-/* A parsed directive.  */
+ 
 typedef struct
 {
   const char* dir_start;
@@ -61,12 +38,12 @@ typedef struct
   const char* precision_start;
   const char* precision_end;
   size_t precision_arg_index;
-  char conversion; /* d i b B o u x X f F e E g G a A c s p n U % but not C S */
+  char conversion;  
   size_t arg_index;
 }
 char_directive;
 
-/* A parsed format string.  */
+ 
 typedef struct
 {
   size_t count;
@@ -79,7 +56,7 @@ char_directives;
 
 #if ENABLE_UNISTDIO
 
-/* A parsed directive.  */
+ 
 typedef struct
 {
   const uint8_t* dir_start;
@@ -91,12 +68,12 @@ typedef struct
   const uint8_t* precision_start;
   const uint8_t* precision_end;
   size_t precision_arg_index;
-  uint8_t conversion; /* d i b B o u x X f F e E g G a A c s p n U % but not C S */
+  uint8_t conversion;  
   size_t arg_index;
 }
 u8_directive;
 
-/* A parsed format string.  */
+ 
 typedef struct
 {
   size_t count;
@@ -107,7 +84,7 @@ typedef struct
 }
 u8_directives;
 
-/* A parsed directive.  */
+ 
 typedef struct
 {
   const uint16_t* dir_start;
@@ -119,12 +96,12 @@ typedef struct
   const uint16_t* precision_start;
   const uint16_t* precision_end;
   size_t precision_arg_index;
-  uint16_t conversion; /* d i b B o u x X f F e E g G a A c s p n U % but not C S */
+  uint16_t conversion;  
   size_t arg_index;
 }
 u16_directive;
 
-/* A parsed format string.  */
+ 
 typedef struct
 {
   size_t count;
@@ -135,7 +112,7 @@ typedef struct
 }
 u16_directives;
 
-/* A parsed directive.  */
+ 
 typedef struct
 {
   const uint32_t* dir_start;
@@ -147,12 +124,12 @@ typedef struct
   const uint32_t* precision_start;
   const uint32_t* precision_end;
   size_t precision_arg_index;
-  uint32_t conversion; /* d i b B o u x X f F e E g G a A c s p n U % but not C S */
+  uint32_t conversion;  
   size_t arg_index;
 }
 u32_directive;
 
-/* A parsed format string.  */
+ 
 typedef struct
 {
   size_t count;
@@ -166,10 +143,7 @@ u32_directives;
 #endif
 
 
-/* Parses the format string.  Fills in the number N of directives, and fills
-   in directives[0], ..., directives[N-1], and sets directives[N].dir_start
-   to the end of the format string.  Also fills in the arg_type fields of the
-   arguments and the needed count of arguments.  */
+ 
 #if ENABLE_UNISTDIO
 extern int
        ulc_printf_parse (const char *format, char_directives *d, arguments *a);
@@ -190,4 +164,4 @@ extern
 int printf_parse (const char *format, char_directives *d, arguments *a);
 #endif
 
-#endif /* _PRINTF_PARSE_H */
+#endif  

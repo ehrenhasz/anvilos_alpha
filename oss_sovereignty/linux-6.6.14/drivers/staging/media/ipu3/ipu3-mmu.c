@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2018 Intel Corporation.
- * Copyright 2018 Google LLC.
- *
- * Author: Tuukka Toivonen <tuukka.toivonen@intel.com>
- * Author: Sakari Ailus <sakari.ailus@linux.intel.com>
- * Author: Samu Onkalo <samu.onkalo@intel.com>
- * Author: Tomasz Figa <tfiga@chromium.org>
- *
- */
+
+ 
 
 #include <linux/dma-mapping.h>
 #include <linux/iopoll.h>
@@ -41,14 +32,14 @@
 #define IMGU_REG_BASE		0x4000
 #define REG_TLB_INVALIDATE	(IMGU_REG_BASE + 0x300)
 #define TLB_INVALIDATE		1
-#define REG_L1_PHYS		(IMGU_REG_BASE + 0x304) /* 27-bit pfn */
+#define REG_L1_PHYS		(IMGU_REG_BASE + 0x304)  
 #define REG_GP_HALT		(IMGU_REG_BASE + 0x5dc)
 #define REG_GP_HALTED		(IMGU_REG_BASE + 0x5e0)
 
 struct imgu_mmu {
 	struct device *dev;
 	void __iomem *base;
-	/* protect access to l2pts, l1pt */
+	 
 	spinlock_t lock;
 
 	void *dummy_page;
@@ -68,13 +59,7 @@ static inline struct imgu_mmu *to_imgu_mmu(struct imgu_mmu_info *info)
 	return container_of(info, struct imgu_mmu, geometry);
 }
 
-/**
- * imgu_mmu_tlb_invalidate - invalidate translation look-aside buffer
- * @mmu: MMU to perform the invalidate operation on
- *
- * This function invalidates the whole TLB. Must be called when the hardware
- * is powered on.
- */
+ 
 static void imgu_mmu_tlb_invalidate(struct imgu_mmu *mmu)
 {
 	writel(TLB_INVALIDATE, mmu->base + REG_TLB_INVALIDATE);
@@ -90,14 +75,7 @@ static void call_if_imgu_is_powered(struct imgu_mmu *mmu,
 	pm_runtime_put(mmu->dev);
 }
 
-/**
- * imgu_mmu_set_halt - set CIO gate halt bit
- * @mmu: MMU to set the CIO gate bit in.
- * @halt: Desired state of the gate bit.
- *
- * This function sets the CIO gate bit that controls whether external memory
- * accesses are allowed. Must be called when the hardware is powered on.
- */
+ 
 static void imgu_mmu_set_halt(struct imgu_mmu *mmu, bool halt)
 {
 	int ret;
@@ -112,12 +90,7 @@ static void imgu_mmu_set_halt(struct imgu_mmu *mmu, bool halt)
 			halt ? "set" : "clear");
 }
 
-/**
- * imgu_mmu_alloc_page_table - allocate a pre-filled page table
- * @pteval: Value to initialize for page table entries with.
- *
- * Return: Pointer to allocated page table or NULL on failure.
- */
+ 
 static u32 *imgu_mmu_alloc_page_table(u32 pteval)
 {
 	u32 *pt;
@@ -135,22 +108,14 @@ static u32 *imgu_mmu_alloc_page_table(u32 pteval)
 	return pt;
 }
 
-/**
- * imgu_mmu_free_page_table - free page table
- * @pt: Page table to free.
- */
+ 
 static void imgu_mmu_free_page_table(u32 *pt)
 {
 	set_memory_wb((unsigned long)pt, IPU3_PT_ORDER);
 	free_page((unsigned long)pt);
 }
 
-/**
- * address_to_pte_idx - split IOVA into L1 and L2 page table indices
- * @iova: IOVA to split.
- * @l1pt_idx: Output for the L1 page table index.
- * @l2pt_idx: Output for the L2 page index.
- */
+ 
 static inline void address_to_pte_idx(unsigned long iova, u32 *l1pt_idx,
 				      u32 *l2pt_idx)
 {
@@ -237,28 +202,14 @@ static int __imgu_mmu_map(struct imgu_mmu *mmu, unsigned long iova,
 	return 0;
 }
 
-/**
- * imgu_mmu_map - map a buffer to a physical address
- *
- * @info: MMU mappable range
- * @iova: the virtual address
- * @paddr: the physical address
- * @size: length of the mappable area
- *
- * The function has been adapted from iommu_map() in
- * drivers/iommu/iommu.c .
- */
+ 
 int imgu_mmu_map(struct imgu_mmu_info *info, unsigned long iova,
 		 phys_addr_t paddr, size_t size)
 {
 	struct imgu_mmu *mmu = to_imgu_mmu(info);
 	int ret = 0;
 
-	/*
-	 * both the virtual address and the physical one, as well as
-	 * the size of the mapping, must be aligned (at least) to the
-	 * size of the smallest page supported by the hardware
-	 */
+	 
 	if (!IS_ALIGNED(iova | paddr | size, IPU3_PAGE_SIZE)) {
 		dev_err(mmu->dev, "unaligned: iova 0x%lx pa %pa size 0x%zx\n",
 			iova, &paddr, size);
@@ -285,17 +236,7 @@ int imgu_mmu_map(struct imgu_mmu_info *info, unsigned long iova,
 	return ret;
 }
 
-/**
- * imgu_mmu_map_sg - Map a scatterlist
- *
- * @info: MMU mappable range
- * @iova: the virtual address
- * @sg: the scatterlist to map
- * @nents: number of entries in the scatterlist
- *
- * The function has been adapted from default_iommu_map_sg() in
- * drivers/iommu/iommu.c .
- */
+ 
 size_t imgu_mmu_map_sg(struct imgu_mmu_info *info, unsigned long iova,
 		       struct scatterlist *sg, unsigned int nents)
 {
@@ -313,7 +254,7 @@ size_t imgu_mmu_map_sg(struct imgu_mmu_info *info, unsigned long iova,
 		if (!IS_ALIGNED(s->offset, IPU3_PAGE_SIZE))
 			goto out_err;
 
-		/* must be IPU3_PAGE_SIZE aligned to be mapped singlely */
+		 
 		if (i == nents - 1 && !IS_ALIGNED(s->length, IPU3_PAGE_SIZE))
 			s_length = PAGE_ALIGN(s->length);
 
@@ -329,7 +270,7 @@ size_t imgu_mmu_map_sg(struct imgu_mmu_info *info, unsigned long iova,
 	return mapped;
 
 out_err:
-	/* undo mappings already done */
+	 
 	imgu_mmu_unmap(info, iova, mapped);
 
 	return 0;
@@ -366,27 +307,14 @@ static size_t __imgu_mmu_unmap(struct imgu_mmu *mmu,
 	return unmap;
 }
 
-/**
- * imgu_mmu_unmap - Unmap a buffer
- *
- * @info: MMU mappable range
- * @iova: the virtual address
- * @size: the length of the buffer
- *
- * The function has been adapted from iommu_unmap() in
- * drivers/iommu/iommu.c .
- */
+ 
 size_t imgu_mmu_unmap(struct imgu_mmu_info *info, unsigned long iova,
 		      size_t size)
 {
 	struct imgu_mmu *mmu = to_imgu_mmu(info);
 	size_t unmapped_page, unmapped = 0;
 
-	/*
-	 * The virtual address, as well as the size of the mapping, must be
-	 * aligned (at least) to the size of the smallest page supported
-	 * by the hardware
-	 */
+	 
 	if (!IS_ALIGNED(iova | size, IPU3_PAGE_SIZE)) {
 		dev_err(mmu->dev, "unaligned: iova 0x%lx size 0x%zx\n",
 			iova, size);
@@ -395,10 +323,7 @@ size_t imgu_mmu_unmap(struct imgu_mmu_info *info, unsigned long iova,
 
 	dev_dbg(mmu->dev, "unmap this: iova 0x%lx size 0x%zx\n", iova, size);
 
-	/*
-	 * Keep iterating until we either unmap 'size' bytes (or more)
-	 * or we hit an area that isn't mapped.
-	 */
+	 
 	while (unmapped < size) {
 		unmapped_page = __imgu_mmu_unmap(mmu, iova, IPU3_PAGE_SIZE);
 		if (!unmapped_page)
@@ -416,14 +341,7 @@ size_t imgu_mmu_unmap(struct imgu_mmu_info *info, unsigned long iova,
 	return unmapped;
 }
 
-/**
- * imgu_mmu_init() - initialize IPU3 MMU block
- *
- * @parent:	struct device parent
- * @base:	IOMEM base of hardware registers.
- *
- * Return: Pointer to IPU3 MMU private data pointer or ERR_PTR() on error.
- */
+ 
 struct imgu_mmu_info *imgu_mmu_init(struct device *parent, void __iomem *base)
 {
 	struct imgu_mmu *mmu;
@@ -437,38 +355,29 @@ struct imgu_mmu_info *imgu_mmu_init(struct device *parent, void __iomem *base)
 	mmu->base = base;
 	spin_lock_init(&mmu->lock);
 
-	/* Disallow external memory access when having no valid page tables. */
+	 
 	imgu_mmu_set_halt(mmu, true);
 
-	/*
-	 * The MMU does not have a "valid" bit, so we have to use a dummy
-	 * page for invalid entries.
-	 */
+	 
 	mmu->dummy_page = (void *)__get_free_page(GFP_KERNEL);
 	if (!mmu->dummy_page)
 		goto fail_group;
 	pteval = IPU3_ADDR2PTE(virt_to_phys(mmu->dummy_page));
 	mmu->dummy_page_pteval = pteval;
 
-	/*
-	 * Allocate a dummy L2 page table with all entries pointing to
-	 * the dummy page.
-	 */
+	 
 	mmu->dummy_l2pt = imgu_mmu_alloc_page_table(pteval);
 	if (!mmu->dummy_l2pt)
 		goto fail_dummy_page;
 	pteval = IPU3_ADDR2PTE(virt_to_phys(mmu->dummy_l2pt));
 	mmu->dummy_l2pt_pteval = pteval;
 
-	/*
-	 * Allocate the array of L2PT CPU pointers, initialized to zero,
-	 * which means the dummy L2PT allocated above.
-	 */
+	 
 	mmu->l2pts = vzalloc(IPU3_PT_PTES * sizeof(*mmu->l2pts));
 	if (!mmu->l2pts)
 		goto fail_l2pt;
 
-	/* Allocate the L1 page table. */
+	 
 	mmu->l1pt = imgu_mmu_alloc_page_table(mmu->dummy_l2pt_pteval);
 	if (!mmu->l1pt)
 		goto fail_l2pts;
@@ -495,16 +404,12 @@ fail_group:
 	return ERR_PTR(-ENOMEM);
 }
 
-/**
- * imgu_mmu_exit() - clean up IPU3 MMU block
- *
- * @info: MMU mappable range
- */
+ 
 void imgu_mmu_exit(struct imgu_mmu_info *info)
 {
 	struct imgu_mmu *mmu = to_imgu_mmu(info);
 
-	/* We are going to free our page tables, no more memory access. */
+	 
 	imgu_mmu_set_halt(mmu, true);
 	imgu_mmu_tlb_invalidate(mmu);
 

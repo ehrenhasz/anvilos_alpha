@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Test handling of code that might set PTE/PMD dirty in read-only VMAs.
- * Setting a PTE/PMD dirty must not accidentally set the PTE/PMD writable.
- *
- * Copyright 2023, Red Hat, Inc.
- *
- * Author(s): David Hildenbrand <david@redhat.com>
- */
+
+ 
 #include <fcntl.h>
 #include <signal.h>
 #include <unistd.h>
@@ -97,16 +90,13 @@ static void test_ptrace_write(void)
 		return;
 	}
 
-	/* Fault in the shared zeropage. */
+	 
 	if (*mem != 0) {
 		ksft_test_result_fail("Memory not zero\n");
 		goto munmap;
 	}
 
-	/*
-	 * Unshare the page (populating a fresh anon page that might be set
-	 * dirty in the PTE) in the read-only VMA using ptrace (FOLL_FORCE).
-	 */
+	 
 	lseek(mem_fd, (uintptr_t) mem, SEEK_SET);
 	ret = write(mem_fd, &data, 1);
 	if (ret != 1 || *mem != data) {
@@ -132,11 +122,7 @@ static void test_ptrace_write_thp(void)
 	if (mem == MAP_FAILED)
 		return;
 
-	/*
-	 * Write to the first subpage in the read-only VMA using
-	 * ptrace(FOLL_FORCE), eventually placing a fresh THP that is marked
-	 * dirty in the PMD.
-	 */
+	 
 	lseek(mem_fd, (uintptr_t) mem, SEEK_SET);
 	ret = write(mem_fd, &data, 1);
 	if (ret != 1 || *mem != data) {
@@ -144,7 +130,7 @@ static void test_ptrace_write_thp(void)
 		goto munmap;
 	}
 
-	/* MM populated a THP if we got the last subpage populated as well. */
+	 
 	if (!pagemap_is_populated(pagemap_fd, mem + thpsize - pagesize)) {
 		ksft_test_result_skip("Did not get a THP populated\n");
 		goto munmap;
@@ -168,14 +154,14 @@ static void test_page_migration(void)
 		return;
 	}
 
-	/* Populate a fresh page and dirty it. */
+	 
 	memset(mem, 1, pagesize);
 	if (mprotect(mem, pagesize, PROT_READ)) {
 		ksft_test_result_fail("mprotect() failed\n");
 		goto munmap;
 	}
 
-	/* Trigger page migration. Might not be available or fail. */
+	 
 	if (syscall(__NR_mbind, mem, pagesize, MPOL_LOCAL, NULL, 0x7fful,
 		    MPOL_MF_MOVE)) {
 		ksft_test_result_skip("mbind() failed\n");
@@ -198,23 +184,20 @@ static void test_page_migration_thp(void)
 	if (mem == MAP_FAILED)
 		return;
 
-	/*
-	 * Write to the first page, which might populate a fresh anon THP
-	 * and dirty it.
-	 */
+	 
 	memset(mem, 1, pagesize);
 	if (mprotect(mem, thpsize, PROT_READ)) {
 		ksft_test_result_fail("mprotect() failed\n");
 		goto munmap;
 	}
 
-	/* MM populated a THP if we got the last subpage populated as well. */
+	 
 	if (!pagemap_is_populated(pagemap_fd, mem + thpsize - pagesize)) {
 		ksft_test_result_skip("Did not get a THP populated\n");
 		goto munmap;
 	}
 
-	/* Trigger page migration. Might not be available or fail. */
+	 
 	if (syscall(__NR_mbind, mem, thpsize, MPOL_LOCAL, NULL, 0x7fful,
 		    MPOL_MF_MOVE)) {
 		ksft_test_result_skip("mbind() failed\n");
@@ -237,23 +220,20 @@ static void test_pte_mapped_thp(void)
 	if (mem == MAP_FAILED)
 		return;
 
-	/*
-	 * Write to the first page, which might populate a fresh anon THP
-	 * and dirty it.
-	 */
+	 
 	memset(mem, 1, pagesize);
 	if (mprotect(mem, thpsize, PROT_READ)) {
 		ksft_test_result_fail("mprotect() failed\n");
 		goto munmap;
 	}
 
-	/* MM populated a THP if we got the last subpage populated as well. */
+	 
 	if (!pagemap_is_populated(pagemap_fd, mem + thpsize - pagesize)) {
 		ksft_test_result_skip("Did not get a THP populated\n");
 		goto munmap;
 	}
 
-	/* Trigger PTE-mapping the THP by mprotect'ing the last subpage. */
+	 
 	if (mprotect(mem + thpsize - pagesize, pagesize,
 		     PROT_READ|PROT_WRITE)) {
 		ksft_test_result_fail("mprotect() failed\n");
@@ -305,7 +285,7 @@ static void test_uffdio_copy(void)
 		goto close_uffd;
 	}
 
-	/* Place a page in a read-only VMA, which might set the PTE dirty. */
+	 
 	uffdio_copy.dst = (unsigned long) dst;
 	uffdio_copy.src = (unsigned long) src;
 	uffdio_copy.len = pagesize;
@@ -322,7 +302,7 @@ munmap:
 	munmap(dst, pagesize);
 	free(src);
 }
-#endif /* __NR_userfaultfd */
+#endif  
 
 int main(void)
 {
@@ -337,7 +317,7 @@ int main(void)
 	}
 #ifdef __NR_userfaultfd
 	tests += 1;
-#endif /* __NR_userfaultfd */
+#endif  
 
 	ksft_print_header();
 	ksft_set_plan(tests);
@@ -349,27 +329,21 @@ int main(void)
 	if (pagemap_fd < 0)
 		ksft_exit_fail_msg("opening /proc/self/pagemap failed\n");
 
-	/*
-	 * On some ptrace(FOLL_FORCE) write access via /proc/self/mem in
-	 * read-only VMAs, the kernel may set the PTE/PMD dirty.
-	 */
+	 
 	test_ptrace_write();
 	if (thpsize)
 		test_ptrace_write_thp();
-	/*
-	 * On page migration, the kernel may set the PTE/PMD dirty when
-	 * remapping the page.
-	 */
+	 
 	test_page_migration();
 	if (thpsize)
 		test_page_migration_thp();
-	/* PTE-mapping a THP might propagate the dirty PMD bit to the PTEs. */
+	 
 	if (thpsize)
 		test_pte_mapped_thp();
-	/* Placing a fresh page via userfaultfd may set the PTE dirty. */
+	 
 #ifdef __NR_userfaultfd
 	test_uffdio_copy();
-#endif /* __NR_userfaultfd */
+#endif  
 
 	err = ksft_get_fail_cnt();
 	if (err)

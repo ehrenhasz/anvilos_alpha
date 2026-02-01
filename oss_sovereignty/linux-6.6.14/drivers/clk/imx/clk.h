@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef __MACH_IMX_CLK_H
 #define __MACH_IMX_CLK_H
 
@@ -53,7 +53,7 @@ enum imx_pfdv2_type {
 	IMX_PFDV2_IMX8ULP,
 };
 
-/* NOTE: Rate table should be kept sorted in descending order. */
+ 
 struct imx_pll14xx_rate_table {
 	unsigned int rate;
 	unsigned int pdiv;
@@ -76,7 +76,7 @@ extern struct imx_pll14xx_clk imx_1443x_dram_pll;
 #define CLK_FRACN_GPPLL_INTEGER	BIT(0)
 #define CLK_FRACN_GPPLL_FRACN	BIT(1)
 
-/* NOTE: Rate table should be kept sorted in descending order. */
+ 
 struct imx_fracn_gppll_rate_table {
 	unsigned int rate;
 	unsigned int mfi;

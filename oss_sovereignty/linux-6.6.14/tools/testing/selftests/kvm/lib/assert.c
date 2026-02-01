@@ -1,11 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * tools/testing/selftests/kvm/lib/assert.c
- *
- * Copyright (C) 2018, Google LLC.
- */
 
-#define _GNU_SOURCE /* for getline(3) and strchrnul(3)*/
+ 
+
+#define _GNU_SOURCE  
 
 #include "test_util.h"
 
@@ -14,37 +10,25 @@
 
 #include "kselftest.h"
 
-/* Dumps the current stack trace to stderr. */
+ 
 static void __attribute__((noinline)) test_dump_stack(void);
 static void test_dump_stack(void)
 {
-	/*
-	 * Build and run this command:
-	 *
-	 *	addr2line -s -e /proc/$PPID/exe -fpai {backtrace addresses} | \
-	 *		cat -n 1>&2
-	 *
-	 * Note that the spacing is different and there's no newline.
-	 */
+	 
 	size_t i;
 	size_t n = 20;
 	void *stack[n];
 	const char *addr2line = "addr2line -s -e /proc/$PPID/exe -fpai";
 	const char *pipeline = "|cat -n 1>&2";
 	char cmd[strlen(addr2line) + strlen(pipeline) +
-		 /* N bytes per addr * 2 digits per byte + 1 space per addr: */
+		  
 		 n * (((sizeof(void *)) * 2) + 1) +
-		 /* Null terminator: */
+		  
 		 1];
 	char *c = cmd;
 
 	n = backtrace(stack, n);
-	/*
-	 * Skip the first 2 frames, which should be test_dump_stack() and
-	 * test_assert(); both of which are declared noinline.  Bail if the
-	 * resulting stack trace would be empty. Otherwise, addr2line will block
-	 * waiting for addresses to be passed in via stdin.
-	 */
+	 
 	if (n <= 2) {
 		fputs("  (stack trace empty)\n", stderr);
 		return;

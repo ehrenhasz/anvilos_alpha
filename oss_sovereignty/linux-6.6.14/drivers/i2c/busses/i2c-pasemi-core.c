@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2006-2007 PA Semi, Inc
- *
- * SMBus host driver for PA Semi PWRficient
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/pci.h>
@@ -17,7 +13,7 @@
 
 #include "i2c-pasemi-core.h"
 
-/* Register offsets */
+ 
 #define REG_MTXFIFO	0x00
 #define REG_MRXFIFO	0x04
 #define REG_SMSTA	0x14
@@ -25,7 +21,7 @@
 #define REG_CTL		0x1c
 #define REG_REV		0x28
 
-/* Register defs */
+ 
 #define MTXFIFO_READ	0x00000400
 #define MTXFIFO_STOP	0x00000200
 #define MTXFIFO_START	0x00000100
@@ -97,7 +93,7 @@ static int pasemi_smb_waitready(struct pasemi_smbus *smbus)
 		}
 	}
 
-	/* Got NACK? */
+	 
 	if (status & SMSTA_MTN)
 		return -ENXIO;
 
@@ -107,7 +103,7 @@ static int pasemi_smb_waitready(struct pasemi_smbus *smbus)
 		return -ETIME;
 	}
 
-	/* Clear XEN */
+	 
 	reg_write(smbus, REG_SMSTA, SMSTA_XEN);
 
 	return 0;
@@ -186,7 +182,7 @@ static int pasemi_smb_xfer(struct i2c_adapter *adapter,
 	int read_flag, err;
 	int len = 0, i;
 
-	/* All our ops take 8-bit shifted addresses */
+	 
 	addr <<= 1;
 	read_flag = read_write == I2C_SMBUS_READ;
 
@@ -351,7 +347,7 @@ int pasemi_i2c_common_probe(struct pasemi_smbus *smbus)
 	smbus->adapter.algo = &smbus_algorithm;
 	smbus->adapter.algo_data = smbus;
 
-	/* set up the sysfs linkage to our parent device */
+	 
 	smbus->adapter.dev.parent = smbus->dev;
 	smbus->use_irq = 0;
 	init_completion(&smbus->irq_completion);

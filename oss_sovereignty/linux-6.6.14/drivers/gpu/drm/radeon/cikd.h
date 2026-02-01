@@ -1,26 +1,4 @@
-/*
- * Copyright 2012 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: Alex Deucher
- */
+ 
 #ifndef CIK_H
 #define CIK_H
 
@@ -30,14 +8,14 @@
 #define CIK_RB_BITMAP_WIDTH_PER_SH     2
 #define HAWAII_RB_BITMAP_WIDTH_PER_SH  4
 
-/* DIDT IND registers */
+ 
 #define DIDT_SQ_CTRL0                                     0x0
 #       define DIDT_CTRL_EN                               (1 << 0)
 #define DIDT_DB_CTRL0                                     0x20
 #define DIDT_TD_CTRL0                                     0x40
 #define DIDT_TCP_CTRL0                                    0x60
 
-/* SMC IND registers */
+ 
 #define DPM_TABLE_475                                     0x3F768
 #       define SamuBootLevel(x)                           ((x) << 0)
 #       define SamuBootLevel_MASK                         0x000000ff
@@ -177,7 +155,7 @@
 #define LCAC_CPL_OVR_SEL                                  0xC0400D84
 #define LCAC_CPL_OVR_VAL                                  0xC0400D88
 
-/* dGPU */
+ 
 #define	CG_THERMAL_CTRL					0xC0300004
 #define 	DPM_EVENT_SRC(x)			((x) << 0)
 #define 	DPM_EVENT_SRC_MASK			(7 << 0)
@@ -294,7 +272,7 @@
 #	define ZCLK_SEL(x)				((x) << 8)
 #	define ZCLK_SEL_MASK				0xFF00
 
-/* KV/KB */
+ 
 #define	CG_THERMAL_INT_CTRL				0xC2100028
 #define		DIG_THERM_INTH(x)			((x) << 0)
 #define		DIG_THERM_INTH_MASK			0x000000FF
@@ -305,8 +283,8 @@
 #define 	THERM_INTH_MASK				(1 << 24)
 #define 	THERM_INTL_MASK				(1 << 25)
 
-/* PCIE registers idx/data 0x38/0x3c */
-#define PB0_PIF_PWRDOWN_0                                 0x1100012 /* PCIE */
+ 
+#define PB0_PIF_PWRDOWN_0                                 0x1100012  
 #       define PLL_POWER_STATE_IN_TXS2_0(x)               ((x) << 7)
 #       define PLL_POWER_STATE_IN_TXS2_0_MASK             (0x7 << 7)
 #       define PLL_POWER_STATE_IN_TXS2_0_SHIFT            7
@@ -316,7 +294,7 @@
 #       define PLL_RAMP_UP_TIME_0(x)                      ((x) << 24)
 #       define PLL_RAMP_UP_TIME_0_MASK                    (0x7 << 24)
 #       define PLL_RAMP_UP_TIME_0_SHIFT                   24
-#define PB0_PIF_PWRDOWN_1                                 0x1100013 /* PCIE */
+#define PB0_PIF_PWRDOWN_1                                 0x1100013  
 #       define PLL_POWER_STATE_IN_TXS2_1(x)               ((x) << 7)
 #       define PLL_POWER_STATE_IN_TXS2_1_MASK             (0x7 << 7)
 #       define PLL_POWER_STATE_IN_TXS2_1_SHIFT            7
@@ -327,13 +305,13 @@
 #       define PLL_RAMP_UP_TIME_1_MASK                    (0x7 << 24)
 #       define PLL_RAMP_UP_TIME_1_SHIFT                   24
 
-#define PCIE_CNTL2                                        0x1001001c /* PCIE */
+#define PCIE_CNTL2                                        0x1001001c  
 #       define SLV_MEM_LS_EN                              (1 << 16)
 #       define SLV_MEM_AGGRESSIVE_LS_EN                   (1 << 17)
 #       define MST_MEM_LS_EN                              (1 << 18)
 #       define REPLAY_MEM_LS_EN                           (1 << 19)
 
-#define PCIE_LC_STATUS1                                   0x1400028 /* PCIE */
+#define PCIE_LC_STATUS1                                   0x1400028  
 #       define LC_REVERSE_RCVR                            (1 << 0)
 #       define LC_REVERSE_XMIT                            (1 << 1)
 #       define LC_OPERATING_LINK_WIDTH_MASK               (0x7 << 2)
@@ -341,13 +319,13 @@
 #       define LC_DETECTED_LINK_WIDTH_MASK                (0x7 << 5)
 #       define LC_DETECTED_LINK_WIDTH_SHIFT               5
 
-#define PCIE_P_CNTL                                       0x1400040 /* PCIE */
+#define PCIE_P_CNTL                                       0x1400040  
 #       define P_IGNORE_EDB_ERR                           (1 << 6)
 
-#define PB1_PIF_PWRDOWN_0                                 0x2100012 /* PCIE */
-#define PB1_PIF_PWRDOWN_1                                 0x2100013 /* PCIE */
+#define PB1_PIF_PWRDOWN_0                                 0x2100012  
+#define PB1_PIF_PWRDOWN_1                                 0x2100013  
 
-#define PCIE_LC_CNTL                                      0x100100A0 /* PCIE */
+#define PCIE_LC_CNTL                                      0x100100A0  
 #       define LC_L0S_INACTIVITY(x)                       ((x) << 8)
 #       define LC_L0S_INACTIVITY_MASK                     (0xf << 8)
 #       define LC_L0S_INACTIVITY_SHIFT                    8
@@ -357,7 +335,7 @@
 #       define LC_PMI_TO_L1_DIS                           (1 << 16)
 #       define LC_ASPM_TO_L1_DIS                          (1 << 24)
 
-#define PCIE_LC_LINK_WIDTH_CNTL                           0x100100A2 /* PCIE */
+#define PCIE_LC_LINK_WIDTH_CNTL                           0x100100A2  
 #       define LC_LINK_WIDTH_SHIFT                        0
 #       define LC_LINK_WIDTH_MASK                         0x7
 #       define LC_LINK_WIDTH_X0                           0
@@ -378,13 +356,13 @@
 #       define LC_DYN_LANES_PWR_STATE(x)                  ((x) << 21)
 #       define LC_DYN_LANES_PWR_STATE_MASK                (0x3 << 21)
 #       define LC_DYN_LANES_PWR_STATE_SHIFT               21
-#define PCIE_LC_N_FTS_CNTL                                0x100100a3 /* PCIE */
+#define PCIE_LC_N_FTS_CNTL                                0x100100a3  
 #       define LC_XMIT_N_FTS(x)                           ((x) << 0)
 #       define LC_XMIT_N_FTS_MASK                         (0xff << 0)
 #       define LC_XMIT_N_FTS_SHIFT                        0
 #       define LC_XMIT_N_FTS_OVERRIDE_EN                  (1 << 8)
 #       define LC_N_FTS_MASK                              (0xff << 24)
-#define PCIE_LC_SPEED_CNTL                                0x100100A4 /* PCIE */
+#define PCIE_LC_SPEED_CNTL                                0x100100A4  
 #       define LC_GEN2_EN_STRAP                           (1 << 0)
 #       define LC_GEN3_EN_STRAP                           (1 << 1)
 #       define LC_TARGET_LINK_SPEED_OVERRIDE_EN           (1 << 2)
@@ -397,7 +375,7 @@
 #       define LC_INITIATE_LINK_SPEED_CHANGE              (1 << 9)
 #       define LC_SPEED_CHANGE_ATTEMPTS_ALLOWED_MASK      (0x3 << 10)
 #       define LC_SPEED_CHANGE_ATTEMPTS_ALLOWED_SHIFT     10
-#       define LC_CURRENT_DATA_RATE_MASK                  (0x3 << 13) /* 0/1/2 = gen1/2/3 */
+#       define LC_CURRENT_DATA_RATE_MASK                  (0x3 << 13)  
 #       define LC_CURRENT_DATA_RATE_SHIFT                 13
 #       define LC_CLR_FAILED_SPD_CHANGE_CNT               (1 << 16)
 #       define LC_OTHER_SIDE_EVER_SENT_GEN2               (1 << 18)
@@ -405,17 +383,17 @@
 #       define LC_OTHER_SIDE_EVER_SENT_GEN3               (1 << 20)
 #       define LC_OTHER_SIDE_SUPPORTS_GEN3                (1 << 21)
 
-#define PCIE_LC_CNTL2                                     0x100100B1 /* PCIE */
+#define PCIE_LC_CNTL2                                     0x100100B1  
 #       define LC_ALLOW_PDWN_IN_L1                        (1 << 17)
 #       define LC_ALLOW_PDWN_IN_L23                       (1 << 18)
 
-#define PCIE_LC_CNTL3                                     0x100100B5 /* PCIE */
+#define PCIE_LC_CNTL3                                     0x100100B5  
 #       define LC_GO_TO_RECOVERY                          (1 << 30)
-#define PCIE_LC_CNTL4                                     0x100100B6 /* PCIE */
+#define PCIE_LC_CNTL4                                     0x100100B6  
 #       define LC_REDO_EQ                                 (1 << 5)
 #       define LC_SET_QUIESCE                             (1 << 13)
 
-/* direct registers */
+ 
 #define PCIE_INDEX  					0x38
 #define PCIE_DATA  					0x3C
 
@@ -541,12 +519,7 @@
 #define	VM_CONTEXT1_PROTECTION_FAULT_STATUS		0x14DC
 #define		PROTECTIONS_MASK			(0xf << 0)
 #define		PROTECTIONS_SHIFT			0
-		/* bit 0: range
-		 * bit 1: pde0
-		 * bit 2: valid
-		 * bit 3: read
-		 * bit 4: write
-		 */
+		 
 #define		MEMORY_CLIENT_ID_MASK			(0xff << 12)
 #define		HAWAII_MEMORY_CLIENT_ID_MASK		(0x1ff << 12)
 #define		MEMORY_CLIENT_ID_SHIFT			12
@@ -800,10 +773,10 @@
 
 #define IH_RB_CNTL                                        0x3e00
 #       define IH_RB_ENABLE                               (1 << 0)
-#       define IH_RB_SIZE(x)                              ((x) << 1) /* log2 */
+#       define IH_RB_SIZE(x)                              ((x) << 1)  
 #       define IH_RB_FULL_DRAIN_ENABLE                    (1 << 6)
 #       define IH_WPTR_WRITEBACK_ENABLE                   (1 << 8)
-#       define IH_WPTR_WRITEBACK_TIMER(x)                 ((x) << 9) /* log2 */
+#       define IH_WPTR_WRITEBACK_TIMER(x)                 ((x) << 9)  
 #       define IH_WPTR_OVERFLOW_ENABLE                    (1 << 16)
 #       define IH_WPTR_OVERFLOW_CLEAR                     (1 << 31)
 #define IH_RB_BASE                                        0x3e04
@@ -860,7 +833,7 @@
 #define		SDMA0					(1 << 10)
 #define		SDMA1					(1 << 11)
 
-/* 0x6b04, 0x7704, 0x10304, 0x10f04, 0x11b04, 0x12704 */
+ 
 #define	LB_MEMORY_CTRL					0x6b04
 #define		LB_MEMORY_SIZE(x)			((x) << 0)
 #define		LB_MEMORY_CONFIG(x)			((x) << 20)
@@ -871,14 +844,14 @@
 #       define LATENCY_LOW_WATERMARK(x)			((x) << 0)
 #       define LATENCY_HIGH_WATERMARK(x)		((x) << 16)
 
-/* 0x6b24, 0x7724, 0x10324, 0x10f24, 0x11b24, 0x12724 */
+ 
 #define LB_VLINE_STATUS                                 0x6b24
 #       define VLINE_OCCURRED                           (1 << 0)
 #       define VLINE_ACK                                (1 << 4)
 #       define VLINE_STAT                               (1 << 12)
 #       define VLINE_INTERRUPT                          (1 << 16)
 #       define VLINE_INTERRUPT_TYPE                     (1 << 17)
-/* 0x6b2c, 0x772c, 0x1032c, 0x10f2c, 0x11b2c, 0x1272c */
+ 
 #define LB_VBLANK_STATUS                                0x6b2c
 #       define VBLANK_OCCURRED                          (1 << 0)
 #       define VBLANK_ACK                               (1 << 4)
@@ -886,7 +859,7 @@
 #       define VBLANK_INTERRUPT                         (1 << 16)
 #       define VBLANK_INTERRUPT_TYPE                    (1 << 17)
 
-/* 0x6b20, 0x7720, 0x10320, 0x10f20, 0x11b20, 0x12720 */
+ 
 #define LB_INTERRUPT_MASK                               0x6b20
 #       define VBLANK_INTERRUPT_MASK                    (1 << 0)
 #       define VLINE_INTERRUPT_MASK                     (1 << 4)
@@ -929,11 +902,11 @@
 #       define DC_HPD6_RX_INTERRUPT                     (1 << 18)
 #define DISP_INTERRUPT_STATUS_CONTINUE6                 0x6780
 
-/* 0x6858, 0x7458, 0x10058, 0x10c58, 0x11858, 0x12458 */
+ 
 #define GRPH_INT_STATUS                                 0x6858
 #       define GRPH_PFLIP_INT_OCCURRED                  (1 << 0)
 #       define GRPH_PFLIP_INT_CLEAR                     (1 << 8)
-/* 0x685c, 0x745c, 0x1005c, 0x10c5c, 0x1185c, 0x1245c */
+ 
 #define GRPH_INT_CONTROL                                0x685c
 #       define GRPH_PFLIP_INT_MASK                      (1 << 0)
 #       define GRPH_PFLIP_INT_TYPE                      (1 << 8)
@@ -976,26 +949,26 @@
 #define DPG_PIPE_STUTTER_CONTROL                          0x6cd4
 #       define STUTTER_ENABLE                             (1 << 0)
 
-/* DCE8 FMT blocks */
+ 
 #define FMT_DYNAMIC_EXP_CNTL                 0x6fb4
 #       define FMT_DYNAMIC_EXP_EN            (1 << 0)
 #       define FMT_DYNAMIC_EXP_MODE          (1 << 4)
-        /* 0 = 10bit -> 12bit, 1 = 8bit -> 12bit */
+         
 #define FMT_CONTROL                          0x6fb8
 #       define FMT_PIXEL_ENCODING            (1 << 16)
-        /* 0 = RGB 4:4:4 or YCbCr 4:4:4, 1 = YCbCr 4:2:2 */
+         
 #define FMT_BIT_DEPTH_CONTROL                0x6fc8
 #       define FMT_TRUNCATE_EN               (1 << 0)
 #       define FMT_TRUNCATE_MODE             (1 << 1)
-#       define FMT_TRUNCATE_DEPTH(x)         ((x) << 4) /* 0 - 18bpp, 1 - 24bpp, 2 - 30bpp */
+#       define FMT_TRUNCATE_DEPTH(x)         ((x) << 4)  
 #       define FMT_SPATIAL_DITHER_EN         (1 << 8)
 #       define FMT_SPATIAL_DITHER_MODE(x)    ((x) << 9)
-#       define FMT_SPATIAL_DITHER_DEPTH(x)   ((x) << 11) /* 0 - 18bpp, 1 - 24bpp, 2 - 30bpp */
+#       define FMT_SPATIAL_DITHER_DEPTH(x)   ((x) << 11)  
 #       define FMT_FRAME_RANDOM_ENABLE       (1 << 13)
 #       define FMT_RGB_RANDOM_ENABLE         (1 << 14)
 #       define FMT_HIGHPASS_RANDOM_ENABLE    (1 << 15)
 #       define FMT_TEMPORAL_DITHER_EN        (1 << 16)
-#       define FMT_TEMPORAL_DITHER_DEPTH(x)  ((x) << 17) /* 0 - 18bpp, 1 - 24bpp, 2 - 30bpp */
+#       define FMT_TEMPORAL_DITHER_DEPTH(x)  ((x) << 17)  
 #       define FMT_TEMPORAL_DITHER_OFFSET(x) ((x) << 21)
 #       define FMT_TEMPORAL_LEVEL            (1 << 24)
 #       define FMT_TEMPORAL_DITHER_RESET     (1 << 25)
@@ -1073,12 +1046,12 @@
 #define		SE_CB_BUSY					(1 << 31)
 
 #define	GRBM_SOFT_RESET					0x8020
-#define		SOFT_RESET_CP					(1 << 0)  /* All CP blocks */
-#define		SOFT_RESET_RLC					(1 << 2)  /* RLC */
-#define		SOFT_RESET_GFX					(1 << 16) /* GFX */
-#define		SOFT_RESET_CPF					(1 << 17) /* CP fetcher shared by gfx and compute */
-#define		SOFT_RESET_CPC					(1 << 18) /* CP Compute (MEC1/2) */
-#define		SOFT_RESET_CPG					(1 << 19) /* CP GFX (PFP, ME, CE) */
+#define		SOFT_RESET_CP					(1 << 0)   
+#define		SOFT_RESET_RLC					(1 << 2)   
+#define		SOFT_RESET_GFX					(1 << 16)  
+#define		SOFT_RESET_CPF					(1 << 17)  
+#define		SOFT_RESET_CPC					(1 << 18)  
+#define		SOFT_RESET_CPG					(1 << 19)  
 
 #define GRBM_INT_CNTL                                   0x8060
 #       define RDERR_INT_ENABLE                         (1 << 0)
@@ -1161,13 +1134,13 @@
 #define	SQ_CONFIG					0x8C00
 
 #define	SH_MEM_BASES					0x8C28
-/* if PTR32, these are the bases for scratch and lds */
-#define		PRIVATE_BASE(x)					((x) << 0) /* scratch */
-#define		SHARED_BASE(x)					((x) << 16) /* LDS */
+ 
+#define		PRIVATE_BASE(x)					((x) << 0)  
+#define		SHARED_BASE(x)					((x) << 16)  
 #define	SH_MEM_APE1_BASE				0x8C2C
-/* if PTR32, this is the base location of GPUVM */
+ 
 #define	SH_MEM_APE1_LIMIT				0x8C30
-/* if PTR32, this is the upper limit of GPUVM */
+ 
 #define	SH_MEM_CONFIG					0x8C34
 #define		PTR32						(1 << 0)
 #define		ALIGNMENT_MODE(x)				((x) << 2)
@@ -1177,7 +1150,7 @@
 #define			SH_MEM_ALIGNMENT_MODE_UNALIGNED			3
 #define		DEFAULT_MTYPE(x)				((x) << 4)
 #define		APE1_MTYPE(x)					((x) << 7)
-/* valid for both DEFAULT_MTYPE and APE1_MTYPE */
+ 
 #define	MTYPE_CACHED					0
 #define	MTYPE_NONCACHED					3
 
@@ -1406,8 +1379,8 @@
 #define RLC_LB_CNTR_INIT                                  0xC36C
 
 #define RLC_SAVE_AND_RESTORE_BASE                         0xC374
-#define RLC_DRIVER_DMA_STATUS                             0xC378 /* dGPU */
-#define RLC_CP_TABLE_RESTORE                              0xC378 /* APU */
+#define RLC_DRIVER_DMA_STATUS                             0xC378  
+#define RLC_CP_TABLE_RESTORE                              0xC378  
 #define RLC_PG_DELAY_2                                    0xC37C
 
 #define RLC_GPM_UCODE_ADDR                                0xC388
@@ -1667,9 +1640,7 @@
 
 #define	CB_CGTT_SCLK_CTRL				0x3c2a0
 
-/*
- * PM4
- */
+ 
 #define	PACKET_TYPE0	0
 #define	PACKET_TYPE1	1
 #define	PACKET_TYPE2	2
@@ -1694,7 +1665,7 @@
 
 #define PACKET3_COMPUTE(op, n) (PACKET3(op, n) | 1 << 1)
 
-/* Packet 3 types */
+ 
 #define	PACKET3_NOP					0x10
 #define	PACKET3_SET_BASE				0x11
 #define		PACKET3_BASE_INDEX(x)                  ((x) << 0)
@@ -1726,62 +1697,35 @@
 #define	PACKET3_DRAW_PREAMBLE				0x36
 #define	PACKET3_WRITE_DATA				0x37
 #define		WRITE_DATA_DST_SEL(x)                   ((x) << 8)
-                /* 0 - register
-		 * 1 - memory (sync - via GRBM)
-		 * 2 - gl2
-		 * 3 - gds
-		 * 4 - reserved
-		 * 5 - memory (async - direct)
-		 */
+                 
 #define		WR_ONE_ADDR                             (1 << 16)
 #define		WR_CONFIRM                              (1 << 20)
 #define		WRITE_DATA_CACHE_POLICY(x)              ((x) << 25)
-                /* 0 - LRU
-		 * 1 - Stream
-		 */
+                 
 #define		WRITE_DATA_ENGINE_SEL(x)                ((x) << 30)
-                /* 0 - me
-		 * 1 - pfp
-		 * 2 - ce
-		 */
+                 
 #define	PACKET3_DRAW_INDEX_INDIRECT_MULTI		0x38
 #define	PACKET3_MEM_SEMAPHORE				0x39
 #              define PACKET3_SEM_USE_MAILBOX       (0x1 << 16)
-#              define PACKET3_SEM_SEL_SIGNAL_TYPE   (0x1 << 20) /* 0 = increment, 1 = write 1 */
-#              define PACKET3_SEM_CLIENT_CODE	    ((x) << 24) /* 0 = CP, 1 = CB, 2 = DB */
+#              define PACKET3_SEM_SEL_SIGNAL_TYPE   (0x1 << 20)  
+#              define PACKET3_SEM_CLIENT_CODE	    ((x) << 24)  
 #              define PACKET3_SEM_SEL_SIGNAL	    (0x6 << 29)
 #              define PACKET3_SEM_SEL_WAIT	    (0x7 << 29)
 #define	PACKET3_COPY_DW					0x3B
 #define	PACKET3_WAIT_REG_MEM				0x3C
 #define		WAIT_REG_MEM_FUNCTION(x)                ((x) << 0)
-                /* 0 - always
-		 * 1 - <
-		 * 2 - <=
-		 * 3 - ==
-		 * 4 - !=
-		 * 5 - >=
-		 * 6 - >
-		 */
+                 
 #define		WAIT_REG_MEM_MEM_SPACE(x)               ((x) << 4)
-                /* 0 - reg
-		 * 1 - mem
-		 */
+                 
 #define		WAIT_REG_MEM_OPERATION(x)               ((x) << 6)
-                /* 0 - wait_reg_mem
-		 * 1 - wr_wait_wr_reg
-		 */
+                 
 #define		WAIT_REG_MEM_ENGINE(x)                  ((x) << 8)
-                /* 0 - me
-		 * 1 - pfp
-		 */
+                 
 #define	PACKET3_INDIRECT_BUFFER				0x3F
 #define		INDIRECT_BUFFER_TCL2_VOLATILE           (1 << 22)
 #define		INDIRECT_BUFFER_VALID                   (1 << 23)
 #define		INDIRECT_BUFFER_CACHE_POLICY(x)         ((x) << 28)
-                /* 0 - LRU
-		 * 1 - Stream
-		 * 2 - Bypass
-		 */
+                 
 #define	PACKET3_COPY_DATA				0x40
 #define	PACKET3_PFP_SYNC_ME				0x42
 #define	PACKET3_SURFACE_SYNC				0x43
@@ -1797,12 +1741,12 @@
 #              define PACKET3_CB7_DEST_BASE_ENA    (1 << 13)
 #              define PACKET3_DB_DEST_BASE_ENA     (1 << 14)
 #              define PACKET3_TCL1_VOL_ACTION_ENA  (1 << 15)
-#              define PACKET3_TC_VOL_ACTION_ENA    (1 << 16) /* L2 */
-#              define PACKET3_TC_WB_ACTION_ENA     (1 << 18) /* L2 */
+#              define PACKET3_TC_VOL_ACTION_ENA    (1 << 16)  
+#              define PACKET3_TC_WB_ACTION_ENA     (1 << 18)  
 #              define PACKET3_DEST_BASE_2_ENA      (1 << 19)
 #              define PACKET3_DEST_BASE_3_ENA      (1 << 21)
 #              define PACKET3_TCL1_ACTION_ENA      (1 << 22)
-#              define PACKET3_TC_ACTION_ENA        (1 << 23) /* L2 */
+#              define PACKET3_TC_ACTION_ENA        (1 << 23)  
 #              define PACKET3_CB_ACTION_ENA        (1 << 25)
 #              define PACKET3_DB_ACTION_ENA        (1 << 26)
 #              define PACKET3_SH_KCACHE_ACTION_ENA (1 << 27)
@@ -1812,107 +1756,53 @@
 #define	PACKET3_EVENT_WRITE				0x46
 #define		EVENT_TYPE(x)                           ((x) << 0)
 #define		EVENT_INDEX(x)                          ((x) << 8)
-                /* 0 - any non-TS event
-		 * 1 - ZPASS_DONE, PIXEL_PIPE_STAT_*
-		 * 2 - SAMPLE_PIPELINESTAT
-		 * 3 - SAMPLE_STREAMOUTSTAT*
-		 * 4 - *S_PARTIAL_FLUSH
-		 * 5 - EOP events
-		 * 6 - EOS events
-		 */
+                 
 #define	PACKET3_EVENT_WRITE_EOP				0x47
 #define		EOP_TCL1_VOL_ACTION_EN                  (1 << 12)
-#define		EOP_TC_VOL_ACTION_EN                    (1 << 13) /* L2 */
-#define		EOP_TC_WB_ACTION_EN                     (1 << 15) /* L2 */
+#define		EOP_TC_VOL_ACTION_EN                    (1 << 13)  
+#define		EOP_TC_WB_ACTION_EN                     (1 << 15)  
 #define		EOP_TCL1_ACTION_EN                      (1 << 16)
-#define		EOP_TC_ACTION_EN                        (1 << 17) /* L2 */
+#define		EOP_TC_ACTION_EN                        (1 << 17)  
 #define		EOP_TCL2_VOLATILE                       (1 << 24)
 #define		EOP_CACHE_POLICY(x)                     ((x) << 25)
-                /* 0 - LRU
-		 * 1 - Stream
-		 * 2 - Bypass
-		 */
+                 
 #define		DATA_SEL(x)                             ((x) << 29)
-                /* 0 - discard
-		 * 1 - send low 32bit data
-		 * 2 - send 64bit data
-		 * 3 - send 64bit GPU counter value
-		 * 4 - send 64bit sys counter value
-		 */
+                 
 #define		INT_SEL(x)                              ((x) << 24)
-                /* 0 - none
-		 * 1 - interrupt only (DATA_SEL = 0)
-		 * 2 - interrupt when data write is confirmed
-		 */
+                 
 #define		DST_SEL(x)                              ((x) << 16)
-                /* 0 - MC
-		 * 1 - TC/L2
-		 */
+                 
 #define	PACKET3_EVENT_WRITE_EOS				0x48
 #define	PACKET3_RELEASE_MEM				0x49
 #define	PACKET3_PREAMBLE_CNTL				0x4A
 #              define PACKET3_PREAMBLE_BEGIN_CLEAR_STATE     (2 << 28)
 #              define PACKET3_PREAMBLE_END_CLEAR_STATE       (3 << 28)
 #define	PACKET3_DMA_DATA				0x50
-/* 1. header
- * 2. CONTROL
- * 3. SRC_ADDR_LO or DATA [31:0]
- * 4. SRC_ADDR_HI [31:0]
- * 5. DST_ADDR_LO [31:0]
- * 6. DST_ADDR_HI [7:0]
- * 7. COMMAND [30:21] | BYTE_COUNT [20:0]
- */
-/* CONTROL */
+ 
+ 
 #              define PACKET3_DMA_DATA_ENGINE(x)     ((x) << 0)
-                /* 0 - ME
-		 * 1 - PFP
-		 */
+                 
 #              define PACKET3_DMA_DATA_SRC_CACHE_POLICY(x) ((x) << 13)
-                /* 0 - LRU
-		 * 1 - Stream
-		 * 2 - Bypass
-		 */
+                 
 #              define PACKET3_DMA_DATA_SRC_VOLATILE (1 << 15)
 #              define PACKET3_DMA_DATA_DST_SEL(x)  ((x) << 20)
-                /* 0 - DST_ADDR using DAS
-		 * 1 - GDS
-		 * 3 - DST_ADDR using L2
-		 */
+                 
 #              define PACKET3_DMA_DATA_DST_CACHE_POLICY(x) ((x) << 25)
-                /* 0 - LRU
-		 * 1 - Stream
-		 * 2 - Bypass
-		 */
+                 
 #              define PACKET3_DMA_DATA_DST_VOLATILE (1 << 27)
 #              define PACKET3_DMA_DATA_SRC_SEL(x)  ((x) << 29)
-                /* 0 - SRC_ADDR using SAS
-		 * 1 - GDS
-		 * 2 - DATA
-		 * 3 - SRC_ADDR using L2
-		 */
+                 
 #              define PACKET3_DMA_DATA_CP_SYNC     (1 << 31)
-/* COMMAND */
+ 
 #              define PACKET3_DMA_DATA_DIS_WC      (1 << 21)
 #              define PACKET3_DMA_DATA_CMD_SRC_SWAP(x) ((x) << 22)
-                /* 0 - none
-		 * 1 - 8 in 16
-		 * 2 - 8 in 32
-		 * 3 - 8 in 64
-		 */
+                 
 #              define PACKET3_DMA_DATA_CMD_DST_SWAP(x) ((x) << 24)
-                /* 0 - none
-		 * 1 - 8 in 16
-		 * 2 - 8 in 32
-		 * 3 - 8 in 64
-		 */
+                 
 #              define PACKET3_DMA_DATA_CMD_SAS     (1 << 26)
-                /* 0 - memory
-		 * 1 - register
-		 */
+                 
 #              define PACKET3_DMA_DATA_CMD_DAS     (1 << 27)
-                /* 0 - memory
-		 * 1 - register
-		 */
+                 
 #              define PACKET3_DMA_DATA_CMD_SAIC    (1 << 28)
 #              define PACKET3_DMA_DATA_CMD_DAIC    (1 << 29)
 #              define PACKET3_DMA_DATA_CMD_RAW_WAIT  (1 << 30)
@@ -1948,9 +1838,9 @@
 #define	PACKET3_WAIT_ON_DE_COUNTER_DIFF			0x88
 #define	PACKET3_SWITCH_BUFFER				0x8B
 
-/* SDMA - first instance at 0xd000, second at 0xd800 */
-#define SDMA0_REGISTER_OFFSET                             0x0 /* not a register */
-#define SDMA1_REGISTER_OFFSET                             0x800 /* not a register */
+ 
+#define SDMA0_REGISTER_OFFSET                             0x0  
+#define SDMA1_REGISTER_OFFSET                             0x800  
 
 #define	SDMA0_UCODE_ADDR                                  0xD000
 #define	SDMA0_UCODE_DATA                                  0xD004
@@ -1979,11 +1869,11 @@
 
 #define SDMA0_GFX_RB_CNTL                                 0xD200
 #       define SDMA_RB_ENABLE                             (1 << 0)
-#       define SDMA_RB_SIZE(x)                            ((x) << 1) /* log2 */
-#       define SDMA_RB_SWAP_ENABLE                        (1 << 9) /* 8IN32 */
+#       define SDMA_RB_SIZE(x)                            ((x) << 1)  
+#       define SDMA_RB_SWAP_ENABLE                        (1 << 9)  
 #       define SDMA_RPTR_WRITEBACK_ENABLE                 (1 << 12)
-#       define SDMA_RPTR_WRITEBACK_SWAP_ENABLE            (1 << 13)  /* 8IN32 */
-#       define SDMA_RPTR_WRITEBACK_TIMER(x)               ((x) << 16) /* log2 */
+#       define SDMA_RPTR_WRITEBACK_SWAP_ENABLE            (1 << 13)   
+#       define SDMA_RPTR_WRITEBACK_TIMER(x)               ((x) << 16)  
 #define SDMA0_GFX_RB_BASE                                 0xD204
 #define SDMA0_GFX_RB_BASE_HI                              0xD208
 #define SDMA0_GFX_RB_RPTR                                 0xD20C
@@ -2003,7 +1893,7 @@
 #define SDMA_PACKET(op, sub_op, e)	((((e) & 0xFFFF) << 16) |	\
 					 (((sub_op) & 0xFF) << 8) |	\
 					 (((op) & 0xFF) << 0))
-/* sDMA opcodes */
+ 
 #define	SDMA_OPCODE_NOP					  0
 #define	SDMA_OPCODE_COPY				  1
 #       define SDMA_COPY_SUB_OPCODE_LINEAR                0
@@ -2020,39 +1910,22 @@
 #define	SDMA_OPCODE_TRAP				  6
 #define	SDMA_OPCODE_SEMAPHORE				  7
 #       define SDMA_SEMAPHORE_EXTRA_O                     (1 << 13)
-                /* 0 - increment
-		 * 1 - write 1
-		 */
+                 
 #       define SDMA_SEMAPHORE_EXTRA_S                     (1 << 14)
-                /* 0 - wait
-		 * 1 - signal
-		 */
+                 
 #       define SDMA_SEMAPHORE_EXTRA_M                     (1 << 15)
-                /* mailbox */
+                 
 #define	SDMA_OPCODE_POLL_REG_MEM			  8
 #       define SDMA_POLL_REG_MEM_EXTRA_OP(x)              ((x) << 10)
-                /* 0 - wait_reg_mem
-		 * 1 - wr_wait_wr_reg
-		 */
+                 
 #       define SDMA_POLL_REG_MEM_EXTRA_FUNC(x)            ((x) << 12)
-                /* 0 - always
-		 * 1 - <
-		 * 2 - <=
-		 * 3 - ==
-		 * 4 - !=
-		 * 5 - >=
-		 * 6 - >
-		 */
+                 
 #       define SDMA_POLL_REG_MEM_EXTRA_M                  (1 << 15)
-                /* 0 = register
-		 * 1 = memory
-		 */
+                 
 #define	SDMA_OPCODE_COND_EXEC				  9
 #define	SDMA_OPCODE_CONSTANT_FILL			  11
 #       define SDMA_CONSTANT_FILL_EXTRA_SIZE(x)           ((x) << 14)
-                /* 0 = byte fill
-		 * 2 = DW fill
-		 */
+                 
 #define	SDMA_OPCODE_GENERATE_PTE_PDE			  12
 #define	SDMA_OPCODE_TIMESTAMP				  13
 #       define SDMA_TIMESTAMP_SUB_OPCODE_SET_LOCAL        0
@@ -2060,9 +1933,9 @@
 #       define SDMA_TIMESTAMP_SUB_OPCODE_GET_GLOBAL       2
 #define	SDMA_OPCODE_SRBM_WRITE				  14
 #       define SDMA_SRBM_WRITE_EXTRA_BYTE_ENABLE(x)       ((x) << 12)
-                /* byte mask */
+                 
 
-/* UVD */
+ 
 
 #define UVD_UDEC_ADDR_CONFIG		0xef4c
 #define UVD_UDEC_DB_ADDR_CONFIG		0xef50
@@ -2091,7 +1964,7 @@
 
 #define UVD_STATUS					0xf6bc
 
-/* UVD clocks */
+ 
 
 #define CG_DCLK_CNTL			0xC050009C
 #	define DCLK_DIVIDER_MASK	0x7f
@@ -2101,10 +1974,10 @@
 #define CG_VCLK_CNTL			0xC05000A4
 #define CG_VCLK_STATUS			0xC05000A8
 
-/* UVD CTX indirect */
+ 
 #define	UVD_CGC_MEM_CTRL				0xC0
 
-/* VCE */
+ 
 
 #define VCE_VCPU_CACHE_OFFSET0		0x20024
 #define VCE_VCPU_CACHE_SIZE0		0x20028

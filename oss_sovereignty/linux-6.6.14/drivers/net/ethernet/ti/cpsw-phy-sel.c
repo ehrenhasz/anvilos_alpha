@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Texas Instruments Ethernet Switch Driver
- *
- * Copyright (C) 2013 Texas Instruments
- *
- * Module Author: Mugunthan V N <mugunthanvnm@ti.com>
- *
- */
+
+ 
 
 #include <linux/platform_device.h>
 #include <linux/init.h>
@@ -15,7 +9,7 @@
 
 #include "cpsw.h"
 
-/* AM33xx SoC specific definitions for the CONTROL port */
+ 
 #define AM33XX_GMII_SEL_MODE_MII	0
 #define AM33XX_GMII_SEL_MODE_RMII	1
 #define AM33XX_GMII_SEL_MODE_RGMII	2

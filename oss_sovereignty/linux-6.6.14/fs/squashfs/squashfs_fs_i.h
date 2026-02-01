@@ -1,14 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
+ 
 #ifndef SQUASHFS_FS_I
 #define SQUASHFS_FS_I
-/*
- * Squashfs
- *
- * Copyright (c) 2002, 2003, 2004, 2005, 2006, 2007, 2008
- * Phillip Lougher <phillip@squashfs.org.uk>
- *
- * squashfs_fs_i.h
- */
+ 
 
 struct squashfs_inode_info {
 	u64		start;

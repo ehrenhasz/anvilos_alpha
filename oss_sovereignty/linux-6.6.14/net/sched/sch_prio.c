@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * net/sched/sch_prio.c	Simple 3-band priority "scheduler".
- *
- * Authors:	Alexey Kuznetsov, <kuznet@ms2.inr.ac.ru>
- * Fixes:       19990609: J Hadi Salim <hadi@nortelnetworks.com>:
- *              Init --  EINVAL when opt undefined
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/slab.h>
@@ -193,7 +187,7 @@ static int prio_tune(struct Qdisc *sch, struct nlattr *opt,
 			return -EINVAL;
 	}
 
-	/* Before commit, make sure we can allocate all new qdiscs */
+	 
 	for (i = oldbands; i < qopt->bands; i++) {
 		queues[i] = qdisc_create_dflt(sch->dev_queue, &pfifo_qdisc_ops,
 					      TC_H_MAKE(sch->handle, i + 1),

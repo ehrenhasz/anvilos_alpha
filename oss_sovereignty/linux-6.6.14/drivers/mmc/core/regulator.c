@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Helper functions for MMC regulators.
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/err.h>
@@ -15,15 +13,7 @@
 
 #ifdef CONFIG_REGULATOR
 
-/**
- * mmc_ocrbitnum_to_vdd - Convert a OCR bit number to its voltage
- * @vdd_bit:	OCR bit number
- * @min_uV:	minimum voltage value (mV)
- * @max_uV:	maximum voltage value (mV)
- *
- * This function returns the voltage range according to the provided OCR
- * bit number. If conversion is not possible a negative errno value returned.
- */
+ 
 static int mmc_ocrbitnum_to_vdd(int vdd_bit, int *min_uV, int *max_uV)
 {
 	int		tmp;
@@ -31,12 +21,7 @@ static int mmc_ocrbitnum_to_vdd(int vdd_bit, int *min_uV, int *max_uV)
 	if (!vdd_bit)
 		return -EINVAL;
 
-	/*
-	 * REVISIT mmc_vddrange_to_ocrmask() may have set some
-	 * bits this regulator doesn't quite support ... don't
-	 * be too picky, most cards and regulators are OK with
-	 * a 0.1V range goof (it's a small error percentage).
-	 */
+	 
 	tmp = vdd_bit - ilog2(MMC_VDD_165_195);
 	if (tmp == 0) {
 		*min_uV = 1650 * 1000;
@@ -49,15 +34,7 @@ static int mmc_ocrbitnum_to_vdd(int vdd_bit, int *min_uV, int *max_uV)
 	return 0;
 }
 
-/**
- * mmc_regulator_get_ocrmask - return mask of supported voltages
- * @supply: regulator to use
- *
- * This returns either a negative errno, or a mask of voltages that
- * can be provided to MMC/SD/SDIO devices using the specified voltage
- * regulator.  This would normally be called before registering the
- * MMC host adapter.
- */
+ 
 static int mmc_regulator_get_ocrmask(struct regulator *supply)
 {
 	int			result = 0;
@@ -91,18 +68,7 @@ static int mmc_regulator_get_ocrmask(struct regulator *supply)
 	return result;
 }
 
-/**
- * mmc_regulator_set_ocr - set regulator to match host->ios voltage
- * @mmc: the host to regulate
- * @supply: regulator to use
- * @vdd_bit: zero for power off, else a bit number (host->ios.vdd)
- *
- * Returns zero on success, else negative errno.
- *
- * MMC host drivers may use this to enable or disable a regulator using
- * a particular supply voltage.  This would normally be called from the
- * set_ios() method.
- */
+ 
 int mmc_regulator_set_ocr(struct mmc_host *mmc,
 			struct regulator *supply,
 			unsigned short vdd_bit)
@@ -141,17 +107,11 @@ static int mmc_regulator_set_voltage_if_supported(struct regulator *regulator,
 {
 	int current_uV;
 
-	/*
-	 * Check if supported first to avoid errors since we may try several
-	 * signal levels during power up and don't want to show errors.
-	 */
+	 
 	if (!regulator_is_supported_voltage(regulator, min_uV, max_uV))
 		return -EINVAL;
 
-	/*
-	 * The voltage is already set, no need to switch.
-	 * Return 1 to indicate that no switch happened.
-	 */
+	 
 	current_uV = regulator_get_voltage(regulator);
 	if (current_uV == target_uV)
 		return 1;
@@ -160,31 +120,13 @@ static int mmc_regulator_set_voltage_if_supported(struct regulator *regulator,
 					     max_uV);
 }
 
-/**
- * mmc_regulator_set_vqmmc - Set VQMMC as per the ios
- * @mmc: the host to regulate
- * @ios: io bus settings
- *
- * For 3.3V signaling, we try to match VQMMC to VMMC as closely as possible.
- * That will match the behavior of old boards where VQMMC and VMMC were supplied
- * by the same supply.  The Bus Operating conditions for 3.3V signaling in the
- * SD card spec also define VQMMC in terms of VMMC.
- * If this is not possible we'll try the full 2.7-3.6V of the spec.
- *
- * For 1.2V and 1.8V signaling we'll try to get as close as possible to the
- * requested voltage.  This is definitely a good idea for UHS where there's a
- * separate regulator on the card that's trying to make 1.8V and it's best if
- * we match.
- *
- * This function is expected to be used by a controller's
- * start_signal_voltage_switch() function.
- */
+ 
 int mmc_regulator_set_vqmmc(struct mmc_host *mmc, struct mmc_ios *ios)
 {
 	struct device *dev = mmc_dev(mmc);
 	int ret, volt, min_uV, max_uV;
 
-	/* If no vqmmc supply then we can't change the voltage */
+	 
 	if (IS_ERR(mmc->supply.vqmmc))
 		return -EINVAL;
 
@@ -206,13 +148,7 @@ int mmc_regulator_set_vqmmc(struct mmc_host *mmc, struct mmc_ios *ios)
 		min_uV = max(volt - 300000, 2700000);
 		max_uV = min(max_uV + 200000, 3600000);
 
-		/*
-		 * Due to a limitation in the current implementation of
-		 * regulator_set_voltage_triplet() which is taking the lowest
-		 * voltage possible if below the target, search for a suitable
-		 * voltage in two steps and try to stay close to vmmc
-		 * with a 0.3V tolerance at first.
-		 */
+		 
 		ret = mmc_regulator_set_voltage_if_supported(mmc->supply.vqmmc,
 							min_uV, volt, max_uV);
 		if (ret >= 0)
@@ -233,18 +169,9 @@ static inline int mmc_regulator_get_ocrmask(struct regulator *supply)
 	return 0;
 }
 
-#endif /* CONFIG_REGULATOR */
+#endif  
 
-/**
- * mmc_regulator_get_supply - try to get VMMC and VQMMC regulators for a host
- * @mmc: the host to regulate
- *
- * Returns 0 or errno. errno should be handled, it is either a critical error
- * or -EPROBE_DEFER. 0 means no critical error but it does not mean all
- * regulators have been found because they all are optional. If you require
- * certain regulators, you need to check separately in your driver if they got
- * populated after calling this function.
- */
+ 
 int mmc_regulator_get_supply(struct mmc_host *mmc)
 {
 	struct device *dev = mmc_dev(mmc);
@@ -275,14 +202,7 @@ int mmc_regulator_get_supply(struct mmc_host *mmc)
 }
 EXPORT_SYMBOL_GPL(mmc_regulator_get_supply);
 
-/**
- * mmc_regulator_enable_vqmmc - enable VQMMC regulator for a host
- * @mmc: the host to regulate
- *
- * Returns 0 or errno. Enables the regulator for vqmmc.
- * Keeps track of the enable status for ensuring that calls to
- * regulator_enable/disable are balanced.
- */
+ 
 int mmc_regulator_enable_vqmmc(struct mmc_host *mmc)
 {
 	int ret = 0;
@@ -299,14 +219,7 @@ int mmc_regulator_enable_vqmmc(struct mmc_host *mmc)
 }
 EXPORT_SYMBOL_GPL(mmc_regulator_enable_vqmmc);
 
-/**
- * mmc_regulator_disable_vqmmc - disable VQMMC regulator for a host
- * @mmc: the host to regulate
- *
- * Returns 0 or errno. Disables the regulator for vqmmc.
- * Keeps track of the enable status for ensuring that calls to
- * regulator_enable/disable are balanced.
- */
+ 
 void mmc_regulator_disable_vqmmc(struct mmc_host *mmc)
 {
 	if (!IS_ERR(mmc->supply.vqmmc) && mmc->vqmmc_enabled) {

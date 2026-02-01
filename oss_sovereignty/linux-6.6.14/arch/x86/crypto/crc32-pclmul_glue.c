@@ -1,31 +1,6 @@
-/* GPL HEADER START
- *
- * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 only,
- * as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License version 2 for more details (a copy is included
- * in the LICENSE file that accompanied this code).
- *
- * You should have received a copy of the GNU General Public License
- * version 2 along with this program; If not, see http://www.gnu.org/licenses
- *
- * Please  visit http://www.xyratex.com/contact if you need additional
- * information or have any questions.
- *
- * GPL HEADER END
- */
+ 
 
-/*
- * Copyright 2012 Xyratex Technology Limited
- *
- * Wrappers for kernel crypto shash api to pclmulqdq crc32 implementation.
- */
+ 
 #include <linux/init.h>
 #include <linux/module.h>
 #include <linux/string.h>
@@ -41,9 +16,8 @@
 #define CHKSUM_BLOCK_SIZE	1
 #define CHKSUM_DIGEST_SIZE	4
 
-#define PCLMUL_MIN_LEN		64L     /* minimum size of buffer
-					 * for crc32_pclmul_le_16 */
-#define SCALE_F			16L	/* size of xmm register */
+#define PCLMUL_MIN_LEN		64L      
+#define SCALE_F			16L	 
 #define SCALE_F_MASK		(SCALE_F - 1)
 
 u32 crc32_pclmul_le_16(unsigned char const *buffer, size_t len, u32 crc32);
@@ -59,7 +33,7 @@ static u32 __attribute__((pure))
 		return crc32_le(crc, p, len);
 
 	if ((long)p & SCALE_F_MASK) {
-		/* align p to 16 byte */
+		 
 		prealign = SCALE_F - ((long)p & SCALE_F_MASK);
 
 		crc = crc32_le(crc, p, prealign);
@@ -119,7 +93,7 @@ static int crc32_pclmul_update(struct shash_desc *desc, const u8 *data,
 	return 0;
 }
 
-/* No final XOR 0xFFFFFFFF, like crc32_le */
+ 
 static int __crc32_pclmul_finup(u32 *crcp, const u8 *data, unsigned int len,
 				u8 *out)
 {

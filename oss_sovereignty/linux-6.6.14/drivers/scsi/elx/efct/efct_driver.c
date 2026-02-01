@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2021 Broadcom. All Rights Reserved. The term
- * “Broadcom” refers to Broadcom Inc. and/or its subsidiaries.
- */
+
+ 
 
 #include "efct_driver.h"
 
@@ -33,7 +30,7 @@ efct_device_init(void)
 {
 	int rc;
 
-	/* driver-wide init for target-server */
+	 
 	rc = efct_scsi_tgt_driver_init();
 	if (rc) {
 		pr_err("efct_scsi_tgt_init failed rc=%d\n", rc);
@@ -154,7 +151,7 @@ efct_device_attach(struct efct *efct)
 
 	efct->efct_req_fw_upgrade = true;
 
-	/* Allocate transport object and bring online */
+	 
 	efct->xport = efct_xport_alloc(efct);
 	if (!efct->xport) {
 		efc_log_err(efct, "failed to allocate transport object\n");
@@ -304,11 +301,7 @@ efct_firmware_write(struct efct *efct, const u8 *buf, size_t buf_len,
 static int
 efct_fw_reset(struct efct *efct)
 {
-	/*
-	 * Firmware reset to activate the new firmware.
-	 * Function 0 will update and load the new firmware
-	 * during attach.
-	 */
+	 
 	if (timer_pending(&efct->xport->stats_timer))
 		del_timer(&efct->xport->stats_timer);
 
@@ -473,7 +466,7 @@ out:
 static struct pci_device_id efct_pci_table[] = {
 	{PCI_DEVICE(EFCT_VENDOR_ID, EFCT_DEVICE_LANCER_G6), 0},
 	{PCI_DEVICE(EFCT_VENDOR_ID, EFCT_DEVICE_LANCER_G7), 0},
-	{}	/* terminate list */
+	{}	 
 };
 
 static int
@@ -505,14 +498,14 @@ efct_pci_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 		goto req_regions_out;
 	}
 
-	/* Fetch the Numa node id for this device */
+	 
 	nid = dev_to_node(&pdev->dev);
 	if (nid < 0) {
 		dev_err(&pdev->dev, "Warning Numa node ID is %d\n", nid);
 		nid = 0;
 	}
 
-	/* Allocate efct */
+	 
 	efct = efct_device_alloc(nid);
 	if (!efct) {
 		dev_err(&pdev->dev, "Failed to allocate efct\n");
@@ -523,7 +516,7 @@ efct_pci_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 	efct->pci = pdev;
 	efct->numa_node = nid;
 
-	/* Map all memory BARs */
+	 
 	for (i = 0, r = 0; i < EFCT_PCI_MAX_REGS; i++) {
 		if (pci_resource_flags(pdev, i) & IORESOURCE_MEM) {
 			efct->reg[r] = ioremap(pci_resource_start(pdev, i),
@@ -531,11 +524,7 @@ efct_pci_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 			r++;
 		}
 
-		/*
-		 * If the 64-bit attribute is set, both this BAR and the
-		 * next form the complete address. Skip processing the
-		 * next BAR.
-		 */
+		 
 		if (pci_resource_flags(pdev, i) & IORESOURCE_MEM_64)
 			i++;
 	}
@@ -555,16 +544,13 @@ efct_pci_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 		goto dma_mask_out;
 	}
 
-	/*
-	 * Initialize MSIX interrupts, note,
-	 * efct_setup_msix() enables the interrupt
-	 */
+	 
 	rc = efct_setup_msix(efct, num_interrupts);
 	if (rc) {
 		dev_err(&pdev->dev, "Can't setup msix\n");
 		goto dma_mask_out;
 	}
-	/* Disable interrupt for now */
+	 
 	for (i = 0; i < efct->n_msix_vec; i++) {
 		efc_log_debug(efct, "irq %d disabled\n", i);
 		disable_irq(pci_irq_vector(efct->pci, i));
@@ -629,7 +615,7 @@ efct_device_prep_for_reset(struct efct *efct, struct pci_dev *pdev)
 		efc_log_debug(efct,
 			      "PCI channel disable preparing for reset\n");
 		efct_device_detach(efct);
-		/* Disable interrupt and pci device */
+		 
 		efct_teardown_msix(efct);
 	}
 	pci_disable_device(pdev);
@@ -644,21 +630,7 @@ efct_device_prep_for_recover(struct efct *efct)
 	}
 }
 
-/**
- * efct_pci_io_error_detected - method for handling PCI I/O error
- * @pdev: pointer to PCI device.
- * @state: the current PCI connection state.
- *
- * This routine is registered to the PCI subsystem for error handling. This
- * function is called by the PCI subsystem after a PCI bus error affecting
- * this device has been detected. When this routine is invoked, it dispatches
- * device error detected handling routine, which will perform the proper
- * error detected operation.
- *
- * Return codes
- * PCI_ERS_RESULT_NEED_RESET - need to reset before recovery
- * PCI_ERS_RESULT_DISCONNECT - device could not be recovered
- */
+ 
 static pci_ers_result_t
 efct_pci_io_error_detected(struct pci_dev *pdev, pci_channel_state_t state)
 {
@@ -700,10 +672,7 @@ efct_pci_io_slot_reset(struct pci_dev *pdev)
 		return PCI_ERS_RESULT_DISCONNECT;
 	}
 
-	/*
-	 * As the new kernel behavior of pci_restore_state() API call clears
-	 * device saved_state flag, need to save the restored state again.
-	 */
+	 
 
 	pci_save_state(pdev);
 
@@ -714,9 +683,9 @@ efct_pci_io_slot_reset(struct pci_dev *pdev)
 		efc_log_err(efct, "rc %d returned, IRQ allocation failed\n",
 			    rc);
 
-	/* Perform device reset */
+	 
 	efct_device_detach(efct);
-	/* Bring device to online*/
+	 
 	efct_device_attach(efct);
 
 	return PCI_ERS_RESULT_RECOVERED;
@@ -727,9 +696,9 @@ efct_pci_io_resume(struct pci_dev *pdev)
 {
 	struct efct *efct = pci_get_drvdata(pdev);
 
-	/* Perform device reset */
+	 
 	efct_device_detach(efct);
-	/* Bring device to online*/
+	 
 	efct_device_attach(efct);
 }
 

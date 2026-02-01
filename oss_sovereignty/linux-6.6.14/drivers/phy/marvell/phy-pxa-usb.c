@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2011 Marvell International Ltd. All rights reserved.
- * Copyright (C) 2018 Lubomir Rintel <lkundrak@v3.sk>
- */
+
+ 
 
 #include <dt-bindings/phy/phy.h>
 #include <linux/clk.h>
@@ -13,7 +10,7 @@
 #include <linux/phy/phy.h>
 #include <linux/platform_device.h>
 
-/* phy regs */
+ 
 #define UTMI_REVISION		0x0
 #define UTMI_CTRL		0x4
 #define UTMI_PLL		0x8
@@ -31,9 +28,9 @@
 #define UTMI_DBG_CTL		0x38
 #define UTMI_OTG_ADDON		0x3c
 
-/* For UTMICTRL Register */
+ 
 #define UTMI_CTRL_USB_CLK_EN                    (1 << 31)
-/* pxa168 */
+ 
 #define UTMI_CTRL_SUSPEND_SET1                  (1 << 30)
 #define UTMI_CTRL_SUSPEND_SET2                  (1 << 29)
 #define UTMI_CTRL_RXBUF_PDWN                    (1 << 24)
@@ -46,7 +43,7 @@
 #define UTMI_CTRL_PLL_PWR_UP_SHIFT              1
 #define UTMI_CTRL_PWR_UP_SHIFT                  0
 
-/* For UTMI_PLL Register */
+ 
 #define UTMI_PLL_PLLCALI12_SHIFT		29
 #define UTMI_PLL_PLLCALI12_MASK			(0x3 << 29)
 
@@ -74,7 +71,7 @@
 #define UTMI_PLL_REFDIV_SHIFT                   0
 #define UTMI_PLL_REFDIV_MASK                    (0xF << 0)
 
-/* For UTMI_TX Register */
+ 
 #define UTMI_TX_REG_EXT_FS_RCAL_SHIFT		27
 #define UTMI_TX_REG_EXT_FS_RCAL_MASK		(0xf << 27)
 
@@ -97,7 +94,7 @@
 #define UTMI_TX_AMP_SHIFT			0
 #define UTMI_TX_AMP_MASK			(0x7 << 0)
 
-/* For UTMI_RX Register */
+ 
 #define UTMI_REG_SQ_LENGTH_SHIFT                15
 #define UTMI_REG_SQ_LENGTH_MASK                 (0x3 << 15)
 
@@ -118,9 +115,7 @@ struct pxa_usb_phy {
 	enum pxa_usb_phy_version version;
 };
 
-/*****************************************************************************
- * The registers read/write routines
- *****************************************************************************/
+ 
 
 static unsigned int u2o_get(void __iomem *base, unsigned int offset)
 {
@@ -164,7 +159,7 @@ static int pxa_usb_phy_init(struct phy *phy)
 
 	dev_info(&phy->dev, "initializing Marvell PXA USB PHY");
 
-	/* Initialize the USB PHY power */
+	 
 	if (pxa_usb_phy->version == PXA_USB_PHY_PXA910) {
 		u2o_set(base, UTMI_CTRL, (1<<UTMI_CTRL_INPKT_DELAY_SOF_SHIFT)
 			| (1<<UTMI_CTRL_PU_REF_SHIFT));
@@ -173,7 +168,7 @@ static int pxa_usb_phy_init(struct phy *phy)
 	u2o_set(base, UTMI_CTRL, 1<<UTMI_CTRL_PLL_PWR_UP_SHIFT);
 	u2o_set(base, UTMI_CTRL, 1<<UTMI_CTRL_PWR_UP_SHIFT);
 
-	/* UTMI_PLL settings */
+	 
 	u2o_clear(base, UTMI_PLL, UTMI_PLL_PLLVDD18_MASK
 		| UTMI_PLL_PLLVDD12_MASK | UTMI_PLL_PLLCALI12_MASK
 		| UTMI_PLL_FBDIV_MASK | UTMI_PLL_REFDIV_MASK
@@ -184,7 +179,7 @@ static int pxa_usb_phy_init(struct phy *phy)
 		| 3<<UTMI_PLL_PLLVDD12_SHIFT | 3<<UTMI_PLL_PLLCALI12_SHIFT
 		| 1<<UTMI_PLL_ICP_SHIFT | 3<<UTMI_PLL_KVCO_SHIFT);
 
-	/* UTMI_TX */
+	 
 	u2o_clear(base, UTMI_TX, UTMI_TX_REG_EXT_FS_RCAL_EN_MASK
 		| UTMI_TX_TXVDD12_MASK | UTMI_TX_CK60_PHSEL_MASK
 		| UTMI_TX_IMPCAL_VTH_MASK | UTMI_TX_REG_EXT_FS_RCAL_MASK
@@ -193,35 +188,32 @@ static int pxa_usb_phy_init(struct phy *phy)
 		| 4<<UTMI_TX_CK60_PHSEL_SHIFT | 4<<UTMI_TX_IMPCAL_VTH_SHIFT
 		| 8<<UTMI_TX_REG_EXT_FS_RCAL_SHIFT | 3<<UTMI_TX_AMP_SHIFT);
 
-	/* UTMI_RX */
+	 
 	u2o_clear(base, UTMI_RX, UTMI_RX_SQ_THRESH_MASK
 		| UTMI_REG_SQ_LENGTH_MASK);
 	u2o_set(base, UTMI_RX, 7<<UTMI_RX_SQ_THRESH_SHIFT
 		| 2<<UTMI_REG_SQ_LENGTH_SHIFT);
 
-	/* UTMI_IVREF */
+	 
 	if (pxa_usb_phy->version == PXA_USB_PHY_PXA168) {
-		/*
-		 * fixing Microsoft Altair board interface with NEC hub issue -
-		 * Set UTMI_IVREF from 0x4a3 to 0x4bf
-		 */
+		 
 		u2o_write(base, UTMI_IVREF, 0x4bf);
 	}
 
-	/* toggle VCOCAL_START bit of UTMI_PLL */
+	 
 	udelay(200);
 	u2o_set(base, UTMI_PLL, VCOCAL_START);
 	udelay(40);
 	u2o_clear(base, UTMI_PLL, VCOCAL_START);
 
-	/* toggle REG_RCAL_START bit of UTMI_TX */
+	 
 	udelay(400);
 	u2o_set(base, UTMI_TX, REG_RCAL_START);
 	udelay(40);
 	u2o_clear(base, UTMI_TX, REG_RCAL_START);
 	udelay(400);
 
-	/* Make sure PHY PLL is ready */
+	 
 	loops = 0;
 	while ((u2o_get(base, UTMI_PLL) & PLL_READY) == 0) {
 		mdelay(1);
@@ -235,7 +227,7 @@ static int pxa_usb_phy_init(struct phy *phy)
 
 	if (pxa_usb_phy->version == PXA_USB_PHY_PXA168) {
 		u2o_set(base, UTMI_RESERVE, 1 << 5);
-		/* Turn on UTMI PHY OTG extension */
+		 
 		u2o_write(base, UTMI_OTG_ADDON, 1);
 	}
 

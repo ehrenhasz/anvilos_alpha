@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * IIO DAC driver for NXP LPC18xx DAC
- *
- * Copyright (C) 2016 Joachim Eastwood <manabian@gmail.com>
- *
- * UNSUPPORTED hardware features:
- *  - Interrupts
- *  - DMA
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/err.h>
@@ -21,7 +13,7 @@
 #include <linux/platform_device.h>
 #include <linux/regulator/consumer.h>
 
-/* LPC18XX DAC registers and bits */
+ 
 #define LPC18XX_DAC_CR			0x000
 #define  LPC18XX_DAC_CR_VALUE_SHIFT	6
 #define  LPC18XX_DAC_CR_VALUE_MASK	0x3ff
@@ -181,7 +173,7 @@ static int lpc18xx_dac_remove(struct platform_device *pdev)
 
 static const struct of_device_id lpc18xx_dac_match[] = {
 	{ .compatible = "nxp,lpc1850-dac" },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, lpc18xx_dac_match);
 

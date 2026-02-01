@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * camss-video.c
- *
- * Qualcomm MSM Camera Subsystem - V4L2 device node
- *
- * Copyright (c) 2013-2015, The Linux Foundation. All rights reserved.
- * Copyright (C) 2015-2018 Linaro Ltd.
- */
+
+ 
 #include <linux/slab.h>
 #include <media/media-entity.h>
 #include <media/v4l2-dev.h>
@@ -29,15 +22,7 @@ struct fract {
 	u8 denominator;
 };
 
-/*
- * struct camss_format_info - ISP media bus format information
- * @code: V4L2 media bus format code
- * @pixelformat: V4L2 pixel format FCC identifier
- * @planes: Number of planes
- * @hsub: Horizontal subsampling (for each plane)
- * @vsub: Vertical subsampling (for each plane)
- * @bpp: Bits per pixel when stored in memory (for each plane)
- */
+ 
 struct camss_format_info {
 	u32 code;
 	u32 pixelformat;
@@ -262,9 +247,7 @@ static const struct camss_format_info formats_pix_8x96[] = {
 	  { { 1, 1 } }, { { 1, 1 } }, { 16 } },
 };
 
-/* -----------------------------------------------------------------------------
- * Helper functions
- */
+ 
 
 static int video_find_format(u32 code, u32 pixelformat,
 			     const struct camss_format_info *formats,
@@ -287,17 +270,7 @@ static int video_find_format(u32 code, u32 pixelformat,
 	return -EINVAL;
 }
 
-/*
- * video_mbus_to_pix_mp - Convert v4l2_mbus_framefmt to v4l2_pix_format_mplane
- * @mbus: v4l2_mbus_framefmt format (input)
- * @pix: v4l2_pix_format_mplane format (output)
- * @f: a pointer to formats array element to be used for the conversion
- * @alignment: bytesperline alignment value
- *
- * Fill the output pix structure with information from the input mbus format.
- *
- * Return 0 on success or a negative error code otherwise
- */
+ 
 static int video_mbus_to_pix_mp(const struct v4l2_mbus_framefmt *mbus,
 				struct v4l2_pix_format_mplane *pix,
 				const struct camss_format_info *f,
@@ -371,9 +344,7 @@ static int video_get_subdev_format(struct camss_video *video,
 				    &video->formats[ret], video->bpl_alignment);
 }
 
-/* -----------------------------------------------------------------------------
- * Video queue operations
- */
+ 
 
 static int video_queue_setup(struct vb2_queue *q,
 	unsigned int *num_buffers, unsigned int *num_planes,
@@ -558,7 +529,7 @@ static void video_stop_streaming(struct vb2_queue *q)
 		ret = v4l2_subdev_call(subdev, video, s_stream, 0);
 
 		if (entity->use_count > 1) {
-			/* Don't stop if other instances of the pipeline are still running */
+			 
 			dev_dbg(video->camss->dev, "Video pipeline still used, don't stop streaming.\n");
 			return;
 		}
@@ -585,9 +556,7 @@ static const struct vb2_ops msm_video_vb2_q_ops = {
 	.stop_streaming  = video_stop_streaming,
 };
 
-/* -----------------------------------------------------------------------------
- * V4L2 ioctls
- */
+ 
 
 static int video_querycap(struct file *file, void *fh,
 			  struct v4l2_capability *cap)
@@ -610,18 +579,7 @@ static int video_enum_fmt(struct file *file, void *fh, struct v4l2_fmtdesc *f)
 	if (f->index >= video->nformats)
 		return -EINVAL;
 
-	/*
-	 * Find index "i" of "k"th unique pixelformat in formats array.
-	 *
-	 * If f->mbus_code passed to video_enum_fmt() is not zero, a device
-	 * with V4L2_CAP_IO_MC capability restricts enumeration to only the
-	 * pixel formats that can be produced from that media bus code.
-	 * This is implemented by skipping video->formats[] entries with
-	 * code != f->mbus_code (if f->mbus_code is not zero).
-	 * If the f->mbus_code passed to video_enum_fmt() is not supported,
-	 * -EINVAL is returned.
-	 * If f->mbus_code is zero, all the pixel formats are enumerated.
-	 */
+	 
 	k = -1;
 	for (i = 0; i < video->nformats; i++) {
 		if (mcode != 0 && video->formats[i].code != mcode)
@@ -643,11 +601,7 @@ static int video_enum_fmt(struct file *file, void *fh, struct v4l2_fmtdesc *f)
 	}
 
 	if (k == -1 || k < f->index)
-		/*
-		 * All the unique pixel formats matching the arguments
-		 * have been enumerated (k >= 0 and f->index > 0), or
-		 * no pixel formats match the non-zero f->mbus_code (k == -1).
-		 */
+		 
 		return -EINVAL;
 
 	f->pixelformat = video->formats[i].pixelformat;
@@ -664,7 +618,7 @@ static int video_enum_framesizes(struct file *file, void *fh,
 	if (fsize->index)
 		return -EINVAL;
 
-	/* Only accept pixel format present in the formats[] table */
+	 
 	for (i = 0; i < video->nformats; i++) {
 		if (video->formats[i].pixelformat == fsize->pixel_format)
 			break;
@@ -722,7 +676,7 @@ static int __video_try_fmt(struct camss_video *video, struct v4l2_format *f)
 			break;
 
 	if (j == video->nformats)
-		j = 0; /* default format */
+		j = 0;  
 
 	fi = &video->formats[j];
 	width = pix_mp->width;
@@ -843,9 +797,7 @@ static const struct v4l2_ioctl_ops msm_vid_ioctl_ops = {
 	.vidioc_s_input			= video_s_input,
 };
 
-/* -----------------------------------------------------------------------------
- * V4L2 file operations
- */
+ 
 
 static int video_open(struct file *file)
 {
@@ -910,9 +862,7 @@ static const struct v4l2_file_operations msm_vid_fops = {
 	.read		= vb2_fop_read,
 };
 
-/* -----------------------------------------------------------------------------
- * CAMSS video core
- */
+ 
 
 static void msm_video_release(struct video_device *vdev)
 {
@@ -927,14 +877,7 @@ static void msm_video_release(struct video_device *vdev)
 		camss_delete(video->camss);
 }
 
-/*
- * msm_video_init_format - Helper function to initialize format
- * @video: struct camss_video
- *
- * Initialize pad format with default value.
- *
- * Return 0 on success or a negative error code otherwise
- */
+ 
 static int msm_video_init_format(struct camss_video *video)
 {
 	int ret;
@@ -956,17 +899,7 @@ static int msm_video_init_format(struct camss_video *video)
 	return 0;
 }
 
-/*
- * msm_video_register - Register a video device node
- * @video: struct camss_video
- * @v4l2_dev: V4L2 device
- * @name: name to be used for the video device node
- *
- * Initialize and register a video device node to a V4L2 device. Also
- * initialize the vb2 queue.
- *
- * Return 0 on success or a negative error code otherwise
- */
+ 
 
 int msm_video_register(struct camss_video *video, struct v4l2_device *v4l2_dev,
 		       const char *name, int is_pix)

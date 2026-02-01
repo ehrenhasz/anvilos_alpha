@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * DaVinci DA850 AHCI SATA platform driver
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -15,7 +13,7 @@
 #define DRV_NAME		"ahci_da850"
 #define HARDRESET_RETRIES	5
 
-/* SATA PHY Control Register offset from AHCI base */
+ 
 #define SATA_P0PHYCR_REG	0x178
 
 #define SATA_PHY_MPY(x)		((x) << 0)
@@ -30,7 +28,7 @@ static void da850_sata_init(struct device *dev, void __iomem *pwrdn_reg,
 {
 	unsigned int val;
 
-	/* Enable SATA clock receiver */
+	 
 	val = readl(pwrdn_reg);
 	val &= ~BIT(0);
 	writel(val, pwrdn_reg);
@@ -45,22 +43,11 @@ static u32 ahci_da850_calculate_mpy(unsigned long refclk_rate)
 {
 	u32 pll_output = 1500000000, needed;
 
-	/*
-	 * We need to determine the value of the multiplier (MPY) bits.
-	 * In order to include the 12.5 multiplier we need to first divide
-	 * the refclk rate by ten.
-	 *
-	 * __div64_32() turned out to be unreliable, sometimes returning
-	 * false results.
-	 */
+	 
 	WARN((refclk_rate % 10) != 0, "refclk must be divisible by 10");
 	needed = pll_output / (refclk_rate / 10);
 
-	/*
-	 * What we have now is (multiplier * 10).
-	 *
-	 * Let's determine the actual register value we need to write.
-	 */
+	 
 
 	switch (needed) {
 	case 50:
@@ -82,10 +69,7 @@ static u32 ahci_da850_calculate_mpy(unsigned long refclk_rate)
 	case 250:
 		return 0xa;
 	default:
-		/*
-		 * We should have divided evenly - if not, return an invalid
-		 * value.
-		 */
+		 
 		return 0;
 	}
 }
@@ -97,13 +81,7 @@ static int ahci_da850_softreset(struct ata_link *link,
 
 	pmp = sata_srst_pmp(link);
 
-	/*
-	 * There's an issue with the SATA controller on da850 SoCs: if we
-	 * enable Port Multiplier support, but the drive is connected directly
-	 * to the board, it can't be detected. As a workaround: if PMP is
-	 * enabled, we first call ahci_do_softreset() and pass it the result of
-	 * sata_srst_pmp(). If this call fails, we retry with pmp = 0.
-	 */
+	 
 	ret = ahci_do_softreset(link, class, pmp, deadline, ahci_check_ready);
 	if (pmp && ret == -EBUSY)
 		return ahci_do_softreset(link, class, 0,
@@ -118,14 +96,7 @@ static int ahci_da850_hardreset(struct ata_link *link,
 	int ret, retry = HARDRESET_RETRIES;
 	bool online;
 
-	/*
-	 * In order to correctly service the LCD controller of the da850 SoC,
-	 * we increased the PLL0 frequency to 456MHz from the default 300MHz.
-	 *
-	 * This made the SATA controller unstable and the hardreset operation
-	 * does not always succeed the first time. Before really giving up to
-	 * bring up the link, retry the reset a couple times.
-	 */
+	 
 	do {
 		ret = ahci_do_hardreset(link, class, deadline, &online);
 		if (online)
@@ -138,10 +109,7 @@ static int ahci_da850_hardreset(struct ata_link *link,
 static struct ata_port_operations ahci_da850_port_ops = {
 	.inherits = &ahci_platform_ops,
 	.softreset = ahci_da850_softreset,
-	/*
-	 * No need to override .pmp_softreset - it's only used for actual
-	 * PMP-enabled ports.
-	 */
+	 
 	.hardreset = ahci_da850_hardreset,
 	.pmp_hardreset = ahci_da850_hardreset,
 };
@@ -170,14 +138,7 @@ static int ahci_da850_probe(struct platform_device *pdev)
 	if (IS_ERR(hpriv))
 		return PTR_ERR(hpriv);
 
-	/*
-	 * Internally ahci_platform_get_resources() calls the bulk clocks
-	 * get method or falls back to using a single clk_get_optional().
-	 * This AHCI SATA controller uses two clocks: functional clock
-	 * with "fck" connection id and external reference clock with
-	 * "refclk" id. If we haven't got all of them re-try the clocks
-	 * getting procedure with the explicitly specified ids.
-	 */
+	 
 	if (hpriv->n_clks < 2) {
 		hpriv->clks = devm_kcalloc(dev, 2, sizeof(*hpriv->clks), GFP_KERNEL);
 		if (!hpriv->clks)
@@ -232,7 +193,7 @@ static SIMPLE_DEV_PM_OPS(ahci_da850_pm_ops, ahci_platform_suspend,
 
 static const struct of_device_id ahci_da850_of_match[] = {
 	{ .compatible = "ti,da850-ahci", },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, ahci_da850_of_match);
 

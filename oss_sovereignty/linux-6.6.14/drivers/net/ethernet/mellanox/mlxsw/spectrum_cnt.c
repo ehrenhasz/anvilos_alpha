@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
-/* Copyright (c) 2017-2018 Mellanox Technologies. All rights reserved */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/bitops.h>
@@ -11,8 +11,8 @@ struct mlxsw_sp_counter_sub_pool {
 	u64 size;
 	unsigned int base_index;
 	enum mlxsw_res_id entry_size_res_id;
-	const char *resource_name; /* devlink resource name */
-	u64 resource_id; /* devlink resource id */
+	const char *resource_name;  
+	u64 resource_id;  
 	unsigned int entry_size;
 	unsigned int bank_count;
 	atomic_t active_entries_count;
@@ -20,8 +20,8 @@ struct mlxsw_sp_counter_sub_pool {
 
 struct mlxsw_sp_counter_pool {
 	u64 pool_size;
-	unsigned long *usage; /* Usage bitmap */
-	spinlock_t counter_pool_lock; /* Protects counter pool allocations */
+	unsigned long *usage;  
+	spinlock_t counter_pool_lock;  
 	atomic_t active_entries_count;
 	unsigned int sub_pools_count;
 	struct mlxsw_sp_counter_sub_pool sub_pools[];
@@ -199,9 +199,7 @@ int mlxsw_sp_counter_alloc(struct mlxsw_sp *mlxsw_sp,
 		err = -ENOBUFS;
 		goto err_alloc;
 	}
-	/* The sub-pools can contain non-integer number of entries
-	 * so we must check for overflow
-	 */
+	 
 	if (entry_index + sub_pool->entry_size > stop_index) {
 		err = -ENOBUFS;
 		goto err_alloc;
@@ -271,15 +269,13 @@ int mlxsw_sp_counter_resources_register(struct mlxsw_core *mlxsw_core)
 	if (err)
 		return err;
 
-	/* Allocation is based on bank count which should be
-	 * specified for each sub pool statically.
-	 */
+	 
 	total_bank_config = 0;
 	base_index = 0;
 	for (i = 0; i < ARRAY_SIZE(mlxsw_sp_counter_sub_pools); i++) {
 		sub_pool = &mlxsw_sp_counter_sub_pools[i];
 		sub_pool_size = sub_pool->bank_count * bank_size;
-		/* The last bank can't be fully used */
+		 
 		if (base_index + sub_pool_size > pool_size)
 			sub_pool_size = pool_size - base_index;
 		base_index += sub_pool_size;
@@ -298,7 +294,7 @@ int mlxsw_sp_counter_resources_register(struct mlxsw_core *mlxsw_core)
 		total_bank_config += sub_pool->bank_count;
 	}
 
-	/* Check config is valid, no bank over subscription */
+	 
 	if (WARN_ON(total_bank_config > div64_u64(pool_size, bank_size) + 1))
 		return -EINVAL;
 

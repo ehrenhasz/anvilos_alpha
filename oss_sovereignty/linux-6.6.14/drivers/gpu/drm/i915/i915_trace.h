@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM i915
@@ -16,7 +16,7 @@
 
 #include "i915_drv.h"
 
-/* object tracking */
+ 
 
 TRACE_EVENT(i915_gem_object_create,
 	    TP_PROTO(struct drm_i915_gem_object *obj),
@@ -616,12 +616,7 @@ TRACE_EVENT(i915_request_wait_begin,
 			     __field(unsigned int, flags)
 			     ),
 
-	    /* NB: the blocking information is racy since mutex_is_locked
-	     * doesn't check that the current thread holds the lock. The only
-	     * other option would be to pass the boolean information of whether
-	     * or not the class was blocking down through the stack which is
-	     * less desirable.
-	     */
+	     
 	    TP_fast_assign(
 			   __entry->dev = rq->i915->drm.primary->index;
 			   __entry->class = rq->engine->uabi_class;
@@ -670,16 +665,7 @@ TRACE_EVENT_CONDITION(i915_reg_rw,
 		(u32)(__entry->val >> 32))
 );
 
-/**
- * DOC: i915_ppgtt_create and i915_ppgtt_release tracepoints
- *
- * With full ppgtt enabled each process using drm will allocate at least one
- * translation table. With these traces it is possible to keep track of the
- * allocation and of the lifetime of the tables; this can be used during
- * testing/debug to verify that we are not leaking ppgtts.
- * These traces identify the ppgtt through the vm pointer, which is also printed
- * by the i915_vma_bind and i915_vma_unbind tracepoints.
- */
+ 
 DECLARE_EVENT_CLASS(i915_ppgtt,
 	TP_PROTO(struct i915_address_space *vm),
 	TP_ARGS(vm),
@@ -707,13 +693,7 @@ DEFINE_EVENT(i915_ppgtt, i915_ppgtt_release,
 	TP_ARGS(vm)
 );
 
-/**
- * DOC: i915_context_create and i915_context_free tracepoints
- *
- * These tracepoints are used to track creation and deletion of contexts.
- * If full ppgtt is enabled, they also print the address of the vm assigned to
- * the context.
- */
+ 
 DECLARE_EVENT_CLASS(i915_context,
 	TP_PROTO(struct i915_gem_context *ctx),
 	TP_ARGS(ctx),
@@ -744,9 +724,9 @@ DEFINE_EVENT(i915_context, i915_context_free,
 	TP_ARGS(ctx)
 );
 
-#endif /* _I915_TRACE_H_ */
+#endif  
 
-/* This part must be outside protection */
+ 
 #undef TRACE_INCLUDE_PATH
 #undef TRACE_INCLUDE_FILE
 #define TRACE_INCLUDE_PATH ../../drivers/gpu/drm/i915

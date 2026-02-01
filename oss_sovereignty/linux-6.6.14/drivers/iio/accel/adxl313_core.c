@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * ADXL313 3-Axis Digital Accelerometer
- *
- * Copyright (c) 2021 Lucas Stankus <lucas.p.stankus@gmail.com>
- *
- * Datasheet: https://www.analog.com/media/en/technical-documentation/data-sheets/ADXL313.pdf
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/module.h>
@@ -75,7 +69,7 @@ static int adxl313_check_id(struct device *dev,
 	if (regval != ADXL313_DEVID0)
 		dev_warn(dev, "Invalid manufacturer ID: 0x%02x\n", regval);
 
-	/* Check DEVID1 and PARTID */
+	 
 	if (regval == ADXL313_DEVID0) {
 		ret = regmap_read(data->regmap, ADXL313_REG_DEVID1, &regval);
 		if (ret)
@@ -276,10 +270,7 @@ static int adxl313_read_raw(struct iio_dev *indio_dev,
 		if (ret)
 			return ret;
 
-		/*
-		 * 8-bit resolution at minimum range, that is 4x accel data scale
-		 * factor at full resolution
-		 */
+		 
 		*val = sign_extend32(regval, 7) * 4;
 		return IIO_VAL_INT;
 	case IIO_CHAN_INFO_SAMP_FREQ:
@@ -304,10 +295,7 @@ static int adxl313_write_raw(struct iio_dev *indio_dev,
 
 	switch (mask) {
 	case IIO_CHAN_INFO_CALIBBIAS:
-		/*
-		 * 8-bit resolution at minimum range, that is 4x accel data scale
-		 * factor at full resolution
-		 */
+		 
 		if (clamp_val(val, -128 * 4, 127 * 4) != val)
 			return -EINVAL;
 
@@ -332,10 +320,7 @@ static int adxl313_setup(struct device *dev, struct adxl313_data *data,
 {
 	int ret;
 
-	/*
-	 * If sw reset available, ensures the device is in a consistent
-	 * state after start up
-	 */
+	 
 	if (data->chip_info->soft_reset) {
 		ret = regmap_write(data->regmap, ADXL313_REG_SOFT_RESET,
 				   ADXL313_SOFT_RESET);
@@ -353,7 +338,7 @@ static int adxl313_setup(struct device *dev, struct adxl313_data *data,
 	if (ret)
 		return ret;
 
-	/* Sets the range to maximum, full resolution, if applicable */
+	 
 	if (data->chip_info->variable_range) {
 		ret = regmap_update_bits(data->regmap, ADXL313_REG_DATA_FORMAT,
 					 ADXL313_RANGE_MSK,
@@ -361,29 +346,20 @@ static int adxl313_setup(struct device *dev, struct adxl313_data *data,
 		if (ret)
 			return ret;
 
-		/* Enables full resolution */
+		 
 		ret = regmap_update_bits(data->regmap, ADXL313_REG_DATA_FORMAT,
 					 ADXL313_FULL_RES, ADXL313_FULL_RES);
 		if (ret)
 			return ret;
 	}
 
-	/* Enables measurement mode */
+	 
 	return regmap_update_bits(data->regmap, ADXL313_REG_POWER_CTL,
 				  ADXL313_POWER_CTL_MSK,
 				  ADXL313_MEASUREMENT_MODE);
 }
 
-/**
- * adxl313_core_probe() - probe and setup for adxl313 accelerometer
- * @dev:	Driver model representation of the device
- * @regmap:	Register map of the device
- * @chip_info:	Structure containing device specific data
- * @setup:	Setup routine to be executed right before the standard device
- *		setup, can also be set to NULL if not required
- *
- * Return: 0 on success, negative errno on error cases
- */
+ 
 int adxl313_core_probe(struct device *dev,
 		       struct regmap *regmap,
 		       const struct adxl313_chip_info *chip_info,

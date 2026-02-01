@@ -1,19 +1,4 @@
-/*
- * Copyright (c) 2014 Redpine Signals Inc.
- *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- *
- */
+ 
 
 #include <linux/module.h>
 #include <linux/types.h>
@@ -22,22 +7,14 @@
 #include "rsi_hal.h"
 #include "rsi_coex.h"
 
-/* Default operating mode is wlan STA + BT */
+ 
 static u16 dev_oper_mode = DEV_OPMODE_STA_BT_DUAL;
 module_param(dev_oper_mode, ushort, 0444);
 MODULE_PARM_DESC(dev_oper_mode, DEV_OPMODE_PARAM_DESC);
 
 static int rsi_rx_urb_submit(struct rsi_hw *adapter, u8 ep_num, gfp_t flags);
 
-/**
- * rsi_usb_card_write() - This function writes to the USB Card.
- * @adapter: Pointer to the adapter structure.
- * @buf: Pointer to the buffer from where the data has to be taken.
- * @len: Length to be written.
- * @endpoint: Type of endpoint.
- *
- * Return: status: 0 on success, a negative error code on failure.
- */
+ 
 static int rsi_usb_card_write(struct rsi_hw *adapter,
 			      u8 *buf,
 			      u16 len,
@@ -68,16 +45,7 @@ static int rsi_usb_card_write(struct rsi_hw *adapter,
 	return status;
 }
 
-/**
- * rsi_write_multiple() - This function writes multiple bytes of information
- *			  to the USB card.
- * @adapter: Pointer to the adapter structure.
- * @endpoint: Type of endpoint.
- * @data: Pointer to the data that has to be written.
- * @count: Number of multiple bytes to be written.
- *
- * Return: 0 on success, a negative error code on failure.
- */
+ 
 static int rsi_write_multiple(struct rsi_hw *adapter,
 			      u8 endpoint,
 			      u8 *data,
@@ -98,14 +66,7 @@ static int rsi_write_multiple(struct rsi_hw *adapter,
 	return rsi_usb_card_write(adapter, data, count, endpoint);
 }
 
-/**
- * rsi_find_bulk_in_and_out_endpoints() - This function initializes the bulk
- *					  endpoints to the device.
- * @interface: Pointer to the USB interface structure.
- * @adapter: Pointer to the adapter structure.
- *
- * Return: ret_val: 0 on success, -ENOMEM on failure.
- */
+ 
 static int rsi_find_bulk_in_and_out_endpoints(struct usb_interface *interface,
 					      struct rsi_hw *adapter)
 {
@@ -164,14 +125,7 @@ static int rsi_find_bulk_in_and_out_endpoints(struct usb_interface *interface,
 #define RSI_USB_REQ_OUT	(USB_TYPE_VENDOR | USB_DIR_OUT | USB_RECIP_DEVICE)
 #define RSI_USB_REQ_IN	(USB_TYPE_VENDOR | USB_DIR_IN | USB_RECIP_DEVICE)
 
-/* rsi_usb_reg_read() - This function reads data from given register address.
- * @usbdev: Pointer to the usb_device structure.
- * @reg: Address of the register to be read.
- * @value: Value to be read.
- * @len: length of data to be read.
- *
- * Return: status: 0 on success, a negative error code on failure.
- */
+ 
 static int rsi_usb_reg_read(struct usb_device *usbdev,
 			    u32 reg,
 			    u16 *value,
@@ -207,16 +161,7 @@ static int rsi_usb_reg_read(struct usb_device *usbdev,
 	return status;
 }
 
-/**
- * rsi_usb_reg_write() - This function writes the given data into the given
- *			 register address.
- * @usbdev: Pointer to the usb_device structure.
- * @reg: Address of the register.
- * @value: Value to write.
- * @len: Length of data to be written.
- *
- * Return: status: 0 on success, a negative error code on failure.
- */
+ 
 static int rsi_usb_reg_write(struct usb_device *usbdev,
 			     u32 reg,
 			     u32 value,
@@ -256,13 +201,7 @@ static int rsi_usb_reg_write(struct usb_device *usbdev,
 	return status;
 }
 
-/**
- * rsi_rx_done_handler() - This function is called when a packet is received
- *			   from USB stack. This is callback to receive done.
- * @urb: Received URB.
- *
- * Return: None.
- */
+ 
 static void rsi_rx_done_handler(struct urb *urb)
 {
 	struct rx_usb_ctrl_block *rx_cb = urb->context;
@@ -313,14 +252,7 @@ static void rsi_rx_urb_kill(struct rsi_hw *adapter, u8 ep_num)
 	usb_kill_urb(urb);
 }
 
-/**
- * rsi_rx_urb_submit() - This function submits the given URB to the USB stack.
- * @adapter: Pointer to the adapter structure.
- * @ep_num: Endpoint number.
- * @mem_flags: The type of memory to allocate.
- *
- * Return: 0 on success, a negative error code on failure.
- */
+ 
 static int rsi_rx_urb_submit(struct rsi_hw *adapter, u8 ep_num, gfp_t mem_flags)
 {
 	struct rsi_91x_usbdev *dev = adapter->rsi_dev;
@@ -399,16 +331,7 @@ static int rsi_usb_read_register_multiple(struct rsi_hw *adapter, u32 addr,
 	return 0;
 }
 
-/**
- * rsi_usb_write_register_multiple() - This function writes multiple bytes of
- *				       information to multiple registers.
- * @adapter: Pointer to the adapter structure.
- * @addr: Address of the register.
- * @data: Pointer to the data that has to be written.
- * @count: Number of multiple bytes to be written on to the registers.
- *
- * Return: status: 0 on success, a negative error code on failure.
- */
+ 
 static int rsi_usb_write_register_multiple(struct rsi_hw *adapter, u32 addr,
 					   u8 *data, u16 count)
 {
@@ -449,15 +372,7 @@ static int rsi_usb_write_register_multiple(struct rsi_hw *adapter, u32 addr,
 	return 0;
 }
 
-/**
- *rsi_usb_host_intf_write_pkt() - This function writes the packet to the
- *				   USB card.
- * @adapter: Pointer to the adapter structure.
- * @pkt: Pointer to the data to be written on to the card.
- * @len: Length of the data to be written on to the card.
- *
- * Return: 0 on success, a negative error code on failure.
- */
+ 
 static int rsi_usb_host_intf_write_pkt(struct rsi_hw *adapter,
 				       u8 *pkt,
 				       u32 len)
@@ -551,12 +466,7 @@ static struct rsi_host_intf_ops usb_host_intf_ops = {
 	.load_data_master_write	= rsi_usb_load_data_master_write,
 };
 
-/**
- * rsi_deinit_usb_interface() - This function deinitializes the usb interface.
- * @adapter: Pointer to the adapter structure.
- *
- * Return: None.
- */
+ 
 static void rsi_deinit_usb_interface(struct rsi_hw *adapter)
 {
 	struct rsi_91x_usbdev *dev = adapter->rsi_dev;
@@ -607,13 +517,7 @@ err:
 	return -1;
 }
 
-/**
- * rsi_init_usb_interface() - This function initializes the usb interface.
- * @adapter: Pointer to the adapter structure.
- * @pfunction: Pointer to USB interface structure.
- *
- * Return: 0 on success, a negative error code on failure.
- */
+ 
 static int rsi_init_usb_interface(struct rsi_hw *adapter,
 				  struct usb_interface *pfunction)
 {
@@ -651,14 +555,14 @@ static int rsi_init_usb_interface(struct rsi_hw *adapter,
 	rsi_dev->tx_blk_size = 252;
 	adapter->block_size = rsi_dev->tx_blk_size;
 
-	/* Initializing function callbacks */
+	 
 	adapter->check_hw_queue_status = rsi_usb_check_queue_status;
 	adapter->determine_event_timeout = rsi_usb_event_timeout;
 	adapter->rsi_host_intf = RSI_HOST_INTF_USB;
 	adapter->host_intf_ops = &usb_host_intf_ops;
 
 #ifdef CONFIG_RSI_DEBUGFS
-	/* In USB, one less than the MAX_DEBUGFS_ENTRIES entries is required */
+	 
 	adapter->num_debugfs_entries = (MAX_DEBUGFS_ENTRIES - 1);
 #endif
 
@@ -689,7 +593,7 @@ static int usb_ulp_read_write(struct rsi_hw *adapter, u16 addr, u32 data,
 	if (ret < 0)
 		return ret;
 
-	/* Initializing GSPI for ULP read/writes */
+	 
 	rsi_usb_master_reg_write(adapter, RSI_GSPI_CTRL_REG0,
 				 RSI_GSPI_CTRL_REG0_VALUE, 2);
 
@@ -710,9 +614,7 @@ static int rsi_reset_card(struct rsi_hw *adapter)
 	rsi_dbg(INFO_ZONE, "Resetting Card...\n");
 	rsi_usb_master_reg_write(adapter, RSI_TA_HOLD_REG, 0xE, 4);
 
-	/* This msleep will ensure Thread-Arch processor to go to hold
-	 * and any pending dma transfers to rf in device to finish.
-	 */
+	 
 	msleep(100);
 
 	ret = rsi_usb_master_reg_write(adapter, SWBL_REGOUT,
@@ -773,15 +675,7 @@ fail:
 	return ret;
 }
 
-/**
- * rsi_probe() - This function is called by kernel when the driver provided
- *		 Vendor and device IDs are matched. All the initialization
- *		 work is done here.
- * @pfunction: Pointer to the USB interface structure.
- * @id: Pointer to the usb_device_id structure.
- *
- * Return: 0 on success, a negative error code on failure.
- */
+ 
 static int rsi_probe(struct usb_interface *pfunction,
 		     const struct usb_device_id *id)
 {
@@ -863,13 +757,7 @@ err:
 	return status;
 }
 
-/**
- * rsi_disconnect() - This function performs the reverse of the probe function,
- *		      it deinitialize the driver structure.
- * @pfunction: Pointer to the USB interface structure.
- *
- * Return: None.
- */
+ 
 static void rsi_disconnect(struct usb_interface *pfunction)
 {
 	struct rsi_hw *adapter = usb_get_intfdata(pfunction);
@@ -899,13 +787,13 @@ static void rsi_disconnect(struct usb_interface *pfunction)
 #ifdef CONFIG_PM
 static int rsi_suspend(struct usb_interface *intf, pm_message_t message)
 {
-	/* Not yet implemented */
+	 
 	return -ENOSYS;
 }
 
 static int rsi_resume(struct usb_interface *intf)
 {
-	/* Not yet implemented */
+	 
 	return -ENOSYS;
 }
 #endif
@@ -913,7 +801,7 @@ static int rsi_resume(struct usb_interface *intf)
 static const struct usb_device_id rsi_dev_table[] = {
 	{ USB_DEVICE(RSI_USB_VENDOR_ID, RSI_USB_PID_9113) },
 	{ USB_DEVICE(RSI_USB_VENDOR_ID, RSI_USB_PID_9116) },
-	{ /* Blank */},
+	{  },
 };
 
 static struct usb_driver rsi_driver = {

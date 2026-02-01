@@ -1,18 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * Copyright (c) 1996, 2003 VIA Networking Technologies, Inc.
- * All rights reserved.
- *
- * Purpose: Implement functions to access baseband
- *
- * Author: Jerry Chen
- *
- * Date: Jun. 5, 2002
- *
- * Revision History:
- *      06-10-2003 Bryan YC Fan:  Re-write codes to support VT3253 spec.
- *      08-26-2003 Kyle Hsu    :  Add defines of packet type and TX rate.
- */
+ 
+ 
 
 #ifndef __BASEBAND_H__
 #define __BASEBAND_H__
@@ -22,30 +9,28 @@
 #define PREAMBLE_LONG   0
 #define PREAMBLE_SHORT  1
 
-/*
- * Registers in the BASEBAND
- */
+ 
 #define BB_MAX_CONTEXT_SIZE 256
 
-#define C_SIFS_A      16      /* usec */
+#define C_SIFS_A      16       
 #define C_SIFS_BG     10
 
-#define C_EIFS      80      /* usec */
+#define C_EIFS      80       
 
-#define C_SLOT_SHORT   9      /* usec */
+#define C_SLOT_SHORT   9       
 #define C_SLOT_LONG   20
 
-#define C_CWMIN_A     15       /* slot time */
+#define C_CWMIN_A     15        
 #define C_CWMIN_B     31
 
-#define C_CWMAX      1023     /* slot time */
+#define C_CWMAX      1023      
 
-/* 0:11A 1:11B 2:11G */
+ 
 #define BB_TYPE_11A    0
 #define BB_TYPE_11B    1
 #define BB_TYPE_11G    2
 
-/* 0:11a, 1:11b, 2:11gb (only CCK in BasicRate), 3:11ga (OFDM in BasicRate) */
+ 
 #define PK_TYPE_11A     0
 #define PK_TYPE_11B     1
 #define PK_TYPE_11GB    2
@@ -72,4 +57,4 @@ int vnt_set_deep_sleep(struct vnt_private *priv);
 int vnt_exit_deep_sleep(struct vnt_private *priv);
 int vnt_update_pre_ed_threshold(struct vnt_private *priv, int scanning);
 
-#endif /* __BASEBAND_H__ */
+#endif  

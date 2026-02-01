@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Driver for cros-ec proximity sensor exposed through MKBP switch
- *
- * Copyright 2021 Google LLC.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -219,7 +215,7 @@ static int cros_ec_mkbp_proximity_probe(struct platform_device *pdev)
 	data = iio_priv(indio_dev);
 	data->ec = ec;
 	data->indio_dev = indio_dev;
-	data->last_proximity = -1; /* Unknown to start */
+	data->last_proximity = -1;  
 	mutex_init(&data->lock);
 	platform_set_drvdata(pdev, data);
 

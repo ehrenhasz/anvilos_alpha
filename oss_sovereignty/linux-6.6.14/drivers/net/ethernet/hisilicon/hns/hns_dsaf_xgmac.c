@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (c) 2014-2015 Hisilicon Limited.
- */
+
+ 
 
 #include <linux/io-64-nonatomic-hi-lo.h>
 #include <linux/of_mdio.h>
@@ -83,41 +81,26 @@ static const struct mac_stats_string g_xgmac_stats_string[] = {
 	{"xgmac_rx_fcs_pkt", MAC_STATS_FIELD_OFF(rx_fcs_err)}
 };
 
-/**
- *hns_xgmac_tx_enable - xgmac port tx enable
- *@drv: mac driver
- *@value: value of enable
- */
+ 
 static void hns_xgmac_tx_enable(struct mac_driver *drv, u32 value)
 {
 	dsaf_set_dev_bit(drv, XGMAC_MAC_ENABLE_REG, XGMAC_ENABLE_TX_B, !!value);
 }
 
-/**
- *hns_xgmac_rx_enable - xgmac port rx enable
- *@drv: mac driver
- *@value: value of enable
- */
+ 
 static void hns_xgmac_rx_enable(struct mac_driver *drv, u32 value)
 {
 	dsaf_set_dev_bit(drv, XGMAC_MAC_ENABLE_REG, XGMAC_ENABLE_RX_B, !!value);
 }
 
-/**
- * hns_xgmac_lf_rf_insert - insert lf rf control about xgmac
- * @mac_drv: mac driver
- * @mode: inserf rf or lf
- */
+ 
 static void hns_xgmac_lf_rf_insert(struct mac_driver *mac_drv, u32 mode)
 {
 	dsaf_set_dev_field(mac_drv, XGMAC_MAC_TX_LF_RF_CONTROL_REG,
 			   XGMAC_LF_RF_INSERT_M, XGMAC_LF_RF_INSERT_S, mode);
 }
 
-/**
- * hns_xgmac_lf_rf_control_init - initial the lf rf control register
- * @mac_drv: mac driver
- */
+ 
 static void hns_xgmac_lf_rf_control_init(struct mac_driver *mac_drv)
 {
 	u32 val = 0;
@@ -128,18 +111,14 @@ static void hns_xgmac_lf_rf_control_init(struct mac_driver *mac_drv)
 	dsaf_write_dev(mac_drv, XGMAC_MAC_TX_LF_RF_CONTROL_REG, val);
 }
 
-/**
- *hns_xgmac_enable - enable xgmac port
- *@mac_drv: mac driver
- *@mode: mode of mac port
- */
+ 
 static void hns_xgmac_enable(void *mac_drv, enum mac_commom_mode mode)
 {
 	struct mac_driver *drv = (struct mac_driver *)mac_drv;
 
 	hns_xgmac_lf_rf_insert(drv, HNS_XGMAC_NO_LF_RF_INSERT);
 
-	/*enable XGE rX/tX */
+	 
 	if (mode == MAC_COMM_MODE_TX) {
 		hns_xgmac_tx_enable(drv, 1);
 	} else if (mode == MAC_COMM_MODE_RX) {
@@ -152,11 +131,7 @@ static void hns_xgmac_enable(void *mac_drv, enum mac_commom_mode mode)
 	}
 }
 
-/**
- *hns_xgmac_disable - disable xgmac port
- *@mac_drv: mac driver
- *@mode: mode of mac port
- */
+ 
 static void hns_xgmac_disable(void *mac_drv, enum mac_commom_mode mode)
 {
 	struct mac_driver *drv = (struct mac_driver *)mac_drv;
@@ -172,13 +147,7 @@ static void hns_xgmac_disable(void *mac_drv, enum mac_commom_mode mode)
 	hns_xgmac_lf_rf_insert(drv, HNS_XGMAC_LF_INSERT);
 }
 
-/**
- *hns_xgmac_pma_fec_enable - xgmac PMA FEC enable
- *@drv: mac driver
- *@tx_value: tx value
- *@rx_value: rx value
- *return status
- */
+ 
 static void hns_xgmac_pma_fec_enable(struct mac_driver *drv, u32 tx_value,
 				     u32 rx_value)
 {
@@ -189,20 +158,17 @@ static void hns_xgmac_pma_fec_enable(struct mac_driver *drv, u32 tx_value,
 	dsaf_write_dev(drv, XGMAC_PMA_FEC_CONTROL_REG, origin);
 }
 
-/* clr exc irq for xge*/
+ 
 static void hns_xgmac_exc_irq_en(struct mac_driver *drv, u32 en)
 {
 	u32 clr_vlue = 0xfffffffful;
-	u32 msk_vlue = en ? 0xfffffffful : 0; /*1 is en, 0 is dis*/
+	u32 msk_vlue = en ? 0xfffffffful : 0;  
 
 	dsaf_write_dev(drv, XGMAC_INT_STATUS_REG, clr_vlue);
 	dsaf_write_dev(drv, XGMAC_INT_ENABLE_REG, msk_vlue);
 }
 
-/**
- *hns_xgmac_init - initialize XGE
- *@mac_drv: mac driver
- */
+ 
 static void hns_xgmac_init(void *mac_drv)
 {
 	struct mac_driver *drv = (struct mac_driver *)mac_drv;
@@ -223,11 +189,7 @@ static void hns_xgmac_init(void *mac_drv)
 	hns_xgmac_disable(mac_drv, MAC_COMM_MODE_RX_AND_TX);
 }
 
-/**
- *hns_xgmac_config_pad_and_crc - set xgmac pad and crc enable the same time
- *@mac_drv: mac driver
- *@newval:enable of pad and crc
- */
+ 
 static void hns_xgmac_config_pad_and_crc(void *mac_drv, u8 newval)
 {
 	struct mac_driver *drv = (struct mac_driver *)mac_drv;
@@ -239,12 +201,7 @@ static void hns_xgmac_config_pad_and_crc(void *mac_drv, u8 newval)
 	dsaf_write_dev(drv, XGMAC_MAC_CONTROL_REG, origin);
 }
 
-/**
- *hns_xgmac_pausefrm_cfg - set pause param about xgmac
- *@mac_drv: mac driver
- *@rx_en: enable receive
- *@tx_en: enable transmit
- */
+ 
 static void hns_xgmac_pausefrm_cfg(void *mac_drv, u32 rx_en, u32 tx_en)
 {
 	struct mac_driver *drv = (struct mac_driver *)mac_drv;
@@ -266,11 +223,7 @@ static void hns_xgmac_set_pausefrm_mac_addr(void *mac_drv, const char *mac_addr)
 	dsaf_write_dev(drv, XGMAC_MAC_PAUSE_LOCAL_MAC_H_REG, high_val);
 }
 
-/**
- *hns_xgmac_set_tx_auto_pause_frames - set tx pause param about xgmac
- *@mac_drv: mac driver
- *@enable:enable tx pause param
- */
+ 
 static void hns_xgmac_set_tx_auto_pause_frames(void *mac_drv, u16 enable)
 {
 	struct mac_driver *drv = (struct mac_driver *)mac_drv;
@@ -278,16 +231,12 @@ static void hns_xgmac_set_tx_auto_pause_frames(void *mac_drv, u16 enable)
 	dsaf_set_dev_bit(drv, XGMAC_MAC_PAUSE_CTRL_REG,
 			 XGMAC_PAUSE_CTL_TX_B, !!enable);
 
-	/*if enable is not zero ,set tx pause time */
+	 
 	if (enable)
 		dsaf_write_dev(drv, XGMAC_MAC_PAUSE_TIME_REG, enable);
 }
 
-/**
- *hns_xgmac_config_max_frame_length - set xgmac max frame length
- *@mac_drv: mac driver
- *@newval:xgmac max frame length
- */
+ 
 static void hns_xgmac_config_max_frame_length(void *mac_drv, u16 newval)
 {
 	struct mac_driver *drv = (struct mac_driver *)mac_drv;
@@ -300,7 +249,7 @@ static void hns_xgmac_update_stats(void *mac_drv)
 	struct mac_driver *drv = (struct mac_driver *)mac_drv;
 	struct mac_hw_stats *hw_stats = &drv->mac_cb->hw_stats;
 
-	/* TX */
+	 
 	hw_stats->tx_fragment_err
 		= hns_mac_reg_read64(drv, XGMAC_TX_PKTS_FRAGMENT);
 	hw_stats->tx_undersize
@@ -349,7 +298,7 @@ static void hns_xgmac_update_stats(void *mac_drv)
 		= hns_mac_reg_read64(drv, XGMAC_RX_FROMAPPBADPKTS);
 	hw_stats->tx_bad_pkts = hns_mac_reg_read64(drv, XGMAC_TX_ERRALLPKTS);
 
-	/* RX */
+	 
 	hw_stats->rx_fragment_err
 		= hns_mac_reg_read64(drv, XGMAC_RX_PKTS_FRAGMENT);
 	hw_stats->rx_undersize
@@ -402,10 +351,7 @@ static void hns_xgmac_update_stats(void *mac_drv)
 	hw_stats->rx_fcs_err = hns_mac_reg_read64(drv, XGMAC_RX_FCSERRPKTS);
 }
 
-/**
- *hns_xgmac_free - free xgmac driver
- *@mac_drv: mac driver
- */
+ 
 static void hns_xgmac_free(void *mac_drv)
 {
 	struct mac_driver *drv = (struct mac_driver *)mac_drv;
@@ -417,11 +363,7 @@ static void hns_xgmac_free(void *mac_drv)
 	dsaf_dev->misc_op->xge_srst(dsaf_dev, mac_id, 0);
 }
 
-/**
- *hns_xgmac_get_info - get xgmac information
- *@mac_drv: mac driver
- *@mac_info:mac information
- */
+ 
 static void hns_xgmac_get_info(void *mac_drv, struct mac_info *mac_info)
 {
 	struct mac_driver *drv = (struct mac_driver *)mac_drv;
@@ -447,12 +389,7 @@ static void hns_xgmac_get_info(void *mac_drv, struct mac_info *mac_info)
 	mac_info->tx_pause_en = dsaf_get_bit(pause_ctrl, XGMAC_PAUSE_CTL_TX_B);
 }
 
-/**
- *hns_xgmac_get_pausefrm_cfg - get xgmac pause param
- *@mac_drv: mac driver
- *@rx_en:xgmac rx pause enable
- *@tx_en:xgmac tx pause enable
- */
+ 
 static void hns_xgmac_get_pausefrm_cfg(void *mac_drv, u32 *rx_en, u32 *tx_en)
 {
 	struct mac_driver *drv = (struct mac_driver *)mac_drv;
@@ -463,11 +400,7 @@ static void hns_xgmac_get_pausefrm_cfg(void *mac_drv, u32 *rx_en, u32 *tx_en)
 	*tx_en = dsaf_get_bit(pause_ctrl, XGMAC_PAUSE_CTL_TX_B);
 }
 
-/**
- *hns_xgmac_get_link_status - get xgmac link status
- *@mac_drv: mac driver
- *@link_stat: xgmac link stat
- */
+ 
 static void hns_xgmac_get_link_status(void *mac_drv, u32 *link_stat)
 {
 	struct mac_driver *drv = (struct mac_driver *)mac_drv;
@@ -475,11 +408,7 @@ static void hns_xgmac_get_link_status(void *mac_drv, u32 *link_stat)
 	*link_stat = dsaf_read_dev(drv, XGMAC_LINK_STATUS_REG);
 }
 
-/**
- *hns_xgmac_get_regs - dump xgmac regs
- *@mac_drv: mac driver
- *@data:data for value of regs
- */
+ 
 static void hns_xgmac_get_regs(void *mac_drv, void *data)
 {
 	u32 i;
@@ -487,7 +416,7 @@ static void hns_xgmac_get_regs(void *mac_drv, void *data)
 	u32 *regs = data;
 	u64 qtmp;
 
-	/* base config registers */
+	 
 	regs[0] = dsaf_read_dev(drv, XGMAC_INT_STATUS_REG);
 	regs[1] = dsaf_read_dev(drv, XGMAC_INT_ENABLE_REG);
 	regs[2] = dsaf_read_dev(drv, XGMAC_INT_SET_REG);
@@ -566,7 +495,7 @@ static void hns_xgmac_get_regs(void *mac_drv, void *data)
 	regs[71] = dsaf_read_dev(drv, XGMAC_PMA_FEC_CORR_BLOCK_CNT__REG);
 	regs[72] = dsaf_read_dev(drv, XGMAC_PMA_FEC_UNCORR_BLOCK_CNT__REG);
 
-	/* status registers */
+	 
 #define hns_xgmac_cpy_q(p, q) \
 	do {\
 		*(p) = (u32)(q);\
@@ -642,7 +571,7 @@ static void hns_xgmac_get_regs(void *mac_drv, void *data)
 	qtmp = hns_mac_reg_read64(drv, XGMAC_TX_ERRALLPKTS);
 	hns_xgmac_cpy_q(&regs[139], qtmp);
 
-	/* RX */
+	 
 	qtmp = hns_mac_reg_read64(drv, XGMAC_RX_PKTS_FRAGMENT);
 	hns_xgmac_cpy_q(&regs[141], qtmp);
 	qtmp = hns_mac_reg_read64(drv, XGMAC_RX_PKTSUNDERSIZE);
@@ -713,16 +642,12 @@ static void hns_xgmac_get_regs(void *mac_drv, void *data)
 	qtmp = hns_mac_reg_read64(drv, XGMAC_RX_FCSERRPKTS);
 	hns_xgmac_cpy_q(&regs[207], qtmp);
 
-	/* mark end of mac regs */
+	 
 	for (i = 208; i < 214; i++)
 		regs[i] = 0xaaaaaaaa;
 }
 
-/**
- *hns_xgmac_get_stats - get xgmac statistic
- *@mac_drv: mac driver
- *@data:data for value of stats regs
- */
+ 
 static void hns_xgmac_get_stats(void *mac_drv, u64 *data)
 {
 	u32 i;
@@ -738,11 +663,7 @@ static void hns_xgmac_get_stats(void *mac_drv, u64 *data)
 	}
 }
 
-/**
- *hns_xgmac_get_strings - get xgmac strings name
- *@stringset: type of values in data
- *@data:data for value of string name
- */
+ 
 static void hns_xgmac_get_strings(u32 stringset, u8 *data)
 {
 	u8 *buff = data;
@@ -755,11 +676,7 @@ static void hns_xgmac_get_strings(u32 stringset, u8 *data)
 		ethtool_sprintf(&buff, g_xgmac_stats_string[i].desc);
 }
 
-/**
- *hns_xgmac_get_sset_count - get xgmac string set count
- *@stringset: type of values in data
- *return xgmac string set count
- */
+ 
 static int hns_xgmac_get_sset_count(int stringset)
 {
 	if (stringset == ETH_SS_STATS || stringset == ETH_SS_PRIV_FLAGS)
@@ -768,10 +685,7 @@ static int hns_xgmac_get_sset_count(int stringset)
 	return 0;
 }
 
-/**
- *hns_xgmac_get_regs_count - get xgmac regs count
- *return xgmac regs count
- */
+ 
 static int hns_xgmac_get_regs_count(void)
 {
 	return HNS_XGMAC_DUMP_NUM;

@@ -1,52 +1,14 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * comedi/drivers/rti800.c
- * Hardware driver for Analog Devices RTI-800/815 board
- *
- * COMEDI - Linux Control and Measurement Device Interface
- * Copyright (C) 1998 David A. Schleef <ds@schleef.org>
- */
 
-/*
- * Driver: rti800
- * Description: Analog Devices RTI-800/815
- * Devices: [Analog Devices] RTI-800 (rti800), RTI-815 (rti815)
- * Author: David A. Schleef <ds@schleef.org>
- * Status: unknown
- * Updated: Fri, 05 Sep 2008 14:50:44 +0100
- *
- * Configuration options:
- *   [0] - I/O port base address
- *   [1] - IRQ (not supported / unused)
- *   [2] - A/D mux/reference (number of channels)
- *	   0 = differential
- *	   1 = pseudodifferential (common)
- *	   2 = single-ended
- *   [3] - A/D range
- *	   0 = [-10,10]
- *	   1 = [-5,5]
- *	   2 = [0,10]
- *   [4] - A/D encoding
- *	   0 = two's complement
- *	   1 = straight binary
- *   [5] - DAC 0 range
- *	   0 = [-10,10]
- *	   1 = [0,10]
- *   [6] - DAC 0 encoding
- *	   0 = two's complement
- *	   1 = straight binary
- *   [7] - DAC 1 range (same as DAC 0)
- *   [8] - DAC 1 encoding (same as DAC 0)
- */
+ 
+
+ 
 
 #include <linux/module.h>
 #include <linux/delay.h>
 #include <linux/interrupt.h>
 #include <linux/comedi/comedidev.h>
 
-/*
- * Register map
- */
+ 
 #define RTI800_CSR		0x00
 #define RTI800_CSR_BUSY		BIT(7)
 #define RTI800_CSR_DONE		BIT(6)
@@ -166,10 +128,7 @@ static int rti800_ai_insn_read(struct comedi_device *dev,
 	if (muxgain_bits != devpriv->muxgain_bits) {
 		devpriv->muxgain_bits = muxgain_bits;
 		outb(devpriv->muxgain_bits, dev->iobase + RTI800_MUXGAIN);
-		/*
-		 * Without a delay here, the RTI_CSR_OVERRUN bit
-		 * gets set, and you will have an error.
-		 */
+		 
 		if (insn->n > 0) {
 			int delay = (gain == 0) ? 10 :
 				    (gain == 1) ? 20 :
@@ -241,7 +200,7 @@ static int rti800_do_insn_bits(struct comedi_device *dev,
 			       unsigned int *data)
 {
 	if (comedi_dio_update_state(s, data)) {
-		/* Outputs are inverted... */
+		 
 		outb(s->state ^ 0xff, dev->iobase + RTI800_DO);
 	}
 
@@ -272,7 +231,7 @@ static int rti800_attach(struct comedi_device *dev, struct comedi_devconfig *it)
 	devpriv->adc_2comp = (it->options[4] == 0);
 	devpriv->dac_2comp[0] = (it->options[6] == 0);
 	devpriv->dac_2comp[1] = (it->options[8] == 0);
-	/* invalid, forces the MUXGAIN register to be set when first used */
+	 
 	devpriv->muxgain_bits = 0xff;
 
 	ret = comedi_alloc_subdevices(dev, 4);
@@ -280,7 +239,7 @@ static int rti800_attach(struct comedi_device *dev, struct comedi_devconfig *it)
 		return ret;
 
 	s = &dev->subdevices[0];
-	/* ai subdevice */
+	 
 	s->type		= COMEDI_SUBD_AI;
 	s->subdev_flags	= SDF_READABLE | SDF_GROUND;
 	s->n_chan	= (it->options[2] ? 16 : 8);
@@ -292,7 +251,7 @@ static int rti800_attach(struct comedi_device *dev, struct comedi_devconfig *it)
 
 	s = &dev->subdevices[1];
 	if (board->has_ao) {
-		/* ao subdevice (only on rti815) */
+		 
 		s->type		= COMEDI_SUBD_AO;
 		s->subdev_flags	= SDF_WRITABLE;
 		s->n_chan	= 2;
@@ -316,7 +275,7 @@ static int rti800_attach(struct comedi_device *dev, struct comedi_devconfig *it)
 	}
 
 	s = &dev->subdevices[2];
-	/* di */
+	 
 	s->type		= COMEDI_SUBD_DI;
 	s->subdev_flags	= SDF_READABLE;
 	s->n_chan	= 8;
@@ -325,7 +284,7 @@ static int rti800_attach(struct comedi_device *dev, struct comedi_devconfig *it)
 	s->range_table	= &range_digital;
 
 	s = &dev->subdevices[3];
-	/* do */
+	 
 	s->type		= COMEDI_SUBD_DO;
 	s->subdev_flags	= SDF_WRITABLE;
 	s->n_chan	= 8;
@@ -333,10 +292,7 @@ static int rti800_attach(struct comedi_device *dev, struct comedi_devconfig *it)
 	s->maxdata	= 1;
 	s->range_table	= &range_digital;
 
-	/*
-	 * There is also an Am9513 timer on these boards. This subdevice
-	 * is not currently supported.
-	 */
+	 
 
 	return 0;
 }

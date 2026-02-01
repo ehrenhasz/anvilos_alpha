@@ -1,22 +1,4 @@
-/* Query locale dependent information for formatting numbers.
-   Copyright (C) 2012-2023 Free Software Foundation, Inc.
-
-   This file is free software: you can redistribute it and/or modify
-   it under the terms of the GNU Lesser General Public License as
-   published by the Free Software Foundation; either version 2.1 of the
-   License, or (at your option) any later version.
-
-   This file is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU Lesser General Public License for more details.
-
-   You should have received a copy of the GNU Lesser General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-#include <config.h>
-
-/* Specification.  */
+ 
 #include <locale.h>
 
 #include <limits.h>
@@ -25,8 +7,7 @@
 
 # define FIX_CHAR_VALUE(x) ((x) >= 0 ? (x) : CHAR_MAX)
 
-/* Override for platforms where 'struct lconv' lacks the int_p_*, int_n_*
-   members or where fields of type 'char' are set to -1 instead of CHAR_MAX.  */
+ 
 
 struct lconv *
 localeconv (void)
@@ -75,37 +56,37 @@ localeconv (void)
 
 #else
 
-/* Override for platforms where 'struct lconv' is a dummy.  */
+ 
 
 struct lconv *
 localeconv (void)
 {
-  static /*const*/ struct lconv result =
+  static   struct lconv result =
     {
-      /* decimal_point */ ".",
-      /* thousands_sep */ "",
-      /* grouping */ "",
-      /* mon_decimal_point */ "",
-      /* mon_thousands_sep */ "",
-      /* mon_grouping */ "",
-      /* positive_sign */ "",
-      /* negative_sign */ "",
-      /* currency_symbol */ "",
-      /* frac_digits */ CHAR_MAX,
-      /* p_cs_precedes */ CHAR_MAX,
-      /* p_sign_posn */ CHAR_MAX,
-      /* p_sep_by_space */ CHAR_MAX,
-      /* n_cs_precedes */ CHAR_MAX,
-      /* n_sign_posn */ CHAR_MAX,
-      /* n_sep_by_space */ CHAR_MAX,
-      /* int_curr_symbol */ "",
-      /* int_frac_digits */ CHAR_MAX,
-      /* int_p_cs_precedes */ CHAR_MAX,
-      /* int_p_sign_posn */ CHAR_MAX,
-      /* int_p_sep_by_space */ CHAR_MAX,
-      /* int_n_cs_precedes */ CHAR_MAX,
-      /* int_n_sign_posn */ CHAR_MAX,
-      /* int_n_sep_by_space */ CHAR_MAX
+        ".",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        CHAR_MAX,
+        CHAR_MAX,
+        CHAR_MAX,
+        CHAR_MAX,
+        CHAR_MAX,
+        CHAR_MAX,
+        CHAR_MAX,
+        "",
+        CHAR_MAX,
+        CHAR_MAX,
+        CHAR_MAX,
+        CHAR_MAX,
+        CHAR_MAX,
+        CHAR_MAX,
+        CHAR_MAX
     };
 
   return &result;

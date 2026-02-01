@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * idr-test.c: Test the IDR API
- * Copyright (c) 2016 Matthew Wilcox <willy@infradead.org>
- */
+
+ 
 #include <linux/bitmap.h>
 #include <linux/idr.h>
 #include <linux/slab.h>
@@ -67,12 +64,7 @@ void idr_replace_test(void)
 	idr_destroy(&idr);
 }
 
-/*
- * Unlike the radix tree, you can put a NULL pointer -- with care -- into
- * the IDR.  Some interfaces, like idr_find() do not distinguish between
- * "present, value is NULL" and "not present", but that's exactly what some
- * users want.
- */
+ 
 void idr_null_test(void)
 {
 	int i;
@@ -296,10 +288,7 @@ static void *idr_throbber(void *arg)
 	return NULL;
 }
 
-/*
- * There are always either 1 or 2 objects in the IDR.  If we find nothing,
- * or we find something at an ID we didn't expect, that's a bug.
- */
+ 
 void idr_find_test_1(int anchor_id, int throbber_id)
 {
 	pthread_t throbber;
@@ -430,12 +419,7 @@ void ida_dump(struct ida *);
 
 #include "../../../lib/test_ida.c"
 
-/*
- * Check that we get the correct error when we run out of memory doing
- * allocations.  In userspace, GFP_NOWAIT will always fail an allocation.
- * The first test is for not having a bitmap available, and the second test
- * is for not being able to allocate a level of the radix tree.
- */
+ 
 void ida_check_nomem(void)
 {
 	DEFINE_IDA(ida);
@@ -448,9 +432,7 @@ void ida_check_nomem(void)
 	IDA_BUG_ON(&ida, !ida_is_empty(&ida));
 }
 
-/*
- * Check handling of conversions between exceptional entries and full bitmaps.
- */
+ 
 void ida_check_conv_user(void)
 {
 	DEFINE_IDA(ida);

@@ -1,9 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// MediaTek ALSA SoC Audio DAI Hostless Control
-//
-// Copyright (c) 2022 MediaTek Inc.
-// Author: Jiaxin Yu <jiaxin.yu@mediatek.com>
+
+
+
+
+
+
 
 #include "mt8186-afe-common.h"
 
@@ -18,9 +18,9 @@ static const struct snd_pcm_hardware mt8186_hostless_hardware = {
 	.fifo_size = 0,
 };
 
-/* dai component */
+ 
 static const struct snd_soc_dapm_route mtk_dai_hostless_routes[] = {
-	/* Hostless ADDA Loopback */
+	 
 	{"ADDA_DL_CH1", "ADDA_UL_CH1 Switch", "Hostless LPBK DL"},
 	{"ADDA_DL_CH1", "ADDA_UL_CH2 Switch", "Hostless LPBK DL"},
 	{"ADDA_DL_CH2", "ADDA_UL_CH1 Switch", "Hostless LPBK DL"},
@@ -33,25 +33,25 @@ static const struct snd_soc_dapm_route mtk_dai_hostless_routes[] = {
 	{"I2S3_CH2", "ADDA_UL_CH2 Switch", "Hostless LPBK DL"},
 	{"Hostless LPBK UL", NULL, "ADDA_UL_Mux"},
 
-	/* Hostelss FM */
-	/* connsys_i2s to hw gain 1*/
+	 
+	 
 	{"Hostless FM UL", NULL, "Connsys I2S"},
 
 	{"HW_GAIN1_IN_CH1", "CONNSYS_I2S_CH1 Switch", "Hostless FM DL"},
 	{"HW_GAIN1_IN_CH2", "CONNSYS_I2S_CH2 Switch", "Hostless FM DL"},
-	/* hw gain to adda dl */
+	 
 	{"Hostless FM UL", NULL, "HW Gain 1 Out"},
 
 	{"ADDA_DL_CH1", "GAIN1_OUT_CH1 Switch", "Hostless FM DL"},
 	{"ADDA_DL_CH2", "GAIN1_OUT_CH2 Switch", "Hostless FM DL"},
-	/* hw gain to i2s3 */
+	 
 	{"I2S3_CH1", "GAIN1_OUT_CH1 Switch", "Hostless FM DL"},
 	{"I2S3_CH2", "GAIN1_OUT_CH2 Switch", "Hostless FM DL"},
-	/* hw gain to i2s1 */
+	 
 	{"I2S1_CH1", "GAIN1_OUT_CH1 Switch", "Hostless FM DL"},
 	{"I2S1_CH2", "GAIN1_OUT_CH2 Switch", "Hostless FM DL"},
 
-	/* Hostless_SRC */
+	 
 	{"ADDA_DL_CH1", "SRC_1_OUT_CH1 Switch", "Hostless_SRC_1_DL"},
 	{"ADDA_DL_CH2", "SRC_1_OUT_CH2 Switch", "Hostless_SRC_1_DL"},
 	{"I2S1_CH1", "SRC_1_OUT_CH1 Switch", "Hostless_SRC_1_DL"},
@@ -60,19 +60,19 @@ static const struct snd_soc_dapm_route mtk_dai_hostless_routes[] = {
 	{"I2S3_CH2", "SRC_1_OUT_CH2 Switch", "Hostless_SRC_1_DL"},
 	{"Hostless_SRC_1_UL", NULL, "HW_SRC_1_Out"},
 
-	/* Hostless_SRC_bargein */
+	 
 	{"HW_SRC_1_IN_CH1", "I2S0_CH1 Switch", "Hostless_SRC_Bargein_DL"},
 	{"HW_SRC_1_IN_CH2", "I2S0_CH2 Switch", "Hostless_SRC_Bargein_DL"},
 	{"Hostless_SRC_Bargein_UL", NULL, "I2S0"},
 
-	/* Hostless AAudio */
+	 
 	{"Hostless HW Gain AAudio In", NULL, "HW Gain 2 In"},
 	{"Hostless SRC AAudio UL", NULL, "HW Gain 2 Out"},
 	{"HW_SRC_2_IN_CH1", "HW_GAIN2_OUT_CH1 Switch", "Hostless SRC AAudio DL"},
 	{"HW_SRC_2_IN_CH2", "HW_GAIN2_OUT_CH2 Switch", "Hostless SRC AAudio DL"},
 };
 
-/* dai ops */
+ 
 static int mtk_dai_hostless_startup(struct snd_pcm_substream *substream,
 				    struct snd_soc_dai *dai)
 {
@@ -96,7 +96,7 @@ static const struct snd_soc_dai_ops mtk_dai_hostless_ops = {
 	.startup = mtk_dai_hostless_startup,
 };
 
-/* dai driver */
+ 
 #define MTK_HOSTLESS_RATES (SNDRV_PCM_RATE_8000_48000 |\
 			   SNDRV_PCM_RATE_88200 |\
 			   SNDRV_PCM_RATE_96000 |\
@@ -184,7 +184,7 @@ static struct snd_soc_dai_driver mtk_dai_hostless_driver[] = {
 		},
 		.ops = &mtk_dai_hostless_ops,
 	},
-	/* BE dai */
+	 
 	{
 		.name = "Hostless_UL1 DAI",
 		.id = MT8186_DAI_HOSTLESS_UL1,

@@ -1,12 +1,4 @@
-/*
- * Driver for MMC and SSD cards for Cavium ThunderX SOCs.
- *
- * This file is subject to the terms and conditions of the GNU General Public
- * License.  See the file "COPYING" in the main directory of this archive
- * for more details.
- *
- * Copyright (C) 2016 Cavium Inc.
- */
+ 
 #include <linux/device.h>
 #include <linux/dma-mapping.h>
 #include <linux/interrupt.h>
@@ -43,7 +35,7 @@ static int thunder_mmc_register_interrupts(struct cvm_mmc_host *host,
 	if (nvec < 0)
 		return nvec;
 
-	/* register interrupts */
+	 
 	for (i = 0; i < nvec; i++) {
 		ret = devm_request_irq(&pdev->dev, pci_irq_vector(pdev, i),
 				       cvm_mmc_interrupt,
@@ -82,7 +74,7 @@ static int thunder_mmc_probe(struct pci_dev *pdev,
 		goto error;
 	}
 
-	/* On ThunderX these are identical */
+	 
 	host->dma_base = host->base;
 
 	host->reg_off = 0x2000;
@@ -116,13 +108,10 @@ static int thunder_mmc_probe(struct pci_dev *pdev,
 	if (ret)
 		goto error;
 
-	/*
-	 * Clear out any pending interrupts that may be left over from
-	 * bootloader. Writing 1 to the bits clears them.
-	 */
+	 
 	writeq(127, host->base + MIO_EMM_INT_EN(host));
 	writeq(3, host->base + MIO_EMM_DMA_INT_ENA_W1C(host));
-	/* Clear DMA FIFO */
+	 
 	writeq(BIT_ULL(16), host->base + MIO_EMM_DMA_FIFO_CFG(host));
 
 	ret = thunder_mmc_register_interrupts(host, pdev);
@@ -130,12 +119,7 @@ static int thunder_mmc_probe(struct pci_dev *pdev,
 		goto error;
 
 	for_each_child_of_node(node, child_node) {
-		/*
-		 * mmc_of_parse and devm* require one device per slot.
-		 * Create a dummy device per slot and set the node pointer to
-		 * the slot. The easiest way to get this is using
-		 * of_platform_device_create.
-		 */
+		 
 		if (of_device_is_compatible(child_node, "mmc-slot")) {
 			host->slot_pdev[i] = of_platform_device_create(child_node, NULL,
 								       &pdev->dev);
@@ -188,7 +172,7 @@ static void thunder_mmc_remove(struct pci_dev *pdev)
 
 static const struct pci_device_id thunder_mmc_id_table[] = {
 	{ PCI_DEVICE(PCI_VENDOR_ID_CAVIUM, 0xa010) },
-	{ 0, }  /* end of table */
+	{ 0, }   
 };
 
 static struct pci_driver thunder_mmc_driver = {

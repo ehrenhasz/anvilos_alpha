@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* ADC driver for AXP20X and AXP22X PMICs
- *
- * Copyright (c) 2016 Free Electrons NextThing Co.
- *	Quentin Schulz <quentin.schulz@free-electrons.com>
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/completion.h>
@@ -133,7 +129,7 @@ static struct iio_map axp20x_maps[] = {
 		.consumer_dev_name = "axp20x-battery-power-supply",
 		.consumer_channel = "batt_dischrg_i",
 		.adc_channel_label = "batt_dischrg_i",
-	}, { /* sentinel */ }
+	}, {   }
 };
 
 static struct iio_map axp22x_maps[] = {
@@ -149,15 +145,10 @@ static struct iio_map axp22x_maps[] = {
 		.consumer_dev_name = "axp20x-battery-power-supply",
 		.consumer_channel = "batt_dischrg_i",
 		.adc_channel_label = "batt_dischrg_i",
-	}, { /* sentinel */ }
+	}, {   }
 };
 
-/*
- * Channels are mapped by physical system. Their channels share the same index.
- * i.e. acin_i is in_current0_raw and acin_v is in_voltage0_raw.
- * The only exception is for the battery. batt_v will be in_voltage6_raw and
- * charge current in_current6_raw and discharge current will be in_current7_raw.
- */
+ 
 static const struct iio_chan_spec axp20x_adc_channels[] = {
 	AXP20X_ADC_CHANNEL(AXP20X_ACIN_V, "acin_v", IIO_VOLTAGE,
 			   AXP20X_ACIN_V_ADC_H),
@@ -237,11 +228,7 @@ static int axp20x_adc_raw(struct iio_dev *indio_dev,
 	struct axp20x_adc_iio *info = iio_priv(indio_dev);
 	int ret, size;
 
-	/*
-	 * N.B.:  Unlike the Chinese datasheets tell, the charging current is
-	 * stored on 12 bits, not 13 bits. Only discharging current is on 13
-	 * bits.
-	 */
+	 
 	if (chan->type == IIO_CURRENT && chan->channel == AXP20X_BATT_DISCHRG_I)
 		size = 13;
 	else
@@ -309,7 +296,7 @@ static int axp20x_adc_scale_voltage(int channel, int *val, int *val2)
 		return IIO_VAL_INT_PLUS_MICRO;
 
 	case AXP20X_TS_IN:
-		/* 0.8 mV per LSB */
+		 
 		*val = 0;
 		*val2 = 800000;
 		return IIO_VAL_INT_PLUS_MICRO;
@@ -323,13 +310,13 @@ static int axp22x_adc_scale_voltage(int channel, int *val, int *val2)
 {
 	switch (channel) {
 	case AXP22X_BATT_V:
-		/* 1.1 mV per LSB */
+		 
 		*val = 1;
 		*val2 = 100000;
 		return IIO_VAL_INT_PLUS_MICRO;
 
 	case AXP22X_TS_IN:
-		/* 0.8 mV per LSB */
+		 
 		*val = 0;
 		*val2 = 800000;
 		return IIO_VAL_INT_PLUS_MICRO;
@@ -352,7 +339,7 @@ static int axp813_adc_scale_voltage(int channel, int *val, int *val2)
 		return IIO_VAL_INT_PLUS_MICRO;
 
 	case AXP813_TS_IN:
-		/* 0.8 mV per LSB */
+		 
 		*val = 0;
 		*val2 = 800000;
 		return IIO_VAL_INT_PLUS_MICRO;
@@ -514,7 +501,7 @@ static int axp22x_read_raw(struct iio_dev *indio_dev,
 {
 	switch (mask) {
 	case IIO_CHAN_INFO_OFFSET:
-		/* For PMIC temp only */
+		 
 		*val = -2677;
 		return IIO_VAL_INT;
 
@@ -556,10 +543,7 @@ static int axp20x_write_raw(struct iio_dev *indio_dev,
 	struct axp20x_adc_iio *info = iio_priv(indio_dev);
 	unsigned int regmask, regval;
 
-	/*
-	 * The AXP20X PMIC allows the user to choose between 0V and 0.7V offsets
-	 * for (independently) GPIO0 and GPIO1 when in ADC mode.
-	 */
+	 
 	if (mask != IIO_CHAN_INFO_OFFSET)
 		return -EINVAL;
 
@@ -661,7 +645,7 @@ static const struct of_device_id axp20x_adc_of_match[] = {
 	{ .compatible = "x-powers,axp209-adc", .data = (void *)&axp20x_data, },
 	{ .compatible = "x-powers,axp221-adc", .data = (void *)&axp22x_data, },
 	{ .compatible = "x-powers,axp813-adc", .data = (void *)&axp813_data, },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, axp20x_adc_of_match);
 
@@ -669,7 +653,7 @@ static const struct platform_device_id axp20x_adc_id_match[] = {
 	{ .name = "axp20x-adc", .driver_data = (kernel_ulong_t)&axp20x_data, },
 	{ .name = "axp22x-adc", .driver_data = (kernel_ulong_t)&axp22x_data, },
 	{ .name = "axp813-adc", .driver_data = (kernel_ulong_t)&axp813_data, },
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(platform, axp20x_adc_id_match);
 
@@ -708,7 +692,7 @@ static int axp20x_probe(struct platform_device *pdev)
 	indio_dev->num_channels = info->data->num_channels;
 	indio_dev->channels = info->data->channels;
 
-	/* Enable the ADCs on IP */
+	 
 	regmap_write(info->regmap, AXP20X_ADC_EN1, info->data->adc_en1_mask);
 
 	if (info->data->adc_en2_mask)
@@ -716,7 +700,7 @@ static int axp20x_probe(struct platform_device *pdev)
 				   info->data->adc_en2_mask,
 				   info->data->adc_en2_mask);
 
-	/* Configure ADCs rate */
+	 
 	info->data->adc_rate(info, 100);
 
 	ret = iio_map_array_register(indio_dev, info->data->maps);

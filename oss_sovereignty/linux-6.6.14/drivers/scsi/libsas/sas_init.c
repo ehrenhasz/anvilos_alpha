@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Serial Attached SCSI (SAS) Transport Layer initialization
- *
- * Copyright (C) 2005 Adaptec, Inc.  All rights reserved.
- * Copyright (C) 2005 Luben Tuikov <luben_tuikov@adaptec.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/slab.h>
@@ -64,7 +59,7 @@ void sas_free_task(struct sas_task *task)
 	}
 }
 
-/*------------ SAS addr hash -----------*/
+ 
 void sas_hash_addr(u8 *hashed, const u8 *sas_addr)
 {
 	const u32 poly = 0x00DB2777;
@@ -148,9 +143,7 @@ EXPORT_SYMBOL_GPL(sas_register_ha);
 
 static void sas_disable_events(struct sas_ha_struct *sas_ha)
 {
-	/* Set the state to unregistered to avoid further unchained
-	 * events to be queued, and flush any in-progress drainers
-	 */
+	 
 	mutex_lock(&sas_ha->drain_mutex);
 	spin_lock_irq(&sas_ha->lock);
 	clear_bit(SAS_HA_REGISTERED, &sas_ha->state);
@@ -164,7 +157,7 @@ int sas_unregister_ha(struct sas_ha_struct *sas_ha)
 	sas_disable_events(sas_ha);
 	sas_unregister_ports(sas_ha);
 
-	/* flush unregistration work */
+	 
 	mutex_lock(&sas_ha->drain_mutex);
 	__sas_drain_work(sas_ha);
 	mutex_unlock(&sas_ha->drain_mutex);
@@ -195,11 +188,11 @@ int sas_try_ata_reset(struct asd_sas_phy *asd_phy)
 {
 	struct domain_device *dev = NULL;
 
-	/* try to route user requested link resets through libata */
+	 
 	if (asd_phy->port)
 		dev = asd_phy->port->port_dev;
 
-	/* validate that dev has been probed */
+	 
 	if (dev)
 		dev = sas_find_dev_by_rphy(dev->rphy);
 
@@ -212,12 +205,7 @@ int sas_try_ata_reset(struct asd_sas_phy *asd_phy)
 	return -ENODEV;
 }
 
-/*
- * transport_sas_phy_reset - reset a phy and permit libata to manage the link
- *
- * phy reset request via sysfs in host workqueue context so we know we
- * can block on eh and safely traverse the domain_device topology
- */
+ 
 static int transport_sas_phy_reset(struct sas_phy *phy, int hard_reset)
 {
 	enum phy_func reset_type;
@@ -361,7 +349,7 @@ void sas_prep_resume_ha(struct sas_ha_struct *ha)
 	set_bit(SAS_HA_REGISTERED, &ha->state);
 	set_bit(SAS_HA_RESUMING, &ha->state);
 
-	/* clear out any stale link events/data from the suspension path */
+	 
 	for (i = 0; i < ha->num_phys; i++) {
 		struct asd_sas_phy *phy = ha->sas_phy[i];
 
@@ -414,12 +402,7 @@ static void _sas_resume_ha(struct sas_ha_struct *ha, bool drain)
 	const unsigned long tmo = msecs_to_jiffies(25000);
 	int i;
 
-	/* deform ports on phys that did not resume
-	 * at this point we may be racing the phy coming back (as posted
-	 * by the lldd).  So we post the event and once we are in the
-	 * libsas context check that the phy remains suspended before
-	 * tearing it down.
-	 */
+	 
 	i = phys_suspended(ha);
 	if (i)
 		dev_info(ha->dev, "waiting up to 25 seconds for %d phy%s to resume\n",
@@ -435,18 +418,14 @@ static void _sas_resume_ha(struct sas_ha_struct *ha, bool drain)
 		}
 	}
 
-	/* all phys are back up or timed out, turn on i/o so we can
-	 * flush out disks that did not return
-	 */
+	 
 	scsi_unblock_requests(ha->shost);
 	if (drain)
 		sas_drain_work(ha);
 	clear_bit(SAS_HA_RESUMING, &ha->state);
 
 	sas_queue_deferred_work(ha);
-	/* send event PORTE_BROADCAST_RCVD to identify some new inserted
-	 * disks for expander
-	 */
+	 
 	sas_resume_insert_broadcast_ha(ha);
 }
 
@@ -456,7 +435,7 @@ void sas_resume_ha(struct sas_ha_struct *ha)
 }
 EXPORT_SYMBOL(sas_resume_ha);
 
-/* A no-sync variant, which does not call sas_drain_ha(). */
+ 
 void sas_resume_ha_no_sync(struct sas_ha_struct *ha)
 {
 	_sas_resume_ha(ha, false);
@@ -475,7 +454,7 @@ void sas_suspend_ha(struct sas_ha_struct *ha)
 		sas_discover_event(port, DISCE_SUSPEND);
 	}
 
-	/* flush suspend events while unregistered */
+	 
 	mutex_lock(&ha->drain_mutex);
 	__sas_drain_work(ha);
 	mutex_unlock(&ha->drain_mutex);
@@ -529,7 +508,7 @@ static int queue_phy_reset(struct sas_phy *phy, int hard_reset)
 		return -ENOMEM;
 
 	pm_runtime_get_sync(ha->dev);
-	/* libsas workqueue coordinates ata-eh reset with discovery */
+	 
 	mutex_lock(&d->event_lock);
 	d->reset_result = 0;
 	d->hard_reset = hard_reset;
@@ -558,7 +537,7 @@ static int queue_phy_enable(struct sas_phy *phy, int enable)
 		return -ENOMEM;
 
 	pm_runtime_get_sync(ha->dev);
-	/* libsas workqueue coordinates ata-eh reset with discovery */
+	 
 	mutex_lock(&d->event_lock);
 	d->enable_result = 0;
 	d->enable = enable;
@@ -604,7 +583,7 @@ static inline ssize_t phy_event_threshold_store(struct device *dev,
 
 	sha->event_thres = simple_strtol(buf, NULL, 10);
 
-	/* threshold cannot be set too small */
+	 
 	if (sha->event_thres < 32)
 		sha->event_thres = 32;
 
@@ -658,7 +637,7 @@ struct asd_sas_event *sas_alloc_event(struct asd_sas_phy *phy,
 						     gfp_flags);
 			}
 		} else {
-			/* Do not support PHY control, stop allocating events */
+			 
 			WARN_ONCE(1, "PHY control not supported.\n");
 			kmem_cache_free(sas_event_cache, event);
 			atomic_dec(&phy->event_nr);
@@ -677,7 +656,7 @@ void sas_free_event(struct asd_sas_event *event)
 	atomic_dec(&phy->event_nr);
 }
 
-/* ---------- SAS Class register/unregister ---------- */
+ 
 
 static int __init sas_class_init(void)
 {

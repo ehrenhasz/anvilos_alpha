@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * MediaTek ALSA SoC Audio DAI eTDM Control
- *
- * Copyright (c) 2022 MediaTek Inc.
- * Author: Bicycle Tsai <bicycle.tsai@mediatek.com>
- *         Trevor Wu <trevor.wu@mediatek.com>
- *         Chun-Chia Chiu <chun-chia.chiu@mediatek.com>
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/pm_runtime.h>
@@ -104,9 +97,9 @@ struct mtk_dai_etdm_priv {
 	unsigned int mclk_fixed_apll;
 	unsigned int mclk_apll;
 	unsigned int mclk_dir;
-	int cowork_source_id; //dai id
+	int cowork_source_id; 
 	unsigned int cowork_slv_count;
-	int cowork_slv_id[MT8188_AFE_IO_ETDM_NUM - 1]; //dai_id
+	int cowork_slv_id[MT8188_AFE_IO_ETDM_NUM - 1]; 
 	bool in_disable_ch[MT8188_ETDM_MAX_CHANNELS];
 };
 
@@ -418,16 +411,16 @@ static int mtk_dai_etdm_enable_mclk(struct mtk_base_afe *afe, int dai_id)
 		val = ETDM_CON1_MCLK_OUTPUT;
 	regmap_update_bits(afe->regmap, etdm_reg.con1, mask, val);
 
-	/* enable parent clock before select apll*/
+	 
 	mt8188_afe_enable_clk(afe, afe_priv->clk[clkmux_id]);
 
-	/* select apll */
+	 
 	ret = mt8188_afe_set_clk_parent(afe, afe_priv->clk[clkmux_id],
 					afe_priv->clk[apll_clk_id]);
 	if (ret)
 		return ret;
 
-	/* set rate */
+	 
 	ret = mt8188_afe_set_clk_rate(afe, afe_priv->clk[clkdiv_id],
 				      etdm_data->mclk_freq);
 
@@ -898,7 +891,7 @@ static int hdmitx_dptx_mux_map_value[] = {
 	0, 1,
 };
 
-/* HDMI_OUT_MUX */
+ 
 static SOC_VALUE_ENUM_SINGLE_AUTODISABLE_DECL(hdmi_out_mux_map_enum,
 				SND_SOC_NOPM,
 				0,
@@ -909,7 +902,7 @@ static SOC_VALUE_ENUM_SINGLE_AUTODISABLE_DECL(hdmi_out_mux_map_enum,
 static const struct snd_kcontrol_new hdmi_out_mux_control =
 	SOC_DAPM_ENUM("HDMI_OUT_MUX", hdmi_out_mux_map_enum);
 
-/* DPTX_OUT_MUX */
+ 
 static SOC_VALUE_ENUM_SINGLE_AUTODISABLE_DECL(dptx_out_mux_map_enum,
 				SND_SOC_NOPM,
 				0,
@@ -920,7 +913,7 @@ static SOC_VALUE_ENUM_SINGLE_AUTODISABLE_DECL(dptx_out_mux_map_enum,
 static const struct snd_kcontrol_new dptx_out_mux_control =
 	SOC_DAPM_ENUM("DPTX_OUT_MUX", dptx_out_mux_map_enum);
 
-/* HDMI_CH0_MUX ~ HDMI_CH7_MUX */
+ 
 static const char *const afe_conn_hdmi_mux_map[] = {
 	"CH0", "CH1", "CH2", "CH3", "CH4", "CH5", "CH6", "CH7",
 };
@@ -1120,7 +1113,7 @@ static const struct snd_kcontrol_new mtk_dai_etdm_controls[] = {
 };
 
 static const struct snd_soc_dapm_widget mtk_dai_etdm_widgets[] = {
-	/* eTDM_IN2 */
+	 
 	SND_SOC_DAPM_MIXER("I012", SND_SOC_NOPM, 0, 0, NULL, 0),
 	SND_SOC_DAPM_MIXER("I013", SND_SOC_NOPM, 0, 0, NULL, 0),
 	SND_SOC_DAPM_MIXER("I014", SND_SOC_NOPM, 0, 0, NULL, 0),
@@ -1138,7 +1131,7 @@ static const struct snd_soc_dapm_widget mtk_dai_etdm_widgets[] = {
 	SND_SOC_DAPM_MIXER("I194", SND_SOC_NOPM, 0, 0, NULL, 0),
 	SND_SOC_DAPM_MIXER("I195", SND_SOC_NOPM, 0, 0, NULL, 0),
 
-	/* eTDM_IN1 */
+	 
 	SND_SOC_DAPM_MIXER("I072", SND_SOC_NOPM, 0, 0, NULL, 0),
 	SND_SOC_DAPM_MIXER("I073", SND_SOC_NOPM, 0, 0, NULL, 0),
 	SND_SOC_DAPM_MIXER("I074", SND_SOC_NOPM, 0, 0, NULL, 0),
@@ -1156,7 +1149,7 @@ static const struct snd_soc_dapm_widget mtk_dai_etdm_widgets[] = {
 	SND_SOC_DAPM_MIXER("I086", SND_SOC_NOPM, 0, 0, NULL, 0),
 	SND_SOC_DAPM_MIXER("I087", SND_SOC_NOPM, 0, 0, NULL, 0),
 
-	/* eTDM_OUT2 */
+	 
 	SND_SOC_DAPM_MIXER("O048", SND_SOC_NOPM, 0, 0,
 			   mtk_dai_etdm_o048_mix, ARRAY_SIZE(mtk_dai_etdm_o048_mix)),
 	SND_SOC_DAPM_MIXER("O049", SND_SOC_NOPM, 0, 0,
@@ -1190,7 +1183,7 @@ static const struct snd_soc_dapm_widget mtk_dai_etdm_widgets[] = {
 	SND_SOC_DAPM_MIXER("O063", SND_SOC_NOPM, 0, 0,
 			   mtk_dai_etdm_o063_mix, ARRAY_SIZE(mtk_dai_etdm_o063_mix)),
 
-	/* eTDM_OUT1 */
+	 
 	SND_SOC_DAPM_MIXER("O072", SND_SOC_NOPM, 0, 0,
 			   mtk_dai_etdm_o072_mix, ARRAY_SIZE(mtk_dai_etdm_o072_mix)),
 	SND_SOC_DAPM_MIXER("O073", SND_SOC_NOPM, 0, 0,
@@ -1224,7 +1217,7 @@ static const struct snd_soc_dapm_widget mtk_dai_etdm_widgets[] = {
 	SND_SOC_DAPM_MIXER("O087", SND_SOC_NOPM, 0, 0,
 			   mtk_dai_etdm_o087_mix, ARRAY_SIZE(mtk_dai_etdm_o087_mix)),
 
-	/* eTDM_OUT3 */
+	 
 	SND_SOC_DAPM_MUX("HDMI_OUT_MUX", SND_SOC_NOPM, 0, 0,
 			 &hdmi_out_mux_control),
 	SND_SOC_DAPM_MUX("DPTX_OUT_MUX", SND_SOC_NOPM, 0, 0,
@@ -1247,7 +1240,7 @@ static const struct snd_soc_dapm_widget mtk_dai_etdm_widgets[] = {
 	SND_SOC_DAPM_MUX("HDMI_CH7_MUX", SND_SOC_NOPM, 0, 0,
 			 &hdmi_ch7_mux_control),
 
-	/* mclk en */
+	 
 	SND_SOC_DAPM_SUPPLY_S("ETDM1_IN_MCLK", SUPPLY_SEQ_ETDM_MCLK,
 			      SND_SOC_NOPM, 0, 0,
 			      mtk_etdm_mclk_event,
@@ -1269,7 +1262,7 @@ static const struct snd_soc_dapm_widget mtk_dai_etdm_widgets[] = {
 			      mtk_dptx_mclk_event,
 			      SND_SOC_DAPM_PRE_PMU | SND_SOC_DAPM_POST_PMD),
 
-	/* cg */
+	 
 	SND_SOC_DAPM_SUPPLY_S("ETDM1_IN_CG", SUPPLY_SEQ_ETDM_CG,
 			      SND_SOC_NOPM, 0, 0,
 			      mtk_etdm_cg_event,
@@ -1291,7 +1284,7 @@ static const struct snd_soc_dapm_widget mtk_dai_etdm_widgets[] = {
 			      mtk_etdm3_cg_event,
 			      SND_SOC_DAPM_PRE_PMU | SND_SOC_DAPM_POST_PMD),
 
-	/* en */
+	 
 	SND_SOC_DAPM_SUPPLY_S("ETDM1_IN_EN", SUPPLY_SEQ_ETDM_EN,
 			      ETDM_IN1_CON0, ETDM_CON0_EN_SHIFT, 0, NULL, 0),
 	SND_SOC_DAPM_SUPPLY_S("ETDM2_IN_EN", SUPPLY_SEQ_ETDM_EN,
@@ -1305,7 +1298,7 @@ static const struct snd_soc_dapm_widget mtk_dai_etdm_widgets[] = {
 	SND_SOC_DAPM_SUPPLY_S("DPTX_EN", SUPPLY_SEQ_DPTX_EN,
 			      AFE_DPTX_CON, AFE_DPTX_CON_ON_SHIFT, 0, NULL, 0),
 
-	/* apll */
+	 
 	SND_SOC_DAPM_SUPPLY_S(APLL1_W_NAME, SUPPLY_SEQ_APLL,
 			      SND_SOC_NOPM, 0, 0,
 			      mtk_apll_event,
@@ -1320,7 +1313,7 @@ static const struct snd_soc_dapm_widget mtk_dai_etdm_widgets[] = {
 };
 
 static const struct snd_soc_dapm_route mtk_dai_etdm_routes[] = {
-	/* mclk */
+	 
 	{"ETDM1_IN", NULL, "ETDM1_IN_MCLK", mtk_etdm_mclk_connect},
 	{"ETDM1_IN", NULL, "ETDM2_IN_MCLK", mtk_etdm_mclk_connect},
 	{"ETDM1_IN", NULL, "ETDM1_OUT_MCLK", mtk_etdm_mclk_connect},
@@ -1358,7 +1351,7 @@ static const struct snd_soc_dapm_route mtk_dai_etdm_routes[] = {
 	{"DPTX_MCLK", NULL, APLL1_W_NAME, mtk_afe_mclk_apll_connect},
 	{"DPTX_MCLK", NULL, APLL2_W_NAME, mtk_afe_mclk_apll_connect},
 
-	/* cg */
+	 
 	{"ETDM1_IN", NULL, "ETDM1_IN_CG"},
 	{"ETDM1_IN", NULL, "ETDM2_IN_CG", mtk_etdm_cowork_connect},
 	{"ETDM1_IN", NULL, "ETDM1_OUT_CG", mtk_etdm_cowork_connect},
@@ -1382,7 +1375,7 @@ static const struct snd_soc_dapm_route mtk_dai_etdm_routes[] = {
 	{"ETDM3_OUT", NULL, "ETDM3_OUT_CG"},
 	{"DPTX", NULL, "ETDM3_OUT_CG"},
 
-	/* en */
+	 
 	{"ETDM1_IN", NULL, "ETDM1_IN_EN"},
 	{"ETDM1_IN", NULL, "ETDM2_IN_EN", mtk_etdm_cowork_connect},
 	{"ETDM1_IN", NULL, "ETDM1_OUT_EN", mtk_etdm_cowork_connect},
@@ -1860,7 +1853,7 @@ static int mt8188_etdm_sync_mode_configure(struct mtk_base_afe *afe, int dai_id)
 	return 0;
 }
 
-/* dai ops */
+ 
 static int mtk_dai_etdm_fifo_mode(struct mtk_base_afe *afe,
 				  int dai_id, unsigned int rate)
 {
@@ -1923,13 +1916,13 @@ static int mtk_dai_etdm_in_configure(struct mtk_base_afe *afe,
 	if (ret < 0)
 		return ret;
 
-	/* afifo */
+	 
 	if (slave_mode)
 		mtk_dai_etdm_fifo_mode(afe, dai_id, 0);
 	else
 		mtk_dai_etdm_fifo_mode(afe, dai_id, rate);
 
-	/* con1 */
+	 
 	if (lrck_width > 0) {
 		mask |= (ETDM_IN_CON1_LRCK_AUTO_MODE |
 			ETDM_IN_CON1_LRCK_WIDTH_MASK);
@@ -1940,7 +1933,7 @@ static int mtk_dai_etdm_in_configure(struct mtk_base_afe *afe,
 	mask = 0;
 	val = 0;
 
-	/* con2 */
+	 
 	if (!slave_mode) {
 		mask |= ETDM_IN_CON2_UPDATE_GAP_MASK;
 		if (rate == 352800 || rate == 384000)
@@ -1959,7 +1952,7 @@ static int mtk_dai_etdm_in_configure(struct mtk_base_afe *afe,
 	mask = 0;
 	val = 0;
 
-	/* con3 */
+	 
 	mask |= ETDM_IN_CON3_DISABLE_OUT_MASK;
 	for (i = 0; i < channels; i += 2) {
 		if (etdm_data->in_disable_ch[i] &&
@@ -1975,7 +1968,7 @@ static int mtk_dai_etdm_in_configure(struct mtk_base_afe *afe,
 	mask = 0;
 	val = 0;
 
-	/* con4 */
+	 
 	mask |= (ETDM_IN_CON4_MASTER_LRCK_INV | ETDM_IN_CON4_MASTER_BCK_INV |
 		ETDM_IN_CON4_SLAVE_LRCK_INV | ETDM_IN_CON4_SLAVE_BCK_INV);
 	if (slave_mode) {
@@ -1994,7 +1987,7 @@ static int mtk_dai_etdm_in_configure(struct mtk_base_afe *afe,
 	mask = 0;
 	val = 0;
 
-	/* con5 */
+	 
 	mask |= ETDM_IN_CON5_LR_SWAP_MASK;
 	mask |= ETDM_IN_CON5_ENABLE_ODD_MASK;
 	for (i = 0; i < channels; i += 2) {
@@ -2039,7 +2032,7 @@ static int mtk_dai_etdm_out_configure(struct mtk_base_afe *afe,
 	if (ret < 0)
 		return ret;
 
-	/* con0 */
+	 
 	mask = ETDM_OUT_CON0_RELATCH_DOMAIN_MASK;
 	val = FIELD_PREP(ETDM_OUT_CON0_RELATCH_DOMAIN_MASK,
 			 ETDM_RELATCH_TIMING_A1A2SYS);
@@ -2048,7 +2041,7 @@ static int mtk_dai_etdm_out_configure(struct mtk_base_afe *afe,
 	mask = 0;
 	val = 0;
 
-	/* con1 */
+	 
 	if (lrck_width > 0) {
 		mask |= (ETDM_OUT_CON1_LRCK_AUTO_MODE |
 			ETDM_OUT_CON1_LRCK_WIDTH_MASK);
@@ -2060,7 +2053,7 @@ static int mtk_dai_etdm_out_configure(struct mtk_base_afe *afe,
 	val = 0;
 
 	if (!slave_mode) {
-		/* con4 */
+		 
 		mask |= ETDM_OUT_CON4_FS_MASK;
 		val |= FIELD_PREP(ETDM_OUT_CON4_FS_MASK, get_etdm_fs_timing(rate));
 	}
@@ -2078,7 +2071,7 @@ static int mtk_dai_etdm_out_configure(struct mtk_base_afe *afe,
 	mask = 0;
 	val = 0;
 
-	/* con5 */
+	 
 	mask |= (ETDM_OUT_CON5_MASTER_LRCK_INV | ETDM_OUT_CON5_MASTER_BCK_INV |
 		ETDM_OUT_CON5_SLAVE_LRCK_INV | ETDM_OUT_CON5_SLAVE_BCK_INV);
 	if (slave_mode) {
@@ -2141,7 +2134,7 @@ static int mtk_dai_etdm_configure(struct mtk_base_afe *afe,
 		return -EINVAL;
 	}
 
-	/* con0 */
+	 
 	mask |= ETDM_CON0_BIT_LEN_MASK;
 	val |= FIELD_PREP(ETDM_CON0_BIT_LEN_MASK, bit_width - 1);
 	mask |= ETDM_CON0_WORD_LEN_MASK;
@@ -2428,7 +2421,7 @@ static int mtk_dai_hdmitx_dptx_hw_params(struct snd_pcm_substream *substream,
 		return -EINVAL;
 	etdm_data = afe_priv->dai_priv[dai->id];
 
-	/* dptx configure */
+	 
 	if (dai->id == MT8188_AFE_IO_DPTX) {
 		regmap_update_bits(afe->regmap, AFE_DPTX_CON,
 				   AFE_DPTX_CON_CH_EN_MASK,
@@ -2488,7 +2481,7 @@ static const struct snd_soc_dai_ops mtk_dai_hdmitx_dptx_ops = {
 	.set_fmt	= mtk_dai_etdm_set_fmt,
 };
 
-/* dai driver */
+ 
 #define MTK_ETDM_RATES (SNDRV_PCM_RATE_8000_192000)
 
 #define MTK_ETDM_FORMATS (SNDRV_PCM_FMTBIT_S16_LE |\
@@ -2644,7 +2637,7 @@ static void mt8188_dai_etdm_parse_of(struct mtk_base_afe *afe)
 		}
 	}
 
-	/* etdm in only */
+	 
 	for (i = 0; i < 2; i++) {
 		dai_id = ETDM_TO_DAI_ID(i);
 		etdm_data = afe_priv->dai_priv[dai_id];

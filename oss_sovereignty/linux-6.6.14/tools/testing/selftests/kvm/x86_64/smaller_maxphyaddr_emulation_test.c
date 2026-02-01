@@ -1,12 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2020, Google LLC.
- *
- * Test that KVM emulates instructions in response to EPT violations when
- * allow_smaller_maxphyaddr is enabled and guest.MAXPHYADDR < host.MAXPHYADDR.
- */
 
-#define _GNU_SOURCE /* for program_invocation_short_name */
+ 
+
+#define _GNU_SOURCE  
 
 #include "flds_emulation.h"
 
@@ -28,13 +23,7 @@ static void guest_code(bool tdp_enabled)
 
 	vector = kvm_asm_safe_ec(FLDS_MEM_EAX, error_code, "a"(MEM_REGION_GVA));
 
-	/*
-	 * When TDP is enabled, flds will trigger an emulation failure, exit to
-	 * userspace, and then the selftest host "VMM" skips the instruction.
-	 *
-	 * When TDP is disabled, no instruction emulation is required so flds
-	 * should generate #PF(RSVD).
-	 */
+	 
 	if (tdp_enabled) {
 		GUEST_ASSERT(!vector);
 	} else {
@@ -84,12 +73,7 @@ int main(int argc, char *argv[])
 
 	vcpu_run(vcpu);
 
-	/*
-	 * When TDP is enabled, KVM must emulate in response the guest physical
-	 * address that is illegal from the guest's perspective, but is legal
-	 * from hardware's perspeective.  This should result in an emulation
-	 * failure exit to userspace since KVM doesn't support emulating flds.
-	 */
+	 
 	if (kvm_is_tdp_enabled()) {
 		handle_flds_emulation_failure_exit(vcpu);
 		vcpu_run(vcpu);

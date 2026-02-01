@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * XHCI extended capability handling
- *
- * Copyright (c) 2017 Hans de Goede <hdegoede@redhat.com>
- */
+
+ 
 
 #include <linux/platform_device.h>
 #include <linux/property.h>

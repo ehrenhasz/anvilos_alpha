@@ -1,6 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
-/* Copyright(c) 2018-2019  Realtek Corporation
- */
+
+ 
 
 #include "main.h"
 #include "coex.h"
@@ -101,7 +100,7 @@ static int rtw8821c_read_efuse(struct rtw_dev *rtwdev, u8 *log_map)
 		rtw8821cs_efuse_parsing(efuse, map);
 		break;
 	default:
-		/* unsupported now */
+		 
 		return -ENOTSUPP;
 	}
 
@@ -151,7 +150,7 @@ static void rtw8821c_pwrtrack_init(struct rtw_dev *rtwdev)
 static void rtw8821c_phy_bf_init(struct rtw_dev *rtwdev)
 {
 	rtw_bf_phy_init(rtwdev);
-	/* Grouping bitmap parameters */
+	 
 	rtw_write32(rtwdev, 0x1C94, 0xAFFFAFFF);
 }
 
@@ -160,12 +159,12 @@ static void rtw8821c_phy_set_param(struct rtw_dev *rtwdev)
 	struct rtw_hal *hal = &rtwdev->hal;
 	u8 crystal_cap, val;
 
-	/* power on BB/RF domain */
+	 
 	val = rtw_read8(rtwdev, REG_SYS_FUNC_EN);
 	val |= BIT_FEN_PCIEA;
 	rtw_write8(rtwdev, REG_SYS_FUNC_EN, val);
 
-	/* toggle BB reset */
+	 
 	val |= BIT_FEN_BB_RSTB | BIT_FEN_BB_GLB_RST;
 	rtw_write8(rtwdev, REG_SYS_FUNC_EN, val);
 	val &= ~(BIT_FEN_BB_RSTB | BIT_FEN_BB_GLB_RST);
@@ -180,7 +179,7 @@ static void rtw8821c_phy_set_param(struct rtw_dev *rtwdev)
 		   BIT_RF_EN | BIT_RF_RSTB | BIT_RF_SDM_RSTB);
 	usleep_range(10, 11);
 
-	/* pre init before header files config */
+	 
 	rtw_write32_clr(rtwdev, REG_RXPSEL, BIT_RX_PSEL_RST);
 
 	rtw_phy_load_tables(rtwdev);
@@ -190,7 +189,7 @@ static void rtw8821c_phy_set_param(struct rtw_dev *rtwdev)
 	rtw_write32_mask(rtwdev, REG_AFE_PLL_CTRL, 0x7e, crystal_cap);
 	rtw_write32_mask(rtwdev, REG_CCK0_FAREPORT, BIT(18) | BIT(22), 0);
 
-	/* post init after header files config */
+	 
 	rtw_write32_set(rtwdev, REG_RXPSEL, BIT_RX_PSEL_RST);
 	hal->ch_param[0] = rtw_read32_mask(rtwdev, REG_TXSF2, MASKDWORD);
 	hal->ch_param[1] = rtw_read32_mask(rtwdev, REG_TXSF6, MASKDWORD);
@@ -209,7 +208,7 @@ static int rtw8821c_mac_init(struct rtw_dev *rtwdev)
 	u32 value32;
 	u16 pre_txcnt;
 
-	/* protocol configuration */
+	 
 	rtw_write8(rtwdev, REG_AMPDU_MAX_TIME_V1, WLAN_AMPDU_MAX_TIME);
 	rtw_write8_set(rtwdev, REG_TX_HANG_CTRL, BIT_EN_EOF_V1);
 	pre_txcnt = WLAN_PRE_TXCNT_TIME_TH | BIT_EN_PRECNT;
@@ -227,7 +226,7 @@ static int rtw8821c_mac_init(struct rtw_dev *rtwdev)
 	rtw_write8(rtwdev, REG_FAST_EDCA_BEBK_SETTING + 2, FAST_EDCA_BK_TH);
 	rtw_write8_set(rtwdev, REG_INIRTS_RATE_SEL, BIT(5));
 
-	/* EDCA configuration */
+	 
 	rtw_write8_clr(rtwdev, REG_TIMER0_SRC_SEL, BIT_TSFT_SEL_TIMER0);
 	rtw_write16(rtwdev, REG_TXPAUSE, 0);
 	rtw_write8(rtwdev, REG_SLOT, WLAN_SLOT_TIME);
@@ -238,16 +237,16 @@ static int rtw8821c_mac_init(struct rtw_dev *rtwdev)
 	rtw_write32(rtwdev, REG_RD_NAV_NXT, WLAN_NAV_CFG);
 	rtw_write16(rtwdev, REG_RXTSF_OFFSET_CCK, WLAN_RX_TSF_CFG);
 
-	/* Set beacon cotnrol - enable TSF and other related functions */
+	 
 	rtw_write8_set(rtwdev, REG_BCN_CTRL, BIT_EN_BCN_FUNCTION);
 
-	/* Set send beacon related registers */
+	 
 	rtw_write32(rtwdev, REG_TBTT_PROHIBIT, WLAN_TBTT_TIME);
 	rtw_write8(rtwdev, REG_DRVERLYINT, WLAN_DRV_EARLY_INT);
 	rtw_write8(rtwdev, REG_BCNDMATIM, WLAN_BCN_DMA_TIME);
 	rtw_write8_clr(rtwdev, REG_TX_PTCL_CTRL + 1, BIT_SIFS_BK_EN >> 8);
 
-	/* WMAC configuration */
+	 
 	rtw_write32(rtwdev, REG_RXFLTMAP0, WLAN_RX_FILTER0);
 	rtw_write16(rtwdev, REG_RXFLTMAP2, WLAN_RX_FILTER2);
 	rtw_write32(rtwdev, REG_RCR, WLAN_RCR_CFG);
@@ -361,19 +360,19 @@ static void rtw8821c_set_channel_rf(struct rtw_dev *rtwdev, u8 channel, u8 bw)
 static void rtw8821c_set_channel_rxdfir(struct rtw_dev *rtwdev, u8 bw)
 {
 	if (bw == RTW_CHANNEL_WIDTH_40) {
-		/* RX DFIR for BW40 */
+		 
 		rtw_write32_mask(rtwdev, REG_ACBB0, BIT(29) | BIT(28), 0x2);
 		rtw_write32_mask(rtwdev, REG_ACBBRXFIR, BIT(29) | BIT(28), 0x2);
 		rtw_write32_mask(rtwdev, REG_TXDFIR, BIT(31), 0x0);
 		rtw_write32_mask(rtwdev, REG_CHFIR, BIT(31), 0x0);
 	} else if (bw == RTW_CHANNEL_WIDTH_80) {
-		/* RX DFIR for BW80 */
+		 
 		rtw_write32_mask(rtwdev, REG_ACBB0, BIT(29) | BIT(28), 0x2);
 		rtw_write32_mask(rtwdev, REG_ACBBRXFIR, BIT(29) | BIT(28), 0x1);
 		rtw_write32_mask(rtwdev, REG_TXDFIR, BIT(31), 0x0);
 		rtw_write32_mask(rtwdev, REG_CHFIR, BIT(31), 0x1);
 	} else {
-		/* RX DFIR for BW20, BW10 and BW5 */
+		 
 		rtw_write32_mask(rtwdev, REG_ACBB0, BIT(29) | BIT(28), 0x2);
 		rtw_write32_mask(rtwdev, REG_ACBBRXFIR, BIT(29) | BIT(28), 0x2);
 		rtw_write32_mask(rtwdev, REG_TXDFIR, BIT(31), 0x1);
@@ -636,10 +635,10 @@ static void rtw8821c_query_rx_desc(struct rtw_dev *rtwdev, u8 *rx_desc,
 	pkt_stat->ppdu_cnt = GET_RX_DESC_PPDU_CNT(rx_desc);
 	pkt_stat->tsf_low = GET_RX_DESC_TSFL(rx_desc);
 
-	/* drv_info_sz is in unit of 8-bytes */
+	 
 	pkt_stat->drv_info_sz *= 8;
 
-	/* c2h cmd pkt's rx/phy status is not interested */
+	 
 	if (pkt_stat->is_c2h)
 		return;
 
@@ -776,30 +775,30 @@ static void rtw8821c_phy_calibration(struct rtw_dev *rtwdev)
 	rtw8821c_do_iqk(rtwdev);
 }
 
-/* for coex */
+ 
 static void rtw8821c_coex_cfg_init(struct rtw_dev *rtwdev)
 {
-	/* enable TBTT nterrupt */
+	 
 	rtw_write8_set(rtwdev, REG_BCN_CTRL, BIT_EN_BCN_FUNCTION);
 
-	/* BT report packet sample rate */
+	 
 	rtw_write8_mask(rtwdev, REG_BT_TDMA_TIME, BIT_MASK_SAMPLE_RATE, 0x5);
 
-	/* enable BT counter statistics */
+	 
 	rtw_write8(rtwdev, REG_BT_STAT_CTRL, BT_CNT_ENABLE);
 
-	/* enable PTA (3-wire function form BT side) */
+	 
 	rtw_write32_set(rtwdev, REG_GPIO_MUXCFG, BIT_BT_PTA_EN);
 	rtw_write32_set(rtwdev, REG_GPIO_MUXCFG, BIT_PO_BT_PTA_PINS);
 
-	/* enable PTA (tx/rx signal form WiFi side) */
+	 
 	rtw_write8_set(rtwdev, REG_QUEUE_CTRL, BIT_PTA_WL_TX_EN);
-	/* wl tx signal to PTA not case EDCCA */
+	 
 	rtw_write8_clr(rtwdev, REG_QUEUE_CTRL, BIT_PTA_EDCCA_EN);
-	/* GNT_BT=1 while select both */
+	 
 	rtw_write16_set(rtwdev, REG_BT_COEX_V2, BIT_GNT_BT_POLARITY);
 
-	/* beacon queue always hi-pri  */
+	 
 	rtw_write8_mask(rtwdev, REG_BT_COEX_TABLE_H + 3, BIT_BCN_QUEUE,
 			BCN_PRI_EN);
 }
@@ -839,7 +838,7 @@ static void rtw8821c_coex_cfg_ant_switch(struct rtw_dev *rtwdev, u8 ctrl_type,
 	case COEX_SWITCH_CTRL_BY_BBSW:
 		rtw_write32_clr(rtwdev, REG_LED_CFG, BIT_DPDT_SEL_EN);
 		rtw_write32_set(rtwdev, REG_LED_CFG, BIT_DPDT_WL_SEL);
-		/* BB SW, DPDT use RFE_ctrl8 and RFE_ctrl9 as ctrl pin */
+		 
 		rtw_write8_mask(rtwdev, REG_RFE_CTRL8, BIT_MASK_RFE_SEL89,
 				DPDT_CTRL_PIN);
 
@@ -861,7 +860,7 @@ static void rtw8821c_coex_cfg_ant_switch(struct rtw_dev *rtwdev, u8 ctrl_type,
 	case COEX_SWITCH_CTRL_BY_PTA:
 		rtw_write32_clr(rtwdev, REG_LED_CFG, BIT_DPDT_SEL_EN);
 		rtw_write32_set(rtwdev, REG_LED_CFG, BIT_DPDT_WL_SEL);
-		/* PTA,  DPDT use RFE_ctrl8 and RFE_ctrl9 as ctrl pin */
+		 
 		rtw_write8_mask(rtwdev, REG_RFE_CTRL8, BIT_MASK_RFE_SEL89,
 				PTA_CTRL_PIN);
 
@@ -929,28 +928,28 @@ static void rtw8821c_coex_cfg_rfe_type(struct rtw_dev *rtwdev)
 	case 0:
 	case 8:
 	case 1:
-	case 9:  /* 1-Ant, Main, WLG */
-	default: /* 2-Ant, DPDT, WLG */
+	case 9:   
+	default:  
 		break;
 	case 2:
-	case 10: /* 1-Ant, Main, BTG */
+	case 10:  
 	case 7:
-	case 15: /* 2-Ant, DPDT, BTG */
+	case 15:  
 		coex_rfe->wlg_at_btg = true;
 		break;
 	case 3:
-	case 11: /* 1-Ant, Aux, WLG */
+	case 11:  
 		coex_rfe->ant_switch_polarity = 1;
 		break;
 	case 4:
-	case 12: /* 1-Ant, Aux, BTG */
+	case 12:  
 		coex_rfe->wlg_at_btg = true;
 		coex_rfe->ant_switch_polarity = 1;
 		break;
 	case 5:
-	case 13: /* 2-Ant, no switch, WLG */
+	case 13:  
 	case 6:
-	case 14: /* 2-Ant, no antenna switch, WLG */
+	case 14:  
 		coex_rfe->ant_switch_exist = false;
 		break;
 	}
@@ -1573,7 +1572,7 @@ static const struct rtw_ltecoex_addr rtw8821c_ltecoex_addr = {
 };
 
 static struct rtw_page_table page_table_8821c[] = {
-	/* not sure what [0] stands for */
+	 
 	{16, 16, 16, 14, 1},
 	{16, 16, 16, 14, 1},
 	{16, 16, 0, 0, 1},
@@ -1582,7 +1581,7 @@ static struct rtw_page_table page_table_8821c[] = {
 };
 
 static struct rtw_rqpn rqpn_table_8821c[] = {
-	/* not sure what [0] stands for */
+	 
 	{RTW_DMA_MAPPING_NORMAL, RTW_DMA_MAPPING_NORMAL,
 	 RTW_DMA_MAPPING_LOW, RTW_DMA_MAPPING_LOW,
 	 RTW_DMA_MAPPING_EXTRA, RTW_DMA_MAPPING_HIGH},
@@ -1645,139 +1644,139 @@ static struct rtw_chip_ops rtw8821c_ops = {
 	.coex_set_wl_rx_gain	= rtw8821c_coex_cfg_wl_rx_gain,
 };
 
-/* rssi in percentage % (dbm = % - 100) */
+ 
 static const u8 wl_rssi_step_8821c[] = {101, 45, 101, 40};
 static const u8 bt_rssi_step_8821c[] = {101, 101, 101, 101};
 
-/* Shared-Antenna Coex Table */
+ 
 static const struct coex_table_para table_sant_8821c[] = {
-	{0x55555555, 0x55555555}, /* case-0 */
+	{0x55555555, 0x55555555},  
 	{0x55555555, 0x55555555},
 	{0x66555555, 0x66555555},
 	{0xaaaaaaaa, 0xaaaaaaaa},
 	{0x5a5a5a5a, 0x5a5a5a5a},
-	{0xfafafafa, 0xfafafafa}, /* case-5 */
+	{0xfafafafa, 0xfafafafa},  
 	{0x6a5a5555, 0xaaaaaaaa},
 	{0x6a5a56aa, 0x6a5a56aa},
 	{0x6a5a5a5a, 0x6a5a5a5a},
 	{0x66555555, 0x5a5a5a5a},
-	{0x66555555, 0x6a5a5a5a}, /* case-10 */
+	{0x66555555, 0x6a5a5a5a},  
 	{0x66555555, 0xaaaaaaaa},
 	{0x66555555, 0x6a5a5aaa},
 	{0x66555555, 0x6aaa6aaa},
 	{0x66555555, 0x6a5a5aaa},
-	{0x66555555, 0xaaaaaaaa}, /* case-15 */
+	{0x66555555, 0xaaaaaaaa},  
 	{0xffff55ff, 0xfafafafa},
 	{0xffff55ff, 0x6afa5afa},
 	{0xaaffffaa, 0xfafafafa},
 	{0xaa5555aa, 0x5a5a5a5a},
-	{0xaa5555aa, 0x6a5a5a5a}, /* case-20 */
+	{0xaa5555aa, 0x6a5a5a5a},  
 	{0xaa5555aa, 0xaaaaaaaa},
 	{0xffffffff, 0x55555555},
 	{0xffffffff, 0x5a5a5a5a},
 	{0xffffffff, 0x5a5a5a5a},
-	{0xffffffff, 0x5a5a5aaa}, /* case-25 */
+	{0xffffffff, 0x5a5a5aaa},  
 	{0x55555555, 0x5a5a5a5a},
 	{0x55555555, 0xaaaaaaaa},
 	{0x66555555, 0x6a5a6a5a},
 	{0x66556655, 0x66556655},
-	{0x66556aaa, 0x6a5a6aaa}, /* case-30 */
+	{0x66556aaa, 0x6a5a6aaa},  
 	{0xffffffff, 0x5aaa5aaa},
 	{0x56555555, 0x5a5a5aaa}
 };
 
-/* Non-Shared-Antenna Coex Table */
+ 
 static const struct coex_table_para table_nsant_8821c[] = {
-	{0xffffffff, 0xffffffff}, /* case-100 */
+	{0xffffffff, 0xffffffff},  
 	{0xffff55ff, 0xfafafafa},
 	{0x66555555, 0x66555555},
 	{0xaaaaaaaa, 0xaaaaaaaa},
 	{0x5a5a5a5a, 0x5a5a5a5a},
-	{0xffffffff, 0xffffffff}, /* case-105 */
+	{0xffffffff, 0xffffffff},  
 	{0x5afa5afa, 0x5afa5afa},
 	{0x55555555, 0xfafafafa},
 	{0x66555555, 0xfafafafa},
 	{0x66555555, 0x5a5a5a5a},
-	{0x66555555, 0x6a5a5a5a}, /* case-110 */
+	{0x66555555, 0x6a5a5a5a},  
 	{0x66555555, 0xaaaaaaaa},
 	{0xffff55ff, 0xfafafafa},
 	{0xffff55ff, 0x5afa5afa},
 	{0xffff55ff, 0xaaaaaaaa},
-	{0xffff55ff, 0xffff55ff}, /* case-115 */
+	{0xffff55ff, 0xffff55ff},  
 	{0xaaffffaa, 0x5afa5afa},
 	{0xaaffffaa, 0xaaaaaaaa},
 	{0xffffffff, 0xfafafafa},
 	{0xffff55ff, 0xfafafafa},
-	{0xffffffff, 0xaaaaaaaa}, /* case-120 */
+	{0xffffffff, 0xaaaaaaaa},  
 	{0xffff55ff, 0x5afa5afa},
 	{0xffff55ff, 0x5afa5afa},
 	{0x55ff55ff, 0x55ff55ff}
 };
 
-/* Shared-Antenna TDMA */
+ 
 static const struct coex_tdma_para tdma_sant_8821c[] = {
-	{ {0x00, 0x00, 0x00, 0x00, 0x00} }, /* case-0 */
-	{ {0x61, 0x45, 0x03, 0x11, 0x11} }, /* case-1 */
+	{ {0x00, 0x00, 0x00, 0x00, 0x00} },  
+	{ {0x61, 0x45, 0x03, 0x11, 0x11} },  
 	{ {0x61, 0x3a, 0x03, 0x11, 0x11} },
 	{ {0x61, 0x35, 0x03, 0x11, 0x11} },
 	{ {0x61, 0x20, 0x03, 0x11, 0x11} },
-	{ {0x61, 0x3a, 0x03, 0x11, 0x11} }, /* case-5 */
+	{ {0x61, 0x3a, 0x03, 0x11, 0x11} },  
 	{ {0x61, 0x45, 0x03, 0x11, 0x10} },
 	{ {0x61, 0x35, 0x03, 0x11, 0x10} },
 	{ {0x61, 0x30, 0x03, 0x11, 0x10} },
 	{ {0x61, 0x20, 0x03, 0x11, 0x10} },
-	{ {0x61, 0x10, 0x03, 0x11, 0x10} }, /* case-10 */
+	{ {0x61, 0x10, 0x03, 0x11, 0x10} },  
 	{ {0x61, 0x08, 0x03, 0x11, 0x15} },
 	{ {0x61, 0x08, 0x03, 0x10, 0x14} },
 	{ {0x51, 0x08, 0x03, 0x10, 0x54} },
 	{ {0x51, 0x08, 0x03, 0x10, 0x55} },
-	{ {0x51, 0x08, 0x07, 0x10, 0x54} }, /* case-15 */
+	{ {0x51, 0x08, 0x07, 0x10, 0x54} },  
 	{ {0x51, 0x45, 0x03, 0x10, 0x50} },
 	{ {0x51, 0x3a, 0x03, 0x11, 0x50} },
 	{ {0x51, 0x30, 0x03, 0x10, 0x50} },
 	{ {0x51, 0x21, 0x03, 0x10, 0x50} },
-	{ {0x51, 0x10, 0x03, 0x10, 0x50} }, /* case-20 */
+	{ {0x51, 0x10, 0x03, 0x10, 0x50} },  
 	{ {0x51, 0x4a, 0x03, 0x10, 0x50} },
 	{ {0x51, 0x08, 0x03, 0x30, 0x54} },
 	{ {0x55, 0x08, 0x03, 0x10, 0x54} },
 	{ {0x65, 0x10, 0x03, 0x11, 0x10} },
-	{ {0x51, 0x10, 0x03, 0x10, 0x51} }, /* case-25 */
+	{ {0x51, 0x10, 0x03, 0x10, 0x51} },  
 	{ {0x51, 0x21, 0x03, 0x10, 0x50} },
 	{ {0x61, 0x08, 0x03, 0x11, 0x11} }
 };
 
-/* Non-Shared-Antenna TDMA */
+ 
 static const struct coex_tdma_para tdma_nsant_8821c[] = {
-	{ {0x00, 0x00, 0x00, 0x40, 0x00} }, /* case-100 */
+	{ {0x00, 0x00, 0x00, 0x40, 0x00} },  
 	{ {0x61, 0x45, 0x03, 0x11, 0x11} },
 	{ {0x61, 0x25, 0x03, 0x11, 0x11} },
 	{ {0x61, 0x35, 0x03, 0x11, 0x11} },
 	{ {0x61, 0x20, 0x03, 0x11, 0x11} },
-	{ {0x61, 0x10, 0x03, 0x11, 0x11} }, /* case-105 */
+	{ {0x61, 0x10, 0x03, 0x11, 0x11} },  
 	{ {0x61, 0x45, 0x03, 0x11, 0x10} },
 	{ {0x61, 0x30, 0x03, 0x11, 0x10} },
 	{ {0x61, 0x30, 0x03, 0x11, 0x10} },
 	{ {0x61, 0x20, 0x03, 0x11, 0x10} },
-	{ {0x61, 0x10, 0x03, 0x11, 0x10} }, /* case-110 */
+	{ {0x61, 0x10, 0x03, 0x11, 0x10} },  
 	{ {0x61, 0x10, 0x03, 0x11, 0x11} },
 	{ {0x61, 0x08, 0x03, 0x10, 0x14} },
 	{ {0x51, 0x08, 0x03, 0x10, 0x54} },
 	{ {0x51, 0x08, 0x03, 0x10, 0x55} },
-	{ {0x51, 0x08, 0x07, 0x10, 0x54} }, /* case-115 */
+	{ {0x51, 0x08, 0x07, 0x10, 0x54} },  
 	{ {0x51, 0x45, 0x03, 0x10, 0x50} },
 	{ {0x51, 0x3a, 0x03, 0x10, 0x50} },
 	{ {0x51, 0x30, 0x03, 0x10, 0x50} },
 	{ {0x51, 0x21, 0x03, 0x10, 0x50} },
-	{ {0x51, 0x21, 0x03, 0x10, 0x50} }, /* case-120 */
+	{ {0x51, 0x21, 0x03, 0x10, 0x50} },  
 	{ {0x51, 0x10, 0x03, 0x10, 0x50} }
 };
 
 static const struct coex_5g_afh_map afh_5g_8821c[] = { {0, 0, 0} };
 
-/* wl_tx_dec_power, bt_tx_dec_power, wl_rx_gain, bt_rx_lna_constrain */
+ 
 static const struct coex_rf_para rf_para_tx_8821c[] = {
-	{0, 0, false, 7},  /* for normal */
-	{0, 20, false, 7}, /* for WL-CPT */
+	{0, 0, false, 7},   
+	{0, 20, false, 7},  
 	{8, 17, true, 4},
 	{7, 18, true, 4},
 	{6, 19, true, 4},
@@ -1785,8 +1784,8 @@ static const struct coex_rf_para rf_para_tx_8821c[] = {
 };
 
 static const struct coex_rf_para rf_para_rx_8821c[] = {
-	{0, 0, false, 7},  /* for normal */
-	{0, 20, false, 7}, /* for WL-CPT */
+	{0, 0, false, 7},   
+	{0, 20, false, 7},  
 	{3, 24, true, 5},
 	{2, 26, true, 5},
 	{1, 27, true, 5},

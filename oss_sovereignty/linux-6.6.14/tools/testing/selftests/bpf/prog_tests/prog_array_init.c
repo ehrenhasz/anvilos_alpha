@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright (c) 2021 Hengqi Chen */
+ 
+ 
 
 #include <test_progs.h>
 #include "test_prog_array_init.skel.h"

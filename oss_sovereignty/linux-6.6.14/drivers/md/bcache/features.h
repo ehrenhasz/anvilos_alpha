@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
+ 
 #ifndef _BCACHE_FEATURES_H
 #define _BCACHE_FEATURES_H
 
@@ -12,11 +12,11 @@
 #define BCH_FEATURE_INCOMPAT		2
 #define BCH_FEATURE_TYPE_MASK		0x03
 
-/* Feature set definition */
-/* Incompat feature set */
-/* 32bit bucket size, obsoleted */
+ 
+ 
+ 
 #define BCH_FEATURE_INCOMPAT_OBSO_LARGE_BUCKET		0x0001
-/* real bucket size is (1 << bucket_size) */
+ 
 #define BCH_FEATURE_INCOMPAT_LOG_LARGE_BUCKET_SIZE	0x0002
 
 #define BCH_FEATURE_COMPAT_SUPP		0

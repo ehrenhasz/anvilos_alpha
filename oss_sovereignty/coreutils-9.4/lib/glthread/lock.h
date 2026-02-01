@@ -1,86 +1,12 @@
-/* Locking in multithreaded situations.
-   Copyright (C) 2005-2023 Free Software Foundation, Inc.
+ 
 
-   This file is free software: you can redistribute it and/or modify
-   it under the terms of the GNU Lesser General Public License as
-   published by the Free Software Foundation; either version 2.1 of the
-   License, or (at your option) any later version.
-
-   This file is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU Lesser General Public License for more details.
-
-   You should have received a copy of the GNU Lesser General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* Written by Bruno Haible <bruno@clisp.org>, 2005.
-   Based on GCC's gthr-posix.h, gthr-posix95.h, gthr-win32.h.  */
-
-/* This file contains locking primitives for use with a given thread library.
-   It does not contain primitives for creating threads or for other
-   synchronization primitives.
-
-   Normal (non-recursive) locks:
-     Type:                gl_lock_t
-     Declaration:         gl_lock_define(extern, name)
-     Initializer:         gl_lock_define_initialized(, name)
-     Initialization:      gl_lock_init (name);
-     Taking the lock:     gl_lock_lock (name);
-     Releasing the lock:  gl_lock_unlock (name);
-     De-initialization:   gl_lock_destroy (name);
-   Equivalent functions with control of error handling:
-     Initialization:      err = glthread_lock_init (&name);
-     Taking the lock:     err = glthread_lock_lock (&name);
-     Releasing the lock:  err = glthread_lock_unlock (&name);
-     De-initialization:   err = glthread_lock_destroy (&name);
-
-   Read-Write (non-recursive) locks:
-     Type:                gl_rwlock_t
-     Declaration:         gl_rwlock_define(extern, name)
-     Initializer:         gl_rwlock_define_initialized(, name)
-     Initialization:      gl_rwlock_init (name);
-     Taking the lock:     gl_rwlock_rdlock (name);
-                          gl_rwlock_wrlock (name);
-     Releasing the lock:  gl_rwlock_unlock (name);
-     De-initialization:   gl_rwlock_destroy (name);
-   Equivalent functions with control of error handling:
-     Initialization:      err = glthread_rwlock_init (&name);
-     Taking the lock:     err = glthread_rwlock_rdlock (&name);
-                          err = glthread_rwlock_wrlock (&name);
-     Releasing the lock:  err = glthread_rwlock_unlock (&name);
-     De-initialization:   err = glthread_rwlock_destroy (&name);
-
-   Recursive locks:
-     Type:                gl_recursive_lock_t
-     Declaration:         gl_recursive_lock_define(extern, name)
-     Initializer:         gl_recursive_lock_define_initialized(, name)
-     Initialization:      gl_recursive_lock_init (name);
-     Taking the lock:     gl_recursive_lock_lock (name);
-     Releasing the lock:  gl_recursive_lock_unlock (name);
-     De-initialization:   gl_recursive_lock_destroy (name);
-   Equivalent functions with control of error handling:
-     Initialization:      err = glthread_recursive_lock_init (&name);
-     Taking the lock:     err = glthread_recursive_lock_lock (&name);
-     Releasing the lock:  err = glthread_recursive_lock_unlock (&name);
-     De-initialization:   err = glthread_recursive_lock_destroy (&name);
-
-  Once-only execution:
-     Type:                gl_once_t
-     Initializer:         gl_once_define(extern, name)
-     Execution:           gl_once (name, initfunction);
-   Equivalent functions with control of error handling:
-     Execution:           err = glthread_once (&name, initfunction);
-*/
+ 
 
 
 #ifndef _LOCK_H
 #define _LOCK_H
 
-/* This file uses HAVE_THREADS_H, HAVE_PTHREAD_RWLOCK,
-   HAVE_PTHREAD_RWLOCK_RDLOCK_PREFER_WRITER,
-   PTHREAD_RWLOCK_WRITER_NONRECURSIVE_INITIALIZER_NP,
-   HAVE_PTHREAD_MUTEX_RECURSIVE.  */
+ 
 #if !_GL_CONFIG_H_INCLUDED
  #error "Please include config.h first."
 #endif
@@ -100,11 +26,11 @@
 # endif
 #endif
 
-/* ========================================================================= */
+ 
 
 #if USE_ISOC_THREADS || USE_ISOC_AND_POSIX_THREADS
 
-/* Use the ISO C threads library.  */
+ 
 
 # include <threads.h>
 
@@ -112,7 +38,7 @@
 extern "C" {
 # endif
 
-/* -------------------------- gl_lock_t datatype -------------------------- */
+ 
 
 typedef struct
         {
@@ -138,18 +64,18 @@ extern int glthread_lock_lock (gl_lock_t *lock);
 extern int glthread_lock_unlock (gl_lock_t *lock);
 extern int glthread_lock_destroy (gl_lock_t *lock);
 
-/* ------------------------- gl_rwlock_t datatype ------------------------- */
+ 
 
 typedef struct
         {
           int volatile init_needed;
           once_flag init_once;
           void (*init_func) (void);
-          mtx_t lock; /* protects the remaining fields */
-          cnd_t waiting_readers; /* waiting readers */
-          cnd_t waiting_writers; /* waiting writers */
-          unsigned int waiting_writers_count; /* number of waiting writers */
-          int runcount; /* number of readers running, or -1 when a writer runs */
+          mtx_t lock;  
+          cnd_t waiting_readers;  
+          cnd_t waiting_writers;  
+          unsigned int waiting_writers_count;  
+          int runcount;  
         }
         gl_rwlock_t;
 # define gl_rwlock_define(STORAGECLASS, NAME) \
@@ -169,7 +95,7 @@ extern int glthread_rwlock_wrlock (gl_rwlock_t *lock);
 extern int glthread_rwlock_unlock (gl_rwlock_t *lock);
 extern int glthread_rwlock_destroy (gl_rwlock_t *lock);
 
-/* --------------------- gl_recursive_lock_t datatype --------------------- */
+ 
 
 typedef struct
         {
@@ -195,7 +121,7 @@ extern int glthread_recursive_lock_lock (gl_recursive_lock_t *lock);
 extern int glthread_recursive_lock_unlock (gl_recursive_lock_t *lock);
 extern int glthread_recursive_lock_destroy (gl_recursive_lock_t *lock);
 
-/* -------------------------- gl_once_t datatype -------------------------- */
+ 
 
 typedef once_flag gl_once_t;
 # define gl_once_define(STORAGECLASS, NAME) \
@@ -209,11 +135,11 @@ typedef once_flag gl_once_t;
 
 #endif
 
-/* ========================================================================= */
+ 
 
 #if USE_POSIX_THREADS
 
-/* Use the POSIX threads library.  */
+ 
 
 # include <pthread.h>
 
@@ -223,7 +149,7 @@ extern "C" {
 
 # if PTHREAD_IN_USE_DETECTION_HARD
 
-/* The pthread_in_use() detection needs to be done at runtime.  */
+ 
 #  define pthread_in_use() \
      glthread_in_use ()
 extern int glthread_in_use (void);
@@ -232,22 +158,11 @@ extern int glthread_in_use (void);
 
 # if USE_POSIX_THREADS_WEAK
 
-/* Use weak references to the POSIX threads library.  */
+ 
 
-/* Weak references avoid dragging in external libraries if the other parts
-   of the program don't use them.  Here we use them, because we don't want
-   every program that uses libintl to depend on libpthread.  This assumes
-   that libpthread would not be loaded after libintl; i.e. if libintl is
-   loaded first, by an executable that does not depend on libpthread, and
-   then a module is dynamically loaded that depends on libpthread, libintl
-   will not be multithread-safe.  */
+ 
 
-/* The way to test at runtime whether libpthread is present is to test
-   whether a function pointer's value, such as &pthread_mutex_init, is
-   non-NULL.  However, some versions of GCC have a bug through which, in
-   PIC mode, &foo != NULL always evaluates to true if there is a direct
-   call to foo(...) in the same function.  To avoid this, we test the
-   address of a function in libpthread that we don't use.  */
+ 
 
 #  pragma weak pthread_mutex_init
 #  pragma weak pthread_mutex_lock
@@ -277,12 +192,7 @@ extern int glthread_in_use (void);
 #  endif
 
 #  if !PTHREAD_IN_USE_DETECTION_HARD
-    /* Considering all platforms with USE_POSIX_THREADS_WEAK, only few symbols
-       can be used to determine whether libpthread is in use.  These are:
-         pthread_mutexattr_gettype
-         pthread_rwlockattr_destroy
-         pthread_rwlockattr_init
-     */
+     
 #   pragma weak pthread_mutexattr_gettype
 #   define pthread_in_use() \
       (pthread_mutexattr_gettype != NULL || c11_threads_in_use ())
@@ -296,7 +206,7 @@ extern int glthread_in_use (void);
 
 # endif
 
-/* -------------------------- gl_lock_t datatype -------------------------- */
+ 
 
 typedef pthread_mutex_t gl_lock_t;
 # define gl_lock_define(STORAGECLASS, NAME) \
@@ -314,7 +224,7 @@ typedef pthread_mutex_t gl_lock_t;
 # define glthread_lock_destroy(LOCK) \
     (pthread_in_use () ? pthread_mutex_destroy (LOCK) : 0)
 
-/* ------------------------- gl_rwlock_t datatype ------------------------- */
+ 
 
 # if HAVE_PTHREAD_RWLOCK && (HAVE_PTHREAD_RWLOCK_RDLOCK_PREFER_WRITER || (defined PTHREAD_RWLOCK_WRITER_NONRECURSIVE_INITIALIZER_NP && (__GNU_LIBRARY__ > 1)))
 
@@ -335,29 +245,8 @@ typedef pthread_rwlock_t gl_rwlock_t;
 #    endif
 #    define glthread_rwlock_init(LOCK) \
        (pthread_in_use () ? pthread_rwlock_init (LOCK, NULL) : 0)
-#   else /* glibc with bug https://sourceware.org/bugzilla/show_bug.cgi?id=13701 */
-#    define gl_rwlock_initializer \
-       PTHREAD_RWLOCK_WRITER_NONRECURSIVE_INITIALIZER_NP
-#    define glthread_rwlock_init(LOCK) \
-       (pthread_in_use () ? glthread_rwlock_init_for_glibc (LOCK) : 0)
-extern int glthread_rwlock_init_for_glibc (pthread_rwlock_t *lock);
-#   endif
-#   define glthread_rwlock_rdlock(LOCK) \
-      (pthread_in_use () ? pthread_rwlock_rdlock (LOCK) : 0)
-#   define glthread_rwlock_wrlock(LOCK) \
-      (pthread_in_use () ? pthread_rwlock_wrlock (LOCK) : 0)
-#   define glthread_rwlock_unlock(LOCK) \
-      (pthread_in_use () ? pthread_rwlock_unlock (LOCK) : 0)
-#   define glthread_rwlock_destroy(LOCK) \
-      (pthread_in_use () ? pthread_rwlock_destroy (LOCK) : 0)
-
-#  else
-
-typedef struct
-        {
-          int initialized;
-          pthread_mutex_t guard;   /* protects the initialization */
-          pthread_rwlock_t rwlock; /* read-write lock */
+#   else  
+          pthread_rwlock_t rwlock;  
         }
         gl_rwlock_t;
 #   define gl_rwlock_define(STORAGECLASS, NAME) \
@@ -388,11 +277,11 @@ extern int glthread_rwlock_destroy_multithreaded (gl_rwlock_t *lock);
 
 typedef struct
         {
-          pthread_mutex_t lock; /* protects the remaining fields */
-          pthread_cond_t waiting_readers; /* waiting readers */
-          pthread_cond_t waiting_writers; /* waiting writers */
-          unsigned int waiting_writers_count; /* number of waiting writers */
-          int runcount; /* number of readers running, or -1 when a writer runs */
+          pthread_mutex_t lock;  
+          pthread_cond_t waiting_readers;  
+          pthread_cond_t waiting_writers;  
+          unsigned int waiting_writers_count;  
+          int runcount;  
         }
         gl_rwlock_t;
 # define gl_rwlock_define(STORAGECLASS, NAME) \
@@ -419,7 +308,7 @@ extern int glthread_rwlock_destroy_multithreaded (gl_rwlock_t *lock);
 
 # endif
 
-/* --------------------- gl_recursive_lock_t datatype --------------------- */
+ 
 
 # if HAVE_PTHREAD_MUTEX_RECURSIVE
 
@@ -451,8 +340,8 @@ extern int glthread_recursive_lock_init_multithreaded (gl_recursive_lock_t *lock
 
 typedef struct
         {
-          pthread_mutex_t recmutex; /* recursive mutex */
-          pthread_mutex_t guard;    /* protects the initialization */
+          pthread_mutex_t recmutex;  
+          pthread_mutex_t guard;     
           int initialized;
         }
         gl_recursive_lock_t;
@@ -479,8 +368,7 @@ extern int glthread_recursive_lock_destroy_multithreaded (gl_recursive_lock_t *l
 
 # else
 
-/* Old versions of POSIX threads on Solaris did not have recursive locks.
-   We have to implement them ourselves.  */
+ 
 
 typedef struct
         {
@@ -510,7 +398,7 @@ extern int glthread_recursive_lock_destroy_multithreaded (gl_recursive_lock_t *l
 
 # endif
 
-/* -------------------------- gl_once_t datatype -------------------------- */
+ 
 
 typedef pthread_once_t gl_once_t;
 # define gl_once_define(STORAGECLASS, NAME) \
@@ -536,11 +424,11 @@ extern int glthread_once_singlethreaded (pthread_once_t *once_control);
 
 #endif
 
-/* ========================================================================= */
+ 
 
 #if USE_WINDOWS_THREADS
 
-# define WIN32_LEAN_AND_MEAN  /* avoid including junk */
+# define WIN32_LEAN_AND_MEAN   
 # include <windows.h>
 
 # include "windows-mutex.h"
@@ -552,18 +440,11 @@ extern int glthread_once_singlethreaded (pthread_once_t *once_control);
 extern "C" {
 # endif
 
-/* We can use CRITICAL_SECTION directly, rather than the native Windows Event,
-   Mutex, Semaphore types, because
-     - we need only to synchronize inside a single process (address space),
-       not inter-process locking,
-     - we don't need to support trylock operations.  (TryEnterCriticalSection
-       does not work on Windows 95/98/ME.  Packages that need trylock usually
-       define their own mutex type.)  */
+ 
 
-/* There is no way to statically initialize a CRITICAL_SECTION.  It needs
-   to be done lazily, once only.  For this we need spinlocks.  */
+ 
 
-/* -------------------------- gl_lock_t datatype -------------------------- */
+ 
 
 typedef glwthread_mutex_t gl_lock_t;
 # define gl_lock_define(STORAGECLASS, NAME) \
@@ -581,7 +462,7 @@ typedef glwthread_mutex_t gl_lock_t;
 # define glthread_lock_destroy(LOCK) \
     glwthread_mutex_destroy (LOCK)
 
-/* ------------------------- gl_rwlock_t datatype ------------------------- */
+ 
 
 typedef glwthread_rwlock_t gl_rwlock_t;
 # define gl_rwlock_define(STORAGECLASS, NAME) \
@@ -601,7 +482,7 @@ typedef glwthread_rwlock_t gl_rwlock_t;
 # define glthread_rwlock_destroy(LOCK) \
     glwthread_rwlock_destroy (LOCK)
 
-/* --------------------- gl_recursive_lock_t datatype --------------------- */
+ 
 
 typedef glwthread_recmutex_t gl_recursive_lock_t;
 # define gl_recursive_lock_define(STORAGECLASS, NAME) \
@@ -619,7 +500,7 @@ typedef glwthread_recmutex_t gl_recursive_lock_t;
 # define glthread_recursive_lock_destroy(LOCK) \
     glwthread_recmutex_destroy (LOCK)
 
-/* -------------------------- gl_once_t datatype -------------------------- */
+ 
 
 typedef glwthread_once_t gl_once_t;
 # define gl_once_define(STORAGECLASS, NAME) \
@@ -633,13 +514,13 @@ typedef glwthread_once_t gl_once_t;
 
 #endif
 
-/* ========================================================================= */
+ 
 
 #if !(USE_ISOC_THREADS || USE_POSIX_THREADS || USE_ISOC_AND_POSIX_THREADS || USE_WINDOWS_THREADS)
 
-/* Provide dummy implementation if threads are not supported.  */
+ 
 
-/* -------------------------- gl_lock_t datatype -------------------------- */
+ 
 
 typedef int gl_lock_t;
 # define gl_lock_define(STORAGECLASS, NAME)
@@ -649,7 +530,7 @@ typedef int gl_lock_t;
 # define glthread_lock_unlock(NAME) 0
 # define glthread_lock_destroy(NAME) 0
 
-/* ------------------------- gl_rwlock_t datatype ------------------------- */
+ 
 
 typedef int gl_rwlock_t;
 # define gl_rwlock_define(STORAGECLASS, NAME)
@@ -660,7 +541,7 @@ typedef int gl_rwlock_t;
 # define glthread_rwlock_unlock(NAME) 0
 # define glthread_rwlock_destroy(NAME) 0
 
-/* --------------------- gl_recursive_lock_t datatype --------------------- */
+ 
 
 typedef int gl_recursive_lock_t;
 # define gl_recursive_lock_define(STORAGECLASS, NAME)
@@ -670,7 +551,7 @@ typedef int gl_recursive_lock_t;
 # define glthread_recursive_lock_unlock(NAME) 0
 # define glthread_recursive_lock_destroy(NAME) 0
 
-/* -------------------------- gl_once_t datatype -------------------------- */
+ 
 
 typedef int gl_once_t;
 # define gl_once_define(STORAGECLASS, NAME) \
@@ -680,11 +561,11 @@ typedef int gl_once_t;
 
 #endif
 
-/* ========================================================================= */
+ 
 
-/* Macros with built-in error handling.  */
+ 
 
-/* -------------------------- gl_lock_t datatype -------------------------- */
+ 
 
 #define gl_lock_init(NAME) \
    do                                  \
@@ -715,7 +596,7 @@ typedef int gl_once_t;
      }                                    \
    while (0)
 
-/* ------------------------- gl_rwlock_t datatype ------------------------- */
+ 
 
 #define gl_rwlock_init(NAME) \
    do                                    \
@@ -753,7 +634,7 @@ typedef int gl_once_t;
      }                                      \
    while (0)
 
-/* --------------------- gl_recursive_lock_t datatype --------------------- */
+ 
 
 #define gl_recursive_lock_init(NAME) \
    do                                            \
@@ -784,7 +665,7 @@ typedef int gl_once_t;
      }                                              \
    while (0)
 
-/* -------------------------- gl_once_t datatype -------------------------- */
+ 
 
 #define gl_once(NAME, INITFUNCTION) \
    do                                           \
@@ -794,6 +675,6 @@ typedef int gl_once_t;
      }                                          \
    while (0)
 
-/* ========================================================================= */
+ 
 
-#endif /* _LOCK_H */
+#endif  

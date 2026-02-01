@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * MADV_POPULATE_READ and MADV_POPULATE_WRITE tests
- *
- * Copyright 2021, Red Hat, Inc.
- *
- * Author(s): David Hildenbrand <david@redhat.com>
- */
+
+ 
 #define _GNU_SOURCE
 #include <stdlib.h>
 #include <string.h>
@@ -20,9 +14,7 @@
 #include "../kselftest.h"
 #include "vm_util.h"
 
-/*
- * For now, we're using 2 MiB of private anonymous memory for all tests.
- */
+ 
 #define SIZE (2 * 1024 * 1024)
 
 static size_t pagesize;
@@ -105,7 +97,7 @@ static void test_holes(void)
 	if (ret)
 		ksft_exit_fail_msg("munmap failed\n");
 
-	/* Hole in the middle */
+	 
 	ret = madvise(addr, SIZE, MADV_POPULATE_READ);
 	ksft_test_result(ret == -1 && errno == ENOMEM,
 			 "MADV_POPULATE_READ with holes in the middle\n");
@@ -113,7 +105,7 @@ static void test_holes(void)
 	ksft_test_result(ret == -1 && errno == ENOMEM,
 			 "MADV_POPULATE_WRITE with holes in the middle\n");
 
-	/* Hole at end */
+	 
 	ret = madvise(addr, 2 * pagesize, MADV_POPULATE_READ);
 	ksft_test_result(ret == -1 && errno == ENOMEM,
 			 "MADV_POPULATE_READ with holes at the end\n");
@@ -121,7 +113,7 @@ static void test_holes(void)
 	ksft_test_result(ret == -1 && errno == ENOMEM,
 			 "MADV_POPULATE_WRITE with holes at the end\n");
 
-	/* Hole at beginning */
+	 
 	ret = madvise(addr + pagesize, pagesize, MADV_POPULATE_READ);
 	ksft_test_result(ret == -1 && errno == ENOMEM,
 			 "MADV_POPULATE_READ with holes at the beginning\n");
@@ -244,18 +236,18 @@ static void test_softdirty(void)
 	if (addr == MAP_FAILED)
 		ksft_exit_fail_msg("mmap failed\n");
 
-	/* Clear any softdirty bits. */
+	 
 	clear_softdirty();
 	ksft_test_result(range_is_not_softdirty(addr, SIZE),
 			 "range is not softdirty\n");
 
-	/* Populating READ should set softdirty. */
+	 
 	ret = madvise(addr, SIZE, MADV_POPULATE_READ);
 	ksft_test_result(!ret, "MADV_POPULATE_READ\n");
 	ksft_test_result(range_is_not_softdirty(addr, SIZE),
 			 "range is not softdirty\n");
 
-	/* Populating WRITE should set softdirty. */
+	 
 	ret = madvise(addr, SIZE, MADV_POPULATE_WRITE);
 	ksft_test_result(!ret, "MADV_POPULATE_WRITE\n");
 	ksft_test_result(range_is_softdirty(addr, SIZE),
@@ -266,14 +258,7 @@ static void test_softdirty(void)
 
 static int system_has_softdirty(void)
 {
-	/*
-	 * There is no way to check if the kernel supports soft-dirty, other
-	 * than by writing to a page and seeing if the bit was set. But the
-	 * tests are intended to check that the bit gets set when it should, so
-	 * doing that check would turn a potentially legitimate fail into a
-	 * skip. Fortunately, we know for sure that arm64 does not support
-	 * soft-dirty. So for now, let's just use the arch as a corse guide.
-	 */
+	 
 #if defined(__aarch64__)
 	return 0;
 #else

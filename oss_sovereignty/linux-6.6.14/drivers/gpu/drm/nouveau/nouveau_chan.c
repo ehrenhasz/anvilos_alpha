@@ -1,26 +1,4 @@
-/*
- * Copyright 2012 Red Hat Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: Ben Skeggs
- */
+ 
 #include <nvif/push006c.h>
 
 #include <nvif/class.h>
@@ -160,7 +138,7 @@ nouveau_channel_prep(struct nouveau_drm *drm, struct nvif_device *device,
 	chan->vmm = nouveau_cli_vmm(cli);
 	atomic_set(&chan->killed, 0);
 
-	/* allocate memory for dma push buffer */
+	 
 	target = NOUVEAU_GEM_DOMAIN_GART | NOUVEAU_GEM_DOMAIN_COHERENT;
 	if (nouveau_vram_pushbuf)
 		target = NOUVEAU_GEM_DOMAIN_VRAM;
@@ -186,10 +164,7 @@ nouveau_channel_prep(struct nouveau_drm *drm, struct nvif_device *device,
 	chan->chan._push.kick = nouveau_channel_kick;
 	chan->chan.push = &chan->chan._push;
 
-	/* create dma object covering the *entire* memory space that the
-	 * pushbuf lives in, this is because the GEM code requires that
-	 * we be able to call out to other (indirect) push buffers
-	 */
+	 
 	chan->push.addr = chan->push.buffer->offset;
 
 	if (device->info.family >= NV_DEVICE_INFO_V0_TESLA) {
@@ -212,10 +187,7 @@ nouveau_channel_prep(struct nouveau_drm *drm, struct nvif_device *device,
 	} else
 	if (chan->push.buffer->bo.resource->mem_type == TTM_PL_VRAM) {
 		if (device->info.family == NV_DEVICE_INFO_V0_TNT) {
-			/* nv04 vram pushbuf hack, retarget to its location in
-			 * the framebuffer bar rather than direct vram access..
-			 * nfi why this exists, it came from the -nv ddx.
-			 */
+			 
 			args.target = NV_DMA_V0_TARGET_PCI;
 			args.access = NV_DMA_V0_ACCESS_RDWR;
 			args.start = nvxx_device(device)->func->
@@ -297,13 +269,13 @@ nouveau_channel_ctor(struct nouveau_drm *drm, struct nvif_device *device, bool p
 	else
 		size = ioffset + ilength;
 
-	/* allocate dma push buffer */
+	 
 	ret = nouveau_channel_prep(drm, device, size, &chan);
 	*pchan = chan;
 	if (ret)
 		return ret;
 
-	/* create channel object */
+	 
 	args.chan.version = 0;
 	args.chan.namelen = sizeof(args.name);
 	args.chan.runlist = __ffs64(runm);
@@ -327,7 +299,7 @@ nouveau_channel_ctor(struct nouveau_drm *drm, struct nvif_device *device, bool p
 	args.chan.huserd = 0;
 	args.chan.ouserd = 0;
 
-	/* allocate userd */
+	 
 	if (hosts[cid].oclass >= VOLTA_CHANNEL_GPFIFO_A) {
 		ret = nvif_mem_ctor(&cli->mmu, "abi16ChanUSERD", NVIF_CLASS_MEM_GF100,
 				    NVIF_MEM_VRAM | NVIF_MEM_COHERENT | NVIF_MEM_MAPPABLE,
@@ -393,7 +365,7 @@ nouveau_channel_init(struct nouveau_channel *chan, u32 vram, u32 gart)
 		}
 	}
 
-	/* allocate dma objects to cover all allowed vram, and gart */
+	 
 	if (device->info.family < NV_DEVICE_INFO_V0_FERMI) {
 		if (device->info.family >= NV_DEVICE_INFO_V0_TESLA) {
 			args.target = NV_DMA_V0_TARGET_VM;
@@ -439,7 +411,7 @@ nouveau_channel_init(struct nouveau_channel *chan, u32 vram, u32 gart)
 			return ret;
 	}
 
-	/* initialise dma tracking parameters */
+	 
 	switch (chan->user.oclass) {
 	case NV03_CHANNEL_DMA:
 	case NV10_CHANNEL_DMA:
@@ -472,7 +444,7 @@ nouveau_channel_init(struct nouveau_channel *chan, u32 vram, u32 gart)
 	for (i = 0; i < NOUVEAU_DMA_SKIPS; i++)
 		PUSH_DATA(chan->chan.push, 0x00000000);
 
-	/* allocate software object class (used for fences on <= nv05) */
+	 
 	if (device->info.family < NV_DEVICE_INFO_V0_CELSIUS) {
 		ret = nvif_object_ctor(&chan->user, "abi16NvswFence", 0x006e,
 				       NVIF_CLASS_SW_NV04,
@@ -488,7 +460,7 @@ nouveau_channel_init(struct nouveau_channel *chan, u32 vram, u32 gart)
 		PUSH_KICK(chan->chan.push);
 	}
 
-	/* initialise synchronisation */
+	 
 	return nouveau_fence(chan->drm)->context_new(chan);
 }
 

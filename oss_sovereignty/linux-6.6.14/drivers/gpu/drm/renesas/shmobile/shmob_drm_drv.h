@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * shmob_drm.h  --  SH Mobile DRM driver
- *
- * Copyright (C) 2012 Renesas Electronics Corporation
- *
- * Laurent Pinchart (laurent.pinchart@ideasonboard.com)
- */
+ 
+ 
 
 #ifndef __SHMOB_DRM_DRV_H__
 #define __SHMOB_DRM_DRV_H__
@@ -30,7 +24,7 @@ struct shmob_drm_device {
 	u32 ldmt1r;
 
 	unsigned int irq;
-	spinlock_t irq_lock;		/* Protects hardware LDINTR register */
+	spinlock_t irq_lock;		 
 
 	struct drm_device *ddev;
 
@@ -39,4 +33,4 @@ struct shmob_drm_device {
 	struct shmob_drm_connector connector;
 };
 
-#endif /* __SHMOB_DRM_DRV_H__ */
+#endif  

@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright (c) 2019 Facebook */
+
+ 
 
 #include <linux/bpf.h>
 #include <linux/bpf_verifier.h>
@@ -33,30 +33,15 @@ struct bpf_struct_ops_map {
 	struct bpf_map map;
 	struct rcu_head rcu;
 	const struct bpf_struct_ops *st_ops;
-	/* protect map_update */
+	 
 	struct mutex lock;
-	/* link has all the bpf_links that is populated
-	 * to the func ptr of the kernel's struct
-	 * (in kvalue.data).
-	 */
+	 
 	struct bpf_link **links;
-	/* image is a page that has all the trampolines
-	 * that stores the func args before calling the bpf_prog.
-	 * A PAGE_SIZE "image" is enough to store all trampoline for
-	 * "links[]".
-	 */
+	 
 	void *image;
-	/* uvalue->data stores the kernel struct
-	 * (e.g. tcp_congestion_ops) that is more useful
-	 * to userspace than the kvalue.  For example,
-	 * the bpf_prog's id is stored instead of the kernel
-	 * address of a func ptr.
-	 */
+	 
 	struct bpf_struct_ops_value *uvalue;
-	/* kvalue.data stores the actual kernel's struct
-	 * (e.g. tcp_congestion_ops) that will be
-	 * registered to the kernel subsystem.
-	 */
+	 
 	struct bpf_struct_ops_value kvalue;
 };
 
@@ -70,11 +55,7 @@ static DEFINE_MUTEX(update_mutex);
 #define VALUE_PREFIX "bpf_struct_ops_"
 #define VALUE_PREFIX_LEN (sizeof(VALUE_PREFIX) - 1)
 
-/* bpf_struct_ops_##_name (e.g. bpf_struct_ops_tcp_congestion_ops) is
- * the map's value exposed to the userspace and its btf-type-id is
- * stored at the map->btf_vmlinux_value_type_id.
- *
- */
+ 
 #define BPF_STRUCT_OPS_TYPE(_name)				\
 extern struct bpf_struct_ops bpf_##_name;			\
 								\
@@ -120,7 +101,7 @@ void bpf_struct_ops_init(struct btf *btf, struct bpf_verifier_log *log)
 	const char *mname;
 	u32 i, j;
 
-	/* Ensure BTF type is emitted for "struct bpf_struct_ops_##_name" */
+	 
 #define BPF_STRUCT_OPS_TYPE(_name) BTF_TYPE_EMIT(struct bpf_struct_ops_##_name);
 #include "bpf_struct_ops_types.h"
 #undef BPF_STRUCT_OPS_TYPE
@@ -264,25 +245,19 @@ int bpf_struct_ops_map_sys_lookup_elem(struct bpf_map *map, void *key,
 		return -ENOENT;
 
 	kvalue = &st_map->kvalue;
-	/* Pair with smp_store_release() during map_update */
+	 
 	state = smp_load_acquire(&kvalue->state);
 	if (state == BPF_STRUCT_OPS_STATE_INIT) {
 		memset(value, 0, map->value_size);
 		return 0;
 	}
 
-	/* No lock is needed.  state and refcnt do not need
-	 * to be updated together under atomic context.
-	 */
+	 
 	uvalue = value;
 	memcpy(uvalue, st_map->uvalue, map->value_size);
 	uvalue->state = state;
 
-	/* This value offers the user space a general estimate of how
-	 * many sockets are still utilizing this struct_ops for TCP
-	 * congestion control. The number might not be exact, but it
-	 * should sufficiently meet our present goals.
-	 */
+	 
 	refcnt = atomic64_read(&map->refcnt) - atomic64_read(&map->usercnt);
 	refcount_set(&uvalue->refcnt, max_t(s64, refcnt, 0));
 
@@ -358,9 +333,7 @@ int bpf_struct_ops_prepare_trampoline(struct bpf_tramp_links *tlinks,
 
 	tlinks[BPF_TRAMP_FENTRY].links[0] = link;
 	tlinks[BPF_TRAMP_FENTRY].nr_links = 1;
-	/* BPF_TRAMP_F_RET_FENTRY_RET is only used by bpf_struct_ops,
-	 * and it must be used alone.
-	 */
+	 
 	flags = model->ret_size > 0 ? BPF_TRAMP_F_RET_FENTRY_RET : 0;
 	return arch_prepare_bpf_trampoline(NULL, image, image_end,
 					   model, flags, tlinks, NULL);
@@ -438,16 +411,13 @@ static long bpf_struct_ops_map_update_elem(struct bpf_map *map, void *key,
 		if (err < 0)
 			goto reset_unlock;
 
-		/* The ->init_member() has handled this member */
+		 
 		if (err > 0)
 			continue;
 
-		/* If st_ops->init_member does not handle it,
-		 * we will only handle func ptrs and zero-ed members
-		 * here.  Reject everything else.
-		 */
+		 
 
-		/* All non func ptr member must be 0 */
+		 
 		if (!ptype || !btf_type_is_func_proto(ptype)) {
 			u32 msize;
 
@@ -467,7 +437,7 @@ static long bpf_struct_ops_map_update_elem(struct bpf_map *map, void *key,
 		}
 
 		prog_fd = (int)(*(unsigned long *)(udata + moff));
-		/* Similar check as the attr->attach_prog_fd */
+		 
 		if (!prog_fd)
 			continue;
 
@@ -504,7 +474,7 @@ static long bpf_struct_ops_map_update_elem(struct bpf_map *map, void *key,
 		*(void **)(kdata + moff) = image;
 		image += err;
 
-		/* put prog_id to udata */
+		 
 		*(unsigned long *)(udata + moff) = prog->aux->id;
 	}
 
@@ -516,10 +486,7 @@ static long bpf_struct_ops_map_update_elem(struct bpf_map *map, void *key,
 				goto reset_unlock;
 		}
 		set_memory_rox((long)st_map->image, 1);
-		/* Let bpf_link handle registration & unregistration.
-		 *
-		 * Pair with smp_load_acquire() during lookup_elem().
-		 */
+		 
 		smp_store_release(&kvalue->state, BPF_STRUCT_OPS_STATE_READY);
 		goto unlock;
 	}
@@ -527,26 +494,14 @@ static long bpf_struct_ops_map_update_elem(struct bpf_map *map, void *key,
 	set_memory_rox((long)st_map->image, 1);
 	err = st_ops->reg(kdata);
 	if (likely(!err)) {
-		/* This refcnt increment on the map here after
-		 * 'st_ops->reg()' is secure since the state of the
-		 * map must be set to INIT at this moment, and thus
-		 * bpf_struct_ops_map_delete_elem() can't unregister
-		 * or transition it to TOBEFREE concurrently.
-		 */
+		 
 		bpf_map_inc(map);
-		/* Pair with smp_load_acquire() during lookup_elem().
-		 * It ensures the above udata updates (e.g. prog->aux->id)
-		 * can be seen once BPF_STRUCT_OPS_STATE_INUSE is set.
-		 */
+		 
 		smp_store_release(&kvalue->state, BPF_STRUCT_OPS_STATE_INUSE);
 		goto unlock;
 	}
 
-	/* Error during st_ops->reg(). Can happen if this struct_ops needs to be
-	 * verified as a whole, after all init_member() calls. Can also happen if
-	 * there was a race in registering the struct_ops (under the same name) to
-	 * a sub-system through different struct_ops's maps.
-	 */
+	 
 	set_memory_nx((long)st_map->image, 1);
 	set_memory_rw((long)st_map->image, 1);
 
@@ -583,7 +538,7 @@ static long bpf_struct_ops_map_delete_elem(struct bpf_map *map, void *key)
 		return -ENOENT;
 	default:
 		WARN_ON_ONCE(1);
-		/* Should never happen.  Treat it as not found. */
+		 
 		return -ENOENT;
 	}
 }
@@ -622,21 +577,7 @@ static void __bpf_struct_ops_map_free(struct bpf_map *map)
 
 static void bpf_struct_ops_map_free(struct bpf_map *map)
 {
-	/* The struct_ops's function may switch to another struct_ops.
-	 *
-	 * For example, bpf_tcp_cc_x->init() may switch to
-	 * another tcp_cc_y by calling
-	 * setsockopt(TCP_CONGESTION, "tcp_cc_y").
-	 * During the switch,  bpf_struct_ops_put(tcp_cc_x) is called
-	 * and its refcount may reach 0 which then free its
-	 * trampoline image while tcp_cc_x is still running.
-	 *
-	 * A vanilla rcu gp is to wait for all bpf-tcp-cc prog
-	 * to finish. bpf-tcp-cc prog is non sleepable.
-	 * A rcu_tasks gp is to wait for the last few insn
-	 * in the tramopline image to finish before releasing
-	 * the trampoline image.
-	 */
+	 
 	synchronize_rcu_mult(call_rcu, call_rcu_tasks);
 
 	__bpf_struct_ops_map_free(map);
@@ -669,9 +610,7 @@ static struct bpf_map *bpf_struct_ops_map_alloc(union bpf_attr *attr)
 	t = st_ops->type;
 
 	st_map_size = sizeof(*st_map) +
-		/* kvalue stores the
-		 * struct bpf_struct_ops_tcp_congestions_ops
-		 */
+		 
 		(vt->size - sizeof(struct bpf_struct_ops_value));
 
 	st_map = bpf_map_area_alloc(st_map_size, NUMA_NO_NODE);
@@ -727,9 +666,7 @@ const struct bpf_map_ops bpf_struct_ops_map_ops = {
 	.map_btf_id = &bpf_struct_ops_map_btf_ids[0],
 };
 
-/* "const void *" because some subsystem is
- * passing a const (e.g. const struct tcp_congestion_ops *)
- */
+ 
 bool bpf_struct_ops_get(const void *kdata)
 {
 	struct bpf_struct_ops_value *kvalue;
@@ -760,7 +697,7 @@ static bool bpf_struct_ops_valid_to_reg(struct bpf_map *map)
 
 	return map->map_type == BPF_MAP_TYPE_STRUCT_OPS &&
 		map->map_flags & BPF_F_LINK &&
-		/* Pair with smp_store_release() during map_update */
+		 
 		smp_load_acquire(&st_map->kvalue.state) == BPF_STRUCT_OPS_STATE_READY;
 }
 
@@ -773,9 +710,7 @@ static void bpf_struct_ops_map_link_dealloc(struct bpf_link *link)
 	st_map = (struct bpf_struct_ops_map *)
 		rcu_dereference_protected(st_link->map, true);
 	if (st_map) {
-		/* st_link->map can be NULL if
-		 * bpf_struct_ops_link_create() fails to register.
-		 */
+		 
 		st_map->st_ops->unreg(&st_map->kvalue.data);
 		bpf_map_put(&st_map->map);
 	}
@@ -835,7 +770,7 @@ static int bpf_struct_ops_map_link_update(struct bpf_link *link, struct bpf_map 
 	}
 
 	old_st_map = container_of(old_map, struct bpf_struct_ops_map, map);
-	/* The new and old struct_ops must be the same type. */
+	 
 	if (st_map->st_ops != old_st_map->st_ops) {
 		err = -EINVAL;
 		goto err_out;

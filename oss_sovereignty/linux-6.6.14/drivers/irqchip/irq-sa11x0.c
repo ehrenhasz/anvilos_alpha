@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2015 Dmitry Eremin-Solenikov
- * Copyright (C) 1999-2001 Nicolas Pitre
- *
- * Generic IRQ handling for the SA11x0.
- */
+
+ 
 #include <linux/init.h>
 #include <linux/module.h>
 #include <linux/interrupt.h>
@@ -18,19 +13,16 @@
 
 #include <asm/exception.h>
 
-#define ICIP	0x00  /* IC IRQ Pending reg. */
-#define ICMR	0x04  /* IC Mask Reg.        */
-#define ICLR	0x08  /* IC Level Reg.       */
-#define ICCR	0x0C  /* IC Control Reg.     */
-#define ICFP	0x10  /* IC FIQ Pending reg. */
-#define ICPR	0x20  /* IC Pending Reg.     */
+#define ICIP	0x00   
+#define ICMR	0x04   
+#define ICLR	0x08   
+#define ICCR	0x0C   
+#define ICFP	0x10   
+#define ICPR	0x20   
 
 static void __iomem *iobase;
 
-/*
- * We don't need to ACK IRQs on the SA1100 unless they're GPIOs
- * this is for internal IRQs i.e. from IRQ LCD to RTCAlrm.
- */
+ 
 static void sa1100_mask_irq(struct irq_data *d)
 {
 	u32 reg;
@@ -94,9 +86,7 @@ static int sa1100irq_suspend(void)
 	st->iclr = readl_relaxed(iobase + ICLR);
 	st->iccr = readl_relaxed(iobase + ICCR);
 
-	/*
-	 * Disable all GPIO-based interrupts.
-	 */
+	 
 	writel_relaxed(st->icmr & 0xfffff000, iobase + ICMR);
 
 	return 0;
@@ -151,16 +141,13 @@ void __init sa11x0_init_irq_nodt(int irq_start, resource_size_t io_start)
 	if (WARN_ON(!iobase))
 		return;
 
-	/* disable all IRQs */
+	 
 	writel_relaxed(0, iobase + ICMR);
 
-	/* all IRQs are IRQ, not FIQ */
+	 
 	writel_relaxed(0, iobase + ICLR);
 
-	/*
-	 * Whatever the doc says, this has to be set for the wait-on-irq
-	 * instruction to work... on a SA1100 rev 9 at least.
-	 */
+	 
 	writel_relaxed(1, iobase + ICCR);
 
 	sa1100_normal_irqdomain = irq_domain_add_simple(NULL,

@@ -1,26 +1,8 @@
-/* localealias.c - Handle aliases for locale names. */
+ 
 
-/* Copyright (C) 1995-1999, 2000-2001, 2003, 2005-2009 Free Software Foundation, Inc.
+ 
 
-   This file is part of GNU Bash.
-
-   Bash is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   Bash is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with Bash.  If not, see <http://www.gnu.org/licenses/>.
-*/
-
-/* Tell glibc's <string.h> to provide a prototype for mempcpy().
-   This must come before <config.h> because <config.h> may include
-   <features.h>, and once <features.h> has been included, it's too late.  */
+ 
 #ifndef _GNU_SOURCE
 # define _GNU_SOURCE    1
 #endif
@@ -70,12 +52,10 @@ char *alloca ();
 # define relocate(pathname) (pathname)
 #endif
 
-/* @@ end of prolog @@ */
+ 
 
 #ifdef _LIBC
-/* Rename the non ANSI C functions.  This is required by the standard
-   because some ANSI C functions will require linking with this object
-   file and the name space must not be polluted.  */
+ 
 # define strcasecmp __strcasecmp
 
 # ifndef mempcpy
@@ -84,7 +64,7 @@ char *alloca ();
 # define HAVE_MEMPCPY	1
 # define HAVE___FSETLOCKING	1
 
-/* We need locking here since we can be called from different places.  */
+ 
 # include <bits/libc-lock.h>
 
 __libc_lock_define_initialized (static, lock);
@@ -94,7 +74,7 @@ __libc_lock_define_initialized (static, lock);
 # define internal_function
 #endif
 
-/* Some optimizations for glibc.  */
+ 
 #ifdef _LIBC
 # define FEOF(fp)		feof_unlocked (fp)
 # define FGETS(buf, n, fp)	fgets_unlocked (buf, n, fp)
@@ -103,10 +83,9 @@ __libc_lock_define_initialized (static, lock);
 # define FGETS(buf, n, fp)	fgets (buf, n, fp)
 #endif
 
-/* For those losing systems which don't have `alloca' we have to add
-   some additional code emulating it.  */
+ 
 #ifdef HAVE_ALLOCA
-# define freea(p) /* nothing */
+# define freea(p)  
 #else
 # define alloca(n) malloc (n)
 # define freea(p) free (p)
@@ -141,7 +120,7 @@ static size_t nmap;
 static size_t maxmap;
 
 
-/* Prototypes for local functions.  */
+ 
 static size_t read_alias_file PARAMS ((const char *fname, int fname_len))
      internal_function;
 static int extend_alias_table PARAMS ((void));
@@ -180,14 +159,14 @@ _nl_expand_alias (name)
       else
 	retval = NULL;
 
-      /* We really found an alias.  Return the value.  */
+       
       if (retval != NULL)
 	{
 	  result = retval->value;
 	  break;
 	}
 
-      /* Perhaps we can find another alias file.  */
+       
       added = 0;
       while (added == 0 && locale_alias_path[0] != '\0')
 	{
@@ -241,45 +220,39 @@ read_alias_file (fname, fname_len)
     return 0;
 
 #ifdef HAVE___FSETLOCKING
-  /* No threads present.  */
+   
   __fsetlocking (fp, FSETLOCKING_BYCALLER);
 #endif
 
   added = 0;
   while (!FEOF (fp))
     {
-      /* It is a reasonable approach to use a fix buffer here because
-	 a) we are only interested in the first two fields
-	 b) these fields must be usable as file names and so must not
-	    be that long
-	 We avoid a multi-kilobyte buffer here since this would use up
-	 stack space which we might not have if the program ran out of
-	 memory.  */
+       
       char buf[400];
       char *alias;
       char *value;
       char *cp;
 
       if (FGETS (buf, sizeof buf, fp) == NULL)
-	/* EOF reached.  */
+	 
 	break;
 
       cp = buf;
-      /* Ignore leading white space.  */
+       
       while (isspace ((unsigned char) cp[0]))
 	++cp;
 
-      /* A leading '#' signals a comment line.  */
+       
       if (cp[0] != '\0' && cp[0] != '#')
 	{
 	  alias = cp++;
 	  while (cp[0] != '\0' && !isspace ((unsigned char) cp[0]))
 	    ++cp;
-	  /* Terminate alias name.  */
+	   
 	  if (cp[0] != '\0')
 	    *cp++ = '\0';
 
-	  /* Now look for the beginning of the value.  */
+	   
 	  while (isspace ((unsigned char) cp[0]))
 	    ++cp;
 
@@ -291,12 +264,10 @@ read_alias_file (fname, fname_len)
 	      value = cp++;
 	      while (cp[0] != '\0' && !isspace ((unsigned char) cp[0]))
 		++cp;
-	      /* Terminate value.  */
+	       
 	      if (cp[0] == '\n')
 		{
-		  /* This has to be done to make the following test
-		     for the end of line possible.  We are looking for
-		     the terminating '\n' which do not overwrite here.  */
+		   
 		  *cp++ = '\0';
 		  *cp = '\n';
 		}
@@ -315,7 +286,7 @@ read_alias_file (fname, fname_len)
 
 	      if (string_space_act + alias_len + value_len > string_space_max)
 		{
-		  /* Increase size of memory pool.  */
+		   
 		  size_t new_size = (string_space_max
 				     + (alias_len + value_len > 1024
 					? alias_len + value_len : 1024));
@@ -354,17 +325,14 @@ read_alias_file (fname, fname_len)
 	    }
 	}
 
-      /* Possibly not the whole line fits into the buffer.  Ignore
-	 the rest of the line.  */
+       
       while (strchr (buf, '\n') == NULL)
 	if (FGETS (buf, sizeof buf, fp) == NULL)
-	  /* Make sure the inner loop will be left.  The outer loop
-	     will exit at the `feof' test.  */
+	   
 	  break;
     }
 
-  /* Should we test for ferror()?  I think we have to silently ignore
-     errors.  --drepper  */
+   
   fclose (fp);
 
   if (added > 0)
@@ -385,7 +353,7 @@ extend_alias_table ()
   new_map = (struct alias_map *) realloc (map, (new_size
 						* sizeof (struct alias_map)));
   if (new_map == NULL)
-    /* Simply don't extend: we don't have any more core.  */
+     
     return -1;
 
   map = new_map;
@@ -411,8 +379,7 @@ alias_compare (map1, map2)
 
   do
     {
-      /* I know this seems to be odd but the tolower() function in
-	 some systems libc cannot handle nonalpha characters.  */
+       
       c1 = isupper (*p1) ? tolower (*p1) : *p1;
       c2 = isupper (*p2) ? tolower (*p2) : *p2;
       if (c1 == '\0')

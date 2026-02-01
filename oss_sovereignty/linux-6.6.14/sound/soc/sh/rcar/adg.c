@@ -1,8 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Helper routines for R-Car sound ADG.
-//
-//  Copyright (C) 2013  Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>
+
+
+
+
+
 #include <linux/clk-provider.h>
 #include <linux/clkdev.h>
 #include "rsnd.h"
@@ -42,7 +42,7 @@ struct rsnd_adg {
 	u32 brga;
 	u32 brgb;
 
-	int brg_rate[ADG_HZ_SIZE]; /* BRGA / BRGB */
+	int brg_rate[ADG_HZ_SIZE];  
 };
 
 #define for_each_rsnd_clkin(pos, adg, i)	\
@@ -128,11 +128,11 @@ static void __rsnd_adg_get_timesel_ratio(struct rsnd_priv *priv,
 	unsigned int val, en;
 	unsigned int min, diff;
 	unsigned int sel_rate[] = {
-		adg->clkin_rate[CLKA],	/* 0000: CLKA */
-		adg->clkin_rate[CLKB],	/* 0001: CLKB */
-		adg->clkin_rate[CLKC],	/* 0010: CLKC */
-		adg->brg_rate[ADG_HZ_441],	/* 0011: BRGA */
-		adg->brg_rate[ADG_HZ_48],	/* 0100: BRGB */
+		adg->clkin_rate[CLKA],	 
+		adg->clkin_rate[CLKB],	 
+		adg->clkin_rate[CLKC],	 
+		adg->brg_rate[ADG_HZ_441],	 
+		adg->brg_rate[ADG_HZ_48],	 
 	};
 
 	min = ~0;
@@ -151,13 +151,10 @@ static void __rsnd_adg_get_timesel_ratio(struct rsnd_priv *priv,
 			if (min > diff) {
 				val = (sel << 8) | idx;
 				min = diff;
-				en = 1 << (sel + 1); /* fixme */
+				en = 1 << (sel + 1);  
 			}
 
-			/*
-			 * step of 0_0000 / 0_0001 / 0_1101
-			 * are out of order
-			 */
+			 
 			if ((idx > 2) && (idx % 2))
 				step *= 2;
 			if (idx == 0x1c) {
@@ -191,7 +188,7 @@ static void rsnd_adg_get_timesel_ratio(struct rsnd_priv *priv,
 	u32 _out;
 	u32 _en;
 
-	/* default = SSI WS */
+	 
 	_in =
 	_out = rsnd_adg_ssi_ws_timing_gen2(io);
 
@@ -288,10 +285,7 @@ static void rsnd_adg_set_ssi_clk(struct rsnd_mod *ssi_mod, u32 val)
 
 	val = val << shift;
 
-	/*
-	 * SSI 8 is not connected to ADG.
-	 * it works with SSI 7
-	 */
+	 
 	if (id == 8)
 		return;
 
@@ -312,17 +306,12 @@ int rsnd_adg_clk_query(struct rsnd_priv *priv, unsigned int rate)
 		[CLKI] = 0x0,
 	};
 
-	/*
-	 * find suitable clock from
-	 * AUDIO_CLKA/AUDIO_CLKB/AUDIO_CLKC/AUDIO_CLKI.
-	 */
+	 
 	for_each_rsnd_clkin(clk, adg, i)
 		if (rate == adg->clkin_rate[i])
 			return sel_table[i];
 
-	/*
-	 * find divided clock from BRGA/BRGB
-	 */
+	 
 	if (rate == adg->brg_rate[ADG_HZ_441])
 		return 0x10;
 
@@ -355,7 +344,7 @@ int rsnd_adg_ssi_clk_try_start(struct rsnd_mod *ssi_mod, unsigned int rate)
 	rsnd_adg_set_ssi_clk(ssi_mod, data);
 
 	if (0 == (rate % 8000))
-		ckr = 0x80000000; /* BRGB output = 48kHz */
+		ckr = 0x80000000;  
 
 	rsnd_mod_bset(adg_mod, BRGCKR, 0x80770000, adg->ckr | ckr);
 
@@ -384,11 +373,7 @@ void rsnd_adg_clk_control(struct rsnd_priv *priv, int enable)
 		if (enable) {
 			clk_prepare_enable(clk);
 
-			/*
-			 * We shouldn't use clk_get_rate() under
-			 * atomic context. Let's keep it when
-			 * rsnd_adg_clk_enable() was called
-			 */
+			 
 			adg->clkin_rate[i] = clk_get_rate(clk);
 		} else {
 			clk_disable_unprepare(clk);
@@ -506,13 +491,10 @@ static int rsnd_adg_get_clkout(struct rsnd_priv *priv)
 	};
 
 	ckr = 0;
-	brga = 0xff; /* default */
-	brgb = 0xff; /* default */
+	brga = 0xff;  
+	brgb = 0xff;  
 
-	/*
-	 * ADG supports BRRA/BRRB output only
-	 * this means all clkout0/1/2/3 will be same rate
-	 */
+	 
 	prop = of_find_property(np, "clock-frequency", NULL);
 	if (!prop)
 		goto rsnd_adg_get_clkout_end;
@@ -533,47 +515,21 @@ static int rsnd_adg_get_clkout(struct rsnd_priv *priv)
 			req_Hz[ADG_HZ_48] = req_rate[i];
 	}
 
-	/*
-	 * This driver is assuming that AUDIO_CLKA/AUDIO_CLKB/AUDIO_CLKC
-	 * have 44.1kHz or 48kHz base clocks for now.
-	 *
-	 * SSI itself can divide parent clock by 1/1 - 1/16
-	 * see
-	 *	rsnd_adg_ssi_clk_try_start()
-	 *	rsnd_ssi_master_clk_start()
-	 */
+	 
 
-	/*
-	 * [APPROXIMATE]
-	 *
-	 * clk_i (internal clock) can't create accurate rate, it will be approximate rate.
-	 *
-	 * <Note>
-	 *
-	 * clk_i needs x2 of required maximum rate.
-	 * see
-	 *	- Minimum division of BRRA/BRRB
-	 *	- rsnd_ssi_clk_query()
-	 *
-	 * Sample Settings for TDM 8ch, 32bit width
-	 *
-	 *	8(ch) x 32(bit) x 44100(Hz) x 2<Note> = 22579200
-	 *	8(ch) x 32(bit) x 48000(Hz) x 2<Note> = 24576000
-	 *
-	 *	clock-frequency = <22579200 24576000>;
-	 */
+	 
 	for_each_rsnd_clkin(clk, adg, i) {
 		u32 rate, div;
 
 		rate = clk_get_rate(clk);
 
-		if (0 == rate) /* not used */
+		if (0 == rate)  
 			continue;
 
-		/* BRGA */
+		 
 
 		if (i == CLKI)
-			/* see [APPROXIMATE] */
+			 
 			rate = (clk_get_rate(clk) / req_Hz[ADG_HZ_441]) * req_Hz[ADG_HZ_441];
 		if (!adg->brg_rate[ADG_HZ_441] && req_Hz[ADG_HZ_441] && (0 == rate % 44100)) {
 			div = rate / req_Hz[ADG_HZ_441];
@@ -589,10 +545,10 @@ static int rsnd_adg_get_clkout(struct rsnd_priv *priv)
 			}
 		}
 
-		/* BRGB */
+		 
 
 		if (i == CLKI)
-			/* see [APPROXIMATE] */
+			 
 			rate = (clk_get_rate(clk) / req_Hz[ADG_HZ_48]) * req_Hz[ADG_HZ_48];
 		if (!adg->brg_rate[ADG_HZ_48] && req_Hz[ADG_HZ_48] && (0 == rate % 48000)) {
 			div = rate / req_Hz[ADG_HZ_48];
@@ -619,17 +575,12 @@ static int rsnd_adg_get_clkout(struct rsnd_priv *priv)
 	clkout_name = clkout_name_gen2;
 	clkout_size = ARRAY_SIZE(clkout_name_gen2);
 	if (rsnd_is_gen4(priv))
-		clkout_size = 1; /* reuse clkout_name_gen2[] */
+		clkout_size = 1;  
 
-	/*
-	 * ADG supports BRRA/BRRB output only.
-	 * this means all clkout0/1/2/3 will be * same rate
-	 */
+	 
 
 	of_property_read_u32(np, "#clock-cells", &count);
-	/*
-	 * for clkout
-	 */
+	 
 	if (!count) {
 		clk = clk_register_fixed_rate(dev, clkout_name[CLKOUT],
 					      parent_clk_name, 0, req_rate[0]);
@@ -640,9 +591,7 @@ static int rsnd_adg_get_clkout(struct rsnd_priv *priv)
 		adg->clkout_size = 1;
 		of_clk_add_provider(np, of_clk_src_simple_get, clk);
 	}
-	/*
-	 * for clkout0/1/2/3
-	 */
+	 
 	else {
 		for (i = 0; i < clkout_size; i++) {
 			clk = clk_register_fixed_rate(dev, clkout_name[i],
@@ -709,10 +658,7 @@ void rsnd_adg_clk_dbg_info(struct rsnd_priv *priv, struct seq_file *m)
 	dbg_msg(dev, m, "BRGA (for 44100 base) = %d\n", adg->brg_rate[ADG_HZ_441]);
 	dbg_msg(dev, m, "BRGB (for 48000 base) = %d\n", adg->brg_rate[ADG_HZ_48]);
 
-	/*
-	 * Actual CLKOUT will be exchanged in rsnd_adg_ssi_clk_try_start()
-	 * by BRGCKR::BRGCKR_31
-	 */
+	 
 	for_each_rsnd_clkout(clk, adg, i)
 		dbg_msg(dev, m, "%-18s : %pa : %ld\n",
 			__clk_get_name(clk), clk, clk_get_rate(clk));
@@ -763,6 +709,6 @@ void rsnd_adg_remove(struct rsnd_priv *priv)
 
 	rsnd_adg_clk_disable(priv);
 
-	/* It should be called after rsnd_adg_clk_disable() */
+	 
 	rsnd_adg_null_clk_clean(priv);
 }

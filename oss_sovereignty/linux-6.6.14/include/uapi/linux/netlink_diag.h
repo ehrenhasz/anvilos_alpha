@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
+ 
 #ifndef __NETLINK_DIAG_H__
 #define __NETLINK_DIAG_H__
 
@@ -34,7 +34,7 @@ struct netlink_diag_ring {
 };
 
 enum {
-	/* NETLINK_DIAG_NONE, standard nl API requires this attribute!  */
+	 
 	NETLINK_DIAG_MEMINFO,
 	NETLINK_DIAG_GROUPS,
 	NETLINK_DIAG_RX_RING,
@@ -48,15 +48,15 @@ enum {
 
 #define NDIAG_PROTO_ALL		((__u8) ~0)
 
-#define NDIAG_SHOW_MEMINFO	0x00000001 /* show memory info of a socket */
-#define NDIAG_SHOW_GROUPS	0x00000002 /* show groups of a netlink socket */
+#define NDIAG_SHOW_MEMINFO	0x00000001  
+#define NDIAG_SHOW_GROUPS	0x00000002  
 #ifndef __KERNEL__
-/* deprecated since 4.6 */
-#define NDIAG_SHOW_RING_CFG	0x00000004 /* show ring configuration */
+ 
+#define NDIAG_SHOW_RING_CFG	0x00000004  
 #endif
-#define NDIAG_SHOW_FLAGS	0x00000008 /* show flags of a netlink socket */
+#define NDIAG_SHOW_FLAGS	0x00000008  
 
-/* flags */
+ 
 #define NDIAG_FLAG_CB_RUNNING		0x00000001
 #define NDIAG_FLAG_PKTINFO		0x00000002
 #define NDIAG_FLAG_BROADCAST_ERROR	0x00000004

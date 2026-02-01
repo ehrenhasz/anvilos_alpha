@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
-   Copyright (c) 2011,2012 Intel Corp.
 
-*/
+ 
 
 #include <net/bluetooth/bluetooth.h>
 #include <net/bluetooth/hci.h>
@@ -13,7 +10,7 @@
 #include "a2mp.h"
 #include "amp.h"
 
-/* Remote AMP Controllers interface */
+ 
 void amp_ctrl_get(struct amp_ctrl *ctrl)
 {
 	BT_DBG("ctrl %p orig refcnt %d", ctrl,
@@ -93,7 +90,7 @@ struct amp_ctrl *amp_ctrl_lookup(struct amp_mgr *mgr, u8 id)
 	return NULL;
 }
 
-/* Physical Link interface */
+ 
 static u8 __next_handle(struct amp_mgr *mgr)
 {
 	if (++mgr->handle == 0)
@@ -123,7 +120,7 @@ struct hci_conn *phylink_add(struct hci_dev *hdev, struct amp_mgr *mgr,
 	return hcon;
 }
 
-/* AMP crypto key generation interface */
+ 
 static int hmac_sha256(u8 *key, u8 ksize, char *plaintext, u8 psize, u8 *output)
 {
 	struct crypto_shash *tfm;
@@ -176,7 +173,7 @@ int phylink_gen_key(struct hci_conn *conn, u8 *data, u8 *len, u8 *type)
 
 	BT_DBG("conn %p key_type %d", conn, conn->key_type);
 
-	/* Legacy key */
+	 
 	if (conn->key_type < 3) {
 		bt_dev_err(hdev, "legacy key type %u", conn->key_type);
 		return -EACCES;
@@ -191,11 +188,11 @@ int phylink_gen_key(struct hci_conn *conn, u8 *data, u8 *len, u8 *type)
 		return -EACCES;
 	}
 
-	/* BR/EDR Link Key concatenated together with itself */
+	 
 	memcpy(&keybuf[0], key->val, HCI_LINK_KEY_SIZE);
 	memcpy(&keybuf[HCI_LINK_KEY_SIZE], key->val, HCI_LINK_KEY_SIZE);
 
-	/* Derive Generic AMP Link Key (gamp) */
+	 
 	err = hmac_sha256(keybuf, HCI_AMP_LINK_KEY_SIZE, "gamp", 4, gamp_key);
 	if (err) {
 		bt_dev_err(hdev, "could not derive Generic AMP Key: err %d", err);
@@ -208,7 +205,7 @@ int phylink_gen_key(struct hci_conn *conn, u8 *data, u8 *len, u8 *type)
 		return err;
 	}
 
-	/* Derive Dedicated AMP Link Key: "802b" is 802.11 PAL keyID */
+	 
 	return hmac_sha256(gamp_key, HCI_AMP_LINK_KEY_SIZE, "802b", 4, data);
 }
 
@@ -233,7 +230,7 @@ static void read_local_amp_assoc_complete(struct hci_dev *hdev, u8 status,
 		memcpy(assoc->data + assoc->offset, rp->frag, frag_len);
 		assoc->offset += frag_len;
 
-		/* Read other fragments */
+		 
 		amp_read_loc_assoc_frag(hdev, rp->phy_handle);
 
 		return;
@@ -244,7 +241,7 @@ static void read_local_amp_assoc_complete(struct hci_dev *hdev, u8 status,
 	assoc->offset = 0;
 
 send_rsp:
-	/* Send A2MP Rsp when all fragments are received */
+	 
 	a2mp_send_getampassoc_rsp(hdev, rp->status);
 	a2mp_send_create_phy_link_req(hdev, rp->status);
 }
@@ -305,7 +302,7 @@ void amp_read_loc_assoc_final_data(struct hci_dev *hdev,
 
 	set_bit(READ_LOC_AMP_ASSOC_FINAL, &mgr->state);
 
-	/* Read Local AMP Assoc final link information data */
+	 
 	hci_req_init(&req, hdev);
 	hci_req_add(&req, HCI_OP_READ_LOCAL_AMP_ASSOC, sizeof(cp), &cp);
 	err = hci_req_run_skb(&req, read_local_amp_assoc_complete);
@@ -327,7 +324,7 @@ static void write_remote_amp_assoc_complete(struct hci_dev *hdev, u8 status,
 	amp_write_rem_assoc_continue(hdev, rp->phy_handle);
 }
 
-/* Write AMP Assoc data fragments, returns true with last fragment written*/
+ 
 static bool amp_write_rem_assoc_frag(struct hci_dev *hdev,
 				     struct hci_conn *hcon)
 {
@@ -391,7 +388,7 @@ void amp_write_rem_assoc_continue(struct hci_dev *hdev, u8 handle)
 	if (!hcon)
 		return;
 
-	/* Send A2MP create phylink rsp when all fragments are written */
+	 
 	if (amp_write_rem_assoc_frag(hdev, hcon))
 		a2mp_send_create_phy_link_rsp(hdev, 0);
 }

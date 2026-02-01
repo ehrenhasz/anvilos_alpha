@@ -1,24 +1,8 @@
-/* tparam.c - merge parameters into a termcap entry string. */
+ 
 
-/* Copyright (C) 1985, 1986, 1993,1994, 1995, 1998, 2001,2003,2005,2006,2008,2009 Free Software Foundation, Inc.
+ 
 
-   This file is part of GNU Bash, the Bourne Again SHell.
-
-   Bash is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   Bash is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with Bash.  If not, see <http://www.gnu.org/licenses/>.
-*/
-
-/* Emacs config.h may rename various library functions such as malloc.  */
+ 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 
@@ -38,7 +22,7 @@ extern char *realloc ();
 #  define bcopy(s, d, n)	memcpy ((d), (s), (n))
 #endif
 
-#else /* not HAVE_CONFIG_H */
+#else  
 
 #if defined(HAVE_STRING_H) || defined(STDC_HEADERS)
 #define bcopy(s, d, n) memcpy ((d), (s), (n))
@@ -52,7 +36,7 @@ char *malloc ();
 char *realloc ();
 #endif
 
-#endif /* not HAVE_CONFIG_H */
+#endif  
 
 #include "ltcap.h"
 
@@ -90,23 +74,13 @@ xrealloc (ptr, size)
     memory_out ();
   return tem;
 }
-#endif /* not emacs */
+#endif  
 
-/* Assuming STRING is the value of a termcap string entry
-   containing `%' constructs to expand parameters,
-   merge in parameter values and store result in block OUTSTRING points to.
-   LEN is the length of OUTSTRING.  If more space is needed,
-   a block is allocated with `malloc'.
-
-   The value returned is the address of the resulting string.
-   This may be OUTSTRING or may be the address of a block got with `malloc'.
-   In the latter case, the caller must free the block.
-
-   The fourth and following args to tparam serve as the parameter values.  */
+ 
 
 static char *tparam1 ();
 
-/* VARARGS 2 */
+ 
 char *
 tparam (string, outstring, len, arg0, arg1, arg2, arg3)
      char *string;
@@ -165,7 +139,7 @@ tparam1 (string, outstring, len, up, left, argp)
 
   while (1)
     {
-      /* If the buffer might be too short, make it bigger.  */
+       
       if (op + 5 >= outend)
 	{
 	  register char *new;
@@ -195,19 +169,19 @@ tparam1 (string, outstring, len, up, left, argp)
 	  tem = *argp;
 	  switch (c)
 	    {
-	    case 'd':		/* %d means output in decimal.  */
+	    case 'd':		 
 	      if (tem < 10)
 		goto onedigit;
 	      if (tem < 100)
 		goto twodigit;
-	    case '3':		/* %3 means output in decimal, 3 digits.  */
+	    case '3':		 
 	      if (tem > 999)
 		{
 		  *op++ = tem / 1000 + '0';
 		  tem %= 1000;
 		}
 	      *op++ = tem / 100 + '0';
-	    case '2':		/* %2 means output in decimal, 2 digits.  */
+	    case '2':		 
 	    twodigit:
 	      tem %= 100;
 	      *op++ = tem / 10 + '0';
@@ -217,20 +191,18 @@ tparam1 (string, outstring, len, up, left, argp)
 	      break;
 
 	    case 'C':
-	      /* For c-100: print quotient of value by 96, if nonzero,
-		 then do like %+.  */
+	       
 	      if (tem >= 96)
 		{
 		  *op++ = tem / 96;
 		  tem %= 96;
 		}
-	    case '+':		/* %+x means add character code of char x.  */
+	    case '+':		 
 	      tem += *p++;
-	    case '.':		/* %. means output as character.  */
+	    case '.':		 
 	      if (left)
 		{
-		  /* If want to forbid output of 0 and \n and \t,
-		     and this is one of them, increment it.  */
+		   
 		  while (tem == 0 || tem == '\n' || tem == '\t')
 		    {
 		      tem++;
@@ -241,34 +213,30 @@ tparam1 (string, outstring, len, up, left, argp)
 		    }
 		}
 	      *op++ = tem ? tem : 0200;
-	    case 'f':		/* %f means discard next arg.  */
+	    case 'f':		 
 	      argp++;
 	      break;
 
-	    case 'b':		/* %b means back up one arg (and re-use it).  */
+	    case 'b':		 
 	      argp--;
 	      break;
 
-	    case 'r':		/* %r means interchange following two args.  */
+	    case 'r':		 
 	      argp[0] = argp[1];
 	      argp[1] = tem;
 	      old_argp++;
 	      break;
 
-	    case '>':		/* %>xy means if arg is > char code of x, */
-	      if (argp[0] > *p++) /* then add char code of y to the arg, */
-		argp[0] += *p;	/* and in any case don't output.  */
-	      p++;		/* Leave the arg to be output later.  */
+	    case '>':		 
+	      if (argp[0] > *p++)  
+		argp[0] += *p;	 
+	      p++;		 
 	      break;
 
-	    case 'a':		/* %a means arithmetic.  */
-	      /* Next character says what operation.
-		 Add or subtract either a constant or some other arg.  */
-	      /* First following character is + to add or - to subtract
-		 or = to assign.  */
-	      /* Next following char is 'p' and an arg spec
-		 (0100 plus position of that arg relative to this one)
-		 or 'c' and a constant stored in a character.  */
+	    case 'a':		 
+	       
+	       
+	       
 	      tem = p[2] & 0177;
 	      if (p[1] == 'p')
 		tem = argp[tem - 0100];
@@ -286,35 +254,35 @@ tparam1 (string, outstring, len, up, left, argp)
 	      p += 3;
 	      break;
 
-	    case 'i':		/* %i means add one to arg, */
-	      argp[0] ++;	/* and leave it to be output later.  */
-	      argp[1] ++;	/* Increment the following arg, too!  */
+	    case 'i':		 
+	      argp[0] ++;	 
+	      argp[1] ++;	 
 	      break;
 
-	    case '%':		/* %% means output %; no arg.  */
+	    case '%':		 
 	      goto ordinary;
 
-	    case 'n':		/* %n means xor each of next two args with 140.  */
+	    case 'n':		 
 	      argp[0] ^= 0140;
 	      argp[1] ^= 0140;
 	      break;
 
-	    case 'm':		/* %m means xor each of next two args with 177.  */
+	    case 'm':		 
 	      argp[0] ^= 0177;
 	      argp[1] ^= 0177;
 	      break;
 
-	    case 'B':		/* %B means express arg as BCD char code.  */
+	    case 'B':		 
 	      argp[0] += 6 * (tem / 10);
 	      break;
 
-	    case 'D':		/* %D means weird Delta Data transformation.  */
+	    case 'D':		 
 	      argp[0] -= 2 * (tem % 16);
 	      break;
 	    }
 	}
       else
-	/* Ordinary character in the argument string.  */
+	 
       ordinary:
 	*op++ = c;
     }
@@ -342,4 +310,4 @@ main (argc, argv)
   return 0;
 }
 
-#endif /* DEBUG */
+#endif  

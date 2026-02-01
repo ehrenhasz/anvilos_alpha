@@ -1,32 +1,17 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) Fuzhou Rockchip Electronics Co.Ltd
- * Author:Mark Yao <mark.yao@rock-chips.com>
- */
+ 
+ 
 
 #ifndef _ROCKCHIP_DRM_VOP_H
 #define _ROCKCHIP_DRM_VOP_H
 
-/*
- * major: IP major version, used for IP structure
- * minor: big feature change under same structure
- */
+ 
 #define VOP_VERSION(major, minor)	((major) << 8 | (minor))
 #define VOP_MAJOR(version)		((version) >> 8)
 #define VOP_MINOR(version)		((version) & 0xff)
 
 #define NUM_YUV2YUV_COEFFICIENTS 12
 
-/* AFBC supports a number of configurable modes. Relevant to us is block size
- * (16x16 or 32x8), storage modifiers (SPARSE, SPLIT), and the YUV-like
- * colourspace transform (YTR). 16x16 SPARSE mode is always used. SPLIT mode
- * could be enabled via the hreg_block_split register, but is not currently
- * handled. The colourspace transform is implicitly always assumed by the
- * decoder, so consumers must use this transform as well.
- *
- * Failure to match modifiers will cause errors displaying AFBC buffers
- * produced by conformant AFBC producers, including Mesa.
- */
+ 
 #define ROCKCHIP_AFBC_MOD \
 	DRM_FORMAT_MOD_ARM_AFBC( \
 		AFBC_FORMAT_MOD_BLOCK_SIZE_16x16 | AFBC_FORMAT_MOD_SPARSE \
@@ -237,7 +222,7 @@ struct vop_data {
 	u64 feature;
 };
 
-/* interrupt define */
+ 
 #define DSP_HOLD_VALID_INTR		(1 << 0)
 #define FS_INTR				(1 << 1)
 #define LINE_FLAG_INTR			(1 << 2)
@@ -264,7 +249,7 @@ struct vop_data {
 #define DSP_LINE_NUM(x)			(((x) & 0x1fff) << 12)
 #define DSP_LINE_NUM_MASK		(0x1fff << 12)
 
-/* src alpha ctrl define */
+ 
 #define SRC_FADING_VALUE(x)		(((x) & 0xff) << 24)
 #define SRC_GLOBAL_ALPHA(x)		(((x) & 0xff) << 16)
 #define SRC_FACTOR_M0(x)		(((x) & 0x7) << 6)
@@ -273,19 +258,17 @@ struct vop_data {
 #define SRC_ALPHA_M0(x)			(((x) & 0x1) << 2)
 #define SRC_COLOR_M0(x)			(((x) & 0x1) << 1)
 #define SRC_ALPHA_EN(x)			(((x) & 0x1) << 0)
-/* dst alpha ctrl define */
+ 
 #define DST_FACTOR_M0(x)		(((x) & 0x7) << 6)
 
-/*
- * display output interface supported by rockchip lcdc
- */
+ 
 #define ROCKCHIP_OUT_MODE_P888	0
 #define ROCKCHIP_OUT_MODE_P666	1
 #define ROCKCHIP_OUT_MODE_P565	2
-/* for use special outface */
+ 
 #define ROCKCHIP_OUT_MODE_AAAA	15
 
-/* output flags */
+ 
 #define ROCKCHIP_OUTPUT_DSI_DUAL	BIT(0)
 
 enum alpha_mode {
@@ -433,4 +416,4 @@ static inline int scl_vop_cal_lb_mode(int width, bool is_yuv)
 }
 
 extern const struct component_ops vop_component_ops;
-#endif /* _ROCKCHIP_DRM_VOP_H */
+#endif  

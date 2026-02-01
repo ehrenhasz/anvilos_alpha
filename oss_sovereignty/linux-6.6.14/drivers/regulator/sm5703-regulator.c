@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 
 #include <linux/mfd/sm5703.h>
 #include <linux/module.h>

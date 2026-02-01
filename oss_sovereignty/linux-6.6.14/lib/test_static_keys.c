@@ -1,31 +1,24 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Kernel module for testing static keys.
- *
- * Copyright 2015 Akamai Technologies Inc. All Rights Reserved
- *
- * Authors:
- *      Jason Baron       <jbaron@akamai.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/jump_label.h>
 
-/* old keys */
+ 
 struct static_key old_true_key	= STATIC_KEY_INIT_TRUE;
 struct static_key old_false_key	= STATIC_KEY_INIT_FALSE;
 
-/* new api */
+ 
 DEFINE_STATIC_KEY_TRUE(true_key);
 DEFINE_STATIC_KEY_FALSE(false_key);
 
-/* external */
+ 
 extern struct static_key base_old_true_key;
 extern struct static_key base_inv_old_true_key;
 extern struct static_key base_old_false_key;
 extern struct static_key base_inv_old_false_key;
 
-/* new api */
+ 
 extern struct static_key_true base_true_key;
 extern struct static_key_true base_inv_true_key;
 extern struct static_key_false base_false_key;
@@ -112,7 +105,7 @@ static int __init test_static_key_init(void)
 	int size;
 
 	struct test_key static_key_tests[] = {
-		/* internal keys - old keys */
+		 
 		{
 			.init_state	= true,
 			.key		= &old_true_key,
@@ -123,7 +116,7 @@ static int __init test_static_key_init(void)
 			.key		= &old_false_key,
 			.test_key	= &old_false_key_static_key_false,
 		},
-		/* internal keys - new keys */
+		 
 		{
 			.init_state	= true,
 			.key		= &true_key.key,
@@ -144,7 +137,7 @@ static int __init test_static_key_init(void)
 			.key		= &false_key.key,
 			.test_key	= &false_key_static_branch_unlikely,
 		},
-		/* external keys - old keys */
+		 
 		{
 			.init_state	= true,
 			.key		= &base_old_true_key,
@@ -165,7 +158,7 @@ static int __init test_static_key_init(void)
 			.key		= &base_inv_old_false_key,
 			.test_key	= &base_inv_old_false_key_static_key_false,
 		},
-		/* external keys - new keys */
+		 
 		{
 			.init_state	= true,
 			.key		= &base_true_key.key,

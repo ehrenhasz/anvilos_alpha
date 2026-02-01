@@ -1,18 +1,4 @@
-/*
- * Copyright (c) 2019 Darren Tucker
- *
- * Permission to use, copy, modify, and distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
+ 
 
 #include "includes.h"
 
@@ -83,24 +69,14 @@ main(void)
 	if (sb.st_mtime != 34567890)
 		fail("st_mtime", 0, 0 );
 #if 0
-	/*
-	 * Results expected to be rounded to the nearest microsecond.
-	 * Depends on timestamp precision in kernel and filesystem so
-	 * disabled by default.
-	 */
+	 
 	if (sb.st_atim.tv_nsec != 23456000)
 		fail("atim.tv_nsec", 23456000, sb.st_atim.tv_nsec);
 	if (sb.st_mtim.tv_nsec != 45678000)
 		fail("mtim.tv_nsec", 45678000, sb.st_mtim.tv_nsec);
 #endif
 
-	/*
-	 * POSIX specifies that when given a symlink, AT_SYMLINK_NOFOLLOW
-	 * should update the symlink and not the destination.  The compat
-	 * code doesn't have a way to do this, so where possible it fails
-	 * with instead of following a symlink when explicitly asked not to.
-	 * Here we just test that it does not update the destination.
-	 */
+	 
 	if (rename(TMPFILE, TMPFILE2) == -1)
 		fail("rename", 0, 0);
 	if (symlink(TMPFILE2, TMPFILE) == -1)

@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * TI OMAP4 ISS V4L2 Driver - ISP IPIPEIF module
- *
- * Copyright (C) 2012 Texas Instruments, Inc.
- *
- * Author: Sergio Aguirre <sergio.a.aguirre@gmail.com>
- */
+ 
+ 
 
 #ifndef OMAP4_ISS_IPIPEIF_H
 #define OMAP4_ISS_IPIPEIF_H
@@ -21,41 +15,13 @@ enum ipipeif_input_entity {
 #define IPIPEIF_OUTPUT_MEMORY			BIT(0)
 #define IPIPEIF_OUTPUT_VP			BIT(1)
 
-/* Sink and source IPIPEIF pads */
+ 
 #define IPIPEIF_PAD_SINK			0
 #define IPIPEIF_PAD_SOURCE_ISIF_SF		1
 #define IPIPEIF_PAD_SOURCE_VP			2
 #define IPIPEIF_PADS_NUM			3
 
-/*
- * struct iss_ipipeif_device - Structure for the IPIPEIF module to store its own
- *			    information
- * @subdev: V4L2 subdevice
- * @pads: Sink and source media entity pads
- * @formats: Active video formats
- * @input: Active input
- * @output: Active outputs
- * @video_out: Output video node
- * @error: A hardware error occurred during capture
- * @alaw: A-law compression enabled (1) or disabled (0)
- * @lpf: Low pass filter enabled (1) or disabled (0)
- * @obclamp: Optical-black clamp enabled (1) or disabled (0)
- * @fpc_en: Faulty pixels correction enabled (1) or disabled (0)
- * @blcomp: Black level compensation configuration
- * @clamp: Optical-black or digital clamp configuration
- * @fpc: Faulty pixels correction configuration
- * @lsc: Lens shading compensation configuration
- * @update: Bitmask of controls to update during the next interrupt
- * @shadow_update: Controls update in progress by userspace
- * @syncif: Interface synchronization configuration
- * @vpcfg: Video port configuration
- * @underrun: A buffer underrun occurred and a new buffer has been queued
- * @state: Streaming state
- * @lock: Serializes shadow_update with interrupt handler
- * @wait: Wait queue used to stop the module
- * @stopping: Stopping state
- * @ioctl_lock: Serializes ioctl calls and LSC requests freeing
- */
+ 
 struct iss_ipipeif_device {
 	struct v4l2_subdev subdev;
 	struct media_pad pads[IPIPEIF_PADS_NUM];
@@ -86,4 +52,4 @@ void omap4iss_ipipeif_restore_context(struct iss_device *iss);
 void omap4iss_ipipeif_max_rate(struct iss_ipipeif_device *ipipeif,
 			       unsigned int *max_rate);
 
-#endif	/* OMAP4_ISS_IPIPEIF_H */
+#endif	 

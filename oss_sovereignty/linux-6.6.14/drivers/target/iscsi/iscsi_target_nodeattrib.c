@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*******************************************************************************
- * This file contains the main functions related to Initiator Node Attributes.
- *
- * (c) Copyright 2007-2013 Datera, Inc.
- *
- * Author: Nicholas A. Bellinger <nab@linux-iscsi.org>
- *
- ******************************************************************************/
+
+ 
 
 #include <target/target_core_base.h>
 
@@ -119,9 +112,7 @@ int iscsit_na_nopin_timeout(
 	pr_debug("Set NopIn Timeout to %u for Initiator"
 		" Node %s\n", a->nopin_timeout,
 		iscsit_na_get_initiatorname(acl));
-	/*
-	 * Reenable disabled nopin_timeout timer for all iSCSI connections.
-	 */
+	 
 	if (!orig_nopin_timeout) {
 		spin_lock_bh(&se_nacl->nacl_sess_lock);
 		se_sess = se_nacl->nacl_sess;

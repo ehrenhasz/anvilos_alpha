@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Mediatek ALSA SoC AFE platform driver for 2701
- *
- * Copyright (c) 2016 MediaTek Inc.
- * Author: Garlic Tseng <garlic.tseng@mediatek.com>
- *	   Ir Lian <ir.lian@mediatek.com>
- *	   Ryder Lee <ryder.lee@mediatek.com>
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/module.h>
@@ -131,7 +124,7 @@ static int mt2701_afe_i2s_path_disable(struct mtk_base_afe *afe,
 	if (i2s_path->on[stream_dir])
 		return 0;
 
-	/* disable i2s */
+	 
 	regmap_update_bits(afe->regmap, i2s_data->i2s_ctrl_reg,
 			   ASYS_I2S_CON_I2S_EN, 0);
 
@@ -161,12 +154,12 @@ static void mt2701_afe_i2s_shutdown(struct snd_pcm_substream *substream,
 
 	mt2701_afe_i2s_path_disable(afe, i2s_path, substream->stream);
 
-	/* need to disable i2s-out path when disable i2s-in */
+	 
 	if (substream->stream == SNDRV_PCM_STREAM_CAPTURE)
 		mt2701_afe_i2s_path_disable(afe, i2s_path, !substream->stream);
 
 exit:
-	/* disable mclk */
+	 
 	mt2701_afe_disable_mclk(afe, mode ? 1 : i2s_num);
 }
 
@@ -176,17 +169,17 @@ static int mt2701_i2s_path_enable(struct mtk_base_afe *afe,
 {
 	const struct mt2701_i2s_data *i2s_data = i2s_path->i2s_data[stream_dir];
 	struct mt2701_afe_private *afe_priv = afe->platform_priv;
-	int reg, fs, w_len = 1; /* now we support bck 64bits only */
+	int reg, fs, w_len = 1;  
 	unsigned int mask, val;
 
-	/* no need to enable if already done */
+	 
 	if (++i2s_path->on[stream_dir] != 1)
 		return 0;
 
 	fs = mt2701_afe_i2s_fs(rate);
 
 	mask = ASYS_I2S_CON_FS |
-	       ASYS_I2S_CON_I2S_COUPLE_MODE | /* 0 */
+	       ASYS_I2S_CON_I2S_COUPLE_MODE |  
 	       ASYS_I2S_CON_I2S_MODE |
 	       ASYS_I2S_CON_WIDE_MODE;
 
@@ -213,10 +206,10 @@ static int mt2701_i2s_path_enable(struct mtk_base_afe *afe,
 			   << i2s_data->i2s_asrc_fs_shift,
 			   fs << i2s_data->i2s_asrc_fs_shift);
 
-	/* enable i2s */
+	 
 	mt2701_afe_enable_i2s(afe, i2s_path, stream_dir);
 
-	/* reset i2s hw status before enable */
+	 
 	regmap_update_bits(afe->regmap, i2s_data->i2s_ctrl_reg,
 			   ASYS_I2S_CON_RESET, ASYS_I2S_CON_RESET);
 	udelay(1);
@@ -251,7 +244,7 @@ static int mt2701_afe_i2s_prepare(struct snd_pcm_substream *substream,
 
 	i2s_path->occupied[substream->stream] = 1;
 
-	/* need to enable i2s-out path when enable i2s-in */
+	 
 	if (substream->stream == SNDRV_PCM_STREAM_CAPTURE)
 		mt2701_i2s_path_enable(afe, i2s_path, !substream->stream,
 				       substream->runtime->rate);
@@ -273,7 +266,7 @@ static int mt2701_afe_i2s_set_sysclk(struct snd_soc_dai *dai, int clk_id,
 	if (i2s_num < 0)
 		return i2s_num;
 
-	/* mclk */
+	 
 	if (dir == SND_SOC_CLOCK_IN) {
 		dev_warn(dai->dev, "The SoCs doesn't support mclk input\n");
 		return -EINVAL;
@@ -348,7 +341,7 @@ static void mt2701_btmrg_shutdown(struct snd_pcm_substream *substream,
 	struct mtk_base_afe *afe = snd_soc_dai_get_drvdata(dai);
 	struct mt2701_afe_private *afe_priv = afe->platform_priv;
 
-	/* if the other direction stream is not occupied */
+	 
 	if (!afe_priv->mrg_enable[!substream->stream]) {
 		regmap_update_bits(afe->regmap, AFE_DAIBT_CON0,
 				   AFE_DAIBT_CON0_DAIBT_EN, 0);
@@ -369,7 +362,7 @@ static int mt2701_simple_fe_startup(struct snd_pcm_substream *substream,
 	struct mtk_base_afe_memif *memif_tmp;
 	int stream_dir = substream->stream;
 
-	/* can't run single DL & DLM at the same time */
+	 
 	if (stream_dir == SNDRV_PCM_STREAM_PLAYBACK) {
 		memif_tmp = &afe->memif[MT2701_MEMIF_DLM];
 		if (memif_tmp->substream) {
@@ -388,7 +381,7 @@ static int mt2701_simple_fe_hw_params(struct snd_pcm_substream *substream,
 	struct mtk_base_afe *afe = snd_soc_dai_get_drvdata(dai);
 	int stream_dir = substream->stream;
 
-	/* single DL use PAIR_INTERLEAVE */
+	 
 	if (stream_dir == SNDRV_PCM_STREAM_PLAYBACK)
 		regmap_update_bits(afe->regmap,
 				   AFE_MEMIF_PBUF_SIZE,
@@ -412,7 +405,7 @@ static int mt2701_dlm_fe_startup(struct snd_pcm_substream *substream,
 			return -EBUSY;
 	}
 
-	/* enable agent for all signal DL (due to hw design) */
+	 
 	for (i = MT2701_MEMIF_DL1; i < MT2701_MEMIF_DL_SINGLE_NUM; ++i) {
 		memif_data = afe->memif[i].data;
 		regmap_update_bits(afe->regmap,
@@ -510,7 +503,7 @@ static int mt2701_irq_fs(struct snd_pcm_substream *substream, unsigned int rate)
 	return mt2701_afe_i2s_fs(rate);
 }
 
-/* FE DAIs */
+ 
 static const struct snd_soc_dai_ops mt2701_single_memif_dai_ops = {
 	.startup	= mt2701_simple_fe_startup,
 	.shutdown	= mtk_afe_fe_shutdown,
@@ -529,7 +522,7 @@ static const struct snd_soc_dai_ops mt2701_dlm_memif_dai_ops = {
 	.trigger	= mt2701_dlm_fe_trigger,
 };
 
-/* I2S BE DAIs */
+ 
 static const struct snd_soc_dai_ops mt2701_afe_i2s_ops = {
 	.startup	= mt2701_afe_i2s_startup,
 	.shutdown	= mt2701_afe_i2s_shutdown,
@@ -537,7 +530,7 @@ static const struct snd_soc_dai_ops mt2701_afe_i2s_ops = {
 	.set_sysclk	= mt2701_afe_i2s_set_sysclk,
 };
 
-/* MRG BE DAIs */
+ 
 static const struct snd_soc_dai_ops mt2701_btmrg_ops = {
 	.startup = mt2701_btmrg_startup,
 	.shutdown = mt2701_btmrg_shutdown,
@@ -545,7 +538,7 @@ static const struct snd_soc_dai_ops mt2701_btmrg_ops = {
 };
 
 static struct snd_soc_dai_driver mt2701_afe_pcm_dais[] = {
-	/* FE DAIs: memory intefaces to CPU */
+	 
 	{
 		.name = "PCMO0",
 		.id = MT2701_MEMIF_DL1,
@@ -630,7 +623,7 @@ static struct snd_soc_dai_driver mt2701_afe_pcm_dais[] = {
 		},
 		.ops = &mt2701_single_memif_dai_ops,
 	},
-	/* BE DAIs */
+	 
 	{
 		.name = "I2S0",
 		.id = MT2701_IO_I2S,
@@ -834,7 +827,7 @@ static const struct snd_kcontrol_new mt2701_afe_multi_ch_out_i2s3[] = {
 };
 
 static const struct snd_soc_dapm_widget mt2701_afe_pcm_widgets[] = {
-	/* inter-connections */
+	 
 	SND_SOC_DAPM_MIXER("I00", SND_SOC_NOPM, 0, 0, NULL, 0),
 	SND_SOC_DAPM_MIXER("I01", SND_SOC_NOPM, 0, 0, NULL, 0),
 	SND_SOC_DAPM_MIXER("I02", SND_SOC_NOPM, 0, 0, mt2701_afe_i02_mix,
@@ -919,7 +912,7 @@ static const struct snd_soc_dapm_route mt2701_afe_pcm_routes[] = {
 	{"I01", NULL, "I2S0 Capture"},
 	{"I02", NULL, "I2S1 Capture"},
 	{"I03", NULL, "I2S1 Capture"},
-	/* I02,03 link to UL2, also need to open I2S0 */
+	 
 	{"I02", "I2S0 Switch", "I2S0 Capture"},
 
 	{"I26", NULL, "BT Capture"},
@@ -1270,7 +1263,7 @@ static const struct mt2701_i2s_data mt2701_i2s_data[][2] = {
 		{ ASYS_I2SO4_CON, 15, 0x1f },
 		{ ASYS_I2SIN4_CON, 15, 0x1f },
 	},
-	/* TODO - extend control registers supported by newer SoCs */
+	 
 };
 
 static irqreturn_t mt2701_asys_isr(int irq_id, void *dev)
@@ -1358,7 +1351,7 @@ static int mt2701_afe_pcm_dev_probe(struct platform_device *pdev)
 
 	mutex_init(&afe->irq_alloc_lock);
 
-	/* memif initialize */
+	 
 	afe->memif_size = MT2701_MEMIF_NUM;
 	afe->memif = devm_kcalloc(dev, afe->memif_size, sizeof(*afe->memif),
 				  GFP_KERNEL);
@@ -1370,7 +1363,7 @@ static int mt2701_afe_pcm_dev_probe(struct platform_device *pdev)
 		afe->memif[i].irq_usage = -1;
 	}
 
-	/* irq initialize */
+	 
 	afe->irqs_size = MT2701_IRQ_ASYS_END;
 	afe->irqs = devm_kcalloc(dev, afe->irqs_size, sizeof(*afe->irqs),
 				 GFP_KERNEL);
@@ -1380,7 +1373,7 @@ static int mt2701_afe_pcm_dev_probe(struct platform_device *pdev)
 	for (i = 0; i < afe->irqs_size; i++)
 		afe->irqs[i].irq_data = &irq_data[i];
 
-	/* I2S initialize */
+	 
 	for (i = 0; i < afe_priv->soc->i2s_num; i++) {
 		afe_priv->i2s_path[i].i2s_data[SNDRV_PCM_STREAM_PLAYBACK] =
 			&mt2701_i2s_data[i][SNDRV_PCM_STREAM_PLAYBACK];
@@ -1396,7 +1389,7 @@ static int mt2701_afe_pcm_dev_probe(struct platform_device *pdev)
 	afe->runtime_resume = mt2701_afe_runtime_resume;
 	afe->runtime_suspend = mt2701_afe_runtime_suspend;
 
-	/* initial audio related clock */
+	 
 	ret = mt2701_init_clock(afe);
 	if (ret) {
 		dev_err(dev, "init clock error\n");

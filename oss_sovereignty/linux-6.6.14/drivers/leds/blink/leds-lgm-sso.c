@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Intel Lightning Mountain SoC LED Serial Shift Output Controller driver
- *
- * Copyright (c) 2020 Intel Corporation.
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/clk.h>
@@ -34,7 +30,7 @@
 #define SSO_CON0_SWU			BIT(31)
 
 #define SSO_CON1			0x2B4
-#define SSO_CON1_FCDSC			GENMASK(21, 20) /* Fixed Divider Shift Clock */
+#define SSO_CON1_FCDSC			GENMASK(21, 20)  
 #define SSO_CON1_FPID			GENMASK(24, 23)
 #define SSO_CON1_GPTD			GENMASK(26, 25)
 #define SSO_CON1_US			GENMASK(31, 30)
@@ -43,7 +39,7 @@
 #define SSO_CON2			0x2C4
 #define SSO_CON3			0x2C8
 
-/* Driver MACRO */
+ 
 #define MAX_PIN_NUM_PER_BANK		SZ_32
 #define MAX_GROUP_NUM			SZ_4
 #define PINS_PER_GROUP			SZ_8
@@ -52,18 +48,13 @@
 #define MAX_FREQ_RANK			10
 #define DEF_GPTC_CLK_RATE		200000000
 #define SSO_DEF_BRIGHTNESS		LED_HALF
-#define DATA_CLK_EDGE			0 /* 0-rising, 1-falling */
+#define DATA_CLK_EDGE			0  
 
 static const u32 freq_div_tbl[] = {4000, 2000, 1000, 800};
 static const int freq_tbl[] = {2, 4, 8, 10, 50000, 100000, 200000, 250000};
 static const int shift_clk_freq_tbl[] = {25000000, 12500000, 6250000, 3125000};
 
-/*
- * Update Source to update the SOUTs
- * SW - Software has to update the SWU bit
- * GPTC - General Purpose timer is used as clock source
- * FPID - Divided FSC clock (FPID) is used as clock source
- */
+ 
 enum {
 	US_SW = 0,
 	US_GPTC = 1,
@@ -71,9 +62,9 @@ enum {
 };
 
 enum {
-	MAX_FPID_FREQ_RANK = 5, /* 1 to 4 */
-	MAX_GPTC_FREQ_RANK = 9, /* 5 to 8 */
-	MAX_GPTC_HS_FREQ_RANK = 10, /* 9 to 10 */
+	MAX_FPID_FREQ_RANK = 5,  
+	MAX_GPTC_FREQ_RANK = 9,  
+	MAX_GPTC_HS_FREQ_RANK = 10,  
 };
 
 enum {
@@ -179,7 +170,7 @@ static u32 sso_led_pin_blink_off(u32 pin, unsigned int group)
 		return pin - LED_GRP1_PIN_MAX;
 	else if (group == LED_GRP1_24_28)
 		return pin - LED_GRP0_PIN_MAX;
-	else	/* led 0 - 23 in led 32 location */
+	else	 
 		return SSO_LED_MAX_NUM - LED_GRP1_PIN_MAX;
 }
 
@@ -214,7 +205,7 @@ static void sso_led_freq_set(struct sso_led_priv *priv, u32 pin, int freq_idx)
 	else if (freq_src == CLK_SRC_GPTC)
 		val_freq = freq_idx - MAX_FPID_FREQ_RANK;
 
-	/* set blink rate idx */
+	 
 	if (freq_src != CLK_SRC_GPTC_HS) {
 		low = GET_FREQ_OFFSET(off, freq_src);
 		high = low + 2;
@@ -222,7 +213,7 @@ static void sso_led_freq_set(struct sso_led_priv *priv, u32 pin, int freq_idx)
 		regmap_update_bits(priv->mmap, reg, GENMASK(high, low), val);
 	}
 
-	/* select clock source */
+	 
 	low = GET_SRC_OFFSET(off);
 	high = low + 2;
 	val = freq_src << high;
@@ -249,7 +240,7 @@ static void sso_led_brightness_set(struct led_classdev *led_cdev,
 	else
 		val = 1;
 
-	/* HW blink off */
+	 
 	if (desc->hw_blink && !val && desc->blinking) {
 		desc->blinking = 0;
 		regmap_update_bits(priv->mmap, SSO_CON2, BIT(desc->pin), 0);
@@ -326,7 +317,7 @@ static void sso_led_hw_cfg(struct sso_led_priv *priv, struct sso_led *led)
 {
 	struct sso_led_desc *desc = &led->desc;
 
-	/* set freq */
+	 
 	if (desc->hw_blink) {
 		sso_led_freq_set(priv, desc->pin, desc->freq_idx);
 		regmap_update_bits(priv->mmap, SSO_CON2, BIT(desc->pin),
@@ -337,10 +328,10 @@ static void sso_led_hw_cfg(struct sso_led_priv *priv, struct sso_led *led)
 		regmap_update_bits(priv->mmap, SSO_CON3, BIT(desc->pin),
 				   1 << desc->pin);
 
-	/* set brightness */
+	 
 	regmap_write(priv->mmap, DUTY_CYCLE(desc->pin), desc->brightness);
 
-	/* enable output */
+	 
 	if (!desc->hw_trig && desc->brightness)
 		gpiod_set_value(led->gpiod, 1);
 }
@@ -473,7 +464,7 @@ static int sso_gpio_gc_init(struct device *dev, struct sso_led_priv *priv)
 
 	gc->label               = "lgm-sso";
 	gc->base                = -1;
-	/* To exclude pins from control, use "gpio-reserved-ranges" */
+	 
 	gc->ngpio               = priv->gpio.pins;
 	gc->parent              = dev;
 	gc->owner               = THIS_MODULE;
@@ -552,14 +543,14 @@ static int sso_gpio_hw_init(struct sso_led_priv *priv)
 	u32 activate;
 	int i, err;
 
-	/* Clear all duty cycles */
+	 
 	for (i = 0; i < priv->gpio.pins; i++) {
 		err = regmap_write(priv->mmap, DUTY_CYCLE(i), 0);
 		if (err)
 			return err;
 	}
 
-	/* 4 groups for total 32 pins */
+	 
 	for (i = 1; i <= MAX_GROUP_NUM; i++) {
 		activate = !!(i * PINS_PER_GROUP <= priv->gpio.pins ||
 			      priv->gpio.pins > (i - 1) * PINS_PER_GROUP);
@@ -569,31 +560,31 @@ static int sso_gpio_hw_init(struct sso_led_priv *priv)
 			return err;
 	}
 
-	/* NO HW directly controlled pin by default */
+	 
 	err = regmap_write(priv->mmap, SSO_CON3, 0);
 	if (err)
 		return err;
 
-	/* NO BLINK for all pins */
+	 
 	err = regmap_write(priv->mmap, SSO_CON2, 0);
 	if (err)
 		return err;
 
-	/* OUTPUT 0 by default */
+	 
 	err = regmap_write(priv->mmap, SSO_CPU, 0);
 	if (err)
 		return err;
 
-	/* update edge */
+	 
 	err = regmap_update_bits(priv->mmap, SSO_CON0, SSO_CON0_RZFL,
 				 FIELD_PREP(SSO_CON0_RZFL, priv->gpio.edge));
 	if (err)
 		return err;
 
-	/* Set GPIO update rate */
+	 
 	sso_gpio_freq_set(priv);
 
-	/* Register shift clock */
+	 
 	sso_register_shift_clk(priv);
 
 	return 0;
@@ -603,10 +594,10 @@ static void sso_led_shutdown(struct sso_led *led)
 {
 	struct sso_led_priv *priv = led->priv;
 
-	/* unregister led */
+	 
 	devm_led_classdev_unregister(priv->dev, &led->cdev);
 
-	/* clear HW control bit */
+	 
 	if (led->desc.hw_trig)
 		regmap_update_bits(priv->mmap, SSO_CON3, BIT(led->desc.pin), 0);
 
@@ -682,7 +673,7 @@ __sso_led_dt_parse(struct sso_led_priv *priv, struct fwnode_handle *fw_ssoled)
 
 		if (fwnode_property_read_u32(fwnode_child,
 					     "intel,sso-blink-rate-hz", &prop)) {
-			/* default first freq rate */
+			 
 			desc->freq_idx = 0;
 			desc->blink_rate = priv->freq[desc->freq_idx];
 		} else {
@@ -707,7 +698,7 @@ __sso_led_dt_parse(struct sso_led_priv *priv, struct fwnode_handle *fw_ssoled)
 
 __dt_err:
 	fwnode_handle_put(fwnode_child);
-	/* unregister leds */
+	 
 	list_for_each_entry(led, &priv->led_list, list)
 		sso_led_shutdown(led);
 
@@ -782,10 +773,10 @@ static int intel_sso_led_probe(struct platform_device *pdev)
 	priv->pdev = pdev;
 	priv->dev = dev;
 
-	/* gate clock */
+	 
 	priv->clocks[0].id = "sso";
 
-	/* fpid clock */
+	 
 	priv->clocks[1].id = "fpid";
 
 	ret = devm_clk_bulk_get(dev, ARRAY_SIZE(priv->clocks), priv->clocks);

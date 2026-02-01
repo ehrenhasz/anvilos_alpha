@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * An I2C driver for the Philips PCF8563 RTC
- * Copyright 2005-06 Tower Technologies
- *
- * Author: Alessandro Zummo <a.zummo@towertech.it>
- * Maintainers: http://www.nslu2-linux.org/
- *
- * based on the other drivers in this same directory.
- *
- * https://www.nxp.com/docs/en/data-sheet/PCF8563.pdf
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/i2c.h>
@@ -20,13 +10,13 @@
 #include <linux/of.h>
 #include <linux/err.h>
 
-#define PCF8563_REG_ST1		0x00 /* status */
+#define PCF8563_REG_ST1		0x00  
 #define PCF8563_REG_ST2		0x01
 #define PCF8563_BIT_AIE		BIT(1)
 #define PCF8563_BIT_AF		BIT(3)
 #define PCF8563_BITS_ST2_N	(7 << 5)
 
-#define PCF8563_REG_SC		0x02 /* datetime */
+#define PCF8563_REG_SC		0x02  
 #define PCF8563_REG_MN		0x03
 #define PCF8563_REG_HR		0x04
 #define PCF8563_REG_DM		0x05
@@ -34,17 +24,17 @@
 #define PCF8563_REG_MO		0x07
 #define PCF8563_REG_YR		0x08
 
-#define PCF8563_REG_AMN		0x09 /* alarm */
+#define PCF8563_REG_AMN		0x09  
 
-#define PCF8563_REG_CLKO		0x0D /* clock out */
-#define PCF8563_REG_CLKO_FE		0x80 /* clock out enabled */
-#define PCF8563_REG_CLKO_F_MASK		0x03 /* frequenc mask */
+#define PCF8563_REG_CLKO		0x0D  
+#define PCF8563_REG_CLKO_FE		0x80  
+#define PCF8563_REG_CLKO_F_MASK		0x03  
 #define PCF8563_REG_CLKO_F_32768HZ	0x00
 #define PCF8563_REG_CLKO_F_1024HZ	0x01
 #define PCF8563_REG_CLKO_F_32HZ		0x02
 #define PCF8563_REG_CLKO_F_1HZ		0x03
 
-#define PCF8563_REG_TMRC	0x0E /* timer control */
+#define PCF8563_REG_TMRC	0x0E  
 #define PCF8563_TMRC_ENABLE	BIT(7)
 #define PCF8563_TMRC_4096	0
 #define PCF8563_TMRC_64		1
@@ -52,30 +42,17 @@
 #define PCF8563_TMRC_1_60	3
 #define PCF8563_TMRC_MASK	3
 
-#define PCF8563_REG_TMR		0x0F /* timer */
+#define PCF8563_REG_TMR		0x0F  
 
-#define PCF8563_SC_LV		0x80 /* low voltage */
-#define PCF8563_MO_C		0x80 /* century */
+#define PCF8563_SC_LV		0x80  
+#define PCF8563_MO_C		0x80  
 
 static struct i2c_driver pcf8563_driver;
 
 struct pcf8563 {
 	struct rtc_device *rtc;
-	/*
-	 * The meaning of MO_C bit varies by the chip type.
-	 * From PCF8563 datasheet: this bit is toggled when the years
-	 * register overflows from 99 to 00
-	 *   0 indicates the century is 20xx
-	 *   1 indicates the century is 19xx
-	 * From RTC8564 datasheet: this bit indicates change of
-	 * century. When the year digit data overflows from 99 to 00,
-	 * this bit is set. By presetting it to 0 while still in the
-	 * 20th century, it will be set in year 2000, ...
-	 * There seems no reliable way to know how the system use this
-	 * bit.  So let's do it heuristically, assuming we are live in
-	 * 1970...2069.
-	 */
-	int c_polarity;	/* 0: MO_C=1 means 19xx, otherwise MO_C=1 means 20xx */
+	 
+	int c_polarity;	 
 
 	struct i2c_client *client;
 #ifdef CONFIG_COMMON_CLK
@@ -87,7 +64,7 @@ static int pcf8563_read_block_data(struct i2c_client *client, unsigned char reg,
 				   unsigned char length, unsigned char *buf)
 {
 	struct i2c_msg msgs[] = {
-		{/* setup read ptr */
+		{ 
 			.addr = client->addr,
 			.len = 1,
 			.buf = &reg,
@@ -191,10 +168,7 @@ static irqreturn_t pcf8563_irq(int irq, void *dev_id)
 	return IRQ_NONE;
 }
 
-/*
- * In the routines that deal directly with the pcf8563 hardware, we use
- * rtc_time -- month 0-11, hour 0-23, yr = calendar year-epoch.
- */
+ 
 static int pcf8563_rtc_read_time(struct device *dev, struct rtc_time *tm)
 {
 	struct i2c_client *client = to_i2c_client(dev);
@@ -223,12 +197,12 @@ static int pcf8563_rtc_read_time(struct device *dev, struct rtc_time *tm)
 
 	tm->tm_sec = bcd2bin(buf[PCF8563_REG_SC] & 0x7F);
 	tm->tm_min = bcd2bin(buf[PCF8563_REG_MN] & 0x7F);
-	tm->tm_hour = bcd2bin(buf[PCF8563_REG_HR] & 0x3F); /* rtc hr 0-23 */
+	tm->tm_hour = bcd2bin(buf[PCF8563_REG_HR] & 0x3F);  
 	tm->tm_mday = bcd2bin(buf[PCF8563_REG_DM] & 0x3F);
 	tm->tm_wday = buf[PCF8563_REG_DW] & 0x07;
-	tm->tm_mon = bcd2bin(buf[PCF8563_REG_MO] & 0x1F) - 1; /* rtc mn 1-12 */
+	tm->tm_mon = bcd2bin(buf[PCF8563_REG_MO] & 0x1F) - 1;  
 	tm->tm_year = bcd2bin(buf[PCF8563_REG_YR]) + 100;
-	/* detect the polarity heuristically. see note above. */
+	 
 	pcf8563->c_polarity = (buf[PCF8563_REG_MO] & PCF8563_MO_C) ?
 		(tm->tm_year >= 100) : (tm->tm_year < 100);
 
@@ -253,17 +227,17 @@ static int pcf8563_rtc_set_time(struct device *dev, struct rtc_time *tm)
 		tm->tm_sec, tm->tm_min, tm->tm_hour,
 		tm->tm_mday, tm->tm_mon, tm->tm_year, tm->tm_wday);
 
-	/* hours, minutes and seconds */
+	 
 	buf[PCF8563_REG_SC] = bin2bcd(tm->tm_sec);
 	buf[PCF8563_REG_MN] = bin2bcd(tm->tm_min);
 	buf[PCF8563_REG_HR] = bin2bcd(tm->tm_hour);
 
 	buf[PCF8563_REG_DM] = bin2bcd(tm->tm_mday);
 
-	/* month, 1 - 12 */
+	 
 	buf[PCF8563_REG_MO] = bin2bcd(tm->tm_mon + 1);
 
-	/* year and century */
+	 
 	buf[PCF8563_REG_YR] = bin2bcd(tm->tm_year - 100);
 	if (pcf8563->c_polarity ? (tm->tm_year >= 100) : (tm->tm_year < 100))
 		buf[PCF8563_REG_MO] |= PCF8563_MO_C;
@@ -349,9 +323,7 @@ static int pcf8563_irq_enable(struct device *dev, unsigned int enabled)
 }
 
 #ifdef CONFIG_COMMON_CLK
-/*
- * Handling of the clkout
- */
+ 
 
 #define clkout_hw_to_pcf8563(_hw) container_of(_hw, struct pcf8563, clkout_hw)
 
@@ -474,7 +446,7 @@ static struct clk *pcf8563_clkout_register_clk(struct pcf8563 *pcf8563)
 	int ret;
 	unsigned char buf;
 
-	/* disable the clkout output */
+	 
 	buf = 0;
 	ret = pcf8563_write_block_data(client, PCF8563_REG_CLKO, 1, &buf);
 	if (ret < 0)
@@ -487,10 +459,10 @@ static struct clk *pcf8563_clkout_register_clk(struct pcf8563 *pcf8563)
 	init.num_parents = 0;
 	pcf8563->clkout_hw.init = &init;
 
-	/* optional override of the clockname */
+	 
 	of_property_read_string(node, "clock-output-names", &init.name);
 
-	/* register the clock */
+	 
 	clk = devm_clk_register(&client->dev, &pcf8563->clkout_hw);
 
 	if (!IS_ERR(clk))
@@ -529,7 +501,7 @@ static int pcf8563_probe(struct i2c_client *client)
 	pcf8563->client = client;
 	device_set_wakeup_capable(&client->dev, 1);
 
-	/* Set timer to lowest frequency to save power (ref Haoyu datasheet) */
+	 
 	buf = PCF8563_TMRC_1_60;
 	err = pcf8563_write_block_data(client, PCF8563_REG_TMRC, 1, &buf);
 	if (err < 0) {
@@ -537,7 +509,7 @@ static int pcf8563_probe(struct i2c_client *client)
 		return err;
 	}
 
-	/* Clear flags and disable interrupts */
+	 
 	buf = 0;
 	err = pcf8563_write_block_data(client, PCF8563_REG_ST2, 1, &buf);
 	if (err < 0) {
@@ -550,7 +522,7 @@ static int pcf8563_probe(struct i2c_client *client)
 		return PTR_ERR(pcf8563->rtc);
 
 	pcf8563->rtc->ops = &pcf8563_rtc_ops;
-	/* the pcf8563 alarm only supports a minute accuracy */
+	 
 	set_bit(RTC_FEATURE_ALARM_RES_MINUTE, pcf8563->rtc->features);
 	clear_bit(RTC_FEATURE_UPDATE_INTERRUPT, pcf8563->rtc->features);
 	pcf8563->rtc->range_min = RTC_TIMESTAMP_BEGIN_2000;
@@ -581,7 +553,7 @@ static int pcf8563_probe(struct i2c_client *client)
 		return err;
 
 #ifdef CONFIG_COMMON_CLK
-	/* register clk in common clk framework */
+	 
 	pcf8563_clkout_register_clk(pcf8563);
 #endif
 

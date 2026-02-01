@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* linux/arch/arm/mach-exynos4/mct.c
- *
- * Copyright (c) 2011 Samsung Electronics Co., Ltd.
- *		http://www.samsung.com
- *
- * Exynos4 MCT(Multi-Core Timer) support
-*/
+
+ 
 
 #include <linux/interrupt.h>
 #include <linux/irq.h>
@@ -52,7 +46,7 @@
 #define TICK_BASE_CNT	1
 
 #ifdef CONFIG_ARM
-/* Use values higher than ARM arch timer. See 6282edb72bed. */
+ 
 #define MCT_CLKSOURCE_RATING		450
 #define MCT_CLKEVENTS_RATING		500
 #else
@@ -60,13 +54,13 @@
 #define MCT_CLKEVENTS_RATING		350
 #endif
 
-/* There are four Global timers starting with 0 offset */
+ 
 #define MCT_G0_IRQ	0
-/* Local timers count starts after global timer count */
+ 
 #define MCT_L0_IRQ	4
-/* Max number of IRQ as per DT binding document */
+ 
 #define MCT_NR_IRQS	20
-/* Max number of local timers */
+ 
 #define MCT_NR_LOCAL	(MCT_NR_IRQS - MCT_L0_IRQ)
 
 enum {
@@ -82,10 +76,7 @@ static int mct_irqs[MCT_NR_IRQS];
 struct mct_clock_event_device {
 	struct clock_event_device evt;
 	unsigned long base;
-	/**
-	 *  The length of the name must be adjusted if number of
-	 *  local timer interrupts grow over two digits
-	 */
+	 
 	char name[11];
 };
 
@@ -101,13 +92,13 @@ static void exynos4_mct_write(unsigned int value, unsigned long offset)
 		stat_addr = (offset & EXYNOS4_MCT_L_MASK) + MCT_L_WSTAT_OFFSET;
 		switch (offset & ~EXYNOS4_MCT_L_MASK) {
 		case MCT_L_TCON_OFFSET:
-			mask = 1 << 3;		/* L_TCON write status */
+			mask = 1 << 3;		 
 			break;
 		case MCT_L_ICNTB_OFFSET:
-			mask = 1 << 1;		/* L_ICNTB write status */
+			mask = 1 << 1;		 
 			break;
 		case MCT_L_TCNTB_OFFSET:
-			mask = 1 << 0;		/* L_TCNTB write status */
+			mask = 1 << 0;		 
 			break;
 		default:
 			return;
@@ -116,34 +107,34 @@ static void exynos4_mct_write(unsigned int value, unsigned long offset)
 		switch (offset) {
 		case EXYNOS4_MCT_G_TCON:
 			stat_addr = EXYNOS4_MCT_G_WSTAT;
-			mask = 1 << 16;		/* G_TCON write status */
+			mask = 1 << 16;		 
 			break;
 		case EXYNOS4_MCT_G_COMP0_L:
 			stat_addr = EXYNOS4_MCT_G_WSTAT;
-			mask = 1 << 0;		/* G_COMP0_L write status */
+			mask = 1 << 0;		 
 			break;
 		case EXYNOS4_MCT_G_COMP0_U:
 			stat_addr = EXYNOS4_MCT_G_WSTAT;
-			mask = 1 << 1;		/* G_COMP0_U write status */
+			mask = 1 << 1;		 
 			break;
 		case EXYNOS4_MCT_G_COMP0_ADD_INCR:
 			stat_addr = EXYNOS4_MCT_G_WSTAT;
-			mask = 1 << 2;		/* G_COMP0_ADD_INCR w status */
+			mask = 1 << 2;		 
 			break;
 		case EXYNOS4_MCT_G_CNT_L:
 			stat_addr = EXYNOS4_MCT_G_CNT_WSTAT;
-			mask = 1 << 0;		/* G_CNT_L write status */
+			mask = 1 << 0;		 
 			break;
 		case EXYNOS4_MCT_G_CNT_U:
 			stat_addr = EXYNOS4_MCT_G_CNT_WSTAT;
-			mask = 1 << 1;		/* G_CNT_U write status */
+			mask = 1 << 1;		 
 			break;
 		default:
 			return;
 		}
 	}
 
-	/* Wait maximum 1 ms until written values are applied */
+	 
 	for (i = 0; i < loops_per_jiffy / 1000 * HZ; i++)
 		if (readl_relaxed(reg_base + stat_addr) & mask) {
 			writel_relaxed(mask, reg_base + stat_addr);
@@ -153,7 +144,7 @@ static void exynos4_mct_write(unsigned int value, unsigned long offset)
 	panic("MCT hangs after writing %d (offset:0x%lx)\n", value, offset);
 }
 
-/* Clocksource handling */
+ 
 static void exynos4_mct_frc_start(void)
 {
 	u32 reg;
@@ -163,16 +154,7 @@ static void exynos4_mct_frc_start(void)
 	exynos4_mct_write(reg, EXYNOS4_MCT_G_TCON);
 }
 
-/**
- * exynos4_read_count_64 - Read all 64-bits of the global counter
- *
- * This will read all 64-bits of the global counter taking care to make sure
- * that the upper and lower half match.  Note that reading the MCT can be quite
- * slow (hundreds of nanoseconds) so you should use the 32-bit (lower half
- * only) version when possible.
- *
- * Returns the number of cycles in the global counter.
- */
+ 
 static u64 exynos4_read_count_64(void)
 {
 	unsigned int lo, hi;
@@ -187,14 +169,7 @@ static u64 exynos4_read_count_64(void)
 	return ((u64)hi << 32) | lo;
 }
 
-/**
- * exynos4_read_count_32 - Read the lower 32-bits of the global counter
- *
- * This will read just the lower 32-bits of the global counter.  This is marked
- * as notrace so it can be used by the scheduler clock.
- *
- * Returns the number of cycles in the global counter (lower 32 bits).
- */
+ 
 static u32 notrace exynos4_read_count_32(void)
 {
 	return readl_relaxed(reg_base + EXYNOS4_MCT_G_CNT_L);
@@ -237,10 +212,7 @@ static cycles_t exynos4_read_current_timer(void)
 
 static int __init exynos4_clocksource_init(bool frc_shared)
 {
-	/*
-	 * When the frc is shared, the main processer should have already
-	 * turned it on and we shouldn't be writing to TCON.
-	 */
+	 
 	if (frc_shared)
 		mct_frc.resume = NULL;
 	else
@@ -357,7 +329,7 @@ static int exynos4_clockevent_init(void)
 
 static DEFINE_PER_CPU(struct mct_clock_event_device, percpu_mct_tick);
 
-/* Clock event handling */
+ 
 static void exynos4_mct_tick_stop(struct mct_clock_event_device *mevt)
 {
 	unsigned long tmp;
@@ -378,12 +350,12 @@ static void exynos4_mct_tick_start(unsigned long cycles,
 
 	exynos4_mct_tick_stop(mevt);
 
-	tmp = (1 << 31) | cycles;	/* MCT_L_UPDATE_ICNTB */
+	tmp = (1 << 31) | cycles;	 
 
-	/* update interrupt count buffer */
+	 
 	exynos4_mct_write(tmp, mevt->base + MCT_L_ICNTB_OFFSET);
 
-	/* enable MCT tick interrupt */
+	 
 	exynos4_mct_write(0x1, mevt->base + MCT_L_INT_ENB_OFFSET);
 
 	tmp = readl_relaxed(reg_base + mevt->base + MCT_L_TCON_OFFSET);
@@ -394,7 +366,7 @@ static void exynos4_mct_tick_start(unsigned long cycles,
 
 static void exynos4_mct_tick_clear(struct mct_clock_event_device *mevt)
 {
-	/* Clear the MCT tick interrupt */
+	 
 	if (readl_relaxed(reg_base + mevt->base + MCT_L_INT_CSTAT_OFFSET) & 1)
 		exynos4_mct_write(0x1, mevt->base + MCT_L_INT_CSTAT_OFFSET);
 }
@@ -437,11 +409,7 @@ static irqreturn_t exynos4_mct_tick_isr(int irq, void *dev_id)
 	struct mct_clock_event_device *mevt = dev_id;
 	struct clock_event_device *evt = &mevt->evt;
 
-	/*
-	 * This is for supporting oneshot mode.
-	 * Mct would generate interrupt periodically
-	 * without explicit stopping.
-	 */
+	 
 	if (!clockevent_state_periodic(&mevt->evt))
 		exynos4_mct_tick_stop(mevt);
 
@@ -528,13 +496,7 @@ static int __init exynos4_timer_resources(struct device_node *np)
 	return 0;
 }
 
-/**
- * exynos4_timer_interrupts - initialize MCT interrupts
- * @np: device node for MCT
- * @int_type: interrupt type, MCT_INT_PPI or MCT_INT_SPI
- * @local_idx: array mapping CPU numbers to local timer indices
- * @nr_local: size of @local_idx array
- */
+ 
 static int __init exynos4_timer_interrupts(struct device_node *np,
 					   unsigned int int_type,
 					   const u32 *local_idx,
@@ -544,14 +506,10 @@ static int __init exynos4_timer_interrupts(struct device_node *np,
 
 	mct_int_type = int_type;
 
-	/* This driver uses only one global timer interrupt */
+	 
 	mct_irqs[MCT_G0_IRQ] = irq_of_parse_and_map(np, MCT_G0_IRQ);
 
-	/*
-	 * Find out the number of local irqs specified. The local
-	 * timer irqs are specified after the four global timer
-	 * irqs are specified.
-	 */
+	 
 	nr_irqs = of_irq_count(np);
 	if (nr_irqs > ARRAY_SIZE(mct_irqs)) {
 		pr_err("exynos-mct: too many (%d) interrupts configured in DT\n",
@@ -612,7 +570,7 @@ static int __init exynos4_timer_interrupts(struct device_node *np,
 		mevt->base = EXYNOS4_MCT_L_BASE(local_idx[cpu]);
 	}
 
-	/* Install hotplug callbacks which configure the timer on this CPU */
+	 
 	err = cpuhp_setup_state(CPUHP_AP_EXYNOS4_MCT_TIMER_STARTING,
 				"clockevents/exynos4/mct_timer:starting",
 				exynos4_mct_starting_cpu,
@@ -677,10 +635,7 @@ static int __init mct_init_dt(struct device_node *np, unsigned int int_type)
 	if (ret)
 		return ret;
 
-	/*
-	 * When the FRC is shared with a main processor, this secondary
-	 * processor cannot use the global comparator.
-	 */
+	 
 	if (frc_shared)
 		return 0;
 

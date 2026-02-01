@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0 OR BSD-3-Clause)
-/*
- * Copyright(c) 2018 Intel Corporation.
- *
- */
+
+ 
 #include "hfi.h"
 #include "trace.h"
 #include "qp.h"
@@ -50,11 +47,7 @@ static void opfn_conn_request(struct rvt_qp *qp)
 
 	trace_hfi1_opfn_state_conn_request(qp);
 	spin_lock_irqsave(&priv->opfn.lock, flags);
-	/*
-	 * Exit if the extended bit is not set, or if nothing is requested, or
-	 * if we have completed all requests, or if a previous request is in
-	 * progress
-	 */
+	 
 	if (!priv->opfn.extended || !priv->opfn.requested ||
 	    priv->opfn.requested == priv->opfn.completed || priv->opfn.curr)
 		goto done;
@@ -68,11 +61,7 @@ static void opfn_conn_request(struct rvt_qp *qp)
 
 	extd = &hfi1_opfn_handlers[capcode];
 	if (!extd || !extd->request || !extd->request(qp, &data)) {
-		/*
-		 * Either there is no handler for this capability or the request
-		 * packet could not be generated. Either way, mark it as done so
-		 * we don't keep attempting to complete it.
-		 */
+		 
 		priv->opfn.completed |= OPFN_CODE(capcode);
 		goto done;
 	}
@@ -85,8 +74,8 @@ static void opfn_conn_request(struct rvt_qp *qp)
 	wr.remote_addr = HFI1_VERBS_E_ATOMIC_VADDR;
 	wr.compare_add = data;
 
-	priv->opfn.curr = capcode;	/* A new request is now in progress */
-	/* Drop opfn.lock before calling ib_post_send() */
+	priv->opfn.curr = capcode;	 
+	 
 	spin_unlock_irqrestore(&priv->opfn.lock, flags);
 
 	ret = ib_post_send(&qp->ibqp, &wr.wr, NULL);
@@ -98,10 +87,7 @@ err:
 	trace_hfi1_msg_opfn_conn_request(qp, "ib_ost_send failed: ret = ",
 					 (u64)ret);
 	spin_lock_irqsave(&priv->opfn.lock, flags);
-	/*
-	 * In case of an unexpected error return from ib_post_send
-	 * clear opfn.curr and reschedule to try again
-	 */
+	 
 	priv->opfn.curr = STL_VERBS_EXTD_NONE;
 	opfn_schedule_conn_request(qp);
 done:
@@ -119,11 +105,7 @@ void opfn_send_conn_request(struct work_struct *work)
 	opfn_conn_request(qpriv->owner);
 }
 
-/*
- * When QP s_lock is held in the caller, the OPFN request must be scheduled
- * to a different workqueue to avoid double locking QP s_lock in call to
- * ib_post_send in opfn_conn_request
- */
+ 
 static void opfn_schedule_conn_request(struct rvt_qp *qp)
 {
 	struct hfi1_qp_priv *priv = qp->priv;
@@ -156,10 +138,7 @@ void opfn_conn_response(struct rvt_qp *qp, struct rvt_ack_entry *e,
 
 	spin_lock_irqsave(&priv->opfn.lock, flags);
 	if (priv->opfn.completed & OPFN_CODE(capcode)) {
-		/*
-		 * We are receiving a request for a feature that has already
-		 * been negotiated. This may mean that the other side has reset
-		 */
+		 
 		priv->opfn.completed &= ~OPFN_CODE(capcode);
 		if (extd->error)
 			extd->error(qp);
@@ -186,10 +165,7 @@ void opfn_conn_reply(struct rvt_qp *qp, u64 data)
 		return;
 
 	spin_lock_irqsave(&priv->opfn.lock, flags);
-	/*
-	 * Either there is no previous request or the reply is not for the
-	 * current request
-	 */
+	 
 	if (!priv->opfn.curr || capcode != priv->opfn.curr)
 		goto done;
 
@@ -201,10 +177,7 @@ void opfn_conn_reply(struct rvt_qp *qp, u64 data)
 	if (extd->reply(qp, data))
 		priv->opfn.completed |= OPFN_CODE(capcode);
 clear:
-	/*
-	 * Clear opfn.curr to indicate that the previous request is no longer in
-	 * progress
-	 */
+	 
 	priv->opfn.curr = STL_VERBS_EXTD_NONE;
 	trace_hfi1_opfn_state_conn_reply(qp);
 done:
@@ -220,11 +193,7 @@ void opfn_conn_error(struct rvt_qp *qp)
 
 	trace_hfi1_opfn_state_conn_error(qp);
 	trace_hfi1_msg_opfn_conn_error(qp, "error. qp state ", (u64)qp->state);
-	/*
-	 * The QP has gone into the Error state. We have to invalidate all
-	 * negotiated feature, including the one in progress (if any). The RC
-	 * QP handling will clean the WQE for the connection request.
-	 */
+	 
 	spin_lock_irqsave(&priv->opfn.lock, flags);
 	while (priv->opfn.completed) {
 		capcode = priv->opfn.completed & ~(priv->opfn.completed - 1);
@@ -257,29 +226,16 @@ void opfn_qp_init(struct rvt_qp *qp, struct ib_qp_attr *attr, int attr_mask)
 		if (qp->pmtu == enum_to_mtu(OPA_MTU_4096) ||
 		    qp->pmtu == enum_to_mtu(OPA_MTU_8192)) {
 			tid_rdma_opfn_init(qp, local);
-			/*
-			 * We only want to set the OPFN requested bit when the
-			 * QP transitions to RTS.
-			 */
+			 
 			if (attr_mask & IB_QP_STATE &&
 			    attr->qp_state == IB_QPS_RTS) {
 				priv->opfn.requested |= OPFN_MASK(TID_RDMA);
-				/*
-				 * If the QP is transitioning to RTS and the
-				 * opfn.completed for TID RDMA has already been
-				 * set, the QP is being moved *back* into RTS.
-				 * We can now renegotiate the TID RDMA
-				 * parameters.
-				 */
+				 
 				if (priv->opfn.completed &
 				    OPFN_MASK(TID_RDMA)) {
 					priv->opfn.completed &=
 						~OPFN_MASK(TID_RDMA);
-					/*
-					 * Since the opfn.completed bit was
-					 * already set, it is safe to assume
-					 * that the opfn.extended is also set.
-					 */
+					 
 					opfn_schedule_conn_request(qp);
 				}
 			}

@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-// Copyright (c) 2019 Mellanox Technologies.
+
+
 
 #include <linux/debugfs.h>
 #include "en.h"
@@ -99,7 +99,7 @@ bool mlx5e_is_ktls_rx(struct mlx5_core_dev *mdev)
 	if (is_kdump_kernel() || !MLX5_CAP_GEN(mdev, tls_rx))
 		return false;
 
-	/* Check the possibility to post the required ICOSQ WQEs. */
+	 
 	if (WARN_ON_ONCE(max_sq_wqebbs < MLX5E_TLS_SET_STATIC_PARAMS_WQEBBS))
 		return false;
 	if (WARN_ON_ONCE(max_sq_wqebbs < MLX5E_TLS_SET_PROGRESS_PARAMS_WQEBBS))

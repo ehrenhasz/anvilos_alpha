@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * lis3lv02d_spi - SPI glue layer for lis3lv02d
- *
- * Copyright (c) 2009 Daniel Mack <daniel@caiaq.de>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -45,7 +41,7 @@ static int lis3_spi_init(struct lis3lv02d *lis3)
 	u8 reg;
 	int ret;
 
-	/* power up the device */
+	 
 	ret = lis3->read(lis3, CTRL_REG1, &reg);
 	if (ret < 0)
 		return ret;

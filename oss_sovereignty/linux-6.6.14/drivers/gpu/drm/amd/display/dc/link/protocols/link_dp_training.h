@@ -1,27 +1,4 @@
-/*
- * Copyright 2022 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 
 #ifndef __DC_LINK_DP_TRAINING_H__
@@ -59,13 +36,13 @@ void dpcd_set_training_pattern(
 	struct dc_link *link,
 	enum dc_dp_training_pattern training_pattern);
 
-/* Write DPCD drive settings. */
+ 
 enum dc_status dpcd_set_lane_settings(
 	struct dc_link *link,
 	const struct link_training_settings *link_training_setting,
 	uint32_t offset);
 
-/* Write DPCD link configuration data. */
+ 
 enum dc_status dpcd_set_link_settings(
 	struct dc_link *link,
 	const struct link_training_settings *lt_settings);
@@ -76,7 +53,7 @@ void dpcd_set_lt_pattern_and_lane_settings(
 	enum dc_dp_training_pattern pattern,
 	uint32_t offset);
 
-/* Read training status and adjustment requests from DPCD. */
+ 
 enum dc_status dp_get_lane_status_and_lane_adjust(
 	struct dc_link *link,
 	const struct link_training_settings *link_training_setting,
@@ -130,7 +107,7 @@ void override_training_settings(
 		const struct dc_link_training_overrides *overrides,
 		struct link_training_settings *lt_settings);
 
-/* Check DPCD training status registers to detect link loss. */
+ 
 enum link_training_result dp_check_link_loss_status(
 		struct dc_link *link,
 		const struct link_training_settings *link_training_setting);
@@ -182,4 +159,4 @@ uint32_t dp_translate_training_aux_read_interval(
 
 uint8_t dp_get_nibble_at_index(const uint8_t *buf,
 	uint32_t index);
-#endif /* __DC_LINK_DP_TRAINING_H__ */
+#endif  

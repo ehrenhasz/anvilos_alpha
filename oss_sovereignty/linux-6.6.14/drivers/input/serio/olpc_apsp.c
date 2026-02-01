@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * OLPC serio driver for multiplexed input from Marvell MMP security processor
- *
- * Copyright (C) 2011-2013 One Laptop Per Child
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/interrupt.h>
@@ -15,49 +11,33 @@
 #include <linux/slab.h>
 #include <linux/delay.h>
 
-/*
- * The OLPC XO-1.75 and XO-4 laptops do not have a hardware PS/2 controller.
- * Instead, the OLPC firmware runs a bit-banging PS/2 implementation on an
- * otherwise-unused slow processor which is included in the Marvell MMP2/MMP3
- * SoC, known as the "Security Processor" (SP) or "Wireless Trusted Module"
- * (WTM). This firmware then reports its results via the WTM registers,
- * which we read from the Application Processor (AP, i.e. main CPU) in this
- * driver.
- *
- * On the hardware side we have a PS/2 mouse and an AT keyboard, the data
- * is multiplexed through this system. We create a serio port for each one,
- * and demultiplex the data accordingly.
- */
+ 
 
-/* WTM register offsets */
+ 
 #define SECURE_PROCESSOR_COMMAND	0x40
 #define COMMAND_RETURN_STATUS		0x80
 #define COMMAND_FIFO_STATUS		0xc4
 #define PJ_RST_INTERRUPT		0xc8
 #define PJ_INTERRUPT_MASK		0xcc
 
-/*
- * The upper byte of SECURE_PROCESSOR_COMMAND and COMMAND_RETURN_STATUS is
- * used to identify which port (device) is being talked to. The lower byte
- * is the data being sent/received.
- */
+ 
 #define PORT_MASK	0xff00
 #define DATA_MASK	0x00ff
 #define PORT_SHIFT	8
 #define KEYBOARD_PORT	0
 #define TOUCHPAD_PORT	1
 
-/* COMMAND_FIFO_STATUS */
-#define CMD_CNTR_MASK		0x7 /* Number of pending/unprocessed commands */
-#define MAX_PENDING_CMDS	4   /* from device specs */
+ 
+#define CMD_CNTR_MASK		0x7  
+#define MAX_PENDING_CMDS	4    
 
-/* PJ_RST_INTERRUPT */
+ 
 #define SP_COMMAND_COMPLETE_RESET	0x1
 
-/* PJ_INTERRUPT_MASK */
+ 
 #define INT_0	(1 << 0)
 
-/* COMMAND_FIFO_STATUS */
+ 
 #define CMD_STS_MASK	0x100
 
 struct olpc_apsp {
@@ -88,7 +68,7 @@ static int olpc_apsp_write(struct serio *port, unsigned char val)
 			       priv->base + SECURE_PROCESSOR_COMMAND);
 			return 0;
 		}
-		/* SP busy. This has not been seen in practice. */
+		 
 		mdelay(1);
 	}
 
@@ -104,10 +84,7 @@ static irqreturn_t olpc_apsp_rx(int irq, void *dev_id)
 	unsigned int w, tmp;
 	struct serio *serio;
 
-	/*
-	 * Write 1 to PJ_RST_INTERRUPT to acknowledge and clear the interrupt
-	 * Write 0xff00 to SECURE_PROCESSOR_COMMAND.
-	 */
+	 
 	tmp = readl(priv->base + PJ_RST_INTERRUPT);
 	if (!(tmp & SP_COMMAND_COMPLETE_RESET)) {
 		dev_warn(priv->dev, "spurious interrupt?\n");
@@ -124,7 +101,7 @@ static irqreturn_t olpc_apsp_rx(int irq, void *dev_id)
 
 	serio_interrupt(serio, w & DATA_MASK, 0);
 
-	/* Ack and clear interrupt */
+	 
 	writel(tmp | SP_COMMAND_COMPLETE_RESET, priv->base + PJ_RST_INTERRUPT);
 	writel(PORT_MASK, priv->base + SECURE_PROCESSOR_COMMAND);
 
@@ -145,7 +122,7 @@ static int olpc_apsp_open(struct serio *port)
 			return -EIO;
 		}
 
-		/* Enable interrupt 0 by clearing its bit */
+		 
 		tmp = readl(priv->base + PJ_INTERRUPT_MASK);
 		writel(tmp & ~INT_0, priv->base + PJ_INTERRUPT_MASK);
 	}
@@ -159,7 +136,7 @@ static void olpc_apsp_close(struct serio *port)
 	unsigned int tmp;
 
 	if (--priv->open_count == 0) {
-		/* Disable interrupt 0 */
+		 
 		tmp = readl(priv->base + PJ_INTERRUPT_MASK);
 		writel(tmp | INT_0, priv->base + PJ_INTERRUPT_MASK);
 	}
@@ -187,7 +164,7 @@ static int olpc_apsp_probe(struct platform_device *pdev)
 	if (priv->irq < 0)
 		return priv->irq;
 
-	/* KEYBOARD */
+	 
 	kb_serio = kzalloc(sizeof(struct serio), GFP_KERNEL);
 	if (!kb_serio)
 		return -ENOMEM;
@@ -202,7 +179,7 @@ static int olpc_apsp_probe(struct platform_device *pdev)
 	priv->kbio		= kb_serio;
 	serio_register_port(kb_serio);
 
-	/* TOUCHPAD */
+	 
 	pad_serio = kzalloc(sizeof(struct serio), GFP_KERNEL);
 	if (!pad_serio) {
 		error = -ENOMEM;

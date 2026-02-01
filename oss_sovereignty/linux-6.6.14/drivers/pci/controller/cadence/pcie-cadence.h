@@ -1,7 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-// Copyright (c) 2017 Cadence
-// Cadence PCIe controller driver.
-// Author: Cyrille Pitchen <cyrille.pitchen@free-electrons.com>
+ 
+
+
+
 
 #ifndef _PCIE_CADENCE_H
 #define _PCIE_CADENCE_H
@@ -11,17 +11,15 @@
 #include <linux/pci-epf.h>
 #include <linux/phy/phy.h>
 
-/* Parameters for the waiting for link up routine */
+ 
 #define LINK_WAIT_MAX_RETRIES	10
 #define LINK_WAIT_USLEEP_MIN	90000
 #define LINK_WAIT_USLEEP_MAX	100000
 
-/*
- * Local Management Registers
- */
+ 
 #define CDNS_PCIE_LM_BASE	0x00100000
 
-/* Vendor ID Register */
+ 
 #define CDNS_PCIE_LM_ID		(CDNS_PCIE_LM_BASE + 0x0044)
 #define  CDNS_PCIE_LM_ID_VENDOR_MASK	GENMASK(15, 0)
 #define  CDNS_PCIE_LM_ID_VENDOR_SHIFT	0
@@ -32,21 +30,21 @@
 #define  CDNS_PCIE_LM_ID_SUBSYS(sub) \
 	(((sub) << CDNS_PCIE_LM_ID_SUBSYS_SHIFT) & CDNS_PCIE_LM_ID_SUBSYS_MASK)
 
-/* Root Port Requester ID Register */
+ 
 #define CDNS_PCIE_LM_RP_RID	(CDNS_PCIE_LM_BASE + 0x0228)
 #define  CDNS_PCIE_LM_RP_RID_MASK	GENMASK(15, 0)
 #define  CDNS_PCIE_LM_RP_RID_SHIFT	0
 #define  CDNS_PCIE_LM_RP_RID_(rid) \
 	(((rid) << CDNS_PCIE_LM_RP_RID_SHIFT) & CDNS_PCIE_LM_RP_RID_MASK)
 
-/* Endpoint Bus and Device Number Register */
+ 
 #define CDNS_PCIE_LM_EP_ID	(CDNS_PCIE_LM_BASE + 0x022c)
 #define  CDNS_PCIE_LM_EP_ID_DEV_MASK	GENMASK(4, 0)
 #define  CDNS_PCIE_LM_EP_ID_DEV_SHIFT	0
 #define  CDNS_PCIE_LM_EP_ID_BUS_MASK	GENMASK(15, 8)
 #define  CDNS_PCIE_LM_EP_ID_BUS_SHIFT	8
 
-/* Endpoint Function f BAR b Configuration Registers */
+ 
 #define CDNS_PCIE_LM_EP_FUNC_BAR_CFG(bar, fn) \
 	(((bar) < BAR_4) ? CDNS_PCIE_LM_EP_FUNC_BAR_CFG0(fn) : CDNS_PCIE_LM_EP_FUNC_BAR_CFG1(fn))
 #define CDNS_PCIE_LM_EP_FUNC_BAR_CFG0(fn) \
@@ -68,10 +66,10 @@
 #define  CDNS_PCIE_LM_EP_FUNC_BAR_CFG_BAR_CTRL(b, c) \
 	(((c) << ((b) * 8 + 5)) & CDNS_PCIE_LM_EP_FUNC_BAR_CFG_BAR_CTRL_MASK(b))
 
-/* Endpoint Function Configuration Register */
+ 
 #define CDNS_PCIE_LM_EP_FUNC_CFG	(CDNS_PCIE_LM_BASE + 0x02c0)
 
-/* Root Complex BAR Configuration Register */
+ 
 #define CDNS_PCIE_LM_RC_BAR_CFG	(CDNS_PCIE_LM_BASE + 0x0300)
 #define  CDNS_PCIE_LM_RC_BAR_CFG_BAR0_APERTURE_MASK	GENMASK(5, 0)
 #define  CDNS_PCIE_LM_RC_BAR_CFG_BAR0_APERTURE(a) \
@@ -93,7 +91,7 @@
 #define  CDNS_PCIE_LM_RC_BAR_CFG_IO_32BITS		BIT(20)
 #define  CDNS_PCIE_LM_RC_BAR_CFG_CHECK_ENABLE		BIT(31)
 
-/* BAR control values applicable to both Endpoint Function and Root Complex */
+ 
 #define  CDNS_PCIE_LM_BAR_CFG_CTRL_DISABLED		0x0
 #define  CDNS_PCIE_LM_BAR_CFG_CTRL_IO_32BITS		0x1
 #define  CDNS_PCIE_LM_BAR_CFG_CTRL_MEM_32BITS		0x4
@@ -116,13 +114,11 @@
 #define LM_RC_BAR_CFG_APERTURE(bar, aperture)		\
 					(((aperture) - 2) << ((bar) * 8))
 
-/* PTM Control Register */
+ 
 #define CDNS_PCIE_LM_PTM_CTRL 	(CDNS_PCIE_LM_BASE + 0x0da8)
 #define CDNS_PCIE_LM_TPM_CTRL_PTMRSEN 	BIT(17)
 
-/*
- * Endpoint Function Registers (PCI configuration space for endpoint functions)
- */
+ 
 #define CDNS_PCIE_EP_FUNC_BASE(fn)	(((fn) << 12) & GENMASK(19, 12))
 
 #define CDNS_PCIE_EP_FUNC_MSI_CAP_OFFSET	0x90
@@ -130,18 +126,14 @@
 #define CDNS_PCIE_EP_FUNC_DEV_CAP_OFFSET	0xc0
 #define CDNS_PCIE_EP_FUNC_SRIOV_CAP_OFFSET	0x200
 
-/*
- * Root Port Registers (PCI configuration space for the root port function)
- */
+ 
 #define CDNS_PCIE_RP_BASE	0x00200000
 #define CDNS_PCIE_RP_CAP_OFFSET 0xc0
 
-/*
- * Address Translation Registers
- */
+ 
 #define CDNS_PCIE_AT_BASE	0x00400000
 
-/* Region r Outbound AXI to PCIe Address Translation Register 0 */
+ 
 #define CDNS_PCIE_AT_OB_REGION_PCI_ADDR0(r) \
 	(CDNS_PCIE_AT_BASE + 0x0000 + ((r) & 0x1f) * 0x0020)
 #define  CDNS_PCIE_AT_OB_REGION_PCI_ADDR0_NBITS_MASK	GENMASK(5, 0)
@@ -154,11 +146,11 @@
 #define  CDNS_PCIE_AT_OB_REGION_PCI_ADDR0_BUS(bus) \
 	(((bus) << 20) & CDNS_PCIE_AT_OB_REGION_PCI_ADDR0_BUS_MASK)
 
-/* Region r Outbound AXI to PCIe Address Translation Register 1 */
+ 
 #define CDNS_PCIE_AT_OB_REGION_PCI_ADDR1(r) \
 	(CDNS_PCIE_AT_BASE + 0x0004 + ((r) & 0x1f) * 0x0020)
 
-/* Region r Outbound PCIe Descriptor Register 0 */
+ 
 #define CDNS_PCIE_AT_OB_REGION_DESC0(r) \
 	(CDNS_PCIE_AT_BASE + 0x0008 + ((r) & 0x1f) * 0x0020)
 #define  CDNS_PCIE_AT_OB_REGION_DESC0_TYPE_MASK		GENMASK(3, 0)
@@ -168,31 +160,31 @@
 #define  CDNS_PCIE_AT_OB_REGION_DESC0_TYPE_CONF_TYPE1	0xb
 #define  CDNS_PCIE_AT_OB_REGION_DESC0_TYPE_NORMAL_MSG	0xc
 #define  CDNS_PCIE_AT_OB_REGION_DESC0_TYPE_VENDOR_MSG	0xd
-/* Bit 23 MUST be set in RC mode. */
+ 
 #define  CDNS_PCIE_AT_OB_REGION_DESC0_HARDCODED_RID	BIT(23)
 #define  CDNS_PCIE_AT_OB_REGION_DESC0_DEVFN_MASK	GENMASK(31, 24)
 #define  CDNS_PCIE_AT_OB_REGION_DESC0_DEVFN(devfn) \
 	(((devfn) << 24) & CDNS_PCIE_AT_OB_REGION_DESC0_DEVFN_MASK)
 
-/* Region r Outbound PCIe Descriptor Register 1 */
+ 
 #define CDNS_PCIE_AT_OB_REGION_DESC1(r)	\
 	(CDNS_PCIE_AT_BASE + 0x000c + ((r) & 0x1f) * 0x0020)
 #define  CDNS_PCIE_AT_OB_REGION_DESC1_BUS_MASK	GENMASK(7, 0)
 #define  CDNS_PCIE_AT_OB_REGION_DESC1_BUS(bus) \
 	((bus) & CDNS_PCIE_AT_OB_REGION_DESC1_BUS_MASK)
 
-/* Region r AXI Region Base Address Register 0 */
+ 
 #define CDNS_PCIE_AT_OB_REGION_CPU_ADDR0(r) \
 	(CDNS_PCIE_AT_BASE + 0x0018 + ((r) & 0x1f) * 0x0020)
 #define  CDNS_PCIE_AT_OB_REGION_CPU_ADDR0_NBITS_MASK	GENMASK(5, 0)
 #define  CDNS_PCIE_AT_OB_REGION_CPU_ADDR0_NBITS(nbits) \
 	(((nbits) - 1) & CDNS_PCIE_AT_OB_REGION_CPU_ADDR0_NBITS_MASK)
 
-/* Region r AXI Region Base Address Register 1 */
+ 
 #define CDNS_PCIE_AT_OB_REGION_CPU_ADDR1(r) \
 	(CDNS_PCIE_AT_BASE + 0x001c + ((r) & 0x1f) * 0x0020)
 
-/* Root Port BAR Inbound PCIe to AXI Address Translation Register */
+ 
 #define CDNS_PCIE_AT_IB_RP_BAR_ADDR0(bar) \
 	(CDNS_PCIE_AT_BASE + 0x0800 + (bar) * 0x0008)
 #define  CDNS_PCIE_AT_IB_RP_BAR_ADDR0_NBITS_MASK	GENMASK(5, 0)
@@ -201,10 +193,10 @@
 #define CDNS_PCIE_AT_IB_RP_BAR_ADDR1(bar) \
 	(CDNS_PCIE_AT_BASE + 0x0804 + (bar) * 0x0008)
 
-/* AXI link down register */
+ 
 #define CDNS_PCIE_AT_LINKDOWN (CDNS_PCIE_AT_BASE + 0x0824)
 
-/* LTSSM Capabilities register */
+ 
 #define CDNS_PCIE_LTSSM_CONTROL_CAP             (CDNS_PCIE_LM_BASE + 0x0054)
 #define  CDNS_PCIE_DETECT_QUIET_MIN_DELAY_MASK  GENMASK(2, 1)
 #define  CDNS_PCIE_DETECT_QUIET_MIN_DELAY_SHIFT 1
@@ -227,13 +219,13 @@ struct cdns_pcie_rp_ib_bar {
 	bool free;
 };
 
-/* Endpoint Function BAR Inbound PCIe to AXI Address Translation Register */
+ 
 #define CDNS_PCIE_AT_IB_EP_FUNC_BAR_ADDR0(fn, bar) \
 	(CDNS_PCIE_AT_BASE + 0x0840 + (fn) * 0x0040 + (bar) * 0x0008)
 #define CDNS_PCIE_AT_IB_EP_FUNC_BAR_ADDR1(fn, bar) \
 	(CDNS_PCIE_AT_BASE + 0x0844 + (fn) * 0x0040 + (bar) * 0x0008)
 
-/* Normal/Vendor specific message access: offset inside some outbound region */
+ 
 #define CDNS_PCIE_NORMAL_MSG_ROUTING_MASK	GENMASK(7, 5)
 #define CDNS_PCIE_NORMAL_MSG_ROUTING(route) \
 	(((route) << 5) & CDNS_PCIE_NORMAL_MSG_ROUTING_MASK)
@@ -256,22 +248,22 @@ enum cdns_pcie_msg_code {
 };
 
 enum cdns_pcie_msg_routing {
-	/* Route to Root Complex */
+	 
 	MSG_ROUTING_TO_RC,
 
-	/* Use Address Routing */
+	 
 	MSG_ROUTING_BY_ADDR,
 
-	/* Use ID Routing */
+	 
 	MSG_ROUTING_BY_ID,
 
-	/* Route as Broadcast Message from Root Complex */
+	 
 	MSG_ROUTING_BCAST,
 
-	/* Local message; terminate at receiver (INTx messages) */
+	 
 	MSG_ROUTING_LOCAL,
 
-	/* Gather & route to Root Complex (PME_TO_Ack message) */
+	 
 	MSG_ROUTING_GATHER,
 };
 
@@ -282,18 +274,7 @@ struct cdns_pcie_ops {
 	u64     (*cpu_addr_fixup)(struct cdns_pcie *pcie, u64 cpu_addr);
 };
 
-/**
- * struct cdns_pcie - private data for Cadence PCIe controller drivers
- * @reg_base: IO mapped register base
- * @mem_res: start/end offsets in the physical system memory to map PCI accesses
- * @dev: PCIe controller
- * @is_rc: tell whether the PCIe controller mode is Root Complex or Endpoint.
- * @phy_count: number of supported PHY devices
- * @phy: list of pointers to specific PHY control blocks
- * @link: list of pointers to corresponding device link representations
- * @ops: Platform-specific ops to control various inputs from Cadence PCIe
- *       wrapper
- */
+ 
 struct cdns_pcie {
 	void __iomem		*reg_base;
 	struct resource		*mem_res;
@@ -305,21 +286,7 @@ struct cdns_pcie {
 	const struct cdns_pcie_ops *ops;
 };
 
-/**
- * struct cdns_pcie_rc - private data for this PCIe Root Complex driver
- * @pcie: Cadence PCIe controller
- * @dev: pointer to PCIe device
- * @cfg_res: start/end offsets in the physical system memory to map PCI
- *           configuration space accesses
- * @cfg_base: IO mapped window to access the PCI configuration space of a
- *            single function at a time
- * @vendor_id: PCI vendor ID
- * @device_id: PCI device ID
- * @avail_ib_bar: Status of RP_BAR0, RP_BAR1 and RP_NO_BAR if it's free or
- *                available
- * @quirk_retrain_flag: Retrain link as quirk for PCIe Gen2
- * @quirk_detect_quiet_flag: LTSSM Detect Quiet min delay set as quirk
- */
+ 
 struct cdns_pcie_rc {
 	struct cdns_pcie	pcie;
 	struct resource		*cfg_res;
@@ -331,39 +298,13 @@ struct cdns_pcie_rc {
 	unsigned int		quirk_detect_quiet_flag:1;
 };
 
-/**
- * struct cdns_pcie_epf - Structure to hold info about endpoint function
- * @epf: Info about virtual functions attached to the physical function
- * @epf_bar: reference to the pci_epf_bar for the six Base Address Registers
- */
+ 
 struct cdns_pcie_epf {
 	struct cdns_pcie_epf *epf;
 	struct pci_epf_bar *epf_bar[PCI_STD_NUM_BARS];
 };
 
-/**
- * struct cdns_pcie_ep - private data for this PCIe endpoint controller driver
- * @pcie: Cadence PCIe controller
- * @max_regions: maximum number of regions supported by hardware
- * @ob_region_map: bitmask of mapped outbound regions
- * @ob_addr: base addresses in the AXI bus where the outbound regions start
- * @irq_phys_addr: base address on the AXI bus where the MSI/legacy IRQ
- *		   dedicated outbound regions is mapped.
- * @irq_cpu_addr: base address in the CPU space where a write access triggers
- *		  the sending of a memory write (MSI) / normal message (legacy
- *		  IRQ) TLP through the PCIe bus.
- * @irq_pci_addr: used to save the current mapping of the MSI/legacy IRQ
- *		  dedicated outbound region.
- * @irq_pci_fn: the latest PCI function that has updated the mapping of
- *		the MSI/legacy IRQ dedicated outbound region.
- * @irq_pending: bitmask of asserted legacy IRQs.
- * @lock: spin lock to disable interrupts while modifying PCIe controller
- *        registers fields (RMW) accessible by both remote RC and EP to
- *        minimize time between read and write
- * @epf: Structure to hold info about endpoint function
- * @quirk_detect_quiet_flag: LTSSM Detect Quiet min delay set as quirk
- * @quirk_disable_flr: Disable FLR (Function Level Reset) quirk flag
- */
+ 
 struct cdns_pcie_ep {
 	struct cdns_pcie	pcie;
 	u32			max_regions;
@@ -374,7 +315,7 @@ struct cdns_pcie_ep {
 	u64			irq_pci_addr;
 	u8			irq_pci_fn;
 	u8			irq_pending;
-	/* protect writing to PCI_STATUS while raising legacy interrupts */
+	 
 	spinlock_t		lock;
 	struct cdns_pcie_epf	*epf;
 	unsigned int		quirk_detect_quiet_flag:1;
@@ -382,7 +323,7 @@ struct cdns_pcie_ep {
 };
 
 
-/* Register access */
+ 
 static inline void cdns_pcie_writel(struct cdns_pcie *pcie, u32 reg, u32 value)
 {
 	writel(value, pcie->reg_base + reg);
@@ -433,7 +374,7 @@ static inline void cdns_pcie_write_sz(void __iomem *addr, int size, u32 value)
 	writel(val, aligned_addr);
 }
 
-/* Root Port register access */
+ 
 static inline void cdns_pcie_rp_writeb(struct cdns_pcie *pcie,
 				       u32 reg, u8 value)
 {
@@ -457,7 +398,7 @@ static inline u16 cdns_pcie_rp_readw(struct cdns_pcie *pcie, u32 reg)
 	return cdns_pcie_read_sz(addr, 0x2);
 }
 
-/* Endpoint Function register access */
+ 
 static inline void cdns_pcie_ep_fn_writeb(struct cdns_pcie *pcie, u8 fn,
 					  u32 reg, u8 value)
 {
@@ -556,4 +497,4 @@ int cdns_pcie_enable_phy(struct cdns_pcie *pcie);
 int cdns_pcie_init_phy(struct device *dev, struct cdns_pcie *pcie);
 extern const struct dev_pm_ops cdns_pcie_pm_ops;
 
-#endif /* _PCIE_CADENCE_H */
+#endif  

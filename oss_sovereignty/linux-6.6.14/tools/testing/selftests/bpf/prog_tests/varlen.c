@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2020 Facebook */
+
+ 
 
 #include <test_progs.h>
 #include <time.h>
@@ -33,7 +33,7 @@ void test_varlen(void)
 
 	bss->test_pid = getpid();
 
-	/* trigger everything */
+	 
 	memcpy(bss->buf_in1, str1, size1);
 	memcpy(bss->buf_in2, str2, size2);
 	bss->capture = true;

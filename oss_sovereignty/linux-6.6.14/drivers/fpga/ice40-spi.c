@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * FPGA Manager Driver for Lattice iCE40.
- *
- *  Copyright (c) 2016 Joel Holdsworth
- *
- * This driver adds support to the FPGA manager for configuring the SRAM of
- * Lattice iCE40 FPGAs through slave SPI.
- */
+
+ 
 
 #include <linux/fpga/fpga-mgr.h>
 #include <linux/gpio/consumer.h>
@@ -15,11 +8,11 @@
 #include <linux/spi/spi.h>
 #include <linux/stringify.h>
 
-#define ICE40_SPI_MAX_SPEED 25000000 /* Hz */
-#define ICE40_SPI_MIN_SPEED 1000000 /* Hz */
+#define ICE40_SPI_MAX_SPEED 25000000  
+#define ICE40_SPI_MIN_SPEED 1000000  
 
-#define ICE40_SPI_RESET_DELAY 1 /* us (>200ns) */
-#define ICE40_SPI_HOUSEKEEPING_DELAY 1200 /* us */
+#define ICE40_SPI_RESET_DELAY 1  
+#define ICE40_SPI_HOUSEKEEPING_DELAY 1200  
 
 #define ICE40_SPI_NUM_ACTIVATION_BYTES DIV_ROUND_UP(49, 8)
 
@@ -65,7 +58,7 @@ static int ice40_fpga_ops_write_init(struct fpga_manager *mgr,
 		return -ENOTSUPP;
 	}
 
-	/* Lock the bus, assert CRESET_B and SS_B and delay >200ns */
+	 
 	spi_bus_lock(dev->master);
 
 	gpiod_set_value(priv->reset, 1);
@@ -74,21 +67,21 @@ static int ice40_fpga_ops_write_init(struct fpga_manager *mgr,
 	spi_message_add_tail(&assert_cs_then_reset_delay, &message);
 	ret = spi_sync_locked(dev, &message);
 
-	/* Come out of reset */
+	 
 	gpiod_set_value(priv->reset, 0);
 
-	/* Abort if the chip-select failed */
+	 
 	if (ret)
 		goto fail;
 
-	/* Check CDONE is de-asserted i.e. the FPGA is reset */
+	 
 	if (gpiod_get_value(priv->cdone)) {
 		dev_err(&dev->dev, "Device reset failed, CDONE is asserted\n");
 		ret = -EIO;
 		goto fail;
 	}
 
-	/* Wait for the housekeeping to complete, and release SS_B */
+	 
 	spi_message_init(&message);
 	spi_message_add_tail(&housekeeping_delay_then_release_cs, &message);
 	ret = spi_sync_locked(dev, &message);
@@ -114,14 +107,14 @@ static int ice40_fpga_ops_write_complete(struct fpga_manager *mgr,
 	struct spi_device *dev = priv->dev;
 	const u8 padding[ICE40_SPI_NUM_ACTIVATION_BYTES] = {0};
 
-	/* Check CDONE is asserted */
+	 
 	if (!gpiod_get_value(priv->cdone)) {
 		dev_err(&dev->dev,
 			"CDONE was not asserted after firmware transfer\n");
 		return -EIO;
 	}
 
-	/* Send of zero-padding to activate the firmware */
+	 
 	return spi_write(dev, padding, sizeof(padding));
 }
 
@@ -145,7 +138,7 @@ static int ice40_fpga_probe(struct spi_device *spi)
 
 	priv->dev = spi;
 
-	/* Check board setup data. */
+	 
 	if (spi->max_speed_hz > ICE40_SPI_MAX_SPEED) {
 		dev_err(dev, "SPI speed is too high, maximum speed is "
 			__stringify(ICE40_SPI_MAX_SPEED) "\n");
@@ -163,7 +156,7 @@ static int ice40_fpga_probe(struct spi_device *spi)
 		return -EINVAL;
 	}
 
-	/* Set up the GPIOs */
+	 
 	priv->cdone = devm_gpiod_get(dev, "cdone", GPIOD_IN);
 	if (IS_ERR(priv->cdone)) {
 		ret = PTR_ERR(priv->cdone);

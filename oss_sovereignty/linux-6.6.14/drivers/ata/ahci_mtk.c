@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * MediaTek AHCI SATA driver
- *
- * Copyright (c) 2017 MediaTek Inc.
- * Author: Ryder Lee <ryder.lee@mediatek.com>
- */
+
+ 
 
 #include <linux/ahci_platform.h>
 #include <linux/kernel.h>
@@ -48,7 +43,7 @@ static int mtk_ahci_platform_resets(struct ahci_host_priv *hpriv,
 	struct mtk_ahci_plat *plat = hpriv->plat_data;
 	int err;
 
-	/* reset AXI bus and PHY part */
+	 
 	plat->axi_rst = devm_reset_control_get_optional_exclusive(dev, "axi");
 	if (PTR_ERR(plat->axi_rst) == -EPROBE_DEFER)
 		return PTR_ERR(plat->axi_rst);
@@ -106,7 +101,7 @@ static int mtk_ahci_parse_property(struct ahci_host_priv *hpriv,
 	struct mtk_ahci_plat *plat = hpriv->plat_data;
 	struct device_node *np = dev->of_node;
 
-	/* enable SATA function if needed */
+	 
 	if (of_property_present(np, "mediatek,phy-mode")) {
 		plat->mode = syscon_regmap_lookup_by_phandle(
 					np, "mediatek,phy-mode");
@@ -168,7 +163,7 @@ static SIMPLE_DEV_PM_OPS(ahci_pm_ops, ahci_platform_suspend,
 
 static const struct of_device_id ahci_of_match[] = {
 	{ .compatible = "mediatek,mtk-ahci", },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, ahci_of_match);
 

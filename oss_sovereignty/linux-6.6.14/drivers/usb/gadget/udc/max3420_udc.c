@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * MAX3420 Device Controller driver for USB.
- *
- * Author: Jaswinder Singh Brar <jaswinder.singh@linaro.org>
- * (C) Copyright 2019-2020 Linaro Ltd
- *
- * Based on:
- *	o MAX3420E datasheet
- *		https://datasheets.maximintegrated.com/en/ds/MAX3420E.pdf
- *	o MAX342{0,1}E Programming Guides
- *		https://pdfserv.maximintegrated.com/en/an/AN3598.pdf
- *		https://pdfserv.maximintegrated.com/en/an/AN3785.pdf
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/device.h>
@@ -28,15 +16,15 @@
 #include <linux/gpio/consumer.h>
 
 #define MAX3420_MAX_EPS		4
-#define MAX3420_EP_MAX_PACKET		64  /* Same for all Endpoints */
-#define MAX3420_EPNAME_SIZE		16  /* Buffer size for endpoint name */
+#define MAX3420_EP_MAX_PACKET		64   
+#define MAX3420_EPNAME_SIZE		16   
 
 #define MAX3420_ACKSTAT		BIT(0)
 
-#define MAX3420_SPI_DIR_RD	0	/* read register from MAX3420 */
-#define MAX3420_SPI_DIR_WR	1	/* write register to MAX3420 */
+#define MAX3420_SPI_DIR_RD	0	 
+#define MAX3420_SPI_DIR_WR	1	 
 
-/* SPI commands: */
+ 
 #define MAX3420_SPI_DIR_SHIFT	1
 #define MAX3420_SPI_REG_SHIFT	3
 
@@ -189,7 +177,7 @@ struct max3420_udc {
 #define DRIVER_DESC     "MAX3420 USB Device-Mode Driver"
 static const char driver_name[] = "max3420-udc";
 
-/* Control endpoint configuration.*/
+ 
 static const struct usb_endpoint_descriptor ep0_desc = {
 	.bEndpointAddress	= USB_DIR_OUT,
 	.bmAttributes		= USB_ENDPOINT_XFER_CONTROL,
@@ -390,14 +378,14 @@ static int spi_max3420_rwkup(struct max3420_udc *udc)
 	if (!wake_remote || !udc->suspended)
 		return false;
 
-	/* Set Remote-WkUp Signal*/
+	 
 	usbctl = spi_rd8(udc, MAX3420_REG_USBCTL);
 	usbctl |= SIGRWU;
 	spi_wr8(udc, MAX3420_REG_USBCTL, usbctl);
 
 	msleep_interruptible(5);
 
-	/* Clear Remote-WkUp Signal*/
+	 
 	usbctl = spi_rd8(udc, MAX3420_REG_USBCTL);
 	usbctl &= ~SIGRWU;
 	spi_wr8(udc, MAX3420_REG_USBCTL, usbctl);
@@ -413,11 +401,11 @@ static void __max3420_stop(struct max3420_udc *udc)
 	u8 val;
 	int i;
 
-	/* clear all pending requests */
+	 
 	for (i = 1; i < MAX3420_MAX_EPS; i++)
 		max3420_nuke(&udc->ep[i], -ECONNRESET);
 
-	/* Disable IRQ to CPU */
+	 
 	spi_wr8(udc, MAX3420_REG_CPUCTL, 0);
 
 	val = spi_rd8(udc, MAX3420_REG_USBCTL);
@@ -433,20 +421,18 @@ static void __max3420_start(struct max3420_udc *udc)
 {
 	u8 val;
 
-	/* Need this delay if bus-powered,
-	 * but even for self-powered it helps stability
-	 */
+	 
 	msleep_interruptible(250);
 
-	/* configure SPI */
+	 
 	spi_wr8(udc, MAX3420_REG_PINCTL, FDUPSPI);
 
-	/* Chip Reset */
+	 
 	spi_wr8(udc, MAX3420_REG_USBCTL, CHIPRES);
 	msleep_interruptible(5);
 	spi_wr8(udc, MAX3420_REG_USBCTL, 0);
 
-	/* Poll for OSC to stabilize */
+	 
 	while (1) {
 		val = spi_rd8(udc, MAX3420_REG_USBIRQ);
 		if (val & OSCOKIRQ)
@@ -454,7 +440,7 @@ static void __max3420_start(struct max3420_udc *udc)
 		cond_resched();
 	}
 
-	/* Enable PULL-UP only when Vbus detected */
+	 
 	val = spi_rd8(udc, MAX3420_REG_USBCTL);
 	val |= VBGATE | CONNECT;
 	spi_wr8(udc, MAX3420_REG_USBCTL, val);
@@ -464,11 +450,11 @@ static void __max3420_start(struct max3420_udc *udc)
 		val |= NOVBUSIRQ;
 	spi_wr8(udc, MAX3420_REG_USBIEN, val);
 
-	/* Enable only EP0 interrupts */
+	 
 	val = IN0BAVIRQ | OUT0DAVIRQ | SUDAVIRQ;
 	spi_wr8(udc, MAX3420_REG_EPIEN, val);
 
-	/* Enable IRQ to CPU */
+	 
 	spi_wr8(udc, MAX3420_REG_CPUCTL, IE);
 }
 
@@ -499,7 +485,7 @@ static irqreturn_t max3420_vbus_handler(int irq, void *dev_id)
 	unsigned long flags;
 
 	spin_lock_irqsave(&udc->lock, flags);
-	/* its a vbus change interrupt */
+	 
 	udc->vbus_active = !udc->vbus_active;
 	udc->todo |= UDC_START;
 	usb_udc_vbus_handler(&udc->gadget, udc->vbus_active);
@@ -539,7 +525,7 @@ static void max3420_getstatus(struct max3420_udc *udc)
 
 	switch (udc->setup.bRequestType & USB_RECIP_MASK) {
 	case USB_RECIP_DEVICE:
-		/* Get device status */
+		 
 		status = udc->gadget.is_selfpowered << USB_DEVICE_SELF_POWERED;
 		status |= (udc->remote_wkp << USB_DEVICE_REMOTE_WAKEUP);
 		break;
@@ -629,7 +615,7 @@ static void max3420_handle_setup(struct max3420_udc *udc)
 
 	switch (udc->setup.bRequest) {
 	case USB_REQ_GET_STATUS:
-		/* Data+Status phase form udc */
+		 
 		if ((udc->setup.bRequestType &
 				(USB_DIR_IN | USB_TYPE_MASK)) !=
 				(USB_DIR_IN | USB_TYPE_STANDARD)) {
@@ -637,7 +623,7 @@ static void max3420_handle_setup(struct max3420_udc *udc)
 		}
 		return max3420_getstatus(udc);
 	case USB_REQ_SET_ADDRESS:
-		/* Status phase from udc */
+		 
 		if (udc->setup.bRequestType != (USB_DIR_OUT |
 				USB_TYPE_STANDARD | USB_RECIP_DEVICE)) {
 			break;
@@ -647,7 +633,7 @@ static void max3420_handle_setup(struct max3420_udc *udc)
 		return;
 	case USB_REQ_CLEAR_FEATURE:
 	case USB_REQ_SET_FEATURE:
-		/* Requests with no data phase, status phase from udc */
+		 
 		if ((udc->setup.bRequestType & USB_TYPE_MASK)
 				!= USB_TYPE_STANDARD)
 			break;
@@ -657,7 +643,7 @@ static void max3420_handle_setup(struct max3420_udc *udc)
 	}
 
 	if (udc->driver->setup(&udc->gadget, &setup) < 0) {
-		/* Stall EP0 */
+		 
 		spi_wr8(udc, MAX3420_REG_EPSTALLS,
 			STLEP0IN | STLEP0OUT | STLSTAT);
 	}
@@ -845,7 +831,7 @@ static int max3420_thread(void *dev_id)
 
 	while (!kthread_should_stop()) {
 		if (!loop_again) {
-			ktime_t kt = ns_to_ktime(1000 * 1000 * 250); /* 250ms */
+			ktime_t kt = ns_to_ktime(1000 * 1000 * 250);  
 
 			set_current_state(TASK_INTERRUPTIBLE);
 
@@ -862,7 +848,7 @@ static int max3420_thread(void *dev_id)
 
 		mutex_lock(&udc->spi_bus_mutex);
 
-		/* If bus-vbus_active and disconnected */
+		 
 		if (!udc->vbus_active || !udc->softconnect)
 			goto loop;
 
@@ -881,7 +867,7 @@ static int max3420_thread(void *dev_id)
 			goto loop;
 		}
 
-		max3420_do_data(udc, 0, 1); /* get done with the EP0 ZLP */
+		max3420_do_data(udc, 0, 1);  
 
 		for (i = 1; i < MAX3420_MAX_EPS; i++) {
 			struct max3420_ep *ep = &udc->ep[i];
@@ -1050,7 +1036,7 @@ static int max3420_ep_dequeue(struct usb_ep *_ep, struct usb_request *_req)
 
 	spin_lock_irqsave(&ep->lock, flags);
 
-	/* Pluck the descriptor from queue */
+	 
 	list_for_each_entry(iter, &ep->queue, queue) {
 		if (iter != req)
 			continue;
@@ -1085,7 +1071,7 @@ static int max3420_wakeup(struct usb_gadget *gadget)
 
 	spin_lock_irqsave(&udc->lock, flags);
 
-	/* Only if wakeup allowed by host */
+	 
 	if (udc->remote_wkp) {
 		udc->todo |= REMOTE_WAKEUP;
 		ret = 0;
@@ -1105,7 +1091,7 @@ static int max3420_udc_start(struct usb_gadget *gadget,
 	unsigned long flags;
 
 	spin_lock_irqsave(&udc->lock, flags);
-	/* hook up the driver */
+	 
 	udc->driver = driver;
 	udc->gadget.speed = USB_SPEED_FULL;
 
@@ -1166,7 +1152,7 @@ static void max3420_eps_init(struct max3420_udc *udc)
 		ep->ep_usb.ops = &max3420_ep_ops;
 		usb_ep_set_maxpacket_limit(&ep->ep_usb, MAX3420_EP_MAX_PACKET);
 
-		if (idx == 0) { /* For EP0 */
+		if (idx == 0) {  
 			ep->ep_usb.desc = &ep0_desc;
 			ep->ep_usb.maxpacket = usb_endpoint_maxp(&ep0_desc);
 			ep->ep_usb.caps.type_control = true;
@@ -1176,11 +1162,11 @@ static void max3420_eps_init(struct max3420_udc *udc)
 			continue;
 		}
 
-		if (idx == 1) { /* EP1 is OUT */
+		if (idx == 1) {  
 			ep->ep_usb.caps.dir_in = false;
 			ep->ep_usb.caps.dir_out = true;
 			snprintf(ep->name, MAX3420_EPNAME_SIZE, "ep1-bulk-out");
-		} else { /* EP2 & EP3 are IN */
+		} else {  
 			ep->ep_usb.caps.dir_in = true;
 			ep->ep_usb.caps.dir_out = false;
 			snprintf(ep->name, MAX3420_EPNAME_SIZE,
@@ -1223,7 +1209,7 @@ static int max3420_probe(struct spi_device *spi)
 
 	udc->remote_wkp = 0;
 
-	/* Setup gadget structure */
+	 
 	udc->gadget.ops = &max3420_udc_ops;
 	udc->gadget.max_speed = USB_SPEED_FULL;
 	udc->gadget.speed = USB_SPEED_UNKNOWN;
@@ -1237,10 +1223,10 @@ static int max3420_probe(struct spi_device *spi)
 	udc->ep0req.usb_req.buf = udc->ep0buf;
 	INIT_LIST_HEAD(&udc->ep0req.queue);
 
-	/* setup Endpoints */
+	 
 	max3420_eps_init(udc);
 
-	/* configure SPI */
+	 
 	spi_rd_buf(udc, MAX3420_REG_EPIRQ, reg, 8);
 	spi_wr8(udc, MAX3420_REG_PINCTL, FDUPSPI);
 
@@ -1266,7 +1252,7 @@ static int max3420_probe(struct spi_device *spi)
 	}
 
 	irq = of_irq_get_byname(spi->dev.of_node, "vbus");
-	if (irq <= 0) { /* no vbus irq implies self-powered design */
+	if (irq <= 0) {  
 		udc->is_selfpowered = 1;
 		udc->vbus_active = true;
 		udc->todo |= UDC_START;
@@ -1275,7 +1261,7 @@ static int max3420_probe(struct spi_device *spi)
 		max3420_start(udc);
 	} else {
 		udc->is_selfpowered = 0;
-		/* Detect current vbus status */
+		 
 		spi_rd_buf(udc, MAX3420_REG_EPIRQ, reg, 8);
 		if (reg[7] != 0xff)
 			udc->vbus_active = true;

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Maxim MAX11205 16-Bit Delta-Sigma ADC
- *
- * Datasheet: https://datasheets.maximintegrated.com/en/ds/MAX1240-max11205.pdf
- * Copyright (C) 2022 Analog Devices, Inc.
- * Author: Ramona Bolboaca <ramona.bolboaca@analog.com>
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/module.h>

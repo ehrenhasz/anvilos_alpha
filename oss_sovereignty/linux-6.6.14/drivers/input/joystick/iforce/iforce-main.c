@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  Copyright (c) 2000-2002 Vojtech Pavlik <vojtech@ucw.cz>
- *  Copyright (c) 2001-2002, 2007 Johann Deneux <johann.deneux@gmail.com>
- *
- *  USB/RS232 I-Force joysticks and wheels.
- */
+
+ 
 
 #include <asm/unaligned.h>
 #include "iforce.h"
@@ -51,14 +46,14 @@ static struct iforce_device iforce_device[] = {
 	{ 0x05ef, 0x020a, "AVB Top Shot Pegasus",			btn_joystick_avb, abs_avb_pegasus, ff_iforce },
 	{ 0x05ef, 0x8884, "AVB Mag Turbo Force",			btn_wheel, abs_wheel, ff_iforce },
 	{ 0x05ef, 0x8886, "Boeder Force Feedback Wheel",		btn_wheel, abs_wheel, ff_iforce },
-	{ 0x05ef, 0x8888, "AVB Top Shot Force Feedback Racing Wheel",	btn_wheel, abs_wheel, ff_iforce }, //?
-	{ 0x061c, 0xc0a4, "ACT LABS Force RS",                          btn_wheel, abs_wheel, ff_iforce }, //?
+	{ 0x05ef, 0x8888, "AVB Top Shot Force Feedback Racing Wheel",	btn_wheel, abs_wheel, ff_iforce }, 
+	{ 0x061c, 0xc0a4, "ACT LABS Force RS",                          btn_wheel, abs_wheel, ff_iforce }, 
 	{ 0x061c, 0xc084, "ACT LABS Force RS",				btn_wheel, abs_wheel, ff_iforce },
-	{ 0x06a3, 0xff04, "Saitek R440 Force Wheel",			btn_wheel, abs_wheel, ff_iforce }, //?
-	{ 0x06f8, 0x0001, "Guillemot Race Leader Force Feedback",	btn_wheel, abs_wheel, ff_iforce }, //?
+	{ 0x06a3, 0xff04, "Saitek R440 Force Wheel",			btn_wheel, abs_wheel, ff_iforce }, 
+	{ 0x06f8, 0x0001, "Guillemot Race Leader Force Feedback",	btn_wheel, abs_wheel, ff_iforce }, 
 	{ 0x06f8, 0x0001, "Guillemot Jet Leader Force Feedback",	btn_joystick, abs_joystick_rudder, ff_iforce },
-	{ 0x06f8, 0x0004, "Guillemot Force Feedback Racing Wheel",	btn_wheel, abs_wheel, ff_iforce }, //?
-	{ 0x06f8, 0xa302, "Guillemot Jet Leader 3D",			btn_joystick, abs_joystick, ff_iforce }, //?
+	{ 0x06f8, 0x0004, "Guillemot Force Feedback Racing Wheel",	btn_wheel, abs_wheel, ff_iforce }, 
+	{ 0x06f8, 0xa302, "Guillemot Jet Leader 3D",			btn_joystick, abs_joystick, ff_iforce }, 
 	{ 0x06d6, 0x29bc, "Trust Force Feedback Race Master",		btn_wheel, abs_wheel, ff_iforce },
 	{ 0x0000, 0x0000, "Unknown I-Force Device [%04x:%04x]",		btn_joystick, abs_joystick, ff_iforce }
 };
@@ -100,10 +95,7 @@ static void iforce_set_autocenter(struct input_dev *dev, u16 magnitude)
 	iforce_send_packet(iforce, FF_CMD_AUTOCENTER, data);
 }
 
-/*
- * Function called when an ioctl is performed on the event dev entry.
- * It uploads an effect to the device
- */
+ 
 static int iforce_upload_effect(struct input_dev *dev, struct ff_effect *effect, struct ff_effect *old)
 {
 	struct iforce *iforce = input_get_drvdata(dev);
@@ -111,14 +103,12 @@ static int iforce_upload_effect(struct input_dev *dev, struct ff_effect *effect,
 	int ret;
 
 	if (__test_and_set_bit(FF_CORE_IS_USED, core_effect->flags)) {
-		/* Check the effect is not already being updated */
+		 
 		if (test_bit(FF_CORE_UPDATE, core_effect->flags))
 			return -EAGAIN;
 	}
 
-/*
- * Upload the effect
- */
+ 
 	switch (effect->type) {
 	case FF_PERIODIC:
 		ret = iforce_upload_periodic(iforce, effect, old);
@@ -138,18 +128,13 @@ static int iforce_upload_effect(struct input_dev *dev, struct ff_effect *effect,
 	}
 
 	if (ret == 0) {
-		/* A packet was sent, forbid new updates until we are notified
-		 * that the packet was updated
-		 */
+		 
 		set_bit(FF_CORE_UPDATE, core_effect->flags);
 	}
 	return ret;
 }
 
-/*
- * Erases an effect: it frees the effect id and mark as unused the memory
- * allocated for the parameters
- */
+ 
 static int iforce_erase_effect(struct input_dev *dev, int effect_id)
 {
 	struct iforce *iforce = input_get_drvdata(dev);
@@ -162,7 +147,7 @@ static int iforce_erase_effect(struct input_dev *dev, int effect_id)
 	if (!err && test_bit(FF_MOD2_IS_USED, core_effect->flags))
 		err = release_resource(&core_effect->mod2_chunk);
 
-	/* TODO: remember to change that if more FF_MOD* bits are added */
+	 
 	core_effect->flags[0] = 0;
 
 	return err;
@@ -175,7 +160,7 @@ static int iforce_open(struct input_dev *dev)
 	iforce->xport_ops->start_io(iforce);
 
 	if (test_bit(EV_FF, dev->evbit)) {
-		/* Enable force feedback */
+		 
 		iforce_send_packet(iforce, FF_CMD_ENABLE, "\004");
 	}
 
@@ -188,7 +173,7 @@ static void iforce_close(struct input_dev *dev)
 	int i;
 
 	if (test_bit(EV_FF, dev->evbit)) {
-		/* Check: no effects should be present in memory */
+		 
 		for (i = 0; i < dev->ff->max_effects; i++) {
 			if (test_bit(FF_CORE_IS_USED, iforce->core_effects[i].flags)) {
 				dev_warn(&dev->dev,
@@ -198,9 +183,9 @@ static void iforce_close(struct input_dev *dev)
 			}
 		}
 
-		/* Disable force feedback playback */
+		 
 		iforce_send_packet(iforce, FF_CMD_ENABLE, "\001");
-		/* Wait for the command to complete */
+		 
 		wait_event_interruptible(iforce->wait,
 			!test_bit(IFORCE_XMIT_RUNNING, iforce->xmit_flags));
 	}
@@ -229,9 +214,7 @@ int iforce_init_device(struct device *parent, u16 bustype,
 	iforce->xmit.buf = iforce->xmit_data;
 	iforce->dev = input_dev;
 
-/*
- * Input device fields.
- */
+ 
 
 	input_dev->id.bustype = bustype;
 	input_dev->dev.parent = parent;
@@ -242,9 +225,7 @@ int iforce_init_device(struct device *parent, u16 bustype,
 	input_dev->open = iforce_open;
 	input_dev->close = iforce_close;
 
-/*
- * On-device memory allocation.
- */
+ 
 
 	iforce->device_memory.name = "I-Force device effect memory";
 	iforce->device_memory.start = 0;
@@ -254,24 +235,20 @@ int iforce_init_device(struct device *parent, u16 bustype,
 	iforce->device_memory.child = NULL;
 	iforce->device_memory.sibling = NULL;
 
-/*
- * Wait until device ready - until it sends its first response.
- */
+ 
 
 	for (i = 0; i < 20; i++)
 		if (!iforce_get_id_packet(iforce, 'O', buf, &len))
 			break;
 
-	if (i == 20) { /* 5 seconds */
+	if (i == 20) {  
 		dev_err(&input_dev->dev,
 			"Timeout waiting for response from device.\n");
 		error = -ENODEV;
 		goto fail;
 	}
 
-/*
- * Get device info.
- */
+ 
 
 	if (!iforce_get_id_packet(iforce, 'M', buf, &len) && len >= 3)
 		input_dev->id.vendor = get_unaligned_le16(buf + 1);
@@ -293,30 +270,24 @@ int iforce_init_device(struct device *parent, u16 bustype,
 	else
 		dev_warn(&iforce->dev->dev, "Device does not respond to id packet N\n");
 
-	/* Check if the device can store more effects than the driver can really handle */
+	 
 	if (ff_effects > IFORCE_EFFECTS_MAX) {
 		dev_warn(&iforce->dev->dev, "Limiting number of effects to %d (device reports %d)\n",
 		       IFORCE_EFFECTS_MAX, ff_effects);
 		ff_effects = IFORCE_EFFECTS_MAX;
 	}
 
-/*
- * Display additional info.
- */
+ 
 
 	for (i = 0; c[i]; i++)
 		if (!iforce_get_id_packet(iforce, c[i], buf, &len))
 			iforce_dump_packet(iforce, "info",
 					   (FF_CMD_QUERY & 0xff00) | len, buf);
 
-/*
- * Disable spring, enable force feedback.
- */
+ 
 	iforce_set_autocenter(input_dev, 0);
 
-/*
- * Find appropriate device entry
- */
+ 
 
 	for (i = 0; iforce_device[i].idvendor; i++)
 		if (iforce_device[i].idvendor == input_dev->id.vendor &&
@@ -326,9 +297,7 @@ int iforce_init_device(struct device *parent, u16 bustype,
 	iforce->type = iforce_device + i;
 	input_dev->name = iforce->type->name;
 
-/*
- * Set input device bitfields and ranges.
- */
+ 
 
 	input_dev->evbit[0] = BIT_MASK(EV_KEY) | BIT_MASK(EV_ABS) |
 		BIT_MASK(EV_FF_STATUS);
@@ -383,9 +352,7 @@ int iforce_init_device(struct device *parent, u16 bustype,
 		ff->set_autocenter = iforce_set_autocenter;
 		ff->playback = iforce_playback;
 	}
-/*
- * Register input device.
- */
+ 
 
 	error = input_register_device(iforce->dev);
 	if (error)

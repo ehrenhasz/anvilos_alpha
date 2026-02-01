@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/**
- * DOC: emac_arc.c - ARC EMAC specific glue layer
- *
- * Copyright (C) 2014 Romain Perier
- *
- * Romain Perier  <romain.perier@gmail.com>
- */
+
+ 
 
 #include <linux/etherdevice.h>
 #include <linux/module.h>
@@ -70,7 +64,7 @@ static int emac_arc_remove(struct platform_device *pdev)
 
 static const struct of_device_id emac_arc_dt_ids[] = {
 	{ .compatible = "snps,arc-emac" },
-	{ /* Sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, emac_arc_dt_ids);
 

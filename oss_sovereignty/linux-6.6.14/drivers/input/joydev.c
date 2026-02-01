@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Joystick device driver for the input driver suite.
- *
- * Copyright (c) 1999-2002 Vojtech Pavlik
- * Copyright (c) 1999 Colin Van Dyke
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -37,7 +32,7 @@ struct joydev {
 	struct input_handle handle;
 	wait_queue_head_t wait;
 	struct list_head client_list;
-	spinlock_t client_lock; /* protects client_list */
+	spinlock_t client_lock;  
 	struct mutex mutex;
 	struct device dev;
 	struct cdev cdev;
@@ -59,7 +54,7 @@ struct joydev_client {
 	int head;
 	int tail;
 	int startup;
-	spinlock_t buffer_lock; /* protects access to buffer, head and tail */
+	spinlock_t buffer_lock;  
 	struct fasync_struct *fasync;
 	struct joydev *joydev;
 	struct list_head node;
@@ -90,9 +85,7 @@ static void joydev_pass_event(struct joydev_client *client,
 {
 	struct joydev *joydev = client->joydev;
 
-	/*
-	 * IRQs already disabled, just acquire the lock
-	 */
+	 
 	spin_lock(&client->buffer_lock);
 
 	client->buffer[client->head] = *event;
@@ -225,10 +218,7 @@ static void joydev_close_device(struct joydev *joydev)
 	mutex_unlock(&joydev->mutex);
 }
 
-/*
- * Wake up users waiting for IO so they can disconnect from
- * dead device.
- */
+ 
 static void joydev_hangup(struct joydev *joydev)
 {
 	struct joydev_client *client;
@@ -334,9 +324,7 @@ static int joydev_fetch_next_event(struct joydev_client *client,
 	return have_event;
 }
 
-/*
- * Old joystick interface
- */
+ 
 static ssize_t joydev_0x_read(struct joydev_client *client,
 			      struct input_dev *input,
 			      char __user *buf)
@@ -347,18 +335,14 @@ static ssize_t joydev_0x_read(struct joydev_client *client,
 
 	spin_lock_irq(&input->event_lock);
 
-	/*
-	 * Get device state
-	 */
+	 
 	for (data.buttons = i = 0; i < 32 && i < joydev->nkey; i++)
 		data.buttons |=
 			test_bit(joydev->keypam[i], input->key) ? (1 << i) : 0;
 	data.x = (joydev->abs[0] / 256 + 128) >> joydev->glue.JS_CORR.x;
 	data.y = (joydev->abs[1] / 256 + 128) >> joydev->glue.JS_CORR.y;
 
-	/*
-	 * Reset reader's event queue
-	 */
+	 
 	spin_lock(&client->buffer_lock);
 	client->startup = 0;
 	client->tail = client->head;
@@ -430,7 +414,7 @@ static ssize_t joydev_read(struct file *file, char __user *buf,
 	return retval;
 }
 
-/* No kernel lock - fine */
+ 
 static __poll_t joydev_poll(struct file *file, poll_table *wait)
 {
 	struct joydev_client *client = file->private_data;
@@ -450,7 +434,7 @@ static int joydev_handle_JSIOCSAXMAP(struct joydev *joydev,
 
 	len = min(len, sizeof(joydev->abspam));
 
-	/* Validate the map. */
+	 
 	abspam = memdup_user(argp, len);
 	if (IS_ERR(abspam))
 		return PTR_ERR(abspam);
@@ -484,7 +468,7 @@ static int joydev_handle_JSIOCSBTNMAP(struct joydev *joydev,
 
 	len = min(len, sizeof(joydev->keypam));
 
-	/* Validate the map. */
+	 
 	keypam = memdup_user(argp, len);
 	if (IS_ERR(keypam))
 		return PTR_ERR(keypam);
@@ -515,7 +499,7 @@ static int joydev_ioctl_common(struct joydev *joydev,
 	int i;
 	const char *name;
 
-	/* Process fixed-sized commands. */
+	 
 	switch (cmd) {
 
 	case JS_SET_CAL:
@@ -558,11 +542,7 @@ static int joydev_ioctl_common(struct joydev *joydev,
 
 	}
 
-	/*
-	 * Process variable-sized commands (the axis and button map commands
-	 * are considered variable-sized to decouple them from the values of
-	 * ABS_MAX and KEY_MAX).
-	 */
+	 
 	switch (cmd & ~IOCSIZE_MASK) {
 
 	case (JSIOCSAXMAP & ~IOCSIZE_MASK):
@@ -657,7 +637,7 @@ static long joydev_compat_ioctl(struct file *file,
 	mutex_unlock(&joydev->mutex);
 	return retval;
 }
-#endif /* CONFIG_COMPAT */
+#endif  
 
 static long joydev_ioctl(struct file *file,
 			 unsigned int cmd, unsigned long arg)
@@ -721,11 +701,7 @@ static const struct file_operations joydev_fops = {
 	.llseek		= no_llseek,
 };
 
-/*
- * Mark device non-existent. This disables writes, ioctls and
- * prevents new users from opening the device. Already posted
- * blocking reads will stay, however new ones will fail.
- */
+ 
 static void joydev_mark_dead(struct joydev *joydev)
 {
 	mutex_lock(&joydev->mutex);
@@ -740,15 +716,12 @@ static void joydev_cleanup(struct joydev *joydev)
 	joydev_mark_dead(joydev);
 	joydev_hangup(joydev);
 
-	/* joydev is marked dead so no one else accesses joydev->open */
+	 
 	if (joydev->open)
 		input_close_device(handle);
 }
 
-/*
- * These codes are copied from hid-ids.h, unfortunately there is no common
- * usb_ids/bt_ids.h header.
- */
+ 
 #define USB_VENDOR_ID_SONY			0x054c
 #define USB_DEVICE_ID_SONY_PS3_CONTROLLER		0x0268
 #define USB_DEVICE_ID_SONY_PS4_CONTROLLER		0x05c4
@@ -775,21 +748,21 @@ static void joydev_cleanup(struct joydev *joydev)
 	}
 
 static const struct input_device_id joydev_blacklist[] = {
-	/* Avoid touchpads and touchscreens */
+	 
 	{
 		.flags = INPUT_DEVICE_ID_MATCH_EVBIT |
 				INPUT_DEVICE_ID_MATCH_KEYBIT,
 		.evbit = { BIT_MASK(EV_KEY) },
 		.keybit = { [BIT_WORD(BTN_TOUCH)] = BIT_MASK(BTN_TOUCH) },
 	},
-	/* Avoid tablets, digitisers and similar devices */
+	 
 	{
 		.flags = INPUT_DEVICE_ID_MATCH_EVBIT |
 				INPUT_DEVICE_ID_MATCH_KEYBIT,
 		.evbit = { BIT_MASK(EV_KEY) },
 		.keybit = { [BIT_WORD(BTN_DIGI)] = BIT_MASK(BTN_DIGI) },
 	},
-	/* Disable accelerometers on composite devices */
+	 
 	ACCEL_DEV(USB_VENDOR_ID_SONY, USB_DEVICE_ID_SONY_PS3_CONTROLLER),
 	ACCEL_DEV(USB_VENDOR_ID_SONY, USB_DEVICE_ID_SONY_PS4_CONTROLLER),
 	ACCEL_DEV(USB_VENDOR_ID_SONY, USB_DEVICE_ID_SONY_PS4_CONTROLLER_2),
@@ -799,7 +772,7 @@ static const struct input_device_id joydev_blacklist[] = {
 	ACCEL_DEV(USB_VENDOR_ID_NINTENDO, USB_DEVICE_ID_NINTENDO_CHRGGRIP),
 	ACCEL_DEV(USB_VENDOR_ID_NINTENDO, USB_DEVICE_ID_NINTENDO_JOYCONL),
 	ACCEL_DEV(USB_VENDOR_ID_NINTENDO, USB_DEVICE_ID_NINTENDO_JOYCONR),
-	{ /* sentinel */ }
+	{   }
 };
 
 static bool joydev_dev_is_blacklisted(struct input_dev *dev)
@@ -824,46 +797,22 @@ static bool joydev_dev_is_absolute_mouse(struct input_dev *dev)
 
 	BUILD_BUG_ON(ABS_CNT > KEY_CNT || EV_CNT > KEY_CNT);
 
-	/*
-	 * Virtualization (VMware, etc) and remote management (HP
-	 * ILO2) solutions use absolute coordinates for their virtual
-	 * pointing devices so that there is one-to-one relationship
-	 * between pointer position on the host screen and virtual
-	 * guest screen, and so their mice use ABS_X, ABS_Y and 3
-	 * primary button events. This clashes with what joydev
-	 * considers to be joysticks (a device with at minimum ABS_X
-	 * axis).
-	 *
-	 * Here we are trying to separate absolute mice from
-	 * joysticks. A device is, for joystick detection purposes,
-	 * considered to be an absolute mouse if the following is
-	 * true:
-	 *
-	 * 1) Event types are exactly
-	 *      EV_ABS, EV_KEY and EV_SYN
-	 *    or
-	 *      EV_ABS, EV_KEY, EV_SYN and EV_MSC
-	 *    or
-	 *      EV_ABS, EV_KEY, EV_SYN, EV_MSC and EV_REL.
-	 * 2) Absolute events are exactly ABS_X and ABS_Y.
-	 * 3) Keys are exactly BTN_LEFT, BTN_RIGHT and BTN_MIDDLE.
-	 * 4) Device is not on "Amiga" bus.
-	 */
+	 
 
 	bitmap_zero(jd_scratch, EV_CNT);
-	/* VMware VMMouse, HP ILO2 */
+	 
 	__set_bit(EV_ABS, jd_scratch);
 	__set_bit(EV_KEY, jd_scratch);
 	__set_bit(EV_SYN, jd_scratch);
 	if (bitmap_equal(jd_scratch, dev->evbit, EV_CNT))
 		ev_match = true;
 
-	/* HP ILO2, AMI BMC firmware */
+	 
 	__set_bit(EV_MSC, jd_scratch);
 	if (bitmap_equal(jd_scratch, dev->evbit, EV_CNT))
 		ev_match = true;
 
-	/* VMware Virtual USB Mouse, QEMU USB Tablet, ATEN BMC firmware */
+	 
 	__set_bit(EV_REL, jd_scratch);
 	if (bitmap_equal(jd_scratch, dev->evbit, EV_CNT))
 		ev_match = true;
@@ -885,10 +834,7 @@ static bool joydev_dev_is_absolute_mouse(struct input_dev *dev)
 	if (!bitmap_equal(dev->keybit, jd_scratch, KEY_CNT))
 		return false;
 
-	/*
-	 * Amiga joystick (amijoy) historically uses left/middle/right
-	 * button events.
-	 */
+	 
 	if (dev->id.bustype == BUS_AMIGA)
 		return false;
 
@@ -897,11 +843,11 @@ static bool joydev_dev_is_absolute_mouse(struct input_dev *dev)
 
 static bool joydev_match(struct input_handler *handler, struct input_dev *dev)
 {
-	/* Disable blacklisted devices */
+	 
 	if (joydev_dev_is_blacklisted(dev))
 		return false;
 
-	/* Avoid absolute mice */
+	 
 	if (joydev_dev_is_absolute_mouse(dev))
 		return false;
 
@@ -935,7 +881,7 @@ static int joydev_connect(struct input_handler *handler, struct input_dev *dev,
 	joydev->exist = true;
 
 	dev_no = minor;
-	/* Normalize device number if it falls into legacy range */
+	 
 	if (dev_no < JOYDEV_MINOR_BASE + JOYDEV_MINORS)
 		dev_no -= JOYDEV_MINOR_BASE;
 	dev_set_name(&joydev->dev, "js%d", dev_no);
@@ -1068,7 +1014,7 @@ static const struct input_device_id joydev_ids[] = {
 		.evbit = { BIT_MASK(EV_KEY) },
 		.keybit = { [BIT_WORD(BTN_TRIGGER_HAPPY)] = BIT_MASK(BTN_TRIGGER_HAPPY) },
 	},
-	{ }	/* Terminating entry */
+	{ }	 
 };
 
 MODULE_DEVICE_TABLE(input, joydev_ids);

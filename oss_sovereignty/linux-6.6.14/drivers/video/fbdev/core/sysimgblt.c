@@ -1,15 +1,4 @@
-/*
- *  Generic 1-bit or 8-bit source to 1-32 bit destination expansion
- *  for frame buffer located in system RAM with packed pixels of any depth.
- *
- *  Based almost entirely on cfbimgblt.c
- *
- *      Copyright (C)  April 2007 Antonino Daplas <adaplas@pol.net>
- *
- *  This file is subject to the terms and conditions of the GNU General Public
- *  License.  See the file COPYING in the main directory of this archive for
- *  more details.
- */
+ 
 #include <linux/module.h>
 #include <linux/string.h>
 #include <linux/fb.h>
@@ -52,7 +41,7 @@ static const u32 cfb_tab32[] = {
 static void color_imageblit(const struct fb_image *image, struct fb_info *p,
 			    void *dst1, u32 start_index, u32 pitch_index)
 {
-	/* Draw the penguin */
+	 
 	u32 *dst, *dst2;
 	u32 color = 0, val, shift;
 	int i, n, bpp = p->var.bits_per_pixel;
@@ -131,7 +120,7 @@ static void slow_imageblit(const struct fb_image *image, struct fb_info *p,
 		dst = dst1;
 		s = src;
 
-		/* write leading bits */
+		 
 		if (start_index) {
 			u32 start_mask = ~(FB_SHIFT_HIGH(p, ~(u32)0,
 							 start_index));
@@ -144,7 +133,7 @@ static void slow_imageblit(const struct fb_image *image, struct fb_info *p,
 			color = (*s & (1 << l)) ? fgcolor : bgcolor;
 			val |= FB_SHIFT_HIGH(p, color, shift);
 
-			/* Did the bitshift spill bits to the next long? */
+			 
 			if (shift >= null_bits) {
 				*dst++ = val;
 				val = (shift == null_bits) ? 0 :
@@ -155,7 +144,7 @@ static void slow_imageblit(const struct fb_image *image, struct fb_info *p,
 			if (!l) { l = 8; s++; }
 		}
 
-		/* write trailing bits */
+		 
  		if (shift) {
 			u32 end_mask = FB_SHIFT_HIGH(p, ~(u32)0, shift);
 
@@ -175,14 +164,7 @@ static void slow_imageblit(const struct fb_image *image, struct fb_info *p,
 	}
 }
 
-/*
- * fast_imageblit - optimized monochrome color expansion
- *
- * Only if:  bits_per_pixel == 8, 16, or 32
- *           image->width is divisible by pixel/dword (ppw);
- *           fix->line_legth is divisible by 4;
- *           beginning and end of a scanline is dword aligned
- */
+ 
 static void fast_imageblit(const struct fb_image *image, struct fb_info *p,
 				  void *dst1, u32 fgcolor, u32 bgcolor)
 {
@@ -232,19 +214,15 @@ static void fast_imageblit(const struct fb_image *image, struct fb_info *p,
 		shift = 8;
 		src = s;
 
-		/*
-		 * Manually unroll the per-line copying loop for better
-		 * performance. This works until we processed the last
-		 * completely filled source byte (inclusive).
-		 */
+		 
 		switch (ppw) {
-		case 4: /* 8 bpp */
+		case 4:  
 			for (j = k; j >= 2; j -= 2, ++src) {
 				*dst++ = colortab[(*src >> 4) & bit_mask];
 				*dst++ = colortab[(*src >> 0) & bit_mask];
 			}
 			break;
-		case 2: /* 16 bpp */
+		case 2:  
 			for (j = k; j >= 4; j -= 4, ++src) {
 				*dst++ = colortab[(*src >> 6) & bit_mask];
 				*dst++ = colortab[(*src >> 4) & bit_mask];
@@ -252,7 +230,7 @@ static void fast_imageblit(const struct fb_image *image, struct fb_info *p,
 				*dst++ = colortab[(*src >> 0) & bit_mask];
 			}
 			break;
-		case 1: /* 32 bpp */
+		case 1:  
 			for (j = k; j >= 8; j -= 8, ++src) {
 				*dst++ = colortab[(*src >> 7) & bit_mask];
 				*dst++ = colortab[(*src >> 6) & bit_mask];
@@ -266,11 +244,7 @@ static void fast_imageblit(const struct fb_image *image, struct fb_info *p,
 			break;
 		}
 
-		/*
-		 * For image widths that are not a multiple of 8, there
-		 * are trailing pixels left on the current line. Print
-		 * them as well.
-		 */
+		 
 		for (; j--; ) {
 			shift -= ppw;
 			*dst++ = colortab[(*src >> shift) & bit_mask];

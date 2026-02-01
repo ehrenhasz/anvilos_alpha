@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * HD-audio controller helpers
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/delay.h>
@@ -11,7 +9,7 @@
 #include <sound/hda_register.h>
 #include "local.h"
 
-/* clear CORB read pointer properly */
+ 
 static void azx_clear_corbrp(struct hdac_bus *bus)
 {
 	int timeout;
@@ -36,35 +34,32 @@ static void azx_clear_corbrp(struct hdac_bus *bus)
 			snd_hdac_chip_readw(bus, CORBRP));
 }
 
-/**
- * snd_hdac_bus_init_cmd_io - set up CORB/RIRB buffers
- * @bus: HD-audio core bus
- */
+ 
 void snd_hdac_bus_init_cmd_io(struct hdac_bus *bus)
 {
 	WARN_ON_ONCE(!bus->rb.area);
 
 	spin_lock_irq(&bus->reg_lock);
-	/* CORB set up */
+	 
 	bus->corb.addr = bus->rb.addr;
 	bus->corb.buf = (__le32 *)bus->rb.area;
 	snd_hdac_chip_writel(bus, CORBLBASE, (u32)bus->corb.addr);
 	snd_hdac_chip_writel(bus, CORBUBASE, upper_32_bits(bus->corb.addr));
 
-	/* set the corb size to 256 entries (ULI requires explicitly) */
+	 
 	snd_hdac_chip_writeb(bus, CORBSIZE, 0x02);
-	/* set the corb write pointer to 0 */
+	 
 	snd_hdac_chip_writew(bus, CORBWP, 0);
 
-	/* reset the corb hw read pointer */
+	 
 	snd_hdac_chip_writew(bus, CORBRP, AZX_CORBRP_RST);
 	if (!bus->corbrp_self_clear)
 		azx_clear_corbrp(bus);
 
-	/* enable corb dma */
+	 
 	snd_hdac_chip_writeb(bus, CORBCTL, AZX_CORBCTL_RUN);
 
-	/* RIRB set up */
+	 
 	bus->rirb.addr = bus->rb.addr + 2048;
 	bus->rirb.buf = (__le32 *)(bus->rb.area + 2048);
 	bus->rirb.wp = bus->rirb.rp = 0;
@@ -72,24 +67,24 @@ void snd_hdac_bus_init_cmd_io(struct hdac_bus *bus)
 	snd_hdac_chip_writel(bus, RIRBLBASE, (u32)bus->rirb.addr);
 	snd_hdac_chip_writel(bus, RIRBUBASE, upper_32_bits(bus->rirb.addr));
 
-	/* set the rirb size to 256 entries (ULI requires explicitly) */
+	 
 	snd_hdac_chip_writeb(bus, RIRBSIZE, 0x02);
-	/* reset the rirb hw write pointer */
+	 
 	snd_hdac_chip_writew(bus, RIRBWP, AZX_RIRBWP_RST);
-	/* set N=1, get RIRB response interrupt for new entry */
+	 
 	snd_hdac_chip_writew(bus, RINTCNT, 1);
-	/* enable rirb dma and response irq */
+	 
 	if (bus->not_use_interrupts)
 		snd_hdac_chip_writeb(bus, RIRBCTL, AZX_RBCTL_DMA_EN);
 	else
 		snd_hdac_chip_writeb(bus, RIRBCTL, AZX_RBCTL_DMA_EN | AZX_RBCTL_IRQ_EN);
-	/* Accept unsolicited responses */
+	 
 	snd_hdac_chip_updatel(bus, GCTL, AZX_GCTL_UNSOL, AZX_GCTL_UNSOL);
 	spin_unlock_irq(&bus->reg_lock);
 }
 EXPORT_SYMBOL_GPL(snd_hdac_bus_init_cmd_io);
 
-/* wait for cmd dmas till they are stopped */
+ 
 static void hdac_wait_for_cmd_dmas(struct hdac_bus *bus)
 {
 	unsigned long timeout;
@@ -105,14 +100,11 @@ static void hdac_wait_for_cmd_dmas(struct hdac_bus *bus)
 		udelay(10);
 }
 
-/**
- * snd_hdac_bus_stop_cmd_io - clean up CORB/RIRB buffers
- * @bus: HD-audio core bus
- */
+ 
 void snd_hdac_bus_stop_cmd_io(struct hdac_bus *bus)
 {
 	spin_lock_irq(&bus->reg_lock);
-	/* disable ringbuffer DMAs */
+	 
 	snd_hdac_chip_writeb(bus, RIRBCTL, 0);
 	snd_hdac_chip_writeb(bus, CORBCTL, 0);
 	spin_unlock_irq(&bus->reg_lock);
@@ -120,7 +112,7 @@ void snd_hdac_bus_stop_cmd_io(struct hdac_bus *bus)
 	hdac_wait_for_cmd_dmas(bus);
 
 	spin_lock_irq(&bus->reg_lock);
-	/* disable unsolicited responses */
+	 
 	snd_hdac_chip_updatel(bus, GCTL, AZX_GCTL_UNSOL, 0);
 	spin_unlock_irq(&bus->reg_lock);
 }
@@ -135,13 +127,7 @@ static unsigned int azx_command_addr(u32 cmd)
 	return addr;
 }
 
-/**
- * snd_hdac_bus_send_cmd - send a command verb via CORB
- * @bus: HD-audio core bus
- * @val: encoded verb value to send
- *
- * Returns zero for success or a negative error code.
- */
+ 
 int snd_hdac_bus_send_cmd(struct hdac_bus *bus, unsigned int val)
 {
 	unsigned int addr = azx_command_addr(val);
@@ -151,10 +137,10 @@ int snd_hdac_bus_send_cmd(struct hdac_bus *bus, unsigned int val)
 
 	bus->last_cmd[azx_command_addr(val)] = val;
 
-	/* add command to corb */
+	 
 	wp = snd_hdac_chip_readw(bus, CORBWP);
 	if (wp == 0xffff) {
-		/* something wrong, controller likely turned to D3 */
+		 
 		spin_unlock_irq(&bus->reg_lock);
 		return -EIO;
 	}
@@ -163,7 +149,7 @@ int snd_hdac_bus_send_cmd(struct hdac_bus *bus, unsigned int val)
 
 	rp = snd_hdac_chip_readw(bus, CORBRP);
 	if (wp == rp) {
-		/* oops, it's full */
+		 
 		spin_unlock_irq(&bus->reg_lock);
 		return -EAGAIN;
 	}
@@ -180,13 +166,7 @@ EXPORT_SYMBOL_GPL(snd_hdac_bus_send_cmd);
 
 #define AZX_RIRB_EX_UNSOL_EV	(1<<4)
 
-/**
- * snd_hdac_bus_update_rirb - retrieve RIRB entries
- * @bus: HD-audio core bus
- *
- * Usually called from interrupt handler.
- * The caller needs bus->reg_lock spinlock before calling this.
- */
+ 
 void snd_hdac_bus_update_rirb(struct hdac_bus *bus)
 {
 	unsigned int rp, wp;
@@ -195,7 +175,7 @@ void snd_hdac_bus_update_rirb(struct hdac_bus *bus)
 
 	wp = snd_hdac_chip_readw(bus, RIRBWP);
 	if (wp == 0xffff) {
-		/* something wrong, controller likely turned to D3 */
+		 
 		return;
 	}
 
@@ -207,7 +187,7 @@ void snd_hdac_bus_update_rirb(struct hdac_bus *bus)
 		bus->rirb.rp++;
 		bus->rirb.rp %= AZX_MAX_RIRB_ENTRIES;
 
-		rp = bus->rirb.rp << 1; /* an RIRB entry is 8-bytes */
+		rp = bus->rirb.rp << 1;  
 		res_ex = le32_to_cpu(bus->rirb.buf[rp + 1]);
 		res = le32_to_cpu(bus->rirb.buf[rp]);
 		addr = res_ex & 0xf;
@@ -233,14 +213,7 @@ void snd_hdac_bus_update_rirb(struct hdac_bus *bus)
 }
 EXPORT_SYMBOL_GPL(snd_hdac_bus_update_rirb);
 
-/**
- * snd_hdac_bus_get_response - receive a response via RIRB
- * @bus: HD-audio core bus
- * @addr: codec address
- * @res: pointer to store the value, NULL when not needed
- *
- * Returns zero if a value is read, or a negative error code.
- */
+ 
 int snd_hdac_bus_get_response(struct hdac_bus *bus, unsigned int addr,
 			      unsigned int *res)
 {
@@ -261,7 +234,7 @@ int snd_hdac_bus_get_response(struct hdac_bus *bus, unsigned int addr,
 			snd_hdac_bus_update_rirb(bus);
 		if (!bus->rirb.cmds[addr]) {
 			if (res)
-				*res = bus->rirb.res[addr]; /* the last value */
+				*res = bus->rirb.res[addr];  
 			if (!bus->polling_mode)
 				finish_wait(&bus->rirb_wq, &wait);
 			spin_unlock_irq(&bus->reg_lock);
@@ -281,7 +254,7 @@ int snd_hdac_bus_get_response(struct hdac_bus *bus, unsigned int addr,
 						    bus->last_cmd[addr]);
 				warned = true;
 			}
-			msleep(2); /* temporary workaround */
+			msleep(2);  
 		} else {
 			udelay(10);
 			cond_resched();
@@ -296,12 +269,7 @@ int snd_hdac_bus_get_response(struct hdac_bus *bus, unsigned int addr,
 EXPORT_SYMBOL_GPL(snd_hdac_bus_get_response);
 
 #define HDAC_MAX_CAPS 10
-/**
- * snd_hdac_bus_parse_capabilities - parse capability structure
- * @bus: the pointer to bus object
- *
- * Returns 0 if successful, or a negative error code.
- */
+ 
 int snd_hdac_bus_parse_capabilities(struct hdac_bus *bus)
 {
 	unsigned int cur_cap;
@@ -310,7 +278,7 @@ int snd_hdac_bus_parse_capabilities(struct hdac_bus *bus)
 
 	offset = snd_hdac_chip_readw(bus, LLCH);
 
-	/* Lets walk the linked capabilities list */
+	 
 	do {
 		cur_cap = _snd_hdac_chip_readl(bus, offset);
 
@@ -337,19 +305,19 @@ int snd_hdac_bus_parse_capabilities(struct hdac_bus *bus)
 			break;
 
 		case AZX_PP_CAP_ID:
-			/* PP capability found, the Audio DSP is present */
+			 
 			dev_dbg(bus->dev, "Found PP capability offset=%x\n", offset);
 			bus->ppcap = bus->remap_addr + offset;
 			break;
 
 		case AZX_SPB_CAP_ID:
-			/* SPIB capability found, handler function */
+			 
 			dev_dbg(bus->dev, "Found SPB capability\n");
 			bus->spbcap = bus->remap_addr + offset;
 			break;
 
 		case AZX_DRSM_CAP_ID:
-			/* DMA resume  capability found, handler function */
+			 
 			dev_dbg(bus->dev, "Found DRSM capability\n");
 			bus->drsmcap = bus->remap_addr + offset;
 			break;
@@ -367,7 +335,7 @@ int snd_hdac_bus_parse_capabilities(struct hdac_bus *bus)
 			break;
 		}
 
-		/* read the offset of next capability */
+		 
 		offset = cur_cap & AZX_CAP_HDR_NXT_PTR_MASK;
 
 	} while (offset);
@@ -376,21 +344,14 @@ int snd_hdac_bus_parse_capabilities(struct hdac_bus *bus)
 }
 EXPORT_SYMBOL_GPL(snd_hdac_bus_parse_capabilities);
 
-/*
- * Lowlevel interface
- */
+ 
 
-/**
- * snd_hdac_bus_enter_link_reset - enter link reset
- * @bus: HD-audio core bus
- *
- * Enter to the link reset state.
- */
+ 
 void snd_hdac_bus_enter_link_reset(struct hdac_bus *bus)
 {
 	unsigned long timeout;
 
-	/* reset controller */
+	 
 	snd_hdac_chip_updatel(bus, GCTL, AZX_GCTL_RESET, 0);
 
 	timeout = jiffies + msecs_to_jiffies(100);
@@ -400,12 +361,7 @@ void snd_hdac_bus_enter_link_reset(struct hdac_bus *bus)
 }
 EXPORT_SYMBOL_GPL(snd_hdac_bus_enter_link_reset);
 
-/**
- * snd_hdac_bus_exit_link_reset - exit link reset
- * @bus: HD-audio core bus
- *
- * Exit from the link reset state.
- */
+ 
 void snd_hdac_bus_exit_link_reset(struct hdac_bus *bus)
 {
 	unsigned long timeout;
@@ -418,38 +374,36 @@ void snd_hdac_bus_exit_link_reset(struct hdac_bus *bus)
 }
 EXPORT_SYMBOL_GPL(snd_hdac_bus_exit_link_reset);
 
-/* reset codec link */
+ 
 int snd_hdac_bus_reset_link(struct hdac_bus *bus, bool full_reset)
 {
 	if (!full_reset)
 		goto skip_reset;
 
-	/* clear STATESTS if not in reset */
+	 
 	if (snd_hdac_chip_readb(bus, GCTL) & AZX_GCTL_RESET)
 		snd_hdac_chip_writew(bus, STATESTS, STATESTS_INT_MASK);
 
-	/* reset controller */
+	 
 	snd_hdac_bus_enter_link_reset(bus);
 
-	/* delay for >= 100us for codec PLL to settle per spec
-	 * Rev 0.9 section 5.5.1
-	 */
+	 
 	usleep_range(500, 1000);
 
-	/* Bring controller out of reset */
+	 
 	snd_hdac_bus_exit_link_reset(bus);
 
-	/* Brent Chartrand said to wait >= 540us for codecs to initialize */
+	 
 	usleep_range(1000, 1200);
 
  skip_reset:
-	/* check to see if controller is ready */
+	 
 	if (!snd_hdac_chip_readb(bus, GCTL)) {
 		dev_dbg(bus->dev, "controller not ready!\n");
 		return -EBUSY;
 	}
 
-	/* detect codecs */
+	 
 	if (!bus->codec_mask) {
 		bus->codec_mask = snd_hdac_chip_readw(bus, STATESTS);
 		dev_dbg(bus->dev, "codec_mask = 0x%lx\n", bus->codec_mask);
@@ -459,70 +413,66 @@ int snd_hdac_bus_reset_link(struct hdac_bus *bus, bool full_reset)
 }
 EXPORT_SYMBOL_GPL(snd_hdac_bus_reset_link);
 
-/* enable interrupts */
+ 
 static void azx_int_enable(struct hdac_bus *bus)
 {
-	/* enable controller CIE and GIE */
+	 
 	snd_hdac_chip_updatel(bus, INTCTL,
 			      AZX_INT_CTRL_EN | AZX_INT_GLOBAL_EN,
 			      AZX_INT_CTRL_EN | AZX_INT_GLOBAL_EN);
 }
 
-/* disable interrupts */
+ 
 static void azx_int_disable(struct hdac_bus *bus)
 {
 	struct hdac_stream *azx_dev;
 
-	/* disable interrupts in stream descriptor */
+	 
 	list_for_each_entry(azx_dev, &bus->stream_list, list)
 		snd_hdac_stream_updateb(azx_dev, SD_CTL, SD_INT_MASK, 0);
 
-	/* disable SIE for all streams & disable controller CIE and GIE */
+	 
 	snd_hdac_chip_writel(bus, INTCTL, 0);
 }
 
-/* clear interrupts */
+ 
 static void azx_int_clear(struct hdac_bus *bus)
 {
 	struct hdac_stream *azx_dev;
 
-	/* clear stream status */
+	 
 	list_for_each_entry(azx_dev, &bus->stream_list, list)
 		snd_hdac_stream_writeb(azx_dev, SD_STS, SD_INT_MASK);
 
-	/* clear STATESTS */
+	 
 	snd_hdac_chip_writew(bus, STATESTS, STATESTS_INT_MASK);
 
-	/* clear rirb status */
+	 
 	snd_hdac_chip_writeb(bus, RIRBSTS, RIRB_INT_MASK);
 
-	/* clear int status */
+	 
 	snd_hdac_chip_writel(bus, INTSTS, AZX_INT_CTRL_EN | AZX_INT_ALL_STREAM);
 }
 
-/**
- * snd_hdac_bus_init_chip - reset and start the controller registers
- * @bus: HD-audio core bus
- * @full_reset: Do full reset
- */
+ 
 bool snd_hdac_bus_init_chip(struct hdac_bus *bus, bool full_reset)
 {
 	if (bus->chip_init)
 		return false;
 
-	/* reset controller */
+	 
 	snd_hdac_bus_reset_link(bus, full_reset);
 
-	/* clear interrupts */
+	 
 	azx_int_clear(bus);
 
-	/* initialize the codec command I/O */
+	 
 	snd_hdac_bus_init_cmd_io(bus);
 
-	/* enable interrupts after CORB/RIRB buffers are initialized above */
+	 
 	azx_int_enable(bus);
 
-	/* program the position buffer */
+	 
 	if (bus->use_posbuf && bus->posbuf.addr) {
 		snd_hdac_chip_writel(bus, DPLBASE, (u32)bus->posbuf.addr);
 		snd_hdac_chip_writel(bus, DPUBASE, upper_32_bits(bus->posbuf.addr));
@@ -534,23 +484,20 @@ bool snd_hdac_bus_init_chip(struct hdac_bus *bus, bool full_reset)
 }
 EXPORT_SYMBOL_GPL(snd_hdac_bus_init_chip);
 
-/**
- * snd_hdac_bus_stop_chip - disable the whole IRQ and I/Os
- * @bus: HD-audio core bus
- */
+ 
 void snd_hdac_bus_stop_chip(struct hdac_bus *bus)
 {
 	if (!bus->chip_init)
 		return;
 
-	/* disable interrupts */
+	 
 	azx_int_disable(bus);
 	azx_int_clear(bus);
 
-	/* disable CORB/RIRB */
+	 
 	snd_hdac_bus_stop_cmd_io(bus);
 
-	/* disable position buffer */
+	 
 	if (bus->posbuf.addr) {
 		snd_hdac_chip_writel(bus, DPLBASE, 0);
 		snd_hdac_chip_writel(bus, DPUBASE, 0);
@@ -560,14 +507,7 @@ void snd_hdac_bus_stop_chip(struct hdac_bus *bus)
 }
 EXPORT_SYMBOL_GPL(snd_hdac_bus_stop_chip);
 
-/**
- * snd_hdac_bus_handle_stream_irq - interrupt handler for streams
- * @bus: HD-audio core bus
- * @status: INTSTS register value
- * @ack: callback to be called for woken streams
- *
- * Returns the bits of handled streams, or zero if no stream is handled.
- */
+ 
 int snd_hdac_bus_handle_stream_irq(struct hdac_bus *bus, unsigned int status,
 				    void (*ack)(struct hdac_bus *,
 						struct hdac_stream *))
@@ -592,13 +532,7 @@ int snd_hdac_bus_handle_stream_irq(struct hdac_bus *bus, unsigned int status,
 }
 EXPORT_SYMBOL_GPL(snd_hdac_bus_handle_stream_irq);
 
-/**
- * snd_hdac_bus_alloc_stream_pages - allocate BDL and other buffers
- * @bus: HD-audio core bus
- *
- * Call this after assigning the all streams.
- * Returns zero for success, or a negative error code.
- */
+ 
 int snd_hdac_bus_alloc_stream_pages(struct hdac_bus *bus)
 {
 	struct hdac_stream *s;
@@ -607,7 +541,7 @@ int snd_hdac_bus_alloc_stream_pages(struct hdac_bus *bus)
 	int err;
 
 	list_for_each_entry(s, &bus->stream_list, list) {
-		/* allocate memory for the BDL for each stream */
+		 
 		err = snd_dma_alloc_pages(dma_type, bus->dev,
 					  BDL_SIZE, &s->bdl);
 		num_streams++;
@@ -617,7 +551,7 @@ int snd_hdac_bus_alloc_stream_pages(struct hdac_bus *bus)
 
 	if (WARN_ON(!num_streams))
 		return -EINVAL;
-	/* allocate memory for the position buffer */
+	 
 	err = snd_dma_alloc_pages(dma_type, bus->dev,
 				  num_streams * 8, &bus->posbuf);
 	if (err < 0)
@@ -625,15 +559,12 @@ int snd_hdac_bus_alloc_stream_pages(struct hdac_bus *bus)
 	list_for_each_entry(s, &bus->stream_list, list)
 		s->posbuf = (__le32 *)(bus->posbuf.area + s->index * 8);
 
-	/* single page (at least 4096 bytes) must suffice for both ringbuffes */
+	 
 	return snd_dma_alloc_pages(dma_type, bus->dev, PAGE_SIZE, &bus->rb);
 }
 EXPORT_SYMBOL_GPL(snd_hdac_bus_alloc_stream_pages);
 
-/**
- * snd_hdac_bus_free_stream_pages - release BDL and other buffers
- * @bus: HD-audio core bus
- */
+ 
 void snd_hdac_bus_free_stream_pages(struct hdac_bus *bus)
 {
 	struct hdac_stream *s;
@@ -650,11 +581,7 @@ void snd_hdac_bus_free_stream_pages(struct hdac_bus *bus)
 }
 EXPORT_SYMBOL_GPL(snd_hdac_bus_free_stream_pages);
 
-/**
- * snd_hdac_bus_link_power - power up/down codec link
- * @codec: HD-audio device
- * @enable: whether to power-up the link
- */
+ 
 void snd_hdac_bus_link_power(struct hdac_device *codec, bool enable)
 {
 	if (enable)

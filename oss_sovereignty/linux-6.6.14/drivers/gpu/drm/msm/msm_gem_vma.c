@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2016 Red Hat
- * Author: Rob Clark <robdclark@gmail.com>
- */
+
+ 
 
 #include "msm_drv.h"
 #include "msm_fence.h"
@@ -38,13 +35,13 @@ msm_gem_address_space_get(struct msm_gem_address_space *aspace)
 	return aspace;
 }
 
-/* Actually unmap memory for the vma */
+ 
 void msm_gem_vma_purge(struct msm_gem_vma *vma)
 {
 	struct msm_gem_address_space *aspace = vma->aspace;
 	unsigned size = vma->node.size;
 
-	/* Don't do anything if the memory isn't mapped */
+	 
 	if (!vma->mapped)
 		return;
 
@@ -53,7 +50,7 @@ void msm_gem_vma_purge(struct msm_gem_vma *vma)
 	vma->mapped = false;
 }
 
-/* Map and pin vma: */
+ 
 int
 msm_gem_vma_map(struct msm_gem_vma *vma, int prot,
 		struct sg_table *sgt, int size)
@@ -72,15 +69,7 @@ msm_gem_vma_map(struct msm_gem_vma *vma, int prot,
 	if (!aspace)
 		return 0;
 
-	/*
-	 * NOTE: iommu/io-pgtable can allocate pages, so we cannot hold
-	 * a lock across map/unmap which is also used in the job_run()
-	 * path, as this can cause deadlock in job_run() vs shrinker/
-	 * reclaim.
-	 *
-	 * Revisit this if we can come up with a scheme to pre-alloc pages
-	 * for the pgtable in map/unmap ops.
-	 */
+	 
 	ret = aspace->mmu->funcs->map(aspace->mmu, vma->iova, sgt, size, prot);
 
 	if (ret) {
@@ -90,7 +79,7 @@ msm_gem_vma_map(struct msm_gem_vma *vma, int prot,
 	return ret;
 }
 
-/* Close an iova.  Warn if it is still in use */
+ 
 void msm_gem_vma_close(struct msm_gem_vma *vma)
 {
 	struct msm_gem_address_space *aspace = vma->aspace;
@@ -120,7 +109,7 @@ struct msm_gem_vma *msm_gem_vma_new(struct msm_gem_address_space *aspace)
 	return vma;
 }
 
-/* Initialize a new vma and allocate an iova for it */
+ 
 int msm_gem_vma_init(struct msm_gem_vma *vma, int size,
 		u64 range_start, u64 range_end)
 {

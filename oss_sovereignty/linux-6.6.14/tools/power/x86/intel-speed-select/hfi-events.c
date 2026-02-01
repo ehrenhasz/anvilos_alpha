@@ -1,31 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Intel Speed Select -- Read HFI events for OOB
- * Copyright (c) 2022 Intel Corporation.
- */
 
-/*
- * This file incorporates work covered by the following copyright and
- * permission notice:
+ 
 
- * WPA Supplicant - driver interaction with Linux nl80211/cfg80211
- * Copyright (c) 2003-2008, Jouni Malinen <j@w1.fi>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- *
- * Alternatively, this software may be distributed under the terms of
- * BSD license.
- *
- * Requires
- * libnl-genl-3-dev
- *
- * For Fedora/CenOS
- * dnf install libnl3-devel
- * For Ubuntu
- * apt install libnl-3-dev libnl-genl-3-dev
- */
+ 
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -295,7 +271,7 @@ int hfi_main(void)
 
 	return 0;
 
-	/* Netlink library doesn't have calls to dealloc cb or disconnect */
+	 
 free_sock:
 	nl_socket_free(sock);
 

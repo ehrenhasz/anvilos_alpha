@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * queue_stack_maps.c: BPF queue and stack maps
- *
- * Copyright (c) 2018 Politecnico di Torino
- */
+
+ 
 #include <linux/bpf.h>
 #include <linux/list.h>
 #include <linux/slab.h>
@@ -17,7 +13,7 @@ struct bpf_queue_stack {
 	struct bpf_map map;
 	raw_spinlock_t lock;
 	u32 head, tail;
-	u32 size; /* max_entries + 1 */
+	u32 size;  
 
 	char elements[] __aligned(8);
 };
@@ -42,10 +38,10 @@ static bool queue_stack_map_is_full(struct bpf_queue_stack *qs)
 	return head == qs->tail;
 }
 
-/* Called from syscall */
+ 
 static int queue_stack_map_alloc_check(union bpf_attr *attr)
 {
-	/* check sanity of attributes */
+	 
 	if (attr->max_entries == 0 || attr->key_size != 0 ||
 	    attr->value_size == 0 ||
 	    attr->map_flags & ~QUEUE_STACK_CREATE_FLAG_MASK ||
@@ -53,9 +49,7 @@ static int queue_stack_map_alloc_check(union bpf_attr *attr)
 		return -EINVAL;
 
 	if (attr->value_size > KMALLOC_MAX_SIZE)
-		/* if value_size is bigger, the user space won't be able to
-		 * access the elements.
-		 */
+		 
 		return -E2BIG;
 
 	return 0;
@@ -83,7 +77,7 @@ static struct bpf_map *queue_stack_map_alloc(union bpf_attr *attr)
 	return &qs->map;
 }
 
-/* Called when map->refcnt goes to zero, either from workqueue or from syscall */
+ 
 static void queue_stack_map_free(struct bpf_map *map)
 {
 	struct bpf_queue_stack *qs = bpf_queue_stack(map);
@@ -161,31 +155,31 @@ out:
 	return err;
 }
 
-/* Called from syscall or from eBPF program */
+ 
 static long queue_map_peek_elem(struct bpf_map *map, void *value)
 {
 	return __queue_map_get(map, value, false);
 }
 
-/* Called from syscall or from eBPF program */
+ 
 static long stack_map_peek_elem(struct bpf_map *map, void *value)
 {
 	return __stack_map_get(map, value, false);
 }
 
-/* Called from syscall or from eBPF program */
+ 
 static long queue_map_pop_elem(struct bpf_map *map, void *value)
 {
 	return __queue_map_get(map, value, true);
 }
 
-/* Called from syscall or from eBPF program */
+ 
 static long stack_map_pop_elem(struct bpf_map *map, void *value)
 {
 	return __stack_map_get(map, value, true);
 }
 
-/* Called from syscall or from eBPF program */
+ 
 static long queue_stack_map_push_elem(struct bpf_map *map, void *value,
 				      u64 flags)
 {
@@ -194,12 +188,10 @@ static long queue_stack_map_push_elem(struct bpf_map *map, void *value,
 	int err = 0;
 	void *dst;
 
-	/* BPF_EXIST is used to force making room for a new element in case the
-	 * map is full
-	 */
+	 
 	bool replace = (flags & BPF_EXIST);
 
-	/* Check supported flags for queue and stack maps */
+	 
 	if (flags & BPF_NOEXIST || flags > BPF_EXIST)
 		return -EINVAL;
 
@@ -215,7 +207,7 @@ static long queue_stack_map_push_elem(struct bpf_map *map, void *value,
 			err = -E2BIG;
 			goto out;
 		}
-		/* advance tail pointer to overwrite oldest element */
+		 
 		if (unlikely(++qs->tail >= qs->size))
 			qs->tail = 0;
 	}
@@ -231,26 +223,26 @@ out:
 	return err;
 }
 
-/* Called from syscall or from eBPF program */
+ 
 static void *queue_stack_map_lookup_elem(struct bpf_map *map, void *key)
 {
 	return NULL;
 }
 
-/* Called from syscall or from eBPF program */
+ 
 static long queue_stack_map_update_elem(struct bpf_map *map, void *key,
 					void *value, u64 flags)
 {
 	return -EINVAL;
 }
 
-/* Called from syscall or from eBPF program */
+ 
 static long queue_stack_map_delete_elem(struct bpf_map *map, void *key)
 {
 	return -EINVAL;
 }
 
-/* Called from syscall */
+ 
 static int queue_stack_map_get_next_key(struct bpf_map *map, void *key,
 					void *next_key)
 {

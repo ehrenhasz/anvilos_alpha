@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) 2018 MediaTek Inc.
- *
- * Author: ZH Chen <zh.chen@mediatek.com>
- *
- */
+ 
+ 
 
 #ifndef __PINCTRL_MTK_MT6765_H
 #define __PINCTRL_MTK_MT6765_H
@@ -1751,4 +1746,4 @@ static struct mtk_pin_desc mtk_pins_mt6765[] = {
 	),
 };
 
-#endif /* __PINCTRL_MTK_MT6765_H */
+#endif  

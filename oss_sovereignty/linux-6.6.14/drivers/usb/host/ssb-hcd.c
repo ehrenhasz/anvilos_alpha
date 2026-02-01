@@ -1,22 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Sonics Silicon Backplane
- * Broadcom USB-core driver  (SSB bus glue)
- *
- * Copyright 2011-2012 Hauke Mehrtens <hauke@hauke-m.de>
- *
- * Based on ssb-ohci driver
- * Copyright 2007 Michael Buesch <m@bues.ch>
- *
- * Derived from the OHCI-PCI driver
- * Copyright 1999 Roman Weissgaerber
- * Copyright 2000-2002 David Brownell
- * Copyright 1999 Linus Torvalds
- * Copyright 1999 Gregory P. Smith
- *
- * Derived from the USBcore related parts of Broadcom-SB
- * Copyright 2005-2011 Broadcom Corporation
- */
+
+ 
 #include <linux/ssb/ssb.h>
 #include <linux/delay.h>
 #include <linux/platform_device.h>
@@ -41,12 +24,12 @@ struct ssb_hcd_device {
 static void ssb_hcd_5354wa(struct ssb_device *dev)
 {
 #ifdef CONFIG_SSB_DRIVER_MIPS
-	/* Work around for 5354 failures */
+	 
 	if (dev->id.revision == 2 && dev->bus->chip_id == 0x5354) {
-		/* Change syn01 reg */
+		 
 		ssb_write32(dev, 0x894, 0x00fe00fe);
 
-		/* Change syn03 reg */
+		 
 		ssb_write32(dev, 0x89c, ssb_read32(dev, 0x89c) | 0x1);
 	}
 #endif
@@ -55,20 +38,14 @@ static void ssb_hcd_5354wa(struct ssb_device *dev)
 static void ssb_hcd_usb20wa(struct ssb_device *dev)
 {
 	if (dev->id.coreid == SSB_DEV_USB20_HOST) {
-		/*
-		 * USB 2.0 special considerations:
-		 *
-		 * In addition to the standard SSB reset sequence, the Host
-		 * Control Register must be programmed to bring the USB core
-		 * and various phy components out of reset.
-		 */
+		 
 		ssb_write32(dev, 0x200, 0x7ff);
 
-		/* Change Flush control reg */
+		 
 		ssb_write32(dev, 0x400, ssb_read32(dev, 0x400) & ~8);
 		ssb_read32(dev, 0x400);
 
-		/* Change Shim control reg */
+		 
 		ssb_write32(dev, 0x304, ssb_read32(dev, 0x304) & ~0x100);
 		ssb_read32(dev, 0x304);
 
@@ -78,13 +55,13 @@ static void ssb_hcd_usb20wa(struct ssb_device *dev)
 	}
 }
 
-/* based on arch/mips/brcm-boards/bcm947xx/pcibios.c */
+ 
 static u32 ssb_hcd_init_chip(struct ssb_device *dev)
 {
 	u32 flags = 0;
 
 	if (dev->id.coreid == SSB_DEV_USB11_HOSTDEV)
-		/* Put the device into host-mode. */
+		 
 		flags |= SSB_HCD_TMSLOW_HOSTMODE;
 
 	ssb_device_enable(dev, flags);
@@ -155,12 +132,12 @@ static int ssb_hcd_probe(struct ssb_device *dev,
 	u16 coreid = dev->id.coreid;
 	struct ssb_hcd_device *usb_dev;
 
-	/* USBcores are only connected on embedded devices. */
+	 
 	chipid_top = (dev->bus->chip_id & 0xFF00);
 	if (chipid_top != 0x4700 && chipid_top != 0x5300)
 		return -ENODEV;
 
-	/* TODO: Probably need checks here; is the core connected? */
+	 
 
 	if (dma_set_mask_and_coherent(dev->dma_dev, DMA_BIT_MASK(32)))
 		return -EOPNOTSUPP;
@@ -170,10 +147,7 @@ static int ssb_hcd_probe(struct ssb_device *dev,
 	if (!usb_dev)
 		return -ENOMEM;
 
-	/* We currently always attach SSB_DEV_USB11_HOSTDEV
-	 * as HOST OHCI. If we want to attach it as Client device,
-	 * we must branch here and call into the (yet to
-	 * be written) Client mode driver. Same for remove(). */
+	 
 	usb_dev->enable_flags = ssb_hcd_init_chip(dev);
 
 	tmp = ssb_read32(dev, SSB_ADMATCH0);
@@ -185,7 +159,7 @@ static int ssb_hcd_probe(struct ssb_device *dev,
 		return PTR_ERR(usb_dev->ohci_dev);
 
 	if (coreid == SSB_DEV_USB20_HOST) {
-		start = ssb_admatch_base(tmp) + 0x800; /* ehci core offset */
+		start = ssb_admatch_base(tmp) + 0x800;  
 		usb_dev->ehci_dev = ssb_hcd_create_pdev(dev, false, start, len);
 		if (IS_ERR(usb_dev->ehci_dev)) {
 			err = PTR_ERR(usb_dev->ehci_dev);
@@ -238,10 +212,10 @@ static int ssb_hcd_resume(struct ssb_device *dev)
 	return 0;
 }
 
-#else /* !CONFIG_PM */
+#else  
 #define ssb_hcd_suspend	NULL
 #define ssb_hcd_resume	NULL
-#endif /* CONFIG_PM */
+#endif  
 
 static const struct ssb_device_id ssb_hcd_table[] = {
 	SSB_DEVICE(SSB_VENDOR_BROADCOM, SSB_DEV_USB11_HOSTDEV, SSB_ANY_REV),

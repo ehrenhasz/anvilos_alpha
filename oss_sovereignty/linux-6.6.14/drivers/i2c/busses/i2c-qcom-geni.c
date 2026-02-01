@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2017-2018, The Linux Foundation. All rights reserved.
+
+
 
 #include <linux/acpi.h>
 #include <linux/clk.h>
@@ -25,14 +25,14 @@
 			M_GP_IRQ_1_EN | M_GP_IRQ_3_EN | M_GP_IRQ_4_EN)
 #define SE_I2C_ABORT		BIT(1)
 
-/* M_CMD OP codes for I2C */
+ 
 #define I2C_WRITE		0x1
 #define I2C_READ		0x2
 #define I2C_WRITE_READ		0x3
 #define I2C_ADDR_ONLY		0x4
 #define I2C_BUS_CLEAR		0x6
 #define I2C_STOP_ON_BUS		0x7
-/* M_CMD params for I2C */
+ 
 #define PRE_CMD_DELAY		BIT(0)
 #define TIMESTAMP_BEFORE	BIT(1)
 #define STOP_STRETCH		BIT(2)
@@ -43,7 +43,7 @@
 #define BYPASS_ADDR_PHASE	BIT(8)
 #define SLV_ADDR_MSK		GENMASK(15, 9)
 #define SLV_ADDR_SHFT		9
-/* I2C SCL COUNTER fields */
+ 
 #define HIGH_COUNTER_MSK	GENMASK(29, 20)
 #define HIGH_COUNTER_SHFT	20
 #define LOW_COUNTER_MSK		GENMASK(19, 10)
@@ -134,18 +134,7 @@ struct geni_i2c_clk_fld {
 	u8	t_cycle_cnt;
 };
 
-/*
- * Hardware uses the underlying formula to calculate time periods of
- * SCL clock cycle. Firmware uses some additional cycles excluded from the
- * below formula and it is confirmed that the time periods are within
- * specification limits.
- *
- * time of high period of SCL: t_high = (t_high_cnt * clk_div) / source_clock
- * time of low period of SCL: t_low = (t_low_cnt * clk_div) / source_clock
- * time of full period of SCL: t_cycle = (t_cycle_cnt * clk_div) / source_clock
- * clk_freq_out = t / t_cycle
- * source_clock = 19.2 MHz
- */
+ 
 static const struct geni_i2c_clk_fld geni_i2c_clk_map[] = {
 	{KHZ(100), 7, 10, 11, 26},
 	{KHZ(400), 2,  5, 12, 24},
@@ -266,7 +255,7 @@ static irqreturn_t geni_i2c_irq(int irq, void *dev)
 		if (m_stat & M_GP_IRQ_0_EN)
 			geni_i2c_err(gi2c, GP_IRQ0);
 
-		/* Disable the TX Watermark interrupt to stop TX */
+		 
 		if (!dma)
 			writel_relaxed(0, base + SE_GENI_TX_WATERMARK_REG);
 	} else if (dma) {
@@ -300,7 +289,7 @@ static irqreturn_t geni_i2c_irq(int irq, void *dev)
 				p++;
 			}
 			writel_relaxed(val, base + SE_GENI_TX_FIFOn);
-			/* TX Complete, Disable the TX Watermark interrupt */
+			 
 			if (gi2c->cur_wr == cur->len) {
 				writel_relaxed(0, base + SE_GENI_TX_WATERMARK_REG);
 				break;
@@ -316,7 +305,7 @@ static irqreturn_t geni_i2c_irq(int irq, void *dev)
 	if (dma && dm_rx_st)
 		writel_relaxed(dm_rx_st, base + SE_DMA_RX_IRQ_CLR);
 
-	/* if this is err with done-bit not set, handle that through timeout. */
+	 
 	if (m_stat & M_CMD_DONE_EN || m_stat & M_CMD_ABORT_EN ||
 	    dm_tx_st & TX_DMA_DONE || dm_tx_st & TX_RESET_DONE ||
 	    dm_rx_st & RX_DMA_DONE || dm_rx_st & RX_RESET_DONE)
@@ -469,7 +458,7 @@ static int geni_i2c_tx_one_msg(struct geni_i2c_dev *gi2c, struct i2c_msg *msg,
 		gi2c->dma_buf = dma_buf;
 	}
 
-	if (!dma_buf) /* Get FIFO IRQ */
+	if (!dma_buf)  
 		writel_relaxed(1, se->base + SE_GENI_TX_WATERMARK_REG);
 
 	cur = gi2c->cur;
@@ -541,7 +530,7 @@ static int geni_i2c_gpi(struct geni_i2c_dev *gi2c, struct i2c_msg *msg,
 		return -ENOMEM;
 	}
 
-	/* set the length as message for rx txn */
+	 
 	peripheral->rx_len = msg->len;
 	peripheral->op = op;
 
@@ -690,7 +679,7 @@ static int geni_i2c_xfer(struct i2c_adapter *adap,
 	if (ret < 0) {
 		dev_err(gi2c->se.dev, "error turning SE resources:%d\n", ret);
 		pm_runtime_put_noidle(gi2c->se.dev);
-		/* Set device in suspended since resume failed */
+		 
 		pm_runtime_set_suspended(gi2c->se.dev);
 		return ret;
 	}
@@ -826,7 +815,7 @@ static int geni_i2c_probe(struct platform_device *pdev)
 			gi2c->irq, ret);
 		return ret;
 	}
-	/* Disable the interrupt so that the system can enter low-power mode */
+	 
 	disable_irq(gi2c->irq);
 	i2c_set_adapdata(&gi2c->adap, gi2c);
 	gi2c->adap.dev.parent = dev;
@@ -836,11 +825,7 @@ static int geni_i2c_probe(struct platform_device *pdev)
 	ret = geni_icc_get(&gi2c->se, desc ? desc->icc_ddr : "qup-memory");
 	if (ret)
 		return ret;
-	/*
-	 * Set the bus quota for core and cpu to a reasonable value for
-	 * register access.
-	 * Set quota for DDR based on bus speed.
-	 */
+	 
 	gi2c->se.icc_paths[GENI_TO_CORE].avg_bw = GENI_DEFAULT_BW;
 	gi2c->se.icc_paths[CPU_TO_GENI].avg_bw = GENI_DEFAULT_BW;
 	if (!desc || desc->icc_ddr)
@@ -874,7 +859,7 @@ static int geni_i2c_probe(struct platform_device *pdev)
 		fifo_disable = readl_relaxed(gi2c->se.base + GENI_IF_DISABLE_RO) & FIFO_IF_DISABLE;
 
 	if (fifo_disable) {
-		/* FIFO is disabled, so we can only use GPI DMA */
+		 
 		gi2c->gpi_mode = true;
 		ret = setup_gpi_dma(gi2c);
 		if (ret) {
@@ -888,7 +873,7 @@ static int geni_i2c_probe(struct platform_device *pdev)
 		gi2c->gpi_mode = false;
 		tx_depth = geni_se_get_tx_fifo_depth(&gi2c->se);
 
-		/* I2C Master Hub Serial Elements doesn't have the HW_PARAM_0 register */
+		 
 		if (!tx_depth && desc)
 			tx_depth = desc->tx_fifo_depth;
 
@@ -953,7 +938,7 @@ static void geni_i2c_shutdown(struct platform_device *pdev)
 {
 	struct geni_i2c_dev *gi2c = platform_get_drvdata(pdev);
 
-	/* Make client i2c transfers start failing */
+	 
 	i2c_mark_adapter_suspended(&gi2c->adap);
 }
 

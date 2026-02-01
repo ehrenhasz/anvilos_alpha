@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * ALSA SoC McASP Audio Layer for TI DAVINCI processor
- *
- * Multi-channel Audio Serial Port Driver
- *
- * Author: Nirmal Pandey <n-pandey@ti.com>,
- *         Suresh Rajashekara <suresh.r@ti.com>
- *         Steve Chen <schen@.mvista.com>
- *
- * Copyright:   (C) 2009 MontaVista Software, Inc., <source@mvista.com>
- * Copyright:   (C) 2009  Texas Instruments, India
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/module.h>
@@ -63,8 +52,8 @@ static u32 context_regs[] = {
 
 struct davinci_mcasp_context {
 	u32	config_regs[ARRAY_SIZE(context_regs)];
-	u32	afifo_regs[2]; /* for read/write fifo control registers */
-	u32	*xrsr_regs; /* for serializer configuration */
+	u32	afifo_regs[2];  
+	u32	*xrsr_regs;  
 	bool	pm_state;
 };
 #endif
@@ -85,10 +74,10 @@ struct davinci_mcasp {
 
 	u32 iec958_status;
 
-	/* Audio can not be enabled due to missing parameter(s) */
+	 
 	bool	missing_audio_param;
 
-	/* McASP specific data */
+	 
 	int	tdm_slots;
 	u32	tdm_mask[2];
 	int	slot_width;
@@ -105,15 +94,15 @@ struct davinci_mcasp {
 	bool	bclk_master;
 	u32	auxclk_fs_ratio;
 
-	unsigned long pdir; /* Pin direction bitfield */
+	unsigned long pdir;  
 
-	/* McASP FIFO related */
+	 
 	u8	txnumevt;
 	u8	rxnumevt;
 
 	bool	dat_port;
 
-	/* Used for comstraint setting on the second stream */
+	 
 	u32	channels;
 	int	max_format_width;
 	u8	active_serializers[2];
@@ -168,8 +157,8 @@ static void mcasp_set_ctl_reg(struct davinci_mcasp *mcasp, u32 ctl_reg, u32 val)
 
 	mcasp_set_bits(mcasp, ctl_reg, val);
 
-	/* programming GBLCTL needs to read back from GBLCTL and verfiy */
-	/* loop count is to avoid the lock-up */
+	 
+	 
 	for (i = 0; i < 1000; i++) {
 		if ((mcasp_get_reg(mcasp, ctl_reg) & val) == val)
 			break;
@@ -213,38 +202,34 @@ static inline void mcasp_set_axr_pdir(struct davinci_mcasp *mcasp, bool enable)
 
 static void mcasp_start_rx(struct davinci_mcasp *mcasp)
 {
-	if (mcasp->rxnumevt) {	/* enable FIFO */
+	if (mcasp->rxnumevt) {	 
 		u32 reg = mcasp->fifo_base + MCASP_RFIFOCTL_OFFSET;
 
 		mcasp_clr_bits(mcasp, reg, FIFO_ENABLE);
 		mcasp_set_bits(mcasp, reg, FIFO_ENABLE);
 	}
 
-	/* Start clocks */
+	 
 	mcasp_set_ctl_reg(mcasp, DAVINCI_MCASP_GBLCTLR_REG, RXHCLKRST);
 	mcasp_set_ctl_reg(mcasp, DAVINCI_MCASP_GBLCTLR_REG, RXCLKRST);
-	/*
-	 * When ASYNC == 0 the transmit and receive sections operate
-	 * synchronously from the transmit clock and frame sync. We need to make
-	 * sure that the TX signlas are enabled when starting reception.
-	 */
+	 
 	if (mcasp_is_synchronous(mcasp)) {
 		mcasp_set_ctl_reg(mcasp, DAVINCI_MCASP_GBLCTLX_REG, TXHCLKRST);
 		mcasp_set_ctl_reg(mcasp, DAVINCI_MCASP_GBLCTLX_REG, TXCLKRST);
 		mcasp_set_clk_pdir(mcasp, true);
 	}
 
-	/* Activate serializer(s) */
+	 
 	mcasp_set_reg(mcasp, DAVINCI_MCASP_RXSTAT_REG, 0xFFFFFFFF);
 	mcasp_set_ctl_reg(mcasp, DAVINCI_MCASP_GBLCTLR_REG, RXSERCLR);
-	/* Release RX state machine */
+	 
 	mcasp_set_ctl_reg(mcasp, DAVINCI_MCASP_GBLCTLR_REG, RXSMRST);
-	/* Release Frame Sync generator */
+	 
 	mcasp_set_ctl_reg(mcasp, DAVINCI_MCASP_GBLCTLR_REG, RXFSRST);
 	if (mcasp_is_synchronous(mcasp))
 		mcasp_set_ctl_reg(mcasp, DAVINCI_MCASP_GBLCTLX_REG, TXFSRST);
 
-	/* enable receive IRQs */
+	 
 	mcasp_set_bits(mcasp, DAVINCI_MCASP_EVTCTLR_REG,
 		       mcasp->irq_request[SNDRV_PCM_STREAM_CAPTURE]);
 }
@@ -253,23 +238,23 @@ static void mcasp_start_tx(struct davinci_mcasp *mcasp)
 {
 	u32 cnt;
 
-	if (mcasp->txnumevt) {	/* enable FIFO */
+	if (mcasp->txnumevt) {	 
 		u32 reg = mcasp->fifo_base + MCASP_WFIFOCTL_OFFSET;
 
 		mcasp_clr_bits(mcasp, reg, FIFO_ENABLE);
 		mcasp_set_bits(mcasp, reg, FIFO_ENABLE);
 	}
 
-	/* Start clocks */
+	 
 	mcasp_set_ctl_reg(mcasp, DAVINCI_MCASP_GBLCTLX_REG, TXHCLKRST);
 	mcasp_set_ctl_reg(mcasp, DAVINCI_MCASP_GBLCTLX_REG, TXCLKRST);
 	mcasp_set_clk_pdir(mcasp, true);
 
-	/* Activate serializer(s) */
+	 
 	mcasp_set_reg(mcasp, DAVINCI_MCASP_TXSTAT_REG, 0xFFFFFFFF);
 	mcasp_set_ctl_reg(mcasp, DAVINCI_MCASP_GBLCTLX_REG, TXSERCLR);
 
-	/* wait for XDATA to be cleared */
+	 
 	cnt = 0;
 	while ((mcasp_get_reg(mcasp, DAVINCI_MCASP_TXSTAT_REG) & XRDATA) &&
 	       (cnt < 100000))
@@ -277,12 +262,12 @@ static void mcasp_start_tx(struct davinci_mcasp *mcasp)
 
 	mcasp_set_axr_pdir(mcasp, true);
 
-	/* Release TX state machine */
+	 
 	mcasp_set_ctl_reg(mcasp, DAVINCI_MCASP_GBLCTLX_REG, TXSMRST);
-	/* Release Frame Sync generator */
+	 
 	mcasp_set_ctl_reg(mcasp, DAVINCI_MCASP_GBLCTLX_REG, TXFSRST);
 
-	/* enable transmit IRQs */
+	 
 	mcasp_set_bits(mcasp, DAVINCI_MCASP_EVTCTLX_REG,
 		       mcasp->irq_request[SNDRV_PCM_STREAM_PLAYBACK]);
 }
@@ -299,14 +284,11 @@ static void davinci_mcasp_start(struct davinci_mcasp *mcasp, int stream)
 
 static void mcasp_stop_rx(struct davinci_mcasp *mcasp)
 {
-	/* disable IRQ sources */
+	 
 	mcasp_clr_bits(mcasp, DAVINCI_MCASP_EVTCTLR_REG,
 		       mcasp->irq_request[SNDRV_PCM_STREAM_CAPTURE]);
 
-	/*
-	 * In synchronous mode stop the TX clocks if no other stream is
-	 * running
-	 */
+	 
 	if (mcasp_is_synchronous(mcasp) && !mcasp->streams) {
 		mcasp_set_clk_pdir(mcasp, false);
 		mcasp_set_reg(mcasp, DAVINCI_MCASP_GBLCTLX_REG, 0);
@@ -315,7 +297,7 @@ static void mcasp_stop_rx(struct davinci_mcasp *mcasp)
 	mcasp_set_reg(mcasp, DAVINCI_MCASP_GBLCTLR_REG, 0);
 	mcasp_set_reg(mcasp, DAVINCI_MCASP_RXSTAT_REG, 0xFFFFFFFF);
 
-	if (mcasp->rxnumevt) {	/* disable FIFO */
+	if (mcasp->rxnumevt) {	 
 		u32 reg = mcasp->fifo_base + MCASP_RFIFOCTL_OFFSET;
 
 		mcasp_clr_bits(mcasp, reg, FIFO_ENABLE);
@@ -326,14 +308,11 @@ static void mcasp_stop_tx(struct davinci_mcasp *mcasp)
 {
 	u32 val = 0;
 
-	/* disable IRQ sources */
+	 
 	mcasp_clr_bits(mcasp, DAVINCI_MCASP_EVTCTLX_REG,
 		       mcasp->irq_request[SNDRV_PCM_STREAM_PLAYBACK]);
 
-	/*
-	 * In synchronous mode keep TX clocks running if the capture stream is
-	 * still running.
-	 */
+	 
 	if (mcasp_is_synchronous(mcasp) && mcasp->streams)
 		val =  TXHCLKRST | TXCLKRST | TXFSRST;
 	else
@@ -343,7 +322,7 @@ static void mcasp_stop_tx(struct davinci_mcasp *mcasp)
 	mcasp_set_reg(mcasp, DAVINCI_MCASP_GBLCTLX_REG, val);
 	mcasp_set_reg(mcasp, DAVINCI_MCASP_TXSTAT_REG, 0xFFFFFFFF);
 
-	if (mcasp->txnumevt) {	/* disable FIFO */
+	if (mcasp->txnumevt) {	 
 		u32 reg = mcasp->fifo_base + MCASP_WFIFOCTL_OFFSET;
 
 		mcasp_clr_bits(mcasp, reg, FIFO_ENABLE);
@@ -387,7 +366,7 @@ static irqreturn_t davinci_mcasp_tx_irq_handler(int irq, void *data)
 	if (stat & XRERR)
 		handled_mask |= XRERR;
 
-	/* Ack the handled event only */
+	 
 	mcasp_set_reg(mcasp, DAVINCI_MCASP_TXSTAT_REG, handled_mask);
 
 	return IRQ_RETVAL(handled_mask);
@@ -418,7 +397,7 @@ static irqreturn_t davinci_mcasp_rx_irq_handler(int irq, void *data)
 	if (stat & XRERR)
 		handled_mask |= XRERR;
 
-	/* Ack the handled event only */
+	 
 	mcasp_set_reg(mcasp, DAVINCI_MCASP_RXSTAT_REG, handled_mask);
 
 	return IRQ_RETVAL(handled_mask);
@@ -455,31 +434,31 @@ static int davinci_mcasp_set_dai_fmt(struct snd_soc_dai *cpu_dai,
 	case SND_SOC_DAIFMT_DSP_A:
 		mcasp_clr_bits(mcasp, DAVINCI_MCASP_TXFMCTL_REG, FSXDUR);
 		mcasp_clr_bits(mcasp, DAVINCI_MCASP_RXFMCTL_REG, FSRDUR);
-		/* 1st data bit occur one ACLK cycle after the frame sync */
+		 
 		data_delay = 1;
 		break;
 	case SND_SOC_DAIFMT_DSP_B:
 	case SND_SOC_DAIFMT_AC97:
 		mcasp_clr_bits(mcasp, DAVINCI_MCASP_TXFMCTL_REG, FSXDUR);
 		mcasp_clr_bits(mcasp, DAVINCI_MCASP_RXFMCTL_REG, FSRDUR);
-		/* No delay after FS */
+		 
 		data_delay = 0;
 		break;
 	case SND_SOC_DAIFMT_I2S:
-		/* configure a full-word SYNC pulse (LRCLK) */
+		 
 		mcasp_set_bits(mcasp, DAVINCI_MCASP_TXFMCTL_REG, FSXDUR);
 		mcasp_set_bits(mcasp, DAVINCI_MCASP_RXFMCTL_REG, FSRDUR);
-		/* 1st data bit occur one ACLK cycle after the frame sync */
+		 
 		data_delay = 1;
-		/* FS need to be inverted */
+		 
 		inv_fs = true;
 		break;
 	case SND_SOC_DAIFMT_RIGHT_J:
 	case SND_SOC_DAIFMT_LEFT_J:
-		/* configure a full-word SYNC pulse (LRCLK) */
+		 
 		mcasp_set_bits(mcasp, DAVINCI_MCASP_TXFMCTL_REG, FSXDUR);
 		mcasp_set_bits(mcasp, DAVINCI_MCASP_RXFMCTL_REG, FSRDUR);
-		/* No delay after FS */
+		 
 		data_delay = 0;
 		break;
 	default:
@@ -494,68 +473,68 @@ static int davinci_mcasp_set_dai_fmt(struct snd_soc_dai *cpu_dai,
 
 	switch (fmt & SND_SOC_DAIFMT_CLOCK_PROVIDER_MASK) {
 	case SND_SOC_DAIFMT_BP_FP:
-		/* codec is clock and frame slave */
+		 
 		mcasp_set_bits(mcasp, DAVINCI_MCASP_ACLKXCTL_REG, ACLKXE);
 		mcasp_set_bits(mcasp, DAVINCI_MCASP_TXFMCTL_REG, AFSXE);
 
 		mcasp_set_bits(mcasp, DAVINCI_MCASP_ACLKRCTL_REG, ACLKRE);
 		mcasp_set_bits(mcasp, DAVINCI_MCASP_RXFMCTL_REG, AFSRE);
 
-		/* BCLK */
+		 
 		set_bit(PIN_BIT_ACLKX, &mcasp->pdir);
 		set_bit(PIN_BIT_ACLKR, &mcasp->pdir);
-		/* Frame Sync */
+		 
 		set_bit(PIN_BIT_AFSX, &mcasp->pdir);
 		set_bit(PIN_BIT_AFSR, &mcasp->pdir);
 
 		mcasp->bclk_master = 1;
 		break;
 	case SND_SOC_DAIFMT_BP_FC:
-		/* codec is clock slave and frame master */
+		 
 		mcasp_set_bits(mcasp, DAVINCI_MCASP_ACLKXCTL_REG, ACLKXE);
 		mcasp_clr_bits(mcasp, DAVINCI_MCASP_TXFMCTL_REG, AFSXE);
 
 		mcasp_set_bits(mcasp, DAVINCI_MCASP_ACLKRCTL_REG, ACLKRE);
 		mcasp_clr_bits(mcasp, DAVINCI_MCASP_RXFMCTL_REG, AFSRE);
 
-		/* BCLK */
+		 
 		set_bit(PIN_BIT_ACLKX, &mcasp->pdir);
 		set_bit(PIN_BIT_ACLKR, &mcasp->pdir);
-		/* Frame Sync */
+		 
 		clear_bit(PIN_BIT_AFSX, &mcasp->pdir);
 		clear_bit(PIN_BIT_AFSR, &mcasp->pdir);
 
 		mcasp->bclk_master = 1;
 		break;
 	case SND_SOC_DAIFMT_BC_FP:
-		/* codec is clock master and frame slave */
+		 
 		mcasp_clr_bits(mcasp, DAVINCI_MCASP_ACLKXCTL_REG, ACLKXE);
 		mcasp_set_bits(mcasp, DAVINCI_MCASP_TXFMCTL_REG, AFSXE);
 
 		mcasp_clr_bits(mcasp, DAVINCI_MCASP_ACLKRCTL_REG, ACLKRE);
 		mcasp_set_bits(mcasp, DAVINCI_MCASP_RXFMCTL_REG, AFSRE);
 
-		/* BCLK */
+		 
 		clear_bit(PIN_BIT_ACLKX, &mcasp->pdir);
 		clear_bit(PIN_BIT_ACLKR, &mcasp->pdir);
-		/* Frame Sync */
+		 
 		set_bit(PIN_BIT_AFSX, &mcasp->pdir);
 		set_bit(PIN_BIT_AFSR, &mcasp->pdir);
 
 		mcasp->bclk_master = 0;
 		break;
 	case SND_SOC_DAIFMT_BC_FC:
-		/* codec is clock and frame master */
+		 
 		mcasp_clr_bits(mcasp, DAVINCI_MCASP_ACLKXCTL_REG, ACLKXE);
 		mcasp_clr_bits(mcasp, DAVINCI_MCASP_TXFMCTL_REG, AFSXE);
 
 		mcasp_clr_bits(mcasp, DAVINCI_MCASP_ACLKRCTL_REG, ACLKRE);
 		mcasp_clr_bits(mcasp, DAVINCI_MCASP_RXFMCTL_REG, AFSRE);
 
-		/* BCLK */
+		 
 		clear_bit(PIN_BIT_ACLKX, &mcasp->pdir);
 		clear_bit(PIN_BIT_ACLKR, &mcasp->pdir);
-		/* Frame Sync */
+		 
 		clear_bit(PIN_BIT_AFSX, &mcasp->pdir);
 		clear_bit(PIN_BIT_AFSR, &mcasp->pdir);
 
@@ -614,14 +593,14 @@ static int __davinci_mcasp_set_clkdiv(struct davinci_mcasp *mcasp, int div_id,
 {
 	pm_runtime_get_sync(mcasp->dev);
 	switch (div_id) {
-	case MCASP_CLKDIV_AUXCLK:			/* MCLK divider */
+	case MCASP_CLKDIV_AUXCLK:			 
 		mcasp_mod_bits(mcasp, DAVINCI_MCASP_AHCLKXCTL_REG,
 			       AHCLKXDIV(div - 1), AHCLKXDIV_MASK);
 		mcasp_mod_bits(mcasp, DAVINCI_MCASP_AHCLKRCTL_REG,
 			       AHCLKRDIV(div - 1), AHCLKRDIV_MASK);
 		break;
 
-	case MCASP_CLKDIV_BCLK:			/* BCLK divider */
+	case MCASP_CLKDIV_BCLK:			 
 		mcasp_mod_bits(mcasp, DAVINCI_MCASP_ACLKXCTL_REG,
 			       ACLKXDIV(div - 1), ACLKXDIV_MASK);
 		mcasp_mod_bits(mcasp, DAVINCI_MCASP_ACLKRCTL_REG,
@@ -631,16 +610,7 @@ static int __davinci_mcasp_set_clkdiv(struct davinci_mcasp *mcasp, int div_id,
 		break;
 
 	case MCASP_CLKDIV_BCLK_FS_RATIO:
-		/*
-		 * BCLK/LRCLK ratio descries how many bit-clock cycles
-		 * fit into one frame. The clock ratio is given for a
-		 * full period of data (for I2S format both left and
-		 * right channels), so it has to be divided by number
-		 * of tdm-slots (for I2S - divided by 2).
-		 * Instead of storing this ratio, we calculate a new
-		 * tdm_slot width by dividing the ratio by the
-		 * number of configured tdm slots.
-		 */
+		 
 		mcasp->slot_width = div / mcasp->tdm_slots;
 		if (div % mcasp->tdm_slots)
 			dev_warn(mcasp->dev,
@@ -692,22 +662,19 @@ static int davinci_mcasp_set_sysclk(struct snd_soc_dai *dai, int clk_id,
 			goto out;
 		}
 	} else {
-		/* Select AUXCLK as HCLK */
+		 
 		mcasp_set_bits(mcasp, DAVINCI_MCASP_AHCLKXCTL_REG, AHCLKXE);
 		mcasp_set_bits(mcasp, DAVINCI_MCASP_AHCLKRCTL_REG, AHCLKRE);
 		set_bit(PIN_BIT_AHCLKX, &mcasp->pdir);
 	}
-	/*
-	 * When AHCLK X/R is selected to be output it means that the HCLK is
-	 * the same clock - coming via AUXCLK.
-	 */
+	 
 	mcasp->sysclk_freq = freq;
 out:
 	pm_runtime_put(mcasp->dev);
 	return 0;
 }
 
-/* All serializers must have equal number of channels */
+ 
 static int davinci_mcasp_ch_constraint(struct davinci_mcasp *mcasp, int stream,
 				       int serializers)
 {
@@ -801,15 +768,7 @@ static int davinci_config_channel_size(struct davinci_mcasp *mcasp,
 		slot_width = mcasp->max_format_width;
 	else
 		slot_width = sample_width;
-	/*
-	 * TX rotation:
-	 * right aligned formats: rotate w/ slot_width
-	 * left aligned formats: rotate w/ sample_width
-	 *
-	 * RX rotation:
-	 * right aligned formats: no rotation needed
-	 * left aligned formats: rotate w/ (slot_width - sample_width)
-	 */
+	 
 	if ((mcasp->dai_fmt & SND_SOC_DAIFMT_FORMAT_MASK) ==
 	    SND_SOC_DAIFMT_RIGHT_J) {
 		tx_rotate = (slot_width / 4) & 0x7;
@@ -819,7 +778,7 @@ static int davinci_config_channel_size(struct davinci_mcasp *mcasp,
 		rx_rotate = (slot_width - sample_width) / 4;
 	}
 
-	/* mapping of the XSSZ bit-field as described in the datasheet */
+	 
 	fmt = (slot_width >> 1) - 1;
 
 	if (mcasp->op_mode != DAVINCI_MCASP_DIT_MODE) {
@@ -833,13 +792,7 @@ static int davinci_config_channel_size(struct davinci_mcasp *mcasp,
 			       RXROT(7));
 		mcasp_set_reg(mcasp, DAVINCI_MCASP_RXMASK_REG, mask);
 	} else {
-		/*
-		 * according to the TRM it should be TXROT=0, this one works:
-		 * 16 bit to 23-8 (TXROT=6, rotate 24 bits)
-		 * 24 bit to 23-0 (TXROT=0, rotate 0 bits)
-		 *
-		 * TXROT = 0 only works with 24bit samples
-		 */
+		 
 		tx_rotate = (sample_width / 4 + 2) & 0x7;
 
 		mcasp_mod_bits(mcasp, DAVINCI_MCASP_TXFMT_REG, TXROT(tx_rotate),
@@ -865,13 +818,13 @@ static int mcasp_common_hw_param(struct davinci_mcasp *mcasp, int stream,
 	int active_serializers, numevt;
 	u32 reg;
 
-	/* In DIT mode we only allow maximum of one serializers for now */
+	 
 	if (mcasp->op_mode == DAVINCI_MCASP_DIT_MODE)
 		max_active_serializers = 1;
 	else
 		max_active_serializers = DIV_ROUND_UP(channels, slots);
 
-	/* Default configuration */
+	 
 	if (mcasp->version < MCASP_VERSION_3)
 		mcasp_set_bits(mcasp, DAVINCI_MCASP_PWREMUMGT_REG, MCASP_SOFT);
 
@@ -903,10 +856,10 @@ static int mcasp_common_hw_param(struct davinci_mcasp *mcasp, int stream,
 			clear_bit(PIN_BIT_AXR(i), &mcasp->pdir);
 			rx_ser++;
 		} else {
-			/* Inactive or unused pin, set it to inactive */
+			 
 			mcasp_mod_bits(mcasp, DAVINCI_MCASP_XRSRCTL_REG(i),
 				       SRMOD_INACTIVE, SRMOD_MASK);
-			/* If unused, set DISMOD for the pin */
+			 
 			if (mcasp->serial_dir[i] != INACTIVE_MODE)
 				mcasp_mod_bits(mcasp,
 					       DAVINCI_MCASP_XRSRCTL_REG(i),
@@ -932,16 +885,11 @@ static int mcasp_common_hw_param(struct davinci_mcasp *mcasp, int stream,
 		return -EINVAL;
 	}
 
-	/* AFIFO is not in use */
+	 
 	if (!numevt) {
-		/* Configure the burst size for platform drivers */
+		 
 		if (active_serializers > 1) {
-			/*
-			 * If more than one serializers are in use we have one
-			 * DMA request to provide data for all serializers.
-			 * For example if three serializers are enabled the DMA
-			 * need to transfer three words per DMA request.
-			 */
+			 
 			dma_data->maxburst = active_serializers;
 		} else {
 			dma_data->maxburst = 0;
@@ -957,11 +905,7 @@ static int mcasp_common_hw_param(struct davinci_mcasp *mcasp, int stream,
 		return -EINVAL;
 	}
 
-	/*
-	 * Calculate the optimal AFIFO depth for platform side:
-	 * The number of words for numevt need to be in steps of active
-	 * serializers.
-	 */
+	 
 	numevt = (numevt / active_serializers) * active_serializers;
 
 	while (period_words % numevt && numevt > 0)
@@ -972,7 +916,7 @@ static int mcasp_common_hw_param(struct davinci_mcasp *mcasp, int stream,
 	mcasp_mod_bits(mcasp, reg, active_serializers, NUMDMA_MASK);
 	mcasp_mod_bits(mcasp, reg, NUMEVT(numevt), NUMEVT_MASK);
 
-	/* Configure the burst size for platform drivers */
+	 
 	if (numevt == 1)
 		numevt = 0;
 	dma_data->maxburst = numevt;
@@ -994,12 +938,7 @@ static int mcasp_i2s_hw_param(struct davinci_mcasp *mcasp, int stream,
 
 	total_slots = mcasp->tdm_slots;
 
-	/*
-	 * If more than one serializer is needed, then use them with
-	 * all the specified tdm_slots. Otherwise, one serializer can
-	 * cope with the transaction using just as many slots as there
-	 * are channels in the stream.
-	 */
+	 
 	if (mcasp->tdm_mask[stream]) {
 		active_slots = hweight32(mcasp->tdm_mask[stream]);
 		active_serializers = DIV_ROUND_UP(channels, active_slots);
@@ -1038,11 +977,7 @@ static int mcasp_i2s_hw_param(struct davinci_mcasp *mcasp, int stream,
 		mcasp_set_bits(mcasp, DAVINCI_MCASP_RXFMT_REG, busel | RXORD);
 		mcasp_mod_bits(mcasp, DAVINCI_MCASP_RXFMCTL_REG,
 			       FSRMOD(total_slots), FSRMOD(0x1FF));
-		/*
-		 * If McASP is set to be TX/RX synchronous and the playback is
-		 * not running already we need to configure the TX slots in
-		 * order to have correct FSX on the bus
-		 */
+		 
 		if (mcasp_is_synchronous(mcasp) && !mcasp->channels)
 			mcasp_mod_bits(mcasp, DAVINCI_MCASP_TXFMCTL_REG,
 				       FSXMOD(total_slots), FSXMOD(0x1FF));
@@ -1051,7 +986,7 @@ static int mcasp_i2s_hw_param(struct davinci_mcasp *mcasp, int stream,
 	return 0;
 }
 
-/* S/PDIF */
+ 
 static int mcasp_dit_hw_param(struct davinci_mcasp *mcasp,
 			      unsigned int rate)
 {
@@ -1062,20 +997,20 @@ static int mcasp_dit_hw_param(struct davinci_mcasp *mcasp,
 	else
 		mcasp_clr_bits(mcasp, DAVINCI_MCASP_TXFMT_REG, TXSEL);
 
-	/* Set TX frame synch : DIT Mode, 1 bit width, internal, rising edge */
+	 
 	mcasp_set_reg(mcasp, DAVINCI_MCASP_TXFMCTL_REG, AFSXE | FSXMOD(0x180));
 
 	mcasp_set_reg(mcasp, DAVINCI_MCASP_TXMASK_REG, 0xFFFF);
 
-	/* Set the TX tdm : for all the slots */
+	 
 	mcasp_set_reg(mcasp, DAVINCI_MCASP_TXTDM_REG, 0xFFFFFFFF);
 
-	/* Set the TX clock controls : div = 1 and internal */
+	 
 	mcasp_set_bits(mcasp, DAVINCI_MCASP_ACLKXCTL_REG, ACLKXE | TX_ASYNC);
 
 	mcasp_clr_bits(mcasp, DAVINCI_MCASP_XEVTCTL_REG, TXDATADMADIS);
 
-	/* Set S/PDIF channel status bits */
+	 
 	cs_bytes[3] &= ~IEC958_AES3_CON_FS;
 	switch (rate) {
 	case 22050:
@@ -1113,7 +1048,7 @@ static int mcasp_dit_hw_param(struct davinci_mcasp *mcasp,
 	mcasp_set_reg(mcasp, DAVINCI_MCASP_DITCSRA_REG, mcasp->iec958_status);
 	mcasp_set_reg(mcasp, DAVINCI_MCASP_DITCSRB_REG, mcasp->iec958_status);
 
-	/* Enable the DIT */
+	 
 	mcasp_set_bits(mcasp, DAVINCI_MCASP_TXDITCTL_REG, DITEN);
 
 	return 0;
@@ -1197,11 +1132,7 @@ static snd_pcm_sframes_t davinci_mcasp_delay(
 	else
 		fifo_use = davinci_mcasp_rx_delay(mcasp);
 
-	/*
-	 * Divide the used locations with the channel count to get the
-	 * FIFO usage in samples (don't care about partial samples in the
-	 * buffer).
-	 */
+	 
 	return fifo_use / substream->runtime->channels;
 }
 
@@ -1250,10 +1181,7 @@ static int davinci_mcasp_hw_params(struct snd_pcm_substream *substream,
 	if (ret)
 		return ret;
 
-	/*
-	 * If mcasp is BCLK master, and a BCLK divider was not provided by
-	 * the machine driver, we need to calculate the ratio.
-	 */
+	 
 	if (mcasp->bclk_master && mcasp->bclk_div == 0 && mcasp->sysclk_freq) {
 		int slots = mcasp->tdm_slots;
 		int rate = params_rate(params);
@@ -1493,7 +1421,7 @@ static int davinci_mcasp_startup(struct snd_pcm_substream *substream,
 	int i, dir, ret;
 	int tdm_slots = mcasp->tdm_slots;
 
-	/* Do not allow more then one stream per direction */
+	 
 	if (mcasp->substreams[substream->stream])
 		return -EBUSY;
 
@@ -1505,10 +1433,7 @@ static int davinci_mcasp_startup(struct snd_pcm_substream *substream,
 	if (mcasp->op_mode == DAVINCI_MCASP_DIT_MODE)
 		return 0;
 
-	/*
-	 * Limit the maximum allowed channels for the first stream:
-	 * number of serializers for the direction * tdm slots per serializer
-	 */
+	 
 	if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK)
 		dir = TX_MODE;
 	else
@@ -1521,20 +1446,11 @@ static int davinci_mcasp_startup(struct snd_pcm_substream *substream,
 	ruledata->serializers = max_channels;
 	ruledata->mcasp = mcasp;
 	max_channels *= tdm_slots;
-	/*
-	 * If the already active stream has less channels than the calculated
-	 * limit based on the seirializers * tdm_slots, and only one serializer
-	 * is in use we need to use that as a constraint for the second stream.
-	 * Otherwise (first stream or less allowed channels or more than one
-	 * serializer in use) we use the calculated constraint.
-	 */
+	 
 	if (mcasp->channels && mcasp->channels < max_channels &&
 	    ruledata->serializers == 1)
 		max_channels = mcasp->channels;
-	/*
-	 * But we can always allow channels upto the amount of
-	 * the available tdm_slots.
-	 */
+	 
 	if (max_channels < tdm_slots)
 		max_channels = tdm_slots;
 
@@ -1547,10 +1463,7 @@ static int davinci_mcasp_startup(struct snd_pcm_substream *substream,
 				   &mcasp->chconstr[substream->stream]);
 
 	if (mcasp->max_format_width) {
-		/*
-		 * Only allow formats which require same amount of bits on the
-		 * bus as the currently running stream
-		 */
+		 
 		ret = snd_pcm_hw_rule_add(substream->runtime, 0,
 					  SNDRV_PCM_HW_PARAM_FORMAT,
 					  davinci_mcasp_hw_rule_format_width,
@@ -1560,7 +1473,7 @@ static int davinci_mcasp_startup(struct snd_pcm_substream *substream,
 			return ret;
 	}
 	else if (mcasp->slot_width) {
-		/* Only allow formats require <= slot_width bits on the bus */
+		 
 		ret = snd_pcm_hw_rule_add(substream->runtime, 0,
 					  SNDRV_PCM_HW_PARAM_FORMAT,
 					  davinci_mcasp_hw_rule_slot_width,
@@ -1570,10 +1483,7 @@ static int davinci_mcasp_startup(struct snd_pcm_substream *substream,
 			return ret;
 	}
 
-	/*
-	 * If we rely on implicit BCLK divider setting we should
-	 * set constraints based on what we can provide.
-	 */
+	 
 	if (mcasp->bclk_master && mcasp->bclk_div == 0 && mcasp->sysclk_freq) {
 		ret = snd_pcm_hw_rule_add(substream->runtime, 0,
 					  SNDRV_PCM_HW_PARAM_RATE,
@@ -1771,7 +1681,7 @@ static const struct snd_soc_component_driver davinci_mcasp_component = {
 	.legacy_dai_naming	= 1,
 };
 
-/* Some HW specific values and defaults. The rest is filled in from DT. */
+ 
 static struct davinci_mcasp_pdata dm646x_mcasp_pdata = {
 	.tx_dma_offset = 0x400,
 	.rx_dma_offset = 0x400,
@@ -1791,7 +1701,7 @@ static struct davinci_mcasp_pdata am33xx_mcasp_pdata = {
 };
 
 static struct davinci_mcasp_pdata dra7_mcasp_pdata = {
-	/* The CFG port offset will be calculated if it is needed */
+	 
 	.tx_dma_offset = 0,
 	.rx_dma_offset = 0,
 	.version = MCASP_VERSION_4,
@@ -1824,7 +1734,7 @@ static const struct of_device_id mcasp_dt_ids[] = {
 		.compatible = "ti,omap4-mcasp-audio",
 		.data = &omap_mcasp_pdata,
 	},
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, mcasp_dt_ids);
 
@@ -1975,7 +1885,7 @@ out:
 	}
 
 	mcasp->op_mode = pdata->op_mode;
-	/* sanity check for tdm slots parameter */
+	 
 	if (mcasp->op_mode == DAVINCI_MCASP_IIS_MODE) {
 		if (pdata->tdm_slots < 2) {
 			dev_warn(&pdev->dev, "invalid tdm slots: %d\n",
@@ -2113,7 +2023,7 @@ static int davinci_mcasp_gpio_request(struct gpio_chip *chip, unsigned offset)
 		return -EBUSY;
 	}
 
-	/* Do not change the PIN yet */
+	 
 	return pm_runtime_resume_and_get(mcasp->dev);
 }
 
@@ -2121,10 +2031,10 @@ static void davinci_mcasp_gpio_free(struct gpio_chip *chip, unsigned offset)
 {
 	struct davinci_mcasp *mcasp = gpiochip_get_data(chip);
 
-	/* Set the direction to input */
+	 
 	mcasp_clr_bits(mcasp, DAVINCI_MCASP_PDIR_REG, BIT(offset));
 
-	/* Set the pin as McASP pin */
+	 
 	mcasp_clr_bits(mcasp, DAVINCI_MCASP_PFUNC_REG, BIT(offset));
 
 	pm_runtime_put_sync(mcasp->dev);
@@ -2143,10 +2053,10 @@ static int davinci_mcasp_gpio_direction_out(struct gpio_chip *chip,
 
 	val = mcasp_get_reg(mcasp, DAVINCI_MCASP_PFUNC_REG);
 	if (!(val & BIT(offset))) {
-		/* Set the pin as GPIO pin */
+		 
 		mcasp_set_bits(mcasp, DAVINCI_MCASP_PFUNC_REG, BIT(offset));
 
-		/* Set the direction to output */
+		 
 		mcasp_set_bits(mcasp, DAVINCI_MCASP_PDIR_REG, BIT(offset));
 	}
 
@@ -2172,10 +2082,10 @@ static int davinci_mcasp_gpio_direction_in(struct gpio_chip *chip,
 
 	val = mcasp_get_reg(mcasp, DAVINCI_MCASP_PFUNC_REG);
 	if (!(val & BIT(offset))) {
-		/* Set the direction to input */
+		 
 		mcasp_clr_bits(mcasp, DAVINCI_MCASP_PDIR_REG, BIT(offset));
 
-		/* Set the pin as GPIO pin */
+		 
 		mcasp_set_bits(mcasp, DAVINCI_MCASP_PFUNC_REG, BIT(offset));
 	}
 
@@ -2232,12 +2142,12 @@ static int davinci_mcasp_init_gpiochip(struct davinci_mcasp *mcasp)
 	return devm_gpiochip_add_data(mcasp->dev, &mcasp->gpio_chip, mcasp);
 }
 
-#else /* CONFIG_GPIOLIB */
+#else  
 static inline int davinci_mcasp_init_gpiochip(struct davinci_mcasp *mcasp)
 {
 	return 0;
 }
-#endif /* CONFIG_GPIOLIB */
+#endif  
 
 static int davinci_mcasp_probe(struct platform_device *pdev)
 {
@@ -2281,12 +2191,12 @@ static int davinci_mcasp_probe(struct platform_device *pdev)
 	if (ret)
 		goto err;
 
-	/* All PINS as McASP */
+	 
 	pm_runtime_get_sync(mcasp->dev);
 	mcasp_set_reg(mcasp, DAVINCI_MCASP_PFUNC_REG, 0x00000000);
 	pm_runtime_put(mcasp->dev);
 
-	/* Skip audio related setup code if the configuration is not adequat */
+	 
 	if (mcasp->missing_audio_param)
 		goto no_audio;
 
@@ -2357,10 +2267,7 @@ static int davinci_mcasp_probe(struct platform_device *pdev)
 	dma_data->filter_data = "tx";
 	if (dat) {
 		dma_data->addr = dat->start;
-		/*
-		 * According to the TRM there should be 0x200 offset added to
-		 * the DAT port address
-		 */
+		 
 		if (mcasp->version == MCASP_VERSION_OMAP)
 			dma_data->addr += davinci_mcasp_txdma_offset(mcasp->pdata);
 	} else {
@@ -2368,7 +2275,7 @@ static int davinci_mcasp_probe(struct platform_device *pdev)
 	}
 
 
-	/* RX is not valid in DIT mode */
+	 
 	if (mcasp->op_mode != DAVINCI_MCASP_DIT_MODE) {
 		dma_data = &mcasp->dma_data[SNDRV_PCM_STREAM_CAPTURE];
 		dma_data->filter_data = "rx";
@@ -2381,19 +2288,13 @@ static int davinci_mcasp_probe(struct platform_device *pdev)
 
 	if (mcasp->version < MCASP_VERSION_3) {
 		mcasp->fifo_base = DAVINCI_MCASP_V2_AFIFO_BASE;
-		/* dma_params->dma_addr is pointing to the data port address */
+		 
 		mcasp->dat_port = true;
 	} else {
 		mcasp->fifo_base = DAVINCI_MCASP_V3_AFIFO_BASE;
 	}
 
-	/* Allocate memory for long enough list for all possible
-	 * scenarios. Maximum number tdm slots is 32 and there cannot
-	 * be more serializers than given in the configuration.  The
-	 * serializer directions could be taken into account, but it
-	 * would make code much more complex and save only couple of
-	 * bytes.
-	 */
+	 
 	mcasp->chconstr[SNDRV_PCM_STREAM_PLAYBACK].list =
 		devm_kcalloc(mcasp->dev,
 			     32 + mcasp->num_serializer - 1,

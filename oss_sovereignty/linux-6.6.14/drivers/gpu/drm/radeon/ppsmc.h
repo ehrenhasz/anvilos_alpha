@@ -1,25 +1,4 @@
-/*
- * Copyright 2011 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 #ifndef PP_SMC_H
 #define PP_SMC_H
 
@@ -109,7 +88,7 @@ typedef uint8_t PPSMC_Result;
 #define PPSMC_MSG_ThrottleOVRDSCLKDS        ((uint8_t)0x96)
 #define PPSMC_MSG_CancelThrottleOVRDSCLKDS  ((uint8_t)0x97)
 
-/* CI/KV/KB */
+ 
 #define PPSMC_MSG_UVDDPM_SetEnabledMask       ((uint16_t) 0x12D)
 #define PPSMC_MSG_VCEDPM_SetEnabledMask       ((uint16_t) 0x12E)
 #define PPSMC_MSG_ACPDPM_SetEnabledMask       ((uint16_t) 0x12F)
@@ -168,7 +147,7 @@ typedef uint8_t PPSMC_Result;
 #define PPSMC_MSG_API_GetSclkFrequency        ((uint16_t) 0x200)
 #define PPSMC_MSG_API_GetMclkFrequency        ((uint16_t) 0x201)
 
-/* TN */
+ 
 #define PPSMC_MSG_DPM_Config                ((uint32_t) 0x102)
 #define PPSMC_MSG_DPM_ForceState            ((uint32_t) 0x104)
 #define PPSMC_MSG_PG_SIMD_Config            ((uint32_t) 0x108)

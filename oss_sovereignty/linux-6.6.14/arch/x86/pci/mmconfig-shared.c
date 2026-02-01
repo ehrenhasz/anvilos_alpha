@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * mmconfig-shared.c - Low-level direct PCI config space access via
- *                     MMCONFIG - common code between i386 and x86-64.
- *
- * This code does:
- * - known chipset handling
- * - ACPI decoding and validation
- *
- * Per-architecture code takes care of the mappings and accesses
- * themselves.
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/efi.h>
@@ -26,7 +16,7 @@
 
 #define PREFIX "PCI: "
 
-/* Indicate if the mmcfg resources have been placed into the resource table. */
+ 
 static bool pci_mmcfg_running_state;
 static bool pci_mmcfg_arch_init_failed;
 static DEFINE_MUTEX(pci_mmcfg_lock);
@@ -55,7 +45,7 @@ static void list_add_sorted(struct pci_mmcfg_region *new)
 {
 	struct pci_mmcfg_region *cfg;
 
-	/* keep list sorted by segment and starting bus number */
+	 
 	list_for_each_entry_rcu(cfg, &pci_mmcfg_list, list, pci_mmcfg_lock_held()) {
 		if (cfg->segment > new->segment ||
 		    (cfg->segment == new->segment &&
@@ -149,11 +139,11 @@ static const char *__init pci_mmcfg_intel_945(void)
 
 	raw_pci_ops->read(0, 0, PCI_DEVFN(0, 0), 0x48, 4, &pciexbar);
 
-	/* Enable bit */
+	 
 	if (!(pciexbar & 1))
 		return NULL;
 
-	/* Size bits */
+	 
 	switch ((pciexbar >> 1) & 3) {
 	case 0:
 		mask = 0xf0000000U;
@@ -171,13 +161,13 @@ static const char *__init pci_mmcfg_intel_945(void)
 		return NULL;
 	}
 
-	/* Errata #2, things break when not aligned on a 256Mb boundary */
-	/* Can only happen in 64M/128M mode */
+	 
+	 
 
 	if ((pciexbar & mask) & 0x0fffffffU)
 		return NULL;
 
-	/* Don't hit the APIC registers and their friends */
+	 
 	if ((pciexbar & mask) >= 0xf0000000U)
 		return NULL;
 
@@ -205,7 +195,7 @@ static const char *__init pci_mmcfg_amd_fam10h(void)
 	msr <<= 32;
 	msr |= low;
 
-	/* mmconfig is not enable */
+	 
 	if (!(msr & FAM10H_MMIO_CONF_ENABLE))
 		return NULL;
 
@@ -214,10 +204,7 @@ static const char *__init pci_mmcfg_amd_fam10h(void)
 	busnbits = (msr >> FAM10H_MMIO_CONF_BUSRANGE_SHIFT) &
 			 FAM10H_MMIO_CONF_BUSRANGE_MASK;
 
-	/*
-	 * only handle bus 0 ?
-	 * need to skip it
-	 */
+	 
 	if (!busnbits)
 		return NULL;
 
@@ -258,9 +245,7 @@ static const char *__init pci_mmcfg_nvidia_mcp55(void)
 	};
 	static const int extcfg_base_lshift __initconst	= 25;
 
-	/*
-	 * do check if amd fam10h already took over
-	 */
+	 
 	if (!acpi_disabled || !list_empty(&pci_mmcfg_list) || mcp55_checked)
 		return NULL;
 
@@ -286,7 +271,7 @@ static const char *__init pci_mmcfg_nvidia_mcp55(void)
 
 		size_index = (extcfg & extcfg_size_mask) >> extcfg_size_shift;
 		base = extcfg & extcfg_base_mask[size_index];
-		/* base could > 4G */
+		 
 		base <<= extcfg_base_lshift;
 		start = (extcfg & extcfg_start_mask) >> extcfg_start_shift;
 		end = start + extcfg_sizebus[size_index] - 1;
@@ -326,12 +311,12 @@ static void __init pci_mmcfg_check_end_bus_number(void)
 {
 	struct pci_mmcfg_region *cfg, *cfgx;
 
-	/* Fixup overlaps */
+	 
 	list_for_each_entry(cfg, &pci_mmcfg_list, list) {
 		if (cfg->end_bus < cfg->start_bus)
 			cfg->end_bus = 255;
 
-		/* Don't access the list head ! */
+		 
 		if (cfg->list.next == &pci_mmcfg_list)
 			break;
 
@@ -370,7 +355,7 @@ static int __init pci_mmcfg_check_hostbridge(void)
 			pr_info(PREFIX "%s with MMCONFIG support\n", name);
 	}
 
-	/* some end_bus_number is crazy, fix it */
+	 
 	pci_mmcfg_check_end_bus_number();
 
 	return !list_empty(&pci_mmcfg_list);
@@ -455,11 +440,7 @@ static bool is_efi_mmio(u64 start, u64 end, enum e820_type not_used)
 			mmio_start = md->phys_addr;
 			mmio_end = mmio_start + size;
 
-			/*
-			 * N.B. Caller supplies (start, start + size),
-			 * so to match, mmio_end is the first address
-			 * *past* the EFI_MEMORY_MAPPED_IO area.
-			 */
+			 
 			if (mmio_start <= start && end <= mmio_end)
 				return true;
 		}
@@ -497,7 +478,7 @@ static bool __ref is_mmconf_reserved(check_reserved_t is_reserved,
 		       &cfg->res, method);
 
 	if (old_size != size) {
-		/* update end_bus */
+		 
 		cfg->end_bus = cfg->start_bus + ((size>>20) - 1);
 		num_buses = cfg->end_bus - cfg->start_bus + 1;
 		cfg->res.end = cfg->res.start +
@@ -557,17 +538,11 @@ pci_mmcfg_check_reserved(struct device *dev, struct pci_mmcfg_region *cfg, int e
 		}
 	}
 
-	/*
-	 * e820__mapped_all() is marked as __init.
-	 * All entries from ACPI MCFG table have been checked at boot time.
-	 * For MCFG information constructed from hotpluggable host bridge's
-	 * _CBA method, just assume it's reserved.
-	 */
+	 
 	if (pci_mmcfg_running_state)
 		return true;
 
-	/* Don't try to do this check unless configuration
-	   type 1 is available. how about type 2 ?*/
+	 
 	if (raw_pci_ops)
 		return is_mmconf_reserved(e820__mapped_all, cfg, dev,
 					  "E820 entry");
@@ -618,7 +593,7 @@ static int __init pci_parse_mcfg(struct acpi_table_header *header)
 
 	mcfg = (struct acpi_table_mcfg *)header;
 
-	/* how many config structures do we have */
+	 
 	free_all_mmcfg();
 	entries = 0;
 	i = header->length - sizeof(struct acpi_table_mcfg);
@@ -717,14 +692,14 @@ void __init pci_mmcfg_early_init(void)
 
 void __init pci_mmcfg_late_init(void)
 {
-	/* MMCONFIG disabled */
+	 
 	if ((pci_probe & PCI_PROBE_MMCONF) == 0)
 		return;
 
 	if (known_bridge)
 		return;
 
-	/* MMCONFIG hasn't been enabled yet, try again */
+	 
 	if (pci_probe & PCI_PROBE_MASK & ~PCI_PROBE_MMCONF) {
 		acpi_table_parse(ACPI_SIG_MCFG, pci_parse_mcfg);
 		__pci_mmcfg_init(0);
@@ -737,15 +712,11 @@ static int __init pci_mmcfg_late_insert_resources(void)
 
 	pci_mmcfg_running_state = true;
 
-	/* If we are not using MMCONFIG, don't insert the resources. */
+	 
 	if ((pci_probe & PCI_PROBE_MMCONF) == 0)
 		return 1;
 
-	/*
-	 * Attempt to insert the mmcfg resources but not with the busy flag
-	 * marked so it won't cause request errors when __request_region is
-	 * called.
-	 */
+	 
 	list_for_each_entry(cfg, &pci_mmcfg_list, list)
 		if (!cfg->res.parent)
 			insert_resource(&iomem_resource, &cfg->res);
@@ -753,14 +724,10 @@ static int __init pci_mmcfg_late_insert_resources(void)
 	return 0;
 }
 
-/*
- * Perform MMCONFIG resource insertion after PCI initialization to allow for
- * misprogrammed MCFG tables that state larger sizes but actually conflict
- * with other system resources.
- */
+ 
 late_initcall(pci_mmcfg_late_insert_resources);
 
-/* Add MMCFG information for host bridges */
+ 
 int pci_mmconfig_insert(struct device *dev, u16 seg, u8 start, u8 end,
 			phys_addr_t addr)
 {
@@ -801,7 +768,7 @@ int pci_mmconfig_insert(struct device *dev, u16 seg, u8 start, u8 end,
 		dev_warn(dev, FW_BUG "MMCONFIG %pR isn't reserved\n",
 			 &cfg->res);
 	} else {
-		/* Insert resource if it's not in boot stage */
+		 
 		if (pci_mmcfg_running_state)
 			tmp = insert_resource_conflict(&iomem_resource,
 						       &cfg->res);
@@ -834,7 +801,7 @@ int pci_mmconfig_insert(struct device *dev, u16 seg, u8 start, u8 end,
 	return rc;
 }
 
-/* Delete MMCFG information for host bridges */
+ 
 int pci_mmconfig_delete(u16 seg, u8 start, u8 end)
 {
 	struct pci_mmcfg_region *cfg;

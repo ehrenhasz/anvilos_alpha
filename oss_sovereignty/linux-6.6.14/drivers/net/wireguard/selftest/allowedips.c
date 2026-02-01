@@ -1,19 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2015-2019 Jason A. Donenfeld <Jason@zx2c4.com>. All Rights Reserved.
- *
- * This contains some basic static unit tests for the allowedips data structure.
- * It also has two additional modes that are disabled and meant to be used by
- * folks directly playing with this file. If you define the macro
- * DEBUG_PRINT_TRIE_GRAPHVIZ to be 1, then every time there's a full tree in
- * memory, it will be printed out as KERN_DEBUG in a format that can be passed
- * to graphviz (the dot command) to visualize it. If you define the macro
- * DEBUG_RANDOM_TRIE to be 1, then there will be an extremely costly set of
- * randomized tests done against a trivial implementation, which may take
- * upwards of a half-hour to complete. There's no set of users who should be
- * enabling these, and the only developers that should go anywhere near these
- * nobs are the ones who are reading this comment.
- */
+
+ 
 
 #ifdef DEBUG
 
@@ -514,22 +500,22 @@ bool __init wg_allowedips_selftest(void)
 	insert(4, b, 192, 168, 4, 4, 32);
 	insert(4, c, 192, 168, 0, 0, 16);
 	insert(4, d, 192, 95, 5, 64, 27);
-	/* replaces previous entry, and maskself is required */
+	 
 	insert(4, c, 192, 95, 5, 65, 27);
 	insert(6, d, 0x26075300, 0x60006b00, 0, 0xc05f0543, 128);
 	insert(6, c, 0x26075300, 0x60006b00, 0, 0, 64);
 	insert(4, e, 0, 0, 0, 0, 0);
 	insert(6, e, 0, 0, 0, 0, 0);
-	/* replaces previous entry */
+	 
 	insert(6, f, 0, 0, 0, 0, 0);
 	insert(6, g, 0x24046800, 0, 0, 0, 32);
-	/* maskself is required */
+	 
 	insert(6, h, 0x24046800, 0x40040800, 0xdeadbeef, 0xdeadbeef, 64);
 	insert(6, a, 0x24046800, 0x40040800, 0xdeadbeef, 0xdeadbeef, 128);
 	insert(6, c, 0x24446800, 0x40e40800, 0xdeaebeef, 0xdefbeef, 128);
 	insert(6, b, 0x24446800, 0xf0e40800, 0xeeaebeef, 0, 98);
 	insert(4, g, 64, 15, 112, 0, 20);
-	/* maskself is required */
+	 
 	insert(4, h, 64, 15, 123, 211, 25);
 	insert(4, a, 10, 0, 0, 0, 25);
 	insert(4, b, 10, 0, 0, 128, 25);
@@ -593,9 +579,7 @@ bool __init wg_allowedips_selftest(void)
 	wg_allowedips_remove_by_peer(&t, a, &mutex);
 	test_negative(4, a, 192, 168, 0, 1);
 
-	/* These will hit the WARN_ON(len >= MAX_ALLOWEDIPS_DEPTH) in free_node
-	 * if something goes wrong.
-	 */
+	 
 	for (i = 0; i < 64; ++i) {
 		part = cpu_to_be64(~0LLU << i);
 		memset(&ip, 0xff, 8);

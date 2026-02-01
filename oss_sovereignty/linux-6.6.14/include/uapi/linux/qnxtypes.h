@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
-/*
- *  Name                         : qnxtypes.h
- *  Author                       : Richard Frowijn
- *  Function                     : standard qnx types
- *  History                      : 22-03-1998 created
- *
- */
+ 
+ 
 
 #ifndef _QNX4TYPES_H
 #define _QNX4TYPES_H

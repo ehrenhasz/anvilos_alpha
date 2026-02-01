@@ -1,35 +1,4 @@
-/*
- * Copyright (c) 2007 Cisco Systems, Inc. All rights reserved.
- * Copyright (c) 2007, 2008 Mellanox Technologies. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 
 #include <linux/workqueue.h>
 #include <linux/module.h>
@@ -75,9 +44,7 @@ static int mlx4_reset_master(struct mlx4_dev *dev)
 
 	if (!pci_channel_offline(dev->persist->pdev)) {
 		err = read_vendor_id(dev);
-		/* If PCI can't be accessed to read vendor ID we assume that its
-		 * link was disabled and chip was already reset.
-		 */
+		 
 		if (err)
 			return 0;
 
@@ -137,10 +104,7 @@ static int mlx4_reset_slave(struct mlx4_dev *dev)
 		rst_ack = (comm_flags & (u32)(1 << COM_CHAN_RST_ACK_OFFSET)) >>
 			COM_CHAN_RST_ACK_OFFSET;
 
-		/* Reading rst_req again since the communication channel can
-		 * be reset at any time by the PF and all its bits will be
-		 * set to zero.
-		 */
+		 
 		rst_req = (comm_flags & (u32)(1 << COM_CHAN_RST_REQ_OFFSET)) >>
 			COM_CHAN_RST_REQ_OFFSET;
 
@@ -184,16 +148,14 @@ void mlx4_enter_error_state(struct mlx4_dev_persistent *persist)
 	if (!err) {
 		mlx4_err(dev, "device was reset successfully\n");
 	} else {
-		/* EEH could have disabled the PCI channel during reset. That's
-		 * recoverable and the PCI error flow will handle it.
-		 */
+		 
 		if (!pci_channel_offline(dev->persist->pdev))
 			BUG_ON(1);
 	}
 	dev->persist->state |= MLX4_DEVICE_STATE_INTERNAL_ERROR;
 	mutex_unlock(&persist->device_state_mutex);
 
-	/* At that step HW was already reset, now notify clients */
+	 
 	mlx4_dispatch_event(dev, MLX4_DEV_EVENT_CATASTROPHIC_ERROR, NULL);
 	mlx4_cmd_wake_completions(dev);
 	return;

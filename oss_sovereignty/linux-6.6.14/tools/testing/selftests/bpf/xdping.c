@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2019, Oracle and/or its affiliates. All rights reserved. */
+
+ 
 
 #include <linux/bpf.h>
 #include <linux/if_link.h>
@@ -127,7 +127,7 @@ int main(int argc, char **argv)
 			xdp_flags |= XDP_FLAGS_DRV_MODE;
 			break;
 		case 's':
-			/* use server program */
+			 
 			server = 1;
 			break;
 		case 'S':
@@ -155,7 +155,7 @@ int main(int argc, char **argv)
 	}
 
 	if (!server) {
-		/* Only supports IPv4; see hints initiailization above. */
+		 
 		if (getaddrinfo(argv[optind], NULL, &hints, &a) || !a) {
 			fprintf(stderr, "Could not resolve %s\n", argv[optind]);
 			return 1;
@@ -165,7 +165,7 @@ int main(int argc, char **argv)
 		freeaddrinfo(a);
 	}
 
-	/* Use libbpf 1.0 API mode */
+	 
 	libbpf_set_strict_mode(LIBBPF_STRICT_ALL);
 
 	snprintf(filename, sizeof(filename), "%s_kern.bpf.o", argv[0]);
@@ -212,12 +212,7 @@ int main(int argc, char **argv)
 		do { } while (1);
 	}
 
-	/* Start xdping-ing from last regular ping reply, e.g. for a count
-	 * of 10 ICMP requests, we start xdping-ing using reply with seq number
-	 * 10.  The reason the last "real" ping RTT is much higher is that
-	 * the ping program sees the ICMP reply associated with the last
-	 * XDP-generated packet, so ping doesn't get a reply until XDP is done.
-	 */
+	 
 	pinginfo.seq = htons(count);
 	pinginfo.count = count;
 
@@ -228,7 +223,7 @@ int main(int argc, char **argv)
 		goto done;
 	}
 
-	/* We need to wait for XDP setup to complete. */
+	 
 	sleep(10);
 
 	snprintf(cmd, sizeof(cmd), "ping -c %d -I %s %s",

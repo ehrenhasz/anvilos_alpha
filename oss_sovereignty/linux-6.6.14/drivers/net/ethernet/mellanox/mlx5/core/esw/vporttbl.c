@@ -1,11 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-// Copyright (c) 2021 Mellanox Technologies.
+
+
 
 #include "eswitch.h"
 
-/* This struct is used as a key to the hash table and we need it to be packed
- * so hash result is consistent
- */
+ 
 struct mlx5_vport_key {
 	u32 chain;
 	u16 prio;
@@ -64,7 +62,7 @@ static u32 flow_attr_to_vport_key(struct mlx5_eswitch *esw,
 	return jhash(key, sizeof(*key), 0);
 }
 
-/* caller must hold vports.lock */
+ 
 static struct mlx5_vport_table *
 esw_vport_tbl_lookup(struct mlx5_eswitch *esw, struct mlx5_vport_key *skey, u32 key)
 {

@@ -1,9 +1,4 @@
-/* Copyright (c) 2016 Sargun Dhillon <sargun@sargun.me>
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of version 2 of the GNU General Public
- * License as published by the Free Software Foundation.
- */
+ 
 #include "vmlinux.h"
 #include <string.h>
 #include <linux/version.h>
@@ -18,14 +13,7 @@ struct {
 	__uint(max_entries, 256);
 } dnat_map SEC(".maps");
 
-/* kprobe is NOT a stable ABI
- * kernel functions can be removed, renamed or completely change semantics.
- * Number of arguments and their positions can change, etc.
- * In such case this bpf+kprobe example will no longer be meaningful
- *
- * This example sits on a syscall, and the syscall ABI is relatively stable
- * of course, across platforms, and over time, the ABI may change.
- */
+ 
 SEC("ksyscall/connect")
 int BPF_KSYSCALL(bpf_prog1, int fd, struct sockaddr_in *uservaddr,
 		 int addrlen)

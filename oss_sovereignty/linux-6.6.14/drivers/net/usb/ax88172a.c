@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * ASIX AX88172A based USB 2.0 Ethernet Devices
- * Copyright (C) 2012 OMICRON electronics GmbH
- *
- * Supports external PHYs via phylib. Based on the driver for the
- * AX88772. Original copyrights follow:
- *
- * Copyright (C) 2003-2006 David Hollis <dhollis@davehollis.com>
- * Copyright (C) 2005 Phil Chang <pchang23@sbcglobal.net>
- * Copyright (C) 2006 James Painter <jamie.painter@iname.com>
- * Copyright (c) 2002-2003 TiVo Inc.
- */
+
+ 
 
 #include "asix.h"
 #include <linux/phy.h>
@@ -25,7 +14,7 @@ struct ax88172a_private {
 	struct asix_rx_fixup_info rx_fixup_info;
 };
 
-/* set MAC link settings according to information from phylib */
+ 
 static void ax88172a_adjust_link(struct net_device *netdev)
 {
 	struct phy_device *phydev = netdev->phydev;
@@ -54,10 +43,10 @@ static void ax88172a_adjust_link(struct net_device *netdev)
 
 static void ax88172a_status(struct usbnet *dev, struct urb *urb)
 {
-	/* link changes are detected by polling the phy */
+	 
 }
 
-/* use phylib infrastructure */
+ 
 static int ax88172a_init_mdio(struct usbnet *dev)
 {
 	struct ax88172a_private *priv = dev->driver_priv;
@@ -73,7 +62,7 @@ static int ax88172a_init_mdio(struct usbnet *dev)
 	priv->mdio->read = &asix_mdio_bus_read;
 	priv->mdio->write = &asix_mdio_bus_write;
 	priv->mdio->name = "Asix MDIO Bus";
-	/* mii bus name is usb-<usb bus number>-<usb device number> */
+	 
 	snprintf(priv->mdio->id, MII_BUS_ID_SIZE, "usb-%03d:%03d",
 		 dev->udev->bus->busnum, dev->udev->devnum);
 
@@ -171,7 +160,7 @@ static int ax88172a_bind(struct usbnet *dev, struct usb_interface *intf)
 
 	dev->driver_priv = priv;
 
-	/* Get the MAC address */
+	 
 	ret = asix_read_cmd(dev, AX_CMD_READ_NODE_ID, 0, 0, ETH_ALEN, buf, 0);
 	if (ret < ETH_ALEN) {
 		netdev_err(dev->net, "Failed to read MAC address: %d\n", ret);
@@ -183,7 +172,7 @@ static int ax88172a_bind(struct usbnet *dev, struct usb_interface *intf)
 	dev->net->netdev_ops = &ax88172a_netdev_ops;
 	dev->net->ethtool_ops = &ax88172a_ethtool_ops;
 
-	/* are we using the internal or the external phy? */
+	 
 	ret = asix_read_cmd(dev, AX_CMD_SW_PHY_STATUS, 0, 0, 1, buf, 0);
 	if (ret < 0) {
 		netdev_err(dev->net, "Failed to read software interface selection register: %d\n",
@@ -215,14 +204,13 @@ static int ax88172a_bind(struct usbnet *dev, struct usb_interface *intf)
 
 	ax88172a_reset_phy(dev, priv->use_embdphy);
 
-	/* Asix framing packs multiple eth frames into a 2K usb bulk transfer */
+	 
 	if (dev->driver_info->flags & FLAG_FRAMING_AX) {
-		/* hard_mtu  is still the default - the device does not support
-		   jumbo eth frames */
+		 
 		dev->rx_urb_size = 2048;
 	}
 
-	/* init MDIO bus */
+	 
 	ret = ax88172a_init_mdio(dev);
 	if (ret)
 		goto free;
@@ -287,14 +275,14 @@ static int ax88172a_reset(struct usbnet *dev)
 		goto out;
 	}
 
-	/* Rewrite MAC address */
+	 
 	memcpy(data->mac_addr, dev->net->dev_addr, ETH_ALEN);
 	ret = asix_write_cmd(dev, AX_CMD_WRITE_NODE_ID, 0, 0, ETH_ALEN,
 			     data->mac_addr, 0);
 	if (ret < 0)
 		goto out;
 
-	/* Set RX_CTL to default values with 2k buffer, and enable cactus */
+	 
 	ret = asix_write_rx_ctl(dev, AX_DEFAULT_RX_CTL, 0);
 	if (ret < 0)
 		goto out;
@@ -307,7 +295,7 @@ static int ax88172a_reset(struct usbnet *dev)
 	netdev_dbg(dev->net, "Medium Status is 0x%04x after all initializations\n",
 		   rx_ctl);
 
-	/* Connect to PHY */
+	 
 	snprintf(priv->phy_name, 20, PHY_ID_FMT,
 		 priv->mdio->id, priv->phy_addr);
 
@@ -323,9 +311,7 @@ static int ax88172a_reset(struct usbnet *dev)
 
 	netdev_info(dev->net, "Connected to phy %s\n", priv->phy_name);
 
-	/* During power-up, the AX88172A set the power down (BMCR_PDOWN)
-	 * bit of the PHY. Bring the PHY up again.
-	 */
+	 
 	genphy_resume(priv->phydev);
 	phy_start(priv->phydev);
 

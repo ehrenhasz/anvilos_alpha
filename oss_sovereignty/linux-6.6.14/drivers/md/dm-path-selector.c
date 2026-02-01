@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2003 Sistina Software.
- * Copyright (C) 2004 Red Hat, Inc. All rights reserved.
- *
- * Module Author: Heinz Mauelshagen
- *
- * This file is released under the GPL.
- *
- * Path selector registration.
- */
+
+ 
 
 #include <linux/device-mapper.h>
 #include <linux/module.h>

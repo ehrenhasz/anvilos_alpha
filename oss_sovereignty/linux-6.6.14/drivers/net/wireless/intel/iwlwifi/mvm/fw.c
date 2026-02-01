@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
-/*
- * Copyright (C) 2012-2014, 2018-2023 Intel Corporation
- * Copyright (C) 2013-2015 Intel Mobile Communications GmbH
- * Copyright (C) 2016-2017 Intel Deutschland GmbH
- */
+
+ 
 #include <net/mac80211.h>
 #include <linux/netdevice.h>
 #include <linux/dmi.h>
@@ -61,7 +57,7 @@ static int iwl_send_rss_cfg_cmd(struct iwl_mvm *mvm)
 	if (mvm->trans->num_rx_queues == 1)
 		return 0;
 
-	/* Do not direct RSS traffic to Q 0 which is our fallback queue */
+	 
 	for (i = 0; i < ARRAY_SIZE(cmd.indirection_table); i++)
 		cmd.indirection_table[i] =
 			1 + (i % (mvm->trans->num_rx_queues - 1));
@@ -157,11 +153,7 @@ static bool iwl_alive_fn(struct iwl_notif_wait_data *notif_wait,
 					continue;
 
 				reg = (void *)reg_tlv->data;
-				/*
-				 * We have only one DRAM IMR region, so we
-				 * can break as soon as we find the first
-				 * one.
-				 */
+				 
 				if (reg->type == IWL_FW_INI_REGION_DRAM_IMR) {
 					mvm->trans->dbg.unsupported_region_msk |= BIT(i);
 					break;
@@ -215,7 +207,7 @@ static bool iwl_alive_fn(struct iwl_notif_wait_data *notif_wait,
 	} else {
 		WARN(1, "unsupported alive notification (size %d)\n",
 		     iwl_rx_packet_payload_len(pkt));
-		/* get timeout later */
+		 
 		return false;
 	}
 
@@ -305,7 +297,7 @@ static void iwl_mvm_print_pd_notification(struct iwl_mvm *mvm)
 
 	IWL_FW_PRINT_REG_INFO(HPM_SECONDARY_DEVICE_STATE);
 
-	/* print OPT info */
+	 
 	IWL_FW_PRINT_REG_INFO(WFPM_MAC_OTP_CFG7_ADDR);
 	IWL_FW_PRINT_REG_INFO(WFPM_MAC_OTP_CFG7_DATA);
 }
@@ -340,11 +332,7 @@ static int iwl_mvm_load_ucode_wait_alive(struct iwl_mvm *mvm,
 				   alive_cmd, ARRAY_SIZE(alive_cmd),
 				   iwl_alive_fn, &alive_data);
 
-	/*
-	 * We want to load the INIT firmware even in RFKILL
-	 * For the unified firmware case, the ucode_type is not
-	 * INIT, but we still need to run it.
-	 */
+	 
 	ret = iwl_trans_start_fw(mvm->trans, fw, run_in_rfkill);
 	if (ret) {
 		iwl_fw_set_current_image(&mvm->fwrt, old_type);
@@ -352,16 +340,13 @@ static int iwl_mvm_load_ucode_wait_alive(struct iwl_mvm *mvm,
 		return ret;
 	}
 
-	/*
-	 * Some things may run in the background now, but we
-	 * just wait for the ALIVE notification here.
-	 */
+	 
 	ret = iwl_wait_notification(&mvm->notif_wait, &alive_wait,
 				    MVM_UCODE_ALIVE_TIMEOUT);
 
 	if (mvm->trans->trans_cfg->device_family ==
 	    IWL_DEVICE_FAMILY_AX210) {
-		/* print these registers regardless of alive fail/success */
+		 
 		IWL_INFO(mvm, "WFPM_UMAC_PD_NOTIFICATION: 0x%x\n",
 			 iwl_read_umac_prph(mvm->trans, WFPM_ARC1_PD_NOTIFICATION));
 		IWL_INFO(mvm, "WFPM_LMAC2_PD_NOTIFICATION: 0x%x\n",
@@ -375,7 +360,7 @@ static int iwl_mvm_load_ucode_wait_alive(struct iwl_mvm *mvm,
 	if (ret) {
 		struct iwl_trans *trans = mvm->trans;
 
-		/* SecBoot info */
+		 
 		if (trans->trans_cfg->device_family >=
 					IWL_DEVICE_FAMILY_22000) {
 			IWL_ERR(mvm,
@@ -393,7 +378,7 @@ static int iwl_mvm_load_ucode_wait_alive(struct iwl_mvm *mvm,
 
 		iwl_mvm_print_pd_notification(mvm);
 
-		/* LMAC/UMAC PC info */
+		 
 		if (trans->trans_cfg->device_family >=
 					IWL_DEVICE_FAMILY_22000) {
 			pc_data = trans->dbg.pc_data;
@@ -430,7 +415,7 @@ static int iwl_mvm_load_ucode_wait_alive(struct iwl_mvm *mvm,
 		return -EIO;
 	}
 
-	/* if reached this point, Alive notification was received */
+	 
 	iwl_mei_alive_notif(true);
 
 	ret = iwl_pnvm_load(mvm->trans, &mvm->notif_wait,
@@ -443,22 +428,10 @@ static int iwl_mvm_load_ucode_wait_alive(struct iwl_mvm *mvm,
 
 	iwl_trans_fw_alive(mvm->trans, alive_data.scd_base_addr);
 
-	/*
-	 * Note: all the queues are enabled as part of the interface
-	 * initialization, but in firmware restart scenarios they
-	 * could be stopped, so wake them up. In firmware restart,
-	 * mac80211 will have the queues stopped as well until the
-	 * reconfiguration completes. During normal startup, they
-	 * will be empty.
-	 */
+	 
 
 	memset(&mvm->queue_info, 0, sizeof(mvm->queue_info));
-	/*
-	 * Set a 'fake' TID for the command queue, since we use the
-	 * hweight() of the tid_bitmap as a refcount now. Not that
-	 * we ever even consider the command queue as one we might
-	 * want to reuse, but be safe nevertheless.
-	 */
+	 
 	mvm->queue_info[IWL_MVM_DQA_CMD_QUEUE].tid_bitmap =
 		BIT(IWL_MAX_TID_COUNT + 2);
 
@@ -467,12 +440,7 @@ static int iwl_mvm_load_ucode_wait_alive(struct iwl_mvm *mvm,
 	iwl_fw_set_dbg_rec_on(&mvm->fwrt);
 #endif
 
-	/*
-	 * All the BSSes in the BSS table include the GP2 in the system
-	 * at the beacon Rx time, this is of course no longer relevant
-	 * since we are resetting the firmware.
-	 * Purge all the BSS table.
-	 */
+	 
 	cfg80211_bss_flush(mvm->hw->wiphy);
 
 	return 0;
@@ -483,7 +451,7 @@ static void iwl_mvm_phy_filter_init(struct iwl_mvm *mvm,
 {
 #ifdef CONFIG_ACPI
 	*phy_filters = mvm->phy_filters;
-#endif /* CONFIG_ACPI */
+#endif  
 }
 
 #if defined(CONFIG_ACPI) && defined(CONFIG_EFI)
@@ -541,18 +509,15 @@ static int iwl_send_phy_cfg_cmd(struct iwl_mvm *mvm)
 		return 0;
 
 	if (mvm->trans->cfg->tx_with_siso_diversity) {
-		/*
-		 * TODO: currently we don't set the antenna but letting the NIC
-		 * to decide which antenna to use. This should come from BIOS.
-		 */
+		 
 		phy_cfg_cmd.phy_cfg =
 			cpu_to_le32(FW_PHY_CFG_CHAIN_SAD_ENABLED);
 	}
 
-	/* Set parameters */
+	 
 	phy_cfg_cmd.phy_cfg = cpu_to_le32(iwl_mvm_get_phy_config(mvm));
 
-	/* set flags extra PHY configuration flags from the device's cfg */
+	 
 	phy_cfg_cmd.phy_cfg |=
 		cpu_to_le32(mvm->trans->trans_cfg->extra_phy_cfg_flags);
 
@@ -601,7 +566,7 @@ static int iwl_run_unified_mvm_ucode(struct iwl_mvm *mvm)
 
 	iwl_dbg_tlv_time_point(&mvm->fwrt, IWL_FW_INI_TIME_POINT_EARLY, NULL);
 
-	/* Will also start the device */
+	 
 	ret = iwl_mvm_load_ucode_wait_alive(mvm, IWL_UCODE_REGULAR);
 	if (ret) {
 		IWL_ERR(mvm, "Failed to start RT ucode: %d\n", ret);
@@ -610,9 +575,7 @@ static int iwl_run_unified_mvm_ucode(struct iwl_mvm *mvm)
 	iwl_dbg_tlv_time_point(&mvm->fwrt, IWL_FW_INI_TIME_POINT_AFTER_ALIVE,
 			       NULL);
 
-	/* Send init config command to mark that we are sending NVM access
-	 * commands
-	 */
+	 
 	ret = iwl_mvm_send_cmd_pdu(mvm, WIDE_ID(SYSTEM_GROUP,
 						INIT_EXTENDED_CFG_CMD),
 				   CMD_SEND_IN_RFKILL,
@@ -623,7 +586,7 @@ static int iwl_run_unified_mvm_ucode(struct iwl_mvm *mvm)
 		goto error;
 	}
 
-	/* Load NVM to NIC if needed */
+	 
 	if (mvm->nvm_file_name) {
 		ret = iwl_read_external_nvm(mvm->trans, mvm->nvm_file_name,
 					    mvm->nvm_sections);
@@ -659,13 +622,13 @@ static int iwl_run_unified_mvm_ucode(struct iwl_mvm *mvm)
 		goto error;
 	}
 
-	/* We wait for the INIT complete notification */
+	 
 	ret = iwl_wait_notification(&mvm->notif_wait, &init_wait,
 				    MVM_UCODE_ALIVE_TIMEOUT);
 	if (ret)
 		return ret;
 
-	/* Read the NVM only at driver load time, no need to do this twice */
+	 
 	if (!IWL_MVM_PARSE_NVM && !mvm->nvm_data) {
 		mvm->nvm_data = iwl_get_nvm(mvm->trans, mvm->fw);
 		if (IS_ERR(mvm->nvm_data)) {
@@ -710,7 +673,7 @@ int iwl_run_init_mvm_ucode(struct iwl_mvm *mvm)
 
 	iwl_dbg_tlv_time_point(&mvm->fwrt, IWL_FW_INI_TIME_POINT_EARLY, NULL);
 
-	/* Will also start the device */
+	 
 	ret = iwl_mvm_load_ucode_wait_alive(mvm, IWL_UCODE_INIT);
 	if (ret) {
 		IWL_ERR(mvm, "Failed to start INIT ucode: %d\n", ret);
@@ -723,7 +686,7 @@ int iwl_run_init_mvm_ucode(struct iwl_mvm *mvm)
 			goto remove_notif;
 	}
 
-	/* Read the NVM only at driver load time, no need to do this twice */
+	 
 	if (!mvm->nvm_data) {
 		ret = iwl_nvm_init(mvm);
 		if (ret) {
@@ -732,7 +695,7 @@ int iwl_run_init_mvm_ucode(struct iwl_mvm *mvm)
 		}
 	}
 
-	/* In case we read the NVM from external file, load it to the NIC */
+	 
 	if (mvm->nvm_file_name) {
 		ret = iwl_mvm_load_nvm_to_nic(mvm);
 		if (ret)
@@ -743,10 +706,7 @@ int iwl_run_init_mvm_ucode(struct iwl_mvm *mvm)
 		  "Too old NVM version (0x%0x, required = 0x%0x)",
 		  mvm->nvm_data->nvm_version, mvm->trans->cfg->nvm_ver);
 
-	/*
-	 * abort after reading the nvm in case RF Kill is on, we will complete
-	 * the init seq later when RF kill will switch to off
-	 */
+	 
 	if (iwl_mvm_is_radio_hw_killed(mvm)) {
 		IWL_DEBUG_RF_KILL(mvm,
 				  "jump over all phy activities due to RF kill\n");
@@ -755,7 +715,7 @@ int iwl_run_init_mvm_ucode(struct iwl_mvm *mvm)
 
 	mvm->rfkill_safe_init_done = true;
 
-	/* Send TX valid antennas before triggering calibrations */
+	 
 	ret = iwl_send_tx_ant_cfg(mvm, iwl_mvm_get_valid_tx_ant(mvm));
 	if (ret)
 		goto remove_notif;
@@ -767,10 +727,7 @@ int iwl_run_init_mvm_ucode(struct iwl_mvm *mvm)
 		goto remove_notif;
 	}
 
-	/*
-	 * Some things may run in the background now, but we
-	 * just wait for the calibration complete notification.
-	 */
+	 
 	ret = iwl_wait_notification(&mvm->notif_wait, &calib_wait,
 				    MVM_UCODE_CALIB_TIMEOUT);
 	if (!ret)
@@ -791,7 +748,7 @@ remove_notif:
 out:
 	mvm->rfkill_safe_init_done = false;
 	if (iwlmvm_mod_params.init_dbg && !mvm->nvm_data) {
-		/* we want to debug INIT and we have no NVM - fake */
+		 
 		mvm->nvm_data = kzalloc(sizeof(struct iwl_nvm_data) +
 					sizeof(struct ieee80211_channel) +
 					sizeof(struct ieee80211_rate),
@@ -860,14 +817,14 @@ int iwl_mvm_sar_select_profile(struct iwl_mvm *mvm, int prof_a, int prof_b)
 		per_chain = cmd.v3.per_chain[0][0];
 	}
 
-	/* all structs have the same common part, add it */
+	 
 	len += sizeof(cmd.common);
 
 	ret = iwl_sar_select_profile(&mvm->fwrt, per_chain,
 				     IWL_NUM_CHAIN_TABLES,
 				     n_subbands, prof_a, prof_b);
 
-	/* return on error or if the profile is disabled (positive number) */
+	 
 	if (ret)
 		return ret;
 
@@ -891,7 +848,7 @@ int iwl_mvm_get_sar_geo_profile(struct iwl_mvm *mvm)
 	u8 cmd_ver = iwl_fw_lookup_cmd_ver(mvm->fw, cmd.id,
 					   IWL_FW_CMD_VER_UNKNOWN);
 
-	/* the ops field is at the same spot for all versions, so set in v1 */
+	 
 	geo_tx_cmd.v1.ops =
 		cpu_to_le32(IWL_PER_CHAIN_OFFSET_GET_CURRENT_TABLE);
 
@@ -949,7 +906,7 @@ static int iwl_mvm_sar_geo_init(struct iwl_mvm *mvm)
 		     offsetof(struct iwl_geo_tx_power_profiles_cmd_v4, ops) !=
 		     offsetof(struct iwl_geo_tx_power_profiles_cmd_v5, ops));
 
-	/* the ops field is at the same spot for all versions, so set in v1 */
+	 
 	cmd.v1.ops = cpu_to_le32(IWL_PER_CHAIN_OFFSET_SET_TABLES);
 
 	if (cmd_ver == 5) {
@@ -983,28 +940,19 @@ static int iwl_mvm_sar_geo_init(struct iwl_mvm *mvm)
 		     offsetof(struct iwl_geo_tx_power_profiles_cmd_v4, table) ||
 		     offsetof(struct iwl_geo_tx_power_profiles_cmd_v4, table) !=
 		     offsetof(struct iwl_geo_tx_power_profiles_cmd_v5, table));
-	/* the table is at the same position for all versions, so set use v1 */
+	 
 	ret = iwl_sar_geo_init(&mvm->fwrt, &cmd.v1.table[0][0],
 			       n_bands, n_profiles);
 
-	/*
-	 * It is a valid scenario to not support SAR, or miss wgds table,
-	 * but in that case there is no need to send the command.
-	 */
+	 
 	if (ret)
 		return 0;
 
-	/* Only set to South Korea if the table revision is 1 */
+	 
 	if (mvm->fwrt.geo_rev == 1)
 		sk = 1;
 
-	/*
-	 * Set the table_revision to South Korea (1) or not (0).  The
-	 * element name is misleading, as it doesn't contain the table
-	 * revision number, but whether the South Korea variation
-	 * should be used.
-	 * This must be done after calling iwl_sar_geo_init().
-	 */
+	 
 	if (cmd_ver == 5)
 		cmd.v5.table_revision = cpu_to_le32(sk);
 	else if (cmd_ver == 4)
@@ -1024,7 +972,7 @@ int iwl_mvm_ppag_send_cmd(struct iwl_mvm *mvm)
 	int ret, cmd_size;
 
 	ret = iwl_read_ppag_table(&mvm->fwrt, &cmd, &cmd_size);
-	/* Not supporting PPAG table is a valid scenario */
+	 
 	if (ret < 0)
 		return 0;
 
@@ -1041,7 +989,7 @@ int iwl_mvm_ppag_send_cmd(struct iwl_mvm *mvm)
 
 static int iwl_mvm_ppag_init(struct iwl_mvm *mvm)
 {
-	/* no need to read the table, done in INIT stage */
+	 
 	if (!(iwl_acpi_is_ppag_approved(&mvm->fwrt)))
 		return 0;
 
@@ -1094,7 +1042,7 @@ static const struct dmi_system_id dmi_tas_approved_list[] = {
 			DMI_MATCH(DMI_SYS_VENDOR, "HONOR"),
 		},
 	},
-	/* keep last */
+	 
 	{}
 };
 
@@ -1108,7 +1056,7 @@ static bool iwl_mvm_add_to_tas_block_list(__le32 *list, __le32 *le_size, unsigne
 	int i;
 	u32 size = le32_to_cpu(*le_size);
 
-	/* Verify that there is room for another country */
+	 
 	if (size >= IWL_TAS_BLOCK_LIST_MAX)
 		return false;
 
@@ -1171,7 +1119,7 @@ static void iwl_mvm_tas_init(struct iwl_mvm *mvm)
 				dmi_get_system_info(DMI_SYS_VENDOR));
 	}
 
-	/* v4 is the same size as v3, so no need to differentiate here */
+	 
 	cmd_size = fw_ver < 3 ?
 		sizeof(struct iwl_tas_config_cmd_v2) :
 		sizeof(struct iwl_tas_config_cmd_v3);
@@ -1201,7 +1149,7 @@ static u8 iwl_mvm_eval_dsm_rfi(struct iwl_mvm *mvm)
 
 	IWL_DEBUG_RADIO(mvm, "DSM RFI is disabled\n");
 
-	/* default behaviour is disabled */
+	 
 	return DSM_VALUE_RFI_DISABLE;
 }
 
@@ -1302,7 +1250,7 @@ void iwl_mvm_get_acpi_tables(struct iwl_mvm *mvm)
 {
 	int ret;
 
-	/* read PPAG table */
+	 
 	ret = iwl_acpi_get_ppag_table(&mvm->fwrt);
 	if (ret < 0) {
 		IWL_DEBUG_RADIO(mvm,
@@ -1310,49 +1258,41 @@ void iwl_mvm_get_acpi_tables(struct iwl_mvm *mvm)
 				ret);
 	}
 
-	/* read SAR tables */
+	 
 	ret = iwl_sar_get_wrds_table(&mvm->fwrt);
 	if (ret < 0) {
 		IWL_DEBUG_RADIO(mvm,
 				"WRDS SAR BIOS table invalid or unavailable. (%d)\n",
 				ret);
-		/*
-		 * If not available, don't fail and don't bother with EWRD and
-		 * WGDS */
+		 
 
 		if (!iwl_sar_get_wgds_table(&mvm->fwrt)) {
-			/*
-			 * If basic SAR is not available, we check for WGDS,
-			 * which should *not* be available either.  If it is
-			 * available, issue an error, because we can't use SAR
-			 * Geo without basic SAR.
-			 */
+			 
 			IWL_ERR(mvm, "BIOS contains WGDS but no WRDS\n");
 		}
 
 	} else {
 		ret = iwl_sar_get_ewrd_table(&mvm->fwrt);
-		/* if EWRD is not available, we can still use
-		* WRDS, so don't fail */
+		 
 		if (ret < 0)
 			IWL_DEBUG_RADIO(mvm,
 					"EWRD SAR BIOS table invalid or unavailable. (%d)\n",
 					ret);
 
-		/* read geo SAR table */
+		 
 		if (iwl_sar_geo_support(&mvm->fwrt)) {
 			ret = iwl_sar_get_wgds_table(&mvm->fwrt);
 			if (ret < 0)
 				IWL_DEBUG_RADIO(mvm,
 						"Geo SAR BIOS table invalid or unavailable. (%d)\n",
 						ret);
-				/* we don't fail if the table is not available */
+				 
 		}
 	}
 
 	iwl_acpi_get_phy_filters(&mvm->fwrt, &mvm->phy_filters);
 }
-#else /* CONFIG_ACPI */
+#else  
 
 inline int iwl_mvm_sar_select_profile(struct iwl_mvm *mvm,
 				      int prof_a, int prof_b)
@@ -1402,7 +1342,7 @@ void iwl_mvm_get_acpi_tables(struct iwl_mvm *mvm)
 {
 }
 
-#endif /* CONFIG_ACPI */
+#endif  
 
 void iwl_mvm_send_recovery_cmd(struct iwl_mvm *mvm, u32 flags)
 {
@@ -1421,12 +1361,12 @@ void iwl_mvm_send_recovery_cmd(struct iwl_mvm *mvm, u32 flags)
 		.len = {sizeof(recovery_cmd), },
 	};
 
-	/* no error log was defined in TLV */
+	 
 	if (!error_log_size)
 		return;
 
 	if (flags & ERROR_RECOVERY_UPDATE_DB) {
-		/* no buf was allocated while HW reset */
+		 
 		if (!mvm->error_recovery_buf)
 			return;
 
@@ -1445,7 +1385,7 @@ void iwl_mvm_send_recovery_cmd(struct iwl_mvm *mvm, u32 flags)
 		return;
 	}
 
-	/* skb respond is only relevant in ERROR_RECOVERY_UPDATE_DB */
+	 
 	if (flags & ERROR_RECOVERY_UPDATE_DB) {
 		resp = le32_to_cpu(*(__le32 *)host_cmd.resp_pkt->data);
 		if (resp)
@@ -1524,7 +1464,7 @@ int iwl_mvm_up(struct iwl_mvm *mvm)
 		goto error;
 	}
 
-	/* FW loaded successfully */
+	 
 	mvm->pldr_sync = false;
 
 	iwl_get_shared_mem_conf(&mvm->fwrt);
@@ -1535,7 +1475,7 @@ int iwl_mvm_up(struct iwl_mvm *mvm)
 
 	if (!iwl_trans_dbg_ini_valid(mvm->trans)) {
 		mvm->fwrt.dump.conf = FW_DBG_INVALID;
-		/* if we have a destination, assume EARLY START */
+		 
 		if (mvm->fw->dbg.dest_tlv)
 			mvm->fwrt.dump.conf = FW_DBG_START_FROM_ALIVE;
 		iwl_fw_start_dbg_conf(&mvm->fwrt, FW_DBG_START_FROM_ALIVE);
@@ -1546,7 +1486,7 @@ int iwl_mvm_up(struct iwl_mvm *mvm)
 		goto error;
 
 	if (!iwl_mvm_has_unified_ucode(mvm)) {
-		/* Send phy db control command and then phy db calibration */
+		 
 		ret = iwl_send_phy_db_data(mvm->phy_db);
 		if (ret)
 			goto error;
@@ -1568,7 +1508,7 @@ int iwl_mvm_up(struct iwl_mvm *mvm)
 
 	iwl_mvm_lari_cfg(mvm);
 
-	/* Init RSS configuration */
+	 
 	ret = iwl_configure_rxq(&mvm->fwrt);
 	if (ret)
 		goto error;
@@ -1582,7 +1522,7 @@ int iwl_mvm_up(struct iwl_mvm *mvm)
 		}
 	}
 
-	/* init the fw <-> mac80211 STA mapping */
+	 
 	for (i = 0; i < mvm->fw->ucode_capa.num_stations; i++) {
 		RCU_INIT_POINTER(mvm->fw_id_to_mac_id[i], NULL);
 		RCU_INIT_POINTER(mvm->fw_id_to_link_sta[i], NULL);
@@ -1595,7 +1535,7 @@ int iwl_mvm_up(struct iwl_mvm *mvm)
 
 	mvm->tdls_cs.peer.sta_id = IWL_MVM_INVALID_STA;
 
-	/* reset quota debouncing buffer - 0xff will yield invalid data */
+	 
 	memset(&mvm->last_quota_cmd, 0xff, sizeof(mvm->last_quota_cmd));
 
 	if (fw_has_capa(&mvm->fw->ucode_capa, IWL_UCODE_TLV_CAPA_DQA_SUPPORT)) {
@@ -1604,23 +1544,15 @@ int iwl_mvm_up(struct iwl_mvm *mvm)
 			goto error;
 	}
 
-	/*
-	 * Add auxiliary station for scanning.
-	 * Newer versions of this command implies that the fw uses
-	 * internal aux station for all aux activities that don't
-	 * requires a dedicated data queue.
-	 */
+	 
 	if (!iwl_mvm_has_new_station_api(mvm->fw)) {
-		 /*
-		  * In old version the aux station uses mac id like other
-		  * station and not lmac id
-		  */
+		  
 		ret = iwl_mvm_add_aux_sta(mvm, MAC_INDEX_AUX);
 		if (ret)
 			goto error;
 	}
 
-	/* Add all the PHY contexts */
+	 
 	i = 0;
 	while (!sband && i < NUM_NL80211_BANDS)
 		sband = mvm->hw->wiphy->bands[i++];
@@ -1634,11 +1566,7 @@ int iwl_mvm_up(struct iwl_mvm *mvm)
 
 	cfg80211_chandef_create(&chandef, chan, NL80211_CHAN_NO_HT);
 	for (i = 0; i < NUM_PHY_CTX; i++) {
-		/*
-		 * The channel used here isn't relevant as it's
-		 * going to be overwritten in the other flows.
-		 * For now use the first channel we have.
-		 */
+		 
 		ret = iwl_mvm_phy_ctxt_add(mvm, &mvm->phy_ctxts[i],
 					   &chandef, 1, 1);
 		if (ret)
@@ -1646,23 +1574,17 @@ int iwl_mvm_up(struct iwl_mvm *mvm)
 	}
 
 	if (iwl_mvm_is_tt_in_fw(mvm)) {
-		/* in order to give the responsibility of ct-kill and
-		 * TX backoff to FW we need to send empty temperature reporting
-		 * cmd during init time
-		 */
+		 
 		iwl_mvm_send_temp_report_ths_cmd(mvm);
 	} else {
-		/* Initialize tx backoffs to the minimal possible */
+		 
 		iwl_mvm_tt_tx_backoff(mvm, 0);
 	}
 
 #ifdef CONFIG_THERMAL
-	/* TODO: read the budget from BIOS / Platform NVM */
+	 
 
-	/*
-	 * In case there is no budget from BIOS / Platform NVM the default
-	 * budget should be 2000mW (cooling state 0).
-	 */
+	 
 	if (iwl_mvm_is_ctdp_supported(mvm)) {
 		ret = iwl_mvm_ctdp_command(mvm, CTDP_CMD_OPERATION_START,
 					   mvm->cooling_dev.cur_state);
@@ -1678,10 +1600,7 @@ int iwl_mvm_up(struct iwl_mvm *mvm)
 	if (ret)
 		goto error;
 
-	/*
-	 * RTNL is not taken during Ct-kill, but we don't need to scan/Tx
-	 * anyway, so don't init MCC.
-	 */
+	 
 	if (!test_bit(IWL_MVM_STATUS_HW_CTKILL, &mvm->status)) {
 		ret = iwl_mvm_init_mcc(mvm);
 		if (ret)
@@ -1763,7 +1682,7 @@ int iwl_mvm_load_d3_fw(struct iwl_mvm *mvm)
 	if (ret)
 		goto error;
 
-	/* Send phy db control command and then phy db calibration*/
+	 
 	ret = iwl_send_phy_db_data(mvm->phy_db);
 	if (ret)
 		goto error;
@@ -1772,21 +1691,14 @@ int iwl_mvm_load_d3_fw(struct iwl_mvm *mvm)
 	if (ret)
 		goto error;
 
-	/* init the fw <-> mac80211 STA mapping */
+	 
 	for (i = 0; i < mvm->fw->ucode_capa.num_stations; i++) {
 		RCU_INIT_POINTER(mvm->fw_id_to_mac_id[i], NULL);
 		RCU_INIT_POINTER(mvm->fw_id_to_link_sta[i], NULL);
 	}
 
 	if (!iwl_mvm_has_new_station_api(mvm->fw)) {
-		/*
-		 * Add auxiliary station for scanning.
-		 * Newer versions of this command implies that the fw uses
-		 * internal aux station for all aux activities that don't
-		 * requires a dedicated data queue.
-		 * In old version the aux station uses mac id like other
-		 * station and not lmac id
-		 */
+		 
 		ret = iwl_mvm_add_aux_sta(mvm, MAC_INDEX_AUX);
 		if (ret)
 			goto error;

@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// loongson_i2s_pci.c -- Loongson I2S controller driver
-//
-// Copyright (C) 2023 Loongson Technology Corporation Limited
-// Author: Yingkun Meng <mengyingkun@loongson.cn>
-//
+
+
+
+
+
+
+
 
 #include <linux/module.h>
 #include <linux/delay.h>

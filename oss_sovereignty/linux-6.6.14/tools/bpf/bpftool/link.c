@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-/* Copyright (C) 2020 Facebook */
+
+ 
 
 #include <errno.h>
 #include <linux/err.h>
@@ -186,7 +186,7 @@ static const char *cgroup_order_string(__u32 order)
 		return "descendants_post";
 	case BPF_CGROUP_ITER_ANCESTORS_UP:
 		return "ancestors_up";
-	default: /* won't happen */
+	default:  
 		return "unknown";
 	}
 }
@@ -270,7 +270,7 @@ show_kprobe_multi_json(struct bpf_link_info *info, json_writer_t *wtr)
 	addrs = u64_to_ptr(info->kprobe_multi.addrs);
 	qsort(addrs, info->kprobe_multi.count, sizeof(addrs[0]), cmp_u64);
 
-	/* Load it once for all. */
+	 
 	if (!dd.sym_count)
 		kernel_syms_load(&dd);
 	for (i = 0; i < dd.sym_count; i++) {
@@ -279,7 +279,7 @@ show_kprobe_multi_json(struct bpf_link_info *info, json_writer_t *wtr)
 		jsonw_start_object(json_wtr);
 		jsonw_uint_field(json_wtr, "addr", dd.sym_mapping[i].address);
 		jsonw_string_field(json_wtr, "func", dd.sym_mapping[i].name);
-		/* Print null if it is vmlinux */
+		 
 		if (dd.sym_mapping[i].module[0] == '\0') {
 			jsonw_name(json_wtr, "module");
 			jsonw_null(json_wtr);
@@ -418,7 +418,7 @@ static int show_link_close_json(int fd, struct bpf_link_info *info)
 			return err;
 
 		prog_type_str = libbpf_bpf_prog_type_str(prog_info.type);
-		/* libbpf will return NULL for variants unknown to it. */
+		 
 		if (prog_type_str)
 			jsonw_string_field(json_wtr, "prog_type", prog_type_str);
 		else
@@ -598,7 +598,7 @@ void netfilter_dump_plain(const struct bpf_link_info *info)
 		pfname = pf2name[pf];
 
 	switch (pf) {
-	case NFPROTO_BRIDGE: /* bridge shares numbers with enum nf_inet_hooks */
+	case NFPROTO_BRIDGE:  
 	case NFPROTO_IPV4:
 	case NFPROTO_IPV6:
 	case NFPROTO_INET:
@@ -644,7 +644,7 @@ static void show_kprobe_multi_plain(struct bpf_link_info *info)
 	addrs = (__u64 *)u64_to_ptr(info->kprobe_multi.addrs);
 	qsort(addrs, info->kprobe_multi.count, sizeof(__u64), cmp_u64);
 
-	/* Load it once for all. */
+	 
 	if (!dd.sym_count)
 		kernel_syms_load(&dd);
 	if (!dd.sym_count)
@@ -754,7 +754,7 @@ static int show_link_close_plain(int fd, struct bpf_link_info *info)
 			return err;
 
 		prog_type_str = libbpf_bpf_prog_type_str(prog_info.type);
-		/* libbpf will return NULL for variants unknown to it. */
+		 
 		if (prog_type_str)
 			printf("\n\tprog_type %s  ", prog_type_str);
 		else

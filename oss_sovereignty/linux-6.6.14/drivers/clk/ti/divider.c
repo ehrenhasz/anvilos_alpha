@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * TI Divider Clock
- *
- * Copyright (C) 2013 Texas Instruments, Inc.
- *
- * Tero Kristo <t-kristo@ti.com>
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/slab.h>
@@ -110,10 +104,7 @@ static unsigned long ti_clk_divider_recalc_rate(struct clk_hw *hw,
 	return DIV_ROUND_UP(parent_rate, div);
 }
 
-/*
- * The reverse of DIV_ROUND_UP: The maximum number which
- * divided by m is r
- */
+ 
 #define MULT_ROUND_UP(r, m) ((r) * (m) + (m) - 1)
 
 static bool _is_valid_table_div(const struct clk_div_table *table,
@@ -186,21 +177,14 @@ static int ti_clk_divider_bestdiv(struct clk_hw *hw, unsigned long rate,
 		return bestdiv;
 	}
 
-	/*
-	 * The maximum divider we can use without overflowing
-	 * unsigned long in rate * i below
-	 */
+	 
 	maxdiv = min(ULONG_MAX / rate, maxdiv);
 
 	for (i = 1; i <= maxdiv; i++) {
 		if (!_is_valid_div(divider, i))
 			continue;
 		if (rate * i == parent_rate_saved) {
-			/*
-			 * It's the most ideal case if the requested rate can be
-			 * divided from parent clock without needing to change
-			 * parent rate, so return the divider immediately.
-			 */
+			 
 			*best_parent_rate = parent_rate_saved;
 			return i;
 		}
@@ -263,12 +247,7 @@ static int ti_clk_divider_set_rate(struct clk_hw *hw, unsigned long rate,
 	return 0;
 }
 
-/**
- * clk_divider_save_context - Save the divider value
- * @hw: pointer  struct clk_hw
- *
- * Save the divider value
- */
+ 
 static int clk_divider_save_context(struct clk_hw *hw)
 {
 	struct clk_omap_divider *divider = to_clk_omap_divider(hw);
@@ -280,12 +259,7 @@ static int clk_divider_save_context(struct clk_hw *hw)
 	return 0;
 }
 
-/**
- * clk_divider_restore_context - restore the saved the divider value
- * @hw: pointer  struct clk_hw
- *
- * Restore the saved the divider value
- */
+ 
 static void clk_divider_restore_context(struct clk_hw *hw)
 {
 	struct clk_omap_divider *divider = to_clk_omap_divider(hw);
@@ -324,7 +298,7 @@ static struct clk *_register_divider(struct device_node *node,
 
 	div->hw.init = &init;
 
-	/* register the clock */
+	 
 	return of_ti_clk_register(node, &div->hw, name);
 }
 
@@ -399,7 +373,7 @@ static int __init ti_clk_get_div_table(struct device_node *node,
 
 	valid_div = 0;
 
-	/* Determine required size for divider table */
+	 
 	for (i = 0; i < num_div; i++) {
 		of_property_read_u32_index(node, "ti,dividers", i, &val);
 		if (val)
@@ -440,7 +414,7 @@ static int _populate_divider_min_max(struct device_node *node,
 	const struct clk_div_table *clkt;
 
 	if (!divider->table) {
-		/* Clk divider table not provided, determine min/max divs */
+		 
 		if (of_property_read_u32(node, "ti,min-div", &min_div))
 			min_div = 1;
 
@@ -506,12 +480,7 @@ static int __init ti_clk_divider_populate(struct device_node *node,
 	return _populate_divider_min_max(node, div);
 }
 
-/**
- * of_ti_divider_clk_setup - Setup function for simple div rate clock
- * @node: device node for this clock
- *
- * Sets up a basic divider clock.
- */
+ 
 static void __init of_ti_divider_clk_setup(struct device_node *node)
 {
 	struct clk *clk;

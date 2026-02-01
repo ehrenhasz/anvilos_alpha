@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
-    Vertical Blank Interval support functions
-    Copyright (C) 2004-2007  Hans Verkuil <hverkuil@xs4all.nl>
-
- */
+ 
+ 
 
 #ifndef IVTV_VBI_H
 #define IVTV_VBI_H

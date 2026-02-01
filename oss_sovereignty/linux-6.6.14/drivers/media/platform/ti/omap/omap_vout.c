@@ -1,33 +1,4 @@
-/*
- * omap_vout.c
- *
- * Copyright (C) 2005-2010 Texas Instruments.
- *
- * This file is licensed under the terms of the GNU General Public License
- * version 2. This program is licensed "as is" without any warranty of any
- * kind, whether express or implied.
- *
- * Leveraged code from the OMAP2 camera driver
- * Video-for-Linux (Version 2) camera capture driver for
- * the OMAP24xx camera controller.
- *
- * Author: Andy Lowe (source@mvista.com)
- *
- * Copyright (C) 2004 MontaVista Software, Inc.
- * Copyright (C) 2010 Texas Instruments.
- *
- * History:
- * 20-APR-2006 Khasim		Modified VRFB based Rotation,
- *				The image data is always read from 0 degree
- *				view and written
- *				to the virtual space of desired rotation angle
- * 4-DEC-2006  Jian		Changed to support better memory management
- *
- * 17-Nov-2008 Hardik		Changed driver to use video_ioctl2
- *
- * 23-Feb-2010 Vaibhav H	Modified to use new DSS2 interface
- *
- */
+ 
 
 #include <linux/init.h>
 #include <linux/module.h>
@@ -55,7 +26,7 @@ MODULE_AUTHOR("Texas Instruments");
 MODULE_DESCRIPTION("OMAP Video for Linux Video out driver");
 MODULE_LICENSE("GPL");
 
-/* Driver Configuration macros */
+ 
 #define VOUT_NAME		"omap_vout"
 
 enum omap_vout_channels {
@@ -63,12 +34,12 @@ enum omap_vout_channels {
 	OMAP_VIDEO2,
 };
 
-/* Variables configurable through module params*/
+ 
 static bool vid1_static_vrfb_alloc;
 static bool vid2_static_vrfb_alloc;
 static bool debug;
 
-/* Module parameters */
+ 
 module_param(vid1_static_vrfb_alloc, bool, S_IRUGO);
 MODULE_PARM_DESC(vid1_static_vrfb_alloc,
 	"Static allocation of the VRFB buffer for video1 device");
@@ -80,32 +51,18 @@ MODULE_PARM_DESC(vid2_static_vrfb_alloc,
 module_param(debug, bool, S_IRUGO);
 MODULE_PARM_DESC(debug, "Debug level (0-1)");
 
-/* list of image formats supported by OMAP2 video pipelines */
+ 
 static const struct v4l2_fmtdesc omap_formats[] = {
 	{
-		/* Note:  V4L2 defines RGB565 as:
-		 *
-		 *      Byte 0                    Byte 1
-		 *      g2 g1 g0 r4 r3 r2 r1 r0   b4 b3 b2 b1 b0 g5 g4 g3
-		 *
-		 * We interpret RGB565 as:
-		 *
-		 *      Byte 0                    Byte 1
-		 *      g2 g1 g0 b4 b3 b2 b1 b0   r4 r3 r2 r1 r0 g5 g4 g3
-		 */
+		 
 		.pixelformat = V4L2_PIX_FMT_RGB565,
 	},
 	{
-		/* Note:  V4L2 defines RGB32 as: RGB-8-8-8-8  we use
-		 *  this for RGB24 unpack mode, the last 8 bits are ignored
-		 * */
+		 
 		.pixelformat = V4L2_PIX_FMT_RGB32,
 	},
 	{
-		/* Note:  V4L2 defines RGB24 as: RGB-8-8-8  we use
-		 *        this for RGB24 packed mode
-		 *
-		 */
+		 
 		.pixelformat = V4L2_PIX_FMT_RGB24,
 	},
 	{
@@ -118,9 +75,7 @@ static const struct v4l2_fmtdesc omap_formats[] = {
 
 #define NUM_OUTPUT_FORMATS (ARRAY_SIZE(omap_formats))
 
-/*
- * Try format
- */
+ 
 static int omap_vout_try_format(struct v4l2_pix_format *pix)
 {
 	int ifmt, bpp = 0;
@@ -168,11 +123,7 @@ static int omap_vout_try_format(struct v4l2_pix_format *pix)
 	return bpp;
 }
 
-/*
- * Convert V4L2 rotation to DSS rotation
- *	V4L2 understand 0, 90, 180, 270.
- *	Convert to 0, 1, 2 and 3 respectively for DSS
- */
+ 
 static int v4l2_rot_to_dss_rot(int v4l2_rotation,
 			enum dss_rotation *rotation, bool mirror)
 {
@@ -232,9 +183,7 @@ static int omap_vout_calculate_offset(struct omap_vout_device *vout)
 	return 0;
 }
 
-/*
- * Convert V4L2 pixel format to DSS pixel format
- */
+ 
 static int video_mode_to_dss_mode(struct omap_vout_device *vout)
 {
 	struct omap_overlay *ovl;
@@ -272,9 +221,7 @@ static int video_mode_to_dss_mode(struct omap_vout_device *vout)
 	return mode;
 }
 
-/*
- * Setup the overlay
- */
+ 
 static int omapvid_setup_overlay(struct omap_vout_device *vout,
 		struct omap_overlay *ovl, int posx, int posy, int outw,
 		int outh, dma_addr_t addr)
@@ -295,9 +242,7 @@ static int omapvid_setup_overlay(struct omap_vout_device *vout,
 		goto setup_ovl_err;
 	}
 
-	/* Setup the input plane parameters according to
-	 * rotation value selected.
-	 */
+	 
 	if (is_rotation_90_or_270(vout)) {
 		cropheight = vout->crop.width;
 		cropwidth = vout->crop.height;
@@ -349,9 +294,7 @@ setup_ovl_err:
 	return ret;
 }
 
-/*
- * Initialize the overlay structure
- */
+ 
 static int omapvid_init(struct omap_vout_device *vout, dma_addr_t addr)
 {
 	int ret = 0, i;
@@ -377,9 +320,7 @@ static int omapvid_init(struct omap_vout_device *vout, dma_addr_t addr)
 		outh = win->w.height;
 		switch (vout->rotation) {
 		case dss_rotation_90_degree:
-			/* Invert the height and width for 90
-			 * and 270 degree rotation
-			 */
+			 
 			swap(outw, outh);
 			posy = (timing->y_res - win->w.width) - win->w.left;
 			posx = win->w.top;
@@ -414,9 +355,7 @@ omapvid_init_err:
 	return ret;
 }
 
-/*
- * Apply the changes set the go bit of DSS
- */
+ 
 static int omapvid_apply_changes(struct omap_vout_device *vout)
 {
 	int i;
@@ -492,7 +431,7 @@ static void omap_vout_isr(void *arg, unsigned int irqstatus)
 
 	mgr_id = ovl->manager->id;
 
-	/* get the display device attached to the overlay */
+	 
 	cur_display = ovl->get_device(ovl);
 
 	if (!cur_display)
@@ -547,7 +486,7 @@ static void omap_vout_isr(void *arg, unsigned int irqstatus)
 	addr = vout->queued_buf_addr[vout->next_frm->vbuf.vb2_buf.index]
 		+ vout->cropped_offset;
 
-	/* First save the configuration in ovelray structure */
+	 
 	ret = omapvid_init(vout, addr);
 	if (ret) {
 		printk(KERN_ERR VOUT_NAME
@@ -555,7 +494,7 @@ static void omap_vout_isr(void *arg, unsigned int irqstatus)
 		goto vout_isr_err;
 	}
 
-	/* Enable the pipeline and set the Go bit */
+	 
 	ret = omapvid_apply_changes(vout);
 	if (ret)
 		printk(KERN_ERR VOUT_NAME "failed to change mode\n");
@@ -565,9 +504,7 @@ vout_isr_err:
 }
 
 
-/*
- * V4L2 ioctls
- */
+ 
 static int vidioc_querycap(struct file *file, void *fh,
 		struct v4l2_capability *cap)
 {
@@ -615,7 +552,7 @@ static int vidioc_try_fmt_vid_out(struct file *file, void *fh,
 
 	ovid = &vout->vid_info;
 	ovl = ovid->overlays[0];
-	/* get the display device attached to the overlay */
+	 
 	dssdev = ovl->get_device(ovl);
 
 	if (!dssdev)
@@ -647,22 +584,21 @@ static int vidioc_s_fmt_vid_out(struct file *file, void *fh,
 	ovl = ovid->overlays[0];
 	dssdev = ovl->get_device(ovl);
 
-	/* get the display device attached to the overlay */
+	 
 	if (!dssdev) {
 		ret = -EINVAL;
 		goto s_fmt_vid_out_exit;
 	}
 	timing = &dssdev->panel.timings;
 
-	/* We don't support RGB24-packed mode if vrfb rotation
-	 * is enabled*/
+	 
 	if ((is_rotation_enabled(vout)) &&
 			f->fmt.pix.pixelformat == V4L2_PIX_FMT_RGB24) {
 		ret = -EINVAL;
 		goto s_fmt_vid_out_exit;
 	}
 
-	/* get the framebuffer parameters */
+	 
 
 	if (is_rotation_90_or_270(vout)) {
 		vout->fbuf.fmt.height = timing->x_res;
@@ -672,22 +608,22 @@ static int vidioc_s_fmt_vid_out(struct file *file, void *fh,
 		vout->fbuf.fmt.width = timing->x_res;
 	}
 
-	/* change to smaller size is OK */
+	 
 
 	bpp = omap_vout_try_format(&f->fmt.pix);
 	f->fmt.pix.sizeimage = f->fmt.pix.width * f->fmt.pix.height * bpp;
 
-	/* try & set the new output format */
+	 
 	vout->bpp = bpp;
 	vout->pix = f->fmt.pix;
 	vout->vrfb_bpp = 1;
 
-	/* If YUYV then vrfb bpp is 2, for  others its 1 */
+	 
 	if (V4L2_PIX_FMT_YUYV == vout->pix.pixelformat ||
 			V4L2_PIX_FMT_UYVY == vout->pix.pixelformat)
 		vout->vrfb_bpp = 2;
 
-	/* set default crop and win */
+	 
 	omap_vout_new_format(&vout->pix, &vout->fbuf, &vout->crop, &vout->win);
 
 	ret = 0;
@@ -734,7 +670,7 @@ static int vidioc_s_fmt_vid_overlay(struct file *file, void *fh,
 			OMAP_DSS_COLOR_KEY_GFX_DST;
 		int enable;
 
-		/* Video1 plane does not support global alpha on OMAP3 */
+		 
 		if (ovl->caps & OMAP_DSS_OVL_CAP_GLOBAL_ALPHA)
 			vout->win.global_alpha = win->global_alpha;
 		else
@@ -803,7 +739,7 @@ static int vidioc_g_selection(struct file *file, void *fh, struct v4l2_selection
 		omap_vout_default_crop(&vout->pix, &vout->fbuf, &sel->r);
 		break;
 	case V4L2_SEL_TGT_CROP_BOUNDS:
-		/* Width and height are always even */
+		 
 		sel->r.width = pix->width & ~1;
 		sel->r.height = pix->height & ~1;
 		break;
@@ -833,7 +769,7 @@ static int vidioc_s_selection(struct file *file, void *fh, struct v4l2_selection
 
 	ovid = &vout->vid_info;
 	ovl = ovid->overlays[0];
-	/* get the display device attached to the overlay */
+	 
 	dssdev = ovl->get_device(ovl);
 
 	if (!dssdev) {
@@ -1000,12 +936,12 @@ static int omap_vout_vb2_start_streaming(struct vb2_queue *vq, unsigned int coun
 	u32 mask = 0;
 	int ret, j;
 
-	/* Get the next frame from the buffer queue */
+	 
 	vout->next_frm = vout->cur_frm = list_entry(vout->dma_queue.next,
 			struct omap_vout_buffer, queue);
-	/* Remove buffer from the buffer queue */
+	 
 	list_del(&vout->cur_frm->queue);
-	/* Initialize field_id and started member */
+	 
 	vout->field_id = 0;
 	vout->first_int = 1;
 	vout->sequence = 0;
@@ -1026,7 +962,7 @@ static int omap_vout_vb2_start_streaming(struct vb2_queue *vq, unsigned int coun
 	mask = DISPC_IRQ_VSYNC | DISPC_IRQ_EVSYNC_EVEN | DISPC_IRQ_EVSYNC_ODD
 		| DISPC_IRQ_VSYNC2;
 
-	/* First save the configuration in overlay structure */
+	 
 	ret = omapvid_init(vout, addr);
 	if (ret) {
 		v4l2_err(&vout->vid_dev->v4l2_dev,
@@ -1036,7 +972,7 @@ static int omap_vout_vb2_start_streaming(struct vb2_queue *vq, unsigned int coun
 
 	omap_dispc_register_isr(omap_vout_isr, vout, mask);
 
-	/* Enable the pipeline and set the Go bit */
+	 
 	ret = omapvid_apply_changes(vout);
 	if (ret)
 		v4l2_err(&vout->vid_dev->v4l2_dev, "failed to change mode\n");
@@ -1066,7 +1002,7 @@ streamon_err1:
 		if (dssdev)
 			ovl->disable(ovl);
 	}
-	/* Turn of the pipeline */
+	 
 	if (omapvid_apply_changes(vout))
 		v4l2_err(&vout->vid_dev->v4l2_dev,
 			 "failed to change mode in streamoff\n");
@@ -1100,7 +1036,7 @@ static void omap_vout_vb2_stop_streaming(struct vb2_queue *vq)
 		if (dssdev)
 			ovl->disable(ovl);
 	}
-	/* Turn of the pipeline */
+	 
 	if (omapvid_apply_changes(vout))
 		v4l2_err(&vout->vid_dev->v4l2_dev,
 			 "failed to change mode in streamoff\n");
@@ -1127,13 +1063,11 @@ static int vidioc_s_fbuf(struct file *file, void *fh,
 	ovid = &vout->vid_info;
 	ovl = ovid->overlays[0];
 
-	/* OMAP DSS doesn't support Source and Destination color
-	   key together */
+	 
 	if ((a->flags & V4L2_FBUF_FLAG_SRC_CHROMAKEY) &&
 			(a->flags & V4L2_FBUF_FLAG_CHROMAKEY))
 		return -EINVAL;
-	/* OMAP DSS Doesn't support the Destination color key
-	   and alpha blending together */
+	 
 	if ((a->flags & V4L2_FBUF_FLAG_CHROMAKEY) &&
 			(a->flags & V4L2_FBUF_FLAG_LOCAL_ALPHA))
 		return -EINVAL;
@@ -1176,7 +1110,7 @@ static int vidioc_s_fbuf(struct file *file, void *fh,
 	if (ovl->manager && ovl->manager->get_manager_info &&
 			ovl->manager->set_manager_info) {
 		ovl->manager->get_manager_info(ovl->manager, &info);
-		/* enable this only if there is no zorder cap */
+		 
 		if ((ovl->caps & OMAP_DSS_OVL_CAP_ZORDER) == 0)
 			info.partial_alpha_enabled = enable;
 		if (ovl->manager->set_manager_info(ovl->manager, &info))
@@ -1198,7 +1132,7 @@ static int vidioc_g_fbuf(struct file *file, void *fh,
 
 	ovid = &vout->vid_info;
 	ovl = ovid->overlays[0];
-	/* get the display device attached to the overlay */
+	 
 	dssdev = ovl->get_device(ovl);
 
 	if (!dssdev)
@@ -1303,8 +1237,8 @@ static const struct vb2_ops omap_vout_vb2_ops = {
 	.wait_finish		= vb2_ops_wait_finish,
 };
 
-/* Init functions used during driver initialization */
-/* Initial setup of video_data */
+ 
+ 
 static int __init omap_vout_setup_video_data(struct omap_vout_device *vout)
 {
 	struct video_device *vfd;
@@ -1315,14 +1249,14 @@ static int __init omap_vout_setup_video_data(struct omap_vout_device *vout)
 	struct vb2_queue *vq;
 	int ret;
 
-	/* set the default pix */
+	 
 	pix = &vout->pix;
 
-	/* Set the default picture of QVGA  */
+	 
 	pix->width = QQVGA_WIDTH;
 	pix->height = QQVGA_HEIGHT;
 
-	/* Default pixel format is RGB 5-6-5 */
+	 
 	pix->pixelformat = V4L2_PIX_FMT_RGB565;
 	pix->field = V4L2_FIELD_NONE;
 	pix->bytesperline = pix->width * 2;
@@ -1334,7 +1268,7 @@ static int __init omap_vout_setup_video_data(struct omap_vout_device *vout)
 	vout->fbuf.fmt.height =  display->panel.timings.y_res;
 	vout->cropped_offset = 0;
 
-	/* Set the data structures for the overlay parameters*/
+	 
 	vout->fbuf.flags = V4L2_FBUF_FLAG_OVERLAY;
 	vout->fbuf.capability = V4L2_FBUF_CAP_LOCAL_ALPHA |
 		V4L2_FBUF_CAP_SRC_CHROMAKEY | V4L2_FBUF_CAP_CHROMAKEY |
@@ -1369,7 +1303,7 @@ static int __init omap_vout_setup_video_data(struct omap_vout_device *vout)
 	if (vout->vid_info.rotation_type == VOUT_ROT_VRFB)
 		vout->vrfb_bpp = 2;
 
-	/* initialize the video_device struct */
+	 
 	vfd = vout->vfd = video_device_alloc();
 
 	if (!vfd) {
@@ -1414,7 +1348,7 @@ static int __init omap_vout_setup_video_data(struct omap_vout_device *vout)
 	return ret;
 }
 
-/* Setup video buffers */
+ 
 static int __init omap_vout_setup_video_bufs(struct platform_device *pdev,
 		int vid_num)
 {
@@ -1437,7 +1371,7 @@ static int __init omap_vout_setup_video_bufs(struct platform_device *pdev,
 	return ret;
 }
 
-/* Create video out devices */
+ 
 static int __init omap_vout_create_video_devices(struct platform_device *pdev)
 {
 	int ret = 0, k;
@@ -1462,45 +1396,35 @@ static int __init omap_vout_create_video_devices(struct platform_device *pdev)
 		vout->vid = k;
 		vid_dev->vouts[k] = vout;
 		vout->vid_dev = vid_dev;
-		/* Select video2 if only 1 overlay is controlled by V4L2 */
+		 
 		if (pdev->num_resources == 1)
 			vout->vid_info.overlays[0] = vid_dev->overlays[k + 2];
 		else
-			/* Else select video1 and video2 one by one. */
+			 
 			vout->vid_info.overlays[0] = vid_dev->overlays[k + 1];
 		vout->vid_info.num_overlays = 1;
 		vout->vid_info.id = k + 1;
 		spin_lock_init(&vout->vbq_lock);
-		/*
-		 * Set the framebuffer base, this allows applications to find
-		 * the fb corresponding to this overlay.
-		 *
-		 * To be precise: fbuf.base should match smem_start of
-		 * struct fb_fix_screeninfo.
-		 */
+		 
 		vout->fbuf.base = (void *)(uintptr_t)info.paddr;
 
-		/* Set VRFB as rotation_type for omap2 and omap3 */
+		 
 		if (omap_vout_dss_omap24xx() || omap_vout_dss_omap34xx())
 			vout->vid_info.rotation_type = VOUT_ROT_VRFB;
 
-		/* Setup the default configuration for the video devices
-		 */
+		 
 		if (omap_vout_setup_video_data(vout) != 0) {
 			ret = -ENOMEM;
 			goto error;
 		}
 
-		/* Allocate default number of buffers for the video streaming
-		 * and reserve the VRFB space for rotation
-		 */
+		 
 		if (omap_vout_setup_video_bufs(pdev, k) != 0) {
 			ret = -ENOMEM;
 			goto error1;
 		}
 
-		/* Register the Video device with V4L2
-		 */
+		 
 		vfd = vout->vfd;
 		if (video_register_device(vfd, VFL_TYPE_VIDEO, -1) < 0) {
 			dev_err(&pdev->dev,
@@ -1530,7 +1454,7 @@ error:
 
 	return -ENODEV;
 }
-/* Driver functions */
+ 
 static void omap_vout_cleanup_device(struct omap_vout_device *vout)
 {
 	struct video_device *vfd;
@@ -1543,25 +1467,17 @@ static void omap_vout_cleanup_device(struct omap_vout_device *vout)
 	ovid = &vout->vid_info;
 	if (vfd) {
 		if (!video_is_registered(vfd)) {
-			/*
-			 * The device was never registered, so release the
-			 * video_device struct directly.
-			 */
+			 
 			video_device_release(vfd);
 		} else {
-			/*
-			 * The unregister function will release the video_device
-			 * struct as well as unregistering it.
-			 */
+			 
 			video_unregister_device(vfd);
 		}
 	}
 	v4l2_ctrl_handler_free(&vout->ctrl_handler);
 	if (ovid->rotation_type == VOUT_ROT_VRFB) {
 		omap_vout_release_vrfb(vout);
-		/* Free the VRFB buffer if allocated
-		 * init time
-		 */
+		 
 		if (vout->vrfb_static_allocation)
 			omap_vout_free_vrfb_buffers(vout);
 	}
@@ -1646,9 +1562,7 @@ static int __init omap_vout_probe(struct platform_device *pdev)
 	for (i = 0; i < vid_dev->num_managers; i++)
 		vid_dev->managers[i] = omap_dss_get_overlay_manager(i);
 
-	/* Get the Video1 overlay and video2 overlay.
-	 * Setup the Display attached to that overlays
-	 */
+	 
 	for (i = 1; i < vid_dev->num_overlays; i++) {
 		ovl = omap_dss_get_overlay(i);
 		dssdev = ovl->get_device(ovl);
@@ -1664,10 +1578,7 @@ static int __init omap_vout_probe(struct platform_device *pdev)
 
 			ret = dssdrv->enable(def_display);
 			if (ret) {
-				/* Here we are not considering a error
-				 *  as display may be enabled by frame
-				 *  buffer driver
-				 */
+				 
 				dev_warn(&pdev->dev,
 					"'%s' Display already enabled\n",
 					def_display->name);

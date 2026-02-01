@@ -1,15 +1,5 @@
 
-/*
- * jazz16.c - driver for Media Vision Jazz16 based soundcards.
- * Copyright (C) 2009 Krzysztof Helt <krzysztof.h1@wp.pl>
- * Based on patches posted by Rask Ingemann Lambertsen and Rene Herman.
- * Based on OSS Sound Blaster driver.
- *
- * This file is subject to the terms and conditions of the GNU General Public
- * License.  See the file COPYING in the main directory of this archive for
- * more details.
- *
- */
+ 
 
 #include <linux/init.h>
 #include <linux/module.h>
@@ -31,9 +21,9 @@ MODULE_DESCRIPTION("Media Vision Jazz16");
 MODULE_AUTHOR("Krzysztof Helt <krzysztof.h1@wp.pl>");
 MODULE_LICENSE("GPL");
 
-static int index[SNDRV_CARDS] = SNDRV_DEFAULT_IDX;	/* Index 0-MAX */
-static char *id[SNDRV_CARDS] = SNDRV_DEFAULT_STR;	/* ID for this card */
-static bool enable[SNDRV_CARDS] = SNDRV_DEFAULT_ENABLE;	/* Enable this card */
+static int index[SNDRV_CARDS] = SNDRV_DEFAULT_IDX;	 
+static char *id[SNDRV_CARDS] = SNDRV_DEFAULT_STR;	 
+static bool enable[SNDRV_CARDS] = SNDRV_DEFAULT_ENABLE;	 
 static unsigned long port[SNDRV_CARDS] = SNDRV_DEFAULT_PORT;
 static unsigned long mpu_port[SNDRV_CARDS] = SNDRV_DEFAULT_PORT;
 static int irq[SNDRV_CARDS] = SNDRV_DEFAULT_IRQ;
@@ -107,7 +97,7 @@ static int jazz16_detect_board(unsigned long port,
 		snd_printk(KERN_ERR "I/O port region is already in use.\n");
 		return -EBUSY;
 	}
-	/* just to call snd_sbdsp_command/reset/get_byte() */
+	 
 	chip.port = port;
 
 	err = snd_sbdsp_reset(&chip);

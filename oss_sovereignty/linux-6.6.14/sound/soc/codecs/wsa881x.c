@@ -1,6 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2015-2017, The Linux Foundation.
-// Copyright (c) 2019, Linaro Limited
+
+
+
 
 #include <linux/bitops.h>
 #include <linux/gpio.h>
@@ -18,7 +18,7 @@
 #define WSA881X_DIGITAL_BASE		0x3000
 #define WSA881X_ANALOG_BASE		0x3100
 
-/* Digital register address space */
+ 
 #define WSA881X_CHIP_ID0			(WSA881X_DIGITAL_BASE + 0x0000)
 #define WSA881X_CHIP_ID1			(WSA881X_DIGITAL_BASE + 0x0001)
 #define WSA881X_CHIP_ID2			(WSA881X_DIGITAL_BASE + 0x0002)
@@ -109,7 +109,7 @@
 #define WSA881X_OTP_REG_31			(WSA881X_DIGITAL_BASE + 0x009F)
 #define WSA881X_OTP_REG_63			(WSA881X_DIGITAL_BASE + 0x00BF)
 
-/* Analog Register address space */
+ 
 #define WSA881X_BIAS_REF_CTRL			(WSA881X_ANALOG_BASE + 0x0000)
 #define WSA881X_BIAS_TEST			(WSA881X_ANALOG_BASE + 0x0001)
 #define WSA881X_BIAS_BIAS			(WSA881X_ANALOG_BASE + 0x0002)
@@ -289,7 +289,7 @@ static struct reg_default wsa881x_defaults[] = {
 	{ WSA881X_OTP_REG_26, 0x03 },
 	{ WSA881X_OTP_REG_27, 0x11 },
 	{ WSA881X_OTP_REG_63, 0x40 },
-	/* WSA881x Analog registers */
+	 
 	{ WSA881X_BIAS_REF_CTRL, 0x6C },
 	{ WSA881X_BIAS_TEST, 0x16 },
 	{ WSA881X_BIAS_BIAS, 0xF0 },
@@ -350,7 +350,7 @@ static const struct reg_sequence wsa881x_vi_txfe_en_2_0[] = {
 	{ WSA881X_SPKR_PROT_FE_GAIN, 0x47, 0 },
 };
 
-/* Default register reset values for WSA881x rev 2.0 */
+ 
 static struct reg_sequence wsa881x_rev_2_0[] = {
 	{ WSA881X_RESET_CTL, 0x00, 0x00 },
 	{ WSA881X_TADC_VALUE_CTL, 0x01, 0x00 },
@@ -384,10 +384,10 @@ enum wsa_port_ids {
 	WSA881X_PORT_VISENSE,
 };
 
-/* 4 ports */
+ 
 static struct sdw_dpn_prop wsa_sink_dpn_prop[WSA881X_MAX_SWR_PORTS] = {
 	{
-		/* DAC */
+		 
 		.num = 1,
 		.type = SDW_DPN_SIMPLE,
 		.min_ch = 1,
@@ -395,7 +395,7 @@ static struct sdw_dpn_prop wsa_sink_dpn_prop[WSA881X_MAX_SWR_PORTS] = {
 		.simple_ch_prep_sm = true,
 		.read_only_wordlength = true,
 	}, {
-		/* COMP */
+		 
 		.num = 2,
 		.type = SDW_DPN_SIMPLE,
 		.min_ch = 1,
@@ -403,7 +403,7 @@ static struct sdw_dpn_prop wsa_sink_dpn_prop[WSA881X_MAX_SWR_PORTS] = {
 		.simple_ch_prep_sm = true,
 		.read_only_wordlength = true,
 	}, {
-		/* BOOST */
+		 
 		.num = 3,
 		.type = SDW_DPN_SIMPLE,
 		.min_ch = 1,
@@ -411,7 +411,7 @@ static struct sdw_dpn_prop wsa_sink_dpn_prop[WSA881X_MAX_SWR_PORTS] = {
 		.simple_ch_prep_sm = true,
 		.read_only_wordlength = true,
 	}, {
-		/* VISENSE */
+		 
 		.num = 4,
 		.type = SDW_DPN_SIMPLE,
 		.min_ch = 1,
@@ -431,7 +431,7 @@ static const struct sdw_port_config wsa881x_pconfig[WSA881X_MAX_SWR_PORTS] = {
 	}, {
 		.num = 3,
 		.ch_mask = 0x3,
-	}, {	/* IV feedback */
+	}, {	 
 		.num = 4,
 		.ch_mask = 0x3,
 	},
@@ -663,10 +663,7 @@ enum {
 	G_0DB,
 };
 
-/*
- * Private data Structure for wsa881x. All parameters related to
- * WSA881X codec needs to be defined here.
- */
+ 
 struct wsa881x_priv {
 	struct regmap *regmap;
 	struct device *dev;
@@ -675,10 +672,7 @@ struct wsa881x_priv {
 	struct sdw_stream_runtime *sruntime;
 	struct sdw_port_config port_config[WSA881X_MAX_SWR_PORTS];
 	struct gpio_desc *sd_n;
-	/*
-	 * Logical state for SD_N GPIO: high for shutdown, low for enable.
-	 * For backwards compatibility.
-	 */
+	 
 	unsigned int sd_n_val;
 	int version;
 	int active_ports;
@@ -695,13 +689,13 @@ static void wsa881x_init(struct wsa881x_priv *wsa881x)
 	regmap_register_patch(wsa881x->regmap, wsa881x_rev_2_0,
 			      ARRAY_SIZE(wsa881x_rev_2_0));
 
-	/* Enable software reset output from soundwire slave */
+	 
 	regmap_update_bits(rm, WSA881X_SWR_RESET_EN, 0x07, 0x07);
 
-	/* Bring out of analog reset */
+	 
 	regmap_update_bits(rm, WSA881X_CDC_RST_CTL, 0x02, 0x02);
 
-	/* Bring out of digital reset */
+	 
 	regmap_update_bits(rm, WSA881X_CDC_RST_CTL, 0x01, 0x01);
 	regmap_update_bits(rm, WSA881X_CLOCK_CONFIG, 0x10, 0x10);
 	regmap_update_bits(rm, WSA881X_SPKR_OCP_CTL, 0x02, 0x02);
@@ -755,18 +749,12 @@ static int wsa881x_put_pa_gain(struct snd_kcontrol *kc,
 		return ret;
 
 	max_gain = (max - ucontrol->value.integer.value[0]) & mask;
-	/*
-	 * Gain has to set incrementally in 4 steps
-	 * as per HW sequence
-	 */
+	 
 	if (max_gain > G_4P5DB)
 		min_gain = G_0DB;
 	else
 		min_gain = max_gain + 3;
-	/*
-	 * 1ms delay is needed before change in gain
-	 * as per HW requirement.
-	 */
+	 
 	usleep_range(1000, 1010);
 
 	for (val = min_gain; max_gain <= val; val--) {
@@ -810,10 +798,7 @@ static int wsa881x_boost_ctrl(struct snd_soc_component *comp, bool enable)
 	else
 		snd_soc_component_update_bits(comp, WSA881X_BOOST_EN_CTL,
 					      WSA881X_BOOST_EN_MASK, 0);
-	/*
-	 * 1.5ms sleep is needed after boost enable/disable as per
-	 * HW requirement
-	 */
+	 
 	usleep_range(1500, 1510);
 	return 0;
 }
@@ -839,7 +824,7 @@ static int wsa881x_set_port(struct snd_kcontrol *kcontrol,
 		data->port_enable[portidx] = false;
 	}
 
-	if (portidx == WSA881X_PORT_BOOST) /* Boost Switch */
+	if (portidx == WSA881X_PORT_BOOST)  
 		wsa881x_boost_ctrl(comp, data->port_enable[portidx]);
 
 	return 1;
@@ -894,10 +879,7 @@ static int wsa881x_visense_txfe_ctrl(struct snd_soc_component *comp,
 		snd_soc_component_update_bits(comp,
 					      WSA881X_SPKR_PROT_FE_VSENSE_VCM,
 					      0x08, 0x08);
-		/*
-		 * 200us sleep is needed after visense txfe disable as per
-		 * HW requirement.
-		 */
+		 
 		usleep_range(200, 210);
 		snd_soc_component_update_bits(comp, WSA881X_SPKR_PROT_FE_GAIN,
 					      0x01, 0x00);
@@ -1124,22 +1106,7 @@ static int wsa881x_probe(struct sdw_slave *pdev,
 		return dev_err_probe(dev, PTR_ERR(wsa881x->sd_n),
 				     "Shutdown Control GPIO not found\n");
 
-	/*
-	 * Backwards compatibility work-around.
-	 *
-	 * The SD_N GPIO is active low, however upstream DTS used always active
-	 * high.  Changing the flag in driver and DTS will break backwards
-	 * compatibility, so add a simple value inversion to work with both old
-	 * and new DTS.
-	 *
-	 * This won't work properly with DTS using the flags properly in cases:
-	 * 1. Old DTS with proper ACTIVE_LOW, however such case was broken
-	 *    before as the driver required the active high.
-	 * 2. New DTS with proper ACTIVE_HIGH (intended), which is rare case
-	 *    (not existing upstream) but possible. This is the price of
-	 *    backwards compatibility, therefore this hack should be removed at
-	 *    some point.
-	 */
+	 
 	wsa881x->sd_n_val = gpiod_is_active_low(wsa881x->sd_n);
 	if (!wsa881x->sd_n_val)
 		dev_warn(dev, "Using ACTIVE_HIGH for shutdown GPIO. Your DTB might be outdated or you use unsupported configuration for the GPIO.");

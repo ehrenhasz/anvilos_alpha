@@ -1,28 +1,5 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
-/*
- * Copyright (c) 2010, Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2012, 2019 by Delphix. All rights reserved.
- * Copyright (c) 2014 Spectra Logic Corporation, All rights reserved.
- */
+ 
+ 
 
 #include <sys/dmu.h>
 #include <sys/zap.h>
@@ -30,85 +7,14 @@
 #include <sys/dsl_pool.h>
 #include <sys/dsl_dataset.h>
 
-/*
- * Deadlist concurrency:
- *
- * Deadlists can only be modified from the syncing thread.
- *
- * Except for dsl_deadlist_insert(), it can only be modified with the
- * dp_config_rwlock held with RW_WRITER.
- *
- * The accessors (dsl_deadlist_space() and dsl_deadlist_space_range()) can
- * be called concurrently, from open context, with the dl_config_rwlock held
- * with RW_READER.
- *
- * Therefore, we only need to provide locking between dsl_deadlist_insert() and
- * the accessors, protecting:
- *     dl_phys->dl_used,comp,uncomp
- *     and protecting the dl_tree from being loaded.
- * The locking is provided by dl_lock.  Note that locking on the bpobj_t
- * provides its own locking, and dl_oldfmt is immutable.
- */
+ 
 
-/*
- * Livelist Overview
- * ================
- *
- * Livelists use the same 'deadlist_t' struct as deadlists and are also used
- * to track blkptrs over the lifetime of a dataset. Livelists however, belong
- * to clones and track the blkptrs that are clone-specific (were born after
- * the clone's creation). The exception is embedded block pointers which are
- * not included in livelists because they do not need to be freed.
- *
- * When it comes time to delete the clone, the livelist provides a quick
- * reference as to what needs to be freed. For this reason, livelists also track
- * when clone-specific blkptrs are freed before deletion to prevent double
- * frees. Each blkptr in a livelist is marked as a FREE or an ALLOC and the
- * deletion algorithm iterates backwards over the livelist, matching
- * FREE/ALLOC pairs and then freeing those ALLOCs which remain. livelists
- * are also updated in the case when blkptrs are remapped: the old version
- * of the blkptr is cancelled out with a FREE and the new version is tracked
- * with an ALLOC.
- *
- * To bound the amount of memory required for deletion, livelists over a
- * certain size are spread over multiple entries. Entries are grouped by
- * birth txg so we can be sure the ALLOC/FREE pair for a given blkptr will
- * be in the same entry. This allows us to delete livelists incrementally
- * over multiple syncs, one entry at a time.
- *
- * During the lifetime of the clone, livelists can get extremely large.
- * Their size is managed by periodic condensing (preemptively cancelling out
- * FREE/ALLOC pairs). Livelists are disabled when a clone is promoted or when
- * the shared space between the clone and its origin is so small that it
- * doesn't make sense to use livelists anymore.
- */
+ 
 
-/*
- * The threshold sublist size at which we create a new sub-livelist for the
- * next txg. However, since blkptrs of the same transaction group must be in
- * the same sub-list, the actual sublist size may exceed this. When picking the
- * size we had to balance the fact that larger sublists mean fewer sublists
- * (decreasing the cost of insertion) against the consideration that sublists
- * will be loaded into memory and shouldn't take up an inordinate amount of
- * space. We settled on ~500000 entries, corresponding to roughly 128M.
- */
+ 
 uint64_t zfs_livelist_max_entries = 500000;
 
-/*
- * We can approximate how much of a performance gain a livelist will give us
- * based on the percentage of blocks shared between the clone and its origin.
- * 0 percent shared means that the clone has completely diverged and that the
- * old method is maximally effective: every read from the block tree will
- * result in lots of frees. Livelists give us gains when they track blocks
- * scattered across the tree, when one read in the old method might only
- * result in a few frees. Once the clone has been overwritten enough,
- * writes are no longer sparse and we'll no longer get much of a benefit from
- * tracking them with a livelist. We chose a lower limit of 75 percent shared
- * (25 percent overwritten). This means that 1/4 of all block pointers will be
- * freed (e.g. each read frees 256, out of a max of 1024) so we expect livelists
- * to make deletion 4x faster. Once the amount of shared space drops below this
- * threshold, the clone will revert to the old deletion method.
- */
+ 
 int zfs_livelist_min_percent_shared = 75;
 
 static int
@@ -140,13 +46,7 @@ dsl_deadlist_load_tree(dsl_deadlist_t *dl)
 
 	ASSERT(!dl->dl_oldfmt);
 	if (dl->dl_havecache) {
-		/*
-		 * After loading the tree, the caller may modify the tree,
-		 * e.g. to add or remove nodes, or to make a node no longer
-		 * refer to the empty_bpobj.  These changes would make the
-		 * dl_cache incorrect.  Therefore we discard the cache here,
-		 * so that it can't become incorrect.
-		 */
+		 
 		dsl_deadlist_cache_entry_t *dlce;
 		void *cookie = NULL;
 		while ((dlce = avl_destroy_nodes(&dl->dl_cache, &cookie))
@@ -168,10 +68,7 @@ dsl_deadlist_load_tree(dsl_deadlist_t *dl)
 		dsl_deadlist_entry_t *dle = kmem_alloc(sizeof (*dle), KM_SLEEP);
 		dle->dle_mintxg = zfs_strtonum(za.za_name, NULL);
 
-		/*
-		 * Prefetch all the bpobj's so that we do that i/o
-		 * in parallel.  Then open them all in a second pass.
-		 */
+		 
 		dle->dle_bpobj.bpo_object = za.za_first_integer;
 		dmu_prefetch(dl->dl_os, dle->dle_bpobj.bpo_object,
 		    0, 0, 0, ZIO_PRIORITY_SYNC_READ);
@@ -189,20 +86,7 @@ dsl_deadlist_load_tree(dsl_deadlist_t *dl)
 	dl->dl_havetree = B_TRUE;
 }
 
-/*
- * Load only the non-empty bpobj's into the dl_cache.  The cache is an analog
- * of the dl_tree, but contains only non-empty_bpobj nodes from the ZAP. It
- * is used only for gathering space statistics.  The dl_cache has two
- * advantages over the dl_tree:
- *
- * 1. Loading the dl_cache is ~5x faster than loading the dl_tree (if it's
- * mostly empty_bpobj's), due to less CPU overhead to open the empty_bpobj
- * many times and to inquire about its (zero) space stats many times.
- *
- * 2. The dl_cache uses less memory than the dl_tree.  We only need to load
- * the dl_tree of snapshots when deleting a snapshot, after which we free the
- * dl_tree with dsl_deadlist_discard_tree
- */
+ 
 static void
 dsl_deadlist_load_cache(dsl_deadlist_t *dl)
 {
@@ -230,10 +114,7 @@ dsl_deadlist_load_cache(dsl_deadlist_t *dl)
 		    kmem_zalloc(sizeof (*dlce), KM_SLEEP);
 		dlce->dlce_mintxg = zfs_strtonum(za.za_name, NULL);
 
-		/*
-		 * Prefetch all the bpobj's so that we do that i/o
-		 * in parallel.  Then open them all in a second pass.
-		 */
+		 
 		dlce->dlce_bpobj = za.za_first_integer;
 		dmu_prefetch(dl->dl_os, dlce->dlce_bpobj,
 		    0, 0, 0, ZIO_PRIORITY_SYNC_READ);
@@ -254,9 +135,7 @@ dsl_deadlist_load_cache(dsl_deadlist_t *dl)
 	dl->dl_havecache = B_TRUE;
 }
 
-/*
- * Discard the tree to save memory.
- */
+ 
 void
 dsl_deadlist_discard_tree(dsl_deadlist_t *dl)
 {
@@ -438,9 +317,7 @@ dle_enqueue_subobj(dsl_deadlist_t *dl, dsl_deadlist_entry_t *dle,
 	}
 }
 
-/*
- * Prefetch metadata required for dle_enqueue_subobj().
- */
+ 
 static void
 dle_prefetch_subobj(dsl_deadlist_t *dl, dsl_deadlist_entry_t *dle,
     uint64_t obj)
@@ -508,10 +385,7 @@ dsl_deadlist_insert_free_cb(void *arg, const blkptr_t *bp, dmu_tx_t *tx)
 	return (0);
 }
 
-/*
- * Insert new key in deadlist, which must be > all current entries.
- * mintxg is not inclusive.
- */
+ 
 void
 dsl_deadlist_add_key(dsl_deadlist_t *dl, uint64_t mintxg, dmu_tx_t *tx)
 {
@@ -536,9 +410,7 @@ dsl_deadlist_add_key(dsl_deadlist_t *dl, uint64_t mintxg, dmu_tx_t *tx)
 	mutex_exit(&dl->dl_lock);
 }
 
-/*
- * Remove this key, merging its entries into the previous key.
- */
+ 
 void
 dsl_deadlist_remove_key(dsl_deadlist_t *dl, uint64_t mintxg, dmu_tx_t *tx)
 {
@@ -566,11 +438,7 @@ dsl_deadlist_remove_key(dsl_deadlist_t *dl, uint64_t mintxg, dmu_tx_t *tx)
 	mutex_exit(&dl->dl_lock);
 }
 
-/*
- * Remove a deadlist entry and all of its contents by removing the entry from
- * the deadlist's avl tree, freeing the entry's bpobj and adjusting the
- * deadlist's space accounting accordingly.
- */
+ 
 void
 dsl_deadlist_remove_entry(dsl_deadlist_t *dl, uint64_t mintxg, dmu_tx_t *tx)
 {
@@ -606,11 +474,7 @@ dsl_deadlist_remove_entry(dsl_deadlist_t *dl, uint64_t mintxg, dmu_tx_t *tx)
 	mutex_exit(&dl->dl_lock);
 }
 
-/*
- * Clear out the contents of a deadlist_entry by freeing its bpobj,
- * replacing it with an empty bpobj and adjusting the deadlist's
- * space accounting
- */
+ 
 void
 dsl_deadlist_clear_entry(dsl_deadlist_entry_t *dle, dsl_deadlist_t *dl,
     dmu_tx_t *tx)
@@ -638,9 +502,7 @@ dsl_deadlist_clear_entry(dsl_deadlist_entry_t *dle, dsl_deadlist_t *dl,
 	mutex_exit(&dl->dl_lock);
 }
 
-/*
- * Return the first entry in deadlist's avl tree
- */
+ 
 dsl_deadlist_entry_t *
 dsl_deadlist_first(dsl_deadlist_t *dl)
 {
@@ -654,9 +516,7 @@ dsl_deadlist_first(dsl_deadlist_t *dl)
 	return (dle);
 }
 
-/*
- * Return the last entry in deadlist's avl tree
- */
+ 
 dsl_deadlist_entry_t *
 dsl_deadlist_last(dsl_deadlist_t *dl)
 {
@@ -670,9 +530,7 @@ dsl_deadlist_last(dsl_deadlist_t *dl)
 	return (dle);
 }
 
-/*
- * Walk ds's snapshots to regenerate generate ZAP & AVL.
- */
+ 
 static void
 dsl_deadlist_regenerate(objset_t *os, uint64_t dlobj,
     uint64_t mrs_obj, dmu_tx_t *tx)
@@ -747,12 +605,7 @@ dsl_deadlist_space(dsl_deadlist_t *dl,
 	mutex_exit(&dl->dl_lock);
 }
 
-/*
- * return space used in the range (mintxg, maxtxg].
- * Includes maxtxg, does not include mintxg.
- * mintxg and maxtxg must both be keys in the deadlist (unless maxtxg is
- * UINT64_MAX).
- */
+ 
 void
 dsl_deadlist_space_range(dsl_deadlist_t *dl, uint64_t mintxg, uint64_t maxtxg,
     uint64_t *usedp, uint64_t *compp, uint64_t *uncompp)
@@ -774,11 +627,7 @@ dsl_deadlist_space_range(dsl_deadlist_t *dl, uint64_t mintxg, uint64_t maxtxg,
 	dlce_tofind.dlce_mintxg = mintxg;
 	dlce = avl_find(&dl->dl_cache, &dlce_tofind, &where);
 
-	/*
-	 * If this mintxg doesn't exist, it may be an empty_bpobj which
-	 * is omitted from the sparse tree.  Start at the next non-empty
-	 * entry.
-	 */
+	 
 	if (dlce == NULL)
 		dlce = avl_nearest(&dl->dl_cache, where, AVL_AFTER);
 
@@ -822,9 +671,7 @@ dsl_deadlist_insert_bpobj(dsl_deadlist_t *dl, uint64_t obj, uint64_t birth,
 	dle_enqueue_subobj(dl, dle, obj, tx);
 }
 
-/*
- * Prefetch metadata required for dsl_deadlist_insert_bpobj().
- */
+ 
 static void
 dsl_deadlist_prefetch_bpobj(dsl_deadlist_t *dl, uint64_t obj, uint64_t birth)
 {
@@ -852,10 +699,7 @@ dsl_deadlist_insert_cb(void *arg, const blkptr_t *bp, boolean_t bp_freed,
 	return (0);
 }
 
-/*
- * Merge the deadlist pointed to by 'obj' into dl.  obj will be left as
- * an empty deadlist.
- */
+ 
 void
 dsl_deadlist_merge(dsl_deadlist_t *dl, uint64_t obj, dmu_tx_t *tx)
 {
@@ -879,10 +723,7 @@ dsl_deadlist_merge(dsl_deadlist_t *dl, uint64_t obj, dmu_tx_t *tx)
 	pza = kmem_alloc(sizeof (*pza), KM_SLEEP);
 
 	mutex_enter(&dl->dl_lock);
-	/*
-	 * Prefetch up to 128 deadlists first and then more as we progress.
-	 * The limit is a balance between ARC use and diminishing returns.
-	 */
+	 
 	for (zap_cursor_init(&pzc, dl->dl_os, obj), i = 0;
 	    (perror = zap_cursor_retrieve(&pzc, pza)) == 0 && i < 128;
 	    zap_cursor_advance(&pzc), i++) {
@@ -917,9 +758,7 @@ dsl_deadlist_merge(dsl_deadlist_t *dl, uint64_t obj, dmu_tx_t *tx)
 	kmem_free(pza, sizeof (*pza));
 }
 
-/*
- * Remove entries on dl that are born > mintxg, and put them on the bpobj.
- */
+ 
 void
 dsl_deadlist_move_bpobj(dsl_deadlist_t *dl, bpobj_t *bpo, uint64_t mintxg,
     dmu_tx_t *tx)
@@ -939,10 +778,7 @@ dsl_deadlist_move_bpobj(dsl_deadlist_t *dl, bpobj_t *bpo, uint64_t mintxg,
 	dle = avl_find(&dl->dl_tree, &dle_tofind, &where);
 	if (dle == NULL)
 		dle = avl_nearest(&dl->dl_tree, where, AVL_AFTER);
-	/*
-	 * Prefetch up to 128 deadlists first and then more as we progress.
-	 * The limit is a balance between ARC use and diminishing returns.
-	 */
+	 
 	for (pdle = dle, i = 0; pdle && i < 128; i++) {
 		bpobj_prefetch_subobj(bpo, pdle->dle_bpobj.bpo_object);
 		pdle = AVL_NEXT(&dl->dl_tree, pdle);
@@ -990,14 +826,14 @@ livelist_compare(const void *larg, const void *rarg)
 	const blkptr_t *l = &((livelist_entry_t *)larg)->le_bp;
 	const blkptr_t *r = &((livelist_entry_t *)rarg)->le_bp;
 
-	/* Sort them according to dva[0] */
+	 
 	uint64_t l_dva0_vdev = DVA_GET_VDEV(&l->blk_dva[0]);
 	uint64_t r_dva0_vdev = DVA_GET_VDEV(&r->blk_dva[0]);
 
 	if (l_dva0_vdev != r_dva0_vdev)
 		return (TREE_CMP(l_dva0_vdev, r_dva0_vdev));
 
-	/* if vdevs are equal, sort by offsets. */
+	 
 	uint64_t l_dva0_offset = DVA_GET_OFFSET(&l->blk_dva[0]);
 	uint64_t r_dva0_offset = DVA_GET_OFFSET(&r->blk_dva[0]);
 	if (l_dva0_offset == r_dva0_offset)
@@ -1011,16 +847,7 @@ struct livelist_iter_arg {
 	zthr_t *t;
 };
 
-/*
- * Expects an AVL tree which is incrementally filled will FREE blkptrs
- * and used to match up ALLOC/FREE pairs. ALLOC'd blkptrs without a
- * corresponding FREE are stored in the supplied bplist.
- *
- * Note that multiple FREE and ALLOC entries for the same blkptr may
- * be encountered when dedup is involved. For this reason we keep a
- * refcount for all the FREE entries of each blkptr and ensure that
- * each of those FREE entries has a corresponding ALLOC preceding it.
- */
+ 
 static int
 dsl_livelist_iterate(void *arg, const blkptr_t *bp, boolean_t bp_freed,
     dmu_tx_t *tx)
@@ -1039,14 +866,14 @@ dsl_livelist_iterate(void *arg, const blkptr_t *bp, boolean_t bp_freed,
 	livelist_entry_t *found = avl_find(avl, &node, NULL);
 	if (bp_freed) {
 		if (found == NULL) {
-			/* first free entry for this blkptr */
+			 
 			livelist_entry_t *e =
 			    kmem_alloc(sizeof (livelist_entry_t), KM_SLEEP);
 			e->le_bp = *bp;
 			e->le_refcnt = 1;
 			avl_add(avl, e);
 		} else {
-			/* dedup block free */
+			 
 			ASSERT(BP_GET_DEDUP(bp));
 			ASSERT3U(BP_GET_CHECKSUM(bp), ==,
 			    BP_GET_CHECKSUM(&found->le_bp));
@@ -1055,21 +882,18 @@ dsl_livelist_iterate(void *arg, const blkptr_t *bp, boolean_t bp_freed,
 		}
 	} else {
 		if (found == NULL) {
-			/* block is currently marked as allocated */
+			 
 			bplist_append(to_free, bp);
 		} else {
-			/* alloc matches a free entry */
+			 
 			ASSERT3U(found->le_refcnt, !=, 0);
 			found->le_refcnt--;
 			if (found->le_refcnt == 0) {
-				/* all tracked free pairs have been matched */
+				 
 				avl_remove(avl, found);
 				kmem_free(found, sizeof (livelist_entry_t));
 			} else {
-				/*
-				 * This is definitely a deduped blkptr so
-				 * let's validate it.
-				 */
+				 
 				ASSERT(BP_GET_DEDUP(bp));
 				ASSERT3U(BP_GET_CHECKSUM(bp), ==,
 				    BP_GET_CHECKSUM(&found->le_bp));
@@ -1079,10 +903,7 @@ dsl_livelist_iterate(void *arg, const blkptr_t *bp, boolean_t bp_freed,
 	return (0);
 }
 
-/*
- * Accepts a bpobj and a bplist. Will insert into the bplist the blkptrs
- * which have an ALLOC entry but no matching FREE
- */
+ 
 int
 dsl_process_sub_livelist(bpobj_t *bpobj, bplist_t *to_free, zthr_t *t,
     uint64_t *size)
@@ -1091,7 +912,7 @@ dsl_process_sub_livelist(bpobj_t *bpobj, bplist_t *to_free, zthr_t *t,
 	avl_create(&avl, livelist_compare, sizeof (livelist_entry_t),
 	    offsetof(livelist_entry_t, le_node));
 
-	/* process the sublist */
+	 
 	struct livelist_iter_arg arg = {
 	    .avl = &avl,
 	    .to_free = to_free,

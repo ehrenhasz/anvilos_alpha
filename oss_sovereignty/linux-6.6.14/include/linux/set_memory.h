@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright 2017, Michael Ellerman, IBM Corporation.
- */
+ 
+ 
 #ifndef _LINUX_SET_MEMORY_H_
 #define _LINUX_SET_MEMORY_H_
 
@@ -38,11 +36,8 @@ static inline bool kernel_page_present(struct page *page)
 {
 	return true;
 }
-#else /* CONFIG_ARCH_HAS_SET_DIRECT_MAP */
-/*
- * Some architectures, e.g. ARM64 can disable direct map modifications at
- * boot time. Let them overrive this query.
- */
+#else  
+ 
 #ifndef can_set_direct_map
 static inline bool can_set_direct_map(void)
 {
@@ -50,7 +45,7 @@ static inline bool can_set_direct_map(void)
 }
 #define can_set_direct_map can_set_direct_map
 #endif
-#endif /* CONFIG_ARCH_HAS_SET_DIRECT_MAP */
+#endif  
 
 #ifdef CONFIG_X86_64
 int set_mce_nospec(unsigned long pfn);
@@ -76,6 +71,6 @@ static inline int set_memory_decrypted(unsigned long addr, int numpages)
 {
 	return 0;
 }
-#endif /* CONFIG_ARCH_HAS_MEM_ENCRYPT */
+#endif  
 
-#endif /* _LINUX_SET_MEMORY_H_ */
+#endif  

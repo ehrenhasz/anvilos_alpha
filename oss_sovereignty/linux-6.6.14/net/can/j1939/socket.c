@@ -1,14 +1,14 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2010-2011 EIA Electronics,
-//                         Pieter Beyens <pieter.beyens@eia.be>
-// Copyright (c) 2010-2011 EIA Electronics,
-//                         Kurt Van Dijck <kurt.van.dijck@eia.be>
-// Copyright (c) 2018 Protonic,
-//                         Robin van der Gracht <robin@protonic.nl>
-// Copyright (c) 2017-2019 Pengutronix,
-//                         Marc Kleine-Budde <kernel@pengutronix.de>
-// Copyright (c) 2017-2019 Pengutronix,
-//                         Oleksij Rempel <kernel@pengutronix.de>
+
+
+
+
+
+
+
+
+
+
+
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -22,9 +22,7 @@
 
 #define J1939_MIN_NAMELEN CAN_REQUIRED_SIZE(struct sockaddr_can, can_addr.j1939)
 
-/* conversion function between struct sock::sk_priority from linux and
- * j1939 priority field
- */
+ 
 static inline priority_t j1939_prio(u32 sk_priority)
 {
 	sk_priority = min(sk_priority, 7U);
@@ -37,13 +35,13 @@ static inline u32 j1939_to_sk_priority(priority_t prio)
 	return 7 - prio;
 }
 
-/* function to see if pgn is to be evaluated */
+ 
 static inline bool j1939_pgn_is_valid(pgn_t pgn)
 {
 	return pgn <= J1939_PGN_MAX;
 }
 
-/* test function to avoid non-zero DA placeholder for pdu1 pgn's */
+ 
 static inline bool j1939_pgn_is_clean_pdu(pgn_t pgn)
 {
 	if (j1939_pgn_is_pdu1(pgn))
@@ -70,9 +68,9 @@ void j1939_sock_pending_del(struct sock *sk)
 {
 	struct j1939_sock *jsk = j1939_sk(sk);
 
-	/* atomic_dec_return returns the new value */
+	 
 	if (!atomic_dec_return(&jsk->skb_pending))
-		wake_up(&jsk->waitq);	/* no pending SKB's */
+		wake_up(&jsk->waitq);	 
 }
 
 static void j1939_jsk_add(struct j1939_priv *priv, struct j1939_sock *jsk)
@@ -152,7 +150,7 @@ static void j1939_sk_queue_activate_next_locked(struct j1939_session *session)
 	struct j1939_session *first;
 	int err;
 
-	/* RX-Session don't have a socket (yet) */
+	 
 	if (!session->sk)
 		return;
 
@@ -165,7 +163,7 @@ static void j1939_sk_queue_activate_next_locked(struct j1939_session *session)
 					 struct j1939_session,
 					 sk_session_queue_entry);
 
-	/* Some else has already activated the next session */
+	 
 	if (first != session)
 		return;
 
@@ -185,7 +183,7 @@ activate_next:
 		first->err = -EBUSY;
 		goto activate_next;
 	} else {
-		/* Give receiver some time (arbitrary chosen) to recover */
+		 
 		int time_ms = 0;
 
 		if (err)
@@ -215,32 +213,24 @@ static bool j1939_sk_match_dst(struct j1939_sock *jsk,
 	if ((jsk->state & J1939_SOCK_PROMISC))
 		return true;
 
-	/* Destination address filter */
+	 
 	if (jsk->addr.src_name && skcb->addr.dst_name) {
 		if (jsk->addr.src_name != skcb->addr.dst_name)
 			return false;
 	} else {
-		/* receive (all sockets) if
-		 * - all packages that match our bind() address
-		 * - all broadcast on a socket if SO_BROADCAST
-		 *   is set
-		 */
+		 
 		if (j1939_address_is_unicast(skcb->addr.da)) {
 			if (jsk->addr.sa != skcb->addr.da)
 				return false;
 		} else if (!sock_flag(&jsk->sk, SOCK_BROADCAST)) {
-			/* receiving broadcast without SO_BROADCAST
-			 * flag is not allowed
-			 */
+			 
 			return false;
 		}
 	}
 
-	/* Source address filter */
+	 
 	if (jsk->state & J1939_SOCK_CONNECTED) {
-		/* receive (all sockets) if
-		 * - all packages that match our connect() name or address
-		 */
+		 
 		if (jsk->addr.dst_name && skcb->addr.src_name) {
 			if (jsk->addr.dst_name != skcb->addr.src_name)
 				return false;
@@ -250,7 +240,7 @@ static bool j1939_sk_match_dst(struct j1939_sock *jsk,
 		}
 	}
 
-	/* PGN filter */
+	 
 	if (j1939_pgn_is_valid(jsk->pgn_rx_filter) &&
 	    jsk->pgn_rx_filter != skcb->addr.pgn)
 		return false;
@@ -258,7 +248,7 @@ static bool j1939_sk_match_dst(struct j1939_sock *jsk,
 	return true;
 }
 
-/* matches skb control buffer (addr) with a j1939 filter */
+ 
 static bool j1939_sk_match_filter(struct j1939_sock *jsk,
 				  const struct j1939_sk_buff_cb *skcb)
 {
@@ -266,7 +256,7 @@ static bool j1939_sk_match_filter(struct j1939_sock *jsk,
 	int nfilter = jsk->nfilters;
 
 	if (!nfilter)
-		/* receive all when no filters are assigned */
+		 
 		return true;
 
 	for (; nfilter; ++f, --nfilter) {
@@ -355,27 +345,13 @@ static void j1939_sk_sock_destruct(struct sock *sk)
 {
 	struct j1939_sock *jsk = j1939_sk(sk);
 
-	/* This function will be called by the generic networking code, when
-	 * the socket is ultimately closed (sk->sk_destruct).
-	 *
-	 * The race between
-	 * - processing a received CAN frame
-	 *   (can_receive -> j1939_can_recv)
-	 *   and accessing j1939_priv
-	 * ... and ...
-	 * - closing a socket
-	 *   (j1939_can_rx_unregister -> can_rx_unregister)
-	 *   and calling the final j1939_priv_put()
-	 *
-	 * is avoided by calling the final j1939_priv_put() from this
-	 * RCU deferred cleanup call.
-	 */
+	 
 	if (jsk->priv) {
 		j1939_priv_put(jsk->priv);
 		jsk->priv = NULL;
 	}
 
-	/* call generic CAN sock destruct */
+	 
 	can_sock_destruct(sk);
 }
 
@@ -383,9 +359,7 @@ static int j1939_sk_init(struct sock *sk)
 {
 	struct j1939_sock *jsk = j1939_sk(sk);
 
-	/* Ensure that "sk" is first member in "struct j1939_sock", so that we
-	 * can skip it during memset().
-	 */
+	 
 	BUILD_BUG_ON(offsetof(struct j1939_sock, sk) != 0);
 	memset((void *)jsk + sizeof(jsk->sk), 0x0,
 	       sizeof(*jsk) - sizeof(jsk->sk));
@@ -393,7 +367,7 @@ static int j1939_sk_init(struct sock *sk)
 	INIT_LIST_HEAD(&jsk->list);
 	init_waitqueue_head(&jsk->waitq);
 	jsk->sk.sk_priority = j1939_to_sk_priority(6);
-	jsk->sk.sk_reuse = 1; /* per default */
+	jsk->sk.sk_reuse = 1;  
 	jsk->addr.sa = J1939_NO_ADDR;
 	jsk->addr.da = J1939_NO_ADDR;
 	jsk->addr.pgn = J1939_NO_PGN;
@@ -402,7 +376,7 @@ static int j1939_sk_init(struct sock *sk)
 	spin_lock_init(&jsk->sk_session_queue_lock);
 	INIT_LIST_HEAD(&jsk->sk_session_queue);
 
-	/* j1939_sk_sock_destruct() depends on SOCK_RCU_FREE flag */
+	 
 	sock_set_flag(sk, SOCK_RCU_FREE);
 	sk->sk_destruct = j1939_sk_sock_destruct;
 	sk->sk_protocol = CAN_J1939;
@@ -446,17 +420,15 @@ static int j1939_sk_bind(struct socket *sock, struct sockaddr *uaddr, int len)
 	sk = sock->sk;
 	net = sock_net(sk);
 
-	/* Already bound to an interface? */
+	 
 	if (jsk->state & J1939_SOCK_BOUND) {
-		/* A re-bind() to a different interface is not
-		 * supported.
-		 */
+		 
 		if (jsk->ifindex != addr->can_ifindex) {
 			ret = -EINVAL;
 			goto out_release_sock;
 		}
 
-		/* drop old references */
+		 
 		j1939_jsk_del(priv, jsk);
 		j1939_local_ecu_put(priv, jsk->addr.src_name, jsk->addr.sa);
 	} else {
@@ -491,20 +463,18 @@ static int j1939_sk_bind(struct socket *sock, struct sockaddr *uaddr, int len)
 
 		jsk->ifindex = addr->can_ifindex;
 
-		/* the corresponding j1939_priv_put() is called via
-		 * sk->sk_destruct, which points to j1939_sk_sock_destruct()
-		 */
+		 
 		j1939_priv_get(priv);
 		jsk->priv = priv;
 	}
 
-	/* set default transmit pgn */
+	 
 	if (j1939_pgn_is_valid(addr->can_addr.j1939.pgn))
 		jsk->pgn_rx_filter = addr->can_addr.j1939.pgn;
 	jsk->addr.src_name = addr->can_addr.j1939.name;
 	jsk->addr.sa = addr->can_addr.j1939.addr;
 
-	/* get new references */
+	 
 	ret = j1939_local_ecu_get(priv, jsk->addr.src_name, jsk->addr.sa);
 	if (ret) {
 		j1939_netdev_stop(priv);
@@ -513,7 +483,7 @@ static int j1939_sk_bind(struct socket *sock, struct sockaddr *uaddr, int len)
 
 	j1939_jsk_add(priv, jsk);
 
- out_release_sock: /* fall through */
+ out_release_sock:  
 	release_sock(sock->sk);
 
 	return ret;
@@ -532,13 +502,13 @@ static int j1939_sk_connect(struct socket *sock, struct sockaddr *uaddr,
 
 	lock_sock(sock->sk);
 
-	/* bind() before connect() is mandatory */
+	 
 	if (!(jsk->state & J1939_SOCK_BOUND)) {
 		ret = -EINVAL;
 		goto out_release_sock;
 	}
 
-	/* A connect() to a different interface is not supported. */
+	 
 	if (jsk->ifindex != addr->can_ifindex) {
 		ret = -EINVAL;
 		goto out_release_sock;
@@ -547,7 +517,7 @@ static int j1939_sk_connect(struct socket *sock, struct sockaddr *uaddr,
 	if (!addr->can_addr.j1939.name &&
 	    addr->can_addr.j1939.addr == J1939_NO_ADDR &&
 	    !sock_flag(&jsk->sk, SOCK_BROADCAST)) {
-		/* broadcast, but SO_BROADCAST not set */
+		 
 		ret = -EACCES;
 		goto out_release_sock;
 	}
@@ -560,7 +530,7 @@ static int j1939_sk_connect(struct socket *sock, struct sockaddr *uaddr,
 
 	jsk->state |= J1939_SOCK_CONNECTED;
 
- out_release_sock: /* fall through */
+ out_release_sock:  
 	release_sock(sock->sk);
 
 	return ret;
@@ -569,9 +539,7 @@ static int j1939_sk_connect(struct socket *sock, struct sockaddr *uaddr,
 static void j1939_sk_sock2sockaddr_can(struct sockaddr_can *addr,
 				       const struct j1939_sock *jsk, int peer)
 {
-	/* There are two holes (2 bytes and 3 bytes) to clear to avoid
-	 * leaking kernel information to user space.
-	 */
+	 
 	memset(addr, 0, J1939_MIN_NAMELEN);
 
 	addr->can_family = AF_CAN;
@@ -745,7 +713,7 @@ static int j1939_sk_getsockopt(struct socket *sock, int level, int optname,
 	struct sock *sk = sock->sk;
 	struct j1939_sock *jsk = j1939_sk(sk);
 	int ret, ulen;
-	/* set defaults for using 'int' properties */
+	 
 	int tmp = 0;
 	int len = sizeof(tmp);
 	void *val = &tmp;
@@ -773,10 +741,7 @@ static int j1939_sk_getsockopt(struct socket *sock, int level, int optname,
 		goto no_copy;
 	}
 
-	/* copy to user, based on 'len' & 'val'
-	 * but most sockopt's are 'int' properties, and have 'len' & 'val'
-	 * left unchanged, but instead modified 'tmp'
-	 */
+	 
 	if (len > ulen)
 		ret = -EFAULT;
 	else if (put_user(len, optlen))
@@ -913,16 +878,16 @@ static size_t j1939_sk_opt_stats_get_size(enum j1939_sk_errqueue_type type)
 	switch (type) {
 	case J1939_ERRQUEUE_RX_RTS:
 		return
-			nla_total_size(sizeof(u32)) + /* J1939_NLA_TOTAL_SIZE */
-			nla_total_size(sizeof(u32)) + /* J1939_NLA_PGN */
-			nla_total_size(sizeof(u64)) + /* J1939_NLA_SRC_NAME */
-			nla_total_size(sizeof(u64)) + /* J1939_NLA_DEST_NAME */
-			nla_total_size(sizeof(u8)) +  /* J1939_NLA_SRC_ADDR */
-			nla_total_size(sizeof(u8)) +  /* J1939_NLA_DEST_ADDR */
+			nla_total_size(sizeof(u32)) +  
+			nla_total_size(sizeof(u32)) +  
+			nla_total_size(sizeof(u64)) +  
+			nla_total_size(sizeof(u64)) +  
+			nla_total_size(sizeof(u8)) +   
+			nla_total_size(sizeof(u8)) +   
 			0;
 	default:
 		return
-			nla_total_size(sizeof(u32)) + /* J1939_NLA_BYTES_ACKED */
+			nla_total_size(sizeof(u32)) +  
 			0;
 	}
 }
@@ -1074,12 +1039,12 @@ void j1939_sk_errqueue(struct j1939_session *session,
 	struct j1939_sock *jsk;
 
 	if (session->sk) {
-		/* send TX notifications to the socket of origin  */
+		 
 		__j1939_sk_errqueue(session, session->sk, type);
 		return;
 	}
 
-	/* spread RX notifications to all sockets subscribed to this session */
+	 
 	spin_lock_bh(&priv->j1939_socks_lock);
 	list_for_each_entry(jsk, &priv->j1939_socks, list) {
 		if (j1939_sk_recv_match_one(jsk, &session->skcb))
@@ -1124,7 +1089,7 @@ static int j1939_sk_send_loop(struct j1939_priv *priv,  struct sock *sk,
 		segment_size = min_t(size_t, J1939_MAX_TP_PACKET_SIZE,
 				     todo_size);
 
-		/* Allocate skb for one segment */
+		 
 		skb = j1939_sk_alloc_skb(priv->ndev, sk, msg, segment_size,
 					 &ret);
 		if (ret)
@@ -1133,9 +1098,7 @@ static int j1939_sk_send_loop(struct j1939_priv *priv,  struct sock *sk,
 		skcb = j1939_skb_to_cb(skb);
 
 		if (!session) {
-			/* at this point the size should be full size
-			 * of the session
-			 */
+			 
 			skcb->offset = 0;
 			session = j1939_tp_send(priv, skb, size);
 			if (IS_ERR(session)) {
@@ -1143,9 +1106,7 @@ static int j1939_sk_send_loop(struct j1939_priv *priv,  struct sock *sk,
 				goto kfree_skb;
 			}
 			if (j1939_sk_queue_session(session)) {
-				/* try to activate session if we a
-				 * fist in the queue
-				 */
+				 
 				if (!j1939_session_activate(session)) {
 					j1939_tp_schedule_txtimer(session, 0);
 				} else {
@@ -1166,7 +1127,7 @@ static int j1939_sk_send_loop(struct j1939_priv *priv,  struct sock *sk,
 	}
 
 	switch (ret) {
-	case 0: /* OK */
+	case 0:  
 		if (todo_size)
 			netdev_warn(priv->ndev,
 				    "no error found and not completely queued?! %zu\n",
@@ -1176,11 +1137,11 @@ static int j1939_sk_send_loop(struct j1939_priv *priv,  struct sock *sk,
 	case -ERESTARTSYS:
 		ret = -EINTR;
 		fallthrough;
-	case -EAGAIN: /* OK */
+	case -EAGAIN:  
 		if (todo_size != size)
 			ret = size - todo_size;
 		break;
-	default: /* ERROR */
+	default:  
 		break;
 	}
 
@@ -1204,7 +1165,7 @@ static int j1939_sk_sendmsg(struct socket *sock, struct msghdr *msg,
 	int ret;
 
 	lock_sock(sock->sk);
-	/* various socket state tests */
+	 
 	if (!(jsk->state & J1939_SOCK_BOUND)) {
 		ret = -EBADFD;
 		goto sendmsg_done;
@@ -1214,12 +1175,12 @@ static int j1939_sk_sendmsg(struct socket *sock, struct msghdr *msg,
 	ifindex = jsk->ifindex;
 
 	if (!jsk->addr.src_name && jsk->addr.sa == J1939_NO_ADDR) {
-		/* no source address assigned yet */
+		 
 		ret = -EBADFD;
 		goto sendmsg_done;
 	}
 
-	/* deal with provided destination address info */
+	 
 	if (msg->msg_name) {
 		struct sockaddr_can *addr = msg->msg_name;
 
@@ -1247,14 +1208,14 @@ static int j1939_sk_sendmsg(struct socket *sock, struct msghdr *msg,
 		if (!addr->can_addr.j1939.name &&
 		    addr->can_addr.j1939.addr == J1939_NO_ADDR &&
 		    !sock_flag(sk, SOCK_BROADCAST)) {
-			/* broadcast, but SO_BROADCAST not set */
+			 
 			ret = -EACCES;
 			goto sendmsg_done;
 		}
 	} else {
 		if (!jsk->addr.dst_name && jsk->addr.da == J1939_NO_ADDR &&
 		    !sock_flag(sk, SOCK_BROADCAST)) {
-			/* broadcast, but SO_BROADCAST not set */
+			 
 			ret = -EACCES;
 			goto sendmsg_done;
 		}
@@ -1287,7 +1248,7 @@ void j1939_sk_netdev_event_netdown(struct j1939_priv *priv)
 static int j1939_sk_no_ioctlcmd(struct socket *sock, unsigned int cmd,
 				unsigned long arg)
 {
-	/* no ioctls for socket layer -> hand it down to NIC layer */
+	 
 	return -ENOIOCTLCMD;
 }
 

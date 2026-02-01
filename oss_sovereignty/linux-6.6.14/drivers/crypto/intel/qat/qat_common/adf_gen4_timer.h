@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/* Copyright(c) 2023 Intel Corporation */
+ 
+ 
 
 #ifndef ADF_GEN4_TIMER_H_
 #define ADF_GEN4_TIMER_H_
@@ -18,4 +18,4 @@ struct adf_timer {
 int adf_gen4_timer_start(struct adf_accel_dev *accel_dev);
 void adf_gen4_timer_stop(struct adf_accel_dev *accel_dev);
 
-#endif /* ADF_GEN4_TIMER_H_ */
+#endif  

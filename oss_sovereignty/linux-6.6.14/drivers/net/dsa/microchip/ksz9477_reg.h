@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Microchip KSZ9477 register definitions
- *
- * Copyright (C) 2017-2018 Microchip Technology Inc.
- */
+ 
+ 
 
 #ifndef __KSZ9477_REGS_H
 #define __KSZ9477_REGS_H
@@ -11,7 +7,7 @@
 #define KS_PRIO_M			0x7
 #define KS_PRIO_S			4
 
-/* 0 - Operation */
+ 
 #define REG_CHIP_ID0__1			0x0000
 
 #define REG_CHIP_ID1__1			0x0001
@@ -82,7 +78,7 @@
 #define REG_SW_PHY_INT_STATUS		0x0020
 #define REG_SW_PHY_INT_ENABLE		0x0024
 
-/* 1 - Global */
+ 
 #define REG_SW_GLOBAL_SERIAL_CTRL_0	0x0100
 #define SW_SPARE_REG_2			BIT(7)
 #define SW_SPARE_REG_1			BIT(6)
@@ -151,7 +147,7 @@
 
 #define SW_IBA_RETRY_CNT_M		(BIT(5) - 1)
 
-/* 2 - PHY */
+ 
 #define REG_SW_POWER_MANAGEMENT_CTRL	0x0201
 
 #define SW_PLL_POWER_DOWN		BIT(5)
@@ -160,7 +156,7 @@
 #define SW_SOFT_POWER_DOWN		2
 #define SW_POWER_SAVING			3
 
-/* 3 - Operation Control */
+ 
 #define REG_SW_OPERATION		0x0300
 
 #define SW_DOUBLE_TAG			BIT(7)
@@ -372,7 +368,7 @@
 
 #define REG_SW_EEE_TXQ_WAIT_TIME__2	0x03C2
 
-/* 4 - */
+ 
 #define REG_SW_VLAN_ENTRY__4		0x0400
 
 #define VLAN_VALID			BIT(31)
@@ -510,7 +506,7 @@
 
 #define HSR_V_SEQ_M			(BIT(16) - 1)
 
-/* 5 - PTP Clock */
+ 
 #define REG_PTP_CLK_CTRL		0x0500
 
 #define PTP_STEP_ADJ			BIT(6)
@@ -714,7 +710,7 @@
 
 #define REG_GLOBAL_RR_INDEX__1		0x0600
 
-/* DLR */
+ 
 #define REG_DLR_SRC_PORT__4		0x0604
 
 #define DLR_SRC_PORT_UNICAST		BIT(31)
@@ -768,7 +764,7 @@
 
 #define DLR_FRAME_QID_M			0x3
 
-/* HSR */
+ 
 #define REG_HSR_PORT_MAP__4		0x0640
 
 #define REG_HSR_ALU_CTRL_0__1		0x0644
@@ -816,7 +812,7 @@
 
 #define HSR_CPU_ACCESS_ENTRY_INDEX_M	(BIT(8) - 1)
 
-/* 0 - Operation */
+ 
 #define REG_PORT_DEFAULT_VID		0x0000
 
 #define REG_PORT_CUSTOM_VID		0x0002
@@ -870,7 +866,7 @@
 
 #define REG_PORT_STATUS_1		0x0034
 
-/* 1 - PHY */
+ 
 #define REG_PORT_PHY_CTRL		0x0100
 
 #define PORT_PHY_RESET			BIT(15)
@@ -1157,7 +1153,7 @@
 #define PORT_PHY_FORCE_MDI		BIT(7)
 #define PORT_PHY_AUTO_MDIX_DISABLE	BIT(6)
 
-/* Same as PORT_PHY_LOOPBACK */
+ 
 #define PORT_PHY_PCS_LOOPBACK		BIT(0)
 
 #define REG_PORT_PHY_DIGITAL_DEBUG_2	0x013A
@@ -1175,19 +1171,19 @@
 #define PORT_STAT_SPEED_10MBIT		BIT(4)
 #define PORT_STAT_FULL_DUPLEX		BIT(3)
 
-/* Same as PORT_PHY_STAT_MASTER */
+ 
 #define PORT_STAT_MASTER		BIT(2)
 #define PORT_RESET			BIT(1)
 #define PORT_LINK_STATUS_FAIL		BIT(0)
 
-/* 3 - xMII */
+ 
 #define PORT_SGMII_SEL			BIT(7)
 #define PORT_GRXC_ENABLE		BIT(0)
 
 #define PORT_RMII_CLK_SEL		BIT(7)
 #define PORT_MII_SEL_EDGE		BIT(5)
 
-/* 4 - MAC */
+ 
 #define REG_PORT_MAC_CTRL_0		0x0400
 
 #define PORT_BROADCAST_STORM		BIT(1)
@@ -1238,7 +1234,7 @@
 
 #define PORT_RATE_LIMIT_M		(BIT(7) - 1)
 
-/* 5 - MIB Counters */
+ 
 #define REG_PORT_MIB_CTRL_STAT__4	0x0500
 
 #define MIB_COUNTER_READ		BIT(25)
@@ -1249,7 +1245,7 @@
 
 #define REG_PORT_MIB_DATA		0x0504
 
-/* 6 - ACL */
+ 
 #define REG_PORT_ACL_0			0x0600
 
 #define ACL_FIRST_RULE_M		0xF
@@ -1375,7 +1371,7 @@
 
 #define REG_PORT_ACL_CTRL_1		0x0613
 
-/* 8 - Classification and Policing */
+ 
 #define REG_PORT_MRI_MIRROR_CTRL	0x0800
 
 #define PORT_MIRROR_RX			BIT(6)
@@ -1482,7 +1478,7 @@
 #define WRED_DROP_ALL			BIT(26)
 #define WRED_PMON_M			(BIT(24) - 1)
 
-/* 9 - Shaping */
+ 
 
 #define REG_PORT_MTI_QUEUE_CTRL_0__4   0x0904
 
@@ -1490,7 +1486,7 @@
 
 #define REG_PORT_MTI_CREDIT_INCREMENT	0x091A
 
-/* A - QM */
+ 
 
 #define REG_PORT_QM_CTRL__4		0x0A00
 
@@ -1520,7 +1516,7 @@
 #define PORT_QM_TX_CNT_CALCULATED_S	16
 #define PORT_QM_TX_CNT_AVAIL_S		0
 
-/* B - LUE */
+ 
 #define REG_PORT_LUE_CTRL		0x0B00
 
 #define PORT_VLAN_LOOKUP_VID_0		BIT(7)
@@ -1533,7 +1529,7 @@
 
 #define REG_PORT_LUE_MSTP_STATE		0x0B04
 
-/* C - PTP */
+ 
 
 #define REG_PTP_PORT_RX_DELAY__2	0x0C00
 #define REG_PTP_PORT_TX_DELAY__2	0x0C02
@@ -1596,4 +1592,4 @@
 #define PTP_TRIG_UNIT_M			(BIT(MAX_TRIG_UNIT) - 1)
 #define PTP_TS_UNIT_M			(BIT(MAX_TIMESTAMP_UNIT) - 1)
 
-#endif /* KSZ9477_REGS_H */
+#endif  

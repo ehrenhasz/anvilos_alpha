@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Huawei HiNIC PCI Express Linux driver
- * Copyright(c) 2017 Huawei Technologies Co., Ltd
- */
+ 
+ 
 
 #ifndef HINIC_HW_DEV_H
 #define HINIC_HW_DEV_H
@@ -212,7 +209,7 @@ enum hinic_port_cmd {
 	HINIC_PORT_CMD_SET_VLAN_FILTER = 0xFF,
 };
 
-/* cmd of mgmt CPU message for HILINK module */
+ 
 enum hinic_hilink_cmd {
 	HINIC_HILINK_CMD_GET_LINK_INFO		= 0x3,
 	HINIC_HILINK_CMD_SET_LINK_SETTINGS	= 0x8,
@@ -491,19 +488,19 @@ struct hinic_dev_cap {
 
 union hinic_fault_hw_mgmt {
 	u32 val[4];
-	/* valid only type == FAULT_TYPE_CHIP */
+	 
 	struct {
 		u8 node_id;
 		u8 err_level;
 		u16 err_type;
 		u32 err_csr_addr;
 		u32 err_csr_value;
-		/* func_id valid only if err_level == FAULT_LEVEL_SERIOUS_FLR */
+		 
 		u16 func_id;
 		u16 rsvd2;
 	} chip;
 
-	/* valid only if type == FAULT_TYPE_UCODE */
+	 
 	struct {
 		u8 cause_id;
 		u8 core_id;
@@ -514,9 +511,7 @@ union hinic_fault_hw_mgmt {
 		u32 rsvd5;
 	} ucode;
 
-	/* valid only if type == FAULT_TYPE_MEM_RD_TIMEOUT ||
-	 * FAULT_TYPE_MEM_WR_TIMEOUT
-	 */
+	 
 	struct {
 		u32 err_csr_ctrl;
 		u32 err_csr_data;
@@ -524,9 +519,7 @@ union hinic_fault_hw_mgmt {
 		u32 mem_index;
 	} mem_timeout;
 
-	/* valid only if type == FAULT_TYPE_REG_RD_TIMEOUT ||
-	 * FAULT_TYPE_REG_WR_TIMEOUT
-	 */
+	 
 	struct {
 		u32 err_csr;
 		u32 rsvd6;
@@ -535,7 +528,7 @@ union hinic_fault_hw_mgmt {
 	} reg_timeout;
 
 	struct {
-		/* 0: read; 1: write */
+		 
 		u8 op_type;
 		u8 port_id;
 		u8 dev_ad;

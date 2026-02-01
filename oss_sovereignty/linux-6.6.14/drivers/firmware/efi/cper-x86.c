@@ -1,13 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (C) 2018, Advanced Micro Devices, Inc.
+
+
 
 #include <linux/cper.h>
 #include <linux/acpi.h>
 
-/*
- * We don't need a "CPER_IA" prefix since these are all locally defined.
- * This will save us a lot of line space.
- */
+ 
 #define VALID_LAPIC_ID			BIT_ULL(0)
 #define VALID_CPUID_INFO		BIT_ULL(1)
 #define VALID_PROC_ERR_INFO_NUM(bits)	(((bits) & GENMASK_ULL(7, 2)) >> 2)
@@ -185,10 +182,7 @@ static void print_err_info(const char *pfx, u8 err_type, u64 check)
 {
 	u16 validation_bits = CHECK_VALID_BITS(check);
 
-	/*
-	 * The MS Check structure varies a lot from the others, so use a
-	 * separate function for decoding.
-	 */
+	 
 	if (err_type == ERR_TYPE_MS)
 		return print_err_info_ms(pfx, validation_bits, check);
 
@@ -203,10 +197,7 @@ static void print_err_info(const char *pfx, u8 err_type, u64 check)
 	if (validation_bits & CHECK_VALID_OPERATION) {
 		u8 op = CHECK_OPERATION(check);
 
-		/*
-		 * CACHE has more operation types than TLB or BUS, though the
-		 * name and the order are the same.
-		 */
+		 
 		u8 max_ops = (err_type == ERR_TYPE_CACHE) ? 9 : 7;
 
 		printk("%sOperation: %u, %s\n", pfx, op,
@@ -338,7 +329,7 @@ void cper_print_proc_ia(const char *pfx, const struct cper_sec_proc_ia *proc)
 		       ctx_info->reg_arr_size);
 
 		if (ctx_info->reg_ctx_type == CTX_TYPE_MSR) {
-			groupsize = 8; /* MSRs are 8 bytes wide. */
+			groupsize = 8;  
 			printk("%sMSR Address: 0x%08x\n", newpfx,
 			       ctx_info->msr_addr);
 		}

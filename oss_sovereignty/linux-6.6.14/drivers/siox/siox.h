@@ -1,23 +1,21 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) 2015-2017 Pengutronix, Uwe Kleine-König <kernel@pengutronix.de>
- */
+ 
+ 
 #include <linux/kernel.h>
 #include <linux/kthread.h>
 #include <linux/siox.h>
 
 #define to_siox_master(_dev)	container_of((_dev), struct siox_master, dev)
 struct siox_master {
-	/* these fields should be initialized by the driver */
+	 
 	int busno;
 	int (*pushpull)(struct siox_master *smaster,
 			size_t setbuf_len, const u8 setbuf[],
 			size_t getbuf_len, u8 getbuf[]);
 
-	/* might be initialized by the driver, if 0 it is set to HZ / 40 */
-	unsigned long poll_interval; /* in jiffies */
+	 
+	unsigned long poll_interval;  
 
-	/* framework private stuff */
+	 
 	struct mutex lock;
 	bool active;
 	struct module *owner;

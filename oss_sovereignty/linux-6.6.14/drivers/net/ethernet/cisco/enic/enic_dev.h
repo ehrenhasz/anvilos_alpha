@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/* Copyright 2011 Cisco Systems, Inc.  All rights reserved. */
+ 
+ 
 
 #ifndef _ENIC_DEV_H_
 #define _ENIC_DEV_H_
@@ -7,10 +7,7 @@
 #include "vnic_dev.h"
 #include "vnic_vic.h"
 
-/*
- * Calls the devcmd function given by argument vnicdevcmdfn.
- * If vf argument is valid, it proxies the devcmd
- */
+ 
 #define ENIC_DEVCMD_PROXY_BY_INDEX(vf, err, enic, vnicdevcmdfn, ...) \
 	do { \
 		spin_lock_bh(&enic->devcmd_lock); \
@@ -42,4 +39,4 @@ int enic_dev_disable(struct enic *enic);
 int enic_dev_intr_coal_timer_info(struct enic *enic);
 int enic_dev_status_to_errno(int devcmd_status);
 
-#endif /* _ENIC_DEV_H_ */
+#endif  

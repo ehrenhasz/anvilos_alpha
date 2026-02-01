@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Greybus operations
- *
- * Copyright 2015-2016 Google Inc.
- */
+
+ 
 
 #include <linux/string.h>
 #include <linux/sysfs.h>
@@ -21,7 +17,7 @@ static LIST_HEAD(modules_list);
 static DECLARE_RWSEM(modules_rwsem);
 static DEFINE_IDA(module_id);
 
-/* helpers */
+ 
 static struct gb_audio_manager_module *gb_audio_manager_get_locked(int id)
 {
 	struct gb_audio_manager_module *module;
@@ -37,7 +33,7 @@ static struct gb_audio_manager_module *gb_audio_manager_get_locked(int id)
 	return NULL;
 }
 
-/* public API */
+ 
 int gb_audio_manager_add(struct gb_audio_manager_module_descriptor *desc)
 {
 	struct gb_audio_manager_module *module;
@@ -55,7 +51,7 @@ int gb_audio_manager_add(struct gb_audio_manager_module_descriptor *desc)
 		return err;
 	}
 
-	/* Add it to the list */
+	 
 	down_write(&modules_rwsem);
 	list_add_tail(&module->list, &modules_list);
 	up_write(&modules_rwsem);
@@ -155,9 +151,7 @@ void gb_audio_manager_dump_all(void)
 }
 EXPORT_SYMBOL_GPL(gb_audio_manager_dump_all);
 
-/*
- * module init/deinit
- */
+ 
 static int __init manager_init(void)
 {
 	manager_kset = kset_create_and_add(GB_AUDIO_MANAGER_NAME, NULL,

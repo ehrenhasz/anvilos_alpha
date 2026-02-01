@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright IBM Corp. 2018
- */
+
+ 
 
 #define KMSG_COMPONENT "qeth"
 #define pr_fmt(fmt) KMSG_COMPONENT ": " fmt
@@ -223,7 +221,7 @@ static int qeth_set_channels(struct net_device *dev,
 	if (channels->tx_count > card->qdio.no_out_queues)
 		return -EINVAL;
 
-	/* Prio-queueing needs all TX queues: */
+	 
 	if (qeth_uses_tx_prio_queueing(card))
 		return -EPERM;
 
@@ -231,9 +229,7 @@ static int qeth_set_channels(struct net_device *dev,
 		if (channels->tx_count < QETH_IQD_MIN_TXQ)
 			return -EINVAL;
 
-		/* Reject downgrade while running. It could push displaced
-		 * ucast flows onto txq0, which is reserved for mcast.
-		 */
+		 
 		if (netif_running(dev) &&
 		    channels->tx_count < dev->real_num_tx_queues)
 			return -EPERM;
@@ -323,10 +319,10 @@ static int qeth_set_per_queue_coalesce(struct net_device *dev, u32 queue,
 	return 0;
 }
 
-/* Helper function to fill 'advertising' and 'supported' which are the same. */
-/* Autoneg and full-duplex are supported and advertised unconditionally.     */
-/* Always advertise and support all speeds up to specified, and only one     */
-/* specified port type.							     */
+ 
+ 
+ 
+ 
 static void qeth_set_ethtool_link_modes(struct ethtool_link_ksettings *cmd,
 					enum qeth_link_mode link_mode)
 {

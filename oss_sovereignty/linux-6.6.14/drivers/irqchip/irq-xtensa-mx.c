@@ -1,12 +1,4 @@
-/*
- * Xtensa MX interrupt distributor
- *
- * Copyright (C) 2002 - 2013 Tensilica, Inc.
- *
- * This file is subject to the terms and conditions of the GNU General Public
- * License.  See the file "COPYING" in the main directory of this archive
- * for more details.
- */
+ 
 
 #include <linux/interrupt.h>
 #include <linux/irqdomain.h>
@@ -37,12 +29,7 @@ static int xtensa_mx_irq_map(struct irq_domain *d, unsigned int irq,
 	return xtensa_irq_map(d, irq, hw);
 }
 
-/*
- * Device Tree IRQ specifier translation function which works with one or
- * two cell bindings. First cell value maps directly to the hwirq number.
- * Second cell if present specifies whether hwirq number is external (1) or
- * internal (0).
- */
+ 
 static int xtensa_mx_irq_domain_xlate(struct irq_domain *d,
 		struct device_node *ctrlr,
 		const u32 *intspec, unsigned int intsize,
@@ -159,7 +146,7 @@ static void __init xtensa_mx_init_common(struct irq_domain *root_domain)
 	irq_set_default_host(root_domain);
 	secondary_init_irq();
 
-	/* Initialize default IRQ routing to CPU 0 */
+	 
 	for (i = 0; i < XCHAL_NUM_EXTINTERRUPTS; ++i)
 		set_er(1, MIROUT(i));
 }

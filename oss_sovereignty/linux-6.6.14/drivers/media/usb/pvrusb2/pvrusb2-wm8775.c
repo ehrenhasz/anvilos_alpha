@@ -1,16 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *
- *  Copyright (C) 2005 Mike Isely <isely@pobox.com>
- *  Copyright (C) 2004 Aurelien Alleaume <slts@free.fr>
- */
 
-/*
+ 
 
-   This source file is specifically designed to interface with the
-   wm8775.
-
-*/
+ 
 
 #include "pvrusb2-wm8775.h"
 
@@ -31,7 +22,7 @@ void pvr2_wm8775_subdev_update(struct pvr2_hdw *hdw, struct v4l2_subdev *sd)
 			input = 1;
 			break;
 		default:
-			/* All other cases just use the second input */
+			 
 			input = 2;
 			break;
 		}

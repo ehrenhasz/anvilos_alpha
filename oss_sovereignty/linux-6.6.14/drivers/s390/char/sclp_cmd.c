@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright IBM Corp. 2007,2012
- *
- * Author(s): Peter Oberparleiter <peter.oberparleiter@de.ibm.com>
- */
+
+ 
 
 #define KMSG_COMPONENT "sclp_cmd"
 #define pr_fmt(fmt) KMSG_COMPONENT ": " fmt
@@ -59,13 +55,13 @@ int sclp_sync_request_timeout(sclp_cmdw_t cmd, void *sccb, int timeout)
 	request->callback_data = &completion;
 	init_completion(&completion);
 
-	/* Perform sclp request. */
+	 
 	rc = sclp_add_request(request);
 	if (rc)
 		goto out;
 	wait_for_completion(&completion);
 
-	/* Check response. */
+	 
 	if (request->status != SCLP_REQ_DONE) {
 		pr_warn("sync request failed (cmd=0x%08x, status=0x%02x)\n",
 			cmd, request->status);
@@ -76,9 +72,7 @@ out:
 	return rc;
 }
 
-/*
- * CPU configuration related functions.
- */
+ 
 
 #define SCLP_CMDW_CONFIGURE_CPU		0x00110001
 #define SCLP_CMDW_DECONFIGURE_CPU	0x00100001
@@ -124,10 +118,7 @@ static int do_core_configure(sclp_cmdw_t cmd)
 
 	if (!SCLP_HAS_CPU_RECONFIG)
 		return -EOPNOTSUPP;
-	/*
-	 * This is not going to cross a page boundary since we force
-	 * kmalloc to have a minimum alignment of 8 bytes on s390.
-	 */
+	 
 	sccb = kzalloc(sizeof(*sccb), GFP_KERNEL | GFP_DMA);
 	if (!sccb)
 		return -ENOMEM;
@@ -332,11 +323,7 @@ static int sclp_mem_notifier(struct notifier_block *nb,
 		sclp_attach_storage(id);
 	switch (action) {
 	case MEM_GOING_OFFLINE:
-		/*
-		 * We do not allow to set memory blocks offline that contain
-		 * standby memory. This is done to simplify the "memory online"
-		 * case.
-		 */
+		 
 		if (contains_standby_increment(start, start + size))
 			rc = -EPERM;
 		break;
@@ -452,7 +439,7 @@ static int __init sclp_detect_standby_memory(void)
 	struct read_storage_sccb *sccb;
 	int i, id, assigned, rc;
 
-	if (oldmem_data.start) /* No standby memory in kdump mode */
+	if (oldmem_data.start)  
 		return 0;
 	if ((sclp.facilities & 0xe00000000000ULL) != 0xe00000000000ULL)
 		return 0;
@@ -508,11 +495,9 @@ out:
 }
 __initcall(sclp_detect_standby_memory);
 
-#endif /* CONFIG_MEMORY_HOTPLUG */
+#endif  
 
-/*
- * Channel path configuration related functions.
- */
+ 
 
 #define SCLP_CMDW_CONFIGURE_CHPATH		0x000f0001
 #define SCLP_CMDW_DECONFIGURE_CHPATH		0x000e0001
@@ -532,7 +517,7 @@ static int do_chp_configure(sclp_cmdw_t cmd)
 
 	if (!SCLP_HAS_CHP_RECONFIG)
 		return -EOPNOTSUPP;
-	/* Prepare sccb. */
+	 
 	sccb = (struct chp_cfg_sccb *) get_zeroed_page(GFP_KERNEL | GFP_DMA);
 	if (!sccb)
 		return -ENOMEM;
@@ -557,25 +542,13 @@ out:
 	return rc;
 }
 
-/**
- * sclp_chp_configure - perform configure channel-path sclp command
- * @chpid: channel-path ID
- *
- * Perform configure channel-path command sclp command for specified chpid.
- * Return 0 after command successfully finished, non-zero otherwise.
- */
+ 
 int sclp_chp_configure(struct chp_id chpid)
 {
 	return do_chp_configure(SCLP_CMDW_CONFIGURE_CHPATH | chpid.id << 8);
 }
 
-/**
- * sclp_chp_deconfigure - perform deconfigure channel-path sclp command
- * @chpid: channel-path ID
- *
- * Perform deconfigure channel-path command sclp command for specified chpid
- * and wait for completion. On success return 0. Return non-zero otherwise.
- */
+ 
 int sclp_chp_deconfigure(struct chp_id chpid)
 {
 	return do_chp_configure(SCLP_CMDW_DECONFIGURE_CHPATH | chpid.id << 8);
@@ -591,14 +564,7 @@ struct chp_info_sccb {
 	u8 cssid;
 } __attribute__((packed));
 
-/**
- * sclp_chp_read_info - perform read channel-path information sclp command
- * @info: resulting channel-path information data
- *
- * Perform read channel-path information sclp command and wait for completion.
- * On success, store channel-path information in @info and return 0. Return
- * non-zero otherwise.
- */
+ 
 int sclp_chp_read_info(struct sclp_chp_info *info)
 {
 	struct chp_info_sccb *sccb;
@@ -606,7 +572,7 @@ int sclp_chp_read_info(struct sclp_chp_info *info)
 
 	if (!SCLP_HAS_CHP_INFO)
 		return -EOPNOTSUPP;
-	/* Prepare sccb. */
+	 
 	sccb = (struct chp_info_sccb *) get_zeroed_page(GFP_KERNEL | GFP_DMA);
 	if (!sccb)
 		return -ENOMEM;

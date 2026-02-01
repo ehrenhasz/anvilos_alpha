@@ -1,12 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
 
-/*
- * Hyper-V nested virtualization code.
- *
- * Copyright (C) 2018, Microsoft, Inc.
- *
- * Author : Lan Tianyu <Tianyu.Lan@microsoft.com>
- */
+
+ 
 #define pr_fmt(fmt)  "Hyper-V: " fmt
 
 
@@ -61,10 +55,7 @@ int hyperv_fill_flush_guest_mapping_list(
 	int gpa_n = 0;
 
 	do {
-		/*
-		 * If flush requests exceed max flush count, go back to
-		 * flush tlbs without range.
-		 */
+		 
 		if (gpa_n >= HV_MAX_FLUSH_REP_COUNT)
 			return -ENOSPC;
 

@@ -1,44 +1,20 @@
-/* mpi-inv.c  -  MPI functions
- *	Copyright (C) 1998, 2001, 2002, 2003 Free Software Foundation, Inc.
- *
- * This file is part of Libgcrypt.
- *
- * Libgcrypt is free software; you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * Libgcrypt is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this program; if not, see <http://www.gnu.org/licenses/>.
- */
+ 
 
 #include "mpi-internal.h"
 
-/****************
- * Calculate the multiplicative inverse X of A mod N
- * That is: Find the solution x for
- *		1 = (a*x) mod n
- */
+ 
 int mpi_invm(MPI x, MPI a, MPI n)
 {
-	/* Extended Euclid's algorithm (See TAOCP Vol II, 4.5.2, Alg X)
-	 * modified according to Michael Penk's solution for Exercise 35
-	 * with further enhancement
-	 */
+	 
 	MPI u, v, u1, u2 = NULL, u3, v1, v2 = NULL, v3, t1, t2 = NULL, t3;
 	unsigned int k;
 	int sign;
 	int odd;
 
 	if (!mpi_cmp_ui(a, 0))
-		return 0; /* Inverse does not exists.  */
+		return 0;  
 	if (!mpi_cmp_ui(n, 1))
-		return 0; /* Inverse does not exists.  */
+		return 0;  
 
 	u = mpi_copy(a);
 	v = mpi_copy(n);
@@ -56,10 +32,10 @@ int mpi_invm(MPI x, MPI a, MPI n)
 	v1 = mpi_copy(v);
 	if (!odd) {
 		v2 = mpi_alloc(mpi_get_nlimbs(u));
-		mpi_sub(v2, u1, u); /* U is used as const 1 */
+		mpi_sub(v2, u1, u);  
 	}
 	v3 = mpi_copy(v);
-	if (mpi_test_bit(u, 0)) { /* u is odd */
+	if (mpi_test_bit(u, 0)) {  
 		t1 = mpi_alloc_set_ui(0);
 		if (!odd) {
 			t2 = mpi_alloc_set_ui(1);
@@ -79,7 +55,7 @@ int mpi_invm(MPI x, MPI a, MPI n)
 		do {
 			if (!odd) {
 				if (mpi_test_bit(t1, 0) || mpi_test_bit(t2, 0)) {
-					/* one is odd */
+					 
 					mpi_add(t1, t1, v);
 					mpi_sub(t2, t2, u);
 				}
@@ -94,7 +70,7 @@ int mpi_invm(MPI x, MPI a, MPI n)
 			}
 Y4:
 			;
-		} while (!mpi_test_bit(t3, 0)); /* while t3 is even */
+		} while (!mpi_test_bit(t3, 0));  
 
 		if (!t3->sign) {
 			mpi_set(u1, t1);
@@ -120,8 +96,8 @@ Y4:
 			if (!odd)
 				mpi_sub(t2, t2, u);
 		}
-	} while (mpi_cmp_ui(t3, 0)); /* while t3 != 0 */
-	/* mpi_lshift( u3, k ); */
+	} while (mpi_cmp_ui(t3, 0));  
+	 
 	mpi_set(x, u1);
 
 	mpi_free(u1);

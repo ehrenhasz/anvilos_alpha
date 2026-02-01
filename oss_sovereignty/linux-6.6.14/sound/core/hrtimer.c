@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * ALSA timer back-end using hrtimer
- * Copyright (C) 2008 Takashi Iwai
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/slab.h>
@@ -18,7 +15,7 @@ MODULE_LICENSE("GPL");
 
 MODULE_ALIAS("snd-timer-" __stringify(SNDRV_TIMER_GLOBAL_HRTIMER));
 
-#define NANO_SEC	1000000000UL	/* 10^9 in sec */
+#define NANO_SEC	1000000000UL	 
 static unsigned int resolution;
 
 struct snd_hrtimer {
@@ -37,12 +34,12 @@ static enum hrtimer_restart snd_hrtimer_callback(struct hrtimer *hrt)
 
 	spin_lock(&t->lock);
 	if (!t->running)
-		goto out; /* fast path */
+		goto out;  
 	stime->in_callback = true;
 	ticks = t->sticks;
 	spin_unlock(&t->lock);
 
-	/* calculate the drift */
+	 
 	delta = ktime_sub(hrt->base->get_time(), hrtimer_get_expires(hrt));
 	if (delta > 0)
 		ticks += ktime_divns(delta, ticks * resolution);
@@ -81,8 +78,8 @@ static int snd_hrtimer_close(struct snd_timer *t)
 
 	if (stime) {
 		spin_lock_irq(&t->lock);
-		t->running = 0; /* just to be sure */
-		stime->in_callback = 1; /* skip start/stop */
+		t->running = 0;  
+		stime->in_callback = 1;  
 		spin_unlock_irq(&t->lock);
 
 		hrtimer_cancel(&stime->hrt);
@@ -121,9 +118,7 @@ static const struct snd_timer_hardware hrtimer_hw __initconst = {
 	.stop =		snd_hrtimer_stop,
 };
 
-/*
- * entry functions
- */
+ 
 
 static struct snd_timer *mytimer;
 
@@ -134,7 +129,7 @@ static int __init snd_hrtimer_init(void)
 
 	resolution = hrtimer_resolution;
 
-	/* Create a new timer and set up the fields */
+	 
 	err = snd_timer_global_new("hrtimer", SNDRV_TIMER_GLOBAL_HRTIMER,
 				   &timer);
 	if (err < 0)
@@ -145,14 +140,14 @@ static int __init snd_hrtimer_init(void)
 	timer->hw = hrtimer_hw;
 	timer->hw.resolution = resolution;
 	timer->hw.ticks = NANO_SEC / resolution;
-	timer->max_instances = 100; /* lower the limit */
+	timer->max_instances = 100;  
 
 	err = snd_timer_global_register(timer);
 	if (err < 0) {
 		snd_timer_global_free(timer);
 		return err;
 	}
-	mytimer = timer; /* remember this */
+	mytimer = timer;  
 
 	return 0;
 }

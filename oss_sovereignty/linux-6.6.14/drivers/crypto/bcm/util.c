@@ -1,35 +1,22 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright 2016 Broadcom
- */
+
+ 
 
 #include <linux/debugfs.h>
 
 #include "cipher.h"
 #include "util.h"
 
-/* offset of SPU_OFIFO_CTRL register */
+ 
 #define SPU_OFIFO_CTRL      0x40
 #define SPU_FIFO_WATERMARK  0x1FF
 
-/**
- * spu_sg_at_offset() - Find the scatterlist entry at a given distance from the
- * start of a scatterlist.
- * @sg:         [in]  Start of a scatterlist
- * @skip:       [in]  Distance from the start of the scatterlist, in bytes
- * @sge:        [out] Scatterlist entry at skip bytes from start
- * @sge_offset: [out] Number of bytes from start of sge buffer to get to
- *                    requested distance.
- *
- * Return: 0 if entry found at requested distance
- *         < 0 otherwise
- */
+ 
 int spu_sg_at_offset(struct scatterlist *sg, unsigned int skip,
 		     struct scatterlist **sge, unsigned int *sge_offset)
 {
-	/* byte index from start of sg to the end of the previous entry */
+	 
 	unsigned int index = 0;
-	/* byte index from start of sg to the end of the current entry */
+	 
 	unsigned int next_index;
 
 	next_index = sg->length;
@@ -46,7 +33,7 @@ int spu_sg_at_offset(struct scatterlist *sg, unsigned int skip,
 	return 0;
 }
 
-/* Copy len bytes of sg data, starting at offset skip, to a dest buffer */
+ 
 void sg_copy_part_to_buf(struct scatterlist *src, u8 *dest,
 			 unsigned int len, unsigned int skip)
 {
@@ -61,11 +48,7 @@ void sg_copy_part_to_buf(struct scatterlist *src, u8 *dest,
 	}
 }
 
-/*
- * Copy data into a scatterlist starting at a specified offset in the
- * scatterlist. Specifically, copy len bytes of data in the buffer src
- * into the scatterlist dest, starting skip bytes into the scatterlist.
- */
+ 
 void sg_copy_part_from_buf(struct scatterlist *dest, u8 *src,
 			   unsigned int len, unsigned int skip)
 {
@@ -80,16 +63,7 @@ void sg_copy_part_from_buf(struct scatterlist *dest, u8 *src,
 	}
 }
 
-/**
- * spu_sg_count() - Determine number of elements in scatterlist to provide a
- * specified number of bytes.
- * @sg_list:  scatterlist to examine
- * @skip:     index of starting point
- * @nbytes:   consider elements of scatterlist until reaching this number of
- *	      bytes
- *
- * Return: the number of sg entries contributing to nbytes of data
- */
+ 
 int spu_sg_count(struct scatterlist *sg_list, unsigned int skip, int nbytes)
 {
 	struct scatterlist *sg;
@@ -111,44 +85,26 @@ int spu_sg_count(struct scatterlist *sg_list, unsigned int skip, int nbytes)
 	return sg_nents;
 }
 
-/**
- * spu_msg_sg_add() - Copy scatterlist entries from one sg to another, up to a
- * given length.
- * @to_sg:       scatterlist to copy to
- * @from_sg:     scatterlist to copy from
- * @from_skip:   number of bytes to skip in from_sg. Non-zero when previous
- *		 request included part of the buffer in entry in from_sg.
- *		 Assumes from_skip < from_sg->length.
- * @from_nents:  number of entries in from_sg
- * @length:      number of bytes to copy. may reach this limit before exhausting
- *		 from_sg.
- *
- * Copies the entries themselves, not the data in the entries. Assumes to_sg has
- * enough entries. Does not limit the size of an individual buffer in to_sg.
- *
- * to_sg, from_sg, skip are all updated to end of copy
- *
- * Return: Number of bytes copied
- */
+ 
 u32 spu_msg_sg_add(struct scatterlist **to_sg,
 		   struct scatterlist **from_sg, u32 *from_skip,
 		   u8 from_nents, u32 length)
 {
-	struct scatterlist *sg;	/* an entry in from_sg */
+	struct scatterlist *sg;	 
 	struct scatterlist *to = *to_sg;
 	struct scatterlist *from = *from_sg;
 	u32 skip = *from_skip;
 	u32 offset;
 	int i;
 	u32 entry_len = 0;
-	u32 frag_len = 0;	/* length of entry added to to_sg */
-	u32 copied = 0;		/* number of bytes copied so far */
+	u32 frag_len = 0;	 
+	u32 copied = 0;		 
 
 	if (length == 0)
 		return 0;
 
 	for_each_sg(from, sg, from_nents, i) {
-		/* number of bytes in this from entry not yet used */
+		 
 		entry_len = sg->length - skip;
 		frag_len = min(entry_len, length - copied);
 		offset = sg->offset + skip;
@@ -156,8 +112,8 @@ u32 spu_msg_sg_add(struct scatterlist **to_sg,
 			sg_set_page(to++, sg_page(sg), frag_len, offset);
 		copied += frag_len;
 		if (copied == entry_len) {
-			/* used up all of from entry */
-			skip = 0;	/* start at beginning of next entry */
+			 
+			skip = 0;	 
 		}
 		if (copied == length)
 			break;
@@ -181,7 +137,7 @@ void add_to_ctr(u8 *ctr_pos, unsigned int increment)
 
 	*low_be = __cpu_to_be64(new_low);
 	if (new_low < orig_low)
-		/* there was a carry from the low 8 bytes */
+		 
 		*high_be = __cpu_to_be64(__be64_to_cpu(*high_be) + 1);
 }
 
@@ -190,23 +146,7 @@ struct sdesc {
 	char ctx[];
 };
 
-/**
- * do_shash() - Do a synchronous hash operation in software
- * @name:       The name of the hash algorithm
- * @result:     Buffer where digest is to be written
- * @data1:      First part of data to hash. May be NULL.
- * @data1_len:  Length of data1, in bytes
- * @data2:      Second part of data to hash. May be NULL.
- * @data2_len:  Length of data2, in bytes
- * @key:	Key (if keyed hash)
- * @key_len:	Length of key, in bytes (or 0 if non-keyed hash)
- *
- * Note that the crypto API will not select this driver's own transform because
- * this driver only registers asynchronous algos.
- *
- * Return: 0 if hash successfully stored in result
- *         < 0 otherwise
- */
+ 
 int do_shash(unsigned char *name, unsigned char *result,
 	     const u8 *data1, unsigned int data1_len,
 	     const u8 *data2, unsigned int data2_len,
@@ -269,12 +209,12 @@ do_shash_err:
 }
 
 #ifdef DEBUG
-/* Dump len bytes of a scatterlist starting at skip bytes into the sg */
+ 
 void __dump_sg(struct scatterlist *sg, unsigned int skip, unsigned int len)
 {
 	u8 dbuf[16];
 	unsigned int idx = skip;
-	unsigned int num_out = 0;	/* number of bytes dumped so far */
+	unsigned int num_out = 0;	 
 	unsigned int count;
 
 	if (packet_debug_logging) {
@@ -292,7 +232,7 @@ void __dump_sg(struct scatterlist *sg, unsigned int skip, unsigned int len)
 }
 #endif
 
-/* Returns the name for a given cipher alg/mode */
+ 
 char *spu_alg_name(enum spu_cipher_alg alg, enum spu_cipher_mode mode)
 {
 	switch (alg) {
@@ -477,11 +417,7 @@ static const struct file_operations spu_debugfs_stats = {
 	.read = spu_debugfs_read,
 };
 
-/*
- * Create the debug FS directories. If the top-level directory has not yet
- * been created, create it now. Create a stats file in this directory for
- * a SPU.
- */
+ 
 void spu_setup_debugfs(void)
 {
 	if (!debugfs_initialized())
@@ -492,7 +428,7 @@ void spu_setup_debugfs(void)
 							    NULL);
 
 	if (!iproc_priv.debugfs_stats)
-		/* Create file with permissions S_IRUSR */
+		 
 		debugfs_create_file("stats", 0400, iproc_priv.debugfs_dir,
 				    &iproc_priv, &spu_debugfs_stats);
 }
@@ -503,28 +439,18 @@ void spu_free_debugfs(void)
 	iproc_priv.debugfs_dir = NULL;
 }
 
-/**
- * format_value_ccm() - Format a value into a buffer, using a specified number
- *			of bytes (i.e. maybe writing value X into a 4 byte
- *			buffer, or maybe into a 12 byte buffer), as per the
- *			SPU CCM spec.
- *
- * @val:		value to write (up to max of unsigned int)
- * @buf:		(pointer to) buffer to write the value
- * @len:		number of bytes to use (0 to 255)
- *
- */
+ 
 void format_value_ccm(unsigned int val, u8 *buf, u8 len)
 {
 	int i;
 
-	/* First clear full output buffer */
+	 
 	memset(buf, 0, len);
 
-	/* Then, starting from right side, fill in with data */
+	 
 	for (i = 0; i < len; i++) {
 		buf[len - i - 1] = (val >> (8 * i)) & 0xff;
 		if (i >= 3)
-			break;  /* Only handle up to 32 bits of 'val' */
+			break;   
 	}
 }

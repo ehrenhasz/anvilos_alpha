@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * io_uring opcode handling table
- */
+
+ 
 #include <linux/kernel.h>
 #include <linux/errno.h>
 #include <linux/fs.h>
@@ -161,7 +159,7 @@ const struct io_issue_def io_issue_defs[] = {
 		.issue			= io_timeout,
 	},
 	[IORING_OP_TIMEOUT_REMOVE] = {
-		/* used by timeout updates' prep() */
+		 
 		.audit_skip		= 1,
 		.prep			= io_timeout_remove_prep,
 		.issue			= io_timeout_remove,
@@ -171,7 +169,7 @@ const struct io_issue_def io_issue_defs[] = {
 		.unbound_nonreg_file	= 1,
 		.pollin			= 1,
 		.poll_exclusive		= 1,
-		.ioprio			= 1,	/* used for flags */
+		.ioprio			= 1,	 
 #if defined(CONFIG_NET)
 		.prep			= io_accept_prep,
 		.issue			= io_accept,

@@ -1,18 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copyright (c) 2013, NVIDIA Corporation.
- */
+ 
+ 
 
-/*
- * Support for the Trusted Foundations secure monitor.
- *
- * Trusted Foundation comes active on some ARM consumer devices (most
- * Tegra-based devices sold on the market are concerned). Such devices can only
- * perform some basic operations, like setting the CPU reset vector, through
- * SMC calls to the secure monitor. The calls are completely specific to
- * Trusted Foundations, and do *not* follow the SMC calling convention or the
- * PSCI standard.
- */
+ 
 
 #ifndef __FIRMWARE_TRUSTED_FOUNDATIONS_H
 #define __FIRMWARE_TRUSTED_FOUNDATIONS_H
@@ -45,7 +34,7 @@ void register_trusted_foundations(struct trusted_foundations_platform_data *pd);
 void of_register_trusted_foundations(void);
 bool trusted_foundations_registered(void);
 
-#else /* CONFIG_TRUSTED_FOUNDATIONS */
+#else  
 static inline void tf_dummy_write_sec(unsigned long val, unsigned int reg)
 {
 }
@@ -53,10 +42,7 @@ static inline void tf_dummy_write_sec(unsigned long val, unsigned int reg)
 static inline void register_trusted_foundations(
 				   struct trusted_foundations_platform_data *pd)
 {
-	/*
-	 * If the system requires TF and we cannot provide it, continue booting
-	 * but disable features that cannot be provided.
-	 */
+	 
 	pr_err("No support for Trusted Foundations, continuing in degraded mode.\n");
 	pr_err("Secondary processors as well as CPU PM will be disabled.\n");
 #if IS_ENABLED(CONFIG_CACHE_L2X0)
@@ -76,10 +62,7 @@ static inline void of_register_trusted_foundations(void)
 	if (!np)
 		return;
 	of_node_put(np);
-	/*
-	 * If we find the target should enable TF but does not support it,
-	 * fail as the system won't be able to do much anyway
-	 */
+	 
 	register_trusted_foundations(NULL);
 }
 
@@ -87,6 +70,6 @@ static inline bool trusted_foundations_registered(void)
 {
 	return false;
 }
-#endif /* CONFIG_TRUSTED_FOUNDATIONS */
+#endif  
 
 #endif

@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (C) 2013 Boris BREZILLON <b.brezillon.dev@gmail.com>
- *
- * Derived from:
- *	https://github.com/yuq/sunxi-nfc-mtd
- *	Copyright (C) 2013 Qiang Yu <yuq825@gmail.com>
- *
- *	https://github.com/hno/Allwinner-Info
- *	Copyright (C) 2013 Henrik Nordström <Henrik Nordström>
- *
- *	Copyright (C) 2013 Dmitriy B. <rzk333@gmail.com>
- *	Copyright (C) 2013 Sergey Lapin <slapin@ossfans.org>
- */
+
+ 
 
 #include <linux/dma-mapping.h>
 #include <linux/slab.h>
@@ -55,7 +43,7 @@
 #define NFC_RAM0_BASE		0x0400
 #define NFC_RAM1_BASE		0x0800
 
-/* define bit use in NFC_CTL */
+ 
 #define NFC_EN			BIT(0)
 #define NFC_RESET		BIT(1)
 #define NFC_BUS_WIDTH_MSK	BIT(2)
@@ -73,7 +61,7 @@
 #define NFC_DMA_TYPE_NORMAL	BIT(15)
 #define NFC_DEBUG_CTL		BIT(31)
 
-/* define bit use in NFC_ST */
+ 
 #define NFC_RB_B2R		BIT(0)
 #define NFC_CMD_INT_FLAG	BIT(1)
 #define NFC_DMA_INT_FLAG	BIT(2)
@@ -82,7 +70,7 @@
 #define NFC_NATCH_INT_FLAG	BIT(5)
 #define NFC_RB_STATE(x)		BIT(x + 8)
 
-/* define bit use in NFC_INT */
+ 
 #define NFC_B2R_INT_ENABLE	BIT(0)
 #define NFC_CMD_INT_ENABLE	BIT(1)
 #define NFC_DMA_INT_ENABLE	BIT(2)
@@ -90,16 +78,16 @@
 				 NFC_CMD_INT_ENABLE | \
 				 NFC_DMA_INT_ENABLE)
 
-/* define bit use in NFC_TIMING_CTL */
+ 
 #define NFC_TIMING_CTL_EDO	BIT(8)
 
-/* define NFC_TIMING_CFG register layout */
+ 
 #define NFC_TIMING_CFG(tWB, tADL, tWHR, tRHW, tCAD)		\
 	(((tWB) & 0x3) | (((tADL) & 0x3) << 2) |		\
 	(((tWHR) & 0x3) << 4) | (((tRHW) & 0x3) << 6) |		\
 	(((tCAD) & 0x7) << 8))
 
-/* define bit use in NFC_CMD */
+ 
 #define NFC_CMD_LOW_BYTE_MSK	GENMASK(7, 0)
 #define NFC_CMD_HIGH_BYTE_MSK	GENMASK(15, 8)
 #define NFC_CMD(x)		(x)
@@ -121,18 +109,18 @@
 #define NFC_ECC_OP		(1 << 30)
 #define NFC_PAGE_OP		(2U << 30)
 
-/* define bit use in NFC_RCMD_SET */
+ 
 #define NFC_READ_CMD_MSK	GENMASK(7, 0)
 #define NFC_RND_READ_CMD0_MSK	GENMASK(15, 8)
 #define NFC_RND_READ_CMD1_MSK	GENMASK(23, 16)
 
-/* define bit use in NFC_WCMD_SET */
+ 
 #define NFC_PROGRAM_CMD_MSK	GENMASK(7, 0)
 #define NFC_RND_WRITE_CMD_MSK	GENMASK(15, 8)
 #define NFC_READ_CMD0_MSK	GENMASK(23, 16)
 #define NFC_READ_CMD1_MSK	GENMASK(31, 24)
 
-/* define bit use in NFC_ECC_CTL */
+ 
 #define NFC_ECC_EN		BIT(0)
 #define NFC_ECC_PIPELINE	BIT(3)
 #define NFC_ECC_EXCEPTION	BIT(4)
@@ -145,7 +133,7 @@
 #define NFC_RANDOM_SEED_MSK	GENMASK(30, 16)
 #define NFC_RANDOM_SEED(x)	((x) << 16)
 
-/* define bit use in NFC_ECC_ST */
+ 
 #define NFC_ECC_ERR(x)		BIT(x)
 #define NFC_ECC_ERR_MSK		GENMASK(15, 0)
 #define NFC_ECC_PAT_FOUND(x)	BIT(x + 16)
@@ -157,38 +145,18 @@
 
 #define NFC_MAX_CS		7
 
-/**
- * struct sunxi_nand_chip_sel - stores information related to NAND Chip Select
- *
- * @cs: the NAND CS id used to communicate with a NAND Chip
- * @rb: the Ready/Busy pin ID. -1 means no R/B pin connected to the NFC
- */
+ 
 struct sunxi_nand_chip_sel {
 	u8 cs;
 	s8 rb;
 };
 
-/**
- * struct sunxi_nand_hw_ecc - stores information related to HW ECC support
- *
- * @ecc_ctl: ECC_CTL register value for this NAND chip
- */
+ 
 struct sunxi_nand_hw_ecc {
 	u32 ecc_ctl;
 };
 
-/**
- * struct sunxi_nand_chip - stores NAND chip device related information
- *
- * @node: used to store NAND chips into a list
- * @nand: base NAND chip structure
- * @ecc: ECC controller structure
- * @clk_rate: clk_rate required for this NAND chip
- * @timing_cfg: TIMING_CFG register value for this NAND chip
- * @timing_ctl: TIMING_CTL register value for this NAND chip
- * @nsels: number of CS lines required by the NAND chip
- * @sels: array of CS lines descriptions
- */
+ 
 struct sunxi_nand_chip {
 	struct list_head node;
 	struct nand_chip nand;
@@ -205,38 +173,14 @@ static inline struct sunxi_nand_chip *to_sunxi_nand(struct nand_chip *nand)
 	return container_of(nand, struct sunxi_nand_chip, nand);
 }
 
-/*
- * NAND Controller capabilities structure: stores NAND controller capabilities
- * for distinction between compatible strings.
- *
- * @has_mdma:		Use mbus dma mode, otherwise general dma
- *			through MBUS on A23/A33 needs extra configuration.
- * @reg_io_data:	I/O data register
- * @dma_maxburst:	DMA maxburst
- */
+ 
 struct sunxi_nfc_caps {
 	bool has_mdma;
 	unsigned int reg_io_data;
 	unsigned int dma_maxburst;
 };
 
-/**
- * struct sunxi_nfc - stores sunxi NAND controller information
- *
- * @controller: base controller structure
- * @dev: parent device (used to print error messages)
- * @regs: NAND controller registers
- * @ahb_clk: NAND controller AHB clock
- * @mod_clk: NAND controller mod clock
- * @reset: NAND controller reset line
- * @assigned_cs: bitmask describing already assigned CS lines
- * @clk_rate: NAND controller current clock rate
- * @chips: a list containing all the NAND chips attached to this NAND
- *	   controller
- * @complete: a completion object used to wait for NAND controller events
- * @dmac: the DMA channel attached to the NAND controller
- * @caps: NAND Controller capabilities
- */
+ 
 struct sunxi_nfc {
 	struct nand_controller controller;
 	struct device *dev;
@@ -465,7 +409,7 @@ static void sunxi_nfc_read_buf(struct nand_chip *nand, uint8_t *buf, int len)
 		tmp = NFC_DATA_TRANS | NFC_DATA_SWAP_METHOD;
 		writel(tmp, nfc->regs + NFC_REG_CMD);
 
-		/* Arbitrary limit for polling mode */
+		 
 		if (cnt < 64)
 			poll = true;
 
@@ -505,7 +449,7 @@ static void sunxi_nfc_write_buf(struct nand_chip *nand, const uint8_t *buf,
 		      NFC_ACCESS_DIR;
 		writel(tmp, nfc->regs + NFC_REG_CMD);
 
-		/* Arbitrary limit for polling mode */
+		 
 		if (cnt < 64)
 			poll = true;
 
@@ -517,7 +461,7 @@ static void sunxi_nfc_write_buf(struct nand_chip *nand, const uint8_t *buf,
 	}
 }
 
-/* These seed values have been extracted from Allwinner's BSP */
+ 
 static const u16 sunxi_nfc_randomizer_page_seeds[] = {
 	0x2b75, 0x0bd0, 0x5ca3, 0x62d1, 0x1c93, 0x07e9, 0x2162, 0x3a72,
 	0x0d67, 0x67f9, 0x1be7, 0x077d, 0x032f, 0x0dac, 0x2716, 0x2436,
@@ -537,15 +481,7 @@ static const u16 sunxi_nfc_randomizer_page_seeds[] = {
 	0x7c57, 0x0fbe, 0x46ce, 0x4939, 0x6b17, 0x37bb, 0x3e91, 0x76db,
 };
 
-/*
- * sunxi_nfc_randomizer_ecc512_seeds and sunxi_nfc_randomizer_ecc1024_seeds
- * have been generated using
- * sunxi_nfc_randomizer_step(seed, (step_size * 8) + 15), which is what
- * the randomizer engine does internally before de/scrambling OOB data.
- *
- * Those tables are statically defined to avoid calculating randomizer state
- * at runtime.
- */
+ 
 static const u16 sunxi_nfc_randomizer_ecc512_seeds[] = {
 	0x3346, 0x367f, 0x1f18, 0x769a, 0x4f64, 0x068c, 0x2ef1, 0x6b64,
 	0x28a9, 0x15d7, 0x30f8, 0x3659, 0x53db, 0x7c5f, 0x71d4, 0x4409,
@@ -588,10 +524,7 @@ static u16 sunxi_nfc_randomizer_step(u16 state, int count)
 {
 	state &= 0x7fff;
 
-	/*
-	 * This loop is just a simple implementation of a Fibonacci LFSR using
-	 * the x16 + x15 + 1 polynomial.
-	 */
+	 
 	while (count--)
 		state = ((state >> 1) |
 			 (((state ^ (state >> 1)) & 1) << 14)) & 0x7fff;
@@ -720,7 +653,7 @@ static void sunxi_nfc_hw_ecc_get_prot_oob_bytes(struct nand_chip *nand, u8 *oob,
 	sunxi_nfc_user_data_to_buf(readl(nfc->regs + NFC_REG_USER_DATA(step)),
 				   oob);
 
-	/* De-randomize the Bad Block Marker. */
+	 
 	if (bbm && (nand->options & NAND_NEED_SCRAMBLING))
 		sunxi_nfc_randomize_bbm(nand, page, oob);
 }
@@ -732,7 +665,7 @@ static void sunxi_nfc_hw_ecc_set_prot_oob_bytes(struct nand_chip *nand,
 	struct sunxi_nfc *nfc = to_sunxi_nfc(nand->controller);
 	u8 user_data[4];
 
-	/* Randomize the Bad Block Marker. */
+	 
 	if (bbm && (nand->options & NAND_NEED_SCRAMBLING)) {
 		memcpy(user_data, oob, sizeof(user_data));
 		sunxi_nfc_randomize_bbm(nand, page, user_data);
@@ -835,10 +768,7 @@ static int sunxi_nfc_hw_ecc_read_chunk(struct nand_chip *nand,
 		return 1;
 
 	if (ret < 0) {
-		/*
-		 * Re-read the data with the randomizer disabled to identify
-		 * bitflips in erased pages.
-		 */
+		 
 		if (nand->options & NAND_NEED_SCRAMBLING)
 			nand_change_read_column_op(nand, data_off, data,
 						   ecc->size, false);
@@ -963,12 +893,12 @@ static int sunxi_nfc_hw_ecc_read_chunks_dma(struct nand_chip *nand, uint8_t *buf
 					       oob_required ? oob : NULL,
 					       i, status, &erased);
 
-		/* ECC errors are handled in the second loop. */
+		 
 		if (ret < 0)
 			continue;
 
 		if (oob_required && !erased) {
-			/* TODO: use DMA to retrieve OOB */
+			 
 			nand_change_read_column_op(nand,
 						   mtd->writesize + oob_off,
 						   oob, ecc->bytes + 4, false);
@@ -993,17 +923,13 @@ static int sunxi_nfc_hw_ecc_read_chunks_dma(struct nand_chip *nand, uint8_t *buf
 			if (!(status & NFC_ECC_ERR(i)))
 				continue;
 
-			/*
-			 * Re-read the data with the randomizer disabled to
-			 * identify bitflips in erased pages.
-			 * TODO: use DMA to read page in raw mode
-			 */
+			 
 			if (randomized)
 				nand_change_read_column_op(nand, data_off,
 							   data, ecc->size,
 							   false);
 
-			/* TODO: use DMA to retrieve OOB */
+			 
 			nand_change_read_column_op(nand,
 						   mtd->writesize + oob_off,
 						   oob, ecc->bytes + 4, false);
@@ -1142,7 +1068,7 @@ static int sunxi_nfc_hw_ecc_read_page_dma(struct nand_chip *nand, u8 *buf,
 	if (ret >= 0)
 		return ret;
 
-	/* Fallback to PIO mode */
+	 
 	return sunxi_nfc_hw_ecc_read_page(nand, buf, oob_required, page);
 }
 
@@ -1197,7 +1123,7 @@ static int sunxi_nfc_hw_ecc_read_subpage_dma(struct nand_chip *nand,
 	if (ret >= 0)
 		return ret;
 
-	/* Fallback to PIO mode */
+	 
 	return sunxi_nfc_hw_ecc_read_subpage(nand, data_offs, readlen,
 					     buf, page);
 }
@@ -1333,7 +1259,7 @@ static int sunxi_nfc_hw_ecc_write_page_dma(struct nand_chip *nand,
 		return ret;
 
 	if (oob_required || (nand->options & NAND_NEED_SCRAMBLING))
-		/* TODO: use DMA to transfer extra OOB bytes ? */
+		 
 		sunxi_nfc_hw_ecc_write_extra_oob(nand, nand->oob_poi,
 						 NULL, page);
 
@@ -1361,7 +1287,7 @@ static int sunxi_nfc_hw_ecc_write_oob(struct nand_chip *nand, int page)
 	if (ret)
 		return ret;
 
-	/* Send command to program the OOB data */
+	 
 	return nand_prog_page_end_op(nand);
 }
 
@@ -1379,7 +1305,7 @@ static int _sunxi_nand_lookup_timing(const s32 *lut, int lut_size, u32 duration,
 			return i;
 	}
 
-	/* Doesn't fit */
+	 
 	return -EINVAL;
 }
 
@@ -1400,67 +1326,67 @@ static int sunxi_nfc_setup_interface(struct nand_chip *nand, int csline,
 	if (IS_ERR(timings))
 		return -ENOTSUPP;
 
-	/* T1 <=> tCLS */
+	 
 	if (timings->tCLS_min > min_clk_period)
 		min_clk_period = timings->tCLS_min;
 
-	/* T2 <=> tCLH */
+	 
 	if (timings->tCLH_min > min_clk_period)
 		min_clk_period = timings->tCLH_min;
 
-	/* T3 <=> tCS */
+	 
 	if (timings->tCS_min > min_clk_period)
 		min_clk_period = timings->tCS_min;
 
-	/* T4 <=> tCH */
+	 
 	if (timings->tCH_min > min_clk_period)
 		min_clk_period = timings->tCH_min;
 
-	/* T5 <=> tWP */
+	 
 	if (timings->tWP_min > min_clk_period)
 		min_clk_period = timings->tWP_min;
 
-	/* T6 <=> tWH */
+	 
 	if (timings->tWH_min > min_clk_period)
 		min_clk_period = timings->tWH_min;
 
-	/* T7 <=> tALS */
+	 
 	if (timings->tALS_min > min_clk_period)
 		min_clk_period = timings->tALS_min;
 
-	/* T8 <=> tDS */
+	 
 	if (timings->tDS_min > min_clk_period)
 		min_clk_period = timings->tDS_min;
 
-	/* T9 <=> tDH */
+	 
 	if (timings->tDH_min > min_clk_period)
 		min_clk_period = timings->tDH_min;
 
-	/* T10 <=> tRR */
+	 
 	if (timings->tRR_min > (min_clk_period * 3))
 		min_clk_period = DIV_ROUND_UP(timings->tRR_min, 3);
 
-	/* T11 <=> tALH */
+	 
 	if (timings->tALH_min > min_clk_period)
 		min_clk_period = timings->tALH_min;
 
-	/* T12 <=> tRP */
+	 
 	if (timings->tRP_min > min_clk_period)
 		min_clk_period = timings->tRP_min;
 
-	/* T13 <=> tREH */
+	 
 	if (timings->tREH_min > min_clk_period)
 		min_clk_period = timings->tREH_min;
 
-	/* T14 <=> tRC */
+	 
 	if (timings->tRC_min > (min_clk_period * 2))
 		min_clk_period = DIV_ROUND_UP(timings->tRC_min, 2);
 
-	/* T15 <=> tWC */
+	 
 	if (timings->tWC_min > (min_clk_period * 2))
 		min_clk_period = DIV_ROUND_UP(timings->tWC_min, 2);
 
-	/* T16 - T19 + tCAD */
+	 
 	if (timings->tWB_max > (min_clk_period * 20))
 		min_clk_period = DIV_ROUND_UP(timings->tWB_max, 20);
 
@@ -1473,17 +1399,7 @@ static int sunxi_nfc_setup_interface(struct nand_chip *nand, int csline,
 	if (timings->tRHW_min > (min_clk_period * 20))
 		min_clk_period = DIV_ROUND_UP(timings->tRHW_min, 20);
 
-	/*
-	 * In non-EDO, tREA should be less than tRP to guarantee that the
-	 * controller does not sample the IO lines too early. Unfortunately,
-	 * the sunxi NAND controller does not allow us to have different
-	 * values for tRP and tREH (tRP = tREH = tRW / 2).
-	 *
-	 * We have 2 options to overcome this limitation:
-	 *
-	 * 1/ Extend tRC to fulfil the tREA <= tRC / 2 constraint
-	 * 2/ Use EDO mode (only works if timings->tRLOH > 0)
-	 */
+	 
 	if (timings->tREA_max > min_clk_period && !timings->tRLOH_min)
 		min_clk_period = timings->tREA_max;
 
@@ -1516,24 +1432,16 @@ static int sunxi_nfc_setup_interface(struct nand_chip *nand, int csline,
 	if (csline == NAND_DATA_IFACE_CHECK_ONLY)
 		return 0;
 
-	/*
-	 * TODO: according to ONFI specs this value only applies for DDR NAND,
-	 * but Allwinner seems to set this to 0x7. Mimic them for now.
-	 */
+	 
 	tCAD = 0x7;
 
-	/* TODO: A83 has some more bits for CDQSS, CS, CLHZ, CCS, WC */
+	 
 	sunxi_nand->timing_cfg = NFC_TIMING_CFG(tWB, tADL, tWHR, tRHW, tCAD);
 
-	/* Convert min_clk_period from picoseconds to nanoseconds */
+	 
 	min_clk_period = DIV_ROUND_UP(min_clk_period, 1000);
 
-	/*
-	 * Unlike what is stated in Allwinner datasheet, the clk_rate should
-	 * be set to (1 / min_clk_period), and not (2 / min_clk_period).
-	 * This new formula was verified with a scope and validated by
-	 * Allwinner engineers.
-	 */
+	 
 	sunxi_nand->clk_rate = NSEC_PER_SEC / min_clk_period;
 	real_clk_rate = clk_round_rate(nfc->mod_clk, sunxi_nand->clk_rate);
 	if (real_clk_rate <= 0) {
@@ -1544,11 +1452,7 @@ static int sunxi_nfc_setup_interface(struct nand_chip *nand, int csline,
 
 	sunxi_nand->timing_ctl = 0;
 
-	/*
-	 * ONFI specification 3.1, paragraph 4.15.2 dictates that EDO data
-	 * output cycle timings shall be used if the host drives tRC less than
-	 * 30 ns. We should also use EDO mode if tREA is bigger than tRP.
-	 */
+	 
 	min_clk_period = NSEC_PER_SEC / real_clk_rate;
 	if (min_clk_period * 2 < 30 || min_clk_period * 1000 < timings->tREA_max)
 		sunxi_nand->timing_ctl = NFC_TIMING_CTL_EDO;
@@ -1580,11 +1484,7 @@ static int sunxi_nand_ooblayout_free(struct mtd_info *mtd, int section,
 	if (section > ecc->steps)
 		return -ERANGE;
 
-	/*
-	 * The first 2 bytes are used for BB markers, hence we
-	 * only have 2 bytes available in the first user data
-	 * section.
-	 */
+	 
 	if (!section && ecc->engine_type == NAND_ECC_ENGINE_TYPE_ON_HOST) {
 		oobregion->offset = 2;
 		oobregion->length = 2;
@@ -1592,10 +1492,7 @@ static int sunxi_nand_ooblayout_free(struct mtd_info *mtd, int section,
 		return 0;
 	}
 
-	/*
-	 * The controller does not provide access to OOB bytes
-	 * past the end of the ECC data.
-	 */
+	 
 	if (section == ecc->steps && ecc->engine_type == NAND_ECC_ENGINE_TYPE_ON_HOST)
 		return -ERANGE;
 
@@ -1632,13 +1529,13 @@ static int sunxi_nand_hw_ecc_ctrl_init(struct nand_chip *nand,
 		ecc->size = 1024;
 		nsectors = mtd->writesize / ecc->size;
 
-		/* Reserve 2 bytes for the BBM */
+		 
 		bytes = (mtd->oobsize - 2) / nsectors;
 
-		/* 4 non-ECC bytes are added before each ECC bytes section */
+		 
 		bytes -= 4;
 
-		/* and bytes has to be even. */
+		 
 		if (bytes % 2)
 			bytes--;
 
@@ -1658,19 +1555,16 @@ static int sunxi_nand_hw_ecc_ctrl_init(struct nand_chip *nand,
 	if (ecc->size != 512 && ecc->size != 1024)
 		return -EINVAL;
 
-	/* Prefer 1k ECC chunk over 512 ones */
+	 
 	if (ecc->size == 512 && mtd->writesize > 512) {
 		ecc->size = 1024;
 		ecc->strength *= 2;
 	}
 
-	/* Add ECC info retrieval from DT */
+	 
 	for (i = 0; i < ARRAY_SIZE(strengths); i++) {
 		if (ecc->strength <= strengths[i]) {
-			/*
-			 * Update ecc->strength value with the actual strength
-			 * that will be used by the ECC engine.
-			 */
+			 
 			ecc->strength = strengths[i];
 			break;
 		}
@@ -1681,10 +1575,10 @@ static int sunxi_nand_hw_ecc_ctrl_init(struct nand_chip *nand,
 		return -ENOTSUPP;
 	}
 
-	/* HW ECC always request ECC bytes for 1024 bytes blocks */
+	 
 	ecc->bytes = DIV_ROUND_UP(ecc->strength * fls(8 * 1024), 8);
 
-	/* HW ECC always work with even numbers of ECC bytes */
+	 
 	ecc->bytes = ALIGN(ecc->bytes, 2);
 
 	nsectors = mtd->writesize / ecc->size;
@@ -1707,7 +1601,7 @@ static int sunxi_nand_hw_ecc_ctrl_init(struct nand_chip *nand,
 		ecc->write_page = sunxi_nfc_hw_ecc_write_page;
 	}
 
-	/* TODO: support DMA for raw accesses and subpage write */
+	 
 	ecc->write_subpage = sunxi_nfc_hw_ecc_write_subpage;
 	ecc->read_oob_raw = nand_read_oob_std;
 	ecc->write_oob_raw = nand_write_oob_std;
@@ -1992,14 +1886,11 @@ static int sunxi_nand_chip_init(struct device *dev, struct sunxi_nfc *nfc,
 	}
 
 	nand = &sunxi_nand->nand;
-	/* Default tR value specified in the ONFI spec (chapter 4.15.1) */
+	 
 	nand->controller = &nfc->controller;
 	nand->controller->ops = &sunxi_nand_controller_ops;
 
-	/*
-	 * Set the ECC mode to the default value in case nothing is specified
-	 * in the DT.
-	 */
+	 
 	nand->ecc.engine_type = NAND_ECC_ENGINE_TYPE_ON_HOST;
 	nand_set_flash_node(nand, np);
 
@@ -2053,7 +1944,7 @@ static int sunxi_nfc_dma_init(struct sunxi_nfc *nfc, struct resource *r)
 		if (ret == -EPROBE_DEFER)
 			return ret;
 
-		/* Ignore errors to fall back to PIO mode */
+		 
 		dev_warn(nfc->dev, "failed to request rxtx DMA channel: %d\n", ret);
 		nfc->dmac = NULL;
 	} else {
@@ -2188,7 +2079,7 @@ static const struct of_device_id sunxi_nfc_ids[] = {
 		.compatible = "allwinner,sun8i-a23-nand-controller",
 		.data = &sunxi_nfc_a23_caps,
 	},
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, sunxi_nfc_ids);
 

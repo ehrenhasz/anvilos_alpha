@@ -1,17 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * An extensible bitmap is a bitmap that supports an
- * arbitrary number of bits.  Extensible bitmaps are
- * used to represent sets of values, such as types,
- * roles, categories, and classes.
- *
- * Each extensible bitmap is implemented as a linked
- * list of bitmap nodes, where each bitmap node has
- * an explicitly specified starting bit position within
- * the total bitmap.
- *
- * Author : Stephen Smalley, <stephen.smalley.work@gmail.com>
- */
+ 
+ 
 #ifndef _SS_EBITMAP_H_
 #define _SS_EBITMAP_H_
 
@@ -38,8 +26,8 @@ struct ebitmap_node {
 };
 
 struct ebitmap {
-	struct ebitmap_node *node;	/* first node in the bitmap */
-	u32 highbit;	/* highest position in the total bitmap */
+	struct ebitmap_node *node;	 
+	u32 highbit;	 
 };
 
 #define ebitmap_length(e) ((e)->highbit)
@@ -151,4 +139,4 @@ static inline int ebitmap_netlbl_import(struct ebitmap *ebmap,
 }
 #endif
 
-#endif	/* _SS_EBITMAP_H_ */
+#endif	 

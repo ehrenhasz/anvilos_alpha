@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * vsp1_rwpf.h  --  R-Car VSP1 Read and Write Pixel Formatters
- *
- * Copyright (C) 2013-2014 Renesas Electronics Corporation
- *
- * Contact: Laurent Pinchart (laurent.pinchart@ideasonboard.com)
- */
+ 
+ 
 #ifndef __VSP1_RWPF_H__
 #define __VSP1_RWPF_H__
 
@@ -86,4 +80,4 @@ extern const struct v4l2_subdev_pad_ops vsp1_rwpf_pad_ops;
 struct v4l2_rect *vsp1_rwpf_get_crop(struct vsp1_rwpf *rwpf,
 				     struct v4l2_subdev_state *sd_state);
 
-#endif /* __VSP1_RWPF_H__ */
+#endif  

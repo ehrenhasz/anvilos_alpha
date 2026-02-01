@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * test_free_pages.c: Check that free_pages() doesn't leak memory
- * Copyright (c) 2020 Oracle
- * Author: Matthew Wilcox <willy@infradead.org>
- */
+
+ 
 
 #define pr_fmt(fmt)	KBUILD_MODNAME ": " fmt
 
@@ -19,7 +15,7 @@ static void test_free_pages(gfp_t gfp)
 		unsigned long addr = __get_free_pages(gfp, 3);
 		struct page *page = virt_to_page((void *)addr);
 
-		/* Simulate page cache getting a speculative reference */
+		 
 		get_page(page);
 		free_pages(addr, 3);
 		put_page(page);

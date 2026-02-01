@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// rt711.c -- rt711 ALSA SoC audio driver
-//
-// Copyright(c) 2019 Realtek Semiconductor Corp.
-//
-//
+
+
+
+
+
+
+
 
 #include <linux/module.h>
 #include <linux/moduleparam.h>
@@ -95,16 +95,16 @@ static int rt711_calibration(struct rt711_priv *rt711)
 
 	dev = regmap_get_device(regmap);
 
-	/* Calibration manual mode */
+	 
 	rt711_index_update_bits(regmap, RT711_VENDOR_REG, RT711_FSM_CTL,
 		0xf, 0x0);
 
-	/* trigger */
+	 
 	rt711_index_update_bits(regmap, RT711_VENDOR_CALI,
 		RT711_DAC_DC_CALI_CTL1, RT711_DAC_DC_CALI_TRIGGER,
 		RT711_DAC_DC_CALI_TRIGGER);
 
-	/* wait for calibration process */
+	 
 	rt711_index_read(regmap, RT711_VENDOR_CALI,
 		RT711_DAC_DC_CALI_CTL1, &val);
 
@@ -122,7 +122,7 @@ static int rt711_calibration(struct rt711_priv *rt711)
 			RT711_DAC_DC_CALI_CTL1, &val);
 	}
 
-	/* depop mode */
+	 
 	rt711_index_update_bits(regmap, RT711_VENDOR_REG,
 		RT711_FSM_CTL, 0xf, RT711_DEPOP_CTL);
 
@@ -258,9 +258,9 @@ static void rt711_jack_detect_handler(struct work_struct *work)
 	if (ret < 0)
 		goto io_error;
 
-	/* pin attached */
+	 
 	if (jack_status & (1 << 31)) {
-		/* jack in */
+		 
 		if (rt711->jack_type == 0) {
 			ret = rt711_headset_detect(rt711);
 			if (ret < 0)
@@ -268,11 +268,11 @@ static void rt711_jack_detect_handler(struct work_struct *work)
 			if (rt711->jack_type == SND_JACK_HEADSET)
 				btn_type = rt711_button_detect(rt711);
 		} else if (rt711->jack_type == SND_JACK_HEADSET) {
-			/* jack is already in, report button event */
+			 
 			btn_type = rt711_button_detect(rt711);
 		}
 	} else {
-		/* jack out */
+		 
 		rt711->jack_type = 0;
 	}
 
@@ -287,7 +287,7 @@ static void rt711_jack_detect_handler(struct work_struct *work)
 			SND_JACK_BTN_2 | SND_JACK_BTN_3);
 
 	if (btn_type) {
-		/* button released */
+		 
 		snd_soc_jack_report(rt711->hs_jack, rt711->jack_type,
 			SND_JACK_HEADSET |
 			SND_JACK_BTN_0 | SND_JACK_BTN_1 |
@@ -315,17 +315,17 @@ static void rt711_btn_check_handler(struct work_struct *work)
 	if (ret < 0)
 		goto io_error;
 
-	/* pin attached */
+	 
 	if (jack_status & (1 << 31)) {
 		if (rt711->jack_type == SND_JACK_HEADSET) {
-			/* jack is already in, report button event */
+			 
 			btn_type = rt711_button_detect(rt711);
 		}
 	} else {
 		rt711->jack_type = 0;
 	}
 
-	/* cbj comparator */
+	 
 	ret = rt711_index_read(rt711->regmap, RT711_VENDOR_REG,
 		RT711_COMBO_JACK_AUTO_CTL2, &reg);
 	if (ret < 0)
@@ -342,7 +342,7 @@ static void rt711_btn_check_handler(struct work_struct *work)
 			SND_JACK_BTN_2 | SND_JACK_BTN_3);
 
 	if (btn_type) {
-		/* button released */
+		 
 		snd_soc_jack_report(rt711->hs_jack, rt711->jack_type,
 			SND_JACK_HEADSET |
 			SND_JACK_BTN_0 | SND_JACK_BTN_1 |
@@ -364,13 +364,13 @@ static void rt711_jack_init(struct rt711_priv *rt711)
 		snd_soc_component_get_dapm(rt711->component);
 
 	mutex_lock(&rt711->calibrate_mutex);
-	/* power on */
+	 
 	if (dapm->bias_level <= SND_SOC_BIAS_STANDBY)
 		regmap_write(rt711->regmap,
 			RT711_SET_AUDIO_POWER_STATE, AC_PWRST_D0);
 
 	if (rt711->hs_jack) {
-		/* unsolicited response & IRQ control */
+		 
 		regmap_write(rt711->regmap,
 			RT711_SET_MIC2_UNSOLICITED_ENABLE, 0x82);
 		regmap_write(rt711->regmap,
@@ -384,7 +384,7 @@ static void rt711_jack_init(struct rt711_priv *rt711)
 
 		switch (rt711->jd_src) {
 		case RT711_JD1:
-			/* default settings was already for JD1 */
+			 
 			break;
 		case RT711_JD2:
 			rt711_index_update_bits(rt711->regmap, RT711_VENDOR_REG,
@@ -447,7 +447,7 @@ static void rt711_jack_init(struct rt711_priv *rt711)
 		dev_dbg(&rt711->slave->dev, "in %s disable\n", __func__);
 	}
 
-	/* power off */
+	 
 	if (dapm->bias_level <= SND_SOC_BIAS_STANDBY)
 		regmap_write(rt711->regmap,
 			RT711_SET_AUDIO_POWER_STATE, AC_PWRST_D3);
@@ -462,7 +462,7 @@ static int rt711_set_jack_detect(struct snd_soc_component *component,
 
 	rt711->hs_jack = hs_jack;
 
-	/* we can only resume if the device was initialized at least once */
+	 
 	if (!rt711->first_hw_init)
 		return 0;
 
@@ -473,7 +473,7 @@ static int rt711_set_jack_detect(struct snd_soc_component *component,
 			return ret;
 		}
 
-		/* pm_runtime not enabled yet */
+		 
 		dev_dbg(component->dev,	"%s: skipping jack init for now\n", __func__);
 		return 0;
 	}
@@ -490,17 +490,17 @@ static void rt711_get_gain(struct rt711_priv *rt711, unsigned int addr_h,
 				unsigned int addr_l, unsigned int val_h,
 				unsigned int *r_val, unsigned int *l_val)
 {
-	/* R Channel */
+	 
 	*r_val = (val_h << 8);
 	regmap_read(rt711->regmap, addr_l, r_val);
 
-	/* L Channel */
+	 
 	val_h |= 0x20;
 	*l_val = (val_h << 8);
 	regmap_read(rt711->regmap, addr_h, l_val);
 }
 
-/* For Verb-Set Amplifier Gain (Verb ID = 3h) */
+ 
 static int rt711_set_amp_gain_put(struct snd_kcontrol *kcontrol,
 		struct snd_ctl_elem_value *ucontrol)
 {
@@ -516,30 +516,30 @@ static int rt711_set_amp_gain_put(struct snd_kcontrol *kcontrol,
 
 	mutex_lock(&rt711->calibrate_mutex);
 
-	/* Can't use update bit function, so read the original value first */
+	 
 	addr_h = mc->reg;
 	addr_l = mc->rreg;
-	if (mc->shift == RT711_DIR_OUT_SFT) /* output */
+	if (mc->shift == RT711_DIR_OUT_SFT)  
 		val_h = 0x80;
-	else /* input */
+	else  
 		val_h = 0x0;
 
 	rt711_get_gain(rt711, addr_h, addr_l, val_h, &read_rl, &read_ll);
 
-	/* L Channel */
+	 
 	if (mc->invert) {
-		/* for mute/unmute */
+		 
 		val_ll = (mc->max - ucontrol->value.integer.value[0])
 					<< RT711_MUTE_SFT;
-		/* keep gain */
+		 
 		read_ll = read_ll & 0x7f;
 		val_ll |= read_ll;
 	} else {
-		/* for gain */
+		 
 		val_ll = ((ucontrol->value.integer.value[0]) & 0x7f);
 		if (val_ll > mc->max)
 			val_ll = mc->max;
-		/* keep mute status */
+		 
 		read_ll = read_ll & (1 << RT711_MUTE_SFT);
 		val_ll |= read_ll;
 	}
@@ -548,48 +548,48 @@ static int rt711_set_amp_gain_put(struct snd_kcontrol *kcontrol,
 		regmap_write(rt711->regmap,
 				RT711_SET_AUDIO_POWER_STATE, AC_PWRST_D0);
 
-	/* R Channel */
+	 
 	if (mc->invert) {
-		/* for mute/unmute */
+		 
 		val_lr = (mc->max - ucontrol->value.integer.value[1])
 					<< RT711_MUTE_SFT;
-		/* keep gain */
+		 
 		read_rl = read_rl & 0x7f;
 		val_lr |= read_rl;
 	} else {
-		/* for gain */
+		 
 		val_lr = ((ucontrol->value.integer.value[1]) & 0x7f);
 		if (val_lr > mc->max)
 			val_lr = mc->max;
-		/* keep mute status */
+		 
 		read_rl = read_rl & (1 << RT711_MUTE_SFT);
 		val_lr |= read_rl;
 	}
 
-	for (i = 0; i < 3; i++) { /* retry 3 times at most */
+	for (i = 0; i < 3; i++) {  
 
 		if (val_ll == val_lr) {
-			/* Set both L/R channels at the same time */
+			 
 			val_h = (1 << mc->shift) | (3 << 4);
 			regmap_write(rt711->regmap,
 				addr_h, (val_h << 8 | val_ll));
 			regmap_write(rt711->regmap,
 				addr_l, (val_h << 8 | val_ll));
 		} else {
-			/* Lch*/
+			 
 			val_h = (1 << mc->shift) | (1 << 5);
 			regmap_write(rt711->regmap,
 				addr_h, (val_h << 8 | val_ll));
 
-			/* Rch */
+			 
 			val_h = (1 << mc->shift) | (1 << 4);
 			regmap_write(rt711->regmap,
 				addr_l, (val_h << 8 | val_lr));
 		}
-		/* check result */
-		if (mc->shift == RT711_DIR_OUT_SFT) /* output */
+		 
+		if (mc->shift == RT711_DIR_OUT_SFT)  
 			val_h = 0x80;
-		else /* input */
+		else  
 			val_h = 0x0;
 
 		rt711_get_gain(rt711, addr_h, addr_l, val_h,
@@ -616,22 +616,22 @@ static int rt711_set_amp_gain_get(struct snd_kcontrol *kcontrol,
 	unsigned int addr_h, addr_l, val_h;
 	unsigned int read_ll, read_rl;
 
-	/* switch to get command */
+	 
 	addr_h = mc->reg;
 	addr_l = mc->rreg;
-	if (mc->shift == RT711_DIR_OUT_SFT) /* output */
+	if (mc->shift == RT711_DIR_OUT_SFT)  
 		val_h = 0x80;
-	else /* input */
+	else  
 		val_h = 0x0;
 
 	rt711_get_gain(rt711, addr_h, addr_l, val_h, &read_rl, &read_ll);
 
 	if (mc->invert) {
-		/* mute/unmute for switch controls */
+		 
 		read_ll = !((read_ll & 0x80) >> RT711_MUTE_SFT);
 		read_rl = !((read_rl & 0x80) >> RT711_MUTE_SFT);
 	} else {
-		/* for gain volume controls */
+		 
 		read_ll = read_ll & 0x7f;
 		read_rl = read_rl & 0x7f;
 	}
@@ -696,7 +696,7 @@ static int rt711_mux_get(struct snd_kcontrol *kcontrol,
 	else
 		return -EINVAL;
 
-	/* vid = 0xf01 */
+	 
 	reg = RT711_VERB_SET_CONNECT_SEL | nid;
 	ret = regmap_read(rt711->regmap, reg, &val);
 	if (ret < 0) {
@@ -733,7 +733,7 @@ static int rt711_mux_put(struct snd_kcontrol *kcontrol,
 	else
 		return -EINVAL;
 
-	/* Verb ID = 0x701h */
+	 
 	val = snd_soc_enum_item_to_val(e, item[0]) << e->shift_l;
 
 	reg = RT711_VERB_SET_CONNECT_SEL | nid;
@@ -1003,7 +1003,7 @@ static int rt711_pcm_hw_params(struct snd_pcm_substream *substream,
 	if (!rt711->slave)
 		return -EINVAL;
 
-	/* SoundWire specific configuration */
+	 
 	snd_sdw_params_to_config(substream, params, &stream_config, &port_config);
 
 	if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK) {
@@ -1025,7 +1025,7 @@ static int rt711_pcm_hw_params(struct snd_pcm_substream *substream,
 	}
 
 	if (params_channels(params) <= 16) {
-		/* bit 3:0 Number of Channel */
+		 
 		val |= (params_channels(params) - 1);
 	} else {
 		dev_err(component->dev, "Unsupported channels %d\n",
@@ -1034,7 +1034,7 @@ static int rt711_pcm_hw_params(struct snd_pcm_substream *substream,
 	}
 
 	switch (params_width(params)) {
-	/* bit 6:4 Bits per Sample */
+	 
 	case 8:
 		break;
 	case 16:
@@ -1053,7 +1053,7 @@ static int rt711_pcm_hw_params(struct snd_pcm_substream *substream,
 		return -EINVAL;
 	}
 
-	/* 48Khz */
+	 
 	regmap_write(rt711->regmap, RT711_DAC_FORMAT_H, val);
 	regmap_write(rt711->regmap, RT711_ADC1_FORMAT_H, val);
 	regmap_write(rt711->regmap, RT711_ADC2_FORMAT_H, val);
@@ -1121,7 +1121,7 @@ static struct snd_soc_dai_driver rt711_dai[] = {
 	}
 };
 
-/* Bus clock frequency */
+ 
 #define RT711_CLK_FREQ_9600000HZ 9600000
 #define RT711_CLK_FREQ_12000000HZ 12000000
 #define RT711_CLK_FREQ_6000000HZ 6000000
@@ -1199,14 +1199,11 @@ int rt711_init(struct device *dev, struct regmap *sdw_regmap,
 	INIT_DELAYED_WORK(&rt711->jack_btn_check_work, rt711_btn_check_handler);
 	INIT_WORK(&rt711->calibration_work, rt711_calibration_work);
 
-	/*
-	 * Mark hw_init to false
-	 * HW init will be performed when device reports present
-	 */
+	 
 	rt711->hw_init = false;
 	rt711->first_hw_init = false;
 
-	/* JD source uses JD2 in default */
+	 
 	rt711->jd_src = RT711_JD2;
 
 	ret =  devm_snd_soc_register_component(dev,
@@ -1216,20 +1213,16 @@ int rt711_init(struct device *dev, struct regmap *sdw_regmap,
 	if (ret < 0)
 		return ret;
 
-	/* set autosuspend parameters */
+	 
 	pm_runtime_set_autosuspend_delay(dev, 3000);
 	pm_runtime_use_autosuspend(dev);
 
-	/* make sure the device does not suspend immediately */
+	 
 	pm_runtime_mark_last_busy(dev);
 
 	pm_runtime_enable(dev);
 
-	/* important note: the device is NOT tagged as 'active' and will remain
-	 * 'suspended' until the hardware is enumerated/initialized. This is required
-	 * to make sure the ASoC framework use of pm_runtime_get_sync() does not silently
-	 * fail with -EACCESS because of race conditions between card creation and enumeration
-	 */
+	 
 
 	dev_dbg(dev, "%s\n", __func__);
 
@@ -1249,21 +1242,19 @@ int rt711_io_init(struct device *dev, struct sdw_slave *slave)
 	if (rt711->first_hw_init)
 		regcache_cache_bypass(rt711->regmap, true);
 
-	/*
-	 * PM runtime status is marked as 'active' only when a Slave reports as Attached
-	 */
+	 
 	if (!rt711->first_hw_init)
-		/* update count of parent 'active' children */
+		 
 		pm_runtime_set_active(&slave->dev);
 
 	pm_runtime_get_noresume(&slave->dev);
 
 	rt711_reset(rt711->regmap);
 
-	/* power on */
+	 
 	regmap_write(rt711->regmap, RT711_SET_AUDIO_POWER_STATE, AC_PWRST_D0);
 
-	/* Set Pin Widget */
+	 
 	regmap_write(rt711->regmap, RT711_SET_PIN_MIC2, 0x25);
 	regmap_write(rt711->regmap, RT711_SET_PIN_HP, 0xc0);
 	regmap_write(rt711->regmap, RT711_SET_PIN_DMIC1, 0x20);
@@ -1271,7 +1262,7 @@ int rt711_io_init(struct device *dev, struct sdw_slave *slave)
 	regmap_write(rt711->regmap, RT711_SET_PIN_LINE1, 0x20);
 	regmap_write(rt711->regmap, RT711_SET_PIN_LINE2, 0x20);
 
-	/* Mute HP/ADC1/ADC2 */
+	 
 	regmap_write(rt711->regmap, RT711_SET_GAIN_HP_H, 0xa080);
 	regmap_write(rt711->regmap, RT711_SET_GAIN_HP_H, 0x9080);
 	regmap_write(rt711->regmap, RT711_SET_GAIN_ADC2_H, 0x6080);
@@ -1279,7 +1270,7 @@ int rt711_io_init(struct device *dev, struct sdw_slave *slave)
 	regmap_write(rt711->regmap, RT711_SET_GAIN_ADC1_H, 0x6080);
 	regmap_write(rt711->regmap, RT711_SET_GAIN_ADC1_H, 0x5080);
 
-	/* Set Configuration Default */
+	 
 	regmap_write(rt711->regmap, 0x4f12, 0x91);
 	regmap_write(rt711->regmap, 0x4e12, 0xd6);
 	regmap_write(rt711->regmap, 0x4d12, 0x11);
@@ -1293,11 +1284,11 @@ int rt711_io_init(struct device *dev, struct sdw_slave *slave)
 	regmap_write(rt711->regmap, 0x4e21, 0x11);
 	regmap_write(rt711->regmap, 0x4f21, 0x01);
 
-	/* Data port arrangement */
+	 
 	rt711_index_write(rt711->regmap, RT711_VENDOR_REG,
 		RT711_TX_RX_MUX_CTL, 0x0154);
 
-	/* Set index */
+	 
 	rt711_index_write(rt711->regmap, RT711_VENDOR_REG,
 		RT711_DIGITAL_MISC_CTRL4, 0x201b);
 	rt711_index_write(rt711->regmap, RT711_VENDOR_REG,
@@ -1307,7 +1298,7 @@ int rt711_io_init(struct device *dev, struct sdw_slave *slave)
 	rt711_index_write(rt711->regmap, RT711_VENDOR_REG,
 		RT711_INLINE_CMD_CTL, 0xd249);
 
-	/* Finish Initial Settings, set power to D3 */
+	 
 	regmap_write(rt711->regmap, RT711_SET_AUDIO_POWER_STATE, AC_PWRST_D3);
 
 	if (rt711->first_hw_init)
@@ -1315,10 +1306,7 @@ int rt711_io_init(struct device *dev, struct sdw_slave *slave)
 	else
 		schedule_work(&rt711->calibration_work);
 
-	/*
-	 * if set_jack callback occurred early than io_init,
-	 * we set up the jack detection function now
-	 */
+	 
 	if (rt711->hs_jack)
 		rt711_jack_init(rt711);
 
@@ -1328,7 +1316,7 @@ int rt711_io_init(struct device *dev, struct sdw_slave *slave)
 	} else
 		rt711->first_hw_init = true;
 
-	/* Mark Slave initialization complete */
+	 
 	rt711->hw_init = true;
 
 	pm_runtime_mark_last_busy(&slave->dev);

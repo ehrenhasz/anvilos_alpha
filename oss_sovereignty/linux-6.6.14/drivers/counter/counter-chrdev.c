@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Generic Counter character device interface
- * Copyright (C) 2020 William Breathitt Gray
- */
+
+ 
 #include <linux/cdev.h>
 #include <linux/counter.h>
 #include <linux/err.h>
@@ -123,13 +120,13 @@ static void counter_events_list_free(struct list_head *const events_list)
 	struct counter_comp_node *q, *o;
 
 	list_for_each_entry_safe(p, n, events_list, l) {
-		/* Free associated component nodes */
+		 
 		list_for_each_entry_safe(q, o, &p->comp_list, l) {
 			list_del(&q->l);
 			kfree(q);
 		}
 
-		/* Free event node */
+		 
 		list_del(&p->l);
 		kfree(p);
 	}
@@ -143,27 +140,27 @@ static int counter_set_event_node(struct counter_device *const counter,
 	int err = 0;
 	struct counter_comp_node *comp_node;
 
-	/* Search for event in the list */
+	 
 	list_for_each_entry(event_node, &counter->next_events_list, l)
 		if (event_node->event == watch->event &&
 		    event_node->channel == watch->channel)
 			break;
 
-	/* If event is not already in the list */
+	 
 	if (&event_node->l == &counter->next_events_list) {
-		/* Allocate new event node */
+		 
 		event_node = kmalloc(sizeof(*event_node), GFP_KERNEL);
 		if (!event_node)
 			return -ENOMEM;
 
-		/* Configure event node and add to the list */
+		 
 		event_node->event = watch->event;
 		event_node->channel = watch->channel;
 		INIT_LIST_HEAD(&event_node->comp_list);
 		list_add(&event_node->l, &counter->next_events_list);
 	}
 
-	/* Check if component watch has already been set before */
+	 
 	list_for_each_entry(comp_node, &event_node->comp_list, l)
 		if (comp_node->parent == cfg->parent &&
 		    counter_comp_read_is_equal(comp_node->comp, cfg->comp)) {
@@ -171,7 +168,7 @@ static int counter_set_event_node(struct counter_device *const counter,
 			goto exit_free_event_node;
 		}
 
-	/* Allocate component node */
+	 
 	comp_node = kmalloc(sizeof(*comp_node), GFP_KERNEL);
 	if (!comp_node) {
 		err = -ENOMEM;
@@ -179,11 +176,11 @@ static int counter_set_event_node(struct counter_device *const counter,
 	}
 	*comp_node = *cfg;
 
-	/* Add component node to event node */
+	 
 	list_add_tail(&comp_node->l, &event_node->comp_list);
 
 exit_free_event_node:
-	/* Free event node if no one else is watching */
+	 
 	if (list_empty(&event_node->comp_list)) {
 		list_del(&event_node->l);
 		kfree(event_node);
@@ -281,7 +278,7 @@ static int counter_add_watch(struct counter_device *const counter,
 
 	parent = watch.component.parent;
 
-	/* Configure parent component info for comp node */
+	 
 	switch (watch.component.scope) {
 	case COUNTER_SCOPE_DEVICE:
 		ext = counter->ext;
@@ -313,7 +310,7 @@ static int counter_add_watch(struct counter_device *const counter,
 
 	id = watch.component.id;
 
-	/* Configure component info for comp node */
+	 
 	switch (watch.component.type) {
 	case COUNTER_COMPONENT_SIGNAL:
 		if (watch.component.scope != COUNTER_SCOPE_SIGNAL)
@@ -431,7 +428,7 @@ static int counter_chrdev_release(struct inode *inode, struct file *filp)
 	mutex_lock(&counter->ops_exist_lock);
 
 	if (!counter->ops) {
-		/* Free any lingering held memory */
+		 
 		counter_events_list_free(&counter->events_list);
 		counter_events_list_free(&counter->next_events_list);
 		ret = -ENODEV;
@@ -464,7 +461,7 @@ static const struct file_operations counter_fops = {
 
 int counter_chrdev_add(struct counter_device *const counter)
 {
-	/* Initialize Counter events lists */
+	 
 	INIT_LIST_HEAD(&counter->events_list);
 	INIT_LIST_HEAD(&counter->next_events_list);
 	spin_lock_init(&counter->events_list_lock);
@@ -473,10 +470,10 @@ int counter_chrdev_add(struct counter_device *const counter)
 	spin_lock_init(&counter->events_in_lock);
 	mutex_init(&counter->events_out_lock);
 
-	/* Initialize character device */
+	 
 	cdev_init(&counter->chrdev, &counter_fops);
 
-	/* Allocate Counter events queue */
+	 
 	return kfifo_alloc(&counter->events, 64, GFP_KERNEL);
 }
 
@@ -623,15 +620,7 @@ static int counter_get_data(struct counter_device *const counter,
 	}
 }
 
-/**
- * counter_push_event - queue event for userspace reading
- * @counter:	pointer to Counter structure
- * @event:	triggered event
- * @channel:	event channel
- *
- * Note: If no one is watching for the respective event, it is silently
- * discarded.
- */
+ 
 void counter_push_event(struct counter_device *const counter, const u8 event,
 			const u8 channel)
 {
@@ -645,20 +634,20 @@ void counter_push_event(struct counter_device *const counter, const u8 event,
 	ev.watch.event = event;
 	ev.watch.channel = channel;
 
-	/* Could be in an interrupt context, so use a spin lock */
+	 
 	spin_lock_irqsave(&counter->events_list_lock, flags);
 
-	/* Search for event in the list */
+	 
 	list_for_each_entry(event_node, &counter->events_list, l)
 		if (event_node->event == event &&
 		    event_node->channel == channel)
 			break;
 
-	/* If event is not in the list */
+	 
 	if (&event_node->l == &counter->events_list)
 		goto exit_early;
 
-	/* Read and queue relevant comp for userspace */
+	 
 	list_for_each_entry(comp_node, &event_node->comp_list, l) {
 		ev.watch.component = comp_node->component;
 		ev.status = -counter_get_data(counter, comp_node, &ev.value);

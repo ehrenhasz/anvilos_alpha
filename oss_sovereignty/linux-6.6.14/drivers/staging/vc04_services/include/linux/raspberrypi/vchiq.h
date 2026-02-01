@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause */
-/* Copyright (c) 2010-2012 Broadcom. All rights reserved. */
+ 
+ 
 
 #ifndef VCHIQ_H
 #define VCHIQ_H
@@ -8,20 +8,20 @@
 			(((x0) << 24) | ((x1) << 16) | ((x2) << 8) | (x3))
 
 enum vchiq_reason {
-	VCHIQ_SERVICE_OPENED,         /* service, -, -             */
-	VCHIQ_SERVICE_CLOSED,         /* service, -, -             */
-	VCHIQ_MESSAGE_AVAILABLE,      /* service, header, -        */
-	VCHIQ_BULK_TRANSMIT_DONE,     /* service, -, bulk_userdata */
-	VCHIQ_BULK_RECEIVE_DONE,      /* service, -, bulk_userdata */
-	VCHIQ_BULK_TRANSMIT_ABORTED,  /* service, -, bulk_userdata */
-	VCHIQ_BULK_RECEIVE_ABORTED    /* service, -, bulk_userdata */
+	VCHIQ_SERVICE_OPENED,          
+	VCHIQ_SERVICE_CLOSED,          
+	VCHIQ_MESSAGE_AVAILABLE,       
+	VCHIQ_BULK_TRANSMIT_DONE,      
+	VCHIQ_BULK_RECEIVE_DONE,       
+	VCHIQ_BULK_TRANSMIT_ABORTED,   
+	VCHIQ_BULK_RECEIVE_ABORTED     
 };
 
 enum vchiq_bulk_mode {
 	VCHIQ_BULK_MODE_CALLBACK,
 	VCHIQ_BULK_MODE_BLOCKING,
 	VCHIQ_BULK_MODE_NOCALLBACK,
-	VCHIQ_BULK_MODE_WAITING		/* Reserved for internal use */
+	VCHIQ_BULK_MODE_WAITING		 
 };
 
 enum vchiq_service_option {
@@ -33,13 +33,13 @@ enum vchiq_service_option {
 };
 
 struct vchiq_header {
-	/* The message identifier - opaque to applications. */
+	 
 	int msgid;
 
-	/* Size of message data. */
+	 
 	unsigned int size;
 
-	char data[];           /* message */
+	char data[];            
 };
 
 struct vchiq_element {
@@ -74,8 +74,8 @@ struct vchiq_service_params_kernel {
 			unsigned int handle,
 			void *bulk_userdata);
 	void *userdata;
-	short version;       /* Increment for non-trivial changes */
-	short version_min;   /* Update for incompatible changes */
+	short version;        
+	short version_min;    
 };
 
 extern int vchiq_initialise(struct vchiq_instance **pinstance);
@@ -106,4 +106,4 @@ extern int vchiq_get_peer_version(struct vchiq_instance *instance, unsigned int 
 				  short *peer_version);
 extern struct vchiq_header *vchiq_msg_hold(struct vchiq_instance *instance, unsigned int handle);
 
-#endif /* VCHIQ_H */
+#endif  

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2006-2008 PA Semi, Inc
- *
- * Ethtool hooks for the PA Semi PWRficient onchip 1G/10G Ethernet MACs
- */
+
+ 
 
 
 #include <linux/netdevice.h>

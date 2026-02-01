@@ -1,6 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
 
-/* In-place tunneling */
+
+ 
 
 #include <stdbool.h>
 #include <string.h>
@@ -42,7 +42,7 @@ static const int cfg_udp_src = 20000;
 #define NEXTHDR_DEST	60
 #endif
 
-/* MPLS label 1000 with S bit (last label) set and ttl of 255. */
+ 
 static const __u32 mpls_label = __bpf_constant_htonl(1000 << 12 |
 						     MPLS_LS_S_MASK | 0xff);
 
@@ -64,13 +64,13 @@ union l4hdr {
 struct v4hdr {
 	struct iphdr ip;
 	union l4hdr l4hdr;
-	__u8 pad[L2_PAD_SZ];		/* space for L2 header / vxlan header ... */
+	__u8 pad[L2_PAD_SZ];		 
 } __attribute__((packed));
 
 struct v6hdr {
 	struct ipv6hdr ip;
 	union l4hdr l4hdr;
-	__u8 pad[L2_PAD_SZ];		/* space for L2 header / vxlan header ... */
+	__u8 pad[L2_PAD_SZ];		 
 } __attribute__((packed));
 
 static __always_inline void set_ipv4_csum(struct iphdr *iph)
@@ -100,25 +100,18 @@ static __always_inline int __encap_ipv4(struct __sk_buff *skb, __u8 encap_proto,
 	int tcp_off;
 	__u64 flags;
 
-	/* Most tests encapsulate a packet into a tunnel with the same
-	 * network protocol, and derive the outer header fields from
-	 * the inner header.
-	 *
-	 * The 6in4 case tests different inner and outer protocols. As
-	 * the inner is ipv6, but the outer expects an ipv4 header as
-	 * input, manually build a struct iphdr based on the ipv6hdr.
-	 */
+	 
 	if (encap_proto == IPPROTO_IPV6) {
 		const __u32 saddr = (192 << 24) | (168 << 16) | (1 << 8) | 1;
 		const __u32 daddr = (192 << 24) | (168 << 16) | (1 << 8) | 2;
 		struct ipv6hdr iph6_inner;
 
-		/* Read the IPv6 header */
+		 
 		if (bpf_skb_load_bytes(skb, ETH_HLEN, &iph6_inner,
 				       sizeof(iph6_inner)) < 0)
 			return TC_ACT_OK;
 
-		/* Derive the IPv4 header fields from the IPv6 header */
+		 
 		memset(&iph_inner, 0, sizeof(iph_inner));
 		iph_inner.version = 4;
 		iph_inner.ihl = 5;
@@ -138,7 +131,7 @@ static __always_inline int __encap_ipv4(struct __sk_buff *skb, __u8 encap_proto,
 		tcp_off = sizeof(iph_inner);
 	}
 
-	/* filter only packets we want */
+	 
 	if (iph_inner.ihl != 5 || iph_inner.protocol != IPPROTO_TCP)
 		return TC_ACT_OK;
 
@@ -194,7 +187,7 @@ static __always_inline int __encap_ipv4(struct __sk_buff *skb, __u8 encap_proto,
 		return TC_ACT_OK;
 	}
 
-	/* add L2 encap (if specified) */
+	 
 	l2_hdr = (__u8 *)&h_outer + olen;
 	switch (l2_proto) {
 	case ETH_P_MPLS_UC:
@@ -219,11 +212,11 @@ static __always_inline int __encap_ipv4(struct __sk_buff *skb, __u8 encap_proto,
 	}
 	olen += l2_len;
 
-	/* add room between mac and network header */
+	 
 	if (bpf_skb_adjust_room(skb, olen, BPF_ADJ_ROOM_MAC, flags))
 		return TC_ACT_SHOT;
 
-	/* prepare new outer network header */
+	 
 	h_outer.ip = iph_inner;
 	h_outer.ip.tot_len = bpf_htons(olen +
 				       bpf_ntohs(h_outer.ip.tot_len));
@@ -231,12 +224,12 @@ static __always_inline int __encap_ipv4(struct __sk_buff *skb, __u8 encap_proto,
 
 	set_ipv4_csum((void *)&h_outer.ip);
 
-	/* store new outer network header */
+	 
 	if (bpf_skb_store_bytes(skb, ETH_HLEN, &h_outer, olen,
 				BPF_F_INVALIDATE_HASH) < 0)
 		return TC_ACT_SHOT;
 
-	/* if changing outer proto type, update eth->h_proto */
+	 
 	if (encap_proto == IPPROTO_IPV6) {
 		struct ethhdr eth;
 
@@ -272,7 +265,7 @@ static __always_inline int __encap_ipv6(struct __sk_buff *skb, __u8 encap_proto,
 			       sizeof(iph_inner)) < 0)
 		return TC_ACT_OK;
 
-	/* filter only packets we want */
+	 
 	if (bpf_skb_load_bytes(skb, ETH_HLEN + sizeof(iph_inner),
 			       &tcph, sizeof(tcph)) < 0)
 		return TC_ACT_OK;
@@ -324,7 +317,7 @@ static __always_inline int __encap_ipv6(struct __sk_buff *skb, __u8 encap_proto,
 		return TC_ACT_OK;
 	}
 
-	/* add L2 encap (if specified) */
+	 
 	l2_hdr = (__u8 *)&h_outer + olen;
 	switch (l2_proto) {
 	case ETH_P_MPLS_UC:
@@ -348,18 +341,18 @@ static __always_inline int __encap_ipv6(struct __sk_buff *skb, __u8 encap_proto,
 	}
 	olen += l2_len;
 
-	/* add room between mac and network header */
+	 
 	if (bpf_skb_adjust_room(skb, olen, BPF_ADJ_ROOM_MAC, flags))
 		return TC_ACT_SHOT;
 
-	/* prepare new outer network header */
+	 
 	h_outer.ip = iph_inner;
 	h_outer.ip.payload_len = bpf_htons(olen +
 					   bpf_ntohs(h_outer.ip.payload_len));
 
 	h_outer.ip.nexthdr = encap_proto;
 
-	/* store new outer network header */
+	 
 	if (bpf_skb_store_bytes(skb, ETH_HLEN, &h_outer, olen,
 				BPF_F_INVALIDATE_HASH) < 0)
 		return TC_ACT_SHOT;
@@ -380,7 +373,7 @@ static int encap_ipv6_ipip6(struct __sk_buff *skb)
 			       sizeof(iph_inner)) < 0)
 		return TC_ACT_OK;
 
-	/* filter only packets we want */
+	 
 	if (bpf_skb_load_bytes(skb, ETH_HLEN + (iph_inner.ihl << 2),
 			       &tcph, sizeof(tcph)) < 0)
 		return TC_ACT_OK;
@@ -392,11 +385,11 @@ static int encap_ipv6_ipip6(struct __sk_buff *skb)
 
 	flags = BPF_F_ADJ_ROOM_FIXED_GSO | BPF_F_ADJ_ROOM_ENCAP_L3_IPV6;
 
-	/* add room between mac and network header */
+	 
 	if (bpf_skb_adjust_room(skb, olen, BPF_ADJ_ROOM_MAC, flags))
 		return TC_ACT_SHOT;
 
-	/* prepare new outer network header */
+	 
 	memset(&h_outer.ip, 0, sizeof(h_outer.ip));
 	h_outer.ip.version = 6;
 	h_outer.ip.hop_limit = iph_inner.ttl;
@@ -407,12 +400,12 @@ static int encap_ipv6_ipip6(struct __sk_buff *skb)
 	h_outer.ip.payload_len = iph_inner.tot_len;
 	h_outer.ip.nexthdr = IPPROTO_IPIP;
 
-	/* store new outer network header */
+	 
 	if (bpf_skb_store_bytes(skb, ETH_HLEN, &h_outer, olen,
 				BPF_F_INVALIDATE_HASH) < 0)
 		return TC_ACT_SHOT;
 
-	/* update eth->h_proto */
+	 
 	if (bpf_skb_load_bytes(skb, 0, &eth, sizeof(eth)) < 0)
 		return TC_ACT_SHOT;
 	eth.h_proto = bpf_htons(ETH_P_IPV6);
@@ -699,7 +692,7 @@ int decap_f(struct __sk_buff *skb)
 	case __bpf_constant_htons(ETH_P_IPV6):
 		return decap_ipv6(skb);
 	default:
-		/* does not match, ignore */
+		 
 		return TC_ACT_OK;
 	}
 }

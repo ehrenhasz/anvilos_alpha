@@ -1,13 +1,4 @@
-/*
- * Broadcom specific AMBA
- * ChipCommon core driver
- *
- * Copyright 2005, Broadcom Corporation
- * Copyright 2006, 2007, Michael Buesch <m@bues.ch>
- * Copyright 2012, Hauke Mehrtens <hauke@hauke-m.de>
- *
- * Licensed under the GNU/GPL. See COPYING for details.
- */
+ 
 
 #include "bcma_private.h"
 #include <linux/bcm47xx_wdt.h>
@@ -41,10 +32,7 @@ static bool bcma_core_cc_has_pmu_watchdog(struct bcma_drv_cc *cc)
 	if (cc->capabilities & BCMA_CC_CAP_PMU) {
 		if (bus->chipinfo.id == BCMA_CHIP_ID_BCM53573) {
 			WARN(bus->chipinfo.rev <= 1, "No watchdog available\n");
-			/* 53573B0 and 53573B1 have bugged PMU watchdog. It can
-			 * be enabled but timer can't be bumped. Use CC one
-			 * instead.
-			 */
+			 
 			return false;
 		}
 		return true;
@@ -98,12 +86,10 @@ static int bcma_chipco_watchdog_ticks_per_ms(struct bcma_drv_cc *cc)
 
 	if (cc->capabilities & BCMA_CC_CAP_PMU) {
 		if (bus->chipinfo.id == BCMA_CHIP_ID_BCM4706)
-			/* 4706 CC and PMU watchdogs are clocked at 1/4 of ALP
-			 * clock
-			 */
+			 
 			return bcma_chipco_get_alp_clock(cc) / 4000;
 		else
-			/* based on 32KHz ILP clock */
+			 
 			return 32;
 	} else {
 		return bcma_chipco_get_alp_clock(cc) / 1000;
@@ -232,7 +218,7 @@ void bcma_core_chipcommon_init(struct bcma_drv_cc *cc)
 	cc->setup_done = true;
 }
 
-/* Set chip watchdog reset timer to fire in 'ticks' backplane cycles */
+ 
 u32 bcma_chipco_watchdog_timer_set(struct bcma_drv_cc *cc, u32 ticks)
 {
 	u32 maxt;
@@ -255,7 +241,7 @@ u32 bcma_chipco_watchdog_timer_set(struct bcma_drv_cc *cc, u32 ticks)
 
 		if (ticks > maxt)
 			ticks = maxt;
-		/* instant NMI */
+		 
 		bcma_cc_write32(cc, BCMA_CC_WATCHDOG, ticks);
 	}
 	return ticks;
@@ -302,10 +288,7 @@ u32 bcma_chipco_gpio_outen(struct bcma_drv_cc *cc, u32 mask, u32 value)
 }
 EXPORT_SYMBOL_GPL(bcma_chipco_gpio_outen);
 
-/*
- * If the bit is set to 0, chipcommon controls this GPIO,
- * if the bit is set to 1, it is used by some part of the chip and not our code.
- */
+ 
 u32 bcma_chipco_gpio_control(struct bcma_drv_cc *cc, u32 mask, u32 value)
 {
 	unsigned long flags;
@@ -385,17 +368,17 @@ void bcma_chipco_serial_init(struct bcma_drv_cc *cc)
 	if (ccrev >= 11 && ccrev != 15) {
 		baud_base = bcma_chipco_get_alp_clock(cc);
 		if (ccrev >= 21) {
-			/* Turn off UART clock before switching clocksource. */
+			 
 			bcma_cc_write32(cc, BCMA_CC_CORECTL,
 				       bcma_cc_read32(cc, BCMA_CC_CORECTL)
 				       & ~BCMA_CC_CORECTL_UARTCLKEN);
 		}
-		/* Set the override bit so we don't divide it */
+		 
 		bcma_cc_write32(cc, BCMA_CC_CORECTL,
 			       bcma_cc_read32(cc, BCMA_CC_CORECTL)
 			       | BCMA_CC_CORECTL_UARTCLK0);
 		if (ccrev >= 21) {
-			/* Re-enable the UART clock. */
+			 
 			bcma_cc_write32(cc, BCMA_CC_CORECTL,
 				       bcma_cc_read32(cc, BCMA_CC_CORECTL)
 				       | BCMA_CC_CORECTL_UARTCLKEN);
@@ -408,7 +391,7 @@ void bcma_chipco_serial_init(struct bcma_drv_cc *cc)
 
 	irq = bcma_core_irq(cc->core, 0);
 
-	/* Determine the registers of the UARTs */
+	 
 	cc->nr_serial_ports = (cc->capabilities & BCMA_CC_CAP_NRUART);
 	for (i = 0; i < cc->nr_serial_ports; i++) {
 		ports[i].regs = cc->core->io_addr + BCMA_CC_UART0_DATA +
@@ -418,4 +401,4 @@ void bcma_chipco_serial_init(struct bcma_drv_cc *cc)
 		ports[i].reg_shift = 0;
 	}
 }
-#endif /* CONFIG_BCMA_DRIVER_MIPS */
+#endif  

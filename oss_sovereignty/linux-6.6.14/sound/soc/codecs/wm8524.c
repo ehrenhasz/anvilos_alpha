@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * wm8524.c  --  WM8524 ALSA SoC Audio driver
- *
- * Copyright 2009 Wolfson Microelectronics plc
- * Copyright 2017 NXP
- *
- * Based on WM8523 ALSA SoC Audio driver written by Mark Brown
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/moduleparam.h>
@@ -23,7 +16,7 @@
 
 #define WM8524_NUM_RATES 7
 
-/* codec private data */
+ 
 struct wm8524_priv {
 	struct gpio_desc *mute;
 	unsigned int sysclk;
@@ -62,9 +55,7 @@ static int wm8524_startup(struct snd_pcm_substream *substream,
 	struct snd_soc_component *component = dai->component;
 	struct wm8524_priv *wm8524 = snd_soc_component_get_drvdata(component);
 
-	/* The set of sample rates that can be supported depends on the
-	 * MCLK supplied to the CODEC - enforce this.
-	 */
+	 
 	if (!wm8524->sysclk) {
 		dev_err(component->dev,
 			"No MCLK configured, call set_sysclk() on init\n");
@@ -102,10 +93,7 @@ static int wm8524_set_dai_sysclk(struct snd_soc_dai *codec_dai,
 	wm8524->rate_constraint.count = 0;
 	for (i = 0; i < ARRAY_SIZE(lrclk_ratios); i++) {
 		val = freq / lrclk_ratios[i].ratio;
-		/* Check that it's a standard rate since core can't
-		 * cope with others and having the odd rates confuses
-		 * constraint matching.
-		 */
+		 
 		switch (val) {
 		case 8000:
 		case 32000:
@@ -126,7 +114,7 @@ static int wm8524_set_dai_sysclk(struct snd_soc_dai *codec_dai,
 		}
 	}
 
-	/* Need at least one supported rate... */
+	 
 	if (wm8524->rate_constraint.count == 0)
 		return -EINVAL;
 
@@ -207,7 +195,7 @@ static const struct snd_soc_component_driver soc_component_dev_wm8524 = {
 
 static const struct of_device_id wm8524_of_match[] = {
 	{ .compatible = "wlf,wm8524" },
-	{ /* sentinel*/ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, wm8524_of_match);
 

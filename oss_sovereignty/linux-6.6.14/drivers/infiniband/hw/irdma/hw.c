@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 or Linux-OpenIB
-/* Copyright (c) 2015 - 2021 Intel Corporation */
+
+ 
 #include "main.h"
 
 static struct irdma_rsrc_limits rsrc_limits_table[] = {
@@ -29,7 +29,7 @@ static struct irdma_rsrc_limits rsrc_limits_table[] = {
 	},
 };
 
-/* types of hmc objects */
+ 
 static enum irdma_hmc_rsrc_type iw_hmc_obj_types[] = {
 	IRDMA_HMC_IW_QP,
 	IRDMA_HMC_IW_CQ,
@@ -53,10 +53,7 @@ static enum irdma_hmc_rsrc_type iw_hmc_obj_types[] = {
 	IRDMA_HMC_IW_OOISCFFL,
 };
 
-/**
- * irdma_iwarp_ce_handler - handle iwarp completions
- * @iwcq: iwarp cq receiving event
- */
+ 
 static void irdma_iwarp_ce_handler(struct irdma_sc_cq *iwcq)
 {
 	struct irdma_cq *cq = iwcq->back_cq;
@@ -67,11 +64,7 @@ static void irdma_iwarp_ce_handler(struct irdma_sc_cq *iwcq)
 		cq->ibcq.comp_handler(&cq->ibcq, cq->ibcq.cq_context);
 }
 
-/**
- * irdma_puda_ce_handler - handle puda completion events
- * @rf: RDMA PCI function
- * @cq: puda completion q for event
- */
+ 
 static void irdma_puda_ce_handler(struct irdma_pci_f *rf,
 				  struct irdma_sc_cq *cq)
 {
@@ -97,11 +90,7 @@ static void irdma_puda_ce_handler(struct irdma_pci_f *rf,
 	irdma_sc_ccq_arm(cq);
 }
 
-/**
- * irdma_process_ceq - handle ceq for completions
- * @rf: RDMA PCI function
- * @ceq: ceq having cq for completion
- */
+ 
 static void irdma_process_ceq(struct irdma_pci_f *rf, struct irdma_ceq *ceq)
 {
 	struct irdma_sc_dev *dev = &rf->sc_dev;
@@ -206,10 +195,7 @@ static void irdma_set_flush_fields(struct irdma_sc_qp *qp,
 	}
 }
 
-/**
- * irdma_process_aeq - handle aeq events
- * @rf: RDMA PCI function
- */
+ 
 static void irdma_process_aeq(struct irdma_pci_f *rf)
 {
 	struct irdma_sc_dev *dev = &rf->sc_dev;
@@ -428,20 +414,13 @@ static void irdma_process_aeq(struct irdma_pci_f *rf)
 		irdma_sc_repost_aeq_entries(dev, aeqcnt);
 }
 
-/**
- * irdma_ena_intr - set up device interrupts
- * @dev: hardware control device structure
- * @msix_id: id of the interrupt to be enabled
- */
+ 
 static void irdma_ena_intr(struct irdma_sc_dev *dev, u32 msix_id)
 {
 	dev->irq_ops->irdma_en_irq(dev, msix_id);
 }
 
-/**
- * irdma_dpc - tasklet for aeq and ceq 0
- * @t: tasklet_struct ptr
- */
+ 
 static void irdma_dpc(struct tasklet_struct *t)
 {
 	struct irdma_pci_f *rf = from_tasklet(rf, t, dpc_tasklet);
@@ -452,10 +431,7 @@ static void irdma_dpc(struct tasklet_struct *t)
 	irdma_ena_intr(&rf->sc_dev, rf->iw_msixtbl[0].idx);
 }
 
-/**
- * irdma_ceq_dpc - dpc handler for CEQ
- * @t: tasklet_struct ptr
- */
+ 
 static void irdma_ceq_dpc(struct tasklet_struct *t)
 {
 	struct irdma_ceq *iwceq = from_tasklet(iwceq, t, dpc_tasklet);
@@ -465,13 +441,7 @@ static void irdma_ceq_dpc(struct tasklet_struct *t)
 	irdma_ena_intr(&rf->sc_dev, iwceq->msix_idx);
 }
 
-/**
- * irdma_save_msix_info - copy msix vector information to iwarp device
- * @rf: RDMA PCI function
- *
- * Allocate iwdev msix table and copy the msix info to the table
- * Return 0 if successful, otherwise return error
- */
+ 
 static int irdma_save_msix_info(struct irdma_pci_f *rf)
 {
 	struct irdma_qvlist_info *iw_qvlist;
@@ -523,11 +493,7 @@ static int irdma_save_msix_info(struct irdma_pci_f *rf)
 	return 0;
 }
 
-/**
- * irdma_irq_handler - interrupt handler for aeq and ceq0
- * @irq: Interrupt request number
- * @data: RDMA PCI function
- */
+ 
 static irqreturn_t irdma_irq_handler(int irq, void *data)
 {
 	struct irdma_pci_f *rf = data;
@@ -537,11 +503,7 @@ static irqreturn_t irdma_irq_handler(int irq, void *data)
 	return IRQ_HANDLED;
 }
 
-/**
- * irdma_ceq_handler - interrupt handler for ceq
- * @irq: interrupt request number
- * @data: ceq pointer
- */
+ 
 static irqreturn_t irdma_ceq_handler(int irq, void *data)
 {
 	struct irdma_ceq *iwceq = data;
@@ -554,14 +516,7 @@ static irqreturn_t irdma_ceq_handler(int irq, void *data)
 	return IRQ_HANDLED;
 }
 
-/**
- * irdma_destroy_irq - destroy device interrupts
- * @rf: RDMA PCI function
- * @msix_vec: msix vector to disable irq
- * @dev_id: parameter to pass to free_irq (used during irq setup)
- *
- * The function is called when destroying aeq/ceq
- */
+ 
 static void irdma_destroy_irq(struct irdma_pci_f *rf,
 			      struct irdma_msix_vector *msix_vec, void *dev_id)
 {
@@ -572,13 +527,7 @@ static void irdma_destroy_irq(struct irdma_pci_f *rf,
 	free_irq(msix_vec->irq, dev_id);
 }
 
-/**
- * irdma_destroy_cqp  - destroy control qp
- * @rf: RDMA PCI function
- *
- * Issue destroy cqp request and
- * free the resources associated with the cqp
- */
+ 
 static void irdma_destroy_cqp(struct irdma_pci_f *rf)
 {
 	struct irdma_sc_dev *dev = &rf->sc_dev;
@@ -610,14 +559,7 @@ static void irdma_destroy_virt_aeq(struct irdma_pci_f *rf)
 	vfree(aeq->mem.va);
 }
 
-/**
- * irdma_destroy_aeq - destroy aeq
- * @rf: RDMA PCI function
- *
- * Issue a destroy aeq request and
- * free the resources associated with the aeq
- * The function is called during driver unload
- */
+ 
 static void irdma_destroy_aeq(struct irdma_pci_f *rf)
 {
 	struct irdma_sc_dev *dev = &rf->sc_dev;
@@ -646,14 +588,7 @@ exit:
 	}
 }
 
-/**
- * irdma_destroy_ceq - destroy ceq
- * @rf: RDMA PCI function
- * @iwceq: ceq to be destroyed
- *
- * Issue a destroy ceq request and
- * free the resources associated with the ceq
- */
+ 
 static void irdma_destroy_ceq(struct irdma_pci_f *rf, struct irdma_ceq *iwceq)
 {
 	struct irdma_sc_dev *dev = &rf->sc_dev;
@@ -678,12 +613,7 @@ exit:
 	iwceq->mem.va = NULL;
 }
 
-/**
- * irdma_del_ceq_0 - destroy ceq 0
- * @rf: RDMA PCI function
- *
- * Disable the ceq 0 interrupt and destroy the ceq 0
- */
+ 
 static void irdma_del_ceq_0(struct irdma_pci_f *rf)
 {
 	struct irdma_ceq *iwceq = rf->ceqlist;
@@ -705,13 +635,7 @@ static void irdma_del_ceq_0(struct irdma_pci_f *rf)
 	rf->ceqs_count = 0;
 }
 
-/**
- * irdma_del_ceqs - destroy all ceq's except CEQ 0
- * @rf: RDMA PCI function
- *
- * Go through all of the device ceq's, except 0, and for each
- * ceq disable the ceq interrupt and destroy the ceq
- */
+ 
 static void irdma_del_ceqs(struct irdma_pci_f *rf)
 {
 	struct irdma_ceq *iwceq = &rf->ceqlist[1];
@@ -736,13 +660,7 @@ static void irdma_del_ceqs(struct irdma_pci_f *rf)
 	rf->ceqs_count = 1;
 }
 
-/**
- * irdma_destroy_ccq - destroy control cq
- * @rf: RDMA PCI function
- *
- * Issue destroy ccq request and
- * free the resources associated with the ccq
- */
+ 
 static void irdma_destroy_ccq(struct irdma_pci_f *rf)
 {
 	struct irdma_sc_dev *dev = &rf->sc_dev;
@@ -761,14 +679,7 @@ static void irdma_destroy_ccq(struct irdma_pci_f *rf)
 	ccq->mem_cq.va = NULL;
 }
 
-/**
- * irdma_close_hmc_objects_type - delete hmc objects of a given type
- * @dev: iwarp device
- * @obj_type: the hmc object type to be deleted
- * @hmc_info: host memory info struct
- * @privileged: permission to close HMC objects
- * @reset: true if called before reset
- */
+ 
 static void irdma_close_hmc_objects_type(struct irdma_sc_dev *dev,
 					 enum irdma_hmc_rsrc_type obj_type,
 					 struct irdma_hmc_info *hmc_info,
@@ -785,14 +696,7 @@ static void irdma_close_hmc_objects_type(struct irdma_sc_dev *dev,
 			  obj_type);
 }
 
-/**
- * irdma_del_hmc_objects - remove all device hmc objects
- * @dev: iwarp device
- * @hmc_info: hmc_info to free
- * @privileged: permission to delete HMC objects
- * @reset: true if called before reset
- * @vers: hardware version
- */
+ 
 static void irdma_del_hmc_objects(struct irdma_sc_dev *dev,
 				  struct irdma_hmc_info *hmc_info, bool privileged,
 				  bool reset, enum irdma_vers vers)
@@ -808,26 +712,14 @@ static void irdma_del_hmc_objects(struct irdma_sc_dev *dev,
 	}
 }
 
-/**
- * irdma_create_hmc_obj_type - create hmc object of a given type
- * @dev: hardware control device structure
- * @info: information for the hmc object to create
- */
+ 
 static int irdma_create_hmc_obj_type(struct irdma_sc_dev *dev,
 				     struct irdma_hmc_create_obj_info *info)
 {
 	return irdma_sc_create_hmc_obj(dev, info);
 }
 
-/**
- * irdma_create_hmc_objs - create all hmc objects for the device
- * @rf: RDMA PCI function
- * @privileged: permission to create HMC objects
- * @vers: HW version
- *
- * Create the device hmc objects and allocate hmc pages
- * Return 0 if successful, otherwise clean up and return error
- */
+ 
 static int irdma_create_hmc_objs(struct irdma_pci_f *rf, bool privileged,
 				 enum irdma_vers vers)
 {
@@ -864,7 +756,7 @@ static int irdma_create_hmc_objs(struct irdma_pci_f *rf, bool privileged,
 
 	while (i) {
 		i--;
-		/* destroy the hmc objects of a given type */
+		 
 		if (dev->hmc_info->hmc_obj[iw_hmc_obj_types[i]].cnt)
 			irdma_close_hmc_objects_type(dev, iw_hmc_obj_types[i],
 						     dev->hmc_info, privileged,
@@ -874,17 +766,7 @@ static int irdma_create_hmc_objs(struct irdma_pci_f *rf, bool privileged,
 	return status;
 }
 
-/**
- * irdma_obj_aligned_mem - get aligned memory from device allocated memory
- * @rf: RDMA PCI function
- * @memptr: points to the memory addresses
- * @size: size of memory needed
- * @mask: mask for the aligned memory
- *
- * Get aligned memory of the requested size and
- * update the memptr to point to the new aligned memory
- * Return 0 if successful, otherwise return no memory error
- */
+ 
 static int irdma_obj_aligned_mem(struct irdma_pci_f *rf,
 				 struct irdma_dma_mem *memptr, u32 size,
 				 u32 mask)
@@ -909,13 +791,7 @@ static int irdma_obj_aligned_mem(struct irdma_pci_f *rf,
 	return 0;
 }
 
-/**
- * irdma_create_cqp - create control qp
- * @rf: RDMA PCI function
- *
- * Return 0, if the cqp and all the resources associated with it
- * are successfully created, otherwise return error
- */
+ 
 static int irdma_create_cqp(struct irdma_pci_f *rf)
 {
 	u32 sqsize = IRDMA_CQP_SW_SQSIZE_2048;
@@ -954,7 +830,7 @@ static int irdma_create_cqp(struct irdma_pci_f *rf)
 
 	dev->cqp->host_ctx_pa = mem.pa;
 	dev->cqp->host_ctx = mem.va;
-	/* populate the cqp init info */
+	 
 	cqp_init_info.dev = dev;
 	cqp_init_info.sq_size = sqsize;
 	cqp_init_info.sq = cqp->sq.va;
@@ -993,7 +869,7 @@ static int irdma_create_cqp(struct irdma_pci_f *rf)
 	INIT_LIST_HEAD(&cqp->cqp_avail_reqs);
 	INIT_LIST_HEAD(&cqp->cqp_pending_reqs);
 
-	/* init the waitqueue of the cqp_requests and add them to the list */
+	 
 	for (i = 0; i < sqsize; i++) {
 		init_waitqueue_head(&cqp->cqp_requests[i].waitq);
 		list_add_tail(&cqp->cqp_requests[i].list, &cqp->cqp_avail_reqs);
@@ -1015,13 +891,7 @@ err_scratch:
 	return status;
 }
 
-/**
- * irdma_create_ccq - create control cq
- * @rf: RDMA PCI function
- *
- * Return 0, if the ccq and the resources associated with it
- * are successfully created, otherwise return error
- */
+ 
 static int irdma_create_ccq(struct irdma_pci_f *rf)
 {
 	struct irdma_sc_dev *dev = &rf->sc_dev;
@@ -1047,7 +917,7 @@ static int irdma_create_ccq(struct irdma_pci_f *rf)
 		goto exit;
 
 	ccq->sc_cq.back_cq = ccq;
-	/* populate the ccq init info */
+	 
 	info.cq_base = ccq->mem_cq.va;
 	info.cq_pa = ccq->mem_cq.pa;
 	info.num_elem = IW_CCQ_SIZE;
@@ -1070,13 +940,7 @@ exit:
 	return status;
 }
 
-/**
- * irdma_alloc_set_mac - set up a mac address table entry
- * @iwdev: irdma device
- *
- * Allocate a mac ip entry and add it to the hw table Return 0
- * if successful, otherwise return error
- */
+ 
 static int irdma_alloc_set_mac(struct irdma_device *iwdev)
 {
 	int status;
@@ -1094,17 +958,7 @@ static int irdma_alloc_set_mac(struct irdma_device *iwdev)
 	return status;
 }
 
-/**
- * irdma_cfg_ceq_vector - set up the msix interrupt vector for
- * ceq
- * @rf: RDMA PCI function
- * @iwceq: ceq associated with the vector
- * @ceq_id: the id number of the iwceq
- * @msix_vec: interrupt vector information
- *
- * Allocate interrupt resources and enable irq handling
- * Return 0 if successful, otherwise return error
- */
+ 
 static int irdma_cfg_ceq_vector(struct irdma_pci_f *rf, struct irdma_ceq *iwceq,
 				u32 ceq_id, struct irdma_msix_vector *msix_vec)
 {
@@ -1139,13 +993,7 @@ static int irdma_cfg_ceq_vector(struct irdma_pci_f *rf, struct irdma_ceq *iwceq,
 	return 0;
 }
 
-/**
- * irdma_cfg_aeq_vector - set up the msix vector for aeq
- * @rf: RDMA PCI function
- *
- * Allocate interrupt resources and enable irq handling
- * Return 0 if successful, otherwise return error
- */
+ 
 static int irdma_cfg_aeq_vector(struct irdma_pci_f *rf)
 {
 	struct irdma_msix_vector *msix_vec = rf->iw_msixtbl;
@@ -1168,16 +1016,7 @@ static int irdma_cfg_aeq_vector(struct irdma_pci_f *rf)
 	return 0;
 }
 
-/**
- * irdma_create_ceq - create completion event queue
- * @rf: RDMA PCI function
- * @iwceq: pointer to the ceq resources to be created
- * @ceq_id: the id number of the iwceq
- * @vsi: SC vsi struct
- *
- * Return 0, if the ceq and the resources associated with it
- * are successfully created, otherwise return error
- */
+ 
 static int irdma_create_ceq(struct irdma_pci_f *rf, struct irdma_ceq *iwceq,
 			    u32 ceq_id, struct irdma_sc_vsi *vsi)
 {
@@ -1222,14 +1061,7 @@ static int irdma_create_ceq(struct irdma_pci_f *rf, struct irdma_ceq *iwceq,
 	return status;
 }
 
-/**
- * irdma_setup_ceq_0 - create CEQ 0 and it's interrupt resource
- * @rf: RDMA PCI function
- *
- * Allocate a list for all device completion event queues
- * Create the ceq 0 and configure it's msix interrupt vector
- * Return 0, if successfully set up, otherwise return error
- */
+ 
 static int irdma_setup_ceq_0(struct irdma_pci_f *rf)
 {
 	struct irdma_ceq *iwceq;
@@ -1278,15 +1110,7 @@ exit:
 	return 0;
 }
 
-/**
- * irdma_setup_ceqs - manage the device ceq's and their interrupt resources
- * @rf: RDMA PCI function
- * @vsi: VSI structure for this CEQ
- *
- * Allocate a list for all device completion event queues
- * Create the ceq's and configure their msix interrupt vectors
- * Return 0, if ceqs are successfully set up, otherwise return error
- */
+ 
 static int irdma_setup_ceqs(struct irdma_pci_f *rf, struct irdma_sc_vsi *vsi)
 {
 	u32 i;
@@ -1361,13 +1185,7 @@ static int irdma_create_virt_aeq(struct irdma_pci_f *rf, u32 size)
 	return 0;
 }
 
-/**
- * irdma_create_aeq - create async event queue
- * @rf: RDMA PCI function
- *
- * Return 0, if the aeq and the resources associated with it
- * are successfully created, otherwise return error
- */
+ 
 static int irdma_create_aeq(struct irdma_pci_f *rf)
 {
 	struct irdma_aeq_init_info info = {};
@@ -1390,7 +1208,7 @@ static int irdma_create_aeq(struct irdma_pci_f *rf)
 	if (aeq->mem.va)
 		goto skip_virt_aeq;
 
-	/* physically mapped aeq failed. setup virtual aeq */
+	 
 	status = irdma_create_virt_aeq(rf, aeq_size);
 	if (status)
 		return status;
@@ -1428,13 +1246,7 @@ err:
 	return status;
 }
 
-/**
- * irdma_setup_aeq - set up the device aeq
- * @rf: RDMA PCI function
- *
- * Create the aeq and configure its msix interrupt vector
- * Return 0 if successful, otherwise return error
- */
+ 
 static int irdma_setup_aeq(struct irdma_pci_f *rf)
 {
 	struct irdma_sc_dev *dev = &rf->sc_dev;
@@ -1456,12 +1268,7 @@ static int irdma_setup_aeq(struct irdma_pci_f *rf)
 	return 0;
 }
 
-/**
- * irdma_initialize_ilq - create iwarp local queue for cm
- * @iwdev: irdma device
- *
- * Return 0 if successful, otherwise return error
- */
+ 
 static int irdma_initialize_ilq(struct irdma_device *iwdev)
 {
 	struct irdma_puda_rsrc_info info = {};
@@ -1486,12 +1293,7 @@ static int irdma_initialize_ilq(struct irdma_device *iwdev)
 	return status;
 }
 
-/**
- * irdma_initialize_ieq - create iwarp exception queue
- * @iwdev: irdma device
- *
- * Return 0 if successful, otherwise return error
- */
+ 
 static int irdma_initialize_ieq(struct irdma_device *iwdev)
 {
 	struct irdma_puda_rsrc_info info = {};
@@ -1514,10 +1316,7 @@ static int irdma_initialize_ieq(struct irdma_device *iwdev)
 	return status;
 }
 
-/**
- * irdma_reinitialize_ieq - destroy and re-create ieq
- * @vsi: VSI structure
- */
+ 
 void irdma_reinitialize_ieq(struct irdma_sc_vsi *vsi)
 {
 	struct irdma_device *iwdev = vsi->back_vsi;
@@ -1530,14 +1329,7 @@ void irdma_reinitialize_ieq(struct irdma_sc_vsi *vsi)
 	}
 }
 
-/**
- * irdma_hmc_setup - create hmc objects for the device
- * @rf: RDMA PCI function
- *
- * Set up the device private memory space for the number and size of
- * the hmc objects and create the objects
- * Return 0 if successful, otherwise return error
- */
+ 
 static int irdma_hmc_setup(struct irdma_pci_f *rf)
 {
 	int status;
@@ -1555,10 +1347,7 @@ static int irdma_hmc_setup(struct irdma_pci_f *rf)
 	return status;
 }
 
-/**
- * irdma_del_init_mem - deallocate memory resources
- * @rf: RDMA PCI function
- */
+ 
 static void irdma_del_init_mem(struct irdma_pci_f *rf)
 {
 	struct irdma_sc_dev *dev = &rf->sc_dev;
@@ -1582,14 +1371,7 @@ static void irdma_del_init_mem(struct irdma_pci_f *rf)
 	rf->hmc_info_mem = NULL;
 }
 
-/**
- * irdma_initialize_dev - initialize device
- * @rf: RDMA PCI function
- *
- * Allocate memory for the hmc objects and initialize iwdev
- * Return 0 if successful, otherwise clean up the resources
- * and return error
- */
+ 
 static int irdma_initialize_dev(struct irdma_pci_f *rf)
 {
 	int status;
@@ -1642,13 +1424,7 @@ error:
 	return status;
 }
 
-/**
- * irdma_rt_deinit_hw - clean up the irdma device resources
- * @iwdev: irdma device
- *
- * remove the mac ip entry and ipv4/ipv6 addresses, destroy the
- * device queues and free the pble and the hmc objects
- */
+ 
 void irdma_rt_deinit_hw(struct irdma_device *iwdev)
 {
 	ibdev_dbg(&iwdev->ibdev, "INIT: state = %d\n", iwdev->init_state);
@@ -1721,12 +1497,7 @@ clean_msixtbl:
 	return status;
 }
 
-/**
- * irdma_get_used_rsrc - determine resources used internally
- * @iwdev: irdma device
- *
- * Called at the end of open to get all internal allocations
- */
+ 
 static void irdma_get_used_rsrc(struct irdma_device *iwdev)
 {
 	iwdev->rf->used_pds = find_first_zero_bit(iwdev->rf->allocated_pds,
@@ -1775,14 +1546,7 @@ void irdma_ctrl_deinit_hw(struct irdma_pci_f *rf)
 	}
 }
 
-/**
- * irdma_rt_init_hw - Initializes runtime portion of HW
- * @iwdev: irdma device
- * @l2params: qos, tc, mtu info from netdev driver
- *
- * Create device queues ILQ, IEQ, CEQs and PBLEs. Setup irdma
- * device resource objects.
- */
+ 
 int irdma_rt_init_hw(struct irdma_device *iwdev,
 		     struct irdma_l2params *l2params)
 {
@@ -1860,9 +1624,7 @@ int irdma_rt_init_hw(struct irdma_device *iwdev,
 		irdma_add_ip(iwdev);
 		iwdev->init_state = IP_ADDR_REGISTERED;
 
-		/* handles asynch cleanup tasks - disconnect CM , free qp,
-		 * free cq bufs
-		 */
+		 
 		iwdev->cleanup_wq = alloc_workqueue("irdma-cleanup-wq",
 					WQ_UNBOUND, WQ_UNBOUND_MAX_ACTIVE);
 		if (!iwdev->cleanup_wq)
@@ -1880,12 +1642,7 @@ int irdma_rt_init_hw(struct irdma_device *iwdev,
 	return status;
 }
 
-/**
- * irdma_ctrl_init_hw - Initializes control portion of HW
- * @rf: RDMA PCI function
- *
- * Create admin queues, HMC obejcts and RF resource objects
- */
+ 
 int irdma_ctrl_init_hw(struct irdma_pci_f *rf)
 {
 	struct irdma_sc_dev *dev = &rf->sc_dev;
@@ -1927,7 +1684,7 @@ int irdma_ctrl_init_hw(struct irdma_pci_f *rf)
 		if (status)
 			break;
 		rf->init_state = CEQ0_CREATED;
-		/* Handles processing of CQP completions */
+		 
 		rf->cqp_cmpl_wq =
 			alloc_ordered_workqueue("cqp_cmpl_wq", WQ_HIGHPRI);
 		if (!rf->cqp_cmpl_wq) {
@@ -1945,10 +1702,7 @@ int irdma_ctrl_init_hw(struct irdma_pci_f *rf)
 	return status;
 }
 
-/**
- * irdma_set_hw_rsrc - set hw memory resources.
- * @rf: RDMA PCI function
- */
+ 
 static void irdma_set_hw_rsrc(struct irdma_pci_f *rf)
 {
 	rf->allocated_qps = (void *)(rf->mem_rsrc +
@@ -1970,10 +1724,7 @@ static void irdma_set_hw_rsrc(struct irdma_pci_f *rf)
 	spin_lock_init(&rf->qh_list_lock);
 }
 
-/**
- * irdma_calc_mem_rsrc_size - calculate memory resources size.
- * @rf: RDMA PCI function
- */
+ 
 static u32 irdma_calc_mem_rsrc_size(struct irdma_pci_f *rf)
 {
 	u32 rsrc_size;
@@ -1992,10 +1743,7 @@ static u32 irdma_calc_mem_rsrc_size(struct irdma_pci_f *rf)
 	return rsrc_size;
 }
 
-/**
- * irdma_initialize_hw_rsrc - initialize hw resource tracking array
- * @rf: RDMA PCI function
- */
+ 
 u32 irdma_initialize_hw_rsrc(struct irdma_pci_f *rf)
 {
 	u32 rsrc_size;
@@ -2038,15 +1786,15 @@ u32 irdma_initialize_hw_rsrc(struct irdma_pci_f *rf)
 	set_bit(0, rf->allocated_arps);
 	set_bit(0, rf->allocated_ahs);
 	set_bit(0, rf->allocated_mcgs);
-	set_bit(2, rf->allocated_qps); /* qp 2 IEQ */
-	set_bit(1, rf->allocated_qps); /* qp 1 ILQ */
+	set_bit(2, rf->allocated_qps);  
+	set_bit(1, rf->allocated_qps);  
 	set_bit(1, rf->allocated_cqs);
 	set_bit(1, rf->allocated_pds);
 	set_bit(2, rf->allocated_cqs);
 	set_bit(2, rf->allocated_pds);
 
 	INIT_LIST_HEAD(&rf->mc_qht_list.list);
-	/* stag index mask has a minimum of 14 bits */
+	 
 	mrdrvbits = 24 - max(get_count_order(rf->max_mr), 14);
 	rf->mr_stagmask = ~(((1 << mrdrvbits) - 1) << (32 - mrdrvbits));
 
@@ -2059,11 +1807,7 @@ mem_rsrc_vzalloc_fail:
 	return ret;
 }
 
-/**
- * irdma_cqp_ce_handler - handle cqp completions
- * @rf: RDMA PCI function
- * @cq: cq for cqp completions
- */
+ 
 void irdma_cqp_ce_handler(struct irdma_pci_f *rf, struct irdma_sc_cq *cq)
 {
 	struct irdma_cqp_request *cqp_request;
@@ -2114,10 +1858,7 @@ void irdma_cqp_ce_handler(struct irdma_pci_f *rf, struct irdma_sc_cq *cq)
 	}
 }
 
-/**
- * cqp_compl_worker - Handle cqp completions
- * @work: Pointer to work structure
- */
+ 
 void cqp_compl_worker(struct work_struct *work)
 {
 	struct irdma_pci_f *rf = container_of(work, struct irdma_pci_f,
@@ -2127,11 +1868,7 @@ void cqp_compl_worker(struct work_struct *work)
 	irdma_cqp_ce_handler(rf, cq);
 }
 
-/**
- * irdma_lookup_apbvt_entry - lookup hash table for an existing apbvt entry corresponding to port
- * @cm_core: cm's core
- * @port: port to identify apbvt entry
- */
+ 
 static struct irdma_apbvt_entry *irdma_lookup_apbvt_entry(struct irdma_cm_core *cm_core,
 							  u16 port)
 {
@@ -2147,14 +1884,7 @@ static struct irdma_apbvt_entry *irdma_lookup_apbvt_entry(struct irdma_cm_core *
 	return NULL;
 }
 
-/**
- * irdma_next_iw_state - modify qp state
- * @iwqp: iwarp qp to modify
- * @state: next state for qp
- * @del_hash: del hash
- * @term: term message
- * @termlen: length of term message
- */
+ 
 void irdma_next_iw_state(struct irdma_qp *iwqp, u8 state, u8 del_hash, u8 term,
 			 u8 termlen)
 {
@@ -2179,12 +1909,7 @@ void irdma_next_iw_state(struct irdma_qp *iwqp, u8 state, u8 del_hash, u8 term,
 	iwqp->iwarp_state = info.next_iwarp_state;
 }
 
-/**
- * irdma_del_local_mac_entry - remove a mac entry from the hw
- * table
- * @rf: RDMA PCI function
- * @idx: the index of the mac ip address to delete
- */
+ 
 void irdma_del_local_mac_entry(struct irdma_pci_f *rf, u16 idx)
 {
 	struct irdma_cqp *iwcqp = &rf->cqp;
@@ -2207,13 +1932,7 @@ void irdma_del_local_mac_entry(struct irdma_pci_f *rf, u16 idx)
 	irdma_put_cqp_request(iwcqp, cqp_request);
 }
 
-/**
- * irdma_add_local_mac_entry - add a mac ip address entry to the
- * hw table
- * @rf: RDMA PCI function
- * @mac_addr: pointer to mac address
- * @idx: the index of the mac ip address to add
- */
+ 
 int irdma_add_local_mac_entry(struct irdma_pci_f *rf, const u8 *mac_addr, u16 idx)
 {
 	struct irdma_local_mac_entry_info *info;
@@ -2242,15 +1961,7 @@ int irdma_add_local_mac_entry(struct irdma_pci_f *rf, const u8 *mac_addr, u16 id
 	return status;
 }
 
-/**
- * irdma_alloc_local_mac_entry - allocate a mac entry
- * @rf: RDMA PCI function
- * @mac_tbl_idx: the index of the new mac address
- *
- * Allocate a mac address entry and update the mac_tbl_idx
- * to hold the index of the newly created mac address
- * Return 0 if successful, otherwise return error
- */
+ 
 int irdma_alloc_local_mac_entry(struct irdma_pci_f *rf, u16 *mac_tbl_idx)
 {
 	struct irdma_cqp *iwcqp = &rf->cqp;
@@ -2276,12 +1987,7 @@ int irdma_alloc_local_mac_entry(struct irdma_pci_f *rf, u16 *mac_tbl_idx)
 	return status;
 }
 
-/**
- * irdma_cqp_manage_apbvt_cmd - send cqp command manage apbvt
- * @iwdev: irdma device
- * @accel_local_port: port for apbvt
- * @add_port: add ordelete port
- */
+ 
 static int irdma_cqp_manage_apbvt_cmd(struct irdma_device *iwdev,
 				      u16 accel_local_port, bool add_port)
 {
@@ -2312,11 +2018,7 @@ static int irdma_cqp_manage_apbvt_cmd(struct irdma_device *iwdev,
 	return status;
 }
 
-/**
- * irdma_add_apbvt - add tcp port to HW apbvt table
- * @iwdev: irdma device
- * @port: port for apbvt
- */
+ 
 struct irdma_apbvt_entry *irdma_add_apbvt(struct irdma_device *iwdev, u16 port)
 {
 	struct irdma_cm_core *cm_core = &iwdev->cm_core;
@@ -2349,11 +2051,7 @@ struct irdma_apbvt_entry *irdma_add_apbvt(struct irdma_device *iwdev, u16 port)
 	return entry;
 }
 
-/**
- * irdma_del_apbvt - delete tcp port from HW apbvt table
- * @iwdev: irdma device
- * @entry: apbvt entry object
- */
+ 
 void irdma_del_apbvt(struct irdma_device *iwdev,
 		     struct irdma_apbvt_entry *entry)
 {
@@ -2367,23 +2065,13 @@ void irdma_del_apbvt(struct irdma_device *iwdev,
 	}
 
 	hash_del(&entry->hlist);
-	/* apbvt_lock is held across CQP delete APBVT OP (non-waiting) to
-	 * protect against race where add APBVT CQP can race ahead of the delete
-	 * APBVT for same port.
-	 */
+	 
 	irdma_cqp_manage_apbvt_cmd(iwdev, entry->port, false);
 	kfree(entry);
 	spin_unlock_irqrestore(&cm_core->apbvt_lock, flags);
 }
 
-/**
- * irdma_manage_arp_cache - manage hw arp cache
- * @rf: RDMA PCI function
- * @mac_addr: mac address ptr
- * @ip_addr: ip addr for arp cache
- * @ipv4: flag inicating IPv4
- * @action: add, delete or modify
- */
+ 
 void irdma_manage_arp_cache(struct irdma_pci_f *rf,
 			    const unsigned char *mac_addr,
 			    u32 *ip_addr, bool ipv4, u32 action)
@@ -2425,10 +2113,7 @@ void irdma_manage_arp_cache(struct irdma_pci_f *rf,
 	irdma_put_cqp_request(&rf->cqp, cqp_request);
 }
 
-/**
- * irdma_send_syn_cqp_callback - do syn/ack after qhash
- * @cqp_request: qhash cqp completion
- */
+ 
 static void irdma_send_syn_cqp_callback(struct irdma_cqp_request *cqp_request)
 {
 	struct irdma_cm_node *cm_node = cqp_request->param;
@@ -2437,15 +2122,7 @@ static void irdma_send_syn_cqp_callback(struct irdma_cqp_request *cqp_request)
 	irdma_rem_ref_cm_node(cm_node);
 }
 
-/**
- * irdma_manage_qhash - add or modify qhash
- * @iwdev: irdma device
- * @cminfo: cm info for qhash
- * @etype: type (syn or quad)
- * @mtype: type of qhash
- * @cmnode: cmnode associated with connection
- * @wait: wait for completion
- */
+ 
 int irdma_manage_qhash(struct irdma_device *iwdev, struct irdma_cm_info *cminfo,
 		       enum irdma_quad_entry_type etype,
 		       enum irdma_quad_hash_manage_type mtype, void *cmnode,
@@ -2530,10 +2207,7 @@ int irdma_manage_qhash(struct irdma_device *iwdev, struct irdma_cm_info *cminfo,
 	return status;
 }
 
-/**
- * irdma_hw_flush_wqes_callback - Check return code after flush
- * @cqp_request: qhash cqp completion
- */
+ 
 static void irdma_hw_flush_wqes_callback(struct irdma_cqp_request *cqp_request)
 {
 	struct irdma_qp_flush_info *hw_info;
@@ -2552,7 +2226,7 @@ static void irdma_hw_flush_wqes_callback(struct irdma_cqp_request *cqp_request)
 	if (hw_info->rq &&
 	    (cqp_request->compl_info.min_err_code == IRDMA_CQP_COMPL_SQ_WQE_FLUSHED ||
 	     cqp_request->compl_info.min_err_code == 0)) {
-		/* RQ WQE flush was requested but did not happen */
+		 
 		qp->qp_uk.rq_flush_complete = true;
 	}
 	if (hw_info->sq &&
@@ -2567,13 +2241,7 @@ static void irdma_hw_flush_wqes_callback(struct irdma_cqp_request *cqp_request)
 	}
 }
 
-/**
- * irdma_hw_flush_wqes - flush qp's wqe
- * @rf: RDMA PCI function
- * @qp: hardware control qp
- * @info: info for flush
- * @wait: flag wait for completion
- */
+ 
 int irdma_hw_flush_wqes(struct irdma_pci_f *rf, struct irdma_sc_qp *qp,
 			struct irdma_qp_flush_info *info, bool wait)
 {
@@ -2610,17 +2278,14 @@ int irdma_hw_flush_wqes(struct irdma_pci_f *rf, struct irdma_sc_qp *qp,
 	if (info->rq) {
 		if (cqp_request->compl_info.min_err_code == IRDMA_CQP_COMPL_SQ_WQE_FLUSHED ||
 		    cqp_request->compl_info.min_err_code == 0) {
-			/* RQ WQE flush was requested but did not happen */
+			 
 			qp->qp_uk.rq_flush_complete = true;
 		}
 	}
 	if (info->sq) {
 		if (cqp_request->compl_info.min_err_code == IRDMA_CQP_COMPL_RQ_WQE_FLUSHED ||
 		    cqp_request->compl_info.min_err_code == 0) {
-			/*
-			 * Handling case where WQE is posted to empty SQ when
-			 * flush has not completed
-			 */
+			 
 			if (IRDMA_RING_MORE_WORK(qp->qp_uk.sq_ring)) {
 				struct irdma_cqp_request *new_req;
 
@@ -2655,7 +2320,7 @@ int irdma_hw_flush_wqes(struct irdma_pci_f *rf, struct irdma_sc_qp *qp,
 				}
 				irdma_put_cqp_request(&rf->cqp, new_req);
 			} else {
-				/* SQ WQE flush was requested but did not happen */
+				 
 				qp->qp_uk.sq_flush_complete = true;
 			}
 		} else {
@@ -2676,13 +2341,7 @@ put_cqp:
 	return status;
 }
 
-/**
- * irdma_gen_ae - generate AE
- * @rf: RDMA PCI function
- * @qp: qp associated with AE
- * @info: info for ae
- * @wait: wait for completion
- */
+ 
 void irdma_gen_ae(struct irdma_pci_f *rf, struct irdma_sc_qp *qp,
 		  struct irdma_gen_ae_info *info, bool wait)
 {
@@ -2715,11 +2374,11 @@ void irdma_flush_wqes(struct irdma_qp *iwqp, u32 flush_mask)
 	if (!(flush_mask & IRDMA_FLUSH_SQ) && !(flush_mask & IRDMA_FLUSH_RQ))
 		return;
 
-	/* Set flush info fields*/
+	 
 	info.sq = flush_mask & IRDMA_FLUSH_SQ;
 	info.rq = flush_mask & IRDMA_FLUSH_RQ;
 
-	/* Generate userflush errors in CQE */
+	 
 	info.sq_major_code = IRDMA_FLUSH_MAJOR_ERR;
 	info.sq_minor_code = FLUSH_GENERAL_ERR;
 	info.rq_major_code = IRDMA_FLUSH_MAJOR_ERR;
@@ -2744,7 +2403,7 @@ void irdma_flush_wqes(struct irdma_qp *iwqp, u32 flush_mask)
 					   msecs_to_jiffies(IRDMA_FLUSH_DELAY_MS));
 	}
 
-	/* Issue flush */
+	 
 	(void)irdma_hw_flush_wqes(rf, &iwqp->sc_qp, &info,
 				  flush_mask & IRDMA_FLUSH_WAIT);
 	iwqp->flush_issued = true;

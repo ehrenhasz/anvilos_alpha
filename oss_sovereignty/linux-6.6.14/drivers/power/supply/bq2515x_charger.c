@@ -1,6 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
-// BQ2515X Battery Charger Driver
-// Copyright (C) 2020 Texas Instruments Incorporated - https://www.ti.com/
+
+
+
 
 #include <linux/err.h>
 #include <linux/i2c.h>
@@ -133,13 +133,7 @@ static const int bq2515x_ilim_lvl_values[] = {
 	50000, 100000, 150000, 200000, 300000, 400000, 500000, 600000
 };
 
-/**
- * struct bq2515x_init_data -
- * @ilim: input current limit
- * @ichg: fast charge current
- * @vbatreg: battery regulation voltage
- * @iprechg: precharge current
- */
+ 
 struct bq2515x_init_data {
 	int ilim;
 	int ichg;
@@ -152,24 +146,7 @@ enum bq2515x_id {
 	BQ25155,
 };
 
-/**
- * struct bq2515x_device -
- * @mains: mains properties
- * @battery: battery properties
- * @regmap: register map structure
- * @dev: device structure
- *
- * @reset_gpio: manual reset (MR) pin
- * @powerdown_gpio: low power mode pin
- * @ac_detect_gpio: power good (PG) pin
- * @ce_gpio: charge enable (CE) pin
- *
- * @model_name: string value describing device model
- * @device_id: value of device_id
- * @mains_online: boolean value indicating power supply online
- *
- * @init_data: charger initialization data structure
- */
+ 
 struct bq2515x_device {
 	struct power_supply *mains;
 	struct power_supply *battery;
@@ -271,18 +248,12 @@ static int bq2515x_wake_up(struct bq2515x_device *bq2515x)
 	int ret;
 	int val;
 
-	/* Read the STAT register if we can read it then the device is out
-	 * of ship mode.  If the register cannot be read then attempt to wake
-	 * it up and enable the ADC.
-	 */
+	 
 	ret = regmap_read(bq2515x->regmap, BQ2515X_STAT0, &val);
 	if (ret)
 		return ret;
 
-	/* Need to toggle LP and bring device out of ship mode. The device
-	 * will exit the ship mode when the MR pin is held low for at least
-	 * t_WAKE2 as shown in section 8.3.7.1 of the datasheet.
-	 */
+	 
 	gpiod_set_value_cansleep(bq2515x->powerdown_gpio, 0);
 
 	gpiod_set_value_cansleep(bq2515x->reset_gpio, 0);
@@ -581,11 +552,7 @@ static int bq2515x_charging_status(struct bq2515x_device *bq2515x,
 	if (ret)
 		return ret;
 
-	/*
-	 * The code block below is used to determine if any faults from the
-	 * STAT0 register are disbaling charging or if the charge has completed
-	 * according to the CHARGE_DONE_STAT bit.
-	 */
+	 
 	if (((status & BQ2515X_STAT0_MASK) == true) &
 			((status & BQ2515X_CHRG_DONE) == false)) {
 		status0_no_fault = true;
@@ -601,10 +568,7 @@ static int bq2515x_charging_status(struct bq2515x_device *bq2515x,
 	ret = regmap_read(bq2515x->regmap, BQ2515X_STAT1, &status);
 	if (ret)
 		return ret;
-	/*
-	 * The code block below is used to determine if any faults from the
-	 * STAT1 register are disbaling charging
-	 */
+	 
 	if ((status & BQ2515X_STAT1_MASK) == false)
 		status1_no_fault = true;
 	else
@@ -612,12 +576,7 @@ static int bq2515x_charging_status(struct bq2515x_device *bq2515x,
 
 	ce_status = (!bq2515x_get_charge_disable(bq2515x));
 
-	/*
-	 * If there are no faults and charging is enabled, then status is
-	 * charging. Otherwise, if charging is complete, then status is full.
-	 * Otherwise, if a fault exists or charging is disabled, then status is
-	 * not charging
-	 */
+	 
 	if (status0_no_fault & status1_no_fault & ce_status)
 		val->intval = POWER_SUPPLY_STATUS_CHARGING;
 	else if (charge_done)

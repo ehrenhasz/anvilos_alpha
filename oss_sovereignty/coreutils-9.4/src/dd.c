@@ -1,20 +1,4 @@
-/* dd -- convert a file while copying it.
-   Copyright (C) 1985-2023 Free Software Foundation, Inc.
-
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* Written by Paul Rubin, David MacKenzie, and Stuart Kemp. */
+ 
 
 #include <config.h>
 
@@ -35,7 +19,7 @@
 #include "xstrtol.h"
 #include "xtime.h"
 
-/* The official name of this program (e.g., no 'g' prefix).  */
+ 
 #define PROGRAM_NAME "dd"
 
 #define AUTHORS \
@@ -43,18 +27,17 @@
   proper_name ("David MacKenzie"), \
   proper_name ("Stuart Kemp")
 
-/* Use SA_NOCLDSTOP as a proxy for whether the sigaction machinery is
-   present.  */
+ 
 #ifndef SA_NOCLDSTOP
 # define SA_NOCLDSTOP 0
-# define sigprocmask(How, Set, Oset) /* empty */
+# define sigprocmask(How, Set, Oset)  
 # define sigset_t int
 # if ! HAVE_SIGINTERRUPT
-#  define siginterrupt(sig, flag) /* empty */
+#  define siginterrupt(sig, flag)  
 # endif
 #endif
 
-/* NonStop circa 2011 lacks SA_RESETHAND; see Bug#9076.  */
+ 
 #ifndef SA_RESETHAND
 # define SA_RESETHAND 0
 #endif
@@ -63,14 +46,12 @@
 # define SIGINFO SIGUSR1
 #endif
 
-/* This may belong in GNULIB's fcntl module instead.
-   Define O_CIO to 0 if it is not supported by this OS. */
+ 
 #ifndef O_CIO
 # define O_CIO 0
 #endif
 
-/* On AIX 5.1 and AIX 5.2, O_NOCACHE is defined via <fcntl.h>
-   and would interfere with our use of that name, below.  */
+ 
 #undef O_NOCACHE
 
 #if ! HAVE_FDATASYNC
@@ -86,10 +67,10 @@
     }						\
   while (0)
 
-/* Default input and output blocksize. */
+ 
 #define DEFAULT_BLOCKSIZE 512
 
-/* Conversions bit masks. */
+ 
 enum
   {
     C_ASCII = 01,
@@ -105,8 +86,7 @@ enum
     C_NOTRUNC = 01000,
     C_SYNC = 02000,
 
-    /* Use separate input and output buffers, and combine partial
-       input blocks. */
+     
     C_TWOBUFS = 04000,
 
     C_NOCREAT = 010000,
@@ -117,7 +97,7 @@ enum
     C_SPARSE = 0200000
   };
 
-/* Status levels.  */
+ 
 enum
   {
     STATUS_NONE = 1,
@@ -126,173 +106,168 @@ enum
     STATUS_PROGRESS = 4
   };
 
-/* The name of the input file, or nullptr for the standard input. */
+ 
 static char const *input_file = nullptr;
 
-/* The name of the output file, or nullptr for the standard output. */
+ 
 static char const *output_file = nullptr;
 
-/* The page size on this host.  */
+ 
 static idx_t page_size;
 
-/* The number of bytes in which atomic reads are done. */
+ 
 static idx_t input_blocksize = 0;
 
-/* The number of bytes in which atomic writes are done. */
+ 
 static idx_t output_blocksize = 0;
 
-/* Conversion buffer size, in bytes.  0 prevents conversions. */
+ 
 static idx_t conversion_blocksize = 0;
 
-/* Skip this many records of 'input_blocksize' bytes before input. */
+ 
 static intmax_t skip_records = 0;
 
-/* Skip this many bytes before input in addition of 'skip_records'
-   records.  */
+ 
 static idx_t skip_bytes = 0;
 
-/* Skip this many records of 'output_blocksize' bytes before output. */
+ 
 static intmax_t seek_records = 0;
 
-/* Skip this many bytes in addition to 'seek_records' records before
-   output.  */
+ 
 static intmax_t seek_bytes = 0;
 
-/* Whether the final output was done with a seek (rather than a write).  */
+ 
 static bool final_op_was_seek;
 
-/* Copy only this many records.  The default is effectively infinity.  */
+ 
 static intmax_t max_records = INTMAX_MAX;
 
-/* Copy this many bytes in addition to 'max_records' records.  */
+ 
 static idx_t max_bytes = 0;
 
-/* Bit vector of conversions to apply. */
+ 
 static int conversions_mask = 0;
 
-/* Open flags for the input and output files.  */
+ 
 static int input_flags = 0;
 static int output_flags = 0;
 
-/* Status flags for what is printed to stderr.  */
+ 
 static int status_level = STATUS_DEFAULT;
 
-/* If nonzero, filter characters through the translation table.  */
+ 
 static bool translation_needed = false;
 
-/* Number of partial blocks written. */
+ 
 static intmax_t w_partial = 0;
 
-/* Number of full blocks written. */
+ 
 static intmax_t w_full = 0;
 
-/* Number of partial blocks read. */
+ 
 static intmax_t r_partial = 0;
 
-/* Number of full blocks read. */
+ 
 static intmax_t r_full = 0;
 
-/* Number of bytes written.  */
+ 
 static intmax_t w_bytes = 0;
 
-/* Last-reported number of bytes written, or negative if never reported.  */
+ 
 static intmax_t reported_w_bytes = -1;
 
-/* Time that dd started.  */
+ 
 static xtime_t start_time;
 
-/* Next time to report periodic progress.  */
+ 
 static xtime_t next_time;
 
-/* If positive, the number of bytes output in the current progress line.  */
+ 
 static int progress_len;
 
-/* True if input is seekable.  */
+ 
 static bool input_seekable;
 
-/* Error number corresponding to initial attempt to lseek input.
-   If ESPIPE, do not issue any more diagnostics about it.  */
+ 
 static int input_seek_errno;
 
-/* File offset of the input, in bytes, or -1 if it overflowed.  */
+ 
 static off_t input_offset;
 
-/* True if a partial read should be diagnosed.  */
+ 
 static bool warn_partial_read;
 
-/* Records truncated by conv=block. */
+ 
 static intmax_t r_truncate = 0;
 
-/* Output representation of newline and space characters.
-   They change if we're converting to EBCDIC.  */
+ 
 static char newline_character = '\n';
 static char space_character = ' ';
 
-/* I/O buffers.  */
+ 
 static char *ibuf;
 static char *obuf;
 
-/* Current index into 'obuf'. */
+ 
 static idx_t oc = 0;
 
-/* Index into current line, for 'conv=block' and 'conv=unblock'.  */
+ 
 static idx_t col = 0;
 
-/* The set of signals that are caught.  */
+ 
 static sigset_t caught_signals;
 
-/* If nonzero, the value of the pending fatal signal.  */
+ 
 static sig_atomic_t volatile interrupt_signal;
 
-/* A count of the number of pending info signals that have been received.  */
+ 
 static sig_atomic_t volatile info_signal_count;
 
-/* Whether to discard cache for input or output.  */
+ 
 static bool i_nocache, o_nocache;
 
-/* Whether to instruct the kernel to discard the complete file.  */
+ 
 static bool i_nocache_eof, o_nocache_eof;
 
-/* Function used for read (to handle iflag=fullblock parameter).  */
+ 
 static ssize_t (*iread_fnc) (int fd, char *buf, idx_t size);
 
-/* A longest symbol in the struct symbol_values tables below.  */
+ 
 #define LONGEST_SYMBOL "count_bytes"
 
-/* A symbol and the corresponding integer value.  */
+ 
 struct symbol_value
 {
   char symbol[sizeof LONGEST_SYMBOL];
   int value;
 };
 
-/* Conversion symbols, for conv="...".  */
+ 
 static struct symbol_value const conversions[] =
 {
-  {"ascii", C_ASCII | C_UNBLOCK | C_TWOBUFS},	/* EBCDIC to ASCII. */
-  {"ebcdic", C_EBCDIC | C_BLOCK | C_TWOBUFS},	/* ASCII to EBCDIC. */
-  {"ibm", C_IBM | C_BLOCK | C_TWOBUFS},	/* Different ASCII to EBCDIC. */
-  {"block", C_BLOCK | C_TWOBUFS},	/* Variable to fixed length records. */
-  {"unblock", C_UNBLOCK | C_TWOBUFS},	/* Fixed to variable length records. */
-  {"lcase", C_LCASE | C_TWOBUFS},	/* Translate upper to lower case. */
-  {"ucase", C_UCASE | C_TWOBUFS},	/* Translate lower to upper case. */
-  {"sparse", C_SPARSE},		/* Try to sparsely write output. */
-  {"swab", C_SWAB | C_TWOBUFS},	/* Swap bytes of input. */
-  {"noerror", C_NOERROR},	/* Ignore i/o errors. */
-  {"nocreat", C_NOCREAT},	/* Do not create output file.  */
-  {"excl", C_EXCL},		/* Fail if the output file already exists.  */
-  {"notrunc", C_NOTRUNC},	/* Do not truncate output file. */
-  {"sync", C_SYNC},		/* Pad input records to ibs with NULs. */
-  {"fdatasync", C_FDATASYNC},	/* Synchronize output data before finishing.  */
-  {"fsync", C_FSYNC},		/* Also synchronize output metadata.  */
+  {"ascii", C_ASCII | C_UNBLOCK | C_TWOBUFS},	 
+  {"ebcdic", C_EBCDIC | C_BLOCK | C_TWOBUFS},	 
+  {"ibm", C_IBM | C_BLOCK | C_TWOBUFS},	 
+  {"block", C_BLOCK | C_TWOBUFS},	 
+  {"unblock", C_UNBLOCK | C_TWOBUFS},	 
+  {"lcase", C_LCASE | C_TWOBUFS},	 
+  {"ucase", C_UCASE | C_TWOBUFS},	 
+  {"sparse", C_SPARSE},		 
+  {"swab", C_SWAB | C_TWOBUFS},	 
+  {"noerror", C_NOERROR},	 
+  {"nocreat", C_NOCREAT},	 
+  {"excl", C_EXCL},		 
+  {"notrunc", C_NOTRUNC},	 
+  {"sync", C_SYNC},		 
+  {"fdatasync", C_FDATASYNC},	 
+  {"fsync", C_FSYNC},		 
   {"", 0}
 };
 
 #define FFS_MASK(x) ((x) ^ ((x) & ((x) - 1)))
 enum
   {
-    /* Compute a value that's bitwise disjoint from the union
-       of all O_ values.  */
+     
     v = ~(0
           | O_APPEND
           | O_BINARY
@@ -309,7 +284,7 @@ enum
           | O_TEXT
           ),
 
-    /* Use its lowest bits for private flags.  */
+     
     O_FULLBLOCK = FFS_MASK (v),
     v2 = v ^ O_FULLBLOCK,
 
@@ -325,7 +300,7 @@ enum
     O_SEEK_BYTES = FFS_MASK (v5)
   };
 
-/* Ensure that we got something.  */
+ 
 static_assert (O_FULLBLOCK != 0);
 static_assert (O_NOCACHE != 0);
 static_assert (O_COUNT_BYTES != 0);
@@ -334,14 +309,14 @@ static_assert (O_SEEK_BYTES != 0);
 
 #define MULTIPLE_BITS_SET(i) (((i) & ((i) - 1)) != 0)
 
-/* Ensure that this is a single-bit value.  */
+ 
 static_assert ( ! MULTIPLE_BITS_SET (O_FULLBLOCK));
 static_assert ( ! MULTIPLE_BITS_SET (O_NOCACHE));
 static_assert ( ! MULTIPLE_BITS_SET (O_COUNT_BYTES));
 static_assert ( ! MULTIPLE_BITS_SET (O_SKIP_BYTES));
 static_assert ( ! MULTIPLE_BITS_SET (O_SEEK_BYTES));
 
-/* Flags, for iflag="..." and oflag="...".  */
+ 
 static struct symbol_value const flags[] =
 {
   {"append",	  O_APPEND},
@@ -351,21 +326,21 @@ static struct symbol_value const flags[] =
   {"directory",   O_DIRECTORY},
   {"dsync",	  O_DSYNC},
   {"noatime",	  O_NOATIME},
-  {"nocache",	  O_NOCACHE},   /* Discard cache.  */
+  {"nocache",	  O_NOCACHE},    
   {"noctty",	  O_NOCTTY},
   {"nofollow",	  HAVE_WORKING_O_NOFOLLOW ? O_NOFOLLOW : 0},
   {"nolinks",	  O_NOLINKS},
   {"nonblock",	  O_NONBLOCK},
   {"sync",	  O_SYNC},
   {"text",	  O_TEXT},
-  {"fullblock",   O_FULLBLOCK}, /* Accumulate full blocks from input.  */
+  {"fullblock",   O_FULLBLOCK},  
   {"count_bytes", O_COUNT_BYTES},
   {"skip_bytes",  O_SKIP_BYTES},
   {"seek_bytes",  O_SEEK_BYTES},
   {"",		0}
 };
 
-/* Status, for status="...".  */
+ 
 static struct symbol_value const statuses[] =
 {
   {"none",	STATUS_NONE},
@@ -374,13 +349,10 @@ static struct symbol_value const statuses[] =
   {"",		0}
 };
 
-/* Translation table formed by applying successive transformations. */
+ 
 static unsigned char trans_table[256];
 
-/* Standard translation tables, taken from POSIX 1003.1-2013.
-   Beware of imitations; there are lots of ASCII<->EBCDIC tables
-   floating around the net, perhaps valid for some applications but
-   not correct here.  */
+ 
 
 static char const ascii_to_ebcdic[] =
 {
@@ -490,20 +462,10 @@ static char const ebcdic_to_ascii[] =
   '\070', '\071', '\372', '\373', '\374', '\375', '\376', '\377'
 };
 
-/* True if we need to close the standard output *stream*.  */
+ 
 static bool close_stdout_required = true;
 
-/* The only reason to close the standard output *stream* is if
-   parse_long_options fails (as it does for --help or --version).
-   In any other case, dd uses only the STDOUT_FILENO file descriptor,
-   and the "cleanup" function calls "close (STDOUT_FILENO)".
-   Closing the file descriptor and then letting the usual atexit-run
-   close_stdout function call "fclose (stdout)" would result in a
-   harmless failure of the close syscall (with errno EBADF).
-   This function serves solely to avoid the unnecessary close_stdout
-   call, once parse_long_options has succeeded.
-   Meanwhile, we guarantee that the standard error stream is flushed,
-   by inlining the last half of close_stdout as needed.  */
+ 
 static void
 maybe_close_stdout (void)
 {
@@ -513,8 +475,7 @@ maybe_close_stdout (void)
     _exit (EXIT_FAILURE);
 }
 
-/* Like the 'error' function but handle any pending newline,
-   and do not exit.  */
+ 
 
 ATTRIBUTE_FORMAT ((__printf__, 2, 3))
 static void
@@ -2555,7 +2516,7 @@ main (int argc, char **argv)
     }
   else
     {
-      /* Invalidate any pending region or to EOF if appropriate.  */
+       
       if (i_nocache || i_nocache_eof)
         invalidate_cache (STDIN_FILENO, 0);
       if (o_nocache || o_nocache_eof)

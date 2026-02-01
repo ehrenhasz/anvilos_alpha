@@ -1,62 +1,25 @@
-// SPDX-License-Identifier: GPL-2.0
-/******************************************************************************
- *
- * Copyright(c) 2007 - 2011 Realtek Corporation. All rights reserved.
- *
- ******************************************************************************/
-/******************************************************************************
- *
- *
- * Module:	rtl8192c_rf6052.c	(Source C File)
- *
- * Note:	Provide RF 6052 series relative API.
- *
- * Function:
- *
- * Export:
- *
- * Abbrev:
- *
- * History:
- * Data			Who		Remark
- *
- * 09/25/2008	MHC		Create initial version.
- * 11/05/2008	MHC		Add API for tw power setting.
- *
- *
-******************************************************************************/
+
+ 
+ 
 
 #include <rtl8723b_hal.h>
 
-/*---------------------------Define Local Constant---------------------------*/
-/*---------------------------Define Local Constant---------------------------*/
+ 
+ 
 
 
-/*------------------------Define global variable-----------------------------*/
-/*------------------------Define global variable-----------------------------*/
+ 
+ 
 
 
-/*------------------------Define local variable------------------------------*/
-/*  2008/11/20 MH For Debug only, RF */
-/*------------------------Define local variable------------------------------*/
+ 
+ 
+ 
 
-/*-----------------------------------------------------------------------------
- * Function:    PHY_RF6052SetBandwidth()
- *
- * Overview:    This function is called by SetBWModeCallback8190Pci() only
- *
- * Input:       struct adapter *			Adapter
- *		WIRELESS_BANDWIDTH_E	Bandwidth	20M or 40M
- *
- * Output:      NONE
- *
- * Return:      NONE
- *
- * Note:		For RF type 0222D
- *---------------------------------------------------------------------------*/
+ 
 void PHY_RF6052SetBandwidth8723B(
 	struct adapter *Adapter, enum channel_width Bandwidth
-) /* 20M or 40M */
+)  
 {
 	struct hal_com_data *pHalData = GET_HAL_DATA(Adapter);
 
@@ -86,15 +49,15 @@ static int phy_RF6052_Config_ParaFile(struct adapter *Adapter)
 	struct bb_register_def *pPhyReg;
 	struct hal_com_data *pHalData = GET_HAL_DATA(Adapter);
 
-	/* 3----------------------------------------------------------------- */
-	/* 3 <2> Initialize RF */
-	/* 3----------------------------------------------------------------- */
-	/* for (eRFPath = RF_PATH_A; eRFPath <pHalData->NumTotalRFPath; eRFPath++) */
+	 
+	 
+	 
+	 
 	for (eRFPath = 0; eRFPath < pHalData->NumTotalRFPath; eRFPath++) {
 
 		pPhyReg = &pHalData->PHYRegDef[eRFPath];
 
-		/*----Store original RFENV control type----*/
+		 
 		switch (eRFPath) {
 		case RF_PATH_A:
 			u4RegValue = PHY_QueryBBReg(Adapter, pPhyReg->rfintfs, bRFSI_RFENV);
@@ -104,22 +67,22 @@ static int phy_RF6052_Config_ParaFile(struct adapter *Adapter)
 			break;
 		}
 
-		/*----Set RF_ENV enable----*/
+		 
 		PHY_SetBBReg(Adapter, pPhyReg->rfintfe, bRFSI_RFENV << 16, 0x1);
-		udelay(1);/* PlatformStallExecution(1); */
+		udelay(1); 
 
-		/*----Set RF_ENV output high----*/
+		 
 		PHY_SetBBReg(Adapter, pPhyReg->rfintfo, bRFSI_RFENV, 0x1);
-		udelay(1);/* PlatformStallExecution(1); */
+		udelay(1); 
 
-		/* Set bit number of Address and Data for RF register */
-		PHY_SetBBReg(Adapter, pPhyReg->rfHSSIPara2, b3WireAddressLength, 0x0);	/*  Set 1 to 4 bits for 8255 */
-		udelay(1);/* PlatformStallExecution(1); */
+		 
+		PHY_SetBBReg(Adapter, pPhyReg->rfHSSIPara2, b3WireAddressLength, 0x0);	 
+		udelay(1); 
 
-		PHY_SetBBReg(Adapter, pPhyReg->rfHSSIPara2, b3WireDataLength, 0x0);	/*  Set 0 to 12  bits for 8255 */
-		udelay(1);/* PlatformStallExecution(1); */
+		PHY_SetBBReg(Adapter, pPhyReg->rfHSSIPara2, b3WireDataLength, 0x0);	 
+		udelay(1); 
 
-		/*----Initialize RF fom connfiguration file----*/
+		 
 		switch (eRFPath) {
 		case RF_PATH_A:
 		case RF_PATH_B:
@@ -128,7 +91,7 @@ static int phy_RF6052_Config_ParaFile(struct adapter *Adapter)
 			break;
 		}
 
-		/*----Restore RFENV control type----*/
+		 
 		switch (eRFPath) {
 		case RF_PATH_A:
 			PHY_SetBBReg(Adapter, pPhyReg->rfintfs, bRFSI_RFENV, u4RegValue);
@@ -139,9 +102,9 @@ static int phy_RF6052_Config_ParaFile(struct adapter *Adapter)
 		}
 	}
 
-	/* 3 ----------------------------------------------------------------- */
-	/* 3 Configuration of Tx Power Tracking */
-	/* 3 ----------------------------------------------------------------- */
+	 
+	 
+	 
 
 	ODM_ConfigRFWithTxPwrTrackHeaderFile(&pHalData->odmpriv);
 
@@ -153,16 +116,16 @@ int PHY_RF6052_Config8723B(struct adapter *Adapter)
 {
 	struct hal_com_data *pHalData = GET_HAL_DATA(Adapter);
 
-	/*  */
-	/*  Initialize general global value */
-	/*  */
+	 
+	 
+	 
 	pHalData->NumTotalRFPath = 1;
 
-	/*  */
-	/*  Config BB and RF */
-	/*  */
+	 
+	 
+	 
 	return phy_RF6052_Config_ParaFile(Adapter);
 
 }
 
-/* End of HalRf6052.c */
+ 

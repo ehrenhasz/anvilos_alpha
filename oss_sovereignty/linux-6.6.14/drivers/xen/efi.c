@@ -1,23 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * EFI support for Xen.
- *
- * Copyright (C) 1999 VA Linux Systems
- * Copyright (C) 1999 Walt Drummond <drummond@valinux.com>
- * Copyright (C) 1999-2002 Hewlett-Packard Co.
- *	David Mosberger-Tang <davidm@hpl.hp.com>
- *	Stephane Eranian <eranian@hpl.hp.com>
- * Copyright (C) 2005-2008 Intel Co.
- *	Fenghua Yu <fenghua.yu@intel.com>
- *	Bibo Mao <bibo.mao@intel.com>
- *	Chandramouli Narayanan <mouli@linux.intel.com>
- *	Huang Ying <ying.huang@intel.com>
- * Copyright (C) 2011 Novell Co.
- *	Jan Beulich <JBeulich@suse.com>
- * Copyright (C) 2011-2012 Oracle Co.
- *	Liang Tang <liang.tang@oracle.com>
- * Copyright (c) 2014 Oracle Co., Daniel Kiper
- */
+
+ 
 
 #include <linux/bug.h>
 #include <linux/efi.h>
@@ -272,10 +254,7 @@ static void xen_efi_reset_system(int reset_type, efi_status_t status,
 	}
 }
 
-/*
- * Set XEN EFI runtime services function pointers. Other fields of struct efi,
- * e.g. efi.systab, will be set like normal EFI.
- */
+ 
 void __init xen_efi_runtime_setup(void)
 {
 	efi.get_time			= xen_efi_get_time;

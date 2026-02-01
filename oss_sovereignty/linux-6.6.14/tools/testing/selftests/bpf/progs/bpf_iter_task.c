@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2020 Facebook */
+
+ 
 #include "bpf_iter.h"
 #include <bpf/bpf_helpers.h>
 #include <bpf/bpf_tracing.h>
@@ -53,7 +53,7 @@ int dump_task_sleepable(struct bpf_iter__task *ctx)
 		return 0;
 	}
 
-	/* Read an invalid pointer and ensure we get an error */
+	 
 	ptr = NULL;
 	ret = bpf_copy_from_user_task(&user_data, sizeof(uint32_t), ptr, task, 0);
 	if (ret) {
@@ -63,9 +63,7 @@ int dump_task_sleepable(struct bpf_iter__task *ctx)
 		return 0;
 	}
 
-	/* Try to read the contents of the task's instruction pointer from the
-	 * remote task's address space.
-	 */
+	 
 	regs = (struct pt_regs *)bpf_task_pt_regs(task);
 	if (regs == (void *)0) {
 		BPF_SEQ_PRINTF(seq, "%s\n", info);

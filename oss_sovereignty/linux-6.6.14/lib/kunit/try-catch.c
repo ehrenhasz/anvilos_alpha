@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * An API to allow a function, that may fail, to be executed, and recover in a
- * controlled manner.
- *
- * Copyright (C) 2019, Google LLC.
- * Author: Brendan Higgins <brendanhiggins@google.com>
- */
+
+ 
 
 #include <kunit/test.h>
 #include <linux/completion.h>
@@ -32,27 +26,8 @@ static int kunit_generic_run_threadfn_adapter(void *data)
 
 static unsigned long kunit_test_timeout(void)
 {
-	/*
-	 * TODO(brendanhiggins@google.com): We should probably have some type of
-	 * variable timeout here. The only question is what that timeout value
-	 * should be.
-	 *
-	 * The intention has always been, at some point, to be able to label
-	 * tests with some type of size bucket (unit/small, integration/medium,
-	 * large/system/end-to-end, etc), where each size bucket would get a
-	 * default timeout value kind of like what Bazel does:
-	 * https://docs.bazel.build/versions/master/be/common-definitions.html#test.size
-	 * There is still some debate to be had on exactly how we do this. (For
-	 * one, we probably want to have some sort of test runner level
-	 * timeout.)
-	 *
-	 * For more background on this topic, see:
-	 * https://mike-bland.com/2011/11/01/small-medium-large.html
-	 *
-	 * If tests timeout due to exceeding sysctl_hung_task_timeout_secs,
-	 * the task will be killed and an oops generated.
-	 */
-	return 300 * msecs_to_jiffies(MSEC_PER_SEC); /* 5 min */
+	 
+	return 300 * msecs_to_jiffies(MSEC_PER_SEC);  
 }
 
 void kunit_try_catch_run(struct kunit_try_catch *try_catch, void *context)

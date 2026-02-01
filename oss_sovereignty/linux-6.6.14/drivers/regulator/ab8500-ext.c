@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) ST-Ericsson SA 2010
- *
- * Authors: Bengt Jonsson <bengt.g.jonsson@stericsson.com>
- *
- * This file is based on drivers/regulator/ab8500.c
- *
- * AB8500 external regulators
- *
- * ab8500-ext supports the following regulators:
- * - VextSupply3
- */
+
+ 
 #include <linux/init.h>
 #include <linux/kernel.h>
 #include <linux/err.h>
@@ -23,7 +12,7 @@
 #include <linux/mfd/abx500.h>
 #include <linux/mfd/abx500/ab8500.h>
 
-/* AB8500 external regulators */
+ 
 enum ab8500_ext_regulator_id {
 	AB8500_EXT_SUPPLY1,
 	AB8500_EXT_SUPPLY2,
@@ -32,20 +21,18 @@ enum ab8500_ext_regulator_id {
 };
 
 struct ab8500_ext_regulator_cfg {
-	bool hwreq; /* requires hw mode or high power mode */
+	bool hwreq;  
 };
 
-/* supply for VextSupply3 */
+ 
 static struct regulator_consumer_supply ab8500_ext_supply3_consumers[] = {
-	/* SIM supply for 3 V SIM cards */
+	 
 	REGULATOR_SUPPLY("vinvsim", "sim-detect.0"),
 };
 
-/*
- * AB8500 external regulators
- */
+ 
 static struct regulator_init_data ab8500_ext_regulators[] = {
-	/* fixed Vbat supplies VSMPS1_EXT_1V8 */
+	 
 	[AB8500_EXT_SUPPLY1] = {
 		.constraints = {
 			.name = "ab8500-ext-supply1",
@@ -56,7 +43,7 @@ static struct regulator_init_data ab8500_ext_regulators[] = {
 			.always_on = 1,
 		},
 	},
-	/* fixed Vbat supplies VSMPS2_EXT_1V36 and VSMPS5_EXT_1V15 */
+	 
 	[AB8500_EXT_SUPPLY2] = {
 		.constraints = {
 			.name = "ab8500-ext-supply2",
@@ -64,7 +51,7 @@ static struct regulator_init_data ab8500_ext_regulators[] = {
 			.max_uV = 1360000,
 		},
 	},
-	/* fixed Vbat supplies VSMPS3_EXT_3V4 and VSMPS4_EXT_3V4 */
+	 
 	[AB8500_EXT_SUPPLY3] = {
 		.constraints = {
 			.name = "ab8500-ext-supply3",
@@ -79,22 +66,7 @@ static struct regulator_init_data ab8500_ext_regulators[] = {
 	},
 };
 
-/**
- * struct ab8500_ext_regulator_info - ab8500 regulator information
- * @dev: device pointer
- * @desc: regulator description
- * @cfg: regulator configuration (extension of regulator FW configuration)
- * @update_bank: bank to control on/off
- * @update_reg: register to control on/off
- * @update_mask: mask to enable/disable and set mode of regulator
- * @update_val: bits holding the regulator current mode
- * @update_val_hp: bits to set EN pin active (LPn pin deactive)
- *                 normally this means high power mode
- * @update_val_lp: bits to set EN pin active and LPn pin active
- *                 normally this means low power mode
- * @update_val_hw: bits to set regulator pins in HW control
- *                 SysClkReq pins and logic will choose mode
- */
+ 
 struct ab8500_ext_regulator_info {
 	struct device *dev;
 	struct regulator_desc desc;
@@ -119,10 +91,7 @@ static int ab8500_ext_regulator_enable(struct regulator_dev *rdev)
 		return -EINVAL;
 	}
 
-	/*
-	 * To satisfy both HW high power request and SW request, the regulator
-	 * must be on in high power.
-	 */
+	 
 	if (info->cfg && info->cfg->hwreq)
 		regval = info->update_val_hp;
 	else
@@ -156,9 +125,7 @@ static int ab8500_ext_regulator_disable(struct regulator_dev *rdev)
 		return -EINVAL;
 	}
 
-	/*
-	 * Set the regulator in HW request mode if configured
-	 */
+	 
 	if (info->cfg && info->cfg->hwreq)
 		regval = info->update_val_hw;
 	else
@@ -236,10 +203,7 @@ static int ab8500_ext_regulator_set_mode(struct regulator_dev *rdev,
 		return -EINVAL;
 	}
 
-	/* If regulator is enabled and info->cfg->hwreq is set, the regulator
-	   must be on in high power, so we don't need to write the register with
-	   the same value.
-	 */
+	 
 	if (ab8500_ext_regulator_is_enabled(rdev) &&
 	    !(info->cfg && info->cfg->hwreq)) {
 		ret = abx500_mask_and_set_register_interruptible(info->dev,
@@ -314,7 +278,7 @@ static int ab8500_ext_list_voltage(struct regulator_dev *rdev,
 		dev_err(rdev_get_dev(rdev), "regulator constraints null pointer\n");
 		return -EINVAL;
 	}
-	/* return the uV for the fixed regulators */
+	 
 	if (regu_constraints->min_uV && regu_constraints->max_uV) {
 		if (regu_constraints->min_uV == regu_constraints->max_uV)
 			return regu_constraints->min_uV;
@@ -402,22 +366,22 @@ static int ab8500_ext_regulator_probe(struct platform_device *pdev)
 		return -EINVAL;
 	}
 
-	/* check for AB8500 2.x */
+	 
 	if (is_ab8500_2p0_or_earlier(ab8500)) {
 		struct ab8500_ext_regulator_info *info;
 
-		/* VextSupply3LPn is inverted on AB8500 2.x */
+		 
 		info = &ab8500_ext_regulator_info[AB8500_EXT_SUPPLY3];
 		info->update_val = 0x30;
 		info->update_val_hp = 0x30;
 		info->update_val_lp = 0x10;
 	}
 
-	/* register all regulators */
+	 
 	for (i = 0; i < ARRAY_SIZE(ab8500_ext_regulator_info); i++) {
 		struct ab8500_ext_regulator_info *info = NULL;
 
-		/* assign per-regulator data */
+		 
 		info = &ab8500_ext_regulator_info[i];
 		info->dev = &pdev->dev;
 		info->cfg = (struct ab8500_ext_regulator_cfg *)
@@ -427,7 +391,7 @@ static int ab8500_ext_regulator_probe(struct platform_device *pdev)
 		config.driver_data = info;
 		config.init_data = &ab8500_ext_regulators[i];
 
-		/* register regulator with framework */
+		 
 		rdev = devm_regulator_register(&pdev->dev, &info->desc,
 					       &config);
 		if (IS_ERR(rdev)) {

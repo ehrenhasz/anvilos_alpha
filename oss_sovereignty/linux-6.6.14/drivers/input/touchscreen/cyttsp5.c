@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Parade TrueTouch(TM) Standard Product V5 Module.
- *
- * Copyright (C) 2015 Parade Technologies
- * Copyright (C) 2012-2015 Cypress Semiconductor
- * Copyright (C) 2018 Bootlin
- *
- * Authors: Mylène Josserand <mylene.josserand@bootlin.com>
- *                Alistair Francis <alistair@alistair23.me>
- */
+
+ 
 
 #include <linux/crc-itu-t.h>
 #include <linux/delay.h>
@@ -51,10 +42,10 @@
 #define REPORT_SIZE_8				8
 #define REPORT_SIZE_16				16
 
-/* Touch reports offsets */
-/* Header offsets */
+ 
+ 
 #define TOUCH_REPORT_DESC_HDR_CONTACTCOUNT	16
-/* Record offsets */
+ 
 #define TOUCH_REPORT_DESC_CONTACTID		8
 #define TOUCH_REPORT_DESC_X			16
 #define TOUCH_REPORT_DESC_Y			32
@@ -62,7 +53,7 @@
 #define TOUCH_REPORT_DESC_MAJ			56
 #define TOUCH_REPORT_DESC_MIN			64
 
-/* HID */
+ 
 #define HID_TOUCH_REPORT_ID			0x1
 #define HID_BTN_REPORT_ID			0x3
 #define HID_APP_RESPONSE_REPORT_ID		0x1F
@@ -90,7 +81,7 @@
 #define CY_HID_GET_HID_DESCRIPTOR_TIMEOUT_MS	4000
 #define CY_HID_SET_POWER_TIMEOUT		500
 
-/* maximum number of concurrent tracks */
+ 
 #define TOUCH_REPORT_SIZE			10
 #define TOUCH_INPUT_HEADER_SIZE			7
 #define BTN_REPORT_SIZE				9
@@ -98,7 +89,7 @@
 
 #define MAX_CY_TCH_T_IDS			32
 
-/* All usage pages for Touch Report */
+ 
 #define TOUCH_REPORT_USAGE_PG_X			0x00010030
 #define TOUCH_REPORT_USAGE_PG_Y			0x00010031
 #define TOUCH_REPORT_USAGE_PG_P			0x000D0030
@@ -116,7 +107,7 @@
 #define SET_CMD_REPORT_TYPE(byte, type) SET_CMD_HIGH(byte, ((type) << 4))
 #define SET_CMD_REPORT_ID(byte, id) SET_CMD_LOW(byte, id)
 
-/* System Information interface definitions */
+ 
 struct cyttsp5_sensing_conf_data_dev {
 	u8 electrodes_x;
 	u8 electrodes_y;
@@ -144,22 +135,22 @@ struct cyttsp5_sensing_conf_data {
 	u8 max_tch;
 };
 
-enum cyttsp5_tch_abs {	/* for ordering within the extracted touch data array */
-	CY_TCH_X,	/* X */
-	CY_TCH_Y,	/* Y */
-	CY_TCH_P,	/* P (Z) */
-	CY_TCH_T,	/* TOUCH ID */
-	CY_TCH_MAJ,	/* TOUCH_MAJOR */
-	CY_TCH_MIN,	/* TOUCH_MINOR */
+enum cyttsp5_tch_abs {	 
+	CY_TCH_X,	 
+	CY_TCH_Y,	 
+	CY_TCH_P,	 
+	CY_TCH_T,	 
+	CY_TCH_MAJ,	 
+	CY_TCH_MIN,	 
 	CY_TCH_NUM_ABS
 };
 
 struct cyttsp5_tch_abs_params {
-	size_t ofs;	/* abs byte offset */
-	size_t size;	/* size in bits */
-	size_t min;	/* min value */
-	size_t max;	/* max value */
-	size_t bofs;	/* bit offset */
+	size_t ofs;	 
+	size_t size;	 
+	size_t min;	 
+	size_t max;	 
+	size_t bofs;	 
 };
 
 struct cyttsp5_touch {
@@ -210,19 +201,14 @@ struct cyttsp5 {
 	struct regulator *vdd;
 };
 
-/*
- * For what is understood in the datasheet, the register does not
- * matter. For consistency, use the Input Register address
- * but it does mean anything to the device. The important data
- * to send is the I2C address
- */
+ 
 static int cyttsp5_read(struct cyttsp5 *ts, u8 *buf, u32 max)
 {
 	int error;
 	u32 size;
 	u8 temp[2];
 
-	/* Read the frame to retrieve the size */
+	 
 	error = regmap_bulk_read(ts->regmap, HID_INPUT_REG, temp, sizeof(temp));
 	if (error)
 		return error;
@@ -234,7 +220,7 @@ static int cyttsp5_read(struct cyttsp5 *ts, u8 *buf, u32 max)
 	if (size > max)
 		return -EINVAL;
 
-	/* Get the real value */
+	 
 	return regmap_bulk_read(ts->regmap, HID_INPUT_REG, buf, size);
 }
 
@@ -246,20 +232,14 @@ static int cyttsp5_write(struct cyttsp5 *ts, unsigned int reg, u8 *data,
 	if (size + 1 > HID_OUTPUT_MAX_CMD_SIZE)
 		return -E2BIG;
 
-	/* High bytes of register address needed as first byte of cmd */
+	 
 	cmd[0] = (reg >> 8) & 0xFF;
 
-	/* Copy the rest of the data */
+	 
 	if (data)
 		memcpy(&cmd[1], data, size);
 
-	/*
-	 * The hardware wants to receive a frame with the address register
-	 * contained in the first two bytes. As the regmap_write function
-	 * add the register adresse in the frame, we use the low byte as
-	 * first frame byte for the address register and the first
-	 * data byte is the high register + left of the cmd to send
-	 */
+	 
 	return regmap_bulk_write(ts->regmap, reg & 0xFF, cmd, size + 1);
 }
 
@@ -313,7 +293,7 @@ static void cyttsp5_get_mt_touches(struct cyttsp5 *ts,
 		tch_addr = ts->input_buf + offset + (i * TOUCH_REPORT_SIZE);
 		cyttsp5_get_touch_record(ts, tch, tch_addr);
 
-		/* Convert MAJOR/MINOR from mm to resolution */
+		 
 		tmp = tch->abs[CY_TCH_MAJ] * 100 * si->sensing_conf_data.res_x;
 		tch->abs[CY_TCH_MAJ] = tmp / si->sensing_conf_data.len_x;
 		tmp = tch->abs[CY_TCH_MIN] * 100 * si->sensing_conf_data.res_x;
@@ -324,14 +304,14 @@ static void cyttsp5_get_mt_touches(struct cyttsp5 *ts,
 		input_mt_report_slot_state(ts->input, MT_TOOL_FINGER, true);
 		__set_bit(t, ids);
 
-		/* position and pressure fields */
+		 
 		touchscreen_report_pos(ts->input, &ts->prop,
 				       tch->abs[CY_TCH_X], tch->abs[CY_TCH_Y],
 				       true);
 		input_report_abs(ts->input, ABS_MT_PRESSURE,
 				 tch->abs[CY_TCH_P]);
 
-		/* Get the extended touch fields */
+		 
 		input_report_abs(ts->input, ABS_MT_TOUCH_MAJOR,
 				 tch->abs[CY_TCH_MAJ]);
 		input_report_abs(ts->input, ABS_MT_TOUCH_MINOR,
@@ -362,7 +342,7 @@ static int cyttsp5_mt_attention(struct device *dev)
 	if (num_cur_tch == 0 && ts->num_prv_rec == 0)
 		return 0;
 
-	/* extract xy_data for all currently reported touches */
+	 
 	if (num_cur_tch)
 		cyttsp5_get_mt_touches(ts, &tch, num_cur_tch);
 
@@ -415,7 +395,7 @@ static int cyttsp5_parse_dt_key_code(struct device *dev)
 	if (!si->num_btns)
 		return 0;
 
-	/* Initialize the button to RESERVED */
+	 
 	memset32(si->key_code, KEY_RESERVED,  si->num_btns);
 
 	return device_property_read_u32_array(dev, "linux,keycodes",
@@ -441,9 +421,9 @@ static int cyttsp5_btn_attention(struct device *dev)
 	if (ts->input_buf[2] != HID_BTN_REPORT_ID)
 		return 0;
 
-	/* extract button press/release touch information */
+	 
 	for (cur_btn = 0; cur_btn < si->num_btns; cur_btn++) {
-		/* Get current button state */
+		 
 		cur_btn_state = (ts->input_buf[offset] >> (cur_btn * CY_BITS_PER_BTN))
 				& CY_NUM_BTN_EVENT_ID;
 
@@ -543,10 +523,10 @@ static int cyttsp5_hid_output_get_sysinfo(struct cyttsp5 *ts)
 	int rc;
 	u8 cmd[HID_OUTPUT_GET_SYSINFO_SIZE];
 
-	/* HI bytes of Output register address */
+	 
 	put_unaligned_le16(HID_OUTPUT_GET_SYSINFO_SIZE, cmd);
 	cmd[2] = HID_APP_OUTPUT_REPORT_ID;
-	cmd[3] = 0x0; /* Reserved */
+	cmd[3] = 0x0;  
 	cmd[4] = HID_OUTPUT_GET_SYSINFO;
 
 	rc = cyttsp5_write(ts, HID_OUTPUT_REG, cmd,
@@ -615,7 +595,7 @@ static int cyttsp5_hid_output_bl_launch_app(struct cyttsp5 *ts)
 
 	put_unaligned_le16(HID_OUTPUT_BL_LAUNCH_APP_SIZE, cmd);
 	cmd[2] = HID_BL_OUTPUT_REPORT_ID;
-	cmd[3] = 0x0; /* Reserved */
+	cmd[3] = 0x0;  
 	cmd[4] = HID_OUTPUT_BL_SOP;
 	cmd[5] = HID_OUTPUT_BL_LAUNCH_APP;
 	put_unaligned_le16(0x00, &cmd[6]);
@@ -669,7 +649,7 @@ static int cyttsp5_get_hid_descriptor(struct cyttsp5 *ts,
 
 	memcpy(desc, ts->response_buf, sizeof(*desc));
 
-	/* Check HID descriptor length and version */
+	 
 	if (le16_to_cpu(desc->hid_desc_len) != sizeof(*desc) ||
 	    le16_to_cpu(desc->bcd_version) != HID_VERSION) {
 		dev_err(dev, "Unsupported HID version\n");
@@ -706,7 +686,7 @@ static irqreturn_t cyttsp5_handle_irq(int irq, void *handle)
 
 	size = get_unaligned_le16(&ts->input_buf[0]);
 	if (size == 0) {
-		/* reset */
+		 
 		report_id = 0;
 		size = 2;
 	} else {
@@ -725,7 +705,7 @@ static irqreturn_t cyttsp5_handle_irq(int irq, void *handle)
 		complete(&ts->cmd_done);
 		break;
 	default:
-		/* It is not an input but a command response */
+		 
 		memcpy(ts->response_buf, ts->input_buf, size);
 		complete(&ts->cmd_done);
 	}
@@ -782,10 +762,7 @@ static int cyttsp5_startup(struct cyttsp5 *ts)
 		return -ENODEV;
 	}
 
-	/*
-	 * Launch the application as the device starts in bootloader mode
-	 * because of a power-on-reset
-	 */
+	 
 	error = cyttsp5_hid_output_bl_launch_app(ts);
 	if (error < 0) {
 		dev_err(ts->dev, "Error on launch app r=%d\n", error);
@@ -831,7 +808,7 @@ static int cyttsp5_probe(struct device *dev, struct regmap *regmap, int irq,
 	if (!ts)
 		return -ENOMEM;
 
-	/* Initialize device info */
+	 
 	ts->regmap = regmap;
 	ts->dev = dev;
 	si = &ts->sysinfo;
@@ -839,7 +816,7 @@ static int cyttsp5_probe(struct device *dev, struct regmap *regmap, int irq,
 
 	init_completion(&ts->cmd_done);
 
-	/* Power up the device */
+	 
 	ts->vdd = devm_regulator_get(dev, "vdd");
 	if (IS_ERR(ts->vdd)) {
 		error = PTR_ERR(ts->vdd);
@@ -865,7 +842,7 @@ static int cyttsp5_probe(struct device *dev, struct regmap *regmap, int irq,
 	ts->input->phys = ts->phys;
 	input_set_drvdata(ts->input, ts);
 
-	/* Reset the gpio to be in a reset state */
+	 
 	ts->reset_gpio = devm_gpiod_get_optional(dev, "reset", GPIOD_OUT_HIGH);
 	if (IS_ERR(ts->reset_gpio)) {
 		error = PTR_ERR(ts->reset_gpio);
@@ -874,7 +851,7 @@ static int cyttsp5_probe(struct device *dev, struct regmap *regmap, int irq,
 	}
 	gpiod_set_value_cansleep(ts->reset_gpio, 0);
 
-	/* Need a delay to have device up */
+	 
 	msleep(20);
 
 	error = devm_request_threaded_irq(dev, irq, NULL, cyttsp5_handle_irq,

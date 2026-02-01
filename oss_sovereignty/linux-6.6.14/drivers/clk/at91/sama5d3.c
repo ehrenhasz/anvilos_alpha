@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/clk-provider.h>
 #include <linux/mfd/syscon.h>
 #include <linux/slab.h>
@@ -43,10 +43,7 @@ static const struct {
 	unsigned long flags;
 	u8 id;
 } sama5d3_systemck[] = {
-	/*
-	 * ddrck feeds DDR controller and is enabled by bootloader thus we need
-	 * to keep it enabled in case there is no Linux consumer for it.
-	 */
+	 
 	{ .n = "ddrck", .p = "masterck_div", .id = 2, .flags = CLK_IS_CRITICAL },
 	{ .n = "lcdck", .p = "masterck_div", .id = 3 },
 	{ .n = "smdck", .p = "smdclk",       .id = 4 },
@@ -105,10 +102,7 @@ static const struct {
 	{ .n = "tdes_clk", .id = 44, },
 	{ .n = "trng_clk", .id = 45, },
 	{ .n = "fuse_clk", .id = 48, },
-	/*
-	 * mpddr_clk feeds DDR controller and is enabled by bootloader thus we
-	 * need to keep it enabled in case there is no Linux consumer for it.
-	 */
+	 
 	{ .n = "mpddr_clk", .id = 49, .flags = CLK_IS_CRITICAL },
 };
 
@@ -262,8 +256,5 @@ static void __init sama5d3_pmc_setup(struct device_node *np)
 err_free:
 	kfree(sama5d3_pmc);
 }
-/*
- * The TCB is used as the clocksource so its clock is needed early. This means
- * this can't be a platform driver.
- */
+ 
 CLK_OF_DECLARE(sama5d3_pmc, "atmel,sama5d3-pmc", sama5d3_pmc_setup);

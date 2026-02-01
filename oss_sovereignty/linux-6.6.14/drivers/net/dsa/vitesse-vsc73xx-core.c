@@ -1,19 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* DSA driver for:
- * Vitesse VSC7385 SparX-G5 5+1-port Integrated Gigabit Ethernet Switch
- * Vitesse VSC7388 SparX-G8 8-port Integrated Gigabit Ethernet Switch
- * Vitesse VSC7395 SparX-G5e 5+1-port Integrated Gigabit Ethernet Switch
- * Vitesse VSC7398 SparX-G8e 8-port Integrated Gigabit Ethernet Switch
- *
- * These switches have a built-in 8051 CPU and can download and execute a
- * firmware in this CPU. They can also be configured to use an external CPU
- * handling the switch in a memory-mapped manner by connecting to that external
- * CPU's memory bus.
- *
- * Copyright (C) 2018 Linus Wallej <linus.walleij@linaro.org>
- * Includes portions of code from the firmware uploader by:
- * Copyright (C) 2009 Gabor Juhos <juhosg@openwrt.org>
- */
+
+ 
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/device.h>
@@ -29,17 +15,17 @@
 
 #include "vitesse-vsc73xx.h"
 
-#define VSC73XX_BLOCK_MAC	0x1 /* Subblocks 0-4, 6 (CPU port) */
-#define VSC73XX_BLOCK_ANALYZER	0x2 /* Only subblock 0 */
-#define VSC73XX_BLOCK_MII	0x3 /* Subblocks 0 and 1 */
-#define VSC73XX_BLOCK_MEMINIT	0x3 /* Only subblock 2 */
-#define VSC73XX_BLOCK_CAPTURE	0x4 /* Only subblock 2 */
-#define VSC73XX_BLOCK_ARBITER	0x5 /* Only subblock 0 */
-#define VSC73XX_BLOCK_SYSTEM	0x7 /* Only subblock 0 */
+#define VSC73XX_BLOCK_MAC	0x1  
+#define VSC73XX_BLOCK_ANALYZER	0x2  
+#define VSC73XX_BLOCK_MII	0x3  
+#define VSC73XX_BLOCK_MEMINIT	0x3  
+#define VSC73XX_BLOCK_CAPTURE	0x4  
+#define VSC73XX_BLOCK_ARBITER	0x5  
+#define VSC73XX_BLOCK_SYSTEM	0x7  
 
-#define CPU_PORT	6 /* CPU port */
+#define CPU_PORT	6  
 
-/* MAC Block registers */
+ 
 #define VSC73XX_MAC_CFG		0x00
 #define VSC73XX_MACHDXGAP	0x02
 #define VSC73XX_FCCONF		0x04
@@ -63,7 +49,7 @@
 #define VSC73XX_CAT_PR_USR_PRIO	0x75
 #define VSC73XX_Q_MISC_CONF	0xdf
 
-/* MAC_CFG register bits */
+ 
 #define VSC73XX_MAC_CFG_WEXC_DIS	BIT(31)
 #define VSC73XX_MAC_CFG_PORT_RST	BIT(29)
 #define VSC73XX_MAC_CFG_TX_EN		BIT(28)
@@ -75,7 +61,7 @@
 #define VSC73XX_MAC_CFG_RX_EN		BIT(16)
 #define VSC73XX_MAC_CFG_VLAN_DBLAWR	BIT(15)
 #define VSC73XX_MAC_CFG_VLAN_AWR	BIT(14)
-#define VSC73XX_MAC_CFG_100_BASE_T	BIT(13) /* Not in manual */
+#define VSC73XX_MAC_CFG_100_BASE_T	BIT(13)  
 #define VSC73XX_MAC_CFG_TX_IPG_MASK	GENMASK(10, 6)
 #define VSC73XX_MAC_CFG_TX_IPG_OFFSET	6
 #define VSC73XX_MAC_CFG_TX_IPG_1000M	(6 << VSC73XX_MAC_CFG_TX_IPG_OFFSET)
@@ -106,12 +92,12 @@
 					 VSC73XX_MAC_CFG_MAC_RX_RST | \
 					 VSC73XX_MAC_CFG_MAC_TX_RST)
 
-/* Flow control register bits */
+ 
 #define VSC73XX_FCCONF_ZERO_PAUSE_EN	BIT(17)
 #define VSC73XX_FCCONF_FLOW_CTRL_OBEY	BIT(16)
 #define VSC73XX_FCCONF_PAUSE_VAL_MASK	GENMASK(15, 0)
 
-/* ADVPORTM advanced port setup register bits */
+ 
 #define VSC73XX_ADVPORTM_IFG_PPM	BIT(7)
 #define VSC73XX_ADVPORTM_EXC_COL_CONT	BIT(6)
 #define VSC73XX_ADVPORTM_EXT_PORT	BIT(5)
@@ -121,7 +107,7 @@
 #define VSC73XX_ADVPORTM_IO_LOOPBACK	BIT(1)
 #define VSC73XX_ADVPORTM_HOST_LOOPBACK	BIT(0)
 
-/* CAT_DROP categorizer frame dropping register bits */
+ 
 #define VSC73XX_CAT_DROP_DROP_MC_SMAC_ENA	BIT(6)
 #define VSC73XX_CAT_DROP_FWD_CTRL_ENA		BIT(4)
 #define VSC73XX_CAT_DROP_FWD_PAUSE_ENA		BIT(3)
@@ -134,7 +120,7 @@
 #define VSC73XX_Q_MISC_CONF_EARLY_TX_512	(1 << 1)
 #define VSC73XX_Q_MISC_CONF_MAC_PAUSE_MODE	BIT(0)
 
-/* Frame analyzer block 2 registers */
+ 
 #define VSC73XX_STORMLIMIT	0x02
 #define VSC73XX_ADVLEARN	0x03
 #define VSC73XX_IFLODMSK	0x04
@@ -151,9 +137,9 @@
 #define VSC73XX_MFLODMASK	0x0f
 #define VSC73XX_RECVMASK	0x10
 #define VSC73XX_AGGRCTRL	0x20
-#define VSC73XX_AGGRMSKS	0x30 /* Until 0x3f */
-#define VSC73XX_DSTMASKS	0x40 /* Until 0x7f */
-#define VSC73XX_SRCMASKS	0x80 /* Until 0x87 */
+#define VSC73XX_AGGRMSKS	0x30  
+#define VSC73XX_DSTMASKS	0x40  
+#define VSC73XX_SRCMASKS	0x80  
 #define VSC73XX_CAPENAB		0xa0
 #define VSC73XX_MACACCESS	0xb0
 #define VSC73XX_IPMCACCESS	0xb1
@@ -190,19 +176,19 @@
 #define VSC73XX_VLANACCESS_VLAN_TBL_CMD_WRITE_ENTRY	2
 #define VSC73XX_VLANACCESS_VLAN_TBL_CMD_CLEAR_TABLE	3
 
-/* MII block 3 registers */
+ 
 #define VSC73XX_MII_STAT	0x0
 #define VSC73XX_MII_CMD		0x1
 #define VSC73XX_MII_DATA	0x2
 
-/* Arbiter block 5 registers */
+ 
 #define VSC73XX_ARBEMPTY		0x0c
 #define VSC73XX_ARBDISC			0x0e
 #define VSC73XX_SBACKWDROP		0x12
 #define VSC73XX_DBACKWDROP		0x13
 #define VSC73XX_ARBBURSTPROB		0x15
 
-/* System block 7 registers */
+ 
 #define VSC73XX_ICPU_SIPAD		0x01
 #define VSC73XX_GMIIDELAY		0x05
 #define VSC73XX_ICPU_CTRL		0x10
@@ -273,15 +259,11 @@ struct vsc73xx_counter {
 	const char *name;
 };
 
-/* Counters are named according to the MIB standards where applicable.
- * Some counters are custom, non-standard. The standard counters are
- * named in accordance with RFC2819, RFC2021 and IEEE Std 802.3-2002 Annex
- * 30A Counters.
- */
+ 
 static const struct vsc73xx_counter vsc73xx_rx_counters[] = {
 	{ 0, "RxEtherStatsPkts" },
-	{ 1, "RxBroadcast+MulticastPkts" }, /* non-standard counter */
-	{ 2, "RxTotalErrorPackets" }, /* non-standard counter */
+	{ 1, "RxBroadcast+MulticastPkts" },  
+	{ 2, "RxTotalErrorPackets" },  
 	{ 3, "RxEtherStatsBroadcastPkts" },
 	{ 4, "RxEtherStatsMulticastPkts" },
 	{ 5, "RxEtherStatsPkts64Octets" },
@@ -290,29 +272,29 @@ static const struct vsc73xx_counter vsc73xx_rx_counters[] = {
 	{ 8, "RxEtherStatsPkts256to511Octets" },
 	{ 9, "RxEtherStatsPkts512to1023Octets" },
 	{ 10, "RxEtherStatsPkts1024to1518Octets" },
-	{ 11, "RxJumboFrames" }, /* non-standard counter */
+	{ 11, "RxJumboFrames" },  
 	{ 12, "RxaPauseMACControlFramesTransmitted" },
-	{ 13, "RxFIFODrops" }, /* non-standard counter */
-	{ 14, "RxBackwardDrops" }, /* non-standard counter */
-	{ 15, "RxClassifierDrops" }, /* non-standard counter */
+	{ 13, "RxFIFODrops" },  
+	{ 14, "RxBackwardDrops" },  
+	{ 15, "RxClassifierDrops" },  
 	{ 16, "RxEtherStatsCRCAlignErrors" },
 	{ 17, "RxEtherStatsUndersizePkts" },
 	{ 18, "RxEtherStatsOversizePkts" },
 	{ 19, "RxEtherStatsFragments" },
 	{ 20, "RxEtherStatsJabbers" },
 	{ 21, "RxaMACControlFramesReceived" },
-	/* 22-24 are undefined */
+	 
 	{ 25, "RxaFramesReceivedOK" },
-	{ 26, "RxQoSClass0" }, /* non-standard counter */
-	{ 27, "RxQoSClass1" }, /* non-standard counter */
-	{ 28, "RxQoSClass2" }, /* non-standard counter */
-	{ 29, "RxQoSClass3" }, /* non-standard counter */
+	{ 26, "RxQoSClass0" },  
+	{ 27, "RxQoSClass1" },  
+	{ 28, "RxQoSClass2" },  
+	{ 29, "RxQoSClass3" },  
 };
 
 static const struct vsc73xx_counter vsc73xx_tx_counters[] = {
 	{ 0, "TxEtherStatsPkts" },
-	{ 1, "TxBroadcast+MulticastPkts" }, /* non-standard counter */
-	{ 2, "TxTotalErrorPackets" }, /* non-standard counter */
+	{ 1, "TxBroadcast+MulticastPkts" },  
+	{ 2, "TxTotalErrorPackets" },  
 	{ 3, "TxEtherStatsBroadcastPkts" },
 	{ 4, "TxEtherStatsMulticastPkts" },
 	{ 5, "TxEtherStatsPkts64Octets" },
@@ -321,22 +303,22 @@ static const struct vsc73xx_counter vsc73xx_tx_counters[] = {
 	{ 8, "TxEtherStatsPkts256to511Octets" },
 	{ 9, "TxEtherStatsPkts512to1023Octets" },
 	{ 10, "TxEtherStatsPkts1024to1518Octets" },
-	{ 11, "TxJumboFrames" }, /* non-standard counter */
+	{ 11, "TxJumboFrames" },  
 	{ 12, "TxaPauseMACControlFramesTransmitted" },
-	{ 13, "TxFIFODrops" }, /* non-standard counter */
-	{ 14, "TxDrops" }, /* non-standard counter */
+	{ 13, "TxFIFODrops" },  
+	{ 14, "TxDrops" },  
 	{ 15, "TxEtherStatsCollisions" },
 	{ 16, "TxEtherStatsCRCAlignErrors" },
 	{ 17, "TxEtherStatsUndersizePkts" },
 	{ 18, "TxEtherStatsOversizePkts" },
 	{ 19, "TxEtherStatsFragments" },
 	{ 20, "TxEtherStatsJabbers" },
-	/* 21-24 are undefined */
+	 
 	{ 25, "TxaFramesReceivedOK" },
-	{ 26, "TxQoSClass0" }, /* non-standard counter */
-	{ 27, "TxQoSClass1" }, /* non-standard counter */
-	{ 28, "TxQoSClass2" }, /* non-standard counter */
-	{ 29, "TxQoSClass3" }, /* non-standard counter */
+	{ 26, "TxQoSClass0" },  
+	{ 27, "TxQoSClass1" },  
+	{ 28, "TxQoSClass2" },  
+	{ 29, "TxQoSClass3" },  
 };
 
 int vsc73xx_is_addr_valid(u8 block, u8 subblock)
@@ -390,7 +372,7 @@ static int vsc73xx_update_bits(struct vsc73xx *vsc, u8 block, u8 subblock,
 	u32 tmp, orig;
 	int ret;
 
-	/* Same read-modify-write algorithm as e.g. regmap */
+	 
 	ret = vsc73xx_read(vsc, block, subblock, reg, &orig);
 	if (ret)
 		return ret;
@@ -452,12 +434,7 @@ static int vsc73xx_detect(struct vsc73xx *vsc)
 		return ret;
 	}
 
-	/* The iCPU can always be used but can boot in different ways.
-	 * If it is initially disabled and has no external memory,
-	 * we are in control and can do whatever we like, else we
-	 * are probably in trouble (we need some way to communicate
-	 * with the running firmware) so we bail out for now.
-	 */
+	 
 	icpu_pi_en = !!(val & VSC73XX_ICPU_CTRL_ICPU_PI_EN);
 	icpu_si_boot_en = !!(val & VSC73XX_ICPU_CTRL_BOOT_EN);
 	if (icpu_si_boot_en && icpu_pi_en) {
@@ -477,7 +454,7 @@ static int vsc73xx_detect(struct vsc73xx *vsc)
 		dev_err(vsc->dev, "no idea how to deal with this\n");
 		return -ENODEV;
 	}
-	/* !icpu_si_boot_en && !cpu_pi_en */
+	 
 	dev_info(vsc->dev, "iCPU disabled, no external memory\n");
 
 	return 0;
@@ -490,7 +467,7 @@ static int vsc73xx_phy_read(struct dsa_switch *ds, int phy, int regnum)
 	u32 val;
 	int ret;
 
-	/* Setting bit 26 means "read" */
+	 
 	cmd = BIT(26) | (phy << 21) | (regnum << 16);
 	ret = vsc73xx_write(vsc, VSC73XX_BLOCK_MII, 0, 1, cmd);
 	if (ret)
@@ -519,12 +496,7 @@ static int vsc73xx_phy_write(struct dsa_switch *ds, int phy, int regnum,
 	u32 cmd;
 	int ret;
 
-	/* It was found through tedious experiments that this router
-	 * chip really hates to have it's PHYs reset. They
-	 * never recover if that happens: autonegotiation stops
-	 * working after a reset. Just filter out this command.
-	 * (Resetting the whole chip is OK.)
-	 */
+	 
 	if (regnum == 0 && (val & BIT(15))) {
 		dev_info(vsc->dev, "reset PHY - disallowed\n");
 		return 0;
@@ -544,15 +516,7 @@ static enum dsa_tag_protocol vsc73xx_get_tag_protocol(struct dsa_switch *ds,
 						      int port,
 						      enum dsa_tag_protocol mp)
 {
-	/* The switch internally uses a 8 byte header with length,
-	 * source port, tag, LPA and priority. This is supposedly
-	 * only accessible when operating the switch using the internal
-	 * CPU or with an external CPU mapping the device in, but not
-	 * when operating the switch over SPI and putting frames in/out
-	 * on port 6 (the CPU port). So far we must assume that we
-	 * cannot access the tag. (See "Internal frame header" section
-	 * 3.9.1 in the manual.)
-	 */
+	 
 	return DSA_TAG_PROTO_NONE;
 }
 
@@ -563,18 +527,12 @@ static int vsc73xx_setup(struct dsa_switch *ds)
 
 	dev_info(vsc->dev, "set up the switch\n");
 
-	/* Issue RESET */
+	 
 	vsc73xx_write(vsc, VSC73XX_BLOCK_SYSTEM, 0, VSC73XX_GLORESET,
 		      VSC73XX_GLORESET_MASTER_RESET);
 	usleep_range(125, 200);
 
-	/* Initialize memory, initialize RAM bank 0..15 except 6 and 7
-	 * This sequence appears in the
-	 * VSC7385 SparX-G5 datasheet section 6.6.1
-	 * VSC7395 SparX-G5e datasheet section 6.6.1
-	 * "initialization sequence".
-	 * No explanation is given to the 0x1010400 magic number.
-	 */
+	 
 	for (i = 0; i <= 15; i++) {
 		if (i != 6 && i != 7) {
 			vsc73xx_write(vsc, VSC73XX_BLOCK_MEMINIT,
@@ -585,29 +543,25 @@ static int vsc73xx_setup(struct dsa_switch *ds)
 	}
 	mdelay(30);
 
-	/* Clear MAC table */
+	 
 	vsc73xx_write(vsc, VSC73XX_BLOCK_ANALYZER, 0,
 		      VSC73XX_MACACCESS,
 		      VSC73XX_MACACCESS_CMD_CLEAR_TABLE);
 
-	/* Clear VLAN table */
+	 
 	vsc73xx_write(vsc, VSC73XX_BLOCK_ANALYZER, 0,
 		      VSC73XX_VLANACCESS,
 		      VSC73XX_VLANACCESS_VLAN_TBL_CMD_CLEAR_TABLE);
 
 	msleep(40);
 
-	/* Use 20KiB buffers on all ports on VSC7395
-	 * The VSC7385 has 16KiB buffers and that is the
-	 * default if we don't set this up explicitly.
-	 * Port "31" is "all ports".
-	 */
+	 
 	if (IS_739X(vsc))
 		vsc73xx_write(vsc, VSC73XX_BLOCK_MAC, 0x1f,
 			      VSC73XX_Q_MISC_CONF,
 			      VSC73XX_Q_MISC_CONF_EXTENT_MEM);
 
-	/* Put all ports into reset until enabled */
+	 
 	for (i = 0; i < 7; i++) {
 		if (i == 5)
 			continue;
@@ -615,20 +569,20 @@ static int vsc73xx_setup(struct dsa_switch *ds)
 			      VSC73XX_MAC_CFG, VSC73XX_MAC_CFG_RESET);
 	}
 
-	/* MII delay, set both GTX and RX delay to 2 ns */
+	 
 	vsc73xx_write(vsc, VSC73XX_BLOCK_SYSTEM, 0, VSC73XX_GMIIDELAY,
 		      VSC73XX_GMIIDELAY_GMII0_GTXDELAY_2_0_NS |
 		      VSC73XX_GMIIDELAY_GMII0_RXDELAY_2_0_NS);
-	/* Enable reception of frames on all ports */
+	 
 	vsc73xx_write(vsc, VSC73XX_BLOCK_ANALYZER, 0, VSC73XX_RECVMASK,
 		      0x5f);
-	/* IP multicast flood mask (table 144) */
+	 
 	vsc73xx_write(vsc, VSC73XX_BLOCK_ANALYZER, 0, VSC73XX_IFLODMSK,
 		      0xff);
 
 	mdelay(50);
 
-	/* Release reset from the internal PHYs */
+	 
 	vsc73xx_write(vsc, VSC73XX_BLOCK_SYSTEM, 0, VSC73XX_GLORESET,
 		      VSC73XX_GLORESET_PHY_RESET);
 
@@ -641,16 +595,13 @@ static void vsc73xx_init_port(struct vsc73xx *vsc, int port)
 {
 	u32 val;
 
-	/* MAC configure, first reset the port and then write defaults */
+	 
 	vsc73xx_write(vsc, VSC73XX_BLOCK_MAC,
 		      port,
 		      VSC73XX_MAC_CFG,
 		      VSC73XX_MAC_CFG_RESET);
 
-	/* Take up the port in 1Gbit mode by default, this will be
-	 * augmented after auto-negotiation on the PHY-facing
-	 * ports.
-	 */
+	 
 	if (port == CPU_PORT)
 		val = VSC73XX_MAC_CFG_1000M_F_RGMII;
 	else
@@ -663,21 +614,14 @@ static void vsc73xx_init_port(struct vsc73xx *vsc, int port)
 		      VSC73XX_MAC_CFG_TX_EN |
 		      VSC73XX_MAC_CFG_RX_EN);
 
-	/* Flow control for the CPU port:
-	 * Use a zero delay pause frame when pause condition is left
-	 * Obey pause control frames
-	 */
+	 
 	vsc73xx_write(vsc, VSC73XX_BLOCK_MAC,
 		      port,
 		      VSC73XX_FCCONF,
 		      VSC73XX_FCCONF_ZERO_PAUSE_EN |
 		      VSC73XX_FCCONF_FLOW_CTRL_OBEY);
 
-	/* Issue pause control frames on PHY facing ports.
-	 * Allow early initiation of MAC transmission if the amount
-	 * of egress data is below 512 bytes on CPU port.
-	 * FIXME: enable 20KiB buffers?
-	 */
+	 
 	if (port == CPU_PORT)
 		val = VSC73XX_Q_MISC_CONF_EARLY_TX_512;
 	else
@@ -688,7 +632,7 @@ static void vsc73xx_init_port(struct vsc73xx *vsc, int port)
 		      VSC73XX_Q_MISC_CONF,
 		      val);
 
-	/* Flow control MAC: a MAC address used in flow control frames */
+	 
 	val = (vsc->addr[5] << 16) | (vsc->addr[4] << 8) | (vsc->addr[3]);
 	vsc73xx_write(vsc, VSC73XX_BLOCK_MAC,
 		      port,
@@ -700,15 +644,13 @@ static void vsc73xx_init_port(struct vsc73xx *vsc, int port)
 		      VSC73XX_FCMACLO,
 		      val);
 
-	/* Tell the categorizer to forward pause frames, not control
-	 * frame. Do not drop anything.
-	 */
+	 
 	vsc73xx_write(vsc, VSC73XX_BLOCK_MAC,
 		      port,
 		      VSC73XX_CAT_DROP,
 		      VSC73XX_CAT_DROP_FWD_PAUSE_ENA);
 
-	/* Clear all counters */
+	 
 	vsc73xx_write(vsc, VSC73XX_BLOCK_MAC,
 		      port, VSC73XX_C_RX0, 0);
 }
@@ -720,32 +662,28 @@ static void vsc73xx_adjust_enable_port(struct vsc73xx *vsc,
 	u32 val = initval;
 	u8 seed;
 
-	/* Reset this port FIXME: break out subroutine */
+	 
 	val |= VSC73XX_MAC_CFG_RESET;
 	vsc73xx_write(vsc, VSC73XX_BLOCK_MAC, port, VSC73XX_MAC_CFG, val);
 
-	/* Seed the port randomness with randomness */
+	 
 	get_random_bytes(&seed, 1);
 	val |= seed << VSC73XX_MAC_CFG_SEED_OFFSET;
 	val |= VSC73XX_MAC_CFG_SEED_LOAD;
 	val |= VSC73XX_MAC_CFG_WEXC_DIS;
 	vsc73xx_write(vsc, VSC73XX_BLOCK_MAC, port, VSC73XX_MAC_CFG, val);
 
-	/* Flow control for the PHY facing ports:
-	 * Use a zero delay pause frame when pause condition is left
-	 * Obey pause control frames
-	 * When generating pause frames, use 0xff as pause value
-	 */
+	 
 	vsc73xx_write(vsc, VSC73XX_BLOCK_MAC, port, VSC73XX_FCCONF,
 		      VSC73XX_FCCONF_ZERO_PAUSE_EN |
 		      VSC73XX_FCCONF_FLOW_CTRL_OBEY |
 		      0xff);
 
-	/* Disallow backward dropping of frames from this port */
+	 
 	vsc73xx_update_bits(vsc, VSC73XX_BLOCK_ARBITER, 0,
 			    VSC73XX_SBACKWDROP, BIT(port), 0);
 
-	/* Enable TX, RX, deassert reset, stop loading seed */
+	 
 	vsc73xx_update_bits(vsc, VSC73XX_BLOCK_MAC, port,
 			    VSC73XX_MAC_CFG,
 			    VSC73XX_MAC_CFG_RESET | VSC73XX_MAC_CFG_SEED_LOAD |
@@ -759,14 +697,11 @@ static void vsc73xx_adjust_link(struct dsa_switch *ds, int port,
 	struct vsc73xx *vsc = ds->priv;
 	u32 val;
 
-	/* Special handling of the CPU-facing port */
+	 
 	if (port == CPU_PORT) {
-		/* Other ports are already initialized but not this one */
+		 
 		vsc73xx_init_port(vsc, CPU_PORT);
-		/* Select the external port for this interface (EXT_PORT)
-		 * Enable the GMII GTX external clock
-		 * Use double data rate (DDR mode)
-		 */
+		 
 		vsc73xx_write(vsc, VSC73XX_BLOCK_MAC,
 			      CPU_PORT,
 			      VSC73XX_ADVPORTM,
@@ -775,25 +710,23 @@ static void vsc73xx_adjust_link(struct dsa_switch *ds, int port,
 			      VSC73XX_ADVPORTM_DDR_MODE);
 	}
 
-	/* This is the MAC confiuration that always need to happen
-	 * after a PHY or the CPU port comes up or down.
-	 */
+	 
 	if (!phydev->link) {
 		int maxloop = 10;
 
 		dev_dbg(vsc->dev, "port %d: went down\n",
 			port);
 
-		/* Disable RX on this port */
+		 
 		vsc73xx_update_bits(vsc, VSC73XX_BLOCK_MAC, port,
 				    VSC73XX_MAC_CFG,
 				    VSC73XX_MAC_CFG_RX_EN, 0);
 
-		/* Discard packets */
+		 
 		vsc73xx_update_bits(vsc, VSC73XX_BLOCK_ARBITER, 0,
 				    VSC73XX_ARBDISC, BIT(port), BIT(port));
 
-		/* Wait until queue is empty */
+		 
 		vsc73xx_read(vsc, VSC73XX_BLOCK_ARBITER, 0,
 			     VSC73XX_ARBEMPTY, &val);
 		while (!(val & BIT(port))) {
@@ -803,36 +736,36 @@ static void vsc73xx_adjust_link(struct dsa_switch *ds, int port,
 			if (--maxloop == 0) {
 				dev_err(vsc->dev,
 					"timeout waiting for block arbiter\n");
-				/* Continue anyway */
+				 
 				break;
 			}
 		}
 
-		/* Put this port into reset */
+		 
 		vsc73xx_write(vsc, VSC73XX_BLOCK_MAC, port, VSC73XX_MAC_CFG,
 			      VSC73XX_MAC_CFG_RESET);
 
-		/* Accept packets again */
+		 
 		vsc73xx_update_bits(vsc, VSC73XX_BLOCK_ARBITER, 0,
 				    VSC73XX_ARBDISC, BIT(port), 0);
 
-		/* Allow backward dropping of frames from this port */
+		 
 		vsc73xx_update_bits(vsc, VSC73XX_BLOCK_ARBITER, 0,
 				    VSC73XX_SBACKWDROP, BIT(port), BIT(port));
 
-		/* Receive mask (disable forwarding) */
+		 
 		vsc73xx_update_bits(vsc, VSC73XX_BLOCK_ANALYZER, 0,
 				    VSC73XX_RECVMASK, BIT(port), 0);
 
 		return;
 	}
 
-	/* Figure out what speed was negotiated */
+	 
 	if (phydev->speed == SPEED_1000) {
 		dev_dbg(vsc->dev, "port %d: 1000 Mbit mode full duplex\n",
 			port);
 
-		/* Set up default for internal port or external RGMII */
+		 
 		if (phydev->interface == PHY_INTERFACE_MODE_RGMII)
 			val = VSC73XX_MAC_CFG_1000M_F_RGMII;
 		else
@@ -869,7 +802,7 @@ static void vsc73xx_adjust_link(struct dsa_switch *ds, int port,
 			"could not adjust link: unknown speed\n");
 	}
 
-	/* Enable port (forwarding) in the receieve mask */
+	 
 	vsc73xx_update_bits(vsc, VSC73XX_BLOCK_ANALYZER, 0,
 			    VSC73XX_RECVMASK, BIT(port), BIT(port));
 }
@@ -889,7 +822,7 @@ static void vsc73xx_port_disable(struct dsa_switch *ds, int port)
 {
 	struct vsc73xx *vsc = ds->priv;
 
-	/* Just put the port into reset */
+	 
 	vsc73xx_write(vsc, VSC73XX_BLOCK_MAC, port,
 		      VSC73XX_MAC_CFG, VSC73XX_MAC_CFG_RESET);
 }
@@ -940,25 +873,20 @@ static void vsc73xx_get_strings(struct dsa_switch *ds, int port, u32 stringset,
 	if (ret)
 		return;
 
-	indices[0] = (val & 0x1f); /* RX counter 0 */
-	indices[1] = ((val >> 5) & 0x1f); /* RX counter 1 */
-	indices[2] = ((val >> 10) & 0x1f); /* RX counter 2 */
-	indices[3] = ((val >> 16) & 0x1f); /* TX counter 0 */
-	indices[4] = ((val >> 21) & 0x1f); /* TX counter 1 */
-	indices[5] = ((val >> 26) & 0x1f); /* TX counter 2 */
+	indices[0] = (val & 0x1f);  
+	indices[1] = ((val >> 5) & 0x1f);  
+	indices[2] = ((val >> 10) & 0x1f);  
+	indices[3] = ((val >> 16) & 0x1f);  
+	indices[4] = ((val >> 21) & 0x1f);  
+	indices[5] = ((val >> 26) & 0x1f);  
 
-	/* The first counters is the RX octets */
+	 
 	j = 0;
 	strncpy(data + j * ETH_GSTRING_LEN,
 		"RxEtherStatsOctets", ETH_GSTRING_LEN);
 	j++;
 
-	/* Each port supports recording 3 RX counters and 3 TX counters,
-	 * figure out what counters we use in this set-up and return the
-	 * names of them. The hardware default counters will be number of
-	 * packets on RX/TX, combined broadcast+multicast packets RX/TX and
-	 * total error packets RX/TX.
-	 */
+	 
 	for (i = 0; i < 3; i++) {
 		cnt = vsc73xx_find_counter(vsc, indices[i], false);
 		if (cnt)
@@ -967,7 +895,7 @@ static void vsc73xx_get_strings(struct dsa_switch *ds, int port, u32 stringset,
 		j++;
 	}
 
-	/* TX stats begins with the number of TX octets */
+	 
 	strncpy(data + j * ETH_GSTRING_LEN,
 		"TxEtherStatsOctets", ETH_GSTRING_LEN);
 	j++;
@@ -983,10 +911,10 @@ static void vsc73xx_get_strings(struct dsa_switch *ds, int port, u32 stringset,
 
 static int vsc73xx_get_sset_count(struct dsa_switch *ds, int port, int sset)
 {
-	/* We only support SS_STATS */
+	 
 	if (sset != ETH_SS_STATS)
 		return 0;
-	/* RX and TX packets, then 3 RX counters, 3 TX counters */
+	 
 	return 8;
 }
 
@@ -1027,11 +955,7 @@ static int vsc73xx_change_mtu(struct dsa_switch *ds, int port, int new_mtu)
 			     VSC73XX_MAXLEN, new_mtu + ETH_HLEN + ETH_FCS_LEN);
 }
 
-/* According to application not "VSC7398 Jumbo Frames" setting
- * up the frame size to 9.6 KB does not affect the performance on standard
- * frames. It is clear from the application note that
- * "9.6 kilobytes" == 9600 bytes.
- */
+ 
 static int vsc73xx_get_max_mtu(struct dsa_switch *ds, int port)
 {
 	return 9600 - ETH_HLEN - ETH_FCS_LEN;
@@ -1143,14 +1067,14 @@ int vsc73xx_probe(struct vsc73xx *vsc)
 	struct device *dev = vsc->dev;
 	int ret;
 
-	/* Release reset, if any */
+	 
 	vsc->reset = devm_gpiod_get_optional(dev, "reset", GPIOD_OUT_LOW);
 	if (IS_ERR(vsc->reset)) {
 		dev_err(dev, "failed to get RESET GPIO\n");
 		return PTR_ERR(vsc->reset);
 	}
 	if (vsc->reset)
-		/* Wait 20ms according to datasheet table 245 */
+		 
 		msleep(20);
 
 	ret = vsc73xx_detect(vsc);
@@ -1158,12 +1082,10 @@ int vsc73xx_probe(struct vsc73xx *vsc)
 		dev_err(vsc->dev,
 			"Chip seems to be out of control. Assert reset and try again.\n");
 		gpiod_set_value_cansleep(vsc->reset, 1);
-		/* Reset pulse should be 20ns minimum, according to datasheet
-		 * table 245, so 10us should be fine
-		 */
+		 
 		usleep_range(10, 100);
 		gpiod_set_value_cansleep(vsc->reset, 0);
-		/* Wait 20ms according to datasheet table 245 */
+		 
 		msleep(20);
 		ret = vsc73xx_detect(vsc);
 	}
@@ -1178,17 +1100,7 @@ int vsc73xx_probe(struct vsc73xx *vsc)
 		 vsc->addr[0], vsc->addr[1], vsc->addr[2],
 		 vsc->addr[3], vsc->addr[4], vsc->addr[5]);
 
-	/* The VSC7395 switch chips have 5+1 ports which means 5
-	 * ordinary ports and a sixth CPU port facing the processor
-	 * with an RGMII interface. These ports are numbered 0..4
-	 * and 6, so they leave a "hole" in the port map for port 5,
-	 * which is invalid.
-	 *
-	 * The VSC7398 has 8 ports, port 7 is again the CPU port.
-	 *
-	 * We allocate 8 ports and avoid access to the nonexistant
-	 * ports.
-	 */
+	 
 	vsc->ds = devm_kzalloc(dev, sizeof(*vsc->ds), GFP_KERNEL);
 	if (!vsc->ds)
 		return -ENOMEM;

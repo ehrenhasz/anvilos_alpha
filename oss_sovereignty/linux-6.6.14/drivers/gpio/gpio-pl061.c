@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2008, 2009 Provigent Ltd.
- *
- * Author: Baruch Siach <baruch@tkos.co.il>
- *
- * Driver for the ARM PrimeCell(tm) General Purpose Input/Output (PL061)
- *
- * Data sheet: ARM DDI 0190B, September 2000
- */
+
+ 
 #include <linux/amba/bus.h>
 #include <linux/bitops.h>
 #include <linux/device.h>
@@ -98,10 +90,7 @@ static int pl061_direction_output(struct gpio_chip *gc, unsigned offset,
 	gpiodir |= BIT(offset);
 	writeb(gpiodir, pl061->base + GPIODIR);
 
-	/*
-	 * gpio value is set again, because pl061 doesn't allow to set value of
-	 * a gpio pin before configuring it in OUT mode.
-	 */
+	 
 	writeb(!!value << offset, pl061->base + (BIT(offset + 2)));
 	raw_spin_unlock_irqrestore(&pl061->lock, flags);
 
@@ -154,11 +143,11 @@ static int pl061_irq_type(struct irq_data *d, unsigned trigger)
 	if (trigger & (IRQ_TYPE_LEVEL_HIGH | IRQ_TYPE_LEVEL_LOW)) {
 		bool polarity = trigger & IRQ_TYPE_LEVEL_HIGH;
 
-		/* Disable edge detection */
+		 
 		gpioibe &= ~bit;
-		/* Enable level detection */
+		 
 		gpiois |= bit;
-		/* Select polarity */
+		 
 		if (polarity)
 			gpioiev |= bit;
 		else
@@ -168,9 +157,9 @@ static int pl061_irq_type(struct irq_data *d, unsigned trigger)
 			offset,
 			polarity ? "HIGH" : "LOW");
 	} else if ((trigger & IRQ_TYPE_EDGE_BOTH) == IRQ_TYPE_EDGE_BOTH) {
-		/* Disable level detection */
+		 
 		gpiois &= ~bit;
-		/* Select both edges, setting this makes GPIOEV be ignored */
+		 
 		gpioibe |= bit;
 		irq_set_handler_locked(d, handle_edge_irq);
 		dev_dbg(gc->parent, "line %d: IRQ on both edges\n", offset);
@@ -178,11 +167,11 @@ static int pl061_irq_type(struct irq_data *d, unsigned trigger)
 		   (trigger & IRQ_TYPE_EDGE_FALLING)) {
 		bool rising = trigger & IRQ_TYPE_EDGE_RISING;
 
-		/* Disable level detection */
+		 
 		gpiois &= ~bit;
-		/* Clear detection on both edges */
+		 
 		gpioibe &= ~bit;
-		/* Select edge */
+		 
 		if (rising)
 			gpioiev |= bit;
 		else
@@ -192,7 +181,7 @@ static int pl061_irq_type(struct irq_data *d, unsigned trigger)
 			offset,
 			rising ? "RISING" : "FALLING");
 	} else {
-		/* No trigger: disable everything */
+		 
 		gpiois &= ~bit;
 		gpioibe &= ~bit;
 		gpioiev &= ~bit;
@@ -260,14 +249,7 @@ static void pl061_irq_unmask(struct irq_data *d)
 	raw_spin_unlock(&pl061->lock);
 }
 
-/**
- * pl061_irq_ack() - ACK an edge IRQ
- * @d: IRQ data for this IRQ
- *
- * This gets called from the edge IRQ handler to ACK the edge IRQ
- * in the GPIOIC (interrupt-clear) register. For level IRQs this is
- * not needed: these go away when the level signal goes away.
- */
+ 
 static void pl061_irq_ack(struct irq_data *d)
 {
 	struct gpio_chip *gc = irq_data_get_irq_chip_data(d);
@@ -334,10 +316,8 @@ static int pl061_probe(struct amba_device *adev, const struct amba_id *id)
 	pl061->gc.parent = dev;
 	pl061->gc.owner = THIS_MODULE;
 
-	/*
-	 * irq_chip support
-	 */
-	writeb(0, pl061->base + GPIOIE); /* disable irqs */
+	 
+	writeb(0, pl061->base + GPIOIE);  
 	irq = adev->irq[0];
 	if (!irq)
 		dev_warn(&adev->dev, "IRQ support disabled\n");

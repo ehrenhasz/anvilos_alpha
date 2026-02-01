@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 #include <linux/bitmap.h>
 #include <linux/bug.h>
 #include <linux/export.h>
@@ -7,29 +7,7 @@
 #include <linux/spinlock.h>
 #include <linux/xarray.h>
 
-/**
- * idr_alloc_u32() - Allocate an ID.
- * @idr: IDR handle.
- * @ptr: Pointer to be associated with the new ID.
- * @nextid: Pointer to an ID.
- * @max: The maximum ID to allocate (inclusive).
- * @gfp: Memory allocation flags.
- *
- * Allocates an unused ID in the range specified by @nextid and @max.
- * Note that @max is inclusive whereas the @end parameter to idr_alloc()
- * is exclusive.  The new ID is assigned to @nextid before the pointer
- * is inserted into the IDR, so if @nextid points into the object pointed
- * to by @ptr, a concurrent lookup will not find an uninitialised ID.
- *
- * The caller should provide their own locking to ensure that two
- * concurrent modifications to the IDR are not possible.  Read-only
- * accesses to the IDR may be done under the RCU read lock or may
- * exclude simultaneous writers.
- *
- * Return: 0 if an ID was allocated, -ENOMEM if memory allocation failed,
- * or -ENOSPC if no free IDs could be found.  If an error occurred,
- * @nextid is unchanged.
- */
+ 
 int idr_alloc_u32(struct idr *idr, void *ptr, u32 *nextid,
 			unsigned long max, gfp_t gfp)
 {
@@ -48,7 +26,7 @@ int idr_alloc_u32(struct idr *idr, void *ptr, u32 *nextid,
 		return PTR_ERR(slot);
 
 	*nextid = iter.index + base;
-	/* there is a memory barrier inside radix_tree_iter_replace() */
+	 
 	radix_tree_iter_replace(&idr->idr_rt, &iter, slot, ptr);
 	radix_tree_iter_tag_clear(&idr->idr_rt, &iter, IDR_FREE);
 
@@ -56,26 +34,7 @@ int idr_alloc_u32(struct idr *idr, void *ptr, u32 *nextid,
 }
 EXPORT_SYMBOL_GPL(idr_alloc_u32);
 
-/**
- * idr_alloc() - Allocate an ID.
- * @idr: IDR handle.
- * @ptr: Pointer to be associated with the new ID.
- * @start: The minimum ID (inclusive).
- * @end: The maximum ID (exclusive).
- * @gfp: Memory allocation flags.
- *
- * Allocates an unused ID in the range specified by @start and @end.  If
- * @end is <= 0, it is treated as one larger than %INT_MAX.  This allows
- * callers to use @start + N as @end as long as N is within integer range.
- *
- * The caller should provide their own locking to ensure that two
- * concurrent modifications to the IDR are not possible.  Read-only
- * accesses to the IDR may be done under the RCU read lock or may
- * exclude simultaneous writers.
- *
- * Return: The newly allocated ID, -ENOMEM if memory allocation failed,
- * or -ENOSPC if no free IDs could be found.
- */
+ 
 int idr_alloc(struct idr *idr, void *ptr, int start, int end, gfp_t gfp)
 {
 	u32 id = start;
@@ -92,28 +51,7 @@ int idr_alloc(struct idr *idr, void *ptr, int start, int end, gfp_t gfp)
 }
 EXPORT_SYMBOL_GPL(idr_alloc);
 
-/**
- * idr_alloc_cyclic() - Allocate an ID cyclically.
- * @idr: IDR handle.
- * @ptr: Pointer to be associated with the new ID.
- * @start: The minimum ID (inclusive).
- * @end: The maximum ID (exclusive).
- * @gfp: Memory allocation flags.
- *
- * Allocates an unused ID in the range specified by @start and @end.  If
- * @end is <= 0, it is treated as one larger than %INT_MAX.  This allows
- * callers to use @start + N as @end as long as N is within integer range.
- * The search for an unused ID will start at the last ID allocated and will
- * wrap around to @start if no free IDs are found before reaching @end.
- *
- * The caller should provide their own locking to ensure that two
- * concurrent modifications to the IDR are not possible.  Read-only
- * accesses to the IDR may be done under the RCU read lock or may
- * exclude simultaneous writers.
- *
- * Return: The newly allocated ID, -ENOMEM if memory allocation failed,
- * or -ENOSPC if no free IDs could be found.
- */
+ 
 int idr_alloc_cyclic(struct idr *idr, void *ptr, int start, int end, gfp_t gfp)
 {
 	u32 id = idr->idr_next;
@@ -135,63 +73,21 @@ int idr_alloc_cyclic(struct idr *idr, void *ptr, int start, int end, gfp_t gfp)
 }
 EXPORT_SYMBOL(idr_alloc_cyclic);
 
-/**
- * idr_remove() - Remove an ID from the IDR.
- * @idr: IDR handle.
- * @id: Pointer ID.
- *
- * Removes this ID from the IDR.  If the ID was not previously in the IDR,
- * this function returns %NULL.
- *
- * Since this function modifies the IDR, the caller should provide their
- * own locking to ensure that concurrent modification of the same IDR is
- * not possible.
- *
- * Return: The pointer formerly associated with this ID.
- */
+ 
 void *idr_remove(struct idr *idr, unsigned long id)
 {
 	return radix_tree_delete_item(&idr->idr_rt, id - idr->idr_base, NULL);
 }
 EXPORT_SYMBOL_GPL(idr_remove);
 
-/**
- * idr_find() - Return pointer for given ID.
- * @idr: IDR handle.
- * @id: Pointer ID.
- *
- * Looks up the pointer associated with this ID.  A %NULL pointer may
- * indicate that @id is not allocated or that the %NULL pointer was
- * associated with this ID.
- *
- * This function can be called under rcu_read_lock(), given that the leaf
- * pointers lifetimes are correctly managed.
- *
- * Return: The pointer associated with this ID.
- */
+ 
 void *idr_find(const struct idr *idr, unsigned long id)
 {
 	return radix_tree_lookup(&idr->idr_rt, id - idr->idr_base);
 }
 EXPORT_SYMBOL_GPL(idr_find);
 
-/**
- * idr_for_each() - Iterate through all stored pointers.
- * @idr: IDR handle.
- * @fn: Function to be called for each pointer.
- * @data: Data passed to callback function.
- *
- * The callback function will be called for each entry in @idr, passing
- * the ID, the entry and @data.
- *
- * If @fn returns anything other than %0, the iteration stops and that
- * value is returned from this function.
- *
- * idr_for_each() can be called concurrently with idr_alloc() and
- * idr_remove() if protected by RCU.  Newly added entries may not be
- * seen and deleted entries may be seen, but adding and removing entries
- * will not cause other entries to be skipped, nor spurious ones to be seen.
- */
+ 
 int idr_for_each(const struct idr *idr,
 		int (*fn)(int id, void *p, void *data), void *data)
 {
@@ -214,16 +110,7 @@ int idr_for_each(const struct idr *idr,
 }
 EXPORT_SYMBOL(idr_for_each);
 
-/**
- * idr_get_next_ul() - Find next populated entry.
- * @idr: IDR handle.
- * @nextid: Pointer to an ID.
- *
- * Returns the next populated entry in the tree with an ID greater than
- * or equal to the value pointed to by @nextid.  On exit, @nextid is updated
- * to the ID of the found value.  To use in a loop, the value pointed to by
- * nextid must be incremented by the user.
- */
+ 
 void *idr_get_next_ul(struct idr *idr, unsigned long *nextid)
 {
 	struct radix_tree_iter iter;
@@ -251,16 +138,7 @@ void *idr_get_next_ul(struct idr *idr, unsigned long *nextid)
 }
 EXPORT_SYMBOL(idr_get_next_ul);
 
-/**
- * idr_get_next() - Find next populated entry.
- * @idr: IDR handle.
- * @nextid: Pointer to an ID.
- *
- * Returns the next populated entry in the tree with an ID greater than
- * or equal to the value pointed to by @nextid.  On exit, @nextid is updated
- * to the ID of the found value.  To use in a loop, the value pointed to by
- * nextid must be incremented by the user.
- */
+ 
 void *idr_get_next(struct idr *idr, int *nextid)
 {
 	unsigned long id = *nextid;
@@ -273,20 +151,7 @@ void *idr_get_next(struct idr *idr, int *nextid)
 }
 EXPORT_SYMBOL(idr_get_next);
 
-/**
- * idr_replace() - replace pointer for given ID.
- * @idr: IDR handle.
- * @ptr: New pointer to associate with the ID.
- * @id: ID to change.
- *
- * Replace the pointer registered with an ID and return the old value.
- * This function can be called under the RCU read lock concurrently with
- * idr_alloc() and idr_remove() (as long as the ID being removed is not
- * the one being replaced!).
- *
- * Returns: the old value on success.  %-ENOENT indicates that @id was not
- * found.  %-EINVAL indicates that @ptr was not valid.
- */
+ 
 void *idr_replace(struct idr *idr, void *ptr, unsigned long id)
 {
 	struct radix_tree_node *node;
@@ -305,78 +170,11 @@ void *idr_replace(struct idr *idr, void *ptr, unsigned long id)
 }
 EXPORT_SYMBOL(idr_replace);
 
-/**
- * DOC: IDA description
- *
- * The IDA is an ID allocator which does not provide the ability to
- * associate an ID with a pointer.  As such, it only needs to store one
- * bit per ID, and so is more space efficient than an IDR.  To use an IDA,
- * define it using DEFINE_IDA() (or embed a &struct ida in a data structure,
- * then initialise it using ida_init()).  To allocate a new ID, call
- * ida_alloc(), ida_alloc_min(), ida_alloc_max() or ida_alloc_range().
- * To free an ID, call ida_free().
- *
- * ida_destroy() can be used to dispose of an IDA without needing to
- * free the individual IDs in it.  You can use ida_is_empty() to find
- * out whether the IDA has any IDs currently allocated.
- *
- * The IDA handles its own locking.  It is safe to call any of the IDA
- * functions without synchronisation in your code.
- *
- * IDs are currently limited to the range [0-INT_MAX].  If this is an awkward
- * limitation, it should be quite straightforward to raise the maximum.
- */
+ 
 
-/*
- * Developer's notes:
- *
- * The IDA uses the functionality provided by the XArray to store bitmaps in
- * each entry.  The XA_FREE_MARK is only cleared when all bits in the bitmap
- * have been set.
- *
- * I considered telling the XArray that each slot is an order-10 node
- * and indexing by bit number, but the XArray can't allow a single multi-index
- * entry in the head, which would significantly increase memory consumption
- * for the IDA.  So instead we divide the index by the number of bits in the
- * leaf bitmap before doing a radix tree lookup.
- *
- * As an optimisation, if there are only a few low bits set in any given
- * leaf, instead of allocating a 128-byte bitmap, we store the bits
- * as a value entry.  Value entries never have the XA_FREE_MARK cleared
- * because we can always convert them into a bitmap entry.
- *
- * It would be possible to optimise further; once we've run out of a
- * single 128-byte bitmap, we currently switch to a 576-byte node, put
- * the 128-byte bitmap in the first entry and then start allocating extra
- * 128-byte entries.  We could instead use the 512 bytes of the node's
- * data as a bitmap before moving to that scheme.  I do not believe this
- * is a worthwhile optimisation; Rasmus Villemoes surveyed the current
- * users of the IDA and almost none of them use more than 1024 entries.
- * Those that do use more than the 8192 IDs that the 512 bytes would
- * provide.
- *
- * The IDA always uses a lock to alloc/free.  If we add a 'test_bit'
- * equivalent, it will still need locking.  Going to RCU lookup would require
- * using RCU to free bitmaps, and that's not trivial without embedding an
- * RCU head in the bitmap, which adds a 2-pointer overhead to each 128-byte
- * bitmap, which is excessive.
- */
+ 
 
-/**
- * ida_alloc_range() - Allocate an unused ID.
- * @ida: IDA handle.
- * @min: Lowest ID to allocate.
- * @max: Highest ID to allocate.
- * @gfp: Memory allocation flags.
- *
- * Allocate an ID between @min and @max, inclusive.  The allocated ID will
- * not exceed %INT_MAX, even if @max is larger.
- *
- * Context: Any context. It is safe to call this function without
- * locking in your code.
- * Return: The allocated ID, or %-ENOMEM if memory could not be allocated,
- * or %-ENOSPC if there are no free IDs.
- */
+ 
 int ida_alloc_range(struct ida *ida, unsigned int min, unsigned int max,
 			gfp_t gfp)
 {
@@ -476,14 +274,7 @@ nospc:
 }
 EXPORT_SYMBOL(ida_alloc_range);
 
-/**
- * ida_free() - Release an allocated ID.
- * @ida: IDA handle.
- * @id: Previously allocated ID.
- *
- * Context: Any context. It is safe to call this function without
- * locking in your code.
- */
+ 
 void ida_free(struct ida *ida, unsigned int id)
 {
 	XA_STATE(xas, &ida->xa, id / IDA_BITMAP_BITS);
@@ -526,18 +317,7 @@ delete:
 }
 EXPORT_SYMBOL(ida_free);
 
-/**
- * ida_destroy() - Free all IDs.
- * @ida: IDA handle.
- *
- * Calling this function frees all IDs and releases all resources used
- * by an IDA.  When this call returns, the IDA is empty and can be reused
- * or freed.  If the IDA is already empty, there is no need to call this
- * function.
- *
- * Context: Any context. It is safe to call this function without
- * locking in your code.
- */
+ 
 void ida_destroy(struct ida *ida)
 {
 	XA_STATE(xas, &ida->xa, 0);

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* AFS filesystem directory editing
- *
- * Copyright (C) 2018 Red Hat, Inc. All Rights Reserved.
- * Written by David Howells (dhowells@redhat.com)
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/fs.h>
@@ -13,13 +9,7 @@
 #include "internal.h"
 #include "xdr_fs.h"
 
-/*
- * Find a number of contiguous clear bits in a directory block bitmask.
- *
- * There are 64 slots, which means we can load the entire bitmap into a
- * variable.  The first bit doesn't count as it corresponds to the block header
- * slot.  nr_slots is between 1 and 9.
- */
+ 
 static int afs_find_contig_bits(union afs_xdr_dir_block *block, unsigned int nr_slots)
 {
 	u64 bitmap;
@@ -34,7 +24,7 @@ static int afs_find_contig_bits(union afs_xdr_dir_block *block, unsigned int nr_
 	bitmap |= (u64)block->hdr.bitmap[5] << 5 * 8;
 	bitmap |= (u64)block->hdr.bitmap[6] << 6 * 8;
 	bitmap |= (u64)block->hdr.bitmap[7] << 7 * 8;
-	bitmap >>= 1; /* The first entry is metadata */
+	bitmap >>= 1;  
 	bit = 1;
 	mask = (1 << nr_slots) - 1;
 
@@ -62,9 +52,7 @@ static int afs_find_contig_bits(union afs_xdr_dir_block *block, unsigned int nr_
 	return -1;
 }
 
-/*
- * Set a number of contiguous bits in the directory block bitmap.
- */
+ 
 static void afs_set_contig_bits(union afs_xdr_dir_block *block,
 				int bit, unsigned int nr_slots)
 {
@@ -83,9 +71,7 @@ static void afs_set_contig_bits(union afs_xdr_dir_block *block,
 	block->hdr.bitmap[7] |= (u8)(mask >> 7 * 8);
 }
 
-/*
- * Clear a number of contiguous bits in the directory block bitmap.
- */
+ 
 static void afs_clear_contig_bits(union afs_xdr_dir_block *block,
 				  int bit, unsigned int nr_slots)
 {
@@ -104,9 +90,7 @@ static void afs_clear_contig_bits(union afs_xdr_dir_block *block,
 	block->hdr.bitmap[7] &= ~(u8)(mask >> 7 * 8);
 }
 
-/*
- * Get a new directory folio.
- */
+ 
 static struct folio *afs_dir_get_folio(struct afs_vnode *vnode, pgoff_t index)
 {
 	struct address_space *mapping = vnode->netfs.inode.i_mapping;
@@ -124,9 +108,7 @@ static struct folio *afs_dir_get_folio(struct afs_vnode *vnode, pgoff_t index)
 	return folio;
 }
 
-/*
- * Scan a directory block looking for a dirent of the right name.
- */
+ 
 static int afs_dir_scan_block(union afs_xdr_dir_block *block, struct qstr *name,
 			      unsigned int blocknum)
 {
@@ -154,7 +136,7 @@ static int afs_dir_scan_block(union afs_xdr_dir_block *block, struct qstr *name,
 		if (de->u.valid != 1)
 			continue;
 
-		/* The block was NUL-terminated by afs_dir_check_page(). */
+		 
 		len = strlen(de->u.name);
 		if (len == name->len &&
 		    memcmp(de->u.name, name->name, name->len) == 0)
@@ -168,10 +150,7 @@ static int afs_dir_scan_block(union afs_xdr_dir_block *block, struct qstr *name,
 	return -1;
 }
 
-/*
- * Initialise a new directory block.  Note that block 0 is special and contains
- * some extra metadata.
- */
+ 
 static void afs_edit_init_block(union afs_xdr_dir_block *meta,
 				union afs_xdr_dir_block *block, int block_num)
 {
@@ -195,14 +174,7 @@ static void afs_edit_init_block(union afs_xdr_dir_block *meta,
 			AFS_DIR_SLOTS_PER_BLOCK - AFS_DIR_RESV_BLOCKS;
 }
 
-/*
- * Edit a directory's file data to add a new directory entry.  Doing this after
- * create, mkdir, symlink, link or rename if the data version number is
- * incremented by exactly one avoids the need to re-download the entire
- * directory contents.
- *
- * The caller must hold the inode locked.
- */
+ 
 void afs_edit_dir_add(struct afs_vnode *vnode,
 		      struct qstr *name, struct afs_fid *new_fid,
 		      enum afs_edit_dir_reason why)
@@ -230,7 +202,7 @@ void afs_edit_dir_add(struct afs_vnode *vnode,
 		return;
 	}
 
-	/* Work out how many slots we're going to need. */
+	 
 	need_slots = afs_dir_calc_slots(name->len);
 
 	meta = kmap_local_folio(folio0, 0);
@@ -238,13 +210,9 @@ void afs_edit_dir_add(struct afs_vnode *vnode,
 		goto new_directory;
 	nr_blocks = i_size / AFS_DIR_BLOCK_SIZE;
 
-	/* Find a block that has sufficient slots available.  Each folio
-	 * contains two or more directory blocks.
-	 */
+	 
 	for (b = 0; b < nr_blocks + 1; b++) {
-		/* If the directory extended into a new folio, then we need to
-		 * tack a new folio on the end.
-		 */
+		 
 		index = b / AFS_DIR_BLOCKS_PER_PAGE;
 		if (nr_blocks >= AFS_DIR_MAX_BLOCKS)
 			goto error;
@@ -258,7 +226,7 @@ void afs_edit_dir_add(struct afs_vnode *vnode,
 
 		block = kmap_local_folio(folio, b * AFS_DIR_BLOCK_SIZE - folio_file_pos(folio));
 
-		/* Abandon the edit if we got a callback break. */
+		 
 		if (!test_bit(AFS_VNODE_DIR_VALID, &vnode->flags))
 			goto invalidated;
 
@@ -268,19 +236,17 @@ void afs_edit_dir_add(struct afs_vnode *vnode,
 		       ntohs(block->hdr.npages),
 		       ntohs(block->hdr.magic));
 
-		/* Initialise the block if necessary. */
+		 
 		if (b == nr_blocks) {
 			_debug("init %u", b);
 			afs_edit_init_block(meta, block, b);
 			afs_set_i_size(vnode, (b + 1) * AFS_DIR_BLOCK_SIZE);
 		}
 
-		/* Only lower dir blocks have a counter in the header. */
+		 
 		if (b >= AFS_DIR_BLOCKS_WITH_CTR ||
 		    meta->meta.alloc_ctrs[b] >= need_slots) {
-			/* We need to try and find one or more consecutive
-			 * slots to hold the entry.
-			 */
+			 
 			slot = afs_find_contig_bits(block, need_slots);
 			if (slot >= 0) {
 				_debug("slot %u", slot);
@@ -295,9 +261,7 @@ void afs_edit_dir_add(struct afs_vnode *vnode,
 		}
 	}
 
-	/* There are no spare slots of sufficient size, yet the operation
-	 * succeeded.  Download the directory again.
-	 */
+	 
 	trace_afs_edit_dir(vnode, why, afs_edit_dir_create_nospc, 0, 0, 0, 0, name->name);
 	clear_bit(AFS_VNODE_DIR_VALID, &vnode->flags);
 	goto out_unmap;
@@ -313,19 +277,19 @@ new_directory:
 	b = 0;
 
 found_space:
-	/* Set the dirent slot. */
+	 
 	trace_afs_edit_dir(vnode, why, afs_edit_dir_create, b, slot,
 			   new_fid->vnode, new_fid->unique, name->name);
 	de = &block->dirents[slot];
 	de->u.valid	= 1;
 	de->u.unused[0]	= 0;
-	de->u.hash_next	= 0; // TODO: Really need to maintain this
+	de->u.hash_next	= 0;  
 	de->u.vnode	= htonl(new_fid->vnode);
 	de->u.unique	= htonl(new_fid->unique);
 	memcpy(de->u.name, name->name, name->len + 1);
 	de->u.name[name->len] = 0;
 
-	/* Adjust the bitmap. */
+	 
 	afs_set_contig_bits(block, slot, need_slots);
 	kunmap_local(block);
 	if (folio != folio0) {
@@ -333,7 +297,7 @@ found_space:
 		folio_put(folio);
 	}
 
-	/* Adjust the allocation counter. */
+	 
 	if (b < AFS_DIR_BLOCKS_WITH_CTR)
 		meta->meta.alloc_ctrs[b] -= need_slots;
 
@@ -364,13 +328,7 @@ error:
 	goto out_unmap;
 }
 
-/*
- * Edit a directory's file data to remove a new directory entry.  Doing this
- * after unlink, rmdir or rename if the data version number is incremented by
- * exactly one avoids the need to re-download the entire directory contents.
- *
- * The caller must hold the inode locked.
- */
+ 
 void afs_edit_dir_remove(struct afs_vnode *vnode,
 			 struct qstr *name, enum afs_edit_dir_reason why)
 {
@@ -399,14 +357,12 @@ void afs_edit_dir_remove(struct afs_vnode *vnode,
 		return;
 	}
 
-	/* Work out how many slots we're going to discard. */
+	 
 	need_slots = afs_dir_calc_slots(name->len);
 
 	meta = kmap_local_folio(folio0, 0);
 
-	/* Find a block that has sufficient slots available.  Each folio
-	 * contains two or more directory blocks.
-	 */
+	 
 	for (b = 0; b < nr_blocks; b++) {
 		index = b / AFS_DIR_BLOCKS_PER_PAGE;
 		if (index >= folio_nr_pages(folio0)) {
@@ -419,7 +375,7 @@ void afs_edit_dir_remove(struct afs_vnode *vnode,
 
 		block = kmap_local_folio(folio, b * AFS_DIR_BLOCK_SIZE - folio_file_pos(folio));
 
-		/* Abandon the edit if we got a callback break. */
+		 
 		if (!test_bit(AFS_VNODE_DIR_VALID, &vnode->flags))
 			goto invalidated;
 
@@ -437,7 +393,7 @@ void afs_edit_dir_remove(struct afs_vnode *vnode,
 		}
 	}
 
-	/* Didn't find the dirent to clobber.  Download the directory again. */
+	 
 	trace_afs_edit_dir(vnode, why, afs_edit_dir_delete_noent,
 			   0, 0, 0, 0, name->name);
 	clear_bit(AFS_VNODE_DIR_VALID, &vnode->flags);
@@ -452,7 +408,7 @@ found_dirent:
 
 	memset(de, 0, sizeof(*de) * need_slots);
 
-	/* Adjust the bitmap. */
+	 
 	afs_clear_contig_bits(block, slot, need_slots);
 	kunmap_local(block);
 	if (folio != folio0) {
@@ -460,7 +416,7 @@ found_dirent:
 		folio_put(folio);
 	}
 
-	/* Adjust the allocation counter. */
+	 
 	if (b < AFS_DIR_BLOCKS_WITH_CTR)
 		meta->meta.alloc_ctrs[b] += need_slots;
 

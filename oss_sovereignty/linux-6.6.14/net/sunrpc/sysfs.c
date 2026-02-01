@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2020 Anna Schumaker <Anna.Schumaker@Netapp.com>
- */
+
+ 
 #include <linux/sunrpc/clnt.h>
 #include <linux/kobject.h>
 #include <linux/sunrpc/addr.h>
@@ -252,9 +250,7 @@ static ssize_t rpc_sysfs_xprt_dstaddr_store(struct kobject *kobj,
 	saddr = (struct sockaddr *)&xprt->addr;
 	port = rpc_get_port(saddr);
 
-	/* buf_len is the len until the first occurence of either
-	 * '\n' or '\0'
-	 */
+	 
 	buf_len = strcspn(buf, "\n");
 
 	dst_addr = kstrndup(buf, buf_len, GFP_KERNEL);

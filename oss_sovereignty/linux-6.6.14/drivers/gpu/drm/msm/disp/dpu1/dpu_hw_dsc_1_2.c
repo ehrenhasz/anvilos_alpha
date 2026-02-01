@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2020-2021, The Linux Foundation. All rights reserved.
- * Copyright (c) 2023 Qualcomm Innovation Center, Inc. All rights reserved
- */
+
+ 
 
 #include <drm/display/drm_dsc_helper.h>
 
@@ -14,7 +11,7 @@
 
 #define DSC_CMN_MAIN_CNF           0x00
 
-/* DPU_DSC_ENC register offsets */
+ 
 #define ENC_DF_CTRL                0x00
 #define ENC_GENERAL_STATUS         0x04
 #define ENC_HSLICE_STATUS          0x08
@@ -50,7 +47,7 @@
 #define DSC_RC_RANGE_BPG_OFFSETS_1 0x94
 #define DSC_RC_RANGE_BPG_OFFSETS_2 0x98
 
-/* DPU_DSC_CTL register offsets */
+ 
 #define DSC_CTL                    0x00
 #define DSC_CFG                    0x04
 #define DSC_DATA_IN_SWAP           0x08
@@ -133,9 +130,7 @@ static void dpu_hw_dsc_config_1_2(struct dpu_hw_dsc *hw_dsc,
 	}
 
 	bpp = dsc->bits_per_pixel;
-	/* as per hw requirement bpp should be programmed
-	 * twice the actual value in case of 420 or 422 encoding
-	 */
+	 
 	if (dsc->native_422 || dsc->native_420)
 		bpp = 2 * bpp;
 
@@ -216,8 +211,8 @@ static void dpu_hw_dsc_config_1_2(struct dpu_hw_dsc *hw_dsc,
 
 	DPU_REG_WRITE(hw, sblk->enc.base + DSC_RC_CONFIG, data);
 
-	/* program the dsc wrapper */
-	data = BIT(0); /* encoder enable */
+	 
+	data = BIT(0);  
 	if (dsc->native_422)
 		data |= BIT(8);
 	else if (dsc->native_420)
@@ -252,11 +247,7 @@ static void dpu_hw_dsc_config_thresh_1_2(struct dpu_hw_dsc *hw_dsc,
 
 	rc = dsc->rc_range_params;
 
-	/*
-	 * With BUF_THRESH -- 14 in total
-	 * each register contains 4 thresh values with the last register
-	 * containing only 2 thresh values
-	 */
+	 
 	DPU_REG_WRITE(hw, sblk->enc.base + DSC_RC_BUF_THRESH_0,
 		      (dsc->rc_buf_thresh[0] << 0) |
 		      (dsc->rc_buf_thresh[1] << 8) |
@@ -276,13 +267,7 @@ static void dpu_hw_dsc_config_thresh_1_2(struct dpu_hw_dsc *hw_dsc,
 		      (dsc->rc_buf_thresh[12] << 0) |
 		      (dsc->rc_buf_thresh[13] << 8));
 
-	/*
-	 * with min/max_QP -- 5 bits
-	 * each register contains 5 min_qp or max_qp for total of 15
-	 *
-	 * With BPG_OFFSET -- 6 bits
-	 * each register contains 5 BPG_offset for total of 15
-	 */
+	 
 	DPU_REG_WRITE(hw, sblk->enc.base + DSC_RC_MIN_QP_0,
 		      (rc[0].range_min_qp << 0) |
 		      (rc[1].range_min_qp << 5) |
@@ -346,7 +331,7 @@ static void dpu_hw_dsc_bind_pingpong_blk_1_2(struct dpu_hw_dsc *hw_dsc,
 {
 	struct dpu_hw_blk_reg_map *hw;
 	const struct dpu_dsc_sub_blks *sblk;
-	int mux_cfg = 0xf; /* Disabled */
+	int mux_cfg = 0xf;  
 
 	hw = &hw_dsc->hw;
 

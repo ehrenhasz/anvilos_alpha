@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Lantiq / Intel PMAC driver for XRX200 SoCs
- *
- * Copyright (C) 2010 Lantiq Deutschland
- * Copyright (C) 2012 John Crispin <john@phrozen.org>
- * Copyright (C) 2017 - 2018 Hauke Mehrtens <hauke@hauke-m.de>
- */
+
+ 
 
 #include <linux/etherdevice.h>
 #include <linux/module.h>
@@ -21,7 +15,7 @@
 
 #include <xway_dma.h>
 
-/* DMA */
+ 
 #define XRX200_DMA_DATA_LEN	(SZ_64K - 1)
 #define XRX200_DMA_RX		0
 #define XRX200_DMA_TX		1
@@ -30,32 +24,32 @@
 #define XRX200_DMA_PACKET_COMPLETE	0
 #define XRX200_DMA_PACKET_IN_PROGRESS	1
 
-/* cpu port mac */
+ 
 #define PMAC_RX_IPG		0x0024
 #define PMAC_RX_IPG_MASK	0xf
 
 #define PMAC_HD_CTL		0x0000
-/* Add Ethernet header to packets from DMA to PMAC */
+ 
 #define PMAC_HD_CTL_ADD		BIT(0)
-/* Add VLAN tag to Packets from DMA to PMAC */
+ 
 #define PMAC_HD_CTL_TAG		BIT(1)
-/* Add CRC to packets from DMA to PMAC */
+ 
 #define PMAC_HD_CTL_AC		BIT(2)
-/* Add status header to packets from PMAC to DMA */
+ 
 #define PMAC_HD_CTL_AS		BIT(3)
-/* Remove CRC from packets from PMAC to DMA */
+ 
 #define PMAC_HD_CTL_RC		BIT(4)
-/* Remove Layer-2 header from packets from PMAC to DMA */
+ 
 #define PMAC_HD_CTL_RL2		BIT(5)
-/* Status header is present from DMA to PMAC */
+ 
 #define PMAC_HD_CTL_RXSH	BIT(6)
-/* Add special tag from PMAC to switch */
+ 
 #define PMAC_HD_CTL_AST		BIT(7)
-/* Remove specail Tag from PMAC to DMA */
+ 
 #define PMAC_HD_CTL_RST		BIT(8)
-/* Check CRC from DMA to PMAC */
+ 
 #define PMAC_HD_CTL_CCRC	BIT(9)
-/* Enable reaction to Pause frames in the PMAC */
+ 
 #define PMAC_HD_CTL_FC		BIT(10)
 
 struct xrx200_chan {
@@ -126,7 +120,7 @@ static int xrx200_skb_size(u16 buf_size)
 		SKB_DATA_ALIGN(sizeof(struct skb_shared_info));
 }
 
-/* drop all the packets from the DMA ring */
+ 
 static void xrx200_flush_dma(struct xrx200_chan *ch)
 {
 	int i;
@@ -154,12 +148,7 @@ static int xrx200_open(struct net_device *net_dev)
 
 	napi_enable(&priv->chan_rx.napi);
 	ltq_dma_open(&priv->chan_rx.dma);
-	/* The boot loader does not always deactivate the receiving of frames
-	 * on the ports and then some packets queue up in the PPE buffers.
-	 * They already passed the PMAC so they do not have the tags
-	 * configured here. Read the these packets here and drop them.
-	 * The HW should have written them into memory after 10us
-	 */
+	 
 	usleep_range(20, 40);
 	xrx200_flush_dma(&priv->chan_rx);
 	ltq_dma_enable_irq(&priv->chan_rx.dma);
@@ -208,7 +197,7 @@ static int xrx200_alloc_buf(struct xrx200_chan *ch, void *(*alloc)(unsigned int 
 	}
 
 	ch->dma.desc_base[ch->dma.desc].addr = mapping + NET_SKB_PAD + NET_IP_ALIGN;
-	/* Make sure the address is written before we give it to HW */
+	 
 	wmb();
 skip:
 	ch->dma.desc_base[ch->dma.desc].ctl =
@@ -249,7 +238,7 @@ static int xrx200_hw_receive(struct xrx200_chan *ch)
 	skb_reserve(skb, NET_SKB_PAD);
 	skb_put(skb, len);
 
-	/* add buffers to skb via skb->frag_list */
+	 
 	if (ctl & LTQ_DMA_SOP) {
 		ch->skb_head = skb;
 		ch->skb_tail = skb;
@@ -384,11 +373,11 @@ static netdev_tx_t xrx200_start_xmit(struct sk_buff *skb,
 	if (unlikely(dma_mapping_error(priv->dev, mapping)))
 		goto err_drop;
 
-	/* dma needs to start on a burst length value aligned address */
+	 
 	byte_offset = mapping % (XRX200_DMA_BURST_LEN * 4);
 
 	desc->addr = mapping - byte_offset;
-	/* Make sure the address is written before we give it to HW */
+	 
 	wmb();
 	desc->ctl = LTQ_DMA_OWN | LTQ_DMA_SOP | LTQ_DMA_EOP |
 		LTQ_DMA_TX_OFFSET(byte_offset) | (len & LTQ_DMA_SIZE_MASK);
@@ -530,7 +519,7 @@ tx_free:
 	ltq_dma_free(&ch_tx->dma);
 
 rx_ring_free:
-	/* free the allocated RX ring */
+	 
 	for (i = 0; i < LTQ_DESC_NUM; i++) {
 		if (priv->chan_rx.skb[i])
 			skb_free_frag(priv->chan_rx.rx_buff[i]);
@@ -548,7 +537,7 @@ static void xrx200_hw_cleanup(struct xrx200_priv *priv)
 	ltq_dma_free(&priv->chan_tx.dma);
 	ltq_dma_free(&priv->chan_rx.dma);
 
-	/* free the allocated RX ring */
+	 
 	for (i = 0; i < LTQ_DESC_NUM; i++)
 		skb_free_frag(priv->chan_rx.rx_buff[i]);
 }
@@ -561,7 +550,7 @@ static int xrx200_probe(struct platform_device *pdev)
 	struct net_device *net_dev;
 	int err;
 
-	/* alloc the network device */
+	 
 	net_dev = devm_alloc_etherdev(dev, sizeof(struct xrx200_priv));
 	if (!net_dev)
 		return -ENOMEM;
@@ -577,7 +566,7 @@ static int xrx200_probe(struct platform_device *pdev)
 	priv->rx_buf_size = xrx200_buffer_size(ETH_DATA_LEN);
 	priv->rx_skb_size = xrx200_skb_size(priv->rx_buf_size);
 
-	/* load the memory ranges */
+	 
 	priv->pmac_reg = devm_platform_get_and_ioremap_resource(pdev, 0, NULL);
 	if (IS_ERR(priv->pmac_reg))
 		return PTR_ERR(priv->pmac_reg);
@@ -589,7 +578,7 @@ static int xrx200_probe(struct platform_device *pdev)
 	if (priv->chan_tx.dma.irq < 0)
 		return -ENOENT;
 
-	/* get the clock */
+	 
 	priv->clk = devm_clk_get(dev, NULL);
 	if (IS_ERR(priv->clk)) {
 		dev_err(dev, "failed to get clock\n");
@@ -600,26 +589,26 @@ static int xrx200_probe(struct platform_device *pdev)
 	if (err)
 		eth_hw_addr_random(net_dev);
 
-	/* bring up the dma engine and IP core */
+	 
 	err = xrx200_dma_init(priv);
 	if (err)
 		return err;
 
-	/* enable clock gate */
+	 
 	err = clk_prepare_enable(priv->clk);
 	if (err)
 		goto err_uninit_dma;
 
-	/* set IPG to 12 */
+	 
 	xrx200_pmac_mask(priv, PMAC_RX_IPG_MASK, 0xb, PMAC_RX_IPG);
 
-	/* enable status header, enable CRC */
+	 
 	xrx200_pmac_mask(priv, 0,
 			 PMAC_HD_CTL_RST | PMAC_HD_CTL_AST | PMAC_HD_CTL_RXSH |
 			 PMAC_HD_CTL_AS | PMAC_HD_CTL_AC | PMAC_HD_CTL_RC,
 			 PMAC_HD_CTL);
 
-	/* setup NAPI */
+	 
 	netif_napi_add(net_dev, &priv->chan_rx.napi, xrx200_poll_rx);
 	netif_napi_add_tx(net_dev, &priv->chan_tx.napi,
 			  xrx200_tx_housekeeping);
@@ -646,18 +635,18 @@ static int xrx200_remove(struct platform_device *pdev)
 	struct xrx200_priv *priv = platform_get_drvdata(pdev);
 	struct net_device *net_dev = priv->net_dev;
 
-	/* free stack related instances */
+	 
 	netif_stop_queue(net_dev);
 	netif_napi_del(&priv->chan_tx.napi);
 	netif_napi_del(&priv->chan_rx.napi);
 
-	/* remove the actual device */
+	 
 	unregister_netdev(net_dev);
 
-	/* release the clock */
+	 
 	clk_disable_unprepare(priv->clk);
 
-	/* shut down hardware */
+	 
 	xrx200_hw_cleanup(priv);
 
 	return 0;

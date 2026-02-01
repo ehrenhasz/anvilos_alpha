@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2009 Nokia Corporation
- * Author: Tomi Valkeinen <tomi.valkeinen@ti.com>
- *
- * Some code and ideas taken from drivers/video/omap/ driver
- * by Imre Deak.
- */
+
+ 
 
 #define DSS_SUBSYS_NAME "DPI"
 
@@ -46,19 +40,12 @@ struct dpi_data {
 
 #define drm_bridge_to_dpi(bridge) container_of(bridge, struct dpi_data, bridge)
 
-/* -----------------------------------------------------------------------------
- * Clock Handling and PLL
- */
+ 
 
 static enum dss_clk_source dpi_get_clk_src_dra7xx(struct dpi_data *dpi,
 						  enum omap_channel channel)
 {
-	/*
-	 * Possible clock sources:
-	 * LCD1: FCK/PLL1_1/HDMI_PLL
-	 * LCD2: FCK/PLL1_3/HDMI_PLL (DRA74x: PLL2_3)
-	 * LCD3: FCK/PLL1_3/HDMI_PLL (DRA74x: PLL2_1)
-	 */
+	 
 
 	switch (channel) {
 	case OMAP_DSS_CHANNEL_LCD:
@@ -94,11 +81,7 @@ static enum dss_clk_source dpi_get_clk_src(struct dpi_data *dpi)
 {
 	enum omap_channel channel = dpi->output.dispc_channel;
 
-	/*
-	 * XXX we can't currently use DSI PLL for DPI with OMAP3, as the DSI PLL
-	 * would also be used for DISPC fclk. Meaning, when the DPI output is
-	 * disabled, DISPC clock will be disabled, and TV out will stop.
-	 */
+	 
 	switch (dpi->dss_model) {
 	case DSS_MODEL_OMAP2:
 	case DSS_MODEL_OMAP3:
@@ -137,11 +120,11 @@ struct dpi_clk_calc_ctx {
 	struct dpi_data *dpi;
 	unsigned int clkout_idx;
 
-	/* inputs */
+	 
 
 	unsigned long pck_min, pck_max;
 
-	/* outputs */
+	 
 
 	struct dss_pll_clock_info pll_cinfo;
 	unsigned long fck;
@@ -153,11 +136,7 @@ static bool dpi_calc_dispc_cb(int lckd, int pckd, unsigned long lck,
 {
 	struct dpi_clk_calc_ctx *ctx = data;
 
-	/*
-	 * Odd dividers give us uneven duty cycle, causing problem when level
-	 * shifted. So skip all odd dividers when the pixel clock is on the
-	 * higher side.
-	 */
+	 
 	if (ctx->pck_min >= 100000000) {
 		if (lckd > 1 && lckd % 2 != 0)
 			return false;
@@ -239,7 +218,7 @@ static bool dpi_pll_clk_calc(struct dpi_data *dpi, unsigned long pck,
 		return dss_pll_calc_a(ctx->dpi->pll, clkin,
 				pll_min, pll_max,
 				dpi_calc_pll_cb, ctx);
-	} else { /* DSS_PLL_TYPE_B */
+	} else {  
 		dss_pll_calc_b(dpi->pll, clkin, pck, &ctx->pll_cinfo);
 
 		ctx->dispc_cinfo.lck_div = 1;
@@ -256,12 +235,7 @@ static bool dpi_dss_clk_calc(struct dpi_data *dpi, unsigned long pck,
 {
 	int i;
 
-	/*
-	 * DSS fck gives us very few possibilities, so finding a good pixel
-	 * clock may not be possible. We try multiple times to find the clock,
-	 * each time widening the pixel clock range we look for, up to
-	 * +/- ~15MHz.
-	 */
+	 
 
 	for (i = 0; i < 25; ++i) {
 		bool ok;
@@ -382,7 +356,7 @@ static int dpi_verify_pll(struct dss_pll *pll)
 {
 	int r;
 
-	/* do initial setup with the PLL to see if it is operational */
+	 
 
 	r = dss_pll_enable(pll);
 	if (r)
@@ -414,9 +388,7 @@ static void dpi_init_pll(struct dpi_data *dpi)
 	dpi->pll = pll;
 }
 
-/* -----------------------------------------------------------------------------
- * DRM Bridge Operations
- */
+ 
 
 static int dpi_bridge_attach(struct drm_bridge *bridge,
 			     enum drm_bridge_attach_flags flags)
@@ -572,16 +544,9 @@ static void dpi_bridge_cleanup(struct dpi_data *dpi)
 	drm_bridge_remove(&dpi->bridge);
 }
 
-/* -----------------------------------------------------------------------------
- * Initialisation and Cleanup
- */
+ 
 
-/*
- * Return a hardcoded channel for the DPI output. This should work for
- * current use cases, but this can be later expanded to either resolve
- * the channel in some more dynamic manner, or get the channel as a user
- * parameter.
- */
+ 
 static enum omap_channel dpi_get_channel(struct dpi_data *dpi)
 {
 	switch (dpi->dss_model) {
@@ -664,24 +629,19 @@ static void dpi_uninit_output_port(struct device_node *port)
 	dpi_bridge_cleanup(dpi);
 }
 
-/* -----------------------------------------------------------------------------
- * Initialisation and Cleanup
- */
+ 
 
 static const struct soc_device_attribute dpi_soc_devices[] = {
 	{ .machine = "OMAP3[456]*" },
 	{ .machine = "[AD]M37*" },
-	{ /* sentinel */ }
+	{   }
 };
 
 static int dpi_init_regulator(struct dpi_data *dpi)
 {
 	struct regulator *vdds_dsi;
 
-	/*
-	 * The DPI uses the DSI VDDS on OMAP34xx, OMAP35xx, OMAP36xx, AM37xx and
-	 * DM37xx only.
-	 */
+	 
 	if (!soc_device_match(dpi_soc_devices))
 		return 0;
 

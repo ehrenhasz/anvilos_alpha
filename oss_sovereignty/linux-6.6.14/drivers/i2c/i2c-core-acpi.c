@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Linux I2C core ACPI support code
- *
- * Copyright (C) 2014 Intel Corp, Author: Lan Tianyu <tianyu.lan@intel.com>
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/device.h>
@@ -42,16 +38,7 @@ struct i2c_acpi_lookup {
 	u32 force_speed;
 };
 
-/**
- * i2c_acpi_get_i2c_resource - Gets I2cSerialBus resource if type matches
- * @ares:	ACPI resource
- * @i2c:	Pointer to I2cSerialBus resource will be returned here
- *
- * Checks if the given ACPI resource is of type I2cSerialBus.
- * In this case, returns a pointer to it to the caller.
- *
- * Returns true if resource type is of I2cSerialBus, otherwise false.
- */
+ 
 bool i2c_acpi_get_i2c_resource(struct acpi_resource *ares,
 			       struct acpi_resource_i2c_serialbus **i2c)
 {
@@ -80,13 +67,7 @@ static int i2c_acpi_resource_count(struct acpi_resource *ares, void *data)
 	return 1;
 }
 
-/**
- * i2c_acpi_client_count - Count the number of I2cSerialBus resources
- * @adev:	ACPI device
- *
- * Returns the number of I2cSerialBus resources in the ACPI-device's
- * resource-list; or a negative error code.
- */
+ 
 int i2c_acpi_client_count(struct acpi_device *adev)
 {
 	int ret, count = 0;
@@ -129,10 +110,7 @@ static int i2c_acpi_fill_info(struct acpi_resource *ares, void *data)
 }
 
 static const struct acpi_device_id i2c_acpi_ignored_device_ids[] = {
-	/*
-	 * ACPI video acpi_devices, which are handled by the acpi-video driver
-	 * sometimes contain a SERIAL_TYPE_I2C ACPI resource, ignore these.
-	 */
+	 
 	{ ACPI_VIDEO_HID, 0 },
 	{}
 };
@@ -161,7 +139,7 @@ static int i2c_acpi_do_lookup(struct acpi_device *adev,
 	memset(info, 0, sizeof(*info));
 	lookup->device_handle = acpi_device_handle(adev);
 
-	/* Look up for I2cSerialBus resource */
+	 
 	INIT_LIST_HEAD(&resource_list);
 	ret = acpi_dev_get_resources(adev, &resource_list,
 				     i2c_acpi_fill_info, lookup);
@@ -187,18 +165,10 @@ static int i2c_acpi_add_irq_resource(struct acpi_resource *ares, void *data)
 	irq_ctx->irq = i2c_dev_irq_from_resources(&r, 1);
 	irq_ctx->wake_capable = r.flags & IORESOURCE_IRQ_WAKECAPABLE;
 
-	return 1; /* No need to add resource to the list */
+	return 1;  
 }
 
-/**
- * i2c_acpi_get_irq - get device IRQ number from ACPI
- * @client: Pointer to the I2C client device
- * @wake_capable: Set to true if the IRQ is wake capable
- *
- * Find the IRQ number used by a specific client device.
- *
- * Return: The IRQ number or an error code.
- */
+ 
 int i2c_acpi_get_irq(struct i2c_client *client, bool *wake_capable)
 {
 	struct acpi_device *adev = ACPI_COMPANION(&client->dev);
@@ -249,13 +219,13 @@ static int i2c_acpi_get_info(struct acpi_device *adev,
 		return ret;
 
 	if (adapter) {
-		/* The adapter must match the one in I2cSerialBus() connector */
+		 
 		if (ACPI_HANDLE(&adapter->dev) != lookup.adapter_handle)
 			return -ENODEV;
 	} else {
 		struct acpi_device *adapter_adev;
 
-		/* The adapter must be present */
+		 
 		adapter_adev = acpi_fetch_acpi_dev(lookup.adapter_handle);
 		if (!adapter_adev)
 			return -ENODEV;
@@ -278,10 +248,7 @@ static void i2c_acpi_register_device(struct i2c_adapter *adapter,
 				     struct acpi_device *adev,
 				     struct i2c_board_info *info)
 {
-	/*
-	 * Skip registration on boards where the ACPI tables are
-	 * known to contain bogus I2C devices.
-	 */
+	 
 	if (acpi_quirk_skip_i2c_client_enumeration(adev))
 		return;
 
@@ -309,14 +276,7 @@ static acpi_status i2c_acpi_add_device(acpi_handle handle, u32 level,
 
 #define I2C_ACPI_MAX_SCAN_DEPTH 32
 
-/**
- * i2c_acpi_register_devices - enumerate I2C slave devices behind adapter
- * @adap: pointer to adapter
- *
- * Enumerate all I2C slave devices behind this adapter by walking the ACPI
- * namespace. When a device is found it will be added to the Linux device
- * model and bound to the corresponding ACPI handle.
- */
+ 
 void i2c_acpi_register_devices(struct i2c_adapter *adap)
 {
 	struct acpi_device *adev;
@@ -343,14 +303,7 @@ void i2c_acpi_register_devices(struct i2c_adapter *adap)
 }
 
 static const struct acpi_device_id i2c_acpi_force_400khz_device_ids[] = {
-	/*
-	 * These Silead touchscreen controllers only work at 400KHz, for
-	 * some reason they do not work at 100KHz. On some devices the ACPI
-	 * tables list another device at their bus as only being capable
-	 * of 100KHz, testing has shown that these other devices work fine
-	 * at 400KHz (as can be expected of any recent i2c hw) so we force
-	 * the speed of the bus to 400 KHz if a Silead device is present.
-	 */
+	 
 	{ "MSSL1680", 0 },
 	{}
 };
@@ -376,15 +329,7 @@ static acpi_status i2c_acpi_lookup_speed(acpi_handle handle, u32 level,
 	return AE_OK;
 }
 
-/**
- * i2c_acpi_find_bus_speed - find I2C bus speed from ACPI
- * @dev: The device owning the bus
- *
- * Find the I2C bus speed by walking the ACPI namespace for all I2C slaves
- * devices connected to this bus and use the speed of slowest device.
- *
- * Returns the speed in Hz or zero
- */
+ 
 u32 i2c_acpi_find_bus_speed(struct device *dev)
 {
 	struct i2c_acpi_lookup lookup;
@@ -486,24 +431,7 @@ struct notifier_block i2c_acpi_notifier = {
 	.notifier_call = i2c_acpi_notify,
 };
 
-/**
- * i2c_acpi_new_device_by_fwnode - Create i2c-client for the Nth I2cSerialBus resource
- * @fwnode:  fwnode with the ACPI resources to get the client from
- * @index:   Index of ACPI resource to get
- * @info:    describes the I2C device; note this is modified (addr gets set)
- * Context: can sleep
- *
- * By default the i2c subsys creates an i2c-client for the first I2cSerialBus
- * resource of an acpi_device, but some acpi_devices have multiple I2cSerialBus
- * resources, in that case this function can be used to create an i2c-client
- * for other I2cSerialBus resources in the Current Resource Settings table.
- *
- * Also see i2c_new_client_device, which this function calls to create the
- * i2c-client.
- *
- * Returns a pointer to the new i2c-client, or error pointer in case of failure.
- * Specifically, -EPROBE_DEFER is returned if the adapter is not found.
- */
+ 
 struct i2c_client *i2c_acpi_new_device_by_fwnode(struct fwnode_handle *fwnode,
 						 int index,
 						 struct i2c_board_info *info)
@@ -576,14 +504,14 @@ static int acpi_gsb_i2c_read_bytes(struct i2c_client *client,
 
 	ret = i2c_transfer(client->adapter, msgs, ARRAY_SIZE(msgs));
 	if (ret < 0) {
-		/* Getting a NACK is unfortunately normal with some DSTDs */
+		 
 		if (ret == -EREMOTEIO)
 			dev_dbg(&client->adapter->dev, "i2c read %d bytes from client@%#x starting at reg %#x failed, error: %d\n",
 				data_len, client->addr, cmd, ret);
 		else
 			dev_err(&client->adapter->dev, "i2c read %d bytes from client@%#x starting at reg %#x failed, error: %d\n",
 				data_len, client->addr, cmd, ret);
-	/* 2 transfers must have completed successfully */
+	 
 	} else if (ret == 2) {
 		memcpy(data, buffer, data_len);
 		ret = 0;
@@ -624,7 +552,7 @@ static int acpi_gsb_i2c_write_bytes(struct i2c_client *client,
 		return ret;
 	}
 
-	/* 1 transfer must have completed successfully */
+	 
 	return (ret == 1) ? 0 : -EIO;
 }
 
@@ -810,4 +738,4 @@ void i2c_acpi_remove_space_handler(struct i2c_adapter *adapter)
 
 	acpi_bus_detach_private_data(handle);
 }
-#endif /* CONFIG_ACPI_I2C_OPREGION */
+#endif  

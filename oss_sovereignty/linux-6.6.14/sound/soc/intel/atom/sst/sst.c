@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  sst.c - Intel SST Driver for audio engine
- *
- *  Copyright (C) 2008-14	Intel Corp
- *  Authors:	Vinod Koul <vinod.koul@intel.com>
- *		Harsha Priya <priya.harsha@intel.com>
- *		Dharageswari R <dharageswari.r@intel.com>
- *		KP Jeeja <jeeja.kp@intel.com>
- *  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- *
- * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- */
+
+ 
 #include <linux/module.h>
 #include <linux/fs.h>
 #include <linux/interrupt.h>
@@ -53,29 +42,29 @@ static irqreturn_t intel_sst_interrupt_mrfld(int irq, void *context)
 	struct intel_sst_drv *drv = (struct intel_sst_drv *) context;
 	irqreturn_t retval = IRQ_HANDLED;
 
-	/* Interrupt arrived, check src */
+	 
 	isr.full = sst_shim_read64(drv->shim, SST_ISRX);
 
 	if (isr.part.done_interrupt) {
-		/* Clear done bit */
+		 
 		spin_lock(&drv->ipc_spin_lock);
 		header.full = sst_shim_read64(drv->shim,
 					drv->ipc_reg.ipcx);
 		header.p.header_high.part.done = 0;
 		sst_shim_write64(drv->shim, drv->ipc_reg.ipcx, header.full);
 
-		/* write 1 to clear status register */;
+		 ;
 		isr.part.done_interrupt = 1;
 		sst_shim_write64(drv->shim, SST_ISRX, isr.full);
 		spin_unlock(&drv->ipc_spin_lock);
 
-		/* we can send more messages to DSP so trigger work */
+		 
 		queue_work(drv->post_msg_wq, &drv->ipc_post_msg_wq);
 		retval = IRQ_HANDLED;
 	}
 
 	if (isr.part.busy_interrupt) {
-		/* message from dsp so copy that */
+		 
 		spin_lock(&drv->ipc_spin_lock);
 		imr.full = sst_shim_read64(drv->shim, SST_IMRX);
 		imr.part.busy_interrupt = 1;
@@ -222,11 +211,7 @@ static void sst_init_locks(struct intel_sst_drv *ctx)
 	spin_lock_init(&ctx->block_lock);
 }
 
-/*
- * Driver handles PCI IDs in ACPI - sst_acpi_probe() - and we are using only
- * device ID part. If real ACPI ID appears, the kstrtouint() returns error, so
- * we are fine with using unsigned short as dev_id type.
- */
+ 
 int sst_alloc_drv_context(struct intel_sst_drv **ctx,
 		struct device *dev, unsigned short dev_id)
 {
@@ -286,11 +271,11 @@ int sst_context_init(struct intel_sst_drv *ctx)
 	sst_init_locks(ctx);
 	sst_set_fw_state_locked(ctx, SST_RESET);
 
-	/* pvt_id 0 reserved for async messages */
+	 
 	ctx->pvt_id = 1;
 	ctx->stream_cnt = 0;
 	ctx->fw_in_mem = NULL;
-	/* we use memcpy, so set to 0 */
+	 
 	ctx->use_dma = 0;
 	ctx->use_lli = 0;
 
@@ -312,7 +297,7 @@ int sst_context_init(struct intel_sst_drv *ctx)
 		mutex_init(&stream->lock);
 	}
 
-	/* Register the ISR */
+	 
 	ret = devm_request_threaded_irq(ctx->dev, ctx->irq_num, ctx->ops->interrupt,
 					ctx->ops->irq_thread, 0, SST_DRV_NAME,
 					ctx);
@@ -321,7 +306,7 @@ int sst_context_init(struct intel_sst_drv *ctx)
 
 	dev_dbg(ctx->dev, "Registered IRQ %#x\n", ctx->irq_num);
 
-	/* default intr are unmasked so set this as masked */
+	 
 	sst_shim_write64(ctx->shim, SST_IMRX, 0xFFFF0038);
 
 	ctx->qos = devm_kzalloc(ctx->dev,
@@ -381,11 +366,7 @@ void sst_configure_runtime_pm(struct intel_sst_drv *ctx)
 {
 	pm_runtime_set_autosuspend_delay(ctx->dev, SST_SUSPEND_DELAY);
 	pm_runtime_use_autosuspend(ctx->dev);
-	/*
-	 * For acpi devices, the actual physical device state is
-	 * initially active. So change the state to active before
-	 * enabling the pm
-	 */
+	 
 
 	if (!acpi_disabled)
 		pm_runtime_set_active(ctx->dev);
@@ -408,11 +389,11 @@ static int intel_sst_runtime_suspend(struct device *dev)
 		dev_dbg(dev, "LPE is already in RESET state, No action\n");
 		return 0;
 	}
-	/* save fw context */
+	 
 	if (ctx->ops->save_dsp_context(ctx))
 		return -EBUSY;
 
-	/* Move the SST state to Reset */
+	 
 	sst_set_fw_state_locked(ctx, SST_RESET);
 
 	synchronize_irq(ctx->irq_num);
@@ -429,14 +410,11 @@ static int intel_sst_suspend(struct device *dev)
 	struct sst_fw_save *fw_save;
 	int i, ret;
 
-	/* check first if we are already in SW reset */
+	 
 	if (ctx->sst_state == SST_RESET)
 		return 0;
 
-	/*
-	 * check if any stream is active and running
-	 * they should already by suspend by soc_suspend
-	 */
+	 
 	for (i = 1; i <= ctx->info.max_streams; i++) {
 		struct stream_info *stream = &ctx->streams[i];
 
@@ -455,14 +433,14 @@ static int intel_sst_suspend(struct device *dev)
 	synchronize_irq(ctx->irq_num);
 	flush_workqueue(ctx->post_msg_wq);
 
-	/* Move the SST state to Reset */
+	 
 	sst_set_fw_state_locked(ctx, SST_RESET);
 
-	/* tell DSP we are suspending */
+	 
 	if (ctx->ops->save_dsp_context(ctx))
 		return -EBUSY;
 
-	/* save the memories */
+	 
 	fw_save = kzalloc(sizeof(*fw_save), GFP_KERNEL);
 	if (!fw_save)
 		return -ENOMEM;
@@ -519,7 +497,7 @@ static int intel_sst_resume(struct device *dev)
 
 	sst_set_fw_state_locked(ctx, SST_FW_LOADING);
 
-	/* we have to restore the memory saved */
+	 
 	ctx->ops->reset(ctx);
 
 	ctx->fw_save = NULL;
@@ -540,12 +518,12 @@ static int intel_sst_resume(struct device *dev)
 		return -ENOMEM;
 
 
-	/* start and wait for ack */
+	 
 	ctx->ops->start(ctx);
 	ret = sst_wait_timeout(ctx, block);
 	if (ret) {
 		dev_err(ctx->dev, "fw download failed %d\n", ret);
-		/* FW download failed due to timeout */
+		 
 		ret = -EBUSY;
 
 	} else {

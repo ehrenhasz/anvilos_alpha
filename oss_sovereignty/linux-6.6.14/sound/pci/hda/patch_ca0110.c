@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * HD audio interface patch for Creative X-Fi CA0110-IBG chip
- *
- * Copyright (c) 2008 Takashi Iwai <tiwai@suse.de>
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/slab.h>
@@ -67,14 +63,12 @@ static int patch_ca0110(struct hda_codec *codec)
 }
 
 
-/*
- * patch entries
- */
+ 
 static const struct hda_device_id snd_hda_id_ca0110[] = {
 	HDA_CODEC_ENTRY(0x1102000a, "CA0110-IBG", patch_ca0110),
 	HDA_CODEC_ENTRY(0x1102000b, "CA0110-IBG", patch_ca0110),
 	HDA_CODEC_ENTRY(0x1102000d, "SB0880 X-Fi", patch_ca0110),
-	{} /* terminator */
+	{}  
 };
 MODULE_DEVICE_TABLE(hdaudio, snd_hda_id_ca0110);
 

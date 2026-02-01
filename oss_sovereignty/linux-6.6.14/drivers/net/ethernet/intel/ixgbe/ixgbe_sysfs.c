@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright(c) 1999 - 2018 Intel Corporation. */
+
+ 
 
 #include "ixgbe.h"
 #include "ixgbe_common.h"
@@ -13,7 +13,7 @@
 #include <linux/netdevice.h>
 #include <linux/hwmon.h>
 
-/* hwmon callback functions */
+ 
 static ssize_t ixgbe_hwmon_show_location(struct device *dev,
 					 struct device_attribute *attr,
 					 char *buf)
@@ -32,12 +32,12 @@ static ssize_t ixgbe_hwmon_show_temp(struct device *dev,
 						     dev_attr);
 	unsigned int value;
 
-	/* reset the temp field */
+	 
 	ixgbe_attr->hw->mac.ops.get_thermal_sensor_data(ixgbe_attr->hw);
 
 	value = ixgbe_attr->sensor->temp;
 
-	/* display millidegree */
+	 
 	value *= 1000;
 
 	return sprintf(buf, "%u\n", value);
@@ -51,7 +51,7 @@ static ssize_t ixgbe_hwmon_show_cautionthresh(struct device *dev,
 						     dev_attr);
 	unsigned int value = ixgbe_attr->sensor->caution_thresh;
 
-	/* display millidegree */
+	 
 	value *= 1000;
 
 	return sprintf(buf, "%u\n", value);
@@ -65,22 +65,13 @@ static ssize_t ixgbe_hwmon_show_maxopthresh(struct device *dev,
 						     dev_attr);
 	unsigned int value = ixgbe_attr->sensor->max_op_thresh;
 
-	/* display millidegree */
+	 
 	value *= 1000;
 
 	return sprintf(buf, "%u\n", value);
 }
 
-/**
- * ixgbe_add_hwmon_attr - Create hwmon attr table for a hwmon sysfs file.
- * @adapter: pointer to the adapter structure
- * @offset: offset in the eeprom sensor data table
- * @type: type of sensor data to display
- *
- * For each file we want in hwmon's sysfs interface we need a device_attribute
- * This is included in our hwmon_attr struct that contains the references to
- * the data structures we need to get the data to display.
- */
+ 
 static int ixgbe_add_hwmon_attr(struct ixgbe_adapter *adapter,
 				unsigned int offset, int type) {
 	int rc;
@@ -116,7 +107,7 @@ static int ixgbe_add_hwmon_attr(struct ixgbe_adapter *adapter,
 		return rc;
 	}
 
-	/* These always the same regardless of type */
+	 
 	ixgbe_attr->sensor =
 		&adapter->hw.mac.thermal_sensor_data.sensor[offset];
 	ixgbe_attr->hw = &adapter->hw;
@@ -136,13 +127,13 @@ static void ixgbe_sysfs_del_adapter(struct ixgbe_adapter *adapter)
 {
 }
 
-/* called from ixgbe_main.c */
+ 
 void ixgbe_sysfs_exit(struct ixgbe_adapter *adapter)
 {
 	ixgbe_sysfs_del_adapter(adapter);
 }
 
-/* called from ixgbe_main.c */
+ 
 int ixgbe_sysfs_init(struct ixgbe_adapter *adapter)
 {
 	struct hwmon_buff *ixgbe_hwmon;
@@ -150,12 +141,12 @@ int ixgbe_sysfs_init(struct ixgbe_adapter *adapter)
 	unsigned int i;
 	int rc = 0;
 
-	/* If this method isn't defined we don't support thermals */
+	 
 	if (adapter->hw.mac.ops.init_thermal_sensor_thresh == NULL) {
 		goto exit;
 	}
 
-	/* Don't create thermal hwmon interface if no sensors present */
+	 
 	if (adapter->hw.mac.ops.init_thermal_sensor_thresh(&adapter->hw))
 		goto exit;
 
@@ -168,14 +159,11 @@ int ixgbe_sysfs_init(struct ixgbe_adapter *adapter)
 	adapter->ixgbe_hwmon_buff = ixgbe_hwmon;
 
 	for (i = 0; i < IXGBE_MAX_SENSORS; i++) {
-		/*
-		 * Only create hwmon sysfs entries for sensors that have
-		 * meaningful data for.
-		 */
+		 
 		if (adapter->hw.mac.thermal_sensor_data.sensor[i].location == 0)
 			continue;
 
-		/* Bail if any hwmon attr struct fails to initialize */
+		 
 		rc = ixgbe_add_hwmon_attr(adapter, i, IXGBE_HWMON_TYPE_CAUTION);
 		if (rc)
 			goto exit;

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2014 STMicroelectronics
- *
- * STMicroelectronics PHY driver MiPHY28lp (for SoC STiH407).
- *
- * Author: Alexandre Torgue <alexandre.torgue@st.com>
- */
+
+ 
 
 #include <linux/platform_device.h>
 #include <linux/io.h>
@@ -24,7 +18,7 @@
 
 #include <dt-bindings/phy/phy.h>
 
-/* MiPHY registers */
+ 
 #define MIPHY_CONF_RESET		0x00
 #define RST_APPLI_SW		BIT(0)
 #define RST_CONF_SW		BIT(1)
@@ -165,14 +159,7 @@
 
 #define MIPHY_PLL_SPAREIN		0xeb
 
-/*
- * On STiH407 the glue logic can be different among MiPHY devices; for example:
- * MiPHY0: OSC_FORCE_EXT means:
- *  0: 30MHz crystal clk - 1: 100MHz ext clk routed through MiPHY1
- * MiPHY1: OSC_FORCE_EXT means:
- *  1: 30MHz crystal clk - 0: 100MHz ext clk routed through MiPHY1
- * Some devices have not the possibility to check if the osc is ready.
- */
+ 
 #define MIPHY_OSC_FORCE_EXT	BIT(3)
 #define MIPHY_OSC_RDY		BIT(5)
 
@@ -180,7 +167,7 @@
 #define MIPHY_CTRL_DEFAULT	0
 #define MIPHY_CTRL_SYNC_D_EN	BIT(2)
 
-/* SATA / PCIe defines */
+ 
 #define SATA_CTRL_MASK		0x07
 #define PCIE_CTRL_MASK		0xff
 #define SATA_CTRL_SELECT_SATA	1
@@ -215,7 +202,7 @@ struct miphy28lp_phy {
 
 	u32 sata_gen;
 
-	/* Sysconfig registers offsets needed to configure the device */
+	 
 	u32 syscfg_reg[SYSCFG_REG_MAX];
 	u8 type;
 };
@@ -367,7 +354,7 @@ static inline void miphy28lp_set_reset(struct miphy28lp_phy *miphy_phy)
 	void __iomem *base = miphy_phy->base;
 	u8 val;
 
-	/* Putting Macro in reset */
+	 
 	writeb_relaxed(RST_APPLI_SW, base + MIPHY_CONF_RESET);
 
 	val = RST_APPLI_SW | RST_CONF_SW;
@@ -375,7 +362,7 @@ static inline void miphy28lp_set_reset(struct miphy28lp_phy *miphy_phy)
 
 	writeb_relaxed(RST_APPLI_SW, base + MIPHY_CONF_RESET);
 
-	/* Bringing the MIPHY-CPU registers out of reset */
+	 
 	if (miphy_phy->type == PHY_TYPE_PCIE) {
 		val = AUTO_RST_RX | TERM_EN_SW;
 		writeb_relaxed(val, base + MIPHY_CONTROL);
@@ -391,11 +378,11 @@ static inline void miphy28lp_pll_calibration(struct miphy28lp_phy *miphy_phy,
 	void __iomem *base = miphy_phy->base;
 	u8 val;
 
-	/* Applying PLL Settings */
+	 
 	writeb_relaxed(0x1d, base + MIPHY_PLL_SPAREIN);
 	writeb_relaxed(pll_ratio->clk_ref, base + MIPHY_PLL_CLKREF_FREQ);
 
-	/* PLL Ratio */
+	 
 	writeb_relaxed(pll_ratio->calset_1, base + MIPHY_PLL_CALSET_1);
 	writeb_relaxed(pll_ratio->calset_2, base + MIPHY_PLL_CALSET_2);
 	writeb_relaxed(pll_ratio->calset_3, base + MIPHY_PLL_CALSET_3);
@@ -435,17 +422,17 @@ static inline void miphy28lp_sata_config_gen(struct miphy28lp_phy *miphy_phy)
 	for (i = 0; i < ARRAY_SIZE(sata_pll_gen); i++) {
 		struct miphy28lp_pll_gen *gen = &sata_pll_gen[i];
 
-		/* Banked settings */
+		 
 		writeb_relaxed(gen->bank, base + MIPHY_CONF);
 		writeb_relaxed(gen->speed, base + MIPHY_SPEED);
 		writeb_relaxed(gen->bias_boost_1, base + MIPHY_BIAS_BOOST_1);
 		writeb_relaxed(gen->bias_boost_2, base + MIPHY_BIAS_BOOST_2);
 
-		/* TX buffer Settings */
+		 
 		writeb_relaxed(gen->tx_ctrl_2, base + MIPHY_TX_CTRL_2);
 		writeb_relaxed(gen->tx_ctrl_3, base + MIPHY_TX_CTRL_3);
 
-		/* RX Buffer Settings */
+		 
 		writeb_relaxed(gen->rx_buff_ctrl, base + MIPHY_RX_BUFFER_CTRL);
 		writeb_relaxed(gen->rx_vga_gain, base + MIPHY_RX_VGA_GAIN);
 		writeb_relaxed(gen->rx_equ_gain_1, base + MIPHY_RX_EQU_GAIN_1);
@@ -462,20 +449,20 @@ static inline void miphy28lp_pcie_config_gen(struct miphy28lp_phy *miphy_phy)
 	for (i = 0; i < ARRAY_SIZE(pcie_pll_gen); i++) {
 		struct miphy28lp_pll_gen *gen = &pcie_pll_gen[i];
 
-		/* Banked settings */
+		 
 		writeb_relaxed(gen->bank, base + MIPHY_CONF);
 		writeb_relaxed(gen->speed, base + MIPHY_SPEED);
 		writeb_relaxed(gen->bias_boost_1, base + MIPHY_BIAS_BOOST_1);
 		writeb_relaxed(gen->bias_boost_2, base + MIPHY_BIAS_BOOST_2);
 
-		/* TX buffer Settings */
+		 
 		writeb_relaxed(gen->tx_ctrl_1, base + MIPHY_TX_CTRL_1);
 		writeb_relaxed(gen->tx_ctrl_2, base + MIPHY_TX_CTRL_2);
 		writeb_relaxed(gen->tx_ctrl_3, base + MIPHY_TX_CTRL_3);
 
 		writeb_relaxed(gen->rx_k_gain, base + MIPHY_RX_K_GAIN);
 
-		/* RX Buffer Settings */
+		 
 		writeb_relaxed(gen->rx_buff_ctrl, base + MIPHY_RX_BUFFER_CTRL);
 		writeb_relaxed(gen->rx_vga_gain, base + MIPHY_RX_VGA_GAIN);
 		writeb_relaxed(gen->rx_equ_gain_1, base + MIPHY_RX_EQU_GAIN_1);
@@ -487,7 +474,7 @@ static inline int miphy28lp_wait_compensation(struct miphy28lp_phy *miphy_phy)
 {
 	u8 val;
 
-	/* Waiting for Compensation to complete */
+	 
 	return readb_relaxed_poll_timeout(miphy_phy->base + MIPHY_COMP_FSM_6,
 					  val, val & COMP_DONE, 1, 5 * USEC_PER_SEC);
 }
@@ -498,8 +485,8 @@ static inline int miphy28lp_compensation(struct miphy28lp_phy *miphy_phy,
 {
 	void __iomem *base = miphy_phy->base;
 
-	/* Poll for HFC ready after reset release */
-	/* Compensation measurement */
+	 
+	 
 	writeb_relaxed(RST_PLL_SW | RST_COMP_SW, base + MIPHY_RESET);
 
 	writeb_relaxed(0x00, base + MIPHY_PLL_COMMON_MISC_2);
@@ -513,7 +500,7 @@ static inline int miphy28lp_compensation(struct miphy28lp_phy *miphy_phy,
 	writeb_relaxed(START_ACT_FILT, base + MIPHY_PLL_COMMON_MISC_2);
 	writeb_relaxed(SET_NEW_CHANGE, base + MIPHY_PLL_SBR_1);
 
-	/* TX compensation offset to re-center TX impedance */
+	 
 	writeb_relaxed(0x00, base + MIPHY_COMP_POSTP);
 
 	if (miphy_phy->type == PHY_TYPE_PCIE)
@@ -527,7 +514,7 @@ static inline void miphy28_usb3_miphy_reset(struct miphy28lp_phy *miphy_phy)
 	void __iomem *base = miphy_phy->base;
 	u8 val;
 
-	/* MIPHY Reset */
+	 
 	writeb_relaxed(RST_APPLI_SW, base + MIPHY_CONF_RESET);
 	writeb_relaxed(0x00, base + MIPHY_CONF_RESET);
 	writeb_relaxed(RST_COMP_SW, base + MIPHY_RESET);
@@ -555,11 +542,8 @@ static void miphy_sata_tune_ssc(struct miphy28lp_phy *miphy_phy)
 	void __iomem *base = miphy_phy->base;
 	u8 val;
 
-	/* Compensate Tx impedance to avoid out of range values */
-	/*
-	 * Enable the SSC on PLL for all banks
-	 * SSC Modulation @ 31 KHz and 4000 ppm modulation amp
-	 */
+	 
+	 
 	val = readb_relaxed(base + MIPHY_BOUNDARY_2);
 	val |= SSC_EN_SW;
 	writeb_relaxed(val, base + MIPHY_BOUNDARY_2);
@@ -571,19 +555,19 @@ static void miphy_sata_tune_ssc(struct miphy28lp_phy *miphy_phy)
 	for (val = 0; val < MIPHY_SATA_BANK_NB; val++) {
 		writeb_relaxed(val, base + MIPHY_CONF);
 
-		/* Add value to each reference clock cycle  */
-		/* and define the period length of the SSC */
+		 
+		 
 		writeb_relaxed(0x3c, base + MIPHY_PLL_SBR_2);
 		writeb_relaxed(0x6c, base + MIPHY_PLL_SBR_3);
 		writeb_relaxed(0x81, base + MIPHY_PLL_SBR_4);
 
-		/* Clear any previous request */
+		 
 		writeb_relaxed(0x00, base + MIPHY_PLL_SBR_1);
 
-		/* requests the PLL to take in account new parameters */
+		 
 		writeb_relaxed(SET_NEW_CHANGE, base + MIPHY_PLL_SBR_1);
 
-		/* To be sure there is no other pending requests */
+		 
 		writeb_relaxed(0x00, base + MIPHY_PLL_SBR_1);
 	}
 }
@@ -593,11 +577,8 @@ static void miphy_pcie_tune_ssc(struct miphy28lp_phy *miphy_phy)
 	void __iomem *base = miphy_phy->base;
 	u8 val;
 
-	/* Compensate Tx impedance to avoid out of range values */
-	/*
-	 * Enable the SSC on PLL for all banks
-	 * SSC Modulation @ 31 KHz and 4000 ppm modulation amp
-	 */
+	 
+	 
 	val = readb_relaxed(base + MIPHY_BOUNDARY_2);
 	val |= SSC_EN_SW;
 	writeb_relaxed(val, base + MIPHY_BOUNDARY_2);
@@ -609,28 +590,28 @@ static void miphy_pcie_tune_ssc(struct miphy28lp_phy *miphy_phy)
 	for (val = 0; val < MIPHY_PCIE_BANK_NB; val++) {
 		writeb_relaxed(val, base + MIPHY_CONF);
 
-		/* Validate Step component */
+		 
 		writeb_relaxed(0x69, base + MIPHY_PLL_SBR_3);
 		writeb_relaxed(0x21, base + MIPHY_PLL_SBR_4);
 
-		/* Validate Period component */
+		 
 		writeb_relaxed(0x3c, base + MIPHY_PLL_SBR_2);
 		writeb_relaxed(0x21, base + MIPHY_PLL_SBR_4);
 
-		/* Clear any previous request */
+		 
 		writeb_relaxed(0x00, base + MIPHY_PLL_SBR_1);
 
-		/* requests the PLL to take in account new parameters */
+		 
 		writeb_relaxed(SET_NEW_CHANGE, base + MIPHY_PLL_SBR_1);
 
-		/* To be sure there is no other pending requests */
+		 
 		writeb_relaxed(0x00, base + MIPHY_PLL_SBR_1);
 	}
 }
 
 static inline void miphy_tune_tx_impedance(struct miphy28lp_phy *miphy_phy)
 {
-	/* Compensate Tx impedance to avoid out of range values */
+	 
 	writeb_relaxed(0x02, miphy_phy->base + MIPHY_COMP_POSTP);
 }
 
@@ -640,30 +621,30 @@ static inline int miphy28lp_configure_sata(struct miphy28lp_phy *miphy_phy)
 	int err;
 	u8 val;
 
-	/* Putting Macro in reset */
+	 
 	miphy28lp_set_reset(miphy_phy);
 
-	/* PLL calibration */
+	 
 	miphy28lp_pll_calibration(miphy_phy, &sata_pll_ratio);
 
-	/* Banked settings Gen1/Gen2/Gen3 */
+	 
 	miphy28lp_sata_config_gen(miphy_phy);
 
-	/* Power control */
-	/* Input bridge enable, manual input bridge control */
+	 
+	 
 	writeb_relaxed(0x21, base + MIPHY_RX_POWER_CTRL_1);
 
-	/* Macro out of reset */
+	 
 	writeb_relaxed(0x00, base + MIPHY_CONF_RESET);
 
-	/* Poll for HFC ready after reset release */
-	/* Compensation measurement */
+	 
+	 
 	err = miphy28lp_compensation(miphy_phy, &sata_pll_ratio);
 	if (err)
 		return err;
 
 	if (miphy_phy->px_rx_pol_inv) {
-		/* Invert Rx polarity */
+		 
 		val = readb_relaxed(miphy_phy->base + MIPHY_CONTROL);
 		val |= PX_RX_POL;
 		writeb_relaxed(val, miphy_phy->base + MIPHY_CONTROL);
@@ -683,24 +664,24 @@ static inline int miphy28lp_configure_pcie(struct miphy28lp_phy *miphy_phy)
 	void __iomem *base = miphy_phy->base;
 	int err;
 
-	/* Putting Macro in reset */
+	 
 	miphy28lp_set_reset(miphy_phy);
 
-	/* PLL calibration */
+	 
 	miphy28lp_pll_calibration(miphy_phy, &pcie_pll_ratio);
 
-	/* Banked settings Gen1/Gen2 */
+	 
 	miphy28lp_pcie_config_gen(miphy_phy);
 
-	/* Power control */
-	/* Input bridge enable, manual input bridge control */
+	 
+	 
 	writeb_relaxed(0x21, base + MIPHY_RX_POWER_CTRL_1);
 
-	/* Macro out of reset */
+	 
 	writeb_relaxed(0x00, base + MIPHY_CONF_RESET);
 
-	/* Poll for HFC ready after reset release */
-	/* Compensation measurement */
+	 
+	 
 	err = miphy28lp_compensation(miphy_phy, &pcie_pll_ratio);
 	if (err)
 		return err;
@@ -720,19 +701,19 @@ static inline void miphy28lp_configure_usb3(struct miphy28lp_phy *miphy_phy)
 	void __iomem *base = miphy_phy->base;
 	u8 val;
 
-	/* Putting Macro in reset */
+	 
 	miphy28lp_set_reset(miphy_phy);
 
-	/* PLL calibration */
+	 
 	miphy28lp_pll_calibration(miphy_phy, &usb3_pll_ratio);
 
-	/* Writing The Speed Rate */
+	 
 	writeb_relaxed(0x00, base + MIPHY_CONF);
 
 	val = RX_SPDSEL_20DEC | TX_SPDSEL_20DEC;
 	writeb_relaxed(val, base + MIPHY_SPEED);
 
-	/* RX Channel compensation and calibration */
+	 
 	writeb_relaxed(0x1c, base + MIPHY_RX_LOCK_SETTINGS_OPT);
 	writeb_relaxed(0x51, base + MIPHY_RX_CAL_CTRL_1);
 	writeb_relaxed(0x70, base + MIPHY_RX_CAL_CTRL_2);
@@ -748,51 +729,51 @@ static inline void miphy28lp_configure_usb3(struct miphy28lp_phy *miphy_phy)
 	writeb_relaxed(0x78, base + MIPHY_RX_EQU_GAIN_1);
 	writeb_relaxed(0x1b, base + MIPHY_SYNCHAR_CONTROL);
 
-	/* TX compensation offset to re-center TX impedance */
+	 
 	writeb_relaxed(0x02, base + MIPHY_COMP_POSTP);
 
-	/* Enable GENSEL_SEL and SSC */
-	/* TX_SEL=0 swing preemp forced by pipe registres */
+	 
+	 
 	val = SSC_SEL | GENSEL_SEL;
 	writeb_relaxed(val, base + MIPHY_BOUNDARY_SEL);
 
-	/* MIPHY Bias boost */
+	 
 	writeb_relaxed(0x00, base + MIPHY_BIAS_BOOST_1);
 	writeb_relaxed(0xa7, base + MIPHY_BIAS_BOOST_2);
 
-	/* SSC modulation */
+	 
 	writeb_relaxed(SSC_EN_SW, base + MIPHY_BOUNDARY_2);
 
-	/* MIPHY TX control */
+	 
 	writeb_relaxed(0x00, base + MIPHY_CONF);
 
-	/* Validate Step component */
+	 
 	writeb_relaxed(0x5a, base + MIPHY_PLL_SBR_3);
 	writeb_relaxed(0xa0, base + MIPHY_PLL_SBR_4);
 
-	/* Validate Period component */
+	 
 	writeb_relaxed(0x3c, base + MIPHY_PLL_SBR_2);
 	writeb_relaxed(0xa1, base + MIPHY_PLL_SBR_4);
 
-	/* Clear any previous request */
+	 
 	writeb_relaxed(0x00, base + MIPHY_PLL_SBR_1);
 
-	/* requests the PLL to take in account new parameters */
+	 
 	writeb_relaxed(0x02, base + MIPHY_PLL_SBR_1);
 
-	/* To be sure there is no other pending requests */
+	 
 	writeb_relaxed(0x00, base + MIPHY_PLL_SBR_1);
 
-	/* Rx PI controller settings */
+	 
 	writeb_relaxed(0xca, base + MIPHY_RX_K_GAIN);
 
-	/* MIPHY RX input bridge control */
-	/* INPUT_BRIDGE_EN_SW=1, manual input bridge control[0]=1 */
+	 
+	 
 	writeb_relaxed(0x21, base + MIPHY_RX_POWER_CTRL_1);
 	writeb_relaxed(0x29, base + MIPHY_RX_POWER_CTRL_1);
 	writeb_relaxed(0x1a, base + MIPHY_RX_POWER_CTRL_2);
 
-	/* MIPHY Reset for usb3 */
+	 
 	miphy28_usb3_miphy_reset(miphy_phy);
 }
 
@@ -801,10 +782,7 @@ static inline int miphy_is_ready(struct miphy28lp_phy *miphy_phy)
 	u8 mask = HFC_PLL | HFC_RDY;
 	u8 val;
 
-	/*
-	 * For PCIe and USB3 check only that PLL and HFC are ready
-	 * For SATA check also that phy is ready!
-	 */
+	 
 	if (miphy_phy->type == PHY_TYPE_SATA)
 		mask |= PHY_RDY;
 
@@ -862,7 +840,7 @@ static int miphy28lp_get_one_addr(struct device *dev,
 	return 0;
 }
 
-/* MiPHY reset and sysconf setup */
+ 
 static int miphy28lp_setup(struct miphy28lp_phy *miphy_phy, u32 miphy_val)
 {
 	int err;
@@ -905,7 +883,7 @@ static int miphy28lp_init_sata(struct miphy28lp_phy *miphy_phy)
 
 	dev_info(miphy_dev->dev, "sata-up mode, addr 0x%p\n", miphy_phy->base);
 
-	/* Configure the glue-logic */
+	 
 	sata_conf |= ((miphy_phy->sata_gen - SATA_GEN1) << SATA_SPDMODE);
 
 	regmap_update_bits(miphy_dev->regmap,
@@ -915,7 +893,7 @@ static int miphy28lp_init_sata(struct miphy28lp_phy *miphy_phy)
 	regmap_update_bits(miphy_dev->regmap, miphy_phy->syscfg_reg[SYSCFG_PCI],
 			   PCIE_CTRL_MASK, SATA_CTRL_SELECT_PCIE);
 
-	/* MiPHY path and clocking init */
+	 
 	err = miphy28lp_setup(miphy_phy, MIPHY_CTRL_DEFAULT);
 
 	if (err) {
@@ -923,7 +901,7 @@ static int miphy28lp_init_sata(struct miphy28lp_phy *miphy_phy)
 		return err;
 	}
 
-	/* initialize miphy */
+	 
 	miphy28lp_configure_sata(miphy_phy);
 
 	return miphy_is_ready(miphy_phy);
@@ -941,7 +919,7 @@ static int miphy28lp_init_pcie(struct miphy28lp_phy *miphy_phy)
 
 	dev_info(miphy_dev->dev, "pcie-up mode, addr 0x%p\n", miphy_phy->base);
 
-	/* Configure the glue-logic */
+	 
 	regmap_update_bits(miphy_dev->regmap,
 			   miphy_phy->syscfg_reg[SYSCFG_SATA],
 			   SATA_CTRL_MASK, SATA_CTRL_SELECT_PCIE);
@@ -949,7 +927,7 @@ static int miphy28lp_init_pcie(struct miphy28lp_phy *miphy_phy)
 	regmap_update_bits(miphy_dev->regmap, miphy_phy->syscfg_reg[SYSCFG_PCI],
 			   PCIE_CTRL_MASK, SYSCFG_PCIE_PCIE_VAL);
 
-	/* MiPHY path and clocking init */
+	 
 	err = miphy28lp_setup(miphy_phy, MIPHY_CTRL_DEFAULT);
 
 	if (err) {
@@ -957,20 +935,20 @@ static int miphy28lp_init_pcie(struct miphy28lp_phy *miphy_phy)
 		return err;
 	}
 
-	/* initialize miphy */
+	 
 	err = miphy28lp_configure_pcie(miphy_phy);
 	if (err)
 		return err;
 
-	/* PIPE Wrapper Configuration */
-	writeb_relaxed(0x68, miphy_phy->pipebase + 0x104); /* Rise_0 */
-	writeb_relaxed(0x61, miphy_phy->pipebase + 0x105); /* Rise_1 */
-	writeb_relaxed(0x68, miphy_phy->pipebase + 0x108); /* Fall_0 */
-	writeb_relaxed(0x61, miphy_phy->pipebase + 0x109); /* Fall-1 */
-	writeb_relaxed(0x68, miphy_phy->pipebase + 0x10c); /* Threshold_0 */
-	writeb_relaxed(0x60, miphy_phy->pipebase + 0x10d); /* Threshold_1 */
+	 
+	writeb_relaxed(0x68, miphy_phy->pipebase + 0x104);  
+	writeb_relaxed(0x61, miphy_phy->pipebase + 0x105);  
+	writeb_relaxed(0x68, miphy_phy->pipebase + 0x108);  
+	writeb_relaxed(0x61, miphy_phy->pipebase + 0x109);  
+	writeb_relaxed(0x68, miphy_phy->pipebase + 0x10c);  
+	writeb_relaxed(0x60, miphy_phy->pipebase + 0x10d);  
 
-	/* Wait for phy_ready */
+	 
 	return miphy_is_ready(miphy_phy);
 }
 
@@ -984,17 +962,17 @@ static int miphy28lp_init_usb3(struct miphy28lp_phy *miphy_phy)
 
 	dev_info(miphy_dev->dev, "usb3-up mode, addr 0x%p\n", miphy_phy->base);
 
-	/* MiPHY path and clocking init */
+	 
 	err = miphy28lp_setup(miphy_phy, MIPHY_CTRL_SYNC_D_EN);
 	if (err) {
 		dev_err(miphy_dev->dev, "USB3 phy setup failed\n");
 		return err;
 	}
 
-	/* initialize miphy */
+	 
 	miphy28lp_configure_usb3(miphy_phy);
 
-	/* PIPE Wrapper Configuration */
+	 
 	writeb_relaxed(0x68, miphy_phy->pipebase + 0x23);
 	writeb_relaxed(0x61, miphy_phy->pipebase + 0x24);
 	writeb_relaxed(0x68, miphy_phy->pipebase + 0x26);
@@ -1002,7 +980,7 @@ static int miphy28lp_init_usb3(struct miphy28lp_phy *miphy_phy)
 	writeb_relaxed(0x18, miphy_phy->pipebase + 0x29);
 	writeb_relaxed(0x61, miphy_phy->pipebase + 0x2a);
 
-	/* pipe Wrapper usb3 TX swing de-emph margin PREEMPH[7:4], SWING[3:0] */
+	 
 	writeb_relaxed(0X67, miphy_phy->pipebase + 0x68);
 	writeb_relaxed(0x0d, miphy_phy->pipebase + 0x69);
 	writeb_relaxed(0X67, miphy_phy->pipebase + 0x6a);

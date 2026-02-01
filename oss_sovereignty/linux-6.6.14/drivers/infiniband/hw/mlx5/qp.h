@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB */
-/*
- * Copyright (c) 2013-2020, Mellanox Technologies inc. All rights reserved.
- */
+ 
+ 
 
 #ifndef _MLX5_IB_QP_H
 #define _MLX5_IB_QP_H
@@ -12,8 +10,7 @@ struct mlx5_qp_table {
 	struct notifier_block nb;
 	struct xarray dct_xa;
 
-	/* protect radix tree
-	 */
+	 
 	spinlock_t lock;
 	struct radix_tree_root tree;
 };
@@ -56,4 +53,4 @@ int mlx5_core_xrcd_dealloc(struct mlx5_ib_dev *dev, u32 xrcdn);
 int mlx5_ib_qp_set_counter(struct ib_qp *qp, struct rdma_counter *counter);
 int mlx5_ib_qp_event_init(void);
 void mlx5_ib_qp_event_cleanup(void);
-#endif /* _MLX5_IB_QP_H */
+#endif  

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2013, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/bitops.h>
@@ -32,32 +30,29 @@ static int clk_pll_enable(struct clk_hw *hw)
 	if (ret)
 		return ret;
 
-	/* Skip if already enabled or in FSM mode */
+	 
 	if ((val & mask) == mask || val & PLL_VOTE_FSM_ENA)
 		return 0;
 
-	/* Disable PLL bypass mode. */
+	 
 	ret = regmap_update_bits(pll->clkr.regmap, pll->mode_reg, PLL_BYPASSNL,
 				 PLL_BYPASSNL);
 	if (ret)
 		return ret;
 
-	/*
-	 * H/W requires a 5us delay between disabling the bypass and
-	 * de-asserting the reset. Delay 10us just to be safe.
-	 */
+	 
 	udelay(10);
 
-	/* De-assert active-low PLL reset. */
+	 
 	ret = regmap_update_bits(pll->clkr.regmap, pll->mode_reg, PLL_RESET_N,
 				 PLL_RESET_N);
 	if (ret)
 		return ret;
 
-	/* Wait until PLL is locked. */
+	 
 	udelay(50);
 
-	/* Enable PLL output. */
+	 
 	return regmap_update_bits(pll->clkr.regmap, pll->mode_reg, PLL_OUTCTRL,
 				 PLL_OUTCTRL);
 }
@@ -69,7 +64,7 @@ static void clk_pll_disable(struct clk_hw *hw)
 	u32 val;
 
 	regmap_read(pll->clkr.regmap, pll->mode_reg, &val);
-	/* Skip if in FSM mode */
+	 
 	if (val & PLL_VOTE_FSM_ENA)
 		return;
 	mask = PLL_OUTCTRL | PLL_RESET_N | PLL_BYPASSNL;
@@ -183,7 +178,7 @@ static int wait_for_pll(struct clk_pll *pll)
 	int ret;
 	const char *name = clk_hw_get_name(&pll->clkr.hw);
 
-	/* Wait for pll to enable. */
+	 
 	for (count = 200; count > 0; count--) {
 		ret = regmap_read(pll->clkr.regmap, pll->status_reg, &val);
 		if (ret)
@@ -270,19 +265,16 @@ static int clk_pll_sr2_enable(struct clk_hw *hw)
 	if (ret)
 		return ret;
 
-	/* Disable PLL bypass mode. */
+	 
 	ret = regmap_update_bits(pll->clkr.regmap, pll->mode_reg, PLL_BYPASSNL,
 				 PLL_BYPASSNL);
 	if (ret)
 		return ret;
 
-	/*
-	 * H/W requires a 5us delay between disabling the bypass and
-	 * de-asserting the reset. Delay 10us just to be safe.
-	 */
+	 
 	udelay(10);
 
-	/* De-assert active-low PLL reset. */
+	 
 	ret = regmap_update_bits(pll->clkr.regmap, pll->mode_reg, PLL_RESET_N,
 				 PLL_RESET_N);
 	if (ret)
@@ -292,7 +284,7 @@ static int clk_pll_sr2_enable(struct clk_hw *hw)
 	if (ret)
 		return ret;
 
-	/* Enable PLL output. */
+	 
 	return regmap_update_bits(pll->clkr.regmap, pll->mode_reg, PLL_OUTCTRL,
 				 PLL_OUTCTRL);
 }

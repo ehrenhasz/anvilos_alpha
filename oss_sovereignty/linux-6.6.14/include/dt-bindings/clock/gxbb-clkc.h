@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * GXBB clock tree IDs
- */
+ 
+ 
 
 #ifndef __GXBB_CLKC_H
 #define __GXBB_CLKC_H
@@ -213,4 +211,4 @@
 #define CLKID_HDMI		205
 #define CLKID_ACODEC		206
 
-#endif /* __GXBB_CLKC_H */
+#endif  

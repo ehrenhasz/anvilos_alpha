@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * exynos-rng.c - Random Number Generator driver for the Exynos
- *
- * Copyright (c) 2017 Krzysztof Kozlowski <krzk@kernel.org>
- *
- * Loosely based on old driver from drivers/char/hw_random/exynos-rng.c:
- * Copyright (C) 2012 Samsung Electronics
- * Jonghwa Lee <jonghwa3.lee@samsung.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/crypto.h>
@@ -31,13 +23,13 @@
 #define EXYNOS_RNG_OUT_BASE		0x160
 #define EXYNOS_RNG_OUT(n)		(EXYNOS_RNG_OUT_BASE + (n * 0x4))
 
-/* EXYNOS_RNG_CONTROL bit fields */
+ 
 #define EXYNOS_RNG_CONTROL_START	0x18
-/* EXYNOS_RNG_STATUS bit fields */
+ 
 #define EXYNOS_RNG_STATUS_SEED_SETTING_DONE	BIT(1)
 #define EXYNOS_RNG_STATUS_RNG_DONE		BIT(5)
 
-/* Five seed and output registers, each 4 bytes */
+ 
 #define EXYNOS_RNG_SEED_REGS		5
 #define EXYNOS_RNG_SEED_SIZE		(EXYNOS_RNG_SEED_REGS * 4)
 
@@ -47,38 +39,31 @@ enum exynos_prng_type {
 	EXYNOS_PRNG_EXYNOS5,
 };
 
-/*
- * Driver re-seeds itself with generated random numbers to hinder
- * backtracking of the original seed.
- *
- * Time for next re-seed in ms.
- */
+ 
 #define EXYNOS_RNG_RESEED_TIME		1000
 #define EXYNOS_RNG_RESEED_BYTES		65536
 
-/*
- * In polling mode, do not wait infinitely for the engine to finish the work.
- */
+ 
 #define EXYNOS_RNG_WAIT_RETRIES		100
 
-/* Context for crypto */
+ 
 struct exynos_rng_ctx {
 	struct exynos_rng_dev		*rng;
 };
 
-/* Device associated memory */
+ 
 struct exynos_rng_dev {
 	struct device			*dev;
 	enum exynos_prng_type		type;
 	void __iomem			*mem;
 	struct clk			*clk;
 	struct mutex 			lock;
-	/* Generated numbers stored for seeding during resume */
+	 
 	u8				seed_save[EXYNOS_RNG_SEED_SIZE];
 	unsigned int			seed_save_len;
-	/* Time of last seeding in jiffies */
+	 
 	unsigned long			last_seeding;
-	/* Bytes generated since last seeding */
+	 
 	unsigned long			bytes_seeding;
 };
 
@@ -100,7 +85,7 @@ static int exynos_rng_set_seed(struct exynos_rng_dev *rng,
 	u32 val;
 	int i;
 
-	/* Round seed length because loop iterates over full register size */
+	 
 	slen = ALIGN_DOWN(slen, 4);
 
 	if (slen < EXYNOS_RNG_SEED_SIZE)
@@ -129,14 +114,7 @@ static int exynos_rng_set_seed(struct exynos_rng_dev *rng,
 	return 0;
 }
 
-/*
- * Start the engine and poll for finish.  Then read from output registers
- * filling the 'dst' buffer up to 'dlen' bytes or up to size of generated
- * random data (EXYNOS_RNG_SEED_SIZE).
- *
- * On success: return 0 and store number of read bytes under 'read' address.
- * On error: return -ERRNO.
- */
+ 
 static int exynos_rng_get_random(struct exynos_rng_dev *rng,
 				 u8 *dst, unsigned int dlen,
 				 unsigned int *read)
@@ -158,7 +136,7 @@ static int exynos_rng_get_random(struct exynos_rng_dev *rng,
 	if (!retry)
 		return -ETIMEDOUT;
 
-	/* Clear status bit */
+	 
 	exynos_rng_writel(rng, EXYNOS_RNG_STATUS_RNG_DONE,
 			  EXYNOS_RNG_STATUS);
 	*read = min_t(size_t, dlen, EXYNOS_RNG_SEED_SIZE);
@@ -168,7 +146,7 @@ static int exynos_rng_get_random(struct exynos_rng_dev *rng,
 	return 0;
 }
 
-/* Re-seed itself from time to time */
+ 
 static void exynos_rng_reseed(struct exynos_rng_dev *rng)
 {
 	unsigned long next_seeding = rng->last_seeding + \
@@ -186,7 +164,7 @@ static void exynos_rng_reseed(struct exynos_rng_dev *rng)
 
 	exynos_rng_set_seed(rng, seed, read);
 
-	/* Let others do some of their job. */
+	 
 	mutex_unlock(&rng->lock);
 	mutex_lock(&rng->lock);
 }
@@ -320,7 +298,7 @@ static int __maybe_unused exynos_rng_suspend(struct device *dev)
 	struct exynos_rng_dev *rng = dev_get_drvdata(dev);
 	int ret;
 
-	/* If we were never seeded then after resume it will be the same */
+	 
 	if (!rng->last_seeding)
 		return 0;
 
@@ -331,7 +309,7 @@ static int __maybe_unused exynos_rng_suspend(struct device *dev)
 
 	mutex_lock(&rng->lock);
 
-	/* Get new random numbers and store them for seeding on resume. */
+	 
 	exynos_rng_get_random(rng, rng->seed_save, sizeof(rng->seed_save),
 			      &(rng->seed_save_len));
 
@@ -350,7 +328,7 @@ static int __maybe_unused exynos_rng_resume(struct device *dev)
 	struct exynos_rng_dev *rng = dev_get_drvdata(dev);
 	int ret;
 
-	/* Never seeded so nothing to do */
+	 
 	if (!rng->last_seeding)
 		return 0;
 

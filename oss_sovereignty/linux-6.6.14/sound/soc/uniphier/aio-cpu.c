@@ -1,8 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Socionext UniPhier AIO ALSA CPU DAI driver.
-//
-// Copyright (c) 2016-2018 Socionext Inc.
+
+
+
+
+
 
 #include <linux/clk.h>
 #include <linux/errno.h>
@@ -32,17 +32,7 @@ static bool is_valid_pll(struct uniphier_aio_chip *chip, int pll_id)
 	return chip->plls[pll_id].enable;
 }
 
-/**
- * find_volume - find volume supported HW port by HW port number
- * @chip: the AIO chip pointer
- * @oport_hw: HW port number, one of AUD_HW_XXXX
- *
- * Find AIO device from device list by HW port number. Volume feature is
- * available only in Output and PCM ports, this limitation comes from HW
- * specifications.
- *
- * Return: The pointer of AIO substream if successful, otherwise NULL on error.
- */
+ 
 static struct uniphier_aio_sub *find_volume(struct uniphier_aio_chip *chip,
 					    int oport_hw)
 {
@@ -83,21 +73,7 @@ static bool match_spec(const struct uniphier_aio_spec *spec,
 	return false;
 }
 
-/**
- * find_spec - find HW specification info by name
- * @aio: the AIO device pointer
- * @name: name of device
- * @direction: the direction of substream, SNDRV_PCM_STREAM_*
- *
- * Find hardware specification information from list by device name. This
- * information is used for telling the difference of SoCs to driver.
- *
- * Specification list is array of 'struct uniphier_aio_spec' which is defined
- * in each drivers (see: aio-i2s.c).
- *
- * Return: The pointer of hardware specification of AIO if successful,
- * otherwise NULL on error.
- */
+ 
 static const struct uniphier_aio_spec *find_spec(struct uniphier_aio *aio,
 						 const char *name,
 						 int direction)
@@ -115,16 +91,7 @@ static const struct uniphier_aio_spec *find_spec(struct uniphier_aio *aio,
 	return NULL;
 }
 
-/**
- * find_divider - find clock divider by frequency
- * @aio: the AIO device pointer
- * @pll_id: PLL ID, should be AUD_PLL_XX
- * @freq: required frequency
- *
- * Find suitable clock divider by frequency.
- *
- * Return: The ID of PLL if successful, otherwise negative error value.
- */
+ 
 static int find_divider(struct uniphier_aio *aio, int pll_id, unsigned int freq)
 {
 	struct uniphier_aio_pll *pll;

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * clk-flexgen.c
- *
- * Copyright (C) ST-Microelectronics SA 2013
- * Author:  Maxime Coquelin <maxime.coquelin@st.com> for ST-Microelectronics.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/clk-provider.h>
@@ -31,19 +26,19 @@ struct clkgen_data {
 struct flexgen {
 	struct clk_hw hw;
 
-	/* Crossbar */
+	 
 	struct clk_mux mux;
-	/* Pre-divisor's gate */
+	 
 	struct clk_gate pgate;
-	/* Pre-divisor */
+	 
 	struct clk_divider pdiv;
-	/* Final divisor's gate */
+	 
 	struct clk_gate fgate;
-	/* Final divisor */
+	 
 	struct clk_divider fdiv;
-	/* Asynchronous mode control */
+	 
 	struct clk_gate sync;
-	/* hw control flags */
+	 
 	bool control_mode;
 };
 
@@ -72,7 +67,7 @@ static void flexgen_disable(struct clk_hw *hw)
 	struct flexgen *flexgen = to_flexgen(hw);
 	struct clk_hw *fgate_hw = &flexgen->fgate.hw;
 
-	/* disable only the final gate */
+	 
 	__clk_hw_set_clk(fgate_hw, hw);
 
 	clk_gate_ops.disable(fgate_hw);
@@ -124,7 +119,7 @@ static int flexgen_determine_rate(struct clk_hw *hw,
 {
 	unsigned long div;
 
-	/* Round div according to exact prate and wished rate */
+	 
 	div = clk_best_div(req->best_parent_rate, req->rate);
 
 	if (clk_hw_get_flags(hw) & CLK_SET_RATE_PARENT) {
@@ -175,11 +170,7 @@ static int flexgen_set_rate(struct clk_hw *hw, unsigned long rate,
 
 	div = clk_best_div(parent_rate, rate);
 
-	/*
-	* pdiv is mainly targeted for low freq results, while fdiv
-	* should be used for div <= 64. The other way round can
-	* lead to 'duty cycle' issues.
-	*/
+	 
 
 	if (div <= 64) {
 		clk_divider_ops.set_rate(pdiv_hw, parent_rate, parent_rate);
@@ -227,7 +218,7 @@ static struct clk *clk_register_flexgen(const char *name,
 	xbar_shift = (idx % 4) * 0x8;
 	fdiv_reg = reg + 0x164 + idx * 4;
 
-	/* Crossbar element config */
+	 
 	fgxbar->mux.lock = lock;
 	fgxbar->mux.mask = BIT(6) - 1;
 	fgxbar->mux.reg = xbar_reg;
@@ -235,27 +226,27 @@ static struct clk *clk_register_flexgen(const char *name,
 	fgxbar->mux.table = NULL;
 
 
-	/* Pre-divider's gate config (in xbar register)*/
+	 
 	fgxbar->pgate.lock = lock;
 	fgxbar->pgate.reg = xbar_reg;
 	fgxbar->pgate.bit_idx = xbar_shift + 6;
 
-	/* Pre-divider config */
+	 
 	fgxbar->pdiv.lock = lock;
 	fgxbar->pdiv.reg = reg + 0x58 + idx * 4;
 	fgxbar->pdiv.width = 10;
 
-	/* Final divider's gate config */
+	 
 	fgxbar->fgate.lock = lock;
 	fgxbar->fgate.reg = fdiv_reg;
 	fgxbar->fgate.bit_idx = 6;
 
-	/* Final divider config */
+	 
 	fgxbar->fdiv.lock = lock;
 	fgxbar->fdiv.reg = fdiv_reg;
 	fgxbar->fdiv.width = 6;
 
-	/* Final divider sync config */
+	 
 	fgxbar->sync.lock = lock;
 	fgxbar->sync.reg = fdiv_reg;
 	fgxbar->sync.bit_idx = 7;
@@ -304,7 +295,7 @@ static const struct clkgen_data clkgen_video = {
 };
 
 static const struct clkgen_clk_out clkgen_stih407_a0_clk_out[] = {
-	/* This clk needs to be on so that memory interface is accessible */
+	 
 	{ .name = "clk-ic-lmi0", .flags = CLK_IS_CRITICAL },
 };
 
@@ -314,7 +305,7 @@ static const struct clkgen_data clkgen_stih407_a0 = {
 };
 
 static const struct clkgen_clk_out clkgen_stih410_a0_clk_out[] = {
-	/* Those clks need to be on so that memory interface is accessible */
+	 
 	{ .name = "clk-ic-lmi0", .flags = CLK_IS_CRITICAL },
 	{ .name = "clk-ic-lmi1", .flags = CLK_IS_CRITICAL },
 };
@@ -333,14 +324,14 @@ static const struct clkgen_clk_out clkgen_stih407_c0_clk_out[] = {
 	{ .name = "clk-proc-tp", },
 	{ .name = "clk-rx-icn-dmu", },
 	{ .name = "clk-rx-icn-hva", },
-	/* This clk needs to be on to keep bus interconnect alive */
+	 
 	{ .name = "clk-icn-cpu", .flags = CLK_IS_CRITICAL },
-	/* This clk needs to be on to keep bus interconnect alive */
+	 
 	{ .name = "clk-tx-icn-dmu", .flags = CLK_IS_CRITICAL },
 	{ .name = "clk-mmc-0", },
 	{ .name = "clk-mmc-1", },
 	{ .name = "clk-jpegdec", },
-	/* This clk needs to be on to keep A9 running */
+	 
 	{ .name = "clk-ext2fa9", .flags = CLK_IS_CRITICAL },
 	{ .name = "clk-ic-bdisp-0", },
 	{ .name = "clk-ic-bdisp-1", },
@@ -350,10 +341,10 @@ static const struct clkgen_clk_out clkgen_stih407_c0_clk_out[] = {
 	{ .name = "clk-st231-aud-0", },
 	{ .name = "clk-st231-gp-1", },
 	{ .name = "clk-st231-dmu", },
-	/* This clk needs to be on to keep bus interconnect alive */
+	 
 	{ .name = "clk-icn-lmi", .flags = CLK_IS_CRITICAL },
 	{ .name = "clk-tx-icn-disp-1", },
-	/* This clk needs to be on to keep bus interconnect alive */
+	 
 	{ .name = "clk-icn-sbc", .flags = CLK_IS_CRITICAL },
 	{ .name = "clk-stfe-frc2", },
 	{ .name = "clk-eth-phy", },
@@ -378,14 +369,14 @@ static const struct clkgen_clk_out clkgen_stih410_c0_clk_out[] = {
 	{ .name = "clk-proc-tp", },
 	{ .name = "clk-rx-icn-dmu", },
 	{ .name = "clk-rx-icn-hva", },
-	/* This clk needs to be on to keep bus interconnect alive */
+	 
 	{ .name = "clk-icn-cpu", .flags = CLK_IS_CRITICAL },
-	/* This clk needs to be on to keep bus interconnect alive */
+	 
 	{ .name = "clk-tx-icn-dmu", .flags = CLK_IS_CRITICAL },
 	{ .name = "clk-mmc-0", },
 	{ .name = "clk-mmc-1", },
 	{ .name = "clk-jpegdec", },
-	/* This clk needs to be on to keep A9 running */
+	 
 	{ .name = "clk-ext2fa9", .flags = CLK_IS_CRITICAL },
 	{ .name = "clk-ic-bdisp-0", },
 	{ .name = "clk-ic-bdisp-1", },
@@ -395,10 +386,10 @@ static const struct clkgen_clk_out clkgen_stih410_c0_clk_out[] = {
 	{ .name = "clk-st231-aud-0", },
 	{ .name = "clk-st231-gp-1", },
 	{ .name = "clk-st231-dmu", },
-	/* This clk needs to be on to keep bus interconnect alive */
+	 
 	{ .name = "clk-icn-lmi", .flags = CLK_IS_CRITICAL },
 	{ .name = "clk-tx-icn-disp-1", },
-	/* This clk needs to be on to keep bus interconnect alive */
+	 
 	{ .name = "clk-icn-sbc", .flags = CLK_IS_CRITICAL },
 	{ .name = "clk-stfe-frc2", },
 	{ .name = "clk-eth-phy", },
@@ -409,7 +400,7 @@ static const struct clkgen_clk_out clkgen_stih410_c0_clk_out[] = {
 	{ .name = "clk-compo-dvp", },
 	{ .name = "clk-tx-icn-hades", },
 	{ .name = "clk-rx-icn-hades", },
-	/* This clk needs to be on to keep bus interconnect alive */
+	 
 	{ .name = "clk-icn-reg-16", .flags = CLK_IS_CRITICAL },
 	{ .name = "clk-pp-hades", },
 	{ .name = "clk-clust-hades", },
@@ -429,17 +420,17 @@ static const struct clkgen_clk_out clkgen_stih418_c0_clk_out[] = {
 	{ .name = "clk-hva", },
 	{ .name = "clk-proc-stfe", },
 	{ .name = "clk-tp", },
-	/* This clk needs to be on to keep bus interconnect alive */
+	 
 	{ .name = "clk-rx-icn-dmu", .flags = CLK_IS_CRITICAL },
-	/* This clk needs to be on to keep bus interconnect alive */
+	 
 	{ .name = "clk-rx-icn-hva", .flags = CLK_IS_CRITICAL },
 	{ .name = "clk-icn-cpu", .flags = CLK_IS_CRITICAL },
-	/* This clk needs to be on to keep bus interconnect alive */
+	 
 	{ .name = "clk-tx-icn-dmu", .flags = CLK_IS_CRITICAL },
 	{ .name = "clk-mmc-0", },
 	{ .name = "clk-mmc-1", },
 	{ .name = "clk-jpegdec", },
-	/* This clk needs to be on to keep bus interconnect alive */
+	 
 	{ .name = "clk-icn-reg", .flags = CLK_IS_CRITICAL },
 	{ .name = "clk-proc-bdisp-0", },
 	{ .name = "clk-proc-bdisp-1", },
@@ -449,11 +440,11 @@ static const struct clkgen_clk_out clkgen_stih418_c0_clk_out[] = {
 	{ .name = "clk-st231-aud-0", },
 	{ .name = "clk-st231-gp-1", },
 	{ .name = "clk-st231-dmu", },
-	/* This clk needs to be on to keep bus interconnect alive */
+	 
 	{ .name = "clk-icn-lmi", .flags = CLK_IS_CRITICAL },
-	/* This clk needs to be on to keep bus interconnect alive */
+	 
 	{ .name = "clk-tx-icn-1", .flags = CLK_IS_CRITICAL },
-	/* This clk needs to be on to keep bus interconnect alive */
+	 
 	{ .name = "clk-icn-sbc", .flags = CLK_IS_CRITICAL },
 	{ .name = "clk-stfe-frc2", },
 	{ .name = "clk-eth-phyref", },
@@ -462,11 +453,11 @@ static const struct clkgen_clk_out clkgen_stih418_c0_clk_out[] = {
 	{ .name = "clk-main-disp", },
 	{ .name = "clk-aux-disp", },
 	{ .name = "clk-compo-dvp", },
-	/* This clk needs to be on to keep bus interconnect alive */
+	 
 	{ .name = "clk-tx-icn-hades", .flags = CLK_IS_CRITICAL },
-	/* This clk needs to be on to keep bus interconnect alive */
+	 
 	{ .name = "clk-rx-icn-hades", .flags = CLK_IS_CRITICAL },
-	/* This clk needs to be on to keep bus interconnect alive */
+	 
 	{ .name = "clk-icn-reg-16", .flags = CLK_IS_CRITICAL },
 	{ .name = "clk-pp-hevc", },
 	{ .name = "clk-clust-hevc", },
@@ -680,7 +671,7 @@ static void __init st_of_flexgen_setup(struct device_node *np)
 	if (!clk_data)
 		goto err;
 
-	/* First try to get output information from the compatible data */
+	 
 	if (!data || !data->outputs_nb || !data->outputs) {
 		ret = of_property_count_strings(np, "clock-output-names");
 		if (ret <= 0) {
@@ -718,9 +709,7 @@ static void __init st_of_flexgen_setup(struct device_node *np)
 			flex_flags = data->flags | data->outputs[i].flags;
 		}
 
-		/*
-		 * If we read an empty clock name then the output is unused
-		 */
+		 
 		if (*clk_name == '\0')
 			continue;
 

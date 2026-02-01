@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright 2019 NXP.
- */
+ 
+ 
 
 #ifndef __DCSS_PRV_H__
 #define __DCSS_PRV_H__
@@ -55,8 +53,8 @@ struct dcss_debug_reg {
 
 enum dcss_ctxld_ctx_type {
 	CTX_DB,
-	CTX_SB_HP, /* high-priority */
-	CTX_SB_LP, /* low-priority  */
+	CTX_SB_HP,  
+	CTX_SB_LP,  
 };
 
 struct dcss_dev {
@@ -101,12 +99,12 @@ void dcss_disable_dtg_and_ss(struct dcss_dev *dcss);
 
 extern const struct dev_pm_ops dcss_dev_pm_ops;
 
-/* BLKCTL */
+ 
 int dcss_blkctl_init(struct dcss_dev *dcss, unsigned long blkctl_base);
 void dcss_blkctl_cfg(struct dcss_blkctl *blkctl);
 void dcss_blkctl_exit(struct dcss_blkctl *blkctl);
 
-/* CTXLD */
+ 
 int dcss_ctxld_init(struct dcss_dev *dcss, unsigned long ctxld_base);
 void dcss_ctxld_exit(struct dcss_ctxld *ctxld);
 void dcss_ctxld_write(struct dcss_ctxld *ctxld, u32 ctx_id,
@@ -122,7 +120,7 @@ void dcss_ctxld_register_completion(struct dcss_ctxld *ctxld,
 				    struct completion *dis_completion);
 void dcss_ctxld_assert_locked(struct dcss_ctxld *ctxld);
 
-/* DPR */
+ 
 int dcss_dpr_init(struct dcss_dev *dcss, unsigned long dpr_base);
 void dcss_dpr_exit(struct dcss_dpr *dpr);
 void dcss_dpr_write_sysctrl(struct dcss_dpr *dpr);
@@ -134,7 +132,7 @@ void dcss_dpr_format_set(struct dcss_dpr *dpr, int ch_num,
 			 const struct drm_format_info *format, u64 modifier);
 void dcss_dpr_set_rotation(struct dcss_dpr *dpr, int ch_num, u32 rotation);
 
-/* DTG */
+ 
 int dcss_dtg_init(struct dcss_dev *dcss, unsigned long dtg_base);
 void dcss_dtg_exit(struct dcss_dtg *dtg);
 bool dcss_dtg_vblank_irq_valid(struct dcss_dtg *dtg);
@@ -153,7 +151,7 @@ void dcss_dtg_plane_pos_set(struct dcss_dtg *dtg, int ch_num,
 			    int px, int py, int pw, int ph);
 void dcss_dtg_ch_enable(struct dcss_dtg *dtg, int ch_num, bool en);
 
-/* SUBSAM */
+ 
 int dcss_ss_init(struct dcss_dev *dcss, unsigned long subsam_base);
 void dcss_ss_exit(struct dcss_ss *ss);
 void dcss_ss_enable(struct dcss_ss *ss);
@@ -162,7 +160,7 @@ void dcss_ss_subsam_set(struct dcss_ss *ss);
 void dcss_ss_sync_set(struct dcss_ss *ss, struct videomode *vm,
 		      bool phsync, bool pvsync);
 
-/* SCALER */
+ 
 int dcss_scaler_init(struct dcss_dev *dcss, unsigned long scaler_base);
 void dcss_scaler_exit(struct dcss_scaler *scl);
 void dcss_scaler_set_filter(struct dcss_scaler *scl, int ch_num,
@@ -176,4 +174,4 @@ int dcss_scaler_get_min_max_ratios(struct dcss_scaler *scl, int ch_num,
 				   int *min, int *max);
 void dcss_scaler_write_sclctrl(struct dcss_scaler *scl);
 
-#endif /* __DCSS_PRV_H__ */
+#endif  

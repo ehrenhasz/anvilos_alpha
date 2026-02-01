@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright(c) 2008 - 2010 Realtek Corporation. All rights reserved.
- *
- * Contact Information: wlanfae <wlanfae@realtek.com>
- */
+
+ 
 #include "rtl_core.h"
 #include "rtl_dm.h"
 #include "r8192E_hw.h"
@@ -12,7 +8,7 @@
 #include "r8190P_rtl8256.h"
 #include "r8192E_cmdpkt.h"
 
-/*---------------------------Define Local Constant---------------------------*/
+ 
 static u32 edca_setting_DL[HT_IOT_PEER_MAX] = {
 	0x5e4322,
 	0x5e4322,
@@ -47,8 +43,8 @@ static u32 edca_setting_UL[HT_IOT_PEER_MAX] = {
 };
 
 const u32 dm_tx_bb_gain[TX_BB_GAIN_TABLE_LEN] = {
-	0x7f8001fe, /* 12 dB */
-	0x788001e2, /* 11 dB */
+	0x7f8001fe,  
+	0x788001e2,  
 	0x71c001c7,
 	0x6b8001ae,
 	0x65400195,
@@ -83,7 +79,7 @@ const u32 dm_tx_bb_gain[TX_BB_GAIN_TABLE_LEN] = {
 	0x1300004c,
 	0x12000048,
 	0x11000044,
-	0x10000040, /* -24 dB */
+	0x10000040,  
 };
 
 const u8 dm_cck_tx_bb_gain[CCK_TX_BB_GAIN_TABLE_LEN][8] = {
@@ -138,22 +134,22 @@ const u8 dm_cck_tx_bb_gain_ch14[CCK_TX_BB_GAIN_TABLE_LEN][8] = {
 	{0x0f, 0x0f, 0x0d, 0x08, 0x00, 0x00, 0x00, 0x00}
 };
 
-/*---------------------------Define Local Constant---------------------------*/
+ 
 
 
-/*------------------------Define global variable-----------------------------*/
+ 
 struct dig_t dm_digtable;
 
 struct drx_path_sel dm_rx_path_sel_table;
-/*------------------------Define global variable-----------------------------*/
+ 
 
 
-/*------------------------Define local variable------------------------------*/
-/*------------------------Define local variable------------------------------*/
+ 
+ 
 
 
 
-/*---------------------Define local function prototype-----------------------*/
+ 
 static void _rtl92e_dm_check_rate_adaptive(struct net_device *dev);
 
 static void _rtl92e_dm_init_bandwidth_autoswitch(struct net_device *dev);
@@ -186,14 +182,14 @@ static void _rtl92e_dm_check_fsync(struct net_device *dev);
 static void _rtl92e_dm_check_rf_ctrl_gpio(void *data);
 static void _rtl92e_dm_fsync_timer_callback(struct timer_list *t);
 
-/*---------------------Define local function prototype-----------------------*/
+ 
 
 static	void	_rtl92e_dm_init_dynamic_tx_power(struct net_device *dev);
 static void _rtl92e_dm_dynamic_tx_power(struct net_device *dev);
 
 static void _rtl92e_dm_send_rssi_to_fw(struct net_device *dev);
 static void _rtl92e_dm_cts_to_self(struct net_device *dev);
-/*---------------------------Define function prototype------------------------*/
+ 
 
 void rtl92e_dm_init(struct net_device *dev)
 {
@@ -1040,23 +1036,7 @@ static void _rtl92e_dm_ctrl_initgain_byrssi(struct net_device *dev)
 		return;
 }
 
-/*-----------------------------------------------------------------------------
- * Function:	dm_CtrlInitGainBeforeConnectByRssiAndFalseAlarm()
- *
- * Overview:	Driver monitor RSSI and False Alarm to change initial gain.
-			Only change initial gain during link in progress.
- *
- * Input:		IN	PADAPTER	pAdapter
- *
- * Output:		NONE
- *
- * Return:		NONE
- *
- * Revised History:
- *	When		Who		Remark
- *	03/04/2009	hpfan	Create Version 0.
- *
- ******************************************************************************/
+ 
 
 static void _rtl92e_dm_ctrl_initgain_byrssi_driver(struct net_device *dev)
 {
@@ -2081,7 +2061,7 @@ static void _rtl92e_dm_check_fsync(struct net_device *dev)
 	}
 }
 
-/*---------------------------Define function prototype------------------------*/
+ 
 static void _rtl92e_dm_init_dynamic_tx_power(struct net_device *dev)
 {
 	struct r8192_priv *priv = rtllib_priv(dev);

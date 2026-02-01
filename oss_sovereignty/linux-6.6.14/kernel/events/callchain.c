@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Performance events callchain code, extracted from core.c:
- *
- *  Copyright (C) 2008 Thomas Gleixner <tglx@linutronix.de>
- *  Copyright (C) 2008-2011 Red Hat, Inc., Ingo Molnar
- *  Copyright (C) 2008-2011 Red Hat, Inc., Peter Zijlstra
- *  Copyright  ©  2009 Paul Mackerras, IBM Corp. <paulus@au1.ibm.com>
- */
+
+ 
 
 #include <linux/perf_event.h>
 #include <linux/slab.h>
@@ -73,11 +66,7 @@ static int alloc_callchain_buffers(void)
 	int size;
 	struct callchain_cpus_entries *entries;
 
-	/*
-	 * We can't use the percpu allocation API for data that can be
-	 * accessed from NMI. Use a temporary manual per cpu allocation
-	 * until that gets sorted out.
-	 */
+	 
 	size = offsetof(struct callchain_cpus_entries, cpu_entries[nr_cpu_ids]);
 
 	entries = kzalloc(size, GFP_KERNEL);
@@ -118,13 +107,7 @@ int get_callchain_buffers(int event_max_stack)
 		goto exit;
 	}
 
-	/*
-	 * If requesting per event more than the global cap,
-	 * return a different error to help userspace figure
-	 * this out.
-	 *
-	 * And also do it here so that we have &callchain_mutex held.
-	 */
+	 
 	if (event_max_stack > sysctl_perf_event_max_stack) {
 		err = -EOVERFLOW;
 		goto exit;
@@ -225,10 +208,7 @@ exit_put:
 	return entry;
 }
 
-/*
- * Used for sysctl_perf_event_max_stack and
- * sysctl_perf_event_max_contexts_per_stack.
- */
+ 
 int perf_event_max_stack_handler(struct ctl_table *table, int write,
 				 void *buffer, size_t *lenp, loff_t *ppos)
 {

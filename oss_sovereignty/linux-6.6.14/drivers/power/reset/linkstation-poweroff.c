@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * LinkStation power off restart driver
- * Copyright (C) 2020 Daniel González Cabanelas <dgcbueu@gmail.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/notifier.h>
@@ -12,7 +9,7 @@
 #include <linux/reboot.h>
 #include <linux/phy.h>
 
-/* Defines from the eth phy Marvell driver */
+ 
 #define MII_MARVELL_COPPER_PAGE		0
 #define MII_MARVELL_LED_PAGE		3
 #define MII_MARVELL_WOL_PAGE		17
@@ -52,23 +49,20 @@ static void linkstation_mvphy_reg_intn(bool restart)
 	if (saved_page < 0)
 		goto err;
 
-	/* Force manual LED2 control to let INTn work */
+	 
 	__phy_modify(phydev, MII_PHY_LED_CTRL, LEDMASK, LED2_FORCE_ON);
 
-	/* Set the LED[2]/INTn pin to the required state */
+	 
 	__phy_modify(phydev, MII_88E1318S_PHY_LED_TCR,
 		     MII_88E1318S_PHY_LED_TCR_FORCE_INT,
 		     MII_88E1318S_PHY_LED_TCR_INTn_ENABLE | data);
 
 	if (!data) {
-		/* Clear interrupts to ensure INTn won't be holded in high state */
+		 
 		__phy_write(phydev, MII_MARVELL_PHY_PAGE, MII_MARVELL_COPPER_PAGE);
 		__phy_read(phydev, MII_M1011_IEVENT);
 
-		/* If WOL was enabled and a magic packet was received before powering
-		 * off, we won't be able to wake up by sending another magic packet.
-		 * Clear WOL status.
-		 */
+		 
 		__phy_write(phydev, MII_MARVELL_PHY_PAGE, MII_MARVELL_WOL_PAGE);
 		__phy_set_bits(phydev, MII_88E1318S_PHY_WOL_CTRL,
 			       MII_88E1318S_PHY_WOL_CTRL_CLEAR_WOL_STATUS);
@@ -91,15 +85,12 @@ static void readynas_mvphy_set_reg(bool restart)
 	if (saved_page < 0)
 		goto err;
 
-	/* Set the LED[2].0 Polarity bit to the required state */
+	 
 	__phy_modify(phydev, MII_PHY_LED_POL_CTRL,
 		     MII_88E1318S_PHY_LED_POL_LED2, data);
 
 	if (!data) {
-		/* If WOL was enabled and a magic packet was received before powering
-		 * off, we won't be able to wake up by sending another magic packet.
-		 * Clear WOL status.
-		 */
+		 
 		__phy_write(phydev, MII_MARVELL_PHY_PAGE, MII_MARVELL_WOL_PAGE);
 		__phy_set_bits(phydev, MII_88E1318S_PHY_WOL_CTRL,
 			       MII_88E1318S_PHY_WOL_CTRL_CLEAR_WOL_STATUS);

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *   Copyright (C) 2016 Namjae Jeon <linkinjeon@kernel.org>
- *   Copyright (C) 2018 Samsung Electronics Co., Ltd.
- */
+
+ 
 
 #include "glob.h"
 #include "nterr.h"
@@ -13,75 +10,60 @@
 
 static int check_smb2_hdr(struct smb2_hdr *hdr)
 {
-	/*
-	 * Make sure that this really is an SMB, that it is a response.
-	 */
+	 
 	if (hdr->Flags & SMB2_FLAGS_SERVER_TO_REDIR)
 		return 1;
 	return 0;
 }
 
-/*
- *  The following table defines the expected "StructureSize" of SMB2 requests
- *  in order by SMB2 command.  This is similar to "wct" in SMB/CIFS requests.
- *
- *  Note that commands are defined in smb2pdu.h in le16 but the array below is
- *  indexed by command in host byte order
- */
+ 
 static const __le16 smb2_req_struct_sizes[NUMBER_OF_SMB2_COMMANDS] = {
-	/* SMB2_NEGOTIATE */ cpu_to_le16(36),
-	/* SMB2_SESSION_SETUP */ cpu_to_le16(25),
-	/* SMB2_LOGOFF */ cpu_to_le16(4),
-	/* SMB2_TREE_CONNECT */ cpu_to_le16(9),
-	/* SMB2_TREE_DISCONNECT */ cpu_to_le16(4),
-	/* SMB2_CREATE */ cpu_to_le16(57),
-	/* SMB2_CLOSE */ cpu_to_le16(24),
-	/* SMB2_FLUSH */ cpu_to_le16(24),
-	/* SMB2_READ */ cpu_to_le16(49),
-	/* SMB2_WRITE */ cpu_to_le16(49),
-	/* SMB2_LOCK */ cpu_to_le16(48),
-	/* SMB2_IOCTL */ cpu_to_le16(57),
-	/* SMB2_CANCEL */ cpu_to_le16(4),
-	/* SMB2_ECHO */ cpu_to_le16(4),
-	/* SMB2_QUERY_DIRECTORY */ cpu_to_le16(33),
-	/* SMB2_CHANGE_NOTIFY */ cpu_to_le16(32),
-	/* SMB2_QUERY_INFO */ cpu_to_le16(41),
-	/* SMB2_SET_INFO */ cpu_to_le16(33),
-	/* use 44 for lease break */
-	/* SMB2_OPLOCK_BREAK */ cpu_to_le16(36)
+	  cpu_to_le16(36),
+	  cpu_to_le16(25),
+	  cpu_to_le16(4),
+	  cpu_to_le16(9),
+	  cpu_to_le16(4),
+	  cpu_to_le16(57),
+	  cpu_to_le16(24),
+	  cpu_to_le16(24),
+	  cpu_to_le16(49),
+	  cpu_to_le16(49),
+	  cpu_to_le16(48),
+	  cpu_to_le16(57),
+	  cpu_to_le16(4),
+	  cpu_to_le16(4),
+	  cpu_to_le16(33),
+	  cpu_to_le16(32),
+	  cpu_to_le16(41),
+	  cpu_to_le16(33),
+	 
+	  cpu_to_le16(36)
 };
 
-/*
- * The size of the variable area depends on the offset and length fields
- * located in different fields for various SMB2 requests. SMB2 requests
- * with no variable length info, show an offset of zero for the offset field.
- */
+ 
 static const bool has_smb2_data_area[NUMBER_OF_SMB2_COMMANDS] = {
-	/* SMB2_NEGOTIATE */ true,
-	/* SMB2_SESSION_SETUP */ true,
-	/* SMB2_LOGOFF */ false,
-	/* SMB2_TREE_CONNECT */	true,
-	/* SMB2_TREE_DISCONNECT */ false,
-	/* SMB2_CREATE */ true,
-	/* SMB2_CLOSE */ false,
-	/* SMB2_FLUSH */ false,
-	/* SMB2_READ */	true,
-	/* SMB2_WRITE */ true,
-	/* SMB2_LOCK */	true,
-	/* SMB2_IOCTL */ true,
-	/* SMB2_CANCEL */ false, /* BB CHECK this not listed in documentation */
-	/* SMB2_ECHO */ false,
-	/* SMB2_QUERY_DIRECTORY */ true,
-	/* SMB2_CHANGE_NOTIFY */ false,
-	/* SMB2_QUERY_INFO */ true,
-	/* SMB2_SET_INFO */ true,
-	/* SMB2_OPLOCK_BREAK */ false
+	  true,
+	  true,
+	  false,
+	 	true,
+	  false,
+	  true,
+	  false,
+	  false,
+	 	true,
+	  true,
+	 	true,
+	  true,
+	  false,  
+	  false,
+	  true,
+	  false,
+	  true,
+	  true,
+	  false
 };
 
-/*
- * Set length of the data area and the offset to arguments.
- * if they are invalid, return error.
- */
+ 
 static int smb2_get_data_area_len(unsigned int *off, unsigned int *len,
 				  struct smb2_hdr *hdr)
 {
@@ -90,11 +72,7 @@ static int smb2_get_data_area_len(unsigned int *off, unsigned int *len,
 	*off = 0;
 	*len = 0;
 
-	/*
-	 * Following commands have data areas so we have to get the location
-	 * of the data buffer offset and data buffer length for the particular
-	 * command.
-	 */
+	 
 	switch (hdr->Command) {
 	case SMB2_SESSION_SETUP:
 		*off = le16_to_cpu(((struct smb2_sess_setup_req *)hdr)->SecurityBufferOffset);
@@ -188,32 +166,21 @@ static int smb2_get_data_area_len(unsigned int *off, unsigned int *len,
 	return ret;
 }
 
-/*
- * Calculate the size of the SMB message based on the fixed header
- * portion, the number of word parameters and the data portion of the message.
- */
+ 
 static int smb2_calc_size(void *buf, unsigned int *len)
 {
 	struct smb2_pdu *pdu = (struct smb2_pdu *)buf;
 	struct smb2_hdr *hdr = &pdu->hdr;
-	unsigned int offset; /* the offset from the beginning of SMB to data area */
-	unsigned int data_length; /* the length of the variable length data area */
+	unsigned int offset;  
+	unsigned int data_length;  
 	int ret;
 
-	/* Structure Size has already been checked to make sure it is 64 */
+	 
 	*len = le16_to_cpu(hdr->StructureSize);
 
-	/*
-	 * StructureSize2, ie length of fixed parameter area has already
-	 * been checked to make sure it is the correct length.
-	 */
+	 
 	*len += le16_to_cpu(pdu->StructureSize2);
-	/*
-	 * StructureSize2 of smb2_lock pdu is set to 48, indicating
-	 * the size of smb2 lock request with single smb2_lock_element
-	 * regardless of number of locks. Subtract single
-	 * smb2_lock_element for correct buffer size check.
-	 */
+	 
 	if (hdr->Command == SMB2_LOCK)
 		*len -= sizeof(struct smb2_lock_element);
 
@@ -227,12 +194,7 @@ static int smb2_calc_size(void *buf, unsigned int *len)
 		    offset);
 
 	if (data_length > 0) {
-		/*
-		 * Check to make sure that data area begins after fixed area,
-		 * Note that last byte of the fixed area is part of data area
-		 * for some commands, typically those with odd StructureSize,
-		 * so we must add one to the calculation.
-		 */
+		 
 		if (offset + 1 < *len) {
 			ksmbd_debug(SMB,
 				    "data area offset %d overlaps SMB2 header %u\n",
@@ -358,7 +320,7 @@ int ksmbd_smb2_check_message(struct ksmbd_work *work)
 	struct smb2_pdu *pdu = ksmbd_req_buf_next(work);
 	struct smb2_hdr *hdr = &pdu->hdr;
 	int command;
-	__u32 clc_len;  /* calculated length */
+	__u32 clc_len;   
 	__u32 len = get_rfc1002_len(work->request_buf);
 	__u32 req_struct_size, next_cmd = le32_to_cpu(hdr->NextCommand);
 
@@ -392,7 +354,7 @@ int ksmbd_smb2_check_message(struct ksmbd_work *work)
 		if (!(command == SMB2_OPLOCK_BREAK_HE &&
 		    (le16_to_cpu(pdu->StructureSize2) == OP_BREAK_STRUCT_SIZE_20 ||
 		    le16_to_cpu(pdu->StructureSize2) == OP_BREAK_STRUCT_SIZE_21))) {
-			/* special case for SMB2.1 lease break message */
+			 
 			ksmbd_debug(SMB,
 				"Illegal request size %u for command %d\n",
 				le16_to_cpu(pdu->StructureSize2), command);
@@ -412,30 +374,19 @@ int ksmbd_smb2_check_message(struct ksmbd_work *work)
 		return 1;
 
 	if (len != clc_len) {
-		/* client can return one byte more due to implied bcc[0] */
+		 
 		if (clc_len == len + 1)
 			goto validate_credit;
 
-		/*
-		 * Some windows servers (win2016) will pad also the final
-		 * PDU in a compound to 8 bytes.
-		 */
+		 
 		if (ALIGN(clc_len, 8) == len)
 			goto validate_credit;
 
-		/*
-		 * SMB2 NEGOTIATE request will be validated when message
-		 * handling proceeds.
-		 */
+		 
 		if (command == SMB2_NEGOTIATE_HE)
 			goto validate_credit;
 
-		/*
-		 * Allow a message that padded to 8byte boundary.
-		 * Linux 4.19.217 with smb 3.0.2 are sometimes
-		 * sending messages where the cls_len is exactly
-		 * 8 bytes less than len.
-		 */
+		 
 		if (clc_len < len && (len - clc_len) <= 8)
 			goto validate_credit;
 

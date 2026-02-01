@@ -1,31 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * dell_rbu.c
- * Bios Update driver for Dell systems
- * Author: Dell Inc
- *         Abhay Salunke <abhay_salunke@dell.com>
- *
- * Copyright (C) 2005 Dell Inc.
- *
- * Remote BIOS Update (rbu) driver is used for updating DELL BIOS by
- * creating entries in the /sys file systems on Linux 2.6 and higher
- * kernels. The driver supports two mechanism to update the BIOS namely
- * contiguous and packetized. Both these methods still require having some
- * application to set the CMOS bit indicating the BIOS to update itself
- * after a reboot.
- *
- * Contiguous method:
- * This driver writes the incoming data in a monolithic image by allocating
- * contiguous physical pages large enough to accommodate the incoming BIOS
- * image size.
- *
- * Packetized method:
- * The driver writes the incoming packet image by allocating a new packet
- * on every time the packet data is written. This driver requires an
- * application to break the BIOS image in to fixed sized packet chunks.
- *
- * See Documentation/admin-guide/dell_rbu.rst for more info.
- */
+
+ 
 
 #define pr_fmt(fmt)	KBUILD_MODNAME ": " fmt
 
@@ -122,17 +96,7 @@ static int create_packet(void *data, size_t length)
 
 	ordernum = get_order(length);
 
-	/*
-	 * BIOS errata mean we cannot allocate packets below 1MB or they will
-	 * be overwritten by BIOS.
-	 *
-	 * array to temporarily hold packets
-	 * that are below the allocation floor
-	 *
-	 * NOTE: very simplistic because we only need the floor to be at 1MB
-	 *       due to BIOS errata. This shouldn't be used for higher floors
-	 *       or you will run out of mem trying to allocate the array.
-	 */
+	 
 	packet_array_size = max_t(unsigned int, allocation_floor / rbu_data.packetsize, 1);
 	invalid_addr_packet_array = kcalloc(packet_array_size, sizeof(void *),
 						GFP_KERNEL);
@@ -164,9 +128,7 @@ static int create_packet(void *data, size_t length)
 			packet_data_temp_buf = NULL;
 		}
 	}
-	/*
-	 * set to uncachable or it may never get written back before reboot
-	 */
+	 
 	set_memory_uc((unsigned long)packet_data_temp_buf, 1 << ordernum);
 
 	spin_lock(&rbu_data.lock);
@@ -176,12 +138,12 @@ static int create_packet(void *data, size_t length)
 	pr_debug("newpacket at physical addr %lx\n",
 		(unsigned long)virt_to_phys(newpacket->data));
 
-	/* packets may not have fixed size */
+	 
 	newpacket->length = length;
 	newpacket->ordernum = ordernum;
 	++rbu_data.num_packets;
 
-	/* initialize the newly created packet headers */
+	 
 	INIT_LIST_HEAD(&newpacket->list);
 	list_add_tail(&newpacket->list, &packet_data_head.list);
 
@@ -190,7 +152,7 @@ static int create_packet(void *data, size_t length)
 	pr_debug("exit\n");
 
 out_alloc_packet_array:
-	/* always free packet array */
+	 
 	while (idx--) {
 		pr_debug("freeing unused packet below floor 0x%lx\n",
 			(unsigned long)virt_to_phys(invalid_addr_packet_array[idx]));
@@ -199,7 +161,7 @@ out_alloc_packet_array:
 	kfree(invalid_addr_packet_array);
 
 out_alloc_packet:
-	/* if error, free data */
+	 
 	if (retval)
 		kfree(newpacket);
 
@@ -222,12 +184,12 @@ static int packetize_data(const u8 *data, size_t length)
 
 	temp = (u8 *) data;
 
-	/* packetize the hunk */
+	 
 	while (!done) {
 		if ((temp + rbu_data.packetsize) < end)
 			packet_length = rbu_data.packetsize;
 		else {
-			/* this is the last packet */
+			 
 			packet_length = end - temp;
 			done = 1;
 		}
@@ -254,22 +216,16 @@ static int do_packet_read(char *data, struct packet_data *newpacket,
 	*list_read_count += newpacket->length;
 
 	if (*list_read_count > bytes_read) {
-		/* point to the start of unread data */
+		 
 		j = newpacket->length - (*list_read_count - bytes_read);
-		/* point to the offset in the packet buffer */
+		 
 		ptemp_buf = (u8 *) newpacket->data + j;
-		/*
-		 * check if there is enough room in
-		 * * the incoming buffer
-		 */
+		 
 		if (length > (*list_read_count - bytes_read))
-			/*
-			 * copy what ever is there in this
-			 * packet and move on
-			 */
+			 
 			bytes_copied = (*list_read_count - bytes_read);
 		else
-			/* copy the remaining */
+			 
 			bytes_copied = length;
 		memcpy(data, ptemp_buf, bytes_copied);
 	}
@@ -285,7 +241,7 @@ static int packet_read_list(char *data, size_t * pread_length)
 	int remaining_bytes = 0;
 	char *pdest = data;
 
-	/* check if we have any packets */
+	 
 	if (0 == rbu_data.num_packets)
 		return -ENOMEM;
 
@@ -298,14 +254,11 @@ static int packet_read_list(char *data, size_t * pread_length)
 		remaining_bytes -= bytes_copied;
 		bytes_read += bytes_copied;
 		pdest += bytes_copied;
-		/*
-		 * check if we reached end of buffer before reaching the
-		 * last packet
-		 */
+		 
 		if (remaining_bytes == 0)
 			break;
 	}
-	/*finally set the bytes read */
+	 
 	*pread_length = bytes_read - rbu_data.packet_read_count;
 	rbu_data.packet_read_count = bytes_read;
 	return 0;
@@ -318,10 +271,7 @@ static void packet_empty_list(void)
 	list_for_each_entry_safe(newpacket, tmp, (&packet_data_head.list)->next, list) {
 		list_del(&newpacket->list);
 
-		/*
-		 * zero out the RBU packet memory before freeing
-		 * to make sure there are no stale RBU packets left in memory
-		 */
+		 
 		memset(newpacket->data, 0, rbu_data.packetsize);
 		set_memory_wb((unsigned long)newpacket->data,
 			1 << newpacket->ordernum);
@@ -334,70 +284,43 @@ static void packet_empty_list(void)
 	rbu_data.imagesize = 0;
 }
 
-/*
- * img_update_free: Frees the buffer allocated for storing BIOS image
- * Always called with lock held and returned with lock held
- */
+ 
 static void img_update_free(void)
 {
 	if (!rbu_data.image_update_buffer)
 		return;
-	/*
-	 * zero out this buffer before freeing it to get rid of any stale
-	 * BIOS image copied in memory.
-	 */
+	 
 	memset(rbu_data.image_update_buffer, 0,
 		rbu_data.image_update_buffer_size);
 	free_pages((unsigned long) rbu_data.image_update_buffer,
 		rbu_data.image_update_ordernum);
 
-	/*
-	 * Re-initialize the rbu_data variables after a free
-	 */
+	 
 	rbu_data.image_update_ordernum = -1;
 	rbu_data.image_update_buffer = NULL;
 	rbu_data.image_update_buffer_size = 0;
 	rbu_data.bios_image_size = 0;
 }
 
-/*
- * img_update_realloc: This function allocates the contiguous pages to
- * accommodate the requested size of data. The memory address and size
- * values are stored globally and on every call to this function the new
- * size is checked to see if more data is required than the existing size.
- * If true the previous memory is freed and new allocation is done to
- * accommodate the new size. If the incoming size is less then than the
- * already allocated size, then that memory is reused. This function is
- * called with lock held and returns with lock held.
- */
+ 
 static int img_update_realloc(unsigned long size)
 {
 	unsigned char *image_update_buffer = NULL;
 	unsigned long img_buf_phys_addr;
 	int ordernum;
 
-	/*
-	 * check if the buffer of sufficient size has been
-	 * already allocated
-	 */
+	 
 	if (rbu_data.image_update_buffer_size >= size) {
-		/*
-		 * check for corruption
-		 */
+		 
 		if ((size != 0) && (rbu_data.image_update_buffer == NULL)) {
 			pr_err("corruption check failed\n");
 			return -EINVAL;
 		}
-		/*
-		 * we have a valid pre-allocated buffer with
-		 * sufficient size
-		 */
+		 
 		return 0;
 	}
 
-	/*
-	 * free any previously allocated buffer
-	 */
+	 
 	img_update_free();
 
 	spin_unlock(&rbu_data.lock);
@@ -413,7 +336,7 @@ static int img_update_realloc(unsigned long size)
 
 	img_buf_phys_addr = (unsigned long)virt_to_phys(image_update_buffer);
 	if (WARN_ON_ONCE(img_buf_phys_addr > BIOS_SCAN_LIMIT))
-		return -EINVAL; /* can't happen per definition */
+		return -EINVAL;  
 
 	rbu_data.image_update_buffer = image_update_buffer;
 	rbu_data.image_update_buffer_size = size;
@@ -429,7 +352,7 @@ static ssize_t read_packet_data(char *buffer, loff_t pos, size_t count)
 	size_t data_length;
 	char *ptempBuf = buffer;
 
-	/* check to see if we have something to return */
+	 
 	if (rbu_data.num_packets == 0) {
 		pr_debug("no packets written\n");
 		retval = -ENOMEM;
@@ -450,7 +373,7 @@ static ssize_t read_packet_data(char *buffer, loff_t pos, size_t count)
 
 	if ((pos + count) > rbu_data.imagesize) {
 		rbu_data.packet_read_count = 0;
-		/* this was the last copy */
+		 
 		retval = bytes_left;
 	} else
 		retval = count;
@@ -461,7 +384,7 @@ static ssize_t read_packet_data(char *buffer, loff_t pos, size_t count)
 
 static ssize_t read_rbu_mono_data(char *buffer, loff_t pos, size_t count)
 {
-	/* check to see if we have something to return */
+	 
 	if ((rbu_data.image_update_buffer == NULL) ||
 		(rbu_data.bios_image_size == 0)) {
 		pr_debug("image_update_buffer %p, bios_image_size %lu\n",
@@ -510,17 +433,10 @@ static void callbackfn_rbu(const struct firmware *fw, void *context)
 			memcpy(rbu_data.image_update_buffer,
 				fw->data, fw->size);
 	} else if (!strcmp(image_type, "packet")) {
-		/*
-		 * we need to free previous packets if a
-		 * new hunk of packets needs to be downloaded
-		 */
+		 
 		packet_empty_list();
 		if (packetize_data(fw->data, fw->size))
-			/* Incase something goes wrong when we are
-			 * in middle of packetizing the data, we
-			 * need to free up whatever packets might
-			 * have been created before we quit.
-			 */
+			 
 			packet_empty_list();
 	} else
 		pr_debug("invalid image type specified\n");
@@ -547,9 +463,7 @@ static ssize_t image_type_write(struct file *filp, struct kobject *kobj,
 	int req_firm_rc = 0;
 	int i;
 	spin_lock(&rbu_data.lock);
-	/*
-	 * Find the first newline or space
-	 */
+	 
 	for (i = 0; i < count; ++i)
 		if (buffer[i] == '\n' || buffer[i] == ' ') {
 			buffer[i] = '\0';
@@ -563,13 +477,7 @@ static ssize_t image_type_write(struct file *filp, struct kobject *kobj,
 	else if (strstr(buffer, "packet"))
 		strcpy(image_type, "packet");
 	else if (strstr(buffer, "init")) {
-		/*
-		 * If due to the user error the driver gets in a bad
-		 * state where even though it is loaded , the
-		 * /sys/class/firmware/dell_rbu entries are missing.
-		 * to cover this situation the user can recreate entries
-		 * by writing init to image_type.
-		 */
+		 
 		if (!rbu_data.entry_created) {
 			spin_unlock(&rbu_data.lock);
 			req_firm_rc = request_firmware_nowait(THIS_MODULE,
@@ -590,7 +498,7 @@ static ssize_t image_type_write(struct file *filp, struct kobject *kobj,
 		return -EINVAL;
 	}
 
-	/* we must free all previous allocations */
+	 
 	packet_empty_list();
 	img_update_free();
 	spin_unlock(&rbu_data.lock);

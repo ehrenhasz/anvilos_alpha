@@ -1,55 +1,7 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
-/*
- * Copyright (c) 2014 by Chunwei Chen. All rights reserved.
- * Copyright (c) 2019 by Delphix. All rights reserved.
- */
+ 
+ 
 
-/*
- * See abd.c for a general overview of the arc buffered data (ABD).
- *
- * Linear buffers act exactly like normal buffers and are always mapped into the
- * kernel's virtual memory space, while scattered ABD data chunks are allocated
- * as physical pages and then mapped in only while they are actually being
- * accessed through one of the abd_* library functions. Using scattered ABDs
- * provides several benefits:
- *
- *  (1) They avoid use of kmem_*, preventing performance problems where running
- *      kmem_reap on very large memory systems never finishes and causes
- *      constant TLB shootdowns.
- *
- *  (2) Fragmentation is less of an issue since when we are at the limit of
- *      allocatable space, we won't have to search around for a long free
- *      hole in the VA space for large ARC allocations. Each chunk is mapped in
- *      individually, so even if we are using HIGHMEM (see next point) we
- *      wouldn't need to worry about finding a contiguous address range.
- *
- *  (3) If we are not using HIGHMEM, then all physical memory is always
- *      mapped into the kernel's address space, so we also avoid the map /
- *      unmap costs on each ABD access.
- *
- * If we are not using HIGHMEM, scattered buffers which have only one chunk
- * can be treated as linear buffers, because they are contiguous in the
- * kernel's virtual address space.  See abd_alloc_chunks() for details.
- */
+ 
 
 #include <sys/abd_impl.h>
 #include <sys/param.h>
@@ -79,56 +31,27 @@ typedef struct abd_stats {
 } abd_stats_t;
 
 static abd_stats_t abd_stats = {
-	/* Amount of memory occupied by all of the abd_t struct allocations */
+	 
 	{ "struct_size",			KSTAT_DATA_UINT64 },
-	/*
-	 * The number of linear ABDs which are currently allocated, excluding
-	 * ABDs which don't own their data (for instance the ones which were
-	 * allocated through abd_get_offset() and abd_get_from_buf()). If an
-	 * ABD takes ownership of its buf then it will become tracked.
-	 */
+	 
 	{ "linear_cnt",				KSTAT_DATA_UINT64 },
-	/* Amount of data stored in all linear ABDs tracked by linear_cnt */
+	 
 	{ "linear_data_size",			KSTAT_DATA_UINT64 },
-	/*
-	 * The number of scatter ABDs which are currently allocated, excluding
-	 * ABDs which don't own their data (for instance the ones which were
-	 * allocated through abd_get_offset()).
-	 */
+	 
 	{ "scatter_cnt",			KSTAT_DATA_UINT64 },
-	/* Amount of data stored in all scatter ABDs tracked by scatter_cnt */
+	 
 	{ "scatter_data_size",			KSTAT_DATA_UINT64 },
-	/*
-	 * The amount of space wasted at the end of the last chunk across all
-	 * scatter ABDs tracked by scatter_cnt.
-	 */
+	 
 	{ "scatter_chunk_waste",		KSTAT_DATA_UINT64 },
-	/*
-	 * The number of compound allocations of a given order.  These
-	 * allocations are spread over all currently allocated ABDs, and
-	 * act as a measure of memory fragmentation.
-	 */
+	 
 	{ { "scatter_order_N",			KSTAT_DATA_UINT64 } },
-	/*
-	 * The number of scatter ABDs which contain multiple chunks.
-	 * ABDs are preferentially allocated from the minimum number of
-	 * contiguous multi-page chunks, a single chunk is optimal.
-	 */
+	 
 	{ "scatter_page_multi_chunk",		KSTAT_DATA_UINT64 },
-	/*
-	 * The number of scatter ABDs which are split across memory zones.
-	 * ABDs are preferentially allocated using pages from a single zone.
-	 */
+	 
 	{ "scatter_page_multi_zone",		KSTAT_DATA_UINT64 },
-	/*
-	 *  The total number of retries encountered when attempting to
-	 *  allocate the pages to populate the scatter ABD.
-	 */
+	 
 	{ "scatter_page_alloc_retry",		KSTAT_DATA_UINT64 },
-	/*
-	 *  The total number of retries encountered when attempting to
-	 *  allocate the sg table for an ABD.
-	 */
+	 
 	{ "scatter_sg_table_retry",		KSTAT_DATA_UINT64 },
 };
 
@@ -149,45 +72,14 @@ static struct {
 #define	abd_for_each_sg(abd, sg, n, i)	\
 	for_each_sg(ABD_SCATTER(abd).abd_sgl, sg, n, i)
 
-/*
- * zfs_abd_scatter_min_size is the minimum allocation size to use scatter
- * ABD's.  Smaller allocations will use linear ABD's which uses
- * zio_[data_]buf_alloc().
- *
- * Scatter ABD's use at least one page each, so sub-page allocations waste
- * some space when allocated as scatter (e.g. 2KB scatter allocation wastes
- * half of each page).  Using linear ABD's for small allocations means that
- * they will be put on slabs which contain many allocations.  This can
- * improve memory efficiency, but it also makes it much harder for ARC
- * evictions to actually free pages, because all the buffers on one slab need
- * to be freed in order for the slab (and underlying pages) to be freed.
- * Typically, 512B and 1KB kmem caches have 16 buffers per slab, so it's
- * possible for them to actually waste more memory than scatter (one page per
- * buf = wasting 3/4 or 7/8th; one buf per slab = wasting 15/16th).
- *
- * Spill blocks are typically 512B and are heavily used on systems running
- * selinux with the default dnode size and the `xattr=sa` property set.
- *
- * By default we use linear allocations for 512B and 1KB, and scatter
- * allocations for larger (1.5KB and up).
- */
+ 
 static int zfs_abd_scatter_min_size = 512 * 3;
 
-/*
- * We use a scattered SPA_MAXBLOCKSIZE sized ABD whose pages are
- * just a single zero'd page. This allows us to conserve memory by
- * only using a single zero page for the scatterlist.
- */
+ 
 abd_t *abd_zero_scatter = NULL;
 
 struct page;
-/*
- * _KERNEL   - Will point to ZERO_PAGE if it is available or it will be
- *             an allocated zero'd PAGESIZE buffer.
- * Userspace - Will be an allocated zero'ed PAGESIZE buffer.
- *
- * abd_zero_page is assigned to each of the pages of abd_zero_scatter.
- */
+ 
 static struct page *abd_zero_page = NULL;
 
 static kmem_cache_t *abd_cache = NULL;
@@ -202,10 +94,7 @@ abd_chunkcnt_for_bytes(size_t size)
 abd_t *
 abd_alloc_struct_impl(size_t size)
 {
-	/*
-	 * In Linux we do not use the size passed in during ABD
-	 * allocation, so we just ignore it.
-	 */
+	 
 	(void) size;
 	abd_t *abd = kmem_cache_alloc(abd_cache, KM_PUSHPAGE);
 	ASSERT3P(abd, !=, NULL);
@@ -224,9 +113,7 @@ abd_free_struct_impl(abd_t *abd)
 #ifdef _KERNEL
 static unsigned zfs_abd_scatter_max_order = MAX_ORDER - 1;
 
-/*
- * Mark zfs data pages so they can be excluded from kernel crash dumps
- */
+ 
 #ifdef _LP64
 #define	ABD_FILE_CACHE_PAGE	0x2F5ABDF11ECAC4E
 
@@ -248,7 +135,7 @@ abd_unmark_zfs_page(struct page *page)
 #else
 #define	abd_mark_zfs_page(page)
 #define	abd_unmark_zfs_page(page)
-#endif /* _LP64 */
+#endif  
 
 #ifndef CONFIG_HIGHMEM
 
@@ -256,13 +143,7 @@ abd_unmark_zfs_page(struct page *page)
 #define	__GFP_RECLAIM		__GFP_WAIT
 #endif
 
-/*
- * The goal is to minimize fragmentation by preferentially populating ABDs
- * with higher order compound pages from a single zone.  Allocation size is
- * progressively decreased until it can be satisfied without performing
- * reclaim or compaction.  When necessary this function will degenerate to
- * allocating individual pages and allowing reclaim to satisfy allocations.
- */
+ 
 void
 abd_alloc_chunks(abd_t *abd, size_t size)
 {
@@ -332,35 +213,12 @@ abd_alloc_chunks(abd_t *abd, size_t size)
 		list_del(&page->lru);
 	}
 
-	/*
-	 * These conditions ensure that a possible transformation to a linear
-	 * ABD would be valid.
-	 */
+	 
 	ASSERT(!PageHighMem(sg_page(table.sgl)));
 	ASSERT0(ABD_SCATTER(abd).abd_offset);
 
 	if (table.nents == 1) {
-		/*
-		 * Since there is only one entry, this ABD can be represented
-		 * as a linear buffer.  All single-page (4K) ABD's can be
-		 * represented this way.  Some multi-page ABD's can also be
-		 * represented this way, if we were able to allocate a single
-		 * "chunk" (higher-order "page" which represents a power-of-2
-		 * series of physically-contiguous pages).  This is often the
-		 * case for 2-page (8K) ABD's.
-		 *
-		 * Representing a single-entry scatter ABD as a linear ABD
-		 * has the performance advantage of avoiding the copy (and
-		 * allocation) in abd_borrow_buf_copy / abd_return_buf_copy.
-		 * A performance increase of around 5% has been observed for
-		 * ARC-cached reads (of small blocks which can take advantage
-		 * of this).
-		 *
-		 * Note that this optimization is only possible because the
-		 * pages are always mapped into the kernel's address space.
-		 * This is not the case for highmem pages, so the
-		 * optimization can not be made there.
-		 */
+		 
 		abd->abd_flags |= ABD_FLAG_LINEAR;
 		abd->abd_flags |= ABD_FLAG_LINEAR_PAGE;
 		abd->abd_u.abd_linear.abd_sgl = table.sgl;
@@ -380,11 +238,7 @@ abd_alloc_chunks(abd_t *abd, size_t size)
 }
 #else
 
-/*
- * Allocate N individual pages to construct a scatter ABD.  This function
- * makes no attempt to request contiguous pages and requires the minimal
- * number of kernel interfaces.  It's designed for maximum compatibility.
- */
+ 
 void
 abd_alloc_chunks(abd_t *abd, size_t size)
 {
@@ -420,12 +274,9 @@ abd_alloc_chunks(abd_t *abd, size_t size)
 		abd->abd_flags |= ABD_FLAG_MULTI_CHUNK;
 	}
 }
-#endif /* !CONFIG_HIGHMEM */
+#endif  
 
-/*
- * This must be called if any of the sg_table allocation functions
- * are called.
- */
+ 
 static void
 abd_free_sg_table(abd_t *abd)
 {
@@ -461,10 +312,7 @@ abd_free_chunks(abd_t *abd)
 	abd_free_sg_table(abd);
 }
 
-/*
- * Allocate scatter ABD of size SPA_MAXBLOCKSIZE, where each page in
- * the scatterlist will be set to the zero'd out buffer abd_zero_page.
- */
+ 
 static void
 abd_alloc_zero_scatter(void)
 {
@@ -483,7 +331,7 @@ abd_alloc_zero_scatter(void)
 	abd_mark_zfs_page(abd_zero_page);
 #else
 	abd_zero_page = ZERO_PAGE(0);
-#endif /* HAVE_ZERO_PAGE_GPL_ONLY */
+#endif  
 
 	while (sg_alloc_table(&table, nr_pages, gfp)) {
 		ABDSTAT_BUMP(abdstat_scatter_sg_table_retry);
@@ -508,7 +356,7 @@ abd_alloc_zero_scatter(void)
 	ABDSTAT_BUMP(abdstat_scatter_page_multi_chunk);
 }
 
-#else /* _KERNEL */
+#else  
 
 #ifndef PAGE_SHIFT
 #define	PAGE_SHIFT (highbit64(PAGESIZE)-1)
@@ -534,10 +382,7 @@ sg_init_table(struct scatterlist *sg, int nr)
 	sg[nr - 1].end = 1;
 }
 
-/*
- * This must be called if any of the sg_table allocation functions
- * are called.
- */
+ 
 static void
 abd_free_sg_table(abd_t *abd)
 {
@@ -553,7 +398,7 @@ static inline void
 sg_set_page(struct scatterlist *sg, struct page *page, unsigned int len,
     unsigned int offset)
 {
-	/* currently we don't use offset */
+	 
 	ASSERT(offset == 0);
 	sg->page = page;
 	sg->length = len;
@@ -634,7 +479,7 @@ abd_alloc_zero_scatter(void)
 	ABDSTAT_BUMP(abdstat_scatter_page_multi_chunk);
 }
 
-#endif /* _KERNEL */
+#endif  
 
 boolean_t
 abd_size_alloc_linear(size_t size)
@@ -704,10 +549,10 @@ abd_free_zero_scatter(void)
 #if defined(HAVE_ZERO_PAGE_GPL_ONLY)
 	abd_unmark_zfs_page(abd_zero_page);
 	__free_page(abd_zero_page);
-#endif /* HAVE_ZERO_PAGE_GPL_ONLY */
+#endif  
 #else
 	umem_free_aligned(abd_zero_page, PAGESIZE);
-#endif /* _KERNEL */
+#endif  
 }
 
 static int
@@ -814,7 +659,7 @@ abd_fini(void)
 void
 abd_free_linear_page(abd_t *abd)
 {
-	/* Transform it back into a scatter ABD for freeing */
+	 
 	struct scatterlist *sg = abd->abd_u.abd_linear.abd_sgl;
 	abd->abd_flags &= ~ABD_FLAG_LINEAR;
 	abd->abd_flags &= ~ABD_FLAG_LINEAR_PAGE;
@@ -826,17 +671,7 @@ abd_free_linear_page(abd_t *abd)
 	abd_update_scatter_stats(abd, ABDSTAT_DECR);
 }
 
-/*
- * If we're going to use this ABD for doing I/O using the block layer, the
- * consumer of the ABD data doesn't care if it's scattered or not, and we don't
- * plan to store this ABD in memory for a long period of time, we should
- * allocate the ABD type that requires the least data copying to do the I/O.
- *
- * On Linux the optimal thing to do would be to use abd_get_offset() and
- * construct a new ABD which shares the original pages thereby eliminating
- * the copy.  But for the moment a new linear ABD is allocated until this
- * performance optimization can be implemented.
- */
+ 
 abd_t *
 abd_alloc_for_io(size_t size, boolean_t is_metadata)
 {
@@ -859,11 +694,7 @@ abd_get_offset_scatter(abd_t *abd, abd_t *sabd, size_t off,
 	if (abd == NULL)
 		abd = abd_alloc_struct(0);
 
-	/*
-	 * Even if this buf is filesystem metadata, we only track that
-	 * if we own the underlying data buffer, which is not true in
-	 * this case. Therefore, we don't ever use ABD_FLAG_META here.
-	 */
+	 
 
 	abd_for_each_sg(sabd, sg, ABD_SCATTER(sabd).abd_nents, i) {
 		if (new_offset < sg->length)
@@ -878,9 +709,7 @@ abd_get_offset_scatter(abd_t *abd, abd_t *sabd, size_t off,
 	return (abd);
 }
 
-/*
- * Initialize the abd_iter.
- */
+ 
 void
 abd_iter_init(struct abd_iter *aiter, abd_t *abd)
 {
@@ -899,28 +728,21 @@ abd_iter_init(struct abd_iter *aiter, abd_t *abd)
 	}
 }
 
-/*
- * This is just a helper function to see if we have exhausted the
- * abd_iter and reached the end.
- */
+ 
 boolean_t
 abd_iter_at_end(struct abd_iter *aiter)
 {
 	return (aiter->iter_pos == aiter->iter_abd->abd_size);
 }
 
-/*
- * Advance the iterator by a certain amount. Cannot be called when a chunk is
- * in use. This can be safely called when the aiter has already exhausted, in
- * which case this does nothing.
- */
+ 
 void
 abd_iter_advance(struct abd_iter *aiter, size_t amount)
 {
 	ASSERT3P(aiter->iter_mapaddr, ==, NULL);
 	ASSERT0(aiter->iter_mapsize);
 
-	/* There's nothing left to advance to, so do nothing */
+	 
 	if (abd_iter_at_end(aiter))
 		return;
 
@@ -938,10 +760,7 @@ abd_iter_advance(struct abd_iter *aiter, size_t amount)
 	}
 }
 
-/*
- * Map the current chunk into aiter. This can be safely called when the aiter
- * has already exhausted, in which case this does nothing.
- */
+ 
 void
 abd_iter_map(struct abd_iter *aiter)
 {
@@ -951,7 +770,7 @@ abd_iter_map(struct abd_iter *aiter)
 	ASSERT3P(aiter->iter_mapaddr, ==, NULL);
 	ASSERT0(aiter->iter_mapsize);
 
-	/* There's nothing left to iterate over, so do nothing */
+	 
 	if (abd_iter_at_end(aiter))
 		return;
 
@@ -971,19 +790,16 @@ abd_iter_map(struct abd_iter *aiter)
 	aiter->iter_mapaddr = (char *)paddr + offset;
 }
 
-/*
- * Unmap the current chunk from aiter. This can be safely called when the aiter
- * has already exhausted, in which case this does nothing.
- */
+ 
 void
 abd_iter_unmap(struct abd_iter *aiter)
 {
-	/* There's nothing left to unmap, so do nothing */
+	 
 	if (abd_iter_at_end(aiter))
 		return;
 
 	if (!abd_is_linear(aiter->iter_abd)) {
-		/* LINTED E_FUNC_SET_NOT_USED */
+		 
 		zfs_kunmap_atomic(aiter->iter_mapaddr - aiter->iter_offset);
 	}
 
@@ -1000,10 +816,7 @@ abd_cache_reap_now(void)
 }
 
 #if defined(_KERNEL)
-/*
- * bio_nr_pages for ABD.
- * @off is the offset in @abd
- */
+ 
 unsigned long
 abd_nr_pages_off(abd_t *abd, unsigned int size, size_t off)
 {
@@ -1054,11 +867,7 @@ bio_map(struct bio *bio, void *buf_ptr, unsigned int bio_size)
 		else
 			page = virt_to_page(buf_ptr);
 
-		/*
-		 * Some network related block device uses tcp_sendpage, which
-		 * doesn't behave well when using 0-count page, this is a
-		 * safety net to catch them.
-		 */
+		 
 		ASSERT3S(page_count(page), >, 0);
 
 		if (bio_add_page(bio, page, size, offset) != size)
@@ -1072,9 +881,7 @@ bio_map(struct bio *bio, void *buf_ptr, unsigned int bio_size)
 	return (bio_size);
 }
 
-/*
- * bio_map for gang ABD.
- */
+ 
 static unsigned int
 abd_gang_bio_map_off(struct bio *bio, abd_t *abd,
     unsigned int io_size, size_t off)
@@ -1096,11 +903,7 @@ abd_gang_bio_map_off(struct bio *bio, abd_t *abd,
 	return (io_size);
 }
 
-/*
- * bio_map for ABD.
- * @off is the offset in @abd
- * Remaining IO size is returned
- */
+ 
 unsigned int
 abd_bio_map_off(struct bio *bio, abd_t *abd,
     unsigned int io_size, size_t off)
@@ -1143,14 +946,14 @@ abd_bio_map_off(struct bio *bio, abd_t *abd,
 	return (io_size);
 }
 
-/* Tunable Parameters */
+ 
 module_param(zfs_abd_scatter_enabled, int, 0644);
 MODULE_PARM_DESC(zfs_abd_scatter_enabled,
 	"Toggle whether ABD allocations must be linear.");
 module_param(zfs_abd_scatter_min_size, int, 0644);
 MODULE_PARM_DESC(zfs_abd_scatter_min_size,
 	"Minimum size of scatter allocations.");
-/* CSTYLED */
+ 
 module_param(zfs_abd_scatter_max_order, uint, 0644);
 MODULE_PARM_DESC(zfs_abd_scatter_max_order,
 	"Maximum order allocation used for a scatter ABD.");

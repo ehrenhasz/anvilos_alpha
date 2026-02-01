@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Fair Queue CoDel discipline
- *
- *  Copyright (C) 2012,2015 Eric Dumazet <edumazet@google.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/types.h>
@@ -23,21 +19,7 @@
 #include <net/codel_impl.h>
 #include <net/codel_qdisc.h>
 
-/*	Fair Queue CoDel.
- *
- * Principles :
- * Packets are classified (internal classifier or external) on flows.
- * This is a Stochastic model (as we use a hash, several flows
- *			       might be hashed on same slot)
- * Each flow has a CoDel managed queue.
- * Flows are linked onto two (Round Robin) lists,
- * so that new flows have priority on old ones.
- *
- * For a given flow, packets are not reordered (CoDel uses a FIFO)
- * head drops only.
- * ECN capability is on by default.
- * Low memory footprint (64 bytes per flow)
- */
+ 
 
 struct fq_codel_flow {
 	struct sk_buff	  *head;
@@ -45,15 +27,15 @@ struct fq_codel_flow {
 	struct list_head  flowchain;
 	int		  deficit;
 	struct codel_vars cvars;
-}; /* please try to keep this structure <= 64 bytes */
+};  
 
 struct fq_codel_sched_data {
-	struct tcf_proto __rcu *filter_list; /* optional external classifier */
+	struct tcf_proto __rcu *filter_list;  
 	struct tcf_block *block;
-	struct fq_codel_flow *flows;	/* Flows table [flows_cnt] */
-	u32		*backlogs;	/* backlog table [flows_cnt] */
-	u32		flows_cnt;	/* number of flows */
-	u32		quantum;	/* psched_mtu(qdisc_dev(sch)); */
+	struct fq_codel_flow *flows;	 
+	u32		*backlogs;	 
+	u32		flows_cnt;	 
+	u32		quantum;	 
 	u32		drop_batch_size;
 	u32		memory_limit;
 	struct codel_params cparams;
@@ -63,8 +45,8 @@ struct fq_codel_sched_data {
 	u32		drop_overlimit;
 	u32		new_flow_count;
 
-	struct list_head new_flows;	/* list of new flows */
-	struct list_head old_flows;	/* list of old flows */
+	struct list_head new_flows;	 
+	struct list_head old_flows;	 
 };
 
 static unsigned int fq_codel_hash(const struct fq_codel_sched_data *q,
@@ -110,9 +92,9 @@ static unsigned int fq_codel_classify(struct sk_buff *skb, struct Qdisc *sch,
 	return 0;
 }
 
-/* helper functions : might be changed when/if skb use a standard list_head */
+ 
 
-/* remove one skb from head of slot queue */
+ 
 static inline struct sk_buff *dequeue_head(struct fq_codel_flow *flow)
 {
 	struct sk_buff *skb = flow->head;
@@ -122,7 +104,7 @@ static inline struct sk_buff *dequeue_head(struct fq_codel_flow *flow)
 	return skb;
 }
 
-/* add skb to flow queue (tail add) */
+ 
 static inline void flow_queue_add(struct fq_codel_flow *flow,
 				  struct sk_buff *skb)
 {
@@ -144,13 +126,7 @@ static unsigned int fq_codel_drop(struct Qdisc *sch, unsigned int max_packets,
 	unsigned int threshold;
 	unsigned int mem = 0;
 
-	/* Queue is full! Find the fat flow and drop packet(s) from it.
-	 * This might sound expensive, but with 1024 flows, we scan
-	 * 4KB of memory, and we dont need to handle a complex tree
-	 * in fast path (packet queue/enqueue) with many cache misses.
-	 * In stress mode, we'll try to drop 64 packets from the flow,
-	 * amortizing this linear lookup to one cache line per drop.
-	 */
+	 
 	for (i = 0; i < q->flows_cnt; i++) {
 		if (q->backlogs[i] > maxbacklog) {
 			maxbacklog = q->backlogs[i];
@@ -158,7 +134,7 @@ static unsigned int fq_codel_drop(struct Qdisc *sch, unsigned int max_packets,
 		}
 	}
 
-	/* Our goal is to drop half of this fat flow backlog */
+	 
 	threshold = maxbacklog >> 1;
 
 	flow = &q->flows[idx];
@@ -171,7 +147,7 @@ static unsigned int fq_codel_drop(struct Qdisc *sch, unsigned int max_packets,
 		__qdisc_drop(skb, to_free);
 	} while (++i < max_packets && len < threshold);
 
-	/* Tell codel to increase its signal strength also */
+	 
 	flow->cvars.count += i;
 	q->backlogs[idx] -= len;
 	q->memory_usage -= mem;
@@ -220,13 +196,9 @@ static int fq_codel_enqueue(struct sk_buff *skb, struct Qdisc *sch,
 	prev_backlog = sch->qstats.backlog;
 	prev_qlen = sch->q.qlen;
 
-	/* save this packet length as it might be dropped by fq_codel_drop() */
+	 
 	pkt_len = qdisc_pkt_len(skb);
-	/* fq_codel_drop() is quite expensive, as it performs a linear search
-	 * in q->backlogs[] to find a fat flow.
-	 * So instead of dropping a single packet, drop half of its backlog
-	 * with a 64 packets limit to not add a too big cpu spike here.
-	 */
+	 
 	ret = fq_codel_drop(sch, q->drop_batch_size, to_free);
 
 	prev_qlen -= sch->q.qlen;
@@ -235,10 +207,7 @@ static int fq_codel_enqueue(struct sk_buff *skb, struct Qdisc *sch,
 	if (memory_limited)
 		q->drop_overmemory += prev_qlen;
 
-	/* As we dropped packet(s), better let upper stack know this.
-	 * If we dropped a packet for this flow, return NET_XMIT_CN,
-	 * but in this case, our parents wont increase their backlogs.
-	 */
+	 
 	if (ret == idx) {
 		qdisc_tree_reduce_backlog(sch, prev_qlen - 1,
 					  prev_backlog - pkt_len);
@@ -248,10 +217,7 @@ static int fq_codel_enqueue(struct sk_buff *skb, struct Qdisc *sch,
 	return NET_XMIT_SUCCESS;
 }
 
-/* This is the specific function called from codel_dequeue()
- * to dequeue a packet from queue. Note: backlog is handled in
- * codel, we dont need to reduce it here.
- */
+ 
 static struct sk_buff *dequeue_func(struct codel_vars *vars, void *ctx)
 {
 	struct Qdisc *sch = ctx;
@@ -305,7 +271,7 @@ begin:
 			    codel_get_enqueue_time, drop_func, dequeue_func);
 
 	if (!skb) {
-		/* force a pass through old_flows to prevent starvation */
+		 
 		if ((head == &q->new_flows) && !list_empty(&q->old_flows))
 			list_move_tail(&flow->flowchain, &q->old_flows);
 		else
@@ -314,9 +280,7 @@ begin:
 	}
 	qdisc_bstats_update(sch, skb);
 	flow->deficit -= qdisc_pkt_len(skb);
-	/* We cant call qdisc_tree_reduce_backlog() if our qlen is 0,
-	 * or HTB crashes. Defer it for next round.
-	 */
+	 
 	if (q->cstats.drop_count && sch->q.qlen) {
 		qdisc_tree_reduce_backlog(sch, q->cstats.drop_count,
 					  q->cstats.drop_len);
@@ -465,7 +429,7 @@ static int fq_codel_init(struct Qdisc *sch, struct nlattr *opt,
 
 	sch->limit = 10*1024;
 	q->flows_cnt = 1024;
-	q->memory_limit = 32 << 20; /* 32 MBytes */
+	q->memory_limit = 32 << 20;  
 	q->drop_batch_size = 64;
 	q->quantum = psched_mtu(qdisc_dev(sch));
 	INIT_LIST_HEAD(&q->new_flows);

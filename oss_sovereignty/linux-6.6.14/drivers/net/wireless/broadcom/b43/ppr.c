@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Broadcom B43 wireless driver
- * PPR (Power Per Rate) management
- *
- * Copyright (c) 2014 Rafał Miłecki <zajec5@gmail.com>
- */
+
+ 
 
 #include "ppr.h"
 #include "b43.h"
@@ -18,7 +13,7 @@ void b43_ppr_clear(struct b43_wldev *dev, struct b43_ppr *ppr)
 {
 	memset(ppr, 0, sizeof(*ppr));
 
-	/* Compile-time PPR check */
+	 
 	BUILD_BUG_ON(sizeof(struct b43_ppr) != B43_PPR_RATES_NUM * sizeof(u8));
 }
 
@@ -122,13 +117,13 @@ bool b43_ppr_load_max_from_sprom(struct b43_wldev *dev, struct b43_ppr *ppr,
 		}
 	}
 
-	/* OFDM */
+	 
 	for (i = 0; i < 8; i++) {
 		off = ((sprom_ofdm_po >> (i * 4)) & 0xf) * 2;
 		rates->ofdm[i] = maxpwr - off;
 	}
 
-	/* MCS 20 SISO */
+	 
 	rates->mcs_20[0] = rates->ofdm[0];
 	rates->mcs_20[1] = rates->ofdm[2];
 	rates->mcs_20[2] = rates->ofdm[3];
@@ -138,7 +133,7 @@ bool b43_ppr_load_max_from_sprom(struct b43_wldev *dev, struct b43_ppr *ppr,
 	rates->mcs_20[6] = rates->ofdm[7];
 	rates->mcs_20[7] = rates->ofdm[7];
 
-	/* MCS 20 CDD */
+	 
 	for (i = 0; i < 4; i++) {
 		off = ((sprom_mcs_po[0] >> (i * 4)) & 0xf) * 2;
 		rates->mcs_20_cdd[i] = maxpwr - off;
@@ -152,7 +147,7 @@ bool b43_ppr_load_max_from_sprom(struct b43_wldev *dev, struct b43_ppr *ppr,
 			rates->mcs_20_cdd[4 + i] -= extra_cdd_po;
 	}
 
-	/* OFDM 20 CDD */
+	 
 	rates->ofdm_20_cdd[0] = rates->mcs_20_cdd[0];
 	rates->ofdm_20_cdd[1] = rates->mcs_20_cdd[0];
 	rates->ofdm_20_cdd[2] = rates->mcs_20_cdd[1];
@@ -162,7 +157,7 @@ bool b43_ppr_load_max_from_sprom(struct b43_wldev *dev, struct b43_ppr *ppr,
 	rates->ofdm_20_cdd[6] = rates->mcs_20_cdd[5];
 	rates->ofdm_20_cdd[7] = rates->mcs_20_cdd[6];
 
-	/* MCS 20 STBC */
+	 
 	for (i = 0; i < 4; i++) {
 		off = ((sprom_mcs_po[0] >> (i * 4)) & 0xf) * 2;
 		rates->mcs_20_stbc[i] = maxpwr - off;
@@ -176,7 +171,7 @@ bool b43_ppr_load_max_from_sprom(struct b43_wldev *dev, struct b43_ppr *ppr,
 			rates->mcs_20_stbc[4 + i] -= extra_stbc_po;
 	}
 
-	/* MCS 20 SDM */
+	 
 	for (i = 0; i < 4; i++) {
 		off = ((sprom_mcs_po[2] >> (i * 4)) & 0xf) * 2;
 		rates->mcs_20_sdm[i] = maxpwr - off;

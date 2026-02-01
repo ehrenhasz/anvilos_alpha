@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #define pr_fmt(fmt) "PCI: " fmt
 
@@ -54,17 +54,7 @@ static int __init set_no_e820(const struct dmi_system_id *id)
 }
 
 static const struct dmi_system_id pci_crs_quirks[] __initconst = {
-	/* http://bugzilla.kernel.org/show_bug.cgi?id=14183 */
-	{
-		.callback = set_use_crs,
-		.ident = "IBM System x3800",
-		.matches = {
-			DMI_MATCH(DMI_SYS_VENDOR, "IBM"),
-			DMI_MATCH(DMI_PRODUCT_NAME, "x3800"),
-		},
-	},
-	/* https://bugzilla.kernel.org/show_bug.cgi?id=16007 */
-	/* 2006 AMD HT/VIA system with two host bridges */
+	 
         {
 		.callback = set_use_crs,
 		.ident = "ASRock ALiveSATA2-GLAN",
@@ -72,8 +62,7 @@ static const struct dmi_system_id pci_crs_quirks[] __initconst = {
 			DMI_MATCH(DMI_PRODUCT_NAME, "ALiveSATA2-GLAN"),
                 },
         },
-	/* https://bugzilla.kernel.org/show_bug.cgi?id=30552 */
-	/* 2006 AMD HT/VIA system with two host bridges */
+	 
 	{
 		.callback = set_use_crs,
 		.ident = "ASUS M2V-MX SE",
@@ -83,80 +72,9 @@ static const struct dmi_system_id pci_crs_quirks[] __initconst = {
 			DMI_MATCH(DMI_BIOS_VENDOR, "American Megatrends Inc."),
 		},
 	},
-	/* https://bugzilla.kernel.org/show_bug.cgi?id=42619 */
-	{
-		.callback = set_use_crs,
-		.ident = "MSI MS-7253",
-		.matches = {
-			DMI_MATCH(DMI_BOARD_VENDOR, "MICRO-STAR INTERNATIONAL CO., LTD"),
-			DMI_MATCH(DMI_BOARD_NAME, "MS-7253"),
-			DMI_MATCH(DMI_BIOS_VENDOR, "Phoenix Technologies, LTD"),
-		},
-	},
-	/* https://bugs.launchpad.net/ubuntu/+source/alsa-driver/+bug/931368 */
-	/* https://bugs.launchpad.net/ubuntu/+source/alsa-driver/+bug/1033299 */
-	{
-		.callback = set_use_crs,
-		.ident = "Foxconn K8M890-8237A",
-		.matches = {
-			DMI_MATCH(DMI_BOARD_VENDOR, "Foxconn"),
-			DMI_MATCH(DMI_BOARD_NAME, "K8M890-8237A"),
-			DMI_MATCH(DMI_BIOS_VENDOR, "Phoenix Technologies, LTD"),
-		},
-	},
+	 
 
-	/* Now for the blacklist.. */
-
-	/* https://bugzilla.redhat.com/show_bug.cgi?id=769657 */
-	{
-		.callback = set_nouse_crs,
-		.ident = "Dell Studio 1557",
-		.matches = {
-			DMI_MATCH(DMI_BOARD_VENDOR, "Dell Inc."),
-			DMI_MATCH(DMI_PRODUCT_NAME, "Studio 1557"),
-			DMI_MATCH(DMI_BIOS_VERSION, "A09"),
-		},
-	},
-	/* https://bugzilla.redhat.com/show_bug.cgi?id=769657 */
-	{
-		.callback = set_nouse_crs,
-		.ident = "Thinkpad SL510",
-		.matches = {
-			DMI_MATCH(DMI_BOARD_VENDOR, "LENOVO"),
-			DMI_MATCH(DMI_BOARD_NAME, "2847DFG"),
-			DMI_MATCH(DMI_BIOS_VERSION, "6JET85WW (1.43 )"),
-		},
-	},
-	/* https://bugzilla.kernel.org/show_bug.cgi?id=42606 */
-	{
-		.callback = set_nouse_crs,
-		.ident = "Supermicro X8DTH",
-		.matches = {
-			DMI_MATCH(DMI_SYS_VENDOR, "Supermicro"),
-			DMI_MATCH(DMI_PRODUCT_NAME, "X8DTH-i/6/iF/6F"),
-			DMI_MATCH(DMI_BIOS_VERSION, "2.0a"),
-		},
-	},
-
-	/* https://bugzilla.kernel.org/show_bug.cgi?id=15362 */
-	{
-		.callback = set_ignore_seg,
-		.ident = "HP xw9300",
-		.matches = {
-			DMI_MATCH(DMI_SYS_VENDOR, "Hewlett-Packard"),
-			DMI_MATCH(DMI_PRODUCT_NAME, "HP xw9300 Workstation"),
-		},
-	},
-
-	/*
-	 * Many Lenovo models with "IIL" in their DMI_PRODUCT_VERSION have
-	 * an E820 reserved region that covers the entire 32-bit host
-	 * bridge memory window from _CRS.  Using the E820 region to clip
-	 * _CRS means no space is available for hot-added or uninitialized
-	 * PCI devices.  This typically breaks I2C controllers for touchpads
-	 * and hot-added Thunderbolt devices.  See the commit log for
-	 * models known to require this quirk and related bug reports.
-	 */
+	 
 	{
 		.callback = set_no_e820,
 		.ident = "Lenovo *IIL* product version",
@@ -166,11 +84,7 @@ static const struct dmi_system_id pci_crs_quirks[] __initconst = {
 		},
 	},
 
-	/*
-	 * The Acer Spin 5 (SP513-54N) has the same E820 reservation covering
-	 * the entire _CRS 32-bit window issue as the Lenovo *IIL* models.
-	 * See https://bugs.launchpad.net/bugs/1884232
-	 */
+	 
 	{
 		.callback = set_no_e820,
 		.ident = "Acer Spin 5 (SP513-54N)",
@@ -180,11 +94,7 @@ static const struct dmi_system_id pci_crs_quirks[] __initconst = {
 		},
 	},
 
-	/*
-	 * Clevo X170KM-G barebones have the same E820 reservation covering
-	 * the entire _CRS 32-bit window issue as the Lenovo *IIL* models.
-	 * See https://bugzilla.kernel.org/show_bug.cgi?id=214259
-	 */
+	 
 	{
 		.callback = set_no_e820,
 		.ident = "Clevo X170KM-G Barebone",
@@ -202,33 +112,13 @@ void __init pci_acpi_crs_quirks(void)
 	if (year >= 0 && year < 2008 && iomem_resource.end <= 0xffffffff)
 		pci_use_crs = false;
 
-	/*
-	 * Some firmware includes unusable space (host bridge registers,
-	 * hidden PCI device BARs, etc) in PCI host bridge _CRS.  This is a
-	 * firmware defect, and 4dc2287c1805 ("x86: avoid E820 regions when
-	 * allocating address space") has clipped out the unusable space in
-	 * the past.
-	 *
-	 * But other firmware supplies E820 reserved regions that cover
-	 * entire _CRS windows, so clipping throws away the entire window,
-	 * leaving none for hot-added or uninitialized devices.  These E820
-	 * entries are probably *not* a firmware defect, so disable the
-	 * clipping by default for post-2022 machines.
-	 *
-	 * We already have quirks to disable clipping for pre-2023
-	 * machines, and we'll likely need quirks to *enable* clipping for
-	 * post-2022 machines that incorrectly include unusable space in
-	 * _CRS.
-	 */
+	 
 	if (year >= 2023)
 		pci_use_e820 = false;
 
 	dmi_check_system(pci_crs_quirks);
 
-	/*
-	 * If the user specifies "pci=use_crs" or "pci=nocrs" explicitly, that
-	 * takes precedence over anything we figured out above.
-	 */
+	 
 	if (pci_probe & PCI_ROOT_NO_CRS)
 		pci_use_crs = false;
 	else if (pci_probe & PCI_USE__CRS)
@@ -238,7 +128,7 @@ void __init pci_acpi_crs_quirks(void)
 	        pci_use_crs ? "Using" : "Ignoring",
 	        pci_use_crs ? "nocrs" : "use_crs");
 
-	/* "pci=use_e820"/"pci=no_e820" on the kernel cmdline takes precedence */
+	 
 	if (pci_probe & PCI_NO_E820)
 		pci_use_e820 = false;
 	else if (pci_probe & PCI_USE_E820)
@@ -259,11 +149,7 @@ static int check_segment(u16 seg, struct device *dev, char *estr)
 		return -EIO;
 	}
 
-	/*
-	 * Failure in adding MMCFG information is not fatal,
-	 * just can't access extended configuration space of
-	 * devices under this host bridge.
-	 */
+	 
 	dev_warn(dev, "%s can't access extended configuration space under this bridge\n",
 		 estr);
 
@@ -283,7 +169,7 @@ static int setup_mcfg_map(struct acpi_pci_root_info *ci)
 	info->mcfg_added = false;
 	seg = info->sd.domain;
 
-	/* return success if MMCFG is not in use */
+	 
 	if (raw_pci_ext_ops && raw_pci_ext_ops != &pci_mmcfg)
 		return 0;
 
@@ -293,7 +179,7 @@ static int setup_mcfg_map(struct acpi_pci_root_info *ci)
 	result = pci_mmconfig_insert(dev, seg, info->start_bus, info->end_bus,
 				     root->mcfg_addr);
 	if (result == 0) {
-		/* enable MMCFG if it hasn't been enabled yet */
+		 
 		if (raw_pci_ext_ops == NULL)
 			raw_pci_ext_ops = &pci_mmcfg;
 		info->mcfg_added = true;
@@ -355,20 +241,7 @@ static void pci_acpi_root_release_info(struct acpi_pci_root_info *ci)
 	kfree(container_of(ci, struct pci_root_info, common));
 }
 
-/*
- * An IO port or MMIO resource assigned to a PCI host bridge may be
- * consumed by the host bridge itself or available to its child
- * bus/devices. The ACPI specification defines a bit (Producer/Consumer)
- * to tell whether the resource is consumed by the host bridge itself,
- * but firmware hasn't used that bit consistently, so we can't rely on it.
- *
- * On x86 and IA64 platforms, all IO port and MMIO resources are assumed
- * to be available to child bus/devices except one special case:
- *     IO port [0xCF8-0xCFF] is consumed by the host bridge itself
- *     to access PCI configuration space.
- *
- * So explicitly filter out PCI CFG IO ports[0xCF8-0xCFF].
- */
+ 
 static bool resource_is_pcicfg_ioport(struct resource *res)
 {
 	return (res->flags & IORESOURCE_IO) &&
@@ -426,10 +299,7 @@ struct pci_bus *pci_acpi_scan_root(struct acpi_pci_root *root)
 
 	bus = pci_find_bus(domain, busnum);
 	if (bus) {
-		/*
-		 * If the desired bus has been scanned already, replace
-		 * its bus->sysdata.
-		 */
+		 
 		struct pci_sysdata sd = {
 			.domain = domain,
 			.node = node,
@@ -454,9 +324,7 @@ struct pci_bus *pci_acpi_scan_root(struct acpi_pci_root *root)
 		}
 	}
 
-	/* After the PCI-E bus has been walked and all devices discovered,
-	 * configure any settings of the fabric that might be necessary.
-	 */
+	 
 	if (bus) {
 		struct pci_bus *child;
 		list_for_each_entry(child, &bus->children, node)
@@ -468,12 +336,7 @@ struct pci_bus *pci_acpi_scan_root(struct acpi_pci_root *root)
 
 int pcibios_root_bridge_prepare(struct pci_host_bridge *bridge)
 {
-	/*
-	 * We pass NULL as parent to pci_create_root_bus(), so if it is not NULL
-	 * here, pci_create_root_bus() has been called by someone else and
-	 * sysdata is likely to be different from what we expect.  Let it go in
-	 * that case.
-	 */
+	 
 	if (!bridge->dev.parent) {
 		struct pci_sysdata *sd = bridge->bus->sysdata;
 		ACPI_COMPANION_SET(&bridge->dev, sd->companion);
@@ -495,11 +358,7 @@ int __init pci_acpi_init(void)
 	x86_init.pci.init_irq = x86_init_noop;
 
 	if (pci_routeirq) {
-		/*
-		 * PCI IRQ routing is set up by pci_enable_device(), but we
-		 * also do it here in case there are still broken drivers that
-		 * don't use pci_enable_device().
-		 */
+		 
 		pr_info("Routing PCI interrupts for all devices because \"pci=routeirq\" specified\n");
 		for_each_pci_dev(dev)
 			acpi_pci_irq_enable(dev);

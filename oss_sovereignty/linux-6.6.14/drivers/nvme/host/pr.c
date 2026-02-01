@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2015 Intel Corporation
- *	Keith Busch <kbusch@kernel.org>
- */
+
+ 
 #include <linux/blkdev.h>
 #include <linux/pr.h>
 #include <asm/unaligned.h>
@@ -135,7 +132,7 @@ static int nvme_pr_register(struct block_device *bdev, u64 old,
 
 	cdw10 = old ? 2 : 0;
 	cdw10 |= (flags & PR_FL_IGNORE_KEY) ? 1 << 3 : 0;
-	cdw10 |= (1 << 30) | (1 << 31); /* PTPL=1 */
+	cdw10 |= (1 << 30) | (1 << 31);  
 	return nvme_pr_command(bdev, cdw10, old, new, nvme_cmd_resv_register);
 }
 
@@ -208,10 +205,7 @@ static int nvme_pr_read_keys(struct block_device *bdev,
 	int ret, i;
 	bool eds;
 
-	/*
-	 * Assume we are using 128-bit host IDs and allocate a buffer large
-	 * enough to get enough keys to fill the return keys buffer.
-	 */
+	 
 	rse_len = struct_size(rse, regctl_eds, num_keys);
 	rse = kzalloc(rse_len, GFP_KERNEL);
 	if (!rse)
@@ -251,10 +245,7 @@ static int nvme_pr_read_reservation(struct block_device *bdev,
 	bool eds;
 
 get_num_regs:
-	/*
-	 * Get the number of registrations so we know how big to allocate
-	 * the response buffer.
-	 */
+	 
 	ret = nvme_pr_resv_report(bdev, &tmp_rse, sizeof(tmp_rse), &eds);
 	if (ret)
 		return ret;

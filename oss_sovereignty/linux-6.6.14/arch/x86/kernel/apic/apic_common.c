@@ -1,8 +1,4 @@
-/*
- * Common functions shared between the various APIC flavours
- *
- * SPDX-License-Identifier: GPL-2.0
- */
+ 
 #include <linux/irq.h>
 #include <asm/apic.h>
 
@@ -42,10 +38,7 @@ bool default_apic_id_registered(void)
 	return physid_isset(read_apic_id(), phys_cpu_present_map);
 }
 
-/*
- * Set up the logical destination ID when the APIC operates in logical
- * destination mode.
- */
+ 
 void default_init_apic_ldr(void)
 {
 	unsigned long val;

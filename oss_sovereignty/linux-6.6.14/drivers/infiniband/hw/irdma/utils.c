@@ -1,15 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0 or Linux-OpenIB
-/* Copyright (c) 2015 - 2021 Intel Corporation */
+
+ 
 #include "main.h"
 
-/**
- * irdma_arp_table -manage arp table
- * @rf: RDMA PCI function
- * @ip_addr: ip address for device
- * @ipv4: IPv4 flag
- * @mac_addr: mac address ptr
- * @action: modify, delete or add
- */
+ 
 int irdma_arp_table(struct irdma_pci_f *rf, u32 *ip_addr, bool ipv4,
 		    const u8 *mac_addr, u32 action)
 {
@@ -70,13 +63,7 @@ int irdma_arp_table(struct irdma_pci_f *rf, u32 *ip_addr, bool ipv4,
 	return arp_index;
 }
 
-/**
- * irdma_add_arp - add a new arp entry if needed
- * @rf: RDMA function
- * @ip: IP address
- * @ipv4: IPv4 flag
- * @mac: MAC address
- */
+ 
 int irdma_add_arp(struct irdma_pci_f *rf, u32 *ip, bool ipv4, const u8 *mac)
 {
 	int arpidx;
@@ -95,36 +82,19 @@ int irdma_add_arp(struct irdma_pci_f *rf, u32 *ip, bool ipv4, const u8 *mac)
 	return irdma_arp_table(rf, ip, ipv4, NULL, IRDMA_ARP_RESOLVE);
 }
 
-/**
- * wr32 - write 32 bits to hw register
- * @hw: hardware information including registers
- * @reg: register offset
- * @val: value to write to register
- */
+ 
 inline void wr32(struct irdma_hw *hw, u32 reg, u32 val)
 {
 	writel(val, hw->hw_addr + reg);
 }
 
-/**
- * rd32 - read a 32 bit hw register
- * @hw: hardware information including registers
- * @reg: register offset
- *
- * Return value of register content
- */
+ 
 inline u32 rd32(struct irdma_hw *hw, u32 reg)
 {
 	return readl(hw->hw_addr + reg);
 }
 
-/**
- * rd64 - read a 64 bit hw register
- * @hw: hardware information including registers
- * @reg: register offset
- *
- * Return value of register content
- */
+ 
 inline u64 rd64(struct irdma_hw *hw, u32 reg)
 {
 	return readq(hw->hw_addr + reg);
@@ -140,12 +110,7 @@ static void irdma_gid_change_event(struct ib_device *ibdev)
 	ib_dispatch_event(&ib_event);
 }
 
-/**
- * irdma_inetaddr_event - system notifier for ipv4 addr events
- * @notifier: not used
- * @event: event for notifier
- * @ptr: if address
- */
+ 
 int irdma_inetaddr_event(struct notifier_block *notifier, unsigned long event,
 			 void *ptr)
 {
@@ -190,12 +155,7 @@ int irdma_inetaddr_event(struct notifier_block *notifier, unsigned long event,
 	return NOTIFY_DONE;
 }
 
-/**
- * irdma_inet6addr_event - system notifier for ipv6 addr events
- * @notifier: not used
- * @event: event for notifier
- * @ptr: if address
- */
+ 
 int irdma_inet6addr_event(struct notifier_block *notifier, unsigned long event,
 			  void *ptr)
 {
@@ -241,12 +201,7 @@ int irdma_inet6addr_event(struct notifier_block *notifier, unsigned long event,
 	return NOTIFY_DONE;
 }
 
-/**
- * irdma_net_event - system notifier for net events
- * @notifier: not used
- * @event: event for notifier
- * @ptr: neighbor
- */
+ 
 int irdma_net_event(struct notifier_block *notifier, unsigned long event,
 		    void *ptr)
 {
@@ -297,12 +252,7 @@ int irdma_net_event(struct notifier_block *notifier, unsigned long event,
 	return NOTIFY_DONE;
 }
 
-/**
- * irdma_netdevice_event - system notifier for netdev events
- * @notifier: not used
- * @event: event for notifier
- * @ptr: netdev
- */
+ 
 int irdma_netdevice_event(struct notifier_block *notifier, unsigned long event,
 			  void *ptr)
 {
@@ -331,10 +281,7 @@ int irdma_netdevice_event(struct notifier_block *notifier, unsigned long event,
 	return NOTIFY_DONE;
 }
 
-/**
- * irdma_add_ipv6_addr - add ipv6 address to the hw arp table
- * @iwdev: irdma device
- */
+ 
 static void irdma_add_ipv6_addr(struct irdma_device *iwdev)
 {
 	struct net_device *ip_dev;
@@ -373,10 +320,7 @@ static void irdma_add_ipv6_addr(struct irdma_device *iwdev)
 	rcu_read_unlock();
 }
 
-/**
- * irdma_add_ipv4_addr - add ipv4 address to the hw arp table
- * @iwdev: irdma device
- */
+ 
 static void irdma_add_ipv4_addr(struct irdma_device *iwdev)
 {
 	struct net_device *dev;
@@ -409,23 +353,14 @@ static void irdma_add_ipv4_addr(struct irdma_device *iwdev)
 	rcu_read_unlock();
 }
 
-/**
- * irdma_add_ip - add ip addresses
- * @iwdev: irdma device
- *
- * Add ipv4/ipv6 addresses to the arp cache
- */
+ 
 void irdma_add_ip(struct irdma_device *iwdev)
 {
 	irdma_add_ipv4_addr(iwdev);
 	irdma_add_ipv6_addr(iwdev);
 }
 
-/**
- * irdma_alloc_and_get_cqp_request - get cqp struct
- * @cqp: device cqp ptr
- * @wait: cqp to be used in wait mode
- */
+ 
 struct irdma_cqp_request *irdma_alloc_and_get_cqp_request(struct irdma_cqp *cqp,
 							  bool wait)
 {
@@ -459,20 +394,13 @@ struct irdma_cqp_request *irdma_alloc_and_get_cqp_request(struct irdma_cqp *cqp,
 	return cqp_request;
 }
 
-/**
- * irdma_get_cqp_request - increase refcount for cqp_request
- * @cqp_request: pointer to cqp_request instance
- */
+ 
 static inline void irdma_get_cqp_request(struct irdma_cqp_request *cqp_request)
 {
 	refcount_inc(&cqp_request->refcnt);
 }
 
-/**
- * irdma_free_cqp_request - free cqp request
- * @cqp: cqp ptr
- * @cqp_request: to be put back in cqp list
- */
+ 
 void irdma_free_cqp_request(struct irdma_cqp *cqp,
 			    struct irdma_cqp_request *cqp_request)
 {
@@ -492,11 +420,7 @@ void irdma_free_cqp_request(struct irdma_cqp *cqp,
 	wake_up(&cqp->remove_wq);
 }
 
-/**
- * irdma_put_cqp_request - dec ref count and free if 0
- * @cqp: cqp ptr
- * @cqp_request: to be put back in cqp list
- */
+ 
 void irdma_put_cqp_request(struct irdma_cqp *cqp,
 			   struct irdma_cqp_request *cqp_request)
 {
@@ -504,11 +428,7 @@ void irdma_put_cqp_request(struct irdma_cqp *cqp,
 		irdma_free_cqp_request(cqp, cqp_request);
 }
 
-/**
- * irdma_free_pending_cqp_request -free pending cqp request objs
- * @cqp: cqp ptr
- * @cqp_request: to be put back in cqp list
- */
+ 
 static void
 irdma_free_pending_cqp_request(struct irdma_cqp *cqp,
 			       struct irdma_cqp_request *cqp_request)
@@ -523,11 +443,7 @@ irdma_free_pending_cqp_request(struct irdma_cqp *cqp,
 	irdma_put_cqp_request(cqp, cqp_request);
 }
 
-/**
- * irdma_cleanup_pending_cqp_op - clean-up cqp with no
- * completions
- * @rf: RDMA PCI function
- */
+ 
 void irdma_cleanup_pending_cqp_op(struct irdma_pci_f *rf)
 {
 	struct irdma_sc_dev *dev = &rf->sc_dev;
@@ -555,11 +471,7 @@ void irdma_cleanup_pending_cqp_op(struct irdma_pci_f *rf)
 	}
 }
 
-/**
- * irdma_wait_event - wait for completion
- * @rf: RDMA PCI function
- * @cqp_request: cqp request to wait
- */
+ 
 static int irdma_wait_event(struct irdma_pci_f *rf,
 			    struct irdma_cqp_request *cqp_request)
 {
@@ -662,13 +574,7 @@ static const struct irdma_cqp_err_info irdma_noncrit_err_list[] = {
 	{0xffff, 0x800a, "Reset Not Sent"}
 };
 
-/**
- * irdma_cqp_crit_err - check if CQP error is critical
- * @dev: pointer to dev structure
- * @cqp_cmd: code for last CQP operation
- * @maj_err_code: major error code
- * @min_err_code: minot error code
- */
+ 
 bool irdma_cqp_crit_err(struct irdma_sc_dev *dev, u8 cqp_cmd,
 			u16 maj_err_code, u16 min_err_code)
 {
@@ -688,11 +594,7 @@ bool irdma_cqp_crit_err(struct irdma_sc_dev *dev, u8 cqp_cmd,
 	return true;
 }
 
-/**
- * irdma_handle_cqp_op - process cqp command
- * @rf: RDMA PCI function
- * @cqp_request: cqp request to process
- */
+ 
 int irdma_handle_cqp_op(struct irdma_pci_f *rf,
 			struct irdma_cqp_request *cqp_request)
 {
@@ -790,11 +692,7 @@ struct ib_device *to_ibdev(struct irdma_sc_dev *dev)
 	return &(container_of(dev, struct irdma_pci_f, sc_dev))->iwdev->ibdev;
 }
 
-/**
- * irdma_get_qp - get qp address
- * @device: iwarp device
- * @qpn: qp number
- */
+ 
 struct ib_qp *irdma_get_qp(struct ib_device *device, int qpn)
 {
 	struct irdma_device *iwdev = to_iwdev(device);
@@ -805,10 +703,7 @@ struct ib_qp *irdma_get_qp(struct ib_device *device, int qpn)
 	return &iwdev->rf->qp_table[qpn]->ibqp;
 }
 
-/**
- * irdma_remove_cqp_head - return head entry and remove
- * @dev: device
- */
+ 
 void *irdma_remove_cqp_head(struct irdma_sc_dev *dev)
 {
 	struct list_head *entry;
@@ -823,12 +718,7 @@ void *irdma_remove_cqp_head(struct irdma_sc_dev *dev)
 	return entry;
 }
 
-/**
- * irdma_cqp_sds_cmd - create cqp command for sd
- * @dev: hardware control device structure
- * @sdinfo: information for sd cqp
- *
- */
+ 
 int irdma_cqp_sds_cmd(struct irdma_sc_dev *dev,
 		      struct irdma_update_sds_info *sdinfo)
 {
@@ -855,11 +745,7 @@ int irdma_cqp_sds_cmd(struct irdma_sc_dev *dev,
 	return status;
 }
 
-/**
- * irdma_cqp_qp_suspend_resume - cqp command for suspend/resume
- * @qp: hardware control qp
- * @op: suspend or resume
- */
+ 
 int irdma_cqp_qp_suspend_resume(struct irdma_sc_qp *qp, u8 op)
 {
 	struct irdma_sc_dev *dev = qp->dev;
@@ -885,13 +771,7 @@ int irdma_cqp_qp_suspend_resume(struct irdma_sc_qp *qp, u8 op)
 	return status;
 }
 
-/**
- * irdma_term_modify_qp - modify qp for term message
- * @qp: hardware control qp
- * @next_state: qp's next state
- * @term: terminate code
- * @term_len: length
- */
+ 
 void irdma_term_modify_qp(struct irdma_sc_qp *qp, u8 next_state, u8 term,
 			  u8 term_len)
 {
@@ -901,11 +781,7 @@ void irdma_term_modify_qp(struct irdma_sc_qp *qp, u8 next_state, u8 term,
 	irdma_next_iw_state(iwqp, next_state, 0, term, term_len);
 };
 
-/**
- * irdma_terminate_done - after terminate is completed
- * @qp: hardware control qp
- * @timeout_occurred: indicates if terminate timer expired
- */
+ 
 void irdma_terminate_done(struct irdma_sc_qp *qp, int timeout_occurred)
 {
 	struct irdma_qp *iwqp;
@@ -940,10 +816,7 @@ static void irdma_terminate_timeout(struct timer_list *t)
 	irdma_qp_rem_ref(&iwqp->ibqp);
 }
 
-/**
- * irdma_terminate_start_timer - start terminate timeout
- * @qp: hardware control qp
- */
+ 
 void irdma_terminate_start_timer(struct irdma_sc_qp *qp)
 {
 	struct irdma_qp *iwqp;
@@ -956,10 +829,7 @@ void irdma_terminate_start_timer(struct irdma_sc_qp *qp)
 	add_timer(&iwqp->terminate_timer);
 }
 
-/**
- * irdma_terminate_del_timer - delete terminate timeout
- * @qp: hardware control qp
- */
+ 
 void irdma_terminate_del_timer(struct irdma_sc_qp *qp)
 {
 	struct irdma_qp *iwqp;
@@ -971,12 +841,7 @@ void irdma_terminate_del_timer(struct irdma_sc_qp *qp)
 		irdma_qp_rem_ref(&iwqp->ibqp);
 }
 
-/**
- * irdma_cqp_query_fpm_val_cmd - send cqp command for fpm
- * @dev: function device struct
- * @val_mem: buffer for fpm
- * @hmc_fn_id: function id for fpm
- */
+ 
 int irdma_cqp_query_fpm_val_cmd(struct irdma_sc_dev *dev,
 				struct irdma_dma_mem *val_mem, u8 hmc_fn_id)
 {
@@ -1005,12 +870,7 @@ int irdma_cqp_query_fpm_val_cmd(struct irdma_sc_dev *dev,
 	return status;
 }
 
-/**
- * irdma_cqp_commit_fpm_val_cmd - commit fpm values in hw
- * @dev: hardware control device structure
- * @val_mem: buffer with fpm values
- * @hmc_fn_id: function id for fpm
- */
+ 
 int irdma_cqp_commit_fpm_val_cmd(struct irdma_sc_dev *dev,
 				 struct irdma_dma_mem *val_mem, u8 hmc_fn_id)
 {
@@ -1039,11 +899,7 @@ int irdma_cqp_commit_fpm_val_cmd(struct irdma_sc_dev *dev,
 	return status;
 }
 
-/**
- * irdma_cqp_cq_create_cmd - create a cq for the cqp
- * @dev: device pointer
- * @cq: pointer to created cq
- */
+ 
 int irdma_cqp_cq_create_cmd(struct irdma_sc_dev *dev, struct irdma_sc_cq *cq)
 {
 	struct irdma_pci_f *rf = dev_to_rf(dev);
@@ -1068,11 +924,7 @@ int irdma_cqp_cq_create_cmd(struct irdma_sc_dev *dev, struct irdma_sc_cq *cq)
 	return status;
 }
 
-/**
- * irdma_cqp_qp_create_cmd - create a qp for the cqp
- * @dev: device pointer
- * @qp: pointer to created qp
- */
+ 
 int irdma_cqp_qp_create_cmd(struct irdma_sc_dev *dev, struct irdma_sc_qp *qp)
 {
 	struct irdma_pci_f *rf = dev_to_rf(dev);
@@ -1102,11 +954,7 @@ int irdma_cqp_qp_create_cmd(struct irdma_sc_dev *dev, struct irdma_sc_qp *qp)
 	return status;
 }
 
-/**
- * irdma_dealloc_push_page - free a push page for qp
- * @rf: RDMA PCI function
- * @qp: hardware control qp
- */
+ 
 static void irdma_dealloc_push_page(struct irdma_pci_f *rf,
 				    struct irdma_sc_qp *qp)
 {
@@ -1136,10 +984,7 @@ static void irdma_dealloc_push_page(struct irdma_pci_f *rf,
 	irdma_put_cqp_request(&rf->cqp, cqp_request);
 }
 
-/**
- * irdma_free_qp_rsrc - free up memory resources for qp
- * @iwqp: qp ptr (user or kernel)
- */
+ 
 void irdma_free_qp_rsrc(struct irdma_qp *iwqp)
 {
 	struct irdma_device *iwdev = iwqp->iwdev;
@@ -1166,11 +1011,7 @@ void irdma_free_qp_rsrc(struct irdma_qp *iwqp)
 	kfree(iwqp->kqp.rq_wrid_mem);
 }
 
-/**
- * irdma_cq_wq_destroy - send cq destroy cqp
- * @rf: RDMA PCI function
- * @cq: hardware control cq
- */
+ 
 void irdma_cq_wq_destroy(struct irdma_pci_f *rf, struct irdma_sc_cq *cq)
 {
 	struct irdma_cqp_request *cqp_request;
@@ -1190,10 +1031,7 @@ void irdma_cq_wq_destroy(struct irdma_pci_f *rf, struct irdma_sc_cq *cq)
 	irdma_put_cqp_request(&rf->cqp, cqp_request);
 }
 
-/**
- * irdma_hw_modify_qp_callback - handle state for modifyQPs that don't wait
- * @cqp_request: modify QP completion
- */
+ 
 static void irdma_hw_modify_qp_callback(struct irdma_cqp_request *cqp_request)
 {
 	struct cqp_cmds_info *cqp_info;
@@ -1205,13 +1043,7 @@ static void irdma_hw_modify_qp_callback(struct irdma_cqp_request *cqp_request)
 	wake_up(&iwqp->mod_qp_waitq);
 }
 
-/**
- * irdma_hw_modify_qp - setup cqp for modify qp
- * @iwdev: RDMA device
- * @iwqp: qp ptr (user or kernel)
- * @info: info for modify qp
- * @wait: flag to wait or not for modify qp completion
- */
+ 
 int irdma_hw_modify_qp(struct irdma_device *iwdev, struct irdma_qp *iwqp,
 		       struct irdma_modify_qp_info *info, bool wait)
 {
@@ -1285,11 +1117,7 @@ int irdma_hw_modify_qp(struct irdma_device *iwdev, struct irdma_qp *iwqp,
 	return status;
 }
 
-/**
- * irdma_cqp_cq_destroy_cmd - destroy the cqp cq
- * @dev: device pointer
- * @cq: pointer to cq
- */
+ 
 void irdma_cqp_cq_destroy_cmd(struct irdma_sc_dev *dev, struct irdma_sc_cq *cq)
 {
 	struct irdma_pci_f *rf = dev_to_rf(dev);
@@ -1297,11 +1125,7 @@ void irdma_cqp_cq_destroy_cmd(struct irdma_sc_dev *dev, struct irdma_sc_cq *cq)
 	irdma_cq_wq_destroy(rf, cq);
 }
 
-/**
- * irdma_cqp_qp_destroy_cmd - destroy the cqp
- * @dev: device pointer
- * @qp: pointer to qp
- */
+ 
 int irdma_cqp_qp_destroy_cmd(struct irdma_sc_dev *dev, struct irdma_sc_qp *qp)
 {
 	struct irdma_pci_f *rf = dev_to_rf(dev);
@@ -1328,11 +1152,7 @@ int irdma_cqp_qp_destroy_cmd(struct irdma_sc_dev *dev, struct irdma_sc_qp *qp)
 	return status;
 }
 
-/**
- * irdma_ieq_mpa_crc_ae - generate AE for crc error
- * @dev: hardware control device structure
- * @qp: hardware control qp
- */
+ 
 void irdma_ieq_mpa_crc_ae(struct irdma_sc_dev *dev, struct irdma_sc_qp *qp)
 {
 	struct irdma_gen_ae_info info = {};
@@ -1344,10 +1164,7 @@ void irdma_ieq_mpa_crc_ae(struct irdma_sc_dev *dev, struct irdma_sc_qp *qp)
 	irdma_gen_ae(rf, qp, &info, false);
 }
 
-/**
- * irdma_init_hash_desc - initialize hash for crc calculation
- * @desc: cryption type
- */
+ 
 int irdma_init_hash_desc(struct shash_desc **desc)
 {
 	struct crypto_shash *tfm;
@@ -1370,10 +1187,7 @@ int irdma_init_hash_desc(struct shash_desc **desc)
 	return 0;
 }
 
-/**
- * irdma_free_hash_desc - free hash desc
- * @desc: to be freed
- */
+ 
 void irdma_free_hash_desc(struct shash_desc *desc)
 {
 	if (desc) {
@@ -1382,13 +1196,7 @@ void irdma_free_hash_desc(struct shash_desc *desc)
 	}
 }
 
-/**
- * irdma_ieq_check_mpacrc - check if mpa crc is OK
- * @desc: desc for hash
- * @addr: address of buffer for crc
- * @len: length of buffer
- * @val: value to be compared
- */
+ 
 int irdma_ieq_check_mpacrc(struct shash_desc *desc, void *addr, u32 len,
 			   u32 val)
 {
@@ -1406,11 +1214,7 @@ int irdma_ieq_check_mpacrc(struct shash_desc *desc, void *addr, u32 len,
 	return ret_code;
 }
 
-/**
- * irdma_ieq_get_qp - get qp based on quad in puda buffer
- * @dev: hardware control device structure
- * @buf: receive puda buffer on exception q
- */
+ 
 struct irdma_sc_qp *irdma_ieq_get_qp(struct irdma_sc_dev *dev,
 				     struct irdma_puda_buf *buf)
 {
@@ -1445,10 +1249,7 @@ struct irdma_sc_qp *irdma_ieq_get_qp(struct irdma_sc_dev *dev,
 	return &iwqp->sc_qp;
 }
 
-/**
- * irdma_send_ieq_ack - ACKs for duplicate or OOO partials FPDUs
- * @qp: qp ptr
- */
+ 
 void irdma_send_ieq_ack(struct irdma_sc_qp *qp)
 {
 	struct irdma_cm_node *cm_node = ((struct irdma_qp *)qp->qp_uk.back_qp)->cm_node;
@@ -1461,11 +1262,7 @@ void irdma_send_ieq_ack(struct irdma_sc_qp *qp)
 	irdma_send_ack(cm_node);
 }
 
-/**
- * irdma_puda_ieq_get_ah_info - get AH info from IEQ buffer
- * @qp: qp pointer
- * @ah_info: AH info pointer
- */
+ 
 void irdma_puda_ieq_get_ah_info(struct irdma_sc_qp *qp,
 				struct irdma_ah_info *ah_info)
 {
@@ -1506,12 +1303,7 @@ void irdma_puda_ieq_get_ah_info(struct irdma_sc_qp *qp,
 						NULL, IRDMA_ARP_RESOLVE);
 }
 
-/**
- * irdma_gen1_ieq_update_tcpip_info - update tcpip in the buffer
- * @buf: puda to update
- * @len: length of buffer
- * @seqnum: seq number for tcp
- */
+ 
 static void irdma_gen1_ieq_update_tcpip_info(struct irdma_puda_buf *buf,
 					     u16 len, u32 seqnum)
 {
@@ -1529,12 +1321,7 @@ static void irdma_gen1_ieq_update_tcpip_info(struct irdma_puda_buf *buf,
 	tcph->seq = htonl(seqnum);
 }
 
-/**
- * irdma_ieq_update_tcpip_info - update tcpip in the buffer
- * @buf: puda to update
- * @len: length of buffer
- * @seqnum: seq number for tcp
- */
+ 
 void irdma_ieq_update_tcpip_info(struct irdma_puda_buf *buf, u16 len,
 				 u32 seqnum)
 {
@@ -1549,12 +1336,7 @@ void irdma_ieq_update_tcpip_info(struct irdma_puda_buf *buf, u16 len,
 	tcph->seq = htonl(seqnum);
 }
 
-/**
- * irdma_gen1_puda_get_tcpip_info - get tcpip info from puda
- * buffer
- * @info: to get information
- * @buf: puda buffer
- */
+ 
 static int irdma_gen1_puda_get_tcpip_info(struct irdma_puda_cmpl_info *info,
 					  struct irdma_puda_buf *buf)
 {
@@ -1605,11 +1387,7 @@ static int irdma_gen1_puda_get_tcpip_info(struct irdma_puda_cmpl_info *info,
 	return 0;
 }
 
-/**
- * irdma_puda_get_tcpip_info - get tcpip info from puda buffer
- * @info: to get information
- * @buf: puda buffer
- */
+ 
 int irdma_puda_get_tcpip_info(struct irdma_puda_cmpl_info *info,
 			      struct irdma_puda_buf *buf)
 {
@@ -1649,10 +1427,7 @@ int irdma_puda_get_tcpip_info(struct irdma_puda_cmpl_info *info,
 	return 0;
 }
 
-/**
- * irdma_hw_stats_timeout - Stats timer-handler which updates all HW stats
- * @t: timer_list pointer
- */
+ 
 static void irdma_hw_stats_timeout(struct timer_list *t)
 {
 	struct irdma_vsi_pestat *pf_devstat =
@@ -1668,10 +1443,7 @@ static void irdma_hw_stats_timeout(struct timer_list *t)
 		  jiffies + msecs_to_jiffies(STATS_TIMER_DELAY));
 }
 
-/**
- * irdma_hw_stats_start_timer - Start periodic stats timer
- * @vsi: vsi structure pointer
- */
+ 
 void irdma_hw_stats_start_timer(struct irdma_sc_vsi *vsi)
 {
 	struct irdma_vsi_pestat *devstat = vsi->pestat;
@@ -1681,10 +1453,7 @@ void irdma_hw_stats_start_timer(struct irdma_sc_vsi *vsi)
 		  jiffies + msecs_to_jiffies(STATS_TIMER_DELAY));
 }
 
-/**
- * irdma_hw_stats_stop_timer - Delete periodic stats timer
- * @vsi: pointer to vsi structure
- */
+ 
 void irdma_hw_stats_stop_timer(struct irdma_sc_vsi *vsi)
 {
 	struct irdma_vsi_pestat *devstat = vsi->pestat;
@@ -1692,20 +1461,13 @@ void irdma_hw_stats_stop_timer(struct irdma_sc_vsi *vsi)
 	del_timer_sync(&devstat->stats_timer);
 }
 
-/**
- * irdma_process_stats - Checking for wrap and update stats
- * @pestat: stats structure pointer
- */
+ 
 static inline void irdma_process_stats(struct irdma_vsi_pestat *pestat)
 {
 	sc_vsi_update_stats(pestat->vsi);
 }
 
-/**
- * irdma_cqp_gather_stats_gen1 - Gather stats
- * @dev: pointer to device structure
- * @pestat: statistics structure
- */
+ 
 void irdma_cqp_gather_stats_gen1(struct irdma_sc_dev *dev,
 				 struct irdma_vsi_pestat *pestat)
 {
@@ -1737,10 +1499,7 @@ void irdma_cqp_gather_stats_gen1(struct irdma_sc_dev *dev,
 	irdma_process_stats(pestat);
 }
 
-/**
- * irdma_process_cqp_stats - Checking for wrap and update stats
- * @cqp_request: cqp_request structure pointer
- */
+ 
 static void irdma_process_cqp_stats(struct irdma_cqp_request *cqp_request)
 {
 	struct irdma_vsi_pestat *pestat = cqp_request->param;
@@ -1748,12 +1507,7 @@ static void irdma_process_cqp_stats(struct irdma_cqp_request *cqp_request)
 	irdma_process_stats(pestat);
 }
 
-/**
- * irdma_cqp_gather_stats_cmd - Gather stats
- * @dev: pointer to device structure
- * @pestat: pointer to stats info
- * @wait: flag to wait or not wait for stats
- */
+ 
 int irdma_cqp_gather_stats_cmd(struct irdma_sc_dev *dev,
 			       struct irdma_vsi_pestat *pestat, bool wait)
 
@@ -1786,12 +1540,7 @@ int irdma_cqp_gather_stats_cmd(struct irdma_sc_dev *dev,
 	return status;
 }
 
-/**
- * irdma_cqp_stats_inst_cmd - Allocate/free stats instance
- * @vsi: pointer to vsi structure
- * @cmd: command to allocate or free
- * @stats_info: pointer to allocate stats info
- */
+ 
 int irdma_cqp_stats_inst_cmd(struct irdma_sc_vsi *vsi, u8 cmd,
 			     struct irdma_stats_inst_info *stats_info)
 {
@@ -1823,12 +1572,7 @@ int irdma_cqp_stats_inst_cmd(struct irdma_sc_vsi *vsi, u8 cmd,
 	return status;
 }
 
-/**
- * irdma_cqp_ceq_cmd - Create/Destroy CEQ's after CEQ 0
- * @dev: pointer to device info
- * @sc_ceq: pointer to ceq structure
- * @op: Create or Destroy
- */
+ 
 int irdma_cqp_ceq_cmd(struct irdma_sc_dev *dev, struct irdma_sc_ceq *sc_ceq,
 		      u8 op)
 {
@@ -1853,12 +1597,7 @@ int irdma_cqp_ceq_cmd(struct irdma_sc_dev *dev, struct irdma_sc_ceq *sc_ceq,
 	return status;
 }
 
-/**
- * irdma_cqp_aeq_cmd - Create/Destroy AEQ
- * @dev: pointer to device info
- * @sc_aeq: pointer to aeq structure
- * @op: Create or Destroy
- */
+ 
 int irdma_cqp_aeq_cmd(struct irdma_sc_dev *dev, struct irdma_sc_aeq *sc_aeq,
 		      u8 op)
 {
@@ -1883,12 +1622,7 @@ int irdma_cqp_aeq_cmd(struct irdma_sc_dev *dev, struct irdma_sc_aeq *sc_aeq,
 	return status;
 }
 
-/**
- * irdma_cqp_ws_node_cmd - Add/modify/delete ws node
- * @dev: pointer to device structure
- * @cmd: Add, modify or delete
- * @node_info: pointer to ws node info
- */
+ 
 int irdma_cqp_ws_node_cmd(struct irdma_sc_dev *dev, u8 cmd,
 			  struct irdma_ws_node_info *node_info)
 {
@@ -1938,17 +1672,7 @@ exit:
 	return status;
 }
 
-/**
- * irdma_ah_cqp_op - perform an AH cqp operation
- * @rf: RDMA PCI function
- * @sc_ah: address handle
- * @cmd: AH operation
- * @wait: wait if true
- * @callback_fcn: Callback function on CQP op completion
- * @cb_param: parameter for callback function
- *
- * returns errno
- */
+ 
 int irdma_ah_cqp_op(struct irdma_pci_f *rf, struct irdma_sc_ah *sc_ah, u8 cmd,
 		    bool wait,
 		    void (*callback_fcn)(struct irdma_cqp_request *),
@@ -1994,10 +1718,7 @@ int irdma_ah_cqp_op(struct irdma_pci_f *rf, struct irdma_sc_ah *sc_ah, u8 cmd,
 	return 0;
 }
 
-/**
- * irdma_ieq_ah_cb - callback after creation of AH for IEQ
- * @cqp_request: pointer to cqp_request of create AH
- */
+ 
 static void irdma_ieq_ah_cb(struct irdma_cqp_request *cqp_request)
 {
 	struct irdma_sc_qp *qp = cqp_request->param;
@@ -2015,10 +1736,7 @@ static void irdma_ieq_ah_cb(struct irdma_cqp_request *cqp_request)
 	spin_unlock_irqrestore(&qp->pfpdu.lock, flags);
 }
 
-/**
- * irdma_ilq_ah_cb - callback after creation of AH for ILQ
- * @cqp_request: pointer to cqp_request of create AH
- */
+ 
 static void irdma_ilq_ah_cb(struct irdma_cqp_request *cqp_request)
 {
 	struct irdma_cm_node *cm_node = cqp_request->param;
@@ -2028,16 +1746,7 @@ static void irdma_ilq_ah_cb(struct irdma_cqp_request *cqp_request)
 	irdma_add_conn_est_qh(cm_node);
 }
 
-/**
- * irdma_puda_create_ah - create AH for ILQ/IEQ qp's
- * @dev: device pointer
- * @ah_info: Address handle info
- * @wait: When true will wait for operation to complete
- * @type: ILQ/IEQ
- * @cb_param: Callback param when not waiting
- * @ah_ret: Returned pointer to address handle if created
- *
- */
+ 
 int irdma_puda_create_ah(struct irdma_sc_dev *dev,
 			 struct irdma_ah_info *ah_info, bool wait,
 			 enum puda_rsrc_type type, void *cb_param,
@@ -2079,11 +1788,7 @@ err_free:
 	return -ENOMEM;
 }
 
-/**
- * irdma_puda_free_ah - free a puda address handle
- * @dev: device pointer
- * @ah: The address handle to free
- */
+ 
 void irdma_puda_free_ah(struct irdma_sc_dev *dev, struct irdma_sc_ah *ah)
 {
 	struct irdma_pci_f *rf = dev_to_rf(dev);
@@ -2099,10 +1804,7 @@ void irdma_puda_free_ah(struct irdma_sc_dev *dev, struct irdma_sc_ah *ah)
 	kfree(ah);
 }
 
-/**
- * irdma_gsi_ud_qp_ah_cb - callback after creation of AH for GSI/ID QP
- * @cqp_request: pointer to cqp_request of create AH
- */
+ 
 void irdma_gsi_ud_qp_ah_cb(struct irdma_cqp_request *cqp_request)
 {
 	struct irdma_sc_ah *sc_ah = cqp_request->param;
@@ -2113,11 +1815,7 @@ void irdma_gsi_ud_qp_ah_cb(struct irdma_cqp_request *cqp_request)
 		sc_ah->ah_info.ah_valid = false;
 }
 
-/**
- * irdma_prm_add_pble_mem - add moemory to pble resources
- * @pprm: pble resource manager
- * @pchunk: chunk of memory to add
- */
+ 
 int irdma_prm_add_pble_mem(struct irdma_pble_prm *pprm,
 			   struct irdma_chunk *pchunk)
 {
@@ -2133,21 +1831,14 @@ int irdma_prm_add_pble_mem(struct irdma_pble_prm *pprm,
 		return -ENOMEM;
 
 	pchunk->sizeofbitmap = sizeofbitmap;
-	/* each pble is 8 bytes hence shift by 3 */
+	 
 	pprm->total_pble_alloc += pchunk->size >> 3;
 	pprm->free_pble_cnt += pchunk->size >> 3;
 
 	return 0;
 }
 
-/**
- * irdma_prm_get_pbles - get pble's from prm
- * @pprm: pble resource manager
- * @chunkinfo: nformation about chunk where pble's were acquired
- * @mem_size: size of pble memory needed
- * @vaddr: returns virtual address of pble memory
- * @fpm_addr: returns fpm address of pble memory
- */
+ 
 int irdma_prm_get_pbles(struct irdma_pble_prm *pprm,
 			struct irdma_pble_chunkinfo *chunkinfo, u64 mem_size,
 			u64 **vaddr, u64 *fpm_addr)
@@ -2172,7 +1863,7 @@ int irdma_prm_get_pbles(struct irdma_pble_prm *pprm,
 		if (bit_idx < pchunk->sizeofbitmap)
 			break;
 
-		/* list.next used macro */
+		 
 		chunk_entry = pchunk->list.next;
 	}
 
@@ -2189,18 +1880,14 @@ int irdma_prm_get_pbles(struct irdma_pble_prm *pprm,
 	chunkinfo->pchunk = pchunk;
 	chunkinfo->bit_idx = bit_idx;
 	chunkinfo->bits_used = bits_needed;
-	/* 3 is sizeof pble divide */
+	 
 	pprm->free_pble_cnt -= chunkinfo->bits_used << (pprm->pble_shift - 3);
 	spin_unlock_irqrestore(&pprm->prm_lock, flags);
 
 	return 0;
 }
 
-/**
- * irdma_prm_return_pbles - return pbles back to prm
- * @pprm: pble resource manager
- * @chunkinfo: chunk where pble's were acquired and to be freed
- */
+ 
 void irdma_prm_return_pbles(struct irdma_pble_prm *pprm,
 			    struct irdma_pble_chunkinfo *chunkinfo)
 {
@@ -2249,10 +1936,7 @@ void irdma_unmap_vm_page_list(struct irdma_hw *hw, dma_addr_t *pg_dma, u32 pg_cn
 		dma_unmap_page(hw->device, pg_dma[i], PAGE_SIZE, DMA_BIDIRECTIONAL);
 }
 
-/**
- * irdma_pble_free_paged_mem - free virtual paged memory
- * @chunk: chunk to free with paged memory
- */
+ 
 void irdma_pble_free_paged_mem(struct irdma_chunk *chunk)
 {
 	if (!chunk->pg_cnt)
@@ -2269,11 +1953,7 @@ done:
 	chunk->type = 0;
 }
 
-/**
- * irdma_pble_get_paged_mem -allocate paged memory for pbles
- * @chunk: chunk to add for paged memory
- * @pg_cnt: number of pages needed
- */
+ 
 int irdma_pble_get_paged_mem(struct irdma_chunk *chunk, u32 pg_cnt)
 {
 	u32 size;
@@ -2306,10 +1986,7 @@ err:
 	return -ENOMEM;
 }
 
-/**
- * irdma_alloc_ws_node_id - Allocate a tx scheduler node ID
- * @dev: device pointer
- */
+ 
 u16 irdma_alloc_ws_node_id(struct irdma_sc_dev *dev)
 {
 	struct irdma_pci_f *rf = dev_to_rf(dev);
@@ -2323,11 +2000,7 @@ u16 irdma_alloc_ws_node_id(struct irdma_sc_dev *dev)
 	return (u16)node_id;
 }
 
-/**
- * irdma_free_ws_node_id - Free a tx scheduler node ID
- * @dev: device pointer
- * @node_id: Work scheduler node ID
- */
+ 
 void irdma_free_ws_node_id(struct irdma_sc_dev *dev, u16 node_id)
 {
 	struct irdma_pci_f *rf = dev_to_rf(dev);
@@ -2335,10 +2008,7 @@ void irdma_free_ws_node_id(struct irdma_sc_dev *dev, u16 node_id)
 	irdma_free_rsrc(rf, rf->allocated_ws_nodes, (u32)node_id);
 }
 
-/**
- * irdma_modify_qp_to_err - Modify a QP to error
- * @sc_qp: qp structure
- */
+ 
 void irdma_modify_qp_to_err(struct irdma_sc_qp *sc_qp)
 {
 	struct irdma_qp *qp = sc_qp->qp_uk.back_qp;
@@ -2423,12 +2093,7 @@ int irdma_generated_cmpls(struct irdma_cq *iwcq, struct irdma_cq_poll_info *cq_p
 	return 0;
 }
 
-/**
- * irdma_set_cpi_common_values - fill in values for polling info struct
- * @cpi: resulting structure of cq_poll_info type
- * @qp: QPair
- * @qp_num: id of the QP
- */
+ 
 static void irdma_set_cpi_common_values(struct irdma_cq_poll_info *cpi,
 					struct irdma_qp_uk *qp, u32 qp_num)
 {
@@ -2481,7 +2146,7 @@ void irdma_generate_flush_completions(struct irdma_qp *iwqp)
 			get_64bit_val(sw_wqe, 24, &wqe_qword);
 			cmpl->cpi.op_type = (u8)FIELD_GET(IRDMAQPSQ_OPCODE, IRDMAQPSQ_OPCODE);
 			cmpl->cpi.q_type = IRDMA_CQE_QTYPE_SQ;
-			/* remove the SQ WR by moving SQ tail*/
+			 
 			IRDMA_RING_SET_TAIL(*sq_ring,
 				sq_ring->tail + qp->sq_wrtrk_array[sq_ring->tail].quanta);
 			if (cmpl->cpi.op_type == IRDMAQP_OP_NOP) {
@@ -2523,7 +2188,7 @@ void irdma_generate_flush_completions(struct irdma_qp *iwqp)
 			cmpl->cpi.wr_id = qp->rq_wrid_array[wqe_idx];
 			cmpl->cpi.op_type = IRDMA_OP_TYPE_REC;
 			cmpl->cpi.q_type = IRDMA_CQE_QTYPE_RQ;
-			/* remove the RQ WR by moving RQ tail */
+			 
 			IRDMA_RING_SET_TAIL(*rq_ring, rq_ring->tail + 1);
 			ibdev_dbg(iwqp->iwrcq->ibcq.device,
 				  "DEV: %s: adding wr_id = 0x%llx RQ Completion to list qp_id=%d, wqe_idx=%d\n",

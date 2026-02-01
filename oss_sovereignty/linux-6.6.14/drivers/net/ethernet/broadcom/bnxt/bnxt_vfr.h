@@ -1,11 +1,4 @@
-/* Broadcom NetXtreme-C/E network driver.
- *
- * Copyright (c) 2016-2017 Broadcom Limited
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation.
- */
+ 
 
 #ifndef BNXT_VFR_H
 #define BNXT_VFR_H
@@ -79,5 +72,5 @@ static inline void bnxt_vf_reps_free(struct bnxt *bp)
 {
 }
 
-#endif /* CONFIG_BNXT_SRIOV */
-#endif /* BNXT_VFR_H */
+#endif  
+#endif  

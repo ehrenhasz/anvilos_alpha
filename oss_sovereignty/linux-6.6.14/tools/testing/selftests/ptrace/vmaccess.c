@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (c) 2020 Bernd Edlinger <bernd.edlinger@hotmail.de>
- * All rights reserved.
- *
- * Check whether /proc/$pid/mem can be accessed without causing deadlocks
- * when de_thread is blocked with ->cred_guard_mutex held.
- */
+
+ 
 
 #include "../kselftest_harness.h"
 #include <stdio.h>

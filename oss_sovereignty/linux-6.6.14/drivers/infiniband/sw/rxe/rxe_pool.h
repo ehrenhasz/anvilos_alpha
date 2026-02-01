@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB */
-/*
- * Copyright (c) 2016 Mellanox Technologies Ltd. All rights reserved.
- * Copyright (c) 2015 System Fabric Works, Inc. All rights reserved.
- */
+ 
+ 
 
 #ifndef RXE_POOL_H
 #define RXE_POOL_H
@@ -16,7 +13,7 @@ enum rxe_elem_type {
 	RXE_TYPE_CQ,
 	RXE_TYPE_MR,
 	RXE_TYPE_MW,
-	RXE_NUM_TYPES,		/* keep me last */
+	RXE_NUM_TYPES,		 
 };
 
 struct rxe_pool_elem {
@@ -44,24 +41,21 @@ struct rxe_pool {
 	u32			next;
 };
 
-/* initialize a pool of objects with given limit on
- * number of elements. gets parameters from rxe_type_info
- * pool elements will be allocated out of a slab cache
- */
+ 
 void rxe_pool_init(struct rxe_dev *rxe, struct rxe_pool *pool,
 		  enum rxe_elem_type type);
 
-/* free resources from object pool */
+ 
 void rxe_pool_cleanup(struct rxe_pool *pool);
 
-/* connect already allocated object to pool */
+ 
 int __rxe_add_to_pool(struct rxe_pool *pool, struct rxe_pool_elem *elem,
 				bool sleepable);
 #define rxe_add_to_pool(pool, obj) __rxe_add_to_pool(pool, &(obj)->elem, true)
 #define rxe_add_to_pool_ah(pool, obj, sleepable) __rxe_add_to_pool(pool, \
 				&(obj)->elem, sleepable)
 
-/* lookup an indexed object from index. takes a reference on object */
+ 
 void *rxe_pool_get_index(struct rxe_pool *pool, u32 index);
 
 int __rxe_get(struct rxe_pool_elem *elem);
@@ -79,4 +73,4 @@ int __rxe_cleanup(struct rxe_pool_elem *elem, bool sleepable);
 void __rxe_finalize(struct rxe_pool_elem *elem);
 #define rxe_finalize(obj) __rxe_finalize(&(obj)->elem)
 
-#endif /* RXE_POOL_H */
+#endif  

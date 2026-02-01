@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/bpf.h>
 #include <bpf/bpf_helpers.h>
 #include <bpf/bpf_endian.h>
@@ -10,6 +10,6 @@ int security_new_get_constant(long val)
 	if (val != 123)
 		return 0;
 	test_get_constant = 1;
-	return test_get_constant; /* original get_constant() returns val - 122 */
+	return test_get_constant;  
 }
 char _license[] SEC("license") = "GPL";

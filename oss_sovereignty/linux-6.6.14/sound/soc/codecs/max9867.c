@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// MAX9867 ALSA SoC codec driver
-//
-// Copyright 2013-2015 Maxim Integrated Products
-// Copyright 2018 Ladislav Michl <ladis@linux-mips.org>
-//
+
+
+
+
+
+
+
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -106,11 +106,11 @@ static int max9867_filter_set(struct snd_kcontrol *kcontrol,
 	if (mode > 1)
 		return -EINVAL;
 
-	/* don't allow change if ADC/DAC active */
+	 
 	if (max9867->adc_dac_active)
 		return -EBUSY;
 
-	/* read current filter mode */
+	 
 	ret = regmap_read(max9867->regmap, MAX9867_CODECFLTR, &reg);
 	if (ret)
 		return -EINVAL;
@@ -118,19 +118,19 @@ static int max9867_filter_set(struct snd_kcontrol *kcontrol,
 	if (mode)
 		mode = MAX9867_CODECFLTR_MODE;
 
-	/* check if change is needed */
+	 
 	if ((reg & MAX9867_CODECFLTR_MODE) == mode)
 		return 0;
 
-	/* shutdown codec before switching filter mode */
+	 
 	regmap_update_bits(max9867->regmap, MAX9867_PWRMAN,
 		MAX9867_PWRMAN_SHDN, 0);
 
-	/* switch filter mode */
+	 
 	regmap_update_bits(max9867->regmap, MAX9867_CODECFLTR,
 		MAX9867_CODECFLTR_MODE, mode);
 
-	/* out of shutdown now */
+	 
 	regmap_update_bits(max9867->regmap, MAX9867_PWRMAN,
 		MAX9867_PWRMAN_SHDN, MAX9867_PWRMAN_SHDN);
 
@@ -186,29 +186,29 @@ static const struct snd_kcontrol_new max9867_snd_controls[] = {
 	SOC_SINGLE("Mono Playback Switch", MAX9867_IFC1B, 3, 1, 0),
 };
 
-/* Input mixer */
+ 
 static const struct snd_kcontrol_new max9867_input_mixer_controls[] = {
 	SOC_DAPM_DOUBLE("Line Capture Switch", MAX9867_INPUTCONFIG, 7, 5, 1, 0),
 	SOC_DAPM_DOUBLE("Mic Capture Switch", MAX9867_INPUTCONFIG, 6, 4, 1, 0),
 };
 
-/* Output mixer */
+ 
 static const struct snd_kcontrol_new max9867_output_mixer_controls[] = {
 	SOC_DAPM_DOUBLE_R("Line Bypass Switch",
 			  MAX9867_LEFTLINELVL, MAX9867_RIGHTLINELVL, 6, 1, 1),
 };
 
-/* Sidetone mixer */
+ 
 static const struct snd_kcontrol_new max9867_sidetone_mixer_controls[] = {
 	SOC_DAPM_DOUBLE("Sidetone Switch", MAX9867_SIDETONE, 6, 7, 1, 0),
 };
 
-/* Line out switch */
+ 
 static const struct snd_kcontrol_new max9867_line_out_control =
 	SOC_DAPM_DOUBLE_R("Switch",
 			  MAX9867_LEFTVOL, MAX9867_RIGHTVOL, 6, 1, 1);
 
-/* DMIC mux */
+ 
 static const char *const dmic_mux_text[] = {
 	"ADC", "DMIC"
 };
@@ -332,7 +332,7 @@ static int max9867_dai_hw_params(struct snd_pcm_substream *substream,
 	unsigned int ni = DIV_ROUND_CLOSEST_ULL(96ULL * 0x10000 * params_rate(params),
 						max9867->pclk);
 
-	/* set up the ni value */
+	 
 	regmap_update_bits(max9867->regmap, MAX9867_AUDIOCLKHIGH,
 		MAX9867_NI_HIGH_MASK, (0xFF00 & ni) >> 8);
 	regmap_update_bits(max9867->regmap, MAX9867_AUDIOCLKLOW,
@@ -376,9 +376,7 @@ static int max9867_dai_hw_params(struct snd_pcm_substream *substream,
 		regmap_update_bits(max9867->regmap, MAX9867_IFC1B,
 			MAX9867_IFC1B_BCLK_MASK, value);
 
-		/* Exact integer mode available for 8kHz and 16kHz sample rates
-		 * and certain PCLK (prescaled MCLK) values.
-		 */
+		 
 		if (params_rate(params) == 8000 ||
 		    params_rate(params) == 16000) {
 			switch (max9867->pclk) {
@@ -399,16 +397,11 @@ static int max9867_dai_hw_params(struct snd_pcm_substream *substream,
 		if (freq && params_rate(params) == 16000)
 			freq++;
 
-		/* If exact integer mode not available, the freq value
-		 * remains zero, i.e. normal mode is used.
-		 */
+		 
 		regmap_update_bits(max9867->regmap, MAX9867_SYSCLK,
 				   MAX9867_FREQ_MASK, freq);
 	} else {
-		/*
-		 * digital pll locks on to any externally supplied LRCLK signal
-		 * and also enable rapid lock mode.
-		 */
+		 
 		regmap_update_bits(max9867->regmap, MAX9867_AUDIOCLKLOW,
 			MAX9867_RAPID_LOCK, MAX9867_RAPID_LOCK);
 		regmap_update_bits(max9867->regmap, MAX9867_AUDIOCLKHIGH,
@@ -433,7 +426,7 @@ static int max9867_set_dai_sysclk(struct snd_soc_dai *codec_dai,
 	struct max9867_priv *max9867 = snd_soc_component_get_drvdata(component);
 	int value = 0;
 
-	/* Set the prescaler based on the master clock frequency*/
+	 
 	if (freq >= 10000000 && freq <= 20000000) {
 		value |= MAX9867_PSCLK_10_20;
 		max9867->pclk = freq;
@@ -498,7 +491,7 @@ static int max9867_dai_set_fmt(struct snd_soc_dai *codec_dai,
 		return -EINVAL;
 	}
 
-	/* Clock inversion bits, BCI and WCI */
+	 
 	switch (fmt & SND_SOC_DAIFMT_INV_MASK) {
 	case SND_SOC_DAIFMT_NB_NF:
 		break;

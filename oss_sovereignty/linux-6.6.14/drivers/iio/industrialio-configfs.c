@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Industrial I/O configfs bits
- *
- * Copyright (c) 2015 Intel Corporation
- */
+
+ 
 
 #include <linux/configfs.h>
 #include <linux/module.h>

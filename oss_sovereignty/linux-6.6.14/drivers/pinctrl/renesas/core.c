@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Pin Control and GPIO driver for SuperH Pin Function Controller.
- *
- * Authors: Magnus Damm, Paul Mundt, Laurent Pinchart
- *
- * Copyright (C) 2008 Magnus Damm
- * Copyright (C) 2009 - 2012 Paul Mundt
- */
+
+ 
 
 #define DRV_NAME "sh-pfc"
 
@@ -37,7 +30,7 @@ static int sh_pfc_map_resources(struct sh_pfc *pfc,
 	unsigned int i;
 	int num_irqs;
 
-	/* Count the MEM and IRQ resources. */
+	 
 	for (num_windows = 0;; num_windows++) {
 		res = platform_get_resource(pdev, IORESOURCE_MEM, num_windows);
 		if (!res)
@@ -50,7 +43,7 @@ static int sh_pfc_map_resources(struct sh_pfc *pfc,
 	if (num_irqs < 0)
 		return num_irqs;
 
-	/* Allocate memory windows and IRQs arrays. */
+	 
 	windows = devm_kcalloc(pfc->dev, num_windows, sizeof(*windows),
 			       GFP_KERNEL);
 	if (windows == NULL)
@@ -69,7 +62,7 @@ static int sh_pfc_map_resources(struct sh_pfc *pfc,
 		pfc->irqs = irqs;
 	}
 
-	/* Fill them. */
+	 
 	for (i = 0; i < num_windows; i++) {
 		windows->virt = devm_platform_get_and_ioremap_resource(pdev, i, &res);
 		if (IS_ERR(windows->virt))
@@ -90,7 +83,7 @@ static void __iomem *sh_pfc_phys_to_virt(struct sh_pfc *pfc, u32 reg)
 	phys_addr_t address = reg;
 	unsigned int i;
 
-	/* scan through physical windows and convert address */
+	 
 	for (i = 0; i < pfc->num_windows; i++) {
 		window = pfc->windows + i;
 
@@ -184,7 +177,7 @@ static void sh_pfc_unlock_reg(struct sh_pfc *pfc, u32 reg, u32 data)
 	if (pfc->info->unlock_reg >= 0x80000000UL)
 		unlock = pfc->info->unlock_reg;
 	else
-		/* unlock_reg is a mask */
+		 
 		unlock = reg & ~pfc->info->unlock_reg;
 
 	sh_pfc_write_raw_reg(sh_pfc_phys_to_virt(pfc, unlock), 32, ~data);
@@ -332,13 +325,13 @@ int sh_pfc_config_mux(struct sh_pfc *pfc, unsigned mark, int pinmux_type)
 	case PINMUX_TYPE_INPUT:
 		range = &pfc->info->input;
 		break;
-#endif /* CONFIG_PINCTRL_SH_PFC_GPIO */
+#endif  
 
 	default:
 		return -EINVAL;
 	}
 
-	/* Iterate over all the configuration fields we need to update. */
+	 
 	while (1) {
 		const struct pinmux_cfg_reg *cr;
 		unsigned int field;
@@ -354,32 +347,21 @@ int sh_pfc_config_mux(struct sh_pfc *pfc, unsigned mark, int pinmux_type)
 		if (!enum_id)
 			break;
 
-		/* Check if the configuration field selects a function. If it
-		 * doesn't, skip the field if it's not applicable to the
-		 * requested pinmux type.
-		 */
+		 
 		in_range = sh_pfc_enum_in_range(enum_id, &pfc->info->function);
 		if (!in_range) {
 			if (pinmux_type == PINMUX_TYPE_FUNCTION) {
-				/* Functions are allowed to modify all
-				 * fields.
-				 */
+				 
 				in_range = 1;
 			} else if (pinmux_type != PINMUX_TYPE_GPIO) {
-				/* Input/output types can only modify fields
-				 * that correspond to their respective ranges.
-				 */
+				 
 				in_range = sh_pfc_enum_in_range(enum_id, range);
 
-				/*
-				 * special case pass through for fixed
-				 * input-only or output-only pins without
-				 * function enum register association.
-				 */
+				 
 				if (in_range && enum_id == range->force)
 					continue;
 			}
-			/* GPIOs are only allowed to modify function fields. */
+			 
 		}
 
 		if (!in_range)
@@ -402,10 +384,7 @@ static int sh_pfc_init_ranges(struct sh_pfc *pfc)
 	unsigned int i;
 
 	if (pfc->info->pins[0].pin == (u16)-1) {
-		/* Pin number -1 denotes that the SoC doesn't report pin numbers
-		 * in its pin arrays yet. Consider the pin numbers range as
-		 * continuous and allocate a single range.
-		 */
+		 
 		pfc->nr_ranges = 1;
 		pfc->ranges = devm_kzalloc(pfc->dev, sizeof(*pfc->ranges),
 					   GFP_KERNEL);
@@ -419,10 +398,7 @@ static int sh_pfc_init_ranges(struct sh_pfc *pfc)
 		return 0;
 	}
 
-	/* Count, allocate and fill the ranges. The PFC SoC data pins array must
-	 * be sorted by pin numbers, and pins without a GPIO port must come
-	 * last.
-	 */
+	 
 	for (i = 1, nr_ranges = 1; i < pfc->info->nr_pins; ++i) {
 		if (pfc->info->pins[i-1].pin != pfc->info->pins[i].pin - 1)
 			nr_ranges++;
@@ -644,7 +620,7 @@ static const struct of_device_id sh_pfc_of_table[] = {
 		.data = &sh73a0_pinmux_info,
 	},
 #endif
-	{ /* sentinel */ }
+	{   }
 };
 #endif
 
@@ -696,7 +672,7 @@ static int sh_pfc_suspend_init(struct sh_pfc *pfc)
 {
 	unsigned int n;
 
-	/* This is the best we can do to check for the presence of PSCI */
+	 
 	if (!psci_ops.cpu_suspend)
 		return 0;
 
@@ -735,7 +711,7 @@ static int sh_pfc_resume_noirq(struct device *dev)
 static int sh_pfc_suspend_init(struct sh_pfc *pfc) { return 0; }
 static int sh_pfc_suspend_noirq(struct device *dev) { return 0; }
 static int sh_pfc_resume_noirq(struct device *dev) { return 0; }
-#endif	/* CONFIG_ARM_PSCI_FW */
+#endif	 
 
 static DEFINE_NOIRQ_DEV_PM_OPS(sh_pfc_pm, sh_pfc_suspend_noirq, sh_pfc_resume_noirq);
 
@@ -887,7 +863,7 @@ static void __init sh_pfc_check_cfg_reg(const char *drvname,
 			sh_pfc_warn("reg 0x%x can be described with variable-width reserved fields\n",
 				    cfg_reg->reg);
 
-		/* Skip field checks (done at build time) */
+		 
 		goto check_enum_ids;
 	}
 
@@ -961,21 +937,17 @@ static void __init sh_pfc_check_bias_reg(const struct sh_pfc_soc_info *info,
 			continue;
 
 		if (bias->puen && bias->pud) {
-			/*
-			 * Pull-enable and pull-up/down control registers
-			 * As some SoCs have pins that support only pull-up
-			 * or pull-down, we just check for one of them
-			 */
+			 
 			if (!(pin->configs & SH_PFC_PIN_CFG_PULL_UP_DOWN))
 				sh_pfc_err("bias_reg 0x%x:%u: pin %s lacks one or more SH_PFC_PIN_CFG_PULL_* flags\n",
 					   bias->puen, i, pin->name);
 		} else if (bias->puen) {
-			/* Pull-up control register only */
+			 
 			if (!(pin->configs & SH_PFC_PIN_CFG_PULL_UP))
 				sh_pfc_err("bias_reg 0x%x:%u: pin %s lacks SH_PFC_PIN_CFG_PULL_UP flag\n",
 					   bias->puen, i, pin->name);
 		} else if (bias->pud) {
-			/* Pull-down control register only */
+			 
 			if (!(pin->configs & SH_PFC_PIN_CFG_PULL_DOWN))
 				sh_pfc_err("bias_reg 0x%x:%u: pin %s lacks SH_PFC_PIN_CFG_PULL_DOWN flag\n",
 					   bias->pud, i, pin->name);
@@ -1038,7 +1010,7 @@ static void __init sh_pfc_check_info(const struct sh_pfc_soc_info *info)
 	sh_pfc_drive_done = false;
 	sh_pfc_power_done = false;
 
-	/* Check pins */
+	 
 	for (i = 0; i < info->nr_pins; i++) {
 		const struct sh_pfc_pin *pin = &info->pins[i];
 		unsigned int x;
@@ -1124,7 +1096,7 @@ static void __init sh_pfc_check_info(const struct sh_pfc_soc_info *info)
 		}
 	}
 
-	/* Check groups and functions */
+	 
 	refcnts = kcalloc(info->nr_groups, sizeof(*refcnts), GFP_KERNEL);
 	if (!refcnts)
 		return;
@@ -1175,11 +1147,11 @@ static void __init sh_pfc_check_info(const struct sh_pfc_soc_info *info)
 
 	kfree(refcnts);
 
-	/* Check config register descriptions */
+	 
 	for (i = 0; info->cfg_regs && info->cfg_regs[i].reg; i++)
 		sh_pfc_check_cfg_reg(drvname, &info->cfg_regs[i]);
 
-	/* Check drive strength registers */
+	 
 	for (i = 0; drive_regs && drive_regs[i].reg; i++)
 		sh_pfc_check_drive_reg(info, &drive_regs[i]);
 
@@ -1198,7 +1170,7 @@ static void __init sh_pfc_check_info(const struct sh_pfc_soc_info *info)
 		}
 	}
 
-	/* Check bias registers */
+	 
 	for (i = 0; bias_regs && (bias_regs[i].puen || bias_regs[i].pud); i++)
 		sh_pfc_check_bias_reg(info, &bias_regs[i]);
 
@@ -1221,11 +1193,11 @@ static void __init sh_pfc_check_info(const struct sh_pfc_soc_info *info)
 		}
 	}
 
-	/* Check ioctrl registers */
+	 
 	for (i = 0; info->ioctrl_regs && info->ioctrl_regs[i].reg; i++)
 		sh_pfc_check_reg(drvname, info->ioctrl_regs[i].reg, U32_MAX);
 
-	/* Check data registers */
+	 
 	for (i = 0; info->data_regs && info->data_regs[i].reg; i++) {
 		sh_pfc_check_reg(drvname, info->data_regs[i].reg,
 				 GENMASK(info->data_regs[i].reg_width - 1, 0));
@@ -1235,7 +1207,7 @@ static void __init sh_pfc_check_info(const struct sh_pfc_soc_info *info)
 	}
 
 #ifdef CONFIG_PINCTRL_SH_FUNC_GPIO
-	/* Check function GPIOs */
+	 
 	for (i = 0; i < info->nr_func_gpios; i++) {
 		const struct pinmux_func *func = &info->func_gpios[i];
 
@@ -1291,9 +1263,9 @@ free_regs:
 	kfree(sh_pfc_regs);
 }
 
-#else /* !DEBUG */
+#else  
 static inline void sh_pfc_check_driver(struct platform_driver *pdrv) {}
-#endif /* !DEBUG */
+#endif  
 
 static int sh_pfc_probe(struct platform_device *pdev)
 {
@@ -1324,7 +1296,7 @@ static int sh_pfc_probe(struct platform_device *pdev)
 		if (ret < 0)
 			return ret;
 
-		/* .init() may have overridden pfc->info */
+		 
 		info = pfc->info;
 	}
 
@@ -1332,7 +1304,7 @@ static int sh_pfc_probe(struct platform_device *pdev)
 	if (ret)
 		return ret;
 
-	/* Enable dummy states for those platforms without pinctrl support */
+	 
 	if (!of_have_populated_dt())
 		pinctrl_provide_dummies();
 
@@ -1340,24 +1312,16 @@ static int sh_pfc_probe(struct platform_device *pdev)
 	if (ret < 0)
 		return ret;
 
-	/*
-	 * Initialize pinctrl bindings first
-	 */
+	 
 	ret = sh_pfc_register_pinctrl(pfc);
 	if (unlikely(ret != 0))
 		return ret;
 
 #ifdef CONFIG_PINCTRL_SH_PFC_GPIO
-	/*
-	 * Then the GPIO chip
-	 */
+	 
 	ret = sh_pfc_register_gpiochip(pfc);
 	if (unlikely(ret != 0)) {
-		/*
-		 * If the GPIO chip fails to come up we still leave the
-		 * PFC state as it is, given that there are already
-		 * extant users of it that have succeeded by this point.
-		 */
+		 
 		dev_notice(pfc->dev, "failed to init GPIO chip, ignoring...\n");
 	}
 #endif
@@ -1406,7 +1370,7 @@ static const struct platform_device_id sh_pfc_id_table[] = {
 #ifdef CONFIG_PINCTRL_PFC_SHX3
 	{ "pfc-shx3", (kernel_ulong_t)&shx3_pinmux_info },
 #endif
-	{ /* sentinel */ }
+	{   }
 };
 
 static struct platform_driver sh_pfc_driver = {

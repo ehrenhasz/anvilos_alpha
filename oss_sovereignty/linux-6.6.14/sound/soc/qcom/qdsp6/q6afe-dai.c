@@ -1,6 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2011-2017, The Linux Foundation. All rights reserved.
-// Copyright (c) 2018, Linaro Limited
+
+
+
 
 #include <linux/err.h>
 #include <linux/init.h>
@@ -127,14 +127,14 @@ static int q6tdm_set_tdm_slot(struct snd_soc_dai *dai,
 	unsigned int cap_mask;
 	int rc = 0;
 
-	/* HW only supports 16 and 32 bit slot width configuration */
+	 
 	if ((slot_width != 16) && (slot_width != 32)) {
 		dev_err(dai->dev, "%s: invalid slot_width %d\n",
 			__func__, slot_width);
 		return -EINVAL;
 	}
 
-	/* HW supports 1-32 slots configuration. Typical: 1, 2, 4, 8, 16, 32 */
+	 
 	switch (slots) {
 	case 2:
 		cap_mask = 0x03;
@@ -158,7 +158,7 @@ static int q6tdm_set_tdm_slot(struct snd_soc_dai *dai,
 	case PRIMARY_TDM_RX_0 ... QUINARY_TDM_TX_7:
 		tdm->nslots_per_frame = slots;
 		tdm->slot_width = slot_width;
-		/* TDM RX dais ids are even and tx are odd */
+		 
 		tdm->slot_mask = ((dai->id & 0x1) ? tx_mask : rx_mask) & cap_mask;
 		break;
 	default:
@@ -201,7 +201,7 @@ static int q6tdm_set_channel_map(struct snd_soc_dai *dai,
 
 			tdm->num_channels = tx_num;
 		} else {
-			/* rx */
+			 
 			if (!rx_slot) {
 				dev_err(dai->dev, "rx slot not found\n");
 				return -EINVAL;
@@ -294,7 +294,7 @@ static int q6dma_set_channel_map(struct snd_soc_dai *dai,
 	case RX_CODEC_DMA_RX_5:
 	case RX_CODEC_DMA_RX_6:
 	case RX_CODEC_DMA_RX_7:
-		/* rx */
+		 
 		if (!rx_ch_mask) {
 			dev_err(dai->dev, "rx slot not found\n");
 			return -EINVAL;
@@ -355,7 +355,7 @@ static int q6afe_dai_prepare(struct snd_pcm_substream *substream,
 	int rc;
 
 	if (dai_data->is_port_started[dai->id]) {
-		/* stop the port and restart with new port config */
+		 
 		rc = q6afe_port_stop(dai_data->port[dai->id]);
 		if (rc < 0) {
 			dev_err(dai->dev, "fail to close AFE port (%d)\n", rc);
@@ -414,7 +414,7 @@ static int q6slim_set_channel_map(struct snd_soc_dai *dai,
 	int i;
 
 	if (dai->id & 0x1) {
-		/* TX */
+		 
 		if (!tx_slot) {
 			pr_err("%s: tx slot not found\n", __func__);
 			return -EINVAL;
@@ -972,7 +972,7 @@ static void of_q6afe_parse_dai_data(struct device *dev,
 		}
 
 		switch (id) {
-		/* MI2S specific properties */
+		 
 		case QUINARY_MI2S_RX ... QUINARY_MI2S_TX:
 		case PRIMARY_MI2S_RX ... QUATERNARY_MI2S_TX:
 			priv = &data->priv[id];

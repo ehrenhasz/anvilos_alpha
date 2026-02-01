@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Driver for the Cirrus EP93xx lcd backlight
- *
- * Copyright (c) 2010 H Hartley Sweeten <hsweeten@visionengravers.com>
- *
- * This driver controls the pulse width modulated brightness control output,
- * BRIGHT, on the Cirrus EP9307, EP9312, and EP9315 processors.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/platform_device.h>
@@ -66,15 +59,7 @@ static int ep93xxbl_probe(struct platform_device *dev)
 	if (!res)
 		return -ENXIO;
 
-	/*
-	 * FIXME - We don't do a request_mem_region here because we are
-	 * sharing the register space with the framebuffer driver (see
-	 * drivers/video/ep93xx-fb.c) and doing so will cause the second
-	 * loaded driver to return -EBUSY.
-	 *
-	 * NOTE: No locking is required; the framebuffer does not touch
-	 * this register.
-	 */
+	 
 	ep93xxbl->mmio = devm_ioremap(&dev->dev, res->start,
 				      resource_size(res));
 	if (!ep93xxbl->mmio)

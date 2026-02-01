@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * NCI based driver for Samsung S3FWRN5 NFC chip
- *
- * Copyright (C) 2015 Samsung Electrnoics
- * Robert Baldyga <r.baldyga@samsung.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <net/nfc/nci_core.h>
@@ -27,7 +22,7 @@ static int s3fwrn5_firmware_init(struct s3fwrn5_info *info)
 
 	s3fwrn5_fw_init(fw_info, "sec_s3fwrn5_firmware.bin");
 
-	/* Get firmware data */
+	 
 	ret = s3fwrn5_fw_request_firmware(fw_info);
 	if (ret < 0)
 		dev_err(&fw_info->ndev->nfc_dev->dev,
@@ -40,7 +35,7 @@ static int s3fwrn5_firmware_update(struct s3fwrn5_info *info)
 	bool need_update;
 	int ret;
 
-	/* Update firmware */
+	 
 
 	s3fwrn5_set_wake(info, false);
 	s3fwrn5_set_mode(info, S3FWRN5_MODE_FW);
@@ -60,7 +55,7 @@ static int s3fwrn5_firmware_update(struct s3fwrn5_info *info)
 	if (ret < 0)
 		goto out;
 
-	/* Update RF configuration */
+	 
 
 	s3fwrn5_set_mode(info, S3FWRN5_MODE_NCI);
 
@@ -128,7 +123,7 @@ static int s3fwrn5_nci_post_setup(struct nci_dev *ndev)
 	int ret;
 
 	if (s3fwrn5_firmware_init(info)) {
-		//skip bootloader mode
+		
 		return 0;
 	}
 
@@ -136,7 +131,7 @@ static int s3fwrn5_nci_post_setup(struct nci_dev *ndev)
 	if (ret < 0)
 		return ret;
 
-	/* NCI core reset */
+	 
 
 	s3fwrn5_set_mode(info, S3FWRN5_MODE_NCI);
 	s3fwrn5_set_wake(info, true);

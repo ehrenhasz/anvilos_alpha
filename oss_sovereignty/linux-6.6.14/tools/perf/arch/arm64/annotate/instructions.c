@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/compiler.h>
 #include <sys/types.h>
 #include <regex.h>
@@ -97,11 +97,11 @@ static int arm64__annotate_init(struct arch *arch, char *cpuid __maybe_unused)
 	if (!arm)
 		return ENOMEM;
 
-	/* bl, blr */
+	 
 	err = regcomp(&arm->call_insn, "^blr?$", REG_EXTENDED);
 	if (err)
 		goto out_free_arm;
-	/* b, b.cond, br, cbz/cbnz, tbz/tbnz */
+	 
 	err = regcomp(&arm->jump_insn, "^[ct]?br?\\.?(cc|cs|eq|ge|gt|hi|hs|le|lo|ls|lt|mi|ne|pl|vc|vs)?n?z?$",
 		      REG_EXTENDED);
 	if (err)

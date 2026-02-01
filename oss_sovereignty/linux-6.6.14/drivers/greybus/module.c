@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Greybus Module code
- *
- * Copyright 2016 Google Inc.
- * Copyright 2016 Linaro Ltd.
- */
+
+ 
 
 #include <linux/greybus.h>
 #include "greybus_trace.h"
@@ -30,14 +25,14 @@ static ssize_t eject_store(struct device *dev,
 		intf = module->interfaces[i];
 
 		mutex_lock(&intf->mutex);
-		/* Set flag to prevent concurrent activation. */
+		 
 		intf->ejected = true;
 		gb_interface_disable(intf);
 		gb_interface_deactivate(intf);
 		mutex_unlock(&intf->mutex);
 	}
 
-	/* Tell the SVC to eject the primary interface. */
+	 
 	ret = gb_svc_intf_eject(module->hd->svc, module->module_id);
 	if (ret)
 		return ret;
@@ -133,9 +128,7 @@ err_put_interfaces:
 	return NULL;
 }
 
-/*
- * Register and enable an interface after first attempting to activate it.
- */
+ 
 static void gb_module_register_interface(struct gb_interface *intf)
 {
 	struct gb_module *module = intf->module;
@@ -179,7 +172,7 @@ err_unlock:
 
 static void gb_module_deregister_interface(struct gb_interface *intf)
 {
-	/* Mark as disconnected to prevent I/O during disable. */
+	 
 	if (intf->module->disconnected)
 		intf->disconnected = true;
 
@@ -192,7 +185,7 @@ static void gb_module_deregister_interface(struct gb_interface *intf)
 	gb_interface_del(intf);
 }
 
-/* Register a module and its interfaces. */
+ 
 int gb_module_add(struct gb_module *module)
 {
 	size_t i;
@@ -212,7 +205,7 @@ int gb_module_add(struct gb_module *module)
 	return 0;
 }
 
-/* Deregister a module and its interfaces. */
+ 
 void gb_module_del(struct gb_module *module)
 {
 	size_t i;

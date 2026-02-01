@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-// Copyright (C) 2014 Broadcom Corporation
+
+
 
 #include <linux/bitops.h>
 #include <linux/clk.h>
@@ -18,7 +18,7 @@
 #define MAX_ROWS			8
 #define MAX_COLS			8
 
-/* Register/field definitions */
+ 
 #define KPCR_OFFSET			0x00000080
 #define KPCR_MODE			0x00000002
 #define KPCR_MODE_SHIFT			1
@@ -58,11 +58,11 @@
 #define KPCR_STATUSFILTERTYPE_MAX	7
 #define KPCR_COLFILTERTYPE_MAX		7
 
-/* Macros to determine the row/column from a bit that is set in SSR0/1. */
+ 
 #define BIT_TO_ROW_SSRN(bit_nr, reg_n)	(((bit_nr) >> 3) + 4 * (reg_n))
 #define BIT_TO_COL(bit_nr)		((bit_nr) % 8)
 
-/* Structure representing various run-time entities */
+ 
 struct bcm_kp {
 	void __iomem *base;
 	int irq;
@@ -78,10 +78,7 @@ struct bcm_kp {
 	u32 imr1_val;
 };
 
-/*
- * Returns the keycode from the input device keymap given the row and
- * column.
- */
+ 
 static int bcm_kp_get_keycode(struct bcm_kp *kp, int row, int col)
 {
 	unsigned int row_shift = get_count_order(kp->n_cols);
@@ -98,7 +95,7 @@ static void bcm_kp_report_keys(struct bcm_kp *kp, int reg_num, int pull_mode)
 	int row, col;
 	unsigned int keycode;
 
-	/* Clear interrupts */
+	 
 	writel(0xFFFFFFFF, kp->base + KPICRN_OFFSET(reg_num));
 
 	state = readl(kp->base + KPSSRN_OFFSET(reg_num));
@@ -107,7 +104,7 @@ static void bcm_kp_report_keys(struct bcm_kp *kp, int reg_num, int pull_mode)
 
 	for_each_set_bit(bit_nr, &change, BITS_PER_LONG) {
 		key_press = state & BIT(bit_nr);
-		/* The meaning of SSR register depends on pull mode. */
+		 
 		key_press = pull_mode ? !key_press : key_press;
 		row = BIT_TO_ROW_SSRN(bit_nr, reg_num);
 		col = BIT_TO_COL(bit_nr);
@@ -199,7 +196,7 @@ static int bcm_kp_matrix_key_parse_dt(struct bcm_kp *kp)
 	unsigned int i;
 	unsigned int num_rows, col_mask, rows_set;
 
-	/* Initialize the KPCR Keypad Configuration Register */
+	 
 	kp->kpcr = KPCR_STATUSFILTERENABLE | KPCR_COLFILTERENABLE;
 
 	error = matrix_keypad_parse_properties(dev, &kp->n_rows, &kp->n_cols);
@@ -208,30 +205,26 @@ static int bcm_kp_matrix_key_parse_dt(struct bcm_kp *kp)
 		return error;
 	}
 
-	/* Set row width for the ASIC block. */
+	 
 	kp->kpcr |= (kp->n_rows - 1) << KPCR_ROWWIDTH_SHIFT;
 
-	/* Set column width for the ASIC block. */
+	 
 	kp->kpcr |= (kp->n_cols - 1) << KPCR_COLUMNWIDTH_SHIFT;
 
-	/* Configure the IMR registers */
+	 
 
-	/*
-	 * IMR registers contain interrupt enable bits for 8x8 matrix
-	 * IMR0 register format: <row3> <row2> <row1> <row0>
-	 * IMR1 register format: <row7> <row6> <row5> <row4>
-	 */
+	 
 	col_mask = (1 << (kp->n_cols)) - 1;
 	num_rows = kp->n_rows;
 
-	/* Set column bits in rows 0 to 3 in IMR0 */
+	 
 	kp->imr0_val = col_mask;
 
 	rows_set = 1;
 	while (--num_rows && rows_set++ < 4)
 		kp->imr0_val |= kp->imr0_val << MAX_COLS;
 
-	/* Set column bits in rows 4 to 7 in IMR1 */
+	 
 	kp->imr1_val = 0;
 	if (num_rows) {
 		kp->imr1_val = col_mask;
@@ -239,16 +232,13 @@ static int bcm_kp_matrix_key_parse_dt(struct bcm_kp *kp)
 			kp->imr1_val |= kp->imr1_val << MAX_COLS;
 	}
 
-	/* Initialize the KPEMR Keypress Edge Mode Registers */
-	/* Trigger on both edges */
+	 
+	 
 	kp->kpemr = 0;
 	for (i = 0; i <= 30; i += 2)
 		kp->kpemr |= (KPEMR_EDGETYPE_BOTH << i);
 
-	/*
-	 * Obtain the Status filter debounce value and verify against the
-	 * possible values specified in the DT binding.
-	 */
+	 
 	of_property_read_u32(np, "status-debounce-filter-period", &dt_val);
 
 	if (dt_val > KPCR_STATUSFILTERTYPE_MAX) {
@@ -259,10 +249,7 @@ static int bcm_kp_matrix_key_parse_dt(struct bcm_kp *kp)
 
 	kp->kpcr |= dt_val << KPCR_STATUSFILTERTYPE_SHIFT;
 
-	/*
-	 * Obtain the Column filter debounce value and verify against the
-	 * possible values specified in the DT binding.
-	 */
+	 
 	of_property_read_u32(np, "col-debounce-filter-period", &dt_val);
 
 	if (dt_val > KPCR_COLFILTERTYPE_MAX) {
@@ -273,15 +260,9 @@ static int bcm_kp_matrix_key_parse_dt(struct bcm_kp *kp)
 
 	kp->kpcr |= dt_val << KPCR_COLFILTERTYPE_SHIFT;
 
-	/*
-	 * Determine between the row and column,
-	 * which should be configured as output.
-	 */
+	 
 	if (of_property_read_bool(np, "row-output-enabled")) {
-		/*
-		* Set RowOContrl or ColumnOContrl in KPIOR
-		* to the number of pins to drive as outputs
-		*/
+		 
 		kp->kpior = ((1 << kp->n_rows) - 1) <<
 				KPIOR_ROWOCONTRL_SHIFT;
 	} else {
@@ -289,9 +270,7 @@ static int bcm_kp_matrix_key_parse_dt(struct bcm_kp *kp)
 				KPIOR_COLUMNOCONTRL_SHIFT;
 	}
 
-	/*
-	 * Determine if the scan pull up needs to be enabled
-	 */
+	 
 	if (of_property_read_bool(np, "pull-up-enabled"))
 		kp->kpcr |= KPCR_MODE;
 
@@ -321,7 +300,7 @@ static int bcm_kp_probe(struct platform_device *pdev)
 
 	__set_bit(EV_KEY, input_dev->evbit);
 
-	/* Enable auto repeat feature of Linux input subsystem */
+	 
 	if (of_property_read_bool(pdev->dev.of_node, "autorepeat"))
 		__set_bit(EV_REP, input_dev->evbit);
 
@@ -356,7 +335,7 @@ static int bcm_kp_probe(struct platform_device *pdev)
 	if (IS_ERR(kp->base))
 		return PTR_ERR(kp->base);
 
-	/* Enable clock */
+	 
 	kp->clk = devm_clk_get_optional(&pdev->dev, "peri_clk");
 	if (IS_ERR(kp->clk)) {
 		return dev_err_probe(&pdev->dev, PTR_ERR(kp->clk), "Failed to get clock\n");
@@ -384,7 +363,7 @@ static int bcm_kp_probe(struct platform_device *pdev)
 			return error;
 	}
 
-	/* Put the kp into a known sane state */
+	 
 	bcm_kp_stop(kp);
 
 	kp->irq = platform_get_irq(pdev, 0);

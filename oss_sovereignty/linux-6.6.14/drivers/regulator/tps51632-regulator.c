@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * tps51632-regulator.c -- TI TPS51632
- *
- * Regulator driver for TPS51632 3-2-1 Phase D-Cap Step Down Driverless
- * Controller with serial VID control and DVFS.
- *
- * Copyright (c) 2012, NVIDIA Corporation.
- *
- * Author: Laxman Dewangan <ldewangan@nvidia.com>
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/i2c.h>
@@ -25,7 +16,7 @@
 #include <linux/regulator/tps51632-regulator.h>
 #include <linux/slab.h>
 
-/* Register definitions */
+ 
 #define TPS51632_VOLTAGE_SELECT_REG		0x0
 #define TPS51632_VOLTAGE_BASE_REG		0x1
 #define TPS51632_OFFSET_REG			0x2
@@ -43,7 +34,7 @@
 #define TPS51632_VMAX_MASK			0x7F
 #define TPS51632_VMAX_LOCK			0x80
 
-/* TPS51632_DVFS_CONTROL_REG */
+ 
 #define TPS51632_DVFS_PWMEN			0x1
 #define TPS51632_DVFS_STEP_20			0x2
 #define TPS51632_DVFS_VMAX_PG			0x4
@@ -51,7 +42,7 @@
 #define TPS51632_DVFS_OCA_EN			0x10
 #define TPS51632_DVFS_FCCM			0x20
 
-/* TPS51632_POWER_STATE_REG */
+ 
 #define TPS51632_POWER_STATE_MASK		0x03
 #define TPS51632_POWER_STATE_MULTI_PHASE_CCM	0x0
 #define TPS51632_POWER_STATE_SINGLE_PHASE_CCM	0x1
@@ -69,7 +60,7 @@
 			TPS51632_VOLTAGE_STEP_10mV) +		\
 			TPS51632_MIN_VSEL)
 
-/* TPS51632 chip information */
+ 
 struct tps51632_chip {
 	struct device *dev;
 	struct regulator_desc desc;
@@ -126,12 +117,7 @@ static int tps51632_init_dcdc(struct tps51632_chip *tps,
 
 	if (pdata->max_voltage_uV) {
 		unsigned int vmax;
-		/**
-		 * TPS51632 hw behavior: VMAX register can be write only
-		 * once as it get locked after first write. The lock get
-		 * reset only when device is power-reset.
-		 * Write register only when lock bit is not enabled.
-		 */
+		 
 		ret = regmap_read(tps->regmap, TPS51632_VMAX_REG, &vmax);
 		if (ret < 0) {
 			dev_err(tps->dev, "VMAX read failed, err %d\n", ret);
@@ -324,7 +310,7 @@ static int tps51632_probe(struct i2c_client *client)
 		return ret;
 	}
 
-	/* Register the regulators */
+	 
 	config.dev = &client->dev;
 	config.init_data = pdata->reg_init_data;
 	config.driver_data = tps;

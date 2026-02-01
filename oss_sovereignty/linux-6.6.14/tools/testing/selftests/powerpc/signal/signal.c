@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright 2016, Cyril Bur, IBM Corp.
- *
- * Sending one self a signal should always get delivered.
- */
+
+ 
 
 #include <signal.h>
 #include <stdio.h>
@@ -52,7 +48,7 @@ static int test_signal()
 		exit(1);
 	}
 
-	/* Don't do this for MAX_ATTEMPT, its simply too long */
+	 
 	for(i  = 0; i < 1000; i++) {
 		pid = fork();
 		if (pid == -1) {
@@ -63,15 +59,15 @@ static int test_signal()
 			signal_self(ppid, SIGUSR1);
 			exit(1);
 		} else {
-			alarm(0); /* Disable any pending */
+			alarm(0);  
 			alarm(2);
 			while (!signaled && !fail)
 				asm volatile("": : :"memory");
 			if (!signaled) {
 				fprintf(stderr, "Didn't get signal from child\n");
-				FAIL_IF(1); /* For the line number */
+				FAIL_IF(1);  
 			}
-			/* Otherwise we'll loop too fast and fork() will eventually fail */
+			 
 			waitpid(pid, NULL, 0);
 		}
 	}
@@ -79,21 +75,21 @@ static int test_signal()
 	for (i = 0; i < MAX_ATTEMPT; i++) {
 		long rc;
 
-		alarm(0); /* Disable any pending */
+		alarm(0);  
 		signaled = 0;
 		alarm(TIMEOUT);
 		rc = signal_self(ppid, SIGUSR1);
 		if (rc) {
 			fprintf(stderr, "(%d) Fail reason: %d rc=0x%lx",
 					i, fail, rc);
-			FAIL_IF(1); /* For the line number */
+			FAIL_IF(1);  
 		}
 		while (!signaled && !fail)
 			asm volatile("": : :"memory");
 		if (!signaled) {
 			fprintf(stderr, "(%d) Fail reason: %d rc=0x%lx",
 					i, fail, rc);
-			FAIL_IF(1); /* For the line number */
+			FAIL_IF(1);  
 		}
 	}
 

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Driver for IDT/Renesas 79RC3243x Interrupt Controller.
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -97,7 +95,7 @@ static int idt_pic_init(struct device_node *of_node, struct device_node *parent)
 	ct->chip.irq_unmask = irq_gc_mask_clr_bit;
 	idtpic->gc = gc;
 
-	/* Mask interrupts. */
+	 
 	writel(0xffffffff, idtpic->base + IDT_PIC_IRQ_MASK);
 	gc->mask_cache = 0xffffffff;
 

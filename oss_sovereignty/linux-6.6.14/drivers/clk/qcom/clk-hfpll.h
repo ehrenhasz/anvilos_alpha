@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 
 #ifndef __QCOM_CLK_HFPLL_H__
 #define __QCOM_CLK_HFPLL_H__

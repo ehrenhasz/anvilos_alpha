@@ -1,13 +1,9 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright(c) 2008 - 2010 Realtek Corporation. All rights reserved.
- *
- * Contact Information: wlanfae <wlanfae@realtek.com>
- */
+ 
+ 
 #ifndef	__R8192UDM_H__
 #define __R8192UDM_H__
 
-/*--------------------------Define Parameters-------------------------------*/
+ 
 #define		OFDM_TABLE_LEN				19
 #define		CCK_TABLE_LEN				12
 
@@ -46,9 +42,9 @@
 #define		TX_RETRY_COUNT_REG		0x1ac
 #define		RegC38_TH				 20
 
-/*--------------------------Define Parameters-------------------------------*/
+ 
 
-/*------------------------------Define structure----------------------------*/
+ 
 struct dig_t {
 	u8		dig_enable_flag;
 	u8		dig_algorithm;
@@ -151,22 +147,22 @@ struct dcmd_txcmd {
 	u32	value;
 };
 
-/*------------------------------Define structure----------------------------*/
+ 
 
-/*------------------------Export global variable----------------------------*/
+ 
 extern	struct dig_t dm_digtable;
 
-/* Pre-calculated gain tables */
+ 
 extern const u32 dm_tx_bb_gain[TX_BB_GAIN_TABLE_LEN];
 extern const u8 dm_cck_tx_bb_gain[CCK_TX_BB_GAIN_TABLE_LEN][8];
 extern const u8 dm_cck_tx_bb_gain_ch14[CCK_TX_BB_GAIN_TABLE_LEN][8];
-/* Maps table index to iq amplify gain (dB, 12 to -24dB) */
+ 
 #define dm_tx_bb_gain_idx_to_amplify(idx) (-idx + 12)
 
-/*------------------------Export global variable----------------------------*/
+ 
 
-/*--------------------------Exported Function prototype---------------------*/
-/*--------------------------Exported Function prototype---------------------*/
+ 
+ 
 
 void rtl92e_dm_init(struct net_device *dev);
 void rtl92e_dm_deinit(struct net_device *dev);
@@ -183,4 +179,4 @@ void    rtl92e_dm_backup_state(struct net_device *dev);
 void    rtl92e_dm_init_edca_turbo(struct net_device *dev);
 void    rtl92e_dm_rf_pathcheck_wq(void *data);
 void rtl92e_dm_init_txpower_tracking(struct net_device *dev);
-#endif	/*__R8192UDM_H__ */
+#endif	 

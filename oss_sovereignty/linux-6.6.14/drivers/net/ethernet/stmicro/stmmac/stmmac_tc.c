@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0 OR MIT)
-/*
- * Copyright (c) 2018 Synopsys, Inc. and/or its affiliates.
- * stmmac TC Handling (HW only)
- */
+
+ 
 
 #include <net/pkt_cls.h>
 #include <net/tc_act/tc_gact.h>
@@ -47,7 +44,7 @@ static struct stmmac_tc_entry *tc_find_entry(struct stmmac_priv *priv,
 		first->handle = loc;
 		first->in_use = true;
 
-		/* Reset HW values */
+		 
 		memset(&first->val, 0, sizeof(first->val));
 	}
 
@@ -70,18 +67,18 @@ static int tc_fill_actions(struct stmmac_tc_entry *entry,
 		action_entry = frag;
 
 	tcf_exts_for_each_action(i, act, exts) {
-		/* Accept */
+		 
 		if (is_tcf_gact_ok(act)) {
 			action_entry->val.af = 1;
 			break;
 		}
-		/* Drop */
+		 
 		if (is_tcf_gact_shot(act)) {
 			action_entry->val.rf = 1;
 			break;
 		}
 
-		/* Unsupported */
+		 
 		return -EINVAL;
 	}
 
@@ -97,7 +94,7 @@ static int tc_fill_entry(struct stmmac_priv *priv,
 	u32 prio = cls->common.prio << 16;
 	int ret;
 
-	/* Only 1 match per entry */
+	 
 	if (sel->nkeys <= 0 || sel->nkeys > 1)
 		return -EINVAL;
 
@@ -209,7 +206,7 @@ err_unfill:
 static int tc_delete_knode(struct stmmac_priv *priv,
 			   struct tc_cls_u32_offload *cls)
 {
-	/* Set entry and fragments as not used */
+	 
 	tc_unfill_entry(priv, cls);
 
 	return stmmac_rxp_config(priv, priv->hw->pcsr, priv->tc_entries,
@@ -292,7 +289,7 @@ static int tc_init(struct stmmac_priv *priv)
 		memset(priv->plat->fpe_cfg, 0, sizeof(*priv->plat->fpe_cfg));
 	}
 
-	/* Fail silently as we can still use remaining features, e.g. CBS */
+	 
 	if (!dma_cap->frpsel)
 		return 0;
 
@@ -324,7 +321,7 @@ static int tc_init(struct stmmac_priv *priv)
 		return -EINVAL;
 	}
 
-	/* Reserve one last filter which lets all pass */
+	 
 	priv->tc_entries_max = count;
 	priv->tc_entries = devm_kcalloc(priv->device,
 			count, sizeof(*priv->tc_entries), GFP_KERNEL);
@@ -349,13 +346,13 @@ static int tc_setup_cbs(struct stmmac_priv *priv,
 	u64 value;
 	int ret;
 
-	/* Queue 0 is not AVB capable */
+	 
 	if (queue <= 0 || queue >= tx_queues_count)
 		return -EINVAL;
 	if (!priv->dma_cap.av)
 		return -EOPNOTSUPP;
 
-	/* Port Transmit Rate and Speed Divider */
+	 
 	switch (priv->speed) {
 	case SPEED_10000:
 		ptr = 32;
@@ -397,7 +394,7 @@ static int tc_setup_cbs(struct stmmac_priv *priv,
 		priv->plat->tx_queues_cfg[queue].mode_to_use = MTL_QUEUE_DCB;
 	}
 
-	/* Final adjustments for HW */
+	 
 	value = div_s64(qopt->idleslope * 1024ll * ptr, speed_div);
 	priv->plat->tx_queues_cfg[queue].idle_slope = value & GENMASK(31, 0);
 
@@ -449,7 +446,7 @@ static int tc_parse_flow_actions(struct stmmac_priv *priv,
 		}
 	}
 
-	/* Nothing to do, maybe inverse filter ? */
+	 
 	return 0;
 }
 
@@ -463,7 +460,7 @@ static int tc_add_basic_flow(struct stmmac_priv *priv,
 	struct flow_dissector *dissector = rule->match.dissector;
 	struct flow_match_basic match;
 
-	/* Nothing to do here */
+	 
 	if (!dissector_uses_key(dissector, FLOW_DISSECTOR_KEY_BASIC))
 		return -EINVAL;
 
@@ -484,7 +481,7 @@ static int tc_add_ip4_flow(struct stmmac_priv *priv,
 	u32 hw_match;
 	int ret;
 
-	/* Nothing to do here */
+	 
 	if (!dissector_uses_key(dissector, FLOW_DISSECTOR_KEY_IPV4_ADDRS))
 		return -EINVAL;
 
@@ -520,7 +517,7 @@ static int tc_add_ports_flow(struct stmmac_priv *priv,
 	bool is_udp;
 	int ret;
 
-	/* Nothing to do here */
+	 
 	if (!dissector_uses_key(dissector, FLOW_DISSECTOR_KEY_PORTS))
 		return -EINVAL;
 
@@ -677,7 +674,7 @@ static int tc_add_vlan_flow(struct stmmac_priv *priv,
 	    priv->rfs_entries_max[STMMAC_RFS_T_VLAN])
 		return -ENOENT;
 
-	/* Nothing to do here */
+	 
 	if (!dissector_uses_key(dissector, FLOW_DISSECTOR_KEY_VLAN))
 		return -EINVAL;
 
@@ -744,7 +741,7 @@ static int tc_add_ethtype_flow(struct stmmac_priv *priv,
 			return -ENOENT;
 	}
 
-	/* Nothing to do here */
+	 
 	if (!dissector_uses_key(dissector, FLOW_DISSECTOR_KEY_BASIC))
 		return -EINVAL;
 
@@ -874,7 +871,7 @@ static int tc_setup_cls(struct stmmac_priv *priv,
 {
 	int ret = 0;
 
-	/* When RSS is enabled, the filtering will be bypassed */
+	 
 	if (priv->rss.enable)
 		return -EBUSY;
 
@@ -1024,7 +1021,7 @@ static int tc_setup_taprio(struct stmmac_priv *priv,
 	}
 
 	mutex_lock(&priv->plat->est->lock);
-	/* Adjust for real system time */
+	 
 	priv->ptp_clock_ops.gettime64(&priv->ptp_clock_ops, &current_time);
 	current_time_ns = timespec64_to_ktime(current_time);
 	time = stmmac_calc_tas_basetime(qopt->base_time, current_time_ns,
@@ -1046,9 +1043,7 @@ static int tc_setup_taprio(struct stmmac_priv *priv,
 		return -EOPNOTSUPP;
 	}
 
-	/* Actual FPE register configuration will be done after FPE handshake
-	 * is success.
-	 */
+	 
 	priv->plat->fpe_cfg->enable = fpe;
 
 	ret = stmmac_est_configure(priv, priv->ioaddr, priv->plat->est,

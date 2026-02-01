@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: ISC */
-/* Copyright (C) 2022 MediaTek Inc. */
+ 
+ 
 
 #ifndef __MT76_CONNAC2_MAC_H
 #define __MT76_CONNAC2_MAC_H
@@ -35,11 +35,11 @@ enum {
 #define MT_TX_FREE_MSDU_CNT		GENMASK(9, 0)
 #define MT_TX_FREE_WLAN_ID		GENMASK(23, 14)
 #define MT_TX_FREE_COUNT		GENMASK(12, 0)
-/* 0: success, others: dropped */
+ 
 #define MT_TX_FREE_STATUS		GENMASK(14, 13)
 #define MT_TX_FREE_MSDU_ID		GENMASK(30, 16)
 #define MT_TX_FREE_PAIR			BIT(31)
-/* will support this field in further revision */
+ 
 #define MT_TX_FREE_RATE			GENMASK(13, 0)
 
 #define MT_TXD0_Q_IDX			GENMASK(31, 25)
@@ -130,7 +130,7 @@ enum {
 #define MT_TX_RATE_MODE			GENMASK(9, 6)
 #define MT_TX_RATE_SU_EXT_TONE		BIT(5)
 #define MT_TX_RATE_DCM			BIT(4)
-/* VHT/HE only use bits 0-3 */
+ 
 #define MT_TX_RATE_IDX			GENMASK(5, 0)
 
 #define MT_TXS0_FIXED_RATE		BIT(31)
@@ -168,7 +168,7 @@ enum {
 
 #define MT_TXS4_TIMESTAMP		GENMASK(31, 0)
 
-/* PPDU based TXS */
+ 
 #define MT_TXS5_MPDU_TX_BYTE		GENMASK(22, 0)
 #define MT_TXS5_MPDU_TX_CNT		GENMASK(31, 23)
 
@@ -176,7 +176,7 @@ enum {
 #define MT_TXS7_MPDU_RETRY_BYTE		GENMASK(22, 0)
 #define MT_TXS7_MPDU_RETRY_CNT		GENMASK(31, 23)
 
-/* RXD DW0 */
+ 
 #define MT_RXD0_LENGTH			GENMASK(15, 0)
 #define MT_RXD0_PKT_FLAG                GENMASK(19, 16)
 #define MT_RXD0_PKT_TYPE		GENMASK(31, 27)
@@ -185,7 +185,7 @@ enum {
 #define MT_RXD0_NORMAL_IP_SUM		BIT(23)
 #define MT_RXD0_NORMAL_UDP_TCP_SUM	BIT(24)
 
-/* RXD DW1 */
+ 
 #define MT_RXD1_NORMAL_WLAN_IDX		GENMASK(9, 0)
 #define MT_RXD1_NORMAL_GROUP_1		BIT(11)
 #define MT_RXD1_NORMAL_GROUP_2		BIT(12)
@@ -204,7 +204,7 @@ enum {
 #define MT_RXD1_NORMAL_ADD_OM		BIT(30)
 #define MT_RXD1_NORMAL_SEC_DONE		BIT(31)
 
-/* RXD DW2 */
+ 
 #define MT_RXD2_NORMAL_BSSID		GENMASK(5, 0)
 #define MT_RXD2_NORMAL_CO_ANT		BIT(6)
 #define MT_RXD2_NORMAL_BF_CQI		BIT(7)
@@ -224,7 +224,7 @@ enum {
 #define MT_RXD2_NORMAL_NON_AMPDU	BIT(30)
 #define MT_RXD2_NORMAL_BF_REPORT	BIT(31)
 
-/* RXD DW4 */
+ 
 #define MT_RXD4_NORMAL_PAYLOAD_FORMAT	GENMASK(1, 0)
 #define MT_RXD4_FIRST_AMSDU_FRAME	GENMASK(1, 0)
 #define MT_RXD4_MID_AMSDU_FRAME		BIT(1)
@@ -240,7 +240,7 @@ enum {
 
 #define MT_RXV_HDR_BAND_IDX		BIT(24)
 
-/* RXD DW3 */
+ 
 #define MT_RXD3_NORMAL_RXV_SEQ		GENMASK(7, 0)
 #define MT_RXD3_NORMAL_CH_FREQ		GENMASK(15, 8)
 #define MT_RXD3_NORMAL_ADDR_TYPE	GENMASK(17, 16)
@@ -260,7 +260,7 @@ enum {
 #define MT_RXD3_NORMAL_RX_DROP		BIT(30)
 #define MT_RXD3_NORMAL_VLAN2ETH		BIT(31)
 
-/* RXD GROUP4 */
+ 
 #define MT_RXD6_FRAME_CONTROL		GENMASK(15, 0)
 #define MT_RXD6_TA_LO			GENMASK(31, 16)
 
@@ -271,7 +271,7 @@ enum {
 
 #define MT_RXD9_HT_CONTROL		GENMASK(31, 0)
 
-/* P-RXV DW0 */
+ 
 #define MT_PRXV_TX_RATE			GENMASK(6, 0)
 #define MT_PRXV_TX_DCM			BIT(4)
 #define MT_PRXV_TX_ER_SU_106T		BIT(5)
@@ -287,14 +287,14 @@ enum {
 #define MT_PRXV_DCM			BIT(17)
 #define MT_PRXV_NUM_RX			BIT(20, 18)
 
-/* P-RXV DW1 */
+ 
 #define MT_PRXV_RCPI3			GENMASK(31, 24)
 #define MT_PRXV_RCPI2			GENMASK(23, 16)
 #define MT_PRXV_RCPI1			GENMASK(15, 8)
 #define MT_PRXV_RCPI0			GENMASK(7, 0)
 #define MT_PRXV_HE_RU_ALLOC_H		GENMASK(3, 0)
 
-/* C-RXV */
+ 
 #define MT_CRXV_HT_STBC			GENMASK(1, 0)
 #define MT_CRXV_TX_MODE			GENMASK(7, 4)
 #define MT_CRXV_FRAME_MODE		GENMASK(10, 8)
@@ -350,4 +350,4 @@ enum tx_port_idx {
 	MT_TX_PORT_IDX_MCU
 };
 
-#endif /* __MT76_CONNAC2_MAC_H */
+#endif  

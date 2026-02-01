@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * LED MTD trigger
- *
- * Copyright 2016 Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>
- *
- * Based on LED IDE-Disk Activity Trigger
- *
- * Copyright 2006 Openedhand Ltd.
- *
- * Author: Richard Purdie <rpurdie@openedhand.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/init.h>

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2012 Russell King
- *
- * Armada 510 (aka Dove) variant support
- */
+
+ 
 #include <linux/clk.h>
 #include <linux/io.h>
 #include <linux/of.h>
@@ -61,15 +57,11 @@ static int armada510_crtc_init(struct armada_crtc *dcrtc, struct device *dev)
 		v->clks[1] = clk;
 	}
 
-	/*
-	 * Lower the watermark so to eliminate jitter at higher bandwidths.
-	 * Disable SRAM read wait state to avoid system hang with external
-	 * clock.
-	 */
+	 
 	armada_updatel(CFG_DMA_WM(0x20), CFG_SRAM_WAIT | CFG_DMA_WM_MASK,
 		       dcrtc->base + LCD_CFG_RDREG4F);
 
-	/* Initialise SPU register */
+	 
 	writel_relaxed(ADV_HWC32ENABLE | ADV_HWC32ARGB | ADV_HWC32BLEND,
 		       dcrtc->base + LCD_SPU_ADV_REG);
 
@@ -84,20 +76,14 @@ static const u32 armada510_clk_sels[] = {
 };
 
 static const struct armada_clocking_params armada510_clocking = {
-	/* HDMI requires -0.6%..+0.5% */
+	 
 	.permillage_min = 994,
 	.permillage_max = 1005,
 	.settable = BIT(0) | BIT(1),
 	.div_max = SCLK_510_INT_DIV_MASK,
 };
 
-/*
- * Armada510 specific SCLK register selection.
- * This gets called with sclk = NULL to test whether the mode is
- * supportable, and again with sclk != NULL to set the clocks up for
- * that.  The former can return an error, but the latter is expected
- * not to.
- */
+ 
 static int armada510_crtc_compute_clock(struct armada_crtc *dcrtc,
 	const struct drm_display_mode *mode, uint32_t *sclk)
 {
@@ -121,7 +107,7 @@ static int armada510_crtc_compute_clock(struct armada_crtc *dcrtc,
 
 		*sclk = res.div | armada510_clk_sels[idx];
 
-		/* We are now using this clock */
+		 
 		v->sel_clk = res.clk;
 		swap(dcrtc->clk, res.clk);
 	}

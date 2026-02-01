@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * sigreturn.c - tests that x86 avoids Intel SYSRET pitfalls
- * Copyright (c) 2014-2016 Andrew Lutomirski
- */
+
+ 
 
 #define _GNU_SOURCE
 
@@ -61,7 +58,7 @@ static void clearhandler(int sig)
 		err(1, "sigaction");
 }
 
-/* State used by our signal handlers. */
+ 
 static gregset_t initial_regs;
 
 static volatile unsigned long rip;
@@ -88,11 +85,11 @@ static void sigusr1(int sig, siginfo_t *info, void *ctx_void)
 
 	memcpy(&initial_regs, &ctx->uc_mcontext.gregs, sizeof(gregset_t));
 
-	/* Set IP and CX to match so that SYSRET can happen. */
+	 
 	ctx->uc_mcontext.gregs[REG_RIP] = rip;
 	ctx->uc_mcontext.gregs[REG_RCX] = rip;
 
-	/* R11 and EFLAGS should already match. */
+	 
 	assert(ctx->uc_mcontext.gregs[REG_EFL] ==
 	       ctx->uc_mcontext.gregs[REG_R11]);
 
@@ -160,12 +157,7 @@ static void test_syscall_fallthrough_to(unsigned long ip)
 
 int main()
 {
-	/*
-	 * When the kernel returns from a slow-path syscall, it will
-	 * detect whether SYSRET is appropriate.  If it incorrectly
-	 * thinks that SYSRET is appropriate when RIP is noncanonical,
-	 * it'll crash on Intel CPUs.
-	 */
+	 
 	sethandler(SIGUSR1, sigusr1, 0);
 	for (int i = 47; i < 64; i++)
 		test_sigreturn_to(1UL<<i);
@@ -174,10 +166,10 @@ int main()
 
 	sethandler(SIGSEGV, sigsegv_for_fallthrough, 0);
 
-	/* One extra test to check that we didn't screw up the mremap logic. */
+	 
 	test_syscall_fallthrough_to((1UL << 47) - 2*PAGE_SIZE);
 
-	/* These are the interesting cases. */
+	 
 	for (int i = 47; i < 64; i++) {
 		test_syscall_fallthrough_to((1UL<<i) - PAGE_SIZE);
 		test_syscall_fallthrough_to(1UL<<i);

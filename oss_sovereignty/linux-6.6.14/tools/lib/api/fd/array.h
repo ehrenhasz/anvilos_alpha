@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef __API_FD_ARRAY__
 #define __API_FD_ARRAY__
 
@@ -6,16 +6,7 @@
 
 struct pollfd;
 
-/**
- * struct fdarray: Array of file descriptors
- *
- * @priv: Per array entry priv area, users should access just its contents,
- *	  not set it to anything, as it is kept in synch with @entries, being
- *	  realloc'ed, * for instance, in fdarray__{grow,filter}.
- *
- *	  I.e. using 'fda->priv[N].idx = * value' where N < fda->nr is ok,
- *	  but doing 'fda->priv = malloc(M)' is not allowed.
- */
+ 
 struct fdarray {
 	int	       nr;
 	int	       nr_alloc;
@@ -56,4 +47,4 @@ static inline int fdarray__available_entries(struct fdarray *fda)
 	return fda->nr_alloc - fda->nr;
 }
 
-#endif /* __API_FD_ARRAY__ */
+#endif  

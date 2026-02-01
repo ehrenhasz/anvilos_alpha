@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 
 #include <linux/ethtool_netlink.h>
 #include <linux/net_tstamp.h>
@@ -465,9 +465,7 @@ const char udp_tunnel_type_names[][ETH_GSTRING_LEN] = {
 static_assert(ARRAY_SIZE(udp_tunnel_type_names) ==
 	      __ETHTOOL_UDP_TUNNEL_TYPE_CNT);
 
-/* return false if legacy contained non-0 deprecated fields
- * maxtxpkt/maxrxpkt. rest of ksettings always updated
- */
+ 
 bool
 convert_legacy_settings_to_link_ksettings(
 	struct ethtool_link_ksettings *link_ksettings,
@@ -477,10 +475,7 @@ convert_legacy_settings_to_link_ksettings(
 
 	memset(link_ksettings, 0, sizeof(*link_ksettings));
 
-	/* This is used to tell users that driver is still using these
-	 * deprecated legacy fields, and they should not use
-	 * %ETHTOOL_GLINKSETTINGS/%ETHTOOL_SLINKSETTINGS
-	 */
+	 
 	if (legacy_settings->maxtxpkt ||
 	    legacy_settings->maxrxpkt)
 		retval = false;
@@ -622,10 +617,7 @@ int ethtool_check_ops(const struct ethtool_ops *ops)
 {
 	if (WARN_ON(ops->set_coalesce && !ops->supported_coalesce_params))
 		return -EINVAL;
-	/* NOTE: sufficiently insane drivers may swap ethtool_ops at runtime,
-	 * the fact that ops are checked at registration time does not
-	 * mean the ops attached to a netdev later on are sane.
-	 */
+	 
 	return 0;
 }
 

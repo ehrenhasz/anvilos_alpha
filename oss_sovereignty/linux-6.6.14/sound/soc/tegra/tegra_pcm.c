@@ -1,19 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * tegra_pcm.c - Tegra PCM driver
- *
- * Author: Stephen Warren <swarren@nvidia.com>
- * Copyright (C) 2010,2012 - NVIDIA, Inc.
- *
- * Based on code copyright/by:
- *
- * Copyright (c) 2009-2010, NVIDIA Corporation.
- * Scott Peterson <speterson@nvidia.com>
- * Vijay Mali <vmali@nvidia.com>
- *
- * Copyright (C) 2010 Google, Inc.
- * Iliyan Malchev <malchev@google.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/dma-mapping.h>
@@ -87,10 +73,10 @@ int tegra_pcm_open(struct snd_soc_component *component,
 
 	dmap = snd_soc_dai_get_dma_data(cpu_dai, substream);
 
-	/* Set HW params now that initialization is complete */
+	 
 	snd_soc_set_runtime_hwparams(substream, &tegra_pcm_hardware);
 
-	/* Ensure period size is multiple of 8 */
+	 
 	ret = snd_pcm_hw_constraint_step(substream->runtime, 0,
 					 SNDRV_PCM_HW_PARAM_PERIOD_BYTES, 0x8);
 	if (ret) {
@@ -117,7 +103,7 @@ int tegra_pcm_open(struct snd_soc_component *component,
 		return ret;
 	}
 
-	/* Set wait time to 500ms by default */
+	 
 	substream->wait_time = 500;
 
 	return 0;
@@ -209,10 +195,7 @@ int tegra_pcm_construct(struct snd_soc_component *component,
 {
 	struct device *dev = component->dev;
 
-	/*
-	 * Fallback for backwards-compatibility with older device trees that
-	 * have the iommus property in the virtual, top-level "sound" node.
-	 */
+	 
 	if (!of_get_property(dev->of_node, "iommus", NULL))
 		dev = rtd->card->snd_card->dev;
 

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
-    i2c-stub.c - I2C/SMBus chip emulator
 
-    Copyright (c) 2004 Mark M. Hoffman <mhoffman@lightlink.com>
-    Copyright (C) 2007-2014 Jean Delvare <jdelvare@suse.de>
-
-*/
+ 
 
 #define pr_fmt(fmt) "i2c-stub: " fmt
 
@@ -19,11 +13,7 @@
 
 #define MAX_CHIPS 10
 
-/*
- * Support for I2C_FUNC_SMBUS_BLOCK_DATA is disabled by default and must
- * be enabled explicitly by setting the I2C_FUNC_SMBUS_BLOCK_DATA bits
- * in the 'functionality' module parameter.
- */
+ 
 #define STUB_FUNC_DEFAULT \
 		(I2C_FUNC_SMBUS_QUICK | I2C_FUNC_SMBUS_BYTE | \
 		 I2C_FUNC_SMBUS_BYTE_DATA | I2C_FUNC_SMBUS_WORD_DATA | \
@@ -41,7 +31,7 @@ static unsigned long functionality = STUB_FUNC_DEFAULT;
 module_param(functionality, ulong, S_IRUGO | S_IWUSR);
 MODULE_PARM_DESC(functionality, "Override functionality bitfield");
 
-/* Some chips have banked register ranges */
+ 
 
 static u8 bank_reg[MAX_CHIPS];
 module_param_array(bank_reg, byte, NULL, S_IRUGO);
@@ -68,19 +58,18 @@ struct smbus_block_data {
 
 struct stub_chip {
 	u8 pointer;
-	u16 words[256];		/* Byte operations use the LSB as per SMBus
-				   specification */
+	u16 words[256];		 
 	struct list_head smbus_blocks;
 
-	/* For chips with banks, extra registers are allocated dynamically */
+	 
 	u8 bank_reg;
 	u8 bank_shift;
 	u8 bank_mask;
-	u8 bank_sel;		/* Currently selected bank */
+	u8 bank_sel;		 
 	u8 bank_start;
 	u8 bank_end;
 	u16 bank_size;
-	u16 *bank_words;	/* Room for bank_mask * bank_size registers */
+	u16 *bank_words;	 
 };
 
 static struct stub_chip *stub_chips;
@@ -119,7 +108,7 @@ static u16 *stub_get_wordp(struct stub_chip *chip, u8 offset)
 		return chip->words + offset;
 }
 
-/* Return negative errno on error. */
+ 
 static s32 stub_xfer(struct i2c_adapter *adap, u16 addr, unsigned short flags,
 	char read_write, u8 command, int size, union i2c_smbus_data *data)
 {
@@ -129,7 +118,7 @@ static s32 stub_xfer(struct i2c_adapter *adap, u16 addr, unsigned short flags,
 	struct smbus_block_data *b;
 	u16 *wordp;
 
-	/* Search for the right chip */
+	 
 	for (i = 0; i < stub_chips_nr; i++) {
 		if (addr == chip_addr[i]) {
 			chip = stub_chips + i;
@@ -172,7 +161,7 @@ static s32 stub_xfer(struct i2c_adapter *adap, u16 addr, unsigned short flags,
 				"smbus byte data - addr 0x%02x, wrote 0x%02x at 0x%02x.\n",
 				addr, data->byte, command);
 
-			/* Set the bank as needed */
+			 
 			if (chip->bank_words && command == chip->bank_reg) {
 				chip->bank_sel =
 					(data->byte >> chip->bank_shift)
@@ -210,11 +199,8 @@ static s32 stub_xfer(struct i2c_adapter *adap, u16 addr, unsigned short flags,
 		break;
 
 	case I2C_SMBUS_I2C_BLOCK_DATA:
-		/*
-		 * We ignore banks here, because banked chips don't use I2C
-		 * block transfers
-		 */
-		if (data->block[0] > 256 - command)	/* Avoid overrun */
+		 
+		if (data->block[0] > 256 - command)	 
 			data->block[0] = 256 - command;
 		len = data->block[0];
 		if (read_write == I2C_SMBUS_WRITE) {
@@ -239,10 +225,7 @@ static s32 stub_xfer(struct i2c_adapter *adap, u16 addr, unsigned short flags,
 		break;
 
 	case I2C_SMBUS_BLOCK_DATA:
-		/*
-		 * We ignore banks here, because chips typically don't use both
-		 * banks and SMBus block transfers
-		 */
+		 
 		b = stub_find_block(&adap->dev, chip, command, false);
 		if (read_write == I2C_SMBUS_WRITE) {
 			len = data->block[0];
@@ -258,12 +241,12 @@ static s32 stub_xfer(struct i2c_adapter *adap, u16 addr, unsigned short flags,
 					break;
 				}
 			}
-			/* Largest write sets read block length */
+			 
 			if (len > b->len)
 				b->len = len;
 			for (i = 0; i < len; i++)
 				b->block[i] = data->block[i + 1];
-			/* update for byte and word commands */
+			 
 			chip->words[command] = (b->block[0] << 8) | b->len;
 			dev_dbg(&adap->dev,
 				"smbus block data - addr 0x%02x, wrote %d bytes at 0x%02x.\n",
@@ -291,7 +274,7 @@ static s32 stub_xfer(struct i2c_adapter *adap, u16 addr, unsigned short flags,
 		dev_dbg(&adap->dev, "Unsupported I2C/SMBus command\n");
 		ret = -EOPNOTSUPP;
 		break;
-	} /* switch (size) */
+	}  
 
 	return ret;
 }
@@ -322,7 +305,7 @@ static int __init i2c_stub_allocate_banks(int i)
 	chip->bank_end = bank_end[i];
 	chip->bank_size = bank_end[i] - bank_start[i] + 1;
 
-	/* We assume that all bits in the mask are contiguous */
+	 
 	chip->bank_mask = bank_mask[i];
 	while (!(chip->bank_mask & 1)) {
 		chip->bank_shift++;
@@ -370,7 +353,7 @@ static int __init i2c_stub_init(void)
 		pr_info("Virtual chip at 0x%02x\n", chip_addr[i]);
 	}
 
-	/* Allocate memory for all chips at once */
+	 
 	stub_chips_nr = i;
 	stub_chips = kcalloc(stub_chips_nr, sizeof(struct stub_chip),
 			     GFP_KERNEL);
@@ -380,7 +363,7 @@ static int __init i2c_stub_init(void)
 	for (i = 0; i < stub_chips_nr; i++) {
 		INIT_LIST_HEAD(&stub_chips[i].smbus_blocks);
 
-		/* Allocate extra memory for banked register ranges */
+		 
 		if (bank_mask[i]) {
 			ret = i2c_stub_allocate_banks(i);
 			if (ret)

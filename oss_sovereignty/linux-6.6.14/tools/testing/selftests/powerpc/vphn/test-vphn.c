@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <stdio.h>
 #include <byteswap.h>
 #include "utils.h"
@@ -104,9 +104,7 @@ static struct test {
 		}
 	},
 	{
-		/* Parsing the next 16-bit value out of the next 64-bit input
-		 * value.
-		 */
+		 
 		"vphn: 5 x 16-bit values",
 		{
 			0x8001800280038004,
@@ -126,7 +124,7 @@ static struct test {
 		}
 	},
 	{
-		/* Parse at most 6 x 64-bit input values */
+		 
 		"vphn: 24 x 16-bit values",
 		{
 			0x8001800280038004,
@@ -196,9 +194,7 @@ static struct test {
 		}
 	},
 	{
-		/* Parsing the next 32-bit value out of the next 64-bit input
-		 * value.
-		 */
+		 
 		"vphn: 3 x 32-bit values",
 		{
 			0x0000000100000002,
@@ -216,7 +212,7 @@ static struct test {
 		}
 	},
 	{
-		/* Parse at most 6 x 64-bit input values */
+		 
 		"vphn: 12 x 32-bit values",
 		{
 			0x0000000100000002,
@@ -275,9 +271,7 @@ static struct test {
 		}
 	},
 	{
-		/* Parse a 32-bit value split accross two consecutives 64-bit
-		 * input values.
-		 */
+		 
 		"vphn: 16-bit value followed by 2 x 32-bit values",
 		{
 			0x8001000000020000,
@@ -297,9 +291,7 @@ static struct test {
 		}
 	},
 	{
-		/* The lower bits in 0x0001ffff don't get mixed up with the
-		 * 0xffff terminator.
-		 */
+		 
 		"vphn: 32-bit value has all ones in 16 lower bits",
 		{
 			0x0001ffff80028003,
@@ -317,8 +309,7 @@ static struct test {
 		}
 	},
 	{
-		/* The following input doesn't follow the specification.
-		 */
+		 
 		"vphn: last 32-bit value is truncated",
 		{
 			0x0000000100000002,

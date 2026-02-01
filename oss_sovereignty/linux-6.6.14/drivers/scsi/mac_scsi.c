@@ -1,18 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Generic Macintosh NCR5380 driver
- *
- * Copyright 1998, Michael Schmitz <mschmitz@lbl.gov>
- *
- * Copyright 2019 Finn Thain
- *
- * derived in part from:
- */
-/*
- * Generic Generic NCR5380 driver
- *
- * Copyright 1995, Russell King
- */
+
+ 
+ 
 
 #include <linux/delay.h>
 #include <linux/types.h>
@@ -31,7 +19,7 @@
 
 #include <scsi/scsi_host.h>
 
-/* Definitions for the core NCR5380 driver. */
+ 
 
 #define NCR5380_implementation_fields   int pdma_residual
 
@@ -83,7 +71,7 @@ static int __init mac_scsi_setup(char *str)
 		setup_sg_tablesize = ints[3];
 	if (ints[0] >= 4)
 		setup_hostid = ints[4];
-	/* ints[5] (use_tagged_queuing) is ignored */
+	 
 	if (ints[0] >= 6)
 		setup_use_pdma = ints[6];
 	if (ints[0] >= 7)
@@ -92,22 +80,9 @@ static int __init mac_scsi_setup(char *str)
 }
 
 __setup("mac5380=", mac_scsi_setup);
-#endif /* !MODULE */
+#endif  
 
-/*
- * According to "Inside Macintosh: Devices", Mac OS requires disk drivers to
- * specify the number of bytes between the delays expected from a SCSI target.
- * This allows the operating system to "prevent bus errors when a target fails
- * to deliver the next byte within the processor bus error timeout period."
- * Linux SCSI drivers lack knowledge of the timing behaviour of SCSI targets
- * so bus errors are unavoidable.
- *
- * If a MOVE.B instruction faults, we assume that zero bytes were transferred
- * and simply retry. That assumption probably depends on target behaviour but
- * seems to hold up okay. The NOP provides synchronization: without it the
- * fault can sometimes occur after the program counter has moved past the
- * offending instruction. Post-increment addressing can't be used.
- */
+ 
 
 #define MOVE_BYTE(operands) \
 	asm volatile ( \
@@ -130,11 +105,7 @@ __setup("mac5380=", mac_scsi_setup);
 		".previous                     \n" \
 		: "+a" (addr), "+r" (n), "+r" (result) : "a" (io))
 
-/*
- * If a MOVE.W (or MOVE.L) instruction faults, it cannot be retried because
- * the residual byte count would be uncertain. In that situation the MOVE_WORD
- * macro clears n in the fixup section to abort the transfer.
- */
+ 
 
 #define MOVE_WORD(operands) \
 	asm volatile ( \
@@ -230,7 +201,7 @@ static inline int mac_pdma_recv(void __iomem *io, unsigned char *start, int n)
 	while (n >= 2)
 		MOVE_WORD("%3@,%0@+");
 	if (result)
-		return start - addr; /* Negated to indicate uncertain length */
+		return start - addr;  
 	if (n == 1)
 		MOVE_BYTE("%3@,%0@");
 out:
@@ -257,14 +228,14 @@ static inline int mac_pdma_send(unsigned char *start, void __iomem *io, int n)
 	while (n >= 2)
 		MOVE_WORD("%0@+,%3@");
 	if (result)
-		return start - addr; /* Negated to indicate uncertain length */
+		return start - addr;  
 	if (n == 1)
 		MOVE_BYTE("%0@,%3@");
 out:
 	return addr - start;
 }
 
-/* The "SCSI DMA" chip on the IIfx implements this register. */
+ 
 #define CTRL_REG                0x8
 #define CTRL_INTERRUPTS_ENABLE  BIT(1)
 #define CTRL_HANDSHAKE_MODE     BIT(3)

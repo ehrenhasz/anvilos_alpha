@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2008, Creative Technology Ltd. All Rights Reserved.
- *
- * @File	ctresource.c
- *
- * @Brief
- * This file contains the implementation of some generic helper functions.
- *
- * @Author	Liu Chun
- * @Date 	May 15 2008
- */
+
+ 
 
 #include "ctresource.h"
 #include "cthardware.h"
@@ -18,14 +8,14 @@
 
 #define AUDIO_SLOT_BLOCK_NUM 	256
 
-/* Resource allocation based on bit-map management mechanism */
+ 
 static int
 get_resource(u8 *rscs, unsigned int amount,
 	     unsigned int multi, unsigned int *ridx)
 {
 	int i, j, k, n;
 
-	/* Check whether there are sufficient resources to meet request. */
+	 
 	for (i = 0, n = multi; i < amount; i++) {
 		j = i / 8;
 		k = i % 8;
@@ -34,15 +24,15 @@ get_resource(u8 *rscs, unsigned int amount,
 			continue;
 		}
 		if (!(--n))
-			break; /* found sufficient contiguous resources */
+			break;  
 	}
 
 	if (i >= amount) {
-		/* Can not find sufficient contiguous resources */
+		 
 		return -ENOENT;
 	}
 
-	/* Mark the contiguous bits in resource bit-map as used */
+	 
 	for (n = multi; n > 0; n--) {
 		j = i / 8;
 		k = i % 8;
@@ -59,7 +49,7 @@ static int put_resource(u8 *rscs, unsigned int multi, unsigned int idx)
 {
 	unsigned int i, j, k, n;
 
-	/* Mark the contiguous bits in resource bit-map as used */
+	 
 	for (n = multi, i = idx; n > 0; n--) {
 		j = i / 8;
 		k = i % 8;
@@ -93,7 +83,7 @@ int mgr_put_resource(struct rsc_mgr *mgr, unsigned int n, unsigned int idx)
 }
 
 static const unsigned char offset_in_audio_slot_block[NUM_RSCTYP] = {
-	/* SRC channel is at Audio Ring slot 1 every 16 slots. */
+	 
 	[SRC]		= 0x1,
 	[AMIXER]	= 0x4,
 	[SUM]		= 0xc,

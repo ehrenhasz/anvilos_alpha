@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/* Copyright 2014 Cisco Systems, Inc.  All rights reserved. */
+ 
+ 
 
 #ifndef _VNIC_INTR_H_
 #define _VNIC_INTR_H_
@@ -12,28 +12,28 @@
 #define VNIC_INTR_TIMER_TYPE_ABS	0
 #define VNIC_INTR_TIMER_TYPE_QUIET	1
 
-/* Interrupt control */
+ 
 struct vnic_intr_ctrl {
-	u32 coalescing_timer;		/* 0x00 */
+	u32 coalescing_timer;		 
 	u32 pad0;
-	u32 coalescing_value;		/* 0x08 */
+	u32 coalescing_value;		 
 	u32 pad1;
-	u32 coalescing_type;		/* 0x10 */
+	u32 coalescing_type;		 
 	u32 pad2;
-	u32 mask_on_assertion;		/* 0x18 */
+	u32 mask_on_assertion;		 
 	u32 pad3;
-	u32 mask;			/* 0x20 */
+	u32 mask;			 
 	u32 pad4;
-	u32 int_credits;		/* 0x28 */
+	u32 int_credits;		 
 	u32 pad5;
-	u32 int_credit_return;		/* 0x30 */
+	u32 int_credit_return;		 
 	u32 pad6;
 };
 
 struct vnic_intr {
 	unsigned int index;
 	struct vnic_dev *vdev;
-	struct vnic_intr_ctrl __iomem *ctrl;	/* memory-mapped */
+	struct vnic_intr_ctrl __iomem *ctrl;	 
 };
 
 static inline void
@@ -88,4 +88,4 @@ void svnic_intr_init(struct vnic_intr *intr,
 		     unsigned int mask_on_assertion);
 void svnic_intr_clean(struct vnic_intr *);
 
-#endif /* _VNIC_INTR_H_ */
+#endif  

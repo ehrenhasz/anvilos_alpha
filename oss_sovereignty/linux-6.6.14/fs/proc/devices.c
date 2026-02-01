@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/fs.h>
 #include <linux/init.h>
 #include <linux/proc_fs.h>
@@ -43,7 +43,7 @@ static void *devinfo_next(struct seq_file *f, void *v, loff_t *pos)
 
 static void devinfo_stop(struct seq_file *f, void *v)
 {
-	/* Nothing to do */
+	 
 }
 
 static const struct seq_operations devinfo_ops = {

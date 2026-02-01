@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2022, STMicroelectronics
- * Copyright (c) 2016, Linaro Ltd.
- * Copyright (c) 2012, Michal Simek <monstr@monstr.eu>
- * Copyright (c) 2012, PetaLogix
- * Copyright (c) 2011, Texas Instruments, Inc.
- * Copyright (c) 2011, Google, Inc.
- *
- * Based on rpmsg performance statistics driver by Michal Simek, which in turn
- * was based on TI & Google OMX rpmsg driver.
- */
+
+ 
 
 #define pr_fmt(fmt)		KBUILD_MODNAME ": " fmt
 
@@ -38,13 +28,7 @@ static DEFINE_IDA(rpmsg_minor_ida);
 #define dev_to_ctrldev(dev) container_of(dev, struct rpmsg_ctrldev, dev)
 #define cdev_to_ctrldev(i_cdev) container_of(i_cdev, struct rpmsg_ctrldev, cdev)
 
-/**
- * struct rpmsg_ctrldev - control device for instantiating endpoint devices
- * @rpdev:	underlaying rpmsg device
- * @cdev:	cdev for the ctrl device
- * @dev:	device for the ctrl device
- * @ctrl_lock:	serialize the ioctrls.
- */
+ 
 struct rpmsg_ctrldev {
 	struct rpmsg_device *rpdev;
 	struct cdev cdev;
@@ -171,7 +155,7 @@ static int rpmsg_ctrldev_probe(struct rpmsg_device *rpdev)
 	if (ret)
 		goto free_ctrl_ida;
 
-	/* We can now rely on the release function for cleanup */
+	 
 	dev->release = rpmsg_ctrldev_release_device;
 
 	dev_set_drvdata(&rpdev->dev, ctrldev);
@@ -195,7 +179,7 @@ static void rpmsg_ctrldev_remove(struct rpmsg_device *rpdev)
 	int ret;
 
 	mutex_lock(&ctrldev->ctrl_lock);
-	/* Destroy all endpoints */
+	 
 	ret = device_for_each_child(&ctrldev->dev, NULL, rpmsg_chrdev_eptdev_destroy);
 	if (ret)
 		dev_warn(&rpdev->dev, "failed to nuke endpoints: %d\n", ret);

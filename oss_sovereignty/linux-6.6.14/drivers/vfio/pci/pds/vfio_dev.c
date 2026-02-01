@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright(c) 2023 Advanced Micro Devices, Inc. */
+
+ 
 
 #include <linux/vfio.h>
 #include <linux/vfio_pci_core.h>
@@ -69,12 +69,7 @@ pds_vfio_set_device_state(struct vfio_device *vdev,
 	struct file *res = NULL;
 
 	mutex_lock(&pds_vfio->state_mutex);
-	/*
-	 * only way to transition out of VFIO_DEVICE_STATE_ERROR is via
-	 * VFIO_DEVICE_RESET, so prevent the state machine from running since
-	 * vfio_mig_get_next_state() will throw a WARN_ON() when transitioning
-	 * from VFIO_DEVICE_STATE_ERROR to any other state
-	 */
+	 
 	while (pds_vfio->state != VFIO_DEVICE_STATE_ERROR &&
 	       new_state != pds_vfio->state) {
 		enum vfio_device_mig_state next_state;
@@ -98,7 +93,7 @@ pds_vfio_set_device_state(struct vfio_device *vdev,
 		}
 	}
 	pds_vfio_state_mutex_unlock(pds_vfio);
-	/* still waiting on a deferred_reset */
+	 
 	if (pds_vfio->state == VFIO_DEVICE_STATE_ERROR)
 		res = ERR_PTR(-EIO);
 

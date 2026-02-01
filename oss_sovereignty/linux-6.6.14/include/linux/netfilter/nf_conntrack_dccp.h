@@ -1,8 +1,8 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _NF_CONNTRACK_DCCP_H
 #define _NF_CONNTRACK_DCCP_H
 
-/* Exposed to userspace over nfnetlink */
+ 
 enum ct_dccp_states {
 	CT_DCCP_NONE,
 	CT_DCCP_REQUEST,
@@ -35,4 +35,4 @@ struct nf_ct_dccp {
 	u_int64_t	handshake_seq;
 };
 
-#endif /* _NF_CONNTRACK_DCCP_H */
+#endif  

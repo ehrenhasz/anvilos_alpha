@@ -1,51 +1,11 @@
-/*
- * Copyright (c) 2006, 2007, 2008, 2009, 2010 QLogic Corporation.
- * All rights reserved.
- * Copyright (c) 2005, 2006 PathScale, Inc. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 
 #include "qib.h"
 
-/* cut down ridiculously long IB macro names */
+ 
 #define OP(x) IB_OPCODE_UC_##x
 
-/**
- * qib_make_uc_req - construct a request packet (SEND, RDMA write)
- * @qp: a pointer to the QP
- * @flags: unused
- *
- * Assumes the s_lock is held.
- *
- * Return 1 if constructed; otherwise, return 0.
- */
+ 
 int qib_make_uc_req(struct rvt_qp *qp, unsigned long *flags)
 {
 	struct qib_qp_priv *priv = qp->priv;
@@ -60,10 +20,10 @@ int qib_make_uc_req(struct rvt_qp *qp, unsigned long *flags)
 	if (!(ib_rvt_state_ops[qp->state] & RVT_PROCESS_SEND_OK)) {
 		if (!(ib_rvt_state_ops[qp->state] & RVT_FLUSH_SEND))
 			goto bail;
-		/* We are in the error state, flush the work request. */
+		 
 		if (qp->s_last == READ_ONCE(qp->s_head))
 			goto bail;
-		/* If DMAs are in progress, we can't flush immediately. */
+		 
 		if (atomic_read(&priv->s_dma_busy)) {
 			qp->s_flags |= RVT_S_WAIT_DMA;
 			goto bail;
@@ -77,11 +37,11 @@ int qib_make_uc_req(struct rvt_qp *qp, unsigned long *flags)
 	if (rdma_ah_get_ah_flags(&qp->remote_ah_attr) & IB_AH_GRH)
 		ohdr = &priv->s_hdr->u.l.oth;
 
-	/* header size in 32-bit words LRH+BTH = (8+12)/4. */
+	 
 	hwords = 5;
 	bth0 = 0;
 
-	/* Get the next send request. */
+	 
 	wqe = rvt_get_swqe_ptr(qp, qp->s_cur);
 	qp->s_wqe = NULL;
 	switch (qp->s_state) {
@@ -89,12 +49,10 @@ int qib_make_uc_req(struct rvt_qp *qp, unsigned long *flags)
 		if (!(ib_rvt_state_ops[qp->state] &
 		    RVT_PROCESS_NEXT_SEND_OK))
 			goto bail;
-		/* Check if send work queue is empty. */
+		 
 		if (qp->s_cur == READ_ONCE(qp->s_head))
 			goto bail;
-		/*
-		 * Start a new request.
-		 */
+		 
 		qp->s_psn = wqe->psn;
 		qp->s_sge.sge = wqe->sg_list[0];
 		qp->s_sge.sg_list = wqe->sg_list + 1;
@@ -115,7 +73,7 @@ int qib_make_uc_req(struct rvt_qp *qp, unsigned long *flags)
 			else {
 				qp->s_state =
 					OP(SEND_ONLY_WITH_IMMEDIATE);
-				/* Immediate data comes after the BTH */
+				 
 				ohdr->u.imm_data = wqe->wr.ex.imm_data;
 				hwords += 1;
 			}
@@ -144,7 +102,7 @@ int qib_make_uc_req(struct rvt_qp *qp, unsigned long *flags)
 			else {
 				qp->s_state =
 					OP(RDMA_WRITE_ONLY_WITH_IMMEDIATE);
-				/* Immediate data comes after the RETH */
+				 
 				ohdr->u.rc.imm_data = wqe->wr.ex.imm_data;
 				hwords += 1;
 				if (wqe->wr.send_flags & IB_SEND_SOLICITED)
@@ -173,7 +131,7 @@ int qib_make_uc_req(struct rvt_qp *qp, unsigned long *flags)
 			qp->s_state = OP(SEND_LAST);
 		else {
 			qp->s_state = OP(SEND_LAST_WITH_IMMEDIATE);
-			/* Immediate data comes after the BTH */
+			 
 			ohdr->u.imm_data = wqe->wr.ex.imm_data;
 			hwords += 1;
 		}
@@ -198,7 +156,7 @@ int qib_make_uc_req(struct rvt_qp *qp, unsigned long *flags)
 		else {
 			qp->s_state =
 				OP(RDMA_WRITE_LAST_WITH_IMMEDIATE);
-			/* Immediate data comes after the BTH */
+			 
 			ohdr->u.imm_data = wqe->wr.ex.imm_data;
 			hwords += 1;
 			if (wqe->wr.send_flags & IB_SEND_SOLICITED)
@@ -222,19 +180,7 @@ bail:
 	return ret;
 }
 
-/**
- * qib_uc_rcv - handle an incoming UC packet
- * @ibp: the port the packet came in on
- * @hdr: the header of the packet
- * @has_grh: true if the packet has a GRH
- * @data: the packet data
- * @tlen: the length of the packet
- * @qp: the QP for this packet.
- *
- * This is called from qib_qp_rcv() to process an incoming UC packet
- * for the given QP.
- * Called at interrupt level.
- */
+ 
 void qib_uc_rcv(struct qib_ibport *ibp, struct ib_header *hdr,
 		int has_grh, void *data, u32 tlen, struct rvt_qp *qp)
 {
@@ -248,13 +194,13 @@ void qib_uc_rcv(struct qib_ibport *ibp, struct ib_header *hdr,
 	struct ib_reth *reth;
 	int ret;
 
-	/* Check for GRH */
+	 
 	if (!has_grh) {
 		ohdr = &hdr->u.oth;
-		hdrsize = 8 + 12;       /* LRH + BTH */
+		hdrsize = 8 + 12;        
 	} else {
 		ohdr = &hdr->u.l.oth;
-		hdrsize = 8 + 40 + 12;  /* LRH + GRH + BTH */
+		hdrsize = 8 + 40 + 12;   
 	}
 
 	opcode = be32_to_cpu(ohdr->bth[0]);
@@ -264,12 +210,9 @@ void qib_uc_rcv(struct qib_ibport *ibp, struct ib_header *hdr,
 	psn = be32_to_cpu(ohdr->bth[2]);
 	opcode >>= 24;
 
-	/* Compare the PSN verses the expected PSN. */
+	 
 	if (unlikely(qib_cmp24(psn, qp->r_psn) != 0)) {
-		/*
-		 * Handle a sequence error.
-		 * Silently drop any current message.
-		 */
+		 
 		qp->r_psn = psn;
 inv:
 		if (qp->r_state == OP(SEND_FIRST) ||
@@ -295,7 +238,7 @@ inv:
 		}
 	}
 
-	/* Check for opcode sequence errors. */
+	 
 	switch (qp->r_state) {
 	case OP(SEND_FIRST):
 	case OP(SEND_MIDDLE):
@@ -327,7 +270,7 @@ inv:
 	if (qp->state == IB_QPS_RTR && !(qp->r_flags & RVT_R_COMM_EST))
 		rvt_comm_est(qp);
 
-	/* OK, process the packet. */
+	 
 	switch (opcode) {
 	case OP(SEND_FIRST):
 	case OP(SEND_ONLY):
@@ -341,10 +284,7 @@ send_first:
 				goto op_err;
 			if (!ret)
 				goto drop;
-			/*
-			 * qp->s_rdma_read_sge will be the owner
-			 * of the mr references.
-			 */
+			 
 			qp->s_rdma_read_sge = qp->r_sge;
 		}
 		qp->r_rcv_len = 0;
@@ -354,7 +294,7 @@ send_first:
 			goto send_last_imm;
 		fallthrough;
 	case OP(SEND_MIDDLE):
-		/* Check for invalid length PMTU or posted rwqe len. */
+		 
 		if (unlikely(tlen != (hdrsize + pmtu + 4)))
 			goto rewind;
 		qp->r_rcv_len += pmtu;
@@ -374,13 +314,13 @@ no_immediate_data:
 		wc.ex.imm_data = 0;
 		wc.wc_flags = 0;
 send_last:
-		/* Get the number of bytes the message was padded by. */
+		 
 		pad = (be32_to_cpu(ohdr->bth[0]) >> 20) & 3;
-		/* Check for invalid length. */
-		/* XXX LAST len should be >= 1 */
+		 
+		 
 		if (unlikely(tlen < (hdrsize + pad + 4)))
 			goto rewind;
-		/* Don't count the CRC. */
+		 
 		tlen -= (hdrsize + pad + 4);
 		wc.byte_len = tlen + qp->r_rcv_len;
 		if (unlikely(wc.byte_len > qp->r_len))
@@ -395,18 +335,18 @@ last_imm:
 		wc.src_qp = qp->remote_qpn;
 		wc.slid = rdma_ah_get_dlid(&qp->remote_ah_attr);
 		wc.sl = rdma_ah_get_sl(&qp->remote_ah_attr);
-		/* zero fields that are N/A */
+		 
 		wc.vendor_err = 0;
 		wc.pkey_index = 0;
 		wc.dlid_path_bits = 0;
 		wc.port_num = 0;
-		/* Signal completion event if the solicited bit is set. */
+		 
 		rvt_recv_cq(qp, &wc, ib_bth_is_solicited(ohdr));
 		break;
 
 	case OP(RDMA_WRITE_FIRST):
 	case OP(RDMA_WRITE_ONLY):
-	case OP(RDMA_WRITE_ONLY_WITH_IMMEDIATE): /* consume RWQE */
+	case OP(RDMA_WRITE_ONLY_WITH_IMMEDIATE):  
 rdma_first:
 		if (unlikely(!(qp->qp_access_flags &
 			       IB_ACCESS_REMOTE_WRITE))) {
@@ -422,7 +362,7 @@ rdma_first:
 			u64 vaddr = be64_to_cpu(reth->vaddr);
 			int ok;
 
-			/* Check rkey */
+			 
 			ok = rvt_rkey_ok(qp, &qp->r_sge.sge, qp->r_len,
 					 vaddr, rkey, IB_ACCESS_REMOTE_WRITE);
 			if (unlikely(!ok))
@@ -443,7 +383,7 @@ rdma_first:
 		}
 		fallthrough;
 	case OP(RDMA_WRITE_MIDDLE):
-		/* Check for invalid length PMTU or posted rwqe len. */
+		 
 		if (unlikely(tlen != (hdrsize + pmtu + 4)))
 			goto drop;
 		qp->r_rcv_len += pmtu;
@@ -458,13 +398,13 @@ rdma_last_imm:
 		hdrsize += 4;
 		wc.wc_flags = IB_WC_WITH_IMM;
 
-		/* Get the number of bytes the message was padded by. */
+		 
 		pad = (be32_to_cpu(ohdr->bth[0]) >> 20) & 3;
-		/* Check for invalid length. */
-		/* XXX LAST len should be >= 1 */
+		 
+		 
 		if (unlikely(tlen < (hdrsize + pad + 4)))
 			goto drop;
-		/* Don't count the CRC. */
+		 
 		tlen -= (hdrsize + pad + 4);
 		if (unlikely(tlen + qp->r_rcv_len != qp->r_len))
 			goto drop;
@@ -485,13 +425,13 @@ rdma_last_imm:
 
 	case OP(RDMA_WRITE_LAST):
 rdma_last:
-		/* Get the number of bytes the message was padded by. */
+		 
 		pad = (be32_to_cpu(ohdr->bth[0]) >> 20) & 3;
-		/* Check for invalid length. */
-		/* XXX LAST len should be >= 1 */
+		 
+		 
 		if (unlikely(tlen < (hdrsize + pad + 4)))
 			goto drop;
-		/* Don't count the CRC. */
+		 
 		tlen -= (hdrsize + pad + 4);
 		if (unlikely(tlen + qp->r_rcv_len != qp->r_len))
 			goto drop;
@@ -500,7 +440,7 @@ rdma_last:
 		break;
 
 	default:
-		/* Drop packet for unknown opcodes. */
+		 
 		goto drop;
 	}
 	qp->r_psn++;

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * GPIO driver for the WinSystems WS16C48
- * Copyright (C) 2016 William Breathitt Gray
- */
+
+ 
 #include <linux/bitfield.h>
 #include <linux/bits.h>
 #include <linux/device.h>
@@ -86,25 +83,20 @@ static const struct regmap_config ws16c48_regmap_config = {
 		},								\
 	}
 
-/* Only the first 24 lines (Port 0-2) support interrupts */
+ 
 #define WS16C48_NUM_IRQS 24
 static const struct regmap_irq ws16c48_regmap_irqs[WS16C48_NUM_IRQS] = {
-	WS16C48_REGMAP_IRQ(0), WS16C48_REGMAP_IRQ(1), WS16C48_REGMAP_IRQ(2), /* 0-2 */
-	WS16C48_REGMAP_IRQ(3), WS16C48_REGMAP_IRQ(4), WS16C48_REGMAP_IRQ(5), /* 3-5 */
-	WS16C48_REGMAP_IRQ(6), WS16C48_REGMAP_IRQ(7), WS16C48_REGMAP_IRQ(8), /* 6-8 */
-	WS16C48_REGMAP_IRQ(9), WS16C48_REGMAP_IRQ(10), WS16C48_REGMAP_IRQ(11), /* 9-11 */
-	WS16C48_REGMAP_IRQ(12), WS16C48_REGMAP_IRQ(13), WS16C48_REGMAP_IRQ(14), /* 12-14 */
-	WS16C48_REGMAP_IRQ(15), WS16C48_REGMAP_IRQ(16), WS16C48_REGMAP_IRQ(17), /* 15-17 */
-	WS16C48_REGMAP_IRQ(18), WS16C48_REGMAP_IRQ(19), WS16C48_REGMAP_IRQ(20), /* 18-20 */
-	WS16C48_REGMAP_IRQ(21), WS16C48_REGMAP_IRQ(22), WS16C48_REGMAP_IRQ(23), /* 21-23 */
+	WS16C48_REGMAP_IRQ(0), WS16C48_REGMAP_IRQ(1), WS16C48_REGMAP_IRQ(2),  
+	WS16C48_REGMAP_IRQ(3), WS16C48_REGMAP_IRQ(4), WS16C48_REGMAP_IRQ(5),  
+	WS16C48_REGMAP_IRQ(6), WS16C48_REGMAP_IRQ(7), WS16C48_REGMAP_IRQ(8),  
+	WS16C48_REGMAP_IRQ(9), WS16C48_REGMAP_IRQ(10), WS16C48_REGMAP_IRQ(11),  
+	WS16C48_REGMAP_IRQ(12), WS16C48_REGMAP_IRQ(13), WS16C48_REGMAP_IRQ(14),  
+	WS16C48_REGMAP_IRQ(15), WS16C48_REGMAP_IRQ(16), WS16C48_REGMAP_IRQ(17),  
+	WS16C48_REGMAP_IRQ(18), WS16C48_REGMAP_IRQ(19), WS16C48_REGMAP_IRQ(20),  
+	WS16C48_REGMAP_IRQ(21), WS16C48_REGMAP_IRQ(22), WS16C48_REGMAP_IRQ(23),  
 };
 
-/**
- * struct ws16c48_gpio - GPIO device private data structure
- * @map:	regmap for the device
- * @lock:	synchronization lock to prevent I/O race conditions
- * @irq_mask:	I/O bits affected by interrupts
- */
+ 
 struct ws16c48_gpio {
 	struct regmap *map;
 	raw_spinlock_t lock;
@@ -115,7 +107,7 @@ static int ws16c48_handle_pre_irq(void *const irq_drv_data) __acquires(&ws16c48g
 {
 	struct ws16c48_gpio *const ws16c48gpio = irq_drv_data;
 
-	/* Lock to prevent Page/Lock register change while we handle IRQ */
+	 
 	raw_spin_lock(&ws16c48gpio->lock);
 
 	return 0;
@@ -139,7 +131,7 @@ static int ws16c48_handle_mask_sync(const int index, const unsigned int mask_buf
 
 	raw_spin_lock_irqsave(&ws16c48gpio->lock, flags);
 
-	/* exit early if no change since the last mask sync */
+	 
 	if (mask_buf == ws16c48gpio->irq_mask[index])
 		goto exit_unlock;
 	ws16c48gpio->irq_mask[index] = mask_buf;
@@ -148,7 +140,7 @@ static int ws16c48_handle_mask_sync(const int index, const unsigned int mask_buf
 	if (ret)
 		goto exit_unlock;
 
-	/* Update ENAB register (inverted mask) */
+	 
 	ret = regmap_write(ws16c48gpio->map, WS16C48_ENAB + index, ~mask_buf);
 	if (ret)
 		goto exit_unlock;
@@ -189,7 +181,7 @@ static int ws16c48_set_type_config(unsigned int **const buf, const unsigned int 
 	if (ret)
 		goto exit_unlock;
 
-	/* Set interrupt polarity */
+	 
 	ret = regmap_update_bits(ws16c48gpio->map, WS16C48_POL + idx, irq_data->mask, polarity);
 	if (ret)
 		goto exit_unlock;
@@ -228,7 +220,7 @@ static int ws16c48_irq_init_hw(struct regmap *const map)
 	if (err)
 		return err;
 
-	/* Disable interrupts for all lines */
+	 
 	err = regmap_write(map, WS16C48_ENAB + 0, 0x00);
 	if (err)
 		return err;
@@ -290,7 +282,7 @@ static int ws16c48_probe(struct device *dev, unsigned int id)
 
 	raw_spin_lock_init(&ws16c48gpio->lock);
 
-	/* Initialize to prevent spurious interrupts before we're ready */
+	 
 	err = ws16c48_irq_init_hw(ws16c48gpio->map);
 	if (err)
 		return err;
@@ -305,7 +297,7 @@ static int ws16c48_probe(struct device *dev, unsigned int id)
 	gpio_config.names = ws16c48_names;
 	gpio_config.reg_dat_base = GPIO_REGMAP_ADDR(WS16C48_DAT_BASE);
 	gpio_config.reg_set_base = GPIO_REGMAP_ADDR(WS16C48_DAT_BASE);
-	/* Setting a GPIO to 0 allows it to be used as an input */
+	 
 	gpio_config.reg_dir_out_base = GPIO_REGMAP_ADDR(WS16C48_DAT_BASE);
 	gpio_config.ngpio_per_reg = WS16C48_NGPIO_PER_REG;
 	gpio_config.irq_domain = regmap_irq_get_domain(chip_data);

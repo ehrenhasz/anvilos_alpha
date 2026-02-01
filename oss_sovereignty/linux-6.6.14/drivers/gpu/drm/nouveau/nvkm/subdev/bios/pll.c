@@ -1,26 +1,4 @@
-/*
- * Copyright 2005-2006 Erik Waling
- * Copyright 2006 Stephane Marchesin
- * Copyright 2007-2009 Stuart Bennett
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
- * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF
- * OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 #include <subdev/bios.h>
 #include <subdev/bios/bit.h>
 #include <subdev/bios/bmp.h>
@@ -266,7 +244,7 @@ nvbios_pll_parse(struct nvkm_bios *bios, u32 type, struct nvbios_pll *info)
 		info->max_p = 0x7;
 		info->max_p_usable = 0x6;
 
-		/* these values taken from nv30/31/36 */
+		 
 		switch (bios->version.chip) {
 		case 0x36:
 			info->vco1.min_n = 0x5;
@@ -279,12 +257,7 @@ nvbios_pll_parse(struct nvkm_bios *bios, u32 type, struct nvbios_pll *info)
 		info->vco1.min_m = 0x1;
 		info->vco1.max_m = 0xd;
 
-		/*
-		 * On nv30, 31, 36 (i.e. all cards with two stage PLLs with this
-		 * table version (apart from nv35)), N2 is compared to
-		 * maxN2 (0x46) and 10 * maxM2 (0x4), so set maxN2 to 0x28 and
-		 * save a comparison
-		 */
+		 
 		info->vco2.min_n = 0x4;
 		switch (bios->version.chip) {
 		case 0x30:
@@ -366,7 +339,7 @@ nvbios_pll_parse(struct nvkm_bios *bios, u32 type, struct nvbios_pll *info)
 		break;
 	case 0x50:
 		info->refclk = nvbios_rd16(bios, data + 1) * 1000;
-		/* info->refclk_alt = nvbios_rd16(bios, data + 3) * 1000; */
+		 
 		info->vco1.min_freq = nvbios_rd16(bios, data + 5) * 1000;
 		info->vco1.max_freq = nvbios_rd16(bios, data + 7) * 1000;
 		info->vco1.min_inputfreq = nvbios_rd16(bios, data + 9) * 1000;
@@ -397,11 +370,7 @@ nvbios_pll_parse(struct nvkm_bios *bios, u32 type, struct nvbios_pll *info)
 		}
 	}
 
-	/*
-	 * By now any valid limit table ought to have set a max frequency for
-	 * vco1, so if it's zero it's either a pre limit table bios, or one
-	 * with an empty limit table (seen on nv18)
-	 */
+	 
 	if (!info->vco1.max_freq) {
 		info->vco1.max_freq = nvbios_rd32(bios, bios->bmp_offset + 67);
 		info->vco1.min_freq = nvbios_rd32(bios, bios->bmp_offset + 71);
@@ -417,7 +386,7 @@ nvbios_pll_parse(struct nvkm_bios *bios, u32 type, struct nvbios_pll *info)
 		info->vco1.min_m = 0x1;
 
 		if (device->crystal == 13500) {
-			/* nv05 does this, nv11 doesn't, nv10 unknown */
+			 
 			if (bios->version.chip < 0x11)
 				info->vco1.min_m = 0x7;
 			info->vco1.max_m = 0xd;

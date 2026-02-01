@@ -1,8 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0+
-//
-// Bells audio support
-//
-// Copyright 2012 Wolfson Microelectronics
+
+
+
+
+
 
 #include <sound/soc.h>
 #include <sound/soc-dapm.h>
@@ -13,13 +13,10 @@
 #include "../codecs/wm5102.h"
 #include "../codecs/wm9081.h"
 
-/* BCLK2 is fixed at this currently */
+ 
 #define BCLK2_RATE (64 * 8000)
 
-/*
- * Expect a 24.576MHz crystal if one is fitted (the driver will function
- * if this is not fitted).
- */
+ 
 #define MCLK_RATE 24576000
 
 #define SYS_AUDIO_RATE 44100

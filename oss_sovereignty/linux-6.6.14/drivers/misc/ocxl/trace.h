@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-// Copyright 2017 IBM Corp.
+ 
+
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM ocxl
 
@@ -233,9 +233,9 @@ TRACE_EVENT(ocxl_afu_irq_receive,
 	)
 );
 
-#endif /* _TRACE_OCXL_H */
+#endif  
 
-/* This part must be outside protection */
+ 
 #undef TRACE_INCLUDE_PATH
 #define TRACE_INCLUDE_PATH .
 #define TRACE_INCLUDE_FILE trace

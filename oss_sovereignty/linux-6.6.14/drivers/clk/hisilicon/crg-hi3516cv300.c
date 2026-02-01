@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Hi3516CV300 Clock and Reset Generator Driver
- *
- * Copyright (c) 2016 HiSilicon Technologies Co., Ltd.
- */
+
+ 
 
 #include <dt-bindings/clock/hi3516cv300-clock.h>
 #include <linux/clk-provider.h>
@@ -14,7 +10,7 @@
 #include "crg.h"
 #include "reset.h"
 
-/* hi3516CV300 core CRG */
+ 
 #define HI3516CV300_INNER_CLK_OFFSET	64
 #define HI3516CV300_FIXED_3M		65
 #define HI3516CV300_FIXED_6M		66
@@ -189,7 +185,7 @@ static const struct hisi_crg_funcs hi3516cv300_crg_funcs = {
 	.unregister_clks = hi3516cv300_clk_unregister,
 };
 
-/* hi3516CV300 sysctrl CRG */
+ 
 #define HI3516CV300_SYSCTRL_NR_CLKS 16
 
 static const char *const wdt_mux_p[] __initconst = { "3m", "apb" };

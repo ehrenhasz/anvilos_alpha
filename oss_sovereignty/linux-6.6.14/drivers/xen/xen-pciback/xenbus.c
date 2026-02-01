@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * PCI Backend Xenbus Setup - handles setup with frontend and xend
- *
- *   Author: Ryan Wilson <hap9@epoch.ncsc.mil>
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -67,14 +63,13 @@ out:
 static void xen_pcibk_disconnect(struct xen_pcibk_device *pdev)
 {
 	mutex_lock(&pdev->dev_lock);
-	/* Ensure the guest can't trigger our handler before removing devices */
+	 
 	if (pdev->evtchn_irq != INVALID_EVTCHN_IRQ) {
 		unbind_from_irqhandler(pdev->evtchn_irq, pdev);
 		pdev->evtchn_irq = INVALID_EVTCHN_IRQ;
 	}
 
-	/* If the driver domain started an op, make sure we complete it
-	 * before releasing the shared memory */
+	 
 
 	flush_work(&pdev->op_work);
 
@@ -94,8 +89,7 @@ static void free_pdev(struct xen_pcibk_device *pdev)
 
 	xen_pcibk_disconnect(pdev);
 
-	/* N.B. This calls pcistub_put_pci_dev which does the FLR on all
-	 * of the PCIe devices. */
+	 
 	xen_pcibk_release_devices(pdev);
 
 	dev_set_drvdata(&pdev->xdev->dev, NULL);
@@ -148,12 +142,12 @@ static int xen_pcibk_attach(struct xen_pcibk_device *pdev)
 
 
 	mutex_lock(&pdev->dev_lock);
-	/* Make sure we only do this setup once */
+	 
 	if (xenbus_read_driver_state(pdev->xdev->nodename) !=
 	    XenbusStateInitialised)
 		goto out;
 
-	/* Wait for frontend to state that it has published the configuration */
+	 
 	if (xenbus_read_driver_state(pdev->xdev->otherend) !=
 	    XenbusStateInitialised)
 		goto out;
@@ -165,7 +159,7 @@ static int xen_pcibk_attach(struct xen_pcibk_device *pdev)
 			    "event-channel", "%u", &remote_evtchn,
 			    "magic", NULL, &magic, NULL);
 	if (err) {
-		/* If configuration didn't get read correctly, wait longer */
+		 
 		xenbus_dev_fatal(pdev->xdev, err,
 				 "Error reading configuration from frontend");
 		goto out;
@@ -214,7 +208,7 @@ static int xen_pcibk_publish_pci_dev(struct xen_pcibk_device *pdev,
 		goto out;
 	}
 
-	/* Note: The PV protocol uses %02x, don't change it */
+	 
 	err = xenbus_printf(XBT_NIL, pdev->xdev->nodename, str,
 			    "%04x:%02x:%02x.%02x", domain, bus,
 			    PCI_SLOT(devfn), PCI_FUNC(devfn));
@@ -258,14 +252,7 @@ static int xen_pcibk_export_device(struct xen_pcibk_device *pdev,
 		xen_register_device_domain_owner(dev, pdev->xdev->otherend_id);
 	}
 
-	/* TODO: It'd be nice to export a bridge and have all of its children
-	 * get exported with it. This may be best done in xend (which will
-	 * have to calculate resource usage anyway) but we probably want to
-	 * put something in here to ensure that if a bridge gets given to a
-	 * driver domain, that all devices under that bridge are not given
-	 * to other driver domains (as he who controls the bridge can disable
-	 * it and stop the other devices from working).
-	 */
+	 
 out:
 	return err;
 }
@@ -291,9 +278,8 @@ static int xen_pcibk_remove_device(struct xen_pcibk_device *pdev,
 	dev_dbg(&dev->dev, "unregistering for %d\n", pdev->xdev->otherend_id);
 	xen_unregister_device_domain_owner(dev);
 
-	/* N.B. This ends up calling pcistub_put_pci_dev which ends up
-	 * doing the FLR. */
-	xen_pcibk_release_pci_dev(pdev, dev, true /* use the lock. */);
+	 
+	xen_pcibk_release_pci_dev(pdev, dev, true  );
 
 out:
 	return err;
@@ -315,7 +301,7 @@ static int xen_pcibk_publish_pci_root(struct xen_pcibk_device *pdev,
 	else if (err < 0)
 		goto out;
 
-	/* Verify that we haven't already published this pci root */
+	 
 	for (i = 0; i < root_num; i++) {
 		len = snprintf(str, sizeof(str), "root-%d", i);
 		if (unlikely(len >= (sizeof(str) - 1))) {
@@ -433,7 +419,7 @@ static int xen_pcibk_reconfigure(struct xen_pcibk_device *pdev,
 			if (err)
 				goto out;
 
-			/* Publish pci roots. */
+			 
 			err = xen_pcibk_publish_pci_roots(pdev,
 						xen_pcibk_publish_pci_root);
 			if (err) {
@@ -487,10 +473,7 @@ static int xen_pcibk_reconfigure(struct xen_pcibk_device *pdev,
 			if (err)
 				goto out;
 
-			/* TODO: If at some point we implement support for pci
-			 * root hot-remove on pcifront side, we'll need to
-			 * remove unnecessary xenstore nodes of pci roots here.
-			 */
+			 
 
 			break;
 
@@ -500,7 +483,7 @@ static int xen_pcibk_reconfigure(struct xen_pcibk_device *pdev,
 	}
 
 	if (state != XenbusStateReconfiguring)
-		/* Make sure we only reconfigure once. */
+		 
 		goto out;
 
 	err = xenbus_switch_state(pdev->xdev, XenbusStateReconfigured);
@@ -532,9 +515,7 @@ static void xen_pcibk_frontend_changed(struct xenbus_device *xdev,
 		break;
 
 	case XenbusStateConnected:
-		/* pcifront switched its state from reconfiguring to connected.
-		 * Then switch to connected state.
-		 */
+		 
 		xenbus_switch_state(xdev, XenbusStateConnected);
 		break;
 
@@ -548,7 +529,7 @@ static void xen_pcibk_frontend_changed(struct xenbus_device *xdev,
 		xenbus_switch_state(xdev, XenbusStateClosed);
 		if (xenbus_dev_is_online(xdev))
 			break;
-		fallthrough;	/* if not online */
+		fallthrough;	 
 	case XenbusStateUnknown:
 		dev_dbg(&xdev->dev, "frontend is gone! unregister device\n");
 		device_unregister(&xdev->dev);
@@ -561,7 +542,7 @@ static void xen_pcibk_frontend_changed(struct xenbus_device *xdev,
 
 static int xen_pcibk_setup_backend(struct xen_pcibk_device *pdev)
 {
-	/* Get configuration from xend (if available now) */
+	 
 	int domain, bus, slot, func;
 	int err = 0;
 	int i, num_devs;
@@ -569,9 +550,7 @@ static int xen_pcibk_setup_backend(struct xen_pcibk_device *pdev)
 	char state_str[64];
 
 	mutex_lock(&pdev->dev_lock);
-	/* It's possible we could get the call to setup twice, so make sure
-	 * we're not already connected.
-	 */
+	 
 	if (xenbus_read_driver_state(pdev->xdev->nodename) !=
 	    XenbusStateInitWait)
 		goto out;
@@ -617,7 +596,7 @@ static int xen_pcibk_setup_backend(struct xen_pcibk_device *pdev)
 		if (err)
 			goto out;
 
-		/* Switch substate of this device. */
+		 
 		l = snprintf(state_str, sizeof(state_str), "state-%d", i);
 		if (unlikely(l >= (sizeof(state_str) - 1))) {
 			err = -ENOMEM;
@@ -651,7 +630,7 @@ static int xen_pcibk_setup_backend(struct xen_pcibk_device *pdev)
 out:
 	mutex_unlock(&pdev->dev_lock);
 	if (!err)
-		/* see if pcifront is already configured (if not, we'll wait) */
+		 
 		xen_pcibk_attach(pdev);
 	return err;
 }
@@ -668,11 +647,7 @@ static void xen_pcibk_be_watch(struct xenbus_watch *watch,
 		break;
 
 	case XenbusStateInitialised:
-		/*
-		 * We typically move to Initialised when the first device was
-		 * added. Hence subsequent devices getting added may need
-		 * reconfiguring.
-		 */
+		 
 		xen_pcibk_reconfigure(pdev, XenbusStateInitialised);
 		break;
 
@@ -694,12 +669,12 @@ static int xen_pcibk_xenbus_probe(struct xenbus_device *dev,
 		goto out;
 	}
 
-	/* wait for xend to configure us */
+	 
 	err = xenbus_switch_state(dev, XenbusStateInitWait);
 	if (err)
 		goto out;
 
-	/* watch the backend node for backend configuration information */
+	 
 	err = xenbus_watch_path(dev, dev->nodename, &pdev->be_watch,
 				NULL, xen_pcibk_be_watch);
 	if (err)
@@ -707,9 +682,7 @@ static int xen_pcibk_xenbus_probe(struct xenbus_device *dev,
 
 	pdev->be_watching = 1;
 
-	/* We need to force a call to our callback here in case
-	 * xend already configured us!
-	 */
+	 
 	xen_pcibk_be_watch(&pdev->be_watch, NULL, NULL);
 
 out:

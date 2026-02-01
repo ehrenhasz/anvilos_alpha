@@ -1,13 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Atlantic Network Driver
- *
- * Copyright (C) 2014-2019 aQuantia Corporation
- * Copyright (C) 2019-2020 Marvell International Ltd.
- */
 
-/* File aq_vec.c: Definition of common structure for vector of Rx and Tx rings.
- * Definition of functions for Rx and Tx rings. Friendly module for aq_nic.
- */
+ 
+
+ 
 
 #include "aq_vec.h"
 

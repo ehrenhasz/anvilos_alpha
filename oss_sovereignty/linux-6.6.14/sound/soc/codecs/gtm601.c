@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * This is a simple driver for the GTM601 Voice PCM interface
- *
- * Copyright (C) 2015 Goldelico GmbH
- *
- * Author: Marek Belisko <marek@goldelico.com>
- *
- * Based on wm8727.c driver
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/slab.h>

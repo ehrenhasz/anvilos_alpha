@@ -1,6 +1,6 @@
-/* DO NOT EDIT! GENERATED AUTOMATICALLY! */
-/* Width 2 property of Unicode characters.  */
-/* Generated automatically by gen-uni-tables.c for Unicode 15.0.0.  */
+ 
+ 
+ 
 
 /* Copyright (C) 2000-2022 Free Software Foundation, Inc.
 
@@ -15,7 +15,7 @@
    GNU Lesser General Public License for more details.
 
    You should have received a copy of the GNU Lesser General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
+   along with this program.  If not, see <https:
 
 #define header_0 16
 #define header_2 9

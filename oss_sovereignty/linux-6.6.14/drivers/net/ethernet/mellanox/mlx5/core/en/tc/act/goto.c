@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-// Copyright (c) 2021, NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+
+
 
 #include "act.h"
 #include "en/tc_priv.h"
@@ -96,13 +96,7 @@ tc_act_post_parse_goto(struct mlx5e_tc_act_parse_state *parse_state,
 		return 0;
 
 	if (parse_state->decap) {
-		/* It can be supported if we'll create a mapping for
-		 * the tunnel device only (without tunnel), and set
-		 * this tunnel id with this decap flow.
-		 *
-		 * On restore (miss), we'll just set this saved tunnel
-		 * device.
-		 */
+		 
 
 		NL_SET_ERR_MSG_MOD(extack, "Decap with goto isn't supported");
 		netdev_warn(priv->netdev, "Decap with goto isn't supported");

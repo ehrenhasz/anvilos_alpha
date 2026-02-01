@@ -1,31 +1,15 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* SF16-FMI, SF16-FMP and SF16-FMD radio driver for Linux radio support
- * heavily based on rtrack driver...
- * (c) 1997 M. Kirkwood
- * (c) 1998 Petr Vandrovec, vandrove@vc.cvut.cz
- *
- * Fitted to new interface by Alan Cox <alan@lxorguk.ukuu.org.uk>
- * Made working and cleaned up functions <mikael.hedin@irf.se>
- * Support for ISAPnP by Ladislav Michl <ladis@psi.cz>
- *
- * Notes on the hardware
- *
- *  Frequency control is done digitally -- ie out(port,encodefreq(95.8));
- *  No volume control - only mute/unmute - you have to use line volume
- *  control on SB-part of SF16-FMI/SF16-FMP/SF16-FMD
- *
- * Converted to V4L2 API by Mauro Carvalho Chehab <mchehab@kernel.org>
- */
 
-#include <linux/kernel.h>	/* __setup			*/
-#include <linux/module.h>	/* Modules			*/
-#include <linux/init.h>		/* Initdata			*/
-#include <linux/ioport.h>	/* request_region		*/
-#include <linux/delay.h>	/* udelay			*/
+ 
+
+#include <linux/kernel.h>	 
+#include <linux/module.h>	 
+#include <linux/init.h>		 
+#include <linux/ioport.h>	 
+#include <linux/delay.h>	 
 #include <linux/isapnp.h>
 #include <linux/mutex.h>
-#include <linux/videodev2.h>	/* kernel radio structs		*/
-#include <linux/io.h>		/* outb, outb_p			*/
+#include <linux/videodev2.h>	 
+#include <linux/io.h>		 
 #include <media/v4l2-device.h>
 #include <media/v4l2-ioctl.h>
 #include <media/v4l2-ctrls.h>
@@ -51,7 +35,7 @@ struct fmi
 	struct video_device vdev;
 	int io;
 	bool mute;
-	u32 curfreq; /* freq in kHz */
+	u32 curfreq;  
 	struct mutex lock;
 };
 
@@ -108,10 +92,10 @@ static inline int fmi_getsigstr(struct fmi *fmi)
 	int res;
 
 	mutex_lock(&fmi->lock);
-	val = fmi->mute ? 0x00 : 0x08;	/* mute/unmute */
+	val = fmi->mute ? 0x00 : 0x08;	 
 	outb(val, fmi->io);
 	outb(val | 0x10, fmi->io);
-	msleep(143);		/* was schedule_timeout(HZ/7) */
+	msleep(143);		 
 	res = (int)inb(fmi->io + 1);
 	outb(val, fmi->io);
 
@@ -122,8 +106,7 @@ static inline int fmi_getsigstr(struct fmi *fmi)
 static void fmi_set_freq(struct fmi *fmi)
 {
 	fmi->curfreq = clamp(fmi->curfreq, RSF16_MINFREQ, RSF16_MAXFREQ);
-	/* rounding in steps of 800 to match the freq
-	   that will be used */
+	 
 	lm7000_set_freq((fmi->curfreq / 800) * 800, fmi, fmi_set_pins);
 }
 
@@ -226,12 +209,12 @@ static const struct v4l2_ioctl_ops fmi_ioctl_ops = {
 	.vidioc_unsubscribe_event = v4l2_event_unsubscribe,
 };
 
-/* ladis: this is my card. does any other types exist? */
+ 
 static struct isapnp_device_id id_table[] = {
-		/* SF16-FMI */
+		 
 	{	ISAPNP_ANY_ID, ISAPNP_ANY_ID,
 		ISAPNP_VENDOR('M','F','R'), ISAPNP_FUNCTION(0xad10), 0},
-		/* SF16-FMD */
+		 
 	{	ISAPNP_ANY_ID, ISAPNP_ANY_ID,
 		ISAPNP_VENDOR('M','F','R'), ISAPNP_FUNCTION(0xad12), 0},
 	{	ISAPNP_CARD_END, },
@@ -348,7 +331,7 @@ static int __init fmi_init(void)
 
 	mutex_init(&fmi->lock);
 
-	/* mute card and set default frequency */
+	 
 	fmi->mute = true;
 	fmi->curfreq = RSF16_MINFREQ;
 	fmi_set_freq(fmi);

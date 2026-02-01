@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* L2TP subsystem debugfs
- *
- * Copyright (c) 2010 Katalix Systems Ltd
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -34,15 +31,15 @@ static struct dentry *rootdir;
 struct l2tp_dfs_seq_data {
 	struct net	*net;
 	netns_tracker	ns_tracker;
-	int tunnel_idx;			/* current tunnel */
-	int session_idx;		/* index of session within current tunnel */
+	int tunnel_idx;			 
+	int session_idx;		 
 	struct l2tp_tunnel *tunnel;
-	struct l2tp_session *session;	/* NULL means get next tunnel */
+	struct l2tp_session *session;	 
 };
 
 static void l2tp_dfs_next_tunnel(struct l2tp_dfs_seq_data *pd)
 {
-	/* Drop reference taken during previous invocation */
+	 
 	if (pd->tunnel)
 		l2tp_tunnel_dec_refcount(pd->tunnel);
 
@@ -52,7 +49,7 @@ static void l2tp_dfs_next_tunnel(struct l2tp_dfs_seq_data *pd)
 
 static void l2tp_dfs_next_session(struct l2tp_dfs_seq_data *pd)
 {
-	/* Drop reference taken during previous invocation */
+	 
 	if (pd->session)
 		l2tp_session_dec_refcount(pd->session);
 
@@ -84,7 +81,7 @@ static void *l2tp_dfs_seq_start(struct seq_file *m, loff_t *offs)
 	else
 		l2tp_dfs_next_session(pd);
 
-	/* NULL tunnel and session indicates end of list */
+	 
 	if (!pd->tunnel && !pd->session)
 		pd = NULL;
 
@@ -105,9 +102,7 @@ static void l2tp_dfs_seq_stop(struct seq_file *p, void *v)
 	if (!pd || pd == SEQ_START_TOKEN)
 		return;
 
-	/* Drop reference taken by last invocation of l2tp_dfs_next_session()
-	 * or l2tp_dfs_next_tunnel().
-	 */
+	 
 	if (pd->session) {
 		l2tp_session_dec_refcount(pd->session);
 		pd->session = NULL;
@@ -128,7 +123,7 @@ static void l2tp_dfs_seq_tunnel_show(struct seq_file *m, void *v)
 	rcu_read_lock_bh();
 	for (hash = 0; hash < L2TP_HASH_SIZE; hash++) {
 		hlist_for_each_entry_rcu(session, &tunnel->session_hlist[hash], hlist) {
-			/* Session ID of zero is a dummy/reserved value used by pppol2tp */
+			 
 			if (session->session_id == 0)
 				continue;
 
@@ -232,7 +227,7 @@ static int l2tp_dfs_seq_show(struct seq_file *m, void *v)
 {
 	struct l2tp_dfs_seq_data *pd = v;
 
-	/* display header on line 1 */
+	 
 	if (v == SEQ_START_TOKEN) {
 		seq_puts(m, "TUNNEL ID, peer ID from IP to IP\n");
 		seq_puts(m, " L2TPv2/L2TPv3, UDP/IP\n");
@@ -274,9 +269,7 @@ static int l2tp_dfs_seq_open(struct inode *inode, struct file *file)
 	if (!pd)
 		goto out;
 
-	/* Derive the network namespace from the pid opening the
-	 * file.
-	 */
+	 
 	pd->net = get_net_ns_by_pid(current->pid);
 	if (IS_ERR(pd->net)) {
 		rc = PTR_ERR(pd->net);

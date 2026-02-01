@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 #define pr_fmt(fmt) "IPsec: " fmt
 
 #include <crypto/algapi.h>
@@ -73,9 +73,7 @@ static inline struct scatterlist *ah_req_sg(struct crypto_ahash *ahash,
 			     __alignof__(struct scatterlist));
 }
 
-/* Clear mutable options and find final destination to substitute
- * into IP header for icv calculation. Options are already checked
- * for validity, so paranoia is not required. */
+ 
 
 static int ip_clear_mutable_options(const struct iphdr *iph, __be32 *daddr)
 {
@@ -97,10 +95,10 @@ static int ip_clear_mutable_options(const struct iphdr *iph, __be32 *daddr)
 			return -EINVAL;
 		switch (*optptr) {
 		case IPOPT_SEC:
-		case 0x85:	/* Some "Extended Security" crap. */
+		case 0x85:	 
 		case IPOPT_CIPSO:
 		case IPOPT_RA:
-		case 0x80|21:	/* RFC1770 */
+		case 0x80|21:	 
 			break;
 		case IPOPT_LSRR:
 		case IPOPT_SSRR:
@@ -227,7 +225,7 @@ static int ah_output(struct xfrm_state *x, struct sk_buff *skb)
 		goto out_free;
 
 	if (x->props.flags & XFRM_STATE_ESN) {
-		/* Attach seqhi sg right after packet payload */
+		 
 		*seqhi = htonl(XFRM_SKB_CB(skb)->seq.output.hi);
 		sg_set_buf(seqhisg, seqhi, seqhi_len);
 	}
@@ -344,8 +342,7 @@ static int ah_input(struct xfrm_state *x, struct sk_buff *skb)
 	if (!pskb_may_pull(skb, ah_hlen))
 		goto out;
 
-	/* We are going to _remove_ AH header to keep sockets happy,
-	 * so... Later this can change. */
+	 
 	if (skb_unclone(skb, GFP_ATOMIC))
 		goto out;
 
@@ -402,7 +399,7 @@ static int ah_input(struct xfrm_state *x, struct sk_buff *skb)
 		goto out_free;
 
 	if (x->props.flags & XFRM_STATE_ESN) {
-		/* Attach seqhi sg right after packet payload */
+		 
 		*seqhi = XFRM_SKB_CB(skb)->seq.input.hi;
 		sg_set_buf(seqhisg, seqhi, seqhi_len);
 	}
@@ -504,12 +501,7 @@ static int ah_init_state(struct xfrm_state *x, struct netlink_ext_ack *extack)
 		goto error;
 	}
 
-	/*
-	 * Lookup the algorithm description maintained by xfrm_algo,
-	 * verify crypto transform properties, and store information
-	 * we need for AH processing.  This lookup cannot fail here
-	 * after a successful crypto_alloc_ahash().
-	 */
+	 
 	aalg_desc = xfrm_aalg_get_byname(x->aalg->alg_name, 0);
 	BUG_ON(!aalg_desc);
 

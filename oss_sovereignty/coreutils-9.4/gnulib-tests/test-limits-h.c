@@ -1,20 +1,4 @@
-/* Test of <limits.h> substitute.
-   Copyright 2016-2023 Free Software Foundation, Inc.
-
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* Written by Paul Eggert.  */
+ 
 
 #include <config.h>
 
@@ -27,7 +11,7 @@
 #define verify_width(width, min, max) \
   static_assert ((max) >> ((width) - 1 - ((min) < 0)) == 1)
 
-/* Macros borrowed from intprops.h.  */
+ 
 #define TYPE_SIGNED(t) (! ((t) 0 < (t) -1))
 #define TYPE_WIDTH(t) (sizeof (t) * CHAR_BIT)
 #define TYPE_MINIMUM(t) ((t) ~ TYPE_MAXIMUM (t))
@@ -36,7 +20,7 @@
         ? (t) -1                                                        \
         : ((((t) 1 << (TYPE_WIDTH (t) - 2)) - 1) * 2 + 1)))
 
-/* Type width macros.  */
+ 
 
 int type_bits[] =
   {
@@ -48,7 +32,7 @@ verify_width (CHAR_BIT, CHAR_MIN, CHAR_MAX);
 verify_width (WORD_BIT, INT_MIN, INT_MAX);
 verify_width (LONG_BIT, LONG_MIN, LONG_MAX);
 
-/* Numerical limit macros.  */
+ 
 
 char               limits1[]  = { CHAR_MIN, CHAR_MAX };
 static_assert (TYPE_MINIMUM (char) == CHAR_MIN);
@@ -94,11 +78,11 @@ unsigned long long limits11[] = { ULLONG_MAX };
 static_assert (TYPE_MINIMUM (unsigned long long int) == 0);
 static_assert (TYPE_MAXIMUM (unsigned long long int) == ULLONG_MAX);
 
-/* Specified by POSIX, not by ISO C.  */
+ 
 
 long long limits12[] = { SSIZE_MAX };
 
-/* Macros specified by C23 and by ISO/IEC TS 18661-1:2014.  */
+ 
 
 verify_width (CHAR_WIDTH, CHAR_MIN, CHAR_MAX);
 verify_width (SCHAR_WIDTH, SCHAR_MIN, SCHAR_MAX);
@@ -112,18 +96,18 @@ verify_width (ULONG_WIDTH, 0, ULONG_MAX);
 verify_width (LLONG_WIDTH, LLONG_MIN, LLONG_MAX);
 verify_width (ULLONG_WIDTH, 0, ULLONG_MAX);
 
-/* Macros specified by C23.  */
+ 
 
 int bool_attrs[] = { BOOL_MAX, BOOL_WIDTH };
 static_assert (BOOL_MAX == (((1U << (BOOL_WIDTH - 1)) - 1) * 2) + 1);
 
 static_assert (0 < MB_LEN_MAX);
 
-/* Get ssize_t, size_t.  */
+ 
 #include <sys/types.h>
 
 static_assert (TYPE_MAXIMUM (ssize_t) == SSIZE_MAX);
-/* Verify that ssize_t has the same width as size_t.  */
+ 
 static_assert (TYPE_MAXIMUM (size_t) / 2 == SSIZE_MAX);
 
 int

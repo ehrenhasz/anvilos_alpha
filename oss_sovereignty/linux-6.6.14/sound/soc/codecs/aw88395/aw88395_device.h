@@ -1,11 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0-only
-//
-// aw88395_device.h --  AW88395 function for ALSA Audio Driver
-//
-// Copyright (c) 2022-2023 AWINIC Technology CO., LTD
-//
-// Author: Bruce zhao <zhaolei@awinic.com>
-//
+
+
+
+
+
+
+
+
 
 #ifndef __AW88395_DEVICE_FILE_H__
 #define __AW88395_DEVICE_FILE_H__

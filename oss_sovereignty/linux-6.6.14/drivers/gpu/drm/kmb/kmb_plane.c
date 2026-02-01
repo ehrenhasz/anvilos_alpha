@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright © 2018-2020 Intel Corporation
- */
+
+ 
 
 #include <drm/drm_atomic.h>
 #include <drm/drm_atomic_helper.h>
@@ -24,7 +22,7 @@ const u32 layer_irqs[] = {
 	LCD_INT_GL1
 };
 
-/* Conversion (yuv->rgb) matrix from myriadx */
+ 
 static const u32 csc_coef_lcd[] = {
 	1024, 0, 1436,
 	1024, -352, -731,
@@ -32,7 +30,7 @@ static const u32 csc_coef_lcd[] = {
 	-179, 125, -226
 };
 
-/* Graphics layer (layers 2 & 3) formats, only packed formats  are supported */
+ 
 static const u32 kmb_formats_g[] = {
 	DRM_FORMAT_RGB332,
 	DRM_FORMAT_XRGB4444, DRM_FORMAT_XBGR4444,
@@ -45,9 +43,9 @@ static const u32 kmb_formats_g[] = {
 	DRM_FORMAT_ARGB8888, DRM_FORMAT_ABGR8888,
 };
 
-/* Video layer ( 0 & 1) formats, packed and planar formats are supported */
+ 
 static const u32 kmb_formats_v[] = {
-	/* packed formats */
+	 
 	DRM_FORMAT_RGB332,
 	DRM_FORMAT_XRGB4444, DRM_FORMAT_XBGR4444,
 	DRM_FORMAT_ARGB4444, DRM_FORMAT_ABGR4444,
@@ -57,7 +55,7 @@ static const u32 kmb_formats_v[] = {
 	DRM_FORMAT_RGB888, DRM_FORMAT_BGR888,
 	DRM_FORMAT_XRGB8888, DRM_FORMAT_XBGR8888,
 	DRM_FORMAT_ARGB8888, DRM_FORMAT_ABGR8888,
-	/*planar formats */
+	 
 	DRM_FORMAT_YUV420, DRM_FORMAT_YVU420,
 	DRM_FORMAT_YUV422, DRM_FORMAT_YVU422,
 	DRM_FORMAT_YUV444, DRM_FORMAT_YVU444,
@@ -74,9 +72,7 @@ static unsigned int check_pixel_format(struct drm_plane *plane, u32 format)
 
 	kmb = to_kmb(plane->dev);
 	init_disp_cfg = kmb->init_disp_cfg[plane_id];
-	/* Due to HW limitations, changing pixel format after initial
-	 * plane configuration is not supported.
-	 */
+	 
 	if (init_disp_cfg.format && init_disp_cfg.format != format) {
 		drm_dbg(&kmb->drm, "Cannot change format after initial plane configuration");
 		return -EINVAL;
@@ -118,9 +114,7 @@ static int kmb_plane_atomic_check(struct drm_plane *plane,
 	    new_plane_state->crtc_h < KMB_FB_MIN_HEIGHT)
 		return -EINVAL;
 
-	/* Due to HW limitations, changing plane height or width after
-	 * initial plane configuration is not supported.
-	 */
+	 
 	if ((init_disp_cfg.width && init_disp_cfg.height) &&
 	    (init_disp_cfg.width != fb->width ||
 	    init_disp_cfg.height != fb->height)) {
@@ -167,7 +161,7 @@ static unsigned int get_pixel_format(u32 format)
 	unsigned int val = 0;
 
 	switch (format) {
-		/* planar formats */
+		 
 	case DRM_FORMAT_YUV444:
 		val = LCD_LAYER_FORMAT_YCBCR444PLAN | LCD_LAYER_PLANAR_STORAGE;
 		break;
@@ -196,8 +190,8 @@ static unsigned int get_pixel_format(u32 format)
 		val = LCD_LAYER_FORMAT_NV12 | LCD_LAYER_PLANAR_STORAGE
 		    | LCD_LAYER_CRCB_ORDER;
 		break;
-		/* packed formats */
-		/* looks hw requires B & G to be swapped when RGB */
+		 
+		 
 	case DRM_FORMAT_RGB332:
 		val = LCD_LAYER_FORMAT_RGB332 | LCD_LAYER_BGR_ORDER;
 		break;
@@ -285,7 +279,7 @@ static unsigned int get_bits_per_pixel(const struct drm_format_info *format)
 
 static void config_csc(struct kmb_drm_private *kmb, int plane_id)
 {
-	/* YUV to RGB conversion using the fixed matrix csc_coef_lcd */
+	 
 	kmb_write_lcd(kmb, LCD_LAYERn_CSC_COEFF11(plane_id), csc_coef_lcd[0]);
 	kmb_write_lcd(kmb, LCD_LAYERn_CSC_COEFF12(plane_id), csc_coef_lcd[1]);
 	kmb_write_lcd(kmb, LCD_LAYERn_CSC_COEFF13(plane_id), csc_coef_lcd[2]);
@@ -406,7 +400,7 @@ static void kmb_plane_atomic_update(struct drm_plane *plane,
 		      addr[Y_PLANE] + fb->offsets[0]);
 	val = get_pixel_format(fb->format->format);
 	val |= get_bits_per_pixel(fb->format);
-	/* Program Cb/Cr for planar formats */
+	 
 	if (num_planes > 1) {
 		kmb_write_lcd(kmb, LCD_LAYERn_DMA_CB_LINE_VSTRIDE(plane_id),
 			      width * fb->format->cpp[0]);
@@ -415,7 +409,7 @@ static void kmb_plane_atomic_update(struct drm_plane *plane,
 
 		addr[U_PLANE] = drm_fb_dma_get_gem_addr(fb, new_plane_state,
 							U_PLANE);
-		/* check if Cb/Cr is swapped*/
+		 
 		if (num_planes == 3 && (val & LCD_LAYER_CRCB_ORDER))
 			kmb_write_lcd(kmb,
 				      LCD_LAYERn_DMA_START_CR_ADR(plane_id),
@@ -438,7 +432,7 @@ static void kmb_plane_atomic_update(struct drm_plane *plane,
 								new_plane_state,
 								V_PLANE);
 
-			/* check if Cb/Cr is swapped*/
+			 
 			if (val & LCD_LAYER_CRCB_ORDER)
 				kmb_write_lcd(kmb,
 					      LCD_LAYERn_DMA_START_CB_ADR(plane_id),
@@ -460,7 +454,7 @@ static void kmb_plane_atomic_update(struct drm_plane *plane,
 	if (val & LCD_LAYER_PLANAR_STORAGE) {
 		val |= LCD_LAYER_CSC_EN;
 
-		/* Enable CSC if input is planar and output is RGB */
+		 
 		config_csc(kmb, plane_id);
 	}
 
@@ -468,10 +462,10 @@ static void kmb_plane_atomic_update(struct drm_plane *plane,
 
 	kmb_write_lcd(kmb, LCD_LAYERn_CFG(plane_id), val);
 
-	/* Configure LCD_CONTROL */
+	 
 	ctrl = kmb_read_lcd(kmb, LCD_CONTROL);
 
-	/* Set layer blending config */
+	 
 	ctrl &= ~LCD_CTRL_ALPHA_ALL;
 	ctrl |= LCD_CTRL_ALPHA_BOTTOM_VL1 |
 		LCD_CTRL_ALPHA_BLEND_VL2;
@@ -496,36 +490,29 @@ static void kmb_plane_atomic_update(struct drm_plane *plane,
 	ctrl |= LCD_CTRL_PROGRESSIVE | LCD_CTRL_TIM_GEN_ENABLE
 	    | LCD_CTRL_CONTINUOUS | LCD_CTRL_OUTPUT_ENABLED;
 
-	/* LCD is connected to MIPI on kmb
-	 * Therefore this bit is required for DSI Tx
-	 */
+	 
 	ctrl |= LCD_CTRL_VHSYNC_IDLE_LVL;
 
 	kmb_write_lcd(kmb, LCD_CONTROL, ctrl);
 
-	/* Enable pipeline AXI read transactions for the DMA
-	 * after setting graphics layers. This must be done
-	 * in a separate write cycle.
-	 */
+	 
 	kmb_set_bitmask_lcd(kmb, LCD_CONTROL, LCD_CTRL_PIPELINE_DMA);
 
-	/* FIXME no doc on how to set output format, these values are taken
-	 * from the Myriadx tests
-	 */
+	 
 	out_format |= LCD_OUTF_FORMAT_RGB888;
 
-	/* Leave RGB order,conversion mode and clip mode to default */
-	/* do not interleave RGB channels for mipi Tx compatibility */
+	 
+	 
 	out_format |= LCD_OUTF_MIPI_RGB_MODE;
 	kmb_write_lcd(kmb, LCD_OUT_FORMAT_CFG, out_format);
 
 	dma_cfg = LCD_DMA_LAYER_ENABLE | LCD_DMA_LAYER_VSTRIDE_EN |
 	    LCD_DMA_LAYER_CONT_UPDATE | LCD_DMA_LAYER_AXI_BURST_16;
 
-	/* Enable DMA */
+	 
 	kmb_write_lcd(kmb, LCD_LAYERn_DMA_CFG(plane_id), dma_cfg);
 
-	/* Save initial display config */
+	 
 	if (!init_disp_cfg->width ||
 	    !init_disp_cfg->height ||
 	    !init_disp_cfg->format) {
@@ -629,9 +616,7 @@ struct kmb_plane *kmb_plane_init(struct drm_device *drm)
 		plane->id = i;
 	}
 
-	/* Disable pipeline AXI read transactions for the DMA
-	 * prior to setting graphics layers
-	 */
+	 
 	kmb_clr_bitmask_lcd(kmb, LCD_CONTROL, LCD_CTRL_PIPELINE_DMA);
 
 	return primary;

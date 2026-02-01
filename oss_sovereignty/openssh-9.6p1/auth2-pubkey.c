@@ -1,28 +1,5 @@
-/* $OpenBSD: auth2-pubkey.c,v 1.119 2023/07/27 22:25:17 djm Exp $ */
-/*
- * Copyright (c) 2000 Markus Friedl.  All rights reserved.
- * Copyright (c) 2010 Damien Miller.  All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- *
- * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
- * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
- * IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
- * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
- * NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
- * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+ 
+ 
 
 #include "includes.h"
 
@@ -66,11 +43,11 @@
 #include "authfile.h"
 #include "match.h"
 #include "ssherr.h"
-#include "channels.h" /* XXX for session.h */
-#include "session.h" /* XXX for child_set_env(); refactor? */
+#include "channels.h"  
+#include "session.h"  
 #include "sk-api.h"
 
-/* import */
+ 
 extern ServerOptions options;
 
 static char *
@@ -106,7 +83,7 @@ userauth_pubkey(struct ssh *ssh, const char *method)
 	    (r = sshpkt_get_string(ssh, &pkblob, &blen)) != 0)
 		fatal_fr(r, "parse %s packet", method);
 
-	/* hostbound auth includes the hostkey offered at initial KEX */
+	 
 	if (hostbound) {
 		if ((r = sshpkt_getb_froms(ssh, &b)) != 0 ||
 		    (r = sshkey_fromb(b, &hostkey)) != 0)
@@ -136,7 +113,7 @@ userauth_pubkey(struct ssh *ssh, const char *method)
 
 	pktype = sshkey_type_from_name(pkalg);
 	if (pktype == KEY_UNSPEC) {
-		/* this is perfectly legal */
+		 
 		verbose_f("unsupported public key algorithm: %s", pkalg);
 		goto done;
 	}
@@ -199,7 +176,7 @@ userauth_pubkey(struct ssh *ssh, const char *method)
 			debug2_f("disabled because of invalid user");
 			goto done;
 		}
-		/* reconstruct packet */
+		 
 		xasprintf(&userstyle, "%s%s%s", authctxt->user,
 		    authctxt->style ? ":" : "",
 		    authctxt->style ? authctxt->style : "");
@@ -217,7 +194,7 @@ userauth_pubkey(struct ssh *ssh, const char *method)
 #ifdef DEBUG_PK
 		sshbuf_dump(b, stderr);
 #endif
-		/* test for correct signature */
+		 
 		authenticated = 0;
 		if (PRIVSEP(user_key_allowed(ssh, pw, key, 1, &authopts)) &&
 		    PRIVSEP(sshkey_verify(key, sig, slen,
@@ -273,14 +250,8 @@ userauth_pubkey(struct ssh *ssh, const char *method)
 			debug2_f("disabled because of invalid user");
 			goto done;
 		}
-		/* XXX fake reply and always send PK_OK ? */
-		/*
-		 * XXX this allows testing whether a user is allowed
-		 * to login: if you happen to have a valid pubkey this
-		 * message is sent. the message is NEVER sent at all
-		 * if a user is not allowed to login. is this an
-		 * issue? -markus
-		 */
+		 
+		 
 		if (PRIVSEP(user_key_allowed(ssh, pw, key, 0, NULL))) {
 			if ((r = sshpkt_start(ssh, SSH2_MSG_USERAUTH_PK_OK))
 			    != 0 ||
@@ -335,10 +306,7 @@ match_principals_file(struct passwd *pw, char *file,
 	return success;
 }
 
-/*
- * Checks whether principal is allowed in output of command.
- * returns 1 if the principal is allowed or 0 otherwise.
- */
+ 
 static int
 match_principals_command(struct passwd *user_pw, const struct sshkey *key,
     const char *conn_id, const char *rdomain, struct sshauthopt **authoptsp)
@@ -364,13 +332,10 @@ match_principals_command(struct passwd *user_pw, const struct sshkey *key,
 		return 0;
 	}
 
-	/*
-	 * NB. all returns later this function should go via "out" to
-	 * ensure the original SIGCHLD handler is restored properly.
-	 */
+	 
 	osigchld = ssh_signal(SIGCHLD, SIG_DFL);
 
-	/* Prepare and verify the user for the command */
+	 
 	username = percent_expand(options.authorized_principals_command_user,
 	    "u", user_pw->pw_name, (char *)NULL);
 	runas_pw = getpwnam(username);
@@ -380,7 +345,7 @@ match_principals_command(struct passwd *user_pw, const struct sshkey *key,
 		goto out;
 	}
 
-	/* Turn the command into an argument vector */
+	 
 	if (argv_split(options.authorized_principals_command,
 	    &ac, &av, 0) != 0) {
 		error("AuthorizedPrincipalsCommand \"%s\" contains "
@@ -435,7 +400,7 @@ match_principals_command(struct passwd *user_pw, const struct sshkey *key,
 		free(av[i]);
 		av[i] = tmp;
 	}
-	/* Prepare a printable command for logs, etc. */
+	 
 	command = argv_assemble(ac, av);
 
 	if ((pid = subprocess("AuthorizedPrincipalsCommand", command,
@@ -455,7 +420,7 @@ match_principals_command(struct passwd *user_pw, const struct sshkey *key,
 	if (exited_cleanly(pid, "AuthorizedPrincipalsCommand", command, 0) != 0)
 		goto out;
 
-	/* Read completed successfully */
+	 
 	found_principal = ok;
  out:
 	if (f != NULL)
@@ -475,7 +440,7 @@ match_principals_command(struct passwd *user_pw, const struct sshkey *key,
 	return found_principal;
 }
 
-/* Authenticate a certificate key against TrustedUserCAKeys */
+ 
 static int
 user_cert_trusted_ca(struct passwd *pw, struct sshkey *key,
     const char *remote_ip, const char *remote_host,
@@ -504,21 +469,17 @@ user_cert_trusted_ca(struct passwd *pw, struct sshkey *key,
 		    options.trusted_user_ca_keys);
 		goto out;
 	}
-	/*
-	 * If AuthorizedPrincipals is in use, then compare the certificate
-	 * principals against the names in that file rather than matching
-	 * against the username.
-	 */
+	 
 	if ((principals_file = authorized_principals_file(pw)) != NULL) {
 		if (match_principals_file(pw, principals_file,
 		    key->cert, &principals_opts))
 			found_principal = 1;
 	}
-	/* Try querying command if specified */
+	 
 	if (!found_principal && match_principals_command(pw, key,
 	    conn_id, rdomain, &principals_opts))
 		found_principal = 1;
-	/* If principals file or command is specified, then require a match */
+	 
 	use_authorized_principals = principals_file != NULL ||
 	    options.authorized_principals_command != NULL;
 	if (!found_principal && use_authorized_principals) {
@@ -531,7 +492,7 @@ user_cert_trusted_ca(struct passwd *pw, struct sshkey *key,
 	    use_authorized_principals ? NULL : pw->pw_name, &reason) != 0)
 		goto fail_reason;
 
-	/* Check authority from options in key and from principals file/cmd */
+	 
 	if ((cert_opts = sshauthopt_from_cert(key)) == NULL) {
 		reason = "Invalid certificate options";
 		goto fail_reason;
@@ -559,7 +520,7 @@ user_cert_trusted_ca(struct passwd *pw, struct sshkey *key,
 		}
 	}
 
-	/* Success */
+	 
 	verbose("Accepted certificate ID \"%s\" (serial %llu) signed by "
 	    "%s CA %s via %s", key->cert->key_id,
 	    (unsigned long long)key->cert->serial,
@@ -579,10 +540,7 @@ user_cert_trusted_ca(struct passwd *pw, struct sshkey *key,
 	return ret;
 }
 
-/*
- * Checks whether key is allowed in file.
- * returns 1 if the key is allowed or 0 otherwise.
- */
+ 
 static int
 user_key_allowed2(struct passwd *pw, struct sshkey *key,
     char *file, const char *remote_ip, const char *remote_host,
@@ -594,7 +552,7 @@ user_key_allowed2(struct passwd *pw, struct sshkey *key,
 	if (authoptsp != NULL)
 		*authoptsp = NULL;
 
-	/* Temporarily use the user's uid. */
+	 
 	temporarily_use_uid(pw);
 
 	debug("trying public key file %s", file);
@@ -608,10 +566,7 @@ user_key_allowed2(struct passwd *pw, struct sshkey *key,
 	return found_key;
 }
 
-/*
- * Checks whether key is allowed in output of command.
- * returns 1 if the key is allowed or 0 otherwise.
- */
+ 
 static int
 user_key_command_allowed2(struct passwd *user_pw, struct sshkey *key,
     const char *remote_ip, const char *remote_host,
@@ -635,13 +590,10 @@ user_key_command_allowed2(struct passwd *user_pw, struct sshkey *key,
 		return 0;
 	}
 
-	/*
-	 * NB. all returns later this function should go via "out" to
-	 * ensure the original SIGCHLD handler is restored properly.
-	 */
+	 
 	osigchld = ssh_signal(SIGCHLD, SIG_DFL);
 
-	/* Prepare and verify the user for the command */
+	 
 	username = percent_expand(options.authorized_keys_command_user,
 	    "u", user_pw->pw_name, (char *)NULL);
 	runas_pw = getpwnam(username);
@@ -651,7 +603,7 @@ user_key_command_allowed2(struct passwd *user_pw, struct sshkey *key,
 		goto out;
 	}
 
-	/* Prepare AuthorizedKeysCommand */
+	 
 	if ((key_fp = sshkey_fingerprint(key, options.fingerprint_hash,
 	    SSH_FP_DEFAULT)) == NULL) {
 		error_f("sshkey_fingerprint failed");
@@ -662,7 +614,7 @@ user_key_command_allowed2(struct passwd *user_pw, struct sshkey *key,
 		goto out;
 	}
 
-	/* Turn the command into an argument vector */
+	 
 	if (argv_split(options.authorized_keys_command, &ac, &av, 0) != 0) {
 		error("AuthorizedKeysCommand \"%s\" contains invalid quotes",
 		    options.authorized_keys_command);
@@ -691,19 +643,15 @@ user_key_command_allowed2(struct passwd *user_pw, struct sshkey *key,
 		free(av[i]);
 		av[i] = tmp;
 	}
-	/* Prepare a printable command for logs, etc. */
+	 
 	command = argv_assemble(ac, av);
 
-	/*
-	 * If AuthorizedKeysCommand was run without arguments
-	 * then fall back to the old behaviour of passing the
-	 * target username as a single argument.
-	 */
+	 
 	if (ac == 1) {
 		av = xreallocarray(av, ac + 2, sizeof(*av));
 		av[1] = xstrdup(user_pw->pw_name);
 		av[2] = NULL;
-		/* Fix up command too, since it is used in log messages */
+		 
 		free(command);
 		xasprintf(&command, "%s %s", av[0], av[1]);
 	}
@@ -727,7 +675,7 @@ user_key_command_allowed2(struct passwd *user_pw, struct sshkey *key,
 	if (exited_cleanly(pid, "AuthorizedKeysCommand", command, 0) != 0)
 		goto out;
 
-	/* Read completed successfully */
+	 
 	found_key = ok;
  out:
 	if (f != NULL)
@@ -745,9 +693,7 @@ user_key_command_allowed2(struct passwd *user_pw, struct sshkey *key,
 	return found_key;
 }
 
-/*
- * Check whether key authenticates and authorises the user.
- */
+ 
 int
 user_key_allowed(struct ssh *ssh, struct passwd *pw, struct sshkey *key,
     int auth_attempt, struct sshauthopt **authoptsp)

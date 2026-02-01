@@ -1,23 +1,15 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// ak4642.c  --  AK4642/AK4643 ALSA Soc Audio driver
-//
-// Copyright (C) 2009 Renesas Solutions Corp.
-// Kuninori Morimoto <morimoto.kuninori@renesas.com>
-//
-// Based on wm8731.c by Richard Purdie
-// Based on ak4535.c by Richard Purdie
-// Based on wm8753.c by Liam Girdwood
 
-/* ** CAUTION **
- *
- * This is very simple driver.
- * It can use headphone output / stereo input only
- *
- * AK4642 is tested.
- * AK4643 is tested.
- * AK4648 is tested.
- */
+
+
+
+
+
+
+
+
+
+
+ 
 
 #include <linux/clk.h>
 #include <linux/clk-provider.h>
@@ -62,54 +54,54 @@
 #define FIL1_0		0x1c
 #define FIL1_1		0x1d
 #define FIL1_2		0x1e
-#define FIL1_3		0x1f	/* The maximum valid register for ak4642 */
+#define FIL1_3		0x1f	 
 #define PW_MGMT4	0x20
 #define MD_CTL5		0x21
 #define LO_MS		0x22
 #define HP_MS		0x23
-#define SPK_MS		0x24	/* The maximum valid register for ak4643 */
+#define SPK_MS		0x24	 
 #define EQ_FBEQAB	0x25
 #define EQ_FBEQCD	0x26
-#define EQ_FBEQE	0x27	/* The maximum valid register for ak4648 */
+#define EQ_FBEQE	0x27	 
 
-/* PW_MGMT1*/
-#define PMVCM		(1 << 6) /* VCOM Power Management */
-#define PMMIN		(1 << 5) /* MIN Input Power Management */
-#define PMDAC		(1 << 2) /* DAC Power Management */
-#define PMADL		(1 << 0) /* MIC Amp Lch and ADC Lch Power Management */
+ 
+#define PMVCM		(1 << 6)  
+#define PMMIN		(1 << 5)  
+#define PMDAC		(1 << 2)  
+#define PMADL		(1 << 0)  
 
-/* PW_MGMT2 */
+ 
 #define HPMTN		(1 << 6)
 #define PMHPL		(1 << 5)
 #define PMHPR		(1 << 4)
-#define MS		(1 << 3) /* master/slave select */
+#define MS		(1 << 3)  
 #define MCKO		(1 << 1)
 #define PMPLL		(1 << 0)
 
 #define PMHP_MASK	(PMHPL | PMHPR)
 #define PMHP		PMHP_MASK
 
-/* PW_MGMT3 */
-#define PMADR		(1 << 0) /* MIC L / ADC R Power Management */
+ 
+#define PMADR		(1 << 0)  
 
-/* SG_SL1 */
-#define MINS		(1 << 6) /* Switch from MIN to Speaker */
-#define DACL		(1 << 4) /* Switch from DAC to Stereo or Receiver */
-#define PMMP		(1 << 2) /* MPWR pin Power Management */
-#define MGAIN0		(1 << 0) /* MIC amp gain*/
+ 
+#define MINS		(1 << 6)  
+#define DACL		(1 << 4)  
+#define PMMP		(1 << 2)  
+#define MGAIN0		(1 << 0)  
 
-/* SG_SL2 */
-#define LOPS		(1 << 6) /* Stero Line-out Power Save Mode */
+ 
+#define LOPS		(1 << 6)  
 
-/* TIMER */
-#define ZTM(param)	((param & 0x3) << 4) /* ALC Zero Crossing TimeOut */
+ 
+#define ZTM(param)	((param & 0x3) << 4)  
 #define WTM(param)	(((param & 0x4) << 4) | ((param & 0x3) << 2))
 
-/* ALC_CTL1 */
-#define ALC		(1 << 5) /* ALC Enable */
-#define LMTH0		(1 << 0) /* ALC Limiter / Recovery Level */
+ 
+#define ALC		(1 << 5)  
+#define LMTH0		(1 << 0)  
 
-/* MD_CTL1 */
+ 
 #define PLL3		(1 << 7)
 #define PLL2		(1 << 6)
 #define PLL1		(1 << 5)
@@ -125,14 +117,14 @@
 #define LEFT_J		(2 << 0)
 #define I2S		(3 << 0)
 
-/* MD_CTL2 */
+ 
 #define FSs(val)	(((val & 0x7) << 0) | ((val & 0x8) << 2))
 #define PSs(val)	((val & 0x3) << 6)
 
-/* MD_CTL3 */
+ 
 #define BST1		(1 << 3)
 
-/* MD_CTL4 */
+ 
 #define DACH		(1 << 0)
 
 struct ak4642_drvdata {
@@ -145,14 +137,7 @@ struct ak4642_priv {
 	struct clk *mcko;
 };
 
-/*
- * Playback Volume (table 39)
- *
- * max : 0x00 : +12.0 dB
- *       ( 0.5 dB step )
- * min : 0xFE : -115.0 dB
- * mute: 0xFF
- */
+ 
 static const DECLARE_TLV_DB_SCALE(out_tlv, -11550, 50, 1);
 
 static const struct snd_kcontrol_new ak4642_snd_controls[] = {
@@ -170,7 +155,7 @@ static const struct snd_kcontrol_new ak4642_lout_mixer_controls[] = {
 	SOC_DAPM_SINGLE("DACL", SG_SL1, 4, 1, 0),
 };
 
-/* event handlers */
+ 
 static int ak4642_lout_event(struct snd_soc_dapm_widget *w,
 			     struct snd_kcontrol *kcontrol, int event)
 {
@@ -179,12 +164,12 @@ static int ak4642_lout_event(struct snd_soc_dapm_widget *w,
 	switch (event) {
 	case SND_SOC_DAPM_PRE_PMD:
 	case SND_SOC_DAPM_PRE_PMU:
-		/* Power save mode ON */
+		 
 		snd_soc_component_update_bits(component, SG_SL2, LOPS, LOPS);
 		break;
 	case SND_SOC_DAPM_POST_PMU:
 	case SND_SOC_DAPM_POST_PMD:
-		/* Power save mode OFF */
+		 
 		msleep(300);
 		snd_soc_component_update_bits(component, SG_SL2, LOPS, 0);
 		break;
@@ -195,7 +180,7 @@ static int ak4642_lout_event(struct snd_soc_dapm_widget *w,
 
 static const struct snd_soc_dapm_widget ak4642_dapm_widgets[] = {
 
-	/* Outputs */
+	 
 	SND_SOC_DAPM_OUTPUT("HPOUTL"),
 	SND_SOC_DAPM_OUTPUT("HPOUTR"),
 	SND_SOC_DAPM_OUTPUT("LINEOUT"),
@@ -214,13 +199,13 @@ static const struct snd_soc_dapm_widget ak4642_dapm_widgets[] = {
 			   SND_SOC_DAPM_PRE_PMU | SND_SOC_DAPM_POST_PMU |
 			   SND_SOC_DAPM_PRE_PMD | SND_SOC_DAPM_POST_PMD),
 
-	/* DAC */
+	 
 	SND_SOC_DAPM_DAC("DAC", NULL, PW_MGMT1, 2, 0),
 };
 
 static const struct snd_soc_dapm_route ak4642_intercon[] = {
 
-	/* Outputs */
+	 
 	{"HPOUTL", NULL, "HPL Out"},
 	{"HPOUTR", NULL, "HPR Out"},
 	{"LINEOUT", NULL, "LINEOUT Mixer"},
@@ -237,9 +222,7 @@ static const struct snd_soc_dapm_route ak4642_intercon[] = {
 	{ "DAC", NULL, "Playback" },
 };
 
-/*
- * ak4642 register cache
- */
+ 
 static const struct reg_default ak4643_reg[] = {
 	{  0, 0x00 }, {  1, 0x00 }, {  2, 0x01 }, {  3, 0x00 },
 	{  4, 0x02 }, {  5, 0x00 }, {  6, 0x00 }, {  7, 0x00 },
@@ -253,11 +236,7 @@ static const struct reg_default ak4643_reg[] = {
 	{ 36, 0x00 },
 };
 
-/* The default settings for 0x0 ~ 0x1f registers are the same for ak4642
-   and ak4643. So we reuse the ak4643 reg_default for ak4642.
-   The valid registers for ak4642 are 0x0 ~ 0x1f which is a subset of ak4643,
-   so define NUM_AK4642_REG_DEFAULTS for ak4642.
-*/
+ 
 #define ak4642_reg ak4643_reg
 #define NUM_AK4642_REG_DEFAULTS	(FIL1_3 + 1)
 
@@ -281,32 +260,11 @@ static int ak4642_dai_startup(struct snd_pcm_substream *substream,
 	struct snd_soc_component *component = dai->component;
 
 	if (is_play) {
-		/*
-		 * start headphone output
-		 *
-		 * PLL, Master Mode
-		 * Audio I/F Format :MSB justified (ADC & DAC)
-		 * Bass Boost Level : Middle
-		 *
-		 * This operation came from example code of
-		 * "ASAHI KASEI AK4642" (japanese) manual p97.
-		 */
-		snd_soc_component_write(component, L_IVC, 0x91); /* volume */
-		snd_soc_component_write(component, R_IVC, 0x91); /* volume */
+		 
+		snd_soc_component_write(component, L_IVC, 0x91);  
+		snd_soc_component_write(component, R_IVC, 0x91);  
 	} else {
-		/*
-		 * start stereo input
-		 *
-		 * PLL Master Mode
-		 * Audio I/F Format:MSB justified (ADC & DAC)
-		 * Pre MIC AMP:+20dB
-		 * MIC Power On
-		 * ALC setting:Refer to Table 35
-		 * ALC bit=“1”
-		 *
-		 * This operation came from example code of
-		 * "ASAHI KASEI AK4642" (japanese) manual p94.
-		 */
+		 
 		snd_soc_component_update_bits(component, SG_SL1, PMMP | MGAIN0, PMMP | MGAIN0);
 		snd_soc_component_write(component, TIMER, ZTM(0x3) | WTM(0x3));
 		snd_soc_component_write(component, ALC_CTL1, ALC | LMTH0);
@@ -325,7 +283,7 @@ static void ak4642_dai_shutdown(struct snd_pcm_substream *substream,
 
 	if (is_play) {
 	} else {
-		/* stop stereo input */
+		 
 		snd_soc_component_update_bits(component, PW_MGMT1, PMADL, 0);
 		snd_soc_component_update_bits(component, PW_MGMT3, PMADR, 0);
 		snd_soc_component_update_bits(component, ALC_CTL1, ALC, 0);
@@ -389,10 +347,10 @@ static int ak4642_dai_set_fmt(struct snd_soc_dai *dai, unsigned int fmt)
 	u8 data;
 	u8 bcko;
 
-	data = MCKO | PMPLL; /* use MCKO */
+	data = MCKO | PMPLL;  
 	bcko = 0;
 
-	/* set clocking for audio interface */
+	 
 	switch (fmt & SND_SOC_DAIFMT_CLOCK_PROVIDER_MASK) {
 	case SND_SOC_DAIFMT_CBP_CFP:
 		data |= MS;
@@ -406,7 +364,7 @@ static int ak4642_dai_set_fmt(struct snd_soc_dai *dai, unsigned int fmt)
 	snd_soc_component_update_bits(component, PW_MGMT2, MS | MCKO | PMPLL, data);
 	snd_soc_component_update_bits(component, MD_CTL1, BCKO_MASK, bcko);
 
-	/* format type */
+	 
 	data = 0;
 	switch (fmt & SND_SOC_DAIFMT_FORMAT_MASK) {
 	case SND_SOC_DAIFMT_LEFT_J:
@@ -415,9 +373,7 @@ static int ak4642_dai_set_fmt(struct snd_soc_dai *dai, unsigned int fmt)
 	case SND_SOC_DAIFMT_I2S:
 		data = I2S;
 		break;
-	/* FIXME
-	 * Please add RIGHT_J / DSP support here
-	 */
+	 
 	default:
 		return -EINVAL;
 	}

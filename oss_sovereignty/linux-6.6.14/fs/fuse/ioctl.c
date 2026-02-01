@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2017 Red Hat, Inc.
- */
+
+ 
 
 #include "fuse_i.h"
 
@@ -19,7 +17,7 @@ static ssize_t fuse_send_ioctl(struct fuse_mount *fm, struct fuse_args *args,
 
 	ret = fuse_simple_request(fm, args);
 
-	/* Translate ENOSYS, which shouldn't be returned from fs */
+	 
 	if (ret == -ENOSYS)
 		ret = -ENOTTY;
 
@@ -29,12 +27,7 @@ static ssize_t fuse_send_ioctl(struct fuse_mount *fm, struct fuse_args *args,
 	return ret;
 }
 
-/*
- * CUSE servers compiled on 32bit broke on 64bit kernels because the
- * ABI was defined to be 'struct iovec' which is different on 32bit
- * and 64bit.  Fortunately we can determine which structure the server
- * used from the size of the reply.
- */
+ 
 static int fuse_copy_ioctl_iovec_old(struct iovec *dst, void *src,
 				     size_t transferred, unsigned count,
 				     bool is_compat)
@@ -44,11 +37,7 @@ static int fuse_copy_ioctl_iovec_old(struct iovec *dst, void *src,
 		struct compat_iovec *ciov = src;
 		unsigned i;
 
-		/*
-		 * With this interface a 32bit server cannot support
-		 * non-compat (i.e. ones coming from 64bit apps) ioctl
-		 * requests
-		 */
+		 
 		if (!is_compat)
 			return -EINVAL;
 
@@ -67,7 +56,7 @@ static int fuse_copy_ioctl_iovec_old(struct iovec *dst, void *src,
 	return 0;
 }
 
-/* Make sure iov_length() won't overflow */
+ 
 static int fuse_verify_ioctl_iov(struct fuse_conn *fc, struct iovec *iov,
 				 size_t count)
 {
@@ -98,7 +87,7 @@ static int fuse_copy_ioctl_iovec(struct fuse_conn *fc, struct iovec *dst,
 		return -EIO;
 
 	for (i = 0; i < count; i++) {
-		/* Did the server supply an inappropriate value? */
+		 
 		if (fiov[i].base != (unsigned long) fiov[i].base ||
 		    fiov[i].len != (unsigned long) fiov[i].len)
 			return -EIO;
@@ -118,52 +107,7 @@ static int fuse_copy_ioctl_iovec(struct fuse_conn *fc, struct iovec *dst,
 }
 
 
-/*
- * For ioctls, there is no generic way to determine how much memory
- * needs to be read and/or written.  Furthermore, ioctls are allowed
- * to dereference the passed pointer, so the parameter requires deep
- * copying but FUSE has no idea whatsoever about what to copy in or
- * out.
- *
- * This is solved by allowing FUSE server to retry ioctl with
- * necessary in/out iovecs.  Let's assume the ioctl implementation
- * needs to read in the following structure.
- *
- * struct a {
- *	char	*buf;
- *	size_t	buflen;
- * }
- *
- * On the first callout to FUSE server, inarg->in_size and
- * inarg->out_size will be NULL; then, the server completes the ioctl
- * with FUSE_IOCTL_RETRY set in out->flags, out->in_iovs set to 1 and
- * the actual iov array to
- *
- * { { .iov_base = inarg.arg,	.iov_len = sizeof(struct a) } }
- *
- * which tells FUSE to copy in the requested area and retry the ioctl.
- * On the second round, the server has access to the structure and
- * from that it can tell what to look for next, so on the invocation,
- * it sets FUSE_IOCTL_RETRY, out->in_iovs to 2 and iov array to
- *
- * { { .iov_base = inarg.arg,	.iov_len = sizeof(struct a)	},
- *   { .iov_base = a.buf,	.iov_len = a.buflen		} }
- *
- * FUSE will copy both struct a and the pointed buffer from the
- * process doing the ioctl and retry ioctl with both struct a and the
- * buffer.
- *
- * This time, FUSE server has everything it needs and completes ioctl
- * without FUSE_IOCTL_RETRY which finishes the ioctl call.
- *
- * Copying data out works the same way.
- *
- * Note that if FUSE_IOCTL_UNRESTRICTED is clear, the kernel
- * automatically initializes in and out iovs by decoding @cmd with
- * _IOC_* macros and the server is not allowed to request RETRY.  This
- * limits ioctl data transfers to well-formed ioctls and is the forced
- * behavior for all FUSE servers.
- */
+ 
 long fuse_do_ioctl(struct file *file, unsigned int cmd, unsigned long arg,
 		   unsigned int flags)
 {
@@ -197,7 +141,7 @@ long fuse_do_ioctl(struct file *file, unsigned int cmd, unsigned long arg,
 	}
 #endif
 
-	/* assume all the iovs returned by client always fits in a page */
+	 
 	BUILD_BUG_ON(sizeof(struct fuse_ioctl_iovec) * FUSE_IOCTL_MAX_IOV > PAGE_SIZE);
 
 	err = -ENOMEM;
@@ -208,10 +152,7 @@ long fuse_do_ioctl(struct file *file, unsigned int cmd, unsigned long arg,
 
 	fuse_page_descs_length_init(ap.descs, 0, fm->fc->max_pages);
 
-	/*
-	 * If restricted, initialize IO parameters as encoded in @cmd.
-	 * RETRY from server is not allowed.
-	 */
+	 
 	if (!(flags & FUSE_IOCTL_UNRESTRICTED)) {
 		struct iovec *iov = iov_page;
 
@@ -233,14 +174,11 @@ long fuse_do_ioctl(struct file *file, unsigned int cmd, unsigned long arg,
 	inarg.in_size = in_size = iov_length(in_iov, in_iovs);
 	inarg.out_size = out_size = iov_length(out_iov, out_iovs);
 
-	/*
-	 * Out data can be used either for actual out data or iovs,
-	 * make sure there always is at least one page.
-	 */
+	 
 	out_size = max_t(size_t, out_size, PAGE_SIZE);
 	max_pages = DIV_ROUND_UP(max(in_size, out_size), PAGE_SIZE);
 
-	/* make sure there are enough buffer pages and init request with them */
+	 
 	err = -ENOMEM;
 	if (max_pages > fm->fc->max_pages)
 		goto out;
@@ -252,7 +190,7 @@ long fuse_do_ioctl(struct file *file, unsigned int cmd, unsigned long arg,
 	}
 
 
-	/* okay, let's send it to the client */
+	 
 	ap.args.opcode = FUSE_IOCTL;
 	ap.args.nodeid = ff->nodeid;
 	ap.args.in_numargs = 1;
@@ -282,11 +220,11 @@ long fuse_do_ioctl(struct file *file, unsigned int cmd, unsigned long arg,
 	if (transferred < 0)
 		goto out;
 
-	/* did it ask for retry? */
+	 
 	if (outarg.flags & FUSE_IOCTL_RETRY) {
 		void *vaddr;
 
-		/* no retry if in restricted mode */
+		 
 		err = -EIO;
 		if (!(flags & FUSE_IOCTL_UNRESTRICTED))
 			goto out;
@@ -294,10 +232,7 @@ long fuse_do_ioctl(struct file *file, unsigned int cmd, unsigned long arg,
 		in_iovs = outarg.in_iovs;
 		out_iovs = outarg.out_iovs;
 
-		/*
-		 * Make sure things are in boundary, separate checks
-		 * are to protect against overflow.
-		 */
+		 
 		err = -ENOMEM;
 		if (in_iovs > FUSE_IOCTL_MAX_IOV ||
 		    out_iovs > FUSE_IOCTL_MAX_IOV ||

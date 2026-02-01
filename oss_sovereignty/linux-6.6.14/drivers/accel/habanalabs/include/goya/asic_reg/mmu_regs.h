@@ -1,23 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0
- *
- * Copyright 2016-2018 HabanaLabs, Ltd.
- * All Rights Reserved.
- *
- */
+ 
 
-/************************************
- ** This is an auto-generated file **
- **       DO NOT EDIT BELOW        **
- ************************************/
+ 
 
 #ifndef ASIC_REG_MMU_REGS_H_
 #define ASIC_REG_MMU_REGS_H_
 
-/*
- *****************************************
- *   MMU (Prototype: MMU)
- *****************************************
- */
+ 
 
 #define mmMMU_INPUT_FIFO_THRESHOLD                                   0x480000
 
@@ -49,4 +37,4 @@
 
 #define mmMMU_ACCESS_ERROR_CAPTURE_VA                                0x480040
 
-#endif /* ASIC_REG_MMU_REGS_H_ */
+#endif  

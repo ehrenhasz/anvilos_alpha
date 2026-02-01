@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2019 MediaTek Inc.
- * Author: James Liao <jamesjj.liao@mediatek.com>
- *         Fabien Parent <fparent@baylibre.com>
- * Copyright (c) 2023 Collabora Ltd.
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/mod_devicetable.h>
@@ -47,7 +42,7 @@ static const struct mtk_clk_desc aud_desc = {
 
 static const struct of_device_id of_match_clk_mt8516_aud[] = {
 	{ .compatible = "mediatek,mt8516-audsys", .data = &aud_desc },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, of_match_clk_mt8516_aud);
 

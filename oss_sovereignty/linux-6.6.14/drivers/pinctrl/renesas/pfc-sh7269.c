@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * SH7269 Pinmux
- *
- * Copyright (C) 2012  Renesas Electronics Europe Ltd
- * Copyright (C) 2012  Phil Edworthy
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <cpu/sh7269.h>
@@ -15,35 +10,35 @@ enum {
 	PINMUX_RESERVED = 0,
 
 	PINMUX_DATA_BEGIN,
-	/* Port A */
+	 
 	PA1_DATA, PA0_DATA,
-	/* Port B */
+	 
 	PB22_DATA, PB21_DATA, PB20_DATA,
 	PB19_DATA, PB18_DATA, PB17_DATA, PB16_DATA,
 	PB15_DATA, PB14_DATA, PB13_DATA, PB12_DATA,
 	PB11_DATA, PB10_DATA, PB9_DATA, PB8_DATA,
 	PB7_DATA, PB6_DATA, PB5_DATA, PB4_DATA,
 	PB3_DATA, PB2_DATA, PB1_DATA,
-	/* Port C */
+	 
 	PC8_DATA,
 	PC7_DATA, PC6_DATA, PC5_DATA, PC4_DATA,
 	PC3_DATA, PC2_DATA, PC1_DATA, PC0_DATA,
-	/* Port D */
+	 
 	PD15_DATA, PD14_DATA, PD13_DATA, PD12_DATA,
 	PD11_DATA, PD10_DATA, PD9_DATA, PD8_DATA,
 	PD7_DATA, PD6_DATA, PD5_DATA, PD4_DATA,
 	PD3_DATA, PD2_DATA, PD1_DATA, PD0_DATA,
-	/* Port E */
+	 
 	PE7_DATA, PE6_DATA, PE5_DATA, PE4_DATA,
 	PE3_DATA, PE2_DATA, PE1_DATA, PE0_DATA,
-	/* Port F */
+	 
 	PF23_DATA, PF22_DATA, PF21_DATA, PF20_DATA,
 	PF19_DATA, PF18_DATA, PF17_DATA, PF16_DATA,
 	PF15_DATA, PF14_DATA, PF13_DATA, PF12_DATA,
 	PF11_DATA, PF10_DATA, PF9_DATA, PF8_DATA,
 	PF7_DATA, PF6_DATA, PF5_DATA, PF4_DATA,
 	PF3_DATA, PF2_DATA, PF1_DATA, PF0_DATA,
-	/* Port G */
+	 
 	PG27_DATA, PG26_DATA, PG25_DATA, PG24_DATA,
 	PG23_DATA, PG22_DATA, PG21_DATA, PG20_DATA,
 	PG19_DATA, PG18_DATA, PG17_DATA, PG16_DATA,
@@ -51,13 +46,12 @@ enum {
 	PG11_DATA, PG10_DATA, PG9_DATA, PG8_DATA,
 	PG7_DATA, PG6_DATA, PG5_DATA, PG4_DATA,
 	PG3_DATA, PG2_DATA, PG1_DATA, PG0_DATA,
-	/* Port H */
-	/* NOTE - Port H does not have a Data Register, but PH Data is
-	   connected to PH Port Register */
+	 
+	 
 	PH7_DATA, PH6_DATA, PH5_DATA, PH4_DATA,
 	PH3_DATA, PH2_DATA, PH1_DATA, PH0_DATA,
-	/* Port I - not on device */
-	/* Port J */
+	 
+	 
 	PJ31_DATA, PJ30_DATA, PJ29_DATA, PJ28_DATA,
 	PJ27_DATA, PJ26_DATA, PJ25_DATA, PJ24_DATA,
 	PJ23_DATA, PJ22_DATA, PJ21_DATA, PJ20_DATA,
@@ -70,35 +64,35 @@ enum {
 
 	PINMUX_INPUT_BEGIN,
 	FORCE_IN,
-	/* Port A */
+	 
 	PA1_IN, PA0_IN,
-	/* Port B */
+	 
 	PB22_IN, PB21_IN, PB20_IN,
 	PB19_IN, PB18_IN, PB17_IN, PB16_IN,
 	PB15_IN, PB14_IN, PB13_IN, PB12_IN,
 	PB11_IN, PB10_IN, PB9_IN, PB8_IN,
 	PB7_IN, PB6_IN, PB5_IN, PB4_IN,
 	PB3_IN, PB2_IN, PB1_IN,
-	/* Port C */
+	 
 	PC8_IN,
 	PC7_IN, PC6_IN, PC5_IN, PC4_IN,
 	PC3_IN, PC2_IN, PC1_IN, PC0_IN,
-	/* Port D */
+	 
 	PD15_IN, PD14_IN, PD13_IN, PD12_IN,
 	PD11_IN, PD10_IN, PD9_IN, PD8_IN,
 	PD7_IN, PD6_IN, PD5_IN, PD4_IN,
 	PD3_IN, PD2_IN, PD1_IN, PD0_IN,
-	/* Port E */
+	 
 	PE7_IN, PE6_IN, PE5_IN, PE4_IN,
 	PE3_IN, PE2_IN, PE1_IN, PE0_IN,
-	/* Port F */
+	 
 	PF23_IN, PF22_IN, PF21_IN, PF20_IN,
 	PF19_IN, PF18_IN, PF17_IN, PF16_IN,
 	PF15_IN, PF14_IN, PF13_IN, PF12_IN,
 	PF11_IN, PF10_IN, PF9_IN, PF8_IN,
 	PF7_IN, PF6_IN, PF5_IN, PF4_IN,
 	PF3_IN, PF2_IN, PF1_IN, PF0_IN,
-	/* Port G */
+	 
 	PG27_IN, PG26_IN, PG25_IN, PG24_IN,
 	PG23_IN, PG22_IN, PG21_IN, PG20_IN,
 	PG19_IN, PG18_IN, PG17_IN, PG16_IN,
@@ -106,9 +100,9 @@ enum {
 	PG11_IN, PG10_IN, PG9_IN, PG8_IN,
 	PG7_IN, PG6_IN, PG5_IN, PG4_IN,
 	PG3_IN, PG2_IN, PG1_IN, PG0_IN,
-	/* Port H - Port H does not have a Data Register */
-	/* Port I - not on device */
-	/* Port J */
+	 
+	 
+	 
 	PJ31_IN, PJ30_IN, PJ29_IN, PJ28_IN,
 	PJ27_IN, PJ26_IN, PJ25_IN, PJ24_IN,
 	PJ23_IN, PJ22_IN, PJ21_IN, PJ20_IN,
@@ -121,35 +115,35 @@ enum {
 
 	PINMUX_OUTPUT_BEGIN,
 	FORCE_OUT,
-	/* Port A */
+	 
 	PA1_OUT, PA0_OUT,
-	/* Port B */
+	 
 	PB22_OUT, PB21_OUT, PB20_OUT,
 	PB19_OUT, PB18_OUT, PB17_OUT, PB16_OUT,
 	PB15_OUT, PB14_OUT, PB13_OUT, PB12_OUT,
 	PB11_OUT, PB10_OUT, PB9_OUT, PB8_OUT,
 	PB7_OUT, PB6_OUT, PB5_OUT, PB4_OUT,
 	PB3_OUT, PB2_OUT, PB1_OUT,
-	/* Port C */
+	 
 	PC8_OUT,
 	PC7_OUT, PC6_OUT, PC5_OUT, PC4_OUT,
 	PC3_OUT, PC2_OUT, PC1_OUT, PC0_OUT,
-	/* Port D */
+	 
 	PD15_OUT, PD14_OUT, PD13_OUT, PD12_OUT,
 	PD11_OUT, PD10_OUT, PD9_OUT, PD8_OUT,
 	PD7_OUT, PD6_OUT, PD5_OUT, PD4_OUT,
 	PD3_OUT, PD2_OUT, PD1_OUT, PD0_OUT,
-	/* Port E */
+	 
 	PE7_OUT, PE6_OUT, PE5_OUT, PE4_OUT,
 	PE3_OUT, PE2_OUT, PE1_OUT, PE0_OUT,
-	/* Port F */
+	 
 	PF23_OUT, PF22_OUT, PF21_OUT, PF20_OUT,
 	PF19_OUT, PF18_OUT, PF17_OUT, PF16_OUT,
 	PF15_OUT, PF14_OUT, PF13_OUT, PF12_OUT,
 	PF11_OUT, PF10_OUT, PF9_OUT, PF8_OUT,
 	PF7_OUT, PF6_OUT, PF5_OUT, PF4_OUT,
 	PF3_OUT, PF2_OUT, PF1_OUT, PF0_OUT,
-	/* Port G */
+	 
 	PG27_OUT, PG26_OUT, PG25_OUT, PG24_OUT,
 	PG23_OUT, PG22_OUT, PG21_OUT, PG20_OUT,
 	PG19_OUT, PG18_OUT, PG17_OUT, PG16_OUT,
@@ -157,9 +151,9 @@ enum {
 	PG11_OUT, PG10_OUT, PG9_OUT, PG8_OUT,
 	PG7_OUT, PG6_OUT, PG5_OUT, PG4_OUT,
 	PG3_OUT, PG2_OUT, PG1_OUT, PG0_OUT,
-	/* Port H - Port H does not have a Data Register */
-	/* Port I - not on device */
-	/* Port J */
+	 
+	 
+	 
 	PJ31_OUT, PJ30_OUT, PJ29_OUT, PJ28_OUT,
 	PJ27_OUT, PJ26_OUT, PJ25_OUT, PJ24_OUT,
 	PJ23_OUT, PJ22_OUT, PJ21_OUT, PJ20_OUT,
@@ -171,11 +165,11 @@ enum {
 	PINMUX_OUTPUT_END,
 
 	PINMUX_FUNCTION_BEGIN,
-	/* Port A */
+	 
 	PA1_IOR_IN, PA1_IOR_OUT,
 	PA0_IOR_IN, PA0_IOR_OUT,
 
-	/* Port B */
+	 
 	PB22_IOR_IN, PB22_IOR_OUT,
 	PB21_IOR_IN, PB21_IOR_OUT,
 	PB20_IOR_IN, PB20_IOR_OUT,
@@ -237,7 +231,7 @@ enum {
 	PB2MD_00, PB2MD_01, PB2MD_10, PB2MD_11,
 	PB1MD_00, PB1MD_01, PB1MD_10, PB1MD_11,
 
-	/* Port C */
+	 
 	PC8_IOR_IN, PC8_IOR_OUT,
 	PC7_IOR_IN, PC7_IOR_OUT,
 	PC6_IOR_IN, PC6_IOR_OUT,
@@ -263,7 +257,7 @@ enum {
 	PC1MD_0, PC1MD_1,
 	PC0MD_0, PC0MD_1,
 
-	/* Port D */
+	 
 	PD15_IOR_IN, PD15_IOR_OUT,
 	PD14_IOR_IN, PD14_IOR_OUT,
 	PD13_IOR_IN, PD13_IOR_OUT,
@@ -301,7 +295,7 @@ enum {
 	PD1MD_00, PD1MD_01, PD1MD_10, PD1MD_11,
 	PD0MD_00, PD0MD_01, PD0MD_10, PD0MD_11,
 
-	/* Port E */
+	 
 	PE7_IOR_IN, PE7_IOR_OUT,
 	PE6_IOR_IN, PE6_IOR_OUT,
 	PE5_IOR_IN, PE5_IOR_OUT,
@@ -324,7 +318,7 @@ enum {
 	PE1MD_100, PE1MD_101, PE1MD_110, PE1MD_111,
 	PE0MD_00, PE0MD_01, PE0MD_10, PE0MD_11,
 
-	/* Port F */
+	 
 	PF23_IOR_IN, PF23_IOR_OUT,
 	PF22_IOR_IN, PF22_IOR_OUT,
 	PF21_IOR_IN, PF21_IOR_OUT,
@@ -404,7 +398,7 @@ enum {
 	PF0MD_000, PF0MD_001, PF0MD_010, PF0MD_011,
 	PF0MD_100, PF0MD_101, PF0MD_110, PF0MD_111,
 
-	/* Port G */
+	 
 	PG27_IOR_IN, PG27_IOR_OUT,
 	PG26_IOR_IN, PG26_IOR_OUT,
 	PG25_IOR_IN, PG25_IOR_OUT,
@@ -487,7 +481,7 @@ enum {
 	PG0MD_000, PG0MD_001, PG0MD_010, PG0MD_011,
 	PG0MD_100, PG0MD_101, PG0MD_110, PG0MD_111,
 
-	/* Port H */
+	 
 	PH7MD_00, PH7MD_01, PH7MD_10, PH7MD_11,
 	PH6MD_00, PH6MD_01, PH6MD_10, PH6MD_11,
 	PH5MD_00, PH5MD_01, PH5MD_10, PH5MD_11,
@@ -498,9 +492,9 @@ enum {
 	PH1MD_00, PH1MD_01, PH1MD_10, PH1MD_11,
 	PH0MD_00, PH0MD_01, PH0MD_10, PH0MD_11,
 
-	/* Port I - not on device */
+	 
 
-	/* Port J */
+	 
 	PJ31_IOR_IN, PJ31_IOR_OUT,
 	PJ30_IOR_IN, PJ30_IOR_OUT,
 	PJ29_IOR_IN, PJ29_IOR_OUT,
@@ -608,11 +602,11 @@ enum {
 	PINMUX_FUNCTION_END,
 
 	PINMUX_MARK_BEGIN,
-	/* Port H */
+	 
 	PHAN7_MARK, PHAN6_MARK, PHAN5_MARK, PHAN4_MARK,
 	PHAN3_MARK, PHAN2_MARK, PHAN1_MARK, PHAN0_MARK,
 
-	/* IRQs */
+	 
 	IRQ7_PG_MARK, IRQ6_PG_MARK, IRQ5_PG_MARK, IRQ4_PG_MARK,
 	IRQ3_PG_MARK, IRQ2_PG_MARK, IRQ1_PG_MARK, IRQ0_PG_MARK,
 	IRQ7_PF_MARK, IRQ6_PF_MARK, IRQ5_PF_MARK, IRQ4_PF_MARK,
@@ -626,35 +620,35 @@ enum {
 	PINT7_PJ_MARK, PINT6_PJ_MARK, PINT5_PJ_MARK, PINT4_PJ_MARK,
 	PINT3_PJ_MARK, PINT2_PJ_MARK, PINT1_PJ_MARK, PINT0_PJ_MARK,
 
-	/* SD */
+	 
 	SD_D0_MARK, SD_D1_MARK, SD_D2_MARK, SD_D3_MARK,
 	SD_WP_MARK, SD_CLK_MARK, SD_CMD_MARK, SD_CD_MARK,
 
-	/* MMC */
+	 
 	MMC_D0_MARK, MMC_D1_MARK, MMC_D2_MARK, MMC_D3_MARK,
 	MMC_D4_MARK, MMC_D5_MARK, MMC_D6_MARK, MMC_D7_MARK,
 	MMC_CLK_MARK, MMC_CMD_MARK, MMC_CD_MARK,
 
-	/* PWM */
+	 
 	PWM1A_MARK, PWM1B_MARK, PWM1C_MARK, PWM1D_MARK,
 	PWM1E_MARK, PWM1F_MARK, PWM1G_MARK, PWM1H_MARK,
 	PWM2A_MARK, PWM2B_MARK, PWM2C_MARK, PWM2D_MARK,
 	PWM2E_MARK, PWM2F_MARK, PWM2G_MARK, PWM2H_MARK,
 
-	/* IEBus */
+	 
 	IERXD_MARK, IETXD_MARK,
 
-	/* WDT */
+	 
 	WDTOVF_MARK,
 
-	/* DMAC */
+	 
 	TEND0_MARK, DACK0_MARK, DREQ0_MARK,
 	TEND1_MARK, DACK1_MARK, DREQ1_MARK,
 
-	/* ADC */
+	 
 	ADTRG_MARK,
 
-	/* BSC */
+	 
 	A25_MARK, A24_MARK,
 	A23_MARK, A22_MARK, A21_MARK, A20_MARK,
 	A19_MARK, A18_MARK, A17_MARK, A16_MARK,
@@ -682,7 +676,7 @@ enum {
 	RAS_MARK, CAS_MARK, CKE_MARK,
 	WAIT_MARK, BREQ_MARK, BACK_MARK, IOIS16_MARK,
 
-	/* TMU */
+	 
 	TIOC0A_MARK, TIOC0B_MARK, TIOC0C_MARK, TIOC0D_MARK,
 	TIOC1A_MARK, TIOC1B_MARK,
 	TIOC2A_MARK, TIOC2B_MARK,
@@ -690,7 +684,7 @@ enum {
 	TIOC4A_MARK, TIOC4B_MARK, TIOC4C_MARK, TIOC4D_MARK,
 	TCLKA_MARK, TCLKB_MARK, TCLKC_MARK, TCLKD_MARK,
 
-	/* SCIF */
+	 
 	SCK0_MARK, RXD0_MARK, TXD0_MARK,
 	SCK1_MARK, RXD1_MARK, TXD1_MARK, RTS1_MARK, CTS1_MARK,
 	SCK2_MARK, RXD2_MARK, TXD2_MARK,
@@ -700,18 +694,18 @@ enum {
 	SCK6_MARK, RXD6_MARK, TXD6_MARK,
 	SCK7_MARK, RXD7_MARK, TXD7_MARK, RTS7_MARK, CTS7_MARK,
 
-	/* RSPI */
+	 
 	MISO0_PB20_MARK, MOSI0_PB19_MARK, SSL00_PB18_MARK, RSPCK0_PB17_MARK,
 	MISO0_PJ19_MARK, MOSI0_PJ18_MARK, SSL00_PJ17_MARK, RSPCK0_PJ16_MARK,
 	MISO1_MARK, MOSI1_MARK, SSL10_MARK, RSPCK1_MARK,
 
-	/* IIC3 */
+	 
 	SCL0_MARK, SDA0_MARK,
 	SCL1_MARK, SDA1_MARK,
 	SCL2_MARK, SDA2_MARK,
 	SCL3_MARK, SDA3_MARK,
 
-	/* SSI */
+	 
 	SSISCK0_MARK, SSIWS0_MARK, SSITXD0_MARK, SSIRXD0_MARK,
 	SSISCK1_MARK, SSIWS1_MARK, SSIDATA1_MARK,
 	SSISCK2_MARK, SSIWS2_MARK, SSIDATA2_MARK,
@@ -721,18 +715,18 @@ enum {
 	AUDIO_CLK_MARK,
 	AUDIO_XOUT_MARK,
 
-	/* SIOF */ /* NOTE Shares AUDIO_CLK with SSI */
+	   
 	SIOFTXD_MARK, SIOFRXD_MARK, SIOFSYNC_MARK, SIOFSCK_MARK,
 
-	/* SPDIF */ /* NOTE Shares AUDIO_CLK with SSI */
+	   
 	SPDIF_IN_MARK, SPDIF_OUT_MARK,
 	SPDIF_IN_PJ24_MARK, SPDIF_OUT_PJ25_MARK,
 
-	/* NANDFMC */ /* NOTE Controller is not available in boot mode 0 */
+	   
 	FCE_MARK,
 	FRB_MARK,
 
-	/* CAN */
+	 
 	CRX0_MARK, CTX0_MARK,
 	CRX1_MARK, CTX1_MARK,
 	CRX2_MARK, CTX2_MARK,
@@ -743,7 +737,7 @@ enum {
 	CRX0_CRX1_PJ22_MARK, CTX0_CTX1_PJ23_MARK,
 	CRX0_CRX1_CRX2_PJ20_MARK, CTX0_CTX1_CTX2_PJ21_MARK,
 
-	/* VDC */
+	 
 	DV_CLK_MARK,
 	DV_VSYNC_MARK, DV_HSYNC_MARK,
 	DV_DATA23_MARK, DV_DATA22_MARK, DV_DATA21_MARK, DV_DATA20_MARK,
@@ -777,11 +771,11 @@ enum {
 };
 
 static const u16 pinmux_data[] = {
-	/* Port A */
+	 
 	PINMUX_DATA(PA1_DATA, PA1_IN),
 	PINMUX_DATA(PA0_DATA, PA0_IN),
 
-	/* Port B */
+	 
 	PINMUX_DATA(PB22_DATA, PB22MD_000, PB22_IN, PB22_OUT),
 	PINMUX_DATA(A22_MARK, PB22MD_001),
 	PINMUX_DATA(CTX2_MARK, PB22MD_010),
@@ -814,7 +808,7 @@ static const u16 pinmux_data[] = {
 	PINMUX_DATA(A2_MARK, PB2MD_01),
 	PINMUX_DATA(A1_MARK, PB1MD_01),
 
-	/* Port C */
+	 
 	PINMUX_DATA(PC8_DATA, PC8MD_000),
 	PINMUX_DATA(CS3_MARK, PC8MD_001),
 	PINMUX_DATA(TXD7_MARK, PC8MD_010),
@@ -858,7 +852,7 @@ static const u16 pinmux_data[] = {
 	PINMUX_DATA(PC0_DATA, PC0MD_0),
 	PINMUX_DATA(CS0_MARK, PC0MD_1),
 
-	/* Port D */
+	 
 	PINMUX_DATA(D15_MARK, PD15MD_01),
 	PINMUX_DATA(D14_MARK, PD14MD_01),
 
@@ -883,7 +877,7 @@ static const u16 pinmux_data[] = {
 	PINMUX_DATA(D1_MARK, PD1MD_01),
 	PINMUX_DATA(D0_MARK, PD0MD_01),
 
-	/* Port E */
+	 
 	PINMUX_DATA(PE7_DATA, PE7MD_00),
 	PINMUX_DATA(SDA3_MARK, PE7MD_01),
 	PINMUX_DATA(RXD7_MARK, PE7MD_10),
@@ -924,7 +918,7 @@ static const u16 pinmux_data[] = {
 	PINMUX_DATA(TCLKA_MARK, PE0MD_10),
 	PINMUX_DATA(LCD_EXTCLK_MARK, PE0MD_11),
 
-	/* Port F */
+	 
 	PINMUX_DATA(PF23_DATA, PF23MD_000),
 	PINMUX_DATA(SD_D2_MARK, PF23MD_001),
 	PINMUX_DATA(TXD3_MARK, PF23MD_100),
@@ -1053,7 +1047,7 @@ static const u16 pinmux_data[] = {
 	PINMUX_DATA(TIOC4A_MARK, PF0MD_100),
 	PINMUX_DATA(DREQ0_MARK, PF0MD_101),
 
-	/* Port G */
+	 
 	PINMUX_DATA(PG27_DATA, PG27MD_00),
 	PINMUX_DATA(LCD_TCON2_MARK, PG27MD_10),
 	PINMUX_DATA(LCD_EXTCLK_MARK, PG27MD_11),
@@ -1104,14 +1098,14 @@ static const u16 pinmux_data[] = {
 	PINMUX_DATA(SPDIF_IN_MARK, PG18MD_011),
 	PINMUX_DATA(SCK4_MARK, PG18MD_100),
 
-// TODO hardware manual has PG17 3 bits wide in reg picture and 2 bits in description
-// we're going with 2 bits
+
+
 	PINMUX_DATA(PG17_DATA, PG17MD_00),
 	PINMUX_DATA(WE3ICIOWRAHDQMUU_MARK, PG17MD_01),
 	PINMUX_DATA(LCD_DATA17_PG17_MARK, PG17MD_10),
 
-// TODO hardware manual has PG16 3 bits wide in reg picture and 2 bits in description
-// we're going with 2 bits
+
+
 	PINMUX_DATA(PG16_DATA, PG16MD_00),
 	PINMUX_DATA(WE2ICIORDDQMUL_MARK, PG16MD_01),
 	PINMUX_DATA(LCD_DATA16_PG16_MARK, PG16MD_10),
@@ -1208,7 +1202,7 @@ static const u16 pinmux_data[] = {
 	PINMUX_DATA(IRQ0_PG_MARK, PG0MD_011),
 	PINMUX_DATA(TIOC0A_MARK, PG0MD_100),
 
-	/* Port H */
+	 
 	PINMUX_DATA(PH7_DATA, PH7MD_00),
 	PINMUX_DATA(PHAN7_MARK, PH7MD_01),
 	PINMUX_DATA(PINT7_PH_MARK, PH7MD_10),
@@ -1242,9 +1236,9 @@ static const u16 pinmux_data[] = {
 	PINMUX_DATA(PHAN0_MARK, PH0MD_01),
 	PINMUX_DATA(PINT0_PH_MARK, PH0MD_10),
 
-	/* Port I - not on device */
+	 
 
-	/* Port J */
+	 
 	PINMUX_DATA(PJ31_DATA, PJ31MD_0),
 	PINMUX_DATA(DV_CLK_MARK, PJ31MD_1),
 
@@ -1451,11 +1445,11 @@ static const u16 pinmux_data[] = {
 };
 
 static const struct sh_pfc_pin pinmux_pins[] = {
-	/* Port A */
+	 
 	PINMUX_GPIO(PA1),
 	PINMUX_GPIO(PA0),
 
-	/* Port B */
+	 
 	PINMUX_GPIO(PB22),
 	PINMUX_GPIO(PB21),
 	PINMUX_GPIO(PB20),
@@ -1479,7 +1473,7 @@ static const struct sh_pfc_pin pinmux_pins[] = {
 	PINMUX_GPIO(PB2),
 	PINMUX_GPIO(PB1),
 
-	/* Port C */
+	 
 	PINMUX_GPIO(PC8),
 	PINMUX_GPIO(PC7),
 	PINMUX_GPIO(PC6),
@@ -1490,7 +1484,7 @@ static const struct sh_pfc_pin pinmux_pins[] = {
 	PINMUX_GPIO(PC1),
 	PINMUX_GPIO(PC0),
 
-	/* Port D */
+	 
 	PINMUX_GPIO(PD15),
 	PINMUX_GPIO(PD14),
 	PINMUX_GPIO(PD13),
@@ -1508,7 +1502,7 @@ static const struct sh_pfc_pin pinmux_pins[] = {
 	PINMUX_GPIO(PD1),
 	PINMUX_GPIO(PD0),
 
-	/* Port E */
+	 
 	PINMUX_GPIO(PE7),
 	PINMUX_GPIO(PE6),
 	PINMUX_GPIO(PE5),
@@ -1518,7 +1512,7 @@ static const struct sh_pfc_pin pinmux_pins[] = {
 	PINMUX_GPIO(PE1),
 	PINMUX_GPIO(PE0),
 
-	/* Port F */
+	 
 	PINMUX_GPIO(PF23),
 	PINMUX_GPIO(PF22),
 	PINMUX_GPIO(PF21),
@@ -1544,7 +1538,7 @@ static const struct sh_pfc_pin pinmux_pins[] = {
 	PINMUX_GPIO(PF1),
 	PINMUX_GPIO(PF0),
 
-	/* Port G */
+	 
 	PINMUX_GPIO(PG27),
 	PINMUX_GPIO(PG26),
 	PINMUX_GPIO(PG25),
@@ -1574,11 +1568,11 @@ static const struct sh_pfc_pin pinmux_pins[] = {
 	PINMUX_GPIO(PG1),
 	PINMUX_GPIO(PG0),
 
-	/* Port H - Port H does not have a Data Register */
+	 
 
-	/* Port I - not on device */
+	 
 
-	/* Port J */
+	 
 	PINMUX_GPIO(PJ31),
 	PINMUX_GPIO(PJ30),
 	PINMUX_GPIO(PJ29),
@@ -1616,7 +1610,7 @@ static const struct sh_pfc_pin pinmux_pins[] = {
 #define PINMUX_FN_BASE	ARRAY_SIZE(pinmux_pins)
 
 static const struct pinmux_func pinmux_func_gpios[] = {
-	/* INTC */
+	 
 	GPIO_FN(IRQ7_PG),
 	GPIO_FN(IRQ6_PG),
 	GPIO_FN(IRQ5_PG),
@@ -1661,10 +1655,10 @@ static const struct pinmux_func pinmux_func_gpios[] = {
 	GPIO_FN(PINT1_PJ),
 	GPIO_FN(PINT0_PJ),
 
-	/* WDT */
+	 
 	GPIO_FN(WDTOVF),
 
-	/* CAN */
+	 
 	GPIO_FN(CTX2),
 	GPIO_FN(CRX2),
 	GPIO_FN(CTX1),
@@ -1684,7 +1678,7 @@ static const struct pinmux_func pinmux_func_gpios[] = {
 	GPIO_FN(CTX0_CTX1_CTX2_PJ21),
 	GPIO_FN(CRX0_CRX1_CRX2_PJ20),
 
-	/* DMAC */
+	 
 	GPIO_FN(TEND0),
 	GPIO_FN(DACK0),
 	GPIO_FN(DREQ0),
@@ -1692,10 +1686,10 @@ static const struct pinmux_func pinmux_func_gpios[] = {
 	GPIO_FN(DACK1),
 	GPIO_FN(DREQ1),
 
-	/* ADC */
+	 
 	GPIO_FN(ADTRG),
 
-	/* BSCh */
+	 
 	GPIO_FN(A25),
 	GPIO_FN(A24),
 	GPIO_FN(A23),
@@ -1763,7 +1757,7 @@ static const struct pinmux_func pinmux_func_gpios[] = {
 	GPIO_FN(BACK),
 	GPIO_FN(IOIS16),
 
-	/* TMU */
+	 
 	GPIO_FN(TIOC4D),
 	GPIO_FN(TIOC4C),
 	GPIO_FN(TIOC4B),
@@ -1785,7 +1779,7 @@ static const struct pinmux_func pinmux_func_gpios[] = {
 	GPIO_FN(TCLKB),
 	GPIO_FN(TCLKA),
 
-	/* SCIF */
+	 
 	GPIO_FN(SCK0),
 	GPIO_FN(TXD0),
 	GPIO_FN(RXD0),
@@ -1817,7 +1811,7 @@ static const struct pinmux_func pinmux_func_gpios[] = {
 	GPIO_FN(RTS7),
 	GPIO_FN(CTS7),
 
-	/* RSPI */
+	 
 	GPIO_FN(RSPCK0_PJ16),
 	GPIO_FN(SSL00_PJ17),
 	GPIO_FN(MOSI0_PJ18),
@@ -1831,7 +1825,7 @@ static const struct pinmux_func pinmux_func_gpios[] = {
 	GPIO_FN(MISO1),
 	GPIO_FN(SSL10),
 
-	/* IIC3 */
+	 
 	GPIO_FN(SCL0),
 	GPIO_FN(SCL1),
 	GPIO_FN(SCL2),
@@ -1839,7 +1833,7 @@ static const struct pinmux_func pinmux_func_gpios[] = {
 	GPIO_FN(SDA1),
 	GPIO_FN(SDA2),
 
-	/* SSI */
+	 
 	GPIO_FN(SSISCK0),
 	GPIO_FN(SSIWS0),
 	GPIO_FN(SSITXD0),
@@ -1856,21 +1850,21 @@ static const struct pinmux_func pinmux_func_gpios[] = {
 	GPIO_FN(AUDIO_CLK),
 	GPIO_FN(AUDIO_XOUT),
 
-	/* SIOF */ /* NOTE Shares AUDIO_CLK with SSI */
+	   
 	GPIO_FN(SIOFTXD),
 	GPIO_FN(SIOFRXD),
 	GPIO_FN(SIOFSYNC),
 	GPIO_FN(SIOFSCK),
 
-	/* SPDIF */ /* NOTE Shares AUDIO_CLK with SSI */
+	   
 	GPIO_FN(SPDIF_IN),
 	GPIO_FN(SPDIF_OUT),
 
-	/* NANDFMC */ /* NOTE Controller is not available in boot mode 0 */
+	   
 	GPIO_FN(FCE),
 	GPIO_FN(FRB),
 
-	/* VDC3 */
+	 
 	GPIO_FN(DV_CLK),
 	GPIO_FN(DV_VSYNC),
 	GPIO_FN(DV_HSYNC),
@@ -1960,24 +1954,22 @@ static const struct pinmux_func pinmux_func_gpios[] = {
 };
 
 static const struct pinmux_cfg_reg pinmux_config_regs[] = {
-	/* "name" addr register_size Field_Width */
+	 
 
-	/* where Field_Width is 1 for single mode registers or 4 for up to 16
-	 * mode registers and modes are described in assending order [0..15]
-	 */
+	 
 
 	{ PINMUX_CFG_REG_VAR("PAIOR0", 0xfffe3812, 16,
 			     GROUP(-7, 1, -7, 1),
 			     GROUP(
-		/* RESERVED [7] */
+		 
 		PA1_IN, PA1_OUT,
-		/* RESERVED [7] */
+		 
 		PA0_IN, PA0_OUT ))
 	},
 	{ PINMUX_CFG_REG_VAR("PBCR5", 0xfffe3824, 16,
 			     GROUP(-4, 4, 4, 4),
 			     GROUP(
-		/* RESERVED [4] */
+		 
 		PB22MD_000, PB22MD_001, PB22MD_010, PB22MD_011,
 		PB22MD_100, PB22MD_101, PB22MD_110, PB22MD_111,
 		0, 0, 0, 0, 0, 0, 0, 0,
@@ -2060,13 +2052,13 @@ static const struct pinmux_cfg_reg pinmux_config_regs[] = {
 		PB1MD_00, PB1MD_01, PB1MD_10, PB1MD_11, 0, 0, 0, 0,
 		0, 0, 0, 0, 0, 0, 0, 0,
 
-		/* RESERVED [4] */ ))
+		  ))
 	},
 
 	{ PINMUX_CFG_REG_VAR("PBIOR1", 0xfffe3830, 16,
 			     GROUP(-9, 1, 1, 1, 1, 1, 1, 1),
 			     GROUP(
-		/* RESERVED [9] */
+		 
 		PB22_IN, PB22_OUT,
 		PB21_IN, PB21_OUT,
 		PB20_IN, PB20_OUT,
@@ -2097,7 +2089,7 @@ static const struct pinmux_cfg_reg pinmux_config_regs[] = {
 	{ PINMUX_CFG_REG_VAR("PCCR2", 0xfffe384a, 16,
 			     GROUP(-12, 4),
 			     GROUP(
-		/* RESERVED [12] */
+		 
 		PC8MD_000, PC8MD_001, PC8MD_010, PC8MD_011,
 		PC8MD_100, PC8MD_101, PC8MD_110, PC8MD_111,
 		0, 0, 0, 0, 0, 0, 0, 0 ))
@@ -2135,7 +2127,7 @@ static const struct pinmux_cfg_reg pinmux_config_regs[] = {
 	{ PINMUX_CFG_REG_VAR("PCIOR0", 0xfffe3852, 16,
 			     GROUP(-7, 1, 1, 1, 1, 1, 1, 1, 1, 1),
 			     GROUP(
-		/* RESERVED [7] */
+		 
 		PC8_IN, PC8_OUT,
 		PC7_IN, PC7_OUT,
 		PC6_IN, PC6_OUT,
@@ -2251,7 +2243,7 @@ static const struct pinmux_cfg_reg pinmux_config_regs[] = {
 	{ PINMUX_CFG_REG_VAR("PEIOR0", 0xfffe3892, 16,
 			     GROUP(-8, 1, 1, 1, 1, 1, 1, 1, 1),
 			     GROUP(
-		/* RESERVED [8] */
+		 
 		PE7_IN, PE7_OUT,
 		PE6_IN, PE6_OUT,
 		PE5_IN, PE5_OUT,
@@ -2299,7 +2291,7 @@ static const struct pinmux_cfg_reg pinmux_config_regs[] = {
 	{ PINMUX_CFG_REG_VAR("PFCR4", 0xfffe38a6, 16,
 			     GROUP(-12, 4),
 			     GROUP(
-		/* RESERVED [12] */
+		 
 		PF15MD_000, PF15MD_001, PF15MD_010, PF15MD_011,
 		PF15MD_100, PF15MD_101, PF15MD_110, PF15MD_111,
 		0, 0, 0, 0, 0, 0, 0, 0 ))
@@ -2307,7 +2299,7 @@ static const struct pinmux_cfg_reg pinmux_config_regs[] = {
 	{ PINMUX_CFG_REG_VAR("PFCR3", 0xfffe38a8, 16,
 			     GROUP(-4, 4, 4, 4),
 			     GROUP(
-		/* RESERVED [4] */
+		 
 		PF14MD_000, PF14MD_001, PF14MD_010, PF14MD_011,
 		PF14MD_100, PF14MD_101, PF14MD_110, PF14MD_111,
 		0, 0, 0, 0, 0, 0, 0, 0,
@@ -2375,7 +2367,7 @@ static const struct pinmux_cfg_reg pinmux_config_regs[] = {
 	{ PINMUX_CFG_REG_VAR("PFIOR1", 0xfffe38b0, 16,
 			     GROUP(-8, 1, 1, 1, 1, 1, 1, 1, 1),
 			     GROUP(
-		/* RESERVED [8] */
+		 
 		PF23_IN, PF23_OUT,
 		PF22_IN, PF22_OUT,
 		PF21_IN, PF21_OUT,
@@ -2749,7 +2741,7 @@ static const struct pinmux_cfg_reg pinmux_config_regs[] = {
 		PJ1_IN, PJ1_OUT,
 		PJ0_IN, PJ0_OUT ))
 	},
-	{ /* sentinel */ }
+	{   }
 };
 
 static const struct pinmux_data_reg pinmux_data_regs[] = {
@@ -2827,7 +2819,7 @@ static const struct pinmux_data_reg pinmux_data_regs[] = {
 		PJ7_DATA, PJ6_DATA, PJ5_DATA, PJ4_DATA,
 		PJ3_DATA, PJ2_DATA, PJ1_DATA, PJ0_DATA ))
 	},
-	{ /* sentinel */ }
+	{   }
 };
 
 const struct sh_pfc_soc_info sh7269_pinmux_info = {

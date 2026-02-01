@@ -1,28 +1,4 @@
-/*
- * This file is part of the MicroPython project, http://micropython.org/
- *
- * The MIT License (MIT)
- *
- * Copyright (c) 2019, Michael Neuling, IBM Corporation.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
+ 
 
 #include "py/mpstate.h"
 
@@ -30,14 +6,14 @@
 
 #undef nlr_push
 
-// Saving all ABI non-vol registers here
+
 
 #ifdef __LP64__
 
 unsigned int nlr_push(nlr_buf_t *nlr) {
 
     __asm__ volatile (
-        "li     4, 0x4eed ; "  // Store canary
+        "li     4, 0x4eed ; "  
         "std    4,  0x00(%0) ;"
         "std    0,  0x08(%0) ;"
         "std    1,  0x10(%0) ;"
@@ -83,7 +59,7 @@ NORETURN void nlr_jump(void *val) {
 
     __asm__ volatile (
         "ld    3, 0x0(%0) ;"
-        "cmpdi 3, 0x4eed ; " // Check canary
+        "cmpdi 3, 0x4eed ; " 
         "bne   . ; "
         "ld    0,  0x08(%0) ;"
         "ld    1,  0x10(%0) ;"
@@ -121,12 +97,12 @@ NORETURN void nlr_jump(void *val) {
 }
 
 #else
-// Saving all ABI non-vol registers here
+
 
 unsigned int nlr_push(nlr_buf_t *nlr) {
 
     __asm__ volatile (
-        "li     4, 0x4eed ; "  // Store canary
+        "li     4, 0x4eed ; "  
         "stw    4,  0x00(%0) ;"
         "stw    0,  0x04(%0) ;"
         "stw    1,  0x08(%0) ;"
@@ -172,7 +148,7 @@ NORETURN void nlr_jump(void *val) {
 
     __asm__ volatile (
         "l    3, 0x0(%0) ;"
-        "cmpdi 3, 0x4eed ; " // Check canary
+        "cmpdi 3, 0x4eed ; " 
         "bne   . ; "
         "l    0,  0x04(%0) ;"
         "l    1,  0x08(%0) ;"
@@ -209,6 +185,6 @@ NORETURN void nlr_jump(void *val) {
     MP_UNREACHABLE;
 }
 
-#endif // __LP64__
+#endif 
 
-#endif // MICROPY_NLR_POWERPC
+#endif 

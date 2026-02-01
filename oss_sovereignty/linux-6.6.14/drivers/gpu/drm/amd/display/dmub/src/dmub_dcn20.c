@@ -1,27 +1,4 @@
-/*
- * Copyright 2019 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 #include "../dmub_srv.h"
 #include "dmub_reg.h"
@@ -36,7 +13,7 @@
 #define CTX dmub
 #define REGS dmub->regs
 
-/* Registers. */
+ 
 
 const struct dmub_srv_common_regs dmub_srv_dcn20_regs = {
 #define DMUB_SR(reg) REG_OFFSET(reg),
@@ -55,7 +32,7 @@ const struct dmub_srv_common_regs dmub_srv_dcn20_regs = {
 #undef DMUB_SF
 };
 
-/* Shared functions. */
+ 
 
 static void dmub_dcn20_get_fb_base_offset(struct dmub_srv *dmub,
 					  uint64_t *fb_base,
@@ -86,7 +63,7 @@ static inline void dmub_dcn20_translate_addr(const union dmub_addr *addr_in,
 
 bool dmub_dcn20_use_cached_inbox(struct dmub_srv *dmub)
 {
-	/* Cached inbox is not supported in this fw version range */
+	 
 	return !(dmub->fw_version >= DMUB_FW_VERSION(1, 0, 0) &&
 		 dmub->fw_version <= DMUB_FW_VERSION(1, 10, 0));
 }
@@ -106,14 +83,7 @@ void dmub_dcn20_reset(struct dmub_srv *dmub)
 
 		dmub->hw_funcs.set_gpint(dmub, cmd);
 
-		/**
-		 * Timeout covers both the ACK and the wait
-		 * for remaining work to finish.
-		 *
-		 * This is mostly bound by the PHY disable sequence.
-		 * Each register check will be greater than 1us, so
-		 * don't bother using udelay.
-		 */
+		 
 
 		for (i = 0; i < timeout; ++i) {
 			if (dmub->hw_funcs.is_gpint_acked(dmub, cmd))
@@ -126,11 +96,11 @@ void dmub_dcn20_reset(struct dmub_srv *dmub)
 				break;
 		}
 
-		/* Clear the GPINT command manually so we don't reset again. */
+		 
 		cmd.all = 0;
 		dmub->hw_funcs.set_gpint(dmub, cmd);
 
-		/* Force reset in case we timed out, DMCUB is likely hung. */
+		 
 	}
 
 	REG_UPDATE(DMCUB_CNTL, DMCUB_SOFT_RESET, 1);
@@ -224,10 +194,10 @@ void dmub_dcn20_setup_windows(struct dmub_srv *dmub,
 		  DMCUB_REGION3_CW3_TOP_ADDRESS, cw3->region.top,
 		  DMCUB_REGION3_CW3_ENABLE, 1);
 
-	/* TODO: Move this to CW4. */
+	 
 	dmub_dcn20_translate_addr(&cw4->offset, fb_base, fb_offset, &offset);
 
-	/* New firmware can support CW4. */
+	 
 	if (dmub_dcn20_use_cached_inbox(dmub)) {
 		REG_WRITE(DMCUB_REGION3_CW4_OFFSET, offset.u.low_part);
 		REG_WRITE(DMCUB_REGION3_CW4_OFFSET_HIGH, offset.u.high_part);
@@ -273,7 +243,7 @@ void dmub_dcn20_setup_windows(struct dmub_srv *dmub,
 void dmub_dcn20_setup_mailbox(struct dmub_srv *dmub,
 			      const struct dmub_region *inbox1)
 {
-	/* New firmware can support CW4 for the inbox. */
+	 
 	if (dmub_dcn20_use_cached_inbox(dmub))
 		REG_WRITE(DMCUB_INBOX1_BASE_ADDRESS, inbox1->base);
 	else
@@ -300,7 +270,7 @@ void dmub_dcn20_set_inbox1_wptr(struct dmub_srv *dmub, uint32_t wptr_offset)
 void dmub_dcn20_setup_out_mailbox(struct dmub_srv *dmub,
 			      const struct dmub_region *outbox1)
 {
-	/* New firmware can support CW4 for the outbox. */
+	 
 	if (dmub_dcn20_use_cached_inbox(dmub))
 		REG_WRITE(DMCUB_OUTBOX1_BASE_ADDRESS, outbox1->base);
 	else
@@ -311,19 +281,13 @@ void dmub_dcn20_setup_out_mailbox(struct dmub_srv *dmub,
 
 uint32_t dmub_dcn20_get_outbox1_wptr(struct dmub_srv *dmub)
 {
-	/**
-	 * outbox1 wptr register is accessed without locks (dal & dc)
-	 * and to be called only by dmub_srv_stat_get_notification()
-	 */
+	 
 	return REG_READ(DMCUB_OUTBOX1_WPTR);
 }
 
 void dmub_dcn20_set_outbox1_rptr(struct dmub_srv *dmub, uint32_t rptr_offset)
 {
-	/**
-	 * outbox1 rptr register is accessed without locks (dal & dc)
-	 * and to be called only by dmub_srv_stat_get_notification()
-	 */
+	 
 	REG_WRITE(DMCUB_OUTBOX1_RPTR, rptr_offset);
 }
 

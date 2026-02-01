@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2017 NVIDIA CORPORATION.  All rights reserved.
- */
+ 
+ 
 
 #ifndef TEGRA_HUB_H
 #define TEGRA_HUB_H 1
@@ -94,4 +92,4 @@ void tegra_display_hub_atomic_commit(struct drm_device *drm,
 #define  CURS_SLOTS(x) (((x) & 0xff) << 8)
 #define  WGRP_SLOTS(x) (((x) & 0xff) << 0)
 
-#endif /* TEGRA_HUB_H */
+#endif  

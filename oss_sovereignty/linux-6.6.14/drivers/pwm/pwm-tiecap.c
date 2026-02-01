@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * ECAP PWM driver
- *
- * Copyright (C) 2012 Texas Instruments, Inc. - https://www.ti.com/
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/platform_device.h>
@@ -14,7 +10,7 @@
 #include <linux/pwm.h>
 #include <linux/of.h>
 
-/* ECAP registers and bits definitions */
+ 
 #define CAP1			0x08
 #define CAP2			0x0C
 #define CAP3			0x10
@@ -43,10 +39,7 @@ static inline struct ecap_pwm_chip *to_ecap_pwm_chip(struct pwm_chip *chip)
 	return container_of(chip, struct ecap_pwm_chip, chip);
 }
 
-/*
- * period_ns = 10^9 * period_cycles / PWM_CLK_RATE
- * duty_ns   = 10^9 * duty_cycles / PWM_CLK_RATE
- */
+ 
 static int ecap_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
 			   int duty_ns, int period_ns, int enabled)
 {
@@ -74,28 +67,24 @@ static int ecap_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
 
 	value = readw(pc->mmio_base + ECCTL2);
 
-	/* Configure APWM mode & disable sync option */
+	 
 	value |= ECCTL2_APWM_MODE | ECCTL2_SYNC_SEL_DISA;
 
 	writew(value, pc->mmio_base + ECCTL2);
 
 	if (!enabled) {
-		/* Update active registers if not running */
+		 
 		writel(duty_cycles, pc->mmio_base + CAP2);
 		writel(period_cycles, pc->mmio_base + CAP1);
 	} else {
-		/*
-		 * Update shadow registers to configure period and
-		 * compare values. This helps current PWM period to
-		 * complete on reconfiguring
-		 */
+		 
 		writel(duty_cycles, pc->mmio_base + CAP4);
 		writel(period_cycles, pc->mmio_base + CAP3);
 	}
 
 	if (!enabled) {
 		value = readw(pc->mmio_base + ECCTL2);
-		/* Disable APWM mode to put APWM output Low */
+		 
 		value &= ~ECCTL2_APWM_MODE;
 		writew(value, pc->mmio_base + ECCTL2);
 	}
@@ -116,10 +105,10 @@ static int ecap_pwm_set_polarity(struct pwm_chip *chip, struct pwm_device *pwm,
 	value = readw(pc->mmio_base + ECCTL2);
 
 	if (polarity == PWM_POLARITY_INVERSED)
-		/* Duty cycle defines LOW period of PWM */
+		 
 		value |= ECCTL2_APWM_POL_LOW;
 	else
-		/* Duty cycle defines HIGH period of PWM */
+		 
 		value &= ~ECCTL2_APWM_POL_LOW;
 
 	writew(value, pc->mmio_base + ECCTL2);
@@ -134,13 +123,10 @@ static int ecap_pwm_enable(struct pwm_chip *chip, struct pwm_device *pwm)
 	struct ecap_pwm_chip *pc = to_ecap_pwm_chip(chip);
 	u16 value;
 
-	/* Leave clock enabled on enabling PWM */
+	 
 	pm_runtime_get_sync(pc->chip.dev);
 
-	/*
-	 * Enable 'Free run Time stamp counter mode' to start counter
-	 * and  'APWM mode' to enable APWM output
-	 */
+	 
 	value = readw(pc->mmio_base + ECCTL2);
 	value |= ECCTL2_TSCTR_FREERUN | ECCTL2_APWM_MODE;
 	writew(value, pc->mmio_base + ECCTL2);
@@ -153,15 +139,12 @@ static void ecap_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
 	struct ecap_pwm_chip *pc = to_ecap_pwm_chip(chip);
 	u16 value;
 
-	/*
-	 * Disable 'Free run Time stamp counter mode' to stop counter
-	 * and 'APWM mode' to put APWM output to low
-	 */
+	 
 	value = readw(pc->mmio_base + ECCTL2);
 	value &= ~(ECCTL2_TSCTR_FREERUN | ECCTL2_APWM_MODE);
 	writew(value, pc->mmio_base + ECCTL2);
 
-	/* Disable clock on PWM disable */
+	 
 	pm_runtime_put_sync(pc->chip.dev);
 }
 
@@ -294,7 +277,7 @@ static int ecap_pwm_suspend(struct device *dev)
 
 	ecap_pwm_save_context(pc);
 
-	/* Disable explicitly if PWM is running */
+	 
 	if (pwm_is_enabled(pwm))
 		pm_runtime_put_sync(dev);
 
@@ -306,7 +289,7 @@ static int ecap_pwm_resume(struct device *dev)
 	struct ecap_pwm_chip *pc = dev_get_drvdata(dev);
 	struct pwm_device *pwm = pc->chip.pwms;
 
-	/* Enable explicitly if PWM was running */
+	 
 	if (pwm_is_enabled(pwm))
 		pm_runtime_get_sync(dev);
 

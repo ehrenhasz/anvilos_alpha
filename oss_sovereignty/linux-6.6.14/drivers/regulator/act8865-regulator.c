@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * act8865-regulator.c - Voltage regulation for active-semi ACT88xx PMUs
- *
- * http://www.active-semi.com/products/power-management-units/act88xx/
- *
- * Copyright (C) 2013 Atmel Corporation
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -21,9 +15,7 @@
 #include <linux/regmap.h>
 #include <dt-bindings/regulator/active-semi,8865-regulator.h>
 
-/*
- * ACT8600 Global Register Map.
- */
+ 
 #define ACT8600_SYS_MODE	0x00
 #define ACT8600_SYS_CTRL	0x01
 #define ACT8600_DCDC1_VSET	0x10
@@ -50,9 +42,7 @@
 #define ACT8600_OTG0		0xB0
 #define ACT8600_OTG1		0xB2
 
-/*
- * ACT8846 Global Register Map.
- */
+ 
 #define	ACT8846_SYS0		0x00
 #define	ACT8846_SYS1		0x01
 #define	ACT8846_REG1_VSET	0x10
@@ -86,9 +76,7 @@
 #define	ACT8846_GLB_OFF_CTRL	0xc3
 #define	ACT8846_OFF_SYSMASK	0x18
 
-/*
- * ACT8865 Global Register Map.
- */
+ 
 #define	ACT8865_SYS_MODE	0x00
 #define	ACT8865_SYS_CTRL	0x01
 #define	ACT8865_SYS_UNLK_REGS	0x0b
@@ -118,26 +106,22 @@
 #define	ACT8865_LDO4_SUS	0x66
 #define	ACT8865_MSTROFF		0x20
 
-/*
- * Field Definitions.
- */
-#define	ACT8865_ENA		0x80	/* ON - [7] */
-#define	ACT8865_DIS		0x40	/* DIS - [6] */
+ 
+#define	ACT8865_ENA		0x80	 
+#define	ACT8865_DIS		0x40	 
 
-#define	ACT8865_VSEL_MASK	0x3F	/* VSET - [5:0] */
+#define	ACT8865_VSEL_MASK	0x3F	 
 
 
-#define ACT8600_LDO10_ENA		0x40	/* ON - [6] */
-#define ACT8600_SUDCDC_VSEL_MASK	0xFF	/* SUDCDC VSET - [7:0] */
+#define ACT8600_LDO10_ENA		0x40	 
+#define ACT8600_SUDCDC_VSEL_MASK	0xFF	 
 
 #define ACT8600_APCH_CHG_ACIN		BIT(7)
 #define ACT8600_APCH_CHG_USB		BIT(6)
 #define ACT8600_APCH_CSTATE0		BIT(5)
 #define ACT8600_APCH_CSTATE1		BIT(4)
 
-/*
- * ACT8865 voltage number
- */
+ 
 #define	ACT8865_VOLTAGE_NUM	64
 #define ACT8600_SUDCDC_VOLTAGE_NUM	256
 
@@ -275,10 +259,7 @@ static int act8865_set_suspend_state(struct regulator_dev *rdev, bool enable)
 	if (enable)
 		val |= BIT(4);
 
-	/*
-	 * Ask the PMIC to enable/disable this output when entering hibernate
-	 * mode.
-	 */
+	 
 	return regmap_write(regmap, reg, val);
 }
 
@@ -735,7 +716,7 @@ static int act8865_pmic_probe(struct i2c_client *client)
 		}
 	}
 
-	/* Finally register devices */
+	 
 	for (i = 0; i < num_regulators; i++) {
 		const struct regulator_desc *desc = &regulators[i];
 		struct regulator_config config = { };
@@ -773,7 +754,7 @@ static int act8865_pmic_probe(struct i2c_client *client)
 
 	i2c_set_clientdata(client, act8865);
 
-	/* Unlock expert registers for ACT8865. */
+	 
 	return type != ACT8865 ? 0 : regmap_write(act8865->regmap,
 						  ACT8865_SYS_UNLK_REGS, 0xef);
 }

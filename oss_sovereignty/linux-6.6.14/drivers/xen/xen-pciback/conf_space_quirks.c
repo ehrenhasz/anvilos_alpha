@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * PCI Backend - Handle special overlays for broken devices.
- *
- * Author: Ryan Wilson <hap9@epoch.ncsc.mil>
- * Author: Chris Bookholt <hap10@epoch.ncsc.mil>
- */
+
+ 
 
 #define dev_fmt(fmt) DRV_NAME ": " fmt
 

@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/******************************************************************************
- *
- * Copyright(c) 2008 - 2011 Intel Corporation. All rights reserved.
- *
- * Contact Information:
- *  Intel Linux Wireless <ilw@linux.intel.com>
- * Intel Corporation, 5200 N.E. Elam Young Parkway, Hillsboro, OR 97124-6497
- *****************************************************************************/
+
+ 
 
 #include "common.h"
 #include "3945.h"
@@ -55,11 +48,7 @@ il3945_ucode_rx_stats_read(struct file *file, char __user *user_buf,
 		return -ENOMEM;
 	}
 
-	/*
-	 * The statistic information display here is based on
-	 * the last stats notification from uCode
-	 * might not reflect the current uCode activity
-	 */
+	 
 	ofdm = &il->_3945.stats.rx.ofdm;
 	cck = &il->_3945.stats.rx.cck;
 	general = &il->_3945.stats.rx.general;
@@ -315,11 +304,7 @@ il3945_ucode_tx_stats_read(struct file *file, char __user *user_buf,
 		return -ENOMEM;
 	}
 
-	/*
-	 * The statistic information display here is based on
-	 * the last stats notification from uCode
-	 * might not reflect the current uCode activity
-	 */
+	 
 	tx = &il->_3945.stats.tx;
 	accum_tx = &il->_3945.accum_stats.tx;
 	delta_tx = &il->_3945.delta_stats.tx;
@@ -408,11 +393,7 @@ il3945_ucode_general_stats_read(struct file *file, char __user *user_buf,
 		return -ENOMEM;
 	}
 
-	/*
-	 * The statistic information display here is based on
-	 * the last stats notification from uCode
-	 * might not reflect the current uCode activity
-	 */
+	 
 	general = &il->_3945.stats.general;
 	dbg = &il->_3945.stats.general.dbg;
 	div = &il->_3945.stats.general.div;

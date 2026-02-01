@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2020 Martin Blumenstingl <martin.blumenstingl@googlemail.com>
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/bitops.h>
@@ -38,7 +36,7 @@
 #define AO_SECURE_REG0						0x0
 #define AO_SECURE_REG0_AHB_SRAM_BITS_19_12			GENMASK(15, 8)
 
-/* Only bits [31:20] and [17:14] are usable, all other bits must be zero */
+ 
 #define MESON_AO_RPROC_SRAM_USABLE_BITS				0xfff3c000ULL
 
 #define MESON_AO_RPROC_MEMORY_OFFSET				0x10000000
@@ -70,13 +68,7 @@ static int meson_mx_ao_arc_rproc_start(struct rproc *rproc)
 			 priv->sram_pa >> 14);
 	writel(tmp, priv->remap_base + AO_REMAP_REG0);
 
-	/*
-	 * The SRAM content as seen by the ARC core always starts at 0x0
-	 * regardless of the value given here (this was discovered by trial and
-	 * error). For SoCs older than Meson6 we probably have to set
-	 * AO_REMAP_REG1_MOVE_AHB_SRAM_TO_0X0_INSTEAD_OF_DDR to achieve the
-	 * same. (At least) For Meson8 and newer that bit must not be set.
-	 */
+	 
 	writel(0x0, priv->remap_base + AO_REMAP_REG1);
 
 	regmap_update_bits(priv->secbus2_regmap, AO_SECURE_REG0,
@@ -92,11 +84,7 @@ static int meson_mx_ao_arc_rproc_start(struct rproc *rproc)
 
 	usleep_range(10, 100);
 
-	/*
-	 * Convert from 0xd9000000 to 0xc9000000 as the vendor driver does.
-	 * This only seems to be relevant for the AO_CPU_CNTL register. It is
-	 * unknown why this is needed.
-	 */
+	 
 	translated_sram_addr = priv->sram_pa - MESON_AO_RPROC_MEMORY_OFFSET;
 
 	tmp = FIELD_PREP(AO_CPU_CNTL_AHB_SRAM_BITS_31_20,
@@ -125,7 +113,7 @@ static void *meson_mx_ao_arc_rproc_da_to_va(struct rproc *rproc, u64 da,
 {
 	struct meson_mx_ao_arc_rproc_priv *priv = rproc->priv;
 
-	/* The memory from the ARC core's perspective always starts at 0x0. */
+	 
 	if ((da + len) > priv->sram_size)
 		return NULL;
 
@@ -240,7 +228,7 @@ static void meson_mx_ao_arc_rproc_remove(struct platform_device *pdev)
 static const struct of_device_id meson_mx_ao_arc_rproc_match[] = {
 	{ .compatible = "amlogic,meson8-ao-arc" },
 	{ .compatible = "amlogic,meson8b-ao-arc" },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, meson_mx_ao_arc_rproc_match);
 

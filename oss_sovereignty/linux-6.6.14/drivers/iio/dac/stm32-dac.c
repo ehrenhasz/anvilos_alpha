@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * This file is part of STM32 DAC driver
- *
- * Copyright (C) 2017, STMicroelectronics - All Rights Reserved
- * Authors: Amelie Delaunay <amelie.delaunay@st.com>
- *	    Fabrice Gasnier <fabrice.gasnier@st.com>
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/delay.h>
@@ -26,12 +20,7 @@
 
 #define STM32_DAC_AUTO_SUSPEND_DELAY_MS	2000
 
-/**
- * struct stm32_dac - private data of DAC driver
- * @common:		reference to DAC common data
- * @lock:		lock to protect against potential races when reading
- *			and update CR, to keep it in sync with pm_runtime
- */
+ 
 struct stm32_dac {
 	struct stm32_dac_common *common;
 	struct mutex		lock;
@@ -63,7 +52,7 @@ static int stm32_dac_set_enable_state(struct iio_dev *indio_dev, int ch,
 	u32 en = enable ? msk : 0;
 	int ret;
 
-	/* already enabled / disabled ? */
+	 
 	mutex_lock(&dac->lock);
 	ret = stm32_dac_is_enabled(indio_dev, ch);
 	if (ret < 0 || enable == !!ret) {
@@ -86,11 +75,7 @@ static int stm32_dac_set_enable_state(struct iio_dev *indio_dev, int ch,
 		goto err_put_pm;
 	}
 
-	/*
-	 * When HFSEL is set, it is not allowed to write the DHRx register
-	 * during 8 clock cycles after the ENx bit is set. It is not allowed
-	 * to make software/hardware trigger during this period either.
-	 */
+	 
 	if (en && dac->common->hfsel)
 		udelay(1);
 
@@ -260,7 +245,7 @@ static const struct iio_chan_spec_ext_info stm32_dac_ext_info[] = {
 	.info_mask_separate =				\
 		BIT(IIO_CHAN_INFO_RAW) |		\
 		BIT(IIO_CHAN_INFO_SCALE),		\
-	/* scan_index is always 0 as num_channels is 1 */ \
+	  \
 	.scan_type = {					\
 		.sign = 'u',				\
 		.realbits = 12,				\
@@ -298,11 +283,7 @@ static int stm32_dac_chan_of_init(struct iio_dev *indio_dev)
 	}
 
 	indio_dev->channels = &stm32_dac_channels[i];
-	/*
-	 * Expose only one channel here, as they can be used independently,
-	 * with separate trigger. Then separate IIO devices are instantiated
-	 * to manage this.
-	 */
+	 
 	indio_dev->num_channels = 1;
 
 	return 0;
@@ -337,7 +318,7 @@ static int stm32_dac_probe(struct platform_device *pdev)
 	if (ret < 0)
 		return ret;
 
-	/* Get stm32-dac-core PM online */
+	 
 	pm_runtime_get_noresume(dev);
 	pm_runtime_set_active(dev);
 	pm_runtime_set_autosuspend_delay(dev, STM32_DAC_AUTO_SUSPEND_DELAY_MS);
@@ -380,7 +361,7 @@ static int stm32_dac_suspend(struct device *dev)
 	int channel = indio_dev->channels[0].channel;
 	int ret;
 
-	/* Ensure DAC is disabled before suspend */
+	 
 	ret = stm32_dac_is_enabled(indio_dev, channel);
 	if (ret)
 		return ret < 0 ? ret : -EBUSY;

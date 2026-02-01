@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * QLogic qlcnic NIC Driver
- * Copyright (c) 2009-2013 QLogic Corporation
- */
+
+ 
 
 #include <linux/slab.h>
 #include <net/ip.h>
@@ -49,8 +46,8 @@ static inline void writeq(u64 val, void __iomem *addr)
 
 static struct crb_128M_2M_block_map
 crb_128M_2M_map[64] __cacheline_aligned_in_smp = {
-    {{{0, 0,         0,         0} } },		/* 0: PCI */
-    {{{1, 0x0100000, 0x0102000, 0x120000},	/* 1: PCIE */
+    {{{0, 0,         0,         0} } },		 
+    {{{1, 0x0100000, 0x0102000, 0x120000},	 
 	  {1, 0x0110000, 0x0120000, 0x130000},
 	  {1, 0x0120000, 0x0122000, 0x124000},
 	  {1, 0x0130000, 0x0132000, 0x126000},
@@ -66,13 +63,13 @@ crb_128M_2M_map[64] __cacheline_aligned_in_smp = {
 	  {0, 0x0000000, 0x0000000, 0x000000},
 	  {1, 0x01e0000, 0x01e0800, 0x122000},
 	  {0, 0x0000000, 0x0000000, 0x000000} } },
-	{{{1, 0x0200000, 0x0210000, 0x180000} } },/* 2: MN */
-    {{{0, 0,         0,         0} } },	    /* 3: */
-    {{{1, 0x0400000, 0x0401000, 0x169000} } },/* 4: P2NR1 */
-    {{{1, 0x0500000, 0x0510000, 0x140000} } },/* 5: SRE   */
-    {{{1, 0x0600000, 0x0610000, 0x1c0000} } },/* 6: NIU   */
-    {{{1, 0x0700000, 0x0704000, 0x1b8000} } },/* 7: QM    */
-    {{{1, 0x0800000, 0x0802000, 0x170000},  /* 8: SQM0  */
+	{{{1, 0x0200000, 0x0210000, 0x180000} } }, 
+    {{{0, 0,         0,         0} } },	     
+    {{{1, 0x0400000, 0x0401000, 0x169000} } }, 
+    {{{1, 0x0500000, 0x0510000, 0x140000} } }, 
+    {{{1, 0x0600000, 0x0610000, 0x1c0000} } }, 
+    {{{1, 0x0700000, 0x0704000, 0x1b8000} } }, 
+    {{{1, 0x0800000, 0x0802000, 0x170000},   
       {0, 0x0000000, 0x0000000, 0x000000},
       {0, 0x0000000, 0x0000000, 0x000000},
       {0, 0x0000000, 0x0000000, 0x000000},
@@ -88,7 +85,7 @@ crb_128M_2M_map[64] __cacheline_aligned_in_smp = {
       {0, 0x0000000, 0x0000000, 0x000000},
       {0, 0x0000000, 0x0000000, 0x000000},
       {1, 0x08f0000, 0x08f2000, 0x172000} } },
-    {{{1, 0x0900000, 0x0902000, 0x174000},	/* 9: SQM1*/
+    {{{1, 0x0900000, 0x0902000, 0x174000},	 
       {0, 0x0000000, 0x0000000, 0x000000},
       {0, 0x0000000, 0x0000000, 0x000000},
       {0, 0x0000000, 0x0000000, 0x000000},
@@ -104,7 +101,7 @@ crb_128M_2M_map[64] __cacheline_aligned_in_smp = {
       {0, 0x0000000, 0x0000000, 0x000000},
       {0, 0x0000000, 0x0000000, 0x000000},
       {1, 0x09f0000, 0x09f2000, 0x176000} } },
-    {{{0, 0x0a00000, 0x0a02000, 0x178000},	/* 10: SQM2*/
+    {{{0, 0x0a00000, 0x0a02000, 0x178000},	 
       {0, 0x0000000, 0x0000000, 0x000000},
       {0, 0x0000000, 0x0000000, 0x000000},
       {0, 0x0000000, 0x0000000, 0x000000},
@@ -120,7 +117,7 @@ crb_128M_2M_map[64] __cacheline_aligned_in_smp = {
       {0, 0x0000000, 0x0000000, 0x000000},
       {0, 0x0000000, 0x0000000, 0x000000},
       {1, 0x0af0000, 0x0af2000, 0x17a000} } },
-    {{{0, 0x0b00000, 0x0b02000, 0x17c000},	/* 11: SQM3*/
+    {{{0, 0x0b00000, 0x0b02000, 0x17c000},	 
       {0, 0x0000000, 0x0000000, 0x000000},
       {0, 0x0000000, 0x0000000, 0x000000},
       {0, 0x0000000, 0x0000000, 0x000000},
@@ -136,28 +133,28 @@ crb_128M_2M_map[64] __cacheline_aligned_in_smp = {
       {0, 0x0000000, 0x0000000, 0x000000},
       {0, 0x0000000, 0x0000000, 0x000000},
       {1, 0x0bf0000, 0x0bf2000, 0x17e000} } },
-	{{{1, 0x0c00000, 0x0c04000, 0x1d4000} } },/* 12: I2Q */
-	{{{1, 0x0d00000, 0x0d04000, 0x1a4000} } },/* 13: TMR */
-	{{{1, 0x0e00000, 0x0e04000, 0x1a0000} } },/* 14: ROMUSB */
-	{{{1, 0x0f00000, 0x0f01000, 0x164000} } },/* 15: PEG4 */
-	{{{0, 0x1000000, 0x1004000, 0x1a8000} } },/* 16: XDMA */
-	{{{1, 0x1100000, 0x1101000, 0x160000} } },/* 17: PEG0 */
-	{{{1, 0x1200000, 0x1201000, 0x161000} } },/* 18: PEG1 */
-	{{{1, 0x1300000, 0x1301000, 0x162000} } },/* 19: PEG2 */
-	{{{1, 0x1400000, 0x1401000, 0x163000} } },/* 20: PEG3 */
-	{{{1, 0x1500000, 0x1501000, 0x165000} } },/* 21: P2ND */
-	{{{1, 0x1600000, 0x1601000, 0x166000} } },/* 22: P2NI */
-	{{{0, 0,         0,         0} } },	/* 23: */
-	{{{0, 0,         0,         0} } },	/* 24: */
-	{{{0, 0,         0,         0} } },	/* 25: */
-	{{{0, 0,         0,         0} } },	/* 26: */
-	{{{0, 0,         0,         0} } },	/* 27: */
-	{{{0, 0,         0,         0} } },	/* 28: */
-	{{{1, 0x1d00000, 0x1d10000, 0x190000} } },/* 29: MS */
-    {{{1, 0x1e00000, 0x1e01000, 0x16a000} } },/* 30: P2NR2 */
-    {{{1, 0x1f00000, 0x1f10000, 0x150000} } },/* 31: EPG */
-	{{{0} } },				/* 32: PCI */
-	{{{1, 0x2100000, 0x2102000, 0x120000},	/* 33: PCIE */
+	{{{1, 0x0c00000, 0x0c04000, 0x1d4000} } }, 
+	{{{1, 0x0d00000, 0x0d04000, 0x1a4000} } }, 
+	{{{1, 0x0e00000, 0x0e04000, 0x1a0000} } }, 
+	{{{1, 0x0f00000, 0x0f01000, 0x164000} } }, 
+	{{{0, 0x1000000, 0x1004000, 0x1a8000} } }, 
+	{{{1, 0x1100000, 0x1101000, 0x160000} } }, 
+	{{{1, 0x1200000, 0x1201000, 0x161000} } }, 
+	{{{1, 0x1300000, 0x1301000, 0x162000} } }, 
+	{{{1, 0x1400000, 0x1401000, 0x163000} } }, 
+	{{{1, 0x1500000, 0x1501000, 0x165000} } }, 
+	{{{1, 0x1600000, 0x1601000, 0x166000} } }, 
+	{{{0, 0,         0,         0} } },	 
+	{{{0, 0,         0,         0} } },	 
+	{{{0, 0,         0,         0} } },	 
+	{{{0, 0,         0,         0} } },	 
+	{{{0, 0,         0,         0} } },	 
+	{{{0, 0,         0,         0} } },	 
+	{{{1, 0x1d00000, 0x1d10000, 0x190000} } }, 
+    {{{1, 0x1e00000, 0x1e01000, 0x16a000} } }, 
+    {{{1, 0x1f00000, 0x1f10000, 0x150000} } }, 
+	{{{0} } },				 
+	{{{1, 0x2100000, 0x2102000, 0x120000},	 
 	  {1, 0x2110000, 0x2120000, 0x130000},
 	  {1, 0x2120000, 0x2122000, 0x124000},
 	  {1, 0x2130000, 0x2132000, 0x126000},
@@ -173,41 +170,39 @@ crb_128M_2M_map[64] __cacheline_aligned_in_smp = {
 	  {0, 0x0000000, 0x0000000, 0x000000},
 	  {0, 0x0000000, 0x0000000, 0x000000},
 	  {0, 0x0000000, 0x0000000, 0x000000} } },
-	{{{1, 0x2200000, 0x2204000, 0x1b0000} } },/* 34: CAM */
-	{{{0} } },				/* 35: */
-	{{{0} } },				/* 36: */
-	{{{0} } },				/* 37: */
-	{{{0} } },				/* 38: */
-	{{{0} } },				/* 39: */
-	{{{1, 0x2800000, 0x2804000, 0x1a4000} } },/* 40: TMR */
-	{{{1, 0x2900000, 0x2901000, 0x16b000} } },/* 41: P2NR3 */
-	{{{1, 0x2a00000, 0x2a00400, 0x1ac400} } },/* 42: RPMX1 */
-	{{{1, 0x2b00000, 0x2b00400, 0x1ac800} } },/* 43: RPMX2 */
-	{{{1, 0x2c00000, 0x2c00400, 0x1acc00} } },/* 44: RPMX3 */
-	{{{1, 0x2d00000, 0x2d00400, 0x1ad000} } },/* 45: RPMX4 */
-	{{{1, 0x2e00000, 0x2e00400, 0x1ad400} } },/* 46: RPMX5 */
-	{{{1, 0x2f00000, 0x2f00400, 0x1ad800} } },/* 47: RPMX6 */
-	{{{1, 0x3000000, 0x3000400, 0x1adc00} } },/* 48: RPMX7 */
-	{{{0, 0x3100000, 0x3104000, 0x1a8000} } },/* 49: XDMA */
-	{{{1, 0x3200000, 0x3204000, 0x1d4000} } },/* 50: I2Q */
-	{{{1, 0x3300000, 0x3304000, 0x1a0000} } },/* 51: ROMUSB */
-	{{{0} } },				/* 52: */
-	{{{1, 0x3500000, 0x3500400, 0x1ac000} } },/* 53: RPMX0 */
-	{{{1, 0x3600000, 0x3600400, 0x1ae000} } },/* 54: RPMX8 */
-	{{{1, 0x3700000, 0x3700400, 0x1ae400} } },/* 55: RPMX9 */
-	{{{1, 0x3800000, 0x3804000, 0x1d0000} } },/* 56: OCM0 */
-	{{{1, 0x3900000, 0x3904000, 0x1b4000} } },/* 57: CRYPTO */
-	{{{1, 0x3a00000, 0x3a04000, 0x1d8000} } },/* 58: SMB */
-	{{{0} } },				/* 59: I2C0 */
-	{{{0} } },				/* 60: I2C1 */
-	{{{1, 0x3d00000, 0x3d04000, 0x1d8000} } },/* 61: LPC */
-	{{{1, 0x3e00000, 0x3e01000, 0x167000} } },/* 62: P2NC */
-	{{{1, 0x3f00000, 0x3f01000, 0x168000} } }	/* 63: P2NR0 */
+	{{{1, 0x2200000, 0x2204000, 0x1b0000} } }, 
+	{{{0} } },				 
+	{{{0} } },				 
+	{{{0} } },				 
+	{{{0} } },				 
+	{{{0} } },				 
+	{{{1, 0x2800000, 0x2804000, 0x1a4000} } }, 
+	{{{1, 0x2900000, 0x2901000, 0x16b000} } }, 
+	{{{1, 0x2a00000, 0x2a00400, 0x1ac400} } }, 
+	{{{1, 0x2b00000, 0x2b00400, 0x1ac800} } }, 
+	{{{1, 0x2c00000, 0x2c00400, 0x1acc00} } }, 
+	{{{1, 0x2d00000, 0x2d00400, 0x1ad000} } }, 
+	{{{1, 0x2e00000, 0x2e00400, 0x1ad400} } }, 
+	{{{1, 0x2f00000, 0x2f00400, 0x1ad800} } }, 
+	{{{1, 0x3000000, 0x3000400, 0x1adc00} } }, 
+	{{{0, 0x3100000, 0x3104000, 0x1a8000} } }, 
+	{{{1, 0x3200000, 0x3204000, 0x1d4000} } }, 
+	{{{1, 0x3300000, 0x3304000, 0x1a0000} } }, 
+	{{{0} } },				 
+	{{{1, 0x3500000, 0x3500400, 0x1ac000} } }, 
+	{{{1, 0x3600000, 0x3600400, 0x1ae000} } }, 
+	{{{1, 0x3700000, 0x3700400, 0x1ae400} } }, 
+	{{{1, 0x3800000, 0x3804000, 0x1d0000} } }, 
+	{{{1, 0x3900000, 0x3904000, 0x1b4000} } }, 
+	{{{1, 0x3a00000, 0x3a04000, 0x1d8000} } }, 
+	{{{0} } },				 
+	{{{0} } },				 
+	{{{1, 0x3d00000, 0x3d04000, 0x1d8000} } }, 
+	{{{1, 0x3e00000, 0x3e01000, 0x167000} } }, 
+	{{{1, 0x3f00000, 0x3f01000, 0x168000} } }	 
 };
 
-/*
- * top 12 bits of crb internal address (hub, agent)
- */
+ 
 static const unsigned crb_hub_agt[64] = {
 	0,
 	QLCNIC_HW_CRB_HUB_AGT_ADR_PS,
@@ -275,7 +270,7 @@ static const unsigned crb_hub_agt[64] = {
 	0,
 };
 
-/*  PCI Windowing for DDR regions.  */
+ 
 
 #define QLCNIC_PCIE_SEM_TIMEOUT	10000
 
@@ -462,7 +457,7 @@ int qlcnic_nic_del_mac(struct qlcnic_adapter *adapter, const u8 *addr)
 	struct qlcnic_mac_vlan_list *cur;
 	int err = -EINVAL;
 
-	/* Delete MAC from the existing list */
+	 
 	list_for_each_entry(cur, &adapter->mac_list, list) {
 		if (ether_addr_equal(addr, cur->mac_addr)) {
 			err = qlcnic_sre_macaddr_change(adapter, cur->mac_addr,
@@ -482,7 +477,7 @@ int qlcnic_nic_add_mac(struct qlcnic_adapter *adapter, const u8 *addr, u16 vlan,
 {
 	struct qlcnic_mac_vlan_list *cur;
 
-	/* look up if already exists */
+	 
 	list_for_each_entry(cur, &adapter->mac_list, list) {
 		if (ether_addr_equal(addr, cur->mac_addr) &&
 		    cur->vlan_id == vlan)
@@ -555,9 +550,7 @@ static void __qlcnic_set_multi(struct net_device *netdev, u16 vlan)
 					   QLCNIC_MULTICAST_MAC);
 	}
 
-	/* configure unicast MAC address, if there is not sufficient space
-	 * to store all the unicast addresses then enable promiscuous mode
-	 */
+	 
 	if (netdev_uc_count(netdev) > ahw->max_uc_count) {
 		mode = VPORT_MISS_MODE_ACCEPT_ALL;
 	} else if (!netdev_uc_empty(netdev)) {
@@ -791,7 +784,7 @@ int qlcnic_82xx_set_rx_coalesce(struct qlcnic_adapter *adapter)
 	return rv;
 }
 
-/* Send the interrupt coalescing parameter set by ethtool to the card. */
+ 
 int qlcnic_82xx_config_intr_coalesce(struct qlcnic_adapter *adapter,
 				     struct ethtool_coalesce *ethcoal)
 {
@@ -901,19 +894,7 @@ int qlcnic_82xx_config_rss(struct qlcnic_adapter *adapter, int enable)
 	word = QLCNIC_H2C_OPCODE_CONFIG_RSS | ((u64)adapter->portnum << 16);
 	req.req_hdr = cpu_to_le64(word);
 
-	/*
-	 * RSS request:
-	 * bits 3-0: hash_method
-	 *      5-4: hash_type_ipv4
-	 *	7-6: hash_type_ipv6
-	 *	  8: enable
-	 *        9: use indirection table
-	 *       10: type-c rss
-	 *	 11: udp rss
-	 *    47-12: reserved
-	 *    62-48: indirection table mask
-	 *	 63: feature flag
-	 */
+	 
 	word =  ((u64)(QLCNIC_RSS_HASHTYPE_IP_TCP & 0x3) << 4) |
 		((u64)(QLCNIC_RSS_HASHTYPE_IP_TCP & 0x3) << 6) |
 		((u64)(enable & 0x1) << 8) |
@@ -1002,10 +983,7 @@ static int qlcnic_send_lro_cleanup(struct qlcnic_adapter *adapter)
 	return rv;
 }
 
-/*
- * qlcnic_change_mtu - Change the Maximum Transfer Unit
- * @returns 0 on success, negative on failure
- */
+ 
 
 int qlcnic_change_mtu(struct net_device *netdev, int mtu)
 {
@@ -1102,15 +1080,8 @@ int qlcnic_set_features(struct net_device *netdev, netdev_features_t features)
 	return 0;
 }
 
-/*
- * Changes the CRB window to the specified window.
- */
- /* Returns < 0 if off is not valid,
- *	 1 if window access is needed. 'off' is set to offset from
- *	   CRB space in 128M pci map
- *	 0 if no window access is needed. 'off' is set to 2M addr
- * In: 'off' is offset from base in 128M pci map
- */
+ 
+  
 static int qlcnic_pci_get_crb_addr_2M(struct qlcnic_hardware_context *ahw,
 				      ulong off, void __iomem **addr)
 {
@@ -1121,9 +1092,7 @@ static int qlcnic_pci_get_crb_addr_2M(struct qlcnic_hardware_context *ahw,
 
 	off -= QLCNIC_PCI_CRBSPACE;
 
-	/*
-	 * Try direct map
-	 */
+	 
 	m = &crb_128M_2M_map[CRB_BLK(off)].sub_block[CRB_SUBBLK(off)];
 
 	if (m->valid && (m->start_128M <= off) && (m->end_128M > off)) {
@@ -1132,18 +1101,12 @@ static int qlcnic_pci_get_crb_addr_2M(struct qlcnic_hardware_context *ahw,
 		return 0;
 	}
 
-	/*
-	 * Not in direct map, use crb window
-	 */
+	 
 	*addr = ahw->pci_base0 + CRB_INDIRECT_2M + (off & MASK(16));
 	return 1;
 }
 
-/*
- * In: 'off' is offset from CRB space in 128M pci map
- * Out: 'off' is 2M pci map addr
- * side effect: lock crb window
- */
+ 
 static int
 qlcnic_pci_set_crbwindow_2M(struct qlcnic_adapter *adapter, ulong off)
 {
@@ -1184,7 +1147,7 @@ int qlcnic_82xx_hw_write_wx_2M(struct qlcnic_adapter *adapter, ulong off,
 	}
 
 	if (rv > 0) {
-		/* indirect access */
+		 
 		write_lock_irqsave(&adapter->ahw->crb_lock, flags);
 		crb_win_lock(adapter);
 		rv = qlcnic_pci_set_crbwindow_2M(adapter, off);
@@ -1215,7 +1178,7 @@ int qlcnic_82xx_hw_read_wx_2M(struct qlcnic_adapter *adapter, ulong off,
 		return readl(addr);
 
 	if (rv > 0) {
-		/* indirect access */
+		 
 		write_lock_irqsave(&adapter->ahw->crb_lock, flags);
 		crb_win_lock(adapter);
 		if (!qlcnic_pci_set_crbwindow_2M(adapter, off))
@@ -1250,18 +1213,18 @@ static int qlcnic_pci_mem_access_direct(struct qlcnic_adapter *adapter,
 	mutex_lock(&adapter->ahw->mem_lock);
 
 	writel(window, adapter->ahw->ocm_win_crb);
-	/* read back to flush */
+	 
 	readl(adapter->ahw->ocm_win_crb);
 	start = QLCNIC_PCI_OCM0_2M + off;
 
 	addr = adapter->ahw->pci_base0 + start;
 
-	if (op == 0)	/* read */
+	if (op == 0)	 
 		*data = readq(addr);
-	else		/* write */
+	else		 
 		writeq(*data, addr);
 
-	/* Set window to 0 */
+	 
 	writel(0, adapter->ahw->ocm_win_crb);
 	readl(adapter->ahw->ocm_win_crb);
 
@@ -1293,7 +1256,7 @@ qlcnic_pci_camqm_write_2M(struct qlcnic_adapter *adapter, u64 off, u64 data)
 
 
 
-/* Set MS memory control data for different adapters */
+ 
 static void qlcnic_set_ms_controls(struct qlcnic_adapter *adapter, u64 off,
 				   struct qlcnic_ms_reg_ctrl *ms)
 {
@@ -1330,7 +1293,7 @@ int qlcnic_pci_mem_write_2M(struct qlcnic_adapter *adapter, u64 off, u64 data)
 	u32 temp, off8;
 	struct qlcnic_ms_reg_ctrl ms;
 
-	/* Only 64-bit aligned access */
+	 
 	if (off & 7)
 		return -EIO;
 
@@ -1368,10 +1331,10 @@ int qlcnic_pci_mem_write_2M(struct qlcnic_adapter *adapter, u64 off, u64 data)
 		goto done;
 	}
 
-	/* This is the modify part of read-modify-write */
+	 
 	qlcnic_ind_wr(adapter, ms.wd[0], qlcnic_ind_rd(adapter, ms.rd[0]));
 	qlcnic_ind_wr(adapter, ms.wd[1], qlcnic_ind_rd(adapter, ms.rd[1]));
-	/* This is the write part of read-modify-write */
+	 
 	qlcnic_ind_wr(adapter, ms.wd[2], data & 0xffffffff);
 	qlcnic_ind_wr(adapter, ms.wd[3], (data >> 32) & 0xffffffff);
 
@@ -1405,7 +1368,7 @@ int qlcnic_pci_mem_read_2M(struct qlcnic_adapter *adapter, u64 off, u64 *data)
 	u64 val;
 	struct qlcnic_ms_reg_ctrl ms;
 
-	/* Only 64-bit aligned access */
+	 
 	if (off & 7)
 		return -EIO;
 	if (!(ADDR_IN_RANGE(off, QLCNIC_ADDR_QDR_NET,

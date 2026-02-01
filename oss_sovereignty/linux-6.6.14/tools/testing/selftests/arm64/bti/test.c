@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2019,2021  Arm Limited
- * Original author: Dave Martin <Dave.Martin@arm.com>
- */
+
+ 
 
 #include "system.h"
 
@@ -97,11 +94,11 @@ static void handler(int n, siginfo_t *si __always_unused,
 
 	putstr(" (expected)]\n");
 	sigill_received = 1;
-	/* zap BTYPE so that resuming the faulting code will work */
+	 
 	uc->uc_mcontext.pstate &= ~PSR_BTYPE_MASK;
 }
 
-/* Does the system have BTI? */
+ 
 static bool have_bti;
 
 static void __do_test(void (*trampoline)(void (*)(void)),
@@ -110,10 +107,7 @@ static void __do_test(void (*trampoline)(void (*)(void)),
 		      const char *name,
 		      int expect_sigill)
 {
-	/*
-	 * Branch Target exceptions should only happen for BTI
-	 * binaries running on a system with BTI:
-	 */
+	 
 	if (!BTI || !have_bti)
 		expect_sigill = 0;
 
@@ -165,9 +159,9 @@ void start(int *argcp)
 	putnum(EXPECTED_TESTS);
 	putstr("\n");
 
-	/* Gross hack for finding AT_HWCAP2 from the initial process stack: */
-	p = (void *const *)argcp + 1 + *argcp + 1; /* start of environment */
-	/* step over environment */
+	 
+	p = (void *const *)argcp + 1 + *argcp + 1;  
+	 
 	while (*p++)
 		;
 	for (auxv = (const struct auxv_entry *)p; auxv->type != AT_NULL; ++auxv) {

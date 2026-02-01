@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) Sistina Software, Inc.  1997-2003 All rights reserved.
- * Copyright (C) 2004-2006 Red Hat, Inc.  All rights reserved.
- */
+
+ 
 
 #include <linux/spinlock.h>
 #include <linux/completion.h>
@@ -19,16 +16,7 @@
 #include "util.h"
 #include "inode.h"
 
-/**
- * gfs2_drevalidate - Check directory lookup consistency
- * @dentry: the mapping to check
- * @flags: lookup flags
- *
- * Check to make sure the lookup necessary to arrive at this inode from its
- * parent is still good.
- *
- * Returns: 1 if the dentry is ok, 0 if it isn't
- */
+ 
 
 static int gfs2_drevalidate(struct dentry *dentry, unsigned int flags)
 {

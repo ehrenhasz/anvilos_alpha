@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) Sistina Software, Inc.  1997-2003 All rights reserved.
- * Copyright (C) 2004-2006 Red Hat, Inc.  All rights reserved.
- */
+
+ 
 
 #include <linux/slab.h>
 #include <linux/spinlock.h>
@@ -43,17 +40,7 @@
 #include "trans.h"
 #include "util.h"
 
-/**
- * gfs2_llseek - seek to a location in a file
- * @file: the file
- * @offset: the offset
- * @whence: Where to seek from (SEEK_SET, SEEK_CUR, or SEEK_END)
- *
- * SEEK_END requires the glock for the file because it references the
- * file's size.
- *
- * Returns: The new offset, or errno
- */
+ 
 
 static loff_t gfs2_llseek(struct file *file, loff_t offset, int whence)
 {
@@ -81,10 +68,7 @@ static loff_t gfs2_llseek(struct file *file, loff_t offset, int whence)
 
 	case SEEK_CUR:
 	case SEEK_SET:
-		/*
-		 * These don't reference inode->i_size and don't depend on the
-		 * block mapping, so we don't need the glock.
-		 */
+		 
 		error = generic_file_llseek(file, offset, whence);
 		break;
 	default:
@@ -94,13 +78,7 @@ static loff_t gfs2_llseek(struct file *file, loff_t offset, int whence)
 	return error;
 }
 
-/**
- * gfs2_readdir - Iterator for a directory
- * @file: The directory to read from
- * @ctx: What to feed directory entries to
- *
- * Returns: errno
- */
+ 
 
 static int gfs2_readdir(struct file *file, struct dir_context *ctx)
 {
@@ -120,12 +98,7 @@ static int gfs2_readdir(struct file *file, struct dir_context *ctx)
 	return error;
 }
 
-/*
- * struct fsflag_gfs2flag
- *
- * The FS_JOURNAL_DATA_FL flag maps to GFS2_DIF_INHERIT_JDATA for directories,
- * and to GFS2_DIF_JDATA for non-directories.
- */
+ 
 static struct {
 	u32 fsflag;
 	u32 gfsflag;
@@ -200,7 +173,7 @@ void gfs2_set_inode_flags(struct inode *inode)
 	inode->i_flags = flags;
 }
 
-/* Flags that can be set by user space */
+ 
 #define GFS2_FLAGS_USER_SET (GFS2_DIF_JDATA|			\
 			     GFS2_DIF_IMMUTABLE|		\
 			     GFS2_DIF_APPENDONLY|		\
@@ -209,13 +182,7 @@ void gfs2_set_inode_flags(struct inode *inode)
 			     GFS2_DIF_TOPDIR|			\
 			     GFS2_DIF_INHERIT_JDATA)
 
-/**
- * do_gfs2_set_flags - set flags on an inode
- * @inode: The inode
- * @reqflags: The flags to set
- * @mask: Indicates which flags are valid
- *
- */
+ 
 static int do_gfs2_set_flags(struct inode *inode, u32 reqflags, u32 mask)
 {
 	struct gfs2_inode *ip = GFS2_I(inode);
@@ -301,7 +268,7 @@ int gfs2_fileattr_set(struct mnt_idmap *idmap,
 	if (S_ISDIR(inode->i_mode)) {
 		mask &= ~GFS2_DIF_JDATA;
 	} else {
-		/* The GFS2_DIF_TOPDIR flag is only valid for directories. */
+		 
 		if (gfsflags & GFS2_DIF_TOPDIR)
 			return -EINVAL;
 		mask &= ~(GFS2_DIF_TOPDIR | GFS2_DIF_INHERIT_JDATA);
@@ -337,7 +304,7 @@ static long gfs2_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 static long gfs2_compat_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 {
 	switch(cmd) {
-	/* Keep this list in sync with gfs2_ioctl */
+	 
 	case FITRIM:
 	case FS_IOC_GETFSLABEL:
 		break;
@@ -351,17 +318,7 @@ static long gfs2_compat_ioctl(struct file *filp, unsigned int cmd, unsigned long
 #define gfs2_compat_ioctl NULL
 #endif
 
-/**
- * gfs2_size_hint - Give a hint to the size of a write request
- * @filep: The struct file
- * @offset: The file offset of the write
- * @size: The length of the write
- *
- * When we are about to do a write, this function records the total
- * write size in order to provide a suitable hint to the lower layers
- * about how many blocks will be required.
- *
- */
+ 
 
 static void gfs2_size_hint(struct file *filep, loff_t offset, size_t size)
 {
@@ -375,16 +332,7 @@ static void gfs2_size_hint(struct file *filep, loff_t offset, size_t size)
 		atomic_set(&ip->i_sizehint, hint);
 }
 
-/**
- * gfs2_allocate_page_backing - Allocate blocks for a write fault
- * @page: The (locked) page to allocate backing for
- * @length: Size of the allocation
- *
- * We try to allocate all the blocks required for the page in one go.  This
- * might fail for various reasons, so we keep trying until all the blocks to
- * back this page are allocated.  If some of the blocks are already allocated,
- * that is ok too.
- */
+ 
 static int gfs2_allocate_page_backing(struct page *page, unsigned int length)
 {
 	u64 pos = page_offset(page);
@@ -404,13 +352,7 @@ static int gfs2_allocate_page_backing(struct page *page, unsigned int length)
 	return 0;
 }
 
-/**
- * gfs2_page_mkwrite - Make a shared, mmap()ed, page writable
- * @vmf: The virtual memory fault containing the page to become writable
- *
- * When the page becomes writable, we need to ensure that we have
- * blocks allocated on disk to back that page.
- */
+ 
 
 static vm_fault_t gfs2_page_mkwrite(struct vm_fault *vmf)
 {
@@ -436,17 +378,17 @@ static vm_fault_t gfs2_page_mkwrite(struct vm_fault *vmf)
 		goto out_uninit;
 	}
 
-	/* Check page index against inode size */
+	 
 	size = i_size_read(inode);
 	if (offset >= size) {
 		ret = VM_FAULT_SIGBUS;
 		goto out_unlock;
 	}
 
-	/* Update file times before taking page lock */
+	 
 	file_update_time(vmf->vma->vm_file);
 
-	/* page is wholly or partially inside EOF */
+	 
 	if (size - offset < PAGE_SIZE)
 		length = size - offset;
 	else
@@ -457,10 +399,7 @@ static vm_fault_t gfs2_page_mkwrite(struct vm_fault *vmf)
 	set_bit(GLF_DIRTY, &ip->i_gl->gl_flags);
 	set_bit(GIF_SW_PAGED, &ip->i_flags);
 
-	/*
-	 * iomap_writepage / iomap_writepages currently don't support inline
-	 * files, so always unstuff here.
-	 */
+	 
 
 	if (!gfs2_is_stuffed(ip) &&
 	    !gfs2_write_alloc_required(ip, offset, length)) {
@@ -504,7 +443,7 @@ static vm_fault_t gfs2_page_mkwrite(struct vm_fault *vmf)
 		goto out_trans_fail;
 	}
 
-	/* Unstuff, if required, and allocate backing blocks for page */
+	 
 	if (gfs2_is_stuffed(ip)) {
 		err = gfs2_unstuff_dinode(ip);
 		if (err) {
@@ -514,9 +453,7 @@ static vm_fault_t gfs2_page_mkwrite(struct vm_fault *vmf)
 	}
 
 	lock_page(page);
-	/* If truncated, we must retry the operation, we may have raced
-	 * with the glock demotion code.
-	 */
+	 
 	if (!PageUptodate(page) || page->mapping != inode->i_mapping) {
 		ret = VM_FAULT_NOPAGE;
 		goto out_page_locked;
@@ -574,17 +511,7 @@ static const struct vm_operations_struct gfs2_vm_ops = {
 	.page_mkwrite = gfs2_page_mkwrite,
 };
 
-/**
- * gfs2_mmap
- * @file: The file to map
- * @vma: The VMA which described the mapping
- *
- * There is no need to get a lock here unless we should be updating
- * atime. We ignore any locking errors since the only consequence is
- * a missed atime update (which will just be deferred until later).
- *
- * Returns: 0
- */
+ 
 
 static int gfs2_mmap(struct file *file, struct vm_area_struct *vma)
 {
@@ -599,7 +526,7 @@ static int gfs2_mmap(struct file *file, struct vm_area_struct *vma)
 					   &i_gh);
 		if (error)
 			return error;
-		/* grab lock to update inode */
+		 
 		gfs2_glock_dq_uninit(&i_gh);
 		file_accessed(file);
 	}
@@ -608,18 +535,7 @@ static int gfs2_mmap(struct file *file, struct vm_area_struct *vma)
 	return 0;
 }
 
-/**
- * gfs2_open_common - This is common to open and atomic_open
- * @inode: The inode being opened
- * @file: The file being opened
- *
- * This maybe called under a glock or not depending upon how it has
- * been called. We must always be called under a glock for regular
- * files, however. For other file types, it does not matter whether
- * we hold the glock or not.
- *
- * Returns: Error code or 0 for success
- */
+ 
 
 int gfs2_open_common(struct inode *inode, struct file *file)
 {
@@ -656,19 +572,7 @@ fail:
 	return ret;
 }
 
-/**
- * gfs2_open - open a file
- * @inode: the inode to open
- * @file: the struct file for this opening
- *
- * After atomic_open, this function is only used for opening files
- * which are already cached. We must still get the glock for regular
- * files to ensure that we have the file size uptodate for the large
- * file check which is in the common code. That is only an issue for
- * regular files though.
- *
- * Returns: errno
- */
+ 
 
 static int gfs2_open(struct inode *inode, struct file *file)
 {
@@ -693,13 +597,7 @@ static int gfs2_open(struct inode *inode, struct file *file)
 	return error;
 }
 
-/**
- * gfs2_release - called to close a struct file
- * @inode: the inode the struct file belongs to
- * @file: the struct file being closed
- *
- * Returns: errno
- */
+ 
 
 static int gfs2_release(struct inode *inode, struct file *file)
 {
@@ -716,26 +614,7 @@ static int gfs2_release(struct inode *inode, struct file *file)
 	return 0;
 }
 
-/**
- * gfs2_fsync - sync the dirty data for a file (across the cluster)
- * @file: the file that points to the dentry
- * @start: the start position in the file to sync
- * @end: the end position in the file to sync
- * @datasync: set if we can ignore timestamp changes
- *
- * We split the data flushing here so that we don't wait for the data
- * until after we've also sent the metadata to disk. Note that for
- * data=ordered, we will write & wait for the data at the log flush
- * stage anyway, so this is unlikely to make much of a difference
- * except in the data=writeback case.
- *
- * If the fdatawrite fails due to any reason except -EIO, we will
- * continue the remainder of the fsync, although we'll still report
- * the error at the end. This is to match filemap_write_and_wait_range()
- * behaviour.
- *
- * Returns: errno
- */
+ 
 
 static int gfs2_fsync(struct file *file, loff_t start, loff_t end,
 		      int datasync)
@@ -787,10 +666,7 @@ static inline bool should_fault_in_pages(struct iov_iter *i,
 	if (!user_backed_iter(i))
 		return false;
 
-	/*
-	 * Try to fault in multiple pages initially.  When that doesn't result
-	 * in any progress, fall back to a single page.
-	 */
+	 
 	size = PAGE_SIZE;
 	offs = offset_in_page(iocb->ki_pos);
 	if (*prev_count != count) {
@@ -815,25 +691,10 @@ static ssize_t gfs2_file_direct_read(struct kiocb *iocb, struct iov_iter *to,
 	size_t read = 0;
 	ssize_t ret;
 
-	/*
-	 * In this function, we disable page faults when we're holding the
-	 * inode glock while doing I/O.  If a page fault occurs, we indicate
-	 * that the inode glock may be dropped, fault in the pages manually,
-	 * and retry.
-	 *
-	 * Unlike generic_file_read_iter, for reads, iomap_dio_rw can trigger
-	 * physical as well as manual page faults, and we need to disable both
-	 * kinds.
-	 *
-	 * For direct I/O, gfs2 takes the inode glock in deferred mode.  This
-	 * locking mode is compatible with other deferred holders, so multiple
-	 * processes and nodes can do direct I/O to a file at the same time.
-	 * There's no guarantee that reads or writes will be atomic.  Any
-	 * coordination among readers and writers needs to happen externally.
-	 */
+	 
 
 	if (!iov_iter_count(to))
-		return 0; /* skip atime */
+		return 0;  
 
 	gfs2_holder_init(ip->i_gl, LM_ST_DEFERRED, 0, gh);
 retry:
@@ -848,7 +709,7 @@ retry:
 	pagefault_enable();
 	if (ret <= 0 && ret != -EFAULT)
 		goto out_unlock;
-	/* No increment (+=) because iomap_dio_rw returns a cumulative value. */
+	 
 	if (ret > 0)
 		read = ret;
 
@@ -863,7 +724,7 @@ out_unlock:
 		gfs2_glock_dq(gh);
 out_uninit:
 	gfs2_holder_uninit(gh);
-	/* User space doesn't expect partial success. */
+	 
 	if (ret < 0)
 		return ret;
 	return read;
@@ -880,30 +741,15 @@ static ssize_t gfs2_file_direct_write(struct kiocb *iocb, struct iov_iter *from,
 	bool enough_retries;
 	ssize_t ret;
 
-	/*
-	 * In this function, we disable page faults when we're holding the
-	 * inode glock while doing I/O.  If a page fault occurs, we indicate
-	 * that the inode glock may be dropped, fault in the pages manually,
-	 * and retry.
-	 *
-	 * For writes, iomap_dio_rw only triggers manual page faults, so we
-	 * don't need to disable physical ones.
-	 */
+	 
 
-	/*
-	 * Deferred lock, even if its a write, since we do no allocation on
-	 * this path. All we need to change is the atime, and this lock mode
-	 * ensures that other nodes have flushed their buffered read caches
-	 * (i.e. their page cache entries for this inode). We do not,
-	 * unfortunately, have the option of only flushing a range like the
-	 * VFS does.
-	 */
+	 
 	gfs2_holder_init(ip->i_gl, LM_ST_DEFERRED, 0, gh);
 retry:
 	ret = gfs2_glock_nq(gh);
 	if (ret)
 		goto out_uninit;
-	/* Silently fall back to buffered I/O when writing beyond EOF */
+	 
 	if (iocb->ki_pos + iov_iter_count(from) > i_size_read(&ip->i_inode))
 		goto out_unlock;
 
@@ -917,7 +763,7 @@ retry:
 		if (ret != -EFAULT)
 			goto out_unlock;
 	}
-	/* No increment (+=) because iomap_dio_rw returns a cumulative value. */
+	 
 	if (ret > 0)
 		written = ret;
 
@@ -929,7 +775,7 @@ retry:
 		if (window_size) {
 			if (!enough_retries)
 				goto retry;
-			/* fall back to buffered I/O */
+			 
 			ret = 0;
 		}
 	}
@@ -938,7 +784,7 @@ out_unlock:
 		gfs2_glock_dq(gh);
 out_uninit:
 	gfs2_holder_uninit(gh);
-	/* User space doesn't expect partial success. */
+	 
 	if (ret < 0)
 		return ret;
 	return written;
@@ -952,12 +798,7 @@ static ssize_t gfs2_file_read_iter(struct kiocb *iocb, struct iov_iter *to)
 	size_t read = 0;
 	ssize_t ret;
 
-	/*
-	 * In this function, we disable page faults when we're holding the
-	 * inode glock while doing I/O.  If a page fault occurs, we indicate
-	 * that the inode glock may be dropped, fault in the pages manually,
-	 * and retry.
-	 */
+	 
 
 	if (iocb->ki_flags & IOCB_DIRECT)
 		return gfs2_file_direct_read(iocb, to, &gh);
@@ -1019,12 +860,7 @@ static ssize_t gfs2_file_buffered_write(struct kiocb *iocb,
 	size_t written = 0;
 	ssize_t ret;
 
-	/*
-	 * In this function, we disable page faults when we're holding the
-	 * inode glock while doing I/O.  If a page fault occurs, we indicate
-	 * that the inode glock may be dropped, fault in the pages manually,
-	 * and retry.
-	 */
+	 
 
 	if (inode == sdp->sd_rindex) {
 		statfs_gh = kmalloc(sizeof(*statfs_gh), GFP_NOFS);
@@ -1082,17 +918,7 @@ out_uninit:
 	return written ? written : ret;
 }
 
-/**
- * gfs2_file_write_iter - Perform a write to a file
- * @iocb: The io context
- * @from: The data to write
- *
- * We have to do a lock/unlock here to refresh the inode size for
- * O_APPEND writes, otherwise we can land up writing at the wrong
- * offset. There is still a race, but provided the app is using its
- * own file locking, this will make O_APPEND work as expected.
- *
- */
+ 
 
 static ssize_t gfs2_file_write_iter(struct kiocb *iocb, struct iov_iter *from)
 {
@@ -1140,13 +966,7 @@ static ssize_t gfs2_file_write_iter(struct kiocb *iocb, struct iov_iter *from)
 			goto out_unlock;
 		}
 
-		/*
-		 * We need to ensure that the page cache pages are written to
-		 * disk and invalidated to preserve the expected O_DIRECT
-		 * semantics.  If the writeback or invalidate fails, only report
-		 * the direct I/O range as we don't know if the buffered pages
-		 * made it to disk.
-		 */
+		 
 		ret2 = generic_write_sync(iocb, buffered);
 		invalidate_mapping_pages(mapping,
 				(iocb->ki_pos - buffered) >> PAGE_SHIFT,
@@ -1207,17 +1027,7 @@ out:
 	return error;
 }
 
-/**
- * calc_max_reserv() - Reverse of write_calc_reserv. Given a number of
- *                     blocks, determine how many bytes can be written.
- * @ip:          The inode in question.
- * @len:         Max cap of bytes. What we return in *len must be <= this.
- * @data_blocks: Compute and return the number of data blocks needed
- * @ind_blocks:  Compute and return the number of indirect blocks needed
- * @max_blocks:  The total blocks available to work with.
- *
- * Returns: void, but @len, @data_blocks and @ind_blocks are filled in.
- */
+ 
 static void calc_max_reserv(struct gfs2_inode *ip, loff_t *len,
 			    unsigned int *data_blocks, unsigned int *ind_blocks,
 			    unsigned int max_blocks)
@@ -1281,24 +1091,17 @@ static long __gfs2_fallocate(struct file *file, int mode, loff_t offset, loff_t 
 			continue;
 		}
 
-		/* We need to determine how many bytes we can actually
-		 * fallocate without exceeding quota or going over the
-		 * end of the fs. We start off optimistically by assuming
-		 * we can write max_bytes */
+		 
 		max_bytes = (len > max_chunk_size) ? max_chunk_size : len;
 
-		/* Since max_bytes is most likely a theoretical max, we
-		 * calculate a more realistic 'bytes' to serve as a good
-		 * starting point for the number of bytes we may be able
-		 * to write */
+		 
 		gfs2_write_calc_reserv(ip, bytes, &data_blocks, &ind_blocks);
 		ap.target = data_blocks + ind_blocks;
 
 		error = gfs2_quota_lock_check(ip, &ap);
 		if (error)
 			return error;
-		/* ap.allowed tells us how many blocks quota will allow
-		 * us to write. Check if this reduces max_blks */
+		 
 		max_blks = UINT_MAX;
 		if (ap.allowed)
 			max_blks = ap.allowed;
@@ -1307,13 +1110,11 @@ static long __gfs2_fallocate(struct file *file, int mode, loff_t offset, loff_t 
 		if (error)
 			goto out_qunlock;
 
-		/* check if the selected rgrp limits our max_blks further */
+		 
 		if (ip->i_res.rs_reserved < max_blks)
 			max_blks = ip->i_res.rs_reserved;
 
-		/* Almost done. Calculate bytes that can be written using
-		 * max_blks. We also recompute max_bytes, data_blocks and
-		 * ind_blocks */
+		 
 		calc_max_reserv(ip, &max_bytes, &data_blocks,
 				&ind_blocks, max_blks);
 
@@ -1366,7 +1167,7 @@ static long gfs2_fallocate(struct file *file, int mode, loff_t offset, loff_t le
 
 	if (mode & ~(FALLOC_FL_PUNCH_HOLE | FALLOC_FL_KEEP_SIZE))
 		return -EOPNOTSUPP;
-	/* fallocate is needed by gfs2_grow to reserve space in the rindex */
+	 
 	if (gfs2_is_jdata(ip) && inode != sdp->sd_rindex)
 		return -EOPNOTSUPP;
 
@@ -1419,14 +1220,7 @@ static ssize_t gfs2_file_splice_write(struct pipe_inode_info *pipe,
 
 #ifdef CONFIG_GFS2_FS_LOCKING_DLM
 
-/**
- * gfs2_lock - acquire/release a posix lock on a file
- * @file: the file pointer
- * @cmd: either modify or retrieve lock state, possibly wait
- * @fl: type and range of lock
- *
- * Returns: errno
- */
+ 
 
 static int gfs2_lock(struct file *file, int cmd, struct file_lock *fl)
 {
@@ -1455,10 +1249,7 @@ static void __flock_holder_uninit(struct file *file, struct gfs2_holder *fl_gh)
 {
 	struct gfs2_glock *gl = gfs2_glock_hold(fl_gh->gh_gl);
 
-	/*
-	 * Make sure gfs2_glock_put() won't sleep under the file->f_lock
-	 * spinlock.
-	 */
+	 
 
 	spin_lock(&file->f_lock);
 	gfs2_holder_uninit(fl_gh);
@@ -1540,14 +1331,7 @@ static void do_unflock(struct file *file, struct file_lock *fl)
 	mutex_unlock(&fp->f_fl_mutex);
 }
 
-/**
- * gfs2_flock - acquire/release a flock lock on a file
- * @file: the file pointer
- * @cmd: either modify or retrieve lock state, possibly wait
- * @fl: type and range of lock
- *
- * Returns: errno
- */
+ 
 
 static int gfs2_flock(struct file *file, int cmd, struct file_lock *fl)
 {
@@ -1593,7 +1377,7 @@ const struct file_operations gfs2_dir_fops = {
 	.llseek		= default_llseek,
 };
 
-#endif /* CONFIG_GFS2_FS_LOCKING_DLM */
+#endif  
 
 const struct file_operations gfs2_file_fops_nolock = {
 	.llseek		= gfs2_llseek,

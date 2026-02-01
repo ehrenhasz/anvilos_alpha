@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _XEN_SMP_H
 
 #ifdef CONFIG_SMP
@@ -31,7 +31,7 @@ struct xen_common_irq {
 	int irq;
 	char *name;
 };
-#else /* CONFIG_SMP */
+#else  
 
 static inline int xen_smp_intr_init(unsigned int cpu)
 {
@@ -44,6 +44,6 @@ static inline int xen_smp_intr_init_pv(unsigned int cpu)
 	return 0;
 }
 static inline void xen_smp_intr_free_pv(unsigned int cpu) {}
-#endif /* CONFIG_SMP */
+#endif  
 
 #endif

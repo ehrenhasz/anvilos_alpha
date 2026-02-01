@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Marvell RVU Virtual Function ethernet driver
- *
- * Copyright (C) 2020 Marvell.
- *
- */
+
+ 
 
 #include <linux/etherdevice.h>
 #include <linux/module.h>
@@ -29,7 +25,7 @@ MODULE_DESCRIPTION(DRV_STRING);
 MODULE_LICENSE("GPL v2");
 MODULE_DEVICE_TABLE(pci, otx2_vf_id_table);
 
-/* RVU VF Interrupt Vector Enumeration */
+ 
 enum {
 	RVU_VF_INT_VEC_MBOX = 0x0,
 };
@@ -114,7 +110,7 @@ static int otx2vf_process_mbox_msg_up(struct otx2_nic *vf,
 	struct msg_rsp *rsp;
 	int err;
 
-	/* Check if valid, if not reply with a invalid msg */
+	 
 	if (req->sig != OTX2_MBOX_REQ_SIG) {
 		otx2_reply_invalid_msg(&vf->mbox.mbox_up, 0, 0, req->id);
 		return -ENODEV;
@@ -179,13 +175,13 @@ static irqreturn_t otx2vf_vfaf_mbox_intr_handler(int irq, void *vf_irq)
 	struct otx2_mbox *mbox;
 	struct mbox_hdr *hdr;
 
-	/* Clear the IRQ */
+	 
 	otx2_write64(vf, RVU_VF_INT, BIT_ULL(0));
 
-	/* Read latest mbox data */
+	 
 	smp_rmb();
 
-	/* Check for PF => VF response messages */
+	 
 	mbox = &vf->mbox.mbox;
 	mdev = &mbox->dev[0];
 	otx2_sync_mbox_bbuf(mbox, 0);
@@ -200,7 +196,7 @@ static irqreturn_t otx2vf_vfaf_mbox_intr_handler(int irq, void *vf_irq)
 		       ALIGN(sizeof(struct mbox_hdr), sizeof(u64)));
 		queue_work(vf->mbox_wq, &vf->mbox.mbox_wrk);
 	}
-	/* Check for PF => VF notification messages */
+	 
 	mbox = &vf->mbox.mbox_up;
 	mdev = &mbox->dev[0];
 	otx2_sync_mbox_bbuf(mbox, 0);
@@ -221,7 +217,7 @@ static void otx2vf_disable_mbox_intr(struct otx2_nic *vf)
 {
 	int vector = pci_irq_vector(vf->pdev, RVU_VF_INT_VEC_MBOX);
 
-	/* Disable VF => PF mailbox IRQ */
+	 
 	otx2_write64(vf, RVU_VF_INT_ENA_W1C, BIT_ULL(0));
 	free_irq(vector, vf);
 }
@@ -233,7 +229,7 @@ static int otx2vf_register_mbox_intr(struct otx2_nic *vf, bool probe_pf)
 	char *irq_name;
 	int err;
 
-	/* Register mailbox interrupt handler */
+	 
 	irq_name = &hw->irq_name[RVU_VF_INT_VEC_MBOX * NAME_SIZE];
 	snprintf(irq_name, NAME_SIZE, "RVUVFAF Mbox");
 	err = request_irq(pci_irq_vector(vf->pdev, RVU_VF_INT_VEC_MBOX),
@@ -244,16 +240,14 @@ static int otx2vf_register_mbox_intr(struct otx2_nic *vf, bool probe_pf)
 		return err;
 	}
 
-	/* Enable mailbox interrupt for msgs coming from PF.
-	 * First clear to avoid spurious interrupts, if any.
-	 */
+	 
 	otx2_write64(vf, RVU_VF_INT, BIT_ULL(0));
 	otx2_write64(vf, RVU_VF_INT_ENA_W1S, BIT_ULL(0));
 
 	if (!probe_pf)
 		return 0;
 
-	/* Check mailbox communication with PF */
+	 
 	req = otx2_mbox_alloc_msg_ready(&vf->mbox);
 	if (!req) {
 		otx2vf_disable_mbox_intr(vf);
@@ -299,15 +293,10 @@ static int otx2vf_vfaf_mbox_init(struct otx2_nic *vf)
 		return -ENOMEM;
 
 	if (test_bit(CN10K_MBOX, &vf->hw.cap_flag)) {
-		/* For cn10k platform, VF mailbox region is in its BAR2
-		 * register space
-		 */
+		 
 		hwbase = vf->reg_base + RVU_VF_MBOX_REGION;
 	} else {
-		/* Mailbox is a reserved memory (in RAM) region shared between
-		 * admin function (i.e PF0) and this VF, shouldn't be mapped as
-		 * device memory to allow unaligned accesses.
-		 */
+		 
 		hwbase = ioremap_wc(pci_resource_start(vf->pdev,
 						       PCI_MBOX_BAR_NUM),
 				    pci_resource_len(vf->pdev,
@@ -354,7 +343,7 @@ static int otx2vf_open(struct net_device *netdev)
 	if (err)
 		return err;
 
-	/* LBKs do not receive link events so tell everyone we are up here */
+	 
 	vf = netdev_priv(netdev);
 	if (is_otx2_lbkvf(vf->pdev)) {
 		pr_info("%s NIC Link is UP\n", netdev->name);
@@ -383,7 +372,7 @@ static netdev_tx_t otx2vf_xmit(struct sk_buff *skb, struct net_device *netdev)
 	if (!otx2_sq_append_skb(netdev, sq, skb, qidx)) {
 		netif_tx_stop_queue(txq);
 
-		/* Check again, incase SQBs got freed up */
+		 
 		smp_mb();
 		if (((sq->num_sqbs - *sq->aura_fc_addr) * sq->sqe_per_sqb)
 							> sq->sqe_thresh)
@@ -569,7 +558,7 @@ static int otx2vf_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 	hw->max_queues = qcount;
 	hw->non_qos_queues = qcount;
 	hw->rbuf_len = OTX2_DEFAULT_RBUF_LEN;
-	/* Use CQE of 128 byte descriptor size by default */
+	 
 	hw->xqe_size = 128;
 
 	hw->irq_name = devm_kmalloc_array(&hw->pdev->dev, num_vec, NAME_SIZE,
@@ -601,17 +590,17 @@ static int otx2vf_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 	}
 
 	otx2_setup_dev_hw_settings(vf);
-	/* Init VF <=> PF mailbox stuff */
+	 
 	err = otx2vf_vfaf_mbox_init(vf);
 	if (err)
 		goto err_free_irq_vectors;
 
-	/* Register mailbox interrupt */
+	 
 	err = otx2vf_register_mbox_intr(vf, true);
 	if (err)
 		goto err_mbox_destroy;
 
-	/* Request AF to attach NPA and LIX LFs to this AF */
+	 
 	err = otx2_attach_npa_nix(vf);
 	if (err)
 		goto err_disable_mbox_intr;
@@ -628,10 +617,10 @@ static int otx2vf_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 	if (err)
 		goto err_detach_rsrc;
 
-	/* Don't check for error.  Proceed without ptp */
+	 
 	otx2_ptp_init(vf);
 
-	/* Assign default mac address */
+	 
 	otx2_get_mac_from_af(netdev);
 
 	netdev->hw_features = NETIF_F_RXCSUM | NETIF_F_IP_CSUM |
@@ -639,7 +628,7 @@ static int otx2vf_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 			      NETIF_F_SG | NETIF_F_TSO | NETIF_F_TSO6 |
 			      NETIF_F_GSO_UDP_L4;
 	netdev->features = netdev->hw_features;
-	/* Support TSO on tag interface */
+	 
 	netdev->vlan_features |= netdev->features;
 	netdev->hw_features  |= NETIF_F_HW_VLAN_CTAG_TX |
 				NETIF_F_HW_VLAN_STAG_TX;
@@ -657,12 +646,12 @@ static int otx2vf_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 	netdev->min_mtu = OTX2_MIN_MTU;
 	netdev->max_mtu = otx2_get_max_mtu(vf);
 
-	/* To distinguish, for LBK VFs set netdev name explicitly */
+	 
 	if (is_otx2_lbkvf(vf->pdev)) {
 		int n;
 
 		n = (vf->pcifunc >> RVU_PFVF_FUNC_SHIFT) & RVU_PFVF_FUNC_MASK;
-		/* Need to subtract 1 to get proper VF number */
+		 
 		n -= 1;
 		snprintf(netdev->name, sizeof(netdev->name), "lbk%d", n);
 	}
@@ -735,7 +724,7 @@ static void otx2vf_remove(struct pci_dev *pdev)
 
 	vf = netdev_priv(netdev);
 
-	/* Disable 802.3x pause frames */
+	 
 	if (vf->flags & OTX2_FLAG_RX_PAUSE_ENABLED ||
 	    (vf->flags & OTX2_FLAG_TX_PAUSE_ENABLED)) {
 		vf->flags &= ~OTX2_FLAG_RX_PAUSE_ENABLED;
@@ -744,7 +733,7 @@ static void otx2vf_remove(struct pci_dev *pdev)
 	}
 
 #ifdef CONFIG_DCB
-	/* Disable PFC config */
+	 
 	if (vf->pfc_en) {
 		vf->pfc_en = 0;
 		otx2_config_priority_flow_ctrl(vf);

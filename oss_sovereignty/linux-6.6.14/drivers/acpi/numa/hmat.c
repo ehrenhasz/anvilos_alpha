@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2019, Intel Corporation.
- *
- * Heterogeneous Memory Attributes Table (HMAT) representation
- *
- * This program parses and reports the platform's HMAT tables, and registers
- * the applicable attributes with the node's interfaces.
- */
+
+ 
 
 #define pr_fmt(fmt) "acpi/hmat: " fmt
 
@@ -39,10 +32,7 @@ static LIST_HEAD(localities);
 
 static DEFINE_MUTEX(target_lock);
 
-/*
- * The defined enum order is used to prioritize attributes to break ties when
- * selecting the best performing node.
- */
+ 
 enum locality_types {
 	WRITE_LATENCY,
 	READ_LATENCY,
@@ -141,10 +131,7 @@ static __init void alloc_memory_target(unsigned int mem_pxm,
 		INIT_LIST_HEAD(&target->caches);
 	}
 
-	/*
-	 * There are potentially multiple ranges per PXM, so record each
-	 * in the per-target memregions resource tree.
-	 */
+	 
 	if (!__request_region(&target->memregions, start, len, "memory target",
 				IORESOURCE_MEM))
 		pr_warn("failed to reserve %#llx - %#llx in pxm: %d\n",
@@ -191,18 +178,13 @@ static u32 hmat_normalize(u16 entry, u64 base, u8 type)
 {
 	u32 value;
 
-	/*
-	 * Check for invalid and overflow values
-	 */
+	 
 	if (entry == 0xffff || !entry)
 		return 0;
 	else if (base > (UINT_MAX / (entry)))
 		return 0;
 
-	/*
-	 * Divide by the base unit for version 1, convert latency from
-	 * picosenonds to nanoseconds if revision 2.
-	 */
+	 
 	value = entry * base;
 	if (hmat_revision == 1) {
 		if (value < 10)
@@ -339,7 +321,7 @@ static __init int hmat_parse_locality(union acpi_subtable_headers *header,
 				target = find_mem_target(targs[targ]);
 				if (target && target->processor_pxm == inits[init]) {
 					hmat_update_target_access(target, type, value, 0);
-					/* If the node has a CPU, update access 1 */
+					 
 					if (node_state(pxm_to_node(inits[init]), N_CPU))
 						hmat_update_target_access(target, type, value, 1);
 				}
@@ -593,11 +575,7 @@ static void hmat_register_target_initiators(struct memory_target *target)
 	int i;
 
 	mem_nid = pxm_to_node(target->memory_pxm);
-	/*
-	 * If the Address Range Structure provides a local processor pxm, link
-	 * only that one. Otherwise, find the best performance attributes and
-	 * register all initiators that match.
-	 */
+	 
 	if (target->processor_pxm != PXM_INVAL) {
 		cpu_nid = pxm_to_node(target->processor_pxm);
 		register_memory_node_under_compute_node(mem_nid, cpu_nid, 0);
@@ -611,12 +589,7 @@ static void hmat_register_target_initiators(struct memory_target *target)
 	if (list_empty(&localities))
 		return;
 
-	/*
-	 * We need the initiator list sorted so we can use bitmap_clear for
-	 * previously set initiators when we find a better memory accessor.
-	 * We'll also use the sorting to prime the candidate nodes with known
-	 * initiators.
-	 */
+	 
 	bitmap_zero(p_nodes, MAX_NUMNODES);
 	list_sort(NULL, &initiators, initiator_cmp);
 	if (initiators_to_nodemask(p_nodes) < 0)
@@ -653,7 +626,7 @@ static void hmat_register_target_initiators(struct memory_target *target)
 		}
 	}
 
-	/* Access 1 ignores Generic Initiators */
+	 
 	bitmap_zero(p_nodes, MAX_NUMNODES);
 	if (initiators_to_nodemask(p_nodes) < 0)
 		return;
@@ -708,10 +681,7 @@ static void hmat_register_target_devices(struct memory_target *target)
 {
 	struct resource *res;
 
-	/*
-	 * Do not bother creating devices if no driver is available to
-	 * consume them.
-	 */
+	 
 	if (!IS_ENABLED(CONFIG_DEV_DAX_HMEM))
 		return;
 
@@ -726,19 +696,10 @@ static void hmat_register_target(struct memory_target *target)
 {
 	int nid = pxm_to_node(target->memory_pxm);
 
-	/*
-	 * Devices may belong to either an offline or online
-	 * node, so unconditionally add them.
-	 */
+	 
 	hmat_register_target_devices(target);
 
-	/*
-	 * Skip offline nodes. This can happen when memory
-	 * marked EFI_MEMORY_SP, "specific purpose", is applied
-	 * to all the memory in a proximity domain leading to
-	 * the node being marked offline / unplugged, or if
-	 * memory-only "hotplug" node is offline.
-	 */
+	 
 	if (nid == NUMA_NO_NODE || !node_online(nid))
 		return;
 
@@ -861,7 +822,7 @@ static __init int hmat_init(void)
 	}
 	hmat_register_targets();
 
-	/* Keep the table and structures if the notifier may use them */
+	 
 	if (!hotplug_memory_notifier(hmat_callback, HMAT_CALLBACK_PRI))
 		return 0;
 out_put:

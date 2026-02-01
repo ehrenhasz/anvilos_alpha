@@ -1,27 +1,4 @@
-/*
- * Copyright 2020 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 #include "dcn302_hwseq.h"
 
@@ -53,7 +30,7 @@ void dcn302_dpp_pg_control(struct dce_hwseq *hws, unsigned int dpp_inst, bool po
 		return;
 
 	switch (dpp_inst) {
-	case 0: /* DPP0 */
+	case 0:  
 		REG_UPDATE(DOMAIN1_PG_CONFIG,
 				DOMAIN1_POWER_GATE, power_gate);
 
@@ -61,7 +38,7 @@ void dcn302_dpp_pg_control(struct dce_hwseq *hws, unsigned int dpp_inst, bool po
 				DOMAIN1_PGFSM_PWR_STATUS, pwr_status,
 				1, 1000);
 		break;
-	case 1: /* DPP1 */
+	case 1:  
 		REG_UPDATE(DOMAIN3_PG_CONFIG,
 				DOMAIN3_POWER_GATE, power_gate);
 
@@ -69,7 +46,7 @@ void dcn302_dpp_pg_control(struct dce_hwseq *hws, unsigned int dpp_inst, bool po
 				DOMAIN3_PGFSM_PWR_STATUS, pwr_status,
 				1, 1000);
 		break;
-	case 2: /* DPP2 */
+	case 2:  
 		REG_UPDATE(DOMAIN5_PG_CONFIG,
 				DOMAIN5_POWER_GATE, power_gate);
 
@@ -77,7 +54,7 @@ void dcn302_dpp_pg_control(struct dce_hwseq *hws, unsigned int dpp_inst, bool po
 				DOMAIN5_PGFSM_PWR_STATUS, pwr_status,
 				1, 1000);
 		break;
-	case 3: /* DPP3 */
+	case 3:  
 		REG_UPDATE(DOMAIN7_PG_CONFIG,
 				DOMAIN7_POWER_GATE, power_gate);
 
@@ -85,7 +62,7 @@ void dcn302_dpp_pg_control(struct dce_hwseq *hws, unsigned int dpp_inst, bool po
 				DOMAIN7_PGFSM_PWR_STATUS, pwr_status,
 				1, 1000);
 		break;
-	case 4: /* DPP4 */
+	case 4:  
 		REG_UPDATE(DOMAIN9_PG_CONFIG,
 				DOMAIN9_POWER_GATE, power_gate);
 
@@ -110,7 +87,7 @@ void dcn302_hubp_pg_control(struct dce_hwseq *hws, unsigned int hubp_inst, bool 
 		return;
 
 	switch (hubp_inst) {
-	case 0: /* DCHUBP0 */
+	case 0:  
 		REG_UPDATE(DOMAIN0_PG_CONFIG,
 				DOMAIN0_POWER_GATE, power_gate);
 
@@ -118,7 +95,7 @@ void dcn302_hubp_pg_control(struct dce_hwseq *hws, unsigned int hubp_inst, bool 
 				DOMAIN0_PGFSM_PWR_STATUS, pwr_status,
 				1, 1000);
 		break;
-	case 1: /* DCHUBP1 */
+	case 1:  
 		REG_UPDATE(DOMAIN2_PG_CONFIG,
 				DOMAIN2_POWER_GATE, power_gate);
 
@@ -126,7 +103,7 @@ void dcn302_hubp_pg_control(struct dce_hwseq *hws, unsigned int hubp_inst, bool 
 				DOMAIN2_PGFSM_PWR_STATUS, pwr_status,
 				1, 1000);
 		break;
-	case 2: /* DCHUBP2 */
+	case 2:  
 		REG_UPDATE(DOMAIN4_PG_CONFIG,
 				DOMAIN4_POWER_GATE, power_gate);
 
@@ -134,7 +111,7 @@ void dcn302_hubp_pg_control(struct dce_hwseq *hws, unsigned int hubp_inst, bool 
 				DOMAIN4_PGFSM_PWR_STATUS, pwr_status,
 				1, 1000);
 		break;
-	case 3: /* DCHUBP3 */
+	case 3:  
 		REG_UPDATE(DOMAIN6_PG_CONFIG,
 				DOMAIN6_POWER_GATE, power_gate);
 
@@ -142,7 +119,7 @@ void dcn302_hubp_pg_control(struct dce_hwseq *hws, unsigned int hubp_inst, bool 
 				DOMAIN6_PGFSM_PWR_STATUS, pwr_status,
 				1, 1000);
 		break;
-	case 4: /* DCHUBP4 */
+	case 4:  
 		REG_UPDATE(DOMAIN8_PG_CONFIG,
 				DOMAIN8_POWER_GATE, power_gate);
 
@@ -173,7 +150,7 @@ void dcn302_dsc_pg_control(struct dce_hwseq *hws, unsigned int dsc_inst, bool po
 		REG_SET(DC_IP_REQUEST_CNTL, 0, IP_REQUEST_EN, 1);
 
 	switch (dsc_inst) {
-	case 0: /* DSC0 */
+	case 0:  
 		REG_UPDATE(DOMAIN16_PG_CONFIG,
 				DOMAIN16_POWER_GATE, power_gate);
 
@@ -181,7 +158,7 @@ void dcn302_dsc_pg_control(struct dce_hwseq *hws, unsigned int dsc_inst, bool po
 				DOMAIN16_PGFSM_PWR_STATUS, pwr_status,
 				1, 1000);
 		break;
-	case 1: /* DSC1 */
+	case 1:  
 		REG_UPDATE(DOMAIN17_PG_CONFIG,
 				DOMAIN17_POWER_GATE, power_gate);
 
@@ -189,7 +166,7 @@ void dcn302_dsc_pg_control(struct dce_hwseq *hws, unsigned int dsc_inst, bool po
 				DOMAIN17_PGFSM_PWR_STATUS, pwr_status,
 				1, 1000);
 		break;
-	case 2: /* DSC2 */
+	case 2:  
 		REG_UPDATE(DOMAIN18_PG_CONFIG,
 				DOMAIN18_POWER_GATE, power_gate);
 
@@ -197,7 +174,7 @@ void dcn302_dsc_pg_control(struct dce_hwseq *hws, unsigned int dsc_inst, bool po
 				DOMAIN18_PGFSM_PWR_STATUS, pwr_status,
 				1, 1000);
 		break;
-	case 3: /* DSC3 */
+	case 3:  
 		REG_UPDATE(DOMAIN19_PG_CONFIG,
 				DOMAIN19_POWER_GATE, power_gate);
 
@@ -205,7 +182,7 @@ void dcn302_dsc_pg_control(struct dce_hwseq *hws, unsigned int dsc_inst, bool po
 				DOMAIN19_PGFSM_PWR_STATUS, pwr_status,
 				1, 1000);
 		break;
-	case 4: /* DSC4 */
+	case 4:  
 		REG_UPDATE(DOMAIN20_PG_CONFIG,
 				DOMAIN20_POWER_GATE, power_gate);
 

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * linux/drivers/pcmcia/sa1100_neponset.c
- *
- * Neponset PCMCIA specific routines
- */
+
+ 
 #include <linux/module.h>
 #include <linux/kernel.h>
 #include <linux/device.h>
@@ -15,29 +11,7 @@
 #include "sa1111_generic.h"
 #include "max1600.h"
 
-/*
- * Neponset uses the Maxim MAX1600, with the following connections:
- *
- *   MAX1600      Neponset
- *
- *    A0VCC        SA-1111 GPIO A<1>
- *    A1VCC        SA-1111 GPIO A<0>
- *    A0VPP        CPLD NCR A0VPP
- *    A1VPP        CPLD NCR A1VPP
- *    B0VCC        SA-1111 GPIO A<2>
- *    B1VCC        SA-1111 GPIO A<3>
- *    B0VPP        ground (slot B is CF)
- *    B1VPP        ground (slot B is CF)
- *
- *     VX          VCC (5V)
- *     VY          VCC3_3 (3.3V)
- *     12INA       12V
- *     12INB       ground (slot B is CF)
- *
- * The MAX1600 CODE pin is tied to ground, placing the device in 
- * "Standard Intel code" mode. Refer to the Maxim data sheet for
- * the corresponding truth table.
- */
+ 
 static int neponset_pcmcia_hw_init(struct soc_pcmcia_socket *skt)
 {
 	struct max1600 *m;

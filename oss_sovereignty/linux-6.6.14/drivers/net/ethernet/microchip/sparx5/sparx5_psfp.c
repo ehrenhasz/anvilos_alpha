@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/* Microchip Sparx5 Switch driver
- *
- * Copyright (c) 2023 Microchip Technology Inc. and its subsidiaries.
- */
+
+ 
 
 #include "sparx5_main_regs.h"
 #include "sparx5_main.h"
@@ -11,13 +8,13 @@
 #define SPX5_PSFP_SG_CONFIG_CHANGE_SLEEP 1000
 #define SPX5_PSFP_SG_CONFIG_CHANGE_TIMEO 100000
 
-/* Pool of available service policers */
+ 
 static struct sparx5_pool_entry sparx5_psfp_fm_pool[SPX5_SDLB_CNT];
 
-/* Pool of available stream gates */
+ 
 static struct sparx5_pool_entry sparx5_psfp_sg_pool[SPX5_PSFP_SG_CNT];
 
-/* Pool of available stream filters */
+ 
 static struct sparx5_pool_entry sparx5_psfp_sf_pool[SPX5_PSFP_SF_CNT];
 
 static int sparx5_psfp_sf_get(u32 *id)
@@ -79,7 +76,7 @@ void sparx5_isdx_conf_set(struct sparx5 *sparx5, u32 isdx, u32 sfid, u32 fmid)
 		 sparx5, ANA_L2_DLB_CFG(isdx));
 }
 
-/* Internal priority value to internal priority selector */
+ 
 static u32 sparx5_psfp_ipv_to_ips(s32 ipv)
 {
 	return ipv > 0 ? (ipv | BIT(3)) : 0;
@@ -117,7 +114,7 @@ static void sparx5_psfp_sg_config_change(struct sparx5 *sparx5, u32 id)
 static void sparx5_psfp_sf_set(struct sparx5 *sparx5, u32 id,
 			       const struct sparx5_psfp_sf *sf)
 {
-	/* Configure stream gate*/
+	 
 	spx5_rmw(ANA_AC_TSN_SF_CFG_TSN_SGID_SET(sf->sgid) |
 		ANA_AC_TSN_SF_CFG_TSN_MAX_SDU_SET(sf->max_sdu) |
 		ANA_AC_TSN_SF_CFG_BLOCK_OVERSIZE_STATE_SET(sf->sblock_osize) |
@@ -139,11 +136,11 @@ static int sparx5_psfp_sg_set(struct sparx5 *sparx5, u32 id,
 	base_lsb = sg->basetime.tv_sec & 0xffffffff;
 	base_msb = sg->basetime.tv_sec >> 32;
 
-	/* Set stream gate id */
+	 
 	spx5_wr(ANA_AC_SG_ACCESS_CTRL_SGID_SET(id), sparx5,
 		ANA_AC_SG_ACCESS_CTRL);
 
-	/* Write AdminPSFP values */
+	 
 	spx5_wr(sg->basetime.tv_nsec, sparx5, ANA_AC_SG_CONFIG_REG_1);
 	spx5_wr(base_lsb, sparx5, ANA_AC_SG_CONFIG_REG_2);
 
@@ -162,22 +159,22 @@ static int sparx5_psfp_sg_set(struct sparx5 *sparx5, u32 id,
 	spx5_wr(sg->cycletime, sparx5, ANA_AC_SG_CONFIG_REG_4);
 	spx5_wr(sg->cycletimeext, sparx5, ANA_AC_SG_CONFIG_REG_5);
 
-	/* For each scheduling entry */
+	 
 	for (i = 0; i < sg->num_entries; i++) {
 		gce = &sg->gce[i];
 		ips = sparx5_psfp_ipv_to_ips(gce->ipv);
-		/* hardware needs TimeInterval to be cumulative */
+		 
 		accum_time_interval += gce->interval;
-		/* Set gate state */
+		 
 		spx5_wr(ANA_AC_SG_GCL_GS_CONFIG_IPS_SET(ips) |
 			ANA_AC_SG_GCL_GS_CONFIG_GATE_STATE_SET(gce->gate_state),
 			sparx5, ANA_AC_SG_GCL_GS_CONFIG(i));
 
-		/* Set time interval */
+		 
 		spx5_wr(accum_time_interval, sparx5,
 			ANA_AC_SG_GCL_TI_CONFIG(i));
 
-		/* Set maximum octets */
+		 
 		spx5_wr(gce->maxoctets, sparx5, ANA_AC_SG_GCL_OCT_CONFIG(i));
 	}
 
@@ -232,17 +229,17 @@ int sparx5_psfp_sg_add(struct sparx5 *sparx5, u32 uidx,
 	ret = sparx5_psfp_sg_get(uidx, id);
 	if (ret < 0)
 		return ret;
-	/* Was already in use, no need to reconfigure */
+	 
 	if (ret > 1)
 		return 0;
 
-	/* Calculate basetime for this stream gate */
+	 
 	sparx5_new_base_time(sparx5, sg->cycletime, 0, &basetime);
 	sg->basetime = ktime_to_timespec64(basetime);
 
 	sparx5_psfp_sg_set(sparx5, *id, sg);
 
-	/* Signal hardware to copy AdminPSFP values into OperPSFP values */
+	 
 	sparx5_psfp_sg_config_change(sparx5, *id);
 
 	return 0;
@@ -256,7 +253,7 @@ int sparx5_psfp_sg_del(struct sparx5 *sparx5, u32 id)
 	ret = sparx5_psfp_sg_put(id);
 	if (ret < 0)
 		return ret;
-	/* Stream gate still in use ? */
+	 
 	if (ret > 0)
 		return 0;
 
@@ -269,11 +266,11 @@ int sparx5_psfp_fm_add(struct sparx5 *sparx5, u32 uidx,
 	struct sparx5_policer *pol = &fm->pol;
 	int ret;
 
-	/* Get flow meter */
+	 
 	ret = sparx5_psfp_fm_get(uidx, &fm->pol.idx);
 	if (ret < 0)
 		return ret;
-	/* Was already in use, no need to reconfigure */
+	 
 	if (ret > 1)
 		return 0;
 
@@ -298,7 +295,7 @@ int sparx5_psfp_fm_del(struct sparx5 *sparx5, u32 id)
 				     .pol.type = SPX5_POL_SERVICE };
 	int ret;
 
-	/* Find the group that this lb belongs to */
+	 
 	ret = sparx5_sdlb_group_get_by_index(sparx5, id, &fm.pol.group);
 	if (ret < 0)
 		return ret;
@@ -306,7 +303,7 @@ int sparx5_psfp_fm_del(struct sparx5 *sparx5, u32 id)
 	ret = sparx5_psfp_fm_put(id);
 	if (ret < 0)
 		return ret;
-	/* Do not reset flow-meter if still in use. */
+	 
 	if (ret > 0)
 		return 0;
 

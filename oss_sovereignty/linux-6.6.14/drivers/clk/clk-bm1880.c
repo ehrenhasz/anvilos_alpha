@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Bitmain BM1880 SoC clock driver
- *
- * Copyright (c) 2019 Linaro Ltd.
- * Author: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/io.h>
@@ -198,10 +193,7 @@ static struct clk_parent_data bm1880_pll_parent[] = {
 	{ .fw_name = "osc", .name = "osc" },
 };
 
-/*
- * All PLL clocks are marked as CRITICAL, hence they are very crucial
- * for the functioning of the SoC
- */
+ 
 static struct bm1880_pll_hw_clock bm1880_pll_clks[] = {
 	CLK_PLL(BM1880_CLK_MPLL, "clk_mpll", bm1880_pll_parent,
 		BM1880_CLK_MPLL_CTL, 0),
@@ -213,19 +205,13 @@ static struct bm1880_pll_hw_clock bm1880_pll_clks[] = {
 		BM1880_CLK_DDRPLL_CTL, 0),
 };
 
-/*
- * Clocks marked as CRITICAL are needed for the proper functioning
- * of the SoC.
- */
+ 
 static const struct bm1880_gate_clock bm1880_gate_clks[] = {
 	{ BM1880_CLK_AHB_ROM, "clk_ahb_rom", "clk_mux_axi6",
 	  BM1880_CLK_ENABLE0, 2, 0 },
 	{ BM1880_CLK_AXI_SRAM, "clk_axi_sram", "clk_axi1",
 	  BM1880_CLK_ENABLE0, 3, 0 },
-	/*
-	 * Since this clock is sourcing the DDR memory, let's mark it as
-	 * critical to avoid gating.
-	 */
+	 
 	{ BM1880_CLK_DDR_AXI, "clk_ddr_axi", "clk_mux_axi6",
 	  BM1880_CLK_ENABLE0, 4, CLK_IS_CRITICAL },
 	{ BM1880_CLK_APB_EFUSE, "clk_apb_efuse", "clk_mux_axi6",
@@ -240,7 +226,7 @@ static const struct bm1880_gate_clock bm1880_gate_clks[] = {
 	  BM1880_CLK_ENABLE0, 16, 0 },
 	{ BM1880_CLK_AXI1_GDMA, "clk_axi1_gdma", "clk_axi1",
 	  BM1880_CLK_ENABLE0, 17, 0 },
-	/* Don't gate GPIO clocks as it is not owned by the GPIO driver */
+	 
 	{ BM1880_CLK_APB_GPIO, "clk_apb_gpio", "clk_mux_axi6",
 	  BM1880_CLK_ENABLE0, 18, CLK_IGNORE_UNUSED },
 	{ BM1880_CLK_APB_GPIO_INTR, "clk_apb_gpio_intr", "clk_mux_axi6",
@@ -249,10 +235,7 @@ static const struct bm1880_gate_clock bm1880_gate_clks[] = {
 	  BM1880_CLK_ENABLE0, 21, 0 },
 	{ BM1880_CLK_AHB_SF, "clk_ahb_sf", "clk_mux_axi6",
 	  BM1880_CLK_ENABLE0, 22, 0 },
-	/*
-	 * Not sure which module this clock is sourcing but gating this clock
-	 * prevents the system from booting. So, let's mark it as critical.
-	 */
+	 
 	{ BM1880_CLK_SDMA_AXI, "clk_sdma_axi", "clk_axi5",
 	  BM1880_CLK_ENABLE0, 23, CLK_IS_CRITICAL },
 	{ BM1880_CLK_APB_I2C, "clk_apb_i2c", "clk_mux_axi6",
@@ -364,10 +347,7 @@ static const struct clk_div_table bm1880_div_table_4[] = {
 	{ 0, 0 }
 };
 
-/*
- * Clocks marked as CRITICAL are needed for the proper functioning
- * of the SoC.
- */
+ 
 static struct bm1880_div_hw_clock bm1880_div_clks[] = {
 	CLK_DIV(BM1880_CLK_DIV_0_RV, "clk_div_0_rv", &bm1880_pll_clks[1].hw,
 		BM1880_CLK_DIV12, 16, 5, 1, bm1880_div_table_0, 0),
@@ -391,15 +371,9 @@ static struct bm1880_div_hw_clock bm1880_div_clks[] = {
 		BM1880_CLK_DIV18, 16, 7, 125, bm1880_div_table_1, 0),
 };
 
-/*
- * Clocks marked as CRITICAL are all needed for the proper functioning
- * of the SoC.
- */
+ 
 static struct bm1880_composite_clock bm1880_composite_clks[] = {
-	/*
-	 * Since clk_a53 and clk_50m_a53 clocks are sourcing the CPU core,
-	 * let's mark them as critical to avoid gating.
-	 */
+	 
 	GATE_MUX(BM1880_CLK_A53, "clk_a53", clk_a53_parents,
 		 BM1880_CLK_ENABLE0, 0, BM1880_CLK_SELECT, 0,
 		 CLK_IS_CRITICAL),
@@ -427,7 +401,7 @@ static struct bm1880_composite_clock bm1880_composite_clks[] = {
 	GATE_DIV(BM1880_CLK_500M_ETH1, "clk_500m_eth1", "clk_fpll",
 		 BM1880_CLK_ENABLE0, 15, BM1880_CLK_DIV7, 16, 5, 3,
 		 bm1880_div_table_0, 0),
-	/* Don't gate GPIO clocks as it is not owned by the GPIO driver */
+	 
 	GATE_DIV(BM1880_CLK_GPIO_DB, "clk_gpio_db", "clk_div_12m_usb",
 		 BM1880_CLK_ENABLE0, 20, BM1880_CLK_DIV8, 16, 16, 120,
 		 bm1880_div_table_4, CLK_IGNORE_UNUSED),

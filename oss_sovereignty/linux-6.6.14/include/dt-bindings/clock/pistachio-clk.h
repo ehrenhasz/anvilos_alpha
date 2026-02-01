@@ -1,12 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2014 Google, Inc.
- */
+ 
+ 
 
 #ifndef _DT_BINDINGS_CLOCK_PISTACHIO_H
 #define _DT_BINDINGS_CLOCK_PISTACHIO_H
 
-/* PLLs */
+ 
 #define CLK_MIPS_PLL			0
 #define CLK_AUDIO_PLL			1
 #define CLK_RPU_V_PLL			2
@@ -15,11 +13,11 @@
 #define CLK_WIFI_PLL			5
 #define CLK_BT_PLL			6
 
-/* Fixed-factor clocks */
+ 
 #define CLK_WIFI_DIV4			16
 #define CLK_WIFI_DIV8			17
 
-/* Gate clocks */
+ 
 #define CLK_MIPS			32
 #define CLK_AUDIO_IN			33
 #define CLK_AUDIO			34
@@ -50,7 +48,7 @@
 #define CLK_BT_DIV8			59
 #define CLK_BT_1MHZ			60
 
-/* Divider clocks */
+ 
 #define CLK_MIPS_INTERNAL_DIV		64
 #define CLK_MIPS_DIV			65
 #define CLK_AUDIO_DIV			66
@@ -83,7 +81,7 @@
 #define CLK_BT_1MHZ_INTERNAL_DIV	93
 #define CLK_BT_1MHZ_DIV			94
 
-/* Mux clocks */
+ 
 #define CLK_AUDIO_REF_MUX		96
 #define CLK_MIPS_PLL_MUX		97
 #define CLK_AUDIO_PLL_MUX		98
@@ -104,7 +102,7 @@
 
 #define CLK_NR_CLKS			113
 
-/* Peripheral gate clocks */
+ 
 #define PERIPH_CLK_SYS			0
 #define PERIPH_CLK_SYS_BUS		1
 #define PERIPH_CLK_DDR			2
@@ -120,7 +118,7 @@
 #define PERIPH_CLK_I2C2			12
 #define PERIPH_CLK_I2C3			13
 
-/* Peripheral divider clocks */
+ 
 #define PERIPH_CLK_ROM_DIV		32
 #define PERIPH_CLK_COUNTER_FAST_DIV	33
 #define PERIPH_CLK_COUNTER_SLOW_PRE_DIV	34
@@ -144,7 +142,7 @@
 
 #define PERIPH_CLK_NR_CLKS		52
 
-/* System gate clocks */
+ 
 #define SYS_CLK_I2C0			0
 #define SYS_CLK_I2C1			1
 #define SYS_CLK_I2C2			2
@@ -171,10 +169,10 @@
 
 #define SYS_CLK_NR_CLKS			28
 
-/* Gates for external input clocks */
+ 
 #define EXT_CLK_AUDIO_IN		0
 #define EXT_CLK_ENET_IN			1
 
 #define EXT_CLK_NR_CLKS			2
 
-#endif /* _DT_BINDINGS_CLOCK_PISTACHIO_H */
+#endif  

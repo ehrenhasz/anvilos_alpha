@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* (C) 1999-2001 Paul `Rusty' Russell
- * (C) 2002-2004 Netfilter Core Team <coreteam@netfilter.org>
- */
+
+ 
 
 #include <linux/types.h>
 #include <linux/ip.h>
@@ -71,15 +69,14 @@ static unsigned int ipv4_conntrack_defrag(void *priv,
 
 #if IS_ENABLED(CONFIG_NF_CONNTRACK)
 #if !IS_ENABLED(CONFIG_NF_NAT)
-	/* Previously seen (loopback)?  Ignore.  Do this before
-	   fragment check. */
+	 
 	if (skb_nfct(skb) && !nf_ct_is_template((struct nf_conn *)skb_nfct(skb)))
 		return NF_ACCEPT;
 #endif
 	if (skb->_nfct == IP_CT_UNTRACKED)
 		return NF_ACCEPT;
 #endif
-	/* Gather fragments. */
+	 
 	if (ip_is_fragment(ip_hdr(skb))) {
 		enum ip_defrag_users user =
 			nf_ct_defrag_user(state->hook, skb);

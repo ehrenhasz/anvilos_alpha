@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
-    MaxLinear MXL5005S VSB/QAM/DVBT tuner driver
-
-    Copyright (C) 2008 MaxLinear
-    Copyright (C) 2008 Steven Toth <stoth@linuxtv.org>
-
-
-*/
+ 
+ 
 
 #ifndef __MXL5005S_H
 #define __MXL5005S_H
@@ -16,7 +9,7 @@
 
 struct mxl5005s_config {
 
-	/* 7 bit i2c address */
+	 
 	u8 i2c_address;
 
 #define IF_FREQ_4570000HZ    4570000
@@ -96,11 +89,10 @@ struct mxl5005s_config {
 #define MXL_LOW_IF  1
 	u8 if_mode;
 
-	/* Some boards need to override the built-in logic for determining
-	   the gain when in QAM mode (the HVR-1600 is one such case) */
+	 
 	u8 qam_gain;
 
-	/* Stuff I don't know what to do with */
+	 
 	u8 AgcMasterByte;
 };
 
@@ -116,7 +108,7 @@ static inline struct dvb_frontend *mxl5005s_attach(struct dvb_frontend *fe,
 	printk(KERN_WARNING "%s: driver disabled by Kconfig\n", __func__);
 	return NULL;
 }
-#endif /* CONFIG_DVB_TUNER_MXL5005S */
+#endif  
 
-#endif /* __MXL5005S_H */
+#endif  
 

@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *  thermal.c - sysfs interface of thermal devices
- *
- *  Copyright (C) 2016 Eduardo Valentin <edubezval@gmail.com>
- *
- *  Highly based on original thermal_core.c
- *  Copyright (C) 2008 Intel Corp
- *  Copyright (C) 2008 Zhang Rui <rui.zhang@intel.com>
- *  Copyright (C) 2008 Sujith Thomas <sujith.thomas@intel.com>
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -21,7 +12,7 @@
 
 #include "thermal_core.h"
 
-/* sys I/F for thermal zone */
+ 
 
 static ssize_t
 type_show(struct device *dev, struct device_attribute *attr, char *buf)
@@ -368,21 +359,17 @@ create_s32_tzp_attr(slope);
 create_s32_tzp_attr(offset);
 #undef create_s32_tzp_attr
 
-/*
- * These are thermal zone device attributes that will always be present.
- * All the attributes created for tzp (create_s32_tzp_attr) also are always
- * present on the sysfs interface.
- */
+ 
 static DEVICE_ATTR_RO(type);
 static DEVICE_ATTR_RO(temp);
 static DEVICE_ATTR_RW(policy);
 static DEVICE_ATTR_RO(available_policies);
 static DEVICE_ATTR_RW(sustainable_power);
 
-/* These thermal zone device attributes are created based on conditions */
+ 
 static DEVICE_ATTR_RW(mode);
 
-/* These attributes are unconditionally added to a thermal zone */
+ 
 static struct attribute *thermal_zone_dev_attrs[] = {
 	&dev_attr_type.attr,
 	&dev_attr_temp.attr,
@@ -418,25 +405,16 @@ static const struct attribute_group thermal_zone_mode_attribute_group = {
 static const struct attribute_group *thermal_zone_attribute_groups[] = {
 	&thermal_zone_attribute_group,
 	&thermal_zone_mode_attribute_group,
-	/* This is not NULL terminated as we create the group dynamically */
+	 
 };
 
-/**
- * create_trip_attrs() - create attributes for trip points
- * @tz:		the thermal zone device
- * @mask:	Writeable trip point bitmap.
- *
- * helper function to instantiate sysfs entries for every trip
- * point and its properties of a struct thermal_zone_device.
- *
- * Return: 0 on success, the proper error value otherwise.
- */
+ 
 static int create_trip_attrs(struct thermal_zone_device *tz, int mask)
 {
 	struct attribute **attrs;
 	int indx;
 
-	/* This function works only for zones with at least one trip */
+	 
 	if (tz->num_trips <= 0)
 		return -EINVAL;
 
@@ -470,7 +448,7 @@ static int create_trip_attrs(struct thermal_zone_device *tz, int mask)
 	}
 
 	for (indx = 0; indx < tz->num_trips; indx++) {
-		/* create trip type attribute */
+		 
 		snprintf(tz->trip_type_attrs[indx].name, THERMAL_NAME_LENGTH,
 			 "trip_point_%d_type", indx);
 
@@ -481,7 +459,7 @@ static int create_trip_attrs(struct thermal_zone_device *tz, int mask)
 		tz->trip_type_attrs[indx].attr.show = trip_point_type_show;
 		attrs[indx] = &tz->trip_type_attrs[indx].attr.attr;
 
-		/* create trip temp attribute */
+		 
 		snprintf(tz->trip_temp_attrs[indx].name, THERMAL_NAME_LENGTH,
 			 "trip_point_%d_temp", indx);
 
@@ -521,12 +499,7 @@ static int create_trip_attrs(struct thermal_zone_device *tz, int mask)
 	return 0;
 }
 
-/**
- * destroy_trip_attrs() - destroy attributes for trip points
- * @tz:		the thermal zone device
- *
- * helper function to free resources allocated by create_trip_attrs()
- */
+ 
 static void destroy_trip_attrs(struct thermal_zone_device *tz)
 {
 	if (!tz)
@@ -544,9 +517,9 @@ int thermal_zone_create_device_groups(struct thermal_zone_device *tz,
 	const struct attribute_group **groups;
 	int i, size, result;
 
-	/* we need one extra for trips and the NULL to terminate the array */
+	 
 	size = ARRAY_SIZE(thermal_zone_attribute_groups) + 2;
-	/* This also takes care of API requirement to be NULL terminated */
+	 
 	groups = kcalloc(size, sizeof(*groups), GFP_KERNEL);
 	if (!groups)
 		return -ENOMEM;
@@ -581,7 +554,7 @@ void thermal_zone_destroy_device_groups(struct thermal_zone_device *tz)
 	kfree(tz->device.groups);
 }
 
-/* sys I/F for cooling device */
+ 
 static ssize_t
 cdev_type_show(struct device *dev, struct device_attribute *attr, char *buf)
 {
@@ -625,7 +598,7 @@ cur_state_store(struct device *dev, struct device_attribute *attr,
 	if ((long)state < 0)
 		return -EINVAL;
 
-	/* Requested state should be less than max_state + 1 */
+	 
 	if (state > cdev->max_state)
 		return -EINVAL;
 
@@ -657,7 +630,7 @@ static const struct attribute_group cooling_device_attr_group = {
 
 static const struct attribute_group *cooling_device_attr_groups[] = {
 	&cooling_device_attr_group,
-	NULL, /* Space allocated for cooling_device_stats_attr_group */
+	NULL,  
 	NULL,
 };
 
@@ -873,7 +846,7 @@ static void cooling_device_stats_setup(struct thermal_cooling_device *cdev)
 {
 	const struct attribute_group *stats_attr_group = NULL;
 	struct cooling_dev_stats *stats;
-	/* Total number of states is highest state + 1 */
+	 
 	unsigned long states = cdev->max_state + 1;
 	int var;
 
@@ -895,7 +868,7 @@ static void cooling_device_stats_setup(struct thermal_cooling_device *cdev)
 	stats_attr_group = &cooling_device_stats_attr_group;
 
 out:
-	/* Fill the empty slot left in cooling_device_attr_groups */
+	 
 	var = ARRAY_SIZE(cooling_device_attr_groups) - 2;
 	cooling_device_attr_groups[var] = stats_attr_group;
 }
@@ -913,7 +886,7 @@ cooling_device_stats_setup(struct thermal_cooling_device *cdev) {}
 static inline void
 cooling_device_stats_destroy(struct thermal_cooling_device *cdev) {}
 
-#endif /* CONFIG_THERMAL_STATISTICS */
+#endif  
 
 void thermal_cooling_device_setup_sysfs(struct thermal_cooling_device *cdev)
 {
@@ -934,7 +907,7 @@ void thermal_cooling_device_stats_reinit(struct thermal_cooling_device *cdev)
 	cooling_device_stats_setup(cdev);
 }
 
-/* these helper will be used only at the time of bindig */
+ 
 ssize_t
 trip_point_show(struct device *dev, struct device_attribute *attr, char *buf)
 {

@@ -1,31 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Intel INT0002 "Virtual GPIO" driver
- *
- * Copyright (C) 2017 Hans de Goede <hdegoede@redhat.com>
- *
- * Loosely based on android x86 kernel code which is:
- *
- * Copyright (c) 2014, Intel Corporation.
- *
- * Author: Dyut Kumar Sil <dyut.k.sil@intel.com>
- *
- * Some peripherals on Bay Trail and Cherry Trail platforms signal a Power
- * Management Event (PME) to the Power Management Controller (PMC) to wakeup
- * the system. When this happens software needs to clear the PME bus 0 status
- * bit in the GPE0a_STS register to avoid an IRQ storm on IRQ 9.
- *
- * This is modelled in ACPI through the INT0002 ACPI device, which is
- * called a "Virtual GPIO controller" in ACPI because it defines the event
- * handler to call when the PME triggers through _AEI and _L02 / _E02
- * methods as would be done for a real GPIO interrupt in ACPI. Note this
- * is a hack to define an AML event handler for the PME while using existing
- * ACPI mechanisms, this is not a real GPIO at all.
- *
- * This driver will bind to the INT0002 device, and register as a GPIO
- * controller, letting gpiolib-acpi.c call the _L02 handler as it would
- * for a real GPIO controller.
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/bitmap.h>
@@ -41,7 +15,7 @@
 
 #define DRV_NAME			"INT0002 Virtual GPIO"
 
-/* For some reason the virtual GPIO pin tied to the GPE is numbered pin 2 */
+ 
 #define GPE0A_PME_B0_VIRT_GPIO_PIN	2
 
 #define GPE0A_PME_B0_STS_BIT		BIT(13)
@@ -55,10 +29,7 @@ struct int0002_data {
 	int wake_enable_count;
 };
 
-/*
- * As this is not a real GPIO at all, but just a hack to model an event in
- * ACPI the get / set functions are dummy functions.
- */
+ 
 
 static int int0002_gpio_get(struct gpio_chip *chip, unsigned int offset)
 {
@@ -104,10 +75,7 @@ static int int0002_irq_set_wake(struct irq_data *data, unsigned int on)
 	struct gpio_chip *chip = irq_data_get_irq_chip_data(data);
 	struct int0002_data *int0002 = container_of(chip, struct int0002_data, chip);
 
-	/*
-	 * Applying of the wakeup flag to our parent IRQ is delayed till system
-	 * suspend, because we only want to do this when using s2idle.
-	 */
+	 
 	if (on)
 		int0002->wake_enable_count++;
 	else
@@ -163,7 +131,7 @@ static int int0002_probe(struct platform_device *pdev)
 	struct gpio_chip *chip;
 	int irq, ret;
 
-	/* Menlow has a different INT0002 device? <sigh> */
+	 
 	if (!soc_intel_is_byt() && !soc_intel_is_cht())
 		return -ENODEV;
 
@@ -189,12 +157,7 @@ static int int0002_probe(struct platform_device *pdev)
 	chip->ngpio = GPE0A_PME_B0_VIRT_GPIO_PIN + 1;
 	chip->irq.init_valid_mask = int0002_init_irq_valid_mask;
 
-	/*
-	 * We directly request the irq here instead of passing a flow-handler
-	 * to gpiochip_set_chained_irqchip, because the irq is shared.
-	 * FIXME: augment this if we managed to pull handling of shared
-	 * IRQs into gpiolib.
-	 */
+	 
 	ret = devm_request_irq(dev, irq, int0002_irq,
 			       IRQF_SHARED, "INT0002", chip);
 	if (ret) {
@@ -204,7 +167,7 @@ static int int0002_probe(struct platform_device *pdev)
 
 	girq = &chip->irq;
 	girq->chip = &int0002_irqchip;
-	/* This let us handle the parent IRQ in the driver */
+	 
 	girq->parent_handler = NULL;
 	girq->num_parents = 0;
 	girq->parents = NULL;
@@ -233,11 +196,7 @@ static int int0002_suspend(struct device *dev)
 {
 	struct int0002_data *int0002 = dev_get_drvdata(dev);
 
-	/*
-	 * The INT0002 parent IRQ is often shared with the ACPI GPE IRQ, don't
-	 * muck with it when firmware based suspend is used, otherwise we may
-	 * cause spurious wakeups from firmware managed suspend.
-	 */
+	 
 	if (!pm_suspend_via_firmware() && int0002->wake_enable_count)
 		enable_irq_wake(int0002->parent_irq);
 

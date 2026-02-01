@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * HiSilicon PA uncore Hardware event counters support
- *
- * Copyright (C) 2020 HiSilicon Limited
- * Author: Shaokun Zhang <zhangshaokun@hisilicon.com>
- *
- * This code is based on the uncore PMUs like arm-cci and arm-ccn.
- */
+
+ 
 #include <linux/acpi.h>
 #include <linux/cpuhotplug.h>
 #include <linux/interrupt.h>
@@ -16,14 +9,14 @@
 
 #include "hisi_uncore_pmu.h"
 
-/* PA register definition */
+ 
 #define PA_PERF_CTRL			0x1c00
 #define PA_EVENT_CTRL			0x1c04
 #define PA_TT_CTRL			0x1c08
 #define PA_TGTID_CTRL			0x1c14
 #define PA_SRCID_CTRL			0x1c18
 
-/* H32 PA interrupt registers */
+ 
 #define PA_INT_MASK			0x1c70
 #define PA_INT_STATUS			0x1c78
 #define PA_INT_CLEAR			0x1c7c
@@ -170,18 +163,12 @@ static void hisi_pa_pmu_write_evtype(struct hisi_pmu *pa_pmu, int idx,
 {
 	u32 reg, reg_idx, shift, val;
 
-	/*
-	 * Select the appropriate event select register(PA_EVENT_TYPE0/1).
-	 * There are 2 event select registers for the 8 hardware counters.
-	 * Event code is 8-bits and for the former 4 hardware counters,
-	 * PA_EVENT_TYPE0 is chosen. For the latter 4 hardware counters,
-	 * PA_EVENT_TYPE1 is chosen.
-	 */
+	 
 	reg = PA_EVENT_TYPE0 + (idx / 4) * 4;
 	reg_idx = idx % 4;
 	shift = 8 * reg_idx;
 
-	/* Write event code to pa_EVENT_TYPEx Register */
+	 
 	val = readl(pa_pmu->base + reg);
 	val &= ~(PA_EVTYPE_MASK << shift);
 	val |= (type << shift);
@@ -211,7 +198,7 @@ static void hisi_pa_pmu_enable_counter(struct hisi_pmu *pa_pmu,
 {
 	u32 val;
 
-	/* Enable counter index in PA_EVENT_CTRL register */
+	 
 	val = readl(pa_pmu->base + PA_EVENT_CTRL);
 	val |= 1 << hwc->idx;
 	writel(val, pa_pmu->base + PA_EVENT_CTRL);
@@ -222,7 +209,7 @@ static void hisi_pa_pmu_disable_counter(struct hisi_pmu *pa_pmu,
 {
 	u32 val;
 
-	/* Clear counter index in PA_EVENT_CTRL register */
+	 
 	val = readl(pa_pmu->base + PA_EVENT_CTRL);
 	val &= ~(1 << hwc->idx);
 	writel(val, pa_pmu->base + PA_EVENT_CTRL);
@@ -234,7 +221,7 @@ static void hisi_pa_pmu_enable_counter_int(struct hisi_pmu *pa_pmu,
 	struct hisi_pa_pmu_int_regs *regs = pa_pmu->dev_info->private;
 	u32 val;
 
-	/* Write 0 to enable interrupt */
+	 
 	val = readl(pa_pmu->base + regs->mask_offset);
 	val &= ~(1 << hwc->idx);
 	writel(val, pa_pmu->base + regs->mask_offset);
@@ -246,7 +233,7 @@ static void hisi_pa_pmu_disable_counter_int(struct hisi_pmu *pa_pmu,
 	struct hisi_pa_pmu_int_regs *regs = pa_pmu->dev_info->private;
 	u32 val;
 
-	/* Write 1 to mask interrupt */
+	 
 	val = readl(pa_pmu->base + regs->mask_offset);
 	val |= 1 << hwc->idx;
 	writel(val, pa_pmu->base + regs->mask_offset);
@@ -269,10 +256,7 @@ static void hisi_pa_pmu_clear_int_status(struct hisi_pmu *pa_pmu, int idx)
 static int hisi_pa_pmu_init_data(struct platform_device *pdev,
 				   struct hisi_pmu *pa_pmu)
 {
-	/*
-	 * As PA PMU is in a SICL, use the SICL_ID and the index ID
-	 * to identify the PA PMU.
-	 */
+	 
 	if (device_property_read_u32(&pdev->dev, "hisilicon,scl-id",
 				     &pa_pmu->sicl_id)) {
 		dev_err(&pdev->dev, "Cannot read sicl-id!\n");
@@ -415,7 +399,7 @@ static const struct hisi_pmu_dev_info hisi_h32pa_v3 = {
 
 static struct hisi_pa_pmu_int_regs hisi_h60pa_pmu_regs = {
 	.mask_offset = H60PA_INT_MASK,
-	.clear_offset = H60PA_INT_STATUS, /* Clear on write */
+	.clear_offset = H60PA_INT_STATUS,  
 	.status_offset = H60PA_INT_STATUS,
 };
 

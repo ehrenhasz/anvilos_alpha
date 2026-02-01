@@ -1,16 +1,14 @@
-/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB */
-/*
- * Copyright 2015-2020 Amazon.com, Inc. or its affiliates. All rights reserved.
- */
+ 
+ 
 
 #ifndef ENA_ETH_COM_H_
 #define ENA_ETH_COM_H_
 
 #include "ena_com.h"
 
-/* head update threshold in units of (queue size / ENA_COMP_HEAD_THRESH) */
+ 
 #define ENA_COMP_HEAD_THRESH 4
-/* we allow 2 DMA descriptors per LLQ entry */
+ 
 #define ENA_LLQ_ENTRY_DESC_CHUNK_SIZE	(2 * sizeof(struct ena_eth_io_tx_desc))
 #define ENA_LLQ_HEADER		(128UL - ENA_LLQ_ENTRY_DESC_CHUNK_SIZE)
 #define ENA_LLQ_LARGE_HEADER	(256UL - ENA_LLQ_ENTRY_DESC_CHUNK_SIZE)
@@ -18,16 +16,14 @@
 struct ena_com_tx_ctx {
 	struct ena_com_tx_meta ena_meta;
 	struct ena_com_buf *ena_bufs;
-	/* For LLQ, header buffer - pushed to the device mem space */
+	 
 	void *push_header;
 
 	enum ena_eth_io_l3_proto_index l3_proto;
 	enum ena_eth_io_l4_proto_index l4_proto;
 	u16 num_bufs;
 	u16 req_id;
-	/* For regular queue, indicate the size of the header
-	 * For LLQ, indicate the size of the pushed buffer
-	 */
+	 
 	u16 header_len;
 
 	u8 meta_valid;
@@ -35,7 +31,7 @@ struct ena_com_tx_ctx {
 	u8 l3_csum_enable;
 	u8 l4_csum_enable;
 	u8 l4_csum_partial;
-	u8 df; /* Don't fragment */
+	u8 df;  
 };
 
 struct ena_com_rx_ctx {
@@ -45,7 +41,7 @@ struct ena_com_rx_ctx {
 	bool l3_csum_err;
 	bool l4_csum_err;
 	u8 l4_csum_checked;
-	/* fragmented packet */
+	 
 	bool frag;
 	u32 hash;
 	u16 descs;
@@ -84,7 +80,7 @@ static inline int ena_com_free_q_entries(struct ena_com_io_sq *io_sq)
 	return io_sq->q_depth - 1 - cnt;
 }
 
-/* Check if the submission queue has enough space to hold required_buffers */
+ 
 static inline bool ena_com_sq_have_enough_space(struct ena_com_io_sq *io_sq,
 						u16 required_buffers)
 {
@@ -93,11 +89,7 @@ static inline bool ena_com_sq_have_enough_space(struct ena_com_io_sq *io_sq,
 	if (io_sq->mem_queue_type == ENA_ADMIN_PLACEMENT_POLICY_HOST)
 		return ena_com_free_q_entries(io_sq) >= required_buffers;
 
-	/* This calculation doesn't need to be 100% accurate. So to reduce
-	 * the calculation overhead just Subtract 2 lines from the free descs
-	 * (one for the header line and one to compensate the devision
-	 * down calculation.
-	 */
+	 
 	temp = required_buffers / io_sq->llq_info.descs_per_entry + 2;
 
 	return ena_com_free_q_entries(io_sq) > temp;
@@ -217,7 +209,7 @@ static inline void ena_com_cq_inc_head(struct ena_com_io_cq *io_cq)
 {
 	io_cq->head++;
 
-	/* Switch phase bit in case of wrap around */
+	 
 	if (unlikely((io_cq->head & (io_cq->q_depth - 1)) == 0))
 		io_cq->phase ^= 1;
 }
@@ -236,10 +228,7 @@ static inline int ena_com_tx_comp_req_id_get(struct ena_com_io_cq *io_cq,
 		((uintptr_t)io_cq->cdesc_addr.virt_addr +
 		(masked_head * io_cq->cdesc_entry_size_in_bytes));
 
-	/* When the current completion descriptor phase isn't the same as the
-	 * expected, it mean that the device still didn't update
-	 * this completion.
-	 */
+	 
 	cdesc_phase = READ_ONCE(cdesc->flags) & ENA_ETH_IO_TX_CDESC_PHASE_MASK;
 	if (cdesc_phase != expected_phase)
 		return -EAGAIN;
@@ -258,4 +247,4 @@ static inline int ena_com_tx_comp_req_id_get(struct ena_com_io_cq *io_cq,
 	return 0;
 }
 
-#endif /* ENA_ETH_COM_H_ */
+#endif  

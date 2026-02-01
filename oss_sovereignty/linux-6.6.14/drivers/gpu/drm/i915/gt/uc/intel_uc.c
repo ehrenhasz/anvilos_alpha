@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright © 2016-2019 Intel Corporation
- */
+
+ 
 
 #include <linux/string_helpers.h>
 
@@ -30,34 +28,33 @@ static void uc_expand_default_options(struct intel_uc *uc)
 	if (i915->params.enable_guc != -1)
 		return;
 
-	/* Don't enable GuC/HuC on pre-Gen12 */
+	 
 	if (GRAPHICS_VER(i915) < 12) {
 		i915->params.enable_guc = 0;
 		return;
 	}
 
-	/* Don't enable GuC/HuC on older Gen12 platforms */
+	 
 	if (IS_TIGERLAKE(i915) || IS_ROCKETLAKE(i915)) {
 		i915->params.enable_guc = 0;
 		return;
 	}
 
-	/* Intermediate platforms are HuC authentication only */
+	 
 	if (IS_ALDERLAKE_S(i915) && !IS_RAPTORLAKE_S(i915)) {
 		i915->params.enable_guc = ENABLE_GUC_LOAD_HUC;
 		return;
 	}
 
-	/* Default: enable HuC authentication and GuC submission */
+	 
 	i915->params.enable_guc = ENABLE_GUC_LOAD_HUC | ENABLE_GUC_SUBMISSION;
 
-	/* XEHPSDV and PVC do not use HuC */
+	 
 	if (IS_XEHPSDV(i915) || IS_PONTEVECCHIO(i915))
 		i915->params.enable_guc &= ~ENABLE_GUC_LOAD_HUC;
 }
 
-/* Reset GuC providing us with fresh state for both GuC and HuC.
- */
+ 
 static int __intel_uc_reset_hw(struct intel_uc *uc)
 {
 	struct intel_gt *gt = uc_to_gt(uc);
@@ -147,13 +144,7 @@ void intel_uc_driver_late_release(struct intel_uc *uc)
 {
 }
 
-/**
- * intel_uc_init_mmio - setup uC MMIO access
- * @uc: the intel_uc structure
- *
- * Setup minimal state necessary for MMIO accesses later in the
- * initialization sequence.
- */
+ 
 void intel_uc_init_mmio(struct intel_uc *uc)
 {
 	intel_guc_init_send_regs(&uc->guc);
@@ -182,12 +173,7 @@ void intel_uc_driver_remove(struct intel_uc *uc)
 	__uc_free_load_err_log(uc);
 }
 
-/*
- * Events triggered while CT buffers are disabled are logged in the SCRATCH_15
- * register using the same bits used in the CT message payload. Since our
- * communication channel with guc is turned off at this point, we can save the
- * message and handle it after we turn it back on.
- */
+ 
 static void guc_clear_mmio_msg(struct intel_guc *guc)
 {
 	intel_uncore_write(guc_to_gt(guc)->uncore, SOFT_SCRATCH(15), 0);
@@ -202,11 +188,7 @@ static void guc_get_mmio_msg(struct intel_guc *guc)
 	val = intel_uncore_read(guc_to_gt(guc)->uncore, SOFT_SCRATCH(15));
 	guc->mmio_msg |= val & guc->msg_enabled_mask;
 
-	/*
-	 * clear all events, including the ones we're not currently servicing,
-	 * to make sure we don't try to process a stale message if we enable
-	 * handling of more events later.
-	 */
+	 
 	guc_clear_mmio_msg(guc);
 
 	spin_unlock_irq(&guc->irq_lock);
@@ -214,7 +196,7 @@ static void guc_get_mmio_msg(struct intel_guc *guc)
 
 static void guc_handle_mmio_msg(struct intel_guc *guc)
 {
-	/* we need communication to be enabled to reply to GuC */
+	 
 	GEM_BUG_ON(!intel_guc_ct_enabled(&guc->ct));
 
 	spin_lock_irq(&guc->irq_lock);
@@ -241,13 +223,13 @@ static int guc_enable_communication(struct intel_guc *guc)
 	if (ret)
 		return ret;
 
-	/* check for mmio messages received before/during the CT enable */
+	 
 	guc_get_mmio_msg(guc);
 	guc_handle_mmio_msg(guc);
 
 	intel_guc_enable_interrupts(guc);
 
-	/* check for CT messages received before we enabled interrupts */
+	 
 	spin_lock_irq(gt->irq_lock);
 	intel_guc_ct_event_handler(&guc->ct);
 	spin_unlock_irq(gt->irq_lock);
@@ -259,23 +241,14 @@ static int guc_enable_communication(struct intel_guc *guc)
 
 static void guc_disable_communication(struct intel_guc *guc)
 {
-	/*
-	 * Events generated during or after CT disable are logged by guc in
-	 * via mmio. Make sure the register is clear before disabling CT since
-	 * all events we cared about have already been processed via CT.
-	 */
+	 
 	guc_clear_mmio_msg(guc);
 
 	intel_guc_disable_interrupts(guc);
 
 	intel_guc_ct_disable(&guc->ct);
 
-	/*
-	 * Check for messages received during/after the CT disable. We do not
-	 * expect any messages to have arrived via CT between the interrupt
-	 * disable and the CT disable because GuC should've been idle until we
-	 * triggered the CT disable protocol.
-	 */
+	 
 	guc_get_mmio_msg(guc);
 
 	guc_dbg(guc, "communication disabled\n");
@@ -290,7 +263,7 @@ static void __uc_fetch_firmwares(struct intel_uc *uc)
 
 	err = intel_uc_fw_fetch(&uc->guc.fw);
 	if (err) {
-		/* Make sure we transition out of transient "SELECTED" state */
+		 
 		if (intel_uc_wants_huc(uc)) {
 			gt_dbg(gt, "Failed to fetch GuC fw (%pe) disabling HuC\n", ERR_PTR(err));
 			intel_uc_fw_change_status(&uc->huc.fw,
@@ -367,7 +340,7 @@ static int __uc_sanitize(struct intel_uc *uc)
 	return __intel_uc_reset_hw(uc);
 }
 
-/* Initialize and verify the uC regs related to uC positioning in WOPCM */
+ 
 static int uc_init_wopcm(struct intel_uc *uc)
 {
 	struct intel_gt *gt = uc_to_gt(uc);
@@ -438,11 +411,7 @@ static int __uc_check_hw(struct intel_uc *uc)
 	if (!intel_uc_supports_guc(uc))
 		return 0;
 
-	/*
-	 * We can silently continue without GuC only if it was never enabled
-	 * before on this system after reboot, otherwise we risk GPU hangs.
-	 * To check if GuC was loaded before we look at WOPCM registers.
-	 */
+	 
 	if (uc_is_wopcm_locked(uc))
 		return -EIO;
 
@@ -489,23 +458,20 @@ static int __uc_init_hw(struct intel_uc *uc)
 
 	intel_guc_reset_interrupts(guc);
 
-	/* WaEnableuKernelHeaderValidFix:skl */
-	/* WaEnableGuCBootHashCheckNotSet:skl,bxt,kbl */
+	 
+	 
 	if (GRAPHICS_VER(i915) == 9)
 		attempts = 3;
 	else
 		attempts = 1;
 
-	/* Disable a potentially low PL1 power limit to allow freq to be raised */
+	 
 	i915_hwmon_power_max_disable(gt->i915, &pl1en);
 
 	intel_rps_raise_unslice(&uc_to_gt(uc)->rps);
 
 	while (attempts--) {
-		/*
-		 * Always reset the GuC just before (re)loading, so
-		 * that the state and timing are fairly predictable
-		 */
+		 
 		ret = __uc_sanitize(uc);
 		if (ret)
 			goto err_rps;
@@ -521,7 +487,7 @@ static int __uc_init_hw(struct intel_uc *uc)
 		       ERR_PTR(ret), attempts);
 	}
 
-	/* Did we succeded or run out of retries? */
+	 
 	if (ret)
 		goto err_log_capture;
 
@@ -529,12 +495,7 @@ static int __uc_init_hw(struct intel_uc *uc)
 	if (ret)
 		goto err_log_capture;
 
-	/*
-	 * GSC-loaded HuC is authenticated by the GSC, so we don't need to
-	 * trigger the auth here. However, given that the HuC loaded this way
-	 * survive GT reset, we still need to update our SW bookkeeping to make
-	 * sure it reflects the correct HW status.
-	 */
+	 
 	if (intel_huc_is_loaded_by_gsc(huc))
 		intel_huc_update_auth_status(huc);
 	else
@@ -551,7 +512,7 @@ static int __uc_init_hw(struct intel_uc *uc)
 		if (ret)
 			goto err_submission;
 	} else {
-		/* Restore GT back to RPn for non-SLPC path */
+		 
 		intel_rps_lower_unslice(&uc_to_gt(uc)->rps);
 	}
 
@@ -562,15 +523,13 @@ static int __uc_init_hw(struct intel_uc *uc)
 
 	return 0;
 
-	/*
-	 * We've failed to load the firmware :(
-	 */
+	 
 err_submission:
 	intel_guc_submission_disable(guc);
 err_log_capture:
 	__uc_capture_load_err_log(uc);
 err_rps:
-	/* Return GT back to RPn */
+	 
 	intel_rps_lower_unslice(&uc_to_gt(uc)->rps);
 
 	i915_hwmon_power_max_restore(gt->i915, pl1en);
@@ -579,13 +538,13 @@ err_out:
 
 	if (!ret) {
 		gt_notice(gt, "GuC is uninitialized\n");
-		/* We want to run without GuC submission */
+		 
 		return 0;
 	}
 
 	gt_probe_error(gt, "GuC initialization failed %pe\n", ERR_PTR(ret));
 
-	/* We want to keep KMS alive */
+	 
 	return -EIO;
 }
 
@@ -602,23 +561,18 @@ static void __uc_fini_hw(struct intel_uc *uc)
 	__uc_sanitize(uc);
 }
 
-/**
- * intel_uc_reset_prepare - Prepare for reset
- * @uc: the intel_uc structure
- *
- * Preparing for full gpu reset.
- */
+ 
 void intel_uc_reset_prepare(struct intel_uc *uc)
 {
 	struct intel_guc *guc = &uc->guc;
 
 	uc->reset_in_progress = true;
 
-	/* Nothing to do if GuC isn't supported */
+	 
 	if (!intel_uc_supports_guc(uc))
 		return;
 
-	/* Firmware expected to be running when this function is called */
+	 
 	if (!intel_guc_is_ready(guc))
 		goto sanitize;
 
@@ -633,7 +587,7 @@ void intel_uc_reset(struct intel_uc *uc, intel_engine_mask_t stalled)
 {
 	struct intel_guc *guc = &uc->guc;
 
-	/* Firmware can not be running when this function is called  */
+	 
 	if (intel_uc_uses_guc_submission(uc))
 		intel_guc_submission_reset(guc, stalled);
 }
@@ -644,7 +598,7 @@ void intel_uc_reset_finish(struct intel_uc *uc)
 
 	uc->reset_in_progress = false;
 
-	/* Firmware expected to be running when this function is called */
+	 
 	if (intel_guc_is_fw_running(guc) && intel_uc_uses_guc_submission(uc))
 		intel_guc_submission_reset_finish(guc);
 }
@@ -653,7 +607,7 @@ void intel_uc_cancel_requests(struct intel_uc *uc)
 {
 	struct intel_guc *guc = &uc->guc;
 
-	/* Firmware can not be running when this function is called  */
+	 
 	if (intel_uc_uses_guc_submission(uc))
 		intel_guc_submission_cancel_requests(guc);
 }
@@ -667,10 +621,7 @@ void intel_uc_runtime_suspend(struct intel_uc *uc)
 		return;
 	}
 
-	/*
-	 * Wait for any outstanding CTB before tearing down communication /w the
-	 * GuC.
-	 */
+	 
 #define OUTSTANDING_CTB_TIMEOUT_PERIOD	(HZ / 5)
 	intel_guc_wait_for_pending_msg(guc, &guc->outstanding_submission_g2h,
 				       false, OUTSTANDING_CTB_TIMEOUT_PERIOD);
@@ -685,7 +636,7 @@ void intel_uc_suspend(struct intel_uc *uc)
 	intel_wakeref_t wakeref;
 	int err;
 
-	/* flush the GSC worker */
+	 
 	intel_gsc_uc_flush_work(&uc->gsc);
 
 	if (!intel_guc_is_ready(guc)) {
@@ -715,16 +666,13 @@ static int __uc_resume(struct intel_uc *uc, bool enable_communication)
 	if (!intel_guc_is_fw_running(guc))
 		return 0;
 
-	/* Make sure we enable communication if and only if it's disabled */
+	 
 	GEM_BUG_ON(enable_communication == intel_guc_ct_enabled(&guc->ct));
 
 	if (enable_communication)
 		guc_enable_communication(guc);
 
-	/* If we are only resuming GuC communication but not reloading
-	 * GuC, we need to ensure the ARAT timer interrupt is enabled
-	 * again. In case of GuC reload, it is enabled during SLPC enable.
-	 */
+	 
 	if (enable_communication && intel_uc_uses_guc_slpc(uc))
 		intel_guc_pm_intrmsk_enable(gt);
 
@@ -741,25 +689,19 @@ static int __uc_resume(struct intel_uc *uc, bool enable_communication)
 
 int intel_uc_resume(struct intel_uc *uc)
 {
-	/*
-	 * When coming out of S3/S4 we sanitize and re-init the HW, so
-	 * communication is already re-enabled at this point.
-	 */
+	 
 	return __uc_resume(uc, false);
 }
 
 int intel_uc_runtime_resume(struct intel_uc *uc)
 {
-	/*
-	 * During runtime resume we don't sanitize, so we need to re-init
-	 * communication as well.
-	 */
+	 
 	return __uc_resume(uc, true);
 }
 
 static const struct intel_uc_ops uc_ops_off = {
 	.init_hw = __uc_check_hw,
-	.fini = __uc_fini, /* to clean-up the init_early initialization */
+	.fini = __uc_fini,  
 };
 
 static const struct intel_uc_ops uc_ops_on = {

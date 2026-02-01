@@ -1,20 +1,4 @@
-/**********************************************************************
- * Author: Cavium, Inc.
- *
- * Contact: support@cavium.com
- *          Please include "LiquidIO" in the subject.
- *
- * Copyright (c) 2003-2017 Cavium, Inc.
- *
- * This file is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, Version 2, as
- * published by the Free Software Foundation.
- *
- * This file is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty
- * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more details.
- ***********************************************************************/
+ 
 #include <linux/pci.h>
 #include <linux/if_vlan.h>
 #include "liquidio_common.h"
@@ -185,7 +169,7 @@ lio_vf_rep_get_stats64(struct net_device *dev,
 {
 	struct lio_vf_rep_desc *vf_rep = netdev_priv(dev);
 
-	/* Swap tx and rx stats as VF rep is a switch port */
+	 
 	stats64->tx_packets = vf_rep->stats.rx_packets;
 	stats64->tx_bytes   = vf_rep->stats.rx_bytes;
 	stats64->tx_dropped = vf_rep->stats.rx_dropped;
@@ -249,9 +233,7 @@ lio_vf_rep_get_ndev(struct octeon_device *oct, int ifidx)
 	    ifidx >= oct->pf_num * max_vfs + max_vfs)
 		return NULL;
 
-	/* ifidx 1-63 for PF0 VFs
-	 * ifidx 65-127 for PF1 VFs
-	 */
+	 
 	vf_id = (ifidx & vfid_mask) - 1;
 
 	return oct->vf_rep_list.ndev[vf_id];
@@ -320,9 +302,7 @@ lio_vf_rep_pkt_recv(struct octeon_recv_info *recv_info, void *buf)
 
 	skb->dev = vf_ndev;
 
-	/* Multiple buffers are not used for vf_rep packets.
-	 * So just buffer_size[0] is valid.
-	 */
+	 
 	lio_vf_rep_copy_packet(oct, skb, recv_pkt->buffer_size[0]);
 
 	skb_pull(skb, rh->r_dh.len * BYTES_PER_DHLEN_UNIT);
@@ -396,7 +376,7 @@ lio_vf_rep_pkt_xmit(struct sk_buff *skb, struct net_device *ndev)
 		goto xmit_failed;
 	}
 
-	/* Multiple buffers are not used for vf_rep packets. */
+	 
 	if (skb_shinfo(skb)->nr_frags != 0) {
 		dev_err(&oct->pci_dev->dev, "VF rep: nr_frags != 0. Dropping packet\n");
 		octeon_free_soft_command(oct, sc);

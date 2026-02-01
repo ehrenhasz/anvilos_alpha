@@ -1,27 +1,4 @@
-/*
- * Copyright 2012-16 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 #include <linux/slab.h>
 
@@ -66,15 +43,15 @@ static bool dce_abm_set_pipe(struct abm *abm, uint32_t controller_id, uint32_t p
 	REG_WAIT(MASTER_COMM_CNTL_REG, MASTER_COMM_INTERRUPT, 0,
 			1, 80000);
 
-	/* set ramping boundary */
+	 
 	REG_WRITE(MASTER_COMM_DATA_REG1, rampingBoundary);
 
-	/* setDMCUParam_Pipe */
+	 
 	REG_UPDATE_2(MASTER_COMM_CMD_REG,
 			MASTER_COMM_CMD_REG_BYTE0, MCP_ABM_PIPE_SET,
 			MASTER_COMM_CMD_REG_BYTE1, controller_id);
 
-	/* notifyDMCUMsg */
+	 
 	REG_UPDATE(MASTER_COMM_CNTL_REG, MASTER_COMM_INTERRUPT, 1);
 
 	REG_WAIT(MASTER_COMM_CNTL_REG, MASTER_COMM_INTERRUPT, 0,
@@ -94,33 +71,33 @@ static void dmcu_set_backlight_level(
 	uint32_t s2;
 
 	if (backlight_pwm_u16_16 & 0x10000)
-		// Check for max backlight condition
+		
 		backlight_8_bit = 0xFF;
 	else
-		// Take MSB of fractional part since backlight is not max
+		
 		backlight_8_bit = (backlight_pwm_u16_16 >> 8) & 0xFF;
 
 	dce_abm_set_pipe(&abm_dce->base, controller_id, panel_id);
 
-	/* waitDMCUReadyForCmd */
+	 
 	REG_WAIT(MASTER_COMM_CNTL_REG, MASTER_COMM_INTERRUPT,
 			0, 1, 80000);
 
-	/* setDMCUParam_BL */
+	 
 	REG_UPDATE(BL1_PWM_USER_LEVEL, BL1_PWM_USER_LEVEL, backlight_pwm_u16_16);
 
-	/* write ramp */
+	 
 	if (controller_id == 0)
 		frame_ramp = 0;
 	REG_WRITE(MASTER_COMM_DATA_REG1, frame_ramp);
 
-	/* setDMCUParam_Cmd */
+	 
 	REG_UPDATE(MASTER_COMM_CMD_REG, MASTER_COMM_CMD_REG_BYTE0, MCP_BL_SET);
 
-	/* notifyDMCUMsg */
+	 
 	REG_UPDATE(MASTER_COMM_CNTL_REG, MASTER_COMM_INTERRUPT, 1);
 
-	/* UpdateRequestedBacklightLevel */
+	 
 	s2 = REG_READ(BIOS_SCRATCH_2);
 
 	s2 &= ~ATOM_S2_CURRENT_BL_LEVEL_MASK;
@@ -130,7 +107,7 @@ static void dmcu_set_backlight_level(
 
 	REG_WRITE(BIOS_SCRATCH_2, s2);
 
-	/* waitDMCUReadyForCmd */
+	 
 	REG_WAIT(MASTER_COMM_CNTL_REG, MASTER_COMM_INTERRUPT,
 			0, 1, 80000);
 }
@@ -179,9 +156,7 @@ static unsigned int dce_abm_get_current_backlight(struct abm *abm)
 	struct dce_abm *abm_dce = TO_DCE_ABM(abm);
 	unsigned int backlight = REG_READ(BL1_PWM_CURRENT_ABM_LEVEL);
 
-	/* return backlight in hardware format which is unsigned 17 bits, with
-	 * 1 bit integer and 16 bit fractional
-	 */
+	 
 	return backlight;
 }
 
@@ -190,9 +165,7 @@ static unsigned int dce_abm_get_target_backlight(struct abm *abm)
 	struct dce_abm *abm_dce = TO_DCE_ABM(abm);
 	unsigned int backlight = REG_READ(BL1_PWM_TARGET_ABM_LEVEL);
 
-	/* return backlight in hardware format which is unsigned 17 bits, with
-	 * 1 bit integer and 16 bit fractional
-	 */
+	 
 	return backlight;
 }
 
@@ -206,12 +179,12 @@ static bool dce_abm_set_level(struct abm *abm, uint32_t level)
 	REG_WAIT(MASTER_COMM_CNTL_REG, MASTER_COMM_INTERRUPT, 0,
 			1, 80000);
 
-	/* setDMCUParam_ABMLevel */
+	 
 	REG_UPDATE_2(MASTER_COMM_CMD_REG,
 			MASTER_COMM_CMD_REG_BYTE0, MCP_ABM_LEVEL_SET,
 			MASTER_COMM_CMD_REG_BYTE2, level);
 
-	/* notifyDMCUMsg */
+	 
 	REG_UPDATE(MASTER_COMM_CNTL_REG, MASTER_COMM_INTERRUPT, 1);
 
 	return true;

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * (c) Copyright 2002-2010, Ralink Technology, Inc.
- * Copyright (C) 2014 Felix Fietkau <nbd@openwrt.org>
- * Copyright (C) 2015 Jakub Kicinski <kubakici@wp.pl>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/firmware.h>
@@ -54,7 +50,7 @@ static struct sk_buff *mt7601u_mcu_msg_alloc(const void *data, int len)
 {
 	struct sk_buff *skb;
 
-	WARN_ON(len % 4); /* if length is not divisible by 4 we need to pad */
+	WARN_ON(len % 4);  
 
 	skb = alloc_skb(len + MT_DMA_HDR_LEN + 4, GFP_KERNEL);
 	if (skb) {
@@ -78,7 +74,7 @@ static int mt7601u_mcu_wait_resp(struct mt7601u_dev *dev, u8 seq)
 			continue;
 		}
 
-		/* Make copies of important data before reusing the urb */
+		 
 		rxfce = get_unaligned_le32(dev->mcu.resp.buf);
 		urb_status = urb->status * mt7601u_urb_has_error(urb);
 
@@ -285,7 +281,7 @@ static int __mt7601u_dma_fw(struct mt7601u_dev *dev,
 			    const void *data, u32 len, u32 dst_addr)
 {
 	DECLARE_COMPLETION_ONSTACK(cmpl);
-	struct mt7601u_dma_buf buf = *dma_buf; /* we need to fake length */
+	struct mt7601u_dma_buf buf = *dma_buf;  
 	__le32 reg;
 	u32 val;
 	int ret;
@@ -467,13 +463,13 @@ static int mt7601u_load_firmware(struct mt7601u_dev *dev)
 	val &= ~MT_USB_DMA_CFG_TX_CLR;
 	mt7601u_wr(dev, MT_USB_DMA_CFG, val);
 
-	/* FCE tx_fs_base_ptr */
+	 
 	mt7601u_wr(dev, MT_TX_CPU_FROM_FCE_BASE_PTR, 0x400230);
-	/* FCE tx_fs_max_cnt */
+	 
 	mt7601u_wr(dev, MT_TX_CPU_FROM_FCE_MAX_COUNT, 1);
-	/* FCE pdma enable */
+	 
 	mt7601u_wr(dev, MT_FCE_PDMA_GLOBAL_CONF, 0x44);
-	/* FCE skip_fs_en */
+	 
 	mt7601u_wr(dev, MT_FCE_SKIP_FS, 3);
 
 	ret = mt7601u_upload_firmware(dev, (const struct mt76_fw *)fw->data);

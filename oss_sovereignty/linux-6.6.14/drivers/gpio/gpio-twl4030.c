@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Access to GPIOs on TWL4030/TPS659x0 chips
- *
- * Copyright (C) 2006-2007 Texas Instruments, Inc.
- * Copyright (C) 2006 MontaVista Software, Inc.
- *
- * Code re-arranged and cleaned up by:
- *	Syed Mohammed Khasim <x0khasim@ti.com>
- *
- * Initial Code:
- *	Andy Lowe / Nishanth Menon
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -26,30 +15,21 @@
 
 #include <linux/mfd/twl.h>
 
-/*
- * The GPIO "subchip" supports 18 GPIOs which can be configured as
- * inputs or outputs, with pullups or pulldowns on each pin.  Each
- * GPIO can trigger interrupts on either or both edges.
- *
- * GPIO interrupts can be fed to either of two IRQ lines; this is
- * intended to support multiple hosts.
- *
- * There are also two LED pins used sometimes as output-only GPIOs.
- */
+ 
 
-/* genirq interfaces are not available to modules */
+ 
 #ifdef MODULE
 #define is_module()	true
 #else
 #define is_module()	false
 #endif
 
-/* GPIO_CTRL Fields */
+ 
 #define MASK_GPIO_CTRL_GPIO0CD1		BIT(0)
 #define MASK_GPIO_CTRL_GPIO1CD2		BIT(1)
 #define MASK_GPIO_CTRL_GPIO_ON		BIT(2)
 
-/* Mask for GPIO registers when aggregated into a 32-bit integer */
+ 
 #define GPIO_32_MASK			0x0003ffff
 
 struct gpio_twl4030_priv {
@@ -57,28 +37,23 @@ struct gpio_twl4030_priv {
 	struct mutex mutex;
 	int irq_base;
 
-	/* Bitfields for state caching */
+	 
 	unsigned int usage_count;
 	unsigned int direction;
 	unsigned int out_state;
 };
 
-/*----------------------------------------------------------------------*/
+ 
 
-/*
- * To configure TWL4030 GPIO module registers
- */
+ 
 static inline int gpio_twl4030_write(u8 address, u8 data)
 {
 	return twl_i2c_write_u8(TWL4030_MODULE_GPIO, data, address);
 }
 
-/*----------------------------------------------------------------------*/
+ 
 
-/*
- * LED register offsets from TWL_MODULE_LED base
- * PWMs A and B are dedicated to LEDs A and B, respectively.
- */
+ 
 
 #define TWL4030_LED_LEDEN_REG	0x00
 #define TWL4030_PWMAON_REG	0x01
@@ -86,7 +61,7 @@ static inline int gpio_twl4030_write(u8 address, u8 data)
 #define TWL4030_PWMBON_REG	0x03
 #define TWL4030_PWMBOFF_REG	0x04
 
-/* LEDEN bits */
+ 
 #define LEDEN_LEDAON		BIT(0)
 #define LEDEN_LEDBON		BIT(1)
 #define LEDEN_LEDAEXT		BIT(2)
@@ -98,11 +73,9 @@ static inline int gpio_twl4030_write(u8 address, u8 data)
 
 #define PWMxON_LENGTH		BIT(7)
 
-/*----------------------------------------------------------------------*/
+ 
 
-/*
- * To read a TWL4030 GPIO module register
- */
+ 
 static inline int gpio_twl4030_read(u8 address)
 {
 	u8 data;
@@ -112,14 +85,11 @@ static inline int gpio_twl4030_read(u8 address)
 	return (ret < 0) ? ret : data;
 }
 
-/*----------------------------------------------------------------------*/
+ 
 
 static u8 cached_leden;
 
-/* The LED lines are open drain outputs ... a FET pulls to GND, so an
- * external pullup is needed.  We could also expose the integrated PWM
- * as a LED brightness control; we initialize it as "always on".
- */
+ 
 static void twl4030_led_set_value(int led, int value)
 {
 	u8 mask = LEDEN_LEDAON | LEDEN_LEDAPWM;
@@ -202,7 +172,7 @@ static int twl4030_get_gpio_datain(int gpio)
 	return ret;
 }
 
-/*----------------------------------------------------------------------*/
+ 
 
 static int twl_request(struct gpio_chip *chip, unsigned offset)
 {
@@ -211,7 +181,7 @@ static int twl_request(struct gpio_chip *chip, unsigned offset)
 
 	mutex_lock(&priv->mutex);
 
-	/* Support the two LED outputs as output-only GPIOs. */
+	 
 	if (offset >= TWL4030_GPIO_MAX) {
 		u8	ledclr_mask = LEDEN_LEDAON | LEDEN_LEDAEXT
 				| LEDEN_LEDAPWM | LEDEN_PWM_LENGTHA;
@@ -223,18 +193,18 @@ static int twl_request(struct gpio_chip *chip, unsigned offset)
 			reg = TWL4030_PWMBON_REG;
 		}
 
-		/* initialize PWM to always-drive */
-		/* Configure PWM OFF register first */
+		 
+		 
 		status = twl_i2c_write_u8(TWL4030_MODULE_LED, 0x7f, reg + 1);
 		if (status < 0)
 			goto done;
 
-		/* Followed by PWM ON register */
+		 
 		status = twl_i2c_write_u8(TWL4030_MODULE_LED, 0x7f, reg);
 		if (status < 0)
 			goto done;
 
-		/* init LED to not-driven (high) */
+		 
 		status = twl_i2c_read_u8(TWL4030_MODULE_LED, &cached_leden,
 					 TWL4030_LED_LEDEN_REG);
 		if (status < 0)
@@ -249,14 +219,12 @@ static int twl_request(struct gpio_chip *chip, unsigned offset)
 		goto done;
 	}
 
-	/* on first use, turn GPIO module "on" */
+	 
 	if (!priv->usage_count) {
 		struct twl4030_gpio_platform_data *pdata;
 		u8 value = MASK_GPIO_CTRL_GPIO_ON;
 
-		/* optionally have the first two GPIOs switch vMMC1
-		 * and vMMC2 power supplies based on card presence.
-		 */
+		 
 		pdata = dev_get_platdata(chip->parent);
 		if (pdata)
 			value |= pdata->mmc_cd & 0x03;
@@ -284,7 +252,7 @@ static void twl_free(struct gpio_chip *chip, unsigned offset)
 
 	priv->usage_count &= ~BIT(offset);
 
-	/* on last use, switch off GPIO module */
+	 
 	if (!priv->usage_count)
 		gpio_twl4030_write(REG_GPIO_CTRL, 0x0);
 
@@ -301,7 +269,7 @@ static int twl_direction_in(struct gpio_chip *chip, unsigned offset)
 	if (offset < TWL4030_GPIO_MAX)
 		ret = twl4030_set_gpio_direction(offset, 1);
 	else
-		ret = -EINVAL;	/* LED outputs can't be set as input */
+		ret = -EINVAL;	 
 
 	if (!ret)
 		priv->direction &= ~BIT(offset);
@@ -366,9 +334,7 @@ static int twl_direction_out(struct gpio_chip *chip, unsigned offset, int value)
 		}
 	}
 
-	/*
-	 *  LED gpios i.e. offset >= TWL4030_GPIO_MAX are always output
-	 */
+	 
 
 	priv->direction |= BIT(offset);
 	mutex_unlock(&priv->mutex);
@@ -381,10 +347,7 @@ static int twl_direction_out(struct gpio_chip *chip, unsigned offset, int value)
 static int twl_get_direction(struct gpio_chip *chip, unsigned offset)
 {
 	struct gpio_twl4030_priv *priv = gpiochip_get_data(chip);
-	/*
-	 * Default GPIO_LINE_DIRECTION_OUT
-	 * LED GPIOs >= TWL4030_GPIO_MAX are always output
-	 */
+	 
 	int ret = GPIO_LINE_DIRECTION_OUT;
 
 	mutex_lock(&priv->mutex);
@@ -423,16 +386,14 @@ static const struct gpio_chip template_chip = {
 	.can_sleep		= true,
 };
 
-/*----------------------------------------------------------------------*/
+ 
 
 static int gpio_twl4030_pulls(u32 ups, u32 downs)
 {
 	u8		message[5];
 	unsigned	i, gpio_bit;
 
-	/* For most pins, a pulldown was enabled by default.
-	 * We should have data that's specific to this board.
-	 */
+	 
 	for (gpio_bit = 1, i = 0; i < 5; i++) {
 		u8		bit_mask;
 		unsigned	j;
@@ -454,9 +415,7 @@ static int gpio_twl4030_debounce(u32 debounce, u8 mmc_cd)
 {
 	u8		message[3];
 
-	/* 30 msec of debouncing is always used for MMC card detect,
-	 * and is optional for everything else.
-	 */
+	 
 	message[0] = (debounce & 0xff) | (mmc_cd & 0x03);
 	debounce >>= 8;
 	message[1] = (debounce & 0xff);
@@ -490,7 +449,7 @@ static struct twl4030_gpio_platform_data *of_gpio_twl4030(struct device *dev)
 	return omap_twl_info;
 }
 
-/* Called from the registered devm action */
+ 
 static void gpio_twl4030_power_off_action(void *data)
 {
 	struct gpio_desc *d = data;
@@ -511,7 +470,7 @@ static int gpio_twl4030_probe(struct platform_device *pdev)
 	if (!priv)
 		return -ENOMEM;
 
-	/* maybe setup IRQs */
+	 
 	if (is_module()) {
 		dev_err(&pdev->dev, "can't dispatch IRQs from modules\n");
 		goto no_irqs;
@@ -547,12 +506,7 @@ no_irqs:
 		return -ENXIO;
 	}
 
-	/*
-	 * NOTE:  boards may waste power if they don't set pullups
-	 * and pulldowns correctly ... default for non-ULPI pins is
-	 * pulldown, and some other pins may have external pullups
-	 * or pulldowns.  Careful!
-	 */
+	 
 	ret = gpio_twl4030_pulls(pdata->pullups, pdata->pulldowns);
 	if (ret)
 		dev_dbg(&pdev->dev, "pullups %.05x %.05x --> %d\n",
@@ -563,10 +517,7 @@ no_irqs:
 		dev_dbg(&pdev->dev, "debounce %.03x %.01x --> %d\n",
 			pdata->debounce, pdata->mmc_cd, ret);
 
-	/*
-	 * NOTE: we assume VIBRA_CTL.VIBRA_EN, in MODULE_AUDIO_VOICE,
-	 * is (still) clear if use_leds is set.
-	 */
+	 
 	if (pdata->use_leds)
 		priv->gpio_chip.ngpio += 2;
 
@@ -577,10 +528,7 @@ no_irqs:
 		return ret;
 	}
 
-	/*
-	 * Special quirk for the OMAP3 to hog and export a WLAN power
-	 * GPIO.
-	 */
+	 
 	if (IS_ENABLED(CONFIG_ARCH_OMAP3) &&
 	    of_machine_is_compatible("compulab,omap3-sbc-t3730")) {
 		struct gpio_desc *d;
@@ -611,7 +559,7 @@ static const struct of_device_id twl_gpio_match[] = {
 };
 MODULE_DEVICE_TABLE(of, twl_gpio_match);
 
-/* Note:  this hardware lives inside an I2C-based multi-function device. */
+ 
 MODULE_ALIAS("platform:twl4030_gpio");
 
 static struct platform_driver gpio_twl4030_driver = {

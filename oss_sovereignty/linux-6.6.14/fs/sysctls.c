@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * /proc/sys/fs shared sysctls
- *
- * These sysctls are shared between different filesystems.
- */
+
+ 
 #include <linux/init.h>
 #include <linux/sysctl.h>
 

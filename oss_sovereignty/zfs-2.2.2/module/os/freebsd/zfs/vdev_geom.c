@@ -1,29 +1,5 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
-/*
- * Copyright (c) 2006 Pawel Jakub Dawidek <pjd@FreeBSD.org>
- * All rights reserved.
- *
- * Portions Copyright (c) 2012 Martin Matuska <mm@FreeBSD.org>
- */
+ 
+ 
 
 #include <sys/zfs_context.h>
 #include <sys/param.h>
@@ -46,9 +22,7 @@
 #define	g_topology_locked()	sx_xlocked(&topology_lock)
 #endif
 
-/*
- * Virtual device vector for GEOM.
- */
+ 
 
 static g_attrchanged_t vdev_geom_attrchanged;
 struct g_class zfs_vdev_class = {
@@ -71,23 +45,19 @@ _Static_assert(
 DECLARE_GEOM_CLASS(zfs_vdev_class, zfs_vdev);
 
 SYSCTL_DECL(_vfs_zfs_vdev);
-/* Don't send BIO_FLUSH. */
+ 
 static int vdev_geom_bio_flush_disable;
 SYSCTL_INT(_vfs_zfs_vdev, OID_AUTO, bio_flush_disable, CTLFLAG_RWTUN,
 	&vdev_geom_bio_flush_disable, 0, "Disable BIO_FLUSH");
-/* Don't send BIO_DELETE. */
+ 
 static int vdev_geom_bio_delete_disable;
 SYSCTL_INT(_vfs_zfs_vdev, OID_AUTO, bio_delete_disable, CTLFLAG_RWTUN,
 	&vdev_geom_bio_delete_disable, 0, "Disable BIO_DELETE");
 
-/* Declare local functions */
+ 
 static void vdev_geom_detach(struct g_consumer *cp, boolean_t open_for_read);
 
-/*
- * Thread local storage used to indicate when a thread is probing geoms
- * for their guids.  If NULL, this thread is not tasting geoms.  If non NULL,
- * it is looking for a replacement for the vdev_t* that is its value.
- */
+ 
 uint_t zfs_geom_probe_vdev_key;
 
 static void
@@ -104,7 +74,7 @@ vdev_geom_set_physpath(vdev_t *vd, struct g_consumer *cp,
 	if (error == 0) {
 		char *old_physpath;
 
-		/* g_topology lock ensures that vdev has not been closed */
+		 
 		g_topology_assert();
 		old_physpath = vd->vdev_physpath;
 		vd->vdev_physpath = spa_strdup(physpath);
@@ -118,11 +88,7 @@ vdev_geom_set_physpath(vdev_t *vd, struct g_consumer *cp,
 	}
 	g_free(physpath);
 
-	/*
-	 * If the physical path changed, update the config.
-	 * Only request an update for previously unset physpaths if
-	 * requested by the caller.
-	 */
+	 
 	if (needs_update)
 		spa_async_request(vd->vdev_spa, SPA_ASYNC_CONFIG_UPDATE);
 
@@ -141,7 +107,7 @@ vdev_geom_attrchanged(struct g_consumer *cp, const char *attr)
 	SLIST_FOREACH(elem, priv, elems) {
 		vdev_t *vd = elem->vd;
 		if (strcmp(attr, "GEOM::physpath") == 0) {
-			vdev_geom_set_physpath(vd, cp, /* null_update */B_TRUE);
+			vdev_geom_set_physpath(vd, cp,  B_TRUE);
 			return;
 		}
 	}
@@ -174,32 +140,19 @@ static void
 vdev_geom_orphan(struct g_consumer *cp)
 {
 	struct consumer_priv_t *priv;
-	// cppcheck-suppress uninitvar
+	
 	struct consumer_vdev_elem *elem;
 
 	g_topology_assert();
 
 	priv = (struct consumer_priv_t *)&cp->private;
 	if (SLIST_EMPTY(priv))
-		/* Vdev close in progress.  Ignore the event. */
+		 
 		return;
 
-	/*
-	 * Orphan callbacks occur from the GEOM event thread.
-	 * Concurrent with this call, new I/O requests may be
-	 * working their way through GEOM about to find out
-	 * (only once executed by the g_down thread) that we've
-	 * been orphaned from our disk provider.  These I/Os
-	 * must be retired before we can detach our consumer.
-	 * This is most easily achieved by acquiring the
-	 * SPA ZIO configuration lock as a writer, but doing
-	 * so with the GEOM topology lock held would cause
-	 * a lock order reversal.  Instead, rely on the SPA's
-	 * async removal support to invoke a close on this
-	 * vdev once it is safe to do so.
-	 */
+	 
 	SLIST_FOREACH(elem, priv, elems) {
-		// cppcheck-suppress uninitvar
+		
 		vdev_t *vd = elem->vd;
 
 		vd->vdev_remove_wanted = B_TRUE;
@@ -232,7 +185,7 @@ vdev_geom_attach(struct g_provider *pp, vdev_t *vd, boolean_t sanity)
 		}
 	}
 
-	/* Do we have geom already? No? Create one. */
+	 
 	LIST_FOREACH(gp, &zfs_vdev_class.geom, geom) {
 		if (gp->flags & G_GEOM_WITHER)
 			continue;
@@ -262,7 +215,7 @@ vdev_geom_attach(struct g_provider *pp, vdev_t *vd, boolean_t sanity)
 		}
 		ZFS_LOG(1, "Created geom and consumer for %s.", pp->name);
 	} else {
-		/* Check if we are already connected to this provider. */
+		 
 		LIST_FOREACH(cp, &gp->consumer, consumer) {
 			if (cp->provider == pp) {
 				ZFS_LOG(1, "Found consumer for %s.", pp->name);
@@ -317,7 +270,7 @@ vdev_geom_detach(struct g_consumer *cp, boolean_t open_for_read)
 	gp = cp->geom;
 	if (open_for_read)
 		g_access(cp, -1, 0, -1);
-	/* Destroy consumer on last close. */
+	 
 	if (cp->acr == 0 && cp->ace == 0) {
 		if (cp->acw > 0)
 			g_access(cp, 0, -cp->acw, 0);
@@ -328,7 +281,7 @@ vdev_geom_detach(struct g_consumer *cp, boolean_t open_for_read)
 		}
 		g_destroy_consumer(cp);
 	}
-	/* Destroy geom if there are no consumers left. */
+	 
 	if (LIST_EMPTY(&gp->consumer)) {
 		ZFS_LOG(1, "Destroyed geom %s.", gp->name);
 		g_wither_geom(gp, ENXIO);
@@ -363,12 +316,7 @@ vdev_geom_close_locked(vdev_t *vd)
 	vdev_geom_detach(cp, B_TRUE);
 }
 
-/*
- * Issue one or more bios to the vdev in parallel
- * cmds, datas, offsets, errors, and sizes are arrays of length ncmds.  Each IO
- * operation is described by parallel entries from each array.  There may be
- * more bios actually issued than entries in the array
- */
+ 
 static void
 vdev_geom_io(struct g_consumer *cp, int *cmds, void **datas, off_t *offsets,
     off_t *sizes, int *errors, int ncmds)
@@ -386,15 +334,15 @@ vdev_geom_io(struct g_consumer *cp, int *cmds, void **datas, off_t *offsets,
 #endif
 	n_bios = 0;
 
-	/* How many bios are required for all commands ? */
+	 
 	for (i = 0; i < ncmds; i++)
 		n_bios += (sizes[i] + maxio - 1) / maxio;
 
-	/* Allocate memory for the bios */
+	 
 	bios_size = n_bios * sizeof (struct bio *);
 	bios = kmem_zalloc(bios_size, KM_SLEEP);
 
-	/* Prepare and issue all of the bios */
+	 
 	for (i = j = 0; i < ncmds; i++) {
 		off = offsets[i];
 		p = datas[i];
@@ -415,7 +363,7 @@ vdev_geom_io(struct g_consumer *cp, int *cmds, void **datas, off_t *offsets,
 	}
 	ASSERT3S(j, ==, n_bios);
 
-	/* Wait for all of the bios to complete, and clean them up */
+	 
 	for (i = j = 0; i < ncmds; i++) {
 		off = offsets[i];
 		s = sizes[i];
@@ -430,11 +378,7 @@ vdev_geom_io(struct g_consumer *cp, int *cmds, void **datas, off_t *offsets,
 	kmem_free(bios, bios_size);
 }
 
-/*
- * Read the vdev config from a device.  Return the number of valid labels that
- * were found.  The vdev config will be returned in config if and only if at
- * least one valid label was found.
- */
+ 
 static int
 vdev_geom_read_config(struct g_consumer *cp, nvlist_t **configp)
 {
@@ -464,7 +408,7 @@ vdev_geom_read_config(struct g_consumer *cp, nvlist_t **configp)
 
 	buflen = sizeof (vdev_lists[0]->vp_nvlist);
 
-	/* Create all of the IO requests */
+	 
 	for (l = 0; l < VDEV_LABELS; l++) {
 		cmds[l] = BIO_READ;
 		vdev_lists[l] = kmem_alloc(size, KM_SLEEP);
@@ -474,11 +418,11 @@ vdev_geom_read_config(struct g_consumer *cp, nvlist_t **configp)
 		ASSERT0(offsets[l] % pp->sectorsize);
 	}
 
-	/* Issue the IO requests */
+	 
 	vdev_geom_io(cp, cmds, (void**)vdev_lists, offsets, sizes, errors,
 	    VDEV_LABELS);
 
-	/* Parse the labels */
+	 
 	config = *configp = NULL;
 	nlabels = 0;
 	for (l = 0; l < VDEV_LABELS; l++) {
@@ -510,7 +454,7 @@ vdev_geom_read_config(struct g_consumer *cp, nvlist_t **configp)
 		nlabels++;
 	}
 
-	/* Free the label storage */
+	 
 	for (l = 0; l < VDEV_LABELS; l++)
 		kmem_free(vdev_lists[l], size);
 
@@ -636,13 +580,13 @@ vdev_geom_read_pool_label(const char *name,
 }
 
 enum match {
-	NO_MATCH = 0,		/* No matching labels found */
-	TOPGUID_MATCH = 1,	/* Labels match top guid, not vdev guid */
-	ZERO_MATCH = 1,		/* Should never be returned */
-	ONE_MATCH = 2,		/* 1 label matching the vdev_guid */
-	TWO_MATCH = 3,		/* 2 label matching the vdev_guid */
-	THREE_MATCH = 4,	/* 3 label matching the vdev_guid */
-	FULL_MATCH = 5		/* all labels match the vdev_guid */
+	NO_MATCH = 0,		 
+	TOPGUID_MATCH = 1,	 
+	ZERO_MATCH = 1,		 
+	ONE_MATCH = 2,		 
+	TWO_MATCH = 3,		 
+	THREE_MATCH = 4,	 
+	FULL_MATCH = 5		 
 };
 
 static enum match
@@ -676,10 +620,7 @@ vdev_attach_ok(vdev_t *vd, struct g_provider *pp)
 	(void) nvlist_lookup_uint64(config, ZPOOL_CONFIG_GUID, &vdev_guid);
 	nvlist_free(config);
 
-	/*
-	 * Check that the label's pool guid matches the desired guid.
-	 * Inactive spares and L2ARCs do not have any pool guid in the label.
-	 */
+	 
 	if (pool_guid != 0 && pool_guid != spa_guid(vd->vdev_spa)) {
 		ZFS_LOG(1, "pool guid mismatch for provider %s: %ju != %ju.",
 		    pp->name,
@@ -687,11 +628,7 @@ vdev_attach_ok(vdev_t *vd, struct g_provider *pp)
 		return (NO_MATCH);
 	}
 
-	/*
-	 * Check that the label's vdev guid matches the desired guid.
-	 * The second condition handles possible race on vdev detach, when
-	 * remaining vdev receives GUID of destroyed top level mirror vdev.
-	 */
+	 
 	if (vdev_guid == vd->vdev_guid) {
 		ZFS_LOG(1, "guids match for provider %s.", pp->name);
 		return (ZERO_MATCH + nlabels);
@@ -813,24 +750,16 @@ vdev_geom_open(vdev_t *vd, uint64_t *psize, uint64_t *max_psize,
 	int error, has_trim;
 	uint16_t rate;
 
-	/*
-	 * Set the TLS to indicate downstack that we
-	 * should not access zvols
-	 */
+	 
 	VERIFY0(tsd_set(zfs_geom_probe_vdev_key, vd));
 
-	/*
-	 * We must have a pathname, and it must be absolute.
-	 */
+	 
 	if (vd->vdev_path == NULL || strncmp(vd->vdev_path, "/dev/", 5) != 0) {
 		vd->vdev_stat.vs_aux = VDEV_AUX_BAD_LABEL;
 		return (EINVAL);
 	}
 
-	/*
-	 * Reopen the device if it's not currently open. Otherwise,
-	 * just update the physical size of the device.
-	 */
+	 
 	if ((cp = vd->vdev_tsd) != NULL) {
 		ASSERT(vd->vdev_reopening);
 		goto skip_open;
@@ -844,39 +773,18 @@ vdev_geom_open(vdev_t *vd, uint64_t *psize, uint64_t *max_psize,
 	    ((vd->vdev_prevstate == VDEV_STATE_UNKNOWN &&
 	    (vd->vdev_spa->spa_load_state == SPA_LOAD_NONE ||
 	    vd->vdev_spa->spa_load_state == SPA_LOAD_CREATE)))) {
-		/*
-		 * We are dealing with a vdev that hasn't been previously
-		 * opened (since boot), and we are not loading an
-		 * existing pool configuration.  This looks like a
-		 * vdev add operation to a new or existing pool.
-		 * Assume the user really wants to do this, and find
-		 * GEOM provider by its name, ignoring GUID mismatches.
-		 *
-		 * XXPOLICY: It would be safer to only allow a device
-		 *           that is unlabeled or labeled but missing
-		 *           GUID information to be opened in this fashion,
-		 *           unless we are doing a split, in which case we
-		 *           should allow any guid.
-		 */
+		 
 		cp = vdev_geom_open_by_path(vd, 0);
 	} else {
-		/*
-		 * Try using the recorded path for this device, but only
-		 * accept it if its label data contains the expected GUIDs.
-		 */
+		 
 		cp = vdev_geom_open_by_path(vd, 1);
 		if (cp == NULL) {
-			/*
-			 * The device at vd->vdev_path doesn't have the
-			 * expected GUIDs. The disks might have merely
-			 * moved around so try all other GEOM providers
-			 * to find one with the right GUIDs.
-			 */
+			 
 			cp = vdev_geom_open_by_guids(vd);
 		}
 	}
 
-	/* Clear the TLS now that tasting is done */
+	 
 	VERIFY0(tsd_set(zfs_geom_probe_vdev_key, NULL));
 
 	if (cp == NULL) {
@@ -924,12 +832,12 @@ vdev_geom_open(vdev_t *vd, uint64_t *psize, uint64_t *max_psize,
 		}
 	}
 
-	/* Fetch initial physical path information for this device. */
+	 
 	if (cp != NULL) {
 		vdev_geom_attrchanged(cp, "GEOM::physpath");
 
-		/* Set other GEOM characteristics */
-		vdev_geom_set_physpath(vd, cp, /* do_null_update */B_FALSE);
+		 
+		vdev_geom_set_physpath(vd, cp,  B_FALSE);
 	}
 
 	g_topology_unlock();
@@ -943,40 +851,32 @@ vdev_geom_open(vdev_t *vd, uint64_t *psize, uint64_t *max_psize,
 skip_open:
 	pp = cp->provider;
 
-	/*
-	 * Determine the actual size of the device.
-	 */
+	 
 	*max_psize = *psize = pp->mediasize;
 
-	/*
-	 * Determine the device's minimum transfer size and preferred
-	 * transfer size.
-	 */
+	 
 	*logical_ashift = highbit(MAX(pp->sectorsize, SPA_MINBLOCKSIZE)) - 1;
 	*physical_ashift = 0;
 	if (pp->stripesize && pp->stripesize > (1 << *logical_ashift) &&
 	    ISP2(pp->stripesize) && pp->stripeoffset == 0)
 		*physical_ashift = highbit(pp->stripesize) - 1;
 
-	/*
-	 * Clear the nowritecache settings, so that on a vdev_reopen()
-	 * we will try again.
-	 */
+	 
 	vd->vdev_nowritecache = B_FALSE;
 
-	/* Inform the ZIO pipeline that we are non-rotational. */
+	 
 	error = g_getattr("GEOM::rotation_rate", cp, &rate);
 	if (error == 0 && rate == DISK_RR_NON_ROTATING)
 		vd->vdev_nonrot = B_TRUE;
 	else
 		vd->vdev_nonrot = B_FALSE;
 
-	/* Set when device reports it supports TRIM. */
+	 
 	error = g_getattr("GEOM::candelete", cp, &has_trim);
 	vd->vdev_has_trim = (error == 0 && has_trim);
 
-	/* Set when device reports it supports secure TRIM. */
-	/* unavailable on FreeBSD */
+	 
+	 
 	vd->vdev_has_securetrim = B_FALSE;
 
 	return (0);
@@ -1019,12 +919,7 @@ vdev_geom_io_intr(struct bio *bp)
 
 	switch (zio->io_error) {
 	case ENOTSUP:
-		/*
-		 * If we get ENOTSUP for BIO_FLUSH or BIO_DELETE we know
-		 * that future attempts will never succeed. In this case
-		 * we set a persistent flag so that we don't bother with
-		 * requests in the future.
-		 */
+		 
 		switch (bp->bio_cmd) {
 		case BIO_FLUSH:
 			vd->vdev_nowritecache = B_TRUE;
@@ -1035,10 +930,7 @@ vdev_geom_io_intr(struct bio *bp)
 		break;
 	case ENXIO:
 		if (!vd->vdev_remove_wanted) {
-			/*
-			 * If provider's error is set we assume it is being
-			 * removed.
-			 */
+			 
 			if (bp->bio_to->error != 0) {
 				vd->vdev_remove_wanted = B_TRUE;
 				spa_async_request(zio->io_spa,
@@ -1050,11 +942,7 @@ vdev_geom_io_intr(struct bio *bp)
 		break;
 	}
 
-	/*
-	 * We have to split bio freeing into two parts, because the ABD code
-	 * cannot be called in this context and vdev_op_io_done is not called
-	 * for ZIO_TYPE_IOCTL zio-s.
-	 */
+	 
 	if (zio->io_type != ZIO_TYPE_READ && zio->io_type != ZIO_TYPE_WRITE) {
 		g_destroy_bio(bp);
 		zio->io_bio = NULL;
@@ -1067,12 +955,7 @@ struct vdev_geom_check_unmapped_cb_state {
 	uint_t	end;
 };
 
-/*
- * Callback to check the ABD segment size/alignment and count the pages.
- * GEOM requires data buffer to look virtually contiguous.  It means only
- * the first page of the buffer may not start and only the last may not
- * end on a page boundary.  All other physical pages must be full.
- */
+ 
 static int
 vdev_geom_check_unmapped_cb(void *buf, size_t len, void *priv)
 {
@@ -1088,31 +971,25 @@ vdev_geom_check_unmapped_cb(void *buf, size_t len, void *priv)
 	return (0);
 }
 
-/*
- * Check whether we can use unmapped I/O for this ZIO on this device to
- * avoid data copying between scattered and/or gang ABD buffer and linear.
- */
+ 
 static int
 vdev_geom_check_unmapped(zio_t *zio, struct g_consumer *cp)
 {
 	struct vdev_geom_check_unmapped_cb_state s;
 
-	/* If unmapped I/O is administratively disabled, respect that. */
+	 
 	if (!unmapped_buf_allowed)
 		return (0);
 
-	/* If the buffer is already linear, then nothing to do here. */
+	 
 	if (abd_is_linear(zio->io_abd))
 		return (0);
 
-	/*
-	 * If unmapped I/O is not supported by the GEOM provider,
-	 * then we can't do anything and have to copy the data.
-	 */
+	 
 	if ((cp->provider->flags & G_PF_ACCEPT_UNMAPPED) == 0)
 		return (0);
 
-	/* Check the buffer chunks sizes/alignments and count pages. */
+	 
 	s.pages = s.end = 0;
 	if (abd_iterate_func(zio->io_abd, 0, zio->io_size,
 	    vdev_geom_check_unmapped_cb, &s))
@@ -1120,9 +997,7 @@ vdev_geom_check_unmapped(zio_t *zio, struct g_consumer *cp)
 	return (s.pages);
 }
 
-/*
- * Callback to translate the ABD segment into array of physical pages.
- */
+ 
 static int
 vdev_geom_fill_unmap_cb(void *buf, size_t len, void *priv)
 {
@@ -1155,7 +1030,7 @@ vdev_geom_io_start(zio_t *zio)
 
 	switch (zio->io_type) {
 	case ZIO_TYPE_IOCTL:
-		/* XXPOLICY */
+		 
 		if (!vdev_readable(vd)) {
 			zio->io_error = SET_ERROR(ENXIO);
 			zio_interrupt(zio);
@@ -1186,7 +1061,7 @@ vdev_geom_io_start(zio_t *zio)
 		return;
 	default:
 			;
-		/* PASSTHROUGH --- placate compiler */
+		 
 	}
 sendreq:
 	ASSERT(zio->io_type == ZIO_TYPE_READ ||
@@ -1213,11 +1088,7 @@ sendreq:
 		else
 			bp->bio_cmd = BIO_WRITE;
 
-		/*
-		 * If possible, represent scattered and/or gang ABD buffer to
-		 * GEOM as an array of physical pages.  It allows to satisfy
-		 * requirement of virtually contiguous buffer without copying.
-		 */
+		 
 		int pgs = vdev_geom_check_unmapped(zio, cp);
 		if (pgs > 0) {
 			bp->bio_ma = malloc(sizeof (struct vm_page *) * pgs,
@@ -1321,6 +1192,6 @@ vdev_ops_t vdev_disk_ops = {
 	.vdev_op_config_generate = NULL,
 	.vdev_op_nparity = NULL,
 	.vdev_op_ndisks = NULL,
-	.vdev_op_type = VDEV_TYPE_DISK,		/* name of this vdev type */
-	.vdev_op_leaf = B_TRUE			/* leaf vdev */
+	.vdev_op_type = VDEV_TYPE_DISK,		 
+	.vdev_op_leaf = B_TRUE			 
 };

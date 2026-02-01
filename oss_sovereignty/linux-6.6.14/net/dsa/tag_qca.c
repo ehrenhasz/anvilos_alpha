@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2015, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/etherdevice.h>
 #include <linux/bitfield.h>
@@ -23,7 +21,7 @@ static struct sk_buff *qca_tag_xmit(struct sk_buff *skb, struct net_device *dev)
 	dsa_alloc_etype_header(skb, QCA_HDR_LEN);
 	phdr = dsa_etype_header_pos_tx(skb);
 
-	/* Set the version field, and set destination port information */
+	 
 	hdr = FIELD_PREP(QCA_HDR_XMIT_VERSION, QCA_HDR_VERSION);
 	hdr |= QCA_HDR_XMIT_FROM_CPU;
 	hdr |= FIELD_PREP(QCA_HDR_XMIT_DP_BIT, BIT(dp->index));
@@ -53,36 +51,36 @@ static struct sk_buff *qca_tag_rcv(struct sk_buff *skb, struct net_device *dev)
 	phdr = dsa_etype_header_pos_rx(skb);
 	hdr = ntohs(*phdr);
 
-	/* Make sure the version is correct */
+	 
 	ver = FIELD_GET(QCA_HDR_RECV_VERSION, hdr);
 	if (unlikely(ver != QCA_HDR_VERSION))
 		return NULL;
 
-	/* Get pk type */
+	 
 	pk_type = FIELD_GET(QCA_HDR_RECV_TYPE, hdr);
 
-	/* Ethernet mgmt read/write packet */
+	 
 	if (pk_type == QCA_HDR_RECV_TYPE_RW_REG_ACK) {
 		if (likely(tagger_data->rw_reg_ack_handler))
 			tagger_data->rw_reg_ack_handler(ds, skb);
 		return NULL;
 	}
 
-	/* Ethernet MIB counter packet */
+	 
 	if (pk_type == QCA_HDR_RECV_TYPE_MIB) {
 		if (likely(tagger_data->mib_autocast_handler))
 			tagger_data->mib_autocast_handler(ds, skb);
 		return NULL;
 	}
 
-	/* Get source port information */
+	 
 	port = FIELD_GET(QCA_HDR_RECV_SOURCE_PORT, hdr);
 
 	skb->dev = dsa_master_find_slave(dev, 0, port);
 	if (!skb->dev)
 		return NULL;
 
-	/* Remove QCA tag and recalculate checksum */
+	 
 	skb_pull_rcsum(skb, QCA_HDR_LEN);
 	dsa_strip_etype_header(skb, QCA_HDR_LEN);
 

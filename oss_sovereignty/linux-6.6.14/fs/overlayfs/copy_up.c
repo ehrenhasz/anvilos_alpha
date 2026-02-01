@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *
- * Copyright (C) 2011 Novell Inc.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/fs.h>
@@ -62,13 +59,13 @@ static int ovl_copy_acl(struct ovl_fs *ofs, const struct path *path,
 	}
 
 	clone = posix_acl_clone(real_acl, GFP_KERNEL);
-	posix_acl_release(real_acl); /* release original acl */
+	posix_acl_release(real_acl);  
 	if (!clone)
 		return -ENOMEM;
 
 	err = ovl_do_set_acl(ofs, dentry, acl_name, clone);
 
-	/* release cloned acl */
+	 
 	posix_acl_release(clone);
 	return err;
 }
@@ -104,7 +101,7 @@ int ovl_copy_xattr(struct super_block *sb, const struct path *oldpath, struct de
 	for (name = buf; list_size; name += slen) {
 		slen = strnlen(name, list_size) + 1;
 
-		/* underlying fs providing us with an broken xattr list? */
+		 
 		if (WARN_ON(slen > list_size)) {
 			error = -EIO;
 			break;
@@ -119,14 +116,14 @@ int ovl_copy_xattr(struct super_block *sb, const struct path *oldpath, struct de
 			break;
 		if (error == 1) {
 			error = 0;
-			continue; /* Discard */
+			continue;  
 		}
 
 		if (is_posix_acl_xattr(name)) {
 			error = ovl_copy_acl(OVL_FS(sb), oldpath, new, name);
 			if (!error)
 				continue;
-			/* POSIX ACLs must be copied. */
+			 
 			break;
 		}
 
@@ -159,7 +156,7 @@ retry:
 			if (error != -EOPNOTSUPP || ovl_must_copy_xattr(name))
 				break;
 
-			/* Ignore failure to copy unknown xattrs */
+			 
 			error = 0;
 		}
 	}
@@ -178,7 +175,7 @@ static int ovl_copy_fileattr(struct inode *inode, const struct path *old,
 
 	err = ovl_real_fileattr_get(old, &oldfa);
 	if (err) {
-		/* Ntfs-3g returns -EINVAL for "no fileattr support" */
+		 
 		if (err == -ENOTTY || err == -EINVAL)
 			return 0;
 		pr_warn("failed to retrieve lower fileattr (%pd2, err=%i)\n",
@@ -186,12 +183,7 @@ static int ovl_copy_fileattr(struct inode *inode, const struct path *old,
 		return err;
 	}
 
-	/*
-	 * We cannot set immutable and append-only flags on upper inode,
-	 * because we would not be able to link upper inode to upper dir
-	 * not set overlay private xattr on upper inode.
-	 * Store these flags in overlay.protattr xattr instead.
-	 */
+	 
 	if (oldfa.flags & OVL_PROT_FS_FLAGS_MASK) {
 		err = ovl_set_protattr(inode, new->dentry, &oldfa);
 		if (err == -EPERM)
@@ -200,16 +192,13 @@ static int ovl_copy_fileattr(struct inode *inode, const struct path *old,
 			return err;
 	}
 
-	/* Don't bother copying flags if none are set */
+	 
 	if (!(oldfa.flags & OVL_COPY_FS_FLAGS_MASK))
 		return 0;
 
 	err = ovl_real_fileattr_get(new, &newfa);
 	if (err) {
-		/*
-		 * Returning an error if upper doesn't support fileattr will
-		 * result in a regression, so revert to the old behavior.
-		 */
+		 
 		if (err == -ENOTTY || err == -EINVAL) {
 			pr_warn_once("copying fileattr: no support on upper\n");
 			return 0;
@@ -251,13 +240,13 @@ static int ovl_copy_up_file(struct ovl_fs *ofs, struct dentry *dentry,
 	if (IS_ERR(old_file))
 		return PTR_ERR(old_file);
 
-	/* Try to use clone_file_range to clone up within the same fs */
+	 
 	cloned = do_clone_file_range(old_file, 0, new_file, 0, len, 0);
 	if (cloned == len)
 		goto out_fput;
-	/* Couldn't clone, so now we try to copy the data */
+	 
 
-	/* Check if lower fs supports seek operation */
+	 
 	if (old_file->f_mode & FMODE_LSEEK)
 		skip_hole = true;
 
@@ -273,21 +262,7 @@ static int ovl_copy_up_file(struct ovl_fs *ofs, struct dentry *dentry,
 			break;
 		}
 
-		/*
-		 * Fill zero for hole will cost unnecessary disk space
-		 * and meanwhile slow down the copy-up speed, so we do
-		 * an optimization for hole during copy-up, it relies
-		 * on SEEK_DATA implementation in lower fs so if lower
-		 * fs does not support it, copy-up will behave as before.
-		 *
-		 * Detail logic of hole detection as below:
-		 * When we detect next data position is larger than current
-		 * position we will skip that hole, otherwise we copy
-		 * data in the size of OVL_COPY_UP_CHUNK_SIZE. Actually,
-		 * it may not recognize all kind of holes and sometimes
-		 * only skips partial of hole area. However, it will be
-		 * enough for most of the use cases.
-		 */
+		 
 
 		if (skip_hole && data_pos < old_pos) {
 			data_pos = vfs_llseek(old_file, old_pos, SEEK_DATA);
@@ -380,7 +355,7 @@ struct ovl_fh *ovl_encode_real_fh(struct ovl_fs *ofs, struct dentry *real,
 	uuid_t *uuid = &real->d_sb->s_uuid;
 	int err;
 
-	/* Make sure the real fid stays 32bit aligned */
+	 
 	BUILD_BUG_ON(OVL_FH_FID_OFFSET % 4);
 	BUILD_BUG_ON(MAX_HANDLE_SZ + OVL_FH_FID_OFFSET > 255);
 
@@ -388,11 +363,7 @@ struct ovl_fh *ovl_encode_real_fh(struct ovl_fs *ofs, struct dentry *real,
 	if (!fh)
 		return ERR_PTR(-ENOMEM);
 
-	/*
-	 * We encode a non-connectable file handle for non-dir, because we
-	 * only need to find the lower inode number and we don't want to pay
-	 * the price or reconnecting the dentry.
-	 */
+	 
 	dwords = buflen >> 2;
 	fh_type = exportfs_encode_fh(real, (void *)fh->fb.fid, &dwords, 0);
 	buflen = (dwords << 2);
@@ -407,12 +378,7 @@ struct ovl_fh *ovl_encode_real_fh(struct ovl_fs *ofs, struct dentry *real,
 	fh->fb.magic = OVL_FH_MAGIC;
 	fh->fb.type = fh_type;
 	fh->fb.flags = OVL_FH_FLAG_CPU_ENDIAN;
-	/*
-	 * When we will want to decode an overlay dentry from this handle
-	 * and all layers are on the same fs, if we get a disconncted real
-	 * dentry when we decode fid, the only way to tell if we should assign
-	 * it to upperdentry or to lowerstack is by checking this flag.
-	 */
+	 
 	if (is_upper)
 		fh->fb.flags |= OVL_FH_FLAG_PATH_UPPER;
 	fh->fb.len = sizeof(fh->fb) + buflen;
@@ -432,29 +398,23 @@ int ovl_set_origin(struct ovl_fs *ofs, struct dentry *lower,
 	const struct ovl_fh *fh = NULL;
 	int err;
 
-	/*
-	 * When lower layer doesn't support export operations store a 'null' fh,
-	 * so we can use the overlay.origin xattr to distignuish between a copy
-	 * up and a pure upper inode.
-	 */
+	 
 	if (ovl_can_decode_fh(lower->d_sb)) {
 		fh = ovl_encode_real_fh(ofs, lower, false);
 		if (IS_ERR(fh))
 			return PTR_ERR(fh);
 	}
 
-	/*
-	 * Do not fail when upper doesn't support xattrs.
-	 */
+	 
 	err = ovl_check_setxattr(ofs, upper, OVL_XATTR_ORIGIN, fh->buf,
 				 fh ? fh->fb.len : 0, 0);
 	kfree(fh);
 
-	/* Ignore -EPERM from setting "user.*" on symlink/special */
+	 
 	return err == -EPERM ? 0 : err;
 }
 
-/* Store file handle of @upper dir in @index dir entry */
+ 
 static int ovl_set_upper_fh(struct ovl_fs *ofs, struct dentry *upper,
 			    struct dentry *index)
 {
@@ -471,11 +431,7 @@ static int ovl_set_upper_fh(struct ovl_fs *ofs, struct dentry *upper,
 	return err;
 }
 
-/*
- * Create and install index entry.
- *
- * Caller must hold i_mutex on indexdir.
- */
+ 
 static int ovl_create_index(struct dentry *dentry, struct dentry *origin,
 			    struct dentry *upper)
 {
@@ -487,18 +443,11 @@ static int ovl_create_index(struct dentry *dentry, struct dentry *origin,
 	struct qstr name = { };
 	int err;
 
-	/*
-	 * For now this is only used for creating index entry for directories,
-	 * because non-dir are copied up directly to index and then hardlinked
-	 * to upper dir.
-	 *
-	 * TODO: implement create index for non-dir, so we can call it when
-	 * encoding file handle for non-dir in case index does not exist.
-	 */
+	 
 	if (WARN_ON(!d_is_dir(dentry)))
 		return -EIO;
 
-	/* Directory not expected to be indexed before copy up */
+	 
 	if (WARN_ON(ovl_test_flag(OVL_INDEX, d_inode(dentry))))
 		return -EIO;
 
@@ -555,7 +504,7 @@ static int ovl_link_up(struct ovl_copy_up_ctx *c)
 	struct ovl_fs *ofs = OVL_FS(c->dentry->d_sb);
 	struct inode *udir = d_inode(upperdir);
 
-	/* Mark parent "impure" because it may now contain non-pure upper */
+	 
 	err = ovl_set_impure(c->parent, upperdir);
 	if (err)
 		return err;
@@ -573,7 +522,7 @@ static int ovl_link_up(struct ovl_copy_up_ctx *c)
 		dput(upper);
 
 		if (!err) {
-			/* Restore timestamps on parent (best effort) */
+			 
 			ovl_set_timestamps(ofs, upperdir, &c->pstat);
 			ovl_dentry_set_upper_alias(c->dentry);
 			ovl_dentry_update_reval(c->dentry, upper);
@@ -620,22 +569,13 @@ static int ovl_copy_up_metadata(struct ovl_copy_up_ctx *c, struct dentry *temp)
 
 	if (inode->i_flags & OVL_COPY_I_FLAGS_MASK &&
 	    (S_ISREG(c->stat.mode) || S_ISDIR(c->stat.mode))) {
-		/*
-		 * Copy the fileattr inode flags that are the source of already
-		 * copied i_flags
-		 */
+		 
 		err = ovl_copy_fileattr(inode, &c->lowerpath, &upperpath);
 		if (err)
 			return err;
 	}
 
-	/*
-	 * Store identifier of lower inode in upper inode xattr to
-	 * allow lookup of the copy up origin inode.
-	 *
-	 * Don't set origin when we are breaking the association with a lower
-	 * hard link.
-	 */
+	 
 	if (c->origin) {
 		err = ovl_set_origin(ofs, c->lowerpath.dentry, temp);
 		if (err)
@@ -699,10 +639,7 @@ static void ovl_revert_cu_creds(struct ovl_cu_creds *cc)
 	}
 }
 
-/*
- * Copyup using workdir to prepare temp file.  Used when copying up directories,
- * special files or when upper fs doesn't support O_TMPFILE.
- */
+ 
 static int ovl_copy_up_workdir(struct ovl_copy_up_ctx *c)
 {
 	struct ovl_fs *ofs = OVL_FS(c->dentry->d_sb);
@@ -713,13 +650,13 @@ static int ovl_copy_up_workdir(struct ovl_copy_up_ctx *c)
 	struct ovl_cu_creds cc;
 	int err;
 	struct ovl_cattr cattr = {
-		/* Can't properly set mode on creation because of the umask */
+		 
 		.mode = c->stat.mode & S_IFMT,
 		.rdev = c->stat.rdev,
 		.link = c->link
 	};
 
-	/* workdir and destdir could be the same when copying up to indexdir */
+	 
 	err = -EIO;
 	if (lock_rename(c->workdir, c->destdir) != NULL)
 		goto unlock;
@@ -735,10 +672,7 @@ static int ovl_copy_up_workdir(struct ovl_copy_up_ctx *c)
 	if (IS_ERR(temp))
 		goto unlock;
 
-	/*
-	 * Copy up data first and then xattrs. Writing data after
-	 * xattrs will remove security.capability xattr automatically.
-	 */
+	 
 	path.dentry = temp;
 	err = ovl_copy_up_data(c, &path);
 	if (err)
@@ -788,7 +722,7 @@ cleanup:
 	goto unlock;
 }
 
-/* Copyup using O_TMPFILE which does not require cross dir locking */
+ 
 static int ovl_copy_up_tmpfile(struct ovl_copy_up_ctx *c)
 {
 	struct ovl_fs *ofs = OVL_FS(c->dentry->d_sb);
@@ -848,27 +782,14 @@ out_fput:
 	return err;
 }
 
-/*
- * Copy up a single dentry
- *
- * All renames start with copy up of source if necessary.  The actual
- * rename will only proceed once the copy up was successful.  Copy up uses
- * upper parent i_mutex for exclusion.  Since rename can change d_parent it
- * is possible that the copy up will lock the old parent.  At that point
- * the file will have already been copied up anyway.
- */
+ 
 static int ovl_do_copy_up(struct ovl_copy_up_ctx *c)
 {
 	int err;
 	struct ovl_fs *ofs = OVL_FS(c->dentry->d_sb);
 	bool to_index = false;
 
-	/*
-	 * Indexed non-dir is copied up directly to the index entry and then
-	 * hardlinked to upper dir. Indexed dir is copied up to indexdir,
-	 * then index entry is created and then copied up dir installed.
-	 * Copying dir up to indexdir instead of workdir simplifies locking.
-	 */
+	 
 	if (ovl_need_index(c->dentry)) {
 		c->indexed = true;
 		if (S_ISDIR(c->stat.mode))
@@ -886,19 +807,16 @@ static int ovl_do_copy_up(struct ovl_copy_up_ctx *c)
 		if (err)
 			return err;
 	} else if (WARN_ON(!c->parent)) {
-		/* Disconnected dentry must be copied up to index dir */
+		 
 		return -EIO;
 	} else {
-		/*
-		 * Mark parent "impure" because it may now contain non-pure
-		 * upper
-		 */
+		 
 		err = ovl_set_impure(c->parent, c->destdir);
 		if (err)
 			return err;
 	}
 
-	/* Should we copyup with O_TMPFILE or with workdir? */
+	 
 	if (S_ISREG(c->stat.mode) && ofs->tmpfile)
 		err = ovl_copy_up_tmpfile(c);
 	else
@@ -910,12 +828,12 @@ static int ovl_do_copy_up(struct ovl_copy_up_ctx *c)
 		ovl_set_flag(OVL_INDEX, d_inode(c->dentry));
 
 	if (to_index) {
-		/* Initialize nlink for copy up of disconnected dentry */
+		 
 		err = ovl_set_nlink_upper(c->dentry);
 	} else {
 		struct inode *udir = d_inode(c->destdir);
 
-		/* Restore timestamps on parent (best effort) */
+		 
 		inode_lock(udir);
 		ovl_set_timestamps(ofs, c->destdir, &c->pstat);
 		inode_unlock(udir);
@@ -944,7 +862,7 @@ static bool ovl_need_meta_copy_up(struct dentry *dentry, umode_t mode,
 	if (flags && ((OPEN_FMODE(flags) & FMODE_WRITE) || (flags & O_TRUNC)))
 		return false;
 
-	/* Fall back to full copy if no fsverity on source data and we require verity */
+	 
 	if (ofs->config.verity_mode == OVL_VERITY_REQUIRE) {
 		struct path lowerdata;
 
@@ -983,7 +901,7 @@ static ssize_t ovl_getxattr_value(const struct path *path, char *name, char **va
 	return res;
 }
 
-/* Copy up data of an inode which was copied up metadata only in the past. */
+ 
 static int ovl_copy_up_meta_inode_data(struct ovl_copy_up_ctx *c)
 {
 	struct ovl_fs *ofs = OVL_FS(c->dentry->d_sb);
@@ -1007,10 +925,7 @@ static int ovl_copy_up_meta_inode_data(struct ovl_copy_up_ctx *c)
 	if (err)
 		goto out_free;
 
-	/*
-	 * Writing to upper file will clear security.capability xattr. We
-	 * don't want that to happen for normal copy-up operation.
-	 */
+	 
 	if (capability) {
 		err = ovl_do_setxattr(ofs, upperpath.dentry, XATTR_NAME_CAPS,
 				      capability, cap_size, 0);
@@ -1071,7 +986,7 @@ static int ovl_copy_up_one(struct dentry *parent, struct dentry *dentry,
 			return err;
 	}
 
-	/* maybe truncate regular file. this has no effect on dirs */
+	 
 	if (flags & O_TRUNC)
 		ctx.stat.size = 0;
 
@@ -1082,7 +997,7 @@ static int ovl_copy_up_one(struct dentry *parent, struct dentry *dentry,
 	}
 
 	err = ovl_copy_up_start(dentry, flags);
-	/* err < 0: interrupted, err > 0: raced with another copy-up */
+	 
 	if (unlikely(err)) {
 		if (err > 0)
 			err = 0;
@@ -1106,19 +1021,11 @@ static int ovl_copy_up_flags(struct dentry *dentry, int flags)
 	const struct cred *old_cred;
 	bool disconnected = (dentry->d_flags & DCACHE_DISCONNECTED);
 
-	/*
-	 * With NFS export, copy up can get called for a disconnected non-dir.
-	 * In this case, we will copy up lower inode to index dir without
-	 * linking it to upper dir.
-	 */
+	 
 	if (WARN_ON(disconnected && d_is_dir(dentry)))
 		return -EIO;
 
-	/*
-	 * We may not need lowerdata if we are only doing metacopy up, but it is
-	 * not very important to optimize this case, so do lazy lowerdata lookup
-	 * before any copy up, so we can do it before taking ovl_inode_lock().
-	 */
+	 
 	err = ovl_verify_lowerdata(dentry);
 	if (err)
 		return err;
@@ -1132,7 +1039,7 @@ static int ovl_copy_up_flags(struct dentry *dentry, int flags)
 			break;
 
 		next = dget(dentry);
-		/* find the topmost dentry not yet copied up */
+		 
 		for (; !disconnected;) {
 			parent = dget_parent(next);
 
@@ -1155,7 +1062,7 @@ static int ovl_copy_up_flags(struct dentry *dentry, int flags)
 
 static bool ovl_open_need_copy_up(struct dentry *dentry, int flags)
 {
-	/* Copy up of disconnected dentry does not set upper alias */
+	 
 	if (ovl_already_copied_up(dentry, flags))
 		return false;
 

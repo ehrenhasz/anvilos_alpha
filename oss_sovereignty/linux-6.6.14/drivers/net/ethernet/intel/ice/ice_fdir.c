@@ -1,9 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (C) 2018-2020, Intel Corporation. */
+
+ 
 
 #include "ice_common.h"
 
-/* These are training packet headers used to program flow director filters. */
+ 
 static const u8 ice_fdir_tcpv4_pkt[] = {
 	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 	0x00, 0x00, 0x00, 0x00, 0x08, 0x00, 0x45, 0x00,
@@ -414,7 +414,7 @@ static const u8 ice_fdir_ip6_tun_pkt[] = {
 	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 };
 
-/* Flow Director no-op training packet table */
+ 
 static const struct ice_fdir_base_pkt ice_fdir_pkt[] = {
 	{
 		ICE_FLTR_PTYPE_NONF_IPV4_TCP,
@@ -565,10 +565,7 @@ static const struct ice_fdir_base_pkt ice_fdir_pkt[] = {
 
 #define ICE_FDIR_NUM_PKT ARRAY_SIZE(ice_fdir_pkt)
 
-/**
- * ice_set_dflt_val_fd_desc
- * @fd_fltr_ctx: pointer to fd filter descriptor
- */
+ 
 static void ice_set_dflt_val_fd_desc(struct ice_fd_fltr_desc_ctx *fd_fltr_ctx)
 {
 	fd_fltr_ctx->comp_q = ICE_FXD_FLTR_QW0_COMP_Q_ZERO;
@@ -592,18 +589,14 @@ static void ice_set_dflt_val_fd_desc(struct ice_fd_fltr_desc_ctx *fd_fltr_ctx)
 	fd_fltr_ctx->fdid = ICE_FXD_FLTR_QW1_FDID_ZERO;
 }
 
-/**
- * ice_set_fd_desc_val
- * @ctx: pointer to fd filter descriptor context
- * @fdir_desc: populated with fd filter descriptor values
- */
+ 
 static void
 ice_set_fd_desc_val(struct ice_fd_fltr_desc_ctx *ctx,
 		    struct ice_fltr_desc *fdir_desc)
 {
 	u64 qword;
 
-	/* prep QW0 of FD filter programming desc */
+	 
 	qword = ((u64)ctx->qindex << ICE_FXD_FLTR_QW0_QINDEX_S) &
 		ICE_FXD_FLTR_QW0_QINDEX_M;
 	qword |= ((u64)ctx->comp_q << ICE_FXD_FLTR_QW0_COMP_Q_S) &
@@ -634,7 +627,7 @@ ice_set_fd_desc_val(struct ice_fd_fltr_desc_ctx *ctx,
 		 ICE_FXD_FLTR_QW0_FLEX_VAL_M;
 	fdir_desc->qidx_compq_space_stat = cpu_to_le64(qword);
 
-	/* prep QW1 of FD filter programming desc */
+	 
 	qword = ((u64)ctx->dtype << ICE_FXD_FLTR_QW1_DTYPE_S) &
 		ICE_FXD_FLTR_QW1_DTYPE_M;
 	qword |= ((u64)ctx->pcmd << ICE_FXD_FLTR_QW1_PCMD_S) &
@@ -656,23 +649,17 @@ ice_set_fd_desc_val(struct ice_fd_fltr_desc_ctx *ctx,
 	fdir_desc->dtype_cmd_vsi_fdid = cpu_to_le64(qword);
 }
 
-/**
- * ice_fdir_get_prgm_desc - set a fdir descriptor from a fdir filter struct
- * @hw: pointer to the hardware structure
- * @input: filter
- * @fdesc: filter descriptor
- * @add: if add is true, this is an add operation, false implies delete
- */
+ 
 void
 ice_fdir_get_prgm_desc(struct ice_hw *hw, struct ice_fdir_fltr *input,
 		       struct ice_fltr_desc *fdesc, bool add)
 {
 	struct ice_fd_fltr_desc_ctx fdir_fltr_ctx = { 0 };
 
-	/* set default context info */
+	 
 	ice_set_dflt_val_fd_desc(&fdir_fltr_ctx);
 
-	/* change sideband filtering values */
+	 
 	fdir_fltr_ctx.fdid = input->fltr_id;
 	if (input->dest_ctl == ICE_FLTR_PRGM_DESC_DEST_DROP_PKT) {
 		fdir_fltr_ctx.drop = ICE_FXD_FLTR_QW0_DROP_YES;
@@ -707,34 +694,21 @@ ice_fdir_get_prgm_desc(struct ice_hw *hw, struct ice_fdir_fltr *input,
 	ice_set_fd_desc_val(&fdir_fltr_ctx, fdesc);
 }
 
-/**
- * ice_alloc_fd_res_cntr - obtain counter resource for FD type
- * @hw: pointer to the hardware structure
- * @cntr_id: returns counter index
- */
+ 
 int ice_alloc_fd_res_cntr(struct ice_hw *hw, u16 *cntr_id)
 {
 	return ice_alloc_res_cntr(hw, ICE_AQC_RES_TYPE_FDIR_COUNTER_BLOCK,
 				  ICE_AQC_RES_TYPE_FLAG_DEDICATED, 1, cntr_id);
 }
 
-/**
- * ice_free_fd_res_cntr - Free counter resource for FD type
- * @hw: pointer to the hardware structure
- * @cntr_id: counter index to be freed
- */
+ 
 int ice_free_fd_res_cntr(struct ice_hw *hw, u16 cntr_id)
 {
 	return ice_free_res_cntr(hw, ICE_AQC_RES_TYPE_FDIR_COUNTER_BLOCK,
 				 ICE_AQC_RES_TYPE_FLAG_DEDICATED, 1, cntr_id);
 }
 
-/**
- * ice_alloc_fd_guar_item - allocate resource for FD guaranteed entries
- * @hw: pointer to the hardware structure
- * @cntr_id: returns counter index
- * @num_fltr: number of filter entries to be allocated
- */
+ 
 int ice_alloc_fd_guar_item(struct ice_hw *hw, u16 *cntr_id, u16 num_fltr)
 {
 	return ice_alloc_res_cntr(hw, ICE_AQC_RES_TYPE_FDIR_GUARANTEED_ENTRIES,
@@ -742,12 +716,7 @@ int ice_alloc_fd_guar_item(struct ice_hw *hw, u16 *cntr_id, u16 num_fltr)
 				  cntr_id);
 }
 
-/**
- * ice_alloc_fd_shrd_item - allocate resource for flow director shared entries
- * @hw: pointer to the hardware structure
- * @cntr_id: returns counter index
- * @num_fltr: number of filter entries to be allocated
- */
+ 
 int ice_alloc_fd_shrd_item(struct ice_hw *hw, u16 *cntr_id, u16 num_fltr)
 {
 	return ice_alloc_res_cntr(hw, ICE_AQC_RES_TYPE_FDIR_SHARED_ENTRIES,
@@ -755,23 +724,13 @@ int ice_alloc_fd_shrd_item(struct ice_hw *hw, u16 *cntr_id, u16 num_fltr)
 				  cntr_id);
 }
 
-/**
- * ice_get_fdir_cnt_all - get the number of Flow Director filters
- * @hw: hardware data structure
- *
- * Returns the number of filters available on device
- */
+ 
 int ice_get_fdir_cnt_all(struct ice_hw *hw)
 {
 	return hw->func_caps.fd_fltr_guar + hw->func_caps.fd_fltr_best_effort;
 }
 
-/**
- * ice_pkt_insert_ipv6_addr - insert a be32 IPv6 address into a memory buffer
- * @pkt: packet buffer
- * @offset: offset into buffer
- * @addr: IPv6 address to convert and insert into pkt at offset
- */
+ 
 static void ice_pkt_insert_ipv6_addr(u8 *pkt, int offset, __be32 *addr)
 {
 	int idx;
@@ -781,14 +740,7 @@ static void ice_pkt_insert_ipv6_addr(u8 *pkt, int offset, __be32 *addr)
 		       sizeof(*addr));
 }
 
-/**
- * ice_pkt_insert_u6_qfi - insert a u6 value QFI into a memory buffer for GTPU
- * @pkt: packet buffer
- * @offset: offset into buffer
- * @data: 8 bit value to convert and insert into pkt at offset
- *
- * This function is designed for inserting QFI (6 bits) for GTPU.
- */
+ 
 static void ice_pkt_insert_u6_qfi(u8 *pkt, int offset, u8 data)
 {
 	u8 ret;
@@ -797,28 +749,13 @@ static void ice_pkt_insert_u6_qfi(u8 *pkt, int offset, u8 data)
 	memcpy(pkt + offset, &ret, sizeof(ret));
 }
 
-/**
- * ice_pkt_insert_u8 - insert a u8 value into a memory buffer.
- * @pkt: packet buffer
- * @offset: offset into buffer
- * @data: 8 bit value to convert and insert into pkt at offset
- */
+ 
 static void ice_pkt_insert_u8(u8 *pkt, int offset, u8 data)
 {
 	memcpy(pkt + offset, &data, sizeof(data));
 }
 
-/**
- * ice_pkt_insert_u8_tc - insert a u8 value into a memory buffer for TC ipv6.
- * @pkt: packet buffer
- * @offset: offset into buffer
- * @data: 8 bit value to convert and insert into pkt at offset
- *
- * This function is designed for inserting Traffic Class (TC) for IPv6,
- * since that TC is not aligned in number of bytes. Here we split it out
- * into two part and fill each byte with data copy from pkt, then insert
- * the two bytes data one by one.
- */
+ 
 static void ice_pkt_insert_u8_tc(u8 *pkt, int offset, u8 data)
 {
 	u8 high, low;
@@ -830,46 +767,25 @@ static void ice_pkt_insert_u8_tc(u8 *pkt, int offset, u8 data)
 	memcpy(pkt + offset + 1, &low, sizeof(low));
 }
 
-/**
- * ice_pkt_insert_u16 - insert a be16 value into a memory buffer
- * @pkt: packet buffer
- * @offset: offset into buffer
- * @data: 16 bit value to convert and insert into pkt at offset
- */
+ 
 static void ice_pkt_insert_u16(u8 *pkt, int offset, __be16 data)
 {
 	memcpy(pkt + offset, &data, sizeof(data));
 }
 
-/**
- * ice_pkt_insert_u32 - insert a be32 value into a memory buffer
- * @pkt: packet buffer
- * @offset: offset into buffer
- * @data: 32 bit value to convert and insert into pkt at offset
- */
+ 
 static void ice_pkt_insert_u32(u8 *pkt, int offset, __be32 data)
 {
 	memcpy(pkt + offset, &data, sizeof(data));
 }
 
-/**
- * ice_pkt_insert_mac_addr - insert a MAC addr into a memory buffer.
- * @pkt: packet buffer
- * @addr: MAC address to convert and insert into pkt at offset
- */
+ 
 static void ice_pkt_insert_mac_addr(u8 *pkt, u8 *addr)
 {
 	ether_addr_copy(pkt, addr);
 }
 
-/**
- * ice_fdir_get_gen_prgm_pkt - generate a training packet
- * @hw: pointer to the hardware structure
- * @input: flow director filter data structure
- * @pkt: pointer to return filter packet
- * @frag: generate a fragment packet
- * @tun: true implies generate a tunnel packet
- */
+ 
 int
 ice_fdir_get_gen_prgm_pkt(struct ice_hw *hw, struct ice_fdir_fltr *input,
 			  u8 *pkt, bool frag, bool tun)
@@ -933,9 +849,7 @@ ice_fdir_get_gen_prgm_pkt(struct ice_hw *hw, struct ice_fdir_fltr *input,
 		loc = &pkt[ICE_FDIR_TUN_PKT_OFF];
 	}
 
-	/* Reverse the src and dst, since the HW expects them to be from Tx
-	 * perspective. The input from user is from Rx filter perspective.
-	 */
+	 
 	switch (flow) {
 	case ICE_FLTR_PTYPE_NONF_IPV4_TCP:
 		ice_pkt_insert_u32(loc, ICE_IPV4_DST_ADDR_OFFSET,
@@ -1118,12 +1032,7 @@ ice_fdir_get_gen_prgm_pkt(struct ice_hw *hw, struct ice_fdir_fltr *input,
 	return 0;
 }
 
-/**
- * ice_fdir_has_frag - does flow type have 2 ptypes
- * @flow: flow ptype
- *
- * returns true is there is a fragment packet for this ptype
- */
+ 
 bool ice_fdir_has_frag(enum ice_fltr_ptype flow)
 {
 	if (flow == ICE_FLTR_PTYPE_NONF_IPV4_OTHER)
@@ -1132,20 +1041,14 @@ bool ice_fdir_has_frag(enum ice_fltr_ptype flow)
 		return false;
 }
 
-/**
- * ice_fdir_find_fltr_by_idx - find filter with idx
- * @hw: pointer to hardware structure
- * @fltr_idx: index to find.
- *
- * Returns pointer to filter if found or null
- */
+ 
 struct ice_fdir_fltr *
 ice_fdir_find_fltr_by_idx(struct ice_hw *hw, u32 fltr_idx)
 {
 	struct ice_fdir_fltr *rule;
 
 	list_for_each_entry(rule, &hw->fdir_list_head, fltr_node) {
-		/* rule ID found in the list */
+		 
 		if (fltr_idx == rule->fltr_id)
 			return rule;
 		if (fltr_idx < rule->fltr_id)
@@ -1154,17 +1057,13 @@ ice_fdir_find_fltr_by_idx(struct ice_hw *hw, u32 fltr_idx)
 	return NULL;
 }
 
-/**
- * ice_fdir_list_add_fltr - add a new node to the flow director filter list
- * @hw: hardware structure
- * @fltr: filter node to add to structure
- */
+ 
 void ice_fdir_list_add_fltr(struct ice_hw *hw, struct ice_fdir_fltr *fltr)
 {
 	struct ice_fdir_fltr *rule, *parent = NULL;
 
 	list_for_each_entry(rule, &hw->fdir_list_head, fltr_node) {
-		/* rule ID found or pass its spot in the list */
+		 
 		if (rule->fltr_id >= fltr->fltr_id)
 			break;
 		parent = rule;
@@ -1176,12 +1075,7 @@ void ice_fdir_list_add_fltr(struct ice_hw *hw, struct ice_fdir_fltr *fltr)
 		list_add(&fltr->fltr_node, &hw->fdir_list_head);
 }
 
-/**
- * ice_fdir_update_cntrs - increment / decrement filter counter
- * @hw: pointer to hardware structure
- * @flow: filter flow type
- * @add: true implies filters added
- */
+ 
 void
 ice_fdir_update_cntrs(struct ice_hw *hw, enum ice_fltr_ptype flow, bool add)
 {
@@ -1196,34 +1090,19 @@ ice_fdir_update_cntrs(struct ice_hw *hw, enum ice_fltr_ptype flow, bool add)
 		hw->fdir_fltr_cnt[flow] += incr;
 }
 
-/**
- * ice_cmp_ipv6_addr - compare 2 IP v6 addresses
- * @a: IP v6 address
- * @b: IP v6 address
- *
- * Returns 0 on equal, returns non-0 if different
- */
+ 
 static int ice_cmp_ipv6_addr(__be32 *a, __be32 *b)
 {
 	return memcmp(a, b, 4 * sizeof(__be32));
 }
 
-/**
- * ice_fdir_comp_rules - compare 2 filters
- * @a: a Flow Director filter data structure
- * @b: a Flow Director filter data structure
- * @v6: bool true if v6 filter
- *
- * Returns true if the filters match
- */
+ 
 static bool
 ice_fdir_comp_rules(struct ice_fdir_fltr *a,  struct ice_fdir_fltr *b, bool v6)
 {
 	enum ice_fltr_ptype flow_type = a->flow_type;
 
-	/* The calling function already checks that the two filters have the
-	 * same flow_type.
-	 */
+	 
 	if (!v6) {
 		if (flow_type == ICE_FLTR_PTYPE_NONF_IPV4_TCP ||
 		    flow_type == ICE_FLTR_PTYPE_NONF_IPV4_UDP ||
@@ -1263,13 +1142,7 @@ ice_fdir_comp_rules(struct ice_fdir_fltr *a,  struct ice_fdir_fltr *b, bool v6)
 	return false;
 }
 
-/**
- * ice_fdir_is_dup_fltr - test if filter is already in list for PF
- * @hw: hardware data structure
- * @input: Flow Director filter data structure
- *
- * Returns true if the filter is found in the list
- */
+ 
 bool ice_fdir_is_dup_fltr(struct ice_hw *hw, struct ice_fdir_fltr *input)
 {
 	struct ice_fdir_fltr *rule;

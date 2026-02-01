@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * linux/drivers/mmc/host/sdhci_f_sdh30.c
- *
- * Copyright (C) 2013 - 2015 Fujitsu Semiconductor, Ltd
- *              Vincent Yang <vincent.yang@tw.fujitsu.com>
- * Copyright (C) 2015 Linaro Ltd  Andy Green <andy.green@linaro.org>
- * Copyright (C) 2019 Socionext Inc.
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/err.h>
@@ -169,7 +162,7 @@ static int sdhci_f_sdh30_probe(struct platform_device *pdev)
 			goto err_rst;
 	}
 
-	/* init vendor specific regs */
+	 
 	ctrl = sdhci_readw(host, F_SDH30_AHB_CONFIG);
 	ctrl |= F_SDH30_SIN | F_SDH30_AHB_INCR_16 | F_SDH30_AHB_INCR_8 |
 		F_SDH30_AHB_INCR_4;
@@ -225,7 +218,7 @@ static void sdhci_f_sdh30_remove(struct platform_device *pdev)
 static const struct of_device_id f_sdh30_dt_ids[] = {
 	{ .compatible = "fujitsu,mb86s70-sdhci-3.0" },
 	{ .compatible = "socionext,f-sdh30-e51-mmc" },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, f_sdh30_dt_ids);
 #endif
@@ -233,7 +226,7 @@ MODULE_DEVICE_TABLE(of, f_sdh30_dt_ids);
 #ifdef CONFIG_ACPI
 static const struct acpi_device_id f_sdh30_acpi_ids[] = {
 	{ "SCX0002" },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(acpi, f_sdh30_acpi_ids);
 #endif

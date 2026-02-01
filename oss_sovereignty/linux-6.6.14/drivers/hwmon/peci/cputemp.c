@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-// Copyright (c) 2018-2021 Intel Corporation
+
+
 
 #include <linux/auxiliary_bus.h>
 #include <linux/bitfield.h>
@@ -145,31 +145,19 @@ unlock:
 	return ret;
 }
 
-/*
- * Error codes:
- *   0x8000: General sensor error
- *   0x8001: Reserved
- *   0x8002: Underflow on reading value
- *   0x8003-0x81ff: Reserved
- */
+ 
 static bool dts_valid(u16 val)
 {
 	return val < 0x8000 || val > 0x81ff;
 }
 
-/*
- * Processors return a value of DTS reading in S10.6 fixed point format
- * (16 bits: 10-bit signed magnitude, 6-bit fraction).
- */
+ 
 static s32 dts_ten_dot_six_to_millidegree(u16 val)
 {
 	return sign_extend32(val, 15) * MILLIDEGREE_PER_DEGREE / 64;
 }
 
-/*
- * For older processors, thermal margin reading is returned in S8.8 fixed
- * point format (16 bits: 8-bit signed magnitude, 8-bit fraction).
- */
+ 
 static s32 dts_eight_dot_eight_to_millidegree(u16 val)
 {
 	return sign_extend32(val, 15) * MILLIDEGREE_PER_DEGREE / 256;
@@ -234,7 +222,7 @@ static int get_dts(struct peci_cputemp *priv, long *val)
 	if (ret)
 		goto err_unlock;
 
-	/* Note that the tcontrol should be available before calling it */
+	 
 	priv->temp.dts.value =
 		(s32)tcontrol - priv->gen_info->thermal_margin_to_millidegree(thermal_margin);
 
@@ -272,7 +260,7 @@ static int get_core_temp(struct peci_cputemp *priv, int core_index, long *val)
 	if (ret)
 		goto err_unlock;
 
-	/* Note that the tjmax should be available before calling it */
+	 
 	priv->temp.core[core_index].value =
 		(s32)tjmax + dts_ten_dot_six_to_millidegree(core_dts_margin);
 
@@ -359,7 +347,7 @@ static int init_core_mask(struct peci_cputemp *priv)
 	u32 data;
 	int ret;
 
-	/* Get the RESOLVED_CORES register value */
+	 
 	switch (peci_dev->info.model) {
 	case INTEL_FAM6_ICELAKE_X:
 	case INTEL_FAM6_ICELAKE_D:
@@ -418,10 +406,7 @@ static int create_temp_label(struct peci_cputemp *priv)
 
 static void check_resolved_cores(struct peci_cputemp *priv)
 {
-	/*
-	 * Failure to resolve cores is non-critical, we're still able to
-	 * provide other sensor data.
-	 */
+	 
 
 	if (init_core_mask(priv))
 		return;
@@ -450,19 +435,19 @@ static const struct hwmon_ops peci_cputemp_ops = {
 
 static const struct hwmon_channel_info * const peci_cputemp_info[] = {
 	HWMON_CHANNEL_INFO(temp,
-			   /* Die temperature */
+			    
 			   HWMON_T_LABEL | HWMON_T_INPUT | HWMON_T_MAX |
 			   HWMON_T_CRIT | HWMON_T_CRIT_HYST,
-			   /* DTS margin */
+			    
 			   HWMON_T_LABEL | HWMON_T_INPUT | HWMON_T_MAX |
 			   HWMON_T_CRIT | HWMON_T_CRIT_HYST,
-			   /* Tcontrol temperature */
+			    
 			   HWMON_T_LABEL | HWMON_T_INPUT | HWMON_T_CRIT,
-			   /* Tthrottle temperature */
+			    
 			   HWMON_T_LABEL | HWMON_T_INPUT,
-			   /* Tjmax temperature */
+			    
 			   HWMON_T_LABEL | HWMON_T_INPUT,
-			   /* Core temperature - for all core channels */
+			    
 			   [channel_core ... CPUTEMP_CHANNEL_NUMS - 1] =
 						HWMON_T_LABEL | HWMON_T_INPUT),
 	NULL
@@ -494,11 +479,7 @@ static int peci_cputemp_probe(struct auxiliary_device *adev,
 	priv->peci_dev = peci_dev;
 	priv->gen_info = (const struct cpu_info *)id->driver_data;
 
-	/*
-	 * This is just a sanity check. Since we're using commands that are
-	 * guaranteed to be supported on a given platform, we should never see
-	 * revision lower than expected.
-	 */
+	 
 	if (peci_dev->info.peci_revision < priv->gen_info->min_peci_revision)
 		dev_warn(priv->dev,
 			 "Unexpected PECI revision %#x, some features may be unavailable\n",
@@ -514,10 +495,7 @@ static int peci_cputemp_probe(struct auxiliary_device *adev,
 	return PTR_ERR_OR_ZERO(hwmon_dev);
 }
 
-/*
- * RESOLVED_CORES PCI configuration register may have different location on
- * different platforms.
- */
+ 
 static struct resolved_cores_reg resolved_cores_reg_hsx = {
 	.bus = 1,
 	.dev = 30,

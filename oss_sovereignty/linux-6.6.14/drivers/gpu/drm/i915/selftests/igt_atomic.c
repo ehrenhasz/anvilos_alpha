@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright © 2018 Intel Corporation
- */
+
+ 
 
 #include <linux/preempt.h>
 #include <linux/bottom_half.h>

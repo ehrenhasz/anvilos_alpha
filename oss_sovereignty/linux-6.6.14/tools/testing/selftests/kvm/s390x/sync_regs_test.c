@@ -1,17 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Test for s390x KVM_CAP_SYNC_REGS
- *
- * Based on the same test for x86:
- * Copyright (C) 2018, Google LLC.
- *
- * Adaptions for s390x:
- * Copyright (C) 2019, Red Hat, Inc.
- *
- * Test expected behavior of the KVM_CAP_SYNC_REGS functionality.
- */
 
-#define _GNU_SOURCE /* for program_invocation_short_name */
+ 
+
+#define _GNU_SOURCE  
 #include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -25,10 +15,7 @@
 
 static void guest_code(void)
 {
-	/*
-	 * We embed diag 501 here instead of doing a ucall to avoid that
-	 * the compiler has messed with r11 at the time of the ucall.
-	 */
+	 
 	asm volatile (
 		"0:	diag 0,0,0x501\n"
 		"	ahi 11,1\n"
@@ -78,7 +65,7 @@ void test_read_invalid(struct kvm_vcpu *vcpu)
 	struct kvm_run *run = vcpu->run;
 	int rv;
 
-	/* Request reading invalid register set from VCPU. */
+	 
 	run->kvm_valid_regs = INVALID_SYNC_FIELD;
 	rv = _vcpu_run(vcpu);
 	TEST_ASSERT(rv < 0 && errno == EINVAL,
@@ -99,7 +86,7 @@ void test_set_invalid(struct kvm_vcpu *vcpu)
 	struct kvm_run *run = vcpu->run;
 	int rv;
 
-	/* Request setting invalid register set into VCPU. */
+	 
 	run->kvm_dirty_regs = INVALID_SYNC_FIELD;
 	rv = _vcpu_run(vcpu);
 	TEST_ASSERT(rv < 0 && errno == EINVAL,
@@ -122,7 +109,7 @@ void test_req_and_verify_all_valid_regs(struct kvm_vcpu *vcpu)
 	struct kvm_regs regs;
 	int rv;
 
-	/* Request and verify all valid register sets. */
+	 
 	run->kvm_valid_regs = TEST_SYNC_FIELDS;
 	rv = _vcpu_run(vcpu);
 	TEST_ASSERT(rv == 0, "vcpu_run failed: %d\n", rv);
@@ -148,7 +135,7 @@ void test_set_and_verify_various_reg_values(struct kvm_vcpu *vcpu)
 	struct kvm_regs regs;
 	int rv;
 
-	/* Set and verify various register values */
+	 
 	run->s.regs.gprs[11] = 0xBAD1DEA;
 	run->s.regs.acrs[0] = 1 << 11;
 
@@ -185,9 +172,7 @@ void test_clear_kvm_dirty_regs_bits(struct kvm_vcpu *vcpu)
 	struct kvm_run *run = vcpu->run;
 	int rv;
 
-	/* Clear kvm_dirty_regs bits, verify new s.regs values are
-	 * overwritten with existing guest values.
-	 */
+	 
 	run->kvm_valid_regs = TEST_SYNC_FIELDS;
 	run->kvm_dirty_regs = 0;
 	run->s.regs.gprs[11] = 0xDEADBEEF;
@@ -226,7 +211,7 @@ int main(int argc, char *argv[])
 
 	ksft_set_plan(ARRAY_SIZE(testlist));
 
-	/* Create VM */
+	 
 	vm = vm_create_with_one_vcpu(&vcpu, guest_code);
 
 	for (idx = 0; idx < ARRAY_SIZE(testlist); idx++) {
@@ -236,5 +221,5 @@ int main(int argc, char *argv[])
 
 	kvm_vm_free(vm);
 
-	ksft_finished();	/* Print results and exit() accordingly */
+	ksft_finished();	 
 }

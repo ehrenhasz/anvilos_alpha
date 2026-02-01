@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0+ OR BSD-3-Clause)
-/* Copyright 2019 NXP */
+
+ 
 
 #include <linux/module.h>
 #include <linux/of.h>
@@ -71,7 +71,7 @@ static int enetc_ptp_probe(struct pci_dev *pdev,
 		goto err_ioremap;
 	}
 
-	/* Allocate 1 interrupt */
+	 
 	n = pci_alloc_irq_vectors(pdev, 1, 1, PCI_IRQ_MSIX);
 	if (n != 1) {
 		err = -EPERM;
@@ -129,7 +129,7 @@ static void enetc_ptp_remove(struct pci_dev *pdev)
 
 static const struct pci_device_id enetc_ptp_id_table[] = {
 	{ PCI_DEVICE(PCI_VENDOR_ID_FREESCALE, ENETC_DEV_ID_PTP) },
-	{ 0, } /* End of table. */
+	{ 0, }  
 };
 MODULE_DEVICE_TABLE(pci, enetc_ptp_id_table);
 

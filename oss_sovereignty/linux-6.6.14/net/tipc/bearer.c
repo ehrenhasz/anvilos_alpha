@@ -1,38 +1,4 @@
-/*
- * net/tipc/bearer.c: TIPC bearer code
- *
- * Copyright (c) 1996-2006, 2013-2016, Ericsson AB
- * Copyright (c) 2004-2006, 2010-2013, Wind River Systems
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- * 3. Neither the names of the copyright holders nor the names of its
- *    contributors may be used to endorse or promote products derived from
- *    this software without specific prior written permission.
- *
- * Alternatively, this software may be distributed under the terms of the
- * GNU General Public License ("GPL") version 2 as published by the Free
- * Software Foundation.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGE.
- */
+ 
 
 #include <net/sock.h>
 #include "core.h"
@@ -70,10 +36,7 @@ static void bearer_disable(struct net *net, struct tipc_bearer *b);
 static int tipc_l2_rcv_msg(struct sk_buff *skb, struct net_device *dev,
 			   struct packet_type *pt, struct net_device *orig_dev);
 
-/**
- * tipc_media_find - locates specified media object by name
- * @name: name to locate
- */
+ 
 struct tipc_media *tipc_media_find(const char *name)
 {
 	u32 i;
@@ -85,10 +48,7 @@ struct tipc_media *tipc_media_find(const char *name)
 	return media_info_array[i];
 }
 
-/**
- * media_find_id - locates specified media object by type identifier
- * @type: type identifier to locate
- */
+ 
 static struct tipc_media *media_find_id(u8 type)
 {
 	u32 i;
@@ -100,12 +60,7 @@ static struct tipc_media *media_find_id(u8 type)
 	return media_info_array[i];
 }
 
-/**
- * tipc_media_addr_printf - record media address in print buffer
- * @buf: output buffer
- * @len: output buffer size remaining
- * @a: input media address
- */
+ 
 int tipc_media_addr_printf(char *buf, int len, struct tipc_media_addr *a)
 {
 	char addr_str[MAX_ADDR_STR];
@@ -127,13 +82,7 @@ int tipc_media_addr_printf(char *buf, int len, struct tipc_media_addr *a)
 	return ret;
 }
 
-/**
- * bearer_name_validate - validate & (optionally) deconstruct bearer name
- * @name: ptr to bearer name string
- * @name_parts: ptr to area for bearer name components (or NULL if not needed)
- *
- * Return: 1 if bearer name is valid, otherwise 0.
- */
+ 
 static int bearer_name_validate(const char *name,
 				struct tipc_bearer_names *name_parts)
 {
@@ -143,11 +92,11 @@ static int bearer_name_validate(const char *name,
 	u32 media_len;
 	u32 if_len;
 
-	/* copy bearer name & ensure length is OK */
+	 
 	if (strscpy(name_copy, name, TIPC_MAX_BEARER_NAME) < 0)
 		return 0;
 
-	/* ensure all component parts of bearer name are present */
+	 
 	media_name = name_copy;
 	if_name = strchr(media_name, ':');
 	if (if_name == NULL)
@@ -156,12 +105,12 @@ static int bearer_name_validate(const char *name,
 	media_len = if_name - media_name;
 	if_len = strlen(if_name) + 1;
 
-	/* validate component parts of bearer name */
+	 
 	if ((media_len <= 1) || (media_len > TIPC_MAX_MEDIA_NAME) ||
 	    (if_len <= 1) || (if_len > TIPC_MAX_IF_NAME))
 		return 0;
 
-	/* return bearer name components, if necessary */
+	 
 	if (name_parts) {
 		strcpy(name_parts->media_name, media_name);
 		strcpy(name_parts->if_name, if_name);
@@ -169,11 +118,7 @@ static int bearer_name_validate(const char *name,
 	return 1;
 }
 
-/**
- * tipc_bearer_find - locates bearer object with matching bearer name
- * @net: the applicable net namespace
- * @name: bearer name to locate
- */
+ 
 struct tipc_bearer *tipc_bearer_find(struct net *net, const char *name)
 {
 	struct tipc_net *tn = tipc_net(net);
@@ -188,11 +133,7 @@ struct tipc_bearer *tipc_bearer_find(struct net *net, const char *name)
 	return NULL;
 }
 
-/*     tipc_bearer_get_name - get the bearer name from its id.
- *     @net: network namespace
- *     @name: a pointer to the buffer where the name will be stored.
- *     @bearer_id: the id to get the name from.
- */
+ 
 int tipc_bearer_get_name(struct net *net, char *name, u32 bearer_id)
 {
 	struct tipc_net *tn = tipc_net(net);
@@ -231,15 +172,7 @@ void tipc_bearer_remove_dest(struct net *net, u32 bearer_id, u32 dest)
 	rcu_read_unlock();
 }
 
-/**
- * tipc_enable_bearer - enable bearer with the given name
- * @net: the applicable net namespace
- * @name: bearer name to enable
- * @disc_domain: bearer domain
- * @prio: bearer priority
- * @attr: nlattr array
- * @extack: netlink extended ack
- */
+ 
 static int tipc_enable_bearer(struct net *net, const char *name,
 			      u32 disc_domain, u32 prio,
 			      struct nlattr *attr[],
@@ -277,7 +210,7 @@ static int tipc_enable_bearer(struct net *net, const char *name,
 	if (prio == TIPC_MEDIA_LINK_PRI)
 		prio = m->priority;
 
-	/* Check new bearer vs existing ones and find free bearer id if any */
+	 
 	bearer_id = MAX_BEARERS;
 	i = MAX_BEARERS;
 	while (i-- != 0) {
@@ -349,7 +282,7 @@ static int tipc_enable_bearer(struct net *net, const char *name,
 		goto rejected;
 	}
 
-	/* Create monitoring data before accepting activate messages */
+	 
 	if (tipc_mon_create(net, bearer_id)) {
 		bearer_disable(net, b);
 		kfree_skb(skb);
@@ -369,11 +302,7 @@ rejected:
 	return res;
 }
 
-/**
- * tipc_reset_bearer - Reset all links established over this bearer
- * @net: the applicable net namespace
- * @b: the target bearer
- */
+ 
 static int tipc_reset_bearer(struct net *net, struct tipc_bearer *b)
 {
 	pr_info("Resetting bearer <%s>\n", b->name);
@@ -393,13 +322,7 @@ void tipc_bearer_put(struct tipc_bearer *b)
 		kfree_rcu(b, rcu);
 }
 
-/**
- * bearer_disable - disable this bearer
- * @net: the applicable net namespace
- * @b: the bearer to disable
- *
- * Note: This routine assumes caller holds RTNL lock.
- */
+ 
 static void bearer_disable(struct net *net, struct tipc_bearer *b)
 {
 	struct tipc_net *tn = tipc_net(net);
@@ -425,7 +348,7 @@ int tipc_enable_l2_media(struct net *net, struct tipc_bearer *b,
 	u8 node_id[NODE_ID_LEN] = {0,};
 	struct net_device *dev;
 
-	/* Find device with specified name */
+	 
 	dev = dev_get_by_name(net, dev_name);
 	if (!dev)
 		return -ENODEV;
@@ -439,7 +362,7 @@ int tipc_enable_l2_media(struct net *net, struct tipc_bearer *b,
 		return -EINVAL;
 	}
 
-	/* Autoconfigure own node identity if needed */
+	 
 	if (!tipc_own_id(net) && hwaddr_len <= NODE_ID_LEN) {
 		memcpy(node_id, dev->dev_addr, hwaddr_len);
 		tipc_net_init(net, node_id, 0);
@@ -450,7 +373,7 @@ int tipc_enable_l2_media(struct net *net, struct tipc_bearer *b,
 		return -EINVAL;
 	}
 
-	/* Associate TIPC bearer with L2 bearer */
+	 
 	rcu_assign_pointer(b->media_ptr, dev);
 	b->pt.dev = dev;
 	b->pt.type = htons(ETH_P_TIPC);
@@ -466,11 +389,7 @@ int tipc_enable_l2_media(struct net *net, struct tipc_bearer *b,
 	return 0;
 }
 
-/* tipc_disable_l2_media - detach TIPC bearer from an L2 interface
- * @b: the target bearer
- *
- * Mark L2 bearer as inactive so that incoming buffers are thrown away
- */
+ 
 void tipc_disable_l2_media(struct tipc_bearer *b)
 {
 	struct net_device *dev;
@@ -482,13 +401,7 @@ void tipc_disable_l2_media(struct tipc_bearer *b)
 	dev_put(dev);
 }
 
-/**
- * tipc_l2_send_msg - send a TIPC packet out over an L2 interface
- * @net: the associated network namespace
- * @skb: the packet to be sent
- * @b: the bearer through which the packet is to be sent
- * @dest: peer destination address
- */
+ 
 int tipc_l2_send_msg(struct net *net, struct sk_buff *skb,
 		     struct tipc_bearer *b, struct tipc_media_addr *dest)
 {
@@ -552,8 +465,7 @@ int tipc_bearer_min_mtu(struct net *net, u32 bearer_id)
 	return mtu;
 }
 
-/* tipc_bearer_xmit_skb - sends buffer to destination over bearer
- */
+ 
 void tipc_bearer_xmit_skb(struct net *net, u32 bearer_id,
 			  struct sk_buff *skb,
 			  struct tipc_media_addr *dest)
@@ -575,8 +487,7 @@ void tipc_bearer_xmit_skb(struct net *net, u32 bearer_id,
 	rcu_read_unlock();
 }
 
-/* tipc_bearer_xmit() -send buffer to destination over bearer
- */
+ 
 void tipc_bearer_xmit(struct net *net, u32 bearer_id,
 		      struct sk_buff_head *xmitq,
 		      struct tipc_media_addr *dst,
@@ -607,8 +518,7 @@ void tipc_bearer_xmit(struct net *net, u32 bearer_id,
 	rcu_read_unlock();
 }
 
-/* tipc_bearer_bc_xmit() - broadcast buffers to all destinations
- */
+ 
 void tipc_bearer_bc_xmit(struct net *net, u32 bearer_id,
 			 struct sk_buff_head *xmitq)
 {
@@ -638,17 +548,7 @@ void tipc_bearer_bc_xmit(struct net *net, u32 bearer_id,
 	rcu_read_unlock();
 }
 
-/**
- * tipc_l2_rcv_msg - handle incoming TIPC message from an interface
- * @skb: the received message
- * @dev: the net device that the packet was received on
- * @pt: the packet_type structure which was used to register this handler
- * @orig_dev: the original receive net device in case the device is a bond
- *
- * Accept only packets explicitly sent to this node, or broadcast packets;
- * ignores packets sent using interface multicast, and traffic sent to other
- * nodes (which can happen if interface is running in promiscuous mode).
- */
+ 
 static int tipc_l2_rcv_msg(struct sk_buff *skb, struct net_device *dev,
 			   struct packet_type *pt, struct net_device *orig_dev)
 {
@@ -670,15 +570,7 @@ static int tipc_l2_rcv_msg(struct sk_buff *skb, struct net_device *dev,
 	return NET_RX_DROP;
 }
 
-/**
- * tipc_l2_device_event - handle device events from network device
- * @nb: the context of the notification
- * @evt: the type of event
- * @ptr: the net device that the event was on
- *
- * This function is called by the Ethernet driver in case of link
- * change event.
- */
+ 
 static int tipc_l2_device_event(struct notifier_block *nb, unsigned long evt,
 				void *ptr)
 {
@@ -815,7 +707,7 @@ void tipc_detach_loopback(struct net *net)
 	netdev_put(net->loopback_dev, &tn->loopback_pt.dev_tracker);
 }
 
-/* Caller should hold rtnl_lock to protect the bearer */
+ 
 static int __tipc_nl_add_bearer(struct tipc_nl_msg *msg,
 				struct tipc_bearer *bearer, int nlflags)
 {

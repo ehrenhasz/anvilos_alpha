@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- *  QLogic FCoE Offload Driver
- *  Copyright (c) 2016-2018 Cavium Inc.
- */
+ 
+ 
 #ifndef _QEDF_DBG_H_
 #define _QEDF_DBG_H_
 
@@ -20,48 +17,34 @@
 
 extern uint qedf_debug;
 
-/* Debug print level definitions */
-#define QEDF_LOG_DEFAULT	0x1		/* Set default logging mask */
-#define QEDF_LOG_INFO		0x2		/*
-						 * Informational logs,
-						 * MAC address, WWPN, WWNN
-						 */
-#define QEDF_LOG_DISC		0x4		/* Init, discovery, rport */
-#define QEDF_LOG_LL2		0x8		/* LL2, VLAN logs */
-#define QEDF_LOG_CONN		0x10		/* Connection setup, cleanup */
-#define QEDF_LOG_EVT		0x20		/* Events, link, mtu */
-#define QEDF_LOG_TIMER		0x40		/* Timer events */
-#define QEDF_LOG_MP_REQ	0x80		/* Middle Path (MP) logs */
-#define QEDF_LOG_SCSI_TM	0x100		/* SCSI Aborts, Task Mgmt */
-#define QEDF_LOG_UNSOL		0x200		/* unsolicited event logs */
-#define QEDF_LOG_IO		0x400		/* scsi cmd, completion */
-#define QEDF_LOG_MQ		0x800		/* Multi Queue logs */
-#define QEDF_LOG_BSG		0x1000		/* BSG logs */
-#define QEDF_LOG_DEBUGFS	0x2000		/* debugFS logs */
-#define QEDF_LOG_LPORT		0x4000		/* lport logs */
-#define QEDF_LOG_ELS		0x8000		/* ELS logs */
-#define QEDF_LOG_NPIV		0x10000		/* NPIV logs */
-#define QEDF_LOG_SESS		0x20000		/* Connection setup, cleanup */
-#define QEDF_LOG_TID		0x80000         /*
-						 * FW TID context acquire
-						 * free
-						 */
-#define QEDF_TRACK_TID		0x100000        /*
-						 * Track TID state. To be
-						 * enabled only at module load
-						 * and not run-time.
-						 */
-#define QEDF_TRACK_CMD_LIST    0x300000        /*
-						* Track active cmd list nodes,
-						* done with reference to TID,
-						* hence TRACK_TID also enabled.
-						*/
-#define QEDF_LOG_NOTICE	0x40000000	/* Notice logs */
-#define QEDF_LOG_WARN		0x80000000	/* Warning logs */
+ 
+#define QEDF_LOG_DEFAULT	0x1		 
+#define QEDF_LOG_INFO		0x2		 
+#define QEDF_LOG_DISC		0x4		 
+#define QEDF_LOG_LL2		0x8		 
+#define QEDF_LOG_CONN		0x10		 
+#define QEDF_LOG_EVT		0x20		 
+#define QEDF_LOG_TIMER		0x40		 
+#define QEDF_LOG_MP_REQ	0x80		 
+#define QEDF_LOG_SCSI_TM	0x100		 
+#define QEDF_LOG_UNSOL		0x200		 
+#define QEDF_LOG_IO		0x400		 
+#define QEDF_LOG_MQ		0x800		 
+#define QEDF_LOG_BSG		0x1000		 
+#define QEDF_LOG_DEBUGFS	0x2000		 
+#define QEDF_LOG_LPORT		0x4000		 
+#define QEDF_LOG_ELS		0x8000		 
+#define QEDF_LOG_NPIV		0x10000		 
+#define QEDF_LOG_SESS		0x20000		 
+#define QEDF_LOG_TID		0x80000          
+#define QEDF_TRACK_TID		0x100000         
+#define QEDF_TRACK_CMD_LIST    0x300000         
+#define QEDF_LOG_NOTICE	0x40000000	 
+#define QEDF_LOG_WARN		0x80000000	 
 
 #define QEDF_DEBUGFS_LOG_LEN (2 * PAGE_SIZE)
 
-/* Debug context structure */
+ 
 struct qedf_dbg_ctx {
 	unsigned int host_no;
 	struct pci_dev *pdev;
@@ -92,7 +75,7 @@ __printf(5, 6)
 void qedf_dbg_info(struct qedf_dbg_ctx *qedf, const char *func, u32 line,
 			  u32 info, const char *fmt, ...);
 
-/* GRC Dump related defines */
+ 
 
 struct Scsi_Host;
 
@@ -123,7 +106,7 @@ extern const struct qedf_debugfs_ops qedf_debugfs_ops[];
 extern const struct file_operations qedf_dbg_fops[];
 
 #ifdef CONFIG_DEBUG_FS
-/* DebugFS related code */
+ 
 struct qedf_list_of_funcs {
 	char *oper_str;
 	ssize_t (*oper_func)(struct qedf_dbg_ctx *qedf);
@@ -137,7 +120,7 @@ struct qedf_list_of_funcs {
 	.write  = drv##_dbg_##ops##_cmd_write \
 }
 
-/* Used for debugfs sequential files */
+ 
 #define qedf_dbg_fileops_seq(drv, ops) \
 { \
 	.owner = THIS_MODULE, \
@@ -153,6 +136,6 @@ extern void qedf_dbg_host_init(struct qedf_dbg_ctx *qedf,
 extern void qedf_dbg_host_exit(struct qedf_dbg_ctx *qedf);
 extern void qedf_dbg_init(char *drv_name);
 extern void qedf_dbg_exit(void);
-#endif /* CONFIG_DEBUG_FS */
+#endif  
 
-#endif /* _QEDF_DBG_H_ */
+#endif  

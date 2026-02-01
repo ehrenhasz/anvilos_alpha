@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * wm8741.c  --  WM8741 ALSA SoC Audio driver
- *
- * Copyright 2010-1 Wolfson Microelectronics plc
- *
- * Author: Ian Lartey <ian@opensource.wolfsonmicro.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/moduleparam.h>
@@ -33,7 +27,7 @@ static const char *wm8741_supply_names[WM8741_NUM_SUPPLIES] = {
 	"DVDD",
 };
 
-/* codec private data */
+ 
 struct wm8741_priv {
 	struct wm8741_platform_data pdata;
 	struct regmap *regmap;
@@ -43,16 +37,16 @@ struct wm8741_priv {
 };
 
 static const struct reg_default wm8741_reg_defaults[] = {
-	{  0, 0x0000 },     /* R0  - DACLLSB Attenuation */
-	{  1, 0x0000 },     /* R1  - DACLMSB Attenuation */
-	{  2, 0x0000 },     /* R2  - DACRLSB Attenuation */
-	{  3, 0x0000 },     /* R3  - DACRMSB Attenuation */
-	{  4, 0x0000 },     /* R4  - Volume Control */
-	{  5, 0x000A },     /* R5  - Format Control */
-	{  6, 0x0000 },     /* R6  - Filter Control */
-	{  7, 0x0000 },     /* R7  - Mode Control 1 */
-	{  8, 0x0002 },     /* R8  - Mode Control 2 */
-	{ 32, 0x0002 },     /* R32 - ADDITONAL_CONTROL_1 */
+	{  0, 0x0000 },      
+	{  1, 0x0000 },      
+	{  2, 0x0000 },      
+	{  3, 0x0000 },      
+	{  4, 0x0000 },      
+	{  5, 0x000A },      
+	{  6, 0x0000 },      
+	{  7, 0x0000 },      
+	{  8, 0x0002 },      
+	{ 32, 0x0002 },      
 };
 
 static int wm8741_reset(struct snd_soc_component *component)
@@ -195,16 +189,14 @@ static int wm8741_hw_params(struct snd_pcm_substream *substream,
 	unsigned int iface, mode;
 	int i;
 
-	/* The set of sample rates that can be supported depends on the
-	 * MCLK supplied to the CODEC - enforce this.
-	 */
+	 
 	if (!wm8741->sysclk) {
 		dev_err(component->dev,
 			"No MCLK configured, call set_sysclk() on init or in hw_params\n");
 		return -EINVAL;
 	}
 
-	/* Find a supported LRCLK rate */
+	 
 	for (i = 0; i < wm8741->sysclk_constraints->count; i++) {
 		if (wm8741->sysclk_constraints->list[i] == params_rate(params))
 			break;
@@ -216,7 +208,7 @@ static int wm8741_hw_params(struct snd_pcm_substream *substream,
 		return -EINVAL;
 	}
 
-	/* bit size */
+	 
 	switch (params_width(params)) {
 	case 16:
 		iface = 0x0;
@@ -236,7 +228,7 @@ static int wm8741_hw_params(struct snd_pcm_substream *substream,
 		return -EINVAL;
 	}
 
-	/* oversampling rate */
+	 
 	if (params_rate(params) > 96000)
 		mode = 0x40;
 	else if (params_rate(params) > 48000)
@@ -306,7 +298,7 @@ static int wm8741_set_dai_fmt(struct snd_soc_dai *codec_dai,
 	struct snd_soc_component *component = codec_dai->component;
 	unsigned int iface;
 
-	/* check master/slave audio interface */
+	 
 	switch (fmt & SND_SOC_DAIFMT_MASTER_MASK) {
 	case SND_SOC_DAIFMT_CBS_CFS:
 		break;
@@ -314,7 +306,7 @@ static int wm8741_set_dai_fmt(struct snd_soc_dai *codec_dai,
 		return -EINVAL;
 	}
 
-	/* interface format */
+	 
 	switch (fmt & SND_SOC_DAIFMT_FORMAT_MASK) {
 	case SND_SOC_DAIFMT_I2S:
 		iface = 0x08;
@@ -335,7 +327,7 @@ static int wm8741_set_dai_fmt(struct snd_soc_dai *codec_dai,
 		return -EINVAL;
 	}
 
-	/* clock inversion */
+	 
 	switch (fmt & SND_SOC_DAIFMT_INV_MASK) {
 	case SND_SOC_DAIFMT_NB_NF:
 		break;
@@ -416,7 +408,7 @@ static int wm8741_configure(struct snd_soc_component *component)
 {
 	struct wm8741_priv *wm8741 = snd_soc_component_get_drvdata(component);
 
-	/* Configure differential mode */
+	 
 	switch (wm8741->pdata.diff_mode) {
 	case WM8741_DIFF_MODE_STEREO:
 	case WM8741_DIFF_MODE_STEREO_REVERSED:
@@ -430,7 +422,7 @@ static int wm8741_configure(struct snd_soc_component *component)
 		return -EINVAL;
 	}
 
-	/* Change some default settings - latch VU */
+	 
 	snd_soc_component_update_bits(component, WM8741_DACLLSB_ATTENUATION,
 			WM8741_UPDATELL, WM8741_UPDATELL);
 	snd_soc_component_update_bits(component, WM8741_DACLMSB_ATTENUATION,
@@ -669,7 +661,7 @@ static struct spi_driver wm8741_spi_driver = {
 	},
 	.probe		= wm8741_spi_probe,
 };
-#endif /* CONFIG_SPI_MASTER */
+#endif  
 
 static int __init wm8741_modinit(void)
 {

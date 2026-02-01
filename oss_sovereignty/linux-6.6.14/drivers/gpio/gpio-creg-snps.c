@@ -1,9 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0+
-//
-// Synopsys CREG (Control REGisters) GPIO driver
-//
-// Copyright (C) 2018 Synopsys
-// Author: Eugeniy Paltsev <Eugeniy.Paltsev@synopsys.com>
+
+
+
+
+
+
 
 #include <linux/gpio/driver.h>
 #include <linux/io.h>
@@ -64,11 +64,11 @@ static int creg_gpio_validate_pg(struct device *dev, struct creg_gpio *hcg,
 	if (layout->bit_per_gpio[i] < 1 || layout->bit_per_gpio[i] > 8)
 		return -EINVAL;
 
-	/* Check that on value fits its placeholder */
+	 
 	if (GENMASK(31, layout->bit_per_gpio[i]) & layout->on[i])
 		return -EINVAL;
 
-	/* Check that off value fits its placeholder */
+	 
 	if (GENMASK(31, layout->bit_per_gpio[i]) & layout->off[i])
 		return -EINVAL;
 
@@ -99,7 +99,7 @@ static int creg_gpio_validate(struct device *dev, struct creg_gpio *hcg,
 		reg_len += hcg->layout->shift[i] + hcg->layout->bit_per_gpio[i];
 	}
 
-	/* Check that we fit in 32 bit register */
+	 
 	if (reg_len > 32)
 		return -EINVAL;
 
@@ -129,7 +129,7 @@ static const struct of_device_id creg_gpio_ids[] = {
 	}, {
 		.compatible = "snps,creg-gpio-hsdk",
 		.data = &hsdk_cs_ctl
-	}, { /* sentinel */ }
+	}, {   }
 };
 
 static int creg_gpio_probe(struct platform_device *pdev)

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #include <linux/sched.h>
 #include <linux/sched/clock.h>
@@ -13,43 +13,41 @@
 
 #define ACE_PRESENT	(1 << 6)
 #define ACE_ENABLED	(1 << 7)
-#define ACE_FCR		(1 << 28)	/* MSR_VIA_FCR */
+#define ACE_FCR		(1 << 28)	 
 
 #define RNG_PRESENT	(1 << 2)
 #define RNG_ENABLED	(1 << 3)
-#define RNG_ENABLE	(1 << 6)	/* MSR_VIA_RNG */
+#define RNG_ENABLE	(1 << 6)	 
 
 static void init_c3(struct cpuinfo_x86 *c)
 {
 	u32  lo, hi;
 
-	/* Test for Centaur Extended Feature Flags presence */
+	 
 	if (cpuid_eax(0xC0000000) >= 0xC0000001) {
 		u32 tmp = cpuid_edx(0xC0000001);
 
-		/* enable ACE unit, if present and disabled */
+		 
 		if ((tmp & (ACE_PRESENT | ACE_ENABLED)) == ACE_PRESENT) {
 			rdmsr(MSR_VIA_FCR, lo, hi);
-			lo |= ACE_FCR;		/* enable ACE unit */
+			lo |= ACE_FCR;		 
 			wrmsr(MSR_VIA_FCR, lo, hi);
 			pr_info("CPU: Enabled ACE h/w crypto\n");
 		}
 
-		/* enable RNG unit, if present and disabled */
+		 
 		if ((tmp & (RNG_PRESENT | RNG_ENABLED)) == RNG_PRESENT) {
 			rdmsr(MSR_VIA_RNG, lo, hi);
-			lo |= RNG_ENABLE;	/* enable RNG unit */
+			lo |= RNG_ENABLE;	 
 			wrmsr(MSR_VIA_RNG, lo, hi);
 			pr_info("CPU: Enabled h/w RNG\n");
 		}
 
-		/* store Centaur Extended Feature Flags as
-		 * word 5 of the CPU capability bit array
-		 */
+		 
 		c->x86_capability[CPUID_C000_0001_EDX] = cpuid_edx(0xC0000001);
 	}
 #ifdef CONFIG_X86_32
-	/* Cyrix III family needs CX8 & PGE explicitly enabled. */
+	 
 	if (c->x86_model >= 6 && c->x86_model <= 13) {
 		rdmsr(MSR_VIA_FCR, lo, hi);
 		lo |= (1<<1 | 1<<7);
@@ -57,7 +55,7 @@ static void init_c3(struct cpuinfo_x86 *c)
 		set_cpu_cap(c, X86_FEATURE_CX8);
 	}
 
-	/* Before Nehemiah, the C3's had 3dNOW! */
+	 
 	if (c->x86_model >= 6 && c->x86_model < 9)
 		set_cpu_cap(c, X86_FEATURE_3DNOW);
 #endif
@@ -94,7 +92,7 @@ enum {
 static void early_init_centaur(struct cpuinfo_x86 *c)
 {
 #ifdef CONFIG_X86_32
-	/* Emulate MTRRs using Centaur's MCR. */
+	 
 	if (c->x86 == 5)
 		set_cpu_cap(c, X86_FEATURE_CENTAUR_MCR);
 #endif
@@ -120,10 +118,7 @@ static void init_centaur(struct cpuinfo_x86 *c)
 	u32  lo, hi, newlo;
 	u32  aa, bb, cc, dd;
 
-	/*
-	 * Bit 31 in normal CPUID used for nonstandard 3DNow ID;
-	 * 3DNow is IDd by bit 31 in extended CPUID (1*32+31) anyway
-	 */
+	 
 	clear_cpu_cap(c, 0*32+31);
 #endif
 	early_init_centaur(c);
@@ -136,11 +131,7 @@ static void init_centaur(struct cpuinfo_x86 *c)
 	if (c->cpuid_level > 9) {
 		unsigned int eax = cpuid_eax(10);
 
-		/*
-		 * Check for version and the number of counters
-		 * Version(eax[7:0]) can't be 0;
-		 * Counters(eax[15:8]) should be greater than 1;
-		 */
+		 
 		if ((eax & 0xff) && (((eax >> 8) & 0xff) > 1))
 			set_cpu_cap(c, X86_FEATURE_ARCH_PERFMON);
 	}
@@ -191,18 +182,18 @@ static void init_centaur(struct cpuinfo_x86 *c)
 		} else {
 			pr_info("Centaur FCR is 0x%X\n", lo);
 		}
-		/* Emulate MTRRs using Centaur's MCR. */
+		 
 		set_cpu_cap(c, X86_FEATURE_CENTAUR_MCR);
-		/* Report CX8 */
+		 
 		set_cpu_cap(c, X86_FEATURE_CX8);
-		/* Set 3DNow! on Winchip 2 and above. */
+		 
 		if (c->x86_model >= 8)
 			set_cpu_cap(c, X86_FEATURE_3DNOW);
-		/* See if we can find out some more. */
+		 
 		if (cpuid_eax(0x80000000) >= 0x80000005) {
-			/* Yes, we can. */
+			 
 			cpuid(0x80000005, &aa, &bb, &cc, &dd);
-			/* Add L1 data and code cache sizes. */
+			 
 			c->x86_cache_size = (cc>>24)+(dd>>24);
 		}
 		sprintf(c->x86_model_id, "WinChip %s", name);
@@ -221,15 +212,11 @@ static void init_centaur(struct cpuinfo_x86 *c)
 static unsigned int
 centaur_size_cache(struct cpuinfo_x86 *c, unsigned int size)
 {
-	/* VIA C3 CPUs (670-68F) need further shifting. */
+	 
 	if ((c->x86 == 6) && ((c->x86_model == 7) || (c->x86_model == 8)))
 		size >>= 8;
 
-	/*
-	 * There's also an erratum in Nehemiah stepping 1, which
-	 * returns '65KB' instead of '64KB'
-	 *  - Note, it seems this may only be in engineering samples.
-	 */
+	 
 	if ((c->x86 == 6) && (c->x86_model == 9) &&
 				(c->x86_stepping == 1) && (size == 65))
 		size -= 1;

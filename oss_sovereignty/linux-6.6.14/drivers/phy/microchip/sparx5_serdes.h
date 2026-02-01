@@ -1,8 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0+
- * Microchip Sparx5 SerDes driver
- *
- * Copyright (c) 2020 Microchip Technology Inc.
- */
+ 
 
 #ifndef _SPARX5_SERDES_H_
 #define _SPARX5_SERDES_H_
@@ -44,9 +40,7 @@ struct sparx5_serdes_macro {
 	enum phy_media media;
 };
 
-/* Read, Write and modify registers content.
- * The register definition macros start at the id
- */
+ 
 static inline void __iomem *sdx5_addr(void __iomem *base[],
 				      int id, int tinst, int tcnt,
 				      int gbase, int ginst,
@@ -132,4 +126,4 @@ static inline void __iomem *sdx5_inst_addr(void __iomem *iomem,
 }
 
 
-#endif /* _SPARX5_SERDES_REGS_H_ */
+#endif  

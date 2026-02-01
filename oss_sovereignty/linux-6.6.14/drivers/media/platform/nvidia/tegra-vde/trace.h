@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM tegra_vde
@@ -86,9 +86,9 @@ TRACE_EVENT(vde_ref_l1,
 		  __entry->with_later_poc_nb, __entry->with_earlier_poc_nb)
 );
 
-#endif /* TEGRA_VDE_TRACE_H */
+#endif  
 
-/* This part must be outside protection */
+ 
 #undef TRACE_INCLUDE_PATH
 #define TRACE_INCLUDE_PATH ../../drivers/media/platform/nvidia/tegra-vde
 #define TRACE_INCLUDE_FILE trace

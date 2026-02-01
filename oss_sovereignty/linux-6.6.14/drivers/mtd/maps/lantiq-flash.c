@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *
- *  Copyright (C) 2004 Liu Peng Infineon IFAP DC COM CPE
- *  Copyright (C) 2010 John Crispin <john@phrozen.org>
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/module.h>
@@ -21,15 +17,7 @@
 
 #include <lantiq_soc.h>
 
-/*
- * The NOR flash is connected to the same external bus unit (EBU) as PCI.
- * To make PCI work we need to enable the endianness swapping for the address
- * written to the EBU. This endianness swapping works for PCI correctly but
- * fails for attached NOR devices. To workaround this we need to use a complex
- * map. The workaround involves swapping all addresses whilst probing the chip.
- * Once probing is complete we stop swapping the addresses but swizzle the
- * unlock addresses to ensure that access to the NOR device works correctly.
- */
+ 
 
 enum {
 	LTQ_NOR_PROBING,
@@ -70,13 +58,7 @@ ltq_write16(struct map_info *map, map_word d, unsigned long adr)
 	spin_unlock_irqrestore(&ebu_lock, flags);
 }
 
-/*
- * The following 2 functions copy data between iomem and a cached memory
- * section. As memcpy() makes use of pre-fetching we cannot use it here.
- * The normal alternative of using memcpy_{to,from}io also makes use of
- * memcpy() on MIPS so it is not applicable either. We are therefore stuck
- * with having to use our own loop.
- */
+ 
 static void
 ltq_copy_from(struct map_info *map, void *to,
 	unsigned long from, ssize_t len)

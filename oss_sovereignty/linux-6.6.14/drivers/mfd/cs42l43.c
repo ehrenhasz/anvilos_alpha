@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * CS42L43 core driver
- *
- * Copyright (C) 2022-2023 Cirrus Logic, Inc. and
- *                         Cirrus Logic International Semiconductor Ltd.
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/build_bug.h>
@@ -512,11 +507,7 @@ static const struct mfd_cell cs42l43_devs[] = {
 	},
 };
 
-/*
- * If the device is connected over Soundwire, as well as soft resetting the
- * device, this function will also way for the device to detach from the bus
- * before returning.
- */
+ 
 static int cs42l43_soft_reset(struct cs42l43 *cs42l43)
 {
 	static const struct reg_sequence reset[] = {
@@ -525,10 +516,7 @@ static int cs42l43_soft_reset(struct cs42l43 *cs42l43)
 
 	reinit_completion(&cs42l43->device_detach);
 
-	/*
-	 * Apply cache only because the soft reset will cause the device to
-	 * detach from the soundwire bus.
-	 */
+	 
 	regcache_cache_only(cs42l43->regmap, true);
 	regmap_multi_reg_write_bypassed(cs42l43->regmap, reset, ARRAY_SIZE(reset));
 
@@ -548,10 +536,7 @@ static int cs42l43_soft_reset(struct cs42l43 *cs42l43)
 	return -EAGAIN;
 }
 
-/*
- * This function is essentially a no-op on I2C, but will wait for the device to
- * attach when the device is used on a SoundWire bus.
- */
+ 
 static int cs42l43_wait_for_attach(struct cs42l43 *cs42l43)
 {
 	if (!cs42l43->attached) {
@@ -567,7 +552,7 @@ static int cs42l43_wait_for_attach(struct cs42l43 *cs42l43)
 
 	regcache_cache_only(cs42l43->regmap, false);
 
-	/* The hardware requires enabling OSC_DIV before doing any SoundWire reads. */
+	 
 	if (cs42l43->sdw)
 		regmap_write(cs42l43->regmap, CS42L43_OSC_DIV_SEL,
 			     CS42L43_OSC_DIV2_EN_MASK);
@@ -575,15 +560,7 @@ static int cs42l43_wait_for_attach(struct cs42l43 *cs42l43)
 	return 0;
 }
 
-/*
- * This function will advance the firmware into boot stage 3 from boot stage 2.
- * Boot stage 3 is required to send commands to the firmware. This is achieved
- * by setting the firmware NEED configuration register to zero, this indicates
- * no configuration is required forcing the firmware to advance to boot stage 3.
- *
- * Later revisions of the firmware require the use of an alternative register
- * for this purpose, which is indicated through the shadow flag.
- */
+ 
 static int cs42l43_mcu_stage_2_3(struct cs42l43 *cs42l43, bool shadow)
 {
 	unsigned int need_reg = CS42L43_NEED_CONFIGS;
@@ -606,19 +583,7 @@ static int cs42l43_mcu_stage_2_3(struct cs42l43 *cs42l43, bool shadow)
 	return -EAGAIN;
 }
 
-/*
- * This function will return the firmware to boot stage 2 from boot stage 3.
- * Boot stage 2 is required to apply updates to the firmware. This is achieved
- * by setting the firmware NEED configuration register to FW_PATCH_NEED_CFG,
- * setting the HAVE configuration register to 0, and soft resetting. The
- * firmware will see it is missing a patch configuration and will pause in boot
- * stage 2.
- *
- * Note: Unlike cs42l43_mcu_stage_2_3 there is no need to consider the shadow
- * register here as the driver will only return to boot stage 2 if the firmware
- * requires update which means the revision does not include shadow register
- * support.
- */
+ 
 static int cs42l43_mcu_stage_3_2(struct cs42l43 *cs42l43)
 {
 	regmap_write(cs42l43->regmap, CS42L43_FW_MISSION_CTRL_NEED_CONFIGS,
@@ -628,10 +593,7 @@ static int cs42l43_mcu_stage_3_2(struct cs42l43 *cs42l43)
 	return cs42l43_soft_reset(cs42l43);
 }
 
-/*
- * Disable the firmware running on the device such that the driver can access
- * the registers without fear of the MCU changing them under it.
- */
+ 
 static int cs42l43_mcu_disable(struct cs42l43 *cs42l43)
 {
 	unsigned int val;
@@ -652,13 +614,11 @@ static int cs42l43_mcu_disable(struct cs42l43 *cs42l43)
 		return ret;
 	}
 
-	/* Soft reset to clear any register state the firmware left behind. */
+	 
 	return cs42l43_soft_reset(cs42l43);
 }
 
-/*
- * Callback to load firmware updates.
- */
+ 
 static void cs42l43_mcu_load_firmware(const struct firmware *firmware, void *context)
 {
 	struct cs42l43 *cs42l43 = context;
@@ -703,19 +663,14 @@ err:
 	complete(&cs42l43->firmware_download);
 }
 
-/*
- * The process of updating the firmware is split into a series of steps, at the
- * end of each step a soft reset of the device might be required which will
- * require the driver to wait for the device to re-attach on the SoundWire bus,
- * if that control bus is being used.
- */
+ 
 static int cs42l43_mcu_update_step(struct cs42l43 *cs42l43)
 {
 	unsigned int mcu_rev, bios_rev, boot_status, secure_cfg;
 	bool patched, shadow;
 	int ret;
 
-	/* Clear any stale software interrupt bits. */
+	 
 	regmap_read(cs42l43->regmap, CS42L43_SOFT_INT, &mcu_rev);
 
 	ret = regmap_read(cs42l43->regmap, CS42L43_BOOT_STATUS, &boot_status);
@@ -738,16 +693,10 @@ static int cs42l43_mcu_update_step(struct cs42l43 *cs42l43)
 		  ((mcu_rev & CS42L43_FW_MINOR_REV_MASK) << 4) |
 		  ((mcu_rev & CS42L43_FW_SUBMINOR_REV_MASK) >> 8);
 
-	/*
-	 * The firmware has two revision numbers bringing either of them up to a
-	 * supported version will provide the features the driver requires.
-	 */
+	 
 	patched = mcu_rev >= CS42L43_MCU_SUPPORTED_REV ||
 		  bios_rev >= CS42L43_MCU_SUPPORTED_BIOS_REV;
-	/*
-	 * Later versions of the firmwware require the driver to access some
-	 * features through a set of shadow registers.
-	 */
+	 
 	shadow = mcu_rev >= CS42L43_MCU_SHADOW_REGS_REQUIRED_REV;
 
 	ret = regmap_read(cs42l43->regmap, CS42L43_BOOT_CONTROL, &secure_cfg);
@@ -800,9 +749,7 @@ static int cs42l43_mcu_update_step(struct cs42l43 *cs42l43)
 	}
 }
 
-/*
- * Update the firmware running on the device.
- */
+ 
 static int cs42l43_mcu_update(struct cs42l43 *cs42l43)
 {
 	int i, ret;
@@ -950,7 +897,7 @@ static int cs42l43_power_up(struct cs42l43 *cs42l43)
 		return ret;
 	}
 
-	/* vdd-p must be on for 50uS before any other supply */
+	 
 	usleep_range(CS42L43_VDDP_DELAY, 2 * CS42L43_VDDP_DELAY);
 
 	gpiod_set_value_cansleep(cs42l43->reset, 1);
@@ -1054,10 +1001,7 @@ int cs42l43_dev_probe(struct cs42l43 *cs42l43)
 	pm_runtime_set_autosuspend_delay(cs42l43->dev, CS42L43_AUTOSUSPEND_TIME);
 	pm_runtime_use_autosuspend(cs42l43->dev);
 	pm_runtime_set_active(cs42l43->dev);
-	/*
-	 * The device is already powered up, but keep it from suspending until
-	 * the boot work runs.
-	 */
+	 
 	pm_runtime_get_noresume(cs42l43->dev);
 	devm_pm_runtime_enable(cs42l43->dev);
 
@@ -1078,13 +1022,7 @@ static int cs42l43_suspend(struct device *dev)
 	struct cs42l43 *cs42l43 = dev_get_drvdata(dev);
 	int ret;
 
-	/*
-	 * Don't care about being resumed here, but the driver does want
-	 * force_resume to always trigger an actual resume, so that register
-	 * state for the MCU/GPIOs is returned as soon as possible after system
-	 * resume. force_resume will resume if the reference count is resumed on
-	 * suspend hence the get_noresume.
-	 */
+	 
 	pm_runtime_get_noresume(dev);
 
 	ret = pm_runtime_force_suspend(dev);
@@ -1125,11 +1063,7 @@ static int cs42l43_runtime_suspend(struct device *dev)
 {
 	struct cs42l43 *cs42l43 = dev_get_drvdata(dev);
 
-	/*
-	 * Whilst the driver doesn't power the chip down here, going into runtime
-	 * suspend lets the SoundWire bus power down, which means the driver
-	 * can't communicate with the device any more.
-	 */
+	 
 	regcache_cache_only(cs42l43->regmap, true);
 
 	return 0;
@@ -1152,10 +1086,7 @@ static int cs42l43_runtime_resume(struct device *dev)
 	}
 
 	if (!reset_canary) {
-		/*
-		 * If the canary has cleared the chip has reset, re-handle the
-		 * MCU and mark the cache as dirty to indicate the chip reset.
-		 */
+		 
 		ret = cs42l43_mcu_update(cs42l43);
 		if (ret)
 			goto err;

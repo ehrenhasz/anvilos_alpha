@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (c) 2013 Linaro Ltd.
- * Copyright (c) 2013 HiSilicon Limited.
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/bitfield.h>
@@ -19,10 +16,7 @@
 #include "dw_mmc.h"
 #include "dw_mmc-pltfm.h"
 
-/*
- * hi6220 sd only support io voltage 1.8v and 3v
- * Also need config AO_SCTRL_SEL18 accordingly
- */
+ 
 #define AO_SCTRL_SEL18		BIT(10)
 #define AO_SCTRL_CTRL3		0x40C
 
@@ -72,30 +66,30 @@ struct hs_timing {
 };
 
 static struct hs_timing hs_timing_cfg[TIMING_MODE][TIMING_CFG_NUM] = {
-	{ /* reserved */ },
-	{ /* SD */
-		{7, 0, 15, 15,},  /* 0: LEGACY 400k */
-		{6, 0,  4,  4,},  /* 1: MMC_HS */
-		{6, 0,  3,  3,},  /* 2: SD_HS */
-		{6, 0, 15, 15,},  /* 3: SDR12 */
-		{6, 0,  2,  2,},  /* 4: SDR25 */
-		{4, 0, 11,  0,},  /* 5: SDR50 */
-		{6, 4, 15,  0,},  /* 6: SDR104 */
-		{0},              /* 7: DDR50 */
-		{0},              /* 8: DDR52 */
-		{0},              /* 9: HS200 */
+	{   },
+	{  
+		{7, 0, 15, 15,},   
+		{6, 0,  4,  4,},   
+		{6, 0,  3,  3,},   
+		{6, 0, 15, 15,},   
+		{6, 0,  2,  2,},   
+		{4, 0, 11,  0,},   
+		{6, 4, 15,  0,},   
+		{0},               
+		{0},               
+		{0},               
 	},
-	{ /* SDIO */
-		{7, 0, 15, 15,},  /* 0: LEGACY 400k */
-		{0},              /* 1: MMC_HS */
-		{6, 0, 15, 15,},  /* 2: SD_HS */
-		{6, 0, 15, 15,},  /* 3: SDR12 */
-		{6, 0,  0,  0,},  /* 4: SDR25 */
-		{4, 0, 12,  0,},  /* 5: SDR50 */
-		{5, 4, 15,  0,},  /* 6: SDR104 */
-		{0},              /* 7: DDR50 */
-		{0},              /* 8: DDR52 */
-		{0},              /* 9: HS200 */
+	{  
+		{7, 0, 15, 15,},   
+		{0},               
+		{6, 0, 15, 15,},   
+		{6, 0, 15, 15,},   
+		{6, 0,  0,  0,},   
+		{4, 0, 12,  0,},   
+		{5, 4, 15,  0,},   
+		{0},               
+		{0},               
+		{0},               
 	}
 };
 
@@ -260,7 +254,7 @@ static void dw_mci_hs_set_timing(struct dw_mci *host, int timing,
 			     FIELD_PREP(GPIO_USE_SAMPLE_DLY_MASK, use_smpl_dly);
 	mci_writel(host, GPIO, (unsigned int)reg_value | GPIO_CLK_ENABLE);
 
-	/* We should delay 1ms wait for timing setting finished. */
+	 
 	usleep_range(1000, 2000);
 }
 
@@ -336,11 +330,7 @@ static int dw_mci_get_best_clksmpl(unsigned int sample_flag)
 
 	i = ffs(sample_flag) - 1;
 
-	/*
-	* A clock cycle is divided into 32 phases,
-	* each of which is represented by a bit,
-	* finding the optimal phase.
-	*/
+	 
 	while (i < 32) {
 		v = ror32(sample_flag, i);
 		len = ffs(~v) - 1;

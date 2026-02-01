@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Converted from tools/testing/selftests/bpf/verifier/unpriv.c */
+
+ 
 
 #include <linux/bpf.h>
 #include <bpf/bpf_helpers.h>
@@ -7,7 +7,7 @@
 #include "bpf_misc.h"
 
 #define BPF_SK_LOOKUP(func) \
-	/* struct bpf_sock_tuple tuple = {} */ \
+	  \
 	"r2 = 0;"			\
 	"*(u32*)(r10 - 8) = r2;"	\
 	"*(u64*)(r10 - 16) = r2;"	\
@@ -15,7 +15,7 @@
 	"*(u64*)(r10 - 32) = r2;"	\
 	"*(u64*)(r10 - 40) = r2;"	\
 	"*(u64*)(r10 - 48) = r2;"	\
-	/* sk = func(ctx, &tuple, sizeof tuple, 0, 0) */ \
+	  \
 	"r2 = r10;"			\
 	"r2 += -48;"			\
 	"r3 = %[sizeof_bpf_sock_tuple];"\
@@ -403,26 +403,26 @@ __naked void pointers_stx_ctx_and_sock(void)
 {
 	asm volatile ("					\
 	r8 = r1;					\
-	/* struct bpf_sock *sock = bpf_sock_lookup(...); */\
+	 \
 "	BPF_SK_LOOKUP(bpf_sk_lookup_tcp)
 "	r2 = r0;					\
-	/* u64 foo; */					\
-	/* void *target = &foo; */			\
+	 					\
+	 			\
 	r6 = r10;					\
 	r6 += -8;					\
 	r1 = r8;					\
-	/* if (skb == NULL) *target = sock; */		\
+	 		\
 	if r1 == 0 goto l0_%=;				\
 	*(u64*)(r6 + 0) = r2;				\
-l0_%=:	/* else *target = skb; */			\
+l0_%=:	 			\
 	if r1 != 0 goto l1_%=;				\
 	*(u64*)(r6 + 0) = r1;				\
-l1_%=:	/* struct __sk_buff *skb = *target; */		\
+l1_%=:	 		\
 	r1 = *(u64*)(r6 + 0);				\
-	/* skb->mark = 42; */				\
+	 				\
 	r3 = 42;					\
 	*(u32*)(r1 + %[__sk_buff_mark]) = r3;		\
-	/* if (sk) bpf_sk_release(sk) */		\
+	 		\
 	if r1 == 0 goto l2_%=;				\
 	call %[bpf_sk_release];				\
 l2_%=:	r0 = 0;						\
@@ -444,23 +444,23 @@ __naked void different_pointers_stx_leak_sock(void)
 {
 	asm volatile ("					\
 	r8 = r1;					\
-	/* struct bpf_sock *sock = bpf_sock_lookup(...); */\
+	 \
 "	BPF_SK_LOOKUP(bpf_sk_lookup_tcp)
 "	r2 = r0;					\
-	/* u64 foo; */					\
-	/* void *target = &foo; */			\
+	 					\
+	 			\
 	r6 = r10;					\
 	r6 += -8;					\
 	r1 = r8;					\
-	/* if (skb == NULL) *target = sock; */		\
+	 		\
 	if r1 == 0 goto l0_%=;				\
 	*(u64*)(r6 + 0) = r2;				\
-l0_%=:	/* else *target = skb; */			\
+l0_%=:	 			\
 	if r1 != 0 goto l1_%=;				\
 	*(u64*)(r6 + 0) = r1;				\
-l1_%=:	/* struct __sk_buff *skb = *target; */		\
+l1_%=:	 		\
 	r1 = *(u64*)(r6 + 0);				\
-	/* skb->mark = 42; */				\
+	 				\
 	r3 = 42;					\
 	*(u32*)(r1 + %[__sk_buff_mark]) = r3;		\
 	exit;						\
@@ -478,23 +478,23 @@ __naked void stx_sock_and_ctx_read(void)
 {
 	asm volatile ("					\
 	r8 = r1;					\
-	/* struct bpf_sock *sock = bpf_sock_lookup(...); */\
+	 \
 "	BPF_SK_LOOKUP(bpf_sk_lookup_tcp)
 "	r2 = r0;					\
-	/* u64 foo; */					\
-	/* void *target = &foo; */			\
+	 					\
+	 			\
 	r6 = r10;					\
 	r6 += -8;					\
 	r1 = r8;					\
-	/* if (skb) *target = skb */			\
+	 			\
 	if r1 == 0 goto l0_%=;				\
 	*(u64*)(r6 + 0) = r1;				\
-l0_%=:	/* else *target = sock */			\
+l0_%=:	 			\
 	if r1 != 0 goto l1_%=;				\
 	*(u64*)(r6 + 0) = r2;				\
-l1_%=:	/* struct bpf_sock *sk = *target; */		\
+l1_%=:	 		\
 	r1 = *(u64*)(r6 + 0);				\
-	/* if (sk) u32 foo = sk->mark; bpf_sk_release(sk); */\
+	 \
 	if r1 == 0 goto l2_%=;				\
 	r3 = *(u32*)(r1 + %[bpf_sock_mark]);		\
 	call %[bpf_sk_release];				\
@@ -517,23 +517,23 @@ __naked void stx_sock_and_ctx_write(void)
 {
 	asm volatile ("					\
 	r8 = r1;					\
-	/* struct bpf_sock *sock = bpf_sock_lookup(...); */\
+	 \
 "	BPF_SK_LOOKUP(bpf_sk_lookup_tcp)
 "	r2 = r0;					\
-	/* u64 foo; */					\
-	/* void *target = &foo; */			\
+	 					\
+	 			\
 	r6 = r10;					\
 	r6 += -8;					\
 	r1 = r8;					\
-	/* if (skb) *target = skb */			\
+	 			\
 	if r1 == 0 goto l0_%=;				\
 	*(u64*)(r6 + 0) = r1;				\
-l0_%=:	/* else *target = sock */			\
+l0_%=:	 			\
 	if r1 != 0 goto l1_%=;				\
 	*(u64*)(r6 + 0) = r2;				\
-l1_%=:	/* struct bpf_sock *sk = *target; */		\
+l1_%=:	 		\
 	r1 = *(u64*)(r6 + 0);				\
-	/* if (sk) sk->mark = 42; bpf_sk_release(sk); */\
+	 \
 	if r1 == 0 goto l2_%=;				\
 	r3 = 42;					\
 	*(u32*)(r1 + %[bpf_sock_mark]) = r3;		\

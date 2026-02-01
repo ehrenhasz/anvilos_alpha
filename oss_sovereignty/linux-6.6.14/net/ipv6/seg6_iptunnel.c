@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  SR-IPv6 implementation
- *
- *  Author:
- *  David Lebrun <david.lebrun@uclouvain.be>
- */
+
+ 
 
 #include <linux/types.h>
 #include <linux/skbuff.h>
@@ -106,7 +101,7 @@ static void set_tun_src(struct net *net, struct net_device *dev,
 	rcu_read_unlock();
 }
 
-/* Compute flowlabel for outer IPv6 header */
+ 
 static __be32 seg6_make_flowlabel(struct net *net, struct sk_buff *skb,
 				  struct ipv6hdr *inner_hdr)
 {
@@ -124,7 +119,7 @@ static __be32 seg6_make_flowlabel(struct net *net, struct sk_buff *skb,
 	return flowlabel;
 }
 
-/* encapsulate an IPv6 packet within an outer IPv6 header with a given SRH */
+ 
 int seg6_do_srh_encap(struct sk_buff *skb, struct ipv6_sr_hdr *osrh, int proto)
 {
 	struct dst_entry *dst = skb_dst(skb);
@@ -149,10 +144,7 @@ int seg6_do_srh_encap(struct sk_buff *skb, struct ipv6_sr_hdr *osrh, int proto)
 	skb_mac_header_rebuild(skb);
 	hdr = ipv6_hdr(skb);
 
-	/* inherit tc, flowlabel and hlim
-	 * hlim will be decremented in ip6_forward() afterwards and
-	 * decapsulation will overwrite inner hlim with outer hlim
-	 */
+	 
 
 	if (skb->protocol == htons(ETH_P_IPV6)) {
 		ip6_flow_hdr(hdr, ip6_tclass(ip6_flowinfo(inner_hdr)),
@@ -164,12 +156,7 @@ int seg6_do_srh_encap(struct sk_buff *skb, struct ipv6_sr_hdr *osrh, int proto)
 
 		memset(IP6CB(skb), 0, sizeof(*IP6CB(skb)));
 
-		/* the control block has been erased, so we have to set the
-		 * iif once again.
-		 * We read the receiving interface index directly from the
-		 * skb->skb_iif as it is done in the IPv4 receiving path (i.e.:
-		 * ip_rcv_core(...)).
-		 */
+		 
 		IP6CB(skb)->iif = skb->skb_iif;
 	}
 
@@ -199,7 +186,7 @@ int seg6_do_srh_encap(struct sk_buff *skb, struct ipv6_sr_hdr *osrh, int proto)
 }
 EXPORT_SYMBOL_GPL(seg6_do_srh_encap);
 
-/* encapsulate an IPv6 packet within an outer IPv6 header with reduced SRH */
+ 
 static int seg6_do_srh_encap_red(struct sk_buff *skb,
 				 struct ipv6_sr_hdr *osrh, int proto)
 {
@@ -219,10 +206,7 @@ static int seg6_do_srh_encap_red(struct sk_buff *skb,
 	if (first_seg > 0) {
 		red_hdrlen = hdrlen - sizeof(struct in6_addr);
 	} else {
-		/* NOTE: if tag/flags and/or other TLVs are introduced in the
-		 * seg6_iptunnel infrastructure, they should be considered when
-		 * deciding to skip the SRH.
-		 */
+		 
 		skip_srh = !sr_has_hmac(osrh);
 
 		red_hdrlen = skip_srh ? 0 : hdrlen;
@@ -242,7 +226,7 @@ static int seg6_do_srh_encap_red(struct sk_buff *skb,
 	skb_mac_header_rebuild(skb);
 	hdr = ipv6_hdr(skb);
 
-	/* based on seg6_do_srh_encap() */
+	 
 	if (skb->protocol == htons(ETH_P_IPV6)) {
 		ip6_flow_hdr(hdr, ip6_tclass(ip6_flowinfo(inner_hdr)),
 			     flowlabel);
@@ -255,9 +239,7 @@ static int seg6_do_srh_encap_red(struct sk_buff *skb,
 		IP6CB(skb)->iif = skb->skb_iif;
 	}
 
-	/* no matter if we have to skip the SRH or not, the first segment
-	 * always comes in the pushed IPv6 header.
-	 */
+	 
 	hdr->daddr = osrh->segments[first_seg];
 
 	if (skip_srh) {
@@ -267,16 +249,13 @@ static int seg6_do_srh_encap_red(struct sk_buff *skb,
 		goto out;
 	}
 
-	/* we cannot skip the SRH, slow path */
+	 
 
 	hdr->nexthdr = NEXTHDR_ROUTING;
 	isrh = (void *)hdr + sizeof(struct ipv6hdr);
 
 	if (unlikely(!first_seg)) {
-		/* this is a very rare case; we have only one SID but
-		 * we cannot skip the SRH since we are carrying some
-		 * other info.
-		 */
+		 
 		memcpy(isrh, osrh, hdrlen);
 		goto srcaddr;
 	}
@@ -317,7 +296,7 @@ out:
 	return 0;
 }
 
-/* insert an SRH within an IPv6 packet, just after the IPv6 header */
+ 
 int seg6_do_srh_inline(struct sk_buff *skb, struct ipv6_sr_hdr *osrh)
 {
 	struct ipv6hdr *hdr, *oldhdr;
@@ -630,9 +609,7 @@ static int seg6_build_state(struct net *net, struct nlattr *nla,
 	tuninfo = nla_data(tb[SEG6_IPTUNNEL_SRH]);
 	tuninfo_len = nla_len(tb[SEG6_IPTUNNEL_SRH]);
 
-	/* tuninfo must contain at least the iptunnel encap structure,
-	 * the SRH and one segment
-	 */
+	 
 	min_size = sizeof(*tuninfo) + sizeof(struct ipv6_sr_hdr) +
 		   sizeof(struct in6_addr);
 	if (tuninfo_len < min_size)
@@ -656,7 +633,7 @@ static int seg6_build_state(struct net *net, struct nlattr *nla,
 		return -EINVAL;
 	}
 
-	/* verify that SRH is consistent */
+	 
 	if (!seg6_validate_srh(tuninfo->srh, tuninfo_len - sizeof(*tuninfo), false))
 		return -EINVAL;
 

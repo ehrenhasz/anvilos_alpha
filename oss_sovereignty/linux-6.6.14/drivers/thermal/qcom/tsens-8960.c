@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2015, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/platform_device.h>
 #include <linux/delay.h>
@@ -12,7 +10,7 @@
 
 #define CONFIG_ADDR		0x3640
 #define CONFIG_ADDR_8660	0x3620
-/* CONFIG_ADDR bitmasks */
+ 
 #define CONFIG			0x9b
 #define CONFIG_MASK		0xf
 #define CONFIG_8660		1
@@ -20,7 +18,7 @@
 #define CONFIG_MASK_8660	(3 << CONFIG_SHIFT_8660)
 
 #define CNTL_ADDR		0x3620
-/* CNTL_ADDR bitmasks */
+ 
 #define EN			BIT(0)
 #define SW_RST			BIT(1)
 
@@ -38,14 +36,14 @@
 #define S2_STATUS_OFF		0x3630
 #define S3_STATUS_OFF		0x3634
 #define S4_STATUS_OFF		0x3638
-#define S5_STATUS_OFF		0x3664  /* Sensors 5-10 found on apq8064/msm8960 */
+#define S5_STATUS_OFF		0x3664   
 #define S6_STATUS_OFF		0x3668
 #define S7_STATUS_OFF		0x366c
 #define S8_STATUS_OFF		0x3670
 #define S9_STATUS_OFF		0x3674
 #define S10_STATUS_OFF		0x3678
 
-/* Original slope - 350 to compensate mC to C inaccuracy */
+ 
 static u32 tsens_msm8960_slope[] = {
 			826, 826, 804, 826,
 			761, 782, 782, 849,
@@ -87,10 +85,7 @@ static int resume_8960(struct tsens_priv *priv)
 	if (ret)
 		return ret;
 
-	/*
-	 * Separate CONFIG restore is not needed only for 8660 as
-	 * config is part of CTRL Addr and its restored as such
-	 */
+	 
 	if (priv->num_sensors > 1) {
 		ret = regmap_update_bits(map, CONFIG_ADDR, CONFIG_MASK, CONFIG);
 		if (ret)
@@ -117,19 +112,13 @@ static int enable_8960(struct tsens_priv *priv, int id)
 	if (ret)
 		return ret;
 
-	/* HARDWARE BUG:
-	 * On platforms with more than 6 sensors, all remaining sensors
-	 * must be enabled together, otherwise undefined results are expected.
-	 * (Sensor 6-7 disabled, Sensor 3 disabled...) In the original driver,
-	 * all the sensors are enabled in one step hence this bug is not
-	 * triggered.
-	 */
+	 
 	if (id > 5)
 		mask = GENMASK(10, 6);
 
 	mask <<= SENSOR0_SHIFT;
 
-	/* Sensors already enabled. Skip. */
+	 
 	if ((reg & mask) == mask)
 		return 0;
 
@@ -200,38 +189,34 @@ static int calibrate_8960(struct tsens_priv *priv)
 }
 
 static const struct reg_field tsens_8960_regfields[MAX_REGFIELDS] = {
-	/* ----- SROT ------ */
-	/* No VERSION information */
+	 
+	 
 
-	/* CNTL */
+	 
 	[TSENS_EN]     = REG_FIELD(CNTL_ADDR,  0, 0),
 	[TSENS_SW_RST] = REG_FIELD(CNTL_ADDR,  1, 1),
-	/* 8960 has 5 sensors, 8660 has 11, we only handle 5 */
+	 
 	[SENSOR_EN]    = REG_FIELD(CNTL_ADDR,  3, 7),
 
-	/* ----- TM ------ */
-	/* INTERRUPT ENABLE */
-	/* NO INTERRUPT ENABLE */
+	 
+	 
+	 
 
-	/* Single UPPER/LOWER TEMPERATURE THRESHOLD for all sensors */
+	 
 	[LOW_THRESH_0]   = REG_FIELD(THRESHOLD_ADDR,  0,  7),
 	[UP_THRESH_0]    = REG_FIELD(THRESHOLD_ADDR,  8, 15),
-	/* MIN_THRESH_0 and MAX_THRESH_0 are not present in the regfield
-	 * Recycle CRIT_THRESH_0 and 1 to set the required regs to hardcoded temp
-	 * MIN_THRESH_0 -> CRIT_THRESH_1
-	 * MAX_THRESH_0 -> CRIT_THRESH_0
-	 */
+	 
 	[CRIT_THRESH_1]   = REG_FIELD(THRESHOLD_ADDR, 16, 23),
 	[CRIT_THRESH_0]   = REG_FIELD(THRESHOLD_ADDR, 24, 31),
 
-	/* UPPER/LOWER INTERRUPT [CLEAR/STATUS] */
-	/* 1 == clear, 0 == normal operation */
+	 
+	 
 	[LOW_INT_CLEAR_0]   = REG_FIELD(CNTL_ADDR,  9,  9),
 	[UP_INT_CLEAR_0]    = REG_FIELD(CNTL_ADDR, 10, 10),
 
-	/* NO CRITICAL INTERRUPT SUPPORT on 8960 */
+	 
 
-	/* Sn_STATUS */
+	 
 	[LAST_TEMP_0]  = REG_FIELD(S0_STATUS_OFF,  0,  7),
 	[LAST_TEMP_1]  = REG_FIELD(S1_STATUS_OFF,  0,  7),
 	[LAST_TEMP_2]  = REG_FIELD(S2_STATUS_OFF,  0,  7),
@@ -244,15 +229,15 @@ static const struct reg_field tsens_8960_regfields[MAX_REGFIELDS] = {
 	[LAST_TEMP_9]  = REG_FIELD(S9_STATUS_OFF,  0,  7),
 	[LAST_TEMP_10] = REG_FIELD(S10_STATUS_OFF, 0,  7),
 
-	/* No VALID field on 8960 */
-	/* TSENS_INT_STATUS bits: 1 == threshold violated */
+	 
+	 
 	[MIN_STATUS_0] = REG_FIELD(INT_STATUS_ADDR, 0, 0),
 	[LOWER_STATUS_0] = REG_FIELD(INT_STATUS_ADDR, 1, 1),
 	[UPPER_STATUS_0] = REG_FIELD(INT_STATUS_ADDR, 2, 2),
-	/* No CRITICAL field on 8960 */
+	 
 	[MAX_STATUS_0] = REG_FIELD(INT_STATUS_ADDR, 3, 3),
 
-	/* TRDY: 1=ready, 0=in progress */
+	 
 	[TRDY] = REG_FIELD(INT_STATUS_ADDR, 7, 7),
 };
 

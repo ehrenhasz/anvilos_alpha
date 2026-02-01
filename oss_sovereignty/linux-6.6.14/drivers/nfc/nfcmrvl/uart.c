@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Marvell NFC-over-UART driver
- *
- * Copyright (C) 2015, Marvell International Ltd.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/delay.h>
@@ -17,9 +13,7 @@ static unsigned int flow_control;
 static unsigned int break_control;
 static int reset_n_io = -EINVAL;
 
-/*
- * NFCMRVL NCI OPS
- */
+ 
 
 static int nfcmrvl_uart_nci_open(struct nfcmrvl_private *priv)
 {
@@ -84,9 +78,7 @@ static int nfcmrvl_uart_parse_dt(struct device_node *node,
 	return 0;
 }
 
-/*
- * NCI UART OPS
- */
+ 
 
 static int nfcmrvl_nci_uart_open(struct nci_uart *nu)
 {
@@ -95,11 +87,7 @@ static int nfcmrvl_nci_uart_open(struct nci_uart *nu)
 	const struct nfcmrvl_platform_data *pdata = NULL;
 	struct device *dev = nu->tty->dev;
 
-	/*
-	 * Platform data cannot be used here since usually it is already used
-	 * by low level serial driver. We can try to retrieve serial device
-	 * and check if DT entries were added.
-	 */
+	 
 
 	if (dev && dev->parent && dev->parent->of_node)
 		if (nfcmrvl_uart_parse_dt(dev->parent->of_node, &config) == 0)
@@ -145,7 +133,7 @@ static void nfcmrvl_nci_uart_tx_start(struct nci_uart *nu)
 	if (priv->ndev->nfc_dev->fw_download_in_progress)
 		return;
 
-	/* Remove BREAK to wake up the NFCC */
+	 
 	if (priv->config.break_control && nu->tty->ops->break_ctl) {
 		nu->tty->ops->break_ctl(nu->tty, 0);
 		usleep_range(3000, 5000);
@@ -159,11 +147,7 @@ static void nfcmrvl_nci_uart_tx_done(struct nci_uart *nu)
 	if (priv->ndev->nfc_dev->fw_download_in_progress)
 		return;
 
-	/*
-	 * To ensure that if the NFCC goes in DEEP SLEEP sate we can wake him
-	 * up. we set BREAK. Once we will be ready to send again we will remove
-	 * it.
-	 */
+	 
 	if (priv->config.break_control && nu->tty->ops->break_ctl) {
 		nu->tty->ops->break_ctl(nu->tty, -1);
 		usleep_range(1000, 3000);

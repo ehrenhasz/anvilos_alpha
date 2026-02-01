@@ -1,14 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * 32-bit test to check vDSO mremap.
- *
- * Copyright (c) 2016 Dmitry Safonov
- * Suggested-by: Andrew Lutomirski
- */
-/*
- * Can be built statically:
- * gcc -Os -Wall -static -m32 test_mremap_vdso.c
- */
+
+ 
+ 
 #define _GNU_SOURCE
 #include <stdio.h>
 #include <errno.h>
@@ -26,7 +18,7 @@ static int try_to_remap(void *vdso_addr, unsigned long size)
 {
 	void *dest_addr, *new_addr;
 
-	/* Searching for memory location where to remap */
+	 
 	dest_addr = mmap(0, size, PROT_NONE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0);
 	if (dest_addr == MAP_FAILED) {
 		printf("[WARN]\tmmap failed (%d): %m\n", errno);
@@ -44,7 +36,7 @@ static int try_to_remap(void *vdso_addr, unsigned long size)
 		munmap(dest_addr, size);
 		if (errno == EINVAL) {
 			printf("[NOTE]\tvDSO partial move failed, will try with bigger size\n");
-			return -1; /* Retry with larger */
+			return -1;  
 		}
 		printf("[FAIL]\tmremap failed (%d): %m\n", errno);
 		return 1;
@@ -76,16 +68,16 @@ int main(int argc, char **argv, char **envp)
 			return 0;
 		}
 
-		/* Simpler than parsing ELF header */
+		 
 		while (ret < 0) {
 			ret = try_to_remap((void *)auxval, vdso_size);
 			vdso_size += PAGE_SIZE;
 		}
 
 #ifdef __i386__
-		/* Glibc is likely to explode now - exit with raw syscall */
+		 
 		asm volatile ("int $0x80" : : "a" (__NR_exit), "b" (!!ret));
-#else /* __x86_64__ */
+#else  
 		syscall(SYS_exit, ret);
 #endif
 	} else {

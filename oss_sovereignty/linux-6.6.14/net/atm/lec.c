@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * lec.c: Lan Emulation driver
- *
- * Marko Kiiskila <mkiiskila@yahoo.com>
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ":%s: " fmt, __func__
 
@@ -12,7 +8,7 @@
 #include <linux/bitops.h>
 #include <linux/capability.h>
 
-/* We are ethernet device */
+ 
 #include <linux/if_ether.h>
 #include <linux/netdevice.h>
 #include <linux/etherdevice.h>
@@ -27,38 +23,31 @@
 #include <linux/spinlock.h>
 #include <linux/seq_file.h>
 
-/* And atm device */
+ 
 #include <linux/atmdev.h>
 #include <linux/atmlec.h>
 
-/* Proxy LEC knows about bridging */
+ 
 #if IS_ENABLED(CONFIG_BRIDGE)
 #include "../bridge/br_private.h"
 
 static unsigned char bridge_ula_lec[] = { 0x01, 0x80, 0xc2, 0x00, 0x00 };
 #endif
 
-/* Modular too */
+ 
 #include <linux/module.h>
 #include <linux/init.h>
 
-/* Hardening for Spectre-v1 */
+ 
 #include <linux/nospec.h>
 
 #include "lec.h"
 #include "lec_arpc.h"
 #include "resources.h"
 
-#define DUMP_PACKETS 0		/*
-				 * 0 = None,
-				 * 1 = 30 first bytes
-				 * 2 = Whole packet
-				 */
+#define DUMP_PACKETS 0		 
 
-#define LEC_UNRES_QUE_LEN 8	/*
-				 * number of tx packets to queue for a
-				 * single destination while waiting for SVC
-				 */
+#define LEC_UNRES_QUE_LEN 8	 
 
 static int lec_open(struct net_device *dev);
 static netdev_tx_t lec_start_xmit(struct sk_buff *skb,
@@ -68,7 +57,7 @@ static struct lec_arp_table *lec_arp_find(struct lec_priv *priv,
 					  const unsigned char *mac_addr);
 static int lec_arp_remove(struct lec_priv *priv,
 			  struct lec_arp_table *to_remove);
-/* LANE2 functions */
+ 
 static void lane2_associate_ind(struct net_device *dev, const u8 *mac_address,
 				const u8 *tlvs, u32 sizeoftlvs);
 static int lane2_resolve(struct net_device *dev, const u8 *dst_mac, int force,
@@ -102,7 +91,7 @@ static void lec_vcc_added(struct lec_priv *priv,
 					   struct sk_buff *skb));
 static void lec_vcc_close(struct lec_priv *priv, struct atm_vcc *vcc);
 
-/* must be done under lec_arp_lock */
+ 
 static inline void lec_arp_hold(struct lec_arp_table *entry)
 {
 	refcount_inc(&entry->usage);
@@ -115,14 +104,14 @@ static inline void lec_arp_put(struct lec_arp_table *entry)
 }
 
 static struct lane2_ops lane2_ops = {
-	.resolve = lane2_resolve,		/* spec 3.1.3 */
-	.associate_req = lane2_associate_req,	/* spec 3.1.4 */
-	.associate_indicator = NULL             /* spec 3.1.5 */
+	.resolve = lane2_resolve,		 
+	.associate_req = lane2_associate_req,	 
+	.associate_indicator = NULL              
 };
 
 static unsigned char bus_mac[ETH_ALEN] = { 0xff, 0xff, 0xff, 0xff, 0xff, 0xff };
 
-/* Device structures */
+ 
 static struct net_device *dev_lec[MAX_LEC_ITF];
 
 #if IS_ENABLED(CONFIG_BRIDGE)
@@ -131,11 +120,7 @@ static void lec_handle_bridge(struct sk_buff *skb, struct net_device *dev)
 	char *buff;
 	struct lec_priv *priv;
 
-	/*
-	 * Check if this is a BPDU. If so, ask zeppelin to send
-	 * LE_TOPOLOGY_REQUEST with the same value of Topology Change bit
-	 * as the Config BPDU has
-	 */
+	 
 	buff = skb->data + skb->dev->hard_header_len;
 	if (*buff++ == 0x42 && *buff++ == 0x42 && *buff++ == 0x03) {
 		struct sock *sk;
@@ -150,7 +135,7 @@ static void lec_handle_bridge(struct sk_buff *skb, struct net_device *dev)
 		mesg->type = l_topology_change;
 		buff += 4;
 		mesg->content.normal.flag = *buff & 0x01;
-					/* 0x01 is topology change */
+					 
 
 		priv = netdev_priv(dev);
 		atm_force_charge(priv->lecd, skb2->truesize);
@@ -159,16 +144,9 @@ static void lec_handle_bridge(struct sk_buff *skb, struct net_device *dev)
 		sk->sk_data_ready(sk);
 	}
 }
-#endif /* IS_ENABLED(CONFIG_BRIDGE) */
+#endif  
 
-/*
- * Open/initialize the netdevice. This is called (in the current kernel)
- * sometime after booting when the 'ifconfig' program is run.
- *
- * This routine should set everything up anew at each open, even
- * registers that "should" only need to be set once at boot, so that
- * there is non-reboot way to recover if something goes wrong.
- */
+ 
 
 static int lec_open(struct net_device *dev)
 {
@@ -230,7 +208,7 @@ static netdev_tx_t lec_start_xmit(struct sk_buff *skb,
 		lec_handle_bridge(skb, dev);
 #endif
 
-	/* Make sure we have room for lec_id */
+	 
 	if (skb_headroom(skb) < 2) {
 		pr_debug("reallocating skb\n");
 		skb2 = skb_realloc_headroom(skb, LEC_HEADER_LEN);
@@ -243,7 +221,7 @@ static netdev_tx_t lec_start_xmit(struct sk_buff *skb,
 	}
 	skb_push(skb, 2);
 
-	/* Put le header to place */
+	 
 	lec_h = (struct lecdatahdr_8023 *)skb->data;
 	lec_h->le_header = htons(priv->lecid);
 
@@ -257,9 +235,9 @@ static netdev_tx_t lec_start_xmit(struct sk_buff *skb,
 	       dev->name, skb->len, priv->lecid);
 	print_hex_dump(KERN_DEBUG, "", DUMP_OFFSET, 16, 1,
 		       skb->data, min(skb->len, MAX_DUMP_SKB), true);
-#endif /* DUMP_PACKETS >= 1 */
+#endif  
 
-	/* Minimum ethernet-frame size */
+	 
 	min_frame_size = LEC_MINIMUM_8023_SIZE;
 	if (skb->len < min_frame_size) {
 		if ((skb->len + skb_tailroom(skb)) < min_frame_size) {
@@ -276,7 +254,7 @@ static netdev_tx_t lec_start_xmit(struct sk_buff *skb,
 		skb_put(skb, min_frame_size - skb->len);
 	}
 
-	/* Send to right vcc */
+	 
 	is_rdesc = 0;
 	dst = lec_h->h_dest;
 	entry = NULL;
@@ -299,7 +277,7 @@ static netdev_tx_t lec_start_xmit(struct sk_buff *skb,
 #if DUMP_PACKETS > 0
 	printk(KERN_DEBUG "%s:sending to vpi:%d vci:%d\n",
 	       dev->name, vcc->vpi, vcc->vci);
-#endif /* DUMP_PACKETS > 0 */
+#endif  
 
 	while (entry && (skb2 = skb_dequeue(&entry->tx_wait))) {
 		pr_debug("emptying tx queue, MAC address %pM\n", lec_h->h_dest);
@@ -314,11 +292,7 @@ static netdev_tx_t lec_start_xmit(struct sk_buff *skb,
 		vpriv->xoff = 1;
 		netif_stop_queue(dev);
 
-		/*
-		 * vcc->pop() might have occurred in between, making
-		 * the vcc usuable again.  Since xmit is serialized,
-		 * this is the only situation we have to re-test.
-		 */
+		 
 
 		if (atm_may_send(vcc, 0))
 			netif_wake_queue(dev);
@@ -331,7 +305,7 @@ out:
 	return NETDEV_TX_OK;
 }
 
-/* The inverse routine to net_open(). */
+ 
 static int lec_close(struct net_device *dev)
 {
 	netif_stop_queue(dev);
@@ -346,7 +320,7 @@ static int lec_atm_send(struct atm_vcc *vcc, struct sk_buff *skb)
 	struct lec_priv *priv = netdev_priv(dev);
 	struct atmlec_msg *mesg;
 	struct lec_arp_table *entry;
-	char *tmp;		/* FIXME */
+	char *tmp;		 
 
 	WARN_ON(refcount_sub_and_test(skb->truesize, &sk_atm(vcc)->sk_wmem_alloc));
 	mesg = (struct atmlec_msg *)skb->data;
@@ -370,7 +344,7 @@ static int lec_atm_send(struct atm_vcc *vcc, struct sk_buff *skb)
 	case l_flush_complete:
 		lec_flush_complete(priv, mesg->content.normal.flag);
 		break;
-	case l_narp_req:	/* LANE2: see 7.1.35 in the lane2 spec */
+	case l_narp_req:	 
 		spin_lock_irqsave(&priv->lec_arp_lock, flags);
 		entry = lec_arp_find(priv, mesg->content.normal.mac_addr);
 		lec_arp_remove(priv, entry);
@@ -385,7 +359,7 @@ static int lec_atm_send(struct atm_vcc *vcc, struct sk_buff *skb)
 			       mesg->content.normal.flag,
 			       mesg->content.normal.targetless_le_arp);
 		pr_debug("in l_arp_update\n");
-		if (mesg->sizeoftlvs != 0) {	/* LANE2 3.1.5 */
+		if (mesg->sizeoftlvs != 0) {	 
 			pr_debug("LANE2 3.1.5, got tlvs, size %d\n",
 				 mesg->sizeoftlvs);
 			lane2_associate_ind(dev, mesg->content.normal.mac_addr,
@@ -407,7 +381,7 @@ static int lec_atm_send(struct atm_vcc *vcc, struct sk_buff *skb)
 		priv->path_switching_delay =
 		    (mesg->content.config.path_switching_delay * HZ);
 		priv->lane_version = mesg->content.config.lane_version;
-					/* LANE2 */
+					 
 		priv->lane2_ops = NULL;
 		if (priv->lane_version > 1)
 			priv->lane2_ops = &lane2_ops;
@@ -436,7 +410,7 @@ static int lec_atm_send(struct atm_vcc *vcc, struct sk_buff *skb)
 			break;
 
 		if (br_fdb_test_addr_hook(dev, mesg->content.proxy.mac_addr)) {
-			/* hit from bridge table, send LE_ARP_RESPONSE */
+			 
 			struct sk_buff *skb2;
 			struct sock *sk;
 
@@ -453,7 +427,7 @@ static int lec_atm_send(struct atm_vcc *vcc, struct sk_buff *skb)
 			sk->sk_data_ready(sk);
 		}
 	}
-#endif /* IS_ENABLED(CONFIG_BRIDGE) */
+#endif  
 		break;
 	default:
 		pr_info("%s: Unknown message type %d\n", dev->name, mesg->type);
@@ -471,7 +445,7 @@ static void lec_atm_close(struct atm_vcc *vcc)
 	struct lec_priv *priv = netdev_priv(dev);
 
 	priv->lecd = NULL;
-	/* Do something needful? */
+	 
 
 	netif_stop_queue(dev);
 	lec_arp_destroy(priv);
@@ -495,14 +469,11 @@ static const struct atmdev_ops lecdev_ops = {
 static struct atm_dev lecatm_dev = {
 	.ops = &lecdev_ops,
 	.type = "lec",
-	.number = 999,		/* dummy device number */
+	.number = 999,		 
 	.lock = __SPIN_LOCK_UNLOCKED(lecatm_dev.lock)
 };
 
-/*
- * LANE2: new argument struct sk_buff *data contains
- * the LE_ARP based TLVs introduced in the LANE2 spec
- */
+ 
 static int
 send_to_lecd(struct lec_priv *priv, atmlec_msg_type type,
 	     const unsigned char *mac_addr, const unsigned char *atm_addr,
@@ -547,10 +518,7 @@ send_to_lecd(struct lec_priv *priv, atmlec_msg_type type,
 
 static void lec_set_multicast_list(struct net_device *dev)
 {
-	/*
-	 * by default, all multicast frames arrive over the bus.
-	 * eventually support selective multicast service
-	 */
+	 
 }
 
 static const struct net_device_ops lec_netdev_ops = {
@@ -602,35 +570,29 @@ static void lec_push(struct atm_vcc *vcc, struct sk_buff *skb)
 	       dev->name, skb->len, priv->lecid);
 	print_hex_dump(KERN_DEBUG, "", DUMP_OFFSET, 16, 1,
 		       skb->data, min(MAX_SKB_DUMP, skb->len), true);
-#endif /* DUMP_PACKETS > 0 */
+#endif  
 	if (memcmp(skb->data, lec_ctrl_magic, 4) == 0) {
-				/* Control frame, to daemon */
+				 
 		struct sock *sk = sk_atm(vcc);
 
 		pr_debug("%s: To daemon\n", dev->name);
 		skb_queue_tail(&sk->sk_receive_queue, skb);
 		sk->sk_data_ready(sk);
-	} else {		/* Data frame, queue to protocol handlers */
+	} else {		 
 		struct lec_arp_table *entry;
 		unsigned char *src, *dst;
 
 		atm_return(vcc, skb->truesize);
 		if (*(__be16 *) skb->data == htons(priv->lecid) ||
 		    !priv->lecd || !(dev->flags & IFF_UP)) {
-			/*
-			 * Probably looping back, or if lecd is missing,
-			 * lecd has gone down
-			 */
+			 
 			pr_debug("Ignoring frame...\n");
 			dev_kfree_skb(skb);
 			return;
 		}
 		dst = ((struct lecdatahdr_8023 *)skb->data)->h_dest;
 
-		/*
-		 * If this is a Data Direct VCC, and the VCC does not match
-		 * the LE_ARP cache entry, delete the LE_ARP cache entry.
-		 */
+		 
 		spin_lock_irqsave(&priv->lec_arp_lock, flags);
 		if (lec_is_data_direct(vcc)) {
 			src = ((struct lecdatahdr_8023 *)skb->data)->h_source;
@@ -642,15 +604,15 @@ static void lec_push(struct atm_vcc *vcc, struct sk_buff *skb)
 		}
 		spin_unlock_irqrestore(&priv->lec_arp_lock, flags);
 
-		if (!(dst[0] & 0x01) &&	/* Never filter Multi/Broadcast */
-		    !priv->is_proxy &&	/* Proxy wants all the packets */
+		if (!(dst[0] & 0x01) &&	 
+		    !priv->is_proxy &&	 
 		    memcmp(dst, dev->dev_addr, dev->addr_len)) {
 			dev_kfree_skb(skb);
 			return;
 		}
 		if (!hlist_empty(&priv->lec_arp_empty_ones))
 			lec_arp_check_empties(priv, vcc, skb);
-		skb_pull(skb, 2);	/* skip lec_id */
+		skb_pull(skb, 2);	 
 		skb->protocol = eth_type_trans(skb, dev);
 		dev->stats.rx_packets++;
 		dev->stats.rx_bytes += skb->len;
@@ -684,7 +646,7 @@ static int lec_vcc_attach(struct atm_vcc *vcc, void __user *arg)
 	int bytes_left;
 	struct atmlec_ioc ioc_data;
 
-	/* Lecd must be up in this case */
+	 
 	bytes_left = copy_from_user(&ioc_data, arg, sizeof(struct atmlec_ioc));
 	if (bytes_left != 0)
 		pr_info("copy from user failed for %d bytes\n", bytes_left);
@@ -718,7 +680,7 @@ static int lec_mcast_attach(struct atm_vcc *vcc, int arg)
 	return lec_mcast_make(netdev_priv(dev_lec[arg]), vcc);
 }
 
-/* Initialize device. */
+ 
 static int lecd_attach(struct atm_vcc *vcc, int arg)
 {
 	int i;
@@ -751,7 +713,7 @@ static int lecd_attach(struct atm_vcc *vcc, int arg)
 			return -EADDRINUSE;
 	}
 	lec_arp_init(priv);
-	priv->itfnum = i;	/* LANE2 addition */
+	priv->itfnum = i;	 
 	priv->lecd = vcc;
 	vcc->dev = &lecatm_dev;
 	vcc_insert_socket(sk_atm(vcc));
@@ -760,7 +722,7 @@ static int lecd_attach(struct atm_vcc *vcc, int arg)
 	set_bit(ATM_VF_META, &vcc->flags);
 	set_bit(ATM_VF_READY, &vcc->flags);
 
-	/* Set default values to these variables */
+	 
 	priv->maximum_unknown_frame_count = 1;
 	priv->max_unknown_frame_time = (1 * HZ);
 	priv->vcc_timeout_period = (1200 * HZ);
@@ -791,7 +753,7 @@ static const char *lec_arp_get_status_string(unsigned char status)
 	};
 
 	if (status > ESI_FORWARD_DIRECT)
-		status = 3;	/* ESI_UNDEFINED */
+		status = 3;	 
 	return lec_arp_status_string[status];
 }
 
@@ -888,7 +850,7 @@ static void *lec_priv_walk(struct lec_state *state, loff_t *l,
 	if (!lec_arp_walk(state, l, priv) && !lec_misc_walk(state, l, priv)) {
 		spin_unlock_irqrestore(&priv->lec_arp_lock, state->flags);
 		state->locked = NULL;
-		/* Partial state reset for the next time we get called */
+		 
 		state->arp_table = state->misc_table = 0;
 	}
 	return state->locked;
@@ -904,7 +866,7 @@ static void *lec_itf_walk(struct lec_state *state, loff_t *l)
 		lec_priv_walk(state, l, netdev_priv(dev)) : NULL;
 	if (!v && dev) {
 		dev_put(dev);
-		/* Partial state reset for the next time we get called */
+		 
 		dev = NULL;
 	}
 	state->dev = dev;
@@ -1064,13 +1026,7 @@ static void __exit lane_module_cleanup(void)
 module_init(lane_module_init);
 module_exit(lane_module_cleanup);
 
-/*
- * LANE2: 3.1.3, LE_RESOLVE.request
- * Non force allocates memory and fills in *tlvs, fills in *sizeoftlvs.
- * If sizeoftlvs == NULL the default TLVs associated with this
- * lec will be used.
- * If dst_mac == NULL, targetless LE_ARP will be sent
- */
+ 
 static int lane2_resolve(struct net_device *dev, const u8 *dst_mac, int force,
 			 u8 **tlvs, u32 *sizeoftlvs)
 {
@@ -1110,13 +1066,7 @@ static int lane2_resolve(struct net_device *dev, const u8 *dst_mac, int force,
 	return retval;
 }
 
-/*
- * LANE2: 3.1.4, LE_ASSOCIATE.request
- * Associate the *tlvs with the *lan_dst address.
- * Will overwrite any previous association
- * Returns 1 for success, 0 for failure (out of memory)
- *
- */
+ 
 static int lane2_associate_req(struct net_device *dev, const u8 *lan_dst,
 			       const u8 *tlvs, u32 sizeoftlvs)
 {
@@ -1125,9 +1075,9 @@ static int lane2_associate_req(struct net_device *dev, const u8 *lan_dst,
 	struct lec_priv *priv = netdev_priv(dev);
 
 	if (!ether_addr_equal(lan_dst, dev->dev_addr))
-		return 0;	/* not our mac address */
+		return 0;	 
 
-	kfree(priv->tlvs);	/* NULL if there was no previous association */
+	kfree(priv->tlvs);	 
 
 	priv->tlvs = kmemdup(tlvs, sizeoftlvs, GFP_KERNEL);
 	if (priv->tlvs == NULL)
@@ -1142,17 +1092,11 @@ static int lane2_associate_req(struct net_device *dev, const u8 *lan_dst,
 	retval = send_to_lecd(priv, l_associate_req, NULL, NULL, skb);
 	if (retval != 0)
 		pr_info("lec.c: lane2_associate_req() failed\n");
-	/*
-	 * If the previous association has changed we must
-	 * somehow notify other LANE entities about the change
-	 */
+	 
 	return 1;
 }
 
-/*
- * LANE2: 3.1.5, LE_ASSOCIATE.indication
- *
- */
+ 
 static void lane2_associate_ind(struct net_device *dev, const u8 *mac_addr,
 				const u8 *tlvs, u32 sizeoftlvs)
 {
@@ -1160,16 +1104,11 @@ static void lane2_associate_ind(struct net_device *dev, const u8 *mac_addr,
 	int i = 0;
 #endif
 	struct lec_priv *priv = netdev_priv(dev);
-#if 0				/*
-				 * Why have the TLVs in LE_ARP entries
-				 * since we do not use them? When you
-				 * uncomment this code, make sure the
-				 * TLVs get freed when entry is killed
-				 */
+#if 0				 
 	struct lec_arp_table *entry = lec_arp_find(priv, mac_addr);
 
 	if (entry == NULL)
-		return;		/* should not happen */
+		return;		 
 
 	kfree(entry->tlvs);
 
@@ -1187,19 +1126,14 @@ static void lane2_associate_ind(struct net_device *dev, const u8 *mac_addr,
 	pr_cont("\n");
 #endif
 
-	/* tell MPOA about the TLVs we saw */
+	 
 	if (priv->lane2_ops && priv->lane2_ops->associate_indicator) {
 		priv->lane2_ops->associate_indicator(dev, mac_addr,
 						     tlvs, sizeoftlvs);
 	}
 }
 
-/*
- * Here starts what used to lec_arpc.c
- *
- * lec_arpc.c was added here when making
- * lane client modular. October 1997
- */
+ 
 
 #include <linux/types.h>
 #include <linux/timer.h>
@@ -1210,9 +1144,7 @@ static void lane2_associate_ind(struct net_device *dev, const u8 *mac_addr,
 
 #if 0
 #define pr_debug(format, args...)
-/*
-  #define pr_debug printk
-*/
+ 
 #endif
 #define DEBUG_ARP_TABLE 0
 
@@ -1221,15 +1153,11 @@ static void lane2_associate_ind(struct net_device *dev, const u8 *mac_addr,
 static void lec_arp_check_expire(struct work_struct *work);
 static void lec_arp_expire_arp(struct timer_list *t);
 
-/*
- * Arp table funcs
- */
+ 
 
 #define HASH(ch) (ch & (LEC_ARP_TABLE_SIZE - 1))
 
-/*
- * Initialization of arp-cache
- */
+ 
 static void lec_arp_init(struct lec_priv *priv)
 {
 	unsigned short i;
@@ -1273,10 +1201,7 @@ static void lec_arp_clear_vccs(struct lec_arp_table *entry)
 	}
 }
 
-/*
- * Insert entry to lec_arp_table
- * LANE2: Add to the end of the list to satisfy 8.1.13
- */
+ 
 static inline void
 lec_arp_add(struct lec_priv *priv, struct lec_arp_table *entry)
 {
@@ -1288,9 +1213,7 @@ lec_arp_add(struct lec_priv *priv, struct lec_arp_table *entry)
 	pr_debug("Added entry:%pM\n", entry->mac_addr);
 }
 
-/*
- * Remove entry from lec_arp_table
- */
+ 
 static int
 lec_arp_remove(struct lec_priv *priv, struct lec_arp_table *to_remove)
 {
@@ -1303,14 +1226,9 @@ lec_arp_remove(struct lec_priv *priv, struct lec_arp_table *to_remove)
 	hlist_del(&to_remove->next);
 	del_timer(&to_remove->timer);
 
-	/*
-	 * If this is the only MAC connected to this VCC,
-	 * also tear down the VCC
-	 */
+	 
 	if (to_remove->status >= ESI_FLUSH_PENDING) {
-		/*
-		 * ESI_FLUSH_PENDING, ESI_FORWARD_DIRECT
-		 */
+		 
 		for (i = 0; i < LEC_ARP_TABLE_SIZE; i++) {
 			hlist_for_each_entry(entry,
 					     &priv->lec_arp_tables[i], next) {
@@ -1324,7 +1242,7 @@ lec_arp_remove(struct lec_priv *priv, struct lec_arp_table *to_remove)
 		if (remove_vcc)
 			lec_arp_clear_vccs(to_remove);
 	}
-	skb_queue_purge(&to_remove->tx_wait);	/* FIXME: good place for this? */
+	skb_queue_purge(&to_remove->tx_wait);	 
 
 	pr_debug("Removed entry:%pM\n", to_remove->mac_addr);
 	return 0;
@@ -1453,9 +1371,7 @@ static void dump_arp_table(struct lec_priv *priv)
 #define dump_arp_table(priv) do { } while (0)
 #endif
 
-/*
- * Destruction of arp-cache
- */
+ 
 static void lec_arp_destroy(struct lec_priv *priv)
 {
 	unsigned long flags;
@@ -1465,9 +1381,7 @@ static void lec_arp_destroy(struct lec_priv *priv)
 
 	cancel_delayed_work_sync(&priv->lec_arp_work);
 
-	/*
-	 * Remove all entries
-	 */
+	 
 
 	spin_lock_irqsave(&priv->lec_arp_lock, flags);
 	for (i = 0; i < LEC_ARP_TABLE_SIZE; i++) {
@@ -1498,7 +1412,7 @@ static void lec_arp_destroy(struct lec_priv *priv)
 	INIT_HLIST_HEAD(&priv->lec_no_forward);
 
 	hlist_for_each_entry_safe(entry, next, &priv->mcast_fwds, next) {
-		/* No timer, LANEv2 7.1.20 and 2.3.5.3 */
+		 
 		lec_arp_clear_vccs(entry);
 		hlist_del(&entry->next);
 		lec_arp_put(entry);
@@ -1508,9 +1422,7 @@ static void lec_arp_destroy(struct lec_priv *priv)
 	spin_unlock_irqrestore(&priv->lec_arp_lock, flags);
 }
 
-/*
- * Find entry by mac_address
- */
+ 
 static struct lec_arp_table *lec_arp_find(struct lec_priv *priv,
 					  const unsigned char *mac_addr)
 {
@@ -1545,7 +1457,7 @@ static struct lec_arp_table *make_entry(struct lec_priv *priv,
 	return to_return;
 }
 
-/* Arp sent timer expired */
+ 
 static void lec_arp_expire_arp(struct timer_list *t)
 {
 	struct lec_arp_table *entry;
@@ -1567,7 +1479,7 @@ static void lec_arp_expire_arp(struct timer_list *t)
 	}
 }
 
-/* Unknown/unused vcc expire, remove associated entry */
+ 
 static void lec_arp_expire_vcc(struct timer_list *t)
 {
 	unsigned long flags;
@@ -1604,13 +1516,13 @@ static bool __lec_arp_check_expire(struct lec_arp_table *entry,
 		 now, entry->last_used, time_to_check);
 	if (time_after(now, entry->last_used + time_to_check) &&
 	    !(entry->flags & LEC_PERMANENT_FLAG) &&
-	    !(entry->mac_addr[0] & 0x01)) {	/* LANE2: 7.1.20 */
-		/* Remove entry */
+	    !(entry->mac_addr[0] & 0x01)) {	 
+		 
 		pr_debug("Entry timed out\n");
 		lec_arp_remove(priv, entry);
 		lec_arp_put(entry);
 	} else {
-		/* Something else */
+		 
 		if ((entry->status == ESI_VC_PENDING ||
 		     entry->status == ESI_ARP_PENDING) &&
 		    time_after_eq(now, entry->timestamp +
@@ -1633,22 +1545,7 @@ static bool __lec_arp_check_expire(struct lec_arp_table *entry,
 
 	return false;
 }
-/*
- * Expire entries.
- * 1. Re-set timer
- * 2. For each entry, delete entries that have aged past the age limit.
- * 3. For each entry, depending on the status of the entry, perform
- *    the following maintenance.
- *    a. If status is ESI_VC_PENDING or ESI_ARP_PENDING then if the
- *       tick_count is above the max_unknown_frame_time, clear
- *       the tick_count to zero and clear the packets_flooded counter
- *       to zero. This supports the packet rate limit per address
- *       while flooding unknowns.
- *    b. If the status is ESI_FLUSH_PENDING and the tick_count is greater
- *       than or equal to the path_switching_delay, change the status
- *       to ESI_FORWARD_DIRECT. This causes the flush period to end
- *       regardless of the progress of the flush protocol.
- */
+ 
 static void lec_arp_check_expire(struct work_struct *work)
 {
 	unsigned long flags;
@@ -1687,10 +1584,7 @@ restart:
 	schedule_delayed_work(&priv->lec_arp_work, LEC_ARP_REFRESH_INTERVAL);
 }
 
-/*
- * Try to find vcc where mac_address is attached.
- *
- */
+ 
 static struct atm_vcc *lec_arp_resolve(struct lec_priv *priv,
 				       const unsigned char *mac_to_find,
 				       int is_rdesc,
@@ -1704,7 +1598,7 @@ static struct atm_vcc *lec_arp_resolve(struct lec_priv *priv,
 		switch (priv->lane_version) {
 		case 1:
 			return priv->mcast_vcc;
-		case 2:	/* LANE2 wants arp for multicast addresses */
+		case 2:	 
 			if (ether_addr_equal(mac_to_find, bus_mac))
 				return priv->mcast_vcc;
 			break;
@@ -1718,25 +1612,17 @@ static struct atm_vcc *lec_arp_resolve(struct lec_priv *priv,
 
 	if (entry) {
 		if (entry->status == ESI_FORWARD_DIRECT) {
-			/* Connection Ok */
+			 
 			entry->last_used = jiffies;
 			lec_arp_hold(entry);
 			*ret_entry = entry;
 			found = entry->vcc;
 			goto out;
 		}
-		/*
-		 * If the LE_ARP cache entry is still pending, reset count to 0
-		 * so another LE_ARP request can be made for this frame.
-		 */
+		 
 		if (entry->status == ESI_ARP_PENDING)
 			entry->no_tries = 0;
-		/*
-		 * Data direct VC not yet set up, check to see if the unknown
-		 * frame count is greater than the limit. If the limit has
-		 * not been reached, allow the caller to send packet to
-		 * BUS.
-		 */
+		 
 		if (entry->status != ESI_FLUSH_PENDING &&
 		    entry->packets_flooded <
 		    priv->maximum_unknown_frame_count) {
@@ -1745,18 +1631,14 @@ static struct atm_vcc *lec_arp_resolve(struct lec_priv *priv,
 			found = priv->mcast_vcc;
 			goto out;
 		}
-		/*
-		 * We got here because entry->status == ESI_FLUSH_PENDING
-		 * or BUS flood limit was reached for an entry which is
-		 * in ESI_ARP_PENDING or ESI_VC_PENDING state.
-		 */
+		 
 		lec_arp_hold(entry);
 		*ret_entry = entry;
 		pr_debug("entry->status %d entry->vcc %p\n", entry->status,
 			 entry->vcc);
 		found = NULL;
 	} else {
-		/* No matching entry was found */
+		 
 		entry = make_entry(priv, mac_to_find);
 		pr_debug("Making entry\n");
 		if (!entry) {
@@ -1764,7 +1646,7 @@ static struct atm_vcc *lec_arp_resolve(struct lec_priv *priv,
 			goto out;
 		}
 		lec_arp_add(priv, entry);
-		/* We want arp-request(s) to be sent */
+		 
 		entry->packets_flooded = 1;
 		entry->status = ESI_ARP_PENDING;
 		entry->no_tries = 1;
@@ -1814,9 +1696,7 @@ lec_addr_delete(struct lec_priv *priv, const unsigned char *atm_addr,
 	return -1;
 }
 
-/*
- * Notifies:  Response to arp_request (atm_addr != NULL)
- */
+ 
 static void
 lec_arp_update(struct lec_priv *priv, const unsigned char *mac_addr,
 	       const unsigned char *atm_addr, unsigned long remoteflag,
@@ -1833,10 +1713,7 @@ lec_arp_update(struct lec_priv *priv, const unsigned char *mac_addr,
 	spin_lock_irqsave(&priv->lec_arp_lock, flags);
 	entry = lec_arp_find(priv, mac_addr);
 	if (entry == NULL && targetless_le_arp)
-		goto out;	/*
-				 * LANE2: ignore targetless LE_ARPs for which
-				 * we have no entry in the cache. 7.1.30
-				 */
+		goto out;	 
 	if (!hlist_empty(&priv->lec_arp_empty_ones)) {
 		hlist_for_each_entry_safe(entry, next,
 					  &priv->lec_arp_empty_ones, next) {
@@ -1879,7 +1756,7 @@ lec_arp_update(struct lec_priv *priv, const unsigned char *mac_addr,
 			goto out;
 		entry->status = ESI_UNKNOWN;
 		lec_arp_add(priv, entry);
-		/* Temporary, changes before end of function */
+		 
 	}
 	memcpy(entry->atm_addr, atm_addr, ATM_ESA_LEN);
 	del_timer(&entry->timer);
@@ -1888,12 +1765,9 @@ lec_arp_update(struct lec_priv *priv, const unsigned char *mac_addr,
 				     &priv->lec_arp_tables[i], next) {
 			if (entry != tmp &&
 			    !memcmp(tmp->atm_addr, atm_addr, ATM_ESA_LEN)) {
-				/* Vcc to this host exists */
+				 
 				if (tmp->status > ESI_VC_PENDING) {
-					/*
-					 * ESI_FLUSH_PENDING,
-					 * ESI_FORWARD_DIRECT
-					 */
+					 
 					entry->vcc = tmp->vcc;
 					entry->old_push = tmp->old_push;
 				}
@@ -1916,9 +1790,7 @@ out:
 	spin_unlock_irqrestore(&priv->lec_arp_lock, flags);
 }
 
-/*
- * Notifies: Vcc setup ready
- */
+ 
 static void
 lec_vcc_added(struct lec_priv *priv, const struct atmlec_ioc *ioc_data,
 	      struct atm_vcc *vcc,
@@ -1929,7 +1801,7 @@ lec_vcc_added(struct lec_priv *priv, const struct atmlec_ioc *ioc_data,
 	int i, found_entry = 0;
 
 	spin_lock_irqsave(&priv->lec_arp_lock, flags);
-	/* Vcc for Multicast Forward. No timer, LANEv2 7.1.20 and 2.3.5.3 */
+	 
 	if (ioc_data->receive == 2) {
 		pr_debug("LEC_ARP: Attaching mcast forward\n");
 #if 0
@@ -1952,10 +1824,7 @@ lec_vcc_added(struct lec_priv *priv, const struct atmlec_ioc *ioc_data,
 		hlist_add_head(&entry->next, &priv->mcast_fwds);
 		goto out;
 	} else if (ioc_data->receive == 1) {
-		/*
-		 * Vcc which we don't want to make default vcc,
-		 * attach it anyway.
-		 */
+		 
 		pr_debug("LEC_ARP:Attaching data direct, not default: %*phN\n",
 			 ATM_ESA_LEN, ioc_data->atm_addr);
 		entry = make_entry(priv, bus_mac);
@@ -2007,17 +1876,7 @@ lec_vcc_added(struct lec_priv *priv, const struct atmlec_ioc *ioc_data,
 #endif
 					}
 				} else {
-					/*
-					 * They were forming a connection
-					 * to us, and we to them. Our
-					 * ATM address is numerically lower
-					 * than theirs, so we make connection
-					 * we formed into default VCC (8.1.11).
-					 * Connection they made gets torn
-					 * down. This might confuse some
-					 * clients. Can be changed if
-					 * someone reports trouble...
-					 */
+					 
 					;
 				}
 			}
@@ -2028,10 +1887,7 @@ lec_vcc_added(struct lec_priv *priv, const struct atmlec_ioc *ioc_data,
 		dump_arp_table(priv);
 		goto out;
 	}
-	/*
-	 * Not found, snatch address from first data packet that arrives
-	 * from this vcc
-	 */
+	 
 	entry = make_entry(priv, bus_mac);
 	if (!entry)
 		goto out;
@@ -2190,7 +2046,7 @@ static void lec_vcc_close(struct lec_priv *priv, struct atm_vcc *vcc)
 	hlist_for_each_entry_safe(entry, next, &priv->mcast_fwds, next) {
 		if (entry->recv_vcc == vcc) {
 			lec_arp_clear_vccs(entry);
-			/* No timer, LANEv2 7.1.20 and 2.3.5.3 */
+			 
 			hlist_del(&entry->next);
 			lec_arp_put(entry);
 		}
@@ -2218,7 +2074,7 @@ lec_arp_check_empties(struct lec_priv *priv,
 			ether_addr_copy(entry->mac_addr, src);
 			entry->status = ESI_FORWARD_DIRECT;
 			entry->last_used = jiffies;
-			/* We might have got an entry */
+			 
 			tmp = lec_arp_find(priv, src);
 			if (tmp) {
 				lec_arp_remove(priv, tmp);

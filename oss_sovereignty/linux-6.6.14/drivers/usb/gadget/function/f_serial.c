@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * f_serial.c - generic USB serial function driver
- *
- * Copyright (C) 2003 Al Borchers (alborchers@steinerpoint.com)
- * Copyright (C) 2008 by David Brownell
- * Copyright (C) 2008 by Nokia Corporation
- */
+
+ 
 
 #include <linux/slab.h>
 #include <linux/kernel.h>
@@ -15,14 +9,7 @@
 #include "u_serial.h"
 
 
-/*
- * This function packages a simple "generic serial" port with no real
- * control mechanisms, just raw data transfer over two bulk endpoints.
- *
- * Because it's not standardized, this isn't as interoperable as the
- * CDC ACM driver.  However, for many purposes it's just as functional
- * if you can arrange appropriate host side drivers.
- */
+ 
 
 struct f_gser {
 	struct gserial			port;
@@ -35,22 +22,22 @@ static inline struct f_gser *func_to_gser(struct usb_function *f)
 	return container_of(f, struct f_gser, port.func);
 }
 
-/*-------------------------------------------------------------------------*/
+ 
 
-/* interface descriptor: */
+ 
 
 static struct usb_interface_descriptor gser_interface_desc = {
 	.bLength =		USB_DT_INTERFACE_SIZE,
 	.bDescriptorType =	USB_DT_INTERFACE,
-	/* .bInterfaceNumber = DYNAMIC */
+	 
 	.bNumEndpoints =	2,
 	.bInterfaceClass =	USB_CLASS_VENDOR_SPEC,
 	.bInterfaceSubClass =	0,
 	.bInterfaceProtocol =	0,
-	/* .iInterface = DYNAMIC */
+	 
 };
 
-/* full speed support: */
+ 
 
 static struct usb_endpoint_descriptor gser_fs_in_desc = {
 	.bLength =		USB_DT_ENDPOINT_SIZE,
@@ -73,7 +60,7 @@ static struct usb_descriptor_header *gser_fs_function[] = {
 	NULL,
 };
 
-/* high speed support: */
+ 
 
 static struct usb_endpoint_descriptor gser_hs_in_desc = {
 	.bLength =		USB_DT_ENDPOINT_SIZE,
@@ -124,15 +111,15 @@ static struct usb_descriptor_header *gser_ss_function[] = {
 	NULL,
 };
 
-/* string descriptors: */
+ 
 
 static struct usb_string gser_string_defs[] = {
 	[0].s = "Generic Serial",
-	{  } /* end of list */
+	{  }  
 };
 
 static struct usb_gadget_strings gser_string_table = {
-	.language =		0x0409,	/* en-us */
+	.language =		0x0409,	 
 	.strings =		gser_string_defs,
 };
 
@@ -141,14 +128,14 @@ static struct usb_gadget_strings *gser_strings[] = {
 	NULL,
 };
 
-/*-------------------------------------------------------------------------*/
+ 
 
 static int gser_set_alt(struct usb_function *f, unsigned intf, unsigned alt)
 {
 	struct f_gser		*gser = func_to_gser(f);
 	struct usb_composite_dev *cdev = f->config->cdev;
 
-	/* we know alt == 0, so this is an activation or a reset */
+	 
 
 	if (gser->port.in->enabled) {
 		dev_dbg(&cdev->gadget->dev,
@@ -179,9 +166,9 @@ static void gser_disable(struct usb_function *f)
 	gserial_disconnect(&gser->port);
 }
 
-/*-------------------------------------------------------------------------*/
+ 
 
-/* serial function driver setup/binding */
+ 
 
 static int gser_bind(struct usb_configuration *c, struct usb_function *f)
 {
@@ -190,11 +177,9 @@ static int gser_bind(struct usb_configuration *c, struct usb_function *f)
 	int			status;
 	struct usb_ep		*ep;
 
-	/* REVISIT might want instance-specific strings to help
-	 * distinguish instances ...
-	 */
+	 
 
-	/* maybe allocate device-global string ID */
+	 
 	if (gser_string_defs[0].id == 0) {
 		status = usb_string_id(c->cdev);
 		if (status < 0)
@@ -202,7 +187,7 @@ static int gser_bind(struct usb_configuration *c, struct usb_function *f)
 		gser_string_defs[0].id = status;
 	}
 
-	/* allocate instance-specific interface IDs */
+	 
 	status = usb_interface_id(c, f);
 	if (status < 0)
 		goto fail;
@@ -211,7 +196,7 @@ static int gser_bind(struct usb_configuration *c, struct usb_function *f)
 
 	status = -ENODEV;
 
-	/* allocate instance-specific endpoints */
+	 
 	ep = usb_ep_autoconfig(cdev->gadget, &gser_fs_in_desc);
 	if (!ep)
 		goto fail;
@@ -222,10 +207,7 @@ static int gser_bind(struct usb_configuration *c, struct usb_function *f)
 		goto fail;
 	gser->port.out = ep;
 
-	/* support all relevant hardware speeds... we expect that when
-	 * hardware is dual speed, all bulk-capable endpoints work at
-	 * both speeds
-	 */
+	 
 	gser_hs_in_desc.bEndpointAddress = gser_fs_in_desc.bEndpointAddress;
 	gser_hs_out_desc.bEndpointAddress = gser_fs_out_desc.bEndpointAddress;
 
@@ -280,7 +262,7 @@ static ssize_t f_serial_console_show(struct config_item *item, char *page)
 
 CONFIGFS_ATTR(f_serial_, console);
 
-#endif /* CONFIG_U_SERIAL_CONSOLE */
+#endif  
 
 static ssize_t f_serial_port_num_show(struct config_item *item, char *page)
 {
@@ -345,7 +327,7 @@ static void gser_unbind(struct usb_configuration *c, struct usb_function *f)
 {
 	struct f_gser	*gser = func_to_gser(f);
 
-	/* Ensure port is disconnected before unbinding */
+	 
 	gserial_disconnect(&gser->port);
 	usb_free_all_descriptors(f);
 }
@@ -369,7 +351,7 @@ static struct usb_function *gser_alloc(struct usb_function_instance *fi)
 	struct f_gser	*gser;
 	struct f_serial_opts *opts;
 
-	/* allocate and initialize one new instance */
+	 
 	gser = kzalloc(sizeof(*gser), GFP_KERNEL);
 	if (!gser)
 		return ERR_PTR(-ENOMEM);

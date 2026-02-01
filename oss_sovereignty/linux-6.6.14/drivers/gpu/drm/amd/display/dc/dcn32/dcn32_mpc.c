@@ -1,27 +1,4 @@
-/*
- * Copyright 2021 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 #include "reg_helper.h"
 #include "dcn30/dcn30_mpc.h"
@@ -77,10 +54,7 @@ void mpc32_power_on_blnd_lut(
 			REG_WAIT(MPCC_MCM_MEM_PWR_CTRL[mpcc_id], MPCC_MCM_1DLUT_MEM_PWR_STATE, 0, 1, 5);
 		} else if (!mpc->ctx->dc->debug.disable_mem_low_power) {
 			ASSERT(false);
-			/* TODO: change to mpc
-			 *  dpp_base->ctx->dc->optimized_required = true;
-			 *  dpp_base->deferred_reg_writes.bits.disable_blnd_lut = true;
-			 */
+			 
 		}
 	} else {
 		REG_SET(MPCC_MCM_MEM_PWR_CTRL[mpcc_id], 0,
@@ -127,7 +101,7 @@ void mpc32_configure_post1dlut(
 {
 	struct dcn30_mpc *mpc30 = TO_DCN30_MPC(mpc);
 
-	//TODO: this
+	
 	REG_UPDATE_2(MPCC_MCM_1DLUT_LUT_CONTROL[mpcc_id],
 			MPCC_MCM_1DLUT_LUT_WRITE_COLOR_MASK, 7,
 			MPCC_MCM_1DLUT_LUT_HOST_SEL, is_ram_a == true ? 0 : 1);
@@ -162,7 +136,7 @@ static void mpc32_post1dlut_get_reg_field(
 	reg->masks.exp_resion_start_segment = mpc->mpc_mask->MPCC_MCM_1DLUT_RAMA_EXP_REGION_START_SEGMENT_B;
 }
 
-/*program blnd lut RAM A*/
+ 
 void mpc32_program_post1dluta_settings(
 		struct mpc *mpc,
 		uint32_t mpcc_id,
@@ -191,7 +165,7 @@ void mpc32_program_post1dluta_settings(
 	cm_helper_program_gamcor_xfer_func(mpc->ctx, params, &gam_regs);
 }
 
-/*program blnd lut RAM B*/
+ 
 void mpc32_program_post1dlutb_settings(
 		struct mpc *mpc,
 		uint32_t mpcc_id,
@@ -683,13 +657,13 @@ void mpc32_power_on_shaper_3dlut(
 
 	REG_SET(MPCC_MCM_MEM_PWR_CTRL[mpcc_id], 0,
 	MPCC_MCM_3DLUT_MEM_PWR_DIS, power_on == true ? 1:0);
-	/* wait for memory to fully power up */
+	 
 	if (power_on && mpc->ctx->dc->debug.enable_mem_low_power.bits.mpc) {
 		REG_WAIT(MPCC_MCM_MEM_PWR_CTRL[mpcc_id], MPCC_MCM_SHAPER_MEM_PWR_STATE, 0, 1, max_retries);
 		REG_WAIT(MPCC_MCM_MEM_PWR_CTRL[mpcc_id], MPCC_MCM_3DLUT_MEM_PWR_STATE, 0, 1, max_retries);
 	}
 
-	/*read status is not mandatory, it is just for debugging*/
+	 
 	REG_GET(MPCC_MCM_MEM_PWR_CTRL[mpcc_id], MPCC_MCM_SHAPER_MEM_PWR_STATE, &power_status_shaper);
 	REG_GET(MPCC_MCM_MEM_PWR_CTRL[mpcc_id], MPCC_MCM_3DLUT_MEM_PWR_STATE, &power_status_3dlut);
 
@@ -861,7 +835,7 @@ void mpc32_set3dlut_ram10(
 		red   = lut[i].red;
 		green = lut[i].green;
 		blue  = lut[i].blue;
-		//should we shift red 22bit and green 12?
+		
 		value = (red<<20) | (green<<10) | blue;
 
 		REG_SET(MPCC_MCM_3DLUT_DATA_30BIT[mpcc_id], 0, MPCC_MCM_3DLUT_DATA_30BIT, value);
@@ -880,8 +854,8 @@ static void mpc32_set_3dlut_mode(
 	uint32_t lut_mode;
 	struct dcn30_mpc *mpc30 = TO_DCN30_MPC(mpc);
 
-	// set default 3DLUT to pre-blend
-	// TODO: implement movable CM location
+	
+	
 	REG_UPDATE(MPCC_MOVABLE_CM_LOCATION_CONTROL[mpcc_id], MPCC_MOVABLE_CM_LOCATION_CNTL, 0);
 
 	if (mode == LUT_BYPASS)

@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * IgorPlug-USB IR Receiver
- *
- * Copyright (C) 2014 Sean Young <sean@mess.org>
- *
- * Supports the standard homebrew IgorPlugUSB receiver with Igor's firmware.
- * See http://www.cesko.host.sk/IgorPlugUSB/IgorPlug-USB%20(AVR)_eng.htm
- *
- * Based on the lirc_igorplugusb.c driver:
- *	Copyright (C) 2004 Jan M. Hochstein
- *	<hochstein@algo.informatik.tu-darmstadt.de>
- */
+
+ 
 #include <linux/device.h>
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -52,12 +41,7 @@ static void igorplugusb_irdata(struct igorplugusb *ir, unsigned len)
 
 	dev_dbg(ir->dev, "irdata: %*ph (len=%u)", len, ir->buf_in, len);
 
-	/*
-	 * If more than 36 pulses and spaces follow each other, the igorplugusb
-	 * overwrites its buffer from the beginning. The overflow value is the
-	 * last offset which was not overwritten. Everything from this offset
-	 * onwards occurred before everything until this offset.
-	 */
+	 
 	overflow = ir->buf_in[2];
 	i = start = overflow + HEADERLEN;
 
@@ -80,7 +64,7 @@ static void igorplugusb_irdata(struct igorplugusb *ir, unsigned len)
 				i = HEADERLEN;
 		} while (i != start);
 
-		/* add a trailing space */
+		 
 		rawir.duration = ir->rc->timeout;
 		rawir.pulse = false;
 		ir_raw_event_store_with_filter(ir->rc, &rawir);
@@ -103,7 +87,7 @@ static void igorplugusb_callback(struct urb *urb)
 		if (req->bRequest == GET_INFRACODE &&
 					urb->actual_length > HEADERLEN)
 			igorplugusb_irdata(ir, urb->actual_length);
-		else /* request IR */
+		else  
 			mod_timer(&ir->timer, jiffies + msecs_to_jiffies(50));
 		break;
 	case -EPROTO:
@@ -193,10 +177,7 @@ static int igorplugusb_probe(struct usb_interface *intf,
 	rc->input_phys = ir->phys;
 	usb_to_input_id(udev, &rc->input_id);
 	rc->dev.parent = &intf->dev;
-	/*
-	 * This device can only store 36 pulses + spaces, which is not enough
-	 * for the NEC protocol and many others.
-	 */
+	 
 	rc->allowed_protocols = RC_PROTO_BIT_ALL_IR_DECODER &
 		~(RC_PROTO_BIT_NEC | RC_PROTO_BIT_NECX | RC_PROTO_BIT_NEC32 |
 		  RC_PROTO_BIT_RC6_6A_20 | RC_PROTO_BIT_RC6_6A_24 |
@@ -246,11 +227,11 @@ static void igorplugusb_disconnect(struct usb_interface *intf)
 }
 
 static const struct usb_device_id igorplugusb_table[] = {
-	/* Igor Plug USB (Atmel's Manufact. ID) */
+	 
 	{ USB_DEVICE(0x03eb, 0x0002) },
-	/* Fit PC2 Infrared Adapter */
+	 
 	{ USB_DEVICE(0x03eb, 0x21fe) },
-	/* Terminating entry */
+	 
 	{ }
 };
 

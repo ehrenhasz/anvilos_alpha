@@ -1,12 +1,4 @@
-/*
- * NAND support for Marvell Orion SoC platforms
- *
- * Tzachi Perelstein <tzachi@marvell.com>
- *
- * This file is licensed under  the terms of the GNU General Public
- * License version 2. This program is licensed "as is" without any
- * warranty of any kind, whether express or implied.
- */
+ 
 
 #include <linux/slab.h>
 #include <linux/module.h>
@@ -64,11 +56,7 @@ static void orion_nand_read_buf(struct nand_chip *chip, uint8_t *buf, int len)
 #if defined(__LINUX_ARM_ARCH__) && __LINUX_ARM_ARCH__ >= 5
 	buf64 = (uint64_t *)buf;
 	while (i < len/8) {
-		/*
-		 * Since GCC has no proper constraint (PR 43518)
-		 * force x variable to r2/r3 registers as ldrd instruction
-		 * requires first register to be even.
-		 */
+		 
 		register uint64_t x asm ("r2");
 
 		asm volatile ("ldrd\t%0, [%1]" : "=&r" (x) : "r" (io_base));
@@ -168,17 +156,13 @@ static int __init orion_nand_probe(struct platform_device *pdev)
 
 	platform_set_drvdata(pdev, info);
 
-	/* Not all platforms can gate the clock, so it is optional. */
+	 
 	info->clk = devm_clk_get_optional_enabled(&pdev->dev, NULL);
 	if (IS_ERR(info->clk))
 		return dev_err_probe(&pdev->dev, PTR_ERR(info->clk),
 				     "failed to get and enable clock!\n");
 
-	/*
-	 * This driver assumes that the default ECC engine should be TYPE_SOFT.
-	 * Set ->engine_type before registering the NAND devices in order to
-	 * provide a driver specific default value.
-	 */
+	 
 	nc->ecc.engine_type = NAND_ECC_ENGINE_TYPE_SOFT;
 
 	ret = nand_scan(nc, 1);

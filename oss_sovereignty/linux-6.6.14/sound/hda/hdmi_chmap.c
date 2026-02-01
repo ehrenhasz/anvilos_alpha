@@ -1,64 +1,47 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * HDMI Channel map support helpers
- */
+
+ 
 
 #include <linux/module.h>
 #include <sound/control.h>
 #include <sound/tlv.h>
 #include <sound/hda_chmap.h>
 
-/*
- * CEA speaker placement:
- *
- *        FLH       FCH        FRH
- *  FLW    FL  FLC   FC   FRC   FR   FRW
- *
- *                                  LFE
- *                     TC
- *
- *          RL  RLC   RC   RRC   RR
- *
- * The Left/Right Surround channel _notions_ LS/RS in SMPTE 320M corresponds to
- * CEA RL/RR; The SMPTE channel _assignment_ C/LFE is swapped to CEA LFE/FC.
- */
+ 
 enum cea_speaker_placement {
-	FL  = (1 <<  0),	/* Front Left           */
-	FC  = (1 <<  1),	/* Front Center         */
-	FR  = (1 <<  2),	/* Front Right          */
-	FLC = (1 <<  3),	/* Front Left Center    */
-	FRC = (1 <<  4),	/* Front Right Center   */
-	RL  = (1 <<  5),	/* Rear Left            */
-	RC  = (1 <<  6),	/* Rear Center          */
-	RR  = (1 <<  7),	/* Rear Right           */
-	RLC = (1 <<  8),	/* Rear Left Center     */
-	RRC = (1 <<  9),	/* Rear Right Center    */
-	LFE = (1 << 10),	/* Low Frequency Effect */
-	FLW = (1 << 11),	/* Front Left Wide      */
-	FRW = (1 << 12),	/* Front Right Wide     */
-	FLH = (1 << 13),	/* Front Left High      */
-	FCH = (1 << 14),	/* Front Center High    */
-	FRH = (1 << 15),	/* Front Right High     */
-	TC  = (1 << 16),	/* Top Center           */
+	FL  = (1 <<  0),	 
+	FC  = (1 <<  1),	 
+	FR  = (1 <<  2),	 
+	FLC = (1 <<  3),	 
+	FRC = (1 <<  4),	 
+	RL  = (1 <<  5),	 
+	RC  = (1 <<  6),	 
+	RR  = (1 <<  7),	 
+	RLC = (1 <<  8),	 
+	RRC = (1 <<  9),	 
+	LFE = (1 << 10),	 
+	FLW = (1 << 11),	 
+	FRW = (1 << 12),	 
+	FLH = (1 << 13),	 
+	FCH = (1 << 14),	 
+	FRH = (1 << 15),	 
+	TC  = (1 << 16),	 
 };
 
 static const char * const cea_speaker_allocation_names[] = {
-	/*  0 */ "FL/FR",
-	/*  1 */ "LFE",
-	/*  2 */ "FC",
-	/*  3 */ "RL/RR",
-	/*  4 */ "RC",
-	/*  5 */ "FLC/FRC",
-	/*  6 */ "RLC/RRC",
-	/*  7 */ "FLW/FRW",
-	/*  8 */ "FLH/FRH",
-	/*  9 */ "TC",
-	/* 10 */ "FCH",
+	  "FL/FR",
+	  "LFE",
+	  "FC",
+	  "RL/RR",
+	  "RC",
+	  "FLC/FRC",
+	  "RLC/RRC",
+	  "FLW/FRW",
+	  "FLH/FRH",
+	  "TC",
+	  "FCH",
 };
 
-/*
- * ELD SA bits in the CEA Speaker Allocation data block
- */
+ 
 static const int eld_speaker_allocation_bits[] = {
 	[0] = FL | FR,
 	[1] = LFE,
@@ -67,73 +50,54 @@ static const int eld_speaker_allocation_bits[] = {
 	[4] = RC,
 	[5] = FLC | FRC,
 	[6] = RLC | RRC,
-	/* the following are not defined in ELD yet */
+	 
 	[7] = FLW | FRW,
 	[8] = FLH | FRH,
 	[9] = TC,
 	[10] = FCH,
 };
 
-/*
- * ALSA sequence is:
- *
- *       surround40   surround41   surround50   surround51   surround71
- * ch0   front left   =            =            =            =
- * ch1   front right  =            =            =            =
- * ch2   rear left    =            =            =            =
- * ch3   rear right   =            =            =            =
- * ch4                LFE          center       center       center
- * ch5                                          LFE          LFE
- * ch6                                                       side left
- * ch7                                                       side right
- *
- * surround71 = {FL, FR, RLC, RRC, FC, LFE, RL, RR}
- */
+ 
 static int hdmi_channel_mapping[0x32][8] = {
-	/* stereo */
+	 
 	[0x00] = { 0x00, 0x11, 0xf2, 0xf3, 0xf4, 0xf5, 0xf6, 0xf7 },
-	/* 2.1 */
+	 
 	[0x01] = { 0x00, 0x11, 0x22, 0xf3, 0xf4, 0xf5, 0xf6, 0xf7 },
-	/* Dolby Surround */
+	 
 	[0x02] = { 0x00, 0x11, 0x23, 0xf2, 0xf4, 0xf5, 0xf6, 0xf7 },
-	/* surround40 */
+	 
 	[0x08] = { 0x00, 0x11, 0x24, 0x35, 0xf3, 0xf2, 0xf6, 0xf7 },
-	/* 4ch */
+	 
 	[0x03] = { 0x00, 0x11, 0x23, 0x32, 0x44, 0xf5, 0xf6, 0xf7 },
-	/* surround41 */
+	 
 	[0x09] = { 0x00, 0x11, 0x24, 0x35, 0x42, 0xf3, 0xf6, 0xf7 },
-	/* surround50 */
+	 
 	[0x0a] = { 0x00, 0x11, 0x24, 0x35, 0x43, 0xf2, 0xf6, 0xf7 },
-	/* surround51 */
+	 
 	[0x0b] = { 0x00, 0x11, 0x24, 0x35, 0x43, 0x52, 0xf6, 0xf7 },
-	/* 7.1 */
+	 
 	[0x13] = { 0x00, 0x11, 0x26, 0x37, 0x43, 0x52, 0x64, 0x75 },
 };
 
-/*
- * This is an ordered list!
- *
- * The preceding ones have better chances to be selected by
- * hdmi_channel_allocation().
- */
+ 
 static struct hdac_cea_channel_speaker_allocation channel_allocations[] = {
-/*			  channel:   7     6    5    4    3     2    1    0  */
+ 
 { .ca_index = 0x00,  .speakers = {   0,    0,   0,   0,   0,    0,  FR,  FL } },
-				 /* 2.1 */
+				  
 { .ca_index = 0x01,  .speakers = {   0,    0,   0,   0,   0,  LFE,  FR,  FL } },
-				 /* Dolby Surround */
+				  
 { .ca_index = 0x02,  .speakers = {   0,    0,   0,   0,  FC,    0,  FR,  FL } },
-				 /* surround40 */
+				  
 { .ca_index = 0x08,  .speakers = {   0,    0,  RR,  RL,   0,    0,  FR,  FL } },
-				 /* surround41 */
+				  
 { .ca_index = 0x09,  .speakers = {   0,    0,  RR,  RL,   0,  LFE,  FR,  FL } },
-				 /* surround50 */
+				  
 { .ca_index = 0x0a,  .speakers = {   0,    0,  RR,  RL,  FC,    0,  FR,  FL } },
-				 /* surround51 */
+				  
 { .ca_index = 0x0b,  .speakers = {   0,    0,  RR,  RL,  FC,  LFE,  FR,  FL } },
-				 /* 6.1 */
+				  
 { .ca_index = 0x0f,  .speakers = {   0,   RC,  RR,  RL,  FC,  LFE,  FR,  FL } },
-				 /* surround71 */
+				  
 { .ca_index = 0x13,  .speakers = { RRC,  RLC,  RR,  RL,  FC,  LFE,  FR,  FL } },
 
 { .ca_index = 0x03,  .speakers = {   0,    0,   0,   0,  FC,  LFE,  FR,  FL } },
@@ -209,13 +173,9 @@ static void hdmi_set_channel_count(struct hdac_device *codec,
 				    AC_VERB_SET_CVT_CHAN_COUNT, chs - 1);
 }
 
-/*
- * Channel mapping routines
- */
+ 
 
-/*
- * Compute derived values in channel_allocations[].
- */
+ 
 static void init_channel_allocations(void)
 {
 	int i, j;
@@ -253,18 +213,11 @@ void snd_hdac_print_channel_allocation(int spk_alloc, char *buf, int buflen)
 			j += scnprintf(buf + j, buflen - j,  " %s",
 					cea_speaker_allocation_names[i]);
 	}
-	buf[j] = '\0';	/* necessary when j == 0 */
+	buf[j] = '\0';	 
 }
 EXPORT_SYMBOL_GPL(snd_hdac_print_channel_allocation);
 
-/*
- * The transformation takes two steps:
- *
- *	eld->spk_alloc => (eld_speaker_allocation_bits[]) => spk_mask
- *	      spk_mask => (channel_allocations[])         => ai->CA
- *
- * TODO: it could select the wrong CA from multiple candidates.
-*/
+ 
 static int hdmi_channel_allocation_spk_alloc_blk(struct hdac_device *codec,
 				   int spk_alloc, int channels)
 {
@@ -273,24 +226,17 @@ static int hdmi_channel_allocation_spk_alloc_blk(struct hdac_device *codec,
 	int spk_mask = 0;
 	char buf[SND_PRINT_CHANNEL_ALLOCATION_ADVISED_BUFSIZE];
 
-	/*
-	 * CA defaults to 0 for basic stereo audio
-	 */
+	 
 	if (channels <= 2)
 		return 0;
 
-	/*
-	 * expand ELD's speaker allocation mask
-	 *
-	 * ELD tells the speaker mask in a compact(paired) form,
-	 * expand ELD's notions to match the ones used by Audio InfoFrame.
-	 */
+	 
 	for (i = 0; i < ARRAY_SIZE(eld_speaker_allocation_bits); i++) {
 		if (spk_alloc & (1 << i))
 			spk_mask |= eld_speaker_allocation_bits[i];
 	}
 
-	/* search for the first working match in the CA table */
+	 
 	for (i = 0; i < ARRAY_SIZE(channel_allocations); i++) {
 		if (channels == channel_allocations[i].channels &&
 		    (spk_mask & channel_allocations[i].spk_mask) ==
@@ -301,10 +247,7 @@ static int hdmi_channel_allocation_spk_alloc_blk(struct hdac_device *codec,
 	}
 
 	if (!ca) {
-		/*
-		 * if there was no match, select the regular ALSA channel
-		 * allocation with the matching number of channels
-		 */
+		 
 		for (i = 0; i < ARRAY_SIZE(channel_allocations); i++) {
 			if (channels == channel_allocations[i].channels) {
 				ca = channel_allocations[i].ca_index;
@@ -352,15 +295,15 @@ static void hdmi_std_setup_channel_mapping(struct hdac_chmap *chmap,
 
 	if (hdmi_channel_mapping[ca][1] == 0) {
 		int hdmi_slot = 0;
-		/* fill actual channel mappings in ALSA channel (i) order */
+		 
 		for (i = 0; i < ch_alloc->channels; i++) {
 			while (!WARN_ON(hdmi_slot >= 8) &&
 			       !ch_alloc->speakers[7 - hdmi_slot])
-				hdmi_slot++; /* skip zero slots */
+				hdmi_slot++;  
 
 			hdmi_channel_mapping[ca][i] = (i << 4) | hdmi_slot++;
 		}
-		/* fill the rest of the slots with ALSA channel 0xf */
+		 
 		for (hdmi_slot = 0; hdmi_slot < 8; hdmi_slot++)
 			if (!ch_alloc->speakers[7 - hdmi_slot])
 				hdmi_channel_mapping[ca][i++] = (0xf << 4) | hdmi_slot;
@@ -388,8 +331,8 @@ static void hdmi_std_setup_channel_mapping(struct hdac_chmap *chmap,
 }
 
 struct channel_map_table {
-	unsigned char map;		/* ALSA API channel map position */
-	int spk_mask;			/* speaker position bit mask */
+	unsigned char map;		 
+	int spk_mask;			 
 };
 
 static struct channel_map_table map_tables[] = {
@@ -410,10 +353,10 @@ static struct channel_map_table map_tables[] = {
 	{ SNDRV_CHMAP_FRW,	FRW },
 	{ SNDRV_CHMAP_TC,	TC },
 	{ SNDRV_CHMAP_TFC,	FCH },
-	{} /* terminator */
+	{}  
 };
 
-/* from ALSA API channel position to speaker bit mask */
+ 
 int snd_hdac_chmap_to_spk_mask(unsigned char c)
 {
 	struct channel_map_table *t = map_tables;
@@ -426,15 +369,13 @@ int snd_hdac_chmap_to_spk_mask(unsigned char c)
 }
 EXPORT_SYMBOL_GPL(snd_hdac_chmap_to_spk_mask);
 
-/* from ALSA API channel position to CEA slot */
+ 
 static int to_cea_slot(int ordered_ca, unsigned char pos)
 {
 	int mask = snd_hdac_chmap_to_spk_mask(pos);
 	int i;
 
-	/* Add sanity check to pass klockwork check.
-	 * This should never happen.
-	 */
+	 
 	if (ordered_ca >= ARRAY_SIZE(channel_allocations))
 		return -1;
 
@@ -448,7 +389,7 @@ static int to_cea_slot(int ordered_ca, unsigned char pos)
 	return -1;
 }
 
-/* from speaker bit mask to ALSA API channel position */
+ 
 int snd_hdac_spk_to_chmap(int spk)
 {
 	struct channel_map_table *t = map_tables;
@@ -461,14 +402,12 @@ int snd_hdac_spk_to_chmap(int spk)
 }
 EXPORT_SYMBOL_GPL(snd_hdac_spk_to_chmap);
 
-/* from CEA slot to ALSA API channel position */
+ 
 static int from_cea_slot(int ordered_ca, unsigned char slot)
 {
 	int mask;
 
-	/* Add sanity check to pass klockwork check.
-	 * This should never happen.
-	 */
+	 
 	if (slot >= 8)
 		return 0;
 
@@ -477,7 +416,7 @@ static int from_cea_slot(int ordered_ca, unsigned char slot)
 	return snd_hdac_spk_to_chmap(mask);
 }
 
-/* get the CA index corresponding to the given ALSA API channel map */
+ 
 static int hdmi_manual_channel_allocation(int chs, unsigned char *map)
 {
 	int i, spks = 0, spk_mask = 0;
@@ -501,7 +440,7 @@ static int hdmi_manual_channel_allocation(int chs, unsigned char *map)
 	return -1;
 }
 
-/* set up the channel slots for the given ALSA API channel map */
+ 
 static int hdmi_manual_setup_channel_mapping(struct hdac_chmap *chmap,
 					     hda_nid_t pin_nid,
 					     int chs, unsigned char *map,
@@ -516,7 +455,7 @@ static int hdmi_manual_setup_channel_mapping(struct hdac_chmap *chmap,
 		hdmi_slot = to_cea_slot(ordered_ca, map[alsa_pos]);
 
 		if (hdmi_slot < 0)
-			continue; /* unassigned channel */
+			continue;  
 
 		assignments[hdmi_slot] = alsa_pos;
 	}
@@ -532,7 +471,7 @@ static int hdmi_manual_setup_channel_mapping(struct hdac_chmap *chmap,
 	return 0;
 }
 
-/* store ALSA API channel map from the current default map */
+ 
 static void hdmi_setup_fake_chmap(unsigned char *map, int ca)
 {
 	int i;
@@ -568,9 +507,7 @@ int snd_hdac_get_active_channels(int ca)
 {
 	int ordered_ca = get_channel_allocation_order(ca);
 
-	/* Add sanity check to pass klockwork check.
-	 * This should never happen.
-	 */
+	 
 	if (ordered_ca >= ARRAY_SIZE(channel_allocations))
 		ordered_ca = 0;
 
@@ -602,9 +539,7 @@ int snd_hdac_channel_allocation(struct hdac_device *hdac, int spk_alloc,
 }
 EXPORT_SYMBOL_GPL(snd_hdac_channel_allocation);
 
-/*
- * ALSA API channel-map control callbacks
- */
+ 
 static int hdmi_chmap_ctl_info(struct snd_kcontrol *kcontrol,
 			       struct snd_ctl_elem_info *uinfo)
 {
@@ -621,11 +556,11 @@ static int hdmi_chmap_ctl_info(struct snd_kcontrol *kcontrol,
 static int hdmi_chmap_cea_alloc_validate_get_type(struct hdac_chmap *chmap,
 		struct hdac_cea_channel_speaker_allocation *cap, int channels)
 {
-	/* If the speaker allocation matches the channel count, it is OK.*/
+	 
 	if (cap->channels != channels)
 		return -1;
 
-	/* all channels are remappable freely */
+	 
 	return SNDRV_CTL_TLVT_CHMAP_VAR;
 }
 
@@ -764,16 +699,14 @@ static int hdmi_chmap_ctl_put(struct snd_kcontrol *kcontrol,
 	unsigned char chmap[8], per_pin_chmap[8];
 	int i, err, ca, prepared = 0;
 
-	/* No monitor is connected in dyn_pcm_assign.
-	 * It's invalid to setup the chmap
-	 */
+	 
 	if (!hchmap->ops.is_pcm_attached(hchmap->hdac, pcm_idx))
 		return 0;
 
 	ctl_idx = snd_ctl_get_ioffidx(kcontrol, &ucontrol->id);
 	substream = snd_pcm_chmap_substream(info, ctl_idx);
 	if (!substream || !substream->runtime)
-		return 0; /* just for avoiding error from alsactl restore */
+		return 0;  
 	switch (substream->runtime->state) {
 	case SNDRV_PCM_STATE_OPEN:
 	case SNDRV_PCM_STATE_SETUP:
@@ -835,7 +768,7 @@ int snd_hdac_add_chmap_ctls(struct snd_pcm *pcm, int pcm_idx,
 				     NULL, 0, pcm_idx, &chmap);
 	if (err < 0)
 		return err;
-	/* override handlers */
+	 
 	chmap->private_data = hchmap;
 	kctl = chmap->kctl;
 	for (i = 0; i < kctl->count; i++)

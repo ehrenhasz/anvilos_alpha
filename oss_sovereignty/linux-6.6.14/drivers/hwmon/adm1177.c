@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * ADM1177 Hot Swap Controller and Digital Power Monitor with Soft Start Pin
- *
- * Copyright 2015-2019 Analog Devices Inc.
- */
+
+ 
 
 #include <linux/bits.h>
 #include <linux/device.h>
@@ -13,23 +9,17 @@
 #include <linux/module.h>
 #include <linux/regulator/consumer.h>
 
-/*  Command Byte Operations */
+ 
 #define ADM1177_CMD_V_CONT	BIT(0)
 #define ADM1177_CMD_I_CONT	BIT(2)
 #define ADM1177_CMD_VRANGE	BIT(4)
 
-/* Extended Register */
+ 
 #define ADM1177_REG_ALERT_TH	2
 
 #define ADM1177_BITS		12
 
-/**
- * struct adm1177_state - driver instance specific data
- * @client:		pointer to i2c client
- * @r_sense_uohm:	current sense resistor value
- * @alert_threshold_ua:	current limit for shutdown
- * @vrange_high:	internal voltage divider
- */
+ 
 struct adm1177_state {
 	struct i2c_client	*client;
 	u32			r_sense_uohm;
@@ -84,10 +74,7 @@ static int adm1177_read(struct device *dev, enum hwmon_sensor_types type,
 			if (ret < 0)
 				return ret;
 			dummy = (data[1] << 4) | (data[2] & 0xF);
-			/*
-			 * convert to milliamperes
-			 * ((105.84mV / 4096) x raw) / senseResistor(ohm)
-			 */
+			 
 			*val = div_u64((105840000ull * dummy),
 				       4096 * st->r_sense_uohm);
 			return 0;
@@ -102,10 +89,7 @@ static int adm1177_read(struct device *dev, enum hwmon_sensor_types type,
 		if (ret < 0)
 			return ret;
 		dummy = (data[0] << 4) | (data[2] >> 4);
-		/*
-		 * convert to millivolts based on resistor devision
-		 * (V_fullscale / 4096) * raw
-		 */
+		 
 		if (st->vrange_high)
 			dummy *= 26350;
 		else
@@ -211,10 +195,7 @@ static int adm1177_probe(struct i2c_client *client)
 	if (device_property_read_u32(dev, "adi,shutdown-threshold-microamp",
 				     &alert_threshold_ua)) {
 		if (st->r_sense_uohm)
-			/*
-			 * set maximum default value from datasheet based on
-			 * shunt-resistor
-			 */
+			 
 			alert_threshold_ua = div_u64(105840000000,
 						     st->r_sense_uohm);
 		else

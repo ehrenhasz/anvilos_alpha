@@ -1,44 +1,8 @@
-/****************************************************************************
- * Copyright 2018-2021,2022 Thomas E. Dickey                                *
- * Copyright 1998-2016,2017 Free Software Foundation, Inc.                  *
- *                                                                          *
- * Permission is hereby granted, free of charge, to any person obtaining a  *
- * copy of this software and associated documentation files (the            *
- * "Software"), to deal in the Software without restriction, including      *
- * without limitation the rights to use, copy, modify, merge, publish,      *
- * distribute, distribute with modifications, sublicense, and/or sell       *
- * copies of the Software, and to permit persons to whom the Software is    *
- * furnished to do so, subject to the following conditions:                 *
- *                                                                          *
- * The above copyright notice and this permission notice shall be included  *
- * in all copies or substantial portions of the Software.                   *
- *                                                                          *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS  *
- * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF               *
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.   *
- * IN NO EVENT SHALL THE ABOVE COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,   *
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR    *
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR    *
- * THE USE OR OTHER DEALINGS IN THE SOFTWARE.                               *
- *                                                                          *
- * Except as contained in this notice, the name(s) of the above copyright   *
- * holders shall not be used in advertising or otherwise to promote the     *
- * sale, use or other dealings in this Software without prior written       *
- * authorization.                                                           *
- ****************************************************************************/
+ 
 
-/****************************************************************************
- *  Author: Zeyd M. Ben-Halim <zmbenhal@netcom.com> 1992,1995               *
- *     and: Eric S. Raymond <esr@snark.thyrsus.com>                         *
- *     and: Thomas E. Dickey                        1996-on                 *
- ****************************************************************************/
+ 
 
-/*
- * tput.c -- shellscript access to terminal capabilities
- *
- * by Eric S. Raymond <esr@snark.thyrsus.com>, portions based on code from
- * Ross Ridge's mytinfo package.
- */
+ 
 
 #include <tparm_type.h>
 #include <clear_cmd.h>
@@ -132,21 +96,19 @@ exit_code(int token, int value)
 
     switch (token) {
     case BOOLEAN:
-	result = !value;	/* TRUE=0, FALSE=1 */
+	result = !value;	 
 	break;
     case NUMBER:
-	result = 0;		/* always zero */
+	result = 0;		 
 	break;
     case STRING:
-	result = value;		/* 0=normal, 1=missing */
+	result = value;		 
 	break;
     }
     return result;
 }
 
-/*
- * Returns nonzero on error.
- */
+ 
 static int
 tput_cmd(int fd, TTY * settings, bool opt_x, int argc, char **argv, int *used)
 {
@@ -162,9 +124,9 @@ tput_cmd(int fd, TTY * settings, bool opt_x, int argc, char **argv, int *used)
     if (is_reset || is_init) {
 	TTY oldmode = *settings;
 
-	int terasechar = -1;	/* new erase character */
-	int intrchar = -1;	/* new interrupt character */
-	int tkillchar = -1;	/* new kill character */
+	int terasechar = -1;	 
+	int intrchar = -1;	 
+	int tkillchar = -1;	 
 
 	if (is_reset) {
 	    reset_start(stdout, TRUE, FALSE);
@@ -238,10 +200,7 @@ tput_cmd(int fd, TTY * settings, bool opt_x, int argc, char **argv, int *used)
 	    char *p_is_s[NUM_PARM];
 	    TParams paramType;
 
-	    /* Nasty hack time. The tparm function needs to see numeric
-	     * parameters as numbers, not as pointers to their string
-	     * representations
-	     */
+	     
 
 	    for (k = 1; (k < argc) && (k <= NUM_PARM); k++) {
 		char *tmp = 0;
@@ -257,9 +216,7 @@ tput_cmd(int fd, TTY * settings, bool opt_x, int argc, char **argv, int *used)
 
 	    paramType = tparm_type(name);
 #if NCURSES_XNAMES
-	    /*
-	     * If the capability is an extended one, analyze the string.
-	     */
+	     
 	    if (paramType == Numbers) {
 		struct name_table_entry const *entry_ptr;
 		entry_ptr = _nc_find_type_entry(name, STRING, FALSE);
@@ -296,7 +253,7 @@ tput_cmd(int fd, TTY * settings, bool opt_x, int argc, char **argv, int *used)
 #undef myParam
 		break;
 	    case Other:
-		/* FALLTHRU */
+		 
 	    default:
 		analyzed = _nc_tparm_analyze(NULL, s, p_is_s, &popcount);
 #define myParam(n) (p_is_s[n - 1] != 0 ? ((TPARM_ARG) strings[n]) : numbers[n])
@@ -319,7 +276,7 @@ tput_cmd(int fd, TTY * settings, bool opt_x, int argc, char **argv, int *used)
 	    *used += analyzed;
 	}
 
-	/* use putp() in order to perform padding */
+	 
 	putp(s);
 	return exit_code(STRING, 0);
     }
@@ -339,7 +296,7 @@ main(int argc, char **argv)
     int used;
     TTY old_settings;
     TTY tty_settings;
-    bool opt_x = FALSE;		/* clear scrollback if possible */
+    bool opt_x = FALSE;		 
     bool is_alias;
     bool need_tty;
 
@@ -361,12 +318,12 @@ main(int argc, char **argv)
 	case 'V':
 	    puts(curses_version());
 	    ExitProgram(EXIT_SUCCESS);
-	case 'x':		/* do not try to clear scrollback */
+	case 'x':		 
 	    opt_x = TRUE;
 	    break;
 	default:
 	    usage(is_alias ? "TVx" : NULL);
-	    /* NOTREACHED */
+	     
 	}
     }
 
@@ -375,9 +332,7 @@ main(int argc, char **argv)
 		 (!strcmp(argv[optind], "reset") ||
 		  !strcmp(argv[optind], "init"))));
 
-    /*
-     * Modify the argument list to omit the options we processed.
-     */
+     
     if (is_alias) {
 	if (optind-- < argc) {
 	    argc -= optind;
@@ -424,7 +379,7 @@ main(int argc, char **argv)
 	    quit(ErrSystem(1), strerror(errno));
 	}
 
-	/* split the buffer into tokens */
+	 
 	for (cp = buf; *cp; cp++) {
 	    if (isspace(UChar(*cp))) {
 		*cp = '\0';
@@ -442,7 +397,7 @@ main(int argc, char **argv)
 	    code = tput_cmd(fd, &tty_settings, opt_x, argnum, argnow, &used);
 	    if (code != 0) {
 		if (result == 0)
-		    result = ErrSystem(0);	/* will return value >4 */
+		    result = ErrSystem(0);	 
 		++result;
 	    }
 	    argnum -= used;

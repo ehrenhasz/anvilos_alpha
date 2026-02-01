@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* binder_alloc_selftest.c
- *
- * Android IPC Subsystem
- *
- * Copyright (C) 2017 Google, Inc.
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -19,58 +14,17 @@ static bool binder_selftest_run = true;
 static int binder_selftest_failures;
 static DEFINE_MUTEX(binder_selftest_lock);
 
-/**
- * enum buf_end_align_type - Page alignment of a buffer
- * end with regard to the end of the previous buffer.
- *
- * In the pictures below, buf2 refers to the buffer we
- * are aligning. buf1 refers to previous buffer by addr.
- * Symbol [ means the start of a buffer, ] means the end
- * of a buffer, and | means page boundaries.
- */
+ 
 enum buf_end_align_type {
-	/**
-	 * @SAME_PAGE_UNALIGNED: The end of this buffer is on
-	 * the same page as the end of the previous buffer and
-	 * is not page aligned. Examples:
-	 * buf1 ][ buf2 ][ ...
-	 * buf1 ]|[ buf2 ][ ...
-	 */
+	 
 	SAME_PAGE_UNALIGNED = 0,
-	/**
-	 * @SAME_PAGE_ALIGNED: When the end of the previous buffer
-	 * is not page aligned, the end of this buffer is on the
-	 * same page as the end of the previous buffer and is page
-	 * aligned. When the previous buffer is page aligned, the
-	 * end of this buffer is aligned to the next page boundary.
-	 * Examples:
-	 * buf1 ][ buf2 ]| ...
-	 * buf1 ]|[ buf2 ]| ...
-	 */
+	 
 	SAME_PAGE_ALIGNED,
-	/**
-	 * @NEXT_PAGE_UNALIGNED: The end of this buffer is on
-	 * the page next to the end of the previous buffer and
-	 * is not page aligned. Examples:
-	 * buf1 ][ buf2 | buf2 ][ ...
-	 * buf1 ]|[ buf2 | buf2 ][ ...
-	 */
+	 
 	NEXT_PAGE_UNALIGNED,
-	/**
-	 * @NEXT_PAGE_ALIGNED: The end of this buffer is on
-	 * the page next to the end of the previous buffer and
-	 * is page aligned. Examples:
-	 * buf1 ][ buf2 | buf2 ]| ...
-	 * buf1 ]|[ buf2 | buf2 ]| ...
-	 */
+	 
 	NEXT_PAGE_ALIGNED,
-	/**
-	 * @NEXT_NEXT_UNALIGNED: The end of this buffer is on
-	 * the page that follows the page after the end of the
-	 * previous buffer and is not page aligned. Examples:
-	 * buf1 ][ buf2 | buf2 | buf2 ][ ...
-	 * buf1 ]|[ buf2 | buf2 | buf2 ][ ...
-	 */
+	 
 	NEXT_NEXT_UNALIGNED,
 	LOOP_END,
 };
@@ -139,11 +93,7 @@ static void binder_selftest_free_buf(struct binder_alloc *alloc,
 		binder_alloc_free_buf(alloc, buffers[seq[i]]);
 
 	for (i = 0; i < end / PAGE_SIZE; i++) {
-		/**
-		 * Error message on a free page can be false positive
-		 * if binder shrinker ran during binder_alloc_free_buf
-		 * calls above.
-		 */
+		 
 		if (list_empty(&alloc->pages[i].lru)) {
 			pr_err_size_seq(sizes, seq);
 			pr_err("expect lru but is %s at page index %d\n",
@@ -181,7 +131,7 @@ static void binder_selftest_alloc_free(struct binder_alloc *alloc,
 	binder_selftest_alloc_buf(alloc, buffers, sizes, seq);
 	binder_selftest_free_buf(alloc, buffers, sizes, seq, end);
 
-	/* Allocate from lru. */
+	 
 	binder_selftest_alloc_buf(alloc, buffers, sizes, seq);
 	if (list_lru_count(&binder_alloc_lru))
 		pr_err("lru list should be empty but is not\n");
@@ -201,7 +151,7 @@ static bool is_dup(int *seq, int index, int val)
 	return false;
 }
 
-/* Generate BUFFER_NUM factorial free orders. */
+ 
 static void binder_selftest_free_seq(struct binder_alloc *alloc,
 				     size_t *sizes, int *seq,
 				     int index, size_t end)
@@ -235,11 +185,7 @@ static void binder_selftest_alloc_size(struct binder_alloc *alloc,
 		front_sizes[i] = offset - last_offset;
 		back_sizes[BUFFER_NUM - i - 1] = front_sizes[i];
 	}
-	/*
-	 * Buffers share the first or last few pages.
-	 * Only BUFFER_NUM - 1 buffer sizes are adjustable since
-	 * we need one giant buffer before getting to the last page.
-	 */
+	 
 	back_sizes[0] += alloc->buffer_size - end_offset[BUFFER_NUM - 1];
 	binder_selftest_free_seq(alloc, front_sizes, seq, 0,
 				 end_offset[BUFFER_NUM - 1]);
@@ -271,15 +217,7 @@ static void binder_selftest_alloc_offset(struct binder_alloc *alloc,
 	}
 }
 
-/**
- * binder_selftest_alloc() - Test alloc and free of buffer pages.
- * @alloc: Pointer to alloc struct.
- *
- * Allocate BUFFER_NUM buffers to cover all page alignment cases,
- * then free them in all orders possible. Check that pages are
- * correctly allocated, put onto lru when buffers are freed, and
- * are freed when binder_alloc_free_page is called.
- */
+ 
 void binder_selftest_alloc(struct binder_alloc *alloc)
 {
 	size_t end_offset[BUFFER_NUM];

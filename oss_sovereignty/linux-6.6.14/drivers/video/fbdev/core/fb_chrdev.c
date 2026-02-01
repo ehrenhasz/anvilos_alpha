@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #include <linux/compat.h>
 #include <linux/console.h>
@@ -8,14 +8,7 @@
 
 #include "fb_internal.h"
 
-/*
- * We hold a reference to the fb_info in file->private_data,
- * but if the current registered fb has changed, we don't
- * actually want to use it.
- *
- * So look up the fb_info using the inode minor number,
- * and just verify it against the reference we have.
- */
+ 
 static struct fb_info *file_fb_info(struct file *file)
 {
 	struct inode *inode = file_inode(file);
@@ -81,7 +74,7 @@ static long do_fb_ioctl(struct fb_info *info, unsigned int cmd,
 	case FBIOPUT_VSCREENINFO:
 		if (copy_from_user(&var, argp, sizeof(var)))
 			return -EFAULT;
-		/* only for kernel-internal use */
+		 
 		var.activate &= ~FB_ACTIVATE_KD_TEXT;
 		console_lock();
 		lock_fb_info(info);
@@ -143,7 +136,7 @@ static long do_fb_ioctl(struct fb_info *info, unsigned int cmd,
 		console_lock();
 		lock_fb_info(info);
 		ret = fb_blank(info, arg);
-		/* might again call into fb_blank */
+		 
 		fbcon_fb_blanked(info, arg);
 		unlock_fb_info(info);
 		console_unlock();
@@ -325,30 +318,21 @@ static int fb_mmap(struct file *file, struct vm_area_struct *vma)
 	if (info->fbops->fb_mmap) {
 		int res;
 
-		/*
-		 * The framebuffer needs to be accessed decrypted, be sure
-		 * SME protection is removed ahead of the call
-		 */
+		 
 		vma->vm_page_prot = pgprot_decrypted(vma->vm_page_prot);
 		res = info->fbops->fb_mmap(info, vma);
 		mutex_unlock(&info->mm_lock);
 		return res;
 #if IS_ENABLED(CONFIG_FB_DEFERRED_IO)
 	} else if (info->fbdefio) {
-		/*
-		 * FB deferred I/O wants you to handle mmap in your drivers. At a
-		 * minimum, point struct fb_ops.fb_mmap to fb_deferred_io_mmap().
-		 */
+		 
 		dev_warn_once(info->dev, "fbdev mmap not set up for deferred I/O.\n");
 		mutex_unlock(&info->mm_lock);
 		return -ENODEV;
 #endif
 	}
 
-	/*
-	 * Ugh. This can be either the frame buffer mapping, or
-	 * if pgoff points past it, the mmio mapping.
-	 */
+	 
 	start = info->fix.smem_start;
 	len = info->fix.smem_len;
 	mmio_pgoff = PAGE_ALIGN((start & ~PAGE_MASK) + len) >> PAGE_SHIFT;

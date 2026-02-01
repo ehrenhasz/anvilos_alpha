@@ -1,6 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2015-2016, The Linux Foundation. All rights reserved.
-// Copyright (c) 2017-2018, Linaro Limited
+
+
+
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -29,14 +29,12 @@
 #define WCD9335_RATES_MASK (SNDRV_PCM_RATE_8000 | SNDRV_PCM_RATE_16000 |\
 			    SNDRV_PCM_RATE_32000 | SNDRV_PCM_RATE_48000 |\
 			    SNDRV_PCM_RATE_96000 | SNDRV_PCM_RATE_192000)
-/* Fractional Rates */
+ 
 #define WCD9335_FRAC_RATES_MASK (SNDRV_PCM_RATE_44100)
 #define WCD9335_FORMATS_S16_S24_LE (SNDRV_PCM_FMTBIT_S16_LE | \
 				  SNDRV_PCM_FMTBIT_S24_LE)
 
-/* slave port water mark level
- *   (0: 6bytes, 1: 9bytes, 2: 12 bytes, 3: 15 bytes)
- */
+ 
 #define SLAVE_PORT_WATER_MARK_6BYTES  0
 #define SLAVE_PORT_WATER_MARK_9BYTES  1
 #define SLAVE_PORT_WATER_MARK_12BYTES 2
@@ -94,7 +92,7 @@
 #define WCD9335_SLIM_TX_CH(p) \
 	{.port = p, .shift = p,}
 
-/* vout step value */
+ 
 #define WCD9335_CALCULATE_VOUT_D(req_mv) (((req_mv - 650) * 10) / 25)
 
 #define WCD9335_INTERPOLATOR_PATH(id)			\
@@ -206,14 +204,14 @@ enum wcd9335_sido_voltage {
 };
 
 enum {
-	COMPANDER_1, /* HPH_L */
-	COMPANDER_2, /* HPH_R */
-	COMPANDER_3, /* LO1_DIFF */
-	COMPANDER_4, /* LO2_DIFF */
-	COMPANDER_5, /* LO3_SE */
-	COMPANDER_6, /* LO4_SE */
-	COMPANDER_7, /* SWR SPK CH1 */
-	COMPANDER_8, /* SWR SPK CH2 */
+	COMPANDER_1,  
+	COMPANDER_2,  
+	COMPANDER_3,  
+	COMPANDER_4,  
+	COMPANDER_5,  
+	COMPANDER_6,  
+	COMPANDER_7,  
+	COMPANDER_8,  
 	COMPANDER_MAX,
 };
 
@@ -338,7 +336,7 @@ struct wcd9335_codec {
 	int hph_r_gain;
 	u32 rx_bias_count;
 
-	/*TX*/
+	 
 	int micb_ref[WCD9335_MAX_MICBIAS];
 	int pullup_ref[WCD9335_MAX_MICBIAS];
 
@@ -377,8 +375,8 @@ static const struct wcd9335_slim_ch wcd9335_tx_chs[WCD9335_TX_MAX] = {
 };
 
 static const struct wcd9335_slim_ch wcd9335_rx_chs[WCD9335_RX_MAX] = {
-	WCD9335_SLIM_RX_CH(0),	 /* 16 */
-	WCD9335_SLIM_RX_CH(1),	 /* 17 */
+	WCD9335_SLIM_RX_CH(0),	  
+	WCD9335_SLIM_RX_CH(1),	  
 	WCD9335_SLIM_RX_CH(2),
 	WCD9335_SLIM_RX_CH(3),
 	WCD9335_SLIM_RX_CH(4),
@@ -398,21 +396,21 @@ struct interp_sample_rate {
 };
 
 static struct interp_sample_rate int_mix_rate_val[] = {
-	{48000, 0x4},	/* 48K */
-	{96000, 0x5},	/* 96K */
-	{192000, 0x6},	/* 192K */
+	{48000, 0x4},	 
+	{96000, 0x5},	 
+	{192000, 0x6},	 
 };
 
 static struct interp_sample_rate int_prim_rate_val[] = {
-	{8000, 0x0},	/* 8K */
-	{16000, 0x1},	/* 16K */
-	{24000, -EINVAL},/* 24K */
-	{32000, 0x3},	/* 32K */
-	{48000, 0x4},	/* 48K */
-	{96000, 0x5},	/* 96K */
-	{192000, 0x6},	/* 192K */
-	{384000, 0x7},	/* 384K */
-	{44100, 0x8}, /* 44.1K */
+	{8000, 0x0},	 
+	{16000, 0x1},	 
+	{24000, -EINVAL}, 
+	{32000, 0x3},	 
+	{48000, 0x4},	 
+	{96000, 0x5},	 
+	{192000, 0x6},	 
+	{384000, 0x7},	 
+	{44100, 0x8},  
 };
 
 struct wcd9335_reg_mask_val {
@@ -422,7 +420,7 @@ struct wcd9335_reg_mask_val {
 };
 
 static const struct wcd9335_reg_mask_val wcd9335_codec_reg_init[] = {
-	/* Rbuckfly/R_EAR(32) */
+	 
 	{WCD9335_CDC_CLSH_K2_MSB, 0x0F, 0x00},
 	{WCD9335_CDC_CLSH_K2_LSB, 0xFF, 0x60},
 	{WCD9335_CPE_SS_DMIC_CFG, 0x80, 0x00},
@@ -482,7 +480,7 @@ static const struct wcd9335_reg_mask_val wcd9335_codec_reg_init[] = {
 	{WCD9335_HPH_REFBUFF_LP_CTL, 0x06, 0x02},
 };
 
-/* Cutoff frequency for high pass filter */
+ 
 static const char * const cf_text[] = {
 	"CF_NEG_3DB_4HZ", "CF_NEG_3DB_75HZ", "CF_NEG_3DB_150HZ"
 };
@@ -1283,12 +1281,12 @@ static int slim_rx_mux_put(struct snd_kcontrol *kc,
 
 	wcd->rx_port_value[port_id] = ucontrol->value.enumerated.item[0];
 
-	/* Remove channel from any list it's in before adding it to a new one */
+	 
 	list_del_init(&wcd->rx_chs[port_id].list);
 
 	switch (wcd->rx_port_value[port_id]) {
 	case 0:
-		/* Channel already removed from lists. Nothing to do here */
+		 
 		break;
 	case 1:
 		list_add_tail(&wcd->rx_chs[port_id].list,
@@ -1353,7 +1351,7 @@ static int slim_tx_mixer_put(struct snd_kcontrol *kc,
 	case AIF1_CAP:
 	case AIF2_CAP:
 	case AIF3_CAP:
-		/* only add to the list if value not set */
+		 
 		if (enable && wcd->tx_port_value[port_id] != dai_id) {
 			wcd->tx_port_value[port_id] = dai_id;
 			list_add_tail(&wcd->tx_chs[port_id].list,
@@ -1513,7 +1511,7 @@ static int wcd9335_put_dec_enum(struct snd_kcontrol *kc,
 		return -EINVAL;
 	}
 
-	/* AMIC: 0, DMIC: 1 */
+	 
 	sel = val ? WCD9335_CDC_TX_ADC_AMIC_SEL : WCD9335_CDC_TX_ADC_DMIC_SEL;
 	snd_soc_component_update_bits(component, reg,
 				      WCD9335_CDC_TX_ADC_AMIC_DMIC_SEL_MASK,
@@ -1541,11 +1539,11 @@ static int wcd9335_int_dem_inp_mux_put(struct snd_kcontrol *kc,
 	else
 		return -EINVAL;
 
-	/* Set Look Ahead Delay */
+	 
 	snd_soc_component_update_bits(component, reg,
 				WCD9335_CDC_RX_PATH_CFG0_DLY_ZN_EN_MASK,
 				val ? WCD9335_CDC_RX_PATH_CFG0_DLY_ZN_EN : 0);
-	/* Set DEM INP Select */
+	 
 	return snd_soc_dapm_put_enum_double(kc, ucontrol);
 }
 
@@ -1647,11 +1645,7 @@ static int wcd9335_set_prim_interpolator_rate(struct snd_soc_dai *dai,
 
 	list_for_each_entry(ch, &wcd->dai[dai->id].slim_ch_list, list) {
 		inp = ch->shift + INTn_1_MIX_INP_SEL_RX0;
-		/*
-		 * Loop through all interpolator MUX inputs and find out
-		 * to which interpolator input, the slim rx port
-		 * is connected
-		 */
+		 
 		for (j = 0; j < WCD9335_NUM_INTERPOLATORS; j++) {
 			cfg0 = snd_soc_component_read(comp,
 					WCD9335_CDC_RX_INP_MUX_RX_INT_CFG0(j));
@@ -1667,7 +1661,7 @@ static int wcd9335_set_prim_interpolator_rate(struct snd_soc_dai *dai,
 
 			if ((inp0_sel == inp) ||  (inp1_sel == inp) ||
 			    (inp2_sel == inp)) {
-				/* rate is in Hz */
+				 
 				if ((j == 0) && (rate == 44100))
 					dev_info(wcd->dev,
 						"Cannot set 44.1KHz on INT0\n");
@@ -1687,7 +1681,7 @@ static int wcd9335_set_interpolator_rate(struct snd_soc_dai *dai, u32 rate)
 {
 	int i;
 
-	/* set mixing path rate */
+	 
 	for (i = 0; i < ARRAY_SIZE(int_mix_rate_val); i++) {
 		if (rate == int_mix_rate_val[i].rate) {
 			wcd9335_set_mix_interpolator_rate(dai,
@@ -1696,7 +1690,7 @@ static int wcd9335_set_interpolator_rate(struct snd_soc_dai *dai, u32 rate)
 		}
 	}
 
-	/* set primary path sample rate */
+	 
 	for (i = 0; i < ARRAY_SIZE(int_prim_rate_val); i++) {
 		if (rate == int_prim_rate_val[i].rate) {
 			wcd9335_set_prim_interpolator_rate(dai,
@@ -1722,7 +1716,7 @@ static int wcd9335_slim_set_hw_params(struct wcd9335_codec *wcd,
 	cfg->direction = direction;
 	cfg->port_mask = 0;
 
-	/* Configure slave interface device */
+	 
 	list_for_each_entry(ch, slim_ch_list, list) {
 		cfg->ch_count++;
 		payload |= 1 << ch->shift;
@@ -1737,7 +1731,7 @@ static int wcd9335_slim_set_hw_params(struct wcd9335_codec *wcd,
 	list_for_each_entry(ch, slim_ch_list, list) {
 		cfg->chs[i++] = ch->ch_num;
 		if (direction == SNDRV_PCM_STREAM_PLAYBACK) {
-			/* write to interface device */
+			 
 			ret = regmap_write(wcd->if_regmap,
 				WCD9335_SLIM_PGD_RX_PORT_MULTI_CHNL_0(ch->port),
 				payload);
@@ -1745,7 +1739,7 @@ static int wcd9335_slim_set_hw_params(struct wcd9335_codec *wcd,
 			if (ret < 0)
 				goto err;
 
-			/* configure the slave port for water mark and enable*/
+			 
 			ret = regmap_write(wcd->if_regmap,
 					WCD9335_SLIM_PGD_RX_PORT_CFG(ch->port),
 					WCD9335_SLIM_WATER_MARK_VAL);
@@ -1758,14 +1752,14 @@ static int wcd9335_slim_set_hw_params(struct wcd9335_codec *wcd,
 			if (ret < 0)
 				goto err;
 
-			/* ports 8,9 */
+			 
 			ret = regmap_write(wcd->if_regmap,
 				WCD9335_SLIM_PGD_TX_PORT_MULTI_CHNL_1(ch->port),
 				(payload & 0xFF00)>>8);
 			if (ret < 0)
 				goto err;
 
-			/* configure the slave port for water mark and enable*/
+			 
 			ret = regmap_write(wcd->if_regmap,
 					WCD9335_SLIM_PGD_TX_PORT_CFG(ch->port),
 					WCD9335_SLIM_WATER_MARK_VAL);
@@ -1804,7 +1798,7 @@ static int wcd9335_set_decimator_rate(struct snd_soc_dai *dai,
 				tx_port, dai->id);
 			return -EINVAL;
 		}
-		/* Find the SB TX MUX input - which decimator is connected */
+		 
 		if (tx_port < 4) {
 			tx_port_reg = WCD9335_CDC_IF_ROUTER_TX_MUX_CFG0;
 			shift = (tx_port << 1);
@@ -1821,7 +1815,7 @@ static int wcd9335_set_decimator_rate(struct snd_soc_dai *dai,
 			tx_port_reg = WCD9335_CDC_IF_ROUTER_TX_MUX_CFG3;
 			shift = 0;
 			shift_val = 0x0F;
-		} else /* (tx_port == 13) */ {
+		} else   {
 			tx_port_reg = WCD9335_CDC_IF_ROUTER_TX_MUX_CFG3;
 			shift = 4;
 			shift_val = 0x03;
@@ -1851,7 +1845,7 @@ static int wcd9335_set_decimator_rate(struct snd_soc_dai *dai,
 					WCD9335_CDC_TX_PATH_CTL_PCM_RATE_MASK,
 					rate_val);
 		} else if ((tx_port <= 8) && (tx_mux_sel == 0x01)) {
-			/* Check if the TX Mux input is RX MIX TXn */
+			 
 			dev_err(wcd->dev, "RX_MIX_TX%u going to SLIM TX%u\n",
 				tx_port, tx_port);
 		} else {
@@ -2196,10 +2190,10 @@ static int wcd9335_set_compander(struct snd_kcontrol *kc,
 	sel = value ? WCD9335_HPH_GAIN_SRC_SEL_COMPANDER :
 		WCD9335_HPH_GAIN_SRC_SEL_REGISTER;
 
-	/* Any specific register configuration for compander */
+	 
 	switch (comp) {
 	case COMPANDER_1:
-		/* Set Gain Source Select based on compander enable/disable */
+		 
 		snd_soc_component_update_bits(component, WCD9335_HPH_L_EN,
 				      WCD9335_HPH_GAIN_SRC_SEL_MASK, sel);
 		break;
@@ -2252,7 +2246,7 @@ static int wcd9335_rx_hph_mode_put(struct snd_kcontrol *kc,
 }
 
 static const struct snd_kcontrol_new wcd9335_snd_controls[] = {
-	/* -84dB min - 40dB max */
+	 
 	SOC_SINGLE_S8_TLV("RX0 Digital Volume", WCD9335_CDC_RX0_RX_VOL_CTL,
 			-84, 40, digital_gain),
 	SOC_SINGLE_S8_TLV("RX1 Digital Volume", WCD9335_CDC_RX1_RX_VOL_CTL,
@@ -2326,7 +2320,7 @@ static const struct snd_kcontrol_new wcd9335_snd_controls[] = {
 	SOC_ENUM_EXT("RX HPH Mode", rx_hph_mode_mux_enum,
 		       wcd9335_rx_hph_mode_get, wcd9335_rx_hph_mode_put),
 
-	/* Gain Controls */
+	 
 	SOC_SINGLE_TLV("EAR PA Volume", WCD9335_ANA_EAR, 4, 4, 1,
 		ear_pa_gain),
 	SOC_SINGLE_TLV("HPHL Volume", WCD9335_HPH_L_EN, 0, 20, 1,
@@ -2422,57 +2416,57 @@ static const struct snd_soc_dapm_route wcd9335_audio_map[] = {
 	WCD9335_INTERPOLATOR_PATH(7),
 	WCD9335_INTERPOLATOR_PATH(8),
 
-	/* EAR PA */
+	 
 	{"RX INT0 DEM MUX", "CLSH_DSM_OUT", "RX INT0 INTERP"},
 	{"RX INT0 DAC", NULL, "RX INT0 DEM MUX"},
 	{"RX INT0 DAC", NULL, "RX_BIAS"},
 	{"EAR PA", NULL, "RX INT0 DAC"},
 	{"EAR", NULL, "EAR PA"},
 
-	/* HPHL */
+	 
 	{"RX INT1 DEM MUX", "CLSH_DSM_OUT", "RX INT1 INTERP"},
 	{"RX INT1 DAC", NULL, "RX INT1 DEM MUX"},
 	{"RX INT1 DAC", NULL, "RX_BIAS"},
 	{"HPHL PA", NULL, "RX INT1 DAC"},
 	{"HPHL", NULL, "HPHL PA"},
 
-	/* HPHR */
+	 
 	{"RX INT2 DEM MUX", "CLSH_DSM_OUT", "RX INT2 INTERP"},
 	{"RX INT2 DAC", NULL, "RX INT2 DEM MUX"},
 	{"RX INT2 DAC", NULL, "RX_BIAS"},
 	{"HPHR PA", NULL, "RX INT2 DAC"},
 	{"HPHR", NULL, "HPHR PA"},
 
-	/* LINEOUT1 */
+	 
 	{"RX INT3 DAC", NULL, "RX INT3 INTERP"},
 	{"RX INT3 DAC", NULL, "RX_BIAS"},
 	{"LINEOUT1 PA", NULL, "RX INT3 DAC"},
 	{"LINEOUT1", NULL, "LINEOUT1 PA"},
 
-	/* LINEOUT2 */
+	 
 	{"RX INT4 DAC", NULL, "RX INT4 INTERP"},
 	{"RX INT4 DAC", NULL, "RX_BIAS"},
 	{"LINEOUT2 PA", NULL, "RX INT4 DAC"},
 	{"LINEOUT2", NULL, "LINEOUT2 PA"},
 
-	/* LINEOUT3 */
+	 
 	{"RX INT5 DAC", NULL, "RX INT5 INTERP"},
 	{"RX INT5 DAC", NULL, "RX_BIAS"},
 	{"LINEOUT3 PA", NULL, "RX INT5 DAC"},
 	{"LINEOUT3", NULL, "LINEOUT3 PA"},
 
-	/* LINEOUT4 */
+	 
 	{"RX INT6 DAC", NULL, "RX INT6 INTERP"},
 	{"RX INT6 DAC", NULL, "RX_BIAS"},
 	{"LINEOUT4 PA", NULL, "RX INT6 DAC"},
 	{"LINEOUT4", NULL, "LINEOUT4 PA"},
 
-	/* SLIMBUS Connections */
+	 
 	{"AIF1 CAP", NULL, "AIF1_CAP Mixer"},
 	{"AIF2 CAP", NULL, "AIF2_CAP Mixer"},
 	{"AIF3 CAP", NULL, "AIF3_CAP Mixer"},
 
-	/* ADC Mux */
+	 
 	WCD9335_ADC_MUX_PATH(0),
 	WCD9335_ADC_MUX_PATH(1),
 	WCD9335_ADC_MUX_PATH(2),
@@ -2483,7 +2477,7 @@ static const struct snd_soc_dapm_route wcd9335_audio_map[] = {
 	WCD9335_ADC_MUX_PATH(7),
 	WCD9335_ADC_MUX_PATH(8),
 
-	/* ADC Connections */
+	 
 	{"ADC1", NULL, "AMIC1"},
 	{"ADC2", NULL, "AMIC2"},
 	{"ADC3", NULL, "AMIC3"},
@@ -2581,15 +2575,11 @@ static int __wcd9335_codec_enable_micbias(struct snd_soc_dapm_widget *w,
 
 	switch (event) {
 	case SND_SOC_DAPM_PRE_PMU:
-		/*
-		 * MIC BIAS can also be requested by MBHC,
-		 * so use ref count to handle micbias pullup
-		 * and enable requests
-		 */
+		 
 		wcd9335_micbias_control(comp, micb_num, MICB_ENABLE, true);
 		break;
 	case SND_SOC_DAPM_POST_PMU:
-		/* wait for cnp time */
+		 
 		usleep_range(1000, 1100);
 		break;
 	case SND_SOC_DAPM_POST_PMD:
@@ -2666,7 +2656,7 @@ static int wcd9335_codec_find_amic_input(struct snd_soc_component *comp,
 	    adc_mux_n == WCD9335_INVALID_ADC_MUX)
 		return 0;
 
-	/* Check whether adc mux input is AMIC or DMIC */
+	 
 	if (adc_mux_n < 4) {
 		reg = WCD9335_CDC_TX_INP_MUX_ADC_MUX0_CFG1 + 2 * adc_mux_n;
 		mreg = WCD9335_CDC_TX_INP_MUX_ADC_MUX0_CFG0 + 2 * adc_mux_n;
@@ -2797,10 +2787,10 @@ static int wcd9335_codec_enable_dec(struct snd_soc_dapm_widget *w,
 			snd_soc_component_update_bits(comp, dec_cfg_reg,
 					    TX_HPF_CUT_OFF_FREQ_MASK,
 					    CF_MIN_3DB_150HZ << 5);
-		/* Enable TX PGA Mute */
+		 
 		snd_soc_component_update_bits(comp, tx_vol_ctl_reg,
 						0x10, 0x10);
-		/* Enable APC */
+		 
 		snd_soc_component_update_bits(comp, dec_cfg_reg, 0x08, 0x08);
 		break;
 	case SND_SOC_DAPM_POST_PMU:
@@ -2854,7 +2844,7 @@ static u8 wcd9335_get_dmic_clk_val(struct snd_soc_component *component,
 		"%s: mclk_rate = %d, dmic_sample_rate = %d\n",
 		__func__, mclk_rate, dmic_clk_rate);
 
-	/* Default value to return in case of error */
+	 
 	if (mclk_rate == WCD9335_MCLK_CLK_9P6MHZ)
 		dmic_ctl_val = WCD9335_DMIC_CLK_DIV_2;
 	else
@@ -3233,7 +3223,7 @@ static int wcd9335_config_compander(struct snd_soc_component *component,
 	int comp;
 	u16 comp_ctl0_reg, rx_path_cfg0_reg;
 
-	/* EAR does not have compander */
+	 
 	if (!interp_n)
 		return 0;
 
@@ -3245,18 +3235,18 @@ static int wcd9335_config_compander(struct snd_soc_component *component,
 	rx_path_cfg0_reg = WCD9335_CDC_RX1_RX_PATH_CFG(comp);
 
 	if (SND_SOC_DAPM_EVENT_ON(event)) {
-		/* Enable Compander Clock */
+		 
 		snd_soc_component_update_bits(component, comp_ctl0_reg,
 					WCD9335_CDC_COMPANDER_CLK_EN_MASK,
 					WCD9335_CDC_COMPANDER_CLK_ENABLE);
-		/* Reset comander */
+		 
 		snd_soc_component_update_bits(component, comp_ctl0_reg,
 					WCD9335_CDC_COMPANDER_SOFT_RST_MASK,
 					WCD9335_CDC_COMPANDER_SOFT_RST_ENABLE);
 		snd_soc_component_update_bits(component, comp_ctl0_reg,
 				WCD9335_CDC_COMPANDER_SOFT_RST_MASK,
 				WCD9335_CDC_COMPANDER_SOFT_RST_DISABLE);
-		/* Enables DRE in this path */
+		 
 		snd_soc_component_update_bits(component, rx_path_cfg0_reg,
 					WCD9335_CDC_RX_PATH_CFG_CMP_EN_MASK,
 					WCD9335_CDC_RX_PATH_CFG_CMP_ENABLE);
@@ -3331,7 +3321,7 @@ static int wcd9335_codec_enable_interpolator(struct snd_soc_dapm_widget *w,
 
 	switch (event) {
 	case SND_SOC_DAPM_PRE_PMU:
-		/* Reset if needed */
+		 
 		wcd9335_codec_enable_prim_interpolator(comp, reg, event);
 		break;
 	case SND_SOC_DAPM_POST_PMU:
@@ -3368,12 +3358,7 @@ static void wcd9335_codec_hph_mode_gain_opt(struct snd_soc_component *component,
 	l_val = (hph_l_en & 0xC0) | 0x20 | gain;
 	r_val = (hph_r_en & 0xC0) | 0x20 | gain;
 
-	/*
-	 * Set HPH_L & HPH_R gain source selection to REGISTER
-	 * for better click and pop only if corresponding PAs are
-	 * not enabled. Also cache the values of the HPHL/R
-	 * PA gains to be applied after PAs are enabled
-	 */
+	 
 	if ((l_val != hph_l_en) && !is_hphl_pa) {
 		snd_soc_component_write(component, WCD9335_HPH_L_EN, l_val);
 		wcd->hph_l_gain = hph_l_en & 0x1F;
@@ -3533,7 +3518,7 @@ static int wcd9335_codec_hphl_dac_event(struct snd_soc_dapm_widget *w,
 
 	switch (event) {
 	case SND_SOC_DAPM_PRE_PMU:
-		/* Read DEM INP Select */
+		 
 		dem_inp = snd_soc_component_read(comp,
 				WCD9335_CDC_RX1_RX_PATH_SEC0) & 0x03;
 		if (((hph_mode == CLS_H_HIFI) || (hph_mode == CLS_H_LOHIFI) ||
@@ -3555,7 +3540,7 @@ static int wcd9335_codec_hphl_dac_event(struct snd_soc_dapm_widget *w,
 	case SND_SOC_DAPM_PRE_PMD:
 		break;
 	case SND_SOC_DAPM_POST_PMD:
-		/* 1000us required as per HW requirement */
+		 
 		usleep_range(1000, 1100);
 
 		if (!(wcd_clsh_ctrl_get_state(wcd->clsh_ctrl) &
@@ -3642,7 +3627,7 @@ static void wcd9335_codec_hph_post_pa_config(struct wcd9335_codec *wcd,
 	if (SND_SOC_DAPM_EVENT_ON(event)) {
 		if (wcd->comp_enabled[COMPANDER_1] ||
 		    wcd->comp_enabled[COMPANDER_2]) {
-			/* GAIN Source Selection */
+			 
 			snd_soc_component_update_bits(wcd->component,
 					WCD9335_HPH_L_EN,
 					WCD9335_HPH_GAIN_SRC_SEL_MASK,
@@ -3685,7 +3670,7 @@ static int wcd9335_codec_hphr_dac_event(struct snd_soc_dapm_widget *w,
 	switch (event) {
 	case SND_SOC_DAPM_PRE_PMU:
 
-		/* Read DEM INP Select */
+		 
 		dem_inp = snd_soc_component_read(comp,
 				WCD9335_CDC_RX2_RX_PATH_SEC0) &
 				WCD9335_CDC_RX_PATH_DEM_INP_SEL_MASK;
@@ -3706,7 +3691,7 @@ static int wcd9335_codec_hphr_dac_event(struct snd_soc_dapm_widget *w,
 
 		break;
 	case SND_SOC_DAPM_POST_PMD:
-		/* 1000us required as per HW requirement */
+		 
 		usleep_range(1000, 1100);
 
 		if (!(wcd_clsh_ctrl_get_state(wcd->clsh_ctrl) &
@@ -3734,10 +3719,7 @@ static int wcd9335_codec_enable_hphl_pa(struct snd_soc_dapm_widget *w,
 	case SND_SOC_DAPM_PRE_PMU:
 		break;
 	case SND_SOC_DAPM_POST_PMU:
-		/*
-		 * 7ms sleep is required after PA is enabled as per
-		 * HW requirement
-		 */
+		 
 		usleep_range(7000, 7100);
 
 		wcd9335_codec_hph_post_pa_config(wcd, hph_mode, event);
@@ -3746,7 +3728,7 @@ static int wcd9335_codec_enable_hphl_pa(struct snd_soc_dapm_widget *w,
 					WCD9335_CDC_RX_PGA_MUTE_EN_MASK,
 					WCD9335_CDC_RX_PGA_MUTE_DISABLE);
 
-		/* Remove mix path mute if it is enabled */
+		 
 		if ((snd_soc_component_read(comp,
 					WCD9335_CDC_RX1_RX_PATH_MIX_CTL)) &
 					WCD9335_CDC_RX_PGA_MUTE_EN_MASK)
@@ -3760,9 +3742,7 @@ static int wcd9335_codec_enable_hphl_pa(struct snd_soc_dapm_widget *w,
 		wcd9335_codec_hph_post_pa_config(wcd, hph_mode, event);
 		break;
 	case SND_SOC_DAPM_POST_PMD:
-		/* 5ms sleep is required after PA is disabled as per
-		 * HW requirement
-		 */
+		 
 		usleep_range(5000, 5500);
 		break;
 	}
@@ -3800,15 +3780,13 @@ static int wcd9335_codec_enable_lineout_pa(struct snd_soc_dapm_widget *w,
 
 	switch (event) {
 	case SND_SOC_DAPM_POST_PMU:
-		/* 5ms sleep is required after PA is enabled as per
-		 * HW requirement
-		 */
+		 
 		usleep_range(5000, 5500);
 		snd_soc_component_update_bits(comp, vol_reg,
 					WCD9335_CDC_RX_PGA_MUTE_EN_MASK,
 					WCD9335_CDC_RX_PGA_MUTE_DISABLE);
 
-		/* Remove mix path mute if it is enabled */
+		 
 		if ((snd_soc_component_read(comp, mix_vol_reg)) &
 					WCD9335_CDC_RX_PGA_MUTE_EN_MASK)
 			snd_soc_component_update_bits(comp,  mix_vol_reg,
@@ -3816,9 +3794,7 @@ static int wcd9335_codec_enable_lineout_pa(struct snd_soc_dapm_widget *w,
 					WCD9335_CDC_RX_PGA_MUTE_DISABLE);
 		break;
 	case SND_SOC_DAPM_POST_PMD:
-		/* 5ms sleep is required after PA is disabled as per
-		 * HW requirement
-		 */
+		 
 		usleep_range(5000, 5500);
 		break;
 	}
@@ -3883,17 +3859,14 @@ static int wcd9335_codec_enable_hphr_pa(struct snd_soc_dapm_widget *w,
 	case SND_SOC_DAPM_PRE_PMU:
 		break;
 	case SND_SOC_DAPM_POST_PMU:
-		/*
-		 * 7ms sleep is required after PA is enabled as per
-		 * HW requirement
-		 */
+		 
 		usleep_range(7000, 7100);
 		wcd9335_codec_hph_post_pa_config(wcd, hph_mode, event);
 		snd_soc_component_update_bits(comp,
 					WCD9335_CDC_RX2_RX_PATH_CTL,
 					WCD9335_CDC_RX_PGA_MUTE_EN_MASK,
 					WCD9335_CDC_RX_PGA_MUTE_DISABLE);
-		/* Remove mix path mute if it is enabled */
+		 
 		if ((snd_soc_component_read(comp,
 					WCD9335_CDC_RX2_RX_PATH_MIX_CTL)) &
 					WCD9335_CDC_RX_PGA_MUTE_EN_MASK)
@@ -3908,9 +3881,7 @@ static int wcd9335_codec_enable_hphr_pa(struct snd_soc_dapm_widget *w,
 		wcd9335_codec_hph_post_pa_config(wcd, hph_mode, event);
 		break;
 	case SND_SOC_DAPM_POST_PMD:
-		/* 5ms sleep is required after PA is disabled as per
-		 * HW requirement
-		 */
+		 
 		usleep_range(5000, 5500);
 		break;
 	}
@@ -3925,15 +3896,13 @@ static int wcd9335_codec_enable_ear_pa(struct snd_soc_dapm_widget *w,
 
 	switch (event) {
 	case SND_SOC_DAPM_POST_PMU:
-		/* 5ms sleep is required after PA is enabled as per
-		 * HW requirement
-		 */
+		 
 		usleep_range(5000, 5500);
 		snd_soc_component_update_bits(comp,
 					WCD9335_CDC_RX0_RX_PATH_CTL,
 					WCD9335_CDC_RX_PGA_MUTE_EN_MASK,
 					WCD9335_CDC_RX_PGA_MUTE_DISABLE);
-		/* Remove mix path mute if it is enabled */
+		 
 		if ((snd_soc_component_read(comp,
 					WCD9335_CDC_RX0_RX_PATH_MIX_CTL)) &
 					WCD9335_CDC_RX_PGA_MUTE_EN_MASK)
@@ -3943,9 +3912,7 @@ static int wcd9335_codec_enable_ear_pa(struct snd_soc_dapm_widget *w,
 					WCD9335_CDC_RX_PGA_MUTE_DISABLE);
 		break;
 	case SND_SOC_DAPM_POST_PMD:
-		/* 5ms sleep is required after PA is disabled as per
-		 * HW requirement
-		 */
+		 
 		usleep_range(5000, 5500);
 
 		break;
@@ -3984,10 +3951,7 @@ static irqreturn_t wcd9335_slimbus_irq(int irq, void *data)
 					(port_id / 8);
 			regmap_read(
 				wcd->if_regmap, reg, &int_val);
-			/*
-			 * Ignore interrupts for ports for which the
-			 * interrupts are not specifically enabled.
-			 */
+			 
 			if (!(int_val & (1 << (port_id % 8))))
 				continue;
 		}
@@ -4060,7 +4024,7 @@ static int wcd9335_setup_irqs(struct wcd9335_codec *wcd)
 		}
 	}
 
-	/* enable interrupts on all slave ports */
+	 
 	for (i = 0; i < WCD9335_SLIM_NUM_PORT_REG; i++)
 		regmap_write(wcd->if_regmap, WCD9335_SLIM_PGD_PORT_INT_EN0 + i,
 			     0xFF);
@@ -4072,7 +4036,7 @@ static void wcd9335_teardown_irqs(struct wcd9335_codec *wcd)
 {
 	int i;
 
-	/* disable interrupts on all slave ports */
+	 
 	for (i = 0; i < WCD9335_SLIM_NUM_PORT_REG; i++)
 		regmap_write(wcd->if_regmap, WCD9335_SLIM_PGD_PORT_INT_EN0 + i,
 			     0x00);
@@ -4108,10 +4072,7 @@ static int wcd9335_enable_master_bias(struct wcd9335_codec *wcd)
 		regmap_update_bits(wcd->regmap, WCD9335_ANA_BIAS,
 					WCD9335_ANA_BIAS_PRECHRG_EN_MASK,
 					WCD9335_ANA_BIAS_PRECHRG_ENABLE);
-		/*
-		 * 1ms delay is required after pre-charge is enabled
-		 * as per HW requirement
-		 */
+		 
 		usleep_range(1000, 1100);
 		regmap_update_bits(wcd->regmap, WCD9335_ANA_BIAS,
 					WCD9335_ANA_BIAS_PRECHRG_EN_MASK,
@@ -4126,7 +4087,7 @@ static int wcd9335_enable_master_bias(struct wcd9335_codec *wcd)
 
 static int wcd9335_enable_mclk(struct wcd9335_codec *wcd)
 {
-	/* Enable mclk requires master bias to be enabled first */
+	 
 	if (wcd->master_bias_users <= 0)
 		return -EINVAL;
 
@@ -4155,10 +4116,7 @@ static int wcd9335_enable_mclk(struct wcd9335_codec *wcd)
 				   WCD9335_CDC_CLK_RST_CTRL_MCLK_CONTROL,
 				   WCD9335_CDC_CLK_RST_CTRL_MCLK_EN_MASK,
 				   WCD9335_CDC_CLK_RST_CTRL_MCLK_ENABLE);
-		/*
-		 * 10us sleep is required after clock is enabled
-		 * as per HW requirement
-		 */
+		 
 		usleep_range(10, 15);
 	}
 
@@ -4174,7 +4132,7 @@ static int wcd9335_disable_mclk(struct wcd9335_codec *wcd)
 
 	if (--wcd->clk_mclk_users == 0) {
 		if (wcd->clk_rco_users > 0) {
-			/* MCLK to RCO switch */
+			 
 			regmap_update_bits(wcd->regmap, WCD9335_ANA_CLK_TOP,
 					WCD9335_ANA_CLK_MCLK_SRC_MASK,
 					WCD9335_ANA_CLK_MCLK_SRC_RCO);
@@ -4224,15 +4182,15 @@ static int wcd9335_cdc_req_mclk_enable(struct wcd9335_codec *wcd,
 				__func__);
 			goto err;
 		}
-		/* get BG */
+		 
 		wcd9335_enable_master_bias(wcd);
-		/* get MCLK */
+		 
 		wcd9335_enable_mclk(wcd);
 
 	} else {
-		/* put MCLK */
+		 
 		wcd9335_disable_mclk(wcd);
-		/* put BG */
+		 
 		wcd9335_disable_master_bias(wcd);
 		clk_disable_unprepare(wcd->mclk);
 		wcd9335_cdc_sido_ccl_enable(wcd, false);
@@ -4250,7 +4208,7 @@ static void wcd9335_codec_apply_sido_voltage(struct wcd9335_codec *wcd,
 	if (req_mv == wcd->sido_voltage)
 		return;
 
-	/* compute the vout_d step value */
+	 
 	vout_d_val = WCD9335_CALCULATE_VOUT_D(req_mv) &
 			WCD9335_ANA_BUCK_VOUT_MASK;
 	snd_soc_component_write(comp, WCD9335_ANA_BUCK_VOUT_D, vout_d_val);
@@ -4258,7 +4216,7 @@ static void wcd9335_codec_apply_sido_voltage(struct wcd9335_codec *wcd,
 				WCD9335_ANA_BUCK_CTL_RAMP_START_MASK,
 				WCD9335_ANA_BUCK_CTL_RAMP_START_ENABLE);
 
-	/* 1 msec sleep required after SIDO Vout_D voltage change */
+	 
 	usleep_range(1000, 1100);
 	wcd->sido_voltage = req_mv;
 	snd_soc_component_update_bits(comp, WCD9335_ANA_BUCK_CTL,
@@ -4271,7 +4229,7 @@ static int wcd9335_codec_update_sido_voltage(struct wcd9335_codec *wcd,
 {
 	int ret = 0;
 
-	/* enable mclk before setting SIDO voltage */
+	 
 	ret = wcd9335_cdc_req_mclk_enable(wcd, true);
 	if (ret) {
 		dev_err(wcd->dev, "Ext clk enable failed\n");
@@ -4323,7 +4281,7 @@ static int wcd9335_codec_enable_mclk(struct snd_soc_dapm_widget *w,
 }
 
 static const struct snd_soc_dapm_widget wcd9335_dapm_widgets[] = {
-	/* TODO SPK1 & SPK2 OUT*/
+	 
 	SND_SOC_DAPM_OUTPUT("EAR"),
 	SND_SOC_DAPM_OUTPUT("HPHL"),
 	SND_SOC_DAPM_OUTPUT("HPHR"),
@@ -4590,7 +4548,7 @@ static const struct snd_soc_dapm_widget wcd9335_dapm_widgets[] = {
 		wcd9335_codec_enable_mclk, SND_SOC_DAPM_PRE_PMU |
 		SND_SOC_DAPM_POST_PMD),
 
-	/* TX */
+	 
 	SND_SOC_DAPM_INPUT("AMIC1"),
 	SND_SOC_DAPM_INPUT("AMIC2"),
 	SND_SOC_DAPM_INPUT("AMIC3"),
@@ -4640,7 +4598,7 @@ static const struct snd_soc_dapm_widget wcd9335_dapm_widgets[] = {
 	SND_SOC_DAPM_ADC_E("ADC6", NULL, WCD9335_ANA_AMIC6, 7, 0,
 			   wcd9335_codec_enable_adc, SND_SOC_DAPM_PRE_PMU),
 
-	/* Digital Mic Inputs */
+	 
 	SND_SOC_DAPM_ADC_E("DMIC0", NULL, SND_SOC_NOPM, 0, 0,
 		wcd9335_codec_enable_dmic, SND_SOC_DAPM_PRE_PMU |
 		SND_SOC_DAPM_POST_PMD),
@@ -4787,12 +4745,12 @@ static void wcd9335_enable_sido_buck(struct snd_soc_component *component)
 	snd_soc_component_update_bits(component, WCD9335_ANA_BUCK_CTL,
 					WCD9335_ANA_BUCK_CTL_VOUT_D_IREF_MASK,
 					WCD9335_ANA_BUCK_CTL_VOUT_D_IREF_EXT);
-	/* 100us sleep needed after IREF settings */
+	 
 	usleep_range(100, 110);
 	snd_soc_component_update_bits(component, WCD9335_ANA_BUCK_CTL,
 					WCD9335_ANA_BUCK_CTL_VOUT_D_VREF_MASK,
 					WCD9335_ANA_BUCK_CTL_VOUT_D_VREF_EXT);
-	/* 100us sleep needed after VREF settings */
+	 
 	usleep_range(100, 110);
 	wcd->sido_input_src = SIDO_SOURCE_RCO_BG;
 }
@@ -4804,10 +4762,7 @@ static int wcd9335_enable_efuse_sensing(struct snd_soc_component *comp)
 				WCD9335_CHIP_TIER_CTRL_EFUSE_CTL,
 				WCD9335_CHIP_TIER_CTRL_EFUSE_EN_MASK,
 				WCD9335_CHIP_TIER_CTRL_EFUSE_ENABLE);
-	/*
-	 * 5ms sleep required after enabling efuse control
-	 * before checking the status.
-	 */
+	 
 	usleep_range(5000, 5500);
 
 	if (!(snd_soc_component_read(comp,
@@ -4826,7 +4781,7 @@ static void wcd9335_codec_init(struct snd_soc_component *component)
 	struct wcd9335_codec *wcd = dev_get_drvdata(component->dev);
 	int i;
 
-	/* ungate MCLK and set clk rate */
+	 
 	regmap_update_bits(wcd->regmap, WCD9335_CODEC_RPM_CLK_GATE,
 				WCD9335_CODEC_RPM_CLK_GATE_MCLK_GATE_MASK, 0);
 
@@ -4850,12 +4805,12 @@ static int wcd9335_codec_probe(struct snd_soc_component *component)
 	int i;
 
 	snd_soc_component_init_regmap(component, wcd->regmap);
-	/* Class-H Init*/
+	 
 	wcd->clsh_ctrl = wcd_clsh_ctrl_alloc(component, WCD9335);
 	if (IS_ERR(wcd->clsh_ctrl))
 		return PTR_ERR(wcd->clsh_ctrl);
 
-	/* Default HPH Mode to Class-H HiFi */
+	 
 	wcd->hph_mode = CLS_H_HIFI;
 	wcd->component = component;
 
@@ -4999,7 +4954,7 @@ static struct regmap_config wcd9335_ifc_regmap_config = {
 };
 
 static const struct regmap_irq wcd9335_codec_irqs[] = {
-	/* INTR_REG 0 */
+	 
 	[WCD9335_IRQ_SLIMBUS] = {
 		.reg_offset = 0,
 		.mask = BIT(0),
@@ -5079,13 +5034,7 @@ static int wcd9335_power_on_reset(struct wcd9335_codec *wcd)
 		return ret;
 	}
 
-	/*
-	 * For WCD9335, it takes about 600us for the Vout_A and
-	 * Vout_D to be ready after BUCK_SIDO is powered up.
-	 * SYS_RST_N shouldn't be pulled high during this time
-	 * Toggle the reset line to make sure the reset pulse is
-	 * correctly applied
-	 */
+	 
 	usleep_range(600, 650);
 
 	gpio_direction_output(wcd->reset_gpio, 0);
@@ -5132,11 +5081,7 @@ static int wcd9335_irq_init(struct wcd9335_codec *wcd)
 {
 	int ret;
 
-	/*
-	 * INTR1 consists of all possible interrupt sources Ear OCP,
-	 * HPH OCP, MBHC, MAD, VBAT, and SVA
-	 * INTR2 is a subset of first interrupt sources MAD, VBAT, and SVA
-	 */
+	 
 	wcd->intr1 = of_irq_get_byname(wcd->dev->of_node, "intr1");
 	if (wcd->intr1 < 0)
 		return dev_err_probe(wcd->dev, wcd->intr1,

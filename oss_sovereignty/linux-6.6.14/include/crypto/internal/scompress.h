@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Synchronous Compression operations
- *
- * Copyright 2015 LG Electronics Inc.
- * Copyright (c) 2016, Intel Corporation
- * Author: Giovanni Cabiddu <giovanni.cabiddu@intel.com>
- */
+ 
+ 
 #ifndef _CRYPTO_SCOMP_INT_H
 #define _CRYPTO_SCOMP_INT_H
 
@@ -20,17 +14,7 @@ struct crypto_scomp {
 	struct crypto_tfm base;
 };
 
-/**
- * struct scomp_alg - synchronous compression algorithm
- *
- * @alloc_ctx:	Function allocates algorithm specific context
- * @free_ctx:	Function frees context allocated with alloc_ctx
- * @compress:	Function performs a compress operation
- * @decompress:	Function performs a de-compress operation
- * @stat:	Statistics for compress algorithm
- * @base:	Common crypto API algorithm data structure
- * @calg:	Cmonn algorithm data structure shared with acomp
- */
+ 
 struct scomp_alg {
 	void *(*alloc_ctx)(struct crypto_scomp *tfm);
 	void (*free_ctx)(struct crypto_scomp *tfm, void *ctx);
@@ -99,26 +83,10 @@ static inline int crypto_scomp_decompress(struct crypto_scomp *tfm,
 						 ctx);
 }
 
-/**
- * crypto_register_scomp() -- Register synchronous compression algorithm
- *
- * Function registers an implementation of a synchronous
- * compression algorithm
- *
- * @alg:	algorithm definition
- *
- * Return: zero on success; error code in case of error
- */
+ 
 int crypto_register_scomp(struct scomp_alg *alg);
 
-/**
- * crypto_unregister_scomp() -- Unregister synchronous compression algorithm
- *
- * Function unregisters an implementation of a synchronous
- * compression algorithm
- *
- * @alg:	algorithm definition
- */
+ 
 void crypto_unregister_scomp(struct scomp_alg *alg);
 
 int crypto_register_scomps(struct scomp_alg *algs, int count);

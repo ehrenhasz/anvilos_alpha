@@ -1,19 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  linux/kernel/compat.c
- *
- *  Kernel compatibililty routines for e.g. 32 bit syscall support
- *  on 64 bit kernels.
- *
- *  Copyright (C) 2002-2003 Stephen Rothwell, IBM Corporation
- */
+
+ 
 
 #include <linux/linkage.h>
 #include <linux/compat.h>
 #include <linux/errno.h>
 #include <linux/time.h>
 #include <linux/signal.h>
-#include <linux/sched.h>	/* for MAX_SCHEDULE_TIMEOUT */
+#include <linux/sched.h>	 
 #include <linux/syscalls.h>
 #include <linux/unistd.h>
 #include <linux/security.h>
@@ -28,10 +21,7 @@
 
 #ifdef __ARCH_WANT_SYS_SIGPROCMASK
 
-/*
- * sys_sigprocmask SIG_SETMASK sets the first (compat) word of the
- * blocked set of signals to the supplied signal set
- */
+ 
 static inline void compat_sig_setmask(sigset_t *blocked, compat_sigset_word set)
 {
 	memcpy(blocked->sig, &set, sizeof(set));
@@ -169,13 +159,7 @@ COMPAT_SYSCALL_DEFINE3(sched_getaffinity, compat_pid_t,  pid, unsigned int, len,
 	return ret;
 }
 
-/*
- * We currently only need the following fields from the sigevent
- * structure: sigev_value, sigev_signo, sig_notify and (sometimes
- * sigev_notify_thread_id).  The others are handled in user mode.
- * We also assume that copying sigev_value.sival_int is sufficient
- * to keep all the bits of sigev_value.sival_ptr intact.
- */
+ 
 int get_compat_sigevent(struct sigevent *event,
 		const struct compat_sigevent __user *u_event)
 {
@@ -195,7 +179,7 @@ long compat_get_bitmap(unsigned long *mask, const compat_ulong_t __user *umask,
 {
 	unsigned long nr_compat_longs;
 
-	/* align bitmap up to nearest compat_long_t boundary */
+	 
 	bitmap_size = ALIGN(bitmap_size, BITS_PER_COMPAT_LONG);
 	nr_compat_longs = BITS_TO_COMPAT_LONGS(bitmap_size);
 
@@ -224,7 +208,7 @@ long compat_put_bitmap(compat_ulong_t __user *umask, unsigned long *mask,
 {
 	unsigned long nr_compat_longs;
 
-	/* align bitmap up to nearest compat_long_t boundary */
+	 
 	bitmap_size = ALIGN(bitmap_size, BITS_PER_COMPAT_LONG);
 	nr_compat_longs = BITS_TO_COMPAT_LONGS(bitmap_size);
 

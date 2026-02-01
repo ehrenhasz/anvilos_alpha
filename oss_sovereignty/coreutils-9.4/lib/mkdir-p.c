@@ -1,22 +1,4 @@
-/* mkdir-p.c -- Ensure that a directory and its parents exist.
-
-   Copyright (C) 1990, 1997-2000, 2002-2007, 2009-2023 Free Software
-   Foundation, Inc.
-
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* Written by Paul Eggert, David MacKenzie, and Jim Meyering.  */
+ 
 
 #include <config.h>
 
@@ -40,46 +22,7 @@
 # define HAVE_FCHMOD false
 #endif
 
-/* Ensure that the directory DIR exists.
-
-   WD is the working directory, as in savewd.c.
-
-   If MAKE_ANCESTOR is not null, create any ancestor directories that
-   don't already exist, by invoking MAKE_ANCESTOR (DIR, ANCESTOR, OPTIONS).
-   This function should return zero if successful, -1 (setting errno)
-   otherwise.  In this case, DIR may be modified by storing '\0' bytes
-   into it, to access the ancestor directories, and this modification
-   is retained on return if the ancestor directories could not be
-   created.
-
-   Create DIR as a new directory, using mkdir with permissions MODE;
-   here, MODE is affected by the umask in the usual way.  It is also
-   OK if MAKE_ANCESTOR is not null and a directory DIR already exists.
-
-   Call ANNOUNCE (DIR, OPTIONS) just after successfully making DIR,
-   even if some of the following actions fail.
-
-   Set DIR's owner to OWNER and group to GROUP, but leave the owner
-   alone if OWNER is (uid_t) -1, and similarly for GROUP.
-
-   Set DIR's mode bits to MODE, except preserve any of the bits that
-   correspond to zero bits in MODE_BITS.  In other words, MODE_BITS is
-   a mask that specifies which of DIR's mode bits should be set or
-   cleared.  Changing the mode in this way is necessary if DIR already
-   existed, if MODE and MODE_BITS specify non-permissions bits like
-   S_ISUID, or if MODE and MODE_BITS specify permissions bits that are
-   masked out by the umask.  MODE_BITS should be a subset of
-   CHMOD_MODE_BITS.
-
-   However, if PRESERVE_EXISTING is true and DIR already exists,
-   do not attempt to set DIR's ownership and file mode bits.
-
-   Return true if DIR exists as a directory with the proper ownership
-   and file mode bits when done, or if a child process has been
-   dispatched to do the real work (though the child process may not
-   have finished yet -- it is the caller's responsibility to handle
-   this).  Report a diagnostic and return false on failure, storing
-   '\0' into *DIR if an ancestor directory had problems.  */
+ 
 
 bool
 make_dir_parents (char *dir,
@@ -113,11 +56,7 @@ make_dir_parents (char *dir,
 
       if (0 <= prefix_len)
         {
-          /* If the ownership might change, or if the directory will be
-             writable to other users and its special mode bits may
-             change after the directory is created, create it with
-             more restrictive permissions at first, so unauthorized
-             users cannot nip in before the directory is ready.  */
+           
           bool keep_owner = owner == (uid_t) -1 && group == (gid_t) -1;
           bool keep_special_mode_bits =
             ((mode_bits & (S_ISUID | S_ISGID)) | (mode & S_ISVTX)) == 0;
@@ -129,8 +68,7 @@ make_dir_parents (char *dir,
 
           if (mkdir (dir + prefix_len, mkdir_mode) == 0)
             {
-              /* True if the caller does not care about the umask's
-                 effect on the permissions.  */
+               
               bool umask_must_be_ok = (mode & mode_bits & S_IRWXUGO) == 0;
 
               announce (dir, options);

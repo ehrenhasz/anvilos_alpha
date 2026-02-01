@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <string.h>
 
 #include <linux/bpf.h>
@@ -31,7 +31,7 @@ int connect6(struct bpf_sock_addr *ctx)
 	struct sockaddr_in6 sa = {};
 	struct svc_addr *orig;
 
-	/* Force local address to [::1]:22223. */
+	 
 	sa.sin6_family = AF_INET6;
 	sa.sin6_port = bpf_htons(22223);
 	sa.sin6_addr.s6_addr32[3] = bpf_htonl(1);
@@ -39,7 +39,7 @@ int connect6(struct bpf_sock_addr *ctx)
 	if (bpf_bind(ctx, (struct sockaddr *)&sa, sizeof(sa)) != 0)
 		return 0;
 
-	/* Rewire service [fc00::1]:60000 to backend [::1]:60124. */
+	 
 	if (ctx->user_port == bpf_htons(60000)) {
 		orig = bpf_sk_storage_get(&service_mapping, ctx->sk, 0,
 					  BPF_SK_STORAGE_GET_F_CREATE);
@@ -67,7 +67,7 @@ int getsockname6(struct bpf_sock_addr *ctx)
 	if (!get_set_sk_priority(ctx))
 		return 1;
 
-	/* Expose local server as [fc00::1]:60000 to client. */
+	 
 	if (ctx->user_port == bpf_htons(60124)) {
 		ctx->user_ip6[0] = bpf_htonl(0xfc000000);
 		ctx->user_ip6[1] = 0;
@@ -86,7 +86,7 @@ int getpeername6(struct bpf_sock_addr *ctx)
 	if (!get_set_sk_priority(ctx))
 		return 1;
 
-	/* Expose service [fc00::1]:60000 as peer instead of backend. */
+	 
 	if (ctx->user_port == bpf_htons(60124)) {
 		orig = bpf_sk_storage_get(&service_mapping, ctx->sk, 0, 0);
 		if (orig) {

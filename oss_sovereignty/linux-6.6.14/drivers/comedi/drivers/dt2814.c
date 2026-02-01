@@ -1,29 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * comedi/drivers/dt2814.c
- * Hardware driver for Data Translation DT2814
- *
- * COMEDI - Linux Control and Measurement Device Interface
- * Copyright (C) 1998 David A. Schleef <ds@schleef.org>
- */
-/*
- * Driver: dt2814
- * Description: Data Translation DT2814
- * Author: ds
- * Status: complete
- * Devices: [Data Translation] DT2814 (dt2814)
- *
- * Configuration options:
- * [0] - I/O port base address
- * [1] - IRQ
- *
- * This card has 16 analog inputs multiplexed onto a 12 bit ADC.  There
- * is a minimally useful onboard clock.  The base frequency for the
- * clock is selected by jumpers, and the clock divider can be selected
- * via programmed I/O.  Unfortunately, the clock divider can only be
- * a power of 10, from 1 to 10^7, of which only 3 or 4 are useful.  In
- * addition, the clock does not seem to be very accurate.
- */
+
+ 
+ 
 
 #include <linux/module.h>
 #include <linux/interrupt.h>
@@ -33,9 +10,7 @@
 #define DT2814_CSR 0
 #define DT2814_DATA 1
 
-/*
- * flags
- */
+ 
 
 #define DT2814_FINISH 0x80
 #define DT2814_ERR 0x40
@@ -44,7 +19,7 @@
 #define DT2814_CHANMASK 0x0f
 
 #define DT2814_TIMEOUT 10
-#define DT2814_MAX_SPEED 100000	/* Arbitrary 10 khz limit */
+#define DT2814_MAX_SPEED 100000	 
 
 static int dt2814_ai_notbusy(struct comedi_device *dev,
 			     struct comedi_subdevice *s,
@@ -66,17 +41,14 @@ static int dt2814_ai_clear(struct comedi_device *dev)
 	unsigned int status = 0;
 	int ret;
 
-	/* Wait until not busy and get status register value. */
+	 
 	ret = comedi_timeout(dev, NULL, NULL, dt2814_ai_notbusy,
 			     (unsigned long)&status);
 	if (ret)
 		return ret;
 
 	if (status & (DT2814_FINISH | DT2814_ERR)) {
-		/*
-		 * There unread data, or the error flag is set.
-		 * Read the data register twice to clear the condition.
-		 */
+		 
 		inb(dev->iobase + DT2814_DATA);
 		inb(dev->iobase + DT2814_DATA);
 	}
@@ -104,7 +76,7 @@ static int dt2814_ai_insn_read(struct comedi_device *dev,
 	int chan;
 	int ret;
 
-	dt2814_ai_clear(dev);	/* clear stale data or error */
+	dt2814_ai_clear(dev);	 
 	for (n = 0; n < insn->n; n++) {
 		chan = CR_CHAN(insn->chanspec);
 
@@ -128,9 +100,9 @@ static int dt2814_ns_to_timer(unsigned int *ns, unsigned int flags)
 	int i;
 	unsigned int f;
 
-	/* XXX ignores flags */
+	 
 
-	f = 10000;		/* ns */
+	f = 10000;		 
 	for (i = 0; i < 8; i++) {
 		if ((2 * (*ns)) < (f * 11))
 			break;
@@ -148,7 +120,7 @@ static int dt2814_ai_cmdtest(struct comedi_device *dev,
 	int err = 0;
 	unsigned int arg;
 
-	/* Step 1 : check if triggers are trivially valid */
+	 
 
 	err |= comedi_check_trigger_src(&cmd->start_src, TRIG_NOW);
 	err |= comedi_check_trigger_src(&cmd->scan_begin_src, TRIG_TIMER);
@@ -159,16 +131,16 @@ static int dt2814_ai_cmdtest(struct comedi_device *dev,
 	if (err)
 		return 1;
 
-	/* Step 2a : make sure trigger sources are unique */
+	 
 
 	err |= comedi_check_trigger_is_unique(cmd->stop_src);
 
-	/* Step 2b : and mutually compatible */
+	 
 
 	if (err)
 		return 2;
 
-	/* Step 3: check if arguments are trivially valid */
+	 
 
 	err |= comedi_check_trigger_arg_is(&cmd->start_arg, 0);
 
@@ -181,13 +153,13 @@ static int dt2814_ai_cmdtest(struct comedi_device *dev,
 
 	if (cmd->stop_src == TRIG_COUNT)
 		err |= comedi_check_trigger_arg_min(&cmd->stop_arg, 2);
-	else	/* TRIG_NONE */
+	else	 
 		err |= comedi_check_trigger_arg_is(&cmd->stop_arg, 0);
 
 	if (err)
 		return 3;
 
-	/* step 4: fix up any arguments */
+	 
 
 	arg = cmd->scan_begin_arg;
 	dt2814_ns_to_timer(&arg, cmd->flags);
@@ -205,7 +177,7 @@ static int dt2814_ai_cmd(struct comedi_device *dev, struct comedi_subdevice *s)
 	int chan;
 	int trigvar;
 
-	dt2814_ai_clear(dev);	/* clear stale data or error */
+	dt2814_ai_clear(dev);	 
 	trigvar = dt2814_ns_to_timer(&cmd->scan_begin_arg, cmd->flags);
 
 	chan = CR_CHAN(cmd->chanlist[0]);
@@ -224,13 +196,7 @@ static int dt2814_ai_cancel(struct comedi_device *dev,
 	spin_lock_irqsave(&dev->spinlock, flags);
 	status = inb(dev->iobase + DT2814_CSR);
 	if (status & DT2814_ENB) {
-		/*
-		 * Clear the timed trigger enable bit.
-		 *
-		 * Note: turning off timed mode triggers another
-		 * sample.  This will be mopped up by the calls to
-		 * dt2814_ai_clear().
-		 */
+		 
 		outb(status & DT2814_CHANMASK, dev->iobase + DT2814_CSR);
 	}
 	spin_unlock_irqrestore(&dev->spinlock, flags);
@@ -257,18 +223,18 @@ static irqreturn_t dt2814_interrupt(int irq, void *d)
 
 	status = inb(dev->iobase + DT2814_CSR);
 	if (!(status & DT2814_ENB)) {
-		/* Timed acquisition not enabled.  Nothing to do. */
+		 
 		spin_unlock(&dev->spinlock);
 		return IRQ_HANDLED;
 	}
 
 	if (!(status & (DT2814_FINISH | DT2814_ERR))) {
-		/* Spurious interrupt? */
+		 
 		spin_unlock(&dev->spinlock);
 		return IRQ_HANDLED;
 	}
 
-	/* Read data or clear error. */
+	 
 	hi = inb(dev->iobase + DT2814_DATA);
 	lo = inb(dev->iobase + DT2814_DATA);
 
@@ -284,13 +250,7 @@ static irqreturn_t dt2814_interrupt(int irq, void *d)
 		}
 	}
 	if (async->events & COMEDI_CB_CANCEL_MASK) {
-		/*
-		 * Disable timed mode.
-		 *
-		 * Note: turning off timed mode triggers another
-		 * sample.  This will be mopped up by the calls to
-		 * dt2814_ai_clear().
-		 */
+		 
 		outb(status & DT2814_CHANMASK, dev->iobase + DT2814_CSR);
 	}
 
@@ -329,10 +289,10 @@ static int dt2814_attach(struct comedi_device *dev, struct comedi_devconfig *it)
 	s = &dev->subdevices[0];
 	s->type = COMEDI_SUBD_AI;
 	s->subdev_flags = SDF_READABLE | SDF_GROUND;
-	s->n_chan = 16;		/* XXX */
+	s->n_chan = 16;		 
 	s->insn_read = dt2814_ai_insn_read;
 	s->maxdata = 0xfff;
-	s->range_table = &range_unknown;	/* XXX */
+	s->range_table = &range_unknown;	 
 	if (dev->irq) {
 		dev->read_subdev = s;
 		s->subdev_flags |= SDF_CMD_READ;
@@ -348,11 +308,7 @@ static int dt2814_attach(struct comedi_device *dev, struct comedi_devconfig *it)
 static void dt2814_detach(struct comedi_device *dev)
 {
 	if (dev->irq) {
-		/*
-		 * An extra conversion triggered on termination of an
-		 * asynchronous command may still be in progress.  Wait for
-		 * it to finish and clear the data or error status.
-		 */
+		 
 		dt2814_ai_clear(dev);
 	}
 	comedi_legacy_detach(dev);

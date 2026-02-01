@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: ISC */
-/*
- * Copyright (C) 2016 Felix Fietkau <nbd@nbd.name>
- */
+ 
+ 
 
 #if !defined(__MT76x02_TRACE_H) || defined(TRACE_HEADER_MULTI_READ)
 #define __MT76x02_TRACE_H

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * ChaCha20-Poly1305 AEAD, RFC7539
- *
- * Copyright (C) 2015 Martin Willi
- */
+
+ 
 
 #include <crypto/internal/aead.h>
 #include <crypto/internal/hash.h>
@@ -25,41 +21,41 @@ struct chachapoly_instance_ctx {
 struct chachapoly_ctx {
 	struct crypto_skcipher *chacha;
 	struct crypto_ahash *poly;
-	/* key bytes we use for the ChaCha20 IV */
+	 
 	unsigned int saltlen;
 	u8 salt[];
 };
 
 struct poly_req {
-	/* zero byte padding for AD/ciphertext, as needed */
+	 
 	u8 pad[POLY1305_BLOCK_SIZE];
-	/* tail data with AD/ciphertext lengths */
+	 
 	struct {
 		__le64 assoclen;
 		__le64 cryptlen;
 	} tail;
 	struct scatterlist src[1];
-	struct ahash_request req; /* must be last member */
+	struct ahash_request req;  
 };
 
 struct chacha_req {
 	u8 iv[CHACHA_IV_SIZE];
 	struct scatterlist src[1];
-	struct skcipher_request req; /* must be last member */
+	struct skcipher_request req;  
 };
 
 struct chachapoly_req_ctx {
 	struct scatterlist src[2];
 	struct scatterlist dst[2];
-	/* the key we generate for Poly1305 using Chacha20 */
+	 
 	u8 key[POLY1305_KEY_SIZE];
-	/* calculated Poly1305 tag */
+	 
 	u8 tag[POLY1305_DIGEST_SIZE];
-	/* length of data to en/decrypt, without ICV */
+	 
 	unsigned int cryptlen;
-	/* Actual AD, excluding IV */
+	 
 	unsigned int assoclen;
-	/* request flags, with MAY_SLEEP cleared if needed */
+	 
 	u32 flags;
 	union {
 		struct poly_req poly;
@@ -155,7 +151,7 @@ static int poly_tail_continue(struct aead_request *req)
 {
 	struct chachapoly_req_ctx *rctx = aead_request_ctx(req);
 
-	if (rctx->cryptlen == req->cryptlen) /* encrypting */
+	if (rctx->cryptlen == req->cryptlen)  
 		return poly_copy_tag(req);
 
 	return chacha_decrypt(req);
@@ -233,7 +229,7 @@ static int poly_cipher(struct aead_request *req)
 	struct scatterlist *crypt = req->src;
 	int err;
 
-	if (rctx->cryptlen == req->cryptlen) /* encrypting */
+	if (rctx->cryptlen == req->cryptlen)  
 		crypt = req->dst;
 
 	crypt = scatterwalk_ffwd(rctx->src, crypt, req->assoclen);
@@ -434,18 +430,7 @@ static int chachapoly_encrypt(struct aead_request *req)
 	rctx->cryptlen = req->cryptlen;
 	rctx->flags = aead_request_flags(req);
 
-	/* encrypt call chain:
-	 * - chacha_encrypt/done()
-	 * - poly_genkey/done()
-	 * - poly_init/done()
-	 * - poly_setkey/done()
-	 * - poly_ad/done()
-	 * - poly_adpad/done()
-	 * - poly_cipher/done()
-	 * - poly_cipherpad/done()
-	 * - poly_tail/done/continue()
-	 * - poly_copy_tag()
-	 */
+	 
 	return chacha_encrypt(req);
 }
 
@@ -456,18 +441,7 @@ static int chachapoly_decrypt(struct aead_request *req)
 	rctx->cryptlen = req->cryptlen - POLY1305_DIGEST_SIZE;
 	rctx->flags = aead_request_flags(req);
 
-	/* decrypt call chain:
-	 * - poly_genkey/done()
-	 * - poly_init/done()
-	 * - poly_setkey/done()
-	 * - poly_ad/done()
-	 * - poly_adpad/done()
-	 * - poly_cipher/done()
-	 * - poly_cipherpad/done()
-	 * - poly_tail/done/continue()
-	 * - chacha_decrypt/done()
-	 * - poly_verify_tag()
-	 */
+	 
 	return poly_genkey(req);
 }
 
@@ -590,10 +564,10 @@ static int chachapoly_create(struct crypto_template *tmpl, struct rtattr **tb,
 	err = -EINVAL;
 	if (poly->digestsize != POLY1305_DIGEST_SIZE)
 		goto err_free_inst;
-	/* Need 16-byte IV size, including Initial Block Counter value */
+	 
 	if (crypto_skcipher_alg_ivsize(chacha) != CHACHA_IV_SIZE)
 		goto err_free_inst;
-	/* Not a stream cipher? */
+	 
 	if (chacha->base.cra_blocksize != 1)
 		goto err_free_inst;
 

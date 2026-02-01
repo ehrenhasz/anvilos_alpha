@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * drivers/rtc/rtc-pl031.c
- *
- * Real Time Clock interface for ARM AMBA PrimeCell 031 RTC
- *
- * Author: Deepak Saxena <dsaxena@plexity.net>
- *
- * Copyright 2006 (c) MontaVista Software, Inc.
- *
- * Author: Mian Yousaf Kaukab <mian.yousaf.kaukab@stericsson.com>
- * Copyright 2010 (c) ST-Ericsson AB
- */
+
+ 
 #include <linux/module.h>
 #include <linux/rtc.h>
 #include <linux/init.h>
@@ -22,59 +11,49 @@
 #include <linux/pm_wakeirq.h>
 #include <linux/slab.h>
 
-/*
- * Register definitions
- */
-#define	RTC_DR		0x00	/* Data read register */
-#define	RTC_MR		0x04	/* Match register */
-#define	RTC_LR		0x08	/* Data load register */
-#define	RTC_CR		0x0c	/* Control register */
-#define	RTC_IMSC	0x10	/* Interrupt mask and set register */
-#define	RTC_RIS		0x14	/* Raw interrupt status register */
-#define	RTC_MIS		0x18	/* Masked interrupt status register */
-#define	RTC_ICR		0x1c	/* Interrupt clear register */
-/* ST variants have additional timer functionality */
-#define RTC_TDR		0x20	/* Timer data read register */
-#define RTC_TLR		0x24	/* Timer data load register */
-#define RTC_TCR		0x28	/* Timer control register */
-#define RTC_YDR		0x30	/* Year data read register */
-#define RTC_YMR		0x34	/* Year match register */
-#define RTC_YLR		0x38	/* Year data load register */
+ 
+#define	RTC_DR		0x00	 
+#define	RTC_MR		0x04	 
+#define	RTC_LR		0x08	 
+#define	RTC_CR		0x0c	 
+#define	RTC_IMSC	0x10	 
+#define	RTC_RIS		0x14	 
+#define	RTC_MIS		0x18	 
+#define	RTC_ICR		0x1c	 
+ 
+#define RTC_TDR		0x20	 
+#define RTC_TLR		0x24	 
+#define RTC_TCR		0x28	 
+#define RTC_YDR		0x30	 
+#define RTC_YMR		0x34	 
+#define RTC_YLR		0x38	 
 
-#define RTC_CR_EN	(1 << 0)	/* counter enable bit */
-#define RTC_CR_CWEN	(1 << 26)	/* Clockwatch enable bit */
+#define RTC_CR_EN	(1 << 0)	 
+#define RTC_CR_CWEN	(1 << 26)	 
 
-#define RTC_TCR_EN	(1 << 1) /* Periodic timer enable bit */
+#define RTC_TCR_EN	(1 << 1)  
 
-/* Common bit definitions for Interrupt status and control registers */
-#define RTC_BIT_AI	(1 << 0) /* Alarm interrupt bit */
-#define RTC_BIT_PI	(1 << 1) /* Periodic interrupt bit. ST variants only. */
+ 
+#define RTC_BIT_AI	(1 << 0)  
+#define RTC_BIT_PI	(1 << 1)  
 
-/* Common bit definations for ST v2 for reading/writing time */
+ 
 #define RTC_SEC_SHIFT 0
-#define RTC_SEC_MASK (0x3F << RTC_SEC_SHIFT) /* Second [0-59] */
+#define RTC_SEC_MASK (0x3F << RTC_SEC_SHIFT)  
 #define RTC_MIN_SHIFT 6
-#define RTC_MIN_MASK (0x3F << RTC_MIN_SHIFT) /* Minute [0-59] */
+#define RTC_MIN_MASK (0x3F << RTC_MIN_SHIFT)  
 #define RTC_HOUR_SHIFT 12
-#define RTC_HOUR_MASK (0x1F << RTC_HOUR_SHIFT) /* Hour [0-23] */
+#define RTC_HOUR_MASK (0x1F << RTC_HOUR_SHIFT)  
 #define RTC_WDAY_SHIFT 17
-#define RTC_WDAY_MASK (0x7 << RTC_WDAY_SHIFT) /* Day of Week [1-7] 1=Sunday */
+#define RTC_WDAY_MASK (0x7 << RTC_WDAY_SHIFT)  
 #define RTC_MDAY_SHIFT 20
-#define RTC_MDAY_MASK (0x1F << RTC_MDAY_SHIFT) /* Day of Month [1-31] */
+#define RTC_MDAY_MASK (0x1F << RTC_MDAY_SHIFT)  
 #define RTC_MON_SHIFT 25
-#define RTC_MON_MASK (0xF << RTC_MON_SHIFT) /* Month [1-12] 1=January */
+#define RTC_MON_MASK (0xF << RTC_MON_SHIFT)  
 
 #define RTC_TIMER_FREQ 32768
 
-/**
- * struct pl031_vendor_data - per-vendor variations
- * @ops: the vendor-specific operations used on this silicon version
- * @clockwatch: if this is an ST Microelectronics silicon version with a
- *	clockwatch function
- * @st_weekday: if this is an ST Microelectronics silicon version that need
- *	the weekday fix
- * @irqflags: special IRQ flags per variant
- */
+ 
 struct pl031_vendor_data {
 	struct rtc_class_ops ops;
 	bool clockwatch;
@@ -96,7 +75,7 @@ static int pl031_alarm_irq_enable(struct device *dev,
 	struct pl031_local *ldata = dev_get_drvdata(dev);
 	unsigned long imsc;
 
-	/* Clear any pending alarm interrupts. */
+	 
 	writel(RTC_BIT_AI, ldata->base + RTC_ICR);
 
 	imsc = readl(ldata->base + RTC_IMSC);
@@ -109,9 +88,7 @@ static int pl031_alarm_irq_enable(struct device *dev,
 	return 0;
 }
 
-/*
- * Convert Gregorian date to ST v2 RTC format.
- */
+ 
 static int pl031_stv2_tm_to_time(struct device *dev,
 				 struct rtc_time *tm, unsigned long *st_time,
 	unsigned long *bcd_year)
@@ -119,12 +96,12 @@ static int pl031_stv2_tm_to_time(struct device *dev,
 	int year = tm->tm_year + 1900;
 	int wday = tm->tm_wday;
 
-	/* wday masking is not working in hardware so wday must be valid */
+	 
 	if (wday < -1 || wday > 6) {
 		dev_err(dev, "invalid wday value %d\n", tm->tm_wday);
 		return -EINVAL;
 	} else if (wday == -1) {
-		/* wday is not provided, calculate it here */
+		 
 		struct rtc_time calc_tm;
 
 		rtc_time64_to_tm(rtc_tm_to_time64(tm), &calc_tm);
@@ -143,9 +120,7 @@ static int pl031_stv2_tm_to_time(struct device *dev,
 	return 0;
 }
 
-/*
- * Convert ST v2 RTC format to Gregorian date.
- */
+ 
 static int pl031_stv2_time_to_tm(unsigned long st_time, unsigned long bcd_year,
 	struct rtc_time *tm)
 {
@@ -326,17 +301,14 @@ static int pl031_probe(struct amba_device *adev, const struct amba_id *id)
 	dev_dbg(&adev->dev, "revision = 0x%01x\n", amba_rev(adev));
 
 	data = readl(ldata->base + RTC_CR);
-	/* Enable the clockwatch on ST Variants */
+	 
 	if (vendor->clockwatch)
 		data |= RTC_CR_CWEN;
 	else
 		data |= RTC_CR_EN;
 	writel(data, ldata->base + RTC_CR);
 
-	/*
-	 * On ST PL031 variants, the RTC reset value does not provide correct
-	 * weekday for 2000-01-01. Correct the erroneous sunday to saturday.
-	 */
+	 
 	if (vendor->st_weekday) {
 		if (readl(ldata->base + RTC_YDR) == 0x2000) {
 			time = readl(ldata->base + RTC_DR);
@@ -384,7 +356,7 @@ err_req:
 	return ret;
 }
 
-/* Operations for the original ARM version */
+ 
 static struct pl031_vendor_data arm_pl031 = {
 	.ops = {
 		.read_time = pl031_read_time,
@@ -396,7 +368,7 @@ static struct pl031_vendor_data arm_pl031 = {
 	.range_max = U32_MAX,
 };
 
-/* The First ST derivative */
+ 
 static struct pl031_vendor_data stv1_pl031 = {
 	.ops = {
 		.read_time = pl031_read_time,
@@ -410,7 +382,7 @@ static struct pl031_vendor_data stv1_pl031 = {
 	.range_max = U32_MAX,
 };
 
-/* And the second ST derivative */
+ 
 static struct pl031_vendor_data stv2_pl031 = {
 	.ops = {
 		.read_time = pl031_stv2_read_time,
@@ -421,12 +393,7 @@ static struct pl031_vendor_data stv2_pl031 = {
 	},
 	.clockwatch = true,
 	.st_weekday = true,
-	/*
-	 * This variant shares the IRQ with another block and must not
-	 * suspend that IRQ line.
-	 * TODO check if it shares with IRQF_NO_SUSPEND user, else we can
-	 * remove IRQF_COND_SUSPEND
-	 */
+	 
 	.irqflags = IRQF_SHARED | IRQF_COND_SUSPEND,
 	.range_min = RTC_TIMESTAMP_BEGIN_0000,
 	.range_max = RTC_TIMESTAMP_END_9999,
@@ -438,7 +405,7 @@ static const struct amba_id pl031_ids[] = {
 		.mask = 0x000fffff,
 		.data = &arm_pl031,
 	},
-	/* ST Micro variants */
+	 
 	{
 		.id = 0x00180031,
 		.mask = 0x00ffffff,

@@ -1,33 +1,4 @@
-/*
- * Copyright(c) 2011-2016 Intel Corporation. All rights reserved.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice (including the next
- * paragraph) shall be included in all copies or substantial portions of the
- * Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- *
- * Authors:
- *    Kevin Tian <kevin.tian@intel.com>
- *    Zhi Wang <zhi.a.wang@intel.com>
- *
- * Contributors:
- *    Min he <min.he@intel.com>
- *
- */
+ 
 
 #include <linux/eventfd.h>
 
@@ -36,7 +7,7 @@
 #include "gvt.h"
 #include "trace.h"
 
-/* common offset among interrupt control registers */
+ 
 #define regbase_to_isr(base)	(base)
 #define regbase_to_imr(base)	(base + 0x4)
 #define regbase_to_iir(base)	(base + 0x8)
@@ -161,20 +132,7 @@ static inline struct intel_gvt_irq_info *regbase_to_irq_info(
 	return NULL;
 }
 
-/**
- * intel_vgpu_reg_imr_handler - Generic IMR register emulation write handler
- * @vgpu: a vGPU
- * @reg: register offset written by guest
- * @p_data: register data written by guest
- * @bytes: register data length
- *
- * This function is used to emulate the generic IMR register bit change
- * behavior.
- *
- * Returns:
- * Zero on success, negative error code if failed.
- *
- */
+ 
 int intel_vgpu_reg_imr_handler(struct intel_vgpu *vgpu,
 	unsigned int reg, void *p_data, unsigned int bytes)
 {
@@ -192,19 +150,7 @@ int intel_vgpu_reg_imr_handler(struct intel_vgpu *vgpu,
 	return 0;
 }
 
-/**
- * intel_vgpu_reg_master_irq_handler - master IRQ write emulation handler
- * @vgpu: a vGPU
- * @reg: register offset written by guest
- * @p_data: register data written by guest
- * @bytes: register data length
- *
- * This function is used to emulate the master IRQ register on gen8+.
- *
- * Returns:
- * Zero on success, negative error code if failed.
- *
- */
+ 
 int intel_vgpu_reg_master_irq_handler(struct intel_vgpu *vgpu,
 	unsigned int reg, void *p_data, unsigned int bytes)
 {
@@ -216,11 +162,7 @@ int intel_vgpu_reg_master_irq_handler(struct intel_vgpu *vgpu,
 	trace_write_ir(vgpu->id, "MASTER_IRQ", reg, ier, virtual_ier,
 		       (virtual_ier ^ ier));
 
-	/*
-	 * GEN8_MASTER_IRQ is a special irq register,
-	 * only bit 31 is allowed to be modified
-	 * and treated as an IER bit.
-	 */
+	 
 	ier &= GEN8_MASTER_IRQ_CONTROL;
 	virtual_ier &= GEN8_MASTER_IRQ_CONTROL;
 	vgpu_vreg(vgpu, reg) &= ~GEN8_MASTER_IRQ_CONTROL;
@@ -231,19 +173,7 @@ int intel_vgpu_reg_master_irq_handler(struct intel_vgpu *vgpu,
 	return 0;
 }
 
-/**
- * intel_vgpu_reg_ier_handler - Generic IER write emulation handler
- * @vgpu: a vGPU
- * @reg: register offset written by guest
- * @p_data: register data written by guest
- * @bytes: register data length
- *
- * This function is used to emulate the generic IER register behavior.
- *
- * Returns:
- * Zero on success, negative error code if failed.
- *
- */
+ 
 int intel_vgpu_reg_ier_handler(struct intel_vgpu *vgpu,
 	unsigned int reg, void *p_data, unsigned int bytes)
 {
@@ -270,19 +200,7 @@ int intel_vgpu_reg_ier_handler(struct intel_vgpu *vgpu,
 	return 0;
 }
 
-/**
- * intel_vgpu_reg_iir_handler - Generic IIR write emulation handler
- * @vgpu: a vGPU
- * @reg: register offset written by guest
- * @p_data: register data written by guest
- * @bytes: register data length
- *
- * This function is used to emulate the generic IIR register behavior.
- *
- * Returns:
- * Zero on success, negative error code if failed.
- *
- */
+ 
 int intel_vgpu_reg_iir_handler(struct intel_vgpu *vgpu, unsigned int reg,
 	void *p_data, unsigned int bytes)
 {
@@ -398,7 +316,7 @@ static void init_irq_map(struct intel_gvt_irq *irq)
 	}
 }
 
-/* =======================vEvent injection===================== */
+ 
 
 #define MSI_CAP_CONTROL(offset) (offset + 2)
 #define MSI_CAP_ADDRESS(offset) (offset + 4)
@@ -415,7 +333,7 @@ static int inject_virtual_interrupt(struct intel_vgpu *vgpu)
 	addr = *(u32 *)(vgpu_cfg_space(vgpu) + MSI_CAP_ADDRESS(offset));
 	data = *(u16 *)(vgpu_cfg_space(vgpu) + MSI_CAP_DATA(offset));
 
-	/* Do not generate MSI if MSIEN is disabled */
+	 
 	if (!(control & MSI_CAP_EN))
 		return 0;
 
@@ -424,15 +342,7 @@ static int inject_virtual_interrupt(struct intel_vgpu *vgpu)
 
 	trace_inject_msi(vgpu->id, addr, data);
 
-	/*
-	 * When guest is powered off, msi_trigger is set to NULL, but vgpu's
-	 * config and mmio register isn't restored to default during guest
-	 * poweroff. If this vgpu is still used in next vm, this vgpu's pipe
-	 * may be enabled, then once this vgpu is active, it will get inject
-	 * vblank interrupt request. But msi_trigger is null until msi is
-	 * enabled by guest. so if msi_trigger is null, success is still
-	 * returned and don't inject interrupt into guest.
-	 */
+	 
 	if (!test_bit(INTEL_VGPU_STATUS_ATTACHED, vgpu->status))
 		return -ESRCH;
 	if (vgpu->msi_trigger && eventfd_signal(vgpu->msi_trigger, 1) != 1)
@@ -462,7 +372,7 @@ static void propagate_event(struct intel_gvt_irq *irq,
 	}
 }
 
-/* =======================vEvent Handlers===================== */
+ 
 static void handle_default_event_virt(struct intel_gvt_irq *irq,
 	enum intel_gvt_event_type event, struct intel_vgpu *vgpu)
 {
@@ -474,8 +384,8 @@ static void handle_default_event_virt(struct intel_gvt_irq *irq,
 	propagate_event(irq, event, vgpu);
 }
 
-/* =====================GEN specific logic======================= */
-/* GEN8 interrupt routines. */
+ 
+ 
 
 #define DEFINE_GVT_GEN8_INTEL_GVT_IRQ_INFO(regname, regbase) \
 static struct intel_gvt_irq_info gen8_##regname##_info = { \
@@ -563,9 +473,9 @@ static void gen8_init_irq(
 	SET_IRQ_GROUP(irq, INTEL_GVT_IRQ_INFO_PCU, &gen8_pcu_info);
 	SET_IRQ_GROUP(irq, INTEL_GVT_IRQ_INFO_PCH, &gvt_base_pch_info);
 
-	/* GEN8 level 2 interrupts. */
+	 
 
-	/* GEN8 interrupt GT0 events */
+	 
 	SET_BIT_INFO(irq, 0, RCS_MI_USER_INTERRUPT, INTEL_GVT_IRQ_INFO_GT0);
 	SET_BIT_INFO(irq, 4, RCS_PIPE_CONTROL, INTEL_GVT_IRQ_INFO_GT0);
 	SET_BIT_INFO(irq, 8, RCS_AS_CONTEXT_SWITCH, INTEL_GVT_IRQ_INFO_GT0);
@@ -574,7 +484,7 @@ static void gen8_init_irq(
 	SET_BIT_INFO(irq, 20, BCS_MI_FLUSH_DW, INTEL_GVT_IRQ_INFO_GT0);
 	SET_BIT_INFO(irq, 24, BCS_AS_CONTEXT_SWITCH, INTEL_GVT_IRQ_INFO_GT0);
 
-	/* GEN8 interrupt GT1 events */
+	 
 	SET_BIT_INFO(irq, 0, VCS_MI_USER_INTERRUPT, INTEL_GVT_IRQ_INFO_GT1);
 	SET_BIT_INFO(irq, 4, VCS_MI_FLUSH_DW, INTEL_GVT_IRQ_INFO_GT1);
 	SET_BIT_INFO(irq, 8, VCS_AS_CONTEXT_SWITCH, INTEL_GVT_IRQ_INFO_GT1);
@@ -588,7 +498,7 @@ static void gen8_init_irq(
 			INTEL_GVT_IRQ_INFO_GT1);
 	}
 
-	/* GEN8 interrupt GT3 events */
+	 
 	SET_BIT_INFO(irq, 0, VECS_MI_USER_INTERRUPT, INTEL_GVT_IRQ_INFO_GT3);
 	SET_BIT_INFO(irq, 4, VECS_MI_FLUSH_DW, INTEL_GVT_IRQ_INFO_GT3);
 	SET_BIT_INFO(irq, 8, VECS_AS_CONTEXT_SWITCH, INTEL_GVT_IRQ_INFO_GT3);
@@ -597,14 +507,14 @@ static void gen8_init_irq(
 	SET_BIT_INFO(irq, 0, PIPE_B_VBLANK, INTEL_GVT_IRQ_INFO_DE_PIPE_B);
 	SET_BIT_INFO(irq, 0, PIPE_C_VBLANK, INTEL_GVT_IRQ_INFO_DE_PIPE_C);
 
-	/* GEN8 interrupt DE PORT events */
+	 
 	SET_BIT_INFO(irq, 0, AUX_CHANNEL_A, INTEL_GVT_IRQ_INFO_DE_PORT);
 	SET_BIT_INFO(irq, 3, DP_A_HOTPLUG, INTEL_GVT_IRQ_INFO_DE_PORT);
 
-	/* GEN8 interrupt DE MISC events */
+	 
 	SET_BIT_INFO(irq, 0, GSE, INTEL_GVT_IRQ_INFO_DE_MISC);
 
-	/* PCH events */
+	 
 	SET_BIT_INFO(irq, 17, GMBUS, INTEL_GVT_IRQ_INFO_PCH);
 	SET_BIT_INFO(irq, 19, CRT_HOTPLUG, INTEL_GVT_IRQ_INFO_PCH);
 	SET_BIT_INFO(irq, 21, DP_B_HOTPLUG, INTEL_GVT_IRQ_INFO_PCH);
@@ -638,7 +548,7 @@ static void gen8_init_irq(
 		SET_BIT_INFO(irq, 4, SPRITE_C_FLIP_DONE, INTEL_GVT_IRQ_INFO_DE_PIPE_C);
 	}
 
-	/* GEN8 interrupt PCU events */
+	 
 	SET_BIT_INFO(irq, 24, PCU_THERMAL, INTEL_GVT_IRQ_INFO_PCU);
 	SET_BIT_INFO(irq, 25, PCU_PCODE2DRIVER_MAILBOX, INTEL_GVT_IRQ_INFO_PCU);
 }
@@ -648,16 +558,7 @@ static const struct intel_gvt_irq_ops gen8_irq_ops = {
 	.check_pending_irq = gen8_check_pending_irq,
 };
 
-/**
- * intel_vgpu_trigger_virtual_event - Trigger a virtual event for a vGPU
- * @vgpu: a vGPU
- * @event: interrupt event
- *
- * This function is used to trigger a virtual interrupt event for vGPU.
- * The caller provides the event to be triggered, the framework itself
- * will emulate the IRQ register bit change.
- *
- */
+ 
 void intel_vgpu_trigger_virtual_event(struct intel_vgpu *vgpu,
 	enum intel_gvt_event_type event)
 {
@@ -686,16 +587,7 @@ static void init_events(
 	}
 }
 
-/**
- * intel_gvt_init_irq - initialize GVT-g IRQ emulation subsystem
- * @gvt: a GVT device
- *
- * This function is called at driver loading stage, to initialize the GVT-g IRQ
- * emulation subsystem.
- *
- * Returns:
- * Zero on success, negative error code if failed.
- */
+ 
 int intel_gvt_init_irq(struct intel_gvt *gvt)
 {
 	struct intel_gvt_irq *irq = &gvt->irq;
@@ -705,10 +597,10 @@ int intel_gvt_init_irq(struct intel_gvt *gvt)
 	irq->ops = &gen8_irq_ops;
 	irq->irq_map = gen8_irq_map;
 
-	/* common event initialization */
+	 
 	init_events(irq);
 
-	/* gen specific initialization */
+	 
 	irq->ops->init_irq(irq);
 
 	init_irq_map(irq);

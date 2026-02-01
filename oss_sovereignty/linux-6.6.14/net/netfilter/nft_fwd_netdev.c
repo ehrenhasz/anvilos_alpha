@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2015 Pablo Neira Ayuso <pablo@netfilter.org>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/init.h>
@@ -29,7 +27,7 @@ static void nft_fwd_netdev_eval(const struct nft_expr *expr,
 	int oif = regs->data[priv->sreg_dev];
 	struct sk_buff *skb = pkt->skb;
 
-	/* This is used by ifb only. */
+	 
 	skb->skb_iif = skb->dev->ifindex;
 	skb_set_redirected(skb, nft_hook(pkt) == NF_NETDEV_INGRESS);
 

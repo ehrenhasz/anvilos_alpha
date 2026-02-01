@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2012-2016, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/completion.h>
@@ -22,7 +20,7 @@
 
 #include <dt-bindings/iio/qcom,spmi-vadc.h>
 
-/* VADC register and bit definitions */
+ 
 #define VADC_REVISION2				0x1
 #define VADC_REVISION2_SUPPORTED_VADC		1
 
@@ -67,25 +65,12 @@
 #define VADC_PERH_RESET_CTL3			0xda
 #define VADC_FOLLOW_WARM_RB			BIT(2)
 
-#define VADC_DATA				0x60	/* 16 bits */
+#define VADC_DATA				0x60	 
 
 #define VADC_CHAN_MIN			VADC_USBIN
 #define VADC_CHAN_MAX			VADC_LR_MUX3_BUF_PU1_PU2_XO_THERM
 
-/**
- * struct vadc_channel_prop - VADC channel property.
- * @channel: channel number, refer to the channel list.
- * @calibration: calibration type.
- * @decimation: sampling rate supported for the channel.
- * @prescale: channel scaling performed on the input signal.
- * @hw_settle_time: the time between AMUX being configured and the
- *	start of conversion.
- * @avg_samples: ability to provide single result from the ADC
- *	that is an average of multiple measurements.
- * @scale_fn_type: Represents the scaling function to convert voltage
- *	physical units desired by the client for the channel.
- * @channel_name: Channel name used in device tree.
- */
+ 
 struct vadc_channel_prop {
 	unsigned int channel;
 	enum vadc_calibration calibration;
@@ -97,20 +82,7 @@ struct vadc_channel_prop {
 	const char *channel_name;
 };
 
-/**
- * struct vadc_priv - VADC private structure.
- * @regmap: pointer to struct regmap.
- * @dev: pointer to struct device.
- * @base: base address for the ADC peripheral.
- * @nchannels: number of VADC channels.
- * @chan_props: array of VADC channel properties.
- * @iio_chans: array of IIO channels specification.
- * @are_ref_measured: are reference points measured.
- * @poll_eoc: use polling instead of interrupt.
- * @complete: VADC result notification after interrupt is received.
- * @graph: store parameters for calibration.
- * @lock: ADC lock for access to the peripheral.
- */
+ 
 struct vadc_priv {
 	struct regmap		 *regmap;
 	struct device		 *dev;
@@ -213,25 +185,25 @@ static int vadc_configure(struct vadc_priv *vadc,
 	u8 decimation, mode_ctrl;
 	int ret;
 
-	/* Mode selection */
+	 
 	mode_ctrl = (VADC_OP_MODE_NORMAL << VADC_OP_MODE_SHIFT) |
 		     VADC_ADC_TRIM_EN | VADC_AMUX_TRIM_EN;
 	ret = vadc_write(vadc, VADC_MODE_CTL, mode_ctrl);
 	if (ret)
 		return ret;
 
-	/* Channel selection */
+	 
 	ret = vadc_write(vadc, VADC_ADC_CH_SEL_CTL, prop->channel);
 	if (ret)
 		return ret;
 
-	/* Digital parameter setup */
+	 
 	decimation = prop->decimation << VADC_ADC_DIG_DEC_RATIO_SEL_SHIFT;
 	ret = vadc_write(vadc, VADC_ADC_DIG_PARAM, decimation);
 	if (ret)
 		return ret;
 
-	/* HW settle time delay */
+	 
 	ret = vadc_write(vadc, VADC_HW_SETTLE_DELAY, prop->hw_settle_time);
 	if (ret)
 		return ret;
@@ -334,7 +306,7 @@ static int vadc_do_conversion(struct vadc_priv *vadc,
 			goto err_disable;
 		}
 
-		/* Double check conversion status */
+		 
 		ret = vadc_poll_wait_eoc(vadc, VADC_CONV_TIME_MIN_US);
 		if (ret)
 			goto err_disable;
@@ -365,7 +337,7 @@ static int vadc_measure_ref_points(struct vadc_priv *vadc)
 	if (ret)
 		goto err;
 
-	/* Try with buffered 625mV channel first */
+	 
 	prop = vadc_get_channel(vadc, VADC_SPARE1);
 	if (!prop)
 		prop = vadc_get_channel(vadc, VADC_REF_625MV);
@@ -382,7 +354,7 @@ static int vadc_measure_ref_points(struct vadc_priv *vadc)
 	vadc->graph[VADC_CALIB_ABSOLUTE].dy = read_1 - read_2;
 	vadc->graph[VADC_CALIB_ABSOLUTE].gnd = read_2;
 
-	/* Ratiometric calibration */
+	 
 	prop = vadc_get_channel(vadc, VADC_VDD_VADC);
 	ret = vadc_do_conversion(vadc, prop, &read_1);
 	if (ret)
@@ -552,11 +524,7 @@ struct vadc_channels {
 		  BIT(IIO_CHAN_INFO_RAW),				\
 		  _pre)							\
 
-/*
- * The array represents all possible ADC channels found in the supported PMICs.
- * Every index in the array is equal to the channel number per datasheet. The
- * gaps in the array should be treated as reserved channels.
- */
+ 
 static const struct vadc_channels vadc_chans[] = {
 	VADC_CHAN_VOLT(USBIN, 4, SCALE_DEFAULT)
 	VADC_CHAN_VOLT(DCIN, 4, SCALE_DEFAULT)
@@ -684,7 +652,7 @@ static int vadc_get_fw_channel_data(struct device *dev,
 		label = vadc_chans[chan].datasheet_name;
 	prop->channel_name = label;
 
-	/* the channel has DT description */
+	 
 	prop->channel = chan;
 
 	ret = fwnode_property_read_u32(fwnode, "qcom,decimation", &value);
@@ -796,7 +764,7 @@ static int vadc_get_fw_data(struct vadc_priv *vadc)
 		iio_chan++;
 	}
 
-	/* These channels are mandatory, they are used as reference points */
+	 
 	if (!vadc_get_channel(vadc, VADC_REF_1250MV)) {
 		dev_err(vadc->dev, "Please define 1.25V channel\n");
 		return -ENODEV;

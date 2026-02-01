@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2010 Felix Fietkau <nbd@openwrt.org>
- */
+
+ 
 #include <linux/netdevice.h>
 #include <linux/types.h>
 #include <linux/skbuff.h>
@@ -115,7 +113,7 @@ minstrel_ht_stats_dump(struct minstrel_ht_sta *mi, int i, char *p)
 
 		p += sprintf(p, "  %3u  ", idx);
 
-		/* tx_time[rate(i)] in usec */
+		 
 		duration = mg->duration[j];
 		duration <<= mg->shift;
 		tx_time = DIV_ROUND_CLOSEST(duration, 1000);

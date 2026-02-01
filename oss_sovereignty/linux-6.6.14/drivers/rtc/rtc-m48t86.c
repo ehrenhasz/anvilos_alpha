@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * ST M48T86 / Dallas DS12887 RTC driver
- * Copyright (c) 2006 Tower Technologies
- *
- * Author: Alessandro Zummo <a.zummo@towertech.it>
- *
- * This drivers only supports the clock running in BCD and 24H mode.
- * If it will be ever adapted to binary and 12H mode, care must be taken
- * to not introduce bugs.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/mod_devicetable.h>
@@ -23,10 +14,10 @@
 #define M48T86_MINALRM		0x03
 #define M48T86_HOUR		0x04
 #define M48T86_HOURALRM		0x05
-#define M48T86_DOW		0x06 /* 1 = sunday */
+#define M48T86_DOW		0x06  
 #define M48T86_DOM		0x07
-#define M48T86_MONTH		0x08 /* 1 - 12 */
-#define M48T86_YEAR		0x09 /* 0 - 99 */
+#define M48T86_MONTH		0x08  
+#define M48T86_YEAR		0x09  
 #define M48T86_A		0x0a
 #define M48T86_B		0x0b
 #define M48T86_B_SET		BIT(7)
@@ -71,29 +62,29 @@ static int m48t86_rtc_read_time(struct device *dev, struct rtc_time *tm)
 	reg = m48t86_readb(dev, M48T86_B);
 
 	if (reg & M48T86_B_DM) {
-		/* data (binary) mode */
+		 
 		tm->tm_sec	= m48t86_readb(dev, M48T86_SEC);
 		tm->tm_min	= m48t86_readb(dev, M48T86_MIN);
 		tm->tm_hour	= m48t86_readb(dev, M48T86_HOUR) & 0x3f;
 		tm->tm_mday	= m48t86_readb(dev, M48T86_DOM);
-		/* tm_mon is 0-11 */
+		 
 		tm->tm_mon	= m48t86_readb(dev, M48T86_MONTH) - 1;
 		tm->tm_year	= m48t86_readb(dev, M48T86_YEAR) + 100;
 		tm->tm_wday	= m48t86_readb(dev, M48T86_DOW);
 	} else {
-		/* bcd mode */
+		 
 		tm->tm_sec	= bcd2bin(m48t86_readb(dev, M48T86_SEC));
 		tm->tm_min	= bcd2bin(m48t86_readb(dev, M48T86_MIN));
 		tm->tm_hour	= bcd2bin(m48t86_readb(dev, M48T86_HOUR) &
 					  0x3f);
 		tm->tm_mday	= bcd2bin(m48t86_readb(dev, M48T86_DOM));
-		/* tm_mon is 0-11 */
+		 
 		tm->tm_mon	= bcd2bin(m48t86_readb(dev, M48T86_MONTH)) - 1;
 		tm->tm_year	= bcd2bin(m48t86_readb(dev, M48T86_YEAR)) + 100;
 		tm->tm_wday	= bcd2bin(m48t86_readb(dev, M48T86_DOW));
 	}
 
-	/* correct the hour if the clock is in 12h mode */
+	 
 	if (!(reg & M48T86_B_H24))
 		if (m48t86_readb(dev, M48T86_HOUR) & 0x80)
 			tm->tm_hour += 12;
@@ -107,12 +98,12 @@ static int m48t86_rtc_set_time(struct device *dev, struct rtc_time *tm)
 
 	reg = m48t86_readb(dev, M48T86_B);
 
-	/* update flag and 24h mode */
+	 
 	reg |= M48T86_B_SET | M48T86_B_H24;
 	m48t86_writeb(dev, reg, M48T86_B);
 
 	if (reg & M48T86_B_DM) {
-		/* data (binary) mode */
+		 
 		m48t86_writeb(dev, tm->tm_sec, M48T86_SEC);
 		m48t86_writeb(dev, tm->tm_min, M48T86_MIN);
 		m48t86_writeb(dev, tm->tm_hour, M48T86_HOUR);
@@ -121,7 +112,7 @@ static int m48t86_rtc_set_time(struct device *dev, struct rtc_time *tm)
 		m48t86_writeb(dev, tm->tm_year % 100, M48T86_YEAR);
 		m48t86_writeb(dev, tm->tm_wday, M48T86_DOW);
 	} else {
-		/* bcd mode */
+		 
 		m48t86_writeb(dev, bin2bcd(tm->tm_sec), M48T86_SEC);
 		m48t86_writeb(dev, bin2bcd(tm->tm_min), M48T86_MIN);
 		m48t86_writeb(dev, bin2bcd(tm->tm_hour), M48T86_HOUR);
@@ -131,7 +122,7 @@ static int m48t86_rtc_set_time(struct device *dev, struct rtc_time *tm)
 		m48t86_writeb(dev, bin2bcd(tm->tm_wday), M48T86_DOW);
 	}
 
-	/* update ended */
+	 
 	reg &= ~M48T86_B_SET;
 	m48t86_writeb(dev, reg, M48T86_B);
 
@@ -185,13 +176,7 @@ static int m48t86_nvram_write(void *priv, unsigned int off, void *buf,
 	return 0;
 }
 
-/*
- * The RTC is an optional feature at purchase time on some Technologic Systems
- * boards. Verify that it actually exists by checking if the last two bytes
- * of the NVRAM can be changed.
- *
- * This is based on the method used in their rtc7800.c example.
- */
+ 
 static bool m48t86_verify_chip(struct platform_device *pdev)
 {
 	unsigned int offset0 = M48T86_NVRAM(M48T86_NVRAM_LEN - 2);
@@ -262,7 +247,7 @@ static int m48t86_rtc_probe(struct platform_device *pdev)
 
 	devm_rtc_nvmem_register(info->rtc, &m48t86_nvmem_cfg);
 
-	/* read battery status */
+	 
 	reg = m48t86_readb(&pdev->dev, M48T86_D);
 	dev_info(&pdev->dev, "battery %s\n",
 		 (reg & M48T86_D_VRT) ? "ok" : "exhausted");
@@ -272,7 +257,7 @@ static int m48t86_rtc_probe(struct platform_device *pdev)
 
 static const struct of_device_id m48t86_rtc_of_ids[] = {
 	{ .compatible = "st,m48t86" },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, m48t86_rtc_of_ids);
 

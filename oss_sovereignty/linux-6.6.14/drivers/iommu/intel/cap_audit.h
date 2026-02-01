@@ -1,15 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * cap_audit.h - audit iommu capabilities header
- *
- * Copyright (C) 2021 Intel Corporation
- *
- * Author: Kyung Min Park <kyung.min.park@intel.com>
- */
+ 
+ 
 
-/*
- * Capability Register Mask
- */
+ 
 #define CAP_FL5LP_MASK		BIT_ULL(60)
 #define CAP_PI_MASK		BIT_ULL(59)
 #define CAP_FL1GP_MASK		BIT_ULL(56)
@@ -30,9 +22,7 @@
 #define CAP_AFL_MASK		BIT_ULL(3)
 #define CAP_NDOMS_MASK		GENMASK_ULL(2, 0)
 
-/*
- * Extended Capability Register Mask
- */
+ 
 #define ECAP_RPS_MASK		BIT_ULL(49)
 #define ECAP_SMPWC_MASK		BIT_ULL(48)
 #define ECAP_FLTS_MASK		BIT_ULL(47)
@@ -60,10 +50,7 @@
 #define ECAP_QI_MASK		BIT_ULL(1)
 #define ECAP_C_MASK		BIT_ULL(0)
 
-/*
- * u64 intel_iommu_cap_sanity, intel_iommu_ecap_sanity will be adjusted as each
- * IOMMU gets audited.
- */
+ 
 #define DO_CHECK_FEATURE_MISMATCH(a, b, cap, feature, MASK) \
 do { \
 	if (cap##_##feature(a) != cap##_##feature(b)) { \

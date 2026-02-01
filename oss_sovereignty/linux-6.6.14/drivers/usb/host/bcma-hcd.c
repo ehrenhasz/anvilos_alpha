@@ -1,23 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Broadcom specific Advanced Microcontroller Bus
- * Broadcom USB-core driver (BCMA bus glue)
- *
- * Copyright 2011-2015 Hauke Mehrtens <hauke@hauke-m.de>
- * Copyright 2015 Felix Fietkau <nbd@openwrt.org>
- *
- * Based on ssb-ohci driver
- * Copyright 2007 Michael Buesch <m@bues.ch>
- *
- * Derived from the OHCI-PCI driver
- * Copyright 1999 Roman Weissgaerber
- * Copyright 2000-2002 David Brownell
- * Copyright 1999 Linus Torvalds
- * Copyright 1999 Gregory P. Smith
- *
- * Derived from the USBcore related parts of Broadcom-SB
- * Copyright 2005-2011 Broadcom Corporation
- */
+
+ 
 #include <linux/bcma/bcma.h>
 #include <linux/delay.h>
 #include <linux/gpio/consumer.h>
@@ -34,7 +16,7 @@ MODULE_AUTHOR("Hauke Mehrtens");
 MODULE_DESCRIPTION("Common USB driver for BCMA Bus");
 MODULE_LICENSE("GPL");
 
-/* See BCMA_CLKCTLST_EXTRESREQ and BCMA_CLKCTLST_EXTRESST */
+ 
 #define USB_BCMA_CLKCTLST_USB_CLK_REQ			0x00000100
 
 struct bcma_hcd_device {
@@ -44,9 +26,7 @@ struct bcma_hcd_device {
 	struct gpio_desc *gpio_desc;
 };
 
-/* Wait for bitmask in a register to get set or cleared.
- * timeout is in units of ten-microseconds.
- */
+ 
 static int bcma_wait_bits(struct bcma_device *dev, u16 reg, u32 bitmask,
 			  int timeout)
 {
@@ -66,23 +46,21 @@ static int bcma_wait_bits(struct bcma_device *dev, u16 reg, u32 bitmask,
 static void bcma_hcd_4716wa(struct bcma_device *dev)
 {
 #ifdef CONFIG_BCMA_DRIVER_MIPS
-	/* Work around for 4716 failures. */
+	 
 	if (dev->bus->chipinfo.id == 0x4716) {
 		u32 tmp;
 
 		tmp = bcma_cpu_clock(&dev->bus->drv_mips);
 		if (tmp >= 480000000)
-			tmp = 0x1846b; /* set CDR to 0x11(fast) */
+			tmp = 0x1846b;  
 		else if (tmp == 453000000)
-			tmp = 0x1046b; /* set CDR to 0x10(slow) */
+			tmp = 0x1046b;  
 		else
 			tmp = 0;
 
-		/* Change Shim mdio control reg to fix host not acking at
-		 * high frequencies
-		 */
+		 
 		if (tmp) {
-			bcma_write32(dev, 0x524, 0x1); /* write sel to enable */
+			bcma_write32(dev, 0x524, 0x1);  
 			udelay(500);
 
 			bcma_write32(dev, 0x524, tmp);
@@ -93,42 +71,33 @@ static void bcma_hcd_4716wa(struct bcma_device *dev)
 			bcma_write32(dev, 0x528, 0x80000000);
 		}
 	}
-#endif /* CONFIG_BCMA_DRIVER_MIPS */
+#endif  
 }
 
-/* based on arch/mips/brcm-boards/bcm947xx/pcibios.c */
+ 
 static void bcma_hcd_init_chip_mips(struct bcma_device *dev)
 {
 	u32 tmp;
 
-	/*
-	 * USB 2.0 special considerations:
-	 *
-	 * 1. Since the core supports both OHCI and EHCI functions, it must
-	 *    only be reset once.
-	 *
-	 * 2. In addition to the standard SI reset sequence, the Host Control
-	 *    Register must be programmed to bring the USB core and various
-	 *    phy components out of reset.
-	 */
+	 
 	if (!bcma_core_is_enabled(dev)) {
 		bcma_core_enable(dev, 0);
 		mdelay(10);
 		if (dev->id.rev >= 5) {
-			/* Enable Misc PLL */
+			 
 			tmp = bcma_read32(dev, 0x1e0);
 			tmp |= 0x100;
 			bcma_write32(dev, 0x1e0, tmp);
 			if (bcma_wait_bits(dev, 0x1e0, 1 << 24, 100))
 				printk(KERN_EMERG "Failed to enable misc PPL!\n");
 
-			/* Take out of resets */
+			 
 			bcma_write32(dev, 0x200, 0x4ff);
 			udelay(25);
 			bcma_write32(dev, 0x200, 0x6ff);
 			udelay(25);
 
-			/* Make sure digital and AFE are locked in USB PHY */
+			 
 			bcma_write32(dev, 0x524, 0x6b);
 			udelay(50);
 			tmp = bcma_read32(dev, 0x524);
@@ -156,7 +125,7 @@ static void bcma_hcd_init_chip_mips(struct bcma_device *dev)
 			bcma_write32(dev, 0x200, 0x7ff);
 			udelay(10);
 
-			/* Take USB and HSIC out of non-driving modes */
+			 
 			bcma_write32(dev, 0x510, 0);
 		} else {
 			bcma_write32(dev, 0x200, 0x7ff);
@@ -168,14 +137,7 @@ static void bcma_hcd_init_chip_mips(struct bcma_device *dev)
 	}
 }
 
-/*
- * bcma_hcd_usb20_old_arm_init - Initialize old USB 2.0 controller on ARM
- *
- * Old USB 2.0 core is identified as BCMA_CORE_USB20_HOST and was introduced
- * long before Northstar devices. It seems some cheaper chipsets like BCM53573
- * still use it.
- * Initialization of this old core differs between MIPS and ARM.
- */
+ 
 static int bcma_hcd_usb20_old_arm_init(struct bcma_hcd_device *usb_dev)
 {
 	struct bcma_device *core = usb_dev->core;
@@ -192,7 +154,7 @@ static int bcma_hcd_usb20_old_arm_init(struct bcma_hcd_device *usb_dev)
 		return -ENOENT;
 	}
 
-	/* Take USB core out of reset */
+	 
 	bcma_awrite32(core, BCMA_IOCTL, BCMA_IOCTL_CLK | BCMA_IOCTL_FGC);
 	usleep_range(100, 200);
 	bcma_awrite32(core, BCMA_RESET_CTL, BCMA_RESET_CTL_RESET);
@@ -202,7 +164,7 @@ static int bcma_hcd_usb20_old_arm_init(struct bcma_hcd_device *usb_dev)
 	bcma_awrite32(core, BCMA_IOCTL, BCMA_IOCTL_CLK);
 	usleep_range(100, 200);
 
-	/* Enable Misc PLL */
+	 
 	bcma_write32(core, BCMA_CLKCTLST, BCMA_CLKCTLST_FORCEHT |
 					  BCMA_CLKCTLST_HQCLKREQ |
 					  USB_BCMA_CLKCTLST_USB_CLK_REQ);
@@ -212,7 +174,7 @@ static int bcma_hcd_usb20_old_arm_init(struct bcma_hcd_device *usb_dev)
 	bcma_write32(core, 0x510, 0xc7f85003);
 	usleep_range(300, 600);
 
-	/* Program USB PHY PLL parameters */
+	 
 	bcma_write32(pmu_core, BCMA_CC_PMU_PLLCTL_ADDR, 0x6);
 	bcma_write32(pmu_core, BCMA_CC_PMU_PLLCTL_DATA, 0x005360c1);
 	usleep_range(100, 200);
@@ -225,7 +187,7 @@ static int bcma_hcd_usb20_old_arm_init(struct bcma_hcd_device *usb_dev)
 	bcma_write32(core, 0x510, 0x7f8d007);
 	udelay(1000);
 
-	/* Take controller out of reset */
+	 
 	bcma_write32(core, 0x200, 0x4ff);
 	usleep_range(25, 50);
 	bcma_write32(core, 0x200, 0x6ff);
@@ -242,28 +204,22 @@ static void bcma_hcd_usb20_ns_init_hc(struct bcma_device *dev)
 {
 	u32 val;
 
-	/* Set packet buffer OUT threshold */
+	 
 	val = bcma_read32(dev, 0x94);
 	val &= 0xffff;
 	val |= 0x80 << 16;
 	bcma_write32(dev, 0x94, val);
 
-	/* Enable break memory transfer */
+	 
 	val = bcma_read32(dev, 0x9c);
 	val |= 1;
 	bcma_write32(dev, 0x9c, val);
 
-	/*
-	 * Broadcom initializes PHY and then waits to ensure HC is ready to be
-	 * configured. In our case the order is reversed. We just initialized
-	 * controller and we let HCD initialize PHY, so let's wait (sleep) now.
-	 */
+	 
 	usleep_range(1000, 2000);
 }
 
-/*
- * bcma_hcd_usb20_ns_init - Initialize Northstar USB 2.0 controller
- */
+ 
 static int bcma_hcd_usb20_ns_init(struct bcma_hcd_device *bcma_hcd)
 {
 	struct bcma_device *core = bcma_hcd->core;
@@ -353,7 +309,7 @@ static int bcma_hcd_usb20_init(struct bcma_hcd_device *usb_dev)
 
 	bcma_hcd_init_chip_mips(dev);
 
-	/* In AI chips EHCI is addrspace 0, OHCI is 1 */
+	 
 	ohci_addr = dev->addr_s[0];
 	if ((chipinfo->id == BCMA_CHIP_ID_BCM5357 ||
 	     chipinfo->id == BCMA_CHIP_ID_BCM4749)
@@ -398,7 +354,7 @@ static int bcma_hcd_probe(struct bcma_device *core)
 	int err;
 	struct bcma_hcd_device *usb_dev;
 
-	/* TODO: Probably need checks here; is the core connected? */
+	 
 
 	usb_dev = devm_kzalloc(&core->dev, sizeof(struct bcma_hcd_device),
 			       GFP_KERNEL);
@@ -475,10 +431,10 @@ static int bcma_hcd_resume(struct bcma_device *dev)
 	return 0;
 }
 
-#else /* !CONFIG_PM */
+#else  
 #define bcma_hcd_suspend	NULL
 #define bcma_hcd_resume	NULL
-#endif /* CONFIG_PM */
+#endif  
 
 static const struct bcma_device_id bcma_hcd_table[] = {
 	BCMA_CORE(BCMA_MANUF_BCM, BCMA_CORE_USB20_HOST, BCMA_ANY_REV, BCMA_ANY_CLASS),

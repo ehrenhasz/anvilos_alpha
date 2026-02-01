@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Motorola CPCAP PMIC regulator driver
- *
- * Based on cpcap-regulator.c from Motorola Linux kernel tree
- * Copyright (C) 2009-2011 Motorola, Inc.
- *
- * Rewritten for mainline kernel to use device tree and regmap
- * Copyright (C) 2017 Tony Lindgren <tony@atomide.com>
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/module.h>
@@ -19,12 +11,9 @@
 #include <linux/regulator/of_regulator.h>
 #include <linux/mfd/motorola-cpcap.h>
 
-/*
- * Resource assignment register bits. These seem to control the state
- * idle modes adn are used at least for omap4.
- */
+ 
 
-/* CPCAP_REG_ASSIGN2 bits - Resource Assignment 2 */
+ 
 #define CPCAP_BIT_VSDIO_SEL		BIT(15)
 #define CPCAP_BIT_VDIG_SEL		BIT(14)
 #define CPCAP_BIT_VCAM_SEL		BIT(13)
@@ -35,7 +24,7 @@
 #define CPCAP_BIT_SW2_SEL		BIT(8)
 #define CPCAP_BIT_SW1_SEL		BIT(7)
 
-/* CPCAP_REG_ASSIGN3 bits - Resource Assignment 3 */
+ 
 #define CPCAP_BIT_VUSBINT2_SEL		BIT(15)
 #define CPCAP_BIT_VUSBINT1_SEL		BIT(14)
 #define CPCAP_BIT_VVIB_SEL		BIT(13)
@@ -53,15 +42,10 @@
 #define CPCAP_BIT_VWLAN2_SEL		BIT(1)
 #define CPCAP_BIT_VRF2_SEL		BIT(0)
 
-/* CPCAP_REG_ASSIGN4 bits - Resource Assignment 4 */
+ 
 #define CPCAP_BIT_VAUDIO_SEL		BIT(0)
 
-/*
- * Enable register bits. At least CPCAP_BIT_AUDIO_LOW_PWR is generic,
- * and not limited to audio regulator. Let's use the Motorola kernel
- * naming for now until we have a better understanding of the other
- * enable register bits. No idea why BIT(3) is not defined.
- */
+ 
 #define CPCAP_BIT_AUDIO_LOW_PWR		BIT(6)
 #define CPCAP_BIT_AUD_LOWPWR_SPEED	BIT(5)
 #define CPCAP_BIT_VAUDIOPRISTBY		BIT(4)
@@ -71,23 +55,10 @@
 
 #define CPCAP_BIT_AUDIO_NORMAL_MODE	0x00
 
-/*
- * Off mode configuration bit. Used currently only by SW5 on omap4. There's
- * the following comment in Motorola Linux kernel tree for it:
- *
- * When set in the regulator mode, the regulator assignment will be changed
- * to secondary when the regulator is disabled. The mode will be set back to
- * primary when the regulator is turned on.
- */
+ 
 #define CPCAP_REG_OFF_MODE_SEC		BIT(15)
 
-/*
- * SoC specific configuration for CPCAP regulator. There are at least three
- * different SoCs each with their own parameters: omap3, omap4 and tegra2.
- *
- * The assign_reg and assign_mask seem to allow toggling between primary
- * and secondary mode that at least omap4 uses for off mode.
- */
+ 
 struct cpcap_regulator {
 	struct regulator_desc rdesc;
 	const u16 assign_reg;
@@ -154,10 +125,7 @@ enum cpcap_regulator_id {
 	CPCAP_NR_REGULATORS,
 };
 
-/*
- * We need to also configure regulator idle mode for SoC off mode if
- * CPCAP_REG_OFF_MODE_SEC is set.
- */
+ 
 static int cpcap_regulator_enable(struct regulator_dev *rdev)
 {
 	struct cpcap_regulator *regulator = rdev_get_drvdata(rdev);
@@ -178,10 +146,7 @@ static int cpcap_regulator_enable(struct regulator_dev *rdev)
 	return error;
 }
 
-/*
- * We need to also configure regulator idle mode for SoC off mode if
- * CPCAP_REG_OFF_MODE_SEC is set.
- */
+ 
 static int cpcap_regulator_disable(struct regulator_dev *rdev)
 {
 	struct cpcap_regulator *regulator = rdev_get_drvdata(rdev);
@@ -303,7 +268,7 @@ static const unsigned int vsdio_val_tbl[] = { 1500000, 1600000, 1800000,
 					      2900000, 3000000, };
 static const unsigned int vpll_val_tbl[] = { 1200000, 1300000, 1400000,
 					     1800000, };
-/* Quirk: 2775000 is before 2500000 for vrf1 regulator */
+ 
 static const unsigned int vrf1_val_tbl[] = { 2775000, 2500000, };
 static const unsigned int vrf2_val_tbl[] = { 0, 2775000, };
 static const unsigned int vrfref_val_tbl[] = { 2500000, 2775000, };
@@ -317,15 +282,7 @@ static const unsigned int vvib_val_tbl[] = { 1300000, 1800000, 2000000,
 static const unsigned int vusb_val_tbl[] = { 0, 3300000, };
 static const unsigned int vaudio_val_tbl[] = { 0, 2775000, };
 
-/*
- * SoC specific configuration for omap4. The data below is comes from Motorola
- * Linux kernel tree. It's basically the values of cpcap_regltr_data,
- * cpcap_regulator_mode_values and cpcap_regulator_off_mode_values, see
- * CPCAP_REG macro above.
- *
- * SW1 to SW4 and SW6 seems to be unused for mapphone. Note that VSIM and
- * VSIMCARD have a shared resource assignment bit.
- */
+ 
 static const struct cpcap_regulator omap4_regulators[] = {
 	CPCAP_REG(SW1, CPCAP_REG_S1C1, CPCAP_REG_ASSIGN2,
 		  CPCAP_BIT_SW1_SEL, unknown_val_tbl,
@@ -399,7 +356,7 @@ static const struct cpcap_regulator omap4_regulators[] = {
 	CPCAP_REG(VAUDIO, CPCAP_REG_VAUDIOC, CPCAP_REG_ASSIGN4,
 		  CPCAP_BIT_VAUDIO_SEL, vaudio_val_tbl,
 		  0x16, 0x1, 0x4, 0, 0),
-	{ /* sentinel */ },
+	{   },
 };
 
 static const struct cpcap_regulator xoom_regulators[] = {
@@ -475,7 +432,7 @@ static const struct cpcap_regulator xoom_regulators[] = {
 	CPCAP_REG(VAUDIO, CPCAP_REG_VAUDIOC, CPCAP_REG_ASSIGN4,
 		  CPCAP_BIT_VAUDIO_SEL, vaudio_val_tbl,
 		  0x16, 0x1, 0x4, 0, 0),
-	{ /* sentinel */ },
+	{   },
 };
 
 static const struct of_device_id cpcap_regulator_id_table[] = {

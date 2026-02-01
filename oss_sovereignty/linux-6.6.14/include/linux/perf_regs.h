@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _LINUX_PERF_REGS_H
 #define _LINUX_PERF_REGS_H
 
@@ -46,5 +46,5 @@ static inline void perf_get_regs_user(struct perf_regs *regs_user,
 	regs_user->regs = task_pt_regs(current);
 	regs_user->abi = perf_reg_abi(current);
 }
-#endif /* CONFIG_HAVE_PERF_REGS */
-#endif /* _LINUX_PERF_REGS_H */
+#endif  
+#endif  

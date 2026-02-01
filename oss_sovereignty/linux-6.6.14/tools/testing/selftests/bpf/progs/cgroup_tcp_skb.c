@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2023 Meta Platforms, Inc. and affiliates. */
+
+ 
 #include <linux/bpf.h>
 #include <bpf/bpf_endian.h>
 #include <bpf/bpf_helpers.h>
@@ -44,7 +44,7 @@ int needed_tcp_pkt(struct __sk_buff *skb, struct tcphdr *tcph)
 	return 1;
 }
 
-/* Run accept() on a socket in the cgroup to receive a new connection. */
+ 
 static int egress_accept(struct tcphdr *tcph)
 {
 	if (g_sock_state ==  SYN_RECV_SENDING_SYN_ACK) {
@@ -80,7 +80,7 @@ static int ingress_accept(struct tcphdr *tcph)
 	return 1;
 }
 
-/* Run connect() on a socket in the cgroup to start a new connection. */
+ 
 static int egress_connect(struct tcphdr *tcph)
 {
 	if (g_sock_state == INIT) {
@@ -107,7 +107,7 @@ static int ingress_connect(struct tcphdr *tcph)
 	return 0;
 }
 
-/* The connection is closed by the peer outside the cgroup. */
+ 
 static int egress_close_remote(struct tcphdr *tcph)
 {
 	switch (g_sock_state) {
@@ -152,7 +152,7 @@ static int ingress_close_remote(struct tcphdr *tcph)
 	return 1;
 }
 
-/* The connection is closed by the endpoint inside the cgroup. */
+ 
 static int egress_close_local(struct tcphdr *tcph)
 {
 	switch (g_sock_state) {
@@ -197,11 +197,7 @@ static int ingress_close_local(struct tcphdr *tcph)
 	return 1;
 }
 
-/* Check the types of outgoing packets of a server socket to make sure they
- * are consistent with the state of the server socket.
- *
- * The connection is closed by the client side.
- */
+ 
 SEC("cgroup_skb/egress")
 int server_egress(struct __sk_buff *skb)
 {
@@ -212,7 +208,7 @@ int server_egress(struct __sk_buff *skb)
 
 	g_packet_count++;
 
-	/* Egress of the server socket. */
+	 
 	if (egress_accept(&tcph) || egress_close_remote(&tcph))
 		return 1;
 
@@ -220,11 +216,7 @@ int server_egress(struct __sk_buff *skb)
 	return 1;
 }
 
-/* Check the types of incoming packets of a server socket to make sure they
- * are consistent with the state of the server socket.
- *
- * The connection is closed by the client side.
- */
+ 
 SEC("cgroup_skb/ingress")
 int server_ingress(struct __sk_buff *skb)
 {
@@ -235,7 +227,7 @@ int server_ingress(struct __sk_buff *skb)
 
 	g_packet_count++;
 
-	/* Ingress of the server socket. */
+	 
 	if (ingress_accept(&tcph) || ingress_close_remote(&tcph))
 		return 1;
 
@@ -243,11 +235,7 @@ int server_ingress(struct __sk_buff *skb)
 	return 1;
 }
 
-/* Check the types of outgoing packets of a server socket to make sure they
- * are consistent with the state of the server socket.
- *
- * The connection is closed by the server side.
- */
+ 
 SEC("cgroup_skb/egress")
 int server_egress_srv(struct __sk_buff *skb)
 {
@@ -258,7 +246,7 @@ int server_egress_srv(struct __sk_buff *skb)
 
 	g_packet_count++;
 
-	/* Egress of the server socket. */
+	 
 	if (egress_accept(&tcph) || egress_close_local(&tcph))
 		return 1;
 
@@ -266,11 +254,7 @@ int server_egress_srv(struct __sk_buff *skb)
 	return 1;
 }
 
-/* Check the types of incoming packets of a server socket to make sure they
- * are consistent with the state of the server socket.
- *
- * The connection is closed by the server side.
- */
+ 
 SEC("cgroup_skb/ingress")
 int server_ingress_srv(struct __sk_buff *skb)
 {
@@ -281,7 +265,7 @@ int server_ingress_srv(struct __sk_buff *skb)
 
 	g_packet_count++;
 
-	/* Ingress of the server socket. */
+	 
 	if (ingress_accept(&tcph) || ingress_close_local(&tcph))
 		return 1;
 
@@ -289,11 +273,7 @@ int server_ingress_srv(struct __sk_buff *skb)
 	return 1;
 }
 
-/* Check the types of outgoing packets of a client socket to make sure they
- * are consistent with the state of the client socket.
- *
- * The connection is closed by the server side.
- */
+ 
 SEC("cgroup_skb/egress")
 int client_egress_srv(struct __sk_buff *skb)
 {
@@ -304,7 +284,7 @@ int client_egress_srv(struct __sk_buff *skb)
 
 	g_packet_count++;
 
-	/* Egress of the server socket. */
+	 
 	if (egress_connect(&tcph) || egress_close_remote(&tcph))
 		return 1;
 
@@ -312,11 +292,7 @@ int client_egress_srv(struct __sk_buff *skb)
 	return 1;
 }
 
-/* Check the types of incoming packets of a client socket to make sure they
- * are consistent with the state of the client socket.
- *
- * The connection is closed by the server side.
- */
+ 
 SEC("cgroup_skb/ingress")
 int client_ingress_srv(struct __sk_buff *skb)
 {
@@ -327,7 +303,7 @@ int client_ingress_srv(struct __sk_buff *skb)
 
 	g_packet_count++;
 
-	/* Ingress of the server socket. */
+	 
 	if (ingress_connect(&tcph) || ingress_close_remote(&tcph))
 		return 1;
 
@@ -335,11 +311,7 @@ int client_ingress_srv(struct __sk_buff *skb)
 	return 1;
 }
 
-/* Check the types of outgoing packets of a client socket to make sure they
- * are consistent with the state of the client socket.
- *
- * The connection is closed by the client side.
- */
+ 
 SEC("cgroup_skb/egress")
 int client_egress(struct __sk_buff *skb)
 {
@@ -350,7 +322,7 @@ int client_egress(struct __sk_buff *skb)
 
 	g_packet_count++;
 
-	/* Egress of the server socket. */
+	 
 	if (egress_connect(&tcph) || egress_close_local(&tcph))
 		return 1;
 
@@ -358,11 +330,7 @@ int client_egress(struct __sk_buff *skb)
 	return 1;
 }
 
-/* Check the types of incoming packets of a client socket to make sure they
- * are consistent with the state of the client socket.
- *
- * The connection is closed by the client side.
- */
+ 
 SEC("cgroup_skb/ingress")
 int client_ingress(struct __sk_buff *skb)
 {
@@ -373,7 +341,7 @@ int client_ingress(struct __sk_buff *skb)
 
 	g_packet_count++;
 
-	/* Ingress of the server socket. */
+	 
 	if (ingress_connect(&tcph) || ingress_close_local(&tcph))
 		return 1;
 

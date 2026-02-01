@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2016 Intel Corporation
- */
+ 
+ 
 
 #ifndef __MOCK_ENGINE_H__
 #define __MOCK_ENGINE_H__
@@ -29,4 +27,4 @@ void mock_engine_flush(struct intel_engine_cs *engine);
 void mock_engine_reset(struct intel_engine_cs *engine);
 void mock_engine_free(struct intel_engine_cs *engine);
 
-#endif /* !__MOCK_ENGINE_H__ */
+#endif  

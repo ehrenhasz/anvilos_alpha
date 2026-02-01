@@ -1,14 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Stowaway keyboard driver for Linux
- */
 
-/*
- *  Copyright (c) 2006 Marek Vasut
- *
- *  Based on Newton keyboard driver for Linux
- *  by Justin Cormack
- */
+ 
+
+ 
 
 #include <linux/slab.h>
 #include <linux/module.h>

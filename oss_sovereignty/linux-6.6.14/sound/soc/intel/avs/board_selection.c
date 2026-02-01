@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0-only
-//
-// Copyright(c) 2021-2022 Intel Corporation. All rights reserved.
-//
-// Authors: Cezary Rojewski <cezary.rojewski@intel.com>
-//          Amadeusz Slawinski <amadeuszx.slawinski@linux.intel.com>
-//
+
+
+
+
+
+
+
 
 #include <linux/acpi.h>
 #include <linux/module.h>
@@ -69,7 +69,7 @@ static struct snd_soc_acpi_mach *dmi_match_quirk(void *arg)
 #define AVS_SSP(x)		(BIT(x))
 #define AVS_SSP_RANGE(a, b)	(GENMASK(b, a))
 
-/* supported I2S board codec configurations */
+ 
 static struct snd_soc_acpi_mach avs_skl_i2s_machines[] = {
 	{
 		.id = "INT343A",
@@ -193,7 +193,7 @@ static struct snd_soc_acpi_mach avs_apl_i2s_machines[] = {
 		.mach_params = {
 			.i2s_link_mask = AVS_SSP_RANGE(0, 5),
 		},
-		.pdata = (unsigned long[]){ 0, 0, 0x14, 0, 0, 0 }, /* SSP2 TDMs */
+		.pdata = (unsigned long[]){ 0, 0, 0x14, 0, 0, 0 },  
 		.tplg_filename = "tdf8532-tplg.bin",
 	},
 	{
@@ -270,7 +270,7 @@ static struct snd_soc_acpi_mach avs_test_i2s_machines[] = {
 		},
 		.tplg_filename = "i2s-test-tplg.bin",
 	},
-	/* no NULL terminator, as we depend on ARRAY SIZE due to .id == NULL */
+	 
 };
 
 struct avs_acpi_boards {
@@ -281,7 +281,7 @@ struct avs_acpi_boards {
 #define AVS_MACH_ENTRY(_id, _mach) \
 	{ .id = PCI_DEVICE_ID_INTEL_##_id, .machs = (_mach), }
 
-/* supported I2S boards per platform */
+ 
 static const struct avs_acpi_boards i2s_boards[] = {
 	AVS_MACH_ENTRY(HDA_SKL_LP, avs_skl_i2s_machines),
 	AVS_MACH_ENTRY(HDA_KBL_LP, avs_kbl_i2s_machines),
@@ -301,7 +301,7 @@ static const struct avs_acpi_boards *avs_get_i2s_boards(struct avs_dev *adev)
 	return NULL;
 }
 
-/* platform devices owned by AVS audio are removed with this hook */
+ 
 static void board_pdev_unregister(void *data)
 {
 	platform_device_unregister(data);
@@ -438,7 +438,7 @@ static int avs_register_i2s_boards(struct avs_dev *adev)
 		int i, num_ssps;
 
 		num_ssps = adev->hw_cfg.i2s_caps.ctrl_count;
-		/* constrain just in case FW says there can be more SSPs than possible */
+		 
 		num_ssps = min_t(int, ARRAY_SIZE(avs_test_i2s_machines), num_ssps);
 
 		mach = avs_test_i2s_machines;

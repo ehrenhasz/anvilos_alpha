@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2012-2016, The Linux Foundation. All rights reserved.
- * Copyright (C) 2017 Linaro Ltd.
- */
+
+ 
 #include <linux/clk.h>
 #include <linux/module.h>
 #include <linux/mod_devicetable.h>
@@ -24,13 +21,7 @@
 
 #define NUM_B_FRAMES_MAX	4
 
-/*
- * Three resons to keep MPLANE formats (despite that the number of planes
- * currently is one):
- * - the MPLANE formats allow only one plane to be used
- * - the downstream driver use MPLANE formats too
- * - future firmware versions could add support for >1 planes
- */
+ 
 static const struct venus_format venc_formats[] = {
 	[VENUS_FMT_NV12] = {
 		.pixfmt = V4L2_PIX_FMT_NV12,
@@ -498,7 +489,7 @@ static int venc_enum_frameintervals(struct file *file, void *fh,
 		return -EINVAL;
 
 	if (IS_V1(inst->core)) {
-		/* framerate is reported in 1/65535 fps unit */
+		 
 		framerate_factor = (1 << 16);
 	}
 
@@ -540,10 +531,7 @@ venc_encoder_cmd(struct file *file, void *fh, struct v4l2_encoder_cmd *cmd)
 
 	if (cmd->cmd == V4L2_ENC_CMD_STOP &&
 	    inst->enc_state == VENUS_ENC_STATE_ENCODING) {
-		/*
-		 * Implement V4L2_ENC_CMD_STOP by enqueue an empty buffer on
-		 * encoder input to signal EOS.
-		 */
+		 
 		if (!(inst->streamon_out && inst->streamon_cap))
 			goto unlock;
 
@@ -738,11 +726,7 @@ static int venc_set_properties(struct venus_inst *inst)
 
 	if (inst->fmt_cap->pixfmt == V4L2_PIX_FMT_H264 ||
 	    inst->fmt_cap->pixfmt == V4L2_PIX_FMT_HEVC) {
-		/* IDR periodicity, n:
-		 * n = 0 - only the first I-frame is IDR frame
-		 * n = 1 - all I-frames will be IDR frames
-		 * n > 1 - every n-th I-frame will be IDR frame
-		 */
+		 
 		ptype = HFI_PROPERTY_CONFIG_VENC_IDR_PERIOD;
 		idrp.idr_period = 0;
 		ret = hfi_session_set_property(inst, ptype, &idrp);
@@ -1473,10 +1457,7 @@ static int venc_open(struct file *file)
 
 	venc_inst_init(inst);
 
-	/*
-	 * create m2m device for every instance, the m2m context scheduling
-	 * is made by firmware side so we do not need to care about.
-	 */
+	 
 	inst->m2m_dev = v4l2_m2m_init(&venc_m2m_ops);
 	if (IS_ERR(inst->m2m_dev)) {
 		ret = PTR_ERR(inst->m2m_dev);

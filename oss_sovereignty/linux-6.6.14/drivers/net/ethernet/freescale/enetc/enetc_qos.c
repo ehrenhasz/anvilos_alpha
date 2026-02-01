@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0+ OR BSD-3-Clause)
-/* Copyright 2019 NXP */
+
+ 
 
 #include "enetc.h"
 
@@ -59,7 +59,7 @@ static int enetc_setup_taprio(struct enetc_ndev_priv *priv,
 	int err;
 	int i;
 
-	/* TSD and Qbv are mutually exclusive in hardware */
+	 
 	for (i = 0; i < priv->num_tx_rings; i++)
 		if (priv->tx_ring[i]->tsd_enable)
 			return -EBUSY;
@@ -71,9 +71,7 @@ static int enetc_setup_taprio(struct enetc_ndev_priv *priv,
 	    admin_conf->cycle_time_extension > U32_MAX)
 		return -EINVAL;
 
-	/* Configure the (administrative) gate control list using the
-	 * control BD descriptor.
-	 */
+	 
 	gcl_config = &cbd.gcl_conf;
 	gcl_len = admin_conf->num_entries;
 
@@ -85,7 +83,7 @@ static int enetc_setup_taprio(struct enetc_ndev_priv *priv,
 
 	gce = (struct gce *)(gcl_data + 1);
 
-	/* Set all gates open as default */
+	 
 	gcl_config->atc = 0xff;
 	gcl_config->acl_len = cpu_to_le16(gcl_len);
 
@@ -249,14 +247,12 @@ int enetc_setup_tc_cbs(struct net_device *ndev, void *type_data)
 	prio_top = tc_nums - 1;
 	prio_next = tc_nums - 2;
 
-	/* Support highest prio and second prio tc in cbs mode */
+	 
 	if (tc != prio_top && tc != prio_next)
 		return -EOPNOTSUPP;
 
 	if (!cbs->enable) {
-		/* Make sure the other TC that are numerically
-		 * lower than this TC have been disabled.
-		 */
+		 
 		if (tc == prio_top &&
 		    enetc_get_cbs_enable(hw, prio_next)) {
 			dev_err(&ndev->dev,
@@ -279,9 +275,7 @@ int enetc_setup_tc_cbs(struct net_device *ndev, void *type_data)
 
 	bw = cbs->idleslope / (port_transmit_rate * 10UL);
 
-	/* Make sure the other TC that are numerically
-	 * higher than this TC have been enabled.
-	 */
+	 
 	if (tc == prio_next) {
 		if (!enetc_get_cbs_enable(hw, prio_top)) {
 			dev_err(&ndev->dev,
@@ -300,17 +294,7 @@ int enetc_setup_tc_cbs(struct net_device *ndev, void *type_data)
 
 	enetc_port_rd(hw, ENETC_PTCMSDUR(tc));
 
-	/* For top prio TC, the max_interfrence_size is maxSizedFrame.
-	 *
-	 * For next prio TC, the max_interfrence_size is calculated as below:
-	 *
-	 *      max_interference_size = M0 + Ma + Ra * M0 / (R0 - Ra)
-	 *
-	 *	- RA: idleSlope for AVB Class A
-	 *	- R0: port transmit rate
-	 *	- M0: maximum sized frame for the port
-	 *	- MA: maximum sized frame for AVB Class A
-	 */
+	 
 
 	if (tc == prio_top) {
 		max_interference_size = port_frame_max_size * 8;
@@ -326,22 +310,16 @@ int enetc_setup_tc_cbs(struct net_device *ndev, void *type_data)
 			(u32)div_u64((u64)ra * m0, r0 - ra);
 	}
 
-	/* hiCredit bits calculate by:
-	 *
-	 * maxSizedFrame * (idleSlope/portTxRate)
-	 */
+	 
 	hi_credit_bit = max_interference_size * bw / 100;
 
-	/* hiCredit bits to hiCredit register need to calculated as:
-	 *
-	 * (enetClockFrequency / portTransmitRate) * 100
-	 */
+	 
 	hi_credit_reg = (u32)div_u64((ENETC_CLK * 100ULL) * hi_credit_bit,
 				     port_transmit_rate * 1000000ULL);
 
 	enetc_port_wr(hw, ENETC_PTCCBSR1(tc), hi_credit_reg);
 
-	/* Set bw register and enable this traffic class */
+	 
 	enetc_port_wr(hw, ENETC_PTCCBSR0(tc), bw | ENETC_CBSE);
 
 	return 0;
@@ -363,7 +341,7 @@ int enetc_setup_tc_txtime(struct net_device *ndev, void *type_data)
 	if (tc < 0 || tc >= priv->num_tx_rings)
 		return -EINVAL;
 
-	/* TSD and Qbv are mutually exclusive in hardware */
+	 
 	if (enetc_rd(hw, ENETC_PTGCR) & ENETC_PTGCR_TGE)
 		return -EBUSY;
 
@@ -395,10 +373,10 @@ enum forward_type {
 	FILTER_ACTION_TYPE_BOTH = GENMASK(1, 0),
 };
 
-/* This is for limit output type for input actions */
+ 
 struct actions_fwd {
 	u64 actions;
-	u64 keys;	/* include the must needed keys */
+	u64 keys;	 
 	enum forward_type output;
 };
 
@@ -446,10 +424,7 @@ struct enetc_psfp_gate {
 	struct action_gate_entry entries[];
 };
 
-/* Only enable the green color frame now
- * Will add eir and ebs color blind, couple flag etc when
- * policing action add more offloading parameters
- */
+ 
 struct enetc_psfp_meter {
 	u32 index;
 	u32 cir;
@@ -477,7 +452,7 @@ struct enetc_psfp {
 	struct hlist_head psfp_filter_list;
 	struct hlist_head psfp_gate_list;
 	struct hlist_head psfp_meter_list;
-	spinlock_t psfp_lock; /* spinlock for the struct enetc_psfp r/w */
+	spinlock_t psfp_lock;  
 };
 
 static struct actions_fwd enetc_act_fwd[] = {
@@ -492,7 +467,7 @@ static struct actions_fwd enetc_act_fwd[] = {
 		BIT_ULL(FLOW_DISSECTOR_KEY_ETH_ADDRS),
 		FILTER_ACTION_TYPE_PSFP
 	},
-	/* example for ACL actions */
+	 
 	{
 		BIT(FLOW_ACTION_DROP),
 		0,
@@ -507,7 +482,7 @@ static struct enetc_psfp epsfp = {
 
 static LIST_HEAD(enetc_block_cb_list);
 
-/* Stream Identity Entry Set Descriptor */
+ 
 static int enetc_streamid_hw_set(struct enetc_ndev_priv *priv,
 				 struct enetc_streamid *sid,
 				 u8 enable)
@@ -532,7 +507,7 @@ static int enetc_streamid_hw_set(struct enetc_ndev_priv *priv,
 	    sid->filtertype != STREAMID_TYPE_SMAC)
 		return -EOPNOTSUPP;
 
-	/* Disable operation before enable */
+	 
 	cbd.index = cpu_to_le16((u16)sid->index);
 	cbd.cls = BDCR_CMD_STREAM_IDENTIFY;
 	cbd.status_flags = 0;
@@ -548,7 +523,7 @@ static int enetc_streamid_hw_set(struct enetc_ndev_priv *priv,
 			       + ((0x3 << 14) | ENETC_CBDR_SID_VIDM));
 
 	si_conf = &cbd.sid_set;
-	/* Only one port supported for one entry, set itself */
+	 
 	si_conf->iports = cpu_to_le32(1 << port);
 	si_conf->id_type = 1;
 	si_conf->oui[2] = 0x0;
@@ -562,7 +537,7 @@ static int enetc_streamid_hw_set(struct enetc_ndev_priv *priv,
 	if (!enable)
 		goto out;
 
-	/* Enable the entry overwrite again incase space flushed by hardware */
+	 
 	cbd.status_flags = 0;
 
 	si_conf->en = 0x80;
@@ -575,11 +550,7 @@ static int enetc_streamid_hw_set(struct enetc_ndev_priv *priv,
 
 	memset(si_data, 0, data_size);
 
-	/* VIDM default to be 1.
-	 * VID Match. If set (b1) then the VID must match, otherwise
-	 * any VID is considered a match. VIDM setting is only used
-	 * when TG is set to b01.
-	 */
+	 
 	if (si_conf->id_type == STREAMID_TYPE_NULL) {
 		ether_addr_copy(si_data->dmac, sid->dst_mac);
 		si_data->vid_vidm_tg = (sid->vid & ENETC_CBDR_SID_VID_MASK) +
@@ -599,7 +570,7 @@ out:
 	return err;
 }
 
-/* Stream Filter Instance Set Descriptor */
+ 
 static int enetc_streamfilter_hw_set(struct enetc_ndev_priv *priv,
 				     struct enetc_psfp_filter *sfi,
 				     u8 enable)
@@ -632,16 +603,11 @@ static int enetc_streamfilter_hw_set(struct enetc_ndev_priv *priv,
 	sfi_config->sg_inst_table_index = cpu_to_le16(sfi->gate_id);
 	sfi_config->input_ports = cpu_to_le32(1 << port);
 
-	/* The priority value which may be matched against the
-	 * frame’s priority value to determine a match for this entry.
-	 */
+	 
 	if (sfi->prio >= 0)
 		sfi_config->multi |= (sfi->prio & 0x7) | 0x8;
 
-	/* Filter Type. Identifies the contents of the MSDU/FM_INST_INDEX
-	 * field as being either an MSDU value or an index into the Flow
-	 * Meter Instance table.
-	 */
+	 
 	if (sfi->maxsdu) {
 		sfi_config->msdu =
 		cpu_to_le16(sfi->maxsdu);
@@ -735,7 +701,7 @@ static int get_start_ns(u64 now, u64 cycle, u64 *start)
 	return 0;
 }
 
-/* Stream Gate Instance Set Descriptor */
+ 
 static int enetc_streamgate_hw_set(struct enetc_ndev_priv *priv,
 				   struct enetc_psfp_gate *sgi,
 				   u8 enable)
@@ -756,7 +722,7 @@ static int enetc_streamgate_hw_set(struct enetc_ndev_priv *priv,
 	cbd.cls = BDCR_CMD_STREAM_GCL;
 	cbd.status_flags = 0x80;
 
-	/* disable */
+	 
 	if (!enable)
 		return enetc_send_cmd(priv->si, &cbd);
 
@@ -767,10 +733,10 @@ static int enetc_streamgate_hw_set(struct enetc_ndev_priv *priv,
 	    !sgi->cycletime)
 		return -EINVAL;
 
-	/* enable */
+	 
 	sgi_config = &cbd.sgi_table;
 
-	/* Keep open before gate list start */
+	 
 	sgi_config->ocgtst = 0x80;
 
 	sgi_config->oipv = (sgi->init_ipv < 0) ?
@@ -778,7 +744,7 @@ static int enetc_streamgate_hw_set(struct enetc_ndev_priv *priv,
 
 	sgi_config->en = 0x80;
 
-	/* Basic config */
+	 
 	err = enetc_send_cmd(priv->si, &cbd);
 	if (err)
 		return -EINVAL;
@@ -830,7 +796,7 @@ static int enetc_streamgate_hw_set(struct enetc_ndev_priv *priv,
 		to->interval = from->interval;
 	}
 
-	/* If basetime is less than now, calculate start time */
+	 
 	now = get_ptp_now(&priv->si->hw);
 
 	if (sgi->basetime < now) {
@@ -883,16 +849,11 @@ static int enetc_flowmeter_hw_set(struct enetc_ndev_priv *priv,
 	fmi_config->cir = cpu_to_le32((u32)temp);
 	fmi_config->cbs = cpu_to_le32(fmi->cbs);
 
-	/* Default for eir ebs disable */
+	 
 	fmi_config->eir = 0;
 	fmi_config->ebs = 0;
 
-	/* Default:
-	 * mark red disable
-	 * drop on yellow disable
-	 * color mode disable
-	 * couple flag disable
-	 */
+	 
 	fmi_config->conf = 0;
 
 	return enetc_send_cmd(priv->si, &cbd);
@@ -1149,7 +1110,7 @@ static int enetc_psfp_parse_clsflower(struct enetc_ndev_priv *priv,
 		else if (entry->id == FLOW_ACTION_POLICE)
 			entryp = entry;
 
-	/* Not support without gate action */
+	 
 	if (!entryg)
 		return -EINVAL;
 
@@ -1229,7 +1190,7 @@ static int enetc_psfp_parse_clsflower(struct enetc_ndev_priv *priv,
 		filter->sid.tagged = STREAMID_VLAN_ALL;
 	}
 
-	/* parsing gate action */
+	 
 	if (entryg->hw_index >= priv->psfp_cap.max_psfp_gate) {
 		NL_SET_ERR_MSG_MOD(extack, "No Stream Gate resource!");
 		err = -ENOSPC;
@@ -1276,7 +1237,7 @@ static int enetc_psfp_parse_clsflower(struct enetc_ndev_priv *priv,
 	sfi->gate_id = sgi->index;
 	sfi->meter_id = ENETC_PSFP_WILDCARD;
 
-	/* Flow meter and max frame size */
+	 
 	if (entryp) {
 		err = enetc_psfp_policer_validate(&rule->action, entryp, extack);
 		if (err)
@@ -1301,7 +1262,7 @@ static int enetc_psfp_parse_clsflower(struct enetc_ndev_priv *priv,
 			sfi->maxsdu = entryp->police.mtu;
 	}
 
-	/* prio ref the filter prio */
+	 
 	if (f->common.prio && f->common.prio <= BIT(3))
 		sfi->prio = f->common.prio - 1;
 	else
@@ -1320,7 +1281,7 @@ static int enetc_psfp_parse_clsflower(struct enetc_ndev_priv *priv,
 
 		sfi->index = index;
 		sfi->handle = index + HANDLE_OFFSET;
-		/* Update the stream filter handle also */
+		 
 		filter->sid.handle = sfi->handle;
 		filter->sfi_index = sfi->index;
 		sfi_overwrite = 0;
@@ -1348,7 +1309,7 @@ static int enetc_psfp_parse_clsflower(struct enetc_ndev_priv *priv,
 		hlist_add_head(&fmi->node, &epsfp.psfp_meter_list);
 	}
 
-	/* Remove the old node if exist and update with a new node */
+	 
 	old_sgi = enetc_get_gate_by_index(filter->sgi_index);
 	if (old_sgi) {
 		refcount_set(&sgi->refcount,
@@ -1552,7 +1513,7 @@ static void clean_sgi_list(void)
 
 static void clean_psfp_all(void)
 {
-	/* Disable all list nodes and free all memory */
+	 
 	clean_sfi_list();
 	clean_sgi_list();
 	clean_stream_list();

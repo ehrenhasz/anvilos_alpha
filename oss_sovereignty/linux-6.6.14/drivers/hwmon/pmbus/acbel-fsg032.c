@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright 2023 IBM Corp.
- */
+
+ 
 
 #include <linux/debugfs.h>
 #include <linux/device.h>

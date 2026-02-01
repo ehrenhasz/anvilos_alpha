@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2013
- * Phillip Lougher <phillip@squashfs.org.uk>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/slab.h>
@@ -11,16 +8,9 @@
 #include "decompressor.h"
 #include "page_actor.h"
 
-/*
- * This file contains implementations of page_actor for decompressing into
- * an intermediate buffer, and for decompressing directly into the
- * page cache.
- *
- * Calling code should avoid sleeping between calls to squashfs_first_page()
- * and squashfs_finish_page().
- */
+ 
 
-/* Implementation of page_actor for decompressing into intermediate buffer */
+ 
 static void *cache_first_page(struct squashfs_page_actor *actor)
 {
 	actor->next_page = 1;
@@ -37,7 +27,7 @@ static void *cache_next_page(struct squashfs_page_actor *actor)
 
 static void cache_finish_page(struct squashfs_page_actor *actor)
 {
-	/* empty */
+	 
 }
 
 struct squashfs_page_actor *squashfs_page_actor_init(void **buffer,
@@ -59,7 +49,7 @@ struct squashfs_page_actor *squashfs_page_actor_init(void **buffer,
 	return actor;
 }
 
-/* Implementation of page_actor for decompressing directly into page cache. */
+ 
 static void *handle_next_page(struct squashfs_page_actor *actor)
 {
 	int max_pages = (actor->length + PAGE_SIZE - 1) >> PAGE_SHIFT;

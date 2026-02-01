@@ -1,18 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2012 Simon Budig, <simon.budig@kernelconcepts.de>
- * Daniel Wagener <daniel.wagener@kernelconcepts.de> (M09 firmware support)
- * Lothar Waßmann <LW@KARO-electronics.de> (DT support)
- * Dario Binacchi <dario.binacchi@amarulasolutions.com> (regmap support)
- */
 
-/*
- * This is a driver for the EDT "Polytouch" family of touch controllers
- * based on the FocalTech FT5x06 line of chips.
- *
- * Development of this driver has been sponsored by Glyn:
- *    http://www.glyn.com/Products/Displays
- */
+ 
+
+ 
 
 #include <linux/debugfs.h>
 #include <linux/delay.h>
@@ -70,9 +59,9 @@
 
 #define EDT_NAME_LEN			23
 #define EDT_SWITCH_MODE_RETRIES		10
-#define EDT_SWITCH_MODE_DELAY		5 /* msec */
+#define EDT_SWITCH_MODE_DELAY		5  
 #define EDT_RAW_DATA_RETRIES		100
-#define EDT_RAW_DATA_DELAY		1000 /* usec */
+#define EDT_RAW_DATA_DELAY		1000  
 
 #define EDT_DEFAULT_NUM_X		1024
 #define EDT_DEFAULT_NUM_Y		1024
@@ -317,17 +306,17 @@ static irqreturn_t edt_ft5x06_ts_isr(int irq, void *dev_id)
 		u8 *buf = &rdbuf[i * tsdata->point_len + tsdata->tdata_offset];
 
 		type = buf[0] >> 6;
-		/* ignore Reserved events */
+		 
 		if (type == TOUCH_EVENT_RESERVED)
 			continue;
 
-		/* M06 sometimes sends bogus coordinates in TOUCH_DOWN */
+		 
 		if (tsdata->version == EDT_M06 && type == TOUCH_EVENT_DOWN)
 			continue;
 
 		x = get_unaligned_be16(buf) & 0x0fff;
 		y = get_unaligned_be16(buf + 2) & 0x0fff;
-		/* The FT5x26 send the y coordinate first */
+		 
 		if (tsdata->version == EV_FT)
 			swap(x, y);
 
@@ -502,22 +491,22 @@ out:
 	return error ?: count;
 }
 
-/* m06, m09: range 0-31, m12: range 0-5 */
+ 
 static EDT_ATTR(gain, S_IWUSR | S_IRUGO, WORK_REGISTER_GAIN,
 		M09_REGISTER_GAIN, EV_REGISTER_GAIN, 0, 31);
-/* m06, m09: range 0-31, m12: range 0-16 */
+ 
 static EDT_ATTR(offset, S_IWUSR | S_IRUGO, WORK_REGISTER_OFFSET,
 		M09_REGISTER_OFFSET, NO_REGISTER, 0, 31);
-/* m06, m09, m12: no supported, ev_ft: range 0-80 */
+ 
 static EDT_ATTR(offset_x, S_IWUSR | S_IRUGO, NO_REGISTER, NO_REGISTER,
 		EV_REGISTER_OFFSET_X, 0, 80);
-/* m06, m09, m12: no supported, ev_ft: range 0-80 */
+ 
 static EDT_ATTR(offset_y, S_IWUSR | S_IRUGO, NO_REGISTER, NO_REGISTER,
 		EV_REGISTER_OFFSET_Y, 0, 80);
-/* m06: range 20 to 80, m09: range 0 to 30, m12: range 1 to 255... */
+ 
 static EDT_ATTR(threshold, S_IWUSR | S_IRUGO, WORK_REGISTER_THRESHOLD,
 		M09_REGISTER_THRESHOLD, EV_REGISTER_THRESHOLD, 0, 255);
-/* m06: range 3 to 14, m12: range 1 to 255 */
+ 
 static EDT_ATTR(report_rate, S_IWUSR | S_IRUGO, WORK_REGISTER_REPORT_RATE,
 		M12_REGISTER_REPORT_RATE, NO_REGISTER, 0, 255);
 
@@ -543,7 +532,7 @@ static ssize_t fw_version_show(struct device *dev,
 
 static DEVICE_ATTR_RO(fw_version);
 
-/* m06 only */
+ 
 static ssize_t header_errors_show(struct device *dev,
 				  struct device_attribute *attr, char *buf)
 {
@@ -555,7 +544,7 @@ static ssize_t header_errors_show(struct device *dev,
 
 static DEVICE_ATTR_RO(header_errors);
 
-/* m06 only */
+ 
 static ssize_t crc_errors_show(struct device *dev,
 			       struct device_attribute *attr, char *buf)
 {
@@ -629,7 +618,7 @@ static int edt_ft5x06_factory_mode(struct edt_ft5x06_ts_data *tsdata)
 		}
 	}
 
-	/* mode register is 0x3c when in the work mode */
+	 
 	error = regmap_write(tsdata->regmap, WORK_REGISTER_OPMODE, 0x03);
 	if (error) {
 		dev_err(&client->dev,
@@ -640,7 +629,7 @@ static int edt_ft5x06_factory_mode(struct edt_ft5x06_ts_data *tsdata)
 	tsdata->factory_mode = true;
 	do {
 		mdelay(EDT_SWITCH_MODE_DELAY);
-		/* mode register is 0x01 when in factory mode */
+		 
 		error = regmap_read(tsdata->regmap, FACTORY_REGISTER_OPMODE,
 				    &val);
 		if (!error && val == 0x03)
@@ -672,7 +661,7 @@ static int edt_ft5x06_work_mode(struct edt_ft5x06_ts_data *tsdata)
 	unsigned int val;
 	int error;
 
-	/* mode register is 0x01 when in the factory mode */
+	 
 	error = regmap_write(tsdata->regmap, FACTORY_REGISTER_OPMODE, 0x1);
 	if (error) {
 		dev_err(&client->dev,
@@ -684,7 +673,7 @@ static int edt_ft5x06_work_mode(struct edt_ft5x06_ts_data *tsdata)
 
 	do {
 		mdelay(EDT_SWITCH_MODE_DELAY);
-		/* mode register is 0x01 when in factory mode */
+		 
 		error = regmap_read(tsdata->regmap, WORK_REGISTER_OPMODE, &val);
 		if (!error && val == 0x01)
 			break;
@@ -793,7 +782,7 @@ static ssize_t edt_ft5x06_debugfs_raw_data_read(struct file *file,
 	colbytes = tsdata->num_y * sizeof(u16);
 
 	for (i = 0; i < tsdata->num_x; i++) {
-		rdbuf[0] = i;  /* column index */
+		rdbuf[0] = i;   
 		error = regmap_bulk_read(tsdata->regmap, 0xf5, rdbuf, colbytes);
 		if (error)
 			goto out;
@@ -854,7 +843,7 @@ static void edt_ft5x06_ts_teardown_debugfs(struct edt_ft5x06_ts_data *tsdata)
 {
 }
 
-#endif /* CONFIG_DEBUGFS */
+#endif  
 
 static int edt_ft5x06_ts_identify(struct i2c_client *client,
 				  struct edt_ft5x06_ts_data *tsdata)
@@ -865,28 +854,22 @@ static int edt_ft5x06_ts_identify(struct i2c_client *client,
 	char *model_name = tsdata->name;
 	char *fw_version = tsdata->fw_version;
 
-	/* see what we find if we assume it is a M06 *
-	 * if we get less than EDT_NAME_LEN, we don't want
-	 * to have garbage in there
-	 */
+	 
 	memset(rdbuf, 0, sizeof(rdbuf));
 	error = regmap_bulk_read(tsdata->regmap, 0xBB, rdbuf, EDT_NAME_LEN - 1);
 	if (error)
 		return error;
 
-	/* Probe content for something consistent.
-	 * M06 starts with a response byte, M12 gives the data directly.
-	 * M09/Generic does not provide model number information.
-	 */
+	 
 	if (!strncasecmp(rdbuf + 1, "EP0", 3)) {
 		tsdata->version = EDT_M06;
 
-		/* remove last '$' end marker */
+		 
 		rdbuf[EDT_NAME_LEN - 1] = '\0';
 		if (rdbuf[EDT_NAME_LEN - 2] == '$')
 			rdbuf[EDT_NAME_LEN - 2] = '\0';
 
-		/* look for Model/Version separator */
+		 
 		p = strchr(rdbuf, '*');
 		if (p)
 			*p++ = '\0';
@@ -903,27 +886,19 @@ static int edt_ft5x06_ts_identify(struct i2c_client *client,
 	} else if (!strncasecmp(rdbuf, "EP0", 3)) {
 		tsdata->version = EDT_M12;
 
-		/* remove last '$' end marker */
+		 
 		rdbuf[EDT_NAME_LEN - 2] = '\0';
 		if (rdbuf[EDT_NAME_LEN - 3] == '$')
 			rdbuf[EDT_NAME_LEN - 3] = '\0';
 
-		/* look for Model/Version separator */
+		 
 		p = strchr(rdbuf, '*');
 		if (p)
 			*p++ = '\0';
 		strscpy(model_name, rdbuf, EDT_NAME_LEN);
 		strscpy(fw_version, p ? p : "", EDT_NAME_LEN);
 	} else {
-		/* If it is not an EDT M06/M12 touchscreen, then the model
-		 * detection is a bit hairy. The different ft5x06
-		 * firmwares around don't reliably implement the
-		 * identification registers. Well, we'll take a shot.
-		 *
-		 * The main difference between generic focaltec based
-		 * touches and EDT M09 is that we know how to retrieve
-		 * the max coordinates for the latter.
-		 */
+		 
 		tsdata->version = GENERIC_FT;
 
 		error = regmap_bulk_read(tsdata->regmap, 0xA6, rdbuf, 2);
@@ -936,30 +911,27 @@ static int edt_ft5x06_ts_identify(struct i2c_client *client,
 		if (error)
 			return error;
 
-		/* This "model identification" is not exact. Unfortunately
-		 * not all firmwares for the ft5x06 put useful values in
-		 * the identification registers.
-		 */
+		 
 		switch (rdbuf[0]) {
-		case 0x11:   /* EDT EP0110M09 */
-		case 0x35:   /* EDT EP0350M09 */
-		case 0x43:   /* EDT EP0430M09 */
-		case 0x50:   /* EDT EP0500M09 */
-		case 0x57:   /* EDT EP0570M09 */
-		case 0x70:   /* EDT EP0700M09 */
+		case 0x11:    
+		case 0x35:    
+		case 0x43:    
+		case 0x50:    
+		case 0x57:    
+		case 0x70:    
 			tsdata->version = EDT_M09;
 			snprintf(model_name, EDT_NAME_LEN, "EP0%i%i0M09",
 				 rdbuf[0] >> 4, rdbuf[0] & 0x0F);
 			break;
-		case 0xa1:   /* EDT EP1010ML00 */
+		case 0xa1:    
 			tsdata->version = EDT_M09;
 			snprintf(model_name, EDT_NAME_LEN, "EP%i%i0ML00",
 				 rdbuf[0] >> 4, rdbuf[0] & 0x0F);
 			break;
-		case 0x5a:   /* Solomon Goldentek Display */
+		case 0x5a:    
 			snprintf(model_name, EDT_NAME_LEN, "GKTW50SCED1R0");
 			break;
-		case 0x59:  /* Evervision Display with FT5xx6 TS */
+		case 0x59:   
 			tsdata->version = EV_FT;
 			error = regmap_bulk_read(tsdata->regmap, 0x53, rdbuf, 1);
 			if (error)
@@ -1111,7 +1083,7 @@ static void edt_ft5x06_ts_set_regs(struct edt_ft5x06_ts_data *tsdata)
 		break;
 
 	case GENERIC_FT:
-		/* this is a guesswork */
+		 
 		reg_addr->reg_threshold = M09_REGISTER_THRESHOLD;
 		reg_addr->reg_report_rate = NO_REGISTER;
 		reg_addr->reg_gain = M09_REGISTER_GAIN;
@@ -1187,7 +1159,7 @@ static int edt_ft5x06_ts_probe(struct i2c_client *client)
 		return error;
 	}
 
-	/* Delay enabling VCC for > 10us (T_ivd) after IOVCC */
+	 
 	usleep_range(10, 100);
 
 	error = regulator_enable(tsdata->vcc);
@@ -1221,12 +1193,7 @@ static int edt_ft5x06_ts_probe(struct i2c_client *client)
 		return error;
 	}
 
-	/*
-	 * Check which sleep modes we can support. Power-off requieres the
-	 * reset-pin to ensure correct power-down/power-up behaviour. Start with
-	 * the EDT_PMODE_POWEROFF test since this is the deepest possible sleep
-	 * mode.
-	 */
+	 
 	if (tsdata->reset_gpio)
 		tsdata->suspend_mode = EDT_PMODE_POWEROFF;
 	else if (tsdata->wake_gpio)
@@ -1264,10 +1231,7 @@ static int edt_ft5x06_ts_probe(struct i2c_client *client)
 		return error;
 	}
 
-	/*
-	 * Dummy read access. EP0700MLP1 returns bogus data on the first
-	 * register read access and ignores writes.
-	 */
+	 
 	regmap_read(tsdata->regmap, 0x00, &val);
 
 	edt_ft5x06_ts_set_tdata_parameters(tsdata);
@@ -1370,7 +1334,7 @@ static int edt_ft5x06_ts_suspend(struct device *dev)
 	if (tsdata->suspend_mode == EDT_PMODE_NOT_SUPPORTED)
 		return 0;
 
-	/* Enter hibernate mode. */
+	 
 	ret = regmap_write(tsdata->regmap, PMOD_REGISTER_OPMODE,
 			   PMOD_REGISTER_HIBERNATE);
 	if (ret)
@@ -1379,12 +1343,7 @@ static int edt_ft5x06_ts_suspend(struct device *dev)
 	if (tsdata->suspend_mode == EDT_PMODE_HIBERNATE)
 		return 0;
 
-	/*
-	 * Power-off according the datasheet. Cut the power may leaf the irq
-	 * line in an undefined state depending on the host pull resistor
-	 * settings. Disable the irq to avoid adjusting each host till the
-	 * device is back in a full functional state.
-	 */
+	 
 	disable_irq(tsdata->client->irq);
 
 	gpiod_set_value_cansleep(reset_gpio, 1);
@@ -1415,14 +1374,7 @@ static int edt_ft5x06_ts_resume(struct device *dev)
 	if (tsdata->suspend_mode == EDT_PMODE_POWEROFF) {
 		struct gpio_desc *reset_gpio = tsdata->reset_gpio;
 
-		/*
-		 * We can't check if the regulator is a dummy or a real
-		 * regulator. So we need to specify the 5ms reset time (T_rst)
-		 * here instead of the 100us T_rtp time. We also need to wait
-		 * 300ms in case it was a real supply and the power was cutted
-		 * of. Toggle the reset pin is also a way to exit the hibernate
-		 * mode.
-		 */
+		 
 		gpiod_set_value_cansleep(reset_gpio, 1);
 		usleep_range(5000, 6000);
 
@@ -1432,7 +1384,7 @@ static int edt_ft5x06_ts_resume(struct device *dev)
 			return ret;
 		}
 
-		/* Delay enabling VCC for > 10us (T_ivd) after IOVCC */
+		 
 		usleep_range(10, 100);
 
 		ret = regulator_enable(tsdata->vcc);
@@ -1481,9 +1433,9 @@ static const struct i2c_device_id edt_ft5x06_ts_id[] = {
 	{ .name = "edt-ft5x06", .driver_data = (long)&edt_ft5x06_data },
 	{ .name = "edt-ft5506", .driver_data = (long)&edt_ft5506_data },
 	{ .name = "ev-ft5726", .driver_data = (long)&edt_ft5506_data },
-	/* Note no edt- prefix for compatibility with the ft6236.c driver */
+	 
 	{ .name = "ft6236", .driver_data = (long)&edt_ft6236_data },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(i2c, edt_ft5x06_ts_id);
 
@@ -1493,9 +1445,9 @@ static const struct of_device_id edt_ft5x06_of_match[] = {
 	{ .compatible = "edt,edt-ft5406", .data = &edt_ft5x06_data },
 	{ .compatible = "edt,edt-ft5506", .data = &edt_ft5506_data },
 	{ .compatible = "evervision,ev-ft5726", .data = &edt_ft5506_data },
-	/* Note focaltech vendor prefix for compatibility with ft6236.c */
+	 
 	{ .compatible = "focaltech,ft6236", .data = &edt_ft6236_data },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, edt_ft5x06_of_match);
 

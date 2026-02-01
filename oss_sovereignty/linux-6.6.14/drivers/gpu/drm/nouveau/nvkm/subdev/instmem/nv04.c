@@ -1,26 +1,4 @@
-/*
- * Copyright 2012 Red Hat Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: Ben Skeggs
- */
+ 
 #define nv04_instmem(p) container_of((p), struct nv04_instmem, base)
 #include "priv.h"
 
@@ -31,9 +9,7 @@ struct nv04_instmem {
 	struct nvkm_mm heap;
 };
 
-/******************************************************************************
- * instmem object implementation
- *****************************************************************************/
+ 
 #define nv04_instobj(p) container_of((p), struct nv04_instobj, base.memory)
 
 struct nv04_instobj {
@@ -138,9 +114,7 @@ nv04_instobj_new(struct nvkm_instmem *base, u32 size, u32 align, bool zero,
 	return ret;
 }
 
-/******************************************************************************
- * instmem subdev implementation
- *****************************************************************************/
+ 
 
 static u32
 nv04_instmem_rd32(struct nvkm_instmem *imem, u32 addr)
@@ -161,31 +135,31 @@ nv04_instmem_oneinit(struct nvkm_instmem *base)
 	struct nvkm_device *device = imem->base.subdev.device;
 	int ret;
 
-	/* PRAMIN aperture maps over the end of VRAM, reserve it */
+	 
 	imem->base.reserved = 512 * 1024;
 
 	ret = nvkm_mm_init(&imem->heap, 0, 0, imem->base.reserved, 1);
 	if (ret)
 		return ret;
 
-	/* 0x00000-0x10000: reserve for probable vbios image */
+	 
 	ret = nvkm_memory_new(device, NVKM_MEM_TARGET_INST, 0x10000, 0, false,
 			      &imem->base.vbios);
 	if (ret)
 		return ret;
 
-	/* 0x10000-0x18000: reserve for RAMHT */
+	 
 	ret = nvkm_ramht_new(device, 0x08000, 0, NULL, &imem->base.ramht);
 	if (ret)
 		return ret;
 
-	/* 0x18000-0x18800: reserve for RAMFC (enough for 32 nv30 channels) */
+	 
 	ret = nvkm_memory_new(device, NVKM_MEM_TARGET_INST, 0x00800, 0, true,
 			      &imem->base.ramfc);
 	if (ret)
 		return ret;
 
-	/* 0x18800-0x18a00: reserve for RAMRO */
+	 
 	ret = nvkm_memory_new(device, NVKM_MEM_TARGET_INST, 0x00200, 0, false,
 			      &imem->base.ramro);
 	if (ret)

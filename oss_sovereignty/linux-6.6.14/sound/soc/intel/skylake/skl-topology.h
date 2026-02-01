@@ -1,13 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- *  skl_topology.h - Intel HDA Platform topology header file
- *
- *  Copyright (C) 2014-15 Intel Corp
- *  Author: Jeeja KP <jeeja.kp@intel.com>
- *  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- *
- * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- */
+ 
+ 
 
 #ifndef __SKL_TOPOLOGY_H__
 #define __SKL_TOPOLOGY_H__
@@ -24,7 +16,7 @@
 #define MAX_DMIC_TS_GROUPS 4
 #define MAX_FIXED_DMIC_PARAMS_SIZE 727
 
-/* Maximum number of coefficients up down mixer module */
+ 
 #define UP_DOWN_MIXER_MAX_COEFF		8
 
 #define MODULE_MAX_IN_PINS	8
@@ -114,7 +106,7 @@ struct skl_cpr_gtw_cfg {
 	u32 node_id;
 	u32 dma_buffer_size;
 	u32 config_length;
-	/* not mandatory; required only for DMIC/I2S */
+	 
 	struct {
 		u32 gtw_attrs;
 		u32 data[];
@@ -148,9 +140,9 @@ struct skl_src_module_cfg {
 struct skl_up_down_mixer_cfg {
 	struct skl_base_cfg base_cfg;
 	enum skl_ch_cfg out_ch_cfg;
-	/* This should be set to 1 if user coefficients are required */
+	 
 	u32 coeff_sel;
-	/* Pass the user coeff in this array */
+	 
 	s32 coeff[UP_DOWN_MIXER_MAX_COEFF];
 	u32 ch_map;
 } __packed;
@@ -166,7 +158,7 @@ struct skl_base_cfg_ext {
 	u16 nr_output_pins;
 	u8 reserved[8];
 	u32 priv_param_length;
-	/* Input pin formats followed by output ones. */
+	 
 	struct skl_pin_format pins_fmt[];
 } __packed;
 
@@ -415,7 +407,7 @@ struct skl_module_cfg {
 	u32 vbus_id;
 	u32 mem_pages;
 	enum d0i3_capability d0i3_caps;
-	u32 dma_buffer_size; /* in milli seconds */
+	u32 dma_buffer_size;  
 	struct skl_module_pin *m_in_pin;
 	struct skl_module_pin *m_out_pin;
 	enum skl_module_type m_type;

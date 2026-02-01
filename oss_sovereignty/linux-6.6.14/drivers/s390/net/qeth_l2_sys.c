@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *    Copyright IBM Corp. 2013
- *    Author(s): Eugene Crosser <eugene.crosser@ru.ibm.com>
- */
+
+ 
 
 #include <linux/slab.h>
 #include <asm/ebcdic.h>
@@ -93,7 +90,7 @@ static ssize_t qeth_bridge_port_role_store(struct device *dev,
 	if (!qeth_bridgeport_allowed(card))
 		rc = -EBUSY;
 	else if (card->options.sbp.reflect_promisc)
-		/* Forbid direct manipulation */
+		 
 		rc = -EPERM;
 	else if (qeth_card_hw_is_reachable(card)) {
 		rc = qeth_bridgeport_setrole(card, role);
@@ -157,7 +154,7 @@ static ssize_t qeth_bridgeport_hostnotification_store(struct device *dev,
 		rc = -EBUSY;
 	else if (qeth_card_hw_is_reachable(card)) {
 		rc = qeth_bridgeport_an_set(card, enable);
-		/* sbp_lock ensures ordering vs notifications-stopped events */
+		 
 		if (!rc)
 			card->options.sbp.hostnotification = enable;
 	} else
@@ -247,9 +244,9 @@ static struct attribute_group qeth_l2_bridgeport_attr_group = {
 	.attrs = qeth_l2_bridgeport_attrs,
 };
 
-/* VNIC CHARS support */
+ 
 
-/* convert sysfs attr name to VNIC characteristic */
+ 
 static u32 qeth_l2_vnicc_sysfs_attr_to_char(const char *attr_name)
 {
 	if (sysfs_streq(attr_name, "flooding"))
@@ -270,7 +267,7 @@ static u32 qeth_l2_vnicc_sysfs_attr_to_char(const char *attr_name)
 	return 0;
 }
 
-/* get current timeout setting */
+ 
 static ssize_t qeth_vnicc_timeout_show(struct device *dev,
 				       struct device_attribute *attr, char *buf)
 {
@@ -286,7 +283,7 @@ static ssize_t qeth_vnicc_timeout_show(struct device *dev,
 	return rc ? rc : sysfs_emit(buf, "%d\n", timeout);
 }
 
-/* change timeout setting */
+ 
 static ssize_t qeth_vnicc_timeout_store(struct device *dev,
 					struct device_attribute *attr,
 					const char *buf, size_t count)
@@ -305,7 +302,7 @@ static ssize_t qeth_vnicc_timeout_store(struct device *dev,
 	return rc ? rc : count;
 }
 
-/* get current setting of characteristic */
+ 
 static ssize_t qeth_vnicc_char_show(struct device *dev,
 				    struct device_attribute *attr, char *buf)
 {
@@ -324,7 +321,7 @@ static ssize_t qeth_vnicc_char_show(struct device *dev,
 	return rc ? rc : sysfs_emit(buf, "%d\n", state);
 }
 
-/* change setting of characteristic */
+ 
 static ssize_t qeth_vnicc_char_store(struct device *dev,
 				     struct device_attribute *attr,
 				     const char *buf, size_t count)

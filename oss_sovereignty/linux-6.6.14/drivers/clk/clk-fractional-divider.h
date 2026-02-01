@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _CLK_FRACTIONAL_DIV_H
 #define _CLK_FRACTIONAL_DIV_H
 

@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
+ 
 #include <linux/kernel.h>
 #include <linux/printk.h>
 #include <linux/slab.h>
@@ -26,7 +26,7 @@ size_t size;
 
 void do_fortify_tests(void)
 {
-	/* Normal initializations. */
+	 
 	memset(&instance, 0x32, sizeof(instance));
 	memset(small, 0xA5, sizeof(small));
 	memset(large, 0x5A, sizeof(large));

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * TQ-Systems TQMx86 PLD GPIO driver
- *
- * Based on vendor driver by:
- *   Vadim V.Vlasov <vvlasov@dev.rtsoft.ru>
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/errno.h>
@@ -19,14 +14,14 @@
 #include <linux/slab.h>
 
 #define TQMX86_NGPIO	8
-#define TQMX86_NGPO	4	/* 0-3 - output */
-#define TQMX86_NGPI	4	/* 4-7 - input */
-#define TQMX86_DIR_INPUT_MASK	0xf0	/* 0-3 - output, 4-7 - input */
+#define TQMX86_NGPO	4	 
+#define TQMX86_NGPI	4	 
+#define TQMX86_DIR_INPUT_MASK	0xf0	 
 
-#define TQMX86_GPIODD	0	/* GPIO Data Direction Register */
-#define TQMX86_GPIOD	1	/* GPIO Data Register */
-#define TQMX86_GPIIC	3	/* GPI Interrupt Configuration Register */
-#define TQMX86_GPIIS	4	/* GPI Interrupt Status Register */
+#define TQMX86_GPIODD	0	 
+#define TQMX86_GPIOD	1	 
+#define TQMX86_GPIIC	3	 
+#define TQMX86_GPIIS	4	 
 
 #define TQMX86_GPII_FALLING	BIT(0)
 #define TQMX86_GPII_RISING	BIT(1)
@@ -79,7 +74,7 @@ static void tqmx86_gpio_set(struct gpio_chip *chip, unsigned int offset,
 static int tqmx86_gpio_direction_input(struct gpio_chip *chip,
 				       unsigned int offset)
 {
-	/* Direction cannot be changed. Validate is an input. */
+	 
 	if (BIT(offset) & TQMX86_DIR_INPUT_MASK)
 		return 0;
 	else
@@ -90,7 +85,7 @@ static int tqmx86_gpio_direction_output(struct gpio_chip *chip,
 					unsigned int offset,
 					int value)
 {
-	/* Direction cannot be changed, validate is an output */
+	 
 	if (BIT(offset) & TQMX86_DIR_INPUT_MASK)
 		return -EINVAL;
 
@@ -164,7 +159,7 @@ static int tqmx86_gpio_irq_set_type(struct irq_data *data, unsigned int type)
 		new_type = TQMX86_GPII_FALLING | TQMX86_GPII_RISING;
 		break;
 	default:
-		return -EINVAL; /* not supported */
+		return -EINVAL;  
 	}
 
 	gpio->irq_type[offset] = new_type;
@@ -201,7 +196,7 @@ static void tqmx86_gpio_irq_handler(struct irq_desc *desc)
 	chained_irq_exit(irq_chip, desc);
 }
 
-/* Minimal runtime PM is needed by the IRQ subsystem */
+ 
 static int __maybe_unused tqmx86_gpio_runtime_suspend(struct device *dev)
 {
 	return 0;
@@ -221,7 +216,7 @@ static void tqmx86_init_irq_valid_mask(struct gpio_chip *chip,
 				       unsigned long *valid_mask,
 				       unsigned int ngpios)
 {
-	/* Only GPIOs 4-7 are valid for interrupts. Clear the others */
+	 
 	clear_bit(0, valid_mask);
 	clear_bit(1, valid_mask);
 	clear_bit(2, valid_mask);
@@ -295,10 +290,10 @@ static int tqmx86_gpio_probe(struct platform_device *pdev)
 	if (irq > 0) {
 		u8 irq_status;
 
-		/* Mask all interrupts */
+		 
 		tqmx86_gpio_write(gpio, 0, TQMX86_GPIIC);
 
-		/* Clear all pending interrupts */
+		 
 		irq_status = tqmx86_gpio_read(gpio, TQMX86_GPIIS);
 		tqmx86_gpio_write(gpio, irq_status, TQMX86_GPIIS);
 

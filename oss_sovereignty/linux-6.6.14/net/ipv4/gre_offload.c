@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *	IPV4 GSO/GRO offload support
- *	Linux INET implementation
- *
- *	GRE GSO support
- */
+
+ 
 
 #include <linux/skbuff.h>
 #include <linux/init.h>
@@ -33,7 +28,7 @@ static struct sk_buff *gre_gso_segment(struct sk_buff *skb,
 	if (unlikely(!pskb_may_pull(skb, tnl_hlen)))
 		goto out;
 
-	/* setup inner skb. */
+	 
 	skb->encapsulation = 0;
 	SKB_GSO_CB(skb)->encap_level = 0;
 	__skb_pull(skb, tnl_hlen);
@@ -50,11 +45,11 @@ static struct sk_buff *gre_gso_segment(struct sk_buff *skb,
 		features &= ~NETIF_F_SCTP_CRC;
 
 	need_ipsec = skb_dst(skb) && dst_xfrm(skb_dst(skb));
-	/* Try to offload checksum if possible */
+	 
 	offload_csum = !!(need_csum && !need_ipsec &&
 			  (skb->dev->features & NETIF_F_HW_CSUM));
 
-	/* segment inner packet. */
+	 
 	segs = skb_mac_gso_segment(skb, features);
 	if (IS_ERR_OR_NULL(segs)) {
 		skb_gso_error_unwind(skb, protocol, tnl_hlen, mac_offset,
@@ -71,7 +66,7 @@ static struct sk_buff *gre_gso_segment(struct sk_buff *skb,
 		struct gre_base_hdr *greh;
 		__sum16 *pcsum;
 
-		/* Set up inner headers if we are offloading inner checksum */
+		 
 		if (skb->ip_summed == CHECKSUM_PARTIAL) {
 			skb_reset_inner_headers(skb);
 			skb->encapsulation = 1;
@@ -94,10 +89,7 @@ static struct sk_buff *gre_gso_segment(struct sk_buff *skb,
 		if (gso_partial && skb_is_gso(skb)) {
 			unsigned int partial_adj;
 
-			/* Adjust checksum to account for the fact that
-			 * the partial checksum is based on actual size
-			 * whereas headers should be based on MSS size.
-			 */
+			 
 			partial_adj = skb->len + skb_headroom(skb) -
 				      SKB_GSO_CB(skb)->data_offset -
 				      skb_shinfo(skb)->gso_size;
@@ -142,20 +134,11 @@ static struct sk_buff *gre_gro_receive(struct list_head *head,
 	if (unlikely(!greh))
 		goto out;
 
-	/* Only support version 0 and K (key), C (csum) flags. Note that
-	 * although the support for the S (seq#) flag can be added easily
-	 * for GRO, this is problematic for GSO hence can not be enabled
-	 * here because a GRO pkt may end up in the forwarding path, thus
-	 * requiring GSO support to break it up correctly.
-	 */
+	 
 	if ((greh->flags & ~(GRE_KEY|GRE_CSUM)) != 0)
 		goto out;
 
-	/* We can only support GRE_CSUM if we can track the location of
-	 * the GRE header.  In the case of FOU/GUE we cannot because the
-	 * outer UDP header displaces the GRE header leaving us in a state
-	 * of limbo.
-	 */
+	 
 	if ((greh->flags & GRE_CSUM) && NAPI_GRO_CB(skb)->is_fou)
 		goto out;
 
@@ -180,7 +163,7 @@ static struct sk_buff *gre_gro_receive(struct list_head *head,
 			goto out;
 	}
 
-	/* Don't bother verifying checksum if we're going to flush anyway. */
+	 
 	if ((greh->flags & GRE_CSUM) && !NAPI_GRO_CB(skb)->flush) {
 		if (skb_gro_checksum_simple_validate(skb))
 			goto out;
@@ -195,14 +178,7 @@ static struct sk_buff *gre_gro_receive(struct list_head *head,
 		if (!NAPI_GRO_CB(p)->same_flow)
 			continue;
 
-		/* The following checks are needed to ensure only pkts
-		 * from the same tunnel are considered for aggregation.
-		 * The criteria for "the same tunnel" includes:
-		 * 1) same version (we only support version 0 here)
-		 * 2) same protocol (we only support ETH_P_IP for now)
-		 * 3) same set of flags
-		 * 4) same key if the key field is present.
-		 */
+		 
 		greh2 = (struct gre_base_hdr *)(p->data + off);
 
 		if (greh2->flags != greh->flags ||
@@ -211,7 +187,7 @@ static struct sk_buff *gre_gro_receive(struct list_head *head,
 			continue;
 		}
 		if (greh->flags & GRE_KEY) {
-			/* compare keys */
+			 
 			if (*(__be32 *)(greh2+1) != *(__be32 *)(greh+1)) {
 				NAPI_GRO_CB(p)->same_flow = 0;
 				continue;
@@ -221,7 +197,7 @@ static struct sk_buff *gre_gro_receive(struct list_head *head,
 
 	skb_gro_pull(skb, grehlen);
 
-	/* Adjusted NAPI_GRO_CB(skb)->csum after skb_gro_pull()*/
+	 
 	skb_gro_postpull_rcsum(skb, greh, grehlen);
 
 	pp = call_gro_receive(ptype->callbacks.gro_receive, head, skb);

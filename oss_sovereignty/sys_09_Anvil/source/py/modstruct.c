@@ -1,29 +1,4 @@
-/*
- * This file is part of the MicroPython project, http://micropython.org/
- *
- * The MIT License (MIT)
- *
- * Copyright (c) 2013, 2014 Damien P. George
- * Copyright (c) 2014 Paul Sokolovsky
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
+ 
 
 #include <assert.h>
 #include <string.h>
@@ -36,21 +11,7 @@
 
 #if MICROPY_PY_STRUCT
 
-/*
-    This module implements most of character typecodes from CPython, with
-    some extensions:
-
-    O - (Pointer to) an arbitrary Python object. This is useful for callback
-        data, etc. Note that you must keep reference to passed object in
-        your Python application, otherwise it may be garbage-collected,
-        and then when you get back this value from callback it may be
-        invalid (and lead to crash).
-    S - Pointer to a string (returned as a Python string). Note the
-        difference from "Ns", - the latter says "in this place of structure
-        is character data of up to N bytes length", while "S" means
-        "in this place of a structure is a pointer to zero-terminated
-        character data".
- */
+ 
 
 static char get_fmt_type(const char **fmt) {
     char t = **fmt;
@@ -66,7 +27,7 @@ static char get_fmt_type(const char **fmt) {
         default:
             return '@';
     }
-    // Skip type char
+    
     (*fmt)++;
     return t;
 }
@@ -102,7 +63,7 @@ static size_t calc_size_items(const char *fmt, size_t *total_sz) {
             size_t align;
             size_t sz = mp_binary_get_size(fmt_type, *fmt, &align);
             while (cnt--) {
-                // Apply alignment
+                
                 size = (size + align - 1) & ~(align - 1);
                 size += sz;
             }
@@ -121,10 +82,10 @@ static mp_obj_t struct_calcsize(mp_obj_t fmt_in) {
 MP_DEFINE_CONST_FUN_OBJ_1(struct_calcsize_obj, struct_calcsize);
 
 static mp_obj_t struct_unpack_from(size_t n_args, const mp_obj_t *args) {
-    // unpack requires that the buffer be exactly the right size.
-    // unpack_from requires that the buffer be "big enough".
-    // Since we implement unpack and unpack_from using the same function
-    // we relax the "exact" requirement, and only implement "big enough".
+    
+    
+    
+    
     const char *fmt = mp_obj_str_get_str(args[0]);
     size_t total_sz;
     size_t num_items = calc_size_items(fmt, &total_sz);
@@ -137,10 +98,10 @@ static mp_obj_t struct_unpack_from(size_t n_args, const mp_obj_t *args) {
     mp_int_t offset = 0;
 
     if (n_args > 2) {
-        // offset arg provided
+        
         offset = mp_obj_get_int(args[2]);
         if (offset < 0) {
-            // negative offsets are relative to the end of the buffer
+            
             offset = bufinfo.len + offset;
             if (offset < 0) {
                 mp_raise_ValueError(MP_ERROR_TEXT("buffer too small"));
@@ -150,7 +111,7 @@ static mp_obj_t struct_unpack_from(size_t n_args, const mp_obj_t *args) {
     }
     byte *p_base = p;
 
-    // Check that the input buffer is big enough to unpack all the values
+    
     if (p + total_sz > end_p) {
         mp_raise_ValueError(MP_ERROR_TEXT("buffer too small"));
     }
@@ -179,7 +140,7 @@ static mp_obj_t struct_unpack_from(size_t n_args, const mp_obj_t *args) {
 }
 MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(struct_unpack_from_obj, 2, 3, struct_unpack_from);
 
-// This function assumes there is enough room in p to store all the values
+
 static void struct_pack_into_internal(mp_obj_t fmt_in, byte *p, size_t n_args, const mp_obj_t *args) {
     const char *fmt = mp_obj_str_get_str(fmt_in);
     char fmt_type = get_fmt_type(&fmt);
@@ -189,7 +150,7 @@ static void struct_pack_into_internal(mp_obj_t fmt_in, byte *p, size_t n_args, c
     for (i = 0; i < n_args;) {
         mp_uint_t cnt = 1;
         if (*fmt == '\0') {
-            // more arguments given than used by format string; CPython raises struct.error here
+            
             break;
         }
         if (unichar_isdigit(*fmt)) {
@@ -210,7 +171,7 @@ static void struct_pack_into_internal(mp_obj_t fmt_in, byte *p, size_t n_args, c
             memset(p + to_copy, 0, cnt - to_copy);
             p += cnt;
         } else {
-            // If we run out of args then we just finish; CPython would raise struct.error
+            
             while (cnt-- && i < n_args) {
                 mp_binary_set_val(fmt_type, *fmt, args[i++], p_base, &p);
             }
@@ -220,7 +181,7 @@ static void struct_pack_into_internal(mp_obj_t fmt_in, byte *p, size_t n_args, c
 }
 
 static mp_obj_t struct_pack(size_t n_args, const mp_obj_t *args) {
-    // TODO: "The arguments must match the values required by the format exactly."
+    
     mp_int_t size = MP_OBJ_SMALL_INT_VALUE(struct_calcsize(args[0]));
     vstr_t vstr;
     vstr_init_len(&vstr, size);
@@ -236,7 +197,7 @@ static mp_obj_t struct_pack_into(size_t n_args, const mp_obj_t *args) {
     mp_get_buffer_raise(args[1], &bufinfo, MP_BUFFER_WRITE);
     mp_int_t offset = mp_obj_get_int(args[2]);
     if (offset < 0) {
-        // negative offsets are relative to the end of the buffer
+        
         offset = (mp_int_t)bufinfo.len + offset;
         if (offset < 0) {
             mp_raise_ValueError(MP_ERROR_TEXT("buffer too small"));
@@ -246,7 +207,7 @@ static mp_obj_t struct_pack_into(size_t n_args, const mp_obj_t *args) {
     byte *end_p = &p[bufinfo.len];
     p += offset;
 
-    // Check that the output buffer is big enough to hold all the values
+    
     mp_int_t sz = MP_OBJ_SMALL_INT_VALUE(struct_calcsize(args[0]));
     if (p + sz > end_p) {
         mp_raise_ValueError(MP_ERROR_TEXT("buffer too small"));

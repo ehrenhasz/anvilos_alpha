@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2020 MediaTek Inc.
+
+
 
 #include <linux/delay.h>
 #include <linux/i2c.h>
@@ -14,90 +14,44 @@
 
 #define DW9768_NAME				"dw9768"
 #define DW9768_MAX_FOCUS_POS			(1024 - 1)
-/*
- * This sets the minimum granularity for the focus positions.
- * A value of 1 gives maximum accuracy for a desired focus position
- */
+ 
 #define DW9768_FOCUS_STEPS			1
 
-/*
- * Ring control and Power control register
- * Bit[1] RING_EN
- * 0: Direct mode
- * 1: AAC mode (ringing control mode)
- * Bit[0] PD
- * 0: Normal operation mode
- * 1: Power down mode
- * DW9768 requires waiting time of Topr after PD reset takes place.
- */
+ 
 #define DW9768_RING_PD_CONTROL_REG		0x02
 #define DW9768_PD_MODE_OFF			0x00
 #define DW9768_PD_MODE_EN			BIT(0)
 #define DW9768_AAC_MODE_EN			BIT(1)
 
-/*
- * DW9768 separates two registers to control the VCM position.
- * One for MSB value, another is LSB value.
- * DAC_MSB: D[9:8] (ADD: 0x03)
- * DAC_LSB: D[7:0] (ADD: 0x04)
- * D[9:0] DAC data input: positive output current = D[9:0] / 1023 * 100[mA]
- */
+ 
 #define DW9768_MSB_ADDR				0x03
 #define DW9768_LSB_ADDR				0x04
 #define DW9768_STATUS_ADDR			0x05
 
-/*
- * AAC mode control & prescale register
- * Bit[7:5] Namely AC[2:0], decide the VCM mode and operation time.
- * 001 AAC2 0.48 x Tvib
- * 010 AAC3 0.70 x Tvib
- * 011 AAC4 0.75 x Tvib
- * 101 AAC8 1.13 x Tvib
- * Bit[2:0] Namely PRESC[2:0], set the internal clock dividing rate as follow.
- * 000 2
- * 001 1
- * 010 1/2
- * 011 1/4
- * 100 8
- * 101 4
- */
+ 
 #define DW9768_AAC_PRESC_REG			0x06
 #define DW9768_AAC_MODE_SEL_MASK		GENMASK(7, 5)
 #define DW9768_CLOCK_PRE_SCALE_SEL_MASK		GENMASK(2, 0)
 
-/*
- * VCM period of vibration register
- * Bit[5:0] Defined as VCM rising periodic time (Tvib) together with PRESC[2:0]
- * Tvib = (6.3ms + AACT[5:0] * 0.1ms) * Dividing Rate
- * Dividing Rate is the internal clock dividing rate that is defined at
- * PRESCALE register (ADD: 0x06)
- */
+ 
 #define DW9768_AAC_TIME_REG			0x07
 
-/*
- * DW9768 requires waiting time (delay time) of t_OPR after power-up,
- * or in the case of PD reset taking place.
- */
+ 
 #define DW9768_T_OPR_US				1000
 #define DW9768_TVIB_MS_BASE10			(64 - 1)
 #define DW9768_AAC_MODE_DEFAULT			2
 #define DW9768_AAC_TIME_DEFAULT			0x20
 #define DW9768_CLOCK_PRE_SCALE_DEFAULT		1
 
-/*
- * This acts as the minimum granularity of lens movement.
- * Keep this value power of 2, so the control steps can be
- * uniformly adjusted for gradual lens movement, with desired
- * number of control steps.
- */
+ 
 #define DW9768_MOVE_STEPS			16
 
 static const char * const dw9768_supply_names[] = {
-	"vin",	/* Digital I/O power */
-	"vdd",	/* Digital core power */
+	"vin",	 
+	"vdd",	 
 };
 
-/* dw9768 device structure */
+ 
 struct dw9768 {
 	struct regulator_bulk_data supplies[ARRAY_SIZE(dw9768_supply_names)];
 	struct v4l2_ctrl_handler ctrls;
@@ -176,12 +130,7 @@ static u32 dw9768_find_dividing_rate(u32 presc_param)
 	return cur_clk_dividing_rate_base100;
 }
 
-/*
- * DW9768_AAC_PRESC_REG & DW9768_AAC_TIME_REG determine VCM operation time.
- * For current VCM mode: AAC3, Operation Time would be 0.70 x Tvib.
- * Tvib = (6.3ms + AACT[5:0] * 0.1MS) * Dividing Rate.
- * Below is calculation of the operation delay for each step.
- */
+ 
 static inline u32 dw9768_cal_move_delay(u32 aac_mode_param, u32 presc_param,
 					u32 aac_timing_param)
 {
@@ -217,7 +166,7 @@ static int dw9768_set_dac(struct dw9768 *dw9768, u16 val)
 {
 	struct i2c_client *client = v4l2_get_subdevdata(&dw9768->sd);
 
-	/* Write VCM position to registers */
+	 
 	return i2c_smbus_write_word_swapped(client, DW9768_MSB_ADDR, val);
 }
 
@@ -226,32 +175,29 @@ static int dw9768_init(struct dw9768 *dw9768)
 	struct i2c_client *client = v4l2_get_subdevdata(&dw9768->sd);
 	int ret, val;
 
-	/* Reset DW9768_RING_PD_CONTROL_REG to default status 0x00 */
+	 
 	ret = i2c_smbus_write_byte_data(client, DW9768_RING_PD_CONTROL_REG,
 					DW9768_PD_MODE_OFF);
 	if (ret < 0)
 		return ret;
 
-	/*
-	 * DW9769 requires waiting delay time of t_OPR
-	 * after PD reset takes place.
-	 */
+	 
 	usleep_range(DW9768_T_OPR_US, DW9768_T_OPR_US + 100);
 
-	/* Set DW9768_RING_PD_CONTROL_REG to DW9768_AAC_MODE_EN(0x01) */
+	 
 	ret = i2c_smbus_write_byte_data(client, DW9768_RING_PD_CONTROL_REG,
 					DW9768_AAC_MODE_EN);
 	if (ret < 0)
 		return ret;
 
-	/* Set AAC mode */
+	 
 	ret = dw9768_mod_reg(dw9768, DW9768_AAC_PRESC_REG,
 			     DW9768_AAC_MODE_SEL_MASK,
 			     dw9768->aac_mode << 5);
 	if (ret < 0)
 		return ret;
 
-	/* Set clock presc */
+	 
 	if (dw9768->clock_presc != DW9768_CLOCK_PRE_SCALE_DEFAULT) {
 		ret = dw9768_mod_reg(dw9768, DW9768_AAC_PRESC_REG,
 				     DW9768_CLOCK_PRE_SCALE_SEL_MASK,
@@ -260,7 +206,7 @@ static int dw9768_init(struct dw9768 *dw9768)
 			return ret;
 	}
 
-	/* Set AAC Timing */
+	 
 	if (dw9768->aac_timing != DW9768_AAC_TIME_DEFAULT) {
 		ret = i2c_smbus_write_byte_data(client, DW9768_AAC_TIME_REG,
 						dw9768->aac_timing);
@@ -304,10 +250,7 @@ static int dw9768_release(struct dw9768 *dw9768)
 	if (ret < 0)
 		return ret;
 
-	/*
-	 * DW9769 requires waiting delay time of t_OPR
-	 * after PD reset takes place.
-	 */
+	 
 	usleep_range(DW9768_T_OPR_US, DW9768_T_OPR_US + 100);
 
 	return 0;
@@ -338,10 +281,7 @@ static int dw9768_runtime_resume(struct device *dev)
 		return ret;
 	}
 
-	/*
-	 * The datasheet refers to t_OPR that needs to be waited before sending
-	 * I2C commands after power-up.
-	 */
+	 
 	usleep_range(DW9768_T_OPR_US, DW9768_T_OPR_US + 100);
 
 	ret = dw9768_init(dw9768);
@@ -422,22 +362,22 @@ static int dw9768_probe(struct i2c_client *client)
 	if (!dw9768)
 		return -ENOMEM;
 
-	/* Initialize subdev */
+	 
 	v4l2_i2c_subdev_init(&dw9768->sd, client, &dw9768_ops);
 
 	dw9768->aac_mode = DW9768_AAC_MODE_DEFAULT;
 	dw9768->aac_timing = DW9768_AAC_TIME_DEFAULT;
 	dw9768->clock_presc = DW9768_CLOCK_PRE_SCALE_DEFAULT;
 
-	/* Optional indication of AAC mode select */
+	 
 	fwnode_property_read_u32(dev_fwnode(dev), "dongwoon,aac-mode",
 				 &dw9768->aac_mode);
 
-	/* Optional indication of clock pre-scale select */
+	 
 	fwnode_property_read_u32(dev_fwnode(dev), "dongwoon,clock-presc",
 				 &dw9768->clock_presc);
 
-	/* Optional indication of AAC Timing */
+	 
 	fwnode_property_read_u32(dev_fwnode(dev), "dongwoon,aac-timing",
 				 &dw9768->aac_timing);
 
@@ -455,12 +395,12 @@ static int dw9768_probe(struct i2c_client *client)
 		return ret;
 	}
 
-	/* Initialize controls */
+	 
 	ret = dw9768_init_controls(dw9768);
 	if (ret)
 		goto err_free_handler;
 
-	/* Initialize subdev */
+	 
 	dw9768->sd.flags |= V4L2_SUBDEV_FL_HAS_DEVNODE;
 	dw9768->sd.internal_ops = &dw9768_int_ops;
 
@@ -470,12 +410,7 @@ static int dw9768_probe(struct i2c_client *client)
 
 	dw9768->sd.entity.function = MEDIA_ENT_F_LENS;
 
-	/*
-	 * Figure out whether we're going to power up the device here. Generally
-	 * this is done if CONFIG_PM is disabled in a DT system or the device is
-	 * to be powered on in an ACPI system. Similarly for power off in
-	 * remove.
-	 */
+	 
 	pm_runtime_enable(dev);
 	full_power = (is_acpi_node(dev_fwnode(dev)) &&
 		      acpi_dev_state_d0(dev)) ||

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * QLogic iSCSI Offload Driver
- * Copyright (c) 2016 Cavium Inc.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/pci.h>
@@ -59,7 +56,7 @@ static struct scsi_transport_template *qedi_scsi_transport;
 static struct pci_driver qedi_pci_driver;
 static DEFINE_PER_CPU(struct qedi_percpu_s, qedi_percpu);
 static LIST_HEAD(qedi_udev_list);
-/* Static function declaration */
+ 
 static int qedi_alloc_global_queues(struct qedi_ctx *qedi);
 static void qedi_free_global_queues(struct qedi_ctx *qedi);
 static struct qedi_cmd *qedi_get_cmd_from_tid(struct qedi_ctx *qedi, u32 tid);
@@ -228,12 +225,12 @@ static int __qedi_alloc_uio_rings(struct qedi_uio_dev *udev)
 	if (udev->ll2_ring || udev->ll2_buf)
 		return rc;
 
-	/* Memory for control area.  */
+	 
 	udev->uctrl = (void *)get_zeroed_page(GFP_KERNEL);
 	if (!udev->uctrl)
 		return -ENOMEM;
 
-	/* Allocating memory for LL2 ring  */
+	 
 	udev->ll2_ring_size = QEDI_PAGE_SIZE;
 	udev->ll2_ring = (void *)get_zeroed_page(GFP_KERNEL | __GFP_COMP);
 	if (!udev->ll2_ring) {
@@ -241,7 +238,7 @@ static int __qedi_alloc_uio_rings(struct qedi_uio_dev *udev)
 		goto exit_alloc_ring;
 	}
 
-	/* Allocating memory for Tx/Rx pkt buffer */
+	 
 	udev->ll2_buf_size = TX_RX_RING * qedi_ll2_buf_size;
 	udev->ll2_buf_size = QEDI_PAGE_ALIGN(udev->ll2_buf_size);
 	udev->ll2_buf = (void *)__get_free_pages(GFP_KERNEL | __GFP_COMP |
@@ -451,9 +448,7 @@ static void qedi_int_fp(struct qedi_ctx *qedi)
 		snprintf(fp->name, sizeof(fp->name), "%s-fp-%d",
 			 "qedi", id);
 
-		/* fp_array[i] ---- irq cookie
-		 * So init data which is needed in int ctx
-		 */
+		 
 	}
 }
 
@@ -683,14 +678,14 @@ static int qedi_ll2_rx(void *cookie, struct sk_buff *skb, u32 arg1, u32 arg2)
 	}
 
 	eh = (struct ethhdr *)skb->data;
-	/* Undo VLAN encapsulation */
+	 
 	if (eh->h_proto == htons(ETH_P_8021Q)) {
 		memmove((u8 *)eh + VLAN_HLEN, eh, ETH_ALEN * 2);
 		eh = (struct ethhdr *)skb_pull(skb, VLAN_HLEN);
 		skb_reset_mac_header(skb);
 	}
 
-	/* Filter out non FIP/FCoE frames here to free them faster */
+	 
 	if (eh->h_proto != htons(ETH_P_ARP) &&
 	    eh->h_proto != htons(ETH_P_IP) &&
 	    eh->h_proto != htons(ETH_P_IPV6)) {
@@ -731,7 +726,7 @@ static int qedi_ll2_rx(void *cookie, struct sk_buff *skb, u32 arg1, u32 arg2)
 	return 0;
 }
 
-/* map this skb to iscsiuio mmaped region */
+ 
 static int qedi_ll2_process_skb(struct qedi_ctx *qedi, struct sk_buff *skb,
 				u16 vlan_id)
 {
@@ -781,7 +776,7 @@ static int qedi_ll2_process_skb(struct qedi_ctx *qedi, struct sk_buff *skb,
 
 	uctrl->hw_rx_prod = prod;
 
-	/* notify the iscsiuio about new packet */
+	 
 	uio_event_notify(&udev->qedi_uinfo);
 
 	return 0;
@@ -879,19 +874,16 @@ static int qedi_set_iscsi_pf_param(struct qedi_ctx *qedi)
 	qedi->pf_params.iscsi_pf_params.glbl_q_params_addr =
 							   (u64)qedi->hw_p_cpuq;
 
-	/* RQ BDQ initializations.
-	 * rq_num_entries: suggested value for Initiator is 16 (4KB RQ)
-	 * rqe_log_size: 8 for 256B RQE
-	 */
+	 
 	qedi->pf_params.iscsi_pf_params.rqe_log_size = 8;
-	/* BDQ address and size */
+	 
 	qedi->pf_params.iscsi_pf_params.bdq_pbl_base_addr[BDQ_ID_RQ] =
 							qedi->bdq_pbl_list_dma;
 	qedi->pf_params.iscsi_pf_params.bdq_pbl_num_entries[BDQ_ID_RQ] =
 						qedi->bdq_pbl_list_num_entries;
 	qedi->pf_params.iscsi_pf_params.rq_buffer_size = QEDI_BDQ_BUF_SIZE;
 
-	/* cq_num_entries: num_tasks + rq_num_entries */
+	 
 	qedi->pf_params.iscsi_pf_params.cq_num_entries = 2048;
 
 	qedi->pf_params.iscsi_pf_params.gl_rq_pi = QEDI_PROTO_CQ_PROD_IDX;
@@ -901,7 +893,7 @@ err_alloc_mem:
 	return rval;
 }
 
-/* Free DMA coherent memory for array of queue pointers we pass to qed */
+ 
 static void qedi_free_iscsi_pf_param(struct qedi_ctx *qedi)
 {
 	size_t size = 0;
@@ -1053,9 +1045,7 @@ static void qedi_get_generic_tlv_data(void *dev, struct qed_generic_tlvs *data)
 	ether_addr_copy(data->mac[0], qedi->mac);
 }
 
-/*
- * Protocol TLV handler
- */
+ 
 static void qedi_get_protocol_tlv_data(void *dev, void *data)
 {
 	struct qed_mfw_tlv_iscsi *iscsi = data;
@@ -1073,7 +1063,7 @@ static void qedi_get_protocol_tlv_data(void *dev, void *data)
 	}
 
 	mutex_lock(&qedi->stats_lock);
-	/* Query firmware for offload stats */
+	 
 	qedi_ops->get_stats(qedi->cdev, fw_iscsi_stats);
 	mutex_unlock(&qedi->stats_lock);
 
@@ -1106,7 +1096,7 @@ static void qedi_get_protocol_tlv_data(void *dev, void *data)
 		iscsi->rx_desc_size_set = true;
 		iscsi->rx_desc_size = QEDI_CQ_SIZE;
 
-		/* tpgt, hdr digest, data digest */
+		 
 		rval = qedi_find_boot_info(qedi, iscsi, block);
 		if (rval)
 			QEDI_INFO(&qedi->dbg_ctx, QEDI_LOG_INFO,
@@ -1140,7 +1130,7 @@ void qedi_schedule_hw_err_handler(void *dev,
 	case QED_HW_ERR_DMAE_FAIL:
 	case QED_HW_ERR_RAMROD_FAIL:
 	case QED_HW_ERR_FW_ASSERT:
-		/* Prevent HW attentions from being reasserted */
+		 
 		if (test_bit(QEDI_ERR_ATTN_CLR_EN, &qedi->qedi_err_flags))
 			qedi_ops->common->attn_clr_enable(qedi->cdev, true);
 
@@ -1270,7 +1260,7 @@ static bool qedi_process_completions(struct qedi_fastpath *fp)
 	int cpu;
 	int ret;
 
-	/* Get the current firmware producer index */
+	 
 	prod_idx = sb->pi_array[QEDI_PROTO_CQ_PROD_IDX];
 
 	if (prod_idx >= QEDI_CQ_SIZE)
@@ -1322,20 +1312,20 @@ static bool qedi_fp_has_work(struct qedi_fastpath *fp)
 
 	barrier();
 
-	/* Get the current firmware producer index */
+	 
 	prod_idx = sb->pi_array[QEDI_PROTO_CQ_PROD_IDX];
 
-	/* Get the pointer to the global CQ this completion is on */
+	 
 	que = qedi->global_queues[fp->sb_id];
 
-	/* prod idx wrap around uint16 */
+	 
 	if (prod_idx >= QEDI_CQ_SIZE)
 		prod_idx = prod_idx % QEDI_CQ_SIZE;
 
 	return (que->cq_cons_idx != prod_idx);
 }
 
-/* MSI-X fastpath handler code */
+ 
 static irqreturn_t qedi_msix_handler(int irq, void *dev_id)
 {
 	struct qedi_fastpath *fp = dev_id;
@@ -1354,7 +1344,7 @@ process_again:
 	if (!qedi_fp_has_work(fp))
 		qed_sb_update_sb_idx(fp->sb_info);
 
-	/* Check for more work */
+	 
 	rmb();
 
 	if (!qedi_fp_has_work(fp))
@@ -1365,10 +1355,10 @@ process_again:
 	return IRQ_HANDLED;
 }
 
-/* simd handler for MSI/INTa */
+ 
 static void qedi_simd_int_handler(void *cookie)
 {
-	/* Cookie is qedi_ctx struct */
+	 
 	struct qedi_ctx *qedi = (struct qedi_ctx *)cookie;
 
 	QEDI_WARN(&qedi->dbg_ctx, "qedi=%p.\n", qedi);
@@ -1540,7 +1530,7 @@ static int qedi_alloc_bdq(struct qedi_ctx *qedi)
 	struct scsi_bd *pbl;
 	u64 *list;
 
-	/* Alloc dma memory for BDQ buffers */
+	 
 	for (i = 0; i < QEDI_BDQ_NUM; i++) {
 		qedi->bdq[i].buf_addr =
 				dma_alloc_coherent(&qedi->pdev->dev,
@@ -1554,7 +1544,7 @@ static int qedi_alloc_bdq(struct qedi_ctx *qedi)
 		}
 	}
 
-	/* Alloc dma memory for BDQ page buffer list */
+	 
 	qedi->bdq_pbl_mem_size = QEDI_BDQ_NUM * sizeof(struct scsi_bd);
 	qedi->bdq_pbl_mem_size = ALIGN(qedi->bdq_pbl_mem_size, QEDI_PAGE_SIZE);
 	qedi->rq_num_entries = qedi->bdq_pbl_mem_size / sizeof(struct scsi_bd);
@@ -1570,10 +1560,7 @@ static int qedi_alloc_bdq(struct qedi_ctx *qedi)
 		return -ENOMEM;
 	}
 
-	/*
-	 * Populate BDQ PBL with physical and virtual address of individual
-	 * BDQ buffers
-	 */
+	 
 	pbl = (struct scsi_bd  *)qedi->bdq_pbl;
 	for (i = 0; i < QEDI_BDQ_NUM; i++) {
 		pbl->address.hi =
@@ -1590,7 +1577,7 @@ static int qedi_alloc_bdq(struct qedi_ctx *qedi)
 		pbl++;
 	}
 
-	/* Allocate list of PBL pages */
+	 
 	qedi->bdq_pbl_list = dma_alloc_coherent(&qedi->pdev->dev,
 						QEDI_PAGE_SIZE,
 						&qedi->bdq_pbl_list_dma,
@@ -1601,10 +1588,7 @@ static int qedi_alloc_bdq(struct qedi_ctx *qedi)
 		return -ENOMEM;
 	}
 
-	/*
-	 * Now populate PBL list with pages that contain pointers to the
-	 * individual buffers.
-	 */
+	 
 	qedi->bdq_pbl_list_num_entries = qedi->bdq_pbl_mem_size /
 					 QEDI_PAGE_SIZE;
 	list = (u64 *)qedi->bdq_pbl_list;
@@ -1625,18 +1609,13 @@ static int qedi_alloc_global_queues(struct qedi_ctx *qedi)
 	dma_addr_t page;
 	int num_pages;
 
-	/*
-	 * Number of global queues (CQ / RQ). This should
-	 * be <= number of available MSIX vectors for the PF
-	 */
+	 
 	if (!qedi->num_queues) {
 		QEDI_ERR(&qedi->dbg_ctx, "No MSI-X vectors available!\n");
 		return -ENOMEM;
 	}
 
-	/* Make sure we allocated the PBL that will contain the physical
-	 * addresses of our queues
-	 */
+	 
 	if (!qedi->p_cpuq) {
 		status = -EINVAL;
 		goto mem_alloc_failure;
@@ -1652,19 +1631,17 @@ static int qedi_alloc_global_queues(struct qedi_ctx *qedi)
 	QEDI_INFO(&qedi->dbg_ctx, QEDI_LOG_DISC,
 		  "qedi->global_queues=%p.\n", qedi->global_queues);
 
-	/* Allocate DMA coherent buffers for BDQ */
+	 
 	status = qedi_alloc_bdq(qedi);
 	if (status)
 		goto mem_alloc_failure;
 
-	/* Allocate DMA coherent buffers for NVM_ISCSI_CFG */
+	 
 	status = qedi_alloc_nvm_iscsi_cfg(qedi);
 	if (status)
 		goto mem_alloc_failure;
 
-	/* Allocate a CQ and an associated PBL for each MSI-X
-	 * vector.
-	 */
+	 
 	for (i = 0; i < qedi->num_queues; i++) {
 		qedi->global_queues[i] =
 					kzalloc(sizeof(*qedi->global_queues[0]),
@@ -1712,7 +1689,7 @@ static int qedi_alloc_global_queues(struct qedi_ctx *qedi)
 			goto mem_alloc_failure;
 		}
 
-		/* Create PBL */
+		 
 		num_pages = qedi->global_queues[i]->cq_mem_size /
 		    QEDI_PAGE_SIZE;
 		page = qedi->global_queues[i]->cq_dma;
@@ -1729,12 +1706,7 @@ static int qedi_alloc_global_queues(struct qedi_ctx *qedi)
 
 	list = (u32 *)qedi->p_cpuq;
 
-	/*
-	 * The list is built as follows: CQ#0 PBL pointer, RQ#0 PBL pointer,
-	 * CQ#1 PBL pointer, RQ#1 PBL pointer, etc.  Each PBL pointer points
-	 * to the physical address which contains an array of pointers to the
-	 * physical addresses of the specific queue pages.
-	 */
+	 
 	for (i = 0; i < qedi->num_queues; i++) {
 		*list = (u32)qedi->global_queues[i]->cq_pbl_dma;
 		list++;
@@ -1764,7 +1736,7 @@ int qedi_alloc_sq(struct qedi_ctx *qedi, struct qedi_endpoint *ep)
 	if (!ep)
 		return -EIO;
 
-	/* Calculate appropriate queue and PBL sizes */
+	 
 	ep->sq_mem_size = QEDI_SQ_SIZE * sizeof(struct iscsi_wqe);
 	ep->sq_mem_size += QEDI_PAGE_SIZE - 1;
 
@@ -1788,7 +1760,7 @@ int qedi_alloc_sq(struct qedi_ctx *qedi, struct qedi_endpoint *ep)
 		goto out_free_sq;
 	}
 
-	/* Create PBL */
+	 
 	num_pages = ep->sq_mem_size / QEDI_PAGE_SIZE;
 	page = ep->sq_dma;
 	pbl = (u32 *)ep->sq_pbl;
@@ -2016,10 +1988,7 @@ void qedi_reset_host_mtu(struct qedi_ctx *qedi, u16 mtu)
 	qedi_ops->ll2->start(qedi->cdev, &params);
 }
 
-/*
- * qedi_get_nvram_block: - Scan through the iSCSI NVRAM block (while accounting
- * for gaps) for the matching absolute-pf-id of the QEDI device.
- */
+ 
 static struct nvm_iscsi_block *
 qedi_get_nvram_block(struct qedi_ctx *qedi)
 {
@@ -2060,7 +2029,7 @@ static ssize_t qedi_show_boot_eth_info(void *data, int type, char *buf)
 		  NVM_ISCSI_CFG_GEN_IPV6_ENABLED;
 	dhcp_en = block->generic.ctrl_flags &
 		  NVM_ISCSI_CFG_GEN_DHCP_TCPIP_CONFIG_ENABLED;
-	/* Static IP assignments. */
+	 
 	fmt = ipv6_en ? "%pI6\n" : "%pI4\n";
 	ip = ipv6_en ? initiator->ipv6.addr.byte : initiator->ipv4.addr.byte;
 	ip_len = ipv6_en ? IPV6_LEN : IPV4_LEN;
@@ -2068,7 +2037,7 @@ static ssize_t qedi_show_boot_eth_info(void *data, int type, char *buf)
 	      initiator->ipv4.subnet_mask.byte;
 	gw = ipv6_en ? initiator->ipv6.gateway.byte :
 	     initiator->ipv4.gateway.byte;
-	/* DHCP IP adjustments. */
+	 
 	fmt = dhcp_en ? "%s\n" : fmt;
 	if (dhcp_en) {
 		ip = ipv6_en ? "0::0" : "0.0.0.0";
@@ -2604,7 +2573,7 @@ retry_probe:
 		goto free_pf_params;
 	}
 
-	/* Start the Slowpath-process */
+	 
 	memset(&sp_params, 0, sizeof(struct qed_slowpath_params));
 	sp_params.int_mode = QED_INT_MODE_MSIX;
 	sp_params.drv_major = QEDI_DRIVER_MAJOR_VER;
@@ -2618,9 +2587,7 @@ retry_probe:
 		goto stop_hw;
 	}
 
-	/* update_pf_params needs to be called before and after slowpath
-	 * start
-	 */
+	 
 	qedi_ops->common->update_pf_params(qedi->cdev, &qedi->pf_params);
 
 	rc = qedi_setup_int(qedi);
@@ -2629,12 +2596,12 @@ retry_probe:
 
 	qedi_ops->common->set_power_state(qedi->cdev, PCI_D0);
 
-	/* Learn information crucial for qedi to progress */
+	 
 	rc = qedi_ops->fill_dev_info(qedi->cdev, &qedi->dev_info);
 	if (rc)
 		goto stop_iscsi_func;
 
-	/* Record BDQ producer doorbell addresses */
+	 
 	qedi->bdq_primary_prod = qedi->dev_info.primary_dbq_rq_addr;
 	qedi->bdq_secondary_prod = qedi->dev_info.secondary_bdq_rq_addr;
 	QEDI_INFO(&qedi->dbg_ctx, QEDI_LOG_DISC,
@@ -2642,11 +2609,7 @@ retry_probe:
 		  qedi->bdq_primary_prod,
 		  qedi->bdq_secondary_prod);
 
-	/*
-	 * We need to write the number of BDs in the BDQ we've preallocated so
-	 * the f/w will do a prefetch and we'll get an unsolicited CQE when a
-	 * packet arrives.
-	 */
+	 
 	qedi->bdq_prod_idx = QEDI_BDQ_NUM;
 	QEDI_INFO(&qedi->dbg_ctx, QEDI_LOG_DISC,
 		  "Writing %d to primary and secondary BDQ doorbell registers.\n",
@@ -2673,10 +2636,10 @@ retry_probe:
 	ether_addr_copy(params.ll2_mac_address, qedi->dev_info.common.hw_mac);
 
 	if (mode != QEDI_MODE_RECOVERY) {
-		/* set up rx path */
+		 
 		INIT_LIST_HEAD(&qedi->ll2_skb_list);
 		spin_lock_init(&qedi->ll2_lock);
-		/* start qedi context */
+		 
 		spin_lock_init(&qedi->hba_lock);
 		spin_lock_init(&qedi->task_idx_lock);
 		mutex_init(&qedi->stats_lock);
@@ -2729,7 +2692,7 @@ retry_probe:
 			goto remove_host;
 		}
 
-		/* Allocate uio buffers */
+		 
 		rc = qedi_alloc_uio_rings(qedi);
 		if (rc) {
 			QEDI_ERR(&qedi->dbg_ctx,
@@ -2744,7 +2707,7 @@ retry_probe:
 			goto free_uio;
 		}
 
-		/* host the array on iscsi_conn */
+		 
 		rc = qedi_setup_cid_que(qedi);
 		if (rc) {
 			QEDI_ERR(&qedi->dbg_ctx,
@@ -2788,7 +2751,7 @@ retry_probe:
 		INIT_DELAYED_WORK(&qedi->board_disable_work,
 				  qedi_board_disable_work);
 
-		/* F/w needs 1st task context memory entry for performance */
+		 
 		set_bit(QEDI_RESERVE_TASK_ID, qedi->task_idx_map);
 		atomic_set(&qedi->num_offloads, 0);
 
@@ -2846,9 +2809,7 @@ static void qedi_recovery_handler(struct work_struct *work)
 
 	iscsi_host_for_each_session(qedi->shost, qedi_mark_conn_recovery);
 
-	/* Call common_ops->recovery_prolog to allow the MFW to quiesce
-	 * any PCI transactions.
-	 */
+	 
 	qedi_ops->common->recovery_prolog(qedi->cdev);
 
 	__qedi_remove(qedi->pdev, QEDI_MODE_RECOVERY);

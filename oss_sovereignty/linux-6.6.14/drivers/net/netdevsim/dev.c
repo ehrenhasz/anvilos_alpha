@@ -1,19 +1,4 @@
-/*
- * Copyright (c) 2018 Cumulus Networks. All rights reserved.
- * Copyright (c) 2018 David Ahern <dsa@cumulusnetworks.com>
- * Copyright (c) 2019 Mellanox Technologies. All rights reserved.
- *
- * This software is licensed under the GNU General License Version 2,
- * June 1991 as shown in the file COPYING in the top-level directory of this
- * source tree.
- *
- * THE COPYRIGHT HOLDERS AND/OR OTHER PARTIES PROVIDE THE PROGRAM "AS IS"
- * WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING,
- * BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE. THE ENTIRE RISK AS TO THE QUALITY AND PERFORMANCE
- * OF THE PROGRAM IS WITH YOU. SHOULD THE PROGRAM PROVE DEFECTIVE, YOU ASSUME
- * THE COST OF ALL NECESSARY SERVICING, REPAIR OR CORRECTION.
- */
+ 
 
 #include <linux/debugfs.h>
 #include <linux/device.h>
@@ -262,7 +247,7 @@ static ssize_t nsim_bus_dev_max_vfs_write(struct file *file,
 	if (ret)
 		return -EINVAL;
 
-	/* max_vfs limited by the maximum number of provided port indexes */
+	 
 	if (val > NSIM_DEV_VF_PORT_INDEX_MAX - NSIM_DEV_VF_PORT_INDEX_BASE)
 		return -ERANGE;
 
@@ -273,7 +258,7 @@ static ssize_t nsim_bus_dev_max_vfs_write(struct file *file,
 
 	nsim_dev = file->private_data;
 	devl_lock(priv_to_devlink(nsim_dev));
-	/* Reject if VFs are configured */
+	 
 	if (nsim_dev_get_vfs(nsim_dev)) {
 		ret = -EBUSY;
 	} else {
@@ -338,7 +323,7 @@ static int nsim_dev_debugfs_init(struct nsim_dev *nsim_dev)
 	debugfs_create_bool("fail_trap_policer_counter_get", 0600,
 			    nsim_dev->ddir,
 			    &nsim_dev->fail_trap_policer_counter_get);
-	/* caution, dev_max_vfs write takes devlink lock */
+	 
 	debugfs_create_file("max_vfs", 0600, nsim_dev->ddir,
 			    nsim_dev, &nsim_dev_max_vfs_fops);
 
@@ -435,7 +420,7 @@ static int nsim_dev_resources_register(struct devlink *devlink)
 	};
 	int err;
 
-	/* Resources for IPv4 */
+	 
 	err = devl_resource_register(devlink, "IPv4", (u64)-1,
 				     NSIM_RESOURCE_IPV4,
 				     DEVLINK_RESOURCE_ID_PARENT_TOP,
@@ -461,7 +446,7 @@ static int nsim_dev_resources_register(struct devlink *devlink)
 		goto err_out;
 	}
 
-	/* Resources for IPv6 */
+	 
 	err = devl_resource_register(devlink, "IPv6", (u64)-1,
 				     NSIM_RESOURCE_IPV6,
 				     DEVLINK_RESOURCE_ID_PARENT_TOP,
@@ -487,7 +472,7 @@ static int nsim_dev_resources_register(struct devlink *devlink)
 		goto err_out;
 	}
 
-	/* Resources for nexthops */
+	 
 	err = devl_resource_register(devlink, "nexthops", (u64)-1,
 				     NSIM_RESOURCE_NEXTHOPS,
 				     DEVLINK_RESOURCE_ID_PARENT_TOP,
@@ -652,12 +637,10 @@ struct nsim_trap_data {
 	u64 *trap_policers_cnt_arr;
 	u64 trap_pkt_cnt;
 	struct nsim_dev *nsim_dev;
-	spinlock_t trap_lock;	/* Protects trap_items_arr */
+	spinlock_t trap_lock;	 
 };
 
-/* All driver-specific traps must be documented in
- * Documentation/networking/devlink/netdevsim.rst
- */
+ 
 enum {
 	NSIM_TRAP_ID_BASE = DEVLINK_TRAP_GENERIC_ID_MAX,
 	NSIM_TRAP_ID_FID_MISS,
@@ -807,11 +790,7 @@ static void nsim_dev_trap_report(struct nsim_dev_port *nsim_dev_port)
 			continue;
 		skb->dev = nsim_dev_port->ns->netdev;
 
-		/* Trapped packets are usually passed to devlink in softIRQ,
-		 * but in this case they are generated in a workqueue. Disable
-		 * softIRQs to prevent lockdep from complaining about
-		 * "incosistent lock state".
-		 */
+		 
 
 		spin_lock_bh(&nsim_dev->fa_cookie_lock);
 		fa_cookie = has_fa_cookie ? nsim_dev->fa_cookie : NULL;
@@ -835,9 +814,7 @@ static void nsim_dev_trap_report_work(struct work_struct *work)
 				      trap_report_dw.work);
 	nsim_dev = nsim_trap_data->nsim_dev;
 
-	/* For each running port and enabled packet trap, generate a UDP
-	 * packet with a random 5-tuple and report it.
-	 */
+	 
 	if (!devl_trylock(priv_to_devlink(nsim_dev))) {
 		schedule_delayed_work(&nsim_dev->trap_data->trap_report_dw, 0);
 		return;
@@ -882,10 +859,7 @@ static int nsim_dev_traps_init(struct devlink *devlink)
 		goto err_trap_items_free;
 	}
 
-	/* The lock is used to protect the action state of the registered
-	 * traps. The value is written by user and read in delayed work when
-	 * iterating over all the traps.
-	 */
+	 
 	spin_lock_init(&nsim_trap_data->trap_lock);
 	nsim_trap_data->nsim_dev = nsim_dev;
 	nsim_dev->trap_data = nsim_trap_data;
@@ -931,7 +905,7 @@ static void nsim_dev_traps_exit(struct devlink *devlink)
 {
 	struct nsim_dev *nsim_dev = devlink_priv(devlink);
 
-	/* caution, trap work takes devlink lock */
+	 
 	cancel_delayed_work_sync(&nsim_dev->trap_data->trap_report_dw);
 	devl_traps_unregister(devlink, nsim_traps_arr,
 			      ARRAY_SIZE(nsim_traps_arr));
@@ -955,9 +929,7 @@ static int nsim_dev_reload_down(struct devlink *devlink, bool netns_change,
 	struct nsim_dev *nsim_dev = devlink_priv(devlink);
 
 	if (nsim_dev->dont_allow_reload) {
-		/* For testing purposes, user set debugfs dont_allow_reload
-		 * value to true. So forbid it.
-		 */
+		 
 		NL_SET_ERR_MSG_MOD(extack, "User forbid the reload for testing purposes");
 		return -EOPNOTSUPP;
 	}
@@ -973,9 +945,7 @@ static int nsim_dev_reload_up(struct devlink *devlink, enum devlink_reload_actio
 	struct nsim_dev *nsim_dev = devlink_priv(devlink);
 
 	if (nsim_dev->fail_reload) {
-		/* For testing purposes, user set debugfs fail_reload
-		 * value to true. Fail right away.
-		 */
+		 
 		NL_SET_ERR_MSG_MOD(extack, "User setup the reload to fail for testing purposes");
 		return -EINVAL;
 	}
@@ -1140,11 +1110,8 @@ nsim_dev_devlink_trap_policer_counter_get(struct devlink *devlink,
 	return 0;
 }
 
-#define NSIM_LINK_SPEED_MAX     5000 /* Mbps */
-#define NSIM_LINK_SPEED_UNIT    125000 /* 1 Mbps given in bytes/sec to avoid
-					* u64 overflow during conversion from
-					* bytes to bits.
-					*/
+#define NSIM_LINK_SPEED_MAX     5000  
+#define NSIM_LINK_SPEED_UNIT    125000  
 
 static int nsim_rate_bytes_to_units(char *name, u64 *rate, struct netlink_ext_ack *extack)
 {

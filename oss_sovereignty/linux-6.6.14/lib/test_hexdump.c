@@ -1,6 +1,4 @@
-/*
- * Test cases for lib/hexdump.c module.
- */
+ 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
 #include <linux/init.h>
@@ -10,10 +8,10 @@
 #include <linux/string.h>
 
 static const unsigned char data_b[] = {
-	'\xbe', '\x32', '\xdb', '\x7b', '\x0a', '\x18', '\x93', '\xb2',	/* 00 - 07 */
-	'\x70', '\xba', '\xc4', '\x24', '\x7d', '\x83', '\x34', '\x9b',	/* 08 - 0f */
-	'\xa6', '\x9c', '\x31', '\xad', '\x9c', '\x0f', '\xac', '\xe9',	/* 10 - 17 */
-	'\x4c', '\xd1', '\x19', '\x99', '\x43', '\xb1', '\xaf', '\x0c',	/* 18 - 1f */
+	'\xbe', '\x32', '\xdb', '\x7b', '\x0a', '\x18', '\x93', '\xb2',	 
+	'\x70', '\xba', '\xc4', '\x24', '\x7d', '\x83', '\x34', '\x9b',	 
+	'\xa6', '\x9c', '\x31', '\xad', '\x9c', '\x0f', '\xac', '\xe9',	 
+	'\x4c', '\xd1', '\x19', '\x99', '\x43', '\xb1', '\xaf', '\x0c',	 
 };
 
 static const unsigned char data_a[] = ".2.{....p..$}.4...1.....L...C...";
@@ -93,7 +91,7 @@ static void __init test_hexdump_prepare_test(size_t len, int rowsize,
 	else
 		result = test_data_1;
 
-	/* hex dump */
+	 
 	p = test;
 	for (i = 0; i < l / gs; i++) {
 		const char *q = *result++;
@@ -107,7 +105,7 @@ static void __init test_hexdump_prepare_test(size_t len, int rowsize,
 	if (i)
 		p--;
 
-	/* ASCII part */
+	 
 	if (ascii) {
 		do {
 			*p++ = ' ';
@@ -173,12 +171,9 @@ static void __init test_hexdump_overflow(size_t buflen, size_t len,
 
 	r = hex_dump_to_buffer(data_b, len, rs, gs, buf, buflen, ascii);
 
-	/*
-	 * Caller must provide the data length multiple of groupsize. The
-	 * calculations below are made with that assumption in mind.
-	 */
-	ae = rs * 2 /* hex */ + rs / gs /* spaces */ + 1 /* space */ + len /* ascii */;
-	he = (gs * 2 /* hex */ + 1 /* space */) * len / gs - 1 /* no trailing space */;
+	 
+	ae = rs * 2   + rs / gs   + 1   + len  ;
+	he = (gs * 2   + 1  ) * len / gs - 1  ;
 
 	if (ascii)
 		e = ae;
@@ -248,7 +243,7 @@ module_init(test_hexdump_init);
 
 static void __exit test_hexdump_exit(void)
 {
-	/* do nothing */
+	 
 }
 module_exit(test_hexdump_exit);
 

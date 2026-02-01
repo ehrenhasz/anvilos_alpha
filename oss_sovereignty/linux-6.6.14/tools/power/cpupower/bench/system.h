@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*  cpufreq-bench CPUFreq microbenchmark
- *
- *  Copyright (C) 2008 Christian Kornacker <ckornacker@suse.de>
- */
+ 
+ 
 
 #include "parse.h"
 

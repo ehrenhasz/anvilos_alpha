@@ -1,18 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * IIO driver for Bosch BNO055 IMU
- *
- * Copyright (C) 2021-2022 Istituto Italiano di Tecnologia
- * Electronic Design Laboratory
- * Written by Andrea Merello <andrea.merello@iit.it>
- *
- * Portions of this driver are taken from the BNO055 driver patch
- * from Vlad Dogaru which is Copyright (c) 2016, Intel Corporation.
- *
- * This driver is also based on BMI160 driver, which is:
- *	Copyright (c) 2016, Intel Corporation.
- *	Copyright (c) 2019, Martin Kelly.
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/bitmap.h>
@@ -37,10 +24,10 @@
 #define BNO055_FW_UID_FMT "bno055-caldata-%*phN.dat"
 #define BNO055_FW_GENERIC_NAME "bno055-caldata.dat"
 
-/* common registers */
+ 
 #define BNO055_PAGESEL_REG		0x7
 
-/* page 0 registers */
+ 
 #define BNO055_CHIP_ID_REG		0x0
 #define BNO055_CHIP_ID_MAGIC 0xA0
 #define BNO055_SW_REV_LSB_REG		0x4
@@ -83,21 +70,17 @@
 #define BNO055_OPR_MODE_FUSION_FMC_OFF 0xB
 #define BNO055_OPR_MODE_FUSION 0xC
 #define BNO055_UNIT_SEL_REG		0x3B
-/* Android orientation mode means: pitch value decreases turning clockwise */
+ 
 #define BNO055_UNIT_SEL_ANDROID BIT(7)
 #define BNO055_UNIT_SEL_GYR_RPS BIT(1)
 #define BNO055_CALDATA_START		0x55
 #define BNO055_CALDATA_END		0x6A
 #define BNO055_CALDATA_LEN 22
 
-/*
- * The difference in address between the register that contains the
- * value and the register that contains the offset.  This applies for
- * accel, gyro and magn channels.
- */
+ 
 #define BNO055_REG_OFFSET_ADDR		0x4D
 
-/* page 1 registers */
+ 
 #define BNO055_PG1(x) ((x) | 0x80)
 #define BNO055_ACC_CONFIG_REG		BNO055_PG1(0x8)
 #define BNO055_ACC_CONFIG_LPF_MASK GENMASK(4, 2)
@@ -134,37 +117,20 @@ static struct bno055_sysfs_attr bno055_acc_lpf = {
 };
 
 static int bno055_acc_range_vals[] = {
-  /* G:    2,    4,    8,    16 */
+   
 	1962, 3924, 7848, 15696
 };
 
 static struct bno055_sysfs_attr bno055_acc_range = {
 	.vals = bno055_acc_range_vals,
 	.len = ARRAY_SIZE(bno055_acc_range_vals),
-	.fusion_vals = (int[]){3924}, /* 4G */
+	.fusion_vals = (int[]){3924},  
 	.type = IIO_VAL_INT,
 };
 
-/*
- * Theoretically the IMU should return data in a given (i.e. fixed) unit
- * regardless of the range setting. This happens for the accelerometer, but not
- * for the gyroscope; the gyroscope range setting affects the scale.
- * This is probably due to this[0] bug.
- * For this reason we map the internal range setting onto the standard IIO scale
- * attribute for gyro.
- * Since the bug[0] may be fixed in future, we check for the IMU FW version and
- * eventually warn the user.
- * Currently we just don't care about "range" attributes for gyro.
- *
- * [0]  https://community.bosch-sensortec.com/t5/MEMS-sensors-forum/BNO055-Wrong-sensitivity-resolution-in-datasheet/td-p/10266
- */
+ 
 
-/*
- * dps = hwval * (dps_range/2^15)
- * rps = hwval * (rps_range/2^15)
- *     = hwval * (dps_range/(2^15 * k))
- * where k is rad-to-deg factor
- */
+ 
 static int bno055_gyr_scale_vals[] = {
 	125, 1877467, 250, 1877467, 500, 1877467,
 	1000, 1877467, 2000, 1877467,
@@ -214,17 +180,17 @@ struct bno055_priv {
 
 static bool bno055_regmap_volatile(struct device *dev, unsigned int reg)
 {
-	/* data and status registers */
+	 
 	if (reg >= BNO055_ACC_DATA_X_LSB_REG && reg <= BNO055_SYS_ERR_REG)
 		return true;
 
-	/* when in fusion mode, config is updated by chip */
+	 
 	if (reg == BNO055_MAG_CONFIG_REG ||
 	    reg == BNO055_ACC_CONFIG_REG ||
 	    reg == BNO055_GYR_CONFIG_REG)
 		return true;
 
-	/* calibration data may be updated by the IMU */
+	 
 	if (reg >= BNO055_CALDATA_START && reg <= BNO055_CALDATA_END)
 		return true;
 
@@ -233,12 +199,12 @@ static bool bno055_regmap_volatile(struct device *dev, unsigned int reg)
 
 static bool bno055_regmap_readable(struct device *dev, unsigned int reg)
 {
-	/* unnamed PG0 reserved areas */
+	 
 	if ((reg < BNO055_PG1(0) && reg > BNO055_CALDATA_END) ||
 	    reg == 0x3C)
 		return false;
 
-	/* unnamed PG1 reserved areas */
+	 
 	if (reg > BNO055_PG1(BNO055_UID_HIGHER_REG) ||
 	    (reg < BNO055_PG1(BNO055_UID_LOWER_REG) && reg > BNO055_PG1(BNO055_GYR_AM_SET_REG)) ||
 	    reg == BNO055_PG1(0xE) ||
@@ -249,18 +215,15 @@ static bool bno055_regmap_readable(struct device *dev, unsigned int reg)
 
 static bool bno055_regmap_writeable(struct device *dev, unsigned int reg)
 {
-	/*
-	 * Unreadable registers are indeed reserved; there are no WO regs
-	 * (except for a single bit in SYS_TRIGGER register)
-	 */
+	 
 	if (!bno055_regmap_readable(dev, reg))
 		return false;
 
-	/* data and status registers */
+	 
 	if (reg >= BNO055_ACC_DATA_X_LSB_REG && reg <= BNO055_SYS_ERR_REG)
 		return false;
 
-	/* ID areas */
+	 
 	if (reg < BNO055_PAGESEL_REG ||
 	    (reg <= BNO055_UID_HIGHER_REG && reg >= BNO055_UID_LOWER_REG))
 		return false;
@@ -294,7 +257,7 @@ const struct regmap_config bno055_regmap_config = {
 };
 EXPORT_SYMBOL_NS_GPL(bno055_regmap_config, IIO_BNO055);
 
-/* must be called in configuration mode */
+ 
 static int bno055_calibration_load(struct bno055_priv *priv, const u8 *data, int len)
 {
 	if (len != BNO055_CALDATA_LEN) {
@@ -318,7 +281,7 @@ static int bno055_operation_mode_do_set(struct bno055_priv *priv,
 	if (ret)
 		return ret;
 
-	/* Following datasheet specifications: sensor takes 7mS up to 19 mS to switch mode */
+	 
 	msleep(20);
 
 	return 0;
@@ -365,7 +328,7 @@ static int bno055_init(struct bno055_priv *priv, const u8 *caldata, int len)
 	if (ret)
 		return ret;
 
-	/* use standard SI units */
+	 
 	ret = regmap_write(priv->regmap, BNO055_UNIT_SEL_REG,
 			   BNO055_UNIT_SEL_ANDROID | BNO055_UNIT_SEL_GYR_RPS);
 	if (ret)
@@ -395,7 +358,7 @@ static ssize_t bno055_operation_mode_set(struct bno055_priv *priv,
 
 	if (operation_mode == BNO055_OPR_MODE_FUSION ||
 	    operation_mode == BNO055_OPR_MODE_FUSION_FMC_OFF) {
-		/* for entering fusion mode, reset the chip to clear the algo state */
+		 
 		ret = regmap_bulk_read(priv->regmap, BNO055_CALDATA_START, caldata,
 				       BNO055_CALDATA_LEN);
 		if (ret)
@@ -425,7 +388,7 @@ static void bno055_uninit(void *arg)
 {
 	struct bno055_priv *priv = arg;
 
-	/* stop the IMU */
+	 
 	bno055_operation_mode_do_set(priv, BNO055_OPR_MODE_CONFIG);
 }
 
@@ -447,7 +410,7 @@ static void bno055_uninit(void *arg)
 	},									\
 }
 
-/* scan indexes follow DATA register order */
+ 
 enum bno055_scan_axis {
 	BNO055_SCAN_ACCEL_X,
 	BNO055_SCAN_ACCEL_Y,
@@ -473,7 +436,7 @@ enum bno055_scan_axis {
 };
 
 static const struct iio_chan_spec bno055_channels[] = {
-	/* accelerometer */
+	 
 	BNO055_CHANNEL(IIO_ACCEL, X, BNO055_SCAN_ACCEL_X,
 		       BNO055_ACC_DATA_X_LSB_REG, BIT(IIO_CHAN_INFO_OFFSET),
 		       BIT(IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY),
@@ -486,7 +449,7 @@ static const struct iio_chan_spec bno055_channels[] = {
 		       BNO055_ACC_DATA_Z_LSB_REG, BIT(IIO_CHAN_INFO_OFFSET),
 		       BIT(IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY),
 		       BIT(IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY)),
-	/* gyroscope */
+	 
 	BNO055_CHANNEL(IIO_ANGL_VEL, X, BNO055_SCAN_GYRO_X,
 		       BNO055_GYR_DATA_X_LSB_REG, BIT(IIO_CHAN_INFO_OFFSET),
 		       BIT(IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY),
@@ -502,7 +465,7 @@ static const struct iio_chan_spec bno055_channels[] = {
 		       BIT(IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY),
 		       BIT(IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY) |
 		       BIT(IIO_CHAN_INFO_SCALE)),
-	/* magnetometer */
+	 
 	BNO055_CHANNEL(IIO_MAGN, X, BNO055_SCAN_MAGN_X,
 		       BNO055_MAG_DATA_X_LSB_REG, BIT(IIO_CHAN_INFO_OFFSET),
 		       BIT(IIO_CHAN_INFO_SAMP_FREQ), BIT(IIO_CHAN_INFO_SAMP_FREQ)),
@@ -512,18 +475,18 @@ static const struct iio_chan_spec bno055_channels[] = {
 	BNO055_CHANNEL(IIO_MAGN, Z, BNO055_SCAN_MAGN_Z,
 		       BNO055_MAG_DATA_Z_LSB_REG, BIT(IIO_CHAN_INFO_OFFSET),
 		       BIT(IIO_CHAN_INFO_SAMP_FREQ), BIT(IIO_CHAN_INFO_SAMP_FREQ)),
-	/* euler angle */
+	 
 	BNO055_CHANNEL(IIO_ROT, YAW, BNO055_SCAN_YAW,
 		       BNO055_EUL_DATA_X_LSB_REG, 0, 0, 0),
 	BNO055_CHANNEL(IIO_ROT, ROLL, BNO055_SCAN_ROLL,
 		       BNO055_EUL_DATA_Y_LSB_REG, 0, 0, 0),
 	BNO055_CHANNEL(IIO_ROT, PITCH, BNO055_SCAN_PITCH,
 		       BNO055_EUL_DATA_Z_LSB_REG, 0, 0, 0),
-	/* quaternion */
+	 
 	BNO055_CHANNEL(IIO_ROT, QUATERNION, BNO055_SCAN_QUATERNION,
 		       BNO055_QUAT_DATA_W_LSB_REG, 0, 0, 0),
 
-	/* linear acceleration */
+	 
 	BNO055_CHANNEL(IIO_ACCEL, LINEAR_X, BNO055_SCAN_LIA_X,
 		       BNO055_LIA_DATA_X_LSB_REG, 0, 0, 0),
 	BNO055_CHANNEL(IIO_ACCEL, LINEAR_Y, BNO055_SCAN_LIA_Y,
@@ -531,7 +494,7 @@ static const struct iio_chan_spec bno055_channels[] = {
 	BNO055_CHANNEL(IIO_ACCEL, LINEAR_Z, BNO055_SCAN_LIA_Z,
 		       BNO055_LIA_DATA_Z_LSB_REG, 0, 0, 0),
 
-	/* gravity vector */
+	 
 	BNO055_CHANNEL(IIO_GRAVITY, X, BNO055_SCAN_GRAVITY_X,
 		       BNO055_GRAVITY_DATA_X_LSB_REG, 0, 0, 0),
 	BNO055_CHANNEL(IIO_GRAVITY, Y, BNO055_SCAN_GRAVITY_Y,
@@ -568,7 +531,7 @@ static int bno055_get_regmask(struct bno055_priv *priv, int *val, int *val2,
 			}
 	if (attr->type == IIO_VAL_INT) {
 		*val = attr->vals[idx];
-	} else { /* IIO_VAL_INT_PLUS_MICRO or IIO_VAL_FRACTIONAL */
+	} else {  
 		*val = attr->vals[idx * 2];
 		*val2 = attr->vals[idx * 2 + 1];
 	}
@@ -590,22 +553,13 @@ static int bno055_set_regmask(struct bno055_priv *priv, int val, int val2,
 	int len;
 	int i;
 
-	/*
-	 * The closest value the HW supports is only one in fusion mode,
-	 * and it is autoselected, so don't do anything, just return OK,
-	 * as the closest possible value has been (virtually) selected
-	 */
+	 
 	if (priv->operation_mode != BNO055_OPR_MODE_AMG)
 		return 0;
 
 	len = attr->len;
 
-	/*
-	 * We always get a request in INT_PLUS_MICRO, but we
-	 * take care of the micro part only when we really have
-	 * non-integer tables. This prevents 32-bit overflow with
-	 * larger integers contained in integer tables.
-	 */
+	 
 	req_val = val;
 	if (attr->type != IIO_VAL_INT) {
 		len /= 2;
@@ -679,10 +633,7 @@ static int bno055_read_simple_chan(struct iio_dev *indio_dev,
 					       &raw_val, sizeof(raw_val));
 			if (ret < 0)
 				return ret;
-			/*
-			 * IMU reports sensor offsets; IIO wants correction
-			 * offsets, thus we need the 'minus' here.
-			 */
+			 
 			*val = -sign_extend32(le16_to_cpu(raw_val), 15);
 		}
 		return IIO_VAL_INT;
@@ -690,24 +641,17 @@ static int bno055_read_simple_chan(struct iio_dev *indio_dev,
 		*val = 1;
 		switch (chan->type) {
 		case IIO_GRAVITY:
-			/* Table 3-35: 1 m/s^2 = 100 LSB */
+			 
 		case IIO_ACCEL:
-			/* Table 3-17: 1 m/s^2 = 100 LSB */
+			 
 			*val2 = 100;
 			break;
 		case IIO_MAGN:
-			/*
-			 * Table 3-19: 1 uT = 16 LSB.  But we need
-			 * Gauss: 1G = 0.1 uT.
-			 */
+			 
 			*val2 = 160;
 			break;
 		case IIO_ANGL_VEL:
-			/*
-			 * Table 3-22: 1 Rps = 900 LSB
-			 * .. but this is not exactly true. See comment at the
-			 * beginning of this file.
-			 */
+			 
 			if (priv->operation_mode != BNO055_OPR_MODE_AMG) {
 				*val = bno055_gyr_scale.fusion_vals[0];
 				*val2 = bno055_gyr_scale.fusion_vals[1];
@@ -720,7 +664,7 @@ static int bno055_read_simple_chan(struct iio_dev *indio_dev,
 						  &bno055_gyr_scale);
 			break;
 		case IIO_ROT:
-			/* Table 3-28: 1 degree = 16 LSB */
+			 
 			*val2 = 16;
 			break;
 		default:
@@ -762,12 +706,12 @@ static int bno055_sysfs_attr_avail(struct bno055_priv *priv, struct bno055_sysfs
 				   const int **vals, int *length)
 {
 	if (priv->operation_mode != BNO055_OPR_MODE_AMG) {
-		/* locked when fusion enabled */
+		 
 		*vals = attr->fusion_vals;
 		if (attr->type == IIO_VAL_INT)
 			*length = 1;
 		else
-			*length = 2; /* IIO_VAL_INT_PLUS_MICRO or IIO_VAL_FRACTIONAL*/
+			*length = 2;  
 	} else {
 		*vals = attr->vals;
 		*length = attr->len;
@@ -832,10 +776,7 @@ static int bno055_read_temp_chan(struct iio_dev *indio_dev, int *val)
 	if (ret < 0)
 		return ret;
 
-	/*
-	 * Tables 3-36 and 3-37: one byte of priv, signed, 1 LSB = 1C.
-	 * ABI wants milliC.
-	 */
+	 
 	*val = raw_val * 1000;
 
 	return IIO_VAL_INT;
@@ -864,7 +805,7 @@ static int bno055_read_quaternion(struct iio_dev *indio_dev,
 		*val_len = 4;
 		return IIO_VAL_INT_MULTIPLE;
 	case IIO_CHAN_INFO_SCALE:
-		/* Table 3-31: 1 quaternion = 2^14 LSB */
+		 
 		if (size < 2)
 			return -EINVAL;
 		vals[0] = 1;
@@ -921,10 +862,7 @@ static int _bno055_read_raw_multi(struct iio_dev *indio_dev,
 		*val_len = 1;
 		return bno055_read_temp_chan(indio_dev, &vals[0]);
 	case IIO_ROT:
-		/*
-		 * Rotation is exposed as either a quaternion or three
-		 * Euler angles.
-		 */
+		 
 		if (chan->channel2 == IIO_MOD_QUATERNION)
 			return bno055_read_quaternion(indio_dev, chan,
 						      size, vals,
@@ -1065,11 +1003,7 @@ static ssize_t fusion_enable_store(struct device *dev,
 	if (!en)
 		return bno055_operation_mode_set(priv, BNO055_OPR_MODE_AMG) ?: len;
 
-	/*
-	 * Coming from AMG means the FMC was off, just switch to fusion but
-	 * don't change anything that doesn't belong to us (i.e let FMC stay off).
-	 * Coming from any other fusion mode means we don't need to do anything.
-	 */
+	 
 	if (priv->operation_mode == BNO055_OPR_MODE_AMG)
 		return  bno055_operation_mode_set(priv, BNO055_OPR_MODE_FUSION_FMC_OFF) ?: len;
 
@@ -1200,11 +1134,7 @@ static ssize_t calibration_data_read(struct file *filp, struct kobject *kobj,
 	u8 data[BNO055_CALDATA_LEN];
 	int ret;
 
-	/*
-	 * Calibration data is volatile; reading it in chunks will possibly
-	 * results in inconsistent data. We require the user to read the whole
-	 * blob in a single chunk
-	 */
+	 
 	if (count < BNO055_CALDATA_LEN || pos)
 		return -EINVAL;
 
@@ -1368,17 +1298,7 @@ static const struct iio_info bno055_info = {
 	.debugfs_reg_access = bno055_debugfs_reg_access,
 };
 
-/*
- * Reads len samples from the HW, stores them in buf starting from buf_idx,
- * and applies mask to cull (skip) unneeded samples.
- * Updates buf_idx incrementing with the number of stored samples.
- * Samples from HW are transferred into buf, then in-place copy on buf is
- * performed in order to cull samples that need to be skipped.
- * This avoids copies of the first samples until we hit the 1st sample to skip,
- * and also avoids having an extra bounce buffer.
- * buf must be able to contain len elements in spite of how many samples we are
- * going to cull.
- */
+ 
 static int bno055_scan_xfer(struct bno055_priv *priv,
 			    int start_ch, int len, unsigned long mask,
 			    __le16 *buf, int *buf_idx)
@@ -1395,14 +1315,7 @@ static int bno055_scan_xfer(struct bno055_priv *priv,
 	if (!mask)
 		return 0;
 
-	/*
-	 * All channels are made up 1 16-bit sample, except for quaternion that
-	 * is made up 4 16-bit values.
-	 * For us the quaternion CH is just like 4 regular CHs.
-	 * If our read starts past the quaternion make sure to adjust the
-	 * starting offset; if the quaternion is contained in our scan then make
-	 * sure to adjust the read len.
-	 */
+	 
 	if (start_ch > BNO055_SCAN_QUATERNION) {
 		start_ch += 3;
 	} else if ((start_ch <= BNO055_SCAN_QUATERNION) &&
@@ -1450,46 +1363,24 @@ static irqreturn_t bno055_trigger_handler(int irq, void *p)
 
 	mutex_lock(&priv->lock);
 
-	/*
-	 * Walk the bitmap and eventually perform several transfers.
-	 * Bitmap ones-fields that are separated by gaps <= xfer_burst_break_thr
-	 * will be included in same transfer.
-	 * Every time the bitmap contains a gap wider than xfer_burst_break_thr
-	 * then we split the transfer, skipping the gap.
-	 */
+	 
 	for_each_set_bitrange(start, end, iio_dev->active_scan_mask,
 			      iio_dev->masklength) {
-		/*
-		 * First transfer will start from the beginning of the first
-		 * ones-field in the bitmap
-		 */
+		 
 		if (first) {
 			xfer_start = start;
 		} else {
-			/*
-			 * We found the next ones-field; check whether to
-			 * include it in * the current transfer or not (i.e.
-			 * let's perform the current * transfer and prepare for
-			 * another one).
-			 */
+			 
 
-			/*
-			 * In case the zeros-gap contains the quaternion bit,
-			 * then its length is actually 4 words instead of 1
-			 * (i.e. +3 wrt other channels).
-			 */
+			 
 			quat_extra_len = ((start > BNO055_SCAN_QUATERNION) &&
 					  (prev_end <= BNO055_SCAN_QUATERNION)) ? 3 : 0;
 
-			/* If the gap is wider than xfer_burst_break_thr then.. */
+			 
 			thr_hit = (start - prev_end + quat_extra_len) >
 				priv->xfer_burst_break_thr;
 
-			/*
-			 * .. transfer all the data up to the gap. Then set the
-			 * next transfer start index at right after the gap
-			 * (i.e. at the start of this ones-field).
-			 */
+			 
 			if (thr_hit) {
 				mask = *iio_dev->active_scan_mask >> xfer_start;
 				ret = bno055_scan_xfer(priv, xfer_start,
@@ -1504,10 +1395,7 @@ static irqreturn_t bno055_trigger_handler(int irq, void *p)
 		prev_end = end;
 	}
 
-	/*
-	 * We finished walking the bitmap; no more gaps to check for. Just
-	 * perform the current transfer.
-	 */
+	 
 	mask = *iio_dev->active_scan_mask >> xfer_start;
 	ret = bno055_scan_xfer(priv, xfer_start,
 			       prev_end - xfer_start,
@@ -1594,13 +1482,7 @@ int bno055_probe(struct device *dev, struct regmap *regmap,
 	if (val != BNO055_CHIP_ID_MAGIC)
 		dev_warn(dev, "Unrecognized chip ID 0x%x\n", val);
 
-	/*
-	 * In case we haven't a HW reset pin, we can still reset the chip via
-	 * register write. This is probably nonsense in case we can't even
-	 * communicate with the chip or the chip isn't the one we expect (i.e.
-	 * we don't write to unknown chips), so we perform SW reset only after
-	 * chip magic ID check
-	 */
+	 
 	if (!priv->reset_gpio) {
 		ret = bno055_system_reset(priv);
 		if (ret)
@@ -1615,12 +1497,7 @@ int bno055_probe(struct device *dev, struct regmap *regmap,
 	if (ret)
 		return ret;
 
-	/*
-	 * The stock FW version contains a bug (see comment at the beginning of
-	 * this file) that causes the anglvel scale to be changed depending on
-	 * the chip range setting. We workaround this, but we don't know what
-	 * other FW versions might do.
-	 */
+	 
 	if (ver != 0x3 || rev != 0x11)
 		dev_warn(dev, "Untested firmware version. Anglvel scale may not work as expected\n");
 
@@ -1629,7 +1506,7 @@ int bno055_probe(struct device *dev, struct regmap *regmap,
 	if (ret)
 		return ret;
 
-	/* Sensor calibration data */
+	 
 	fw_name_buf = kasprintf(GFP_KERNEL, BNO055_FW_UID_FMT,
 				BNO055_UID_LEN, priv->uid);
 	if (!fw_name_buf)

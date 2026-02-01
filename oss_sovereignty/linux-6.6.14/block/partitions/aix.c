@@ -1,20 +1,16 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *  fs/partitions/aix.c
- *
- *  Copyright (C) 2012-2013 Philippe De Muyter <phdm@macqel.be>
- */
+
+ 
 
 #include "check.h"
 
 struct lvm_rec {
-	char lvm_id[4]; /* "_LVM" */
+	char lvm_id[4];  
 	char reserved4[16];
 	__be32 lvmarea_len;
 	__be32 vgda_len;
 	__be32 vgda_psn[2];
 	char reserved36[10];
-	__be16 pp_size; /* log2(pp_size) */
+	__be16 pp_size;  
 	char reserved46[12];
 	__be16 version;
 	};
@@ -66,16 +62,7 @@ struct pvd {
 
 #define LVM_MAXLVS 256
 
-/**
- * read_lba(): Read bytes from disk, starting at given LBA
- * @state
- * @lba
- * @buffer
- * @count
- *
- * Description:  Reads @count bytes from @state->disk into @buffer.
- * Returns number of bytes read on success, 0 on error.
- */
+ 
 static size_t read_lba(struct parsed_partitions *state, u64 lba, u8 *buffer,
 			size_t count)
 {
@@ -101,15 +88,7 @@ static size_t read_lba(struct parsed_partitions *state, u64 lba, u8 *buffer,
 	return totalreadcount;
 }
 
-/**
- * alloc_pvd(): reads physical volume descriptor
- * @state
- * @lba
- *
- * Description: Returns pvd on success,  NULL on error.
- * Allocates space for pvd and fill it with disk blocks at @lba
- * Notes: remember to free pvd when you're done!
- */
+ 
 static struct pvd *alloc_pvd(struct parsed_partitions *state, u32 lba)
 {
 	size_t count = sizeof(struct pvd);
@@ -126,15 +105,7 @@ static struct pvd *alloc_pvd(struct parsed_partitions *state, u32 lba)
 	return p;
 }
 
-/**
- * alloc_lvn(): reads logical volume names
- * @state
- * @lba
- *
- * Description: Returns lvn on success,  NULL on error.
- * Allocates space for lvn and fill it with disk blocks at @lba
- * Notes: remember to free lvn when you're done!
- */
+ 
 static struct lvname *alloc_lvn(struct parsed_partitions *state, u32 lba)
 {
 	size_t count = sizeof(struct lvname) * LVM_MAXLVS;
@@ -215,7 +186,7 @@ int aix_partition(struct parsed_partitions *state)
 				if (lvip[i].pps_per_lv)
 					foundlvs += 1;
 			}
-			/* pvd loops depend on n[].name and lvip[].pps_per_lv */
+			 
 			pvd = alloc_pvd(state, vgda_sector + 17);
 		}
 		put_dev_sector(sect);
@@ -267,7 +238,7 @@ int aix_partition(struct parsed_partitions *state)
 		}
 		for (i = 0; i < state->limit; i += 1)
 			if (lvip[i].pps_found && !lvip[i].lv_is_contiguous) {
-				char tmp[sizeof(n[i].name) + 1]; // null char
+				char tmp[sizeof(n[i].name) + 1]; 
 
 				snprintf(tmp, sizeof(tmp), "%s", n[i].name);
 				pr_warn("partition %s (%u pp's found) is "

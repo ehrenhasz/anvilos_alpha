@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) STMicroelectronics 2016
- *
- * Author: Benjamin Gaignard <benjamin.gaignard@st.com>
- *
- */
+
+ 
 
 #include <linux/iio/iio.h>
 #include <linux/iio/sysfs.h>
@@ -19,7 +14,7 @@
 #define MAX_TRIGGERS 7
 #define MAX_VALIDS 5
 
-/* List the triggers created by each timer */
+ 
 static const void *triggers_table[][MAX_TRIGGERS] = {
 	{ TIM1_TRGO, TIM1_TRGO2, TIM1_CH1, TIM1_CH2, TIM1_CH3, TIM1_CH4,},
 	{ TIM2_TRGO, TIM2_CH1, TIM2_CH2, TIM2_CH3, TIM2_CH4,},
@@ -40,19 +35,19 @@ static const void *triggers_table[][MAX_TRIGGERS] = {
 	{ TIM17_OC1,},
 };
 
-/* List the triggers accepted by each timer */
+ 
 static const void *valids_table[][MAX_VALIDS] = {
 	{ TIM5_TRGO, TIM2_TRGO, TIM3_TRGO, TIM4_TRGO,},
 	{ TIM1_TRGO, TIM8_TRGO, TIM3_TRGO, TIM4_TRGO,},
 	{ TIM1_TRGO, TIM2_TRGO, TIM5_TRGO, TIM4_TRGO,},
 	{ TIM1_TRGO, TIM2_TRGO, TIM3_TRGO, TIM8_TRGO,},
 	{ TIM2_TRGO, TIM3_TRGO, TIM4_TRGO, TIM8_TRGO,},
-	{ }, /* timer 6 */
-	{ }, /* timer 7 */
+	{ },  
+	{ },  
 	{ TIM1_TRGO, TIM2_TRGO, TIM4_TRGO, TIM5_TRGO,},
 	{ TIM2_TRGO, TIM3_TRGO, TIM10_OC1, TIM11_OC1,},
-	{ }, /* timer 10 */
-	{ }, /* timer 11 */
+	{ },  
+	{ },  
 	{ TIM4_TRGO, TIM5_TRGO, TIM13_OC1, TIM14_OC1,},
 };
 
@@ -62,18 +57,18 @@ static const void *stm32h7_valids_table[][MAX_VALIDS] = {
 	{ TIM1_TRGO, TIM2_TRGO, TIM15_TRGO, TIM4_TRGO,},
 	{ TIM1_TRGO, TIM2_TRGO, TIM3_TRGO, TIM8_TRGO,},
 	{ TIM1_TRGO, TIM8_TRGO, TIM3_TRGO, TIM4_TRGO,},
-	{ }, /* timer 6 */
-	{ }, /* timer 7 */
+	{ },  
+	{ },  
 	{ TIM1_TRGO, TIM2_TRGO, TIM4_TRGO, TIM5_TRGO,},
-	{ }, /* timer 9 */
-	{ }, /* timer 10 */
-	{ }, /* timer 11 */
+	{ },  
+	{ },  
+	{ },  
 	{ TIM4_TRGO, TIM5_TRGO, TIM13_OC1, TIM14_OC1,},
-	{ }, /* timer 13 */
-	{ }, /* timer 14 */
+	{ },  
+	{ },  
 	{ TIM1_TRGO, TIM3_TRGO, TIM16_OC1, TIM17_OC1,},
-	{ }, /* timer 16 */
-	{ }, /* timer 17 */
+	{ },  
+	{ },  
 };
 
 struct stm32_timer_trigger_regs {
@@ -94,7 +89,7 @@ struct stm32_timer_trigger {
 	const void *triggers;
 	const void *valids;
 	bool has_trgo2;
-	struct mutex lock; /* concurrent sysfs configuration */
+	struct mutex lock;  
 	struct list_head tr_list;
 	struct stm32_timer_trigger_regs bak;
 };
@@ -122,17 +117,14 @@ static int stm32_timer_start(struct stm32_timer_trigger *priv,
 	int prescaler = 0;
 	u32 ccer;
 
-	/* Period and prescaler values depends of clock rate */
+	 
 	div = (unsigned long long)clk_get_rate(priv->clk);
 
 	do_div(div, frequency);
 
 	prd = div;
 
-	/*
-	 * Increase prescaler value until we get a result that fit
-	 * with auto reload register maximum value.
-	 */
+	 
 	while (div > priv->max_arr) {
 		prescaler++;
 		div = prd;
@@ -145,7 +137,7 @@ static int stm32_timer_start(struct stm32_timer_trigger *priv,
 		return -EINVAL;
 	}
 
-	/* Check if nobody else use the timer */
+	 
 	regmap_read(priv->regmap, TIM_CCER, &ccer);
 	if (ccer & TIM_CCER_CCXE)
 		return -EBUSY;
@@ -160,7 +152,7 @@ static int stm32_timer_start(struct stm32_timer_trigger *priv,
 	regmap_write(priv->regmap, TIM_ARR, prd - 1);
 	regmap_update_bits(priv->regmap, TIM_CR1, TIM_CR1_ARPE, TIM_CR1_ARPE);
 
-	/* Force master mode to update mode */
+	 
 	if (stm32_timer_is_trgo2_name(trig->name))
 		regmap_update_bits(priv->regmap, TIM_CR2, TIM_CR2_MMS2,
 				   0x2 << TIM_CR2_MMS2_SHIFT);
@@ -168,10 +160,10 @@ static int stm32_timer_start(struct stm32_timer_trigger *priv,
 		regmap_update_bits(priv->regmap, TIM_CR2, TIM_CR2_MMS,
 				   0x2 << TIM_CR2_MMS_SHIFT);
 
-	/* Make sure that registers are updated */
+	 
 	regmap_update_bits(priv->regmap, TIM_EGR, TIM_EGR_UG, TIM_EGR_UG);
 
-	/* Enable controller */
+	 
 	regmap_update_bits(priv->regmap, TIM_CR1, TIM_CR1_CEN, TIM_CR1_CEN);
 	mutex_unlock(&priv->lock);
 
@@ -188,19 +180,19 @@ static void stm32_timer_stop(struct stm32_timer_trigger *priv,
 		return;
 
 	mutex_lock(&priv->lock);
-	/* Stop timer */
+	 
 	regmap_update_bits(priv->regmap, TIM_CR1, TIM_CR1_ARPE, 0);
 	regmap_update_bits(priv->regmap, TIM_CR1, TIM_CR1_CEN, 0);
 	regmap_write(priv->regmap, TIM_PSC, 0);
 	regmap_write(priv->regmap, TIM_ARR, 0);
 
-	/* Force disable master mode */
+	 
 	if (stm32_timer_is_trgo2_name(trig->name))
 		regmap_update_bits(priv->regmap, TIM_CR2, TIM_CR2_MMS2, 0);
 	else
 		regmap_update_bits(priv->regmap, TIM_CR2, TIM_CR2_MMS, 0);
 
-	/* Make sure that registers are updated */
+	 
 	regmap_update_bits(priv->regmap, TIM_EGR, TIM_EGR_UG, TIM_EGR_UG);
 
 	if (priv->enabled) {
@@ -271,7 +263,7 @@ static char *master_mode_table[] = {
 	"OC2REF",
 	"OC3REF",
 	"OC4REF",
-	/* Master mode selection 2 only */
+	 
 	"OC5REF",
 	"OC6REF",
 	"compare_pulse_OC4REF",
@@ -324,7 +316,7 @@ static ssize_t stm32_tt_store_master_mode(struct device *dev,
 			     strlen(master_mode_table[i]))) {
 			mutex_lock(&priv->lock);
 			if (!priv->enabled) {
-				/* Clock should be enabled first */
+				 
 				priv->enabled = true;
 				clk_enable(priv->clk);
 			}
@@ -355,7 +347,7 @@ static ssize_t stm32_tt_show_master_mode_avail(struct device *dev,
 		len += scnprintf(buf + len, PAGE_SIZE - len,
 			"%s ", master_mode_table[i]);
 
-	/* replace trailing space by newline */
+	 
 	buf[len - 1] = '\n';
 
 	return len;
@@ -420,10 +412,7 @@ static int stm32_register_iio_triggers(struct stm32_timer_trigger *priv)
 		trig->dev.parent = priv->dev->parent;
 		trig->ops = &timer_trigger_ops;
 
-		/*
-		 * sampling frequency and master mode attributes
-		 * should only be available on trgo/trgo2 triggers
-		 */
+		 
 		if (cur_is_trgo || cur_is_trgo2)
 			trig->dev.groups = stm32_trigger_attr_groups;
 
@@ -467,7 +456,7 @@ static int stm32_counter_read_raw(struct iio_dev *indio_dev,
 		*val = 1;
 		*val2 = 0;
 
-		/* in quadrature case scale = 0.25 */
+		 
 		if (dat == 3)
 			*val2 = 2;
 
@@ -488,7 +477,7 @@ static int stm32_counter_write_raw(struct iio_dev *indio_dev,
 		return regmap_write(priv->regmap, TIM_CNT, val);
 
 	case IIO_CHAN_INFO_SCALE:
-		/* fixed scale */
+		 
 		return -EINVAL;
 
 	case IIO_CHAN_INFO_ENABLE:
@@ -607,10 +596,7 @@ static int stm32_set_enable_mode(struct iio_dev *indio_dev,
 
 	if (sms < 0)
 		return sms;
-	/*
-	 * Triggered mode sets CEN bit automatically by hardware. So, first
-	 * enable counter clock, so it can use it. Keeps it in sync with CEN.
-	 */
+	 
 	mutex_lock(&priv->lock);
 	if (sms == 6 && !priv->enabled) {
 		clk_enable(priv->clk);
@@ -682,7 +668,7 @@ static ssize_t stm32_count_set_preset(struct iio_dev *indio_dev,
 	if (ret)
 		return ret;
 
-	/* TIMx_ARR register shouldn't be buffered (ARPE=0) */
+	 
 	regmap_update_bits(priv->regmap, TIM_CR1, TIM_CR1_ARPE, 0);
 	regmap_write(priv->regmap, TIM_ARR, preset);
 
@@ -736,13 +722,7 @@ static struct stm32_timer_trigger *stm32_setup_counter_device(struct device *dev
 	return iio_priv(indio_dev);
 }
 
-/**
- * is_stm32_timer_trigger
- * @trig: trigger to be checked
- *
- * return true if the trigger is a valid stm32 iio timer trigger
- * either return false
- */
+ 
 bool is_stm32_timer_trigger(struct iio_trigger *trig)
 {
 	return (trig->ops == &timer_trigger_ops);
@@ -753,10 +733,7 @@ static void stm32_timer_detect_trgo2(struct stm32_timer_trigger *priv)
 {
 	u32 val;
 
-	/*
-	 * Master mode selection 2 bits can only be written and read back when
-	 * timer supports it.
-	 */
+	 
 	regmap_update_bits(priv->regmap, TIM_CR2, TIM_CR2_MMS2, TIM_CR2_MMS2);
 	regmap_read(priv->regmap, TIM_CR2, &val);
 	regmap_update_bits(priv->regmap, TIM_CR2, TIM_CR2_MMS2, 0);
@@ -782,7 +759,7 @@ static int stm32_timer_trigger_probe(struct platform_device *pdev)
 	    index >= cfg->num_valids_table)
 		return -EINVAL;
 
-	/* Create an IIO device only if we have triggers to be validated */
+	 
 	if (*cfg->valids_table[index])
 		priv = stm32_setup_counter_device(dev);
 	else
@@ -814,10 +791,10 @@ static int stm32_timer_trigger_remove(struct platform_device *pdev)
 	struct stm32_timer_trigger *priv = platform_get_drvdata(pdev);
 	u32 val;
 
-	/* Unregister triggers before everything can be safely turned off */
+	 
 	stm32_unregister_iio_triggers(priv);
 
-	/* Check if nobody else use the timer, then disable it */
+	 
 	regmap_read(priv->regmap, TIM_CCER, &val);
 	if (!(val & TIM_CCER_CCXE))
 		regmap_update_bits(priv->regmap, TIM_CR1, TIM_CR1_CEN, 0);
@@ -832,9 +809,9 @@ static int stm32_timer_trigger_suspend(struct device *dev)
 {
 	struct stm32_timer_trigger *priv = dev_get_drvdata(dev);
 
-	/* Only take care of enabled timer: don't disturb other MFD child */
+	 
 	if (priv->enabled) {
-		/* Backup registers that may get lost in low power mode */
+		 
 		regmap_read(priv->regmap, TIM_CR1, &priv->bak.cr1);
 		regmap_read(priv->regmap, TIM_CR2, &priv->bak.cr2);
 		regmap_read(priv->regmap, TIM_PSC, &priv->bak.psc);
@@ -842,7 +819,7 @@ static int stm32_timer_trigger_suspend(struct device *dev)
 		regmap_read(priv->regmap, TIM_CNT, &priv->bak.cnt);
 		regmap_read(priv->regmap, TIM_SMCR, &priv->bak.smcr);
 
-		/* Disable the timer */
+		 
 		regmap_update_bits(priv->regmap, TIM_CR1, TIM_CR1_CEN, 0);
 		clk_disable(priv->clk);
 	}
@@ -860,16 +837,16 @@ static int stm32_timer_trigger_resume(struct device *dev)
 		if (ret)
 			return ret;
 
-		/* restore master/slave modes */
+		 
 		regmap_write(priv->regmap, TIM_SMCR, priv->bak.smcr);
 		regmap_write(priv->regmap, TIM_CR2, priv->bak.cr2);
 
-		/* restore sampling_frequency (trgo / trgo2 triggers) */
+		 
 		regmap_write(priv->regmap, TIM_PSC, priv->bak.psc);
 		regmap_write(priv->regmap, TIM_ARR, priv->bak.arr);
 		regmap_write(priv->regmap, TIM_CNT, priv->bak.cnt);
 
-		/* Also re-enables the timer */
+		 
 		regmap_write(priv->regmap, TIM_CR1, priv->bak.cr1);
 	}
 
@@ -898,7 +875,7 @@ static const struct of_device_id stm32_trig_of_match[] = {
 		.compatible = "st,stm32h7-timer-trigger",
 		.data = (void *)&stm32h7_timer_trg_cfg,
 	},
-	{ /* end node */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, stm32_trig_of_match);
 

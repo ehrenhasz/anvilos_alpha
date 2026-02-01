@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: LGPL-2.1
+
 #define _GNU_SOURCE
 #include <assert.h>
 #include <linux/membarrier.h>
@@ -261,7 +261,7 @@ unsigned int yield_mod_cnt, nr_abort;
 
 #define printf_verbose(fmt, ...)
 
-#endif /* BENCHMARK */
+#endif  
 
 #include "rseq.h"
 
@@ -289,17 +289,14 @@ bool rseq_validate_cpu_id(void)
 	return rseq_mm_cid_available();
 }
 # ifdef TEST_MEMBARRIER
-/*
- * Membarrier does not currently support targeting a mm_cid, so
- * issue the barrier on all cpus.
- */
+ 
 static
 int rseq_membarrier_expedited(int cpu)
 {
 	return sys_membarrier(MEMBARRIER_CMD_PRIVATE_EXPEDITED_RSEQ,
 			      0, 0);
 }
-# endif /* TEST_MEMBARRIER */
+# endif  
 #else
 # define RSEQ_PERCPU	RSEQ_PERCPU_CPU_ID
 static
@@ -319,7 +316,7 @@ int rseq_membarrier_expedited(int cpu)
 	return sys_membarrier(MEMBARRIER_CMD_PRIVATE_EXPEDITED_RSEQ,
 			      MEMBARRIER_CMD_FLAG_CPU, cpu);
 }
-# endif /* TEST_MEMBARRIER */
+# endif  
 #endif
 
 struct percpu_lock_entry {
@@ -401,7 +398,7 @@ struct percpu_memcpy_buffer {
 	struct percpu_memcpy_buffer_entry c[CPU_SETSIZE];
 };
 
-/* A simple percpu spinlock. Grabs lock on current cpu. */
+ 
 static int rseq_this_cpu_lock(struct percpu_lock *lock)
 {
 	int cpu;
@@ -420,12 +417,9 @@ static int rseq_this_cpu_lock(struct percpu_lock *lock)
 					 0, 1, cpu);
 		if (rseq_likely(!ret))
 			break;
-		/* Retry if comparison fails or rseq aborts. */
+		 
 	}
-	/*
-	 * Acquire semantic when taking lock after control dependency.
-	 * Matches rseq_smp_store_release().
-	 */
+	 
 	rseq_smp_acquire__after_ctrl_dep();
 	return cpu;
 }
@@ -433,10 +427,7 @@ static int rseq_this_cpu_lock(struct percpu_lock *lock)
 static void rseq_percpu_unlock(struct percpu_lock *lock, int cpu)
 {
 	assert(lock->c[cpu].v == 1);
-	/*
-	 * Release lock, with release semantic. Matches
-	 * rseq_smp_acquire__after_ctrl_dep().
-	 */
+	 
 	rseq_smp_store_release(&lock->c[cpu].v, 0);
 }
 
@@ -468,12 +459,7 @@ void *test_percpu_spinlock_thread(void *arg)
 	return NULL;
 }
 
-/*
- * A simple test which implements a sharded counter using a per-cpu
- * lock.  Obviously real applications might prefer to simply use a
- * per-cpu increment; however, this is reasonable for a test and the
- * lock can be extended to synchronize more complicated operations.
- */
+ 
 void test_percpu_spinlock(void)
 {
 	const int num_threads = opt_threads;
@@ -605,7 +591,7 @@ void this_cpu_list_push(struct percpu_list *list,
 		int ret;
 
 		cpu = get_current_cpu_id();
-		/* Load list->c[cpu].head with single-copy atomicity. */
+		 
 		expect = (intptr_t)RSEQ_READ_ONCE(list->c[cpu].head);
 		newval = (intptr_t)node;
 		targetptr = (intptr_t *)&list->c[cpu].head;
@@ -614,17 +600,13 @@ void this_cpu_list_push(struct percpu_list *list,
 					 targetptr, expect, newval, cpu);
 		if (rseq_likely(!ret))
 			break;
-		/* Retry if comparison fails or rseq aborts. */
+		 
 	}
 	if (_cpu)
 		*_cpu = cpu;
 }
 
-/*
- * Unlike a traditional lock-less linked list; the availability of a
- * rseq primitive allows us to implement pop without concerns over
- * ABA-type races.
- */
+ 
 struct percpu_list_node *this_cpu_list_pop(struct percpu_list *list,
 					   int *_cpu)
 {
@@ -651,17 +633,14 @@ struct percpu_list_node *this_cpu_list_pop(struct percpu_list *list,
 		}
 		if (ret > 0)
 			break;
-		/* Retry if rseq aborts. */
+		 
 	}
 	if (_cpu)
 		*_cpu = cpu;
 	return node;
 }
 
-/*
- * __percpu_list_pop is not safe against concurrent accesses. Should
- * only be used on lists that are not concurrently modified.
- */
+ 
 struct percpu_list_node *__percpu_list_pop(struct percpu_list *list, int cpu)
 {
 	struct percpu_list_node *node;
@@ -687,7 +666,7 @@ void *test_percpu_list_thread(void *arg)
 
 		node = this_cpu_list_pop(list, NULL);
 		if (opt_yield)
-			sched_yield();  /* encourage shuffling */
+			sched_yield();   
 		if (node)
 			this_cpu_list_push(list, node, NULL);
 	}
@@ -700,7 +679,7 @@ void *test_percpu_list_thread(void *arg)
 	return NULL;
 }
 
-/* Simultaneous modification to a per-cpu linked list from many threads.  */
+ 
 void test_percpu_list(void)
 {
 	const int num_threads = opt_threads;
@@ -712,7 +691,7 @@ void test_percpu_list(void)
 
 	memset(&list, 0, sizeof(list));
 
-	/* Generate list entries for every usable cpu. */
+	 
 	sched_getaffinity(0, sizeof(allowed_cpus), &allowed_cpus);
 	for (i = 0; i < CPU_SETSIZE; i++) {
 		if (!CPU_ISSET(i, &allowed_cpus))
@@ -761,11 +740,7 @@ void test_percpu_list(void)
 		}
 	}
 
-	/*
-	 * All entries should now be accounted for (unless some external
-	 * actor is interfering with our allowed affinity while this
-	 * test is running).
-	 */
+	 
 	assert(sum == expected_sum);
 }
 
@@ -797,7 +772,7 @@ bool this_cpu_buffer_push(struct percpu_buffer *buffer,
 			result = true;
 			break;
 		}
-		/* Retry if comparison fails or rseq aborts. */
+		 
 	}
 	if (_cpu)
 		*_cpu = cpu;
@@ -816,7 +791,7 @@ struct percpu_buffer_node *this_cpu_buffer_pop(struct percpu_buffer *buffer,
 		int ret;
 
 		cpu = get_current_cpu_id();
-		/* Load offset with single-copy atomicity. */
+		 
 		offset = RSEQ_READ_ONCE(buffer->c[cpu].offset);
 		if (offset == 0) {
 			head = NULL;
@@ -831,17 +806,14 @@ struct percpu_buffer_node *this_cpu_buffer_pop(struct percpu_buffer *buffer,
 			(intptr_t)head, newval, cpu);
 		if (rseq_likely(!ret))
 			break;
-		/* Retry if comparison fails or rseq aborts. */
+		 
 	}
 	if (_cpu)
 		*_cpu = cpu;
 	return head;
 }
 
-/*
- * __percpu_buffer_pop is not safe against concurrent accesses. Should
- * only be used on buffers that are not concurrently modified.
- */
+ 
 struct percpu_buffer_node *__percpu_buffer_pop(struct percpu_buffer *buffer,
 					       int cpu)
 {
@@ -870,10 +842,10 @@ void *test_percpu_buffer_thread(void *arg)
 
 		node = this_cpu_buffer_pop(buffer, NULL);
 		if (opt_yield)
-			sched_yield();  /* encourage shuffling */
+			sched_yield();   
 		if (node) {
 			if (!this_cpu_buffer_push(buffer, node, NULL)) {
-				/* Should increase buffer size. */
+				 
 				abort();
 			}
 		}
@@ -887,7 +859,7 @@ void *test_percpu_buffer_thread(void *arg)
 	return NULL;
 }
 
-/* Simultaneous modification to a per-cpu buffer from many threads.  */
+ 
 void test_percpu_buffer(void)
 {
 	const int num_threads = opt_threads;
@@ -899,12 +871,12 @@ void test_percpu_buffer(void)
 
 	memset(&buffer, 0, sizeof(buffer));
 
-	/* Generate list entries for every usable cpu. */
+	 
 	sched_getaffinity(0, sizeof(allowed_cpus), &allowed_cpus);
 	for (i = 0; i < CPU_SETSIZE; i++) {
 		if (!CPU_ISSET(i, &allowed_cpus))
 			continue;
-		/* Worse-case is every item in same CPU. */
+		 
 		buffer.c[i].array =
 			malloc(sizeof(*buffer.c[i].array) * CPU_SETSIZE *
 			       BUFFER_ITEM_PER_CPU);
@@ -915,13 +887,7 @@ void test_percpu_buffer(void)
 
 			expected_sum += j;
 
-			/*
-			 * We could theoretically put the word-sized
-			 * "data" directly in the buffer. However, we
-			 * want to model objects that would not fit
-			 * within a single word, so allocate an object
-			 * for each node.
-			 */
+			 
 			node = malloc(sizeof(*node));
 			assert(node);
 			node->data = j;
@@ -962,11 +928,7 @@ void test_percpu_buffer(void)
 		free(buffer.c[i].array);
 	}
 
-	/*
-	 * All entries should now be accounted for (unless some external
-	 * actor is interfering with our allowed affinity while this
-	 * test is running).
-	 */
+	 
 	assert(sum == expected_sum);
 }
 
@@ -984,13 +946,13 @@ bool this_cpu_memcpy_buffer_push(struct percpu_memcpy_buffer *buffer,
 		int ret;
 
 		cpu = get_current_cpu_id();
-		/* Load offset with single-copy atomicity. */
+		 
 		offset = RSEQ_READ_ONCE(buffer->c[cpu].offset);
 		if (offset == buffer->c[cpu].buflen)
 			break;
 		destptr = (char *)&buffer->c[cpu].array[offset];
 		srcptr = (char *)&item;
-		/* copylen must be <= 4kB. */
+		 
 		copylen = sizeof(item);
 		newval_final = offset + 1;
 		targetptr_final = &buffer->c[cpu].offset;
@@ -1003,7 +965,7 @@ bool this_cpu_memcpy_buffer_push(struct percpu_memcpy_buffer *buffer,
 			result = true;
 			break;
 		}
-		/* Retry if comparison fails or rseq aborts. */
+		 
 	}
 	if (_cpu)
 		*_cpu = cpu;
@@ -1024,13 +986,13 @@ bool this_cpu_memcpy_buffer_pop(struct percpu_memcpy_buffer *buffer,
 		int ret;
 
 		cpu = get_current_cpu_id();
-		/* Load offset with single-copy atomicity. */
+		 
 		offset = RSEQ_READ_ONCE(buffer->c[cpu].offset);
 		if (offset == 0)
 			break;
 		destptr = (char *)item;
 		srcptr = (char *)&buffer->c[cpu].array[offset - 1];
-		/* copylen must be <= 4kB. */
+		 
 		copylen = sizeof(*item);
 		newval_final = offset - 1;
 		targetptr_final = &buffer->c[cpu].offset;
@@ -1041,17 +1003,14 @@ bool this_cpu_memcpy_buffer_pop(struct percpu_memcpy_buffer *buffer,
 			result = true;
 			break;
 		}
-		/* Retry if comparison fails or rseq aborts. */
+		 
 	}
 	if (_cpu)
 		*_cpu = cpu;
 	return result;
 }
 
-/*
- * __percpu_memcpy_buffer_pop is not safe against concurrent accesses. Should
- * only be used on buffers that are not concurrently modified.
- */
+ 
 bool __percpu_memcpy_buffer_pop(struct percpu_memcpy_buffer *buffer,
 				struct percpu_memcpy_buffer_node *item,
 				int cpu)
@@ -1081,10 +1040,10 @@ void *test_percpu_memcpy_buffer_thread(void *arg)
 
 		result = this_cpu_memcpy_buffer_pop(buffer, &item, NULL);
 		if (opt_yield)
-			sched_yield();  /* encourage shuffling */
+			sched_yield();   
 		if (result) {
 			if (!this_cpu_memcpy_buffer_push(buffer, item, NULL)) {
-				/* Should increase buffer size. */
+				 
 				abort();
 			}
 		}
@@ -1098,7 +1057,7 @@ void *test_percpu_memcpy_buffer_thread(void *arg)
 	return NULL;
 }
 
-/* Simultaneous modification to a per-cpu buffer from many threads.  */
+ 
 void test_percpu_memcpy_buffer(void)
 {
 	const int num_threads = opt_threads;
@@ -1110,12 +1069,12 @@ void test_percpu_memcpy_buffer(void)
 
 	memset(&buffer, 0, sizeof(buffer));
 
-	/* Generate list entries for every usable cpu. */
+	 
 	sched_getaffinity(0, sizeof(allowed_cpus), &allowed_cpus);
 	for (i = 0; i < CPU_SETSIZE; i++) {
 		if (!CPU_ISSET(i, &allowed_cpus))
 			continue;
-		/* Worse-case is every item in same CPU. */
+		 
 		buffer.c[i].array =
 			malloc(sizeof(*buffer.c[i].array) * CPU_SETSIZE *
 			       MEMCPY_BUFFER_ITEM_PER_CPU);
@@ -1124,13 +1083,7 @@ void test_percpu_memcpy_buffer(void)
 		for (j = 1; j <= MEMCPY_BUFFER_ITEM_PER_CPU; j++) {
 			expected_sum += 2 * j + 1;
 
-			/*
-			 * We could theoretically put the word-sized
-			 * "data" directly in the buffer. However, we
-			 * want to model objects that would not fit
-			 * within a single word, so allocate an object
-			 * for each node.
-			 */
+			 
 			buffer.c[i].array[j - 1].data1 = j;
 			buffer.c[i].array[j - 1].data2 = j + 1;
 			buffer.c[i].offset++;
@@ -1170,11 +1123,7 @@ void test_percpu_memcpy_buffer(void)
 		free(buffer.c[i].array);
 	}
 
-	/*
-	 * All entries should now be accounted for (unless some external
-	 * actor is interfering with our allowed affinity while this
-	 * test is running).
-	 */
+	 
 	assert(sum == expected_sum);
 }
 
@@ -1209,14 +1158,14 @@ static int set_signal_handler(void)
 	return ret;
 }
 
-/* Test MEMBARRIER_CMD_PRIVATE_RESTART_RSEQ_ON_CPU membarrier command. */
+ 
 #ifdef TEST_MEMBARRIER
 struct test_membarrier_thread_args {
 	int stop;
 	intptr_t percpu_list_ptr;
 };
 
-/* Worker threads modify data in their "active" percpu lists. */
+ 
 void *test_membarrier_worker_thread(void *arg)
 {
 	struct test_membarrier_thread_args *args =
@@ -1230,7 +1179,7 @@ void *test_membarrier_worker_thread(void *arg)
 		abort();
 	}
 
-	/* Wait for initialization. */
+	 
 	while (!atomic_load(&args->percpu_list_ptr)) {}
 
 	for (i = 0; i < iters; ++i) {
@@ -1277,10 +1226,7 @@ void test_membarrier_free_percpu_list(struct percpu_list *list)
 		free(list->c[i].head);
 }
 
-/*
- * The manager thread swaps per-cpu lists that worker threads see,
- * and validates that there are no unexpected modifications.
- */
+ 
 void *test_membarrier_manager_thread(void *arg)
 {
 	struct test_membarrier_thread_args *args =
@@ -1295,55 +1241,46 @@ void *test_membarrier_manager_thread(void *arg)
 		abort();
 	}
 
-	/* Init lists. */
+	 
 	test_membarrier_init_percpu_list(&list_a);
 	test_membarrier_init_percpu_list(&list_b);
 
 	atomic_store(&args->percpu_list_ptr, (intptr_t)&list_a);
 
 	while (!atomic_load(&args->stop)) {
-		/* list_a is "active". */
+		 
 		cpu_a = rand() % CPU_SETSIZE;
-		/*
-		 * As list_b is "inactive", we should never see changes
-		 * to list_b.
-		 */
+		 
 		if (expect_b != atomic_load(&list_b.c[cpu_b].head->data)) {
 			fprintf(stderr, "Membarrier test failed\n");
 			abort();
 		}
 
-		/* Make list_b "active". */
+		 
 		atomic_store(&args->percpu_list_ptr, (intptr_t)&list_b);
 		if (rseq_membarrier_expedited(cpu_a) &&
-				errno != ENXIO /* missing CPU */) {
+				errno != ENXIO  ) {
 			perror("sys_membarrier");
 			abort();
 		}
-		/*
-		 * Cpu A should now only modify list_b, so the values
-		 * in list_a should be stable.
-		 */
+		 
 		expect_a = atomic_load(&list_a.c[cpu_a].head->data);
 
 		cpu_b = rand() % CPU_SETSIZE;
-		/*
-		 * As list_a is "inactive", we should never see changes
-		 * to list_a.
-		 */
+		 
 		if (expect_a != atomic_load(&list_a.c[cpu_a].head->data)) {
 			fprintf(stderr, "Membarrier test failed\n");
 			abort();
 		}
 
-		/* Make list_a "active". */
+		 
 		atomic_store(&args->percpu_list_ptr, (intptr_t)&list_a);
 		if (rseq_membarrier_expedited(cpu_b) &&
-				errno != ENXIO /* missing CPU*/) {
+				errno != ENXIO  ) {
 			perror("sys_membarrier");
 			abort();
 		}
-		/* Remember a value from list_b. */
+		 
 		expect_b = atomic_load(&list_b.c[cpu_b].head->data);
 	}
 
@@ -1409,7 +1346,7 @@ void test_membarrier(void)
 		abort();
 	}
 }
-#else /* TEST_MEMBARRIER */
+#else  
 void test_membarrier(void)
 {
 	fprintf(stderr, "rseq_offset_deref_addv is not implemented on this architecture. "

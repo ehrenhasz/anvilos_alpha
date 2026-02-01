@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Tegra host1x Register Offsets for Tegra234
- *
- * Copyright (c) 2022 NVIDIA Corporation.
- */
+ 
+ 
 
 #ifndef __HOST1X_HOST1X08_HARDWARE_H
 #define __HOST1X_HOST1X08_HARDWARE_H

@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Siemens SIMATIC IPC platform driver
- *
- * Copyright (c) Siemens AG, 2018-2023
- *
- * Authors:
- *  Henning Schild <henning.schild@siemens.com>
- *  Jan Kiszka <jan.kiszka@siemens.com>
- *  Gerd Haeussler <gerd.haeussler.ext@siemens.com>
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/* makemapdata.c
- * originally written by: Kirk Reiser.
- *
- ** Copyright (C) 2002  Kirk Reiser.
- *  Copyright (C) 2003  David Borowski.
- */
+
+ 
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -89,8 +84,8 @@ main(int argc, char *argv[])
 	open_input(spk_dir_name, "spk_priv_keyinfo.h");
 	while (get_define()) {
 		if (strlen(def_val) > 5) {
-			//if (def_val[0] == '(')
-			//	def_val++;
+			
+			
 			cp = strchr(def_val, '+');
 			if (!cp)
 				continue;

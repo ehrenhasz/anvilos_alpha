@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Thunderbolt driver - capabilities lookup
- *
- * Copyright (c) 2014 Andreas Noever <andreas.noever@gmail.com>
- * Copyright (C) 2018, Intel Corporation
- */
+
+ 
 
 #include <linux/slab.h>
 #include <linux/errno.h>
@@ -21,10 +16,7 @@ static int tb_port_enable_tmu(struct tb_port *port, bool enable)
 	u32 value, offset;
 	int ret;
 
-	/*
-	 * Legacy devices need to have TMU access enabled before port
-	 * space can be fully accessed.
-	 */
+	 
 	if (tb_switch_is_light_ridge(sw))
 		offset = 0x26;
 	else if (tb_switch_is_eagle_ridge(sw))
@@ -46,12 +38,7 @@ static int tb_port_enable_tmu(struct tb_port *port, bool enable)
 
 static void tb_port_dummy_read(struct tb_port *port)
 {
-	/*
-	 * When reading from next capability pointer location in port
-	 * config space the read data is not cleared on LR. To avoid
-	 * reading stale data on next read perform one dummy read after
-	 * port capabilities are walked.
-	 */
+	 
 	if (tb_switch_is_light_ridge(port->sw)) {
 		u32 dummy;
 
@@ -59,16 +46,7 @@ static void tb_port_dummy_read(struct tb_port *port)
 	}
 }
 
-/**
- * tb_port_next_cap() - Return next capability in the linked list
- * @port: Port to find the capability for
- * @offset: Previous capability offset (%0 for start)
- *
- * Returns dword offset of the next capability in port config space
- * capability list and returns it. Passing %0 returns the first entry in
- * the capability list. If no next capability is found returns %0. In case
- * of failure returns negative errno.
- */
+ 
 int tb_port_next_cap(struct tb_port *port, unsigned int offset)
 {
 	struct tb_cap_any header;
@@ -107,15 +85,7 @@ static int __tb_port_find_cap(struct tb_port *port, enum tb_port_cap cap)
 	return -ENOENT;
 }
 
-/**
- * tb_port_find_cap() - Find port capability
- * @port: Port to find the capability for
- * @cap: Capability to look
- *
- * Returns offset to start of capability or %-ENOENT if no such
- * capability was found. Negative errno is returned if there was an
- * error.
- */
+ 
 int tb_port_find_cap(struct tb_port *port, enum tb_port_cap cap)
 {
 	int ret;
@@ -132,16 +102,7 @@ int tb_port_find_cap(struct tb_port *port, enum tb_port_cap cap)
 	return ret;
 }
 
-/**
- * tb_switch_next_cap() - Return next capability in the linked list
- * @sw: Switch to find the capability for
- * @offset: Previous capability offset (%0 for start)
- *
- * Finds dword offset of the next capability in router config space
- * capability list and returns it. Passing %0 returns the first entry in
- * the capability list. If no next capability is found returns %0. In case
- * of failure returns negative errno.
- */
+ 
 int tb_switch_next_cap(struct tb_switch *sw, unsigned int offset)
 {
 	struct tb_cap_any header;
@@ -176,15 +137,7 @@ int tb_switch_next_cap(struct tb_switch *sw, unsigned int offset)
 	return ret >= VSE_CAP_OFFSET_MAX ? 0 : ret;
 }
 
-/**
- * tb_switch_find_cap() - Find switch capability
- * @sw: Switch to find the capability for
- * @cap: Capability to look
- *
- * Returns offset to start of capability or %-ENOENT if no such
- * capability was found. Negative errno is returned if there was an
- * error.
- */
+ 
 int tb_switch_find_cap(struct tb_switch *sw, enum tb_switch_cap cap)
 {
 	int offset = 0;
@@ -208,16 +161,7 @@ int tb_switch_find_cap(struct tb_switch *sw, enum tb_switch_cap cap)
 	return -ENOENT;
 }
 
-/**
- * tb_switch_find_vse_cap() - Find switch vendor specific capability
- * @sw: Switch to find the capability for
- * @vsec: Vendor specific capability to look
- *
- * Functions enumerates vendor specific capabilities (VSEC) of a switch
- * and returns offset when capability matching @vsec is found. If no
- * such capability is found returns %-ENOENT. In case of error returns
- * negative errno.
- */
+ 
 int tb_switch_find_vse_cap(struct tb_switch *sw, enum tb_switch_vse_cap vsec)
 {
 	int offset = 0;

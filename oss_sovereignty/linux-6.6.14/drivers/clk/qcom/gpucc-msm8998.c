@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2019, Jeffrey Hugo
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/bitops.h>
@@ -30,7 +28,7 @@ enum {
 	P_GPUPLL0_OUT_EVEN,
 };
 
-/* Instead of going directly to the block, XO is routed through this branch */
+ 
 static struct clk_branch gpucc_cxo_clk = {
 	.halt_reg = 0x1020,
 	.clkr = {
@@ -329,9 +327,9 @@ static int gpucc_msm8998_probe(struct platform_device *pdev)
 	if (IS_ERR(regmap))
 		return PTR_ERR(regmap);
 
-	/* force periph logic on to avoid perf counter corruption */
+	 
 	regmap_write_bits(regmap, gfx3d_clk.clkr.enable_reg, BIT(13), BIT(13));
-	/* tweak droop detector (GPUCC_GPU_DD_WRAP_CTRL) to reduce leakage */
+	 
 	regmap_write_bits(regmap, gfx3d_clk.clkr.enable_reg, BIT(0), BIT(0));
 
 	return qcom_cc_really_probe(pdev, &gpucc_msm8998_desc, regmap);

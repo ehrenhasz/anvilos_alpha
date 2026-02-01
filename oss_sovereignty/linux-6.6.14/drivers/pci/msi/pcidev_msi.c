@@ -1,13 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * MSI[X} related functions which are available unconditionally.
- */
+
+ 
 #include "../pci.h"
 
-/*
- * Disable the MSI[X] hardware to avoid screaming interrupts during boot.
- * This is the power on reset default so usually this should be a noop.
- */
+ 
 
 void pci_msi_init(struct pci_dev *dev)
 {

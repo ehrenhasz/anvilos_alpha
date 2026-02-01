@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * net/sched/act_police.c	Input police filter
- *
- * Authors:	Alexey Kuznetsov, <kuznet@ms2.inr.ac.ru>
- * 		J Hadi Salim (action changes)
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/types.h>
@@ -22,7 +17,7 @@
 #include <net/tc_act/tc_police.h>
 #include <net/tc_wrapper.h>
 
-/* Each policer is serialized by its individual spinlock */
+ 
 
 static struct tc_action_ops act_police_ops;
 
@@ -157,7 +152,7 @@ static int tcf_police_init(struct net *net, struct nlattr *nla,
 		goto failure;
 	}
 
-	/* No failure allowed after this point */
+	 
 	new->tcfp_result = tcfp_result;
 	new->tcfp_mtu = parm->mtu;
 	if (!new->tcfp_mtu) {

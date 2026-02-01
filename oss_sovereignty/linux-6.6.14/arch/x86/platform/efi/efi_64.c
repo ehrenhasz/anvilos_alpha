@@ -1,20 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * x86_64 specific EFI support functions
- * Based on Extensible Firmware Interface Specification version 1.0
- *
- * Copyright (C) 2005-2008 Intel Co.
- *	Fenghua Yu <fenghua.yu@intel.com>
- *	Bibo Mao <bibo.mao@intel.com>
- *	Chandramouli Narayanan <mouli@linux.intel.com>
- *	Huang Ying <ying.huang@intel.com>
- *
- * Code to convert EFI to E820 map has been implemented in elilo bootloader
- * based on a EFI patch by Edgar Hucek. Based on the E820 map, the page table
- * is setup appropriately for EFI runtime code.
- * - mouli 06/14/2007.
- *
- */
+
+ 
 
 #define pr_fmt(fmt) "efi: " fmt
 
@@ -49,22 +34,11 @@
 #include <asm/pgalloc.h>
 #include <asm/sev.h>
 
-/*
- * We allocate runtime services regions top-down, starting from -4G, i.e.
- * 0xffff_ffff_0000_0000 and limit EFI VA mapping space to 64G.
- */
+ 
 static u64 efi_va = EFI_VA_START;
 static struct mm_struct *efi_prev_mm;
 
-/*
- * We need our own copy of the higher levels of the page tables
- * because we want to avoid inserting EFI region mappings (EFI_VA_END
- * to EFI_VA_START) into the standard kernel page tables. Everything
- * else can be shared, see efi_sync_low_kernel_mappings().
- *
- * We don't want the pgd on the pgd_list and cannot use pgd_alloc() for the
- * allocation.
- */
+ 
 int __init efi_alloc_page_tables(void)
 {
 	pgd_t *pgd, *efi_pgd;
@@ -101,9 +75,7 @@ fail:
 	return -ENOMEM;
 }
 
-/*
- * Add low kernel mappings for passing arguments to EFI functions.
- */
+ 
 void efi_sync_low_kernel_mappings(void)
 {
 	unsigned num_entries;
@@ -126,10 +98,7 @@ void efi_sync_low_kernel_mappings(void)
 	num_entries = p4d_index(EFI_VA_END);
 	memcpy(p4d_efi, p4d_k, sizeof(p4d_t) * num_entries);
 
-	/*
-	 * We share all the PUD entries apart from those that map the
-	 * EFI regions. Copy around them.
-	 */
+	 
 	BUILD_BUG_ON((EFI_VA_START & ~PUD_MASK) != 0);
 	BUILD_BUG_ON((EFI_VA_END & ~PUD_MASK) != 0);
 
@@ -148,9 +117,7 @@ void efi_sync_low_kernel_mappings(void)
 	memcpy(pud_efi, pud_k, sizeof(pud_t) * num_entries);
 }
 
-/*
- * Wrapper for slow_virt_to_phys() that handles NULL addresses.
- */
+ 
 static inline phys_addr_t
 virt_to_phys_or_null_size(void *va, unsigned long size)
 {
@@ -164,7 +131,7 @@ virt_to_phys_or_null_size(void *va, unsigned long size)
 
 	pa = slow_virt_to_phys(va);
 
-	/* check if the object crosses a page boundary */
+	 
 	if (WARN_ON((pa ^ (pa + size - 1)) & PAGE_MASK))
 		return 0;
 
@@ -182,12 +149,7 @@ int __init efi_setup_page_tables(unsigned long pa_memmap, unsigned num_pages)
 	unsigned npages;
 	pgd_t *pgd = efi_mm.pgd;
 
-	/*
-	 * It can happen that the physical address of new_memmap lands in memory
-	 * which is not mapped in the EFI page table. Therefore we need to go
-	 * and ident-map those pages containing the map before calling
-	 * phys_efi_set_virtual_address_map().
-	 */
+	 
 	pfn = pa_memmap >> PAGE_SHIFT;
 	pf = _PAGE_NX | _PAGE_RW | _PAGE_ENC;
 	if (kernel_map_pages_in_pgd(pgd, pfn, pa_memmap, num_pages, pf)) {
@@ -195,37 +157,19 @@ int __init efi_setup_page_tables(unsigned long pa_memmap, unsigned num_pages)
 		return 1;
 	}
 
-	/*
-	 * Certain firmware versions are way too sentimental and still believe
-	 * they are exclusive and unquestionable owners of the first physical page,
-	 * even though they explicitly mark it as EFI_CONVENTIONAL_MEMORY
-	 * (but then write-access it later during SetVirtualAddressMap()).
-	 *
-	 * Create a 1:1 mapping for this page, to avoid triple faults during early
-	 * boot with such firmware. We are free to hand this page to the BIOS,
-	 * as trim_bios_range() will reserve the first page and isolate it away
-	 * from memory allocators anyway.
-	 */
+	 
 	if (kernel_map_pages_in_pgd(pgd, 0x0, 0x0, 1, pf)) {
 		pr_err("Failed to create 1:1 mapping for the first page!\n");
 		return 1;
 	}
 
-	/*
-	 * When SEV-ES is active, the GHCB as set by the kernel will be used
-	 * by firmware. Create a 1:1 unencrypted mapping for each GHCB.
-	 */
+	 
 	if (sev_es_efi_map_ghcbs(pgd)) {
 		pr_err("Failed to create 1:1 mapping for the GHCBs!\n");
 		return 1;
 	}
 
-	/*
-	 * When making calls to the firmware everything needs to be 1:1
-	 * mapped and addressable with 32-bit pointers. Map the kernel
-	 * text and allocate a new stack because we can't rely on the
-	 * stack pointer being < 4GB.
-	 */
+	 
 	if (!efi_is_mixed())
 		return 0;
 
@@ -235,7 +179,7 @@ int __init efi_setup_page_tables(unsigned long pa_memmap, unsigned num_pages)
 		return 1;
 	}
 
-	efi_mixed_mode_stack_pa = page_to_phys(page + 1); /* stack grows down */
+	efi_mixed_mode_stack_pa = page_to_phys(page + 1);  
 
 	npages = (_etext - _text) >> PAGE_SHIFT;
 	text = __pa(_text);
@@ -273,18 +217,7 @@ static void __init __map_region(efi_memory_desc_t *md, u64 va)
 	unsigned long pfn;
 	pgd_t *pgd = efi_mm.pgd;
 
-	/*
-	 * EFI_RUNTIME_SERVICES_CODE regions typically cover PE/COFF
-	 * executable images in memory that consist of both R-X and
-	 * RW- sections, so we cannot apply read-only or non-exec
-	 * permissions just yet. However, modern EFI systems provide
-	 * a memory attributes table that describes those sections
-	 * with the appropriate restricted permissions, which are
-	 * applied in efi_runtime_update_mappings() below. All other
-	 * regions can be mapped non-executable at this point, with
-	 * the exception of boot services code regions, but those will
-	 * be unmapped again entirely in efi_free_boot_services().
-	 */
+	 
 	if (md->type != EFI_BOOT_SERVICES_CODE &&
 	    md->type != EFI_RUNTIME_SERVICES_CODE)
 		flags |= _PAGE_NX;
@@ -307,18 +240,10 @@ void __init efi_map_region(efi_memory_desc_t *md)
 	unsigned long size = md->num_pages << PAGE_SHIFT;
 	u64 pa = md->phys_addr;
 
-	/*
-	 * Make sure the 1:1 mappings are present as a catch-all for b0rked
-	 * firmware which doesn't update all internal pointers after switching
-	 * to virtual mode and would otherwise crap on us.
-	 */
+	 
 	__map_region(md, md->phys_addr);
 
-	/*
-	 * Enforce the 1:1 mapping as the default virtual address when
-	 * booting in EFI mixed mode, because even though we may be
-	 * running a 64-bit kernel, the firmware may only be 32-bit.
-	 */
+	 
 	if (efi_is_mixed()) {
 		md->virt_addr = md->phys_addr;
 		return;
@@ -326,14 +251,14 @@ void __init efi_map_region(efi_memory_desc_t *md)
 
 	efi_va -= size;
 
-	/* Is PA 2M-aligned? */
+	 
 	if (!(pa & (PMD_SIZE - 1))) {
 		efi_va &= PMD_MASK;
 	} else {
 		u64 pa_offset = pa & (PMD_SIZE - 1);
 		u64 prev_va = efi_va;
 
-		/* get us the same offset within this 2M page */
+		 
 		efi_va = (efi_va & PMD_MASK) + pa_offset;
 
 		if (efi_va > prev_va)
@@ -345,16 +270,12 @@ void __init efi_map_region(efi_memory_desc_t *md)
 		return;
 	}
 
-	/* Do the VA map */
+	 
 	__map_region(md, efi_va);
 	md->virt_addr = efi_va;
 }
 
-/*
- * kexec kernel will use efi_map_region_fixed to map efi runtime memory ranges.
- * md->virt_addr is the original virtual address which had been mapped in kexec
- * 1st kernel.
- */
+ 
 void __init efi_map_region_fixed(efi_memory_desc_t *md)
 {
 	__map_region(md, md->phys_addr);
@@ -372,7 +293,7 @@ static int __init efi_update_mappings(efi_memory_desc_t *md, unsigned long pf)
 	pgd_t *pgd = efi_mm.pgd;
 	int err1, err2;
 
-	/* Update the 1:1 mapping */
+	 
 	pfn = md->phys_addr >> PAGE_SHIFT;
 	err1 = kernel_map_pages_in_pgd(pgd, pfn, md->phys_addr, md->num_pages, pf);
 	if (err1) {
@@ -414,24 +335,14 @@ void __init efi_runtime_update_mappings(void)
 {
 	efi_memory_desc_t *md;
 
-	/*
-	 * Use the EFI Memory Attribute Table for mapping permissions if it
-	 * exists, since it is intended to supersede EFI_PROPERTIES_TABLE.
-	 */
+	 
 	if (efi_enabled(EFI_MEM_ATTR)) {
 		efi_disable_ibt_for_runtime = false;
 		efi_memattr_apply_permissions(NULL, efi_update_mem_attr);
 		return;
 	}
 
-	/*
-	 * EFI_MEMORY_ATTRIBUTES_TABLE is intended to replace
-	 * EFI_PROPERTIES_TABLE. So, use EFI_PROPERTIES_TABLE to update
-	 * permissions only if EFI_MEMORY_ATTRIBUTES_TABLE is not
-	 * published by the firmware. Even if we find a buggy implementation of
-	 * EFI_MEMORY_ATTRIBUTES_TABLE, don't fall back to
-	 * EFI_PROPERTIES_TABLE, because of the same reason.
-	 */
+	 
 
 	if (!efi_enabled(EFI_NX_PE_DATA))
 		return;
@@ -467,13 +378,7 @@ void __init efi_dump_pagetable(void)
 #endif
 }
 
-/*
- * Makes the calling thread switch to/from efi_mm context. Can be used
- * in a kernel thread and user context. Preemption needs to remain disabled
- * while the EFI-mm is borrowed. mmgrab()/mmdrop() is not used because the mm
- * can not change under us.
- * It should be ensured that there are no concurrent calls to this function.
- */
+ 
 static void efi_enter_mm(void)
 {
 	efi_prev_mm = current->active_mm;
@@ -504,11 +409,7 @@ void arch_efi_call_virt_teardown(void)
 
 static DEFINE_SPINLOCK(efi_runtime_lock);
 
-/*
- * DS and ES contain user values.  We need to save them.
- * The 32-bit EFI code needs a valid DS, ES, and SS.  There's no
- * need to save the old SS: __KERNEL_DS is always acceptable.
- */
+ 
 #define __efi_thunk(func, ...)						\
 ({									\
 	unsigned short __ds, __es;					\
@@ -530,14 +431,7 @@ static DEFINE_SPINLOCK(efi_runtime_lock);
 	____s;								\
 })
 
-/*
- * Switch to the EFI page tables early so that we can access the 1:1
- * runtime services mappings which are not mapped in any other page
- * tables.
- *
- * Also, disable interrupts because the IDT points to 64-bit handlers,
- * which aren't going to function correctly when we switch to 32-bit.
- */
+ 
 #define efi_thunk(func...)						\
 ({									\
 	efi_status_t __s;						\
@@ -751,11 +645,7 @@ static efi_status_t
 efi_thunk_update_capsule(efi_capsule_header_t **capsules,
 			 unsigned long count, unsigned long sg_list)
 {
-	/*
-	 * To properly support this function we would need to repackage
-	 * 'capsules' because the firmware doesn't understand 64-bit
-	 * pointers.
-	 */
+	 
 	return EFI_UNSUPPORTED;
 }
 
@@ -817,11 +707,7 @@ efi_thunk_query_capsule_caps(efi_capsule_header_t **capsules,
 			     unsigned long count, u64 *max_size,
 			     int *reset_type)
 {
-	/*
-	 * To properly support this function we would need to repackage
-	 * 'capsules' because the firmware doesn't understand 64-bit
-	 * pointers.
-	 */
+	 
 	return EFI_UNSUPPORTED;
 }
 
@@ -866,7 +752,7 @@ efi_set_virtual_address_map(unsigned long memory_map_size,
 
 	efi_fpu_begin();
 
-	/* Disable interrupts around EFI calls: */
+	 
 	local_irq_save(flags);
 	status = arch_efi_call_virt(efi.runtime, set_virtual_address_map,
 				    memory_map_size, descriptor_size,
@@ -875,7 +761,7 @@ efi_set_virtual_address_map(unsigned long memory_map_size,
 
 	efi_fpu_end();
 
-	/* grab the virtually remapped EFI runtime services table pointer */
+	 
 	efi.runtime = READ_ONCE(systab->runtime);
 
 	efi_leave_mm();

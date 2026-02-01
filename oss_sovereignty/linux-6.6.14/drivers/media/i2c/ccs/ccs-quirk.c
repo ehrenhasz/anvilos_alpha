@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * drivers/media/i2c/ccs/ccs-quirk.c
- *
- * Generic driver for MIPI CCS/SMIA/SMIA++ compliant camera sensors
- *
- * Copyright (C) 2020 Intel Corporation
- * Copyright (C) 2011--2012 Nokia Corporation
- * Contact: Sakari Ailus <sakari.ailus@linux.intel.com>
- */
+
+ 
 
 #include <linux/delay.h>
 
@@ -38,8 +30,8 @@ static int jt8ew9_limits(struct ccs_sensor *sensor)
 	if (sensor->minfo.revision_number < 0x0300)
 		sensor->frame_skip = 1;
 
-	/* Below 24 gain doesn't have effect at all, */
-	/* but ~59 is needed for full dynamic range */
+	 
+	 
 	ccs_replace_limit(sensor, CCS_L_ANALOG_GAIN_CODE_MIN, 0, 59);
 	ccs_replace_limit(sensor, CCS_L_ANALOG_GAIN_CODE_MAX, 0, 6000);
 
@@ -49,30 +41,30 @@ static int jt8ew9_limits(struct ccs_sensor *sensor)
 static int jt8ew9_post_poweron(struct ccs_sensor *sensor)
 {
 	static const struct ccs_reg_8 regs[] = {
-		{ 0x30a3, 0xd8 }, /* Output port control : LVDS ports only */
-		{ 0x30ae, 0x00 }, /* 0x0307 pll_multiplier maximum value on PLL input 9.6MHz ( 19.2MHz is divided on pre_pll_div) */
-		{ 0x30af, 0xd0 }, /* 0x0307 pll_multiplier maximum value on PLL input 9.6MHz ( 19.2MHz is divided on pre_pll_div) */
-		{ 0x322d, 0x04 }, /* Adjusting Processing Image Size to Scaler Toshiba Recommendation Setting */
-		{ 0x3255, 0x0f }, /* Horizontal Noise Reduction Control Toshiba Recommendation Setting */
-		{ 0x3256, 0x15 }, /* Horizontal Noise Reduction Control Toshiba Recommendation Setting */
-		{ 0x3258, 0x70 }, /* Analog Gain Control Toshiba Recommendation Setting */
-		{ 0x3259, 0x70 }, /* Analog Gain Control Toshiba Recommendation Setting */
-		{ 0x325f, 0x7c }, /* Analog Gain Control Toshiba Recommendation Setting */
-		{ 0x3302, 0x06 }, /* Pixel Reference Voltage Control Toshiba Recommendation Setting */
-		{ 0x3304, 0x00 }, /* Pixel Reference Voltage Control Toshiba Recommendation Setting */
-		{ 0x3307, 0x22 }, /* Pixel Reference Voltage Control Toshiba Recommendation Setting */
-		{ 0x3308, 0x8d }, /* Pixel Reference Voltage Control Toshiba Recommendation Setting */
-		{ 0x331e, 0x0f }, /* Black Hole Sun Correction Control Toshiba Recommendation Setting */
-		{ 0x3320, 0x30 }, /* Black Hole Sun Correction Control Toshiba Recommendation Setting */
-		{ 0x3321, 0x11 }, /* Black Hole Sun Correction Control Toshiba Recommendation Setting */
-		{ 0x3322, 0x98 }, /* Black Hole Sun Correction Control Toshiba Recommendation Setting */
-		{ 0x3323, 0x64 }, /* Black Hole Sun Correction Control Toshiba Recommendation Setting */
-		{ 0x3325, 0x83 }, /* Read Out Timing Control Toshiba Recommendation Setting */
-		{ 0x3330, 0x18 }, /* Read Out Timing Control Toshiba Recommendation Setting */
-		{ 0x333c, 0x01 }, /* Read Out Timing Control Toshiba Recommendation Setting */
-		{ 0x3345, 0x2f }, /* Black Hole Sun Correction Control Toshiba Recommendation Setting */
-		{ 0x33de, 0x38 }, /* Horizontal Noise Reduction Control Toshiba Recommendation Setting */
-		/* Taken from v03. No idea what the rest are. */
+		{ 0x30a3, 0xd8 },  
+		{ 0x30ae, 0x00 },  
+		{ 0x30af, 0xd0 },  
+		{ 0x322d, 0x04 },  
+		{ 0x3255, 0x0f },  
+		{ 0x3256, 0x15 },  
+		{ 0x3258, 0x70 },  
+		{ 0x3259, 0x70 },  
+		{ 0x325f, 0x7c },  
+		{ 0x3302, 0x06 },  
+		{ 0x3304, 0x00 },  
+		{ 0x3307, 0x22 },  
+		{ 0x3308, 0x8d },  
+		{ 0x331e, 0x0f },  
+		{ 0x3320, 0x30 },  
+		{ 0x3321, 0x11 },  
+		{ 0x3322, 0x98 },  
+		{ 0x3323, 0x64 },  
+		{ 0x3325, 0x83 },  
+		{ 0x3330, 0x18 },  
+		{ 0x333c, 0x01 },  
+		{ 0x3345, 0x2f },  
+		{ 0x33de, 0x38 },  
+		 
 		{ 0x32e0, 0x05 },
 		{ 0x32e1, 0x05 },
 		{ 0x32e2, 0x04 },
@@ -91,12 +83,9 @@ const struct ccs_quirk smiapp_jt8ew9_quirk = {
 
 static int imx125es_post_poweron(struct ccs_sensor *sensor)
 {
-	/* Taken from v02. No idea what the other two are. */
+	 
 	static const struct ccs_reg_8 regs[] = {
-		/*
-		 * 0x3302: clk during frame blanking:
-		 * 0x00 - HS mode, 0x01 - LP11
-		 */
+		 
 		{ 0x3302, 0x01 },
 		{ 0x302d, 0x00 },
 		{ 0x3b08, 0x8c },
@@ -122,11 +111,11 @@ static int jt8ev1_post_poweron(struct ccs_sensor *sensor)
 	struct i2c_client *client = v4l2_get_subdevdata(&sensor->src->sd);
 	int rval;
 	static const struct ccs_reg_8 regs[] = {
-		{ 0x3031, 0xcd }, /* For digital binning (EQ_MONI) */
-		{ 0x30a3, 0xd0 }, /* FLASH STROBE enable */
-		{ 0x3237, 0x00 }, /* For control of pulse timing for ADC */
+		{ 0x3031, 0xcd },  
+		{ 0x30a3, 0xd0 },  
+		{ 0x3237, 0x00 },  
 		{ 0x3238, 0x43 },
-		{ 0x3301, 0x06 }, /* For analog bias for sensor */
+		{ 0x3301, 0x06 },  
 		{ 0x3302, 0x06 },
 		{ 0x3304, 0x00 },
 		{ 0x3305, 0x88 },
@@ -136,14 +125,14 @@ static int jt8ev1_post_poweron(struct ccs_sensor *sensor)
 		{ 0x333f, 0x1f },
 		{ 0x3355, 0x00 },
 		{ 0x3356, 0x20 },
-		{ 0x33bf, 0x20 }, /* Adjust the FBC speed */
+		{ 0x33bf, 0x20 },  
 		{ 0x33c9, 0x20 },
-		{ 0x33ce, 0x30 }, /* Adjust the parameter for logic function */
-		{ 0x33cf, 0xec }, /* For Black sun */
-		{ 0x3328, 0x80 }, /* Ugh. No idea what's this. */
+		{ 0x33ce, 0x30 },  
+		{ 0x33cf, 0xec },  
+		{ 0x3328, 0x80 },  
 	};
 	static const struct ccs_reg_8 regs_96[] = {
-		{ 0x30ae, 0x00 }, /* For control of ADC clock */
+		{ 0x30ae, 0x00 },  
 		{ 0x30af, 0xd0 },
 		{ 0x30b0, 0x01 },
 	};
@@ -172,15 +161,15 @@ static int jt8ev1_post_streamoff(struct ccs_sensor *sensor)
 {
 	int rval;
 
-	/* Workaround: allows fast standby to work properly */
+	 
 	rval = ccs_write_addr(sensor, 0x3205, 0x04);
 	if (rval < 0)
 		return rval;
 
-	/* Wait for 1 ms + one line => 2 ms is likely enough */
+	 
 	usleep_range(2000, 2050);
 
-	/* Restore it */
+	 
 	rval = ccs_write_addr(sensor, 0x3205, 0x00);
 	if (rval < 0)
 		return rval;

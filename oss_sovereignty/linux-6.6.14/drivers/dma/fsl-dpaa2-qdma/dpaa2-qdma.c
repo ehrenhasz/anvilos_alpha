@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright 2019 NXP
+
+
 
 #include <linux/init.h>
 #include <linux/module.h>
@@ -83,9 +83,7 @@ static void dpaa2_qdma_free_chan_resources(struct dma_chan *chan)
 	dpaa2_qdma->desc_allocated--;
 }
 
-/*
- * Request a command descriptor for enqueue.
- */
+ 
 static struct dpaa2_qdma_comp *
 dpaa2_qdma_request_desc(struct dpaa2_qdma_chan *dpaa2_chan)
 {
@@ -154,13 +152,10 @@ dpaa2_qdma_populate_fd(u32 format, struct dpaa2_qdma_comp *dpaa2_comp)
 	fd = dpaa2_comp->fd_virt_addr;
 	memset(fd, 0, sizeof(struct dpaa2_fd));
 
-	/* fd populated */
+	 
 	dpaa2_fd_set_addr(fd, dpaa2_comp->fl_bus_addr);
 
-	/*
-	 * Bypass memory translation, Frame list format, short length disable
-	 * we need to disable BMT if fsl-mc use iova addr
-	 */
+	 
 	if (smmu_disable)
 		dpaa2_fd_set_bpid(fd, QMAN_FD_BMT_ENABLE);
 	dpaa2_fd_set_format(fd, QMAN_FD_FMT_ENABLE | QMAN_FD_SL_DISABLE);
@@ -168,7 +163,7 @@ dpaa2_qdma_populate_fd(u32 format, struct dpaa2_qdma_comp *dpaa2_comp)
 	dpaa2_fd_set_frc(fd, format | QDMA_SER_CTX);
 }
 
-/* first frame list for descriptor buffer */
+ 
 static void
 dpaa2_qdma_populate_first_framel(struct dpaa2_fl_entry *f_list,
 				 struct dpaa2_qdma_comp *dpaa2_comp,
@@ -179,11 +174,11 @@ dpaa2_qdma_populate_first_framel(struct dpaa2_fl_entry *f_list,
 	sdd = dpaa2_comp->desc_virt_addr;
 	memset(sdd, 0, 2 * (sizeof(*sdd)));
 
-	/* source descriptor CMD */
+	 
 	sdd->cmd = cpu_to_le32(QDMA_SD_CMD_RDTTYPE_COHERENT);
 	sdd++;
 
-	/* dest descriptor CMD */
+	 
 	if (wrt_changed)
 		sdd->cmd = cpu_to_le32(LX2160_QDMA_DD_CMD_WRTTYPE_COHERENT);
 	else
@@ -191,46 +186,46 @@ dpaa2_qdma_populate_first_framel(struct dpaa2_fl_entry *f_list,
 
 	memset(f_list, 0, sizeof(struct dpaa2_fl_entry));
 
-	/* first frame list to source descriptor */
+	 
 	dpaa2_fl_set_addr(f_list, dpaa2_comp->desc_bus_addr);
 	dpaa2_fl_set_len(f_list, 0x20);
 	dpaa2_fl_set_format(f_list, QDMA_FL_FMT_SBF | QDMA_FL_SL_LONG);
 
-	/* bypass memory translation */
+	 
 	if (smmu_disable)
 		f_list->bpid = cpu_to_le16(QDMA_FL_BMT_ENABLE);
 }
 
-/* source and destination frame list */
+ 
 static void
 dpaa2_qdma_populate_frames(struct dpaa2_fl_entry *f_list,
 			   dma_addr_t dst, dma_addr_t src,
 			   size_t len, uint8_t fmt)
 {
-	/* source frame list to source buffer */
+	 
 	memset(f_list, 0, sizeof(struct dpaa2_fl_entry));
 
 	dpaa2_fl_set_addr(f_list, src);
 	dpaa2_fl_set_len(f_list, len);
 
-	/* single buffer frame or scatter gather frame */
+	 
 	dpaa2_fl_set_format(f_list, (fmt | QDMA_FL_SL_LONG));
 
-	/* bypass memory translation */
+	 
 	if (smmu_disable)
 		f_list->bpid = cpu_to_le16(QDMA_FL_BMT_ENABLE);
 
 	f_list++;
 
-	/* destination frame list to destination buffer */
+	 
 	memset(f_list, 0, sizeof(struct dpaa2_fl_entry));
 
 	dpaa2_fl_set_addr(f_list, dst);
 	dpaa2_fl_set_len(f_list, len);
 	dpaa2_fl_set_format(f_list, (fmt | QDMA_FL_SL_LONG));
-	/* single buffer frame or scatter gather frame */
+	 
 	dpaa2_fl_set_final(f_list, QDMA_FL_F);
-	/* bypass memory translation */
+	 
 	if (smmu_disable)
 		f_list->bpid = cpu_to_le16(QDMA_FL_BMT_ENABLE);
 }
@@ -252,12 +247,12 @@ static struct dma_async_tx_descriptor
 
 	wrt_changed = (bool)dpaa2_qdma->qdma_wrtype_fixup;
 
-	/* populate Frame descriptor */
+	 
 	dpaa2_qdma_populate_fd(QDMA_FD_LONG_FORMAT, dpaa2_comp);
 
 	f_list = dpaa2_comp->fl_virt_addr;
 
-	/* first frame list for descriptor buffer (logn format) */
+	 
 	dpaa2_qdma_populate_first_framel(f_list, dpaa2_comp, wrt_changed);
 
 	f_list++;
@@ -314,7 +309,7 @@ static int __cold dpaa2_qdma_setup(struct fsl_mc_device *ls_dev)
 	priv->dev = dev;
 	priv->dpqdma_id = ls_dev->obj_desc.id;
 
-	/* Get the handle for the DPDMAI this interface is associate with */
+	 
 	err = dpdmai_open(priv->mc_io, 0, priv->dpqdma_id, &ls_dev->mc_handle);
 	if (err) {
 		dev_err(dev, "dpdmai_open() failed\n");
@@ -416,7 +411,7 @@ static void dpaa2_qdma_fqdan_cb(struct dpaa2_io_notification_ctx *ctx)
 			continue;
 		}
 
-		/* obtain FD and process the error */
+		 
 		fd = dpaa2_dq_fd(dq);
 
 		status = dpaa2_fd_get_ctrl(fd) & 0xff;
@@ -667,7 +662,7 @@ static int dpaa2_qdma_probe(struct fsl_mc_device *dpdmai_dev)
 	if (priv->iommu_domain)
 		smmu_disable = false;
 
-	/* obtain a MC portal */
+	 
 	err = fsl_mc_portal_allocate(dpdmai_dev, 0, &priv->mc_io);
 	if (err) {
 		if (err == -ENXIO)
@@ -677,28 +672,28 @@ static int dpaa2_qdma_probe(struct fsl_mc_device *dpdmai_dev)
 		goto err_mcportal;
 	}
 
-	/* DPDMAI initialization */
+	 
 	err = dpaa2_qdma_setup(dpdmai_dev);
 	if (err) {
 		dev_err(dev, "dpaa2_dpdmai_setup() failed\n");
 		goto err_dpdmai_setup;
 	}
 
-	/* DPIO */
+	 
 	err = dpaa2_qdma_dpio_setup(priv);
 	if (err) {
 		dev_err(dev, "dpaa2_dpdmai_dpio_setup() failed\n");
 		goto err_dpio_setup;
 	}
 
-	/* DPDMAI binding to DPIO */
+	 
 	err = dpaa2_dpdmai_bind(priv);
 	if (err) {
 		dev_err(dev, "dpaa2_dpdmai_bind() failed\n");
 		goto err_bind;
 	}
 
-	/* DPDMAI enable */
+	 
 	err = dpdmai_enable(priv->mc_io, 0, dpdmai_dev->mc_handle);
 	if (err) {
 		dev_err(dev, "dpdmai_enable() failed\n");

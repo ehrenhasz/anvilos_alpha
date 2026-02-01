@@ -1,20 +1,4 @@
-/*
- * NXP Wireless LAN device driver: TDLS handling
- *
- * Copyright 2011-2020 NXP
- *
- * This software file (the "File") is distributed by NXP
- * under the terms of the GNU General Public License Version 2, June 1991
- * (the "License").  You may use, redistribute and/or modify this File in
- * accordance with the terms and conditions of the License, a copy of which
- * is available on the worldwide web at
- * http://www.gnu.org/licenses/old-licenses/gpl-2.0.txt.
- *
- * THE FILE IS DISTRIBUTED AS-IS, WITHOUT WARRANTY OF ANY KIND, AND THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE
- * ARE EXPRESSLY DISCLAIMED.  The License provides additional details about
- * this warranty disclaimer.
- */
+ 
 
 #include "main.h"
 #include "wmm.h"
@@ -114,7 +98,7 @@ static void mwifiex_hold_tdls_packets(struct mwifiex_private *priv,
 	return;
 }
 
-/* This function appends rate TLV to scan config command. */
+ 
 static int
 mwifiex_tdls_append_rates_ie(struct mwifiex_private *priv,
 			     struct sk_buff *skb)
@@ -213,7 +197,7 @@ mwifiex_tdls_add_ht_oper(struct mwifiex_private *priv, const u8 *mac,
 
 	ht_oper->primary_chan = bss_desc->channel;
 
-	/* follow AP's channel bandwidth */
+	 
 	if (ISSUPP_CHANWIDTH40(priv->adapter->hw_dot_11n_dev_cap) &&
 	    bss_desc->bcn_ht_cap &&
 	    ISALLOWED_CHANWIDTH40(bss_desc->bcn_ht_oper->ht_param))
@@ -281,14 +265,14 @@ static int mwifiex_tdls_add_vht_oper(struct mwifiex_private *priv,
 	else
 		usr_vht_cap_info = adapter->usr_dot_11ac_dev_cap_bg;
 
-	/* find the minimum bandwidth between AP/TDLS peers */
+	 
 	vht_cap = &sta_ptr->tdls_cap.vhtcap;
 	supp_chwd_set = GET_VHTCAP_CHWDSET(usr_vht_cap_info);
 	peer_supp_chwd_set =
 			 GET_VHTCAP_CHWDSET(le32_to_cpu(vht_cap->vht_cap_info));
 	supp_chwd_set = min_t(u8, supp_chwd_set, peer_supp_chwd_set);
 
-	/* We need check AP's bandwidth when TDLS_WIDER_BANDWIDTH is off */
+	 
 
 	if (ap_vht_cap && sta_ptr->tdls_cap.extcap.ext_capab[7] &
 	    WLAN_EXT_CAPA8_TDLS_WIDE_BW_ENABLED) {
@@ -391,15 +375,15 @@ mwifiex_tdls_add_wmm_param_ie(struct mwifiex_private *priv, struct sk_buff *skb)
 
 	wmm->element_id = WLAN_EID_VENDOR_SPECIFIC;
 	wmm->len = sizeof(*wmm) - 2;
-	wmm->oui[0] = 0x00; /* Microsoft OUI 00:50:F2 */
+	wmm->oui[0] = 0x00;  
 	wmm->oui[1] = 0x50;
 	wmm->oui[2] = 0xf2;
-	wmm->oui_type = 2; /* WME */
-	wmm->oui_subtype = 1; /* WME param */
-	wmm->version = 1; /* WME ver */
-	wmm->qos_info = 0; /* U-APSD not in use */
+	wmm->oui_type = 2;  
+	wmm->oui_subtype = 1;  
+	wmm->version = 1;  
+	wmm->qos_info = 0;  
 
-	/* use default WMM AC parameters for TDLS link*/
+	 
 	memcpy(&wmm->ac[0], ac_be, sizeof(ac_be));
 	memcpy(&wmm->ac[1], ac_bk, sizeof(ac_bk));
 	memcpy(&wmm->ac[2], ac_vi, sizeof(ac_vi));
@@ -416,14 +400,14 @@ mwifiex_add_wmm_info_ie(struct mwifiex_private *priv, struct sk_buff *skb,
 		      MWIFIEX_TDLS_WMM_INFO_SIZE + sizeof(struct ieee_types_header));
 
 	*buf++ = WLAN_EID_VENDOR_SPECIFIC;
-	*buf++ = 7; /* len */
-	*buf++ = 0x00; /* Microsoft OUI 00:50:F2 */
+	*buf++ = 7;  
+	*buf++ = 0x00;  
 	*buf++ = 0x50;
 	*buf++ = 0xf2;
-	*buf++ = 2; /* WME */
-	*buf++ = 0; /* WME info */
-	*buf++ = 1; /* WME ver */
-	*buf++ = qosinfo; /* U-APSD no in use */
+	*buf++ = 2;  
+	*buf++ = 0;  
+	*buf++ = 1;  
+	*buf++ = qosinfo;  
 }
 
 static void mwifiex_tdls_add_bss_co_2040(struct sk_buff *skb)
@@ -640,7 +624,7 @@ int mwifiex_send_tdls_data_frame(struct mwifiex_private *priv, const u8 *peer,
 		      sizeof(struct ieee80211_tdls_data)) +
 		  MWIFIEX_MGMT_FRAME_HEADER_SIZE +
 		  MWIFIEX_SUPPORTED_RATES +
-		  3 + /* Qos Info */
+		  3 +  
 		  sizeof(struct ieee_types_extcap) +
 		  sizeof(struct ieee80211_ht_cap) +
 		  sizeof(struct ieee_types_bss_co_2040) +
@@ -715,9 +699,7 @@ int mwifiex_send_tdls_data_frame(struct mwifiex_private *priv, const u8 *peer,
 	__net_timestamp(skb);
 	mwifiex_queue_tx_pkt(priv, skb);
 
-	/* Delay 10ms to make sure tdls setup confirm/teardown frame
-	 * is received by peer
-	*/
+	 
 	if (action_code == WLAN_TDLS_SETUP_CONFIRM ||
 	    action_code == WLAN_TDLS_TEARDOWN)
 		msleep_interruptible(10);
@@ -749,12 +731,12 @@ mwifiex_construct_tdls_action_frame(struct mwifiex_private *priv,
 	mgmt->frame_control = cpu_to_le16(IEEE80211_FTYPE_MGMT |
 					  IEEE80211_STYPE_ACTION);
 
-	/* add address 4 */
+	 
 	pos = skb_put(skb, ETH_ALEN);
 
 	switch (action_code) {
 	case WLAN_PUB_ACTION_TDLS_DISCOVER_RES:
-		/* See the layout of 'struct ieee80211_mgmt'. */
+		 
 		extra = sizeof(mgmt->u.action.u.tdls_discover_resp) +
 			sizeof(mgmt->u.action.category);
 		skb_put(skb, extra);
@@ -765,9 +747,9 @@ mwifiex_construct_tdls_action_frame(struct mwifiex_private *priv,
 								   dialog_token;
 		mgmt->u.action.u.tdls_discover_resp.capability =
 							     cpu_to_le16(capab);
-		/* move back for addr4 */
+		 
 		memmove(pos + ETH_ALEN, &mgmt->u.action, extra);
-		/* init address 4 */
+		 
 		eth_broadcast_addr(pos);
 
 		ret = mwifiex_tdls_append_rates_ie(priv, skb);
@@ -832,8 +814,8 @@ int mwifiex_send_tdls_action_frame(struct mwifiex_private *priv, const u8 *peer,
 		  sizeof(struct ieee80211_ht_operation) +
 		  sizeof(struct ieee80211_tdls_lnkie) +
 		  extra_ies_len +
-		  3 + /* Qos Info */
-		  ETH_ALEN; /* Address4 */
+		  3 +  
+		  ETH_ALEN;  
 
 	if (priv->adapter->is_hw_11ac_capable)
 		skb_len += sizeof(struct ieee_types_vht_cap) +
@@ -866,7 +848,7 @@ int mwifiex_send_tdls_action_frame(struct mwifiex_private *priv, const u8 *peer,
 	if (extra_ies_len)
 		skb_put_data(skb, extra_ies, extra_ies_len);
 
-	/* the TDLS link IE is always added last we are the responder */
+	 
 
 	mwifiex_tdls_add_link_ie(skb, peer, priv->curr_addr,
 				 priv->cfg_bssid);
@@ -888,9 +870,7 @@ int mwifiex_send_tdls_action_frame(struct mwifiex_private *priv, const u8 *peer,
 	return 0;
 }
 
-/* This function process tdls action frame from peer.
- * Peer capabilities are stored into station node structure.
- */
+ 
 void mwifiex_process_tdls_action_frame(struct mwifiex_private *priv,
 				       u8 *buf, int len)
 {
@@ -918,7 +898,7 @@ void mwifiex_process_tdls_action_frame(struct mwifiex_private *priv,
 			return;
 
 		pos = buf + sizeof(struct ethhdr) + 4;
-		/* payload 1+ category 1 + action 1 + dialog 1 */
+		 
 		cap = get_unaligned_le16(pos);
 		ies_len = len - sizeof(struct ethhdr) - TDLS_REQ_FIX_LEN;
 		pos += 2;
@@ -927,7 +907,7 @@ void mwifiex_process_tdls_action_frame(struct mwifiex_private *priv,
 	case WLAN_TDLS_SETUP_RESPONSE:
 		if (len < (sizeof(struct ethhdr) + TDLS_RESP_FIX_LEN))
 			return;
-		/* payload 1+ category 1 + action 1 + dialog 1 + status code 2*/
+		 
 		pos = buf + sizeof(struct ethhdr) + 6;
 		cap = get_unaligned_le16(pos);
 		ies_len = len - sizeof(struct ethhdr) - TDLS_RESP_FIX_LEN;
@@ -979,7 +959,7 @@ void mwifiex_process_tdls_action_frame(struct mwifiex_private *priv,
 		case WLAN_EID_HT_CAPABILITY:
 			if (ie_len != sizeof(struct ieee80211_ht_cap))
 				return;
-			/* copy the ie's value into ht_capb*/
+			 
 			memcpy((u8 *)&sta_ptr->tdls_cap.ht_capb, pos + 2,
 			       sizeof(struct ieee80211_ht_cap));
 			sta_ptr->is_11n_enabled = 1;
@@ -987,7 +967,7 @@ void mwifiex_process_tdls_action_frame(struct mwifiex_private *priv,
 		case WLAN_EID_HT_OPERATION:
 			if (ie_len != sizeof(struct ieee80211_ht_operation))
 				return;
-			/* copy the ie's value into ht_oper*/
+			 
 			memcpy(&sta_ptr->tdls_cap.ht_oper, pos + 2,
 			       sizeof(struct ieee80211_ht_operation));
 			break;
@@ -1026,7 +1006,7 @@ void mwifiex_process_tdls_action_frame(struct mwifiex_private *priv,
 				if (ie_len !=
 				    sizeof(struct ieee80211_vht_operation))
 					return;
-				/* copy the ie's value into vhtoper*/
+				 
 				memcpy(&sta_ptr->tdls_cap.vhtoper, pos + 2,
 				       sizeof(struct ieee80211_vht_operation));
 			}
@@ -1035,7 +1015,7 @@ void mwifiex_process_tdls_action_frame(struct mwifiex_private *priv,
 			if (priv->adapter->is_hw_11ac_capable) {
 				if (ie_len != sizeof(struct ieee80211_vht_cap))
 					return;
-				/* copy the ie's value into vhtcap*/
+				 
 				memcpy((u8 *)&sta_ptr->tdls_cap.vhtcap, pos + 2,
 				       sizeof(struct ieee80211_vht_cap));
 				sta_ptr->is_11ac_enabled = 1;
@@ -1232,7 +1212,7 @@ int mwifiex_get_tdls_list(struct mwifiex_private *priv,
 	if (!ISSUPP_TDLS_ENABLED(priv->adapter->fw_cap_info))
 		return 0;
 
-	/* make sure we are in station mode and connected */
+	 
 	if (!(priv->bss_type == MWIFIEX_BSS_TYPE_STA && priv->media_connected))
 		return 0;
 
@@ -1356,7 +1336,7 @@ void mwifiex_add_auto_tdls_peer(struct mwifiex_private *priv, const u8 *mac)
 		}
 	}
 
-	/* create new TDLS peer */
+	 
 	tdls_peer = kzalloc(sizeof(*tdls_peer), GFP_ATOMIC);
 	if (tdls_peer) {
 		ether_addr_copy(tdls_peer->mac_addr, mac);

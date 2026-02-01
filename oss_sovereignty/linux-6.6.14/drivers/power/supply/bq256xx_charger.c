@@ -1,6 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
-// BQ256XX Battery Charger Driver
-// Copyright (C) 2020 Texas Instruments Incorporated - http://www.ti.com/
+
+
+
 
 #include <linux/err.h>
 #include <linux/i2c.h>
@@ -149,18 +149,7 @@
 
 #define BQ256XX_REG_RST		BIT(7)
 
-/**
- * struct bq256xx_init_data -
- * @ichg: fast charge current
- * @iindpm: input current limit
- * @vbatreg: charge voltage
- * @iterm: termination current
- * @iprechg: precharge current
- * @vindpm: input voltage limit
- * @ichg_max: maximum fast charge current
- * @vbatreg_max: maximum charge voltage
- * @ts_ignore: TS_IGNORE flag
- */
+ 
 struct bq256xx_init_data {
 	u32 ichg;
 	u32 iindpm;
@@ -173,17 +162,7 @@ struct bq256xx_init_data {
 	bool ts_ignore;
 };
 
-/**
- * struct bq256xx_state -
- * @vbus_stat: VBUS status according to BQ256XX_CHARGER_STATUS_0
- * @chrg_stat: charging status according to BQ256XX_CHARGER_STATUS_0
- * @online: PG status according to BQ256XX_CHARGER_STATUS_0
- *
- * @wdt_fault: watchdog fault according to BQ256XX_CHARGER_STATUS_1
- * @bat_fault: battery fault according to BQ256XX_CHARGER_STATUS_1
- * @chrg_fault: charging fault according to BQ256XX_CHARGER_STATUS_1
- * @ntc_fault: TS fault according to BQ256XX_CHARGER_STATUS_1
- */
+ 
 struct bq256xx_state {
 	u8 vbus_stat;
 	u8 chrg_stat;
@@ -205,28 +184,7 @@ enum bq256xx_id {
 	BQ25611D,
 };
 
-/**
- * struct bq256xx_device -
- * @client: i2c client structure
- * @regmap: register map structure
- * @dev: device structure
- * @charger: power supply registered for the charger
- * @battery: power supply registered for the battery
- * @lock: mutex lock structure
- *
- * @usb2_phy: usb_phy identifier
- * @usb3_phy: usb_phy identifier
- * @usb_nb: notifier block
- * @usb_work: usb work queue
- * @usb_event: usb_event code
- *
- * @model_name: i2c name string
- *
- * @init_data: initialization data
- * @chip_info: device variant information
- * @state: device status and faults
- * @watchdog_timer: watchdog timer value in milliseconds
- */
+ 
 struct bq256xx_device {
 	struct i2c_client *client;
 	struct device *dev;
@@ -249,39 +207,7 @@ struct bq256xx_device {
 	int watchdog_timer;
 };
 
-/**
- * struct bq256xx_chip_info -
- * @model_id: device instance
- *
- * @bq256xx_regmap_config: regmap configuration struct
- * @bq256xx_get_ichg: pointer to instance specific get_ichg function
- * @bq256xx_get_iindpm: pointer to instance specific get_iindpm function
- * @bq256xx_get_vbatreg: pointer to instance specific get_vbatreg function
- * @bq256xx_get_iterm: pointer to instance specific get_iterm function
- * @bq256xx_get_iprechg: pointer to instance specific get_iprechg function
- * @bq256xx_get_vindpm: pointer to instance specific get_vindpm function
- *
- * @bq256xx_set_ichg: pointer to instance specific set_ichg function
- * @bq256xx_set_iindpm: pointer to instance specific set_iindpm function
- * @bq256xx_set_vbatreg: pointer to instance specific set_vbatreg function
- * @bq256xx_set_iterm: pointer to instance specific set_iterm function
- * @bq256xx_set_iprechg: pointer to instance specific set_iprechg function
- * @bq256xx_set_vindpm: pointer to instance specific set_vindpm function
- * @bq256xx_set_charge_type: pointer to instance specific set_charge_type function
- * @bq256xx_set_ts_ignore: pointer to instance specific set_ts_ignore function
- *
- * @bq256xx_def_ichg: default ichg value in microamps
- * @bq256xx_def_iindpm: default iindpm value in microamps
- * @bq256xx_def_vbatreg: default vbatreg value in microvolts
- * @bq256xx_def_iterm: default iterm value in microamps
- * @bq256xx_def_iprechg: default iprechg value in microamps
- * @bq256xx_def_vindpm: default vindpm value in microvolts
- *
- * @bq256xx_max_ichg: maximum charge current in microamps
- * @bq256xx_max_vbatreg: maximum battery regulation voltage in microvolts
- *
- * @has_usb_detect: indicates whether device has BC1.2 detection
- */
+ 
 struct bq256xx_chip_info {
 	int model_id;
 
@@ -1731,7 +1657,7 @@ static int bq256xx_probe(struct i2c_client *client)
 	if (ret)
 		return ret;
 
-	/* OTG reporting */
+	 
 	bq->usb2_phy = devm_usb_get_phy(dev, USB_PHY_TYPE_USB2);
 	if (!IS_ERR_OR_NULL(bq->usb2_phy)) {
 		INIT_WORK(&bq->usb_work, bq256xx_usb_work);

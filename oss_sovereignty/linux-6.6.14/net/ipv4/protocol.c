@@ -1,23 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * INET		An implementation of the TCP/IP protocol suite for the LINUX
- *		operating system.  INET is implemented using the  BSD Socket
- *		interface as the means of communication with the user level.
- *
- *		INET protocol dispatch tables.
- *
- * Authors:	Ross Biro
- *		Fred N. van Kempen, <waltje@uWalt.NL.Mugnet.ORG>
- *
- * Fixes:
- *		Alan Cox	: Ahah! udp icmp errors don't work because
- *				  udp_err is never called!
- *		Alan Cox	: Added new fields for init and ready for
- *				  proper fragmentation (_NO_ 4K limits!)
- *		Richard Colella	: Hang on hash collision
- *		Vince Laviano	: Modified inet_del_protocol() to correctly
- *				  maintain copy bit.
- */
+
+ 
 #include <linux/cache.h>
 #include <linux/module.h>
 #include <linux/netdevice.h>

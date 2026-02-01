@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/****************************************************************************
- * Driver for Solarflare network controllers and boards
- * Copyright 2015 Solarflare Communications Inc.
- */
+
+ 
 #include <linux/etherdevice.h>
 #include <linux/pci.h>
 #include <linux/module.h>
@@ -39,11 +36,11 @@ static int efx_ef10_vswitch_alloc(struct efx_nic *efx, unsigned int port_id,
 	MCDI_POPULATE_DWORD_1(inbuf, VSWITCH_ALLOC_IN_FLAGS,
 			      VSWITCH_ALLOC_IN_FLAG_AUTO_PORT, 0);
 
-	/* Quietly try to allocate 2 VLAN tags */
+	 
 	rc = efx_mcdi_rpc_quiet(efx, MC_CMD_VSWITCH_ALLOC, inbuf, sizeof(inbuf),
 				NULL, 0, NULL);
 
-	/* If 2 VLAN tags is too many, revert to trying with 1 VLAN tags */
+	 
 	if (rc == -EPROTO) {
 		MCDI_SET_DWORD(inbuf, VSWITCH_ALLOC_IN_NUM_VLAN_TAGS, 1);
 		rc = efx_mcdi_rpc(efx, MC_CMD_VSWITCH_ALLOC, inbuf,
@@ -121,7 +118,7 @@ static void efx_ef10_sriov_free_vf_vports(struct efx_nic *efx)
 	for (i = 0; i < efx->vf_count; i++) {
 		struct ef10_vf *vf = nic_data->vf + i;
 
-		/* If VF is assigned, do not free the vport  */
+		 
 		if (vf->pci_dev && pci_is_dev_assigned(vf->pci_dev))
 			continue;
 
@@ -255,9 +252,7 @@ fail_vadaptor_alloc:
 	return rc;
 }
 
-/* On top of the default firmware vswitch setup, create a VEB vswitch and
- * expansion vport for use by this function.
- */
+ 
 int efx_ef10_vswitching_probe_pf(struct efx_nic *efx)
 {
 	struct efx_ef10_nic_data *nic_data = efx->nic_data;
@@ -265,7 +260,7 @@ int efx_ef10_vswitching_probe_pf(struct efx_nic *efx)
 	int rc;
 
 	if (pci_sriov_get_totalvfs(efx->pci_dev) <= 0) {
-		/* vswitch not needed as we have no VFs */
+		 
 		efx_ef10_vadaptor_alloc_set_features(efx);
 		return 0;
 	}
@@ -354,7 +349,7 @@ void efx_ef10_vswitching_remove_pf(struct efx_nic *efx)
 	efx_ef10_vadaptor_free(efx, efx->vport_id);
 
 	if (efx->vport_id == EVB_PORT_ID_ASSIGNED)
-		return; /* No vswitch was ever created */
+		return;  
 
 	if (!is_zero_ether_addr(nic_data->vport_mac)) {
 		efx_ef10_vport_del_mac(efx, efx->vport_id,
@@ -364,7 +359,7 @@ void efx_ef10_vswitching_remove_pf(struct efx_nic *efx)
 	efx_ef10_vport_free(efx, efx->vport_id);
 	efx->vport_id = EVB_PORT_ID_ASSIGNED;
 
-	/* Only free the vswitch if no VFs are assigned */
+	 
 	if (!pci_vfs_assigned(efx->pci_dev))
 		efx_ef10_vswitch_free(efx, efx->vport_id);
 }
@@ -399,12 +394,7 @@ fail1:
 	return rc;
 }
 
-/* Disable SRIOV and remove VFs
- * If some VFs are attached to a guest (using Xen, only) nothing is
- * done if force=false, and vports are freed if force=true (for the non
- * attachedc ones, only) but SRIOV is not disabled and VFs are not
- * removed in either case.
- */
+ 
 static int efx_ef10_pci_sriov_disable(struct efx_nic *efx, bool force)
 {
 	struct pci_dev *dev = efx->pci_dev;
@@ -450,15 +440,13 @@ void efx_ef10_sriov_fini(struct efx_nic *efx)
 	int rc;
 
 	if (!nic_data->vf) {
-		/* Remove any un-assigned orphaned VFs. This can happen if the PF driver
-		 * was unloaded while any VF was assigned to a guest (using Xen, only).
-		 */
+		 
 		if (pci_num_vf(efx->pci_dev) && !pci_vfs_assigned(efx->pci_dev))
 			pci_disable_sriov(efx->pci_dev);
 		return;
 	}
 
-	/* Disable SRIOV and remove any VFs in the host */
+	 
 	rc = efx_ef10_pci_sriov_disable(efx, true);
 	if (rc)
 		netif_dbg(efx, drv, efx->net_dev,
@@ -534,7 +522,7 @@ int efx_ef10_sriov_set_vf_mac(struct efx_nic *efx, int vf_i, const u8 *mac)
 		goto fail;
 
 	if (vf->efx) {
-		/* VF cannot use the vport_id that the PF created */
+		 
 		rc = efx_ef10_vadaptor_alloc(vf->efx, EVB_PORT_ID_ASSIGNED);
 		if (rc)
 			return rc;
@@ -608,10 +596,10 @@ int efx_ef10_sriov_set_vf_vlan(struct efx_nic *efx, int vf_i, u16 vlan,
 		vf->vport_id = 0;
 	}
 
-	/* Do the actual vlan change */
+	 
 	vf->vlan = new_vlan;
 
-	/* Restore everything in reverse order */
+	 
 	rc = efx_ef10_vport_alloc(efx, EVB_PORT_ID_ASSIGNED,
 				  MC_CMD_VPORT_ALLOC_IN_VPORT_TYPE_NORMAL,
 				  vf->vlan, &vf->vport_id);
@@ -688,7 +676,7 @@ static int efx_ef10_sriov_set_privilege_mask(struct efx_nic *efx, int vf_i,
 
 	EFX_WARN_ON_PARANOID((value & ~mask) != 0);
 
-	/* Get privilege mask */
+	 
 	MCDI_POPULATE_DWORD_2(pm_inbuf, PRIVILEGE_MASK_IN_FUNCTION,
 			      PRIVILEGE_MASK_IN_FUNCTION_PF, nic_data->pf_index,
 			      PRIVILEGE_MASK_IN_FUNCTION_VF, vf_i);
@@ -712,7 +700,7 @@ static int efx_ef10_sriov_set_privilege_mask(struct efx_nic *efx, int vf_i,
 
 	new_mask |= MC_CMD_PRIVILEGE_MASK_IN_DO_CHANGE;
 
-	/* Set privilege mask */
+	 
 	MCDI_SET_DWORD(pm_inbuf, PRIVILEGE_MASK_IN_NEW_MASK, new_mask);
 
 	rc = efx_mcdi_rpc(efx, MC_CMD_PRIVILEGE_MASK,
@@ -731,7 +719,7 @@ int efx_ef10_sriov_set_vf_spoofchk(struct efx_nic *efx, int vf_i, bool spoofchk)
 {
 	struct efx_ef10_nic_data *nic_data = efx->nic_data;
 
-	/* Can't enable spoofchk if firmware doesn't support it. */
+	 
 	if (!(nic_data->datapath_caps &
 	      BIT(MC_CMD_GET_CAPABILITIES_OUT_TX_MAC_SECURITY_FILTERING_LBN)) &&
 	    spoofchk)
@@ -760,7 +748,7 @@ int efx_ef10_sriov_set_vf_link_state(struct efx_nic *efx, int vf_i,
 			      LINK_STATE_MODE_IN_FUNCTION_VF, vf_i);
 	MCDI_SET_DWORD(inbuf, LINK_STATE_MODE_IN_NEW_MODE, link_state);
 	return efx_mcdi_rpc(efx, MC_CMD_LINK_STATE_MODE, inbuf, sizeof(inbuf),
-			    NULL, 0, NULL); /* don't care what old mode was */
+			    NULL, 0, NULL);  
 }
 
 int efx_ef10_sriov_get_vf_config(struct efx_nic *efx, int vf_i,

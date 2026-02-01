@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * IIO multiplexer driver
- *
- * Copyright (C) 2017 Axentia Technologies AB
- *
- * Author: Peter Rosin <peda@axentia.se>
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/iio/consumer.h>
@@ -347,7 +341,7 @@ static int mux_probe(struct platform_device *pdev)
 
 	sizeof_ext_info = iio_get_channel_ext_info_count(parent);
 	if (sizeof_ext_info) {
-		sizeof_ext_info += 1; /* one extra entry for the sentinel */
+		sizeof_ext_info += 1;  
 		sizeof_ext_info *= sizeof(*mux->ext_info);
 	}
 
@@ -441,7 +435,7 @@ static int mux_probe(struct platform_device *pdev)
 
 static const struct of_device_id mux_match[] = {
 	{ .compatible = "io-channel-mux" },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, mux_match);
 

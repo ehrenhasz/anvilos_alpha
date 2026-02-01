@@ -1,17 +1,13 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/******************************************************************************
- *
- * Copyright(c) 2007 - 2011 Realtek Corporation. All rights reserved.
- *
- ******************************************************************************/
+ 
+ 
 
 
 #ifndef __HALHWOUTSRC_H__
 #define __HALHWOUTSRC_H__
 
-/*  */
-/*  structure and define */
-/*  */
+ 
+ 
+ 
 
 struct phy_rx_agc_info_t {
 	#if (ODM_ENDIAN_TYPE == ODM_ENDIAN_LITTLE)
@@ -27,7 +23,7 @@ struct phy_status_rpt_8192cd_t {
 	u8 cck_sig_qual_ofdm_pwdb_all;
 	u8 cck_agc_rpt_ofdm_cfosho_a;
 	u8 cck_rpt_b_ofdm_cfosho_b;
-	u8 rsvd_1;/* ch_corr_msb; */
+	u8 rsvd_1; 
 	u8 noise_power_db_msb;
 	s8 path_cfotail[2];
 	u8 pcts_mask[2];
@@ -41,21 +37,21 @@ struct phy_status_rpt_8192cd_t {
 	u8 rsvd_3;
 
 #if (ODM_ENDIAN_TYPE == ODM_ENDIAN_LITTLE)
-	u8 antsel_rx_keep_2:1;	/* ex_intf_flg:1; */
+	u8 antsel_rx_keep_2:1;	 
 	u8 sgi_en:1;
 	u8 rxsc:2;
 	u8 idle_long:1;
 	u8 r_ant_train_en:1;
 	u8 ant_sel_b:1;
 	u8 ant_sel:1;
-#else	/*  _BIG_ENDIAN_ */
+#else	 
 	u8 ant_sel:1;
 	u8 ant_sel_b:1;
 	u8 r_ant_train_en:1;
 	u8 idle_long:1;
 	u8 rxsc:2;
 	u8 sgi_en:1;
-	u8 antsel_rx_keep_2:1;	/* ex_intf_flg:1; */
+	u8 antsel_rx_keep_2:1;	 
 #endif
 };
 

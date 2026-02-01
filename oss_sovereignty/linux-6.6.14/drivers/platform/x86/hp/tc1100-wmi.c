@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  HP Compaq TC1100 Tablet WMI Extras Driver
- *
- *  Copyright (C) 2007 Carlos Corbacho <carlos@strangeworlds.co.uk>
- *  Copyright (C) 2004 Jamey Hicks <jamey.hicks@hp.com>
- *  Copyright (C) 2001, 2002 Andy Grover <andrew.grover@intel.com>
- *  Copyright (C) 2001, 2002 Paul Diefenbaugh <paul.s.diefenbaugh@intel.com>
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -39,9 +32,7 @@ struct tc1100_data {
 static struct tc1100_data suspend_data;
 #endif
 
-/* --------------------------------------------------------------------------
-				Device Management
-   -------------------------------------------------------------------------- */
+ 
 
 static int get_state(u32 *out, u8 instance)
 {
@@ -115,13 +106,9 @@ static int set_state(u32 *in, u8 instance)
 	return 0;
 }
 
-/* --------------------------------------------------------------------------
-				FS Interface (/sys)
-   -------------------------------------------------------------------------- */
+ 
 
-/*
- * Read/ write bool sysfs macro
- */
+ 
 #define show_set_bool(value, instance) \
 static ssize_t \
 show_bool_##value(struct device *dev, struct device_attribute *attr, \
@@ -160,9 +147,7 @@ static const struct attribute_group tc1100_attribute_group = {
 	.attrs	= tc1100_attributes,
 };
 
-/* --------------------------------------------------------------------------
-				Driver Model
-   -------------------------------------------------------------------------- */
+ 
 
 static int __init tc1100_probe(struct platform_device *device)
 {

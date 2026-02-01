@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/* Applied Micro X-Gene SoC Ethernet Driver
- *
- * Copyright (c) 2014, Applied Micro Circuits Corporation
- * Authors: Iyappan Subramanian <isubramanian@apm.com>
- *	    Keyur Chudgar <kchudgar@apm.com>
- */
+ 
+ 
 
 #ifndef __XGENE_ENET_XGMAC_H__
 #define __XGENE_ENET_XGMAC_H__
@@ -86,4 +81,4 @@
 extern const struct xgene_mac_ops xgene_xgmac_ops;
 extern const struct xgene_port_ops xgene_xgport_ops;
 
-#endif /* __XGENE_ENET_XGMAC_H__ */
+#endif  

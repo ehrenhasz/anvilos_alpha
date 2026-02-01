@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * tps65910.c  --  TI TPS6591x chip family multi-function driver
- *
- * Copyright 2010 Texas Instruments Inc.
- *
- * Author: Graeme Gregory <gg@slimlogic.co.uk>
- * Author: Jorge Eduardo Candelaria <jedu@slimlogic.co.uk>
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/err.h>
@@ -48,7 +41,7 @@ static const struct mfd_cell tps65910s[] = {
 
 
 static const struct regmap_irq tps65911_irqs[] = {
-	/* INT_STS */
+	 
 	[TPS65911_IRQ_PWRHOLD_F] = {
 		.mask = INT_MSK_PWRHOLD_F_IT_MSK_MASK,
 		.reg_offset = 0,
@@ -82,7 +75,7 @@ static const struct regmap_irq tps65911_irqs[] = {
 		.reg_offset = 0,
 	},
 
-	/* INT_STS2 */
+	 
 	[TPS65911_IRQ_GPIO0_R] = {
 		.mask = INT_MSK2_GPIO0_R_IT_MSK_MASK,
 		.reg_offset = 1,
@@ -116,7 +109,7 @@ static const struct regmap_irq tps65911_irqs[] = {
 		.reg_offset = 1,
 	},
 
-	/* INT_STS2 */
+	 
 	[TPS65911_IRQ_GPIO4_R] = {
 		.mask = INT_MSK3_GPIO4_R_IT_MSK_MASK,
 		.reg_offset = 2,
@@ -152,7 +145,7 @@ static const struct regmap_irq tps65911_irqs[] = {
 };
 
 static const struct regmap_irq tps65910_irqs[] = {
-	/* INT_STS */
+	 
 	[TPS65910_IRQ_VBAT_VMBDCH] = {
 		.mask = TPS65910_INT_MSK_VMBDCH_IT_MSK_MASK,
 		.reg_offset = 0,
@@ -186,7 +179,7 @@ static const struct regmap_irq tps65910_irqs[] = {
 		.reg_offset = 0,
 	},
 
-	/* INT_STS2 */
+	 
 	[TPS65910_IRQ_GPIO_R] = {
 		.mask = TPS65910_INT_MSK2_GPIO0_F_IT_MSK_MASK,
 		.reg_offset = 1,
@@ -260,13 +253,9 @@ static bool is_volatile_reg(struct device *dev, unsigned int reg)
 {
 	struct tps65910 *tps65910 = dev_get_drvdata(dev);
 
-	/*
-	 * Caching all regulator registers.
-	 * All regualator register address range is same for
-	 * TPS65910 and TPS65911
-	 */
+	 
 	if ((reg >= TPS65910_VIO) && (reg <= TPS65910_VDAC)) {
-		/* Check for non-existing register */
+		 
 		if (tps65910_chip_id(tps65910) == TPS65910)
 			if ((reg == TPS65911_VDDCTRL_OP) ||
 				(reg == TPS65911_VDDCTRL_SR))
@@ -313,7 +302,7 @@ static int tps65910_sleepinit(struct tps65910 *tps65910,
 
 	dev = tps65910->dev;
 
-	/* enabling SLEEP device state */
+	 
 	ret = regmap_set_bits(tps65910->regmap, TPS65910_DEVCTRL,
 			      DEVCTRL_DEV_SLP_MASK);
 	if (ret < 0) {
@@ -475,10 +464,7 @@ static int tps65910_i2c_probe(struct i2c_client *i2c)
 	tps65910->i2c_client = i2c;
 	tps65910->id = chip_id;
 
-	/* Work around silicon erratum SWCZ010: the tps65910 may miss the
-	 * first I2C transfer. So issue a dummy transfer before the first
-	 * real transfer.
-	 */
+	 
 	i2c_master_send(i2c, "", 1);
 	tps65910->regmap = devm_regmap_init_i2c(i2c, &tps65910_regmap_config);
 	if (IS_ERR(tps65910->regmap)) {
@@ -495,11 +481,7 @@ static int tps65910_i2c_probe(struct i2c_client *i2c)
 	tps65910_sleepinit(tps65910, pmic_plat_data);
 
 	if (pmic_plat_data->pm_off && !pm_power_off) {
-		/*
-		 * The PWR_OFF bit needs to be set separately, before
-		 * transitioning to the OFF state. It enables the "sequential"
-		 * power-off mode on TPS65911, it's a NO-OP on TPS65910.
-		 */
+		 
 		ret = regmap_set_bits(tps65910->regmap, TPS65910_DEVCTRL,
 				      DEVCTRL_PWR_OFF_MASK);
 		if (ret) {
@@ -543,5 +525,5 @@ static int __init tps65910_i2c_init(void)
 {
 	return i2c_add_driver(&tps65910_i2c_driver);
 }
-/* init early so consumer devices can complete system boot */
+ 
 subsys_initcall(tps65910_i2c_init);

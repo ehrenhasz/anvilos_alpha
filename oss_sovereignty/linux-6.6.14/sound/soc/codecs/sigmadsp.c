@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Load Analog Devices SigmaStudio firmware files
- *
- * Copyright 2009-2014 Analog Devices Inc.
- */
+
+ 
 
 #include <linux/crc32.h>
 #include <linux/firmware.h>
@@ -118,7 +114,7 @@ static int sigmadsp_ctrl_info(struct snd_kcontrol *kcontrol,
 static int sigmadsp_ctrl_write(struct sigmadsp *sigmadsp,
 	struct sigmadsp_control *ctrl, void *data)
 {
-	/* safeload loads up to 20 bytes in a atomic operation */
+	 
 	if (ctrl->num_bytes <= 20 && sigmadsp->ops && sigmadsp->ops->safeload)
 		return sigmadsp->ops->safeload(sigmadsp, ctrl->addr, data,
 			ctrl->num_bytes);
@@ -191,7 +187,7 @@ static bool sigma_fw_validate_control_name(const char *name, unsigned int len)
 	unsigned int i;
 
 	for (i = 0; i < len; i++) {
-		/* Normal ASCII characters are valid */
+		 
 		if (name[i] < ' ' || name[i] > '~')
 			return false;
 	}
@@ -218,7 +214,7 @@ static int sigma_fw_load_control(struct sigmadsp *sigmadsp,
 	if (name_len >= SNDRV_CTL_ELEM_ID_NAME_MAXLEN)
 		name_len = SNDRV_CTL_ELEM_ID_NAME_MAXLEN - 1;
 
-	/* Make sure there are no non-displayable characaters in the string */
+	 
 	if (!sigma_fw_validate_control_name(ctrl_chunk->name, name_len))
 		return -EINVAL;
 
@@ -234,11 +230,7 @@ static int sigma_fw_load_control(struct sigmadsp *sigmadsp,
 	}
 	ctrl->name = name;
 
-	/*
-	 * Readbacks doesn't work with non-volatile controls, since the
-	 * firmware updates the control value without driver interaction. Mark
-	 * the readbacks to ensure that the values are not cached.
-	 */
+	 
 	if (ctrl->name && strncmp(ctrl->name, READBACK_CTRL_NAME,
 				  (sizeof(READBACK_CTRL_NAME) - 1)) == 0)
 		ctrl->is_readback = true;
@@ -298,7 +290,7 @@ static int sigma_fw_load_samplerates(struct sigmadsp *sigmadsp,
 	if (num_rates > 32 || num_rates == 0)
 		return -EINVAL;
 
-	/* We only allow one samplerates block per file */
+	 
 	if (sigmadsp->rate_constraints.count)
 		return -EINVAL;
 
@@ -322,10 +314,7 @@ static int sigmadsp_fw_load_v2(struct sigmadsp *sigmadsp,
 	unsigned int length, pos;
 	int ret;
 
-	/*
-	 * Make sure that there is at least one chunk to avoid integer
-	 * underflows later on. Empty firmware is still valid though.
-	 */
+	 
 	if (fw->size < sizeof(*chunk) + sizeof(struct sigma_firmware_header))
 		return 0;
 
@@ -359,10 +348,7 @@ static int sigmadsp_fw_load_v2(struct sigmadsp *sigmadsp,
 		if (ret)
 			return ret;
 
-		/*
-		 * This can not overflow since if length is larger than the
-		 * maximum firmware size (0x4000000) we'll error out earilier.
-		 */
+		 
 		pos += ALIGN(length, sizeof(__le32));
 	}
 
@@ -393,10 +379,7 @@ static size_t sigma_action_size(struct sigma_action *sa)
 	return payload + sizeof(struct sigma_action);
 }
 
-/*
- * Returns a negative error value in case of an error, 0 if processing of
- * the firmware should be stopped after this action, 1 otherwise.
- */
+ 
 static int process_sigma_action(struct sigmadsp *sigmadsp,
 	struct sigma_action *sa)
 {
@@ -491,22 +474,17 @@ static int sigmadsp_firmware_load(struct sigmadsp *sigmadsp, const char *name)
 	int ret;
 	u32 crc;
 
-	/* first load the blob */
+	 
 	ret = request_firmware(&fw, name, sigmadsp->dev);
 	if (ret) {
 		pr_debug("%s: request_firmware() failed with %i\n", __func__, ret);
 		goto done;
 	}
 
-	/* then verify the header */
+	 
 	ret = -EINVAL;
 
-	/*
-	 * Reject too small or unreasonable large files. The upper limit has been
-	 * chosen a bit arbitrarily, but it should be enough for all practical
-	 * purposes and having the limit makes it easier to avoid integer
-	 * overflows later in the loading process.
-	 */
+	 
 	if (fw->size < sizeof(*ssfw_head) || fw->size >= 0x4000000) {
 		dev_err(sigmadsp->dev, "Failed to load firmware: Invalid size\n");
 		goto done;
@@ -564,16 +542,7 @@ static int sigmadsp_init(struct sigmadsp *sigmadsp, struct device *dev,
 	return sigmadsp_firmware_load(sigmadsp, firmware_name);
 }
 
-/**
- * devm_sigmadsp_init() - Initialize SigmaDSP instance
- * @dev: The parent device
- * @ops: The sigmadsp_ops to use for this instance
- * @firmware_name: Name of the firmware file to load
- *
- * Allocates a SigmaDSP instance and loads the specified firmware file.
- *
- * Returns a pointer to a struct sigmadsp on success, or a PTR_ERR() on error.
- */
+ 
 struct sigmadsp *devm_sigmadsp_init(struct device *dev,
 	const struct sigmadsp_ops *ops, const char *firmware_name)
 {
@@ -631,7 +600,7 @@ static unsigned int sigmadsp_get_samplerate_mask(struct sigmadsp *sigmadsp,
 static bool sigmadsp_samplerate_valid(unsigned int supported,
 	unsigned int requested)
 {
-	/* All samplerates are supported */
+	 
 	if (!supported)
 		return true;
 
@@ -684,17 +653,7 @@ static void sigmadsp_activate_ctrl(struct sigmadsp *sigmadsp,
 	}
 }
 
-/**
- * sigmadsp_attach() - Attach a sigmadsp instance to a ASoC component
- * @sigmadsp: The sigmadsp instance to attach
- * @component: The component to attach to
- *
- * Typically called in the components probe callback.
- *
- * Note, once this function has been called the firmware must not be released
- * until after the ALSA snd_card that the component belongs to has been
- * disconnected, even if sigmadsp_attach() returns an error.
- */
+ 
 int sigmadsp_attach(struct sigmadsp *sigmadsp,
 	struct snd_soc_component *component)
 {
@@ -717,17 +676,7 @@ int sigmadsp_attach(struct sigmadsp *sigmadsp,
 }
 EXPORT_SYMBOL_GPL(sigmadsp_attach);
 
-/**
- * sigmadsp_setup() - Setup the DSP for the specified samplerate
- * @sigmadsp: The sigmadsp instance to configure
- * @samplerate: The samplerate the DSP should be configured for
- *
- * Loads the appropriate firmware program and parameter memory (if not already
- * loaded) and enables the controls for the specified samplerate. Any control
- * parameter changes that have been made previously will be restored.
- *
- * Returns 0 on success, a negative error code otherwise.
- */
+ 
 int sigmadsp_setup(struct sigmadsp *sigmadsp, unsigned int samplerate)
 {
 	struct sigmadsp_control *ctrl;
@@ -765,13 +714,7 @@ err:
 }
 EXPORT_SYMBOL_GPL(sigmadsp_setup);
 
-/**
- * sigmadsp_reset() - Notify the sigmadsp instance that the DSP has been reset
- * @sigmadsp: The sigmadsp instance to reset
- *
- * Should be called whenever the DSP has been reset and parameter and program
- * memory need to be re-loaded.
- */
+ 
 void sigmadsp_reset(struct sigmadsp *sigmadsp)
 {
 	struct sigmadsp_control *ctrl;
@@ -783,16 +726,7 @@ void sigmadsp_reset(struct sigmadsp *sigmadsp)
 }
 EXPORT_SYMBOL_GPL(sigmadsp_reset);
 
-/**
- * sigmadsp_restrict_params() - Applies DSP firmware specific constraints
- * @sigmadsp: The sigmadsp instance
- * @substream: The substream to restrict
- *
- * Applies samplerate constraints that may be required by the firmware Should
- * typically be called from the CODEC/component drivers startup callback.
- *
- * Returns 0 on success, a negative error code otherwise.
- */
+ 
 int sigmadsp_restrict_params(struct sigmadsp *sigmadsp,
 	struct snd_pcm_substream *substream)
 {

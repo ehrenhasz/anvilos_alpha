@@ -1,17 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  linux/fs/adfs/dir.c
- *
- *  Copyright (C) 1999-2000 Russell King
- *
- *  Common directory handling for ADFS
- */
+
+ 
 #include <linux/slab.h>
 #include "adfs.h"
 
-/*
- * For future.  This should probably be per-directory.
- */
+ 
 static DECLARE_RWSEM(adfs_dir_rwsem);
 
 int adfs_dir_copyfrom(void *dst, struct adfs_dir *dir, unsigned int offset,
@@ -103,7 +95,7 @@ int adfs_dir_read_buffers(struct super_block *sb, u32 indaddr,
 
 	num = ALIGN(size, sb->s_blocksize) >> sb->s_blocksize_bits;
 	if (num > ARRAY_SIZE(dir->bh)) {
-		/* We only allow one extension */
+		 
 		if (dir->bhs != dir->bh)
 			return -EINVAL;
 
@@ -177,7 +169,7 @@ static void adfs_dir_mark_dirty(struct adfs_dir *dir)
 {
 	unsigned int i;
 
-	/* Mark the buffers dirty */
+	 
 	for (i = 0; i < dir->nr_buffers; i++)
 		mark_buffer_dirty(dir->bhs[i]);
 }
@@ -201,15 +193,7 @@ void adfs_object_fixup(struct adfs_dir *dir, struct object_info *obj)
 {
 	unsigned int dots, i;
 
-	/*
-	 * RISC OS allows the use of '/' in directory entry names, so we need
-	 * to fix these up.  '/' is typically used for FAT compatibility to
-	 * represent '.', so do the same conversion here.  In any case, '.'
-	 * will never be in a RISC OS name since it is used as the pathname
-	 * separator.  Handle the case where we may generate a '.' or '..'
-	 * name, replacing the first character with '^' (the RISC OS "parent
-	 * directory" character.)
-	 */
+	 
 	for (i = dots = 0; i < obj->name_len; i++)
 		if (obj->name[i] == '/') {
 			obj->name[i] = '.';
@@ -219,10 +203,7 @@ void adfs_object_fixup(struct adfs_dir *dir, struct object_info *obj)
 	if (obj->name_len <= 2 && dots == obj->name_len)
 		obj->name[0] = '^';
 
-	/*
-	 * If the object is a file, and the user requested the ,xyz hex
-	 * filetype suffix to the name, check the filetype and append.
-	 */
+	 
 	if (!(obj->attr & ADFS_NDA_DIRECTORY) && ADFS_SB(dir->sb)->s_ftsuffix) {
 		u16 filetype = adfs_filetype(obj->loadaddr);
 
@@ -306,11 +287,7 @@ adfs_dir_update(struct super_block *sb, struct object_info *obj, int wait)
 	adfs_dir_relse(&dir);
 	return ret;
 
-	/*
-	 * If the updated failed because the entry wasn't found, we can
-	 * just release the buffers. If it was any other error, forget
-	 * the dirtied buffers so they aren't written back to the media.
-	 */
+	 
 forget:
 	if (ret == -ENOENT)
 		adfs_dir_relse(&dir);
@@ -411,10 +388,7 @@ adfs_hash(const struct dentry *parent, struct qstr *qstr)
 	return 0;
 }
 
-/*
- * Compare two names, taking note of the name length
- * requirements of the underlying filesystem.
- */
+ 
 static int adfs_compare(const struct dentry *dentry, unsigned int len,
 			const char *str, const struct qstr *qstr)
 {
@@ -435,10 +409,7 @@ adfs_lookup(struct inode *dir, struct dentry *dentry, unsigned int flags)
 
 	error = adfs_dir_lookup_byname(dir, &dentry->d_name, &obj);
 	if (error == 0) {
-		/*
-		 * This only returns NULL if get_empty_inode
-		 * fails.
-		 */
+		 
 		inode = adfs_iget(dir->i_sb, &obj);
 		if (!inode)
 			inode = ERR_PTR(-EACCES);
@@ -448,9 +419,7 @@ adfs_lookup(struct inode *dir, struct dentry *dentry, unsigned int flags)
 	return d_splice_alias(inode, dentry);
 }
 
-/*
- * directories can handle most operations...
- */
+ 
 const struct inode_operations adfs_dir_inode_operations = {
 	.lookup		= adfs_lookup,
 	.setattr	= adfs_notify_change,

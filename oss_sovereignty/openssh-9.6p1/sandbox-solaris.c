@@ -1,19 +1,4 @@
-/*
- * Copyright (c) 2015 Joyent, Inc
- * Author: Alex Wilson <alex.wilson@joyent.com>
- *
- * Permission to use, copy, modify, and distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
+ 
 
 #include "includes.h"
 
@@ -49,7 +34,7 @@ ssh_sandbox_init(struct monitor *monitor)
 
 	box = xcalloc(1, sizeof(*box));
 
-	/* Start with "basic" and drop everything we don't need. */
+	 
 	box->pset = solaris_basic_privset();
 
 	if (box->pset == NULL) {
@@ -57,7 +42,7 @@ ssh_sandbox_init(struct monitor *monitor)
 		return NULL;
 	}
 
-	/* Drop everything except the ability to use already-opened files */
+	 
 	if (priv_delset(box->pset, PRIV_FILE_LINK_ANY) != 0 ||
 #ifdef PRIV_NET_ACCESS
 	    priv_delset(box->pset, PRIV_NET_ACCESS) != 0 ||
@@ -76,7 +61,7 @@ ssh_sandbox_init(struct monitor *monitor)
 		return NULL;
 	}
 
-	/* These may not be available on older Solaris-es */
+	 
 # if defined(PRIV_FILE_READ) && defined(PRIV_FILE_WRITE)
 	if (priv_delset(box->pset, PRIV_FILE_READ) != 0 ||
 	    priv_delset(box->pset, PRIV_FILE_WRITE) != 0) {
@@ -108,7 +93,7 @@ ssh_sandbox_parent_finish(struct ssh_sandbox *box)
 void
 ssh_sandbox_parent_preauth(struct ssh_sandbox *box, pid_t child_pid)
 {
-	/* Nothing to do here */
+	 
 }
 
-#endif /* SANDBOX_SOLARIS */
+#endif  

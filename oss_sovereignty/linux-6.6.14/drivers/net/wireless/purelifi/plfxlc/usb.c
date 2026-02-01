@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2021 pureLiFi
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/init.h>
@@ -308,7 +306,7 @@ void plfxlc_usb_disable_tx(struct plfxlc_usb *usb)
 
 	clear_bit(PLF_BIT_ENABLED, &tx->enabled);
 
-	/* kill all submitted tx-urbs */
+	 
 	usb_kill_anchored_urbs(&tx->submitted);
 
 	spin_lock_irqsave(&tx->lock, flags);
@@ -317,9 +315,7 @@ void plfxlc_usb_disable_tx(struct plfxlc_usb *usb)
 	tx->submitted_urbs = 0;
 	spin_unlock_irqrestore(&tx->lock, flags);
 
-	/* The stopped state is ignored, relying on ieee80211_wake_queues()
-	 * in a potentionally following plfxlc_usb_enable_tx().
-	 */
+	 
 }
 
 void plfxlc_usb_enable_tx(struct plfxlc_usb *usb)
@@ -343,9 +339,7 @@ void plfxlc_tx_urb_complete(struct urb *urb)
 
 	skb = urb->context;
 	info = IEEE80211_SKB_CB(skb);
-	/* grab 'usb' pointer before handing off the skb (since
-	 * it might be freed by plfxlc_mac_tx_to_dev or mac80211)
-	 */
+	 
 	usb = &plfxlc_hw_mac(info->rate_driver_data[0])->chip.usb;
 
 	switch (urb->status) {
@@ -453,9 +447,7 @@ static void get_usb_req(struct usb_device *udev, void *buffer,
 	usb_req->id = cpu_to_be32(usb_req_id);
 	usb_req->len  = cpu_to_be32(0);
 
-	/* Copy buffer length into the transmitted buffer, as it is important
-	 * for the Rx MAC to know its exact length.
-	 */
+	 
 	if (usb_req->id == cpu_to_be32(USB_REQ_BEACON_WR)) {
 		memcpy(buffer_dst, &payload_len_nw, sizeof(payload_len_nw));
 		buffer_dst += sizeof(payload_len_nw);
@@ -467,12 +459,12 @@ static void get_usb_req(struct usb_device *udev, void *buffer,
 	buffer_src_p += buffer_len;
 	temp_usb_len +=  buffer_len;
 
-	/* Set the FCS_LEN (4) bytes as 0 for CRC checking. */
+	 
 	memset(buffer_dst, 0, FCS_LEN);
 	buffer_dst += FCS_LEN;
 	temp_usb_len += FCS_LEN;
 
-	/* Round the packet to be transmitted to 4 bytes. */
+	 
 	if (temp_usb_len % PURELIFI_BYTE_NUM_ALIGNMENT) {
 		memset(buffer_dst, 0, PURELIFI_BYTE_NUM_ALIGNMENT -
 		       (temp_usb_len %
@@ -667,7 +659,7 @@ static int probe(struct usb_interface *intf,
 
 	plfxlc_chip_enable_rxtx(chip);
 
-	/* Initialise the data plane Tx queue */
+	 
 	for (i = 0; i < MAX_STA_NUM; i++) {
 		skb_queue_head_init(&tx->station[i].data_list);
 		tx->station[i].flag = 0;
@@ -705,9 +697,7 @@ static void disconnect(struct usb_interface *intf)
 	struct plfxlc_mac *mac;
 	struct plfxlc_usb *usb;
 
-	/* Either something really bad happened, or
-	 * we're just dealing with a DEVICE_INSTALLER.
-	 */
+	 
 	if (!hw)
 		return;
 
@@ -721,11 +711,7 @@ static void disconnect(struct usb_interface *intf)
 
 	plfxlc_chip_disable_rxtx(&mac->chip);
 
-	/* If the disconnect has been caused by a removal of the
-	 * driver module, the reset allows reloading of the driver. If the
-	 * reset will not be executed here, the upload of the firmware in the
-	 * probe function caused by the reloading of the driver will fail.
-	 */
+	 
 	usb_reset_device(interface_to_usbdev(intf));
 
 	plfxlc_mac_release(mac);
@@ -812,9 +798,7 @@ static struct plfxlc_usb *get_plfxlc_usb(struct usb_interface *intf)
 	struct ieee80211_hw *hw = plfxlc_intf_to_hw(intf);
 	struct plfxlc_mac *mac;
 
-	/* Either something really bad happened, or
-	 * we're just dealing with a DEVICE_INSTALLER.
-	 */
+	 
 	if (!hw)
 		return NULL;
 

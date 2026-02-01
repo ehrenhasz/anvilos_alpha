@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* MPTCP socket monitoring support
- *
- * Copyright (c) 2019 Red Hat
- *
- * Author: Davide Caratti <dcaratti@redhat.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/net.h>
@@ -82,17 +77,17 @@ static size_t subflow_get_info_size(const struct sock *sk)
 {
 	size_t size = 0;
 
-	size += nla_total_size(0) +	/* INET_ULP_INFO_MPTCP */
-		nla_total_size(4) +	/* MPTCP_SUBFLOW_ATTR_TOKEN_REM */
-		nla_total_size(4) +	/* MPTCP_SUBFLOW_ATTR_TOKEN_LOC */
-		nla_total_size(4) +	/* MPTCP_SUBFLOW_ATTR_RELWRITE_SEQ */
-		nla_total_size_64bit(8) +	/* MPTCP_SUBFLOW_ATTR_MAP_SEQ */
-		nla_total_size(4) +	/* MPTCP_SUBFLOW_ATTR_MAP_SFSEQ */
-		nla_total_size(2) +	/* MPTCP_SUBFLOW_ATTR_SSN_OFFSET */
-		nla_total_size(2) +	/* MPTCP_SUBFLOW_ATTR_MAP_DATALEN */
-		nla_total_size(4) +	/* MPTCP_SUBFLOW_ATTR_FLAGS */
-		nla_total_size(1) +	/* MPTCP_SUBFLOW_ATTR_ID_REM */
-		nla_total_size(1) +	/* MPTCP_SUBFLOW_ATTR_ID_LOC */
+	size += nla_total_size(0) +	 
+		nla_total_size(4) +	 
+		nla_total_size(4) +	 
+		nla_total_size(4) +	 
+		nla_total_size_64bit(8) +	 
+		nla_total_size(4) +	 
+		nla_total_size(2) +	 
+		nla_total_size(2) +	 
+		nla_total_size(4) +	 
+		nla_total_size(1) +	 
+		nla_total_size(1) +	 
 		0;
 	return size;
 }

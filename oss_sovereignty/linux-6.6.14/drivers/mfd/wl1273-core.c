@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * MFD driver for wl1273 FM radio and audio codec submodules.
- *
- * Copyright (C) 2011 Nokia Corporation
- * Author: Matti Aaltonen <matti.j.aaltonen@nokia.com>
- */
+
+ 
 
 #include <linux/mfd/wl1273-core.h>
 #include <linux/slab.h>
@@ -70,13 +65,7 @@ static int wl1273_fm_write_data(struct wl1273_core *core, u8 *data, u16 len)
 	return 0;
 }
 
-/**
- * wl1273_fm_set_audio() -	Set audio mode.
- * @core:			A pointer to the device struct.
- * @new_mode:			The new audio mode.
- *
- * Audio modes are WL1273_AUDIO_DIGITAL and WL1273_AUDIO_ANALOG.
- */
+ 
 static int wl1273_fm_set_audio(struct wl1273_core *core, unsigned int new_mode)
 {
 	int r = 0;
@@ -133,11 +122,7 @@ out:
 	return r;
 }
 
-/**
- * wl1273_fm_set_volume() -	Set volume.
- * @core:			A pointer to the device struct.
- * @volume:			The new volume value.
- */
+ 
 static int wl1273_fm_set_volume(struct wl1273_core *core, unsigned int volume)
 {
 	int r;

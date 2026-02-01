@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Freescale SPI/eSPI controller driver library.
- *
- * Maintainer: Kumar Gala
- *
- * Copyright (C) 2006 Polycom, Inc.
- *
- * CPM SPI and QE buffer descriptors mode support:
- * Copyright (c) 2009  MontaVista Software, Inc.
- * Author: Anton Vorontsov <avorontsov@ru.mvista.com>
- *
- * Copyright 2010 Freescale Semiconductor, Inc.
- */
+
+ 
 #include <linux/dma-mapping.h>
 #include <linux/fsl_devices.h>
 #include <linux/interrupt.h>
@@ -87,7 +75,7 @@ void mpc8xxx_spi_probe(struct device *dev, struct resource *mem,
 
 	master = dev_get_drvdata(dev);
 
-	/* the spi->mode bits understood by this driver: */
+	 
 	master->mode_bits = SPI_CPOL | SPI_CPHA | SPI_CS_HIGH
 			| SPI_LSB_FIRST | SPI_LOOP;
 
@@ -127,11 +115,11 @@ int of_mpc8xxx_spi_probe(struct platform_device *ofdev)
 	pdata = &pinfo->pdata;
 	dev->platform_data = pdata;
 
-	/* Allocate bus num dynamically. */
+	 
 	pdata->bus_num = -1;
 
 #ifdef CONFIG_FSL_SOC
-	/* SPI controller is either clocked from QE or SoC clock. */
+	 
 	pdata->sysclk = get_brgfreq();
 	if (pdata->sysclk == -1) {
 		pdata->sysclk = fsl_get_sys_freq();

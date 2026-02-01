@@ -1,21 +1,4 @@
-/*
- * Battery power supply driver for X-Powers AXP20X and AXP22X PMICs
- *
- * Copyright 2016 Free Electrons NextThing Co.
- *	Quentin Schulz <quentin.schulz@free-electrons.com>
- *
- * This driver is based on a previous upstreaming attempt by:
- *	Bruno Prémont <bonbons@linux-vserver.org>
- *
- * This file is subject to the terms and conditions of the GNU General
- * Public License. See the file "COPYING" in the main directory of this
- * archive for more details.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- */
+ 
 
 #include <linux/err.h>
 #include <linux/interrupt.h>
@@ -72,7 +55,7 @@ struct axp20x_batt_ps {
 	struct iio_channel *batt_chrg_i;
 	struct iio_channel *batt_dischrg_i;
 	struct iio_channel *batt_v;
-	/* Maximum constant charge current */
+	 
 	unsigned int max_ccc;
 	const struct axp_data	*data;
 };
@@ -223,10 +206,7 @@ static int axp20x_battery_get_prop(struct power_supply *psy,
 		if (ret)
 			return ret;
 
-		/*
-		 * Fuel Gauge data takes 7 bits but the stored value seems to be
-		 * directly the raw percentage without any scaling to 7 bits.
-		 */
+		 
 		if ((val1 & AXP209_FG_PERCENT) == 100)
 			val->intval = POWER_SUPPLY_STATUS_FULL;
 		else
@@ -273,12 +253,12 @@ static int axp20x_battery_get_prop(struct power_supply *psy,
 		if (ret)
 			return ret;
 
-		/* IIO framework gives mA but Power Supply framework gives uA */
+		 
 		val->intval *= 1000;
 		break;
 
 	case POWER_SUPPLY_PROP_CAPACITY:
-		/* When no battery is present, return capacity is 100% */
+		 
 		ret = regmap_read(axp20x_batt->regmap, AXP20X_PWR_OP_MODE,
 				  &reg);
 		if (ret)
@@ -296,10 +276,7 @@ static int axp20x_battery_get_prop(struct power_supply *psy,
 		if (axp20x_batt->data->has_fg_valid && !(reg & AXP22X_FG_VALID))
 			return -EINVAL;
 
-		/*
-		 * Fuel Gauge data takes 7 bits but the stored value seems to be
-		 * directly the raw percentage without any scaling to 7 bits.
-		 */
+		 
 		val->intval = reg & AXP209_FG_PERCENT;
 		break;
 
@@ -321,7 +298,7 @@ static int axp20x_battery_get_prop(struct power_supply *psy,
 		if (ret)
 			return ret;
 
-		/* IIO framework gives mV but Power Supply framework gives uV */
+		 
 		val->intval *= 1000;
 		break;
 
@@ -345,12 +322,7 @@ static int axp22x_battery_set_max_voltage(struct axp20x_batt_ps *axp20x_batt,
 		break;
 
 	default:
-		/*
-		 * AXP20x max voltage can be set to 4.36V and AXP22X max voltage
-		 * can be set to 4.22V and 4.24V, but these voltages are too
-		 * high for Lithium based batteries (AXP PMICs are supposed to
-		 * be used with these kinds of battery).
-		 */
+		 
 		return -EINVAL;
 	}
 
@@ -375,12 +347,7 @@ static int axp20x_battery_set_max_voltage(struct axp20x_batt_ps *axp20x_batt,
 		break;
 
 	default:
-		/*
-		 * AXP20x max voltage can be set to 4.36V and AXP22X max voltage
-		 * can be set to 4.22V and 4.24V, but these voltages are too
-		 * high for Lithium based batteries (AXP PMICs are supposed to
-		 * be used with these kinds of battery).
-		 */
+		 
 		return -EINVAL;
 	}
 
@@ -551,7 +518,7 @@ static const struct of_device_id axp20x_battery_ps_id[] = {
 	}, {
 		.compatible = "x-powers,axp813-battery-power-supply",
 		.data = (void *)&axp813_data,
-	}, { /* sentinel */ },
+	}, {   },
 };
 MODULE_DEVICE_TABLE(of, axp20x_battery_ps_id);
 
@@ -621,7 +588,7 @@ static int axp20x_power_probe(struct platform_device *pdev)
 			dev_err(&pdev->dev,
 				"couldn't set voltage_min_design\n");
 
-		/* Set max to unverified value to be able to set CCC */
+		 
 		axp20x_batt->max_ccc = ccc;
 
 		if (ccc <= 0 || axp20x_set_constant_charge_current(axp20x_batt,
@@ -634,10 +601,7 @@ static int axp20x_power_probe(struct platform_device *pdev)
 		}
 	}
 
-	/*
-	 * Update max CCC to a valid value if battery info is present or set it
-	 * to current register value by default.
-	 */
+	 
 	axp20x_get_constant_charge_current(axp20x_batt,
 					   &axp20x_batt->max_ccc);
 

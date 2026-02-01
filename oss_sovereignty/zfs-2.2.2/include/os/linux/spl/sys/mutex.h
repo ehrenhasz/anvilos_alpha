@@ -1,25 +1,4 @@
-/*
- *  Copyright (C) 2007-2010 Lawrence Livermore National Security, LLC.
- *  Copyright (C) 2007 The Regents of the University of California.
- *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
- *  Written by Brian Behlendorf <behlendorf1@llnl.gov>.
- *  UCRL-CODE-235197
- *
- *  This file is part of the SPL, Solaris Porting Layer.
- *
- *  The SPL is free software; you can redistribute it and/or modify it
- *  under the terms of the GNU General Public License as published by the
- *  Free Software Foundation; either version 2 of the License, or (at your
- *  option) any later version.
- *
- *  The SPL is distributed in the hope that it will be useful, but WITHOUT
- *  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- *  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
- *  for more details.
- *
- *  You should have received a copy of the GNU General Public License along
- *  with the SPL.  If not, see <http://www.gnu.org/licenses/>.
- */
+ 
 
 #ifndef _SPL_MUTEX_H
 #define	_SPL_MUTEX_H
@@ -39,11 +18,11 @@ typedef enum {
 
 typedef struct {
 	struct mutex		m_mutex;
-	spinlock_t		m_lock;	/* used for serializing mutex_exit */
+	spinlock_t		m_lock;	 
 	kthread_t		*m_owner;
 #ifdef CONFIG_LOCKDEP
 	kmutex_type_t		m_type;
-#endif /* CONFIG_LOCKDEP */
+#endif  
 } kmutex_t;
 
 #define	MUTEX(mp)		(&((mp)->m_mutex))
@@ -83,18 +62,13 @@ spl_mutex_lockdep_on_maybe(kmutex_t *mp)			\
 	if (mp && mp->m_type == MUTEX_NOLOCKDEP)		\
 		lockdep_on();					\
 }
-#else  /* CONFIG_LOCKDEP */
+#else   
 #define	spl_mutex_set_type(mp, type)
 #define	spl_mutex_lockdep_off_maybe(mp)
 #define	spl_mutex_lockdep_on_maybe(mp)
-#endif /* CONFIG_LOCKDEP */
+#endif  
 
-/*
- * The following functions must be a #define	and not static inline.
- * This ensures that the native linux mutex functions (lock/unlock)
- * will be correctly located in the users code which is important
- * for the built in kernel lock analysis tools
- */
+ 
 #undef mutex_init
 #define	mutex_init(mp, name, type, ibc)				\
 {								\
@@ -114,7 +88,7 @@ spl_mutex_lockdep_on_maybe(kmutex_t *mp)			\
 }
 
 #define	mutex_tryenter(mp)					\
-/* CSTYLED */								\
+ 								\
 ({								\
 	int _rc_;						\
 								\
@@ -138,7 +112,7 @@ spl_mutex_lockdep_on_maybe(kmutex_t *mp)			\
 }
 
 #define	mutex_enter_interruptible(mp)				\
-/* CSTYLED */							\
+ 							\
 ({								\
 	int _rc_;						\
 								\
@@ -155,25 +129,7 @@ spl_mutex_lockdep_on_maybe(kmutex_t *mp)			\
 
 #define	mutex_enter(mp) mutex_enter_nested((mp), 0)
 
-/*
- * The reason for the spinlock:
- *
- * The Linux mutex is designed with a fast-path/slow-path design such that it
- * does not guarantee serialization upon itself, allowing a race where latter
- * acquirers finish mutex_unlock before former ones.
- *
- * The race renders it unsafe to be used for serializing the freeing of an
- * object in which the mutex is embedded, where the latter acquirer could go
- * on to free the object while the former one is still doing mutex_unlock and
- * causing memory corruption.
- *
- * However, there are many places in ZFS where the mutex is used for
- * serializing object freeing, and the code is shared among other OSes without
- * this issue. Thus, we need the spinlock to force the serialization on
- * mutex_exit().
- *
- * See http://lwn.net/Articles/575477/ for the information about the race.
- */
+ 
 #define	mutex_exit(mp)						\
 {								\
 	ASSERT3P(mutex_owner(mp), ==, current);			\
@@ -183,7 +139,7 @@ spl_mutex_lockdep_on_maybe(kmutex_t *mp)			\
 	mutex_unlock(MUTEX(mp));				\
 	spl_mutex_lockdep_on_maybe(mp);				\
 	spin_unlock(&(mp)->m_lock);				\
-	/* NOTE: do not dereference mp after this point */	\
+	 	\
 }
 
-#endif /* _SPL_MUTEX_H */
+#endif  

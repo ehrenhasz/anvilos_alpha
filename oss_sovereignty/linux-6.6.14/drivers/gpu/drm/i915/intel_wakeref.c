@@ -1,8 +1,4 @@
-/*
- * SPDX-License-Identifier: MIT
- *
- * Copyright © 2019 Intel Corporation
- */
+ 
 
 #include <linux/wait_bit.h>
 
@@ -25,12 +21,7 @@ static void rpm_put(struct intel_wakeref *wf)
 
 int __intel_wakeref_get_first(struct intel_wakeref *wf)
 {
-	/*
-	 * Treat get/put as different subclasses, as we may need to run
-	 * the put callback from under the shrinker and do not want to
-	 * cross-contanimate that callback with any extra work performed
-	 * upon acquiring the wakeref.
-	 */
+	 
 	mutex_lock_nested(&wf->mutex, SINGLE_DEPTH_NESTING);
 	if (!atomic_read(&wf->count)) {
 		int err;
@@ -44,7 +35,7 @@ int __intel_wakeref_get_first(struct intel_wakeref *wf)
 			return err;
 		}
 
-		smp_mb__before_atomic(); /* release wf->count */
+		smp_mb__before_atomic();  
 	}
 	atomic_inc(&wf->count);
 	mutex_unlock(&wf->mutex);
@@ -59,7 +50,7 @@ static void ____intel_wakeref_put_last(struct intel_wakeref *wf)
 	if (unlikely(!atomic_dec_and_test(&wf->count)))
 		goto unlock;
 
-	/* ops->put() must reschedule its own release on error/deferral */
+	 
 	if (likely(!wf->ops->put(wf))) {
 		rpm_put(wf);
 		wake_up_var(&wf->wakeref);
@@ -73,7 +64,7 @@ void __intel_wakeref_put_last(struct intel_wakeref *wf, unsigned long flags)
 {
 	INTEL_WAKEREF_BUG_ON(delayed_work_pending(&wf->work));
 
-	/* Assume we are not in process context and so cannot sleep. */
+	 
 	if (flags & INTEL_WAKEREF_PUT_ASYNC || !mutex_trylock(&wf->mutex)) {
 		mod_delayed_work(wf->i915->unordered_wq, &wf->work,
 				 FIELD_GET(INTEL_WAKEREF_PUT_DELAY, flags));
@@ -161,7 +152,7 @@ void intel_wakeref_auto(struct intel_wakeref_auto *wf, unsigned long timeout)
 		return;
 	}
 
-	/* Our mission is that we only extend an already active wakeref */
+	 
 	assert_rpm_wakelock_held(&wf->i915->runtime_pm);
 
 	if (!refcount_inc_not_zero(&wf->count)) {
@@ -175,11 +166,7 @@ void intel_wakeref_auto(struct intel_wakeref_auto *wf, unsigned long timeout)
 		spin_unlock_irqrestore(&wf->lock, flags);
 	}
 
-	/*
-	 * If we extend a pending timer, we will only get a single timer
-	 * callback and so need to cancel the local inc by running the
-	 * elided callback to keep the wf->count balanced.
-	 */
+	 
 	if (mod_timer(&wf->timer, jiffies + timeout))
 		wakeref_auto_timeout(&wf->timer);
 }

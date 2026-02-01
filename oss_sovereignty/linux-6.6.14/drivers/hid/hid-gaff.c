@@ -1,18 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  Force feedback support for GreenAsia (Product ID 0x12) based devices
- *
- *  The devices are distributed under various names and the same USB device ID
- *  can be used in many game controllers.
- *
- *  0e8f:0012 "GreenAsia Inc.    USB Joystick     "
- *   - tested with MANTA Warior MM816 and SpeedLink Strike2 SL-6635.
- *
- *  Copyright (c) 2008 Lukasz Lubojanski <lukasz@lubojanski.info>
- */
 
-/*
- */
+ 
+
+ 
 
 #include <linux/input.h>
 #include <linux/slab.h>

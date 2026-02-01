@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) 2021 Broadcom. All Rights Reserved. The term
- * “Broadcom” refers to Broadcom Inc. and/or its subsidiaries.
- */
+ 
+ 
 
 #ifndef __EFC_H__
 #define __EFC_H__
@@ -49,4 +46,4 @@ enum efc_scsi_del_target_reason {
 	efc_log_debug(nport->efc, \
 		"[%s]  %-20s %-20s\n", nport->display_name, __func__, efc_sm_event_name(evt)) \
 
-#endif /* __EFC_H__ */
+#endif  

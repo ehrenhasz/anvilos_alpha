@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  Information interface for ALSA driver
- *  Copyright (c) by Jaroslav Kysela <perex@perex.cz>
- */
+
+ 
 
 #include <linux/slab.h>
 #include <linux/time.h>
@@ -14,9 +11,7 @@
 #include <linux/utsname.h>
 #include <linux/mutex.h>
 
-/*
- *  OSS compatible part
- */
+ 
 
 static DEFINE_MUTEX(strings);
 static char *snd_sndstat_strings[SNDRV_CARDS][SNDRV_OSS_INFO_DEV_COUNT];
@@ -102,5 +97,5 @@ int __init snd_info_minor_register(void)
 	if (!entry)
 		return -ENOMEM;
 	entry->c.text.read = snd_sndstat_proc_read;
-	return snd_info_register(entry); /* freed in error path */
+	return snd_info_register(entry);  
 }

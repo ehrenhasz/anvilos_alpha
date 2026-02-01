@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
-	Mantis PCI bridge driver
-
-	Copyright (C) Manu Abraham (abraham.manu@gmail.com)
-
-*/
+ 
+ 
 
 #ifndef __MANTIS_IOC_H
 #define __MANTIS_IOC_H
@@ -36,4 +31,4 @@ extern void mantis_gpio_set_bits(struct mantis_pci *mantis, u32 bitpos, u8 value
 
 extern int mantis_stream_control(struct mantis_pci *mantis, enum mantis_stream_control stream_ctl);
 
-#endif /* __MANTIS_IOC_H */
+#endif  

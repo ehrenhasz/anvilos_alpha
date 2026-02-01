@@ -1,17 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Common methods for dibusb-based-receivers.
- *
- * Copyright (C) 2004-5 Patrick Boettcher (patrick.boettcher@desy.de)
- *
- * see Documentation/driver-api/media/drivers/dvb-usb.rst for more information
- */
+
+ 
 
 #include "dibusb.h"
 
 MODULE_LICENSE("GPL");
 
-/* 3000MC/P stuff */
-// Config Adjacent channels  Perf -cal22
+ 
+
 static struct dibx000_agc_config dib3000p_mt2060_agc_config = {
 	.band_caps = BAND_VHF | BAND_UHF,
 	.setup     = (1 << 8) | (5 << 5) | (1 << 4) | (1 << 3) | (0 << 2) | (2 << 0),
@@ -120,7 +115,7 @@ int dibusb_dib3000mc_tuner_attach(struct dvb_usb_adapter *adap)
 	u16 if1 = 1220;
 	struct i2c_adapter *tun_i2c;
 
-	// First IF calibration for Liteon Sticks
+	
 	if (le16_to_cpu(adap->dev->udev->descriptor.idVendor) == USB_VID_LITEON &&
 	    le16_to_cpu(adap->dev->udev->descriptor.idProduct) == USB_PID_LITEON_DVB_T_WARM) {
 
@@ -153,12 +148,12 @@ int dibusb_dib3000mc_tuner_attach(struct dvb_usb_adapter *adap)
 
 	tun_i2c = dib3000mc_get_tuner_i2c_master(adap->fe_adap[0].fe, 1);
 	if (dvb_attach(mt2060_attach, adap->fe_adap[0].fe, tun_i2c, &stk3000p_mt2060_config, if1) == NULL) {
-		/* not found - use panasonic pll parameters */
+		 
 		if (dvb_attach(dvb_pll_attach, adap->fe_adap[0].fe, 0x60, tun_i2c, DVB_PLL_ENV57H1XD5) == NULL)
 			return -ENOMEM;
 	} else {
 		st->mt2060_present = 1;
-		/* set the correct parameters for the dib3000p */
+		 
 		dib3000mc_set_config(adap->fe_adap[0].fe, &stk3000p_dib3000p_config);
 	}
 	return 0;

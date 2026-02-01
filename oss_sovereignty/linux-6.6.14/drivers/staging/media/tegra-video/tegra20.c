@@ -1,15 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Tegra20-specific VI implementation
- *
- * Copyright (C) 2023 SKIDATA GmbH
- * Author: Luca Ceresoli <luca.ceresoli@bootlin.com>
- */
 
-/*
- * This source file contains Tegra20 supported video formats,
- * VI and VIP SoC specific data, operations and registers accessors.
- */
+ 
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/delay.h>
@@ -23,15 +15,13 @@
 
 #define TEGRA_VI_SYNCPT_WAIT_TIMEOUT			msecs_to_jiffies(200)
 
-/* This are just good-sense numbers. The actual min/max is not documented. */
+ 
 #define TEGRA20_MIN_WIDTH	32U
 #define TEGRA20_MIN_HEIGHT	32U
 #define TEGRA20_MAX_WIDTH	2048U
 #define TEGRA20_MAX_HEIGHT	2048U
 
-/* --------------------------------------------------------------------------
- * Registers
- */
+ 
 
 #define TEGRA_VI_CONT_SYNCPT_OUT_1			0x0060
 #define       VI_CONT_SYNCPT_OUT_1_CONTINUOUS_SYNCPT	BIT(8)
@@ -40,12 +30,12 @@
 #define TEGRA_VI_VI_INPUT_CONTROL			0x0088
 #define       VI_INPUT_FIELD_DETECT			BIT(27)
 #define       VI_INPUT_BT656				BIT(25)
-#define       VI_INPUT_YUV_INPUT_FORMAT_SFT		8  /* bits [9:8] */
+#define       VI_INPUT_YUV_INPUT_FORMAT_SFT		8   
 #define       VI_INPUT_YUV_INPUT_FORMAT_UYVY		(0 << VI_INPUT_YUV_INPUT_FORMAT_SFT)
 #define       VI_INPUT_YUV_INPUT_FORMAT_VYUY		(1 << VI_INPUT_YUV_INPUT_FORMAT_SFT)
 #define       VI_INPUT_YUV_INPUT_FORMAT_YUYV		(2 << VI_INPUT_YUV_INPUT_FORMAT_SFT)
 #define       VI_INPUT_YUV_INPUT_FORMAT_YVYU		(3 << VI_INPUT_YUV_INPUT_FORMAT_SFT)
-#define       VI_INPUT_INPUT_FORMAT_SFT			2  /* bits [5:2] */
+#define       VI_INPUT_INPUT_FORMAT_SFT			2   
 #define       VI_INPUT_INPUT_FORMAT_YUV422		(0 << VI_INPUT_INPUT_FORMAT_SFT)
 #define       VI_INPUT_VIP_INPUT_ENABLE			BIT(1)
 
@@ -83,11 +73,11 @@
 #define       VI_OUTPUT_OUTPUT_FORMAT_YUV420PLANAR	(6 << VI_OUTPUT_OUTPUT_FORMAT_SFT)
 
 #define TEGRA_VI_VIP_H_ACTIVE				0x00a4
-#define       VI_VIP_H_ACTIVE_PERIOD_SFT		16 /* active pixels/line, must be even */
+#define       VI_VIP_H_ACTIVE_PERIOD_SFT		16  
 #define       VI_VIP_H_ACTIVE_START_SFT			0
 
 #define TEGRA_VI_VIP_V_ACTIVE				0x00a8
-#define       VI_VIP_V_ACTIVE_PERIOD_SFT		16 /* active lines */
+#define       VI_VIP_V_ACTIVE_PERIOD_SFT		16  
 #define       VI_VIP_V_ACTIVE_START_SFT			0
 
 #define TEGRA_VI_VB0_START_ADDRESS_FIRST		0x00c4
@@ -121,12 +111,12 @@
 #define TEGRA_VI_VIP_INPUT_STATUS			0x0144
 
 #define TEGRA_VI_VI_DATA_INPUT_CONTROL			0x0168
-#define       VI_DATA_INPUT_SFT				0 /* [11:0] = mask pin inputs to VI core */
+#define       VI_DATA_INPUT_SFT				0  
 
 #define TEGRA_VI_PIN_INPUT_ENABLE			0x016c
 #define       VI_PIN_INPUT_VSYNC			BIT(14)
 #define       VI_PIN_INPUT_HSYNC			BIT(13)
-#define       VI_PIN_INPUT_VD_SFT			0 /* [11:0] = data bin N input enable */
+#define       VI_PIN_INPUT_VD_SFT			0  
 
 #define TEGRA_VI_PIN_INVERSION				0x0174
 #define       VI_PIN_INVERSION_VSYNC_ACTIVE_HIGH	BIT(1)
@@ -144,19 +134,14 @@
 #define TEGRA_VI_VI_RAISE				0x01ac
 #define       VI_VI_RAISE_ON_EDGE			BIT(0)
 
-/* --------------------------------------------------------------------------
- * VI
- */
+ 
 
 static void tegra20_vi_write(struct tegra_vi_channel *chan, unsigned int addr, u32 val)
 {
 	writel(val, chan->vi->iomem + addr);
 }
 
-/*
- * Get the main input format (YUV/RGB...) and the YUV variant as values to
- * be written into registers for the current VI input mbus code.
- */
+ 
 static void tegra20_vi_get_input_formats(struct tegra_vi_channel *chan,
 					 unsigned int *main_input_format,
 					 unsigned int *yuv_input_format)
@@ -181,17 +166,14 @@ static void tegra20_vi_get_input_formats(struct tegra_vi_channel *chan,
 	}
 }
 
-/*
- * Get the main output format (YUV/RGB...) and the YUV variant as values to
- * be written into registers for the current VI output pixel format.
- */
+ 
 static void tegra20_vi_get_output_formats(struct tegra_vi_channel *chan,
 					  unsigned int *main_output_format,
 					  unsigned int *yuv_output_format)
 {
 	u32 output_fourcc = chan->format.pixelformat;
 
-	/* Default to YUV422 non-planar (U8Y8V8Y8) after downscaling */
+	 
 	(*main_output_format) = VI_OUTPUT_OUTPUT_FORMAT_YUV422POST;
 	(*yuv_output_format) = VI_OUTPUT_YUV_OUTPUT_FORMAT_UYVY;
 
@@ -215,18 +197,10 @@ static void tegra20_vi_get_output_formats(struct tegra_vi_channel *chan,
 	}
 }
 
-/*
- * Make the VI accessible (needed on Tegra20).
- *
- * This function writes an unknown bit into an unknown register. The code
- * comes from a downstream 3.1 kernel that has a working VIP driver for
- * Tegra20, and removing it makes the VI completely unaccessible. It should
- * be rewritten and possibly moved elsewhere, but the appropriate location
- * and implementation is unknown due to a total lack of documentation.
- */
+ 
 static int tegra20_vi_enable(struct tegra_vi *vi, bool on)
 {
-	/* from arch/arm/mach-tegra/iomap.h */
+	 
 	const phys_addr_t TEGRA_APB_MISC_BASE = 0x70000000;
 	const unsigned long reg_offset = 0x42c;
 	void __iomem *apb_misc;
@@ -287,11 +261,7 @@ static void tegra20_fmt_align(struct v4l2_pix_format *pix, unsigned int bpp)
 	}
 }
 
-/*
- * Compute buffer offsets once per stream so that
- * tegra20_channel_vi_buffer_setup() only has to do very simple maths for
- * each buffer.
- */
+ 
 static void tegra20_channel_queue_setup(struct tegra_vi_channel *chan)
 {
 	unsigned int stride = chan->format.bytesperline;
@@ -315,7 +285,7 @@ static void tegra20_channel_queue_setup(struct tegra_vi_channel *chan)
 		chan->addr_offset_u = stride * height;
 		chan->addr_offset_v = chan->addr_offset_u + stride * height / 4;
 
-		/* For YVU420, we swap the locations of the U and V planes. */
+		 
 		if (chan->format.pixelformat == V4L2_PIX_FMT_YVU420) {
 			unsigned long temp;
 
@@ -388,7 +358,7 @@ static int tegra20_channel_capture_frame(struct tegra_vi_channel *chan,
 
 	tegra20_vi_write(chan, TEGRA_VI_CAMERA_CONTROL, VI_CAMERA_CONTROL_VIP_ENABLE);
 
-	/* Wait for syncpt counter to reach frame start event threshold */
+	 
 	err = host1x_syncpt_wait(chan->mw_ack_sp[0], chan->next_out_sp_idx,
 				 TEGRA_VI_SYNCPT_WAIT_TIMEOUT, NULL);
 	if (err) {
@@ -414,11 +384,7 @@ static int tegra20_chan_capture_kthread_start(void *data)
 	int err = 0;
 
 	while (1) {
-		/*
-		 * Source is not streaming if error is non-zero.
-		 * So, do not dequeue buffers on error and let the thread sleep
-		 * till kthread stop signal is received.
-		 */
+		 
 		wait_event_interruptible(chan->start_wait,
 					 kthread_should_stop() ||
 					 (!list_empty(&chan->capture) && !err));
@@ -426,7 +392,7 @@ static int tegra20_chan_capture_kthread_start(void *data)
 		if (kthread_should_stop())
 			break;
 
-		/* dequeue the buffer and start capture */
+		 
 		spin_lock(&chan->start_lock);
 		if (list_empty(&chan->capture)) {
 			spin_unlock(&chan->start_lock);
@@ -465,16 +431,12 @@ static void tegra20_camera_capture_setup(struct tegra_vi_channel *chan)
 
 	tegra20_vi_get_output_formats(chan, &main_output_format, &yuv_output_format);
 
-	/*
-	 * Set up low pass filter.  Use 0x240 for chromaticity and 0x240
-	 * for luminance, which is the default and means not to touch
-	 * anything.
-	 */
+	 
 	tegra20_vi_write(chan, TEGRA_VI_H_LPF_CONTROL,
 			 0x0240 << VI_H_LPF_CONTROL_LUMA_SFT |
 			 0x0240 << VI_H_LPF_CONTROL_CHROMA_SFT);
 
-	/* Set up raise-on-edge, so we get an interrupt on end of frame. */
+	 
 	tegra20_vi_write(chan, TEGRA_VI_VI_RAISE, VI_VI_RAISE_ON_EDGE);
 
 	tegra20_vi_write(chan, TEGRA_VI_VI_FIRST_OUTPUT_CONTROL,
@@ -483,18 +445,18 @@ static void tegra20_camera_capture_setup(struct tegra_vi_channel *chan)
 			 yuv_output_format << VI_OUTPUT_YUV_OUTPUT_FORMAT_SFT |
 			 main_output_format << VI_OUTPUT_OUTPUT_FORMAT_SFT);
 
-	/* Set up frame size */
+	 
 	tegra20_vi_write(chan, TEGRA_VI_FIRST_OUTPUT_FRAME_SIZE,
 			 height << VI_FIRST_OUTPUT_FRAME_HEIGHT_SFT |
 			 width  << VI_FIRST_OUTPUT_FRAME_WIDTH_SFT);
 
-	/* First output memory enabled */
+	 
 	tegra20_vi_write(chan, TEGRA_VI_VI_ENABLE, 0);
 
-	/* Set the number of frames in the buffer */
+	 
 	tegra20_vi_write(chan, TEGRA_VI_VB0_COUNT_FIRST, 1);
 
-	/* Set up buffer frame size */
+	 
 	tegra20_vi_write(chan, TEGRA_VI_VB0_SIZE_FIRST,
 			 height << VI_VB0_SIZE_FIRST_V_SFT |
 			 width  << VI_VB0_SIZE_FIRST_H_SFT);
@@ -592,21 +554,14 @@ const struct tegra_vi_soc tegra20_vi_soc = {
 	.nformats = ARRAY_SIZE(tegra20_video_formats),
 	.default_video_format = &tegra20_video_formats[0],
 	.ops = &tegra20_vi_ops,
-	.vi_max_channels = 1, /* parallel input (VIP) */
+	.vi_max_channels = 1,  
 	.vi_max_clk_hz = 150000000,
 	.has_h_v_flip = true,
 };
 
-/* --------------------------------------------------------------------------
- * VIP
- */
+ 
 
-/*
- * VIP-specific configuration for stream start.
- *
- * Whatever is common among VIP and CSI is done by the VI component (see
- * tegra20_vi_start_streaming()). Here we do what is VIP-specific.
- */
+ 
 static int tegra20_vip_start_streaming(struct tegra_vip_channel *vip_chan)
 {
 	struct tegra_vi_channel *vi_chan = v4l2_get_subdev_hostdata(&vip_chan->subdev);
@@ -630,11 +585,7 @@ static int tegra20_vip_start_streaming(struct tegra_vip_channel *vip_chan)
 	tegra20_vi_write(vi_chan, TEGRA_VI_VIP_H_ACTIVE,
 			 roundup(width, 2) << VI_VIP_H_ACTIVE_PERIOD_SFT);
 
-	/*
-	 * For VIP, D9..D2 is mapped to the video decoder's P7..P0.
-	 * Disable/mask out the other Dn wires. When not in BT656
-	 * mode we also need the V/H sync.
-	 */
+	 
 	tegra20_vi_write(vi_chan, TEGRA_VI_PIN_INPUT_ENABLE,
 			 GENMASK(9, 2) << VI_PIN_INPUT_VD_SFT |
 			 VI_PIN_INPUT_HSYNC | VI_PIN_INPUT_VSYNC);

@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  drivers/net/ethernet/freescale/gianfar_ethtool.c
- *
- *  Gianfar Ethernet Driver
- *  Ethtool support for Gianfar Enet
- *  Based on e1000 ethtool support
- *
- *  Author: Andy Fleming
- *  Maintainer: Kumar Gala
- *  Modifier: Sandeep Gopalpet <sandeep.kumar@freescale.com>
- *
- *  Copyright 2003-2006, 2008-2009, 2011 Freescale Semiconductor, Inc.
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -49,7 +37,7 @@
 #define GFAR_MAX_COAL_FRAMES 0xff
 
 static const char stat_gstrings[][ETH_GSTRING_LEN] = {
-	/* extra stats */
+	 
 	"rx-allocation-errors",
 	"rx-large-frame-errors",
 	"rx-short-frame-errors",
@@ -63,7 +51,7 @@ static const char stat_gstrings[][ETH_GSTRING_LEN] = {
 	"tx-babbling-errors",
 	"tx-underrun-errors",
 	"tx-timeout-errors",
-	/* rmon stats */
+	 
 	"tx-rx-64-frames",
 	"tx-rx-65-127-frames",
 	"tx-rx-128-255-frames",
@@ -110,8 +98,7 @@ static const char stat_gstrings[][ETH_GSTRING_LEN] = {
 	"tx-fragmented-frames",
 };
 
-/* Fill in a buffer with the strings which correspond to the
- * stats */
+ 
 static void gfar_gstrings(struct net_device *dev, u32 stringset, u8 * buf)
 {
 	struct gfar_private *priv = netdev_priv(dev);
@@ -123,10 +110,7 @@ static void gfar_gstrings(struct net_device *dev, u32 stringset, u8 * buf)
 		       GFAR_EXTRA_STATS_LEN * ETH_GSTRING_LEN);
 }
 
-/* Fill in an array of 64-bit statistics from various sources.
- * This array will be appended to the end of the ethtool_stats
- * structure, and returned to user space
- */
+ 
 static void gfar_fill_stats(struct net_device *dev, struct ethtool_stats *dummy,
 			    u64 *buf)
 {
@@ -161,20 +145,20 @@ static int gfar_sset_count(struct net_device *dev, int sset)
 	}
 }
 
-/* Fills in the drvinfo structure with some basic info */
+ 
 static void gfar_gdrvinfo(struct net_device *dev,
 			  struct ethtool_drvinfo *drvinfo)
 {
 	strscpy(drvinfo->driver, DRV_NAME, sizeof(drvinfo->driver));
 }
 
-/* Return the length of the register structure */
+ 
 static int gfar_reglen(struct net_device *dev)
 {
 	return sizeof (struct gfar);
 }
 
-/* Return a dump of the GFAR register space */
+ 
 static void gfar_get_regs(struct net_device *dev, struct ethtool_regs *regs,
 			  void *regbuf)
 {
@@ -187,8 +171,7 @@ static void gfar_get_regs(struct net_device *dev, struct ethtool_regs *regs,
 		buf[i] = gfar_read(&theregs[i]);
 }
 
-/* Convert microseconds to ethernet clock ticks, which changes
- * depending on what speed the controller is running at */
+ 
 static unsigned int gfar_usecs2ticks(struct gfar_private *priv,
 				     unsigned int usecs)
 {
@@ -196,7 +179,7 @@ static unsigned int gfar_usecs2ticks(struct gfar_private *priv,
 	struct phy_device *phydev = ndev->phydev;
 	unsigned int count;
 
-	/* The timer is different, depending on the interface speed */
+	 
 	switch (phydev->speed) {
 	case SPEED_1000:
 		count = GFAR_GBIT_TIME;
@@ -210,12 +193,11 @@ static unsigned int gfar_usecs2ticks(struct gfar_private *priv,
 		break;
 	}
 
-	/* Make sure we return a number greater than 0
-	 * if usecs > 0 */
+	 
 	return DIV_ROUND_UP(usecs * 1000, count);
 }
 
-/* Convert ethernet clock ticks to microseconds */
+ 
 static unsigned int gfar_ticks2usecs(struct gfar_private *priv,
 				     unsigned int ticks)
 {
@@ -223,7 +205,7 @@ static unsigned int gfar_ticks2usecs(struct gfar_private *priv,
 	struct phy_device *phydev = ndev->phydev;
 	unsigned int count;
 
-	/* The timer is different, depending on the interface speed */
+	 
 	switch (phydev->speed) {
 	case SPEED_1000:
 		count = GFAR_GBIT_TIME;
@@ -237,13 +219,12 @@ static unsigned int gfar_ticks2usecs(struct gfar_private *priv,
 		break;
 	}
 
-	/* Make sure we return a number greater than 0 */
-	/* if ticks is > 0 */
+	 
+	 
 	return (ticks * count) / 1000;
 }
 
-/* Get the coalescing parameters, and put them in the cvals
- * structure.  */
+ 
 static int gfar_gcoalesce(struct net_device *dev,
 			  struct ethtool_coalesce *cvals,
 			  struct kernel_ethtool_coalesce *kernel_coal,
@@ -279,10 +260,7 @@ static int gfar_gcoalesce(struct net_device *dev,
 	return 0;
 }
 
-/* Change the coalescing values.
- * Both cvals->*_usecs and cvals->*_frames have to be > 0
- * in order for coalescing to be active
- */
+ 
 static int gfar_scoalesce(struct net_device *dev,
 			  struct ethtool_coalesce *cvals,
 			  struct kernel_ethtool_coalesce *kernel_coal,
@@ -297,7 +275,7 @@ static int gfar_scoalesce(struct net_device *dev,
 	if (!dev->phydev)
 		return -ENODEV;
 
-	/* Check the bounds of the values */
+	 
 	if (cvals->rx_coalesce_usecs > GFAR_MAX_COAL_USECS) {
 		netdev_info(dev, "Coalescing is limited to %d microseconds\n",
 			    GFAR_MAX_COAL_USECS);
@@ -310,7 +288,7 @@ static int gfar_scoalesce(struct net_device *dev,
 		return -EINVAL;
 	}
 
-	/* Check the bounds of the values */
+	 
 	if (cvals->tx_coalesce_usecs > GFAR_MAX_COAL_USECS) {
 		netdev_info(dev, "Coalescing is limited to %d microseconds\n",
 			    GFAR_MAX_COAL_USECS);
@@ -326,7 +304,7 @@ static int gfar_scoalesce(struct net_device *dev,
 	while (test_and_set_bit_lock(GFAR_RESETTING, &priv->state))
 		cpu_relax();
 
-	/* Set up rx coalescing */
+	 
 	if ((cvals->rx_coalesce_usecs == 0) ||
 	    (cvals->rx_max_coalesced_frames == 0)) {
 		for (i = 0; i < priv->num_rx_queues; i++)
@@ -342,7 +320,7 @@ static int gfar_scoalesce(struct net_device *dev,
 			gfar_usecs2ticks(priv, cvals->rx_coalesce_usecs));
 	}
 
-	/* Set up tx coalescing */
+	 
 	if ((cvals->tx_coalesce_usecs == 0) ||
 	    (cvals->tx_max_coalesced_frames == 0)) {
 		for (i = 0; i < priv->num_tx_queues; i++)
@@ -370,9 +348,7 @@ static int gfar_scoalesce(struct net_device *dev,
 	return err;
 }
 
-/* Fills in rvals with the current ring parameters.  Currently,
- * rx, rx_mini, and rx_jumbo rings are the same size, as mini and
- * jumbo are ignored by the driver */
+ 
 static void gfar_gringparam(struct net_device *dev,
 			    struct ethtool_ringparam *rvals,
 			    struct kernel_ethtool_ringparam *kernel_rvals,
@@ -390,18 +366,14 @@ static void gfar_gringparam(struct net_device *dev,
 	rvals->rx_jumbo_max_pending = GFAR_RX_MAX_RING_SIZE;
 	rvals->tx_max_pending = GFAR_TX_MAX_RING_SIZE;
 
-	/* Values changeable by the user.  The valid values are
-	 * in the range 1 to the "*_max_pending" counterpart above.
-	 */
+	 
 	rvals->rx_pending = rx_queue->rx_ring_size;
 	rvals->rx_mini_pending = rx_queue->rx_ring_size;
 	rvals->rx_jumbo_pending = rx_queue->rx_ring_size;
 	rvals->tx_pending = tx_queue->tx_ring_size;
 }
 
-/* Change the current ring parameters, stopping the controller if
- * necessary so that we don't mess things up while we're in motion.
- */
+ 
 static int gfar_sringparam(struct net_device *dev,
 			   struct ethtool_ringparam *rvals,
 			   struct kernel_ethtool_ringparam *kernel_rvals,
@@ -432,14 +404,14 @@ static int gfar_sringparam(struct net_device *dev,
 	if (dev->flags & IFF_UP)
 		stop_gfar(dev);
 
-	/* Change the sizes */
+	 
 	for (i = 0; i < priv->num_rx_queues; i++)
 		priv->rx_queue[i]->rx_ring_size = rvals->rx_pending;
 
 	for (i = 0; i < priv->num_tx_queues; i++)
 		priv->tx_queue[i]->tx_ring_size = rvals->tx_pending;
 
-	/* Rebuild the rings with the new size */
+	 
 	if (dev->flags & IFF_UP)
 		err = startup_gfar(dev);
 
@@ -523,7 +495,7 @@ int gfar_set_features(struct net_device *dev, netdev_features_t features)
 	dev->features = features;
 
 	if (dev->flags & IFF_UP) {
-		/* Now we take down the rings to rebuild them */
+		 
 		stop_gfar(dev);
 		err = startup_gfar(dev);
 	} else {
@@ -733,9 +705,7 @@ static int gfar_ethflow_to_filer_table(struct gfar_private *priv, u64 ethflow,
 		goto err;
 	}
 
-	/* If a match was found, then it begins the starting of a cluster rule
-	 * if it was already programmed, we need to overwrite these rules
-	 */
+	 
 	for (l = i+1; l < MAX_FILER_IDX; l++) {
 		if ((priv->ftp_rqfcr[l] & RQFCR_CLE) &&
 		    !(priv->ftp_rqfcr[l] & RQFCR_AND)) {
@@ -759,10 +729,10 @@ static int gfar_ethflow_to_filer_table(struct gfar_private *priv, u64 ethflow,
 
 	priv->cur_filer_idx = l - 1;
 
-	/* hash rules */
+	 
 	ethflow_to_filer_rules(priv, ethflow);
 
-	/* Write back the popped out rules again */
+	 
 	for (k = j+1; k < MAX_FILER_IDX; k++) {
 		priv->ftp_rqfpr[priv->cur_filer_idx] = local_rqfpr[k];
 		priv->ftp_rqfcr[priv->cur_filer_idx] = local_rqfcr[k];
@@ -782,7 +752,7 @@ err:
 static int gfar_set_hash_opts(struct gfar_private *priv,
 			      struct ethtool_rxnfc *cmd)
 {
-	/* write the filer rules here */
+	 
 	if (!gfar_ethflow_to_filer_table(priv, cmd->data, cmd->flow_type))
 		return -EINVAL;
 
@@ -794,7 +764,7 @@ static int gfar_check_filer_hardware(struct gfar_private *priv)
 	struct gfar __iomem *regs = priv->gfargrp[0].regs;
 	u32 i;
 
-	/* Check if we are in FIFO mode */
+	 
 	i = gfar_read(&regs->ecntrl);
 	i &= ECNTRL_FIFM;
 	if (i == ECNTRL_FIFM) {
@@ -810,7 +780,7 @@ static int gfar_check_filer_hardware(struct gfar_private *priv)
 			return -EOPNOTSUPP;
 		}
 	}
-	/* Or in standard mode */
+	 
 	else {
 		i = gfar_read(&regs->rctrl);
 		i &= RCTRL_PRSDEP_MASK;
@@ -824,14 +794,12 @@ static int gfar_check_filer_hardware(struct gfar_private *priv)
 		}
 	}
 
-	/* Sets the properties for arbitrary filer rule
-	 * to the first 4 Layer 4 Bytes
-	 */
+	 
 	gfar_write(&regs->rbifx, 0xC0C1C2C3);
 	return 0;
 }
 
-/* Write a mask to filer cache */
+ 
 static void gfar_set_mask(u32 mask, struct filer_table *tab)
 {
 	tab->fe[tab->index].ctrl = RQFCR_AND | RQFCR_PID_MASK | RQFCR_CMP_EXACT;
@@ -839,7 +807,7 @@ static void gfar_set_mask(u32 mask, struct filer_table *tab)
 	tab->index++;
 }
 
-/* Sets parse bits (e.g. IP or TCP) */
+ 
 static void gfar_set_parse_bits(u32 value, u32 mask, struct filer_table *tab)
 {
 	gfar_set_mask(mask, tab);
@@ -858,31 +826,18 @@ static void gfar_set_general_attribute(u32 value, u32 mask, u32 flag,
 	tab->index++;
 }
 
-/* For setting a tuple of value and mask of type flag
- * Example:
- * IP-Src = 10.0.0.0/255.0.0.0
- * value: 0x0A000000 mask: FF000000 flag: RQFPR_IPV4
- *
- * Ethtool gives us a value=0 and mask=~0 for don't care a tuple
- * For a don't care mask it gives us a 0
- *
- * The check if don't care and the mask adjustment if mask=0 is done for VLAN
- * and MAC stuff on an upper level (due to missing information on this level).
- * For these guys we can discard them if they are value=0 and mask=0.
- *
- * Further the all masks are one-padded for better hardware efficiency.
- */
+ 
 static void gfar_set_attribute(u32 value, u32 mask, u32 flag,
 			       struct filer_table *tab)
 {
 	switch (flag) {
-		/* 3bit */
+		 
 	case RQFCR_PID_PRI:
 		if (!(value | mask))
 			return;
 		mask |= RQFCR_PID_PRI_MASK;
 		break;
-		/* 8bit */
+		 
 	case RQFCR_PID_L4P:
 	case RQFCR_PID_TOS:
 		if (!~(mask | RQFCR_PID_L4P_MASK))
@@ -892,13 +847,13 @@ static void gfar_set_attribute(u32 value, u32 mask, u32 flag,
 		else
 			mask |= RQFCR_PID_L4P_MASK;
 		break;
-		/* 12bit */
+		 
 	case RQFCR_PID_VID:
 		if (!(value | mask))
 			return;
 		mask |= RQFCR_PID_VID_MASK;
 		break;
-		/* 16bit */
+		 
 	case RQFCR_PID_DPT:
 	case RQFCR_PID_SPT:
 	case RQFCR_PID_ETY:
@@ -909,7 +864,7 @@ static void gfar_set_attribute(u32 value, u32 mask, u32 flag,
 		else
 			mask |= RQFCR_PID_PORT_MASK;
 		break;
-		/* 24bit */
+		 
 	case RQFCR_PID_DAH:
 	case RQFCR_PID_DAL:
 	case RQFCR_PID_SAH:
@@ -918,7 +873,7 @@ static void gfar_set_attribute(u32 value, u32 mask, u32 flag,
 			return;
 		mask |= RQFCR_PID_MAC_MASK;
 		break;
-		/* for all real 32bit masks */
+		 
 	default:
 		if (!~mask)
 			return;
@@ -929,7 +884,7 @@ static void gfar_set_attribute(u32 value, u32 mask, u32 flag,
 	gfar_set_general_attribute(value, mask, flag, tab);
 }
 
-/* Translates value and mask for UDP, TCP or SCTP */
+ 
 static void gfar_set_basic_ip(struct ethtool_tcpip4_spec *value,
 			      struct ethtool_tcpip4_spec *mask,
 			      struct filer_table *tab)
@@ -949,7 +904,7 @@ static void gfar_set_basic_ip(struct ethtool_tcpip4_spec *value,
 	gfar_set_attribute(value->tos, mask->tos, RQFCR_PID_TOS, tab);
 }
 
-/* Translates value and mask for RAW-IP4 */
+ 
 static void gfar_set_user_ip(struct ethtool_usrip4_spec *value,
 			     struct ethtool_usrip4_spec *mask,
 			     struct filer_table *tab)
@@ -968,14 +923,14 @@ static void gfar_set_user_ip(struct ethtool_usrip4_spec *value,
 
 }
 
-/* Translates value and mask for ETHER spec */
+ 
 static void gfar_set_ether(struct ethhdr *value, struct ethhdr *mask,
 			   struct filer_table *tab)
 {
 	u32 upper_temp_mask = 0;
 	u32 lower_temp_mask = 0;
 
-	/* Source address */
+	 
 	if (!is_broadcast_ether_addr(mask->h_source)) {
 		if (is_zero_ether_addr(mask->h_source)) {
 			upper_temp_mask = 0xFFFFFFFF;
@@ -988,20 +943,20 @@ static void gfar_set_ether(struct ethhdr *value, struct ethhdr *mask,
 					  mask->h_source[4] << 8  |
 					  mask->h_source[5];
 		}
-		/* Upper 24bit */
+		 
 		gfar_set_attribute(value->h_source[0] << 16 |
 				   value->h_source[1] << 8  |
 				   value->h_source[2],
 				   upper_temp_mask, RQFCR_PID_SAH, tab);
-		/* And the same for the lower part */
+		 
 		gfar_set_attribute(value->h_source[3] << 16 |
 				   value->h_source[4] << 8  |
 				   value->h_source[5],
 				   lower_temp_mask, RQFCR_PID_SAL, tab);
 	}
-	/* Destination address */
+	 
 	if (!is_broadcast_ether_addr(mask->h_dest)) {
-		/* Special for destination is limited broadcast */
+		 
 		if ((is_broadcast_ether_addr(value->h_dest) &&
 		    is_zero_ether_addr(mask->h_dest))) {
 			gfar_set_parse_bits(RQFPR_EBC, RQFPR_EBC, tab);
@@ -1018,12 +973,12 @@ static void gfar_set_ether(struct ethhdr *value, struct ethhdr *mask,
 						  mask->h_dest[5];
 			}
 
-			/* Upper 24bit */
+			 
 			gfar_set_attribute(value->h_dest[0] << 16 |
 					   value->h_dest[1] << 8  |
 					   value->h_dest[2],
 					   upper_temp_mask, RQFCR_PID_DAH, tab);
-			/* And the same for the lower part */
+			 
 			gfar_set_attribute(value->h_dest[3] << 16 |
 					   value->h_dest[4] << 8  |
 					   value->h_dest[5],
@@ -1068,7 +1023,7 @@ static inline u32 vlan_tci_priom(struct ethtool_rx_flow_spec *rule)
 		VLAN_PRIO_SHIFT;
 }
 
-/* Convert a rule to binary filter format of gianfar */
+ 
 static int gfar_convert_to_filer(struct ethtool_rx_flow_spec *rule,
 				 struct filer_table *tab)
 {
@@ -1078,7 +1033,7 @@ static int gfar_convert_to_filer(struct ethtool_rx_flow_spec *rule,
 	u32 prio = 0, prio_mask = 0;
 	u32 old_index = tab->index;
 
-	/* Check if vlan is wanted */
+	 
 	if ((rule->flow_type & FLOW_EXT) &&
 	    (rule->m_ext.vlan_tci != cpu_to_be16(0xFFFF))) {
 		if (!rule->m_ext.vlan_tci)
@@ -1087,7 +1042,7 @@ static int gfar_convert_to_filer(struct ethtool_rx_flow_spec *rule,
 		vlan = RQFPR_VLN;
 		vlan_mask = RQFPR_VLN;
 
-		/* Separate the fields */
+		 
 		id = vlan_tci_vid(rule);
 		id_mask = vlan_tci_vidm(rule);
 		cfi = vlan_tci_cfi(rule);
@@ -1140,13 +1095,13 @@ static int gfar_convert_to_filer(struct ethtool_rx_flow_spec *rule,
 		return -1;
 	}
 
-	/* Set the vlan attributes in the end */
+	 
 	if (vlan) {
 		gfar_set_attribute(id, id_mask, RQFCR_PID_VID, tab);
 		gfar_set_attribute(prio, prio_mask, RQFCR_PID_PRI, tab);
 	}
 
-	/* If there has been nothing written till now, it must be a default */
+	 
 	if (tab->index == old_index) {
 		gfar_set_mask(0xFFFFFFFF, tab);
 		tab->fe[tab->index].ctrl = 0x20;
@@ -1154,31 +1109,29 @@ static int gfar_convert_to_filer(struct ethtool_rx_flow_spec *rule,
 		tab->index++;
 	}
 
-	/* Remove last AND */
+	 
 	tab->fe[tab->index - 1].ctrl &= (~RQFCR_AND);
 
-	/* Specify which queue to use or to drop */
+	 
 	if (rule->ring_cookie == RX_CLS_FLOW_DISC)
 		tab->fe[tab->index - 1].ctrl |= RQFCR_RJE;
 	else
 		tab->fe[tab->index - 1].ctrl |= (rule->ring_cookie << 10);
 
-	/* Only big enough entries can be clustered */
+	 
 	if (tab->index > (old_index + 2)) {
 		tab->fe[old_index + 1].ctrl |= RQFCR_CLE;
 		tab->fe[tab->index - 1].ctrl |= RQFCR_CLE;
 	}
 
-	/* In rare cases the cache can be full while there is
-	 * free space in hw
-	 */
+	 
 	if (tab->index > MAX_FILER_CACHE_IDX - 1)
 		return -EBUSY;
 
 	return 0;
 }
 
-/* Write the bit-pattern from software's buffer to hardware registers */
+ 
 static int gfar_write_filer_table(struct gfar_private *priv,
 				  struct filer_table *tab)
 {
@@ -1186,15 +1139,13 @@ static int gfar_write_filer_table(struct gfar_private *priv,
 	if (tab->index > MAX_FILER_IDX - 1)
 		return -EBUSY;
 
-	/* Fill regular entries */
+	 
 	for (; i < MAX_FILER_IDX && (tab->fe[i].ctrl | tab->fe[i].prop); i++)
 		gfar_write_filer(priv, i, tab->fe[i].ctrl, tab->fe[i].prop);
-	/* Fill the rest with fall-troughs */
+	 
 	for (; i < MAX_FILER_IDX; i++)
 		gfar_write_filer(priv, i, 0x60, 0xFFFFFFFF);
-	/* Last entry must be default accept
-	 * because that's what people expect
-	 */
+	 
 	gfar_write_filer(priv, i, 0x20, 0x0);
 
 	return 0;
@@ -1226,14 +1177,12 @@ static int gfar_process_filer_changes(struct gfar_private *priv)
 	struct filer_table *tab;
 	s32 ret = 0;
 
-	/* So index is set to zero, too! */
+	 
 	tab = kzalloc(sizeof(*tab), GFP_KERNEL);
 	if (tab == NULL)
 		return -ENOMEM;
 
-	/* Now convert the existing filer data from flow_spec into
-	 * filer tables binary format
-	 */
+	 
 	list_for_each_entry(j, &priv->rx_list.list, list) {
 		ret = gfar_convert_to_filer(&j->fs, tab);
 		if (ret == -EBUSY) {
@@ -1248,7 +1197,7 @@ static int gfar_process_filer_changes(struct gfar_private *priv)
 		}
 	}
 
-	/* Write everything to hardware */
+	 
 	ret = gfar_write_filer_table(priv, tab);
 	if (ret == -EBUSY) {
 		netdev_err(priv->ndev, "Rule not added: No free space!\n");
@@ -1288,7 +1237,7 @@ static int gfar_add_cls(struct gfar_private *priv,
 	ret = gfar_check_capability(&temp->fs, priv);
 	if (ret)
 		goto clean_mem;
-	/* Link in the new element at the right @location */
+	 
 	if (list_empty(&priv->rx_list.list)) {
 		ret = gfar_check_filer_hardware(priv);
 		if (ret != 0)

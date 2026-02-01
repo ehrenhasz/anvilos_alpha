@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * Copyright (c) 2011-2018 Magewell Electronics Co., Ltd. (Nanjing)
- * Author: Yong Deng <yong.deng@magewell.com>
- * Copyright 2021-2022 Bootlin
- * Author: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
- */
+ 
+ 
 
 #ifndef _SUN6I_CSI_REG_H_
 #define _SUN6I_CSI_REG_H_
@@ -23,7 +18,7 @@
 #define SUN6I_CSI_EN_PTN_GEN_EN			BIT(1)
 #define SUN6I_CSI_EN_CSI_EN			BIT(0)
 
-/* Note that Allwinner manuals and code invert positive/negative definitions. */
+ 
 
 #define SUN6I_CSI_IF_CFG_REG			0x4
 #define SUN6I_CSI_IF_CFG_FIELD_DT_PCLK_SHIFT(v)	(((v) << 24) & GENMASK(27, 24))
@@ -81,9 +76,9 @@
 #define SUN6I_CSI_INPUT_FMT_YUV422		3
 #define SUN6I_CSI_INPUT_FMT_YUV420		4
 
-/* Note that Allwinner manuals and code invert frame/field definitions. */
+ 
 
-/* RAW */
+ 
 #define SUN6I_CSI_OUTPUT_FMT_FRAME_RAW_8	0
 #define SUN6I_CSI_OUTPUT_FMT_FRAME_RAW_10	1
 #define SUN6I_CSI_OUTPUT_FMT_FRAME_RAW_12	2
@@ -97,7 +92,7 @@
 #define SUN6I_CSI_OUTPUT_FMT_FIELD_RGB888	13
 #define SUN6I_CSI_OUTPUT_FMT_FIELD_PRGB888	14
 
-/* YUV */
+ 
 #define SUN6I_CSI_OUTPUT_FMT_FRAME_YUV422P	0
 #define SUN6I_CSI_OUTPUT_FMT_FRAME_YUV420P	1
 #define SUN6I_CSI_OUTPUT_FMT_FIELD_YUV420P	2
@@ -113,13 +108,13 @@
 #define SUN6I_CSI_OUTPUT_FMT_FRAME_YUV422SP_10	12
 #define SUN6I_CSI_OUTPUT_FMT_FRAME_YUV420SP_10	13
 
-/* YUV Planar */
+ 
 #define SUN6I_CSI_INPUT_YUV_SEQ_YUYV		0
 #define SUN6I_CSI_INPUT_YUV_SEQ_YVYU		1
 #define SUN6I_CSI_INPUT_YUV_SEQ_UYVY		2
 #define SUN6I_CSI_INPUT_YUV_SEQ_VYUY		3
 
-/* YUV Semi-planar */
+ 
 #define SUN6I_CSI_INPUT_YUV_SEQ_UV		0
 #define SUN6I_CSI_INPUT_YUV_SEQ_VU		1
 

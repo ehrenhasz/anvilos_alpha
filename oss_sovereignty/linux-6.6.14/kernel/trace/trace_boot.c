@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * trace_boot.c
- * Tracing kernel boot-time
- */
+
+ 
 
 #define pr_fmt(fmt)	"trace_boot: " fmt
 
@@ -29,7 +26,7 @@ trace_boot_set_instance_options(struct trace_array *tr, struct xbc_node *node)
 	char buf[MAX_BUF_LEN];
 	unsigned long v = 0;
 
-	/* Common ftrace options */
+	 
 	xbc_node_for_each_array_value(node, "options", anode, p) {
 		if (strscpy(buf, p, ARRAY_SIZE(buf)) < 0) {
 			pr_err("String is too long: %s\n", p);
@@ -252,7 +249,7 @@ trace_boot_hist_add_one_handler(struct xbc_node *hnode, char **bufp,
 	const char *p;
 	char sep;
 
-	/* Compose 'handler' parameter */
+	 
 	p = xbc_node_find_value(hnode, param, NULL);
 	if (!p) {
 		pr_err("hist.%s requires '%s' option.\n",
@@ -261,7 +258,7 @@ trace_boot_hist_add_one_handler(struct xbc_node *hnode, char **bufp,
 	}
 	append_printf(bufp, end, ":%s(%s)", handler, p);
 
-	/* Compose 'action' parameter */
+	 
 	knode = xbc_node_find_subkey(hnode, "trace");
 	if (!knode)
 		knode = xbc_node_find_subkey(hnode, "save");
@@ -308,7 +305,7 @@ trace_boot_hist_add_handlers(struct xbc_node *hnode, char **bufp,
 		p = xbc_node_get_data(node);
 		if (!isdigit(p[0]))
 			continue;
-		/* All digit started node should be instances. */
+		 
 		ret = trace_boot_hist_add_one_handler(node, bufp, end, handler, param);
 		if (ret < 0)
 			break;
@@ -320,28 +317,7 @@ trace_boot_hist_add_handlers(struct xbc_node *hnode, char **bufp,
 	return ret;
 }
 
-/*
- * Histogram boottime tracing syntax.
- *
- * ftrace.[instance.INSTANCE.]event.GROUP.EVENT.hist[.N] {
- *	keys = <KEY>[,...]
- *	values = <VAL>[,...]
- *	sort = <SORT-KEY>[,...]
- *	size = <ENTRIES>
- *	name = <HISTNAME>
- *	var { <VAR> = <EXPR> ... }
- *	pause|continue|clear
- *	onmax|onchange[.N] { var = <VAR>; <ACTION> [= <PARAM>] }
- *	onmatch[.N] { event = <EVENT>; <ACTION> [= <PARAM>] }
- *	filter = <FILTER>
- * }
- *
- * Where <ACTION> are;
- *
- *	trace = <EVENT>, <ARG1>[, ...]
- *	save = <ARG1>[, ...]
- *	snapshot
- */
+ 
 static int __init
 trace_boot_compose_hist_cmd(struct xbc_node *hnode, char *buf, size_t size)
 {
@@ -377,14 +353,14 @@ trace_boot_compose_hist_cmd(struct xbc_node *hnode, char *buf, size_t size)
 	node = xbc_node_find_subkey(hnode, "var");
 	if (node) {
 		xbc_node_for_each_key_value(node, knode, p) {
-			/* Expression must not include spaces. */
+			 
 			append_printf(&buf, end, ":%s=",
 				      xbc_node_get_data(knode));
 			append_str_nospace(&buf, end, p);
 		}
 	}
 
-	/* Histogram control attributes (mutual exclusive) */
+	 
 	if (xbc_node_find_value(hnode, "pause", NULL))
 		append_printf(&buf, end, ":pause");
 	else if (xbc_node_find_value(hnode, "continue", NULL))
@@ -392,7 +368,7 @@ trace_boot_compose_hist_cmd(struct xbc_node *hnode, char *buf, size_t size)
 	else if (xbc_node_find_value(hnode, "clear", NULL))
 		append_printf(&buf, end, ":clear");
 
-	/* Histogram handler and actions */
+	 
 	node = xbc_node_find_subkey(hnode, "onmax");
 	if (node && trace_boot_hist_add_handlers(node, &buf, end, "var") < 0)
 		return -EINVAL;
@@ -427,7 +403,7 @@ trace_boot_init_histograms(struct trace_event_file *file,
 		p = xbc_node_get_data(node);
 		if (!isdigit(p[0]))
 			continue;
-		/* All digit started node should be instances. */
+		 
 		if (trace_boot_compose_hist_cmd(node, buf, size) == 0) {
 			tmp = kstrdup(buf, GFP_KERNEL);
 			if (!tmp)
@@ -454,7 +430,7 @@ static void __init
 trace_boot_init_histograms(struct trace_event_file *file,
 			   struct xbc_node *hnode, char *buf, size_t size)
 {
-	/* do nothing */
+	 
 }
 #endif
 
@@ -524,7 +500,7 @@ trace_boot_init_events(struct trace_array *tr, struct xbc_node *node)
 	node = xbc_node_find_subkey(node, "event");
 	if (!node)
 		return;
-	/* per-event key starts with "event.GROUP.EVENT" */
+	 
 	xbc_node_for_each_subkey(node, gnode) {
 		data = xbc_node_get_data(gnode);
 		if (!strcmp(data, "enable")) {
@@ -540,13 +516,13 @@ trace_boot_init_events(struct trace_array *tr, struct xbc_node *node)
 			}
 			trace_boot_init_one_event(tr, gnode, enode);
 		}
-		/* Event enablement must be done after event settings */
+		 
 		if (enable) {
 			data = xbc_node_get_data(gnode);
 			trace_array_set_clr_event(tr, data, NULL, true);
 		}
 	}
-	/* Ditto */
+	 
 	if (enable_all)
 		trace_array_set_clr_event(tr, NULL, NULL, true);
 }
@@ -601,7 +577,7 @@ trace_boot_enable_tracer(struct trace_array *tr, struct xbc_node *node)
 			pr_err("Failed to set given tracer: %s\n", p);
 	}
 
-	/* Since tracer can free snapshot buffer, allocate snapshot here.*/
+	 
 	if (xbc_node_find_value(node, "alloc_snapshot", NULL)) {
 		if (tracing_alloc_snapshot_instance(tr) < 0)
 			pr_err("Failed to allocate snapshot buffer\n");
@@ -656,7 +632,7 @@ static int __init trace_boot_init(void)
 	if (!tr)
 		return 0;
 
-	/* Global trace array is also one instance */
+	 
 	trace_boot_init_one_instance(tr, trace_node);
 	trace_boot_init_instances(trace_node);
 
@@ -664,8 +640,5 @@ static int __init trace_boot_init(void)
 
 	return 0;
 }
-/*
- * Start tracing at the end of core-initcall, so that it starts tracing
- * from the beginning of postcore_initcall.
- */
+ 
 core_initcall_sync(trace_boot_init);

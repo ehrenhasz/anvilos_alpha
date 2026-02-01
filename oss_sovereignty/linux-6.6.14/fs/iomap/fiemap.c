@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2016-2021 Christoph Hellwig.
- */
+
+ 
 #include <linux/module.h>
 #include <linux/compiler.h>
 #include <linux/fs.h>
@@ -14,7 +12,7 @@ static int iomap_to_fiemap(struct fiemap_extent_info *fi,
 {
 	switch (iomap->type) {
 	case IOMAP_HOLE:
-		/* skip holes */
+		 
 		return 0;
 	case IOMAP_DELALLOC:
 		flags |= FIEMAP_EXTENT_DELALLOC | FIEMAP_EXTENT_UNKNOWN;
@@ -50,11 +48,11 @@ static loff_t iomap_fiemap_iter(const struct iomap_iter *iter,
 	ret = iomap_to_fiemap(fi, prev, 0);
 	*prev = iter->iomap;
 	switch (ret) {
-	case 0:		/* success */
+	case 0:		 
 		return iomap_length(iter);
-	case 1:		/* extent array full */
+	case 1:		 
 		return 0;
-	default:	/* error */
+	default:	 
 		return ret;
 	}
 }
@@ -86,14 +84,14 @@ int iomap_fiemap(struct inode *inode, struct fiemap_extent_info *fi,
 			return ret;
 	}
 
-	/* inode with no (attribute) mapping will give ENOENT */
+	 
 	if (ret < 0 && ret != -ENOENT)
 		return ret;
 	return 0;
 }
 EXPORT_SYMBOL_GPL(iomap_fiemap);
 
-/* legacy ->bmap interface.  0 is the error return (!) */
+ 
 sector_t
 iomap_bmap(struct address_space *mapping, sector_t bno,
 		const struct iomap_ops *ops)
@@ -114,7 +112,7 @@ iomap_bmap(struct address_space *mapping, sector_t bno,
 	while ((ret = iomap_iter(&iter, ops)) > 0) {
 		if (iter.iomap.type == IOMAP_MAPPED)
 			bno = iomap_sector(&iter.iomap, iter.pos) >> blkshift;
-		/* leave iter.processed unset to abort loop */
+		 
 	}
 	if (ret)
 		return 0;

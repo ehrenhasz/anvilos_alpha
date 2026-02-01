@@ -1,8 +1,4 @@
-/*
- * SPDX-License-Identifier: MIT
- *
- * Copyright © 2016 Intel Corporation
- */
+ 
 
 #include "i915_scatterlist.h"
 
@@ -29,7 +25,7 @@ static int huge_get_pages(struct drm_i915_gem_object *obj)
 {
 #define GFP (GFP_KERNEL | __GFP_NOWARN | __GFP_RETRY_MAYFAIL)
 	const unsigned long nreal = obj->scratch / PAGE_SIZE;
-	unsigned int npages; /* restricted by sg_alloc_table */
+	unsigned int npages;  
 	struct scatterlist *sg, *src, *end;
 	struct sg_table *pages;
 	unsigned long n;

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Driver for NXP PN533 NFC Chip - USB transport layer
- *
- * Copyright (C) 2011 Instituto Nokia de Tecnologia
- * Copyright (C) 2012-2013 Tieto Poland
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/kernel.h>
@@ -93,7 +88,7 @@ static void pn533_recv_ack(struct urb *urb)
 
 	switch (urb->status) {
 	case 0:
-		break; /* success */
+		break;  
 	case -ECONNRESET:
 	case -ENOENT:
 		dev_dbg(&phy->udev->dev,
@@ -140,7 +135,7 @@ static int pn533_usb_send_ack(struct pn533 *dev, gfp_t flags)
 {
 	struct pn533_usb_phy *phy = dev->phy;
 	static const u8 ack[6] = {0x00, 0x00, 0xff, 0x00, 0xff, 0x00};
-	/* spec 7.1.1.3:  Preamble, SoPC (2), ACK Code (2), Postamble */
+	 
 
 	if (!phy->ack_buffer) {
 		phy->ack_buffer = kmemdup(ack, sizeof(ack), flags);
@@ -188,12 +183,12 @@ static int pn533_usb_send_frame(struct pn533 *dev,
 	phy->out_urb->context = cntx;
 
 	if (dev->protocol_type == PN533_PROTO_REQ_RESP) {
-		/* request for response for sent packet directly */
+		 
 		rc = pn533_submit_urb_for_response(phy, GFP_KERNEL);
 		if (rc)
 			goto error;
 	} else if (dev->protocol_type == PN533_PROTO_REQ_ACK_RESP) {
-		/* request for ACK if that's the case */
+		 
 		rc = pn533_submit_urb_for_ack(phy, GFP_KERNEL);
 		if (rc)
 			goto error;
@@ -210,24 +205,20 @@ static void pn533_usb_abort_cmd(struct pn533 *dev, gfp_t flags)
 {
 	struct pn533_usb_phy *phy = dev->phy;
 
-	/* ACR122U does not support any command which aborts last
-	 * issued command i.e. as ACK for standard PN533. Additionally,
-	 * it behaves stange, sending broken or incorrect responses,
-	 * when we cancel urb before the chip will send response.
-	 */
+	 
 	if (dev->device_type == PN533_DEVICE_ACR122U)
 		return;
 
-	/* An ack will cancel the last issued command */
+	 
 	pn533_usb_send_ack(dev, flags);
 
-	/* cancel the urb request */
+	 
 	usb_kill_urb(phy->in_urb);
 }
 
-/* ACR122 specific structs and functions */
+ 
 
-/* ACS ACR122 pn533 frame definitions */
+ 
 #define PN533_ACR122_TX_FRAME_HEADER_LEN (sizeof(struct pn533_acr122_tx_frame) \
 					  + 2)
 #define PN533_ACR122_TX_FRAME_TAIL_LEN 0
@@ -236,7 +227,7 @@ static void pn533_usb_abort_cmd(struct pn533 *dev, gfp_t flags)
 #define PN533_ACR122_RX_FRAME_TAIL_LEN 2
 #define PN533_ACR122_FRAME_MAX_PAYLOAD_LEN PN533_STD_FRAME_MAX_PAYLOAD_LEN
 
-/* CCID messages types */
+ 
 #define PN533_ACR122_PC_TO_RDR_ICCPOWERON 0x62
 #define PN533_ACR122_PC_TO_RDR_ESCAPE 0x6B
 
@@ -249,12 +240,9 @@ struct pn533_acr122_ccid_hdr {
 	u8 slot;
 	u8 seq;
 
-	/*
-	 * 3 msg specific bytes or status, error and 1 specific
-	 * byte for reposnse msg
-	 */
+	 
 	u8 params[3];
-	u8 data[]; /* payload */
+	u8 data[];  
 } __packed;
 
 struct pn533_acr122_apdu_hdr {
@@ -268,12 +256,12 @@ struct pn533_acr122_tx_frame {
 	struct pn533_acr122_ccid_hdr ccid;
 	struct pn533_acr122_apdu_hdr apdu;
 	u8 datalen;
-	u8 data[]; /* pn533 frame: TFI ... */
+	u8 data[];  
 } __packed;
 
 struct pn533_acr122_rx_frame {
 	struct pn533_acr122_ccid_hdr ccid;
-	u8 data[]; /* pn533 frame : TFI ... */
+	u8 data[];  
 } __packed;
 
 static void pn533_acr122_tx_frame_init(void *_frame, u8 cmd_code)
@@ -281,7 +269,7 @@ static void pn533_acr122_tx_frame_init(void *_frame, u8 cmd_code)
 	struct pn533_acr122_tx_frame *frame = _frame;
 
 	frame->ccid.type = PN533_ACR122_PC_TO_RDR_ESCAPE;
-	/* sizeof(apdu_hdr) + sizeof(datalen) */
+	 
 	frame->ccid.datalen = sizeof(frame->apdu) + 1;
 	frame->ccid.slot = 0;
 	frame->ccid.seq = 0;
@@ -291,7 +279,7 @@ static void pn533_acr122_tx_frame_init(void *_frame, u8 cmd_code)
 
 	frame->data[0] = PN533_STD_FRAME_DIR_OUT;
 	frame->data[1] = cmd_code;
-	frame->datalen = 2;  /* data[0] + data[1] */
+	frame->datalen = 2;   
 
 	frame->apdu.class = 0xFF;
 	frame->apdu.ins = 0;
@@ -333,7 +321,7 @@ static int pn533_acr122_rx_frame_size(void *frame)
 {
 	struct pn533_acr122_rx_frame *f = frame;
 
-	/* f->ccid.datalen already includes tail length */
+	 
 	return sizeof(struct pn533_acr122_rx_frame) + f->ccid.datalen;
 }
 
@@ -379,7 +367,7 @@ static void pn533_acr122_poweron_rdr_resp(struct urb *urb)
 
 static int pn533_acr122_poweron_rdr(struct pn533_usb_phy *phy)
 {
-	/* Power on th reader (CCID cmd) */
+	 
 	u8 cmd[10] = {PN533_ACR122_PC_TO_RDR_ICCPOWERON,
 		      0, 0, 0, 0, 0, 0, 3, 0, 0};
 	char *buffer;
@@ -393,7 +381,7 @@ static int pn533_acr122_poweron_rdr(struct pn533_usb_phy *phy)
 		return -ENOMEM;
 
 	init_completion(&arg.done);
-	cntx = phy->in_urb->context;  /* backup context */
+	cntx = phy->in_urb->context;   
 
 	phy->in_urb->complete = pn533_acr122_poweron_rdr_resp;
 	phy->in_urb->context = &arg;
@@ -418,7 +406,7 @@ static int pn533_acr122_poweron_rdr(struct pn533_usb_phy *phy)
 	}
 
 	wait_for_completion(&arg.done);
-	phy->in_urb->context = cntx; /* restore context */
+	phy->in_urb->context = cntx;  
 
 	return arg.rc;
 }
@@ -430,7 +418,7 @@ static void pn533_out_complete(struct urb *urb)
 
 	switch (urb->status) {
 	case 0:
-		break; /* success */
+		break;  
 	case -ECONNRESET:
 	case -ENOENT:
 		dev_dbg(&phy->udev->dev,
@@ -453,7 +441,7 @@ static void pn533_ack_complete(struct urb *urb)
 
 	switch (urb->status) {
 	case 0:
-		break; /* success */
+		break;  
 	case -ECONNRESET:
 	case -ENOENT:
 		dev_dbg(&phy->udev->dev,

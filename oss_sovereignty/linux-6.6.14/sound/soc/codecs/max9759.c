@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * MAX9759 Amplifier Driver
- *
- * Copyright (c) 2017 BayLibre, SAS.
- * Author: Neil Armstrong <narmstrong@baylibre.com>
- */
+
+ 
 
 #include <linux/gpio/consumer.h>
 #include <linux/module.h>
@@ -36,7 +31,7 @@ static int pga_event(struct snd_soc_dapm_widget *w,
 	return 0;
 }
 
-/* From 6dB to 24dB in steps of 6dB */
+ 
 static const DECLARE_TLV_DB_SCALE(speaker_gain_tlv, 600, 600, 0);
 
 static int speaker_gain_control_get(struct snd_kcontrol *kcontrol,
@@ -51,11 +46,11 @@ static int speaker_gain_control_get(struct snd_kcontrol *kcontrol,
 }
 
 static const bool speaker_gain_table[4][2] = {
-	/* G1, G2 */
-	{true, true},	/* +6dB */
-	{false, true},	/* +12dB */
-	{true, false},	/* +18dB */
-	{false, false},	/* +24dB */
+	 
+	{true, true},	 
+	{false, true},	 
+	{true, false},	 
+	{false, false},	 
 };
 
 static int speaker_gain_control_put(struct snd_kcontrol *kcontrol,
@@ -70,10 +65,10 @@ static int speaker_gain_control_put(struct snd_kcontrol *kcontrol,
 
 	priv->gain = ucontrol->value.integer.value[0];
 
-	/* G1 */
+	 
 	gpiod_set_value_cansleep(priv->gpiod_gain->desc[0],
 				 speaker_gain_table[priv->gain][0]);
-	/* G2 */
+	 
 	gpiod_set_value_cansleep(priv->gpiod_gain->desc[1],
 				 speaker_gain_table[priv->gain][1]);
 

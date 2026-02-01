@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) Fuzhou Rockchip Electronics Co.Ltd
- * Author:Mark Yao <mark.yao@rock-chips.com>
- *
- * based on exynos_drm_drv.c
- */
+
+ 
 
 #include <linux/dma-mapping.h>
 #include <linux/platform_device.h>
@@ -44,11 +39,7 @@
 
 static const struct drm_driver rockchip_drm_driver;
 
-/*
- * Attach a (component) device to the shared drm dma mapping from master drm
- * device.  This is used by the VOPs to map GEM buffers to a common DMA
- * mapping.
- */
+ 
 int rockchip_drm_dma_attach_device(struct drm_device *drm_dev,
 				   struct device *dev)
 {
@@ -140,7 +131,7 @@ static int rockchip_drm_bind(struct device *dev)
 	struct rockchip_drm_private *private;
 	int ret;
 
-	/* Remove existing drivers that may own the framebuffer memory. */
+	 
 	ret = drm_aperture_remove_framebuffers(&rockchip_drm_driver);
 	if (ret) {
 		DRM_DEV_ERROR(dev,
@@ -169,7 +160,7 @@ static int rockchip_drm_bind(struct device *dev)
 
 	rockchip_drm_mode_config_init(drm_dev);
 
-	/* Try to bind all sub drivers. */
+	 
 	ret = component_bind_all(dev, drm_dev);
 	if (ret)
 		goto err_free;
@@ -184,7 +175,7 @@ static int rockchip_drm_bind(struct device *dev)
 
 	drm_mode_config_reset(drm_dev);
 
-	/* init kms poll for handling hpd */
+	 
 	drm_kms_helper_poll_init(drm_dev);
 
 	ret = drm_dev_register(drm_dev, 0);
@@ -259,15 +250,7 @@ static const struct dev_pm_ops rockchip_drm_pm_ops = {
 static struct platform_driver *rockchip_sub_drivers[MAX_ROCKCHIP_SUB_DRIVERS];
 static int num_rockchip_sub_drivers;
 
-/*
- * Get the endpoint id of the remote endpoint of the given encoder. This
- * information is used by the VOP2 driver to identify the encoder.
- *
- * @rkencoder: The encoder to get the remote endpoint id from
- * @np: The encoder device node
- * @port: The number of the port leading to the VOP2
- * @reg: The endpoint number leading to the VOP2
- */
+ 
 int rockchip_drm_encoder_set_crtc_endpoint_id(struct rockchip_encoder *rkencoder,
 					      struct device_node *np, int port, int reg)
 {
@@ -292,16 +275,7 @@ int rockchip_drm_encoder_set_crtc_endpoint_id(struct rockchip_encoder *rkencoder
 	return 0;
 }
 
-/*
- * Check if a vop endpoint is leading to a rockchip subdriver or bridge.
- * Should be called from the component bind stage of the drivers
- * to ensure that all subdrivers are probed.
- *
- * @ep: endpoint of a rockchip vop
- *
- * returns true if subdriver, false if external bridge and -ENODEV
- * if remote port does not contain a device.
- */
+ 
 int rockchip_drm_endpoint_is_subdriver(struct device_node *ep)
 {
 	struct device_node *node = of_graph_get_remote_port_parent(ep);
@@ -312,7 +286,7 @@ int rockchip_drm_endpoint_is_subdriver(struct device_node *ep)
 	if (!node)
 		return -ENODEV;
 
-	/* status disabled will prevent creation of platform-devices */
+	 
 	if (!of_device_is_available(node)) {
 		of_node_put(node);
 		return -ENODEV;
@@ -321,14 +295,11 @@ int rockchip_drm_endpoint_is_subdriver(struct device_node *ep)
 	pdev = of_find_device_by_node(node);
 	of_node_put(node);
 
-	/* enabled non-platform-devices can immediately return here */
+	 
 	if (!pdev)
 		return false;
 
-	/*
-	 * All rockchip subdrivers have probed at this point, so
-	 * any device not having a driver now is an external bridge.
-	 */
+	 
 	drv = pdev->dev.driver;
 	if (!drv) {
 		platform_device_put(pdev);
@@ -465,7 +436,7 @@ static void rockchip_drm_platform_shutdown(struct platform_device *pdev)
 
 static const struct of_device_id rockchip_drm_dt_ids[] = {
 	{ .compatible = "rockchip,display-subsystem", },
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, rockchip_drm_dt_ids);
 

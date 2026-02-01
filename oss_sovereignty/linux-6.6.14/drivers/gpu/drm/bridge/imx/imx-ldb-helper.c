@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (C) 2012 Sascha Hauer, Pengutronix
- * Copyright 2019,2020,2022 NXP
- */
+
+ 
 
 #include <linux/export.h>
 #include <linux/media-bus-format.h>
@@ -81,10 +78,7 @@ void ldb_bridge_enable_helper(struct drm_bridge *bridge)
 	struct ldb_channel *ldb_ch = bridge->driver_private;
 	struct ldb *ldb = ldb_ch->ldb;
 
-	/*
-	 * Platform specific bridge drivers should set ldb_ctrl properly
-	 * for the enablement, so just write the ctrl_reg here.
-	 */
+	 
 	regmap_write(ldb->regmap, ldb->ctrl_reg, ldb->ldb_ctrl);
 }
 EXPORT_SYMBOL_GPL(ldb_bridge_enable_helper);

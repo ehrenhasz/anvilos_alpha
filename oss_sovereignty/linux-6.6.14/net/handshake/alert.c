@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Handle the TLS Alert protocol
- *
- * Author: Chuck Lever <chuck.lever@oracle.com>
- *
- * Copyright (c) 2023, Oracle and/or its affiliates.
- */
+
+ 
 
 #include <linux/types.h>
 #include <linux/socket.h>
@@ -23,14 +17,7 @@
 
 #include <trace/events/handshake.h>
 
-/**
- * tls_alert_send - send a TLS Alert on a kTLS socket
- * @sock: open kTLS socket to send on
- * @level: TLS Alert level
- * @description: TLS Alert description
- *
- * Returns zero on success or a negative errno.
- */
+ 
 int tls_alert_send(struct socket *sock, u8 level, u8 description)
 {
 	u8 record_type = TLS_RECORD_TYPE_ALERT;
@@ -64,13 +51,7 @@ int tls_alert_send(struct socket *sock, u8 level, u8 description)
 	return ret < 0 ? ret : 0;
 }
 
-/**
- * tls_get_record_type - Look for TLS RECORD_TYPE information
- * @sk: socket (for IP address information)
- * @cmsg: incoming message to be parsed
- *
- * Returns zero or a TLS_RECORD_TYPE value.
- */
+ 
 u8 tls_get_record_type(const struct sock *sk, const struct cmsghdr *cmsg)
 {
 	u8 record_type;
@@ -86,14 +67,7 @@ u8 tls_get_record_type(const struct sock *sk, const struct cmsghdr *cmsg)
 }
 EXPORT_SYMBOL(tls_get_record_type);
 
-/**
- * tls_alert_recv - Parse TLS Alert messages
- * @sk: socket (for IP address information)
- * @msg: incoming message to be parsed
- * @level: OUT - TLS AlertLevel value
- * @description: OUT - TLS AlertDescription value
- *
- */
+ 
 void tls_alert_recv(const struct sock *sk, const struct msghdr *msg,
 		    u8 *level, u8 *description)
 {

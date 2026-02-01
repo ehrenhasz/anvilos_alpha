@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Rockchip IO Voltage Domain driver
- *
- * Copyright 2014 MundoReader S.L.
- * Copyright 2014 Google, Inc.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -17,17 +12,7 @@
 
 #define MAX_SUPPLIES		16
 
-/*
- * The max voltage for 1.8V and 3.3V come from the Rockchip datasheet under
- * "Recommended Operating Conditions" for "Digital GPIO".   When the typical
- * is 3.3V the max is 3.6V.  When the typical is 1.8V the max is 1.98V.
- *
- * They are used like this:
- * - If the voltage on a rail is above the "1.8" voltage (1.98V) we'll tell the
- *   SoC we're at 3.3.
- * - If the voltage on a rail is above the "3.3" voltage (3.6V) we'll consider
- *   that to be an error.
- */
+ 
 #define MAX_VOLTAGE_1_8		1980000
 #define MAX_VOLTAGE_3_3		3600000
 
@@ -87,9 +72,9 @@ static int rk3568_iodomain_write(struct rockchip_iodomain_supply *supply, int uV
 	int b;
 
 	switch (supply->idx) {
-	case 0: /* pmuio1 */
+	case 0:  
 		break;
-	case 1: /* pmuio2 */
+	case 1:  
 		b = supply->idx;
 		val0 = BIT(16 + b) | (is_3v3 ? 0 : BIT(b));
 		b = supply->idx + 4;
@@ -98,14 +83,14 @@ static int rk3568_iodomain_write(struct rockchip_iodomain_supply *supply, int uV
 		regmap_write(iod->grf, RK3568_PMU_GRF_IO_VSEL2, val0);
 		regmap_write(iod->grf, RK3568_PMU_GRF_IO_VSEL2, val1);
 		break;
-	case 3: /* vccio2 */
+	case 3:  
 		break;
-	case 2: /* vccio1 */
-	case 4: /* vccio3 */
-	case 5: /* vccio4 */
-	case 6: /* vccio5 */
-	case 7: /* vccio6 */
-	case 8: /* vccio7 */
+	case 2:  
+	case 4:  
+	case 5:  
+	case 6:  
+	case 7:  
+	case 8:  
 		b = supply->idx - 1;
 		val0 = BIT(16 + b) | (is_3v3 ? 0 : BIT(b));
 		val1 = BIT(16 + b) | (is_3v3 ? BIT(b) : 0);
@@ -127,11 +112,11 @@ static int rockchip_iodomain_write(struct rockchip_iodomain_supply *supply,
 	u32 val;
 	int ret;
 
-	/* set value bit */
+	 
 	val = (uV > MAX_VOLTAGE_1_8) ? 0 : 1;
 	val <<= supply->idx;
 
-	/* apply hiword-mask */
+	 
 	val |= (BIT(supply->idx) << 16);
 
 	ret = regmap_write(iod->grf, iod->soc_data->grf_offset, val);
@@ -150,19 +135,7 @@ static int rockchip_iodomain_notify(struct notifier_block *nb,
 	int uV;
 	int ret;
 
-	/*
-	 * According to Rockchip it's important to keep the SoC IO domain
-	 * higher than (or equal to) the external voltage.  That means we need
-	 * to change it before external voltage changes happen in the case
-	 * of an increase.
-	 *
-	 * Note that in the "pre" change we pick the max possible voltage that
-	 * the regulator might end up at (the client requests a range and we
-	 * don't know for certain the exact voltage).  Right now we rely on the
-	 * slop in MAX_VOLTAGE_1_8 and MAX_VOLTAGE_3_3 to save us if clients
-	 * request something like a max of 3.6V when they really want 3.3V.
-	 * We could attempt to come up with better rules if this fails.
-	 */
+	 
 	if (event & REGULATOR_EVENT_PRE_VOLTAGE_CHANGE) {
 		struct pre_voltage_change_data *pvc_data = data;
 
@@ -196,14 +169,11 @@ static void px30_iodomain_init(struct rockchip_iodomain *iod)
 	int ret;
 	u32 val;
 
-	/* if no VCCIO6 supply we should leave things alone */
+	 
 	if (!iod->supplies[PX30_IO_VSEL_VCCIO6_SUPPLY_NUM].reg)
 		return;
 
-	/*
-	 * set vccio6 iodomain to also use this framework
-	 * instead of a special gpio.
-	 */
+	 
 	val = PX30_IO_VSEL_VCCIO6_SRC | (PX30_IO_VSEL_VCCIO6_SRC << 16);
 	ret = regmap_write(iod->grf, PX30_IO_VSEL, val);
 	if (ret < 0)
@@ -215,14 +185,11 @@ static void rk3288_iodomain_init(struct rockchip_iodomain *iod)
 	int ret;
 	u32 val;
 
-	/* if no flash supply we should leave things alone */
+	 
 	if (!iod->supplies[RK3288_SOC_FLASH_SUPPLY_NUM].reg)
 		return;
 
-	/*
-	 * set flash0 iodomain to also use this framework
-	 * instead of a special gpio.
-	 */
+	 
 	val = RK3288_SOC_CON2_FLASH0 | (RK3288_SOC_CON2_FLASH0 << 16);
 	ret = regmap_write(iod->grf, RK3288_SOC_CON2, val);
 	if (ret < 0)
@@ -234,14 +201,11 @@ static void rk3328_iodomain_init(struct rockchip_iodomain *iod)
 	int ret;
 	u32 val;
 
-	/* if no vccio2 supply we should leave things alone */
+	 
 	if (!iod->supplies[RK3328_SOC_VCCIO2_SUPPLY_NUM].reg)
 		return;
 
-	/*
-	 * set vccio2 iodomain to also use this framework
-	 * instead of a special gpio.
-	 */
+	 
 	val = RK3328_SOC_CON4_VCCIO2 | (RK3328_SOC_CON4_VCCIO2 << 16);
 	ret = regmap_write(iod->grf, RK3328_SOC_CON4, val);
 	if (ret < 0)
@@ -253,14 +217,11 @@ static void rk3368_iodomain_init(struct rockchip_iodomain *iod)
 	int ret;
 	u32 val;
 
-	/* if no flash supply we should leave things alone */
+	 
 	if (!iod->supplies[RK3368_SOC_FLASH_SUPPLY_NUM].reg)
 		return;
 
-	/*
-	 * set flash0 iodomain to also use this framework
-	 * instead of a special gpio.
-	 */
+	 
 	val = RK3368_SOC_CON15_FLASH0 | (RK3368_SOC_CON15_FLASH0 << 16);
 	ret = regmap_write(iod->grf, RK3368_SOC_CON15, val);
 	if (ret < 0)
@@ -272,14 +233,11 @@ static void rk3399_pmu_iodomain_init(struct rockchip_iodomain *iod)
 	int ret;
 	u32 val;
 
-	/* if no pmu io supply we should leave things alone */
+	 
 	if (!iod->supplies[RK3399_PMUGRF_VSEL_SUPPLY_NUM].reg)
 		return;
 
-	/*
-	 * set pmu io iodomain to also use this framework
-	 * instead of a special gpio.
-	 */
+	 
 	val = RK3399_PMUGRF_CON0_VSEL | (RK3399_PMUGRF_CON0_VSEL << 16);
 	ret = regmap_write(iod->grf, RK3399_PMUGRF_CON0, val);
 	if (ret < 0)
@@ -323,10 +281,7 @@ static const struct rockchip_iodomain_soc_data soc_data_px30_pmu = {
 	},
 };
 
-/*
- * On the rk3188 the io-domains are handled by a shared register with the
- * lower 8 bits being still being continuing drive-strength settings.
- */
+ 
 static const struct rockchip_iodomain_soc_data soc_data_rk3188 = {
 	.grf_offset = 0x104,
 	.supply_names = {
@@ -362,16 +317,16 @@ static const struct rockchip_iodomain_soc_data soc_data_rk3228 = {
 static const struct rockchip_iodomain_soc_data soc_data_rk3288 = {
 	.grf_offset = 0x380,
 	.supply_names = {
-		"lcdc",		/* LCDC_VDD */
-		"dvp",		/* DVPIO_VDD */
-		"flash0",	/* FLASH0_VDD (emmc) */
-		"flash1",	/* FLASH1_VDD (sdio1) */
-		"wifi",		/* APIO3_VDD  (sdio0) */
-		"bb",		/* APIO5_VDD */
-		"audio",	/* APIO4_VDD */
-		"sdcard",	/* SDMMC0_VDD (sdmmc) */
-		"gpio30",	/* APIO1_VDD */
-		"gpio1830",	/* APIO2_VDD */
+		"lcdc",		 
+		"dvp",		 
+		"flash0",	 
+		"flash1",	 
+		"wifi",		 
+		"bb",		 
+		"audio",	 
+		"sdcard",	 
+		"gpio30",	 
+		"gpio1830",	 
 	},
 	.init = rk3288_iodomain_init,
 };
@@ -393,15 +348,15 @@ static const struct rockchip_iodomain_soc_data soc_data_rk3328 = {
 static const struct rockchip_iodomain_soc_data soc_data_rk3368 = {
 	.grf_offset = 0x900,
 	.supply_names = {
-		NULL,		/* reserved */
-		"dvp",		/* DVPIO_VDD */
-		"flash0",	/* FLASH0_VDD (emmc) */
-		"wifi",		/* APIO2_VDD (sdio0) */
+		NULL,		 
+		"dvp",		 
+		"flash0",	 
+		"wifi",		 
 		NULL,
-		"audio",	/* APIO3_VDD */
-		"sdcard",	/* SDMMC0_VDD (sdmmc) */
-		"gpio30",	/* APIO1_VDD */
-		"gpio1830",	/* APIO4_VDD (gpujtag) */
+		"audio",	 
+		"sdcard",	 
+		"gpio30",	 
+		"gpio1830",	 
 	},
 	.init = rk3368_iodomain_init,
 };
@@ -413,18 +368,18 @@ static const struct rockchip_iodomain_soc_data soc_data_rk3368_pmu = {
 		NULL,
 		NULL,
 		NULL,
-		"pmu",	        /*PMU IO domain*/
-		"vop",	        /*LCDC IO domain*/
+		"pmu",	         
+		"vop",	         
 	},
 };
 
 static const struct rockchip_iodomain_soc_data soc_data_rk3399 = {
 	.grf_offset = 0xe640,
 	.supply_names = {
-		"bt656",		/* APIO2_VDD */
-		"audio",		/* APIO5_VDD */
-		"sdmmc",		/* SDMMC0_VDD */
-		"gpio1830",		/* APIO4_VDD */
+		"bt656",		 
+		"audio",		 
+		"sdmmc",		 
+		"gpio1830",		 
 	},
 };
 
@@ -440,7 +395,7 @@ static const struct rockchip_iodomain_soc_data soc_data_rk3399_pmu = {
 		NULL,
 		NULL,
 		NULL,
-		"pmu1830",		/* PMUIO2_VDD */
+		"pmu1830",		 
 	},
 	.init = rk3399_pmu_iodomain_init,
 };
@@ -564,7 +519,7 @@ static const struct of_device_id rockchip_iodomain_match[] = {
 		.compatible = "rockchip,rv1126-pmu-io-voltage-domain",
 		.data = &soc_data_rv1126_pmu
 	},
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, rockchip_iodomain_match);
 
@@ -620,7 +575,7 @@ static int rockchip_iodomain_probe(struct platform_device *pdev)
 		if (IS_ERR(reg)) {
 			ret = PTR_ERR(reg);
 
-			/* If a supply wasn't specified, that's OK */
+			 
 			if (ret == -ENODEV)
 				continue;
 			else if (ret != -EPROBE_DEFER)
@@ -629,10 +584,10 @@ static int rockchip_iodomain_probe(struct platform_device *pdev)
 			goto unreg_notify;
 		}
 
-		/* set initial correct value */
+		 
 		uV = regulator_get_voltage(reg);
 
-		/* must be a regulator we can get the voltage of */
+		 
 		if (uV < 0) {
 			dev_err(iod->dev, "Can't determine voltage: %s\n",
 				supply_name);
@@ -648,7 +603,7 @@ static int rockchip_iodomain_probe(struct platform_device *pdev)
 			goto unreg_notify;
 		}
 
-		/* setup our supply */
+		 
 		supply->idx = i;
 		supply->iod = iod;
 		supply->reg = reg;
@@ -660,7 +615,7 @@ static int rockchip_iodomain_probe(struct platform_device *pdev)
 			goto unreg_notify;
 		}
 
-		/* register regulator notifier */
+		 
 		ret = regulator_register_notifier(reg, &supply->nb);
 		if (ret) {
 			dev_err(&pdev->dev,

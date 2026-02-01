@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright(c) 2008 - 2011 Intel Corporation. All rights reserved.
- *
- * Maintained at www.Open-FCoE.org
- */
+
+ 
 
 #include <linux/types.h>
 #include <linux/module.h>
@@ -67,7 +63,7 @@ module_param_call(disable, fcoe_transport_disable, NULL, NULL, S_IWUSR);
 __MODULE_PARM_TYPE(disable, "string");
 MODULE_PARM_DESC(disable, " Disables fcoe on an ethernet interface.");
 
-/* notification function for packets from net device */
+ 
 static struct notifier_block libfcoe_notifier = {
 	.notifier_call = libfcoe_device_notification,
 };
@@ -107,13 +103,7 @@ static inline u32 eth2fc_speed(u32 eth_port_speed)
 	return FC_PORTSPEED_UNKNOWN;
 }
 
-/**
- * fcoe_link_speed_update() - Update the supported and actual link speeds
- * @lport: The local port to update speeds for
- *
- * Returns: 0 if the ethtool query was successful
- *          -1 if the ethtool query failed
- */
+ 
 int fcoe_link_speed_update(struct fc_lport *lport)
 {
 	struct net_device *netdev = fcoe_get_netdev(lport);
@@ -157,15 +147,7 @@ int fcoe_link_speed_update(struct fc_lport *lport)
 }
 EXPORT_SYMBOL_GPL(fcoe_link_speed_update);
 
-/**
- * __fcoe_get_lesb() - Get the Link Error Status Block (LESB) for a given lport
- * @lport: The local port to update speeds for
- * @fc_lesb: Pointer to the LESB to be filled up
- * @netdev: Pointer to the netdev that is associated with the lport
- *
- * Note, the Link Error Status Block (LESB) for FCoE is defined in FC-BB-6
- * Clause 7.11 in v1.04.
- */
+ 
 void __fcoe_get_lesb(struct fc_lport *lport,
 		     struct fc_els_lesb *fc_lesb,
 		     struct net_device *netdev)
@@ -195,11 +177,7 @@ void __fcoe_get_lesb(struct fc_lport *lport,
 }
 EXPORT_SYMBOL_GPL(__fcoe_get_lesb);
 
-/**
- * fcoe_get_lesb() - Fill the FCoE Link Error Status Block
- * @lport: the local port
- * @fc_lesb: the link error status block
- */
+ 
 void fcoe_get_lesb(struct fc_lport *lport,
 			 struct fc_els_lesb *fc_lesb)
 {
@@ -209,12 +187,7 @@ void fcoe_get_lesb(struct fc_lport *lport,
 }
 EXPORT_SYMBOL_GPL(fcoe_get_lesb);
 
-/**
- * fcoe_ctlr_get_lesb() - Get the Link Error Status Block (LESB) for a given
- * fcoe controller device
- * @ctlr_dev: The given fcoe controller device
- *
- */
+ 
 void fcoe_ctlr_get_lesb(struct fcoe_ctlr_device *ctlr_dev)
 {
 	struct fcoe_ctlr *fip = fcoe_ctlr_device_priv(ctlr_dev);
@@ -237,15 +210,7 @@ void fcoe_wwn_to_str(u64 wwn, char *buf, int len)
 }
 EXPORT_SYMBOL_GPL(fcoe_wwn_to_str);
 
-/**
- * fcoe_validate_vport_create() - Validate a vport before creating it
- * @vport: NPIV port to be created
- *
- * This routine is meant to add validation for a vport before creating it
- * via fcoe_vport_create().
- * Current validations are:
- *      - WWPN supplied is unique for given lport
- */
+ 
 int fcoe_validate_vport_create(struct fc_vport *vport)
 {
 	struct Scsi_Host *shost = vport_to_shost(vport);
@@ -257,7 +222,7 @@ int fcoe_validate_vport_create(struct fc_vport *vport)
 	mutex_lock(&n_port->lp_mutex);
 
 	fcoe_wwn_to_str(vport->port_name, buf, sizeof(buf));
-	/* Check if the wwpn is not same as that of the lport */
+	 
 	if (!memcmp(&n_port->wwpn, &vport->port_name, sizeof(u64))) {
 		LIBFCOE_TRANSPORT_DBG("vport WWPN 0x%s is same as that of the "
 				      "base port WWPN\n", buf);
@@ -265,7 +230,7 @@ int fcoe_validate_vport_create(struct fc_vport *vport)
 		goto out;
 	}
 
-	/* Check if there is any existing vport with same wwpn */
+	 
 	list_for_each_entry(vn_port, &n_port->vports, list) {
 		if (!memcmp(&vn_port->wwpn, &vport->port_name, sizeof(u64))) {
 			LIBFCOE_TRANSPORT_DBG("vport with given WWPN 0x%s "
@@ -280,14 +245,7 @@ out:
 }
 EXPORT_SYMBOL_GPL(fcoe_validate_vport_create);
 
-/**
- * fcoe_get_wwn() - Get the world wide name from LLD if it supports it
- * @netdev: the associated net device
- * @wwn: the output WWN
- * @type: the type of WWN (WWPN or WWNN)
- *
- * Returns: 0 for success
- */
+ 
 int fcoe_get_wwn(struct net_device *netdev, u64 *wwn, int type)
 {
 	const struct net_device_ops *ops = netdev->netdev_ops;
@@ -298,14 +256,7 @@ int fcoe_get_wwn(struct net_device *netdev, u64 *wwn, int type)
 }
 EXPORT_SYMBOL_GPL(fcoe_get_wwn);
 
-/**
- * fcoe_fc_crc() - Calculates the CRC for a given frame
- * @fp: The frame to be checksumed
- *
- * This uses crc32() routine to calculate the CRC for a frame
- *
- * Return: The 32 bit CRC value
- */
+ 
 u32 fcoe_fc_crc(struct fc_frame *fp)
 {
 	struct sk_buff *skb = fp_skb(fp);
@@ -335,15 +286,7 @@ u32 fcoe_fc_crc(struct fc_frame *fp)
 }
 EXPORT_SYMBOL_GPL(fcoe_fc_crc);
 
-/**
- * fcoe_start_io() - Start FCoE I/O
- * @skb: The packet to be transmitted
- *
- * This routine is called from the net device to start transmitting
- * FCoE packets.
- *
- * Returns: 0 for success
- */
+ 
 int fcoe_start_io(struct sk_buff *skb)
 {
 	struct sk_buff *nskb;
@@ -361,10 +304,7 @@ int fcoe_start_io(struct sk_buff *skb)
 EXPORT_SYMBOL_GPL(fcoe_start_io);
 
 
-/**
- * fcoe_clean_pending_queue() - Dequeue a skb and free it
- * @lport: The local port to dequeue a skb on
- */
+ 
 void fcoe_clean_pending_queue(struct fc_lport *lport)
 {
 	struct fcoe_port  *port = lport_priv(lport);
@@ -380,20 +320,7 @@ void fcoe_clean_pending_queue(struct fc_lport *lport)
 }
 EXPORT_SYMBOL_GPL(fcoe_clean_pending_queue);
 
-/**
- * fcoe_check_wait_queue() - Attempt to clear the transmit backlog
- * @lport: The local port whose backlog is to be cleared
- * @skb: The received FIP packet
- *
- * This empties the wait_queue, dequeues the head of the wait_queue queue
- * and calls fcoe_start_io() for each packet. If all skb have been
- * transmitted it returns the qlen. If an error occurs it restores
- * wait_queue (to try again later) and returns -1.
- *
- * The wait_queue is used when the skb transmit fails. The failed skb
- * will go in the wait_queue which will be emptied by the timer function or
- * by the next skb transmit.
- */
+ 
 void fcoe_check_wait_queue(struct fc_lport *lport, struct sk_buff *skb)
 {
 	struct fcoe_port *port = lport_priv(lport);
@@ -409,7 +336,7 @@ void fcoe_check_wait_queue(struct fc_lport *lport, struct sk_buff *skb)
 	port->fcoe_pending_queue_active = 1;
 
 	while (port->fcoe_pending_queue.qlen) {
-		/* keep qlen > 0 until fcoe_start_io succeeds */
+		 
 		port->fcoe_pending_queue.qlen++;
 		skb = __skb_dequeue(&port->fcoe_pending_queue);
 
@@ -419,11 +346,11 @@ void fcoe_check_wait_queue(struct fc_lport *lport, struct sk_buff *skb)
 
 		if (rc) {
 			__skb_queue_head(&port->fcoe_pending_queue, skb);
-			/* undo temporary increment above */
+			 
 			port->fcoe_pending_queue.qlen--;
 			break;
 		}
-		/* undo temporary increment above */
+		 
 		port->fcoe_pending_queue.qlen--;
 	}
 
@@ -439,12 +366,7 @@ out:
 }
 EXPORT_SYMBOL_GPL(fcoe_check_wait_queue);
 
-/**
- * fcoe_queue_timer() - The fcoe queue timer
- * @t: Timer context use to obtain the FCoE port
- *
- * Calls fcoe_check_wait_queue on timeout
- */
+ 
 void fcoe_queue_timer(struct timer_list *t)
 {
 	struct fcoe_port *port = from_timer(port, t, timer);
@@ -453,20 +375,7 @@ void fcoe_queue_timer(struct timer_list *t)
 }
 EXPORT_SYMBOL_GPL(fcoe_queue_timer);
 
-/**
- * fcoe_get_paged_crc_eof() - Allocate a page to be used for the trailer CRC
- * @skb:  The packet to be transmitted
- * @tlen: The total length of the trailer
- * @fps:  The fcoe context
- *
- * This routine allocates a page for frame trailers. The page is re-used if
- * there is enough room left on it for the current trailer. If there isn't
- * enough buffer left a new page is allocated for the trailer. Reference to
- * the page from this function as well as the skbs using the page fragments
- * ensure that the page is freed at the appropriate time.
- *
- * Returns: 0 for success
- */
+ 
 int fcoe_get_paged_crc_eof(struct sk_buff *skb, int tlen,
 			   struct fcoe_percpu_s *fps)
 {
@@ -500,15 +409,7 @@ int fcoe_get_paged_crc_eof(struct sk_buff *skb, int tlen,
 }
 EXPORT_SYMBOL_GPL(fcoe_get_paged_crc_eof);
 
-/**
- * fcoe_transport_lookup - find an fcoe transport that matches a netdev
- * @netdev: The netdev to look for from all attached transports
- *
- * Returns : ptr to the fcoe transport that supports this netdev or NULL
- * if not found.
- *
- * The ft_mutex should be held when this is called
- */
+ 
 static struct fcoe_transport *fcoe_transport_lookup(struct net_device *netdev)
 {
 	struct fcoe_transport *ft = NULL;
@@ -519,12 +420,7 @@ static struct fcoe_transport *fcoe_transport_lookup(struct net_device *netdev)
 	return NULL;
 }
 
-/**
- * fcoe_transport_attach - Attaches an FCoE transport
- * @ft: The fcoe transport to be attached
- *
- * Returns : 0 for success
- */
+ 
 int fcoe_transport_attach(struct fcoe_transport *ft)
 {
 	int rc = 0;
@@ -537,7 +433,7 @@ int fcoe_transport_attach(struct fcoe_transport *ft)
 		goto out_attach;
 	}
 
-	/* Add default transport to the tail */
+	 
 	if (strcmp(ft->name, FCOE_TRANSPORT_DEFAULT))
 		list_add(&ft->list, &fcoe_transports);
 	else
@@ -552,12 +448,7 @@ out_attach:
 }
 EXPORT_SYMBOL(fcoe_transport_attach);
 
-/**
- * fcoe_transport_detach - Detaches an FCoE transport
- * @ft: The fcoe transport to be attached
- *
- * Returns : 0 for success
- */
+ 
 int fcoe_transport_detach(struct fcoe_transport *ft)
 {
 	int rc = 0;
@@ -571,7 +462,7 @@ int fcoe_transport_detach(struct fcoe_transport *ft)
 		goto out_attach;
 	}
 
-	/* remove netdev mapping for this transport as it is going away */
+	 
 	mutex_lock(&fn_mutex);
 	list_for_each_entry_safe(nm, tmp, &fcoe_netdevs, list) {
 		if (nm->ft == ft) {
@@ -671,16 +562,7 @@ static void fcoe_del_netdev_mapping(struct net_device *netdev)
 }
 
 
-/**
- * fcoe_netdev_map_lookup - find the fcoe transport that matches the netdev on which
- * it was created
- * @netdev: The net device that the FCoE interface is on
- *
- * Returns : ptr to the fcoe transport that supports this netdev or NULL
- * if not found.
- *
- * The ft_mutex should be held when this is called
- */
+ 
 static struct fcoe_transport *fcoe_netdev_map_lookup(struct net_device *netdev)
 {
 	struct fcoe_transport *ft = NULL;
@@ -699,12 +581,7 @@ static struct fcoe_transport *fcoe_netdev_map_lookup(struct net_device *netdev)
 	return NULL;
 }
 
-/**
- * fcoe_if_to_netdev() - Parse a name buffer to get a net device
- * @buffer: The name of the net device
- *
- * Returns: NULL or a ptr to net_device
- */
+ 
 static struct net_device *fcoe_if_to_netdev(const char *buffer)
 {
 	char *cp;
@@ -720,16 +597,7 @@ static struct net_device *fcoe_if_to_netdev(const char *buffer)
 	return NULL;
 }
 
-/**
- * libfcoe_device_notification() - Handler for net device events
- * @notifier: The context of the notification
- * @event:    The type of event
- * @ptr:      The net device that the event was on
- *
- * This function is called by the Ethernet driver in case of link change event.
- *
- * Returns: 0 for success
- */
+ 
 static int libfcoe_device_notification(struct notifier_block *notifier,
 				    ulong event, void *ptr)
 {
@@ -778,7 +646,7 @@ ssize_t fcoe_ctlr_create_store(const char *buf, size_t count)
 		goto out_putdev;
 	}
 
-	/* pass to transport create */
+	 
 	err = ft->alloc ? ft->alloc(netdev) : -ENODEV;
 	if (err) {
 		fcoe_del_netdev_mapping(netdev);
@@ -828,7 +696,7 @@ ssize_t fcoe_ctlr_destroy_store(const char *buf, size_t count)
 		goto out_putdev;
 	}
 
-	/* pass to transport destroy */
+	 
 	rc = ft->destroy(netdev);
 	if (rc)
 		goto out_putdev;
@@ -837,7 +705,7 @@ ssize_t fcoe_ctlr_destroy_store(const char *buf, size_t count)
 	LIBFCOE_TRANSPORT_DBG("transport %s %s to destroy fcoe on %s.\n",
 			      ft->name, (rc) ? "failed" : "succeeded",
 			      netdev->name);
-	rc = count; /* required for successful return */
+	rc = count;  
 out_putdev:
 	dev_put(netdev);
 out_nodev:
@@ -845,16 +713,7 @@ out_nodev:
 	return rc;
 }
 
-/**
- * fcoe_transport_create() - Create a fcoe interface
- * @buffer: The name of the Ethernet interface to create on
- * @kp:	    The associated kernel param
- *
- * Called from sysfs. This holds the ft_mutex while calling the
- * registered fcoe transport's create function.
- *
- * Returns: 0 for success
- */
+ 
 static int fcoe_transport_create(const char *buffer,
 				 const struct kernel_param *kp)
 {
@@ -895,7 +754,7 @@ static int fcoe_transport_create(const char *buffer,
 		goto out_putdev;
 	}
 
-	/* pass to transport create */
+	 
 	rc = ft->create ? ft->create(netdev, fip_mode) : -ENODEV;
 	if (rc)
 		fcoe_del_netdev_mapping(netdev);
@@ -911,16 +770,7 @@ out_nodev:
 	return rc;
 }
 
-/**
- * fcoe_transport_destroy() - Destroy a FCoE interface
- * @buffer: The name of the Ethernet interface to be destroyed
- * @kp:	    The associated kernel parameter
- *
- * Called from sysfs. This holds the ft_mutex while calling the
- * registered fcoe transport's destroy function.
- *
- * Returns: 0 for success
- */
+ 
 static int fcoe_transport_destroy(const char *buffer,
 				  const struct kernel_param *kp)
 {
@@ -943,7 +793,7 @@ static int fcoe_transport_destroy(const char *buffer,
 		goto out_putdev;
 	}
 
-	/* pass to transport destroy */
+	 
 	rc = ft->destroy ? ft->destroy(netdev) : -ENODEV;
 	fcoe_del_netdev_mapping(netdev);
 	LIBFCOE_TRANSPORT_DBG("transport %s %s to destroy fcoe on %s.\n",
@@ -957,15 +807,7 @@ out_nodev:
 	return rc;
 }
 
-/**
- * fcoe_transport_disable() - Disables a FCoE interface
- * @buffer: The name of the Ethernet interface to be disabled
- * @kp:	    The associated kernel parameter
- *
- * Called from sysfs.
- *
- * Returns: 0 for success
- */
+ 
 static int fcoe_transport_disable(const char *buffer,
 				  const struct kernel_param *kp)
 {
@@ -992,15 +834,7 @@ out_nodev:
 	return rc;
 }
 
-/**
- * fcoe_transport_enable() - Enables a FCoE interface
- * @buffer: The name of the Ethernet interface to be enabled
- * @kp:     The associated kernel parameter
- *
- * Called from sysfs.
- *
- * Returns: 0 for success
- */
+ 
 static int fcoe_transport_enable(const char *buffer,
 				 const struct kernel_param *kp)
 {
@@ -1027,9 +861,7 @@ out_nodev:
 	return rc;
 }
 
-/**
- * libfcoe_init() - Initialization routine for libfcoe.ko
- */
+ 
 static int __init libfcoe_init(void)
 {
 	int rc = 0;
@@ -1046,9 +878,7 @@ static int __init libfcoe_init(void)
 }
 module_init(libfcoe_init);
 
-/**
- * libfcoe_exit() - Tear down libfcoe.ko
- */
+ 
 static void __exit libfcoe_exit(void)
 {
 	fcoe_sysfs_teardown();

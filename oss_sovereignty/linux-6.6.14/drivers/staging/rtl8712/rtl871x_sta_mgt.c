@@ -1,18 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/******************************************************************************
- * rtl871x_sta_mgt.c
- *
- * Copyright(c) 2007 - 2010 Realtek Corporation. All rights reserved.
- * Linux device driver for RTL8192SU
- *
- * Modifications for inclusion into the Linux staging tree are
- * Copyright(c) 2010 Larry Finger. All rights reserved.
- *
- * Contact information:
- * WLAN FAE <wlanfae@realtek.com>
- * Larry Finger <Larry.Finger@lwfinger.net>
- *
- ******************************************************************************/
+
+ 
 
 #define _RTL871X_STA_MGT_C_
 
@@ -62,7 +49,7 @@ int _r8712_init_sta_priv(struct	sta_priv *pstapriv)
 	return 0;
 }
 
-/* this function is used to free the memory of lock || sema for all stainfos */
+ 
 static void mfree_all_stainfo(struct sta_priv *pstapriv)
 {
 	unsigned long irqL;
@@ -80,7 +67,7 @@ static void mfree_all_stainfo(struct sta_priv *pstapriv)
 void _r8712_free_sta_priv(struct sta_priv *pstapriv)
 {
 	if (pstapriv) {
-		/* be done before free sta_hash_lock */
+		 
 		mfree_all_stainfo(pstapriv);
 		kfree(pstapriv->pallocated_stainfo_buf);
 	}
@@ -114,15 +101,11 @@ struct sta_info *r8712_alloc_stainfo(struct sta_priv *pstapriv, u8 *hwaddr)
 		list_add_tail(&psta->hash_list, phash_list);
 		pstapriv->asoc_sta_count++;
 
-/* For the SMC router, the sequence number of first packet of WPS handshake
- * will be 0. In this case, this packet will be dropped by recv_decache function
- * if we use the 0x00 as the default value for tid_rxseq variable. So, we
- * initialize the tid_rxseq variable as the 0xffff.
- */
+ 
 		for (i = 0; i < 16; i++)
 			memcpy(&psta->sta_recvpriv.rxcache.tid_rxseq[i],
 				&wRxSeqInitialValue, 2);
-		/* for A-MPDU Rx reordering buffer control */
+		 
 		for (i = 0; i < 16; i++) {
 			preorder_ctrl = &psta->recvreorder_ctrl[i];
 			preorder_ctrl->padapter = pstapriv->padapter;
@@ -138,7 +121,7 @@ exit:
 	return psta;
 }
 
-/* using pstapriv->sta_hash_lock to protect */
+ 
 void r8712_free_stainfo(struct _adapter *padapter, struct sta_info *psta)
 {
 	int i;
@@ -171,23 +154,21 @@ void r8712_free_stainfo(struct _adapter *padapter, struct sta_info *psta)
 	spin_unlock_irqrestore(&(pxmitpriv->be_pending.lock), irqL0);
 	list_del_init(&psta->hash_list);
 	pstapriv->asoc_sta_count--;
-	/* re-init sta_info; 20061114 */
+	 
 	_r8712_init_sta_xmit_priv(&psta->sta_xmitpriv);
 	_r8712_init_sta_recv_priv(&psta->sta_recvpriv);
-	/* for A-MPDU Rx reordering buffer control,
-	 * cancel reordering_ctrl_timer
-	 */
+	 
 	for (i = 0; i < 16; i++) {
 		preorder_ctrl = &psta->recvreorder_ctrl[i];
 		del_timer(&preorder_ctrl->reordering_ctrl_timer);
 	}
 	spin_lock(&(pfree_sta_queue->lock));
-	/* insert into free_sta_queue; 20061114 */
+	 
 	list_add_tail(&psta->list, &pfree_sta_queue->queue);
 	spin_unlock(&(pfree_sta_queue->lock));
 }
 
-/* free all stainfo which in sta_hash[all] */
+ 
 void r8712_free_all_stainfo(struct _adapter *padapter)
 {
 	unsigned long irqL;
@@ -214,7 +195,7 @@ void r8712_free_all_stainfo(struct _adapter *padapter)
 	spin_unlock_irqrestore(&pstapriv->sta_hash_lock, irqL);
 }
 
-/* any station allocated can be searched by hash list */
+ 
 struct sta_info *r8712_get_stainfo(struct sta_priv *pstapriv, u8 *hwaddr)
 {
 	unsigned long	 irqL;
@@ -231,7 +212,7 @@ struct sta_info *r8712_get_stainfo(struct sta_priv *pstapriv, u8 *hwaddr)
 	while (!end_of_queue_search(phead, plist)) {
 		psta = container_of(plist, struct sta_info, hash_list);
 		if ((!memcmp(psta->hwaddr, hwaddr, ETH_ALEN))) {
-			/* if found the matched address */
+			 
 			break;
 		}
 		psta = NULL;

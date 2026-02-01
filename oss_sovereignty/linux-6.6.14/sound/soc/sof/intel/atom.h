@@ -1,17 +1,10 @@
-/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause) */
-/*
- * This file is provided under a dual BSD/GPLv2 license.  When using or
- * redistributing this file, you may do so under either license.
- *
- * Copyright(c) 2017-2021 Intel Corporation. All rights reserved.
- *
- * Author: Liam Girdwood <liam.r.girdwood@linux.intel.com>
- */
+ 
+ 
 
 #ifndef __SOF_INTEL_ATOM_H
 #define __SOF_INTEL_ATOM_H
 
-/* DSP memories */
+ 
 #define IRAM_OFFSET		0x0C0000
 #define IRAM_SIZE		(80 * 1024)
 #define DRAM_OFFSET		0x100000
@@ -24,7 +17,7 @@
 #define EXCEPT_OFFSET		0x800
 #define EXCEPT_MAX_HDR_SIZE	0x400
 
-/* DSP peripherals */
+ 
 #define DMAC0_OFFSET		0x098000
 #define DMAC1_OFFSET		0x09c000
 #define DMAC2_OFFSET		0x094000
@@ -43,13 +36,11 @@
 
 #define PANIC_OFFSET(x)	(((x) & GENMASK_ULL(47, 32)) >> 32)
 
-/*
- * Debug
- */
+ 
 
 #define MBOX_DUMP_SIZE	0x30
 
-/* BARs */
+ 
 #define DSP_BAR		0
 #define PCI_BAR		1
 #define IMR_BAR		2

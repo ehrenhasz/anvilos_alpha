@@ -1,18 +1,4 @@
-/*
- * Copyright (c) 2012 Neratec Solutions AG
- *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
+ 
 
 #include <linux/slab.h>
 #include <linux/export.h>
@@ -21,24 +7,19 @@
 #include "dfs_pri_detector.h"
 #include "ath.h"
 
-/**
- * struct radar_types - contains array of patterns defined for one DFS domain
- * @region: regulatory DFS region
- * @num_radar_types: number of radar types to follow
- * @radar_types: radar types array
- */
+ 
 struct radar_types {
 	enum nl80211_dfs_regions region;
 	u32 num_radar_types;
 	const struct radar_detector_specs *radar_types;
 };
 
-/* percentage on ppb threshold to trigger detection */
+ 
 #define MIN_PPB_THRESH	50
 #define PPB_THRESH_RATE(PPB, RATE) ((PPB * RATE + 100 - RATE) / 100)
 #define PPB_THRESH(PPB) PPB_THRESH_RATE(PPB, MIN_PPB_THRESH)
 #define PRF2PRI(PRF) ((1000000 + PRF / 2) / PRF)
-/* percentage of pulse width tolerance */
+ 
 #define WIDTH_TOLERANCE 5
 #define WIDTH_LOWER(X) ((X*(100-WIDTH_TOLERANCE)+50)/100)
 #define WIDTH_UPPER(X) ((X*(100+WIDTH_TOLERANCE)+50)/100)
@@ -51,7 +32,7 @@ struct radar_types {
 	PPB_THRESH(PPB), PRI_TOLERANCE,	CHIRP			\
 }
 
-/* radar types as defined by ETSI EN-301-893 v1.5.1 */
+ 
 static const struct radar_detector_specs etsi_radar_ref_types_v15[] = {
 	ETSI_PATTERN(0,  0,  1,  700,  700, 1, 18, false),
 	ETSI_PATTERN(1,  0,  5,  200, 1000, 1, 10, false),
@@ -76,12 +57,7 @@ static const struct radar_types etsi_radar_types_v15 = {
 	PPB_THRESH(PPB), PRI_TOLERANCE,	CHIRP			\
 }
 
-/* radar types released on August 14, 2014
- * type 1 PRI values randomly selected within the range of 518 and 3066.
- * divide it to 3 groups is good enough for both of radar detection and
- * avoiding false detection based on practical test results
- * collected for more than a year.
- */
+ 
 static const struct radar_detector_specs fcc_radar_ref_types[] = {
 	FCC_PATTERN(0, 0, 1, 1428, 1428, 1, 18, false),
 	FCC_PATTERN(101, 0, 1, 518, 938, 1, 57, false),
@@ -131,12 +107,7 @@ static const struct radar_types *dfs_domains[] = {
 	&jp_radar_types,
 };
 
-/**
- * get_dfs_domain_radar_types() - get radar types for a given DFS domain
- * @region: regulatory DFS region
- *
- * Return value: radar_types ptr on success, NULL if DFS domain is not supported
- */
+ 
 static const struct radar_types *
 get_dfs_domain_radar_types(enum nl80211_dfs_regions region)
 {
@@ -148,23 +119,14 @@ get_dfs_domain_radar_types(enum nl80211_dfs_regions region)
 	return NULL;
 }
 
-/**
- * struct channel_detector - detector elements for a DFS channel
- * @head: list_head
- * @freq: frequency for this channel detector in MHz
- * @detectors: array of dynamically created detector elements for this freq
- *
- * Channel detectors are required to provide multi-channel DFS detection, e.g.
- * to support off-channel scanning. A pattern detector has a list of channels
- * radar pulses have been reported for in the past.
- */
+ 
 struct channel_detector {
 	struct list_head head;
 	u16 freq;
 	struct pri_detector **detectors;
 };
 
-/* channel_detector_reset() - reset detector lines for a given channel */
+ 
 static void channel_detector_reset(struct dfs_pattern_detector *dpd,
 				   struct channel_detector *cd)
 {
@@ -175,7 +137,7 @@ static void channel_detector_reset(struct dfs_pattern_detector *dpd,
 		cd->detectors[i]->reset(cd->detectors[i], dpd->last_pulse_ts);
 }
 
-/* channel_detector_exit() - destructor */
+ 
 static void channel_detector_exit(struct dfs_pattern_detector *dpd,
 				  struct channel_detector *cd)
 {
@@ -228,16 +190,7 @@ fail:
 	return NULL;
 }
 
-/**
- * channel_detector_get() - get channel detector for given frequency
- * @dpd: DPD instance pointer
- * @freq: freq frequency in MHz
- *
- * Return value: pointer to channel detector on success, NULL otherwise
- *
- * Return existing channel detector for the given frequency or return a
- * newly create one.
- */
+ 
 static struct channel_detector *
 channel_detector_get(struct dfs_pattern_detector *dpd, u16 freq)
 {
@@ -249,11 +202,9 @@ channel_detector_get(struct dfs_pattern_detector *dpd, u16 freq)
 	return channel_detector_create(dpd, freq);
 }
 
-/*
- * DFS Pattern Detector
- */
+ 
 
-/* dpd_reset(): reset all channel detectors */
+ 
 static void dpd_reset(struct dfs_pattern_detector *dpd)
 {
 	struct channel_detector *cd;
@@ -276,10 +227,7 @@ dpd_add_pulse(struct dfs_pattern_detector *dpd, struct pulse_event *event,
 	u32 i;
 	struct channel_detector *cd;
 
-	/*
-	 * pulses received for a non-supported or un-initialized
-	 * domain are treated as detected radars for fail-safety
-	 */
+	 
 	if (dpd->region == NL80211_DFS_UNSET)
 		return true;
 
@@ -287,12 +235,12 @@ dpd_add_pulse(struct dfs_pattern_detector *dpd, struct pulse_event *event,
 	if (cd == NULL)
 		return false;
 
-	/* reset detector on time stamp wraparound, caused by TSF reset */
+	 
 	if (event->ts < dpd->last_pulse_ts)
 		dpd_reset(dpd);
 	dpd->last_pulse_ts = event->ts;
 
-	/* do type individual pattern matching */
+	 
 	for (i = 0; i < dpd->num_radar_types; i++) {
 		struct pri_detector *pd = cd->detectors[i];
 		struct pri_sequence *ps = pd->add_pulse(pd, event);
@@ -332,7 +280,7 @@ static bool dpd_set_domain(struct dfs_pattern_detector *dpd,
 	if (rt == NULL)
 		return false;
 
-	/* delete all channel detectors for previous DFS domain */
+	 
 	list_for_each_entry_safe(cd, cd0, &dpd->channel_detectors, head)
 		channel_detector_exit(dpd, cd);
 	dpd->radar_spec = rt->radar_types;

@@ -1,14 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- *  sst_mfld_platform.h - Intel MID Platform driver header file
- *
- *  Copyright (C) 2010 Intel Corp
- *  Author: Vinod Koul <vinod.koul@intel.com>
- *  Author: Harsha Priya <priya.harsha@intel.com>
- *  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- *
- * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- */
+ 
+ 
 
 #ifndef __SST_PLATFORMDRV_H__
 #define __SST_PLATFORMDRV_H__
@@ -64,15 +55,15 @@ enum sst_audio_device_type {
 	SND_SST_DEVICE_COMPRESS,
 };
 
-/* PCM Parameters */
+ 
 struct sst_pcm_params {
-	u16 codec;	/* codec type */
-	u8 num_chan;	/* 1=Mono, 2=Stereo */
-	u8 pcm_wd_sz;	/* 16/24 - bit*/
-	u32 reserved;	/* Bitrate in bits per second */
-	u32 sfreq;	/* Sampling rate in Hz */
+	u16 codec;	 
+	u8 num_chan;	 
+	u8 pcm_wd_sz;	 
+	u32 reserved;	 
+	u32 sfreq;	 
 	u32 ring_buffer_size;
-	u32 period_count;	/* period elapsed in samples*/
+	u32 period_count;	 
 	u32 ring_buffer_addr;
 };
 
@@ -160,10 +151,10 @@ int sst_fill_stream_params(void *substream, const struct sst_data *ctx,
 
 struct sst_algo_int_control_v2 {
 	struct soc_mixer_control mc;
-	u16 module_id; /* module identifieer */
-	u16 pipe_id; /* location info: pipe_id + instance_id */
+	u16 module_id;  
+	u16 pipe_id;  
 	u16 instance_id;
-	unsigned int value; /* Value received is stored here */
+	unsigned int value;  
 };
 struct sst_data {
 	struct platform_device *pdev;

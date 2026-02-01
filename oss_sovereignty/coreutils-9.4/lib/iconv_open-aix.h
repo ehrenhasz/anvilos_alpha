@@ -1,6 +1,6 @@
-/* ANSI-C code produced by gperf version 3.1 */
-/* Command-line: gperf -m 10 ./lib/iconv_open-aix.gperf  */
-/* Computed positions: -k'4,$' */
+ 
+ 
+ 
 
 #if !((' ' == 32) && ('!' == 33) && ('"' == 34) && ('#' == 35) \
       && ('%' == 37) && ('&' == 38) && ('\'' == 39) && ('(' == 40) \
@@ -25,7 +25,7 @@
       && ('s' == 115) && ('t' == 116) && ('u' == 117) && ('v' == 118) \
       && ('w' == 119) && ('x' == 120) && ('y' == 121) && ('z' == 122) \
       && ('{' == 123) && ('|' == 124) && ('}' == 125) && ('~' == 126))
-/* The character set is not based on ISO-646.  */
+ 
 #error "gperf generated tables don't work with this execution character set. Please report a bug to <bug-gperf@gnu.org>."
 #endif
 
@@ -37,7 +37,7 @@ struct mapping { int standard_name; const char vendor_name[10 + 1]; };
 #define MAX_WORD_LENGTH 11
 #define MIN_HASH_VALUE 6
 #define MAX_HASH_VALUE 44
-/* maximum key range = 39, duplicates = 0 */
+ 
 
 #ifdef __GNUC__
 __inline

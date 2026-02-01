@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2020 Facebook */
+
+ 
 #include "bpf_iter.h"
 #include <bpf/bpf_helpers.h>
 
@@ -53,16 +53,12 @@ int get_task_user_stacks(struct bpf_iter__task *ctx)
 	if (res <= 0)
 		return 0;
 
-	/* Only one task, the current one, should succeed */
+	 
 	++num_user_stacks;
 
 	buf_sz += res;
 
-	/* If the verifier doesn't refine bpf_get_task_stack res, and instead
-	 * assumes res is entirely unknown, this program will fail to load as
-	 * the verifier will believe that max buf_sz value allows reading
-	 * past the end of entries in bpf_seq_write call
-	 */
+	 
 	bpf_seq_write(seq, &entries, buf_sz);
 	return 0;
 }

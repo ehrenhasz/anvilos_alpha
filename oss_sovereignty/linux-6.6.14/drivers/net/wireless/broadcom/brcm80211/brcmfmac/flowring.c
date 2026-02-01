@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: ISC
-/*
- * Copyright (c) 2014 Broadcom Corporation
- */
+
+ 
 
 
 #include <linux/types.h>
@@ -269,12 +267,7 @@ u32 brcmf_flowring_enqueue(struct brcmf_flowring *flow, u16 flowid,
 	    (skb_queue_len(&ring->skblist) > BRCMF_FLOWRING_HIGH)) {
 		brcmf_flowring_block(flow, flowid, true);
 		brcmf_dbg(MSGBUF, "Flowcontrol: BLOCK for ring %d\n", flowid);
-		/* To prevent (work around) possible race condition, check
-		 * queue len again. It is also possible to use locking to
-		 * protect, but that is undesirable for every enqueue and
-		 * dequeue. This simple check will solve a possible race
-		 * condition if it occurs.
-		 */
+		 
 		if (skb_queue_len(&ring->skblist) < BRCMF_FLOWRING_LOW)
 			brcmf_flowring_block(flow, flowid, false);
 	}

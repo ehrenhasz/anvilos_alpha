@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2017-2021 NVIDIA CORPORATION.  All rights reserved.
- */
+
+ 
 
 #include <linux/io.h>
 #include <linux/iommu.h>
@@ -77,20 +75,11 @@ static void tegra186_mc_client_sid_override(struct tegra_mc *mc,
 
 	value = readl(mc->regs + client->regs.sid.security);
 	if ((value & MC_SID_STREAMID_SECURITY_OVERRIDE) == 0) {
-		/*
-		 * If the secure firmware has locked this down the override
-		 * for this memory client, there's nothing we can do here.
-		 */
+		 
 		if (value & MC_SID_STREAMID_SECURITY_WRITE_ACCESS_DISABLED)
 			return;
 
-		/*
-		 * Otherwise, try to set the override itself. Typically the
-		 * secure firmware will never have set this configuration.
-		 * Instead, it will either have disabled write access to
-		 * this field, or it will already have set an explicit
-		 * override itself.
-		 */
+		 
 		WARN_ON((value & MC_SID_STREAMID_SECURITY_OVERRIDE) == 0);
 
 		value |= MC_SID_STREAMID_SECURITY_OVERRIDE;

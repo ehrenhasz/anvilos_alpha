@@ -1,21 +1,4 @@
-/**********************************************************************
- * Author: Cavium, Inc.
- *
- * Contact: support@cavium.com
- *          Please include "LiquidIO" in the subject.
- *
- * Copyright (c) 2003-2016 Cavium, Inc.
- *
- * This file is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, Version 2, as
- * published by the Free Software Foundation.
- *
- * This file is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty
- * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more
- * details.
- **********************************************************************/
+ 
 #include <linux/netdevice.h>
 #include "liquidio_common.h"
 #include "octeon_droq.h"
@@ -88,8 +71,8 @@ octeon_pci_fastread(struct octeon_device *oct, u8 __iomem *mapped_addr,
 		*(hostbuf++) = readb(mapped_addr++);
 }
 
-/* Core mem read/write with temporary bar1 settings. */
-/* op = 1 to read, op = 0 to write. */
+ 
+ 
 static void
 __octeon_pci_rw_core_mem(struct octeon_device *oct, u64 addr,
 			 u8 *hostbuf, u32 len, u32 op)
@@ -119,17 +102,14 @@ __octeon_pci_rw_core_mem(struct octeon_device *oct, u64 addr,
 
 	spin_lock_irqsave(&oct->mem_access_lock, flags);
 
-	/* Save the original index reg value. */
+	 
 	index_reg_val = oct->fn_list.bar1_idx_read(oct, MEMOPS_IDX);
 	do {
 		oct->fn_list.bar1_idx_setup(oct, addr, MEMOPS_IDX, 1);
 		mapped_addr = oct->mmio[1].hw_addr
 		    + (MEMOPS_IDX << 22) + (addr & 0x3fffff);
 
-		/* If operation crosses a 4MB boundary, split the transfer
-		 * at the 4MB
-		 * boundary.
-		 */
+		 
 		if (((addr + len - 1) & ~(0x3fffff)) != (addr & ~(0x3fffff))) {
 			copy_len = (u32)(((addr & ~(0x3fffff)) +
 				   (MEMOPS_IDX << 22)) - addr);
@@ -137,7 +117,7 @@ __octeon_pci_rw_core_mem(struct octeon_device *oct, u64 addr,
 			copy_len = len;
 		}
 
-		if (op) {	/* read from core */
+		if (op) {	 
 			octeon_pci_fastread(oct, mapped_addr, hostbuf,
 					    copy_len);
 		} else {

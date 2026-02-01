@@ -1,8 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Kernel module to match EUI64 address parameters. */
 
-/* (C) 2001-2002 Andras Kis-Szabo <kisza@sch.bme.hu>
- */
+ 
+
+ 
 
 #include <linux/module.h>
 #include <linux/skbuff.h>

@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *	X.25 Packet Layer release 002
- *
- *	This is ALPHA test software. This code may break your machine,
- *	randomly fail to work with new releases, misbehave and/or generally
- *	screw up. It might even work.
- *
- *	This code REQUIRES 2.1.15 or higher
- *
- *	History
- *	X.25 001	Jonathan Naylor	Started coding.
- */
+
+ 
 
 #include <linux/if_arp.h>
 #include <linux/init.h>
@@ -20,9 +9,7 @@
 LIST_HEAD(x25_route_list);
 DEFINE_RWLOCK(x25_route_list_lock);
 
-/*
- *	Add a new route.
- */
+ 
 static int x25_add_route(struct x25_address *address, unsigned int sigdigits,
 			 struct net_device *dev)
 {
@@ -56,13 +43,7 @@ out:
 	return rc;
 }
 
-/**
- * __x25_remove_route - remove route from x25_route_list
- * @rt: route to remove
- *
- * Remove route from x25_route_list. If it was there.
- * Caller must hold x25_route_list_lock.
- */
+ 
 static void __x25_remove_route(struct x25_route *rt)
 {
 	if (rt->node.next) {
@@ -92,9 +73,7 @@ static int x25_del_route(struct x25_address *address, unsigned int sigdigits,
 	return rc;
 }
 
-/*
- *	A device has been removed, remove its routes.
- */
+ 
 void x25_route_device_down(struct net_device *dev)
 {
 	struct x25_route *rt;
@@ -111,9 +90,7 @@ void x25_route_device_down(struct net_device *dev)
 	write_unlock_bh(&x25_route_list_lock);
 }
 
-/*
- *	Check that the device given is a valid X.25 interface that is "up".
- */
+ 
 struct net_device *x25_dev_get(char *devname)
 {
 	struct net_device *dev = dev_get_by_name(&init_net, devname);
@@ -126,12 +103,7 @@ struct net_device *x25_dev_get(char *devname)
 	return dev;
 }
 
-/**
- * 	x25_get_route -	Find a route given an X.25 address.
- *	@addr: - address to find a route for
- *
- * 	Find a route given an X.25 address.
- */
+ 
 struct x25_route *x25_get_route(struct x25_address *addr)
 {
 	struct x25_route *rt, *use = NULL;
@@ -154,9 +126,7 @@ struct x25_route *x25_get_route(struct x25_address *addr)
 	return use;
 }
 
-/*
- *	Handle the ioctls that control the routing functions.
- */
+ 
 int x25_route_ioctl(unsigned int cmd, void __user *arg)
 {
 	struct x25_route_struct rt;
@@ -187,9 +157,7 @@ out:
 	return rc;
 }
 
-/*
- *	Release all memory associated with X.25 routing structures.
- */
+ 
 void __exit x25_route_free(void)
 {
 	struct x25_route *rt;

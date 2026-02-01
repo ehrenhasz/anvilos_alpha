@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * TI Palmas MFD Driver
- *
- * Copyright 2011-2012 Texas Instruments Inc.
- *
- * Author: Graeme Gregory <gg@slimlogic.co.uk>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/moduleparam.h>
@@ -43,7 +37,7 @@ static const struct regmap_config palmas_regmap_config[PALMAS_NUM_CLIENTS] = {
 };
 
 static const struct regmap_irq tps65917_irqs[] = {
-	/* INT1 IRQs */
+	 
 	[TPS65917_RESERVED1] = {
 		.mask = TPS65917_RESERVED,
 	},
@@ -68,7 +62,7 @@ static const struct regmap_irq tps65917_irqs[] = {
 	[TPS65917_RESERVED3] = {
 		.mask = TPS65917_RESERVED,
 	},
-	/* INT2 IRQs*/
+	 
 	[TPS65917_RESERVED4] = {
 		.mask = TPS65917_RESERVED,
 		.reg_offset = 1,
@@ -101,7 +95,7 @@ static const struct regmap_irq tps65917_irqs[] = {
 		.mask = TPS65917_RESERVED,
 		.reg_offset = 1,
 	},
-	/* INT3 IRQs */
+	 
 	[TPS65917_GPADC_AUTO_0_IRQ] = {
 		.mask = TPS65917_INT3_STATUS_GPADC_AUTO_0,
 		.reg_offset = 2,
@@ -134,7 +128,7 @@ static const struct regmap_irq tps65917_irqs[] = {
 		.mask = TPS65917_INT3_STATUS_VBUS,
 		.reg_offset = 2,
 	},
-	/* INT4 IRQs */
+	 
 	[TPS65917_GPIO_0_IRQ] = {
 		.mask = TPS65917_INT4_STATUS_GPIO_0,
 		.reg_offset = 3,
@@ -170,7 +164,7 @@ static const struct regmap_irq tps65917_irqs[] = {
 };
 
 static const struct regmap_irq palmas_irqs[] = {
-	/* INT1 IRQs */
+	 
 	[PALMAS_CHARG_DET_N_VBUS_OVV_IRQ] = {
 		.mask = PALMAS_INT1_STATUS_CHARG_DET_N_VBUS_OVV,
 	},
@@ -195,7 +189,7 @@ static const struct regmap_irq palmas_irqs[] = {
 	[PALMAS_VBAT_MON_IRQ] = {
 		.mask = PALMAS_INT1_STATUS_VBAT_MON,
 	},
-	/* INT2 IRQs*/
+	 
 	[PALMAS_RTC_ALARM_IRQ] = {
 		.mask = PALMAS_INT2_STATUS_RTC_ALARM,
 		.reg_offset = 1,
@@ -228,7 +222,7 @@ static const struct regmap_irq palmas_irqs[] = {
 		.mask = PALMAS_INT2_STATUS_VAC_ACOK,
 		.reg_offset = 1,
 	},
-	/* INT3 IRQs */
+	 
 	[PALMAS_GPADC_AUTO_0_IRQ] = {
 		.mask = PALMAS_INT3_STATUS_GPADC_AUTO_0,
 		.reg_offset = 2,
@@ -261,7 +255,7 @@ static const struct regmap_irq palmas_irqs[] = {
 		.mask = PALMAS_INT3_STATUS_VBUS,
 		.reg_offset = 2,
 	},
-	/* INT4 IRQs */
+	 
 	[PALMAS_GPIO_0_IRQ] = {
 		.mask = PALMAS_INT4_STATUS_GPIO_0,
 		.reg_offset = 3,
@@ -361,7 +355,7 @@ int palmas_ext_control_req_config(struct palmas *palmas,
 		return ret;
 	}
 
-	/* Unmask the PREQ */
+	 
 	ret = palmas_update_bits(palmas, PALMAS_PMU_CONTROL_BASE,
 			PALMAS_POWER_CTRL, BIT(preq_mask_bit), 0);
 	if (ret < 0) {
@@ -406,7 +400,7 @@ static void palmas_dt_to_pdata(struct i2c_client *i2c,
 		pdata->pad2 = prop;
 	}
 
-	/* The default for this register is all masked */
+	 
 	ret = of_property_read_u32(node, "ti,power-ctrl", &prop);
 	if (!ret)
 		pdata->power_ctrl = prop;
@@ -569,7 +563,7 @@ static int palmas_i2c_probe(struct i2c_client *i2c)
 		goto no_irq;
 	}
 
-	/* Change interrupt line output polarity */
+	 
 	if (pdata->irq_flags & IRQ_TYPE_LEVEL_HIGH)
 		reg = PALMAS_POLARITY_CTRL_INT_POLARITY;
 	else
@@ -582,7 +576,7 @@ static int palmas_i2c_probe(struct i2c_client *i2c)
 		goto err_i2c;
 	}
 
-	/* Change IRQ into clear on read mode for efficiency */
+	 
 	slave = PALMAS_BASE_TO_SLAVE(PALMAS_INTERRUPT_BASE);
 	addr = PALMAS_BASE_TO_REG(PALMAS_INTERRUPT_BASE, PALMAS_INT_CTRL);
 	reg = PALMAS_INT_CTRL_INT_CLEAR;
@@ -668,10 +662,7 @@ no_irq:
 	if (ret)
 		goto err_irq;
 
-	/*
-	 * If we are probing with DT do this the DT way and return here
-	 * otherwise continue and add devices using mfd helpers.
-	 */
+	 
 	if (node) {
 		ret = devm_of_platform_populate(&i2c->dev);
 		if (ret < 0) {
@@ -717,7 +708,7 @@ static const struct i2c_device_id palmas_i2c_id[] = {
 	{ "twl6035", },
 	{ "twl6037", },
 	{ "tps65913", },
-	{ /* end */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(i2c, palmas_i2c_id);
 
@@ -735,7 +726,7 @@ static int __init palmas_i2c_init(void)
 {
 	return i2c_add_driver(&palmas_i2c_driver);
 }
-/* init early so consumer devices can complete system boot */
+ 
 subsys_initcall(palmas_i2c_init);
 
 static void __exit palmas_i2c_exit(void)

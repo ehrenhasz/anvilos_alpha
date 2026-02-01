@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Squashfs - a compressed read only filesystem for Linux
- *
- * Copyright (c) 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010
- * Phillip Lougher <phillip@squashfs.org.uk>
- *
- * xz_wrapper.c
- */
+
+ 
 
 
 #include <linux/mutex.h>
@@ -49,7 +42,7 @@ static void *squashfs_xz_comp_opts(struct squashfs_sb_info *msblk,
 	}
 
 	if (comp_opts) {
-		/* check compressor options are the expected length */
+		 
 		if (len < sizeof(*comp_opts)) {
 			err = -EIO;
 			goto out;
@@ -57,7 +50,7 @@ static void *squashfs_xz_comp_opts(struct squashfs_sb_info *msblk,
 
 		opts->dict_size = le32_to_cpu(comp_opts->dictionary_size);
 
-		/* the dictionary size should be 2^n or 2^n+2^(n+1) */
+		 
 		n = ffs(opts->dict_size) - 1;
 		if (opts->dict_size != (1 << n) && opts->dict_size != (1 << n) +
 						(1 << (n + 1))) {
@@ -65,7 +58,7 @@ static void *squashfs_xz_comp_opts(struct squashfs_sb_info *msblk,
 			goto out;
 		}
 	} else
-		/* use defaults */
+		 
 		opts->dict_size = max_t(int, msblk->block_size,
 							SQUASHFS_METADATA_SIZE);
 
@@ -144,7 +137,7 @@ static int squashfs_xz_uncompress(struct squashfs_sb_info *msblk, void *strm,
 			int avail;
 
 			if (!bio_next_segment(bio, &iter_all)) {
-				/* XZ_STREAM_END must be reached. */
+				 
 				error = -EIO;
 				break;
 			}

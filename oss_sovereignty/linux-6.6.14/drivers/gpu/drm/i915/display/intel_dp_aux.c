@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright © 2020-2021 Intel Corporation
- */
+
+ 
 
 #include "i915_drv.h"
 #include "i915_reg.h"
@@ -64,10 +62,7 @@ static u32 g4x_get_aux_clock_divider(struct intel_dp *intel_dp, int index)
 	if (index)
 		return 0;
 
-	/*
-	 * The clock divider is based off the hrawclk, and would like to run at
-	 * 2MHz.  So, take the hrawclk value and divide by 2000 and use that
-	 */
+	 
 	return DIV_ROUND_CLOSEST(RUNTIME_INFO(dev_priv)->rawclk_freq, 2000);
 }
 
@@ -80,11 +75,7 @@ static u32 ilk_get_aux_clock_divider(struct intel_dp *intel_dp, int index)
 	if (index)
 		return 0;
 
-	/*
-	 * The clock divider is based off the cdclk or PCH rawclk, and would
-	 * like to run at 2MHz.  So, take the cdclk or PCH rawclk value and
-	 * divide by 2000 and use that
-	 */
+	 
 	if (dig_port->aux_ch == AUX_CH_A)
 		freq = dev_priv->display.cdclk.hw.cdclk;
 	else
@@ -98,7 +89,7 @@ static u32 hsw_get_aux_clock_divider(struct intel_dp *intel_dp, int index)
 	struct intel_digital_port *dig_port = dp_to_dig_port(intel_dp);
 
 	if (dig_port->aux_ch != AUX_CH_A && HAS_PCH_LPT_H(dev_priv)) {
-		/* Workaround for non-ULT HSW */
+		 
 		switch (index) {
 		case 0: return 63;
 		case 1: return 72;
@@ -111,17 +102,13 @@ static u32 hsw_get_aux_clock_divider(struct intel_dp *intel_dp, int index)
 
 static u32 skl_get_aux_clock_divider(struct intel_dp *intel_dp, int index)
 {
-	/*
-	 * SKL doesn't need us to program the AUX clock divider (Hardware will
-	 * derive the clock from CDCLK automatically). We still implement the
-	 * get_aux_clock_divider vfunc to plug-in into the existing code.
-	 */
+	 
 	return index ? 0 : 1;
 }
 
 static int intel_dp_aux_sync_len(void)
 {
-	int precharge = 16; /* 10-16 */
+	int precharge = 16;  
 	int preamble = 16;
 
 	return precharge + preamble;
@@ -129,7 +116,7 @@ static int intel_dp_aux_sync_len(void)
 
 static int intel_dp_aux_fw_sync_len(void)
 {
-	int precharge = 10; /* 10-16 */
+	int precharge = 10;  
 	int preamble = 8;
 
 	return precharge + preamble;
@@ -140,7 +127,7 @@ static int g4x_dp_aux_precharge_len(void)
 	int precharge_min = 10;
 	int preamble = 16;
 
-	/* HW wants the length of the extra precharge in 2us units */
+	 
 	return (intel_dp_aux_sync_len() -
 		precharge_min - preamble) / 2;
 }
@@ -154,7 +141,7 @@ static u32 g4x_get_aux_send_ctl(struct intel_dp *intel_dp,
 			to_i915(dig_port->base.base.dev);
 	u32 timeout;
 
-	/* Max timeout value on G4x-BDW: 1.6ms */
+	 
 	if (IS_BROADWELL(dev_priv))
 		timeout = DP_AUX_CH_CTL_TIME_OUT_600us;
 	else
@@ -179,11 +166,7 @@ static u32 skl_get_aux_send_ctl(struct intel_dp *intel_dp,
 	struct drm_i915_private *i915 =	to_i915(dig_port->base.base.dev);
 	u32 ret;
 
-	/*
-	 * Max timeout values:
-	 * SKL-GLK: 1.6ms
-	 * ICL+: 4ms
-	 */
+	 
 	ret = DP_AUX_CH_CTL_SEND_BUSY |
 		DP_AUX_CH_CTL_DONE |
 		DP_AUX_CH_CTL_INTERRUPT |
@@ -197,10 +180,7 @@ static u32 skl_get_aux_send_ctl(struct intel_dp *intel_dp,
 	if (intel_tc_port_in_tbt_alt_mode(dig_port))
 		ret |= DP_AUX_CH_CTL_TBT_IO;
 
-	/*
-	 * Power request bit is already set during aux power well enable.
-	 * Preserve the bit across aux transactions.
-	 */
+	 
 	if (DISPLAY_VER(i915) >= 14)
 		ret |= XELPDP_DP_AUX_CH_CTL_POWER_REQUEST;
 
@@ -234,12 +214,7 @@ intel_dp_aux_xfer(struct intel_dp *intel_dp,
 
 	if (is_tc_port) {
 		intel_tc_port_lock(dig_port);
-		/*
-		 * Abort transfers on a disconnected port as required by
-		 * DP 1.4a link CTS 4.2.1.5, also avoiding the long AUX
-		 * timeouts that would otherwise happen.
-		 * TODO: abort the transfer on non-TC ports as well.
-		 */
+		 
 		if (!intel_tc_port_connected_locked(&dig_port->base)) {
 			ret = -ENXIO;
 			goto out_unlock;
@@ -251,36 +226,24 @@ intel_dp_aux_xfer(struct intel_dp *intel_dp,
 	aux_wakeref = intel_display_power_get(i915, aux_domain);
 	pps_wakeref = intel_pps_lock(intel_dp);
 
-	/*
-	 * We will be called with VDD already enabled for dpcd/edid/oui reads.
-	 * In such cases we want to leave VDD enabled and it's up to upper layers
-	 * to turn it off. But for eg. i2c-dev access we need to turn it on/off
-	 * ourselves.
-	 */
+	 
 	vdd = intel_pps_vdd_on_unlocked(intel_dp);
 
-	/*
-	 * dp aux is extremely sensitive to irq latency, hence request the
-	 * lowest possible wakeup latency and so prevent the cpu from going into
-	 * deep sleep states.
-	 */
+	 
 	cpu_latency_qos_update_request(&intel_dp->pm_qos, 0);
 
 	intel_pps_check_power_unlocked(intel_dp);
 
-	/*
-	 * FIXME PSR should be disabled here to prevent
-	 * it using the same AUX CH simultaneously
-	 */
+	 
 
-	/* Try to wait for any previous AUX channel activity */
+	 
 	for (try = 0; try < 3; try++) {
 		status = intel_de_read_notrace(i915, ch_ctl);
 		if ((status & DP_AUX_CH_CTL_SEND_BUSY) == 0)
 			break;
 		msleep(1);
 	}
-	/* just trace the final value */
+	 
 	trace_i915_reg_rw(false, ch_ctl, status, sizeof(status), true);
 
 	if (try == 3) {
@@ -297,7 +260,7 @@ intel_dp_aux_xfer(struct intel_dp *intel_dp,
 		goto out;
 	}
 
-	/* Only 5 data registers! */
+	 
 	if (drm_WARN_ON(&i915->drm, send_bytes > 20 || recv_size > 20)) {
 		ret = -E2BIG;
 		goto out;
@@ -310,31 +273,26 @@ intel_dp_aux_xfer(struct intel_dp *intel_dp,
 
 		send_ctl |= aux_send_ctl_flags;
 
-		/* Must try at least 3 times according to DP spec */
+		 
 		for (try = 0; try < 5; try++) {
-			/* Load the send data into the aux channel data registers */
+			 
 			for (i = 0; i < send_bytes; i += 4)
 				intel_de_write(i915, ch_data[i >> 2],
 					       intel_dp_aux_pack(send + i,
 								 send_bytes - i));
 
-			/* Send the command and wait for it to complete */
+			 
 			intel_de_write(i915, ch_ctl, send_ctl);
 
 			status = intel_dp_aux_wait_done(intel_dp);
 
-			/* Clear done status and any errors */
+			 
 			intel_de_write(i915, ch_ctl,
 				       status | DP_AUX_CH_CTL_DONE |
 				       DP_AUX_CH_CTL_TIME_OUT_ERROR |
 				       DP_AUX_CH_CTL_RECEIVE_ERROR);
 
-			/*
-			 * DP CTS 1.2 Core Rev 1.1, 4.2.1.1 & 4.2.1.2
-			 *   400us delay required for errors and timeouts
-			 *   Timeout errors from the HW already meet this
-			 *   requirement so skip to next iteration
-			 */
+			 
 			if (status & DP_AUX_CH_CTL_TIME_OUT_ERROR)
 				continue;
 
@@ -355,10 +313,7 @@ intel_dp_aux_xfer(struct intel_dp *intel_dp,
 	}
 
 done:
-	/*
-	 * Check for timeout or receive error. Timeouts occur when the sink is
-	 * not connected.
-	 */
+	 
 	if (status & DP_AUX_CH_CTL_RECEIVE_ERROR) {
 		drm_err(&i915->drm, "%s: receive error (status 0x%08x)\n",
 			intel_dp->aux.name, status);
@@ -366,10 +321,7 @@ done:
 		goto out;
 	}
 
-	/*
-	 * Timeouts occur when the device isn't connected, so they're "normal"
-	 * -- don't fill the kernel log with these
-	 */
+	 
 	if (status & DP_AUX_CH_CTL_TIME_OUT_ERROR) {
 		drm_dbg_kms(&i915->drm, "%s: timeout (status 0x%08x)\n",
 			    intel_dp->aux.name, status);
@@ -377,14 +329,10 @@ done:
 		goto out;
 	}
 
-	/* Unload any bytes sent back from the other side */
+	 
 	recv_bytes = REG_FIELD_GET(DP_AUX_CH_CTL_MESSAGE_SIZE_MASK, status);
 
-	/*
-	 * By BSpec: "Message sizes of 0 or >20 are not allowed."
-	 * We have no idea of what happened so we return -EBUSY so
-	 * drm layer takes care for the necessary retries.
-	 */
+	 
 	if (recv_bytes == 0 || recv_bytes > 20) {
 		drm_dbg_kms(&i915->drm,
 			    "%s: Forbidden recv_bytes = %d on aux transaction\n",
@@ -431,11 +379,7 @@ intel_dp_aux_header(u8 txbuf[HEADER_SIZE],
 
 static u32 intel_dp_aux_xfer_flags(const struct drm_dp_aux_msg *msg)
 {
-	/*
-	 * If we're trying to send the HDCP Aksv, we need to set a the Aksv
-	 * select bit to inform the hardware to send the Aksv after our header
-	 * since we can't access that data from software.
-	 */
+	 
 	if ((msg->request & ~DP_AUX_I2C_MOT) == DP_AUX_NATIVE_WRITE &&
 	    msg->address == DP_AUX_HDCP_AKSV)
 		return DP_AUX_CH_CTL_AUX_AKSV_SELECT;
@@ -460,7 +404,7 @@ intel_dp_aux_transfer(struct drm_dp_aux *aux, struct drm_dp_aux_msg *msg)
 	case DP_AUX_I2C_WRITE:
 	case DP_AUX_I2C_WRITE_STATUS_UPDATE:
 		txsize = msg->size ? HEADER_SIZE + msg->size : BARE_ADDRESS_SIZE;
-		rxsize = 2; /* 0 or 1 data bytes */
+		rxsize = 2;  
 
 		if (drm_WARN_ON(&i915->drm, txsize > 20))
 			return -E2BIG;
@@ -476,10 +420,10 @@ intel_dp_aux_transfer(struct drm_dp_aux *aux, struct drm_dp_aux_msg *msg)
 			msg->reply = rxbuf[0] >> 4;
 
 			if (ret > 1) {
-				/* Number of bytes written in a short write. */
+				 
 				ret = clamp_t(int, rxbuf[1], 0, msg->size);
 			} else {
-				/* Return payload size. */
+				 
 				ret = msg->size;
 			}
 		}
@@ -497,12 +441,7 @@ intel_dp_aux_transfer(struct drm_dp_aux *aux, struct drm_dp_aux_msg *msg)
 					rxbuf, rxsize, flags);
 		if (ret > 0) {
 			msg->reply = rxbuf[0] >> 4;
-			/*
-			 * Assume happy day, and copy the data. The caller is
-			 * expected to check msg->reply before touching it.
-			 *
-			 * Return payload size.
-			 */
+			 
 			ret--;
 			memcpy(msg->buffer, rxbuf + 1, ret);
 		}
@@ -642,8 +581,8 @@ static i915_reg_t tgl_aux_ctl_reg(struct intel_dp *intel_dp)
 	case AUX_CH_USBC2:
 	case AUX_CH_USBC3:
 	case AUX_CH_USBC4:
-	case AUX_CH_USBC5:  /* aka AUX_CH_D_XELPD */
-	case AUX_CH_USBC6:  /* aka AUX_CH_E_XELPD */
+	case AUX_CH_USBC5:   
+	case AUX_CH_USBC6:   
 		return DP_AUX_CH_CTL(aux_ch);
 	default:
 		MISSING_CASE(aux_ch);
@@ -665,8 +604,8 @@ static i915_reg_t tgl_aux_data_reg(struct intel_dp *intel_dp, int index)
 	case AUX_CH_USBC2:
 	case AUX_CH_USBC3:
 	case AUX_CH_USBC4:
-	case AUX_CH_USBC5:  /* aka AUX_CH_D_XELPD */
-	case AUX_CH_USBC6:  /* aka AUX_CH_E_XELPD */
+	case AUX_CH_USBC5:   
+	case AUX_CH_USBC6:   
 		return DP_AUX_CH_DATA(aux_ch, index);
 	default:
 		MISSING_CASE(aux_ch);
@@ -763,7 +702,7 @@ void intel_dp_aux_init(struct intel_dp *intel_dp)
 	intel_dp->aux.drm_dev = &dev_priv->drm;
 	drm_dp_aux_init(&intel_dp->aux);
 
-	/* Failure to allocate our preferred name is not critical */
+	 
 	if (DISPLAY_VER(dev_priv) >= 13 && aux_ch >= AUX_CH_D_XELPD)
 		intel_dp->aux.name = kasprintf(GFP_KERNEL, "AUX %c/%s",
 					       aux_ch_name(aux_ch - AUX_CH_D_XELPD + AUX_CH_D),
@@ -785,7 +724,7 @@ static enum aux_ch default_aux_ch(struct intel_encoder *encoder)
 {
 	struct drm_i915_private *i915 = to_i915(encoder->base.dev);
 
-	/* SKL has DDI E but no AUX E */
+	 
 	if (DISPLAY_VER(i915) == 9 && encoder->port == PORT_E)
 		return AUX_CH_A;
 
@@ -831,7 +770,7 @@ enum aux_ch intel_dp_aux_ch(struct intel_encoder *encoder)
 	if (aux_ch == AUX_CH_NONE)
 		return AUX_CH_NONE;
 
-	/* FIXME validate aux_ch against platform caps */
+	 
 
 	other = get_encoder_by_aux_ch(encoder, aux_ch);
 	if (other) {

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-/*
- * Copyright (c) 2021, Mellanox Technologies inc. All rights reserved.
- */
+
+ 
 
 #include <rdma/uverbs_std_types.h>
 #include "dm.h"
@@ -27,9 +25,7 @@ static int mlx5_cmd_alloc_memic(struct mlx5_dm *dm, phys_addr_t *addr,
 	if (!length || (length & MLX5_MEMIC_ALLOC_SIZE_MASK))
 		return -EINVAL;
 
-	/* mlx5 device sets alignment as 64*2^driver_value
-	 * so normalizing is needed.
-	 */
+	 
 	mlx5_alignment = (alignment < MLX5_MEMIC_BASE_ALIGN) ? 0 :
 			 alignment - MLX5_MEMIC_BASE_ALIGN;
 	if (mlx5_alignment > max_alignment)
@@ -249,7 +245,7 @@ static int UVERBS_HANDLER(MLX5_IB_METHOD_DM_MAP_OP_ADDR)(
 		kfree(op_entry);
 		goto err_unlock;
 	}
-	/* From this point, entry will be freed by mmap_free */
+	 
 	kref_get(&dm->ref);
 
 	err = copy_op_to_user(op_entry, attrs);
@@ -386,9 +382,7 @@ static struct ib_dm *handle_alloc_dm_sw_icm(struct ib_ucontext *ctx,
 	dm->base.type = type;
 	dm->base.ibdm.device = ctx->device;
 
-	/* Allocation size must a multiple of the basic block size
-	 * and a power of 2.
-	 */
+	 
 	act_size = round_up(attr->length, MLX5_SW_ICM_BLOCK_SIZE(dev));
 	act_size = roundup_pow_of_two(act_size);
 

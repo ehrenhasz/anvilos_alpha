@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*******************************************************************************
-  This contains the functions to handle the normal descriptors.
 
-  Copyright (C) 2007-2009  STMicroelectronics Ltd
-
-
-  Author: Giuseppe Cavallaro <peppe.cavallaro@st.com>
-*******************************************************************************/
+ 
 
 #include <linux/stmmac.h>
 #include "common.h"
@@ -19,11 +12,11 @@ static int ndesc_get_tx_status(struct stmmac_extra_stats *x,
 	unsigned int tdes1 = le32_to_cpu(p->des1);
 	int ret = tx_done;
 
-	/* Get tx owner first */
+	 
 	if (unlikely(tdes0 & TDES0_OWN))
 		return tx_dma_own;
 
-	/* Verify tx error by looking at the last segment. */
+	 
 	if (likely(!(tdes1 & TDES1_LAST_SEGMENT)))
 		return tx_not_ls;
 
@@ -62,10 +55,7 @@ static int ndesc_get_tx_len(struct dma_desc *p)
 	return (le32_to_cpu(p->des1) & RDES1_BUFFER1_SIZE_MASK);
 }
 
-/* This function verifies if each incoming frame has some errors
- * and, if required, updates the multicast statistics.
- * In case of success, it returns good_frame because the GMAC device
- * is supposed to be able to compute the csum in HW. */
+ 
 static int ndesc_get_rx_status(struct stmmac_extra_stats *x,
 			       struct dma_desc *p)
 {
@@ -213,12 +203,7 @@ static int ndesc_get_rx_frame_len(struct dma_desc *p, int rx_coe_type)
 {
 	unsigned int csum = 0;
 
-	/* The type-1 checksum offload engines append the checksum at
-	 * the end of frame and the two bytes of checksum are added in
-	 * the length.
-	 * Adjust for that in the framelen for type-1 checksum offload
-	 * engines
-	 */
+	 
 	if (rx_coe_type == STMMAC_RX_COE_TYPE1)
 		csum = 2;
 
@@ -244,7 +229,7 @@ static void ndesc_get_timestamp(void *desc, u32 ats, u64 *ts)
 	u64 ns;
 
 	ns = le32_to_cpu(p->des2);
-	/* convert high/sec time stamp value to nanosecond */
+	 
 	ns += le32_to_cpu(p->des3) * 1000000000ULL;
 
 	*ts = ns;
@@ -256,7 +241,7 @@ static int ndesc_get_rx_timestamp_status(void *desc, void *next_desc, u32 ats)
 
 	if ((le32_to_cpu(p->des2) == 0xffffffff) &&
 	    (le32_to_cpu(p->des3) == 0xffffffff))
-		/* timestamp is corrupted, hence don't store it */
+		 
 		return 0;
 	else
 		return 1;

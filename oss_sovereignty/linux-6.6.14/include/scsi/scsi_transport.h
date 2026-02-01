@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/* 
- *  Transport specific attributes.
- *
- *  Copyright (c) 2003 Silicon Graphics, Inc.  All rights reserved.
- */
+ 
+ 
 #ifndef SCSI_TRANSPORT_H
 #define SCSI_TRANSPORT_H
 
@@ -14,34 +10,26 @@
 #include <scsi/scsi_device.h>
 
 struct scsi_transport_template {
-	/* the attribute containers */
+	 
 	struct transport_container host_attrs;
 	struct transport_container target_attrs;
 	struct transport_container device_attrs;
 
-	/*
-	 * If set, called from sysfs and legacy procfs rescanning code.
-	 */
+	 
 	int (*user_scan)(struct Scsi_Host *, uint, uint, u64);
 
-	/* The size of the specific transport attribute structure (a
-	 * space of this size will be left at the end of the
-	 * scsi_* structure */
+	 
 	int	device_size;
 	int	device_private_offset;
 	int	target_size;
 	int	target_private_offset;
 	int	host_size;
-	/* no private offset for the host; there's an alternative mechanism */
+	 
 
-	/*
-	 * True if the transport wants to use a host-based work-queue
-	 */
+	 
 	unsigned int create_work_queue : 1;
 
-	/*
-	 * Allows a transport to override the default error handler.
-	 */
+	 
 	void (* eh_strategy_handler)(struct Scsi_Host *);
 };
 
@@ -49,10 +37,7 @@ struct scsi_transport_template {
 	dev_to_shost((tc)->parent)
 
 
-/* Private area maintenance. The driver requested allocations come
- * directly after the transport class allocations (if any).  The idea
- * is that you *must* call these only once.  The code assumes that the
- * initial values are the ones the transport specific code requires */
+ 
 static inline void
 scsi_transport_reserve_target(struct scsi_transport_template * t, int space)
 {
@@ -85,4 +70,4 @@ scsi_transport_device_data(struct scsi_device *sdev)
 
 void __scsi_init_queue(struct Scsi_Host *shost, struct request_queue *q);
 
-#endif /* SCSI_TRANSPORT_H */
+#endif  

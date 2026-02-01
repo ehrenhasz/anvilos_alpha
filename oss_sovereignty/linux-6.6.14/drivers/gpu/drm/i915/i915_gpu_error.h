@@ -1,8 +1,4 @@
-/*
- * SPDX-License-Identifier: MIT
- *
- * Copyright © 2008-2018 Intel Corporation
- */
+ 
 
 #ifndef _I915_GPU_ERROR_H_
 #define _I915_GPU_ERROR_H_
@@ -64,10 +60,10 @@ struct intel_engine_coredump {
 	bool simulated;
 	u32 reset_count;
 
-	/* position of active request inside the ring */
+	 
 	u32 rq_head, rq_post, rq_tail;
 
-	/* Register state */
+	 
 	u32 ccid;
 	u32 start;
 	u32 tail;
@@ -85,7 +81,7 @@ struct intel_engine_coredump {
 	u64 acthd;
 	u32 fault_reg;
 	u64 faddr;
-	u32 rc_psmi; /* sleep state */
+	u32 rc_psmi;  
 	u32 nopid;
 	u32 excc;
 	u32 cmd_cctl;
@@ -95,7 +91,7 @@ struct intel_engine_coredump {
 	u32 dma_faddr_lo;
 	struct intel_instdone instdone;
 
-	/* GuC matched capture-lists info */
+	 
 	struct intel_guc_state_capture *guc_capture;
 	struct __guc_capture_parsed_output *guc_capture_node;
 
@@ -144,30 +140,30 @@ struct intel_gt_coredump {
 
 	struct intel_gt_info info;
 
-	/* Generic register state */
+	 
 	u32 eir;
 	u32 pgtbl_er;
 	u32 ier;
 	u32 gtier[6], ngtier;
 	u32 forcewake;
-	u32 error; /* gen6+ */
-	u32 err_int; /* gen7 */
-	u32 fault_data0; /* gen8, gen9 */
-	u32 fault_data1; /* gen8, gen9 */
+	u32 error;  
+	u32 err_int;  
+	u32 fault_data0;  
+	u32 fault_data1;  
 	u32 done_reg;
 	u32 gac_eco;
 	u32 gam_ecochk;
 	u32 gab_ctl;
 	u32 gfx_mode;
 	u32 gtt_cache;
-	u32 aux_err; /* gen12 */
-	u32 gam_done; /* gen12 */
+	u32 aux_err;  
+	u32 gam_done;  
 	u32 clock_frequency;
 	u32 clock_period_ns;
 
-	/* Display related */
+	 
 	u32 derrmr;
-	u32 sfc_done[I915_MAX_SFC]; /* gen12 */
+	u32 sfc_done[I915_MAX_SFC];  
 
 	u32 nfence;
 	u64 fence[I915_MAX_NUM_FENCES];
@@ -222,17 +218,17 @@ struct i915_gpu_coredump {
 };
 
 struct i915_gpu_error {
-	/* For reset and error_state handling. */
+	 
 	spinlock_t lock;
-	/* Protected by the above dev->gpu_error.lock. */
+	 
 	struct i915_gpu_coredump *first_error;
 
 	atomic_t pending_fb_pin;
 
-	/** Number of times the device has been reset (global) */
+	 
 	atomic_t reset_count;
 
-	/** Number of times an engine has been reset */
+	 
 	atomic_t reset_engine_count[MAX_ENGINE_CLASS];
 };
 
@@ -424,6 +420,6 @@ static inline void i915_disable_error_state(struct drm_i915_private *i915,
 {
 }
 
-#endif /* IS_ENABLED(CONFIG_DRM_I915_CAPTURE_ERROR) */
+#endif  
 
-#endif /* _I915_GPU_ERROR_H_ */
+#endif  

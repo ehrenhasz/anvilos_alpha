@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * udc.c - Core UDC Framework
- *
- * Copyright (C) 2016 Intel Corporation
- * Author: Felipe Balbi <felipe.balbi@linux.intel.com>
- */
+
+ 
 
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM gadget
@@ -281,9 +276,9 @@ DEFINE_EVENT(udc_log_req, usb_gadget_giveback_request,
 	TP_ARGS(ep, req, ret)
 );
 
-#endif /* __UDC_TRACE_H */
+#endif  
 
-/* this part has to be here */
+ 
 
 #undef TRACE_INCLUDE_PATH
 #define TRACE_INCLUDE_PATH .

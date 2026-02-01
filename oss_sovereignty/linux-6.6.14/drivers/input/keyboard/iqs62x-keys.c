@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Azoteq IQS620A/621/622/624/625 Keys and Switches
- *
- * Copyright (C) 2019 Jeff LaBundy <jeff@labundy.com>
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/input.h>
@@ -112,10 +108,7 @@ static int iqs62x_keys_init(struct iqs62x_keys_private *iqs62x_keys)
 	case IQS622_PROD_NUM:
 		event_reg = IQS620_GLBL_EVENT_MASK;
 
-		/*
-		 * Discreet button, hysteresis and SAR UI flags represent keys
-		 * and are unmasked if mapped to a valid keycode.
-		 */
+		 
 		for (i = 0; i < iqs62x_keys->keycodemax; i++) {
 			if (iqs62x_keys->keycode[i] == KEY_RESERVED)
 				continue;
@@ -132,10 +125,7 @@ static int iqs62x_keys_init(struct iqs62x_keys_private *iqs62x_keys)
 		if (ret)
 			return ret;
 
-		/*
-		 * Hall UI flags represent switches and are unmasked if their
-		 * corresponding child nodes are present.
-		 */
+		 
 		for (i = 0; i < ARRAY_SIZE(iqs62x_keys->switches); i++) {
 			if (!(iqs62x_keys->switches[i].enabled))
 				continue;
@@ -159,10 +149,7 @@ static int iqs62x_keys_init(struct iqs62x_keys_private *iqs62x_keys)
 	case IQS624_PROD_NUM:
 		event_reg = IQS624_HALL_UI;
 
-		/*
-		 * Interval change events represent keys and are unmasked if
-		 * either wheel movement flag is mapped to a valid keycode.
-		 */
+		 
 		if (iqs62x_keys->keycode[IQS62X_EVENT_WHEEL_UP] != KEY_RESERVED)
 			event_mask |= IQS624_HALL_UI_INT_EVENT;
 
@@ -226,10 +213,7 @@ static int iqs62x_keys_notifier(struct notifier_block *notifier,
 	if (event_data->interval == iqs62x_keys->interval)
 		return NOTIFY_OK;
 
-	/*
-	 * Each frame contains at most one wheel event (up or down), in which
-	 * case a complementary release cycle is emulated.
-	 */
+	 
 	if (event_flags & BIT(IQS62X_EVENT_WHEEL_UP)) {
 		input_report_key(iqs62x_keys->input,
 				 iqs62x_keys->keycode[IQS62X_EVENT_WHEEL_UP],

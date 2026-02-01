@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-// Copyright (c) 2021, NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+
+
 
 #include <linux/math64.h>
 #include "lib/aso.h"
@@ -13,12 +13,12 @@
 #define MLX5_CBS_MAN_SHIFT 16
 #define MLX5_CIR_EXP_SHIFT 8
 
-/* cir = 8*(10^9)*cir_mantissa/(2^cir_exponent)) bits/s */
+ 
 #define MLX5_CONST_CIR 8000000000ULL
 #define MLX5_CALC_CIR(m, e)  ((MLX5_CONST_CIR * (m)) >> (e))
 #define MLX5_MAX_CIR ((MLX5_CONST_CIR * 0x100) - 1)
 
-/* cbs = cbs_mantissa*2^cbs_exponent */
+ 
 #define MLX5_CALC_CBS(m, e)  ((m) << (e))
 #define MLX5_MAX_CBS ((0x100ULL << 0x1F) - 1)
 #define MLX5_MAX_HW_CBS 0x7FFFFFFF
@@ -28,19 +28,19 @@ struct mlx5e_flow_meter_aso_obj {
 	int base_id;
 	int total_meters;
 
-	unsigned long meters_map[]; /* must be at the end of this struct */
+	unsigned long meters_map[];  
 };
 
 struct mlx5e_flow_meters {
 	enum mlx5_flow_namespace_type ns_type;
 	struct mlx5_aso *aso;
-	struct mutex aso_lock; /* Protects aso operations */
+	struct mutex aso_lock;  
 	int log_granularity;
 	u32 pdn;
 
 	DECLARE_HASHTABLE(hashtbl, 8);
 
-	struct mutex sync_lock; /* protect flow meter operations */
+	struct mutex sync_lock;  
 	struct list_head partial_list;
 	struct list_head full_list;
 
@@ -55,12 +55,12 @@ mlx5e_flow_meter_cir_calc(u64 cir, u8 *man, u8 *exp)
 	u8 e, _man = 0, _exp = 0;
 	u64 m;
 
-	for (e = 0; e <= 0x1F; e++) { /* exp width 5bit */
+	for (e = 0; e <= 0x1F; e++) {  
 		m = cir << e;
-		if ((s64)m < 0) /* overflow */
+		if ((s64)m < 0)  
 			break;
 		m = div64_u64(m, MLX5_CONST_CIR);
-		if (m > 0xFF) /* man width 8 bit */
+		if (m > 0xFF)  
 			continue;
 		_cir = MLX5_CALC_CIR(m, e);
 		_delta = cir - _cir;
@@ -85,9 +85,9 @@ mlx5e_flow_meter_cbs_calc(u64 cbs, u8 *man, u8 *exp)
 	u8 e, _man = 0, _exp = 0;
 	u64 m;
 
-	for (e = 0; e <= 0x1F; e++) { /* exp width 5bit */
+	for (e = 0; e <= 0x1F; e++) {  
 		m = cbs >> e;
-		if (m > 0xFF) /* man width 8 bit */
+		if (m > 0xFF)  
 			continue;
 		_cbs = MLX5_CALC_CBS(m, e);
 		_delta = cbs - _cbs;
@@ -124,7 +124,7 @@ mlx5e_tc_meter_modify(struct mlx5_core_dev *mdev,
 	rate = meter_params->rate;
 	burst = meter_params->burst;
 
-	/* HW treats each packet as 128 bytes in PPS mode */
+	 
 	if (meter_params->mode == MLX5_RATE_LIMIT_PPS) {
 		rate <<= 10;
 		burst <<= 7;
@@ -133,7 +133,7 @@ mlx5e_tc_meter_modify(struct mlx5_core_dev *mdev,
 	if (!rate || rate > MLX5_MAX_CIR || !burst || burst > MLX5_MAX_CBS)
 		return -EINVAL;
 
-	/* HW has limitation of total 31 bits for cbs */
+	 
 	if (burst > MLX5_MAX_HW_CBS) {
 		mlx5_core_warn(mdev,
 			       "burst(%lld) is too large, use HW allowed value(%d)\n",
@@ -170,7 +170,7 @@ mlx5e_tc_meter_modify(struct mlx5_core_dev *mdev,
 
 	aso_data = (struct mlx5_wqe_aso_data_seg *)(aso_wqe + 1);
 	memset(aso_data, 0, sizeof(*aso_data));
-	aso_data->bytewise_data[meter->idx * 8] = cpu_to_be32((0x1 << 31) | /* valid */
+	aso_data->bytewise_data[meter->idx * 8] = cpu_to_be32((0x1 << 31) |  
 					(MLX5_FLOW_METER_COLOR_GREEN << MLX5_START_COLOR_SHIFT));
 	if (meter_params->mode == MLX5_RATE_LIMIT_PPS)
 		aso_data->bytewise_data[meter->idx * 8] |=
@@ -186,7 +186,7 @@ mlx5e_tc_meter_modify(struct mlx5_core_dev *mdev,
 
 	mlx5_aso_post_wqe(aso, true, &aso_wqe->ctrl);
 
-	/* With newer FW, the wait for the first ASO WQE is more than 2us, put the wait 10ms. */
+	 
 	expires = jiffies + msecs_to_jiffies(10);
 	do {
 		err = mlx5_aso_poll_cq(aso, true);
@@ -275,7 +275,7 @@ __mlx5e_flow_meter_alloc(struct mlx5e_flow_meters *flow_meters, bool alloc_aso)
 	meters_obj = list_first_entry_or_null(&flow_meters->partial_list,
 					      struct mlx5e_flow_meter_aso_obj,
 					      entry);
-	/* 2 meters in one object */
+	 
 	total = 1 << (flow_meters->log_granularity + 1);
 	if (!meters_obj) {
 		err = mlx5e_flow_meter_create_aso_obj(flow_meters, &id);

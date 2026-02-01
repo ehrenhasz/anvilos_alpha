@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include "virtgpu_drv.h"
 
 #include <linux/dma-mapping.h>
@@ -56,7 +56,7 @@ static int virtio_gpu_vram_mmap(struct drm_gem_object *obj,
 	else if (vram->map_info == VIRTIO_GPU_MAP_CACHE_UNCACHED)
 		vma->vm_page_prot = pgprot_noncached(vma->vm_page_prot);
 
-	/* Partial mappings of GEM buffers don't happen much in practice. */
+	 
 	if (vm_size != vram->vram_node.size)
 		return -EINVAL;
 
@@ -81,8 +81,8 @@ struct sg_table *virtio_gpu_vram_map_dma_buf(struct virtio_gpu_object *bo,
 		return ERR_PTR(-ENOMEM);
 
 	if (!(bo->blob_flags & VIRTGPU_BLOB_FLAG_USE_MAPPABLE)) {
-		// Virtio devices can access the dma-buf via its UUID. Return a stub
-		// sg_table so the dma-buf API still works.
+		
+		
 		if (!is_virtio_device(dev) || !vgdev->has_resource_assign_uuid) {
 			ret = -EIO;
 			goto out;
@@ -164,7 +164,7 @@ static int virtio_gpu_vram_map(struct virtio_gpu_object *bo)
 	}
 
 	virtio_gpu_array_add_obj(objs, &bo->base.base);
-	/*TODO: Add an error checking helper function in drm_mm.h */
+	 
 	offset = vram->vram_node.start - vgdev->host_visible_region.addr;
 
 	ret = virtio_gpu_cmd_map(vgdev, objs, offset);
@@ -200,7 +200,7 @@ int virtio_gpu_vram_create(struct virtio_gpu_device *vgdev,
 	params->size = PAGE_ALIGN(params->size);
 	drm_gem_private_object_init(vgdev->ddev, obj, params->size);
 
-	/* Create fake offset */
+	 
 	ret = drm_gem_create_mmap_offset(obj);
 	if (ret) {
 		kfree(vram);

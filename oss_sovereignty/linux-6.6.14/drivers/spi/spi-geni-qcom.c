@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2017-2018, The Linux foundation. All rights reserved.
+
+
 
 #include <linux/clk.h>
 #include <linux/dmaengine.h>
@@ -17,7 +17,7 @@
 #include <linux/spi/spi.h>
 #include <linux/spinlock.h>
 
-/* SPI SE specific registers and respective register fields */
+ 
 #define SE_SPI_CPHA		0x224
 #define CPHA			BIT(0)
 
@@ -56,14 +56,14 @@
 #define SE_SPI_SLAVE_EN				(0x2BC)
 #define SPI_SLAVE_EN				BIT(0)
 
-/* M_CMD OP codes for SPI */
+ 
 #define SPI_TX_ONLY		1
 #define SPI_RX_ONLY		2
 #define SPI_TX_RX		7
 #define SPI_CS_ASSERT		8
 #define SPI_CS_DEASSERT		9
 #define SPI_SCK_ONLY		10
-/* M_CMD params for SPI */
+ 
 #define SPI_PRE_CMD_DELAY	BIT(0)
 #define TIMESTAMP_BEFORE	BIT(1)
 #define FRAGMENTATION		BIT(2)
@@ -161,10 +161,7 @@ static void handle_se_timeout(struct spi_master *spi,
 	mas->cur_xfer = NULL;
 
 	if (spi->slave) {
-		/*
-		 * skip CMD Cancel sequnece since spi slave
-		 * doesn`t support CMD Cancel sequnece
-		 */
+		 
 		spin_unlock_irq(&mas->lock);
 		goto unmap_if_dma;
 	}
@@ -186,10 +183,7 @@ static void handle_se_timeout(struct spi_master *spi,
 	if (!time_left) {
 		dev_err(mas->dev, "Failed to cancel/abort m_cmd\n");
 
-		/*
-		 * No need for a lock since SPI core has a lock and we never
-		 * access this from an interrupt.
-		 */
+		 
 		mas->abort_failed = true;
 	}
 
@@ -215,11 +209,7 @@ unmap_if_dma:
 					dev_err(mas->dev, "DMA RX RESET failed\n");
 			}
 		} else {
-			/*
-			 * This can happen if a timeout happened and we had to wait
-			 * for lock in this function because isr was holding the lock
-			 * and handling transfer completion at that time.
-			 */
+			 
 			dev_warn(mas->dev, "Cancel/Abort on completed SPI transfer\n");
 		}
 	}
@@ -258,12 +248,7 @@ static bool spi_geni_is_abort_still_pending(struct spi_geni_master *mas)
 	if (!mas->abort_failed)
 		return false;
 
-	/*
-	 * The only known case where a transfer times out and then a cancel
-	 * times out then an abort times out is if something is blocking our
-	 * interrupt handler from running.  Avoid starting any new transfers
-	 * until that sorts itself out.
-	 */
+	 
 	spin_lock_irq(&mas->lock);
 	m_irq = readl(se->base + SE_GENI_M_IRQ_STATUS);
 	m_irq_en = readl(se->base + SE_GENI_M_IRQ_EN);
@@ -275,10 +260,7 @@ static bool spi_geni_is_abort_still_pending(struct spi_geni_master *mas)
 		return true;
 	}
 
-	/*
-	 * If we're here the problem resolved itself so no need to check more
-	 * on future transfers.
-	 */
+	 
 	mas->abort_failed = false;
 
 	return false;
@@ -312,7 +294,7 @@ static void spi_geni_set_cs(struct spi_device *slv, bool set_flag)
 	}
 
 	mas->cs_flag = set_flag;
-	/* set xfer_mode to FIFO to complete cs_done in isr */
+	 
 	mas->cur_xfer_mode = GENI_SE_FIFO;
 	geni_se_select_mode(se, mas->cur_xfer_mode);
 
@@ -341,10 +323,7 @@ static void spi_setup_word_len(struct spi_geni_master *mas, u16 mode,
 	struct geni_se *se = &mas->se;
 	u32 word_len;
 
-	/*
-	 * If bits_per_word isn't a byte aligned value, set the packing to be
-	 * 1 SPI word per FIFO word.
-	 */
+	 
 	if (!(mas->fifo_width_bits % bits_per_word))
 		pack_words = mas->fifo_width_bits / bits_per_word;
 	else
@@ -371,13 +350,7 @@ static int geni_spi_set_clock_and_bw(struct spi_geni_master *mas,
 		return ret;
 	}
 
-	/*
-	 * SPI core clock gets configured with the requested frequency
-	 * or the frequency closer to the requested frequency.
-	 * For that reason requested frequency is stored in the
-	 * cur_speed_hz and referred in the consecutive transfer instead
-	 * of calling clk_get_rate() API.
-	 */
+	 
 	mas->cur_speed_hz = clk_hz;
 
 	clk_sel = idx & CLK_SEL_MSK;
@@ -385,7 +358,7 @@ static int geni_spi_set_clock_and_bw(struct spi_geni_master *mas,
 	writel(clk_sel, se->base + SE_GENI_CLK_SEL);
 	writel(m_clk_cfg, se->base + GENI_SER_M_CLK_CFG);
 
-	/* Set BW quota for CPU as driver supports FIFO mode only. */
+	 
 	se->icc_paths[CPU_TO_GENI].avg_bw = Bps_to_icc(mas->cur_speed_hz);
 	ret = geni_icc_set_bw(se);
 	if (ret)
@@ -517,10 +490,7 @@ static int setup_gsi_xfer(struct spi_transfer *xfer, struct spi_geni_master *mas
 		}
 	}
 
-	/*
-	 * Prepare the TX always, even for RX or tx_buf being null, we would
-	 * need TX to be prepared per GSI spec
-	 */
+	 
 	dmaengine_slave_config(mas->tx, &config);
 	tx_desc = dmaengine_prep_slave_sg(mas->tx, xfer->tx_sg.sgl, xfer->tx_sg.nents,
 					  DMA_MEM_TO_DEV, flags);
@@ -566,7 +536,7 @@ static bool geni_can_dma(struct spi_controller *ctlr,
 	if (mas->cur_xfer_mode == GENI_GPI_DMA)
 		return true;
 
-	/* Set SE DMA mode for SPI slave. */
+	 
 	if (ctlr->slave)
 		return true;
 
@@ -596,7 +566,7 @@ static int spi_geni_prepare_message(struct spi_master *spi,
 		return ret;
 
 	case GENI_GPI_DMA:
-		/* nothing to do for GPI DMA */
+		 
 		return 0;
 	}
 
@@ -669,15 +639,12 @@ static int spi_geni_init(struct spi_geni_master *mas)
 	}
 	mas->tx_fifo_depth = geni_se_get_tx_fifo_depth(se);
 
-	/* Width of Tx and Rx FIFO is same */
+	 
 	mas->fifo_width_bits = geni_se_get_tx_fifo_width(se);
 
-	/*
-	 * Hardware programming guide suggests to configure
-	 * RX FIFO RFR level to fifo_depth-2.
-	 */
+	 
 	geni_se_init(se, mas->tx_fifo_depth - 3, mas->tx_fifo_depth - 2);
-	/* Transmit an entire FIFO worth of data per IRQ */
+	 
 	mas->tx_wm = 1;
 	ver = geni_se_get_qup_hw_version(se);
 	major = GENI_SE_VERSION_MAJOR(ver);
@@ -692,7 +659,7 @@ static int spi_geni_init(struct spi_geni_master *mas)
 	switch (fifo_disable) {
 	case 1:
 		ret = spi_geni_grab_gpi_chan(mas);
-		if (!ret) { /* success case */
+		if (!ret) {  
 			mas->cur_xfer_mode = GENI_GPI_DMA;
 			geni_se_select_mode(se, GENI_GPI_DMA);
 			dev_dbg(mas->dev, "Using GPI DMA mode for SPI\n");
@@ -700,10 +667,7 @@ static int spi_geni_init(struct spi_geni_master *mas)
 		} else if (ret == -EPROBE_DEFER) {
 			goto out_pm;
 		}
-		/*
-		 * in case of failure to get gpi dma channel, we can still do the
-		 * FIFO mode, so fallthrough
-		 */
+		 
 		dev_warn(mas->dev, "FIFO mode disabled, but couldn't get DMA, fall back to FIFO mode\n");
 		fallthrough;
 
@@ -714,7 +678,7 @@ static int spi_geni_init(struct spi_geni_master *mas)
 		break;
 	}
 
-	/* We always control CS manually */
+	 
 	if (!spi->slave) {
 		spi_tx_cfg = readl(se->base + SE_SPI_TRANS_CFG);
 		spi_tx_cfg &= ~CS_TOGGLE;
@@ -728,11 +692,7 @@ out_pm:
 
 static unsigned int geni_byte_per_fifo_word(struct spi_geni_master *mas)
 {
-	/*
-	 * Calculate how many bytes we'll put in each FIFO word.  If the
-	 * transfer words don't pack cleanly into a FIFO word we'll just put
-	 * one transfer word in each FIFO word.  If they do pack we'll pack 'em.
-	 */
+	 
 	if (mas->fifo_width_bits % mas->cur_bits_per_word)
 		return roundup_pow_of_two(DIV_ROUND_UP(mas->cur_bits_per_word,
 						       BITS_PER_BYTE));
@@ -748,7 +708,7 @@ static bool geni_spi_handle_tx(struct spi_geni_master *mas)
 	unsigned int bytes_per_fifo_word = geni_byte_per_fifo_word(mas);
 	unsigned int i = 0;
 
-	/* Stop the watermark IRQ if nothing to send */
+	 
 	if (!mas->cur_xfer) {
 		writel(0, se->base + SE_GENI_TX_WATERMARK_REG);
 		return false;
@@ -797,7 +757,7 @@ static void geni_spi_handle_rx(struct spi_geni_master *mas)
 			rx_bytes -= bytes_per_fifo_word - rx_last_byte_valid;
 	}
 
-	/* Clear out the FIFO and bail if nowhere to put it */
+	 
 	if (!mas->cur_xfer) {
 		for (i = 0; i < DIV_ROUND_UP(rx_bytes, bytes_per_fifo_word); i++)
 			readl(se->base + SE_GENI_RX_FIFOn);
@@ -831,18 +791,7 @@ static int setup_se_xfer(struct spi_transfer *xfer,
 	struct geni_se *se = &mas->se;
 	int ret;
 
-	/*
-	 * Ensure that our interrupt handler isn't still running from some
-	 * prior command before we start messing with the hardware behind
-	 * its back.  We don't need to _keep_ the lock here since we're only
-	 * worried about racing with out interrupt handler.  The SPI core
-	 * already handles making sure that we're not trying to do two
-	 * transfers at once or setting a chip select and doing a transfer
-	 * concurrently.
-	 *
-	 * NOTE: we actually _can't_ hold the lock here because possibly we
-	 * might call clk_set_rate() which needs to be able to sleep.
-	 */
+	 
 	spin_lock_irq(&mas->lock);
 	spin_unlock_irq(&mas->lock);
 
@@ -851,7 +800,7 @@ static int setup_se_xfer(struct spi_transfer *xfer,
 		mas->cur_bits_per_word = xfer->bits_per_word;
 	}
 
-	/* Speed and bits per word can be overridden per transfer */
+	 
 	ret = geni_spi_set_clock_and_bw(mas, xfer->speed_hz);
 	if (ret)
 		return ret;
@@ -874,12 +823,7 @@ static int setup_se_xfer(struct spi_transfer *xfer,
 		mas->rx_rem_bytes = xfer->len;
 	}
 
-	/*
-	 * Select DMA mode if sgt are present; and with only 1 entry
-	 * This is not a serious limitation because the xfer buffers are
-	 * expected to fit into in 1 entry almost always, and if any
-	 * doesn't for any reason we fall back to FIFO mode anyway
-	 */
+	 
 	if (!xfer->tx_sg.nents && !xfer->rx_sg.nents)
 		mas->cur_xfer_mode = GENI_SE_FIFO;
 	else if (xfer->tx_sg.nents > 1 || xfer->rx_sg.nents > 1) {
@@ -890,10 +834,7 @@ static int setup_se_xfer(struct spi_transfer *xfer,
 		mas->cur_xfer_mode = GENI_SE_DMA;
 	geni_se_select_mode(se, mas->cur_xfer_mode);
 
-	/*
-	 * Lock around right before we start the transfer since our
-	 * interrupt could come in at any time now.
-	 */
+	 
 	spin_lock_irq(&mas->lock);
 	geni_se_setup_m_cmd(se, m_cmd, FRAGMENTATION);
 
@@ -923,13 +864,13 @@ static int spi_geni_transfer_one(struct spi_master *spi,
 	if (spi_geni_is_abort_still_pending(mas))
 		return -EBUSY;
 
-	/* Terminate and return success for 0 byte length transfer */
+	 
 	if (!xfer->len)
 		return 0;
 
 	if (mas->cur_xfer_mode == GENI_SE_FIFO || mas->cur_xfer_mode == GENI_SE_DMA) {
 		ret = setup_se_xfer(xfer, mas, slv->mode, spi);
-		/* SPI framework expects +ve ret code to wait for transfer complete */
+		 
 		if (!ret)
 			ret = 1;
 		return ret;
@@ -966,19 +907,7 @@ static irqreturn_t geni_spi_isr(int irq, void *data)
 			if (mas->cur_xfer) {
 				spi_finalize_current_transfer(spi);
 				mas->cur_xfer = NULL;
-				/*
-				 * If this happens, then a CMD_DONE came before all the
-				 * Tx buffer bytes were sent out. This is unusual, log
-				 * this condition and disable the WM interrupt to
-				 * prevent the system from stalling due an interrupt
-				 * storm.
-				 *
-				 * If this happens when all Rx bytes haven't been
-				 * received, log the condition. The only known time
-				 * this can happen is if bits_per_word != 8 and some
-				 * registers that expect xfer lengths in num spi_words
-				 * weren't written correctly.
-				 */
+				 
 				if (mas->tx_rem_bytes) {
 					writel(0, se->base + SE_GENI_TX_WATERMARK_REG);
 					dev_err(mas->dev, "Premature done. tx_rem = %d bpw%d\n",
@@ -1019,19 +948,7 @@ static irqreturn_t geni_spi_isr(int irq, void *data)
 	if (m_irq & M_CMD_ABORT_EN)
 		complete(&mas->abort_done);
 
-	/*
-	 * It's safe or a good idea to Ack all of our interrupts at the end
-	 * of the function. Specifically:
-	 * - M_CMD_DONE_EN / M_RX_FIFO_LAST_EN: Edge triggered interrupts and
-	 *   clearing Acks. Clearing at the end relies on nobody else having
-	 *   started a new transfer yet or else we could be clearing _their_
-	 *   done bit, but everyone grabs the spinlock before starting a new
-	 *   transfer.
-	 * - M_RX_FIFO_WATERMARK_EN / M_TX_FIFO_WATERMARK_EN: These appear
-	 *   to be "latched level" interrupts so it's important to clear them
-	 *   _after_ you've handled the condition and always safe to do so
-	 *   since they'll re-assert if they're still happening.
-	 */
+	 
 	writel(m_irq, se->base + SE_GENI_M_IRQ_CLEAR);
 
 	spin_unlock(&mas->lock);
@@ -1080,7 +997,7 @@ static int spi_geni_probe(struct platform_device *pdev)
 	ret = devm_pm_opp_set_clkname(&pdev->dev, "se");
 	if (ret)
 		return ret;
-	/* OPP table is optional */
+	 
 	ret = devm_pm_opp_of_add_table(&pdev->dev);
 	if (ret && ret != -ENODEV) {
 		dev_err(&pdev->dev, "invalid OPP table in device tree\n");
@@ -1093,7 +1010,7 @@ static int spi_geni_probe(struct platform_device *pdev)
 	spi->bits_per_word_mask = SPI_BPW_RANGE_MASK(4, 32);
 	spi->num_chipselect = 4;
 	spi->max_speed_hz = 50000000;
-	spi->max_dma_len = 0xffff0; /* 24 bits for tx/rx dma length */
+	spi->max_dma_len = 0xffff0;  
 	spi->prepare_message = spi_geni_prepare_message;
 	spi->transfer_one = spi_geni_transfer_one;
 	spi->can_dma = geni_can_dma;
@@ -1118,7 +1035,7 @@ static int spi_geni_probe(struct platform_device *pdev)
 	ret = geni_icc_get(&mas->se, NULL);
 	if (ret)
 		goto spi_geni_probe_runtime_disable;
-	/* Set the bus quota to a reasonable value for register access */
+	 
 	mas->se.icc_paths[GENI_TO_CORE].avg_bw = Bps_to_icc(CORE_2X_50_MHZ);
 	mas->se.icc_paths[CPU_TO_GENI].avg_bw = GENI_DEFAULT_BW;
 
@@ -1130,17 +1047,11 @@ static int spi_geni_probe(struct platform_device *pdev)
 	if (ret)
 		goto spi_geni_probe_runtime_disable;
 
-	/*
-	 * check the mode supported and set_cs for fifo mode only
-	 * for dma (gsi) mode, the gsi will set cs based on params passed in
-	 * TRE
-	 */
+	 
 	if (!spi->slave && mas->cur_xfer_mode == GENI_SE_FIFO)
 		spi->set_cs = spi_geni_set_cs;
 
-	/*
-	 * TX is required per GSI spec, see setup_gsi_xfer().
-	 */
+	 
 	if (mas->cur_xfer_mode == GENI_GPI_DMA)
 		spi->flags = SPI_CONTROLLER_MUST_TX;
 
@@ -1167,7 +1078,7 @@ static void spi_geni_remove(struct platform_device *pdev)
 	struct spi_master *spi = platform_get_drvdata(pdev);
 	struct spi_geni_master *mas = spi_master_get_devdata(spi);
 
-	/* Unregister _before_ disabling pm_runtime() so we stop transfers */
+	 
 	spi_unregister_master(spi);
 
 	spi_geni_release_dma_chan(mas);
@@ -1182,7 +1093,7 @@ static int __maybe_unused spi_geni_runtime_suspend(struct device *dev)
 	struct spi_geni_master *mas = spi_master_get_devdata(spi);
 	int ret;
 
-	/* Drop the performance state vote */
+	 
 	dev_pm_opp_set_rate(dev, 0);
 
 	ret = geni_se_resources_off(&mas->se);

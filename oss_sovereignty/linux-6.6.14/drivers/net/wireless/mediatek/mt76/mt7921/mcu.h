@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: ISC */
-/* Copyright (C) 2020 MediaTek Inc. */
+ 
+ 
 
 #ifndef __MT7921_MCU_H
 #define __MT7921_MCU_H
@@ -33,7 +33,7 @@ struct mt7921_mcu_tx_done_event {
 	u8 rsv1[32];
 } __packed;
 
-/* ext event table */
+ 
 enum {
 	MCU_EXT_EVENT_RATE_REPORT = 0x87,
 };
@@ -51,8 +51,8 @@ struct mt7921_mcu_eeprom_info {
 #define MT_RA_RATE_BW			GENMASK(14, 13)
 
 enum {
-	MT_EBF = BIT(0),	/* explicit beamforming */
-	MT_IBF = BIT(1)		/* implicit beamforming */
+	MT_EBF = BIT(0),	 
+	MT_IBF = BIT(1)		 
 };
 
 struct mt7921_mcu_ant_id_config {

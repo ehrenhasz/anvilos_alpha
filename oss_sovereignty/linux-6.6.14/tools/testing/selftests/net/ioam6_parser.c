@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Author: Justin Iurman (justin.iurman@uliege.be)
- *
- * IOAM tester for IPv6, see ioam6.sh for details on each test case.
- */
+
+ 
 #include <arpa/inet.h>
 #include <errno.h>
 #include <limits.h>
@@ -29,17 +25,14 @@ struct ioam_config {
 	char *sc_data;
 };
 
-/*
- * Be careful if you modify structs below - everything MUST be kept synchronized
- * with configurations inside ioam6.sh and always reflect the same.
- */
+ 
 
 static struct ioam_config node1 = {
 	.id = 1,
 	.wide = 11111111,
-	.ingr_id = 0xffff, /* default value */
+	.ingr_id = 0xffff,  
 	.egr_id = 101,
-	.ingr_wide = 0xffffffff, /* default value */
+	.ingr_wide = 0xffffffff,  
 	.egr_wide = 101101,
 	.ns_data = 0xdeadbee0,
 	.ns_wide = 0xcafec0caf00dc0de,
@@ -66,20 +59,18 @@ static struct ioam_config node3 = {
 	.id = 3,
 	.wide = 33333333,
 	.ingr_id = 301,
-	.egr_id = 0xffff, /* default value */
+	.egr_id = 0xffff,  
 	.ingr_wide = 301301,
-	.egr_wide = 0xffffffff, /* default value */
+	.egr_wide = 0xffffffff,  
 	.ns_data = 0xdeadbee2,
 	.ns_wide = 0xcafec0caf22dc0de,
-	.sc_id = 0xffffff, /* default value */
+	.sc_id = 0xffffff,  
 	.sc_data = NULL,
 	.hlim = 62,
 };
 
 enum {
-	/**********
-	 * OUTPUT *
-	 **********/
+	 
 	TEST_OUT_UNDEF_NS,
 	TEST_OUT_NO_ROOM,
 	TEST_OUT_BIT0,
@@ -97,9 +88,7 @@ enum {
 	TEST_OUT_BIT22,
 	TEST_OUT_FULL_SUPP_TRACE,
 
-	/*********
-	 * INPUT *
-	 *********/
+	 
 	TEST_IN_UNDEF_NS,
 	TEST_IN_NO_ROOM,
 	TEST_IN_OFLAG,
@@ -118,9 +107,7 @@ enum {
 	TEST_IN_BIT22,
 	TEST_IN_FULL_SUPP_TRACE,
 
-	/**********
-	 * GLOBAL *
-	 **********/
+	 
 	TEST_FWD_FULL_SUPP_TRACE,
 
 	__TEST_MAX,

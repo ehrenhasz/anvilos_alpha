@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
 
-  Broadcom B43 wireless driver
-
-  debugfs driver debugging code
-
-  Copyright (c) 2005-2007 Michael Buesch <m@bues.ch>
-
-
-*/
+ 
 
 #include <linux/fs.h>
 #include <linux/debugfs.h>
@@ -24,14 +15,14 @@
 #include "xmit.h"
 
 
-/* The root directory. */
+ 
 static struct dentry *rootdir;
 
 struct b43_debugfs_fops {
 	ssize_t (*read)(struct b43_wldev *dev, char *buf, size_t bufsize);
 	int (*write)(struct b43_wldev *dev, const char *buf, size_t count);
 	struct file_operations fops;
-	/* Offset of struct b43_dfs_file in struct b43_dfsentry */
+	 
 	size_t file_struct_offset;
 };
 
@@ -59,7 +50,7 @@ struct b43_dfs_file *fops_to_dfs_file(struct b43_wldev *dev,
 	} while (0)
 
 
-/* The biggest address values for SHM access from the debugfs files. */
+ 
 #define B43_MAX_SHM_ROUTING	4
 #define B43_MAX_SHM_ADDR	0xFFFF
 
@@ -215,7 +206,7 @@ static int shm32write__write_file(struct b43_wldev *dev,
 	return 0;
 }
 
-/* The biggest MMIO address that we allow access to from the debugfs files. */
+ 
 #define B43_MAX_MMIO_ACCESS	(0xF00 - 1)
 
 static ssize_t mmio16read__read_file(struct b43_wldev *dev,
@@ -411,9 +402,9 @@ static unsigned long calc_expire_secs(unsigned long now,
 	expire = time + expire;
 
 	if (time_after(now, expire))
-		return 0; /* expired */
+		return 0;  
 	if (expire < now) {
-		/* jiffies wrapped */
+		 
 		expire -= MAX_JIFFY_OFFSET;
 		now -= MAX_JIFFY_OFFSET;
 	}
@@ -495,7 +486,7 @@ static ssize_t b43_debugfs_read(struct file *file, char __user *userbuf,
 	struct b43_dfs_file *dfile;
 	ssize_t ret;
 	char *buf;
-	const size_t bufsize = 1024 * 16; /* 16 kiB buffer */
+	const size_t bufsize = 1024 * 16;  
 	const size_t buforder = get_order(bufsize);
 	int err = 0;
 
@@ -635,8 +626,7 @@ bool b43_debug(struct b43_wldev *dev, enum b43_dyndbg feature)
 
 	enabled = (dev->dfsentry && dev->dfsentry->dyn_debug[feature]);
 	if (unlikely(enabled)) {
-		/* Force full debugging messages, if the user enabled
-		 * some dynamic debugging feature. */
+		 
 		b43_modparam_verbose = B43_VERBOSITY_MAX;
 	}
 
@@ -694,12 +684,12 @@ void b43_debugfs_add_device(struct b43_wldev *dev)
 	snprintf(devdir, sizeof(devdir), "%s", wiphy_name(dev->wl->hw->wiphy));
 	e->subdir = debugfs_create_dir(devdir, rootdir);
 
-	e->mmio16read_next = 0xFFFF; /* invalid address */
-	e->mmio32read_next = 0xFFFF; /* invalid address */
-	e->shm16read_routing_next = 0xFFFFFFFF; /* invalid routing */
-	e->shm16read_addr_next = 0xFFFFFFFF; /* invalid address */
-	e->shm32read_routing_next = 0xFFFFFFFF; /* invalid routing */
-	e->shm32read_addr_next = 0xFFFFFFFF; /* invalid address */
+	e->mmio16read_next = 0xFFFF;  
+	e->mmio32read_next = 0xFFFF;  
+	e->shm16read_routing_next = 0xFFFFFFFF;  
+	e->shm16read_addr_next = 0xFFFFFFFF;  
+	e->shm32read_routing_next = 0xFFFFFFFF;  
+	e->shm32read_addr_next = 0xFFFFFFFF;  
 
 #define ADD_FILE(name, mode)	\
 	do {							\

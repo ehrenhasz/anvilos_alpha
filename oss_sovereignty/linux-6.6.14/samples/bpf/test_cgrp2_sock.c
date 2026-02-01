@@ -1,12 +1,4 @@
-/* eBPF example program:
- *
- * - Loads eBPF program
- *
- *   The eBPF program sets the sk_bound_dev_if index in new AF_INET{6}
- *   sockets opened by processes in the cgroup.
- *
- * - Attaches the new program to a cgroup using BPF_PROG_ATTACH
- */
+ 
 
 #define _GNU_SOURCE
 
@@ -29,41 +21,41 @@ char bpf_log_buf[BPF_LOG_BUF_SIZE];
 
 static int prog_load(__u32 idx, __u32 mark, __u32 prio)
 {
-	/* save pointer to context */
+	 
 	struct bpf_insn prog_start[] = {
 		BPF_MOV64_REG(BPF_REG_6, BPF_REG_1),
 	};
 	struct bpf_insn prog_end[] = {
-		BPF_MOV64_IMM(BPF_REG_0, 1), /* r0 = verdict */
+		BPF_MOV64_IMM(BPF_REG_0, 1),  
 		BPF_EXIT_INSN(),
 	};
 
-	/* set sk_bound_dev_if on socket */
+	 
 	struct bpf_insn prog_dev[] = {
 		BPF_MOV64_IMM(BPF_REG_3, idx),
 		BPF_MOV64_IMM(BPF_REG_2, offsetof(struct bpf_sock, bound_dev_if)),
 		BPF_STX_MEM(BPF_W, BPF_REG_1, BPF_REG_3, offsetof(struct bpf_sock, bound_dev_if)),
 	};
 
-	/* set mark on socket */
+	 
 	struct bpf_insn prog_mark[] = {
-		/* get uid of process */
+		 
 		BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 0, 0,
 			     BPF_FUNC_get_current_uid_gid),
 		BPF_ALU64_IMM(BPF_AND, BPF_REG_0, 0xffffffff),
 
-		/* if uid is 0, use given mark, else use the uid as the mark */
+		 
 		BPF_MOV64_REG(BPF_REG_3, BPF_REG_0),
 		BPF_JMP_IMM(BPF_JNE, BPF_REG_0, 0, 1),
 		BPF_MOV64_IMM(BPF_REG_3, mark),
 
-		/* set the mark on the new socket */
+		 
 		BPF_MOV64_REG(BPF_REG_1, BPF_REG_6),
 		BPF_MOV64_IMM(BPF_REG_2, offsetof(struct bpf_sock, mark)),
 		BPF_STX_MEM(BPF_W, BPF_REG_1, BPF_REG_3, offsetof(struct bpf_sock, mark)),
 	};
 
-	/* set priority on socket */
+	 
 	struct bpf_insn prog_prio[] = {
 		BPF_MOV64_REG(BPF_REG_1, BPF_REG_6),
 		BPF_MOV64_IMM(BPF_REG_3, prio),

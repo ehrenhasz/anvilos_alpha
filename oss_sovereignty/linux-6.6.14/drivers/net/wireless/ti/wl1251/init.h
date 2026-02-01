@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * This file is part of wl1251
- *
- * Copyright (C) 2009 Nokia Corporation
- */
+ 
+ 
 
 #ifndef __WL1251_INIT_H__
 #define __WL1251_INIT_H__
@@ -11,25 +7,25 @@
 #include "wl1251.h"
 
 enum {
-	/* best effort/legacy */
+	 
 	AC_BE = 0,
 
-	/* background */
+	 
 	AC_BK = 1,
 
-	/* video */
+	 
 	AC_VI = 2,
 
-	/* voice */
+	 
 	AC_VO = 3,
 
-	/* broadcast dummy access category */
+	 
 	AC_BCAST = 4,
 
 	NUM_ACCESS_CATEGORIES = 4
 };
 
-/* following are defult values for the IE fields*/
+ 
 #define CWMIN_BK  15
 #define CWMIN_BE  15
 #define CWMIN_VI  7
@@ -39,13 +35,10 @@ enum {
 #define CWMAX_VI  15
 #define CWMAX_VO  7
 
-/* slot number setting to start transmission at PIFS interval */
+ 
 #define AIFS_PIFS 1
 
-/*
- * slot number setting to start transmission at DIFS interval - normal DCF
- * access
- */
+ 
 #define AIFS_DIFS 2
 
 #define AIFSN_BK  7

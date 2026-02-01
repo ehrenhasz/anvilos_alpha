@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *
- * Copyright (C) 2011 Novell Inc.
- */
+
+ 
 
 #include <linux/fs.h>
 #include <linux/slab.h>
@@ -113,26 +110,23 @@ static struct ovl_cache_entry *ovl_cache_entry_find(struct rb_root *root,
 static bool ovl_calc_d_ino(struct ovl_readdir_data *rdd,
 			   struct ovl_cache_entry *p)
 {
-	/* Don't care if not doing ovl_iter() */
+	 
 	if (!rdd->dentry)
 		return false;
 
-	/* Always recalc d_ino when remapping lower inode numbers */
+	 
 	if (ovl_xino_bits(OVL_FS(rdd->dentry->d_sb)))
 		return true;
 
-	/* Always recalc d_ino for parent */
+	 
 	if (strcmp(p->name, "..") == 0)
 		return true;
 
-	/* If this is lower, then native d_ino will do */
+	 
 	if (!rdd->is_upper)
 		return false;
 
-	/*
-	 * Recalc d_ino for '.' and for all entries if dir is impure (contains
-	 * copied up entries)
-	 */
+	 
 	if ((p->name[0] == '.' && p->len == 1) ||
 	    ovl_test_flag(OVL_IMPURE, d_inode(rdd->dentry)))
 		return true;
@@ -157,7 +151,7 @@ static struct ovl_cache_entry *ovl_cache_entry_new(struct ovl_readdir_data *rdd,
 	p->type = d_type;
 	p->real_ino = ino;
 	p->ino = ino;
-	/* Defer setting d_ino for upper entry to ovl_iterate() */
+	 
 	if (ovl_calc_d_ino(rdd, p))
 		p->ino = 0;
 	p->is_upper = rdd->is_upper;
@@ -333,7 +327,7 @@ static void ovl_dir_reset(struct file *file)
 	}
 	is_real = ovl_dir_is_real(inode);
 	if (od->is_real != is_real) {
-		/* is_real can only become false when dir is copied up */
+		 
 		if (WARN_ON(is_real))
 			return;
 		od->is_real = false;
@@ -363,10 +357,7 @@ static int ovl_dir_read_merged(struct dentry *dentry, struct list_head *list,
 			if (err)
 				break;
 		} else {
-			/*
-			 * Insert lowest layer entries before upper ones, this
-			 * allows offsets to be reasonably constant
-			 */
+			 
 			list_add(&rdd.middle, rdd.list);
 			rdd.is_lowest = true;
 			err = ovl_dir_read(&realpath, &rdd);
@@ -386,7 +377,7 @@ static void ovl_seek_cursor(struct ovl_dir_file *od, loff_t pos)
 			break;
 		off++;
 	}
-	/* Cursor is safe since the cache is stable */
+	 
 	od->cursor = p;
 }
 
@@ -425,7 +416,7 @@ static struct ovl_dir_cache *ovl_cache_get(struct dentry *dentry)
 	return cache;
 }
 
-/* Map inode number to lower fs unique range */
+ 
 static u64 ovl_remap_lower_ino(u64 ino, int xinobits, int fsid,
 			       const char *name, int namelen, bool warn)
 {
@@ -439,23 +430,11 @@ static u64 ovl_remap_lower_ino(u64 ino, int xinobits, int fsid,
 		return ino;
 	}
 
-	/*
-	 * The lowest xinobit is reserved for mapping the non-peresistent inode
-	 * numbers range, but this range is only exposed via st_ino, not here.
-	 */
+	 
 	return ino | ((u64)fsid) << (xinoshift + 1);
 }
 
-/*
- * Set d_ino for upper entries. Non-upper entries should always report
- * the uppermost real inode ino and should not call this function.
- *
- * When not all layer are on same fs, report real ino also for upper.
- *
- * When all layers are on the same fs, and upper has a reference to
- * copy up origin, call vfs_getattr() on the overlay entry to make
- * sure that d_ino will be consistent with st_ino from stat(2).
- */
+ 
 static int ovl_cache_update_ino(const struct path *path, struct ovl_cache_entry *p)
 
 {
@@ -476,14 +455,14 @@ static int ovl_cache_update_ino(const struct path *path, struct ovl_cache_entry 
 			goto get;
 		}
 		if (p->len == 2 && p->name[1] == '.') {
-			/* we shall not be moved */
+			 
 			this = dget(dir->d_parent);
 			goto get;
 		}
 	}
 	this = lookup_one(mnt_idmap(path->mnt), p->name, dir, p->len);
 	if (IS_ERR_OR_NULL(this) || !this->d_inode) {
-		/* Mark a stale entry */
+		 
 		p->is_whiteout = true;
 		if (IS_ERR(this)) {
 			err = PTR_ERR(this);
@@ -504,11 +483,7 @@ get:
 		if (err)
 			goto fail;
 
-		/*
-		 * Directory inode is always on overlay st_dev.
-		 * Non-dir with ovl_same_dev() could be on pseudo st_dev in case
-		 * of xino bits overflow.
-		 */
+		 
 		WARN_ON_ONCE(S_ISDIR(stat.mode) &&
 			     dir->d_sb->s_dev != stat.dev);
 		ino = stat.ino;
@@ -606,7 +581,7 @@ static struct ovl_dir_cache *ovl_cache_get_impure(const struct path *path)
 	if (cache && ovl_inode_version_get(inode) == cache->version)
 		return cache;
 
-	/* Impure cache is not refcounted, free it here */
+	 
 	ovl_dir_cache_free(inode);
 	ovl_set_dir_cache(inode, NULL);
 
@@ -621,10 +596,7 @@ static struct ovl_dir_cache *ovl_cache_get_impure(const struct path *path)
 		return ERR_PTR(res);
 	}
 	if (list_empty(&cache->entries)) {
-		/*
-		 * A good opportunity to get rid of an unneeded "impure" flag.
-		 * Removing the "impure" xattr is best effort.
-		 */
+		 
 		if (!ovl_want_write(dentry)) {
 			ovl_removexattr(ofs, ovl_dentry_upper(dentry),
 					OVL_XATTR_IMPURE);
@@ -680,12 +652,7 @@ static bool ovl_is_impure_dir(struct file *file)
 	struct ovl_dir_file *od = file->private_data;
 	struct inode *dir = file_inode(file);
 
-	/*
-	 * Only upper dir can be impure, but if we are in the middle of
-	 * iterating a lower real dir, dir could be copied up and marked
-	 * impure. We only want the impure cache if we started iterating
-	 * a real upper dir to begin with.
-	 */
+	 
 	return od->is_upper && ovl_test_flag(OVL_IMPURE, dir);
 
 }
@@ -747,11 +714,7 @@ static int ovl_iterate(struct file *file, struct dir_context *ctx)
 		ovl_dir_reset(file);
 
 	if (od->is_real) {
-		/*
-		 * If parent is merge, then need to adjust d_ino for '..', if
-		 * dir is impure then need to adjust d_ino for copied up
-		 * entries.
-		 */
+		 
 		if (ovl_xino_bits(ofs) ||
 		    (ovl_same_fs(ofs) &&
 		     (ovl_is_impure_dir(file) ||
@@ -784,7 +747,7 @@ static int ovl_iterate(struct file *file, struct dir_context *ctx)
 					goto out;
 			}
 		}
-		/* ovl_cache_update_ino() sets is_whiteout on stale entry */
+		 
 		if (!p->is_whiteout) {
 			if (!dir_emit(ctx, p->name, p->len, p->ino, p->type))
 				break;
@@ -851,13 +814,7 @@ static struct file *ovl_dir_open_realfile(const struct file *file,
 	return res;
 }
 
-/*
- * Like ovl_real_fdget(), returns upperfile if dir was copied up since open.
- * Unlike ovl_real_fdget(), this caches upperfile in file->private_data.
- *
- * TODO: use same abstract type for file->private_data of dir and file so
- * upperfile could also be cached for files as well.
- */
+ 
 struct file *ovl_dir_real_file(const struct file *file, bool want_upper)
 {
 
@@ -868,9 +825,7 @@ struct file *ovl_dir_real_file(const struct file *file, bool want_upper)
 	if (!OVL_TYPE_UPPER(ovl_path_type(dentry)))
 		return want_upper ? NULL : realfile;
 
-	/*
-	 * Need to check if we started out being a lower dir, but got copied up
-	 */
+	 
 	if (!od->is_upper) {
 		realfile = READ_ONCE(od->upperfile);
 		if (!realfile) {
@@ -905,7 +860,7 @@ static int ovl_dir_fsync(struct file *file, loff_t start, loff_t end,
 	realfile = ovl_dir_real_file(file, true);
 	err = PTR_ERR_OR_ZERO(realfile);
 
-	/* Nothing to sync for lower */
+	 
 	if (!realfile || err)
 		return err;
 
@@ -954,7 +909,7 @@ static int ovl_dir_open(struct inode *inode, struct file *file)
 	return 0;
 }
 
-WRAP_DIR_ITER(ovl_iterate) // FIXME!
+WRAP_DIR_ITER(ovl_iterate)  
 const struct file_operations ovl_dir_operations = {
 	.read		= generic_read_dir,
 	.open		= ovl_dir_open,
@@ -980,10 +935,7 @@ int ovl_check_empty_dir(struct dentry *dentry, struct list_head *list)
 	err = 0;
 
 	list_for_each_entry_safe(p, n, list, l_node) {
-		/*
-		 * Select whiteouts in upperdir, they should
-		 * be cleared when deleting this directory.
-		 */
+		 
 		if (p->is_whiteout) {
 			if (p->is_upper)
 				continue;
@@ -1040,7 +992,7 @@ static bool ovl_check_d_type(struct dir_context *ctx, const char *name,
 	struct ovl_readdir_data *rdd =
 		container_of(ctx, struct ovl_readdir_data, ctx);
 
-	/* Even if d_type is not supported, DT_DIR is returned for . and .. */
+	 
 	if (!strncmp(name, ".", namelen) || !strncmp(name, "..", namelen))
 		return true;
 
@@ -1050,10 +1002,7 @@ static bool ovl_check_d_type(struct dir_context *ctx, const char *name,
 	return true;
 }
 
-/*
- * Returns 1 if d_type is supported, 0 not supported/unknown. Negative values
- * if error is encountered.
- */
+ 
 int ovl_check_d_type_supported(const struct path *realpath)
 {
 	int err;
@@ -1084,14 +1033,7 @@ static int ovl_workdir_cleanup_recurse(struct ovl_fs *ofs, const struct path *pa
 	};
 	bool incompat = false;
 
-	/*
-	 * The "work/incompat" directory is treated specially - if it is not
-	 * empty, instead of printing a generic error and mounting read-only,
-	 * we will error about incompat features and fail the mount.
-	 *
-	 * When called from ovl_indexdir_cleanup(), path->dentry->d_name.name
-	 * starts with '#'.
-	 */
+	 
 	if (level == 2 &&
 	    !strcmp(path->dentry->d_name.name, OVL_INCOMPATDIR_NAME))
 		incompat = true;
@@ -1185,7 +1127,7 @@ int ovl_indexdir_cleanup(struct ovl_fs *ofs)
 			index = NULL;
 			break;
 		}
-		/* Cleanup leftover from index create/cleanup attempt */
+		 
 		if (index->d_name.name[0] == '#') {
 			err = ovl_workdir_cleanup(ofs, dir, path.mnt, index, 1);
 			if (err)
@@ -1196,23 +1138,16 @@ int ovl_indexdir_cleanup(struct ovl_fs *ofs)
 		if (!err) {
 			goto next;
 		} else if (err == -ESTALE) {
-			/* Cleanup stale index entries */
+			 
 			err = ovl_cleanup(ofs, dir, index);
 		} else if (err != -ENOENT) {
-			/*
-			 * Abort mount to avoid corrupting the index if
-			 * an incompatible index entry was found or on out
-			 * of memory.
-			 */
+			 
 			break;
 		} else if (ofs->config.nfs_export) {
-			/*
-			 * Whiteout orphan index to block future open by
-			 * handle after overlay nlink dropped to zero.
-			 */
+			 
 			err = ovl_cleanup_and_whiteout(ofs, dir, index);
 		} else {
-			/* Cleanup orphan index entries */
+			 
 			err = ovl_cleanup(ofs, dir, index);
 		}
 

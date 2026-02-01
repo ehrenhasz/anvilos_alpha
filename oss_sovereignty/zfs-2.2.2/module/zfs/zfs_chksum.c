@@ -1,27 +1,6 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
+ 
 
-/*
- * Copyright (c) 2021-2022 Tino Reichardt <milky-zfs@mcmilk.de>
- */
+ 
 
 #include <sys/zio_checksum.h>
 #include <sys/zfs_context.h>
@@ -31,7 +10,7 @@
 #include <sys/blake3.h>
 #include <sys/sha2.h>
 
-/* limit benchmarking to max 256KiB, when EdonR is slower then this: */
+ 
 #define	LIMIT_PERF_MBS	300
 
 typedef struct {
@@ -55,28 +34,7 @@ static chksum_stat_t *chksum_stat_data = 0;
 static int chksum_stat_cnt = 0;
 static kstat_t *chksum_kstat = NULL;
 
-/*
- * Sample output on i3-1005G1 System:
- *
- * implementation   1k      4k     16k     64k    256k      1m      4m     16m
- * edonr-generic  1278    1625    1769    1776    1783    1778    1771    1767
- * skein-generic   548     594     613     623     621     623     621     486
- * sha256-generic  255     270     281     278     279     281     283     283
- * sha256-x64      288     310     316     317     318     317     317     316
- * sha256-ssse3    304     342     351     355     356     357     356     356
- * sha256-avx      311     348     359     362     362     363     363     362
- * sha256-avx2     330     378     389     395     395     395     395     395
- * sha256-shani    908    1127    1212    1230    1233    1234    1223    1230
- * sha512-generic  359     409     431     427     429     430     428     423
- * sha512-x64      420     473     490     496     497     497     496     495
- * sha512-avx      406     522     546     560     560     560     556     560
- * sha512-avx2     464     568     601     606     609     610     607     608
- * blake3-generic  330     327     324     323     324     320     323     322
- * blake3-sse2     424    1366    1449    1468    1458    1453    1395    1408
- * blake3-sse41    453    1554    1658    1703    1689    1669    1622    1630
- * blake3-avx2     452    2013    3225    3351    3356    3261    3076    3101
- * blake3-avx512   498    2869    5269    5926    5872    5643    5014    5005
- */
+ 
 static int
 chksum_kstat_headers(char *buf, size_t size)
 {
@@ -146,21 +104,21 @@ chksum_run(chksum_stat_t *cs, abd_t *abd, void *ctx, int round,
 	zio_cksum_t zcp;
 
 	switch (round) {
-	case 1: /* 1k */
+	case 1:  
 		size = 1<<10; loops = 128; break;
-	case 2: /* 2k */
+	case 2:  
 		size = 1<<12; loops = 64; break;
-	case 3: /* 4k */
+	case 3:  
 		size = 1<<14; loops = 32; break;
-	case 4: /* 16k */
+	case 4:  
 		size = 1<<16; loops = 16; break;
-	case 5: /* 256k */
+	case 5:  
 		size = 1<<18; loops = 8; break;
-	case 6: /* 1m */
+	case 6:  
 		size = 1<<20; loops = 4; break;
-	case 7: /* 4m */
+	case 7:  
 		size = 1<<22; loops = 1; break;
-	case 8: /* 16m */
+	case 8:  
 		size = 1<<24; loops = 1; break;
 	}
 
@@ -175,8 +133,8 @@ chksum_run(chksum_stat_t *cs, abd_t *abd, void *ctx, int round,
 	kpreempt_enable();
 
 	run_bw = size * run_count * NANOSEC;
-	run_bw /= run_time_ns;	/* B/s */
-	*result = run_bw/1024/1024; /* MiB/s */
+	run_bw /= run_time_ns;	 
+	*result = run_bw/1024/1024;  
 }
 
 #define	LIMIT_INIT	0
@@ -195,7 +153,7 @@ chksum_benchit(chksum_stat_t *cs)
 	if (cs->init)
 		ctx = cs->init(&cs->salt);
 
-	/* allocate test memory via abd linear interface */
+	 
 	abd = abd_alloc_linear(1<<20, B_FALSE);
 	chksum_run(cs, abd, ctx, 1, &cs->bs1k);
 	chksum_run(cs, abd, ctx, 2, &cs->bs4k);
@@ -203,7 +161,7 @@ chksum_benchit(chksum_stat_t *cs)
 	chksum_run(cs, abd, ctx, 4, &cs->bs64k);
 	chksum_run(cs, abd, ctx, 5, &cs->bs256k);
 
-	/* check if we ran on a slow cpu */
+	 
 	if (chksum_stat_limit == LIMIT_INIT) {
 		if (cs->bs1k < LIMIT_PERF_MBS) {
 			chksum_stat_limit = LIMIT_NEEDED;
@@ -212,14 +170,14 @@ chksum_benchit(chksum_stat_t *cs)
 		}
 	}
 
-	/* skip benchmarks >= 1MiB when the CPU is to slow */
+	 
 	if (chksum_stat_limit == LIMIT_NEEDED)
 		goto abort;
 
 	chksum_run(cs, abd, ctx, 6, &cs->bs1m);
 	abd_free(abd);
 
-	/* allocate test memory via abd non linear interface */
+	 
 	abd = abd_alloc(1<<24, B_FALSE);
 	chksum_run(cs, abd, ctx, 7, &cs->bs4m);
 	chksum_run(cs, abd, ctx, 8, &cs->bs16m);
@@ -227,19 +185,17 @@ chksum_benchit(chksum_stat_t *cs)
 abort:
 	abd_free(abd);
 
-	/* free up temp memory */
+	 
 	if (cs->free)
 		cs->free(ctx);
 }
 
-/*
- * Initialize and benchmark all supported implementations.
- */
+ 
 static void
 chksum_benchmark(void)
 {
 #ifndef _KERNEL
-	/* we need the benchmark only for the kernel module */
+	 
 	return;
 #endif
 
@@ -250,7 +206,7 @@ chksum_benchmark(void)
 	const zfs_impl_t *sha256 = zfs_impl_get_ops("sha256");
 	const zfs_impl_t *sha512 = zfs_impl_get_ops("sha512");
 
-	/* count implementations */
+	 
 	chksum_stat_cnt = 2;
 	chksum_stat_cnt += sha256->getcnt();
 	chksum_stat_cnt += sha512->getcnt();
@@ -258,10 +214,10 @@ chksum_benchmark(void)
 	chksum_stat_data = kmem_zalloc(
 	    sizeof (chksum_stat_t) * chksum_stat_cnt, KM_SLEEP);
 
-	/* edonr - needs to be the first one here (slow CPU check) */
+	 
 	cs = &chksum_stat_data[cbid++];
 
-	/* edonr */
+	 
 	cs->init = abd_checksum_edonr_tmpl_init;
 	cs->func = abd_checksum_edonr_native;
 	cs->free = abd_checksum_edonr_tmpl_free;
@@ -269,7 +225,7 @@ chksum_benchmark(void)
 	cs->impl = "generic";
 	chksum_benchit(cs);
 
-	/* skein */
+	 
 	cs = &chksum_stat_data[cbid++];
 	cs->init = abd_checksum_skein_tmpl_init;
 	cs->func = abd_checksum_skein_native;
@@ -278,7 +234,7 @@ chksum_benchmark(void)
 	cs->impl = "generic";
 	chksum_benchit(cs);
 
-	/* sha256 */
+	 
 	id_save = sha256->getid();
 	for (max = 0, id = 0; id < sha256->getcnt(); id++) {
 		sha256->setid(id);
@@ -296,7 +252,7 @@ chksum_benchmark(void)
 	}
 	sha256->setid(id_save);
 
-	/* sha512 */
+	 
 	id_save = sha512->getid();
 	for (max = 0, id = 0; id < sha512->getcnt(); id++) {
 		sha512->setid(id);
@@ -314,7 +270,7 @@ chksum_benchmark(void)
 	}
 	sha512->setid(id_save);
 
-	/* blake3 */
+	 
 	id_save = blake3->getid();
 	for (max = 0, id = 0; id < blake3->getcnt(); id++) {
 		blake3->setid(id);
@@ -340,10 +296,10 @@ chksum_init(void)
 	blake3_per_cpu_ctx_init();
 #endif
 
-	/* Benchmark supported implementations */
+	 
 	chksum_benchmark();
 
-	/* Install kstats for all implementations */
+	 
 	chksum_kstat = kstat_create("zfs", 0, "chksum_bench", "misc",
 	    KSTAT_TYPE_RAW, 0, KSTAT_FLAG_VIRTUAL);
 

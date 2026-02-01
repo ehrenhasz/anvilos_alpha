@@ -1,37 +1,8 @@
-/****************************************************************************
- * Copyright 2018,2020 Thomas E. Dickey                                     *
- * Copyright 2011-2014,2017 Free Software Foundation, Inc.                  *
- *                                                                          *
- * Permission is hereby granted, free of charge, to any person obtaining a  *
- * copy of this software and associated documentation files (the            *
- * "Software"), to deal in the Software without restriction, including      *
- * without limitation the rights to use, copy, modify, merge, publish,      *
- * distribute, distribute with modifications, sublicense, and/or sell       *
- * copies of the Software, and to permit persons to whom the Software is    *
- * furnished to do so, subject to the following conditions:                 *
- *                                                                          *
- * The above copyright notice and this permission notice shall be included  *
- * in all copies or substantial portions of the Software.                   *
- *                                                                          *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS  *
- * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF               *
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.   *
- * IN NO EVENT SHALL THE ABOVE COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,   *
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR    *
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR    *
- * THE USE OR OTHER DEALINGS IN THE SOFTWARE.                               *
- *                                                                          *
- * Except as contained in this notice, the name(s) of the above copyright   *
- * holders shall not be used in advertising or otherwise to promote the     *
- * sale, use or other dealings in this Software without prior written       *
- * authorization.                                                           *
- ****************************************************************************/
+ 
 
-/****************************************************************************
- *  Author: Thomas E. Dickey                        2011                    *
- ****************************************************************************/
+ 
 
-/* $Id: nc_termios.h,v 1.8 2020/08/29 20:53:19 tom Exp $ */
+ 
 
 #ifndef NC_TERMIOS_included
 #define NC_TERMIOS_included 1
@@ -40,14 +11,11 @@
 
 #if HAVE_TERMIOS_H && HAVE_TCGETATTR
 
-#else /* !HAVE_TERMIOS_H */
+#else  
 
 #if HAVE_TERMIO_H
 
-/* Add definitions to make termio look like termios.
- * But ifdef it, since there are some implementations
- * that try to do this for us in a fake <termio.h>.
- */
+ 
 #ifndef TCSADRAIN
 #define TCSADRAIN TCSETAW
 #endif
@@ -74,11 +42,11 @@
 #undef TERMIOS
 #endif
 
-#else /* !HAVE_TERMIO_H */
+#else  
 
 #if defined(_WIN32) && !defined(EXP_WIN32_DRIVER)
 
-/* lflag bits */
+ 
 #define ISIG	0x0001
 #define ICANON	0x0002
 #define ECHO	0x0004
@@ -96,7 +64,7 @@
 #define VQUIT	    10
 #define VTIME	    16
 
-/* iflag bits */
+ 
 #define IGNBRK	0x00001
 #define BRKINT	0x00002
 #define IGNPAR	0x00004
@@ -109,10 +77,10 @@
 #define IXOFF	0x01000
 #define PARMRK	0x10000
 
-/* oflag bits */
+ 
 #define OPOST	0x00001
 
-/* cflag bits */
+ 
 #define CBAUD	 0x0100f
 #define B0	 0x00000
 #define B50	 0x00001
@@ -160,9 +128,9 @@
 #undef  ttyname
 #define ttyname(fd) NULL
 
-#endif /* _WIN32 */
-#endif /* HAVE_TERMIO_H */
+#endif  
+#endif  
 
-#endif /* HAVE_TERMIOS_H */
+#endif  
 
-#endif /* NC_TERMIOS_included */
+#endif  

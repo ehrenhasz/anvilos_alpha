@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2018 MediaTek Inc.
- * Author: Zhiyong Tao <zhiyong.tao@mediatek.com>
- *
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/platform_device.h>
@@ -275,11 +271,11 @@ static const struct mtk_pin_ies_smt_set mt2712_ies_set[] = {
 };
 
 static const struct mtk_drv_group_desc mt2712_drv_grp[] =  {
-	/* 0E4E8SR 4/8/12/16 */
+	 
 	MTK_DRV_GRP(4, 16, 1, 2, 4),
-	/* 0E2E4SR  2/4/6/8 */
+	 
 	MTK_DRV_GRP(2, 8, 1, 2, 2),
-	/* E8E4E2  2/4/6/8/10/12/14/16 */
+	 
 	MTK_DRV_GRP(2, 16, 0, 2, 2)
 };
 

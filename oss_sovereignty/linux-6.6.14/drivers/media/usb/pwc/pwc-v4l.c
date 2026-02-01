@@ -1,18 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* Linux driver for Philips webcam
-   USB and Video4Linux interface part.
-   (C) 1999-2004 Nemosoft Unv.
-   (C) 2004-2006 Luc Saillard (luc@saillard.org)
-   (C) 2011 Hans de Goede <hdegoede@redhat.com>
 
-   NOTE: this version of pwc is an unofficial (modified) release of pwc & pcwx
-   driver and thus may have bugs that are not present in the original version.
-   Please send bug reports and support requests to <luc@saillard.org>.
-   The decompression routines have been implemented by reverse-engineering the
-   Nemosoft binary pwcx module. Caveat emptor.
-
-
-*/
+ 
 
 #include <linux/errno.h>
 #include <linux/init.h>
@@ -158,7 +145,7 @@ int pwc_init_controls(struct pwc_device *pdev)
 	if (r)
 		return r;
 
-	/* Brightness, contrast, saturation, gamma */
+	 
 	r = pwc_get_u8_ctrl(pdev, GET_LUM_CTL, BRIGHTNESS_FORMATTER, &def);
 	if (r || def > 127)
 		def = 63;
@@ -190,7 +177,7 @@ int pwc_init_controls(struct pwc_device *pdev)
 	pdev->gamma = v4l2_ctrl_new_std(hdl, &pwc_ctrl_ops,
 				V4L2_CID_GAMMA, 0, 31, 1, def);
 
-	/* auto white balance, red gain, blue gain */
+	 
 	r = pwc_get_u8_ctrl(pdev, GET_CHROM_CTL, WB_MODE_FORMATTER, &def);
 	if (r || def > awb_auto)
 		def = awb_auto;
@@ -198,7 +185,7 @@ int pwc_init_controls(struct pwc_device *pdev)
 	cfg.name = v4l2_ctrl_get_name(cfg.id);
 	cfg.def = def;
 	pdev->auto_white_balance = v4l2_ctrl_new_custom(hdl, &cfg, NULL);
-	/* check auto controls to avoid NULL deref in v4l2_ctrl_auto_cluster */
+	 
 	if (!pdev->auto_white_balance)
 		return hdl->error;
 
@@ -218,11 +205,11 @@ int pwc_init_controls(struct pwc_device *pdev)
 
 	v4l2_ctrl_auto_cluster(3, &pdev->auto_white_balance, awb_manual, true);
 
-	/* autogain, gain */
+	 
 	r = pwc_get_u8_ctrl(pdev, GET_LUM_CTL, AGC_MODE_FORMATTER, &def);
 	if (r || (def != 0 && def != 0xff))
 		def = 0;
-	/* Note a register value if 0 means auto gain is on */
+	 
 	pdev->autogain = v4l2_ctrl_new_std(hdl, &pwc_ctrl_ops,
 				V4L2_CID_AUTOGAIN, 0, 1, 1, def == 0);
 	if (!pdev->autogain)
@@ -234,16 +221,13 @@ int pwc_init_controls(struct pwc_device *pdev)
 	pdev->gain = v4l2_ctrl_new_std(hdl, &pwc_ctrl_ops,
 				V4L2_CID_GAIN, 0, 63, 1, def);
 
-	/* auto exposure, exposure */
+	 
 	if (DEVICE_USE_CODEC2(pdev->type)) {
 		r = pwc_get_u8_ctrl(pdev, GET_LUM_CTL, SHUTTER_MODE_FORMATTER,
 				    &def);
 		if (r || (def != 0 && def != 0xff))
 			def = 0;
-		/*
-		 * def = 0 auto, def = ff manual
-		 * menu idx 0 = auto, idx 1 = manual
-		 */
+		 
 		pdev->exposure_auto = v4l2_ctrl_new_std_menu(hdl,
 					&pwc_ctrl_ops,
 					V4L2_CID_EXPOSURE_AUTO,
@@ -251,26 +235,26 @@ int pwc_init_controls(struct pwc_device *pdev)
 		if (!pdev->exposure_auto)
 			return hdl->error;
 
-		/* GET_LUM_CTL, PRESET_SHUTTER_FORMATTER is unreliable */
+		 
 		r = pwc_get_u16_ctrl(pdev, GET_STATUS_CTL,
 				     READ_SHUTTER_FORMATTER, &def);
 		if (r || def > 655)
 			def = 655;
 		pdev->exposure = v4l2_ctrl_new_std(hdl, &pwc_ctrl_ops,
 					V4L2_CID_EXPOSURE, 0, 655, 1, def);
-		/* CODEC2: separate auto gain & auto exposure */
+		 
 		v4l2_ctrl_auto_cluster(2, &pdev->autogain, 0, true);
 		v4l2_ctrl_auto_cluster(2, &pdev->exposure_auto,
 				       V4L2_EXPOSURE_MANUAL, true);
 	} else if (DEVICE_USE_CODEC3(pdev->type)) {
-		/* GET_LUM_CTL, PRESET_SHUTTER_FORMATTER is unreliable */
+		 
 		r = pwc_get_u16_ctrl(pdev, GET_STATUS_CTL,
 				     READ_SHUTTER_FORMATTER, &def);
 		if (r || def > 255)
 			def = 255;
 		pdev->exposure = v4l2_ctrl_new_std(hdl, &pwc_ctrl_ops,
 					V4L2_CID_EXPOSURE, 0, 255, 1, def);
-		/* CODEC3: both gain and exposure controlled by autogain */
+		 
 		pdev->autogain_expo_cluster[0] = pdev->autogain;
 		pdev->autogain_expo_cluster[1] = pdev->gain;
 		pdev->autogain_expo_cluster[2] = pdev->exposure;
@@ -278,16 +262,16 @@ int pwc_init_controls(struct pwc_device *pdev)
 				       0, true);
 	}
 
-	/* color / bw setting */
+	 
 	r = pwc_get_u8_ctrl(pdev, GET_CHROM_CTL, COLOUR_MODE_FORMATTER,
 			 &def);
 	if (r || (def != 0 && def != 0xff))
 		def = 0xff;
-	/* def = 0 bw, def = ff color, menu idx 0 = color, idx 1 = bw */
+	 
 	pdev->colorfx = v4l2_ctrl_new_std_menu(hdl, &pwc_ctrl_ops,
 				V4L2_CID_COLORFX, 1, 0, def == 0);
 
-	/* autocontour, contour */
+	 
 	r = pwc_get_u8_ctrl(pdev, GET_LUM_CTL, AUTO_CONTOUR_FORMATTER, &def);
 	if (r || (def != 0 && def != 0xff))
 		def = 0;
@@ -306,7 +290,7 @@ int pwc_init_controls(struct pwc_device *pdev)
 
 	v4l2_ctrl_auto_cluster(2, &pdev->autocontour, 0, false);
 
-	/* backlight */
+	 
 	r = pwc_get_u8_ctrl(pdev, GET_LUM_CTL,
 			    BACK_LIGHT_COMPENSATION_FORMATTER, &def);
 	if (r || (def != 0 && def != 0xff))
@@ -316,7 +300,7 @@ int pwc_init_controls(struct pwc_device *pdev)
 	cfg.def = def == 0;
 	pdev->backlight = v4l2_ctrl_new_custom(hdl, &cfg, NULL);
 
-	/* flikker rediction */
+	 
 	r = pwc_get_u8_ctrl(pdev, GET_LUM_CTL,
 			    FLICKERLESS_MODE_FORMATTER, &def);
 	if (r || (def != 0 && def != 0xff))
@@ -326,7 +310,7 @@ int pwc_init_controls(struct pwc_device *pdev)
 	cfg.def = def == 0;
 	pdev->flicker = v4l2_ctrl_new_custom(hdl, &cfg, NULL);
 
-	/* Dynamic noise reduction */
+	 
 	r = pwc_get_u8_ctrl(pdev, GET_LUM_CTL,
 			    DYNAMIC_NOISE_CONTROL_FORMATTER, &def);
 	if (r || def > 3)
@@ -335,7 +319,7 @@ int pwc_init_controls(struct pwc_device *pdev)
 	cfg.def = def;
 	pdev->noise_reduction = v4l2_ctrl_new_custom(hdl, &cfg, NULL);
 
-	/* Save / Restore User / Factory Settings */
+	 
 	pdev->save_user = v4l2_ctrl_new_custom(hdl, &pwc_save_user_cfg, NULL);
 	pdev->restore_user = v4l2_ctrl_new_custom(hdl, &pwc_restore_user_cfg,
 						  NULL);
@@ -347,7 +331,7 @@ int pwc_init_controls(struct pwc_device *pdev)
 	if (pdev->restore_factory)
 		pdev->restore_factory->flags |= V4L2_CTRL_FLAG_UPDATE;
 
-	/* Auto White Balance speed & delay */
+	 
 	r = pwc_get_u8_ctrl(pdev, GET_CHROM_CTL,
 			    AWB_CONTROL_SPEED_FORMATTER, &def);
 	if (r || def < 1 || def > 32)
@@ -367,7 +351,7 @@ int pwc_init_controls(struct pwc_device *pdev)
 	if (!(pdev->features & FEATURE_MOTOR_PANTILT))
 		return hdl->error;
 
-	/* Motor pan / tilt / reset */
+	 
 	pdev->motor_pan = v4l2_ctrl_new_std(hdl, &pwc_ctrl_ops,
 				V4L2_CID_PAN_RELATIVE, -4480, 4480, 64, 0);
 	if (!pdev->motor_pan)
@@ -405,7 +389,7 @@ static void pwc_vidioc_fill_fmt(struct v4l2_format *f,
 			(f->fmt.pix.pixelformat>>24)&255);
 }
 
-/* ioctl(VIDIOC_TRY_FMT) */
+ 
 static int pwc_vidioc_try_fmt(struct pwc_device *pdev, struct v4l2_format *f)
 {
 	int size;
@@ -444,7 +428,7 @@ static int pwc_vidioc_try_fmt(struct pwc_device *pdev, struct v4l2_format *f)
 	return 0;
 }
 
-/* ioctl(VIDIOC_SET_FMT) */
+ 
 
 static int pwc_s_fmt_vid_cap(struct file *file, void *fh, struct v4l2_format *f)
 {
@@ -488,7 +472,7 @@ static int pwc_querycap(struct file *file, void *fh, struct v4l2_capability *cap
 
 static int pwc_enum_input(struct file *file, void *fh, struct v4l2_input *i)
 {
-	if (i->index)	/* Only one INPUT is supported */
+	if (i->index)	 
 		return -EINVAL;
 
 	strscpy(i->name, "Camera", sizeof(i->name));
@@ -553,7 +537,7 @@ static int pwc_g_volatile_ctrl(struct v4l2_ctrl *ctrl)
 		pdev->gain_valid = true;
 		if (!DEVICE_USE_CODEC3(pdev->type))
 			break;
-		/* For CODEC3 where autogain also controls expo */
+		 
 		fallthrough;
 	case V4L2_CID_EXPOSURE_AUTO:
 		if (pdev->exposure_valid && time_before(jiffies,
@@ -592,12 +576,9 @@ static int pwc_set_awb(struct pwc_device *pdev)
 			return ret;
 
 		if (pdev->auto_white_balance->val != awb_manual)
-			pdev->color_bal_valid = false; /* Force cache update */
+			pdev->color_bal_valid = false;  
 
-		/*
-		 * If this is a preset, update our red / blue balance values
-		 * so that events get generated for the new preset values
-		 */
+		 
 		if (pdev->auto_white_balance->val == awb_indoor ||
 		    pdev->auto_white_balance->val == awb_outdoor ||
 		    pdev->auto_white_balance->val == awb_fl)
@@ -624,7 +605,7 @@ static int pwc_set_awb(struct pwc_device *pdev)
 	return 0;
 }
 
-/* For CODEC2 models which have separate autogain and auto exposure */
+ 
 static int pwc_set_autogain(struct pwc_device *pdev)
 {
 	int ret;
@@ -637,7 +618,7 @@ static int pwc_set_autogain(struct pwc_device *pdev)
 			return ret;
 
 		if (pdev->autogain->val)
-			pdev->gain_valid = false; /* Force cache update */
+			pdev->gain_valid = false;  
 	}
 
 	if (pdev->autogain->val)
@@ -653,7 +634,7 @@ static int pwc_set_autogain(struct pwc_device *pdev)
 	return 0;
 }
 
-/* For CODEC2 models which have separate autogain and auto exposure */
+ 
 static int pwc_set_exposure_auto(struct pwc_device *pdev)
 {
 	int ret;
@@ -667,7 +648,7 @@ static int pwc_set_exposure_auto(struct pwc_device *pdev)
 			return ret;
 
 		if (is_auto)
-			pdev->exposure_valid = false; /* Force cache update */
+			pdev->exposure_valid = false;  
 	}
 
 	if (is_auto)
@@ -683,7 +664,7 @@ static int pwc_set_exposure_auto(struct pwc_device *pdev)
 	return 0;
 }
 
-/* For CODEC3 models which have autogain controlling both gain and exposure */
+ 
 static int pwc_set_autogain_expo(struct pwc_device *pdev)
 {
 	int ret;
@@ -696,8 +677,8 @@ static int pwc_set_autogain_expo(struct pwc_device *pdev)
 			return ret;
 
 		if (pdev->autogain->val) {
-			pdev->gain_valid     = false; /* Force cache update */
-			pdev->exposure_valid = false; /* Force cache update */
+			pdev->gain_valid     = false;  
+			pdev->exposure_valid = false;  
 		}
 	}
 
@@ -868,10 +849,10 @@ static int pwc_enum_fmt_vid_cap(struct file *file, void *fh, struct v4l2_fmtdesc
 {
 	struct pwc_device *pdev = video_drvdata(file);
 
-	/* We only support two format: the raw format, and YUV */
+	 
 	switch (f->index) {
 	case 0:
-		/* RAW format */
+		 
 		f->pixelformat = pdev->type <= 646 ? V4L2_PIX_FMT_PWC1 : V4L2_PIX_FMT_PWC2;
 		break;
 	case 1:
@@ -943,7 +924,7 @@ static int pwc_enum_frameintervals(struct file *file, void *fh,
 		}
 	}
 
-	/* TODO: Support raw format */
+	 
 	if (size < 0 || fival->pixel_format != V4L2_PIX_FMT_YUV420)
 		return -EINVAL;
 
@@ -987,9 +968,7 @@ static int pwc_s_parm(struct file *file, void *fh,
 	if (parm->type != V4L2_BUF_TYPE_VIDEO_CAPTURE)
 		return -EINVAL;
 
-	/* If timeperframe == 0, then reset the framerate to the nominal value.
-	   We pick a high framerate here, and let pwc_set_video_mode() figure
-	   out the best match. */
+	 
 	if (parm->parm.capture.timeperframe.numerator == 0 ||
 	    parm->parm.capture.timeperframe.denominator == 0)
 		fps = 30;

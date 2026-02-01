@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * AD7606 SPI ADC driver
- *
- * Copyright 2011 Analog Devices Inc.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/spi/spi.h>
@@ -13,7 +9,7 @@
 #include <linux/iio/iio.h>
 #include "ad7606.h"
 
-#define MAX_SPI_FREQ_HZ		23500000	/* VDRIVE above 4.75 V */
+#define MAX_SPI_FREQ_HZ		23500000	 
 
 #define AD7616_CONFIGURATION_REGISTER	0x02
 #define AD7616_OS_MASK			GENMASK(4, 2)
@@ -21,24 +17,16 @@
 #define AD7616_SEQEN_MODE		BIT(5)
 #define AD7616_RANGE_CH_A_ADDR_OFF	0x04
 #define AD7616_RANGE_CH_B_ADDR_OFF	0x06
-/*
- * Range of channels from a group are stored in 2 registers.
- * 0, 1, 2, 3 in a register followed by 4, 5, 6, 7 in second register.
- * For channels from second group(8-15) the order is the same, only with
- * an offset of 2 for register address.
- */
+ 
 #define AD7616_RANGE_CH_ADDR(ch)	((ch) >> 2)
-/* The range of the channel is stored in 2 bits */
+ 
 #define AD7616_RANGE_CH_MSK(ch)		(0b11 << (((ch) & 0b11) * 2))
 #define AD7616_RANGE_CH_MODE(ch, mode)	((mode) << ((((ch) & 0b11)) * 2))
 
 #define AD7606_CONFIGURATION_REGISTER	0x02
 #define AD7606_SINGLE_DOUT		0x00
 
-/*
- * Range for AD7606B channels are stored in registers starting with address 0x3.
- * Each register stores range for 2 channels(4 bits per channel).
- */
+ 
 #define AD7606_RANGE_CH_MSK(ch)		(GENMASK(3, 0) << (4 * ((ch) & 0x1)))
 #define AD7606_RANGE_CH_MODE(ch, mode)	\
 	((GENMASK(3, 0) & mode) << (4 * ((ch) & 0x1)))
@@ -83,20 +71,13 @@ static const unsigned int ad7606B_oversampling_avail[9] = {
 
 static u16 ad7616_spi_rd_wr_cmd(int addr, char isWriteOp)
 {
-	/*
-	 * The address of register consist of one w/r bit
-	 * 6 bits of address followed by one reserved bit.
-	 */
+	 
 	return ((addr & 0x7F) << 1) | ((isWriteOp & 0x1) << 7);
 }
 
 static u16 ad7606B_spi_rd_wr_cmd(int addr, char is_write_op)
 {
-	/*
-	 * The address of register consists of one bit which
-	 * specifies a read command placed in bit 6, followed by
-	 * 6 bits of address.
-	 */
+	 
 	return (addr & 0x3F) | (((~is_write_op) & 0x1) << 6);
 }
 
@@ -179,23 +160,17 @@ static int ad7616_write_scale_sw(struct iio_dev *indio_dev, int ch, int val)
 	unsigned int ch_addr, mode, ch_index;
 
 
-	/*
-	 * Ad7616 has 16 channels divided in group A and group B.
-	 * The range of channels from A are stored in registers with address 4
-	 * while channels from B are stored in register with address 6.
-	 * The last bit from channels determines if it is from group A or B
-	 * because the order of channels in iio is 0A, 0B, 1A, 1B...
-	 */
+	 
 	ch_index = ch >> 1;
 
 	ch_addr = AD7616_RANGE_CH_ADDR(ch_index);
 
-	if ((ch & 0x1) == 0) /* channel A */
+	if ((ch & 0x1) == 0)  
 		ch_addr += AD7616_RANGE_CH_A_ADDR_OFF;
-	else	/* channel B */
+	else	 
 		ch_addr += AD7616_RANGE_CH_B_ADDR_OFF;
 
-	/* 0b01 for 2.5v, 0b10 for 5v and 0b11 for 10v */
+	 
 	mode = AD7616_RANGE_CH_MODE(ch_index, ((val + 1) & 0b11));
 	return st->bops->write_mask(st, ch_addr, AD7616_RANGE_CH_MSK(ch_index),
 				     mode);
@@ -230,16 +205,13 @@ static int ad7616_sw_mode_config(struct iio_dev *indio_dev)
 {
 	struct ad7606_state *st = iio_priv(indio_dev);
 
-	/*
-	 * Scale can be configured individually for each channel
-	 * in software mode.
-	 */
+	 
 	indio_dev->channels = ad7616_sw_channels;
 
 	st->write_scale = ad7616_write_scale_sw;
 	st->write_os = &ad7616_write_os_sw;
 
-	/* Activate Burst mode and SEQEN MODE */
+	 
 	return st->bops->write_mask(st,
 			      AD7616_CONFIGURATION_REGISTER,
 			      AD7616_BURST_MODE | AD7616_SEQEN_MODE,
@@ -251,32 +223,24 @@ static int ad7606B_sw_mode_config(struct iio_dev *indio_dev)
 	struct ad7606_state *st = iio_priv(indio_dev);
 	unsigned long os[3] = {1};
 
-	/*
-	 * Software mode is enabled when all three oversampling
-	 * pins are set to high. If oversampling gpios are defined
-	 * in the device tree, then they need to be set to high,
-	 * otherwise, they must be hardwired to VDD
-	 */
+	 
 	if (st->gpio_os) {
 		gpiod_set_array_value(ARRAY_SIZE(os),
 				      st->gpio_os->desc, st->gpio_os->info, os);
 	}
-	/* OS of 128 and 256 are available only in software mode */
+	 
 	st->oversampling_avail = ad7606B_oversampling_avail;
 	st->num_os_ratios = ARRAY_SIZE(ad7606B_oversampling_avail);
 
 	st->write_scale = ad7606_write_scale_sw;
 	st->write_os = &ad7606_write_os_sw;
 
-	/* Configure device spi to output on a single channel */
+	 
 	st->bops->reg_write(st,
 			    AD7606_CONFIGURATION_REGISTER,
 			    AD7606_SINGLE_DOUT);
 
-	/*
-	 * Scale can be configured individually for each channel
-	 * in software mode.
-	 */
+	 
 	indio_dev->channels = ad7606b_sw_channels;
 
 	return 0;

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * FSI hub master driver
- *
- * Copyright (C) IBM Corporation 2016
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/fsi.h>
@@ -15,29 +11,14 @@
 
 #define FSI_ENGID_HUB_MASTER		0x1c
 
-#define FSI_LINK_ENABLE_SETUP_TIME	10	/* in mS */
+#define FSI_LINK_ENABLE_SETUP_TIME	10	 
 
-/*
- * FSI hub master support
- *
- * A hub master increases the number of potential target devices that the
- * primary FSI master can access. For each link a primary master supports,
- * each of those links can in turn be chained to a hub master with multiple
- * links of its own.
- *
- * The hub is controlled by a set of control registers exposed as a regular fsi
- * device (the hub->upstream device), and provides access to the downstream FSI
- * bus as through an address range on the slave itself (->addr and ->size).
- *
- * [This differs from "cascaded" masters, which expose the entire downstream
- * bus entirely through the fsi device address range, and so have a smaller
- * accessible address space.]
- */
+ 
 struct fsi_master_hub {
 	struct fsi_master	master;
 	struct fsi_device	*upstream;
-	uint32_t		addr, size;	/* slave-relative addr of */
-						/* master address space */
+	uint32_t		addr, size;	 
+						 
 };
 
 #define to_fsi_master_hub(m) container_of(m, struct fsi_master_hub, master)
@@ -110,7 +91,7 @@ static void hub_master_release(struct device *dev)
 	kfree(hub);
 }
 
-/* mmode encoders */
+ 
 static inline u32 fsi_mmode_crs0(u32 x)
 {
 	return (x & FSI_MMODE_CRS0MASK) << FSI_MMODE_CRS0SHFT;
@@ -133,7 +114,7 @@ static int hub_master_init(struct fsi_master_hub *hub)
 	if (rc)
 		return rc;
 
-	/* Initialize the MFSI (hub master) engine */
+	 
 	reg = cpu_to_be32(FSI_MRESP_RST_ALL_MASTER | FSI_MRESP_RST_ALL_LINK
 			| FSI_MRESP_RST_MCR | FSI_MRESP_RST_PYE);
 	rc = fsi_device_write(dev, FSI_MRESP0, &reg, sizeof(reg));
@@ -162,7 +143,7 @@ static int hub_master_init(struct fsi_master_hub *hub)
 	if (rc)
 		return rc;
 
-	/* Leave enabled long enough for master logic to set up */
+	 
 	mdelay(FSI_LINK_ENABLE_SETUP_TIME);
 
 	rc = fsi_device_write(dev, FSI_MCENP0, &reg, sizeof(reg));
@@ -182,7 +163,7 @@ static int hub_master_init(struct fsi_master_hub *hub)
 	if (rc)
 		return rc;
 
-	/* Reset the master bridge */
+	 
 	reg = cpu_to_be32(FSI_MRESB_RST_GEN);
 	rc = fsi_device_write(dev, FSI_MRESB0, &reg, sizeof(reg));
 	if (rc)
@@ -243,13 +224,7 @@ static int hub_master_probe(struct device *dev)
 	if (rc)
 		goto err_release;
 
-	/* At this point, fsi_master_register performs the device_initialize(),
-	 * and holds the sole reference on master.dev. This means the device
-	 * will be freed (via ->release) during any subsequent call to
-	 * fsi_master_unregister.  We add our own reference to it here, so we
-	 * can perform cleanup (in _remove()) without it being freed before
-	 * we're ready.
-	 */
+	 
 	get_device(&hub->master.dev);
 	return 0;
 
@@ -267,10 +242,7 @@ static int hub_master_remove(struct device *dev)
 	fsi_slave_release_range(hub->upstream->slave, hub->addr, hub->size);
 	of_node_put(hub->master.dev.of_node);
 
-	/*
-	 * master.dev will likely be ->release()ed after this, which free()s
-	 * the hub
-	 */
+	 
 	put_device(&hub->master.dev);
 
 	return 0;

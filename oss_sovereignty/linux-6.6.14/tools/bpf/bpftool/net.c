@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-// Copyright (C) 2018 Facebook
+
+
 
 #ifndef _GNU_SOURCE
 #define _GNU_SOURCE
@@ -391,7 +391,7 @@ static int dump_class_qdisc_nlmsg(void *cookie, void *msg, struct nlattr **tb)
 	struct tcmsg *info = msg;
 
 	if (tcinfo->is_qdisc) {
-		/* skip clsact qdisc */
+		 
 		if (tb[TCA_KIND] &&
 		    strcmp(libbpf_nla_data(tb[TCA_KIND]), "clsact") == 0)
 			return 0;
@@ -542,7 +542,7 @@ static int show_dev_tc_bpf_classic(int sock, unsigned int nl_pid,
 			goto out;
 	}
 
-	/* root, ingress and egress handle */
+	 
 	handle = TC_H_ROOT;
 	filter_info.kind = "root";
 	ret = netlink_get_filter(sock, nl_pid, dev->ifindex, handle,
@@ -589,9 +589,7 @@ static int query_flow_dissector(struct bpf_attach_info *attach_info)
 	close(fd);
 	if (err) {
 		if (errno == EINVAL) {
-			/* Older kernel's don't support querying
-			 * flow dissector programs.
-			 */
+			 
 			errno = 0;
 			return 0;
 		}
@@ -648,7 +646,7 @@ static int do_attach(int argc, char **argv)
 	int progfd, ifindex, err = 0;
 	bool overwrite = false;
 
-	/* parse attach args */
+	 
 	if (!REQ_ARGS(5))
 		return -EINVAL;
 
@@ -679,7 +677,7 @@ static int do_attach(int argc, char **argv)
 		}
 	}
 
-	/* attach xdp prog */
+	 
 	if (is_prefix("xdp", attach_type_strings[attach_type]))
 		err = do_attach_detach_xdp(progfd, attach_type, ifindex,
 					   overwrite);
@@ -701,7 +699,7 @@ static int do_detach(int argc, char **argv)
 	enum net_attach_type attach_type;
 	int progfd, ifindex, err = 0;
 
-	/* parse detach args */
+	 
 	if (!REQ_ARGS(3))
 		return -EINVAL;
 
@@ -716,7 +714,7 @@ static int do_detach(int argc, char **argv)
 	if (ifindex < 1)
 		return -EINVAL;
 
-	/* detach xdp prog */
+	 
 	progfd = -1;
 	if (is_prefix("xdp", attach_type_strings[attach_type]))
 		err = do_attach_detach_xdp(progfd, attach_type, ifindex, NULL);

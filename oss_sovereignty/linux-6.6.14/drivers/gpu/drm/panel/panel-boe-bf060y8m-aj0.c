@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * BOE BF060Y8M-AJ0 5.99" MIPI-DSI OLED Panel on SW43404 DriverIC
- *
- * Copyright (c) 2020 AngeloGioacchino Del Regno
- *                    <angelogioacchino.delregno@somainline.org>
- */
+
+ 
 
 #include <linux/backlight.h>
 #include <linux/delay.h>
@@ -103,7 +98,7 @@ static int boe_bf060y8m_aj0_off(struct boe_bf060y8m_aj0 *boe)
 	struct device *dev = &dsi->dev;
 	int ret;
 
-	/* OFF commands sent in HS mode */
+	 
 	dsi->mode_flags &= ~MIPI_DSI_MODE_LPM;
 	ret = mipi_dsi_dcs_set_display_off(dsi);
 	if (ret < 0) {
@@ -132,11 +127,7 @@ static int boe_bf060y8m_aj0_prepare(struct drm_panel *panel)
 	if (boe->prepared)
 		return 0;
 
-	/*
-	 * Enable EL Driving Voltage first - doing that at the beginning
-	 * or at the end of the power sequence doesn't matter, so enable
-	 * it here to avoid yet another usleep at the end.
-	 */
+	 
 	ret = regulator_enable(boe->vregs[BF060Y8M_VREG_EL_VDD].consumer);
 	if (ret)
 		return ret;
@@ -210,8 +201,8 @@ static const struct drm_display_mode boe_bf060y8m_aj0_mode = {
 	.vsync_start = 2160 + 16,
 	.vsync_end = 2160 + 16 + 1,
 	.vtotal = 2160 + 16 + 1 + 15,
-	.width_mm = 68,   /* 68.04 mm */
-	.height_mm = 136, /* 136.08 mm */
+	.width_mm = 68,    
+	.height_mm = 136,  
 };
 
 static int boe_bf060y8m_aj0_get_modes(struct drm_panel *panel,
@@ -323,21 +314,13 @@ static int boe_bf060y8m_aj0_init_vregs(struct boe_bf060y8m_aj0 *boe,
 	if (!ret)
 		return ret;
 
-	/* ELVSS is negative: -5.00V to -1.40V */
+	 
 	vreg = boe->vregs[BF060Y8M_VREG_EL_VSS].consumer;
 	ret = regulator_is_supported_voltage(vreg, 1400000, 5000000);
 	if (!ret)
 		return ret;
 
-	/*
-	 * Set min/max rated current, known only for VCI and VDDIO and,
-	 * in case of failure, just go on gracefully, as this step is not
-	 * guaranteed to succeed on all regulator HW but do a debug print
-	 * to inform the developer during debugging.
-	 * In any case, these two supplies are also optional, so they may
-	 * be fixed-regulator which, at the time of writing, does not
-	 * support fake current limiting.
-	 */
+	 
 	vreg = boe->vregs[BF060Y8M_VREG_VDDIO].consumer;
 	ret = regulator_set_current_limit(vreg, 1500, 2500);
 	if (ret)
@@ -416,7 +399,7 @@ static void boe_bf060y8m_aj0_remove(struct mipi_dsi_device *dsi)
 
 static const struct of_device_id boe_bf060y8m_aj0_of_match[] = {
 	{ .compatible = "boe,bf060y8m-aj0" },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, boe_bf060y8m_aj0_of_match);
 

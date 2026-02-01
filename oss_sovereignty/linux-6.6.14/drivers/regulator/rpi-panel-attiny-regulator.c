@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2020 Marek Vasut <marex@denx.de>
- *
- * Based on rpi_touchscreen.c by Eric Anholt <eric@anholt.net>
- */
+
+ 
 
 #include <linux/backlight.h>
 #include <linux/err.h>
@@ -18,7 +14,7 @@
 #include <linux/regulator/of_regulator.h>
 #include <linux/slab.h>
 
-/* I2C registers of the Atmel microcontroller. */
+ 
 #define REG_ID		0x80
 #define REG_PORTA	0x81
 #define REG_PORTB	0x82
@@ -45,8 +41,8 @@
 #define PC_RST_BRIDGE_N		BIT(3)
 
 enum gpio_signals {
-	RST_BRIDGE_N,	/* TC358762 bridge reset */
-	RST_TP_N,	/* Touch controller reset */
+	RST_BRIDGE_N,	 
+	RST_TP_N,	 
 	NUM_GPIO
 };
 
@@ -61,7 +57,7 @@ static const struct gpio_signal_mappings mappings[NUM_GPIO] = {
 };
 
 struct attiny_lcd {
-	/* lock to serialise overall accesses to the Atmel */
+	 
 	struct mutex	lock;
 	struct regmap	*regmap;
 	bool gpio_states[NUM_GPIO];
@@ -95,21 +91,17 @@ static int attiny_lcd_power_enable(struct regulator_dev *rdev)
 
 	mutex_lock(&state->lock);
 
-	/* Ensure bridge, and tp stay in reset */
+	 
 	attiny_set_port_state(state, REG_PORTC, 0);
 	usleep_range(5000, 10000);
 
-	/* Default to the same orientation as the closed source
-	 * firmware used for the panel.  Runtime rotation
-	 * configuration will be supported using VC4's plane
-	 * orientation bits.
-	 */
+	 
 	attiny_set_port_state(state, REG_PORTA, PA_LCD_LR);
 	usleep_range(5000, 10000);
-	/* Main regulator on, and power to the panel (LCD_VCC_N) */
+	 
 	attiny_set_port_state(state, REG_PORTB, PB_LCD_MAIN);
 	usleep_range(5000, 10000);
-	/* Bring controllers out of reset */
+	 
 	attiny_set_port_state(state, REG_PORTC, PC_LED_EN);
 
 	msleep(80);
@@ -252,7 +244,7 @@ static int attiny_i2c_read(struct i2c_client *client, u8 reg, unsigned int *buf)
 	u8 data_buf[1] = { 0, };
 	int ret;
 
-	/* Write register address */
+	 
 	msgs[0].addr = client->addr;
 	msgs[0].flags = 0;
 	msgs[0].len = ARRAY_SIZE(addr_buf);
@@ -264,7 +256,7 @@ static int attiny_i2c_read(struct i2c_client *client, u8 reg, unsigned int *buf)
 
 	usleep_range(5000, 10000);
 
-	/* Read data from register */
+	 
 	msgs[0].addr = client->addr;
 	msgs[0].flags = I2C_M_RD;
 	msgs[0].len = 1;
@@ -278,9 +270,7 @@ static int attiny_i2c_read(struct i2c_client *client, u8 reg, unsigned int *buf)
 	return 0;
 }
 
-/*
- * I2C driver interface functions
- */
+ 
 static int attiny_i2c_probe(struct i2c_client *i2c)
 {
 	struct backlight_properties props = { };
@@ -314,8 +304,8 @@ static int attiny_i2c_probe(struct i2c_client *i2c)
 	}
 
 	switch (data) {
-	case 0xde: /* ver 1 */
-	case 0xc3: /* ver 2 */
+	case 0xde:  
+	case 0xc3:  
 		break;
 	default:
 		dev_err(&i2c->dev, "Unknown Atmel firmware revision: 0x%02x\n", data);

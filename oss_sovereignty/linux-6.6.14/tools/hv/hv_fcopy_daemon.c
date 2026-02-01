@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * An implementation of host to guest copy functionality for Linux.
- *
- * Copyright (C) 2014, Microsoft, Inc.
- *
- * Author : K. Y. Srinivasan <kys@microsoft.com>
- */
+
+ 
 
 
 #include <sys/types.h>
@@ -36,10 +30,7 @@ static int hv_start_fcopy(struct hv_start_fcopy *smsg)
 		 (char *)smsg->path_name, (char *)smsg->file_name);
 
 	syslog(LOG_INFO, "Target file name: %s", target_fname);
-	/*
-	 * Check to see if the path is already in place; if not,
-	 * create if required.
-	 */
+	 
 	while ((q = strchr(p, '/')) != NULL) {
 		if (q == p) {
 			p++;
@@ -110,16 +101,7 @@ static int hv_copy_data(struct hv_do_fcopy *cpmsg)
 	return ret;
 }
 
-/*
- * Reset target_fname to "" in the two below functions for hibernation: if
- * the fcopy operation is aborted by hibernation, the daemon should remove the
- * partially-copied file; to achieve this, the hv_utils driver always fakes a
- * CANCEL_FCOPY message upon suspend, and later when the VM resumes back,
- * the daemon calls hv_copy_cancel() to remove the file; if a file is copied
- * successfully before suspend, hv_copy_finished() must reset target_fname to
- * avoid that the file can be incorrectly removed upon resume, since the faked
- * CANCEL_FCOPY message is spurious in this case.
- */
+ 
 static int hv_copy_finished(void)
 {
 	close(target_fd);
@@ -189,7 +171,7 @@ int main(int argc, char *argv[])
 reopen_fcopy_fd:
 	if (fcopy_fd != -1)
 		close(fcopy_fd);
-	/* Remove any possible partially-copied file on error */
+	 
 	hv_copy_cancel();
 	in_handshake = 1;
 	fcopy_fd = open("/dev/vmbus/hv_fcopy", O_RDWR);
@@ -200,19 +182,14 @@ reopen_fcopy_fd:
 		exit(EXIT_FAILURE);
 	}
 
-	/*
-	 * Register with the kernel.
-	 */
+	 
 	if ((write(fcopy_fd, &version, sizeof(int))) != sizeof(int)) {
 		syslog(LOG_ERR, "Registration failed: %s", strerror(errno));
 		exit(EXIT_FAILURE);
 	}
 
 	while (1) {
-		/*
-		 * In this loop we process fcopy messages after the
-		 * handshake is complete.
-		 */
+		 
 		ssize_t len;
 
 		len = pread(fcopy_fd, &buffer, sizeof(buffer), 0);
@@ -253,11 +230,7 @@ reopen_fcopy_fd:
 
 		}
 
-		/*
-		 * pwrite() may return an error due to the faked CANCEL_FCOPY
-		 * message upon hibernation. Ignore the error by resetting the
-		 * dev file, i.e. closing and re-opening it.
-		 */
+		 
 		if (pwrite(fcopy_fd, &error, sizeof(int), 0) != sizeof(int)) {
 			syslog(LOG_ERR, "pwrite failed: %s", strerror(errno));
 			goto reopen_fcopy_fd;

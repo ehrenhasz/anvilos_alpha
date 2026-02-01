@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/backing-dev.h>
@@ -25,7 +25,7 @@ static void blk_mq_ctx_sysfs_release(struct kobject *kobj)
 {
 	struct blk_mq_ctx *ctx = container_of(kobj, struct blk_mq_ctx, kobj);
 
-	/* ctx->ctxs won't be released until all ctx are freed */
+	 
 	kobject_put(&ctx->ctxs->kobj);
 }
 

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Pinctrl / GPIO driver for StarFive JH7110 SoC
- *
- * Copyright (C) 2022 Emil Renner Berthing <kernel@esmil.dk>
- * Copyright (C) 2022 StarFive Technology Co., Ltd.
- */
+
+ 
 
 #include <linux/bits.h>
 #include <linux/clk.h>
@@ -32,7 +27,7 @@
 #include "../pinconf.h"
 #include "pinctrl-starfive-jh7110.h"
 
-/* pad control bits */
+ 
 #define JH7110_PADCFG_POS	BIT(7)
 #define JH7110_PADCFG_SMT	BIT(6)
 #define JH7110_PADCFG_SLEW	BIT(5)
@@ -46,12 +41,7 @@
 #define JH7110_PADCFG_DS_12MA	(3U << 1)
 #define JH7110_PADCFG_IE	BIT(0)
 
-/*
- * The packed pinmux values from the device tree look like this:
- *
- *  | 31 - 24 | 23 - 16 | 15 - 10 |  9 - 8   | 7 - 0 |
- *  |   din   |  dout   |  doen   | function |  pin  |
- */
+ 
 static unsigned int jh7110_pinmux_din(u32 v)
 {
 	return (v & GENMASK(31, 24)) >> 24;
@@ -212,7 +202,7 @@ static int jh7110_dt_node_to_map(struct pinctrl_dev *pctldev,
 			goto put_child;
 		}
 
-		/* don't create a map if there are no pinconf settings */
+		 
 		if (map[nmaps].data.configs.num_configs == 0)
 			continue;
 
@@ -578,7 +568,7 @@ static int jh7110_gpio_direction_input(struct gpio_chip *gc,
 			struct jh7110_pinctrl, gc);
 	const struct jh7110_pinctrl_soc_info *info = sfp->info;
 
-	/* enable input and schmitt trigger */
+	 
 	jh7110_padcfg_rmw(sfp, gpio,
 			  JH7110_PADCFG_IE | JH7110_PADCFG_SMT,
 			  JH7110_PADCFG_IE | JH7110_PADCFG_SMT);
@@ -602,7 +592,7 @@ static int jh7110_gpio_direction_output(struct gpio_chip *gc,
 				GPI_NONE, value ? GPOUT_HIGH : GPOUT_LOW,
 				GPOEN_ENABLE, 0);
 
-	/* disable input, schmitt trigger and bias */
+	 
 	jh7110_padcfg_rmw(sfp, gpio,
 			  JH7110_PADCFG_IE | JH7110_PADCFG_SMT |
 			  JH7110_PADCFG_BIAS, 0);
@@ -788,29 +778,29 @@ static int jh7110_irq_set_type(struct irq_data *d, unsigned int trigger)
 
 	switch (trigger) {
 	case IRQ_TYPE_EDGE_RISING:
-		irq_type  = mask; /* 1: edge triggered */
-		edge_both = 0;    /* 0: single edge */
-		polarity  = mask; /* 1: rising edge */
+		irq_type  = mask;  
+		edge_both = 0;     
+		polarity  = mask;  
 		break;
 	case IRQ_TYPE_EDGE_FALLING:
-		irq_type  = mask; /* 1: edge triggered */
-		edge_both = 0;    /* 0: single edge */
-		polarity  = 0;    /* 0: falling edge */
+		irq_type  = mask;  
+		edge_both = 0;     
+		polarity  = 0;     
 		break;
 	case IRQ_TYPE_EDGE_BOTH:
-		irq_type  = mask; /* 1: edge triggered */
-		edge_both = mask; /* 1: both edges */
-		polarity  = 0;    /* 0: ignored */
+		irq_type  = mask;  
+		edge_both = mask;  
+		polarity  = 0;     
 		break;
 	case IRQ_TYPE_LEVEL_HIGH:
-		irq_type  = 0;    /* 0: level triggered */
-		edge_both = 0;    /* 0: ignored */
-		polarity  = mask; /* 1: high level */
+		irq_type  = 0;     
+		edge_both = 0;     
+		polarity  = mask;  
 		break;
 	case IRQ_TYPE_LEVEL_LOW:
-		irq_type  = 0;    /* 0: level triggered */
-		edge_both = 0;    /* 0: ignored */
-		polarity  = 0;    /* 0: low level */
+		irq_type  = 0;     
+		edge_both = 0;     
+		polarity  = 0;     
 		break;
 	default:
 		return -EINVAL;
@@ -891,11 +881,7 @@ int jh7110_pinctrl_probe(struct platform_device *pdev)
 	if (IS_ERR(rst))
 		return dev_err_probe(dev, PTR_ERR(rst), "could not get reset\n");
 
-	/*
-	 * we don't want to assert reset and risk undoing pin muxing for the
-	 * early boot serial console, but let's make sure the reset line is
-	 * deasserted in case someone runs a really minimal bootloader.
-	 */
+	 
 	ret = reset_control_deassert(rst);
 	if (ret)
 		return dev_err_probe(dev, ret, "could not deassert reset\n");

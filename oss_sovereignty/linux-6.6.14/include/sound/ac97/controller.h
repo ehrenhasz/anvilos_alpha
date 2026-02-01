@@ -1,7 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0
- *
- * Copyright (C) 2016 Robert Jarzmik <robert.jarzmik@free.fr>
- */
+ 
 
 #ifndef AC97_CONTROLLER_H
 #define AC97_CONTROLLER_H
@@ -14,20 +11,7 @@
 
 struct ac97_controller_ops;
 
-/**
- * struct ac97_controller - The AC97 controller of the AC-Link
- * @ops:		the AC97 operations.
- * @controllers:	linked list of all existing controllers.
- * @adap:		the shell device ac97-%d, ie. ac97 adapter
- * @nr:			the number of the shell device
- * @slots_available:	the mask of accessible/scanable codecs.
- * @parent:		the device providing the AC97 controller.
- * @codecs:		the 4 possible AC97 codecs (NULL if none found).
- * @codecs_pdata:	platform_data for each codec (NULL if no pdata).
- *
- * This structure is internal to AC97 bus, and should not be used by the
- * controllers themselves, excepting for using @dev.
- */
+ 
 struct ac97_controller {
 	const struct ac97_controller_ops *ops;
 	struct list_head controllers;
@@ -39,18 +23,7 @@ struct ac97_controller {
 	void *codecs_pdata[AC97_BUS_MAX_CODECS];
 };
 
-/**
- * struct ac97_controller_ops - The AC97 operations
- * @reset:	Cold reset of the AC97 AC-Link.
- * @warm_reset:	Warm reset of the AC97 AC-Link.
- * @read:	Read of a single AC97 register.
- *		Returns the register value or a negative error code.
- * @write:	Write of a single AC97 register.
- *
- * These are the basic operation an AC97 controller must provide for an AC97
- * access functions. Amongst these, all but the last 2 are mandatory.
- * The slot number is also known as the AC97 codec number, between 0 and 3.
- */
+ 
 struct ac97_controller_ops {
 	void (*reset)(struct ac97_controller *adrv);
 	void (*warm_reset)(struct ac97_controller *adrv);

@@ -1,31 +1,4 @@
-/*
- * Copyright 2008 Advanced Micro Devices, Inc.
- * Copyright 2008 Red Hat Inc.
- * Copyright 2009 Jerome Glisse.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: Dave Airlie
- *          Alex Deucher
- *          Jerome Glisse
- *          Christian König
- */
+ 
 #include <linux/seq_file.h>
 #include <linux/slab.h>
 #include <linux/uaccess.h>
@@ -35,30 +8,14 @@
 #include "amdgpu.h"
 #include "atom.h"
 
-/*
- * Rings
- * Most engines on the GPU are fed via ring buffers.  Ring
- * buffers are areas of GPU accessible memory that the host
- * writes commands into and the GPU reads commands out of.
- * There is a rptr (read pointer) that determines where the
- * GPU is currently reading, and a wptr (write pointer)
- * which determines where the host has written.  When the
- * pointers are equal, the ring is idle.  When the host
- * writes commands to the ring buffer, it increments the
- * wptr.  The GPU then starts fetching commands and executes
- * them until the pointers are equal again.
- */
+ 
 
-/**
- * amdgpu_ring_max_ibs - Return max IBs that fit in a single submission.
- *
- * @type: ring type for which to return the limit.
- */
+ 
 unsigned int amdgpu_ring_max_ibs(enum amdgpu_ring_type type)
 {
 	switch (type) {
 	case AMDGPU_RING_TYPE_GFX:
-		/* Need to keep at least 192 on GFX7+ for old radv. */
+		 
 		return 192;
 	case AMDGPU_RING_TYPE_COMPUTE:
 		return 125;
@@ -69,24 +26,13 @@ unsigned int amdgpu_ring_max_ibs(enum amdgpu_ring_type type)
 	}
 }
 
-/**
- * amdgpu_ring_alloc - allocate space on the ring buffer
- *
- * @ring: amdgpu_ring structure holding ring information
- * @ndw: number of dwords to allocate in the ring buffer
- *
- * Allocate @ndw dwords in the ring buffer (all asics).
- * Returns 0 on success, error on failure.
- */
+ 
 int amdgpu_ring_alloc(struct amdgpu_ring *ring, unsigned int ndw)
 {
-	/* Align requested size with padding so unlock_commit can
-	 * pad safely */
+	 
 	ndw = (ndw + ring->funcs->align_mask) & ~ring->funcs->align_mask;
 
-	/* Make sure we aren't trying to allocate more space
-	 * than the maximum for one submission
-	 */
+	 
 	if (WARN_ON_ONCE(ndw > ring->max_dw))
 		return -ENOMEM;
 
@@ -99,13 +45,7 @@ int amdgpu_ring_alloc(struct amdgpu_ring *ring, unsigned int ndw)
 	return 0;
 }
 
-/** amdgpu_ring_insert_nop - insert NOP packets
- *
- * @ring: amdgpu_ring structure holding ring information
- * @count: the number of NOP packets to insert
- *
- * This is the generic insert_nop function for rings except SDMA
- */
+ 
 void amdgpu_ring_insert_nop(struct amdgpu_ring *ring, uint32_t count)
 {
 	int i;
@@ -114,34 +54,19 @@ void amdgpu_ring_insert_nop(struct amdgpu_ring *ring, uint32_t count)
 		amdgpu_ring_write(ring, ring->funcs->nop);
 }
 
-/**
- * amdgpu_ring_generic_pad_ib - pad IB with NOP packets
- *
- * @ring: amdgpu_ring structure holding ring information
- * @ib: IB to add NOP packets to
- *
- * This is the generic pad_ib function for rings except SDMA
- */
+ 
 void amdgpu_ring_generic_pad_ib(struct amdgpu_ring *ring, struct amdgpu_ib *ib)
 {
 	while (ib->length_dw & ring->funcs->align_mask)
 		ib->ptr[ib->length_dw++] = ring->funcs->nop;
 }
 
-/**
- * amdgpu_ring_commit - tell the GPU to execute the new
- * commands on the ring buffer
- *
- * @ring: amdgpu_ring structure holding ring information
- *
- * Update the wptr (write pointer) to tell the GPU to
- * execute new commands on the ring buffer (all asics).
- */
+ 
 void amdgpu_ring_commit(struct amdgpu_ring *ring)
 {
 	uint32_t count;
 
-	/* We pad to match fetch size */
+	 
 	count = ring->funcs->align_mask + 1 -
 		(ring->wptr & ring->funcs->align_mask);
 	count %= ring->funcs->align_mask + 1;
@@ -154,13 +79,7 @@ void amdgpu_ring_commit(struct amdgpu_ring *ring)
 		ring->funcs->end_use(ring);
 }
 
-/**
- * amdgpu_ring_undo - reset the wptr
- *
- * @ring: amdgpu_ring structure holding ring information
- *
- * Reset the driver's copy of the wptr (all asics).
- */
+ 
 void amdgpu_ring_undo(struct amdgpu_ring *ring)
 {
 	ring->wptr = ring->wptr_old;
@@ -179,20 +98,7 @@ void amdgpu_ring_undo(struct amdgpu_ring *ring)
 	 (void *)((uint8_t *)(ring->mes_ctx->meta_data_ptr) + offset) : \
 	 (&ring->adev->wb.wb[offset]))
 
-/**
- * amdgpu_ring_init - init driver ring struct.
- *
- * @adev: amdgpu_device pointer
- * @ring: amdgpu_ring structure holding ring information
- * @max_dw: maximum number of dw for ring alloc
- * @irq_src: interrupt source to use for this ring
- * @irq_type: interrupt type to use for this ring
- * @hw_prio: ring priority (NORMAL/HIGH)
- * @sched_score: optional score atomic shared with other schedulers
- *
- * Initialize the driver information for the selected ring (all asics).
- * Returns 0 on success, error on failure.
- */
+ 
 int amdgpu_ring_init(struct amdgpu_device *adev, struct amdgpu_ring *ring,
 		     unsigned int max_dw, struct amdgpu_irq_src *irq_src,
 		     unsigned int irq_type, unsigned int hw_prio,
@@ -204,12 +110,7 @@ int amdgpu_ring_init(struct amdgpu_device *adev, struct amdgpu_ring *ring,
 	u32 hw_ip;
 	unsigned int max_ibs_dw;
 
-	/* Set the hw submission limit higher for KIQ because
-	 * it's used for a number of gfx/compute tasks by both
-	 * KFD and KGD which may have outstanding fences and
-	 * it doesn't really use the gpu scheduler anyway;
-	 * KIQ tasks get submitted directly to the ring.
-	 */
+	 
 	if (ring->funcs->type == AMDGPU_RING_TYPE_KIQ)
 		sched_hw_submission = max(sched_hw_submission, 256);
 	else if (ring == &adev->sdma.instance[0].page)
@@ -302,7 +203,7 @@ int amdgpu_ring_init(struct amdgpu_device *adev, struct amdgpu_ring *ring,
 	ring->cond_exe_cpu_addr =
 		amdgpu_ring_get_cpu_addr(ring, ring->cond_exe_offs);
 
-	/* always set cond_exec_polling to CONTINUE */
+	 
 	*ring->cond_exe_cpu_addr = 1;
 
 	r = amdgpu_fence_driver_start_ring(ring, irq_src, irq_type);
@@ -324,7 +225,7 @@ int amdgpu_ring_init(struct amdgpu_device *adev, struct amdgpu_ring *ring,
 	ring->ptr_mask = ring->funcs->support_64bit_ptrs ?
 		0xffffffffffffffff : ring->buf_mask;
 
-	/* Allocate ring buffer */
+	 
 	if (ring->is_mes_queue) {
 		int offset = 0;
 
@@ -362,17 +263,11 @@ int amdgpu_ring_init(struct amdgpu_device *adev, struct amdgpu_ring *ring,
 	return 0;
 }
 
-/**
- * amdgpu_ring_fini - tear down the driver ring struct.
- *
- * @ring: amdgpu_ring structure holding ring information
- *
- * Tear down the driver information for the selected ring (all asics).
- */
+ 
 void amdgpu_ring_fini(struct amdgpu_ring *ring)
 {
 
-	/* Not to finish a ring which is not initialized */
+	 
 	if (!(ring->adev) ||
 	    (!ring->is_mes_queue && !(ring->adev->rings[ring->idx])))
 		return;
@@ -401,18 +296,7 @@ void amdgpu_ring_fini(struct amdgpu_ring *ring)
 		ring->adev->rings[ring->idx] = NULL;
 }
 
-/**
- * amdgpu_ring_emit_reg_write_reg_wait_helper - ring helper
- *
- * @ring: ring to write to
- * @reg0: register to write
- * @reg1: register to wait on
- * @ref: reference value to write/wait on
- * @mask: mask to wait on
- *
- * Helper for rings that don't support write and wait in a
- * single oneshot packet.
- */
+ 
 void amdgpu_ring_emit_reg_write_reg_wait_helper(struct amdgpu_ring *ring,
 						uint32_t reg0, uint32_t reg1,
 						uint32_t ref, uint32_t mask)
@@ -421,15 +305,7 @@ void amdgpu_ring_emit_reg_write_reg_wait_helper(struct amdgpu_ring *ring,
 	amdgpu_ring_emit_reg_wait(ring, reg1, mask, mask);
 }
 
-/**
- * amdgpu_ring_soft_recovery - try to soft recover a ring lockup
- *
- * @ring: ring to try the recovery on
- * @vmid: VMID we try to get going again
- * @fence: timedout fence
- *
- * Tries to get a ring proceeding again when it is stuck.
- */
+ 
 bool amdgpu_ring_soft_recovery(struct amdgpu_ring *ring, unsigned int vmid,
 			       struct dma_fence *fence)
 {
@@ -453,18 +329,10 @@ bool amdgpu_ring_soft_recovery(struct amdgpu_ring *ring, unsigned int vmid,
 	return dma_fence_is_signaled(fence);
 }
 
-/*
- * Debugfs info
- */
+ 
 #if defined(CONFIG_DEBUG_FS)
 
-/* Layout of file is 12 bytes consisting of
- * - rptr
- * - wptr
- * - driver's copy of wptr
- *
- * followed by n-words of ring data
- */
+ 
 static ssize_t amdgpu_debugfs_ring_read(struct file *f, char __user *buf,
 					size_t size, loff_t *pos)
 {
@@ -608,15 +476,7 @@ void amdgpu_debugfs_ring_init(struct amdgpu_device *adev,
 #endif
 }
 
-/**
- * amdgpu_ring_test_helper - tests ring and set sched readiness status
- *
- * @ring: ring to try the recovery on
- *
- * Tests ring and set sched readiness status
- *
- * Returns 0 on success, error on failure.
- */
+ 
 int amdgpu_ring_test_helper(struct amdgpu_ring *ring)
 {
 	struct amdgpu_device *adev = ring->adev;
@@ -650,9 +510,7 @@ static void amdgpu_ring_to_mqd_prop(struct amdgpu_ring *ring,
 	prop->use_doorbell = ring->use_doorbell;
 	prop->doorbell_index = ring->doorbell_index;
 
-	/* map_queues packet doesn't need activate the queue,
-	 * so only kiq need set this field.
-	 */
+	 
 	prop->hqd_active = ring->funcs->type == AMDGPU_RING_TYPE_KIQ;
 
 	if ((ring->funcs->type == AMDGPU_RING_TYPE_COMPUTE &&

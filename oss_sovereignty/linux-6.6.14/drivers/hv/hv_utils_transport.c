@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Kernel/userspace transport abstraction for Hyper-V util driver.
- *
- * Copyright (C) 2015, Vitaly Kuznetsov <vkuznets@redhat.com>
- */
+
+ 
 
 #include <linux/slab.h>
 #include <linux/fs.h>
@@ -124,17 +120,11 @@ static int hvt_op_open(struct inode *inode, struct file *file)
 	if (hvt->mode == HVUTIL_TRANSPORT_DESTROY) {
 		ret = -EBADF;
 	} else if (hvt->mode == HVUTIL_TRANSPORT_INIT) {
-		/*
-		 * Switching to CHARDEV mode. We switch bach to INIT when
-		 * device gets released.
-		 */
+		 
 		hvt->mode = HVUTIL_TRANSPORT_CHARDEV;
 	}
 	else if (hvt->mode == HVUTIL_TRANSPORT_NETLINK) {
-		/*
-		 * We're switching from netlink communication to using char
-		 * device. Issue the reset first.
-		 */
+		 
 		issue_reset = true;
 		hvt->mode = HVUTIL_TRANSPORT_CHARDEV;
 	} else {
@@ -167,10 +157,7 @@ static int hvt_op_release(struct inode *inode, struct file *file)
 	mode_old = hvt->mode;
 	if (hvt->mode != HVUTIL_TRANSPORT_DESTROY)
 		hvt->mode = HVUTIL_TRANSPORT_INIT;
-	/*
-	 * Cleanup message buffers to avoid spurious messages when the daemon
-	 * connects back.
-	 */
+	 
 	hvt_reset(hvt);
 
 	if (mode_old == HVUTIL_TRANSPORT_DESTROY)
@@ -199,10 +186,7 @@ static void hvt_cn_callback(struct cn_msg *msg, struct netlink_skb_parms *nsp)
 		return;
 	}
 
-	/*
-	 * Switching to NETLINK mode. Switching to CHARDEV happens when someone
-	 * opens the device.
-	 */
+	 
 	mutex_lock(&hvt->lock);
 	if (hvt->mode == HVUTIL_TRANSPORT_INIT)
 		hvt->mode = HVUTIL_TRANSPORT_NETLINK;
@@ -233,16 +217,12 @@ int hvutil_transport_send(struct hvutil_transport *hvt, void *msg, int len,
 		memcpy(cn_msg->data, msg, len);
 		ret = cn_netlink_send(cn_msg, 0, 0, GFP_ATOMIC);
 		kfree(cn_msg);
-		/*
-		 * We don't know when netlink messages are delivered but unlike
-		 * in CHARDEV mode we're not blocked and we can send next
-		 * messages right away.
-		 */
+		 
 		if (on_read_cb)
 			on_read_cb();
 		return ret;
 	}
-	/* HVUTIL_TRANSPORT_CHARDEV */
+	 
 	mutex_lock(&hvt->lock);
 	if (hvt->mode != HVUTIL_TRANSPORT_CHARDEV) {
 		ret = -EINVAL;
@@ -250,7 +230,7 @@ int hvutil_transport_send(struct hvutil_transport *hvt, void *msg, int len,
 	}
 
 	if (hvt->outmsg) {
-		/* Previous message wasn't received */
+		 
 		ret = -EFAULT;
 		goto out_unlock;
 	}
@@ -307,7 +287,7 @@ struct hvutil_transport *hvutil_transport_init(const char *name,
 	if (misc_register(&hvt->mdev))
 		goto err_free_hvt;
 
-	/* Use cn_id.idx/cn_id.val to determine if we need to setup netlink */
+	 
 	if (hvt->cn_id.idx > 0 && hvt->cn_id.val > 0 &&
 	    cn_add_callback(&hvt->cn_id, name, hvt_cn_callback))
 		goto err_free_hvt;
@@ -332,11 +312,7 @@ void hvutil_transport_destroy(struct hvutil_transport *hvt)
 	wake_up_interruptible(&hvt->outmsg_q);
 	mutex_unlock(&hvt->lock);
 
-	/*
-	 * In case we were in 'chardev' mode we still have an open fd so we
-	 * have to defer freeing the device. Netlink interface can be freed
-	 * now.
-	 */
+	 
 	spin_lock(&hvt_list_lock);
 	list_del(&hvt->list);
 	spin_unlock(&hvt_list_lock);

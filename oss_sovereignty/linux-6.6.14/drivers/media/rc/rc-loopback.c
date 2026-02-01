@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Loopback driver for rc-core,
- *
- * Copyright (c) 2010 David Härdeman <david@hardeman.nu>
- *
- * This driver receives TX data and passes it back as RX data,
- * which is useful for (scripted) debugging of rc-core without
- * having to use actual hardware.
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/module.h>
@@ -112,7 +104,7 @@ static int loop_tx_ir(struct rc_dev *dev, unsigned *txbuf, unsigned count)
 		rawir.pulse = i % 2 ? false : true;
 		rawir.duration = txbuf[i];
 
-		/* simulate overflow if ridiculously long pulse was sent */
+		 
 		if (rawir.pulse && rawir.duration > MS_TO_US(50))
 			ir_raw_event_overflow(dev);
 		else
@@ -127,7 +119,7 @@ static int loop_tx_ir(struct rc_dev *dev, unsigned *txbuf, unsigned count)
 		ir_raw_event_store(dev, &rawir);
 	}
 
-	/* Fake a silence long enough to cause us to go idle */
+	 
 	rawir.pulse = false;
 	rawir.duration = dev->timeout;
 	ir_raw_event_store_with_filter(dev, &rawir);
@@ -180,21 +172,21 @@ static int loop_set_wakeup_filter(struct rc_dev *dev,
 	int ret;
 	int i;
 
-	/* fine to disable filter */
+	 
 	if (!sc->mask)
 		return 0;
 
-	/* encode the specified filter and loop it back */
+	 
 	raw = kmalloc_array(max, sizeof(*raw), GFP_KERNEL);
 	if (!raw)
 		return -ENOMEM;
 
 	ret = ir_raw_encode_scancode(dev->wakeup_protocol, sc->data, raw, max);
-	/* still loop back the partial raw IR even if it's incomplete */
+	 
 	if (ret == -ENOBUFS)
 		ret = max;
 	if (ret >= 0) {
-		/* do the loopback */
+		 
 		for (i = 0; i < ret; ++i)
 			ir_raw_event_store(dev, &raw[i]);
 		ir_raw_event_handle(dev);

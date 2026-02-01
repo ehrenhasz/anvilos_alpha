@@ -1,20 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0-only
 
-/*
- * Radio tuning for Philips SA2400 on RTL8180
- *
- * Copyright 2007 Andrea Merello <andrea.merello@gmail.com>
- *
- * Code from the BSD driver and the rtl8181 project have been
- * very useful to understand certain things
- *
- * I want to thanks the Authors of such projects and the Ndiswrapper
- * project Authors.
- *
- * A special Big Thanks also is for all people who donated me cards,
- * making possible the creation of the original rtl8180 driver
- * from which this code is derived!
- */
+
+ 
 
 #include <linux/pci.h>
 #include <linux/delay.h>
@@ -24,7 +10,7 @@
 #include "sa2400.h"
 
 static const u32 sa2400_chan[] = {
-	0x00096c, /* ch1 */
+	0x00096c,  
 	0x080970,
 	0x100974,
 	0x180978,
@@ -37,7 +23,7 @@ static const u32 sa2400_chan[] = {
 	0x10099c,
 	0x1809a0,
 	0x0009a8,
-	0x0009b4, /* ch 14 */
+	0x0009b4,  
 };
 
 static void write_sa2400(struct ieee80211_hw *dev, u8 addr, u32 data)
@@ -45,7 +31,7 @@ static void write_sa2400(struct ieee80211_hw *dev, u8 addr, u32 data)
 	struct rtl8180_priv *priv = dev->priv;
 	u32 phy_config;
 
-	/* MAC will bang bits to the sa2400. sw 3-wire is NOT used */
+	 
 	phy_config = 0xb0000000;
 
 	phy_config |= ((u32)(addr & 0xf)) << 24;
@@ -93,7 +79,7 @@ static u8 sa2400_rf_calc_rssi(u8 agc, u8 sq)
 	if (sq > 78)
 		return 32;
 
-	/* TODO: recalc sa2400_rf_rssi_map to avoid mult / div */
+	 
 	return 65 * sa2400_rf_rssi_map[sq] / 100;
 }
 
@@ -150,10 +136,10 @@ static void sa2400_rf_init(struct ieee80211_hw *dev)
 	write_sa2400(dev, 3, 0);
 	write_sa2400(dev, 4, 0x19340 | firdac);
 	write_sa2400(dev, 5, 0x1dfb | (SA2400_MAX_SENS - 54) << 15);
-	write_sa2400(dev, 4, 0x19348 | firdac); /* calibrate VCO */
+	write_sa2400(dev, 4, 0x19348 | firdac);  
 
 	if (!analogphy)
-		write_sa2400(dev, 4, 0x1938c); /*???*/
+		write_sa2400(dev, 4, 0x1938c);  
 
 	write_sa2400(dev, 4, 0x19340 | firdac);
 
@@ -161,11 +147,11 @@ static void sa2400_rf_init(struct ieee80211_hw *dev)
 	write_sa2400(dev, 1, 0xbb50);
 	write_sa2400(dev, 2, 0x80);
 	write_sa2400(dev, 3, 0);
-	write_sa2400(dev, 4, 0x19344 | firdac); /* calibrate filter */
+	write_sa2400(dev, 4, 0x19344 | firdac);  
 
-	/* new from rtl8180 embedded driver (rtl8181 project) */
-	write_sa2400(dev, 6, 0x13ff | (1 << 23)); /* MANRX */
-	write_sa2400(dev, 8, 0); /* VCO */
+	 
+	write_sa2400(dev, 6, 0x13ff | (1 << 23));  
+	write_sa2400(dev, 8, 0);  
 
 	if (analogphy) {
 		rtl8180_set_anaparam(priv, anaparam |
@@ -175,24 +161,22 @@ static void sa2400_rf_init(struct ieee80211_hw *dev)
 		rtl818x_iowrite32(priv, &priv->map->TX_CONF,
 			txconf | RTL818X_TX_CONF_LOOPBACK_CONT);
 
-		write_sa2400(dev, 4, 0x19341); /* calibrates DC */
+		write_sa2400(dev, 4, 0x19341);  
 
-		/* a 5us sleep is required here,
-		 * we rely on the 3ms delay introduced in write_sa2400 */
+		 
 		write_sa2400(dev, 4, 0x19345);
 
-		/* a 20us sleep is required here,
-		 * we rely on the 3ms delay introduced in write_sa2400 */
+		 
 
 		rtl818x_iowrite32(priv, &priv->map->TX_CONF, txconf);
 
 		rtl8180_set_anaparam(priv, anaparam);
 	}
-	/* end new code */
+	 
 
-	write_sa2400(dev, 4, 0x19341 | firdac); /* RTX MODE */
+	write_sa2400(dev, 4, 0x19341 | firdac);  
 
-	/* baseband configuration */
+	 
 	rtl8180_write_phy(dev, 0, 0x98);
 	rtl8180_write_phy(dev, 3, 0x38);
 	rtl8180_write_phy(dev, 4, 0xe0);
@@ -206,9 +190,9 @@ static void sa2400_rf_init(struct ieee80211_hw *dev)
 
 	if (rtl818x_ioread8(priv, &priv->map->CONFIG2) &
 	    RTL818X_CONFIG2_ANTENNA_DIV)
-		rtl8180_write_phy(dev, 0x12, 0xc7); /* enable ant diversity */
+		rtl8180_write_phy(dev, 0x12, 0xc7);  
 	else
-		rtl8180_write_phy(dev, 0x12, 0x47); /* disable ant diversity */
+		rtl8180_write_phy(dev, 0x12, 0x47);  
 
 	rtl8180_write_phy(dev, 0x13, 0x90 | priv->csthreshold);
 

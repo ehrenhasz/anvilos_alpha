@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * E3C EC168 DVB USB driver
- *
- * Copyright (C) 2009 Antti Palosaari <crope@iki.fi>
- */
+
+ 
 
 #include "ec168.h"
 #include "ec100.h"
@@ -60,15 +56,15 @@ static int ec168_ctrl_msg(struct dvb_usb_device *d, struct ec168_req *req)
 	}
 
 	if (requesttype == (USB_TYPE_VENDOR | USB_DIR_OUT)) {
-		/* write */
+		 
 		memcpy(buf, req->data, req->size);
 		pipe = usb_sndctrlpipe(d->udev, 0);
 	} else {
-		/* read */
+		 
 		pipe = usb_rcvctrlpipe(d->udev, 0);
 	}
 
-	msleep(1); /* avoid I2C errors */
+	msleep(1);  
 
 	ret = usb_control_msg(d->udev, pipe, request, requesttype, req->value,
 		req->index, buf, req->size, EC168_USB_TIMEOUT);
@@ -81,7 +77,7 @@ static int ec168_ctrl_msg(struct dvb_usb_device *d, struct ec168_req *req)
 	else
 		ret = 0;
 
-	/* read request, copy returned data to return buf */
+	 
 	if (!ret && requesttype == (USB_TYPE_VENDOR | USB_DIR_IN))
 		memcpy(req->data, buf, req->size);
 
@@ -95,7 +91,7 @@ error:
 	return ret;
 }
 
-/* I2C */
+ 
 static struct ec100_config ec168_ec100_config;
 
 static int ec168_i2c_xfer(struct i2c_adapter *adap, struct i2c_msg msg[],
@@ -121,8 +117,8 @@ static int ec168_i2c_xfer(struct i2c_adapter *adap, struct i2c_msg msg[],
 				}
 				req.cmd = READ_DEMOD;
 				req.value = 0;
-				req.index = 0xff00 + msg[i].buf[0]; /* reg */
-				req.size = msg[i+1].len; /* bytes to read */
+				req.index = 0xff00 + msg[i].buf[0];  
+				req.size = msg[i+1].len;  
 				req.data = &msg[i+1].buf[0];
 				ret = ec168_ctrl_msg(d, &req);
 				i += 2;
@@ -140,8 +136,8 @@ static int ec168_i2c_xfer(struct i2c_adapter *adap, struct i2c_msg msg[],
 					break;
 				}
 				req.cmd = WRITE_DEMOD;
-				req.value = msg[i].buf[1]; /* val */
-				req.index = 0xff00 + msg[i].buf[0]; /* reg */
+				req.value = msg[i].buf[1];  
+				req.index = 0xff00 + msg[i].buf[0];  
 				req.size = 0;
 				req.data = NULL;
 				ret = ec168_ctrl_msg(d, &req);
@@ -152,8 +148,8 @@ static int ec168_i2c_xfer(struct i2c_adapter *adap, struct i2c_msg msg[],
 					break;
 				}
 				req.cmd = WRITE_I2C;
-				req.value = msg[i].buf[0]; /* val */
-				req.index = 0x0100 + msg[i].addr; /* I2C addr */
+				req.value = msg[i].buf[0];  
+				req.index = 0x0100 + msg[i].addr;  
 				req.size = msg[i].len-1;
 				req.data = &msg[i].buf[1];
 				ret = ec168_ctrl_msg(d, &req);
@@ -181,7 +177,7 @@ static struct i2c_algorithm ec168_i2c_algo = {
 	.functionality = ec168_i2c_func,
 };
 
-/* Callbacks for DVB USB */
+ 
 static int ec168_identify_state(struct dvb_usb_device *d, const char **name)
 {
 	int ret;
@@ -213,7 +209,7 @@ static int ec168_download_firmware(struct dvb_usb_device *d,
 	struct ec168_req req = {DOWNLOAD_FIRMWARE, 0, 0, 0, NULL};
 	dev_dbg(&d->udev->dev, "%s:\n", __func__);
 
-	#define LEN_MAX 2048 /* max packet size */
+	#define LEN_MAX 2048  
 	for (remaining = fw->size; remaining > 0; remaining -= LEN_MAX) {
 		len = remaining;
 		if (len > LEN_MAX)
@@ -234,7 +230,7 @@ static int ec168_download_firmware(struct dvb_usb_device *d,
 
 	req.size = 0;
 
-	/* set "warm"? */
+	 
 	req.cmd = SET_CONFIG;
 	req.value = 0;
 	req.index = 0x0001;
@@ -242,7 +238,7 @@ static int ec168_download_firmware(struct dvb_usb_device *d,
 	if (ret)
 		goto error;
 
-	/* really needed - no idea what does */
+	 
 	req.cmd = GPIO;
 	req.value = 0;
 	req.index = 0x0206;
@@ -250,7 +246,7 @@ static int ec168_download_firmware(struct dvb_usb_device *d,
 	if (ret)
 		goto error;
 
-	/* activate tuner I2C? */
+	 
 	req.cmd = WRITE_I2C;
 	req.value = 0;
 	req.index = 0x00c6;
@@ -265,7 +261,7 @@ error:
 }
 
 static struct ec100_config ec168_ec100_config = {
-	.demod_address = 0xff, /* not real address, demod is integrated */
+	.demod_address = 0xff,  
 };
 
 static int ec168_ec100_frontend_attach(struct dvb_usb_adapter *adap)
@@ -318,9 +314,8 @@ static int ec168_streaming_ctrl(struct dvb_frontend *fe, int onoff)
 	return ec168_ctrl_msg(d, &req);
 }
 
-/* DVB USB Driver stuff */
-/* bInterfaceNumber 0 is HID
- * bInterfaceNumber 1 is DVB-T */
+ 
+ 
 static const struct dvb_usb_device_properties ec168_props = {
 	.driver_name = KBUILD_MODNAME,
 	.owner = THIS_MODULE,

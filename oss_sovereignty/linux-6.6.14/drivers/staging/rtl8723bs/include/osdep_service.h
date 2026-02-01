@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/******************************************************************************
- *
- * Copyright(c) 2007 - 2013 Realtek Corporation. All rights reserved.
- *
- ******************************************************************************/
+ 
+ 
 #ifndef __OSDEP_SERVICE_H_
 #define __OSDEP_SERVICE_H_
 
@@ -104,7 +100,7 @@ static inline int rtw_bug_check(void *parg1, void *parg2, void *parg3, void *par
 
 extern void rtw_free_netdev(struct net_device * netdev);
 
-/* Macros for handling unaligned memory accesses */
+ 
 
 void rtw_buf_free(u8 **buf, u32 *buf_len);
 void rtw_buf_update(u8 **buf, u32 *buf_len, u8 *src, u32 src_len);
@@ -122,10 +118,8 @@ bool rtw_cbuf_push(struct rtw_cbuf *cbuf, void *buf);
 void *rtw_cbuf_pop(struct rtw_cbuf *cbuf);
 struct rtw_cbuf *rtw_cbuf_alloc(u32 size);
 
-/*  String handler */
-/*
- * Write formatted output to sized buffer
- */
+ 
+ 
 #define rtw_sprintf(buf, size, format, arg...)	snprintf(buf, size, format, ##arg)
 
 #endif

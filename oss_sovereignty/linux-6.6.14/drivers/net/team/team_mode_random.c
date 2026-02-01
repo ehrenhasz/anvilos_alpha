@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * drivers/net/team/team_mode_random.c - Random mode for team
- * Copyright (c) 2013 Jiri Pirko <jiri@resnulli.us>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/types.h>

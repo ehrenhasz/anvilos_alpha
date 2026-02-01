@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * The proc filesystem constants/structures
- */
+ 
+ 
 #ifndef _LINUX_PROC_FS_H
 #define _LINUX_PROC_FS_H
 
@@ -14,11 +12,7 @@ struct seq_file;
 struct seq_operations;
 
 enum {
-	/*
-	 * All /proc entries using this ->proc_ops instance are never removed.
-	 *
-	 * If in doubt, ignore this flag.
-	 */
+	 
 #ifdef MODULE
 	PROC_ENTRY_PERMANENT = 0U,
 #else
@@ -32,7 +26,7 @@ struct proc_ops {
 	ssize_t	(*proc_read)(struct file *, char __user *, size_t, loff_t *);
 	ssize_t (*proc_read_iter)(struct kiocb *, struct iov_iter *);
 	ssize_t	(*proc_write)(struct file *, const char __user *, size_t, loff_t *);
-	/* mandatory unless nonseekable_open() or equivalent is used */
+	 
 	loff_t	(*proc_lseek)(struct file *, loff_t, int);
 	int	(*proc_release)(struct inode *, struct file *);
 	__poll_t (*proc_poll)(struct file *, struct poll_table_struct *);
@@ -44,15 +38,15 @@ struct proc_ops {
 	unsigned long (*proc_get_unmapped_area)(struct file *, unsigned long, unsigned long, unsigned long, unsigned long);
 } __randomize_layout;
 
-/* definitions for hide_pid field */
+ 
 enum proc_hidepid {
 	HIDEPID_OFF	  = 0,
 	HIDEPID_NO_ACCESS = 1,
 	HIDEPID_INVISIBLE = 2,
-	HIDEPID_NOT_PTRACEABLE = 4, /* Limit pids to only ptraceable pids */
+	HIDEPID_NOT_PTRACEABLE = 4,  
 };
 
-/* definitions for proc mount option pidonly */
+ 
 enum proc_pidonly {
 	PROC_PIDONLY_OFF = 0,
 	PROC_PIDONLY_ON  = 1,
@@ -60,8 +54,8 @@ enum proc_pidonly {
 
 struct proc_fs_info {
 	struct pid_namespace *pid_ns;
-	struct dentry *proc_self;        /* For /proc/self */
-	struct dentry *proc_thread_self; /* For /proc/thread-self */
+	struct dentry *proc_self;         
+	struct dentry *proc_thread_self;  
 	kgid_t pid_gid;
 	enum proc_hidepid hide_pid;
 	enum proc_pidonly pidonly;
@@ -111,10 +105,7 @@ struct proc_dir_entry *proc_create(const char *name, umode_t mode, struct proc_d
 extern void proc_set_size(struct proc_dir_entry *, loff_t);
 extern void proc_set_user(struct proc_dir_entry *, kuid_t, kgid_t);
 
-/*
- * Obtain the private data passed by user through proc_create_data() or
- * related.
- */
+ 
 static inline void *pde_data(const struct inode *inode)
 {
 	return inode->i_private;
@@ -150,18 +141,15 @@ extern int bpf_iter_init_seq_net(void *priv_data, struct bpf_iter_aux_info *aux)
 extern void bpf_iter_fini_seq_net(void *priv_data);
 
 #ifdef CONFIG_PROC_PID_ARCH_STATUS
-/*
- * The architecture which selects CONFIG_PROC_PID_ARCH_STATUS must
- * provide proc_pid_arch_status() definition.
- */
+ 
 int proc_pid_arch_status(struct seq_file *m, struct pid_namespace *ns,
 			struct pid *pid, struct task_struct *task);
-#endif /* CONFIG_PROC_PID_ARCH_STATUS */
+#endif  
 
 void arch_report_meminfo(struct seq_file *m);
 void arch_proc_pid_thread_features(struct seq_file *m, struct task_struct *task);
 
-#else /* CONFIG_PROC_FS */
+#else  
 
 static inline void proc_root_init(void)
 {
@@ -221,7 +209,7 @@ static inline struct pid *tgid_pidfd_to_pid(const struct file *file)
 	return ERR_PTR(-EBADF);
 }
 
-#endif /* CONFIG_PROC_FS */
+#endif  
 
 struct net;
 
@@ -235,7 +223,7 @@ struct ns_common;
 int open_related_ns(struct ns_common *ns,
 		   struct ns_common *(*get_ns)(struct ns_common *ns));
 
-/* get the associated pid namespace for a file in procfs */
+ 
 static inline struct pid_namespace *proc_pid_ns(struct super_block *sb)
 {
 	return proc_sb_info(sb)->pid_ns;
@@ -243,4 +231,4 @@ static inline struct pid_namespace *proc_pid_ns(struct super_block *sb)
 
 bool proc_ns_file(const struct file *file);
 
-#endif /* _LINUX_PROC_FS_H */
+#endif  

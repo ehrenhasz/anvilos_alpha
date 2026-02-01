@@ -1,17 +1,6 @@
-/* $OpenBSD: packet.h,v 1.96 2023/12/18 14:45:17 djm Exp $ */
+ 
 
-/*
- * Author: Tatu Ylonen <ylo@cs.hut.fi>
- * Copyright (c) 1995 Tatu Ylonen <ylo@cs.hut.fi>, Espoo, Finland
- *                    All rights reserved
- * Interface for the packet protocol functions.
- *
- * As far as I am concerned, the code I have written for this software
- * can be used freely for any purpose.  Any derived versions of this
- * software must be clearly marked as such, and if the derived work is
- * incompatible with the protocol description in the RFC file, it must be
- * called by a name other than "ssh" or "Secure Shell".
- */
+ 
 
 #ifndef PACKET_H
 #define PACKET_H
@@ -22,17 +11,17 @@
 # include <openssl/bn.h>
 # ifdef OPENSSL_HAS_ECC
 #  include <openssl/ec.h>
-# else /* OPENSSL_HAS_ECC */
+# else  
 #  define EC_KEY	void
 #  define EC_GROUP	void
 #  define EC_POINT	void
-# endif /* OPENSSL_HAS_ECC */
-#else /* WITH_OPENSSL */
+# endif  
+#else  
 # define BIGNUM		void
 # define EC_KEY		void
 # define EC_GROUP	void
 # define EC_POINT	void
-#endif /* WITH_OPENSSL */
+#endif  
 
 #include <signal.h>
 #include "openbsd-compat/sys-queue.h"
@@ -40,9 +29,9 @@
 struct kex;
 struct sshkey;
 struct sshbuf;
-struct session_state;	/* private session data */
+struct session_state;	 
 
-#include "dispatch.h"	/* typedef, DISPATCH_MAX */
+#include "dispatch.h"	 
 
 struct key_entry {
 	TAILQ_ENTRY(key_entry) next;
@@ -50,41 +39,41 @@ struct key_entry {
 };
 
 struct ssh {
-	/* Session state */
+	 
 	struct session_state *state;
 
-	/* Key exchange */
+	 
 	struct kex *kex;
 
-	/* cached local and remote ip addresses and ports */
+	 
 	char *remote_ipaddr;
 	int remote_port;
 	char *local_ipaddr;
 	int local_port;
 	char *rdomain_in;
 
-	/* Optional preamble for log messages (e.g. username) */
+	 
 	char *log_preamble;
 
-	/* Dispatcher table */
+	 
 	dispatch_fn *dispatch[DISPATCH_MAX];
-	/* number of packets to ignore in the dispatcher */
+	 
 	int dispatch_skip_packets;
 
-	/* datafellows */
+	 
 	int compat;
 
-	/* Lists for private and public keys */
+	 
 	TAILQ_HEAD(, key_entry) private_keys;
 	TAILQ_HEAD(, key_entry) public_keys;
 
-	/* Client/Server authentication context */
+	 
 	void *authctxt;
 
-	/* Channels context */
+	 
 	struct ssh_channels *chanctxt;
 
-	/* APP data */
+	 
 	void *app_data;
 };
 
@@ -172,7 +161,7 @@ time_t	 ssh_packet_get_rekey_timeout(struct ssh *);
 void	*ssh_packet_get_input(struct ssh *);
 void	*ssh_packet_get_output(struct ssh *);
 
-/* new API */
+ 
 int	sshpkt_start(struct ssh *ssh, u_char type);
 int	sshpkt_send(struct ssh *ssh);
 int     sshpkt_disconnect(struct ssh *, const char *fmt, ...)
@@ -220,4 +209,4 @@ const u_char	*sshpkt_ptr(struct ssh *, size_t *lenp);
 # undef EC_POINT
 #endif
 
-#endif				/* PACKET_H */
+#endif				 

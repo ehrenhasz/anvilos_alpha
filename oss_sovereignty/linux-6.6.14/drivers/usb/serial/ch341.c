@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright 2007, Frank A Kingswood <frank@kingswood-consulting.co.uk>
- * Copyright 2007, Werner Cornelius <werner@cornelius-consult.de>
- * Copyright 2009, Boris Hajduk <boris@hajduk.org>
- *
- * ch341.c implements a serial port driver for the Winchiphead CH341.
- *
- * The CH341 device can be used to implement an RS232 asynchronous
- * serial port, an IEEE-1284 parallel printer port or a memory-like
- * interface. In all cases the CH341 supports an I2C interface as well.
- * This driver only supports the asynchronous serial interface.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/tty.h>
@@ -24,33 +13,30 @@
 #define DEFAULT_BAUD_RATE 9600
 #define DEFAULT_TIMEOUT   1000
 
-/* flags for IO-Bits */
+ 
 #define CH341_BIT_RTS (1 << 6)
 #define CH341_BIT_DTR (1 << 5)
 
-/******************************/
-/* interrupt pipe definitions */
-/******************************/
-/* always 4 interrupt bytes */
-/* first irq byte normally 0x08 */
-/* second irq byte base 0x7d + below */
-/* third irq byte base 0x94 + below */
-/* fourth irq byte normally 0xee */
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 
-/* second interrupt byte */
-#define CH341_MULT_STAT 0x04 /* multiple status since last interrupt event */
+ 
+#define CH341_MULT_STAT 0x04  
 
-/* status returned in third interrupt answer byte, inverted in data
-   from irq */
+ 
 #define CH341_BIT_CTS 0x01
 #define CH341_BIT_DSR 0x02
 #define CH341_BIT_RI  0x04
 #define CH341_BIT_DCD 0x08
-#define CH341_BITS_MODEM_STAT 0x0f /* all bits */
+#define CH341_BITS_MODEM_STAT 0x0f  
 
-/* Break support - the information used to implement this was gleaned from
- * the Net/FreeBSD uchcom.c driver by Takanori Watanabe.  Domo arigato.
- */
+ 
 
 #define CH341_REQ_READ_VERSION 0x5F
 #define CH341_REQ_WRITE_REG    0x9A
@@ -92,8 +78,8 @@ static const struct usb_device_id id_table[] = {
 MODULE_DEVICE_TABLE(usb, id_table);
 
 struct ch341_private {
-	spinlock_t lock; /* access lock */
-	unsigned baud_rate; /* set baud rate */
+	spinlock_t lock;  
+	unsigned baud_rate;  
 	u8 mcr;
 	u8 msr;
 	u8 lcr;
@@ -158,36 +144,21 @@ static const speed_t ch341_min_rates[] = {
 	CH341_MIN_RATE(3),
 };
 
-/* Supported range is 46 to 3000000 bps. */
+ 
 #define CH341_MIN_BPS	DIV_ROUND_UP(CH341_CLKRATE, CH341_CLK_DIV(0, 0) * 256)
 #define CH341_MAX_BPS	(CH341_CLKRATE / (CH341_CLK_DIV(3, 0) * 2))
 
-/*
- * The device line speed is given by the following equation:
- *
- *	baudrate = 48000000 / (2^(12 - 3 * ps - fact) * div), where
- *
- *		0 <= ps <= 3,
- *		0 <= fact <= 1,
- *		2 <= div <= 256 if fact = 0, or
- *		9 <= div <= 256 if fact = 1
- */
+ 
 static int ch341_get_divisor(struct ch341_private *priv, speed_t speed)
 {
 	unsigned int fact, div, clk_div;
 	bool force_fact0 = false;
 	int ps;
 
-	/*
-	 * Clamp to supported range, this makes the (ps < 0) and (div < 2)
-	 * sanity checks below redundant.
-	 */
+	 
 	speed = clamp_val(speed, CH341_MIN_BPS, CH341_MAX_BPS);
 
-	/*
-	 * Start with highest possible base clock (fact = 1) that will give a
-	 * divisor strictly less than 512.
-	 */
+	 
 	fact = 1;
 	for (ps = 3; ps >= 0; ps--) {
 		if (speed > ch341_min_rates[ps])
@@ -197,15 +168,15 @@ static int ch341_get_divisor(struct ch341_private *priv, speed_t speed)
 	if (ps < 0)
 		return -EINVAL;
 
-	/* Determine corresponding divisor, rounding down. */
+	 
 	clk_div = CH341_CLK_DIV(ps, fact);
 	div = CH341_CLKRATE / (clk_div * speed);
 
-	/* Some devices require a lower base clock if ps < 3. */
+	 
 	if (ps < 3 && (priv->quirks & CH341_QUIRK_LIMITED_PRESCALER))
 		force_fact0 = true;
 
-	/* Halve base clock (fact = 0) if required. */
+	 
 	if (div < 9 || div > 255 || force_fact0) {
 		div /= 2;
 		clk_div *= 2;
@@ -215,19 +186,12 @@ static int ch341_get_divisor(struct ch341_private *priv, speed_t speed)
 	if (div < 2)
 		return -EINVAL;
 
-	/*
-	 * Pick next divisor if resulting rate is closer to the requested one,
-	 * scale up to avoid rounding errors on low rates.
-	 */
+	 
 	if (16 * CH341_CLKRATE / (clk_div * div) - 16 * speed >=
 			16 * speed - 16 * CH341_CLKRATE / (clk_div * (div + 1)))
 		div++;
 
-	/*
-	 * Prefer lower base clock (fact = 0) if even divisor.
-	 *
-	 * Note that this makes the receiver more tolerant to errors.
-	 */
+	 
 	if (fact == 1 && div % 2 == 0) {
 		div /= 2;
 		fact = 0;
@@ -250,13 +214,7 @@ static int ch341_set_baudrate_lcr(struct usb_device *dev,
 	if (val < 0)
 		return -EINVAL;
 
-	/*
-	 * CH341A buffers data until a full endpoint-size packet (32 bytes)
-	 * has been received unless bit 7 is set.
-	 *
-	 * At least one device with version 0x27 appears to have this bit
-	 * inverted.
-	 */
+	 
 	if (priv->version > 0x27)
 		val |= BIT(7);
 
@@ -266,12 +224,7 @@ static int ch341_set_baudrate_lcr(struct usb_device *dev,
 	if (r)
 		return r;
 
-	/*
-	 * Chip versions before version 0x30 as read using
-	 * CH341_REQ_READ_VERSION used separate registers for line control
-	 * (stop bits, parity and word length). Version 0x30 and above use
-	 * CH341_REG_LCR only and CH341_REG_LCR2 is always set to zero.
-	 */
+	 
 	if (priv->version < 0x30)
 		return 0;
 
@@ -306,7 +259,7 @@ static int ch341_get_status(struct usb_device *dev, struct ch341_private *priv)
 	return 0;
 }
 
-/* -------------------------------------------------------------------------- */
+ 
 
 static int ch341_configure(struct usb_device *dev, struct ch341_private *priv)
 {
@@ -314,7 +267,7 @@ static int ch341_configure(struct usb_device *dev, struct ch341_private *priv)
 	u8 buffer[2];
 	int r;
 
-	/* expect two bytes 0x27 0x00 */
+	 
 	r = ch341_control_in(dev, CH341_REQ_READ_VERSION, 0, 0, buffer, size);
 	if (r)
 		return r;
@@ -346,12 +299,7 @@ static int ch341_detect_quirks(struct usb_serial_port *port)
 	u8 buffer[2];
 	int r;
 
-	/*
-	 * A subset of CH34x devices does not support all features. The
-	 * prescaler is limited and there is no support for sending a RS232
-	 * break condition. A read failure when trying to set up the latter is
-	 * used to detect these devices.
-	 */
+	 
 	r = usb_control_msg_recv(udev, 0, CH341_REQ_READ_REG,
 				 USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_DIR_IN,
 				 CH341_REG_BREAK, 0, &buffer, size,
@@ -383,10 +331,7 @@ static int ch341_port_probe(struct usb_serial_port *port)
 
 	spin_lock_init(&priv->lock);
 	priv->baud_rate = DEFAULT_BAUD_RATE;
-	/*
-	 * Some CH340 devices appear unable to change the initial LCR
-	 * settings, so set a sane 8N1 default.
-	 */
+	 
 	priv->lcr = CH341_LCR_ENABLE_RX | CH341_LCR_ENABLE_TX | CH341_LCR_CS8;
 
 	r = ch341_configure(port->serial->dev, priv);
@@ -426,7 +371,7 @@ static void ch341_dtr_rts(struct usb_serial_port *port, int on)
 	struct ch341_private *priv = usb_get_serial_port_data(port);
 	unsigned long flags;
 
-	/* drop DTR and RTS */
+	 
 	spin_lock_irqsave(&priv->lock, flags);
 	if (on)
 		priv->mcr |= CH341_BIT_RTS | CH341_BIT_DTR;
@@ -443,7 +388,7 @@ static void ch341_close(struct usb_serial_port *port)
 }
 
 
-/* open this device, set default parameters */
+ 
 static int ch341_open(struct tty_struct *tty, struct usb_serial_port *port)
 {
 	struct ch341_private *priv = usb_get_serial_port_data(port);
@@ -478,9 +423,7 @@ err_kill_interrupt_urb:
 	return r;
 }
 
-/* Old_termios contains the original termios settings and
- * tty->termios contains the new setting to be used.
- */
+ 
 static void ch341_set_termios(struct tty_struct *tty,
 			      struct usb_serial_port *port,
 			      const struct ktermios *old_termios)
@@ -491,7 +434,7 @@ static void ch341_set_termios(struct tty_struct *tty,
 	u8 lcr;
 	int r;
 
-	/* redundant changes may cause the chip to lose bytes */
+	 
 	if (old_termios && !tty_termios_hw_change(&tty->termios, old_termios))
 		return;
 
@@ -548,20 +491,7 @@ static void ch341_set_termios(struct tty_struct *tty,
 	ch341_set_handshake(port->serial->dev, priv->mcr);
 }
 
-/*
- * A subset of all CH34x devices don't support a real break condition and
- * reading CH341_REG_BREAK fails (see also ch341_detect_quirks). This function
- * simulates a break condition by lowering the baud rate to the minimum
- * supported by the hardware upon enabling the break condition and sending
- * a NUL byte.
- *
- * Incoming data is corrupted while the break condition is being simulated.
- *
- * Normally the duration of the break condition can be controlled individually
- * by userspace using TIOCSBRK and TIOCCBRK or by passing an argument to
- * TCSBRKP. Due to how the simulation is implemented the duration can't be
- * controlled. The duration is always about (1s / 46bd * 9bit) = 196ms.
- */
+ 
 static int ch341_simulate_break(struct tty_struct *tty, int break_state)
 {
 	struct usb_serial_port *port = tty->driver_data;
@@ -590,13 +520,7 @@ static int ch341_simulate_break(struct tty_struct *tty, int break_state)
 			goto restore;
 		}
 
-		/*
-		 * Compute expected transmission duration including safety
-		 * margin. The original baud rate is only restored after the
-		 * computed point in time.
-		 *
-		 * 11 bits = 1 start, 8 data, 1 stop, 1 margin
-		 */
+		 
 		priv->break_end = jiffies + (11 * HZ / CH341_MIN_BPS);
 
 		return 0;
@@ -607,7 +531,7 @@ static int ch341_simulate_break(struct tty_struct *tty, int break_state)
 	now = jiffies;
 
 	if (time_before(now, priv->break_end)) {
-		/* Wait until NUL byte is written */
+		 
 		delay = priv->break_end - now;
 		dev_dbg(&port->dev,
 			"wait %d ms while transmitting NUL byte at %u baud\n",
@@ -617,7 +541,7 @@ static int ch341_simulate_break(struct tty_struct *tty, int break_state)
 
 	r = 0;
 restore:
-	/* Restore original baud rate */
+	 
 	r2 = ch341_set_baudrate_lcr(port->serial->dev, priv, priv->baud_rate,
 			priv->lcr);
 	if (r2 < 0) {
@@ -753,12 +677,12 @@ static void ch341_read_int_callback(struct urb *urb)
 
 	switch (urb->status) {
 	case 0:
-		/* success */
+		 
 		break;
 	case -ECONNRESET:
 	case -ENOENT:
 	case -ESHUTDOWN:
-		/* this urb is terminated, clean up */
+		 
 		dev_dbg(&urb->dev->dev, "%s - urb shutting down: %d\n",
 			__func__, urb->status);
 		return;
@@ -814,7 +738,7 @@ static int ch341_reset_resume(struct usb_serial *serial)
 	if (!priv)
 		return 0;
 
-	/* reconfigure ch341 serial port after bus-reset */
+	 
 	ch341_configure(serial->dev, priv);
 
 	if (tty_port_initialized(&port->port)) {

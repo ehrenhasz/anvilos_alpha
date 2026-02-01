@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * hp206c.c - HOPERF HP206C precision barometer and altimeter sensor
- *
- * Copyright (c) 2016, Intel Corporation.
- *
- * (7-bit I2C slave address 0x76)
- *
- * Datasheet:
- *  http://www.hoperf.com/upload/sensor/HP206C_DataSheet_EN_V2.0.pdf
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/i2c.h>
@@ -20,7 +11,7 @@
 
 #include <asm/unaligned.h>
 
-/* I2C commands: */
+ 
 #define HP206C_CMD_SOFT_RST	0x06
 
 #define HP206C_CMD_ADC_CVT	0x40
@@ -50,7 +41,7 @@
 #define HP206C_REG_PARA		0x0f
 #define HP206C_FLAG_CMPS_EN	0x80
 
-/* Maximum spin for DEV_RDY */
+ 
 #define HP206C_MAX_DEV_RDY_WAIT_COUNT 20
 #define HP206C_DEV_RDY_WAIT_US    20000
 
@@ -67,7 +58,7 @@ struct hp206c_osr_setting {
 	unsigned int pres_conv_time_us;
 };
 
-/* Data from Table 5 in datasheet. */
+ 
 static const struct hp206c_osr_setting hp206c_osr_settings[] = {
 	{ HP206C_CMD_ADC_CVT_OSR_4096,	65600,	131100	},
 	{ HP206C_CMD_ADC_CVT_OSR_2048,	32800,	65600	},
@@ -103,7 +94,7 @@ static int hp206c_read_20bit(struct i2c_client *client, u8 cmd)
 	return get_unaligned_be24(&values[0]) & GENMASK(19, 0);
 }
 
-/* Spin for max 160ms until DEV_RDY is 1, or return error. */
+ 
 static int hp206c_wait_dev_rdy(struct iio_dev *indio_dev)
 {
 	int ret;
@@ -139,7 +130,7 @@ static int hp206c_set_compensation(struct i2c_client *client, bool enabled)
 	return hp206c_write_reg(client, HP206C_REG_PARA, val);
 }
 
-/* Do a soft reset */
+ 
 static int hp206c_soft_reset(struct iio_dev *indio_dev)
 {
 	int ret;
@@ -241,9 +232,7 @@ static int hp206c_read_raw(struct iio_dev *indio_dev,
 					HP206C_CMD_READ_T,
 					osr_setting->temp_conv_time_us);
 			if (ret >= 0) {
-				/* 20 significant bits are provided.
-				 * Extend sign over the rest.
-				 */
+				 
 				*val = sign_extend32(ret, 19);
 				ret = IIO_VAL_INT;
 			}
@@ -384,7 +373,7 @@ static int hp206c_probe(struct i2c_client *client)
 
 	i2c_set_clientdata(client, indio_dev);
 
-	/* Do a soft reset on probe */
+	 
 	ret = hp206c_soft_reset(indio_dev);
 	if (ret) {
 		dev_err(&client->dev, "Failed to reset on startup: %d\n", ret);

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright © 2020 Intel Corporation
- */
+
+ 
 
 #include <linux/slab.h>
 
@@ -101,7 +99,7 @@ __set_pd_entry(struct i915_page_directory * const pd,
 	       struct i915_page_table * const to,
 	       u64 (*encode)(const dma_addr_t, const enum i915_cache_level))
 {
-	/* Each thread pre-pins the pd, and we may have a thread per pde. */
+	 
 	GEM_BUG_ON(atomic_read(px_used(pd)) > NALLOC * I915_PDES);
 
 	atomic_inc(px_used(pd));
@@ -193,7 +191,7 @@ void ppgtt_bind_vma(struct i915_address_space *vm,
 		vma_res->allocated = true;
 	}
 
-	/* Applicable to VLV, and gen8+ */
+	 
 	pte_flags = 0;
 	if (vma_res->bi.readonly)
 		pte_flags |= PTE_READ_ONLY;
@@ -216,7 +214,7 @@ void ppgtt_unbind_vma(struct i915_address_space *vm,
 
 static unsigned long pd_count(u64 size, int shift)
 {
-	/* Beware later misalignment */
+	 
 	return (size + 2 * (BIT_ULL(shift) - 1)) >> shift;
 }
 
@@ -254,7 +252,7 @@ int i915_vm_alloc_pt_stash(struct i915_address_space *vm,
 	}
 
 	for (n = 1; n < vm->top; n++) {
-		shift += ilog2(I915_PDES); /* Each PD holds 512 entries */
+		shift += ilog2(I915_PDES);  
 		count = pd_count(size, shift);
 		while (count--) {
 			struct i915_page_directory *pd;

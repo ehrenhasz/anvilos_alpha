@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (C) 2019-2021, Intel Corporation. */
+
+ 
 
 #include "ice.h"
 #include "ice_tc_lib.h"
@@ -9,25 +9,14 @@
 
 #define ICE_TC_METADATA_LKUP_IDX 0
 
-/**
- * ice_tc_count_lkups - determine lookup count for switch filter
- * @flags: TC-flower flags
- * @headers: Pointer to TC flower filter header structure
- * @fltr: Pointer to outer TC filter structure
- *
- * Determine lookup count based on TC flower input for switch filter.
- */
+ 
 static int
 ice_tc_count_lkups(u32 flags, struct ice_tc_flower_lyr_2_4_hdrs *headers,
 		   struct ice_tc_flower_fltr *fltr)
 {
-	int lkups_cnt = 1; /* 0th lookup is metadata */
+	int lkups_cnt = 1;  
 
-	/* Always add metadata as the 0th lookup. Included elements:
-	 * - Direction flag (always present)
-	 * - ICE_TC_FLWR_FIELD_VLAN_TPID (present if specified)
-	 * - Tunnel flag (present if tunnel)
-	 */
+	 
 
 	if (flags & ICE_TC_FLWR_FIELD_TENANT_ID)
 		lkups_cnt++;
@@ -54,24 +43,24 @@ ice_tc_count_lkups(u32 flags, struct ice_tc_flower_lyr_2_4_hdrs *headers,
 	if (flags & ICE_TC_FLWR_FIELD_ETH_TYPE_ID)
 		lkups_cnt++;
 
-	/* are MAC fields specified? */
+	 
 	if (flags & (ICE_TC_FLWR_FIELD_DST_MAC | ICE_TC_FLWR_FIELD_SRC_MAC))
 		lkups_cnt++;
 
-	/* is VLAN specified? */
+	 
 	if (flags & (ICE_TC_FLWR_FIELD_VLAN | ICE_TC_FLWR_FIELD_VLAN_PRIO))
 		lkups_cnt++;
 
-	/* is CVLAN specified? */
+	 
 	if (flags & (ICE_TC_FLWR_FIELD_CVLAN | ICE_TC_FLWR_FIELD_CVLAN_PRIO))
 		lkups_cnt++;
 
-	/* are PPPoE options specified? */
+	 
 	if (flags & (ICE_TC_FLWR_FIELD_PPPOE_SESSID |
 		     ICE_TC_FLWR_FIELD_PPP_PROTO))
 		lkups_cnt++;
 
-	/* are IPv[4|6] fields specified? */
+	 
 	if (flags & (ICE_TC_FLWR_FIELD_DEST_IPV4 | ICE_TC_FLWR_FIELD_SRC_IPV4 |
 		     ICE_TC_FLWR_FIELD_DEST_IPV6 | ICE_TC_FLWR_FIELD_SRC_IPV6))
 		lkups_cnt++;
@@ -79,11 +68,11 @@ ice_tc_count_lkups(u32 flags, struct ice_tc_flower_lyr_2_4_hdrs *headers,
 	if (flags & (ICE_TC_FLWR_FIELD_IP_TOS | ICE_TC_FLWR_FIELD_IP_TTL))
 		lkups_cnt++;
 
-	/* are L2TPv3 options specified? */
+	 
 	if (flags & ICE_TC_FLWR_FIELD_L2TPV3_SESSID)
 		lkups_cnt++;
 
-	/* is L4 (TCP/UDP/any other L4 protocol fields) specified? */
+	 
 	if (flags & (ICE_TC_FLWR_FIELD_DEST_L4_PORT |
 		     ICE_TC_FLWR_FIELD_SRC_L4_PORT))
 		lkups_cnt++;
@@ -134,7 +123,7 @@ ice_proto_type_from_tunnel(enum ice_tunnel_type type)
 	case TNL_GRETAP:
 		return ICE_NVGRE;
 	case TNL_GTPU:
-		/* NO_PAY profiles will not work with GTP-U */
+		 
 		return ICE_GTP;
 	case TNL_GTPC:
 		return ICE_GTP_NO_PAY;
@@ -327,25 +316,13 @@ ice_tc_fill_tunnel_outer(u32 flags, struct ice_tc_flower_fltr *fltr,
 		i++;
 	}
 
-	/* always fill matching on tunneled packets in metadata */
+	 
 	ice_rule_add_tunnel_metadata(&list[ICE_TC_METADATA_LKUP_IDX]);
 
 	return i;
 }
 
-/**
- * ice_tc_fill_rules - fill filter rules based on TC fltr
- * @hw: pointer to HW structure
- * @flags: tc flower field flags
- * @tc_fltr: pointer to TC flower filter
- * @list: list of advance rule elements
- * @rule_info: pointer to information about rule
- * @l4_proto: pointer to information such as L4 proto type
- *
- * Fill ice_adv_lkup_elem list based on TC flower flags and
- * TC flower headers. This list should be used to add
- * advance filter in hardware.
- */
+ 
 static int
 ice_tc_fill_rules(struct ice_hw *hw, u32 flags,
 		  struct ice_tc_flower_fltr *tc_fltr,
@@ -356,11 +333,11 @@ ice_tc_fill_rules(struct ice_hw *hw, u32 flags,
 	struct ice_tc_flower_lyr_2_4_hdrs *headers = &tc_fltr->outer_headers;
 	bool inner = false;
 	u16 vlan_tpid = 0;
-	int i = 1; /* 0th lookup is metadata */
+	int i = 1;  
 
 	rule_info->vlan_type = vlan_tpid;
 
-	/* Always add direction metadata */
+	 
 	ice_rule_add_direction_metadata(&list[ICE_TC_METADATA_LKUP_IDX]);
 
 	rule_info->tun_type = ice_sw_type_from_tunnel(tc_fltr->tunnel_type);
@@ -401,7 +378,7 @@ ice_tc_fill_rules(struct ice_hw *hw, u32 flags,
 		i++;
 	}
 
-	/* copy VLAN info */
+	 
 	if (flags & (ICE_TC_FLWR_FIELD_VLAN | ICE_TC_FLWR_FIELD_VLAN_PRIO)) {
 		if (flags & ICE_TC_FLWR_FIELD_CVLAN)
 			list[i].type = ICE_VLAN_EX;
@@ -479,7 +456,7 @@ ice_tc_fill_rules(struct ice_hw *hw, u32 flags,
 		i++;
 	}
 
-	/* copy L3 (IPv[4|6]: src, dest) address */
+	 
 	if (flags & (ICE_TC_FLWR_FIELD_DEST_IPV4 |
 		     ICE_TC_FLWR_FIELD_SRC_IPV4)) {
 		struct ice_tc_l3_hdr *l3_key, *l3_mask;
@@ -577,7 +554,7 @@ ice_tc_fill_rules(struct ice_hw *hw, u32 flags,
 		i++;
 	}
 
-	/* copy L4 (src, dest) port */
+	 
 	if (flags & (ICE_TC_FLWR_FIELD_DEST_L4_PORT |
 		     ICE_TC_FLWR_FIELD_SRC_L4_PORT)) {
 		struct ice_tc_l4_hdr *l4_key, *l4_mask;
@@ -600,13 +577,7 @@ ice_tc_fill_rules(struct ice_hw *hw, u32 flags,
 	return i;
 }
 
-/**
- * ice_tc_tun_get_type - get the tunnel type
- * @tunnel_dev: ptr to tunnel device
- *
- * This function detects appropriate tunnel_type if specified device is
- * tunnel device such as VXLAN/Geneve
- */
+ 
 static int ice_tc_tun_get_type(struct net_device *tunnel_dev)
 {
 	if (netif_is_vxlan(tunnel_dev))
@@ -617,9 +588,7 @@ static int ice_tc_tun_get_type(struct net_device *tunnel_dev)
 	    netif_is_ip6gretap(tunnel_dev))
 		return TNL_GRETAP;
 
-	/* Assume GTP-U by default in case of GTP netdev.
-	 * GTP-C may be selected later, based on enc_dst_port.
-	 */
+	 
 	if (netif_is_gtp(tunnel_dev))
 		return TNL_GTPU;
 	return TNL_LAST;
@@ -750,34 +719,29 @@ ice_eswitch_add_tc_fltr(struct ice_vsi *vsi, struct ice_tc_flower_fltr *fltr)
 	rule_info.sw_act.fltr_act = fltr->action.fltr_act;
 	if (fltr->action.fltr_act != ICE_DROP_PACKET)
 		rule_info.sw_act.vsi_handle = fltr->dest_vsi->idx;
-	/* For now, making priority to be highest, and it also becomes
-	 * the priority for recipe which will get created as a result of
-	 * new extraction sequence based on input set.
-	 * Priority '7' is max val for switch recipe, higher the number
-	 * results into order of switch rule evaluation.
-	 */
+	 
 	rule_info.priority = 7;
 	rule_info.flags_info.act_valid = true;
 
 	if (fltr->direction == ICE_ESWITCH_FLTR_INGRESS) {
-		/* Uplink to VF */
+		 
 		rule_info.sw_act.flag |= ICE_FLTR_RX;
 		rule_info.sw_act.src = hw->pf_id;
 		rule_info.flags_info.act = ICE_SINGLE_ACT_LB_ENABLE;
 	} else if (fltr->direction == ICE_ESWITCH_FLTR_EGRESS &&
 		   fltr->dest_vsi == vsi->back->switchdev.uplink_vsi) {
-		/* VF to Uplink */
+		 
 		rule_info.sw_act.flag |= ICE_FLTR_TX;
 		rule_info.sw_act.src = vsi->idx;
 		rule_info.flags_info.act = ICE_SINGLE_ACT_LAN_ENABLE;
 	} else {
-		/* VF to VF */
+		 
 		rule_info.sw_act.flag |= ICE_FLTR_TX;
 		rule_info.sw_act.src = vsi->idx;
 		rule_info.flags_info.act = ICE_SINGLE_ACT_LB_ENABLE;
 	}
 
-	/* specify the cookie as filter_rule_id */
+	 
 	rule_info.fltr_rule_id = fltr->cookie;
 
 	ret = ice_add_adv_rule(hw, list, lkups_cnt, &rule_info, &rule_added);
@@ -790,9 +754,7 @@ ice_eswitch_add_tc_fltr(struct ice_vsi *vsi, struct ice_tc_flower_fltr *fltr)
 		goto exit;
 	}
 
-	/* store the output params, which are needed later for removing
-	 * advanced switch filter
-	 */
+	 
 	fltr->rid = rule_added.rid;
 	fltr->rule_id = rule_added.rule_id;
 	fltr->dest_vsi_handle = rule_added.vsi_handle;
@@ -802,27 +764,17 @@ exit:
 	return ret;
 }
 
-/**
- * ice_locate_vsi_using_queue - locate VSI using queue (forward to queue action)
- * @vsi: Pointer to VSI
- * @queue: Queue index
- *
- * Locate the VSI using specified "queue". When ADQ is not enabled,
- * always return input VSI, otherwise locate corresponding
- * VSI based on per channel "offset" and "qcount"
- */
+ 
 struct ice_vsi *
 ice_locate_vsi_using_queue(struct ice_vsi *vsi, int queue)
 {
 	int num_tc, tc;
 
-	/* if ADQ is not active, passed VSI is the candidate VSI */
+	 
 	if (!ice_is_adq_active(vsi->back))
 		return vsi;
 
-	/* Locate the VSI (it could still be main PF VSI or CHNL_VSI depending
-	 * upon queue number)
-	 */
+	 
 	num_tc = vsi->mqprio_qopt.qopt.num_tc;
 
 	for (tc = 0; tc < num_tc; tc++) {
@@ -830,7 +782,7 @@ ice_locate_vsi_using_queue(struct ice_vsi *vsi, int queue)
 		int offset = vsi->mqprio_qopt.qopt.offset[tc];
 
 		if (queue >= offset && queue < offset + qcount) {
-			/* for non-ADQ TCs, passed VSI is the candidate VSI */
+			 
 			if (tc < ICE_CHNL_START_TC)
 				return vsi;
 			else
@@ -849,14 +801,7 @@ ice_locate_rx_ring_using_queue(struct ice_vsi *vsi,
 	return queue < vsi->num_rxq ? vsi->rx_rings[queue] : NULL;
 }
 
-/**
- * ice_tc_forward_action - Determine destination VSI and queue for the action
- * @vsi: Pointer to VSI
- * @tc_fltr: Pointer to TC flower filter structure
- *
- * Validates the tc forward action and determines the destination VSI and queue
- * for the forward action.
- */
+ 
 static struct ice_vsi *
 ice_tc_forward_action(struct ice_vsi *vsi, struct ice_tc_flower_fltr *tc_fltr)
 {
@@ -869,21 +814,21 @@ ice_tc_forward_action(struct ice_vsi *vsi, struct ice_tc_flower_fltr *tc_fltr)
 
 	dev = ice_pf_to_dev(pf);
 
-	/* Get the destination VSI and/or destination queue and validate them */
+	 
 	switch (tc_fltr->action.fltr_act) {
 	case ICE_FWD_TO_VSI:
 		tc_class = tc_fltr->action.fwd.tc.tc_class;
-		/* Select the destination VSI */
+		 
 		if (tc_class < ICE_CHNL_START_TC) {
 			NL_SET_ERR_MSG_MOD(tc_fltr->extack,
 					   "Unable to add filter because of unsupported destination");
 			return ERR_PTR(-EOPNOTSUPP);
 		}
-		/* Locate ADQ VSI depending on hw_tc number */
+		 
 		dest_vsi = vsi->tc_map_vsi[tc_class];
 		break;
 	case ICE_FWD_TO_Q:
-		/* Locate the Rx queue */
+		 
 		ring = ice_locate_rx_ring_using_queue(vsi, tc_fltr);
 		if (!ring) {
 			dev_err(dev,
@@ -891,9 +836,7 @@ ice_tc_forward_action(struct ice_vsi *vsi, struct ice_tc_flower_fltr *tc_fltr)
 				tc_fltr->action.fwd.q.queue);
 			return ERR_PTR(-EINVAL);
 		}
-		/* Determine destination VSI even though the action is
-		 * FWD_TO_QUEUE, because QUEUE is associated with VSI
-		 */
+		 
 		q = tc_fltr->action.fwd.q.queue;
 		dest_vsi = ice_locate_vsi_using_queue(vsi, q);
 		break;
@@ -903,7 +846,7 @@ ice_tc_forward_action(struct ice_vsi *vsi, struct ice_tc_flower_fltr *tc_fltr)
 			tc_fltr->action.fltr_act);
 		return ERR_PTR(-EINVAL);
 	}
-	/* Must have valid dest_vsi (it could be main VSI or ADQ VSI) */
+	 
 	if (!dest_vsi) {
 		dev_err(dev,
 			"Unable to add filter because specified destination VSI doesn't exist\n");
@@ -912,14 +855,7 @@ ice_tc_forward_action(struct ice_vsi *vsi, struct ice_tc_flower_fltr *tc_fltr)
 	return dest_vsi;
 }
 
-/**
- * ice_add_tc_flower_adv_fltr - add appropriate filter rules
- * @vsi: Pointer to VSI
- * @tc_fltr: Pointer to TC flower filter structure
- *
- * based on filter parameters using Advance recipes supported
- * by OS package.
- */
+ 
 static int
 ice_add_tc_flower_adv_fltr(struct ice_vsi *vsi,
 			   struct ice_tc_flower_fltr *tc_fltr)
@@ -953,7 +889,7 @@ ice_add_tc_flower_adv_fltr(struct ice_vsi *vsi,
 		return -EOPNOTSUPP;
 	}
 
-	/* validate forwarding action VSI and queue */
+	 
 	if (ice_is_forward_action(tc_fltr->action.fltr_act)) {
 		dest_vsi = ice_tc_forward_action(vsi, tc_fltr);
 		if (IS_ERR(dest_vsi))
@@ -972,7 +908,7 @@ ice_add_tc_flower_adv_fltr(struct ice_vsi *vsi,
 	}
 
 	rule_info.sw_act.fltr_act = tc_fltr->action.fltr_act;
-	/* specify the cookie as filter_rule_id */
+	 
 	rule_info.fltr_rule_id = tc_fltr->cookie;
 
 	switch (tc_fltr->action.fltr_act) {
@@ -985,7 +921,7 @@ ice_add_tc_flower_adv_fltr(struct ice_vsi *vsi,
 			rule_info.sw_act.vsi_handle, lkups_cnt);
 		break;
 	case ICE_FWD_TO_Q:
-		/* HW queue number in global space */
+		 
 		rule_info.sw_act.fwd_id.q_id = tc_fltr->action.fwd.q.hw_queue;
 		rule_info.sw_act.vsi_handle = dest_vsi->idx;
 		rule_info.priority = ICE_SWITCH_FLTR_PRIO_QUEUE;
@@ -1016,21 +952,17 @@ ice_add_tc_flower_adv_fltr(struct ice_vsi *vsi,
 		goto exit;
 	}
 
-	/* store the output params, which are needed later for removing
-	 * advanced switch filter
-	 */
+	 
 	tc_fltr->rid = rule_added.rid;
 	tc_fltr->rule_id = rule_added.rule_id;
 	tc_fltr->dest_vsi_handle = rule_added.vsi_handle;
 	if (tc_fltr->action.fltr_act == ICE_FWD_TO_VSI ||
 	    tc_fltr->action.fltr_act == ICE_FWD_TO_Q) {
 		tc_fltr->dest_vsi = dest_vsi;
-		/* keep track of advanced switch filter for
-		 * destination VSI
-		 */
+		 
 		dest_vsi->num_chnl_fltr++;
 
-		/* keeps track of channel filters for PF VSI */
+		 
 		if (vsi->type == ICE_VSI_PF &&
 		    (flags & (ICE_TC_FLWR_FIELD_DST_MAC |
 			      ICE_TC_FLWR_FIELD_ENC_DST_MAC)))
@@ -1061,13 +993,7 @@ exit:
 	return ret;
 }
 
-/**
- * ice_tc_set_pppoe - Parse PPPoE fields from TC flower filter
- * @match: Pointer to flow match structure
- * @fltr: Pointer to filter structure
- * @headers: Pointer to outer header fields
- * @returns PPP protocol used in filter (ppp_ses or ppp_disc)
- */
+ 
 static u16
 ice_tc_set_pppoe(struct flow_match_pppoe *match,
 		 struct ice_tc_flower_fltr *fltr,
@@ -1086,13 +1012,7 @@ ice_tc_set_pppoe(struct flow_match_pppoe *match,
 	return be16_to_cpu(match->key->type);
 }
 
-/**
- * ice_tc_set_ipv4 - Parse IPv4 addresses from TC flower filter
- * @match: Pointer to flow match structure
- * @fltr: Pointer to filter structure
- * @headers: inner or outer header fields
- * @is_encap: set true for tunnel IPv4 address
- */
+ 
 static int
 ice_tc_set_ipv4(struct flow_match_ipv4_addrs *match,
 		struct ice_tc_flower_fltr *fltr,
@@ -1117,13 +1037,7 @@ ice_tc_set_ipv4(struct flow_match_ipv4_addrs *match,
 	return 0;
 }
 
-/**
- * ice_tc_set_ipv6 - Parse IPv6 addresses from TC flower filter
- * @match: Pointer to flow match structure
- * @fltr: Pointer to filter structure
- * @headers: inner or outer header fields
- * @is_encap: set true for tunnel IPv6 address
- */
+ 
 static int
 ice_tc_set_ipv6(struct flow_match_ipv6_addrs *match,
 		struct ice_tc_flower_fltr *fltr,
@@ -1131,15 +1045,13 @@ ice_tc_set_ipv6(struct flow_match_ipv6_addrs *match,
 {
 	struct ice_tc_l3_hdr *l3_key, *l3_mask;
 
-	/* src and dest IPV6 address should not be LOOPBACK
-	 * (0:0:0:0:0:0:0:1), which can be represented as ::1
-	 */
+	 
 	if (ipv6_addr_loopback(&match->key->dst) ||
 	    ipv6_addr_loopback(&match->key->src)) {
 		NL_SET_ERR_MSG_MOD(fltr->extack, "Bad IPv6, addr is LOOPBACK");
 		return -EINVAL;
 	}
-	/* if src/dest IPv6 address is *,* error */
+	 
 	if (ipv6_addr_any(&match->mask->dst) &&
 	    ipv6_addr_any(&match->mask->src)) {
 		NL_SET_ERR_MSG_MOD(fltr->extack, "Bad src/dest IPv6, addr is any");
@@ -1179,13 +1091,7 @@ ice_tc_set_ipv6(struct flow_match_ipv6_addrs *match,
 	return 0;
 }
 
-/**
- * ice_tc_set_tos_ttl - Parse IP ToS/TTL from TC flower filter
- * @match: Pointer to flow match structure
- * @fltr: Pointer to filter structure
- * @headers: inner or outer header fields
- * @is_encap: set true for tunnel
- */
+ 
 static void
 ice_tc_set_tos_ttl(struct flow_match_ip *match,
 		   struct ice_tc_flower_fltr *fltr,
@@ -1213,13 +1119,7 @@ ice_tc_set_tos_ttl(struct flow_match_ip *match,
 	}
 }
 
-/**
- * ice_tc_set_port - Parse ports from TC flower filter
- * @match: Flow match structure
- * @fltr: Pointer to filter structure
- * @headers: inner or outer header fields
- * @is_encap: set true for tunnel port
- */
+ 
 static int
 ice_tc_set_port(struct flow_match_ports match,
 		struct ice_tc_flower_fltr *fltr,
@@ -1264,16 +1164,7 @@ ice_get_tunnel_device(struct net_device *dev, struct flow_rule *rule)
 	return NULL;
 }
 
-/**
- * ice_parse_gtp_type - Sets GTP tunnel type to GTP-U or GTP-C
- * @match: Flow match structure
- * @fltr: Pointer to filter structure
- *
- * GTP-C/GTP-U is selected based on destination port number (enc_dst_port).
- * Before calling this funtcion, fltr->tunnel_type should be set to TNL_GTPU,
- * therefore making GTP-U the default choice (when destination port number is
- * not specified).
- */
+ 
 static int
 ice_parse_gtp_type(struct flow_match_ports match,
 		   struct ice_tc_flower_fltr *fltr)
@@ -1377,13 +1268,7 @@ ice_parse_tunnel_attr(struct net_device *dev, struct flow_rule *rule,
 	return 0;
 }
 
-/**
- * ice_parse_cls_flower - Parse TC flower filters provided by kernel
- * @vsi: Pointer to the VSI
- * @filter_dev: Pointer to device on which filter is being added
- * @f: Pointer to struct flow_cls_offload
- * @fltr: Pointer to filter structure
- */
+ 
 static int
 ice_parse_cls_flower(struct net_device *filter_dev, struct ice_vsi *vsi,
 		     struct flow_cls_offload *f,
@@ -1432,9 +1317,7 @@ ice_parse_cls_flower(struct net_device *filter_dev, struct ice_vsi *vsi,
 			return err;
 		}
 
-		/* header pointers should point to the inner headers, outer
-		 * header were already set by ice_parse_tunnel_attr
-		 */
+		 
 		headers = &fltr->inner_headers;
 	} else if (dissector->used_keys &
 		  (BIT_ULL(FLOW_DISSECTOR_KEY_ENC_IPV4_ADDRS) |
@@ -1570,11 +1453,7 @@ ice_parse_cls_flower(struct net_device *filter_dev, struct ice_vsi *vsi,
 		flow_rule_match_pppoe(rule, &match);
 		n_proto_key = ice_tc_set_pppoe(&match, fltr, headers);
 
-		/* If ethertype equals ETH_P_PPP_SES, n_proto might be
-		 * overwritten by encapsulated protocol (ppp_proto field) or set
-		 * to 0. To correct this, flow_match_pppoe provides the type
-		 * field, which contains the actual ethertype (ETH_P_PPP_SES).
-		 */
+		 
 		headers->l2_key.n_proto = cpu_to_be16(n_proto_key);
 		headers->l2_mask.n_proto = cpu_to_be16(0xFFFF);
 		fltr->flags |= ICE_TC_FLWR_FIELD_ETH_TYPE_ID;
@@ -1638,13 +1517,7 @@ ice_parse_cls_flower(struct net_device *filter_dev, struct ice_vsi *vsi,
 	return 0;
 }
 
-/**
- * ice_add_switch_fltr - Add TC flower filters
- * @vsi: Pointer to VSI
- * @fltr: Pointer to struct ice_tc_flower_fltr
- *
- * Add filter in HW switch block
- */
+ 
 static int
 ice_add_switch_fltr(struct ice_vsi *vsi, struct ice_tc_flower_fltr *fltr)
 {
@@ -1657,13 +1530,7 @@ ice_add_switch_fltr(struct ice_vsi *vsi, struct ice_tc_flower_fltr *fltr)
 	return ice_add_tc_flower_adv_fltr(vsi, fltr);
 }
 
-/**
- * ice_prep_adq_filter - Prepare ADQ filter with the required additional headers
- * @vsi: Pointer to VSI
- * @fltr: Pointer to TC flower filter structure
- *
- * Prepare ADQ filter with the required additional header fields
- */
+ 
 static int
 ice_prep_adq_filter(struct ice_vsi *vsi, struct ice_tc_flower_fltr *fltr)
 {
@@ -1675,18 +1542,7 @@ ice_prep_adq_filter(struct ice_vsi *vsi, struct ice_tc_flower_fltr *fltr)
 		return -EOPNOTSUPP;
 	}
 
-	/* For ADQ, filter must include dest MAC address, otherwise unwanted
-	 * packets with unrelated MAC address get delivered to ADQ VSIs as long
-	 * as remaining filter criteria is satisfied such as dest IP address
-	 * and dest/src L4 port. Below code handles the following cases:
-	 * 1. For non-tunnel, if user specify MAC addresses, use them.
-	 * 2. For non-tunnel, if user didn't specify MAC address, add implicit
-	 * dest MAC to be lower netdev's active unicast MAC address
-	 * 3. For tunnel,  as of now TC-filter through flower classifier doesn't
-	 * have provision for user to specify outer DMAC, hence driver to
-	 * implicitly add outer dest MAC to be lower netdev's active unicast
-	 * MAC address.
-	 */
+	 
 	if (fltr->tunnel_type != TNL_LAST &&
 	    !(fltr->flags & ICE_TC_FLWR_FIELD_ENC_DST_MAC))
 		fltr->flags |= ICE_TC_FLWR_FIELD_ENC_DST_MAC;
@@ -1702,9 +1558,7 @@ ice_prep_adq_filter(struct ice_vsi *vsi, struct ice_tc_flower_fltr *fltr)
 		eth_broadcast_addr(fltr->outer_headers.l2_mask.dst_mac);
 	}
 
-	/* Make sure VLAN is already added to main VSI, before allowing ADQ to
-	 * add a VLAN based filter such as MAC + VLAN + L4 port.
-	 */
+	 
 	if (fltr->flags & ICE_TC_FLWR_FIELD_VLAN) {
 		u16 vlan_id = be16_to_cpu(fltr->outer_headers.vlan_hdr.vlan_id);
 
@@ -1717,14 +1571,7 @@ ice_prep_adq_filter(struct ice_vsi *vsi, struct ice_tc_flower_fltr *fltr)
 	return 0;
 }
 
-/**
- * ice_handle_tclass_action - Support directing to a traffic class
- * @vsi: Pointer to VSI
- * @cls_flower: Pointer to TC flower offload structure
- * @fltr: Pointer to TC flower filter structure
- *
- * Support directing traffic to a traffic class/queue-set
- */
+ 
 static int
 ice_handle_tclass_action(struct ice_vsi *vsi,
 			 struct flow_cls_offload *cls_flower,
@@ -1732,9 +1579,7 @@ ice_handle_tclass_action(struct ice_vsi *vsi,
 {
 	int tc = tc_classid_to_hwtc(vsi->netdev, cls_flower->classid);
 
-	/* user specified hw_tc (must be non-zero for ADQ TC), action is forward
-	 * to hw_tc (i.e. ADQ channel number)
-	 */
+	 
 	if (tc < ICE_CHNL_START_TC) {
 		NL_SET_ERR_MSG_MOD(fltr->extack,
 				   "Unable to add filter because of unsupported destination");
@@ -1765,12 +1610,10 @@ ice_tc_forward_to_queue(struct ice_vsi *vsi, struct ice_tc_flower_fltr *fltr,
 	}
 	fltr->action.fltr_act = ICE_FWD_TO_Q;
 	fltr->action.fwd.q.queue = queue;
-	/* determine corresponding HW queue */
+	 
 	fltr->action.fwd.q.hw_queue = vsi->rxq_map[queue];
 
-	/* If ADQ is configured, and the queue belongs to ADQ VSI, then prepare
-	 * ADQ switch filter
-	 */
+	 
 	ch_vsi = ice_locate_vsi_using_queue(vsi, fltr->action.fwd.q.queue);
 	if (!ch_vsi)
 		return -EINVAL;
@@ -1787,7 +1630,7 @@ ice_tc_parse_action(struct ice_vsi *vsi, struct ice_tc_flower_fltr *fltr,
 {
 	switch (act->id) {
 	case FLOW_ACTION_RX_QUEUE_MAPPING:
-		/* forward to queue */
+		 
 		return ice_tc_forward_to_queue(vsi, fltr, act);
 	case FLOW_ACTION_DROP:
 		fltr->action.fltr_act = ICE_DROP_PACKET;
@@ -1798,15 +1641,7 @@ ice_tc_parse_action(struct ice_vsi *vsi, struct ice_tc_flower_fltr *fltr,
 	}
 }
 
-/**
- * ice_parse_tc_flower_actions - Parse the actions for a TC filter
- * @filter_dev: Pointer to device on which filter is being added
- * @vsi: Pointer to VSI
- * @cls_flower: Pointer to TC flower offload structure
- * @fltr: Pointer to TC flower filter structure
- *
- * Parse the actions for a TC filter
- */
+ 
 static int ice_parse_tc_flower_actions(struct net_device *filter_dev,
 				       struct ice_vsi *vsi,
 				       struct flow_cls_offload *cls_flower,
@@ -1835,13 +1670,7 @@ static int ice_parse_tc_flower_actions(struct net_device *filter_dev,
 	return 0;
 }
 
-/**
- * ice_del_tc_fltr - deletes a filter from HW table
- * @vsi: Pointer to VSI
- * @fltr: Pointer to struct ice_tc_flower_fltr
- *
- * This function deletes a filter from HW table and manages book-keeping
- */
+ 
 static int ice_del_tc_fltr(struct ice_vsi *vsi, struct ice_tc_flower_fltr *fltr)
 {
 	struct ice_rule_query_data rule_rem;
@@ -1861,14 +1690,12 @@ static int ice_del_tc_fltr(struct ice_vsi *vsi, struct ice_tc_flower_fltr *fltr)
 		return -EIO;
 	}
 
-	/* update advanced switch filter count for destination
-	 * VSI if filter destination was VSI
-	 */
+	 
 	if (fltr->dest_vsi) {
 		if (fltr->dest_vsi->type == ICE_VSI_CHNL) {
 			fltr->dest_vsi->num_chnl_fltr--;
 
-			/* keeps track of channel filters for PF VSI */
+			 
 			if (vsi->type == ICE_VSI_PF &&
 			    (fltr->flags & (ICE_TC_FLWR_FIELD_DST_MAC |
 					    ICE_TC_FLWR_FIELD_ENC_DST_MAC)))
@@ -1878,16 +1705,7 @@ static int ice_del_tc_fltr(struct ice_vsi *vsi, struct ice_tc_flower_fltr *fltr)
 	return 0;
 }
 
-/**
- * ice_add_tc_fltr - adds a TC flower filter
- * @netdev: Pointer to netdev
- * @vsi: Pointer to VSI
- * @f: Pointer to flower offload structure
- * @__fltr: Pointer to struct ice_tc_flower_fltr
- *
- * This function parses TC-flower input fields, parses action,
- * and adds a filter.
- */
+ 
 static int
 ice_add_tc_fltr(struct net_device *netdev, struct ice_vsi *vsi,
 		struct flow_cls_offload *f,
@@ -1896,7 +1714,7 @@ ice_add_tc_fltr(struct net_device *netdev, struct ice_vsi *vsi,
 	struct ice_tc_flower_fltr *fltr;
 	int err;
 
-	/* by default, set output to be INVALID */
+	 
 	*__fltr = NULL;
 
 	fltr = kzalloc(sizeof(*fltr), GFP_KERNEL);
@@ -1920,7 +1738,7 @@ ice_add_tc_fltr(struct net_device *netdev, struct ice_vsi *vsi,
 	if (err < 0)
 		goto err;
 
-	/* return the newly created filter */
+	 
 	*__fltr = fltr;
 
 	return 0;
@@ -1929,11 +1747,7 @@ err:
 	return err;
 }
 
-/**
- * ice_find_tc_flower_fltr - Find the TC flower filter in the list
- * @pf: Pointer to PF
- * @cookie: filter specific cookie
- */
+ 
 static struct ice_tc_flower_fltr *
 ice_find_tc_flower_fltr(struct ice_pf *pf, unsigned long cookie)
 {
@@ -1946,12 +1760,7 @@ ice_find_tc_flower_fltr(struct ice_pf *pf, unsigned long cookie)
 	return NULL;
 }
 
-/**
- * ice_add_cls_flower - add TC flower filters
- * @netdev: Pointer to filter device
- * @vsi: Pointer to VSI
- * @cls_flower: Pointer to flower offload structure
- */
+ 
 int
 ice_add_cls_flower(struct net_device *netdev, struct ice_vsi *vsi,
 		   struct flow_cls_offload *cls_flower)
@@ -1972,37 +1781,30 @@ ice_add_cls_flower(struct net_device *netdev, struct ice_vsi *vsi,
 
 	if (!(vsi_netdev->features & NETIF_F_HW_TC) &&
 	    !test_bit(ICE_FLAG_CLS_FLOWER, pf->flags)) {
-		/* Based on TC indirect notifications from kernel, all ice
-		 * devices get an instance of rule from higher level device.
-		 * Avoid triggering explicit error in this case.
-		 */
+		 
 		if (netdev == vsi_netdev)
 			NL_SET_ERR_MSG_MOD(extack, "can't apply TC flower filters, turn ON hw-tc-offload and try again");
 		return -EINVAL;
 	}
 
-	/* avoid duplicate entries, if exists - return error */
+	 
 	fltr = ice_find_tc_flower_fltr(pf, cls_flower->cookie);
 	if (fltr) {
 		NL_SET_ERR_MSG_MOD(extack, "filter cookie already exists, ignoring");
 		return -EEXIST;
 	}
 
-	/* prep and add TC-flower filter in HW */
+	 
 	err = ice_add_tc_fltr(netdev, vsi, cls_flower, &fltr);
 	if (err)
 		return err;
 
-	/* add filter into an ordered list */
+	 
 	hlist_add_head(&fltr->tc_flower_node, &pf->tc_flower_fltr_list);
 	return 0;
 }
 
-/**
- * ice_del_cls_flower - delete TC flower filters
- * @vsi: Pointer to VSI
- * @cls_flower: Pointer to struct flow_cls_offload
- */
+ 
 int
 ice_del_cls_flower(struct ice_vsi *vsi, struct flow_cls_offload *cls_flower)
 {
@@ -2010,7 +1812,7 @@ ice_del_cls_flower(struct ice_vsi *vsi, struct flow_cls_offload *cls_flower)
 	struct ice_pf *pf = vsi->back;
 	int err;
 
-	/* find filter */
+	 
 	fltr = ice_find_tc_flower_fltr(pf, cls_flower->cookie);
 	if (!fltr) {
 		if (!test_bit(ICE_FLAG_TC_MQPRIO, pf->flags) &&
@@ -2022,24 +1824,21 @@ ice_del_cls_flower(struct ice_vsi *vsi, struct flow_cls_offload *cls_flower)
 	}
 
 	fltr->extack = cls_flower->common.extack;
-	/* delete filter from HW */
+	 
 	err = ice_del_tc_fltr(vsi, fltr);
 	if (err)
 		return err;
 
-	/* delete filter from an ordered list */
+	 
 	hlist_del(&fltr->tc_flower_node);
 
-	/* free the filter node */
+	 
 	kfree(fltr);
 
 	return 0;
 }
 
-/**
- * ice_replay_tc_fltrs - replay TC filters
- * @pf: pointer to PF struct
- */
+ 
 void ice_replay_tc_fltrs(struct ice_pf *pf)
 {
 	struct ice_tc_flower_fltr *fltr;

@@ -1,12 +1,12 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
-//
-// This file is provided under a dual BSD/GPLv2 license.  When using or
-// redistributing this file, you may do so under either license.
-//
-// Copyright(c) 2018 Intel Corporation. All rights reserved.
-//
-// Author: Liam Girdwood <liam.r.girdwood@linux.intel.com>
-//
+
+
+
+
+
+
+
+
+
 
 #include <linux/module.h>
 #include <sound/sof.h>
@@ -14,7 +14,7 @@
 #include "sof-priv.h"
 
 static struct snd_soc_card sof_nocodec_card = {
-	.name = "nocodec", /* the sof- prefix is added by the core */
+	.name = "nocodec",  
 	.topology_shortname = "sof-nocodec",
 	.owner = THIS_MODULE
 };
@@ -30,7 +30,7 @@ static int sof_nocodec_bes_setup(struct device *dev,
 	if (!drv || !links || !card)
 		return -EINVAL;
 
-	/* set up BE dai_links */
+	 
 	for (i = 0; i < link_num; i++) {
 		dlc = devm_kcalloc(dev, 2, sizeof(*dlc), GFP_KERNEL);
 		if (!dlc)
@@ -75,7 +75,7 @@ static int sof_nocodec_setup(struct device *dev,
 {
 	struct snd_soc_dai_link *links;
 
-	/* create dummy BE dai_links */
+	 
 	links = devm_kcalloc(dev, num_dai_drivers, sizeof(struct snd_soc_dai_link), GFP_KERNEL);
 	if (!links)
 		return -ENOMEM;

@@ -1,6 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright (C) 2018 Western Digital Corporation
- */
+ 
+ 
 
 #ifndef __UFS_SYSFS_H__
 #define __UFS_SYSFS_H__

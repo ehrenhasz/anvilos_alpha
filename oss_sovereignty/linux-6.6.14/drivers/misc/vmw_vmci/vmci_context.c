@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * VMware VMCI Driver
- *
- * Copyright (C) 2012 VMware, Inc. All rights reserved.
- */
+
+ 
 
 #include <linux/vmw_vmci_defs.h>
 #include <linux/vmw_vmci_api.h>
@@ -21,24 +17,19 @@
 #include "vmci_driver.h"
 #include "vmci_event.h"
 
-/* Use a wide upper bound for the maximum contexts. */
+ 
 #define VMCI_MAX_CONTEXTS 2000
 
-/*
- * List of current VMCI contexts.  Contexts can be added by
- * vmci_ctx_create() and removed via vmci_ctx_destroy().
- * These, along with context lookup, are protected by the
- * list structure's lock.
- */
+ 
 static struct {
 	struct list_head head;
-	spinlock_t lock; /* Spinlock for context list operations */
+	spinlock_t lock;  
 } ctx_list = {
 	.head = LIST_HEAD_INIT(ctx_list.head),
 	.lock = __SPIN_LOCK_UNLOCKED(ctx_list.lock),
 };
 
-/* Used by contexts that did not set up notify flag pointers */
+ 
 static bool ctx_dummy_notify;
 
 static void ctx_signal_notify(struct vmci_ctx *context)
@@ -51,10 +42,7 @@ static void ctx_clear_notify(struct vmci_ctx *context)
 	*context->notify = false;
 }
 
-/*
- * If nothing requires the attention of the guest, clears both
- * notify flag and call.
- */
+ 
 static void ctx_clear_notify_call(struct vmci_ctx *context)
 {
 	if (context->pending_datagrams == 0 &&
@@ -62,10 +50,7 @@ static void ctx_clear_notify_call(struct vmci_ctx *context)
 		ctx_clear_notify(context);
 }
 
-/*
- * Sets the context's notify flag iff datagrams are pending for this
- * context.  Called from vmci_setup_notify().
- */
+ 
 void vmci_ctx_check_signal_notify(struct vmci_ctx *context)
 {
 	spin_lock(&context->lock);
@@ -74,9 +59,7 @@ void vmci_ctx_check_signal_notify(struct vmci_ctx *context)
 	spin_unlock(&context->lock);
 }
 
-/*
- * Allocates and initializes a VMCI context.
- */
+ 
 struct vmci_ctx *vmci_ctx_create(u32 cid, u32 priv_flags,
 				 uintptr_t event_hnd,
 				 int user_version,
@@ -117,7 +100,7 @@ struct vmci_ctx *vmci_ctx_create(u32 cid, u32 priv_flags,
 	INIT_LIST_HEAD(&context->datagram_queue);
 	INIT_LIST_HEAD(&context->notifier_list);
 
-	/* Initialize host-specific VMCI context. */
+	 
 	init_waitqueue_head(&context->host_context.wait_queue);
 
 	context->queue_pair_array =
@@ -151,16 +134,11 @@ struct vmci_ctx *vmci_ctx_create(u32 cid, u32 priv_flags,
 	context->notify = &ctx_dummy_notify;
 	context->notify_page = NULL;
 
-	/*
-	 * If we collide with an existing context we generate a new
-	 * and use it instead. The VMX will determine if regeneration
-	 * is okay. Since there isn't 4B - 16 VMs running on a given
-	 * host, the below loop will terminate.
-	 */
+	 
 	spin_lock(&ctx_list.lock);
 
 	while (vmci_ctx_exists(cid)) {
-		/* We reserve the lowest 16 ids for fixed contexts. */
+		 
 		cid = max(cid, VMCI_RESERVED_CID_LIMIT - 1) + 1;
 		if (cid == VMCI_INVALID_ID)
 			cid = VMCI_RESERVED_CID_LIMIT;
@@ -182,9 +160,7 @@ struct vmci_ctx *vmci_ctx_create(u32 cid, u32 priv_flags,
 	return ERR_PTR(error);
 }
 
-/*
- * Destroy VMCI context.
- */
+ 
 void vmci_ctx_destroy(struct vmci_ctx *context)
 {
 	spin_lock(&ctx_list.lock);
@@ -195,9 +171,7 @@ void vmci_ctx_destroy(struct vmci_ctx *context)
 	vmci_ctx_put(context);
 }
 
-/*
- * Fire notification for all contexts interested in given cid.
- */
+ 
 static int ctx_fire_notification(u32 context_id, u32 priv_flags)
 {
 	u32 i, array_size;
@@ -206,27 +180,17 @@ static int ctx_fire_notification(u32 context_id, u32 priv_flags)
 	struct vmci_handle context_handle =
 		vmci_make_handle(context_id, VMCI_EVENT_HANDLER);
 
-	/*
-	 * We create an array to hold the subscribers we find when
-	 * scanning through all contexts.
-	 */
+	 
 	subscriber_array = vmci_handle_arr_create(0, VMCI_MAX_CONTEXTS);
 	if (subscriber_array == NULL)
 		return VMCI_ERROR_NO_MEM;
 
-	/*
-	 * Scan all contexts to find who is interested in being
-	 * notified about given contextID.
-	 */
+	 
 	rcu_read_lock();
 	list_for_each_entry_rcu(sub_ctx, &ctx_list.head, list_item) {
 		struct vmci_handle_list *node;
 
-		/*
-		 * We only deliver notifications of the removal of
-		 * contexts, if the two contexts are allowed to
-		 * interact.
-		 */
+		 
 		if (vmci_deny_interaction(priv_flags, sub_ctx->priv_flags))
 			continue;
 
@@ -241,7 +205,7 @@ static int ctx_fire_notification(u32 context_id, u32 priv_flags)
 	}
 	rcu_read_unlock();
 
-	/* Fire event to all subscribers. */
+	 
 	array_size = vmci_handle_arr_get_size(subscriber_array);
 	for (i = 0; i < array_size; i++) {
 		int result;
@@ -260,7 +224,7 @@ static int ctx_fire_notification(u32 context_id, u32 priv_flags)
 			pr_devel("Failed to enqueue event datagram (type=%d) for context (ID=0x%x)\n",
 				 ev.msg.event_data.event,
 				 ev.msg.hdr.dst.context);
-			/* We continue to enqueue on next subscriber. */
+			 
 		}
 	}
 	vmci_handle_arr_destroy(subscriber_array);
@@ -268,11 +232,7 @@ static int ctx_fire_notification(u32 context_id, u32 priv_flags)
 	return VMCI_SUCCESS;
 }
 
-/*
- * Returns the current number of pending datagrams. The call may
- * also serve as a synchronization point for the datagram queue,
- * as no enqueue operations can occur concurrently.
- */
+ 
 int vmci_ctx_pending_datagrams(u32 cid, u32 *pending)
 {
 	struct vmci_ctx *context;
@@ -290,9 +250,7 @@ int vmci_ctx_pending_datagrams(u32 cid, u32 *pending)
 	return VMCI_SUCCESS;
 }
 
-/*
- * Queues a VMCI datagram for the appropriate target VM context.
- */
+ 
 int vmci_ctx_enqueue_datagram(u32 cid, struct vmci_datagram *dg)
 {
 	struct vmci_datagram_queue_entry *dq_entry;
@@ -306,14 +264,14 @@ int vmci_ctx_enqueue_datagram(u32 cid, struct vmci_datagram *dg)
 		return VMCI_ERROR_INVALID_ARGS;
 	}
 
-	/* Get the target VM's VMCI context. */
+	 
 	context = vmci_ctx_get(cid);
 	if (!context) {
 		pr_devel("Invalid context (ID=0x%x)\n", cid);
 		return VMCI_ERROR_INVALID_ARGS;
 	}
 
-	/* Allocate guest call entry and add it to the target VM's queue. */
+	 
 	dq_entry = kmalloc(sizeof(*dq_entry), GFP_KERNEL);
 	if (dq_entry == NULL) {
 		pr_warn("Failed to allocate memory for datagram\n");
@@ -327,15 +285,7 @@ int vmci_ctx_enqueue_datagram(u32 cid, struct vmci_datagram *dg)
 
 	spin_lock(&context->lock);
 
-	/*
-	 * We put a higher limit on datagrams from the hypervisor.  If
-	 * the pending datagram is not from hypervisor, then we check
-	 * if enqueueing it would exceed the
-	 * VMCI_MAX_DATAGRAM_QUEUE_SIZE limit on the destination.  If
-	 * the pending datagram is from hypervisor, we allow it to be
-	 * queued at the destination side provided we don't reach the
-	 * VMCI_MAX_DATAGRAM_AND_EVENT_QUEUE_SIZE limit.
-	 */
+	 
 	if (context->datagram_queue_size + vmci_dg_size >=
 	    VMCI_MAX_DATAGRAM_QUEUE_SIZE &&
 	    (!vmci_handle_is_equal(dg_src,
@@ -362,11 +312,7 @@ int vmci_ctx_enqueue_datagram(u32 cid, struct vmci_datagram *dg)
 	return vmci_dg_size;
 }
 
-/*
- * Verifies whether a context with the specified context ID exists.
- * FIXME: utility is dubious as no decisions can be reliably made
- * using this data as context can appear and disappear at any time.
- */
+ 
 bool vmci_ctx_exists(u32 cid)
 {
 	struct vmci_ctx *context;
@@ -385,9 +331,7 @@ bool vmci_ctx_exists(u32 cid)
 	return exists;
 }
 
-/*
- * Retrieves VMCI context corresponding to the given cid.
- */
+ 
 struct vmci_ctx *vmci_ctx_get(u32 cid)
 {
 	struct vmci_ctx *c, *context = NULL;
@@ -398,14 +342,7 @@ struct vmci_ctx *vmci_ctx_get(u32 cid)
 	rcu_read_lock();
 	list_for_each_entry_rcu(c, &ctx_list.head, list_item) {
 		if (c->cid == cid) {
-			/*
-			 * The context owner drops its own reference to the
-			 * context only after removing it from the list and
-			 * waiting for RCU grace period to expire. This
-			 * means that we are not about to increase the
-			 * reference count of something that is in the
-			 * process of being destroyed.
-			 */
+			 
 			context = c;
 			kref_get(&context->kref);
 			break;
@@ -416,11 +353,7 @@ struct vmci_ctx *vmci_ctx_get(u32 cid)
 	return context;
 }
 
-/*
- * Deallocates all parts of a context data structure. This
- * function doesn't lock the context, because it assumes that
- * the caller was holding the last reference to context.
- */
+ 
 static void ctx_free_ctx(struct kref *kref)
 {
 	struct vmci_ctx *context = container_of(kref, struct vmci_ctx, kref);
@@ -428,27 +361,15 @@ static void ctx_free_ctx(struct kref *kref)
 	struct vmci_handle temp_handle;
 	struct vmci_handle_list *notifier, *tmp;
 
-	/*
-	 * Fire event to all contexts interested in knowing this
-	 * context is dying.
-	 */
+	 
 	ctx_fire_notification(context->cid, context->priv_flags);
 
-	/*
-	 * Cleanup all queue pair resources attached to context.  If
-	 * the VM dies without cleaning up, this code will make sure
-	 * that no resources are leaked.
-	 */
+	 
 	temp_handle = vmci_handle_arr_get_entry(context->queue_pair_array, 0);
 	while (!vmci_handle_is_equal(temp_handle, VMCI_INVALID_HANDLE)) {
 		if (vmci_qp_broker_detach(temp_handle,
 					  context) < VMCI_SUCCESS) {
-			/*
-			 * When vmci_qp_broker_detach() succeeds it
-			 * removes the handle from the array.  If
-			 * detach fails, we must remove the handle
-			 * ourselves.
-			 */
+			 
 			vmci_handle_arr_remove_entry(context->queue_pair_array,
 						     temp_handle);
 		}
@@ -456,10 +377,7 @@ static void ctx_free_ctx(struct kref *kref)
 		    vmci_handle_arr_get_entry(context->queue_pair_array, 0);
 	}
 
-	/*
-	 * It is fine to destroy this without locking the callQueue, as
-	 * this is the only thread having a reference to the context.
-	 */
+	 
 	list_for_each_entry_safe(dq_entry, dq_entry_tmp,
 				 &context->datagram_queue, list_item) {
 		WARN_ON(dq_entry->dg_size != VMCI_DG_SIZE(dq_entry->dg));
@@ -483,28 +401,13 @@ static void ctx_free_ctx(struct kref *kref)
 	kfree(context);
 }
 
-/*
- * Drops reference to VMCI context. If this is the last reference to
- * the context it will be deallocated. A context is created with
- * a reference count of one, and on destroy, it is removed from
- * the context list before its reference count is decremented. Thus,
- * if we reach zero, we are sure that nobody else are about to increment
- * it (they need the entry in the context list for that), and so there
- * is no need for locking.
- */
+ 
 void vmci_ctx_put(struct vmci_ctx *context)
 {
 	kref_put(&context->kref, ctx_free_ctx);
 }
 
-/*
- * Dequeues the next datagram and returns it to caller.
- * The caller passes in a pointer to the max size datagram
- * it can handle and the datagram is only unqueued if the
- * size is less than max_size. If larger max_size is set to
- * the size of the datagram to give the caller a chance to
- * set up a larger buffer for the guestcall.
- */
+ 
 int vmci_ctx_dequeue_datagram(struct vmci_ctx *context,
 			      size_t *max_size,
 			      struct vmci_datagram **dg)
@@ -513,7 +416,7 @@ int vmci_ctx_dequeue_datagram(struct vmci_ctx *context,
 	struct list_head *list_item;
 	int rv;
 
-	/* Dequeue the next datagram entry. */
+	 
 	spin_lock(&context->lock);
 	if (context->pending_datagrams == 0) {
 		ctx_clear_notify_call(context);
@@ -527,7 +430,7 @@ int vmci_ctx_dequeue_datagram(struct vmci_ctx *context,
 	dq_entry =
 	    list_entry(list_item, struct vmci_datagram_queue_entry, list_item);
 
-	/* Check size of caller's buffer. */
+	 
 	if (*max_size < dq_entry->dg_size) {
 		*max_size = dq_entry->dg_size;
 		spin_unlock(&context->lock);
@@ -543,9 +446,7 @@ int vmci_ctx_dequeue_datagram(struct vmci_ctx *context,
 		ctx_clear_notify_call(context);
 		rv = VMCI_SUCCESS;
 	} else {
-		/*
-		 * Return the size of the next datagram.
-		 */
+		 
 		struct vmci_datagram_queue_entry *next_entry;
 
 		list_item = context->datagram_queue.next;
@@ -553,15 +454,12 @@ int vmci_ctx_dequeue_datagram(struct vmci_ctx *context,
 		    list_entry(list_item, struct vmci_datagram_queue_entry,
 			       list_item);
 
-		/*
-		 * The following size_t -> int truncation is fine as
-		 * the maximum size of a (routable) datagram is 68KB.
-		 */
+		 
 		rv = (int)next_entry->dg_size;
 	}
 	spin_unlock(&context->lock);
 
-	/* Caller must free datagram. */
+	 
 	*dg = dq_entry->dg;
 	dq_entry->dg = NULL;
 	kfree(dq_entry);
@@ -569,10 +467,7 @@ int vmci_ctx_dequeue_datagram(struct vmci_ctx *context,
 	return rv;
 }
 
-/*
- * Reverts actions set up by vmci_setup_notify().  Unmaps and unlocks the
- * page mapped/locked by vmci_setup_notify().
- */
+ 
 void vmci_ctx_unset_notify(struct vmci_ctx *context)
 {
 	struct page *notify_page;
@@ -591,10 +486,7 @@ void vmci_ctx_unset_notify(struct vmci_ctx *context)
 	}
 }
 
-/*
- * Add remote_cid to list of contexts current contexts wants
- * notifications from/about.
- */
+ 
 int vmci_ctx_add_notification(u32 context_id, u32 remote_cid)
 {
 	struct vmci_ctx *context;
@@ -658,10 +550,7 @@ int vmci_ctx_add_notification(u32 context_id, u32 remote_cid)
 	return result;
 }
 
-/*
- * Remove remote_cid from current context's list of contexts it is
- * interested in getting notifications from/about.
- */
+ 
 int vmci_ctx_remove_notification(u32 context_id, u32 remote_cid)
 {
 	struct vmci_ctx *context;
@@ -714,7 +603,7 @@ static int vmci_ctx_get_chkpt_notifiers(struct vmci_ctx *context,
 		return VMCI_ERROR_MORE_DATA;
 	}
 
-	notifiers = kmalloc(data_size, GFP_ATOMIC); /* FIXME: want GFP_KERNEL */
+	notifiers = kmalloc(data_size, GFP_ATOMIC);  
 	if (!notifiers)
 		return VMCI_ERROR_NO_MEM;
 
@@ -758,9 +647,7 @@ static int vmci_ctx_get_chkpt_doorbells(struct vmci_ctx *context,
 	return VMCI_SUCCESS;
 }
 
-/*
- * Get current context's checkpoint state of given type.
- */
+ 
 int vmci_ctx_get_chkpt_state(u32 context_id,
 			     u32 cpt_type,
 			     u32 *buf_size,
@@ -781,10 +668,7 @@ int vmci_ctx_get_chkpt_state(u32 context_id,
 		break;
 
 	case VMCI_WELLKNOWN_CPT_STATE:
-		/*
-		 * For compatibility with VMX'en with VM to VM communication, we
-		 * always return zero wellknown handles.
-		 */
+		 
 
 		*buf_size = 0;
 		*pbuf = NULL;
@@ -807,9 +691,7 @@ int vmci_ctx_get_chkpt_state(u32 context_id,
 	return result;
 }
 
-/*
- * Set current context's checkpoint state of given type.
- */
+ 
 int vmci_ctx_set_chkpt_state(u32 context_id,
 			     u32 cpt_type,
 			     u32 buf_size,
@@ -821,10 +703,7 @@ int vmci_ctx_set_chkpt_state(u32 context_id,
 	u32 num_ids = buf_size / sizeof(u32);
 
 	if (cpt_type == VMCI_WELLKNOWN_CPT_STATE && num_ids > 0) {
-		/*
-		 * We would end up here if VMX with VM to VM communication
-		 * attempts to restore a checkpoint with wellknown handles.
-		 */
+		 
 		pr_warn("Attempt to restore checkpoint with obsolete wellknown handles\n");
 		return VMCI_ERROR_OBSOLETE;
 	}
@@ -847,13 +726,7 @@ int vmci_ctx_set_chkpt_state(u32 context_id,
 	return result;
 }
 
-/*
- * Retrieves the specified context's pending notifications in the
- * form of a handle array. The handle arrays returned are the
- * actual data - not a copy and should not be modified by the
- * caller. They must be released using
- * vmci_ctx_rcv_notifications_release.
- */
+ 
 int vmci_ctx_rcv_notifications_get(u32 context_id,
 				   struct vmci_handle_arr **db_handle_array,
 				   struct vmci_handle_arr **qp_handle_array)
@@ -883,12 +756,7 @@ int vmci_ctx_rcv_notifications_get(u32 context_id,
 	return result;
 }
 
-/*
- * Releases handle arrays with pending notifications previously
- * retrieved using vmci_ctx_rcv_notifications_get. If the
- * notifications were not successfully handed over to the guest,
- * success must be false.
- */
+ 
 void vmci_ctx_rcv_notifications_release(u32 context_id,
 					struct vmci_handle_arr *db_handle_array,
 					struct vmci_handle_arr *qp_handle_array,
@@ -900,12 +768,7 @@ void vmci_ctx_rcv_notifications_release(u32 context_id,
 	if (!success) {
 		struct vmci_handle handle;
 
-		/*
-		 * New notifications may have been added while we were not
-		 * holding the context lock, so we transfer any new pending
-		 * doorbell notifications to the old array, and reinstate the
-		 * old array.
-		 */
+		 
 
 		handle = vmci_handle_arr_remove_tail(
 					context->pending_doorbell_array);
@@ -934,10 +797,7 @@ void vmci_ctx_rcv_notifications_release(u32 context_id,
 		vmci_handle_arr_destroy(qp_handle_array);
 }
 
-/*
- * Registers that a new doorbell handle has been allocated by the
- * context. Only doorbell handles registered can be notified.
- */
+ 
 int vmci_ctx_dbell_create(u32 context_id, struct vmci_handle handle)
 {
 	struct vmci_ctx *context;
@@ -963,10 +823,7 @@ int vmci_ctx_dbell_create(u32 context_id, struct vmci_handle handle)
 	return result;
 }
 
-/*
- * Unregisters a doorbell handle that was previously registered
- * with vmci_ctx_dbell_create.
- */
+ 
 int vmci_ctx_dbell_destroy(u32 context_id, struct vmci_handle handle)
 {
 	struct vmci_ctx *context;
@@ -991,10 +848,7 @@ int vmci_ctx_dbell_destroy(u32 context_id, struct vmci_handle handle)
 	    VMCI_ERROR_NOT_FOUND : VMCI_SUCCESS;
 }
 
-/*
- * Unregisters all doorbell handles that were previously
- * registered with vmci_ctx_dbell_create.
- */
+ 
 int vmci_ctx_dbell_destroy_all(u32 context_id)
 {
 	struct vmci_ctx *context;
@@ -1023,16 +877,7 @@ int vmci_ctx_dbell_destroy_all(u32 context_id)
 	return VMCI_SUCCESS;
 }
 
-/*
- * Registers a notification of a doorbell handle initiated by the
- * specified source context. The notification of doorbells are
- * subject to the same isolation rules as datagram delivery. To
- * allow host side senders of notifications a finer granularity
- * of sender rights than those assigned to the sending context
- * itself, the host context is required to specify a different
- * set of privilege flags that will override the privileges of
- * the source context.
- */
+ 
 int vmci_ctx_notify_dbell(u32 src_cid,
 			  struct vmci_handle handle,
 			  u32 src_priv_flags)
@@ -1043,7 +888,7 @@ int vmci_ctx_notify_dbell(u32 src_cid,
 	if (vmci_handle_is_invalid(handle))
 		return VMCI_ERROR_INVALID_ARGS;
 
-	/* Get the target VM's VMCI context. */
+	 
 	dst_context = vmci_ctx_get(handle.context);
 	if (!dst_context) {
 		pr_devel("Invalid context (ID=0x%x)\n", handle.context);
@@ -1116,10 +961,7 @@ bool vmci_ctx_supports_host_qp(struct vmci_ctx *context)
 	return context && context->user_version >= VMCI_VERSION_HOSTQP;
 }
 
-/*
- * Registers that a new queue pair handle has been allocated by
- * the context.
- */
+ 
 int vmci_ctx_qp_create(struct vmci_ctx *context, struct vmci_handle handle)
 {
 	int result;
@@ -1136,10 +978,7 @@ int vmci_ctx_qp_create(struct vmci_ctx *context, struct vmci_handle handle)
 	return result;
 }
 
-/*
- * Unregisters a queue pair handle that was previously registered
- * with vmci_ctx_qp_create.
- */
+ 
 int vmci_ctx_qp_destroy(struct vmci_ctx *context, struct vmci_handle handle)
 {
 	struct vmci_handle hndl;
@@ -1153,10 +992,7 @@ int vmci_ctx_qp_destroy(struct vmci_ctx *context, struct vmci_handle handle)
 		VMCI_ERROR_NOT_FOUND : VMCI_SUCCESS;
 }
 
-/*
- * Determines whether a given queue pair handle is registered
- * with the given context.
- */
+ 
 bool vmci_ctx_qp_exists(struct vmci_ctx *context, struct vmci_handle handle)
 {
 	if (context == NULL || vmci_handle_is_invalid(handle))
@@ -1165,12 +1001,7 @@ bool vmci_ctx_qp_exists(struct vmci_ctx *context, struct vmci_handle handle)
 	return vmci_handle_arr_has_entry(context->queue_pair_array, handle);
 }
 
-/*
- * vmci_context_get_priv_flags() - Retrieve privilege flags.
- * @context_id: The context ID of the VMCI context.
- *
- * Retrieves privilege flags of the given VMCI context ID.
- */
+ 
 u32 vmci_context_get_priv_flags(u32 context_id)
 {
 	if (vmci_host_code_active()) {
@@ -1189,13 +1020,7 @@ u32 vmci_context_get_priv_flags(u32 context_id)
 }
 EXPORT_SYMBOL_GPL(vmci_context_get_priv_flags);
 
-/*
- * vmci_is_context_owner() - Determimnes if user is the context owner
- * @context_id: The context ID of the VMCI context.
- * @uid:        The host user id (real kernel value).
- *
- * Determines whether a given UID is the owner of given VMCI context.
- */
+ 
 bool vmci_is_context_owner(u32 context_id, kuid_t uid)
 {
 	bool is_owner = false;

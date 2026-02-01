@@ -1,33 +1,8 @@
-/*
- * Copyright 2020 Mauro Rossi <issor.oruam@gmail.com>
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 #include "dm_services.h"
 
-/*
- * Pre-requisites: headers required by header of this unit
- */
+ 
 #include "include/gpio_types.h"
 #include "../hw_translate.h"
 
@@ -37,10 +12,7 @@
 #include "dce/dce_6_0_sh_mask.h"
 #include "smu/smu_6_0_d.h"
 
-/*
- * @brief
- * Returns index of first bit (starting with LSB) which is set
- */
+ 
 static uint32_t index_from_vector(
 	uint32_t vector)
 {
@@ -67,7 +39,7 @@ static bool offset_to_id(
 	uint32_t *en)
 {
 	switch (offset) {
-	/* GENERIC */
+	 
 	case mmDC_GPIO_GENERIC_A:
 		*id = GPIO_ID_GENERIC;
 		switch (mask) {
@@ -97,7 +69,7 @@ static bool offset_to_id(
 			return false;
 		}
 	break;
-	/* HPD */
+	 
 	case mmDC_GPIO_HPD_A:
 		*id = GPIO_ID_HPD;
 		switch (mask) {
@@ -124,7 +96,7 @@ static bool offset_to_id(
 			return false;
 		}
 	break;
-	/* SYNCA */
+	 
 	case mmDC_GPIO_SYNCA_A:
 		*id = GPIO_ID_SYNC;
 		switch (mask) {
@@ -139,7 +111,7 @@ static bool offset_to_id(
 			return false;
 		}
 	break;
-	/* mmDC_GPIO_GENLK_MASK */
+	 
 	case mmDC_GPIO_GENLK_A:
 		*id = GPIO_ID_GSL;
 		switch (mask) {
@@ -160,15 +132,13 @@ static bool offset_to_id(
 			return false;
 		}
 	break;
-	/* GPIOPAD */
+	 
 	case mmGPIOPAD_A:
 		*id = GPIO_ID_GPIO_PAD;
 		*en = index_from_vector(mask);
 		return (*en <= GPIO_GPIO_PAD_MAX);
-	/* DDC */
-	/* we don't care about the GPIO_ID for DDC
-	 * in DdcHandle it will use GPIO_ID_DDC_DATA/GPIO_ID_DDC_CLOCK
-	 * directly in the create method */
+	 
+	 
 	case mmDC_GPIO_DDC1_A:
 		*en = GPIO_DDC_LINE_DDC1;
 		return true;
@@ -190,17 +160,17 @@ static bool offset_to_id(
 	case mmDC_GPIO_DDCVGA_A:
 		*en = GPIO_DDC_LINE_DDC_VGA;
 		return true;
-	/* GPIO_I2CPAD */
+	 
 	case mmDC_GPIO_I2CPAD_A:
 		*en = GPIO_DDC_LINE_I2C_PAD;
 		return true;
-	/* Not implemented */
+	 
 	case mmDC_GPIO_PWRSEQ_A:
 	case mmDC_GPIO_PAD_STRENGTH_1:
 	case mmDC_GPIO_PAD_STRENGTH_2:
 	case mmDC_GPIO_DEBUG:
 		return false;
-	/* UNEXPECTED */
+	 
 	default:
 		BREAK_TO_DEBUGGER();
 		return false;

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2016 Cavium, Inc.
- */
+
+ 
 
 #include <linux/interrupt.h>
 #include <linux/module.h>
@@ -87,7 +85,7 @@ static void free_pending_queues(struct pending_qinfo *pqinfo)
 		if (!queue->head)
 			continue;
 
-		/* free single queue */
+		 
 		kfree_sensitive((queue->head));
 
 		queue->front = 0;
@@ -121,7 +119,7 @@ static int alloc_pending_queues(struct pending_qinfo *pqinfo, u32 qlen,
 		queue->rear = 0;
 		atomic64_set((&queue->pending_count), (0));
 
-		/* init queue spin lock */
+		 
 		spin_lock_init(&queue->lock);
 	}
 
@@ -172,7 +170,7 @@ static void free_command_queues(struct cpt_vf *cptvf,
 	struct pci_dev *pdev = cptvf->pdev;
 	struct hlist_node *node;
 
-	/* clean up for each queue */
+	 
 	for (i = 0; i < cptvf->nr_queues; i++) {
 		queue = &cqinfo->queue[i];
 		if (hlist_empty(&cqinfo->queue[i].chead))
@@ -193,7 +191,7 @@ static void free_command_queues(struct cpt_vf *cptvf,
 		queue->idx = 0;
 	}
 
-	/* common cleanup */
+	 
 	cqinfo->cmd_size = 0;
 }
 
@@ -206,15 +204,15 @@ static int alloc_command_queues(struct cpt_vf *cptvf,
 	struct command_queue *queue = NULL;
 	struct pci_dev *pdev = cptvf->pdev;
 
-	/* common init */
+	 
 	cqinfo->cmd_size = cmd_size;
-	/* Qsize in dwords, needed for SADDR config, 1-next chunk pointer */
+	 
 	cptvf->qsize = min(qlen, cqinfo->qchunksize) *
 			CPT_NEXT_CHUNK_PTR_SIZE + 1;
-	/* Qsize in bytes to create space for alignment */
+	 
 	q_size = qlen * cqinfo->cmd_size;
 
-	/* per queue initialization */
+	 
 	for (i = 0; i < cptvf->nr_queues; i++) {
 		size_t c_size = 0;
 		size_t rem_q_size = q_size;
@@ -259,8 +257,8 @@ static int alloc_command_queues(struct cpt_vf *cptvf,
 			last = curr;
 		} while (rem_q_size);
 
-		/* Make the queue circular */
-		/* Tie back last chunk entry to head */
+		 
+		 
 		curr = first;
 		*((u64 *)(&last->head[last->size])) = (u64)curr->dma_addr;
 		queue->qhead = curr;
@@ -278,7 +276,7 @@ static int init_command_queues(struct cpt_vf *cptvf, u32 qlen)
 	struct pci_dev *pdev = cptvf->pdev;
 	int ret;
 
-	/* setup AE command queues */
+	 
 	ret = alloc_command_queues(cptvf, &cptvf->cqinfo, CPT_INST_SIZE,
 				   qlen);
 	if (ret) {
@@ -316,7 +314,7 @@ static int cptvf_sw_init(struct cpt_vf *cptvf, u32 qlen, u32 nr_queues)
 	u32 max_dev_queues = 0;
 
 	max_dev_queues = CPT_NUM_QS_PER_VF;
-	/* possible cpus */
+	 
 	nr_queues = min_t(u32, nr_queues, max_dev_queues);
 	cptvf->nr_queues = nr_queues;
 
@@ -334,7 +332,7 @@ static int cptvf_sw_init(struct cpt_vf *cptvf, u32 qlen, u32 nr_queues)
 		goto setup_pqfail;
 	}
 
-	/* Create worker threads for BH processing */
+	 
 	ret = init_worker_threads(cptvf);
 	if (ret) {
 		dev_err(&pdev->dev, "Failed to setup worker threads\n");
@@ -374,7 +372,7 @@ void cptvf_write_vq_doorbell(struct cpt_vf *cptvf, u32 val)
 
 	vqx_dbell.u = cpt_read_csr64(cptvf->reg_base,
 				     CPTX_VQX_DOORBELL(0, 0));
-	vqx_dbell.s.dbell_cnt = val * 8; /* Num of Instructions * 8 words */
+	vqx_dbell.s.dbell_cnt = val * 8;  
 	cpt_write_csr64(cptvf->reg_base, CPTX_VQX_DOORBELL(0, 0),
 			vqx_dbell.u);
 }
@@ -416,7 +414,7 @@ static void cptvf_enable_swerr_interrupts(struct cpt_vf *cptvf)
 
 	vqx_misc_ena.u = cpt_read_csr64(cptvf->reg_base,
 					CPTX_VQX_MISC_ENA_W1S(0, 0));
-	/* Set mbox(0) interupts for the requested vf */
+	 
 	vqx_misc_ena.s.swerr = 1;
 	cpt_write_csr64(cptvf->reg_base, CPTX_VQX_MISC_ENA_W1S(0, 0),
 			vqx_misc_ena.u);
@@ -428,7 +426,7 @@ static void cptvf_enable_mbox_interrupts(struct cpt_vf *cptvf)
 
 	vqx_misc_ena.u = cpt_read_csr64(cptvf->reg_base,
 					CPTX_VQX_MISC_ENA_W1S(0, 0));
-	/* Set mbox(0) interupts for the requested vf */
+	 
 	vqx_misc_ena.s.mbox = 1;
 	cpt_write_csr64(cptvf->reg_base, CPTX_VQX_MISC_ENA_W1S(0, 0),
 			vqx_misc_ena.u);
@@ -440,7 +438,7 @@ static void cptvf_enable_done_interrupts(struct cpt_vf *cptvf)
 
 	vqx_done_ena.u = cpt_read_csr64(cptvf->reg_base,
 					CPTX_VQX_DONE_ENA_W1S(0, 0));
-	/* Set DONE interrupt for the requested vf */
+	 
 	vqx_done_ena.s.done = 1;
 	cpt_write_csr64(cptvf->reg_base, CPTX_VQX_DONE_ENA_W1S(0, 0),
 			vqx_done_ena.u);
@@ -452,7 +450,7 @@ static void cptvf_clear_dovf_intr(struct cpt_vf *cptvf)
 
 	vqx_misc_int.u = cpt_read_csr64(cptvf->reg_base,
 					CPTX_VQX_MISC_INT(0, 0));
-	/* W1C for the VF */
+	 
 	vqx_misc_int.s.dovf = 1;
 	cpt_write_csr64(cptvf->reg_base, CPTX_VQX_MISC_INT(0, 0),
 			vqx_misc_int.u);
@@ -464,7 +462,7 @@ static void cptvf_clear_irde_intr(struct cpt_vf *cptvf)
 
 	vqx_misc_int.u = cpt_read_csr64(cptvf->reg_base,
 					CPTX_VQX_MISC_INT(0, 0));
-	/* W1C for the VF */
+	 
 	vqx_misc_int.s.irde = 1;
 	cpt_write_csr64(cptvf->reg_base, CPTX_VQX_MISC_INT(0, 0),
 			vqx_misc_int.u);
@@ -476,7 +474,7 @@ static void cptvf_clear_nwrp_intr(struct cpt_vf *cptvf)
 
 	vqx_misc_int.u = cpt_read_csr64(cptvf->reg_base,
 					CPTX_VQX_MISC_INT(0, 0));
-	/* W1C for the VF */
+	 
 	vqx_misc_int.s.nwrp = 1;
 	cpt_write_csr64(cptvf->reg_base,
 			CPTX_VQX_MISC_INT(0, 0), vqx_misc_int.u);
@@ -488,7 +486,7 @@ static void cptvf_clear_mbox_intr(struct cpt_vf *cptvf)
 
 	vqx_misc_int.u = cpt_read_csr64(cptvf->reg_base,
 					CPTX_VQX_MISC_INT(0, 0));
-	/* W1C for the VF */
+	 
 	vqx_misc_int.s.mbox = 1;
 	cpt_write_csr64(cptvf->reg_base, CPTX_VQX_MISC_INT(0, 0),
 			vqx_misc_int.u);
@@ -500,7 +498,7 @@ static void cptvf_clear_swerr_intr(struct cpt_vf *cptvf)
 
 	vqx_misc_int.u = cpt_read_csr64(cptvf->reg_base,
 					CPTX_VQX_MISC_INT(0, 0));
-	/* W1C for the VF */
+	 
 	vqx_misc_int.s.swerr = 1;
 	cpt_write_csr64(cptvf->reg_base, CPTX_VQX_MISC_INT(0, 0),
 			vqx_misc_int.u);
@@ -518,7 +516,7 @@ static irqreturn_t cptvf_misc_intr_handler(int irq, void *cptvf_irq)
 	u64 intr;
 
 	intr = cptvf_read_vf_misc_intr_status(cptvf);
-	/*Check for MISC interrupt types*/
+	 
 	if (likely(intr & CPT_VF_INTR_MBOX_MASK)) {
 		dev_dbg(&pdev->dev, "Mailbox interrupt 0x%llx on CPT VF %d\n",
 			intr, cptvf->vfid);
@@ -526,7 +524,7 @@ static irqreturn_t cptvf_misc_intr_handler(int irq, void *cptvf_irq)
 		cptvf_clear_mbox_intr(cptvf);
 	} else if (unlikely(intr & CPT_VF_INTR_DOVF_MASK)) {
 		cptvf_clear_dovf_intr(cptvf);
-		/*Clear doorbell count*/
+		 
 		cptvf_write_vq_doorbell(cptvf, 0);
 		dev_err(&pdev->dev, "Doorbell overflow error interrupt 0x%llx on CPT VF %d\n",
 			intr, cptvf->vfid);
@@ -586,15 +584,13 @@ static irqreturn_t cptvf_done_intr_handler(int irq, void *cptvf_irq)
 {
 	struct cpt_vf *cptvf = (struct cpt_vf *)cptvf_irq;
 	struct pci_dev *pdev = cptvf->pdev;
-	/* Read the number of completions */
+	 
 	u32 intr = cptvf_read_vq_done_count(cptvf);
 
 	if (intr) {
 		struct cptvf_wqe *wqe;
 
-		/* Acknowledge the number of
-		 * scheduled completions for processing
-		 */
+		 
 		cptvf_write_vq_done_ack(cptvf, intr);
 		wqe = get_cptvf_vq_wqe(cptvf, 0);
 		if (unlikely(!wqe)) {
@@ -639,22 +635,22 @@ static void cptvf_device_init(struct cpt_vf *cptvf)
 {
 	u64 base_addr = 0;
 
-	/* Disable the VQ */
+	 
 	cptvf_write_vq_ctl(cptvf, 0);
-	/* Reset the doorbell */
+	 
 	cptvf_write_vq_doorbell(cptvf, 0);
-	/* Clear inflight */
+	 
 	cptvf_write_vq_inprog(cptvf, 0);
-	/* Write VQ SADDR */
-	/* TODO: for now only one queue, so hard coded */
+	 
+	 
 	base_addr = (u64)(cptvf->cqinfo.queue[0].qhead->dma_addr);
 	cptvf_write_vq_saddr(cptvf, base_addr);
-	/* Configure timerhold / coalescence */
+	 
 	cptvf_write_vq_done_timewait(cptvf, CPT_TIMER_THOLD);
 	cptvf_write_vq_done_numwait(cptvf, 1);
-	/* Enable the VQ */
+	 
 	cptvf_write_vq_ctl(cptvf, 1);
-	/* Flag the VF ready */
+	 
 	cptvf->flags |= CPT_FLAG_DEVICE_READY;
 }
 
@@ -682,7 +678,7 @@ static int cptvf_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 		dev_err(dev, "PCI request regions failed 0x%x\n", err);
 		goto cptvf_err_disable_device;
 	}
-	/* Mark as VF driver */
+	 
 	cptvf->flags |= CPT_FLAG_VF_DRIVER;
 	err = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(48));
 	if (err) {
@@ -690,7 +686,7 @@ static int cptvf_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 		goto cptvf_err_release_regions;
 	}
 
-	/* MAP PF's configuration registers */
+	 
 	cptvf->reg_base = pcim_iomap(pdev, 0, 0);
 	if (!cptvf->reg_base) {
 		dev_err(dev, "Cannot map config register space, aborting\n");
@@ -715,35 +711,35 @@ static int cptvf_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 		goto cptvf_free_vectors;
 	}
 
-	/* Enable mailbox interrupt */
+	 
 	cptvf_enable_mbox_interrupts(cptvf);
 	cptvf_enable_swerr_interrupts(cptvf);
 
-	/* Check ready with PF */
-	/* Gets chip ID / device Id from PF if ready */
+	 
+	 
 	err = cptvf_check_pf_ready(cptvf);
 	if (err) {
 		dev_err(dev, "PF not responding to READY msg");
 		goto cptvf_free_misc_irq;
 	}
 
-	/* CPT VF software resources initialization */
+	 
 	cptvf->cqinfo.qchunksize = CPT_CMD_QCHUNK_SIZE;
 	err = cptvf_sw_init(cptvf, CPT_CMD_QLEN, CPT_NUM_QS_PER_VF);
 	if (err) {
 		dev_err(dev, "cptvf_sw_init() failed");
 		goto cptvf_free_misc_irq;
 	}
-	/* Convey VQ LEN to PF */
+	 
 	err = cptvf_send_vq_size_msg(cptvf);
 	if (err) {
 		dev_err(dev, "PF not responding to QLEN msg");
 		goto cptvf_free_misc_irq;
 	}
 
-	/* CPT VF device initialization */
+	 
 	cptvf_device_init(cptvf);
-	/* Send msg to PF to assign currnet Q to required group */
+	 
 	cptvf->vfgrp = 1;
 	err = cptvf_send_vf_to_grp_msg(cptvf);
 	if (err) {
@@ -766,10 +762,10 @@ static int cptvf_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 		goto cptvf_free_misc_irq;
 	}
 
-	/* Enable mailbox interrupt */
+	 
 	cptvf_enable_done_interrupts(cptvf);
 
-	/* Set irq affinity masks */
+	 
 	cptvf_set_irq_affinity(cptvf, CPT_VF_INT_VEC_E_MISC);
 	cptvf_set_irq_affinity(cptvf, CPT_VF_INT_VEC_E_DONE);
 
@@ -810,7 +806,7 @@ static void cptvf_remove(struct pci_dev *pdev)
 		return;
 	}
 
-	/* Convey DOWN to PF */
+	 
 	if (cptvf_send_vf_down(cptvf)) {
 		dev_err(&pdev->dev, "PF not responding to DOWN msg");
 	} else {
@@ -832,10 +828,10 @@ static void cptvf_shutdown(struct pci_dev *pdev)
 	cptvf_remove(pdev);
 }
 
-/* Supported devices */
+ 
 static const struct pci_device_id cptvf_id_table[] = {
 	{PCI_VDEVICE(CAVIUM, CPT_81XX_PCI_VF_DEVICE_ID), 0},
-	{ 0, }  /* end of table */
+	{ 0, }   
 };
 
 static struct pci_driver cptvf_pci_driver = {

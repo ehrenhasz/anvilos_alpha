@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright 2020-2021 NXP
- *
- * An implementation of the software-defined tag_8021q.c tagger format, which
- * also preserves full functionality under a vlan_filtering bridge. It does
- * this by using the TCAM engines for:
- * - pushing the RX VLAN as a second, outer tag, on egress towards the CPU port
- * - redirecting towards the correct front port based on TX VLAN and popping
- *   that on egress
- */
+
+ 
 #include <linux/dsa/8021q.h>
 #include <linux/dsa/ocelot.h>
 
@@ -17,7 +9,7 @@
 #define OCELOT_8021Q_NAME "ocelot-8021q"
 
 struct ocelot_8021q_tagger_private {
-	struct ocelot_8021q_tagger_data data; /* Must be first */
+	struct ocelot_8021q_tagger_data data;  
 	struct kthread_worker *xmit_worker;
 };
 
@@ -36,10 +28,7 @@ static struct sk_buff *ocelot_defer_xmit(struct dsa_port *dp,
 	if (!xmit_work_fn || !xmit_worker)
 		return NULL;
 
-	/* PTP over IP packets need UDP checksumming. We may have inherited
-	 * NETIF_F_HW_CSUM from the DSA master, but these packets are not sent
-	 * through the DSA master, so calculate the checksum here.
-	 */
+	 
 	if (skb->ip_summed == CHECKSUM_PARTIAL && skb_checksum_help(skb))
 		return NULL;
 
@@ -47,11 +36,9 @@ static struct sk_buff *ocelot_defer_xmit(struct dsa_port *dp,
 	if (!xmit_work)
 		return NULL;
 
-	/* Calls felix_port_deferred_xmit in felix.c */
+	 
 	kthread_init_work(&xmit_work->work, xmit_work_fn);
-	/* Increase refcount so the kfree_skb in dsa_slave_xmit
-	 * won't really free the packet.
-	 */
+	 
 	xmit_work->dp = dp;
 	xmit_work->skb = skb_get(skb);
 

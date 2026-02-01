@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2008-2009 Patrick McHardy <kaber@trash.net>
- *
- * Development of this code funded by Astaro AG (http://www.astaro.com/)
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/init.h>
@@ -203,15 +199,13 @@ static void nft_immediate_destroy(const struct nft_ctx *ctx,
 		if (!nft_chain_binding(chain))
 			break;
 
-		/* Rule construction failed, but chain is already bound:
-		 * let the transaction records release this chain and its rules.
-		 */
+		 
 		if (chain->bound) {
 			nft_use_dec(&chain->use);
 			break;
 		}
 
-		/* Rule has been deleted, release chain and its rules. */
+		 
 		chain_ctx = *ctx;
 		chain_ctx.chain = chain;
 

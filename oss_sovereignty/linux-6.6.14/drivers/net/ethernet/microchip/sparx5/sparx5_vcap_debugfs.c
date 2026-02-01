@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/* Microchip Sparx5 Switch driver VCAP debugFS implementation
- *
- * Copyright (c) 2022 Microchip Technology Inc. and its subsidiaries.
- */
+
+ 
 
 #include <linux/types.h>
 #include <linux/list.h>
@@ -86,7 +83,7 @@ static void sparx5_vcap_is0_port_keys(struct sparx5 *sparx5,
 	for (lookup = 0; lookup < admin->lookups; ++lookup) {
 		out->prf(out->dst, "\n    Lookup %d: ", lookup);
 
-		/* Get lookup state */
+		 
 		value = spx5_rd(sparx5,
 				ANA_CL_ADV_CL_CFG(port->portno, lookup));
 		out->prf(out->dst, "\n      state: ");
@@ -129,7 +126,7 @@ static void sparx5_vcap_is2_port_keys(struct sparx5 *sparx5,
 	for (lookup = 0; lookup < admin->lookups; ++lookup) {
 		out->prf(out->dst, "\n    Lookup %d: ", lookup);
 
-		/* Get lookup state */
+		 
 		value = spx5_rd(sparx5, ANA_ACL_VCAP_S2_CFG(port->portno));
 		out->prf(out->dst, "\n      state: ");
 		if (ANA_ACL_VCAP_S2_CFG_SEC_ENA_GET(value) & BIT(lookup))
@@ -137,7 +134,7 @@ static void sparx5_vcap_is2_port_keys(struct sparx5 *sparx5,
 		else
 			out->prf(out->dst, "off");
 
-		/* Get key selection state */
+		 
 		value = spx5_rd(sparx5,
 				ANA_ACL_VCAP_S2_KEY_SEL(port->portno, lookup));
 
@@ -239,7 +236,7 @@ static void sparx5_vcap_is2_port_stickies(struct sparx5 *sparx5,
 	out->prf(out->dst, "  Sticky bits: ");
 	for (lookup = 0; lookup < admin->lookups; ++lookup) {
 		out->prf(out->dst, "\n    Lookup %d: ", lookup);
-		/* Get lookup sticky bits */
+		 
 		value = spx5_rd(sparx5, ANA_ACL_SEC_LOOKUP_STICKY(lookup));
 
 		if (ANA_ACL_SEC_LOOKUP_STICKY_KEY_SEL_CLM_STICKY_GET(value))
@@ -278,7 +275,7 @@ static void sparx5_vcap_is2_port_stickies(struct sparx5 *sparx5,
 			out->prf(out->dst, " mac_llc");
 		if (ANA_ACL_SEC_LOOKUP_STICKY_SEC_TYPE_MAC_ETYPE_STICKY_GET(value))
 			out->prf(out->dst, " mac_etype");
-		/* Clear stickies */
+		 
 		spx5_wr(value, sparx5, ANA_ACL_SEC_LOOKUP_STICKY(lookup));
 	}
 	out->prf(out->dst, "\n");
@@ -295,7 +292,7 @@ static void sparx5_vcap_es0_port_keys(struct sparx5 *sparx5,
 		 netdev_name(port->ndev));
 	out->prf(out->dst, "\n    Lookup 0: ");
 
-	/* Get lookup state */
+	 
 	value = spx5_rd(sparx5, REW_ES0_CTRL);
 	out->prf(out->dst, "\n      state: ");
 	if (REW_ES0_CTRL_ES0_LU_ENA_GET(value))
@@ -335,7 +332,7 @@ static void sparx5_vcap_es2_port_keys(struct sparx5 *sparx5,
 	for (lookup = 0; lookup < admin->lookups; ++lookup) {
 		out->prf(out->dst, "\n    Lookup %d: ", lookup);
 
-		/* Get lookup state */
+		 
 		value = spx5_rd(sparx5, EACL_VCAP_ES2_KEY_SEL(port->portno,
 							      lookup));
 		out->prf(out->dst, "\n      state: ");
@@ -429,13 +426,13 @@ static void sparx5_vcap_es2_port_stickies(struct sparx5 *sparx5,
 			out->prf(out->dst, " arp");
 		if (EACL_SEC_LOOKUP_STICKY_SEC_TYPE_MAC_ETYPE_STICKY_GET(value))
 			out->prf(out->dst, " mac_etype");
-		/* Clear stickies */
+		 
 		spx5_wr(value, sparx5, EACL_SEC_LOOKUP_STICKY(lookup));
 	}
 	out->prf(out->dst, "\n");
 }
 
-/* Provide port information via a callback interface */
+ 
 int sparx5_port_info(struct net_device *ndev,
 		     struct vcap_admin *admin,
 		     struct vcap_output_print *out)

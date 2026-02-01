@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Renesas RZ/V2M Clocked Serial Interface (CSI) driver
- *
- * Copyright (C) 2023 Renesas Electronics Corporation
- */
+
+ 
 
 #include <linux/bits.h>
 #include <linux/clk.h>
@@ -17,18 +13,18 @@
 #include <linux/spi/spi.h>
 #include <linux/units.h>
 
-/* Registers */
-#define CSI_MODE		0x00	/* CSI mode control */
-#define CSI_CLKSEL		0x04	/* CSI clock select */
-#define CSI_CNT			0x08	/* CSI control */
-#define CSI_INT			0x0C	/* CSI interrupt status */
-#define CSI_IFIFOL		0x10	/* CSI receive FIFO level display */
-#define CSI_OFIFOL		0x14	/* CSI transmit FIFO level display */
-#define CSI_IFIFO		0x18	/* CSI receive window */
-#define CSI_OFIFO		0x1C	/* CSI transmit window */
-#define CSI_FIFOTRG		0x20	/* CSI FIFO trigger level */
+ 
+#define CSI_MODE		0x00	 
+#define CSI_CLKSEL		0x04	 
+#define CSI_CNT			0x08	 
+#define CSI_INT			0x0C	 
+#define CSI_IFIFOL		0x10	 
+#define CSI_OFIFOL		0x14	 
+#define CSI_IFIFO		0x18	 
+#define CSI_OFIFO		0x1C	 
+#define CSI_FIFOTRG		0x20	 
 
-/* CSI_MODE */
+ 
 #define CSI_MODE_CSIE		BIT(7)
 #define CSI_MODE_TRMD		BIT(6)
 #define CSI_MODE_CCL		BIT(5)
@@ -37,14 +33,14 @@
 
 #define CSI_MODE_SETUP		0x00000040
 
-/* CSI_CLKSEL */
+ 
 #define CSI_CLKSEL_CKP		BIT(17)
 #define CSI_CLKSEL_DAP		BIT(16)
 #define CSI_CLKSEL_MODE		(CSI_CLKSEL_CKP|CSI_CLKSEL_DAP)
 #define CSI_CLKSEL_SLAVE	BIT(15)
 #define CSI_CLKSEL_CKS		GENMASK(14, 1)
 
-/* CSI_CNT */
+ 
 #define CSI_CNT_CSIRST		BIT(28)
 #define CSI_CNT_R_TRGEN		BIT(19)
 #define CSI_CNT_UNDER_E		BIT(13)
@@ -54,7 +50,7 @@
 #define CSI_CNT_T_TRGR_E	BIT(4)
 #define CSI_CNT_R_TRGR_E	BIT(0)
 
-/* CSI_INT */
+ 
 #define CSI_INT_UNDER		BIT(13)
 #define CSI_INT_OVERF		BIT(12)
 #define CSI_INT_TREND		BIT(9)
@@ -62,17 +58,13 @@
 #define CSI_INT_T_TRGR		BIT(4)
 #define CSI_INT_R_TRGR		BIT(0)
 
-/* CSI_FIFOTRG */
+ 
 #define CSI_FIFOTRG_R_TRG       GENMASK(2, 0)
 
 #define CSI_FIFO_SIZE_BYTES	32U
 #define CSI_FIFO_HALF_SIZE	16U
 #define CSI_EN_DIS_TIMEOUT_US	100
-/*
- * Clock "csiclk" gets divided by 2 * CSI_CLKSEL_CKS in order to generate the
- * serial clock (output from master), with CSI_CLKSEL_CKS ranging from 0x1 (that
- * means "csiclk" is divided by 2) to 0x3FFF ("csiclk" is divided by 32766).
- */
+ 
 #define CSI_CKS_MAX		GENMASK(13, 0)
 
 #define UNDERRUN_ERROR		BIT(0)
@@ -200,11 +192,7 @@ static inline void rzv2m_csi_calc_current_transfer(struct rzv2m_csi_priv *csi)
 	unsigned int to_transfer;
 
 	if (csi->txbuf)
-		/*
-		 * Leaving a little bit of headroom in the FIFOs makes it very
-		 * hard to raise an overflow error (which is only possible
-		 * when IP transmits and receives at the same time).
-		 */
+		 
 		to_transfer = min(CSI_FIFO_HALF_SIZE, bytes_remaining);
 	else
 		to_transfer = min(CSI_FIFO_SIZE_BYTES, bytes_remaining);
@@ -212,12 +200,7 @@ static inline void rzv2m_csi_calc_current_transfer(struct rzv2m_csi_priv *csi)
 	if (csi->bytes_per_word == 2)
 		to_transfer >>= 1;
 
-	/*
-	 * We can only choose a trigger level from a predefined set of values.
-	 * This will pick a value that is the greatest possible integer that's
-	 * less than or equal to the number of bytes we need to transfer.
-	 * This may result in multiple smaller transfers.
-	 */
+	 
 	csi->words_to_transfer = rounddown_pow_of_two(to_transfer);
 
 	if (csi->bytes_per_word == 2)
@@ -347,10 +330,7 @@ static void rzv2m_csi_setup_clock(struct rzv2m_csi_priv *csi, u32 spi_hz)
 	unsigned long csiclk_rate_limit = pclk_rate >> 1;
 	u32 cks;
 
-	/*
-	 * There is a restriction on the frequency of CSICLK, it has to be <=
-	 * PCLK / 2.
-	 */
+	 
 	if (csiclk_rate > csiclk_rate_limit) {
 		clk_set_rate(csi->csiclk, csiclk_rate >> 1);
 		csiclk_rate = clk_get_rate(csi->csiclk);
@@ -374,10 +354,10 @@ static void rzv2m_csi_setup_operating_mode(struct rzv2m_csi_priv *csi,
 					   struct spi_transfer *t)
 {
 	if (t->rx_buf && !t->tx_buf)
-		/* Reception-only mode */
+		 
 		rzv2m_csi_reg_write_bit(csi, CSI_MODE, CSI_MODE_TRMD, 0);
 	else
-		/* Send and receive mode */
+		 
 		rzv2m_csi_reg_write_bit(csi, CSI_MODE, CSI_MODE_TRMD, 1);
 
 	csi->bytes_per_word = t->bits_per_word / 8;
@@ -394,27 +374,24 @@ static int rzv2m_csi_setup(struct spi_device *spi)
 
 	writel(CSI_MODE_SETUP, csi->base + CSI_MODE);
 
-	/* Setup clock polarity and phase timing */
+	 
 	rzv2m_csi_reg_write_bit(csi, CSI_CLKSEL, CSI_CLKSEL_MODE,
 				~spi->mode & SPI_MODE_X_MASK);
 
-	/* Setup serial data order */
+	 
 	rzv2m_csi_reg_write_bit(csi, CSI_MODE, CSI_MODE_DIR,
 				!!(spi->mode & SPI_LSB_FIRST));
 
-	/* Set the operation mode as master */
+	 
 	rzv2m_csi_reg_write_bit(csi, CSI_CLKSEL, CSI_CLKSEL_SLAVE, 0);
 
-	/* Give the IP a SW reset */
+	 
 	ret = rzv2m_csi_sw_reset(csi, 1);
 	if (ret)
 		return ret;
 	rzv2m_csi_sw_reset(csi, 0);
 
-	/*
-	 * We need to enable the communication so that the clock will settle
-	 * for the right polarity before enabling the CS.
-	 */
+	 
 	rzv2m_csi_start_stop_operation(csi, 1, false);
 	udelay(10);
 	rzv2m_csi_start_stop_operation(csi, 0, false);
@@ -428,7 +405,7 @@ static int rzv2m_csi_pio_transfer(struct rzv2m_csi_priv *csi)
 	bool rx_completed = !csi->rxbuf;
 	int ret = 0;
 
-	/* Make sure the TX FIFO is empty */
+	 
 	writel(0, csi->base + CSI_OFIFOL);
 
 	csi->bytes_sent = 0;
@@ -440,19 +417,13 @@ static int rzv2m_csi_pio_transfer(struct rzv2m_csi_priv *csi)
 	rzv2m_csi_enable_rx_trigger(csi, true);
 
 	while (!tx_completed || !rx_completed) {
-		/*
-		 * Decide how many words we are going to transfer during
-		 * this cycle (for both TX and RX), then set the RX FIFO trigger
-		 * level accordingly. No need to set a trigger level for the
-		 * TX FIFO, as this IP comes with an interrupt that fires when
-		 * the TX FIFO is empty.
-		 */
+		 
 		rzv2m_csi_calc_current_transfer(csi);
 		rzv2m_csi_set_rx_fifo_trigger_level(csi);
 
 		rzv2m_csi_enable_irqs(csi, CSI_INT_OVERF | CSI_INT_UNDER);
 
-		/* Make sure the RX FIFO is empty */
+		 
 		writel(0, csi->base + CSI_IFIFOL);
 
 		writel(readl(csi->base + CSI_INT), csi->base + CSI_INT);
@@ -460,7 +431,7 @@ static int rzv2m_csi_pio_transfer(struct rzv2m_csi_priv *csi)
 
 		rzv2m_csi_start_stop_operation(csi, 1, false);
 
-		/* TX */
+		 
 		if (csi->txbuf) {
 			ret = rzv2m_csi_fill_txfifo(csi);
 			if (ret)
@@ -474,16 +445,12 @@ static int rzv2m_csi_pio_transfer(struct rzv2m_csi_priv *csi)
 				tx_completed = true;
 		}
 
-		/*
-		 * Make sure the RX FIFO contains the desired number of words.
-		 * We then either flush its content, or we copy it onto
-		 * csi->rxbuf.
-		 */
+		 
 		ret = rzv2m_csi_wait_for_rx_ready(csi);
 		if (ret)
 			break;
 
-		/* RX */
+		 
 		if (csi->rxbuf) {
 			rzv2m_csi_start_stop_operation(csi, 0, false);
 
@@ -602,14 +569,10 @@ static int rzv2m_csi_probe(struct platform_device *pdev)
 	if (ret)
 		return dev_err_probe(dev, ret, "cannot request IRQ\n");
 
-	/*
-	 * The reset also affects other HW that is not under the control
-	 * of Linux. Therefore, all we can do is make sure the reset is
-	 * deasserted.
-	 */
+	 
 	reset_control_deassert(rstc);
 
-	/* Make sure the IP is in SW reset state */
+	 
 	ret = rzv2m_csi_sw_reset(csi, 1);
 	if (ret)
 		return ret;
@@ -638,7 +601,7 @@ static void rzv2m_csi_remove(struct platform_device *pdev)
 
 static const struct of_device_id rzv2m_csi_match[] = {
 	{ .compatible = "renesas,rzv2m-csi" },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, rzv2m_csi_match);
 

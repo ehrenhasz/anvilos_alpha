@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause */
-/*
- * Copyright (C) 2022 Intel Corporation
- */
+ 
+ 
 #ifndef __TIME_SYNC_H__
 #define __TIME_SYNC_H__
 

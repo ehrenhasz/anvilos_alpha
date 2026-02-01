@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * AES-128-CMAC with TLen 16 for IEEE 802.11w BIP
- * Copyright 2008, Jouni Malinen <j@w1.fi>
- * Copyright (C) 2020 Intel Corporation
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/types.h>
@@ -16,8 +12,8 @@
 #include "key.h"
 #include "aes_cmac.h"
 
-#define CMAC_TLEN 8 /* CMAC TLen = 64 bits (8 octets) */
-#define CMAC_TLEN_256 16 /* CMAC TLen = 128 bits (16 octets) */
+#define CMAC_TLEN 8  
+#define CMAC_TLEN_256 16  
 #define AAD_LEN 20
 
 static const u8 zero[CMAC_TLEN_256];
@@ -35,7 +31,7 @@ void ieee80211_aes_cmac(struct crypto_shash *tfm, const u8 *aad,
 	crypto_shash_update(desc, aad, AAD_LEN);
 	fc = (const __le16 *)aad;
 	if (ieee80211_is_beacon(*fc)) {
-		/* mask Timestamp field to zero */
+		 
 		crypto_shash_update(desc, zero, 8);
 		crypto_shash_update(desc, data + 8, data_len - 8 - CMAC_TLEN);
 	} else {
@@ -58,7 +54,7 @@ void ieee80211_aes_cmac_256(struct crypto_shash *tfm, const u8 *aad,
 	crypto_shash_update(desc, aad, AAD_LEN);
 	fc = (const __le16 *)aad;
 	if (ieee80211_is_beacon(*fc)) {
-		/* mask Timestamp field to zero */
+		 
 		crypto_shash_update(desc, zero, 8);
 		crypto_shash_update(desc, data + 8,
 				    data_len - 8 - CMAC_TLEN_256);

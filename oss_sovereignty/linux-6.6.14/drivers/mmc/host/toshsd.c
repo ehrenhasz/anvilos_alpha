@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  Toshiba PCI Secure Digital Host Controller Interface driver
- *
- *  Copyright (C) 2014 Ondrej Zary
- *  Copyright (C) 2007 Richard Betts, All Rights Reserved.
- *
- *	Based on asic3_mmc.c, copyright (c) 2005 SDG Systems, LLC and,
- *	sdhci.c, copyright (C) 2005-2006 Pierre Ossman
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/device.h>
@@ -27,40 +19,40 @@
 
 static const struct pci_device_id pci_ids[] = {
 	{ PCI_DEVICE(PCI_VENDOR_ID_TOSHIBA, 0x0805) },
-	{ /* end: all zeroes */ },
+	{   },
 };
 
 MODULE_DEVICE_TABLE(pci, pci_ids);
 
 static void toshsd_init(struct toshsd_host *host)
 {
-	/* enable clock */
+	 
 	pci_write_config_byte(host->pdev, SD_PCICFG_CLKSTOP,
 					SD_PCICFG_CLKSTOP_ENABLE_ALL);
 	pci_write_config_byte(host->pdev, SD_PCICFG_CARDDETECT, 2);
 
-	/* reset */
-	iowrite16(0, host->ioaddr + SD_SOFTWARERESET); /* assert */
+	 
+	iowrite16(0, host->ioaddr + SD_SOFTWARERESET);  
 	mdelay(2);
-	iowrite16(1, host->ioaddr + SD_SOFTWARERESET); /* deassert */
+	iowrite16(1, host->ioaddr + SD_SOFTWARERESET);  
 	mdelay(2);
 
-	/* Clear card registers */
+	 
 	iowrite16(0, host->ioaddr + SD_CARDCLOCKCTRL);
 	iowrite32(0, host->ioaddr + SD_CARDSTATUS);
 	iowrite32(0, host->ioaddr + SD_ERRORSTATUS0);
 	iowrite16(0, host->ioaddr + SD_STOPINTERNAL);
 
-	/* SDIO clock? */
+	 
 	iowrite16(0x100, host->ioaddr + SDIO_BASE + SDIO_CLOCKNWAITCTRL);
 
-	/* enable LED */
+	 
 	pci_write_config_byte(host->pdev, SD_PCICFG_SDLED_ENABLE1,
 					SD_PCICFG_LED_ENABLE1_START);
 	pci_write_config_byte(host->pdev, SD_PCICFG_SDLED_ENABLE2,
 					SD_PCICFG_LED_ENABLE2_START);
 
-	/* set interrupt masks */
+	 
 	iowrite32(~(u32)(SD_CARD_RESP_END | SD_CARD_RW_END
 			| SD_CARD_CARD_REMOVED_0 | SD_CARD_CARD_INSERTED_0
 			| SD_BUF_READ_ENABLE | SD_BUF_WRITE_ENABLE
@@ -70,11 +62,7 @@ static void toshsd_init(struct toshsd_host *host)
 	iowrite16(0x1000, host->ioaddr + SD_TRANSACTIONCTRL);
 }
 
-/* Set MMC clock / power.
- * Note: This controller uses a simple divider scheme therefore it cannot run
- * SD/MMC cards at full speed (24/20MHz). HCLK (=33MHz PCI clock?) is too high
- * and the next slowest is 16MHz (div=2).
- */
+ 
 static void __toshsd_set_ios(struct mmc_host *mmc, struct mmc_ios *ios)
 {
 	struct toshsd_host *host = mmc_priv(mmc);
@@ -88,7 +76,7 @@ static void __toshsd_set_ios(struct mmc_host *mmc, struct mmc_ios *ios)
 
 		clk = div >> 2;
 
-		if (div == 1) { /* disable the divider */
+		if (div == 1) {  
 			pci_write_config_byte(host->pdev, SD_PCICFG_CLKMODE,
 					      SD_PCICFG_CLKMODE_DIV_DISABLE);
 			clk |= SD_CARDCLK_DIV_DISABLE;
@@ -144,7 +132,7 @@ static void toshsd_finish_request(struct toshsd_host *host)
 {
 	struct mmc_request *mrq = host->mrq;
 
-	/* Write something to end the command */
+	 
 	host->mrq = NULL;
 	host->cmd = NULL;
 	host->data = NULL;
@@ -177,9 +165,7 @@ static irqreturn_t toshsd_thread_irq(int irq, void *dev_id)
 
 	buf = sg_miter->addr;
 
-	/* Ensure we dont read more than one block. The chip will interrupt us
-	 * When the next block is available.
-	 */
+	 
 	count = sg_miter->length;
 	if (count > data->blksz)
 		count = data->blksz;
@@ -187,7 +173,7 @@ static irqreturn_t toshsd_thread_irq(int irq, void *dev_id)
 	dev_dbg(&host->pdev->dev, "count: %08x, flags %08x\n", count,
 		data->flags);
 
-	/* Transfer the data */
+	 
 	if (data->flags & MMC_DATA_READ)
 		ioread32_rep(host->ioaddr + SD_DATAPORT, buf, count >> 2);
 	else
@@ -216,7 +202,7 @@ static void toshsd_cmd_irq(struct toshsd_host *host)
 	host->cmd = NULL;
 
 	if (cmd->flags & MMC_RSP_PRESENT && cmd->flags & MMC_RSP_136) {
-		/* R2 */
+		 
 		buf[12] = 0xff;
 		data = ioread16(host->ioaddr + SD_RESPONSE0);
 		buf[13] = data & 0xff;
@@ -242,7 +228,7 @@ static void toshsd_cmd_irq(struct toshsd_host *host)
 		data = ioread16(host->ioaddr + SD_RESPONSE7);
 		buf[3] = data & 0xff;
 	} else if (cmd->flags & MMC_RSP_PRESENT) {
-		/* R1, R1B, R3, R6, R7 */
+		 
 		data = ioread16(host->ioaddr + SD_RESPONSE0);
 		buf[0] = data & 0xff;
 		buf[1] = data >> 8;
@@ -254,8 +240,7 @@ static void toshsd_cmd_irq(struct toshsd_host *host)
 	dev_dbg(&host->pdev->dev, "Command IRQ complete %d %d %x\n",
 		cmd->opcode, cmd->error, cmd->flags);
 
-	/* If there is data to handle we will
-	 * finish the request in the mmc_data_end_irq handler.*/
+	 
 	if (host->data)
 		return;
 
@@ -300,7 +285,7 @@ static irqreturn_t toshsd_irq(int irq, void *dev_id)
 	dev_dbg(&host->pdev->dev, "IRQ status:%x mask:%x\n",
 		int_status, int_mask);
 
-	/* nothing to do: it's not our IRQ */
+	 
 	if (!int_reg) {
 		ret = IRQ_NONE;
 		goto irq_end;
@@ -359,7 +344,7 @@ static irqreturn_t toshsd_irq(int irq, void *dev_id)
 		}
 	}
 
-	/* Card insert/remove. The mmc controlling code is stateless. */
+	 
 	if (int_reg & (SD_CARD_CARD_INSERTED_0 | SD_CARD_CARD_REMOVED_0)) {
 		iowrite32(int_status &
 			  ~(SD_CARD_CARD_REMOVED_0 | SD_CARD_CARD_INSERTED_0),
@@ -371,7 +356,7 @@ static irqreturn_t toshsd_irq(int irq, void *dev_id)
 		mmc_detect_change(host->mmc, 1);
 	}
 
-	/* Data transfer */
+	 
 	if (int_reg & (SD_BUF_READ_ENABLE | SD_BUF_WRITE_ENABLE)) {
 		iowrite32(int_status &
 			  ~(SD_BUF_WRITE_ENABLE | SD_BUF_READ_ENABLE),
@@ -381,14 +366,14 @@ static irqreturn_t toshsd_irq(int irq, void *dev_id)
 		goto irq_end;
 	}
 
-	/* Command completion */
+	 
 	if (int_reg & SD_CARD_RESP_END) {
 		iowrite32(int_status & ~(SD_CARD_RESP_END),
 			  host->ioaddr + SD_CARDSTATUS);
 		toshsd_cmd_irq(host);
 	}
 
-	/* Data transfer completion */
+	 
 	if (int_reg & SD_CARD_RW_END) {
 		iowrite32(int_status & ~(SD_CARD_RW_END),
 			  host->ioaddr + SD_CARDSTATUS);
@@ -449,7 +434,7 @@ static void toshsd_start_cmd(struct toshsd_host *host, struct mmc_command *cmd)
 		c |= SD_CMD_TYPE_ACMD;
 
 	if (cmd->opcode == MMC_GO_IDLE_STATE)
-		c |= (3 << 8);  /* removed from ipaq-asic3.h for some reason */
+		c |= (3 << 8);   
 
 	if (data) {
 		c |= SD_CMD_DATA_PRESENT;
@@ -463,10 +448,10 @@ static void toshsd_start_cmd(struct toshsd_host *host, struct mmc_command *cmd)
 		if (data->flags & MMC_DATA_READ)
 			c |= SD_CMD_TRANSFER_READ;
 
-		/* MMC_DATA_WRITE does not require a bit to be set */
+		 
 	}
 
-	/* Send the command */
+	 
 	iowrite32(cmd->arg, host->ioaddr + SD_ARG0);
 	iowrite16(c, host->ioaddr + SD_CMD);
 }
@@ -487,18 +472,18 @@ static void toshsd_start_data(struct toshsd_host *host, struct mmc_data *data)
 
 	sg_miter_start(&host->sg_miter, data->sg, data->sg_len, flags);
 
-	/* Set transfer length and blocksize */
+	 
 	iowrite16(data->blocks, host->ioaddr + SD_BLOCKCOUNT);
 	iowrite16(data->blksz, host->ioaddr + SD_CARDXFERDATALEN);
 }
 
-/* Process requests from the MMC layer */
+ 
 static void toshsd_request(struct mmc_host *mmc, struct mmc_request *mrq)
 {
 	struct toshsd_host *host = mmc_priv(mmc);
 	unsigned long flags;
 
-	/* abort if card not present */
+	 
 	if (!(ioread16(host->ioaddr + SD_CARDSTATUS) & SD_CARD_PRESENT_0)) {
 		mrq->cmd->error = -ENOMEDIUM;
 		mmc_request_done(mmc, mrq);
@@ -535,7 +520,7 @@ static int toshsd_get_ro(struct mmc_host *mmc)
 {
 	struct toshsd_host *host = mmc_priv(mmc);
 
-	/* active low */
+	 
 	return !(ioread16(host->ioaddr + SD_CARDSTATUS) & SD_CARD_WRITE_PROTECT);
 }
 
@@ -556,14 +541,14 @@ static const struct mmc_host_ops toshsd_ops = {
 
 static void toshsd_powerdown(struct toshsd_host *host)
 {
-	/* mask all interrupts */
+	 
 	iowrite32(0xffffffff, host->ioaddr + SD_INTMASKCARD);
-	/* disable card clock */
+	 
 	iowrite16(0x000, host->ioaddr + SDIO_BASE + SDIO_CLOCKNWAITCTRL);
 	iowrite16(0, host->ioaddr + SD_CARDCLOCKCTRL);
-	/* power down card */
+	 
 	pci_write_config_byte(host->pdev, SD_PCICFG_POWER1, SD_PCICFG_PWR1_OFF);
-	/* disable clock */
+	 
 	pci_write_config_byte(host->pdev, SD_PCICFG_CLKSTOP, 0);
 }
 
@@ -599,7 +584,7 @@ static int toshsd_pm_resume(struct device *dev)
 
 	return 0;
 }
-#endif /* CONFIG_PM_SLEEP */
+#endif  
 
 static int toshsd_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 {
@@ -634,7 +619,7 @@ static int toshsd_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 		goto release;
 	}
 
-	/* Set MMC host parameters */
+	 
 	mmc->ops = &toshsd_ops;
 	mmc->caps = MMC_CAP_4_BIT_DATA;
 	mmc->ocr_avail = MMC_VDD_32_33;

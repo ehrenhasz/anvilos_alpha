@@ -1,31 +1,4 @@
-/****************************************************************************
-
-   Copyright Echo Digital Audio Corporation (c) 1998 - 2004
-   All rights reserved
-   www.echoaudio.com
-
-   This file is part of Echo Digital Audio's generic driver library.
-
-   Echo Digital Audio's generic driver library is free software;
-   you can redistribute it and/or modify it under the terms of
-   the GNU General Public License as published by the Free Software Foundation.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program; if not, write to the Free Software
-   Foundation, Inc., 59 Temple Place - Suite 330, Boston,
-   MA  02111-1307, USA.
-
-   *************************************************************************
-
- Translation from C++ and adaptation for use in ALSA-Driver
- were made by Giuliano Pochini <pochini@shiny.it>
-
-****************************************************************************/
+ 
 
 
 static int write_control_reg(struct echoaudio *chip, u32 value, char force);
@@ -91,7 +64,7 @@ static u32 detect_input_clocks(const struct echoaudio *chip)
 {
 	u32 clocks_from_dsp, clock_bits;
 
-	/* Map the DSP clock detect bits to the generic driver clock detect bits */
+	 
 	clocks_from_dsp = le32_to_cpu(chip->comm_page->status_clocks);
 
 	clock_bits = ECHO_CLOCK_BIT_INTERNAL;
@@ -110,8 +83,7 @@ static u32 detect_input_clocks(const struct echoaudio *chip)
 
 
 
-/* Layla24 has an ASIC on the PCI card and another ASIC in the external box;
-both need to be loaded. */
+ 
 static int load_asic(struct echoaudio *chip)
 {
 	int err;
@@ -120,10 +92,10 @@ static int load_asic(struct echoaudio *chip)
 		return 1;
 
 
-	/* Give the DSP a few milliseconds to settle down */
+	 
 	mdelay(10);
 
-	/* Load the ASIC for the PCI card */
+	 
 	err = load_asic_generic(chip, DSP_FNC_LOAD_LAYLA24_PCI_CARD_ASIC,
 				FW_LAYLA24_1_ASIC);
 	if (err < 0)
@@ -131,23 +103,22 @@ static int load_asic(struct echoaudio *chip)
 
 	chip->asic_code = FW_LAYLA24_2S_ASIC;
 
-	/* Now give the new ASIC a little time to set up */
+	 
 	mdelay(10);
 
-	/* Do the external one */
+	 
 	err = load_asic_generic(chip, DSP_FNC_LOAD_LAYLA24_EXTERNAL_ASIC,
 				FW_LAYLA24_2S_ASIC);
 	if (err < 0)
 		return err;
 
-	/* Now give the external ASIC a little time to set up */
+	 
 	mdelay(10);
 
-	/* See if it worked */
+	 
 	err = check_asic_status(chip);
 
-	/* Set up the control register if the load succeeded -
-	   48 kHz, internal clock, S/PDIF RCA mode */
+	 
 	if (!err)
 		err = write_control_reg(chip, GML_CONVERTER_ENABLE | GML_48KHZ,
 					true);
@@ -165,17 +136,17 @@ static int set_sample_rate(struct echoaudio *chip, u32 rate)
 		       chip->digital_mode == DIGITAL_MODE_ADAT))
 		return -EINVAL;
 
-	/* Only set the clock for internal mode. */
+	 
 	if (chip->input_clock != ECHO_CLOCK_INTERNAL) {
 		dev_warn(chip->card->dev,
 			 "Cannot set sample rate - clock not set to CLK_CLOCKININTERNAL\n");
-		/* Save the rate anyhow */
+		 
 		chip->comm_page->sample_rate = cpu_to_le32(rate);
 		chip->sample_rate = rate;
 		return 0;
 	}
 
-	/* Get the control register & clear the appropriate bits */
+	 
 	control_reg = le32_to_cpu(chip->comm_page->control_register);
 	control_reg &= GML_CLOCK_CLEAR_MASK & GML_SPDIF_RATE_CLEAR_MASK;
 
@@ -193,7 +164,7 @@ static int set_sample_rate(struct echoaudio *chip, u32 rate)
 		break;
 	case 44100:
 		clock = GML_44KHZ;
-		/* Professional mode */
+		 
 		if (control_reg & GML_SPDIF_PRO_MODE)
 			clock |= GML_SPDIF_SAMPLE_RATE0;
 		break;
@@ -214,8 +185,7 @@ static int set_sample_rate(struct echoaudio *chip, u32 rate)
 		clock = GML_8KHZ;
 		break;
 	default:
-		/* If this is a non-standard rate, then the driver needs to
-		use Layla24's special "continuous frequency" mode */
+		 
 		clock = LAYLA24_CONTINUOUS_CLOCK;
 		if (rate > 50000) {
 			base_rate = rate >> 1;
@@ -239,7 +209,7 @@ static int set_sample_rate(struct echoaudio *chip, u32 rate)
 
 	control_reg |= clock;
 
-	chip->comm_page->sample_rate = cpu_to_le32(rate);	/* ignored by the DSP ? */
+	chip->comm_page->sample_rate = cpu_to_le32(rate);	 
 	chip->sample_rate = rate;
 	dev_dbg(chip->card->dev,
 		"set_sample_rate: %d clock %d\n", rate, control_reg);
@@ -253,12 +223,12 @@ static int set_input_clock(struct echoaudio *chip, u16 clock)
 {
 	u32 control_reg, clocks_from_dsp;
 
-	/* Mask off the clock select bits */
+	 
 	control_reg = le32_to_cpu(chip->comm_page->control_register) &
 		GML_CLOCK_CLEAR_MASK;
 	clocks_from_dsp = le32_to_cpu(chip->comm_page->status_clocks);
 
-	/* Pick the new clock */
+	 
 	switch (clock) {
 	case ECHO_CLOCK_INTERNAL:
 		chip->input_clock = ECHO_CLOCK_INTERNAL;
@@ -267,7 +237,7 @@ static int set_input_clock(struct echoaudio *chip, u16 clock)
 		if (chip->digital_mode == DIGITAL_MODE_ADAT)
 			return -EAGAIN;
 		control_reg |= GML_SPDIF_CLOCK;
-		/* Layla24 doesn't support 96KHz S/PDIF */
+		 
 		control_reg &= ~GML_DOUBLE_SPEED_MODE;
 		break;
 	case ECHO_CLOCK_WORD:
@@ -295,14 +265,12 @@ static int set_input_clock(struct echoaudio *chip, u16 clock)
 
 
 
-/* Depending on what digital mode you want, Layla24 needs different ASICs
-loaded.  This function checks the ASIC needed for the new mode and sees
-if it matches the one already loaded. */
+ 
 static int switch_asic(struct echoaudio *chip, short asic)
 {
 	s8 *monitors;
 
-	/*  Check to see if this is already loaded */
+	 
 	if (asic != chip->asic_code) {
 		monitors = kmemdup(chip->comm_page->monitors,
 					MONITOR_ARRAY_SIZE, GFP_KERNEL);
@@ -312,7 +280,7 @@ static int switch_asic(struct echoaudio *chip, short asic)
 		memset(chip->comm_page->monitors, ECHOGAIN_MUTED,
 		       MONITOR_ARRAY_SIZE);
 
-		/* Load the desired ASIC */
+		 
 		if (load_asic_generic(chip, DSP_FNC_LOAD_LAYLA24_EXTERNAL_ASIC,
 				      asic) < 0) {
 			memcpy(chip->comm_page->monitors, monitors,
@@ -336,7 +304,7 @@ static int dsp_set_digital_mode(struct echoaudio *chip, u8 mode)
 	int err, incompatible_clock;
 	short asic;
 
-	/* Set clock to "internal" if it's not compatible with the new mode */
+	 
 	incompatible_clock = false;
 	switch (mode) {
 	case DIGITAL_MODE_SPDIF_OPTICAL:
@@ -356,20 +324,20 @@ static int dsp_set_digital_mode(struct echoaudio *chip, u8 mode)
 		return -EINVAL;
 	}
 
-	if (incompatible_clock) {	/* Switch to 48KHz, internal */
+	if (incompatible_clock) {	 
 		chip->sample_rate = 48000;
 		spin_lock_irq(&chip->lock);
 		set_input_clock(chip, ECHO_CLOCK_INTERNAL);
 		spin_unlock_irq(&chip->lock);
 	}
 
-	/* switch_asic() can sleep */
+	 
 	if (switch_asic(chip, asic) < 0)
 		return -EIO;
 
 	spin_lock_irq(&chip->lock);
 
-	/* Tweak the control register */
+	 
 	control_reg = le32_to_cpu(chip->comm_page->control_register);
 	control_reg &= GML_DIGITAL_MODE_CLEAR_MASK;
 
@@ -378,7 +346,7 @@ static int dsp_set_digital_mode(struct echoaudio *chip, u8 mode)
 		control_reg |= GML_SPDIF_OPTICAL_MODE;
 		break;
 	case DIGITAL_MODE_SPDIF_RCA:
-		/* GML_SPDIF_OPTICAL_MODE bit cleared */
+		 
 		break;
 	case DIGITAL_MODE_ADAT:
 		control_reg |= GML_ADAT_MODE;

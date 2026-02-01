@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) 2015 Etnaviv Project
- */
+ 
+ 
 
 #ifndef ETNAVIV_DUMP_H
 #define ETNAVIV_DUMP_H
@@ -28,7 +26,7 @@ struct etnaviv_dump_object_header {
 	__le32 data[2];
 };
 
-/* Registers object, an array of these */
+ 
 struct etnaviv_dump_registers {
 	__le32 reg;
 	__le32 value;

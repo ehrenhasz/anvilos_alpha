@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * isabelle.c - Low power high fidelity audio codec driver
- *
- * Copyright (c) 2012 Texas Instruments, Inc
- *
- * Initially based on sound/soc/codecs/twl6040.c
- */
+
+ 
 #include <linux/module.h>
 #include <linux/moduleparam.h>
 #include <linux/kernel.h>
@@ -27,7 +21,7 @@
 #include "isabelle.h"
 
 
-/* Register default values for ISABELLE driver. */
+ 
 static const struct reg_default isabelle_reg_defs[] = {
 	{ 0, 0x00 },
 	{ 1, 0x00 },
@@ -148,14 +142,14 @@ static const struct soc_enum isabelle_rx2_enum[] = {
 			ARRAY_SIZE(isabelle_rx2_texts), isabelle_rx2_texts),
 };
 
-/* Headset DAC playback switches */
+ 
 static const struct snd_kcontrol_new rx1_mux_controls =
 	SOC_DAPM_ENUM("Route", isabelle_rx1_enum);
 
 static const struct snd_kcontrol_new rx2_mux_controls =
 	SOC_DAPM_ENUM("Route", isabelle_rx2_enum);
 
-/* TX input selection */
+ 
 static const char *isabelle_atx_texts[] = {"AMIC1", "DMIC"};
 static const char *isabelle_vtx_texts[] = {"AMIC2", "DMIC"};
 
@@ -179,11 +173,11 @@ static const struct snd_kcontrol_new atx_mux_controls =
 static const struct snd_kcontrol_new vtx_mux_controls =
 	SOC_DAPM_ENUM("Route", isabelle_vtx_enum);
 
-/* Left analog microphone selection */
+ 
 static const char *isabelle_amic1_texts[] = {
 	"Main Mic", "Headset Mic", "Aux/FM Left"};
 
-/* Left analog microphone selection */
+ 
 static const char *isabelle_amic2_texts[] = {"Sub Mic", "Aux/FM Right"};
 
 static SOC_ENUM_SINGLE_DECL(isabelle_amic1_enum,
@@ -228,7 +222,7 @@ static const struct snd_kcontrol_new st_audio_control =
 static const struct snd_kcontrol_new st_voice_control =
 	SOC_DAPM_ENUM("Route", isabelle_st_voice_enum);
 
-/* Mixer controls */
+ 
 static const struct snd_kcontrol_new isabelle_hs_left_mixer_controls[] = {
 SOC_DAPM_SINGLE("DAC1L Playback Switch", ISABELLE_HSDRV_CFG1_REG, 7, 1, 0),
 SOC_DAPM_SINGLE("APGA1 Playback Switch", ISABELLE_HSDRV_CFG1_REG, 6, 1, 0),
@@ -337,16 +331,16 @@ SOC_DAPM_SINGLE("DL6 Playback Switch", ISABELLE_RX_INPUT_CFG2_REG, 4, 1, 0),
 static const struct snd_kcontrol_new ep_path_enable_control =
 	SOC_DAPM_SINGLE("Switch", ISABELLE_EARDRV_CFG2_REG, 0, 1, 0);
 
-/* TLV Declarations */
+ 
 static const DECLARE_TLV_DB_SCALE(mic_amp_tlv, 0, 100, 0);
 static const DECLARE_TLV_DB_SCALE(afm_amp_tlv, -3300, 300, 0);
 static const DECLARE_TLV_DB_SCALE(dac_tlv, -1200, 200, 0);
 static const DECLARE_TLV_DB_SCALE(hf_tlv, -5000, 200, 0);
 
-/* from -63 to 0 dB in 1 dB steps */
+ 
 static const DECLARE_TLV_DB_SCALE(dpga_tlv, -6300, 100, 1);
 
-/* from -63 to 9 dB in 1 dB steps */
+ 
 static const DECLARE_TLV_DB_SCALE(rx_tlv, -6300, 100, 1);
 
 static const DECLARE_TLV_DB_SCALE(st_tlv, -2700, 300, 1);
@@ -463,12 +457,12 @@ static const struct snd_kcontrol_new isabelle_snd_controls[] = {
 	SOC_SINGLE("DL56 Playback Switch", ISABELLE_DL56_INTF_CFG_REG,
 		7, 1, 0),
 
-	/* DMIC Switch */
+	 
 	SOC_SINGLE("DMIC Switch", ISABELLE_DMIC_CFG_REG, 0, 1, 0),
 };
 
 static const struct snd_soc_dapm_widget isabelle_dapm_widgets[] = {
-	/* Inputs */
+	 
 	SND_SOC_DAPM_INPUT("MAINMIC"),
 	SND_SOC_DAPM_INPUT("HSMIC"),
 	SND_SOC_DAPM_INPUT("SUBMIC"),
@@ -476,7 +470,7 @@ static const struct snd_soc_dapm_widget isabelle_dapm_widgets[] = {
 	SND_SOC_DAPM_INPUT("LINEIN2"),
 	SND_SOC_DAPM_INPUT("DMICDAT"),
 
-	/* Outputs */
+	 
 	SND_SOC_DAPM_OUTPUT("HSOL"),
 	SND_SOC_DAPM_OUTPUT("HSOR"),
 	SND_SOC_DAPM_OUTPUT("HFL"),
@@ -492,7 +486,7 @@ static const struct snd_soc_dapm_widget isabelle_dapm_widgets[] = {
 	SND_SOC_DAPM_PGA("DL5", SND_SOC_NOPM, 0, 0, NULL, 0),
 	SND_SOC_DAPM_PGA("DL6", SND_SOC_NOPM, 0, 0, NULL, 0),
 
-	/* Analog input muxes for the capture amplifiers */
+	 
 	SND_SOC_DAPM_MUX("Analog Left Capture Route",
 			SND_SOC_NOPM, 0, 0, &amic1_control),
 	SND_SOC_DAPM_MUX("Analog Right Capture Route",
@@ -503,7 +497,7 @@ static const struct snd_soc_dapm_widget isabelle_dapm_widgets[] = {
 	SND_SOC_DAPM_MUX("Sidetone Voice Playback", SND_SOC_NOPM, 0, 0,
 			&st_voice_control),
 
-	/* AIF */
+	 
 	SND_SOC_DAPM_AIF_IN("INTF1_SDI", NULL, 0, ISABELLE_INTF_EN_REG, 7, 0),
 	SND_SOC_DAPM_AIF_IN("INTF2_SDI", NULL, 0, ISABELLE_INTF_EN_REG, 6, 0),
 
@@ -515,21 +509,21 @@ static const struct snd_soc_dapm_widget isabelle_dapm_widgets[] = {
 	SND_SOC_DAPM_OUT_DRV("ULVTX1", SND_SOC_NOPM, 0, 0, NULL, 0),
 	SND_SOC_DAPM_OUT_DRV("ULVTX2", SND_SOC_NOPM, 0, 0, NULL, 0),
 
-	/* Analog Capture PGAs */
+	 
 	SND_SOC_DAPM_PGA("MicAmp1", ISABELLE_AMIC_CFG_REG, 5, 0, NULL, 0),
 	SND_SOC_DAPM_PGA("MicAmp2", ISABELLE_AMIC_CFG_REG, 4, 0, NULL, 0),
 
-	/* Auxiliary FM PGAs */
+	 
 	SND_SOC_DAPM_PGA("APGA1", ISABELLE_APGA_CFG_REG, 7, 0, NULL, 0),
 	SND_SOC_DAPM_PGA("APGA2", ISABELLE_APGA_CFG_REG, 6, 0, NULL, 0),
 
-	/* ADCs */
+	 
 	SND_SOC_DAPM_ADC("ADC1", "Left Front Capture",
 			ISABELLE_AMIC_CFG_REG, 7, 0),
 	SND_SOC_DAPM_ADC("ADC2", "Right Front Capture",
 			ISABELLE_AMIC_CFG_REG, 6, 0),
 
-	/* Microphone Bias */
+	 
 	SND_SOC_DAPM_SUPPLY("Headset Mic Bias", ISABELLE_ABIAS_CFG_REG,
 			3, 0, NULL, 0),
 	SND_SOC_DAPM_SUPPLY("Main Mic Bias", ISABELLE_ABIAS_CFG_REG,
@@ -539,7 +533,7 @@ static const struct snd_soc_dapm_widget isabelle_dapm_widgets[] = {
 	SND_SOC_DAPM_SUPPLY("Digital Mic2 Bias",
 			ISABELLE_DBIAS_CFG_REG, 2, 0, NULL, 0),
 
-	/* Mixers */
+	 
 	SND_SOC_DAPM_MIXER("Headset Left Mixer", SND_SOC_NOPM, 0, 0,
 			isabelle_hs_left_mixer_controls,
 			ARRAY_SIZE(isabelle_hs_left_mixer_controls)),
@@ -600,7 +594,7 @@ static const struct snd_soc_dapm_widget isabelle_dapm_widgets[] = {
 			isabelle_rx6_mixer_controls,
 			ARRAY_SIZE(isabelle_rx6_mixer_controls)),
 
-	/* DACs */
+	 
 	SND_SOC_DAPM_DAC("DAC1L", "Headset Playback", ISABELLE_DAC_CFG_REG,
 			5, 0),
 	SND_SOC_DAPM_DAC("DAC1R", "Headset Playback", ISABELLE_DAC_CFG_REG,
@@ -614,7 +608,7 @@ static const struct snd_soc_dapm_widget isabelle_dapm_widgets[] = {
 	SND_SOC_DAPM_DAC("DAC3R", "Lineout Playback", ISABELLE_DAC_CFG_REG,
 			0, 0),
 
-	/* Analog Playback PGAs */
+	 
 	SND_SOC_DAPM_PGA("Sidetone Audio PGA", SND_SOC_NOPM, 0, 0, NULL, 0),
 	SND_SOC_DAPM_PGA("Sidetone Voice PGA", SND_SOC_NOPM, 0, 0, NULL, 0),
 	SND_SOC_DAPM_PGA("HF Left PGA", SND_SOC_NOPM, 0, 0, NULL, 0),
@@ -626,13 +620,13 @@ static const struct snd_soc_dapm_widget isabelle_dapm_widgets[] = {
 	SND_SOC_DAPM_PGA("DPGA3L", SND_SOC_NOPM, 0, 0, NULL, 0),
 	SND_SOC_DAPM_PGA("DPGA3R", SND_SOC_NOPM, 0, 0, NULL, 0),
 
-	/* Analog Playback Mux */
+	 
 	SND_SOC_DAPM_MUX("RX1 Playback", ISABELLE_ALU_RX_EN_REG, 5, 0,
 			&rx1_mux_controls),
 	SND_SOC_DAPM_MUX("RX2 Playback", ISABELLE_ALU_RX_EN_REG, 4, 0,
 			&rx2_mux_controls),
 
-	/* TX Select */
+	 
 	SND_SOC_DAPM_MUX("ATX Select", ISABELLE_TX_INPUT_CFG_REG,
 			7, 0, &atx_mux_controls),
 	SND_SOC_DAPM_MUX("VTX Select", ISABELLE_TX_INPUT_CFG_REG,
@@ -641,7 +635,7 @@ static const struct snd_soc_dapm_widget isabelle_dapm_widgets[] = {
 	SND_SOC_DAPM_SWITCH("Earphone Playback", SND_SOC_NOPM, 0, 0,
 			&ep_path_enable_control),
 
-	/* Output Drivers */
+	 
 	SND_SOC_DAPM_OUT_DRV("HS Left Driver", ISABELLE_HSDRV_CFG2_REG,
 			1, 0, NULL, 0),
 	SND_SOC_DAPM_OUT_DRV("HS Right Driver", ISABELLE_HSDRV_CFG2_REG,
@@ -660,7 +654,7 @@ static const struct snd_soc_dapm_widget isabelle_dapm_widgets[] = {
 };
 
 static const struct snd_soc_dapm_route isabelle_intercon[] = {
-	/* Interface mapping */
+	 
 	{ "DL1", "DL12 Playback Switch", "INTF1_SDI" },
 	{ "DL2", "DL12 Playback Switch", "INTF1_SDI" },
 	{ "DL3", "DL34 Playback Switch", "INTF1_SDI" },
@@ -675,7 +669,7 @@ static const struct snd_soc_dapm_route isabelle_intercon[] = {
 	{ "DL5", "DL56 Playback Switch", "INTF2_SDI" },
 	{ "DL6", "DL56 Playback Switch", "INTF2_SDI" },
 
-	/* Input side mapping */
+	 
 	{ "Sidetone Audio PGA", NULL, "Sidetone Audio Playback" },
 	{ "Sidetone Voice PGA", NULL, "Sidetone Voice Playback" },
 
@@ -701,7 +695,7 @@ static const struct snd_soc_dapm_route isabelle_intercon[] = {
 	{ "RX6 Mixer", "ST2 Playback Switch", "Sidetone Voice PGA" },
 	{ "RX6 Mixer", "DL6 Playback Switch", "DL6" },
 
-	/* Capture path */
+	 
 	{ "Analog Left Capture Route", "Headset Mic", "HSMIC" },
 	{ "Analog Left Capture Route", "Main Mic", "MAINMIC" },
 	{ "Analog Left Capture Route", "Aux/FM Left", "LINEIN1" },
@@ -743,7 +737,7 @@ static const struct snd_soc_dapm_route isabelle_intercon[] = {
 	{ "INTF2_SDO", NULL, "ULVTX1" },
 	{ "INTF2_SDO", NULL, "ULVTX2" },
 
-	/* AFM Path */
+	 
 	{ "APGA1", NULL, "LINEIN1" },
 	{ "APGA2", NULL, "LINEIN2" },
 
@@ -824,7 +818,7 @@ static const struct snd_soc_dapm_route isabelle_intercon[] = {
 	{ "HSOL", NULL, "HS Left Driver" },
 	{ "HSOR", NULL, "HS Right Driver" },
 
-	/* Earphone playback path */
+	 
 	{ "Earphone Mixer", "DAC2L Playback Switch", "DAC2L" },
 	{ "Earphone Mixer", "APGA1 Playback Switch", "APGA1" },
 
@@ -950,7 +944,7 @@ static int isabelle_hw_params(struct snd_pcm_substream *substream,
 	snd_soc_component_update_bits(component, ISABELLE_FS_RATE_CFG_REG,
 			ISABELLE_FS_RATE_MASK, fs_val);
 
-	/* bit size */
+	 
 	switch (params_width(params)) {
 	case 20:
 		aif |= ISABELLE_AIF_LENGTH_20;
@@ -1004,10 +998,10 @@ static int isabelle_set_dai_fmt(struct snd_soc_dai *codec_dai, unsigned int fmt)
 	return 0;
 }
 
-/* Rates supported by Isabelle driver */
+ 
 #define ISABELLE_RATES		SNDRV_PCM_RATE_8000_48000
 
-/* Formates supported by Isabelle driver. */
+ 
 #define ISABELLE_FORMATS (SNDRV_PCM_FMTBIT_S20_3LE |\
 			SNDRV_PCM_FMTBIT_S32_LE)
 
@@ -1037,7 +1031,7 @@ static const struct snd_soc_dai_ops isabelle_ul_dai_ops = {
 	.set_fmt	= isabelle_set_dai_fmt,
 };
 
-/* ISABELLE dai structure */
+ 
 static struct snd_soc_dai_driver isabelle_dai[] = {
 	{
 		.name = "isabelle-dl1",

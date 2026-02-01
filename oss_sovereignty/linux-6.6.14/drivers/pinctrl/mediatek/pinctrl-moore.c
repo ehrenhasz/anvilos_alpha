@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * MediaTek Pinctrl Moore Driver, which implement the generic dt-binding
- * pinctrl-bindings.txt for MediaTek SoC.
- *
- * Copyright (C) 2017-2018 MediaTek Inc.
- * Author: Sean Wang <sean.wang@mediatek.com>
- *
- */
+
+ 
 
 #include <dt-bindings/pinctrl/mt65xx.h>
 #include <linux/gpio/driver.h>
@@ -17,7 +10,7 @@
 
 #define PINCTRL_PINCTRL_DEV		KBUILD_MODNAME
 
-/* Custom pinconf parameters */
+ 
 #define MTK_PIN_CONFIG_TDSEL	(PIN_CONFIG_END + 1)
 #define MTK_PIN_CONFIG_RDSEL	(PIN_CONFIG_END + 2)
 #define MTK_PIN_CONFIG_PU_ADV	(PIN_CONFIG_END + 3)
@@ -100,7 +93,7 @@ static int mtk_pinmux_gpio_set_direction(struct pinctrl_dev *pctldev,
 	if (!desc->name)
 		return -ENOTSUPP;
 
-	/* hardware would take 0 as input direction */
+	 
 	return mtk_hw_set_value(hw, desc, PINCTRL_PIN_REG_DIR, !input);
 }
 
@@ -181,7 +174,7 @@ static int mtk_pinconf_get(struct pinctrl_dev *pctldev,
 		if (err)
 			return err;
 
-		/* HW takes input mode as zero; output mode as non-zero */
+		 
 		if ((val && param == PIN_CONFIG_INPUT_ENABLE) ||
 		    (!val && param == PIN_CONFIG_OUTPUT_ENABLE))
 			return -EINVAL;
@@ -341,9 +334,7 @@ static int mtk_pinconf_set(struct pinctrl_dev *pctldev, unsigned int pin,
 				goto err;
 			break;
 		case PIN_CONFIG_INPUT_SCHMITT_ENABLE:
-			/* arg = 1: Input mode & SMT enable ;
-			 * arg = 0: Output mode & SMT disable
-			 */
+			 
 			arg = arg ? 2 : 1;
 			err = mtk_hw_set_value(hw, desc, PINCTRL_PIN_REG_DIR,
 					       arg & 1);
@@ -410,7 +401,7 @@ static int mtk_pinconf_group_get(struct pinctrl_dev *pctldev,
 		if (mtk_pinconf_get(pctldev, pins[i], config))
 			return -ENOTSUPP;
 
-		/* configs do not match between two pins */
+		 
 		if (i && old != *config)
 			return -ENOTSUPP;
 
@@ -579,13 +570,7 @@ static int mtk_build_gpiochip(struct mtk_pinctrl *hw)
 	if (ret < 0)
 		return ret;
 
-	/* Just for backward compatible for these old pinctrl nodes without
-	 * "gpio-ranges" property. Otherwise, called directly from a
-	 * DeviceTree-supported pinctrl driver is DEPRECATED.
-	 * Please see Section 2.1 of
-	 * Documentation/devicetree/bindings/gpio/gpio.txt on how to
-	 * bind pinctrl and gpio drivers via the "gpio-ranges" property.
-	 */
+	 
 	if (!of_property_present(hw->dev->of_node, "gpio-ranges")) {
 		ret = gpiochip_add_pin_range(chip, dev_name(hw->dev), 0, 0,
 					     chip->ngpio);
@@ -674,7 +659,7 @@ int mtk_moore_pinctrl_probe(struct platform_device *pdev,
 
 	spin_lock_init(&hw->lock);
 
-	/* Copy from internal struct mtk_pin_desc to register to the core */
+	 
 	pins = devm_kmalloc_array(&pdev->dev, hw->soc->npins, sizeof(*pins),
 				  GFP_KERNEL);
 	if (!pins)
@@ -685,7 +670,7 @@ int mtk_moore_pinctrl_probe(struct platform_device *pdev,
 		pins[i].name = hw->soc->pins[i].name;
 	}
 
-	/* Setup pins descriptions per SoC types */
+	 
 	mtk_desc.pins = (const struct pinctrl_pin_desc *)pins;
 	mtk_desc.npins = hw->soc->npins;
 	mtk_desc.num_custom_params = ARRAY_SIZE(mtk_custom_bindings);
@@ -699,19 +684,17 @@ int mtk_moore_pinctrl_probe(struct platform_device *pdev,
 	if (err)
 		return err;
 
-	/* Setup groups descriptions per SoC types */
+	 
 	err = mtk_build_groups(hw);
 	if (err)
 		return dev_err_probe(dev, err, "Failed to build groups\n");
 
-	/* Setup functions descriptions per SoC types */
+	 
 	err = mtk_build_functions(hw);
 	if (err)
 		return dev_err_probe(dev, err, "Failed to build functions\n");
 
-	/* For able to make pinctrl_claim_hogs, we must not enable pinctrl
-	 * until all groups and functions are being added one.
-	 */
+	 
 	err = pinctrl_enable(hw->pctrl);
 	if (err)
 		return err;
@@ -721,7 +704,7 @@ int mtk_moore_pinctrl_probe(struct platform_device *pdev,
 		dev_warn(&pdev->dev,
 			 "Failed to add EINT, but pinctrl still can work\n");
 
-	/* Build gpiochip should be after pinctrl_enable is done */
+	 
 	err = mtk_build_gpiochip(hw);
 	if (err)
 		return dev_err_probe(dev, err, "Failed to add gpio_chip\n");

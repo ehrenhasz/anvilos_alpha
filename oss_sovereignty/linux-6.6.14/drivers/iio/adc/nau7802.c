@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Driver for the Nuvoton NAU7802 ADC
- *
- * Copyright 2013 Free Electrons
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/i2c.h>
@@ -157,9 +153,7 @@ nau7802_read_conversion_out:
 	return data;
 }
 
-/*
- * Conversions are synchronised on the rising edge of NAU7802_PUCTRL_CS_BIT
- */
+ 
 static int nau7802_sync(struct nau7802_state *st)
 {
 	int ret;
@@ -189,11 +183,7 @@ static irqreturn_t nau7802_eoc_trigger(int irq, void *private)
 	if (nau7802_read_conversion(st) < 0)
 		return IRQ_HANDLED;
 
-	/*
-	 * Because there is actually only one ADC for both channels, we have to
-	 * wait for enough conversions to happen before getting a significant
-	 * value when changing channels and the values are far apart.
-	 */
+	 
 	if (st->conversion_count < NAU7802_MIN_CONVERSIONS)
 		st->conversion_count++;
 	if (st->conversion_count >= NAU7802_MIN_CONVERSIONS)
@@ -214,12 +204,12 @@ static int nau7802_read_irq(struct iio_dev *indio_dev,
 
 	nau7802_sync(st);
 
-	/* read registers to ensure we flush everything */
+	 
 	ret = nau7802_read_conversion(st);
 	if (ret < 0)
 		goto read_chan_info_failure;
 
-	/* Wait for a conversion to finish */
+	 
 	ret = wait_for_completion_interruptible_timeout(&st->value_ok,
 			msecs_to_jiffies(1000));
 	if (ret == 0)
@@ -249,16 +239,12 @@ static int nau7802_read_poll(struct iio_dev *indio_dev,
 
 	nau7802_sync(st);
 
-	/* read registers to ensure we flush everything */
+	 
 	ret = nau7802_read_conversion(st);
 	if (ret < 0)
 		return ret;
 
-	/*
-	 * Because there is actually only one ADC for both channels, we have to
-	 * wait for enough conversions to happen before getting a significant
-	 * value when changing channels and the values are far appart.
-	 */
+	 
 	do {
 		ret = i2c_smbus_read_byte_data(st->client, NAU7802_REG_PUCTRL);
 		if (ret < 0)
@@ -297,11 +283,7 @@ static int nau7802_read_raw(struct iio_dev *indio_dev,
 	switch (mask) {
 	case IIO_CHAN_INFO_RAW:
 		mutex_lock(&st->lock);
-		/*
-		 * Select the channel to use
-		 *   - Channel 1 is value 0 in the CHS register
-		 *   - Channel 2 is value 1 in the CHS register
-		 */
+		 
 		ret = i2c_smbus_read_byte_data(st->client, NAU7802_REG_CTRL2);
 		if (ret < 0) {
 			mutex_unlock(&st->lock);
@@ -336,10 +318,7 @@ static int nau7802_read_raw(struct iio_dev *indio_dev,
 		if (ret < 0)
 			return ret;
 
-		/*
-		 * We have 24 bits of signed data, that means 23 bits of data
-		 * plus the sign bit
-		 */
+		 
 		*val = st->vref_mv;
 		*val2 = 23 + (ret & NAU7802_CTRL1_GAINS_BITS);
 
@@ -428,22 +407,19 @@ static int nau7802_probe(struct i2c_client *client)
 
 	st->client = client;
 
-	/* Reset the device */
+	 
 	ret = i2c_smbus_write_byte_data(st->client, NAU7802_REG_PUCTRL,
 				  NAU7802_PUCTRL_RR_BIT);
 	if (ret < 0)
 		return ret;
 
-	/* Enter normal operation mode */
+	 
 	ret = i2c_smbus_write_byte_data(st->client, NAU7802_REG_PUCTRL,
 				  NAU7802_PUCTRL_PUD_BIT);
 	if (ret < 0)
 		return ret;
 
-	/*
-	 * After about 200 usecs, the device should be ready and then
-	 * the Power Up bit will be set to 1. If not, wait for it.
-	 */
+	 
 	udelay(210);
 	ret = i2c_smbus_read_byte_data(st->client, NAU7802_REG_PUCTRL);
 	if (ret < 0)
@@ -474,18 +450,14 @@ static int nau7802_probe(struct i2c_client *client)
 			return ret;
 	}
 
-	/* Populate available ADC input ranges */
+	 
 	for (i = 0; i < ARRAY_SIZE(st->scale_avail); i++)
 		st->scale_avail[i] = (((u64)st->vref_mv) * 1000000000ULL)
 					   >> (23 + i);
 
 	init_completion(&st->value_ok);
 
-	/*
-	 * The ADC fires continuously and we can't do anything about
-	 * it. So we need to have the IRQ disabled by default, and we
-	 * will enable them back when we will need them..
-	 */
+	 
 	if (client->irq) {
 		ret = devm_request_threaded_irq(&client->dev, client->irq,
 						NULL,
@@ -495,14 +467,7 @@ static int nau7802_probe(struct i2c_client *client)
 						client->dev.driver->name,
 						indio_dev);
 		if (ret) {
-			/*
-			 * What may happen here is that our IRQ controller is
-			 * not able to get level interrupt but this is required
-			 * by this ADC as when going over 40 sample per second,
-			 * the interrupt line may stay high between conversions.
-			 * So, we continue no matter what but we switch to
-			 * polling mode.
-			 */
+			 
 			dev_info(&client->dev,
 				"Failed to allocate IRQ, using polling mode\n");
 			client->irq = 0;
@@ -510,10 +475,7 @@ static int nau7802_probe(struct i2c_client *client)
 	}
 
 	if (!client->irq) {
-		/*
-		 * We are polling, use the fastest sample rate by
-		 * default
-		 */
+		 
 		st->sample_rate = NAU7802_SAMP_FREQ_320;
 		ret = i2c_smbus_write_byte_data(st->client, NAU7802_REG_CTRL2,
 					  NAU7802_CTRL2_CRS(st->sample_rate));
@@ -521,7 +483,7 @@ static int nau7802_probe(struct i2c_client *client)
 			return ret;
 	}
 
-	/* Setup the ADC channels available on the board */
+	 
 	indio_dev->num_channels = ARRAY_SIZE(nau7802_chan_array);
 	indio_dev->channels = nau7802_chan_array;
 

@@ -1,10 +1,8 @@
-/* SPDX-License-Identifier: GPL-2.0+ WITH Linux-syscall-note */
+ 
 #ifndef __SOUND_HDSP_H
 #define __SOUND_HDSP_H
 
-/*
- *   Copyright (C) 2003 Thomas Charbonnel (thomas@undata.org)
- */
+ 
 
 #ifdef __linux__
 #include <linux/types.h>
@@ -27,7 +25,7 @@ struct hdsp_peak_rms {
 	__u32 output_peaks[28];
 	__u64 input_rms[26];
 	__u64 playback_rms[26];
-	/* These are only used for H96xx cards */
+	 
 	__u64 output_rms[26];
 };
 
@@ -62,7 +60,7 @@ struct hdsp_config_info {
 #define SNDRV_HDSP_IOCTL_GET_CONFIG_INFO _IOR('H', 0x41, struct hdsp_config_info)
 
 struct hdsp_firmware {
-	void *firmware_data;	/* 24413 x 4 bytes */
+	void *firmware_data;	 
 };
 
 #define SNDRV_HDSP_IOCTL_UPLOAD_FIRMWARE _IOW('H', 0x42, struct hdsp_firmware)
@@ -87,4 +85,4 @@ struct hdsp_9632_aeb {
 
 #define SNDRV_HDSP_IOCTL_GET_9632_AEB _IOR('H', 0x45, struct hdsp_9632_aeb)
 
-#endif /* __SOUND_HDSP_H */
+#endif  

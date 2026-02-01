@@ -1,17 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Support for Intel Camera Imaging ISP subsystem.
- * Copyright (c) 2015, Intel Corporation.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms and conditions of the GNU General Public License,
- * version 2, as published by the Free Software Foundation.
- *
- * This program is distributed in the hope it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- * more details.
- */
+ 
+ 
 
 #ifndef __INPUT_FORMATTER_GLOBAL_H_INCLUDED__
 #define __INPUT_FORMATTER_GLOBAL_H_INCLUDED__
@@ -49,8 +37,8 @@
 
 typedef struct input_formatter_cfg_s	input_formatter_cfg_t;
 
-/* Hardware registers */
-/*#define HIVE_IF_RESET_ADDRESS                   0x000*/ /* deprecated */
+ 
+   
 #define HIVE_IF_START_LINE_ADDRESS              0x004
 #define HIVE_IF_START_COLUMN_ADDRESS            0x008
 #define HIVE_IF_CROPPED_HEIGHT_ADDRESS          0x00C
@@ -73,12 +61,12 @@ typedef struct input_formatter_cfg_s	input_formatter_cfg_t;
 #define HIVE_IF_FSM_CROP_LINE_COUNTER           0x10C
 #define HIVE_IF_FSM_CROP_STATUS                 0x108
 
-/* Registers only for simulation */
+ 
 #define HIVE_IF_CRUN_MODE_ADDRESS               0x04C
 #define HIVE_IF_DUMP_OUTPUT_ADDRESS             0x050
 
-/* Follow the DMA syntax, "cmd" last */
-#define IF_PACK(val, cmd)             ((val & 0x0fff) | (cmd /*& 0xf000*/))
+ 
+#define IF_PACK(val, cmd)             ((val & 0x0fff) | (cmd  ))
 
 #define HIVE_STR2MEM_SOFT_RESET_REG_ADDRESS                   (_STR2MEM_SOFT_RESET_REG_ID * _STR2MEM_REG_ALIGN)
 #define HIVE_STR2MEM_INPUT_ENDIANNESS_REG_ADDRESS             (_STR2MEM_INPUT_ENDIANNESS_REG_ID * _STR2MEM_REG_ALIGN)
@@ -90,9 +78,7 @@ typedef struct input_formatter_cfg_s	input_formatter_cfg_t;
 #define HIVE_STR2MEM_DUAL_BYTE_INPUTS_ENABLED_REG_ADDRESS     (_STR2MEM_DUAL_BYTE_INPUTS_ENABLED_REG_ID * _STR2MEM_REG_ALIGN)
 #define HIVE_STR2MEM_EN_STAT_UPDATE_ADDRESS                   (_STR2MEM_EN_STAT_UPDATE_ID * _STR2MEM_REG_ALIGN)
 
-/*
- * This data structure is shared between host and SP
- */
+ 
 struct input_formatter_cfg_s {
 	u32	start_line;
 	u32	start_column;
@@ -112,4 +98,4 @@ extern const hrt_address HIVE_IF_SRST_ADDRESS[N_INPUT_FORMATTER_ID];
 extern const hrt_data HIVE_IF_SRST_MASK[N_INPUT_FORMATTER_ID];
 extern const u8 HIVE_IF_SWITCH_CODE[N_INPUT_FORMATTER_ID];
 
-#endif /* __INPUT_FORMATTER_GLOBAL_H_INCLUDED__ */
+#endif  

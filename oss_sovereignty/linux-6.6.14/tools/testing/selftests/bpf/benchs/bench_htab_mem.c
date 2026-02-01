@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (C) 2023. Huawei Technologies Co., Ltd */
+
+ 
 #include <argp.h>
 #include <stdbool.h>
 #include <pthread.h>
@@ -16,7 +16,7 @@
 struct htab_mem_use_case {
 	const char *name;
 	const char **progs;
-	/* Do synchronization between addition thread and deletion thread */
+	 
 	bool need_sync;
 };
 
@@ -114,7 +114,7 @@ static int htab_mem_bench_init_barriers(void)
 	if (!barriers)
 		return -1;
 
-	/* Used for synchronization between two threads */
+	 
 	for (i = 0; i < nr; i++)
 		pthread_barrier_init(&barriers[i], NULL, 2);
 
@@ -179,7 +179,7 @@ static void htab_mem_setup(void)
 
 	map = ctx.skel->maps.htab;
 	bpf_map__set_value_size(map, args.value_size);
-	/* Ensure that different CPUs can operate on different subset */
+	 
 	bpf_map__set_max_entries(map, MAX(8192, 64 * env.nr_cpus));
 	if (args.preallocated)
 		bpf_map__set_map_flags(map, bpf_map__map_flags(map) & ~BPF_F_NO_PREALLOC);
@@ -223,11 +223,11 @@ cleanup:
 static void htab_mem_add_fn(pthread_barrier_t *notify)
 {
 	while (true) {
-		/* Do addition */
+		 
 		(void)syscall(__NR_getpgid, 0);
-		/* Notify deletion thread to do deletion */
+		 
 		pthread_barrier_wait(notify);
-		/* Wait for deletion to complete */
+		 
 		pthread_barrier_wait(notify);
 	}
 }
@@ -235,11 +235,11 @@ static void htab_mem_add_fn(pthread_barrier_t *notify)
 static void htab_mem_delete_fn(pthread_barrier_t *notify)
 {
 	while (true) {
-		/* Wait for addition to complete */
+		 
 		pthread_barrier_wait(notify);
-		/* Do deletion */
+		 
 		(void)syscall(__NR_getppid);
-		/* Notify addition thread to do addition */
+		 
 		pthread_barrier_wait(notify);
 	}
 }
@@ -272,7 +272,7 @@ static void htab_mem_read_mem_cgrp_file(const char *name, unsigned long *value)
 
 	fd = openat(ctx.fd, name, O_RDONLY);
 	if (fd < 0) {
-		/* cgroup v1 ? */
+		 
 		fprintf(stderr, "no %s\n", name);
 		*value = 0;
 		return;

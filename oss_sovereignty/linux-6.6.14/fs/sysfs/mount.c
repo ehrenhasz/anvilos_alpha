@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * fs/sysfs/symlink.c - operations for initializing and mounting sysfs
- *
- * Copyright (c) 2001-3 Patrick Mochel
- * Copyright (c) 2007 SUSE Linux Products GmbH
- * Copyright (c) 2007 Tejun Heo <teheo@suse.de>
- *
- * Please see Documentation/filesystems/sysfs.rst for more information.
- */
+
+ 
 
 #include <linux/fs.h>
 #include <linux/magic.h>

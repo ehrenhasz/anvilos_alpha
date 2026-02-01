@@ -1,25 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * INET		An implementation of the TCP/IP protocol suite for the LINUX
- *		operating system.  INET is implemented using the  BSD Socket
- *		interface as the means of communication with the user level.
- *
- *		IP/TCP/UDP checksumming routines
- *
- * Authors:	Jorge Cwik, <jorge@laser.satlink.net>
- *		Arnt Gulbrandsen, <agulbra@nvg.unit.no>
- *		Tom May, <ftom@netcom.com>
- *              Pentium Pro/II routines:
- *              Alexander Kjeldaas <astor@guardian.no>
- *              Finn Arne Gangstad <finnag@guardian.no>
- *		Lots of code moved from tcp.c and ip.c; see those files
- *		for more names.
- *
- * Changes:     Ingo Molnar, converted csum_partial_copy() to 2.1 exception
- *			     handling.
- *		Andi Kleen,  add zeroing on error
- *                   converted to pure assembler
- */
+ 
+ 
 
 #include <linux/linkage.h>
 #include <asm/errno.h>
@@ -27,25 +7,15 @@
 #include <asm/export.h>
 #include <asm/nospec-branch.h>
 
-/*
- * computes a partial checksum, e.g. for TCP/UDP fragments
- */
+ 
 
-/*	
-unsigned int csum_partial(const unsigned char * buff, int len, unsigned int sum)
- */
+ 
 		
 .text
 		
 #ifndef CONFIG_X86_USE_PPRO_CHECKSUM
 
-	  /*		
-	   * Experiments with Ethernet and SLIP connections show that buff
-	   * is aligned on either a 2-byte or 4-byte boundary.  We get at
-	   * least a twofold speedup on 486 and Pentium if it is 4-byte aligned.
-	   * Fortunately, it is easy to convert 2-byte alignment to 4-byte
-	   * alignment for the unrolled loop.
-	   */		
+	   		
 SYM_FUNC_START(csum_partial)
 	pushl %esi
 	pushl %ebx
@@ -132,7 +102,7 @@ SYM_FUNC_END(csum_partial)
 
 #else
 
-/* Version for PentiumII/PPro */
+ 
 
 SYM_FUNC_START(csum_partial)
 	pushl %esi
@@ -251,14 +221,9 @@ SYM_FUNC_END(csum_partial)
 #endif
 EXPORT_SYMBOL(csum_partial)
 
-/*
-unsigned int csum_partial_copy_generic (const char *src, char *dst,
-				  int len)
- */ 
+  
 
-/*
- * Copy from ds while checksumming, otherwise like csum_partial
- */
+ 
 
 #define EXC(y...)						\
 	9999: y;						\
@@ -367,7 +332,7 @@ SYM_FUNC_END(csum_partial_copy_generic)
 
 #else
 
-/* Version for PentiumII/PPro */
+ 
 
 #define ROUND1(x) \
 	EXC(movl x(%esi), %ebx	)	;	\

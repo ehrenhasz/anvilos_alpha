@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (C) 2020 ARM Limited
+
+
 
 #include "helper.h"
 
@@ -29,7 +29,7 @@ size_t keydb_sign(size_t ptr)
 
 size_t keyg_sign(size_t ptr)
 {
-	/* output is encoded in the upper 32 bits */
+	 
 	size_t dest = 0;
 	size_t modifier = 0;
 

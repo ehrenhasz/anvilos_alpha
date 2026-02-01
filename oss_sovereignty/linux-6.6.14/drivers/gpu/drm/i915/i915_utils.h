@@ -1,26 +1,4 @@
-/*
- * Copyright © 2016 Intel Corporation
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice (including the next
- * paragraph) shall be included in all copies or substantial portions of the
- * Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
- * IN THE SOFTWARE.
- *
- */
+ 
 
 #ifndef __I915_UTILS_H
 #define __I915_UTILS_H
@@ -156,12 +134,7 @@ static __always_inline ptrdiff_t ptrdiff(const void *a, const void *b)
 	return a - b;
 }
 
-/*
- * container_of_user: Extract the superclass from a pointer to a member.
- *
- * Exactly like container_of() with the exception that it plays nicely
- * with sparse for __user @ptr.
- */
+ 
 #define container_of_user(ptr, type, member) ({				\
 	void __user *__mptr = (void __user *)(ptr);			\
 	BUILD_BUG_ON_MSG(!__same_type(*(ptr), typeof_member(type, member)) && \
@@ -169,19 +142,7 @@ static __always_inline ptrdiff_t ptrdiff(const void *a, const void *b)
 			 "pointer type mismatch in container_of()");	\
 	((type __user *)(__mptr - offsetof(type, member))); })
 
-/*
- * check_user_mbz: Check that a user value exists and is zero
- *
- * Frequently in our uABI we reserve space for future extensions, and
- * two ensure that userspace is prepared we enforce that space must
- * be zero. (Then any future extension can safely assume a default value
- * of 0.)
- *
- * check_user_mbz() combines checking that the user pointer is accessible
- * and that the contained value is zero.
- *
- * Returns: -EFAULT if not accessible, -EINVAL if !zero, or 0 on success.
- */
+ 
 #define check_user_mbz(U) ({						\
 	typeof(*(U)) mbz__;						\
 	get_user(mbz__, (U)) ? -EFAULT : mbz__ ? -EINVAL : 0;		\
@@ -223,21 +184,13 @@ static inline unsigned long msecs_to_jiffies_timeout(const unsigned int m)
 	return min_t(unsigned long, MAX_JIFFY_OFFSET, j + 1);
 }
 
-/*
- * If you need to wait X milliseconds between events A and B, but event B
- * doesn't happen exactly after event A, you record the timestamp (jiffies) of
- * when event A happened, then just before event B you call this function and
- * pass the timestamp as the first argument, and X as the second argument.
- */
+ 
 static inline void
 wait_remaining_ms_from_jiffies(unsigned long timestamp_jiffies, int to_wait_ms)
 {
 	unsigned long target_jiffies, tmp_jiffies, remaining_jiffies;
 
-	/*
-	 * Don't re-read the value of "jiffies" every time since it may change
-	 * behind our back and break the math.
-	 */
+	 
 	tmp_jiffies = jiffies;
 	target_jiffies = timestamp_jiffies +
 			 msecs_to_jiffies_timeout(to_wait_ms);
@@ -250,23 +203,16 @@ wait_remaining_ms_from_jiffies(unsigned long timestamp_jiffies, int to_wait_ms)
 	}
 }
 
-/*
- * __wait_for - magic wait macro
- *
- * Macro to help avoid open coding check/wait/timeout patterns. Note that it's
- * important that we check the condition again after having timed out, since the
- * timeout could be due to preemption or similar and we've never had a chance to
- * check the condition before the timeout.
- */
+ 
 #define __wait_for(OP, COND, US, Wmin, Wmax) ({ \
 	const ktime_t end__ = ktime_add_ns(ktime_get_raw(), 1000ll * (US)); \
-	long wait__ = (Wmin); /* recommended min for usleep is 10 us */	\
+	long wait__ = (Wmin);  	\
 	int ret__;							\
 	might_sleep();							\
 	for (;;) {							\
 		const bool expired__ = ktime_after(ktime_get_raw(), end__); \
 		OP;							\
-		/* Guarantee COND check prior to timeout */		\
+		 		\
 		barrier();						\
 		if (COND) {						\
 			ret__ = 0;					\
@@ -287,7 +233,7 @@ wait_remaining_ms_from_jiffies(unsigned long timestamp_jiffies, int to_wait_ms)
 						   (Wmax))
 #define wait_for(COND, MS)		_wait_for((COND), (MS) * 1000, 10, 1000)
 
-/* If CONFIG_PREEMPT_COUNT is disabled, in_atomic() always reports false. */
+ 
 #if defined(CONFIG_DRM_I915_DEBUG) && defined(CONFIG_PREEMPT_COUNT)
 # define _WAIT_FOR_ATOMIC_CHECK(ATOMIC) WARN_ON_ONCE((ATOMIC) && !in_atomic())
 #else
@@ -308,7 +254,7 @@ wait_remaining_ms_from_jiffies(unsigned long timestamp_jiffies, int to_wait_ms)
 		u64 now = local_clock(); \
 		if (!(ATOMIC)) \
 			preempt_enable(); \
-		/* Guarantee COND check prior to timeout */ \
+		  \
 		barrier(); \
 		if (COND) { \
 			ret = 0; \
@@ -357,12 +303,7 @@ wait_remaining_ms_from_jiffies(unsigned long timestamp_jiffies, int to_wait_ms)
 void add_taint_for_CI(struct drm_i915_private *i915, unsigned int taint);
 static inline void __add_taint_for_CI(unsigned int taint)
 {
-	/*
-	 * The system is "ok", just about surviving for the user, but
-	 * CI results are now unreliable as the HW is very suspect.
-	 * CI checks the taint state after every test and will reboot
-	 * the machine if the kernel is tainted.
-	 */
+	 
 	add_taint(taint, LOCKDEP_STILL_OK);
 }
 
@@ -384,11 +325,11 @@ static inline bool i915_run_as_guest(void)
 #if IS_ENABLED(CONFIG_X86)
 	return !hypervisor_is_type(X86_HYPER_NATIVE);
 #else
-	/* Not supported yet */
+	 
 	return false;
 #endif
 }
 
 bool i915_vtd_active(struct drm_i915_private *i915);
 
-#endif /* !__I915_UTILS_H */
+#endif  

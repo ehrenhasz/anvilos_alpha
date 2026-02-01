@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * max31790.c - Part of lm_sensors, Linux kernel modules for hardware
- *             monitoring.
- *
- * (C) 2015 by Il Han <corone.il.han@gmail.com>
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/hwmon.h>
@@ -14,7 +9,7 @@
 #include <linux/module.h>
 #include <linux/slab.h>
 
-/* MAX31790 registers */
+ 
 #define MAX31790_REG_GLOBAL_CONFIG	0x00
 #define MAX31790_REG_FAN_CONFIG(ch)	(0x02 + (ch))
 #define MAX31790_REG_FAN_DYNAMICS(ch)	(0x08 + (ch))
@@ -25,13 +20,13 @@
 #define MAX31790_REG_PWMOUT(ch)		(0x40 + (ch) * 2)
 #define MAX31790_REG_TARGET_COUNT(ch)	(0x50 + (ch) * 2)
 
-/* Fan Config register bits */
+ 
 #define MAX31790_FAN_CFG_RPM_MODE	0x80
 #define MAX31790_FAN_CFG_CTRL_MON	0x10
 #define MAX31790_FAN_CFG_TACH_INPUT_EN	0x08
 #define MAX31790_FAN_CFG_TACH_INPUT	0x01
 
-/* Fan Dynamics register bits */
+ 
 #define MAX31790_FAN_DYN_SR_SHIFT	5
 #define MAX31790_FAN_DYN_SR_MASK	0xE0
 #define SR_FROM_REG(reg)		(((reg) & MAX31790_FAN_DYN_SR_MASK) \
@@ -49,16 +44,14 @@
 
 #define NR_CHANNEL			6
 
-/*
- * Client data (each client gets its own)
- */
+ 
 struct max31790_data {
 	struct i2c_client *client;
 	struct mutex update_lock;
-	bool valid; /* zero until following fields are valid */
-	unsigned long last_updated; /* in jiffies */
+	bool valid;  
+	unsigned long last_updated;  
 
-	/* register values */
+	 
 	u8 fan_config[NR_CHANNEL];
 	u8 fan_dynamics[NR_CHANNEL];
 	u16 fault_status;
@@ -189,11 +182,7 @@ static int max31790_read_fan(struct device *dev, u32 attr, int channel,
 		mutex_lock(&data->update_lock);
 		*val = !!(data->fault_status & (1 << channel));
 		data->fault_status &= ~(1 << channel);
-		/*
-		 * If a fault bit is set, we need to write into one of the fan
-		 * configuration registers to clear it. Note that this also
-		 * clears the fault for the companion channel if enabled.
-		 */
+		 
 		if (*val) {
 			int reg = MAX31790_REG_TARGET_COUNT(channel % NR_CHANNEL);
 
@@ -352,21 +341,13 @@ static int max31790_write_pwm(struct device *dev, u32 attr, int channel,
 		fan_config = data->fan_config[channel];
 		if (val == 0) {
 			fan_config |= MAX31790_FAN_CFG_CTRL_MON;
-			/*
-			 * Disable RPM mode; otherwise disabling fan speed
-			 * monitoring is not possible.
-			 */
+			 
 			fan_config &= ~MAX31790_FAN_CFG_RPM_MODE;
 		} else if (val == 1) {
 			fan_config &= ~(MAX31790_FAN_CFG_CTRL_MON | MAX31790_FAN_CFG_RPM_MODE);
 		} else if (val == 2) {
 			fan_config &= ~MAX31790_FAN_CFG_CTRL_MON;
-			/*
-			 * The chip sets MAX31790_FAN_CFG_TACH_INPUT_EN on its
-			 * own if MAX31790_FAN_CFG_RPM_MODE is set.
-			 * Do it here as well to reflect the actual register
-			 * value in the cache.
-			 */
+			 
 			fan_config |= (MAX31790_FAN_CFG_RPM_MODE | MAX31790_FAN_CFG_TACH_INPUT_EN);
 		} else {
 			err = -EINVAL;
@@ -521,9 +502,7 @@ static int max31790_probe(struct i2c_client *client)
 	data->client = client;
 	mutex_init(&data->update_lock);
 
-	/*
-	 * Initialize the max31790 chip
-	 */
+	 
 	err = max31790_init_client(client, data);
 	if (err)
 		return err;

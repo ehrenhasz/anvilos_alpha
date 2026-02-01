@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/****************************************************************************
- * Driver for AMD network controllers and boards
- * Copyright (C) 2023, Advanced Micro Devices, Inc.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License version 2 as published
- * by the Free Software Foundation, incorporated herein by reference.
- */
+
+ 
 
 #include "net_driver.h"
 #include "ef100_nic.h"
@@ -155,7 +148,7 @@ static int efx_devlink_add_port(struct efx_nic *efx,
 						      external);
 		break;
 	default:
-		/* MAE_MPORT_DESC_MPORT_ALIAS and UNDEFINED */
+		 
 		return 0;
 	}
 
@@ -180,7 +173,7 @@ static int efx_devlink_info_nvram_partition(struct efx_nic *efx,
 	rc = efx_mcdi_nvram_metadata(efx, partition_type, NULL, version, NULL,
 				     0);
 
-	/* If the partition does not exist, that is not an error. */
+	 
 	if (rc == -ENOENT)
 		return 0;
 
@@ -202,11 +195,7 @@ static int efx_devlink_info_stored_versions(struct efx_nic *efx,
 {
 	int err;
 
-	/* We do not care here about the specific error but just if an error
-	 * happened. The specific error will be reported inside the call
-	 * through system messages, and if any error happened in any call
-	 * below, we report it through extack.
-	 */
+	 
 	err = efx_devlink_info_nvram_partition(efx, req,
 					       NVRAM_PARTITION_TYPE_BUNDLE,
 					       DEVLINK_INFO_VERSION_GENERIC_FW_BUNDLE_ID);
@@ -254,7 +243,7 @@ static void efx_devlink_info_running_v2(struct efx_nic *efx,
 					       DEVLINK_INFO_VERSION_GENERIC_BOARD_ID,
 					       buf);
 
-		/* Favour full board version if present (in V5 or later) */
+		 
 		if (~flags & BIT(EFX_VER_FLAG(BOARD_VERSION))) {
 			snprintf(buf, EFX_MAX_VERSION_INFO_LEN, "%u",
 				 MCDI_DWORD(outbuf,
@@ -533,7 +522,7 @@ static int efx_devlink_info_running_versions(struct efx_nic *efx,
 		return rc;
 	}
 
-	/* Handle previous output */
+	 
 	if (outlength < MC_CMD_GET_VERSION_V2_OUT_LEN) {
 		ver.words = (__le16 *)MCDI_PTR(outbuf,
 					       GET_VERSION_EXT_OUT_VERSION);
@@ -549,26 +538,26 @@ static int efx_devlink_info_running_versions(struct efx_nic *efx,
 		return 0;
 	}
 
-	/* Handle V2 additions */
+	 
 	flags = MCDI_DWORD(outbuf, GET_VERSION_V2_OUT_FLAGS);
 	efx_devlink_info_running_v2(efx, req, flags, outbuf);
 
 	if (outlength < MC_CMD_GET_VERSION_V3_OUT_LEN)
 		return 0;
 
-	/* Handle V3 additions */
+	 
 	efx_devlink_info_running_v3(efx, req, flags, outbuf);
 
 	if (outlength < MC_CMD_GET_VERSION_V4_OUT_LEN)
 		return 0;
 
-	/* Handle V4 additions */
+	 
 	efx_devlink_info_running_v4(efx, req, flags, outbuf);
 
 	if (outlength < MC_CMD_GET_VERSION_V5_OUT_LEN)
 		return 0;
 
-	/* Handle V5 additions */
+	 
 	efx_devlink_info_running_v5(efx, req, flags, outbuf);
 
 	return 0;
@@ -599,10 +588,7 @@ static int efx_devlink_info_get(struct devlink *devlink,
 	struct efx_nic *efx = devlink_private->efx;
 	int err;
 
-	/* Several different MCDI commands are used. We report if errors
-	 * happened through extack. Specific error information via system
-	 * messages inside the calls.
-	 */
+	 
 	err = efx_devlink_info_board_cfg(efx, req);
 
 	err |= efx_devlink_info_stored_versions(efx, req);
@@ -630,7 +616,7 @@ static struct devlink_port *ef100_set_devlink_port(struct efx_nic *efx, u32 idx)
 		return NULL;
 
 	if (efx_mae_lookup_mport(efx, idx, &id)) {
-		/* This should not happen. */
+		 
 		if (idx == MAE_MPORT_DESC_VF_IDX_NULL)
 			pci_warn_once(efx->pci_dev, "No mport ID found for PF.\n");
 		else
@@ -641,7 +627,7 @@ static struct devlink_port *ef100_set_devlink_port(struct efx_nic *efx, u32 idx)
 
 	mport = efx_mae_get_mport(efx, id);
 	if (!mport) {
-		/* This should not happen. */
+		 
 		if (idx == MAE_MPORT_DESC_VF_IDX_NULL)
 			pci_warn_once(efx->pci_dev, "No mport found for PF.\n");
 		else

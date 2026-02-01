@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * GPIO driver for AMD
- *
- * Copyright (c) 2014,2015 AMD Corporation.
- * Authors: Ken Xue <Ken.Xue@amd.com>
- *      Wu, Jeff <Jeff.Wu@amd.com>
- *
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/bug.h>
@@ -123,7 +116,7 @@ static int amd_gpio_set_debounce(struct amd_gpio *gpio_dev, unsigned int offset,
 	u32 pin_reg;
 	int ret = 0;
 
-	/* Use special handling for Pin0 debounce */
+	 
 	if (offset == 0) {
 		pin_reg = readl(gpio_dev->base + WAKE_INT_MASTER_REG);
 		if (pin_reg & INTERNAL_GPIO0_DEBOUNCE)
@@ -135,15 +128,7 @@ static int amd_gpio_set_debounce(struct amd_gpio *gpio_dev, unsigned int offset,
 	if (debounce) {
 		pin_reg |= DB_TYPE_REMOVE_GLITCH << DB_CNTRL_OFF;
 		pin_reg &= ~DB_TMR_OUT_MASK;
-		/*
-		Debounce	Debounce	Timer	Max
-		TmrLarge	TmrOutUnit	Unit	Debounce
-							Time
-		0	0	61 usec (2 RtcClk)	976 usec
-		0	1	244 usec (8 RtcClk)	3.9 msec
-		1	0	15.6 msec (512 RtcClk)	250 msec
-		1	1	62.5 msec (2048 RtcClk)	1 sec
-		*/
+		 
 
 		if (debounce < 61) {
 			pin_reg |= 1;
@@ -233,7 +218,7 @@ static void amd_gpio_dbg_show(struct seq_file *s, struct gpio_chip *gc)
 			pin_num = AMD_GPIO_PINS_BANK3 + i;
 			break;
 		default:
-			/* Illegal bank number, ignore */
+			 
 			continue;
 		}
 		seq_printf(s, "GPIO bank%d\n", bank);
@@ -533,21 +518,7 @@ static int amd_gpio_irq_set_type(struct irq_data *d, unsigned int type)
 	}
 
 	pin_reg |= CLR_INTR_STAT << INTERRUPT_STS_OFF;
-	/*
-	 * If WAKE_INT_MASTER_REG.MaskStsEn is set, a software write to the
-	 * debounce registers of any GPIO will block wake/interrupt status
-	 * generation for *all* GPIOs for a length of time that depends on
-	 * WAKE_INT_MASTER_REG.MaskStsLength[11:0].  During this period the
-	 * INTERRUPT_ENABLE bit will read as 0.
-	 *
-	 * We temporarily enable irq for the GPIO whose configuration is
-	 * changing, and then wait for it to read back as 1 to know when
-	 * debounce has settled and then disable the irq again.
-	 * We do this polling with the spinlock held to ensure other GPIO
-	 * access routines do not read an incorrect value for the irq enable
-	 * bit of other GPIOs.  We keep the GPIO masked while polling to avoid
-	 * spurious irqs, and disable the irq again after polling.
-	 */
+	 
 	mask = BIT(INTERRUPT_ENABLE_OFF);
 	pin_reg_irq_en = pin_reg;
 	pin_reg_irq_en |= mask;
@@ -563,11 +534,7 @@ static int amd_gpio_irq_set_type(struct irq_data *d, unsigned int type)
 
 static void amd_irq_ack(struct irq_data *d)
 {
-	/*
-	 * based on HW design,there is no need to ack HW
-	 * before handle current irq. But this routine is
-	 * necessary for handle_edge_irq
-	*/
+	 
 }
 
 static const struct irq_chip amd_gpio_irqchip = {
@@ -580,12 +547,7 @@ static const struct irq_chip amd_gpio_irqchip = {
 	.irq_set_wake = amd_gpio_irq_set_wake,
 	.irq_eoi      = amd_gpio_irq_eoi,
 	.irq_set_type = amd_gpio_irq_set_type,
-	/*
-	 * We need to set IRQCHIP_ENABLE_WAKEUP_ON_SUSPEND so that a wake event
-	 * also generates an IRQ. We need the IRQ so the irq_handler can clear
-	 * the wake event. Otherwise the wake event will never clear and
-	 * prevent the system from suspending.
-	 */
+	 
 	.flags        = IRQCHIP_ENABLE_WAKEUP_ON_SUSPEND | IRQCHIP_IMMUTABLE,
 	GPIOCHIP_IRQ_RESOURCE_HELPERS,
 };
@@ -603,14 +565,14 @@ static bool do_amd_gpio_irq_handler(int irq, void *dev_id)
 	u32  regval;
 	u64 status, mask;
 
-	/* Read the wake status */
+	 
 	raw_spin_lock_irqsave(&gpio_dev->lock, flags);
 	status = readl(gpio_dev->base + WAKE_INT_STATUS_REG1);
 	status <<= 32;
 	status |= readl(gpio_dev->base + WAKE_INT_STATUS_REG0);
 	raw_spin_unlock_irqrestore(&gpio_dev->lock, flags);
 
-	/* Bit 0-45 contain the relevant status bits */
+	 
 	status &= (1ULL << 46) - 1;
 	regs = gpio_dev->base;
 	for (mask = 1, irqnr = 0; status; mask <<= 1, regs += 4, irqnr += 4) {
@@ -618,7 +580,7 @@ static bool do_amd_gpio_irq_handler(int irq, void *dev_id)
 			continue;
 		status &= ~mask;
 
-		/* Each status bit covers four pins */
+		 
 		for (i = 0; i < 4; i++) {
 			regval = readl(regs + i);
 
@@ -626,7 +588,7 @@ static bool do_amd_gpio_irq_handler(int irq, void *dev_id)
 				pm_pr_dbg("GPIO %d is active: 0x%x",
 					  irqnr + i, regval);
 
-			/* caused wake on resume context for shared IRQ */
+			 
 			if (irq < 0 && (regval & BIT(WAKE_STS_OFF)))
 				return true;
 
@@ -635,13 +597,7 @@ static bool do_amd_gpio_irq_handler(int irq, void *dev_id)
 				continue;
 			generic_handle_domain_irq_safe(gc->irq.domain, irqnr + i);
 
-			/* Clear interrupt.
-			 * We must read the pin register again, in case the
-			 * value was changed while executing
-			 * generic_handle_domain_irq() above.
-			 * If the line is not an irq, disable it in order to
-			 * avoid a system hang caused by an interrupt storm.
-			 */
+			 
 			raw_spin_lock_irqsave(&gpio_dev->lock, flags);
 			regval = readl(regs + i);
 			if (!gpiochip_line_is_irq(gc, irqnr + i)) {
@@ -656,11 +612,11 @@ static bool do_amd_gpio_irq_handler(int irq, void *dev_id)
 			raw_spin_unlock_irqrestore(&gpio_dev->lock, flags);
 		}
 	}
-	/* did not cause wake on resume context for shared IRQ */
+	 
 	if (irq < 0)
 		return false;
 
-	/* Signal EOI to the GPIO unit */
+	 
 	raw_spin_lock_irqsave(&gpio_dev->lock, flags);
 	regval = readl(gpio_dev->base + WAKE_INT_MASTER_REG);
 	regval |= EOI_MASK;
@@ -897,10 +853,7 @@ static bool amd_gpio_should_save(struct amd_gpio *gpio_dev, unsigned int pin)
 	if (!pd)
 		return false;
 
-	/*
-	 * Only restore the pin if it is actually in use by the kernel (or
-	 * by userspace).
-	 */
+	 
 	if (pd->mux_owner || pd->gpio_owner ||
 	    gpiochip_line_is_irq(&gpio_dev->gc, pin))
 		return true;
@@ -924,7 +877,7 @@ static int amd_gpio_suspend(struct device *dev)
 		raw_spin_lock_irqsave(&gpio_dev->lock, flags);
 		gpio_dev->saved_regs[i] = readl(gpio_dev->base + pin * 4) & ~PIN_IRQ_PENDING;
 
-		/* mask any interrupts not intended to be a wake source */
+		 
 		if (!(gpio_dev->saved_regs[i] & WAKE_SOURCE)) {
 			writel(gpio_dev->saved_regs[i] & ~BIT(INTERRUPT_MASK_OFF),
 			       gpio_dev->base + pin * 4);
@@ -1135,12 +1088,12 @@ static int amd_gpio_probe(struct platform_device *pdev)
 		return PTR_ERR(gpio_dev->pctrl);
 	}
 
-	/* Disable and mask interrupts */
+	 
 	amd_gpio_irq_init(gpio_dev);
 
 	girq = &gpio_dev->gc.irq;
 	gpio_irq_chip_set_chip(girq, &amd_gpio_irqchip);
-	/* This will let us handle the parent IRQ in the driver */
+	 
 	girq->parent_handler = NULL;
 	girq->num_parents = 0;
 	girq->parents = NULL;

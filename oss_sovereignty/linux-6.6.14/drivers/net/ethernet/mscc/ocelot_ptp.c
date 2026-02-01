@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0 OR MIT)
-/* Microsemi Ocelot PTP clock driver
- *
- * Copyright (c) 2017 Microsemi Corporation
- * Copyright 2020 NXP
- */
+
+ 
 #include <linux/time64.h>
 
 #include <linux/dsa/ocelot.h>
@@ -36,7 +32,7 @@ int ocelot_ptp_gettime64(struct ptp_clock_info *ptp, struct timespec64 *ts)
 
 	spin_unlock_irqrestore(&ocelot->ptp_clock_lock, flags);
 
-	/* Deal with negative values */
+	 
 	if (ns >= 0x3ffffff0 && ns <= 0x3fffffff) {
 		s--;
 		ns &= 0xf;
@@ -117,7 +113,7 @@ int ocelot_ptp_adjtime(struct ptp_clock_info *ptp, s64 delta)
 		if (ocelot->ops->tas_clock_adjust)
 			ocelot->ops->tas_clock_adjust(ocelot);
 	} else {
-		/* Fall back using ocelot_ptp_settime64 which is not exact. */
+		 
 		struct timespec64 ts;
 		u64 now;
 
@@ -154,13 +150,13 @@ int ocelot_ptp_adjfine(struct ptp_clock_info *ptp, long scaled_ppm)
 	do_div(adj, scaled_ppm);
 	do_div(adj, 1000);
 
-	/* If the adjustment value is too large, use ns instead */
+	 
 	if (adj >= (1L << 30)) {
 		unit = PTP_CFG_CLK_ADJ_FREQ_NS;
 		do_div(adj, 1000);
 	}
 
-	/* Still too big */
+	 
 	if (adj >= (1L << 30))
 		goto disable_adj;
 
@@ -209,7 +205,7 @@ int ocelot_ptp_enable(struct ptp_clock_info *ptp,
 
 	switch (rq->type) {
 	case PTP_CLK_REQ_PEROUT:
-		/* Reject requests with unsupported flags */
+		 
 		if (rq->perout.flags & ~(PTP_PEROUT_DUTY_CYCLE |
 					 PTP_PEROUT_PHASE))
 			return -EOPNOTSUPP;
@@ -233,7 +229,7 @@ int ocelot_ptp_enable(struct ptp_clock_info *ptp,
 		if (ts_period.tv_sec == 1 && ts_period.tv_nsec == 0)
 			pps = true;
 
-		/* Handle turning off */
+		 
 		if (!on) {
 			spin_lock_irqsave(&ocelot->ptp_clock_lock, flags);
 			val = PTP_PIN_CFG_ACTION(PTP_PIN_ACTION_IDLE);
@@ -246,7 +242,7 @@ int ocelot_ptp_enable(struct ptp_clock_info *ptp,
 			ts_phase.tv_sec = rq->perout.phase.sec;
 			ts_phase.tv_nsec = rq->perout.phase.nsec;
 		} else {
-			/* Compatibility */
+			 
 			ts_phase.tv_sec = rq->perout.start.sec;
 			ts_phase.tv_nsec = rq->perout.start.nsec;
 		}
@@ -258,7 +254,7 @@ int ocelot_ptp_enable(struct ptp_clock_info *ptp,
 			return -EINVAL;
 		}
 
-		/* Calculate waveform high and low times */
+		 
 		if (rq->perout.flags & PTP_PEROUT_DUTY_CYCLE) {
 			struct timespec64 ts_on;
 
@@ -278,7 +274,7 @@ int ocelot_ptp_enable(struct ptp_clock_info *ptp,
 		wf_low = timespec64_to_ns(&ts_period);
 		wf_low -= wf_high;
 
-		/* Handle PPS request */
+		 
 		if (pps) {
 			spin_lock_irqsave(&ocelot->ptp_clock_lock, flags);
 			ocelot_write_rix(ocelot, ts_phase.tv_nsec,
@@ -292,7 +288,7 @@ int ocelot_ptp_enable(struct ptp_clock_info *ptp,
 			break;
 		}
 
-		/* Handle periodic clock */
+		 
 		if (wf_high > 0x3fffffff || wf_high <= 0x6)
 			return -EINVAL;
 		if (wf_low > 0x3fffffff || wf_low <= 0x6)
@@ -528,15 +524,13 @@ int ocelot_hwstamp_set(struct ocelot *ocelot, int port, struct ifreq *ifr)
 	if (copy_from_user(&cfg, ifr->ifr_data, sizeof(cfg)))
 		return -EFAULT;
 
-	/* Tx type sanity check */
+	 
 	switch (cfg.tx_type) {
 	case HWTSTAMP_TX_ON:
 		ocelot_port->ptp_cmd = IFH_REW_OP_TWO_STEP_PTP;
 		break;
 	case HWTSTAMP_TX_ONESTEP_SYNC:
-		/* IFH_REW_OP_ONE_STEP_PTP updates the correctional field, we
-		 * need to update the origin time.
-		 */
+		 
 		ocelot_port->ptp_cmd = IFH_REW_OP_ORIGIN_PTP;
 		break;
 	case HWTSTAMP_TX_OFF:
@@ -622,7 +616,7 @@ static int ocelot_port_add_txtstamp_skb(struct ocelot *ocelot, int port,
 	}
 
 	skb_shinfo(clone)->tx_flags |= SKBTX_IN_PROGRESS;
-	/* Store timestamp ID in OCELOT_SKB_CB(clone)->ts_id */
+	 
 	OCELOT_SKB_CB(clone)->ts_id = ocelot_port->ts_id;
 
 	ocelot_port->ts_id++;
@@ -667,7 +661,7 @@ int ocelot_port_txtstamp_request(struct ocelot *ocelot, int port,
 	unsigned int ptp_class;
 	int err;
 
-	/* Don't do anything if PTP timestamping not enabled */
+	 
 	if (!ptp_cmd)
 		return 0;
 
@@ -675,14 +669,14 @@ int ocelot_port_txtstamp_request(struct ocelot *ocelot, int port,
 	if (ptp_class == PTP_CLASS_NONE)
 		return -EINVAL;
 
-	/* Store ptp_cmd in OCELOT_SKB_CB(skb)->ptp_cmd */
+	 
 	if (ptp_cmd == IFH_REW_OP_ORIGIN_PTP) {
 		if (ocelot_ptp_is_onestep_sync(skb, ptp_class)) {
 			OCELOT_SKB_CB(skb)->ptp_cmd = ptp_cmd;
 			return 0;
 		}
 
-		/* Fall back to two-step timestamping */
+		 
 		ptp_cmd = IFH_REW_OP_TWO_STEP_PTP;
 	}
 
@@ -711,7 +705,7 @@ static void ocelot_get_hwtimestamp(struct ocelot *ocelot,
 
 	spin_lock_irqsave(&ocelot->ptp_clock_lock, flags);
 
-	/* Read current PTP time to get seconds */
+	 
 	val = ocelot_read_rix(ocelot, PTP_PIN_CFG, TOD_ACC_PIN);
 
 	val &= ~(PTP_PIN_CFG_SYNC | PTP_PIN_CFG_ACTION_MASK | PTP_PIN_CFG_DOM);
@@ -719,11 +713,11 @@ static void ocelot_get_hwtimestamp(struct ocelot *ocelot,
 	ocelot_write_rix(ocelot, val, PTP_PIN_CFG, TOD_ACC_PIN);
 	ts->tv_sec = ocelot_read_rix(ocelot, PTP_PIN_TOD_SEC_LSB, TOD_ACC_PIN);
 
-	/* Read packet HW timestamp from FIFO */
+	 
 	val = ocelot_read(ocelot, SYS_PTP_TXSTAMP);
 	ts->tv_nsec = SYS_PTP_TXSTAMP_PTP_TXSTAMP(val);
 
-	/* Sec has incremented since the ts was registered */
+	 
 	if ((ts->tv_sec & 0x1) != !!(val & SYS_PTP_TXSTAMP_PTP_TXSTAMP_SEC))
 		ts->tv_sec--;
 
@@ -755,13 +749,13 @@ void ocelot_get_txtstamp(struct ocelot *ocelot)
 
 		val = ocelot_read(ocelot, SYS_PTP_STATUS);
 
-		/* Check if a timestamp can be retrieved */
+		 
 		if (!(val & SYS_PTP_STATUS_PTP_MESS_VLD))
 			break;
 
 		WARN_ON(val & SYS_PTP_STATUS_PTP_OVFL);
 
-		/* Retrieve the ts ID and Tx port */
+		 
 		id = SYS_PTP_STATUS_PTP_MESS_ID_X(val);
 		txport = SYS_PTP_STATUS_PTP_MESS_TXPORT_X(val);
 		seqid = SYS_PTP_STATUS_PTP_MESS_SEQ_ID(val);
@@ -773,7 +767,7 @@ void ocelot_get_txtstamp(struct ocelot *ocelot)
 		ocelot->ptp_skbs_in_flight--;
 		spin_unlock(&ocelot->ts_id_lock);
 
-		/* Retrieve its associated skb */
+		 
 try_again:
 		spin_lock_irqsave(&port->tx_skbs.lock, flags);
 
@@ -798,15 +792,15 @@ try_again:
 			goto try_again;
 		}
 
-		/* Get the h/w timestamp */
+		 
 		ocelot_get_hwtimestamp(ocelot, &ts);
 
-		/* Set the timestamp into the skb */
+		 
 		memset(&shhwtstamps, 0, sizeof(shhwtstamps));
 		shhwtstamps.hwtstamp = ktime_set(ts.tv_sec, ts.tv_nsec);
 		skb_complete_tx_timestamp(skb_match, &shhwtstamps);
 
-		/* Next ts */
+		 
 		ocelot_write(ocelot, SYS_PTP_NXT_PTP_NXT, SYS_PTP_NXT);
 	}
 }
@@ -833,7 +827,7 @@ int ocelot_init_timestamp(struct ocelot *ocelot,
 	ptp_clock = ptp_clock_register(&ocelot->ptp_info, ocelot->dev);
 	if (IS_ERR(ptp_clock))
 		return PTR_ERR(ptp_clock);
-	/* Check if PHC support is missing at the configuration level */
+	 
 	if (!ptp_clock)
 		return 0;
 

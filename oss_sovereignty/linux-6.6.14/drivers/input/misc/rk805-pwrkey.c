@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Rockchip RK805 PMIC Power Key driver
- *
- * Copyright (c) 2017, Fuzhou Rockchip Electronics Co., Ltd
- *
- * Author: Joseph Chen <chenjh@rock-chips.com>
- */
+
+ 
 
 #include <linux/errno.h>
 #include <linux/init.h>

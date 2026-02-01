@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *   ALSA sequencer /proc interface
- *   Copyright (c) 1998 by Frank van de Pol <fvdpol@coil.demon.nl>
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/export.h>
@@ -42,7 +39,7 @@ void snd_seq_info_done(void)
 	snd_info_free_entry(timer_entry);
 }
 
-/* create all our /proc entries */
+ 
 int __init snd_seq_info_init(void)
 {
 	queues_entry = create_info_entry("queues",

@@ -1,20 +1,6 @@
-/*
- * Copyright (c) 2008-2011 Atheros Communications Inc.
- *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
+ 
 
-/* We use the hw_value as an index into our private channel structure */
+ 
 
 #include "common.h"
 
@@ -32,63 +18,57 @@
 	.max_power = 20, \
 }
 
-/* Some 2 GHz radios are actually tunable on 2312-2732
- * on 5 MHz steps, we support the channels which we know
- * we have calibration data for all cards though to make
- * this static */
+ 
 static const struct ieee80211_channel ath9k_2ghz_chantable[] = {
-	CHAN2G(2412, 0), /* Channel 1 */
-	CHAN2G(2417, 1), /* Channel 2 */
-	CHAN2G(2422, 2), /* Channel 3 */
-	CHAN2G(2427, 3), /* Channel 4 */
-	CHAN2G(2432, 4), /* Channel 5 */
-	CHAN2G(2437, 5), /* Channel 6 */
-	CHAN2G(2442, 6), /* Channel 7 */
-	CHAN2G(2447, 7), /* Channel 8 */
-	CHAN2G(2452, 8), /* Channel 9 */
-	CHAN2G(2457, 9), /* Channel 10 */
-	CHAN2G(2462, 10), /* Channel 11 */
-	CHAN2G(2467, 11), /* Channel 12 */
-	CHAN2G(2472, 12), /* Channel 13 */
-	CHAN2G(2484, 13), /* Channel 14 */
+	CHAN2G(2412, 0),  
+	CHAN2G(2417, 1),  
+	CHAN2G(2422, 2),  
+	CHAN2G(2427, 3),  
+	CHAN2G(2432, 4),  
+	CHAN2G(2437, 5),  
+	CHAN2G(2442, 6),  
+	CHAN2G(2447, 7),  
+	CHAN2G(2452, 8),  
+	CHAN2G(2457, 9),  
+	CHAN2G(2462, 10),  
+	CHAN2G(2467, 11),  
+	CHAN2G(2472, 12),  
+	CHAN2G(2484, 13),  
 };
 
-/* Some 5 GHz radios are actually tunable on XXXX-YYYY
- * on 5 MHz steps, we support the channels which we know
- * we have calibration data for all cards though to make
- * this static */
+ 
 static const struct ieee80211_channel ath9k_5ghz_chantable[] = {
-	/* _We_ call this UNII 1 */
-	CHAN5G(5180, 14), /* Channel 36 */
-	CHAN5G(5200, 15), /* Channel 40 */
-	CHAN5G(5220, 16), /* Channel 44 */
-	CHAN5G(5240, 17), /* Channel 48 */
-	/* _We_ call this UNII 2 */
-	CHAN5G(5260, 18), /* Channel 52 */
-	CHAN5G(5280, 19), /* Channel 56 */
-	CHAN5G(5300, 20), /* Channel 60 */
-	CHAN5G(5320, 21), /* Channel 64 */
-	/* _We_ call this "Middle band" */
-	CHAN5G(5500, 22), /* Channel 100 */
-	CHAN5G(5520, 23), /* Channel 104 */
-	CHAN5G(5540, 24), /* Channel 108 */
-	CHAN5G(5560, 25), /* Channel 112 */
-	CHAN5G(5580, 26), /* Channel 116 */
-	CHAN5G(5600, 27), /* Channel 120 */
-	CHAN5G(5620, 28), /* Channel 124 */
-	CHAN5G(5640, 29), /* Channel 128 */
-	CHAN5G(5660, 30), /* Channel 132 */
-	CHAN5G(5680, 31), /* Channel 136 */
-	CHAN5G(5700, 32), /* Channel 140 */
-	/* _We_ call this UNII 3 */
-	CHAN5G(5745, 33), /* Channel 149 */
-	CHAN5G(5765, 34), /* Channel 153 */
-	CHAN5G(5785, 35), /* Channel 157 */
-	CHAN5G(5805, 36), /* Channel 161 */
-	CHAN5G(5825, 37), /* Channel 165 */
+	 
+	CHAN5G(5180, 14),  
+	CHAN5G(5200, 15),  
+	CHAN5G(5220, 16),  
+	CHAN5G(5240, 17),  
+	 
+	CHAN5G(5260, 18),  
+	CHAN5G(5280, 19),  
+	CHAN5G(5300, 20),  
+	CHAN5G(5320, 21),  
+	 
+	CHAN5G(5500, 22),  
+	CHAN5G(5520, 23),  
+	CHAN5G(5540, 24),  
+	CHAN5G(5560, 25),  
+	CHAN5G(5580, 26),  
+	CHAN5G(5600, 27),  
+	CHAN5G(5620, 28),  
+	CHAN5G(5640, 29),  
+	CHAN5G(5660, 30),  
+	CHAN5G(5680, 31),  
+	CHAN5G(5700, 32),  
+	 
+	CHAN5G(5745, 33),  
+	CHAN5G(5765, 34),  
+	CHAN5G(5785, 35),  
+	CHAN5G(5805, 36),  
+	CHAN5G(5825, 37),  
 };
 
-/* Atheros hardware rate code addition for short preamble */
+ 
 #define SHPCHECK(__hw_rate, __flags) \
 	((__flags & IEEE80211_RATE_SHORT_PREAMBLE) ? (__hw_rate | 0x04 ) : 0)
 
@@ -206,7 +186,7 @@ void ath9k_cmn_setup_ht_cap(struct ath_hw *ah,
 		ht_info->cap |= (1 << IEEE80211_HT_CAP_RX_STBC_SHIFT);
 	}
 
-	/* set up supported mcs set */
+	 
 	memset(&ht_info->mcs, 0, sizeof(ht_info->mcs));
 	tx_streams = ath9k_cmn_count_streams(ah->txchainmask, max_streams);
 	rx_streams = ath9k_cmn_count_streams(ah->rxchainmask, max_streams);

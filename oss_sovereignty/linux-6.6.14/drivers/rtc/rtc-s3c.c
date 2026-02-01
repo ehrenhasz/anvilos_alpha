@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* drivers/rtc/rtc-s3c.c
- *
- * Copyright (c) 2010 Samsung Electronics Co., Ltd.
- *		http://www.samsung.com/
- *
- * Copyright (c) 2004,2006 Simtec Electronics
- *	Ben Dooks, <ben@simtec.co.uk>
- *	http://armlinux.simtec.co.uk/
- *
- * S3C2410/S3C2440/S3C24XX Internal RTC Driver
-*/
+
+ 
 
 #include <linux/module.h>
 #include <linux/fs.h>
@@ -79,7 +69,7 @@ static void s3c_rtc_disable_clk(struct s3c_rtc *info)
 	clk_disable(info->rtc_clk);
 }
 
-/* IRQ Handler */
+ 
 static irqreturn_t s3c_rtc_alarmirq(int irq, void *id)
 {
 	struct s3c_rtc *info = (struct s3c_rtc *)id;
@@ -90,7 +80,7 @@ static irqreturn_t s3c_rtc_alarmirq(int irq, void *id)
 	return IRQ_HANDLED;
 }
 
-/* Update control registers */
+ 
 static int s3c_rtc_setaie(struct device *dev, unsigned int enabled)
 {
 	struct s3c_rtc *info = dev_get_drvdata(dev);
@@ -126,7 +116,7 @@ static int s3c_rtc_setaie(struct device *dev, unsigned int enabled)
 	return ret;
 }
 
-/* Read time from RTC and convert it from BCD */
+ 
 static int s3c_rtc_read_time(struct s3c_rtc *info, struct rtc_time *tm)
 {
 	unsigned int have_retried = 0;
@@ -144,11 +134,7 @@ retry_get_time:
 	tm->tm_year = readb(info->base + S3C2410_RTCYEAR);
 	tm->tm_sec  = readb(info->base + S3C2410_RTCSEC);
 
-	/*
-	 * The only way to work out whether the system was mid-update
-	 * when we read it is to check the second counter, and if it
-	 * is zero, then we re-try the entire read
-	 */
+	 
 	if (tm->tm_sec == 0 && !have_retried) {
 		have_retried = 1;
 		goto retry_get_time;
@@ -166,7 +152,7 @@ retry_get_time:
 	return 0;
 }
 
-/* Convert time to BCD and write it to RTC */
+ 
 static int s3c_rtc_write_time(struct s3c_rtc *info, const struct rtc_time *tm)
 {
 	int ret;
@@ -196,7 +182,7 @@ static int s3c_rtc_gettime(struct device *dev, struct rtc_time *tm)
 	if (ret)
 		return ret;
 
-	/* Convert internal representation to actual date/time */
+	 
 	tm->tm_year += 100;
 	tm->tm_mon -= 1;
 
@@ -211,10 +197,7 @@ static int s3c_rtc_settime(struct device *dev, struct rtc_time *tm)
 
 	dev_dbg(dev, "set time %ptR\n", tm);
 
-	/*
-	 * Convert actual date/time to internal representation.
-	 * We get around Y2K by simply not supporting it.
-	 */
+	 
 	rtc_tm.tm_year -= 100;
 	rtc_tm.tm_mon += 1;
 
@@ -247,7 +230,7 @@ static int s3c_rtc_getalarm(struct device *dev, struct rtc_wkalrm *alrm)
 
 	dev_dbg(dev, "read alarm %d, %ptR\n", alm_en, alm_tm);
 
-	/* decode the alarm enable field */
+	 
 	if (alm_en & S3C2410_RTCALM_SECEN)
 		alm_tm->tm_sec = bcd2bin(alm_tm->tm_sec);
 
@@ -336,7 +319,7 @@ static void s3c24xx_rtc_enable(struct s3c_rtc *info)
 	unsigned int con, tmp;
 
 	con = readw(info->base + S3C2410_RTCCON);
-	/* re-enable the device, and check it is ok */
+	 
 	if ((con & S3C2410_RTCCON_RTCEN) == 0) {
 		dev_info(info->dev, "rtc disabled, re-enabling\n");
 
@@ -420,7 +403,7 @@ static int s3c_rtc_probe(struct platform_device *pdev)
 
 	dev_dbg(&pdev->dev, "s3c2410_rtc: alarm irq %d\n", info->irq_alarm);
 
-	/* get the memory region */
+	 
 	info->base = devm_platform_ioremap_resource(pdev, 0);
 	if (IS_ERR(info->base))
 		return PTR_ERR(info->base);
@@ -445,11 +428,11 @@ static int s3c_rtc_probe(struct platform_device *pdev)
 			goto err_src_clk;
 	}
 
-	/* disable RTC enable bits potentially set by the bootloader */
+	 
 	if (info->data->disable)
 		info->data->disable(info);
 
-	/* check to see if everything is setup correctly */
+	 
 	if (info->data->enable)
 		info->data->enable(info);
 
@@ -591,7 +574,7 @@ static const __maybe_unused struct of_device_id s3c_rtc_dt_match[] = {
 		.compatible = "samsung,exynos3250-rtc",
 		.data = &s3c6410_rtc_data,
 	},
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, s3c_rtc_dt_match);
 

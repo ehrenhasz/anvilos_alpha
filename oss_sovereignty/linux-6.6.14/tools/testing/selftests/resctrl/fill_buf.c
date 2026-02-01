@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * fill_buf benchmark
- *
- * Copyright (C) 2018 Intel Corporation
- *
- * Authors:
- *    Sai Praneeth Prakhya <sai.praneeth.prakhya@intel.com>,
- *    Fenghua Yu <fenghua.yu@intel.com>
- */
+
+ 
 #include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>
@@ -43,7 +35,7 @@ static void mem_flush(unsigned char *buf, size_t buf_size)
 	unsigned char *cp = buf;
 	size_t i = 0;
 
-	buf_size = buf_size / CL_SIZE; /* mem size in cache lines */
+	buf_size = buf_size / CL_SIZE;  
 
 	for (i = 0; i < buf_size; i++)
 		cl_flush(&cp[i * CL_SIZE]);
@@ -112,7 +104,7 @@ static int fill_cache_read(unsigned char *buf, size_t buf_size, bool once)
 			break;
 	}
 
-	/* Consume read result so that reading memory is not optimized out. */
+	 
 	fp = fopen("/dev/null", "w");
 	if (!fp) {
 		perror("Unable to write to /dev/null");
@@ -144,7 +136,7 @@ static int fill_cache(size_t buf_size, int memflush, int op, bool once)
 	if (!buf)
 		return -1;
 
-	/* Flush the memory before using to avoid "cache hot pages" effect */
+	 
 	if (memflush)
 		mem_flush(buf, buf_size);
 

@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright(c) 2017 - 2019 Pensando Systems, Inc */
+
+ 
 
 #include <linux/ethtool.h>
 #include <linux/printk.h>
@@ -22,17 +22,12 @@
 #include "ionic_ethtool.h"
 #include "ionic_debugfs.h"
 
-/* queuetype support level */
+ 
 static const u8 ionic_qtype_versions[IONIC_QTYPE_MAX] = {
-	[IONIC_QTYPE_ADMINQ]  = 0,   /* 0 = Base version with CQ support */
-	[IONIC_QTYPE_NOTIFYQ] = 0,   /* 0 = Base version */
-	[IONIC_QTYPE_RXQ]     = 2,   /* 0 = Base version with CQ+SG support
-				      * 2 =       ... with CMB rings
-				      */
-	[IONIC_QTYPE_TXQ]     = 3,   /* 0 = Base version with CQ+SG support
-				      * 1 =       ... with Tx SG version 1
-				      * 3 =       ... with CMB rings
-				      */
+	[IONIC_QTYPE_ADMINQ]  = 0,    
+	[IONIC_QTYPE_NOTIFYQ] = 0,    
+	[IONIC_QTYPE_RXQ]     = 2,    
+	[IONIC_QTYPE_TXQ]     = 3,    
 };
 
 static void ionic_link_status_check(struct ionic_lif *lif);
@@ -103,10 +98,7 @@ static void ionic_lif_deferred_work(struct work_struct *work)
 			} else {
 				ionic_lif_handle_fw_down(lif);
 
-				/* Fire off another watchdog to see
-				 * if the FW is already back rather than
-				 * waiting another whole cycle
-				 */
+				 
 				mod_timer(&lif->ionic->watchdog_timer, jiffies + 1);
 			}
 			break;
@@ -136,7 +128,7 @@ static void ionic_link_status_check(struct ionic_lif *lif)
 	if (!test_bit(IONIC_LIF_F_LINK_CHECK_REQUESTED, lif->state))
 		return;
 
-	/* Don't put carrier back up if we're in a broken state */
+	 
 	if (test_bit(IONIC_LIF_F_BROKEN, lif->state)) {
 		clear_bit(IONIC_LIF_F_LINK_CHECK_REQUESTED, lif->state);
 		return;
@@ -187,7 +179,7 @@ void ionic_link_status_check_request(struct ionic_lif *lif, bool can_sleep)
 {
 	struct ionic_deferred_work *work;
 
-	/* we only need one request outstanding at a time */
+	 
 	if (test_and_set_bit(IONIC_LIF_F_LINK_CHECK_REQUESTED, lif->state))
 		return;
 
@@ -340,9 +332,7 @@ static int ionic_qcq_disable(struct ionic_lif *lif, struct ionic_qcq *qcq, int f
 		del_timer_sync(&qcq->napi_deadline);
 	}
 
-	/* If there was a previous fw communcation error, don't bother with
-	 * sending the adminq command and just return the same error value.
-	 */
+	 
 	if (fw_err == -ETIMEDOUT || fw_err == -ENXIO)
 		return fw_err;
 
@@ -512,7 +502,7 @@ static int ionic_alloc_qcq_interrupt(struct ionic_lif *lif, struct ionic_qcq *qc
 		goto err_out_free_intr;
 	}
 
-	/* try to get the irq on the local numa node first */
+	 
 	qcq->intr.cpu = cpumask_local_spread(qcq->intr.index,
 					     dev_to_node(lif->ionic->dev));
 	if (qcq->intr.cpu != -1)
@@ -593,10 +583,7 @@ static int ionic_qcq_alloc(struct ionic_lif *lif, unsigned int type,
 	if (flags & IONIC_QCQ_F_NOTIFYQ) {
 		int q_size;
 
-		/* q & cq need to be contiguous in NotifyQ, so alloc it all in q
-		 * and don't alloc qc.  We leave new->qc_size and new->qc_base
-		 * as 0 to be sure we don't try to free it later.
-		 */
+		 
 		q_size = ALIGN(num_descs * desc_size, PAGE_SIZE);
 		new->q_size = PAGE_SIZE + q_size +
 			      ALIGN(num_descs * cq_desc_size, PAGE_SIZE);
@@ -616,7 +603,7 @@ static int ionic_qcq_alloc(struct ionic_lif *lif, unsigned int type,
 		ionic_cq_map(&new->cq, cq_base, cq_base_pa);
 		ionic_cq_bind(&new->cq, &new->q);
 	} else {
-		/* regular DMA q descriptors */
+		 
 		new->q_size = PAGE_SIZE + (num_descs * desc_size);
 		new->q_base = dma_alloc_coherent(dev, new->q_size, &new->q_base_pa,
 						 GFP_KERNEL);
@@ -630,7 +617,7 @@ static int ionic_qcq_alloc(struct ionic_lif *lif, unsigned int type,
 		ionic_q_map(&new->q, q_base, q_base_pa);
 
 		if (flags & IONIC_QCQ_F_CMB_RINGS) {
-			/* on-chip CMB q descriptors */
+			 
 			new->cmb_q_size = num_descs * desc_size;
 			new->cmb_order = order_base_2(new->cmb_q_size / PAGE_SIZE);
 
@@ -655,7 +642,7 @@ static int ionic_qcq_alloc(struct ionic_lif *lif, unsigned int type,
 			ionic_q_cmb_map(&new->q, new->cmb_q_base, new->cmb_q_base_pa);
 		}
 
-		/* cq DMA descriptors */
+		 
 		new->cq_size = PAGE_SIZE + (num_descs * cq_desc_size);
 		new->cq_base = dma_alloc_coherent(dev, new->cq_size, &new->cq_base_pa,
 						  GFP_KERNEL);
@@ -742,7 +729,7 @@ static int ionic_qcqs_alloc(struct ionic_lif *lif)
 			goto err_out;
 		ionic_debugfs_add_qcq(lif, lif->notifyqcq);
 
-		/* Let the notifyq ride on the adminq interrupt */
+		 
 		ionic_link_qcq_interrupts(lif->adminqcq, lif->notifyqcq);
 	}
 
@@ -1056,7 +1043,7 @@ int ionic_lif_config_hwstamp_rxq_all(struct ionic_lif *lif, bool rx_all)
 	else
 		qparam.rxq_features = 0;
 
-	/* if we're not running, just set the values and return */
+	 
 	if (!netif_running(lif->netdev)) {
 		lif->rxq_features = qparam.rxq_features;
 		return 0;
@@ -1176,7 +1163,7 @@ static bool ionic_notifyq_service(struct ionic_cq *cq,
 	netdev = lif->netdev;
 	eid = le64_to_cpu(comp->event.eid);
 
-	/* Have we run out of new completions to process? */
+	 
 	if ((s64)(eid - lif->last_eid) <= 0)
 		return false;
 
@@ -1344,7 +1331,7 @@ static int ionic_addr_add(struct net_device *netdev, const u8 *addr)
 
 static int ionic_addr_del(struct net_device *netdev, const u8 *addr)
 {
-	/* Don't delete our own address from the uc list */
+	 
 	if (ether_addr_equal(addr, netdev->dev_addr))
 		return 0;
 
@@ -1363,7 +1350,7 @@ void ionic_lif_rx_mode(struct ionic_lif *lif)
 
 	mutex_lock(&lif->config_lock);
 
-	/* grab the flags once for local use */
+	 
 	nd_flags = netdev->flags;
 
 	rx_mode = IONIC_RX_MODE_F_UNICAST;
@@ -1372,15 +1359,10 @@ void ionic_lif_rx_mode(struct ionic_lif *lif)
 	rx_mode |= (nd_flags & IFF_PROMISC) ? IONIC_RX_MODE_F_PROMISC : 0;
 	rx_mode |= (nd_flags & IFF_ALLMULTI) ? IONIC_RX_MODE_F_ALLMULTI : 0;
 
-	/* sync the filters */
+	 
 	ionic_rx_filter_sync(lif);
 
-	/* check for overflow state
-	 *    if so, we track that we overflowed and enable NIC PROMISC
-	 *    else if the overflow is set and not needed
-	 *       we remove our overflow flag and check the netdev flags
-	 *       to see if we can disable NIC PROMISC
-	 */
+	 
 	nfilters = le32_to_cpu(lif->identity->eth.max_ucast_filters);
 
 	if (((lif->nucast + lif->nmcast) >= nfilters) ||
@@ -1437,13 +1419,11 @@ static void ionic_ndo_set_rx_mode(struct net_device *netdev)
 	struct ionic_lif *lif = netdev_priv(netdev);
 	struct ionic_deferred_work *work;
 
-	/* Sync the kernel filter list with the driver filter list */
+	 
 	__dev_uc_sync(netdev, ionic_addr_add, ionic_addr_del);
 	__dev_mc_sync(netdev, ionic_addr_add, ionic_addr_del);
 
-	/* Shove off the rest of the rxmode work to the work task
-	 * which will include syncing the filters to the firmware.
-	 */
+	 
 	work = kzalloc(sizeof(*work), GFP_ATOMIC);
 	if (!work) {
 		netdev_err(lif->netdev, "rxmode change dropped\n");
@@ -1576,7 +1556,7 @@ static int ionic_init_nic_features(struct ionic_lif *lif)
 	netdev_features_t features;
 	int err;
 
-	/* set up what we expect to support by default */
+	 
 	features = NETIF_F_HW_VLAN_CTAG_TX |
 		   NETIF_F_HW_VLAN_CTAG_RX |
 		   NETIF_F_HW_VLAN_CTAG_FILTER |
@@ -1600,7 +1580,7 @@ static int ionic_init_nic_features(struct ionic_lif *lif)
 	if (err)
 		return err;
 
-	/* tell the netdev what we actually can support */
+	 
 	netdev->features |= NETIF_F_HIGHDMA;
 
 	if (lif->hw_features & IONIC_ETH_HW_VLAN_TX_TAG)
@@ -1709,10 +1689,7 @@ static int ionic_program_mac(struct ionic_lif *lif, u8 *mac)
 	if (err)
 		return err;
 
-	/* To deal with older firmware that silently ignores the set attr mac:
-	 * doesn't actually change the mac and doesn't return an error, so we
-	 * do the get attr to verify whether or not the set actually happened
-	 */
+	 
 	if (!ether_addr_equal(get_mac, mac))
 		return 1;
 
@@ -1756,7 +1733,7 @@ static int ionic_set_mac_address(struct net_device *netdev, void *sa)
 
 void ionic_stop_queues_reconfig(struct ionic_lif *lif)
 {
-	/* Stop and clean the queues before reconfiguration */
+	 
 	netif_device_detach(lif->netdev);
 	ionic_stop_queues(lif);
 	ionic_txrx_deinit(lif);
@@ -1766,14 +1743,9 @@ static int ionic_start_queues_reconfig(struct ionic_lif *lif)
 {
 	int err;
 
-	/* Re-init the queues after reconfiguration */
+	 
 
-	/* The only way txrx_init can fail here is if communication
-	 * with FW is suddenly broken.  There's not much we can do
-	 * at this point - error messages have already been printed,
-	 * so we can continue on and the user can eventually do a
-	 * DOWN and UP to try to reset and clear the issue.
-	 */
+	 
 	err = ionic_txrx_init(lif);
 	ionic_link_status_check_request(lif, CAN_NOT_SLEEP);
 	netif_device_attach(lif->netdev);
@@ -1799,7 +1771,7 @@ static int ionic_change_mtu(struct net_device *netdev, int new_mtu)
 	if (err)
 		return err;
 
-	/* if we're not running, nothing more to do */
+	 
 	if (!netif_running(netdev)) {
 		netdev->mtu = new_mtu;
 		return 0;
@@ -1822,9 +1794,7 @@ static void ionic_tx_timeout_work(struct work_struct *ws)
 	if (test_bit(IONIC_LIF_F_FW_RESET, lif->state))
 		return;
 
-	/* if we were stopped before this scheduled job was launched,
-	 * don't bother the queues as they are already stopped.
-	 */
+	 
 	if (!netif_running(lif->netdev))
 		return;
 
@@ -1920,7 +1890,7 @@ static int ionic_lif_rss_init(struct ionic_lif *lif)
 			 IONIC_RSS_TYPE_IPV6_TCP |
 			 IONIC_RSS_TYPE_IPV6_UDP;
 
-	/* Fill indirection table with 'default' values */
+	 
 	tbl_sz = le16_to_cpu(lif->ionic->ident.lif.eth.rss_ind_tbl_sz);
 	for (i = 0; i < tbl_sz; i++)
 		lif->rss_ind_tbl[i] = ethtool_rxfh_indir_default(i, lif->nxqs);
@@ -2246,7 +2216,7 @@ static int ionic_open(struct net_device *netdev)
 	struct ionic_lif *lif = netdev_priv(netdev);
 	int err;
 
-	/* If recovering from a broken state, clear the bit and we'll try again */
+	 
 	if (test_and_clear_bit(IONIC_LIF_F_BROKEN, lif->state))
 		netdev_info(netdev, "clearing broken state\n");
 
@@ -2268,16 +2238,14 @@ static int ionic_open(struct net_device *netdev)
 	if (err)
 		goto err_txrx_deinit;
 
-	/* don't start the queues until we have link */
+	 
 	if (netif_carrier_ok(netdev)) {
 		err = ionic_start_queues(lif);
 		if (err)
 			goto err_txrx_deinit;
 	}
 
-	/* If hardware timestamping is enabled, but the queues were freed by
-	 * ionic_stop, those need to be reallocated and initialized, too.
-	 */
+	 
 	ionic_lif_hwstamp_recreate_queues(lif);
 
 	mutex_unlock(&lif->queue_lock);
@@ -2512,7 +2480,7 @@ static int ionic_set_vf_vlan(struct net_device *netdev, int vf, u16 vlan,
 	struct ionic *ionic = lif->ionic;
 	int ret;
 
-	/* until someday when we support qos */
+	 
 	if (qos)
 		return -EINVAL;
 
@@ -2551,7 +2519,7 @@ static int ionic_set_vf_rate(struct net_device *netdev, int vf,
 	struct ionic *ionic = lif->ionic;
 	int ret;
 
-	/* setting the min just seems silly */
+	 
 	if (tx_min)
 		return -EINVAL;
 
@@ -2775,30 +2743,26 @@ static int ionic_cmb_reconfig(struct ionic_lif *lif,
 	struct ionic_queue_params start_qparams;
 	int err = 0;
 
-	/* When changing CMB queue parameters, we're using limited
-	 * on-device memory and don't have extra memory to use for
-	 * duplicate allocations, so we free it all first then
-	 * re-allocate with the new parameters.
-	 */
+	 
 
-	/* Checkpoint for possible unwind */
+	 
 	ionic_init_queue_params(lif, &start_qparams);
 
-	/* Stop and free the queues */
+	 
 	ionic_stop_queues_reconfig(lif);
 	ionic_txrx_free(lif);
 
-	/* Set up new qparams */
+	 
 	ionic_set_queue_params(lif, qparam);
 
 	if (netif_running(lif->netdev)) {
-		/* Alloc and start the new configuration */
+		 
 		err = ionic_txrx_alloc(lif);
 		if (err) {
 			dev_warn(lif->ionic->dev,
 				 "CMB reconfig failed, restoring values: %d\n", err);
 
-			/* Back out the changes */
+			 
 			ionic_set_queue_params(lif, &start_qparams);
 			err = ionic_txrx_alloc(lif);
 			if (err) {
@@ -2817,7 +2781,7 @@ static int ionic_cmb_reconfig(struct ionic_lif *lif,
 	}
 
 err_out:
-	/* This was detached in ionic_stop_queues_reconfig() */
+	 
 	netif_device_attach(lif->netdev);
 
 	return err;
@@ -2825,7 +2789,7 @@ err_out:
 
 static void ionic_swap_queues(struct ionic_qcq *a, struct ionic_qcq *b)
 {
-	/* only swapping the queues, not the napi, flags, or other stuff */
+	 
 	swap(a->q.features,   b->q.features);
 	swap(a->q.num_descs,  b->q.num_descs);
 	swap(a->q.desc_size,  b->q.desc_size);
@@ -2865,12 +2829,12 @@ int ionic_reconfigure_queues(struct ionic_lif *lif,
 	unsigned int flags, i;
 	int err = 0;
 
-	/* Are we changing q params while CMB is on */
+	 
 	if ((test_bit(IONIC_LIF_F_CMB_TX_RINGS, lif->state) && qparam->cmb_tx) ||
 	    (test_bit(IONIC_LIF_F_CMB_RX_RINGS, lif->state) && qparam->cmb_rx))
 		return ionic_cmb_reconfig(lif, qparam);
 
-	/* allocate temporary qcq arrays to hold new queue structs */
+	 
 	if (qparam->nxqs != lif->nxqs || qparam->ntxq_descs != lif->ntxq_descs) {
 		tx_qcqs = devm_kcalloc(lif->ionic->dev, lif->ionic->ntxqs_per_lif,
 				       sizeof(struct ionic_qcq *), GFP_KERNEL);
@@ -2890,9 +2854,7 @@ int ionic_reconfigure_queues(struct ionic_lif *lif,
 		}
 	}
 
-	/* allocate new desc_info and rings, but leave the interrupt setup
-	 * until later so as to not mess with the still-running queues
-	 */
+	 
 	if (tx_qcqs) {
 		num_desc = qparam->ntxq_descs;
 		desc_sz = sizeof(struct ionic_txq_desc);
@@ -2906,7 +2868,7 @@ int ionic_reconfigure_queues(struct ionic_lif *lif,
 			sg_desc_sz = sizeof(struct ionic_txq_sg_desc);
 
 		for (i = 0; i < qparam->nxqs; i++) {
-			/* If missing, short placeholder qcq needed for swap */
+			 
 			if (!lif->txqcqs[i]) {
 				flags = IONIC_QCQ_F_TX_STATS | IONIC_QCQ_F_SG;
 				err = ionic_qcq_alloc(lif, IONIC_QTYPE_TXQ, i, "tx", flags,
@@ -2935,7 +2897,7 @@ int ionic_reconfigure_queues(struct ionic_lif *lif,
 			comp_sz *= 2;
 
 		for (i = 0; i < qparam->nxqs; i++) {
-			/* If missing, short placeholder qcq needed for swap */
+			 
 			if (!lif->rxqcqs[i]) {
 				flags = IONIC_QCQ_F_RX_STATS | IONIC_QCQ_F_SG;
 				err = ionic_qcq_alloc(lif, IONIC_QTYPE_RXQ, i, "rx", flags,
@@ -2956,7 +2918,7 @@ int ionic_reconfigure_queues(struct ionic_lif *lif,
 		}
 	}
 
-	/* stop and clean the queues */
+	 
 	ionic_stop_queues_reconfig(lif);
 
 	if (qparam->nxqs != lif->nxqs) {
@@ -2970,7 +2932,7 @@ int ionic_reconfigure_queues(struct ionic_lif *lif,
 		}
 	}
 
-	/* swap new desc_info and rings, keeping existing interrupt config */
+	 
 	if (tx_qcqs) {
 		lif->ntxq_descs = qparam->ntxq_descs;
 		for (i = 0; i < qparam->nxqs; i++)
@@ -2983,7 +2945,7 @@ int ionic_reconfigure_queues(struct ionic_lif *lif,
 			ionic_swap_queues(lif->rxqcqs[i], rx_qcqs[i]);
 	}
 
-	/* if we need to change the interrupt layout, this is the time */
+	 
 	if (qparam->intr_split != test_bit(IONIC_LIF_F_SPLIT_INTR, lif->state) ||
 	    qparam->nxqs != lif->nxqs) {
 		if (qparam->intr_split) {
@@ -2994,10 +2956,7 @@ int ionic_reconfigure_queues(struct ionic_lif *lif,
 			lif->tx_coalesce_hw = lif->rx_coalesce_hw;
 		}
 
-		/* Clear existing interrupt assignments.  We check for NULL here
-		 * because we're checking the whole array for potential qcqs, not
-		 * just those qcqs that have just been set up.
-		 */
+		 
 		for (i = 0; i < lif->ionic->ntxqs_per_lif; i++) {
 			if (lif->txqcqs[i])
 				ionic_qcq_intr_free(lif, lif->txqcqs[i]);
@@ -3005,7 +2964,7 @@ int ionic_reconfigure_queues(struct ionic_lif *lif,
 				ionic_qcq_intr_free(lif, lif->rxqcqs[i]);
 		}
 
-		/* re-assign the interrupts */
+		 
 		for (i = 0; i < qparam->nxqs; i++) {
 			lif->rxqcqs[i]->flags |= IONIC_QCQ_F_INTR;
 			err = ionic_alloc_qcq_interrupt(lif, lif->rxqcqs[i]);
@@ -3028,7 +2987,7 @@ int ionic_reconfigure_queues(struct ionic_lif *lif,
 		}
 	}
 
-	/* now we can rework the debugfs mappings */
+	 
 	if (tx_qcqs) {
 		for (i = 0; i < qparam->nxqs; i++) {
 			ionic_debugfs_del_qcq(lif->txqcqs[i]);
@@ -3047,14 +3006,14 @@ int ionic_reconfigure_queues(struct ionic_lif *lif,
 	swap(lif->rxq_features, qparam->rxq_features);
 
 err_out_reinit_unlock:
-	/* re-init the queues, but don't lose an error code */
+	 
 	if (err)
 		ionic_start_queues_reconfig(lif);
 	else
 		err = ionic_start_queues_reconfig(lif);
 
 err_out:
-	/* free old allocs without cleaning intr */
+	 
 	for (i = 0; i < qparam->nxqs; i++) {
 		if (tx_qcqs && tx_qcqs[i]) {
 			tx_qcqs[i]->flags &= ~IONIC_QCQ_F_INTR;
@@ -3070,7 +3029,7 @@ err_out:
 		}
 	}
 
-	/* free q array */
+	 
 	if (rx_qcqs) {
 		devm_kfree(lif->ionic->dev, rx_qcqs);
 		rx_qcqs = NULL;
@@ -3080,9 +3039,7 @@ err_out:
 		tx_qcqs = NULL;
 	}
 
-	/* clean the unused dma and info allocations when new set is smaller
-	 * than the full array, but leave the qcq shells in place
-	 */
+	 
 	for (i = lif->nxqs; i < lif->ionic->ntxqs_per_lif; i++) {
 		if (lif->txqcqs && lif->txqcqs[i]) {
 			lif->txqcqs[i]->flags &= ~IONIC_QCQ_F_INTR;
@@ -3160,7 +3117,7 @@ int ionic_lif_alloc(struct ionic *ionic)
 		lif->nrxq_descs = IONIC_DEF_TXRX_DESC;
 	}
 
-	/* Convert the default coalesce value to actual hw resolution */
+	 
 	lif->rx_coalesce_usecs = IONIC_ITR_COAL_USEC_DEFAULT;
 	lif->rx_coalesce_hw = ionic_coal_usec_to_hw(lif->ionic,
 						    lif->rx_coalesce_usecs);
@@ -3180,7 +3137,7 @@ int ionic_lif_alloc(struct ionic *ionic)
 	INIT_LIST_HEAD(&lif->deferred.list);
 	INIT_WORK(&lif->deferred.work, ionic_lif_deferred_work);
 
-	/* allocate lif info */
+	 
 	lif->info_sz = ALIGN(sizeof(*lif->info), PAGE_SIZE);
 	lif->info = dma_alloc_coherent(dev, lif->info_sz,
 				       &lif->info_pa, GFP_KERNEL);
@@ -3192,13 +3149,13 @@ int ionic_lif_alloc(struct ionic *ionic)
 
 	ionic_debugfs_add_lif(lif);
 
-	/* allocate control queues and txrx queue arrays */
+	 
 	ionic_lif_queue_identify(lif);
 	err = ionic_qcqs_alloc(lif);
 	if (err)
 		goto err_out_free_lif_info;
 
-	/* allocate rss indirection table */
+	 
 	tbl_sz = le16_to_cpu(lif->ionic->ident.lif.eth.rss_ind_tbl_sz);
 	lif->rss_ind_tbl_sz = sizeof(*lif->rss_ind_tbl) * tbl_sz;
 	lif->rss_ind_tbl = dma_alloc_coherent(dev, lif->rss_ind_tbl_sz,
@@ -3340,10 +3297,7 @@ static void ionic_lif_handle_fw_up(struct ionic_lif *lif)
 
 	dev_info(ionic->dev, "FW Up: restarting LIFs\n");
 
-	/* This is a little different from what happens at
-	 * probe time because the LIF already exists so we
-	 * just need to reanimate it.
-	 */
+	 
 	ionic_init_devinfo(ionic);
 	err = ionic_identify(ionic);
 	if (err)
@@ -3361,7 +3315,7 @@ static void ionic_lif_handle_fw_up(struct ionic_lif *lif)
 
 	dev_info(ionic->dev, "FW Up: LIFs restarted\n");
 
-	/* restore the hardware timestamping queues */
+	 
 	ionic_lif_hwstamp_replay(lif);
 
 	return;
@@ -3376,31 +3330,31 @@ void ionic_lif_free(struct ionic_lif *lif)
 
 	ionic_lif_free_phc(lif);
 
-	/* free rss indirection table */
+	 
 	dma_free_coherent(dev, lif->rss_ind_tbl_sz, lif->rss_ind_tbl,
 			  lif->rss_ind_tbl_pa);
 	lif->rss_ind_tbl = NULL;
 	lif->rss_ind_tbl_pa = 0;
 
-	/* free queues */
+	 
 	ionic_qcqs_free(lif);
 	if (!test_bit(IONIC_LIF_F_FW_RESET, lif->state))
 		ionic_lif_reset(lif);
 
-	/* free lif info */
+	 
 	kfree(lif->identity);
 	dma_free_coherent(dev, lif->info_sz, lif->info, lif->info_pa);
 	lif->info = NULL;
 	lif->info_pa = 0;
 
-	/* unmap doorbell page */
+	 
 	ionic_bus_unmap_dbpage(lif->ionic, lif->kern_dbpage);
 	lif->kern_dbpage = NULL;
 
 	mutex_destroy(&lif->config_lock);
 	mutex_destroy(&lif->queue_lock);
 
-	/* free netdev & lif */
+	 
 	ionic_debugfs_del_lif(lif);
 	free_netdev(lif->netdev);
 }
@@ -3515,7 +3469,7 @@ static int ionic_lif_notifyq_init(struct ionic_lif *lif)
 	dev_dbg(dev, "notifyq->hw_type %d\n", q->hw_type);
 	dev_dbg(dev, "notifyq->hw_index %d\n", q->hw_index);
 
-	/* preset the callback info */
+	 
 	q->info[0].cb_arg = lif;
 
 	qcq->flags |= IONIC_QCQ_F_INITED;
@@ -3562,15 +3516,11 @@ static int ionic_station_set(struct ionic_lif *lif)
 	}
 
 	if (!is_zero_ether_addr(netdev->dev_addr)) {
-		/* If the netdev mac is non-zero and doesn't match the default
-		 * device address, it was set by something earlier and we're
-		 * likely here again after a fw-upgrade reset.  We need to be
-		 * sure the netdev mac is in our filter list.
-		 */
+		 
 		if (!ether_addr_equal(mac_address, netdev->dev_addr))
 			ionic_lif_addr_add(lif, netdev->dev_addr);
 	} else {
-		/* Update the netdev mac with the device's mac */
+		 
 		ether_addr_copy(addr.sa_data, mac_address);
 		addr.sa_family = AF_INET;
 		err = eth_prepare_mac_addr_change(netdev, &addr);
@@ -3608,7 +3558,7 @@ int ionic_lif_init(struct ionic_lif *lif)
 
 	lif->hw_index = le16_to_cpu(comp.hw_index);
 
-	/* now that we have the hw_index we can figure out our doorbell page */
+	 
 	lif->dbid_count = le32_to_cpu(lif->ionic->ident.dev.ndbpgs_per_lif);
 	if (!lif->dbid_count) {
 		dev_err(dev, "No doorbell pages, aborting\n");
@@ -3729,7 +3679,7 @@ int ionic_lif_register(struct ionic_lif *lif)
 	if (err)
 		lif->ionic->nb.notifier_call = NULL;
 
-	/* only register LIF0 for now */
+	 
 	err = register_netdev(lif->netdev);
 	if (err) {
 		dev_err(lif->ionic->dev, "Cannot register net device, aborting\n");
@@ -3774,7 +3724,7 @@ static void ionic_lif_queue_identify(struct ionic_lif *lif)
 	for (qtype = 0; qtype < ARRAY_SIZE(ionic_qtype_versions); qtype++) {
 		struct ionic_qtype_info *qti = &lif->qtype_info[qtype];
 
-		/* filter out the ones we know about */
+		 
 		switch (qtype) {
 		case IONIC_QTYPE_ADMINQ:
 		case IONIC_QTYPE_NOTIFYQ:
@@ -3889,7 +3839,7 @@ int ionic_lif_size(struct ionic *ionic)
 	unsigned int min_intrs;
 	int err;
 
-	/* retrieve basic values from FW */
+	 
 	lc = &ident->lif.eth.config;
 	dev_nintrs = le32_to_cpu(ident->dev.nintrs);
 	neqs_per_lif = le32_to_cpu(ident->lif.rdma.eq_qtype.qid_count);
@@ -3897,7 +3847,7 @@ int ionic_lif_size(struct ionic *ionic)
 	ntxqs_per_lif = le32_to_cpu(lc->queue_count[IONIC_QTYPE_TXQ]);
 	nrxqs_per_lif = le32_to_cpu(lc->queue_count[IONIC_QTYPE_RXQ]);
 
-	/* limit values to play nice with kdump */
+	 
 	if (is_kdump_kernel()) {
 		dev_nintrs = 2;
 		neqs_per_lif = 0;
@@ -3906,7 +3856,7 @@ int ionic_lif_size(struct ionic *ionic)
 		nrxqs_per_lif = 1;
 	}
 
-	/* reserve last queue id for hardware timestamping */
+	 
 	if (lc->features & cpu_to_le64(IONIC_ETH_HW_TIMESTAMP)) {
 		if (ntxqs_per_lif <= 1 || nrxqs_per_lif <= 1) {
 			lc->features &= cpu_to_le64(~IONIC_ETH_HW_TIMESTAMP);
@@ -3921,13 +3871,9 @@ int ionic_lif_size(struct ionic *ionic)
 	neqs = min(neqs_per_lif, num_online_cpus());
 
 try_again:
-	/* interrupt usage:
-	 *    1 for master lif adminq/notifyq
-	 *    1 for each CPU for master lif TxRx queue pairs
-	 *    whatever's left is for RDMA queues
-	 */
+	 
 	nintrs = 1 + nxqs + neqs;
-	min_intrs = 2;  /* adminq + 1 TxRx queue pair */
+	min_intrs = 2;   
 
 	if (nintrs > dev_nintrs)
 		goto try_fewer;

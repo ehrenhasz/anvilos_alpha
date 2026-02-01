@@ -1,16 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-or-later OR copyleft-next-0.3.1
-/*
- * proc sysctl test driver
- *
- * Copyright (C) 2017 Luis R. Rodriguez <mcgrof@kernel.org>
- */
 
-/*
- * This module provides an interface to the proc sysctl interfaces.  This
- * driver requires CONFIG_PROC_SYSCTL. It will not normally be loaded by the
- * system unless explicitly requested by name. You can also build this driver
- * into your kernel.
- */
+ 
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -68,7 +59,7 @@ static struct test_sysctl_data test_data = {
 	.string_0001 = "(none)",
 };
 
-/* These are all under /proc/sys/debug/test_sysctl/ */
+ 
 static struct ctl_table test_table[] = {
 	{
 		.procname	= "int_0001",
@@ -175,7 +166,7 @@ static int test_sysctl_setup_node_tests(void)
 	return 0;
 }
 
-/* Used to test that unregister actually removes the directory */
+ 
 static struct ctl_table test_table_unregister[] = {
 	{
 		.procname	= "unregister_error",
@@ -210,12 +201,7 @@ static int test_sysctl_run_register_mount_point(void)
 	sysctl_test_headers.test_h_mnterror
 		= register_sysctl("debug/test_sysctl/mnt/mnt_error",
 				  test_table_unregister);
-	/*
-	 * Don't check the result.:
-	 * If it fails (expected behavior), return 0.
-	 * If successful (missbehavior of register mount point), we want to see
-	 * mnt_error when we run the sysctl test script
-	 */
+	 
 
 	return 0;
 }

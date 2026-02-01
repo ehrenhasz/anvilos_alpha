@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  CLPS711X IRQ driver
- *
- *  Copyright (C) 2013 Alexander Shiyan <shc_work@mail.ru>
- */
+
+ 
 
 #include <linux/io.h>
 #include <linux/irq.h>
@@ -140,7 +136,7 @@ static int __init clps711x_intc_irq_map(struct irq_domain *h, unsigned int virq,
 		handler = handle_fasteoi_irq;
 	}
 
-	/* Clear down pending interrupt */
+	 
 	if (clps711x_irqs[hw].eoi)
 		writel_relaxed(0, clps711x_intc->base + clps711x_irqs[hw].eoi);
 
@@ -172,7 +168,7 @@ static int __init _clps711x_intc_init(struct device_node *np,
 	clps711x_intc->intsr[2] = clps711x_intc->base + CLPS711X_INTSR3;
 	clps711x_intc->intmr[2] = clps711x_intc->base + CLPS711X_INTMR3;
 
-	/* Mask all interrupts */
+	 
 	writel_relaxed(0, clps711x_intc->intmr[0]);
 	writel_relaxed(0, clps711x_intc->intmr[1]);
 	writel_relaxed(0, clps711x_intc->intmr[2]);

@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (C) 2023. Huawei Technologies Co., Ltd */
+
+ 
 #define _GNU_SOURCE
 #include <sched.h>
 #include <stdbool.h>
@@ -26,7 +26,7 @@ static void *htab_lookup_fn(void *arg)
 		struct htab_val value;
 		unsigned int key;
 
-		/* Use BPF_F_LOCK to use spin-lock in map value. */
+		 
 		key = 7;
 		bpf_map_lookup_elem_flags(ctx->fd, &key, &value, BPF_F_LOCK);
 	}

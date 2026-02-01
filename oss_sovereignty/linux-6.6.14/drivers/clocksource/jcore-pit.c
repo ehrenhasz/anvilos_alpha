@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * J-Core SoC PIT/clocksource driver
- *
- * Copyright (C) 2015-2016 Smart Energy Instruments, Inc.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/slab.h>
@@ -177,35 +173,7 @@ static int __init jcore_pit_init(struct device_node *node)
 		return err;
 	}
 
-	/*
-	 * The J-Core PIT is not hard-wired to a particular IRQ, but
-	 * integrated with the interrupt controller such that the IRQ it
-	 * generates is programmable, as follows:
-	 *
-	 * The bit layout of the PIT enable register is:
-	 *
-	 *	.....e..ppppiiiiiiii............
-	 *
-	 * where the .'s indicate unrelated/unused bits, e is enable,
-	 * p is priority, and i is hard irq number.
-	 *
-	 * For the PIT included in AIC1 (obsolete but still in use),
-	 * any hard irq (trap number) can be programmed via the 8
-	 * iiiiiiii bits, and a priority (0-15) is programmable
-	 * separately in the pppp bits.
-	 *
-	 * For the PIT included in AIC2 (current), the programming
-	 * interface is equivalent modulo interrupt mapping. This is
-	 * why a different compatible tag was not used. However only
-	 * traps 64-127 (the ones actually intended to be used for
-	 * interrupts, rather than syscalls/exceptions/etc.) can be
-	 * programmed (the high 2 bits of i are ignored) and the
-	 * priority pppp is <<2'd and or'd onto the irq number. This
-	 * choice seems to have been made on the hardware engineering
-	 * side under an assumption that preserving old AIC1 priority
-	 * mappings was important. Future models will likely ignore
-	 * the pppp field.
-	 */
+	 
 	hwirq = irq_get_irq_data(pit_irq)->hwirq;
 	irqprio = (hwirq >> 2) & PIT_PRIO_MASK;
 	enable_val = (1U << PIT_ENABLE_SHIFT)

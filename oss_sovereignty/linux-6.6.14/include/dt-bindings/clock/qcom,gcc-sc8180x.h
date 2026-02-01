@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
-/*
- * Copyright (c) 2018-2019, The Linux Foundation. All rights reserved.
- * Copyright (c) 2021, Linaro Ltd.
- */
+ 
+ 
 
 #ifndef _DT_BINDINGS_CLK_QCOM_GCC_SC8180X_H
 #define _DT_BINDINGS_CLK_QCOM_GCC_SC8180X_H
@@ -293,7 +290,7 @@
 #define GCC_VIDEO_AXI1_CLK_BCR					43
 #define GCC_USB3_DP_PHY_SEC_BCR					44
 
-/* GCC GDSCRs */
+ 
 #define EMAC_GDSC						0
 #define PCIE_0_GDSC						1
 #define PCIE_1_GDSC						2

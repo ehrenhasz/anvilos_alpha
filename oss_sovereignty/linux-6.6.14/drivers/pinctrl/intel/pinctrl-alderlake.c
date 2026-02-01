@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Intel Alder Lake PCH pinctrl/GPIO driver
- *
- * Copyright (C) 2020, 2022 Intel Corporation
- * Author: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
- */
+
+ 
 
 #include <linux/mod_devicetable.h>
 #include <linux/module.h>
@@ -40,9 +35,9 @@
 #define ADL_S_COMMUNITY(b, s, e, g)			\
 	INTEL_COMMUNITY_GPPS(b, s, e, g, ADL_S)
 
-/* Alder Lake-N */
+ 
 static const struct pinctrl_pin_desc adln_pins[] = {
-	/* GPP_B */
+	 
 	PINCTRL_PIN(0, "CORE_VID_0"),
 	PINCTRL_PIN(1, "CORE_VID_1"),
 	PINCTRL_PIN(2, "GPPC_B_2"),
@@ -69,7 +64,7 @@ static const struct pinctrl_pin_desc adln_pins[] = {
 	PINCTRL_PIN(23, "GPPC_B_23"),
 	PINCTRL_PIN(24, "GSPI0_CLK_LOOPBK"),
 	PINCTRL_PIN(25, "GSPI1_CLK_LOOPBK"),
-	/* GPP_T */
+	 
 	PINCTRL_PIN(26, "GPPC_T_0"),
 	PINCTRL_PIN(27, "GPPC_T_1"),
 	PINCTRL_PIN(28, "FUSA_DIAGTEST_EN"),
@@ -86,7 +81,7 @@ static const struct pinctrl_pin_desc adln_pins[] = {
 	PINCTRL_PIN(39, "GPPC_T_13"),
 	PINCTRL_PIN(40, "GPPC_T_14"),
 	PINCTRL_PIN(41, "GPPC_T_15"),
-	/* GPP_A */
+	 
 	PINCTRL_PIN(42, "ESPI_IO_0"),
 	PINCTRL_PIN(43, "ESPI_IO_1"),
 	PINCTRL_PIN(44, "ESPI_IO_2"),
@@ -112,7 +107,7 @@ static const struct pinctrl_pin_desc adln_pins[] = {
 	PINCTRL_PIN(64, "GPPC_A_22"),
 	PINCTRL_PIN(65, "ESPI_CS1B"),
 	PINCTRL_PIN(66, "ESPI_CLK_LOOPBK"),
-	/* GPP_S */
+	 
 	PINCTRL_PIN(67, "GPP_S_0"),
 	PINCTRL_PIN(68, "GPP_S_1"),
 	PINCTRL_PIN(69, "GPP_S_2"),
@@ -121,7 +116,7 @@ static const struct pinctrl_pin_desc adln_pins[] = {
 	PINCTRL_PIN(72, "GPP_S_5"),
 	PINCTRL_PIN(73, "GPP_S_6"),
 	PINCTRL_PIN(74, "GPP_S_7"),
-	/* GPP_I */
+	 
 	PINCTRL_PIN(75, "GPP_F_0_CNV_BRI_DT_UART0_RTSB"),
 	PINCTRL_PIN(76, "GPP_F_1_CNV_BRI_RSP_UART0_RXD"),
 	PINCTRL_PIN(77, "GPP_F_2_CNV_RGI_DT_UART0_TXD"),
@@ -142,7 +137,7 @@ static const struct pinctrl_pin_desc adln_pins[] = {
 	PINCTRL_PIN(92, "GPP_F_17_EMMC_CLK"),
 	PINCTRL_PIN(93, "GPP_F_18_EMMC_RESETB"),
 	PINCTRL_PIN(94, "GPP_F_19_A4WP_PRESENT"),
-	/* GPP_H */
+	 
 	PINCTRL_PIN(95, "GPPC_H_0"),
 	PINCTRL_PIN(96, "GPPC_H_1"),
 	PINCTRL_PIN(97, "GPPC_H_2"),
@@ -167,7 +162,7 @@ static const struct pinctrl_pin_desc adln_pins[] = {
 	PINCTRL_PIN(116, "GPPC_H_21"),
 	PINCTRL_PIN(117, "GPPC_H_22"),
 	PINCTRL_PIN(118, "GPPC_H_23"),
-	/* GPP_D */
+	 
 	PINCTRL_PIN(119, "GPPC_D_0"),
 	PINCTRL_PIN(120, "GPPC_D_1"),
 	PINCTRL_PIN(121, "GPPC_D_2"),
@@ -189,7 +184,7 @@ static const struct pinctrl_pin_desc adln_pins[] = {
 	PINCTRL_PIN(137, "GPPC_D_18"),
 	PINCTRL_PIN(138, "GPPC_D_19"),
 	PINCTRL_PIN(139, "GSPI2_CLK_LOOPBK"),
-	/* vGPIO */
+	 
 	PINCTRL_PIN(140, "CNV_BTEN"),
 	PINCTRL_PIN(141, "CNV_BT_HOST_WAKEB"),
 	PINCTRL_PIN(142, "CNV_BT_IF_SELECT"),
@@ -219,7 +214,7 @@ static const struct pinctrl_pin_desc adln_pins[] = {
 	PINCTRL_PIN(166, "vI2S2_RXD"),
 	PINCTRL_PIN(167, "THC0_WOT_INT"),
 	PINCTRL_PIN(168, "THC1_WOT_INT"),
-	/* GPP_C */
+	 
 	PINCTRL_PIN(169, "SMBCLK"),
 	PINCTRL_PIN(170, "SMBDATA"),
 	PINCTRL_PIN(171, "SMBALERTB"),
@@ -244,7 +239,7 @@ static const struct pinctrl_pin_desc adln_pins[] = {
 	PINCTRL_PIN(190, "GPPC_C_21"),
 	PINCTRL_PIN(191, "GPPC_C_22"),
 	PINCTRL_PIN(192, "GPPC_C_23"),
-	/* GPP_F */
+	 
 	PINCTRL_PIN(193, "CNV_BRI_DT"),
 	PINCTRL_PIN(194, "CNV_BRI_RSP"),
 	PINCTRL_PIN(195, "CNV_RGI_DT"),
@@ -270,14 +265,14 @@ static const struct pinctrl_pin_desc adln_pins[] = {
 	PINCTRL_PIN(215, "GPPC_F_22"),
 	PINCTRL_PIN(216, "GPPC_F_23"),
 	PINCTRL_PIN(217, "GPPF_CLK_LOOPBACK"),
-	/* HVCMOS */
+	 
 	PINCTRL_PIN(218, "L_BKLTEN"),
 	PINCTRL_PIN(219, "L_BKLTCTL"),
 	PINCTRL_PIN(220, "L_VDDEN"),
 	PINCTRL_PIN(221, "SYS_PWROK"),
 	PINCTRL_PIN(222, "SYS_RESETB"),
 	PINCTRL_PIN(223, "MLK_RSTB"),
-	/* GPP_E */
+	 
 	PINCTRL_PIN(224, "GPPC_E_0"),
 	PINCTRL_PIN(225, "GPPC_E_1"),
 	PINCTRL_PIN(226, "GPPC_E_2"),
@@ -303,7 +298,7 @@ static const struct pinctrl_pin_desc adln_pins[] = {
 	PINCTRL_PIN(246, "DNX_FORCE_RELOAD"),
 	PINCTRL_PIN(247, "GPPC_E_23"),
 	PINCTRL_PIN(248, "GPPE_CLK_LOOPBACK"),
-	/* GPP_R */
+	 
 	PINCTRL_PIN(249, "HDA_BCLK"),
 	PINCTRL_PIN(250, "HDA_SYNC"),
 	PINCTRL_PIN(251, "HDA_SDO"),
@@ -315,28 +310,28 @@ static const struct pinctrl_pin_desc adln_pins[] = {
 };
 
 static const struct intel_padgroup adln_community0_gpps[] = {
-	ADL_GPP(0, 0, 25, 0),				/* GPP_B */
-	ADL_GPP(1, 26, 41, 32),				/* GPP_T */
-	ADL_GPP(2, 42, 66, 64),				/* GPP_A */
+	ADL_GPP(0, 0, 25, 0),				 
+	ADL_GPP(1, 26, 41, 32),				 
+	ADL_GPP(2, 42, 66, 64),				 
 };
 
 static const struct intel_padgroup adln_community1_gpps[] = {
-	ADL_GPP(0, 67, 74, 96),				/* GPP_S */
-	ADL_GPP(1, 75, 94, 128),			/* GPP_I */
-	ADL_GPP(2, 95, 118, 160),			/* GPP_H */
-	ADL_GPP(3, 119, 139, 192),			/* GPP_D */
-	ADL_GPP(4, 140, 168, 224),			/* vGPIO */
+	ADL_GPP(0, 67, 74, 96),				 
+	ADL_GPP(1, 75, 94, 128),			 
+	ADL_GPP(2, 95, 118, 160),			 
+	ADL_GPP(3, 119, 139, 192),			 
+	ADL_GPP(4, 140, 168, 224),			 
 };
 
 static const struct intel_padgroup adln_community4_gpps[] = {
-	ADL_GPP(0, 169, 192, 256),			/* GPP_C */
-	ADL_GPP(1, 193, 217, 288),			/* GPP_F */
-	ADL_GPP(2, 218, 223, INTEL_GPIO_BASE_NOMAP),	/* HVCMOS */
-	ADL_GPP(3, 224, 248, 320),			/* GPP_E */
+	ADL_GPP(0, 169, 192, 256),			 
+	ADL_GPP(1, 193, 217, 288),			 
+	ADL_GPP(2, 218, 223, INTEL_GPIO_BASE_NOMAP),	 
+	ADL_GPP(3, 224, 248, 320),			 
 };
 
 static const struct intel_padgroup adln_community5_gpps[] = {
-	ADL_GPP(0, 249, 256, 352),			/* GPP_R */
+	ADL_GPP(0, 249, 256, 352),			 
 };
 
 static const struct intel_community adln_communities[] = {
@@ -353,9 +348,9 @@ static const struct intel_pinctrl_soc_data adln_soc_data = {
 	.ncommunities = ARRAY_SIZE(adln_communities),
 };
 
-/* Alder Lake-S */
+ 
 static const struct pinctrl_pin_desc adls_pins[] = {
-	/* GPP_I */
+	 
 	PINCTRL_PIN(0, "EXT_PWR_GATEB"),
 	PINCTRL_PIN(1, "DDSP_HPD_1"),
 	PINCTRL_PIN(2, "DDSP_HPD_2"),
@@ -381,7 +376,7 @@ static const struct pinctrl_pin_desc adls_pins[] = {
 	PINCTRL_PIN(22, "GSPI1_MOSI"),
 	PINCTRL_PIN(23, "GSPI0_CLK_LOOPBK"),
 	PINCTRL_PIN(24, "GSPI1_CLK_LOOPBK"),
-	/* GPP_R */
+	 
 	PINCTRL_PIN(25, "HDA_BCLK"),
 	PINCTRL_PIN(26, "HDA_SYNC"),
 	PINCTRL_PIN(27, "HDA_SDO"),
@@ -405,7 +400,7 @@ static const struct pinctrl_pin_desc adls_pins[] = {
 	PINCTRL_PIN(45, "DDPA_CTRLCLK"),
 	PINCTRL_PIN(46, "DDPA_CTRLDATA"),
 	PINCTRL_PIN(47, "GSPI2_CLK_LOOPBK"),
-	/* GPP_J */
+	 
 	PINCTRL_PIN(48, "CNV_PA_BLANKING"),
 	PINCTRL_PIN(49, "CPU_C10_GATEB"),
 	PINCTRL_PIN(50, "CNV_BRI_DT"),
@@ -418,7 +413,7 @@ static const struct pinctrl_pin_desc adls_pins[] = {
 	PINCTRL_PIN(57, "SRCCLKREQB_17"),
 	PINCTRL_PIN(58, "BSSB_LS_RX"),
 	PINCTRL_PIN(59, "BSSB_LS_TX"),
-	/* vGPIO */
+	 
 	PINCTRL_PIN(60, "CNV_BTEN"),
 	PINCTRL_PIN(61, "CNV_BT_HOST_WAKEB"),
 	PINCTRL_PIN(62, "CNV_BT_IF_SELECT"),
@@ -446,7 +441,7 @@ static const struct pinctrl_pin_desc adls_pins[] = {
 	PINCTRL_PIN(84, "vI2S2_SFRM"),
 	PINCTRL_PIN(85, "vI2S2_TXD"),
 	PINCTRL_PIN(86, "vI2S2_RXD"),
-	/* vGPIO_0 */
+	 
 	PINCTRL_PIN(87, "ESPI_USB_OCB_0"),
 	PINCTRL_PIN(88, "ESPI_USB_OCB_1"),
 	PINCTRL_PIN(89, "ESPI_USB_OCB_2"),
@@ -455,7 +450,7 @@ static const struct pinctrl_pin_desc adls_pins[] = {
 	PINCTRL_PIN(92, "USB_CPU_OCB_1"),
 	PINCTRL_PIN(93, "USB_CPU_OCB_2"),
 	PINCTRL_PIN(94, "USB_CPU_OCB_3"),
-	/* GPP_B */
+	 
 	PINCTRL_PIN(95, "PCIE_LNK_DOWN"),
 	PINCTRL_PIN(96, "ISH_UART0_RTSB"),
 	PINCTRL_PIN(97, "VRALERTB"),
@@ -480,7 +475,7 @@ static const struct pinctrl_pin_desc adls_pins[] = {
 	PINCTRL_PIN(116, "GPP_B_21"),
 	PINCTRL_PIN(117, "GPP_B_22"),
 	PINCTRL_PIN(118, "SML1ALERTB"),
-	/* GPP_G */
+	 
 	PINCTRL_PIN(119, "GPP_G_0"),
 	PINCTRL_PIN(120, "GPP_G_1"),
 	PINCTRL_PIN(121, "DNX_FORCE_RELOAD"),
@@ -489,7 +484,7 @@ static const struct pinctrl_pin_desc adls_pins[] = {
 	PINCTRL_PIN(124, "SLP_DRAMB"),
 	PINCTRL_PIN(125, "GPP_G_6"),
 	PINCTRL_PIN(126, "GPP_G_7"),
-	/* GPP_H */
+	 
 	PINCTRL_PIN(127, "SRCCLKREQB_18"),
 	PINCTRL_PIN(128, "GPP_H_1"),
 	PINCTRL_PIN(129, "SRCCLKREQB_8"),
@@ -514,7 +509,7 @@ static const struct pinctrl_pin_desc adls_pins[] = {
 	PINCTRL_PIN(148, "ISH_I2C1_SDA"),
 	PINCTRL_PIN(149, "ISH_I2C1_SCL"),
 	PINCTRL_PIN(150, "TIME_SYNC_0"),
-	/* SPI0 */
+	 
 	PINCTRL_PIN(151, "SPI0_IO_2"),
 	PINCTRL_PIN(152, "SPI0_IO_3"),
 	PINCTRL_PIN(153, "SPI0_MOSI_IO_0"),
@@ -524,7 +519,7 @@ static const struct pinctrl_pin_desc adls_pins[] = {
 	PINCTRL_PIN(157, "SPI0_FLASH_1_CSB"),
 	PINCTRL_PIN(158, "SPI0_CLK"),
 	PINCTRL_PIN(159, "SPI0_CLK_LOOPBK"),
-	/* GPP_A */
+	 
 	PINCTRL_PIN(160, "ESPI_IO_0"),
 	PINCTRL_PIN(161, "ESPI_IO_1"),
 	PINCTRL_PIN(162, "ESPI_IO_2"),
@@ -541,7 +536,7 @@ static const struct pinctrl_pin_desc adls_pins[] = {
 	PINCTRL_PIN(173, "ESPI_ALERT3B"),
 	PINCTRL_PIN(174, "GPP_A_14"),
 	PINCTRL_PIN(175, "ESPI_CLK_LOOPBK"),
-	/* GPP_C */
+	 
 	PINCTRL_PIN(176, "SMBCLK"),
 	PINCTRL_PIN(177, "SMBDATA"),
 	PINCTRL_PIN(178, "SMBALERTB"),
@@ -566,7 +561,7 @@ static const struct pinctrl_pin_desc adls_pins[] = {
 	PINCTRL_PIN(197, "UART2_TXD"),
 	PINCTRL_PIN(198, "UART2_RTSB"),
 	PINCTRL_PIN(199, "UART2_CTSB"),
-	/* GPP_S */
+	 
 	PINCTRL_PIN(200, "SNDW1_CLK"),
 	PINCTRL_PIN(201, "SNDW1_DATA"),
 	PINCTRL_PIN(202, "SNDW2_CLK"),
@@ -575,7 +570,7 @@ static const struct pinctrl_pin_desc adls_pins[] = {
 	PINCTRL_PIN(205, "SNDW3_DATA"),
 	PINCTRL_PIN(206, "SNDW4_CLK"),
 	PINCTRL_PIN(207, "SNDW4_DATA"),
-	/* GPP_E */
+	 
 	PINCTRL_PIN(208, "SATAXPCIE_0"),
 	PINCTRL_PIN(209, "SATAXPCIE_1"),
 	PINCTRL_PIN(210, "SATAXPCIE_2"),
@@ -599,7 +594,7 @@ static const struct pinctrl_pin_desc adls_pins[] = {
 	PINCTRL_PIN(228, "GPP_E_20"),
 	PINCTRL_PIN(229, "ISH_UART0_CTSB"),
 	PINCTRL_PIN(230, "SPI1_CLK_LOOPBK"),
-	/* GPP_K */
+	 
 	PINCTRL_PIN(231, "GSXDOUT"),
 	PINCTRL_PIN(232, "GSXSLOAD"),
 	PINCTRL_PIN(233, "GSXDIN"),
@@ -615,7 +610,7 @@ static const struct pinctrl_pin_desc adls_pins[] = {
 	PINCTRL_PIN(243, "SYS_PWROK"),
 	PINCTRL_PIN(244, "SYS_RESETB"),
 	PINCTRL_PIN(245, "MLK_RSTB"),
-	/* GPP_F */
+	 
 	PINCTRL_PIN(246, "SATAXPCIE_3"),
 	PINCTRL_PIN(247, "SATAXPCIE_4"),
 	PINCTRL_PIN(248, "SATAXPCIE_5"),
@@ -640,7 +635,7 @@ static const struct pinctrl_pin_desc adls_pins[] = {
 	PINCTRL_PIN(267, "L_BKLTCTL"),
 	PINCTRL_PIN(268, "VNN_CTRL"),
 	PINCTRL_PIN(269, "GPP_F_23"),
-	/* GPP_D */
+	 
 	PINCTRL_PIN(270, "SRCCLKREQB_0"),
 	PINCTRL_PIN(271, "SRCCLKREQB_1"),
 	PINCTRL_PIN(272, "SRCCLKREQB_2"),
@@ -666,7 +661,7 @@ static const struct pinctrl_pin_desc adls_pins[] = {
 	PINCTRL_PIN(292, "UART3_RTSB"),
 	PINCTRL_PIN(293, "UART3_CTSB"),
 	PINCTRL_PIN(294, "GSPI3_CLK_LOOPBK"),
-	/* JTAG */
+	 
 	PINCTRL_PIN(295, "JTAG_TDO"),
 	PINCTRL_PIN(296, "JTAGX"),
 	PINCTRL_PIN(297, "PRDYB"),
@@ -679,35 +674,35 @@ static const struct pinctrl_pin_desc adls_pins[] = {
 };
 
 static const struct intel_padgroup adls_community0_gpps[] = {
-	ADL_GPP(0, 0, 24, 0),				/* GPP_I */
-	ADL_GPP(1, 25, 47, 32),				/* GPP_R */
-	ADL_GPP(2, 48, 59, 64),				/* GPP_J */
-	ADL_GPP(3, 60, 86, 96),				/* vGPIO */
-	ADL_GPP(4, 87, 94, 128),			/* vGPIO_0 */
+	ADL_GPP(0, 0, 24, 0),				 
+	ADL_GPP(1, 25, 47, 32),				 
+	ADL_GPP(2, 48, 59, 64),				 
+	ADL_GPP(3, 60, 86, 96),				 
+	ADL_GPP(4, 87, 94, 128),			 
 };
 
 static const struct intel_padgroup adls_community1_gpps[] = {
-	ADL_GPP(0, 95, 118, 160),			/* GPP_B */
-	ADL_GPP(1, 119, 126, 192),			/* GPP_G */
-	ADL_GPP(2, 127, 150, 224),			/* GPP_H */
+	ADL_GPP(0, 95, 118, 160),			 
+	ADL_GPP(1, 119, 126, 192),			 
+	ADL_GPP(2, 127, 150, 224),			 
 };
 
 static const struct intel_padgroup adls_community3_gpps[] = {
-	ADL_GPP(0, 151, 159, INTEL_GPIO_BASE_NOMAP),	/* SPI0 */
-	ADL_GPP(1, 160, 175, 256),			/* GPP_A */
-	ADL_GPP(2, 176, 199, 288),			/* GPP_C */
+	ADL_GPP(0, 151, 159, INTEL_GPIO_BASE_NOMAP),	 
+	ADL_GPP(1, 160, 175, 256),			 
+	ADL_GPP(2, 176, 199, 288),			 
 };
 
 static const struct intel_padgroup adls_community4_gpps[] = {
-	ADL_GPP(0, 200, 207, 320),			/* GPP_S */
-	ADL_GPP(1, 208, 230, 352),			/* GPP_E */
-	ADL_GPP(2, 231, 245, 384),			/* GPP_K */
-	ADL_GPP(3, 246, 269, 416),			/* GPP_F */
+	ADL_GPP(0, 200, 207, 320),			 
+	ADL_GPP(1, 208, 230, 352),			 
+	ADL_GPP(2, 231, 245, 384),			 
+	ADL_GPP(3, 246, 269, 416),			 
 };
 
 static const struct intel_padgroup adls_community5_gpps[] = {
-	ADL_GPP(0, 270, 294, 448),			/* GPP_D */
-	ADL_GPP(1, 295, 303, INTEL_GPIO_BASE_NOMAP),	/* JTAG */
+	ADL_GPP(0, 270, 294, 448),			 
+	ADL_GPP(1, 295, 303, INTEL_GPIO_BASE_NOMAP),	 
 };
 
 static const struct intel_community adls_communities[] = {

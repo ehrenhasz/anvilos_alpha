@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2021 Broadcom. All Rights Reserved. The term
- * “Broadcom” refers to Broadcom Inc. and/or its subsidiaries.
- */
+
+ 
 
 #include "efct_driver.h"
 #include "efct_hw.h"
@@ -10,8 +7,8 @@
 
 struct efct_io_pool {
 	struct efct *efct;
-	spinlock_t lock;	/* IO pool lock */
-	u32 io_num_ios;		/* Total IOs allocated */
+	spinlock_t lock;	 
+	u32 io_num_ios;		 
 	struct efct_io *ios[EFCT_NUM_SCSI_IOS];
 	struct list_head freelist;
 
@@ -24,14 +21,14 @@ efct_io_pool_create(struct efct *efct, u32 num_sgl)
 	struct efct_io_pool *io_pool;
 	struct efct_io *io;
 
-	/* Allocate the IO pool */
+	 
 	io_pool = kzalloc(sizeof(*io_pool), GFP_KERNEL);
 	if (!io_pool)
 		return NULL;
 
 	io_pool->efct = efct;
 	INIT_LIST_HEAD(&io_pool->freelist);
-	/* initialize IO pool lock */
+	 
 	spin_lock_init(&io_pool->lock);
 
 	for (i = 0; i < EFCT_NUM_SCSI_IOS; i++) {
@@ -44,7 +41,7 @@ efct_io_pool_create(struct efct *efct, u32 num_sgl)
 		io->tag = i;
 		io->instance_index = i;
 
-		/* Allocate a response buffer */
+		 
 		io->rspbuf.size = SCSI_RSP_BUF_LENGTH;
 		io->rspbuf.virt = dma_alloc_coherent(&efct->pci->dev,
 						     io->rspbuf.size,
@@ -55,7 +52,7 @@ efct_io_pool_create(struct efct *efct, u32 num_sgl)
 			return NULL;
 		}
 
-		/* Allocate SGL */
+		 
 		io->sgl = kzalloc(sizeof(*io->sgl) * num_sgl, GFP_KERNEL);
 		if (!io->sgl) {
 			efct_io_pool_free(io_pool);
@@ -142,7 +139,7 @@ efct_io_pool_io_alloc(struct efct_io_pool *io_pool)
 	return io;
 }
 
-/* Free an object used to track an IO */
+ 
 void
 efct_io_pool_io_free(struct efct_io_pool *io_pool, struct efct_io *io)
 {
@@ -167,7 +164,7 @@ efct_io_pool_io_free(struct efct_io_pool *io_pool, struct efct_io *io)
 	atomic_add_return(1, &efct->xport->io_total_free);
 }
 
-/* Find an I/O given it's node and ox_id */
+ 
 struct efct_io *
 efct_io_find_tgt_io(struct efct *efct, struct efct_node *node,
 		    u16 ox_id, u16 rx_id)

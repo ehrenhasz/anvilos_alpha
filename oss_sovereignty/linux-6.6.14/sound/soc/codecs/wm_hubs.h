@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * wm_hubs.h  --  WM899x common code
- *
- * Copyright 2009 Wolfson Microelectronics plc
- *
- * Author: Mark Brown <broonie@opensource.wolfsonmicro.com>
- */
+ 
+ 
 
 #ifndef _WM_HUBS_H
 #define _WM_HUBS_H
@@ -19,7 +13,7 @@ struct snd_soc_component;
 
 extern const unsigned int wm_hubs_spkmix_tlv[];
 
-/* This *must* be the first element of the codec->private_data struct */
+ 
 struct wm_hubs_data {
 	int dcs_codes_l;
 	int dcs_codes_r;

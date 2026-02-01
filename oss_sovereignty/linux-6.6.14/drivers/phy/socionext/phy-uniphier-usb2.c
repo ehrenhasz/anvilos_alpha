@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * phy-uniphier-usb2.c - PHY driver for UniPhier USB2 controller
- * Copyright 2015-2018 Socionext Inc.
- * Author:
- *      Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
- */
+
+ 
 
 #include <linux/mfd/syscon.h>
 #include <linux/module.h>
@@ -18,13 +13,13 @@
 #define SG_USBPHY1CTRL		0x500
 #define SG_USBPHY1CTRL2		0x504
 #define SG_USBPHY2CTRL		0x508
-#define SG_USBPHY2CTRL2		0x50c	/* LD11 */
-#define SG_USBPHY12PLL		0x50c	/* Pro4 */
+#define SG_USBPHY2CTRL2		0x50c	 
+#define SG_USBPHY12PLL		0x50c	 
 #define SG_USBPHY3CTRL		0x510
 #define SG_USBPHY3CTRL2		0x514
-#define SG_USBPHY4CTRL		0x518	/* Pro4 */
-#define SG_USBPHY4CTRL2		0x51c	/* Pro4 */
-#define SG_USBPHY34PLL		0x51c	/* Pro4 */
+#define SG_USBPHY4CTRL		0x518	 
+#define SG_USBPHY4CTRL2		0x51c	 
+#define SG_USBPHY34PLL		0x51c	 
 
 struct uniphier_u2phy_param {
 	u32 offset;
@@ -117,7 +112,7 @@ static int uniphier_u2phy_probe(struct platform_device *pdev)
 	if (WARN_ON(!data))
 		return -EINVAL;
 
-	/* get number of data */
+	 
 	for (ndatas = 0; data[ndatas].config0.offset; ndatas++)
 		;
 
@@ -198,7 +193,7 @@ static const struct uniphier_u2phy_soc_data uniphier_pro4_data[] = {
 		.config0 = { SG_USBPHY4CTRL, 0x05142400 },
 		.config1 = { SG_USBPHY34PLL, 0x00010010 },
 	},
-	{ /* sentinel */ }
+	{   }
 };
 
 static const struct uniphier_u2phy_soc_data uniphier_ld11_data[] = {
@@ -214,7 +209,7 @@ static const struct uniphier_u2phy_soc_data uniphier_ld11_data[] = {
 		.config0 = { SG_USBPHY3CTRL,  0x82280000 },
 		.config1 = { SG_USBPHY3CTRL2, 0x00000106 },
 	},
-	{ /* sentinel */ }
+	{   }
 };
 
 static const struct of_device_id uniphier_u2phy_match[] = {
@@ -226,7 +221,7 @@ static const struct of_device_id uniphier_u2phy_match[] = {
 		.compatible = "socionext,uniphier-ld11-usb2-phy",
 		.data = &uniphier_ld11_data,
 	},
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, uniphier_u2phy_match);
 

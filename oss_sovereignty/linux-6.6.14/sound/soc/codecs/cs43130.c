@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * cs43130.c  --  CS43130 ALSA Soc Audio driver
- *
- * Copyright 2017 Cirrus Logic, Inc.
- *
- * Authors: Li Xu <li.xu@cirrus.com>
- */
+
+ 
 #include <linux/module.h>
 #include <linux/moduleparam.h>
 #include <linux/kernel.h>
@@ -335,7 +329,7 @@ static int cs43130_change_clksrc(struct snd_soc_component *component,
 	int mclk_int_decoded;
 
 	if (src == cs43130->mclk_int_src) {
-		/* clk source has not changed */
+		 
 		return 0;
 	}
 
@@ -779,7 +773,7 @@ static int cs43130_dsd_hw_params(struct snd_pcm_substream *substream,
 
 	mutex_lock(&cs43130->clk_mutex);
 	if (!cs43130->clk_req) {
-		/* no DAI is currently using clk */
+		 
 		if (!(CS43130_MCLK_22M % params_rate(params)))
 			required_clk = CS43130_MCLK_22M;
 		else
@@ -842,7 +836,7 @@ static int cs43130_hw_params(struct snd_pcm_substream *substream,
 
 	mutex_lock(&cs43130->clk_mutex);
 	if (!cs43130->clk_req) {
-		/* no DAI is currently using clk */
+		 
 		if (!(CS43130_MCLK_22M % params_rate(params)))
 			required_clk = CS43130_MCLK_22M;
 		else
@@ -863,7 +857,7 @@ static int cs43130_hw_params(struct snd_pcm_substream *substream,
 	switch (dai->id) {
 	case CS43130_ASP_DOP_DAI:
 	case CS43130_XSP_DOP_DAI:
-		/* DoP bitwidth is always 24-bit */
+		 
 		bitwidth_dai = 24;
 		sclk = params_rate(params) * bitwidth_dai *
 		       params_channels(params);
@@ -911,12 +905,12 @@ static int cs43130_hw_params(struct snd_pcm_substream *substream,
 	}
 
 	if (!sclk && cs43130->dais[dai->id].dai_mode == SND_SOC_DAIFMT_CBM_CFM)
-		/* Calculate SCLK in master mode if unassigned */
+		 
 		sclk = params_rate(params) * bitwidth_dai *
 		       params_channels(params);
 
 	if (!sclk) {
-		/* at this point, SCLK must be set */
+		 
 		dev_err(component->dev, "SCLK freq is not set\n");
 		return -EINVAL;
 	}
@@ -950,7 +944,7 @@ static int cs43130_hw_free(struct snd_pcm_substream *substream,
 	mutex_lock(&cs43130->clk_mutex);
 	cs43130->clk_req--;
 	if (!cs43130->clk_req) {
-		/* no DAI is currently using clk */
+		 
 		cs43130_change_clksrc(component, CS43130_MCLK_SRC_RCO);
 		cs43130_pcm_dsd_mix(false, cs43130->regmap);
 	}
@@ -1175,10 +1169,7 @@ static int cs43130_dsd_event(struct snd_soc_dapm_widget *w,
 			regmap_update_bits(cs43130->regmap,
 					   CS43130_DSD_PATH_CTL_1,
 					   CS43130_MUTE_MASK, CS43130_MUTE_EN);
-			/*
-			 * DSD Power Down Sequence
-			 * According to Design, 130ms is preferred.
-			 */
+			 
 			msleep(130);
 			break;
 		case CS43131_CHIP_ID:
@@ -1232,10 +1223,7 @@ static int cs43130_pcm_event(struct snd_soc_dapm_widget *w,
 			regmap_update_bits(cs43130->regmap,
 					   CS43130_PCM_PATH_CTL_1,
 					   CS43130_MUTE_MASK, CS43130_MUTE_EN);
-			/*
-			 * PCM Power Down Sequence
-			 * According to Design, 130ms is preferred.
-			 */
+			 
 			msleep(130);
 			break;
 		case CS43131_CHIP_ID:
@@ -1296,11 +1284,7 @@ static int cs43130_dac_event(struct snd_soc_dapm_widget *w,
 		case CS4399_CHIP_ID:
 			regmap_multi_reg_write(cs43130->regmap, dac_postpmu_seq,
 					       ARRAY_SIZE(dac_postpmu_seq));
-			/*
-			 * Per datasheet, Sec. PCM Power-Up Sequence.
-			 * According to Design, CS43130_DXD12 must be 0 to meet
-			 * THDN and Dynamic Range spec.
-			 */
+			 
 			msleep(1000);
 			regmap_write(cs43130->regmap, CS43130_DXD12, 0);
 			break;
@@ -1656,7 +1640,7 @@ static int cs43130_component_set_sysclk(struct snd_soc_component *component,
 
 static inline u16 cs43130_get_ac_reg_val(u16 ac_freq)
 {
-	/* AC freq is counted in 5.94Hz step. */
+	 
 	return ac_freq / 6;
 }
 
@@ -2074,7 +2058,7 @@ static void cs43130_imp_meas(struct work_struct *wk)
 
 	mutex_lock(&cs43130->clk_mutex);
 	if (!cs43130->clk_req) {
-		/* clk not in use */
+		 
 		cs43130_set_pll(component, 0, 0, cs43130->mclk, CS43130_MCLK_22M);
 		if (cs43130->pll_bypass)
 			cs43130_change_clksrc(component, CS43130_MCLK_SRC_EXT);
@@ -2157,7 +2141,7 @@ exit:
 
 	mutex_lock(&cs43130->clk_mutex);
 	cs43130->clk_req--;
-	/* clk not in use */
+	 
 	if (!cs43130->clk_req)
 		cs43130_change_clksrc(component, CS43130_MCLK_SRC_RCO);
 	mutex_unlock(&cs43130->clk_mutex);
@@ -2358,7 +2342,7 @@ static const struct regmap_config cs43130_regmap = {
 	.precious_reg		= cs43130_precious_register,
 	.volatile_reg		= cs43130_volatile_register,
 	.cache_type		= REGCACHE_MAPLE,
-	/* needed for regcache_sync */
+	 
 	.use_single_read	= true,
 	.use_single_write	= true,
 };
@@ -2376,7 +2360,7 @@ static int cs43130_handle_device_data(struct i2c_client *i2c_client,
 	int i;
 
 	if (of_property_read_u32(np, "cirrus,xtal-ibias", &val) < 0) {
-		/* Crystal is unused. System clock is used for external MCLK */
+		 
 		cs43130->xtal_ibias = CS43130_XTAL_UNUSED;
 		return 0;
 	}

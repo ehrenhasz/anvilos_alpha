@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only or Apache-2.0 */
-/*
- * WF200 hardware interface definitions
- *
- * Copyright (c) 2018-2020, Silicon Laboratories Inc.
- */
+ 
+ 
 
 #ifndef WFX_HIF_API_MIB_H
 #define WFX_HIF_API_MIB_H
@@ -209,7 +205,7 @@ struct wfx_hif_mib_slot_time {
 } __packed;
 
 struct wfx_hif_mib_current_tx_power_level {
-	__le32 power_level; /* signed value */
+	__le32 power_level;  
 } __packed;
 
 struct wfx_hif_mib_non_erp_protection {

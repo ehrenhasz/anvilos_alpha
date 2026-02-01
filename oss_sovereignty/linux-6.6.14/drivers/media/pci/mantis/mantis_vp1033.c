@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
-	Mantis VP-1033 driver
 
-	Copyright (C) Manu Abraham (abraham.manu@gmail.com)
-
-*/
+ 
 
 #include <linux/signal.h>
 #include <linux/sched.h>

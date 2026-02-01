@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * MCP2221A - Microchip USB to I2C Host Protocol Bridge
- *
- * Copyright (c) 2020, Rishi Gupta <gupt21@gmail.com>
- *
- * Datasheet: https://ww1.microchip.com/downloads/en/DeviceDoc/20005565B.pdf
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/err.h>
@@ -20,7 +14,7 @@
 #include <linux/iio/iio.h>
 #include "hid-ids.h"
 
-/* Commands codes in a raw output report */
+ 
 enum {
 	MCP2221_I2C_WR_DATA = 0x90,
 	MCP2221_I2C_WR_NO_STOP = 0x94,
@@ -37,7 +31,7 @@ enum {
 	MCP2221_READ_FLASH_DATA = 0xb0,
 };
 
-/* Response codes in a raw input report */
+ 
 enum {
 	MCP2221_SUCCESS = 0x00,
 	MCP2221_I2C_ENG_BUSY = 0x01,
@@ -54,7 +48,7 @@ enum {
 	MCP2221_ALT_F_NOT_GPIOD = 0xEF,
 };
 
-/* MCP GPIO direction encoding */
+ 
 enum {
 	MCP2221_DIR_OUT = 0x00,
 	MCP2221_DIR_IN = 0x01,
@@ -62,7 +56,7 @@ enum {
 
 #define MCP_NGPIO	4
 
-/* MCP GPIO set command layout */
+ 
 struct mcp_set_gpio {
 	u8 cmd;
 	u8 dummy;
@@ -74,7 +68,7 @@ struct mcp_set_gpio {
 	} gpio[MCP_NGPIO];
 } __packed;
 
-/* MCP GPIO get command layout */
+ 
 struct mcp_get_gpio {
 	u8 cmd;
 	u8 dummy;
@@ -84,11 +78,7 @@ struct mcp_get_gpio {
 	} gpio[MCP_NGPIO];
 } __packed;
 
-/*
- * There is no way to distinguish responses. Therefore next command
- * is sent only after response to previous has been received. Mutex
- * lock is used for this purpose mainly.
- */
+ 
 struct mcp2221 {
 	struct hid_device *hdev;
 	struct i2c_adapter adapter;
@@ -117,13 +107,10 @@ struct mcp2221_iio {
 	struct mcp2221 *mcp;
 };
 
-/*
- * Default i2c bus clock frequency 400 kHz. Modify this if you
- * want to set some other frequency (min 50 kHz - max 400 kHz).
- */
+ 
 static uint i2c_clk_freq = 400;
 
-/* Synchronously send output report to the device */
+ 
 static int mcp_send_report(struct mcp2221 *mcp,
 					u8 *out_report, size_t len)
 {
@@ -134,7 +121,7 @@ static int mcp_send_report(struct mcp2221 *mcp,
 	if (!buf)
 		return -ENOMEM;
 
-	/* mcp2221 uses interrupt endpoint for out reports */
+	 
 	ret = hid_hw_output_report(mcp->hdev, buf, len);
 	kfree(buf);
 
@@ -143,11 +130,7 @@ static int mcp_send_report(struct mcp2221 *mcp,
 	return 0;
 }
 
-/*
- * Send o/p report to the device and wait for i/p report to be
- * received from the device. If the device does not respond,
- * we timeout.
- */
+ 
 static int mcp_send_data_req_status(struct mcp2221 *mcp,
 			u8 *out_report, int len)
 {
@@ -168,7 +151,7 @@ static int mcp_send_data_req_status(struct mcp2221 *mcp,
 	return mcp->status;
 }
 
-/* Check pass/fail for actual communication with i2c slave */
+ 
 static int mcp_chk_last_cmd_status(struct mcp2221 *mcp)
 {
 	memset(mcp->txbuf, 0, 8);
@@ -177,7 +160,7 @@ static int mcp_chk_last_cmd_status(struct mcp2221 *mcp)
 	return mcp_send_data_req_status(mcp, mcp->txbuf, 8);
 }
 
-/* Cancels last command releasing i2c bus just in case occupied */
+ 
 static int mcp_cancel_last_cmd(struct mcp2221 *mcp)
 {
 	memset(mcp->txbuf, 0, 8);
@@ -198,7 +181,7 @@ static int mcp_set_i2c_speed(struct mcp2221 *mcp)
 
 	ret = mcp_send_data_req_status(mcp, mcp->txbuf, 8);
 	if (ret) {
-		/* Small delay is needed here */
+		 
 		usleep_range(980, 1000);
 		mcp_cancel_last_cmd(mcp);
 	}
@@ -206,14 +189,7 @@ static int mcp_set_i2c_speed(struct mcp2221 *mcp)
 	return 0;
 }
 
-/*
- * An output report can contain minimum 1 and maximum 60 user data
- * bytes. If the number of data bytes is more then 60, we send it
- * in chunks of 60 bytes. Last chunk may contain exactly 60 or less
- * bytes. Total number of bytes is informed in very first report to
- * mcp2221, from that point onwards it first collect all the data
- * from host and then send to i2c slave device.
- */
+ 
 static int mcp_i2c_write(struct mcp2221 *mcp,
 				struct i2c_msg *msg, int type, u8 last_status)
 {
@@ -256,22 +232,14 @@ static int mcp_i2c_write(struct mcp2221 *mcp,
 		else
 			len = 60;
 
-		/*
-		 * Testing shows delay is needed between successive writes
-		 * otherwise next write fails on first-try from i2c core.
-		 * This value is obtained through automated stress testing.
-		 */
+		 
 		usleep_range(980, 1000);
 	} while (len > 0);
 
 	return ret;
 }
 
-/*
- * Device reads all data (0 - 65535 bytes) from i2c slave device and
- * stores it in device itself. This data is read back from device to
- * host in multiples of 60 bytes using input reports.
- */
+ 
 static int mcp_i2c_smbus_read(struct mcp2221 *mcp,
 				struct i2c_msg *msg, int type, u16 smbus_addr,
 				u8 smbus_len, u8 *smbus_buf)
@@ -328,7 +296,7 @@ static int mcp_i2c_xfer(struct i2c_adapter *adapter,
 
 	mutex_lock(&mcp->lock);
 
-	/* Setting speed before every transaction is required for mcp2221 */
+	 
 	ret = mcp_set_i2c_speed(mcp);
 	if (ret)
 		goto exit;
@@ -344,7 +312,7 @@ static int mcp_i2c_xfer(struct i2c_adapter *adapter,
 			goto exit;
 		ret = num;
 	} else if (num == 2) {
-		/* Ex transaction; send reg address and read its contents */
+		 
 		if (msgs[0].addr == msgs[1].addr &&
 			!(msgs[0].flags & I2C_M_RD) &&
 			 (msgs[1].flags & I2C_M_RD)) {
@@ -384,7 +352,7 @@ static int mcp_smbus_write(struct mcp2221 *mcp, u16 addr,
 	int data_len, ret;
 
 	mcp->txbuf[0] = type;
-	mcp->txbuf[1] = len + 1; /* 1 is due to command byte itself */
+	mcp->txbuf[1] = len + 1;  
 	mcp->txbuf[2] = 0;
 	mcp->txbuf[3] = (u8)(addr << 1);
 	mcp->txbuf[4] = command;
@@ -658,7 +626,7 @@ static int mcp_gpio_direction_output(struct gpio_chip *gc,
 	ret = mcp_gpio_dir_set(mcp, offset, MCP2221_DIR_OUT);
 	mutex_unlock(&mcp->lock);
 
-	/* Can't configure as output, bailout early */
+	 
 	if (ret)
 		return ret;
 
@@ -691,7 +659,7 @@ static int mcp_gpio_get_direction(struct gpio_chip *gc,
 }
 #endif
 
-/* Gives current state of i2c engine inside mcp2221 */
+ 
 static int mcp_get_i2c_eng_state(struct mcp2221 *mcp,
 				u8 *data, u8 idx)
 {
@@ -721,15 +689,7 @@ static int mcp_get_i2c_eng_state(struct mcp2221 *mcp,
 	return ret;
 }
 
-/*
- * MCP2221 uses interrupt endpoint for input reports. This function
- * is called by HID layer when it receives i/p report from mcp2221,
- * which is actually a response to the previously sent command.
- *
- * MCP2221A firmware specific return codes are parsed and 0 or
- * appropriate negative error code is returned. Delayed response
- * results in timeout error and stray reponses results in -EIO.
- */
+ 
 static int mcp2221_raw_event(struct hid_device *hdev,
 				struct hid_report *report, u8 *data, int size)
 {
@@ -870,7 +830,7 @@ static int mcp2221_raw_event(struct hid_device *hdev,
 		case MCP2221_SUCCESS:
 			mcp->status = 0;
 
-			/* Only handles CHIP SETTINGS subpage currently */
+			 
 			if (mcp->txbuf[1] != 0) {
 				mcp->status = -EIO;
 				break;
@@ -879,14 +839,14 @@ static int mcp2221_raw_event(struct hid_device *hdev,
 #if IS_REACHABLE(CONFIG_IIO)
 			{
 				u8 tmp;
-				/* DAC scale value */
+				 
 				tmp = FIELD_GET(GENMASK(7, 6), data[6]);
 				if ((data[6] & BIT(5)) && tmp)
 					mcp->dac_scale = tmp + 4;
 				else
 					mcp->dac_scale = 5;
 
-				/* ADC scale value */
+				 
 				tmp = FIELD_GET(GENMASK(4, 3), data[7]);
 				if ((data[7] & BIT(2)) && tmp)
 					mcp->adc_scale = tmp - 1;
@@ -910,7 +870,7 @@ static int mcp2221_raw_event(struct hid_device *hdev,
 	return 1;
 }
 
-/* Device resource managed function for HID unregistration */
+ 
 static void mcp2221_hid_unregister(void *ptr)
 {
 	struct hid_device *hdev = ptr;
@@ -919,7 +879,7 @@ static void mcp2221_hid_unregister(void *ptr)
 	hid_hw_stop(hdev);
 }
 
-/* This is needed to be sure hid_hw_stop() isn't called twice by the subsystem */
+ 
 static void mcp2221_remove(struct hid_device *hdev)
 {
 	struct mcp2221 *mcp = hid_get_drvdata(hdev);
@@ -951,7 +911,7 @@ static int mcp2221_read_raw(struct iio_dev *indio_dev,
 		*val = mcp->dac_value;
 		ret = IIO_VAL_INT;
 	} else {
-		/* Read ADC values */
+		 
 		ret = mcp_chk_last_cmd_status(mcp);
 
 		if (!ret) {
@@ -1004,7 +964,7 @@ static int mcp_iio_channels(struct mcp2221 *mcp)
 	int idx, cnt = 0;
 	bool dac_created = false;
 
-	/* GP0 doesn't have ADC/DAC alternative function */
+	 
 	for (idx = 1; idx < MCP_NGPIO; idx++) {
 		struct iio_chan_spec *chan = &mcp->iio_channels[cnt];
 
@@ -1014,10 +974,10 @@ static int mcp_iio_channels(struct mcp2221 *mcp)
 			chan->channel = cnt++;
 			break;
 		case 3:
-			/* GP1 doesn't have DAC alternative function */
+			 
 			if (idx == 1 || dac_created)
 				continue;
-			/* DAC1 and DAC2 outputs are connected to the same DAC */
+			 
 			dac_created = true;
 			chan->output = 1;
 			cnt++;
@@ -1092,7 +1052,7 @@ reschedule_task:
 	if (!retries--)
 		return;
 
-	/* Device is not ready to read SRAM or FLASH data, try again */
+	 
 	schedule_delayed_work(&mcp->init_work, msecs_to_jiffies(100));
 }
 #endif
@@ -1113,10 +1073,7 @@ static int mcp2221_probe(struct hid_device *hdev,
 		return ret;
 	}
 
-	/*
-	 * This driver uses the .raw_event callback and therefore does not need any
-	 * HID_CONNECT_xxx flags.
-	 */
+	 
 	ret = hid_hw_start(hdev, 0);
 	if (ret) {
 		hid_err(hdev, "can't start hardware\n");
@@ -1144,7 +1101,7 @@ static int mcp2221_probe(struct hid_device *hdev,
 
 	hid_device_io_start(hdev);
 
-	/* Set I2C bus clock diviser */
+	 
 	if (i2c_clk_freq > 400)
 		i2c_clk_freq = 400;
 	if (i2c_clk_freq < 50)
@@ -1167,7 +1124,7 @@ static int mcp2221_probe(struct hid_device *hdev,
 	}
 
 #if IS_REACHABLE(CONFIG_GPIOLIB)
-	/* Setup GPIO chip */
+	 
 	mcp->gc = devm_kzalloc(&hdev->dev, sizeof(*mcp->gc), GFP_KERNEL);
 	if (!mcp->gc)
 		return -ENOMEM;
@@ -1210,7 +1167,7 @@ static struct hid_driver mcp2221_driver = {
 	.raw_event	= mcp2221_raw_event,
 };
 
-/* Register with HID core */
+ 
 module_hid_driver(mcp2221_driver);
 
 MODULE_AUTHOR("Rishi Gupta <gupt21@gmail.com>");

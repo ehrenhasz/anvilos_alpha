@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * ARM APMT table support.
- * Design document number: ARM DEN0117.
- *
- * Copyright (c) 2022, NVIDIA CORPORATION & AFFILIATES.
- *
- */
+
+ 
 
 #define pr_fmt(fmt)	"ACPI: APMT: " fmt
 
@@ -17,10 +11,10 @@
 
 #define DEV_NAME "arm-cs-arch-pmu"
 
-/* There can be up to 3 resources: page 0 and 1 address, and interrupt. */
+ 
 #define DEV_MAX_RESOURCE_COUNT 3
 
-/* Root pointer to the mapped APMT table */
+ 
 static struct acpi_table_header *apmt_table;
 
 static int __init apmt_init_resources(struct resource *res,
@@ -65,13 +59,7 @@ static int __init apmt_init_resources(struct resource *res,
 	return num_res;
 }
 
-/**
- * apmt_add_platform_device() - Allocate a platform device for APMT node
- * @node: Pointer to device ACPI APMT node
- * @fwnode: fwnode associated with the APMT node
- *
- * Returns: 0 on success, <0 failure
- */
+ 
 static int __init apmt_add_platform_device(struct acpi_apmt_node *node,
 					   struct fwnode_handle *fwnode)
 {
@@ -91,10 +79,7 @@ static int __init apmt_add_platform_device(struct acpi_apmt_node *node,
 	if (ret)
 		goto dev_put;
 
-	/*
-	 * Add a copy of APMT node pointer to platform_data to be used to
-	 * retrieve APMT data information.
-	 */
+	 
 	ret = platform_device_add_data(pdev, &node, sizeof(node));
 	if (ret)
 		goto dev_put;
@@ -122,10 +107,7 @@ static int __init apmt_init_platform_devices(void)
 	u64 offset, end;
 	int ret;
 
-	/*
-	 * apmt_table and apmt both point to the start of APMT table, but
-	 * have different struct types
-	 */
+	 
 	apmt = (struct acpi_table_apmt *)apmt_table;
 	offset = sizeof(*apmt);
 	end = apmt->header.length;
@@ -155,11 +137,7 @@ void __init acpi_apmt_init(void)
 	acpi_status status;
 	int ret;
 
-	/**
-	 * APMT table nodes will be used at runtime after the apmt init,
-	 * so we don't need to call acpi_put_table() to release
-	 * the APMT table mapping.
-	 */
+	 
 	status = acpi_get_table(ACPI_SIG_APMT, 0, &apmt_table);
 
 	if (ACPI_FAILURE(status)) {

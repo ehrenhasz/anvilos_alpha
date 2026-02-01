@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-/*
- * Copyright (c) 2016 Mellanox Technologies Ltd. All rights reserved.
- * Copyright (c) 2015 System Fabric Works, Inc. All rights reserved.
- */
+
+ 
 
 #include <linux/vmalloc.h>
 #include "rxe.h"
@@ -45,10 +42,7 @@ err1:
 
 inline void rxe_queue_reset(struct rxe_queue *q)
 {
-	/* queue is comprised from header and the memory
-	 * of the actual queue. See "struct rxe_queue_buf" in rxe_queue.h
-	 * reset only the queue itself and not the management header
-	 */
+	 
 	memset(q->buf->data, 0, q->buf_size - sizeof(struct rxe_queue_buf));
 }
 
@@ -59,7 +53,7 @@ struct rxe_queue *rxe_queue_init(struct rxe_dev *rxe, int *num_elem,
 	size_t buf_size;
 	unsigned int num_slots;
 
-	/* num_elem == 0 is allowed, but uninteresting */
+	 
 	if (*num_elem < 0)
 		return NULL;
 
@@ -70,10 +64,10 @@ struct rxe_queue *rxe_queue_init(struct rxe_dev *rxe, int *num_elem,
 	q->rxe = rxe;
 	q->type = type;
 
-	/* used in resize, only need to copy used part of queue */
+	 
 	q->elem_size = elem_size;
 
-	/* pad element up to at least a cacheline and always a power of 2 */
+	 
 	if (elem_size < cache_line_size())
 		elem_size = cache_line_size();
 	elem_size = roundup_pow_of_two(elem_size);
@@ -103,10 +97,7 @@ err2:
 	return NULL;
 }
 
-/* copies elements from original q to new q and then swaps the contents of the
- * two q headers. This is so that if anyone is holding a pointer to q it will
- * still work
- */
+ 
 static int resize_finish(struct rxe_queue *q, struct rxe_queue *new_q,
 			 unsigned int num_elem)
 {
@@ -132,13 +123,13 @@ static int resize_finish(struct rxe_queue *q, struct rxe_queue *new_q,
 	new_q->buf->producer_index = new_prod;
 	q->buf->consumer_index = cons;
 
-	/* update private index copies */
+	 
 	if (type == QUEUE_TYPE_TO_CLIENT)
 		new_q->index = new_q->buf->producer_index;
 	else
 		q->index = q->buf->consumer_index;
 
-	/* exchange rxe_queue headers */
+	 
 	swap(*q, *new_q);
 
 	return 0;
@@ -179,7 +170,7 @@ int rxe_queue_resize(struct rxe_queue *q, unsigned int *num_elem_p,
 
 	spin_unlock_irqrestore(consumer_lock, consumer_flags);
 
-	rxe_queue_cleanup(new_q);	/* new/old dep on err */
+	rxe_queue_cleanup(new_q);	 
 	if (err)
 		goto err1;
 

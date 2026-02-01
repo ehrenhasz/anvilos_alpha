@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _CCU_MULT_H_
 #define _CCU_MULT_H_
 
@@ -67,4 +67,4 @@ static inline struct ccu_mult *hw_to_ccu_mult(struct clk_hw *hw)
 
 extern const struct clk_ops ccu_mult_ops;
 
-#endif /* _CCU_MULT_H_ */
+#endif  

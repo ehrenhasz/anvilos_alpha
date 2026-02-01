@@ -1,18 +1,4 @@
-/*
- * Copyright (c) 2010-2011 Atheros Communications Inc.
- *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
+ 
 
 #ifndef HTC_H
 #define HTC_H
@@ -32,11 +18,11 @@
 #include "hif_usb.h"
 #include "wmi.h"
 
-#define ATH_STA_SHORT_CALINTERVAL 1000    /* 1 second */
-#define ATH_AP_SHORT_CALINTERVAL  100     /* 100 ms */
-#define ATH_ANI_POLLINTERVAL      100     /* 100 ms */
-#define ATH_LONG_CALINTERVAL      30000   /* 30 seconds */
-#define ATH_RESTART_CALINTERVAL   1200000 /* 20 minutes */
+#define ATH_STA_SHORT_CALINTERVAL 1000     
+#define ATH_AP_SHORT_CALINTERVAL  100      
+#define ATH_ANI_POLLINTERVAL      100      
+#define ATH_LONG_CALINTERVAL      30000    
+#define ATH_RESTART_CALINTERVAL   1200000  
 
 #define ATH_DEFAULT_BMISS_LIMIT 10
 #define TSF_TO_TU(_h, _l) \
@@ -75,7 +61,7 @@ struct tx_frame_hdr {
 	u8 node_idx;
 	u8 vif_idx;
 	u8 tidno;
-	__be32 flags; /* ATH9K_HTC_TX_* */
+	__be32 flags;  
 	u8 key_type;
 	u8 keyix;
 	u8 cookie;
@@ -284,8 +270,8 @@ struct ath9k_htc_rx {
 	bool initialized;
 };
 
-#define ATH9K_HTC_TX_CLEANUP_INTERVAL 50 /* ms */
-#define ATH9K_HTC_TX_TIMEOUT_INTERVAL 3000 /* ms */
+#define ATH9K_HTC_TX_CLEANUP_INTERVAL 50  
+#define ATH9K_HTC_TX_TIMEOUT_INTERVAL 3000  
 #define ATH9K_HTC_TX_RESERVE 10
 #define ATH9K_HTC_TX_TIMEOUT_COUNT 40
 #define ATH9K_HTC_TX_THRESHOLD (MAX_TX_BUF_NUM - ATH9K_HTC_TX_RESERVE)
@@ -310,7 +296,7 @@ struct ath9k_htc_tx {
 };
 
 struct ath9k_htc_tx_ctl {
-	u8 type; /* ATH9K_HTC_* */
+	u8 type;  
 	u8 epid;
 	u8 txok;
 	u8 sta_idx;
@@ -391,7 +377,7 @@ static inline void ath9k_htc_err_stat_rx(struct ath9k_htc_priv *priv,
 {
 }
 
-#endif /* CONFIG_ATH9K_HTC_DEBUGFS */
+#endif  
 
 #define ATH_LED_PIN_DEF             1
 #define ATH_LED_PIN_9287            10
@@ -400,19 +386,16 @@ static inline void ath9k_htc_err_stat_rx(struct ath9k_htc_priv *priv,
 
 #define BSTUCK_THRESHOLD 10
 
-/*
- * Adjust these when the max. no of beaconing interfaces is
- * increased.
- */
-#define DEFAULT_SWBA_RESPONSE 40 /* in TUs */
-#define MIN_SWBA_RESPONSE     10 /* in TUs */
+ 
+#define DEFAULT_SWBA_RESPONSE 40  
+#define MIN_SWBA_RESPONSE     10  
 
 struct htc_beacon {
 	enum {
-		OK,		/* no change needed */
-		UPDATE,		/* update pending */
-		COMMIT		/* beacon sent, commit change */
-	} updateslot;		/* slot time update fsm */
+		OK,		 
+		UPDATE,		 
+		COMMIT		 
+	} updateslot;		 
 
 	struct ieee80211_vif *bslot[ATH9K_HTC_MAX_BCN_VIF];
 	u32 bmisscnt;
@@ -424,7 +407,7 @@ struct htc_beacon {
 struct ath_btcoex {
 	u32 bt_priority_cnt;
 	unsigned long bt_priority_time;
-	int bt_stomp_type; /* Types of BT stomping */
+	int bt_stomp_type;  
 	u32 btcoex_no_stomp;
 	u32 btcoex_period;
 	u32 btscan_no_stomp;
@@ -444,7 +427,7 @@ static inline void ath9k_htc_start_btcoex(struct ath9k_htc_priv *priv)
 static inline void ath9k_htc_stop_btcoex(struct ath9k_htc_priv *priv)
 {
 }
-#endif /* CONFIG_ATH9K_BTCOEX_SUPPORT */
+#endif  
 
 #define OP_BT_PRIORITY_DETECTED    3
 #define OP_BT_SCAN                 4
@@ -648,6 +631,6 @@ static inline int ath9k_htc_init_debug(struct ath_hw *ah) { return 0; };
 static inline void ath9k_htc_deinit_debug(struct ath9k_htc_priv *priv)
 {
 }
-#endif /* CONFIG_ATH9K_HTC_DEBUGFS */
+#endif  
 
-#endif /* HTC_H */
+#endif  

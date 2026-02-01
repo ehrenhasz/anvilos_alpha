@@ -1,28 +1,4 @@
-/*
- * This file is part of the MicroPython project, http://micropython.org/
- *
- * The MIT License (MIT)
- *
- * Copyright (c) 2013-2017 Damien P. George
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
+ 
 
 #include <stdbool.h>
 #include <string.h>
@@ -53,11 +29,11 @@ static bool is_set_or_frozenset(mp_obj_t o) {
     ;
 }
 
-// This macro is shorthand for mp_check_self to verify the argument is a set.
+
 #define check_set(o) mp_check_self(mp_obj_is_type(o, &mp_type_set))
 
-// This macro is shorthand for mp_check_self to verify the argument is a
-// set or frozenset for methods that operate on both of these types.
+
+
 #define check_set_or_frozenset(o) mp_check_self(is_set_or_frozenset(o))
 
 static void set_print(const mp_print_t *print, mp_obj_t self_in, mp_print_kind_t kind) {
@@ -104,23 +80,23 @@ static mp_obj_t set_make_new(const mp_obj_type_t *type, size_t n_args, size_t n_
 
     switch (n_args) {
         case 0: {
-            // create a new, empty set
+            
             mp_obj_set_t *set = MP_OBJ_TO_PTR(mp_obj_new_set(0, NULL));
-            // set actual set/frozenset type
+            
             set->base.type = type;
             return MP_OBJ_FROM_PTR(set);
         }
 
         case 1:
-        default: { // can only be 0 or 1 arg
-            // 1 argument, an iterable from which we make a new set
+        default: { 
+            
             mp_obj_t set = mp_obj_new_set(0, NULL);
             mp_obj_t iterable = mp_getiter(args[0], NULL);
             mp_obj_t item;
             while ((item = mp_iternext(iterable)) != MP_OBJ_STOP_ITERATION) {
                 mp_obj_set_store(set, item);
             }
-            // Set actual set/frozenset type
+            
             ((mp_obj_set_t *)MP_OBJ_TO_PTR(set))->base.type = type;
             return set;
         }
@@ -152,8 +128,8 @@ static mp_obj_t set_getiter(mp_obj_t set_in, mp_obj_iter_buf_t *iter_buf) {
     return MP_OBJ_FROM_PTR(o);
 }
 
-/******************************************************************************/
-/* set methods                                                                */
+ 
+ 
 
 static mp_obj_t set_add(mp_obj_t self_in, mp_obj_t item) {
     check_set(self_in);
@@ -317,7 +293,7 @@ static mp_obj_t set_issubset_internal(mp_obj_t self_in, mp_obj_t other_in, bool 
             }
         }
     }
-    // TODO: Should free objects altogether
+    
     if (cleanup_self) {
         set_clear(MP_OBJ_FROM_PTR(self));
     }
@@ -378,7 +354,7 @@ static mp_obj_t set_remove(mp_obj_t self_in, mp_obj_t item) {
 static MP_DEFINE_CONST_FUN_OBJ_2(set_remove_obj, set_remove);
 
 static mp_obj_t set_symmetric_difference_update(mp_obj_t self_in, mp_obj_t other_in) {
-    check_set_or_frozenset(self_in); // can be frozenset due to call from set_symmetric_difference
+    check_set_or_frozenset(self_in); 
     mp_obj_set_t *self = MP_OBJ_TO_PTR(self_in);
     mp_obj_t iter = mp_getiter(other_in, NULL);
     mp_obj_t next;
@@ -432,7 +408,7 @@ static mp_obj_t set_unary_op(mp_unary_op_t op, mp_obj_t self_in) {
         #if MICROPY_PY_BUILTINS_FROZENSET
         case MP_UNARY_OP_HASH:
             if (mp_obj_is_type(self_in, &mp_type_frozenset)) {
-                // start hash with unique value
+                
                 mp_int_t hash = (mp_int_t)(uintptr_t)&mp_type_frozenset;
                 size_t max = self->set.alloc;
                 mp_set_t *set = &self->set;
@@ -447,7 +423,7 @@ static mp_obj_t set_unary_op(mp_unary_op_t op, mp_obj_t self_in) {
             MP_FALLTHROUGH
         #endif
         default:
-            return MP_OBJ_NULL;      // op not supported
+            return MP_OBJ_NULL;      
     }
 }
 
@@ -459,7 +435,7 @@ static mp_obj_t set_binary_op(mp_binary_op_t op, mp_obj_t lhs, mp_obj_t rhs) {
     bool update = true;
     #endif
     if (op != MP_BINARY_OP_CONTAINS && !is_set_or_frozenset(rhs)) {
-        // For all ops except containment the RHS must be a set/frozenset
+        
         return MP_OBJ_NULL;
     }
     switch (op) {
@@ -510,12 +486,12 @@ static mp_obj_t set_binary_op(mp_binary_op_t op, mp_obj_t lhs, mp_obj_t rhs) {
             return mp_obj_new_bool(elem != MP_OBJ_NULL);
         }
         default:
-            return MP_OBJ_NULL; // op not supported
+            return MP_OBJ_NULL; 
     }
 }
 
-/******************************************************************************/
-/* set constructors & public C API                                            */
+ 
+ 
 
 static const mp_rom_map_elem_t set_locals_dict_table[] = {
     { MP_ROM_QSTR(MP_QSTR_add), MP_ROM_PTR(&set_add_obj) },
@@ -593,4 +569,4 @@ void mp_obj_set_store(mp_obj_t self_in, mp_obj_t item) {
     mp_set_lookup(&self->set, item, MP_MAP_LOOKUP_ADD_IF_NOT_FOUND);
 }
 
-#endif // MICROPY_PY_BUILTINS_SET
+#endif 

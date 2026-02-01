@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Benchmark find_next_bit and related bit operations.
- *
- * Copyright 2020 Google LLC.
- */
+
+ 
 #include <stdlib.h>
 #include "bench.h"
 #include "../util/stat.h"
@@ -115,7 +111,7 @@ static int do_for_each_set_bit(unsigned int num_bits)
 		printf("  Average test_bit loop took:    %.3f usec (+- %.3f usec)\n",
 			time_average, time_stddev);
 
-		if (use_of_val == accumulator)  /* Try to avoid compiler tricks. */
+		if (use_of_val == accumulator)   
 			printf("\n");
 	}
 	bitmap_free(to_test);

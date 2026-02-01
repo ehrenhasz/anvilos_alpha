@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * linux/net/sunrpc/sysctl.c
- *
- * Sysctl interface to sunrpc module.
- *
- * I would prefer to register the sunrpc table below sys/net, but that's
- * impossible at the moment.
- */
+
+ 
 
 #include <linux/types.h>
 #include <linux/linkage.h>
@@ -23,9 +16,7 @@
 
 #include "netns.h"
 
-/*
- * Declare the debug flags here
- */
+ 
 unsigned int	rpc_debug;
 EXPORT_SYMBOL_GPL(rpc_debug);
 
@@ -103,7 +94,7 @@ proc_dodebug(struct ctl_table *table, int write, void *buffer, size_t *lenp,
 		} else
 			left = 0;
 		*(unsigned int *) table->data = value;
-		/* Display the RPC tasks on writing to rpc_debug */
+		 
 		if (strcmp(table->procname, "rpc_debug") == 0)
 			rpc_show_tasks(&init_net);
 	} else {

@@ -1,27 +1,4 @@
-/*
-* Copyright 2016 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 #include "dm_services.h"
 #include "dc.h"
@@ -238,10 +215,9 @@ enum dcn20_clk_src_array_id {
 	DCN20_CLK_SRC_TOTAL_DCN201
 };
 
-/* begin *********************
- * macros to expend register list macro defined in HW object header file */
+ 
 
-/* DCN */
+ 
 
 #undef BASE_INNER
 #define BASE_INNER(seg) DMU_BASE__INST0_SEG ## seg
@@ -275,7 +251,7 @@ enum dcn20_clk_src_array_id {
 	.reg_name[id] = BASE(mm ## reg_name ## _ ## block ## id ## _BASE_IDX) + \
 					mm ## reg_name ## _ ## block ## id
 
-/* NBIO */
+ 
 #define NBIO_BASE_INNER(seg) \
 	NBIO_BASE__INST0_SEG ## seg
 
@@ -286,7 +262,7 @@ enum dcn20_clk_src_array_id {
 		.reg_name = NBIO_BASE(mm ## reg_name ## _BASE_IDX) + \
 					mm ## reg_name
 
-/* MMHUB */
+ 
 #define MMHUB_BASE_INNER(seg) \
 	MMHUB_BASE__INST0_SEG ## seg
 
@@ -1088,16 +1064,14 @@ static bool dcn201_resource_construct(
 	pool->base.res_cap = &res_cap_dnc201;
 	pool->base.funcs = &dcn201_res_pool_funcs;
 
-	/*************************************************
-	 *  Resource + asic cap harcoding                *
-	 *************************************************/
+	 
 	pool->base.underlay_pipe_index = NO_UNDERLAY_PIPE;
 
 	pool->base.pipe_count = 4;
 	pool->base.mpcc_count = 5;
 	dc->caps.max_downscale_ratio = 200;
 	dc->caps.i2c_speed_in_khz = 100;
-	dc->caps.i2c_speed_in_khz_hdcp = 5; /*1.5 w/a applied by default*/
+	dc->caps.i2c_speed_in_khz_hdcp = 5;  
 	dc->caps.max_cursor_size = 256;
 	dc->caps.min_horizontal_blanking_period = 80;
 	dc->caps.dmdata_alloc_size = 2048;
@@ -1109,7 +1083,7 @@ static bool dcn201_resource_construct(
 	dc->caps.force_dp_tps4_for_cp2520 = true;
 	dc->caps.extended_aux_timeout_support = true;
 
-	/* Color pipeline capabilities */
+	 
 	dc->caps.color.dpp.dcn_arch = 1;
 	dc->caps.color.dpp.input_lut_shared = 0;
 	dc->caps.color.dpp.icsc = 1;
@@ -1125,7 +1099,7 @@ static bool dcn201_resource_construct(
 
 	dc->caps.color.dpp.hw_3d_lut = 1;
 	dc->caps.color.dpp.ogam_ram = 1;
-	// no OGAM ROM on DCN2
+	
 	dc->caps.color.dpp.ogam_rom_caps.srgb = 0;
 	dc->caps.color.dpp.ogam_rom_caps.bt2020 = 0;
 	dc->caps.color.dpp.ogam_rom_caps.gamma2_2 = 0;
@@ -1146,12 +1120,10 @@ static bool dcn201_resource_construct(
 
 	dc->debug = debug_defaults_drv;
 
-	/*a0 only, remove later*/
+	 
 	dc->work_arounds.no_connect_phy_config  = true;
 	dc->work_arounds.dedcn20_305_wa = true;
-	/*************************************************
-	 *  Create resources                             *
-	 *************************************************/
+	 
 
 	pool->base.clock_sources[DCN20_CLK_SRC_PLL0] =
 			dcn201_clock_source_create(ctx, ctx->dc_bios,
@@ -1164,7 +1136,7 @@ static bool dcn201_resource_construct(
 
 	pool->base.clk_src_count = DCN20_CLK_SRC_TOTAL_DCN201;
 
-	/* todo: not reuse phy_pll registers */
+	 
 	pool->base.dp_clock_source =
 			dcn201_clock_source_create(ctx, ctx->dc_bios,
 				CLOCK_SOURCE_ID_DP_DTO,
@@ -1194,7 +1166,7 @@ static bool dcn201_resource_construct(
 			goto create_fail;
 	}
 
-	/* mem input -> ipp -> dpp -> opp -> TG */
+	 
 	for (i = 0; i < pool->base.pipe_count; i++) {
 		pool->base.hubps[i] = dcn201_hubp_create(ctx, i);
 		if (pool->base.hubps[i] == NULL) {

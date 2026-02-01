@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * AMD ALSA SoC PDM Driver
- *
- * Copyright (C) 2021 Advanced Micro Devices, Inc. All rights reserved.
- */
+ 
+ 
 
 #include "acp6x_chip_offset_byte.h"
 
@@ -52,7 +48,7 @@
 #define MAX_BUFFER (CAPTURE_MAX_PERIOD_SIZE * CAPTURE_MAX_NUM_PERIODS)
 #define MIN_BUFFER MAX_BUFFER
 
-/* time in ms for runtime suspend delay */
+ 
 #define ACP_SUSPEND_DELAY_MS	2000
 
 enum acp_config {

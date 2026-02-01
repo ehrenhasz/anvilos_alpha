@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 
 #include "netlink.h"
 #include "common.h"
@@ -123,7 +123,7 @@ const struct ethnl_request_ops ethnl_features_request_ops = {
 	.fill_reply		= features_fill_reply,
 };
 
-/* FEATURES_SET */
+ 
 
 const struct nla_policy ethnl_features_set_policy[] = {
 	[ETHTOOL_A_FEATURES_HEADER]	=
@@ -250,7 +250,7 @@ int ethnl_set_features(struct sk_buff *skb, struct genl_info *info)
 		goto out_ops;
 	}
 
-	/* set req_wanted bits not in req_mask from old_wanted */
+	 
 	bitmap_and(req_wanted, req_wanted, req_mask, NETDEV_FEATURE_COUNT);
 	bitmap_andnot(new_wanted, old_wanted, req_mask, NETDEV_FEATURE_COUNT);
 	bitmap_or(req_wanted, new_wanted, req_wanted, NETDEV_FEATURE_COUNT);

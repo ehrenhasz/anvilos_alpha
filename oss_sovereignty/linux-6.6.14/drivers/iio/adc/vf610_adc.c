@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Freescale Vybrid vf610 ADC driver
- *
- * Copyright 2013 Freescale Semiconductor, Inc.
- */
+
+ 
 
 #include <linux/mod_devicetable.h>
 #include <linux/module.h>
@@ -27,10 +23,10 @@
 #include <linux/iio/trigger_consumer.h>
 #include <linux/iio/triggered_buffer.h>
 
-/* This will be the driver name the kernel reports */
+ 
 #define DRIVER_NAME "vf610-adc"
 
-/* Vybrid/IMX ADC registers */
+ 
 #define VF610_REG_ADC_HC0		0x00
 #define VF610_REG_ADC_HC1		0x04
 #define VF610_REG_ADC_HS		0x08
@@ -44,7 +40,7 @@
 #define VF610_REG_ADC_CAL		0x28
 #define VF610_REG_ADC_PCTL		0x30
 
-/* Configuration register field define */
+ 
 #define VF610_ADC_MODE_BIT8		0x00
 #define VF610_ADC_MODE_BIT10		0x04
 #define VF610_ADC_MODE_BIT12		0x08
@@ -73,7 +69,7 @@
 #define VF610_ADC_AVGS_MASK		0xC000
 #define VF610_ADC_OVWREN		0x10000
 
-/* General control register field define */
+ 
 #define VF610_ADC_ADACKEN		0x1
 #define VF610_ADC_DMAEN			0x2
 #define VF610_ADC_ACREN			0x4
@@ -83,7 +79,7 @@
 #define VF610_ADC_ADCON			0x40
 #define VF610_ADC_CAL			0x80
 
-/* Other field define */
+ 
 #define VF610_ADC_ADCHC(x)		((x) & 0x1F)
 #define VF610_ADC_AIEN			(0x1 << 7)
 #define VF610_ADC_CONV_DISABLE		0x1F
@@ -93,11 +89,11 @@
 
 #define DEFAULT_SAMPLE_TIME		1000
 
-/* V at 25°C of 696 mV */
+ 
 #define VF610_VTEMP25_3V0		950
-/* V at 25°C of 699 mV */
+ 
 #define VF610_VTEMP25_3V3		867
-/* Typical sensor slope coefficient at all temperatures */
+ 
 #define VF610_TEMP_SLOPE_COEFF		1840
 
 enum clk_sel {
@@ -157,7 +153,7 @@ struct vf610_adc {
 	void __iomem *regs;
 	struct clk *clk;
 
-	/* lock to protect against multiple access to the device */
+	 
 	struct mutex lock;
 
 	u32 vref_uv;
@@ -170,7 +166,7 @@ struct vf610_adc {
 	u32 sample_freq_avail[5];
 
 	struct completion completion;
-	/* Ensure the timestamp is naturally aligned */
+	 
 	struct {
 		u16 chan;
 		s64 timestamp __aligned(8);
@@ -190,20 +186,17 @@ static inline void vf610_adc_calculate_rates(struct vf610_adc *info)
 	adck_rate = info->max_adck_rate[adc_feature->conv_mode];
 
 	if (adck_rate) {
-		/* calculate clk divider which is within specification */
+		 
 		divisor = ipg_rate / adck_rate;
 		adc_feature->clk_div = 1 << fls(divisor + 1);
 	} else {
-		/* fall-back value using a safe divisor */
+		 
 		adc_feature->clk_div = 8;
 	}
 
 	adck_rate = ipg_rate / adc_feature->clk_div;
 
-	/*
-	 * Determine the long sample time adder value to be used based
-	 * on the default minimum sample time provided.
-	 */
+	 
 	adck_period = NSEC_PER_SEC / adck_rate;
 	lst_addr_min = adc_feature->default_sample_time / adck_period;
 	for (i = 0; i < ARRAY_SIZE(vf610_lst_adder); i++) {
@@ -213,17 +206,7 @@ static inline void vf610_adc_calculate_rates(struct vf610_adc *info)
 		}
 	}
 
-	/*
-	 * Calculate ADC sample frequencies
-	 * Sample time unit is ADCK cycles. ADCK clk source is ipg clock,
-	 * which is the same as bus clock.
-	 *
-	 * ADC conversion time = SFCAdder + AverageNum x (BCT + LSTAdder)
-	 * SFCAdder: fixed to 6 ADCK cycles
-	 * AverageNum: 1, 4, 8, 16, 32 samples for hardware average.
-	 * BCT (Base Conversion Time): fixed to 25 ADCK cycles for 12 bit mode
-	 * LSTAdder(Long Sample Time): 3, 5, 7, 9, 13, 17, 21, 25 ADCK cycles
-	 */
+	 
 	for (i = 0; i < ARRAY_SIZE(vf610_hw_avgs); i++)
 		info->sample_freq_avail[i] =
 			adck_rate / (6 + vf610_hw_avgs[i] *
@@ -234,7 +217,7 @@ static inline void vf610_adc_cfg_init(struct vf610_adc *info)
 {
 	struct vf610_adc_feature *adc_feature = &info->adc_feature;
 
-	/* set default Configuration for ADC controller */
+	 
 	adc_feature->clk_sel = VF610_ADCIOC_BUSCLK_SET;
 	adc_feature->vol_ref = VF610_ADCIOC_VR_VREF_SET;
 
@@ -266,13 +249,13 @@ static void vf610_adc_cfg_post_set(struct vf610_adc *info)
 		break;
 	}
 
-	/* low power set for calibration */
+	 
 	cfg_data |= VF610_ADC_ADLPC_EN;
 
-	/* enable high speed for calibration */
+	 
 	cfg_data |= VF610_ADC_ADHSC_EN;
 
-	/* voltage reference */
+	 
 	switch (adc_feature->vol_ref) {
 	case VF610_ADCIOC_VR_VREF_SET:
 		break;
@@ -286,7 +269,7 @@ static void vf610_adc_cfg_post_set(struct vf610_adc *info)
 		dev_err(info->dev, "error voltage reference\n");
 	}
 
-	/* data overwrite enable */
+	 
 	if (adc_feature->ovwren)
 		cfg_data |= VF610_ADC_OVWREN;
 
@@ -301,7 +284,7 @@ static void vf610_adc_calibration(struct vf610_adc *info)
 	if (!info->adc_feature.calibration)
 		return;
 
-	/* enable calibration interrupt */
+	 
 	hc_cfg = VF610_ADC_AIEN | VF610_ADC_CONV_DISABLE;
 	writel(hc_cfg, info->regs + VF610_REG_ADC_HC0);
 
@@ -344,7 +327,7 @@ static void vf610_adc_sample_set(struct vf610_adc *info)
 	cfg_data = readl(info->regs + VF610_REG_ADC_CFG);
 	gc_data = readl(info->regs + VF610_REG_ADC_GC);
 
-	/* resolution mode */
+	 
 	cfg_data &= ~VF610_ADC_MODE_MASK;
 	switch (adc_feature->res_mode) {
 	case 8:
@@ -361,7 +344,7 @@ static void vf610_adc_sample_set(struct vf610_adc *info)
 		break;
 	}
 
-	/* clock select and clock divider */
+	 
 	cfg_data &= ~(VF610_ADC_CLK_MASK | VF610_ADC_ADCCLK_MASK);
 	switch (adc_feature->clk_div) {
 	case 1:
@@ -387,10 +370,7 @@ static void vf610_adc_sample_set(struct vf610_adc *info)
 		break;
 	}
 
-	/*
-	 * Set ADLSMP and ADSTS based on the Long Sample Time Adder value
-	 * determined.
-	 */
+	 
 	switch (adc_feature->lst_adder_index) {
 	case VF610_ADCK_CYCLES_3:
 		break;
@@ -422,7 +402,7 @@ static void vf610_adc_sample_set(struct vf610_adc *info)
 		dev_err(info->dev, "error in sample time select\n");
 	}
 
-	/* update hardware average selection */
+	 
 	cfg_data &= ~VF610_ADC_AVGS_MASK;
 	gc_data &= ~VF610_ADC_AVGEN;
 	switch (adc_feature->sample_rate) {
@@ -454,14 +434,14 @@ static void vf610_adc_sample_set(struct vf610_adc *info)
 
 static void vf610_adc_hw_init(struct vf610_adc *info)
 {
-	/* CFG: Feature set */
+	 
 	vf610_adc_cfg_post_set(info);
 	vf610_adc_sample_set(info);
 
-	/* adc calibration */
+	 
 	vf610_adc_calibration(info);
 
-	/* CFG: power and speed set */
+	 
 	vf610_adc_cfg_set(info);
 }
 
@@ -550,7 +530,7 @@ static const struct iio_chan_spec vf610_adc_iio_channels[] = {
 	VF610_ADC_CHAN(15, IIO_VOLTAGE),
 	VF610_ADC_TEMPERATURE_CHAN(26, IIO_TEMP),
 	IIO_CHAN_SOFT_TIMESTAMP(32),
-	/* sentinel */
+	 
 };
 
 static int vf610_adc_read_data(struct vf610_adc *info)
@@ -609,7 +589,7 @@ static ssize_t vf610_show_samp_freq_avail(struct device *dev,
 		len += scnprintf(buf + len, PAGE_SIZE - len,
 			"%u ", info->sample_freq_avail[i]);
 
-	/* replace trailing space by newline */
+	 
 	buf[len - 1] = '\n';
 
 	return len;
@@ -657,11 +637,7 @@ static int vf610_read_sample(struct iio_dev *indio_dev,
 		*val = info->value;
 		break;
 	case IIO_TEMP:
-		/*
-		 * Calculate in degree Celsius times 1000
-		 * Using the typical sensor slope of 1.84 mV/°C
-		 * and VREFH_ADC at 3.3V, V at 25°C of 699 mV
-		 */
+		 
 		*val = 25000 - ((int)info->value - VF610_VTEMP25_3V3) *
 				1000000 / VF610_TEMP_SLOPE_COEFF;
 
@@ -810,7 +786,7 @@ static const struct iio_info vf610_adc_iio_info = {
 
 static const struct of_device_id vf610_adc_match[] = {
 	{ .compatible = "fsl,vf610-adc", },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, vf610_adc_match);
 
@@ -935,7 +911,7 @@ static int vf610_adc_suspend(struct device *dev)
 	struct vf610_adc *info = iio_priv(indio_dev);
 	int hc_cfg;
 
-	/* ADC controller enters to stop mode */
+	 
 	hc_cfg = readl(info->regs + VF610_REG_ADC_HC0);
 	hc_cfg |= VF610_ADC_CONV_DISABLE;
 	writel(hc_cfg, info->regs + VF610_REG_ADC_HC0);

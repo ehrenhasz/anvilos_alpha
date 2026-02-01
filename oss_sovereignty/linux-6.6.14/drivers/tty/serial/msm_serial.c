@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Driver for msm7k serial device and console
- *
- * Copyright (C) 2007 Google, Inc.
- * Author: Robert Love <rlove@google.com>
- * Copyright (c) 2011, Code Aurora Forum. All rights reserved.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/atomic.h>
@@ -135,19 +129,19 @@
 #define UARTDM_DMEN_RX_SC_ENABLE	BIT(5)
 #define UARTDM_DMEN_TX_SC_ENABLE	BIT(4)
 
-#define UARTDM_DMEN_TX_BAM_ENABLE	BIT(2)	/* UARTDM_1P4 */
-#define UARTDM_DMEN_TX_DM_ENABLE	BIT(0)	/* < UARTDM_1P4 */
+#define UARTDM_DMEN_TX_BAM_ENABLE	BIT(2)	 
+#define UARTDM_DMEN_TX_DM_ENABLE	BIT(0)	 
 
-#define UARTDM_DMEN_RX_BAM_ENABLE	BIT(3)	/* UARTDM_1P4 */
-#define UARTDM_DMEN_RX_DM_ENABLE	BIT(1)	/* < UARTDM_1P4 */
+#define UARTDM_DMEN_RX_BAM_ENABLE	BIT(3)	 
+#define UARTDM_DMEN_RX_DM_ENABLE	BIT(1)	 
 
 #define UARTDM_DMRX			0x34
 #define UARTDM_NCF_TX			0x40
 #define UARTDM_RX_TOTAL_SNAP		0x38
 
-#define UARTDM_BURST_SIZE		16   /* in bytes */
-#define UARTDM_TX_AIGN(x)		((x) & ~0x3) /* valid for > 1p3 */
-#define UARTDM_TX_MAX			256   /* in bytes, valid for <= 1p3 */
+#define UARTDM_BURST_SIZE		16    
+#define UARTDM_TX_AIGN(x)		((x) & ~0x3)  
+#define UARTDM_TX_MAX			256    
 #define UARTDM_RX_SIZE			(UART_XMIT_SIZE / 4)
 
 enum {
@@ -198,9 +192,7 @@ unsigned int msm_read(struct uart_port *port, unsigned int off)
 	return readl_relaxed(port->membase + off);
 }
 
-/*
- * Setup the MND registers to use the TCXO clock.
- */
+ 
 static void msm_serial_set_mnd_regs_tcxo(struct uart_port *port)
 {
 	msm_write(port, 0x06, MSM_UART_MREG);
@@ -210,9 +202,7 @@ static void msm_serial_set_mnd_regs_tcxo(struct uart_port *port)
 	port->uartclk = 1843200;
 }
 
-/*
- * Setup the MND registers to use the TCXO clock divided by 4.
- */
+ 
 static void msm_serial_set_mnd_regs_tcxoby4(struct uart_port *port)
 {
 	msm_write(port, 0x18, MSM_UART_MREG);
@@ -226,10 +216,7 @@ static void msm_serial_set_mnd_regs(struct uart_port *port)
 {
 	struct msm_port *msm_port = to_msm_port(port);
 
-	/*
-	 * These registers don't exist so we change the clk input rate
-	 * on uartdm hardware instead
-	 */
+	 
 	if (msm_port->is_uartdm)
 		return;
 
@@ -253,13 +240,7 @@ static void msm_stop_dma(struct uart_port *port, struct msm_dma *dma)
 
 	dmaengine_terminate_all(dma->chan);
 
-	/*
-	 * DMA Stall happens if enqueue and flush command happens concurrently.
-	 * For example before changing the baud rate/protocol configuration and
-	 * sending flush command to ADM, disable the channel of UARTDM.
-	 * Note: should not reset the receiver here immediately as it is not
-	 * suggested to do disable/reset or reset/disable at the same time.
-	 */
+	 
 	val = msm_read(port, UARTDM_DMEN);
 	val &= ~dma->enable_bit;
 	msm_write(port, val, UARTDM_DMEN);
@@ -301,7 +282,7 @@ static void msm_request_tx_dma(struct msm_port *msm_port, resource_size_t base)
 
 	dma = &msm_port->tx_dma;
 
-	/* allocate DMA resources, if available */
+	 
 	dma->chan = dma_request_chan(dev, "tx");
 	if (IS_ERR(dma->chan))
 		goto no_tx;
@@ -349,7 +330,7 @@ static void msm_request_rx_dma(struct msm_port *msm_port, resource_size_t base)
 
 	dma = &msm_port->rx_dma;
 
-	/* allocate DMA resources, if available */
+	 
 	dma->chan = dma_request_chan(dev, "rx");
 	if (IS_ERR(dma->chan))
 		goto no_rx;
@@ -418,7 +399,7 @@ static void msm_start_tx(struct uart_port *port)
 	struct msm_port *msm_port = to_msm_port(port);
 	struct msm_dma *dma = &msm_port->tx_dma;
 
-	/* Already started in DMA mode */
+	 
 	if (dma->count)
 		return;
 
@@ -446,7 +427,7 @@ static void msm_complete_tx_dma(void *args)
 
 	spin_lock_irqsave(&port->lock, flags);
 
-	/* Already stopped */
+	 
 	if (!dma->count)
 		goto done;
 
@@ -467,7 +448,7 @@ static void msm_complete_tx_dma(void *args)
 	uart_xmit_advance(port, count);
 	dma->count = 0;
 
-	/* Restore "Tx FIFO below watermark" interrupt */
+	 
 	msm_port->imr |= MSM_UART_IMR_TXLEV;
 	msm_write(port, msm_port->imr, MSM_UART_IMR);
 
@@ -512,10 +493,7 @@ static int msm_handle_tx_dma(struct msm_port *msm_port, unsigned int count)
 	if (ret)
 		goto unmap;
 
-	/*
-	 * Using DMA complete for Tx FIFO reload, no need for
-	 * "Tx FIFO below watermark" one, disable it
-	 */
+	 
 	msm_port->imr &= ~MSM_UART_IMR_TXLEV;
 	msm_write(port, msm_port->imr, MSM_UART_IMR);
 
@@ -551,7 +529,7 @@ static void msm_complete_rx_dma(void *args)
 
 	spin_lock_irqsave(&port->lock, flags);
 
-	/* Already stopped */
+	 
 	if (!dma->count)
 		goto done;
 
@@ -634,16 +612,10 @@ static void msm_start_rx_dma(struct msm_port *msm_port)
 	ret = dma_submit_error(dma->cookie);
 	if (ret)
 		goto unmap;
-	/*
-	 * Using DMA for FIFO off-load, no need for "Rx FIFO over
-	 * watermark" or "stale" interrupts, disable them
-	 */
+	 
 	msm_port->imr &= ~(MSM_UART_IMR_RXLEV | MSM_UART_IMR_RXSTALE);
 
-	/*
-	 * Well, when DMA is ADM3 engine(implied by <= UARTDM v1.3),
-	 * we need RXSTALE to flush input DMA fifo to memory
-	 */
+	 
 	if (msm_port->is_uartdm < UARTDM_1P4)
 		msm_port->imr |= MSM_UART_IMR_RXSTALE;
 
@@ -672,10 +644,7 @@ unmap:
 	dma_unmap_single(uart->dev, dma->phys, UARTDM_RX_SIZE, dma->dir);
 
 sw_mode:
-	/*
-	 * Switch from DMA to SW/FIFO mode. After clearing Rx BAM (UARTDM_DMEN),
-	 * receiver must be reset.
-	 */
+	 
 	msm_write(uart, MSM_UART_CR_CMD_RESET_RX, MSM_UART_CR);
 	msm_write(uart, MSM_UART_CR_RX_ENABLE, MSM_UART_CR);
 
@@ -683,7 +652,7 @@ sw_mode:
 	msm_write(uart, 0xFFFFFF, UARTDM_DMRX);
 	msm_write(uart, MSM_UART_CR_CMD_STALE_EVENT_ENABLE, MSM_UART_CR);
 
-	/* Re-enable RX interrupts */
+	 
 	msm_port->imr |= MSM_UART_IMR_RXLEV | MSM_UART_IMR_RXSTALE;
 	msm_write(uart, msm_port->imr, MSM_UART_IMR);
 }
@@ -731,7 +700,7 @@ static void msm_handle_rx_dm(struct uart_port *port, unsigned int misr)
 		msm_port->old_snap_state += count;
 	}
 
-	/* TODO: Precise error reporting */
+	 
 
 	port->icount.rx += count;
 
@@ -778,7 +747,7 @@ static void msm_handle_rx_dm(struct uart_port *port, unsigned int misr)
 	msm_write(port, 0xFFFFFF, UARTDM_DMRX);
 	msm_write(port, MSM_UART_CR_CMD_STALE_EVENT_ENABLE, MSM_UART_CR);
 
-	/* Try to use DMA */
+	 
 	msm_start_rx_dma(msm_port);
 }
 
@@ -788,17 +757,14 @@ static void msm_handle_rx(struct uart_port *port)
 	struct tty_port *tport = &port->state->port;
 	unsigned int sr;
 
-	/*
-	 * Handle overrun. My understanding of the hardware is that overrun
-	 * is not tied to the RX buffer, so we handle the case out of band.
-	 */
+	 
 	if ((msm_read(port, MSM_UART_SR) & MSM_UART_SR_OVERRUN)) {
 		port->icount.overrun++;
 		tty_insert_flip_char(tport, 0, TTY_OVERRUN);
 		msm_write(port, MSM_UART_CR_CMD_RESET_ERR, MSM_UART_CR);
 	}
 
-	/* and now the main RX loop */
+	 
 	while ((sr = msm_read(port, MSM_UART_SR)) & MSM_UART_SR_RX_READY) {
 		unsigned int c;
 		char flag = TTY_NORMAL;
@@ -816,7 +782,7 @@ static void msm_handle_rx(struct uart_port *port)
 			port->icount.rx++;
 		}
 
-		/* Mask conditions we're ignoring. */
+		 
 		sr &= port->read_status_mask;
 
 		if (sr & MSM_UART_SR_RX_BREAK)
@@ -871,7 +837,7 @@ static void msm_handle_tx_pio(struct uart_port *port, unsigned int tx_count)
 		tf_pointer += num_chars;
 	}
 
-	/* disable tx interrupts if nothing more to send */
+	 
 	if (uart_circ_empty(xmit))
 		msm_stop_tx(port);
 
@@ -914,7 +880,7 @@ static void msm_handle_tx(struct uart_port *port)
 	pio_count = CIRC_CNT_TO_END(xmit->head, xmit->tail, UART_XMIT_SIZE);
 	dma_count = CIRC_CNT_TO_END(xmit->head, xmit->tail, UART_XMIT_SIZE);
 
-	dma_min = 1;	/* Always DMA */
+	dma_min = 1;	 
 	if (msm_port->is_uartdm > UARTDM_1P3) {
 		dma_count = UARTDM_TX_AIGN(dma_count);
 		dma_min = UARTDM_BURST_SIZE;
@@ -931,7 +897,7 @@ static void msm_handle_tx(struct uart_port *port)
 	else
 		err = msm_handle_tx_dma(msm_port, dma_count);
 
-	if (err)	/* fall back to PIO mode */
+	if (err)	 
 		msm_handle_tx_pio(port, pio_count);
 }
 
@@ -953,7 +919,7 @@ static irqreturn_t msm_uart_irq(int irq, void *dev_id)
 
 	spin_lock_irqsave(&port->lock, flags);
 	misr = msm_read(port, MSM_UART_MISR);
-	msm_write(port, 0, MSM_UART_IMR); /* disable interrupt */
+	msm_write(port, 0, MSM_UART_IMR);  
 
 	if (misr & MSM_UART_IMR_RXBREAK_START) {
 		msm_port->break_detected = true;
@@ -966,10 +932,7 @@ static irqreturn_t msm_uart_irq(int irq, void *dev_id)
 			msm_write(port, val, MSM_UART_CR);
 			val = MSM_UART_CR_CMD_RESET_STALE_INT;
 			msm_write(port, val, MSM_UART_CR);
-			/*
-			 * Flush DMA input fifo to memory, this will also
-			 * trigger DMA RX completion
-			 */
+			 
 			dmaengine_terminate_all(dma->chan);
 		} else if (msm_port->is_uartdm) {
 			msm_handle_rx_dm(port, misr);
@@ -982,7 +945,7 @@ static irqreturn_t msm_uart_irq(int irq, void *dev_id)
 	if (misr & MSM_UART_IMR_DELTA_CTS)
 		msm_handle_delta_cts(port);
 
-	msm_write(port, msm_port->imr, MSM_UART_IMR); /* restore interrupt */
+	msm_write(port, msm_port->imr, MSM_UART_IMR);  
 	spin_unlock_irqrestore(&port->lock, flags);
 
 	return IRQ_HANDLED;
@@ -1003,7 +966,7 @@ static void msm_reset(struct uart_port *port)
 	struct msm_port *msm_port = to_msm_port(port);
 	unsigned int mr;
 
-	/* reset everything */
+	 
 	msm_write(port, MSM_UART_CR_CMD_RESET_RX, MSM_UART_CR);
 	msm_write(port, MSM_UART_CR_CMD_RESET_TX, MSM_UART_CR);
 	msm_write(port, MSM_UART_CR_CMD_RESET_ERR, MSM_UART_CR);
@@ -1014,7 +977,7 @@ static void msm_reset(struct uart_port *port)
 	mr &= ~MSM_UART_MR1_RX_RDY_CTL;
 	msm_write(port, mr, MSM_UART_MR1);
 
-	/* Disable DM modes */
+	 
 	if (msm_port->is_uartdm)
 		msm_write(port, 0, UARTDM_DMEN);
 }
@@ -1076,7 +1039,7 @@ msm_find_best_baud(struct uart_port *port, unsigned int baud,
 		{ 1536, 0x00,  1 },
 	};
 
-	best = table; /* Default to smallest divider */
+	best = table;  
 	target = clk_round_rate(msm_port->clk, 16 * baud);
 	divisor = DIV_ROUND_CLOSEST(target, 16 * baud);
 
@@ -1087,7 +1050,7 @@ msm_find_best_baud(struct uart_port *port, unsigned int baud,
 			result = target / entry->divisor / 16;
 			diff = abs(result - baud);
 
-			/* Keep track of best entry */
+			 
 			if (diff < best_diff) {
 				best_diff = diff;
 				best = entry;
@@ -1099,14 +1062,11 @@ msm_find_best_baud(struct uart_port *port, unsigned int baud,
 		} else if (entry->divisor > divisor) {
 			old = target;
 			target = clk_round_rate(msm_port->clk, old + 1);
-			/*
-			 * The rate didn't get any faster so we can't do
-			 * better at dividing it down
-			 */
+			 
 			if (target == old)
 				break;
 
-			/* Start the divisor search over at this new rate */
+			 
 			entry = table;
 			divisor = DIV_ROUND_CLOSEST(target, 16 * baud);
 			continue;
@@ -1140,7 +1100,7 @@ static int msm_set_baud_rate(struct uart_port *port, unsigned int baud,
 
 	msm_write(port, entry->code, MSM_UART_CSR);
 
-	/* RX stale watermark */
+	 
 	rxstale = entry->rxstale;
 	watermark = MSM_UART_IPR_STALE_LSB & rxstale;
 	if (msm_port->is_uartdm) {
@@ -1154,20 +1114,20 @@ static int msm_set_baud_rate(struct uart_port *port, unsigned int baud,
 
 	msm_write(port, watermark, MSM_UART_IPR);
 
-	/* set RX watermark */
+	 
 	watermark = (port->fifosize * 3) / 4;
 	msm_write(port, watermark, MSM_UART_RFWR);
 
-	/* set TX watermark */
+	 
 	msm_write(port, 10, MSM_UART_TFWR);
 
 	msm_write(port, MSM_UART_CR_CMD_PROTECTION_EN, MSM_UART_CR);
 	msm_reset(port);
 
-	/* Enable RX and TX */
+	 
 	msm_write(port, MSM_UART_CR_TX_ENABLE | MSM_UART_CR_RX_ENABLE, MSM_UART_CR);
 
-	/* turn on RX and CTS interrupts */
+	 
 	msm_port->imr = MSM_UART_IMR_RXLEV | MSM_UART_IMR_RXSTALE |
 			MSM_UART_IMR_CURRENT_CTS | MSM_UART_IMR_RXBREAK_START;
 
@@ -1207,7 +1167,7 @@ static int msm_startup(struct uart_port *port)
 	else
 		rfr_level = port->fifosize;
 
-	/* set automatic RFR level */
+	 
 	data = msm_read(port, MSM_UART_MR1);
 
 	if (msm_port->is_uartdm)
@@ -1248,7 +1208,7 @@ static void msm_shutdown(struct uart_port *port)
 	struct msm_port *msm_port = to_msm_port(port);
 
 	msm_port->imr = 0;
-	msm_write(port, 0, MSM_UART_IMR); /* disable interrupts */
+	msm_write(port, 0, MSM_UART_IMR);  
 
 	if (msm_port->is_uartdm)
 		msm_release_dma(msm_port);
@@ -1268,16 +1228,16 @@ static void msm_set_termios(struct uart_port *port, struct ktermios *termios,
 
 	spin_lock_irqsave(&port->lock, flags);
 
-	if (dma->chan) /* Terminate if any */
+	if (dma->chan)  
 		msm_stop_dma(port, dma);
 
-	/* calculate and set baud rate */
+	 
 	baud = uart_get_baud_rate(port, termios, old, 300, 4000000);
 	baud = msm_set_baud_rate(port, baud, &flags);
 	if (tty_termios_baud_rate(termios))
 		tty_termios_encode_baud_rate(termios, baud, baud);
 
-	/* calculate parity */
+	 
 	mr = msm_read(port, MSM_UART_MR2);
 	mr &= ~MSM_UART_MR2_PARITY_MODE;
 	if (termios->c_cflag & PARENB) {
@@ -1289,7 +1249,7 @@ static void msm_set_termios(struct uart_port *port, struct ktermios *termios,
 			mr |= MSM_UART_MR2_PARITY_MODE_EVEN;
 	}
 
-	/* calculate bits per char */
+	 
 	mr &= ~MSM_UART_MR2_BITS_PER_CHAR;
 	switch (termios->c_cflag & CSIZE) {
 	case CS5:
@@ -1307,17 +1267,17 @@ static void msm_set_termios(struct uart_port *port, struct ktermios *termios,
 		break;
 	}
 
-	/* calculate stop bits */
+	 
 	mr &= ~(MSM_UART_MR2_STOP_BIT_LEN_ONE | MSM_UART_MR2_STOP_BIT_LEN_TWO);
 	if (termios->c_cflag & CSTOPB)
 		mr |= MSM_UART_MR2_STOP_BIT_LEN_TWO;
 	else
 		mr |= MSM_UART_MR2_STOP_BIT_LEN_ONE;
 
-	/* set parity, bits per char, and stop bit */
+	 
 	msm_write(port, mr, MSM_UART_MR2);
 
-	/* calculate and set hardware flow control */
+	 
 	mr = msm_read(port, MSM_UART_MR1);
 	mr &= ~(MSM_UART_MR1_CTS_CTL | MSM_UART_MR1_RX_RDY_CTL);
 	if (termios->c_cflag & CRTSCTS) {
@@ -1326,7 +1286,7 @@ static void msm_set_termios(struct uart_port *port, struct ktermios *termios,
 	}
 	msm_write(port, mr, MSM_UART_MR1);
 
-	/* Configure status bits to ignore based on termio flags. */
+	 
 	port->read_status_mask = 0;
 	if (termios->c_iflag & INPCK)
 		port->read_status_mask |= MSM_UART_SR_PAR_FRAME_ERR;
@@ -1335,7 +1295,7 @@ static void msm_set_termios(struct uart_port *port, struct ktermios *termios,
 
 	uart_update_timeout(port, termios->c_cflag, baud);
 
-	/* Try to use DMA */
+	 
 	msm_start_rx_dma(msm_port);
 
 	spin_unlock_irqrestore(&port->lock, flags);
@@ -1450,16 +1410,13 @@ static int msm_poll_get_char_dm(struct uart_port *port)
 	static int count;
 	unsigned char *sp = (unsigned char *)&slop;
 
-	/* Check if a previous read had more than one char */
+	 
 	if (count) {
 		c = sp[sizeof(slop) - count];
 		count--;
-	/* Or if FIFO is empty */
+	 
 	} else if (!(msm_read(port, MSM_UART_SR) & MSM_UART_SR_RX_READY)) {
-		/*
-		 * If RX packing buffer has less than a word, force stale to
-		 * push contents into RX FIFO
-		 */
+		 
 		count = msm_read(port, UARTDM_RXFS);
 		count = (count >> UARTDM_RXFS_BUF_SHIFT) & UARTDM_RXFS_BUF_MASK;
 		if (count) {
@@ -1473,7 +1430,7 @@ static int msm_poll_get_char_dm(struct uart_port *port)
 		} else {
 			c = NO_POLL_CHAR;
 		}
-	/* FIFO has a word */
+	 
 	} else {
 		slop = msm_read(port, UARTDM_RF);
 		c = sp[0];
@@ -1489,7 +1446,7 @@ static int msm_poll_get_char(struct uart_port *port)
 	int c;
 	struct msm_port *msm_port = to_msm_port(port);
 
-	/* Disable all interrupts */
+	 
 	imr = msm_read(port, MSM_UART_IMR);
 	msm_write(port, 0, MSM_UART_IMR);
 
@@ -1498,7 +1455,7 @@ static int msm_poll_get_char(struct uart_port *port)
 	else
 		c = msm_poll_get_char_single(port);
 
-	/* Enable interrupts */
+	 
 	msm_write(port, imr, MSM_UART_IMR);
 
 	return c;
@@ -1509,25 +1466,25 @@ static void msm_poll_put_char(struct uart_port *port, unsigned char c)
 	u32 imr;
 	struct msm_port *msm_port = to_msm_port(port);
 
-	/* Disable all interrupts */
+	 
 	imr = msm_read(port, MSM_UART_IMR);
 	msm_write(port, 0, MSM_UART_IMR);
 
 	if (msm_port->is_uartdm)
 		msm_reset_dm_count(port, 1);
 
-	/* Wait until FIFO is empty */
+	 
 	while (!(msm_read(port, MSM_UART_SR) & MSM_UART_SR_TX_READY))
 		cpu_relax();
 
-	/* Write a character */
+	 
 	msm_write(port, c, msm_port->is_uartdm ? UARTDM_TF : MSM_UART_TF);
 
-	/* Wait until FIFO is empty */
+	 
 	while (!(msm_read(port, MSM_UART_SR) & MSM_UART_SR_TX_READY))
 		cpu_relax();
 
-	/* Enable interrupts */
+	 
 	msm_write(port, imr, MSM_UART_IMR);
 }
 #endif
@@ -1609,7 +1566,7 @@ static void __msm_console_write(struct uart_port *port, const char *s,
 	else
 		tf = port->membase + MSM_UART_TF;
 
-	/* Account for newlines that will get a carriage return added */
+	 
 	for (i = 0; i < count; i++)
 		if (s[i] == '\n')
 			num_newlines++;

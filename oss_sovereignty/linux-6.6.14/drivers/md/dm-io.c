@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2003 Sistina Software
- * Copyright (C) 2006 Red Hat GmbH
- *
- * This file is released under the GPL.
- */
+
+ 
 
 #include "dm-core.h"
 
@@ -27,10 +22,7 @@ struct dm_io_client {
 	struct bio_set bios;
 };
 
-/*
- * Aligning 'struct io' reduces the number of bits required to store
- * its address.  Refer to store_io_and_region_in_bio() below.
- */
+ 
 struct io {
 	unsigned long error_bits;
 	atomic_t count;
@@ -43,9 +35,7 @@ struct io {
 
 static struct kmem_cache *_dm_io_cache;
 
-/*
- * Create a client with mempool and bioset.
- */
+ 
 struct dm_io_client *dm_io_client_create(void)
 {
 	struct dm_io_client *client;
@@ -81,15 +71,7 @@ void dm_io_client_destroy(struct dm_io_client *client)
 }
 EXPORT_SYMBOL(dm_io_client_destroy);
 
-/*
- *-------------------------------------------------------------------
- * We need to keep track of which region a bio is doing io for.
- * To avoid a memory allocation to store just 5 or 6 bits, we
- * ensure the 'struct io' pointer is aligned so enough low bits are
- * always zero and then combine it with the region number directly in
- * bi_private.
- *-------------------------------------------------------------------
- */
+ 
 static void store_io_and_region_in_bio(struct bio *bio, struct io *io,
 				       unsigned int region)
 {
@@ -110,12 +92,7 @@ static void retrieve_io_and_region_from_bio(struct bio *bio, struct io **io,
 	*region = val & (DM_IO_MAX_REGIONS - 1);
 }
 
-/*
- *--------------------------------------------------------------
- * We need an io object to keep track of the number of bios that
- * have been dispatched for a particular io.
- *--------------------------------------------------------------
- */
+ 
 static void complete_io(struct io *io)
 {
 	unsigned long error_bits = io->error_bits;
@@ -148,9 +125,7 @@ static void endio(struct bio *bio)
 	if (bio->bi_status && bio_data_dir(bio) == READ)
 		zero_fill_bio(bio);
 
-	/*
-	 * The bio destructor in bio_put() may use the io object.
-	 */
+	 
 	retrieve_io_and_region_from_bio(bio, &io, &region);
 
 	error = bio->bi_status;
@@ -159,12 +134,7 @@ static void endio(struct bio *bio)
 	dec_count(io, region, error);
 }
 
-/*
- *--------------------------------------------------------------
- * These little objects provide an abstraction for getting a new
- * destination page for io.
- *--------------------------------------------------------------
- */
+ 
 struct dpages {
 	void (*get_page)(struct dpages *dp,
 			 struct page **p, unsigned long *len, unsigned int *offset);
@@ -180,9 +150,7 @@ struct dpages {
 	unsigned long vma_invalidate_size;
 };
 
-/*
- * Functions for getting the pages from a list.
- */
+ 
 static void list_get_page(struct dpages *dp,
 		  struct page **p, unsigned long *len, unsigned int *offset)
 {
@@ -210,9 +178,7 @@ static void list_dp_init(struct dpages *dp, struct page_list *pl, unsigned int o
 	dp->context_ptr = pl;
 }
 
-/*
- * Functions for getting the pages from a bvec.
- */
+ 
 static void bio_get_page(struct dpages *dp, struct page **p,
 			 unsigned long *len, unsigned int *offset)
 {
@@ -223,7 +189,7 @@ static void bio_get_page(struct dpages *dp, struct page **p,
 	*len = bvec.bv_len;
 	*offset = bvec.bv_offset;
 
-	/* avoid figuring it out again in bio_next_page() */
+	 
 	dp->context_bi.bi_sector = (sector_t)bvec.bv_len;
 }
 
@@ -240,17 +206,12 @@ static void bio_dp_init(struct dpages *dp, struct bio *bio)
 	dp->get_page = bio_get_page;
 	dp->next_page = bio_next_page;
 
-	/*
-	 * We just use bvec iterator to retrieve pages, so it is ok to
-	 * access the bvec table directly here
-	 */
+	 
 	dp->context_ptr = bio->bi_io_vec;
 	dp->context_bi = bio->bi_iter;
 }
 
-/*
- * Functions for getting the pages from a VMA.
- */
+ 
 static void vm_get_page(struct dpages *dp,
 		 struct page **p, unsigned long *len, unsigned int *offset)
 {
@@ -273,9 +234,7 @@ static void vm_dp_init(struct dpages *dp, void *data)
 	dp->context_ptr = data;
 }
 
-/*
- * Functions for getting the pages from kernel memory.
- */
+ 
 static void km_get_page(struct dpages *dp, struct page **p, unsigned long *len,
 			unsigned int *offset)
 {
@@ -298,11 +257,7 @@ static void km_dp_init(struct dpages *dp, void *data)
 	dp->context_ptr = data;
 }
 
-/*
- *---------------------------------------------------------------
- * IO routines that accept a list of pages.
- *---------------------------------------------------------------
- */
+ 
 static void do_region(const blk_opf_t opf, unsigned int region,
 		      struct dm_io_region *where, struct dpages *dp,
 		      struct io *io)
@@ -318,9 +273,7 @@ static void do_region(const blk_opf_t opf, unsigned int region,
 	unsigned int special_cmd_max_sectors;
 	const enum req_op op = opf & REQ_OP_MASK;
 
-	/*
-	 * Reject unsupported discard and write same requests.
-	 */
+	 
 	if (op == REQ_OP_DISCARD)
 		special_cmd_max_sectors = bdev_max_discard_sectors(where->bdev);
 	else if (op == REQ_OP_WRITE_ZEROES)
@@ -332,14 +285,9 @@ static void do_region(const blk_opf_t opf, unsigned int region,
 		return;
 	}
 
-	/*
-	 * where->count may be zero if op holds a flush and we need to
-	 * send a zero-sized flush.
-	 */
+	 
 	do {
-		/*
-		 * Allocate a suitably sized-bio.
-		 */
+		 
 		switch (op) {
 		case REQ_OP_DISCARD:
 		case REQ_OP_WRITE_ZEROES:
@@ -362,9 +310,7 @@ static void do_region(const blk_opf_t opf, unsigned int region,
 			remaining -= num_sectors;
 		} else {
 			while (remaining) {
-				/*
-				 * Try and add as many pages as possible.
-				 */
+				 
 				dp->get_page(dp, &page, &len, &offset);
 				len = min(len, to_bytes(remaining));
 				if (!bio_add_page(bio, page, len, offset))
@@ -393,20 +339,14 @@ static void dispatch_io(blk_opf_t opf, unsigned int num_regions,
 	if (sync)
 		opf |= REQ_SYNC;
 
-	/*
-	 * For multiple regions we need to be careful to rewind
-	 * the dp object for each call to do_region.
-	 */
+	 
 	for (i = 0; i < num_regions; i++) {
 		*dp = old_pages;
 		if (where[i].count || (opf & REQ_PREFLUSH))
 			do_region(opf, i, where + i, dp, io);
 	}
 
-	/*
-	 * Drop the extra reference that we were holding to avoid
-	 * the io being completed too early.
-	 */
+	 
 	dec_count(io, 0, 0);
 }
 
@@ -439,7 +379,7 @@ static int sync_io(struct dm_io_client *client, unsigned int num_regions,
 
 	io = mempool_alloc(&client->pool, GFP_NOIO);
 	io->error_bits = 0;
-	atomic_set(&io->count, 1); /* see dispatch_io() */
+	atomic_set(&io->count, 1);  
 	io->client = client;
 	io->callback = sync_io_complete;
 	io->context = &sio;
@@ -471,7 +411,7 @@ static int async_io(struct dm_io_client *client, unsigned int num_regions,
 
 	io = mempool_alloc(&client->pool, GFP_NOIO);
 	io->error_bits = 0;
-	atomic_set(&io->count, 1); /* see dispatch_io() */
+	atomic_set(&io->count, 1);  
 	io->client = client;
 	io->callback = fn;
 	io->context = context;
@@ -486,7 +426,7 @@ static int async_io(struct dm_io_client *client, unsigned int num_regions,
 static int dp_init(struct dm_io_request *io_req, struct dpages *dp,
 		   unsigned long size)
 {
-	/* Set up dpages based on memory type */
+	 
 
 	dp->vma_invalidate_address = NULL;
 	dp->vma_invalidate_size = 0;

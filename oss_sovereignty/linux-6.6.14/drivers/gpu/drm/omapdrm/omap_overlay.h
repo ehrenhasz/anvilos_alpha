@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) 2018 Texas Instruments Incorporated -  http://www.ti.com/
- * Author: Benoit Parrot <bparrot@ti.com>
- */
+ 
+ 
 
 #ifndef __OMAPDRM_OVERLAY_H__
 #define __OMAPDRM_OVERLAY_H__
@@ -15,7 +12,7 @@ struct drm_device;
 struct drm_mode_object;
 struct drm_plane;
 
-/* Used to associate a HW overlay/plane to a plane */
+ 
 struct omap_hw_overlay {
 	unsigned int idx;
 
@@ -32,4 +29,4 @@ int omap_overlay_assign(struct drm_atomic_state *s, struct drm_plane *plane,
 			struct omap_hw_overlay **r_overlay);
 void omap_overlay_release(struct drm_atomic_state *s, struct omap_hw_overlay *overlay);
 void omap_overlay_update_state(struct omap_drm_private *priv, struct omap_hw_overlay *overlay);
-#endif /* __OMAPDRM_OVERLAY_H__ */
+#endif  

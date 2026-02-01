@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) Meta Platforms, Inc. and affiliates. */
+
+ 
 
 #include "vmlinux.h"
 #include "bpf_tracing_net.h"
@@ -91,7 +91,7 @@ static int bpf_test_sockopt_flip(void *ctx, struct sock *sk,
 
 	if (bpf_getsockopt(ctx, level, opt, &old, sizeof(old)))
 		return 1;
-	/* kernel initialized txrehash to 255 */
+	 
 	if (level == SOL_SOCKET && opt == SO_TXREHASH && old != 0 && old != 1)
 		old = 1;
 

@@ -1,16 +1,4 @@
-/*
- * Allwinner EMAC Fast Ethernet driver for Linux.
- *
- * Copyright 2012-2013 Stefan Roese <sr@denx.de>
- * Copyright 2013 Maxime Ripard <maxime.ripard@free-electrons.com>
- *
- * Based on the Linux driver provided by Allwinner:
- * Copyright (C) 1997  Sten Wang
- *
- * This file is licensed under the terms of the GNU General Public
- * License version 2. This program is licensed "as is" without any
- * warranty of any kind, whether express or implied.
- */
+ 
 
 #include <linux/clk.h>
 #include <linux/etherdevice.h>
@@ -38,36 +26,18 @@
 #define EMAC_MAX_FRAME_LEN	0x0600
 
 #define EMAC_DEFAULT_MSG_ENABLE 0x0000
-static int debug = -1;     /* defaults above */;
+static int debug = -1;      ;
 module_param(debug, int, 0);
 MODULE_PARM_DESC(debug, "debug message flags");
 
-/* Transmit timeout, default 5 seconds. */
+ 
 static int watchdog = 5000;
 module_param(watchdog, int, 0400);
 MODULE_PARM_DESC(watchdog, "transmit timeout in milliseconds");
 
-/* EMAC register address locking.
- *
- * The EMAC uses an address register to control where data written
- * to the data register goes. This means that the address register
- * must be preserved over interrupts or similar calls.
- *
- * During interrupt and other critical calls, a spinlock is used to
- * protect the system, but the calls themselves save the address
- * in the address register in case they are interrupting another
- * access to the device.
- *
- * For general accesses a lock is provided so that calls which are
- * allowed to sleep are serialised so that the address register does
- * not need to be saved. This lock also serves to serialise access
- * to the EEPROM and PHY access registers which are shared between
- * these two devices.
- */
+ 
 
-/* The driver supports the original EMACE, and now the two newer
- * devices, EMACA and EMACB.
- */
+ 
 
 struct emac_board_info {
 	struct clk		*clk;
@@ -104,7 +74,7 @@ static void emac_update_speed(struct net_device *dev)
 	struct emac_board_info *db = netdev_priv(dev);
 	unsigned int reg_val;
 
-	/* set EMAC SPEED, depend on PHY  */
+	 
 	reg_val = readl(db->membase + EMAC_MAC_SUPP_REG);
 	reg_val &= ~EMAC_MAC_SUPP_100M;
 	if (db->speed == SPEED_100)
@@ -117,7 +87,7 @@ static void emac_update_duplex(struct net_device *dev)
 	struct emac_board_info *db = netdev_priv(dev);
 	unsigned int reg_val;
 
-	/* set duplex depend on phy */
+	 
 	reg_val = readl(db->membase + EMAC_MAC_CTL1_REG);
 	reg_val &= ~EMAC_MAC_CTL1_DUPLEX_EN;
 	if (db->duplex)
@@ -169,9 +139,9 @@ static int emac_mdio_probe(struct net_device *dev)
 	struct emac_board_info *db = netdev_priv(dev);
 	struct phy_device *phydev;
 
-	/* to-do: PHY interrupts are currently not supported */
+	 
 
-	/* attach the mac to the phy */
+	 
 	phydev = of_phy_connect(db->ndev, db->phy_node,
 				&emac_handle_link_change, 0,
 				db->phy_interface);
@@ -180,7 +150,7 @@ static int emac_mdio_probe(struct net_device *dev)
 		return -ENODEV;
 	}
 
-	/* mask with MAC supported features */
+	 
 	phy_set_max_speed(phydev, SPEED_100);
 
 	db->link = 0;
@@ -199,7 +169,7 @@ static void emac_reset(struct emac_board_info *db)
 {
 	dev_dbg(db->dev, "resetting device\n");
 
-	/* RESET device */
+	 
 	writel(0, db->membase + EMAC_CTL_REG);
 	udelay(200);
 	writel(EMAC_CTL_RESET, db->membase + EMAC_CTL_REG);
@@ -254,15 +224,15 @@ static void emac_dma_done_callback(void *arg)
 	skb->protocol = eth_type_trans(skb, dev);
 	netif_rx(skb);
 	dev->stats.rx_bytes += rxlen;
-	/* Pass to upper layer */
+	 
 	dev->stats.rx_packets++;
 
-	/* re enable cpu receive */
+	 
 	reg_val = readl(db->membase + EMAC_RX_CTL_REG);
 	reg_val &= ~EMAC_RX_CTL_DMA_EN;
 	writel(reg_val, db->membase + EMAC_RX_CTL_REG);
 
-	/* re enable interrupt */
+	 
 	reg_val = readl(db->membase + EMAC_INT_CTL_REG);
 	reg_val |= EMAC_INT_CTL_RX_EN;
 	writel(reg_val, db->membase + EMAC_INT_CTL_REG);
@@ -327,7 +297,7 @@ prepare_err:
 	return ret;
 }
 
-/* ethtool ops */
+ 
 static void emac_get_drvinfo(struct net_device *dev,
 			      struct ethtool_drvinfo *info)
 {
@@ -363,38 +333,38 @@ static unsigned int emac_setup(struct net_device *ndev)
 	struct emac_board_info *db = netdev_priv(ndev);
 	unsigned int reg_val;
 
-	/* set up TX */
+	 
 	reg_val = readl(db->membase + EMAC_TX_MODE_REG);
 
 	writel(reg_val | EMAC_TX_MODE_ABORTED_FRAME_EN,
 		db->membase + EMAC_TX_MODE_REG);
 
-	/* set MAC */
-	/* set MAC CTL0 */
+	 
+	 
 	reg_val = readl(db->membase + EMAC_MAC_CTL0_REG);
 	writel(reg_val | EMAC_MAC_CTL0_RX_FLOW_CTL_EN |
 		EMAC_MAC_CTL0_TX_FLOW_CTL_EN,
 		db->membase + EMAC_MAC_CTL0_REG);
 
-	/* set MAC CTL1 */
+	 
 	reg_val = readl(db->membase + EMAC_MAC_CTL1_REG);
 	reg_val |= EMAC_MAC_CTL1_LEN_CHECK_EN;
 	reg_val |= EMAC_MAC_CTL1_CRC_EN;
 	reg_val |= EMAC_MAC_CTL1_PAD_EN;
 	writel(reg_val, db->membase + EMAC_MAC_CTL1_REG);
 
-	/* set up IPGT */
+	 
 	writel(EMAC_MAC_IPGT_FULL_DUPLEX, db->membase + EMAC_MAC_IPGT_REG);
 
-	/* set up IPGR */
+	 
 	writel((EMAC_MAC_IPGR_IPG1 << 8) | EMAC_MAC_IPGR_IPG2,
 		db->membase + EMAC_MAC_IPGR_REG);
 
-	/* set up Collison window */
+	 
 	writel((EMAC_MAC_CLRT_COLLISION_WINDOW << 8) | EMAC_MAC_CLRT_RM,
 		db->membase + EMAC_MAC_CLRT_REG);
 
-	/* set up Max Frame Length */
+	 
 	writel(EMAC_MAX_FRAME_LEN,
 		db->membase + EMAC_MAC_MAXF_REG);
 
@@ -406,7 +376,7 @@ static void emac_set_rx_mode(struct net_device *ndev)
 	struct emac_board_info *db = netdev_priv(ndev);
 	unsigned int reg_val;
 
-	/* set up RX */
+	 
 	reg_val = readl(db->membase + EMAC_RX_CTL_REG);
 
 	if (ndev->flags & IFF_PROMISC)
@@ -426,39 +396,39 @@ static unsigned int emac_powerup(struct net_device *ndev)
 	struct emac_board_info *db = netdev_priv(ndev);
 	unsigned int reg_val;
 
-	/* initial EMAC */
-	/* flush RX FIFO */
+	 
+	 
 	reg_val = readl(db->membase + EMAC_RX_CTL_REG);
 	reg_val |= EMAC_RX_CTL_FLUSH_FIFO;
 	writel(reg_val, db->membase + EMAC_RX_CTL_REG);
 	udelay(1);
 
-	/* initial MAC */
-	/* soft reset MAC */
+	 
+	 
 	reg_val = readl(db->membase + EMAC_MAC_CTL0_REG);
 	reg_val &= ~EMAC_MAC_CTL0_SOFT_RESET;
 	writel(reg_val, db->membase + EMAC_MAC_CTL0_REG);
 
-	/* set MII clock */
+	 
 	reg_val = readl(db->membase + EMAC_MAC_MCFG_REG);
 	reg_val &= ~EMAC_MAC_MCFG_MII_CLKD_MASK;
 	reg_val |= EMAC_MAC_MCFG_MII_CLKD_72;
 	writel(reg_val, db->membase + EMAC_MAC_MCFG_REG);
 
-	/* clear RX counter */
+	 
 	writel(0x0, db->membase + EMAC_RX_FBC_REG);
 
-	/* disable all interrupt and clear interrupt status */
+	 
 	writel(0, db->membase + EMAC_INT_CTL_REG);
 	reg_val = readl(db->membase + EMAC_INT_STA_REG);
 	writel(reg_val, db->membase + EMAC_INT_STA_REG);
 
 	udelay(1);
 
-	/* set up EMAC */
+	 
 	emac_setup(ndev);
 
-	/* set mac_address to chip */
+	 
 	writel(ndev->dev_addr[0] << 16 | ndev->dev_addr[1] << 8 | ndev->
 	       dev_addr[2], db->membase + EMAC_MAC_A1_REG);
 	writel(ndev->dev_addr[3] << 16 | ndev->dev_addr[4] << 8 | ndev->
@@ -487,7 +457,7 @@ static int emac_set_mac_address(struct net_device *dev, void *p)
 	return 0;
 }
 
-/* Initialize emac board */
+ 
 static void emac_init_device(struct net_device *dev)
 {
 	struct emac_board_info *db = netdev_priv(dev);
@@ -499,12 +469,12 @@ static void emac_init_device(struct net_device *dev)
 	emac_update_speed(dev);
 	emac_update_duplex(dev);
 
-	/* enable RX/TX */
+	 
 	reg_val = readl(db->membase + EMAC_CTL_REG);
 	writel(reg_val | EMAC_CTL_RESET | EMAC_CTL_TX_EN | EMAC_CTL_RX_EN,
 		db->membase + EMAC_CTL_REG);
 
-	/* enable RX/TX0/RX Hlevel interrup */
+	 
 	reg_val = readl(db->membase + EMAC_INT_CTL_REG);
 	reg_val |= (EMAC_INT_CTL_TX_EN | EMAC_INT_CTL_TX_ABRT_EN | EMAC_INT_CTL_RX_EN);
 	writel(reg_val, db->membase + EMAC_INT_CTL_REG);
@@ -512,7 +482,7 @@ static void emac_init_device(struct net_device *dev)
 	spin_unlock_irqrestore(&db->lock, flags);
 }
 
-/* Our watchdog timed out. Called by the networking layer */
+ 
 static void emac_timeout(struct net_device *dev, unsigned int txqueue)
 {
 	struct emac_board_info *db = netdev_priv(dev);
@@ -521,23 +491,21 @@ static void emac_timeout(struct net_device *dev, unsigned int txqueue)
 	if (netif_msg_timer(db))
 		dev_err(db->dev, "tx time out.\n");
 
-	/* Save previous register address */
+	 
 	spin_lock_irqsave(&db->lock, flags);
 
 	netif_stop_queue(dev);
 	emac_reset(db);
 	emac_init_device(dev);
-	/* We can accept TX packets again */
+	 
 	netif_trans_update(dev);
 	netif_wake_queue(dev);
 
-	/* Restore previous register address */
+	 
 	spin_unlock_irqrestore(&db->lock, flags);
 }
 
-/* Hardware start transmission.
- * Send a packet to media from the upper layer.
- */
+ 
 static netdev_tx_t emac_start_xmit(struct sk_buff *skb, struct net_device *dev)
 {
 	struct emac_board_info *db = netdev_priv(dev);
@@ -559,47 +527,45 @@ static netdev_tx_t emac_start_xmit(struct sk_buff *skb, struct net_device *dev)
 	dev->stats.tx_bytes += skb->len;
 
 	db->tx_fifo_stat |= 1 << channel;
-	/* TX control: First packet immediately send, second packet queue */
+	 
 	if (channel == 0) {
-		/* set TX len */
+		 
 		writel(skb->len, db->membase + EMAC_TX_PL0_REG);
-		/* start translate from fifo to phy */
+		 
 		writel(readl(db->membase + EMAC_TX_CTL0_REG) | 1,
 		       db->membase + EMAC_TX_CTL0_REG);
 
-		/* save the time stamp */
+		 
 		netif_trans_update(dev);
 	} else if (channel == 1) {
-		/* set TX len */
+		 
 		writel(skb->len, db->membase + EMAC_TX_PL1_REG);
-		/* start translate from fifo to phy */
+		 
 		writel(readl(db->membase + EMAC_TX_CTL1_REG) | 1,
 		       db->membase + EMAC_TX_CTL1_REG);
 
-		/* save the time stamp */
+		 
 		netif_trans_update(dev);
 	}
 
 	if ((db->tx_fifo_stat & 3) == 3) {
-		/* Second packet */
+		 
 		netif_stop_queue(dev);
 	}
 
 	spin_unlock_irqrestore(&db->lock, flags);
 
-	/* free this SKB */
+	 
 	dev_consume_skb_any(skb);
 
 	return NETDEV_TX_OK;
 }
 
-/* EMAC interrupt handler
- * receive the packet to upper layer, free the transmitted packet
- */
+ 
 static void emac_tx_done(struct net_device *dev, struct emac_board_info *db,
 			  unsigned int tx_status)
 {
-	/* One packet sent complete */
+	 
 	db->tx_fifo_stat &= ~(tx_status & 3);
 	if (3 == (tx_status & 3))
 		dev->stats.tx_packets += 2;
@@ -612,8 +578,7 @@ static void emac_tx_done(struct net_device *dev, struct emac_board_info *db,
 	netif_wake_queue(dev);
 }
 
-/* Received a packet and pass to upper layer
- */
+ 
 static void emac_rx(struct net_device *dev)
 {
 	struct emac_board_info *db = netdev_priv(dev);
@@ -623,12 +588,9 @@ static void emac_rx(struct net_device *dev)
 	unsigned int reg_val;
 	u32 rxhdr, rxstatus, rxcount, rxlen;
 
-	/* Check packet ready or not */
+	 
 	while (1) {
-		/* race warning: the first packet might arrive with
-		 * the interrupts disabled, but the second will fix
-		 * it
-		 */
+		 
 		rxcount = readl(db->membase + EMAC_RX_FBC_REG);
 
 		if (netif_msg_rx_status(db))
@@ -642,7 +604,7 @@ static void emac_rx(struct net_device *dev)
 					EMAC_INT_CTL_RX_EN);
 			writel(reg_val, db->membase + EMAC_INT_CTL_REG);
 
-			/* had one stuck? */
+			 
 			rxcount = readl(db->membase + EMAC_RX_FBC_REG);
 			if (!rxcount)
 				return;
@@ -652,12 +614,12 @@ static void emac_rx(struct net_device *dev)
 		if (netif_msg_rx_status(db))
 			dev_dbg(db->dev, "receive header: %x\n", reg_val);
 		if (reg_val != EMAC_UNDOCUMENTED_MAGIC) {
-			/* disable RX */
+			 
 			reg_val = readl(db->membase + EMAC_CTL_REG);
 			writel(reg_val & ~EMAC_CTL_RX_EN,
 			       db->membase + EMAC_CTL_REG);
 
-			/* Flush RX FIFO */
+			 
 			reg_val = readl(db->membase + EMAC_RX_CTL_REG);
 			writel(reg_val | (1 << 3),
 			       db->membase + EMAC_RX_CTL_REG);
@@ -666,7 +628,7 @@ static void emac_rx(struct net_device *dev)
 				reg_val = readl(db->membase + EMAC_RX_CTL_REG);
 			} while (reg_val & (1 << 3));
 
-			/* enable RX */
+			 
 			reg_val = readl(db->membase + EMAC_CTL_REG);
 			writel(reg_val | EMAC_CTL_RX_EN,
 			       db->membase + EMAC_CTL_REG);
@@ -681,7 +643,7 @@ static void emac_rx(struct net_device *dev)
 			return;
 		}
 
-		/* A packet ready now  & Get status/length */
+		 
 		good_packet = true;
 
 		rxhdr = readl(db->membase + EMAC_RX_IO_DATA_REG);
@@ -696,7 +658,7 @@ static void emac_rx(struct net_device *dev)
 			dev_dbg(db->dev, "RX: status %02x, length %04x\n",
 				rxstatus, rxlen);
 
-		/* Packet Status check */
+		 
 		if (rxlen < 0x40) {
 			good_packet = false;
 			if (netif_msg_rx_err(db))
@@ -719,7 +681,7 @@ static void emac_rx(struct net_device *dev)
 			}
 		}
 
-		/* Move data from EMAC */
+		 
 		if (good_packet) {
 			skb = netdev_alloc_skb(dev, rxlen + 4);
 			if (!skb)
@@ -727,7 +689,7 @@ static void emac_rx(struct net_device *dev)
 			skb_reserve(skb, 2);
 			rdptr = skb_put(skb, rxlen - 4);
 
-			/* Read received packet from RX SRAM */
+			 
 			if (netif_msg_rx_status(db))
 				dev_dbg(db->dev, "RxLen %x\n", rxlen);
 
@@ -738,7 +700,7 @@ static void emac_rx(struct net_device *dev)
 				if (!emac_dma_inblk_32bit(db, skb, rdptr, rxlen))
 					break;
 
-				/* re enable cpu receive. then try to receive by emac_inblk_32bit */
+				 
 				reg_val = readl(db->membase + EMAC_RX_CTL_REG);
 				reg_val &= ~EMAC_RX_CTL_DMA_EN;
 				writel(reg_val, db->membase + EMAC_RX_CTL_REG);
@@ -748,7 +710,7 @@ static void emac_rx(struct net_device *dev)
 					rdptr, rxlen);
 			dev->stats.rx_bytes += rxlen;
 
-			/* Pass to upper layer */
+			 
 			skb->protocol = eth_type_trans(skb, dev);
 			netif_rx(skb);
 			dev->stats.rx_packets++;
@@ -763,37 +725,37 @@ static irqreturn_t emac_interrupt(int irq, void *dev_id)
 	int int_status;
 	unsigned int reg_val;
 
-	/* A real interrupt coming */
+	 
 
 	spin_lock(&db->lock);
 
-	/* Disable all interrupts */
+	 
 	writel(0, db->membase + EMAC_INT_CTL_REG);
 
-	/* Got EMAC interrupt status */
-	/* Got ISR */
+	 
+	 
 	int_status = readl(db->membase + EMAC_INT_STA_REG);
-	/* Clear ISR status */
+	 
 	writel(int_status, db->membase + EMAC_INT_STA_REG);
 
 	if (netif_msg_intr(db))
 		dev_dbg(db->dev, "emac interrupt %02x\n", int_status);
 
-	/* Received the coming packet */
+	 
 	if ((int_status & 0x100) && (db->emacrx_completed_flag == 1)) {
-		/* carrier lost */
+		 
 		db->emacrx_completed_flag = 0;
 		emac_rx(dev);
 	}
 
-	/* Transmit Interrupt check */
+	 
 	if (int_status & EMAC_INT_STA_TX_COMPLETE)
 		emac_tx_done(dev, db, int_status);
 
 	if (int_status & EMAC_INT_STA_TX_ABRT)
 		netdev_info(dev, " ab : %x\n", int_status);
 
-	/* Re-enable interrupt mask */
+	 
 	if (db->emacrx_completed_flag == 1) {
 		reg_val = readl(db->membase + EMAC_INT_CTL_REG);
 		reg_val |= (EMAC_INT_CTL_TX_EN | EMAC_INT_CTL_TX_ABRT_EN | EMAC_INT_CTL_RX_EN);
@@ -810,9 +772,7 @@ static irqreturn_t emac_interrupt(int irq, void *dev_id)
 }
 
 #ifdef CONFIG_NET_POLL_CONTROLLER
-/*
- * Used by netconsole
- */
+ 
 static void emac_poll_controller(struct net_device *dev)
 {
 	disable_irq(dev->irq);
@@ -821,9 +781,7 @@ static void emac_poll_controller(struct net_device *dev)
 }
 #endif
 
-/*  Open the interface.
- *  The interface is opened whenever "ifconfig" actives it.
- */
+ 
 static int emac_open(struct net_device *dev)
 {
 	struct emac_board_info *db = netdev_priv(dev);
@@ -835,7 +793,7 @@ static int emac_open(struct net_device *dev)
 	if (request_irq(dev->irq, &emac_interrupt, 0, dev->name, dev))
 		return -EAGAIN;
 
-	/* Initialize EMAC board */
+	 
 	emac_reset(db);
 	emac_init_device(dev);
 
@@ -857,22 +815,20 @@ static void emac_shutdown(struct net_device *dev)
 	unsigned int reg_val;
 	struct emac_board_info *db = netdev_priv(dev);
 
-	/* Disable all interrupt */
+	 
 	writel(0, db->membase + EMAC_INT_CTL_REG);
 
-	/* clear interrupt status */
+	 
 	reg_val = readl(db->membase + EMAC_INT_STA_REG);
 	writel(reg_val, db->membase + EMAC_INT_STA_REG);
 
-	/* Disable RX/TX */
+	 
 	reg_val = readl(db->membase + EMAC_CTL_REG);
 	reg_val &= ~(EMAC_CTL_TX_EN | EMAC_CTL_RX_EN | EMAC_CTL_RESET);
 	writel(reg_val, db->membase + EMAC_CTL_REG);
 }
 
-/* Stop the interface.
- * The interface is stopped when it is brought.
- */
+ 
 static int emac_stop(struct net_device *ndev)
 {
 	struct emac_board_info *db = netdev_priv(ndev);
@@ -960,8 +916,7 @@ out_clear_chan:
 	return err;
 }
 
-/* Search EMAC board, allocate space and register it
- */
+ 
 static int emac_probe(struct platform_device *pdev)
 {
 	struct device_node *np = pdev->dev.of_node;
@@ -993,7 +948,7 @@ static int emac_probe(struct platform_device *pdev)
 		goto out;
 	}
 
-	/* fill in parameters for net-dev structure */
+	 
 	ndev->base_addr = (unsigned long)db->membase;
 	ndev->irq = irq_of_parse_and_map(np, 0);
 	if (ndev->irq == -ENXIO) {
@@ -1032,10 +987,10 @@ static int emac_probe(struct platform_device *pdev)
 		goto out_release_sram;
 	}
 
-	/* Read MAC-address from DT */
+	 
 	ret = of_get_ethdev_address(np, ndev);
 	if (ret) {
-		/* if the MAC address is invalid get a random one */
+		 
 		eth_hw_addr_random(ndev);
 		dev_warn(&pdev->dev, "using random MAC address %pM\n",
 			 ndev->dev_addr);
@@ -1051,7 +1006,7 @@ static int emac_probe(struct platform_device *pdev)
 
 	platform_set_drvdata(pdev, ndev);
 
-	/* Carrier starts down, phylib will bring it up */
+	 
 	netif_carrier_off(ndev);
 
 	ret = register_netdev(ndev);
@@ -1130,7 +1085,7 @@ static int emac_resume(struct platform_device *dev)
 static const struct of_device_id emac_of_match[] = {
 	{.compatible = "allwinner,sun4i-a10-emac",},
 
-	/* Deprecated */
+	 
 	{.compatible = "allwinner,sun4i-emac",},
 	{},
 };

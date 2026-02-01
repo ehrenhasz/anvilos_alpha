@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * vsp1_rwpf.c  --  R-Car VSP1 Read and Write Pixel Formatters
- *
- * Copyright (C) 2013-2014 Renesas Electronics Corporation
- *
- * Contact: Laurent Pinchart (laurent.pinchart@ideasonboard.com)
- */
+
+ 
 
 #include <media/v4l2-subdev.h>
 
@@ -23,9 +17,7 @@ struct v4l2_rect *vsp1_rwpf_get_crop(struct vsp1_rwpf *rwpf,
 					RWPF_PAD_SINK);
 }
 
-/* -----------------------------------------------------------------------------
- * V4L2 Subdevice Pad Operations
- */
+ 
 
 static int vsp1_rwpf_enum_mbus_code(struct v4l2_subdev *subdev,
 				    struct v4l2_subdev_state *sd_state,
@@ -75,7 +67,7 @@ static int vsp1_rwpf_set_format(struct v4l2_subdev *subdev,
 		goto done;
 	}
 
-	/* Default to YUV if the requested format is not supported. */
+	 
 	if (fmt->format.code != MEDIA_BUS_FMT_ARGB8888_1X32 &&
 	    fmt->format.code != MEDIA_BUS_FMT_AHSV8888_1X32 &&
 	    fmt->format.code != MEDIA_BUS_FMT_AYUV8_1X32)
@@ -84,10 +76,7 @@ static int vsp1_rwpf_set_format(struct v4l2_subdev *subdev,
 	format = vsp1_entity_get_pad_format(&rwpf->entity, config, fmt->pad);
 
 	if (fmt->pad == RWPF_PAD_SOURCE) {
-		/*
-		 * The RWPF performs format conversion but can't scale, only the
-		 * format code can be changed on the source pad.
-		 */
+		 
 		format->code = fmt->format.code;
 		fmt->format = *format;
 		goto done;
@@ -106,7 +95,7 @@ static int vsp1_rwpf_set_format(struct v4l2_subdev *subdev,
 	if (rwpf->entity.type == VSP1_ENTITY_RPF) {
 		struct v4l2_rect *crop;
 
-		/* Update the sink crop rectangle. */
+		 
 		crop = vsp1_rwpf_get_crop(rwpf, config);
 		crop->left = 0;
 		crop->top = 0;
@@ -114,7 +103,7 @@ static int vsp1_rwpf_set_format(struct v4l2_subdev *subdev,
 		crop->height = fmt->format.height;
 	}
 
-	/* Propagate the format to the source pad. */
+	 
 	format = vsp1_entity_get_pad_format(&rwpf->entity, config,
 					    RWPF_PAD_SOURCE);
 	*format = fmt->format;
@@ -138,10 +127,7 @@ static int vsp1_rwpf_get_selection(struct v4l2_subdev *subdev,
 	struct v4l2_mbus_framefmt *format;
 	int ret = 0;
 
-	/*
-	 * Cropping is only supported on the RPF and is implemented on the sink
-	 * pad.
-	 */
+	 
 	if (rwpf->entity.type == VSP1_ENTITY_WPF || sel->pad != RWPF_PAD_SINK)
 		return -EINVAL;
 
@@ -188,10 +174,7 @@ static int vsp1_rwpf_set_selection(struct v4l2_subdev *subdev,
 	struct v4l2_rect *crop;
 	int ret = 0;
 
-	/*
-	 * Cropping is only supported on the RPF and is implemented on the sink
-	 * pad.
-	 */
+	 
 	if (rwpf->entity.type == VSP1_ENTITY_WPF || sel->pad != RWPF_PAD_SINK)
 		return -EINVAL;
 
@@ -207,14 +190,11 @@ static int vsp1_rwpf_set_selection(struct v4l2_subdev *subdev,
 		goto done;
 	}
 
-	/* Make sure the crop rectangle is entirely contained in the image. */
+	 
 	format = vsp1_entity_get_pad_format(&rwpf->entity, config,
 					    RWPF_PAD_SINK);
 
-	/*
-	 * Restrict the crop rectangle coordinates to multiples of 2 to avoid
-	 * shifting the color plane.
-	 */
+	 
 	if (format->code == MEDIA_BUS_FMT_AYUV8_1X32) {
 		sel->r.left = ALIGN(sel->r.left, 2);
 		sel->r.top = ALIGN(sel->r.top, 2);
@@ -232,7 +212,7 @@ static int vsp1_rwpf_set_selection(struct v4l2_subdev *subdev,
 	crop = vsp1_rwpf_get_crop(rwpf, config);
 	*crop = sel->r;
 
-	/* Propagate the format to the source pad. */
+	 
 	format = vsp1_entity_get_pad_format(&rwpf->entity, config,
 					    RWPF_PAD_SOURCE);
 	format->width = crop->width;
@@ -253,9 +233,7 @@ const struct v4l2_subdev_pad_ops vsp1_rwpf_pad_ops = {
 	.set_selection = vsp1_rwpf_set_selection,
 };
 
-/* -----------------------------------------------------------------------------
- * Controls
- */
+ 
 
 static int vsp1_rwpf_s_ctrl(struct v4l2_ctrl *ctrl)
 {

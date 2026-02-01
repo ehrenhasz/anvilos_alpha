@@ -1,40 +1,4 @@
-/*
- * Atheros CARL9170 driver
- *
- * Basic HW register/memory/command access functions
- *
- * Copyright 2008, Johannes Berg <johannes@sipsolutions.net>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; see the file COPYING.  If not, see
- * http://www.gnu.org/licenses/.
- *
- * This file incorporates work covered by the following copyright and
- * permission notice:
- *    Copyright (c) 2007-2008 Atheros Communications, Inc.
- *
- *    Permission to use, copy, modify, and/or distribute this software for any
- *    purpose with or without fee is hereby granted, provided that the above
- *    copyright notice and this permission notice appear in all copies.
- *
- *    THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- *    WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- *    MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- *    ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- *    WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- *    ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- *    OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
+ 
 
 #include <asm/div64.h>
 #include "carl9170.h"
@@ -65,12 +29,12 @@ int carl9170_read_mreg(struct ar9170 *ar, const int nregs,
 	int i, err;
 	__le32 *offs, *res;
 
-	/* abuse "out" for the register offsets, must be same length */
+	 
 	offs = (__le32 *)out;
 	for (i = 0; i < nregs; i++)
 		offs[i] = cpu_to_le32(regs[i]);
 
-	/* also use the same buffer for the input */
+	 
 	res = (__le32 *)out;
 
 	err = carl9170_exec_cmd(ar, CARL9170_CMD_RREG,
@@ -84,7 +48,7 @@ int carl9170_read_mreg(struct ar9170 *ar, const int nregs,
 		return err;
 	}
 
-	/* convert result to cpu endian */
+	 
 	for (i = 0; i < nregs; i++)
 		out[i] = le32_to_cpu(res[i]);
 
@@ -210,10 +174,10 @@ int carl9170_powersave(struct ar9170 *ar, const bool ps)
 		return -ENOMEM;
 
 	if (ps) {
-		/* Sleep until next TBTT */
+		 
 		state = CARL9170_PSM_SLEEP | 1;
 	} else {
-		/* wake up immediately */
+		 
 		state = 1;
 	}
 

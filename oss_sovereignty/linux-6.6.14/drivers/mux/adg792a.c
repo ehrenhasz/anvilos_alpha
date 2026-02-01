@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Multiplexer driver for Analog Devices ADG792A/G Triple 4:1 mux
- *
- * Copyright (C) 2017 Axentia Technologies AB
- *
- * Author: Peter Rosin <peda@axentia.se>
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/i2c.h>
@@ -24,7 +18,7 @@ static int adg792a_write_cmd(struct i2c_client *i2c, u8 cmd, int reset)
 {
 	u8 data = ADG792A_RESETB | ADG792A_LDSW;
 
-	/* ADG792A_RESETB is active low, the chip resets when it is zero. */
+	 
 	if (reset)
 		data &= ~ADG792A_RESETB;
 
@@ -37,7 +31,7 @@ static int adg792a_set(struct mux_control *mux, int state)
 	u8 cmd;
 
 	if (mux->chip->controllers == 1) {
-		/* parallel mux controller operation */
+		 
 		if (state == MUX_IDLE_DISCONNECT)
 			cmd = ADG792A_DISABLE_ALL;
 		else

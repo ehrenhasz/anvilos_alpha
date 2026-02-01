@@ -1,25 +1,4 @@
-/*
- * Copyright (C) 2012 Avionic Design GmbH
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sub license,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice (including the
- * next paragraph) shall be included in all copies or substantial portions
- * of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT. IN NO EVENT SHALL
- * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
- * DEALINGS IN THE SOFTWARE.
- */
+ 
 
 #ifndef __LINUX_HDMI_H_
 #define __LINUX_HDMI_H_
@@ -39,7 +18,7 @@ enum hdmi_packet_type {
 	HDMI_PACKET_TYPE_DST_AUDIO = 0x08,
 	HDMI_PACKET_TYPE_HBR_AUDIO_STREAM = 0x09,
 	HDMI_PACKET_TYPE_GAMUT_METADATA = 0x0a,
-	/* + enum hdmi_infoframe_type */
+	 
 };
 
 enum hdmi_infoframe_type {
@@ -122,7 +101,7 @@ enum hdmi_extended_colorimetry {
 	HDMI_EXTENDED_COLORIMETRY_OPYCC_601,
 	HDMI_EXTENDED_COLORIMETRY_OPRGB,
 
-	/* The following EC values are only defined in CEA-861-F. */
+	 
 	HDMI_EXTENDED_COLORIMETRY_BT2020_CONST_LUM,
 	HDMI_EXTENDED_COLORIMETRY_BT2020,
 	HDMI_EXTENDED_COLORIMETRY_RESERVED,
@@ -135,7 +114,7 @@ enum hdmi_quantization_range {
 	HDMI_QUANTIZATION_RANGE_RESERVED,
 };
 
-/* non-uniform picture scaling */
+ 
 enum hdmi_nups {
 	HDMI_NUPS_UNKNOWN,
 	HDMI_NUPS_HORIZONTAL,
@@ -189,7 +168,7 @@ struct hdmi_avi_infoframe {
 	unsigned short right_bar;
 };
 
-/* DRM Infoframe as per CTA 861.G spec */
+ 
 struct hdmi_drm_infoframe {
 	enum hdmi_infoframe_type type;
 	unsigned char version;
@@ -295,19 +274,15 @@ enum hdmi_audio_sample_frequency {
 };
 
 enum hdmi_audio_coding_type_ext {
-	/* Refer to Audio Coding Type (CT) field in Data Byte 1 */
+	 
 	HDMI_AUDIO_CODING_TYPE_EXT_CT,
 
-	/*
-	 * The next three CXT values are defined in CEA-861-E only.
-	 * They do not exist in older versions, and in CEA-861-F they are
-	 * defined as 'Not in use'.
-	 */
+	 
 	HDMI_AUDIO_CODING_TYPE_EXT_HE_AAC,
 	HDMI_AUDIO_CODING_TYPE_EXT_HE_AAC_V2,
 	HDMI_AUDIO_CODING_TYPE_EXT_MPEG_SURROUND,
 
-	/* The following CXT values are only defined in CEA-861-F. */
+	 
 	HDMI_AUDIO_CODING_TYPE_EXT_MPEG4_HE_AAC,
 	HDMI_AUDIO_CODING_TYPE_EXT_MPEG4_HE_AAC_V2,
 	HDMI_AUDIO_CODING_TYPE_EXT_MPEG4_AAC_LC,
@@ -366,7 +341,7 @@ struct hdmi_vendor_infoframe {
 	unsigned int s3d_ext_data;
 };
 
-/* HDR Metadata as per 861.G spec */
+ 
 struct hdr_static_metadata {
 	__u8 eotf;
 	__u8 metadata_type;
@@ -375,19 +350,11 @@ struct hdr_static_metadata {
 	__u16 min_cll;
 };
 
-/**
- * struct hdr_sink_metadata - HDR sink metadata
- *
- * Metadata Information read from Sink's EDID
- */
+ 
 struct hdr_sink_metadata {
-	/**
-	 * @metadata_type: Static_Metadata_Descriptor_ID.
-	 */
+	 
 	__u32 metadata_type;
-	/**
-	 * @hdmi_type1: HDR Metadata Infoframe.
-	 */
+	 
 	union {
 		struct hdr_static_metadata hdmi_type1;
 	};
@@ -410,19 +377,7 @@ union hdmi_vendor_any_infoframe {
 	struct hdmi_vendor_infoframe hdmi;
 };
 
-/**
- * union hdmi_infoframe - overall union of all abstract infoframe representations
- * @any: generic infoframe
- * @avi: avi infoframe
- * @spd: spd infoframe
- * @vendor: union of all vendor infoframes
- * @audio: audio infoframe
- * @drm: Dynamic Range and Mastering infoframe
- *
- * This is used by the generic pack function. This works since all infoframes
- * have the same header which also indicates which type of infoframe should be
- * packed.
- */
+ 
 union hdmi_infoframe {
 	struct hdmi_any_infoframe any;
 	struct hdmi_avi_infoframe avi;
@@ -442,4 +397,4 @@ int hdmi_infoframe_unpack(union hdmi_infoframe *frame,
 void hdmi_infoframe_log(const char *level, struct device *dev,
 			const union hdmi_infoframe *frame);
 
-#endif /* _DRM_HDMI_H */
+#endif  

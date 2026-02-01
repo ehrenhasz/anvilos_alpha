@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * HID raw devices, giving access to raw HID events.
- *
- * In comparison to hiddev, this device does not process the
- * hid events at all (no parsing, no lookups). This lets applications
- * to work on raw hid events as they want to, and avoids a need to
- * use a transport-specific userspace libhid/libusb libraries.
- *
- *  Copyright (c) 2007-2014 Jiri Kosina
- */
+
+ 
 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
@@ -65,7 +56,7 @@ static ssize_t hidraw_read(struct file *file, char __user *buffer, size_t count,
 					break;
 				}
 
-				/* allow O_NONBLOCK to work well from other threads */
+				 
 				mutex_unlock(&list->read_mutex);
 				schedule();
 				mutex_lock(&list->read_mutex);
@@ -99,9 +90,7 @@ out:
 	return ret;
 }
 
-/*
- * The first byte of the report buffer is expected to be a report number.
- */
+ 
 static ssize_t hidraw_send_report(struct file *file, const char __user *buffer, size_t count, unsigned char report_type)
 {
 	unsigned int minor = iminor(file_inode(file));
@@ -141,11 +130,7 @@ static ssize_t hidraw_send_report(struct file *file, const char __user *buffer, 
 	if ((report_type == HID_OUTPUT_REPORT) &&
 	    !(dev->quirks & HID_QUIRK_NO_OUTPUT_REPORTS_ON_INTR_EP)) {
 		ret = hid_hw_output_report(dev, buf, count);
-		/*
-		 * compatibility with old implementation of USB-HID and I2C-HID:
-		 * if the device does not support receiving output reports,
-		 * on an interrupt endpoint, fallback to SET_REPORT HID command.
-		 */
+		 
 		if (ret != -ENOSYS)
 			goto out_free;
 	}
@@ -169,13 +154,7 @@ static ssize_t hidraw_write(struct file *file, const char __user *buffer, size_t
 }
 
 
-/*
- * This function performs a Get_Report transfer over the control endpoint
- * per section 7.2.1 of the HID specification, version 1.1.  The first byte
- * of buffer is the report number to request, or 0x0 if the device does not
- * use numbered reports. The report_type parameter can be HID_FEATURE_REPORT
- * or HID_INPUT_REPORT.
- */
+ 
 static ssize_t hidraw_get_report(struct file *file, char __user *buffer, size_t count, unsigned char report_type)
 {
 	unsigned int minor = iminor(file_inode(file));
@@ -218,10 +197,7 @@ static ssize_t hidraw_get_report(struct file *file, char __user *buffer, size_t 
 		goto out;
 	}
 
-	/*
-	 * Read the first byte from the user. This is the report number,
-	 * which is passed to hid_hw_raw_request().
-	 */
+	 
 	if (copy_from_user(&report_number, buffer, 1)) {
 		ret = -EFAULT;
 		goto out_free;
@@ -251,7 +227,7 @@ out:
 static __poll_t hidraw_poll(struct file *file, poll_table *wait)
 {
 	struct hidraw_list *list = file->private_data;
-	__poll_t mask = EPOLLOUT | EPOLLWRNORM; /* hidraw is always writable */
+	__poll_t mask = EPOLLOUT | EPOLLWRNORM;  
 
 	poll_wait(file, &list->hidraw->wait, wait);
 	if (list->head != list->tail)
@@ -274,11 +250,7 @@ static int hidraw_open(struct inode *inode, struct file *file)
 		goto out;
 	}
 
-	/*
-	 * Technically not writing to the hidraw_table but a write lock is
-	 * required to protect the device refcount. This is symmetrical to
-	 * hidraw_release().
-	 */
+	 
 	down_write(&minors_rwsem);
 	if (!hidraw_table[minor] || !hidraw_table[minor]->exist) {
 		err = -ENODEV;
@@ -341,7 +313,7 @@ static void drop_ref(struct hidraw *hidraw, int exists_bit)
 			hidraw_table[hidraw->minor] = NULL;
 			kfree(hidraw);
 		} else {
-			/* close device for last reader */
+			 
 			hid_hw_close(hidraw->hid);
 			hid_hw_power(hidraw->hid, PM_HINT_NORMAL);
 		}
@@ -459,7 +431,7 @@ static long hidraw_ioctl(struct file *file, unsigned int cmd,
 					break;
 				}
 
-				/* Begin Read-only ioctls. */
+				 
 				if (_IOC_DIR(cmd) != _IOC_READ) {
 					ret = -EINVAL;
 					break;
@@ -547,7 +519,7 @@ int hidraw_connect(struct hid_device *hid)
 	int minor, result;
 	struct hidraw *dev;
 
-	/* we accept any HID device, all applications */
+	 
 
 	dev = kzalloc(sizeof(struct hidraw), GFP_KERNEL);
 	if (!dev)

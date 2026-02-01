@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* ZD1211 USB-WLAN driver for Linux
- *
- * Copyright (C) 2005-2007 Ulrich Kunitz <kune@deine-taler.de>
- * Copyright (C) 2006-2007 Daniel Drake <dsd@gentoo.org>
- */
+
+ 
 
 #include <linux/errno.h>
 #include <linux/string.h>
@@ -43,8 +39,7 @@ void zd_rf_init(struct zd_rf *rf)
 {
 	memset(rf, 0, sizeof(*rf));
 
-	/* default to update channel integration, as almost all RF's do want
-	 * this */
+	 
 	rf->update_channel_int = 1;
 }
 
@@ -142,7 +137,7 @@ int zd_switch_radio_off(struct zd_rf *rf)
 	int r, t;
 	struct zd_chip *chip = zd_rf_to_chip(rf);
 
-	/* TODO: move phy regs handling to zd_chip */
+	 
 	ZD_ASSERT(mutex_is_locked(&chip->mutex));
 	r = zd_chip_lock_phy_regs(chip);
 	if (r)

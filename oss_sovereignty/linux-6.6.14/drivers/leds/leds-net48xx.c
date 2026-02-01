@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * LEDs driver for Soekris net48xx
- *
- * Copyright (C) 2006 Chris Boot <bootc@bootc.net>
- *
- * Based on leds-ams-delta.c
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/init.h>
@@ -50,7 +44,7 @@ static int __init net48xx_led_init(void)
 {
 	int ret;
 
-	/* small hack, but scx200_gpio doesn't set .dev if the probe fails */
+	 
 	if (!scx200_gpio_ops.dev) {
 		ret = -ENODEV;
 		goto out;

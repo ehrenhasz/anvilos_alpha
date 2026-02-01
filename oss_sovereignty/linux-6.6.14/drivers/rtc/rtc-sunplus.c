@@ -1,10 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
 
-/*
- * The RTC driver for Sunplus	SP7021
- *
- * Copyright (C) 2019 Sunplus Technology Inc., All rights reseerved.
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/clk.h>
@@ -163,20 +159,7 @@ static irqreturn_t sp_rtc_irq_handler(int irq, void *dev_id)
 	return IRQ_HANDLED;
 }
 
-/*
- * -------------------------------------------------------------------------------------
- * bat_charge_rsel   bat_charge_dsel   bat_charge_en     Remarks
- *         x              x                 0            Disable
- *         0              0                 1            0.86mA (2K Ohm with diode)
- *         1              0                 1            1.81mA (250 Ohm with diode)
- *         2              0                 1            2.07mA (50 Ohm with diode)
- *         3              0                 1            16.0mA (0 Ohm with diode)
- *         0              1                 1            1.36mA (2K Ohm without diode)
- *         1              1                 1            3.99mA (250 Ohm without diode)
- *         2              1                 1            4.41mA (50 Ohm without diode)
- *         3              1                 1            16.0mA (0 Ohm without diode)
- * -------------------------------------------------------------------------------------
- */
+ 
 static void sp_rtc_set_trickle_charger(struct device dev)
 {
 	struct sunplus_rtc *sp_rtc = dev_get_drvdata(&dev);
@@ -286,11 +269,11 @@ static int sp_rtc_probe(struct platform_device *plat_dev)
 	if (ret)
 		goto free_reset_assert;
 
-	/* Setup trickle charger */
+	 
 	if (plat_dev->dev.of_node)
 		sp_rtc_set_trickle_charger(plat_dev->dev);
 
-	/* Keep RTC from system reset */
+	 
 	writel(DIS_SYS_RST_RTC_MASK_BIT | DIS_SYS_RST_RTC, sp_rtc->reg_base + RTC_CTRL);
 
 	return 0;
@@ -336,7 +319,7 @@ static int sp_rtc_resume(struct device *dev)
 
 static const struct of_device_id sp_rtc_of_match[] = {
 	{ .compatible = "sunplus,sp7021-rtc" },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, sp_rtc_of_match);
 

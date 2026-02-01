@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef __NET_TC_IPT_H
 #define __NET_TC_IPT_H
 
@@ -14,4 +14,4 @@ struct tcf_ipt {
 };
 #define to_ipt(a) ((struct tcf_ipt *)a)
 
-#endif /* __NET_TC_IPT_H */
+#endif  

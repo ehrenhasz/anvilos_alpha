@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2015 Jens Kuske <jenskuske@gmail.com>
- *
- * Based on clk-simple-gates.c, which is:
- * Copyright 2015 Maxime Ripard
- *
- * Maxime Ripard <maxime.ripard@free-electrons.com>
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/io.h>

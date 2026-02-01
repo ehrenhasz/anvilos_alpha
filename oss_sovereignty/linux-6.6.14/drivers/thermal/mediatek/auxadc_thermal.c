@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2015 MediaTek Inc.
- * Author: Hanyi Wu <hanyi.wu@mediatek.com>
- *         Sascha Hauer <s.hauer@pengutronix.de>
- *         Dawei Chien <dawei.chien@mediatek.com>
- *         Louis Yu <louis.yu@mediatek.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -24,7 +18,7 @@
 
 #include "../thermal_hwmon.h"
 
-/* AUXADC Registers */
+ 
 #define AUXADC_CON1_SET_V	0x008
 #define AUXADC_CON1_CLR_V	0x00c
 #define AUXADC_CON2_V		0x010
@@ -33,7 +27,7 @@
 #define APMIXED_SYS_TS_CON0	0x600
 #define APMIXED_SYS_TS_CON1	0x604
 
-/* Thermal Controller Registers */
+ 
 #define TEMP_MONCTL0		0x000
 #define TEMP_MONCTL1		0x004
 #define TEMP_MONCTL2		0x008
@@ -90,43 +84,36 @@
 #define TEMP_ADCVALIDMASK_VALID_HIGH		BIT(5)
 #define TEMP_ADCVALIDMASK_VALID_POS(bit)	(bit)
 
-/* MT8173 thermal sensors */
+ 
 #define MT8173_TS1	0
 #define MT8173_TS2	1
 #define MT8173_TS3	2
 #define MT8173_TS4	3
 #define MT8173_TSABB	4
 
-/* AUXADC channel 11 is used for the temperature sensors */
+ 
 #define MT8173_TEMP_AUXADC_CHANNEL	11
 
-/* The total number of temperature sensors in the MT8173 */
+ 
 #define MT8173_NUM_SENSORS		5
 
-/* The number of banks in the MT8173 */
+ 
 #define MT8173_NUM_ZONES		4
 
-/* The number of sensing points per bank */
+ 
 #define MT8173_NUM_SENSORS_PER_ZONE	4
 
-/* The number of controller in the MT8173 */
+ 
 #define MT8173_NUM_CONTROLLER		1
 
-/* The calibration coefficient of sensor  */
+ 
 #define MT8173_CALIBRATION	165
 
-/* Valid temperatures range */
+ 
 #define MT8173_TEMP_MIN		-20000
 #define MT8173_TEMP_MAX		150000
 
-/*
- * Layout of the fuses providing the calibration data
- * These macros could be used for MT8183, MT8173, MT2701, and MT2712.
- * MT8183 has 6 sensors and needs 6 VTS calibration data.
- * MT8173 has 5 sensors and needs 5 VTS calibration data.
- * MT2701 has 3 sensors and needs 3 VTS calibration data.
- * MT2712 has 4 sensors and needs 4 VTS calibration data.
- */
+ 
 #define CALIB_BUF0_VALID_V1		BIT(0)
 #define CALIB_BUF1_ADC_GE_V1(x)		(((x) >> 22) & 0x3ff)
 #define CALIB_BUF0_VTS_TS1_V1(x)	(((x) >> 17) & 0x1ff)
@@ -140,10 +127,7 @@
 #define CALIB_BUF0_O_SLOPE_SIGN_V1(x)	(((x) >> 7) & 0x1)
 #define CALIB_BUF1_ID_V1(x)		(((x) >> 9) & 0x1)
 
-/*
- * Layout of the fuses providing the calibration data
- * These macros could be used for MT7622.
- */
+ 
 #define CALIB_BUF0_ADC_OE_V2(x)		(((x) >> 22) & 0x3ff)
 #define CALIB_BUF0_ADC_GE_V2(x)		(((x) >> 12) & 0x3ff)
 #define CALIB_BUF0_DEGC_CALI_V2(x)	(((x) >> 6) & 0x3f)
@@ -154,10 +138,7 @@
 #define CALIB_BUF1_VALID_V2(x)		(((x) >> 4) & 0x1)
 #define CALIB_BUF1_O_SLOPE_SIGN_V2(x)	(((x) >> 3) & 0x1)
 
-/*
- * Layout of the fuses providing the calibration data
- * These macros can be used for MT7981 and MT7986.
- */
+ 
 #define CALIB_BUF0_ADC_GE_V3(x)		(((x) >> 0) & 0x3ff)
 #define CALIB_BUF0_DEGC_CALI_V3(x)	(((x) >> 20) & 0x3f)
 #define CALIB_BUF0_O_SLOPE_V3(x)	(((x) >> 26) & 0x3f)
@@ -184,45 +165,45 @@ enum mtk_thermal_version {
 	MTK_THERMAL_V3,
 };
 
-/* MT2701 thermal sensors */
+ 
 #define MT2701_TS1	0
 #define MT2701_TS2	1
 #define MT2701_TSABB	2
 
-/* AUXADC channel 11 is used for the temperature sensors */
+ 
 #define MT2701_TEMP_AUXADC_CHANNEL	11
 
-/* The total number of temperature sensors in the MT2701 */
+ 
 #define MT2701_NUM_SENSORS	3
 
-/* The number of sensing points per bank */
+ 
 #define MT2701_NUM_SENSORS_PER_ZONE	3
 
-/* The number of controller in the MT2701 */
+ 
 #define MT2701_NUM_CONTROLLER		1
 
-/* The calibration coefficient of sensor  */
+ 
 #define MT2701_CALIBRATION	165
 
-/* MT2712 thermal sensors */
+ 
 #define MT2712_TS1	0
 #define MT2712_TS2	1
 #define MT2712_TS3	2
 #define MT2712_TS4	3
 
-/* AUXADC channel 11 is used for the temperature sensors */
+ 
 #define MT2712_TEMP_AUXADC_CHANNEL	11
 
-/* The total number of temperature sensors in the MT2712 */
+ 
 #define MT2712_NUM_SENSORS	4
 
-/* The number of sensing points per bank */
+ 
 #define MT2712_NUM_SENSORS_PER_ZONE	4
 
-/* The number of controller in the MT2712 */
+ 
 #define MT2712_NUM_CONTROLLER		1
 
-/* The calibration coefficient of sensor  */
+ 
 #define MT2712_CALIBRATION	165
 
 #define MT7622_TEMP_AUXADC_CHANNEL	11
@@ -232,13 +213,13 @@ enum mtk_thermal_version {
 #define MT7622_TS1	0
 #define MT7622_NUM_CONTROLLER		1
 
-/* The maximum number of banks */
+ 
 #define MAX_NUM_ZONES		8
 
-/* The calibration coefficient of sensor  */
+ 
 #define MT7622_CALIBRATION	165
 
-/* MT8183 thermal sensors */
+ 
 #define MT8183_TS1	0
 #define MT8183_TS2	1
 #define MT8183_TS3	2
@@ -246,46 +227,46 @@ enum mtk_thermal_version {
 #define MT8183_TS5	4
 #define MT8183_TSABB	5
 
-/* AUXADC channel  is used for the temperature sensors */
+ 
 #define MT8183_TEMP_AUXADC_CHANNEL	11
 
-/* The total number of temperature sensors in the MT8183 */
+ 
 #define MT8183_NUM_SENSORS	6
 
-/* The number of banks in the MT8183 */
+ 
 #define MT8183_NUM_ZONES               1
 
-/* The number of sensing points per bank */
+ 
 #define MT8183_NUM_SENSORS_PER_ZONE	 6
 
-/* The number of controller in the MT8183 */
+ 
 #define MT8183_NUM_CONTROLLER		2
 
-/* The calibration coefficient of sensor  */
+ 
 #define MT8183_CALIBRATION	153
 
-/* AUXADC channel 11 is used for the temperature sensors */
+ 
 #define MT7986_TEMP_AUXADC_CHANNEL	11
 
-/* The total number of temperature sensors in the MT7986 */
+ 
 #define MT7986_NUM_SENSORS		1
 
-/* The number of banks in the MT7986 */
+ 
 #define MT7986_NUM_ZONES		1
 
-/* The number of sensing points per bank */
+ 
 #define MT7986_NUM_SENSORS_PER_ZONE	1
 
-/* MT7986 thermal sensors */
+ 
 #define MT7986_TS1			0
 
-/* The number of controller in the MT7986 */
+ 
 #define MT7986_NUM_CONTROLLER		1
 
-/* The calibration coefficient of sensor  */
+ 
 #define MT7986_CALIBRATION		165
 
-/* MT8365 */
+ 
 #define MT8365_TEMP_AUXADC_CHANNEL 11
 #define MT8365_CALIBRATION 164
 #define MT8365_NUM_CONTROLLER 1
@@ -333,10 +314,10 @@ struct mtk_thermal {
 
 	struct clk *clk_peri_therm;
 	struct clk *clk_auxadc;
-	/* lock: for getting and putting banks */
+	 
 	struct mutex lock;
 
-	/* Calibration values */
+	 
 	s32 adc_ge;
 	s32 adc_oe;
 	s32 degc_cali;
@@ -350,7 +331,7 @@ struct mtk_thermal {
 	int (*raw_to_mcelsius)(struct mtk_thermal *mt, int sensno, s32 raw);
 };
 
-/* MT8183 thermal sensor data */
+ 
 static const int mt8183_bank_data[MT8183_NUM_SENSORS] = {
 	MT8183_TS1, MT8183_TS2, MT8183_TS3, MT8183_TS4, MT8183_TS5, MT8183_TSABB
 };
@@ -371,7 +352,7 @@ static const int mt8183_vts_index[MT8183_NUM_SENSORS] = {
 	VTS1, VTS2, VTS3, VTS4, VTS5, VTSABB
 };
 
-/* MT8173 thermal sensor data */
+ 
 static const int mt8173_bank_data[MT8173_NUM_ZONES][3] = {
 	{ MT8173_TS2, MT8173_TS3 },
 	{ MT8173_TS2, MT8173_TS4 },
@@ -394,7 +375,7 @@ static const int mt8173_vts_index[MT8173_NUM_SENSORS] = {
 	VTS1, VTS2, VTS3, VTS4, VTSABB
 };
 
-/* MT2701 thermal sensor data */
+ 
 static const int mt2701_bank_data[MT2701_NUM_SENSORS] = {
 	MT2701_TS1, MT2701_TS2, MT2701_TSABB
 };
@@ -414,7 +395,7 @@ static const int mt2701_vts_index[MT2701_NUM_SENSORS] = {
 	VTS1, VTS2, VTS3
 };
 
-/* MT2712 thermal sensor data */
+ 
 static const int mt2712_bank_data[MT2712_NUM_SENSORS] = {
 	MT2712_TS1, MT2712_TS2, MT2712_TS3, MT2712_TS4
 };
@@ -434,7 +415,7 @@ static const int mt2712_vts_index[MT2712_NUM_SENSORS] = {
 	VTS1, VTS2, VTS3, VTS4
 };
 
-/* MT7622 thermal sensor data */
+ 
 static const int mt7622_bank_data[MT7622_NUM_SENSORS] = { MT7622_TS1, };
 static const int mt7622_msr[MT7622_NUM_SENSORS_PER_ZONE] = { TEMP_MSR0, };
 static const int mt7622_adcpnp[MT7622_NUM_SENSORS_PER_ZONE] = { TEMP_ADCPNP0, };
@@ -442,7 +423,7 @@ static const int mt7622_mux_values[MT7622_NUM_SENSORS] = { 0, };
 static const int mt7622_vts_index[MT7622_NUM_SENSORS] = { VTS1 };
 static const int mt7622_tc_offset[MT7622_NUM_CONTROLLER] = { 0x0, };
 
-/* MT7986 thermal sensor data */
+ 
 static const int mt7986_bank_data[MT7986_NUM_SENSORS] = { MT7986_TS1, };
 static const int mt7986_msr[MT7986_NUM_SENSORS_PER_ZONE] = { TEMP_MSR0, };
 static const int mt7986_adcpnp[MT7986_NUM_SENSORS_PER_ZONE] = { TEMP_ADCPNP0, };
@@ -450,7 +431,7 @@ static const int mt7986_mux_values[MT7986_NUM_SENSORS] = { 0, };
 static const int mt7986_vts_index[MT7986_NUM_SENSORS] = { VTS1 };
 static const int mt7986_tc_offset[MT7986_NUM_CONTROLLER] = { 0x0, };
 
-/* MT8365 thermal sensor data */
+ 
 static const int mt8365_bank_data[MT8365_NUM_SENSORS] = {
 	MT8365_TS1, MT8365_TS2, MT8365_TS3
 };
@@ -468,19 +449,7 @@ static const int mt8365_tc_offset[MT8365_NUM_CONTROLLER] = { 0 };
 
 static const int mt8365_vts_index[MT8365_NUM_SENSORS] = { VTS1, VTS2, VTS3 };
 
-/*
- * The MT8173 thermal controller has four banks. Each bank can read up to
- * four temperature sensors simultaneously. The MT8173 has a total of 5
- * temperature sensors. We use each bank to measure a certain area of the
- * SoC. Since TS2 is located centrally in the SoC it is influenced by multiple
- * areas, hence is used in different banks.
- *
- * The thermal core only gets the maximum temperature of all banks, so
- * the bank concept wouldn't be necessary here. However, the SVS (Smart
- * Voltage Scaling) unit makes its decisions based on the same bank
- * data, and this indeed needs the temperatures of the individual banks
- * for making better decisions.
- */
+ 
 static const struct mtk_thermal_data mt8173_thermal_data = {
 	.auxadc_channel = MT8173_TEMP_AUXADC_CHANNEL,
 	.num_banks = MT8173_NUM_ZONES,
@@ -511,16 +480,7 @@ static const struct mtk_thermal_data mt8173_thermal_data = {
 	.version = MTK_THERMAL_V1,
 };
 
-/*
- * The MT2701 thermal controller has one bank, which can read up to
- * three temperature sensors simultaneously. The MT2701 has a total of 3
- * temperature sensors.
- *
- * The thermal core only gets the maximum temperature of this one bank,
- * so the bank concept wouldn't be necessary here. However, the SVS (Smart
- * Voltage Scaling) unit makes its decisions based on the same bank
- * data.
- */
+ 
 static const struct mtk_thermal_data mt2701_thermal_data = {
 	.auxadc_channel = MT2701_TEMP_AUXADC_CHANNEL,
 	.num_banks = 1,
@@ -542,16 +502,7 @@ static const struct mtk_thermal_data mt2701_thermal_data = {
 	.version = MTK_THERMAL_V1,
 };
 
-/*
- * The MT8365 thermal controller has one bank, which can read up to
- * four temperature sensors simultaneously. The MT8365 has a total of 3
- * temperature sensors.
- *
- * The thermal core only gets the maximum temperature of this one bank,
- * so the bank concept wouldn't be necessary here. However, the SVS (Smart
- * Voltage Scaling) unit makes its decisions based on the same bank
- * data.
- */
+ 
 static const struct mtk_thermal_data mt8365_thermal_data = {
 	.auxadc_channel = MT8365_TEMP_AUXADC_CHANNEL,
 	.num_banks = MT8365_NUM_BANKS,
@@ -576,16 +527,7 @@ static const struct mtk_thermal_data mt8365_thermal_data = {
 	.apmixed_buffer_ctl_set = 0,
 };
 
-/*
- * The MT2712 thermal controller has one bank, which can read up to
- * four temperature sensors simultaneously. The MT2712 has a total of 4
- * temperature sensors.
- *
- * The thermal core only gets the maximum temperature of this one bank,
- * so the bank concept wouldn't be necessary here. However, the SVS (Smart
- * Voltage Scaling) unit makes its decisions based on the same bank
- * data.
- */
+ 
 static const struct mtk_thermal_data mt2712_thermal_data = {
 	.auxadc_channel = MT2712_TEMP_AUXADC_CHANNEL,
 	.num_banks = 1,
@@ -607,10 +549,7 @@ static const struct mtk_thermal_data mt2712_thermal_data = {
 	.version = MTK_THERMAL_V1,
 };
 
-/*
- * MT7622 have only one sensing point which uses AUXADC Channel 11 for raw data
- * access.
- */
+ 
 static const struct mtk_thermal_data mt7622_thermal_data = {
 	.auxadc_channel = MT7622_TEMP_AUXADC_CHANNEL,
 	.num_banks = MT7622_NUM_ZONES,
@@ -635,17 +574,7 @@ static const struct mtk_thermal_data mt7622_thermal_data = {
 	.apmixed_buffer_ctl_set = BIT(0),
 };
 
-/*
- * The MT8183 thermal controller has one bank for the current SW framework.
- * The MT8183 has a total of 6 temperature sensors.
- * There are two thermal controller to control the six sensor.
- * The first one bind 2 sensor, and the other bind 4 sensors.
- * The thermal core only gets the maximum temperature of all sensor, so
- * the bank concept wouldn't be necessary here. However, the SVS (Smart
- * Voltage Scaling) unit makes its decisions based on the same bank
- * data, and this indeed needs the temperatures of the individual banks
- * for making better decisions.
- */
+ 
 static const struct mtk_thermal_data mt8183_thermal_data = {
 	.auxadc_channel = MT8183_TEMP_AUXADC_CHANNEL,
 	.num_banks = MT8183_NUM_ZONES,
@@ -668,9 +597,7 @@ static const struct mtk_thermal_data mt8183_thermal_data = {
 	.version = MTK_THERMAL_V1,
 };
 
-/*
- * MT7986 uses AUXADC Channel 11 for raw data access.
- */
+ 
 static const struct mtk_thermal_data mt7986_thermal_data = {
 	.auxadc_channel = MT7986_TEMP_AUXADC_CHANNEL,
 	.num_banks = MT7986_NUM_ZONES,
@@ -697,15 +624,7 @@ static bool mtk_thermal_temp_is_valid(int temp)
 	return (temp >= MT8173_TEMP_MIN) && (temp <= MT8173_TEMP_MAX);
 }
 
-/**
- * raw_to_mcelsius_v1 - convert a raw ADC value to mcelsius
- * @mt:	The thermal controller
- * @sensno:	sensor number
- * @raw:	raw ADC value
- *
- * This converts the raw ADC value to mcelsius using the SoC specific
- * calibration constants
- */
+ 
 static int raw_to_mcelsius_v1(struct mtk_thermal *mt, int sensno, s32 raw)
 {
 	s32 tmp;
@@ -767,13 +686,7 @@ static int raw_to_mcelsius_v3(struct mtk_thermal *mt, int sensno, s32 raw)
 	return mt->degc_cali * 500 - tmp;
 }
 
-/**
- * mtk_thermal_get_bank - get bank
- * @bank:	The bank
- *
- * The bank registers are banked, we have to select a bank in the
- * PTPCORESEL register to access it.
- */
+ 
 static void mtk_thermal_get_bank(struct mtk_thermal_bank *bank)
 {
 	struct mtk_thermal *mt = bank->mt;
@@ -789,12 +702,7 @@ static void mtk_thermal_get_bank(struct mtk_thermal_bank *bank)
 	}
 }
 
-/**
- * mtk_thermal_put_bank - release bank
- * @bank:	The bank
- *
- * release a bank previously taken with mtk_thermal_get_bank,
- */
+ 
 static void mtk_thermal_put_bank(struct mtk_thermal_bank *bank)
 {
 	struct mtk_thermal *mt = bank->mt;
@@ -803,13 +711,7 @@ static void mtk_thermal_put_bank(struct mtk_thermal_bank *bank)
 		mutex_unlock(&mt->lock);
 }
 
-/**
- * mtk_thermal_bank_temperature - get the temperature of a bank
- * @bank:	The bank
- *
- * The temperature of a bank is considered the maximum temperature of
- * the sensors associated to the bank.
- */
+ 
 static int mtk_thermal_bank_temperature(struct mtk_thermal_bank *bank)
 {
 	struct mtk_thermal *mt = bank->mt;
@@ -823,15 +725,7 @@ static int mtk_thermal_bank_temperature(struct mtk_thermal_bank *bank)
 		temp = mt->raw_to_mcelsius(
 			mt, conf->bank_data[bank->id].sensors[i], raw);
 
-		/*
-		 * Depending on the filt/sen intervals and ADC polling time,
-		 * we may need up to 60 milliseconds after initialization: this
-		 * will result in the first reading containing an out of range
-		 * temperature value.
-		 * Validate the reading to both address the aforementioned issue
-		 * and to eventually avoid bogus readings during runtime in the
-		 * event that the AUXADC gets unstable due to high EMI, etc.
-		 */
+		 
 		if (!mtk_thermal_temp_is_valid(temp))
 			temp = THERMAL_TEMP_INVALID;
 
@@ -883,82 +777,69 @@ static void mtk_thermal_init_bank(struct mtk_thermal *mt, int num,
 
 	mtk_thermal_get_bank(bank);
 
-	/* bus clock 66M counting unit is 12 * 15.15ns * 256 = 46.540us */
+	 
 	writel(TEMP_MONCTL1_PERIOD_UNIT(12), controller_base + TEMP_MONCTL1);
 
-	/*
-	 * filt interval is 1 * 46.540us = 46.54us,
-	 * sen interval is 429 * 46.540us = 19.96ms
-	 */
+	 
 	writel(TEMP_MONCTL2_FILTER_INTERVAL(1) |
 			TEMP_MONCTL2_SENSOR_INTERVAL(429),
 			controller_base + TEMP_MONCTL2);
 
-	/* poll is set to 10u */
+	 
 	writel(TEMP_AHBPOLL_ADC_POLL_INTERVAL(768),
 	       controller_base + TEMP_AHBPOLL);
 
-	/* temperature sampling control, 1 sample */
+	 
 	writel(0x0, controller_base + TEMP_MSRCTL0);
 
-	/* exceed this polling time, IRQ would be inserted */
+	 
 	writel(0xffffffff, controller_base + TEMP_AHBTO);
 
-	/* number of interrupts per event, 1 is enough */
+	 
 	writel(0x0, controller_base + TEMP_MONIDET0);
 	writel(0x0, controller_base + TEMP_MONIDET1);
 
-	/*
-	 * The MT8173 thermal controller does not have its own ADC. Instead it
-	 * uses AHB bus accesses to control the AUXADC. To do this the thermal
-	 * controller has to be programmed with the physical addresses of the
-	 * AUXADC registers and with the various bit positions in the AUXADC.
-	 * Also the thermal controller controls a mux in the APMIXEDSYS register
-	 * space.
-	 */
+	 
 
-	/*
-	 * this value will be stored to TEMP_PNPMUXADDR (TEMP_SPARE0)
-	 * automatically by hw
-	 */
+	 
 	writel(BIT(conf->auxadc_channel), controller_base + TEMP_ADCMUX);
 
-	/* AHB address for auxadc mux selection */
+	 
 	writel(auxadc_phys_base + AUXADC_CON1_CLR_V,
 	       controller_base + TEMP_ADCMUXADDR);
 
 	if (mt->conf->version == MTK_THERMAL_V1) {
-		/* AHB address for pnp sensor mux selection */
+		 
 		writel(apmixed_phys_base + APMIXED_SYS_TS_CON1,
 		       controller_base + TEMP_PNPMUXADDR);
 	}
 
-	/* AHB value for auxadc enable */
+	 
 	writel(BIT(conf->auxadc_channel), controller_base + TEMP_ADCEN);
 
-	/* AHB address for auxadc enable (channel 0 immediate mode selected) */
+	 
 	writel(auxadc_phys_base + AUXADC_CON1_SET_V,
 	       controller_base + TEMP_ADCENADDR);
 
-	/* AHB address for auxadc valid bit */
+	 
 	writel(auxadc_phys_base + AUXADC_DATA(conf->auxadc_channel),
 	       controller_base + TEMP_ADCVALIDADDR);
 
-	/* AHB address for auxadc voltage output */
+	 
 	writel(auxadc_phys_base + AUXADC_DATA(conf->auxadc_channel),
 	       controller_base + TEMP_ADCVOLTADDR);
 
-	/* read valid & voltage are at the same register */
+	 
 	writel(0x0, controller_base + TEMP_RDCTRL);
 
-	/* indicate where the valid bit is */
+	 
 	writel(TEMP_ADCVALIDMASK_VALID_HIGH | TEMP_ADCVALIDMASK_VALID_POS(12),
 	       controller_base + TEMP_ADCVALIDMASK);
 
-	/* no shift */
+	 
 	writel(0x0, controller_base + TEMP_ADCVOLTAGESHIFT);
 
-	/* enable auxadc mux write transaction */
+	 
 	writel(TEMP_ADCWRITECTRL_ADC_MUX_WRITE,
 		controller_base + TEMP_ADCWRITECTRL);
 
@@ -1075,7 +956,7 @@ static int mtk_thermal_get_calibration_data(struct device *dev,
 	size_t len;
 	int i, ret = 0;
 
-	/* Start with default values */
+	 
 	mt->adc_ge = 512;
 	mt->adc_oe = 512;
 	for (i = 0; i < mt->conf->num_sensors; i++)

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2019 Pengutronix, Michael Tretter <kernel@pengutronix.de>
- *
- * Helper functions for handling messages that are send via mailbox to the
- * Allegro VCU firmware.
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/export.h>
@@ -372,10 +367,7 @@ allegro_dec_create_channel(struct mcu_msg_create_channel_response *msg,
 
 	msg->channel_id = src[i++];
 	msg->user_id = src[i++];
-	/*
-	 * Version >= MCU_MSG_VERSION_2019_2 is handled in
-	 * allegro_decode_config_blob().
-	 */
+	 
 	if (version < MCU_MSG_VERSION_2019_2) {
 		msg->options = src[i++];
 		msg->num_core = src[i++];
@@ -460,11 +452,7 @@ allegro_dec_encode_frame(struct mcu_msg_encode_frame_response *msg, u32 *src)
 	return i * sizeof(*src);
 }
 
-/**
- * allegro_encode_mail() - Encode allegro messages to firmware format
- * @dst: Pointer to the memory that will be filled with data
- * @msg: The allegro message that will be encoded
- */
+ 
 ssize_t allegro_encode_mail(u32 *dst, void *msg)
 {
 	const struct mcu_msg_header *header = msg;
@@ -497,26 +485,14 @@ ssize_t allegro_encode_mail(u32 *dst, void *msg)
 		return -EINVAL;
 	}
 
-	/*
-	 * The encoded messages might have different length depending on
-	 * the firmware version or certain fields. Therefore, we have to
-	 * set the body length after encoding the message.
-	 */
+	 
 	dst[0] = FIELD_PREP(GENMASK(31, 16), header->type) |
 		 FIELD_PREP(GENMASK(15, 0), size);
 
 	return size + sizeof(*dst);
 }
 
-/**
- * allegro_decode_mail() - Parse allegro messages from the firmware.
- * @msg: The mcu_msg_response that will be filled with parsed values.
- * @src: Pointer to the memory that will be parsed
- *
- * The message format in the mailbox depends on the firmware. Parse the
- * different formats into a uniform message format that can be used without
- * taking care of the firmware version.
- */
+ 
 int allegro_decode_mail(void *msg, u32 *src)
 {
 	struct mcu_msg_header *header;

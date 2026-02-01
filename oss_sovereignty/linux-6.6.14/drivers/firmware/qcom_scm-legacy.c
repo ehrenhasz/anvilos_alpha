@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright (c) 2010,2015,2019 The Linux Foundation. All rights reserved.
- * Copyright (C) 2015 Linaro Ltd.
- */
+
+ 
 
 #include <linux/slab.h>
 #include <linux/io.h>
@@ -18,39 +16,13 @@
 static DEFINE_MUTEX(qcom_scm_lock);
 
 
-/**
- * struct arm_smccc_args
- * @args:	The array of values used in registers in smc instruction
- */
+ 
 struct arm_smccc_args {
 	unsigned long args[8];
 };
 
 
-/**
- * struct scm_legacy_command - one SCM command buffer
- * @len: total available memory for command and response
- * @buf_offset: start of command buffer
- * @resp_hdr_offset: start of response buffer
- * @id: command to be executed
- * @buf: buffer returned from scm_legacy_get_command_buffer()
- *
- * An SCM command is laid out in memory as follows:
- *
- *	------------------- <--- struct scm_legacy_command
- *	| command header  |
- *	------------------- <--- scm_legacy_get_command_buffer()
- *	| command buffer  |
- *	------------------- <--- struct scm_legacy_response and
- *	| response header |      scm_legacy_command_to_response()
- *	------------------- <--- scm_legacy_get_response_buffer()
- *	| response buffer |
- *	-------------------
- *
- * There can be arbitrary padding between the headers and buffers so
- * you should always use the appropriate scm_legacy_get_*_buffer() routines
- * to access the buffers in a safe manner.
- */
+ 
 struct scm_legacy_command {
 	__le32 len;
 	__le32 buf_offset;
@@ -59,48 +31,28 @@ struct scm_legacy_command {
 	__le32 buf[];
 };
 
-/**
- * struct scm_legacy_response - one SCM response buffer
- * @len: total available memory for response
- * @buf_offset: start of response data relative to start of scm_legacy_response
- * @is_complete: indicates if the command has finished processing
- */
+ 
 struct scm_legacy_response {
 	__le32 len;
 	__le32 buf_offset;
 	__le32 is_complete;
 };
 
-/**
- * scm_legacy_command_to_response() - Get a pointer to a scm_legacy_response
- * @cmd: command
- *
- * Returns a pointer to a response for a command.
- */
+ 
 static inline struct scm_legacy_response *scm_legacy_command_to_response(
 		const struct scm_legacy_command *cmd)
 {
 	return (void *)cmd + le32_to_cpu(cmd->resp_hdr_offset);
 }
 
-/**
- * scm_legacy_get_command_buffer() - Get a pointer to a command buffer
- * @cmd: command
- *
- * Returns a pointer to the command buffer of a command.
- */
+ 
 static inline void *scm_legacy_get_command_buffer(
 		const struct scm_legacy_command *cmd)
 {
 	return (void *)cmd->buf;
 }
 
-/**
- * scm_legacy_get_response_buffer() - Get a pointer to a response buffer
- * @rsp: response
- *
- * Returns a pointer to a response buffer of a response.
- */
+ 
 static inline void *scm_legacy_get_response_buffer(
 		const struct scm_legacy_response *rsp)
 {
@@ -117,20 +69,7 @@ static void __scm_legacy_do(const struct arm_smccc_args *smc,
 	} while (res->a0 == QCOM_SCM_INTERRUPTED);
 }
 
-/**
- * scm_legacy_call() - Sends a command to the SCM and waits for the command to
- * finish processing.
- * @dev:	device
- * @desc:	descriptor structure containing arguments and return values
- * @res:        results from SMC call
- *
- * A note on cache maintenance:
- * Note that any buffers that are expected to be accessed by the secure world
- * must be flushed before invoking qcom_scm_call and invalidated in the cache
- * immediately after qcom_scm_call returns. Cache maintenance on the command
- * and response buffers is taken care of by qcom_scm_call; however, callers are
- * responsible for any other cached buffers passed over to the secure world.
- */
+ 
 int scm_legacy_call(struct device *dev, const struct qcom_scm_desc *desc,
 		    struct qcom_scm_res *res)
 {
@@ -211,16 +150,7 @@ out:
 				SCM_LEGACY_MASK_IRQS | \
 				(n & 0xf))
 
-/**
- * scm_legacy_call_atomic() - Send an atomic SCM command with up to 5 arguments
- * and 3 return values
- * @unused: device, legacy argument, not used, can be NULL
- * @desc: SCM call descriptor containing arguments
- * @res:  SCM call return values
- *
- * This shall only be used with commands that are guaranteed to be
- * uninterruptable, atomic and SMP safe.
- */
+ 
 int scm_legacy_call_atomic(struct device *unused,
 			   const struct qcom_scm_desc *desc,
 			   struct qcom_scm_res *res)

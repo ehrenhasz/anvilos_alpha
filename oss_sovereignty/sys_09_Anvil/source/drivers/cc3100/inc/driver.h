@@ -1,55 +1,21 @@
-/*
- * driver.h - CC31xx/CC32xx Host Driver Implementation
- *
- * Copyright (C) 2014 Texas Instruments Incorporated - http://www.ti.com/ 
- * 
- * 
- *  Redistribution and use in source and binary forms, with or without 
- *  modification, are permitted provided that the following conditions 
- *  are met:
- *
- *    Redistributions of source code must retain the above copyright 
- *    notice, this list of conditions and the following disclaimer.
- *
- *    Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the 
- *    documentation and/or other materials provided with the   
- *    distribution.
- *
- *    Neither the name of Texas Instruments Incorporated nor the names of
- *    its contributors may be used to endorse or promote products derived
- *    from this software without specific prior written permission.
- *
- *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS 
- *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT 
- *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- *  A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT 
- *  OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, 
- *  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT 
- *  LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- *  DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- *  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT 
- *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE 
- *  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
-*/
+ 
  
 #ifndef __DRIVER_INT_H__
 #define __DRIVER_INT_H__
 
 
-/*****************************************************************************/
-/* Macro declarations                                                        */
-/*****************************************************************************/
+ 
+ 
+ 
 
 #ifndef CPU_FREQ_IN_MHZ
  #define CPU_FREQ_IN_MHZ         (200)
 #endif
 #define USEC_DELAY              (50)
 
-/*****************************************************************************/
-/* Structure/Enum declarations                                               */
-/*****************************************************************************/
+ 
+ 
+ 
 
 typedef struct
 {
@@ -80,7 +46,7 @@ typedef struct _SlPoolObj_t
     _SlSyncObj_t	      SyncObj;
 	 _u8                *pRespArgs;
 	_u8			      ActionID; 
-	_u8			      AdditionalData; /* use for socketID and one bit which indicate supprt IPV6 or not (1=support, 0 otherwise) */
+	_u8			      AdditionalData;  
     _u8				  NextIndex;  
 
 } _SlPoolObj_t;
@@ -141,10 +107,10 @@ typedef enum
 
 typedef struct
 {
-    _u8                     *pAsyncBuf;         /* place to write pointer to buffer with CmdResp's Header + Arguments */
+    _u8                     *pAsyncBuf;          
 	_u8					    ActionIndex; 
-    _SlSpawnEntryFunc_t     AsyncEvtHandler;    /* place to write pointer to AsyncEvent handler (calc-ed by Opcode)   */
-    _SlRxMsgClass_e         RxMsgClass;         /* type of Rx message                                                 */
+    _SlSpawnEntryFunc_t     AsyncEvtHandler;     
+    _SlRxMsgClass_e         RxMsgClass;          
 } AsyncExt_t;
 
 typedef _u8 _SlSd_t;
@@ -179,7 +145,7 @@ typedef struct
     _u8                     RxDoneCnt;
     _u8                     SocketNonBlocking;
 	_u8                     SocketTXFailure;
-    /* for stack reduction the parameters are globals */
+     
     _SlFunctionParams_t              FunctionParams;
 
     _u8 ActionIndex;
@@ -190,9 +156,9 @@ extern _volatile _u8           RxIrqCnt;
 extern _SlDriverCb_t* g_pCB;
 extern P_SL_DEV_PING_CALLBACK  pPingCallBackFunc;
 
-/*****************************************************************************/
-/* Function prototypes                                                       */
-/*****************************************************************************/
+ 
+ 
+ 
 extern void _SlDrvDriverCBInit(void);
 extern void _SlDrvDriverCBDeinit(void);
 extern void _SlDrvRxIrqHandler(void *pValue);
@@ -244,4 +210,4 @@ extern void  _SlDrvResetCmdExt(_SlCmdExt_t* pCmdExt);
 #define _SL_PROTOCOL_CALC_LEN(pCmdCtrl,pCmdExt)     ((pCmdExt) ? \
                                                      (_SL_PROTOCOL_ALIGN_SIZE(pCmdCtrl->TxDescLen) + _SL_PROTOCOL_ALIGN_SIZE(pCmdExt->TxPayloadLen)) : \
                                                      (_SL_PROTOCOL_ALIGN_SIZE(pCmdCtrl->TxDescLen)))
-#endif /* __DRIVER_INT_H__ */
+#endif  

@@ -1,20 +1,18 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copyright (C) 2015 Amlogic, Inc. All rights reserved.
- */
+ 
+ 
 
 #ifndef __MESON_REGISTERS_H
 #define __MESON_REGISTERS_H
 
 #include <linux/io.h>
 
-/* Shift all registers by 2 */
+ 
 #define _REG(reg)	((reg) << 2)
 
 #define writel_bits_relaxed(mask, val, addr) \
 	writel_relaxed((readl_relaxed(addr) & ~(mask)) | ((val) & (mask)), addr)
 
-/* vpp2 */
+ 
 #define VPP2_DUMMY_DATA 0x1900
 #define VPP2_LINE_IN_LENGTH 0x1901
 #define VPP2_PIC_IN_HEIGHT 0x1902
@@ -134,7 +132,7 @@
 #define VPP2_OSD_SCALE_COEF 0x19cd
 #define VPP2_INT_LINE_NUM 0x19ce
 
-/* viu */
+ 
 #define VIU_ADDR_START 0x1a00
 #define VIU_ADDR_END 0x1aff
 #define VIU_SW_RESET 0x1a01
@@ -328,7 +326,7 @@
 #define VIU_VD2_FMT_CTRL 0x1a88
 #define VIU_VD2_FMT_W 0x1a89
 
-/* VIU Matrix Registers */
+ 
 #define VIU_OSD1_MATRIX_CTRL 0x1a90
 #define VIU_OSD1_MATRIX_COEF00_01 0x1a91
 #define VIU_OSD1_MATRIX_COEF02_10 0x1a92
@@ -394,7 +392,7 @@
 #define AFBC_PIXEL_VER_SCOPE 0x1af0
 #define AFBC_VD_CFMT_H 0x1af1
 
-/* vpp */
+ 
 #define VPP_DUMMY_DATA 0x1d00
 #define VPP_LINE_IN_LENGTH 0x1d01
 #define VPP_PIC_IN_HEIGHT 0x1d02
@@ -634,12 +632,12 @@
 #define VPP_WRAP_OSD3_MATRIX_PRE_OFFSET2 0x3dbc
 #define VPP_WRAP_OSD3_MATRIX_EN_CTRL 0x3dbd
 
-/* osd1 HDR */
+ 
 #define OSD1_HDR2_CTRL 0x38a0
 #define OSD1_HDR2_CTRL_VDIN0_HDR2_TOP_EN       BIT(13)
 #define OSD1_HDR2_CTRL_REG_ONLY_MAT            BIT(16)
 
-/* osd2 scaler */
+ 
 #define OSD2_VSC_PHASE_STEP 0x3d00
 #define OSD2_VSC_INI_PHASE 0x3d01
 #define OSD2_VSC_CTRL0 0x3d02
@@ -655,7 +653,7 @@
 #define OSD2_SCALE_COEF_IDX 0x3d18
 #define OSD2_SCALE_COEF 0x3d19
 
-/* osd34 scaler */
+ 
 #define OSD34_SCALE_COEF_IDX 0x3d1e
 #define OSD34_SCALE_COEF 0x3d1f
 #define OSD34_VSC_PHASE_STEP 0x3d20
@@ -671,7 +669,7 @@
 #define OSD34_SCO_H_START_END 0x3d2a
 #define OSD34_SCO_V_START_END 0x3d2b
 
-/* viu2 */
+ 
 #define VIU2_ADDR_START 0x1e00
 #define VIU2_ADDR_END 0x1eff
 #define VIU2_SW_RESET 0x1e01
@@ -769,7 +767,7 @@
 #define VIU2_VD1_FMT_CTRL 0x1e68
 #define VIU2_VD1_FMT_W 0x1e69
 
-/* encode */
+ 
 #define ENCP_VFIFO2VD_CTL 0x1b58
 #define ENCP_VFIFO2VD_PIXEL_START 0x1b59
 #define ENCP_VFIFO2VD_PIXEL_END 0x1b5a
@@ -1308,14 +1306,14 @@
 #define RDMA_STATUS2 0x1116
 #define RDMA_STATUS3 0x1117
 #define L_GAMMA_CNTL_PORT 0x1400
-#define		L_GAMMA_CNTL_PORT_VCOM_POL	BIT(7)	/* RW */
-#define		L_GAMMA_CNTL_PORT_RVS_OUT	BIT(6)	/* RW */
-#define		L_GAMMA_CNTL_PORT_ADR_RDY	BIT(5)	/* Read Only */
-#define		L_GAMMA_CNTL_PORT_WR_RDY	BIT(4)	/* Read Only */
-#define		L_GAMMA_CNTL_PORT_RD_RDY	BIT(3)	/* Read Only */
-#define		L_GAMMA_CNTL_PORT_TR		BIT(2)	/* RW */
-#define		L_GAMMA_CNTL_PORT_SET		BIT(1)	/* RW */
-#define		L_GAMMA_CNTL_PORT_EN		BIT(0)	/* RW */
+#define		L_GAMMA_CNTL_PORT_VCOM_POL	BIT(7)	 
+#define		L_GAMMA_CNTL_PORT_RVS_OUT	BIT(6)	 
+#define		L_GAMMA_CNTL_PORT_ADR_RDY	BIT(5)	 
+#define		L_GAMMA_CNTL_PORT_WR_RDY	BIT(4)	 
+#define		L_GAMMA_CNTL_PORT_RD_RDY	BIT(3)	 
+#define		L_GAMMA_CNTL_PORT_TR		BIT(2)	 
+#define		L_GAMMA_CNTL_PORT_SET		BIT(1)	 
+#define		L_GAMMA_CNTL_PORT_EN		BIT(0)	 
 #define L_GAMMA_DATA_PORT 0x1401
 #define L_GAMMA_ADDR_PORT 0x1402
 #define		L_GAMMA_ADDR_PORT_RD		BIT(12)
@@ -1686,7 +1684,7 @@
 #define VPU_WRARB_MODE_L2C1 0x27a2
 #define		VPU_RDARB_SLAVE_TO_MASTER_PORT(dc, port) (port << (16 + dc))
 
-/* osd super scale */
+ 
 #define OSDSR_HV_SIZEIN 0x3130
 #define OSDSR_CTRL_MODE 0x3131
 #define OSDSR_ABIC_HCOEF 0x3132
@@ -1715,7 +1713,7 @@
 #define OSDSR_YBIC_VCOEF0 0x3149
 #define OSDSR_CBIC_VCOEF0 0x314a
 
-/* osd afbcd on gxtvbb */
+ 
 #define OSD1_AFBCD_ENABLE 0x31a0
 #define		OSD1_AFBCD_ID_FIFO_THRD			GENMASK(15, 9)
 #define		OSD1_AFBCD_DEC_ENABLE			BIT(8)
@@ -1745,11 +1743,11 @@
 #define		OSD1_AFBCD_DEC_PIXEL_BGN_V		GENMASK(31, 16)
 #define		OSD1_AFBCD_DEC_PIXEL_END_V		GENMASK(15, 0)
 
-/* add for gxm and 962e dv core2 */
+ 
 #define DOLBY_CORE2A_SWAP_CTRL1	0x3434
 #define DOLBY_CORE2A_SWAP_CTRL2	0x3435
 
-/* osd afbc on g12a */
+ 
 #define VPU_MAFBC_BLOCK_ID 0x3a00
 #define VPU_MAFBC_IRQ_RAW_STATUS 0x3a01
 #define VPU_MAFBC_IRQ_CLEAR 0x3a02
@@ -1907,4 +1905,4 @@
 #define VPP_RDARB_MODE 0x3978
 #define VPP_RDARB_REQEN_SLV 0x3979
 
-#endif /* __MESON_REGISTERS_H */
+#endif  

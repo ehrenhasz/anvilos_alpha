@@ -1,14 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef __LINUX_BOOTMEM_INFO_H
 #define __LINUX_BOOTMEM_INFO_H
 
 #include <linux/mm.h>
 #include <linux/kmemleak.h>
 
-/*
- * Types for free bootmem stored in page->lru.next. These have to be in
- * some random range in unsigned long space for debugging purposes.
- */
+ 
 enum {
 	MEMORY_HOTPLUG_MIN_BOOTMEM_TYPE = 12,
 	SECTION_INFO = MEMORY_HOTPLUG_MIN_BOOTMEM_TYPE,
@@ -24,19 +21,12 @@ void get_page_bootmem(unsigned long info, struct page *page,
 		      unsigned long type);
 void put_page_bootmem(struct page *page);
 
-/*
- * Any memory allocated via the memblock allocator and not via the
- * buddy will be marked reserved already in the memmap. For those
- * pages, we can call this function to free it to buddy allocator.
- */
+ 
 static inline void free_bootmem_page(struct page *page)
 {
 	unsigned long magic = page->index;
 
-	/*
-	 * The reserve_bootmem_region sets the reserved flag on bootmem
-	 * pages.
-	 */
+	 
 	VM_BUG_ON_PAGE(page_ref_count(page) != 2, page);
 
 	if (magic == SECTION_INFO || magic == MIX_SECTION_INFO)
@@ -65,4 +55,4 @@ static inline void free_bootmem_page(struct page *page)
 }
 #endif
 
-#endif /* __LINUX_BOOTMEM_INFO_H */
+#endif  

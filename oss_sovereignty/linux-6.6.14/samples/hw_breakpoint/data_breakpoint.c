@@ -1,21 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * data_breakpoint.c - Sample HW Breakpoint file to watch kernel data address
- *
- * usage: insmod data_breakpoint.ko ksym=<ksym_name>
- *
- * This file is a kernel module that places a breakpoint over ksym_name kernel
- * variable using Hardware Breakpoint register. The corresponding handler which
- * prints a backtrace is invoked every time a write operation is performed on
- * that variable.
- *
- * Copyright (C) IBM Corporation, 2009
- *
- * Author: K.Prasad <prasad@linux.vnet.ibm.com>
- */
-#include <linux/module.h>	/* Needed by all modules */
-#include <linux/kernel.h>	/* Needed for KERN_INFO */
-#include <linux/init.h>		/* Needed for the macros */
+
+ 
+#include <linux/module.h>	 
+#include <linux/kernel.h>	 
+#include <linux/init.h>		 
 #include <linux/kallsyms.h>
 
 #include <linux/perf_event.h>

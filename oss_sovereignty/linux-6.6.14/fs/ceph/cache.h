@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Ceph cache definitions.
- *
- *  Copyright (C) 2013 by Adfin Solutions, Inc. All Rights Reserved.
- *  Written by Milosz Tanski (milosz@adfin.com)
- */
+ 
+ 
 
 #ifndef _CEPH_CACHE_H
 #define _CEPH_CACHE_H
@@ -75,7 +70,7 @@ static inline void ceph_fscache_note_page_release(struct inode *inode)
 
 	fscache_note_page_release(ceph_fscache_cookie(ci));
 }
-#else /* CONFIG_CEPH_FSCACHE */
+#else  
 static inline int ceph_fscache_register_fs(struct ceph_fs_client* fsc,
 					   struct fs_context *fc)
 {
@@ -143,6 +138,6 @@ static inline int ceph_begin_cache_operation(struct netfs_io_request *rreq)
 static inline void ceph_fscache_note_page_release(struct inode *inode)
 {
 }
-#endif /* CONFIG_CEPH_FSCACHE */
+#endif  
 
 #endif

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* 10G controller driver for Samsung SoCs
- *
- * Copyright (C) 2013 Samsung Electronics Co., Ltd.
- *		http://www.samsung.com
- *
- * Author: Siva Reddy Kallam <siva.kallam@samsung.com>
- */
+
+ 
 #include <linux/delay.h>
 #include <linux/export.h>
 #include <linux/io.h>
@@ -17,22 +11,18 @@
 #include "sxgbe_reg.h"
 #include "sxgbe_desc.h"
 
-/* DMA core initialization */
+ 
 static int sxgbe_dma_init(void __iomem *ioaddr, int fix_burst, int burst_map)
 {
 	u32 reg_val;
 
 	reg_val = readl(ioaddr + SXGBE_DMA_SYSBUS_MODE_REG);
 
-	/* if fix_burst = 0, Set UNDEF = 1 of DMA_Sys_Mode Register.
-	 * if fix_burst = 1, Set UNDEF = 0 of DMA_Sys_Mode Register.
-	 * burst_map is bitmap for  BLEN[4, 8, 16, 32, 64, 128 and 256].
-	 * Set burst_map irrespective of fix_burst value.
-	 */
+	 
 	if (!fix_burst)
 		reg_val |= SXGBE_DMA_AXI_UNDEF_BURST;
 
-	/* write burst len map */
+	 
 	reg_val |= (burst_map << SXGBE_DMA_BLENMAP_LSHIFT);
 
 	writel(reg_val,	ioaddr + SXGBE_DMA_SYSBUS_MODE_REG);
@@ -48,21 +38,21 @@ static void sxgbe_dma_channel_init(void __iomem *ioaddr, int cha_num,
 	dma_addr_t dma_addr;
 
 	reg_val = readl(ioaddr + SXGBE_DMA_CHA_CTL_REG(cha_num));
-	/* set the pbl */
+	 
 	if (fix_burst) {
 		reg_val |= SXGBE_DMA_PBL_X8MODE;
 		writel(reg_val, ioaddr + SXGBE_DMA_CHA_CTL_REG(cha_num));
-		/* program the TX pbl */
+		 
 		reg_val = readl(ioaddr + SXGBE_DMA_CHA_TXCTL_REG(cha_num));
 		reg_val |= (pbl << SXGBE_DMA_TXPBL_LSHIFT);
 		writel(reg_val, ioaddr + SXGBE_DMA_CHA_TXCTL_REG(cha_num));
-		/* program the RX pbl */
+		 
 		reg_val = readl(ioaddr + SXGBE_DMA_CHA_RXCTL_REG(cha_num));
 		reg_val |= (pbl << SXGBE_DMA_RXPBL_LSHIFT);
 		writel(reg_val, ioaddr + SXGBE_DMA_CHA_RXCTL_REG(cha_num));
 	}
 
-	/* program desc registers */
+	 
 	writel(upper_32_bits(dma_tx),
 	       ioaddr + SXGBE_DMA_CHA_TXDESC_HADD_REG(cha_num));
 	writel(lower_32_bits(dma_tx),
@@ -73,10 +63,8 @@ static void sxgbe_dma_channel_init(void __iomem *ioaddr, int cha_num,
 	writel(lower_32_bits(dma_rx),
 	       ioaddr + SXGBE_DMA_CHA_RXDESC_LADD_REG(cha_num));
 
-	/* program tail pointers */
-	/* assumption: upper 32 bits are constant and
-	 * same as TX/RX desc list
-	 */
+	 
+	 
 	dma_addr = dma_tx + ((t_rsize - 1) * SXGBE_DESC_SIZE_BYTES);
 	writel(lower_32_bits(dma_addr),
 	       ioaddr + SXGBE_DMA_CHA_TXDESC_TAILPTR_REG(cha_num));
@@ -84,11 +72,11 @@ static void sxgbe_dma_channel_init(void __iomem *ioaddr, int cha_num,
 	dma_addr = dma_rx + ((r_rsize - 1) * SXGBE_DESC_SIZE_BYTES);
 	writel(lower_32_bits(dma_addr),
 	       ioaddr + SXGBE_DMA_CHA_RXDESC_LADD_REG(cha_num));
-	/* program the ring sizes */
+	 
 	writel(t_rsize - 1, ioaddr + SXGBE_DMA_CHA_TXDESC_RINGLEN_REG(cha_num));
 	writel(r_rsize - 1, ioaddr + SXGBE_DMA_CHA_RXDESC_RINGLEN_REG(cha_num));
 
-	/* Enable TX/RX interrupts */
+	 
 	writel(SXGBE_DMA_ENA_INT,
 	       ioaddr + SXGBE_DMA_CHA_INT_ENABLE_REG(cha_num));
 }
@@ -104,14 +92,14 @@ static void sxgbe_enable_dma_transmission(void __iomem *ioaddr, int cha_num)
 
 static void sxgbe_enable_dma_irq(void __iomem *ioaddr, int dma_cnum)
 {
-	/* Enable TX/RX interrupts */
+	 
 	writel(SXGBE_DMA_ENA_INT,
 	       ioaddr + SXGBE_DMA_CHA_INT_ENABLE_REG(dma_cnum));
 }
 
 static void sxgbe_disable_dma_irq(void __iomem *ioaddr, int dma_cnum)
 {
-	/* Disable TX/RX interrupts */
+	 
 	writel(0, ioaddr + SXGBE_DMA_CHA_INT_ENABLE_REG(dma_cnum));
 }
 
@@ -190,7 +178,7 @@ static int sxgbe_tx_dma_int_status(void __iomem *ioaddr, int channel_no,
 	u32 clear_val = 0;
 	u32 ret_val = 0;
 
-	/* TX Normal Interrupt Summary */
+	 
 	if (likely(int_status & SXGBE_DMA_INT_STATUS_NIS)) {
 		x->normal_irq_n++;
 		if (int_status & SXGBE_DMA_INT_STATUS_TI) {
@@ -205,7 +193,7 @@ static int sxgbe_tx_dma_int_status(void __iomem *ioaddr, int channel_no,
 			clear_val |= SXGBE_DMA_INT_STATUS_TBU;
 		}
 	} else if (unlikely(int_status & SXGBE_DMA_INT_STATUS_AIS)) {
-		/* TX Abnormal Interrupt Summary */
+		 
 		if (int_status & SXGBE_DMA_INT_STATUS_TPS) {
 			ret_val |= tx_hard_error;
 			clear_val |= SXGBE_DMA_INT_STATUS_TPS;
@@ -216,12 +204,9 @@ static int sxgbe_tx_dma_int_status(void __iomem *ioaddr, int channel_no,
 			ret_val |= tx_hard_error;
 			x->fatal_bus_error_irq++;
 
-			/* Assumption: FBE bit is the combination of
-			 * all the bus access erros and cleared when
-			 * the respective error bits cleared
-			 */
+			 
 
-			/* check for actual cause */
+			 
 			if (int_status & SXGBE_DMA_INT_STATUS_TEB0) {
 				x->tx_read_transfer_err++;
 				clear_val |= SXGBE_DMA_INT_STATUS_TEB0;
@@ -242,14 +227,14 @@ static int sxgbe_tx_dma_int_status(void __iomem *ioaddr, int channel_no,
 			}
 		}
 
-		/* context descriptor error */
+		 
 		if (int_status & SXGBE_DMA_INT_STATUS_CTXTERR) {
 			x->tx_ctxt_desc_err++;
 			clear_val |= SXGBE_DMA_INT_STATUS_CTXTERR;
 		}
 	}
 
-	/* clear the served bits */
+	 
 	writel(clear_val, ioaddr + SXGBE_DMA_CHA_STATUS_REG(channel_no));
 
 	return ret_val;
@@ -262,7 +247,7 @@ static int sxgbe_rx_dma_int_status(void __iomem *ioaddr, int channel_no,
 	u32 clear_val = 0;
 	u32 ret_val = 0;
 
-	/* RX Normal Interrupt Summary */
+	 
 	if (likely(int_status & SXGBE_DMA_INT_STATUS_NIS)) {
 		x->normal_irq_n++;
 		if (int_status & SXGBE_DMA_INT_STATUS_RI) {
@@ -271,7 +256,7 @@ static int sxgbe_rx_dma_int_status(void __iomem *ioaddr, int channel_no,
 			clear_val |= SXGBE_DMA_INT_STATUS_RI;
 		}
 	} else if (unlikely(int_status & SXGBE_DMA_INT_STATUS_AIS)) {
-		/* RX Abnormal Interrupt Summary */
+		 
 		if (int_status & SXGBE_DMA_INT_STATUS_RBU) {
 			ret_val |= rx_bump_tc;
 			clear_val |= SXGBE_DMA_INT_STATUS_RBU;
@@ -288,12 +273,9 @@ static int sxgbe_rx_dma_int_status(void __iomem *ioaddr, int channel_no,
 			ret_val |= rx_hard_error;
 			x->fatal_bus_error_irq++;
 
-			/* Assumption: FBE bit is the combination of
-			 * all the bus access erros and cleared when
-			 * the respective error bits cleared
-			 */
+			 
 
-			/* check for actual cause */
+			 
 			if (int_status & SXGBE_DMA_INT_STATUS_REB0) {
 				x->rx_read_transfer_err++;
 				clear_val |= SXGBE_DMA_INT_STATUS_REB0;
@@ -315,13 +297,13 @@ static int sxgbe_rx_dma_int_status(void __iomem *ioaddr, int channel_no,
 		}
 	}
 
-	/* clear the served bits */
+	 
 	writel(clear_val, ioaddr + SXGBE_DMA_CHA_STATUS_REG(channel_no));
 
 	return ret_val;
 }
 
-/* Program the HW RX Watchdog */
+ 
 static void sxgbe_dma_rx_watchdog(void __iomem *ioaddr, u32 riwt)
 {
 	u32 que_num;

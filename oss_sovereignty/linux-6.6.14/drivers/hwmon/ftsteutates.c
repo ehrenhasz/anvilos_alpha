@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Support for the FTS Systemmonitoring Chip "Teutates"
- *
- * Copyright (C) 2016 Fujitsu Technology Solutions GmbH,
- *		  Thilo Cestonaro <thilo.cestonaro@ts.fujitsu.com>
- */
+
+ 
 #include <linux/err.h>
 #include <linux/hwmon.h>
 #include <linux/i2c.h>
@@ -62,14 +57,14 @@ enum WATCHDOG_RESOLUTION {
 
 struct fts_data {
 	struct i2c_client *client;
-	/* update sensor data lock */
+	 
 	struct mutex update_lock;
-	/* read/write register lock */
+	 
 	struct mutex access_lock;
-	unsigned long last_updated; /* in jiffies */
+	unsigned long last_updated;  
 	struct watchdog_device wdd;
 	enum WATCHDOG_RESOLUTION resolution;
-	bool valid; /* false until following fields are valid */
+	bool valid;  
 
 	u8 volt[FTS_NO_VOLT_SENSORS];
 
@@ -77,7 +72,7 @@ struct fts_data {
 	u8 temp_alarm;
 
 	u8 fan_present;
-	u8 fan_input[FTS_NO_FAN_SENSORS]; /* in rps */
+	u8 fan_input[FTS_NO_FAN_SENSORS];  
 	u8 fan_source[FTS_NO_FAN_SENSORS];
 	u8 fan_alarm;
 };
@@ -91,9 +86,9 @@ struct fts_data {
 
 #define FTS_REG_VOLT(idx) ((idx) + 0x18)
 
-/*****************************************************************************/
-/* I2C Helper functions							     */
-/*****************************************************************************/
+ 
+ 
+ 
 static int fts_read_byte(struct i2c_client *client, unsigned short reg)
 {
 	int ret;
@@ -140,9 +135,9 @@ error:
 	return ret;
 }
 
-/*****************************************************************************/
-/* Data Updater Helper function						     */
-/*****************************************************************************/
+ 
+ 
+ 
 static int fts_update_device(struct fts_data *data)
 {
 	int i;
@@ -156,7 +151,7 @@ static int fts_update_device(struct fts_data *data)
 	if (err < 0)
 		goto exit;
 
-	data->valid = !!(err & 0x02); /* Data not ready yet */
+	data->valid = !!(err & 0x02);  
 	if (unlikely(!data->valid)) {
 		err = -EAGAIN;
 		goto exit;
@@ -215,9 +210,9 @@ exit:
 	return err;
 }
 
-/*****************************************************************************/
-/* Watchdog functions							     */
-/*****************************************************************************/
+ 
+ 
+ 
 static int fts_wd_set_resolution(struct fts_data *data,
 				 enum WATCHDOG_RESOLUTION resolution)
 {
@@ -256,9 +251,7 @@ static int fts_wd_set_timeout(struct watchdog_device *wdd, unsigned int timeout)
 	int ret;
 
 	data = watchdog_get_drvdata(wdd);
-	/* switch watchdog resolution to minutes if timeout does not fit
-	 * into a byte
-	 */
+	 
 	if (timeout > 0xFF) {
 		timeout = DIV_ROUND_UP(timeout, 60) * 60;
 		resolution = minutes;
@@ -310,7 +303,7 @@ static int fts_watchdog_init(struct fts_data *data)
 	if (timeout < 0)
 		return timeout;
 
-	/* watchdog not running, set timeout to a default of 60 sec. */
+	 
 	if (timeout == 0) {
 		ret = fts_wd_set_resolution(data, seconds);
 		if (ret < 0)
@@ -326,13 +319,13 @@ static int fts_watchdog_init(struct fts_data *data)
 		set_bit(WDOG_HW_RUNNING, &data->wdd.status);
 	}
 
-	/* Register our watchdog part */
+	 
 	data->wdd.info = &fts_wd_info;
 	data->wdd.ops = &fts_wd_ops;
 	data->wdd.parent = &data->client->dev;
 	data->wdd.min_timeout = 1;
 
-	/* max timeout 255 minutes. */
+	 
 	data->wdd.max_hw_heartbeat_ms = 0xFF * 60 * MSEC_PER_SEC;
 
 	return devm_watchdog_register_device(&data->client->dev, &data->wdd);
@@ -395,7 +388,7 @@ static int fts_read(struct device *dev, enum hwmon_sensor_types type, u32 attr, 
 
 			return 0;
 		case hwmon_temp_fault:
-			/* 00h Temperature = Sensor Error */;
+			 ;
 			*val = (data->temp_input[channel] == 0);
 
 			return 0;
@@ -574,20 +567,20 @@ static const struct hwmon_chip_info fts_chip_info = {
 	.info = fts_info,
 };
 
-/*****************************************************************************/
-/* Module initialization / remove functions				     */
-/*****************************************************************************/
+ 
+ 
+ 
 static int fts_detect(struct i2c_client *client,
 		      struct i2c_board_info *info)
 {
 	int val;
 
-	/* detection works with revision greater or equal to 0x2b */
+	 
 	val = i2c_smbus_read_byte_data(client, FTS_DEVICE_REVISION_REG);
 	if (val < 0x2b)
 		return -ENODEV;
 
-	/* Device Detect Regs must have 0x17 0x34 and 0x54 */
+	 
 	val = i2c_smbus_read_byte_data(client, FTS_DEVICE_DETECT_REG_1);
 	if (val != 0x17)
 		return -ENODEV;
@@ -600,10 +593,7 @@ static int fts_detect(struct i2c_client *client,
 	if (val != 0x54)
 		return -ENODEV;
 
-	/*
-	 * 0x10 == Baseboard Management Controller, 0x01 == Teutates
-	 * Device ID Reg needs to be 0x11
-	 */
+	 
 	val = i2c_smbus_read_byte_data(client, FTS_DEVICE_ID_REG);
 	if (val != 0x11)
 		return -ENODEV;
@@ -624,7 +614,7 @@ static int fts_probe(struct i2c_client *client)
 	if (client->addr != 0x73)
 		return -ENODEV;
 
-	/* Baseboard Management Controller check */
+	 
 	deviceid = i2c_smbus_read_byte_data(client, FTS_DEVICE_ID_REG);
 	if (deviceid > 0 && (deviceid & 0xF0) == 0x10) {
 		switch (deviceid & 0x0F) {
@@ -669,9 +659,9 @@ static int fts_probe(struct i2c_client *client)
 	return 0;
 }
 
-/*****************************************************************************/
-/* Module Details							     */
-/*****************************************************************************/
+ 
+ 
+ 
 static struct i2c_driver fts_driver = {
 	.class = I2C_CLASS_HWMON,
 	.driver = {

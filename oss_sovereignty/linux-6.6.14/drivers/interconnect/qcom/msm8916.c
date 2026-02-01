@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2018-2020 Linaro Ltd
- * Author: Georgi Djakov <georgi.djakov@linaro.org>
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/interconnect-provider.h>

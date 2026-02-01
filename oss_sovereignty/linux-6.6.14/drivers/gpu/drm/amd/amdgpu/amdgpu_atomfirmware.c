@@ -1,25 +1,4 @@
-/*
- * Copyright 2016 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 
 #include <drm/amdgpu_drm.h>
 #include "amdgpu.h"
@@ -36,13 +15,7 @@ union firmware_info {
 	struct atom_firmware_info_v3_4 v34;
 };
 
-/*
- * Helper function to query firmware capability
- *
- * @adev: amdgpu_device pointer
- *
- * Return firmware_capability in firmwareinfo table on success or 0 if not
- */
+ 
 uint32_t amdgpu_atomfirmware_query_firmware_capability(struct amdgpu_device *adev)
 {
 	struct amdgpu_mode_info *mode_info = &adev->mode_info;
@@ -57,7 +30,7 @@ uint32_t amdgpu_atomfirmware_query_firmware_capability(struct amdgpu_device *ade
 
 	if (amdgpu_atom_parse_data_header(adev->mode_info.atom_context,
 				index, &size, &frev, &crev, &data_offset)) {
-		/* support firmware_info 3.1 + */
+		 
 		if ((frev == 3 && crev >= 1) || (frev > 3)) {
 			firmware_info = (union firmware_info *)
 				(mode_info->atom_context->bios + data_offset);
@@ -68,13 +41,7 @@ uint32_t amdgpu_atomfirmware_query_firmware_capability(struct amdgpu_device *ade
 	return fw_cap;
 }
 
-/*
- * Helper function to query gpu virtualizaiton capability
- *
- * @adev: amdgpu_device pointer
- *
- * Return true if gpu virtualization is supported or false if not
- */
+ 
 bool amdgpu_atomfirmware_gpu_virtualization_supported(struct amdgpu_device *adev)
 {
 	u32 fw_cap;
@@ -118,11 +85,11 @@ static int amdgpu_atomfirmware_allocate_fb_v2_1(struct amdgpu_device *adev,
 	if ((start_addr & ATOM_VRAM_OPERATION_FLAGS_MASK) ==
 		(u32)(ATOM_VRAM_BLOCK_SRIOV_MSG_SHARE_RESERVATION <<
 		ATOM_VRAM_OPERATION_FLAGS_SHIFT)) {
-		/* Firmware request VRAM reservation for SR-IOV */
+		 
 		adev->mman.fw_vram_usage_start_offset = (start_addr &
 			(~ATOM_VRAM_OPERATION_FLAGS_MASK)) << 10;
 		adev->mman.fw_vram_usage_size = fw_size << 10;
-		/* Use the default scratch size */
+		 
 		*usage_bytes = 0;
 	} else {
 		*usage_bytes = drv_size << 10;
@@ -150,7 +117,7 @@ static int amdgpu_atomfirmware_allocate_fb_v2_2(struct amdgpu_device *adev,
 	if (amdgpu_sriov_vf(adev) &&
 	    ((fw_start_addr & (ATOM_VRAM_BLOCK_NEEDS_NO_RESERVATION <<
 		ATOM_VRAM_OPERATION_FLAGS_SHIFT)) == 0)) {
-		/* Firmware request VRAM reservation for SR-IOV */
+		 
 		adev->mman.fw_vram_usage_start_offset = (fw_start_addr &
 			(~ATOM_VRAM_OPERATION_FLAGS_MASK)) << 10;
 		adev->mman.fw_vram_usage_size = fw_size << 10;
@@ -159,7 +126,7 @@ static int amdgpu_atomfirmware_allocate_fb_v2_2(struct amdgpu_device *adev,
 	if (amdgpu_sriov_vf(adev) &&
 	    ((drv_start_addr & (ATOM_VRAM_BLOCK_NEEDS_NO_RESERVATION <<
 		ATOM_VRAM_OPERATION_FLAGS_SHIFT)) == 0)) {
-		/* driver request VRAM reservation for SR-IOV */
+		 
 		adev->mman.drv_vram_usage_start_offset = (drv_start_addr &
 			(~ATOM_VRAM_OPERATION_FLAGS_MASK)) << 10;
 		adev->mman.drv_vram_usage_size = drv_size << 10;
@@ -199,7 +166,7 @@ int amdgpu_atomfirmware_allocate_fb_scratch(struct amdgpu_device *adev)
 	ctx->scratch_size_bytes = 0;
 	if (usage_bytes == 0)
 		usage_bytes = 20 * 1024;
-	/* allocate some scratch memory */
+	 
 	ctx->scratch = kzalloc(usage_bytes, GFP_KERNEL);
 	if (!ctx->scratch)
 		return -ENOMEM;
@@ -372,7 +339,7 @@ amdgpu_atomfirmware_get_vram_info(struct amdgpu_device *adev,
 			module_id = (RREG32(adev->bios_scratch_reg_offset + 4) & 0x00ff0000) >> 16;
 			if (frev == 3) {
 				switch (crev) {
-				/* v30 */
+				 
 				case 0:
 					vram_module = (union vram_module *)vram_info->v30.vram_module;
 					mem_vendor = (vram_module->v30.dram_vendor_id) & 0xF;
@@ -391,7 +358,7 @@ amdgpu_atomfirmware_get_vram_info(struct amdgpu_device *adev,
 				}
 			} else if (frev == 2) {
 				switch (crev) {
-				/* v23 */
+				 
 				case 3:
 					if (module_id > vram_info->v23.vram_module_num)
 						module_id = 0;
@@ -412,7 +379,7 @@ amdgpu_atomfirmware_get_vram_info(struct amdgpu_device *adev,
 					if (vram_vendor)
 						*vram_vendor = mem_vendor;
 					break;
-				/* v24 */
+				 
 				case 4:
 					if (module_id > vram_info->v24.vram_module_num)
 						module_id = 0;
@@ -433,7 +400,7 @@ amdgpu_atomfirmware_get_vram_info(struct amdgpu_device *adev,
 					if (vram_vendor)
 						*vram_vendor = mem_vendor;
 					break;
-				/* v25 */
+				 
 				case 5:
 					if (module_id > vram_info->v25.vram_module_num)
 						module_id = 0;
@@ -454,7 +421,7 @@ amdgpu_atomfirmware_get_vram_info(struct amdgpu_device *adev,
 					if (vram_vendor)
 						*vram_vendor = mem_vendor;
 					break;
-				/* v26 */
+				 
 				case 6:
 					if (module_id > vram_info->v26.vram_module_num)
 						module_id = 0;
@@ -479,7 +446,7 @@ amdgpu_atomfirmware_get_vram_info(struct amdgpu_device *adev,
 					return -EINVAL;
 				}
 			} else {
-				/* invalid frev */
+				 
 				return -EINVAL;
 			}
 		}
@@ -489,10 +456,7 @@ amdgpu_atomfirmware_get_vram_info(struct amdgpu_device *adev,
 	return 0;
 }
 
-/*
- * Return true if vbios enabled ecc by default, if umc info table is available
- * or false if ecc is not enabled or umc info table is not available
- */
+ 
 bool amdgpu_atomfirmware_mem_ecc_supported(struct amdgpu_device *adev)
 {
 	struct amdgpu_mode_info *mode_info = &adev->mode_info;
@@ -530,7 +494,7 @@ bool amdgpu_atomfirmware_mem_ecc_supported(struct amdgpu_device *adev)
 					 (umc_config1 & UMC_CONFIG1__ENABLE_ECC_CAPABLE)) ? true : false;
 				break;
 			default:
-				/* unsupported crev */
+				 
 				return false;
 			}
 		} else if (frev == 4) {
@@ -541,11 +505,11 @@ bool amdgpu_atomfirmware_mem_ecc_supported(struct amdgpu_device *adev)
 					(umc_config1 & UMC_CONFIG1__ENABLE_ECC_CAPABLE) ? true : false;
 				break;
 			default:
-				/* unsupported crev */
+				 
 				return false;
 			}
 		} else {
-			/* unsupported frev */
+			 
 			return false;
 		}
 	}
@@ -553,13 +517,7 @@ bool amdgpu_atomfirmware_mem_ecc_supported(struct amdgpu_device *adev)
 	return ecc_default_enabled;
 }
 
-/*
- * Helper function to query sram ecc capablity
- *
- * @adev: amdgpu_device pointer
- *
- * Return true if vbios supports sram ecc or false if not
- */
+ 
 bool amdgpu_atomfirmware_sram_ecc_supported(struct amdgpu_device *adev)
 {
 	u32 fw_cap;
@@ -569,13 +527,7 @@ bool amdgpu_atomfirmware_sram_ecc_supported(struct amdgpu_device *adev)
 	return (fw_cap & ATOM_FIRMWARE_CAP_SRAM_ECC) ? true : false;
 }
 
-/*
- * Helper function to query dynamic boot config capability
- *
- * @adev: amdgpu_device pointer
- *
- * Return true if vbios supports dynamic boot config or false if not
- */
+ 
 bool amdgpu_atomfirmware_dynamic_boot_config_supported(struct amdgpu_device *adev)
 {
 	u32 fw_cap;
@@ -585,16 +537,7 @@ bool amdgpu_atomfirmware_dynamic_boot_config_supported(struct amdgpu_device *ade
 	return (fw_cap & ATOM_FIRMWARE_CAP_DYNAMIC_BOOT_CFG_ENABLE) ? true : false;
 }
 
-/**
- * amdgpu_atomfirmware_ras_rom_addr -- Get the RAS EEPROM addr from VBIOS
- * @adev: amdgpu_device pointer
- * @i2c_address: pointer to u8; if not NULL, will contain
- *    the RAS EEPROM address if the function returns true
- *
- * Return true if VBIOS supports RAS EEPROM address reporting,
- * else return false. If true and @i2c_address is not NULL,
- * will contain the RAS ROM address.
- */
+ 
 bool amdgpu_atomfirmware_ras_rom_addr(struct amdgpu_device *adev,
 				      u8 *i2c_address)
 {
@@ -610,25 +553,11 @@ bool amdgpu_atomfirmware_ras_rom_addr(struct amdgpu_device *adev,
 	if (amdgpu_atom_parse_data_header(adev->mode_info.atom_context,
 					  index, &size, &frev, &crev,
 					  &data_offset)) {
-		/* support firmware_info 3.4 + */
+		 
 		if ((frev == 3 && crev >= 4) || (frev > 3)) {
 			firmware_info = (union firmware_info *)
 				(mode_info->atom_context->bios + data_offset);
-			/* The ras_rom_i2c_slave_addr should ideally
-			 * be a 19-bit EEPROM address, which would be
-			 * used as is by the driver; see top of
-			 * amdgpu_eeprom.c.
-			 *
-			 * When this is the case, 0 is of course a
-			 * valid RAS EEPROM address, in which case,
-			 * we'll drop the first "if (firm...)" and only
-			 * leave the check for the pointer.
-			 *
-			 * The reason this works right now is because
-			 * ras_rom_i2c_slave_addr contains the EEPROM
-			 * device type qualifier 1010b in the top 4
-			 * bits.
-			 */
+			 
 			if (firmware_info->v34.ras_rom_i2c_slave_addr) {
 				if (i2c_address)
 					*i2c_address = firmware_info->v34.ras_rom_i2c_slave_addr;
@@ -689,7 +618,7 @@ int amdgpu_atomfirmware_get_clock_info(struct amdgpu_device *adev)
 			(union smu_info *)(mode_info->atom_context->bios +
 					   data_offset);
 
-		/* system clock */
+		 
 		if (frev == 3)
 			spll->reference_freq = le32_to_cpu(smu_info->v31.core_refclk_10khz);
 		else if (frev == 4)
@@ -715,7 +644,7 @@ int amdgpu_atomfirmware_get_clock_info(struct amdgpu_device *adev)
 			(union umc_info *)(mode_info->atom_context->bios +
 					   data_offset);
 
-		/* memory clock */
+		 
 		mpll->reference_freq = le32_to_cpu(umc_info->v31.mem_refclk_10khz);
 
 		mpll->reference_div = 0;
@@ -730,8 +659,7 @@ int amdgpu_atomfirmware_get_clock_info(struct amdgpu_device *adev)
 		ret = 0;
 	}
 
-	/* if asic is Navi+, the rlc reference clock is used for system clock
-	 * from vbios gfx_info table */
+	 
 	if (adev->asic_type >= CHIP_NAVI10) {
 		index = get_index_into_master_table(atom_master_list_of_data_tables_v2_1,
 						   gfx_info);
@@ -829,13 +757,7 @@ int amdgpu_atomfirmware_get_gfx_info(struct amdgpu_device *adev)
 	return -EINVAL;
 }
 
-/*
- * Helper function to query two stage mem training capability
- *
- * @adev: amdgpu_device pointer
- *
- * Return true if two stage mem training is supported or false if not
- */
+ 
 bool amdgpu_atomfirmware_mem_training_supported(struct amdgpu_device *adev)
 {
 	u32 fw_cap;
@@ -859,7 +781,7 @@ int amdgpu_atomfirmware_get_fw_reserved_fb_size(struct amdgpu_device *adev)
 
 	if (!amdgpu_atom_parse_data_header(ctx, index, &size,
 				&frev, &crev, &data_offset))
-		/* fail to parse data_header */
+		 
 		return 0;
 
 	firmware_info = (union firmware_info *)(ctx->bios + data_offset);
@@ -880,14 +802,7 @@ int amdgpu_atomfirmware_get_fw_reserved_fb_size(struct amdgpu_device *adev)
 	return fw_reserved_fb_size;
 }
 
-/*
- * Helper function to execute asic_init table
- *
- * @adev: amdgpu_device pointer
- * @fb_reset: flag to indicate whether fb is reset or not
- *
- * Return 0 if succeed, otherwise failed
- */
+ 
 int amdgpu_atomfirmware_asic_init(struct amdgpu_device *adev, bool fb_reset)
 {
 	struct amdgpu_mode_info *mode_info = &adev->mode_info;
@@ -905,7 +820,7 @@ int amdgpu_atomfirmware_asic_init(struct amdgpu_device *adev, bool fb_reset)
 	if (!ctx)
 		return -EINVAL;
 
-	/* query bootup sclk/mclk from firmware_info table */
+	 
 	index = get_index_into_master_table(atom_master_list_of_data_tables_v2_1,
 					    firmwareinfo);
 	if (amdgpu_atom_parse_data_header(ctx, index, NULL,

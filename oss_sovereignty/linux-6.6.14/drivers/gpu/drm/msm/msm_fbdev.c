@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2013 Red Hat
- * Author: Rob Clark <robdclark@gmail.com>
- */
+
+ 
 
 #include <linux/fb.h>
 
@@ -21,9 +18,7 @@ static bool fbdev = true;
 MODULE_PARM_DESC(fbdev, "Enable fbdev compat layer");
 module_param(fbdev, bool, 0600);
 
-/*
- * fbdev funcs, to implement legacy fbdev interface on top of drm driver
- */
+ 
 
 FB_GEN_DEFAULT_DEFERRED_SYSMEM_OPS(msm_fbdev,
 				   drm_fb_helper_damage_range,
@@ -47,7 +42,7 @@ static void msm_fbdev_fb_destroy(struct fb_info *info)
 
 	drm_fb_helper_fini(helper);
 
-	/* this will free the backing object */
+	 
 	msm_gem_put_vaddr(bo);
 	drm_framebuffer_remove(fb);
 
@@ -94,11 +89,7 @@ static int msm_fbdev_create(struct drm_fb_helper *helper,
 
 	bo = msm_framebuffer_bo(fb, 0);
 
-	/*
-	 * NOTE: if we can be guaranteed to be able to map buffer
-	 * in panic (ie. lock-safe, etc) we could avoid pinning the
-	 * buffer now:
-	 */
+	 
 	ret = msm_gem_get_and_pin_iova(bo, priv->kms->aspace, &paddr);
 	if (ret) {
 		DRM_DEV_ERROR(dev->dev, "failed to get buffer obj iova: %d\n", ret);
@@ -145,7 +136,7 @@ static int msm_fbdev_fb_dirty(struct drm_fb_helper *helper,
 	struct drm_device *dev = helper->dev;
 	int ret;
 
-	/* Call damage handlers only if necessary */
+	 
 	if (!(clip->x1 < clip->x2 && clip->y1 < clip->y2))
 		return 0;
 
@@ -163,9 +154,7 @@ static const struct drm_fb_helper_funcs msm_fb_helper_funcs = {
 	.fb_dirty = msm_fbdev_fb_dirty,
 };
 
-/*
- * struct drm_client
- */
+ 
 
 static void msm_fbdev_client_unregister(struct drm_client_dev *client)
 {
@@ -223,7 +212,7 @@ static const struct drm_client_funcs msm_fbdev_client_funcs = {
 	.hotplug	= msm_fbdev_client_hotplug,
 };
 
-/* initialize fbdev helper */
+ 
 void msm_fbdev_setup(struct drm_device *dev)
 {
 	struct drm_fb_helper *helper;

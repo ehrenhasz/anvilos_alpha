@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include "unwind.h"
 #include "dso.h"
 #include "map.h"
@@ -37,7 +37,7 @@ int unwind__prepare_access(struct maps *maps, struct map *map, bool *initialized
 	}
 
 	machine = maps__machine(maps);
-	/* env->arch is NULL for live-mode (i.e. perf top) */
+	 
 	if (!machine->env || !machine->env->arch)
 		goto out_register;
 

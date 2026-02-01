@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Helpers for the host side of a virtio ring.
- *
- * Since these may be in userspace, we use (inline) accessors.
- */
+
+ 
 #include <linux/compiler.h>
 #include <linux/module.h>
 #include <linux/vringh.h>
@@ -34,7 +30,7 @@ static __printf(1,2) __cold void vringh_bad(const char *fmt, ...)
 	}
 }
 
-/* Returns vring->num if empty, -ve on error. */
+ 
 static inline int __vringh_get_head(const struct vringh *vrh,
 				    int (*getu16)(const struct vringh *vrh,
 						  u16 *val, const __virtio16 *p),
@@ -53,7 +49,7 @@ static inline int __vringh_get_head(const struct vringh *vrh,
 	if (*last_avail_idx == avail_idx)
 		return vrh->vring.num;
 
-	/* Only get avail ring entries after they have been exposed by guest. */
+	 
 	virtio_rmb(vrh->weak_barriers);
 
 	i = *last_avail_idx & (vrh->vring.num - 1);
@@ -75,11 +71,7 @@ static inline int __vringh_get_head(const struct vringh *vrh,
 	return head;
 }
 
-/**
- * vringh_kiov_advance - skip bytes from vring_kiov
- * @iov: an iov passed to vringh_getdesc_*() (updated as we consume)
- * @len: the maximum length to advance
- */
+ 
 void vringh_kiov_advance(struct vringh_kiov *iov, size_t len)
 {
 	while (len && iov->i < iov->used) {
@@ -90,7 +82,7 @@ void vringh_kiov_advance(struct vringh_kiov *iov, size_t len)
 		iov->iov[iov->i].iov_base += partlen;
 
 		if (!iov->iov[iov->i].iov_len) {
-			/* Fix up old iov element then increment. */
+			 
 			iov->iov[iov->i].iov_len = iov->consumed;
 			iov->iov[iov->i].iov_base -= iov->consumed;
 
@@ -103,7 +95,7 @@ void vringh_kiov_advance(struct vringh_kiov *iov, size_t len)
 }
 EXPORT_SYMBOL(vringh_kiov_advance);
 
-/* Copy some bytes to/from the iovec.  Returns num copied. */
+ 
 static inline ssize_t vringh_iov_xfer(struct vringh *vrh,
 				      struct vringh_kiov *iov,
 				      void *ptr, size_t len,
@@ -128,7 +120,7 @@ static inline ssize_t vringh_iov_xfer(struct vringh *vrh,
 		iov->iov[iov->i].iov_base += partlen;
 
 		if (!iov->iov[iov->i].iov_len) {
-			/* Fix up old iov element then increment. */
+			 
 			iov->iov[iov->i].iov_len = iov->consumed;
 			iov->iov[iov->i].iov_base -= iov->consumed;
 
@@ -139,7 +131,7 @@ static inline ssize_t vringh_iov_xfer(struct vringh *vrh,
 	return done;
 }
 
-/* May reduce *len if range is shorter. */
+ 
 static inline bool range_check(struct vringh *vrh, u64 addr, size_t *len,
 			       struct vringh_range *range,
 			       bool (*getrange)(struct vringh *,
@@ -151,14 +143,14 @@ static inline bool range_check(struct vringh *vrh, u64 addr, size_t *len,
 	}
 	BUG_ON(addr < range->start || addr > range->end_incl);
 
-	/* To end of memory? */
+	 
 	if (unlikely(addr + *len == 0)) {
 		if (range->end_incl == -1ULL)
 			return true;
 		goto truncate;
 	}
 
-	/* Otherwise, don't wrap. */
+	 
 	if (addr + *len < addr) {
 		vringh_bad("Wrapping descriptor %zu@0x%llx",
 			   *len, (unsigned long long)addr);
@@ -182,7 +174,7 @@ static inline bool no_range_check(struct vringh *vrh, u64 addr, size_t *len,
 	return true;
 }
 
-/* No reason for this code to be inline. */
+ 
 static int move_to_indirect(const struct vringh *vrh,
 			    int *up_next, u16 *i, void *addr,
 			    const struct vring_desc *desc,
@@ -190,7 +182,7 @@ static int move_to_indirect(const struct vringh *vrh,
 {
 	u32 len;
 
-	/* Indirect tables can't have indirect. */
+	 
 	if (*up_next != -1) {
 		vringh_bad("Multilevel indirect %u->%u", *up_next, *i);
 		return -EINVAL;
@@ -202,7 +194,7 @@ static int move_to_indirect(const struct vringh *vrh,
 		return -EINVAL;
 	}
 
-	/* We will check this when we follow it! */
+	 
 	if (desc->flags & cpu_to_vringh16(vrh, VRING_DESC_F_NEXT))
 		*up_next = vringh16_to_cpu(vrh, desc->next);
 	else
@@ -210,7 +202,7 @@ static int move_to_indirect(const struct vringh *vrh,
 	*descs = addr;
 	*desc_max = len / sizeof(struct vring_desc);
 
-	/* Now, start at the first indirect. */
+	 
 	*i = 0;
 	return 0;
 }
@@ -307,12 +299,12 @@ __vringh_iov(struct vringh *vrh, u16 i,
 	struct vringh_range range = { -1ULL, 0 }, slowrange;
 	bool slow = false;
 
-	/* We start traversing vring's descriptor table. */
+	 
 	descs = vrh->vring.desc;
 	desc_max = vrh->vring.num;
 	up_next = -1;
 
-	/* You must want something! */
+	 
 	if (WARN_ON(!riov && !wiov))
 		return -EINVAL;
 
@@ -338,7 +330,7 @@ __vringh_iov(struct vringh *vrh, u16 i,
 			     cpu_to_vringh16(vrh, VRING_DESC_F_INDIRECT))) {
 			u64 a = vringh64_to_cpu(vrh, desc.addr);
 
-			/* Make sure it's OK, and get offset. */
+			 
 			len = vringh32_to_cpu(vrh, desc.len);
 			if (!rcheck(vrh, a, &len, &range, getrange)) {
 				err = -EINVAL;
@@ -347,7 +339,7 @@ __vringh_iov(struct vringh *vrh, u16 i,
 
 			if (unlikely(len != vringh32_to_cpu(vrh, desc.len))) {
 				slow = true;
-				/* We need to save this range to use offset */
+				 
 				slowrange = range;
 			}
 
@@ -390,7 +382,7 @@ __vringh_iov(struct vringh *vrh, u16 i,
 		}
 
 	again:
-		/* Make sure it's OK, and get offset. */
+		 
 		len = vringh32_to_cpu(vrh, desc.len);
 		if (!rcheck(vrh, vringh64_to_cpu(vrh, desc.addr), &len, &range,
 			    getrange)) {
@@ -421,7 +413,7 @@ __vringh_iov(struct vringh *vrh, u16 i,
 		if (desc.flags & cpu_to_vringh16(vrh, VRING_DESC_F_NEXT)) {
 			i = vringh16_to_cpu(vrh, desc.next);
 		} else {
-			/* Just in case we need to finish traversing above. */
+			 
 			if (unlikely(up_next > 0)) {
 				i = return_from_indirect(vrh, &up_next,
 							 &descs, &desc_max);
@@ -463,7 +455,7 @@ static inline int __vringh_complete(struct vringh *vrh,
 
 	off = used_idx % vrh->vring.num;
 
-	/* Compiler knows num_used == 1 sometimes, hence extra check */
+	 
 	if (num_used > 1 && unlikely(off + num_used >= vrh->vring.num)) {
 		u16 part = vrh->vring.num - off;
 		err = putused(vrh, &used_ring->ring[off], used, part);
@@ -479,7 +471,7 @@ static inline int __vringh_complete(struct vringh *vrh,
 		return err;
 	}
 
-	/* Make sure buffer is written before we update index. */
+	 
 	virtio_wmb(vrh->weak_barriers);
 
 	err = putu16(vrh, &vrh->vring.used->idx, used_idx + num_used);
@@ -503,12 +495,10 @@ static inline int __vringh_need_notify(struct vringh *vrh,
 	u16 used_event;
 	int err;
 
-	/* Flush out used index update. This is paired with the
-	 * barrier that the Guest executes when enabling
-	 * interrupts. */
+	 
 	virtio_mb(vrh->weak_barriers);
 
-	/* Old-style, without event indices. */
+	 
 	if (!vrh->event_indices) {
 		u16 flags;
 		err = getu16(vrh, &flags, &vrh->vring.avail->flags);
@@ -520,7 +510,7 @@ static inline int __vringh_need_notify(struct vringh *vrh,
 		return (!(flags & VRING_AVAIL_F_NO_INTERRUPT));
 	}
 
-	/* Modern: we know when other side wants to know. */
+	 
 	err = getu16(vrh, &used_event, &vring_used_event(&vrh->vring));
 	if (err) {
 		vringh_bad("Failed to get used event idx at %p",
@@ -528,7 +518,7 @@ static inline int __vringh_need_notify(struct vringh *vrh,
 		return err;
 	}
 
-	/* Just in case we added so many that we wrap. */
+	 
 	if (unlikely(vrh->completed > 0xffff))
 		notify = true;
 	else
@@ -550,7 +540,7 @@ static inline bool __vringh_notify_enable(struct vringh *vrh,
 	u16 avail;
 
 	if (!vrh->event_indices) {
-		/* Old-school; update flags. */
+		 
 		if (putu16(vrh, &vrh->vring.used->flags, 0) != 0) {
 			vringh_bad("Clearing used flags %p",
 				   &vrh->vring.used->flags);
@@ -565,8 +555,7 @@ static inline bool __vringh_notify_enable(struct vringh *vrh,
 		}
 	}
 
-	/* They could have slipped one in as we were doing that: make
-	 * sure it's written, then check again. */
+	 
 	virtio_mb(vrh->weak_barriers);
 
 	if (getu16(vrh, &avail, &vrh->vring.avail->idx) != 0) {
@@ -575,9 +564,7 @@ static inline bool __vringh_notify_enable(struct vringh *vrh,
 		return true;
 	}
 
-	/* This is unlikely, so we just leave notifications enabled
-	 * (if we're using event_indices, we'll only get one
-	 * notification anyway). */
+	 
 	return avail == vrh->last_avail_idx;
 }
 
@@ -586,7 +573,7 @@ static inline void __vringh_notify_disable(struct vringh *vrh,
 							 __virtio16 *p, u16 val))
 {
 	if (!vrh->event_indices) {
-		/* Old-school; update flags. */
+		 
 		if (putu16(vrh, &vrh->vring.used->flags,
 			   VRING_USED_F_NO_NOTIFY)) {
 			vringh_bad("Setting used flags %p",
@@ -595,7 +582,7 @@ static inline void __vringh_notify_disable(struct vringh *vrh,
 	}
 }
 
-/* Userspace access helpers: in this case, addresses are really userspace. */
+ 
 static inline int getu16_user(const struct vringh *vrh, u16 *val, const __virtio16 *p)
 {
 	__virtio16 v = 0;
@@ -640,26 +627,14 @@ static inline int xfer_to_user(const struct vringh *vrh,
 		-EFAULT : 0;
 }
 
-/**
- * vringh_init_user - initialize a vringh for a userspace vring.
- * @vrh: the vringh to initialize.
- * @features: the feature bits for this ring.
- * @num: the number of elements.
- * @weak_barriers: true if we only need memory barriers, not I/O.
- * @desc: the userspace descriptor pointer.
- * @avail: the userspace avail pointer.
- * @used: the userspace used pointer.
- *
- * Returns an error if num is invalid: you should check pointers
- * yourself!
- */
+ 
 int vringh_init_user(struct vringh *vrh, u64 features,
 		     unsigned int num, bool weak_barriers,
 		     vring_desc_t __user *desc,
 		     vring_avail_t __user *avail,
 		     vring_used_t __user *used)
 {
-	/* Sane power of 2 please! */
+	 
 	if (!num || num > 0xffff || (num & (num - 1))) {
 		vringh_bad("Bad ring size %u", num);
 		return -EINVAL;
@@ -672,7 +647,7 @@ int vringh_init_user(struct vringh *vrh, u64 features,
 	vrh->last_avail_idx = 0;
 	vrh->last_used_idx = 0;
 	vrh->vring.num = num;
-	/* vring expects kernel addresses, but only used via accessors. */
+	 
 	vrh->vring.desc = (__force struct vring_desc *)desc;
 	vrh->vring.avail = (__force struct vring_avail *)avail;
 	vrh->vring.used = (__force struct vring_used *)used;
@@ -680,26 +655,7 @@ int vringh_init_user(struct vringh *vrh, u64 features,
 }
 EXPORT_SYMBOL(vringh_init_user);
 
-/**
- * vringh_getdesc_user - get next available descriptor from userspace ring.
- * @vrh: the userspace vring.
- * @riov: where to put the readable descriptors (or NULL)
- * @wiov: where to put the writable descriptors (or NULL)
- * @getrange: function to call to check ranges.
- * @head: head index we received, for passing to vringh_complete_user().
- *
- * Returns 0 if there was no descriptor, 1 if there was, or -errno.
- *
- * Note that on error return, you can tell the difference between an
- * invalid ring and a single invalid descriptor: in the former case,
- * *head will be vrh->vring.num.  You may be able to ignore an invalid
- * descriptor, but there's not much you can do with an invalid ring.
- *
- * Note that you can reuse riov and wiov with subsequent calls. Content is
- * overwritten and memory reallocated if more space is needed.
- * When you don't have to use riov and wiov anymore, you should clean up them
- * calling vringh_iov_cleanup() to release the memory, even on error!
- */
+ 
 int vringh_getdesc_user(struct vringh *vrh,
 			struct vringh_iov *riov,
 			struct vringh_iov *wiov,
@@ -714,11 +670,11 @@ int vringh_getdesc_user(struct vringh *vrh,
 	if (err < 0)
 		return err;
 
-	/* Empty... */
+	 
 	if (err == vrh->vring.num)
 		return 0;
 
-	/* We need the layouts to be the identical for this to work */
+	 
 	BUILD_BUG_ON(sizeof(struct vringh_kiov) != sizeof(struct vringh_iov));
 	BUILD_BUG_ON(offsetof(struct vringh_kiov, iov) !=
 		     offsetof(struct vringh_iov, iov));
@@ -749,14 +705,7 @@ int vringh_getdesc_user(struct vringh *vrh,
 }
 EXPORT_SYMBOL(vringh_getdesc_user);
 
-/**
- * vringh_iov_pull_user - copy bytes from vring_iov.
- * @riov: the riov as passed to vringh_getdesc_user() (updated as we consume)
- * @dst: the place to copy.
- * @len: the maximum length to copy.
- *
- * Returns the bytes copied <= len or a negative errno.
- */
+ 
 ssize_t vringh_iov_pull_user(struct vringh_iov *riov, void *dst, size_t len)
 {
 	return vringh_iov_xfer(NULL, (struct vringh_kiov *)riov,
@@ -764,14 +713,7 @@ ssize_t vringh_iov_pull_user(struct vringh_iov *riov, void *dst, size_t len)
 }
 EXPORT_SYMBOL(vringh_iov_pull_user);
 
-/**
- * vringh_iov_push_user - copy bytes into vring_iov.
- * @wiov: the wiov as passed to vringh_getdesc_user() (updated as we consume)
- * @src: the place to copy from.
- * @len: the maximum length to copy.
- *
- * Returns the bytes copied <= len or a negative errno.
- */
+ 
 ssize_t vringh_iov_push_user(struct vringh_iov *wiov,
 			     const void *src, size_t len)
 {
@@ -780,31 +722,15 @@ ssize_t vringh_iov_push_user(struct vringh_iov *wiov,
 }
 EXPORT_SYMBOL(vringh_iov_push_user);
 
-/**
- * vringh_abandon_user - we've decided not to handle the descriptor(s).
- * @vrh: the vring.
- * @num: the number of descriptors to put back (ie. num
- *	 vringh_get_user() to undo).
- *
- * The next vringh_get_user() will return the old descriptor(s) again.
- */
+ 
 void vringh_abandon_user(struct vringh *vrh, unsigned int num)
 {
-	/* We only update vring_avail_event(vr) when we want to be notified,
-	 * so we haven't changed that yet. */
+	 
 	vrh->last_avail_idx -= num;
 }
 EXPORT_SYMBOL(vringh_abandon_user);
 
-/**
- * vringh_complete_user - we've finished with descriptor, publish it.
- * @vrh: the vring.
- * @head: the head as filled in by vringh_getdesc_user.
- * @len: the length of data we have written.
- *
- * You should check vringh_need_notify_user() after one or more calls
- * to this function.
- */
+ 
 int vringh_complete_user(struct vringh *vrh, u16 head, u32 len)
 {
 	struct vring_used_elem used;
@@ -815,15 +741,7 @@ int vringh_complete_user(struct vringh *vrh, u16 head, u32 len)
 }
 EXPORT_SYMBOL(vringh_complete_user);
 
-/**
- * vringh_complete_multi_user - we've finished with many descriptors.
- * @vrh: the vring.
- * @used: the head, length pairs.
- * @num_used: the number of used elements.
- *
- * You should check vringh_need_notify_user() after one or more calls
- * to this function.
- */
+ 
 int vringh_complete_multi_user(struct vringh *vrh,
 			       const struct vring_used_elem used[],
 			       unsigned num_used)
@@ -833,45 +751,28 @@ int vringh_complete_multi_user(struct vringh *vrh,
 }
 EXPORT_SYMBOL(vringh_complete_multi_user);
 
-/**
- * vringh_notify_enable_user - we want to know if something changes.
- * @vrh: the vring.
- *
- * This always enables notifications, but returns false if there are
- * now more buffers available in the vring.
- */
+ 
 bool vringh_notify_enable_user(struct vringh *vrh)
 {
 	return __vringh_notify_enable(vrh, getu16_user, putu16_user);
 }
 EXPORT_SYMBOL(vringh_notify_enable_user);
 
-/**
- * vringh_notify_disable_user - don't tell us if something changes.
- * @vrh: the vring.
- *
- * This is our normal running state: we disable and then only enable when
- * we're going to sleep.
- */
+ 
 void vringh_notify_disable_user(struct vringh *vrh)
 {
 	__vringh_notify_disable(vrh, putu16_user);
 }
 EXPORT_SYMBOL(vringh_notify_disable_user);
 
-/**
- * vringh_need_notify_user - must we tell the other side about used buffers?
- * @vrh: the vring we've called vringh_complete_user() on.
- *
- * Returns -errno or 0 if we don't need to tell the other side, 1 if we do.
- */
+ 
 int vringh_need_notify_user(struct vringh *vrh)
 {
 	return __vringh_need_notify(vrh, getu16_user);
 }
 EXPORT_SYMBOL(vringh_need_notify_user);
 
-/* Kernelspace access helpers. */
+ 
 static inline int getu16_kern(const struct vringh *vrh,
 			      u16 *val, const __virtio16 *p)
 {
@@ -915,25 +816,14 @@ static inline int kern_xfer(const struct vringh *vrh, void *dst,
 	return 0;
 }
 
-/**
- * vringh_init_kern - initialize a vringh for a kernelspace vring.
- * @vrh: the vringh to initialize.
- * @features: the feature bits for this ring.
- * @num: the number of elements.
- * @weak_barriers: true if we only need memory barriers, not I/O.
- * @desc: the userspace descriptor pointer.
- * @avail: the userspace avail pointer.
- * @used: the userspace used pointer.
- *
- * Returns an error if num is invalid.
- */
+ 
 int vringh_init_kern(struct vringh *vrh, u64 features,
 		     unsigned int num, bool weak_barriers,
 		     struct vring_desc *desc,
 		     struct vring_avail *avail,
 		     struct vring_used *used)
 {
-	/* Sane power of 2 please! */
+	 
 	if (!num || num > 0xffff || (num & (num - 1))) {
 		vringh_bad("Bad ring size %u", num);
 		return -EINVAL;
@@ -953,26 +843,7 @@ int vringh_init_kern(struct vringh *vrh, u64 features,
 }
 EXPORT_SYMBOL(vringh_init_kern);
 
-/**
- * vringh_getdesc_kern - get next available descriptor from kernelspace ring.
- * @vrh: the kernelspace vring.
- * @riov: where to put the readable descriptors (or NULL)
- * @wiov: where to put the writable descriptors (or NULL)
- * @head: head index we received, for passing to vringh_complete_kern().
- * @gfp: flags for allocating larger riov/wiov.
- *
- * Returns 0 if there was no descriptor, 1 if there was, or -errno.
- *
- * Note that on error return, you can tell the difference between an
- * invalid ring and a single invalid descriptor: in the former case,
- * *head will be vrh->vring.num.  You may be able to ignore an invalid
- * descriptor, but there's not much you can do with an invalid ring.
- *
- * Note that you can reuse riov and wiov with subsequent calls. Content is
- * overwritten and memory reallocated if more space is needed.
- * When you don't have to use riov and wiov anymore, you should clean up them
- * calling vringh_kiov_cleanup() to release the memory, even on error!
- */
+ 
 int vringh_getdesc_kern(struct vringh *vrh,
 			struct vringh_kiov *riov,
 			struct vringh_kiov *wiov,
@@ -985,7 +856,7 @@ int vringh_getdesc_kern(struct vringh *vrh,
 	if (err < 0)
 		return err;
 
-	/* Empty... */
+	 
 	if (err == vrh->vring.num)
 		return 0;
 
@@ -999,28 +870,14 @@ int vringh_getdesc_kern(struct vringh *vrh,
 }
 EXPORT_SYMBOL(vringh_getdesc_kern);
 
-/**
- * vringh_iov_pull_kern - copy bytes from vring_iov.
- * @riov: the riov as passed to vringh_getdesc_kern() (updated as we consume)
- * @dst: the place to copy.
- * @len: the maximum length to copy.
- *
- * Returns the bytes copied <= len or a negative errno.
- */
+ 
 ssize_t vringh_iov_pull_kern(struct vringh_kiov *riov, void *dst, size_t len)
 {
 	return vringh_iov_xfer(NULL, riov, dst, len, xfer_kern);
 }
 EXPORT_SYMBOL(vringh_iov_pull_kern);
 
-/**
- * vringh_iov_push_kern - copy bytes into vring_iov.
- * @wiov: the wiov as passed to vringh_getdesc_kern() (updated as we consume)
- * @src: the place to copy from.
- * @len: the maximum length to copy.
- *
- * Returns the bytes copied <= len or a negative errno.
- */
+ 
 ssize_t vringh_iov_push_kern(struct vringh_kiov *wiov,
 			     const void *src, size_t len)
 {
@@ -1028,31 +885,15 @@ ssize_t vringh_iov_push_kern(struct vringh_kiov *wiov,
 }
 EXPORT_SYMBOL(vringh_iov_push_kern);
 
-/**
- * vringh_abandon_kern - we've decided not to handle the descriptor(s).
- * @vrh: the vring.
- * @num: the number of descriptors to put back (ie. num
- *	 vringh_get_kern() to undo).
- *
- * The next vringh_get_kern() will return the old descriptor(s) again.
- */
+ 
 void vringh_abandon_kern(struct vringh *vrh, unsigned int num)
 {
-	/* We only update vring_avail_event(vr) when we want to be notified,
-	 * so we haven't changed that yet. */
+	 
 	vrh->last_avail_idx -= num;
 }
 EXPORT_SYMBOL(vringh_abandon_kern);
 
-/**
- * vringh_complete_kern - we've finished with descriptor, publish it.
- * @vrh: the vring.
- * @head: the head as filled in by vringh_getdesc_kern.
- * @len: the length of data we have written.
- *
- * You should check vringh_need_notify_kern() after one or more calls
- * to this function.
- */
+ 
 int vringh_complete_kern(struct vringh *vrh, u16 head, u32 len)
 {
 	struct vring_used_elem used;
@@ -1064,38 +905,21 @@ int vringh_complete_kern(struct vringh *vrh, u16 head, u32 len)
 }
 EXPORT_SYMBOL(vringh_complete_kern);
 
-/**
- * vringh_notify_enable_kern - we want to know if something changes.
- * @vrh: the vring.
- *
- * This always enables notifications, but returns false if there are
- * now more buffers available in the vring.
- */
+ 
 bool vringh_notify_enable_kern(struct vringh *vrh)
 {
 	return __vringh_notify_enable(vrh, getu16_kern, putu16_kern);
 }
 EXPORT_SYMBOL(vringh_notify_enable_kern);
 
-/**
- * vringh_notify_disable_kern - don't tell us if something changes.
- * @vrh: the vring.
- *
- * This is our normal running state: we disable and then only enable when
- * we're going to sleep.
- */
+ 
 void vringh_notify_disable_kern(struct vringh *vrh)
 {
 	__vringh_notify_disable(vrh, putu16_kern);
 }
 EXPORT_SYMBOL(vringh_notify_disable_kern);
 
-/**
- * vringh_need_notify_kern - must we tell the other side about used buffers?
- * @vrh: the vring we've called vringh_complete_kern() on.
- *
- * Returns -errno or 0 if we don't need to tell the other side, 1 if we do.
- */
+ 
 int vringh_need_notify_kern(struct vringh *vrh)
 {
 	return __vringh_need_notify(vrh, getu16_kern);
@@ -1280,7 +1104,7 @@ static inline int getu16_iotlb(const struct vringh *vrh,
 	ivec.iov.iovec = iov.iovec;
 	ivec.count = 1;
 
-	/* Atomic read is needed for getu16 */
+	 
 	ret = iotlb_translate(vrh, (u64)(uintptr_t)p, sizeof(*p),
 			      NULL, &ivec, VHOST_MAP_RO);
 	if (ret < 0)
@@ -1317,7 +1141,7 @@ static inline int putu16_iotlb(const struct vringh *vrh,
 	ivec.iov.iovec = &iov.iovec;
 	ivec.count = 1;
 
-	/* Atomic write is needed for putu16 */
+	 
 	ret = iotlb_translate(vrh, (u64)(uintptr_t)p, sizeof(*p),
 			      NULL, &ivec, VHOST_MAP_RO);
 	if (ret < 0)
@@ -1391,18 +1215,7 @@ static inline int putused_iotlb(const struct vringh *vrh,
 	return 0;
 }
 
-/**
- * vringh_init_iotlb - initialize a vringh for a ring with IOTLB.
- * @vrh: the vringh to initialize.
- * @features: the feature bits for this ring.
- * @num: the number of elements.
- * @weak_barriers: true if we only need memory barriers, not I/O.
- * @desc: the userspace descriptor pointer.
- * @avail: the userspace avail pointer.
- * @used: the userspace used pointer.
- *
- * Returns an error if num is invalid.
- */
+ 
 int vringh_init_iotlb(struct vringh *vrh, u64 features,
 		      unsigned int num, bool weak_barriers,
 		      struct vring_desc *desc,
@@ -1416,19 +1229,7 @@ int vringh_init_iotlb(struct vringh *vrh, u64 features,
 }
 EXPORT_SYMBOL(vringh_init_iotlb);
 
-/**
- * vringh_init_iotlb_va - initialize a vringh for a ring with IOTLB containing
- *                        user VA.
- * @vrh: the vringh to initialize.
- * @features: the feature bits for this ring.
- * @num: the number of elements.
- * @weak_barriers: true if we only need memory barriers, not I/O.
- * @desc: the userspace descriptor pointer.
- * @avail: the userspace avail pointer.
- * @used: the userspace used pointer.
- *
- * Returns an error if num is invalid.
- */
+ 
 int vringh_init_iotlb_va(struct vringh *vrh, u64 features,
 			 unsigned int num, bool weak_barriers,
 			 struct vring_desc *desc,
@@ -1442,12 +1243,7 @@ int vringh_init_iotlb_va(struct vringh *vrh, u64 features,
 }
 EXPORT_SYMBOL(vringh_init_iotlb_va);
 
-/**
- * vringh_set_iotlb - initialize a vringh for a ring with IOTLB.
- * @vrh: the vring
- * @iotlb: iotlb associated with this vring
- * @iotlb_lock: spinlock to synchronize the iotlb accesses
- */
+ 
 void vringh_set_iotlb(struct vringh *vrh, struct vhost_iotlb *iotlb,
 		      spinlock_t *iotlb_lock)
 {
@@ -1456,27 +1252,7 @@ void vringh_set_iotlb(struct vringh *vrh, struct vhost_iotlb *iotlb,
 }
 EXPORT_SYMBOL(vringh_set_iotlb);
 
-/**
- * vringh_getdesc_iotlb - get next available descriptor from ring with
- * IOTLB.
- * @vrh: the kernelspace vring.
- * @riov: where to put the readable descriptors (or NULL)
- * @wiov: where to put the writable descriptors (or NULL)
- * @head: head index we received, for passing to vringh_complete_iotlb().
- * @gfp: flags for allocating larger riov/wiov.
- *
- * Returns 0 if there was no descriptor, 1 if there was, or -errno.
- *
- * Note that on error return, you can tell the difference between an
- * invalid ring and a single invalid descriptor: in the former case,
- * *head will be vrh->vring.num.  You may be able to ignore an invalid
- * descriptor, but there's not much you can do with an invalid ring.
- *
- * Note that you can reuse riov and wiov with subsequent calls. Content is
- * overwritten and memory reallocated if more space is needed.
- * When you don't have to use riov and wiov anymore, you should clean up them
- * calling vringh_kiov_cleanup() to release the memory, even on error!
- */
+ 
 int vringh_getdesc_iotlb(struct vringh *vrh,
 			 struct vringh_kiov *riov,
 			 struct vringh_kiov *wiov,
@@ -1489,7 +1265,7 @@ int vringh_getdesc_iotlb(struct vringh *vrh,
 	if (err < 0)
 		return err;
 
-	/* Empty... */
+	 
 	if (err == vrh->vring.num)
 		return 0;
 
@@ -1503,15 +1279,7 @@ int vringh_getdesc_iotlb(struct vringh *vrh,
 }
 EXPORT_SYMBOL(vringh_getdesc_iotlb);
 
-/**
- * vringh_iov_pull_iotlb - copy bytes from vring_iov.
- * @vrh: the vring.
- * @riov: the riov as passed to vringh_getdesc_iotlb() (updated as we consume)
- * @dst: the place to copy.
- * @len: the maximum length to copy.
- *
- * Returns the bytes copied <= len or a negative errno.
- */
+ 
 ssize_t vringh_iov_pull_iotlb(struct vringh *vrh,
 			      struct vringh_kiov *riov,
 			      void *dst, size_t len)
@@ -1520,15 +1288,7 @@ ssize_t vringh_iov_pull_iotlb(struct vringh *vrh,
 }
 EXPORT_SYMBOL(vringh_iov_pull_iotlb);
 
-/**
- * vringh_iov_push_iotlb - copy bytes into vring_iov.
- * @vrh: the vring.
- * @wiov: the wiov as passed to vringh_getdesc_iotlb() (updated as we consume)
- * @src: the place to copy from.
- * @len: the maximum length to copy.
- *
- * Returns the bytes copied <= len or a negative errno.
- */
+ 
 ssize_t vringh_iov_push_iotlb(struct vringh *vrh,
 			      struct vringh_kiov *wiov,
 			      const void *src, size_t len)
@@ -1537,32 +1297,15 @@ ssize_t vringh_iov_push_iotlb(struct vringh *vrh,
 }
 EXPORT_SYMBOL(vringh_iov_push_iotlb);
 
-/**
- * vringh_abandon_iotlb - we've decided not to handle the descriptor(s).
- * @vrh: the vring.
- * @num: the number of descriptors to put back (ie. num
- *	 vringh_get_iotlb() to undo).
- *
- * The next vringh_get_iotlb() will return the old descriptor(s) again.
- */
+ 
 void vringh_abandon_iotlb(struct vringh *vrh, unsigned int num)
 {
-	/* We only update vring_avail_event(vr) when we want to be notified,
-	 * so we haven't changed that yet.
-	 */
+	 
 	vrh->last_avail_idx -= num;
 }
 EXPORT_SYMBOL(vringh_abandon_iotlb);
 
-/**
- * vringh_complete_iotlb - we've finished with descriptor, publish it.
- * @vrh: the vring.
- * @head: the head as filled in by vringh_getdesc_iotlb.
- * @len: the length of data we have written.
- *
- * You should check vringh_need_notify_iotlb() after one or more calls
- * to this function.
- */
+ 
 int vringh_complete_iotlb(struct vringh *vrh, u16 head, u32 len)
 {
 	struct vring_used_elem used;
@@ -1574,38 +1317,21 @@ int vringh_complete_iotlb(struct vringh *vrh, u16 head, u32 len)
 }
 EXPORT_SYMBOL(vringh_complete_iotlb);
 
-/**
- * vringh_notify_enable_iotlb - we want to know if something changes.
- * @vrh: the vring.
- *
- * This always enables notifications, but returns false if there are
- * now more buffers available in the vring.
- */
+ 
 bool vringh_notify_enable_iotlb(struct vringh *vrh)
 {
 	return __vringh_notify_enable(vrh, getu16_iotlb, putu16_iotlb);
 }
 EXPORT_SYMBOL(vringh_notify_enable_iotlb);
 
-/**
- * vringh_notify_disable_iotlb - don't tell us if something changes.
- * @vrh: the vring.
- *
- * This is our normal running state: we disable and then only enable when
- * we're going to sleep.
- */
+ 
 void vringh_notify_disable_iotlb(struct vringh *vrh)
 {
 	__vringh_notify_disable(vrh, putu16_iotlb);
 }
 EXPORT_SYMBOL(vringh_notify_disable_iotlb);
 
-/**
- * vringh_need_notify_iotlb - must we tell the other side about used buffers?
- * @vrh: the vring we've called vringh_complete_iotlb() on.
- *
- * Returns -errno or 0 if we don't need to tell the other side, 1 if we do.
- */
+ 
 int vringh_need_notify_iotlb(struct vringh *vrh)
 {
 	return __vringh_need_notify(vrh, getu16_iotlb);

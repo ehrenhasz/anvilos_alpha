@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) STMicroelectronics SA 2015
- * Authors: Arnaud Pouliquen <arnaud.pouliquen@st.com>
- *          for STMicroelectronics.
- */
+
+ 
 
 #include <linux/io.h>
 #include <linux/module.h>
@@ -14,15 +10,15 @@
 #include <sound/soc.h>
 #include <sound/soc-dapm.h>
 
-/* DAC definitions */
+ 
 
-/* stih407 DAC registers */
-/* sysconf 5041: Audio-Gue-Control */
+ 
+ 
 #define STIH407_AUDIO_GLUE_CTRL 0x000000A4
-/* sysconf 5042: Audio-DAC-Control */
+ 
 #define STIH407_AUDIO_DAC_CTRL 0x000000A8
 
-/* DAC definitions */
+ 
 #define STIH407_DAC_SOFTMUTE		0x0
 #define STIH407_DAC_STANDBY_ANA		0x1
 #define STIH407_DAC_STANDBY		0x2
@@ -31,7 +27,7 @@
 #define STIH407_DAC_STANDBY_ANA_MASK    BIT(STIH407_DAC_STANDBY_ANA)
 #define STIH407_DAC_STANDBY_MASK        BIT(STIH407_DAC_STANDBY)
 
-/* SPDIF definitions */
+ 
 #define SPDIF_BIPHASE_ENABLE		0x6
 #define SPDIF_BIPHASE_IDLE		0x7
 
@@ -59,17 +55,17 @@ struct sti_spdif_audio {
 	int mclk;
 };
 
-/* device data structure */
+ 
 struct sti_sas_dev_data {
 	const struct regmap_config *regmap;
-	const struct snd_soc_dai_ops *dac_ops;  /* DAC function callbacks */
-	const struct snd_soc_dapm_widget *dapm_widgets; /* dapms declaration */
-	const int num_dapm_widgets; /* dapms declaration */
-	const struct snd_soc_dapm_route *dapm_routes; /* route declaration */
-	const int num_dapm_routes; /* route declaration */
+	const struct snd_soc_dai_ops *dac_ops;   
+	const struct snd_soc_dapm_widget *dapm_widgets;  
+	const int num_dapm_widgets;  
+	const struct snd_soc_dapm_route *dapm_routes;  
+	const int num_dapm_routes;  
 };
 
-/* driver data structure */
+ 
 struct sti_sas_data {
 	struct device *dev;
 	const struct sti_sas_dev_data *dev_data;
@@ -77,7 +73,7 @@ struct sti_sas_data {
 	struct sti_spdif_audio spdif;
 };
 
-/* Read a register from the sysconf reg bank */
+ 
 static int sti_sas_read_reg(void *context, unsigned int reg,
 			    unsigned int *value)
 {
@@ -91,7 +87,7 @@ static int sti_sas_read_reg(void *context, unsigned int reg,
 	return status;
 }
 
-/* Read a register from the sysconf reg bank */
+ 
 static int sti_sas_write_reg(void *context, unsigned int reg,
 			     unsigned int value)
 {
@@ -104,17 +100,14 @@ static int  sti_sas_init_sas_registers(struct snd_soc_component *component,
 				       struct sti_sas_data *data)
 {
 	int ret;
-	/*
-	 * DAC and SPDIF are activated by default
-	 * put them in IDLE to save power
-	 */
+	 
 
-	/* Initialise bi-phase formatter to disabled */
+	 
 	ret = snd_soc_component_update_bits(component, STIH407_AUDIO_GLUE_CTRL,
 				  SPDIF_BIPHASE_ENABLE_MASK, 0);
 
 	if (!ret)
-		/* Initialise bi-phase formatter idle value to 0 */
+		 
 		ret = snd_soc_component_update_bits(component, STIH407_AUDIO_GLUE_CTRL,
 					  SPDIF_BIPHASE_IDLE_MASK, 0);
 	if (ret < 0) {
@@ -122,8 +115,8 @@ static int  sti_sas_init_sas_registers(struct snd_soc_component *component,
 		return ret;
 	}
 
-	/* Init DAC configuration */
-	/* init configuration */
+	 
+	 
 	ret =  snd_soc_component_update_bits(component, STIH407_AUDIO_DAC_CTRL,
 				   STIH407_DAC_STANDBY_MASK,
 				   STIH407_DAC_STANDBY_MASK);
@@ -145,12 +138,10 @@ static int  sti_sas_init_sas_registers(struct snd_soc_component *component,
 	return ret;
 }
 
-/*
- * DAC
- */
+ 
 static int sti_sas_dac_set_fmt(struct snd_soc_dai *dai, unsigned int fmt)
 {
-	/* Sanity check only */
+	 
 	if ((fmt & SND_SOC_DAIFMT_CLOCK_PROVIDER_MASK) != SND_SOC_DAIFMT_CBC_CFC) {
 		dev_err(dai->component->dev,
 			"%s: ERROR: Unsupported clocking 0x%x\n",
@@ -190,9 +181,7 @@ static int stih407_sas_dac_mute(struct snd_soc_dai *dai, int mute, int stream)
 	}
 }
 
-/*
- * SPDIF
- */
+ 
 static int sti_sas_spdif_set_fmt(struct snd_soc_dai *dai,
 				 unsigned int fmt)
 {
@@ -206,12 +195,7 @@ static int sti_sas_spdif_set_fmt(struct snd_soc_dai *dai,
 	return 0;
 }
 
-/*
- * sti_sas_spdif_trigger:
- * Trigger function is used to ensure that BiPhase Formater is disabled
- * before CPU dai is stopped.
- * This is mandatory to avoid that BPF is stalled
- */
+ 
 static int sti_sas_spdif_trigger(struct snd_pcm_substream *substream, int cmd,
 				 struct snd_soc_dai *dai)
 {
@@ -243,14 +227,9 @@ static bool sti_sas_volatile_register(struct device *dev, unsigned int reg)
 	return false;
 }
 
-/*
- * CODEC DAIS
- */
+ 
 
-/*
- * sti_sas_set_sysclk:
- * get MCLK input frequency to check that MCLK-FS ratio is coherent
- */
+ 
 static int sti_sas_set_sysclk(struct snd_soc_dai *dai, int clk_id,
 			      unsigned int freq, int dir)
 {
@@ -409,13 +388,13 @@ static int sti_sas_driver_probe(struct platform_device *pdev)
 	struct sti_sas_data *drvdata;
 	const struct of_device_id *of_id;
 
-	/* Allocate device structure */
+	 
 	drvdata = devm_kzalloc(&pdev->dev, sizeof(struct sti_sas_data),
 			       GFP_KERNEL);
 	if (!drvdata)
 		return -ENOMEM;
 
-	/* Populate data structure depending on compatibility */
+	 
 	of_id = of_match_node(sti_sas_dev_match, pnode);
 	if (!of_id->data) {
 		dev_err(&pdev->dev, "data associated to device is missing\n");
@@ -424,10 +403,10 @@ static int sti_sas_driver_probe(struct platform_device *pdev)
 
 	drvdata->dev_data = (struct sti_sas_dev_data *)of_id->data;
 
-	/* Initialise device structure */
+	 
 	drvdata->dev = &pdev->dev;
 
-	/* Request the DAC & SPDIF registers memory region */
+	 
 	drvdata->dac.virt_regmap = devm_regmap_init(&pdev->dev, NULL, drvdata,
 						    drvdata->dev_data->regmap);
 	if (IS_ERR(drvdata->dac.virt_regmap)) {
@@ -435,7 +414,7 @@ static int sti_sas_driver_probe(struct platform_device *pdev)
 		return PTR_ERR(drvdata->dac.virt_regmap);
 	}
 
-	/* Request the syscon region */
+	 
 	drvdata->dac.regmap =
 		syscon_regmap_lookup_by_phandle(pnode, "st,syscfg");
 	if (IS_ERR(drvdata->dac.regmap)) {
@@ -446,14 +425,14 @@ static int sti_sas_driver_probe(struct platform_device *pdev)
 
 	sti_sas_dai[STI_SAS_DAI_ANALOG_OUT].ops = drvdata->dev_data->dac_ops;
 
-	/* Set dapms*/
+	 
 	sti_sas_driver.dapm_widgets = drvdata->dev_data->dapm_widgets;
 	sti_sas_driver.num_dapm_widgets = drvdata->dev_data->num_dapm_widgets;
 
 	sti_sas_driver.dapm_routes = drvdata->dev_data->dapm_routes;
 	sti_sas_driver.num_dapm_routes = drvdata->dev_data->num_dapm_routes;
 
-	/* Store context */
+	 
 	dev_set_drvdata(&pdev->dev, drvdata);
 
 	return devm_snd_soc_register_component(&pdev->dev, &sti_sas_driver,

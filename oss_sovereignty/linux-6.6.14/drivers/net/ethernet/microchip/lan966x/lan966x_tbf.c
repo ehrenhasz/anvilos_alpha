@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0+
+
 
 #include "lan966x_main.h"
 
@@ -25,16 +25,16 @@ int lan966x_tbf_add(struct lan966x_port *port,
 	cir = div_u64(qopt->replace_params.rate.rate_bytes_ps, 1000) * 8;
 	cbs = qopt->replace_params.max_size;
 
-	/* Rate unit is 100 kbps */
+	 
 	cir = DIV_ROUND_UP(cir, 100);
-	/* Avoid using zero rate */
+	 
 	cir = cir ?: 1;
-	/* Burst unit is 4kB */
+	 
 	cbs = DIV_ROUND_UP(cbs, 4096);
-	/* Avoid using zero burst */
+	 
 	cbs = cbs ?: 1;
 
-	/* Check that actually the result can be written */
+	 
 	if (cir > GENMASK(15, 0) ||
 	    cbs > GENMASK(6, 0))
 		return -EINVAL;

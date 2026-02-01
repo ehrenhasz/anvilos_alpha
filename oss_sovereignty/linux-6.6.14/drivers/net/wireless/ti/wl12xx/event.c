@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * This file is part of wl12xx
- *
- * Copyright (C) 2012 Texas Instruments. All rights reserved.
- */
+
+ 
 
 #include "event.h"
 #include "scan.h"
@@ -25,7 +21,7 @@ int wl12xx_wait_for_event(struct wl1271 *wl, enum wlcore_wait_event event,
 		break;
 
 	default:
-		/* event not implemented */
+		 
 		return 0;
 	}
 	return wlcore_cmd_wait_for_event_or_timeout(wl, local_event, timeout);
@@ -83,10 +79,7 @@ int wl12xx_process_mailbox_events(struct wl1271 *wl)
 	if (vector & DUMMY_PACKET_EVENT_ID)
 		wlcore_event_dummy_packet(wl);
 
-	/*
-	 * "TX retries exceeded" has a different meaning according to mode.
-	 * In AP mode the offending station is disconnected.
-	 */
+	 
 	if (vector & MAX_TX_RETRY_EVENT_ID)
 		wlcore_event_max_tx_failure(wl,
 				le16_to_cpu(mbox->sta_tx_retry_exceeded));

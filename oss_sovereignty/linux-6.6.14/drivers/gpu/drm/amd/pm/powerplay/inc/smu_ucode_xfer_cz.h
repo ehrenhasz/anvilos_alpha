@@ -1,26 +1,5 @@
-/*
- * Copyright 2016 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
-// CZ Ucode Loading Definitions
+ 
+
 #ifndef SMU_UCODE_XFER_CZ_H
 #define SMU_UCODE_XFER_CZ_H
 
@@ -55,7 +34,7 @@
 #define IGNORE_JOB               0xff
 #define END_OF_TASK_LIST     (uint16_t)0xffff
 
-// Size of DRAM regions (in bytes) requested by SMU:
+
 #define SMU_DRAM_REQ_MM_PWR_LOG 48 
 
 #define UCODE_ID_SDMA0           0
@@ -124,7 +103,7 @@ struct TOC {
     SMU_Task tasks[];
 };
 
-// META DATA COMMAND Definitions
+
 #define METADATA_CMD_MODE0         0x00000103 
 #define METADATA_CMD_MODE1         0x00000113 
 #define METADATA_CMD_MODE2         0x00000123 
@@ -136,14 +115,14 @@ struct TOC {
 #define METADATA_CMD_ARG_MASK      0xFFFF0000
 #define METADATA_CMD_ARG_SHIFT     16
 
-// Simple register addr/data fields
+
 struct SMU_MetaData_Mode0 {
     uint32_t register_address;
     uint32_t register_data;
 };
 typedef struct SMU_MetaData_Mode0 SMU_MetaData_Mode0;
 
-// Register addr/data with mask
+
 struct SMU_MetaData_Mode1 {
     uint32_t register_address;
     uint32_t register_mask;
@@ -158,7 +137,7 @@ struct SMU_MetaData_Mode2 {
 };
 typedef struct SMU_MetaData_Mode2 SMU_MetaData_Mode2;
 
-// Always write data (even on a save operation)
+
 struct SMU_MetaData_Mode3 {
     uint32_t register_address;
     uint32_t register_mask;

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright 2022 Google, Inc
- *
- * USB-C module to reduce wakeups due to contaminants.
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/irqreturn.h>
@@ -25,14 +21,14 @@ enum fladc_select {
 };
 
 #define FLADC_1uA_LSB_MV		25
-/* High range CC */
+ 
 #define FLADC_CC_HIGH_RANGE_LSB_MV	208
-/* Low range CC */
+ 
 #define FLADC_CC_LOW_RANGE_LSB_MV      126
 
-/* 1uA current source */
+ 
 #define FLADC_CC_SCALE1			1
-/* 5 uA current source */
+ 
 #define FLADC_CC_SCALE2			5
 
 #define FLADC_1uA_CC_OFFSET_MV		300
@@ -57,10 +53,10 @@ enum fladc_select {
 static int max_contaminant_adc_to_mv(struct max_tcpci_chip *chip, enum fladc_select channel,
 				     bool ua_src, u8 fladc)
 {
-	/* SBU channels only have 1 scale with 1uA. */
+	 
 	if ((ua_src && (channel == CC1_SCALE2 || channel == CC2_SCALE2 || channel == SBU1 ||
 			channel == SBU2)))
-		/* Mean of range */
+		 
 		return FLADC_1uA_CC_OFFSET_MV + (fladc * FLADC_1uA_LSB_MV);
 	else if (!ua_src && (channel == CC1_SCALE1 || channel == CC2_SCALE1))
 		return FLADC_CC_HIGH_RANGE_OFFSET_MV + (fladc * FLADC_CC_HIGH_RANGE_LSB_MV);
@@ -79,13 +75,13 @@ static int max_contaminant_read_adc_mv(struct max_tcpci_chip *chip, enum fladc_s
 	u8 fladc;
 	int ret;
 
-	/* Channel & scale select */
+	 
 	ret = regmap_update_bits(regmap, TCPC_VENDOR_ADC_CTRL1, ADCINSEL_MASK,
 				 channel << ADC_CHANNEL_OFFSET);
 	if (ret < 0)
 		return ret;
 
-	/* Enable ADC */
+	 
 	ret = regmap_update_bits(regmap, TCPC_VENDOR_ADC_CTRL1, ADCEN, ADCEN);
 	if (ret < 0)
 		return ret;
@@ -95,7 +91,7 @@ static int max_contaminant_read_adc_mv(struct max_tcpci_chip *chip, enum fladc_s
 	if (ret < 0)
 		return ret;
 
-	/* Disable ADC */
+	 
 	ret = regmap_update_bits(regmap, TCPC_VENDOR_ADC_CTRL1, ADCEN, 0);
 	if (ret < 0)
 		return ret;
@@ -119,18 +115,18 @@ static int max_contaminant_read_resistance_kohm(struct max_tcpci_chip *chip,
 
 	if (channel == CC1_SCALE1 || channel == CC2_SCALE1 || channel == CC1_SCALE2 ||
 	    channel == CC2_SCALE2) {
-		/* Enable 1uA current source */
+		 
 		ret = regmap_update_bits(regmap, TCPC_VENDOR_CC_CTRL2, CCLPMODESEL_MASK,
 					 ULTRA_LOW_POWER_MODE);
 		if (ret < 0)
 			return ret;
 
-		/* Enable 1uA current source */
+		 
 		ret = regmap_update_bits(regmap, TCPC_VENDOR_CC_CTRL2, CCRPCTRL_MASK, UA_1_SRC);
 		if (ret < 0)
 			return ret;
 
-		/* OVP disable */
+		 
 		ret = regmap_update_bits(regmap, TCPC_VENDOR_CC_CTRL2, CCOVPDIS, CCOVPDIS);
 		if (ret < 0)
 			return ret;
@@ -139,11 +135,11 @@ static int max_contaminant_read_resistance_kohm(struct max_tcpci_chip *chip,
 		if (mv < 0)
 			return ret;
 
-		/* OVP enable */
+		 
 		ret = regmap_update_bits(regmap, TCPC_VENDOR_CC_CTRL2, CCOVPDIS, 0);
 		if (ret < 0)
 			return ret;
-		/* returns KOhm as 1uA source is used. */
+		 
 		return mv;
 	}
 
@@ -151,8 +147,8 @@ static int max_contaminant_read_resistance_kohm(struct max_tcpci_chip *chip,
 	if (ret < 0)
 		return ret;
 
-	/* SBU switches auto configure when channel is selected. */
-	/* Enable 1ua current source */
+	 
+	 
 	ret = regmap_update_bits(regmap, TCPC_VENDOR_CC_CTRL2, SBURPCTRL, SBURPCTRL);
 	if (ret < 0)
 		return ret;
@@ -160,12 +156,12 @@ static int max_contaminant_read_resistance_kohm(struct max_tcpci_chip *chip,
 	mv = max_contaminant_read_adc_mv(chip, channel, sleep_msec, raw, true);
 	if (mv < 0)
 		return ret;
-	/* Disable current source */
+	 
 	ret = regmap_update_bits(regmap, TCPC_VENDOR_CC_CTRL2, SBURPCTRL, 0);
 	if (ret < 0)
 		return ret;
 
-	/* OVP disable */
+	 
 	ret = regmap_update_bits(regmap, TCPC_VENDOR_CC_CTRL2, SBUOVPDIS, 0);
 	if (ret < 0)
 		return ret;
@@ -179,17 +175,17 @@ static int max_contaminant_read_comparators(struct max_tcpci_chip *chip, u8 *ven
 	struct regmap *regmap = chip->data.regmap;
 	int ret;
 
-	/* Enable 80uA source */
+	 
 	ret = regmap_update_bits(regmap, TCPC_VENDOR_CC_CTRL2, CCRPCTRL_MASK, UA_80_SRC);
 	if (ret < 0)
 		return ret;
 
-	/* Enable comparators */
+	 
 	ret = regmap_update_bits(regmap, TCPC_VENDOR_CC_CTRL1, CCCOMPEN, CCCOMPEN);
 	if (ret < 0)
 		return ret;
 
-	/* Sleep to allow comparators settle */
+	 
 	usleep_range(5000, 6000);
 	ret = regmap_update_bits(regmap, TCPC_TCPC_CTRL, TCPC_TCPC_CTRL_ORIENTATION, PLUG_ORNT_CC1);
 	if (ret < 0)
@@ -310,7 +306,7 @@ static int max_contaminant_enable_dry_detection(struct max_tcpci_chip *chip)
 	if (ret < 0)
 		return ret;
 
-	/* Enable Look4Connection before sending the command */
+	 
 	ret = regmap_update_bits(regmap, TCPC_TCPC_CTRL, TCPC_TCPC_CTRL_EN_LK4CONN_ALRT,
 				 TCPC_TCPC_CTRL_EN_LK4CONN_ALRT);
 	if (ret < 0)

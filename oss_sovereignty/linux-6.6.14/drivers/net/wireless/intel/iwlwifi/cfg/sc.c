@@ -1,26 +1,23 @@
-// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
-/*
- * Copyright (C) 2015-2017 Intel Deutschland GmbH
- * Copyright (C) 2018-2023 Intel Corporation
- */
+
+ 
 #include <linux/module.h>
 #include <linux/stringify.h>
 #include "iwl-config.h"
 #include "iwl-prph.h"
 #include "fw/api/txq.h"
 
-/* Highest firmware API version supported */
+ 
 #define IWL_SC_UCODE_API_MAX	83
 
-/* Lowest firmware API version supported */
+ 
 #define IWL_SC_UCODE_API_MIN	82
 
-/* NVM versions */
+ 
 #define IWL_SC_NVM_VERSION		0x0a1d
 
-/* Memory offsets and lengths */
-#define IWL_SC_DCCM_OFFSET		0x800000 /* LMAC1 */
-#define IWL_SC_DCCM_LEN			0x10000 /* LMAC1 */
+ 
+#define IWL_SC_DCCM_OFFSET		0x800000  
+#define IWL_SC_DCCM_LEN			0x10000  
 #define IWL_SC_DCCM2_OFFSET		0x880000
 #define IWL_SC_DCCM2_LEN		0x8000
 #define IWL_SC_SMEM_OFFSET		0x400000
@@ -126,10 +123,7 @@ static const struct iwl_base_params iwl_sc_base_params = {
 	IWL_DEVICE_BZ_COMMON,						\
 	.ht_params = &iwl_22000_ht_params
 
-/*
- * This size was picked according to 8 MSDUs inside 512 A-MSDUs in an
- * A-MPDU, with additional overhead to account for processing time.
- */
+ 
 #define IWL_NUM_RBDS_SC_EHT		(512 * 16)
 
 const struct iwl_cfg_trans_params iwl_sc_trans_cfg = {

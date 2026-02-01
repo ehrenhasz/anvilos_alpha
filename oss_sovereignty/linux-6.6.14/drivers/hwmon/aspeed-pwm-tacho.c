@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (c) 2016 Google, Inc
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -19,7 +17,7 @@
 #include <linux/sysfs.h>
 #include <linux/thermal.h>
 
-/* ASPEED PWM & FAN Tach Register Definition */
+ 
 #define ASPEED_PTCR_CTRL		0x00
 #define ASPEED_PTCR_CLK_CTRL		0x04
 #define ASPEED_PTCR_DUTY0_CTRL		0x08
@@ -44,7 +42,7 @@
 #define ASPEED_PTCR_TACH_SOURCE_EXT	0x60
 #define ASPEED_PTCR_TYPEO_LIMIT		0x78
 
-/* ASPEED_PTCR_CTRL : 0x00 - General Control Register */
+ 
 #define ASPEED_PTCR_CTRL_SET_PWMD_TYPE_PART1	15
 #define ASPEED_PTCR_CTRL_SET_PWMD_TYPE_PART2	6
 #define ASPEED_PTCR_CTRL_SET_PWMD_TYPE_MASK	(BIT(7) | BIT(15))
@@ -71,22 +69,19 @@
 #define	ASPEED_PTCR_CTRL_CLK_SRC	BIT(1)
 #define	ASPEED_PTCR_CTRL_CLK_EN		BIT(0)
 
-/* ASPEED_PTCR_CLK_CTRL : 0x04 - Clock Control Register */
-/* TYPE N */
+ 
+ 
 #define ASPEED_PTCR_CLK_CTRL_TYPEN_MASK		GENMASK(31, 16)
 #define ASPEED_PTCR_CLK_CTRL_TYPEN_UNIT		24
 #define ASPEED_PTCR_CLK_CTRL_TYPEN_H		20
 #define ASPEED_PTCR_CLK_CTRL_TYPEN_L		16
-/* TYPE M */
+ 
 #define ASPEED_PTCR_CLK_CTRL_TYPEM_MASK         GENMASK(15, 0)
 #define ASPEED_PTCR_CLK_CTRL_TYPEM_UNIT		8
 #define ASPEED_PTCR_CLK_CTRL_TYPEM_H		4
 #define ASPEED_PTCR_CLK_CTRL_TYPEM_L		0
 
-/*
- * ASPEED_PTCR_DUTY_CTRL/1/2/3 : 0x08/0x0C/0x48/0x4C - PWM-FAN duty control
- * 0/1/2/3 register
- */
+ 
 #define DUTY_CTRL_PWM2_FALL_POINT	24
 #define DUTY_CTRL_PWM2_RISE_POINT	16
 #define DUTY_CTRL_PWM2_RISE_FALL_MASK	GENMASK(31, 16)
@@ -94,7 +89,7 @@
 #define DUTY_CTRL_PWM1_RISE_POINT	0
 #define DUTY_CTRL_PWM1_RISE_FALL_MASK   GENMASK(15, 0)
 
-/* ASPEED_PTCR_TYPEM_CTRL : 0x10/0x18/0x50 - Type M/N/O Ctrl 0 Register */
+ 
 #define TYPE_CTRL_FAN_MASK		(GENMASK(5, 1) | GENMASK(31, 16))
 #define TYPE_CTRL_FAN1_MASK		GENMASK(31, 0)
 #define TYPE_CTRL_FAN_PERIOD		16
@@ -102,18 +97,18 @@
 #define TYPE_CTRL_FAN_DIVISION		1
 #define TYPE_CTRL_FAN_TYPE_EN		1
 
-/* ASPEED_PTCR_TACH_SOURCE : 0x20/0x60 - Tach Source Register */
-/* bit [0,1] at 0x20, bit [2] at 0x60 */
+ 
+ 
 #define TACH_PWM_SOURCE_BIT01(x)	((x) * 2)
 #define TACH_PWM_SOURCE_BIT2(x)		((x) * 2)
 #define TACH_PWM_SOURCE_MASK_BIT01(x)	(0x3 << ((x) * 2))
 #define TACH_PWM_SOURCE_MASK_BIT2(x)	BIT((x) * 2)
 
-/* ASPEED_PTCR_RESULT : 0x2c - Result Register */
+ 
 #define RESULT_STATUS_MASK		BIT(31)
 #define RESULT_VALUE_MASK		0xfffff
 
-/* ASPEED_PTCR_CTRL_EXT : 0x40 - General Control Extension #1 Register */
+ 
 #define ASPEED_PTCR_CTRL_SET_PWMH_TYPE_PART1	15
 #define ASPEED_PTCR_CTRL_SET_PWMH_TYPE_PART2	6
 #define ASPEED_PTCR_CTRL_SET_PWMH_TYPE_MASK	(BIT(7) | BIT(15))
@@ -135,8 +130,8 @@
 #define	ASPEED_PTCR_CTRL_PWMF_EN	BIT(9)
 #define	ASPEED_PTCR_CTRL_PWME_EN	BIT(8)
 
-/* ASPEED_PTCR_CLK_EXT_CTRL : 0x44 - Clock Control Extension #1 Register */
-/* TYPE O */
+ 
+ 
 #define ASPEED_PTCR_CLK_CTRL_TYPEO_MASK         GENMASK(15, 0)
 #define ASPEED_PTCR_CLK_CTRL_TYPEO_UNIT		8
 #define ASPEED_PTCR_CLK_CTRL_TYPEO_H		4
@@ -144,24 +139,18 @@
 
 #define PWM_MAX 255
 
-#define BOTH_EDGES 0x02 /* 10b */
+#define BOTH_EDGES 0x02  
 
 #define M_PWM_DIV_H 0x00
 #define M_PWM_DIV_L 0x05
 #define M_PWM_PERIOD 0x5F
 #define M_TACH_CLK_DIV 0x00
-/*
- * 5:4 Type N fan tach mode selection bit:
- * 00: falling
- * 01: rising
- * 10: both
- * 11: reserved.
- */
-#define M_TACH_MODE 0x02 /* 10b */
+ 
+#define M_TACH_MODE 0x02  
 #define M_TACH_UNIT 0x0420
 #define INIT_FAN_CTRL 0xFF
 
-/* How long we sleep in us while waiting for an RPM result. */
+ 
 #define ASPEED_RPM_STATUS_SLEEP_USEC	500
 
 #define MAX_CDEV_NAME_LEN 16
@@ -544,16 +533,13 @@ static int aspeed_get_fan_tach_ch_rpm(struct aspeed_pwm_tacho_data *priv,
 		ASPEED_RPM_STATUS_SLEEP_USEC,
 		usec);
 
-	/* return -ETIMEDOUT if we didn't get an answer. */
+	 
 	if (ret)
 		return ret;
 
 	raw_data = val & RESULT_VALUE_MASK;
 	tach_div = priv->type_fan_tach_clock_division[type];
-	/*
-	 * We need the mode to determine if the raw_data is double (from
-	 * counting both edges).
-	 */
+	 
 	mode = priv->type_fan_tach_mode[type];
 	both = (mode & BOTH_EDGES) ? 1 : 0;
 
@@ -704,11 +690,7 @@ static const struct attribute_group fan_dev_group = {
 	.is_visible = fan_dev_is_visible,
 };
 
-/*
- * The clock type is type M :
- * The PWM frequency = 24MHz / (type M clock division L bit *
- * type M clock division H bit * (type M PWM period bit + 1))
- */
+ 
 static void aspeed_create_type(struct aspeed_pwm_tacho_data *priv)
 {
 	priv->type_pwm_clock_division_h[TYPEM] = M_PWM_DIV_H;

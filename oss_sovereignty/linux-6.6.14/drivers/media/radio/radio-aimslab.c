@@ -1,38 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * AimsLab RadioTrack (aka RadioVeveal) driver
- *
- * Copyright 1997 M. Kirkwood
- *
- * Converted to the radio-isa framework by Hans Verkuil <hans.verkuil@cisco.com>
- * Converted to V4L2 API by Mauro Carvalho Chehab <mchehab@kernel.org>
- * Converted to new API by Alan Cox <alan@lxorguk.ukuu.org.uk>
- * Various bugfixes and enhancements by Russell Kroll <rkroll@exploits.org>
- *
- * Notes on the hardware (reverse engineered from other peoples'
- * reverse engineering of AIMS' code :-)
- *
- *  Frequency control is done digitally -- ie out(port,encodefreq(95.8));
- *
- *  The signal strength query is unsurprisingly inaccurate.  And it seems
- *  to indicate that (on my card, at least) the frequency setting isn't
- *  too great.  (I have to tune up .025MHz from what the freq should be
- *  to get a report that the thing is tuned.)
- *
- *  Volume control is (ugh) analogue:
- *   out(port, start_increasing_volume);
- *   wait(a_wee_while);
- *   out(port, stop_changing_the_volume);
- *
- * Fully tested with the Keene USB FM Transmitter and the v4l2-compliance tool.
- */
 
-#include <linux/module.h>	/* Modules			*/
-#include <linux/init.h>		/* Initdata			*/
-#include <linux/ioport.h>	/* request_region		*/
-#include <linux/delay.h>	/* msleep			*/
-#include <linux/videodev2.h>	/* kernel radio structs		*/
-#include <linux/io.h>		/* outb, outb_p			*/
+ 
+
+#include <linux/module.h>	 
+#include <linux/init.h>		 
+#include <linux/ioport.h>	 
+#include <linux/delay.h>	 
+#include <linux/videodev2.h>	 
+#include <linux/io.h>		 
 #include <linux/slab.h>
 #include <media/v4l2-device.h>
 #include <media/v4l2-ioctl.h>
@@ -79,9 +53,9 @@ static struct radio_isa_card *rtrack_alloc(void)
 #define AIMS_BIT_TUN_DATA	(1 << 2)
 #define AIMS_BIT_VOL_CE		(1 << 3)
 #define AIMS_BIT_TUN_STRQ	(1 << 4)
-/* bit 5 is not connected */
-#define AIMS_BIT_VOL_UP		(1 << 6)	/* active low */
-#define AIMS_BIT_VOL_DN		(1 << 7)	/* active low */
+ 
+#define AIMS_BIT_VOL_UP		(1 << 6)	 
+#define AIMS_BIT_VOL_DN		(1 << 7)	 
 
 static void rtrack_set_pins(void *handle, u8 pins)
 {
@@ -111,7 +85,7 @@ static int rtrack_s_frequency(struct radio_isa_card *isa, u32 freq)
 
 static u32 rtrack_g_signal(struct radio_isa_card *isa)
 {
-	/* bit set = no signal present */
+	 
 	return 0xffff * !(inb(isa->io) & 2);
 }
 
@@ -121,33 +95,33 @@ static int rtrack_s_mute_volume(struct radio_isa_card *isa, bool mute, int vol)
 	int curvol = rt->curvol;
 
 	if (mute) {
-		outb(0xd0, isa->io);	/* volume steady + sigstr + off	*/
+		outb(0xd0, isa->io);	 
 		return 0;
 	}
-	if (vol == 0) {			/* volume = 0 means mute the card */
-		outb(0x48, isa->io);	/* volume down but still "on"	*/
-		msleep(curvol * 3);	/* make sure it's totally down	*/
+	if (vol == 0) {			 
+		outb(0x48, isa->io);	 
+		msleep(curvol * 3);	 
 	} else if (curvol < vol) {
-		outb(0x98, isa->io);	/* volume up + sigstr + on	*/
+		outb(0x98, isa->io);	 
 		for (; curvol < vol; curvol++)
 			mdelay(3);
 	} else if (curvol > vol) {
-		outb(0x58, isa->io);	/* volume down + sigstr + on	*/
+		outb(0x58, isa->io);	 
 		for (; curvol > vol; curvol--)
 			mdelay(3);
 	}
-	outb(0xd8, isa->io);		/* volume steady + sigstr + on	*/
+	outb(0xd8, isa->io);		 
 	rt->curvol = vol;
 	return 0;
 }
 
-/* Mute card - prevents noisy bootups */
+ 
 static int rtrack_initialize(struct radio_isa_card *isa)
 {
-	/* this ensures that the volume is all the way up  */
-	outb(0x90, isa->io);	/* volume up but still "on"	*/
-	msleep(3000);		/* make sure it's totally up	*/
-	outb(0xc0, isa->io);	/* steady volume, mute card	*/
+	 
+	outb(0x90, isa->io);	 
+	msleep(3000);		 
+	outb(0xc0, isa->io);	 
 	return 0;
 }
 

@@ -1,28 +1,11 @@
-/* gettextP.h - Header describing internals of libintl library. */
+ 
 
-/* Copyright (C) 1995-1999, 2000-2003, 2005-2009 Free Software Foundation, Inc.
-   Written by Ulrich Drepper <drepper@cygnus.com>, 1995.
-
-   This file is part of GNU Bash.
-
-   Bash is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   Bash is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with Bash.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ 
 
 #ifndef _GETTEXTP_H
 #define _GETTEXTP_H
 
-#include <stddef.h>		/* Get size_t.  */
+#include <stddef.h>		 
 
 #ifdef _LIBC
 # include "../iconv/gconv_int.h"
@@ -34,9 +17,9 @@
 
 #include "loadinfo.h"
 
-#include "gmo.h"		/* Get nls_uint32.  */
+#include "gmo.h"		 
 
-/* @@ end of prolog @@ */
+ 
 
 #ifndef PARAMS
 # if __STDC__ || defined __GNUC__ || defined __SUNPRO_C || defined __cplusplus || __PROTOTYPES
@@ -54,8 +37,7 @@
 # define attribute_hidden
 #endif
 
-/* Tell the compiler when a conditional or integer expression is
-   almost always true or almost always false.  */
+ 
 #ifndef HAVE_BUILTIN_EXPECT
 # define __builtin_expect(expr, val) (expr)
 #endif
@@ -78,48 +60,48 @@ SWAP (i)
 #endif
 
 
-/* In-memory representation of system dependent string.  */
+ 
 struct sysdep_string_desc
 {
-  /* Length of addressed string, including the trailing NUL.  */
+   
   size_t length;
-  /* Pointer to addressed string.  */
+   
   const char *pointer;
 };
 
-/* The representation of an opened message catalog.  */
+ 
 struct loaded_domain
 {
-  /* Pointer to memory containing the .mo file.  */
+   
   const char *data;
-  /* 1 if the memory is mmap()ed, 0 if the memory is malloc()ed.  */
+   
   int use_mmap;
-  /* Size of mmap()ed memory.  */
+   
   size_t mmap_size;
-  /* 1 if the .mo file uses a different endianness than this machine.  */
+   
   int must_swap;
-  /* Pointer to additional malloc()ed memory.  */
+   
   void *malloced;
 
-  /* Number of static strings pairs.  */
+   
   nls_uint32 nstrings;
-  /* Pointer to descriptors of original strings in the file.  */
+   
   const struct string_desc *orig_tab;
-  /* Pointer to descriptors of translated strings in the file.  */
+   
   const struct string_desc *trans_tab;
 
-  /* Number of system dependent strings pairs.  */
+   
   nls_uint32 n_sysdep_strings;
-  /* Pointer to descriptors of original sysdep strings.  */
+   
   const struct sysdep_string_desc *orig_sysdep_tab;
-  /* Pointer to descriptors of translated sysdep strings.  */
+   
   const struct sysdep_string_desc *trans_sysdep_tab;
 
-  /* Size of hash table.  */
+   
   nls_uint32 hash_size;
-  /* Pointer to hash table.  */
+   
   const nls_uint32 *hash_tab;
-  /* 1 if the hash table uses a different endianness than this machine.  */
+   
   int must_swap_hash_tab;
 
   int codeset_cntr;
@@ -136,28 +118,24 @@ struct loaded_domain
   unsigned long int nplurals;
 };
 
-/* We want to allocate a string at the end of the struct.  But ISO C
-   doesn't allow zero sized arrays.  */
+ 
 #ifdef __GNUC__
 # define ZERO 0
 #else
 # define ZERO 1
 #endif
 
-/* A set of settings bound to a message domain.  Used to store settings
-   from bindtextdomain() and bind_textdomain_codeset().  */
+ 
 struct binding
 {
   struct binding *next;
   char *dirname;
-  int codeset_cntr;	/* Incremented each time codeset changes.  */
+  int codeset_cntr;	 
   char *codeset;
   char domainname[ZERO];
 };
 
-/* A counter which is incremented each time some previous translations
-   become invalid.
-   This variable is part of the external ABI of the GNU libintl.  */
+ 
 extern int _nl_msg_cat_cntr;
 
 #ifndef _LIBC
@@ -210,8 +188,7 @@ extern char *__bindtextdomain PARAMS ((const char *__domainname,
 extern char *__bind_textdomain_codeset PARAMS ((const char *__domainname,
 						const char *__codeset));
 #else
-/* Declare the exported libintl_* functions, in a way that allows us to
-   call them under their real name.  */
+ 
 # define _INTL_REDIRECT_MACROS
 # include "libgnuintl.h"
 extern char *libintl_dcigettext PARAMS ((const char *__domainname,
@@ -221,6 +198,6 @@ extern char *libintl_dcigettext PARAMS ((const char *__domainname,
 					 int __category));
 #endif
 
-/* @@ begin of epilog @@ */
+ 
 
-#endif /* gettextP.h  */
+#endif  

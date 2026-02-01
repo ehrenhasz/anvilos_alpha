@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Qualcomm QCM2290 Network-on-Chip (NoC) QoS driver
- *
- * Copyright (c) 2021, Linaro Ltd.
- *
- */
+
+ 
 
 #include <dt-bindings/interconnect/qcom,qcm2290.h>
 #include <linux/device.h>
@@ -97,7 +92,7 @@ enum {
 	QCM2290_SLAVE_SNOC_BIMC_RT,
 };
 
-/* Master nodes */
+ 
 static const u16 mas_appss_proc_links[] = {
 	QCM2290_SLAVE_EBI1,
 	QCM2290_SLAVE_BIMC_SNOC,
@@ -671,7 +666,7 @@ static struct qcom_icc_node mas_gfx3d = {
 	.links = mas_gfx3d_links,
 };
 
-/* Slave nodes */
+ 
 static struct qcom_icc_node slv_ebi1 = {
 	.name = "slv_ebi1",
 	.id = QCM2290_SLAVE_EBI1,
@@ -1170,7 +1165,7 @@ static struct qcom_icc_node slv_anoc_snoc = {
 	.links = slv_anoc_snoc_links,
 };
 
-/* NoC descriptors */
+ 
 static struct qcom_icc_node * const qcm2290_bimc_nodes[] = {
 	[MASTER_APPSS_PROC] = &mas_appss_proc,
 	[MASTER_SNOC_BIMC_RT] = &mas_snoc_bimc_rt,
@@ -1197,7 +1192,7 @@ static const struct qcom_icc_desc qcm2290_bimc = {
 	.bus_clk_desc = &bimc_clk,
 	.regmap_cfg = &qcm2290_bimc_regmap_config,
 	.keep_alive = true,
-	/* M_REG_BASE() in vendor msm_bus_bimc_adhoc driver */
+	 
 	.qos_offset = 0x8000,
 };
 
@@ -1297,7 +1292,7 @@ static const struct qcom_icc_desc qcm2290_snoc = {
 	.bus_clk_desc = &bus_2_clk,
 	.regmap_cfg = &qcm2290_snoc_regmap_config,
 	.keep_alive = true,
-	/* Vendor DT node fab-sys_noc property 'qcom,base-offset' */
+	 
 	.qos_offset = 0x15000,
 };
 

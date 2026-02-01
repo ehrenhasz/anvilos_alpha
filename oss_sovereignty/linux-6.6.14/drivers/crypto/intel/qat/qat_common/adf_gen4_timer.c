@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright(c) 2023 Intel Corporation */
+
+ 
 
 #include <linux/container_of.h>
 #include <linux/dev_printk.h>
@@ -15,7 +15,7 @@
 
 #define ADF_GEN4_TIMER_PERIOD_MS 200
 
-/* This periodic update is used to trigger HB, RL & TL fw events */
+ 
 static void work_handler(struct work_struct *work)
 {
 	struct adf_accel_dev *accel_dev;

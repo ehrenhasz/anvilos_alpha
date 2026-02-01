@@ -1,19 +1,5 @@
-/* $OpenBSD: digest-openssl.c,v 1.9 2020/10/29 02:52:43 djm Exp $ */
-/*
- * Copyright (c) 2013 Damien Miller <djm@mindrot.org>
- *
- * Permission to use, copy, modify, and distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
+ 
+ 
 
 #include "includes.h"
 
@@ -54,7 +40,7 @@ struct ssh_digest {
 	const EVP_MD *(*mdfunc)(void);
 };
 
-/* NB. Indexed directly by algorithm number */
+ 
 const struct ssh_digest digests[] = {
 	{ SSH_DIGEST_MD5,	"MD5",		16,	EVP_md5 },
 	{ SSH_DIGEST_SHA1,	"SHA1",		20,	EVP_sha1 },
@@ -69,7 +55,7 @@ ssh_digest_by_alg(int alg)
 {
 	if (alg < 0 || alg >= SSH_DIGEST_MAX)
 		return NULL;
-	if (digests[alg].id != alg) /* sanity */
+	if (digests[alg].id != alg)  
 		return NULL;
 	if (digests[alg].mdfunc == NULL)
 		return NULL;
@@ -135,7 +121,7 @@ ssh_digest_copy_state(struct ssh_digest_ctx *from, struct ssh_digest_ctx *to)
 {
 	if (from->alg != to->alg)
 		return SSH_ERR_INVALID_ARGUMENT;
-	/* we have bcopy-style order while openssl has memcpy-style */
+	 
 	if (!EVP_MD_CTX_copy_ex(to->mdctx, from->mdctx))
 		return SSH_ERR_LIBCRYPTO_ERROR;
 	return 0;
@@ -163,11 +149,11 @@ ssh_digest_final(struct ssh_digest_ctx *ctx, u_char *d, size_t dlen)
 
 	if (digest == NULL || dlen > UINT_MAX)
 		return SSH_ERR_INVALID_ARGUMENT;
-	if (dlen < digest->digest_len) /* No truncation allowed */
+	if (dlen < digest->digest_len)  
 		return SSH_ERR_INVALID_ARGUMENT;
 	if (EVP_DigestFinal_ex(ctx->mdctx, d, &l) != 1)
 		return SSH_ERR_LIBCRYPTO_ERROR;
-	if (l != digest->digest_len) /* sanity */
+	if (l != digest->digest_len)  
 		return SSH_ERR_INTERNAL_ERROR;
 	return 0;
 }
@@ -204,4 +190,4 @@ ssh_digest_buffer(int alg, const struct sshbuf *b, u_char *d, size_t dlen)
 {
 	return ssh_digest_memory(alg, sshbuf_ptr(b), sshbuf_len(b), d, dlen);
 }
-#endif /* WITH_OPENSSL */
+#endif  

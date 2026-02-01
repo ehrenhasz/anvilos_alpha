@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: ISC
-/*
- * Copyright (c) 2014 Broadcom Corporation
- */
+
+ 
 #ifndef BRCMF_CHIP_H
 #define BRCMF_CHIP_H
 
@@ -10,21 +8,7 @@
 #define CORE_CC_REG(base, field) \
 		(base + offsetof(struct chipcregs, field))
 
-/**
- * struct brcmf_chip - chip level information.
- *
- * @chip: chip identifier.
- * @chiprev: chip revision.
- * @enum_base: base address of core enumeration space.
- * @cc_caps: chipcommon core capabilities.
- * @cc_caps_ext: chipcommon core extended capabilities.
- * @pmucaps: PMU capabilities.
- * @pmurev: PMU revision.
- * @rambase: RAM base address (only applicable for ARM CR4 chips).
- * @ramsize: amount of RAM on chip including retention.
- * @srsize: amount of retention RAM on chip.
- * @name: string representation of the chip identifier.
- */
+ 
 struct brcmf_chip {
 	u32 chip;
 	u32 chiprev;
@@ -39,29 +23,14 @@ struct brcmf_chip {
 	char name[12];
 };
 
-/**
- * struct brcmf_core - core related information.
- *
- * @id: core identifier.
- * @rev: core revision.
- * @base: base address of core register space.
- */
+ 
 struct brcmf_core {
 	u16 id;
 	u16 rev;
 	u32 base;
 };
 
-/**
- * struct brcmf_buscore_ops - buscore specific callbacks.
- *
- * @read32: read 32-bit value over bus.
- * @write32: write 32-bit value over bus.
- * @prepare: prepare bus for core configuration.
- * @setup: bus-specific core setup.
- * @active: chip becomes active.
- *	The callback should use the provided @rstvec when non-zero.
- */
+ 
 struct brcmf_buscore_ops {
 	u32 (*read32)(void *ctx, u32 addr);
 	void (*write32)(void *ctx, u32 addr, u32 value);
@@ -89,4 +58,4 @@ bool brcmf_chip_sr_capable(struct brcmf_chip *pub);
 char *brcmf_chip_name(u32 chipid, u32 chiprev, char *buf, uint len);
 u32 brcmf_chip_enum_base(u16 devid);
 
-#endif /* BRCMF_AXIDMP_H */
+#endif  

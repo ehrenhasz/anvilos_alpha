@@ -1,12 +1,12 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-//
-// OWL factor clock driver
-//
-// Copyright (c) 2014 Actions Semi Inc.
-// Author: David Liu <liuwei@actions-semi.com>
-//
-// Copyright (c) 2018 Linaro Ltd.
-// Author: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+ 
+
+
+
+
+
+
+
+
 
 #ifndef _OWL_FACTOR_H_
 #define _OWL_FACTOR_H_
@@ -80,4 +80,4 @@ int owl_factor_helper_set_rate(const struct owl_clk_common *common,
 
 extern const struct clk_ops owl_factor_ops;
 
-#endif /* _OWL_FACTOR_H_ */
+#endif  

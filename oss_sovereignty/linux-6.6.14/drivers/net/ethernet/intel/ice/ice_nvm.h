@@ -1,15 +1,15 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright (c) 2019, Intel Corporation. */
+ 
+ 
 
 #ifndef _ICE_NVM_H_
 #define _ICE_NVM_H_
 
 struct ice_orom_civd_info {
-	u8 signature[4];	/* Must match ASCII '$CIV' characters */
-	u8 checksum;		/* Simple modulo 256 sum of all structure bytes must equal 0 */
-	__le32 combo_ver;	/* Combo Image Version number */
-	u8 combo_name_len;	/* Length of the unicode combo image version string, max of 32 */
-	__le16 combo_name[32];	/* Unicode string representing the Combo Image version */
+	u8 signature[4];	 
+	u8 checksum;		 
+	__le32 combo_ver;	 
+	u8 combo_name_len;	 
+	__le16 combo_name[32];	 
 } __packed;
 
 int ice_acquire_nvm(struct ice_hw *hw, enum ice_aq_res_access_type access);
@@ -43,4 +43,4 @@ int
 ice_nvm_pass_component_tbl(struct ice_hw *hw, u8 *data, u16 length,
 			   u8 transfer_flag, u8 *comp_response,
 			   u8 *comp_response_code, struct ice_sq_cd *cd);
-#endif /* _ICE_NVM_H_ */
+#endif  

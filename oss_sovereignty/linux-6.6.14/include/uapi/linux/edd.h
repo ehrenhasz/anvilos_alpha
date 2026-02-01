@@ -1,43 +1,14 @@
-/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
-/*
- * linux/include/linux/edd.h
- *  Copyright (C) 2002, 2003, 2004 Dell Inc.
- *  by Matt Domsch <Matt_Domsch@dell.com>
- *
- * structures and definitions for the int 13h, ax={41,48}h
- * BIOS Enhanced Disk Drive Services
- * This is based on the T13 group document D1572 Revision 0 (August 14 2002)
- * available at http://www.t13.org/docs2002/d1572r0.pdf.  It is
- * very similar to D1484 Revision 3 http://www.t13.org/docs2002/d1484r3.pdf
- *
- * In a nutshell, arch/{i386,x86_64}/boot/setup.S populates a scratch
- * table in the boot_params that contains a list of BIOS-enumerated
- * boot devices.
- * In arch/{i386,x86_64}/kernel/setup.c, this information is
- * transferred into the edd structure, and in drivers/firmware/edd.c, that
- * information is used to identify BIOS boot disk.  The code in setup.S
- * is very sensitive to the size of these structures.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License v2.0 as published by
- * the Free Software Foundation
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- */
+ 
+ 
 #ifndef _UAPI_LINUX_EDD_H
 #define _UAPI_LINUX_EDD_H
 
 #include <linux/types.h>
 
-#define EDDNR 0x1e9		/* addr of number of edd_info structs at EDDBUF
-				   in boot_params - treat this as 1 byte  */
-#define EDDBUF	0xd00		/* addr of edd_info structs in boot_params */
-#define EDDMAXNR 6		/* number of edd_info structs starting at EDDBUF  */
-#define EDDEXTSIZE 8		/* change these if you muck with the structures */
+#define EDDNR 0x1e9		 
+#define EDDBUF	0xd00		 
+#define EDDMAXNR 6		 
+#define EDDEXTSIZE 8		 
 #define EDDPARMSIZE 74
 #define CHECKEXTENSIONSPRESENT 0x41
 #define GETDEVICEPARAMETERS 0x48
@@ -46,12 +17,11 @@
 #define EDDMAGIC2 0xAA55
 
 
-#define READ_SECTORS 0x02         /* int13 AH=0x02 is READ_SECTORS command */
-#define EDD_MBR_SIG_OFFSET 0x1B8  /* offset of signature in the MBR */
-#define EDD_MBR_SIG_BUF    0x290  /* addr in boot params */
-#define EDD_MBR_SIG_MAX 16        /* max number of signatures to store */
-#define EDD_MBR_SIG_NR_BUF 0x1ea  /* addr of number of MBR signtaures at EDD_MBR_SIG_BUF
-				     in boot_params - treat this as 1 byte  */
+#define READ_SECTORS 0x02          
+#define EDD_MBR_SIG_OFFSET 0x1B8   
+#define EDD_MBR_SIG_BUF    0x290   
+#define EDD_MBR_SIG_MAX 16         
+#define EDD_MBR_SIG_NR_BUF 0x1ea   
 
 #ifndef __ASSEMBLY__
 
@@ -77,9 +47,9 @@ struct edd_device_params {
 	__u32 sectors_per_track;
 	__u64 number_of_sectors;
 	__u16 bytes_per_sector;
-	__u32 dpte_ptr;		/* 0xFFFFFFFF for our purposes */
-	__u16 key;		/* = 0xBEDD */
-	__u8 device_path_info_length;	/* = 44 */
+	__u32 dpte_ptr;		 
+	__u16 key;		 
+	__u8 device_path_info_length;	 
 	__u8 reserved2;
 	__u16 reserved3;
 	__u8 host_bus_type[4];
@@ -97,7 +67,7 @@ struct edd_device_params {
 			__u8 channel;
 			__u32 reserved;
 		} __attribute__ ((packed)) pci;
-		/* pcix is same as pci */
+		 
 		struct {
 			__u64 reserved;
 		} __attribute__ ((packed)) ibnd;
@@ -187,6 +157,6 @@ struct edd {
 	unsigned char edd_info_nr;
 };
 
-#endif				/*!__ASSEMBLY__ */
+#endif				 
 
-#endif /* _UAPI_LINUX_EDD_H */
+#endif  

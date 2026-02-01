@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * MFD core driver for Intel Cherrytrail Whiskey Cove PMIC
- *
- * Copyright (C) 2017 Hans de Goede <hdegoede@redhat.com>
- *
- * Based on various non upstream patches to support the CHT Whiskey Cove PMIC:
- * Copyright (C) 2013-2015 Intel Corporation. All rights reserved.
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/delay.h>
@@ -19,7 +12,7 @@
 #include <linux/mfd/intel_soc_pmic.h>
 #include <linux/regmap.h>
 
-/* PMIC device registers */
+ 
 #define REG_OFFSET_MASK		GENMASK(7, 0)
 #define REG_ADDR_MASK		GENMASK(15, 8)
 #define REG_ADDR_SHIFT		8
@@ -27,10 +20,10 @@
 #define CHT_WC_IRQLVL1		0x6e02
 #define CHT_WC_IRQLVL1_MASK	0x6e0e
 
-/* Whiskey Cove PMIC share same ACPI ID between different platforms */
+ 
 #define CHT_WC_HRV		3
 
-/* Level 1 IRQs (level 2 IRQs are handled in the child device drivers) */
+ 
 enum {
 	CHT_WC_PWRSRC_IRQ = 0,
 	CHT_WC_THRM_IRQ,
@@ -38,7 +31,7 @@ enum {
 	CHT_WC_ADC_IRQ,
 	CHT_WC_EXT_CHGR_IRQ,
 	CHT_WC_GPIO_IRQ,
-	/* There is no irq 6 */
+	 
 	CHT_WC_CRIT_IRQ = 7,
 };
 
@@ -64,11 +57,7 @@ static struct mfd_cell cht_wc_dev[] = {
 	{	.name = "cht_wcove_leds", },
 };
 
-/*
- * The CHT Whiskey Cove covers multiple I2C addresses, with a 1 Byte
- * register address space per I2C address, so we use 16 bit register
- * addresses where the high 8 bits contain the I2C client address.
- */
+ 
 static int cht_wc_byte_reg_read(void *context, unsigned int reg,
 				unsigned int *val)
 {
@@ -137,14 +126,9 @@ static const struct regmap_irq_chip cht_wc_regmap_irq_chip = {
 
 static const struct dmi_system_id cht_wc_model_dmi_ids[] = {
 	{
-		/* GPD win / GPD pocket mini laptops */
+		 
 		.driver_data = (void *)(long)INTEL_CHT_WC_GPD_WIN_POCKET,
-		/*
-		 * This DMI match may not seem unique, but it is. In the 67000+
-		 * DMI decode dumps from linux-hardware.org only 116 have
-		 * board_vendor set to "AMI Corporation" and of those 116 only
-		 * the GPD win's and pocket's board_name is "Default string".
-		 */
+		 
 		.matches = {
 			DMI_EXACT_MATCH(DMI_BOARD_VENDOR, "AMI Corporation"),
 			DMI_EXACT_MATCH(DMI_BOARD_NAME, "Default string"),
@@ -152,14 +136,14 @@ static const struct dmi_system_id cht_wc_model_dmi_ids[] = {
 			DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "Default string"),
 		},
 	}, {
-		/* Xiaomi Mi Pad 2 */
+		 
 		.driver_data = (void *)(long)INTEL_CHT_WC_XIAOMI_MIPAD2,
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "Xiaomi Inc"),
 			DMI_MATCH(DMI_PRODUCT_NAME, "Mipad2"),
 		},
 	}, {
-		/* Lenovo Yoga Book X90F / X90L */
+		 
 		.driver_data = (void *)(long)INTEL_CHT_WC_LENOVO_YOGABOOK1,
 		.matches = {
 			DMI_EXACT_MATCH(DMI_SYS_VENDOR, "Intel Corporation"),
@@ -167,14 +151,14 @@ static const struct dmi_system_id cht_wc_model_dmi_ids[] = {
 			DMI_EXACT_MATCH(DMI_PRODUCT_VERSION, "YETI-11"),
 		},
 	}, {
-		/* Lenovo Yoga Book X91F / X91L */
+		 
 		.driver_data = (void *)(long)INTEL_CHT_WC_LENOVO_YOGABOOK1,
 		.matches = {
-			/* Non exact match to match F + L versions */
+			 
 			DMI_MATCH(DMI_PRODUCT_NAME, "Lenovo YB1-X91"),
 		},
 	}, {
-		/* Lenovo Yoga Tab 3 Pro YT3-X90F */
+		 
 		.driver_data = (void *)(long)INTEL_CHT_WC_LENOVO_YT3_X90,
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "Intel Corporation"),

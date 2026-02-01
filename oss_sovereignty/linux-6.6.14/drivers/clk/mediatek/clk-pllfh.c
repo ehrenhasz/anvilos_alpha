@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2022 MediaTek Inc.
- * Author: Edward-JW Yang <edward-jw.yang@mediatek.com>
- */
+
+ 
 
 #include <linux/of.h>
 #include <linux/of_address.h>

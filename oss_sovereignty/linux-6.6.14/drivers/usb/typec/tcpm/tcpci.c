@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright 2015-2017 Google, Inc
- *
- * USB Type-C Port Controller Interface.
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/kernel.h>
@@ -151,10 +147,7 @@ static int tcpci_apply_rc(struct tcpc_dev *tcpc, enum typec_cc_status cc,
 	if (ret < 0)
 		return ret;
 
-	/*
-	 * APPLY_RC state is when ROLE_CONTROL.CC1 != ROLE_CONTROL.CC2 and vbus autodischarge on
-	 * disconnect is disabled. Bail out when ROLE_CONTROL.CC1 != ROLE_CONTROL.CC2.
-	 */
+	 
 	if (((reg & (TCPC_ROLE_CTRL_CC2_MASK << TCPC_ROLE_CTRL_CC2_SHIFT)) >>
 	     TCPC_ROLE_CTRL_CC2_SHIFT) !=
 	    ((reg & (TCPC_ROLE_CTRL_CC1_MASK << TCPC_ROLE_CTRL_CC1_SHIFT)) >>
@@ -178,7 +171,7 @@ static int tcpci_start_toggling(struct tcpc_dev *tcpc,
 	if (port_type != TYPEC_PORT_DRP)
 		return -EOPNOTSUPP;
 
-	/* Handle vendor drp toggling */
+	 
 	if (tcpci->data->start_drp_toggling) {
 		ret = tcpci->data->start_drp_toggling(tcpci, tcpci->data, cc);
 		if (ret < 0)
@@ -249,7 +242,7 @@ static int tcpci_set_polarity(struct tcpc_dev *tcpc,
 	int ret;
 	enum typec_cc_status cc1, cc2;
 
-	/* Obtain Rp setting from role control */
+	 
 	ret = regmap_read(tcpci->regmap, TCPC_ROLE_CTRL, &reg);
 	if (ret < 0)
 		return ret;
@@ -258,30 +251,24 @@ static int tcpci_set_polarity(struct tcpc_dev *tcpc,
 	if (ret < 0)
 		return ret;
 
-	/*
-	 * When port has drp toggling enabled, ROLE_CONTROL would only have the initial
-	 * terminations for the toggling and does not indicate the final cc
-	 * terminations when ConnectionResult is 0 i.e. drp toggling stops and
-	 * the connection is resolved. Infer port role from TCPC_CC_STATUS based on the
-	 * terminations seen. The port role is then used to set the cc terminations.
-	 */
+	 
 	if (reg & TCPC_ROLE_CTRL_DRP) {
-		/* Disable DRP for the OPEN setting to take effect */
+		 
 		reg = reg & ~TCPC_ROLE_CTRL_DRP;
 
 		if (polarity == TYPEC_POLARITY_CC2) {
 			reg &= ~(TCPC_ROLE_CTRL_CC2_MASK << TCPC_ROLE_CTRL_CC2_SHIFT);
-			/* Local port is source */
+			 
 			if (cc2 == TYPEC_CC_RD)
-				/* Role control would have the Rp setting when DRP was enabled */
+				 
 				reg |= TCPC_ROLE_CTRL_CC_RP << TCPC_ROLE_CTRL_CC2_SHIFT;
 			else
 				reg |= TCPC_ROLE_CTRL_CC_RD << TCPC_ROLE_CTRL_CC2_SHIFT;
 		} else {
 			reg &= ~(TCPC_ROLE_CTRL_CC1_MASK << TCPC_ROLE_CTRL_CC1_SHIFT);
-			/* Local port is source */
+			 
 			if (cc1 == TYPEC_CC_RD)
-				/* Role control would have the Rp setting when DRP was enabled */
+				 
 				reg |= TCPC_ROLE_CTRL_CC_RP << TCPC_ROLE_CTRL_CC1_SHIFT;
 			else
 				reg |= TCPC_ROLE_CTRL_CC_RD << TCPC_ROLE_CTRL_CC1_SHIFT;
@@ -314,7 +301,7 @@ static int tcpci_set_vconn(struct tcpc_dev *tcpc, bool enable)
 	struct tcpci *tcpci = tcpc_to_tcpci(tcpc);
 	int ret;
 
-	/* Handle vendor set vconn */
+	 
 	if (tcpci->data->set_vconn) {
 		ret = tcpci->data->set_vconn(tcpci, tcpci->data, enable);
 		if (ret < 0)
@@ -343,10 +330,7 @@ static int tcpci_set_auto_vbus_discharge_threshold(struct tcpc_dev *dev, enum ty
 	unsigned int pwr_ctrl, threshold = 0;
 	int ret;
 
-	/*
-	 * Indicates that vbus is going to go away due PR_SWAP, hard reset etc.
-	 * Do not discharge vbus here.
-	 */
+	 
 	if (requested_vbus_voltage_mv == 0)
 		goto write_thresh;
 
@@ -355,7 +339,7 @@ static int tcpci_set_auto_vbus_discharge_threshold(struct tcpc_dev *dev, enum ty
 		return ret;
 
 	if (pwr_ctrl & TCPC_FAST_ROLE_SWAP_EN) {
-		/* To prevent disconnect when the source is fast role swap is capable. */
+		 
 		threshold = AUTO_DISCHARGE_DEFAULT_THRESHOLD_MV;
 	} else if (mode == TYPEC_PWR_MODE_PD) {
 		if (pps_active)
@@ -367,7 +351,7 @@ static int tcpci_set_auto_vbus_discharge_threshold(struct tcpc_dev *dev, enum ty
 				     VSINKPD_MIN_IR_DROP_MV - VSRC_VALID_MIN_MV) *
 				     VSINKDISCONNECT_PD_MIN_PERCENT / 100;
 	} else {
-		/* 3.5V for non-pd sink */
+		 
 		threshold = AUTO_DISCHARGE_DEFAULT_THRESHOLD_MV;
 	}
 
@@ -385,7 +369,7 @@ static int tcpci_enable_frs(struct tcpc_dev *dev, bool enable)
 	struct tcpci *tcpci = tcpc_to_tcpci(dev);
 	int ret;
 
-	/* To prevent disconnect during FRS, set disconnect threshold to 3.5V */
+	 
 	ret = tcpci_write16(tcpci, TCPC_VBUS_SINK_DISCONNECT_THRESH, enable ? 0 : 0x8c);
 	if (ret < 0)
 		return ret;
@@ -487,12 +471,12 @@ static int tcpci_set_vbus(struct tcpc_dev *tcpc, bool source, bool sink)
 
 	if (tcpci->data->set_vbus) {
 		ret = tcpci->data->set_vbus(tcpci, tcpci->data, source, sink);
-		/* Bypass when ret > 0 */
+		 
 		if (ret != 0)
 			return ret < 0 ? ret : 0;
 	}
 
-	/* Disable both source and sink first before enabling anything */
+	 
 
 	if (!source) {
 		ret = regmap_write(tcpci->regmap, TCPC_COMMAND,
@@ -534,16 +518,12 @@ static int tcpci_pd_transmit(struct tcpc_dev *tcpc, enum tcpm_transmit_type type
 	int ret;
 
 	cnt = msg ? pd_header_cnt(header) * 4 : 0;
-	/**
-	 * TCPCI spec forbids direct access of TCPC_TX_DATA.
-	 * But, since some of the chipsets offer this capability,
-	 * it's fair to support both.
-	 */
+	 
 	if (tcpci->data->TX_BUF_BYTE_x_hidden) {
 		u8 buf[TCPC_TRANSMIT_BUFFER_MAX_LEN] = {0,};
 		u8 pos = 0;
 
-		/* Payload + header + TCPC_TX_BYTE_CNT */
+		 
 		buf[pos++] = cnt + 2;
 
 		if (msg)
@@ -574,7 +554,7 @@ static int tcpci_pd_transmit(struct tcpc_dev *tcpc, enum tcpm_transmit_type type
 		}
 	}
 
-	/* nRetryCount is 3 in PD2.0 spec where 2 in PD3.0 spec */
+	 
 	reg = ((negotiated_rev > PD_REV20 ? PD_RETRY_COUNT_3_0_OR_HIGHER : PD_RETRY_COUNT_DEFAULT)
 	       << TCPC_TRANSMIT_RETRY_SHIFT) | (type << TCPC_TRANSMIT_TYPE_SHIFT);
 	ret = regmap_write(tcpci->regmap, TCPC_TRANSMIT, reg);
@@ -587,7 +567,7 @@ static int tcpci_pd_transmit(struct tcpc_dev *tcpc, enum tcpm_transmit_type type
 static int tcpci_init(struct tcpc_dev *tcpc)
 {
 	struct tcpci *tcpci = tcpc_to_tcpci(tcpc);
-	unsigned long timeout = jiffies + msecs_to_jiffies(2000); /* XXX */
+	unsigned long timeout = jiffies + msecs_to_jiffies(2000);  
 	unsigned int reg;
 	int ret;
 
@@ -606,14 +586,14 @@ static int tcpci_init(struct tcpc_dev *tcpc)
 	if (ret < 0)
 		return ret;
 
-	/* Handle vendor init */
+	 
 	if (tcpci->data->init) {
 		ret = tcpci->data->init(tcpci, tcpci->data);
 		if (ret < 0)
 			return ret;
 	}
 
-	/* Clear all events */
+	 
 	ret = tcpci_write16(tcpci, TCPC_ALERT, 0xffff);
 	if (ret < 0)
 		return ret;
@@ -626,7 +606,7 @@ static int tcpci_init(struct tcpc_dev *tcpc)
 	if (ret < 0)
 		return ret;
 
-	/* Enable Vbus detection */
+	 
 	ret = regmap_write(tcpci->regmap, TCPC_COMMAND,
 			   TCPC_CMD_ENABLE_VBUS_DETECT);
 	if (ret < 0)
@@ -637,7 +617,7 @@ static int tcpci_init(struct tcpc_dev *tcpc)
 		TCPC_ALERT_RX_HARD_RST | TCPC_ALERT_CC_STATUS;
 	if (tcpci->controls_vbus)
 		reg |= TCPC_ALERT_POWER_STATUS;
-	/* Enable VSAFE0V status interrupt when detecting VSAFE0V is supported */
+	 
 	if (tcpci->data->vbus_vsafe0v) {
 		reg |= TCPC_ALERT_EXTENDED_STATUS;
 		ret = regmap_write(tcpci->regmap, TCPC_EXTENDED_STATUS_MASK,
@@ -659,10 +639,7 @@ irqreturn_t tcpci_irq(struct tcpci *tcpci)
 
 	tcpci_read16(tcpci, TCPC_ALERT, &status);
 
-	/*
-	 * Clear alert status for everything except RX_STATUS, which shouldn't
-	 * be cleared until we have successfully retrieved message.
-	 */
+	 
 	if (status & ~TCPC_ALERT_RX_STATUS)
 		tcpci_write16(tcpci, TCPC_ALERT,
 			      status & ~TCPC_ALERT_RX_STATUS);
@@ -672,10 +649,7 @@ irqreturn_t tcpci_irq(struct tcpci *tcpci)
 
 	if (status & TCPC_ALERT_POWER_STATUS) {
 		regmap_read(tcpci->regmap, TCPC_POWER_STATUS_MASK, &raw);
-		/*
-		 * If power status mask has been reset, then the TCPC
-		 * has reset.
-		 */
+		 
 		if (raw == 0xff)
 			tcpm_tcpc_reset(tcpci->port);
 		else
@@ -688,12 +662,7 @@ irqreturn_t tcpci_irq(struct tcpci *tcpci)
 		u16 header;
 
 		regmap_read(tcpci->regmap, TCPC_RX_BYTE_CNT, &cnt);
-		/*
-		 * 'cnt' corresponds to READABLE_BYTE_COUNT in section 4.4.14
-		 * of the TCPCI spec [Rev 2.0 Ver 1.0 October 2017] and is
-		 * defined in table 4-36 as one greater than the number of
-		 * bytes received. And that number includes the header. So:
-		 */
+		 
 		if (cnt > 3)
 			payload_cnt = cnt - (1 + sizeof(msg.header));
 		else
@@ -709,7 +678,7 @@ irqreturn_t tcpci_irq(struct tcpci *tcpci)
 			regmap_raw_read(tcpci->regmap, TCPC_RX_DATA,
 					&msg.payload, payload_cnt);
 
-		/* Read complete, clear RX status alert bit */
+		 
 		tcpci_write16(tcpci, TCPC_ALERT, TCPC_ALERT_RX_STATUS);
 
 		tcpm_pd_receive(tcpci->port, &msg);
@@ -746,12 +715,12 @@ static const struct regmap_config tcpci_regmap_config = {
 	.reg_bits = 8,
 	.val_bits = 8,
 
-	.max_register = 0x7F, /* 0x80 .. 0xFF are vendor defined */
+	.max_register = 0x7F,  
 };
 
 static int tcpci_parse_config(struct tcpci *tcpci)
 {
-	tcpci->controls_vbus = true; /* XXX */
+	tcpci->controls_vbus = true;  
 
 	tcpci->tcpc.fwnode = device_get_named_child_node(tcpci->dev,
 							 "connector");
@@ -845,7 +814,7 @@ static int tcpci_probe(struct i2c_client *client)
 
 	i2c_set_clientdata(client, chip);
 
-	/* Disable chip interrupts before requesting irq */
+	 
 	err = regmap_raw_write(chip->data.regmap, TCPC_ALERT_MASK, &val,
 			       sizeof(u16));
 	if (err < 0)
@@ -872,7 +841,7 @@ static void tcpci_remove(struct i2c_client *client)
 	struct tcpci_chip *chip = i2c_get_clientdata(client);
 	int err;
 
-	/* Disable chip interrupts before unregistering port */
+	 
 	err = tcpci_write16(chip->tcpci, TCPC_ALERT_MASK, 0);
 	if (err < 0)
 		dev_warn(&client->dev, "Failed to disable irqs (%pe)\n", ERR_PTR(err));

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: MIT
+
 #include "nv20.h"
 #include "regs.h"
 
@@ -6,9 +6,7 @@
 #include <engine/fifo.h>
 #include <engine/fifo/chan.h>
 
-/*******************************************************************************
- * PGRAPH context
- ******************************************************************************/
+ 
 
 static const struct nvkm_object_func
 nv2a_gr_chan = {
@@ -64,7 +62,7 @@ nv2a_gr_chan_new(struct nvkm_gr *base, struct nvkm_chan *fifoch,
 	nvkm_wo32(chan->inst, 0x0610, 0x00000001);
 	nvkm_wo32(chan->inst, 0x0618, 0x00040000);
 	nvkm_wo32(chan->inst, 0x061c, 0x00010000);
-	for (i = 0x1a9c; i <= 0x22fc; i += 16) { /*XXX: check!! */
+	for (i = 0x1a9c; i <= 0x22fc; i += 16) {  
 		nvkm_wo32(chan->inst, (i + 0), 0x10700ff9);
 		nvkm_wo32(chan->inst, (i + 4), 0x0436086c);
 		nvkm_wo32(chan->inst, (i + 8), 0x000c001b);
@@ -87,9 +85,7 @@ nv2a_gr_chan_new(struct nvkm_gr *base, struct nvkm_chan *fifoch,
 	return 0;
 }
 
-/*******************************************************************************
- * PGRAPH engine/subdev functions
- ******************************************************************************/
+ 
 
 static const struct nvkm_gr_func
 nv2a_gr = {
@@ -100,21 +96,21 @@ nv2a_gr = {
 	.tile = nv20_gr_tile,
 	.chan_new = nv2a_gr_chan_new,
 	.sclass = {
-		{ -1, -1, 0x0012, &nv04_gr_object }, /* beta1 */
-		{ -1, -1, 0x0019, &nv04_gr_object }, /* clip */
-		{ -1, -1, 0x0030, &nv04_gr_object }, /* null */
-		{ -1, -1, 0x0039, &nv04_gr_object }, /* m2mf */
-		{ -1, -1, 0x0043, &nv04_gr_object }, /* rop */
-		{ -1, -1, 0x0044, &nv04_gr_object }, /* patt */
-		{ -1, -1, 0x004a, &nv04_gr_object }, /* gdi */
-		{ -1, -1, 0x0062, &nv04_gr_object }, /* surf2d */
-		{ -1, -1, 0x0072, &nv04_gr_object }, /* beta4 */
-		{ -1, -1, 0x0089, &nv04_gr_object }, /* sifm */
-		{ -1, -1, 0x008a, &nv04_gr_object }, /* ifc */
-		{ -1, -1, 0x0096, &nv04_gr_object }, /* celcius */
-		{ -1, -1, 0x009e, &nv04_gr_object }, /* swzsurf */
-		{ -1, -1, 0x009f, &nv04_gr_object }, /* imageblit */
-		{ -1, -1, 0x0597, &nv04_gr_object }, /* kelvin */
+		{ -1, -1, 0x0012, &nv04_gr_object },  
+		{ -1, -1, 0x0019, &nv04_gr_object },  
+		{ -1, -1, 0x0030, &nv04_gr_object },  
+		{ -1, -1, 0x0039, &nv04_gr_object },  
+		{ -1, -1, 0x0043, &nv04_gr_object },  
+		{ -1, -1, 0x0044, &nv04_gr_object },  
+		{ -1, -1, 0x004a, &nv04_gr_object },  
+		{ -1, -1, 0x0062, &nv04_gr_object },  
+		{ -1, -1, 0x0072, &nv04_gr_object },  
+		{ -1, -1, 0x0089, &nv04_gr_object },  
+		{ -1, -1, 0x008a, &nv04_gr_object },  
+		{ -1, -1, 0x0096, &nv04_gr_object },  
+		{ -1, -1, 0x009e, &nv04_gr_object },  
+		{ -1, -1, 0x009f, &nv04_gr_object },  
+		{ -1, -1, 0x0597, &nv04_gr_object },  
 		{}
 	}
 };

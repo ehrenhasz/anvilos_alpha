@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Renesas USBF USB Function driver
- *
- * Copyright 2022 Schneider Electric
- * Author: Herve Codina <herve.codina@bootlin.com>
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/dma-mapping.h>
@@ -24,7 +19,7 @@
 #define USBF_NUM_ENDPOINTS	16
 #define USBF_EP0_MAX_PCKT_SIZE	64
 
-/* EPC registers */
+ 
 #define USBF_REG_USB_CONTROL	0x000
 #define     USBF_USB_PUE2		BIT(2)
 #define     USBF_USB_CONNECTB		BIT(3)
@@ -60,7 +55,7 @@
 #define     USBF_USB_SOF_INT		BIT(4)
 #define     USBF_USB_SOF_ERROR_INT	BIT(5)
 #define     USBF_USB_SPEED_MODE_INT	BIT(6)
-#define     USBF_USB_EPN_INT(_n)	(BIT(8) << (_n)) /* n=0..15 */
+#define     USBF_USB_EPN_INT(_n)	(BIT(8) << (_n))  
 
 #define USBF_REG_USB_INT_ENA	0x024
 #define     USBF_USB_RSUM_EN		BIT(1)
@@ -69,10 +64,10 @@
 #define     USBF_USB_SOF_EN		BIT(4)
 #define     USBF_USB_SOF_ERROR_EN	BIT(5)
 #define     USBF_USB_SPEED_MODE_EN	BIT(6)
-#define     USBF_USB_EPN_EN(_n)		(BIT(8) << (_n)) /* n=0..15 */
+#define     USBF_USB_EPN_EN(_n)		(BIT(8) << (_n))  
 
 #define USBF_BASE_EP0		0x028
-/* EP0 registers offsets from Base + USBF_BASE_EP0 (EP0 regs area) */
+ 
 #define     USBF_REG_EP0_CONTROL	0x00
 #define         USBF_EP0_ONAK			BIT(0)
 #define         USBF_EP0_INAK			BIT(1)
@@ -128,7 +123,7 @@
 #define     USBF_REG_EP0_WRITE		0x14
 
 #define USBF_BASE_EPN(_n)	(0x040 + (_n) * 0x020)
-/* EPn registers offsets from Base + USBF_BASE_EPN(n-1). n=1..15 */
+ 
 #define     USBF_REG_EPN_CONTROL	0x000
 #define         USBF_EPN_ONAK			BIT(0)
 #define         USBF_EPN_OSTL			BIT(2)
@@ -206,7 +201,7 @@
 #define     USBF_REG_EPN_READ		0x018
 #define     USBF_REG_EPN_WRITE		0x01C
 
-/* AHB-EPC Bridge registers */
+ 
 #define USBF_REG_AHBSCTR	0x1000
 #define USBF_REG_AHBMCTR	0x1004
 #define     USBF_SYS_WBURST_TYPE	BIT(2)
@@ -218,14 +213,14 @@
 #define     USBF_SYS_SBUS_ERRINT1	 BIT(5)
 #define     USBF_SYS_MBUS_ERRINT	 BIT(6)
 #define     USBF_SYS_VBUS_INT		 BIT(13)
-#define     USBF_SYS_DMA_ENDINT_EPN(_n)	 (BIT(16) << (_n)) /* _n=1..15 */
+#define     USBF_SYS_DMA_ENDINT_EPN(_n)	 (BIT(16) << (_n))  
 
 #define USBF_REG_AHBBINTEN	0x100C
 #define     USBF_SYS_SBUS_ERRINT0EN	  BIT(4)
 #define     USBF_SYS_SBUS_ERRINT1EN	  BIT(5)
 #define     USBF_SYS_MBUS_ERRINTEN	  BIT(6)
 #define     USBF_SYS_VBUS_INTEN		  BIT(13)
-#define     USBF_SYS_DMA_ENDINTEN_EPN(_n) (BIT(16) << (_n)) /* _n=1..15 */
+#define     USBF_SYS_DMA_ENDINTEN_EPN(_n) (BIT(16) << (_n))  
 
 #define USBF_REG_EPCTR		0x1010
 #define     USBF_SYS_EPC_RST		BIT(0)
@@ -237,11 +232,11 @@
 
 #define USBF_REG_USBSSVER	0x1020
 #define USBF_REG_USBSSCONF	0x1024
-#define    USBF_SYS_DMA_AVAILABLE(_n)	(BIT(0) << (_n)) /* _n=0..15 */
-#define    USBF_SYS_EP_AVAILABLE(_n)	(BIT(16) << (_n)) /* _n=0..15 */
+#define    USBF_SYS_DMA_AVAILABLE(_n)	(BIT(0) << (_n))  
+#define    USBF_SYS_EP_AVAILABLE(_n)	(BIT(16) << (_n))  
 
 #define USBF_BASE_DMA_EPN(_n)	(0x1110 + (_n) * 0x010)
-/* EPn DMA registers offsets from Base USBF_BASE_DMA_EPN(n-1). n=1..15*/
+ 
 #define     USBF_REG_DMA_EPN_DCR1	0x00
 #define         USBF_SYS_EPN_REQEN		BIT(0)
 #define         USBF_SYS_EPN_DIR0		BIT(1)
@@ -254,7 +249,7 @@
 
 #define     USBF_REG_DMA_EPN_TADR	0x08
 
-/* USB request */
+ 
 struct usbf_req {
 	struct usb_request	req;
 	struct list_head	queue;
@@ -271,7 +266,7 @@ struct usbf_req {
 	size_t			dma_size;
 };
 
-/* USB Endpoint */
+ 
 struct usbf_ep {
 	struct usb_ep		ep;
 	char			name[32];
@@ -310,7 +305,7 @@ struct usbf_udc {
 	bool				is_remote_wakeup;
 	bool				is_usb_suspended;
 	struct usbf_ep			ep[USBF_NUM_ENDPOINTS];
-	/* for EP0 control messages */
+	 
 	enum usbf_ep0state		ep0state;
 	struct usbf_req			setup_reply;
 	u8				ep0_buf[USBF_EP0_MAX_PCKT_SIZE];
@@ -335,88 +330,84 @@ struct usbf_ep_info {
 		.maxpacket_limit = _maxpacket_limit,                          \
 	}
 
-/* This table is computed from the recommended values provided in the SOC
- * datasheet. The buffer type (single/double) and the endpoint type cannot
- * be changed. The mapping in internal RAM (base_addr and number of words)
- * for each endpoints depends on the max packet size and the buffer type.
- */
+ 
 static const struct usbf_ep_info usbf_ep_info[USBF_NUM_ENDPOINTS] = {
-	/* ep0: buf @0x0000 64 bytes, fixed 32 words */
+	 
 	[0] = USBF_EP_INFO("ep0-ctrl",
 			   USB_EP_CAPS(USB_EP_CAPS_TYPE_CONTROL,
 				       USB_EP_CAPS_DIR_ALL),
 			   0x0000, USBF_SINGLE_BUFFER, USBF_EP0_MAX_PCKT_SIZE),
-	/* ep1: buf @0x0020, 2 buffers 512 bytes -> (512 * 2 / 4) words */
+	 
 	[1] = USBF_EP_INFO("ep1-bulk",
 			   USB_EP_CAPS(USB_EP_CAPS_TYPE_BULK,
 				       USB_EP_CAPS_DIR_ALL),
 			   0x0020, USBF_DOUBLE_BUFFER, 512),
-	/* ep2: buf @0x0120, 2 buffers 512 bytes -> (512 * 2 / 4) words */
+	 
 	[2] = USBF_EP_INFO("ep2-bulk",
 			   USB_EP_CAPS(USB_EP_CAPS_TYPE_BULK,
 				       USB_EP_CAPS_DIR_ALL),
 			   0x0120, USBF_DOUBLE_BUFFER, 512),
-	/* ep3: buf @0x0220, 1 buffer 512 bytes -> (512 * 2 / 4) words */
+	 
 	[3] = USBF_EP_INFO("ep3-bulk",
 			   USB_EP_CAPS(USB_EP_CAPS_TYPE_BULK,
 				       USB_EP_CAPS_DIR_ALL),
 			   0x0220, USBF_SINGLE_BUFFER, 512),
-	/* ep4: buf @0x02A0, 1 buffer 512 bytes -> (512 * 1 / 4) words */
+	 
 	[4] = USBF_EP_INFO("ep4-bulk",
 			   USB_EP_CAPS(USB_EP_CAPS_TYPE_BULK,
 				       USB_EP_CAPS_DIR_ALL),
 			   0x02A0, USBF_SINGLE_BUFFER, 512),
-	/* ep5: buf @0x0320, 1 buffer 512 bytes -> (512 * 2 / 4) words */
+	 
 	[5] = USBF_EP_INFO("ep5-bulk",
 			   USB_EP_CAPS(USB_EP_CAPS_TYPE_BULK,
 				       USB_EP_CAPS_DIR_ALL),
 			   0x0320, USBF_SINGLE_BUFFER, 512),
-	/* ep6: buf @0x03A0, 1 buffer 1024 bytes -> (1024 * 1 / 4) words */
+	 
 	[6] = USBF_EP_INFO("ep6-int",
 			   USB_EP_CAPS(USB_EP_CAPS_TYPE_INT,
 				       USB_EP_CAPS_DIR_ALL),
 			   0x03A0, USBF_SINGLE_BUFFER, 1024),
-	/* ep7: buf @0x04A0, 1 buffer 1024 bytes -> (1024 * 1 / 4) words */
+	 
 	[7] = USBF_EP_INFO("ep7-int",
 			   USB_EP_CAPS(USB_EP_CAPS_TYPE_INT,
 				       USB_EP_CAPS_DIR_ALL),
 			   0x04A0, USBF_SINGLE_BUFFER, 1024),
-	/* ep8: buf @0x0520, 1 buffer 1024 bytes -> (1024 * 1 / 4) words */
+	 
 	[8] = USBF_EP_INFO("ep8-int",
 			   USB_EP_CAPS(USB_EP_CAPS_TYPE_INT,
 				       USB_EP_CAPS_DIR_ALL),
 			   0x0520, USBF_SINGLE_BUFFER, 1024),
-	/* ep9: buf @0x0620, 1 buffer 1024 bytes -> (1024 * 1 / 4) words */
+	 
 	[9] = USBF_EP_INFO("ep9-int",
 			   USB_EP_CAPS(USB_EP_CAPS_TYPE_INT,
 				       USB_EP_CAPS_DIR_ALL),
 			   0x0620, USBF_SINGLE_BUFFER, 1024),
-	/* ep10: buf @0x0720, 2 buffers 1024 bytes -> (1024 * 2 / 4) words */
+	 
 	[10] = USBF_EP_INFO("ep10-iso",
 			    USB_EP_CAPS(USB_EP_CAPS_TYPE_ISO,
 					USB_EP_CAPS_DIR_ALL),
 			    0x0720, USBF_DOUBLE_BUFFER, 1024),
-	/* ep11: buf @0x0920, 2 buffers 1024 bytes -> (1024 * 2 / 4) words */
+	 
 	[11] = USBF_EP_INFO("ep11-iso",
 			    USB_EP_CAPS(USB_EP_CAPS_TYPE_ISO,
 					USB_EP_CAPS_DIR_ALL),
 			    0x0920, USBF_DOUBLE_BUFFER, 1024),
-	/* ep12: buf @0x0B20, 2 buffers 1024 bytes -> (1024 * 2 / 4) words */
+	 
 	[12] = USBF_EP_INFO("ep12-iso",
 			    USB_EP_CAPS(USB_EP_CAPS_TYPE_ISO,
 					USB_EP_CAPS_DIR_ALL),
 			    0x0B20, USBF_DOUBLE_BUFFER, 1024),
-	/* ep13: buf @0x0D20, 2 buffers 1024 bytes -> (1024 * 2 / 4) words */
+	 
 	[13] = USBF_EP_INFO("ep13-iso",
 			    USB_EP_CAPS(USB_EP_CAPS_TYPE_ISO,
 					USB_EP_CAPS_DIR_ALL),
 			    0x0D20, USBF_DOUBLE_BUFFER, 1024),
-	/* ep14: buf @0x0F20, 2 buffers 1024 bytes -> (1024 * 2 / 4) words */
+	 
 	[14] = USBF_EP_INFO("ep14-iso",
 			    USB_EP_CAPS(USB_EP_CAPS_TYPE_ISO,
 					USB_EP_CAPS_DIR_ALL),
 			    0x0F20, USBF_DOUBLE_BUFFER, 1024),
-	/* ep15: buf @0x1120, 2 buffers 1024 bytes -> (1024 * 2 / 4) words */
+	 
 	[15] = USBF_EP_INFO("ep15-iso",
 			    USB_EP_CAPS(USB_EP_CAPS_TYPE_ISO,
 					USB_EP_CAPS_DIR_ALL),
@@ -669,17 +660,12 @@ static int usbf_ep0_pio_out(struct usbf_ep *ep0, struct usbf_req *req)
 
 		if (recv < ep0->ep.maxpacket) {
 			dev_dbg(ep0->udc->dev, "ep0 short packet\n");
-			/* This is a short packet -> It is the end */
+			 
 			req->req.status = 0;
 			return 0;
 		}
 
-		/* The Data stage of a control transfer from an endpoint to the
-		 * host is complete when the endpoint does one of the following:
-		 * - Has transferred exactly the expected amount of data
-		 * - Transfers a packet with a payload size less than
-		 *   wMaxPacketSize or transfers a zero-length packet
-		 */
+		 
 		if (req->req.actual == req->req.length) {
 			req->req.status = 0;
 			return 0;
@@ -687,7 +673,7 @@ static int usbf_ep0_pio_out(struct usbf_ep *ep0, struct usbf_req *req)
 	}
 
 	if (ep0->status & USBF_EP0_OUT_NULL_INT) {
-		/* NULL packet received */
+		 
 		dev_dbg(ep0->udc->dev, "ep0 null packet\n");
 		if (req->req.actual != req->req.length) {
 			req->req.status = req->req.short_not_ok ?
@@ -843,7 +829,7 @@ static int usbf_epn_dma_in(struct usbf_ep *epn, struct usbf_req *req)
 		lastpkt = (left % epn->ep.maxpacket);
 		if (lastpkt == 0)
 			lastpkt = epn->ep.maxpacket;
-		lastpkt &= ~0x3; /* DMA is done on 32bit units */
+		lastpkt &= ~0x3;  
 
 		usbf_ep_dma_reg_writel(epn, USBF_REG_DMA_EPN_DCR2,
 			USBF_SYS_EPN_MPKT(epn->ep.maxpacket) | USBF_SYS_EPN_LMPKT(lastpkt));
@@ -858,18 +844,12 @@ static int usbf_epn_dma_in(struct usbf_ep *epn, struct usbf_req *req)
 
 		usbf_ep_reg_bitset(epn, USBF_REG_EPN_CONTROL, USBF_EPN_AUTO);
 
-		/* The end of DMA transfer at the USBF level needs to be handle
-		 * after the detection of the end of DMA transfer at the brige
-		 * level.
-		 * To force this sequence, EPN_IN_END_EN will be set by the
-		 * detection of the end of transfer at bridge level (ie. bridge
-		 * interrupt).
-		 */
+		 
 		usbf_ep_reg_bitclr(epn, USBF_REG_EPN_INT_ENA,
 			USBF_EPN_IN_EN | USBF_EPN_IN_END_EN);
 		epn->bridge_on_dma_end = usbf_epn_enable_in_end_int;
 
-		/* Clear any pending IN_END interrupt */
+		 
 		usbf_ep_reg_writel(epn, USBF_REG_EPN_STATUS, ~(u32)USBF_EPN_IN_END_INT);
 
 		usbf_ep_reg_writel(epn, USBF_REG_EPN_DMA_CTRL,
@@ -917,9 +897,7 @@ static int usbf_epn_dma_in(struct usbf_ep *epn, struct usbf_req *req)
 		}
 
 		if (req->req.actual % epn->ep.maxpacket) {
-			/* last packet was a short packet. Tell the hardware to
-			 * send it right now.
-			 */
+			 
 			dev_dbg(epn->udc->dev, "ep%u send short\n", epn->id);
 			usbf_ep_reg_writel(epn, USBF_REG_EPN_STATUS,
 				~(u32)USBF_EPN_IN_INT);
@@ -930,15 +908,13 @@ static int usbf_epn_dma_in(struct usbf_ep *epn, struct usbf_req *req)
 			break;
 		}
 
-		/* Last packet size was a maxpacket size
-		 * Send null packet if needed
-		 */
+		 
 		if (req->req.zero) {
 			req->xfer_step = USBF_XFER_SEND_NULL;
 			break;
 		}
 
-		/* No more action to do. Wait for the end of the USB transfer */
+		 
 		req->xfer_step = USBF_XFER_WAIT_END;
 		break;
 
@@ -1027,12 +1003,12 @@ static int usbf_epn_pio_out(struct usbf_ep *epn, struct usbf_req *req)
 
 		if (recv < epn->ep.maxpacket) {
 			dev_dbg(epn->udc->dev, "ep%u short packet\n", epn->id);
-			/* This is a short packet -> It is the end */
+			 
 			req->req.status = 0;
 			return 0;
 		}
 
-		/* Request full -> complete */
+		 
 		if (req->req.actual == req->req.length) {
 			req->req.status = 0;
 			return 0;
@@ -1040,7 +1016,7 @@ static int usbf_epn_pio_out(struct usbf_ep *epn, struct usbf_req *req)
 	}
 
 	if (epn->status & USBF_EPN_OUT_NULL_INT) {
-		/* NULL packet received */
+		 
 		dev_dbg(epn->udc->dev, "ep%u null packet\n", epn->id);
 		if (req->req.actual != req->req.length) {
 			req->req.status = req->req.short_not_ok ?
@@ -1075,18 +1051,12 @@ static void usbf_epn_dma_out_send_dma(struct usbf_ep *epn, dma_addr_t addr, u32 
 		usbf_ep_reg_writel(epn, USBF_REG_EPN_LEN_DCNT,
 				USBF_EPN_SET_DMACNT(0));
 
-		/* The end of DMA transfer at the USBF level needs to be handled
-		 * after the detection of the end of DMA transfer at the brige
-		 * level.
-		 * To force this sequence, enabling the OUT_END interrupt will
-		 * be donee by the detection of the end of transfer at bridge
-		 * level (ie. bridge interrupt).
-		 */
+		 
 		usbf_ep_reg_bitclr(epn, USBF_REG_EPN_INT_ENA,
 			USBF_EPN_OUT_EN | USBF_EPN_OUT_NULL_EN | USBF_EPN_OUT_END_EN);
 		epn->bridge_on_dma_end = usbf_epn_enable_out_end_int;
 
-		/* Clear any pending OUT_END interrupt */
+		 
 		usbf_ep_reg_writel(epn, USBF_REG_EPN_STATUS,
 			~(u32)USBF_EPN_OUT_END_INT);
 
@@ -1105,24 +1075,20 @@ static void usbf_epn_dma_out_send_dma(struct usbf_ep *epn, dma_addr_t addr, u32 
 	usbf_ep_reg_writel(epn, USBF_REG_EPN_LEN_DCNT,
 		USBF_EPN_SET_DMACNT(npkt));
 
-	/* Here, the bridge may or may not generate an interrupt to signal the
-	 * end of DMA transfer.
-	 * Keep only OUT_END interrupt and let handle the bridge later during
-	 * the OUT_END processing.
-	 */
+	 
 	usbf_ep_reg_clrset(epn, USBF_REG_EPN_INT_ENA,
 		USBF_EPN_OUT_EN | USBF_EPN_OUT_NULL_EN,
 		USBF_EPN_OUT_END_EN);
 
-	/* Disable bridge interrupt. It will be renabled later */
+	 
 	usbf_reg_bitclr(epn->udc, USBF_REG_AHBBINTEN,
 		USBF_SYS_DMA_ENDINTEN_EPN(epn->id));
 
-	/* Clear any pending DMA_END interrupt at bridge level */
+	 
 	usbf_reg_writel(epn->udc, USBF_REG_AHBBINT,
 		USBF_SYS_DMA_ENDINT_EPN(epn->id));
 
-	/* Clear any pending OUT_END interrupt */
+	 
 	usbf_ep_reg_writel(epn, USBF_REG_EPN_STATUS,
 		~(u32)USBF_EPN_OUT_END_INT);
 
@@ -1138,17 +1104,17 @@ static size_t usbf_epn_dma_out_complete_dma(struct usbf_ep *epn, bool is_short)
 	u32 tmp;
 	int ret;
 
-	/* Restore interrupt mask */
+	 
 	usbf_ep_reg_clrset(epn, USBF_REG_EPN_INT_ENA,
 		USBF_EPN_OUT_END_EN,
 		USBF_EPN_OUT_EN | USBF_EPN_OUT_NULL_EN);
 
 	if (is_short) {
-		/* Nothing more to do when the DMA was for a short packet */
+		 
 		return 0;
 	}
 
-	/* Enable the bridge interrupt */
+	 
 	usbf_reg_bitset(epn->udc, USBF_REG_AHBBINTEN,
 		USBF_SYS_DMA_ENDINTEN_EPN(epn->id));
 
@@ -1156,11 +1122,7 @@ static size_t usbf_epn_dma_out_complete_dma(struct usbf_ep *epn, bool is_short)
 	dmacnt = USBF_EPN_GET_DMACNT(tmp);
 
 	if (dmacnt) {
-		/* Some packet were not received (halted by a short or a null
-		 * packet.
-		 * The bridge never raises an interrupt in this case.
-		 * Wait for the end of transfer at bridge level
-		 */
+		 
 		ret = readl_poll_timeout_atomic(
 			epn->dma_regs + USBF_REG_DMA_EPN_DCR1,
 			tmp, (USBF_SYS_EPN_GET_DMACNT(tmp) == dmacnt),
@@ -1173,10 +1135,7 @@ static size_t usbf_epn_dma_out_complete_dma(struct usbf_ep *epn, bool is_short)
 		usbf_ep_dma_reg_bitclr(epn, USBF_REG_DMA_EPN_DCR1,
 			USBF_SYS_EPN_REQEN);
 
-		/* The dmacnt value tells how many packet were not transferred
-		 * from the maximum number of packet we set for the DMA transfer.
-		 * Compute the left DMA size based on this value.
-		 */
+		 
 		return dmacnt * epn->ep.maxpacket;
 	}
 
@@ -1239,7 +1198,7 @@ static int usbf_epn_dma_out(struct usbf_ep *epn, struct usbf_req *req)
 		}
 
 		if (recv < epn->ep.maxpacket) {
-			/* Short packet received */
+			 
 			dev_dbg(epn->udc->dev, "ep%u short packet\n", epn->id);
 			if (recv <= 3) {
 				usbf_epn_recv_residue(epn,
@@ -1281,11 +1240,7 @@ static int usbf_epn_dma_out(struct usbf_ep *epn, struct usbf_req *req)
 		}
 		req->is_mapped = 1;
 
-		/* Use the maximum DMA size according to the request buffer.
-		 * We will adjust the received size later at the end of the DMA
-		 * transfer with the left size computed from
-		 * usbf_epn_dma_out_complete_dma().
-		 */
+		 
 		npkt = left / epn->ep.maxpacket;
 		usbf_epn_dma_out_send_dma(epn,
 				req->req.dma + req->req.actual,
@@ -1339,7 +1294,7 @@ static int usbf_epn_dma_out(struct usbf_ep *epn, struct usbf_req *req)
 
 		dma_left = usbf_epn_dma_out_complete_dma(epn, false);
 		if (dma_left) {
-			/* Adjust the final DMA size with */
+			 
 			count = req->dma_size - dma_left;
 
 			dev_dbg(epn->udc->dev, "ep%u dma xfer done %u\n", epn->id,
@@ -1348,7 +1303,7 @@ static int usbf_epn_dma_out(struct usbf_ep *epn, struct usbf_req *req)
 			req->req.actual += count;
 
 			if (epn->status & USBF_EPN_OUT_NULL_INT) {
-				/* DMA was stopped by a null packet reception */
+				 
 				dev_dbg(epn->udc->dev, "ep%u dma stopped by null pckt\n",
 					epn->id);
 				usb_gadget_unmap_request(&epn->udc->gadget,
@@ -1418,7 +1373,7 @@ static int usbf_epn_dma_out(struct usbf_ep *epn, struct usbf_req *req)
 			return 0;
 		}
 
-		/* Process queue at bridge interrupt only */
+		 
 		usbf_ep_reg_bitclr(epn, USBF_REG_EPN_INT_ENA,
 			USBF_EPN_OUT_END_EN | USBF_EPN_OUT_EN | USBF_EPN_OUT_NULL_EN);
 		epn->status = 0;
@@ -1430,7 +1385,7 @@ static int usbf_epn_dma_out(struct usbf_ep *epn, struct usbf_req *req)
 	case USBF_XFER_WAIT_BRIDGE:
 		dev_dbg(epn->udc->dev, "ep%u bridge transfers done\n", epn->id);
 
-		/* Restore interrupt mask */
+		 
 		usbf_ep_reg_clrset(epn, USBF_REG_EPN_INT_ENA,
 			USBF_EPN_OUT_END_EN,
 			USBF_EPN_OUT_EN | USBF_EPN_OUT_NULL_EN);
@@ -1443,7 +1398,7 @@ static int usbf_epn_dma_out(struct usbf_ep *epn, struct usbf_req *req)
 		req->xfer_step = USBF_XFER_START;
 		left = req->req.length - req->req.actual;
 		if (!left) {
-			/* No more data can be added to the buffer */
+			 
 			dev_dbg(epn->udc->dev, "ep%u recv done %u/%u\n", epn->id,
 				req->req.actual, req->req.length);
 			return 0;
@@ -1460,14 +1415,7 @@ static void usbf_epn_dma_stop(struct usbf_ep *epn)
 {
 	usbf_ep_dma_reg_bitclr(epn, USBF_REG_DMA_EPN_DCR1, USBF_SYS_EPN_REQEN);
 
-	/* In the datasheet:
-	 *   If EP[m]_REQEN = 0b is set during DMA transfer, AHB-EPC stops DMA
-	 *   after 1 packet transfer completed.
-	 *   Therefore, wait sufficient time for ensuring DMA transfer
-	 *   completion. The WAIT time depends on the system, especially AHB
-	 *   bus activity
-	 * So arbitrary 10ms would be sufficient.
-	 */
+	 
 	mdelay(10);
 
 	usbf_ep_reg_bitclr(epn, USBF_REG_EPN_DMA_CTRL, USBF_EPN_DMA_EN);
@@ -1498,17 +1446,17 @@ static void usbf_epn_dma_abort(struct usbf_ep *epn,  struct usbf_req *req)
 			USBF_EPN_OUT_EN | USBF_EPN_OUT_NULL_EN);
 	}
 
-	/* As dma is stopped, be sure that no DMA interrupt are pending */
+	 
 	usbf_ep_reg_writel(epn, USBF_REG_EPN_STATUS,
 		USBF_EPN_IN_END_INT | USBF_EPN_OUT_END_INT);
 
 	usbf_reg_writel(epn->udc, USBF_REG_AHBBINT, USBF_SYS_DMA_ENDINT_EPN(epn->id));
 
-	/* Enable DMA interrupt the bridge level */
+	 
 	usbf_reg_bitset(epn->udc, USBF_REG_AHBBINTEN,
 		USBF_SYS_DMA_ENDINTEN_EPN(epn->id));
 
-	/* Reset transfer step */
+	 
 	req->xfer_step = USBF_XFER_START;
 }
 
@@ -1611,26 +1559,21 @@ static int usbf_epn_start_queue(struct usbf_ep *epn)
 			if (ret != -EINPROGRESS) {
 				dev_err(epn->udc->dev,
 					"queued next request not in progress\n");
-					/* The request cannot be completed (ie
-					 * ret == 0) on the first call.
-					 * stall and nuke the endpoint
-					 */
+					 
 				return ret ? ret : -EIO;
 			}
 		}
 	} else {
 		if (req) {
-			/* Clear ONAK to accept OUT tokens */
+			 
 			usbf_ep_reg_bitclr(epn, USBF_REG_EPN_CONTROL,
 				USBF_EPN_ONAK);
 
-			/* Enable interrupts */
+			 
 			usbf_ep_reg_bitset(epn, USBF_REG_EPN_INT_ENA,
 				USBF_EPN_OUT_INT | USBF_EPN_OUT_NULL_INT);
 		} else {
-			/* Disable incoming data and interrupt.
-			 * They will be enable on next usb_eb_queue call
-			 */
+			 
 			usbf_ep_reg_bitset(epn, USBF_REG_EPN_CONTROL,
 				USBF_EPN_ONAK);
 			usbf_ep_reg_bitclr(epn, USBF_REG_EPN_INT_ENA,
@@ -1670,10 +1613,7 @@ static int usbf_ep_process_queue(struct usbf_ep *ep)
 	}
 
 	do {
-		/* Were going to read the FIFO for this current request.
-		 * NAK any other incoming data to avoid a race condition if no
-		 * more request are available.
-		 */
+		 
 		if (!ep->is_in && ep->id != 0) {
 			usbf_ep_reg_bitset(ep, USBF_REG_EPN_CONTROL,
 				USBF_EPN_ONAK);
@@ -1682,9 +1622,7 @@ static int usbf_ep_process_queue(struct usbf_ep *ep)
 		ret = usbf_ep_xfer(ep, req);
 		if (ret == -EINPROGRESS) {
 			if (!ep->is_in && ep->id != 0) {
-				/* The current request needs more data.
-				 * Allow incoming data
-				 */
+				 
 				usbf_ep_reg_bitclr(ep, USBF_REG_EPN_CONTROL,
 					USBF_EPN_ONAK);
 			}
@@ -1697,11 +1635,7 @@ static int usbf_ep_process_queue(struct usbf_ep *ep)
 		ep->is_processing = is_processing;
 
 		if (ret) {
-			/* An error was detected during the request transfer.
-			 * Any pending DMA transfers were aborted by the
-			 * usbf_ep_req_done() call.
-			 * It's time to flush the fifo
-			 */
+			 
 			if (ep->id == 0)
 				usbf_ep0_fifo_flush(ep);
 			else
@@ -1716,20 +1650,16 @@ static int usbf_ep_process_queue(struct usbf_ep *ep)
 
 		if (ep->id != 0) {
 			if (req) {
-				/* An other request is available.
-				 * Allow incoming data
-				 */
+				 
 				usbf_ep_reg_bitclr(ep, USBF_REG_EPN_CONTROL,
 					USBF_EPN_ONAK);
 			} else {
-				/* No request queued. Disable interrupts.
-				 * They will be enabled on usb_ep_queue
-				 */
+				 
 				usbf_ep_reg_bitclr(ep, USBF_REG_EPN_INT_ENA,
 					USBF_EPN_OUT_INT | USBF_EPN_OUT_NULL_INT);
 			}
 		}
-		/* Do not recall usbf_ep_xfer() */
+		 
 		return req ? -EINPROGRESS : 0;
 
 	} while (req);
@@ -1763,9 +1693,7 @@ static void usbf_ep_stall(struct usbf_ep *ep, bool stall)
 	} else {
 		first = list_first_entry_or_null(&ep->queue, struct usbf_req, queue);
 		if (first && first->is_mapped) {
-			/* This can appear if the host halts an endpoint using
-			 * SET_FEATURE and then un-halts the endpoint
-			 */
+			 
 			usbf_epn_dma_abort(ep, first);
 		}
 		usbf_epn_fifo_flush(ep);
@@ -1793,7 +1721,7 @@ static void usbf_ep0_enable(struct usbf_ep *ep0)
 	ep0->udc->ep0state = EP0_IDLE;
 	ep0->disabled = 0;
 
-	/* enable interrupts for the ep0 */
+	 
 	usbf_reg_bitset(ep0->udc, USBF_REG_USB_INT_ENA, USBF_USB_EPN_EN(0));
 }
 
@@ -1806,15 +1734,13 @@ static int usbf_epn_enable(struct usbf_ep *epn)
 	usbf_ep_reg_writel(epn, USBF_REG_EPN_PCKT_ADRS,
 		USBF_EPN_BASEAD(base_addr) | USBF_EPN_MPKT(epn->ep.maxpacket));
 
-	/* OUT transfer interrupt are enabled during usb_ep_queue */
+	 
 	if (epn->is_in) {
-		/* Will be changed in DMA processing */
+		 
 		usbf_ep_reg_writel(epn, USBF_REG_EPN_INT_ENA, USBF_EPN_IN_EN);
 	}
 
-	/* Clear, set endpoint direction, set IN/OUT STL, and enable
-	 * Send NAK for Data out as request are not queued yet
-	 */
+	 
 	ctrl = USBF_EPN_EN | USBF_EPN_BCLR;
 	if (epn->is_in)
 		ctrl |= USBF_EPN_OSTL | USBF_EPN_OSTL_EN;
@@ -1853,10 +1779,10 @@ static int usbf_ep_enable(struct usb_ep *_ep,
 
 	ep->disabled = 0;
 
-	/* enable interrupts for this endpoint */
+	 
 	usbf_reg_bitset(udc, USBF_REG_USB_INT_ENA, USBF_USB_EPN_EN(ep->id));
 
-	/* enable DMA interrupt at bridge level if DMA is used */
+	 
 	if (ep->dma_regs) {
 		ep->bridge_on_dma_end = NULL;
 		usbf_reg_bitset(udc, USBF_REG_AHBBINTEN,
@@ -1871,13 +1797,13 @@ end:
 
 static int usbf_epn_disable(struct usbf_ep *epn)
 {
-	/* Disable interrupts */
+	 
 	usbf_ep_reg_writel(epn, USBF_REG_EPN_INT_ENA, 0);
 
-	/* Disable endpoint */
+	 
 	usbf_ep_reg_bitclr(epn, USBF_REG_EPN_CONTROL, USBF_EPN_EN);
 
-	/* remove anything that was pending */
+	 
 	usbf_ep_nuke(epn, -ESHUTDOWN);
 
 	return 0;
@@ -1898,15 +1824,15 @@ static int usbf_ep_disable(struct usb_ep *_ep)
 
 	spin_lock_irqsave(&ep->udc->lock, flags);
 	ep->disabled = 1;
-	/* Disable DMA interrupt */
+	 
 	if (ep->dma_regs) {
 		usbf_reg_bitclr(udc, USBF_REG_AHBBINTEN,
 			USBF_SYS_DMA_ENDINTEN_EPN(ep->id));
 		ep->bridge_on_dma_end = NULL;
 	}
-	/* disable interrupts for this endpoint */
+	 
 	usbf_reg_bitclr(udc, USBF_REG_USB_INT_ENA, USBF_USB_EPN_EN(ep->id));
-	/* and the endpoint itself */
+	 
 	ret = usbf_epn_disable(ep);
 	spin_unlock_irqrestore(&ep->udc->lock, flags);
 
@@ -1944,9 +1870,7 @@ static int usbf_ep0_queue(struct usbf_ep *ep0, struct usbf_req *req,
 		if (ret != -EINPROGRESS) {
 			dev_err(ep0->udc->dev,
 				"queued request not in progress\n");
-			/* The request cannot be completed (ie
-			 * ret == 0) on the first call
-			 */
+			 
 			return ret ? ret : -EIO;
 		}
 	}
@@ -2026,19 +1950,14 @@ static int usbf_ep_dequeue(struct usb_ep *_ep, struct usb_request *_req)
 
 	first = list_is_first(&req->queue, &ep->queue);
 
-	/* Complete the request but avoid any operation that could be done
-	 * if a new request is queued during the request completion
-	 */
+	 
 	is_processing = ep->is_processing;
 	ep->is_processing = 1;
 	usbf_ep_req_done(ep, req, -ECONNRESET);
 	ep->is_processing = is_processing;
 
 	if (first) {
-		/* The first item in the list was dequeued.
-		 * This item could already be submitted to the hardware.
-		 * So, flush the fifo
-		 */
+		 
 		if (ep->id)
 			usbf_epn_fifo_flush(ep);
 		else
@@ -2046,14 +1965,7 @@ static int usbf_ep_dequeue(struct usb_ep *_ep, struct usb_request *_req)
 	}
 
 	if (ep->id == 0) {
-		/* We dequeue a request on ep0. On this endpoint, we can have
-		 * 1 request related to the data stage and/or 1 request
-		 * related to the status stage.
-		 * We dequeue one of them and so the USB control transaction
-		 * is no more coherent. The simple way to be consistent after
-		 * dequeuing is to stall and nuke the endpoint and wait the
-		 * next SETUP packet.
-		 */
+		 
 		usbf_ep_stall(ep, true);
 		usbf_ep_nuke(ep, -ECONNRESET);
 		ep->udc->ep0state = EP0_IDLE;
@@ -2325,16 +2237,11 @@ static int usbf_req_clear_set_feature(struct usbf_udc *udc,
 			return -EINVAL;
 
 		if ((ep->id == 0) && is_set) {
-			/* Endpoint 0 cannot be halted (stalled)
-			 * Returning an error code leads to a STALL on this ep0
-			 * but keep the automate in a consistent state.
-			 */
+			 
 			return -EINVAL;
 		}
 		if (ep->is_wedged && !is_set) {
-			/* Ignore CLEAR_FEATURE(HALT ENDPOINT) when the
-			 * endpoint is wedged
-			 */
+			 
 			break;
 		}
 		usbf_ep_stall(ep, is_set);
@@ -2355,16 +2262,13 @@ static void usbf_ep0_req_set_address_complete(struct usb_ep *_ep,
 {
 	struct usbf_ep *ep = container_of(_ep, struct usbf_ep, ep);
 
-	/* The status phase of the SET_ADDRESS request is completed ... */
+	 
 	if (_req->status == 0) {
-		/* ... without any errors -> Signaled the state to the core. */
+		 
 		usb_gadget_set_state(&ep->udc->gadget, USB_STATE_ADDRESS);
 	}
 
-	/* In case of request failure, there is no need to revert the address
-	 * value set to the hardware as the hardware will take care of the
-	 * value only if the status stage is completed normally.
-	 */
+	 
 }
 
 static int usbf_req_set_address(struct usbf_udc *udc,
@@ -2386,13 +2290,10 @@ static int usbf_req_set_address(struct usbf_udc *udc,
 		return -EINVAL;
 
 	addr = wValue;
-	/* The hardware will take care of this USB address after the status
-	 * stage of the SET_ADDRESS request is completed normally.
-	 * It is safe to write it now
-	 */
+	 
 	usbf_reg_writel(udc, USBF_REG_USB_ADDRESS, USBF_USB_SET_USB_ADDR(addr));
 
-	/* Queued the status request */
+	 
 	usbf_ep0_fill_req(&udc->ep[0], &udc->setup_reply, NULL, 0,
 			  usbf_ep0_req_set_address_complete);
 	usbf_ep0_queue(&udc->ep[0], &udc->setup_reply, GFP_ATOMIC);
@@ -2421,10 +2322,7 @@ static int usbf_req_set_configuration(struct usbf_udc *udc,
 
 	if ((ctrlrequest->bRequestType != (USB_DIR_OUT | USB_RECIP_DEVICE)) ||
 	    (wIndex != 0) || (wLength != 0)) {
-		/* No error detected by driver->setup() but it is not an USB2.0
-		 * Ch9 SET_CONFIGURATION.
-		 * Nothing more to do
-		 */
+		 
 		return 0;
 	}
 
@@ -2432,7 +2330,7 @@ static int usbf_req_set_configuration(struct usbf_udc *udc,
 		usbf_reg_bitset(udc, USBF_REG_USB_CONTROL, USBF_USB_CONF);
 	} else {
 		usbf_reg_bitclr(udc, USBF_REG_USB_CONTROL, USBF_USB_CONF);
-		/* Go back to Address State */
+		 
 		spin_unlock(&udc->lock);
 		usb_gadget_set_state(&udc->gadget, USB_STATE_ADDRESS);
 		spin_lock(&udc->lock);
@@ -2450,7 +2348,7 @@ static int usbf_handle_ep0_setup(struct usbf_ep *ep0)
 	struct usbf_udc *udc = ep0->udc;
 	int ret;
 
-	/* Read setup data (ie the USB control request) */
+	 
 	crq.raw[0] = usbf_reg_readl(udc, USBF_REG_SETUP_DATA0);
 	crq.raw[1] = usbf_reg_readl(udc, USBF_REG_SETUP_DATA1);
 
@@ -2459,7 +2357,7 @@ static int usbf_handle_ep0_setup(struct usbf_ep *ep0)
 		crq.ctrlreq.bRequestType, crq.ctrlreq.bRequest,
 		crq.ctrlreq.wValue, crq.ctrlreq.wIndex, crq.ctrlreq.wLength);
 
-	/* Set current EP0 state according to the received request */
+	 
 	if (crq.ctrlreq.wLength) {
 		if (crq.ctrlreq.bRequestType & USB_DIR_IN) {
 			udc->ep0state = EP0_IN_DATA_PHASE;
@@ -2478,11 +2376,11 @@ static int usbf_handle_ep0_setup(struct usbf_ep *ep0)
 		ep0->is_in = 1;
 	}
 
-	/* We starts a new control transfer -> Clear the delayed status flag */
+	 
 	ep0->delayed_status = 0;
 
 	if ((crq.ctrlreq.bRequestType & USB_TYPE_MASK) != USB_TYPE_STANDARD) {
-		/* This is not a USB standard request -> delelate */
+		 
 		goto delegate;
 	}
 
@@ -2532,11 +2430,11 @@ static int usbf_handle_ep0_data_status(struct usbf_ep *ep0,
 			ep0state_name);
 		break;
 	case -EINPROGRESS:
-		/* More data needs to be processed */
+		 
 		ret = 0;
 		break;
 	case 0:
-		/* All requests in the queue are processed */
+		 
 		udc->ep0state = next_ep0state;
 		break;
 	default:
@@ -2584,7 +2482,7 @@ static int usbf_handle_ep0_in_status_start(struct usbf_ep *ep0)
 				USBF_EP0_INAK_EN | USBF_EP0_PIDCLR);
 	ep0->is_in = 1;
 
-	/* Queue request for status if needed */
+	 
 	req = list_first_entry_or_null(&ep0->queue, struct usbf_req, queue);
 	if (!req) {
 		if (ep0->delayed_status) {
@@ -2738,13 +2636,10 @@ static void usbf_ep0_interrupt(struct usbf_ep *ep0)
 
 		if (ret) {
 			dev_dbg(ep0->udc->dev, "ep0 failed (%d)\n", ret);
-			/* Failure -> stall.
-			 * This stall state will be automatically cleared when
-			 * the IP receives the next SETUP packet
-			 */
+			 
 			usbf_ep_stall(ep0, true);
 
-			/* Remove anything that was pending */
+			 
 			usbf_ep_nuke(ep0, -EPROTO);
 
 			udc->ep0state = EP0_IDLE;
@@ -2769,11 +2664,11 @@ static void usbf_epn_process_queue(struct usbf_ep *epn)
 			epn->id, epn->is_in ? "in" : "out");
 		break;
 	case -EINPROGRESS:
-		/* More data needs to be processed */
+		 
 		ret = 0;
 		break;
 	case 0:
-		/* All requests in the queue are processed */
+		 
 		break;
 	default:
 		dev_err(epn->udc->dev, "ep%u %s, process queue failed (%d)\n",
@@ -2832,7 +2727,7 @@ static void usbf_epn_interrupt(struct usbf_ep *epn)
 static void usbf_ep_reset(struct usbf_ep *ep)
 {
 	ep->status = 0;
-	/* Remove anything that was pending */
+	 
 	usbf_ep_nuke(ep, -ESHUTDOWN);
 }
 
@@ -2852,14 +2747,14 @@ static void usbf_reset(struct usbf_udc *udc)
 	else
 		udc->gadget.speed = USB_SPEED_FULL;
 
-	/* Remote wakeup feature must be disabled on USB bus reset */
+	 
 	udc->is_remote_wakeup = false;
 
-	/* Enable endpoint zero */
+	 
 	usbf_ep0_enable(&udc->ep[0]);
 
 	if (udc->driver) {
-		/* Signal the reset */
+		 
 		spin_unlock(&udc->lock);
 		usb_gadget_udc_reset(&udc->gadget, udc->driver);
 		spin_lock(&udc->lock);
@@ -2881,13 +2776,7 @@ static void usbf_driver_suspend(struct usbf_udc *udc)
 		udc->driver->suspend(&udc->gadget);
 		spin_lock(&udc->lock);
 
-		/* The datasheet tells to set the USB_CONTROL register SUSPEND
-		 * bit when the USB bus suspend is detected.
-		 * This bit stops the clocks (clocks for EPC, SIE, USBPHY) but
-		 * these clocks seems not used only by the USB device. Some
-		 * UARTs can be lost ...
-		 * So, do not set the USB_CONTROL register SUSPEND bit.
-		 */
+		 
 	}
 }
 
@@ -2978,7 +2867,7 @@ static irqreturn_t usbf_ahb_epc_irq(int irq, void *_udc)
 
 	spin_lock_irqsave(&udc->lock, flags);
 
-	/* Read and ack interrupts */
+	 
 	sysbint = usbf_reg_readl(udc, USBF_REG_AHBBINT);
 	usbf_reg_writel(udc, USBF_REG_AHBBINT, sysbint);
 
@@ -3029,10 +2918,10 @@ static int usbf_udc_start(struct usb_gadget *gadget,
 
 	spin_lock_irqsave(&udc->lock, flags);
 
-	/* hook up the driver */
+	 
 	udc->driver = driver;
 
-	/* Enable VBUS interrupt */
+	 
 	usbf_reg_writel(udc, USBF_REG_AHBBINTEN, USBF_SYS_VBUS_INTEN);
 
 	spin_unlock_irqrestore(&udc->lock, flags);
@@ -3047,7 +2936,7 @@ static int usbf_udc_stop(struct usb_gadget *gadget)
 
 	spin_lock_irqsave(&udc->lock, flags);
 
-	/* Disable VBUS interrupt */
+	 
 	usbf_reg_writel(udc, USBF_REG_AHBBINTEN, 0);
 
 	udc->driver = NULL;
@@ -3068,17 +2957,12 @@ static int usbf_get_frame(struct usb_gadget *gadget)
 
 static void usbf_attach(struct usbf_udc *udc)
 {
-	/* Enable USB signal to Function PHY
-	 * D+ signal Pull-up
-	 * Disable endpoint 0, it will be automatically enable when a USB reset
-	 * is received.
-	 * Disable the other endpoints
-	 */
+	 
 	usbf_reg_clrset(udc, USBF_REG_USB_CONTROL,
 		USBF_USB_CONNECTB | USBF_USB_DEFAULT | USBF_USB_CONF,
 		USBF_USB_PUE2);
 
-	/* Enable reset and mode change interrupts */
+	 
 	usbf_reg_bitset(udc, USBF_REG_USB_INT_ENA,
 		USBF_USB_USB_RST_EN | USBF_USB_SPEED_MODE_EN | USBF_USB_RSUM_EN | USBF_USB_SPND_EN);
 }
@@ -3087,7 +2971,7 @@ static void usbf_detach(struct usbf_udc *udc)
 {
 	int i;
 
-	/* Disable interrupts */
+	 
 	usbf_reg_writel(udc, USBF_REG_USB_INT_ENA, 0);
 
 	for (i = 0; i < ARRAY_SIZE(udc->ep); i++) {
@@ -3097,11 +2981,7 @@ static void usbf_detach(struct usbf_udc *udc)
 		usbf_ep_reset(&udc->ep[i]);
 	}
 
-	/* Disable USB signal to Function PHY
-	 * Do not Pull-up D+ signal
-	 * Disable endpoint 0
-	 * Disable the other endpoints
-	 */
+	 
 	usbf_reg_clrset(udc, USBF_REG_USB_CONTROL,
 		USBF_USB_PUE2 | USBF_USB_DEFAULT | USBF_USB_CONF,
 		USBF_USB_CONNECTB);
@@ -3153,7 +3033,7 @@ static int usbf_udc_wakeup(struct usb_gadget *gadget)
 
 	dev_dbg(udc->dev, "do wakeup\n");
 
-	/* Send the resume signal */
+	 
 	usbf_reg_bitset(udc, USBF_REG_USB_CONTROL, USBF_USB_RSUM_IN);
 	usbf_reg_bitclr(udc, USBF_REG_USB_CONTROL, USBF_USB_RSUM_IN);
 
@@ -3270,12 +3150,10 @@ static int usbf_probe(struct platform_device *pdev)
 	dev_info(dev, "USBF version: %08x\n",
 		usbf_reg_readl(udc, USBF_REG_USBSSVER));
 
-	/* Resetting the PLL is handled via the clock driver as it has common
-	 * registers with USB Host
-	 */
+	 
 	usbf_reg_bitclr(udc, USBF_REG_EPCTR, USBF_SYS_EPC_RST);
 
-	/* modify in register gadget process */
+	 
 	udc->gadget.speed = USB_SPEED_FULL;
 	udc->gadget.max_speed = USB_SPEED_HIGH;
 	udc->gadget.ops = &usbf_gadget_ops;
@@ -3284,15 +3162,11 @@ static int usbf_probe(struct platform_device *pdev)
 	udc->gadget.dev.parent = dev;
 	udc->gadget.ep0 = &udc->ep[0].ep;
 
-	/* The hardware DMA controller needs dma addresses aligned on 32bit.
-	 * A fallback to pio is done if DMA addresses are not aligned.
-	 */
+	 
 	udc->gadget.quirk_avoids_skb_reserve = 1;
 
 	INIT_LIST_HEAD(&udc->gadget.ep_list);
-	/* we have a canned request structure to allow sending packets as reply
-	 * to get_status requests
-	 */
+	 
 	INIT_LIST_HEAD(&udc->setup_reply.queue);
 
 	for (i = 0; i < ARRAY_SIZE(udc->ep); i++) {
@@ -3371,7 +3245,7 @@ static void usbf_remove(struct platform_device *pdev)
 
 static const struct of_device_id usbf_match[] = {
 	{ .compatible = "renesas,rzn1-usbf" },
-	{} /* sentinel */
+	{}  
 };
 MODULE_DEVICE_TABLE(of, usbf_match);
 

@@ -1,18 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Driver for Linear Technology LTC4151 High Voltage I2C Current
- * and Voltage Monitor
- *
- * Copyright (C) 2011 AppearTV AS
- *
- * Derived from:
- *
- *  Driver for Linear Technology LTC4261 I2C Negative Voltage Hot
- *  Swap Controller
- *  Copyright (C) 2010 Ericsson AB.
- *
- * Datasheet: http://www.linear.com/docs/Datasheet/4151fc.pdf
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -25,7 +12,7 @@
 #include <linux/hwmon-sysfs.h>
 #include <linux/jiffies.h>
 
-/* chip registers */
+ 
 #define LTC4151_SENSE_H	0x00
 #define LTC4151_SENSE_L	0x01
 #define LTC4151_VIN_H	0x02
@@ -38,10 +25,10 @@ struct ltc4151_data {
 
 	struct mutex update_lock;
 	bool valid;
-	unsigned long last_updated; /* in jiffies */
-	unsigned int shunt; /* in micro ohms */
+	unsigned long last_updated;  
+	unsigned int shunt;  
 
-	/* Registers */
+	 
 	u8 regs[6];
 };
 
@@ -53,16 +40,13 @@ static struct ltc4151_data *ltc4151_update_device(struct device *dev)
 
 	mutex_lock(&data->update_lock);
 
-	/*
-	 * The chip's A/D updates 6 times per second
-	 * (Conversion Rate 6 - 9 Hz)
-	 */
+	 
 	if (time_after(jiffies, data->last_updated + HZ / 6) || !data->valid) {
 		int i;
 
 		dev_dbg(&client->dev, "Starting ltc4151 update\n");
 
-		/* Read all registers */
+		 
 		for (i = 0; i < ARRAY_SIZE(data->regs); i++) {
 			int val;
 
@@ -84,7 +68,7 @@ abort:
 	return ret;
 }
 
-/* Return the voltage from the given register in mV */
+ 
 static int ltc4151_get_value(struct ltc4151_data *data, u8 reg)
 {
 	u32 val;
@@ -93,22 +77,19 @@ static int ltc4151_get_value(struct ltc4151_data *data, u8 reg)
 
 	switch (reg) {
 	case LTC4151_ADIN_H:
-		/* 500uV resolution. Convert to mV. */
+		 
 		val = val * 500 / 1000;
 		break;
 	case LTC4151_SENSE_H:
-		/*
-		 * 20uV resolution. Convert to current as measured with
-		 * a given sense resistor, in mA.
-		 */
+		 
 		val = val * 20 * 1000 / data->shunt;
 		break;
 	case LTC4151_VIN_H:
-		/* 25 mV per increment */
+		 
 		val = val * 25;
 		break;
 	default:
-		/* If we get here, the developer messed up */
+		 
 		WARN_ON_ONCE(1);
 		val = 0;
 		break;
@@ -131,19 +112,14 @@ static ssize_t ltc4151_value_show(struct device *dev,
 	return sysfs_emit(buf, "%d\n", value);
 }
 
-/*
- * Input voltages.
- */
+ 
 static SENSOR_DEVICE_ATTR_RO(in1_input, ltc4151_value, LTC4151_VIN_H);
 static SENSOR_DEVICE_ATTR_RO(in2_input, ltc4151_value, LTC4151_ADIN_H);
 
-/* Currents (via sense resistor) */
+ 
 static SENSOR_DEVICE_ATTR_RO(curr1_input, ltc4151_value, LTC4151_SENSE_H);
 
-/*
- * Finally, construct an array of pointers to members of the above objects,
- * as required for sysfs_create_group()
- */
+ 
 static struct attribute *ltc4151_attrs[] = {
 	&sensor_dev_attr_in1_input.dev_attr.attr,
 	&sensor_dev_attr_in2_input.dev_attr.attr,
@@ -171,7 +147,7 @@ static int ltc4151_probe(struct i2c_client *client)
 
 	if (of_property_read_u32(client->dev.of_node,
 				 "shunt-resistor-micro-ohms", &shunt))
-		shunt = 1000; /* 1 mOhm if not set via DT */
+		shunt = 1000;  
 
 	if (shunt == 0)
 		return -EINVAL;
@@ -199,7 +175,7 @@ static const struct of_device_id __maybe_unused ltc4151_match[] = {
 };
 MODULE_DEVICE_TABLE(of, ltc4151_match);
 
-/* This is the driver that will be inserted */
+ 
 static struct i2c_driver ltc4151_driver = {
 	.driver = {
 		.name	= "ltc4151",

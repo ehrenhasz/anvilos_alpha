@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2019 Intel Corporation
- */
+ 
+ 
 
 #ifndef INTEL_GT_PM_IRQ_H
 #define INTEL_GT_PM_IRQ_H
@@ -18,4 +16,4 @@ void gen6_gt_pm_disable_irq(struct intel_gt *gt, u32 disable_mask);
 
 void gen6_gt_pm_reset_iir(struct intel_gt *gt, u32 reset_mask);
 
-#endif /* INTEL_GT_PM_IRQ_H */
+#endif  

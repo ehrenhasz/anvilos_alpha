@@ -1,26 +1,4 @@
-/*
- * Copyright 2015 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: Alex Deucher
- */
+ 
 
 #include "amdgpu.h"
 #include "amdgpu_trace.h"
@@ -65,9 +43,7 @@ static void si_dma_ring_emit_ib(struct amdgpu_ring *ring,
 				uint32_t flags)
 {
 	unsigned vmid = AMDGPU_JOB_GET_VMID(job);
-	/* The indirect buffer packet must end on an 8 DW boundary in the DMA ring.
-	 * Pad as necessary with NOPs.
-	 */
+	 
 	while ((lower_32_bits(ring->wptr) & 7) != 5)
 		amdgpu_ring_write(ring, DMA_PACKET(DMA_PACKET_NOP, 0, 0, 0, 0));
 	amdgpu_ring_write(ring, DMA_IB_PACKET(DMA_PACKET_INDIRECT_BUFFER, vmid, 0));
@@ -76,29 +52,18 @@ static void si_dma_ring_emit_ib(struct amdgpu_ring *ring,
 
 }
 
-/**
- * si_dma_ring_emit_fence - emit a fence on the DMA ring
- *
- * @ring: amdgpu ring pointer
- * @addr: address
- * @seq: sequence number
- * @flags: fence related flags
- *
- * Add a DMA fence packet to the ring to write
- * the fence seq number and DMA trap packet to generate
- * an interrupt if needed (VI).
- */
+ 
 static void si_dma_ring_emit_fence(struct amdgpu_ring *ring, u64 addr, u64 seq,
 				      unsigned flags)
 {
 
 	bool write64bit = flags & AMDGPU_FENCE_FLAG_64BIT;
-	/* write the fence */
+	 
 	amdgpu_ring_write(ring, DMA_PACKET(DMA_PACKET_FENCE, 0, 0, 0, 0));
 	amdgpu_ring_write(ring, addr & 0xfffffffc);
 	amdgpu_ring_write(ring, (upper_32_bits(addr) & 0xff));
 	amdgpu_ring_write(ring, seq);
-	/* optionally write high bits as well */
+	 
 	if (write64bit) {
 		addr += 4;
 		amdgpu_ring_write(ring, DMA_PACKET(DMA_PACKET_FENCE, 0, 0, 0, 0));
@@ -106,7 +71,7 @@ static void si_dma_ring_emit_fence(struct amdgpu_ring *ring, u64 addr, u64 seq,
 		amdgpu_ring_write(ring, (upper_32_bits(addr) & 0xff));
 		amdgpu_ring_write(ring, upper_32_bits(seq));
 	}
-	/* generate an interrupt */
+	 
 	amdgpu_ring_write(ring, DMA_PACKET(DMA_PACKET_TRAP, 0, 0, 0, 0));
 }
 
@@ -118,7 +83,7 @@ static void si_dma_stop(struct amdgpu_device *adev)
 	amdgpu_sdma_unset_buffer_funcs_helper(adev);
 
 	for (i = 0; i < adev->sdma.num_instances; i++) {
-		/* dma0 */
+		 
 		rb_cntl = RREG32(DMA_RB_CNTL + sdma_offsets[i]);
 		rb_cntl &= ~DMA_RB_ENABLE;
 		WREG32(DMA_RB_CNTL + sdma_offsets[i], rb_cntl);
@@ -138,7 +103,7 @@ static int si_dma_start(struct amdgpu_device *adev)
 		WREG32(DMA_SEM_INCOMPLETE_TIMER_CNTL + sdma_offsets[i], 0);
 		WREG32(DMA_SEM_WAIT_FAIL_TIMER_CNTL + sdma_offsets[i], 0);
 
-		/* Set ring buffer size in dwords */
+		 
 		rb_bufsz = order_base_2(ring->ring_size / 4);
 		rb_cntl = rb_bufsz << 1;
 #ifdef __BIG_ENDIAN
@@ -146,7 +111,7 @@ static int si_dma_start(struct amdgpu_device *adev)
 #endif
 		WREG32(DMA_RB_CNTL + sdma_offsets[i], rb_cntl);
 
-		/* Initialize the ring buffer's read and write pointers */
+		 
 		WREG32(DMA_RB_RPTR + sdma_offsets[i], 0);
 		WREG32(DMA_RB_WPTR + sdma_offsets[i], 0);
 
@@ -159,7 +124,7 @@ static int si_dma_start(struct amdgpu_device *adev)
 
 		WREG32(DMA_RB_BASE + sdma_offsets[i], ring->gpu_addr >> 8);
 
-		/* enable DMA IBs */
+		 
 		ib_cntl = DMA_IB_ENABLE | CMD_VMID_FORCE;
 #ifdef __BIG_ENDIAN
 		ib_cntl |= DMA_IB_SWAP_ENABLE;
@@ -185,15 +150,7 @@ static int si_dma_start(struct amdgpu_device *adev)
 	return 0;
 }
 
-/**
- * si_dma_ring_test_ring - simple async dma engine test
- *
- * @ring: amdgpu_ring structure holding ring information
- *
- * Test the DMA engine by writing using it to write an
- * value to memory. (VI).
- * Returns 0 for success, error for failure.
- */
+ 
 static int si_dma_ring_test_ring(struct amdgpu_ring *ring)
 {
 	struct amdgpu_device *adev = ring->adev;
@@ -236,15 +193,7 @@ error_free_wb:
 	return r;
 }
 
-/**
- * si_dma_ring_test_ib - test an IB on the DMA engine
- *
- * @ring: amdgpu_ring structure holding ring information
- * @timeout: timeout value in jiffies, or MAX_SCHEDULE_TIMEOUT
- *
- * Test a simple IB in the DMA ring (VI).
- * Returns 0 on success, error on failure.
- */
+ 
 static int si_dma_ring_test_ib(struct amdgpu_ring *ring, long timeout)
 {
 	struct amdgpu_device *adev = ring->adev;
@@ -298,16 +247,7 @@ err0:
 	return r;
 }
 
-/**
- * si_dma_vm_copy_pte - update PTEs by copying them from the GART
- *
- * @ib: indirect buffer to fill with commands
- * @pe: addr of the page entry
- * @src: src addr to copy from
- * @count: number of page entries to update
- *
- * Update PTEs by copying them from the GART using DMA (SI).
- */
+ 
 static void si_dma_vm_copy_pte(struct amdgpu_ib *ib,
 			       uint64_t pe, uint64_t src,
 			       unsigned count)
@@ -322,17 +262,7 @@ static void si_dma_vm_copy_pte(struct amdgpu_ib *ib,
 	ib->ptr[ib->length_dw++] = upper_32_bits(src) & 0xff;
 }
 
-/**
- * si_dma_vm_write_pte - update PTEs by writing them manually
- *
- * @ib: indirect buffer to fill with commands
- * @pe: addr of the page entry
- * @value: dst addr to write into pe
- * @count: number of page entries to update
- * @incr: increase next addr by incr bytes
- *
- * Update PTEs by writing them manually using DMA (SI).
- */
+ 
 static void si_dma_vm_write_pte(struct amdgpu_ib *ib, uint64_t pe,
 				uint64_t value, unsigned count,
 				uint32_t incr)
@@ -349,18 +279,7 @@ static void si_dma_vm_write_pte(struct amdgpu_ib *ib, uint64_t pe,
 	}
 }
 
-/**
- * si_dma_vm_set_pte_pde - update the page tables using sDMA
- *
- * @ib: indirect buffer to fill with commands
- * @pe: addr of the page entry
- * @addr: dst addr to write into pe
- * @count: number of page entries to update
- * @incr: increase next addr by incr bytes
- * @flags: access flags
- *
- * Update the page tables using sDMA (CIK).
- */
+ 
 static void si_dma_vm_set_pte_pde(struct amdgpu_ib *ib,
 				     uint64_t pe,
 				     uint64_t addr, unsigned count,
@@ -379,15 +298,15 @@ static void si_dma_vm_set_pte_pde(struct amdgpu_ib *ib,
 		else
 			value = 0;
 
-		/* for physically contiguous pages (vram) */
+		 
 		ib->ptr[ib->length_dw++] = DMA_PTE_PDE_PACKET(ndw);
-		ib->ptr[ib->length_dw++] = pe; /* dst addr */
+		ib->ptr[ib->length_dw++] = pe;  
 		ib->ptr[ib->length_dw++] = upper_32_bits(pe) & 0xff;
-		ib->ptr[ib->length_dw++] = lower_32_bits(flags); /* mask */
+		ib->ptr[ib->length_dw++] = lower_32_bits(flags);  
 		ib->ptr[ib->length_dw++] = upper_32_bits(flags);
-		ib->ptr[ib->length_dw++] = value; /* value */
+		ib->ptr[ib->length_dw++] = value;  
 		ib->ptr[ib->length_dw++] = upper_32_bits(value);
-		ib->ptr[ib->length_dw++] = incr; /* increment size */
+		ib->ptr[ib->length_dw++] = incr;  
 		ib->ptr[ib->length_dw++] = 0;
 		pe += ndw * 4;
 		addr += (ndw / 2) * incr;
@@ -395,63 +314,42 @@ static void si_dma_vm_set_pte_pde(struct amdgpu_ib *ib,
 	}
 }
 
-/**
- * si_dma_ring_pad_ib - pad the IB to the required number of dw
- *
- * @ring: amdgpu_ring pointer
- * @ib: indirect buffer to fill with padding
- *
- */
+ 
 static void si_dma_ring_pad_ib(struct amdgpu_ring *ring, struct amdgpu_ib *ib)
 {
 	while (ib->length_dw & 0x7)
 		ib->ptr[ib->length_dw++] = DMA_PACKET(DMA_PACKET_NOP, 0, 0, 0, 0);
 }
 
-/**
- * si_dma_ring_emit_pipeline_sync - sync the pipeline
- *
- * @ring: amdgpu_ring pointer
- *
- * Make sure all previous operations are completed (CIK).
- */
+ 
 static void si_dma_ring_emit_pipeline_sync(struct amdgpu_ring *ring)
 {
 	uint32_t seq = ring->fence_drv.sync_seq;
 	uint64_t addr = ring->fence_drv.gpu_addr;
 
-	/* wait for idle */
+	 
 	amdgpu_ring_write(ring, DMA_PACKET(DMA_PACKET_POLL_REG_MEM, 0, 0, 0, 0) |
-			  (1 << 27)); /* Poll memory */
+			  (1 << 27));  
 	amdgpu_ring_write(ring, lower_32_bits(addr));
-	amdgpu_ring_write(ring, (0xff << 16) | upper_32_bits(addr)); /* retry, addr_hi */
-	amdgpu_ring_write(ring, 0xffffffff); /* mask */
-	amdgpu_ring_write(ring, seq); /* value */
-	amdgpu_ring_write(ring, (3 << 28) | 0x20); /* func(equal) | poll interval */
+	amdgpu_ring_write(ring, (0xff << 16) | upper_32_bits(addr));  
+	amdgpu_ring_write(ring, 0xffffffff);  
+	amdgpu_ring_write(ring, seq);  
+	amdgpu_ring_write(ring, (3 << 28) | 0x20);  
 }
 
-/**
- * si_dma_ring_emit_vm_flush - cik vm flush using sDMA
- *
- * @ring: amdgpu_ring pointer
- * @vmid: vmid number to use
- * @pd_addr: address
- *
- * Update the page table base and flush the VM TLB
- * using sDMA (VI).
- */
+ 
 static void si_dma_ring_emit_vm_flush(struct amdgpu_ring *ring,
 				      unsigned vmid, uint64_t pd_addr)
 {
 	amdgpu_gmc_emit_flush_gpu_tlb(ring, vmid, pd_addr);
 
-	/* wait for invalidate to complete */
+	 
 	amdgpu_ring_write(ring, DMA_PACKET(DMA_PACKET_POLL_REG_MEM, 0, 0, 0, 0));
 	amdgpu_ring_write(ring, VM_INVALIDATE_REQUEST);
-	amdgpu_ring_write(ring, 0xff << 16); /* retry */
-	amdgpu_ring_write(ring, 1 << vmid); /* mask */
-	amdgpu_ring_write(ring, 0); /* value */
-	amdgpu_ring_write(ring, (0 << 28) | 0x20); /* func(always) | poll interval */
+	amdgpu_ring_write(ring, 0xff << 16);  
+	amdgpu_ring_write(ring, 1 << vmid);  
+	amdgpu_ring_write(ring, 0);  
+	amdgpu_ring_write(ring, (0 << 28) | 0x20);  
 }
 
 static void si_dma_ring_emit_wreg(struct amdgpu_ring *ring,
@@ -482,13 +380,13 @@ static int si_dma_sw_init(void *handle)
 	int r, i;
 	struct amdgpu_device *adev = (struct amdgpu_device *)handle;
 
-	/* DMA0 trap event */
+	 
 	r = amdgpu_irq_add_id(adev, AMDGPU_IRQ_CLIENTID_LEGACY, 224,
 			      &adev->sdma.trap_irq);
 	if (r)
 		return r;
 
-	/* DMA1 trap event */
+	 
 	r = amdgpu_irq_add_id(adev, AMDGPU_IRQ_CLIENTID_LEGACY, 244,
 			      &adev->sdma.trap_irq);
 	if (r)
@@ -724,11 +622,11 @@ static const struct amdgpu_ring_funcs si_dma_ring_funcs = {
 	.get_wptr = si_dma_ring_get_wptr,
 	.set_wptr = si_dma_ring_set_wptr,
 	.emit_frame_size =
-		3 + 3 + /* hdp flush / invalidate */
-		6 + /* si_dma_ring_emit_pipeline_sync */
-		SI_FLUSH_GPU_TLB_NUM_WREG * 3 + 6 + /* si_dma_ring_emit_vm_flush */
-		9 + 9 + 9, /* si_dma_ring_emit_fence x3 for user fence, vm fence */
-	.emit_ib_size = 7 + 3, /* si_dma_ring_emit_ib */
+		3 + 3 +  
+		6 +  
+		SI_FLUSH_GPU_TLB_NUM_WREG * 3 + 6 +  
+		9 + 9 + 9,  
+	.emit_ib_size = 7 + 3,  
 	.emit_ib = si_dma_ring_emit_ib,
 	.emit_fence = si_dma_ring_emit_fence,
 	.emit_pipeline_sync = si_dma_ring_emit_pipeline_sync,
@@ -759,19 +657,7 @@ static void si_dma_set_irq_funcs(struct amdgpu_device *adev)
 	adev->sdma.trap_irq.funcs = &si_dma_trap_irq_funcs;
 }
 
-/**
- * si_dma_emit_copy_buffer - copy buffer using the sDMA engine
- *
- * @ib: indirect buffer to copy to
- * @src_offset: src GPU address
- * @dst_offset: dst GPU address
- * @byte_count: number of bytes to xfer
- * @tmz: is this a secure operation
- *
- * Copy GPU buffers using the DMA engine (VI).
- * Used by the amdgpu ttm implementation to move pages if
- * registered as the asic copy callback.
- */
+ 
 static void si_dma_emit_copy_buffer(struct amdgpu_ib *ib,
 				       uint64_t src_offset,
 				       uint64_t dst_offset,
@@ -786,16 +672,7 @@ static void si_dma_emit_copy_buffer(struct amdgpu_ib *ib,
 	ib->ptr[ib->length_dw++] = upper_32_bits(src_offset) & 0xff;
 }
 
-/**
- * si_dma_emit_fill_buffer - fill buffer using the sDMA engine
- *
- * @ib: indirect buffer to copy to
- * @src_data: value to write to buffer
- * @dst_offset: dst GPU address
- * @byte_count: number of bytes to xfer
- *
- * Fill GPU buffers using the DMA engine (VI).
- */
+ 
 static void si_dma_emit_fill_buffer(struct amdgpu_ib *ib,
 				       uint32_t src_data,
 				       uint64_t dst_offset,

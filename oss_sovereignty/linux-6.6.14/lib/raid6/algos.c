@@ -1,15 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* -*- linux-c -*- ------------------------------------------------------- *
- *
- *   Copyright 2002 H. Peter Anvin - All Rights Reserved
- *
- * ----------------------------------------------------------------------- */
 
-/*
- * raid6/algos.c
- *
- * Algorithm list and algorithm selection for RAID-6
- */
+ 
+
+ 
 
 #include <linux/raid/pq.h>
 #ifndef __KERNEL__
@@ -18,7 +10,7 @@
 #else
 #include <linux/module.h>
 #include <linux/gfp.h>
-/* In .bss so it's zeroed */
+ 
 const char raid6_empty_zero_page[PAGE_SIZE] __attribute__((aligned(256)));
 EXPORT_SYMBOL(raid6_empty_zero_page);
 #endif
@@ -127,7 +119,7 @@ const struct raid6_recov_calls *const raid6_recov_algos[] = {
 #ifdef __KERNEL__
 #define RAID6_TIME_JIFFIES_LG2	4
 #else
-/* Need more time to be stable in userspace */
+ 
 #define RAID6_TIME_JIFFIES_LG2	9
 #define time_before(x, y) ((x) < (y))
 #endif
@@ -160,7 +152,7 @@ static inline const struct raid6_calls *raid6_choose_gen(
 	void *(*const dptrs)[RAID6_TEST_DISKS], const int disks)
 {
 	unsigned long perf, bestgenperf, j0, j1;
-	int start = (disks>>1)-1, stop = disks-3;	/* work on the second half of the disks */
+	int start = (disks>>1)-1, stop = disks-3;	 
 	const struct raid6_calls *const *algo;
 	const struct raid6_calls *best;
 
@@ -240,8 +232,8 @@ out:
 }
 
 
-/* Try to pick the best algorithm */
-/* This code uses the gfmul table as convenient data set to abuse */
+ 
+ 
 
 int __init raid6_select_algo(void)
 {
@@ -253,7 +245,7 @@ int __init raid6_select_algo(void)
 	void *dptrs[RAID6_TEST_DISKS];
 	int i, cycle;
 
-	/* prepare the buffer and fill it circularly with gfmul table */
+	 
 	disk_ptr = (char *)__get_free_pages(GFP_KERNEL, RAID6_TEST_DISKS_ORDER);
 	if (!disk_ptr) {
 		pr_err("raid6: Yikes!  No memory available.\n");
@@ -273,10 +265,10 @@ int __init raid6_select_algo(void)
 	if ((disks - 2) * PAGE_SIZE % 65536)
 		memcpy(p, raid6_gfmul, (disks - 2) * PAGE_SIZE % 65536);
 
-	/* select raid gen_syndrome function */
+	 
 	gen_best = raid6_choose_gen(&dptrs, disks);
 
-	/* select raid recover functions */
+	 
 	rec_best = raid6_choose_recov();
 
 	free_pages((unsigned long)disk_ptr, RAID6_TEST_DISKS_ORDER);

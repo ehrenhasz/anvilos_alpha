@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _UDP6_IMPL_H
 #define _UDP6_IMPL_H
 #include <net/udp.h>
@@ -28,4 +28,4 @@ void udpv6_destroy_sock(struct sock *sk);
 #ifdef CONFIG_PROC_FS
 int udp6_seq_show(struct seq_file *seq, void *v);
 #endif
-#endif	/* _UDP6_IMPL_H */
+#endif	 

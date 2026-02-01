@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2014 Marvell Technology Group Ltd.
- *
- * Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>
- * Alexandre Belloni <alexandre.belloni@free-electrons.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/clk-provider.h>
@@ -58,28 +53,7 @@
 #define REG_GC360_CLKCTL	0x024c
 #define REG_SDIO_DLLMST_CLKCTL	0x0250
 
-/*
- * BG2/BG2CD SoCs have the following audio/video I/O units:
- *
- * audiohd: HDMI TX audio
- * audio0:  7.1ch TX
- * audio1:  2ch TX
- * audio2:  2ch RX
- * audio3:  SPDIF TX
- * video0:  HDMI video
- * video1:  Secondary video
- * video2:  SD auxiliary video
- *
- * There are no external audio clocks (ACLKI0, ACLKI1) and
- * only one external video clock (VCLKI0).
- *
- * Currently missing bits and pieces:
- * - audio_fast_pll is unknown
- * - audiohd_pll is unknown
- * - video0_pll is unknown
- * - audio[023], audiohd parent pll is assumed to be audio_fast_pll
- *
- */
+ 
 
 #define	MAX_CLKS 41
 static struct clk_hw_onecell_data *clk_data;
@@ -512,7 +486,7 @@ static void __init berlin2_clock_setup(struct device_node *np)
 	if (!gbase)
 		return;
 
-	/* overwrite default clock names with DT provided ones */
+	 
 	clk = of_clk_get_by_name(np, clk_names[REFCLK]);
 	if (!IS_ERR(clk)) {
 		clk_names[REFCLK] = __clk_get_name(clk);
@@ -525,7 +499,7 @@ static void __init berlin2_clock_setup(struct device_node *np)
 		clk_put(clk);
 	}
 
-	/* simple register PLLs */
+	 
 	ret = berlin2_pll_register(&bg2_pll_map, gbase + REG_SYSPLLCTL0,
 				   clk_names[SYSPLL], clk_names[REFCLK], 0);
 	if (ret)
@@ -544,7 +518,7 @@ static void __init berlin2_clock_setup(struct device_node *np)
 	if (of_device_is_compatible(np, "marvell,berlin2-global-register"))
 		avpll_flags |= BERLIN2_AVPLL_SCRAMBLE_QUIRK;
 
-	/* audio/video VCOs */
+	 
 	ret = berlin2_avpll_vco_register(gbase + REG_AVPLLCTL0, "avpll_vcoA",
 			 clk_names[REFCLK], avpll_flags, 0);
 	if (ret)
@@ -572,7 +546,7 @@ static void __init berlin2_clock_setup(struct device_node *np)
 			goto bg2_fail;
 	}
 
-	/* reference clock bypass switches */
+	 
 	parent_names[0] = clk_names[SYSPLL];
 	parent_names[1] = clk_names[REFCLK];
 	hw = clk_hw_register_mux(NULL, "syspll_byp", parent_names, 2,
@@ -597,7 +571,7 @@ static void __init berlin2_clock_setup(struct device_node *np)
 		goto bg2_fail;
 	clk_names[CPUPLL] = clk_hw_get_name(hw);
 
-	/* clock muxes */
+	 
 	parent_names[0] = clk_names[AVPLL_B3];
 	parent_names[1] = clk_names[AVPLL_A3];
 	hw = clk_hw_register_mux(NULL, clk_names[AUDIO1_PLL], parent_names, 2,
@@ -640,7 +614,7 @@ static void __init berlin2_clock_setup(struct device_node *np)
 	if (IS_ERR(hw))
 		goto bg2_fail;
 
-	/* clock divider cells */
+	 
 	for (n = 0; n < ARRAY_SIZE(bg2_divs); n++) {
 		const struct berlin2_div_data *dd = &bg2_divs[n];
 		int k;
@@ -653,7 +627,7 @@ static void __init berlin2_clock_setup(struct device_node *np)
 				dd->num_parents, dd->flags, &lock);
 	}
 
-	/* clock gate cells */
+	 
 	for (n = 0; n < ARRAY_SIZE(bg2_gates); n++) {
 		const struct berlin2_gate_data *gd = &bg2_gates[n];
 
@@ -662,11 +636,11 @@ static void __init berlin2_clock_setup(struct device_node *np)
 			    gd->bit_idx, 0, &lock);
 	}
 
-	/* twdclk is derived from cpu/3 */
+	 
 	hws[CLKID_TWD] =
 		clk_hw_register_fixed_factor(NULL, "twd", "cpu", 0, 1, 3);
 
-	/* check for errors on leaf clocks */
+	 
 	for (n = 0; n < MAX_CLKS; n++) {
 		if (!IS_ERR(hws[n]))
 			continue;
@@ -675,7 +649,7 @@ static void __init berlin2_clock_setup(struct device_node *np)
 		goto bg2_fail;
 	}
 
-	/* register clk-provider */
+	 
 	of_clk_add_hw_provider(np, of_clk_hw_onecell_get, clk_data);
 
 	return;

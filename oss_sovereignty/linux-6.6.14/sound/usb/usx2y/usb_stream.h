@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef __USB_STREAM_H
 #define __USB_STREAM_H
 
@@ -43,4 +43,4 @@ void usb_stream_free(struct usb_stream_kernel *sk);
 int usb_stream_start(struct usb_stream_kernel *sk);
 void usb_stream_stop(struct usb_stream_kernel *sk);
 
-#endif /* __USB_STREAM_H */
+#endif  

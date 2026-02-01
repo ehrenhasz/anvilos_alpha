@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * Copyright 2020 Kévin L'hôpital <kevin.lhopital@bootlin.com>
- * Copyright 2020-2022 Bootlin
- * Author: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
- */
+ 
+ 
 
 #ifndef _SUN8I_A83T_DPHY_H_
 #define _SUN8I_A83T_DPHY_H_

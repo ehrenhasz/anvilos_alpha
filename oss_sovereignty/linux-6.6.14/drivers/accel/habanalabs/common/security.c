@@ -1,9 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
 
-/*
- * Copyright 2020 HabanaLabs, Ltd.
- * All Rights Reserved.
- */
+
+ 
 
 #include "habanalabs.h"
 
@@ -20,15 +17,7 @@ static const char * const hl_glbl_error_cause[HL_MAX_NUM_OF_GLBL_ERR_CAUSE] = {
 	"Write to read only"
 };
 
-/**
- * hl_get_pb_block - return the relevant block within the block array
- *
- * @hdev: pointer to hl_device structure
- * @mm_reg_addr: register address in the desired block
- * @pb_blocks: blocks array
- * @array_size: blocks array size
- *
- */
+ 
 static int hl_get_pb_block(struct hl_device *hdev, u32 mm_reg_addr,
 		const u32 pb_blocks[], int array_size)
 {
@@ -48,14 +37,7 @@ static int hl_get_pb_block(struct hl_device *hdev, u32 mm_reg_addr,
 	return -EDOM;
 }
 
-/**
- * hl_unset_pb_in_block - clear a specific protection bit in a block
- *
- * @hdev: pointer to hl_device structure
- * @reg_offset: register offset will be converted to bit offset in pb block
- * @sgs_entry: pb array
- *
- */
+ 
 static int hl_unset_pb_in_block(struct hl_device *hdev, u32 reg_offset,
 				struct hl_block_glbl_sec *sgs_entry)
 {
@@ -72,18 +54,7 @@ static int hl_unset_pb_in_block(struct hl_device *hdev, u32 reg_offset,
 	return 0;
 }
 
-/**
- * hl_unsecure_register - locate the relevant block for this register and
- *                        remove corresponding protection bit
- *
- * @hdev: pointer to hl_device structure
- * @mm_reg_addr: register address to unsecure
- * @offset: additional offset to the register address
- * @pb_blocks: blocks array
- * @sgs_array: pb array
- * @array_size: blocks array size
- *
- */
+ 
 int hl_unsecure_register(struct hl_device *hdev, u32 mm_reg_addr, int offset,
 		const u32 pb_blocks[], struct hl_block_glbl_sec sgs_array[],
 		int array_size)
@@ -101,18 +72,7 @@ int hl_unsecure_register(struct hl_device *hdev, u32 mm_reg_addr, int offset,
 	return hl_unset_pb_in_block(hdev, reg_offset, &sgs_array[block_num]);
 }
 
-/**
- * hl_unsecure_register_range - locate the relevant block for this register
- *                              range and remove corresponding protection bit
- *
- * @hdev: pointer to hl_device structure
- * @mm_reg_range: register address range to unsecure
- * @offset: additional offset to the register address
- * @pb_blocks: blocks array
- * @sgs_array: pb array
- * @array_size: blocks array size
- *
- */
+ 
 static int hl_unsecure_register_range(struct hl_device *hdev,
 		struct range mm_reg_range, int offset, const u32 pb_blocks[],
 		struct hl_block_glbl_sec sgs_array[],
@@ -136,19 +96,7 @@ static int hl_unsecure_register_range(struct hl_device *hdev,
 	return rc;
 }
 
-/**
- * hl_unsecure_registers - locate the relevant block for all registers and
- *                        remove corresponding protection bit
- *
- * @hdev: pointer to hl_device structure
- * @mm_reg_array: register address array to unsecure
- * @mm_array_size: register array size
- * @offset: additional offset to the register address
- * @pb_blocks: blocks array
- * @sgs_array: pb array
- * @blocks_array_size: blocks array size
- *
- */
+ 
 int hl_unsecure_registers(struct hl_device *hdev, const u32 mm_reg_array[],
 		int mm_array_size, int offset, const u32 pb_blocks[],
 		struct hl_block_glbl_sec sgs_array[], int blocks_array_size)
@@ -166,19 +114,7 @@ int hl_unsecure_registers(struct hl_device *hdev, const u32 mm_reg_array[],
 	return rc;
 }
 
-/**
- * hl_unsecure_registers_range - locate the relevant block for all register
- *                        ranges and remove corresponding protection bit
- *
- * @hdev: pointer to hl_device structure
- * @mm_reg_range_array: register address range array to unsecure
- * @mm_array_size: register array size
- * @offset: additional offset to the register address
- * @pb_blocks: blocks array
- * @sgs_array: pb array
- * @blocks_array_size: blocks array size
- *
- */
+ 
 static int hl_unsecure_registers_range(struct hl_device *hdev,
 		const struct range mm_reg_range_array[], int mm_array_size,
 		int offset, const u32 pb_blocks[],
@@ -197,15 +133,7 @@ static int hl_unsecure_registers_range(struct hl_device *hdev,
 	return rc;
 }
 
-/**
- * hl_ack_pb_security_violations - Ack security violation
- *
- * @hdev: pointer to hl_device structure
- * @pb_blocks: blocks array
- * @block_offset: additional offset to the block
- * @array_size: blocks array size
- *
- */
+ 
 static void hl_ack_pb_security_violations(struct hl_device *hdev,
 		const u32 pb_blocks[], u32 block_offset, int array_size)
 {
@@ -224,16 +152,7 @@ static void hl_ack_pb_security_violations(struct hl_device *hdev,
 	}
 }
 
-/**
- * hl_config_glbl_sec - set pb in HW according to given pb array
- *
- * @hdev: pointer to hl_device structure
- * @pb_blocks: blocks array
- * @sgs_array: pb array
- * @block_offset: additional offset to the block
- * @array_size: blocks array size
- *
- */
+ 
 void hl_config_glbl_sec(struct hl_device *hdev, const u32 pb_blocks[],
 		struct hl_block_glbl_sec sgs_array[], u32 block_offset,
 		int array_size)
@@ -254,14 +173,7 @@ void hl_config_glbl_sec(struct hl_device *hdev, const u32 pb_blocks[],
 	}
 }
 
-/**
- * hl_secure_block - locally memsets a block to 0
- *
- * @hdev: pointer to hl_device structure
- * @sgs_array: pb array to clear
- * @array_size: blocks array size
- *
- */
+ 
 void hl_secure_block(struct hl_device *hdev,
 		struct hl_block_glbl_sec sgs_array[], int array_size)
 {
@@ -272,22 +184,7 @@ void hl_secure_block(struct hl_device *hdev,
 			HL_BLOCK_GLBL_SEC_SIZE);
 }
 
-/**
- * hl_init_pb_with_mask - set selected pb instances with mask in HW according
- *                        to given configuration
- *
- * @hdev: pointer to hl_device structure
- * @num_dcores: number of decores to apply configuration to
- *              set to HL_PB_SHARED if need to apply only once
- * @dcore_offset: offset between dcores
- * @num_instances: number of instances to apply configuration to
- * @instance_offset: offset between instances
- * @pb_blocks: blocks array
- * @blocks_array_size: blocks array size
- * @user_regs_array: unsecured register array
- * @user_regs_array_size: unsecured register array size
- * @mask: enabled instances mask: 1- enabled, 0- disabled
- */
+ 
 int hl_init_pb_with_mask(struct hl_device *hdev, u32 num_dcores,
 		u32 dcore_offset, u32 num_instances, u32 instance_offset,
 		const u32 pb_blocks[], u32 blocks_array_size,
@@ -306,7 +203,7 @@ int hl_init_pb_with_mask(struct hl_device *hdev, u32 num_dcores,
 	hl_unsecure_registers(hdev, user_regs_array, user_regs_array_size, 0,
 			pb_blocks, glbl_sec, blocks_array_size);
 
-	/* Fill all blocks with the same configuration */
+	 
 	for (i = 0 ; i < num_dcores ; i++) {
 		for (j = 0 ; j < num_instances ; j++) {
 			int seq = i * num_instances + j;
@@ -325,21 +222,7 @@ int hl_init_pb_with_mask(struct hl_device *hdev, u32 num_dcores,
 	return 0;
 }
 
-/**
- * hl_init_pb - set pb in HW according to given configuration
- *
- * @hdev: pointer to hl_device structure
- * @num_dcores: number of decores to apply configuration to
- *              set to HL_PB_SHARED if need to apply only once
- * @dcore_offset: offset between dcores
- * @num_instances: number of instances to apply configuration to
- * @instance_offset: offset between instances
- * @pb_blocks: blocks array
- * @blocks_array_size: blocks array size
- * @user_regs_array: unsecured register array
- * @user_regs_array_size: unsecured register array size
- *
- */
+ 
 int hl_init_pb(struct hl_device *hdev, u32 num_dcores, u32 dcore_offset,
 		u32 num_instances, u32 instance_offset,
 		const u32 pb_blocks[], u32 blocks_array_size,
@@ -351,23 +234,7 @@ int hl_init_pb(struct hl_device *hdev, u32 num_dcores, u32 dcore_offset,
 			user_regs_array_size, ULLONG_MAX);
 }
 
-/**
- * hl_init_pb_ranges_with_mask - set pb instances using mask in HW according to
- *                               given configuration unsecurring registers
- *                               ranges instead of specific registers
- *
- * @hdev: pointer to hl_device structure
- * @num_dcores: number of decores to apply configuration to
- *              set to HL_PB_SHARED if need to apply only once
- * @dcore_offset: offset between dcores
- * @num_instances: number of instances to apply configuration to
- * @instance_offset: offset between instances
- * @pb_blocks: blocks array
- * @blocks_array_size: blocks array size
- * @user_regs_range_array: unsecured register range array
- * @user_regs_range_array_size: unsecured register range array size
- * @mask: enabled instances mask: 1- enabled, 0- disabled
- */
+ 
 int hl_init_pb_ranges_with_mask(struct hl_device *hdev, u32 num_dcores,
 		u32 dcore_offset, u32 num_instances, u32 instance_offset,
 		const u32 pb_blocks[], u32 blocks_array_size,
@@ -390,7 +257,7 @@ int hl_init_pb_ranges_with_mask(struct hl_device *hdev, u32 num_dcores,
 	if (rc)
 		goto free_glbl_sec;
 
-	/* Fill all blocks with the same configuration */
+	 
 	for (i = 0 ; i < num_dcores ; i++) {
 		for (j = 0 ; j < num_instances ; j++) {
 			int seq = i * num_instances + j;
@@ -410,22 +277,7 @@ free_glbl_sec:
 	return rc;
 }
 
-/**
- * hl_init_pb_ranges - set pb in HW according to given configuration unsecurring
- *                     registers ranges instead of specific registers
- *
- * @hdev: pointer to hl_device structure
- * @num_dcores: number of decores to apply configuration to
- *              set to HL_PB_SHARED if need to apply only once
- * @dcore_offset: offset between dcores
- * @num_instances: number of instances to apply configuration to
- * @instance_offset: offset between instances
- * @pb_blocks: blocks array
- * @blocks_array_size: blocks array size
- * @user_regs_range_array: unsecured register range array
- * @user_regs_range_array_size: unsecured register range array size
- *
- */
+ 
 int hl_init_pb_ranges(struct hl_device *hdev, u32 num_dcores,
 		u32 dcore_offset, u32 num_instances, u32 instance_offset,
 		const u32 pb_blocks[], u32 blocks_array_size,
@@ -438,20 +290,7 @@ int hl_init_pb_ranges(struct hl_device *hdev, u32 num_dcores,
 			user_regs_range_array_size, ULLONG_MAX);
 }
 
-/**
- * hl_init_pb_single_dcore - set pb for a single docre in HW
- * according to given configuration
- *
- * @hdev: pointer to hl_device structure
- * @dcore_offset: offset from the dcore0
- * @num_instances: number of instances to apply configuration to
- * @instance_offset: offset between instances
- * @pb_blocks: blocks array
- * @blocks_array_size: blocks array size
- * @user_regs_array: unsecured register array
- * @user_regs_array_size: unsecured register array size
- *
- */
+ 
 int hl_init_pb_single_dcore(struct hl_device *hdev, u32 dcore_offset,
 		u32 num_instances, u32 instance_offset,
 		const u32 pb_blocks[], u32 blocks_array_size,
@@ -472,7 +311,7 @@ int hl_init_pb_single_dcore(struct hl_device *hdev, u32 dcore_offset,
 	if (rc)
 		goto free_glbl_sec;
 
-	/* Fill all blocks with the same configuration */
+	 
 	for (i = 0 ; i < num_instances ; i++)
 		hl_config_glbl_sec(hdev, pb_blocks, glbl_sec,
 				dcore_offset + i * instance_offset,
@@ -484,22 +323,7 @@ free_glbl_sec:
 	return rc;
 }
 
-/**
- * hl_init_pb_ranges_single_dcore - set pb for a single docre in HW according
- *                                  to given configuration unsecurring
- *                                  registers ranges instead of specific
- *                                  registers
- *
- * @hdev: pointer to hl_device structure
- * @dcore_offset: offset from the dcore0
- * @num_instances: number of instances to apply configuration to
- * @instance_offset: offset between instances
- * @pb_blocks: blocks array
- * @blocks_array_size: blocks array size
- * @user_regs_range_array: unsecured register range array
- * @user_regs_range_array_size: unsecured register range array size
- *
- */
+ 
 int hl_init_pb_ranges_single_dcore(struct hl_device *hdev, u32 dcore_offset,
 		u32 num_instances, u32 instance_offset,
 		const u32 pb_blocks[], u32 blocks_array_size,
@@ -519,7 +343,7 @@ int hl_init_pb_ranges_single_dcore(struct hl_device *hdev, u32 dcore_offset,
 			user_regs_range_array_size, 0, pb_blocks, glbl_sec,
 			blocks_array_size);
 
-	/* Fill all blocks with the same configuration */
+	 
 	for (i = 0 ; i < num_instances ; i++)
 		hl_config_glbl_sec(hdev, pb_blocks, glbl_sec,
 				dcore_offset + i * instance_offset,
@@ -530,27 +354,14 @@ int hl_init_pb_ranges_single_dcore(struct hl_device *hdev, u32 dcore_offset,
 	return 0;
 }
 
-/**
- * hl_ack_pb_with_mask - ack pb with mask in HW according to given configuration
- *
- * @hdev: pointer to hl_device structure
- * @num_dcores: number of decores to apply configuration to
- *              set to HL_PB_SHARED if need to apply only once
- * @dcore_offset: offset between dcores
- * @num_instances: number of instances to apply configuration to
- * @instance_offset: offset between instances
- * @pb_blocks: blocks array
- * @blocks_array_size: blocks array size
- * @mask: enabled instances mask: 1- enabled, 0- disabled
- *
- */
+ 
 void hl_ack_pb_with_mask(struct hl_device *hdev, u32 num_dcores,
 		u32 dcore_offset, u32 num_instances, u32 instance_offset,
 		const u32 pb_blocks[], u32 blocks_array_size, u64 mask)
 {
 	int i, j;
 
-	/* ack all blocks */
+	 
 	for (i = 0 ; i < num_dcores ; i++) {
 		for (j = 0 ; j < num_instances ; j++) {
 			int seq = i * num_instances + j;
@@ -565,19 +376,7 @@ void hl_ack_pb_with_mask(struct hl_device *hdev, u32 num_dcores,
 	}
 }
 
-/**
- * hl_ack_pb - ack pb in HW according to given configuration
- *
- * @hdev: pointer to hl_device structure
- * @num_dcores: number of decores to apply configuration to
- *              set to HL_PB_SHARED if need to apply only once
- * @dcore_offset: offset between dcores
- * @num_instances: number of instances to apply configuration to
- * @instance_offset: offset between instances
- * @pb_blocks: blocks array
- * @blocks_array_size: blocks array size
- *
- */
+ 
 void hl_ack_pb(struct hl_device *hdev, u32 num_dcores, u32 dcore_offset,
 		u32 num_instances, u32 instance_offset,
 		const u32 pb_blocks[], u32 blocks_array_size)
@@ -587,25 +386,14 @@ void hl_ack_pb(struct hl_device *hdev, u32 num_dcores, u32 dcore_offset,
 			ULLONG_MAX);
 }
 
-/**
- * hl_ack_pb_single_dcore - ack pb for single docre in HW
- * according to given configuration
- *
- * @hdev: pointer to hl_device structure
- * @dcore_offset: offset from dcore0
- * @num_instances: number of instances to apply configuration to
- * @instance_offset: offset between instances
- * @pb_blocks: blocks array
- * @blocks_array_size: blocks array size
- *
- */
+ 
 void hl_ack_pb_single_dcore(struct hl_device *hdev, u32 dcore_offset,
 		u32 num_instances, u32 instance_offset,
 		const u32 pb_blocks[], u32 blocks_array_size)
 {
 	int i;
 
-	/* ack all blocks */
+	 
 	for (i = 0 ; i < num_instances ; i++)
 		hl_ack_pb_security_violations(hdev, pb_blocks,
 				dcore_offset + i * instance_offset,
@@ -623,9 +411,7 @@ static u32 hl_automated_get_block_base_addr(struct hl_device *hdev,
 			sub_minor * block_info->sub_minor_offset;
 	struct asic_fixed_properties *prop = &hdev->asic_prop;
 
-	/* Calculation above returns an address for FW use, and therefore should
-	 * be casted for driver use.
-	 */
+	 
 	return (fw_block_base_address - lower_32_bits(prop->cfg_base_address));
 }
 
@@ -634,7 +420,7 @@ static bool hl_check_block_type_exclusion(struct hl_skip_blocks_cfg *skip_blocks
 {
 	int i;
 
-	/* Check if block type is listed in the exclusion list of block types */
+	 
 	for (i = 0 ; i < skip_blocks_cfg->block_types_len ; i++)
 		if (block_type == skip_blocks_cfg->block_types[i])
 			return true;

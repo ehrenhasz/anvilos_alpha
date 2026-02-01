@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright 2019 NXP
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/cpu.h>
@@ -29,7 +27,7 @@
 
 #define IMX7ULP_MAX_RUN_FREQ	528000
 
-/* cpufreq-dt device registered by imx-cpufreq-dt */
+ 
 static struct platform_device *cpufreq_dt_pdev;
 static struct device *cpu_dev;
 static int cpufreq_opp_token;
@@ -132,13 +130,7 @@ static int imx_cpufreq_dt_probe(struct platform_device *pdev)
 		mkt_segment = (cell_value & OCOTP_CFG3_MKT_SEGMENT_MASK)
 			       >> OCOTP_CFG3_MKT_SEGMENT_SHIFT;
 
-	/*
-	 * Early samples without fuses written report "0 0" which may NOT
-	 * match any OPP defined in DT. So clamp to minimum OPP defined in
-	 * DT to avoid warning for "no OPPs".
-	 *
-	 * Applies to i.MX8M series SoCs.
-	 */
+	 
 	if (mkt_segment == 0 && speed_grade == 0) {
 		if (of_machine_is_compatible("fsl,imx8mm") ||
 		    of_machine_is_compatible("fsl,imx8mq"))

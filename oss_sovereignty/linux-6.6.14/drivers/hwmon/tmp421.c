@@ -1,15 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* tmp421.c
- *
- * Copyright (C) 2009 Andre Prendel <andre.prendel@gmx.de>
- * Preliminary support by:
- * Melvin Rook, Raymond Ng
- */
 
-/*
- * Driver for the Texas Instruments TMP421 SMBus temperature sensor IC.
- * Supported models: TMP421, TMP422, TMP423, TMP441, TMP442
- */
+ 
+
+ 
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -23,14 +15,14 @@
 #include <linux/of.h>
 #include <linux/sysfs.h>
 
-/* Addresses to scan */
+ 
 static const unsigned short normal_i2c[] = { 0x2a, 0x4c, 0x4d, 0x4e, 0x4f,
 					     I2C_CLIENT_END };
 
 enum chips { tmp421, tmp422, tmp423, tmp441, tmp442 };
 
 #define MAX_CHANNELS				4
-/* The TMP421 registers */
+ 
 #define TMP421_STATUS_REG			0x08
 #define TMP421_CONFIG_REG_1			0x09
 #define TMP421_CONFIG_REG_2			0x0A
@@ -44,11 +36,11 @@ enum chips { tmp421, tmp422, tmp423, tmp441, tmp442 };
 static const u8 TMP421_TEMP_MSB[MAX_CHANNELS]	= { 0x00, 0x01, 0x02, 0x03 };
 static const u8 TMP421_TEMP_LSB[MAX_CHANNELS]	= { 0x10, 0x11, 0x12, 0x13 };
 
-/* Flags */
+ 
 #define TMP421_CONFIG_SHUTDOWN			0x40
 #define TMP421_CONFIG_RANGE			0x04
 
-/* Manufacturer / Device ID's */
+ 
 #define TMP421_MANUFACTURER_ID			0x55
 #define TMP421_DEVICE_ID			0x21
 #define TMP422_DEVICE_ID			0x22
@@ -113,7 +105,7 @@ struct tmp421_data {
 
 static int temp_from_raw(u16 reg, bool extended)
 {
-	/* Mask out status bits */
+	 
 	int temp = reg & ~0xf;
 
 	if (extended)
@@ -213,10 +205,7 @@ static int tmp421_read(struct device *dev, enum hwmon_sensor_types type,
 	case hwmon_temp_fault:
 		if (!tmp421->channel[channel].enabled)
 			return -ENODATA;
-		/*
-		 * Any of OPEN or /PVLD bits indicate a hardware mulfunction
-		 * and the conversion result may be incorrect
-		 */
+		 
 		*val = !!(tmp421->channel[channel].temp & 0x03);
 		return 0;
 	case hwmon_temp_enable:
@@ -277,10 +266,10 @@ static int tmp421_init_client(struct tmp421_data *data)
 	int config, config_orig;
 	struct i2c_client *client = data->client;
 
-	/* Set the conversion rate to 2 Hz */
+	 
 	i2c_smbus_write_byte_data(client, TMP421_CONVERSION_RATE_REG, 0x05);
 
-	/* Start conversions (disable shutdown if necessary) */
+	 
 	config = i2c_smbus_read_byte_data(client, TMP421_CONFIG_REG_1);
 	if (config < 0) {
 		dev_err(&client->dev,

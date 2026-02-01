@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Functions corresponding to string type attributes under BIOS String GUID for use with
- * dell-wmi-sysman
- *
- *  Copyright (c) 2020 Dell Inc.
- */
+
+ 
 
 #include "dell-wmi-sysman.h"
 
@@ -21,7 +16,7 @@ static ssize_t current_value_show(struct kobject *kobj, struct kobj_attribute *a
 	if (instance_id < 0)
 		return -EIO;
 
-	/* need to use specific instance_id and guid combination to get right data */
+	 
 	obj = get_wmiobj_pointer(instance_id, DELL_WMI_BIOS_STRING_ATTRIBUTE_GUID);
 	if (!obj)
 		return -EIO;
@@ -34,11 +29,7 @@ static ssize_t current_value_show(struct kobject *kobj, struct kobj_attribute *a
 	return ret;
 }
 
-/**
- * validate_str_input() - Validate input of current_value against min and max lengths
- * @instance_id: The instance on which input is validated
- * @buf: Input value
- */
+ 
 static int validate_str_input(int instance_id, const char *buf)
 {
 	int in_len = strlen(buf);
@@ -116,12 +107,7 @@ int alloc_str_data(void)
 	return ret;
 }
 
-/**
- * populate_str_data() - Populate all properties of an instance under string attribute
- * @str_obj: ACPI object with string data
- * @instance_id: The instance to enumerate
- * @attr_name_kobj: The parent kernel object
- */
+ 
 int populate_str_data(union acpi_object *str_obj, int instance_id, struct kobject *attr_name_kobj)
 {
 	wmi_priv.str_data[instance_id].attr_name_kobj = attr_name_kobj;
@@ -155,11 +141,7 @@ int populate_str_data(union acpi_object *str_obj, int instance_id, struct kobjec
 	return sysfs_create_group(attr_name_kobj, &str_attr_group);
 }
 
-/**
- * exit_str_attributes() - Clear all attribute data
- *
- * Clears all data allocated for this group of attributes
- */
+ 
 void exit_str_attributes(void)
 {
 	int instance_id;

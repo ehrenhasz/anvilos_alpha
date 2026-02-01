@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0 OR MIT
+
 #define _GNU_SOURCE
 #include <error.h>
 #include <limits.h>
@@ -90,7 +90,7 @@ static char *trim_whitespace_in_place(char *buffer)
 	return buffer;
 }
 
-/* borrowed (with all helpers) from pidfd/pidfd_open_test.c */
+ 
 static pid_t get_pid_from_fdinfo_file(int pidfd, const char *key, size_t keylen)
 {
 	int ret;
@@ -181,7 +181,7 @@ static int cmsg_check(int fd)
 		}
 	}
 
-	/* send(pfd, "x", sizeof(char), 0) */
+	 
 	if (data != 'x') {
 		log_err("recvmsg: data corruption");
 		return 1;
@@ -197,7 +197,7 @@ static int cmsg_check(int fd)
 		return 1;
 	}
 
-	/* pidfd from SCM_PIDFD should point to the parent process PID */
+	 
 	parent_pid =
 		get_pid_from_fdinfo_file(*pidfd, "Pid:", sizeof("Pid:") - 1);
 	if (parent_pid != getppid()) {
@@ -341,7 +341,7 @@ static void client(FIXTURE_DATA(scm_pidfd) *self,
 		child_die();
 	}
 
-	/* skip further for SOCK_DGRAM as it's not applicable */
+	 
 	if (variant->type == SOCK_DGRAM)
 		return;
 
@@ -357,7 +357,7 @@ static void client(FIXTURE_DATA(scm_pidfd) *self,
 		child_die();
 	}
 
-	/* pid from SO_PEERCRED should point to the parent process PID */
+	 
 	if (peer_cred.pid != getppid()) {
 		log_err("peer_cred.pid != getppid(): %d != %d", peer_cred.pid, getppid());
 		child_die();
@@ -410,7 +410,7 @@ TEST_F(scm_pidfd, test)
 		pfd = self->server;
 	}
 
-	/* wait until the child arrives at checkpoint */
+	 
 	read(self->startup_pipe[0], &err, sizeof(int));
 	close(self->startup_pipe[0]);
 

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * FireDTV driver (formerly known as FireSAT)
- *
- * Copyright (C) 2004 Andreas Monitzer <andy@monitzer.com>
- * Copyright (C) 2008 Henrik Kurelid <henrik@kurelid.se>
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/dvb/ca.h>
@@ -145,7 +140,7 @@ static int fdtv_ca_send_msg(struct firedtv *fdtv, void *arg)
 	struct ca_msg *msg = arg;
 	int err;
 
-	/* Do we need a semaphore for this? */
+	 
 	fdtv->ca_last_command =
 		(msg->msg[0] << 16) + (msg->msg[1] << 8) + msg->msg[2];
 	switch (fdtv->ca_last_command) {
@@ -153,11 +148,11 @@ static int fdtv_ca_send_msg(struct firedtv *fdtv, void *arg)
 		err = fdtv_ca_pmt(fdtv, arg);
 		break;
 	case EN50221_TAG_APP_INFO_ENQUIRY:
-		/* handled in ca_get_msg */
+		 
 		err = 0;
 		break;
 	case EN50221_TAG_CA_INFO_ENQUIRY:
-		/* handled in ca_get_msg */
+		 
 		err = 0;
 		break;
 	case EN50221_TAG_ENTER_MENU:
@@ -199,7 +194,7 @@ static int fdtv_ca_ioctl(struct file *file, unsigned int cmd, void *arg)
 		err = -EOPNOTSUPP;
 	}
 
-	/* FIXME Is this necessary? */
+	 
 	avc_tuner_status(fdtv, &stat);
 
 	return err;

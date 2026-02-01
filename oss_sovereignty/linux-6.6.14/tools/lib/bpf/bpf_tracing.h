@@ -1,10 +1,10 @@
-/* SPDX-License-Identifier: (LGPL-2.1 OR BSD-2-Clause) */
+ 
 #ifndef __BPF_TRACING_H__
 #define __BPF_TRACING_H__
 
 #include "bpf_helpers.h"
 
-/* Scan the ARCH passed in from ARCH env variable (see Makefile) */
+ 
 #if defined(__TARGET_ARCH_x86)
 	#define bpf_target_x86
 	#define bpf_target_defined
@@ -37,7 +37,7 @@
 	#define bpf_target_defined
 #else
 
-/* Fall back to what the compiler says */
+ 
 #if defined(__x86_64__)
 	#define bpf_target_x86
 	#define bpf_target_defined
@@ -68,7 +68,7 @@
 #elif defined(__loongarch__)
 	#define bpf_target_loongarch
 	#define bpf_target_defined
-#endif /* no compiler target */
+#endif  
 
 #endif
 
@@ -78,9 +78,7 @@
 
 #if defined(bpf_target_x86)
 
-/*
- * https://en.wikipedia.org/wiki/X86_calling_conventions#System_V_AMD64_ABI
- */
+ 
 
 #if defined(__KERNEL__) || defined(__VMLINUX_H__)
 
@@ -90,10 +88,7 @@
 #define __PT_PARM4_REG cx
 #define __PT_PARM5_REG r8
 #define __PT_PARM6_REG r9
-/*
- * Syscall uses r10 for PARM4. See arch/x86/entry/entry_64.S:entry_SYSCALL_64
- * comments in Linux sources. And refer to syscall(2) manpage.
- */
+ 
 #define __PT_PARM1_SYSCALL_REG __PT_PARM1_REG
 #define __PT_PARM2_SYSCALL_REG __PT_PARM2_REG
 #define __PT_PARM3_SYSCALL_REG __PT_PARM3_REG
@@ -111,11 +106,11 @@
 
 #ifdef __i386__
 
-/* i386 kernel is built with -mregparm=3 */
+ 
 #define __PT_PARM1_REG eax
 #define __PT_PARM2_REG edx
 #define __PT_PARM3_REG ecx
-/* i386 syscall ABI is very different, refer to syscall(2) manpage */
+ 
 #define __PT_PARM1_SYSCALL_REG ebx
 #define __PT_PARM2_SYSCALL_REG ecx
 #define __PT_PARM3_SYSCALL_REG edx
@@ -129,7 +124,7 @@
 #define __PT_SP_REG esp
 #define __PT_IP_REG eip
 
-#else /* __i386__ */
+#else  
 
 #define __PT_PARM1_REG rdi
 #define __PT_PARM2_REG rsi
@@ -151,21 +146,19 @@
 #define __PT_SP_REG rsp
 #define __PT_IP_REG rip
 
-#endif /* __i386__ */
+#endif  
 
-#endif /* __KERNEL__ || __VMLINUX_H__ */
+#endif  
 
 #elif defined(bpf_target_s390)
 
-/*
- * https://github.com/IBM/s390x-abi/releases/download/v1.6/lzsabi_s390x.pdf
- */
+ 
 
 struct pt_regs___s390 {
 	unsigned long orig_gpr2;
 };
 
-/* s390 provides user_pt_regs instead of struct pt_regs to userspace */
+ 
 #define __PT_REGS_CAST(x) ((const user_pt_regs *)(x))
 #define __PT_PARM1_REG gprs[2]
 #define __PT_PARM2_REG gprs[3]
@@ -184,16 +177,14 @@ struct pt_regs___s390 {
 	BPF_CORE_READ((const struct pt_regs___s390 *)(x), __PT_PARM1_SYSCALL_REG)
 
 #define __PT_RET_REG gprs[14]
-#define __PT_FP_REG gprs[11]	/* Works only with CONFIG_FRAME_POINTER */
+#define __PT_FP_REG gprs[11]	 
 #define __PT_RC_REG gprs[2]
 #define __PT_SP_REG gprs[15]
 #define __PT_IP_REG psw.addr
 
 #elif defined(bpf_target_arm)
 
-/*
- * https://github.com/ARM-software/abi-aa/blob/main/aapcs32/aapcs32.rst#machine-registers
- */
+ 
 
 #define __PT_PARM1_REG uregs[0]
 #define __PT_PARM2_REG uregs[1]
@@ -209,22 +200,20 @@ struct pt_regs___s390 {
 #define __PT_PARM7_SYSCALL_REG uregs[6]
 
 #define __PT_RET_REG uregs[14]
-#define __PT_FP_REG uregs[11]	/* Works only with CONFIG_FRAME_POINTER */
+#define __PT_FP_REG uregs[11]	 
 #define __PT_RC_REG uregs[0]
 #define __PT_SP_REG uregs[13]
 #define __PT_IP_REG uregs[12]
 
 #elif defined(bpf_target_arm64)
 
-/*
- * https://github.com/ARM-software/abi-aa/blob/main/aapcs64/aapcs64.rst#machine-registers
- */
+ 
 
 struct pt_regs___arm64 {
 	unsigned long orig_x0;
 };
 
-/* arm64 provides struct user_pt_regs instead of struct pt_regs to userspace */
+ 
 #define __PT_REGS_CAST(x) ((const struct user_pt_regs *)(x))
 #define __PT_PARM1_REG regs[0]
 #define __PT_PARM2_REG regs[1]
@@ -246,17 +235,14 @@ struct pt_regs___arm64 {
 	BPF_CORE_READ((const struct pt_regs___arm64 *)(x), __PT_PARM1_SYSCALL_REG)
 
 #define __PT_RET_REG regs[30]
-#define __PT_FP_REG regs[29]	/* Works only with CONFIG_FRAME_POINTER */
+#define __PT_FP_REG regs[29]	 
 #define __PT_RC_REG regs[0]
 #define __PT_SP_REG sp
 #define __PT_IP_REG pc
 
 #elif defined(bpf_target_mips)
 
-/*
- * N64 ABI is assumed right now.
- * https://en.wikipedia.org/wiki/MIPS_architecture#Calling_conventions
- */
+ 
 
 #define __PT_PARM1_REG regs[4]
 #define __PT_PARM2_REG regs[5]
@@ -271,21 +257,18 @@ struct pt_regs___arm64 {
 #define __PT_PARM2_SYSCALL_REG __PT_PARM2_REG
 #define __PT_PARM3_SYSCALL_REG __PT_PARM3_REG
 #define __PT_PARM4_SYSCALL_REG __PT_PARM4_REG
-#define __PT_PARM5_SYSCALL_REG __PT_PARM5_REG /* only N32/N64 */
-#define __PT_PARM6_SYSCALL_REG __PT_PARM6_REG /* only N32/N64 */
+#define __PT_PARM5_SYSCALL_REG __PT_PARM5_REG  
+#define __PT_PARM6_SYSCALL_REG __PT_PARM6_REG  
 
 #define __PT_RET_REG regs[31]
-#define __PT_FP_REG regs[30]	/* Works only with CONFIG_FRAME_POINTER */
+#define __PT_FP_REG regs[30]	 
 #define __PT_RC_REG regs[2]
 #define __PT_SP_REG regs[29]
 #define __PT_IP_REG cp0_epc
 
 #elif defined(bpf_target_powerpc)
 
-/*
- * http://refspecs.linux-foundation.org/elf/elfspec_ppc.pdf (page 3-14,
- * section "Function Calling Sequence")
- */
+ 
 
 #define __PT_PARM1_REG gpr[3]
 #define __PT_PARM2_REG gpr[4]
@@ -296,7 +279,7 @@ struct pt_regs___arm64 {
 #define __PT_PARM7_REG gpr[9]
 #define __PT_PARM8_REG gpr[10]
 
-/* powerpc does not select ARCH_HAS_SYSCALL_WRAPPER. */
+ 
 #define PT_REGS_SYSCALL_REGS(ctx) ctx
 #define __PT_PARM1_SYSCALL_REG orig_gpr3
 #define __PT_PARM2_SYSCALL_REG __PT_PARM2_REG
@@ -305,7 +288,7 @@ struct pt_regs___arm64 {
 #define __PT_PARM5_SYSCALL_REG __PT_PARM5_REG
 #define __PT_PARM6_SYSCALL_REG __PT_PARM6_REG
 #if !defined(__arch64__)
-#define __PT_PARM7_SYSCALL_REG __PT_PARM7_REG /* only powerpc (not powerpc64) */
+#define __PT_PARM7_SYSCALL_REG __PT_PARM7_REG  
 #endif
 
 #define __PT_RET_REG regs[31]
@@ -316,9 +299,7 @@ struct pt_regs___arm64 {
 
 #elif defined(bpf_target_sparc)
 
-/*
- * https://en.wikipedia.org/wiki/Calling_convention#SPARC
- */
+ 
 
 #define __PT_PARM1_REG u_regs[UREG_I0]
 #define __PT_PARM2_REG u_regs[UREG_I1]
@@ -338,7 +319,7 @@ struct pt_regs___arm64 {
 #define __PT_FP_REG __unsupported__
 #define __PT_RC_REG u_regs[UREG_I0]
 #define __PT_SP_REG u_regs[UREG_FP]
-/* Should this also be a bpf_target check for the sparc case? */
+ 
 #if defined(__arch64__)
 #define __PT_IP_REG tpc
 #else
@@ -347,11 +328,9 @@ struct pt_regs___arm64 {
 
 #elif defined(bpf_target_riscv)
 
-/*
- * https://github.com/riscv-non-isa/riscv-elf-psabi-doc/blob/master/riscv-cc.adoc#risc-v-calling-conventions
- */
+ 
 
-/* riscv provides struct user_regs_struct instead of struct pt_regs to userspace */
+ 
 #define __PT_REGS_CAST(x) ((const struct user_regs_struct *)(x))
 #define __PT_PARM1_REG a0
 #define __PT_PARM2_REG a1
@@ -377,12 +356,9 @@ struct pt_regs___arm64 {
 
 #elif defined(bpf_target_arc)
 
-/*
- * Section "Function Calling Sequence" (page 24):
- * https://raw.githubusercontent.com/wiki/foss-for-synopsys-dwc-arc-processors/toolchain/files/ARCv2_ABI.pdf
- */
+ 
 
-/* arc provides struct user_regs_struct instead of struct pt_regs to userspace */
+ 
 #define __PT_REGS_CAST(x) ((const struct user_regs_struct *)(x))
 #define __PT_PARM1_REG scratch.r0
 #define __PT_PARM2_REG scratch.r1
@@ -393,7 +369,7 @@ struct pt_regs___arm64 {
 #define __PT_PARM7_REG scratch.r6
 #define __PT_PARM8_REG scratch.r7
 
-/* arc does not select ARCH_HAS_SYSCALL_WRAPPER. */
+ 
 #define PT_REGS_SYSCALL_REGS(ctx) ctx
 #define __PT_PARM1_SYSCALL_REG __PT_PARM1_REG
 #define __PT_PARM2_SYSCALL_REG __PT_PARM2_REG
@@ -410,12 +386,9 @@ struct pt_regs___arm64 {
 
 #elif defined(bpf_target_loongarch)
 
-/*
- * https://docs.kernel.org/loongarch/introduction.html
- * https://loongson.github.io/LoongArch-Documentation/LoongArch-ELF-ABI-EN.html
- */
+ 
 
-/* loongarch provides struct user_pt_regs instead of struct pt_regs to userspace */
+ 
 #define __PT_REGS_CAST(x) ((const struct user_pt_regs *)(x))
 #define __PT_PARM1_REG regs[4]
 #define __PT_PARM2_REG regs[5]
@@ -426,7 +399,7 @@ struct pt_regs___arm64 {
 #define __PT_PARM7_REG regs[10]
 #define __PT_PARM8_REG regs[11]
 
-/* loongarch does not select ARCH_HAS_SYSCALL_WRAPPER. */
+ 
 #define PT_REGS_SYSCALL_REGS(ctx) ctx
 #define __PT_PARM1_SYSCALL_REG __PT_PARM1_REG
 #define __PT_PARM2_SYSCALL_REG __PT_PARM2_REG
@@ -447,15 +420,12 @@ struct pt_regs___arm64 {
 
 struct pt_regs;
 
-/* allow some architectures to override `struct pt_regs` */
+ 
 #ifndef __PT_REGS_CAST
 #define __PT_REGS_CAST(x) (x)
 #endif
 
-/*
- * Different architectures support different number of arguments passed
- * through registers. i386 supports just 3, some arches support up to 8.
- */
+ 
 #ifndef __PT_PARM4_REG
 #define __PT_PARM4_REG __unsupported__
 #endif
@@ -471,13 +441,7 @@ struct pt_regs;
 #ifndef __PT_PARM8_REG
 #define __PT_PARM8_REG __unsupported__
 #endif
-/*
- * Similarly, syscall-specific conventions might differ between function call
- * conventions within each architecutre. All supported architectures pass
- * either 6 or 7 syscall arguments in registers.
- *
- * See syscall(2) manpage for succinct table with information on each arch.
- */
+ 
 #ifndef __PT_PARM7_SYSCALL_REG
 #define __PT_PARM7_SYSCALL_REG __unsupported__
 #endif
@@ -558,7 +522,7 @@ struct pt_regs;
 #define PT_REGS_PARM7_CORE_SYSCALL(x) BPF_CORE_READ(__PT_REGS_CAST(x), __PT_PARM7_SYSCALL_REG)
 #endif
 
-#else /* defined(bpf_target_defined) */
+#else  
 
 #define PT_REGS_PARM1(x) ({ _Pragma(__BPF_TARGET_MISSING); 0l; })
 #define PT_REGS_PARM2(x) ({ _Pragma(__BPF_TARGET_MISSING); 0l; })
@@ -607,15 +571,11 @@ struct pt_regs;
 #define PT_REGS_PARM6_CORE_SYSCALL(x) ({ _Pragma(__BPF_TARGET_MISSING); 0l; })
 #define PT_REGS_PARM7_CORE_SYSCALL(x) ({ _Pragma(__BPF_TARGET_MISSING); 0l; })
 
-#endif /* defined(bpf_target_defined) */
+#endif  
 
-/*
- * When invoked from a syscall handler kprobe, returns a pointer to a
- * struct pt_regs containing syscall arguments and suitable for passing to
- * PT_REGS_PARMn_SYSCALL() and PT_REGS_PARMn_CORE_SYSCALL().
- */
+ 
 #ifndef PT_REGS_SYSCALL_REGS
-/* By default, assume that the arch selects ARCH_HAS_SYSCALL_WRAPPER. */
+ 
 #define PT_REGS_SYSCALL_REGS(ctx) ((struct pt_regs *)PT_REGS_PARM1(ctx))
 #endif
 
@@ -647,21 +607,7 @@ struct pt_regs;
 #define ___bpf_ctx_cast12(x, args...) ___bpf_ctx_cast11(args), (void *)ctx[11]
 #define ___bpf_ctx_cast(args...)      ___bpf_apply(___bpf_ctx_cast, ___bpf_narg(args))(args)
 
-/*
- * BPF_PROG is a convenience wrapper for generic tp_btf/fentry/fexit and
- * similar kinds of BPF programs, that accept input arguments as a single
- * pointer to untyped u64 array, where each u64 can actually be a typed
- * pointer or integer of different size. Instead of requring user to write
- * manual casts and work with array elements by index, BPF_PROG macro
- * allows user to declare a list of named and typed input arguments in the
- * same syntax as for normal C function. All the casting is hidden and
- * performed transparently, while user code can just assume working with
- * function arguments of specified type and name.
- *
- * Original raw context argument is preserved as well as 'ctx' argument.
- * This is useful when using BPF helpers that expect original context
- * as one of the parameters (e.g., for bpf_perf_event_output()).
- */
+ 
 #define BPF_PROG(name, args...)						    \
 name(unsigned long long *ctx);						    \
 static __always_inline typeof(name(0))					    \
@@ -747,31 +693,7 @@ ____##name(unsigned long long *ctx, ##args)
 #define ___bpf_ctx_decl12(t, x, args...)	, t x ___bpf_ctx_decl11(args)
 #define ___bpf_ctx_decl(args...)	___bpf_apply(___bpf_ctx_decl, ___bpf_narg2(args))(args)
 
-/*
- * BPF_PROG2 is an enhanced version of BPF_PROG in order to handle struct
- * arguments. Since each struct argument might take one or two u64 values
- * in the trampoline stack, argument type size is needed to place proper number
- * of u64 values for each argument. Therefore, BPF_PROG2 has different
- * syntax from BPF_PROG. For example, for the following BPF_PROG syntax:
- *
- *   int BPF_PROG(test2, int a, int b) { ... }
- *
- * the corresponding BPF_PROG2 syntax is:
- *
- *   int BPF_PROG2(test2, int, a, int, b) { ... }
- *
- * where type and the corresponding argument name are separated by comma.
- *
- * Use BPF_PROG2 macro if one of the arguments might be a struct/union larger
- * than 8 bytes:
- *
- *   int BPF_PROG2(test_struct_arg, struct bpf_testmod_struct_arg_1, a, int, b,
- *		   int, c, int, d, struct bpf_testmod_struct_arg_2, e, int, ret)
- *   {
- *        // access a, b, c, d, e, and ret directly
- *        ...
- *   }
- */
+ 
 #define BPF_PROG2(name, args...)						\
 name(unsigned long long *ctx);							\
 static __always_inline typeof(name(0))						\
@@ -796,16 +718,7 @@ struct pt_regs;
 #define ___bpf_kprobe_args8(x, args...) ___bpf_kprobe_args7(args), (void *)PT_REGS_PARM8(ctx)
 #define ___bpf_kprobe_args(args...)     ___bpf_apply(___bpf_kprobe_args, ___bpf_narg(args))(args)
 
-/*
- * BPF_KPROBE serves the same purpose for kprobes as BPF_PROG for
- * tp_btf/fentry/fexit BPF programs. It hides the underlying platform-specific
- * low-level way of getting kprobe input arguments from struct pt_regs, and
- * provides a familiar typed and named function arguments syntax and
- * semantics of accessing kprobe input paremeters.
- *
- * Original struct pt_regs* context is preserved as 'ctx' argument. This might
- * be necessary when using BPF helpers like bpf_perf_event_output().
- */
+ 
 #define BPF_KPROBE(name, args...)					    \
 name(struct pt_regs *ctx);						    \
 static __always_inline typeof(name(0))					    \
@@ -824,12 +737,7 @@ ____##name(struct pt_regs *ctx, ##args)
 #define ___bpf_kretprobe_args1(x)      ___bpf_kretprobe_args0(), (void *)PT_REGS_RC(ctx)
 #define ___bpf_kretprobe_args(args...) ___bpf_apply(___bpf_kretprobe_args, ___bpf_narg(args))(args)
 
-/*
- * BPF_KRETPROBE is similar to BPF_KPROBE, except, it only provides optional
- * return value (in addition to `struct pt_regs *ctx`), but no input
- * arguments, because they will be clobbered by the time probed function
- * returns.
- */
+ 
 #define BPF_KRETPROBE(name, args...)					    \
 name(struct pt_regs *ctx);						    \
 static __always_inline typeof(name(0))					    \
@@ -843,7 +751,7 @@ typeof(name(0)) name(struct pt_regs *ctx)				    \
 }									    \
 static __always_inline typeof(name(0)) ____##name(struct pt_regs *ctx, ##args)
 
-/* If kernel has CONFIG_ARCH_HAS_SYSCALL_WRAPPER, read pt_regs directly */
+ 
 #define ___bpf_syscall_args0()           ctx
 #define ___bpf_syscall_args1(x)          ___bpf_syscall_args0(), (void *)PT_REGS_PARM1_SYSCALL(regs)
 #define ___bpf_syscall_args2(x, args...) ___bpf_syscall_args1(args), (void *)PT_REGS_PARM2_SYSCALL(regs)
@@ -854,7 +762,7 @@ static __always_inline typeof(name(0)) ____##name(struct pt_regs *ctx, ##args)
 #define ___bpf_syscall_args7(x, args...) ___bpf_syscall_args6(args), (void *)PT_REGS_PARM7_SYSCALL(regs)
 #define ___bpf_syscall_args(args...)     ___bpf_apply(___bpf_syscall_args, ___bpf_narg(args))(args)
 
-/* If kernel doesn't have CONFIG_ARCH_HAS_SYSCALL_WRAPPER, we have to BPF_CORE_READ from pt_regs */
+ 
 #define ___bpf_syswrap_args0()           ctx
 #define ___bpf_syswrap_args1(x)          ___bpf_syswrap_args0(), (void *)PT_REGS_PARM1_CORE_SYSCALL(regs)
 #define ___bpf_syswrap_args2(x, args...) ___bpf_syswrap_args1(args), (void *)PT_REGS_PARM2_CORE_SYSCALL(regs)
@@ -865,30 +773,7 @@ static __always_inline typeof(name(0)) ____##name(struct pt_regs *ctx, ##args)
 #define ___bpf_syswrap_args7(x, args...) ___bpf_syswrap_args6(args), (void *)PT_REGS_PARM7_CORE_SYSCALL(regs)
 #define ___bpf_syswrap_args(args...)     ___bpf_apply(___bpf_syswrap_args, ___bpf_narg(args))(args)
 
-/*
- * BPF_KSYSCALL is a variant of BPF_KPROBE, which is intended for
- * tracing syscall functions, like __x64_sys_close. It hides the underlying
- * platform-specific low-level way of getting syscall input arguments from
- * struct pt_regs, and provides a familiar typed and named function arguments
- * syntax and semantics of accessing syscall input parameters.
- *
- * Original struct pt_regs * context is preserved as 'ctx' argument. This might
- * be necessary when using BPF helpers like bpf_perf_event_output().
- *
- * At the moment BPF_KSYSCALL does not transparently handle all the calling
- * convention quirks for the following syscalls:
- *
- * - mmap(): __ARCH_WANT_SYS_OLD_MMAP.
- * - clone(): CONFIG_CLONE_BACKWARDS, CONFIG_CLONE_BACKWARDS2 and
- *            CONFIG_CLONE_BACKWARDS3.
- * - socket-related syscalls: __ARCH_WANT_SYS_SOCKETCALL.
- * - compat syscalls.
- *
- * This may or may not change in the future. User needs to take extra measures
- * to handle such quirks explicitly, if necessary.
- *
- * This macro relies on BPF CO-RE support and virtual __kconfig externs.
- */
+ 
 #define BPF_KSYSCALL(name, args...)					    \
 name(struct pt_regs *ctx);						    \
 extern _Bool LINUX_HAS_SYSCALL_WRAPPER __kconfig;			    \
@@ -912,10 +797,7 @@ ____##name(struct pt_regs *ctx, ##args)
 
 #define BPF_KPROBE_SYSCALL BPF_KSYSCALL
 
-/* BPF_UPROBE and BPF_URETPROBE are identical to BPF_KPROBE and BPF_KRETPROBE,
- * but are named way less confusingly for SEC("uprobe") and SEC("uretprobe")
- * use cases.
- */
+ 
 #define BPF_UPROBE(name, args...)  BPF_KPROBE(name, ##args)
 #define BPF_URETPROBE(name, args...)  BPF_KRETPROBE(name, ##args)
 

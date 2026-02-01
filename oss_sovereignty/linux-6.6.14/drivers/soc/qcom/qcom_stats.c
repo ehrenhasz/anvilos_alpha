@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2011-2021, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/debugfs.h>
 #include <linux/device.h>
@@ -71,10 +69,7 @@ struct appended_stats {
 static void qcom_print_stats(struct seq_file *s, const struct sleep_stats *stat)
 {
 	u64 accumulated = stat->accumulated;
-	/*
-	 * If a subsystem is in sleep when reading the sleep stats adjust
-	 * the accumulated sleep duration to show actual sleep time.
-	 */
+	 
 	if (stat->last_entered_at > stat->last_exited_at)
 		accumulated += arch_timer_read_counter() - stat->last_entered_at;
 
@@ -89,7 +84,7 @@ static int qcom_subsystem_sleep_stats_show(struct seq_file *s, void *unused)
 	struct subsystem_data *subsystem = s->private;
 	struct sleep_stats *stat;
 
-	/* Items are allocated lazily, so lookup pointer each time */
+	 
 	stat = qcom_smem_get(subsystem->pid, subsystem->smem_item, NULL);
 	if (IS_ERR(stat))
 		return 0;
@@ -130,13 +125,7 @@ static void qcom_create_soc_sleep_stat_files(struct dentry *root, void __iomem *
 	u32 offset = 0, type;
 	int i, j;
 
-	/*
-	 * On RPM targets, stats offset location is dynamic and changes from target
-	 * to target and sometimes from build to build for same target.
-	 *
-	 * In such cases the dynamic address is present at 0x14 offset from base
-	 * address in devicetree. The last 16bits indicates the stats_offset.
-	 */
+	 
 	if (config->dynamic_offset) {
 		stats_offset = readl(reg + RPM_DYNAMIC_ADDR);
 		stats_offset &= RPM_DYNAMIC_ADDR_MASK;
@@ -145,13 +134,7 @@ static void qcom_create_soc_sleep_stat_files(struct dentry *root, void __iomem *
 	for (i = 0; i < config->num_records; i++) {
 		d[i].base = reg + offset + stats_offset;
 
-		/*
-		 * Read the low power mode name and create debugfs file for it.
-		 * The names read could be of below,
-		 * (may change depending on low power mode supported).
-		 * For rpmh-sleep-stats: "aosd", "cxsd" and "ddr".
-		 * For rpm-sleep-stats: "vmin" and "vlow".
-		 */
+		 
 		type = readl(d[i].base);
 		for (j = 0; j < sizeof(u32); j++) {
 			stat_type[j] = type & 0xff;
@@ -233,7 +216,7 @@ static const struct stats_config rpm_data = {
 	.subsystem_stats_in_smem = false,
 };
 
-/* Older RPM firmwares have the stats at a fixed offset instead */
+ 
 static const struct stats_config rpm_data_dba0 = {
 	.stats_offset = 0xdba0,
 	.num_records = 2,

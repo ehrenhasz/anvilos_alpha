@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *  CCW device PGID and path verification I/O handling.
- *
- *    Copyright IBM Corp. 2002, 2009
- *    Author(s): Cornelia Huck <cornelia.huck@de.ibm.com>
- *		 Martin Schwidefsky <schwidefsky@de.ibm.com>
- *		 Peter Oberparleiter <peter.oberparleiter@de.ibm.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/string.h>
@@ -28,9 +21,7 @@
 
 static void verify_start(struct ccw_device *cdev);
 
-/*
- * Process path verification data and report result.
- */
+ 
 static void verify_done(struct ccw_device *cdev, int rc)
 {
 	struct subchannel *sch = to_subchannel(cdev->dev.parent);
@@ -40,7 +31,7 @@ static void verify_done(struct ccw_device *cdev, int rc)
 
 	if (rc)
 		goto out;
-	/* Ensure consistent multipathing state at device and channel. */
+	 
 	if (sch->config.mp != mpath) {
 		sch->config.mp = mpath;
 		rc = cio_commit_config(sch);
@@ -52,9 +43,7 @@ out:
 	ccw_device_verify_done(cdev, rc);
 }
 
-/*
- * Create channel program to perform a NOOP.
- */
+ 
 static void nop_build_cp(struct ccw_device *cdev)
 {
 	struct ccw_request *req = &cdev->private->req;
@@ -67,9 +56,7 @@ static void nop_build_cp(struct ccw_device *cdev)
 	req->cp		= cp;
 }
 
-/*
- * Perform NOOP on a single path.
- */
+ 
 static void nop_do(struct ccw_device *cdev)
 {
 	struct subchannel *sch = to_subchannel(cdev->dev.parent);
@@ -87,21 +74,17 @@ out_nopath:
 	verify_done(cdev, sch->vpm ? 0 : -EACCES);
 }
 
-/*
- * Adjust NOOP I/O status.
- */
+ 
 static enum io_status nop_filter(struct ccw_device *cdev, void *data,
 				 struct irb *irb, enum io_status status)
 {
-	/* Only subchannel status might indicate a path error. */
+	 
 	if (status == IO_STATUS_ERROR && irb->scsw.cmd.cstat == 0)
 		return IO_DONE;
 	return status;
 }
 
-/*
- * Process NOOP request result for a single path.
- */
+ 
 static void nop_callback(struct ccw_device *cdev, void *data, int rc)
 {
 	struct subchannel *sch = to_subchannel(cdev->dev.parent);
@@ -120,7 +103,7 @@ static void nop_callback(struct ccw_device *cdev, void *data, int rc)
 	default:
 		goto err;
 	}
-	/* Continue on the next path. */
+	 
 	req->lpm >>= 1;
 	nop_do(cdev);
 	return;
@@ -129,9 +112,7 @@ err:
 	verify_done(cdev, rc);
 }
 
-/*
- * Create channel program to perform SET PGID on a single path.
- */
+ 
 static void spid_build_cp(struct ccw_device *cdev, u8 fn)
 {
 	struct ccw_request *req = &cdev->private->req;
@@ -150,21 +131,16 @@ static void spid_build_cp(struct ccw_device *cdev, u8 fn)
 static void pgid_wipeout_callback(struct ccw_device *cdev, void *data, int rc)
 {
 	if (rc) {
-		/* We don't know the path groups' state. Abort. */
+		 
 		verify_done(cdev, rc);
 		return;
 	}
-	/*
-	 * Path groups have been reset. Restart path verification but
-	 * leave paths in path_noirq_mask out.
-	 */
+	 
 	cdev->private->flags.pgid_unknown = 0;
 	verify_start(cdev);
 }
 
-/*
- * Reset pathgroups and restart path verification, leave unusable paths out.
- */
+ 
 static void pgid_wipeout_start(struct ccw_device *cdev)
 {
 	struct subchannel *sch = to_subchannel(cdev->dev.parent);
@@ -176,7 +152,7 @@ static void pgid_wipeout_start(struct ccw_device *cdev)
 		      id->ssid, id->devno, cdev->private->pgid_valid_mask,
 		      cdev->private->path_noirq_mask);
 
-	/* Initialize request data. */
+	 
 	memset(req, 0, sizeof(*req));
 	req->timeout	= PGID_TIMEOUT;
 	req->maxretries	= PGID_RETRIES;
@@ -189,20 +165,18 @@ static void pgid_wipeout_start(struct ccw_device *cdev)
 	ccw_request_start(cdev);
 }
 
-/*
- * Perform establish/resign SET PGID on a single path.
- */
+ 
 static void spid_do(struct ccw_device *cdev)
 {
 	struct subchannel *sch = to_subchannel(cdev->dev.parent);
 	struct ccw_request *req = &cdev->private->req;
 	u8 fn;
 
-	/* Use next available path that is not already in correct state. */
+	 
 	req->lpm = lpm_adjust(req->lpm, cdev->private->pgid_todo_mask);
 	if (!req->lpm)
 		goto out_nopath;
-	/* Channel program setup. */
+	 
 	if (req->lpm & sch->opm)
 		fn = SPID_FUNC_ESTABLISH;
 	else
@@ -215,16 +189,14 @@ static void spid_do(struct ccw_device *cdev)
 
 out_nopath:
 	if (cdev->private->flags.pgid_unknown) {
-		/* At least one SPID could be partially done. */
+		 
 		pgid_wipeout_start(cdev);
 		return;
 	}
 	verify_done(cdev, sch->vpm ? 0 : -EACCES);
 }
 
-/*
- * Process SET PGID request result for a single path.
- */
+ 
 static void spid_callback(struct ccw_device *cdev, void *data, int rc)
 {
 	struct subchannel *sch = to_subchannel(cdev->dev.parent);
@@ -243,11 +215,11 @@ static void spid_callback(struct ccw_device *cdev, void *data, int rc)
 		break;
 	case -EOPNOTSUPP:
 		if (cdev->private->flags.mpath) {
-			/* Try without multipathing. */
+			 
 			cdev->private->flags.mpath = 0;
 			goto out_restart;
 		}
-		/* Try without pathgrouping. */
+		 
 		cdev->private->flags.pgroup = 0;
 		goto out_restart;
 	default:
@@ -268,7 +240,7 @@ static void spid_start(struct ccw_device *cdev)
 {
 	struct ccw_request *req = &cdev->private->req;
 
-	/* Initialize request data. */
+	 
 	memset(req, 0, sizeof(*req));
 	req->timeout	= PGID_TIMEOUT;
 	req->maxretries	= PGID_RETRIES;
@@ -295,9 +267,7 @@ static int pgid_cmp(struct pgid *p1, struct pgid *p2)
 		      sizeof(struct pgid) - 1);
 }
 
-/*
- * Determine pathgroup state from PGID data.
- */
+ 
 static void pgid_analyze(struct ccw_device *cdev, struct pgid **p,
 			 int *mismatch, u8 *reserved, u8 *reset)
 {
@@ -338,7 +308,7 @@ static u8 pgid_to_donepm(struct ccw_device *cdev)
 	int lpm;
 	u8 donepm = 0;
 
-	/* Set bits for paths which are already in the target state. */
+	 
 	for (i = 0; i < 8; i++) {
 		lpm = 0x80 >> i;
 		if ((cdev->private->pgid_valid_mask & lpm) == 0)
@@ -373,9 +343,7 @@ static void pgid_fill(struct ccw_device *cdev, struct pgid *pgid)
 		       sizeof(struct pgid));
 }
 
-/*
- * Process SENSE PGID data and report result.
- */
+ 
 static void snid_done(struct ccw_device *cdev, int rc)
 {
 	struct ccw_dev_id *id = &cdev->private->dev_id;
@@ -412,16 +380,16 @@ out:
 			pgid_wipeout_start(cdev);
 			return;
 		}
-		/* Anything left to do? */
+		 
 		if (cdev->private->pgid_todo_mask == 0) {
 			verify_done(cdev, sch->vpm == 0 ? -EACCES : 0);
 			return;
 		}
-		/* Perform path-grouping. */
+		 
 		spid_start(cdev);
 		break;
 	case -EOPNOTSUPP:
-		/* Path-grouping not supported. */
+		 
 		cdev->private->flags.pgroup = 0;
 		cdev->private->flags.mpath = 0;
 		verify_start(cdev);
@@ -431,16 +399,14 @@ out:
 	}
 }
 
-/*
- * Create channel program to perform a SENSE PGID on a single path.
- */
+ 
 static void snid_build_cp(struct ccw_device *cdev)
 {
 	struct ccw_request *req = &cdev->private->req;
 	struct ccw1 *cp = cdev->private->dma_area->iccws;
 	int i = pathmask_to_pos(req->lpm);
 
-	/* Channel program setup. */
+	 
 	cp->cmd_code	= CCW_CMD_SENSE_PGID;
 	cp->cda		= (u32)virt_to_phys(&cdev->private->dma_area->pgid[i]);
 	cp->count	= sizeof(struct pgid);
@@ -448,9 +414,7 @@ static void snid_build_cp(struct ccw_device *cdev)
 	req->cp		= cp;
 }
 
-/*
- * Perform SENSE PGID on a single path.
- */
+ 
 static void snid_do(struct ccw_device *cdev)
 {
 	struct subchannel *sch = to_subchannel(cdev->dev.parent);
@@ -475,9 +439,7 @@ out_nopath:
 	snid_done(cdev, ret);
 }
 
-/*
- * Process SENSE PGID request result for single path.
- */
+ 
 static void snid_callback(struct ccw_device *cdev, void *data, int rc)
 {
 	struct ccw_request *req = &cdev->private->req;
@@ -496,7 +458,7 @@ static void snid_callback(struct ccw_device *cdev, void *data, int rc)
 	default:
 		goto err;
 	}
-	/* Continue on the next path. */
+	 
 	req->lpm >>= 1;
 	snid_do(cdev);
 	return;
@@ -505,9 +467,7 @@ err:
 	snid_done(cdev, rc);
 }
 
-/*
- * Perform path verification.
- */
+ 
 static void verify_start(struct ccw_device *cdev)
 {
 	struct subchannel *sch = to_subchannel(cdev->dev.parent);
@@ -517,14 +477,14 @@ static void verify_start(struct ccw_device *cdev)
 	sch->vpm = 0;
 	sch->lpm = sch->schib.pmcw.pam;
 
-	/* Initialize PGID data. */
+	 
 	memset(cdev->private->dma_area->pgid, 0,
 	       sizeof(cdev->private->dma_area->pgid));
 	cdev->private->pgid_valid_mask = 0;
 	cdev->private->pgid_todo_mask = sch->schib.pmcw.pam;
 	cdev->private->path_notoper_mask = 0;
 
-	/* Initialize request data. */
+	 
 	memset(req, 0, sizeof(*req));
 	req->timeout	= PGID_TIMEOUT;
 	req->maxretries	= PGID_RETRIES;
@@ -544,24 +504,12 @@ static void verify_start(struct ccw_device *cdev)
 	}
 }
 
-/**
- * ccw_device_verify_start - perform path verification
- * @cdev: ccw device
- *
- * Perform an I/O on each available channel path to @cdev to determine which
- * paths are operational. The resulting path mask is stored in sch->vpm.
- * If device options specify pathgrouping, establish a pathgroup for the
- * operational paths. When finished, call ccw_device_verify_done with a
- * return code specifying the result.
- */
+ 
 void ccw_device_verify_start(struct ccw_device *cdev)
 {
 	CIO_TRACE_EVENT(4, "vrfy");
 	CIO_HEX_EVENT(4, &cdev->private->dev_id, sizeof(cdev->private->dev_id));
-	/*
-	 * Initialize pathgroup and multipath state with target values.
-	 * They may change in the course of path verification.
-	 */
+	 
 	cdev->private->flags.pgroup = cdev->private->options.pgroup;
 	cdev->private->flags.mpath = cdev->private->options.mpath;
 	cdev->private->flags.doverify = 0;
@@ -569,9 +517,7 @@ void ccw_device_verify_start(struct ccw_device *cdev)
 	verify_start(cdev);
 }
 
-/*
- * Process disband SET PGID request result.
- */
+ 
 static void disband_callback(struct ccw_device *cdev, void *data, int rc)
 {
 	struct subchannel *sch = to_subchannel(cdev->dev.parent);
@@ -579,7 +525,7 @@ static void disband_callback(struct ccw_device *cdev, void *data, int rc)
 
 	if (rc)
 		goto out;
-	/* Ensure consistent multipathing state at device and channel. */
+	 
 	cdev->private->flags.mpath = 0;
 	if (sch->config.mp) {
 		sch->config.mp = 0;
@@ -591,14 +537,7 @@ out:
 	ccw_device_disband_done(cdev, rc);
 }
 
-/**
- * ccw_device_disband_start - disband pathgroup
- * @cdev: ccw device
- *
- * Execute a SET PGID channel program on @cdev to disband a previously
- * established pathgroup. When finished, call ccw_device_disband_done with
- * a return code specifying the result.
- */
+ 
 void ccw_device_disband_start(struct ccw_device *cdev)
 {
 	struct subchannel *sch = to_subchannel(cdev->dev.parent);
@@ -607,7 +546,7 @@ void ccw_device_disband_start(struct ccw_device *cdev)
 
 	CIO_TRACE_EVENT(4, "disb");
 	CIO_HEX_EVENT(4, &cdev->private->dev_id, sizeof(cdev->private->dev_id));
-	/* Request setup. */
+	 
 	memset(req, 0, sizeof(*req));
 	req->timeout	= PGID_TIMEOUT;
 	req->maxretries	= PGID_RETRIES;
@@ -650,15 +589,7 @@ static void stlck_callback(struct ccw_device *cdev, void *data, int rc)
 	complete(&sdata->done);
 }
 
-/**
- * ccw_device_stlck_start - perform unconditional release
- * @cdev: ccw device
- * @data: data pointer to be passed to ccw_device_stlck_done
- * @buf1: data pointer used in channel program
- * @buf2: data pointer used in channel program
- *
- * Execute a channel program on @cdev to release an existing PGID reservation.
- */
+ 
 static void ccw_device_stlck_start(struct ccw_device *cdev, void *data,
 				   void *buf1, void *buf2)
 {
@@ -667,7 +598,7 @@ static void ccw_device_stlck_start(struct ccw_device *cdev, void *data,
 
 	CIO_TRACE_EVENT(4, "stlck");
 	CIO_HEX_EVENT(4, &cdev->private->dev_id, sizeof(cdev->private->dev_id));
-	/* Request setup. */
+	 
 	memset(req, 0, sizeof(*req));
 	req->timeout	= PGID_TIMEOUT;
 	req->maxretries	= PGID_RETRIES;
@@ -678,9 +609,7 @@ static void ccw_device_stlck_start(struct ccw_device *cdev, void *data,
 	ccw_request_start(cdev);
 }
 
-/*
- * Perform unconditional reserve + release.
- */
+ 
 int ccw_device_stlck(struct ccw_device *cdev)
 {
 	struct subchannel *sch = to_subchannel(cdev->dev.parent);
@@ -688,7 +617,7 @@ int ccw_device_stlck(struct ccw_device *cdev)
 	u8 *buffer;
 	int rc;
 
-	/* Check if steal lock operation is valid for this device. */
+	 
 	if (cdev->drv) {
 		if (!cdev->private->options.force)
 			return -EINVAL;
@@ -702,20 +631,20 @@ int ccw_device_stlck(struct ccw_device *cdev)
 	rc = cio_enable_subchannel(sch, (u32)virt_to_phys(sch));
 	if (rc)
 		goto out_unlock;
-	/* Perform operation. */
+	 
 	cdev->private->state = DEV_STATE_STEAL_LOCK;
 	ccw_device_stlck_start(cdev, &data, &buffer[0], &buffer[32]);
 	spin_unlock_irq(sch->lock);
-	/* Wait for operation to finish. */
+	 
 	if (wait_for_completion_interruptible(&data.done)) {
-		/* Got a signal. */
+		 
 		spin_lock_irq(sch->lock);
 		ccw_request_cancel(cdev);
 		spin_unlock_irq(sch->lock);
 		wait_for_completion(&data.done);
 	}
 	rc = data.rc;
-	/* Check results. */
+	 
 	spin_lock_irq(sch->lock);
 	cio_disable_subchannel(sch);
 	cdev->private->state = DEV_STATE_BOXED;

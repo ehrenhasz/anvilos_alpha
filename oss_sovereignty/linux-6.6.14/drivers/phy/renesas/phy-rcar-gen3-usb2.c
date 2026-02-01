@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Renesas R-Car Gen3 for USB2.0 PHY driver
- *
- * Copyright (C) 2015-2017 Renesas Electronics Corporation
- *
- * This is based on the phy-rcar-gen2 driver:
- * Copyright (C) 2014 Renesas Solutions Corp.
- * Copyright (C) 2014 Cogent Embedded, Inc.
- */
+
+ 
 
 #include <linux/extcon-provider.h>
 #include <linux/interrupt.h>
@@ -23,7 +15,7 @@
 #include <linux/usb/of.h>
 #include <linux/workqueue.h>
 
-/******* USB2.0 Host registers (original offset is +0x200) *******/
+ 
 #define USB2_INT_ENABLE		0x000
 #define USB2_USBCTR		0x00c
 #define USB2_SPD_RSM_TIMSET	0x10c
@@ -35,49 +27,49 @@
 #define USB2_LINECTRL1		0x610
 #define USB2_ADPCTRL		0x630
 
-/* INT_ENABLE */
+ 
 #define USB2_INT_ENABLE_UCOM_INTEN	BIT(3)
-#define USB2_INT_ENABLE_USBH_INTB_EN	BIT(2)	/* For EHCI */
-#define USB2_INT_ENABLE_USBH_INTA_EN	BIT(1)	/* For OHCI */
+#define USB2_INT_ENABLE_USBH_INTB_EN	BIT(2)	 
+#define USB2_INT_ENABLE_USBH_INTA_EN	BIT(1)	 
 
-/* USBCTR */
+ 
 #define USB2_USBCTR_DIRPD	BIT(2)
 #define USB2_USBCTR_PLL_RST	BIT(1)
 
-/* SPD_RSM_TIMSET */
+ 
 #define USB2_SPD_RSM_TIMSET_INIT	0x014e029b
 
-/* OC_TIMSET */
+ 
 #define USB2_OC_TIMSET_INIT		0x000209ab
 
-/* COMMCTRL */
-#define USB2_COMMCTRL_OTG_PERI		BIT(31)	/* 1 = Peripheral mode */
+ 
+#define USB2_COMMCTRL_OTG_PERI		BIT(31)	 
 
-/* OBINTSTA and OBINTEN */
+ 
 #define USB2_OBINT_SESSVLDCHG		BIT(12)
 #define USB2_OBINT_IDDIGCHG		BIT(11)
 #define USB2_OBINT_BITS			(USB2_OBINT_SESSVLDCHG | \
 					 USB2_OBINT_IDDIGCHG)
 
-/* VBCTRL */
+ 
 #define USB2_VBCTRL_OCCLREN		BIT(16)
 #define USB2_VBCTRL_DRVVBUSSEL		BIT(8)
 #define USB2_VBCTRL_VBOUT		BIT(0)
 
-/* LINECTRL1 */
+ 
 #define USB2_LINECTRL1_DPRPD_EN		BIT(19)
 #define USB2_LINECTRL1_DP_RPD		BIT(18)
 #define USB2_LINECTRL1_DMRPD_EN		BIT(17)
 #define USB2_LINECTRL1_DM_RPD		BIT(16)
 #define USB2_LINECTRL1_OPMODE_NODRV	BIT(6)
 
-/* ADPCTRL */
+ 
 #define USB2_ADPCTRL_OTGSESSVLD		BIT(20)
 #define USB2_ADPCTRL_IDDIG		BIT(19)
-#define USB2_ADPCTRL_IDPULLUP		BIT(5)	/* 1 = ID sampling is enabled */
+#define USB2_ADPCTRL_IDPULLUP		BIT(5)	 
 #define USB2_ADPCTRL_DRVVBUS		BIT(4)
 
-/*  RZ/G2L specific */
+ 
 #define USB2_OBINT_IDCHG_EN		BIT(0)
 #define USB2_LINECTRL1_USB2_IDMON	BIT(0)
 
@@ -107,12 +99,12 @@ struct rcar_gen3_phy {
 
 struct rcar_gen3_chan {
 	void __iomem *base;
-	struct device *dev;	/* platform_device's device */
+	struct device *dev;	 
 	struct extcon_dev *extcon;
 	struct rcar_gen3_phy rphys[NUM_OF_PHYS];
 	struct regulator *vbus;
 	struct work_struct work;
-	struct mutex lock;	/* protects rphys[...].powered */
+	struct mutex lock;	 
 	enum usb_dr_mode dr_mode;
 	int irq;
 	u32 obint_enable_bits;
@@ -127,16 +119,7 @@ struct rcar_gen3_phy_drv_data {
 	bool no_adp_ctrl;
 };
 
-/*
- * Combination about is_otg_channel and uses_otg_pins:
- *
- * Parameters				|| Behaviors
- * is_otg_channel	| uses_otg_pins	|| irqs		| role sysfs
- * ---------------------+---------------++--------------+------------
- * true			| true		|| enabled	| enabled
- * true                 | false		|| disabled	| enabled
- * false                | any		|| disabled	| disabled
- */
+ 
 
 static void rcar_gen3_phy_usb2_work(struct work_struct *work)
 {
@@ -350,23 +333,23 @@ static ssize_t role_store(struct device *dev, struct device_attribute *attr,
 	else
 		return -EINVAL;
 
-	/* is_b_device: true is B-Device. false is A-Device. */
+	 
 	is_b_device = rcar_gen3_check_id(ch);
 	cur_mode = rcar_gen3_get_phy_mode(ch);
 
-	/* If current and new mode is the same, this returns the error */
+	 
 	if (cur_mode == new_mode)
 		return -EINVAL;
 
-	if (new_mode == PHY_MODE_USB_HOST) { /* And is_host must be false */
-		if (!is_b_device)	/* A-Peripheral */
+	if (new_mode == PHY_MODE_USB_HOST) {  
+		if (!is_b_device)	 
 			rcar_gen3_init_from_a_peri_to_a_host(ch);
-		else			/* B-Peripheral */
+		else			 
 			rcar_gen3_init_for_b_host(ch);
-	} else {			/* And is_host must be true */
-		if (!is_b_device)	/* A-Host */
+	} else {			 
+		if (!is_b_device)	 
 			rcar_gen3_init_for_a_peri(ch);
-		else			/* B-Host */
+		else			 
 			rcar_gen3_init_for_peri(ch);
 	}
 
@@ -391,7 +374,7 @@ static void rcar_gen3_init_otg(struct rcar_gen3_chan *ch)
 	void __iomem *usb2_base = ch->base;
 	u32 val;
 
-	/* Should not use functions of read-modify-write a register */
+	 
 	val = readl(usb2_base + USB2_LINECTRL1);
 	val = (val & ~USB2_LINECTRL1_DP_RPD) | USB2_LINECTRL1_DPRPD_EN |
 	      USB2_LINECTRL1_DMRPD_EN | USB2_LINECTRL1_DM_RPD;
@@ -447,14 +430,14 @@ static int rcar_gen3_phy_usb2_init(struct phy *p)
 		}
 	}
 
-	/* Initialize USB2 part */
+	 
 	val = readl(usb2_base + USB2_INT_ENABLE);
 	val |= USB2_INT_ENABLE_UCOM_INTEN | rphy->int_enable_bits;
 	writel(val, usb2_base + USB2_INT_ENABLE);
 	writel(USB2_SPD_RSM_TIMSET_INIT, usb2_base + USB2_SPD_RSM_TIMSET);
 	writel(USB2_OC_TIMSET_INIT, usb2_base + USB2_OC_TIMSET);
 
-	/* Initialize otg part */
+	 
 	if (channel->is_otg_channel) {
 		if (rcar_gen3_needs_init_otg(channel))
 			rcar_gen3_init_otg(channel);
@@ -515,7 +498,7 @@ static int rcar_gen3_phy_usb2_power_on(struct phy *p)
 	writel(val, usb2_base + USB2_USBCTR);
 
 out:
-	/* The powered flag should be set for any other phys anyway */
+	 
 	rphy->powered = true;
 	mutex_unlock(&channel->lock);
 
@@ -597,7 +580,7 @@ static const struct of_device_id rcar_gen3_phy_usb2_match_table[] = {
 		.compatible = "renesas,rcar-gen3-usb2-phy",
 		.data = &rcar_gen3_phy_usb2_data,
 	},
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, rcar_gen3_phy_usb2_match_table);
 
@@ -612,9 +595,9 @@ static struct phy *rcar_gen3_phy_usb2_xlate(struct device *dev,
 {
 	struct rcar_gen3_chan *ch = dev_get_drvdata(dev);
 
-	if (args->args_count == 0)	/* For old version dts */
+	if (args->args_count == 0)	 
 		return ch->rphys[PHY_INDEX_BOTH_HC].phy;
-	else if (args->args_count > 1)	/* Prevent invalid args count */
+	else if (args->args_count > 1)	 
 		return ERR_PTR(-ENODEV);
 
 	if (args->args[0] >= NUM_OF_PHYS)
@@ -628,11 +611,7 @@ static enum usb_dr_mode rcar_gen3_get_dr_mode(struct device_node *np)
 	enum usb_dr_mode candidate = USB_DR_MODE_UNKNOWN;
 	int i;
 
-	/*
-	 * If one of device nodes has other dr_mode except UNKNOWN,
-	 * this function returns UNKNOWN. To achieve backward compatibility,
-	 * this loop starts the index as 0.
-	 */
+	 
 	for (i = 0; i < NUM_OF_PHYS; i++) {
 		enum usb_dr_mode mode = of_usb_get_dr_mode_by_phy(np, i);
 
@@ -669,7 +648,7 @@ static int rcar_gen3_phy_usb2_probe(struct platform_device *pdev)
 		return PTR_ERR(channel->base);
 
 	channel->obint_enable_bits = USB2_OBINT_BITS;
-	/* get irq number here and request_irq for OTG in phy_init */
+	 
 	channel->irq = platform_get_irq_optional(pdev, 0);
 	channel->dr_mode = rcar_gen3_get_dr_mode(dev->of_node);
 	if (channel->dr_mode != USB_DR_MODE_UNKNOWN) {
@@ -690,10 +669,7 @@ static int rcar_gen3_phy_usb2_probe(struct platform_device *pdev)
 		}
 	}
 
-	/*
-	 * devm_phy_create() will call pm_runtime_enable(&phy->dev);
-	 * And then, phy-core will manage runtime pm for this device.
-	 */
+	 
 	pm_runtime_enable(dev);
 
 	phy_data = of_device_get_match_data(dev);

@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2023 Isovalent */
+
+ 
 
 #include "vmlinux.h"
 
@@ -12,17 +12,17 @@ struct {
 	__uint(type, BPF_MAP_TYPE_HASH);
 } hash_map_bench SEC(".maps");
 
-/* The number of slots to store times */
+ 
 #define NR_SLOTS 32
 #define NR_CPUS 256
 #define CPU_MASK (NR_CPUS-1)
 
-/* Configured by userspace */
+ 
 u64 nr_entries;
 u64 nr_loops;
 u32 __attribute__((__aligned__(8))) key[NR_CPUS];
 
-/* Filled by us */
+ 
 u64 __attribute__((__aligned__(256))) percpu_times_index[NR_CPUS];
 u64 __attribute__((__aligned__(256))) percpu_times[NR_CPUS][NR_SLOTS];
 
@@ -33,7 +33,7 @@ static inline void patch_key(u32 i)
 #else
 	key[0] = __builtin_bswap32(i + 1);
 #endif
-	/* the rest of key is random and is configured by userspace */
+	 
 }
 
 static int lookup_callback(__u32 index, u32 *unused)

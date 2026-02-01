@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2014, Sony Mobile Communications AB.
- * Copyright (c) 2012-2013, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/platform_device.h>
@@ -24,20 +21,20 @@ struct request_member {
 };
 
 struct rpm_reg_parts {
-	struct request_member mV;		/* used if voltage is in mV */
-	struct request_member uV;		/* used if voltage is in uV */
-	struct request_member ip;		/* peak current in mA */
-	struct request_member pd;		/* pull down enable */
-	struct request_member ia;		/* average current in mA */
-	struct request_member fm;		/* force mode */
-	struct request_member pm;		/* power mode */
-	struct request_member pc;		/* pin control */
-	struct request_member pf;		/* pin function */
-	struct request_member enable_state;	/* NCP and switch */
-	struct request_member comp_mode;	/* NCP */
-	struct request_member freq;		/* frequency: NCP and SMPS */
-	struct request_member freq_clk_src;	/* clock source: SMPS */
-	struct request_member hpm;		/* switch: control OCP and SS */
+	struct request_member mV;		 
+	struct request_member uV;		 
+	struct request_member ip;		 
+	struct request_member pd;		 
+	struct request_member ia;		 
+	struct request_member fm;		 
+	struct request_member pm;		 
+	struct request_member pc;		 
+	struct request_member pf;		 
+	struct request_member enable_state;	 
+	struct request_member comp_mode;	 
+	struct request_member freq;		 
+	struct request_member freq_clk_src;	 
+	struct request_member hpm;		 
 	int request_len;
 };
 
@@ -145,9 +142,7 @@ static const struct rpm_reg_parts rpm8960_ncp_parts = {
 	.freq           = { 0, 0x3E000000, 25 },
 };
 
-/*
- * Physically available PMIC regulator voltage ranges
- */
+ 
 static const struct linear_range pldo_ranges[] = {
 	REGULATOR_LINEAR_RANGE( 750000,   0,  59, 12500),
 	REGULATOR_LINEAR_RANGE(1500000,  60, 123, 25000),
@@ -439,9 +434,7 @@ static const struct regulator_ops switch_ops = {
 	.is_enabled = rpm_reg_is_enabled,
 };
 
-/*
- * PM8018 regulators
- */
+ 
 static const struct qcom_rpm_reg pm8018_pldo = {
 	.desc.linear_ranges = pldo_ranges,
 	.desc.n_linear_ranges = ARRAY_SIZE(pldo_ranges),
@@ -477,9 +470,7 @@ static const struct qcom_rpm_reg pm8018_switch = {
 	.parts = &rpm8960_switch_parts,
 };
 
-/*
- * PM8058 regulators
- */
+ 
 static const struct qcom_rpm_reg pm8058_pldo = {
 	.desc.linear_ranges = pldo_ranges,
 	.desc.n_linear_ranges = ARRAY_SIZE(pldo_ranges),
@@ -523,9 +514,7 @@ static const struct qcom_rpm_reg pm8058_switch = {
 	.parts = &rpm8660_switch_parts,
 };
 
-/*
- * PM8901 regulators
- */
+ 
 static const struct qcom_rpm_reg pm8901_pldo = {
 	.desc.linear_ranges = pldo_ranges,
 	.desc.n_linear_ranges = ARRAY_SIZE(pldo_ranges),
@@ -561,9 +550,7 @@ static const struct qcom_rpm_reg pm8901_switch = {
 	.parts = &rpm8660_switch_parts,
 };
 
-/*
- * PM8921 regulators
- */
+ 
 static const struct qcom_rpm_reg pm8921_pldo = {
 	.desc.linear_ranges = pldo_ranges,
 	.desc.n_linear_ranges = ARRAY_SIZE(pldo_ranges),
@@ -723,13 +710,7 @@ static int rpm_reg_of_parse(struct device_node *node,
 			return ret;
 		}
 
-		/*
-		 * If force-mode is encoded as 2 bits then the
-		 * possible register values are:
-		 * NONE, LPM, HPM
-		 * otherwise:
-		 * NONE, LPM, AUTO, HPM, BYPASS
-		 */
+		 
 		switch (val) {
 		case QCOM_RPM_FORCE_MODE_NONE:
 			force_mode = 0;

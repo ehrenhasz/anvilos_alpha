@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
 
-  Broadcom B43 wireless driver
-  IEEE 802.11n HT-PHY support
-
-  Copyright (c) 2011 Rafał Miłecki <zajec5@gmail.com>
-
-
-*/
+ 
 
 #include <linux/slab.h>
 
@@ -17,7 +9,7 @@
 #include "radio_2059.h"
 #include "main.h"
 
-/* Force values to keep compatibility with wl */
+ 
 enum ht_rssi_type {
 	HT_RSSI_W1 = 0,
 	HT_RSSI_W2 = 1,
@@ -28,9 +20,7 @@ enum ht_rssi_type {
 	HT_RSSI_TBD = 6,
 };
 
-/**************************************************
- * Radio 2059.
- **************************************************/
+ 
 
 static void b43_radio_2059_channel_setup(struct b43_wldev *dev,
 			const struct b43_phy_ht_channeltab_e_radio2059 *e)
@@ -67,7 +57,7 @@ static void b43_radio_2059_channel_setup(struct b43_wldev *dev,
 
 	udelay(50);
 
-	/* Calibration */
+	 
 	b43_radio_mask(dev, R2059_RFPLL_MISC_EN, ~0x1);
 	b43_radio_mask(dev, R2059_RFPLL_MISC_CAL_RESETN, ~0x4);
 	b43_radio_set(dev, R2059_RFPLL_MISC_CAL_RESETN, 0x4);
@@ -76,34 +66,34 @@ static void b43_radio_2059_channel_setup(struct b43_wldev *dev,
 	udelay(300);
 }
 
-/* Calibrate resistors in LPF of PLL? */
+ 
 static void b43_radio_2059_rcal(struct b43_wldev *dev)
 {
-	/* Enable */
+	 
 	b43_radio_set(dev, R2059_C3 | R2059_RCAL_CONFIG, 0x1);
 	usleep_range(10, 20);
 
 	b43_radio_set(dev, R2059_C3 | 0x0BF, 0x1);
 	b43_radio_maskset(dev, R2059_C3 | 0x19B, 0x3, 0x2);
 
-	/* Start */
+	 
 	b43_radio_set(dev, R2059_C3 | R2059_RCAL_CONFIG, 0x2);
 	usleep_range(100, 200);
 
-	/* Stop */
+	 
 	b43_radio_mask(dev, R2059_C3 | R2059_RCAL_CONFIG, ~0x2);
 
 	if (!b43_radio_wait_value(dev, R2059_C3 | R2059_RCAL_STATUS, 1, 1, 100,
 				  1000000))
 		b43err(dev->wl, "Radio 0x2059 rcal timeout\n");
 
-	/* Disable */
+	 
 	b43_radio_mask(dev, R2059_C3 | R2059_RCAL_CONFIG, ~0x1);
 
 	b43_radio_set(dev, 0xa, 0x60);
 }
 
-/* Calibrate the internal RC oscillator? */
+ 
 static void b43_radio_2057_rccal(struct b43_wldev *dev)
 {
 	static const u16 radio_values[3][2] = {
@@ -116,15 +106,15 @@ static void b43_radio_2057_rccal(struct b43_wldev *dev)
 		b43_radio_write(dev, R2059_RCCAL_X1, 0x6E);
 		b43_radio_write(dev, R2059_RCCAL_TRC0, radio_values[i][1]);
 
-		/* Start */
+		 
 		b43_radio_write(dev, R2059_RCCAL_START_R1_Q1_P1, 0x55);
 
-		/* Wait */
+		 
 		if (!b43_radio_wait_value(dev, R2059_RCCAL_DONE_OSCCAP, 2, 2,
 					  500, 5000000))
 			b43err(dev->wl, "Radio 0x2059 rccal timeout\n");
 
-		/* Stop */
+		 
 		b43_radio_write(dev, R2059_RCCAL_START_R1_Q1_P1, 0x15);
 	}
 
@@ -144,7 +134,7 @@ static void b43_radio_2059_init(struct b43_wldev *dev)
 	static const u16 routing[] = { R2059_C1, R2059_C2, R2059_C3 };
 	int i;
 
-	/* Prepare (reset?) radio */
+	 
 	b43_radio_2059_init_pre(dev);
 
 	r2059_upload_inittabs(dev);
@@ -152,7 +142,7 @@ static void b43_radio_2059_init(struct b43_wldev *dev)
 	for (i = 0; i < ARRAY_SIZE(routing); i++)
 		b43_radio_set(dev, routing[i] | 0x146, 0x3);
 
-	/* Post init starts below */
+	 
 
 	b43_radio_set(dev, R2059_RFPLL_MISC_CAL_RESETN, 0x0078);
 	b43_radio_set(dev, R2059_XTAL_CONFIG2, 0x0080);
@@ -160,7 +150,7 @@ static void b43_radio_2059_init(struct b43_wldev *dev)
 	b43_radio_mask(dev, R2059_RFPLL_MISC_CAL_RESETN, ~0x0078);
 	b43_radio_mask(dev, R2059_XTAL_CONFIG2, ~0x0080);
 
-	if (1) { /* FIXME */
+	if (1) {  
 		b43_radio_2059_rcal(dev);
 		b43_radio_2057_rccal(dev);
 	}
@@ -168,9 +158,7 @@ static void b43_radio_2059_init(struct b43_wldev *dev)
 	b43_radio_mask(dev, R2059_RFPLL_MASTER, ~0x0008);
 }
 
-/**************************************************
- * RF
- **************************************************/
+ 
 
 static void b43_phy_ht_force_rf_sequence(struct b43_wldev *dev, u16 rf_seq)
 {
@@ -207,15 +195,13 @@ static void b43_phy_ht_pa_override(struct b43_wldev *dev, bool enable)
 	} else {
 		for (i = 0; i < 3; i++)
 			htphy->rf_ctl_int_save[i] = b43_phy_read(dev, regs[i]);
-		/* TODO: Does 5GHz band use different value (not 0x0400)? */
+		 
 		for (i = 0; i < 3; i++)
 			b43_phy_write(dev, regs[i], 0x0400);
 	}
 }
 
-/**************************************************
- * Various PHY ops
- **************************************************/
+ 
 
 static u16 b43_phy_ht_classifier(struct b43_wldev *dev, u16 mask, u16 val)
 {
@@ -261,7 +247,7 @@ static void b43_phy_ht_zero_extg(struct b43_wldev *dev)
 		b43_phy_write(dev, B43_PHY_EXTG(base[i] + 0xc), 0);
 }
 
-/* Some unknown AFE (Analog Frondned) op */
+ 
 static void b43_phy_ht_afe_unk1(struct b43_wldev *dev)
 {
 	u8 i;
@@ -273,7 +259,7 @@ static void b43_phy_ht_afe_unk1(struct b43_wldev *dev)
 	};
 
 	for (i = 0; i < 3; i++) {
-		/* TODO: verify masks&sets */
+		 
 		b43_phy_set(dev, ctl_regs[i][1], 0x4);
 		b43_phy_set(dev, ctl_regs[i][0], 0x4);
 		b43_phy_mask(dev, ctl_regs[i][1], ~0x1);
@@ -316,7 +302,7 @@ static void b43_phy_ht_bphy_reset(struct b43_wldev *dev, bool reset)
 	b43_write16(dev, B43_MMIO_PSM_PHY_HDR,
 		    tmp | B43_PSM_HDR_MAC_PHY_FORCE_CLK);
 
-	/* Put BPHY in or take it out of the reset */
+	 
 	if (reset)
 		b43_phy_set(dev, B43_PHY_B_BBCFG,
 			    B43_PHY_B_BBCFG_RSTCCA | B43_PHY_B_BBCFG_RSTRX);
@@ -328,9 +314,7 @@ static void b43_phy_ht_bphy_reset(struct b43_wldev *dev, bool reset)
 	b43_write16(dev, B43_MMIO_PSM_PHY_HDR, tmp);
 }
 
-/**************************************************
- * Samples
- **************************************************/
+ 
 
 static void b43_phy_ht_stop_playback(struct b43_wldev *dev)
 {
@@ -393,7 +377,7 @@ static void b43_phy_ht_run_samples(struct b43_wldev *dev, u16 samps, u16 loops,
 	b43_phy_set(dev, B43_PHY_HT_RF_SEQ_MODE,
 		    B43_PHY_HT_RF_SEQ_MODE_CA_OVER);
 
-	/* TODO: find out mask bits! Do we need more function arguments? */
+	 
 	b43_phy_mask(dev, B43_PHY_HT_SAMP_CMD, ~0);
 	b43_phy_mask(dev, B43_PHY_HT_SAMP_CMD, ~0);
 	b43_phy_mask(dev, B43_PHY_HT_IQLOCAL_CMDGCTL, ~0);
@@ -420,9 +404,7 @@ static void b43_phy_ht_tx_tone(struct b43_wldev *dev)
 	b43_phy_ht_run_samples(dev, samp, 0xFFFF, 0);
 }
 
-/**************************************************
- * RSSI
- **************************************************/
+ 
 
 static void b43_phy_ht_rssi_select(struct b43_wldev *dev, u8 core_sel,
 				   enum ht_rssi_type rssi_type)
@@ -439,7 +421,7 @@ static void b43_phy_ht_rssi_select(struct b43_wldev *dev, u8 core_sel,
 		b43err(dev->wl, "RSSI selection for core off not implemented yet\n");
 	} else {
 		for (core = 0; core < 3; core++) {
-			/* Check if caller requested a one specific core */
+			 
 			if ((core_sel == 1 && core != 0) ||
 			    (core_sel == 2 && core != 1) ||
 			    (core_sel == 3 && core != 2))
@@ -504,9 +486,7 @@ static void b43_phy_ht_poll_rssi(struct b43_wldev *dev, enum ht_rssi_type type,
 		b43_phy_write(dev, phy_regs_to_save[i], phy_regs_values[i]);
 }
 
-/**************************************************
- * Tx/Rx
- **************************************************/
+ 
 
 static void b43_phy_ht_tx_power_fix(struct b43_wldev *dev)
 {
@@ -516,7 +496,7 @@ static void b43_phy_ht_tx_power_fix(struct b43_wldev *dev)
 		u16 mask;
 		u32 tmp = b43_httab_read(dev, B43_HTTAB32(26, 0xE8));
 
-		if (0) /* FIXME */
+		if (0)  
 			mask = 0x2 << (i * 4);
 		else
 			mask = 0;
@@ -546,7 +526,7 @@ static void b43_phy_ht_tx_power_ctl(struct b43_wldev *dev, bool enable)
 
 	if (!enable) {
 		if (b43_phy_read(dev, B43_PHY_HT_TXPCTL_CMD_C1) & en_bits) {
-			/* We disable enabled TX pwr ctl, save it's state */
+			 
 			for (i = 0; i < 3; i++)
 				phy_ht->tx_pwr_idx[i] =
 					b43_phy_read(dev, status_regs[i]);
@@ -584,7 +564,7 @@ static void b43_phy_ht_tx_power_ctl_idle_tssi(struct b43_wldev *dev)
 		save_regs[core][0] = b43_phy_read(dev, base[core] + 0);
 
 		b43_phy_write(dev, base[core] + 6, 0);
-		b43_phy_mask(dev, base[core] + 7, ~0xF); /* 0xF? Or just 0x6? */
+		b43_phy_mask(dev, base[core] + 7, ~0xF);  
 		b43_phy_set(dev, base[core] + 0, 0x0400);
 		b43_phy_set(dev, base[core] + 0, 0x1000);
 	}
@@ -611,7 +591,7 @@ static void b43_phy_ht_tssi_setup(struct b43_wldev *dev)
 	static const u16 routing[] = { R2059_C1, R2059_C2, R2059_C3, };
 	int core;
 
-	/* 0x159 is probably TX_SSI_MUX or TSSIG (by comparing to N-PHY) */
+	 
 	for (core = 0; core < 3; core++) {
 		b43_radio_set(dev, 0x8bf, 0x1);
 		b43_radio_write(dev, routing[core] | 0x0159, 0x0011);
@@ -669,7 +649,7 @@ static void b43_phy_ht_tx_power_ctl_setup(struct b43_wldev *dev)
 	b43_phy_mask(dev, B43_PHY_HT_TXPCTL_CMD_C1,
 		     ~B43_PHY_HT_TXPCTL_CMD_C1_PCTLEN & 0xFFFF);
 
-	/* TODO: Does it depend on sprom->fem.ghz2.tssipos? */
+	 
 	b43_phy_set(dev, B43_PHY_HT_TXPCTL_IDLE_TSSI, 0x4000);
 
 	b43_phy_maskset(dev, B43_PHY_HT_TXPCTL_CMD_C1,
@@ -697,7 +677,7 @@ static void b43_phy_ht_tx_power_ctl_setup(struct b43_wldev *dev)
 	b43_phy_maskset(dev, B43_PHY_HT_TXPCTL_N, ~B43_PHY_HT_TXPCTL_N_NPTIL2,
 			0x3 << B43_PHY_HT_TXPCTL_N_NPTIL2_SHIFT);
 #if 0
-	/* TODO: what to mask/set? */
+	 
 	b43_phy_maskset(dev, B43_PHY_HT_TXPCTL_CMD_C1, 0x800, 0)
 	b43_phy_maskset(dev, B43_PHY_HT_TXPCTL_CMD_C1, 0x400, 0)
 #endif
@@ -726,9 +706,7 @@ static void b43_phy_ht_tx_power_ctl_setup(struct b43_wldev *dev)
 	}
 }
 
-/**************************************************
- * Channel switching ops.
- **************************************************/
+ 
 
 static void b43_phy_ht_spur_avoid(struct b43_wldev *dev,
 				  struct ieee80211_channel *new_channel)
@@ -736,7 +714,7 @@ static void b43_phy_ht_spur_avoid(struct b43_wldev *dev,
 	struct bcma_device *core = dev->dev->bdev;
 	int spuravoid = 0;
 
-	/* Check for 13 and 14 is just a guess, we don't have enough logs. */
+	 
 	if (new_channel->hw_value == 13 || new_channel->hw_value == 14)
 		spuravoid = 1;
 	bcma_core_pll_ctl(core, B43_BCMA_CLKCTLST_PHY_PLL_REQ, 0, false);
@@ -765,15 +743,15 @@ static void b43_phy_ht_channel_setup(struct b43_wldev *dev,
 				struct ieee80211_channel *new_channel)
 {
 	if (new_channel->band == NL80211_BAND_5GHZ) {
-		/* Switch to 2 GHz for a moment to access B-PHY regs */
+		 
 		b43_phy_mask(dev, B43_PHY_HT_BANDCTL, ~B43_PHY_HT_BANDCTL_5GHZ);
 
 		b43_phy_ht_bphy_reset(dev, true);
 
-		/* Switch to 5 GHz */
+		 
 		b43_phy_set(dev, B43_PHY_HT_BANDCTL, B43_PHY_HT_BANDCTL_5GHZ);
 	} else {
-		/* Switch to 2 GHz */
+		 
 		b43_phy_mask(dev, B43_PHY_HT_BANDCTL, ~B43_PHY_HT_BANDCTL_5GHZ);
 
 		b43_phy_ht_bphy_reset(dev, false);
@@ -796,7 +774,7 @@ static void b43_phy_ht_channel_setup(struct b43_wldev *dev,
 			b43_phy_mask(dev, B43_PHY_HT_TEST, ~0x840);
 	}
 
-	if (1) /* TODO: On N it's for early devices only, what about HT? */
+	if (1)  
 		b43_phy_ht_tx_power_fix(dev);
 
 	b43_phy_ht_spur_avoid(dev, new_channel);
@@ -821,7 +799,7 @@ static int b43_phy_ht_set_channel(struct b43_wldev *dev,
 		return -ESRCH;
 	}
 
-	/* TODO: In case of N-PHY some bandwidth switching goes here */
+	 
 
 	if (phy->radio_ver == 0x2059) {
 		b43_radio_2059_channel_setup(dev, chent_r2059);
@@ -834,9 +812,7 @@ static int b43_phy_ht_set_channel(struct b43_wldev *dev,
 	return 0;
 }
 
-/**************************************************
- * Basic PHY ops.
- **************************************************/
+ 
 
 static int b43_phy_ht_op_allocate(struct b43_wldev *dev)
 {
@@ -950,7 +926,7 @@ static int b43_phy_ht_op_init(struct b43_wldev *dev)
 			    0x09, 0x0e, 0x13, 0x18);
 	b43_httab_write_few(dev, B43_HTTAB16(01, 0x8), 4,
 			    0x09, 0x0e, 0x13, 0x18);
-	/* TODO: Did wl mean 2 instead of 40? */
+	 
 	b43_httab_write_few(dev, B43_HTTAB16(40, 0x8), 4,
 			    0x09, 0x0e, 0x13, 0x18);
 
@@ -963,7 +939,7 @@ static int b43_phy_ht_op_init(struct b43_wldev *dev)
 	b43_phy_set(dev, B43_PHY_EXTG(0x080), 0x1);
 	b43_phy_set(dev, B43_PHY_EXTG(0x084), 0x1);
 
-	/* Copy some tables entries */
+	 
 	tmp = b43_httab_read(dev, B43_HTTAB16(7, 0x144));
 	b43_httab_write(dev, B43_HTTAB16(7, 0x14a), tmp);
 	tmp = b43_httab_read(dev, B43_HTTAB16(7, 0x154));
@@ -971,7 +947,7 @@ static int b43_phy_ht_op_init(struct b43_wldev *dev)
 	tmp = b43_httab_read(dev, B43_HTTAB16(7, 0x164));
 	b43_httab_write(dev, B43_HTTAB16(7, 0x16a), tmp);
 
-	/* Reset CCA */
+	 
 	b43_phy_force_clock(dev, true);
 	tmp = b43_phy_read(dev, B43_PHY_HT_BBCFG);
 	b43_phy_write(dev, B43_PHY_HT_BBCFG, tmp | B43_PHY_HT_BBCFG_RSTCCA);
@@ -985,7 +961,7 @@ static int b43_phy_ht_op_init(struct b43_wldev *dev)
 	b43_phy_ht_force_rf_sequence(dev, B43_PHY_HT_RF_SEQ_TRIG_RST2RX);
 	b43_phy_ht_pa_override(dev, true);
 
-	/* TODO: Should we restore it? Or store it in global PHY info? */
+	 
 	b43_phy_ht_classifier(dev, 0, 0);
 	b43_phy_ht_read_clip_detection(dev, clip_state);
 
@@ -1015,72 +991,7 @@ static void b43_phy_ht_op_free(struct b43_wldev *dev)
 	phy->ht = NULL;
 }
 
-/* https://bcm-v4.sipsolutions.net/802.11/Radio/Switch%20Radio */
-static void b43_phy_ht_op_software_rfkill(struct b43_wldev *dev,
-					bool blocked)
-{
-	if (b43_read32(dev, B43_MMIO_MACCTL) & B43_MACCTL_ENABLED)
-		b43err(dev->wl, "MAC not suspended\n");
-
-	if (blocked) {
-		b43_phy_mask(dev, B43_PHY_HT_RF_CTL_CMD,
-			     ~B43_PHY_HT_RF_CTL_CMD_CHIP0_PU);
-	} else {
-		if (dev->phy.radio_ver == 0x2059)
-			b43_radio_2059_init(dev);
-		else
-			B43_WARN_ON(1);
-
-		b43_switch_channel(dev, dev->phy.channel);
-	}
-}
-
-static void b43_phy_ht_op_switch_analog(struct b43_wldev *dev, bool on)
-{
-	if (on) {
-		b43_phy_write(dev, B43_PHY_HT_AFE_C1, 0x00cd);
-		b43_phy_write(dev, B43_PHY_HT_AFE_C1_OVER, 0x0000);
-		b43_phy_write(dev, B43_PHY_HT_AFE_C2, 0x00cd);
-		b43_phy_write(dev, B43_PHY_HT_AFE_C2_OVER, 0x0000);
-		b43_phy_write(dev, B43_PHY_HT_AFE_C3, 0x00cd);
-		b43_phy_write(dev, B43_PHY_HT_AFE_C3_OVER, 0x0000);
-	} else {
-		b43_phy_write(dev, B43_PHY_HT_AFE_C1_OVER, 0x07ff);
-		b43_phy_write(dev, B43_PHY_HT_AFE_C1, 0x00fd);
-		b43_phy_write(dev, B43_PHY_HT_AFE_C2_OVER, 0x07ff);
-		b43_phy_write(dev, B43_PHY_HT_AFE_C2, 0x00fd);
-		b43_phy_write(dev, B43_PHY_HT_AFE_C3_OVER, 0x07ff);
-		b43_phy_write(dev, B43_PHY_HT_AFE_C3, 0x00fd);
-	}
-}
-
-static int b43_phy_ht_op_switch_channel(struct b43_wldev *dev,
-					unsigned int new_channel)
-{
-	struct ieee80211_channel *channel = dev->wl->hw->conf.chandef.chan;
-	enum nl80211_channel_type channel_type =
-		cfg80211_get_chandef_type(&dev->wl->hw->conf.chandef);
-
-	if (b43_current_band(dev->wl) == NL80211_BAND_2GHZ) {
-		if ((new_channel < 1) || (new_channel > 14))
-			return -EINVAL;
-	} else {
-		return -EINVAL;
-	}
-
-	return b43_phy_ht_set_channel(dev, channel, channel_type);
-}
-
-static unsigned int b43_phy_ht_op_get_default_chan(struct b43_wldev *dev)
-{
-	if (b43_current_band(dev->wl) == NL80211_BAND_2GHZ)
-		return 11;
-	return 36;
-}
-
-/**************************************************
- * R/W ops.
- **************************************************/
+ 
 
 static void b43_phy_ht_op_maskset(struct b43_wldev *dev, u16 reg, u16 mask,
 				 u16 set)
@@ -1092,7 +1003,7 @@ static void b43_phy_ht_op_maskset(struct b43_wldev *dev, u16 reg, u16 mask,
 
 static u16 b43_phy_ht_op_radio_read(struct b43_wldev *dev, u16 reg)
 {
-	/* HT-PHY needs 0x200 for read access */
+	 
 	reg |= 0x200;
 
 	b43_write16f(dev, B43_MMIO_RADIO24_CONTROL, reg);
@@ -1116,9 +1027,7 @@ static void b43_phy_ht_op_adjust_txpower(struct b43_wldev *dev)
 {
 }
 
-/**************************************************
- * PHY ops struct.
- **************************************************/
+ 
 
 const struct b43_phy_operations b43_phyops_ht = {
 	.allocate		= b43_phy_ht_op_allocate,

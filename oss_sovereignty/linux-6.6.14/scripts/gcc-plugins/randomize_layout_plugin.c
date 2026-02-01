@@ -1,20 +1,4 @@
-/*
- * Copyright 2014-2016 by Open Source Security, Inc., Brad Spengler <spender@grsecurity.net>
- *                   and PaX Team <pageexec@freemail.hu>
- * Licensed under the GPL v2
- *
- * Note: the choice of the license means that the compilation process is
- *       NOT 'eligible' as defined by gcc's library exception to the GPL v3,
- *       but for the kernel it doesn't matter since it doesn't link against
- *       any of the gcc libraries
- *
- * Usage:
- * $ # for 4.5/4.6/C based 4.7
- * $ gcc -I`gcc -print-file-name=plugin`/include -I`gcc -print-file-name=plugin`/include/c-family -fPIC -shared -O2 -o randomize_layout_plugin.so randomize_layout_plugin.c
- * $ # for C++ based 4.7/4.8+
- * $ g++ -I`g++ -print-file-name=plugin`/include -I`g++ -print-file-name=plugin`/include/c-family -fPIC -shared -O2 -o randomize_layout_plugin.so randomize_layout_plugin.c
- * $ gcc -fplugin=./randomize_layout_plugin.so test.c -O2
- */
+ 
 
 #include "gcc-common.h"
 #include "randomize_layout_seed.h"
@@ -39,7 +23,7 @@ static struct plugin_info randomize_layout_plugin_info = {
 			  "performance-mode\tenable cacheline-aware layout randomization\n"
 };
 
-/* from old Linux dcache.h */
+ 
 static inline unsigned long
 partial_name_hash(unsigned long c, unsigned long prevhash)
 {
@@ -97,27 +81,21 @@ static tree handle_randomize_layout_attr(tree *node, tree name, tree args, int f
 	return NULL_TREE;
 }
 
-/* set on complete types that we don't need to inspect further at all */
+ 
 static tree handle_randomize_considered_attr(tree *node, tree name, tree args, int flags, bool *no_add_attrs)
 {
 	*no_add_attrs = false;
 	return NULL_TREE;
 }
 
-/*
- * set on types that we've performed a shuffle on, to prevent re-shuffling
- * this does not preclude us from inspecting its fields for potential shuffles
- */
+ 
 static tree handle_randomize_performed_attr(tree *node, tree name, tree args, int flags, bool *no_add_attrs)
 {
 	*no_add_attrs = false;
 	return NULL_TREE;
 }
 
-/*
- * 64bit variant of Bob Jenkins' public domain PRNG
- * 256 bits of internal state
- */
+ 
 
 typedef unsigned long long u64;
 
@@ -198,7 +176,7 @@ static void performance_shuffle(tree *newtree, unsigned long length, ranctx *prn
 
 	partition_struct(newtree, length, (struct partition_group *)&size_group, &num_groups);
 
-	/* FIXME: this group shuffle is currently a no-op. */
+	 
 	for (i = num_groups - 1; i > 0; i--) {
 		struct partition_group tmp;
 		randnum = ranval(prng_state) % (i + 1);
@@ -216,7 +194,7 @@ static void performance_shuffle(tree *newtree, unsigned long length, ranctx *prn
 				continue;
 			randnum = ranval(prng_state) % (index + 1);
 			randnum += size_group[x].start;
-			// we could handle this case differently if desired
+			 
 			if (DECL_BIT_FIELD_TYPE(newtree[randnum]))
 				continue;
 			tmp = newtree[i];
@@ -239,7 +217,7 @@ static void full_shuffle(tree *newtree, unsigned long length, ranctx *prng_state
 	}
 }
 
-/* modern in-place Fisher-Yates shuffle */
+ 
 static void shuffle(const_tree type, tree *newtree, unsigned long length)
 {
 	unsigned long i;
@@ -285,7 +263,7 @@ static bool is_flexible_array(const_tree field)
 	if (TREE_CODE(fieldtype) != ARRAY_TYPE)
 		return false;
 
-	/* size of type is represented in bits */
+	 
 
 	if (typesize == NULL_TREE && TYPE_DOMAIN(fieldtype) != NULL_TREE &&
 	    TYPE_MAX_VALUE(TYPE_DOMAIN(fieldtype)) == NULL_TREE)
@@ -321,12 +299,12 @@ static int relayout_struct(tree type)
 	    lookup_attribute("no_randomize_layout", TYPE_ATTRIBUTES(TYPE_MAIN_VARIANT(type))))
 		return 0;
 
-	/* Workaround for 3rd-party VirtualBox source that we can't modify ourselves */
+	 
 	if (!strcmp((const char *)ORIG_TYPE_NAME(type), "INTNETTRUNKFACTORY") ||
 	    !strcmp((const char *)ORIG_TYPE_NAME(type), "RAWPCIFACTORY"))
 		return 0;
 
-	/* throw out any structs in uapi */
+	 
 	xloc = expand_location(DECL_SOURCE_LOCATION(TYPE_FIELDS(type)));
 
 	if (strstr(xloc.file, "/uapi/"))
@@ -337,10 +315,7 @@ static int relayout_struct(tree type)
 		newtree[i] = field;
 	}
 
-	/*
-	 * enforce that we don't randomize the layout of the last
-	 * element of a struct if it's a proper flexible array
-	 */
+	 
 	if (is_flexible_array(newtree[num_fields - 1])) {
 		has_flexarray = true;
 		shuffle_length--;
@@ -348,10 +323,7 @@ static int relayout_struct(tree type)
 
 	shuffle(type, (tree *)newtree, shuffle_length);
 
-	/*
-	 * set up a bogus anonymous struct field designed to error out on unnamed struct initializers
-	 * as gcc provides no other way to detect such code
-	 */
+	 
 	list = make_node(FIELD_DECL);
 	TREE_CHAIN(list) = newtree[0];
 	TREE_TYPE(list) = void_type_node;
@@ -361,7 +333,7 @@ static int relayout_struct(tree type)
 	DECL_SIZE_UNIT(list) = size_zero_node;
 	DECL_FIELD_OFFSET(list) = size_zero_node;
 	DECL_CONTEXT(list) = type;
-	// to satisfy the constify plugin
+	
 	TREE_READONLY(list) = 1;
 
 	for (i = 0; i < num_fields - 1; i++)
@@ -378,11 +350,7 @@ static int relayout_struct(tree type)
 			TYPE_ATTRIBUTES(type) = tree_cons(get_identifier("has_flexarray"), NULL_TREE, TYPE_ATTRIBUTES(type));
 	}
 
-	/*
-	 * force a re-layout of the main variant
-	 * the TYPE_SIZE for all variants will be recomputed
-	 * by finalize_type_size()
-	 */
+	 
 	TYPE_SIZE(main_variant) = NULL_TREE;
 	layout_type(main_variant);
 	gcc_assert(TYPE_SIZE(main_variant) != NULL_TREE);
@@ -390,13 +358,13 @@ static int relayout_struct(tree type)
 	return 1;
 }
 
-/* from constify plugin */
+ 
 static const_tree get_field_type(const_tree field)
 {
 	return strip_array_types(TREE_TYPE(field));
 }
 
-/* from constify plugin */
+ 
 static bool is_fptr(const_tree fieldtype)
 {
 	if (TREE_CODE(fieldtype) != POINTER_TYPE)
@@ -405,7 +373,7 @@ static bool is_fptr(const_tree fieldtype)
 	return TREE_CODE(TREE_TYPE(fieldtype)) == FUNCTION_TYPE;
 }
 
-/* derived from constify plugin */
+ 
 static int is_pure_ops_struct(const_tree node)
 {
 	const_tree field;
@@ -599,8 +567,7 @@ static void check_bad_casts_in_constructor(tree var, tree init)
 			continue;
 		}
 
-		/* pipacs' plugin creates franken-arrays that differ from those produced by
-		   normal code which all have valid 'field' trees. work around this */
+		 
 		if (field == NULL_TREE)
 			continue;
 		field_type = TREE_TYPE(field);
@@ -628,7 +595,7 @@ static void check_bad_casts_in_constructor(tree var, tree init)
 	}
 }
 
-/* derived from the constify plugin */
+ 
 static void check_global_variables(void *event_data, void *data)
 {
 	struct varpool_node *node;
@@ -718,12 +685,7 @@ static void handle_local_var_initializers(void)
 	}
 }
 
-/*
- * iterate over all statements to find "bad" casts:
- * those where the address of the start of a structure is cast
- * to a pointer of a structure of a different type, or a
- * structure pointer type is cast to a different structure pointer type
- */
+ 
 static unsigned int find_bad_casts_execute(void)
 {
 	basic_block bb;
@@ -820,7 +782,7 @@ static unsigned int find_bad_casts_execute(void)
 				MISMATCH(gimple_location(stmt), "op0", ptr_lhs_type, op0_type);
 			} else {
 				const_tree ssa_name_var = SSA_NAME_VAR(rhs1);
-				/* skip bogus type casts introduced by container_of */
+				 
 				if (ssa_name_var != NULL_TREE && DECL_NAME(ssa_name_var) && 
 				    !strcmp((const char *)DECL_NAME_POINTER(ssa_name_var), "__mptr"))
 					continue;

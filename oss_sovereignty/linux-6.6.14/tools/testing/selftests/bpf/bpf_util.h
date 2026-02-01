@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef __BPF_UTIL__
 #define __BPF_UTIL__
 
@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
-#include <bpf/libbpf.h> /* libbpf_num_possible_cpus */
+#include <bpf/libbpf.h>  
 
 static inline unsigned int bpf_num_possible_cpus(void)
 {
@@ -20,12 +20,7 @@ static inline unsigned int bpf_num_possible_cpus(void)
 	return possible_cpus;
 }
 
-/* Copy up to sz - 1 bytes from zero-terminated src string and ensure that dst
- * is zero-terminated string no matter what (unless sz == 0, in which case
- * it's a no-op). It's conceptually close to FreeBSD's strlcpy(), but differs
- * in what is returned. Given this is internal helper, it's trivial to extend
- * this, when necessary. Use this instead of strncpy inside libbpf source code.
- */
+ 
 static inline void bpf_strlcpy(char *dst, const char *src, size_t sz)
 {
 	size_t i;
@@ -42,7 +37,7 @@ static inline void bpf_strlcpy(char *dst, const char *src, size_t sz)
 #define __bpf_percpu_val_align	__attribute__((__aligned__(8)))
 
 #define BPF_DECLARE_PERCPU(type, name)				\
-	struct { type v; /* padding */ } __bpf_percpu_val_align	\
+	struct { type v;   } __bpf_percpu_val_align	\
 		name[bpf_num_possible_cpus()]
 #define bpf_percpu(name, cpu) name[(cpu)].v
 
@@ -59,4 +54,4 @@ static inline void bpf_strlcpy(char *dst, const char *src, size_t sz)
 	(offsetof(TYPE, MEMBER)	+ sizeof_field(TYPE, MEMBER))
 #endif
 
-#endif /* __BPF_UTIL__ */
+#endif  

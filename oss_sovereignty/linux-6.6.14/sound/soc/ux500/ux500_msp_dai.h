@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) ST-Ericsson SA 2012
- *
- * Author: Ola Lilja <ola.o.lilja@stericsson.com>,
- *         Roger Nilsson <roger.xr.nilsson@stericsson.com>
- *         for ST-Ericsson.
- */
+ 
+ 
 
 #ifndef UX500_msp_dai_H
 #define UX500_msp_dai_H
@@ -52,12 +46,12 @@ struct ux500_msp_i2s_drvdata {
 	int slots;
 	int slot_width;
 
-	/* Clocks */
+	 
 	unsigned int master_clk;
 	struct clk *clk;
 	struct clk *pclk;
 
-	/* Regulators */
+	 
 	int vape_opp_constraint;
 };
 

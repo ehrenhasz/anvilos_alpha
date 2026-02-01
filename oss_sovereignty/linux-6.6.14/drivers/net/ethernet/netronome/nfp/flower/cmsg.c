@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-/* Copyright (C) 2015-2018 Netronome Systems, Inc. */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/netdevice.h>
@@ -134,7 +134,7 @@ nfp_flower_process_mtu_ack(struct nfp_app *app, struct sk_buff *skb)
 	if (!app_priv->mtu_conf.requested_val ||
 	    app_priv->mtu_conf.portnum != be32_to_cpu(msg->portnum) ||
 	    be16_to_cpu(msg->mtu) != app_priv->mtu_conf.requested_val) {
-		/* Not an ack for requested MTU change. */
+		 
 		spin_unlock_bh(&app_priv->mtu_conf.lock);
 		return false;
 	}
@@ -173,7 +173,7 @@ nfp_flower_cmsg_portmod_rx(struct nfp_app *app, struct sk_buff *skb)
 
 		netif_carrier_on(netdev);
 
-		/* An MTU of 0 from the firmware should be ignored */
+		 
 		if (mtu)
 			dev_set_mtu(netdev, mtu);
 	} else {
@@ -214,7 +214,7 @@ nfp_flower_cmsg_merge_hint_rx(struct nfp_app *app, struct sk_buff *skb)
 	int err, i, flow_cnt;
 
 	msg = nfp_flower_cmsg_get_data(skb);
-	/* msg->count starts at 0 and always assumes at least 1 entry. */
+	 
 	flow_cnt = msg->count + 1;
 
 	if (msg_len < struct_size(msg, flow, flow_cnt)) {
@@ -242,7 +242,7 @@ nfp_flower_cmsg_merge_hint_rx(struct nfp_app *app, struct sk_buff *skb)
 	}
 
 	err = nfp_flower_merge_offloaded_flows(app, sub_flows[0], sub_flows[1]);
-	/* Only warn on memory fail. Hint veto will not break functionality. */
+	 
 	if (err == -ENOMEM)
 		nfp_flower_cmsg_warn(app, "Flow merge memory fail.\n");
 
@@ -362,19 +362,19 @@ void nfp_flower_cmsg_rx(struct nfp_app *app, struct sk_buff *skb)
 	}
 
 	if (cmsg_hdr->type == NFP_FLOWER_CMSG_TYPE_FLOW_STATS) {
-		/* We need to deal with stats updates from HW asap */
+		 
 		nfp_flower_rx_flow_stats(app, skb);
 		dev_consume_skb_any(skb);
 	} else if (cmsg_hdr->type == NFP_FLOWER_CMSG_TYPE_PORT_MOD &&
 		   nfp_flower_process_mtu_ack(app, skb)) {
-		/* Handle MTU acks outside wq to prevent RTNL conflict. */
+		 
 		dev_consume_skb_any(skb);
 	} else if (cmsg_hdr->type == NFP_FLOWER_CMSG_TYPE_TUN_NEIGH ||
 		   cmsg_hdr->type == NFP_FLOWER_CMSG_TYPE_TUN_NEIGH_V6) {
-		/* Acks from the NFP that the route is added - ignore. */
+		 
 		dev_consume_skb_any(skb);
 	} else if (cmsg_hdr->type == NFP_FLOWER_CMSG_TYPE_PORT_REIFY) {
-		/* Handle REIFY acks outside wq to prevent RTNL conflict. */
+		 
 		nfp_flower_cmsg_portreify_rx(app, skb);
 		dev_consume_skb_any(skb);
 	} else {

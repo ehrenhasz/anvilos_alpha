@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2019 Linaro Limited, All rights reserved.
- * Author: Mike Leach <mike.leach@linaro.org>
- */
+
+ 
 
 #include <linux/atomic.h>
 #include <linux/coresight.h>
@@ -14,49 +11,43 @@
 
 #include "coresight-cti.h"
 
-/*
- * Declare the number of static declared attribute groups
- * Value includes groups + NULL value at end of table.
- */
+ 
 #define CORESIGHT_CTI_STATIC_GROUPS_MAX 5
 
-/*
- * List of trigger signal type names. Match the constants declared in
- * include\dt-bindings\arm\coresight-cti-dt.h
- */
+ 
 static const char * const sig_type_names[] = {
-	"genio",	/* GEN_IO */
-	"intreq",	/* GEN_INTREQ */
-	"intack",	/* GEN_INTACK */
-	"haltreq",	/* GEN_HALTREQ */
-	"restartreq",	/* GEN_RESTARTREQ */
-	"pe_edbgreq",	/* PE_EDBGREQ */
-	"pe_dbgrestart",/* PE_DBGRESTART */
-	"pe_ctiirq",	/* PE_CTIIRQ */
-	"pe_pmuirq",	/* PE_PMUIRQ */
-	"pe_dbgtrigger",/* PE_DBGTRIGGER */
-	"etm_extout",	/* ETM_EXTOUT */
-	"etm_extin",	/* ETM_EXTIN */
-	"snk_full",	/* SNK_FULL */
-	"snk_acqcomp",	/* SNK_ACQCOMP */
-	"snk_flushcomp",/* SNK_FLUSHCOMP */
-	"snk_flushin",	/* SNK_FLUSHIN */
-	"snk_trigin",	/* SNK_TRIGIN */
-	"stm_asyncout",	/* STM_ASYNCOUT */
-	"stm_tout_spte",/* STM_TOUT_SPTE */
-	"stm_tout_sw",	/* STM_TOUT_SW */
-	"stm_tout_hete",/* STM_TOUT_HETE */
-	"stm_hwevent",	/* STM_HWEVENT */
-	"ela_tstart",	/* ELA_TSTART */
-	"ela_tstop",	/* ELA_TSTOP */
-	"ela_dbgreq",	/* ELA_DBGREQ */
+	"genio",	 
+	"intreq",	 
+	"intack",	 
+	"haltreq",	 
+	"restartreq",	 
+	"pe_edbgreq",	 
+	"pe_dbgrestart", 
+	"pe_ctiirq",	 
+	"pe_pmuirq",	 
+	"pe_dbgtrigger", 
+	"etm_extout",	 
+	"etm_extin",	 
+	"snk_full",	 
+	"snk_acqcomp",	 
+	"snk_flushcomp", 
+	"snk_flushin",	 
+	"snk_trigin",	 
+	"stm_asyncout",	 
+	"stm_tout_spte", 
+	"stm_tout_sw",	 
+	"stm_tout_hete", 
+	"stm_hwevent",	 
+	"ela_tstart",	 
+	"ela_tstop",	 
+	"ela_dbgreq",	 
 };
 
-/* Show function pointer used in the connections dynamic declared attributes*/
+ 
 typedef ssize_t (*p_show_fn)(struct device *dev, struct device_attribute *attr,
 			     char *buf);
 
-/* Connection attribute types */
+ 
 enum cti_conn_attr_type {
 	CTI_CON_ATTR_NAME,
 	CTI_CON_ATTR_TRIGIN_SIG,
@@ -66,7 +57,7 @@ enum cti_conn_attr_type {
 	CTI_CON_ATTR_MAX,
 };
 
-/* Names for the connection attributes */
+ 
 static const char * const con_attr_names[CTI_CON_ATTR_MAX] = {
 	"name",
 	"in_signals",
@@ -75,7 +66,7 @@ static const char * const con_attr_names[CTI_CON_ATTR_MAX] = {
 	"out_types",
 };
 
-/* basic attributes */
+ 
 static ssize_t enable_show(struct device *dev,
 			   struct device_attribute *attr,
 			   char *buf)
@@ -161,7 +152,7 @@ static ssize_t nr_trigger_cons_show(struct device *dev,
 }
 static DEVICE_ATTR_RO(nr_trigger_cons);
 
-/* attribute and group sysfs tables. */
+ 
 static struct attribute *coresight_cti_attrs[] = {
 	&dev_attr_enable.attr,
 	&dev_attr_powered.attr,
@@ -170,9 +161,9 @@ static struct attribute *coresight_cti_attrs[] = {
 	NULL,
 };
 
-/* register based attributes */
+ 
 
-/* Read registers with power check only (no enable check). */
+ 
 static ssize_t coresight_cti_reg_show(struct device *dev,
 			   struct device_attribute *attr, char *buf)
 {
@@ -189,7 +180,7 @@ static ssize_t coresight_cti_reg_show(struct device *dev,
 	return sysfs_emit(buf, "0x%x\n", val);
 }
 
-/* Write registers with power check only (no enable check). */
+ 
 static __maybe_unused ssize_t coresight_cti_reg_store(struct device *dev,
 						      struct device_attribute *attr,
 						      const char *buf, size_t size)
@@ -235,7 +226,7 @@ static __maybe_unused ssize_t coresight_cti_reg_store(struct device *dev,
 	   }								\
 	})[0].attr.attr)
 
-/* coresight management registers */
+ 
 static struct attribute *coresight_cti_mgmt_attrs[] = {
 	coresight_cti_reg(devaff0, CTIDEVAFF0),
 	coresight_cti_reg(devaff1, CTIDEVAFF1),
@@ -251,12 +242,9 @@ static struct attribute *coresight_cti_mgmt_attrs[] = {
 	NULL,
 };
 
-/* CTI low level programming registers */
+ 
 
-/*
- * Show a simple 32 bit value if enabled and powered.
- * If inaccessible & pcached_val not NULL then show cached value.
- */
+ 
 static ssize_t cti_reg32_show(struct device *dev, char *buf,
 			      u32 *pcached_val, int reg_offset)
 {
@@ -278,11 +266,7 @@ static ssize_t cti_reg32_show(struct device *dev, char *buf,
 	return sprintf(buf, "%#x\n", val);
 }
 
-/*
- * Store a simple 32 bit value.
- * If pcached_val not NULL, then copy to here too,
- * if reg_offset >= 0 then write through if enabled.
- */
+ 
 static ssize_t cti_reg32_store(struct device *dev, const char *buf,
 			       size_t size, u32 *pcached_val, int reg_offset)
 {
@@ -294,18 +278,18 @@ static ssize_t cti_reg32_store(struct device *dev, const char *buf,
 		return -EINVAL;
 
 	spin_lock(&drvdata->spinlock);
-	/* local store */
+	 
 	if (pcached_val)
 		*pcached_val = (u32)val;
 
-	/* write through if offset and enabled */
+	 
 	if ((reg_offset >= 0) && cti_active(config))
 		cti_write_single_reg(drvdata, reg_offset, val);
 	spin_unlock(&drvdata->spinlock);
 	return size;
 }
 
-/* Standard macro for simple rw cti config registers */
+ 
 #define cti_config_reg32_rw(name, cfgname, offset)			\
 static ssize_t name##_show(struct device *dev,				\
 			   struct device_attribute *attr,		\
@@ -387,7 +371,7 @@ static ssize_t inen_store(struct device *dev,
 	index = config->ctiinout_sel;
 	config->ctiinen[index] = val;
 
-	/* write through if enabled */
+	 
 	if (cti_active(config))
 		cti_write_single_reg(drvdata, CTIINEN(index), val);
 	spin_unlock(&drvdata->spinlock);
@@ -426,7 +410,7 @@ static ssize_t outen_store(struct device *dev,
 	index = config->ctiinout_sel;
 	config->ctiouten[index] = val;
 
-	/* write through if enabled */
+	 
 	if (cti_active(config))
 		cti_write_single_reg(drvdata, CTIOUTEN(index), val);
 	spin_unlock(&drvdata->spinlock);
@@ -465,10 +449,10 @@ static ssize_t appclear_store(struct device *dev,
 
 	spin_lock(&drvdata->spinlock);
 
-	/* a 1'b1 in appclr clears down the same bit in appset*/
+	 
 	config->ctiappset &= ~val;
 
-	/* write through if enabled */
+	 
 	if (cti_active(config))
 		cti_write_single_reg(drvdata, CTIAPPCLEAR, val);
 	spin_unlock(&drvdata->spinlock);
@@ -489,7 +473,7 @@ static ssize_t apppulse_store(struct device *dev,
 
 	spin_lock(&drvdata->spinlock);
 
-	/* write through if enabled */
+	 
 	if (cti_active(config))
 		cti_write_single_reg(drvdata, CTIAPPPULSE, val);
 	spin_unlock(&drvdata->spinlock);
@@ -497,11 +481,7 @@ static ssize_t apppulse_store(struct device *dev,
 }
 static DEVICE_ATTR_WO(apppulse);
 
-/*
- * Define CONFIG_CORESIGHT_CTI_INTEGRATION_REGS to enable the access to the
- * integration control registers. Normally only used to investigate connection
- * data.
- */
+ 
 static struct attribute *coresight_cti_regs_attrs[] = {
 	&dev_attr_inout_sel.attr,
 	&dev_attr_inen.attr,
@@ -530,7 +510,7 @@ static struct attribute *coresight_cti_regs_attrs[] = {
 	NULL,
 };
 
-/* CTI channel x-trigger programming */
+ 
 static int
 cti_trig_op_parse(struct device *dev, enum cti_chan_op op,
 		  enum cti_trig_dir dir, const char *buf, size_t size)
@@ -539,7 +519,7 @@ cti_trig_op_parse(struct device *dev, enum cti_chan_op op,
 	u32 trig_idx;
 	int items, err = -EINVAL;
 
-	/* extract chan idx and trigger idx */
+	 
 	items = sscanf(buf, "%d %d", &chan_idx, &trig_idx);
 	if (items == 2) {
 		err = cti_channel_trig_op(dev, op, dir, chan_idx, trig_idx);
@@ -719,7 +699,7 @@ static ssize_t trigout_filtered_show(struct device *dev,
 }
 static DEVICE_ATTR_RO(trigout_filtered);
 
-/* clear all xtrigger / channel programming */
+ 
 static ssize_t chan_xtrigs_reset_store(struct device *dev,
 				       struct device_attribute *attr,
 				       const char *buf, size_t size)
@@ -730,20 +710,20 @@ static ssize_t chan_xtrigs_reset_store(struct device *dev,
 
 	spin_lock(&drvdata->spinlock);
 
-	/* clear the CTI trigger / channel programming registers */
+	 
 	for (i = 0; i < config->nr_trig_max; i++) {
 		config->ctiinen[i] = 0;
 		config->ctiouten[i] = 0;
 	}
 
-	/* clear the other regs */
+	 
 	config->ctigate = GENMASK(config->nr_ctm_channels - 1, 0);
 	config->asicctl = 0;
 	config->ctiappset = 0;
 	config->ctiinout_sel = 0;
 	config->xtrig_rchan_sel = 0;
 
-	/* if enabled then write through */
+	 
 	if (cti_active(config))
 		cti_write_all_hw_regs(drvdata);
 
@@ -752,10 +732,7 @@ static ssize_t chan_xtrigs_reset_store(struct device *dev,
 }
 static DEVICE_ATTR_WO(chan_xtrigs_reset);
 
-/*
- * Write to select a channel to view, read to display the
- * cross triggers for the selected channel.
- */
+ 
 static ssize_t chan_xtrigs_sel_store(struct device *dev,
 				     struct device_attribute *attr,
 				     const char *buf, size_t size)
@@ -837,7 +814,7 @@ static ssize_t print_chan_list(struct device *dev,
 	int size, i;
 	unsigned long inuse_bits = 0, chan_mask;
 
-	/* scan regs to get bitmap of channels in use. */
+	 
 	spin_lock(&drvdata->spinlock);
 	for (i = 0; i < config->nr_trig_max; i++) {
 		inuse_bits |= config->ctiinen[i];
@@ -845,11 +822,11 @@ static ssize_t print_chan_list(struct device *dev,
 	}
 	spin_unlock(&drvdata->spinlock);
 
-	/* inverse bits if printing free channels */
+	 
 	if (!inuse)
 		inuse_bits = ~inuse_bits;
 
-	/* list of channels, or 'none' */
+	 
 	chan_mask = GENMASK(config->nr_ctm_channels - 1, 0);
 	if (inuse_bits & chan_mask)
 		size = bitmap_print_to_pagebuf(true, buf, &inuse_bits,
@@ -896,16 +873,8 @@ static struct attribute *coresight_cti_channel_attrs[] = {
 	NULL,
 };
 
-/* Create the connections trigger groups and attrs dynamically */
-/*
- * Each connection has dynamic group triggers<N> + name, trigin/out sigs/types
- * attributes, + each device has static nr_trigger_cons giving the number
- * of groups. e.g. in sysfs:-
- * /cti_<name>/triggers0
- * /cti_<name>/triggers1
- * /cti_<name>/nr_trigger_cons
- * where nr_trigger_cons = 2
- */
+ 
+ 
 static ssize_t con_name_show(struct device *dev,
 			     struct device_attribute *attr,
 			     char *buf)
@@ -945,7 +914,7 @@ static ssize_t trigout_sig_show(struct device *dev,
 	return bitmap_print_to_pagebuf(true, buf, &mask, cfg->nr_trig_max);
 }
 
-/* convert a sig type id to a name */
+ 
 static const char *
 cti_sig_type_name(struct cti_trig_con *con, int used_count, bool in)
 {
@@ -993,10 +962,7 @@ static ssize_t trigout_type_show(struct device *dev,
 	return used;
 }
 
-/*
- * Array of show function names declared above to allow selection
- * for the connection attributes
- */
+ 
 static p_show_fn show_fns[CTI_CON_ATTR_MAX] = {
 	con_name_show,
 	trigin_sig_show,
@@ -1019,11 +985,11 @@ static int cti_create_con_sysfs_attr(struct device *dev,
 		name = devm_kstrdup(dev, con_attr_names[attr_type],
 				    GFP_KERNEL);
 		if (name) {
-			/* fill out the underlying attribute struct */
+			 
 			eattr->attr.attr.name = name;
 			eattr->attr.attr.mode = 0444;
 
-			/* now the device_attribute struct */
+			 
 			eattr->attr.show = show_fns[attr_type];
 		} else {
 			return -ENOMEM;
@@ -1033,11 +999,7 @@ static int cti_create_con_sysfs_attr(struct device *dev,
 	}
 	eattr->var = con;
 	con->con_attrs[attr_idx] = &eattr->attr.attr;
-	/*
-	 * Initialize the dynamically allocated attribute
-	 * to avoid LOCKDEP splat. See include/linux/sysfs.h
-	 * for more details.
-	 */
+	 
 	sysfs_attr_init(con->con_attrs[attr_idx]);
 
 	return 0;
@@ -1064,7 +1026,7 @@ cti_create_con_sysfs_group(struct device *dev, struct cti_device *ctidev,
 	return group;
 }
 
-/* create a triggers connection group and the attributes for that group */
+ 
 static int cti_create_con_attr_set(struct device *dev, int con_idx,
 				   struct cti_device *ctidev,
 				   struct cti_trig_con *tc)
@@ -1077,7 +1039,7 @@ static int cti_create_con_attr_set(struct device *dev, int con_idx,
 	if (!attr_group)
 		return -ENOMEM;
 
-	/* allocate NULL terminated array of attributes */
+	 
 	tc->con_attrs = devm_kcalloc(dev, CTI_CON_ATTR_MAX + 1,
 				     sizeof(struct attribute *), GFP_KERNEL);
 	if (!tc->con_attrs)
@@ -1119,12 +1081,12 @@ static int cti_create_con_attr_set(struct device *dev, int con_idx,
 	return 0;
 }
 
-/* create the array of group pointers for the CTI sysfs groups */
+ 
 static int cti_create_cons_groups(struct device *dev, struct cti_device *ctidev)
 {
 	int nr_groups;
 
-	/* nr groups = dynamic + static + NULL terminator */
+	 
 	nr_groups = ctidev->nr_trig_con + CORESIGHT_CTI_STATIC_GROUPS_MAX;
 	ctidev->con_groups = devm_kcalloc(dev, nr_groups,
 					  sizeof(struct attribute_group *),
@@ -1144,11 +1106,11 @@ int cti_create_cons_sysfs(struct device *dev, struct cti_drvdata *drvdata)
 	if (err)
 		return err;
 
-	/* populate first locations with the static set of groups */
+	 
 	for (i = 0; i < (CORESIGHT_CTI_STATIC_GROUPS_MAX - 1); i++)
 		ctidev->con_groups[i] = coresight_cti_groups[i];
 
-	/* add dynamic set for each connection */
+	 
 	list_for_each_entry(tc, &ctidev->trig_cons, node) {
 		err = cti_create_con_attr_set(dev, con_idx++, ctidev, tc);
 		if (err)
@@ -1157,7 +1119,7 @@ int cti_create_cons_sysfs(struct device *dev, struct cti_drvdata *drvdata)
 	return err;
 }
 
-/* attribute and group sysfs tables. */
+ 
 static const struct attribute_group coresight_cti_group = {
 	.attrs = coresight_cti_attrs,
 };

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Driver for the Texas Instruments DP83869 PHY
- * Copyright (C) 2019 Texas Instruments Inc.
- */
+
+ 
 
 #include <linux/ethtool.h>
 #include <linux/etherdevice.h>
@@ -26,7 +24,7 @@
 #define DP83869_CTRL		0x1f
 #define DP83869_CFG4		0x1e
 
-/* Extended Registers */
+ 
 #define DP83869_GEN_CFG3        0x0031
 #define DP83869_RGMIICTL	0x0032
 #define DP83869_STRAP_STS1	0x006e
@@ -45,7 +43,7 @@
 #define DP83869_SW_RESET	BIT(15)
 #define DP83869_SW_RESTART	BIT(14)
 
-/* MICR Interrupt bits */
+ 
 #define MII_DP83869_MICR_AN_ERR_INT_EN		BIT(15)
 #define MII_DP83869_MICR_SPEED_CHNG_INT_EN	BIT(14)
 #define MII_DP83869_MICR_DUP_MODE_CHNG_INT_EN	BIT(13)
@@ -67,37 +65,37 @@
 					ADVERTISED_Pause | \
 					ADVERTISED_Asym_Pause)
 
-/* This is the same bit mask as the BMCR so re-use the BMCR default */
+ 
 #define DP83869_FX_CTRL_DEFAULT	MII_DP83869_BMCR_DEFAULT
 
-/* CFG1 bits */
+ 
 #define DP83869_CFG1_DEFAULT	(ADVERTISE_1000HALF | \
 				 ADVERTISE_1000FULL | \
 				 CTL1000_AS_MASTER)
 
-/* RGMIICTL bits */
+ 
 #define DP83869_RGMII_TX_CLK_DELAY_EN		BIT(1)
 #define DP83869_RGMII_RX_CLK_DELAY_EN		BIT(0)
 
-/* RGMIIDCTL */
+ 
 #define DP83869_RGMII_CLK_DELAY_SHIFT		4
 #define DP83869_CLK_DELAY_DEF			7
 
-/* STRAP_STS1 bits */
+ 
 #define DP83869_STRAP_OP_MODE_MASK		GENMASK(2, 0)
 #define DP83869_STRAP_STS1_RESERVED		BIT(11)
 #define DP83869_STRAP_MIRROR_ENABLED           BIT(12)
 
-/* PHYCTRL bits */
+ 
 #define DP83869_RX_FIFO_SHIFT	12
 #define DP83869_TX_FIFO_SHIFT	14
 
-/* PHY_CTRL lower bytes 0x48 are declared as reserved */
+ 
 #define DP83869_PHY_CTRL_DEFAULT	0x48
 #define DP83869_PHYCR_FIFO_DEPTH_MASK	GENMASK(15, 12)
 #define DP83869_PHYCR_RESERVED_MASK	BIT(11)
 
-/* IO_MUX_CFG bits */
+ 
 #define DP83869_IO_MUX_CFG_IO_IMPEDANCE_CTRL	0x1f
 
 #define DP83869_IO_MUX_CFG_IO_IMPEDANCE_MAX	0x0
@@ -105,17 +103,17 @@
 #define DP83869_IO_MUX_CFG_CLK_O_SEL_MASK	(0x1f << 8)
 #define DP83869_IO_MUX_CFG_CLK_O_SEL_SHIFT	8
 
-/* CFG3 bits */
+ 
 #define DP83869_CFG3_PORT_MIRROR_EN              BIT(0)
 
-/* CFG4 bits */
+ 
 #define DP83869_INT_OE	BIT(7)
 
-/* OP MODE */
+ 
 #define DP83869_OP_MODE_MII			BIT(5)
 #define DP83869_SGMII_RGMII_BRIDGE		BIT(6)
 
-/* RXFCFG bits*/
+ 
 #define DP83869_WOL_MAGIC_EN		BIT(0)
 #define DP83869_WOL_PATTERN_EN		BIT(1)
 #define DP83869_WOL_BCAST_EN		BIT(2)
@@ -123,7 +121,7 @@
 #define DP83869_WOL_SEC_EN		BIT(5)
 #define DP83869_WOL_ENH_MAC		BIT(7)
 
-/* CFG2 bits */
+ 
 #define DP83869_DOWNSHIFT_EN		(BIT(8) | BIT(9))
 #define DP83869_DOWNSHIFT_ATTEMPT_MASK	(BIT(10) | BIT(11))
 #define DP83869_DOWNSHIFT_1_COUNT_VAL	0
@@ -538,7 +536,7 @@ static int dp83869_of_init(struct phy_device *phydev)
 
 	dp83869->io_impedance = -EINVAL;
 
-	/* Optional configuration */
+	 
 	ret = of_property_read_u32(of_node, "ti,clk-output-sel",
 				   &dp83869->clk_output_sel);
 	if (ret || dp83869->clk_output_sel > DP83869_CLK_O_SEL_REF_CLK)
@@ -563,7 +561,7 @@ static int dp83869_of_init(struct phy_device *phydev)
 	if (of_property_read_bool(of_node, "enet-phy-lane-swap")) {
 		dp83869->port_mirroring = DP83869_PORT_MIRRORING_EN;
 	} else {
-		/* If the lane swap is not in the DT then check the straps */
+		 
 		ret = phy_read_mmd(phydev, DP83869_DEVADDR, DP83869_STRAP_STS1);
 		if (ret < 0)
 			return ret;
@@ -603,7 +601,7 @@ static int dp83869_of_init(struct phy_device *phydev)
 {
 	return dp83869_set_strapped_mode(phydev);
 }
-#endif /* CONFIG_OF_MDIO */
+#endif  
 
 static int dp83869_configure_rgmii(struct phy_device *phydev,
 				   struct dp83869_private *dp83869)
@@ -640,7 +638,7 @@ static int dp83869_configure_fiber(struct phy_device *phydev,
 	int bmcr;
 	int ret;
 
-	/* Only allow advertising what this PHY supports */
+	 
 	linkmode_and(phydev->advertising, phydev->advertising,
 		     phydev->supported);
 
@@ -656,7 +654,7 @@ static int dp83869_configure_fiber(struct phy_device *phydev,
 		linkmode_set_bit(ETHTOOL_LINK_MODE_100baseFX_Half_BIT,
 				 phydev->supported);
 
-		/* Auto neg is not supported in 100base FX mode */
+		 
 		bmcr = phy_read(phydev, MII_BMCR);
 		if (bmcr < 0)
 			return bmcr;
@@ -672,7 +670,7 @@ static int dp83869_configure_fiber(struct phy_device *phydev,
 		}
 	}
 
-	/* Update advertising from supported */
+	 
 	linkmode_or(phydev->advertising, phydev->advertising,
 		    phydev->supported);
 
@@ -689,9 +687,7 @@ static int dp83869_configure_mode(struct phy_device *phydev,
 	    dp83869->mode > DP83869_SGMII_COPPER_ETHERNET)
 		return -EINVAL;
 
-	/* Below init sequence for each operational mode is defined in
-	 * section 9.4.8 of the datasheet.
-	 */
+	 
 	phy_ctrl_val = dp83869->mode;
 	if (phydev->interface == PHY_INTERFACE_MODE_MII) {
 		if (dp83869->mode == DP83869_100M_MEDIA_CONVERT ||
@@ -793,7 +789,7 @@ static int dp83869_config_init(struct phy_device *phydev)
 	struct dp83869_private *dp83869 = phydev->priv;
 	int ret, val;
 
-	/* Force speed optimization for the PHY even if it strapped */
+	 
 	ret = phy_modify(phydev, DP83869_CFG2, DP83869_DOWNSHIFT_EN,
 			 DP83869_DOWNSHIFT_EN);
 	if (ret)
@@ -803,7 +799,7 @@ static int dp83869_config_init(struct phy_device *phydev)
 	if (ret)
 		return ret;
 
-	/* Enable Interrupt output INT_OE in CFG4 register */
+	 
 	if (phy_interrupt_is_valid(phydev)) {
 		val = phy_read(phydev, DP83869_CFG4);
 		val |= DP83869_INT_OE;
@@ -813,7 +809,7 @@ static int dp83869_config_init(struct phy_device *phydev)
 	if (dp83869->port_mirroring != DP83869_PORT_MIRRORING_KEEP)
 		dp83869_config_port_mirroring(phydev);
 
-	/* Clock output selection if muxing property is set */
+	 
 	if (dp83869->clk_output_sel != DP83869_CLK_O_SEL_REF_CLK)
 		ret = phy_modify_mmd(phydev,
 				     DP83869_DEVADDR, DP83869_IO_MUX_CFG,
@@ -882,9 +878,7 @@ static int dp83869_phy_reset(struct phy_device *phydev)
 
 	usleep_range(10, 20);
 
-	/* Global sw reset sets all registers to default.
-	 * Need to set the registers in the PHY to the right config.
-	 */
+	 
 	return dp83869_config_init(phydev);
 }
 

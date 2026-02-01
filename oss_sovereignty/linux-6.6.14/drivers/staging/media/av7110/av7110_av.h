@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _AV7110_AV_H_
 #define _AV7110_AV_H_
 
@@ -29,4 +29,4 @@ extern int av7110_av_init(struct av7110 *av7110);
 extern void av7110_av_exit(struct av7110 *av7110);
 
 
-#endif /* _AV7110_AV_H_ */
+#endif  

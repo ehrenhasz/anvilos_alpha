@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright(c) 2007 - 2009 Intel Corporation. All rights reserved.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/spinlock.h>

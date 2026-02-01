@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Driver for the Synopsys DesignWare DMA Controller
- *
- * Copyright (C) 2013 Intel Corporation
- */
+ 
+ 
 
 #ifndef _DMA_DW_INTERNAL_H
 #define _DMA_DW_INTERNAL_H
@@ -26,10 +22,10 @@ extern bool dw_dma_filter(struct dma_chan *chan, void *param);
 #ifdef CONFIG_ACPI
 void dw_dma_acpi_controller_register(struct dw_dma *dw);
 void dw_dma_acpi_controller_free(struct dw_dma *dw);
-#else /* !CONFIG_ACPI */
+#else  
 static inline void dw_dma_acpi_controller_register(struct dw_dma *dw) {}
 static inline void dw_dma_acpi_controller_free(struct dw_dma *dw) {}
-#endif /* !CONFIG_ACPI */
+#endif  
 
 struct platform_device;
 
@@ -90,4 +86,4 @@ static __maybe_unused const struct dw_dma_chip_pdata xbar_chip_pdata = {
 	.remove = idma32_dma_remove,
 };
 
-#endif /* _DMA_DW_INTERNAL_H */
+#endif  

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- *	uvc_v4l2.c  --  USB Video Class Gadget driver
- *
- *	Copyright (C) 2009-2010
- *	    Laurent Pinchart (laurent.pinchart@ideasonboard.com)
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/errno.h>
@@ -140,10 +135,7 @@ static struct uvcg_frame *find_closest_frame_by_size(struct uvc_device *uvc,
 	struct uvcg_frame *uframe = NULL;
 	unsigned int d, maxd;
 
-	/* Find the closest image size. The distance between image sizes is
-	 * the size in pixels of the non-overlapping regions between the
-	 * requested size and the frame-specified size.
-	 */
+	 
 	maxd = (unsigned int)-1;
 
 	list_for_each_entry(format, &uvc->header->formats, entry) {
@@ -174,9 +166,7 @@ static struct uvcg_frame *find_closest_frame_by_size(struct uvc_device *uvc,
 	return uframe;
 }
 
-/* --------------------------------------------------------------------------
- * Requests handling
- */
+ 
 
 static int
 uvc_send_response(struct uvc_device *uvc, struct uvc_request_data *data)
@@ -195,9 +185,7 @@ uvc_send_response(struct uvc_device *uvc, struct uvc_request_data *data)
 	return usb_ep_queue(cdev->gadget->ep0, req, GFP_KERNEL);
 }
 
-/* --------------------------------------------------------------------------
- * V4L2 ioctls
- */
+ 
 
 static int
 uvc_v4l2_querycap(struct file *file, void *fh, struct v4l2_capability *cap)
@@ -323,7 +311,7 @@ uvc_v4l2_enum_frameintervals(struct file *file, void *fh,
 	fival->discrete.numerator =
 		uframe->dw_frame_interval[fival->index];
 
-	/* TODO: handle V4L2_FRMIVAL_TYPE_STEPWISE */
+	 
 	fival->type = V4L2_FRMIVAL_TYPE_DISCRETE;
 	fival->discrete.denominator = 10000000;
 	v4l2_simplify_fraction(&fival->discrete.numerator,
@@ -442,15 +430,12 @@ uvc_v4l2_streamon(struct file *file, void *fh, enum v4l2_buf_type type)
 	if (type != video->queue.queue.type)
 		return -EINVAL;
 
-	/* Enable UVC video. */
+	 
 	ret = uvcg_video_enable(video, 1);
 	if (ret < 0)
 		return ret;
 
-	/*
-	 * Complete the alternate setting selection setup phase now that
-	 * userspace is ready to provide video frames.
-	 */
+	 
 	uvc_function_setup_continue(uvc);
 	uvc->state = UVC_STATE_STREAMING;
 
@@ -561,9 +546,7 @@ const struct v4l2_ioctl_ops uvc_v4l2_ioctl_ops = {
 	.vidioc_default = uvc_v4l2_ioctl_default,
 };
 
-/* --------------------------------------------------------------------------
- * V4L2
- */
+ 
 
 static int
 uvc_v4l2_open(struct file *file)

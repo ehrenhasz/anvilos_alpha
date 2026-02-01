@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef __BCMASP_INTF_DEFS_H
 #define __BCMASP_INTF_DEFS_H
 
@@ -210,7 +210,7 @@
 #define    RX_EDPKT_CFG_CFG0_RBUF	0x0
 #define    RX_EDPKT_CFG_CFG0_RBUF_4K	0x1
 #define    RX_EDPKT_CFG_CFG0_BUF_4K	0x2
-/* EFRM STUFF, 0 = no byte stuff, 1 = two byte stuff */
+ 
 #define   RX_EDPKT_CFG_CFG0_EFRM_STUF	BIT(11)
 #define   RX_EDPKT_CFG_CFG0_BALN_SHIFT	12
 #define    RX_EDPKT_CFG_CFG0_NO_ALN	0

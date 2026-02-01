@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0+
-//
-// Regulator device driver for DA9061 and DA9062.
-// Copyright (C) 2015-2017  Dialog Semiconductor
+
+
+
+
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -18,7 +18,7 @@
 #include <linux/mfd/da9062/registers.h>
 #include <dt-bindings/regulator/dlg,da9063-regulator.h>
 
-/* Regulator IDs */
+ 
 enum {
 	DA9061_ID_BUCK1,
 	DA9061_ID_BUCK2,
@@ -42,20 +42,20 @@ enum {
 	DA9062_MAX_REGULATORS,
 };
 
-/* Regulator capabilities and registers description */
+ 
 struct da9062_regulator_info {
 	struct regulator_desc desc;
-	/* Main register fields */
+	 
 	struct reg_field mode;
 	struct reg_field suspend;
 	struct reg_field sleep;
 	struct reg_field suspend_sleep;
 	unsigned int suspend_vsel_reg;
-	/* Event detection bit */
+	 
 	struct reg_field oc_event;
 };
 
-/* Single regulator settings */
+ 
 struct da9062_regulator {
 	struct regulator_desc			desc;
 	struct regulator_dev			*rdev;
@@ -68,31 +68,23 @@ struct da9062_regulator {
 	struct regmap_field			*suspend_sleep;
 };
 
-/* Encapsulates all information for the regulators driver */
+ 
 struct da9062_regulators {
 	int					irq_ldo_lim;
 	unsigned				n_regulators;
-	/* Array size to be defined during init. Keep at end. */
+	 
 	struct da9062_regulator			regulator[];
 };
 
-/* Regulator operations */
+ 
 
-/* Current limits array (in uA)
- * - DA9061_ID_[BUCK1|BUCK3]
- * - DA9062_ID_[BUCK1|BUCK2|BUCK4]
- * Entry indexes corresponds to register values.
- */
+ 
 static const unsigned int da9062_buck_a_limits[] = {
 	 500000,  600000,  700000,  800000,  900000, 1000000, 1100000, 1200000,
 	1300000, 1400000, 1500000, 1600000, 1700000, 1800000, 1900000, 2000000
 };
 
-/* Current limits array (in uA)
- * - DA9061_ID_BUCK2
- * - DA9062_ID_BUCK3
- * Entry indexes corresponds to register values.
- */
+ 
 static const unsigned int da9062_buck_b_limits[] = {
 	1500000, 1600000, 1700000, 1800000, 1900000, 2000000, 2100000, 2200000,
 	2300000, 2400000, 2500000, 2600000, 2700000, 2800000, 2900000, 3000000
@@ -134,11 +126,7 @@ static int da9062_buck_set_mode(struct regulator_dev *rdev, unsigned mode)
 	return regmap_field_write(regl->mode, val);
 }
 
-/*
- * Bucks use single mode register field for normal operation
- * and suspend state.
- * There are 3 modes to map to: FAST, NORMAL, and STANDBY.
- */
+ 
 
 static unsigned da9062_buck_get_mode(struct regulator_dev *rdev)
 {
@@ -152,7 +140,7 @@ static unsigned da9062_buck_get_mode(struct regulator_dev *rdev)
 
 	switch (val) {
 	default:
-		/* Sleep flag bit decides the mode */
+		 
 		break;
 	case DA9063_BUCK_MODE_SLEEP:
 		return REGULATOR_MODE_STANDBY;
@@ -172,10 +160,7 @@ static unsigned da9062_buck_get_mode(struct regulator_dev *rdev)
 		return REGULATOR_MODE_FAST;
 }
 
-/*
- * LDOs use sleep flags - one for normal and one for suspend state.
- * There are 2 modes to map to: NORMAL and STANDBY (sleep) for each state.
- */
+ 
 
 static int da9062_ldo_set_mode(struct regulator_dev *rdev, unsigned mode)
 {
@@ -354,7 +339,7 @@ static const struct regulator_ops da9062_ldo_ops = {
 	.set_suspend_mode	= da9062_ldo_set_suspend_mode,
 };
 
-/* DA9061 Regulator information */
+ 
 static const struct da9062_regulator_info local_da9061_regulator_info[] = {
 	{
 		.desc.id = DA9061_ID_BUCK1,
@@ -601,7 +586,7 @@ static const struct da9062_regulator_info local_da9061_regulator_info[] = {
 	},
 };
 
-/* DA9062 Regulator information */
+ 
 static const struct da9062_regulator_info local_da9062_regulator_info[] = {
 	{
 		.desc.id = DA9062_ID_BUCK1,
@@ -885,7 +870,7 @@ static const struct da9062_regulator_info local_da9062_regulator_info[] = {
 	},
 };
 
-/* Regulator interrupt handlers */
+ 
 static irqreturn_t da9062_ldo_lim_event(int irq, void *data)
 {
 	struct da9062_regulators *regulators = data;
@@ -941,7 +926,7 @@ static int da9062_regulator_probe(struct platform_device *pdev)
 		return -ENODEV;
 	}
 
-	/* Allocate memory required by usable regulators */
+	 
 	regulators = devm_kzalloc(&pdev->dev, struct_size(regulators, regulator,
 				  max_regulators), GFP_KERNEL);
 	if (!regulators)
@@ -951,7 +936,7 @@ static int da9062_regulator_probe(struct platform_device *pdev)
 	platform_set_drvdata(pdev, regulators);
 
 	for (n = 0; n < regulators->n_regulators; n++) {
-		/* Initialise regulator structure */
+		 
 		regl = &regulators->regulator[n];
 		regl->hw = chip;
 		regl->info = &rinfo[n];
@@ -995,7 +980,7 @@ static int da9062_regulator_probe(struct platform_device *pdev)
 				return PTR_ERR(regl->suspend_sleep);
 		}
 
-		/* Register regulator */
+		 
 		memset(&config, 0, sizeof(config));
 		config.dev = chip->dev;
 		config.driver_data = regl;
@@ -1011,7 +996,7 @@ static int da9062_regulator_probe(struct platform_device *pdev)
 		}
 	}
 
-	/* LDOs overcurrent event support */
+	 
 	regulators->irq_ldo_lim = platform_get_irq_byname_optional(pdev, "LDO_LIM");
 	if (regulators->irq_ldo_lim < 0)
 		return 0;
@@ -1049,7 +1034,7 @@ static void __exit da9062_regulator_cleanup(void)
 }
 module_exit(da9062_regulator_cleanup);
 
-/* Module information */
+ 
 MODULE_AUTHOR("S Twiss <stwiss.opensource@diasemi.com>");
 MODULE_DESCRIPTION("REGULATOR device driver for Dialog DA9062 and DA9061");
 MODULE_LICENSE("GPL");

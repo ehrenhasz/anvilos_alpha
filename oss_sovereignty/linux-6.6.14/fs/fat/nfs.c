@@ -1,6 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* fs/fat/nfs.c
- */
+
+ 
 
 #include <linux/exportfs.h>
 #include "fat.h"
@@ -17,9 +16,7 @@ struct fat_fid {
 #define FAT_FID_SIZE_WITHOUT_PARENT 3
 #define FAT_FID_SIZE_WITH_PARENT (sizeof(struct fat_fid)/sizeof(u32))
 
-/*
- * Look up a directory inode given its starting cluster.
- */
+ 
 static struct inode *fat_dget(struct super_block *sb, int i_logstart)
 {
 	struct msdos_sb_info *sbi = MSDOS_SB(sb);
@@ -76,9 +73,7 @@ static struct inode *__fat_nfs_get_inode(struct super_block *sb,
 			return inode;
 		}
 		de = (struct msdos_dir_entry *)bh->b_data;
-		/* If a file is deleted on server and client is not updated
-		 * yet, we must not build the inode upon a lookup call.
-		 */
+		 
 		if (IS_FREE(de[offset].name))
 			inode = NULL;
 		else
@@ -135,10 +130,7 @@ fat_encode_fh_nostale(struct inode *inode, __u32 *fh, int *lenp,
 	return type;
 }
 
-/*
- * Map a NFS file handle to a corresponding dentry.
- * The dentry may or may not be connected to the filesystem root.
- */
+ 
 static struct dentry *fat_fh_to_dentry(struct super_block *sb, struct fid *fid,
 				int fh_len, int fh_type)
 {
@@ -173,10 +165,7 @@ static struct dentry *fat_fh_to_dentry_nostale(struct super_block *sb,
 	return d_obtain_alias(inode);
 }
 
-/*
- * Find the parent for a file specified by NFS handle.
- * This requires that the handle contain the i_ino of the parent.
- */
+ 
 static struct dentry *fat_fh_to_parent(struct super_block *sb, struct fid *fid,
 				int fh_len, int fh_type)
 {
@@ -206,10 +195,7 @@ static struct dentry *fat_fh_to_parent_nostale(struct super_block *sb,
 	return d_obtain_alias(inode);
 }
 
-/*
- * Rebuild the parent for a directory that is not connected
- *  to the filesystem root
- */
+ 
 static
 struct inode *fat_rebuild_parent(struct super_block *sb, int parent_logstart)
 {
@@ -253,12 +239,7 @@ struct inode *fat_rebuild_parent(struct super_block *sb, int parent_logstart)
 	return parent;
 }
 
-/*
- * Find the parent for a directory that is not currently connected to
- * the filesystem root.
- *
- * On entry, the caller holds d_inode(child_dir)->i_mutex.
- */
+ 
 static struct dentry *fat_get_parent(struct dentry *child_dir)
 {
 	struct super_block *sb = child_dir->d_sb;

@@ -1,19 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Vidtv serves as a reference DVB driver and helps validate the existing APIs
- * in the media subsystem. It can also aid developers working on userspace
- * applications.
- *
- * This file contains the code for an AES3 (also known as AES/EBU) encoder.
- * It is based on EBU Tech 3250 and SMPTE 302M technical documents.
- *
- * This encoder currently supports 16bit AES3 subframes using 16bit signed
- * integers.
- *
- * Note: AU stands for Access Unit, and AAU stands for Audio Access Unit
- *
- * Copyright (C) 2020 Daniel W. S. Almeida
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ":%s, %d: " fmt, __func__, __LINE__
 
@@ -35,20 +21,20 @@
 #include "vidtv_s302m.h"
 
 #define S302M_SAMPLING_RATE_HZ 48000
-#define PES_PRIVATE_STREAM_1 0xbd  /* PES: private_stream_1 */
+#define PES_PRIVATE_STREAM_1 0xbd   
 #define S302M_BLOCK_SZ 192
 #define S302M_SIN_LUT_NUM_ELEM 1024
 
-/* these are retrieved empirically from ffmpeg/libavcodec */
+ 
 #define FF_S302M_DEFAULT_NUM_FRAMES 1115
 #define FF_S302M_DEFAULT_PTS_INCREMENT 2090
 #define FF_S302M_DEFAULT_PTS_OFFSET 100000
 
-/* Used by the tone generator: number of samples for PI */
+ 
 #define PI		180
 
 static const u8 reverse[256] = {
-	/* from ffmpeg */
+	 
 	0x00, 0x80, 0x40, 0xC0, 0x20, 0xA0, 0x60, 0xE0, 0x10, 0x90, 0x50, 0xD0,
 	0x30, 0xB0, 0x70, 0xF0, 0x08, 0x88, 0x48, 0xC8, 0x28, 0xA8, 0x68, 0xE8,
 	0x18, 0x98, 0x58, 0xD8, 0x38, 0xB8, 0x78, 0xF8, 0x04, 0x84, 0x44, 0xC4,
@@ -78,7 +64,7 @@ struct tone_duration {
 	int duration;
 };
 
-#define COMPASS 100 /* beats per minute */
+#define COMPASS 100  
 static const struct tone_duration beethoven_fur_elise[] = {
 	{ NOTE_SILENT, 512},
 	{ NOTE_E_6, 128},  { NOTE_DS_6, 128}, { NOTE_E_6, 128},
@@ -223,7 +209,7 @@ static void vidtv_s302m_compute_pts_from_video(struct vidtv_encoder *e)
 	struct vidtv_access_unit *au = e->access_units;
 	struct vidtv_access_unit *sync_au = e->sync->access_units;
 
-	/* use the same pts from the video access unit*/
+	 
 	while (au && sync_au) {
 		au->pts = sync_au->pts;
 		au = au->next;
@@ -238,10 +224,7 @@ static u16 vidtv_s302m_get_sample(struct vidtv_encoder *e)
 	struct vidtv_s302m_ctx *ctx = e->ctx;
 
 	if (!e->src_buf) {
-		/*
-		 * Simple tone generator: play the tones at the
-		 * beethoven_fur_elise array.
-		 */
+		 
 		if (ctx->last_duration <= 0) {
 			if (e->src_buf_offset >= ARRAY_SIZE(beethoven_fur_elise))
 				e->src_buf_offset = 0;
@@ -255,7 +238,7 @@ static u16 vidtv_s302m_get_sample(struct vidtv_encoder *e)
 			ctx->last_duration--;
 		}
 
-		/* Handle pause notes */
+		 
 		if (!ctx->last_tone)
 			return 0x8000;
 
@@ -265,7 +248,7 @@ static u16 vidtv_s302m_get_sample(struct vidtv_encoder *e)
 		return (fixp_sin32(pos % (2 * PI)) >> 16) + 0x8000;
 	}
 
-	/* bug somewhere */
+	 
 	if (e->src_buf_offset > e->src_buf_sz) {
 		pr_err_ratelimited("overflow detected: %d > %d, wrapping.\n",
 				   e->src_buf_offset,
@@ -275,7 +258,7 @@ static u16 vidtv_s302m_get_sample(struct vidtv_encoder *e)
 	}
 
 	if (e->src_buf_offset >= e->src_buf_sz) {
-		/* let the source know we are out of data */
+		 
 		if (e->last_sample_cb)
 			e->last_sample_cb(e->sample_count);
 
@@ -294,7 +277,7 @@ static u32 vidtv_s302m_write_frame(struct vidtv_encoder *e,
 	struct vidtv_s302m_frame_16 f = {};
 	u32 nbytes = 0;
 
-	/* from ffmpeg: see s302enc.c */
+	 
 
 	u8 vucf = ctx->frame_index == 0 ? 0x10 : 0;
 
@@ -330,7 +313,7 @@ static u32 vidtv_s302m_write_h(struct vidtv_encoder *e, u32 p_sz)
 	struct vidtv_smpte_s302m_es h = {};
 	u32 nbytes = 0;
 
-	/* 2 channels, ident: 0, 16 bits per sample */
+	 
 	h.bitfield = cpu_to_be32((p_sz << 16));
 
 	nbytes += vidtv_memcpy(e->encoder_buf,
@@ -391,18 +374,7 @@ static void *vidtv_s302m_encode(struct vidtv_encoder *e)
 {
 	struct vidtv_s302m_ctx *ctx = e->ctx;
 
-	/*
-	 * According to SMPTE 302M, an audio access unit is specified as those
-	 * AES3 words that are associated with a corresponding video frame.
-	 * Therefore, there is one audio access unit for every video access unit
-	 * in the corresponding video encoder ('sync'), using the same values
-	 * for PTS as used by the video encoder.
-	 *
-	 * Assuming that it is also possible to send audio without any
-	 * associated video, as in a radio-like service, a single audio access unit
-	 * is created with values for 'num_samples' and 'pts' taken empirically from
-	 * ffmpeg
-	 */
+	 
 
 	vidtv_s302m_access_unit_destroy(e);
 	vidtv_s302m_alloc_au(e);

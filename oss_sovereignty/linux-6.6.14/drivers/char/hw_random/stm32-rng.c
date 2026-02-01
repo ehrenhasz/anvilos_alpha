@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (c) 2015, Daniel Thompson
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -47,8 +45,8 @@ static int stm32_rng_read(struct hwrng *rng, void *data, size_t max, bool wait)
 
 	while (max >= sizeof(u32)) {
 		sr = readl_relaxed(priv->base + RNG_SR);
-		/* Manage timeout which is based on timer and take */
-		/* care of initial delay time when enabling rng	*/
+		 
+		 
 		if (!sr && wait) {
 			int err;
 
@@ -61,7 +59,7 @@ static int stm32_rng_read(struct hwrng *rng, void *data, size_t max, bool wait)
 					"%s: timeout %x!\n", __func__, sr);
 		}
 
-		/* If error detected or data not ready... */
+		 
 		if (sr != RNG_SR_DRDY) {
 			if (WARN_ONCE(sr & (RNG_SR_SEIS | RNG_SR_CEIS),
 					"bad RNG status - %x\n", sr))
@@ -98,7 +96,7 @@ static int stm32_rng_init(struct hwrng *rng)
 		writel_relaxed(RNG_CR_RNGEN | RNG_CR_CED,
 			       priv->base + RNG_CR);
 
-	/* clear error indicators */
+	 
 	writel_relaxed(0, priv->base + RNG_SR);
 
 	return 0;

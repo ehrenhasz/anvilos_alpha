@@ -1,11 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (c) International Business Machines Corp., 2006
- *
- * Author: Artem Bityutskiy (Битюцкий Артём)
- */
 
-/* This file mostly implements UBI kernel API functions */
+ 
+
+ 
 
 #include <linux/module.h>
 #include <linux/err.h>
@@ -15,14 +11,7 @@
 #include <asm/div64.h>
 #include "ubi.h"
 
-/**
- * ubi_do_get_device_info - get information about UBI device.
- * @ubi: UBI device description object
- * @di: the information is stored here
- *
- * This function is the same as 'ubi_get_device_info()', but it assumes the UBI
- * device is locked and cannot disappear.
- */
+ 
 void ubi_do_get_device_info(struct ubi_device *ubi, struct ubi_device_info *di)
 {
 	di->ubi_num = ubi->ubi_num;
@@ -35,14 +24,7 @@ void ubi_do_get_device_info(struct ubi_device *ubi, struct ubi_device_info *di)
 }
 EXPORT_SYMBOL_GPL(ubi_do_get_device_info);
 
-/**
- * ubi_get_device_info - get information about UBI device.
- * @ubi_num: UBI device number
- * @di: the information is stored here
- *
- * This function returns %0 in case of success, %-EINVAL if the UBI device
- * number is invalid, and %-ENODEV if there is no such UBI device.
- */
+ 
 int ubi_get_device_info(int ubi_num, struct ubi_device_info *di)
 {
 	struct ubi_device *ubi;
@@ -58,12 +40,7 @@ int ubi_get_device_info(int ubi_num, struct ubi_device_info *di)
 }
 EXPORT_SYMBOL_GPL(ubi_get_device_info);
 
-/**
- * ubi_do_get_volume_info - get information about UBI volume.
- * @ubi: UBI device description object
- * @vol: volume description object
- * @vi: the information is stored here
- */
+ 
 void ubi_do_get_volume_info(struct ubi_device *ubi, struct ubi_volume *vol,
 			    struct ubi_volume_info *vi)
 {
@@ -82,11 +59,7 @@ void ubi_do_get_volume_info(struct ubi_device *ubi, struct ubi_volume *vol,
 	vi->dev = &vol->dev;
 }
 
-/**
- * ubi_get_volume_info - get information about UBI volume.
- * @desc: volume descriptor
- * @vi: the information is stored here
- */
+ 
 void ubi_get_volume_info(struct ubi_volume_desc *desc,
 			 struct ubi_volume_info *vi)
 {
@@ -94,24 +67,7 @@ void ubi_get_volume_info(struct ubi_volume_desc *desc,
 }
 EXPORT_SYMBOL_GPL(ubi_get_volume_info);
 
-/**
- * ubi_open_volume - open UBI volume.
- * @ubi_num: UBI device number
- * @vol_id: volume ID
- * @mode: open mode
- *
- * The @mode parameter specifies if the volume should be opened in read-only
- * mode, read-write mode, or exclusive mode. The exclusive mode guarantees that
- * nobody else will be able to open this volume. UBI allows to have many volume
- * readers and one writer at a time.
- *
- * If a static volume is being opened for the first time since boot, it will be
- * checked by this function, which means it will be fully read and the CRC
- * checksum of each logical eraseblock will be checked.
- *
- * This function returns volume descriptor in case of success and a negative
- * error code in case of failure.
- */
+ 
 struct ubi_volume_desc *ubi_open_volume(int ubi_num, int vol_id, int mode)
 {
 	int err;
@@ -128,9 +84,7 @@ struct ubi_volume_desc *ubi_open_volume(int ubi_num, int vol_id, int mode)
 	    mode != UBI_EXCLUSIVE && mode != UBI_METAONLY)
 		return ERR_PTR(-EINVAL);
 
-	/*
-	 * First of all, we have to get the UBI device to prevent its removal.
-	 */
+	 
 	ubi = ubi_get_device(ubi_num);
 	if (!ubi)
 		return ERR_PTR(-ENODEV);
@@ -191,7 +145,7 @@ struct ubi_volume_desc *ubi_open_volume(int ubi_num, int vol_id, int mode)
 
 	mutex_lock(&ubi->ckvol_mutex);
 	if (!vol->checked && !vol->skip_check) {
-		/* This is the first open - check the volume */
+		 
 		err = ubi_check_volume(ubi, vol_id);
 		if (err < 0) {
 			mutex_unlock(&ubi->ckvol_mutex);
@@ -222,14 +176,7 @@ out_put_ubi:
 }
 EXPORT_SYMBOL_GPL(ubi_open_volume);
 
-/**
- * ubi_open_volume_nm - open UBI volume by name.
- * @ubi_num: UBI device number
- * @name: volume name
- * @mode: open mode
- *
- * This function is similar to 'ubi_open_volume()', but opens a volume by name.
- */
+ 
 struct ubi_volume_desc *ubi_open_volume_nm(int ubi_num, const char *name,
 					   int mode)
 {
@@ -254,7 +201,7 @@ struct ubi_volume_desc *ubi_open_volume_nm(int ubi_num, const char *name,
 		return ERR_PTR(-ENODEV);
 
 	spin_lock(&ubi->volumes_lock);
-	/* Walk all volumes of this UBI device */
+	 
 	for (i = 0; i < ubi->vtbl_slots; i++) {
 		struct ubi_volume *vol = ubi->volumes[i];
 
@@ -270,23 +217,13 @@ struct ubi_volume_desc *ubi_open_volume_nm(int ubi_num, const char *name,
 	else
 		ret = ERR_PTR(-ENODEV);
 
-	/*
-	 * We should put the UBI device even in case of success, because
-	 * 'ubi_open_volume()' took a reference as well.
-	 */
+	 
 	ubi_put_device(ubi);
 	return ret;
 }
 EXPORT_SYMBOL_GPL(ubi_open_volume_nm);
 
-/**
- * ubi_open_volume_path - open UBI volume by its character device node path.
- * @pathname: volume character device node path
- * @mode: open mode
- *
- * This function is similar to 'ubi_open_volume()', but opens a volume the path
- * to its character device node.
- */
+ 
 struct ubi_volume_desc *ubi_open_volume_path(const char *pathname, int mode)
 {
 	int error, ubi_num, vol_id;
@@ -319,10 +256,7 @@ struct ubi_volume_desc *ubi_open_volume_path(const char *pathname, int mode)
 }
 EXPORT_SYMBOL_GPL(ubi_open_volume_path);
 
-/**
- * ubi_close_volume - close UBI volume.
- * @desc: volume descriptor
- */
+ 
 void ubi_close_volume(struct ubi_volume_desc *desc)
 {
 	struct ubi_volume *vol = desc->vol;
@@ -356,16 +290,7 @@ void ubi_close_volume(struct ubi_volume_desc *desc)
 }
 EXPORT_SYMBOL_GPL(ubi_close_volume);
 
-/**
- * leb_read_sanity_check - does sanity checks on read requests.
- * @desc: volume descriptor
- * @lnum: logical eraseblock number to read from
- * @offset: offset within the logical eraseblock to read from
- * @len: how many bytes to read
- *
- * This function is used by ubi_leb_read() and ubi_leb_read_sg()
- * to perform sanity checks.
- */
+ 
 static int leb_read_sanity_check(struct ubi_volume_desc *desc, int lnum,
 				 int offset, int len)
 {
@@ -380,7 +305,7 @@ static int leb_read_sanity_check(struct ubi_volume_desc *desc, int lnum,
 
 	if (vol->vol_type == UBI_STATIC_VOLUME) {
 		if (vol->used_ebs == 0)
-			/* Empty static UBI volume */
+			 
 			return 0;
 		if (lnum == vol->used_ebs - 1 &&
 		    offset + len > vol->last_eb_bytes)
@@ -393,33 +318,7 @@ static int leb_read_sanity_check(struct ubi_volume_desc *desc, int lnum,
 	return 0;
 }
 
-/**
- * ubi_leb_read - read data.
- * @desc: volume descriptor
- * @lnum: logical eraseblock number to read from
- * @buf: buffer where to store the read data
- * @offset: offset within the logical eraseblock to read from
- * @len: how many bytes to read
- * @check: whether UBI has to check the read data's CRC or not.
- *
- * This function reads data from offset @offset of logical eraseblock @lnum and
- * stores the data at @buf. When reading from static volumes, @check specifies
- * whether the data has to be checked or not. If yes, the whole logical
- * eraseblock will be read and its CRC checksum will be checked (i.e., the CRC
- * checksum is per-eraseblock). So checking may substantially slow down the
- * read speed. The @check argument is ignored for dynamic volumes.
- *
- * In case of success, this function returns zero. In case of failure, this
- * function returns a negative error code.
- *
- * %-EBADMSG error code is returned:
- * o for both static and dynamic volumes if MTD driver has detected a data
- *   integrity problem (unrecoverable ECC checksum mismatch in case of NAND);
- * o for static volumes in case of data CRC mismatch.
- *
- * If the volume is damaged because of an interrupted update this function just
- * returns immediately with %-EBADF error code.
- */
+ 
 int ubi_leb_read(struct ubi_volume_desc *desc, int lnum, char *buf, int offset,
 		 int len, int check)
 {
@@ -447,19 +346,7 @@ int ubi_leb_read(struct ubi_volume_desc *desc, int lnum, char *buf, int offset,
 EXPORT_SYMBOL_GPL(ubi_leb_read);
 
 
-/**
- * ubi_leb_read_sg - read data into a scatter gather list.
- * @desc: volume descriptor
- * @lnum: logical eraseblock number to read from
- * @sgl: UBI scatter gather list to store the read data
- * @offset: offset within the logical eraseblock to read from
- * @len: how many bytes to read
- * @check: whether UBI has to check the read data's CRC or not.
- *
- * This function works exactly like ubi_leb_read_sg(). But instead of
- * storing the read data into a buffer it writes to an UBI scatter gather
- * list.
- */
+ 
 int ubi_leb_read_sg(struct ubi_volume_desc *desc, int lnum, struct ubi_sgl *sgl,
 		    int offset, int len, int check)
 {
@@ -486,31 +373,7 @@ int ubi_leb_read_sg(struct ubi_volume_desc *desc, int lnum, struct ubi_sgl *sgl,
 }
 EXPORT_SYMBOL_GPL(ubi_leb_read_sg);
 
-/**
- * ubi_leb_write - write data.
- * @desc: volume descriptor
- * @lnum: logical eraseblock number to write to
- * @buf: data to write
- * @offset: offset within the logical eraseblock where to write
- * @len: how many bytes to write
- *
- * This function writes @len bytes of data from @buf to offset @offset of
- * logical eraseblock @lnum.
- *
- * This function takes care of physical eraseblock write failures. If write to
- * the physical eraseblock write operation fails, the logical eraseblock is
- * re-mapped to another physical eraseblock, the data is recovered, and the
- * write finishes. UBI has a pool of reserved physical eraseblocks for this.
- *
- * If all the data were successfully written, zero is returned. If an error
- * occurred and UBI has not been able to recover from it, this function returns
- * a negative error code. Note, in case of an error, it is possible that
- * something was still written to the flash media, but that may be some
- * garbage.
- *
- * If the volume is damaged because of an interrupted update this function just
- * returns immediately with %-EBADF code.
- */
+ 
 int ubi_leb_write(struct ubi_volume_desc *desc, int lnum, const void *buf,
 		  int offset, int len)
 {
@@ -541,21 +404,7 @@ int ubi_leb_write(struct ubi_volume_desc *desc, int lnum, const void *buf,
 }
 EXPORT_SYMBOL_GPL(ubi_leb_write);
 
-/*
- * ubi_leb_change - change logical eraseblock atomically.
- * @desc: volume descriptor
- * @lnum: logical eraseblock number to change
- * @buf: data to write
- * @len: how many bytes to write
- *
- * This function changes the contents of a logical eraseblock atomically. @buf
- * has to contain new logical eraseblock data, and @len - the length of the
- * data, which has to be aligned. The length may be shorter than the logical
- * eraseblock size, ant the logical eraseblock may be appended to more times
- * later on. This function guarantees that in case of an unclean reboot the old
- * contents is preserved. Returns zero in case of success and a negative error
- * code in case of failure.
- */
+ 
 int ubi_leb_change(struct ubi_volume_desc *desc, int lnum, const void *buf,
 		   int len)
 {
@@ -585,18 +434,7 @@ int ubi_leb_change(struct ubi_volume_desc *desc, int lnum, const void *buf,
 }
 EXPORT_SYMBOL_GPL(ubi_leb_change);
 
-/**
- * ubi_leb_erase - erase logical eraseblock.
- * @desc: volume descriptor
- * @lnum: logical eraseblock number
- *
- * This function un-maps logical eraseblock @lnum and synchronously erases the
- * correspondent physical eraseblock. Returns zero in case of success and a
- * negative error code in case of failure.
- *
- * If the volume is damaged because of an interrupted update this function just
- * returns immediately with %-EBADF code.
- */
+ 
 int ubi_leb_erase(struct ubi_volume_desc *desc, int lnum)
 {
 	struct ubi_volume *vol = desc->vol;
@@ -622,42 +460,7 @@ int ubi_leb_erase(struct ubi_volume_desc *desc, int lnum)
 }
 EXPORT_SYMBOL_GPL(ubi_leb_erase);
 
-/**
- * ubi_leb_unmap - un-map logical eraseblock.
- * @desc: volume descriptor
- * @lnum: logical eraseblock number
- *
- * This function un-maps logical eraseblock @lnum and schedules the
- * corresponding physical eraseblock for erasure, so that it will eventually be
- * physically erased in background. This operation is much faster than the
- * erase operation.
- *
- * Unlike erase, the un-map operation does not guarantee that the logical
- * eraseblock will contain all 0xFF bytes when UBI is initialized again. For
- * example, if several logical eraseblocks are un-mapped, and an unclean reboot
- * happens after this, the logical eraseblocks will not necessarily be
- * un-mapped again when this MTD device is attached. They may actually be
- * mapped to the same physical eraseblocks again. So, this function has to be
- * used with care.
- *
- * In other words, when un-mapping a logical eraseblock, UBI does not store
- * any information about this on the flash media, it just marks the logical
- * eraseblock as "un-mapped" in RAM. If UBI is detached before the physical
- * eraseblock is physically erased, it will be mapped again to the same logical
- * eraseblock when the MTD device is attached again.
- *
- * The main and obvious use-case of this function is when the contents of a
- * logical eraseblock has to be re-written. Then it is much more efficient to
- * first un-map it, then write new data, rather than first erase it, then write
- * new data. Note, once new data has been written to the logical eraseblock,
- * UBI guarantees that the old contents has gone forever. In other words, if an
- * unclean reboot happens after the logical eraseblock has been un-mapped and
- * then written to, it will contain the last written data.
- *
- * This function returns zero in case of success and a negative error code in
- * case of failure. If the volume is damaged because of an interrupted update
- * this function just returns immediately with %-EBADF code.
- */
+ 
 int ubi_leb_unmap(struct ubi_volume_desc *desc, int lnum)
 {
 	struct ubi_volume *vol = desc->vol;
@@ -678,22 +481,7 @@ int ubi_leb_unmap(struct ubi_volume_desc *desc, int lnum)
 }
 EXPORT_SYMBOL_GPL(ubi_leb_unmap);
 
-/**
- * ubi_leb_map - map logical eraseblock to a physical eraseblock.
- * @desc: volume descriptor
- * @lnum: logical eraseblock number
- *
- * This function maps an un-mapped logical eraseblock @lnum to a physical
- * eraseblock. This means, that after a successful invocation of this
- * function the logical eraseblock @lnum will be empty (contain only %0xFF
- * bytes) and be mapped to a physical eraseblock, even if an unclean reboot
- * happens.
- *
- * This function returns zero in case of success, %-EBADF if the volume is
- * damaged because of an interrupted update, %-EBADMSG if the logical
- * eraseblock is already mapped, and other negative error codes in case of
- * other failures.
- */
+ 
 int ubi_leb_map(struct ubi_volume_desc *desc, int lnum)
 {
 	struct ubi_volume *vol = desc->vol;
@@ -717,22 +505,7 @@ int ubi_leb_map(struct ubi_volume_desc *desc, int lnum)
 }
 EXPORT_SYMBOL_GPL(ubi_leb_map);
 
-/**
- * ubi_is_mapped - check if logical eraseblock is mapped.
- * @desc: volume descriptor
- * @lnum: logical eraseblock number
- *
- * This function checks if logical eraseblock @lnum is mapped to a physical
- * eraseblock. If a logical eraseblock is un-mapped, this does not necessarily
- * mean it will still be un-mapped after the UBI device is re-attached. The
- * logical eraseblock may become mapped to the physical eraseblock it was last
- * mapped to.
- *
- * This function returns %1 if the LEB is mapped, %0 if not, and a negative
- * error code in case of failure. If the volume is damaged because of an
- * interrupted update this function just returns immediately with %-EBADF error
- * code.
- */
+ 
 int ubi_is_mapped(struct ubi_volume_desc *desc, int lnum)
 {
 	struct ubi_volume *vol = desc->vol;
@@ -749,14 +522,7 @@ int ubi_is_mapped(struct ubi_volume_desc *desc, int lnum)
 }
 EXPORT_SYMBOL_GPL(ubi_is_mapped);
 
-/**
- * ubi_sync - synchronize UBI device buffers.
- * @ubi_num: UBI device to synchronize
- *
- * The underlying MTD device may cache data in hardware or in software. This
- * function ensures the caches are flushed. Returns zero in case of success and
- * a negative error code in case of failure.
- */
+ 
 int ubi_sync(int ubi_num)
 {
 	struct ubi_device *ubi;
@@ -771,18 +537,7 @@ int ubi_sync(int ubi_num)
 }
 EXPORT_SYMBOL_GPL(ubi_sync);
 
-/**
- * ubi_flush - flush UBI work queue.
- * @ubi_num: UBI device to flush work queue
- * @vol_id: volume id to flush for
- * @lnum: logical eraseblock number to flush for
- *
- * This function executes all pending works for a particular volume id / logical
- * eraseblock number pair. If either value is set to %UBI_ALL, then it acts as
- * a wildcard for all of the corresponding volume numbers or logical
- * eraseblock numbers. It returns zero in case of success and a negative error
- * code in case of failure.
- */
+ 
 int ubi_flush(int ubi_num, int vol_id, int lnum)
 {
 	struct ubi_device *ubi;
@@ -800,22 +555,7 @@ EXPORT_SYMBOL_GPL(ubi_flush);
 
 BLOCKING_NOTIFIER_HEAD(ubi_notifiers);
 
-/**
- * ubi_register_volume_notifier - register a volume notifier.
- * @nb: the notifier description object
- * @ignore_existing: if non-zero, do not send "added" notification for all
- *                   already existing volumes
- *
- * This function registers a volume notifier, which means that
- * 'nb->notifier_call()' will be invoked when an UBI  volume is created,
- * removed, re-sized, re-named, or updated. The first argument of the function
- * is the notification type. The second argument is pointer to a
- * &struct ubi_notification object which describes the notification event.
- * Using UBI API from the volume notifier is prohibited.
- *
- * This function returns zero in case of success and a negative error code
- * in case of failure.
- */
+ 
 int ubi_register_volume_notifier(struct notifier_block *nb,
 				 int ignore_existing)
 {
@@ -827,12 +567,7 @@ int ubi_register_volume_notifier(struct notifier_block *nb,
 	if (ignore_existing)
 		return 0;
 
-	/*
-	 * We are going to walk all UBI devices and all volumes, and
-	 * notify the user about existing volumes by the %UBI_VOLUME_ADDED
-	 * event. We have to lock the @ubi_devices_mutex to make sure UBI
-	 * devices do not disappear.
-	 */
+	 
 	mutex_lock(&ubi_devices_mutex);
 	ubi_enumerate_volumes(nb);
 	mutex_unlock(&ubi_devices_mutex);
@@ -841,13 +576,7 @@ int ubi_register_volume_notifier(struct notifier_block *nb,
 }
 EXPORT_SYMBOL_GPL(ubi_register_volume_notifier);
 
-/**
- * ubi_unregister_volume_notifier - unregister the volume notifier.
- * @nb: the notifier description object
- *
- * This function unregisters volume notifier @nm and returns zero in case of
- * success and a negative error code in case of failure.
- */
+ 
 int ubi_unregister_volume_notifier(struct notifier_block *nb)
 {
 	return blocking_notifier_chain_unregister(&ubi_notifiers, nb);

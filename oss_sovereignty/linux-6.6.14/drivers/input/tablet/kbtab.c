@@ -1,13 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 #include <linux/kernel.h>
 #include <linux/slab.h>
 #include <linux/module.h>
 #include <linux/usb/input.h>
 #include <asm/unaligned.h>
 
-/*
- * Pressure-threshold modules param code from Alex Perry <alex.perry@ieee.org>
- */
+ 
 
 MODULE_AUTHOR("Josh Myer <josh@joshisanerd.com>");
 MODULE_DESCRIPTION("USB KB Gear JamStudio Tablet driver");
@@ -38,12 +36,12 @@ static void kbtab_irq(struct urb *urb)
 
 	switch (urb->status) {
 	case 0:
-		/* success */
+		 
 		break;
 	case -ECONNRESET:
 	case -ENOENT:
 	case -ESHUTDOWN:
-		/* this urb is terminated, clean up */
+		 
 		dev_dbg(&kbtab->intf->dev,
 			"%s - urb shutting down with status: %d\n",
 			__func__, urb->status);
@@ -61,7 +59,7 @@ static void kbtab_irq(struct urb *urb)
 	input_report_abs(dev, ABS_X, get_unaligned_le16(&data[1]));
 	input_report_abs(dev, ABS_Y, get_unaligned_le16(&data[3]));
 
-	/*input_report_key(dev, BTN_TOUCH , data[0] & 0x01);*/
+	 
 	input_report_key(dev, BTN_RIGHT, data[0] & 0x02);
 
 	pressure = data[5];

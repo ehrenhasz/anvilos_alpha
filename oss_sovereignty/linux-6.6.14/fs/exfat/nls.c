@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2012-2013 Samsung Electronics Co., Ltd.
- */
+
+ 
 
 #include <linux/string.h>
 #include <linux/slab.h>
@@ -11,15 +9,11 @@
 #include "exfat_raw.h"
 #include "exfat_fs.h"
 
-/* Upcase table macro */
+ 
 #define EXFAT_NUM_UPCASE	(2918)
 #define UTBL_COUNT		(0x10000)
 
-/*
- * Upcase table in compressed format (7.2.5.1 Recommended Up-case Table
- * in exfat specification, See:
- * https://docs.microsoft.com/en-us/windows/win32/fileio/exfat-specification).
- */
+ 
 static const unsigned short uni_def_upcase[EXFAT_NUM_UPCASE] = {
 	0x0000, 0x0001, 0x0002, 0x0003, 0x0004, 0x0005, 0x0006, 0x0007,
 	0x0008, 0x0009, 0x000a, 0x000b, 0x000c, 0x000d, 0x000e, 0x000f,
@@ -388,14 +382,7 @@ static const unsigned short uni_def_upcase[EXFAT_NUM_UPCASE] = {
 	0xfffa, 0xfffb, 0xfffc, 0xfffd, 0xfffe, 0xffff,
 };
 
-/*
- * Allow full-width illegal characters :
- * "MS windows 7" supports full-width-invalid-name-characters.
- * So we should check half-width-invalid-name-characters(ASCII) only
- * for compatibility.
- *
- * " * / : < > ? \ |
- */
+ 
 static unsigned short bad_uni_chars[] = {
 	0x0022,         0x002A, 0x002F, 0x003A,
 	0x003C, 0x003E, 0x003F, 0x005C, 0x007C,
@@ -417,7 +404,7 @@ static int exfat_convert_char_to_ucs2(struct nls_table *nls,
 
 	len = nls->char2uni(ch, ch_len, ucs2);
 	if (len < 0) {
-		/* conversion failed */
+		 
 		if (lossy != NULL)
 			*lossy |= NLS_NAME_LOSSY;
 		*ucs2 = '_';
@@ -440,7 +427,7 @@ static int exfat_convert_ucs2_to_char(struct nls_table *nls,
 
 	len = nls->uni2char(ucs2, ch, MAX_CHARSET_SIZE);
 	if (len < 0) {
-		/* conversion failed */
+		 
 		if (lossy != NULL)
 			*lossy |= NLS_NAME_LOSSY;
 		ch[0] = '_';
@@ -483,7 +470,7 @@ static int exfat_utf16_to_utf8(struct super_block *sb,
 	int len;
 	const unsigned short *uniname = p_uniname->name;
 
-	/* always len >= 0 */
+	 
 	len = utf16s_to_utf8s(uniname, MAX_NAME_LENGTH, UTF16_HOST_ENDIAN,
 		p_cstring, buflen);
 	p_cstring[len] = '\0';
@@ -554,7 +541,7 @@ static int __exfat_utf16_to_nls(struct super_block *sb,
 			len = exfat_convert_ucs2_to_char(nls, *uniname, buf,
 				NULL);
 		} else {
-			/* Process UTF-16 surrogate pair as one character */
+			 
 			if (!(*uniname & SURROGATE_LOW) &&
 			    i+1 < MAX_NAME_LENGTH &&
 			    (*(uniname+1) & SURROGATE_MASK) == SURROGATE_PAIR &&
@@ -563,12 +550,7 @@ static int __exfat_utf16_to_nls(struct super_block *sb,
 				i++;
 			}
 
-			/*
-			 * UTF-16 surrogate pair encodes code points above
-			 * U+FFFF. Code points above U+FFFF are not supported
-			 * by kernel NLS framework therefore use replacement
-			 * character
-			 */
+			 
 			len = 1;
 			buf[0] = '_';
 		}
@@ -580,7 +562,7 @@ static int __exfat_utf16_to_nls(struct super_block *sb,
 		if (len > 1) {
 			for (j = 0; j < len; j++)
 				*p_cstring++ = buf[j];
-		} else { /* len == 1 */
+		} else {  
 			*p_cstring++ = *buf;
 		}
 
@@ -687,7 +669,7 @@ static int exfat_load_upcase_table(struct super_block *sb,
 				index++;
 			} else if (uni == 0xFFFF) {
 				skip = true;
-			} else { /* uni != index , uni != 0xFFFF */
+			} else {  
 				upcase_table[index] = uni;
 				index++;
 			}
@@ -739,7 +721,7 @@ static int exfat_load_default_upcase_table(struct super_block *sb)
 	if (index >= 0xFFFF)
 		return 0;
 
-	/* FATAL error: default upcase table has error */
+	 
 	exfat_free_upcase_table(sbi);
 	return ret;
 }
@@ -788,7 +770,7 @@ int exfat_create_upcase_table(struct super_block *sb)
 			if (ret && ret != -EIO)
 				goto load_default;
 
-			/* load successfully */
+			 
 			return ret;
 		}
 
@@ -797,7 +779,7 @@ int exfat_create_upcase_table(struct super_block *sb)
 	}
 
 load_default:
-	/* load default upcase table */
+	 
 	return exfat_load_default_upcase_table(sb);
 }
 

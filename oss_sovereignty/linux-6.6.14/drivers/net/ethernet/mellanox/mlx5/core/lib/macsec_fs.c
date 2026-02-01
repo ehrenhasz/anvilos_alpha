@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-/* Copyright (c) 2022, NVIDIA CORPORATION & AFFILIATES. All rights reserved. */
+
+ 
 
 #include <net/macsec.h>
 #include <linux/mlx5/qp.h>
@@ -10,7 +10,7 @@
 #include "lib/macsec_fs.h"
 #include "mlx5_core.h"
 
-/* MACsec TX flow steering */
+ 
 #define CRYPTO_NUM_MAXSEC_FTE BIT(15)
 #define CRYPTO_TABLE_DEFAULT_RULE_GROUP_SIZE 1
 
@@ -37,7 +37,7 @@
 #define RDMA_RX_ROCE_IP_TABLE_LEVEL 0
 #define RDMA_RX_ROCE_MACSEC_OP_TABLE_LEVEL 1
 
-#define MLX5_MACSEC_TAG_LEN 8 /* SecTAG length with ethertype and without the optional SCI */
+#define MLX5_MACSEC_TAG_LEN 8  
 #define MLX5_MACSEC_SECTAG_TCI_AN_FIELD_BITMASK 0x23
 #define MLX5_MACSEC_SECTAG_TCI_AN_FIELD_OFFSET 0x8
 #define MLX5_MACSEC_SECTAG_TCI_SC_FIELD_OFFSET 0x5
@@ -45,10 +45,10 @@
 #define MLX5_SECTAG_HEADER_SIZE_WITHOUT_SCI 0x8
 #define MLX5_SECTAG_HEADER_SIZE_WITH_SCI (MLX5_SECTAG_HEADER_SIZE_WITHOUT_SCI + MACSEC_SCI_LEN)
 
-/* MACsec RX flow steering */
+ 
 #define MLX5_ETH_WQE_FT_META_MACSEC_MASK 0x3E
 
-/* MACsec fs_id handling for steering */
+ 
 #define macsec_fs_set_tx_fs_id(fs_id) (MLX5_ETH_WQE_FT_META_MACSEC | (fs_id) << 2)
 #define macsec_fs_set_rx_fs_id(fs_id) ((fs_id) | BIT(30))
 
@@ -57,7 +57,7 @@ struct mlx5_sectag_header {
 	u8 tci_an;
 	u8 sl;
 	u32 pn;
-	u8 sci[MACSEC_SCI_LEN]; /* optional */
+	u8 sci[MACSEC_SCI_LEN];  
 }  __packed;
 
 struct mlx5_roce_macsec_tx_rule {
@@ -137,14 +137,14 @@ struct mlx5_macsec_miss {
 };
 
 struct mlx5_macsec_rx_roce {
-	/* Flow table/rules in NIC domain, to check if it's a RoCE packet */
+	 
 	struct mlx5_flow_group *g;
 	struct mlx5_flow_table *ft;
 	struct mlx5_flow_handle *rule;
 	struct mlx5_modify_hdr *copy_modify_hdr;
 	struct mlx5_macsec_miss nic_miss;
 
-	/* Flow table/rule in RDMA domain, to check dgid */
+	 
 	struct mlx5_flow_table *ft_ip_check;
 	struct mlx5_flow_table *ft_macsec_op_check;
 	struct mlx5_macsec_miss miss;
@@ -184,16 +184,16 @@ struct mlx5_macsec_fs {
 	struct mlx5_macsec_tx *tx_fs;
 	struct mlx5_macsec_rx *rx_fs;
 
-	/* Stats manage */
+	 
 	struct mlx5_macsec_stats stats;
 
-	/* Tx sci -> fs id mapping handling */
-	struct rhashtable sci_hash;      /* sci -> mlx5_fs_id */
+	 
+	struct rhashtable sci_hash;       
 
-	/* RX fs_id -> mlx5_fs_id mapping handling */
-	struct rhashtable fs_id_hash;      /* fs_id -> mlx5_fs_id */
+	 
+	struct rhashtable fs_id_hash;       
 
-	/* TX & RX fs_id lists per macsec device */
+	 
 	struct list_head macsec_devices_list;
 };
 
@@ -227,7 +227,7 @@ static void macsec_fs_tx_destroy(struct mlx5_macsec_fs *macsec_fs)
 
 	tx_tables = &tx_fs->tables;
 
-	/* Tx check table */
+	 
 	if (tx_fs->check_rule) {
 		mlx5_del_flow_rules(tx_fs->check_rule);
 		tx_fs->check_rule = NULL;
@@ -248,7 +248,7 @@ static void macsec_fs_tx_destroy(struct mlx5_macsec_fs *macsec_fs)
 		tx_tables->ft_check = NULL;
 	}
 
-	/* Tx crypto table */
+	 
 	if (tx_fs->crypto_mke_rule) {
 		mlx5_del_flow_rules(tx_fs->crypto_mke_rule);
 		tx_fs->crypto_mke_rule = NULL;
@@ -284,7 +284,7 @@ static int macsec_fs_tx_create_crypto_table_groups(struct mlx5_macsec_flow_table
 
 	mc = MLX5_ADDR_OF(create_flow_group_in, in, match_criteria);
 
-	/* Flow Group for MKE match */
+	 
 	MLX5_SET_CFG(in, match_criteria_enable, MLX5_MATCH_OUTER_HEADERS);
 	MLX5_SET_TO_ONES(fte_match_param, mc, outer_headers.ethertype);
 
@@ -296,7 +296,7 @@ static int macsec_fs_tx_create_crypto_table_groups(struct mlx5_macsec_flow_table
 		goto err;
 	ft->num_groups++;
 
-	/* Flow Group for SA rules */
+	 
 	memset(in, 0, inlen);
 	memset(mc, 0, mclen);
 	MLX5_SET_CFG(in, match_criteria_enable, MLX5_MATCH_MISC_PARAMETERS_2);
@@ -311,7 +311,7 @@ static int macsec_fs_tx_create_crypto_table_groups(struct mlx5_macsec_flow_table
 		goto err;
 	ft->num_groups++;
 
-	/* Flow Group for l2 traps */
+	 
 	memset(in, 0, inlen);
 	memset(mc, 0, mclen);
 	MLX5_SET_CFG(in, start_flow_index, ix);
@@ -340,7 +340,7 @@ static struct mlx5_flow_table
 	struct mlx5_flow_table_attr ft_attr = {};
 	struct mlx5_flow_table *fdb = NULL;
 
-	/* reserve entry for the match all miss group and rule */
+	 
 	ft_attr.autogroup.num_reserved_entries = 1;
 	ft_attr.autogroup.max_num_groups = 1;
 	ft_attr.prio = 0;
@@ -374,7 +374,7 @@ static int macsec_fs_tx_roce_create(struct mlx5_macsec_fs *macsec_fs)
 	if (!ns)
 		return -ENOMEM;
 
-	/* Tx RoCE crypto table  */
+	 
 	ft = macsec_fs_auto_group_table_create(ns, 0, RDMA_TX_MACSEC_LEVEL, CRYPTO_NUM_MAXSEC_FTE);
 	if (IS_ERR(ft)) {
 		err = PTR_ERR(ft);
@@ -421,7 +421,7 @@ static int macsec_fs_tx_create(struct mlx5_macsec_fs *macsec_fs)
 	tx_tables = &tx_fs->tables;
 	ft_crypto = &tx_tables->ft_crypto;
 
-	/* Tx crypto table  */
+	 
 	ft_attr.flags = MLX5_FLOW_TABLE_TUNNEL_EN_REFORMAT;
 	ft_attr.level = TX_CRYPTO_TABLE_LEVEL;
 	ft_attr.max_fte = CRYPTO_NUM_MAXSEC_FTE;
@@ -434,7 +434,7 @@ static int macsec_fs_tx_create(struct mlx5_macsec_fs *macsec_fs)
 	}
 	ft_crypto->t = flow_table;
 
-	/* Tx crypto table groups */
+	 
 	err = macsec_fs_tx_create_crypto_table_groups(ft_crypto);
 	if (err) {
 		mlx5_core_err(mdev,
@@ -443,7 +443,7 @@ static int macsec_fs_tx_create(struct mlx5_macsec_fs *macsec_fs)
 		goto err;
 	}
 
-	/* Tx crypto table MKE rule - MKE packets shouldn't be offloaded */
+	 
 	spec->match_criteria_enable = MLX5_MATCH_OUTER_HEADERS;
 
 	MLX5_SET_TO_ONES(fte_match_param, spec->match_criteria, outer_headers.ethertype);
@@ -458,7 +458,7 @@ static int macsec_fs_tx_create(struct mlx5_macsec_fs *macsec_fs)
 	}
 	tx_fs->crypto_mke_rule = rule;
 
-	/* Tx crypto table Default miss rule */
+	 
 	memset(&flow_act, 0, sizeof(flow_act));
 	flow_act.action = MLX5_FLOW_CONTEXT_ACTION_ALLOW;
 	rule = mlx5_add_flow_rules(ft_crypto->t, NULL, &flow_act, NULL, 0);
@@ -469,7 +469,7 @@ static int macsec_fs_tx_create(struct mlx5_macsec_fs *macsec_fs)
 	}
 	tx_tables->crypto_miss_rule = rule;
 
-	/* Tx check table */
+	 
 	flow_table = macsec_fs_auto_group_table_create(ns, 0, TX_CHECK_TABLE_LEVEL,
 						       TX_CHECK_TABLE_NUM_FTE);
 	if (IS_ERR(flow_table)) {
@@ -479,7 +479,7 @@ static int macsec_fs_tx_create(struct mlx5_macsec_fs *macsec_fs)
 	}
 	tx_tables->ft_check = flow_table;
 
-	/* Tx check table Default miss group/rule */
+	 
 	memset(flow_group_in, 0, inlen);
 	MLX5_SET(create_flow_group_in, flow_group_in, start_flow_index, flow_table->max_fte - 1);
 	MLX5_SET(create_flow_group_in, flow_group_in, end_flow_index, flow_table->max_fte - 1);
@@ -493,7 +493,7 @@ static int macsec_fs_tx_create(struct mlx5_macsec_fs *macsec_fs)
 	}
 	tx_tables->ft_check_group = flow_group;
 
-	/* Tx check table default drop rule */
+	 
 	memset(&dest, 0, sizeof(struct mlx5_flow_destination));
 	memset(&flow_act, 0, sizeof(flow_act));
 	dest.type = MLX5_FLOW_DESTINATION_TYPE_COUNTER;
@@ -507,7 +507,7 @@ static int macsec_fs_tx_create(struct mlx5_macsec_fs *macsec_fs)
 	}
 	tx_tables->check_miss_rule = rule;
 
-	/* Tx check table rule */
+	 
 	memset(spec, 0, sizeof(struct mlx5_flow_spec));
 	memset(&dest, 0, sizeof(struct mlx5_flow_destination));
 	memset(&flow_act, 0, sizeof(flow_act));
@@ -593,7 +593,7 @@ static int macsec_fs_tx_setup_fte(struct mlx5_macsec_fs *macsec_fs,
 	id = err;
 	spec->match_criteria_enable |= MLX5_MATCH_MISC_PARAMETERS_2;
 
-	/* Metadata match */
+	 
 	MLX5_SET(fte_match_param, spec->match_criteria, misc_parameters_2.metadata_reg_a,
 		 MLX5_ETH_WQE_FT_META_MACSEC_MASK);
 	MLX5_SET(fte_match_param, spec->match_value, misc_parameters_2.metadata_reg_a,
@@ -630,7 +630,7 @@ static void macsec_fs_tx_create_sectag_header(const struct macsec_context *ctx,
 			sectag.tci_an |= MACSEC_TCI_SCB;
 	}
 
-	/* With GCM, C/E clear for !encrypt, both set for encrypt */
+	 
 	if (tx_sc->encrypt)
 		sectag.tci_an |= MACSEC_TCI_CONFID;
 	else if (secy->icv_len != MACSEC_DEFAULT_ICV_LEN)
@@ -680,7 +680,7 @@ static void macsec_fs_id_del(struct list_head *macsec_devices_list, u32 fs_id,
 	}
 
 	if (fs_id_found->id) {
-		/* Make sure ongoing datapath readers sees a valid SA */
+		 
 		rhashtable_remove_fast(hash_table, &fs_id_found->hash, *rhash);
 		fs_id_found->id = 0;
 	}
@@ -728,7 +728,7 @@ static int macsec_fs_id_add(struct list_head *macsec_devices_list, u32 fs_id,
 		}
 	}
 
-	if (!macsec_device) { /* first time adding a SA to that device */
+	if (!macsec_device) {  
 		macsec_device = kzalloc(sizeof(*macsec_device), GFP_KERNEL);
 		if (!macsec_device) {
 			err = -ENOMEM;
@@ -833,7 +833,7 @@ macsec_fs_tx_add_rule(struct mlx5_macsec_fs *macsec_fs,
 
 	tx_rule = &macsec_rule->tx_rule;
 
-	/* Tx crypto table crypto rule */
+	 
 	macsec_fs_tx_create_sectag_header(macsec_ctx, reformatbf, &reformat_size);
 
 	reformat_params.type = MLX5_REFORMAT_TYPE_ADD_MACSEC;
@@ -1008,7 +1008,7 @@ static void macsec_fs_rx_destroy(struct mlx5_macsec_fs *macsec_fs)
 	struct mlx5_macsec_tables *rx_tables;
 	int i;
 
-	/* Rx check table */
+	 
 	for (i = 1; i >= 0; --i) {
 		if (rx_fs->check_rule[i]) {
 			mlx5_del_flow_rules(rx_fs->check_rule[i]);
@@ -1039,7 +1039,7 @@ static void macsec_fs_rx_destroy(struct mlx5_macsec_fs *macsec_fs)
 		rx_tables->ft_check = NULL;
 	}
 
-	/* Rx crypto table */
+	 
 	if (rx_tables->crypto_miss_rule) {
 		mlx5_del_flow_rules(rx_tables->crypto_miss_rule);
 		rx_tables->crypto_miss_rule = NULL;
@@ -1071,7 +1071,7 @@ static int macsec_fs_rx_create_crypto_table_groups(struct mlx5_macsec_flow_table
 
 	mc = MLX5_ADDR_OF(create_flow_group_in, in, match_criteria);
 
-	/* Flow group for SA rule with SCI */
+	 
 	MLX5_SET_CFG(in, match_criteria_enable, MLX5_MATCH_OUTER_HEADERS |
 						MLX5_MATCH_MISC_PARAMETERS_5);
 	MLX5_SET_TO_ONES(fte_match_param, mc, outer_headers.ethertype);
@@ -1090,7 +1090,7 @@ static int macsec_fs_rx_create_crypto_table_groups(struct mlx5_macsec_flow_table
 		goto err;
 	ft->num_groups++;
 
-	/* Flow group for SA rule without SCI */
+	 
 	memset(in, 0, inlen);
 	memset(mc, 0, mclen);
 	MLX5_SET_CFG(in, match_criteria_enable, MLX5_MATCH_OUTER_HEADERS |
@@ -1110,7 +1110,7 @@ static int macsec_fs_rx_create_crypto_table_groups(struct mlx5_macsec_flow_table
 		goto err;
 	ft->num_groups++;
 
-	/* Flow Group for l2 traps */
+	 
 	memset(in, 0, inlen);
 	memset(mc, 0, mclen);
 	MLX5_SET_CFG(in, start_flow_index, ix);
@@ -1150,7 +1150,7 @@ static int macsec_fs_rx_create_check_decap_rule(struct mlx5_macsec_fs *macsec_fs
 
 	rx_tables = &rx_fs->tables;
 
-	/* Rx check table decap 16B rule */
+	 
 	memset(dest, 0, sizeof(*dest));
 	memset(flow_act, 0, sizeof(*flow_act));
 	memset(spec, 0, sizeof(*spec));
@@ -1169,15 +1169,15 @@ static int macsec_fs_rx_create_check_decap_rule(struct mlx5_macsec_fs *macsec_fs
 	rx_fs->check_rule_pkt_reformat[rule_index] = flow_act->pkt_reformat;
 
 	spec->match_criteria_enable = MLX5_MATCH_MISC_PARAMETERS_2;
-	/* MACsec syndrome match */
+	 
 	MLX5_SET_TO_ONES(fte_match_param, spec->match_criteria, misc_parameters_2.macsec_syndrome);
 	MLX5_SET(fte_match_param, spec->match_value, misc_parameters_2.macsec_syndrome, 0);
-	/* ASO return reg syndrome match */
+	 
 	MLX5_SET_TO_ONES(fte_match_param, spec->match_criteria, misc_parameters_2.metadata_reg_c_4);
 	MLX5_SET(fte_match_param, spec->match_value, misc_parameters_2.metadata_reg_c_4, 0);
 
 	spec->match_criteria_enable |= MLX5_MATCH_MISC_PARAMETERS_5;
-	/* Sectag TCI SC present bit*/
+	 
 	MLX5_SET(fte_match_param, spec->match_criteria, misc_parameters_5.macsec_tag_0,
 		 MLX5_MACSEC_SECTAG_TCI_SC_FIELD_BIT << MLX5_MACSEC_SECTAG_TCI_AN_FIELD_OFFSET);
 
@@ -1227,7 +1227,7 @@ static int macsec_fs_rx_roce_miss_create(struct mlx5_core_dev *mdev,
 	if (!flow_group_in)
 		return -ENOMEM;
 
-	/* IP check ft has no miss rule since we use default miss action which is go to next PRIO */
+	 
 	MLX5_SET(create_flow_group_in, flow_group_in, start_flow_index,
 		 roce->ft_macsec_op_check->max_fte - 1);
 	MLX5_SET(create_flow_group_in, flow_group_in, end_flow_index,
@@ -1531,7 +1531,7 @@ static int macsec_fs_rx_create(struct mlx5_macsec_fs *macsec_fs)
 	if (err)
 		goto out_flow_group;
 
-	/* Rx crypto table */
+	 
 	ft_attr.level = RX_CRYPTO_TABLE_LEVEL;
 	ft_attr.max_fte = CRYPTO_NUM_MAXSEC_FTE;
 
@@ -1543,7 +1543,7 @@ static int macsec_fs_rx_create(struct mlx5_macsec_fs *macsec_fs)
 	}
 	ft_crypto->t = flow_table;
 
-	/* Rx crypto table groups */
+	 
 	err = macsec_fs_rx_create_crypto_table_groups(ft_crypto);
 	if (err) {
 		mlx5_core_err(mdev,
@@ -1563,7 +1563,7 @@ static int macsec_fs_rx_create(struct mlx5_macsec_fs *macsec_fs)
 	}
 	rx_tables->crypto_miss_rule = rule;
 
-	/* Rx check table */
+	 
 	flow_table = macsec_fs_auto_group_table_create(ns,
 						       MLX5_FLOW_TABLE_TUNNEL_EN_REFORMAT,
 						       RX_CHECK_TABLE_LEVEL,
@@ -1575,7 +1575,7 @@ static int macsec_fs_rx_create(struct mlx5_macsec_fs *macsec_fs)
 	}
 	rx_tables->ft_check = flow_table;
 
-	/* Rx check table Default miss group/rule */
+	 
 	MLX5_SET(create_flow_group_in, flow_group_in, start_flow_index, flow_table->max_fte - 1);
 	MLX5_SET(create_flow_group_in, flow_group_in, end_flow_index, flow_table->max_fte - 1);
 	flow_group = mlx5_create_flow_group(rx_tables->ft_check, flow_group_in);
@@ -1588,7 +1588,7 @@ static int macsec_fs_rx_create(struct mlx5_macsec_fs *macsec_fs)
 	}
 	rx_tables->ft_check_group = flow_group;
 
-	/* Rx check table default drop rule */
+	 
 	memset(&flow_act, 0, sizeof(flow_act));
 
 	dest.type = MLX5_FLOW_DESTINATION_TYPE_COUNTER;
@@ -1602,7 +1602,7 @@ static int macsec_fs_rx_create(struct mlx5_macsec_fs *macsec_fs)
 	}
 	rx_tables->check_miss_rule = rule;
 
-	/* Rx check table decap rules */
+	 
 	err = macsec_fs_rx_create_check_decap_rule(macsec_fs, &dest, &flow_act, spec,
 						   MLX5_SECTAG_HEADER_SIZE_WITH_SCI);
 	if (err)
@@ -1688,13 +1688,13 @@ static void macsec_fs_rx_setup_fte(struct mlx5_flow_spec *spec,
 
 	spec->match_criteria_enable = MLX5_MATCH_OUTER_HEADERS;
 
-	/* MACsec ethertype */
+	 
 	MLX5_SET_TO_ONES(fte_match_param, spec->match_criteria, outer_headers.ethertype);
 	MLX5_SET(fte_match_param, spec->match_value, outer_headers.ethertype, ETH_P_MACSEC);
 
 	spec->match_criteria_enable |= MLX5_MATCH_MISC_PARAMETERS_5;
 
-	/* Sectag AN + TCI SC present bit*/
+	 
 	MLX5_SET(fte_match_param, spec->match_criteria, misc_parameters_5.macsec_tag_0,
 		 MLX5_MACSEC_SECTAG_TCI_AN_FIELD_BITMASK << MLX5_MACSEC_SECTAG_TCI_AN_FIELD_OFFSET);
 	MLX5_SET(fte_match_param, spec->match_value, misc_parameters_5.macsec_tag_0,
@@ -1711,8 +1711,8 @@ static void macsec_fs_rx_setup_fte(struct mlx5_flow_spec *spec,
 		MLX5_SET(fte_match_param, spec->match_value, misc_parameters_5.macsec_tag_3,
 			 be32_to_cpu(sci_p[1]));
 	} else {
-		/* When SCI isn't present in the Sectag, need to match the source */
-		/* MAC address only if the SCI contains the default MACsec PORT	  */
+		 
+		 
 		MLX5_SET_TO_ONES(fte_match_param, spec->match_criteria, outer_headers.smac_47_16);
 		MLX5_SET_TO_ONES(fte_match_param, spec->match_criteria, outer_headers.smac_15_0);
 		memcpy(MLX5_ADDR_OF(fte_match_param, spec->match_value, outer_headers.smac_47_16),
@@ -1761,8 +1761,8 @@ macsec_fs_rx_add_rule(struct mlx5_macsec_fs *macsec_fs,
 	rx_tables = &rx_fs->tables;
 	ft_crypto = &rx_tables->ft_crypto;
 
-	/* Set bit[31 - 30] macsec marker - 0x01 */
-	/* Set bit[15-0] fs id */
+	 
+	 
 	MLX5_SET(set_action_in, action, action_type, MLX5_ACTION_TYPE_SET);
 	MLX5_SET(set_action_in, action, field, MLX5_ACTION_IN_FIELD_METADATA_REG_B);
 	MLX5_SET(set_action_in, action, data, macsec_fs_set_rx_fs_id(fs_id));
@@ -1779,7 +1779,7 @@ macsec_fs_rx_add_rule(struct mlx5_macsec_fs *macsec_fs,
 	}
 	rx_rule->meta_modhdr = modify_hdr;
 
-	/* Rx crypto table with SCI rule */
+	 
 	macsec_fs_rx_setup_fte(spec, &flow_act, attrs, true);
 
 	flow_act.modify_hdr = modify_hdr;
@@ -1799,7 +1799,7 @@ macsec_fs_rx_add_rule(struct mlx5_macsec_fs *macsec_fs,
 	}
 	rx_rule->rule[0] = rule;
 
-	/* Rx crypto table without SCI rule */
+	 
 	if ((cpu_to_be64((__force u64)attrs->sci) & 0xFFFF) == ntohs(MACSEC_PORT_ES)) {
 		memset(spec, 0, sizeof(struct mlx5_flow_spec));
 		memset(&dest, 0, sizeof(struct mlx5_flow_destination));

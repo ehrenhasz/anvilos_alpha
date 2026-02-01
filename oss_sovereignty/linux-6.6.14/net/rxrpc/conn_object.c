@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* RxRPC virtual connection handler, common bits.
- *
- * Copyright (C) 2007, 2016 Red Hat, Inc. All Rights Reserved.
- * Written by David Howells (dhowells@redhat.com)
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -13,9 +9,7 @@
 #include <linux/skbuff.h>
 #include "ar-internal.h"
 
-/*
- * Time till a connection expires after last use (in seconds).
- */
+ 
 unsigned int __read_mostly rxrpc_connection_expiry = 10 * 60;
 unsigned int __read_mostly rxrpc_closed_conn_expiry = 10;
 
@@ -49,9 +43,7 @@ static void rxrpc_connection_timer(struct timer_list *timer)
 	rxrpc_poke_conn(conn, rxrpc_conn_get_poke_timer);
 }
 
-/*
- * allocate a new connection
- */
+ 
 struct rxrpc_connection *rxrpc_alloc_connection(struct rxrpc_net *rxnet,
 						gfp_t gfp)
 {
@@ -80,17 +72,7 @@ struct rxrpc_connection *rxrpc_alloc_connection(struct rxrpc_net *rxnet,
 	return conn;
 }
 
-/*
- * Look up a connection in the cache by protocol parameters.
- *
- * If successful, a pointer to the connection is returned, but no ref is taken.
- * NULL is returned if there is no match.
- *
- * When searching for a service call, if we find a peer but no connection, we
- * return that through *_peer in case we need to create a new service call.
- *
- * The caller must be holding the RCU read lock.
- */
+ 
 struct rxrpc_connection *rxrpc_find_client_connection_rcu(struct rxrpc_local *local,
 							  struct sockaddr_rxrpc *srx,
 							  struct sk_buff *skb)
@@ -101,9 +83,7 @@ struct rxrpc_connection *rxrpc_find_client_connection_rcu(struct rxrpc_local *lo
 
 	_enter(",%x", sp->hdr.cid & RXRPC_CIDMASK);
 
-	/* Look up client connections by connection ID alone as their
-	 * IDs are unique for this machine.
-	 */
+	 
 	conn = idr_find(&local->conn_ids, sp->hdr.cid >> RXRPC_CIDSHIFT);
 	if (!conn || refcount_read(&conn->ref) == 0) {
 		_debug("no conn");
@@ -145,11 +125,7 @@ not_found:
 	return NULL;
 }
 
-/*
- * Disconnect a call and clear any channel it occupies when that call
- * terminates.  The caller must hold the channel_lock and must release the
- * call's ref on the connection.
- */
+ 
 void __rxrpc_disconnect_call(struct rxrpc_connection *conn,
 			     struct rxrpc_call *call)
 {
@@ -159,9 +135,7 @@ void __rxrpc_disconnect_call(struct rxrpc_connection *conn,
 	_enter("%d,%x", conn->debug_id, call->cid);
 
 	if (chan->call == call) {
-		/* Save the result of the call so that we can repeat it if necessary
-		 * through the channel, whilst disposing of the actual call record.
-		 */
+		 
 		trace_rxrpc_disconnect_call(call);
 		switch (call->completion) {
 		case RXRPC_CALL_SUCCEEDED:
@@ -186,10 +160,7 @@ void __rxrpc_disconnect_call(struct rxrpc_connection *conn,
 	_leave("");
 }
 
-/*
- * Disconnect a call and clear any channel it occupies when that call
- * terminates.
- */
+ 
 void rxrpc_disconnect_call(struct rxrpc_call *call)
 {
 	struct rxrpc_connection *conn = call->conn;
@@ -218,10 +189,7 @@ void rxrpc_disconnect_call(struct rxrpc_call *call)
 	rxrpc_put_call(call, rxrpc_call_put_io_thread);
 }
 
-/*
- * Queue a connection's work processor, getting a ref to pass to the work
- * queue.
- */
+ 
 void rxrpc_queue_conn(struct rxrpc_connection *conn, enum rxrpc_conn_trace why)
 {
 	if (atomic_read(&conn->active) >= 0 &&
@@ -229,9 +197,7 @@ void rxrpc_queue_conn(struct rxrpc_connection *conn, enum rxrpc_conn_trace why)
 		rxrpc_see_connection(conn, why);
 }
 
-/*
- * Note the re-emergence of a connection.
- */
+ 
 void rxrpc_see_connection(struct rxrpc_connection *conn,
 			  enum rxrpc_conn_trace why)
 {
@@ -242,9 +208,7 @@ void rxrpc_see_connection(struct rxrpc_connection *conn,
 	}
 }
 
-/*
- * Get a ref on a connection.
- */
+ 
 struct rxrpc_connection *rxrpc_get_connection(struct rxrpc_connection *conn,
 					      enum rxrpc_conn_trace why)
 {
@@ -255,9 +219,7 @@ struct rxrpc_connection *rxrpc_get_connection(struct rxrpc_connection *conn,
 	return conn;
 }
 
-/*
- * Try to get a ref on a connection.
- */
+ 
 struct rxrpc_connection *
 rxrpc_get_connection_maybe(struct rxrpc_connection *conn,
 			   enum rxrpc_conn_trace why)
@@ -273,9 +235,7 @@ rxrpc_get_connection_maybe(struct rxrpc_connection *conn,
 	return conn;
 }
 
-/*
- * Set the service connection reap timer.
- */
+ 
 static void rxrpc_set_service_reap_timer(struct rxrpc_net *rxnet,
 					 unsigned long reap_at)
 {
@@ -283,9 +243,7 @@ static void rxrpc_set_service_reap_timer(struct rxrpc_net *rxnet,
 		timer_reduce(&rxnet->service_conn_reap_timer, reap_at);
 }
 
-/*
- * destroy a virtual connection
- */
+ 
 static void rxrpc_rcu_free_connection(struct rcu_head *rcu)
 {
 	struct rxrpc_connection *conn =
@@ -302,9 +260,7 @@ static void rxrpc_rcu_free_connection(struct rcu_head *rcu)
 		wake_up_var(&rxnet->nr_conns);
 }
 
-/*
- * Clean up a dead connection.
- */
+ 
 static void rxrpc_clean_up_connection(struct work_struct *work)
 {
 	struct rxrpc_connection *conn =
@@ -318,7 +274,7 @@ static void rxrpc_clean_up_connection(struct work_struct *work)
 	ASSERT(list_empty(&conn->cache_link));
 
 	del_timer_sync(&conn->timer);
-	cancel_work_sync(&conn->processor); /* Processing may restart the timer */
+	cancel_work_sync(&conn->processor);  
 	del_timer_sync(&conn->timer);
 
 	write_lock(&rxnet->conn_lock);
@@ -335,18 +291,13 @@ static void rxrpc_clean_up_connection(struct work_struct *work)
 	rxrpc_put_peer(conn->peer, rxrpc_peer_put_conn);
 	rxrpc_put_local(conn->local, rxrpc_local_put_kill_conn);
 
-	/* Drain the Rx queue.  Note that even though we've unpublished, an
-	 * incoming packet could still be being added to our Rx queue, so we
-	 * will need to drain it again in the RCU cleanup handler.
-	 */
+	 
 	rxrpc_purge_queue(&conn->rx_queue);
 
 	call_rcu(&conn->rcu, rxrpc_rcu_free_connection);
 }
 
-/*
- * Drop a ref on a connection.
- */
+ 
 void rxrpc_put_connection(struct rxrpc_connection *conn,
 			  enum rxrpc_conn_trace why)
 {
@@ -366,18 +317,14 @@ void rxrpc_put_connection(struct rxrpc_connection *conn,
 
 		if (in_softirq() || work_busy(&conn->processor) ||
 		    timer_pending(&conn->timer))
-			/* Can't use the rxrpc workqueue as we need to cancel/flush
-			 * something that may be running/waiting there.
-			 */
+			 
 			schedule_work(&conn->destructor);
 		else
 			rxrpc_clean_up_connection(&conn->destructor);
 	}
 }
 
-/*
- * reap dead service connections
- */
+ 
 void rxrpc_service_connection_reaper(struct work_struct *work)
 {
 	struct rxrpc_connection *conn, *_p;
@@ -418,9 +365,7 @@ void rxrpc_service_connection_reaper(struct work_struct *work)
 			}
 		}
 
-		/* The activity count sits at 0 whilst the conn is unused on
-		 * the list; we reduce that to -1 to make the conn unavailable.
-		 */
+		 
 		active = 0;
 		if (!atomic_try_cmpxchg(&conn->active, &active, -1))
 			continue;
@@ -453,10 +398,7 @@ void rxrpc_service_connection_reaper(struct work_struct *work)
 	_leave("");
 }
 
-/*
- * preemptively destroy all the service connection records rather than
- * waiting for them to time out
- */
+ 
 void rxrpc_destroy_all_connections(struct rxrpc_net *rxnet)
 {
 	struct rxrpc_connection *conn, *_p;
@@ -481,9 +423,7 @@ void rxrpc_destroy_all_connections(struct rxrpc_net *rxnet)
 
 	ASSERT(list_empty(&rxnet->conn_proc_list));
 
-	/* We need to wait for the connections to be destroyed by RCU as they
-	 * pin things that we still need to get rid of.
-	 */
+	 
 	wait_var_event(&rxnet->nr_conns, !atomic_read(&rxnet->nr_conns));
 	_leave("");
 }

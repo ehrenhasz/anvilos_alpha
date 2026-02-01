@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2017, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/clk-provider.h>
@@ -21,18 +19,18 @@
 
 #include "phy-qcom-qmp.h"
 
-/* QPHY_SW_RESET bit */
+ 
 #define SW_RESET				BIT(0)
-/* QPHY_POWER_DOWN_CONTROL */
+ 
 #define SW_PWRDN				BIT(0)
 #define REFCLK_DRV_DSBL				BIT(1)
-/* QPHY_START_CONTROL bits */
+ 
 #define SERDES_START				BIT(0)
 #define PCS_START				BIT(1)
 #define PLL_READY_GATE_EN			BIT(3)
-/* QPHY_PCS_STATUS bit */
+ 
 #define PHYSTATUS				BIT(6)
-/* QPHY_COM_PCS_READY_STATUS bit */
+ 
 #define PCS_READY				BIT(0)
 
 #define PHY_INIT_COMPLETE_TIMEOUT		10000
@@ -42,10 +40,7 @@
 struct qmp_phy_init_tbl {
 	unsigned int offset;
 	unsigned int val;
-	/*
-	 * mask of lanes for which this register is written
-	 * for cases when second lane needs different values
-	 */
+	 
 	u8 lane_mask;
 };
 
@@ -63,18 +58,18 @@ struct qmp_phy_init_tbl {
 		.lane_mask = l,		\
 	}
 
-/* set of registers with offsets different per-PHY */
+ 
 enum qphy_reg_layout {
-	/* Common block control registers */
+	 
 	QPHY_COM_SW_RESET,
 	QPHY_COM_POWER_DOWN_CONTROL,
 	QPHY_COM_START_CONTROL,
 	QPHY_COM_PCS_READY_STATUS,
-	/* PCS registers */
+	 
 	QPHY_SW_RESET,
 	QPHY_START_CTRL,
 	QPHY_PCS_STATUS,
-	/* Keep last to ensure regs_layout arrays are properly initialized */
+	 
 	QPHY_LAYOUT_SIZE
 };
 
@@ -166,12 +161,12 @@ static const struct qmp_phy_init_tbl msm8996_pcie_pcs_tbl[] = {
 	QMP_PHY_INIT_CFG(QPHY_V2_PCS_TXDEEMPH_M3P5DB_V0, 0x0e),
 };
 
-/* struct qmp_phy_cfg - per-PHY initialization config */
+ 
 struct qmp_phy_cfg {
-	/* number of PHYs provided by this block */
+	 
 	int num_phys;
 
-	/* Init sequence for PHY blocks - serdes, tx, rx, pcs */
+	 
 	const struct qmp_phy_init_tbl *serdes_tbl;
 	int serdes_tbl_num;
 	const struct qmp_phy_init_tbl *tx_tbl;
@@ -181,34 +176,21 @@ struct qmp_phy_cfg {
 	const struct qmp_phy_init_tbl *pcs_tbl;
 	int pcs_tbl_num;
 
-	/* clock ids to be requested */
+	 
 	const char * const *clk_list;
 	int num_clks;
-	/* resets to be requested */
+	 
 	const char * const *reset_list;
 	int num_resets;
-	/* regulators to be requested */
+	 
 	const char * const *vreg_list;
 	int num_vregs;
 
-	/* array of registers with different offsets */
+	 
 	const unsigned int *regs;
 };
 
-/**
- * struct qmp_phy - per-lane phy descriptor
- *
- * @phy: generic phy
- * @cfg: phy specific configuration
- * @serdes: iomapped memory space for phy's serdes (i.e. PLL)
- * @tx: iomapped memory space for lane's tx
- * @rx: iomapped memory space for lane's rx
- * @pcs: iomapped memory space for lane's pcs
- * @pipe_clk: pipe clock
- * @index: lane index
- * @qmp: QMP phy to which this lane belongs
- * @lane_rst: lane's reset controller
- */
+ 
 struct qmp_phy {
 	struct phy *phy;
 	const struct qmp_phy_cfg *cfg;
@@ -222,19 +204,7 @@ struct qmp_phy {
 	struct reset_control *lane_rst;
 };
 
-/**
- * struct qcom_qmp - structure holding QMP phy block attributes
- *
- * @dev: device
- *
- * @clks: array of clocks required by phy
- * @resets: array of resets required by phy
- * @vregs: regulator supplies bulk data
- *
- * @phys: array of per-lane phy descriptors
- * @phy_mutex: mutex lock for PHY common block initialization
- * @init_count: phy common block initialization count
- */
+ 
 struct qcom_qmp {
 	struct device *dev;
 
@@ -256,7 +226,7 @@ static inline void qphy_setbits(void __iomem *base, u32 offset, u32 val)
 	reg |= val;
 	writel(reg, base + offset);
 
-	/* ensure that above write is through */
+	 
 	readl(base + offset);
 }
 
@@ -268,21 +238,21 @@ static inline void qphy_clrbits(void __iomem *base, u32 offset, u32 val)
 	reg &= ~val;
 	writel(reg, base + offset);
 
-	/* ensure that above write is through */
+	 
 	readl(base + offset);
 }
 
-/* list of clocks required by phy */
+ 
 static const char * const msm8996_phy_clk_l[] = {
 	"aux", "cfg_ahb", "ref",
 };
 
-/* list of resets */
+ 
 static const char * const msm8996_pciephy_reset_l[] = {
 	"phy", "common", "cfg",
 };
 
-/* list of regulators */
+ 
 static const char * const qmp_phy_vreg_l[] = {
 	"vdda-phy", "vdda-pll",
 };
@@ -486,24 +456,21 @@ static int qmp_pcie_msm8996_power_on(struct phy *phy)
 		goto err_reset_lane;
 	}
 
-	/* Tx, Rx, and PCS configurations */
+	 
 	qmp_pcie_msm8996_configure_lane(tx, cfg->tx_tbl, cfg->tx_tbl_num, 1);
 	qmp_pcie_msm8996_configure_lane(rx, cfg->rx_tbl, cfg->rx_tbl_num, 1);
 	qmp_pcie_msm8996_configure(pcs, cfg->pcs_tbl, cfg->pcs_tbl_num);
 
-	/*
-	 * Pull out PHY from POWER DOWN state.
-	 * This is active low enable signal to power-down PHY.
-	 */
+	 
 	qphy_setbits(pcs, QPHY_V2_PCS_POWER_DOWN_CONTROL,
 			SW_PWRDN | REFCLK_DRV_DSBL);
 
 	usleep_range(POWER_DOWN_DELAY_US_MIN, POWER_DOWN_DELAY_US_MAX);
 
-	/* Pull PHY out of reset state */
+	 
 	qphy_clrbits(pcs, cfg->regs[QPHY_SW_RESET], SW_RESET);
 
-	/* start SerDes and Phy-Coding-Sublayer */
+	 
 	qphy_setbits(pcs, cfg->regs[QPHY_START_CTRL],
 			PCS_START | PLL_READY_GATE_EN);
 
@@ -532,14 +499,14 @@ static int qmp_pcie_msm8996_power_off(struct phy *phy)
 
 	clk_disable_unprepare(qphy->pipe_clk);
 
-	/* PHY reset */
+	 
 	qphy_setbits(qphy->pcs, cfg->regs[QPHY_SW_RESET], SW_RESET);
 
-	/* stop SerDes and Phy-Coding-Sublayer */
+	 
 	qphy_clrbits(qphy->pcs, cfg->regs[QPHY_START_CTRL],
 			SERDES_START | PCS_START);
 
-	/* Put PHY into POWER DOWN state: active low */
+	 
 	qphy_clrbits(qphy->pcs, QPHY_V2_PCS_POWER_DOWN_CONTROL,
 			SW_PWRDN | REFCLK_DRV_DSBL);
 
@@ -640,24 +607,7 @@ static void phy_clk_release_provider(void *res)
 	of_clk_del_provider(res);
 }
 
-/*
- * Register a fixed rate pipe clock.
- *
- * The <s>_pipe_clksrc generated by PHY goes to the GCC that gate
- * controls it. The <s>_pipe_clk coming out of the GCC is requested
- * by the PHY driver for its operations.
- * We register the <s>_pipe_clksrc here. The gcc driver takes care
- * of assigning this <s>_pipe_clksrc as parent to <s>_pipe_clk.
- * Below picture shows this relationship.
- *
- *         +---------------+
- *         |   PHY block   |<<---------------------------------------+
- *         |               |                                         |
- *         |   +-------+   |                   +-----+               |
- *   I/P---^-->|  PLL  |---^--->pipe_clksrc--->| GCC |--->pipe_clk---+
- *    clk  |   +-------+   |                   +-----+
- *         +---------------+
- */
+ 
 static int phy_pipe_clk_register(struct qcom_qmp *qmp, struct device_node *np)
 {
 	struct clk_fixed_rate *fixed;
@@ -676,7 +626,7 @@ static int phy_pipe_clk_register(struct qcom_qmp *qmp, struct device_node *np)
 
 	init.ops = &clk_fixed_rate_ops;
 
-	/* controllers using QMP phys use 125MHz pipe clock interface */
+	 
 	fixed->fixed_rate = 125000000;
 	fixed->hw.init = &init;
 
@@ -688,10 +638,7 @@ static int phy_pipe_clk_register(struct qcom_qmp *qmp, struct device_node *np)
 	if (ret)
 		return ret;
 
-	/*
-	 * Roll a devm action because the clock provider is the child node, but
-	 * the child node is not actually a device.
-	 */
+	 
 	return devm_add_action_or_reset(qmp->dev, phy_clk_release_provider, np);
 }
 
@@ -720,10 +667,7 @@ static int qmp_pcie_msm8996_create(struct device *dev, struct device_node *np, i
 
 	qphy->cfg = cfg;
 	qphy->serdes = serdes;
-	/*
-	 * Get memory resources for each PHY:
-	 * Resources are indexed as: tx -> 0; rx -> 1; pcs -> 2.
-	 */
+	 
 	qphy->tx = devm_of_iomap(dev, np, 0, NULL);
 	if (IS_ERR(qphy->tx))
 		return PTR_ERR(qphy->tx);
@@ -820,7 +764,7 @@ static int qmp_pcie_msm8996_probe(struct platform_device *pdev)
 		return ret;
 
 	num = of_get_available_child_count(dev->of_node);
-	/* do we have a rogue child node ? */
+	 
 	if (num > expected_phys)
 		return -EINVAL;
 
@@ -830,7 +774,7 @@ static int qmp_pcie_msm8996_probe(struct platform_device *pdev)
 
 	id = 0;
 	for_each_available_child_of_node(dev->of_node, child) {
-		/* Create per-lane phy */
+		 
 		ret = qmp_pcie_msm8996_create(dev, child, id, serdes, cfg);
 		if (ret) {
 			dev_err(dev, "failed to create lane%d phy, %d\n",
@@ -838,10 +782,7 @@ static int qmp_pcie_msm8996_probe(struct platform_device *pdev)
 			goto err_node_put;
 		}
 
-		/*
-		 * Register the pipe clock provided by phy.
-		 * See function description to see details of this pipe clock.
-		 */
+		 
 		ret = phy_pipe_clk_register(qmp, child);
 		if (ret) {
 			dev_err(qmp->dev,

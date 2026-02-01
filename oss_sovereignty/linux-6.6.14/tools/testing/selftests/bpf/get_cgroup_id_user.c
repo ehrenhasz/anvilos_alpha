@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2018 Facebook
+
+
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -66,7 +66,7 @@ int main(int argc, char **argv)
 	if (CHECK(cgroup_fd < 0, "cgroup_setup_and_join", "err %d errno %d\n", cgroup_fd, errno))
 		return 1;
 
-	/* Use libbpf 1.0 API mode */
+	 
 	libbpf_set_strict_mode(LIBBPF_STRICT_ALL);
 
 	err = bpf_prog_test_load(file, BPF_PROG_TYPE_TRACEPOINT, &obj, &prog_fd);
@@ -108,9 +108,7 @@ int main(int argc, char **argv)
 	attr.sample_period = 1;
 	attr.wakeup_events = 1;
 
-	/* attach to this pid so the all bpf invocations will be in the
-	 * cgroup associated with this pid.
-	 */
+	 
 	pmu_fd = syscall(__NR_perf_event_open, &attr, getpid(), -1, -1, 0);
 	if (CHECK(pmu_fd < 0, "perf_event_open", "err %d errno %d\n", pmu_fd,
 		  errno))
@@ -126,7 +124,7 @@ int main(int argc, char **argv)
 		  errno))
 		goto close_pmu;
 
-	/* trigger some syscalls */
+	 
 	syscall(__NR_nanosleep, &req, NULL);
 
 	err = bpf_map_lookup_elem(cgidmap_fd, &key, &kcgid);

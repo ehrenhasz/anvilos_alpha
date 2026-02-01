@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Driver for Socionext External Interrupt Unit (EXIU)
- *
- * Copyright (c) 2017-2019 Linaro, Ltd. <ard.biesheuvel@linaro.org>
- *
- * Based on irq-tegra.c:
- *   Copyright (C) 2011 Google, Inc.
- *   Copyright (C) 2010,2013, NVIDIA Corporation
- */
+
+ 
 
 #include <linux/interrupt.h>
 #include <linux/io.h>
@@ -48,12 +40,7 @@ static void exiu_irq_eoi(struct irq_data *d)
 {
 	struct exiu_irq_data *data = irq_data_get_irq_chip_data(d);
 
-	/*
-	 * Level triggered interrupts are latched and must be cleared during
-	 * EOI or the interrupt will be jammed on. Of course if a level
-	 * triggered interrupt is still asserted then the write will not clear
-	 * the interrupt.
-	 */
+	 
 	if (irqd_is_level_type(d))
 		writel(BIT(d->hwirq), data->base + EIREQCLR);
 
@@ -85,7 +72,7 @@ static void exiu_irq_enable(struct irq_data *d)
 	struct exiu_irq_data *data = irq_data_get_irq_chip_data(d);
 	u32 val;
 
-	/* clear interrupts that were latched while disabled */
+	 
 	writel_relaxed(BIT(d->hwirq), data->base + EIREQCLR);
 
 	val = readl_relaxed(data->base + EIMASK) & ~BIT(d->hwirq);
@@ -147,7 +134,7 @@ static int exiu_domain_translate(struct irq_domain *domain,
 			return -EINVAL;
 
 		if (fwspec->param[0] != GIC_SPI)
-			return -EINVAL; /* No PPI should point to this domain */
+			return -EINVAL;  
 
 		*hwirq = fwspec->param[1] - info->spi_base;
 		*type = fwspec->param[2] & IRQ_TYPE_SENSE_MASK;
@@ -171,9 +158,9 @@ static int exiu_domain_alloc(struct irq_domain *dom, unsigned int virq,
 	parent_fwspec = *fwspec;
 	if (is_of_node(dom->parent->fwnode)) {
 		if (fwspec->param_count != 3)
-			return -EINVAL;	/* Not GIC compliant */
+			return -EINVAL;	 
 		if (fwspec->param[0] != GIC_SPI)
-			return -EINVAL;	/* No PPI should point to this domain */
+			return -EINVAL;	 
 
 		hwirq = fwspec->param[1] - info->spi_base;
 	} else {
@@ -215,7 +202,7 @@ static struct exiu_irq_data *exiu_init(const struct fwnode_handle *fwnode,
 		goto out_free;
 	}
 
-	/* clear and mask all interrupts */
+	 
 	writel_relaxed(0xFFFFFFFF, data->base + EIREQCLR);
 	writel_relaxed(0xFFFFFFFF, data->base + EIMASK);
 
@@ -308,7 +295,7 @@ out_unmap:
 
 static const struct acpi_device_id exiu_acpi_ids[] = {
 	{ "SCX0008" },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(acpi, exiu_acpi_ids);
 

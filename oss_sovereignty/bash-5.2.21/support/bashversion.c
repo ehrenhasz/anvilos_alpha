@@ -1,22 +1,6 @@
-/* bashversion.c -- Display bash version information. */
+ 
 
-/* Copyright (C) 2001-2021 Free Software Foundation, Inc.
-
-   This file is part of GNU Bash, the Bourne Again SHell.
-
-   Bash is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   Bash is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with Bash.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ 
 
 #include "config.h"
 
@@ -81,24 +65,24 @@ main (argc, argv)
 	  usage ();
 	  exit (0);
 	case 'r':
-	  oflags |= RFLAG;	/* release */
+	  oflags |= RFLAG;	 
 	  break;
 	case 'v':
-	  oflags |= VFLAG;	/* version */
+	  oflags |= VFLAG;	 
 	  break;
 	case 'm':
-	  oflags |= MFLAG;	/* machtype */
+	  oflags |= MFLAG;	 
 	  break;
 	case 'p':
-	  oflags |= PFLAG;	/* patchlevel */
+	  oflags |= PFLAG;	 
 	  break;
-	case 's':		/* short version string */
+	case 's':		 
 	  oflags |= SFLAG;
 	  break;
-	case 'l':		/* long version string */
+	case 'l':		 
 	  oflags |= LFLAG;
 	  break;
-	case 'x':		/* extended version information */
+	case 'x':		 
 	  oflags |= XFLAG;
 	  break;
 	default:
@@ -116,7 +100,7 @@ main (argc, argv)
       exit (2);
     }
 
-  /* default behavior */  
+     
   if (oflags == 0)
     oflags = SFLAG;
 

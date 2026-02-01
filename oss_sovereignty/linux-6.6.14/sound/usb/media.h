@@ -1,20 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * media.h - Media Controller specific ALSA driver code
- *
- * Copyright (c) 2019 Shuah Khan <shuah@kernel.org>
- *
- */
+ 
+ 
 
-/*
- * This file adds Media Controller support to the ALSA driver
- * to use the Media Controller API to share the tuner with DVB
- * and V4L2 drivers that control the media device.
- *
- * The media device is created based on the existing quirks framework.
- * Using this approach, the media controller API usage can be added for
- * a specific device.
- */
+ 
 #ifndef __MEDIA_H
 
 #ifdef CONFIG_SND_USB_AUDIO_USE_MEDIA_CONTROLLER
@@ -34,11 +21,7 @@ struct media_ctl {
 	struct media_pipeline media_pipe;
 };
 
-/*
- * One source pad each for SNDRV_PCM_STREAM_CAPTURE and
- * SNDRV_PCM_STREAM_PLAYBACK. One for sink pad to link
- * to AUDIO Source
- */
+ 
 #define MEDIA_MIXER_PAD_MAX    (SNDRV_PCM_STREAM_LAST + 2)
 
 struct media_mixer_ctl {
@@ -71,4 +54,4 @@ static inline int snd_media_start_pipeline(struct snd_usb_substream *subs)
 					{ return 0; }
 static inline void snd_media_stop_pipeline(struct snd_usb_substream *subs) { }
 #endif
-#endif /* __MEDIA_H */
+#endif  

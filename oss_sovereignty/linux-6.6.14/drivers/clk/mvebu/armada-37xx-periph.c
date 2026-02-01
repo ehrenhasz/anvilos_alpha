@@ -1,21 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Marvell Armada 37xx SoC Peripheral clocks
- *
- * Copyright (C) 2016 Marvell
- *
- * Gregory CLEMENT <gregory.clement@free-electrons.com>
- *
- * Most of the peripheral clocks can be modelled like this:
- *             _____    _______    _______
- * TBG-A-P  --|     |  |       |  |       |   ______
- * TBG-B-P  --| Mux |--| /div1 |--| /div2 |--| Gate |--> perip_clk
- * TBG-A-S  --|     |  |       |  |       |  |______|
- * TBG-B-S  --|_____|  |_______|  |_______|
- *
- * However some clocks may use only one or two block or and use the
- * xtal clock as parent.
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/io.h>
@@ -59,7 +43,7 @@ struct clk_periph_driver_data {
 	spinlock_t lock;
 	void __iomem *reg;
 
-	/* Storage registers for suspend/resume operations */
+	 
 	u32 tbg_sel;
 	u32 div_sel0;
 	u32 div_sel1;
@@ -108,19 +92,19 @@ static const struct clk_div_table clk_table6[] = {
 	{ .val = 4, .div = 4, },
 	{ .val = 5, .div = 5, },
 	{ .val = 6, .div = 6, },
-	{ .val = 0, .div = 0, }, /* last entry */
+	{ .val = 0, .div = 0, },  
 };
 
 static const struct clk_div_table clk_table1[] = {
 	{ .val = 0, .div = 1, },
 	{ .val = 1, .div = 2, },
-	{ .val = 0, .div = 0, }, /* last entry */
+	{ .val = 0, .div = 0, },  
 };
 
 static const struct clk_div_table clk_table2[] = {
 	{ .val = 0, .div = 2, },
 	{ .val = 1, .div = 4, },
-	{ .val = 0, .div = 0, }, /* last entry */
+	{ .val = 0, .div = 0, },  
 };
 
 static const struct clk_ops clk_double_div_ops;
@@ -250,7 +234,7 @@ static PERIPH_DOUBLEDIV(_name, _reg1, _reg2, _shift1, _shift2);
 	  .is_double_div = true,			\
 	}
 
-/* NB periph clocks */
+ 
 PERIPH_CLK_FULL_DD(mmc, 2, 0, DIV_SEL2, DIV_SEL2, 16, 13);
 PERIPH_CLK_FULL_DD(sata_host, 3, 2, DIV_SEL2, DIV_SEL2, 10, 7);
 PERIPH_CLK_FULL_DD(sec_at, 6, 4, DIV_SEL1, DIV_SEL1, 3, 0);
@@ -290,7 +274,7 @@ static struct clk_periph_data data_nb[] = {
 	{ },
 };
 
-/* SB periph clocks */
+ 
 PERIPH_CLK_MUX_DD(gbe_50, 6, DIV_SEL2, DIV_SEL2, 6, 9);
 PERIPH_CLK_MUX_DD(gbe_core, 8, DIV_SEL1, DIV_SEL1, 18, 21);
 PERIPH_CLK_MUX_DD(gbe_125, 10, DIV_SEL1, DIV_SEL1, 6, 9);
@@ -382,17 +366,10 @@ static unsigned int armada_3700_pm_dvfs_get_cpu_div(struct regmap *base)
 	unsigned int offset = ARMADA_37XX_NB_TBG_DIV_OFF;
 	unsigned int load_level, div;
 
-	/*
-	 * This function is always called after the function
-	 * armada_3700_pm_dvfs_is_enabled, so no need to check again
-	 * if the base is valid.
-	 */
+	 
 	regmap_read(base, reg, &load_level);
 
-	/*
-	 * The register and the offset inside this register accessed to
-	 * read the current divider depend on the load level
-	 */
+	 
 	load_level &= ARMADA_37XX_NB_CPU_LOAD_MASK;
 	armada_3700_pm_dvfs_update_regs(load_level, &reg, &offset);
 
@@ -407,17 +384,10 @@ static unsigned int armada_3700_pm_dvfs_get_cpu_parent(struct regmap *base)
 	unsigned int offset = ARMADA_37XX_NB_TBG_SEL_OFF;
 	unsigned int load_level, sel;
 
-	/*
-	 * This function is always called after the function
-	 * armada_3700_pm_dvfs_is_enabled, so no need to check again
-	 * if the base is valid
-	 */
+	 
 	regmap_read(base, reg, &load_level);
 
-	/*
-	 * The register and the offset inside this register accessed to
-	 * read the current divider depend on the load level
-	 */
+	 
 	load_level &= ARMADA_37XX_NB_CPU_LOAD_MASK;
 	armada_3700_pm_dvfs_update_regs(load_level, &reg, &offset);
 
@@ -461,7 +431,7 @@ static long clk_pm_cpu_round_rate(struct clk_hw *hw, unsigned long rate,
 	struct regmap *base = pm_cpu->nb_pm_base;
 	unsigned int div = *parent_rate / rate;
 	unsigned int load_level;
-	/* only available when DVFS is enabled */
+	 
 	if (!armada_3700_pm_dvfs_is_enabled(base))
 		return -EINVAL;
 
@@ -475,36 +445,15 @@ static long clk_pm_cpu_round_rate(struct clk_hw *hw, unsigned long rate,
 		val >>= offset;
 		val &= ARMADA_37XX_NB_TBG_DIV_MASK;
 		if (val == div)
-			/*
-			 * We found a load level matching the target
-			 * divider, switch to this load level and
-			 * return.
-			 */
+			 
 			return *parent_rate / div;
 	}
 
-	/* We didn't find any valid divider */
+	 
 	return -EINVAL;
 }
 
-/*
- * Workaround when base CPU frequnecy is 1000 or 1200 MHz
- *
- * Switching the CPU from the L2 or L3 frequencies (250/300 or 200 MHz
- * respectively) to L0 frequency (1/1.2 GHz) requires a significant
- * amount of time to let VDD stabilize to the appropriate
- * voltage. This amount of time is large enough that it cannot be
- * covered by the hardware countdown register. Due to this, the CPU
- * might start operating at L0 before the voltage is stabilized,
- * leading to CPU stalls.
- *
- * To work around this problem, we prevent switching directly from the
- * L2/L3 frequencies to the L0 frequency, and instead switch to the L1
- * frequency in-between. The sequence therefore becomes:
- * 1. First switch from L2/L3 (200/250/300 MHz) to L1 (500/600 MHz)
- * 2. Sleep 20ms for stabling VDD voltage
- * 3. Then switch from L1 (500/600 MHz) to L0 (1000/1200 MHz).
- */
+ 
 static void clk_pm_cpu_set_rate_wa(struct clk_pm_cpu *pm_cpu,
 				   unsigned int new_level, unsigned long rate,
 				   struct regmap *base)
@@ -517,11 +466,7 @@ static void clk_pm_cpu_set_rate_wa(struct clk_pm_cpu *pm_cpu,
 	if (cur_level == new_level)
 		return;
 
-	/*
-	 * System wants to go to L1 on its own. If we are going from L2/L3,
-	 * remember when 20ms will expire. If from L0, set the value so that
-	 * next switch to L0 won't have to wait.
-	 */
+	 
 	if (new_level == ARMADA_37XX_DVFS_LOAD_1) {
 		if (cur_level == ARMADA_37XX_DVFS_LOAD_0)
 			pm_cpu->l1_expiration = jiffies;
@@ -530,17 +475,11 @@ static void clk_pm_cpu_set_rate_wa(struct clk_pm_cpu *pm_cpu,
 		return;
 	}
 
-	/*
-	 * If we are setting to L2/L3, just invalidate L1 expiration time,
-	 * sleeping is not needed.
-	 */
+	 
 	if (rate < 1000*1000*1000)
 		goto invalidate_l1_exp;
 
-	/*
-	 * We are going to L0 with rate >= 1GHz. Check whether we have been at
-	 * L1 for long enough time. If not, go to L1 for 20ms.
-	 */
+	 
 	if (pm_cpu->l1_expiration && time_is_before_eq_jiffies(pm_cpu->l1_expiration))
 		goto invalidate_l1_exp;
 
@@ -561,7 +500,7 @@ static int clk_pm_cpu_set_rate(struct clk_hw *hw, unsigned long rate,
 	unsigned int div = parent_rate / rate;
 	unsigned int load_level;
 
-	/* only available when DVFS is enabled */
+	 
 	if (!armada_3700_pm_dvfs_is_enabled(base))
 		return -EINVAL;
 
@@ -576,15 +515,11 @@ static int clk_pm_cpu_set_rate(struct clk_hw *hw, unsigned long rate,
 		val &= ARMADA_37XX_NB_TBG_DIV_MASK;
 
 		if (val == div) {
-			/*
-			 * We found a load level matching the target
-			 * divider, switch to this load level and
-			 * return.
-			 */
+			 
 			reg = ARMADA_37XX_NB_CPU_LOAD;
 			mask = ARMADA_37XX_NB_CPU_LOAD_MASK;
 
-			/* Apply workaround when base CPU frequency is 1000 or 1200 MHz */
+			 
 			if (parent_rate >= 1000*1000*1000)
 				clk_pm_cpu_set_rate_wa(pm_cpu, load_level, rate, base);
 
@@ -594,7 +529,7 @@ static int clk_pm_cpu_set_rate(struct clk_hw *hw, unsigned long rate,
 		}
 	}
 
-	/* We didn't find any valid divider */
+	 
 	return -EINVAL;
 }
 
@@ -709,7 +644,7 @@ static int __maybe_unused armada_3700_periph_clock_resume(struct device *dev)
 {
 	struct clk_periph_driver_data *data = dev_get_drvdata(dev);
 
-	/* Follow the same order than what the Cortex-M3 does (ATF code) */
+	 
 	writel(data->clk_dis, data->reg + CLK_DIS);
 	writel(data->div_sel0, data->reg + DIV_SEL0);
 	writel(data->div_sel1, data->reg + DIV_SEL1);

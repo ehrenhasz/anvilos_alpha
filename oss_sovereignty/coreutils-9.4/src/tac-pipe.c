@@ -1,24 +1,7 @@
-/* tac from a pipe.
-
-   Copyright (C) 1997-2023 Free Software Foundation, Inc.
-
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* FIXME */
+ 
 #include "assure.h"
 
-/* FIXME: this is small for testing */
+ 
 #define BUFFER_SIZE (8)
 
 #define LEN(X, I) ((X)->p[(I)].one_past_end - (X)->p[(I)].start)
@@ -63,9 +46,8 @@ buf_init_from_stdin (Buf *x, char eol_byte)
 
       if (buf == nullptr)
         {
-          /* Fall back on the code that relies on a temporary file.
-             Write all buffers to that file and free them.  */
-          /* FIXME */
+           
+           
           ok = false;
           break;
         }
@@ -89,14 +71,13 @@ buf_init_from_stdin (Buf *x, char eol_byte)
 
   if (ok)
     {
-      /* If the file was non-empty and lacked an EOL_BYTE at its end,
-         then add a buffer containing just that one byte.  */
+       
       if (!last_byte_is_eol_byte)
         {
           char *buf = malloc (1);
           if (buf == nullptr)
             {
-              /* FIXME: just like above */
+               
               ok = false;
             }
           else
@@ -113,8 +94,7 @@ buf_init_from_stdin (Buf *x, char eol_byte)
   x->n_bufs = obstack_object_size (OBS) / sizeof (x->p[0]);
   x->p = (struct B_pair *) obstack_finish (OBS);
 
-  /* If there are two or more buffers and the last buffer is empty,
-     then free the last one and decrement the buffer count.  */
+   
   if (x->n_bufs >= 2
       && x->p[x->n_bufs - 1].start == x->p[x->n_bufs - 1].one_past_end)
     free (x->p[--(x->n_bufs)].start);
@@ -202,9 +182,7 @@ find_bol (const Buf *x,
       last_bol_ptr = ONE_PAST_END (x, i);
     }
 
-  /* If last_bol->ptr didn't point at the first byte of X, then reaching
-     this point means that we're about to return the line that is at the
-     beginning of X.  */
+   
   if (last_bol->ptr != x->p[0].start)
     {
       new_bol->i = 0;
@@ -240,11 +218,11 @@ tac_mem ()
       return false;
     }
 
-  /* Special case the empty file.  */
+   
   if (EMPTY (&x))
     return true;
 
-  /* Initially, point at one past the last byte of the file.  */
+   
   bol.i = x.n_bufs - 1;
   bol.ptr = ONE_PAST_END (&x, bol.i);
 

@@ -1,19 +1,5 @@
-/* $OpenBSD: ssh-pkcs11-helper.c,v 1.26 2021/11/18 03:31:44 djm Exp $ */
-/*
- * Copyright (c) 2010 Markus Friedl.  All rights reserved.
- *
- * Permission to use, copy, modify, and distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
+ 
+ 
 
 #include "includes.h"
 
@@ -46,7 +32,7 @@
 
 #ifdef WITH_OPENSSL
 
-/* borrows code from sftp-server and ssh-agent */
+ 
 
 struct pkcs11_keyinfo {
 	struct sshkey	*key;
@@ -56,9 +42,9 @@ struct pkcs11_keyinfo {
 
 TAILQ_HEAD(, pkcs11_keyinfo) pkcs11_keylist;
 
-#define MAX_MSG_LENGTH		10240 /*XXX*/
+#define MAX_MSG_LENGTH		10240  
 
-/* input and output queue */
+ 
 struct sshbuf *iqueue;
 struct sshbuf *oqueue;
 
@@ -91,7 +77,7 @@ del_keys_by_name(char *name)
 	}
 }
 
-/* lookup matching 'private' key */
+ 
 static struct sshkey *
 lookup_key(struct sshkey *k)
 {
@@ -152,7 +138,7 @@ process_add(void)
 	    (r = sshbuf_put_u32(msg, -nkeys)) != 0)
 		fatal_fr(r, "compose");
 	free(labels);
-	free(keys); /* keys themselves are transferred to pkcs11_keylist */
+	free(keys);  
 	free(pin);
 	free(name);
 	send_msg(msg);
@@ -190,7 +176,7 @@ process_sign(void)
 	struct sshkey *key, *found;
 	struct sshbuf *msg;
 
-	/* XXX support SHA2 signature flags */
+	 
 	if ((r = sshbuf_get_string(iqueue, &blob, &blen)) != 0 ||
 	    (r = sshbuf_get_string(iqueue, &data, &dlen)) != 0 ||
 	    (r = sshbuf_get_u32(iqueue, NULL)) != 0)
@@ -217,7 +203,7 @@ process_sign(void)
 				u_int xslen = ECDSA_size(key->ecdsa);
 
 				signature = xmalloc(xslen);
-				/* "The parameter type is ignored." */
+				 
 				ret = ECDSA_sign(-1, data, dlen, signature,
 				    &xslen, found->ecdsa);
 				if (ret != 0)
@@ -225,11 +211,11 @@ process_sign(void)
 				else
 					error_f("ECDSA_sign returned %d", ret);
 				slen = xslen;
-#endif /* OPENSSL_HAS_ECC */
+#endif  
 			} else
 				error_f("don't know how to sign with key "
 				    "type %d", (int)key->type);
-#endif /* WITH_OPENSSL */
+#endif  
 		}
 		sshkey_free(key);
 	}
@@ -262,7 +248,7 @@ process(void)
 
 	buf_len = sshbuf_len(iqueue);
 	if (buf_len < 5)
-		return;		/* Incomplete message. */
+		return;		 
 	cp = sshbuf_ptr(iqueue);
 	msg_len = get_u32(cp);
 	if (msg_len > MAX_MSG_LENGTH) {
@@ -292,7 +278,7 @@ process(void)
 		error("Unknown message %d", type);
 		break;
 	}
-	/* discard the remaining bytes from the current packet */
+	 
 	if (buf_len < sshbuf_len(iqueue)) {
 		error("iqueue grew unexpectedly");
 		cleanup_exit(255);
@@ -311,7 +297,7 @@ process(void)
 void
 cleanup_exit(int i)
 {
-	/* XXX */
+	 
 	_exit(i);
 }
 
@@ -364,11 +350,7 @@ main(int argc, char **argv)
 		pfd[0].fd = in;
 		pfd[1].fd = out;
 
-		/*
-		 * Ensure that we can read a full buffer and handle
-		 * the worst-case length packet it can generate,
-		 * otherwise apply backpressure by stopping reads.
-		 */
+		 
 		if ((r = sshbuf_check_reserve(iqueue, sizeof(buf))) == 0 &&
 		    (r = sshbuf_check_reserve(oqueue, MAX_MSG_LENGTH)) == 0)
 			pfd[0].events = POLLIN;
@@ -378,13 +360,13 @@ main(int argc, char **argv)
 		if (sshbuf_len(oqueue) > 0)
 			pfd[1].events = POLLOUT;
 
-		if ((r = poll(pfd, 2, -1 /* INFTIM */)) <= 0) {
+		if ((r = poll(pfd, 2, -1  )) <= 0) {
 			if (r == 0 || errno == EINTR)
 				continue;
 			fatal("poll: %s", strerror(errno));
 		}
 
-		/* copy stdin to iqueue */
+		 
 		if ((pfd[0].revents & (POLLIN|POLLHUP|POLLERR)) != 0) {
 			len = read(in, buf, sizeof buf);
 			if (len == 0) {
@@ -396,7 +378,7 @@ main(int argc, char **argv)
 			} else if ((r = sshbuf_put(iqueue, buf, len)) != 0)
 				fatal_fr(r, "sshbuf_put");
 		}
-		/* send oqueue to stdout */
+		 
 		if ((pfd[1].revents & (POLLOUT|POLLHUP)) != 0) {
 			len = write(out, sshbuf_ptr(oqueue),
 			    sshbuf_len(oqueue));
@@ -407,11 +389,7 @@ main(int argc, char **argv)
 				fatal_fr(r, "consume");
 		}
 
-		/*
-		 * Process requests from client if we can fit the results
-		 * into the output buffer, otherwise stop processing input
-		 * and let the output queue drain.
-		 */
+		 
 		if ((r = sshbuf_check_reserve(oqueue, MAX_MSG_LENGTH)) == 0)
 			process();
 		else if (r != SSH_ERR_NO_BUFFER_SPACE)
@@ -419,7 +397,7 @@ main(int argc, char **argv)
 	}
 }
 
-#else /* WITH_OPENSSL */
+#else  
 void
 cleanup_exit(int i)
 {
@@ -432,8 +410,8 @@ main(int argc, char **argv)
 	fprintf(stderr, "PKCS#11 code is not enabled\n");
 	return 1;
 }
-#endif /* WITH_OPENSSL */
-#else /* ENABLE_PKCS11 */
+#endif  
+#else  
 int
 main(int argc, char **argv)
 {
@@ -443,4 +421,4 @@ main(int argc, char **argv)
 	log_init(__progname, SYSLOG_LEVEL_ERROR, SYSLOG_FACILITY_AUTH, 0);
 	fatal("PKCS#11 support disabled at compile time");
 }
-#endif /* ENABLE_PKCS11 */
+#endif  

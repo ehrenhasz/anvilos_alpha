@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* -*- linux-c -*- --------------------------------------------------------- *
- *
- * linux/fs/devpts/inode.c
- *
- *  Copyright 1998-2004 H. Peter Anvin -- All Rights Reserved
- *
- * ------------------------------------------------------------------------- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -26,19 +20,11 @@
 #include <linux/seq_file.h>
 
 #define DEVPTS_DEFAULT_MODE 0600
-/*
- * ptmx is a new node in /dev/pts and will be unused in legacy (single-
- * instance) mode. To prevent surprises in user space, set permissions of
- * ptmx to 0. Use 'chmod' or remount with '-o ptmxmode' to set meaningful
- * permissions.
- */
+ 
 #define DEVPTS_DEFAULT_PTMX_MODE 0000
 #define PTMX_MINOR	2
 
-/*
- * sysctl support for setting limits on the number of Unix98 ptys allocated.
- * Otherwise one can eat up all kernel memory by opening /dev/ptmx repeatedly.
- */
+ 
 static int pty_limit = NR_UNIX98_PTY_DEFAULT;
 static int pty_reserve = NR_UNIX98_PTY_RESERVE;
 static int pty_limit_min;
@@ -115,12 +101,12 @@ static int devpts_ptmx_path(struct path *path)
 	struct super_block *sb;
 	int err;
 
-	/* Is a devpts filesystem at "pts" in the same directory? */
+	 
 	err = path_pts(path);
 	if (err)
 		return err;
 
-	/* Is the path the root of a devpts filesystem? */
+	 
 	sb = path->mnt->mnt_sb;
 	if ((sb->s_magic != DEVPTS_SUPER_MAGIC) ||
 	    (path->mnt->mnt_root != sb->s_root))
@@ -129,24 +115,7 @@ static int devpts_ptmx_path(struct path *path)
 	return 0;
 }
 
-/*
- * Try to find a suitable devpts filesystem. We support the following
- * scenarios:
- * - The ptmx device node is located in the same directory as the devpts
- *   mount where the pts device nodes are located.
- *   This is e.g. the case when calling open on the /dev/pts/ptmx device
- *   node when the devpts filesystem is mounted at /dev/pts.
- * - The ptmx device node is located outside the devpts filesystem mount
- *   where the pts device nodes are located. For example, the ptmx device
- *   is a symlink, separate device node, or bind-mount.
- *   A supported scenario is bind-mounting /dev/pts/ptmx to /dev/ptmx and
- *   then calling open on /dev/ptmx. In this case a suitable pts
- *   subdirectory can be found in the common parent directory /dev of the
- *   devpts mount and the ptmx bind-mount, after resolving the /dev/ptmx
- *   bind-mount.
- *   If no suitable pts subdirectory can be found this function will fail.
- *   This is e.g. the case when bind-mounting /dev/pts/ptmx to /ptmx.
- */
+ 
 struct vfsmount *devpts_mntget(struct file *filp, struct pts_fs_info *fsi)
 {
 	struct path path;
@@ -155,14 +124,12 @@ struct vfsmount *devpts_mntget(struct file *filp, struct pts_fs_info *fsi)
 	path = filp->f_path;
 	path_get(&path);
 
-	/* Walk upward while the start point is a bind mount of
-	 * a single file.
-	 */
+	 
 	while (path.mnt->mnt_root == path.dentry)
 		if (follow_up(&path) == 0)
 			break;
 
-	/* devpts_ptmx_path() finds a devpts fs or returns an error. */
+	 
 	if ((path.mnt->mnt_sb->s_magic != DEVPTS_SUPER_MAGIC) ||
 	    (DEVPTS_SB(path.mnt->mnt_sb) != fsi))
 		err = devpts_ptmx_path(&path);
@@ -187,7 +154,7 @@ struct pts_fs_info *devpts_acquire(struct file *filp)
 	path = filp->f_path;
 	path_get(&path);
 
-	/* Has the devpts filesystem already been found? */
+	 
 	if (path.mnt->mnt_sb->s_magic != DEVPTS_SUPER_MAGIC) {
 		int err;
 
@@ -198,9 +165,7 @@ struct pts_fs_info *devpts_acquire(struct file *filp)
 		}
 	}
 
-	/*
-	 * pty code needs to hold extra references in case of last /dev/tty close
-	 */
+	 
 	sb = path.mnt->mnt_sb;
 	atomic_inc(&sb->s_active);
 	result = DEVPTS_SB(sb);
@@ -218,13 +183,7 @@ void devpts_release(struct pts_fs_info *fsi)
 #define PARSE_MOUNT	0
 #define PARSE_REMOUNT	1
 
-/*
- * parse_mount_options():
- *	Set @opts to mount options specified in @data. If an option is not
- *	specified in @data, set it to its default value.
- *
- * Note: @data may be NULL (in which case all options are set to default).
- */
+ 
 static int parse_mount_options(char *data, int op, struct pts_mount_opts *opts)
 {
 	char *p;
@@ -239,9 +198,7 @@ static int parse_mount_options(char *data, int op, struct pts_mount_opts *opts)
 	opts->ptmxmode = DEVPTS_DEFAULT_PTMX_MODE;
 	opts->max     = NR_UNIX98_PTY_MAX;
 
-	/* Only allow instances mounted from the initial mount
-	 * namespace to tap the reserve pool of ptys.
-	 */
+	 
 	if (op == PARSE_MOUNT)
 		opts->reserve =
 			(current->nsproxy->mnt_ns == init_task.nsproxy->mnt_ns);
@@ -315,7 +272,7 @@ static int mknod_ptmx(struct super_block *sb)
 
 	inode_lock(d_inode(root));
 
-	/* If we have already created ptmx node, return */
+	 
 	if (fsi->ptmx_dentry) {
 		rc = 0;
 		goto out;
@@ -327,9 +284,7 @@ static int mknod_ptmx(struct super_block *sb)
 		goto out;
 	}
 
-	/*
-	 * Create a new 'ptmx' node in this mount of devpts.
-	 */
+	 
 	inode = new_inode(sb);
 	if (!inode) {
 		pr_err("Unable to alloc inode for ptmx node\n");
@@ -371,12 +326,7 @@ static int devpts_remount(struct super_block *sb, int *flags, char *data)
 
 	err = parse_mount_options(data, PARSE_REMOUNT, opts);
 
-	/*
-	 * parse_mount_options() restores options to default values
-	 * before parsing and may have changed ptmxmode. So, update the
-	 * mode in the inode too. Bogus options don't fail the remount,
-	 * so do this even on error return.
-	 */
+	 
 	update_ptmx_mode(fsi);
 
 	return err;
@@ -475,12 +425,7 @@ fail:
 	return error;
 }
 
-/*
- * devpts_mount()
- *
- *     Mount a new (private) instance of devpts.  PTYs created in this
- *     instance are independent of the PTYs in other devpts instances.
- */
+ 
 static struct dentry *devpts_mount(struct file_system_type *fs_type,
 	int flags, const char *dev_name, void *data)
 {
@@ -504,10 +449,7 @@ static struct file_system_type devpts_fs_type = {
 	.fs_flags	= FS_USERNS_MOUNT,
 };
 
-/*
- * The normal naming convention is simply /dev/pts/<number>; this conforms
- * to the System V naming convention
- */
+ 
 
 int devpts_new_index(struct pts_fs_info *fsi)
 {
@@ -532,15 +474,7 @@ void devpts_kill_index(struct pts_fs_info *fsi, int idx)
 	atomic_dec(&pty_count);
 }
 
-/**
- * devpts_pty_new -- create a new inode in /dev/pts/
- * @fsi: Filesystem info for this instance.
- * @index: used as a name of the node
- * @priv: what's given back by devpts_get_priv
- *
- * The dentry for the created inode is returned.
- * Remove it from /dev/pts/ with devpts_pty_kill().
- */
+ 
 struct dentry *devpts_pty_new(struct pts_fs_info *fsi, int index, void *priv)
 {
 	struct dentry *dentry;
@@ -578,12 +512,7 @@ struct dentry *devpts_pty_new(struct pts_fs_info *fsi, int index, void *priv)
 	return dentry;
 }
 
-/**
- * devpts_get_priv -- get private data for a slave
- * @dentry: dentry of the slave
- *
- * Returns whatever was passed as priv in devpts_pty_new for a given inode.
- */
+ 
 void *devpts_get_priv(struct dentry *dentry)
 {
 	if (dentry->d_sb->s_magic != DEVPTS_SUPER_MAGIC)
@@ -591,12 +520,7 @@ void *devpts_get_priv(struct dentry *dentry)
 	return dentry->d_fsdata;
 }
 
-/**
- * devpts_pty_kill -- remove inode form /dev/pts/
- * @dentry: dentry of the slave to be removed
- *
- * This is an inverse operation of devpts_pty_new.
- */
+ 
 void devpts_pty_kill(struct dentry *dentry)
 {
 	WARN_ON_ONCE(dentry->d_sb->s_magic != DEVPTS_SUPER_MAGIC);
@@ -605,7 +529,7 @@ void devpts_pty_kill(struct dentry *dentry)
 	drop_nlink(dentry->d_inode);
 	d_drop(dentry);
 	fsnotify_unlink(d_inode(dentry->d_parent), dentry);
-	dput(dentry);	/* d_alloc_name() in devpts_pty_new() */
+	dput(dentry);	 
 }
 
 static int __init init_devpts_fs(void)

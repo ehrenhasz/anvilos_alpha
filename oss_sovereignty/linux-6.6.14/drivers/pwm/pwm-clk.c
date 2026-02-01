@@ -1,22 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Clock based PWM controller
- *
- * Copyright (c) 2021 Nikita Travkin <nikita@trvn.ru>
- *
- * This is an "adapter" driver that allows PWM consumers to use
- * system clocks with duty cycle control as PWM outputs.
- *
- * Limitations:
- * - Due to the fact that exact behavior depends on the underlying
- *   clock driver, various limitations are possible.
- * - Underlying clock may not be able to give 0% or 100% duty cycle
- *   (constant off or on), exact behavior will depend on the clock.
- * - When the PWM is disabled, the clock will be disabled as well,
- *   line state will depend on the clock.
- * - The clk API doesn't expose the necessary calls to implement
- *   .get_state().
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/math64.h>
@@ -57,12 +40,7 @@ static int pwm_clk_apply(struct pwm_chip *chip, struct pwm_device *pwm,
 		pcchip->clk_enabled = true;
 	}
 
-	/*
-	 * We have to enable the clk before setting the rate and duty_cycle,
-	 * that however results in a window where the clk is on with a
-	 * (potentially) different setting. Also setting period and duty_cycle
-	 * are two separate calls, so that probably isn't atomic either.
-	 */
+	 
 
 	rate = DIV64_U64_ROUND_UP(NSEC_PER_SEC, period);
 	ret = clk_set_rate(pcchip->clk, rate);
@@ -118,7 +96,7 @@ static void pwm_clk_remove(struct platform_device *pdev)
 
 static const struct of_device_id pwm_clk_dt_ids[] = {
 	{ .compatible = "clk-pwm", },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, pwm_clk_dt_ids);
 

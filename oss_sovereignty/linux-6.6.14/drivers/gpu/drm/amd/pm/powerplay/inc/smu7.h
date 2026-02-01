@@ -1,25 +1,4 @@
-/*
- * Copyright 2013 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 
 #ifndef SMU7_H
 #define SMU7_H
@@ -38,15 +17,15 @@
 #define SMU7_MAX_LEVELS_MVDD            4
 #define SMU7_MAX_LEVELS_VDDNB           8
 
-#define SMU7_MAX_LEVELS_GRAPHICS        SMU__NUM_SCLK_DPM_STATE   // SCLK + SQ DPM + ULV
-#define SMU7_MAX_LEVELS_MEMORY          SMU__NUM_MCLK_DPM_LEVELS   // MCLK Levels DPM
-#define SMU7_MAX_LEVELS_GIO             SMU__NUM_LCLK_DPM_LEVELS  // LCLK Levels
-#define SMU7_MAX_LEVELS_LINK            SMU__NUM_PCIE_DPM_LEVELS  // PCIe speed and number of lanes.
-#define SMU7_MAX_LEVELS_UVD             8   // VCLK/DCLK levels for UVD.
-#define SMU7_MAX_LEVELS_VCE             8   // ECLK levels for VCE.
-#define SMU7_MAX_LEVELS_ACP             8   // ACLK levels for ACP.
-#define SMU7_MAX_LEVELS_SAMU            8   // SAMCLK levels for SAMU.
-#define SMU7_MAX_ENTRIES_SMIO           32  // Number of entries in SMIO table.
+#define SMU7_MAX_LEVELS_GRAPHICS        SMU__NUM_SCLK_DPM_STATE   
+#define SMU7_MAX_LEVELS_MEMORY          SMU__NUM_MCLK_DPM_LEVELS   
+#define SMU7_MAX_LEVELS_GIO             SMU__NUM_LCLK_DPM_LEVELS  
+#define SMU7_MAX_LEVELS_LINK            SMU__NUM_PCIE_DPM_LEVELS  
+#define SMU7_MAX_LEVELS_UVD             8   
+#define SMU7_MAX_LEVELS_VCE             8   
+#define SMU7_MAX_LEVELS_ACP             8   
+#define SMU7_MAX_LEVELS_SAMU            8   
+#define SMU7_MAX_ENTRIES_SMIO           32  
 
 #define DPM_NO_LIMIT 0
 #define DPM_NO_UP 1
@@ -82,8 +61,8 @@
 #define SCRATCH_B_CURR_SAMU_INDEX_MASK  (0x7<<SCRATCH_B_CURR_SAMU_INDEX_SHIFT)
 
 
-/* Voltage Regulator Configuration */
-/* VR Config info is contained in dpmTable */
+ 
+ 
 
 #define VRCONF_VDDC_MASK         0x000000FF
 #define VRCONF_VDDC_SHIFT        0
@@ -115,8 +94,8 @@ struct SMU7_PIDController {
 
 typedef struct SMU7_PIDController SMU7_PIDController;
 
-// -------------------------------------------------------------------------------------------------------------------------
-#define SMU7_MAX_PCIE_LINK_SPEEDS 3 /* 0:Gen1 1:Gen2 2:Gen3 */
+
+#define SMU7_MAX_PCIE_LINK_SPEEDS 3  
 
 #define SMU7_SCLK_DPM_CONFIG_MASK                        0x01
 #define SMU7_VOLTAGE_CONTROLLER_CONFIG_MASK              0x02

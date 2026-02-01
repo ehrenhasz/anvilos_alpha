@@ -1,57 +1,4 @@
-/*
- * This file is provided under a dual BSD/GPLv2 license.  When using or
- * redistributing this file, you may do so under either license.
- *
- * GPL LICENSE SUMMARY
- *
- * Copyright(c) 2008 - 2011 Intel Corporation. All rights reserved.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of version 2 of the GNU General Public License as
- * published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St - Fifth Floor, Boston, MA 02110-1301 USA.
- * The full GNU General Public License is included in this distribution
- * in the file called LICENSE.GPL.
- *
- * BSD LICENSE
- *
- * Copyright(c) 2008 - 2011 Intel Corporation. All rights reserved.
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- *
- *   * Redistributions of source code must retain the above copyright
- *     notice, this list of conditions and the following disclaimer.
- *   * Redistributions in binary form must reproduce the above copyright
- *     notice, this list of conditions and the following disclaimer in
- *     the documentation and/or other materials provided with the
- *     distribution.
- *   * Neither the name of Intel Corporation nor the names of its
- *     contributors may be used to endorse or promote products derived
- *     from this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+ 
 #include <scsi/sas_ata.h>
 #include "host.h"
 #include "isci.h"
@@ -73,14 +20,7 @@ const char *rnc_state_name(enum scis_sds_remote_node_context_states state)
 }
 #undef C
 
-/**
- * sci_remote_node_context_is_ready()
- * @sci_rnc: The state of the remote node context object to check.
- *
- * This method will return true if the remote node context is in a READY state
- * otherwise it will return false bool true if the remote node context is in
- * the ready state. false if the remote node context is not in the ready state.
- */
+ 
 bool sci_remote_node_context_is_ready(
 	struct sci_remote_node_context *sci_rnc)
 {
@@ -130,7 +70,7 @@ static void sci_remote_node_context_construct_buffer(struct sci_remote_node_cont
 	rnc->ssp.remote_node_port_width = idev->device_port_width;
 	rnc->ssp.logical_port_index = idev->owning_port->physical_port_index;
 
-	/* sas address is __be64, context ram format is __le64 */
+	 
 	sas_addr = cpu_to_le64(SAS_ADDR(dev->sas_addr));
 	rnc->ssp.remote_sas_address_hi = upper_32_bits(sas_addr);
 	rnc->ssp.remote_sas_address_lo = lower_32_bits(sas_addr);
@@ -157,17 +97,13 @@ static void sci_remote_node_context_construct_buffer(struct sci_remote_node_cont
 
 	rnc->ssp.initial_arbitration_wait_time = 0;
 
-	/* Open Address Frame Parameters */
+	 
 	rnc->ssp.oaf_connection_rate = idev->connection_rate;
 	rnc->ssp.oaf_features = 0;
 	rnc->ssp.oaf_source_zone_group = 0;
 	rnc->ssp.oaf_more_compatibility_features = 0;
 }
-/*
- * This method will setup the remote node context object so it will transition
- * to its ready state.  If the remote node context is already setup to
- * transition to its final state then this function does nothing. none
- */
+ 
 static void sci_remote_node_context_setup_to_resume(
 	struct sci_remote_node_context *sci_rnc,
 	scics_sds_remote_node_context_callback callback,
@@ -197,10 +133,7 @@ static void sci_remote_node_context_setup_to_destroy(
 	wake_up(&ihost->eventq);
 }
 
-/*
- * This method just calls the user callback function and then resets the
- * callback.
- */
+ 
 static void sci_remote_node_context_notify_user(
 	struct sci_remote_node_context *rnc)
 {
@@ -271,9 +204,7 @@ static void sci_remote_node_context_initial_state_enter(struct sci_base_state_ma
 	struct isci_remote_device *idev = rnc_to_dev(rnc);
 	struct isci_host *ihost = idev->owning_port->owning_controller;
 
-	/* Check to see if we have gotten back to the initial state because
-	 * someone requested to destroy the remote node context object.
-	 */
+	 
 	if (sm->previous_state_id == SCI_RNC_INVALIDATING) {
 		rnc->destination_state = RNC_DEST_UNSPECIFIED;
 		sci_remote_node_context_notify_user(rnc);
@@ -294,7 +225,7 @@ static void sci_remote_node_context_invalidating_state_enter(struct sci_base_sta
 {
 	struct sci_remote_node_context *rnc = container_of(sm, typeof(*rnc), sm);
 
-	/* Terminate all outstanding requests. */
+	 
 	sci_remote_device_terminate_requests(rnc_to_dev(rnc));
 	sci_remote_node_context_invalidate_context_buffer(rnc);
 }
@@ -308,12 +239,7 @@ static void sci_remote_node_context_resuming_state_enter(struct sci_base_state_m
 	idev = rnc_to_dev(rnc);
 	dev = idev->domain_dev;
 
-	/*
-	 * For direct attached SATA devices we need to clear the TLCR
-	 * NCQ to TCi tag mapping on the phy and in cases where we
-	 * resume because of a target reset we also need to update
-	 * the STPTLDARNI register with the RNi of the device
-	 */
+	 
 	if (dev_is_sata(dev) && !dev->parent)
 		sci_port_setup_transports(idev->owning_port, rnc->remote_node_index);
 
@@ -336,7 +262,7 @@ static void sci_remote_node_context_ready_state_enter(struct sci_base_state_mach
 			SCI_SOFTWARE_SUSPEND_EXPECTED_EVENT);
 
 		if (dest_select == RNC_DEST_SUSPENDED_RESUME)
-			tell_user = 0;  /* Wait until ready again. */
+			tell_user = 0;   
 	}
 	if (tell_user)
 		sci_remote_node_context_notify_user(rnc);
@@ -362,7 +288,7 @@ static void sci_remote_node_context_tx_rx_suspended_state_enter(struct sci_base_
 		rnc->suspend_count = new_count;
 	smp_wmb();
 
-	/* Terminate outstanding requests pending abort. */
+	 
 	sci_remote_device_abort_requests_pending_abort(idev);
 
 	wake_up(&ihost->eventq);
@@ -446,8 +372,7 @@ enum sci_status sci_remote_node_context_event_handler(struct sci_remote_node_con
 			switch (scu_get_event_type(event_code)) {
 			case SCU_EVENT_TYPE_RNC_SUSPEND_TX:
 			case SCU_EVENT_TYPE_RNC_SUSPEND_TX_RX:
-				/* We really dont care if the hardware is going to suspend
-				 * the device since it's being invalidated anyway */
+				 
 				dev_warn(scirdev_to_dev(rnc_to_dev(sci_rnc)),
 					"%s: SCIC Remote Node Context 0x%p was "
 					"suspended by hardware while being "
@@ -465,8 +390,7 @@ enum sci_status sci_remote_node_context_event_handler(struct sci_remote_node_con
 			switch (scu_get_event_type(event_code)) {
 			case SCU_EVENT_TYPE_RNC_SUSPEND_TX:
 			case SCU_EVENT_TYPE_RNC_SUSPEND_TX_RX:
-				/* We really dont care if the hardware is going to suspend
-				 * the device since it's being resumed anyway */
+				 
 				dev_warn(scirdev_to_dev(rnc_to_dev(sci_rnc)),
 					"%s: SCIC Remote Node Context 0x%p was "
 					"suspended by hardware while being resumed.\n",
@@ -547,10 +471,7 @@ enum sci_status sci_remote_node_context_destruct(struct sci_remote_node_context 
 		dev_warn(scirdev_to_dev(rnc_to_dev(sci_rnc)),
 			 "%s: invalid state: %s\n", __func__,
 			 rnc_state_name(state));
-		/* We have decided that the destruct request on the remote node context
-		 * can not fail since it is either in the initial/destroyed state or is
-		 * can be destroyed.
-		 */
+		 
 		return SCI_SUCCESS;
 	default:
 		dev_warn(scirdev_to_dev(rnc_to_dev(sci_rnc)),
@@ -579,7 +500,7 @@ enum sci_status sci_remote_node_context_suspend(
 		sci_rnc->destination_state, suspend_reason,
 		suspend_type);
 
-	/* Disable automatic state continuations if explicitly suspending. */
+	 
 	if ((suspend_reason == SCI_HW_SUSPEND) ||
 	    (sci_rnc->destination_state == RNC_DEST_FINAL))
 		dest_param = sci_rnc->destination_state;
@@ -594,14 +515,11 @@ enum sci_status sci_remote_node_context_suspend(
 				 __func__, sci_rnc);
 			return SCI_FAILURE_INVALID_STATE;
 		}
-		fallthrough;	/* and handle like SCI_RNC_POSTING */
+		fallthrough;	 
 	case SCI_RNC_RESUMING:
-		fallthrough;	/* and handle like SCI_RNC_POSTING */
+		fallthrough;	 
 	case SCI_RNC_POSTING:
-		/* Set the destination state to AWAIT - this signals the
-		 * entry into the SCI_RNC_READY state that a suspension
-		 * needs to be done immediately.
-		 */
+		 
 		if (sci_rnc->destination_state != RNC_DEST_FINAL)
 			sci_rnc->destination_state = RNC_DEST_SUSPENDED;
 		sci_rnc->suspend_type = suspend_type;
@@ -631,10 +549,10 @@ enum sci_status sci_remote_node_context_suspend(
 	sci_rnc->suspend_type = suspend_type;
 	sci_rnc->suspend_reason = suspend_reason;
 
-	if (status == SCI_SUCCESS) { /* Already in the destination state? */
+	if (status == SCI_SUCCESS) {  
 		struct isci_host *ihost = idev->owning_port->owning_controller;
 
-		wake_up_all(&ihost->eventq); /* Let observers look. */
+		wake_up_all(&ihost->eventq);  
 		return SCI_SUCCESS;
 	}
 	if ((suspend_reason == SCI_SW_SUSPEND_NORMAL) ||
@@ -684,15 +602,11 @@ enum sci_status sci_remote_node_context_resume(struct sci_remote_node_context *s
 	case SCI_RNC_POSTING:
 	case SCI_RNC_INVALIDATING:
 	case SCI_RNC_RESUMING:
-		/* We are still waiting to post when a resume was
-		 * requested.
-		 */
+		 
 		switch (sci_rnc->destination_state) {
 		case RNC_DEST_SUSPENDED:
 		case RNC_DEST_SUSPENDED_RESUME:
-			/* Previously waiting to suspend after posting.
-			 * Now continue onto resumption.
-			 */
+			 
 			sci_remote_node_context_setup_to_resume(
 				sci_rnc, cb_fn, cb_p,
 				RNC_DEST_SUSPENDED_RESUME);
@@ -709,11 +623,7 @@ enum sci_status sci_remote_node_context_resume(struct sci_remote_node_context *s
 	case SCI_RNC_TX_RX_SUSPENDED:
 		{
 			struct domain_device *dev = idev->domain_dev;
-			/* If this is an expander attached SATA device we must
-			 * invalidate and repost the RNC since this is the only
-			 * way to clear the TCi to NCQ tag mapping table for
-			 * the RNi. All other device types we can just resume.
-			 */
+			 
 			sci_remote_node_context_setup_to_resume(
 				sci_rnc, cb_fn, cb_p, RNC_DEST_READY);
 

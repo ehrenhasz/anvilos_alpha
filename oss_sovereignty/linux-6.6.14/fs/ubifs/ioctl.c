@@ -1,37 +1,23 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * This file is part of UBIFS.
- *
- * Copyright (C) 2006-2008 Nokia Corporation.
- * Copyright (C) 2006, 2007 University of Szeged, Hungary
- *
- * Authors: Zoltan Sogor
- *          Artem Bityutskiy (Битюцкий Артём)
- *          Adrian Hunter
- */
 
-/* This file implements EXT2-compatible extended attribute ioctl() calls */
+ 
+
+ 
 
 #include <linux/compat.h>
 #include <linux/mount.h>
 #include <linux/fileattr.h>
 #include "ubifs.h"
 
-/* Need to be kept consistent with checked flags in ioctl2ubifs() */
+ 
 #define UBIFS_SETTABLE_IOCTL_FLAGS \
 	(FS_COMPR_FL | FS_SYNC_FL | FS_APPEND_FL | \
 	 FS_IMMUTABLE_FL | FS_DIRSYNC_FL)
 
-/* Need to be kept consistent with checked flags in ubifs2ioctl() */
+ 
 #define UBIFS_GETTABLE_IOCTL_FLAGS \
 	(UBIFS_SETTABLE_IOCTL_FLAGS | FS_ENCRYPT_FL)
 
-/**
- * ubifs_set_inode_flags - set VFS inode flags.
- * @inode: VFS inode to set flags for
- *
- * This function propagates flags from UBIFS inode object to VFS inode object.
- */
+ 
 void ubifs_set_inode_flags(struct inode *inode)
 {
 	unsigned int flags = ubifs_inode(inode)->flags;
@@ -50,13 +36,7 @@ void ubifs_set_inode_flags(struct inode *inode)
 		inode->i_flags |= S_ENCRYPTED;
 }
 
-/*
- * ioctl2ubifs - convert ioctl inode flags to UBIFS inode flags.
- * @ioctl_flags: flags to convert
- *
- * This function converts ioctl flags (@FS_COMPR_FL, etc) to UBIFS inode flags
- * (@UBIFS_COMPR_FL, etc).
- */
+ 
 static int ioctl2ubifs(int ioctl_flags)
 {
 	int ubifs_flags = 0;
@@ -75,13 +55,7 @@ static int ioctl2ubifs(int ioctl_flags)
 	return ubifs_flags;
 }
 
-/*
- * ubifs2ioctl - convert UBIFS inode flags to ioctl inode flags.
- * @ubifs_flags: flags to convert
- *
- * This function converts UBIFS inode flags (@UBIFS_COMPR_FL, etc) to ioctl
- * flags (@FS_COMPR_FL, etc).
- */
+ 
 static int ubifs2ioctl(int ubifs_flags)
 {
 	int ioctl_flags = 0;

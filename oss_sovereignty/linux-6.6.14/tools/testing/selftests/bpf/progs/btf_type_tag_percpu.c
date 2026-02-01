@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2022 Google */
+
+ 
 #include "vmlinux.h"
 #include <bpf/bpf_helpers.h>
 #include <bpf/bpf_tracing.h>
@@ -28,20 +28,7 @@ int BPF_PROG(test_percpu2, struct bpf_testmod_btf_type_tag_2 *arg)
 	return 0;
 }
 
-/* trace_cgroup_mkdir(struct cgroup *cgrp, const char *path)
- *
- * struct cgroup_rstat_cpu {
- *   ...
- *   struct cgroup *updated_children;
- *   ...
- * };
- *
- * struct cgroup {
- *   ...
- *   struct cgroup_rstat_cpu __percpu *rstat_cpu;
- *   ...
- * };
- */
+ 
 SEC("tp_btf/cgroup_mkdir")
 int BPF_PROG(test_percpu_load, struct cgroup *cgrp, const char *path)
 {
@@ -58,7 +45,7 @@ int BPF_PROG(test_percpu_helper, struct cgroup *cgrp, const char *path)
 	cpu = bpf_get_smp_processor_id();
 	rstat = (struct cgroup_rstat_cpu *)bpf_per_cpu_ptr(cgrp->rstat_cpu, cpu);
 	if (rstat) {
-		/* READ_ONCE */
+		 
 		*(volatile int *)rstat;
 	}
 

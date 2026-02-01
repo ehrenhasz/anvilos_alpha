@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Async I/O region for vfio_ccw
- *
- * Copyright Red Hat, Inc. 2019
- *
- * Author(s): Cornelia Huck <cohuck@redhat.com>
- */
+
+ 
 
 #include <linux/vfio.h>
 

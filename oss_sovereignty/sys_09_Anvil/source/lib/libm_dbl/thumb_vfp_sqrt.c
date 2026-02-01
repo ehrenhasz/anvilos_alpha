@@ -1,4 +1,4 @@
-// an implementation of sqrt for Thumb using hardware double-precision VFP instructions
+
 
 double sqrt(double x) {
     double ret;

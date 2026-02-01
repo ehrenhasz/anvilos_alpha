@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
-* Copyright (C) 2015 Broadcom Corporation
-*
-*/
+
+ 
 #include <linux/module.h>
 #include <linux/init.h>
 #include <linux/input.h>
@@ -29,10 +26,10 @@
 #define X_MAX               0xFFF
 #define Y_MAX               0xFFF
 
-/* Value given by controller for invalid coordinate. */
+ 
 #define INVALID_COORD       0xFFFFFFFF
 
-/* Register offsets */
+ 
 #define REGCTL1             0x00
 #define REGCTL2             0x04
 #define INTERRUPT_THRES     0x08
@@ -55,24 +52,24 @@
 #define SOFT_BYPASS_DATA    0x3c
 
 
-/* Bit values for INTERRUPT_MASK and INTERRUPT_STATUS regs */
+ 
 #define TS_PEN_INTR_MASK        BIT(0)
 #define TS_FIFO_INTR_MASK       BIT(2)
 
-/* Bit values for CONTROLLER_STATUS reg1 */
+ 
 #define TS_PEN_DOWN             BIT(0)
 
-/* Shift values for control reg1 */
+ 
 #define SCANNING_PERIOD_SHIFT   24
 #define DEBOUNCE_TIMEOUT_SHIFT  16
 #define SETTLING_TIMEOUT_SHIFT  8
 #define TOUCH_TIMEOUT_SHIFT     0
 
-/* Shift values for coordinates from fifo */
+ 
 #define X_COORD_SHIFT  0
 #define Y_COORD_SHIFT  16
 
-/* Bit values for REGCTL2 */
+ 
 #define TS_CONTROLLER_EN_BIT    BIT(16)
 #define TS_CONTROLLER_AVGDATA_SHIFT 8
 #define TS_CONTROLLER_AVGDATA_MASK (0x7 << TS_CONTROLLER_AVGDATA_SHIFT)
@@ -90,44 +87,25 @@ do { \
 } while (0)
 
 struct tsc_param {
-	/* Each step is 1024 us.  Valid 1-256 */
+	 
 	u32 scanning_period;
 
-	/*  Each step is 512 us.  Valid 0-255 */
+	 
 	u32 debounce_timeout;
 
-	/*
-	 * The settling duration (in ms) is the amount of time the tsc
-	 * waits to allow the voltage to settle after turning on the
-	 * drivers in detection mode. Valid values: 0-11
-	 *   0 =  0.008 ms
-	 *   1 =  0.01 ms
-	 *   2 =  0.02 ms
-	 *   3 =  0.04 ms
-	 *   4 =  0.08 ms
-	 *   5 =  0.16 ms
-	 *   6 =  0.32 ms
-	 *   7 =  0.64 ms
-	 *   8 =  1.28 ms
-	 *   9 =  2.56 ms
-	 *   10 = 5.12 ms
-	 *   11 = 10.24 ms
-	 */
+	 
 	u32 settling_timeout;
 
-	/* touch timeout in sample counts */
+	 
 	u32 touch_timeout;
 
-	/*
-	 * Number of data samples which are averaged before a final data point
-	 * is placed into the FIFO
-	 */
+	 
 	u32 average_data;
 
-	/* FIFO threshold */
+	 
 	u32 fifo_threshold;
 
-	/* Optional standard touchscreen properties. */
+	 
 	u32 max_x;
 	u32 max_y;
 	u32 fuzz_x;
@@ -147,17 +125,14 @@ struct iproc_ts_priv {
 	struct tsc_param cfg_params;
 };
 
-/*
- * Set default values the same as hardware reset values
- * except for fifo_threshold with is set to 1.
- */
+ 
 static const struct tsc_param iproc_default_config = {
-	.scanning_period  = 0x5,  /* 1 to 256 */
-	.debounce_timeout = 0x28, /* 0 to 255 */
-	.settling_timeout = 0x7,  /* 0 to 11 */
-	.touch_timeout    = 0xa,  /* 0 to 255 */
-	.average_data     = 5,    /* entry 5 = 32 pts */
-	.fifo_threshold   = 1,    /* 0 to 31 */
+	.scanning_period  = 0x5,   
+	.debounce_timeout = 0x28,  
+	.settling_timeout = 0x7,   
+	.touch_timeout    = 0xa,   
+	.average_data     = 5,     
+	.fifo_threshold   = 1,     
 	.max_x            = X_MAX,
 	.max_y            = Y_MAX,
 };
@@ -200,9 +175,9 @@ static irqreturn_t iproc_touchscreen_interrupt(int irq, void *data)
 	if (intr_status == 0)
 		return IRQ_NONE;
 
-	/* Clear all interrupt status bits, write-1-clear */
+	 
 	regmap_write(priv->regmap, INTERRUPT_STATUS, intr_status);
-	/* Pen up/down */
+	 
 	if (intr_status & TS_PEN_INTR_MASK) {
 		regmap_read(priv->regmap, CONTROLLER_STATUS, &priv->pen_status);
 		if (priv->pen_status & TS_PEN_DOWN)
@@ -217,28 +192,24 @@ static irqreturn_t iproc_touchscreen_interrupt(int irq, void *data)
 			"pen up-down (%d)\n", priv->pen_status);
 	}
 
-	/* coordinates in FIFO exceed the theshold */
+	 
 	if (intr_status & TS_FIFO_INTR_MASK) {
 		for (i = 0; i < priv->cfg_params.fifo_threshold; i++) {
 			regmap_read(priv->regmap, FIFO_DATA, &raw_coordinate);
 			if (raw_coordinate == INVALID_COORD)
 				continue;
 
-			/*
-			 * The x and y coordinate are 16 bits each
-			 * with the x in the lower 16 bits and y in the
-			 * upper 16 bits.
-			 */
+			 
 			x = (raw_coordinate >> X_COORD_SHIFT) &
 				FIFO_DATA_X_Y_MASK;
 			y = (raw_coordinate >> Y_COORD_SHIFT) &
 				FIFO_DATA_X_Y_MASK;
 
-			/* We only want to retain the 12 msb of the 16 */
+			 
 			x = (x >> 4) & 0x0FFF;
 			y = (y >> 4) & 0x0FFF;
 
-			/* Adjust x y according to LCD tsc mount angle. */
+			 
 			if (priv->cfg_params.invert_x)
 				x = priv->cfg_params.max_x - x;
 
@@ -266,7 +237,7 @@ static int iproc_ts_start(struct input_dev *idev)
 	int error;
 	struct iproc_ts_priv *priv = input_get_drvdata(idev);
 
-	/* Enable clock */
+	 
 	error = clk_prepare_enable(priv->tsc_clk);
 	if (error) {
 		dev_err(&priv->pdev->dev, "%s clk_prepare_enable failed %d\n",
@@ -274,17 +245,14 @@ static int iproc_ts_start(struct input_dev *idev)
 		return error;
 	}
 
-	/*
-	 * Interrupt is generated when:
-	 *  FIFO reaches the int_th value, and pen event(up/down)
-	 */
+	 
 	val = TS_PEN_INTR_MASK | TS_FIFO_INTR_MASK;
 	regmap_update_bits(priv->regmap, INTERRUPT_MASK, val, val);
 
 	val = priv->cfg_params.fifo_threshold;
 	regmap_write(priv->regmap, INTERRUPT_THRES, val);
 
-	/* Initialize control reg1 */
+	 
 	val = 0;
 	val |= priv->cfg_params.scanning_period << SCANNING_PERIOD_SHIFT;
 	val |= priv->cfg_params.debounce_timeout << DEBOUNCE_TIMEOUT_SHIFT;
@@ -292,19 +260,19 @@ static int iproc_ts_start(struct input_dev *idev)
 	val |= priv->cfg_params.touch_timeout << TOUCH_TIMEOUT_SHIFT;
 	regmap_write(priv->regmap, REGCTL1, val);
 
-	/* Try to clear all interrupt status */
+	 
 	val = TS_FIFO_INTR_MASK | TS_PEN_INTR_MASK;
 	regmap_update_bits(priv->regmap, INTERRUPT_STATUS, val, val);
 
-	/* Initialize control reg2 */
+	 
 	val = TS_CONTROLLER_EN_BIT | TS_WIRE_MODE_BIT;
 	val |= priv->cfg_params.average_data << TS_CONTROLLER_AVGDATA_SHIFT;
 
 	mask = (TS_CONTROLLER_AVGDATA_MASK);
-	mask |= (TS_CONTROLLER_PWR_LDO |	/* PWR up LDO */
-		   TS_CONTROLLER_PWR_ADC |	/* PWR up ADC */
-		   TS_CONTROLLER_PWR_BGP |	/* PWR up BGP */
-		   TS_CONTROLLER_PWR_TS);	/* PWR up TS */
+	mask |= (TS_CONTROLLER_PWR_LDO |	 
+		   TS_CONTROLLER_PWR_ADC |	 
+		   TS_CONTROLLER_PWR_BGP |	 
+		   TS_CONTROLLER_PWR_TS);	 
 	mask |= val;
 	regmap_update_bits(priv->regmap, REGCTL2, mask, val);
 
@@ -318,15 +286,11 @@ static void iproc_ts_stop(struct input_dev *dev)
 	u32 val;
 	struct iproc_ts_priv *priv = input_get_drvdata(dev);
 
-	/*
-	 * Disable FIFO int_th and pen event(up/down)Interrupts only
-	 * as the interrupt mask register is shared between ADC, TS and
-	 * flextimer.
-	 */
+	 
 	val = TS_PEN_INTR_MASK | TS_FIFO_INTR_MASK;
 	regmap_update_bits(priv->regmap, INTERRUPT_MASK, val, 0);
 
-	/* Only power down touch screen controller */
+	 
 	val = TS_CONTROLLER_PWR_TS;
 	regmap_update_bits(priv->regmap, REGCTL2, val, val);
 
@@ -396,7 +360,7 @@ static int iproc_get_tsc_config(struct device *dev, struct iproc_ts_priv *priv)
 		priv->cfg_params.fifo_threshold = val;
 	}
 
-	/* Parse optional properties. */
+	 
 	of_property_read_u32(np, "touchscreen-size-x", &priv->cfg_params.max_x);
 	of_property_read_u32(np, "touchscreen-size-y", &priv->cfg_params.max_y);
 
@@ -424,7 +388,7 @@ static int iproc_ts_probe(struct platform_device *pdev)
 	if (!priv)
 		return -ENOMEM;
 
-	/* touchscreen controller memory mapped regs via syscon*/
+	 
 	priv->regmap = syscon_regmap_lookup_by_phandle(pdev->dev.of_node,
 							"ts_syscon");
 	if (IS_ERR(priv->regmap)) {
@@ -457,7 +421,7 @@ static int iproc_ts_probe(struct platform_device *pdev)
 	priv->idev = idev;
 	priv->pen_status = PEN_UP_STATUS;
 
-	/* Set input device info  */
+	 
 	idev->name = IPROC_TS_NAME;
 	idev->dev.parent = &pdev->dev;
 
@@ -480,7 +444,7 @@ static int iproc_ts_probe(struct platform_device *pdev)
 	input_set_drvdata(idev, priv);
 	platform_set_drvdata(pdev, priv);
 
-	/* get interrupt */
+	 
 	irq = platform_get_irq(pdev, 0);
 	if (irq < 0)
 		return irq;

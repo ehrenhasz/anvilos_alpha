@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright (C) 2018 Intel Corporation */
+ 
+ 
 
 #ifndef __IPU3_PARAMS_H
 #define __IPU3_PARAMS_H
@@ -25,4 +25,4 @@ void imgu_css_cfg_gdc_table(struct imgu_abi_gdc_warp_param *gdc,
 			    int frame_out_x, int frame_out_y,
 			    int env_w, int env_h);
 
-#endif /*__IPU3_PARAMS_H */
+#endif  

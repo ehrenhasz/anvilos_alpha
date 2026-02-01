@@ -1,69 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  Copyright (c) by Jaroslav Kysela <perex@perex.cz>
- *  Routines for control of CS4235/4236B/4237B/4238B/4239 chips
- *
- *  Note:
- *     -----
- *
- *  Bugs:
- *     -----
- */
 
-/*
- *  Indirect control registers (CS4236B+)
- * 
- *  C0
- *     D8: WSS reset (all chips)
- *
- *  C1 (all chips except CS4236)
- *     D7-D5: version 
- *     D4-D0: chip id
- *             11101 - CS4235
- *             01011 - CS4236B
- *             01000 - CS4237B
- *             01001 - CS4238B
- *             11110 - CS4239
- *
- *  C2
- *     D7-D4: 3D Space (CS4235,CS4237B,CS4238B,CS4239)
- *     D3-D0: 3D Center (CS4237B); 3D Volume (CS4238B)
- * 
- *  C3
- *     D7: 3D Enable (CS4237B)
- *     D6: 3D Mono Enable (CS4237B)
- *     D5: 3D Serial Output (CS4237B,CS4238B)
- *     D4: 3D Enable (CS4235,CS4238B,CS4239)
- *
- *  C4
- *     D7: consumer serial port enable (CS4237B,CS4238B)
- *     D6: channels status block reset (CS4237B,CS4238B)
- *     D5: user bit in sub-frame of digital audio data (CS4237B,CS4238B)
- *     D4: validity bit in sub-frame of digital audio data (CS4237B,CS4238B)
- * 
- *  C5  lower channel status (digital serial data description) (CS4237B,CS4238B)
- *     D7-D6: first two bits of category code
- *     D5: lock
- *     D4-D3: pre-emphasis (0 = none, 1 = 50/15us)
- *     D2: copy/copyright (0 = copy inhibited)
- *     D1: 0 = digital audio / 1 = non-digital audio
- *     
- *  C6  upper channel status (digital serial data description) (CS4237B,CS4238B)
- *     D7-D6: sample frequency (0 = 44.1kHz)
- *     D5: generation status (0 = no indication, 1 = original/commercially precaptureed data)
- *     D4-D0: category code (upper bits)
- *
- *  C7  reserved (must write 0)
- *
- *  C8  wavetable control
- *     D7: volume control interrupt enable (CS4235,CS4239)
- *     D6: hardware volume control format (CS4235,CS4239)
- *     D3: wavetable serial port enable (all chips)
- *     D2: DSP serial port switch (all chips)
- *     D1: disable MCLK (all chips)
- *     D0: force BRESET low (all chips)
- *
- */
+ 
+
+ 
 
 #include <linux/io.h>
 #include <linux/delay.h>
@@ -76,34 +14,30 @@
 #include <sound/initval.h>
 #include <sound/tlv.h>
 
-/*
- *
- */
+ 
 
 static const unsigned char snd_cs4236_ext_map[18] = {
-	/* CS4236_LEFT_LINE */		0xff,
-	/* CS4236_RIGHT_LINE */		0xff,
-	/* CS4236_LEFT_MIC */		0xdf,
-	/* CS4236_RIGHT_MIC */		0xdf,
-	/* CS4236_LEFT_MIX_CTRL */	0xe0 | 0x18,
-	/* CS4236_RIGHT_MIX_CTRL */	0xe0,
-	/* CS4236_LEFT_FM */		0xbf,
-	/* CS4236_RIGHT_FM */		0xbf,
-	/* CS4236_LEFT_DSP */		0xbf,
-	/* CS4236_RIGHT_DSP */		0xbf,
-	/* CS4236_RIGHT_LOOPBACK */	0xbf,
-	/* CS4236_DAC_MUTE */		0xe0,
-	/* CS4236_ADC_RATE */		0x01,	/* 48kHz */
-	/* CS4236_DAC_RATE */		0x01,	/* 48kHz */
-	/* CS4236_LEFT_MASTER */	0xbf,
-	/* CS4236_RIGHT_MASTER */	0xbf,
-	/* CS4236_LEFT_WAVE */		0xbf,
-	/* CS4236_RIGHT_WAVE */		0xbf
+	 		0xff,
+	 		0xff,
+	 		0xdf,
+	 		0xdf,
+	 	0xe0 | 0x18,
+	 	0xe0,
+	 		0xbf,
+	 		0xbf,
+	 		0xbf,
+	 		0xbf,
+	 	0xbf,
+	 		0xe0,
+	 		0x01,	 
+	 		0x01,	 
+	 	0xbf,
+	 	0xbf,
+	 		0xbf,
+	 		0xbf
 };
 
-/*
- *
- */
+ 
 
 static void snd_cs4236_ctrl_out(struct snd_wss *chip,
 				unsigned char reg, unsigned char val)
@@ -118,9 +52,7 @@ static unsigned char snd_cs4236_ctrl_in(struct snd_wss *chip, unsigned char reg)
 	return inb(chip->cport + 4);
 }
 
-/*
- *  PCM
- */
+ 
 
 #define CLOCKS 8
 
@@ -173,7 +105,7 @@ static void snd_cs4236_playback_format(struct snd_wss *chip,
 	unsigned char rate = divisor_to_rate_register(params->rate_den);
 	
 	spin_lock_irqsave(&chip->reg_lock, flags);
-	/* set fast playback format change and clean playback FIFO */
+	 
 	snd_wss_out(chip, CS4231_ALT_FEATURE_1,
 		    chip->image[CS4231_ALT_FEATURE_1] | 0x10);
 	snd_wss_out(chip, CS4231_PLAYBK_FORMAT, pdfr & 0xf0);
@@ -191,7 +123,7 @@ static void snd_cs4236_capture_format(struct snd_wss *chip,
 	unsigned char rate = divisor_to_rate_register(params->rate_den);
 	
 	spin_lock_irqsave(&chip->reg_lock, flags);
-	/* set fast capture format change and clean capture FIFO */
+	 
 	snd_wss_out(chip, CS4231_ALT_FEATURE_1,
 		    chip->image[CS4231_ALT_FEATURE_1] | 0x20);
 	snd_wss_out(chip, CS4231_REC_FORMAT, cdfr & 0xf0);
@@ -229,8 +161,8 @@ static void snd_cs4236_resume(struct snd_wss *chip)
 		switch (reg) {
 		case CS4236_EXT_REG:
 		case CS4231_VERSION:
-		case 27:	/* why? CS4235 - master left */
-		case 29:	/* why? CS4235 - master right */
+		case 27:	 
+		case 29:	 
 			break;
 		default:
 			snd_wss_out(chip, reg, chip->image[reg]);
@@ -251,11 +183,8 @@ static void snd_cs4236_resume(struct snd_wss *chip)
 	snd_wss_mce_down(chip);
 }
 
-#endif /* CONFIG_PM */
-/*
- * This function does no fail if the chip is not CS4236B or compatible.
- * It just an equivalent to the snd_wss_create() then.
- */
+#endif  
+ 
 int snd_cs4236_create(struct snd_card *card,
 		      unsigned long port,
 		      unsigned long cport,
@@ -318,12 +247,7 @@ int snd_cs4236_create(struct snd_card *card,
 	snd_cs4236_ctrl_out(chip, 5, reg);
 	snd_cs4236_ctrl_out(chip, 6, IEC958_AES1_CON_PCM_CODER >> 2);
 	snd_cs4236_ctrl_out(chip, 7, 0x00);
-	/*
-	 * 0x8c for C8 is valid for Turtle Beach Malibu - the IEC-958
-	 * output is working with this setup, other hardware should
-	 * have different signal paths and this value should be
-	 * selectable in the future
-	 */
+	 
 	snd_cs4236_ctrl_out(chip, 8, 0x8c);
 	chip->rate_constraint = snd_cs4236_xrate;
 	chip->set_playback_format = snd_cs4236_playback_format;
@@ -333,12 +257,12 @@ int snd_cs4236_create(struct snd_card *card,
 	chip->resume = snd_cs4236_resume;
 #endif
 
-	/* initialize extended registers */
+	 
 	for (reg = 0; reg < sizeof(snd_cs4236_ext_map); reg++)
 		snd_cs4236_ext_out(chip, CS4236_I23VAL(reg),
 				   snd_cs4236_ext_map[reg]);
 
-	/* initialize compatible but more featured registers */
+	 
 	snd_wss_out(chip, CS4231_LEFT_INPUT, 0x40);
 	snd_wss_out(chip, CS4231_RIGHT_INPUT, 0x40);
 	snd_wss_out(chip, CS4231_AUX1_LEFT_INPUT, 0xff);
@@ -371,9 +295,7 @@ int snd_cs4236_pcm(struct snd_wss *chip, int device)
 	return 0;
 }
 
-/*
- *  MIXER
- */
+ 
 
 #define CS4236_SINGLE(xname, xindex, reg, shift, mask, invert) \
 { .iface = SNDRV_CTL_ELEM_IFACE_MIXER, .name = xname, .index = xindex, \

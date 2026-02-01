@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/ceph/ceph_debug.h>
 
 #include <linux/module.h>
@@ -22,26 +22,14 @@
 #include "crypto.h"
 #include <linux/ceph/decode.h>
 
-/*
- * Ceph inode operations
- *
- * Implement basic inode helpers (get, alloc) and inode ops (getattr,
- * setattr, etc.), xattr helpers, and helpers for assimilating
- * metadata returned by the MDS into our cache.
- *
- * Also define helpers for doing asynchronous writeback, invalidation,
- * and truncation for the benefit of those who can't afford to block
- * (typically because they are in the message handler path).
- */
+ 
 
 static const struct inode_operations ceph_symlink_iops;
 static const struct inode_operations ceph_encrypted_symlink_iops;
 
 static void ceph_inode_work(struct work_struct *work);
 
-/*
- * find or create an inode, given the ceph ino number
- */
+ 
 static int ceph_set_ino_cb(struct inode *inode, void *data)
 {
 	struct ceph_inode_info *ci = ceph_inode(inode);
@@ -55,19 +43,7 @@ static int ceph_set_ino_cb(struct inode *inode, void *data)
 	return 0;
 }
 
-/**
- * ceph_new_inode - allocate a new inode in advance of an expected create
- * @dir: parent directory for new inode
- * @dentry: dentry that may eventually point to new inode
- * @mode: mode of new inode
- * @as_ctx: pointer to inherited security context
- *
- * Allocate a new inode in advance of an operation to create a new inode.
- * This allocates the inode and sets up the acl_sec_ctx with appropriate
- * info for the new inode.
- *
- * Returns a pointer to the new inode or an ERR_PTR.
- */
+ 
 struct inode *ceph_new_inode(struct inode *dir, struct dentry *dentry,
 			     umode_t *mode, struct ceph_acl_sec_ctx *as_ctx)
 {
@@ -91,10 +67,7 @@ struct inode *ceph_new_inode(struct inode *dir, struct dentry *dentry,
 	if (err < 0)
 		goto out_err;
 
-	/*
-	 * We'll skip setting fscrypt context for snapshots, leaving that for
-	 * the handle_reply().
-	 */
+	 
 	if (ceph_snap(dir) != CEPH_SNAPDIR) {
 		err = ceph_fscrypt_prepare_context(dir, inode, as_ctx);
 		if (err)
@@ -117,15 +90,7 @@ void ceph_as_ctx_to_req(struct ceph_mds_request *req,
 	ceph_fscrypt_as_ctx_to_req(req, as_ctx);
 }
 
-/**
- * ceph_get_inode - find or create/hash a new inode
- * @sb: superblock to search and allocate in
- * @vino: vino to search for
- * @newino: optional new inode to insert if one isn't found (may be NULL)
- *
- * Search for or insert a new inode into the hash for the given vino, and
- * return a reference to it. If new is non-NULL, its reference is consumed.
- */
+ 
 struct inode *ceph_get_inode(struct super_block *sb, struct ceph_vino vino,
 			     struct inode *newino)
 {
@@ -154,9 +119,7 @@ struct inode *ceph_get_inode(struct super_block *sb, struct ceph_vino vino,
 	return inode;
 }
 
-/*
- * get/constuct snapdir inode for a given directory
- */
+ 
 struct inode *ceph_get_snapdir(struct inode *parent)
 {
 	struct ceph_vino vino = {
@@ -192,7 +155,7 @@ struct inode *ceph_get_snapdir(struct inode *parent)
 	ci->i_btime = ceph_inode(parent)->i_btime;
 
 #ifdef CONFIG_FS_ENCRYPTION
-	/* if encrypted, just borrow fscrypt_auth from parent */
+	 
 	if (IS_ENCRYPTED(parent)) {
 		struct ceph_inode_info *pci = ceph_inode(parent);
 
@@ -212,7 +175,7 @@ struct inode *ceph_get_snapdir(struct inode *parent)
 	if (inode->i_state & I_NEW) {
 		inode->i_op = &ceph_snapdir_iops;
 		inode->i_fop = &ceph_snapdir_fops;
-		ci->i_snap_caps = CEPH_CAP_PIN; /* so we can open */
+		ci->i_snap_caps = CEPH_CAP_PIN;  
 		unlock_new_inode(inode);
 	}
 
@@ -235,17 +198,9 @@ const struct inode_operations ceph_file_iops = {
 };
 
 
-/*
- * We use a 'frag tree' to keep track of the MDS's directory fragments
- * for a given inode (usually there is just a single fragment).  We
- * need to know when a child frag is delegated to a new MDS, or when
- * it is flagged as replicated, so we can direct our requests
- * accordingly.
- */
+ 
 
-/*
- * find/create a frag in the tree
- */
+ 
 static struct ceph_inode_frag *__get_or_create_frag(struct ceph_inode_info *ci,
 						    u32 f)
 {
@@ -284,9 +239,7 @@ static struct ceph_inode_frag *__get_or_create_frag(struct ceph_inode_info *ci,
 	return frag;
 }
 
-/*
- * find a specific frag @f
- */
+ 
 struct ceph_inode_frag *__ceph_find_frag(struct ceph_inode_info *ci, u32 f)
 {
 	struct rb_node *n = ci->i_fragtree.rb_node;
@@ -305,11 +258,7 @@ struct ceph_inode_frag *__ceph_find_frag(struct ceph_inode_info *ci, u32 f)
 	return NULL;
 }
 
-/*
- * Choose frag containing the given value @v.  If @pfrag is
- * specified, copy the frag delegation info to the caller if
- * it is present.
- */
+ 
 static u32 __ceph_choose_frag(struct ceph_inode_info *ci, u32 v,
 			      struct ceph_inode_frag *pfrag, int *found)
 {
@@ -325,7 +274,7 @@ static u32 __ceph_choose_frag(struct ceph_inode_info *ci, u32 v,
 		WARN_ON(!ceph_frag_contains_value(t, v));
 		frag = __ceph_find_frag(ci, t);
 		if (!frag)
-			break; /* t is a leaf */
+			break;  
 		if (frag->split_by == 0) {
 			if (pfrag)
 				memcpy(pfrag, frag, sizeof(*pfrag));
@@ -334,7 +283,7 @@ static u32 __ceph_choose_frag(struct ceph_inode_info *ci, u32 v,
 			break;
 		}
 
-		/* choose child */
+		 
 		nway = 1 << frag->split_by;
 		dout("choose_frag(%x) %x splits by %d (%d ways)\n", v, t,
 		     frag->split_by, nway);
@@ -362,11 +311,7 @@ u32 ceph_choose_frag(struct ceph_inode_info *ci, u32 v,
 	return ret;
 }
 
-/*
- * Process dirfrag (delegation) info from the mds.  Include leaf
- * fragment in tree ONLY if ndist > 0.  Otherwise, only
- * branches/splits are included in i_fragtree)
- */
+ 
 static int ceph_fill_dirfrag(struct inode *inode,
 			     struct ceph_mds_reply_dirfrag *dirinfo)
 {
@@ -384,23 +329,23 @@ static int ceph_fill_dirfrag(struct inode *inode,
 		diri_auth = ci->i_auth_cap->mds;
 	spin_unlock(&ci->i_ceph_lock);
 
-	if (mds == -1) /* CDIR_AUTH_PARENT */
+	if (mds == -1)  
 		mds = diri_auth;
 
 	mutex_lock(&ci->i_fragtree_mutex);
 	if (ndist == 0 && mds == diri_auth) {
-		/* no delegation info needed. */
+		 
 		frag = __ceph_find_frag(ci, id);
 		if (!frag)
 			goto out;
 		if (frag->split_by == 0) {
-			/* tree leaf, remove */
+			 
 			dout("fill_dirfrag removed %llx.%llx frag %x"
 			     " (no ref)\n", ceph_vinop(inode), id);
 			rb_erase(&frag->node, &ci->i_fragtree);
 			kfree(frag);
 		} else {
-			/* tree branch, keep and clear */
+			 
 			dout("fill_dirfrag cleared %llx.%llx frag %x"
 			     " referral\n", ceph_vinop(inode), id);
 			frag->mds = -1;
@@ -410,11 +355,10 @@ static int ceph_fill_dirfrag(struct inode *inode,
 	}
 
 
-	/* find/add this frag to store mds delegation info */
+	 
 	frag = __get_or_create_frag(ci, id);
 	if (IS_ERR(frag)) {
-		/* this is not the end of the world; we can continue
-		   with bad/inaccurate delegation info */
+		 
 		pr_err("fill_dirfrag ENOMEM on mds ref %llx.%llx fg %x\n",
 		       ceph_vinop(inode), le32_to_cpu(dirinfo->frag));
 		err = -ENOMEM;
@@ -511,7 +455,7 @@ static int ceph_fill_fragtree(struct inode *inode,
 				break;
 			}
 			rb_node = rb_next(rb_node);
-			/* delete stale split/leaf node */
+			 
 			if (frag->split_by > 0 ||
 			    !is_frag_child(frag->frag, prev_frag)) {
 				rb_erase(&frag->node, &ci->i_fragtree);
@@ -535,7 +479,7 @@ static int ceph_fill_fragtree(struct inode *inode,
 	while (rb_node) {
 		frag = rb_entry(rb_node, struct ceph_inode_frag, node);
 		rb_node = rb_next(rb_node);
-		/* delete stale split/leaf node */
+		 
 		if (frag->split_by > 0 ||
 		    !is_frag_child(frag->frag, prev_frag)) {
 			rb_erase(&frag->node, &ci->i_fragtree);
@@ -549,9 +493,7 @@ out_unlock:
 	return 0;
 }
 
-/*
- * initialize a newly allocated inode.
- */
+ 
 struct inode *ceph_alloc_inode(struct super_block *sb)
 {
 	struct ceph_inode_info *ci;
@@ -563,7 +505,7 @@ struct inode *ceph_alloc_inode(struct super_block *sb)
 
 	dout("alloc_inode %p\n", &ci->netfs.inode);
 
-	/* Set parameters for the netfs library */
+	 
 	netfs_inode_init(&ci->netfs, &ceph_netfs_ops);
 
 	spin_lock_init(&ci->i_ceph_lock);
@@ -695,10 +637,7 @@ void ceph_evict_inode(struct inode *inode)
 	if (__ceph_has_quota(ci, QUOTA_GET_ANY))
 		ceph_adjust_quota_realms_count(inode, false);
 
-	/*
-	 * we may still have a snap_realm reference if there are stray
-	 * caps in i_snap_caps.
-	 */
+	 
 	if (ci->i_snap_realm) {
 		if (ceph_snap(inode) == CEPH_NOSNAP) {
 			dout(" dropping residual ref to snap realm %p\n",
@@ -732,14 +671,7 @@ static inline blkcnt_t calc_inode_blocks(u64 size)
 	return (size + (1<<9) - 1) >> 9;
 }
 
-/*
- * Helpers to fill in size, ctime, mtime, and atime.  We have to be
- * careful because either the client or MDS may have more up to date
- * info, depending on which capabilities are held, and whether
- * time_warp_seq or truncate_seq have increased.  (Ordinarily, mtime
- * and size are monotonically increasing, except when utimes() or
- * truncate() increments the corresponding _seq values.)
- */
+ 
 int ceph_fill_file_size(struct inode *inode, int issued,
 			u32 truncate_seq, u64 truncate_size, u64 size)
 {
@@ -756,10 +688,7 @@ int ceph_fill_file_size(struct inode *inode, int issued,
 		}
 		i_size_write(inode, size);
 		inode->i_blocks = calc_inode_blocks(size);
-		/*
-		 * If we're expanding, then we should be able to just update
-		 * the existing cookie.
-		 */
+		 
 		if (size > isize)
 			ceph_fscache_update(inode);
 		ci->i_reported_size = size;
@@ -768,15 +697,10 @@ int ceph_fill_file_size(struct inode *inode, int issued,
 			     ci->i_truncate_seq, truncate_seq);
 			ci->i_truncate_seq = truncate_seq;
 
-			/* the MDS should have revoked these caps */
+			 
 			WARN_ON_ONCE(issued & (CEPH_CAP_FILE_RD |
 					       CEPH_CAP_FILE_LAZYIO));
-			/*
-			 * If we hold relevant caps, or in the case where we're
-			 * not the only client referencing this file and we
-			 * don't hold those caps, then we need to check whether
-			 * the file is either opened or mmaped
-			 */
+			 
 			if ((issued & (CEPH_CAP_FILE_CACHE|
 				       CEPH_CAP_FILE_BUFFER)) ||
 			    mapping_mapped(inode->i_mapping) ||
@@ -787,12 +711,7 @@ int ceph_fill_file_size(struct inode *inode, int issued,
 		}
 	}
 
-	/*
-	 * It's possible that the new sizes of the two consecutive
-	 * size truncations will be in the same fscrypt last block,
-	 * and we need to truncate the corresponding page caches
-	 * anyway.
-	 */
+	 
 	if (ceph_seq_cmp(truncate_seq, ci->i_truncate_seq) >= 0) {
 		dout("%s truncate_size %lld -> %llu, encrypted %d\n", __func__,
 		     ci->i_truncate_size, truncate_size, !!IS_ENCRYPTED(inode));
@@ -832,7 +751,7 @@ void ceph_fill_file_time(struct inode *inode, int issued,
 		}
 		if (ci->i_version == 0 ||
 		    ceph_seq_cmp(time_warp_seq, ci->i_time_warp_seq) > 0) {
-			/* the MDS did a utimes() */
+			 
 			dout("mtime %lld.%09ld -> %lld.%09ld "
 			     "tw %d -> %d\n",
 			     inode->i_mtime.tv_sec, inode->i_mtime.tv_nsec,
@@ -843,7 +762,7 @@ void ceph_fill_file_time(struct inode *inode, int issued,
 			inode->i_atime = *atime;
 			ci->i_time_warp_seq = time_warp_seq;
 		} else if (time_warp_seq == ci->i_time_warp_seq) {
-			/* nobody did utimes(); take the max */
+			 
 			if (timespec64_compare(mtime, &inode->i_mtime) > 0) {
 				dout("mtime %lld.%09ld -> %lld.%09ld inc\n",
 				     inode->i_mtime.tv_sec,
@@ -859,12 +778,12 @@ void ceph_fill_file_time(struct inode *inode, int issued,
 				inode->i_atime = *atime;
 			}
 		} else if (issued & CEPH_CAP_FILE_EXCL) {
-			/* we did a utimes(); ignore mds values */
+			 
 		} else {
 			warn = 1;
 		}
 	} else {
-		/* we have no write|excl caps; whatever the MDS says is true */
+		 
 		if (ceph_seq_cmp(time_warp_seq, ci->i_time_warp_seq) >= 0) {
 			inode_set_ctime_to_ts(inode, *ctime);
 			inode->i_mtime = *mtime;
@@ -874,7 +793,7 @@ void ceph_fill_file_time(struct inode *inode, int issued,
 			warn = 1;
 		}
 	}
-	if (warn) /* time_warp_seq shouldn't go backwards */
+	if (warn)  
 		dout("%p mds time_warp_seq %llu < %u\n",
 		     inode, time_warp_seq, ci->i_time_warp_seq);
 }
@@ -907,10 +826,7 @@ static int decode_encrypted_symlink(const char *encsym, int symlen, u8 **decsym)
 }
 #endif
 
-/*
- * Populate an inode based on info from mds.  May be called on new or
- * existing inodes.
- */
+ 
 int ceph_fill_inode(struct inode *inode, struct page *locked_page,
 		    struct ceph_mds_reply_info_in *iinfo,
 		    struct ceph_mds_reply_dirfrag *dirinfo,
@@ -940,7 +856,7 @@ int ceph_fill_inode(struct inode *inode, struct page *locked_page,
 	     inode, ceph_vinop(inode), le64_to_cpu(info->version),
 	     ci->i_version);
 
-	/* Once I_NEW is cleared, we can't change type or dev numbers */
+	 
 	if (inode->i_state & I_NEW) {
 		inode->i_mode = mode;
 	} else {
@@ -961,18 +877,14 @@ int ceph_fill_inode(struct inode *inode, struct page *locked_page,
 
 	info_caps = le32_to_cpu(info->cap.caps);
 
-	/* prealloc new cap struct */
+	 
 	if (info_caps && ceph_snap(inode) == CEPH_NOSNAP) {
 		new_cap = ceph_get_cap(mdsc, caps_reservation);
 		if (!new_cap)
 			return -ENOMEM;
 	}
 
-	/*
-	 * prealloc xattr data, if it looks like we'll need it.  only
-	 * if len > 4 (meaning there are actually xattrs; the first 4
-	 * bytes are the xattr count).
-	 */
+	 
 	if (iinfo->xattr_len > 4) {
 		xattr_blob = ceph_buffer_new(iinfo->xattr_len, GFP_NOFS);
 		if (!xattr_blob)
@@ -989,23 +901,13 @@ int ceph_fill_inode(struct inode *inode, struct page *locked_page,
 
 	spin_lock(&ci->i_ceph_lock);
 
-	/*
-	 * provided version will be odd if inode value is projected,
-	 * even if stable.  skip the update if we have newer stable
-	 * info (ours>=theirs, e.g. due to racing mds replies), unless
-	 * we are getting projected (unstable) info (in which case the
-	 * version is odd, and we want ours>theirs).
-	 *   us   them
-	 *   2    2     skip
-	 *   3    2     skip
-	 *   3    3     update
-	 */
+	 
 	if (ci->i_version == 0 ||
 	    ((info->cap.flags & CEPH_CAP_FLAG_AUTH) &&
 	     le64_to_cpu(info->version) > (ci->i_version & ~1)))
 		new_version = true;
 
-	/* Update change_attribute */
+	 
 	inode_set_max_iversion_raw(inode, iinfo->change_attr);
 
 	__ceph_caps_issued(ci, &issued);
@@ -1038,7 +940,7 @@ int ceph_fill_inode(struct inode *inode, struct page *locked_page,
 		ceph_decode_timespec64(&ci->i_snap_btime, &iinfo->snap_btime);
 	}
 
-	/* directories have fl_stripe_unit set to zero */
+	 
 	if (IS_ENCRYPTED(inode))
 		inode->i_blkbits = CEPH_FSCRYPT_BLOCK_SHIFT;
 	else if (le32_to_cpu(info->layout.fl_stripe_unit))
@@ -1052,7 +954,7 @@ int ceph_fill_inode(struct inode *inode, struct page *locked_page,
 		set_nlink(inode, le32_to_cpu(info->nlink));
 
 	if (new_version || (new_issued & CEPH_CAP_ANY_RD)) {
-		/* be careful with mtime, atime, size */
+		 
 		ceph_decode_timespec64(&atime, &info->atime);
 		ceph_decode_timespec64(&mtime, &info->mtime);
 		ceph_decode_timespec64(&ctime, &info->ctime);
@@ -1098,7 +1000,7 @@ int ceph_fill_inode(struct inode *inode, struct page *locked_page,
 					le32_to_cpu(info->truncate_seq),
 					le64_to_cpu(info->truncate_size),
 					size);
-		/* only update max_size on auth cap */
+		 
 		if ((info->cap.flags & CEPH_CAP_FLAG_AUTH) &&
 		    ci->i_max_size != le64_to_cpu(info->max_size)) {
 			dout("max_size %lld -> %llu\n", ci->i_max_size,
@@ -1107,8 +1009,7 @@ int ceph_fill_inode(struct inode *inode, struct page *locked_page,
 		}
 	}
 
-	/* layout and rstat are not tracked by capability, update them if
-	 * the inode info is from auth mds */
+	 
 	if (new_version || (info->cap.flags & CEPH_CAP_FLAG_AUTH)) {
 		if (S_ISDIR(inode->i_mode)) {
 			ci->i_dir_layout = iinfo->dir_layout;
@@ -1121,8 +1022,8 @@ int ceph_fill_inode(struct inode *inode, struct page *locked_page,
 		}
 	}
 
-	/* xattrs */
-	/* note that if i_xattrs.len <= 4, i_xattrs.data will still be NULL. */
+	 
+	 
 	if ((ci->i_xattrs.version == 0 || !(issued & CEPH_CAP_XATTR_EXCL))  &&
 	    le64_to_cpu(info->xattr_version) > ci->i_xattrs.version) {
 		if (ci->i_xattrs.blob)
@@ -1137,7 +1038,7 @@ int ceph_fill_inode(struct inode *inode, struct page *locked_page,
 		xattr_blob = NULL;
 	}
 
-	/* finally update i_version */
+	 
 	if (le64_to_cpu(info->version) > ci->i_version)
 		ci->i_version = le64_to_cpu(info->version);
 
@@ -1198,14 +1099,11 @@ int ceph_fill_inode(struct inode *inode, struct page *locked_page,
 			if (!ci->i_symlink)
 				ci->i_symlink = sym;
 			else
-				kfree(sym); /* lost a race */
+				kfree(sym);  
 		}
 
 		if (IS_ENCRYPTED(inode)) {
-			/*
-			 * Encrypted symlinks need to be decrypted before we can
-			 * cache their targets in i_link. Don't touch it here.
-			 */
+			 
 			inode->i_op = &ceph_encrypted_symlink_iops;
 		} else {
 			inode->i_link = ci->i_symlink;
@@ -1221,7 +1119,7 @@ int ceph_fill_inode(struct inode *inode, struct page *locked_page,
 		       ceph_vinop(inode), inode->i_mode);
 	}
 
-	/* were we issued a capability? */
+	 
 	if (info_caps) {
 		if (ceph_snap(inode) == CEPH_NOSNAP) {
 			ceph_add_cap(inode, session,
@@ -1233,7 +1131,7 @@ int ceph_fill_inode(struct inode *inode, struct page *locked_page,
 				     le64_to_cpu(info->cap.realm),
 				     info->cap.flags, &new_cap);
 
-			/* set dir completion flag? */
+			 
 			if (S_ISDIR(inode->i_mode) &&
 			    ci->i_files == 0 && ci->i_subdirs == 0 &&
 			    (info_caps & CEPH_CAP_FILE_SHARED) &&
@@ -1281,15 +1179,15 @@ int ceph_fill_inode(struct inode *inode, struct page *locked_page,
 	if (wake)
 		wake_up_all(&ci->i_cap_wq);
 
-	/* queue truncate if we saw i_size decrease */
+	 
 	if (queue_trunc)
 		ceph_queue_vmtruncate(inode);
 
-	/* populate frag tree */
+	 
 	if (S_ISDIR(inode->i_mode))
 		ceph_fill_fragtree(inode, &info->fragtree, dirinfo);
 
-	/* update delegation info? */
+	 
 	if (dirinfo)
 		ceph_fill_dirfrag(inode, dirinfo);
 
@@ -1303,9 +1201,7 @@ out:
 	return err;
 }
 
-/*
- * caller should hold session s_mutex and dentry->d_lock.
- */
+ 
 static void __update_dentry_lease(struct inode *dir, struct dentry *dentry,
 				  struct ceph_mds_reply_lease *lease,
 				  struct ceph_mds_session *session,
@@ -1321,7 +1217,7 @@ static void __update_dentry_lease(struct inode *dir, struct dentry *dentry,
 	dout("update_dentry_lease %p duration %lu ms ttl %lu\n",
 	     dentry, duration, ttl);
 
-	/* only track leases on regular dentries */
+	 
 	if (ceph_snap(dir) != CEPH_NOSNAP)
 		return;
 
@@ -1338,7 +1234,7 @@ static void __update_dentry_lease(struct inode *dir, struct dentry *dentry,
 
 	if (di->lease_gen == atomic_read(&session->s_cap_gen) &&
 	    time_before(ttl, di->time))
-		return;  /* we already have a newer lease. */
+		return;   
 
 	if (di->lease_session && di->lease_session != session) {
 		*old_lease_session = di->lease_session;
@@ -1369,9 +1265,7 @@ static inline void update_dentry_lease(struct inode *dir, struct dentry *dentry,
 	ceph_put_mds_session(old_lease_session);
 }
 
-/*
- * update dentry lease without having parent inode locked
- */
+ 
 static void update_dentry_lease_careful(struct dentry *dentry,
 					struct ceph_mds_reply_lease *lease,
 					struct ceph_mds_session *session,
@@ -1385,18 +1279,17 @@ static void update_dentry_lease_careful(struct dentry *dentry,
 	struct ceph_mds_session *old_lease_session = NULL;
 
 	spin_lock(&dentry->d_lock);
-	/* make sure dentry's name matches target */
+	 
 	if (dentry->d_name.len != dname_len ||
 	    memcmp(dentry->d_name.name, dname, dname_len))
 		goto out_unlock;
 
 	dir = d_inode(dentry->d_parent);
-	/* make sure parent matches dvino */
+	 
 	if (!ceph_ino_compare(dir, pdvino))
 		goto out_unlock;
 
-	/* make sure dentry's inode matches target. NULL ptvino means that
-	 * we expect a negative dentry */
+	 
 	if (ptvino) {
 		if (d_really_is_negative(dentry))
 			goto out_unlock;
@@ -1414,10 +1307,7 @@ out_unlock:
 	ceph_put_mds_session(old_lease_session);
 }
 
-/*
- * splice a dentry to an inode.
- * caller must hold directory i_rwsem for this to be safe.
- */
+ 
 static int splice_dentry(struct dentry **pdn, struct inode *in)
 {
 	struct dentry *dn = *pdn;
@@ -1426,10 +1316,7 @@ static int splice_dentry(struct dentry **pdn, struct inode *in)
 	BUG_ON(d_inode(dn));
 
 	if (S_ISDIR(in->i_mode)) {
-		/* If inode is directory, d_splice_alias() below will remove
-		 * 'realdn' from its origin parent. We need to ensure that
-		 * origin parent's readdir cache will not reference 'realdn'
-		 */
+		 
 		realdn = d_find_any_alias(in);
 		if (realdn) {
 			struct ceph_dentry_info *di = ceph_dentry(realdn);
@@ -1446,7 +1333,7 @@ static int splice_dentry(struct dentry **pdn, struct inode *in)
 		}
 	}
 
-	/* dn must be unhashed */
+	 
 	if (!d_unhashed(dn))
 		d_drop(dn);
 	realdn = d_splice_alias(in, dn);
@@ -1472,17 +1359,7 @@ static int splice_dentry(struct dentry **pdn, struct inode *in)
 	return 0;
 }
 
-/*
- * Incorporate results into the local cache.  This is either just
- * one inode, or a directory, dentry, and possibly linked-to inode (e.g.,
- * after a lookup).
- *
- * A reply may contain
- *         a directory inode along with a dentry.
- *  and/or a target inode
- *
- * Called with snap_rwsem (read).
- */
+ 
 int ceph_fill_trace(struct super_block *sb, struct ceph_mds_request *req)
 {
 	struct ceph_mds_session *session = req->r_session;
@@ -1590,7 +1467,7 @@ retry_lookup:
 	}
 
 	if (rinfo->head->is_target) {
-		/* Should be filled in by handle_reply */
+		 
 		BUG_ON(!req->r_target_inode);
 
 		in = req->r_target_inode;
@@ -1614,21 +1491,14 @@ retry_lookup:
 			unlock_new_inode(in);
 	}
 
-	/*
-	 * ignore null lease/binding on snapdir ENOENT, or else we
-	 * will have trouble splicing in the virtual snapdir later
-	 */
+	 
 	if (rinfo->head->is_dentry &&
             !test_bit(CEPH_MDS_R_ABORTED, &req->r_req_flags) &&
 	    test_bit(CEPH_MDS_R_PARENT_LOCKED, &req->r_req_flags) &&
 	    (rinfo->head->is_target || strncmp(req->r_dentry->d_name.name,
 					       fsc->mount_options->snapdir_name,
 					       req->r_dentry->d_name.len))) {
-		/*
-		 * lookup link rename   : null -> possibly existing inode
-		 * mknod symlink mkdir  : null -> new inode
-		 * unlink               : linked -> null
-		 */
+		 
 		struct inode *dir = req->r_parent;
 		struct dentry *dn = req->r_dentry;
 		bool have_dir_cap, have_lease;
@@ -1643,18 +1513,18 @@ retry_lookup:
 		BUG_ON(ceph_ino(dir) != dvino.ino);
 		BUG_ON(ceph_snap(dir) != dvino.snap);
 
-		/* do we have a lease on the whole dir? */
+		 
 		have_dir_cap =
 			(le32_to_cpu(rinfo->diri.in->cap.caps) &
 			 CEPH_CAP_FILE_SHARED);
 
-		/* do we have a dn lease? */
+		 
 		have_lease = have_dir_cap ||
 			le32_to_cpu(rinfo->dlease->duration_ms);
 		if (!have_lease)
 			dout("fill_trace  no dentry lease or dir cap\n");
 
-		/* rename? */
+		 
 		if (req->r_old_dentry && req->r_op == CEPH_MDS_OP_RENAME) {
 			struct inode *olddir = req->r_old_dentry_dir;
 			BUG_ON(!olddir);
@@ -1666,7 +1536,7 @@ retry_lookup:
 			dout("fill_trace doing d_move %p -> %p\n",
 			     req->r_old_dentry, dn);
 
-			/* d_move screws up sibling dentries' offsets */
+			 
 			ceph_dir_clear_ordered(dir);
 			ceph_dir_clear_ordered(olddir);
 
@@ -1676,22 +1546,19 @@ retry_lookup:
 			     req->r_old_dentry,
 			     dn, dn);
 
-			/* ensure target dentry is invalidated, despite
-			   rehashing bug in vfs_rename_dir */
+			 
 			ceph_invalidate_dentry_lease(dn);
 
 			dout("dn %p gets new offset %lld\n", req->r_old_dentry,
 			     ceph_dentry(req->r_old_dentry)->offset);
 
-			/* swap r_dentry and r_old_dentry in case that
-			 * splice_dentry() gets called later. This is safe
-			 * because no other place will use them */
+			 
 			req->r_dentry = req->r_old_dentry;
 			req->r_old_dentry = dn;
 			dn = req->r_dentry;
 		}
 
-		/* null dentry? */
+		 
 		if (!rinfo->head->is_target) {
 			dout("fill_trace null dentry\n");
 			if (d_really_is_positive(dn)) {
@@ -1710,14 +1577,14 @@ retry_lookup:
 			goto done;
 		}
 
-		/* attach proper inode */
+		 
 		if (d_really_is_negative(dn)) {
 			ceph_dir_clear_ordered(dir);
 			ihold(in);
 			err = splice_dentry(&req->r_dentry, in);
 			if (err < 0)
 				goto done;
-			dn = req->r_dentry;  /* may have spliced */
+			dn = req->r_dentry;   
 		} else if (d_really_is_positive(dn) && d_inode(dn) != in) {
 			dout(" %p links to %p %llx.%llx, not %llx.%llx\n",
 			     dn, d_inode(dn), ceph_vinop(d_inode(dn)),
@@ -1738,7 +1605,7 @@ retry_lookup:
 		   !test_bit(CEPH_MDS_R_ABORTED, &req->r_req_flags)) {
 		struct inode *dir = req->r_parent;
 
-		/* fill out a snapdir LOOKUPSNAP dentry */
+		 
 		BUG_ON(!dir);
 		BUG_ON(ceph_snap(dir) != CEPH_SNAPDIR);
 		BUG_ON(!req->r_dentry);
@@ -1749,7 +1616,7 @@ retry_lookup:
 		if (err < 0)
 			goto done;
 	} else if (rinfo->head->is_dentry && req->r_dentry) {
-		/* parent inode is not locked, be carefull */
+		 
 		struct ceph_vino *ptvino = NULL;
 		dvino.ino = le64_to_cpu(rinfo->diri.in->ino);
 		dvino.snap = le64_to_cpu(rinfo->diri.in->snapid);
@@ -1768,9 +1635,7 @@ done:
 	return err;
 }
 
-/*
- * Prepopulate our cache with readdir results, leases, etc.
- */
+ 
 static int readdir_prepopulate_inodes_only(struct ceph_mds_request *req,
 					   struct ceph_mds_session *session)
 {
@@ -1840,8 +1705,7 @@ static int fill_readdir_cache(struct inode *dir, struct dentry *dn,
 			ctl->index = -1;
 			return idx == 0 ? -ENOMEM : 0;
 		}
-		/* reading/filling the cache are serialized by
-		 * i_rwsem, no need to use page lock */
+		 
 		unlock_page(ctl->page);
 		ctl->dentries = kmap(ctl->page);
 		if (idx == 0)
@@ -1886,7 +1750,7 @@ int ceph_readdir_prepopulate(struct ceph_mds_request *req,
 						  strlen(req->r_path2));
 			last_hash = ceph_frag_value(last_hash);
 		} else if (rinfo->offset_hash) {
-			/* mds understands offset_hash */
+			 
 			WARN_ON_ONCE(req->r_readdir_offset != 2);
 			last_hash = le32_to_cpu(req->r_args.readdir.offset_hash);
 		}
@@ -1913,8 +1777,7 @@ int ceph_readdir_prepopulate(struct ceph_mds_request *req,
 		if (ceph_frag_is_leftmost(frag) &&
 		    req->r_readdir_offset == 2 &&
 		    !(rinfo->hash_order && last_hash)) {
-			/* note dir version at start of readdir so we can
-			 * tell if any dentries get dropped */
+			 
 			req->r_dir_release_cnt =
 				atomic64_read(&ci->i_release_count);
 			req->r_dir_ordered_cnt =
@@ -1926,7 +1789,7 @@ int ceph_readdir_prepopulate(struct ceph_mds_request *req,
 	cache_ctl.index = req->r_readdir_cache_idx;
 	fpos_offset = req->r_readdir_offset;
 
-	/* FIXME: release caps/leases if error occurs */
+	 
 	for (i = 0; i < rinfo->dir_nr; i++) {
 		struct ceph_mds_reply_dir_entry *rde = rinfo->dir_entries + i;
 		struct ceph_vino tvino;
@@ -1988,7 +1851,7 @@ retry_lookup:
 			goto retry_lookup;
 		}
 
-		/* inode */
+		 
 		if (d_really_is_positive(dn)) {
 			in = d_inode(dn);
 		} else {
@@ -2151,10 +2014,7 @@ out:
 		ceph_check_caps(ci, 0);
 }
 
-/*
- * Make sure any pending truncation is applied before doing anything
- * that may depend on it.
- */
+ 
 void __ceph_do_pending_vmtruncate(struct inode *inode)
 {
 	struct ceph_inode_info *ci = ceph_inode(inode);
@@ -2171,10 +2031,7 @@ retry:
 		return;
 	}
 
-	/*
-	 * make sure any dirty snapped pages are flushed before we
-	 * possibly truncate them.. so write AND block!
-	 */
+	 
 	if (ci->i_wrbuffer_ref_head < ci->i_wrbuffer_ref) {
 		spin_unlock(&ci->i_ceph_lock);
 		dout("%s %p flushing snaps first\n", __func__, inode);
@@ -2183,7 +2040,7 @@ retry:
 		goto retry;
 	}
 
-	/* there should be no reader or writer */
+	 
 	WARN_ON_ONCE(ci->i_rd_ref || ci->i_wr_ref);
 
 	to = ci->i_truncate_pagecache_size;
@@ -2263,9 +2120,7 @@ static int ceph_encrypted_symlink_getattr(struct mnt_idmap *idmap,
 	return fscrypt_symlink_getattr(path, stat);
 }
 
-/*
- * symlinks
- */
+ 
 static const struct inode_operations ceph_symlink_iops = {
 	.get_link = simple_get_link,
 	.setattr = ceph_setattr,
@@ -2280,13 +2135,7 @@ static const struct inode_operations ceph_encrypted_symlink_iops = {
 	.listxattr = ceph_listxattr,
 };
 
-/*
- * Transfer the encrypted last block to the MDS and the MDS
- * will help update it when truncating a smaller size.
- *
- * We don't support a PAGE_SIZE that is smaller than the
- * CEPH_FSCRYPT_BLOCK_SIZE.
- */
+ 
 static int fill_fscrypt_truncate(struct inode *inode,
 				 struct ceph_mds_request *req,
 				 struct iattr *attr)
@@ -2317,7 +2166,7 @@ static int fill_fscrypt_truncate(struct inode *inode,
 	     i_size, attr->ia_size, ceph_cap_string(got),
 	     ceph_cap_string(issued));
 
-	/* Try to writeback the dirty pagecaches */
+	 
 	if (issued & (CEPH_CAP_FILE_BUFFER)) {
 		loff_t lend = orig_pos + CEPH_FSCRYPT_BLOCK_SHIFT - 1;
 
@@ -2348,27 +2197,15 @@ static int fill_fscrypt_truncate(struct inode *inode,
 	if (ret < 0)
 		goto out;
 
-	/* Insert the header first */
+	 
 	header.ver = 1;
 	header.compat = 1;
 	header.change_attr = cpu_to_le64(inode_peek_iversion_raw(inode));
 
-	/*
-	 * Always set the block_size to CEPH_FSCRYPT_BLOCK_SIZE,
-	 * because in MDS it may need this to do the truncate.
-	 */
+	 
 	header.block_size = cpu_to_le32(CEPH_FSCRYPT_BLOCK_SIZE);
 
-	/*
-	 * If we hit a hole here, we should just skip filling
-	 * the fscrypt for the request, because once the fscrypt
-	 * is enabled, the file will be split into many blocks
-	 * with the size of CEPH_FSCRYPT_BLOCK_SIZE, if there
-	 * has a hole, the hole size should be multiple of block
-	 * size.
-	 *
-	 * If the Rados object doesn't exist, it will be set to 0.
-	 */
+	 
 	if (!objver) {
 		dout("%s hit hole, ppos %lld < size %lld\n", __func__,
 		     pos, i_size);
@@ -2383,10 +2220,10 @@ static int fill_fscrypt_truncate(struct inode *inode,
 		dout("%s encrypt block boff/bsize %d/%lu\n", __func__,
 		     boff, CEPH_FSCRYPT_BLOCK_SIZE);
 
-		/* truncate and zero out the extra contents for the last block */
+		 
 		memset(iov.iov_base + boff, 0, PAGE_SIZE - boff);
 
-		/* encrypt the last block */
+		 
 		ret = ceph_fscrypt_encrypt_block_inplace(inode, page,
 						    CEPH_FSCRYPT_BLOCK_SIZE,
 						    0, block,
@@ -2395,13 +2232,13 @@ static int fill_fscrypt_truncate(struct inode *inode,
 			goto out;
 	}
 
-	/* Insert the header */
+	 
 	ret = ceph_pagelist_append(pagelist, &header, sizeof(header));
 	if (ret)
 		goto out;
 
 	if (header.block_size) {
-		/* Append the last block contents to pagelist */
+		 
 		ret = ceph_pagelist_append(pagelist, iov.iov_base,
 					   CEPH_FSCRYPT_BLOCK_SIZE);
 		if (ret)
@@ -2437,7 +2274,7 @@ int __ceph_setattr(struct inode *inode, struct iattr *attr,
 	int inode_dirty_flags = 0;
 	bool lock_snap_rwsem = false;
 	bool fill_fscrypt;
-	int truncate_retry = 20; /* The RMW will take around 50ms */
+	int truncate_retry = 20;  
 
 retry:
 	prealloc_cf = ceph_alloc_cap_flush();
@@ -2480,7 +2317,7 @@ retry:
 		dout("setattr %llx:%llx fscrypt_auth len %u to %u)\n",
 			ceph_vinop(inode), ci->fscrypt_auth_len, len);
 
-		/* It should never be re-set once set */
+		 
 		WARN_ON_ONCE(ci->fscrypt_auth);
 
 		if (issued & CEPH_CAP_AUTH_EXCL) {
@@ -2503,7 +2340,7 @@ retry:
 		spin_unlock(&ci->i_ceph_lock);
 		goto out;
 	}
-#endif /* CONFIG_FS_ENCRYPTION */
+#endif  
 
 	if (ia_valid & ATTR_UID) {
 		dout("setattr %p uid %d -> %d\n", inode,
@@ -2574,10 +2411,7 @@ retry:
 	}
 	if (ia_valid & ATTR_SIZE) {
 		dout("setattr %p size %lld -> %lld\n", inode, isize, attr->ia_size);
-		/*
-		 * Only when the new size is smaller and not aligned to
-		 * CEPH_FSCRYPT_BLOCK_SIZE will the RMW is needed.
-		 */
+		 
 		if (IS_ENCRYPTED(inode) && attr->ia_size < isize &&
 		    (attr->ia_size % CEPH_FSCRYPT_BLOCK_SIZE)) {
 			mask |= CEPH_SETATTR_SIZE;
@@ -2646,7 +2480,7 @@ retry:
 		}
 	}
 
-	/* these do nothing */
+	 
 	if (ia_valid & ATTR_CTIME) {
 		bool only = (ia_valid & (ATTR_SIZE|ATTR_MTIME|ATTR_ATIME|
 					 ATTR_MODE|ATTR_UID|ATTR_GID)) == 0;
@@ -2656,11 +2490,7 @@ retry:
 		     attr->ia_ctime.tv_sec, attr->ia_ctime.tv_nsec,
 		     only ? "ctime only" : "ignored");
 		if (only) {
-			/*
-			 * if kernel wants to dirty ctime but nothing else,
-			 * we need to choose a cap to dirty under, or do
-			 * a almost-no-op setattr
-			 */
+			 
 			if (issued & CEPH_CAP_AUTH_EXCL)
 				dirtied |= CEPH_CAP_AUTH_EXCL;
 			else if (issued & CEPH_CAP_FILE_EXCL)
@@ -2704,13 +2534,7 @@ retry:
 				goto out;
 		}
 
-		/*
-		 * The truncate request will return -EAGAIN when the
-		 * last block has been updated just before the MDS
-		 * successfully gets the xlock for the FILE lock. To
-		 * avoid corrupting the file contents we need to retry
-		 * it.
-		 */
+		 
 		err = ceph_mdsc_do_request(mdsc, NULL, req);
 		if (err == -EAGAIN && truncate_retry--) {
 			dout("setattr %p result=%d (%s locally, %d remote), retry it!\n",
@@ -2733,9 +2557,7 @@ out:
 	return err;
 }
 
-/*
- * setattr
- */
+ 
 int ceph_setattr(struct mnt_idmap *idmap, struct dentry *dentry,
 		 struct iattr *attr)
 {
@@ -2777,25 +2599,7 @@ int ceph_try_to_choose_auth_mds(struct inode *inode, int mask)
 {
 	int issued = ceph_caps_issued(ceph_inode(inode));
 
-	/*
-	 * If any 'x' caps is issued we can just choose the auth MDS
-	 * instead of the random replica MDSes. Because only when the
-	 * Locker is in LOCK_EXEC state will the loner client could
-	 * get the 'x' caps. And if we send the getattr requests to
-	 * any replica MDS it must auth pin and tries to rdlock from
-	 * the auth MDS, and then the auth MDS need to do the Locker
-	 * state transition to LOCK_SYNC. And after that the lock state
-	 * will change back.
-	 *
-	 * This cost much when doing the Locker state transition and
-	 * usually will need to revoke caps from clients.
-	 *
-	 * And for the 'Xs' caps for getxattr we will also choose the
-	 * auth MDS, because the MDS side code is buggy due to setxattr
-	 * won't notify the replica MDSes when the values changed and
-	 * the replica MDS will return the old values. Though we will
-	 * fix it in MDS code, but this still makes sense for old ceph.
-	 */
+	 
 	if (((mask & CEPH_CAP_ANY_SHARED) && (issued & CEPH_CAP_ANY_EXCL))
 	    || (mask & (CEPH_STAT_RSTAT | CEPH_STAT_CAP_XATTR)))
 		return USE_AUTH_MDS;
@@ -2803,10 +2607,7 @@ int ceph_try_to_choose_auth_mds(struct inode *inode, int mask)
 		return USE_ANY_MDS;
 }
 
-/*
- * Verify that we have a lease on the given mask.  If not,
- * do a getattr against an mds.
- */
+ 
 int __ceph_do_getattr(struct inode *inode, struct page *locked_page,
 		      int mask, bool force)
 {
@@ -2839,7 +2640,7 @@ int __ceph_do_getattr(struct inode *inode, struct page *locked_page,
 	if (locked_page && err == 0) {
 		u64 inline_version = req->r_reply_info.targeti.inline_version;
 		if (inline_version == 0) {
-			/* the reply is supposed to contain inline data */
+			 
 			err = -EINVAL;
 		} else if (inline_version == CEPH_INLINE_NONE ||
 			   inline_version == 1) {
@@ -2906,10 +2707,7 @@ out:
 }
 
 
-/*
- * Check inode permissions.  We verify we have a valid value for
- * the AUTH cap, then call the generic handler.
- */
+ 
 int ceph_permission(struct mnt_idmap *idmap, struct inode *inode,
 		    int mask)
 {
@@ -2925,7 +2723,7 @@ int ceph_permission(struct mnt_idmap *idmap, struct inode *inode,
 	return err;
 }
 
-/* Craft a mask of needed caps given a set of requested statx attrs. */
+ 
 static int statx_to_caps(u32 want, umode_t mode)
 {
 	int mask = 0;
@@ -2934,10 +2732,7 @@ static int statx_to_caps(u32 want, umode_t mode)
 		mask |= CEPH_CAP_AUTH_SHARED;
 
 	if (want & (STATX_NLINK|STATX_CTIME|STATX_CHANGE_COOKIE)) {
-		/*
-		 * The link count for directories depends on inode->i_subdirs,
-		 * and that is only updated when Fs caps are held.
-		 */
+		 
 		if (S_ISDIR(mode))
 			mask |= CEPH_CAP_FILE_SHARED;
 		else
@@ -2953,10 +2748,7 @@ static int statx_to_caps(u32 want, umode_t mode)
 	return mask;
 }
 
-/*
- * Get all the attributes. If we have sufficient caps for the requested attrs,
- * then we can avoid talking to the MDS at all.
- */
+ 
 int ceph_getattr(struct mnt_idmap *idmap, const struct path *path,
 		 struct kstat *stat, u32 request_mask, unsigned int flags)
 {
@@ -2969,7 +2761,7 @@ int ceph_getattr(struct mnt_idmap *idmap, const struct path *path,
 	if (ceph_inode_is_shutdown(inode))
 		return -ESTALE;
 
-	/* Skip the getattr altogether if we're asked not to sync */
+	 
 	if ((flags & AT_STATX_SYNC_TYPE) != AT_STATX_DONT_SYNC) {
 		err = ceph_do_getattr(inode,
 				statx_to_caps(request_mask, inode->i_mode),
@@ -2981,10 +2773,7 @@ int ceph_getattr(struct mnt_idmap *idmap, const struct path *path,
 	generic_fillattr(&nop_mnt_idmap, request_mask, inode, stat);
 	stat->ino = ceph_present_inode(inode);
 
-	/*
-	 * btime on newly-allocated inodes is 0, so if this is still set to
-	 * that, then assume that it's not valid.
-	 */
+	 
 	if (ci->i_btime.tv_sec || ci->i_btime.tv_nsec) {
 		stat->btime = ci->i_btime;
 		valid_mask |= STATX_BTIME;
@@ -3026,13 +2815,9 @@ int ceph_getattr(struct mnt_idmap *idmap, const struct path *path,
 		}
 		stat->blocks = 0;
 		stat->blksize = 65536;
-		/*
-		 * Some applications rely on the number of st_nlink
-		 * value on directories to be either 0 (if unlinked)
-		 * or 2 + number of subdirectories.
-		 */
+		 
 		if (stat->nlink == 1)
-			/* '.' + '..' + subdirs */
+			 
 			stat->nlink = 1 + 1 + ci->i_subdirs;
 	}
 

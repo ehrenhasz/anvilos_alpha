@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Driver for Realtek PCI-Express card reader
- *
- * Copyright(c) 2009-2013 Realtek Semiconductor Corp. All rights reserved.
- *
- * Author:
- *   Wei WANG (wei_wang@realsil.com.cn)
- *   Micky Ching (micky_ching@realsil.com.cn)
- */
+
+ 
 
 #include <linux/blkdev.h>
 #include <linux/kthread.h>
@@ -84,7 +76,7 @@ void rtsx_enable_bus_int(struct rtsx_chip *chip)
 	if (!chip->adma_mode)
 		reg |= DATA_DONE_INT_EN;
 
-	/* Enable Bus Interrupt */
+	 
 	rtsx_writel(chip, RTSX_BIER, reg);
 
 	dev_dbg(rtsx_dev(chip), "RTSX_BIER: 0x%08x\n", reg);
@@ -119,7 +111,7 @@ static int rtsx_pre_handle_sdio_old(struct rtsx_chip *chip)
 		if (retval)
 			return retval;
 
-		/* Enable SDIO internal clock */
+		 
 		retval = rtsx_write_register(chip, 0xFF2C, 0x01, 0x01);
 		if (retval)
 			return retval;
@@ -179,7 +171,7 @@ static int rtsx_pre_handle_sdio_new(struct rtsx_chip *chip)
 		cd_toggle_mask = 0x08;
 
 		if (tmp & cd_toggle_mask) {
-			/* Disable sdio_bus_auto_switch */
+			 
 			if (CHECK_PID(chip, 0x5288)) {
 				retval = rtsx_write_register(chip, 0xFE5A,
 							     0x08, 0x00);
@@ -217,7 +209,7 @@ static int rtsx_pre_handle_sdio_new(struct rtsx_chip *chip)
 			if (retval != STATUS_SUCCESS)
 				return STATUS_FAIL;
 
-			/* Enable sdio_bus_auto_switch */
+			 
 			if (CHECK_PID(chip, 0x5288)) {
 				retval = rtsx_write_register(chip, 0xFE5A,
 							     0x08, 0x08);
@@ -343,13 +335,13 @@ int rtsx_reset_chip(struct rtsx_chip *chip)
 	if (retval)
 		return retval;
 
-	/* Disable card clock */
+	 
 	retval = rtsx_write_register(chip, CARD_CLK_EN, 0x1E, 0);
 	if (retval)
 		return retval;
 
 #ifdef SUPPORT_OCP
-	/* SSC power on, OCD power on */
+	 
 	if (CHECK_LUN_MODE(chip, SD_MS_2LUN)) {
 		retval = rtsx_write_register(chip, FPDCTL, OC_POWER_DOWN, 0);
 		if (retval)
@@ -374,7 +366,7 @@ int rtsx_reset_chip(struct rtsx_chip *chip)
 	if (retval)
 		return retval;
 #else
-	/* OC power down */
+	 
 	retval = rtsx_write_register(chip, FPDCTL, OC_POWER_DOWN,
 				     OC_POWER_DOWN);
 	if (retval)
@@ -387,17 +379,17 @@ int rtsx_reset_chip(struct rtsx_chip *chip)
 			return retval;
 	}
 
-	/* Turn off LED */
+	 
 	retval = rtsx_write_register(chip, CARD_GPIO, 0xFF, 0x03);
 	if (retval)
 		return retval;
 
-	/* Reset delink mode */
+	 
 	retval = rtsx_write_register(chip, CHANGE_LINK_STATE, 0x0A, 0);
 	if (retval)
 		return retval;
 
-	/* Card driving select */
+	 
 	retval = rtsx_write_register(chip, CARD_DRIVE_SEL, 0xFF,
 				     chip->card_drive_sel);
 	if (retval)
@@ -411,7 +403,7 @@ int rtsx_reset_chip(struct rtsx_chip *chip)
 #endif
 
 	if (chip->asic_code) {
-		/* Enable SSC Clock */
+		 
 		retval = rtsx_write_register(chip, SSC_CTL1, 0xFF,
 					     SSC_8X_EN | SSC_SEL_4M);
 		if (retval)
@@ -421,19 +413,12 @@ int rtsx_reset_chip(struct rtsx_chip *chip)
 			return retval;
 	}
 
-	/*
-	 * Disable cd_pwr_save (u_force_rst_core_en=0, u_cd_rst_core_en=0)
-	 *    0xFE5B
-	 *    bit[1]    u_cd_rst_core_en	rst_value = 0
-	 *    bit[2]    u_force_rst_core_en	rst_value = 0
-	 *    bit[5]    u_mac_phy_rst_n_dbg	rst_value = 1
-	 *    bit[4]	u_non_sticky_rst_n_dbg	rst_value = 0
-	 */
+	 
 	retval = rtsx_write_register(chip, CHANGE_LINK_STATE, 0x16, 0x10);
 	if (retval)
 		return retval;
 
-	/* Enable ASPM */
+	 
 	if (chip->aspm_l0s_l1_en) {
 		retval = rtsx_reset_aspm(chip);
 		if (retval != STATUS_SUCCESS)
@@ -503,9 +488,9 @@ int rtsx_reset_chip(struct rtsx_chip *chip)
 
 		dev_dbg(rtsx_dev(chip), "chip->need_reset = 0x%x (%s)\n",
 			(unsigned int)(chip->need_reset), __func__);
-#else  /* HW_AUTO_SWITCH_SD_BUS */
+#else   
 		retval = rtsx_pre_handle_sdio_old(chip);
-#endif  /* HW_AUTO_SWITCH_SD_BUS */
+#endif   
 		if (retval != STATUS_SUCCESS)
 			return STATUS_FAIL;
 
@@ -537,7 +522,7 @@ nextcard:
 		return retval;
 
 	if (CHECK_PID(chip, 0x5208) || CHECK_PID(chip, 0x5288)) {
-		/* Turn off main power when entering S3/S4 state */
+		 
 		retval = rtsx_write_register(chip, MAIN_PWR_OFF_CTL, 0x03,
 					     0x03);
 		if (retval)
@@ -590,7 +575,7 @@ nextcard:
 		wait_timeout(200);
 	}
 
-	/* Reset card */
+	 
 	rtsx_reset_detected_cards(chip, 0);
 
 	chip->driver_first_load = 0;
@@ -1259,14 +1244,7 @@ delink_stage:
 	rtsx_delink_stage(chip);
 }
 
-/**
- * rtsx_stop_cmd - stop command transfer and DMA transfer
- * @chip: Realtek's card reader chip
- * @card: flash card type
- *
- * Stop command transfer and DMA transfer.
- * This function is called in error handler.
- */
+ 
 void rtsx_stop_cmd(struct rtsx_chip *chip, int card)
 {
 	int i;
@@ -1858,13 +1836,7 @@ int rtsx_pre_handle_interrupt(struct rtsx_chip *chip)
 				clear_bit(SD_NR, &chip->need_reset);
 			}
 		} else {
-			/*
-			 * If multi-luns, it's possible that
-			 * when plugging/unplugging one card
-			 * there is another card which still
-			 * exists in the slot. In this case,
-			 * all existed cards should be reset.
-			 */
+			 
 			if (exit_ss && (status & SD_EXIST))
 				set_bit(SD_NR, &chip->need_reinit);
 		}
@@ -1929,18 +1901,18 @@ void rtsx_do_before_power_down(struct rtsx_chip *chip, int pm_stat)
 		chip->sdio_in_charge = 1;
 		if (CHECK_PID(chip, 0x5208)) {
 			rtsx_write_register(chip, TLPTISTAT, 0x08, 0x08);
-			/* Enable sdio_bus_auto_switch */
+			 
 			rtsx_write_register(chip, 0xFE70, 0x80, 0x80);
 		} else if (CHECK_PID(chip, 0x5288)) {
 			rtsx_write_register(chip, TLPTISTAT, 0x08, 0x08);
-			/* Enable sdio_bus_auto_switch */
+			 
 			rtsx_write_register(chip, 0xFE5A, 0x08, 0x08);
 		}
 	}
 #endif
 
 	if (CHECK_PID(chip, 0x5208) && chip->ic_version >= IC_VER_D) {
-		/* u_force_clkreq_0 */
+		 
 		rtsx_write_register(chip, PETXCFG, 0x08, 0x08);
 	}
 

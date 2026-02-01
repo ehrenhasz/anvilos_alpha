@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef __DTS_MT6397_PINFUNC_H
 #define __DTS_MT6397_PINFUNC_H
 
@@ -254,4 +254,4 @@
 #define MT6397_PIN_40_CEC__FUNC_TEST_IN31 (MTK_PIN_NO(40) | 6)
 #define MT6397_PIN_40_CEC__FUNC_TEST_OUT31 (MTK_PIN_NO(40) | 7)
 
-#endif /* __DTS_MT6397_PINFUNC_H */
+#endif  

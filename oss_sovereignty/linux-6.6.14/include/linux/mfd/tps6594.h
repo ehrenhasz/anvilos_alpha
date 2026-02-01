@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Functions to access TPS6594 Power Management IC
- *
- * Copyright (C) 2023 BayLibre Incorporated - https://www.baylibre.com/
- */
+ 
+ 
 
 #ifndef __LINUX_MFD_TPS6594_H
 #define __LINUX_MFD_TPS6594_H
@@ -13,17 +9,17 @@
 
 struct regmap_irq_chip_data;
 
-/* Chip id list */
+ 
 enum pmic_id {
 	TPS6594,
 	TPS6593,
 	LP8764,
 };
 
-/* Macro to get page index from register address */
+ 
 #define TPS6594_REG_TO_PAGE(reg)	((reg) >> 8)
 
-/* Registers for page 0 of TPS6594 */
+ 
 #define TPS6594_REG_DEV_REV				0x01
 
 #define TPS6594_REG_NVM_CODE_1				0x02
@@ -215,12 +211,12 @@ enum pmic_id {
 #define TPS6594_REG_PFSM_DELAY_REG_3			0xcf
 #define TPS6594_REG_PFSM_DELAY_REG_4			0xd0
 
-/* Registers for page 1 of TPS6594 */
+ 
 #define TPS6594_REG_SERIAL_IF_CONFIG			0x11a
 #define TPS6594_REG_I2C1_ID				0x122
 #define TPS6594_REG_I2C2_ID				0x123
 
-/* Registers for page 4 of TPS6594 */
+ 
 #define TPS6594_REG_WD_ANSWER_REG			0x401
 #define TPS6594_REG_WD_QUESTION_ANSW_CNT		0x402
 #define TPS6594_REG_WD_WIN1_CFG				0x403
@@ -232,7 +228,7 @@ enum pmic_id {
 #define TPS6594_REG_WD_THR_CFG				0x409
 #define TPS6594_REG_DWD_FAIL_CNT_REG			0x40a
 
-/* BUCKX_CTRL register field definition */
+ 
 #define TPS6594_BIT_BUCK_EN				BIT(0)
 #define TPS6594_BIT_BUCK_FPWM				BIT(1)
 #define TPS6594_BIT_BUCK_FPWM_MP			BIT(2)
@@ -241,37 +237,37 @@ enum pmic_id {
 #define TPS6594_BIT_BUCK_PLDN				BIT(5)
 #define TPS6594_BIT_BUCK_RV_SEL				BIT(7)
 
-/* BUCKX_CONF register field definition */
+ 
 #define TPS6594_MASK_BUCK_SLEW_RATE			GENMASK(2, 0)
 #define TPS6594_MASK_BUCK_ILIM				GENMASK(5, 3)
 
-/* BUCKX_PG_WINDOW register field definition */
+ 
 #define TPS6594_MASK_BUCK_OV_THR			GENMASK(2, 0)
 #define TPS6594_MASK_BUCK_UV_THR			GENMASK(5, 3)
 
-/* BUCKX VSET */
+ 
 #define TPS6594_MASK_BUCKS_VSET GENMASK(7, 0)
 
-/* LDOX_CTRL register field definition */
+ 
 #define TPS6594_BIT_LDO_EN				BIT(0)
 #define TPS6594_BIT_LDO_SLOW_RAMP			BIT(1)
 #define TPS6594_BIT_LDO_VMON_EN				BIT(4)
 #define TPS6594_MASK_LDO_PLDN				GENMASK(6, 5)
 #define TPS6594_BIT_LDO_RV_SEL				BIT(7)
 
-/* LDORTC_CTRL register field definition */
+ 
 #define TPS6594_BIT_LDORTC_DIS				BIT(0)
 
-/* LDOX_VOUT register field definition */
+ 
 #define TPS6594_MASK_LDO123_VSET			GENMASK(6, 1)
 #define TPS6594_MASK_LDO4_VSET				GENMASK(6, 0)
 #define TPS6594_BIT_LDO_BYPASS				BIT(7)
 
-/* LDOX_PG_WINDOW register field definition */
+ 
 #define TPS6594_MASK_LDO_OV_THR				GENMASK(2, 0)
 #define TPS6594_MASK_LDO_UV_THR				GENMASK(5, 3)
 
-/* VCCA_VMON_CTRL register field definition */
+ 
 #define TPS6594_BIT_VMON_EN				BIT(0)
 #define TPS6594_BIT_VMON1_EN				BIT(1)
 #define TPS6594_BIT_VMON1_RV_SEL			BIT(2)
@@ -279,17 +275,17 @@ enum pmic_id {
 #define TPS6594_BIT_VMON2_RV_SEL			BIT(4)
 #define TPS6594_BIT_VMON_DEGLITCH_SEL			BIT(5)
 
-/* VCCA_PG_WINDOW register field definition */
+ 
 #define TPS6594_MASK_VCCA_OV_THR			GENMASK(2, 0)
 #define TPS6594_MASK_VCCA_UV_THR			GENMASK(5, 3)
 #define TPS6594_BIT_VCCA_PG_SET				BIT(6)
 
-/* VMONX_PG_WINDOW register field definition */
+ 
 #define TPS6594_MASK_VMONX_OV_THR			GENMASK(2, 0)
 #define TPS6594_MASK_VMONX_UV_THR			GENMASK(5, 3)
 #define TPS6594_BIT_VMONX_RANGE				BIT(6)
 
-/* GPIOX_CONF register field definition */
+ 
 #define TPS6594_BIT_GPIO_DIR				BIT(0)
 #define TPS6594_BIT_GPIO_OD				BIT(1)
 #define TPS6594_BIT_GPIO_PU_SEL				BIT(2)
@@ -297,7 +293,7 @@ enum pmic_id {
 #define TPS6594_BIT_GPIO_DEGLITCH_EN			BIT(4)
 #define TPS6594_MASK_GPIO_SEL				GENMASK(7, 5)
 
-/* NPWRON_CONF register field definition */
+ 
 #define TPS6594_BIT_NRSTOUT_OD				BIT(0)
 #define TPS6594_BIT_ENABLE_PU_SEL			BIT(2)
 #define TPS6594_BIT_ENABLE_PU_PD_EN			BIT(3)
@@ -305,55 +301,55 @@ enum pmic_id {
 #define TPS6594_BIT_ENABLE_POL				BIT(5)
 #define TPS6594_MASK_NPWRON_SEL				GENMASK(7, 6)
 
-/* GPIO_OUT_X register field definition */
+ 
 #define TPS6594_BIT_GPIOX_OUT(gpio_inst)		BIT((gpio_inst) % 8)
 
-/* GPIO_IN_X register field definition */
+ 
 #define TPS6594_BIT_GPIOX_IN(gpio_inst)			BIT((gpio_inst) % 8)
 #define TPS6594_BIT_NPWRON_IN				BIT(3)
 
-/* RAIL_SEL_1 register field definition */
+ 
 #define TPS6594_MASK_BUCK1_GRP_SEL			GENMASK(1, 0)
 #define TPS6594_MASK_BUCK2_GRP_SEL			GENMASK(3, 2)
 #define TPS6594_MASK_BUCK3_GRP_SEL			GENMASK(5, 4)
 #define TPS6594_MASK_BUCK4_GRP_SEL			GENMASK(7, 6)
 
-/* RAIL_SEL_2 register field definition */
+ 
 #define TPS6594_MASK_BUCK5_GRP_SEL			GENMASK(1, 0)
 #define TPS6594_MASK_LDO1_GRP_SEL			GENMASK(3, 2)
 #define TPS6594_MASK_LDO2_GRP_SEL			GENMASK(5, 4)
 #define TPS6594_MASK_LDO3_GRP_SEL			GENMASK(7, 6)
 
-/* RAIL_SEL_3 register field definition */
+ 
 #define TPS6594_MASK_LDO4_GRP_SEL			GENMASK(1, 0)
 #define TPS6594_MASK_VCCA_GRP_SEL			GENMASK(3, 2)
 #define TPS6594_MASK_VMON1_GRP_SEL			GENMASK(5, 4)
 #define TPS6594_MASK_VMON2_GRP_SEL			GENMASK(7, 6)
 
-/* FSM_TRIG_SEL_1 register field definition */
+ 
 #define TPS6594_MASK_MCU_RAIL_TRIG			GENMASK(1, 0)
 #define TPS6594_MASK_SOC_RAIL_TRIG			GENMASK(3, 2)
 #define TPS6594_MASK_OTHER_RAIL_TRIG			GENMASK(5, 4)
 #define TPS6594_MASK_SEVERE_ERR_TRIG			GENMASK(7, 6)
 
-/* FSM_TRIG_SEL_2 register field definition */
+ 
 #define TPS6594_MASK_MODERATE_ERR_TRIG			GENMASK(1, 0)
 
-/* FSM_TRIG_MASK_X register field definition */
+ 
 #define TPS6594_BIT_GPIOX_FSM_MASK(gpio_inst)		BIT(((gpio_inst) << 1) % 8)
 #define TPS6594_BIT_GPIOX_FSM_MASK_POL(gpio_inst)	BIT(((gpio_inst) << 1) % 8 + 1)
 
-/* MASK_BUCKX register field definition */
+ 
 #define TPS6594_BIT_BUCKX_OV_MASK(buck_inst)		BIT(((buck_inst) << 2) % 8)
 #define TPS6594_BIT_BUCKX_UV_MASK(buck_inst)		BIT(((buck_inst) << 2) % 8 + 1)
 #define TPS6594_BIT_BUCKX_ILIM_MASK(buck_inst)		BIT(((buck_inst) << 2) % 8 + 3)
 
-/* MASK_LDOX register field definition */
+ 
 #define TPS6594_BIT_LDOX_OV_MASK(ldo_inst)		BIT(((ldo_inst) << 2) % 8)
 #define TPS6594_BIT_LDOX_UV_MASK(ldo_inst)		BIT(((ldo_inst) << 2) % 8 + 1)
 #define TPS6594_BIT_LDOX_ILIM_MASK(ldo_inst)		BIT(((ldo_inst) << 2) % 8 + 3)
 
-/* MASK_VMON register field definition */
+ 
 #define TPS6594_BIT_VCCA_OV_MASK			BIT(0)
 #define TPS6594_BIT_VCCA_UV_MASK			BIT(1)
 #define TPS6594_BIT_VMON1_OV_MASK			BIT(2)
@@ -361,24 +357,24 @@ enum pmic_id {
 #define TPS6594_BIT_VMON2_OV_MASK			BIT(5)
 #define TPS6594_BIT_VMON2_UV_MASK			BIT(6)
 
-/* MASK_GPIOX register field definition */
+ 
 #define TPS6594_BIT_GPIOX_FALL_MASK(gpio_inst)		BIT((gpio_inst) < 8 ? \
 							    (gpio_inst) : (gpio_inst) % 8)
 #define TPS6594_BIT_GPIOX_RISE_MASK(gpio_inst)		BIT((gpio_inst) < 8 ? \
 							    (gpio_inst) : (gpio_inst) % 8 + 3)
 
-/* MASK_STARTUP register field definition */
+ 
 #define TPS6594_BIT_NPWRON_START_MASK			BIT(0)
 #define TPS6594_BIT_ENABLE_MASK				BIT(1)
 #define TPS6594_BIT_FSD_MASK				BIT(4)
 #define TPS6594_BIT_SOFT_REBOOT_MASK			BIT(5)
 
-/* MASK_MISC register field definition */
+ 
 #define TPS6594_BIT_BIST_PASS_MASK			BIT(0)
 #define TPS6594_BIT_EXT_CLK_MASK			BIT(1)
 #define TPS6594_BIT_TWARN_MASK				BIT(3)
 
-/* MASK_MODERATE_ERR register field definition */
+ 
 #define TPS6594_BIT_BIST_FAIL_MASK			BIT(1)
 #define TPS6594_BIT_REG_CRC_ERR_MASK			BIT(2)
 #define TPS6594_BIT_SPMI_ERR_MASK			BIT(4)
@@ -386,24 +382,24 @@ enum pmic_id {
 #define TPS6594_BIT_NINT_READBACK_MASK			BIT(6)
 #define TPS6594_BIT_NRSTOUT_READBACK_MASK		BIT(7)
 
-/* MASK_FSM_ERR register field definition */
+ 
 #define TPS6594_BIT_IMM_SHUTDOWN_MASK			BIT(0)
 #define TPS6594_BIT_ORD_SHUTDOWN_MASK			BIT(1)
 #define TPS6594_BIT_MCU_PWR_ERR_MASK			BIT(2)
 #define TPS6594_BIT_SOC_PWR_ERR_MASK			BIT(3)
 
-/* MASK_COMM_ERR register field definition */
+ 
 #define TPS6594_BIT_COMM_FRM_ERR_MASK			BIT(0)
 #define TPS6594_BIT_COMM_CRC_ERR_MASK			BIT(1)
 #define TPS6594_BIT_COMM_ADR_ERR_MASK			BIT(3)
 #define TPS6594_BIT_I2C2_CRC_ERR_MASK			BIT(5)
 #define TPS6594_BIT_I2C2_ADR_ERR_MASK			BIT(7)
 
-/* MASK_READBACK_ERR register field definition */
+ 
 #define TPS6594_BIT_EN_DRV_READBACK_MASK		BIT(0)
 #define TPS6594_BIT_NRSTOUT_SOC_READBACK_MASK		BIT(3)
 
-/* MASK_ESM register field definition */
+ 
 #define TPS6594_BIT_ESM_SOC_PIN_MASK			BIT(0)
 #define TPS6594_BIT_ESM_SOC_FAIL_MASK			BIT(1)
 #define TPS6594_BIT_ESM_SOC_RST_MASK			BIT(2)
@@ -411,7 +407,7 @@ enum pmic_id {
 #define TPS6594_BIT_ESM_MCU_FAIL_MASK			BIT(4)
 #define TPS6594_BIT_ESM_MCU_RST_MASK			BIT(5)
 
-/* INT_TOP register field definition */
+ 
 #define TPS6594_BIT_BUCK_INT				BIT(0)
 #define TPS6594_BIT_LDO_VMON_INT			BIT(1)
 #define TPS6594_BIT_GPIO_INT				BIT(2)
@@ -421,29 +417,29 @@ enum pmic_id {
 #define TPS6594_BIT_SEVERE_ERR_INT			BIT(6)
 #define TPS6594_BIT_FSM_ERR_INT				BIT(7)
 
-/* INT_BUCK register field definition */
+ 
 #define TPS6594_BIT_BUCK1_2_INT				BIT(0)
 #define TPS6594_BIT_BUCK3_4_INT				BIT(1)
 #define TPS6594_BIT_BUCK5_INT				BIT(2)
 
-/* INT_BUCKX register field definition */
+ 
 #define TPS6594_BIT_BUCKX_OV_INT(buck_inst)		BIT(((buck_inst) << 2) % 8)
 #define TPS6594_BIT_BUCKX_UV_INT(buck_inst)		BIT(((buck_inst) << 2) % 8 + 1)
 #define TPS6594_BIT_BUCKX_SC_INT(buck_inst)		BIT(((buck_inst) << 2) % 8 + 2)
 #define TPS6594_BIT_BUCKX_ILIM_INT(buck_inst)		BIT(((buck_inst) << 2) % 8 + 3)
 
-/* INT_LDO_VMON register field definition */
+ 
 #define TPS6594_BIT_LDO1_2_INT				BIT(0)
 #define TPS6594_BIT_LDO3_4_INT				BIT(1)
 #define TPS6594_BIT_VCCA_INT				BIT(4)
 
-/* INT_LDOX register field definition */
+ 
 #define TPS6594_BIT_LDOX_OV_INT(ldo_inst)		BIT(((ldo_inst) << 2) % 8)
 #define TPS6594_BIT_LDOX_UV_INT(ldo_inst)		BIT(((ldo_inst) << 2) % 8 + 1)
 #define TPS6594_BIT_LDOX_SC_INT(ldo_inst)		BIT(((ldo_inst) << 2) % 8 + 2)
 #define TPS6594_BIT_LDOX_ILIM_INT(ldo_inst)		BIT(((ldo_inst) << 2) % 8 + 3)
 
-/* INT_VMON register field definition */
+ 
 #define TPS6594_BIT_VCCA_OV_INT				BIT(0)
 #define TPS6594_BIT_VCCA_UV_INT				BIT(1)
 #define TPS6594_BIT_VMON1_OV_INT			BIT(2)
@@ -453,28 +449,28 @@ enum pmic_id {
 #define TPS6594_BIT_VMON2_UV_INT			BIT(6)
 #define TPS6594_BIT_VMON2_RV_INT			BIT(7)
 
-/* INT_GPIO register field definition */
+ 
 #define TPS6594_BIT_GPIO9_INT				BIT(0)
 #define TPS6594_BIT_GPIO10_INT				BIT(1)
 #define TPS6594_BIT_GPIO11_INT				BIT(2)
 #define TPS6594_BIT_GPIO1_8_INT				BIT(3)
 
-/* INT_GPIOX register field definition */
+ 
 #define TPS6594_BIT_GPIOX_INT(gpio_inst)		BIT(gpio_inst)
 
-/* INT_STARTUP register field definition */
+ 
 #define TPS6594_BIT_NPWRON_START_INT			BIT(0)
 #define TPS6594_BIT_ENABLE_INT				BIT(1)
 #define TPS6594_BIT_RTC_INT				BIT(2)
 #define TPS6594_BIT_FSD_INT				BIT(4)
 #define TPS6594_BIT_SOFT_REBOOT_INT			BIT(5)
 
-/* INT_MISC register field definition */
+ 
 #define TPS6594_BIT_BIST_PASS_INT			BIT(0)
 #define TPS6594_BIT_EXT_CLK_INT				BIT(1)
 #define TPS6594_BIT_TWARN_INT				BIT(3)
 
-/* INT_MODERATE_ERR register field definition */
+ 
 #define TPS6594_BIT_TSD_ORD_INT				BIT(0)
 #define TPS6594_BIT_BIST_FAIL_INT			BIT(1)
 #define TPS6594_BIT_REG_CRC_ERR_INT			BIT(2)
@@ -484,12 +480,12 @@ enum pmic_id {
 #define TPS6594_BIT_NINT_READBACK_INT			BIT(6)
 #define TPS6594_BIT_NRSTOUT_READBACK_INT		BIT(7)
 
-/* INT_SEVERE_ERR register field definition */
+ 
 #define TPS6594_BIT_TSD_IMM_INT				BIT(0)
 #define TPS6594_BIT_VCCA_OVP_INT			BIT(1)
 #define TPS6594_BIT_PFSM_ERR_INT			BIT(2)
 
-/* INT_FSM_ERR register field definition */
+ 
 #define TPS6594_BIT_IMM_SHUTDOWN_INT			BIT(0)
 #define TPS6594_BIT_ORD_SHUTDOWN_INT			BIT(1)
 #define TPS6594_BIT_MCU_PWR_ERR_INT			BIT(2)
@@ -499,18 +495,18 @@ enum pmic_id {
 #define TPS6594_BIT_ESM_INT				BIT(6)
 #define TPS6594_BIT_WD_INT				BIT(7)
 
-/* INT_COMM_ERR register field definition */
+ 
 #define TPS6594_BIT_COMM_FRM_ERR_INT			BIT(0)
 #define TPS6594_BIT_COMM_CRC_ERR_INT			BIT(1)
 #define TPS6594_BIT_COMM_ADR_ERR_INT			BIT(3)
 #define TPS6594_BIT_I2C2_CRC_ERR_INT			BIT(5)
 #define TPS6594_BIT_I2C2_ADR_ERR_INT			BIT(7)
 
-/* INT_READBACK_ERR register field definition */
+ 
 #define TPS6594_BIT_EN_DRV_READBACK_INT			BIT(0)
 #define TPS6594_BIT_NRSTOUT_SOC_READBACK_INT		BIT(3)
 
-/* INT_ESM register field definition */
+ 
 #define TPS6594_BIT_ESM_SOC_PIN_INT			BIT(0)
 #define TPS6594_BIT_ESM_SOC_FAIL_INT			BIT(1)
 #define TPS6594_BIT_ESM_SOC_RST_INT			BIT(2)
@@ -518,17 +514,17 @@ enum pmic_id {
 #define TPS6594_BIT_ESM_MCU_FAIL_INT			BIT(4)
 #define TPS6594_BIT_ESM_MCU_RST_INT			BIT(5)
 
-/* STAT_BUCKX register field definition */
+ 
 #define TPS6594_BIT_BUCKX_OV_STAT(buck_inst)		BIT(((buck_inst) << 2) % 8)
 #define TPS6594_BIT_BUCKX_UV_STAT(buck_inst)		BIT(((buck_inst) << 2) % 8 + 1)
 #define TPS6594_BIT_BUCKX_ILIM_STAT(buck_inst)		BIT(((buck_inst) << 2) % 8 + 3)
 
-/* STAT_LDOX register field definition */
+ 
 #define TPS6594_BIT_LDOX_OV_STAT(ldo_inst)		BIT(((ldo_inst) << 2) % 8)
 #define TPS6594_BIT_LDOX_UV_STAT(ldo_inst)		BIT(((ldo_inst) << 2) % 8 + 1)
 #define TPS6594_BIT_LDOX_ILIM_STAT(ldo_inst)		BIT(((ldo_inst) << 2) % 8 + 3)
 
-/* STAT_VMON register field definition */
+ 
 #define TPS6594_BIT_VCCA_OV_STAT			BIT(0)
 #define TPS6594_BIT_VCCA_UV_STAT			BIT(1)
 #define TPS6594_BIT_VMON1_OV_STAT			BIT(2)
@@ -536,42 +532,42 @@ enum pmic_id {
 #define TPS6594_BIT_VMON2_OV_STAT			BIT(5)
 #define TPS6594_BIT_VMON2_UV_STAT			BIT(6)
 
-/* STAT_STARTUP register field definition */
+ 
 #define TPS6594_BIT_ENABLE_STAT				BIT(1)
 
-/* STAT_MISC register field definition */
+ 
 #define TPS6594_BIT_EXT_CLK_STAT			BIT(1)
 #define TPS6594_BIT_TWARN_STAT				BIT(3)
 
-/* STAT_MODERATE_ERR register field definition */
+ 
 #define TPS6594_BIT_TSD_ORD_STAT			BIT(0)
 
-/* STAT_SEVERE_ERR register field definition */
+ 
 #define TPS6594_BIT_TSD_IMM_STAT			BIT(0)
 #define TPS6594_BIT_VCCA_OVP_STAT			BIT(1)
 
-/* STAT_READBACK_ERR register field definition */
+ 
 #define TPS6594_BIT_EN_DRV_READBACK_STAT		BIT(0)
 #define TPS6594_BIT_NINT_READBACK_STAT			BIT(1)
 #define TPS6594_BIT_NRSTOUT_READBACK_STAT		BIT(2)
 #define TPS6594_BIT_NRSTOUT_SOC_READBACK_STAT		BIT(3)
 
-/* PGOOD_SEL_1 register field definition */
+ 
 #define TPS6594_MASK_PGOOD_SEL_BUCK1			GENMASK(1, 0)
 #define TPS6594_MASK_PGOOD_SEL_BUCK2			GENMASK(3, 2)
 #define TPS6594_MASK_PGOOD_SEL_BUCK3			GENMASK(5, 4)
 #define TPS6594_MASK_PGOOD_SEL_BUCK4			GENMASK(7, 6)
 
-/* PGOOD_SEL_2 register field definition */
+ 
 #define TPS6594_MASK_PGOOD_SEL_BUCK5			GENMASK(1, 0)
 
-/* PGOOD_SEL_3 register field definition */
+ 
 #define TPS6594_MASK_PGOOD_SEL_LDO1			GENMASK(1, 0)
 #define TPS6594_MASK_PGOOD_SEL_LDO2			GENMASK(3, 2)
 #define TPS6594_MASK_PGOOD_SEL_LDO3			GENMASK(5, 4)
 #define TPS6594_MASK_PGOOD_SEL_LDO4			GENMASK(7, 6)
 
-/* PGOOD_SEL_4 register field definition */
+ 
 #define TPS6594_BIT_PGOOD_SEL_VCCA			BIT(0)
 #define TPS6594_BIT_PGOOD_SEL_VMON1			BIT(1)
 #define TPS6594_BIT_PGOOD_SEL_VMON2			BIT(2)
@@ -581,10 +577,10 @@ enum pmic_id {
 #define TPS6594_BIT_PGOOD_POL				BIT(6)
 #define TPS6594_BIT_PGOOD_WINDOW			BIT(7)
 
-/* PLL_CTRL register field definition */
+ 
 #define TPS6594_MASK_EXT_CLK_FREQ			GENMASK(1, 0)
 
-/* CONFIG_1 register field definition */
+ 
 #define TPS6594_BIT_TWARN_LEVEL				BIT(0)
 #define TPS6594_BIT_TSD_ORD_LEVEL			BIT(1)
 #define TPS6594_BIT_I2C1_HS				BIT(3)
@@ -593,16 +589,16 @@ enum pmic_id {
 #define TPS6594_BIT_NSLEEP1_MASK			BIT(6)
 #define TPS6594_BIT_NSLEEP2_MASK			BIT(7)
 
-/* CONFIG_2 register field definition */
+ 
 #define TPS6594_BIT_BB_CHARGER_EN			BIT(0)
 #define TPS6594_BIT_BB_ICHR				BIT(1)
 #define TPS6594_MASK_BB_VEOC				GENMASK(3, 2)
 #define TPS6594_BB_EOC_RDY				BIT(7)
 
-/* ENABLE_DRV_REG register field definition */
+ 
 #define TPS6594_BIT_ENABLE_DRV				BIT(0)
 
-/* MISC_CTRL register field definition */
+ 
 #define TPS6594_BIT_NRSTOUT				BIT(0)
 #define TPS6594_BIT_NRSTOUT_SOC				BIT(1)
 #define TPS6594_BIT_LPM_EN				BIT(2)
@@ -611,114 +607,114 @@ enum pmic_id {
 #define TPS6594_BIT_SEL_EXT_CLK				BIT(5)
 #define TPS6594_MASK_SYNCCLKOUT_FREQ_SEL		GENMASK(7, 6)
 
-/* ENABLE_DRV_STAT register field definition */
+ 
 #define TPS6594_BIT_EN_DRV_IN				BIT(0)
 #define TPS6594_BIT_NRSTOUT_IN				BIT(1)
 #define TPS6594_BIT_NRSTOUT_SOC_IN			BIT(2)
 #define TPS6594_BIT_FORCE_EN_DRV_LOW			BIT(3)
 #define TPS6594_BIT_SPMI_LPM_EN				BIT(4)
 
-/* RECOV_CNT_REG_1 register field definition */
+ 
 #define TPS6594_MASK_RECOV_CNT				GENMASK(3, 0)
 
-/* RECOV_CNT_REG_2 register field definition */
+ 
 #define TPS6594_MASK_RECOV_CNT_THR			GENMASK(3, 0)
 #define TPS6594_BIT_RECOV_CNT_CLR			BIT(4)
 
-/* FSM_I2C_TRIGGERS register field definition */
+ 
 #define TPS6594_BIT_TRIGGER_I2C(bit)			BIT(bit)
 
-/* FSM_NSLEEP_TRIGGERS register field definition */
+ 
 #define TPS6594_BIT_NSLEEP1B				BIT(0)
 #define TPS6594_BIT_NSLEEP2B				BIT(1)
 
-/* BUCK_RESET_REG register field definition */
+ 
 #define TPS6594_BIT_BUCKX_RESET(buck_inst)		BIT(buck_inst)
 
-/* SPREAD_SPECTRUM_1 register field definition */
+ 
 #define TPS6594_MASK_SS_DEPTH				GENMASK(1, 0)
 #define TPS6594_BIT_SS_EN				BIT(2)
 
-/* FREQ_SEL register field definition */
+ 
 #define TPS6594_BIT_BUCKX_FREQ_SEL(buck_inst)		BIT(buck_inst)
 
-/* FSM_STEP_SIZE register field definition */
+ 
 #define TPS6594_MASK_PFSM_DELAY_STEP			GENMASK(4, 0)
 
-/* LDO_RV_TIMEOUT_REG_1 register field definition */
+ 
 #define TPS6594_MASK_LDO1_RV_TIMEOUT			GENMASK(3, 0)
 #define TPS6594_MASK_LDO2_RV_TIMEOUT			GENMASK(7, 4)
 
-/* LDO_RV_TIMEOUT_REG_2 register field definition */
+ 
 #define TPS6594_MASK_LDO3_RV_TIMEOUT			GENMASK(3, 0)
 #define TPS6594_MASK_LDO4_RV_TIMEOUT			GENMASK(7, 4)
 
-/* USER_SPARE_REGS register field definition */
+ 
 #define TPS6594_BIT_USER_SPARE(bit)			BIT(bit)
 
-/* ESM_MCU_START_REG register field definition */
+ 
 #define TPS6594_BIT_ESM_MCU_START			BIT(0)
 
-/* ESM_MCU_MODE_CFG register field definition */
+ 
 #define TPS6594_MASK_ESM_MCU_ERR_CNT_TH			GENMASK(3, 0)
 #define TPS6594_BIT_ESM_MCU_ENDRV			BIT(5)
 #define TPS6594_BIT_ESM_MCU_EN				BIT(6)
 #define TPS6594_BIT_ESM_MCU_MODE			BIT(7)
 
-/* ESM_MCU_ERR_CNT_REG register field definition */
+ 
 #define TPS6594_MASK_ESM_MCU_ERR_CNT			GENMASK(4, 0)
 
-/* ESM_SOC_START_REG register field definition */
+ 
 #define TPS6594_BIT_ESM_SOC_START			BIT(0)
 
-/* ESM_SOC_MODE_CFG register field definition */
+ 
 #define TPS6594_MASK_ESM_SOC_ERR_CNT_TH			GENMASK(3, 0)
 #define TPS6594_BIT_ESM_SOC_ENDRV			BIT(5)
 #define TPS6594_BIT_ESM_SOC_EN				BIT(6)
 #define TPS6594_BIT_ESM_SOC_MODE			BIT(7)
 
-/* ESM_SOC_ERR_CNT_REG register field definition */
+ 
 #define TPS6594_MASK_ESM_SOC_ERR_CNT			GENMASK(4, 0)
 
-/* REGISTER_LOCK register field definition */
+ 
 #define TPS6594_BIT_REGISTER_LOCK_STATUS		BIT(0)
 
-/* VMON_CONF register field definition */
+ 
 #define TPS6594_MASK_VMON1_SLEW_RATE			GENMASK(2, 0)
 #define TPS6594_MASK_VMON2_SLEW_RATE			GENMASK(5, 3)
 
-/* SOFT_REBOOT_REG register field definition */
+ 
 #define TPS6594_BIT_SOFT_REBOOT				BIT(0)
 
-/* RTC_SECONDS & ALARM_SECONDS register field definition */
+ 
 #define TPS6594_MASK_SECOND_0				GENMASK(3, 0)
 #define TPS6594_MASK_SECOND_1				GENMASK(6, 4)
 
-/* RTC_MINUTES & ALARM_MINUTES register field definition */
+ 
 #define TPS6594_MASK_MINUTE_0				GENMASK(3, 0)
 #define TPS6594_MASK_MINUTE_1				GENMASK(6, 4)
 
-/* RTC_HOURS & ALARM_HOURS register field definition */
+ 
 #define TPS6594_MASK_HOUR_0				GENMASK(3, 0)
 #define TPS6594_MASK_HOUR_1				GENMASK(5, 4)
 #define TPS6594_BIT_PM_NAM				BIT(7)
 
-/* RTC_DAYS & ALARM_DAYS register field definition */
+ 
 #define TPS6594_MASK_DAY_0				GENMASK(3, 0)
 #define TPS6594_MASK_DAY_1				GENMASK(5, 4)
 
-/* RTC_MONTHS & ALARM_MONTHS register field definition */
+ 
 #define TPS6594_MASK_MONTH_0				GENMASK(3, 0)
 #define TPS6594_BIT_MONTH_1				BIT(4)
 
-/* RTC_YEARS & ALARM_YEARS register field definition */
+ 
 #define TPS6594_MASK_YEAR_0				GENMASK(3, 0)
 #define TPS6594_MASK_YEAR_1				GENMASK(7, 4)
 
-/* RTC_WEEKS register field definition */
+ 
 #define TPS6594_MASK_WEEK				GENMASK(2, 0)
 
-/* RTC_CTRL_1 register field definition */
+ 
 #define TPS6594_BIT_STOP_RTC				BIT(0)
 #define TPS6594_BIT_ROUND_30S				BIT(1)
 #define TPS6594_BIT_AUTO_COMP				BIT(2)
@@ -727,7 +723,7 @@ enum pmic_id {
 #define TPS6594_BIT_GET_TIME				BIT(6)
 #define TPS6594_BIT_RTC_V_OPT				BIT(7)
 
-/* RTC_CTRL_2 register field definition */
+ 
 #define TPS6594_BIT_XTAL_EN				BIT(0)
 #define TPS6594_MASK_XTAL_SEL				GENMASK(2, 1)
 #define TPS6594_BIT_LP_STANDBY_SEL			BIT(3)
@@ -735,41 +731,41 @@ enum pmic_id {
 #define TPS6594_MASK_STARTUP_DEST			GENMASK(6, 5)
 #define TPS6594_BIT_FIRST_STARTUP_DONE			BIT(7)
 
-/* RTC_STATUS register field definition */
+ 
 #define TPS6594_BIT_RUN					BIT(1)
 #define TPS6594_BIT_TIMER				BIT(5)
 #define TPS6594_BIT_ALARM				BIT(6)
 #define TPS6594_BIT_POWER_UP				BIT(7)
 
-/* RTC_INTERRUPTS register field definition */
+ 
 #define TPS6594_MASK_EVERY				GENMASK(1, 0)
 #define TPS6594_BIT_IT_TIMER				BIT(2)
 #define TPS6594_BIT_IT_ALARM				BIT(3)
 
-/* RTC_RESET_STATUS register field definition */
+ 
 #define TPS6594_BIT_RESET_STATUS_RTC			BIT(0)
 
-/* SERIAL_IF_CONFIG register field definition */
+ 
 #define TPS6594_BIT_I2C_SPI_SEL				BIT(0)
 #define TPS6594_BIT_I2C1_SPI_CRC_EN			BIT(1)
 #define TPS6594_BIT_I2C2_CRC_EN				BIT(2)
 #define TPS6594_MASK_T_CRC				GENMASK(7, 3)
 
-/* WD_QUESTION_ANSW_CNT register field definition */
+ 
 #define TPS6594_MASK_WD_QUESTION			GENMASK(3, 0)
 #define TPS6594_MASK_WD_ANSW_CNT			GENMASK(5, 4)
 
-/* WD_MODE_REG register field definition */
+ 
 #define TPS6594_BIT_WD_RETURN_LONGWIN			BIT(0)
 #define TPS6594_BIT_WD_MODE_SELECT			BIT(1)
 #define TPS6594_BIT_WD_PWRHOLD				BIT(2)
 
-/* WD_QA_CFG register field definition */
+ 
 #define TPS6594_MASK_WD_QUESTION_SEED			GENMASK(3, 0)
 #define TPS6594_MASK_WD_QA_LFSR				GENMASK(5, 4)
 #define TPS6594_MASK_WD_QA_FDBK				GENMASK(7, 6)
 
-/* WD_ERR_STATUS register field definition */
+ 
 #define TPS6594_BIT_WD_LONGWIN_TIMEOUT_INT		BIT(0)
 #define TPS6594_BIT_WD_TIMEOUT				BIT(1)
 #define TPS6594_BIT_WD_TRIG_EARLY			BIT(2)
@@ -779,23 +775,23 @@ enum pmic_id {
 #define TPS6594_BIT_WD_FAIL_INT				BIT(6)
 #define TPS6594_BIT_WD_RST_INT				BIT(7)
 
-/* WD_THR_CFG register field definition */
+ 
 #define TPS6594_MASK_WD_RST_TH				GENMASK(2, 0)
 #define TPS6594_MASK_WD_FAIL_TH				GENMASK(5, 3)
 #define TPS6594_BIT_WD_EN				BIT(6)
 #define TPS6594_BIT_WD_RST_EN				BIT(7)
 
-/* WD_FAIL_CNT_REG register field definition */
+ 
 #define TPS6594_MASK_WD_FAIL_CNT			GENMASK(3, 0)
 #define TPS6594_BIT_WD_FIRST_OK				BIT(5)
 #define TPS6594_BIT_WD_BAD_EVENT			BIT(6)
 
-/* CRC8 polynomial for I2C & SPI protocols */
+ 
 #define TPS6594_CRC8_POLYNOMIAL	0x07
 
-/* IRQs */
+ 
 enum tps6594_irqs {
-	/* INT_BUCK1_2 register */
+	 
 	TPS6594_IRQ_BUCK1_OV,
 	TPS6594_IRQ_BUCK1_UV,
 	TPS6594_IRQ_BUCK1_SC,
@@ -804,7 +800,7 @@ enum tps6594_irqs {
 	TPS6594_IRQ_BUCK2_UV,
 	TPS6594_IRQ_BUCK2_SC,
 	TPS6594_IRQ_BUCK2_ILIM,
-	/* INT_BUCK3_4 register */
+	 
 	TPS6594_IRQ_BUCK3_OV,
 	TPS6594_IRQ_BUCK3_UV,
 	TPS6594_IRQ_BUCK3_SC,
@@ -813,12 +809,12 @@ enum tps6594_irqs {
 	TPS6594_IRQ_BUCK4_UV,
 	TPS6594_IRQ_BUCK4_SC,
 	TPS6594_IRQ_BUCK4_ILIM,
-	/* INT_BUCK5 register */
+	 
 	TPS6594_IRQ_BUCK5_OV,
 	TPS6594_IRQ_BUCK5_UV,
 	TPS6594_IRQ_BUCK5_SC,
 	TPS6594_IRQ_BUCK5_ILIM,
-	/* INT_LDO1_2 register */
+	 
 	TPS6594_IRQ_LDO1_OV,
 	TPS6594_IRQ_LDO1_UV,
 	TPS6594_IRQ_LDO1_SC,
@@ -827,7 +823,7 @@ enum tps6594_irqs {
 	TPS6594_IRQ_LDO2_UV,
 	TPS6594_IRQ_LDO2_SC,
 	TPS6594_IRQ_LDO2_ILIM,
-	/* INT_LDO3_4 register */
+	 
 	TPS6594_IRQ_LDO3_OV,
 	TPS6594_IRQ_LDO3_UV,
 	TPS6594_IRQ_LDO3_SC,
@@ -836,7 +832,7 @@ enum tps6594_irqs {
 	TPS6594_IRQ_LDO4_UV,
 	TPS6594_IRQ_LDO4_SC,
 	TPS6594_IRQ_LDO4_ILIM,
-	/* INT_VMON register */
+	 
 	TPS6594_IRQ_VCCA_OV,
 	TPS6594_IRQ_VCCA_UV,
 	TPS6594_IRQ_VMON1_OV,
@@ -845,11 +841,11 @@ enum tps6594_irqs {
 	TPS6594_IRQ_VMON2_OV,
 	TPS6594_IRQ_VMON2_UV,
 	TPS6594_IRQ_VMON2_RV,
-	/* INT_GPIO register */
+	 
 	TPS6594_IRQ_GPIO9,
 	TPS6594_IRQ_GPIO10,
 	TPS6594_IRQ_GPIO11,
-	/* INT_GPIO1_8 register */
+	 
 	TPS6594_IRQ_GPIO1,
 	TPS6594_IRQ_GPIO2,
 	TPS6594_IRQ_GPIO3,
@@ -858,16 +854,16 @@ enum tps6594_irqs {
 	TPS6594_IRQ_GPIO6,
 	TPS6594_IRQ_GPIO7,
 	TPS6594_IRQ_GPIO8,
-	/* INT_STARTUP register */
+	 
 	TPS6594_IRQ_NPWRON_START,
 	TPS6594_IRQ_ENABLE,
 	TPS6594_IRQ_FSD,
 	TPS6594_IRQ_SOFT_REBOOT,
-	/* INT_MISC register */
+	 
 	TPS6594_IRQ_BIST_PASS,
 	TPS6594_IRQ_EXT_CLK,
 	TPS6594_IRQ_TWARN,
-	/* INT_MODERATE_ERR register */
+	 
 	TPS6594_IRQ_TSD_ORD,
 	TPS6594_IRQ_BIST_FAIL,
 	TPS6594_IRQ_REG_CRC_ERR,
@@ -876,29 +872,29 @@ enum tps6594_irqs {
 	TPS6594_IRQ_NPWRON_LONG,
 	TPS6594_IRQ_NINT_READBACK,
 	TPS6594_IRQ_NRSTOUT_READBACK,
-	/* INT_SEVERE_ERR register */
+	 
 	TPS6594_IRQ_TSD_IMM,
 	TPS6594_IRQ_VCCA_OVP,
 	TPS6594_IRQ_PFSM_ERR,
-	/* INT_FSM_ERR register */
+	 
 	TPS6594_IRQ_IMM_SHUTDOWN,
 	TPS6594_IRQ_ORD_SHUTDOWN,
 	TPS6594_IRQ_MCU_PWR_ERR,
 	TPS6594_IRQ_SOC_PWR_ERR,
-	/* INT_COMM_ERR register */
+	 
 	TPS6594_IRQ_COMM_FRM_ERR,
 	TPS6594_IRQ_COMM_CRC_ERR,
 	TPS6594_IRQ_COMM_ADR_ERR,
 	TPS6594_IRQ_I2C2_CRC_ERR,
 	TPS6594_IRQ_I2C2_ADR_ERR,
-	/* INT_READBACK_ERR register */
+	 
 	TPS6594_IRQ_EN_DRV_READBACK,
 	TPS6594_IRQ_NRSTOUT_SOC_READBACK,
-	/* INT_ESM register */
+	 
 	TPS6594_IRQ_ESM_SOC_PIN,
 	TPS6594_IRQ_ESM_SOC_FAIL,
 	TPS6594_IRQ_ESM_SOC_RST,
-	/* RTC_STATUS register */
+	 
 	TPS6594_IRQ_TIMER,
 	TPS6594_IRQ_ALARM,
 	TPS6594_IRQ_POWER_UP,
@@ -993,17 +989,7 @@ enum tps6594_irqs {
 #define TPS6594_IRQ_NAME_ALARM			"alarm"
 #define TPS6594_IRQ_NAME_POWERUP		"powerup"
 
-/**
- * struct tps6594 - device private data structure
- *
- * @dev:      MFD parent device
- * @chip_id:  chip ID
- * @reg:      I2C slave address or SPI chip select number
- * @use_crc:  if true, use CRC for I2C and SPI interface protocols
- * @regmap:   regmap for accessing the device registers
- * @irq:      irq generated by the device
- * @irq_data: regmap irq data used for the irq chip
- */
+ 
 struct tps6594 {
 	struct device *dev;
 	unsigned long chip_id;
@@ -1017,4 +1003,4 @@ struct tps6594 {
 bool tps6594_is_volatile_reg(struct device *dev, unsigned int reg);
 int tps6594_device_init(struct tps6594 *tps, bool enable_crc);
 
-#endif /*  __LINUX_MFD_TPS6594_H */
+#endif  

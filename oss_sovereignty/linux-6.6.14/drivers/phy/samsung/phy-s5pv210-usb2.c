@@ -1,19 +1,14 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Samsung SoC USB 1.1/2.0 PHY driver - S5PV210 support
- *
- * Copyright (C) 2013 Samsung Electronics Co., Ltd.
- * Authors: Kamil Debski <k.debski@samsung.com>
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/io.h>
 #include <linux/phy/phy.h>
 #include "phy-samsung-usb2.h"
 
-/* Exynos USB PHY registers */
+ 
 
-/* PHY power control */
+ 
 #define S5PV210_UPHYPWR			0x0
 
 #define S5PV210_UPHYPWR_PHY0_SUSPEND	BIT(0)
@@ -30,7 +25,7 @@
 	S5PV210_UPHYPWR_PHY1_SUSPEND | \
 	S5PV210_UPHYPWR_PHY1_PWR)
 
-/* PHY clock control */
+ 
 #define S5PV210_UPHYCLK			0x4
 
 #define S5PV210_UPHYCLK_PHYFSEL_MASK	(0x3 << 0)
@@ -42,7 +37,7 @@
 #define S5PV210_UPHYCLK_PHY0_COMMON_ON	BIT(4)
 #define S5PV210_UPHYCLK_PHY1_COMMON_ON	BIT(7)
 
-/* PHY reset control */
+ 
 #define S5PV210_UPHYRST			0x8
 
 #define S5PV210_URSTCON_PHY0		BIT(0)
@@ -51,7 +46,7 @@
 #define S5PV210_URSTCON_PHY1_ALL	BIT(3)
 #define S5PV210_URSTCON_HOST_LINK_ALL	BIT(4)
 
-/* Isolation, configured in the power management unit */
+ 
 #define S5PV210_USB_ISOL_OFFSET		0x680c
 #define S5PV210_USB_ISOL_DEVICE		BIT(0)
 #define S5PV210_USB_ISOL_HOST		BIT(1)
@@ -63,10 +58,7 @@ enum s5pv210_phy_id {
 	S5PV210_NUM_PHYS,
 };
 
-/*
- * s5pv210_rate_to_clk() converts the supplied clock rate to the value that
- * can be written to the phy register.
- */
+ 
 static int s5pv210_rate_to_clk(unsigned long rate, u32 *reg)
 {
 	switch (rate) {
@@ -139,9 +131,7 @@ static void s5pv210_phy_pwr(struct samsung_usb2_phy_instance *inst, bool on)
 		udelay(10);
 		rst &= ~rstbits;
 		writel(rst, drv->reg_phy + S5PV210_UPHYRST);
-		/* The following delay is necessary for the reset sequence to be
-		 * completed
-		 */
+		 
 		udelay(80);
 	} else {
 		pwr = readl(drv->reg_phy + S5PV210_UPHYPWR);

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 or BSD-3-Clause
-/*
- * Copyright(c) 2015 - 2018 Intel Corporation.
- */
+
+ 
 
 #include <linux/spinlock.h>
 
@@ -18,12 +16,7 @@ static int gid_ok(union ib_gid *gid, __be64 gid_prefix, __be64 id)
 		 gid->global.subnet_prefix == IB_DEFAULT_GID_PREFIX));
 }
 
-/*
- *
- * This should be called with the QP r_lock held.
- *
- * The s_lock will be acquired around the hfi1_migrate_qp() call.
- */
+ 
 int hfi1_ruc_check_hdr(struct hfi1_ibport *ibp, struct hfi1_packet *packet)
 {
 	__be64 guid;
@@ -65,7 +58,7 @@ int hfi1_ruc_check_hdr(struct hfi1_ibport *ibp, struct hfi1_packet *packet)
 				      slid, dlid);
 			return 1;
 		}
-		/* Validate the SLID. See Ch. 9.6.1.5 and 17.2.8 */
+		 
 		if (slid != rdma_ah_get_dlid(&qp->alt_ah_attr) ||
 		    ppd_from_ibp(ibp)->port !=
 			rdma_ah_get_port_num(&qp->alt_ah_attr))
@@ -102,7 +95,7 @@ int hfi1_ruc_check_hdr(struct hfi1_ibport *ibp, struct hfi1_packet *packet)
 				      slid, dlid);
 			return 1;
 		}
-		/* Validate the SLID. See Ch. 9.6.1.5 */
+		 
 		if ((slid != rdma_ah_get_dlid(&qp->remote_ah_attr)) ||
 		    ppd_from_ibp(ibp)->port != qp->port_num)
 			return 1;
@@ -113,16 +106,7 @@ int hfi1_ruc_check_hdr(struct hfi1_ibport *ibp, struct hfi1_packet *packet)
 	return 0;
 }
 
-/**
- * hfi1_make_grh - construct a GRH header
- * @ibp: a pointer to the IB port
- * @hdr: a pointer to the GRH header being constructed
- * @grh: the global route address to send to
- * @hwords: size of header after grh being sent in dwords
- * @nwords: the number of 32 bit words of data being sent
- *
- * Return the size of the header in 32 bit words.
- */
+ 
 u32 hfi1_make_grh(struct hfi1_ibport *ibp, struct ib_grh *hdr,
 		  const struct ib_global_route *grh, u32 hwords, u32 nwords)
 {
@@ -131,10 +115,10 @@ u32 hfi1_make_grh(struct hfi1_ibport *ibp, struct ib_grh *hdr,
 			    (grh->traffic_class << IB_GRH_TCLASS_SHIFT) |
 			    (grh->flow_label << IB_GRH_FLOW_SHIFT));
 	hdr->paylen = cpu_to_be16((hwords + nwords) << 2);
-	/* next_hdr is defined by C8-7 in ch. 8.4.1 */
+	 
 	hdr->next_hdr = IB_GRH_NEXT_HDR;
 	hdr->hop_limit = grh->hop_limit;
-	/* The SGID is 32-bit aligned. */
+	 
 	hdr->sgid.global.subnet_prefix = ibp->rvp.gid_prefix;
 	hdr->sgid.global.interface_id =
 		grh->sgid_index < HFI1_GUIDS_PER_PORT ?
@@ -142,24 +126,14 @@ u32 hfi1_make_grh(struct hfi1_ibport *ibp, struct ib_grh *hdr,
 		get_sguid(ibp, HFI1_PORT_GUID_INDEX);
 	hdr->dgid = grh->dgid;
 
-	/* GRH header size in 32-bit words. */
+	 
 	return sizeof(struct ib_grh) / sizeof(u32);
 }
 
 #define BTH2_OFFSET (offsetof(struct hfi1_sdma_header, \
 			      hdr.ibh.u.oth.bth[2]) / 4)
 
-/**
- * build_ahg - create ahg in s_ahg
- * @qp: a pointer to QP
- * @npsn: the next PSN for the request/response
- *
- * This routine handles the AHG by allocating an ahg entry and causing the
- * copy of the first middle.
- *
- * Subsequent middles use the copied entry, editing the
- * PSN with 1 or 2 edits.
- */
+ 
 static inline void build_ahg(struct rvt_qp *qp, u32 npsn)
 {
 	struct hfi1_qp_priv *priv = qp->priv;
@@ -167,18 +141,18 @@ static inline void build_ahg(struct rvt_qp *qp, u32 npsn)
 	if (unlikely(qp->s_flags & HFI1_S_AHG_CLEAR))
 		clear_ahg(qp);
 	if (!(qp->s_flags & HFI1_S_AHG_VALID)) {
-		/* first middle that needs copy  */
+		 
 		if (qp->s_ahgidx < 0)
 			qp->s_ahgidx = sdma_ahg_alloc(priv->s_sde);
 		if (qp->s_ahgidx >= 0) {
 			qp->s_ahgpsn = npsn;
 			priv->s_ahg->tx_flags |= SDMA_TXREQ_F_AHG_COPY;
-			/* save to protect a change in another thread */
+			 
 			priv->s_ahg->ahgidx = qp->s_ahgidx;
 			qp->s_flags |= HFI1_S_AHG_VALID;
 		}
 	} else {
-		/* subsequent middle after valid */
+		 
 		if (qp->s_ahgidx >= 0) {
 			priv->s_ahg->tx_flags |= SDMA_TXREQ_F_USE_AHG;
 			priv->s_ahg->ahgidx = qp->s_ahgidx;
@@ -213,21 +187,7 @@ static inline void hfi1_make_ruc_bth(struct rvt_qp *qp,
 	ohdr->bth[2] = cpu_to_be32(bth2);
 }
 
-/**
- * hfi1_make_ruc_header_16B - build a 16B header
- * @qp: the queue pair
- * @ohdr: a pointer to the destination header memory
- * @bth0: bth0 passed in from the RC/UC builder
- * @bth1: bth1 passed in from the RC/UC builder
- * @bth2: bth2 passed in from the RC/UC builder
- * @middle: non zero implies indicates ahg "could" be used
- * @ps: the current packet state
- *
- * This routine may disarm ahg under these situations:
- * - packet needs a GRH
- * - BECN needed
- * - migration state not IB_MIG_MIGRATED
- */
+ 
 static inline void hfi1_make_ruc_header_16B(struct rvt_qp *qp,
 					    struct ib_other_headers *ohdr,
 					    u32 bth0, u32 bth1, u32 bth2,
@@ -252,10 +212,7 @@ static inline void hfi1_make_ruc_header_16B(struct rvt_qp *qp,
 		struct ib_grh *grh;
 		struct ib_global_route *grd =
 			rdma_ah_retrieve_grh(&qp->remote_ah_attr);
-		/*
-		 * Ensure OPA GIDs are transformed to IB gids
-		 * before creating the GRH.
-		 */
+		 
 		if (grd->sgid_index == OPA_GID_INDEX)
 			grd->sgid_index = 0;
 		grh = &ps->s_txreq->phdr.hdr.opah.u.l.grh;
@@ -274,7 +231,7 @@ static inline void hfi1_make_ruc_header_16B(struct rvt_qp *qp,
 
 	if (qp->s_flags & RVT_S_ECN) {
 		qp->s_flags &= ~RVT_S_ECN;
-		/* we recently received a FECN, so return a BECN */
+		 
 		becn = true;
 		middle = 0;
 	}
@@ -302,21 +259,7 @@ static inline void hfi1_make_ruc_header_16B(struct rvt_qp *qp,
 			  pkey, becn, 0, l4, priv->s_sc);
 }
 
-/**
- * hfi1_make_ruc_header_9B - build a 9B header
- * @qp: the queue pair
- * @ohdr: a pointer to the destination header memory
- * @bth0: bth0 passed in from the RC/UC builder
- * @bth1: bth1 passed in from the RC/UC builder
- * @bth2: bth2 passed in from the RC/UC builder
- * @middle: non zero implies indicates ahg "could" be used
- * @ps: the current packet state
- *
- * This routine may disarm ahg under these situations:
- * - packet needs a GRH
- * - BECN needed
- * - migration state not IB_MIG_MIGRATED
- */
+ 
 static inline void hfi1_make_ruc_header_9B(struct rvt_qp *qp,
 					   struct ib_other_headers *ohdr,
 					   u32 bth0, u32 bth1, u32 bth2,
@@ -352,7 +295,7 @@ static inline void hfi1_make_ruc_header_9B(struct rvt_qp *qp,
 
 	if (qp->s_flags & RVT_S_ECN) {
 		qp->s_flags &= ~RVT_S_ECN;
-		/* we recently received a FECN, so return a BECN */
+		 
 		bth1 |= (IB_BECN_MASK << IB_BECN_SHIFT);
 		middle = 0;
 	}
@@ -377,7 +320,7 @@ typedef void (*hfi1_make_ruc_hdr)(struct rvt_qp *qp,
 				  u32 bth0, u32 bth1, u32 bth2, int middle,
 				  struct hfi1_pkt_state *ps);
 
-/* We support only two types - 9B and 16B for now */
+ 
 static const hfi1_make_ruc_hdr hfi1_ruc_header_tbl[2] = {
 	[HFI1_PKT_TYPE_9B] = &hfi1_make_ruc_header_9B,
 	[HFI1_PKT_TYPE_16B] = &hfi1_make_ruc_header_16B
@@ -389,43 +332,20 @@ void hfi1_make_ruc_header(struct rvt_qp *qp, struct ib_other_headers *ohdr,
 {
 	struct hfi1_qp_priv *priv = qp->priv;
 
-	/*
-	 * reset s_ahg/AHG fields
-	 *
-	 * This insures that the ahgentry/ahgcount
-	 * are at a non-AHG default to protect
-	 * build_verbs_tx_desc() from using
-	 * an include ahgidx.
-	 *
-	 * build_ahg() will modify as appropriate
-	 * to use the AHG feature.
-	 */
+	 
 	priv->s_ahg->tx_flags = 0;
 	priv->s_ahg->ahgcount = 0;
 	priv->s_ahg->ahgidx = 0;
 
-	/* Make the appropriate header */
+	 
 	hfi1_ruc_header_tbl[priv->hdr_type](qp, ohdr, bth0, bth1, bth2, middle,
 					    ps);
 }
 
-/* when sending, force a reschedule every one of these periods */
-#define SEND_RESCHED_TIMEOUT (5 * HZ)  /* 5s in jiffies */
+ 
+#define SEND_RESCHED_TIMEOUT (5 * HZ)   
 
-/**
- * hfi1_schedule_send_yield - test for a yield required for QP
- * send engine
- * @qp: a pointer to QP
- * @ps: a pointer to a structure with commonly lookup values for
- *      the send engine progress
- * @tid: true if it is the tid leg
- *
- * This routine checks if the time slice for the QP has expired
- * for RC QPs, if so an additional work entry is queued. At this
- * point, other QPs have an opportunity to be scheduled. It
- * returns true if a yield is required, otherwise, false
- * is returned.
- */
+ 
 bool hfi1_schedule_send_yield(struct rvt_qp *qp, struct hfi1_pkt_state *ps,
 			      bool tid)
 {
@@ -481,15 +401,7 @@ void _hfi1_do_send(struct work_struct *work)
 	hfi1_do_send(qp, true);
 }
 
-/**
- * hfi1_do_send - perform a send on a QP
- * @qp: a pointer to the QP
- * @in_thread: true if in a workqueue thread
- *
- * Process entries in the send work queue until credit or queue is
- * exhausted.  Only allow one CPU to send a packet per QP.
- * Otherwise, two threads could send packets out of order.
- */
+ 
 void hfi1_do_send(struct rvt_qp *qp, bool in_thread)
 {
 	struct hfi1_pkt_state ps;
@@ -532,7 +444,7 @@ void hfi1_do_send(struct rvt_qp *qp, bool in_thread)
 
 	spin_lock_irqsave(&qp->s_lock, ps.flags);
 
-	/* Return if we are already busy processing a work request. */
+	 
 	if (!hfi1_send_ok(qp)) {
 		if (qp->s_flags & HFI1_S_ANY_WAIT_IO)
 			iowait_set_flag(&priv->s_iowait, IOWAIT_PENDING_IB);
@@ -548,22 +460,19 @@ void hfi1_do_send(struct rvt_qp *qp, bool in_thread)
 			cpumask_first(cpumask_of_node(ps.ppd->dd->node));
 	ps.pkts_sent = false;
 
-	/* insure a pre-built packet is handled  */
+	 
 	ps.s_txreq = get_waiting_verbs_txreq(ps.wait);
 	do {
-		/* Check for a constructed packet to be sent. */
+		 
 		if (ps.s_txreq) {
 			if (priv->s_flags & HFI1_S_TID_BUSY_SET)
 				qp->s_flags |= RVT_S_BUSY;
 			spin_unlock_irqrestore(&qp->s_lock, ps.flags);
-			/*
-			 * If the packet cannot be sent now, return and
-			 * the send engine will be woken up later.
-			 */
+			 
 			if (hfi1_verbs_send(qp, &ps))
 				return;
 
-			/* allow other tasks to run */
+			 
 			if (hfi1_schedule_send_yield(qp, &ps, false))
 				return;
 

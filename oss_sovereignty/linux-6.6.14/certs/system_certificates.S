@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #include <linux/export.h>
 #include <linux/init.h>
 
@@ -25,7 +25,7 @@ system_extra_cert:
 system_extra_cert_used:
 	.int 0
 
-#endif /* CONFIG_SYSTEM_EXTRA_CERTIFICATE */
+#endif  
 
 	.align 8
 	.globl system_certificate_list_size

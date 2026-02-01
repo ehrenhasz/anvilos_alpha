@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * dice_pcm.c - a part of driver for DICE based devices
- *
- * Copyright (c) Clemens Ladisch <clemens@ladisch.de>
- * Copyright (c) 2014 Takashi Sakamoto <o-takashi@sakamocchi.jp>
- */
+
+ 
 
 #include "dice.h"
 
@@ -198,9 +193,9 @@ static int pcm_open(struct snd_pcm_substream *substream)
 
 	mutex_lock(&dice->mutex);
 
-	// When source of clock is not internal or any stream is reserved for
-	// transmission of PCM frames, the available sampling rate is limited
-	// at current one.
+	
+	
+	
 	if (!internal ||
 	    (dice->substreams_counter > 0 && d->events_per_period > 0)) {
 		unsigned int frames_per_period = d->events_per_period;
@@ -217,7 +212,7 @@ static int pcm_open(struct snd_pcm_substream *substream)
 		substream->runtime->hw.rate_max = rate;
 
 		if (frames_per_period > 0) {
-			// For double_pcm_frame quirk.
+			
 			if (rate > 96000 && !dice->disable_double_pcm_frames) {
 				frames_per_period *= 2;
 				frames_per_buffer *= 2;
@@ -272,7 +267,7 @@ static int pcm_hw_params(struct snd_pcm_substream *substream,
 		unsigned int events_per_buffer = params_buffer_size(hw_params);
 
 		mutex_lock(&dice->mutex);
-		// For double_pcm_frame quirk.
+		
 		if (rate > 96000 && !dice->disable_double_pcm_frames) {
 			events_per_period /= 2;
 			events_per_buffer /= 2;

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *      uvc_v4l2.c  --  USB Video Class driver - V4L2 API
- *
- *      Copyright (C) 2005-2010
- *          Laurent Pinchart (laurent.pinchart@ideasonboard.com)
- */
+
+ 
 
 #include <linux/bits.h>
 #include <linux/compat.h>
@@ -34,10 +29,7 @@ static int uvc_control_add_xu_mapping(struct uvc_video_chain *chain,
 	size_t size;
 	int ret;
 
-	/*
-	 * Prevent excessive memory consumption, as well as integer
-	 * overflows.
-	 */
+	 
 	if (xmap->menu_count == 0 ||
 	    xmap->menu_count > UVC_MAX_CONTROL_MENU_ENTRIES)
 		return -EINVAL;
@@ -63,10 +55,7 @@ static int uvc_control_add_xu_mapping(struct uvc_video_chain *chain,
 		}
 	}
 
-	/*
-	 * Always use the standard naming if available, otherwise copy the
-	 * names supplied by userspace.
-	 */
+	 
 	if (!v4l2_ctrl_get_menu(map->id)) {
 		size = xmap->menu_count * sizeof(map->menu_names[0]);
 		map->menu_names = kzalloc(size, GFP_KERNEL);
@@ -76,7 +65,7 @@ static int uvc_control_add_xu_mapping(struct uvc_video_chain *chain,
 		}
 
 		for (i = 0; i < xmap->menu_count ; i++) {
-			/* sizeof(names[i]) - 1: to take care of \0 */
+			 
 			if (copy_from_user((char *)map->menu_names[i],
 					   xmap->menu_info[i].name,
 					   sizeof(map->menu_names[i]) - 1)) {
@@ -97,9 +86,7 @@ done:
 	return ret;
 }
 
-/* ------------------------------------------------------------------------
- * UVC ioctls
- */
+ 
 static int uvc_ioctl_xu_ctrl_map(struct uvc_video_chain *chain,
 				 struct uvc_xu_control_mapping *xmap)
 {
@@ -111,7 +98,7 @@ static int uvc_ioctl_xu_ctrl_map(struct uvc_video_chain *chain,
 		return -ENOMEM;
 
 	map->id = xmap->id;
-	/* Non standard control id. */
+	 
 	if (v4l2_ctrl_get_name(map->id) == NULL) {
 		if (xmap->name[0] == '\0') {
 			ret = -EINVAL;
@@ -151,16 +138,9 @@ free_map:
 	return ret;
 }
 
-/* ------------------------------------------------------------------------
- * V4L2 interface
- */
+ 
 
-/*
- * Find the frame interval closest to the requested frame interval for the
- * given frame format and size. This should be done by the device as part of
- * the Video Probe and Commit negotiation, but some hardware don't implement
- * that feature.
- */
+ 
 static u32 uvc_try_frame_interval(const struct uvc_frame *frame, u32 interval)
 {
 	unsigned int i;
@@ -231,10 +211,7 @@ static int uvc_v4l2_try_format(struct uvc_streaming *stream,
 		fcc[0], fcc[1], fcc[2], fcc[3],
 		fmt->fmt.pix.width, fmt->fmt.pix.height);
 
-	/*
-	 * Check if the hardware supports the requested format, use the default
-	 * format otherwise.
-	 */
+	 
 	for (i = 0; i < stream->nformats; ++i) {
 		format = &stream->formats[i];
 		if (format->fcc == fmt->fmt.pix.pixelformat)
@@ -246,11 +223,7 @@ static int uvc_v4l2_try_format(struct uvc_streaming *stream,
 		fmt->fmt.pix.pixelformat = format->fcc;
 	}
 
-	/*
-	 * Find the closest image size. The distance between image sizes is
-	 * the size in pixels of the non-overlapping regions between the
-	 * requested size and the frame-specified size.
-	 */
+	 
 	rw = fmt->fmt.pix.width;
 	rh = fmt->fmt.pix.height;
 	maxd = (unsigned int)-1;
@@ -276,49 +249,32 @@ static int uvc_v4l2_try_format(struct uvc_streaming *stream,
 		return -EINVAL;
 	}
 
-	/* Use the default frame interval. */
+	 
 	interval = frame->dwDefaultFrameInterval;
 	uvc_dbg(stream->dev, FORMAT,
 		"Using default frame interval %u.%u us (%u.%u fps)\n",
 		interval / 10, interval % 10, 10000000 / interval,
 		(100000000 / interval) % 10);
 
-	/* Set the format index, frame index and frame interval. */
+	 
 	memset(probe, 0, sizeof(*probe));
-	probe->bmHint = 1;	/* dwFrameInterval */
+	probe->bmHint = 1;	 
 	probe->bFormatIndex = format->index;
 	probe->bFrameIndex = frame->bFrameIndex;
 	probe->dwFrameInterval = uvc_try_frame_interval(frame, interval);
-	/*
-	 * Some webcams stall the probe control set request when the
-	 * dwMaxVideoFrameSize field is set to zero. The UVC specification
-	 * clearly states that the field is read-only from the host, so this
-	 * is a webcam bug. Set dwMaxVideoFrameSize to the value reported by
-	 * the webcam to work around the problem.
-	 *
-	 * The workaround could probably be enabled for all webcams, so the
-	 * quirk can be removed if needed. It's currently useful to detect
-	 * webcam bugs and fix them before they hit the market (providing
-	 * developers test their webcams with the Linux driver as well as with
-	 * the Windows driver).
-	 */
+	 
 	mutex_lock(&stream->mutex);
 	if (stream->dev->quirks & UVC_QUIRK_PROBE_EXTRAFIELDS)
 		probe->dwMaxVideoFrameSize =
 			stream->ctrl.dwMaxVideoFrameSize;
 
-	/* Probe the device. */
+	 
 	ret = uvc_probe_video(stream, probe);
 	mutex_unlock(&stream->mutex);
 	if (ret < 0)
 		return ret;
 
-	/*
-	 * After the probe, update fmt with the values returned from
-	 * negotiation with the device. Some devices return invalid bFormatIndex
-	 * and bFrameIndex values, in which case we can only assume they have
-	 * accepted the requested format as-is.
-	 */
+	 
 	for (i = 0; i < stream->nformats; ++i) {
 		if (probe->bFormatIndex == stream->formats[i].index) {
 			format = &stream->formats[i];
@@ -498,7 +454,7 @@ static int uvc_v4l2_set_streamparm(struct uvc_streaming *stream,
 	probe.dwFrameInterval = uvc_try_frame_interval(frame, interval);
 	maxd = abs((s32)probe.dwFrameInterval - interval);
 
-	/* Try frames with matching size to find the best frame interval. */
+	 
 	for (i = 0; i < format->nframes && maxd != 0; i++) {
 		u32 d, ival;
 
@@ -520,7 +476,7 @@ static int uvc_v4l2_set_streamparm(struct uvc_streaming *stream,
 		maxd = d;
 	}
 
-	/* Probe the device with the new settings. */
+	 
 	ret = uvc_probe_video(stream, &probe);
 	if (ret < 0) {
 		mutex_unlock(&stream->mutex);
@@ -531,7 +487,7 @@ static int uvc_v4l2_set_streamparm(struct uvc_streaming *stream,
 	stream->cur_frame = frame;
 	mutex_unlock(&stream->mutex);
 
-	/* Return the actual frame period. */
+	 
 	timeperframe.numerator = probe.dwFrameInterval;
 	timeperframe.denominator = 10000000;
 	v4l2_simplify_fraction(&timeperframe.numerator,
@@ -548,40 +504,16 @@ static int uvc_v4l2_set_streamparm(struct uvc_streaming *stream,
 	return 0;
 }
 
-/* ------------------------------------------------------------------------
- * Privilege management
- */
+ 
 
-/*
- * Privilege management is the multiple-open implementation basis. The current
- * implementation is completely transparent for the end-user and doesn't
- * require explicit use of the VIDIOC_G_PRIORITY and VIDIOC_S_PRIORITY ioctls.
- * Those ioctls enable finer control on the device (by making possible for a
- * user to request exclusive access to a device), but are not mature yet.
- * Switching to the V4L2 priority mechanism might be considered in the future
- * if this situation changes.
- *
- * Each open instance of a UVC device can either be in a privileged or
- * unprivileged state. Only a single instance can be in a privileged state at
- * a given time. Trying to perform an operation that requires privileges will
- * automatically acquire the required privileges if possible, or return -EBUSY
- * otherwise. Privileges are dismissed when closing the instance or when
- * freeing the video buffers using VIDIOC_REQBUFS.
- *
- * Operations that require privileges are:
- *
- * - VIDIOC_S_INPUT
- * - VIDIOC_S_PARM
- * - VIDIOC_S_FMT
- * - VIDIOC_REQBUFS
- */
+ 
 static int uvc_acquire_privileges(struct uvc_fh *handle)
 {
-	/* Always succeed if the handle is already privileged. */
+	 
 	if (handle->state == UVC_HANDLE_ACTIVE)
 		return 0;
 
-	/* Check if the device already has a privileged handle. */
+	 
 	if (atomic_inc_return(&handle->stream->active) != 1) {
 		atomic_dec(&handle->stream->active);
 		return -EBUSY;
@@ -604,9 +536,7 @@ static int uvc_has_privileges(struct uvc_fh *handle)
 	return handle->state == UVC_HANDLE_ACTIVE;
 }
 
-/* ------------------------------------------------------------------------
- * V4L2 file operations
- */
+ 
 
 static int uvc_v4l2_open(struct file *file)
 {
@@ -621,7 +551,7 @@ static int uvc_v4l2_open(struct file *file)
 	if (ret < 0)
 		return ret;
 
-	/* Create the device handle. */
+	 
 	handle = kzalloc(sizeof(*handle), GFP_KERNEL);
 	if (handle == NULL) {
 		usb_autopm_put_interface(stream->dev->intf);
@@ -659,11 +589,11 @@ static int uvc_v4l2_release(struct file *file)
 
 	uvc_dbg(stream->dev, CALLS, "%s\n", __func__);
 
-	/* Only free resources if this is a privileged handle. */
+	 
 	if (uvc_has_privileges(handle))
 		uvc_queue_release(&stream->queue);
 
-	/* Release the file handle. */
+	 
 	uvc_dismiss_privileges(handle);
 	v4l2_fh_del(&handle->vfh);
 	v4l2_fh_exit(&handle->vfh);
@@ -1255,7 +1185,7 @@ static int uvc_ioctl_enum_framesizes(struct file *file, void *fh,
 	unsigned int index;
 	unsigned int i;
 
-	/* Look for the given pixel format */
+	 
 	for (i = 0; i < stream->nformats; i++) {
 		if (stream->formats[i].fcc == fsize->pixel_format) {
 			format = &stream->formats[i];
@@ -1265,7 +1195,7 @@ static int uvc_ioctl_enum_framesizes(struct file *file, void *fh,
 	if (format == NULL)
 		return -EINVAL;
 
-	/* Skip duplicate frame sizes */
+	 
 	for (i = 0, index = 0; i < format->nframes; i++) {
 		if (frame && frame->wWidth == format->frames[i].wWidth &&
 		    frame->wHeight == format->frames[i].wHeight)
@@ -1296,7 +1226,7 @@ static int uvc_ioctl_enum_frameintervals(struct file *file, void *fh,
 	unsigned int index;
 	unsigned int i;
 
-	/* Look for the given pixel format and frame size */
+	 
 	for (i = 0; i < stream->nformats; i++) {
 		if (stream->formats[i].fcc == fival->pixel_format) {
 			format = &stream->formats[i];
@@ -1364,7 +1294,7 @@ static long uvc_ioctl_default(struct file *file, void *fh, bool valid_prio,
 	struct uvc_video_chain *chain = handle->chain;
 
 	switch (cmd) {
-	/* Dynamic controls. */
+	 
 	case UVCIOC_CTRL_MAP:
 		return uvc_ioctl_xu_ctrl_map(chain, arg);
 

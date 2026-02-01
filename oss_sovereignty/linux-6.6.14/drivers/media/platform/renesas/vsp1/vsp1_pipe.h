@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * vsp1_pipe.h  --  R-Car VSP1 Pipeline
- *
- * Copyright (C) 2013-2015 Renesas Electronics Corporation
- *
- * Contact: Laurent Pinchart (laurent.pinchart@ideasonboard.com)
- */
+ 
+ 
 #ifndef __VSP1_PIPE_H__
 #define __VSP1_PIPE_H__
 
@@ -19,20 +13,7 @@
 struct vsp1_dl_list;
 struct vsp1_rwpf;
 
-/*
- * struct vsp1_format_info - VSP1 video format description
- * @fourcc: V4L2 pixel format FCC identifier
- * @mbus: media bus format code
- * @hwfmt: VSP1 hardware format
- * @swap: swap register control
- * @planes: number of planes
- * @bpp: bits per pixel
- * @swap_yc: the Y and C components are swapped (Y comes before C)
- * @swap_uv: the U and V components are swapped (V comes before U)
- * @hsub: horizontal subsampling factor
- * @vsub: vertical subsampling factor
- * @alpha: has an alpha channel
- */
+ 
 struct vsp1_format_info {
 	u32 fourcc;
 	unsigned int mbus;
@@ -53,25 +34,13 @@ enum vsp1_pipeline_state {
 	VSP1_PIPELINE_STOPPING,
 };
 
-/*
- * struct vsp1_partition_window - Partition window coordinates
- * @left: horizontal coordinate of the partition start in pixels relative to the
- *	  left edge of the image
- * @width: partition width in pixels
- */
+ 
 struct vsp1_partition_window {
 	unsigned int left;
 	unsigned int width;
 };
 
-/*
- * struct vsp1_partition - A description of a slice for the partition algorithm
- * @rpf: The RPF partition window configuration
- * @uds_sink: The UDS input partition window configuration
- * @uds_source: The UDS output partition window configuration
- * @sru: The SRU partition window configuration
- * @wpf: The WPF partition window configuration
- */
+ 
 struct vsp1_partition {
 	struct vsp1_partition_window rpf;
 	struct vsp1_partition_window uds_sink;
@@ -80,35 +49,7 @@ struct vsp1_partition {
 	struct vsp1_partition_window wpf;
 };
 
-/*
- * struct vsp1_pipeline - A VSP1 hardware pipeline
- * @pipe: the media pipeline
- * @irqlock: protects the pipeline state
- * @state: current state
- * @wq: wait queue to wait for state change completion
- * @frame_end: frame end interrupt handler
- * @lock: protects the pipeline use count and stream count
- * @kref: pipeline reference count
- * @stream_count: number of streaming video nodes
- * @buffers_ready: bitmask of RPFs and WPFs with at least one buffer available
- * @sequence: frame sequence number
- * @num_inputs: number of RPFs
- * @inputs: array of RPFs in the pipeline (indexed by RPF index)
- * @output: WPF at the output of the pipeline
- * @brx: BRx entity, if present
- * @hgo: HGO entity, if present
- * @hgt: HGT entity, if present
- * @lif: LIF entity, if present
- * @uds: UDS entity, if present
- * @uds_input: entity at the input of the UDS, if the UDS is present
- * @entities: list of entities in the pipeline
- * @stream_config: cached stream configuration for video pipelines
- * @configured: when false the @stream_config shall be written to the hardware
- * @interlaced: True when the pipeline is configured in interlaced mode
- * @partitions: The number of partitions used to process one frame
- * @partition: The current partition for configuration to process
- * @part_table: The pre-calculated partitions used by the pipeline
- */
+ 
 struct vsp1_pipeline {
 	struct media_pipeline pipe;
 
@@ -134,11 +75,7 @@ struct vsp1_pipeline {
 	struct vsp1_entity *uds;
 	struct vsp1_entity *uds_input;
 
-	/*
-	 * The order of this list must be identical to the order of the entities
-	 * in the pipeline, as it is assumed by the partition algorithm that we
-	 * can walk this list in sequence.
-	 */
+	 
 	struct list_head entities;
 
 	struct vsp1_dl_body *stream_config;
@@ -174,4 +111,4 @@ void vsp1_pipeline_propagate_partition(struct vsp1_pipeline *pipe,
 const struct vsp1_format_info *vsp1_get_format_info(struct vsp1_device *vsp1,
 						    u32 fourcc);
 
-#endif /* __VSP1_PIPE_H__ */
+#endif  

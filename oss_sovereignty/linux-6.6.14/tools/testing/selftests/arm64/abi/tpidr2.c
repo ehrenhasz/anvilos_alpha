@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 
 #include <linux/sched.h>
 #include <linux/wait.h>
@@ -64,13 +64,13 @@ static void print_summary(void)
 	putstr(" error:0\n");
 }
 
-/* Processes should start with TPIDR2 == 0 */
+ 
 static int default_value(void)
 {
 	return get_tpidr2() == 0;
 }
 
-/* If we set TPIDR2 we should read that value */
+ 
 static int write_read(void)
 {
 	set_tpidr2(getpid());
@@ -78,7 +78,7 @@ static int write_read(void)
 	return getpid() == get_tpidr2();
 }
 
-/* If we set a value we should read the same value after scheduling out */
+ 
 static int write_sleep_read(void)
 {
 	set_tpidr2(getpid());
@@ -88,11 +88,7 @@ static int write_sleep_read(void)
 	return getpid() == get_tpidr2();
 }
 
-/*
- * If we fork the value in the parent should be unchanged and the
- * child should start with the same value and be able to set its own
- * value.
- */
+ 
 static int write_fork_read(void)
 {
 	pid_t newpid, waiting, oldpid;
@@ -103,7 +99,7 @@ static int write_fork_read(void)
 	oldpid = getpid();
 	newpid = fork();
 	if (newpid == 0) {
-		/* In child */
+		 
 		if (get_tpidr2() != oldpid) {
 			putstr("# TPIDR2 changed in child: ");
 			putnum(get_tpidr2());
@@ -156,11 +152,7 @@ static int write_fork_read(void)
 	}
 }
 
-/*
- * sys_clone() has a lot of per architecture variation so just define
- * it here rather than adding it to nolibc, plus the raw API is a
- * little more convenient for this test.
- */
+ 
 static int sys_clone(unsigned long clone_flags, unsigned long newsp,
 		     int *parent_tidptr, unsigned long tls,
 		     int *child_tidptr)
@@ -169,11 +161,7 @@ static int sys_clone(unsigned long clone_flags, unsigned long newsp,
 			   child_tidptr);
 }
 
-/*
- * If we clone with CLONE_SETTLS then the value in the parent should
- * be unchanged and the child should start with zero and be able to
- * set its own value.
- */
+ 
 static int write_clone_read(void)
 {
 	int parent_tid, child_tid;
@@ -192,7 +180,7 @@ static int write_clone_read(void)
 	}
 
 	if (ret == 0) {
-		/* In child */
+		 
 		if (get_tpidr2() != 0) {
 			putstr("# TPIDR2 non-zero in child: ");
 			putnum(get_tpidr2());
@@ -267,11 +255,7 @@ int main(int argc, char **argv)
 	putnum(getpid());
 	putstr("\n");
 
-	/*
-	 * This test is run with nolibc which doesn't support hwcap and
-	 * it's probably disproportionate to implement so instead check
-	 * for the default vector length configuration in /proc.
-	 */
+	 
 	ret = open("/proc/sys/abi/sme_default_vector_length", O_RDONLY, 0);
 	if (ret >= 0) {
 		run_test(default_value);

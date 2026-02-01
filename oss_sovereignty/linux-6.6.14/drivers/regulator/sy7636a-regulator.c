@@ -1,11 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0+
-//
-// Functions to access SY3686A power management chip voltages
-//
-// Copyright (C) 2019 reMarkable AS - http://www.remarkable.com/
-//
-// Authors: Lars Ivar Miljeteig <lars.ivar.miljeteig@remarkable.com>
-//          Alistair Francis <alistair@alistair23.me>
+
+
+
+
+
+
+
+
 
 #include <linux/gpio/consumer.h>
 #include <linux/i2c.h>

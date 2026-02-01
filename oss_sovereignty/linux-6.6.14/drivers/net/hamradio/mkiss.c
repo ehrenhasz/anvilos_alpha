@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *
- * Copyright (C) Hans Alblas PE1AYX <hans@esrac.ele.tue.nl>
- * Copyright (C) 2004, 05 Ralf Baechle DL5RB <ralf@linux-mips.org>
- * Copyright (C) 2004, 05 Thomas Osterried DL9SAU <thomas@x-berg.in-berlin.de>
- */
+
+ 
 #include <linux/module.h>
 #include <linux/bitops.h>
 #include <linux/uaccess.h>
@@ -31,41 +26,41 @@
 
 #define AX_MTU		236
 
-/* some arch define END as assembly function ending, just undef it */
+ 
 #undef	END
-/* SLIP/KISS protocol characters. */
-#define END             0300		/* indicates end of frame	*/
-#define ESC             0333		/* indicates byte stuffing	*/
-#define ESC_END         0334		/* ESC ESC_END means END 'data'	*/
-#define ESC_ESC         0335		/* ESC ESC_ESC means ESC 'data'	*/
+ 
+#define END             0300		 
+#define ESC             0333		 
+#define ESC_END         0334		 
+#define ESC_ESC         0335		 
 
 struct mkiss {
-	struct tty_struct	*tty;	/* ptr to TTY structure		*/
-	struct net_device	*dev;	/* easy for intr handling	*/
+	struct tty_struct	*tty;	 
+	struct net_device	*dev;	 
 
-	/* These are pointers to the malloc()ed frame buffers. */
-	spinlock_t		buflock;/* lock for rbuf and xbuf */
-	unsigned char		*rbuff;	/* receiver buffer		*/
-	int			rcount;	/* received chars counter       */
-	unsigned char		*xbuff;	/* transmitter buffer		*/
-	unsigned char		*xhead;	/* pointer to next byte to XMIT */
-	int			xleft;	/* bytes left in XMIT queue     */
+	 
+	spinlock_t		buflock; 
+	unsigned char		*rbuff;	 
+	int			rcount;	 
+	unsigned char		*xbuff;	 
+	unsigned char		*xhead;	 
+	int			xleft;	 
 
-	/* Detailed SLIP statistics. */
-	int		mtu;		/* Our mtu (to spot changes!)   */
-	int		buffsize;	/* Max buffers sizes            */
+	 
+	int		mtu;		 
+	int		buffsize;	 
 
-	unsigned long	flags;		/* Flag values/ mode etc	*/
-					/* long req'd: used by set_bit --RR */
-#define AXF_INUSE	0		/* Channel in use               */
-#define AXF_ESCAPE	1               /* ESC received                 */
-#define AXF_ERROR	2               /* Parity, etc. error           */
-#define AXF_KEEPTEST	3		/* Keepalive test flag		*/
-#define AXF_OUTWAIT	4		/* is outpacket was flag	*/
+	unsigned long	flags;		 
+					 
+#define AXF_INUSE	0		 
+#define AXF_ESCAPE	1                
+#define AXF_ERROR	2                
+#define AXF_KEEPTEST	3		 
+#define AXF_OUTWAIT	4		 
 
 	int		mode;
-        int		crcmode;	/* MW: for FlexNet, SMACK etc.  */
-	int		crcauto;	/* CRC auto mode */
+        int		crcmode;	 
+	int		crcauto;	 
 
 #define CRC_MODE_NONE		0
 #define CRC_MODE_FLEX		1
@@ -77,7 +72,7 @@ struct mkiss {
 	struct completion	dead;
 };
 
-/*---------------------------------------------------------------------------*/
+ 
 
 static const unsigned short crc_flex_table[] = {
 	0x0f87, 0x1e0e, 0x2c95, 0x3d1c, 0x49a3, 0x582a, 0x6ab1, 0x7b38,
@@ -155,19 +150,14 @@ static int check_crc_16(unsigned char *cp, int size)
 	return 0;
 }
 
-/*
- * Standard encapsulation
- */
+ 
 
 static int kiss_esc(unsigned char *s, unsigned char *d, int len)
 {
 	unsigned char *ptr = d;
 	unsigned char c;
 
-	/*
-	 * Send an initial END character to flush out any data that may have
-	 * accumulated in the receiver due to line noise.
-	 */
+	 
 
 	*ptr++ = END;
 
@@ -192,11 +182,7 @@ static int kiss_esc(unsigned char *s, unsigned char *d, int len)
 	return ptr - d;
 }
 
-/*
- * MW:
- * OK its ugly, but tell me a better solution without copying the
- * packet to a temporary buffer :-)
- */
+ 
 static int kiss_esc_crc(unsigned char *s, unsigned char *d, unsigned short crc,
 	int len)
 {
@@ -233,7 +219,7 @@ static int kiss_esc_crc(unsigned char *s, unsigned char *d, unsigned short crc,
 	return ptr - d;
 }
 
-/* Send one completely decapsulated AX.25 packet to the AX.25 layer. */
+ 
 static void ax_bump(struct mkiss *ax)
 {
 	struct sk_buff *skb;
@@ -270,12 +256,7 @@ static void ax_bump(struct mkiss *ax)
 			}
 			ax->rcount -= 2;
 
-			/*
-			 * dl9sau bugfix: the trailling two bytes flexnet crc
-			 * will not be passed to the kernel. thus we have to
-			 * correct the kissparm signature, because it indicates
-			 * a crc but there's none
-			 */
+			 
 			*ax->rbuff &= ~0x20;
 		}
 	}
@@ -302,7 +283,7 @@ static void kiss_unesc(struct mkiss *ax, unsigned char s)
 {
 	switch (s) {
 	case END:
-		/* drop keeptest bit = VSV */
+		 
 		if (test_bit(AXF_KEEPTEST, &ax->flags))
 			clear_bit(AXF_KEEPTEST, &ax->flags);
 
@@ -353,7 +334,7 @@ static int ax_set_mac_address(struct net_device *dev, void *addr)
 	return 0;
 }
 
-/*---------------------------------------------------------------------------*/
+ 
 
 static void ax_changedmtu(struct mkiss *ax)
 {
@@ -363,11 +344,7 @@ static void ax_changedmtu(struct mkiss *ax)
 
 	len = dev->mtu * 2;
 
-	/*
-	 * allow for arrival of larger UDP packets, even if we say not to
-	 * also fixes a bug in which SunOS sends 512-byte packets even with
-	 * an MSS of 128
-	 */
+	 
 	if (len < 576 * 2)
 		len = 576 * 2;
 
@@ -421,17 +398,17 @@ static void ax_changedmtu(struct mkiss *ax)
 	kfree(orbuff);
 }
 
-/* Encapsulate one AX.25 packet and stuff into a TTY queue. */
+ 
 static void ax_encaps(struct net_device *dev, unsigned char *icp, int len)
 {
 	struct mkiss *ax = netdev_priv(dev);
 	unsigned char *p;
 	int actual, count;
 
-	if (ax->mtu != ax->dev->mtu + 73)	/* Someone has been ifconfigging */
+	if (ax->mtu != ax->dev->mtu + 73)	 
 		ax_changedmtu(ax);
 
-	if (len > ax->mtu) {		/* Sigh, shouldn't occur BUT ... */
+	if (len > ax->mtu) {		 
 		printk(KERN_ERR "mkiss: %s: truncating oversized transmit packet!\n", ax->dev->name);
 		dev->stats.tx_dropped++;
 		netif_start_queue(dev);
@@ -442,14 +419,10 @@ static void ax_encaps(struct net_device *dev, unsigned char *icp, int len)
 
 	spin_lock_bh(&ax->buflock);
 	if ((*p & 0x0f) != 0) {
-		/* Configuration Command (kissparms(1).
-		 * Protocol spec says: never append CRC.
-		 * This fixes a very old bug in the linux
-		 * kiss driver. -- dl9sau */
+		 
 		switch (*p & 0xff) {
 		case 0x85:
-			/* command from userspace especially for us,
-			 * not for delivery to the tnc */
+			 
 			if (len > 1) {
 				int cmd = (p[1] & 0xff);
 				switch(cmd) {
@@ -516,7 +489,7 @@ static void ax_encaps(struct net_device *dev, unsigned char *icp, int len)
 	ax->xhead = ax->xbuff + actual;
 }
 
-/* Encapsulate an AX.25 packet and kick it into a TTY queue. */
+ 
 static netdev_tx_t ax_xmit(struct sk_buff *skb, struct net_device *dev)
 {
 	struct mkiss *ax = netdev_priv(dev);
@@ -530,12 +503,9 @@ static netdev_tx_t ax_xmit(struct sk_buff *skb, struct net_device *dev)
 	}
 
 	if (netif_queue_stopped(dev)) {
-		/*
-		 * May be we must check transmitter timeout here ?
-		 *      14 Oct 1994 Dmitry Gorodchanin.
-		 */
+		 
 		if (time_before(jiffies, dev_trans_start(dev) + 20 * HZ)) {
-			/* 20 sec timeout not reached */
+			 
 			return NETDEV_TX_BUSY;
 		}
 
@@ -548,7 +518,7 @@ static netdev_tx_t ax_xmit(struct sk_buff *skb, struct net_device *dev)
 		netif_start_queue(dev);
 	}
 
-	/* We were not busy, so we are now... :-) */
+	 
 	netif_stop_queue(dev);
 	ax_encaps(dev, skb->data, skb->len);
 	kfree_skb(skb);
@@ -566,7 +536,7 @@ static int ax_open_dev(struct net_device *dev)
 	return 0;
 }
 
-/* Open the low-level part of the AX25 channel. Easy! */
+ 
 static int ax_open(struct net_device *dev)
 {
 	struct mkiss *ax = netdev_priv(dev);
@@ -575,19 +545,10 @@ static int ax_open(struct net_device *dev)
 	if (ax->tty == NULL)
 		return -ENODEV;
 
-	/*
-	 * Allocate the frame buffers:
-	 *
-	 * rbuff	Receive buffer.
-	 * xbuff	Transmit buffer.
-	 */
+	 
 	len = dev->mtu * 2;
 
-	/*
-	 * allow for arrival of larger UDP packets, even if we say not to
-	 * also fixes a bug in which SunOS sends 512-byte packets even with
-	 * an MSS of 128
-	 */
+	 
 	if (len < 576 * 2)
 		len = 576 * 2;
 
@@ -602,7 +563,7 @@ static int ax_open(struct net_device *dev)
 	ax->rcount   = 0;
 	ax->xleft    = 0;
 
-	ax->flags   &= (1 << AXF_INUSE);      /* Clear ESCAPE & ERROR flags */
+	ax->flags   &= (1 << AXF_INUSE);       
 
 	spin_lock_init(&ax->buflock);
 
@@ -616,7 +577,7 @@ norbuff:
 }
 
 
-/* Close the low-level part of the AX25 channel. Easy! */
+ 
 static int ax_close(struct net_device *dev)
 {
 	struct mkiss *ax = netdev_priv(dev);
@@ -638,7 +599,7 @@ static const struct net_device_ops ax_netdev_ops = {
 
 static void ax_setup(struct net_device *dev)
 {
-	/* Finish setting up the DEVICE info. */
+	 
 	dev->mtu             = AX_MTU;
 	dev->hard_header_len = AX25_MAX_HEADER_LEN;
 	dev->addr_len        = AX25_ADDR_LEN;
@@ -654,14 +615,7 @@ static void ax_setup(struct net_device *dev)
 	dev->flags      = IFF_BROADCAST | IFF_MULTICAST;
 }
 
-/*
- * We have a potential race on dereferencing tty->disc_data, because the tty
- * layer provides no locking at all - thus one cpu could be running
- * sixpack_receive_buf while another calls sixpack_close, which zeroes
- * tty->disc_data and frees the memory that sixpack_receive_buf is using.  The
- * best way to fix this is to use a rwlock in the tty struct, but for now we
- * use a single global rwlock for all ttys in ppp line discipline.
- */
+ 
 static DEFINE_RWLOCK(disc_data_lock);
 
 static struct mkiss *mkiss_get(struct tty_struct *tty)
@@ -683,7 +637,7 @@ static void mkiss_put(struct mkiss *ax)
 		complete(&ax->dead);
 }
 
-static int crc_force = 0;	/* Can be overridden with insmod */
+static int crc_force = 0;	 
 
 static int mkiss_open(struct tty_struct *tty)
 {
@@ -716,10 +670,10 @@ static int mkiss_open(struct tty_struct *tty)
 
 	tty_driver_flush_buffer(tty);
 
-	/* Restore default settings */
+	 
 	dev->type = ARPHRD_AX25;
 
-	/* Perform the low-level AX25 initialization. */
+	 
 	err = ax_open(ax->dev);
 	if (err)
 		goto out_free_netdev;
@@ -728,7 +682,7 @@ static int mkiss_open(struct tty_struct *tty)
 	if (err)
 		goto out_free_buffers;
 
-	/* after register_netdev() - because else printk smashes the kernel */
+	 
 	switch (crc_force) {
 	case 3:
 		ax->crcmode  = CRC_MODE_SMACK;
@@ -756,7 +710,7 @@ static int mkiss_open(struct tty_struct *tty)
 
 	netif_start_queue(dev);
 
-	/* Done.  We have linked the TTY line to a channel. */
+	 
 	return 0;
 
 out_free_buffers:
@@ -782,21 +736,15 @@ static void mkiss_close(struct tty_struct *tty)
 	if (!ax)
 		return;
 
-	/*
-	 * We have now ensured that nobody can start using ap from now on, but
-	 * we have to wait for all existing users to finish.
-	 */
+	 
 	if (!refcount_dec_and_test(&ax->refcnt))
 		wait_for_completion(&ax->dead);
-	/*
-	 * Halt the transmit queue so that a new transmit cannot scribble
-	 * on our buffers
-	 */
+	 
 	netif_stop_queue(ax->dev);
 
 	unregister_netdev(ax->dev);
 
-	/* Free all AX25 frame buffers after unreg. */
+	 
 	kfree(ax->rbuff);
 	kfree(ax->xbuff);
 
@@ -805,7 +753,7 @@ static void mkiss_close(struct tty_struct *tty)
 	free_netdev(ax->dev);
 }
 
-/* Perform I/O control on an active ax25 channel. */
+ 
 static int mkiss_ioctl(struct tty_struct *tty, unsigned int cmd,
 		unsigned long arg)
 {
@@ -813,7 +761,7 @@ static int mkiss_ioctl(struct tty_struct *tty, unsigned int cmd,
 	struct net_device *dev;
 	unsigned int tmp, err;
 
-	/* First make sure we're connected. */
+	 
 	if (ax == NULL)
 		return -ENXIO;
 	dev = ax->dev;
@@ -868,12 +816,7 @@ static int mkiss_ioctl(struct tty_struct *tty, unsigned int cmd,
 	return err;
 }
 
-/*
- * Handle the 'receiver data ready' interrupt.
- * This function is called by the 'tty_io' module in the kernel when
- * a block of data has been received, which can now be decapsulated
- * and sent on to the AX.25 layer for further processing.
- */
+ 
 static void mkiss_receive_buf(struct tty_struct *tty, const u8 *cp,
 			      const u8 *fp, size_t count)
 {
@@ -882,14 +825,11 @@ static void mkiss_receive_buf(struct tty_struct *tty, const u8 *cp,
 	if (!ax)
 		return;
 
-	/*
-	 * Argh! mtu change time! - costs us the packet part received
-	 * at the change
-	 */
+	 
 	if (ax->mtu != ax->dev->mtu + 73)
 		ax_changedmtu(ax);
 
-	/* Read the characters out of the buffer */
+	 
 	while (count--) {
 		if (fp != NULL && *fp++) {
 			if (!test_and_set_bit(AXF_ERROR, &ax->flags))
@@ -905,10 +845,7 @@ static void mkiss_receive_buf(struct tty_struct *tty, const u8 *cp,
 	tty_unthrottle(tty);
 }
 
-/*
- * Called by the driver when there's room for more data.  If we have
- * more packets to send, we send them here.
- */
+ 
 static void mkiss_write_wakeup(struct tty_struct *tty)
 {
 	struct mkiss *ax = mkiss_get(tty);
@@ -918,9 +855,7 @@ static void mkiss_write_wakeup(struct tty_struct *tty)
 		return;
 
 	if (ax->xleft <= 0)  {
-		/* Now serial buffer is almost free & we can start
-		 * transmission of another packet
-		 */
+		 
 		clear_bit(TTY_DO_WRITE_WAKEUP, &tty->flags);
 
 		netif_wake_queue(ax->dev);

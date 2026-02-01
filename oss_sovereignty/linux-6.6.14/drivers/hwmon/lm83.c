@@ -1,22 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * lm83.c - Part of lm_sensors, Linux kernel modules for hardware
- *          monitoring
- * Copyright (C) 2003-2009  Jean Delvare <jdelvare@suse.de>
- *
- * Heavily inspired from the lm78, lm75 and adm1021 drivers. The LM83 is
- * a sensor chip made by National Semiconductor. It reports up to four
- * temperatures (its own plus up to three external ones) with a 1 deg
- * resolution and a 3-4 deg accuracy. Complete datasheet can be obtained
- * from National's website at:
- *   http://www.national.com/pf/LM/LM83.html
- * Since the datasheet omits to give the chip stepping code, I give it
- * here: 0x03 (at register 0xff).
- *
- * Also supports the LM82 temp sensor, which is basically a stripped down
- * model of the LM83.  Datasheet is here:
- * http://www.national.com/pf/LM/LM82.html
- */
+
+ 
 
 #include <linux/bits.h>
 #include <linux/err.h>
@@ -27,21 +10,14 @@
 #include <linux/regmap.h>
 #include <linux/slab.h>
 
-/*
- * Addresses to scan
- * Address is selected using 2 three-level pins, resulting in 9 possible
- * addresses.
- */
+ 
 
 static const unsigned short normal_i2c[] = {
 	0x18, 0x19, 0x1a, 0x29, 0x2a, 0x2b, 0x4c, 0x4d, 0x4e, I2C_CLIENT_END };
 
 enum chips { lm83, lm82 };
 
-/*
- * The LM83 registers
- * Manufacturer ID is 0x01 for National Semiconductor.
- */
+ 
 
 #define LM83_REG_R_MAN_ID		0xFE
 #define LM83_REG_R_CHIP_ID		0xFF
@@ -78,7 +54,7 @@ static const u8 LM83_REG_MAX[] = {
 	LM83_REG_R_REMOTE3_HIGH,
 };
 
-/* alarm and fault registers and bits, indexed by channel */
+ 
 static const u8 LM83_ALARM_REG[] = {
 	LM83_REG_R_STATUS1, LM83_REG_R_STATUS2, LM83_REG_R_STATUS1, LM83_REG_R_STATUS2
 };
@@ -95,16 +71,14 @@ static const u8 LM83_FAULT_BIT[] = {
 	0, BIT(5), BIT(2), BIT(2)
 };
 
-/*
- * Client data (each client gets its own)
- */
+ 
 
 struct lm83_data {
 	struct regmap *regmap;
 	enum chips type;
 };
 
-/* regmap code */
+ 
 
 static int lm83_regmap_reg_read(void *context, unsigned int reg, unsigned int *val)
 {
@@ -119,12 +93,7 @@ static int lm83_regmap_reg_read(void *context, unsigned int reg, unsigned int *v
 	return 0;
 }
 
-/*
- * The regmap write function maps read register addresses to write register
- * addresses. This is necessary for regmap register caching to work.
- * An alternative would be to clear the regmap cache whenever a register is
- * written, but that would be much more expensive.
- */
+ 
 static int lm83_regmap_reg_write(void *context, unsigned int reg, unsigned int val)
 {
 	struct i2c_client *client = context;
@@ -171,7 +140,7 @@ static const struct regmap_config lm83_regmap_config = {
 	.reg_write = lm83_regmap_reg_write,
 };
 
-/* hwmon API */
+ 
 
 static int lm83_temp_read(struct device *dev, u32 attr, int channel, long *val)
 {
@@ -300,9 +269,7 @@ static umode_t lm83_is_visible(const void *_data, enum hwmon_sensor_types type,
 {
 	const struct lm83_data *data = _data;
 
-	/*
-	 * LM82 only supports a single external channel, modeled as channel 2.
-	 */
+	 
 	if (data->type == lm82 && (channel == 1 || channel == 3))
 		return 0;
 
@@ -363,7 +330,7 @@ static const struct hwmon_chip_info lm83_chip_info = {
 	.info = lm83_info,
 };
 
-/* Return 0 if detection is successful, -ENODEV otherwise */
+ 
 static int lm83_detect(struct i2c_client *client,
 		       struct i2c_board_info *info)
 {
@@ -374,7 +341,7 @@ static int lm83_detect(struct i2c_client *client,
 	if (!i2c_check_functionality(adapter, I2C_FUNC_SMBUS_BYTE_DATA))
 		return -ENODEV;
 
-	/* Detection */
+	 
 	if ((i2c_smbus_read_byte_data(client, LM83_REG_R_STATUS1) & 0xA8) ||
 	    (i2c_smbus_read_byte_data(client, LM83_REG_R_STATUS2) & 0x48) ||
 	    (i2c_smbus_read_byte_data(client, LM83_REG_R_CONFIG) & 0x41)) {
@@ -383,29 +350,22 @@ static int lm83_detect(struct i2c_client *client,
 		return -ENODEV;
 	}
 
-	/* Identification */
+	 
 	man_id = i2c_smbus_read_byte_data(client, LM83_REG_R_MAN_ID);
-	if (man_id != 0x01)	/* National Semiconductor */
+	if (man_id != 0x01)	 
 		return -ENODEV;
 
 	chip_id = i2c_smbus_read_byte_data(client, LM83_REG_R_CHIP_ID);
 	switch (chip_id) {
 	case 0x03:
-		/*
-		 * According to the LM82 datasheet dated March 2013, recent
-		 * revisions of LM82 have a die revision of 0x03. This was
-		 * confirmed with a real chip. Further details in this revision
-		 * of the LM82 datasheet strongly suggest that LM82 is just a
-		 * repackaged LM83. It is therefore impossible to distinguish
-		 * those chips from LM83, and they will be misdetected as LM83.
-		 */
+		 
 		name = "lm83";
 		break;
 	case 0x01:
 		name = "lm82";
 		break;
 	default:
-		/* identification failed */
+		 
 		dev_dbg(&adapter->dev,
 			"Unsupported chip (man_id=0x%02X, chip_id=0x%02X)\n",
 			man_id, chip_id);
@@ -445,9 +405,7 @@ static int lm83_probe(struct i2c_client *client)
 	return PTR_ERR_OR_ZERO(hwmon_dev);
 }
 
-/*
- * Driver data (common to all clients)
- */
+ 
 
 static struct i2c_driver lm83_driver = {
 	.class		= I2C_CLASS_HWMON,

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * OMAP Display Subsystem Base
- *
- * Copyright (C) 2015-2017 Texas Instruments Incorporated - https://www.ti.com/
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/list.h>
@@ -21,9 +17,7 @@ struct dispc_device *dispc_get_dispc(struct dss_device *dss)
 	return dss->dispc;
 }
 
-/* -----------------------------------------------------------------------------
- * OMAP DSS Devices Handling
- */
+ 
 
 static LIST_HEAD(omapdss_devices_list);
 static DEFINE_MUTEX(omapdss_devices_lock);
@@ -85,10 +79,7 @@ struct omap_dss_device *omapdss_find_device_by_node(struct device_node *node)
 	return NULL;
 }
 
-/*
- * Search for the next output device starting at @from. Release the reference to
- * the @from device, and acquire a reference to the returned device if found.
- */
+ 
 struct omap_dss_device *omapdss_device_next_output(struct omap_dss_device *from)
 {
 	struct omap_dss_device *dssdev;
@@ -101,17 +92,11 @@ struct omap_dss_device *omapdss_device_next_output(struct omap_dss_device *from)
 		goto done;
 	}
 
-	/*
-	 * Start from the from entry if given or from omapdss_devices_list
-	 * otherwise.
-	 */
+	 
 	list = from ? &from->list : &omapdss_devices_list;
 
 	list_for_each_entry(dssdev, list, list) {
-		/*
-		 * Stop if we reach the omapdss_devices_list, that's the end of
-		 * the list.
-		 */
+		 
 		if (&dssdev->list == &omapdss_devices_list) {
 			dssdev = NULL;
 			goto done;
@@ -147,11 +132,7 @@ int omapdss_device_connect(struct dss_device *dss,
 		dst ? dev_name(dst->dev) : "NULL");
 
 	if (!dst) {
-		/*
-		 * The destination is NULL when the source is connected to a
-		 * bridge instead of a DSS device. Stop here, we will attach
-		 * the bridge later when we will have a DRM encoder.
-		 */
+		 
 		return src && src->bridge ? 0 : -EINVAL;
 	}
 
@@ -185,9 +166,7 @@ void omapdss_device_disconnect(struct omap_dss_device *src,
 	dst->dss = NULL;
 }
 
-/* -----------------------------------------------------------------------------
- * Components Handling
- */
+ 
 
 static struct list_head omapdss_comp_list;
 
@@ -230,10 +209,7 @@ static void omapdss_walk_device(struct device *dev, struct device_node *node,
 		list_add(&comp->list, &omapdss_comp_list);
 	}
 
-	/*
-	 * of_graph_get_remote_port_parent() prints an error if there is no
-	 * port/ports node. To avoid that, check first that there's the node.
-	 */
+	 
 	n = of_get_child_by_name(node, "ports");
 	if (!n)
 		n = of_get_child_by_name(node, "port");

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2008-2009 Patrick McHardy <kaber@trash.net>
- *
- * Development of this code funded by Astaro AG (http://www.astaro.com/)
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/init.h>
@@ -254,7 +250,7 @@ static int nft_counter_offload(struct nft_offload_ctx *ctx,
 			       struct nft_flow_rule *flow,
 			       const struct nft_expr *expr)
 {
-	/* No specific offload action is needed, but report success. */
+	 
 	return 0;
 }
 

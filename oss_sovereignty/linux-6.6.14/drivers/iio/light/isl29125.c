@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * isl29125.c - Support for Intersil ISL29125 RGB light sensor
- *
- * Copyright (c) 2014 Peter Meerwald <pmeerw@pmeerw.net>
- *
- * RGB light sensor with 16-bit channels for red, green, blue);
- * 7-bit I2C slave address 0x44
- *
- * TODO: interrupt support, IR compensation, thresholds, 12bit
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/i2c.h>
@@ -41,8 +32,8 @@
 #define ISL29125_MODE_B 0x3
 #define ISL29125_MODE_RGB 0x5
 
-#define ISL29125_SENSING_RANGE_0 5722   /* 375 lux full range */
-#define ISL29125_SENSING_RANGE_1 152590 /* 10k lux full range */
+#define ISL29125_SENSING_RANGE_0 5722    
+#define ISL29125_SENSING_RANGE_1 152590  
 
 #define ISL29125_MODE_RANGE BIT(3)
 
@@ -51,7 +42,7 @@
 struct isl29125_data {
 	struct i2c_client *client;
 	u8 conf1;
-	/* Ensure timestamp is naturally aligned */
+	 
 	struct {
 		u16 chans[3];
 		s64 timestamp __aligned(8);
@@ -143,9 +134,9 @@ static int isl29125_read_raw(struct iio_dev *indio_dev,
 	case IIO_CHAN_INFO_SCALE:
 		*val = 0;
 		if (data->conf1 & ISL29125_MODE_RANGE)
-			*val2 = ISL29125_SENSING_RANGE_1; /*10k lux full range*/
+			*val2 = ISL29125_SENSING_RANGE_1;  
 		else
-			*val2 = ISL29125_SENSING_RANGE_0; /*375 lux full range*/
+			*val2 = ISL29125_SENSING_RANGE_0;  
 		return IIO_VAL_INT_PLUS_MICRO;
 	}
 	return -EINVAL;

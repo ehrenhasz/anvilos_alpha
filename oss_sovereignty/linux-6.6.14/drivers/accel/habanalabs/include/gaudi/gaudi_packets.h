@@ -1,9 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0
- *
- * Copyright 2017-2020 HabanaLabs, Ltd.
- * All Rights Reserved.
- *
- */
+ 
 
 #ifndef GAUDI_PACKETS_H
 #define GAUDI_PACKETS_H
@@ -44,16 +39,10 @@ enum packet_id {
 #define GAUDI_PKT_CTL_MB_SHIFT		31
 #define GAUDI_PKT_CTL_MB_MASK		0x80000000
 
-/* All packets have, at least, an 8-byte header, which contains
- * the packet type. The kernel driver uses the packet header for packet
- * validation and to perform any necessary required preparation before
- * sending them off to the hardware.
- */
+ 
 struct gaudi_packet {
 	__le64 header;
-	/* The rest of the packet data follows. Use the corresponding
-	 * packet_XXX struct to deference the data, based on packet type
-	 */
+	 
 	u8 contents[];
 };
 
@@ -75,7 +64,7 @@ struct packet_wreg32 {
 struct packet_wreg_bulk {
 	__le32 size64;
 	__le32 ctl;
-	__le64 values[]; /* data starts here */
+	__le64 values[];  
 };
 
 #define GAUDI_PKT_LONG_CTL_OP_SHIFT		20
@@ -191,4 +180,4 @@ struct packet_cp_dma {
 	__le64 src_addr;
 };
 
-#endif /* GAUDI_PACKETS_H */
+#endif  

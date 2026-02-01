@@ -1,9 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-// Copyright (c) 2023 Intel Corporation
 
-/*
- *  sof_sdw_cs_amp - Helpers to handle CS35L56 from generic machine driver
- */
+
+
+ 
 
 #include <linux/device.h>
 #include <linux/errno.h>
@@ -36,7 +34,7 @@ int sof_sdw_cs_amp_init(struct snd_soc_card *card,
 			struct sof_sdw_codec_info *info,
 			bool playback)
 {
-	/* Count amp number and do init on playback link only. */
+	 
 	if (!playback)
 		return 0;
 

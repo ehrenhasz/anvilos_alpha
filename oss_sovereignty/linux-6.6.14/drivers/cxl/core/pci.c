@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright(c) 2021 Intel Corporation. All rights reserved. */
+
+ 
 #include <linux/io-64-nonatomic-lo-hi.h>
 #include <linux/device.h>
 #include <linux/delay.h>
@@ -11,12 +11,7 @@
 #include "core.h"
 #include "trace.h"
 
-/**
- * DOC: cxl core pci
- *
- * Compute Express Link protocols are layered on top of PCIe. CXL core provides
- * a set of helpers for CXL interactions which occur via PCIe.
- */
+ 
 
 static unsigned short media_ready_timeout = 60;
 module_param(media_ready_timeout, ushort, 0644);
@@ -65,13 +60,7 @@ static int match_add_dports(struct pci_dev *pdev, void *data)
 	return 0;
 }
 
-/**
- * devm_cxl_port_enumerate_dports - enumerate downstream ports of the upstream port
- * @port: cxl_port whose ->uport_dev is the upstream of dports to be enumerated
- *
- * Returns a positive number of dports enumerated or a negative error
- * code.
- */
+ 
 int devm_cxl_port_enumerate_dports(struct cxl_port *port)
 {
 	struct pci_bus *bus = cxl_port_to_pci_bus(port);
@@ -112,7 +101,7 @@ static int cxl_dvsec_mem_range_valid(struct cxl_dev_state *cxlds, int id)
 	if (id > CXL_DVSEC_RANGE_MAX)
 		return -EINVAL;
 
-	/* Check MEM INFO VALID bit first, give up after 1s */
+	 
 	i = 1;
 	do {
 		rc = pci_read_config_dword(pdev,
@@ -148,7 +137,7 @@ static int cxl_dvsec_mem_range_active(struct cxl_dev_state *cxlds, int id)
 	if (id > CXL_DVSEC_RANGE_MAX)
 		return -EINVAL;
 
-	/* Check MEM ACTIVE bit, up to 60s timeout by default */
+	 
 	for (i = media_ready_timeout; i; i--) {
 		rc = pci_read_config_dword(
 			pdev, d + CXL_DVSEC_RANGE_SIZE_LOW(id), &temp);
@@ -171,10 +160,7 @@ static int cxl_dvsec_mem_range_active(struct cxl_dev_state *cxlds, int id)
 	return 0;
 }
 
-/*
- * Wait up to @media_ready_timeout for the device to report memory
- * active.
- */
+ 
 int cxl_await_media_ready(struct cxl_dev_state *cxlds)
 {
 	struct pci_dev *pdev = to_pci_dev(cxlds->dev);
@@ -214,13 +200,7 @@ static int wait_for_valid(struct pci_dev *pdev, int d)
 	u32 val;
 	int rc;
 
-	/*
-	 * Memory_Info_Valid: When set, indicates that the CXL Range 1 Size high
-	 * and Size Low registers are valid. Must be set within 1 second of
-	 * deassertion of reset to CXL device. Likely it is already set by the
-	 * time this runs, but otherwise give a 1.5 second timeout in case of
-	 * clock skew.
-	 */
+	 
 	rc = pci_read_config_dword(pdev, d + CXL_DVSEC_RANGE_SIZE_LOW(0), &val);
 	if (rc)
 		return rc;
@@ -280,7 +260,7 @@ static int devm_cxl_enable_mem(struct device *host, struct cxl_dev_state *cxlds)
 	return devm_add_action_or_reset(host, clear_mem_enable, cxlds);
 }
 
-/* require dvsec ranges to be covered by a locked platform window */
+ 
 static int dvsec_range_allowed(struct device *dev, void *arg)
 {
 	struct range *dev_range = arg;
@@ -345,12 +325,7 @@ int cxl_dvsec_rr_decode(struct device *dev, int d,
 		return -ENXIO;
 	}
 
-	/*
-	 * It is not allowed by spec for MEM.capable to be set and have 0 legacy
-	 * HDM decoders (values > 2 are also undefined as of CXL 2.0). As this
-	 * driver is for a spec defined class code which must be CXL.mem
-	 * capable, there is no point in continuing to enable CXL.mem.
-	 */
+	 
 	hdm_count = FIELD_GET(CXL_DVSEC_HDM_COUNT_MASK, cap);
 	if (!hdm_count || hdm_count > 2)
 		return -EINVAL;
@@ -361,11 +336,7 @@ int cxl_dvsec_rr_decode(struct device *dev, int d,
 		return rc;
 	}
 
-	/*
-	 * The current DVSEC values are moot if the memory capability is
-	 * disabled, and they will remain moot after the HDM Decoder
-	 * capability is enabled.
-	 */
+	 
 	info->mem_enabled = FIELD_GET(CXL_DVSEC_MEM_ENABLE, ctrl);
 	if (!info->mem_enabled)
 		return 0;
@@ -423,14 +394,7 @@ int cxl_dvsec_rr_decode(struct device *dev, int d,
 }
 EXPORT_SYMBOL_NS_GPL(cxl_dvsec_rr_decode, CXL);
 
-/**
- * cxl_hdm_decode_init() - Setup HDM decoding for the endpoint
- * @cxlds: Device state
- * @cxlhdm: Mapped HDM decoder Capability
- * @info: Cached DVSEC range registers info
- *
- * Try to enable the endpoint's HDM Decoder Capability
- */
+ 
 int cxl_hdm_decode_init(struct cxl_dev_state *cxlds, struct cxl_hdm *cxlhdm,
 			struct cxl_endpoint_dvsec_info *info)
 {
@@ -444,10 +408,7 @@ int cxl_hdm_decode_init(struct cxl_dev_state *cxlds, struct cxl_hdm *cxlhdm,
 	if (hdm)
 		global_ctrl = readl(hdm + CXL_HDM_DECODER_CTRL_OFFSET);
 
-	/*
-	 * If the HDM Decoder Capability is already enabled then assume
-	 * that some other agent like platform firmware set it up.
-	 */
+	 
 	if (global_ctrl & CXL_HDM_DECODER_ENABLE || (!hdm && info->mem_enabled))
 		return devm_cxl_enable_mem(&port->dev, cxlds);
 	else if (!hdm)
@@ -480,15 +441,7 @@ int cxl_hdm_decode_init(struct cxl_dev_state *cxlds, struct cxl_hdm *cxlhdm,
 		info->mem_enabled = 0;
 	}
 
-	/*
-	 * Per CXL 2.0 Section 8.1.3.8.3 and 8.1.3.8.4 DVSEC CXL Range 1 Base
-	 * [High,Low] when HDM operation is enabled the range register values
-	 * are ignored by the device, but the spec also recommends matching the
-	 * DVSEC Range 1,2 to HDM Decoder Range 0,1. So, non-zero info->ranges
-	 * are expected even though Linux does not require or maintain that
-	 * match. If at least one DVSEC range is enabled and allowed, skip HDM
-	 * Decoder Capability Enable.
-	 */
+	 
 	if (info->mem_enabled)
 		return 0;
 
@@ -564,7 +517,7 @@ static int cxl_cdat_read_table(struct device *dev,
 			return rc;
 		}
 
-		/* 1 DW Table Access Response Header + CDAT entry */
+		 
 		entry = (struct cdat_entry_header *)(data + 1);
 		if ((entry_handle == 0 &&
 		     rc != sizeof(__le32) + sizeof(struct cdat_header)) ||
@@ -573,34 +526,26 @@ static int cxl_cdat_read_table(struct device *dev,
 		      rc != sizeof(__le32) + le16_to_cpu(entry->length))))
 			return -EIO;
 
-		/* Get the CXL table access header entry handle */
+		 
 		entry_handle = FIELD_GET(CXL_DOE_TABLE_ACCESS_ENTRY_HANDLE,
 					 le32_to_cpu(data[0]));
 		entry_dw = rc / sizeof(__le32);
-		/* Skip Header */
+		 
 		entry_dw -= 1;
-		/*
-		 * Table Access Response Header overwrote the last DW of
-		 * previous entry, so restore that DW
-		 */
+		 
 		*data = saved_dw;
 		length -= entry_dw * sizeof(__le32);
 		data += entry_dw;
 		saved_dw = *data;
 	} while (entry_handle != CXL_DOE_TABLE_ACCESS_LAST_ENTRY);
 
-	/* Length in CDAT header may exceed concatenation of CDAT entries */
+	 
 	*cdat_length -= length - sizeof(__le32);
 
 	return 0;
 }
 
-/**
- * read_cdat_data - Read the CDAT data on this port
- * @port: Port to read data from
- *
- * This call will sleep waiting for responses from the DOE mailbox.
- */
+ 
 void read_cdat_data(struct cxl_port *port)
 {
 	struct cxl_memdev *cxlmd = to_cxl_memdev(port->uport_dev);
@@ -635,7 +580,7 @@ void read_cdat_data(struct cxl_port *port)
 
 	rc = cxl_cdat_read_table(dev, cdat_doe, cdat_table, &cdat_length);
 	if (rc) {
-		/* Don't leave table data allocated on error */
+		 
 		devm_kfree(dev, cdat_table);
 		dev_err(dev, "CDAT data read error\n");
 		return;
@@ -664,7 +609,7 @@ void cxl_cor_error_detected(struct pci_dev *pdev)
 }
 EXPORT_SYMBOL_NS_GPL(cxl_cor_error_detected, CXL);
 
-/* CXL spec rev3.0 8.2.4.16.1 */
+ 
 static void header_log_copy(struct cxl_dev_state *cxlds, u32 *log)
 {
 	void __iomem *addr;
@@ -681,10 +626,7 @@ static void header_log_copy(struct cxl_dev_state *cxlds, u32 *log)
 	}
 }
 
-/*
- * Log the state of the RAS status registers and prepare them to log the
- * next error status. Return 1 if reset needed.
- */
+ 
 static bool cxl_report_and_clear(struct cxl_dev_state *cxlds)
 {
 	u32 hl[CXL_HEADERLOG_SIZE_U32];
@@ -700,7 +642,7 @@ static bool cxl_report_and_clear(struct cxl_dev_state *cxlds)
 	if (!(status & CXL_RAS_UNCORRECTABLE_STATUS_MASK))
 		return false;
 
-	/* If multiple errors, log header points to first error from ctrl reg */
+	 
 	if (hweight32(status) > 1) {
 		void __iomem *rcc_addr =
 			cxlds->regs.ras + CXL_RAS_CAP_CONTROL_OFFSET;
@@ -726,12 +668,7 @@ pci_ers_result_t cxl_error_detected(struct pci_dev *pdev,
 	struct device *dev = &cxlmd->dev;
 	bool ue;
 
-	/*
-	 * A frozen channel indicates an impending reset which is fatal to
-	 * CXL.mem operation, and will likely crash the system. On the off
-	 * chance the situation is recoverable dump the status of the RAS
-	 * capability registers and bounce the active state of the memdev.
-	 */
+	 
 	ue = cxl_report_and_clear(cxlds);
 
 	switch (state) {

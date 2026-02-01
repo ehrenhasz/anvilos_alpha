@@ -1,25 +1,5 @@
-/* Test of <sys/resource.h> substitute.
-   Copyright (C) 2012-2023 Free Software Foundation, Inc.
-
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-#include <config.h>
-
-#include <sys/resource.h>
-
-/* Check that necessary types are defined.  */
-#ifdef TODO /* Not implemented in gnulib yet */
+ 
+#ifdef TODO  
 rlim_t t1;
 struct rlimit t2;
 #endif
@@ -32,8 +12,8 @@ suseconds_t t11;
 fd_set t12;
 #endif
 
-/* Check that the necessary constants are defined.  */
-#ifdef TODO /* Not implemented in gnulib yet */
+ 
+#ifdef TODO  
 int prios[] =
   {
     PRIO_PROCESS,

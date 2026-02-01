@@ -1,26 +1,4 @@
-/*
- * Copyright 2012 Red Hat Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: Ben Skeggs
- */
+ 
 #include <core/gpuobj.h>
 #include <core/engine.h>
 
@@ -28,7 +6,7 @@
 #include <subdev/bar.h>
 #include <subdev/mmu.h>
 
-/* fast-path, where backend is able to provide direct pointer to memory */
+ 
 static u32
 nvkm_gpuobj_rd32_fast(struct nvkm_gpuobj *gpuobj, u32 offset)
 {
@@ -41,7 +19,7 @@ nvkm_gpuobj_wr32_fast(struct nvkm_gpuobj *gpuobj, u32 offset, u32 data)
 	iowrite32_native(data, gpuobj->map + offset);
 }
 
-/* accessor functions for gpuobjs allocated directly from instmem */
+ 
 static int
 nvkm_gpuobj_heap_map(struct nvkm_gpuobj *gpuobj, u64 offset,
 		     struct nvkm_vmm *vmm, struct nvkm_vma *vma,
@@ -103,7 +81,7 @@ nvkm_gpuobj_heap = {
 	.map = nvkm_gpuobj_heap_map,
 };
 
-/* accessor functions for gpuobjs sub-allocated from a parent gpuobj */
+ 
 static int
 nvkm_gpuobj_map(struct nvkm_gpuobj *gpuobj, u64 offset,
 		struct nvkm_vmm *vmm, struct nvkm_vma *vma,
@@ -241,10 +219,7 @@ nvkm_gpuobj_new(struct nvkm_device *device, u32 size, int align, bool zero,
 	return ret;
 }
 
-/* the below is basically only here to support sharing the paged dma object
- * for PCI(E)GART on <=nv4x chipsets, and should *not* be expected to work
- * anywhere else.
- */
+ 
 
 int
 nvkm_gpuobj_wrap(struct nvkm_memory *memory, struct nvkm_gpuobj **pgpuobj)

@@ -1,24 +1,13 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * bebob_stream.c - a part of driver for BeBoB based devices
- *
- * Copyright (c) 2013-2014 Takashi Sakamoto
- */
+
+ 
 
 #include "./bebob.h"
 
 #define READY_TIMEOUT_MS	4000
 
-/*
- * NOTE;
- * For BeBoB streams, Both of input and output CMP connection are important.
- *
- * For most devices, each CMP connection starts to transmit/receive a
- * corresponding stream. But for a few devices, both of CMP connection needs
- * to start transmitting stream. An example is 'M-Audio Firewire 410'.
- */
+ 
 
-/* 128 is an arbitrary length but it seems to be enough */
+ 
 #define FORMAT_MAXIMUM_LENGTH 128
 
 const unsigned int snd_bebob_rate_table[SND_BEBOB_STRM_FMT_ENTRIES] = {
@@ -31,10 +20,7 @@ const unsigned int snd_bebob_rate_table[SND_BEBOB_STRM_FMT_ENTRIES] = {
 	[6] = 192000,
 };
 
-/*
- * See: Table 51: Extended Stream Format Info ‘Sampling Frequency’
- * in Additional AVC commands (Nov 2003, BridgeCo)
- */
+ 
 static const unsigned int bridgeco_freq_table[] = {
 	[0] = 0x02,
 	[1] = 0x03,
@@ -85,7 +71,7 @@ snd_bebob_stream_get_rate(struct snd_bebob *bebob, unsigned int *curr_rate)
 	if (rx_rate == tx_rate)
 		goto end;
 
-	/* synchronize receive stream rate to transmit stream rate */
+	 
 	err = avc_general_set_sig_fmt(bebob->unit, rx_rate,
 				      AVC_GENERAL_PLUG_DIR_IN, 0);
 end:
@@ -107,10 +93,7 @@ snd_bebob_stream_set_rate(struct snd_bebob *bebob, unsigned int rate)
 	if (err < 0)
 		goto end;
 
-	/*
-	 * Some devices need a bit time for transition.
-	 * 300msec is got by some experiments.
-	 */
+	 
 	msleep(300);
 end:
 	return err;
@@ -125,7 +108,7 @@ int snd_bebob_stream_get_clock_src(struct snd_bebob *bebob,
 	enum avc_bridgeco_plug_type type;
 	int err = 0;
 
-	/* 1.The device has its own operation to switch source of clock */
+	 
 	if (clk_spec) {
 		err = clk_spec->get(bebob, &id);
 		if (err < 0) {
@@ -146,19 +129,13 @@ int snd_bebob_stream_get_clock_src(struct snd_bebob *bebob,
 		goto end;
 	}
 
-	/*
-	 * 2.The device don't support to switch source of clock then assumed
-	 *   to use internal clock always
-	 */
+	 
 	if (bebob->sync_input_plug < 0) {
 		*src = SND_BEBOB_CLOCK_TYPE_INTERNAL;
 		goto end;
 	}
 
-	/*
-	 * 3.The device supports to switch source of clock by an usual way.
-	 *   Let's check input for 'Music Sub Unit Sync Input' plug.
-	 */
+	 
 	avc_bridgeco_fill_msu_addr(addr, AVC_BRIDGECO_PLUG_DIR_IN,
 				   bebob->sync_input_plug);
 	err = avc_bridgeco_get_plug_input(bebob->unit, addr, input);
@@ -169,51 +146,34 @@ int snd_bebob_stream_get_clock_src(struct snd_bebob *bebob,
 		goto end;
 	}
 
-	/*
-	 * If there are no input plugs, all of fields are 0xff.
-	 * Here check the first field. This field is used for direction.
-	 */
+	 
 	if (input[0] == 0xff) {
 		*src = SND_BEBOB_CLOCK_TYPE_INTERNAL;
 		goto end;
 	}
 
-	/* The source from any output plugs is for one purpose only. */
+	 
 	if (input[0] == AVC_BRIDGECO_PLUG_DIR_OUT) {
-		/*
-		 * In BeBoB architecture, the source from music subunit may
-		 * bypass from oPCR[0]. This means that this source gives
-		 * synchronization to IEEE 1394 cycle start packet.
-		 */
+		 
 		if (input[1] == AVC_BRIDGECO_PLUG_MODE_SUBUNIT &&
 		    input[2] == 0x0c) {
 			*src = SND_BEBOB_CLOCK_TYPE_INTERNAL;
 			goto end;
 		}
-	/* The source from any input units is for several purposes. */
+	 
 	} else if (input[1] == AVC_BRIDGECO_PLUG_MODE_UNIT) {
 		if (input[2] == AVC_BRIDGECO_PLUG_UNIT_ISOC) {
 			if (input[3] == 0x00) {
-				/*
-				 * This source comes from iPCR[0]. This means
-				 * that presentation timestamp calculated by
-				 * SYT series of the received packets. In
-				 * short, this driver is the master of
-				 * synchronization.
-				 */
+				 
 				*src = SND_BEBOB_CLOCK_TYPE_SYT;
 				goto end;
 			} else {
-				/*
-				 * This source comes from iPCR[1-29]. This
-				 * means that the synchronization stream is not
-				 * the Audio/MIDI compound stream.
-				 */
+				 
 				*src = SND_BEBOB_CLOCK_TYPE_EXTERNAL;
 				goto end;
 			}
 		} else if (input[2] == AVC_BRIDGECO_PLUG_UNIT_EXT) {
-			/* Check type of this plug.  */
+			 
 			avc_bridgeco_fill_unit_addr(addr,
 						    AVC_BRIDGECO_PLUG_DIR_IN,
 						    AVC_BRIDGECO_PLUG_UNIT_EXT,
@@ -224,28 +184,22 @@ int snd_bebob_stream_get_clock_src(struct snd_bebob *bebob,
 				goto end;
 
 			if (type == AVC_BRIDGECO_PLUG_TYPE_DIG) {
-				/*
-				 * SPDIF/ADAT or sometimes (not always) word
-				 * clock.
-				 */
+				 
 				*src = SND_BEBOB_CLOCK_TYPE_EXTERNAL;
 				goto end;
 			} else if (type == AVC_BRIDGECO_PLUG_TYPE_SYNC) {
-				/* Often word clock. */
+				 
 				*src = SND_BEBOB_CLOCK_TYPE_EXTERNAL;
 				goto end;
 			} else if (type == AVC_BRIDGECO_PLUG_TYPE_ADDITION) {
-				/*
-				 * Not standard.
-				 * Mostly, additional internal clock.
-				 */
+				 
 				*src = SND_BEBOB_CLOCK_TYPE_INTERNAL;
 				goto end;
 			}
 		}
 	}
 
-	/* Not supported. */
+	 
 	err = -EIO;
 end:
 	return err;
@@ -260,10 +214,7 @@ static int map_data_channels(struct snd_bebob *bebob, struct amdtp_stream *s)
 	enum avc_bridgeco_plug_dir dir;
 	int err;
 
-	/*
-	 * The length of return value of this command cannot be expected. Here
-	 * use the maximum length of FCP.
-	 */
+	 
 	buf = kzalloc(256, GFP_KERNEL);
 	if (buf == NULL)
 		return -ENOMEM;
@@ -284,15 +235,15 @@ static int map_data_channels(struct snd_bebob *bebob, struct amdtp_stream *s)
 	}
 	pos = 0;
 
-	/* positions in I/O buffer */
+	 
 	pcm = 0;
 	midi = 0;
 
-	/* the number of sections in AMDTP packet */
+	 
 	sections = buf[pos++];
 
 	for (sec = 0; sec < sections; sec++) {
-		/* type of this section */
+		 
 		avc_bridgeco_fill_unit_addr(addr, dir,
 					    AVC_BRIDGECO_PLUG_UNIT_ISOC, 0);
 		err = avc_bridgeco_get_plug_section_type(bebob->unit, addr,
@@ -305,34 +256,29 @@ static int map_data_channels(struct snd_bebob *bebob, struct amdtp_stream *s)
 				err);
 			goto end;
 		}
-		/* NoType */
+		 
 		if (type == 0xff) {
 			err = -ENOSYS;
 			goto end;
 		}
 
-		/* the number of channels in this section */
+		 
 		channels = buf[pos++];
 
 		for (ch = 0; ch < channels; ch++) {
-			/* position of this channel in AMDTP packet */
+			 
 			stm_pos = buf[pos++] - 1;
-			/* location of this channel in this section */
+			 
 			sec_loc = buf[pos++] - 1;
 
-			/*
-			 * Basically the number of location is within the
-			 * number of channels in this section. But some models
-			 * of M-Audio don't follow this. Its location for MIDI
-			 * is the position of MIDI channels in AMDTP packet.
-			 */
+			 
 			if (sec_loc >= channels)
 				sec_loc = ch;
 
 			switch (type) {
-			/* for MIDI conformant data channel */
+			 
 			case 0x0a:
-				/* AMDTP_MAX_CHANNELS_FOR_MIDI is 1. */
+				 
 				if ((midi > 0) && (stm_pos != midi)) {
 					err = -ENOSYS;
 					goto end;
@@ -340,17 +286,17 @@ static int map_data_channels(struct snd_bebob *bebob, struct amdtp_stream *s)
 				amdtp_am824_set_midi_position(s, stm_pos);
 				midi = stm_pos;
 				break;
-			/* for PCM data channel */
-			case 0x01:	/* Headphone */
-			case 0x02:	/* Microphone */
-			case 0x03:	/* Line */
-			case 0x04:	/* SPDIF */
-			case 0x05:	/* ADAT */
-			case 0x06:	/* TDIF */
-			case 0x07:	/* MADI */
-			/* for undefined/changeable signal  */
-			case 0x08:	/* Analog */
-			case 0x09:	/* Digital */
+			 
+			case 0x01:	 
+			case 0x02:	 
+			case 0x03:	 
+			case 0x04:	 
+			case 0x05:	 
+			case 0x06:	 
+			case 0x07:	 
+			 
+			case 0x08:	 
+			case 0x09:	 
 			default:
 				location = pcm + sec_loc;
 				if (location >= AM824_MAX_CHANNELS_FOR_PCM) {
@@ -413,7 +359,7 @@ static int start_stream(struct snd_bebob *bebob, struct amdtp_stream *stream)
 	else
 		conn = &bebob->out_conn;
 
-	// channel mapping.
+	 
 	if (bebob->maudio_special_quirk == NULL) {
 		err = map_data_channels(bebob, stream);
 		if (err < 0)
@@ -529,8 +475,8 @@ int snd_bebob_stream_reserve_duplex(struct snd_bebob *bebob, unsigned int rate,
 	unsigned int curr_rate;
 	int err;
 
-	// Considering JACK/FFADO streaming:
-	// TODO: This can be removed hwdep functionality becomes popular.
+	 
+	 
 	err = check_connection_used_by_others(bebob, &bebob->rx_stream);
 	if (err < 0)
 		return err;
@@ -551,11 +497,11 @@ int snd_bebob_stream_reserve_duplex(struct snd_bebob *bebob, unsigned int rate,
 	if (bebob->substreams_counter == 0 || curr_rate != rate) {
 		unsigned int index;
 
-		// NOTE:
-		// If establishing connections at first, Yamaha GO46
-		// (and maybe Terratec X24) don't generate sound.
-		//
-		// For firmware customized by M-Audio, refer to next NOTE.
+		 
+		 
+		 
+		
+		
 		err = bebob->spec->rate->set(bebob, rate);
 		if (err < 0) {
 			dev_err(&bebob->unit->device,
@@ -594,11 +540,11 @@ int snd_bebob_stream_start_duplex(struct snd_bebob *bebob)
 {
 	int err;
 
-	// Need no substreams.
+	
 	if (bebob->substreams_counter == 0)
 		return -EIO;
 
-	// packet queueing error or detecting discontinuity
+	
 	if (amdtp_streaming_error(&bebob->rx_stream) ||
 	    amdtp_streaming_error(&bebob->tx_stream)) {
 		amdtp_domain_stop(&bebob->domain);
@@ -633,21 +579,21 @@ int snd_bebob_stream_start_duplex(struct snd_bebob *bebob)
 		else
 			tx_init_skip_cycles = 16000;
 
-		// MEMO: Some devices start packet transmission long enough after establishment of
-		// CMP connection. In the early stage of packet streaming, any device transfers
-		// NODATA packets. After several hundred cycles, it begins to multiplex event into
-		// the packet with adequate value of syt field in CIP header. Some devices are
-		// strictly to generate any discontinuity in the sequence of tx packet when they
-		// receives inadequate sequence of value in syt field of CIP header. In the case,
-		// the request to break CMP connection is often corrupted, then any transaction
-		// results in unrecoverable error, sometimes generate bus-reset.
+		
+		
+		
+		
+		
+		
+		
+		
 		err = amdtp_domain_start(&bebob->domain, tx_init_skip_cycles, true, false);
 		if (err < 0)
 			goto error;
 
-		// NOTE:
-		// The firmware customized by M-Audio uses these commands to
-		// start transmitting stream. This is not usual way.
+		
+		
+		
 		if (bebob->maudio_special_quirk) {
 			err = bebob->spec->rate->set(bebob, curr_rate);
 			if (err < 0) {
@@ -658,8 +604,8 @@ int snd_bebob_stream_start_duplex(struct snd_bebob *bebob)
 			}
 		}
 
-		// Some devices postpone start of transmission mostly for 1 sec after receives
-		// packets firstly.
+		
+		
 		if (!amdtp_domain_wait_ready(&bebob->domain, READY_TIMEOUT_MS)) {
 			err = -ETIMEDOUT;
 			goto error;
@@ -684,10 +630,7 @@ void snd_bebob_stream_stop_duplex(struct snd_bebob *bebob)
 	}
 }
 
-/*
- * This function should be called before starting streams or after stopping
- * streams.
- */
+ 
 void snd_bebob_stream_destroy_duplex(struct snd_bebob *bebob)
 {
 	amdtp_domain_destroy(&bebob->domain);
@@ -696,26 +639,18 @@ void snd_bebob_stream_destroy_duplex(struct snd_bebob *bebob)
 	destroy_stream(bebob, &bebob->rx_stream);
 }
 
-/*
- * See: Table 50: Extended Stream Format Info Format Hierarchy Level 2’
- * in Additional AVC commands (Nov 2003, BridgeCo)
- * Also 'Clause 12 AM824 sequence adaption layers' in IEC 61883-6:2005
- */
+ 
 static int
 parse_stream_formation(u8 *buf, unsigned int len,
 		       struct snd_bebob_stream_formation *formation)
 {
 	unsigned int i, e, channels, format;
 
-	/*
-	 * this module can support a hierarchy combination that:
-	 *  Root:	Audio and Music (0x90)
-	 *  Level 1:	AM824 Compound  (0x40)
-	 */
+	 
 	if ((buf[0] != 0x90) || (buf[1] != 0x40))
 		return -ENOSYS;
 
-	/* check sampling rate */
+	 
 	for (i = 0; i < ARRAY_SIZE(bridgeco_freq_table); i++) {
 		if (buf[2] == bridgeco_freq_table[i])
 			break;
@@ -723,7 +658,7 @@ parse_stream_formation(u8 *buf, unsigned int len,
 	if (i == ARRAY_SIZE(bridgeco_freq_table))
 		return -ENOSYS;
 
-	/* Avoid double count by different entries for the same rate. */
+	 
 	memset(&formation[i], 0, sizeof(struct snd_bebob_stream_formation));
 
 	for (e = 0; e < buf[4]; e++) {
@@ -731,36 +666,36 @@ parse_stream_formation(u8 *buf, unsigned int len,
 		format = buf[6 + e * 2];
 
 		switch (format) {
-		/* IEC 60958 Conformant, currently handled as MBLA */
+		 
 		case 0x00:
-		/* Multi bit linear audio */
-		case 0x06:	/* Raw */
+		 
+		case 0x06:	 
 			formation[i].pcm += channels;
 			break;
-		/* MIDI Conformant */
+		 
 		case 0x0d:
 			formation[i].midi += channels;
 			break;
-		/* IEC 61937-3 to 7 */
+		 
 		case 0x01:
 		case 0x02:
 		case 0x03:
 		case 0x04:
 		case 0x05:
-		/* Multi bit linear audio */
-		case 0x07:	/* DVD-Audio */
-		case 0x0c:	/* High Precision */
-		/* One Bit Audio */
-		case 0x08:	/* (Plain) Raw */
-		case 0x09:	/* (Plain) SACD */
-		case 0x0a:	/* (Encoded) Raw */
-		case 0x0b:	/* (Encoded) SACD */
-		/* Synchronization Stream (Stereo Raw audio) */
+		 
+		case 0x07:	 
+		case 0x0c:	 
+		 
+		case 0x08:	 
+		case 0x09:	 
+		case 0x0a:	 
+		case 0x0b:	 
+		 
 		case 0x40:
-		/* Don't care */
+		 
 		case 0xff:
 		default:
-			return -ENOSYS;	/* not supported */
+			return -ENOSYS;	 
 		}
 	}
 
@@ -799,7 +734,7 @@ static int fill_stream_formations(struct snd_bebob *bebob, u8 addr[AVC_BRIDGECO_
 
 		len = FORMAT_MAXIMUM_LENGTH;
 		err = avc_bridgeco_get_plug_strm_fmt(bebob->unit, addr, buf, &len, eid);
-		// No entries remained.
+		 
 		if (err == -EINVAL && eid > 0) {
 			err = 0;
 			break;
@@ -829,7 +764,7 @@ static int detect_midi_ports(struct snd_bebob *bebob,
 
 	*midi_ports = 0;
 
-	/// Detect the number of available MIDI ports when packet has MIDI conformant data channel.
+	 
 	for (i = 0; i < SND_BEBOB_STRM_FMT_ENTRIES; ++i) {
 		if (formats[i].midi > 0)
 			break;
@@ -856,9 +791,9 @@ static int detect_midi_ports(struct snd_bebob *bebob,
 		err = avc_bridgeco_get_plug_ch_count(bebob->unit, addr, &ch_count);
 		if (err < 0)
 			break;
-		// Yamaha GO44, GO46, Terratec Phase 24, Phase x24 reports 0 for the number of
-		// channels in external output plug 3 (MIDI type) even if it has a pair of physical
-		// MIDI jacks. As a workaround, assume it as one.
+		 
+		 
+		 
 		if (ch_count == 0)
 			ch_count = 1;
 		*midi_ports += ch_count;
@@ -875,7 +810,7 @@ seek_msu_sync_input_plug(struct snd_bebob *bebob)
 	enum avc_bridgeco_plug_type type;
 	int err;
 
-	/* Get the number of Music Sub Unit for both direction. */
+	 
 	err = avc_general_get_plug_info(bebob->unit, 0x0c, 0x00, 0x00, plugs);
 	if (err < 0) {
 		dev_err(&bebob->unit->device,
@@ -884,7 +819,7 @@ seek_msu_sync_input_plug(struct snd_bebob *bebob)
 		goto end;
 	}
 
-	/* seek destination plugs for 'MSU sync input' */
+	 
 	bebob->sync_input_plug = -1;
 	for (i = 0; i < plugs[0]; i++) {
 		avc_bridgeco_fill_msu_addr(addr, AVC_BRIDGECO_PLUG_DIR_IN, i);
@@ -911,7 +846,7 @@ int snd_bebob_stream_discover(struct snd_bebob *bebob)
 	u8 plugs[AVC_PLUG_INFO_BUF_BYTES], addr[AVC_BRIDGECO_ADDR_BYTES];
 	int err;
 
-	/* the number of plugs for isoc in/out, ext in/out  */
+	 
 	err = avc_general_get_plug_info(bebob->unit, 0x1f, 0x07, 0x00, plugs);
 	if (err < 0) {
 		dev_err(&bebob->unit->device,
@@ -920,10 +855,7 @@ int snd_bebob_stream_discover(struct snd_bebob *bebob)
 		goto end;
 	}
 
-	/*
-	 * This module supports at least one isoc input plug and one isoc
-	 * output plug.
-	 */
+	 
 	if ((plugs[0] == 0) || (plugs[1] == 0)) {
 		err = -ENOSYS;
 		goto end;
@@ -949,7 +881,7 @@ int snd_bebob_stream_discover(struct snd_bebob *bebob)
 	if (err < 0)
 		goto end;
 
-	/* for check source of clock later */
+	 
 	if (!clk_spec)
 		err = seek_msu_sync_input_plug(bebob);
 end:
@@ -968,13 +900,13 @@ int snd_bebob_stream_lock_try(struct snd_bebob *bebob)
 
 	spin_lock_irq(&bebob->lock);
 
-	/* user land lock this */
+	 
 	if (bebob->dev_lock_count < 0) {
 		err = -EBUSY;
 		goto end;
 	}
 
-	/* this is the first time */
+	 
 	if (bebob->dev_lock_count++ == 0)
 		snd_bebob_stream_lock_changed(bebob);
 	err = 0;

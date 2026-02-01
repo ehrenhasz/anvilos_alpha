@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * FB driver for the S6D1121 LCD Controller
- *
- * Copyright (C) 2013 Roman Rolinsky
- *
- * Based on fb_ili9325.c by Noralf Tronnes
- * Based on ili9325.c by Jeroen Domburg
- * Init code from UTFT library by Henning Karlsen
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -28,7 +20,7 @@ static int init_display(struct fbtft_par *par)
 {
 	par->fbtftops.reset(par);
 
-	/* Initialization sequence from Lib_UTFT */
+	 
 
 	write_reg(par, 0x0011, 0x2004);
 	write_reg(par, 0x0013, 0xCC00);
@@ -60,7 +52,7 @@ static int init_display(struct fbtft_par *par)
 	write_reg(par, 0x0007, 0x0053);
 	write_reg(par, 0x0079, 0x0000);
 
-	write_reg(par, 0x0022); /* Write Data to GRAM */
+	write_reg(par, 0x0022);  
 
 	return 0;
 }
@@ -68,8 +60,8 @@ static int init_display(struct fbtft_par *par)
 static void set_addr_win(struct fbtft_par *par, int xs, int ys, int xe, int ye)
 {
 	switch (par->info->var.rotate) {
-	/* R20h = Horizontal GRAM Start Address */
-	/* R21h = Vertical GRAM Start Address */
+	 
+	 
 	case 0:
 		write_reg(par, 0x0020, xs);
 		write_reg(par, 0x0021, ys);
@@ -87,13 +79,13 @@ static void set_addr_win(struct fbtft_par *par, int xs, int ys, int xe, int ye)
 		write_reg(par, 0x0021, HEIGHT - 1 - xs);
 		break;
 	}
-	write_reg(par, 0x0022); /* Write Data to GRAM */
+	write_reg(par, 0x0022);  
 }
 
 static int set_var(struct fbtft_par *par)
 {
 	switch (par->info->var.rotate) {
-	/* AM: GRAM update direction */
+	 
 	case 0:
 		write_reg(par, 0x03, 0x0003 | (par->bgr << 12));
 		break;
@@ -111,11 +103,7 @@ static int set_var(struct fbtft_par *par)
 	return 0;
 }
 
-/*
- * Gamma string format:
- * PKP0 PKP1 PKP2 PKP3 PKP4 PKP5 PKP6 PKP7 PKP8 PKP9 PKP10 PKP11 VRP0 VRP1
- * PKN0 PKN1 PKN2 PKN3 PKN4 PKN5 PKN6 PKN7 PRN8 PRN9 PRN10 PRN11 VRN0 VRN1
- */
+ 
 #define CURVE(num, idx)  curves[(num) * par->gamma.num_values + (idx)]
 static int set_gamma(struct fbtft_par *par, u32 *curves)
 {
@@ -126,7 +114,7 @@ static int set_gamma(struct fbtft_par *par, u32 *curves)
 	};
 	int i, j;
 
-	/* apply mask */
+	 
 	for (i = 0; i < 2; i++)
 		for (j = 0; j < 14; j++)
 			CURVE(i, j) &= mask[i * par->gamma.num_values + j];

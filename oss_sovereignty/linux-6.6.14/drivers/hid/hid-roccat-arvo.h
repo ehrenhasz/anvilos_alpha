@@ -1,18 +1,15 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
+ 
 #ifndef __HID_ROCCAT_ARVO_H
 #define __HID_ROCCAT_ARVO_H
 
-/*
- * Copyright (c) 2011 Stefan Achatz <erazor_de@users.sourceforge.net>
- */
+ 
 
-/*
- */
+ 
 
 #include <linux/types.h>
 
-struct arvo_mode_key { /* 2 bytes */
-	uint8_t command; /* ARVO_COMMAND_MODE_KEY */
+struct arvo_mode_key {  
+	uint8_t command;  
 	uint8_t state;
 } __packed;
 
@@ -24,14 +21,14 @@ struct arvo_info {
 	uint8_t unknown[8];
 } __packed;
 
-struct arvo_key_mask { /* 2 bytes */
-	uint8_t command; /* ARVO_COMMAND_KEY_MASK */
+struct arvo_key_mask {  
+	uint8_t command;  
 	uint8_t key_mask;
 } __packed;
 
-/* selected profile is persistent */
-struct arvo_actual_profile { /* 2 bytes */
-	uint8_t command; /* ARVO_COMMAND_ACTUAL_PROFILE */
+ 
+struct arvo_actual_profile {  
+	uint8_t command;  
 	uint8_t actual_profile;
 } __packed;
 
@@ -44,9 +41,9 @@ enum arvo_commands {
 };
 
 struct arvo_special_report {
-	uint8_t unknown1; /* always 0x01 */
+	uint8_t unknown1;  
 	uint8_t event;
-	uint8_t unknown2; /* always 0x70 */
+	uint8_t unknown2;  
 } __packed;
 
 enum arvo_special_report_events {

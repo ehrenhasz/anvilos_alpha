@@ -1,12 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0+
-//
-// max14577.c - mfd core driver for the Maxim 14577/77836
-//
-// Copyright (C) 2014 Samsung Electronics
-// Chanwoo Choi <cw00.choi@samsung.com>
-// Krzysztof Kozlowski <krzk@kernel.org>
-//
-// This driver is based on max8997.c
+
+
+
+
+
+
+
+
+
 
 #include <linux/err.h>
 #include <linux/module.h>
@@ -16,10 +16,7 @@
 #include <linux/mfd/max14577.h>
 #include <linux/mfd/max14577-private.h>
 
-/*
- * Table of valid charger currents for different Maxim chipsets.
- * It is placed here because it is used by both charger and regulator driver.
- */
+ 
 const struct maxim_charger_current maxim_charger_currents[] = {
 	[MAXIM_DEVICE_TYPE_UNKNOWN] = { 0, 0, 0, 0 },
 	[MAXIM_DEVICE_TYPE_MAX14577] = {
@@ -37,27 +34,7 @@ const struct maxim_charger_current maxim_charger_currents[] = {
 };
 EXPORT_SYMBOL_GPL(maxim_charger_currents);
 
-/*
- * maxim_charger_calc_reg_current - Calculate register value for current
- * @limits:	constraints for charger, matching the MBCICHWRC register
- * @min_ua:	minimal requested current, micro Amps
- * @max_ua:	maximum requested current, micro Amps
- * @dst:	destination to store calculated register value
- *
- * Calculates the value of MBCICHWRC (Fast Battery Charge Current) register
- * for given current and stores it under pointed 'dst'. The stored value
- * combines low bit (MBCICHWRCL) and high bits (MBCICHWRCH). It is also
- * properly shifted.
- *
- * The calculated register value matches the current which:
- *  - is always between <limits.min, limits.max>;
- *  - is always less or equal to max_ua;
- *  - is the highest possible value;
- *  - may be lower than min_ua.
- *
- * On success returns 0. On error returns -EINVAL (requested min/max current
- * is outside of given charger limits) and 'dst' is not set.
- */
+ 
 int maxim_charger_calc_reg_current(const struct maxim_charger_current *limits,
 		unsigned int min_ua, unsigned int max_ua, u8 *dst)
 {
@@ -70,27 +47,20 @@ int maxim_charger_calc_reg_current(const struct maxim_charger_current *limits,
 		return -EINVAL;
 
 	if (max_ua < limits->high_start) {
-		/*
-		 * Less than high_start, so set the minimal current
-		 * (turn Low Bit off, 0 as high bits).
-		 */
+		 
 		*dst = 0x0;
 		return 0;
 	}
 
-	/* max_ua is in range: <high_start, infinite>, cut it to limits.max */
+	 
 	max_ua = min(limits->max, max_ua);
 	max_ua -= limits->high_start;
-	/*
-	 * There is no risk of overflow 'max_ua' here because:
-	 *  - max_ua >= limits.high_start
-	 *  - BUILD_BUG checks that 'limits' are: max >= high_start + high_step
-	 */
+	 
 	current_bits = max_ua / limits->high_step;
 
-	/* Turn Low Bit on (use range <limits.high_start, limits.max>) ... */
+	 
 	*dst = 0x1 << CHGCTRL4_MBCICHWRCL_SHIFT;
-	/* and set proper High Bits */
+	 
 	*dst |= current_bits << CHGCTRL4_MBCICHWRCH_SHIFT;
 
 	return 0;
@@ -156,7 +126,7 @@ static bool max14577_muic_volatile_reg(struct device *dev, unsigned int reg)
 
 static bool max77836_muic_volatile_reg(struct device *dev, unsigned int reg)
 {
-	/* Any max14577 volatile registers are also max77836 volatile. */
+	 
 	if (max14577_muic_volatile_reg(dev, reg))
 		return true;
 
@@ -189,17 +159,17 @@ static const struct regmap_config max77836_pmic_regmap_config = {
 };
 
 static const struct regmap_irq max14577_irqs[] = {
-	/* INT1 interrupts */
+	 
 	{ .reg_offset = 0, .mask = MAX14577_INT1_ADC_MASK, },
 	{ .reg_offset = 0, .mask = MAX14577_INT1_ADCLOW_MASK, },
 	{ .reg_offset = 0, .mask = MAX14577_INT1_ADCERR_MASK, },
-	/* INT2 interrupts */
+	 
 	{ .reg_offset = 1, .mask = MAX14577_INT2_CHGTYP_MASK, },
 	{ .reg_offset = 1, .mask = MAX14577_INT2_CHGDETRUN_MASK, },
 	{ .reg_offset = 1, .mask = MAX14577_INT2_DCDTMR_MASK, },
 	{ .reg_offset = 1, .mask = MAX14577_INT2_DBCHG_MASK, },
 	{ .reg_offset = 1, .mask = MAX14577_INT2_VBVOLT_MASK, },
-	/* INT3 interrupts */
+	 
 	{ .reg_offset = 2, .mask = MAX14577_INT3_EOC_MASK, },
 	{ .reg_offset = 2, .mask = MAX14577_INT3_CGMBC_MASK, },
 	{ .reg_offset = 2, .mask = MAX14577_INT3_OVP_MASK, },
@@ -216,19 +186,19 @@ static const struct regmap_irq_chip max14577_irq_chip = {
 };
 
 static const struct regmap_irq max77836_muic_irqs[] = {
-	/* INT1 interrupts */
+	 
 	{ .reg_offset = 0, .mask = MAX14577_INT1_ADC_MASK, },
 	{ .reg_offset = 0, .mask = MAX14577_INT1_ADCLOW_MASK, },
 	{ .reg_offset = 0, .mask = MAX14577_INT1_ADCERR_MASK, },
 	{ .reg_offset = 0, .mask = MAX77836_INT1_ADC1K_MASK, },
-	/* INT2 interrupts */
+	 
 	{ .reg_offset = 1, .mask = MAX14577_INT2_CHGTYP_MASK, },
 	{ .reg_offset = 1, .mask = MAX14577_INT2_CHGDETRUN_MASK, },
 	{ .reg_offset = 1, .mask = MAX14577_INT2_DCDTMR_MASK, },
 	{ .reg_offset = 1, .mask = MAX14577_INT2_DBCHG_MASK, },
 	{ .reg_offset = 1, .mask = MAX14577_INT2_VBVOLT_MASK, },
 	{ .reg_offset = 1, .mask = MAX77836_INT2_VIDRM_MASK, },
-	/* INT3 interrupts */
+	 
 	{ .reg_offset = 2, .mask = MAX14577_INT3_EOC_MASK, },
 	{ .reg_offset = 2, .mask = MAX14577_INT3_CGMBC_MASK, },
 	{ .reg_offset = 2, .mask = MAX14577_INT3_OVP_MASK, },
@@ -280,15 +250,7 @@ static void max14577_print_dev_type(struct max14577 *max14577)
 			max14577->dev_type, device_id, vendor_id);
 }
 
-/*
- * Max77836 specific initialization code for driver probe.
- * Adds new I2C dummy device, regmap and regmap IRQ chip.
- * Unmasks Interrupt Source register.
- *
- * On success returns 0.
- * On failure returns errno and reverts any changes done so far (e.g. remove
- * I2C dummy device), except masking the INT SRC register.
- */
+ 
 static int max77836_init(struct max14577 *max14577)
 {
 	int ret;
@@ -311,7 +273,7 @@ static int max77836_init(struct max14577 *max14577)
 		goto err;
 	}
 
-	/* Un-mask MAX77836 Interrupt Source register */
+	 
 	ret = max14577_read_reg(max14577->regmap_pmic,
 			MAX77836_PMIC_REG_INTSRC_MASK, &intsrc_mask);
 	if (ret < 0) {
@@ -346,9 +308,7 @@ err:
 	return ret;
 }
 
-/*
- * Max77836 specific de-initialization code for driver remove.
- */
+ 
 static void max77836_remove(struct max14577 *max14577)
 {
 	regmap_del_irq_chip(max14577->irq, max14577->irq_data_pmic);
@@ -434,7 +394,7 @@ static int max14577_i2c_probe(struct i2c_client *i2c)
 		return ret;
 	}
 
-	/* Max77836 specific initialization code (additional regmap) */
+	 
 	if (max14577->dev_type == MAXIM_DEVICE_TYPE_MAX77836) {
 		ret = max77836_init(max14577);
 		if (ret < 0)
@@ -483,15 +443,7 @@ static int max14577_suspend(struct device *dev)
 
 	if (device_may_wakeup(dev))
 		enable_irq_wake(max14577->irq);
-	/*
-	 * MUIC IRQ must be disabled during suspend because if it happens
-	 * while suspended it will be handled before resuming I2C.
-	 *
-	 * When device is woken up from suspend (e.g. by ADC change),
-	 * an interrupt occurs before resuming I2C bus controller.
-	 * Interrupt handler tries to read registers but this read
-	 * will fail because I2C is still suspended.
-	 */
+	 
 	disable_irq(max14577->irq);
 
 	return 0;
@@ -527,10 +479,10 @@ static int __init max14577_i2c_init(void)
 	BUILD_BUG_ON(ARRAY_SIZE(max14577_i2c_id) != MAXIM_DEVICE_TYPE_NUM);
 	BUILD_BUG_ON(ARRAY_SIZE(max14577_dt_match) != MAXIM_DEVICE_TYPE_NUM);
 
-	/* Valid charger current values must be provided for each chipset */
+	 
 	BUILD_BUG_ON(ARRAY_SIZE(maxim_charger_currents) != MAXIM_DEVICE_TYPE_NUM);
 
-	/* Check for valid values for charger */
+	 
 	BUILD_BUG_ON(MAX14577_CHARGER_CURRENT_LIMIT_HIGH_START +
 			MAX14577_CHARGER_CURRENT_LIMIT_HIGH_STEP * 0xf !=
 			MAX14577_CHARGER_CURRENT_LIMIT_MAX);

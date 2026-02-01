@@ -1,24 +1,14 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * Copyright (c) 1996, 2003 VIA Networking Technologies, Inc.
- * All rights reserved.
- *
- * Purpose: Provide functions to setup NIC operation mode
- *
- * Author: Tevin Chen
- *
- * Date: May 21, 1996
- *
- */
+ 
+ 
 
 #ifndef __CARD_H__
 #define __CARD_H__
 #include "device.h"
 
-/* init card type */
+ 
 
 #define CB_MAX_CHANNEL_24G	14
-#define CB_MAX_CHANNEL_5G	42 /* add channel9(5045MHz), 41==>42 */
+#define CB_MAX_CHANNEL_5G	42  
 #define CB_MAX_CHANNEL		(CB_MAX_CHANNEL_24G + CB_MAX_CHANNEL_5G)
 
 struct vnt_private;
@@ -41,4 +31,4 @@ int vnt_radio_power_on(struct vnt_private *priv);
 u8 vnt_get_pkt_type(struct vnt_private *priv);
 int vnt_set_bss_mode(struct vnt_private *priv);
 
-#endif /* __CARD_H__ */
+#endif  

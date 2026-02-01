@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (C) 2019 Spreadtrum Communications Inc.
+
+
 
 #include <linux/dma-mapping.h>
 #include <linux/dmaengine.h>
@@ -15,17 +15,17 @@
 
 #define SPRD_COMPR_DMA_CHANS		2
 
-/* Default values if userspace does not set */
+ 
 #define SPRD_COMPR_MIN_FRAGMENT_SIZE	SZ_8K
 #define SPRD_COMPR_MAX_FRAGMENT_SIZE	SZ_128K
 #define SPRD_COMPR_MIN_NUM_FRAGMENTS	4
 #define SPRD_COMPR_MAX_NUM_FRAGMENTS	64
 
-/* DSP FIFO size */
+ 
 #define SPRD_COMPR_MCDT_EMPTY_WMK	0
 #define SPRD_COMPR_MCDT_FIFO_SIZE	512
 
-/* Stage 0 IRAM buffer size definition */
+ 
 #define SPRD_COMPR_IRAM_BUF_SIZE	SZ_32K
 #define SPRD_COMPR_IRAM_INFO_SIZE	(sizeof(struct sprd_compr_playinfo))
 #define SPRD_COMPR_IRAM_LINKLIST_SIZE	(1024 - SPRD_COMPR_IRAM_INFO_SIZE)
@@ -33,7 +33,7 @@
 					 SPRD_COMPR_IRAM_INFO_SIZE + \
 					 SPRD_COMPR_IRAM_LINKLIST_SIZE)
 
-/* Stage 1 DDR buffer size definition */
+ 
 #define SPRD_COMPR_AREA_BUF_SIZE	SZ_2M
 #define SPRD_COMPR_AREA_LINKLIST_SIZE	1024
 #define SPRD_COMPR_AREA_SIZE		(SPRD_COMPR_AREA_BUF_SIZE + \
@@ -48,51 +48,34 @@ struct sprd_compr_dma {
 	int trans_len;
 };
 
-/*
- * The Spreadtrum Audio compress offload mode will use 2-stage DMA transfer to
- * save power. That means we can request 2 dma channels, one for source channel,
- * and another one for destination channel. Once the source channel's transaction
- * is done, it will trigger the destination channel's transaction automatically
- * by hardware signal.
- *
- * For 2-stage DMA transfer, we can allocate 2 buffers: IRAM buffer (always
- * power-on) and DDR buffer. The source channel will transfer data from IRAM
- * buffer to the DSP fifo to decoding/encoding, once IRAM buffer is empty by
- * transferring done, the destination channel will start to transfer data from
- * DDR buffer to IRAM buffer.
- *
- * Since the DSP fifo is only 512B, IRAM buffer is allocated by 32K, and DDR
- * buffer is larger to 2M. That means only the IRAM 32k data is transferred
- * done, we can wake up the AP system to transfer data from DDR to IRAM, and
- * other time the AP system can be suspended to save power.
- */
+ 
 struct sprd_compr_stream {
 	struct snd_compr_stream *cstream;
 	struct sprd_compr_ops *compr_ops;
 	struct sprd_compr_dma dma[SPRD_COMPR_DMA_CHANS];
 
-	/* DMA engine channel number */
+	 
 	int num_channels;
 
-	/* Stage 0 IRAM buffer */
+	 
 	struct snd_dma_buffer iram_buffer;
-	/* Stage 1 DDR buffer */
+	 
 	struct snd_dma_buffer compr_buffer;
 
-	/* DSP play information IRAM buffer */
+	 
 	dma_addr_t info_phys;
 	void *info_area;
 	int info_size;
 
-	/* Data size copied to IRAM buffer */
+	 
 	int copied_total;
-	/* Total received data size from userspace */
+	 
 	int received_total;
-	/* Stage 0 IRAM buffer received data size */
+	 
 	int received_stage0;
-	/* Stage 1 DDR buffer received data size */
+	 
 	int received_stage1;
-	/* Stage 1 DDR buffer pointer */
+	 
 	int stage1_pointer;
 };
 
@@ -118,7 +101,7 @@ static void sprd_platform_compr_dma_complete(void *data)
 	struct sprd_compr_stream *stream = runtime->private_data;
 	struct sprd_compr_dma *dma = &stream->dma[1];
 
-	/* Update data size copied to IRAM buffer */
+	 
 	stream->copied_total += dma->trans_len;
 	if (stream->copied_total > stream->received_total)
 		stream->copied_total = stream->received_total;
@@ -217,10 +200,7 @@ static int sprd_platform_compr_dma_config(struct snd_soc_component *component,
 		sg_dma_address(sgt) = dst_addr;
 	}
 
-	/*
-	 * Configure the link-list address for the DMA engine link-list
-	 * mode.
-	 */
+	 
 	link.virt_addr = (unsigned long)dma->virt;
 	link.phy_addr = dma->phys;
 
@@ -231,10 +211,7 @@ static int sprd_platform_compr_dma_config(struct snd_soc_component *component,
 		goto config_err;
 	}
 
-	/*
-	 * We configure the DMA request mode, interrupt mode, channel
-	 * mode and channel trigger mode by the flags.
-	 */
+	 
 	dma->desc = dma->chan->device->device_prep_slave_sg(dma->chan, sg,
 							    sg_num, dir,
 							    flags, &link);
@@ -244,7 +221,7 @@ static int sprd_platform_compr_dma_config(struct snd_soc_component *component,
 		goto config_err;
 	}
 
-	/* Only channel 1 transfer can wake up the AP system. */
+	 
 	if (!params->no_wake_mode && channel == 1) {
 		dma->desc->callback = sprd_platform_compr_dma_complete;
 		dma->desc->callback_param = cstream;
@@ -271,12 +248,7 @@ static int sprd_platform_compr_set_params(struct snd_soc_component *component,
 	struct sprd_compr_params compr_params = { };
 	int ret;
 
-	/*
-	 * Configure the DMA engine 2-stage transfer mode. Channel 1 set as the
-	 * destination channel, and channel 0 set as the source channel, that
-	 * means once the source channel's transaction is done, it will trigger
-	 * the destination channel's transaction automatically.
-	 */
+	 
 	ret = sprd_platform_compr_dma_config(component, cstream, params, 1);
 	if (ret) {
 		dev_err(dev, "failed to config stage 1 DMA: %d\n", ret);
@@ -335,36 +307,30 @@ static int sprd_platform_compr_open(struct snd_soc_component *component,
 	stream->num_channels = 2;
 	stream->compr_ops = data->ops;
 
-	/*
-	 * Allocate the stage 0 IRAM buffer size, including the DMA 0
-	 * link-list size and play information of DSP address size.
-	 */
+	 
 	ret = snd_dma_alloc_pages(SNDRV_DMA_TYPE_DEV_IRAM, dev,
 				  SPRD_COMPR_IRAM_SIZE, &stream->iram_buffer);
 	if (ret < 0)
 		goto err_iram;
 
-	/* Use to save link-list configuration for DMA 0. */
+	 
 	stream->dma[0].virt = stream->iram_buffer.area + SPRD_COMPR_IRAM_SIZE;
 	stream->dma[0].phys = stream->iram_buffer.addr + SPRD_COMPR_IRAM_SIZE;
 
-	/* Use to update the current data offset of DSP. */
+	 
 	stream->info_phys = stream->iram_buffer.addr + SPRD_COMPR_IRAM_SIZE +
 		SPRD_COMPR_IRAM_LINKLIST_SIZE;
 	stream->info_area = stream->iram_buffer.area + SPRD_COMPR_IRAM_SIZE +
 		SPRD_COMPR_IRAM_LINKLIST_SIZE;
 	stream->info_size = SPRD_COMPR_IRAM_INFO_SIZE;
 
-	/*
-	 * Allocate the stage 1 DDR buffer size, including the DMA 1 link-list
-	 * size.
-	 */
+	 
 	ret = snd_dma_alloc_pages(SNDRV_DMA_TYPE_DEV, dev,
 				  SPRD_COMPR_AREA_SIZE, &stream->compr_buffer);
 	if (ret < 0)
 		goto err_compr;
 
-	/* Use to save link-list configuration for DMA 1. */
+	 
 	stream->dma[1].virt = stream->compr_buffer.area + SPRD_COMPR_AREA_SIZE;
 	stream->dma[1].phys = stream->compr_buffer.addr + SPRD_COMPR_AREA_SIZE;
 
@@ -535,21 +501,13 @@ static int sprd_platform_compr_copy(struct snd_soc_component *component,
 	int avail_bytes, data_count = count;
 	void *dst;
 
-	/*
-	 * We usually set fragment size as 32K, and the stage 0 IRAM buffer
-	 * size is 32K too. So if now the received data size of the stage 0
-	 * IRAM buffer is less than 32K, that means we have some available
-	 * spaces for the stage 0 IRAM buffer.
-	 */
+	 
 	if (stream->received_stage0 < runtime->fragment_size) {
 		avail_bytes = runtime->fragment_size - stream->received_stage0;
 		dst = stream->iram_buffer.area + stream->received_stage0;
 
 		if (avail_bytes >= data_count) {
-			/*
-			 * Copy data to the stage 0 IRAM buffer directly if
-			 * spaces are enough.
-			 */
+			 
 			if (copy_from_user(dst, buf, data_count))
 				return -EFAULT;
 
@@ -557,12 +515,7 @@ static int sprd_platform_compr_copy(struct snd_soc_component *component,
 			stream->copied_total += data_count;
 			goto copy_done;
 		} else {
-			/*
-			 * If the data count is larger than the available spaces
-			 * of the stage 0 IRAM buffer, we should copy one
-			 * partial data to the stage 0 IRAM buffer, and copy
-			 * the left to the stage 1 DDR buffer.
-			 */
+			 
 			if (copy_from_user(dst, buf, avail_bytes))
 				return -EFAULT;
 
@@ -573,10 +526,7 @@ static int sprd_platform_compr_copy(struct snd_soc_component *component,
 		}
 	}
 
-	/*
-	 * Copy data to the stage 1 DDR buffer if no spaces for the stage 0 IRAM
-	 * buffer.
-	 */
+	 
 	dst = stream->compr_buffer.area + stream->stage1_pointer;
 	if (data_count < stream->compr_buffer.bytes - stream->stage1_pointer) {
 		if (copy_from_user(dst, buf, data_count))
@@ -599,7 +549,7 @@ static int sprd_platform_compr_copy(struct snd_soc_component *component,
 	stream->received_stage1 += data_count;
 
 copy_done:
-	/* Update the copied data size. */
+	 
 	stream->received_total += count;
 	return count;
 }

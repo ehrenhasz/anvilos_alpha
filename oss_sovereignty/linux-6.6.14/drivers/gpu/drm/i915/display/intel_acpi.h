@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2019 Intel Corporation
- */
+ 
+ 
 
 #ifndef __INTEL_ACPI_H__
 #define __INTEL_ACPI_H__
@@ -26,6 +24,6 @@ static inline
 void intel_acpi_assign_connector_fwnodes(struct drm_i915_private *i915) { return; }
 static inline
 void intel_acpi_video_register(struct drm_i915_private *i915) { return; }
-#endif /* CONFIG_ACPI */
+#endif  
 
-#endif /* __INTEL_ACPI_H__ */
+#endif  

@@ -1,8 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0+
-//
-// Speyside audio support
-//
-// Copyright 2011 Wolfson Microelectronics
+
+
+
+
+
 
 #include <sound/soc.h>
 #include <sound/soc-dapm.h>
@@ -97,7 +97,7 @@ static int speyside_set_bias_level_post(struct snd_soc_card *card,
 
 static struct snd_soc_jack speyside_headset;
 
-/* Headset jack detection DAPM pins */
+ 
 static struct snd_soc_jack_pin speyside_headset_pins[] = {
 	{
 		.pin = "Headset Mic",
@@ -105,7 +105,7 @@ static struct snd_soc_jack_pin speyside_headset_pins[] = {
 	},
 };
 
-/* Default the headphone selection to active high */
+ 
 static int speyside_jack_polarity;
 
 static int speyside_get_micbias(struct snd_soc_dapm_widget *source,
@@ -125,7 +125,7 @@ static void speyside_set_polarity(struct snd_soc_component *component,
 	speyside_jack_polarity = !polarity;
 	gpio_direction_output(WM8996_HPSEL_GPIO, speyside_jack_polarity);
 
-	/* Re-run DAPM to make sure we're using the correct mic bias */
+	 
 	snd_soc_dapm_sync(snd_soc_component_get_dapm(component));
 }
 
@@ -236,7 +236,7 @@ static struct snd_soc_dai_link speyside_dai[] = {
 
 static int speyside_wm9081_init(struct snd_soc_component *component)
 {
-	/* At any time the WM9081 is active it will have this clock */
+	 
 	return snd_soc_component_set_sysclk(component, WM9081_SYSCLK_MCLK, 0,
 					MCLK_AUDIO_RATE, 0);
 }

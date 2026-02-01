@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- *  IPv6 IOAM implementation
- *
- *  Author:
- *  Justin Iurman <justin.iurman@uliege.be>
- */
+ 
+ 
 
 #ifndef _NET_IOAM6_H
 #define _NET_IOAM6_H
@@ -65,4 +60,4 @@ void ioam6_exit(void);
 int ioam6_iptunnel_init(void);
 void ioam6_iptunnel_exit(void);
 
-#endif /* _NET_IOAM6_H */
+#endif  

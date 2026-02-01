@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #include <linux/atomic.h>
 #include <linux/debugfs.h>
 #include <linux/notifier.h>
@@ -15,7 +15,7 @@ struct notifier_err_inject_action {
 struct notifier_err_inject {
 	struct notifier_block nb;
 	struct notifier_err_inject_action actions[];
-	/* The last slot must be terminated with zero sentinel */
+	 
 };
 
 extern struct dentry *notifier_err_inject_dir;

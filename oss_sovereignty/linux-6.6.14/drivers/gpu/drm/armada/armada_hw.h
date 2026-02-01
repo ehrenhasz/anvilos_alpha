@@ -1,20 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2012 Russell King
- *  Rewritten from the dovefb driver, and Armada510 manuals.
- */
+ 
+ 
 #ifndef ARMADA_HW_H
 #define ARMADA_HW_H
 
-/*
- * Note: the following registers are written from IRQ context:
- *  LCD_SPU_V_PORCH, LCD_SPU_ADV_REG, LCD_SPUT_V_H_TOTAL
- *  LCD_SPU_DMA_START_ADDR_[YUV][01], LCD_SPU_DMA_PITCH_YC,
- *  LCD_SPU_DMA_PITCH_UV, LCD_SPU_DMA_OVSA_HPXL_VLN,
- *  LCD_SPU_DMA_HPXL_VLN, LCD_SPU_DZM_HPXL_VLN, LCD_SPU_DMA_CTRL0
- */
+ 
 enum {
-	LCD_SPU_ADV_REG			= 0x0084,	/* Armada 510 */
+	LCD_SPU_ADV_REG			= 0x0084,	 
 	LCD_SPU_DMA_START_ADDR_Y0	= 0x00c0,
 	LCD_SPU_DMA_START_ADDR_U0	= 0x00c4,
 	LCD_SPU_DMA_START_ADDR_V0	= 0x00c8,
@@ -46,7 +37,7 @@ enum {
 	LCD_SPU_COLORKEY_Y		= 0x0130,
 	LCD_SPU_COLORKEY_U		= 0x0134,
 	LCD_SPU_COLORKEY_V		= 0x0138,
-	LCD_CFG_RDREG4F			= 0x013c,	/* Armada 510 */
+	LCD_CFG_RDREG4F			= 0x013c,	 
 	LCD_SPU_SPI_RXDATA		= 0x0140,
 	LCD_SPU_ISA_RXDATA		= 0x0144,
 	LCD_SPU_HWC_RDDAT		= 0x0158,
@@ -61,7 +52,7 @@ enum {
 	LCD_SPU_DMA_CTRL1		= 0x0194,
 	LCD_SPU_SRAM_CTRL		= 0x0198,
 	LCD_SPU_SRAM_WRDAT		= 0x019c,
-	LCD_SPU_SRAM_PARA0		= 0x01a0,	/* Armada 510 */
+	LCD_SPU_SRAM_PARA0		= 0x01a0,	 
 	LCD_SPU_SRAM_PARA1		= 0x01a4,
 	LCD_CFG_SCLK_DIV		= 0x01a8,
 	LCD_SPU_CONTRAST		= 0x01ac,
@@ -73,7 +64,7 @@ enum {
 	LCD_SPU_IRQ_ISR			= 0x01c4,
 };
 
-/* For LCD_SPU_ADV_REG */
+ 
 enum {
 	ADV_VSYNC_L_OFF	= 0xfff << 20,
 	ADV_GRACOLORKEY	= 1 << 19,
@@ -85,7 +76,7 @@ enum {
 	ADV_VSYNC_H_OFF	= 0xfff << 0,
 };
 
-/* LCD_CFG_RDREG4F - Armada 510 only */
+ 
 enum {
 	CFG_SRAM_WAIT	= BIT(11),
 	CFG_SMPN_FASTTX	= BIT(10),
@@ -112,7 +103,7 @@ enum {
 	CFG_YUV2RGB	= 1 << 1,
 };
 
-/* For LCD_SPU_DMA_CTRL0 */
+ 
 enum {
 	CFG_NOBLENDING	= 1 << 31,
 	CFG_GAMMA_ENA	= 1 << 30,
@@ -149,7 +140,7 @@ enum {
 	CKMODE_B	= 7,
 };
 
-/* For LCD_SPU_DMA_CTRL1 */
+ 
 enum {
 	CFG_FRAME_TRIG		= 1 << 31,
 	CFG_VSYNC_INV		= 1 << 27,
@@ -171,7 +162,7 @@ enum {
 	CFG_PIXCMD_MASK		= 0xff,
 };
 
-/* For LCD_SPU_SRAM_CTRL */
+ 
 enum {
 	SRAM_READ	= 0 << 14,
 	SRAM_WRITE	= 2 << 14,
@@ -189,25 +180,25 @@ enum {
 	SRAM_HWC	= 0xf << 8,
 };
 
-/* For LCD_SPU_SRAM_PARA1 */
+ 
 enum {
-	CFG_CSB_256x32	= 1 << 15,	/* cursor */
-	CFG_CSB_256x24	= 1 << 14,	/* palette */
-	CFG_CSB_256x8	= 1 << 13,	/* gamma */
-	CFG_PDWN1920x32	= 1 << 8,	/* Armada 510: power down vscale ram */
-	CFG_PDWN256x32	= 1 << 7,	/* power down cursor */
-	CFG_PDWN256x24	= 1 << 6,	/* power down palette */
-	CFG_PDWN256x8	= 1 << 5,	/* power down gamma */
-	CFG_PDWNHWC	= 1 << 4,	/* Armada 510: power down all hwc ram */
-	CFG_PDWN32x32	= 1 << 3,	/* power down slave->smart ram */
-	CFG_PDWN16x66	= 1 << 2,	/* power down UV fifo */
-	CFG_PDWN32x66	= 1 << 1,	/* power down Y fifo */
-	CFG_PDWN64x66	= 1 << 0,	/* power down graphic fifo */
+	CFG_CSB_256x32	= 1 << 15,	 
+	CFG_CSB_256x24	= 1 << 14,	 
+	CFG_CSB_256x8	= 1 << 13,	 
+	CFG_PDWN1920x32	= 1 << 8,	 
+	CFG_PDWN256x32	= 1 << 7,	 
+	CFG_PDWN256x24	= 1 << 6,	 
+	CFG_PDWN256x8	= 1 << 5,	 
+	CFG_PDWNHWC	= 1 << 4,	 
+	CFG_PDWN32x32	= 1 << 3,	 
+	CFG_PDWN16x66	= 1 << 2,	 
+	CFG_PDWN32x66	= 1 << 1,	 
+	CFG_PDWN64x66	= 1 << 0,	 
 };
 
-/* For LCD_CFG_SCLK_DIV */
+ 
 enum {
-	/* Armada 510 */
+	 
 	SCLK_510_AXI		= 0x0 << 30,
 	SCLK_510_EXTCLK0	= 0x1 << 30,
 	SCLK_510_PLL		= 0x2 << 30,
@@ -216,7 +207,7 @@ enum {
 	SCLK_510_FRAC_DIV_MASK	= 0xfff << 16,
 	SCLK_510_INT_DIV_MASK	= 0xffff << 0,
 
-	/* Armada 16x */
+	 
 	SCLK_16X_AHB		= 0x0 << 28,
 	SCLK_16X_PCLK		= 0x1 << 28,
 	SCLK_16X_AXI		= 0x4 << 28,
@@ -225,7 +216,7 @@ enum {
 	SCLK_16X_INT_DIV_MASK	= 0xffff << 0,
 };
 
-/* For LCD_SPU_DUMB_CTRL */
+ 
 enum {
 	DUMB16_RGB565_0	= 0x0 << 28,
 	DUMB16_RGB565_1	= 0x1 << 28,
@@ -239,15 +230,15 @@ enum {
 	CFG_BIAS_OUT	= 1 << 8,
 	CFG_REV_RGB	= 1 << 7,
 	CFG_INV_CBLANK	= 1 << 6,
-	CFG_INV_CSYNC	= 1 << 5,	/* Normally active high */
+	CFG_INV_CSYNC	= 1 << 5,	 
 	CFG_INV_HENA	= 1 << 4,
-	CFG_INV_VSYNC	= 1 << 3,	/* Normally active high */
-	CFG_INV_HSYNC	= 1 << 2,	/* Normally active high */
+	CFG_INV_VSYNC	= 1 << 3,	 
+	CFG_INV_HSYNC	= 1 << 2,	 
 	CFG_INV_PCLK	= 1 << 1,
 	CFG_DUMB_ENA	= 1 << 0,
 };
 
-/* For LCD_SPU_IOPAD_CONTROL */
+ 
 enum {
 	CFG_VSCALE_LN_EN	= 3 << 18,
 	CFG_GRA_VM_ENA		= 1 << 15,
@@ -272,7 +263,7 @@ enum {
 
 #define IOPAD_DUMB24                0x0
 
-/* For LCD_SPU_IRQ_ENA */
+ 
 enum {
 	DMA_FRAME_IRQ0_ENA	= 1 << 31,
 	DMA_FRAME_IRQ1_ENA	= 1 << 30,
@@ -293,7 +284,7 @@ enum {
 	CLEAN_SPU_IRQ_ISR	= 0xffff,
 };
 
-/* For LCD_SPU_IRQ_ISR */
+ 
 enum {
 	DMA_FRAME_IRQ0		= 1 << 31,
 	DMA_FRAME_IRQ1		= 1 << 30,

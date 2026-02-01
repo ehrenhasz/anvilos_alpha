@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB */
-/* Copyright (c) 2022, NVIDIA CORPORATION & AFFILIATES. */
+ 
+ 
 
 #ifndef MLX5_MACSEC_H
 #define MLX5_MACSEC_H
@@ -29,4 +29,4 @@ void mlx5_macsec_del_roce_sa_rules(u32 fs_id, struct mlx5_macsec_fs *macsec_fs,
 				   struct list_head *rx_rules_list, bool is_tx);
 
 #endif
-#endif /* MLX5_MACSEC_H */
+#endif  

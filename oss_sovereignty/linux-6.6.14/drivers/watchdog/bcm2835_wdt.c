@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Watchdog driver for Broadcom BCM2835
- *
- * "bcm2708_wdog" driver written by Luke Diamand that was obtained from
- * branch "rpi-3.6.y" of git://github.com/raspberrypi/linux.git was used
- * as a hardware reference for the Broadcom BCM2835 watchdog timer.
- *
- * Copyright (C) 2013 Lubomir Rintel <lkundrak@v3.sk>
- *
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/types.h>
@@ -33,11 +24,7 @@
 #define PM_RSTC_WRCFG_FULL_RESET	0x00000020
 #define PM_RSTC_RESET			0x00000102
 
-/*
- * The Raspberry Pi firmware uses the RSTS register to know which partition
- * to boot from. The partition value is spread into bits 0, 2, 4, 6, 8, 10.
- * Partition 63 is a special partition used by the firmware to indicate halt.
- */
+ 
 #define PM_RSTS_RASPBERRYPI_HALT	0x555
 
 #define SECS_TO_WDOG_TICKS(x) ((x) << 16)
@@ -102,14 +89,14 @@ static void __bcm2835_restart(struct bcm2835_wdt *wdt)
 {
 	u32 val;
 
-	/* use a timeout of 10 ticks (~150us) */
+	 
 	writel_relaxed(10 | PM_PASSWORD, wdt->base + PM_WDOG);
 	val = readl_relaxed(wdt->base + PM_RSTC);
 	val &= PM_RSTC_WRCFG_CLR;
 	val |= PM_PASSWORD | PM_RSTC_WRCFG_FULL_RESET;
 	writel_relaxed(val, wdt->base + PM_RSTC);
 
-	/* No sleeping, possibly atomic. */
+	 
 	mdelay(1);
 }
 
@@ -145,26 +132,18 @@ static struct watchdog_device bcm2835_wdt_wdd = {
 	.timeout =	WDOG_TICKS_TO_SECS(PM_WDOG_TIME_SET),
 };
 
-/*
- * We can't really power off, but if we do the normal reset scheme, and
- * indicate to bootcode.bin not to reboot, then most of the chip will be
- * powered off.
- */
+ 
 static void bcm2835_power_off(void)
 {
 	struct bcm2835_wdt *wdt = bcm2835_power_off_wdt;
 	u32 val;
 
-	/*
-	 * We set the watchdog hard reset bit here to distinguish this reset
-	 * from the normal (full) reset. bootcode.bin will not reboot after a
-	 * hard reset.
-	 */
+	 
 	val = readl_relaxed(wdt->base + PM_RSTS);
 	val |= PM_PASSWORD | PM_RSTS_RASPBERRYPI_HALT;
 	writel_relaxed(val, wdt->base + PM_RSTS);
 
-	/* Continue with normal reset mechanism */
+	 
 	__bcm2835_restart(wdt);
 }
 
@@ -188,14 +167,7 @@ static int bcm2835_wdt_probe(struct platform_device *pdev)
 	watchdog_set_nowayout(&bcm2835_wdt_wdd, nowayout);
 	bcm2835_wdt_wdd.parent = dev;
 	if (bcm2835_wdt_is_running(wdt)) {
-		/*
-		 * The currently active timeout value (set by the
-		 * bootloader) may be different from the module
-		 * heartbeat parameter or the value in device
-		 * tree. But we just need to set WDOG_HW_RUNNING,
-		 * because then the framework will "immediately" ping
-		 * the device, updating the timeout.
-		 */
+		 
 		set_bit(WDOG_HW_RUNNING, &bcm2835_wdt_wdd.status);
 	}
 

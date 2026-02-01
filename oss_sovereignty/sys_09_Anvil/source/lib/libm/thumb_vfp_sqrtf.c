@@ -1,4 +1,4 @@
-// an implementation of sqrtf for Thumb using hardware VFP instructions
+
 
 #include <math.h>
 

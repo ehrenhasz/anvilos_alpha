@@ -1,19 +1,4 @@
-/*
- * parse_vdso.c: Linux reference vDSO parser
- * Written by Andrew Lutomirski, 2011-2014.
- *
- * This code is meant to be linked in to various programs that run on Linux.
- * As such, it is available with as few restrictions as possible.  This file
- * is licensed under the Creative Commons Zero License, version 1.0,
- * available at http://creativecommons.org/publicdomain/zero/1.0/legalcode
- *
- * The vDSO is a regular ELF DSO that the kernel maps into user space when
- * it starts a program.  It works equally well in statically and dynamically
- * linked binaries.
- *
- * This code is tested on x86.  In principle it should work on any
- * architecture that has a vDSO.
- */
+ 
 
 #include <stdbool.h>
 #include <stdint.h>
@@ -23,7 +8,7 @@
 
 #include "parse_vdso.h"
 
-/* And here's the code. */
+ 
 #ifndef ELF_BITS
 # if ULONG_MAX > 0xffffffffUL
 #  define ELF_BITS 64
@@ -40,22 +25,22 @@ static struct vdso_info
 {
 	bool valid;
 
-	/* Load information */
+	 
 	uintptr_t load_addr;
-	uintptr_t load_offset;  /* load_addr - recorded vaddr */
+	uintptr_t load_offset;   
 
-	/* Symbol table */
+	 
 	ELF(Sym) *symtab;
 	const char *symstrings;
 	ELF(Word) *bucket, *chain;
 	ELF(Word) nbucket, nchain;
 
-	/* Version table */
+	 
 	ELF(Versym) *versym;
 	ELF(Verdef) *verdef;
 } vdso_info;
 
-/* Straight from the ELF specification. */
+ 
 static unsigned long elf_hash(const unsigned char *name)
 {
 	unsigned long h = 0, g;
@@ -81,16 +66,13 @@ void vdso_init_from_sysinfo_ehdr(uintptr_t base)
 	ELF(Ehdr) *hdr = (ELF(Ehdr)*)base;
 	if (hdr->e_ident[EI_CLASS] !=
 	    (ELF_BITS == 32 ? ELFCLASS32 : ELFCLASS64)) {
-		return;  /* Wrong ELF class -- check ELF_BITS */
+		return;   
 	}
 
 	ELF(Phdr) *pt = (ELF(Phdr)*)(vdso_info.load_addr + hdr->e_phoff);
 	ELF(Dyn) *dyn = 0;
 
-	/*
-	 * We need two things from the segment table: the load offset
-	 * and the dynamic table.
-	 */
+	 
 	for (i = 0; i < hdr->e_phnum; i++)
 	{
 		if (pt[i].p_type == PT_LOAD && !found_vaddr) {
@@ -104,11 +86,9 @@ void vdso_init_from_sysinfo_ehdr(uintptr_t base)
 	}
 
 	if (!found_vaddr || !dyn)
-		return;  /* Failed */
+		return;   
 
-	/*
-	 * Fish out the useful bits of the dynamic table.
-	 */
+	 
 	ELF(Word) *hash = 0;
 	vdso_info.symstrings = 0;
 	vdso_info.symtab = 0;
@@ -144,41 +124,28 @@ void vdso_init_from_sysinfo_ehdr(uintptr_t base)
 		}
 	}
 	if (!vdso_info.symstrings || !vdso_info.symtab || !hash)
-		return;  /* Failed */
+		return;   
 
 	if (!vdso_info.verdef)
 		vdso_info.versym = 0;
 
-	/* Parse the hash table header. */
+	 
 	vdso_info.nbucket = hash[0];
 	vdso_info.nchain = hash[1];
 	vdso_info.bucket = &hash[2];
 	vdso_info.chain = &hash[vdso_info.nbucket + 2];
 
-	/* That's all we need. */
+	 
 	vdso_info.valid = true;
 }
 
 static bool vdso_match_version(ELF(Versym) ver,
 			       const char *name, ELF(Word) hash)
 {
-	/*
-	 * This is a helper function to check if the version indexed by
-	 * ver matches name (which hashes to hash).
-	 *
-	 * The version definition table is a mess, and I don't know how
-	 * to do this in better than linear time without allocating memory
-	 * to build an index.  I also don't know why the table has
-	 * variable size entries in the first place.
-	 *
-	 * For added fun, I can't find a comprehensible specification of how
-	 * to parse all the weird flags in the table.
-	 *
-	 * So I just parse the whole table every time.
-	 */
+	 
 
-	/* First step: find the version definition */
-	ver &= 0x7fff;  /* Apparently bit 15 means "hidden" */
+	 
+	ver &= 0x7fff;   
 	ELF(Verdef) *def = vdso_info.verdef;
 	while(true) {
 		if ((def->vd_flags & VER_FLG_BASE) == 0
@@ -186,12 +153,12 @@ static bool vdso_match_version(ELF(Versym) ver,
 			break;
 
 		if (def->vd_next == 0)
-			return false;  /* No definition. */
+			return false;   
 
 		def = (ELF(Verdef) *)((char *)def + def->vd_next);
 	}
 
-	/* Now figure out whether it matches. */
+	 
 	ELF(Verdaux) *aux = (ELF(Verdaux)*)((char *)def + def->vd_aux);
 	return def->vd_hash == hash
 		&& !strcmp(name, vdso_info.symstrings + aux->vda_name);
@@ -209,7 +176,7 @@ void *vdso_sym(const char *version, const char *name)
 	for (; chain != STN_UNDEF; chain = vdso_info.chain[chain]) {
 		ELF(Sym) *sym = &vdso_info.symtab[chain];
 
-		/* Check for a defined global or weak function w/ right name. */
+		 
 		if (ELF64_ST_TYPE(sym->st_info) != STT_FUNC)
 			continue;
 		if (ELF64_ST_BIND(sym->st_info) != STB_GLOBAL &&
@@ -220,7 +187,7 @@ void *vdso_sym(const char *version, const char *name)
 		if (strcmp(name, vdso_info.symstrings + sym->st_name))
 			continue;
 
-		/* Check symbol version. */
+		 
 		if (vdso_info.versym
 		    && !vdso_match_version(vdso_info.versym[chain],
 					   version, ver_hash))

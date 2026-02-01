@@ -1,26 +1,4 @@
-/*
- * Copyright 2008 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Author: Stanislaw Skowronek
- */
+ 
 
 #include <linux/module.h>
 #include <linux/sched.h>
@@ -79,7 +57,7 @@ static uint32_t atom_arg_mask[8] =
 static int atom_arg_shift[8] = { 0, 0, 8, 16, 0, 8, 16, 24 };
 
 static int atom_dst_to_src[8][4] = {
-	/* translate destination alignment field to the source alignment encoding */
+	 
 	{0, 0, 0, 0},
 	{1, 2, 3, 0},
 	{1, 2, 3, 0},
@@ -221,8 +199,7 @@ static uint32_t atom_get_src_int(atom_exec_context *ctx, uint8_t attr,
 	case ATOM_ARG_PS:
 		idx = U8(*ptr);
 		(*ptr)++;
-		/* get_unaligned_le32 avoids unaligned accesses from atombios
-		 * tables, noticed on a DEC Alpha. */
+		 
 		val = get_unaligned_le32((u32 *)&ctx->ps[idx]);
 		if (print)
 			DEBUG("PS[0x%02X,0x%04X]", idx, val);
@@ -709,7 +686,7 @@ static void atom_op_div32(atom_exec_context *ctx, int *ptr, int arg)
 
 static void atom_op_eot(atom_exec_context *ctx, int *ptr, int arg)
 {
-	/* functionally, a nop */
+	 
 }
 
 static void atom_op_jump(atom_exec_context *ctx, int *ptr, int arg)
@@ -755,7 +732,7 @@ static void atom_op_jump(atom_exec_context *ctx, int *ptr, int arg)
 					ctx->abort = true;
 				}
 			} else {
-				/* jiffies wrap around we will just wait a little longer */
+				 
 				ctx->last_jump_jiffies = jiffies;
 			}
 		} else {
@@ -827,7 +804,7 @@ static void atom_op_mul32(atom_exec_context *ctx, int *ptr, int arg)
 
 static void atom_op_nop(atom_exec_context *ctx, int *ptr, int arg)
 {
-	/* nothing */
+	 
 }
 
 static void atom_op_or(atom_exec_context *ctx, int *ptr, int arg)
@@ -960,7 +937,7 @@ static void atom_op_shl(atom_exec_context *ctx, int *ptr, int arg)
 	uint32_t dst_align = atom_dst_to_src[(attr >> 3) & 7][(attr >> 6) & 3];
 	SDEBUG("   dst: ");
 	dst = atom_get_dst(ctx, arg, attr, ptr, &saved, 1);
-	/* op needs to full dst value */
+	 
 	dst = saved;
 	shift = atom_get_src(ctx, attr, ptr);
 	SDEBUG("   shift: %d\n", shift);
@@ -979,7 +956,7 @@ static void atom_op_shr(atom_exec_context *ctx, int *ptr, int arg)
 	uint32_t dst_align = atom_dst_to_src[(attr >> 3) & 7][(attr >> 6) & 3];
 	SDEBUG("   dst: ");
 	dst = atom_get_dst(ctx, arg, attr, ptr, &saved, 1);
-	/* op needs to full dst value */
+	 
 	dst = saved;
 	shift = atom_get_src(ctx, attr, ptr);
 	SDEBUG("   shift: %d\n", shift);
@@ -1270,15 +1247,15 @@ int amdgpu_atom_execute_table(struct atom_context *ctx, int index, uint32_t *par
 	int r;
 
 	mutex_lock(&ctx->mutex);
-	/* reset data block */
+	 
 	ctx->data_block = 0;
-	/* reset reg block */
+	 
 	ctx->reg_block = 0;
-	/* reset fb window */
+	 
 	ctx->fb_base = 0;
-	/* reset io mode */
+	 
 	ctx->io_mode = ATOM_IO_MM;
-	/* reset divmul */
+	 
 	ctx->divmul[0] = 0;
 	ctx->divmul[1] = 0;
 	r = amdgpu_atom_execute_table_locked(ctx, index, params);
@@ -1323,23 +1300,20 @@ static void atom_get_vbios_name(struct atom_context *ctx)
 
 		c_ptr = (unsigned char *)(p_rom + off_to_vbios_str);
 	} else {
-		/* do not know where to find name */
+		 
 		memcpy(ctx->name, na, 7);
 		ctx->name[7] = 0;
 		return;
 	}
 
-	/*
-	 * skip the atombios strings, usually 4
-	 * 1st is P/N, 2nd is ASIC, 3rd is PCI type, 4th is Memory type
-	 */
+	 
 	for (i = 0; i < str_num; i++) {
 		while (*c_ptr != 0)
 			c_ptr++;
 		c_ptr++;
 	}
 
-	/* skip the following 2 chars: 0x0D 0x0A */
+	 
 	c_ptr += 2;
 
 	name_size = strnlen(c_ptr, STRLEN_LONG - 1);
@@ -1446,10 +1420,10 @@ static void atom_get_vbios_version(struct atom_context *ctx)
 {
 	unsigned char *vbios_ver;
 
-	/* find anchor ATOMBIOSBK-AMD */
+	 
 	vbios_ver = atom_find_str_in_rom(ctx, BIOS_VERSION_PREFIX, 3, 1024, 64);
 	if (vbios_ver != NULL) {
-		/* skip ATOMBIOSBK-AMD VER */
+		 
 		vbios_ver += 18;
 		memcpy(ctx->vbios_ver_str, vbios_ver, STRLEN_NORMAL);
 	} else {

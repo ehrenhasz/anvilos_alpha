@@ -1,19 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Crypto library utility functions
- *
- * Copyright (c) 2006 Herbert Xu <herbert@gondor.apana.org.au>
- */
+
+ 
 
 #include <asm/unaligned.h>
 #include <crypto/utils.h>
 #include <linux/module.h>
 
-/*
- * XOR @len bytes from @src1 and @src2 together, writing the result to @dst
- * (which may alias one of the sources).  Don't call this directly; call
- * crypto_xor() or crypto_xor_cpy() instead.
- */
+ 
 void __crypto_xor(u8 *dst, const u8 *src1, const u8 *src2, unsigned int len)
 {
 	int relalign = 0;
@@ -26,12 +18,7 @@ void __crypto_xor(u8 *dst, const u8 *src1, const u8 *src2, unsigned int len)
 
 		relalign = d ? 1 << __ffs(d) : size;
 
-		/*
-		 * If we care about alignment, process as many bytes as
-		 * needed to advance dst and src to values whose alignments
-		 * equal their relative alignment. This will allow us to
-		 * process the remainder of the input using optimal strides.
-		 */
+		 
 		while (((unsigned long)dst & (relalign - 1)) && len > 0) {
 			*dst++ = *src1++ ^ *src2++;
 			len--;

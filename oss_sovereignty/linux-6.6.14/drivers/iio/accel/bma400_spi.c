@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * SPI IIO driver for Bosch BMA400 triaxial acceleration sensor.
- *
- * Copyright 2020 Dan Robertson <dan@dlrobertson.com>
- *
- */
+
+ 
 #include <linux/bits.h>
 #include <linux/init.h>
 #include <linux/mod_devicetable.h>
@@ -33,12 +28,7 @@ static int bma400_regmap_spi_read(void *context,
 	if (status)
 		return status;
 
-	/*
-	 * From the BMA400 datasheet:
-	 *
-	 * > For a basic read operation two bytes have to be read and the first
-	 * > has to be dropped and the second byte must be interpreted.
-	 */
+	 
 	memcpy(val, result + 1, val_size);
 
 	return 0;
@@ -74,12 +64,7 @@ static int bma400_spi_probe(struct spi_device *spi)
 		return PTR_ERR(regmap);
 	}
 
-	/*
-	 * Per the bma400 datasheet, the first SPI read may
-	 * return garbage. As the datasheet recommends, the
-	 * chip ID register will be read here and checked
-	 * again in the following probe.
-	 */
+	 
 	ret = regmap_read(regmap, BMA400_CHIP_ID_REG, &val);
 	if (ret)
 		dev_err(&spi->dev, "Failed to read chip id register\n");

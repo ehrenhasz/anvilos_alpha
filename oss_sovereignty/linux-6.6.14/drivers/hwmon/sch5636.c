@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/***************************************************************************
- *   Copyright (C) 2011-2012 Hans de Goede <hdegoede@redhat.com>           *
- *                                                                         *
- ***************************************************************************/
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -19,7 +16,7 @@
 #include "sch56xx-common.h"
 
 #define DRVNAME "sch5636"
-#define DEVNAME "theseus" /* We only support one model for now */
+#define DEVNAME "theseus"  
 
 #define SCH5636_REG_FUJITSU_ID		0x780
 #define SCH5636_REG_FUJITSU_REV		0x783
@@ -46,7 +43,7 @@ static const u16 SCH5636_REG_TEMP_VAL[SCH5636_NO_TEMPS] = {
 static const u16 SCH5636_REG_FAN_VAL[SCH5636_NO_FANS] = {
 	0x2C, 0x2E, 0x30, 0x32, 0x62, 0x64, 0x66, 0x68 };
 #define SCH5636_REG_FAN_CTRL(i)		(0x880 + (i))
-/* FAULT in datasheet, but acts as an alarm */
+ 
 #define SCH5636_FAN_ALARM		0x04
 #define SCH5636_FAN_NOT_PRESENT		0x08
 #define SCH5636_FAN_DEACTIVATED		0x80
@@ -57,8 +54,8 @@ struct sch5636_data {
 	struct device *hwmon_dev;
 
 	struct mutex update_lock;
-	bool valid;			/* true if following fields are valid */
-	unsigned long last_updated;	/* In jiffies */
+	bool valid;			 
+	unsigned long last_updated;	 
 	u8 in[SCH5636_NO_INS];
 	u8 temp_val[SCH5636_NO_TEMPS];
 	u8 temp_ctrl[SCH5636_NO_TEMPS];
@@ -74,7 +71,7 @@ static struct sch5636_data *sch5636_update_device(struct device *dev)
 
 	mutex_lock(&data->update_lock);
 
-	/* Cache the values for 1 second */
+	 
 	if (data->valid && !time_after(jiffies, data->last_updated + HZ))
 		goto abort;
 
@@ -107,7 +104,7 @@ static struct sch5636_data *sch5636_update_device(struct device *dev)
 			goto abort;
 		}
 		data->temp_ctrl[i] = val;
-		/* Alarms need to be explicitly write-cleared */
+		 
 		if (val & SCH5636_TEMP_ALARM) {
 			sch56xx_write_virtual_reg(data->addr,
 						SCH5636_REG_TEMP_CTRL(i), val);
@@ -133,7 +130,7 @@ static struct sch5636_data *sch5636_update_device(struct device *dev)
 			goto abort;
 		}
 		data->fan_ctrl[i] = val;
-		/* Alarms need to be explicitly write-cleared */
+		 
 		if (val & SCH5636_FAN_ALARM) {
 			sch56xx_write_virtual_reg(data->addr,
 						SCH5636_REG_FAN_CTRL(i), val);
@@ -436,7 +433,7 @@ static int sch5636_probe(struct platform_device *pdev)
 	pr_info("Found %s chip at %#hx, revision: %d.%02d\n", DEVNAME,
 		data->addr, revision[0], revision[1]);
 
-	/* Read all temp + fan ctrl registers to determine which are active */
+	 
 	for (i = 0; i < SCH5636_NO_TEMPS; i++) {
 		val = sch56xx_read_virtual_reg(data->addr,
 					       SCH5636_REG_TEMP_CTRL(i));
@@ -491,7 +488,7 @@ static int sch5636_probe(struct platform_device *pdev)
 		goto error;
 	}
 
-	/* Note failing to register the watchdog is not a fatal error */
+	 
 	sch56xx_watchdog_register(&pdev->dev, data->addr, (revision[0] << 8) | revision[1],
 				  &data->update_lock, 0);
 

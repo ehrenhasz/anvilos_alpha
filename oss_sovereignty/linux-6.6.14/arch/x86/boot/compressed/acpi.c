@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #define BOOT_CTYPE_H
 #include "misc.h"
 #include "error.h"
@@ -7,16 +7,10 @@
 
 #include <linux/numa.h>
 
-/*
- * Longest parameter of 'acpi=' is 'copy_dsdt', plus an extra '\0'
- * for termination.
- */
+ 
 #define MAX_ACPI_ARG_LENGTH 10
 
-/*
- * Immovable memory regions representation. Max amount of memory regions is
- * MAX_NUMNODES*2.
- */
+ 
 struct mem_vector immovable_mem[MAX_NUMNODES*2];
 
 static acpi_physical_address
@@ -26,16 +20,13 @@ __efi_get_rsdp_addr(unsigned long cfg_tbl_pa, unsigned int cfg_tbl_len)
 	unsigned long rsdp_addr;
 	int ret;
 
-	/*
-	 * Search EFI system tables for RSDP. Preferred is ACPI_20_TABLE_GUID to
-	 * ACPI_TABLE_GUID because it has more features.
-	 */
+	 
 	rsdp_addr = efi_find_vendor_table(boot_params, cfg_tbl_pa, cfg_tbl_len,
 					  ACPI_20_TABLE_GUID);
 	if (rsdp_addr)
 		return (acpi_physical_address)rsdp_addr;
 
-	/* No ACPI_20_TABLE_GUID found, fallback to ACPI_TABLE_GUID. */
+	 
 	rsdp_addr = efi_find_vendor_table(boot_params, cfg_tbl_pa, cfg_tbl_len,
 					  ACPI_TABLE_GUID);
 	if (rsdp_addr)
@@ -85,7 +76,7 @@ static u8 compute_checksum(u8 *buffer, u32 length)
 	return sum;
 }
 
-/* Search a block of memory for the RSDP signature. */
+ 
 static u8 *scan_mem_for_rsdp(u8 *start, u32 length)
 {
 	struct acpi_table_rsdp *rsdp;
@@ -93,56 +84,48 @@ static u8 *scan_mem_for_rsdp(u8 *start, u32 length)
 
 	end = start + length;
 
-	/* Search from given start address for the requested length */
+	 
 	for (address = start; address < end; address += ACPI_RSDP_SCAN_STEP) {
-		/*
-		 * Both RSDP signature and checksum must be correct.
-		 * Note: Sometimes there exists more than one RSDP in memory;
-		 * the valid RSDP has a valid checksum, all others have an
-		 * invalid checksum.
-		 */
+		 
 		rsdp = (struct acpi_table_rsdp *)address;
 
-		/* BAD Signature */
+		 
 		if (!ACPI_VALIDATE_RSDP_SIG(rsdp->signature))
 			continue;
 
-		/* Check the standard checksum */
+		 
 		if (compute_checksum((u8 *)rsdp, ACPI_RSDP_CHECKSUM_LENGTH))
 			continue;
 
-		/* Check extended checksum if table version >= 2 */
+		 
 		if ((rsdp->revision >= 2) &&
 		    (compute_checksum((u8 *)rsdp, ACPI_RSDP_XCHECKSUM_LENGTH)))
 			continue;
 
-		/* Signature and checksum valid, we have found a real RSDP */
+		 
 		return address;
 	}
 	return NULL;
 }
 
-/* Search RSDP address in EBDA. */
+ 
 static acpi_physical_address bios_get_rsdp_addr(void)
 {
 	unsigned long address;
 	u8 *rsdp;
 
-	/* Get the location of the Extended BIOS Data Area (EBDA) */
+	 
 	address = *(u16 *)ACPI_EBDA_PTR_LOCATION;
 	address <<= 4;
 
-	/*
-	 * Search EBDA paragraphs (EBDA is required to be a minimum of
-	 * 1K length)
-	 */
+	 
 	if (address > 0x400) {
 		rsdp = scan_mem_for_rsdp((u8 *)address, ACPI_EBDA_WINDOW_SIZE);
 		if (rsdp)
 			return (acpi_physical_address)(unsigned long)rsdp;
 	}
 
-	/* Search upper memory: 16-byte boundaries in E0000h-FFFFFh */
+	 
 	rsdp = scan_mem_for_rsdp((u8 *) ACPI_HI_RSDP_WINDOW_BASE,
 					ACPI_HI_RSDP_WINDOW_SIZE);
 	if (rsdp)
@@ -151,7 +134,7 @@ static acpi_physical_address bios_get_rsdp_addr(void)
 	return 0;
 }
 
-/* Return RSDP address on success, otherwise 0. */
+ 
 acpi_physical_address get_rsdp_addr(void)
 {
 	acpi_physical_address pa;
@@ -168,10 +151,7 @@ acpi_physical_address get_rsdp_addr(void)
 }
 
 #if defined(CONFIG_RANDOMIZE_BASE) && defined(CONFIG_MEMORY_HOTREMOVE)
-/*
- * Max length of 64-bit hex address string is 19, prefix "0x" + 16 hex
- * digits, and '\0' for termination.
- */
+ 
 #define MAX_ADDR_LEN 19
 
 static unsigned long get_cmdline_acpi_rsdp(void)
@@ -192,7 +172,7 @@ static unsigned long get_cmdline_acpi_rsdp(void)
 	return addr;
 }
 
-/* Compute SRAT address from RSDP. */
+ 
 static unsigned long get_acpi_srat_table(void)
 {
 	unsigned long root_table, acpi_table;
@@ -202,11 +182,7 @@ static unsigned long get_acpi_srat_table(void)
 	char arg[10];
 	u8 *entry;
 
-	/*
-	 * Check whether we were given an RSDP on the command line. We don't
-	 * stash this in boot params because the kernel itself may have
-	 * different ideas about whether to trust a command-line parameter.
-	 */
+	 
 	rsdp = (struct acpi_table_rsdp *)get_cmdline_acpi_rsdp();
 	if (!rsdp)
 		rsdp = (struct acpi_table_rsdp *)(long)
@@ -215,7 +191,7 @@ static unsigned long get_acpi_srat_table(void)
 	if (!rsdp)
 		return 0;
 
-	/* Get ACPI root table from RSDP.*/
+	 
 	if (!(cmdline_find_option("acpi", arg, sizeof(arg)) == 4 &&
 	    !strncmp(arg, "rsdt", 4)) &&
 	    rsdp->xsdt_physical_address &&
@@ -255,16 +231,7 @@ static unsigned long get_acpi_srat_table(void)
 	return 0;
 }
 
-/**
- * count_immovable_mem_regions - Parse SRAT and cache the immovable
- * memory regions into the immovable_mem array.
- *
- * Return the number of immovable memory regions on success, 0 on failure:
- *
- * - Too many immovable memory regions
- * - ACPI off or no SRAT found
- * - No immovable memory region found.
- */
+ 
 int count_immovable_mem_regions(void)
 {
 	unsigned long table_addr, table_end, table;
@@ -312,4 +279,4 @@ int count_immovable_mem_regions(void)
 	}
 	return num;
 }
-#endif /* CONFIG_RANDOMIZE_BASE && CONFIG_MEMORY_HOTREMOVE */
+#endif  

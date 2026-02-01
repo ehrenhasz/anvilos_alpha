@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Driver for 100BASE-TX PHY embedded into NXP SJA1110 switch
- *
- * Copyright 2022-2023 NXP
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/mii.h>
@@ -11,14 +8,14 @@
 
 #define PHY_ID_CBTX_SJA1110			0x001bb020
 
-/* Registers */
+ 
 #define  CBTX_MODE_CTRL_STAT			0x11
 #define  CBTX_PDOWN_CTRL			0x18
 #define  CBTX_RX_ERR_COUNTER			0x1a
 #define  CBTX_IRQ_STAT				0x1d
 #define  CBTX_IRQ_ENABLE			0x1e
 
-/* Fields */
+ 
 #define CBTX_MODE_CTRL_STAT_AUTO_MDIX_EN	BIT(7)
 #define CBTX_MODE_CTRL_STAT_MDIX_MODE		BIT(6)
 
@@ -36,7 +33,7 @@ static int cbtx_soft_reset(struct phy_device *phydev)
 {
 	int ret;
 
-	/* Can't soft reset unless we remove PHY from true power down mode */
+	 
 	ret = phy_clear_bits(phydev, CBTX_PDOWN_CTRL,
 			     CBTX_PDOWN_CTL_TRUE_PDOWN);
 	if (ret)
@@ -47,7 +44,7 @@ static int cbtx_soft_reset(struct phy_device *phydev)
 
 static int cbtx_config_init(struct phy_device *phydev)
 {
-	/* Wait for cbtx_config_aneg() to kick in and apply this */
+	 
 	phydev->mdix_ctrl = ETH_TP_MDI_AUTO;
 
 	return 0;
@@ -198,7 +195,7 @@ static struct phy_driver cbtx_driver[] = {
 	{
 		PHY_ID_MATCH_MODEL(PHY_ID_CBTX_SJA1110),
 		.name			= "NXP CBTX (SJA1110)",
-		/* PHY_BASIC_FEATURES */
+		 
 		.soft_reset		= cbtx_soft_reset,
 		.config_init		= cbtx_config_init,
 		.suspend		= genphy_suspend,

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Microchip / Atmel ECC (I2C) driver.
- *
- * Copyright (c) 2017, Microchip Technology Inc.
- * Author: Tudor Ambarus
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/device.h>
@@ -25,18 +20,7 @@
 
 static struct atmel_ecc_driver_data driver_data;
 
-/**
- * struct atmel_ecdh_ctx - transformation context
- * @client     : pointer to i2c client device
- * @fallback   : used for unsupported curves or when user wants to use its own
- *               private key.
- * @public_key : generated when calling set_secret(). It's the responsibility
- *               of the user to not call set_secret() while
- *               generate_public_key() or compute_shared_secret() are in flight.
- * @curve_id   : elliptic curve id
- * @do_fallback: true when the device doesn't support the curve or when the user
- *               wants to use its own private key.
- */
+ 
 struct atmel_ecdh_ctx {
 	struct i2c_client *client;
 	struct crypto_kpp *fallback;
@@ -55,25 +39,22 @@ static void atmel_ecdh_done(struct atmel_i2c_work_data *work_data, void *areq,
 	if (status)
 		goto free_work_data;
 
-	/* might want less than we've got */
+	 
 	n_sz = min_t(size_t, ATMEL_ECC_NIST_P256_N_SIZE, req->dst_len);
 
-	/* copy the shared secret */
+	 
 	copied = sg_copy_from_buffer(req->dst, sg_nents_for_len(req->dst, n_sz),
 				     &cmd->data[RSP_DATA_IDX], n_sz);
 	if (copied != n_sz)
 		status = -EINVAL;
 
-	/* fall through */
+	 
 free_work_data:
 	kfree_sensitive(work_data);
 	kpp_request_complete(req, status);
 }
 
-/*
- * A random private key is generated and stored in the device. The device
- * returns the pair public key.
- */
+ 
 static int atmel_ecdh_set_secret(struct crypto_kpp *tfm, const void *buf,
 				 unsigned int len)
 {
@@ -83,9 +64,9 @@ static int atmel_ecdh_set_secret(struct crypto_kpp *tfm, const void *buf,
 	struct ecdh params;
 	int ret = -ENOMEM;
 
-	/* free the old public key, if any */
+	 
 	kfree(ctx->public_key);
-	/* make sure you don't free the old public key twice */
+	 
 	ctx->public_key = NULL;
 
 	if (crypto_ecdh_decode_key(buf, len, &params) < 0) {
@@ -94,7 +75,7 @@ static int atmel_ecdh_set_secret(struct crypto_kpp *tfm, const void *buf,
 	}
 
 	if (params.key_size) {
-		/* fallback to ecdh software implementation */
+		 
 		ctx->do_fallback = true;
 		return crypto_kpp_set_secret(ctx->fallback, buf, len);
 	}
@@ -103,11 +84,7 @@ static int atmel_ecdh_set_secret(struct crypto_kpp *tfm, const void *buf,
 	if (!cmd)
 		return -ENOMEM;
 
-	/*
-	 * The device only supports NIST P256 ECC keys. The public key size will
-	 * always be the same. Use a macro for the key size to avoid unnecessary
-	 * computations.
-	 */
+	 
 	public_key = kmalloc(ATMEL_ECC_PUBKEY_SIZE, GFP_KERNEL);
 	if (!public_key)
 		goto free_cmd;
@@ -120,7 +97,7 @@ static int atmel_ecdh_set_secret(struct crypto_kpp *tfm, const void *buf,
 	if (ret)
 		goto free_public_key;
 
-	/* save the public key */
+	 
 	memcpy(public_key, &cmd->data[RSP_DATA_IDX], ATMEL_ECC_PUBKEY_SIZE);
 	ctx->public_key = public_key;
 
@@ -149,10 +126,10 @@ static int atmel_ecdh_generate_public_key(struct kpp_request *req)
 	if (!ctx->public_key)
 		return -EINVAL;
 
-	/* might want less than we've got */
+	 
 	nbytes = min_t(size_t, ATMEL_ECC_PUBKEY_SIZE, req->dst_len);
 
-	/* public key was saved at private key generation */
+	 
 	copied = sg_copy_from_buffer(req->dst,
 				     sg_nents_for_len(req->dst, nbytes),
 				     ctx->public_key, nbytes);
@@ -175,7 +152,7 @@ static int atmel_ecdh_compute_shared_secret(struct kpp_request *req)
 		return crypto_kpp_compute_shared_secret(req);
 	}
 
-	/* must have exactly two points to be on the curve */
+	 
 	if (req->src_len != ATMEL_ECC_PUBKEY_SIZE)
 		return -EINVAL;
 
@@ -286,11 +263,7 @@ static unsigned int atmel_ecdh_max_size(struct crypto_kpp *tfm)
 	if (ctx->fallback)
 		return crypto_kpp_maxsize(ctx->fallback);
 
-	/*
-	 * The device only supports NIST P256 ECC keys. The public key size will
-	 * always be the same. Use a macro for the key size to avoid unnecessary
-	 * computations.
-	 */
+	 
 	return ATMEL_ECC_PUBKEY_SIZE;
 }
 
@@ -346,16 +319,9 @@ static void atmel_ecc_remove(struct i2c_client *client)
 {
 	struct atmel_i2c_client_priv *i2c_priv = i2c_get_clientdata(client);
 
-	/* Return EBUSY if i2c client already allocated. */
+	 
 	if (atomic_read(&i2c_priv->tfm_count)) {
-		/*
-		 * After we return here, the memory backing the device is freed.
-		 * That happens no matter what the return value of this function
-		 * is because in the Linux device model there is no error
-		 * handling for unbinding a driver.
-		 * If there is still some action pending, it probably involves
-		 * accessing the freed memory.
-		 */
+		 
 		dev_emerg(&client->dev, "Device is busy, expect memory corruption.\n");
 		return;
 	}
@@ -372,7 +338,7 @@ static const struct of_device_id atmel_ecc_dt_ids[] = {
 	{
 		.compatible = "atmel,atecc508a",
 	}, {
-		/* sentinel */
+		 
 	}
 };
 MODULE_DEVICE_TABLE(of, atmel_ecc_dt_ids);

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * mt2701-wm8960.c  --  MT2701 WM8960 ALSA SoC machine driver
- *
- * Copyright (c) 2017 MediaTek Inc.
- * Author: Ryder Lee <ryder.lee@mediatek.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <sound/soc.h>
@@ -60,7 +55,7 @@ SND_SOC_DAILINK_DEFS(codec,
 	DAILINK_COMP_ARRAY(COMP_EMPTY()));
 
 static struct snd_soc_dai_link mt2701_wm8960_dai_links[] = {
-	/* FE */
+	 
 	{
 		.name = "wm8960-playback",
 		.stream_name = "wm8960-playback",
@@ -79,7 +74,7 @@ static struct snd_soc_dai_link mt2701_wm8960_dai_links[] = {
 		.dpcm_capture = 1,
 		SND_SOC_DAILINK_REG(capture),
 	},
-	/* BE */
+	 
 	{
 		.name = "wm8960-codec",
 		.no_pcm = 1,
@@ -176,7 +171,7 @@ static struct platform_driver mt2701_wm8960_machine = {
 
 module_platform_driver(mt2701_wm8960_machine);
 
-/* Module information */
+ 
 MODULE_DESCRIPTION("MT2701 WM8960 ALSA SoC machine driver");
 MODULE_AUTHOR("Ryder Lee <ryder.lee@mediatek.com>");
 MODULE_LICENSE("GPL v2");

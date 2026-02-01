@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Tahvo USB transceiver driver
- *
- * Copyright (C) 2005-2006 Nokia Corporation
- *
- * Parts copied from isp1301_omap.c.
- * Copyright (C) 2004 Texas Instruments
- * Copyright (C) 2004 David Brownell
- *
- * Original driver written by Juha Yrjölä, Tony Lindgren and Timo Teräs.
- * Modified for Retu/Tahvo MFD by Aaro Koskinen.
- */
+
+ 
 
 #include <linux/io.h>
 #include <linux/clk.h>
@@ -76,17 +65,14 @@ static void check_vbus_state(struct tahvo_usb *tu)
 	if (reg & TAHVO_STAT_VBUS) {
 		switch (tu->phy.otg->state) {
 		case OTG_STATE_B_IDLE:
-			/* Enable the gadget driver */
+			 
 			if (tu->phy.otg->gadget)
 				usb_gadget_vbus_connect(tu->phy.otg->gadget);
 			tu->phy.otg->state = OTG_STATE_B_PERIPHERAL;
 			usb_phy_set_event(&tu->phy, USB_EVENT_ENUMERATED);
 			break;
 		case OTG_STATE_A_IDLE:
-			/*
-			 * Session is now valid assuming the USB hub is driving
-			 * Vbus.
-			 */
+			 
 			tu->phy.otg->state = OTG_STATE_A_HOST;
 			break;
 		default:
@@ -124,7 +110,7 @@ static void tahvo_usb_become_host(struct tahvo_usb *tu)
 
 	extcon_set_state_sync(tu->extcon, EXTCON_USB_HOST, true);
 
-	/* Power up the transceiver in USB host mode */
+	 
 	retu_write(rdev, TAHVO_REG_USBR, USBR_REGOUT | USBR_NSUSPEND |
 		   USBR_MASTER_SW2 | USBR_MASTER_SW1);
 	tu->phy.otg->state = OTG_STATE_A_IDLE;
@@ -143,7 +129,7 @@ static void tahvo_usb_become_peripheral(struct tahvo_usb *tu)
 
 	extcon_set_state_sync(tu->extcon, EXTCON_USB_HOST, false);
 
-	/* Power up transceiver and set it in USB peripheral mode */
+	 
 	retu_write(rdev, TAHVO_REG_USBR, USBR_SLAVE_CONTROL | USBR_REGOUT |
 		   USBR_NSUSPEND | USBR_SLAVE_SW);
 	tu->phy.otg->state = OTG_STATE_B_IDLE;
@@ -162,11 +148,11 @@ static void tahvo_usb_power_off(struct tahvo_usb *tu)
 {
 	struct retu_dev *rdev = dev_get_drvdata(tu->pt_dev->dev.parent);
 
-	/* Disable gadget controller if any */
+	 
 	if (tu->phy.otg->gadget)
 		usb_gadget_vbus_disconnect(tu->phy.otg->gadget);
 
-	/* Power off transceiver */
+	 
 	retu_write(rdev, TAHVO_REG_USBR, 0);
 	tu->phy.otg->state = OTG_STATE_UNDEFINED;
 }
@@ -332,7 +318,7 @@ static int tahvo_usb_probe(struct platform_device *pdev)
 
 	tu->pt_dev = pdev;
 
-	/* Default mode */
+	 
 #ifdef CONFIG_TAHVO_USB_HOST_BY_DEFAULT
 	tu->tahvo_mode = TAHVO_MODE_HOST;
 #else
@@ -345,9 +331,7 @@ static int tahvo_usb_probe(struct platform_device *pdev)
 	if (!IS_ERR(tu->ick))
 		clk_enable(tu->ick);
 
-	/*
-	 * Set initial state, so that we generate kevents only on state changes.
-	 */
+	 
 	tu->vbus_state = retu_read(rdev, TAHVO_REG_IDSR) & TAHVO_STAT_VBUS;
 
 	tu->extcon = devm_extcon_dev_allocate(&pdev->dev, tahvo_cable);
@@ -364,12 +348,12 @@ static int tahvo_usb_probe(struct platform_device *pdev)
 		goto err_disable_clk;
 	}
 
-	/* Set the initial cable state. */
+	 
 	extcon_set_state_sync(tu->extcon, EXTCON_USB_HOST,
 			       tu->tahvo_mode == TAHVO_MODE_HOST);
 	extcon_set_state_sync(tu->extcon, EXTCON_USB, tu->vbus_state);
 
-	/* Create OTG interface */
+	 
 	tahvo_usb_power_off(tu);
 	tu->phy.dev = &pdev->dev;
 	tu->phy.otg->state = OTG_STATE_UNDEFINED;

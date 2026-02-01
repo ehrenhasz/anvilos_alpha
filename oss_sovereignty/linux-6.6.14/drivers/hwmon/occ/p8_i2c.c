@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-// Copyright IBM Corp 2019
+
+
 
 #include <linux/device.h>
 #include <linux/errno.h>
@@ -15,12 +15,12 @@
 #define OCC_TIMEOUT_MS			1000
 #define OCC_CMD_IN_PRG_WAIT_MS		50
 
-/* OCB (on-chip control bridge - interface to OCC) registers */
+ 
 #define OCB_DATA1			0x6B035
 #define OCB_ADDR			0x6B070
 #define OCB_DATA3			0x6B075
 
-/* OCC SRAM address space */
+ 
 #define OCC_SRAM_ADDR_CMD		0xFFFF6000
 #define OCC_SRAM_ADDR_RESP		0xFFFF7000
 
@@ -39,16 +39,16 @@ static int p8_i2c_occ_getscom(struct i2c_client *client, u32 address, u8 *data)
 	__be64 buf;
 	struct i2c_msg msgs[2];
 
-	/* p8 i2c slave requires shift */
+	 
 	address <<= 1;
 
 	msgs[0].addr = client->addr;
 	msgs[0].flags = client->flags & I2C_M_TEN;
 	msgs[0].len = sizeof(u32);
-	/* address is a scom address; bus-endian */
+	 
 	msgs[0].buf = (char *)&address;
 
-	/* data from OCC is big-endian */
+	 
 	msgs[1].addr = client->addr;
 	msgs[1].flags = (client->flags & I2C_M_TEN) | I2C_M_RD;
 	msgs[1].len = sizeof(u64);
@@ -68,10 +68,10 @@ static int p8_i2c_occ_putscom(struct i2c_client *client, u32 address, u8 *data)
 	u32 buf[3];
 	ssize_t rc;
 
-	/* p8 i2c slave requires shift */
+	 
 	address <<= 1;
 
-	/* address is bus-endian; data passed through from user as-is */
+	 
 	buf[0] = address;
 	memcpy(&buf[1], &data[4], sizeof(u32));
 	memcpy(&buf[2], data, sizeof(u32));
@@ -125,23 +125,23 @@ static int p8_i2c_occ_send_cmd(struct occ *occ, u8 *cmd, size_t len,
 
 	start = jiffies;
 
-	/* set sram address for command */
+	 
 	rc = p8_i2c_occ_putscom_u32(client, OCB_ADDR, OCC_SRAM_ADDR_CMD, 0);
 	if (rc)
 		return rc;
 
-	/* write command (expected to already be BE), we need bus-endian... */
+	 
 	rc = p8_i2c_occ_putscom_be(client, OCB_DATA3, cmd, len);
 	if (rc)
 		return rc;
 
-	/* trigger OCC attention */
+	 
 	rc = p8_i2c_occ_putscom_u32(client, OCB_DATA1, OCC_DATA_ATTN, 0);
 	if (rc)
 		return rc;
 
 	do {
-		/* set sram address for response */
+		 
 		rc = p8_i2c_occ_putscom_u32(client, OCB_ADDR,
 					    OCC_SRAM_ADDR_RESP, 0);
 		if (rc)
@@ -151,7 +151,7 @@ static int p8_i2c_occ_send_cmd(struct occ *occ, u8 *cmd, size_t len,
 		if (rc)
 			return rc;
 
-		/* wait for OCC */
+		 
 		if (or->return_status == OCC_RESP_CMD_IN_PRG) {
 			rc = -EALREADY;
 
@@ -163,7 +163,7 @@ static int p8_i2c_occ_send_cmd(struct occ *occ, u8 *cmd, size_t len,
 		}
 	} while (rc);
 
-	/* check the OCC response */
+	 
 	switch (or->return_status) {
 	case OCC_RESP_CMD_IN_PRG:
 		rc = -ETIMEDOUT;
@@ -197,7 +197,7 @@ static int p8_i2c_occ_send_cmd(struct occ *occ, u8 *cmd, size_t len,
 	if ((data_length + 7) > resp_len)
 		return -EMSGSIZE;
 
-	/* fetch the rest of the response data */
+	 
 	for (i = 8; i < data_length + 7; i += 8) {
 		rc = p8_i2c_occ_getscom(client, OCB_DATA3, ((u8 *)resp) + i);
 		if (rc)
@@ -221,7 +221,7 @@ static int p8_i2c_occ_probe(struct i2c_client *client)
 	dev_set_drvdata(&client->dev, occ);
 
 	occ->powr_sample_time_us = 250;
-	occ->poll_cmd_data = 0x10;		/* P8 OCC poll data */
+	occ->poll_cmd_data = 0x10;		 
 	occ->send_cmd = p8_i2c_occ_send_cmd;
 
 	return occ_setup(occ);

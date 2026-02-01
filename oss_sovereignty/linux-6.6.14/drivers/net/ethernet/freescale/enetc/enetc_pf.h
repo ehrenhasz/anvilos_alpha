@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: (GPL-2.0+ OR BSD-3-Clause) */
-/* Copyright 2017-2019 NXP */
+ 
+ 
 
 #include "enetc.h"
 #include <linux/phylink.h>
@@ -30,8 +30,8 @@ struct enetc_vf_state {
 
 struct enetc_pf {
 	struct enetc_si *si;
-	int num_vfs; /* number of active VFs, after sriov_init */
-	int total_vfs; /* max number of VFs, set for PF at probe */
+	int num_vfs;  
+	int total_vfs;  
 	struct enetc_vf_state *vf_state;
 
 	struct enetc_mac_filter mac_filter[ENETC_MAX_NUM_MAC_FLT];
@@ -40,11 +40,11 @@ struct enetc_pf {
 	struct work_struct msg_task;
 	char msg_int_name[ENETC_INT_NAME_MAX];
 
-	char vlan_promisc_simap; /* bitmap of SIs in VLAN promisc mode */
+	char vlan_promisc_simap;  
 	DECLARE_BITMAP(vlan_ht_filter, ENETC_VLAN_HT_SIZE);
 	DECLARE_BITMAP(active_vlans, VLAN_N_VID);
 
-	struct mii_bus *mdio; /* saved for cleanup */
+	struct mii_bus *mdio;  
 	struct mii_bus *imdio;
 	struct phylink_pcs *pcs;
 

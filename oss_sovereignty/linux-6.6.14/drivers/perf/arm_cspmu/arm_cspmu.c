@@ -1,24 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * ARM CoreSight Architecture PMU driver.
- *
- * This driver adds support for uncore PMU based on ARM CoreSight Performance
- * Monitoring Unit Architecture. The PMU is accessible via MMIO registers and
- * like other uncore PMUs, it does not support process specific events and
- * cannot be used in sampling mode.
- *
- * This code is based on other uncore PMUs like ARM DSU PMU. It provides a
- * generic implementation to operate the PMU according to CoreSight PMU
- * architecture and ACPI ARM PMU table (APMT) documents below:
- *   - ARM CoreSight PMU architecture document number: ARM IHI 0091 A.a-00bet0.
- *   - APMT document number: ARM DEN0117.
- *
- * The user should refer to the vendor technical documentation to get details
- * about the supported events.
- *
- * Copyright (c) 2022, NVIDIA CORPORATION & AFFILIATES. All rights reserved.
- *
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/cacheinfo.h>
@@ -39,9 +20,7 @@
 	ARM_CSPMU_EXT_ATTR(_name, arm_cspmu_cpumask_show,	\
 				(unsigned long)_config)
 
-/*
- * CoreSight PMU Arch register offsets.
- */
+ 
 #define PMEVCNTR_LO					0x0
 #define PMEVCNTR_HI					0x4
 #define PMEVTYPER					0x400
@@ -57,7 +36,7 @@
 #define PMCR						0xE04
 #define PMIIDR						0xE08
 
-/* PMCFGR register field */
+ 
 #define PMCFGR_NCG					GENMASK(31, 28)
 #define PMCFGR_HDBG					BIT(24)
 #define PMCFGR_TRO					BIT(23)
@@ -72,7 +51,7 @@
 #define PMCFGR_SIZE					GENMASK(13, 8)
 #define PMCFGR_N					GENMASK(7, 0)
 
-/* PMCR register field */
+ 
 #define PMCR_TRO					BIT(11)
 #define PMCR_HDBG					BIT(10)
 #define PMCR_FZO					BIT(9)
@@ -84,35 +63,33 @@
 #define PMCR_P						BIT(1)
 #define PMCR_E						BIT(0)
 
-/* Each SET/CLR register supports up to 32 counters. */
+ 
 #define ARM_CSPMU_SET_CLR_COUNTER_SHIFT		5
 #define ARM_CSPMU_SET_CLR_COUNTER_NUM		\
 	(1 << ARM_CSPMU_SET_CLR_COUNTER_SHIFT)
 
-/* Convert counter idx into SET/CLR register number. */
+ 
 #define COUNTER_TO_SET_CLR_ID(idx)			\
 	(idx >> ARM_CSPMU_SET_CLR_COUNTER_SHIFT)
 
-/* Convert counter idx into SET/CLR register bit. */
+ 
 #define COUNTER_TO_SET_CLR_BIT(idx)			\
 	(idx & (ARM_CSPMU_SET_CLR_COUNTER_NUM - 1))
 
 #define ARM_CSPMU_ACTIVE_CPU_MASK		0x0
 #define ARM_CSPMU_ASSOCIATED_CPU_MASK		0x1
 
-/* Check and use default if implementer doesn't provide attribute callback */
+ 
 #define CHECK_DEFAULT_IMPL_OPS(ops, callback)			\
 	do {							\
 		if (!ops->callback)				\
 			ops->callback = arm_cspmu_ ## callback;	\
 	} while (0)
 
-/*
- * Maximum poll count for reading counter value using high-low-high sequence.
- */
+ 
 #define HILOHI_MAX_POLL	1000
 
-/* JEDEC-assigned JEP106 identification code */
+ 
 #define ARM_CSPMU_IMPL_ID_NVIDIA		0x36B
 
 static unsigned long arm_cspmu_cpuhp_state;
@@ -122,25 +99,15 @@ static struct acpi_apmt_node *arm_cspmu_apmt_node(struct device *dev)
 	return *(struct acpi_apmt_node **)dev_get_platdata(dev);
 }
 
-/*
- * In CoreSight PMU architecture, all of the MMIO registers are 32-bit except
- * counter register. The counter register can be implemented as 32-bit or 64-bit
- * register depending on the value of PMCFGR.SIZE field. For 64-bit access,
- * single-copy 64-bit atomic support is implementation defined. APMT node flag
- * is used to identify if the PMU supports 64-bit single copy atomic. If 64-bit
- * single copy atomic is not supported, the driver treats the register as a pair
- * of 32-bit register.
- */
+ 
 
-/*
- * Read 64-bit register as a pair of 32-bit registers using hi-lo-hi sequence.
- */
+ 
 static u64 read_reg64_hilohi(const void __iomem *addr, u32 max_poll_count)
 {
 	u32 val_lo, val_hi;
 	u64 val;
 
-	/* Use high-low-high sequence to avoid tearing */
+	 
 	do {
 		if (max_poll_count-- == 0) {
 			pr_err("ARM CSPMU: timeout hi-low-high sequence\n");
@@ -156,25 +123,25 @@ static u64 read_reg64_hilohi(const void __iomem *addr, u32 max_poll_count)
 	return val;
 }
 
-/* Check if cycle counter is supported. */
+ 
 static inline bool supports_cycle_counter(const struct arm_cspmu *cspmu)
 {
 	return (cspmu->pmcfgr & PMCFGR_CC);
 }
 
-/* Get counter size, which is (PMCFGR_SIZE + 1). */
+ 
 static inline u32 counter_size(const struct arm_cspmu *cspmu)
 {
 	return FIELD_GET(PMCFGR_SIZE, cspmu->pmcfgr) + 1;
 }
 
-/* Get counter mask. */
+ 
 static inline u64 counter_mask(const struct arm_cspmu *cspmu)
 {
 	return GENMASK_ULL(counter_size(cspmu) - 1, 0);
 }
 
-/* Check if counter is implemented as 64-bit register. */
+ 
 static inline bool use_64b_counter_reg(const struct arm_cspmu *cspmu)
 {
 	return (counter_size(cspmu) > 32);
@@ -190,7 +157,7 @@ ssize_t arm_cspmu_sysfs_event_show(struct device *dev,
 }
 EXPORT_SYMBOL_GPL(arm_cspmu_sysfs_event_show);
 
-/* Default event list. */
+ 
 static struct attribute *arm_cspmu_event_attrs[] = {
 	ARM_CSPMU_EVENT_ATTR(cycles, ARM_CSPMU_EVT_CYCLES_DEFAULT),
 	NULL,
@@ -217,7 +184,7 @@ arm_cspmu_event_attr_is_visible(struct kobject *kobj,
 
 	eattr = container_of(attr, typeof(*eattr), attr.attr);
 
-	/* Hide cycle event if not supported */
+	 
 	if (!supports_cycle_counter(cspmu) &&
 	    eattr->id == ARM_CSPMU_EVT_CYCLES_DEFAULT)
 		return 0;
@@ -395,16 +362,12 @@ static int arm_cspmu_init_impl_ops(struct arm_cspmu *cspmu)
 	struct acpi_apmt_node *apmt_node = arm_cspmu_apmt_node(cspmu->dev);
 	const struct impl_match *match = impl_match;
 
-	/*
-	 * Get PMU implementer and product id from APMT node.
-	 * If APMT node doesn't have implementer/product id, try get it
-	 * from PMIIDR.
-	 */
+	 
 	cspmu->impl.pmiidr =
 		(apmt_node->impl_id) ? apmt_node->impl_id :
 				       readl(cspmu->base0 + PMIIDR);
 
-	/* Find implementer specific attribute ops. */
+	 
 	for (; match->pmiidr; match++) {
 		const u32 mask = match->mask;
 
@@ -417,7 +380,7 @@ static int arm_cspmu_init_impl_ops(struct arm_cspmu *cspmu)
 		}
 	}
 
-	/* Use default callbacks if implementer doesn't provide one. */
+	 
 	CHECK_DEFAULT_IMPL_OPS(impl_ops, get_event_attrs);
 	CHECK_DEFAULT_IMPL_OPS(impl_ops, get_format_attrs);
 	CHECK_DEFAULT_IMPL_OPS(impl_ops, get_identifier);
@@ -554,7 +517,7 @@ static int arm_cspmu_get_event_idx(struct arm_cspmu_hw_events *hw_events,
 
 	if (supports_cycle_counter(cspmu)) {
 		if (cspmu->impl.ops.is_cycle_counter_event(event)) {
-			/* Search for available cycle counter. */
+			 
 			if (test_and_set_bit(cspmu->cycle_counter_logical_idx,
 					     hw_events->used_ctrs))
 				return -EAGAIN;
@@ -562,11 +525,7 @@ static int arm_cspmu_get_event_idx(struct arm_cspmu_hw_events *hw_events,
 			return cspmu->cycle_counter_logical_idx;
 		}
 
-		/*
-		 * Search a regular counter from the used counter bitmap.
-		 * The cycle counter divides the bitmap into two parts. Search
-		 * the first then second half to exclude the cycle counter bit.
-		 */
+		 
 		idx = find_first_zero_bit(hw_events->used_ctrs,
 					  cspmu->cycle_counter_logical_idx);
 		if (idx >= cspmu->cycle_counter_logical_idx) {
@@ -595,17 +554,14 @@ static bool arm_cspmu_validate_event(struct pmu *pmu,
 	if (is_software_event(event))
 		return true;
 
-	/* Reject groups spanning multiple HW PMUs. */
+	 
 	if (event->pmu != pmu)
 		return false;
 
 	return (arm_cspmu_get_event_idx(hw_events, event) >= 0);
 }
 
-/*
- * Make sure the group of events can be scheduled at once
- * on the PMU.
- */
+ 
 static bool arm_cspmu_validate_group(struct perf_event *event)
 {
 	struct perf_event *sibling, *leader = event->group_leader;
@@ -638,10 +594,7 @@ static int arm_cspmu_event_init(struct perf_event *event)
 	if (event->attr.type != event->pmu->type)
 		return -ENOENT;
 
-	/*
-	 * Following other "uncore" PMUs, we do not support sampling mode or
-	 * attach to a task (per-process mode).
-	 */
+	 
 	if (is_sampling_event(event)) {
 		dev_dbg(cspmu->pmu.dev,
 			"Can't support sampling events\n");
@@ -654,17 +607,14 @@ static int arm_cspmu_event_init(struct perf_event *event)
 		return -EINVAL;
 	}
 
-	/*
-	 * Make sure the CPU assignment is on one of the CPUs associated with
-	 * this PMU.
-	 */
+	 
 	if (!cpumask_test_cpu(event->cpu, &cspmu->associated_cpus)) {
 		dev_dbg(cspmu->pmu.dev,
 			"Requested cpu is not associated with the PMU\n");
 		return -EINVAL;
 	}
 
-	/* Enforce the current active CPU to handle the events in this PMU. */
+	 
 	event->cpu = cpumask_first(&cspmu->active_cpu);
 	if (event->cpu >= nr_cpu_ids)
 		return -EINVAL;
@@ -672,13 +622,7 @@ static int arm_cspmu_event_init(struct perf_event *event)
 	if (!arm_cspmu_validate_group(event))
 		return -EINVAL;
 
-	/*
-	 * The logical counter id is tracked with hw_perf_event.extra_reg.idx.
-	 * The physical counter id is tracked with hw_perf_event.idx.
-	 * We don't assign an index until we actually place the event onto
-	 * hardware. Use -1 to signify that we haven't decided where to put it
-	 * yet.
-	 */
+	 
 	hwc->idx = -1;
 	hwc->extra_reg.idx = -1;
 	hwc->config = cspmu->impl.ops.event_type(event);
@@ -726,12 +670,7 @@ static u64 arm_cspmu_read_counter(struct perf_event *event)
 	return readl(cspmu->base1 + offset);
 }
 
-/*
- * arm_cspmu_set_event_period: Set the period for the counter.
- *
- * To handle cases of extreme interrupt latency, we program
- * the counter with half of the max count for the counters.
- */
+ 
 static void arm_cspmu_set_event_period(struct perf_event *event)
 {
 	struct arm_cspmu *cspmu = to_arm_cspmu(event->pmu);
@@ -814,7 +753,7 @@ static void arm_cspmu_start(struct perf_event *event, int pmu_flags)
 	struct hw_perf_event *hwc = &event->hw;
 	u32 filter;
 
-	/* We always reprogram the counter */
+	 
 	if (pmu_flags & PERF_EF_RELOAD)
 		WARN_ON(!(hwc->state & PERF_HES_UPTODATE));
 
@@ -877,7 +816,7 @@ static int arm_cspmu_add(struct perf_event *event, int flags)
 	if (flags & PERF_EF_START)
 		arm_cspmu_start(event, PERF_EF_RELOAD);
 
-	/* Propagate changes to the userspace mapping. */
+	 
 	perf_event_update_userpage(event);
 
 	return 0;
@@ -931,14 +870,14 @@ static int arm_cspmu_init_mmio(struct arm_cspmu *cspmu)
 	dev = cspmu->dev;
 	pdev = to_platform_device(dev);
 
-	/* Base address for page 0. */
+	 
 	cspmu->base0 = devm_platform_ioremap_resource(pdev, 0);
 	if (IS_ERR(cspmu->base0)) {
 		dev_err(dev, "ioremap failed for page-0 resource\n");
 		return PTR_ERR(cspmu->base0);
 	}
 
-	/* Base address for page 1 if supported. Otherwise point to page 0. */
+	 
 	cspmu->base1 = cspmu->base0;
 	if (platform_get_resource(pdev, IORESOURCE_MEM, 1)) {
 		cspmu->base1 = devm_platform_ioremap_resource(pdev, 1);
@@ -955,11 +894,7 @@ static int arm_cspmu_init_mmio(struct arm_cspmu *cspmu)
 	cspmu->cycle_counter_logical_idx = ARM_CSPMU_MAX_HW_CNTRS;
 
 	if (supports_cycle_counter(cspmu)) {
-		/*
-		 * The last logical counter is mapped to cycle counter if
-		 * there is a gap between regular and cycle counter. Otherwise,
-		 * logical and physical have 1-to-1 mapping.
-		 */
+		 
 		cspmu->cycle_counter_logical_idx =
 			(cspmu->num_logical_ctrs <= ARM_CSPMU_CYCLE_CNTR_IDX) ?
 				cspmu->num_logical_ctrs - 1 :
@@ -1041,7 +976,7 @@ static int arm_cspmu_request_irq(struct arm_cspmu *cspmu)
 	dev = cspmu->dev;
 	pdev = to_platform_device(dev);
 
-	/* Skip IRQ request if the PMU does not support overflow interrupt. */
+	 
 	irq = platform_get_irq_optional(pdev, 0);
 	if (irq < 0)
 		return irq == -ENXIO ? 0 : irq;
@@ -1165,7 +1100,7 @@ static int arm_cspmu_register_pmu(struct arm_cspmu *cspmu)
 		.capabilities	= capabilities,
 	};
 
-	/* Hardware counter init */
+	 
 	arm_cspmu_stop_counters(cspmu);
 	arm_cspmu_reset_counters(cspmu);
 
@@ -1247,11 +1182,11 @@ static int arm_cspmu_cpu_online(unsigned int cpu, struct hlist_node *node)
 	if (!cpumask_test_cpu(cpu, &cspmu->associated_cpus))
 		return 0;
 
-	/* If the PMU is already managed, there is nothing to do */
+	 
 	if (!cpumask_empty(&cspmu->active_cpu))
 		return 0;
 
-	/* Use this CPU for event counting */
+	 
 	arm_cspmu_set_active_cpu(cpu, cspmu);
 
 	return 0;
@@ -1265,18 +1200,18 @@ static int arm_cspmu_cpu_teardown(unsigned int cpu, struct hlist_node *node)
 	struct arm_cspmu *cspmu =
 		hlist_entry_safe(node, struct arm_cspmu, cpuhp_node);
 
-	/* Nothing to do if this CPU doesn't own the PMU */
+	 
 	if (!cpumask_test_and_clear_cpu(cpu, &cspmu->active_cpu))
 		return 0;
 
-	/* Choose a new CPU to migrate ownership of the PMU to */
+	 
 	cpumask_and(&online_supported, &cspmu->associated_cpus,
 		    cpu_online_mask);
 	dst = cpumask_any_but(&online_supported, cpu);
 	if (dst >= nr_cpu_ids)
 		return 0;
 
-	/* Use this CPU for event counting */
+	 
 	perf_pmu_migrate_context(&cspmu->pmu, cpu, dst);
 	arm_cspmu_set_active_cpu(dst, cspmu);
 

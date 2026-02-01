@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-// Copyright (C) 2016 Broadcom
+
+
 
 #include <linux/io.h>
 #include <linux/mod_devicetable.h>
@@ -18,11 +18,7 @@ static void __iomem *kona_reset_base;
 static int kona_reset_handler(struct notifier_block *this,
 				unsigned long mode, void *cmd)
 {
-	/*
-	 * A soft reset is triggered by writing a 0 to bit 0 of the soft reset
-	 * register. To write to that register we must first write the password
-	 * and the enable bit in the write access enable register.
-	 */
+	 
 	writel((RSTMGR_WR_PASSWORD << RSTMGR_WR_PASSWORD_SHIFT) |
 		RSTMGR_WR_ACCESS_ENABLE,
 		kona_reset_base + RSTMGR_REG_WR_ACCESS_OFFSET);

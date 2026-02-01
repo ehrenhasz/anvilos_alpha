@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Driver for Pixcir I2C touchscreen controllers.
- *
- * Copyright (C) 2010-2011 Pixcir, Inc.
- */
+
+ 
 
 #include <asm/unaligned.h>
 #include <linux/delay.h>
@@ -17,22 +13,13 @@
 #include <linux/of.h>
 #include <linux/slab.h>
 
-#define PIXCIR_MAX_SLOTS       5 /* Max fingers supported by driver */
+#define PIXCIR_MAX_SLOTS       5  
 
-/*
- * Register map
- */
+ 
 #define PIXCIR_REG_POWER_MODE	51
 #define PIXCIR_REG_INT_MODE	52
 
-/*
- * Power modes:
- * active: max scan speed
- * idle: lower scan speed with automatic transition to active on touch
- * halt: datasheet says sleep but this is more like halt as the chip
- *       clocks are cut and it can only be brought out of this mode
- *	 using the RESET pin.
- */
+ 
 enum pixcir_power_mode {
 	PIXCIR_POWER_ACTIVE,
 	PIXCIR_POWER_IDLE,
@@ -42,14 +29,7 @@ enum pixcir_power_mode {
 #define PIXCIR_POWER_MODE_MASK	0x03
 #define PIXCIR_POWER_ALLOW_IDLE (1UL << 2)
 
-/*
- * Interrupt modes:
- * periodical: interrupt is asserted periodicaly
- * diff coordinates: interrupt is asserted when coordinates change
- * level on touch: interrupt level asserted during touch
- * pulse on touch: interrupt pulse asserted during touch
- *
- */
+ 
 enum pixcir_int_mode {
 	PIXCIR_INT_PERIODICAL,
 	PIXCIR_INT_DIFF_COORD,
@@ -61,12 +41,7 @@ enum pixcir_int_mode {
 #define PIXCIR_INT_ENABLE	(1UL << 3)
 #define PIXCIR_INT_POL_HIGH	(1UL << 2)
 
-/**
- * struct pixcir_i2c_chip_data - chip related data
- * @max_fingers:	Max number of fingers reported simultaneously by h/w
- * @has_hw_ids:		Hardware supports finger tracking IDs
- *
- */
+ 
 struct pixcir_i2c_chip_data {
 	u8 max_fingers;
 	bool has_hw_ids;
@@ -194,18 +169,15 @@ static irqreturn_t pixcir_ts_isr(int irq, void *dev_id)
 	struct pixcir_report_data report;
 
 	while (tsdata->running) {
-		/* parse packet */
+		 
 		pixcir_ts_parse(tsdata, &report);
 
-		/* report it */
+		 
 		pixcir_ts_report(tsdata, &report);
 
 		if (gpiod_get_value_cansleep(tsdata->gpio_attb)) {
 			if (report.num_touches) {
-				/*
-				 * Last report with no finger up?
-				 * Do it now then.
-				 */
+				 
 				input_mt_sync_frame(tsdata->input);
 				input_sync(tsdata->input);
 			}
@@ -222,9 +194,9 @@ static void pixcir_reset(struct pixcir_i2c_ts_data *tsdata)
 {
 	if (!IS_ERR_OR_NULL(tsdata->gpio_reset)) {
 		gpiod_set_value_cansleep(tsdata->gpio_reset, 1);
-		ndelay(100);	/* datasheet section 1.2.3 says 80ns min. */
+		ndelay(100);	 
 		gpiod_set_value_cansleep(tsdata->gpio_reset, 0);
-		/* wait for controller ready. 100ms guess. */
+		 
 		msleep(100);
 	}
 }
@@ -250,7 +222,7 @@ static int pixcir_set_power_mode(struct pixcir_i2c_ts_data *ts,
 	ret &= ~PIXCIR_POWER_MODE_MASK;
 	ret |= mode;
 
-	/* Always AUTO_IDLE */
+	 
 	ret |= PIXCIR_POWER_ALLOW_IDLE;
 
 	ret = i2c_smbus_write_byte_data(ts->client, PIXCIR_REG_POWER_MODE, ret);
@@ -268,11 +240,7 @@ static int pixcir_set_power_mode(struct pixcir_i2c_ts_data *ts,
 	return 0;
 }
 
-/*
- * Set the interrupt mode for the device i.e. ATTB line behaviour
- *
- * @polarity : 1 for active high, 0 for active low.
- */
+ 
 static int pixcir_set_int_mode(struct pixcir_i2c_ts_data *ts,
 			       enum pixcir_int_mode mode, bool polarity)
 {
@@ -304,9 +272,7 @@ static int pixcir_set_int_mode(struct pixcir_i2c_ts_data *ts,
 	return 0;
 }
 
-/*
- * Enable/disable interrupt generation
- */
+ 
 static int pixcir_int_enable(struct pixcir_i2c_ts_data *ts, bool enable)
 {
 	struct device *dev = &ts->client->dev;
@@ -344,7 +310,7 @@ static int pixcir_start(struct pixcir_i2c_ts_data *ts)
 		msleep(100);
 	}
 
-	/* LEVEL_TOUCH interrupt with active low polarity */
+	 
 	error = pixcir_set_int_mode(ts, PIXCIR_INT_LEVEL_TOUCH, 0);
 	if (error) {
 		dev_err(dev, "Failed to set interrupt mode: %d\n", error);
@@ -352,9 +318,9 @@ static int pixcir_start(struct pixcir_i2c_ts_data *ts)
 	}
 
 	ts->running = true;
-	mb();	/* Update status before IRQ can fire */
+	mb();	 
 
-	/* enable interrupt generation */
+	 
 	error = pixcir_int_enable(ts, true);
 	if (error) {
 		dev_err(dev, "Failed to enable interrupt generation: %d\n",
@@ -369,7 +335,7 @@ static int pixcir_stop(struct pixcir_i2c_ts_data *ts)
 {
 	int error;
 
-	/* Disable interrupt generation */
+	 
 	error = pixcir_int_enable(ts, false);
 	if (error) {
 		dev_err(&ts->client->dev,
@@ -378,11 +344,11 @@ static int pixcir_stop(struct pixcir_i2c_ts_data *ts)
 		return error;
 	}
 
-	/* Exit ISR if running, no more report parsing */
+	 
 	ts->running = false;
-	mb();	/* update status before we synchronize irq */
+	mb();	 
 
-	/* Wait till running ISR is complete */
+	 
 	synchronize_irq(ts->client->irq);
 
 	if (ts->gpio_enable)
@@ -550,14 +516,14 @@ static int pixcir_i2c_ts_probe(struct i2c_client *client)
 
 	pixcir_reset(tsdata);
 
-	/* Always be in IDLE mode to save power, device supports auto wake */
+	 
 	error = pixcir_set_power_mode(tsdata, PIXCIR_POWER_IDLE);
 	if (error) {
 		dev_err(dev, "Failed to set IDLE mode\n");
 		return error;
 	}
 
-	/* Stop device till opened */
+	 
 	error = pixcir_stop(tsdata);
 	if (error)
 		return error;
@@ -573,7 +539,7 @@ static int pixcir_i2c_ts_probe(struct i2c_client *client)
 
 static const struct pixcir_i2c_chip_data pixcir_ts_data = {
 	.max_fingers = 2,
-	/* no hw id support */
+	 
 };
 
 static const struct pixcir_i2c_chip_data pixcir_tangoc_data = {

@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Charging control driver for the Wilco EC
- *
- * Copyright 2019 Google LLC
- *
- * See Documentation/ABI/testing/sysfs-class-power and
- * Documentation/ABI/testing/sysfs-class-power-wilco for userspace interface
- * and other info.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/platform_device.h>
@@ -16,18 +8,18 @@
 
 #define DRV_NAME "wilco-charger"
 
-/* Property IDs and related EC constants */
+ 
 #define PID_CHARGE_MODE		0x0710
 #define PID_CHARGE_LOWER_LIMIT	0x0711
 #define PID_CHARGE_UPPER_LIMIT	0x0712
 
 enum charge_mode {
-	CHARGE_MODE_STD = 1,	/* Used for Standard */
-	CHARGE_MODE_EXP = 2,	/* Express Charge, used for Fast */
-	CHARGE_MODE_AC = 3,	/* Mostly AC use, used for Trickle */
-	CHARGE_MODE_AUTO = 4,	/* Used for Adaptive */
-	CHARGE_MODE_CUSTOM = 5,	/* Used for Custom */
-	CHARGE_MODE_LONGLIFE = 6, /* Used for Long Life */
+	CHARGE_MODE_STD = 1,	 
+	CHARGE_MODE_EXP = 2,	 
+	CHARGE_MODE_AC = 3,	 
+	CHARGE_MODE_AUTO = 4,	 
+	CHARGE_MODE_CUSTOM = 5,	 
+	CHARGE_MODE_LONGLIFE = 6,  
 };
 
 #define CHARGE_LOWER_LIMIT_MIN	50
@@ -35,7 +27,7 @@ enum charge_mode {
 #define CHARGE_UPPER_LIMIT_MIN	55
 #define CHARGE_UPPER_LIMIT_MAX	100
 
-/* Convert from POWER_SUPPLY_PROP_CHARGE_TYPE value to the EC's charge mode */
+ 
 static int psp_val_to_charge_mode(int psp_val)
 {
 	switch (psp_val) {
@@ -56,7 +48,7 @@ static int psp_val_to_charge_mode(int psp_val)
 	}
 }
 
-/* Convert from EC's charge mode to POWER_SUPPLY_PROP_CHARGE_TYPE value */
+ 
 static int charge_mode_to_psp_val(enum charge_mode mode)
 {
 	switch (mode) {

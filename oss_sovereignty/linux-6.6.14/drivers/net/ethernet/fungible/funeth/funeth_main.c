@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
+
 
 #include <linux/bpf.h>
 #include <linux/crash_dump.h>
@@ -24,7 +24,7 @@
 #define ADMIN_CQ_DEPTH 64
 #define ADMIN_RQ_DEPTH 16
 
-/* Default number of Tx/Rx queues. */
+ 
 #define FUN_DFLT_QUEUES 16U
 
 enum {
@@ -38,7 +38,7 @@ static const struct pci_device_id funeth_id_table[] = {
 	{ 0, }
 };
 
-/* Issue a port write admin command with @n key/value pairs. */
+ 
 static int fun_port_write_cmds(struct funeth_priv *fp, unsigned int n,
 			       const int *keys, const u64 *data)
 {
@@ -72,7 +72,7 @@ int fun_port_write_cmd(struct funeth_priv *fp, int key, u64 data)
 	return fun_port_write_cmds(fp, 1, &key, &data);
 }
 
-/* Issue a port read admin command with @n key/value pairs. */
+ 
 static int fun_port_read_cmds(struct funeth_priv *fp, unsigned int n,
 			      const int *keys, u64 *data)
 {
@@ -165,14 +165,7 @@ static int fun_adi_write(struct fun_dev *fdev, enum fun_admin_adi_attr attr,
 	return fun_submit_admin_sync_cmd(fdev, &req.common, NULL, 0, 0);
 }
 
-/* Configure RSS for the given port. @op determines whether a new RSS context
- * is to be created or whether an existing one should be reconfigured. The
- * remaining parameters specify the hashing algorithm, key, and indirection
- * table.
- *
- * This initiates packet delivery to the Rx queues set in the indirection
- * table.
- */
+ 
 int fun_config_rss(struct net_device *dev, int algo, const u8 *key,
 		   const u32 *qtable, u8 op)
 {
@@ -207,7 +200,7 @@ int fun_config_rss(struct net_device *dev, int algo, const u8 *key,
 	cmd.req.u.create.dataop = FUN_DATAOP_HDR_INIT(1, 0, 1, 0, len);
 	fun_dataop_gl_init(&cmd.gl, 0, 0, len, fp->rss_dma_addr);
 
-	/* write the key and indirection table into the RSS DMA area */
+	 
 	memcpy(fp->rss_cfg, key, FUN_ETH_RSS_MAX_KEY_SIZE);
 	indir_tab = fp->rss_cfg + FUN_ETH_RSS_MAX_KEY_SIZE;
 	for (rc = 0; rc < table_len; rc++)
@@ -220,9 +213,7 @@ int fun_config_rss(struct net_device *dev, int algo, const u8 *key,
 	return rc;
 }
 
-/* Destroy the HW RSS conntext associated with the given port. This also stops
- * all packet delivery to our Rx queues.
- */
+ 
 static void fun_destroy_rss(struct funeth_priv *fp)
 {
 	if (fp->rss_hw_id != FUN_HCI_ID_INVALID) {
@@ -243,9 +234,7 @@ static void fun_irq_aff_release(struct kref __always_unused *ref)
 {
 }
 
-/* Allocate an IRQ structure, assign an MSI-X index and initial affinity to it,
- * and add it to the IRQ XArray.
- */
+ 
 static struct fun_irq *fun_alloc_qirq(struct funeth_priv *fp, unsigned int idx,
 				      int node, unsigned int xa_idx_offset)
 {
@@ -288,7 +277,7 @@ static void fun_free_qirq(struct funeth_priv *fp, struct fun_irq *irq)
 	kfree(irq);
 }
 
-/* Release the IRQs reserved for Tx/Rx queues that aren't being used. */
+ 
 static void fun_prune_queue_irqs(struct net_device *dev)
 {
 	struct funeth_priv *fp = netdev_priv(dev);
@@ -297,7 +286,7 @@ static void fun_prune_queue_irqs(struct net_device *dev)
 	unsigned long idx;
 
 	xa_for_each(&fp->irqs, idx, irq) {
-		if (irq->txq || irq->rxq)  /* skip those in use */
+		if (irq->txq || irq->rxq)   
 			continue;
 
 		xa_erase(&fp->irqs, idx);
@@ -311,11 +300,7 @@ static void fun_prune_queue_irqs(struct net_device *dev)
 	netif_info(fp, intr, dev, "Released %u queue IRQs\n", nreleased);
 }
 
-/* Reserve IRQs, one per queue, to acommodate the requested queue numbers @ntx
- * and @nrx. IRQs are added incrementally to those we already have.
- * We hold on to allocated IRQs until garbage collection of unused IRQs is
- * separately requested.
- */
+ 
 static int fun_alloc_queue_irqs(struct net_device *dev, unsigned int ntx,
 				unsigned int nrx)
 {
@@ -444,9 +429,7 @@ static void fun_free_rings(struct net_device *netdev, struct fun_qset *qset)
 	struct funeth_txq **xdpqs = qset->xdpqs;
 	struct funeth_rxq **rxqs = qset->rxqs;
 
-	/* qset may not specify any queues to operate on. In that case the
-	 * currently installed queues are implied.
-	 */
+	 
 	if (!rxqs) {
 		rxqs = rtnl_dereference(fp->rxqs);
 		xdpqs = rtnl_dereference(fp->xdpqs);
@@ -471,7 +454,7 @@ static void fun_free_rings(struct net_device *netdev, struct fun_qset *qset)
 	if (qset->state == FUN_QSTATE_DESTROYED)
 		kfree(rxqs);
 
-	/* Tell the caller which queues were operated on. */
+	 
 	qset->rxqs = rxqs;
 	qset->xdpqs = xdpqs;
 }
@@ -524,9 +507,7 @@ free_qvec:
 	return err;
 }
 
-/* Take queues to the next level. Presently this means creating them on the
- * device.
- */
+ 
 static int fun_advance_ring_state(struct net_device *dev, struct fun_qset *qset)
 {
 	struct funeth_priv *fp = netdev_priv(dev);
@@ -631,9 +612,7 @@ static int fun_vi_create(struct funeth_priv *fp)
 	return fun_submit_admin_sync_cmd(fp->fdev, &req.common, NULL, 0, 0);
 }
 
-/* Helper to create an ETH flow and bind an SQ to it.
- * Returns the ETH id (>= 0) on success or a negative error.
- */
+ 
 int fun_create_and_bind_tx(struct funeth_priv *fp, u32 sqid)
 {
 	int rc, ethid;
@@ -742,13 +721,11 @@ static void fun_down(struct net_device *dev, struct fun_qset *qset)
 {
 	struct funeth_priv *fp = netdev_priv(dev);
 
-	/* If we don't have queues the data path is already down.
-	 * Note netif_running(dev) may be true.
-	 */
+	 
 	if (!rcu_access_pointer(fp->rxqs))
 		return;
 
-	/* It is also down if the queues aren't on the device. */
+	 
 	if (fp->txqs[0]->init_state >= FUN_QSTATE_INIT_FULL) {
 		netif_info(fp, ifdown, dev,
 			   "Tearing down data path on device\n");
@@ -805,7 +782,7 @@ static int fun_up(struct net_device *dev, struct fun_qset *qset)
 		err = fun_config_rss(dev, fp->hash_algo, fp->rss_key,
 				     fp->indir_table, FUN_ADMIN_SUBOP_CREATE);
 	} else {
-		/* The non-RSS case has only 1 queue. */
+		 
 		err = fun_bind(fp->fdev, FUN_ADMIN_BIND_TYPE_VI, dev->dev_port,
 			       FUN_ADMIN_BIND_TYPE_EPCQ,
 			       qset->rxqs[0]->hw_cqid);
@@ -1030,7 +1007,7 @@ static int fun_hwtstamp_set(struct net_device *dev, struct ifreq *ifr)
 	if (copy_from_user(&cfg, ifr->ifr_data, sizeof(cfg)))
 		return -EFAULT;
 
-	/* no TX HW timestamps */
+	 
 	cfg.tx_type = HWTSTAMP_TX_OFF;
 
 	switch (cfg.rx_filter) {
@@ -1073,7 +1050,7 @@ static int fun_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
 	}
 }
 
-/* Prepare the queues for XDP. */
+ 
 static int fun_enter_xdp(struct net_device *dev, struct bpf_prog *prog)
 {
 	struct funeth_priv *fp = netdev_priv(dev);
@@ -1104,7 +1081,7 @@ out:
 	return err;
 }
 
-/* Set the queues for non-XDP operation. */
+ 
 static void fun_end_xdp(struct net_device *dev)
 {
 	struct funeth_priv *fp = netdev_priv(dev);
@@ -1115,7 +1092,7 @@ static void fun_end_xdp(struct net_device *dev)
 	xdpqs = rtnl_dereference(fp->xdpqs);
 	rcu_assign_pointer(fp->xdpqs, NULL);
 	synchronize_net();
-	/* at this point both Rx and Tx XDP processing has ended */
+	 
 
 	free_xdpqs(xdpqs, fp->num_xdpqs, 0, FUN_QSTATE_DESTROYED);
 	fp->num_xdpqs = 0;
@@ -1134,7 +1111,7 @@ static int fun_xdp_setup(struct net_device *dev, struct netdev_bpf *xdp)
 	struct funeth_priv *fp = netdev_priv(dev);
 	int i, err;
 
-	/* XDP uses at most one buffer */
+	 
 	if (prog && dev->mtu > XDP_MAX_MTU) {
 		netdev_err(dev, "device MTU %u too large for XDP\n", dev->mtu);
 		NL_SET_ERR_MSG_MOD(xdp->extack,
@@ -1366,11 +1343,7 @@ static void fun_dflt_rss_indir(struct funeth_priv *fp, unsigned int nrx)
 		fp->indir_table[i] = ethtool_rxfh_indir_default(i, nrx);
 }
 
-/* Reset the RSS indirection table to equal distribution across the current
- * number of Rx queues. Called at init time and whenever the number of Rx
- * queues changes subsequently. Note that this may also resize the indirection
- * table.
- */
+ 
 static void fun_reset_rss_indir(struct net_device *dev, unsigned int nrx)
 {
 	struct funeth_priv *fp = netdev_priv(dev);
@@ -1378,18 +1351,12 @@ static void fun_reset_rss_indir(struct net_device *dev, unsigned int nrx)
 	if (!fp->rss_cfg)
 		return;
 
-	/* Set the table size to the max possible that allows an equal number
-	 * of occurrences of each CQ.
-	 */
+	 
 	fp->indir_table_nentries = rounddown(FUN_ETH_RSS_MAX_INDIR_ENT, nrx);
 	fun_dflt_rss_indir(fp, nrx);
 }
 
-/* Update the RSS LUT to contain only queues in [0, nrx). Normally this will
- * update the LUT to an equal distribution among nrx queues, If @only_if_needed
- * is set the LUT is left unchanged if it already does not reference any queues
- * >= nrx.
- */
+ 
 static int fun_rss_set_qnum(struct net_device *dev, unsigned int nrx,
 			    bool only_if_needed)
 {
@@ -1424,11 +1391,7 @@ static int fun_rss_set_qnum(struct net_device *dev, unsigned int nrx,
 	return err;
 }
 
-/* Allocate the DMA area for the RSS configuration commands to the device, and
- * initialize the hash, hash key, indirection table size and its entries to
- * their defaults. The indirection table defaults to equal distribution across
- * the Rx queues.
- */
+ 
 static int fun_init_rss(struct net_device *dev)
 {
 	struct funeth_priv *fp = netdev_priv(dev);
@@ -1526,7 +1489,7 @@ static int fun_dl_port_register(struct net_device *netdev)
 	return devlink_port_register(dl, &fp->dl_port, idx);
 }
 
-/* Determine the max Tx/Rx queues for a port. */
+ 
 static int fun_max_qs(struct fun_ethdev *ed, unsigned int *ntx,
 		      unsigned int *nrx)
 {
@@ -1542,13 +1505,7 @@ static int fun_max_qs(struct fun_ethdev *ed, unsigned int *ntx,
 	if (neth < 0)
 		return neth;
 
-	/* We determine the max number of queues based on the CPU
-	 * cores, device interrupts and queues, RSS size, and device Tx flows.
-	 *
-	 * - At least 1 Rx and 1 Tx queues.
-	 * - At most 1 Rx/Tx queue per core.
-	 * - Each Rx/Tx queue needs 1 SQ.
-	 */
+	 
 	*ntx = min(ed->nsqs_per_port - 1, num_online_cpus());
 	*nrx = *ntx;
 	if (*ntx > neth)
@@ -1576,11 +1533,7 @@ static void fun_queue_defaults(struct net_device *dev, unsigned int nsqs)
 	netif_set_real_num_rx_queues(dev, nrx);
 }
 
-/* Replace the existing Rx/Tx/XDP queues with equal number of queues with
- * different settings, e.g. depth. This is a disruptive replacement that
- * temporarily shuts down the data path and should be limited to changes that
- * can't be applied to live queues. The old queues are always discarded.
- */
+ 
 int fun_replace_queues(struct net_device *dev, struct fun_qset *newqs,
 		       struct netlink_ext_ack *extack)
 {
@@ -1605,20 +1558,14 @@ int fun_replace_queues(struct net_device *dev, struct fun_qset *newqs,
 	if (!err)
 		return 0;
 
-	/* The new queues couldn't be installed. We do not retry the old queues
-	 * as they are the same to the device as the new queues and would
-	 * similarly fail.
-	 */
+	 
 	newqs->state = FUN_QSTATE_DESTROYED;
 	fun_free_rings(dev, newqs);
 	NL_SET_ERR_MSG_MOD(extack, "Unable to restore the data path with the new queues.");
 	return err;
 }
 
-/* Change the number of Rx/Tx queues of a device while it is up. This is done
- * by incrementally adding/removing queues to meet the new requirements while
- * handling ongoing traffic.
- */
+ 
 int fun_change_num_queues(struct net_device *dev, unsigned int ntx,
 			  unsigned int nrx)
 {
@@ -1650,11 +1597,11 @@ int fun_change_num_queues(struct net_device *dev, unsigned int ntx,
 	if (err)
 		goto free_irqs;
 
-	err = fun_enable_irqs(dev); /* of any newly added queues */
+	err = fun_enable_irqs(dev);  
 	if (err)
 		goto free_rings;
 
-	/* copy the queues we are keeping to the new set */
+	 
 	memcpy(newqs.rxqs, oldqs.rxqs, keep_rx * sizeof(*oldqs.rxqs));
 	memcpy(newqs.txqs, fp->txqs, keep_tx * sizeof(*fp->txqs));
 
@@ -1685,7 +1632,7 @@ int fun_change_num_queues(struct net_device *dev, unsigned int ntx,
 		fun_rss_set_qnum(dev, nrx, false);
 	}
 
-	/* disable interrupts of any excess Tx queues */
+	 
 	for (i = keep_tx; i < oldqs.ntxqs; i++)
 		fun_disable_one_irq(oldqs.txqs[i]->irq);
 
@@ -1738,7 +1685,7 @@ static int fun_create_netdev(struct fun_ethdev *ed, unsigned int portid)
 	if (rc)
 		goto free_netdev;
 
-	/* bind port to admin CQ for async events */
+	 
 	rc = fun_bind(fdev, FUN_ADMIN_BIND_TYPE_PORT, portid,
 		      FUN_ADMIN_BIND_TYPE_EPCQ, 0);
 	if (rc)
@@ -1777,7 +1724,7 @@ static int fun_create_netdev(struct fun_ethdev *ed, unsigned int portid)
 
 	fun_set_ethtool_ops(netdev);
 
-	/* configurable parameters */
+	 
 	fp->sq_depth = min(SQ_DEPTH, fdev->q_depth);
 	fp->cq_depth = min(CQ_DEPTH, fdev->q_depth);
 	fp->rq_depth = min_t(unsigned int, RQ_DEPTH, fdev->q_depth);
@@ -1792,7 +1739,7 @@ static int fun_create_netdev(struct fun_ethdev *ed, unsigned int portid)
 		goto free_stats;
 
 	fp->ktls_id = FUN_HCI_ID_INVALID;
-	fun_ktls_init(netdev);            /* optional, failure OK */
+	fun_ktls_init(netdev);             
 
 	netif_carrier_off(netdev);
 	ed->netdevs[portid] = netdev;
@@ -1837,7 +1784,7 @@ static int fun_create_ports(struct fun_ethdev *ed, unsigned int nports)
 	struct fun_dev *fd = &ed->fdev;
 	int i, rc;
 
-	/* The admin queue takes 1 IRQ and 2 SQs. */
+	 
 	ed->nsqs_per_port = min(fd->num_irqs - 1,
 				fd->kern_end_qid - 2) / nports;
 	if (ed->nsqs_per_port < 2) {
@@ -1893,7 +1840,7 @@ static void fun_update_link_state(const struct fun_ethdev *ed,
 	fp = netdev_priv(netdev);
 
 	write_seqcount_begin(&fp->link_seq);
-	fp->link_speed = be32_to_cpu(notif->speed) * 10;  /* 10 Mbps->Mbps */
+	fp->link_speed = be32_to_cpu(notif->speed) * 10;   
 	fp->active_fc = notif->flow_ctrl;
 	fp->active_fec = notif->fec;
 	fp->xcvr_type = notif->xcvr_type;
@@ -1909,7 +1856,7 @@ static void fun_update_link_state(const struct fun_ethdev *ed,
 	fun_report_link(netdev);
 }
 
-/* handler for async events delivered through the admin CQ */
+ 
 static void fun_event_cb(struct fun_dev *fdev, void *entry)
 {
 	u8 op = ((struct fun_admin_rsp_common *)entry)->op;
@@ -1936,7 +1883,7 @@ static void fun_event_cb(struct fun_dev *fdev, void *entry)
 	}
 }
 
-/* handler for pending work managed by the service task */
+ 
 static void fun_service_cb(struct fun_dev *fdev)
 {
 	struct fun_ethdev *ed = to_fun_ethdev(fdev);
@@ -2001,7 +1948,7 @@ static int funeth_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 		.cq_depth      = ADMIN_CQ_DEPTH,
 		.sq_depth      = ADMIN_SQ_DEPTH,
 		.rq_depth      = ADMIN_RQ_DEPTH,
-		.min_msix      = 2,              /* 1 Rx + 1 Tx */
+		.min_msix      = 2,               
 		.event_cb      = fun_event_cb,
 		.serv_cb       = fun_service_cb,
 	};

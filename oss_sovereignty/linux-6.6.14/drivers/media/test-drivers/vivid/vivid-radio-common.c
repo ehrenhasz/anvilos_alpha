@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * vivid-radio-common.c - common radio rx/tx support functions.
- *
- * Copyright 2014 Cisco Systems, Inc. and/or its affiliates. All rights reserved.
- */
+
+ 
 
 #include <linux/errno.h>
 #include <linux/kernel.h>
@@ -15,13 +11,10 @@
 #include "vivid-radio-common.h"
 #include "vivid-rds-gen.h"
 
-/*
- * These functions are shared between the vivid receiver and transmitter
- * since both use the same frequency bands.
- */
+ 
 
 const struct v4l2_frequency_band vivid_radio_bands[TOT_BANDS] = {
-	/* Band FM */
+	 
 	{
 		.type = V4L2_TUNER_RADIO,
 		.index = 0,
@@ -31,7 +24,7 @@ const struct v4l2_frequency_band vivid_radio_bands[TOT_BANDS] = {
 		.rangehigh  = FM_FREQ_RANGE_HIGH,
 		.modulation = V4L2_BAND_MODULATION_FM,
 	},
-	/* Band AM */
+	 
 	{
 		.type = V4L2_TUNER_RADIO,
 		.index = 1,
@@ -40,7 +33,7 @@ const struct v4l2_frequency_band vivid_radio_bands[TOT_BANDS] = {
 		.rangehigh  = AM_FREQ_RANGE_HIGH,
 		.modulation = V4L2_BAND_MODULATION_AM,
 	},
-	/* Band SW */
+	 
 	{
 		.type = V4L2_TUNER_RADIO,
 		.index = 2,
@@ -51,17 +44,13 @@ const struct v4l2_frequency_band vivid_radio_bands[TOT_BANDS] = {
 	},
 };
 
-/*
- * Initialize the RDS generator. If we can loop, then the RDS generator
- * is set up with the values from the RDS TX controls, otherwise it
- * will fill in standard values using one of two alternates.
- */
+ 
 void vivid_radio_rds_init(struct vivid_dev *dev)
 {
 	struct vivid_rds_gen *rds = &dev->rds_gen;
 	bool alt = dev->radio_rx_rds_use_alternates;
 
-	/* Do nothing, blocks will be filled by the transmitter */
+	 
 	if (dev->radio_rds_loop && !dev->radio_tx_rds_controls)
 		return;
 
@@ -99,20 +88,14 @@ void vivid_radio_rds_init(struct vivid_dev *dev)
 	vivid_rds_generate(rds);
 }
 
-/*
- * Calculate the emulated signal quality taking into account the frequency
- * the transmitter is using.
- */
+ 
 static void vivid_radio_calc_sig_qual(struct vivid_dev *dev)
 {
 	int mod = 16000;
 	int delta = 800;
 	int sig_qual, sig_qual_tx = mod;
 
-	/*
-	 * For SW and FM there is a channel every 1000 kHz, for AM there is one
-	 * every 100 kHz.
-	 */
+	 
 	if (dev->radio_rx_freq <= AM_FREQ_RANGE_HIGH) {
 		mod /= 10;
 		delta /= 10;
@@ -122,10 +105,7 @@ static void vivid_radio_calc_sig_qual(struct vivid_dev *dev)
 		sig_qual_tx = dev->radio_rx_freq - dev->radio_tx_freq;
 	if (abs(sig_qual_tx) <= abs(sig_qual)) {
 		sig_qual = sig_qual_tx;
-		/*
-		 * Zero the internal rds buffer if we are going to loop
-		 * rds blocks.
-		 */
+		 
 		if (!dev->radio_rds_loop && !dev->radio_tx_rds_controls)
 			memset(dev->rds_gen.data, 0,
 			       sizeof(dev->rds_gen.data));
@@ -166,11 +146,7 @@ int vivid_radio_s_frequency(struct file *file, unsigned *pfreq, const struct v4l
 					   vivid_radio_bands[band].rangehigh);
 	*pfreq = freq;
 
-	/*
-	 * For both receiver and transmitter recalculate the signal quality
-	 * (since that depends on both frequencies) and re-init the rds
-	 * generator.
-	 */
+	 
 	vivid_radio_calc_sig_qual(dev);
 	vivid_radio_rds_init(dev);
 	return 0;

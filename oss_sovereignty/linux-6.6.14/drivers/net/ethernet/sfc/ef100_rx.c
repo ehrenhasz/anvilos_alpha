@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/****************************************************************************
- * Driver for Solarflare network controllers and boards
- * Copyright 2005-2019 Solarflare Communications Inc.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License version 2 as published
- * by the Free Software Foundation, incorporated herein by reference.
- */
+
+ 
 
 #include "net_driver.h"
 #include "ef100_rx.h"
@@ -18,7 +11,7 @@
 #include "ef100_nic.h"
 #include "io.h"
 
-/* Get the value of a field in the RX prefix */
+ 
 #define PREFIX_OFFSET_W(_f)	(ESF_GZ_RX_PREFIX_ ## _f ## _LBN / 32)
 #define PREFIX_OFFSET_B(_f)	(ESF_GZ_RX_PREFIX_ ## _f ## _LBN % 32)
 #define PREFIX_WIDTH_MASK(_f)	((1ULL << ESF_GZ_RX_PREFIX_ ## _f ## _WIDTH) - 1)
@@ -45,7 +38,7 @@ static bool ef100_has_fcs_error(struct efx_channel *channel, u32 *prefix)
 	l2status = PREFIX_FIELD(&rxclass, HCLASS_L2_STATUS);
 
 	if (likely(l2status == ESE_GZ_RH_HCLASS_L2_STATUS_OK))
-		/* Everything is ok */
+		 
 		return false;
 
 	if (l2status == ESE_GZ_RH_HCLASS_L2_STATUS_FCS_ERR)
@@ -71,7 +64,7 @@ void __ef100_rx_packet(struct efx_channel *channel)
 		u32 mark = PREFIX_FIELD(prefix, USER_MARK);
 
 		if (channel->type->receive_raw(rx_queue, mark))
-			return; /* packet was consumed */
+			return;  
 	}
 
 	if (ef100_has_fcs_error(channel, prefix) &&
@@ -101,11 +94,7 @@ void __ef100_rx_packet(struct efx_channel *channel)
 			if (efv->net_dev->flags & IFF_UP)
 				efx_ef100_rep_rx_packet(efv, rx_buf);
 			rcu_read_unlock();
-			/* Representor Rx doesn't care about PF Rx buffer
-			 * ownership, it just makes a copy. So, we are done
-			 * with the Rx buffer from PF point of view and should
-			 * free it.
-			 */
+			 
 			goto free_rx_buffer;
 		}
 		rcu_read_unlock();
@@ -129,7 +118,7 @@ void __ef100_rx_packet(struct efx_channel *channel)
 	}
 
 	if (channel->type->receive_skb) {
-		/* no support for special channels yet, so just discard */
+		 
 		WARN_ON_ONCE(1);
 		goto free_rx_buffer;
 	}

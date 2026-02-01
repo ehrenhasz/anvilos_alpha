@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Digital I/O driver for Technologic Systems I2C FPGA Core
- *
- * Copyright (C) 2015, 2018 Technologic Systems
- * Copyright (C) 2016 Savoir-Faire Linux
- */
+
+ 
 
 #include <linux/gpio/driver.h>
 #include <linux/i2c.h>
@@ -13,10 +8,7 @@
 #include <linux/regmap.h>
 
 #define DEFAULT_PIN_NUMBER	32
-/*
- * Register bits used by the GPIO device
- * Some boards, such as TS-7970 do not have a separate input bit
- */
+ 
 #define TS4900_GPIO_OE		0x01
 #define TS4900_GPIO_OUT		0x02
 #define TS4900_GPIO_IN		0x04
@@ -47,10 +39,7 @@ static int ts4900_gpio_direction_input(struct gpio_chip *chip,
 {
 	struct ts4900_gpio_priv *priv = gpiochip_get_data(chip);
 
-	/*
-	 * Only clear the OE bit here, requires a RMW. Prevents a potential issue
-	 * with OE and DAT getting to the physical pin at different times.
-	 */
+	 
 	return regmap_update_bits(priv->regmap, offset, TS4900_GPIO_OE, 0);
 }
 
@@ -61,11 +50,7 @@ static int ts4900_gpio_direction_output(struct gpio_chip *chip,
 	unsigned int reg;
 	int ret;
 
-	/*
-	 * If changing from an input to an output, we need to first set the
-	 * GPIO's DAT bit to what is requested and then set the OE bit. This
-	 * prevents a glitch that can occur on the IO line.
-	 */
+	 
 	regmap_read(priv->regmap, offset, &reg);
 	if (!(reg & TS4900_GPIO_OE)) {
 		if (value)
@@ -132,7 +117,7 @@ static const struct of_device_id ts4900_gpio_of_match_table[] = {
 		.compatible = "technologic,ts7970-gpio",
 		.data = (void *)TS7970_GPIO_IN,
 	},
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, ts4900_gpio_of_match_table);
 
@@ -176,7 +161,7 @@ static int ts4900_gpio_probe(struct i2c_client *client)
 
 static const struct i2c_device_id ts4900_gpio_id_table[] = {
 	{ "ts4900-gpio", },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(i2c, ts4900_gpio_id_table);
 

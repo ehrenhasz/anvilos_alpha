@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/****************************************************************************
- * Driver for Solarflare network controllers and boards
- * Copyright 2005-2006 Fen Systems Ltd.
- * Copyright 2006-2013 Solarflare Communications Inc.
- */
+ 
+ 
 
 #ifndef EFX_NIC_H
 #define EFX_NIC_H
@@ -86,20 +82,7 @@ enum {
 	SIENA_STAT_COUNT
 };
 
-/**
- * struct siena_nic_data - Siena NIC state
- * @efx: Pointer back to main interface structure
- * @wol_filter_id: Wake-on-LAN packet filter id
- * @stats: Hardware statistics
- * @vf: Array of &struct siena_vf objects
- * @vf_buftbl_base: The zeroth buffer table index used to back VF queues.
- * @vfdi_status: Common VFDI status page to be dmad to VF address space.
- * @local_addr_list: List of local addresses. Protected by %local_lock.
- * @local_page_list: List of DMA addressable pages used to broadcast
- *	%local_addr_list. Protected by %local_lock.
- * @local_lock: Mutex protecting %local_addr_list and %local_page_list.
- * @peer_work: Work item to broadcast peer addresses to VMs.
- */
+ 
 struct siena_nic_data {
 	struct efx_nic *efx;
 	int wol_filter_id;
@@ -120,7 +103,7 @@ extern const struct efx_nic_type siena_a0_nic_type;
 
 int falcon_probe_board(struct efx_nic *efx, u16 revision_info);
 
-/* Falcon/Siena queue operations */
+ 
 int efx_farch_tx_probe(struct efx_tx_queue *tx_queue);
 void efx_farch_tx_init(struct efx_tx_queue *tx_queue);
 void efx_farch_tx_fini(struct efx_tx_queue *tx_queue);
@@ -142,7 +125,7 @@ int efx_farch_ev_process(struct efx_channel *channel, int quota);
 void efx_farch_ev_read_ack(struct efx_channel *channel);
 void efx_farch_ev_test_generate(struct efx_channel *channel);
 
-/* Falcon/Siena filter operations */
+ 
 int efx_farch_filter_table_probe(struct efx_nic *efx);
 void efx_farch_filter_table_restore(struct efx_nic *efx);
 void efx_farch_filter_table_remove(struct efx_nic *efx);
@@ -169,7 +152,7 @@ bool efx_farch_filter_rfs_expire_one(struct efx_nic *efx, u32 flow_id,
 #endif
 void efx_farch_filter_sync_rx_mode(struct efx_nic *efx);
 
-/* Falcon/Siena interrupts */
+ 
 void efx_farch_irq_enable_master(struct efx_nic *efx);
 int efx_farch_irq_test_generate(struct efx_nic *efx);
 void efx_farch_irq_disable_master(struct efx_nic *efx);
@@ -177,7 +160,7 @@ irqreturn_t efx_farch_msi_interrupt(int irq, void *dev_id);
 irqreturn_t efx_farch_legacy_interrupt(int irq, void *dev_id);
 irqreturn_t efx_farch_fatal_interrupt(struct efx_nic *efx);
 
-/* Global Resources */
+ 
 void efx_siena_prepare_flush(struct efx_nic *efx);
 int efx_farch_fini_dmaq(struct efx_nic *efx);
 void efx_farch_finish_flr(struct efx_nic *efx);
@@ -190,7 +173,7 @@ void efx_farch_init_common(struct efx_nic *efx);
 void efx_farch_rx_push_indir_table(struct efx_nic *efx);
 void efx_farch_rx_pull_indir_table(struct efx_nic *efx);
 
-/* Tests */
+ 
 struct efx_farch_register_test {
 	unsigned address;
 	efx_oword_t mask;
@@ -203,4 +186,4 @@ int efx_farch_test_registers(struct efx_nic *efx,
 void efx_farch_generate_event(struct efx_nic *efx, unsigned int evq,
 			      efx_qword_t *event);
 
-#endif /* EFX_NIC_H */
+#endif  

@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// mcp251xfd - Microchip MCP251xFD Family CAN controller driver
-//
-// Copyright (c) 2019, 2020, 2021 Pengutronix,
-//               Marc Kleine-Budde <kernel@pengutronix.de>
-//
+
+
+
+
+
+
+
 
 #include "mcp251xfd.h"
 
@@ -330,54 +330,24 @@ mcp251xfd_regmap_crc_read(void *context,
 		if (err != -EBADMSG)
 			return err;
 
-		/* MCP251XFD_REG_TBC is the time base counter
-		 * register. It increments once per SYS clock tick,
-		 * which is 20 or 40 MHz.
-		 *
-		 * Observation on the mcp2518fd shows that if the
-		 * lowest byte (which is transferred first on the SPI
-		 * bus) of that register is 0x00 or 0x80 the
-		 * calculated CRC doesn't always match the transferred
-		 * one. On the mcp2517fd this problem is not limited
-		 * to the first byte being 0x00 or 0x80.
-		 *
-		 * If the highest bit in the lowest byte is flipped
-		 * the transferred CRC matches the calculated one. We
-		 * assume for now the CRC operates on the correct
-		 * data.
-		 */
+		 
 		if (reg == MCP251XFD_REG_TBC &&
 		    ((buf_rx->data[0] & 0xf8) == 0x0 ||
 		     (buf_rx->data[0] & 0xf8) == 0x80)) {
-			/* Flip highest bit in lowest byte of le32 */
+			 
 			buf_rx->data[0] ^= 0x80;
 
-			/* re-check CRC */
+			 
 			err = mcp251xfd_regmap_crc_read_check_crc(buf_rx,
 								  buf_tx,
 								  val_len);
 			if (!err) {
-				/* If CRC is now correct, assume
-				 * flipped data is OK.
-				 */
+				 
 				goto out;
 			}
 		}
 
-		/* MCP251XFD_REG_OSC is the first ever reg we read from.
-		 *
-		 * The chip may be in deep sleep and this SPI transfer
-		 * (i.e. the assertion of the CS) will wake the chip
-		 * up. This takes about 3ms. The CRC of this transfer
-		 * is wrong.
-		 *
-		 * Or there isn't a chip at all, in this case the CRC
-		 * will be wrong, too.
-		 *
-		 * In both cases ignore the CRC and copy the read data
-		 * to the caller. It will take care of both cases.
-		 *
-		 */
+		 
 		if (reg == MCP251XFD_REG_OSC && val_len == sizeof(__le32)) {
 			err = 0;
 			goto out;
@@ -404,9 +374,9 @@ mcp251xfd_regmap_crc_read(void *context,
 }
 
 static const struct regmap_range mcp251xfd_reg_table_yes_range[] = {
-	regmap_reg_range(0x000, 0x2ec),	/* CAN FD Controller Module SFR */
-	regmap_reg_range(0x400, 0xbfc),	/* RAM */
-	regmap_reg_range(0xe00, 0xe14),	/* MCP2517/18FD SFR */
+	regmap_reg_range(0x000, 0x2ec),	 
+	regmap_reg_range(0x400, 0xbfc),	 
+	regmap_reg_range(0xe00, 0xe14),	 
 };
 
 static const struct regmap_access_table mcp251xfd_reg_table = {
@@ -445,7 +415,7 @@ static const struct regmap_config mcp251xfd_regmap_crc = {
 	.name = "crc",
 	.reg_bits = 16,
 	.reg_stride = 4,
-	.pad_bits = 16,		/* keep data bits aligned */
+	.pad_bits = 16,		 
 	.val_bits = 32,
 	.max_register = 0xffc,
 	.wr_table = &mcp251xfd_reg_table,

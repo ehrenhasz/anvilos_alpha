@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2010-2012 by Dell Inc.  All rights reserved.
- * Copyright (C) 2011-2013 Red Hat, Inc.
- *
- * This file is released under the GPL.
- *
- * dm-switch is a device-mapper target that maps IO to underlying block
- * devices efficiently when there are a large number of fixed-sized
- * address regions but there is no simple pattern to allow for a compact
- * mapping representation such as dm-stripe.
- */
+
+ 
 
 #include <linux/device-mapper.h>
 
@@ -19,41 +9,32 @@
 
 #define DM_MSG_PREFIX "switch"
 
-/*
- * One region_table_slot_t holds <region_entries_per_slot> region table
- * entries each of which is <region_table_entry_bits> in size.
- */
+ 
 typedef unsigned long region_table_slot_t;
 
-/*
- * A device with the offset to its start sector.
- */
+ 
 struct switch_path {
 	struct dm_dev *dmdev;
 	sector_t start;
 };
 
-/*
- * Context block for a dm switch device.
- */
+ 
 struct switch_ctx {
 	struct dm_target *ti;
 
-	unsigned int nr_paths;		/* Number of paths in path_list. */
+	unsigned int nr_paths;		 
 
-	unsigned int region_size;		/* Region size in 512-byte sectors */
-	unsigned long nr_regions;	/* Number of regions making up the device */
-	signed char region_size_bits;	/* log2 of region_size or -1 */
+	unsigned int region_size;		 
+	unsigned long nr_regions;	 
+	signed char region_size_bits;	 
 
-	unsigned char region_table_entry_bits;	/* Number of bits in one region table entry */
-	unsigned char region_entries_per_slot;	/* Number of entries in one region table slot */
-	signed char region_entries_per_slot_bits;	/* log2 of region_entries_per_slot or -1 */
+	unsigned char region_table_entry_bits;	 
+	unsigned char region_entries_per_slot;	 
+	signed char region_entries_per_slot_bits;	 
 
-	region_table_slot_t *region_table;	/* Region table */
+	region_table_slot_t *region_table;	 
 
-	/*
-	 * Array of dm devices to switch between.
-	 */
+	 
 	struct switch_path path_list[];
 };
 
@@ -149,9 +130,7 @@ static unsigned int switch_region_table_read(struct switch_ctx *sctx, unsigned l
 		((1 << sctx->region_table_entry_bits) - 1);
 }
 
-/*
- * Find which path to use at given offset.
- */
+ 
 static unsigned int switch_get_path_nr(struct switch_ctx *sctx, sector_t offset)
 {
 	unsigned int path_nr;
@@ -165,7 +144,7 @@ static unsigned int switch_get_path_nr(struct switch_ctx *sctx, sector_t offset)
 
 	path_nr = switch_region_table_read(sctx, p);
 
-	/* This can only happen if the processor uses non-atomic stores. */
+	 
 	if (unlikely(path_nr >= sctx->nr_paths))
 		path_nr = 0;
 
@@ -187,9 +166,7 @@ static void switch_region_table_write(struct switch_ctx *sctx, unsigned long reg
 	sctx->region_table[region_index] = pte;
 }
 
-/*
- * Fill the region table with an initial round robin pattern.
- */
+ 
 static void initialise_region_table(struct switch_ctx *sctx)
 {
 	unsigned int path_nr = 0;
@@ -228,9 +205,7 @@ static int parse_path(struct dm_arg_set *as, struct dm_target *ti)
 	return 0;
 }
 
-/*
- * Destructor: Don't free the dm_target, just the ti->private data (if any).
- */
+ 
 static void switch_dtr(struct dm_target *ti)
 {
 	struct switch_ctx *sctx = ti->private;
@@ -242,14 +217,7 @@ static void switch_dtr(struct dm_target *ti)
 	kfree(sctx);
 }
 
-/*
- * Constructor arguments:
- *   <num_paths> <region_size> <num_optional_args> [<optional_args>...]
- *   [<dev_path> <offset>]+
- *
- * Optional args are to allow for future extension: currently this
- * parameter must be 0.
- */
+ 
 static int switch_ctr(struct dm_target *ti, unsigned int argc, char **argv)
 {
 	static const struct dm_arg _args[] = {
@@ -277,7 +245,7 @@ static int switch_ctr(struct dm_target *ti, unsigned int argc, char **argv)
 	r = dm_read_arg_group(_args + 2, &as, &nr_optional_args, &ti->error);
 	if (r)
 		return r;
-	/* parse optional arguments here, if we add any */
+	 
 
 	if (as.argc != nr_paths * 2) {
 		ti->error = "Incorrect number of path arguments";
@@ -306,7 +274,7 @@ static int switch_ctr(struct dm_target *ti, unsigned int argc, char **argv)
 
 	initialise_region_table(sctx);
 
-	/* For UNMAP, sending the request down any path is sufficient */
+	 
 	ti->num_discard_bios = 1;
 
 	return 0;
@@ -329,16 +297,7 @@ static int switch_map(struct dm_target *ti, struct bio *bio)
 	return DM_MAPIO_REMAPPED;
 }
 
-/*
- * We need to parse hex numbers in the message as quickly as possible.
- *
- * This table-based hex parser improves performance.
- * It improves a time to load 1000000 entries compared to the condition-based
- * parser.
- *		table-based parser	condition-based parser
- * PA-RISC	0.29s			0.31s
- * Opteron	0.0495s			0.0498s
- */
+ 
 static const unsigned char hex_table[256] = {
 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
@@ -462,11 +421,7 @@ static int process_set_region_mappings(struct switch_ctx *sctx,
 	return 0;
 }
 
-/*
- * Messages are processed one-at-a-time.
- *
- * Only set_region_mappings is supported.
- */
+ 
 static int switch_message(struct dm_target *ti, unsigned int argc, char **argv,
 			  char *result, unsigned int maxlen)
 {
@@ -512,11 +467,7 @@ static void switch_status(struct dm_target *ti, status_type_t type,
 	}
 }
 
-/*
- * Switch ioctl:
- *
- * Passthrough all ioctls to the path for sector 0
- */
+ 
 static int switch_prepare_ioctl(struct dm_target *ti, struct block_device **bdev)
 {
 	struct switch_ctx *sctx = ti->private;
@@ -526,9 +477,7 @@ static int switch_prepare_ioctl(struct dm_target *ti, struct block_device **bdev
 
 	*bdev = sctx->path_list[path_nr].dmdev->bdev;
 
-	/*
-	 * Only pass ioctls through if the device sizes match exactly.
-	 */
+	 
 	if (ti->len + sctx->path_list[path_nr].start !=
 	    bdev_nr_sectors((*bdev)))
 		return 1;

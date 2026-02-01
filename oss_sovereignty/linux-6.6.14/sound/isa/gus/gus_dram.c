@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  Copyright (c) by Jaroslav Kysela <perex@perex.cz>
- *  DRAM access routines
- */
+
+ 
 
 #include <linux/time.h>
 #include <sound/core.h>

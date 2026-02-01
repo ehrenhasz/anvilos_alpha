@@ -1,40 +1,6 @@
-/****************************************************************************
- * Copyright 2020 Thomas E. Dickey                                          *
- * Copyright 1998-2016,2017 Free Software Foundation, Inc.                  *
- *                                                                          *
- * Permission is hereby granted, free of charge, to any person obtaining a  *
- * copy of this software and associated documentation files (the            *
- * "Software"), to deal in the Software without restriction, including      *
- * without limitation the rights to use, copy, modify, merge, publish,      *
- * distribute, distribute with modifications, sublicense, and/or sell       *
- * copies of the Software, and to permit persons to whom the Software is    *
- * furnished to do so, subject to the following conditions:                 *
- *                                                                          *
- * The above copyright notice and this permission notice shall be included  *
- * in all copies or substantial portions of the Software.                   *
- *                                                                          *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS  *
- * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF               *
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.   *
- * IN NO EVENT SHALL THE ABOVE COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,   *
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR    *
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR    *
- * THE USE OR OTHER DEALINGS IN THE SOFTWARE.                               *
- *                                                                          *
- * Except as contained in this notice, the name(s) of the above copyright   *
- * holders shall not be used in advertising or otherwise to promote the     *
- * sale, use or other dealings in this Software without prior written       *
- * authorization.                                                           *
- ****************************************************************************/
+ 
 
-/*
- *		def_prog_mode()
- *		def_shell_mode()
- *		reset_prog_mode()
- *		reset_shell_mode()
- *		savetty()
- *		resetty()
- */
+ 
 
 #include <curses.priv.h>
 
@@ -149,15 +115,13 @@ NCURSES_SP_NAME(def_shell_mode) (NCURSES_SP_DCL0)
 #ifdef USE_TERM_DRIVER
 	rc = CallDriver_2(SP_PARM, td_mode, FALSE, TRUE);
 #else
-	/*
-	 * If XTABS was on, remove the tab and backtab capabilities.
-	 */
+	 
 	if (_nc_get_tty_mode(&termp->Ottyb) == OK) {
 #ifdef TERMIOS
 	    if (termp->Ottyb.c_oflag & OFLAGS_TABS)
 		tab = back_tab = NULL;
 #elif defined(EXP_WIN32_DRIVER)
-	    /* noop */
+	     
 #else
 	    if (termp->Ottyb.sg_flags & XTABS)
 		tab = back_tab = NULL;
@@ -189,14 +153,12 @@ NCURSES_SP_NAME(def_prog_mode) (NCURSES_SP_DCL0)
 #ifdef USE_TERM_DRIVER
 	rc = CallDriver_2(SP_PARM, td_mode, TRUE, TRUE);
 #else
-	/*
-	 * Turn off the XTABS bit in the tty structure if it was on.
-	 */
+	 
 	if (_nc_get_tty_mode(&termp->Nttyb) == OK) {
 #ifdef TERMIOS
 	    termp->Nttyb.c_oflag &= (unsigned) (~OFLAGS_TABS);
 #elif defined(EXP_WIN32_DRIVER)
-	    /* noop */
+	     
 #else
 	    termp->Nttyb.sg_flags &= (unsigned) (~XTABS);
 #endif
@@ -294,10 +256,7 @@ saved_tty(NCURSES_SP_DCL0)
     return result;
 }
 
-/*
-**	savetty()  and  resetty()
-**
-*/
+ 
 
 NCURSES_EXPORT(int)
 NCURSES_SP_NAME(savetty) (NCURSES_SP_DCL0)

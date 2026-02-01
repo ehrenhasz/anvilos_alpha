@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/if.h>
 #include <linux/if_ether.h>
 #include <linux/if_link.h>
@@ -10,14 +10,7 @@
 #include "enic_res.h"
 #include "enic_clsf.h"
 
-/* enic_addfltr_5t - Add ipv4 5tuple filter
- *	@enic: enic struct of vnic
- *	@keys: flow_keys of ipv4 5tuple
- *	@rq: rq number to steer to
- *
- * This function returns filter_id(hardware_id) of the filter
- * added. In case of error it returns a negative number.
- */
+ 
 int enic_addfltr_5t(struct enic *enic, struct flow_keys *keys, u16 rq)
 {
 	int res;
@@ -49,13 +42,7 @@ int enic_addfltr_5t(struct enic *enic, struct flow_keys *keys, u16 rq)
 	return res;
 }
 
-/* enic_delfltr - Delete clsf filter
- *	@enic: enic struct of vnic
- *	@filter_id: filter_is(hardware_id) of filter to be deleted
- *
- * This function returns zero in case of success, negative number incase of
- * error.
- */
+ 
 int enic_delfltr(struct enic *enic, u16 filter_id)
 {
 	int ret;
@@ -67,9 +54,7 @@ int enic_delfltr(struct enic *enic, u16 filter_id)
 	return ret;
 }
 
-/* enic_rfs_flw_tbl_init - initialize enic->rfs_h members
- *	@enic: enic data
- */
+ 
 void enic_rfs_flw_tbl_init(struct enic *enic)
 {
 	int i;
@@ -188,24 +173,15 @@ int enic_rx_flow_steer(struct net_device *dev, const struct sk_buff *skb,
 	spin_lock_bh(&enic->rfs_h.lock);
 	n = htbl_key_search(&enic->rfs_h.ht_head[tbl_idx], &keys);
 
-	if (n) { /* entry already present  */
+	if (n) {  
 		if (rxq_index == n->rq_id) {
 			res = -EEXIST;
 			goto ret_unlock;
 		}
 
-		/* desired rq changed for the flow, we need to delete
-		 * old fltr and add new one
-		 *
-		 * The moment we delete the fltr, the upcoming pkts
-		 * are put it default rq based on rss. When we add
-		 * new filter, upcoming pkts are put in desired queue.
-		 * This could cause ooo pkts.
-		 *
-		 * Lets 1st try adding new fltr and then del old one.
-		 */
+		 
 		i = --enic->rfs_h.free;
-		/* clsf tbl is full, we have to del old fltr first*/
+		 
 		if (unlikely(i < 0)) {
 			enic->rfs_h.free++;
 			res = enic_delfltr(enic, n->fltr_id);
@@ -217,7 +193,7 @@ int enic_rx_flow_steer(struct net_device *dev, const struct sk_buff *skb,
 				enic->rfs_h.free++;
 				goto ret_unlock;
 			}
-		/* add new fltr 1st then del old fltr */
+		 
 		} else {
 			int ret;
 
@@ -227,9 +203,7 @@ int enic_rx_flow_steer(struct net_device *dev, const struct sk_buff *skb,
 				goto ret_unlock;
 			}
 			ret = enic_delfltr(enic, n->fltr_id);
-			/* deleting old fltr failed. Add old fltr to list.
-			 * enic_flow_may_expire() will try to delete it later.
-			 */
+			 
 			if (unlikely(ret < 0)) {
 				struct enic_rfs_fltr_node *d;
 				struct hlist_head *head;
@@ -248,7 +222,7 @@ int enic_rx_flow_steer(struct net_device *dev, const struct sk_buff *skb,
 		n->rq_id = rxq_index;
 		n->fltr_id = res;
 		n->flow_id = flow_id;
-	/* entry not present */
+	 
 	} else {
 		i = --enic->rfs_h.free;
 		if (i <= 0) {
@@ -283,4 +257,4 @@ ret_unlock:
 	return res;
 }
 
-#endif /* CONFIG_RFS_ACCEL */
+#endif  

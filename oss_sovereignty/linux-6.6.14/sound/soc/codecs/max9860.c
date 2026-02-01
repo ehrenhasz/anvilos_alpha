@@ -1,14 +1,14 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Driver for the MAX9860 Mono Audio Voice Codec
-//
-// https://datasheets.maximintegrated.com/en/ds/MAX9860.pdf
-//
-// The driver does not support sidetone since the DVST register field is
-// backwards with the mute near the maximum level instead of the minimum.
-//
-// Author: Peter Rosin <peda@axentia.s>
-//         Copyright 2016 Axentia Technologies
+
+
+
+
+
+
+
+
+
+
+
 
 #include <linux/init.h>
 #include <linux/module.h>
@@ -356,12 +356,7 @@ static int max9860_hw_params(struct snd_pcm_substream *substream,
 		return ret;
 	}
 
-	/*
-	 * Check if Integer Clock Mode is possible, but avoid it in slave mode
-	 * since we then do not know if lrclk is derived from pclk and the
-	 * datasheet mentions that the frequencies have to match exactly in
-	 * order for this to work.
-	 */
+	 
 	if (params_rate(params) == 8000 || params_rate(params) == 16000) {
 		if (master) {
 			switch (max9860->pclk_rate) {
@@ -375,11 +370,7 @@ static int max9860_hw_params(struct snd_pcm_substream *substream,
 				sysclk = MAX9860_FREQ_19_2MHZ;
 				break;
 			default:
-				/*
-				 * Integer Clock Mode not possible. Leave
-				 * sysclk at zero and fall through to the
-				 * code below for PLL mode.
-				 */
+				 
 				break;
 			}
 
@@ -388,23 +379,17 @@ static int max9860_hw_params(struct snd_pcm_substream *substream,
 		}
 	}
 
-	/*
-	 * Largest possible n:
-	 *    65536 * 96 * 48kHz / 10MHz -> 30199
-	 * Smallest possible n:
-	 *    65536 * 96 *  8kHz / 20MHz -> 2517
-	 * Both fit nicely in the available 15 bits, no need to apply any mask.
-	 */
+	 
 	n = DIV_ROUND_CLOSEST_ULL(65536ULL * 96 * params_rate(params),
 				  max9860->pclk_rate);
 
 	if (!sysclk) {
-		/* PLL mode */
+		 
 		if (params_rate(params) > 24000)
 			sysclk |= MAX9860_16KHZ;
 
 		if (!master)
-			n |= 1; /* trigger rapid pll lock mode */
+			n |= 1;  
 	}
 
 	sysclk |= max9860->psclk;
@@ -630,11 +615,7 @@ static int max9860_probe(struct i2c_client *i2c)
 
 	dev_set_drvdata(dev, max9860);
 
-	/*
-	 * mclk has to be in the 10MHz to 60MHz range.
-	 * psclk is used to scale mclk into pclk so that
-	 * pclk is in the 10MHz to 20MHz range.
-	 */
+	 
 	mclk = clk_get(dev, "mclk");
 
 	if (IS_ERR(mclk)) {

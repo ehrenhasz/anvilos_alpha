@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: BSD-3-Clause-Clear */
-/*
- * Copyright (c) 2020 The Linux Foundation. All rights reserved.
- */
+ 
+ 
 
 #ifndef _WOW_H_
 #define _WOW_H_
@@ -51,5 +49,5 @@ static inline int ath11k_wow_wakeup(struct ath11k_base *ab)
 	return 0;
 }
 
-#endif /* CONFIG_PM */
-#endif /* _WOW_H_ */
+#endif  
+#endif  

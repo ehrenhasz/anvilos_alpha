@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) 2014 Filipe David Borba Manana <fdmanana@gmail.com>
- */
+ 
+ 
 
 #ifndef BTRFS_PROPS_H
 #define BTRFS_PROPS_H

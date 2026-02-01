@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * This file is part of wl18xx
- *
- * Copyright (C) 2012 Texas Instruments. All rights reserved.
- */
+ 
+ 
 
 #ifndef __WL18XX_EVENT_H__
 #define __WL18XX_EVENT_H__
@@ -47,38 +43,38 @@ struct wl18xx_event_mailbox {
 
 	s8 rssi_snr_trigger_metric[NUM_OF_RSSI_SNR_TRIGGERS];
 
-	/* bitmap of removed links */
+	 
 	__le32 hlid_removed_bitmap;
 
-	/* rx ba constraint */
-	__le16 rx_ba_role_id_bitmap; /* 0xfff means any role. */
+	 
+	__le16 rx_ba_role_id_bitmap;  
 	__le16 rx_ba_allowed_bitmap;
 
-	/* bitmap of roc completed (by role id) */
+	 
 	__le16 roc_completed_bitmap;
 
-	/* bitmap of stations (by role id) with bss loss */
+	 
 	__le16 bss_loss_bitmap;
 
-	/* bitmap of stations (by HLID) which exceeded max tx retries */
+	 
 	__le16 tx_retry_exceeded_bitmap;
 
-	/* time sync high msb*/
+	 
 	__le16 time_sync_tsf_high_msb;
 
-	/* bitmap of inactive stations (by HLID) */
+	 
 	__le16 inactive_sta_bitmap;
 
-	/* time sync high lsb*/
+	 
 	__le16 time_sync_tsf_high_lsb;
 
-	/* rx BA win size indicated by RX_BA_WIN_SIZE_CHANGE_EVENT_ID */
+	 
 	u8 rx_ba_role_id;
 	u8 rx_ba_link_id;
 	u8 rx_ba_win_size;
 	u8 padding;
 
-	/* smart config */
+	 
 	u8 sc_ssid_len;
 	u8 sc_pwd_len;
 	u8 sc_token_len;
@@ -87,18 +83,18 @@ struct wl18xx_event_mailbox {
 	u8 sc_pwd[64];
 	u8 sc_token[32];
 
-	/* smart config sync channel */
+	 
 	u8 sc_sync_channel;
 	u8 sc_sync_band;
 
-	/* time sync low msb*/
+	 
 	__le16 time_sync_tsf_low_msb;
 
-	/* radar detect */
+	 
 	u8 radar_channel;
 	u8 radar_type;
 
-	/* time sync low lsb*/
+	 
 	__le16 time_sync_tsf_low_lsb;
 
 } __packed;

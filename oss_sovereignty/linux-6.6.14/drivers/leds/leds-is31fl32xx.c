@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Driver for ISSI IS31FL32xx family of I2C LED controllers
- *
- * Copyright 2015 Allworx Corp.
- *
- * Datasheets:
- *   http://www.issi.com/US/product-analog-fxled-driver.shtml
- *   http://www.si-en.com/product.asp?parentid=890
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/i2c.h>
@@ -16,26 +8,26 @@
 #include <linux/module.h>
 #include <linux/of.h>
 
-/* Used to indicate a device has no such register */
+ 
 #define IS31FL32XX_REG_NONE 0xFF
 
-/* Software Shutdown bit in Shutdown Register */
+ 
 #define IS31FL32XX_SHUTDOWN_SSD_ENABLE  0
 #define IS31FL32XX_SHUTDOWN_SSD_DISABLE BIT(0)
 
-/* IS31FL3216 has a number of unique registers */
+ 
 #define IS31FL3216_CONFIG_REG 0x00
 #define IS31FL3216_LIGHTING_EFFECT_REG 0x03
 #define IS31FL3216_CHANNEL_CONFIG_REG 0x04
 
-/* Software Shutdown bit in 3216 Config Register */
+ 
 #define IS31FL3216_CONFIG_SSD_ENABLE  BIT(7)
 #define IS31FL3216_CONFIG_SSD_DISABLE 0
 
 struct is31fl32xx_priv;
 struct is31fl32xx_led_data {
 	struct led_classdev cdev;
-	u8 channel; /* 1-based, max priv->cdef->channels */
+	u8 channel;  
 	struct is31fl32xx_priv *priv;
 };
 
@@ -46,30 +38,7 @@ struct is31fl32xx_priv {
 	struct is31fl32xx_led_data leds[];
 };
 
-/**
- * struct is31fl32xx_chipdef - chip-specific attributes
- * @channels            : Number of LED channels
- * @shutdown_reg        : address of Shutdown register (optional)
- * @pwm_update_reg      : address of PWM Update register
- * @global_control_reg  : address of Global Control register (optional)
- * @reset_reg           : address of Reset register (optional)
- * @pwm_register_base   : address of first PWM register
- * @pwm_registers_reversed: : true if PWM registers count down instead of up
- * @led_control_register_base : address of first LED control register (optional)
- * @enable_bits_per_led_control_register: number of LEDs enable bits in each
- * @reset_func          : pointer to reset function
- * @sw_shutdown_func    : pointer to software shutdown function
- *
- * For all optional register addresses, the sentinel value %IS31FL32XX_REG_NONE
- * indicates that this chip has no such register.
- *
- * If non-NULL, @reset_func will be called during probing to set all
- * necessary registers to a known initialization state. This is needed
- * for chips that do not have a @reset_reg.
- *
- * @enable_bits_per_led_control_register must be >=1 if
- * @led_control_register_base != %IS31FL32XX_REG_NONE.
- */
+ 
 struct is31fl32xx_chipdef {
 	u8	channels;
 	u8	shutdown_reg;
@@ -149,12 +118,7 @@ static int is31fl32xx_write(struct is31fl32xx_priv *priv, u8 reg, u8 val)
 	return ret;
 }
 
-/*
- * Custom reset function for IS31FL3216 because it does not have a RESET
- * register the way that the other IS31FL32xx chips do. We don't bother
- * writing the GPIO and animation registers, because the registers we
- * do write ensure those will have no effect.
- */
+ 
 static int is31fl3216_reset(struct is31fl32xx_priv *priv)
 {
 	unsigned int i;
@@ -183,12 +147,7 @@ static int is31fl3216_reset(struct is31fl32xx_priv *priv)
 	return 0;
 }
 
-/*
- * Custom Software-Shutdown function for IS31FL3216 because it does not have
- * a SHUTDOWN register the way that the other IS31FL32xx chips do.
- * We don't bother doing a read/modify/write on the CONFIG register because
- * we only ever use a value of '0' for the other fields in that register.
- */
+ 
 static int is31fl3216_software_shutdown(struct is31fl32xx_priv *priv,
 					bool enable)
 {
@@ -198,27 +157,7 @@ static int is31fl3216_software_shutdown(struct is31fl32xx_priv *priv,
 	return is31fl32xx_write(priv, IS31FL3216_CONFIG_REG, value);
 }
 
-/*
- * NOTE: A mutex is not needed in this function because:
- * - All referenced data is read-only after probe()
- * - The I2C core has a mutex on to protect the bus
- * - There are no read/modify/write operations
- * - Intervening operations between the write of the PWM register
- *   and the Update register are harmless.
- *
- * Example:
- *	PWM_REG_1 write 16
- *	UPDATE_REG write 0
- *	PWM_REG_2 write 128
- *	UPDATE_REG write 0
- *   vs:
- *	PWM_REG_1 write 16
- *	PWM_REG_2 write 128
- *	UPDATE_REG write 0
- *	UPDATE_REG write 0
- * are equivalent. Poking the Update register merely applies all PWM
- * register writes up to that point.
- */
+ 
 static int is31fl32xx_brightness_set(struct led_classdev *led_cdev,
 				     enum led_brightness brightness)
 {
@@ -230,7 +169,7 @@ static int is31fl32xx_brightness_set(struct led_classdev *led_cdev,
 
 	dev_dbg(led_cdev->dev, "%s: %d\n", __func__, brightness);
 
-	/* NOTE: led_data->channel is 1-based */
+	 
 	if (cdef->pwm_registers_reversed)
 		pwm_register_offset = cdef->channels - led_data->channel;
 	else
@@ -291,10 +230,7 @@ static int is31fl32xx_init_regs(struct is31fl32xx_priv *priv)
 	if (ret)
 		return ret;
 
-	/*
-	 * Set enable bit for all channels.
-	 * We will control state with PWM registers alone.
-	 */
+	 
 	if (cdef->led_control_register_base != IS31FL32XX_REG_NONE) {
 		u8 value =
 		    GENMASK(cdef->enable_bits_per_led_control_register-1, 0);
@@ -378,7 +314,7 @@ static int is31fl32xx_parse_dt(struct device *dev,
 		if (ret)
 			goto err;
 
-		/* Detect if channel is already in use by another child */
+		 
 		other_led_data = is31fl32xx_find_led_data(priv,
 							  led_data->channel);
 		if (other_led_data) {
@@ -466,10 +402,7 @@ static void is31fl32xx_remove(struct i2c_client *client)
 			ERR_PTR(ret));
 }
 
-/*
- * i2c-core (and modalias) requires that id_table be properly filled,
- * even though it is not used for DeviceTree based instantiation.
- */
+ 
 static const struct i2c_device_id is31fl32xx_id[] = {
 	{ "is31fl3236" },
 	{ "is31fl3235" },

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2015 MediaTek Inc.
- */
+
+ 
 
 #include "phy-mtk-mipi-dsi.h"
 
@@ -35,12 +33,12 @@ static int mtk_mipi_tx_power_on(struct phy *phy)
 	struct mtk_mipi_tx *mipi_tx = phy_get_drvdata(phy);
 	int ret;
 
-	/* Power up core and enable PLL */
+	 
 	ret = clk_prepare_enable(mipi_tx->pll_hw.clk);
 	if (ret < 0)
 		return ret;
 
-	/* Enable DSI Lane LDO outputs, disable pad tie low */
+	 
 	mipi_tx->driver_data->mipi_tx_enable_signal(phy);
 	return 0;
 }
@@ -49,10 +47,10 @@ static int mtk_mipi_tx_power_off(struct phy *phy)
 {
 	struct mtk_mipi_tx *mipi_tx = phy_get_drvdata(phy);
 
-	/* Enable pad tie low, disable DSI Lane LDO outputs */
+	 
 	mipi_tx->driver_data->mipi_tx_disable_signal(phy);
 
-	/* Disable PLL and power down core */
+	 
 	clk_disable_unprepare(mipi_tx->pll_hw.clk);
 
 	return 0;
@@ -136,11 +134,11 @@ static int mtk_mipi_tx_probe(struct platform_device *pdev)
 
 	ret = of_property_read_u32(dev->of_node, "drive-strength-microamp",
 				   &mipi_tx->mipitx_drive);
-	/* If can't get the "mipi_tx->mipitx_drive", set it default 0x8 */
+	 
 	if (ret < 0)
 		mipi_tx->mipitx_drive = 4600;
 
-	/* check the mipitx_drive valid */
+	 
 	if (mipi_tx->mipitx_drive > 6000 || mipi_tx->mipitx_drive < 3000) {
 		dev_warn(dev, "drive-strength-microamp is invalid %d, not in 3000 ~ 6000\n",
 			 mipi_tx->mipitx_drive);
@@ -183,7 +181,7 @@ static const struct of_device_id mtk_mipi_tx_match[] = {
 	{ .compatible = "mediatek,mt2701-mipi-tx", .data = &mt2701_mipitx_data },
 	{ .compatible = "mediatek,mt8173-mipi-tx", .data = &mt8173_mipitx_data },
 	{ .compatible = "mediatek,mt8183-mipi-tx", .data = &mt8183_mipitx_data },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, mtk_mipi_tx_match);
 

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/* I2C support for Dialog DA9063
- *
- * Copyright 2012 Dialog Semiconductor Ltd.
- * Copyright 2013 Philipp Zabel, Pengutronix
- *
- * Author: Krystian Garbaciak, Dialog Semiconductor
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -22,11 +16,7 @@
 #include <linux/of.h>
 #include <linux/regulator/of_regulator.h>
 
-/*
- * Raw I2C access required for just accessing chip and variant info before we
- * know which device is present. The info read from the device using this
- * approach is then used to select the correct regmap tables.
- */
+ 
 
 #define DA9063_REG_PAGE_SIZE		0x100
 #define DA9063_REG_PAGED_ADDR_MASK	0xFF
@@ -52,7 +42,7 @@ static int da9063_i2c_blockreg_read(struct i2c_client *client, u16 addr,
 	u8 page_num, paged_addr;
 	int ret;
 
-	/* Determine page info based on register address */
+	 
 	page_num = (addr / DA9063_REG_PAGE_SIZE);
 	if (page_num > 1) {
 		dev_err(&client->dev, "Invalid register address provided\n");
@@ -64,19 +54,19 @@ static int da9063_i2c_blockreg_read(struct i2c_client *client, u16 addr,
 	page_sel_buf[DA9063_PAGE_SEL_BUF_PAGE_VAL] =
 		(page_num << DA9063_I2C_PAGE_SEL_SHIFT) & DA9063_REG_PAGE_MASK;
 
-	/* Write reg address, page selection */
+	 
 	xfer[DA9063_PAGED_READ_MSG_PAGE_SEL].addr = client->addr;
 	xfer[DA9063_PAGED_READ_MSG_PAGE_SEL].flags = 0;
 	xfer[DA9063_PAGED_READ_MSG_PAGE_SEL].len = DA9063_PAGE_SEL_BUF_SIZE;
 	xfer[DA9063_PAGED_READ_MSG_PAGE_SEL].buf = page_sel_buf;
 
-	/* Select register address */
+	 
 	xfer[DA9063_PAGED_READ_MSG_REG_SEL].addr = client->addr;
 	xfer[DA9063_PAGED_READ_MSG_REG_SEL].flags = 0;
 	xfer[DA9063_PAGED_READ_MSG_REG_SEL].len = sizeof(paged_addr);
 	xfer[DA9063_PAGED_READ_MSG_REG_SEL].buf = &paged_addr;
 
-	/* Read data */
+	 
 	xfer[DA9063_PAGED_READ_MSG_DATA].addr = client->addr;
 	xfer[DA9063_PAGED_READ_MSG_DATA].flags = I2C_M_RD;
 	xfer[DA9063_PAGED_READ_MSG_DATA].len = count;
@@ -130,9 +120,7 @@ static int da9063_get_device_type(struct i2c_client *i2c, struct da9063 *da9063)
 	return 0;
 }
 
-/*
- * Variant specific regmap configs
- */
+ 
 
 static const struct regmap_range da9063_ad_readable_ranges[] = {
 	regmap_reg_range(DA9063_REG_PAGE_CON, DA9063_AD_REG_SECOND_D),
@@ -444,7 +432,7 @@ static int da9063_i2c_probe(struct i2c_client *i2c)
 		return ret;
 	}
 
-	/* If SMBus is not available and only I2C is possible, enter I2C mode */
+	 
 	if (i2c_check_functionality(i2c->adapter, I2C_FUNC_I2C)) {
 		ret = regmap_clear_bits(da9063->regmap, DA9063_REG_CONFIG_J,
 					DA9063_TWOWIRE_TO);

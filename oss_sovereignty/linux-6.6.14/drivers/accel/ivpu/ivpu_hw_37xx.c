@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2020-2023 Intel Corporation
- */
+
+ 
 
 #include "ivpu_drv.h"
 #include "ivpu_fw.h"
@@ -15,7 +13,7 @@
 #define TILE_FUSE_ENABLE_BOTH        0x0
 #define TILE_SKU_BOTH_MTL            0x3630
 
-/* Work point configuration values */
+ 
 #define CONFIG_1_TILE                0x01
 #define CONFIG_2_TILE                0x02
 #define PLL_RATIO_5_3                0x01
@@ -106,7 +104,7 @@ static void ivpu_hw_wa_init(struct ivpu_device *vdev)
 
 	REGB_WR32(VPU_37XX_BUTTRESS_INTERRUPT_STAT, BUTTRESS_ALL_IRQ_MASK);
 	if (REGB_RD32(VPU_37XX_BUTTRESS_INTERRUPT_STAT) == BUTTRESS_ALL_IRQ_MASK) {
-		/* Writing 1s does not clear the interrupt status register */
+		 
 		vdev->wa.interrupt_clear_with_0 = true;
 		REGB_WR32(VPU_37XX_BUTTRESS_INTERRUPT_STAT, 0x0);
 	}
@@ -137,7 +135,7 @@ static int ivpu_pll_wait_for_cmd_send(struct ivpu_device *vdev)
 	return REGB_POLL_FLD(VPU_37XX_BUTTRESS_WP_REQ_CMD, SEND, 0, PLL_TIMEOUT_US);
 }
 
-/* Send KMD initiated workpoint change */
+ 
 static int ivpu_pll_cmd_send(struct ivpu_device *vdev, u16 min_ratio, u16 max_ratio,
 			     u16 target_ratio, u16 config)
 {
@@ -488,7 +486,7 @@ static void ivpu_boot_pwr_island_drive(struct ivpu_device *vdev, bool enable)
 
 static int ivpu_boot_wait_for_pwr_island_status(struct ivpu_device *vdev, u32 exp_val)
 {
-	/* FPGA model (UPF) is not power aware, skipped Power Island polling */
+	 
 	if (ivpu_is_fpga(vdev))
 		return 0;
 
@@ -678,7 +676,7 @@ static int ivpu_hw_37xx_d0i3_enable(struct ivpu_device *vdev)
 	if (ret)
 		ivpu_err(vdev, "Failed to enable D0i3: %d\n", ret);
 
-	udelay(5); /* VPU requires 5 us to complete the transition */
+	udelay(5);  
 
 	return ret;
 }
@@ -714,11 +712,7 @@ static int ivpu_hw_37xx_power_up(struct ivpu_device *vdev)
 		return ret;
 	}
 
-	/*
-	 * The control circuitry for vpu_idle indication logic powers up active.
-	 * To ensure unnecessary low power mode signal from LRT during bring up,
-	 * KMD disables the circuitry prior to bringing up the Main Power island.
-	 */
+	 
 	ivpu_boot_vpu_idle_gen_disable(vdev);
 
 	ret = ivpu_boot_pwr_domain_enable(vdev);
@@ -785,15 +779,15 @@ static void ivpu_hw_37xx_wdt_disable(struct ivpu_device *vdev)
 {
 	u32 val;
 
-	/* Enable writing and set non-zero WDT value */
+	 
 	REGV_WR32(MTL_VPU_CPU_SS_TIM_SAFE, TIM_SAFE_ENABLE);
 	REGV_WR32(MTL_VPU_CPU_SS_TIM_WATCHDOG, TIM_WATCHDOG_RESET_VALUE);
 
-	/* Enable writing and disable watchdog timer */
+	 
 	REGV_WR32(MTL_VPU_CPU_SS_TIM_SAFE, TIM_SAFE_ENABLE);
 	REGV_WR32(MTL_VPU_CPU_SS_TIM_WDOG_EN, 0);
 
-	/* Now clear the timeout interrupt */
+	 
 	val = REGV_RD32(MTL_VPU_CPU_SS_TIM_GEN_CONFIG);
 	val = REG_CLR_FLD(MTL_VPU_CPU_SS_TIM_GEN_CONFIG, WDOG_TO_INT_CLR, val);
 	REGV_WR32(MTL_VPU_CPU_SS_TIM_GEN_CONFIG, val);
@@ -812,7 +806,7 @@ static u32 ivpu_hw_37xx_pll_to_freq(u32 ratio, u32 config)
 	return cpu_clock;
 }
 
-/* Register indirect accesses */
+ 
 static u32 ivpu_hw_37xx_reg_pll_freq_get(struct ivpu_device *vdev)
 {
 	u32 pll_curr_ratio;
@@ -909,7 +903,7 @@ static void ivpu_hw_37xx_irq_noc_firewall_handler(struct ivpu_device *vdev)
 	ivpu_pm_schedule_recovery(vdev);
 }
 
-/* Handler for IRQs from VPU core (irqV) */
+ 
 static u32 ivpu_hw_37xx_irqv_handler(struct ivpu_device *vdev, int irq)
 {
 	u32 status = REGV_RD32(VPU_37XX_HOST_SS_ICB_STATUS_0) & ICB_0_IRQ_MASK;
@@ -940,7 +934,7 @@ static u32 ivpu_hw_37xx_irqv_handler(struct ivpu_device *vdev, int irq)
 	return status;
 }
 
-/* Handler for IRQs from Buttress core (irqB) */
+ 
 static u32 ivpu_hw_37xx_irqb_handler(struct ivpu_device *vdev, int irq)
 {
 	u32 status = REGB_RD32(VPU_37XX_BUTTRESS_INTERRUPT_STAT) & BUTTRESS_IRQ_MASK;
@@ -970,12 +964,9 @@ static u32 ivpu_hw_37xx_irqb_handler(struct ivpu_device *vdev, int irq)
 		schedule_recovery = true;
 	}
 
-	/* This must be done after interrupts are cleared at the source. */
+	 
 	if (IVPU_WA(interrupt_clear_with_0))
-		/*
-		 * Writing 1 triggers an interrupt, so we can't perform read update write.
-		 * Clear local interrupt status by writing 0 to all bits.
-		 */
+		 
 		REGB_WR32(VPU_37XX_BUTTRESS_INTERRUPT_STAT, 0x0);
 	else
 		REGB_WR32(VPU_37XX_BUTTRESS_INTERRUPT_STAT, status);
@@ -996,7 +987,7 @@ static irqreturn_t ivpu_hw_37xx_irq_handler(int irq, void *ptr)
 	ret_irqv = ivpu_hw_37xx_irqv_handler(vdev, irq);
 	ret_irqb = ivpu_hw_37xx_irqb_handler(vdev, irq);
 
-	/* Re-enable global interrupts to re-trigger MSI for pending interrupts */
+	 
 	REGB_WR32(VPU_37XX_BUTTRESS_GLOBAL_INT_MASK, 0x0);
 
 	return IRQ_RETVAL(ret_irqb | ret_irqv);

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #include <subcmd/parse-options.h>
 #include <linux/hw_breakpoint.h>
@@ -107,8 +107,8 @@ static void *breakpoint_thread(void *arg)
 	return NULL;
 }
 
-// The benchmark creates nbreakpoints inheritable breakpoints,
-// then starts nparallel threads which create and join bench_repeat batches of nthreads threads.
+
+
 int bench_breakpoint_thread(int argc, const char **argv)
 {
 	unsigned int i, result_usec;
@@ -192,9 +192,9 @@ static const char * const enable_usage[] = {
 	NULL
 };
 
-// The benchmark creates an inheritable breakpoint,
-// then starts npassive threads that block and nactive threads that actively spin
-// and then disables and enables the breakpoint bench_repeat times.
+
+
+
 int bench_breakpoint_enable(int argc, const char **argv)
 {
 	unsigned int i, nthreads, result_usec, done = 0;
@@ -226,7 +226,7 @@ int bench_breakpoint_enable(int argc, const char **argv)
 			i < enable_params.npassive ? passive_thread : active_thread, &done))
 			exit((perror("pthread_create"), EXIT_FAILURE));
 	}
-	usleep(10000);  // let the threads block
+	usleep(10000);  
 	gettimeofday(&start, NULL);
 	for (i = 0; i < bench_repeat; i++) {
 		if (ioctl(fd, PERF_EVENT_IOC_DISABLE, 0))

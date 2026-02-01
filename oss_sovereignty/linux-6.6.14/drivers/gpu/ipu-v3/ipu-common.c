@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (c) 2010 Sascha Hauer <s.hauer@pengutronix.de>
- * Copyright (C) 2005-2009 Freescale Semiconductor, Inc.
- */
+
+ 
 #include <linux/module.h>
 #include <linux/export.h>
 #include <linux/types.h>
@@ -249,17 +246,7 @@ EXPORT_SYMBOL_GPL(ipu_idmac_put);
 
 #define idma_mask(ch)			(1 << ((ch) & 0x1f))
 
-/*
- * This is an undocumented feature, a write one to a channel bit in
- * IPU_CHA_CUR_BUF and IPU_CHA_TRIPLE_CUR_BUF will reset the channel's
- * internal current buffer pointer so that transfers start from buffer
- * 0 on the next channel enable (that's the theory anyway, the imx6 TRM
- * only says these are read-only registers). This operation is required
- * for channel linking to work correctly, for instance video capture
- * pipelines that carry out image rotations will fail after the first
- * streaming unless this function is called for each channel before
- * re-enabling the channels.
- */
+ 
 static void __ipu_idmac_reset_current_buffer(struct ipuv3_channel *channel)
 {
 	struct ipu_soc *ipu = channel->ipu;
@@ -324,7 +311,7 @@ int ipu_idmac_lock_enable(struct ipuv3_channel *channel, int num_bursts)
 	switch (num_bursts) {
 	case 0:
 	case 1:
-		bursts = 0x00; /* locking disabled */
+		bursts = 0x00;  
 		break;
 	case 2:
 		bursts = 0x01;
@@ -339,11 +326,7 @@ int ipu_idmac_lock_enable(struct ipuv3_channel *channel, int num_bursts)
 		return -EINVAL;
 	}
 
-	/*
-	 * IPUv3EX / i.MX51 has a different register layout, and on IPUv3M /
-	 * i.MX53 channel arbitration locking doesn't seem to work properly.
-	 * Allow enabling the lock feature on IPUv3H / i.MX6 only.
-	 */
+	 
 	if (bursts && ipu->ipu_type != IPUV3H)
 		return -EINVAL;
 
@@ -460,7 +443,7 @@ void ipu_idmac_select_buffer(struct ipuv3_channel *channel, u32 buf_num)
 
 	spin_lock_irqsave(&ipu->lock, flags);
 
-	/* Mark buffer as ready. */
+	 
 	if (buf_num == 0)
 		ipu_cm_write(ipu, idma_mask(chno), IPU_CHA_BUF0_RDY(chno));
 	else
@@ -478,7 +461,7 @@ void ipu_idmac_clear_buffer(struct ipuv3_channel *channel, u32 buf_num)
 
 	spin_lock_irqsave(&ipu->lock, flags);
 
-	ipu_cm_write(ipu, 0xF0300000, IPU_GPR); /* write one to clear */
+	ipu_cm_write(ipu, 0xF0300000, IPU_GPR);  
 	switch (buf_num) {
 	case 0:
 		ipu_cm_write(ipu, idma_mask(chno), IPU_CHA_BUF0_RDY(chno));
@@ -492,7 +475,7 @@ void ipu_idmac_clear_buffer(struct ipuv3_channel *channel, u32 buf_num)
 	default:
 		break;
 	}
-	ipu_cm_write(ipu, 0x0, IPU_GPR); /* write one to set */
+	ipu_cm_write(ipu, 0x0, IPU_GPR);  
 
 	spin_unlock_irqrestore(&ipu->lock, flags);
 }
@@ -547,15 +530,15 @@ int ipu_idmac_disable_channel(struct ipuv3_channel *channel)
 
 	spin_lock_irqsave(&ipu->lock, flags);
 
-	/* Disable DMA channel(s) */
+	 
 	val = ipu_idmac_read(ipu, IDMAC_CHA_EN(channel->num));
 	val &= ~idma_mask(channel->num);
 	ipu_idmac_write(ipu, val, IDMAC_CHA_EN(channel->num));
 
 	__ipu_idmac_reset_current_buffer(channel);
 
-	/* Set channel buffers NOT to be ready */
-	ipu_cm_write(ipu, 0xf0000000, IPU_GPR); /* write one to clear */
+	 
+	ipu_cm_write(ipu, 0xf0000000, IPU_GPR);  
 
 	if (ipu_cm_read(ipu, IPU_CHA_BUF0_RDY(channel->num)) &
 			idma_mask(channel->num)) {
@@ -569,9 +552,9 @@ int ipu_idmac_disable_channel(struct ipuv3_channel *channel)
 			     IPU_CHA_BUF1_RDY(channel->num));
 	}
 
-	ipu_cm_write(ipu, 0x0, IPU_GPR); /* write one to set */
+	ipu_cm_write(ipu, 0x0, IPU_GPR);  
 
-	/* Reset the double buffer */
+	 
 	val = ipu_cm_read(ipu, IPU_CHA_DB_MODE_SEL(channel->num));
 	val &= ~idma_mask(channel->num);
 	ipu_cm_write(ipu, val, IPU_CHA_DB_MODE_SEL(channel->num));
@@ -582,12 +565,7 @@ int ipu_idmac_disable_channel(struct ipuv3_channel *channel)
 }
 EXPORT_SYMBOL_GPL(ipu_idmac_disable_channel);
 
-/*
- * The imx6 rev. D TRM says that enabling the WM feature will increase
- * a channel's priority. Refer to Table 36-8 Calculated priority value.
- * The sub-module that is the sink or source for the channel must enable
- * watermark signal for this to take effect (SMFC_WM for instance).
- */
+ 
 void ipu_idmac_enable_watermark(struct ipuv3_channel *channel, bool enable)
 {
 	struct ipu_soc *ipu = channel->ipu;
@@ -623,10 +601,7 @@ static int ipu_memory_reset(struct ipu_soc *ipu)
 	return 0;
 }
 
-/*
- * Set the source mux for the given CSI. Selects either parallel or
- * MIPI CSI2 sources.
- */
+ 
 void ipu_set_csi_src_mux(struct ipu_soc *ipu, int csi_id, bool mipi_csi2)
 {
 	unsigned long flags;
@@ -648,9 +623,7 @@ void ipu_set_csi_src_mux(struct ipu_soc *ipu, int csi_id, bool mipi_csi2)
 }
 EXPORT_SYMBOL_GPL(ipu_set_csi_src_mux);
 
-/*
- * Set the source mux for the IC. Selects either CSI[01] or the VDI.
- */
+ 
 void ipu_set_ic_src_mux(struct ipu_soc *ipu, int csi_id, bool vdi)
 {
 	unsigned long flags;
@@ -676,7 +649,7 @@ void ipu_set_ic_src_mux(struct ipu_soc *ipu, int csi_id, bool vdi)
 EXPORT_SYMBOL_GPL(ipu_set_ic_src_mux);
 
 
-/* Frame Synchronization Unit Channel Linking */
+ 
 
 struct fsu_link_reg_info {
 	int chno;
@@ -726,9 +699,7 @@ static const struct fsu_link_info *find_fsu_link_info(int src, int sink)
 	return NULL;
 }
 
-/*
- * Links a source channel to a sink channel in the FSU.
- */
+ 
 int ipu_fsu_link(struct ipu_soc *ipu, int src_ch, int sink_ch)
 {
 	const struct fsu_link_info *link;
@@ -760,9 +731,7 @@ int ipu_fsu_link(struct ipu_soc *ipu, int src_ch, int sink_ch)
 }
 EXPORT_SYMBOL_GPL(ipu_fsu_link);
 
-/*
- * Unlinks source and sink channels in the FSU.
- */
+ 
 int ipu_fsu_unlink(struct ipu_soc *ipu, int src_ch, int sink_ch)
 {
 	const struct fsu_link_info *link;
@@ -792,14 +761,14 @@ int ipu_fsu_unlink(struct ipu_soc *ipu, int src_ch, int sink_ch)
 }
 EXPORT_SYMBOL_GPL(ipu_fsu_unlink);
 
-/* Link IDMAC channels in the FSU */
+ 
 int ipu_idmac_link(struct ipuv3_channel *src, struct ipuv3_channel *sink)
 {
 	return ipu_fsu_link(src->ipu, src->num, sink->num);
 }
 EXPORT_SYMBOL_GPL(ipu_idmac_link);
 
-/* Unlink IDMAC channels in the FSU */
+ 
 int ipu_idmac_unlink(struct ipuv3_channel *src, struct ipuv3_channel *sink)
 {
 	return ipu_fsu_unlink(src->ipu, src->num, sink->num);
@@ -875,7 +844,7 @@ static const struct of_device_id imx_ipu_dt_ids[] = {
 	{ .compatible = "fsl,imx53-ipu", .data = &ipu_type_imx53, },
 	{ .compatible = "fsl,imx6q-ipu", .data = &ipu_type_imx6q, },
 	{ .compatible = "fsl,imx6qp-ipu", .data = &ipu_type_imx6q, },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, imx_ipu_dt_ids);
 
@@ -1096,7 +1065,7 @@ struct ipu_platform_reg {
 	const char *name;
 };
 
-/* These must be in the order of the corresponding device tree port nodes */
+ 
 static struct ipu_platform_reg client_reg[] = {
 	{
 		.pdata = {
@@ -1152,7 +1121,7 @@ static int ipu_add_client_devices(struct ipu_soc *ipu, unsigned long ipu_base)
 		struct platform_device *pdev;
 		struct device_node *of_node;
 
-		/* Associate subdevice with the corresponding port node */
+		 
 		of_node = of_graph_get_port_by_id(dev->of_node, i);
 		if (!of_node) {
 			dev_info(dev,
@@ -1222,7 +1191,7 @@ static int ipu_irq_init(struct ipu_soc *ipu)
 		return ret;
 	}
 
-	/* Mask and clear all interrupts */
+	 
 	for (i = 0; i < IPU_NUM_IRQS; i += 32) {
 		ipu_cm_write(ipu, 0, IPU_INT_CTRL(i / 32));
 		ipu_cm_write(ipu, ~unused[i / 32], IPU_INT_STAT(i / 32));
@@ -1254,7 +1223,7 @@ static void ipu_irq_exit(struct ipu_soc *ipu)
 	irq_set_chained_handler_and_data(ipu->irq_err, NULL, NULL);
 	irq_set_chained_handler_and_data(ipu->irq_sync, NULL, NULL);
 
-	/* TODO: remove irq_domain_generic_chips */
+	 
 
 	for (i = 0; i < IPU_NUM_IRQS; i++) {
 		irq = irq_linear_revmap(ipu->domain, i);
@@ -1421,7 +1390,7 @@ static int ipu_probe(struct platform_device *pdev)
 	if (ret)
 		goto out_failed_irq;
 
-	/* Set MCU_T to divide MCU access window into 2 */
+	 
 	ipu_cm_write(ipu, 0x00400000L | (IPU_MCU_T_DEFAULT << 18),
 			IPU_DISP_GEN);
 

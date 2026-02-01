@@ -1,24 +1,4 @@
-/*
- * Copyright 2014 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- */
+ 
 
 #include "amdgpu.h"
 #include "amdgpu_amdkfd.h"
@@ -41,7 +21,7 @@ enum hqd_dequeue_request_type {
 };
 
 enum {
-	MAX_TRAPID = 8,		/* 3 bits in the bitfield. */
+	MAX_TRAPID = 8,		 
 	MAX_WATCH_ADDRESSES = 4
 };
 
@@ -93,12 +73,7 @@ static void kgd_program_sh_mem_settings(struct amdgpu_device *adev, uint32_t vmi
 static int kgd_set_pasid_vmid_mapping(struct amdgpu_device *adev, u32 pasid,
 					unsigned int vmid, uint32_t inst)
 {
-	/*
-	 * We have to assume that there is no outstanding mapping.
-	 * The ATC_VMID_PASID_MAPPING_UPDATE_STATUS bit could be 0 because
-	 * a mapping is in progress or because a mapping finished and the
-	 * SW cleared it. So the protocol is to always wait & clear.
-	 */
+	 
 	uint32_t pasid_mapping = (pasid == 0) ? 0 : (uint32_t)pasid |
 			ATC_VMID0_PASID_MAPPING__VALID_MASK;
 
@@ -108,7 +83,7 @@ static int kgd_set_pasid_vmid_mapping(struct amdgpu_device *adev, u32 pasid,
 		cpu_relax();
 	WREG32(mmATC_VMID_PASID_MAPPING_UPDATE_STATUS, 1U << vmid);
 
-	/* Mapping vmid to pasid also for IH block */
+	 
 	WREG32(mmIH_VMID_0_LUT + vmid, pasid_mapping);
 
 	return 0;
@@ -170,23 +145,18 @@ static int kgd_hqd_load(struct amdgpu_device *adev, void *mqd,
 
 	acquire_queue(adev, pipe_id, queue_id);
 
-	/* HQD registers extend from CP_MQD_BASE_ADDR to CP_MQD_CONTROL. */
+	 
 	mqd_hqd = &m->cp_mqd_base_addr_lo;
 
 	for (reg = mmCP_MQD_BASE_ADDR; reg <= mmCP_MQD_CONTROL; reg++)
 		WREG32(reg, mqd_hqd[reg - mmCP_MQD_BASE_ADDR]);
 
-	/* Copy userspace write pointer value to register.
-	 * Activate doorbell logic to monitor subsequent changes.
-	 */
+	 
 	data = REG_SET_FIELD(m->cp_hqd_pq_doorbell_control,
 			     CP_HQD_PQ_DOORBELL_CONTROL, DOORBELL_EN, 1);
 	WREG32(mmCP_HQD_PQ_DOORBELL_CONTROL, data);
 
-	/* read_user_ptr may take the mm->mmap_lock.
-	 * release srbm_mutex to avoid circular dependency between
-	 * srbm_mutex->mmap_lock->reservation_ww_class_mutex->srbm_mutex.
-	 */
+	 
 	release_queue(adev);
 	valid_wptr = read_user_wptr(mm, wptr, wptr_val);
 	acquire_queue(adev, pipe_id, queue_id);
@@ -384,15 +354,10 @@ static int kgd_hqd_destroy(struct amdgpu_device *adev, void *mqd,
 		break;
 	}
 
-	/* Workaround: If IQ timer is active and the wait time is close to or
-	 * equal to 0, dequeueing is not safe. Wait until either the wait time
-	 * is larger or timer is cleared. Also, ensure that IQ_REQ_PEND is
-	 * cleared before continuing. Also, ensure wait times are set to at
-	 * least 0x3.
-	 */
+	 
 	local_irq_save(flags);
 	preempt_disable();
-	retry = 5000; /* wait for 500 usecs at maximum */
+	retry = 5000;  
 	while (true) {
 		temp = RREG32(mmCP_HQD_IQ_TIMER);
 		if (REG_GET_FIELD(temp, CP_HQD_IQ_TIMER, PROCESSING_IQ)) {
@@ -401,12 +366,9 @@ static int kgd_hqd_destroy(struct amdgpu_device *adev, void *mqd,
 		}
 		if (REG_GET_FIELD(temp, CP_HQD_IQ_TIMER, ACTIVE)) {
 			if (REG_GET_FIELD(temp, CP_HQD_IQ_TIMER, RETRY_TYPE)
-					== 3) /* SEM-rearm is safe */
+					== 3)  
 				break;
-			/* Wait time 3 is safe for CP, but our MMIO read/write
-			 * time is close to 1 microsecond, so check for 10 to
-			 * leave more buffer room
-			 */
+			 
 			if (REG_GET_FIELD(temp, CP_HQD_IQ_TIMER, WAIT_TIME)
 					>= 10)
 				break;
@@ -504,7 +466,7 @@ static int kgd_wave_control_execute(struct amdgpu_device *adev,
 	WREG32(mmGRBM_GFX_INDEX, gfx_index_val);
 	WREG32(mmSQ_CMD, sq_cmd);
 
-	/*  Restore the GRBM_GFX_INDEX register  */
+	 
 
 	data = GRBM_GFX_INDEX__INSTANCE_BROADCAST_WRITES_MASK |
 		GRBM_GFX_INDEX__SH_BROADCAST_WRITES_MASK |
@@ -547,13 +509,7 @@ static void set_vm_context_page_table_base(struct amdgpu_device *adev,
 		lower_32_bits(page_table_base));
 }
 
- /**
-  * read_vmid_from_vmfault_reg - read vmid from register
-  *
-  * adev: amdgpu_device pointer
-  * @vmid: vmid pointer
-  * read vmid from register (CIK).
-  */
+  
 static uint32_t read_vmid_from_vmfault_reg(struct amdgpu_device *adev)
 {
 	uint32_t status = RREG32(mmVM_CONTEXT1_PROTECTION_FAULT_STATUS);

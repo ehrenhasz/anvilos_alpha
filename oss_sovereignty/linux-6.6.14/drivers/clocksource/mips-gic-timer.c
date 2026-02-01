@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (C) 2012 MIPS Technologies, Inc.  All rights reserved.
+
+
 
 #define pr_fmt(fmt) "mips-gic-timer: " fmt
 
@@ -189,14 +189,14 @@ static int __init __gic_clocksource_init(void)
 	unsigned int count_width;
 	int ret;
 
-	/* Set clocksource mask. */
+	 
 	count_width = read_gic_config() & GIC_CONFIG_COUNTBITS;
 	count_width >>= __ffs(GIC_CONFIG_COUNTBITS);
 	count_width *= 4;
 	count_width += 32;
 	gic_clocksource.mask = CLOCKSOURCE_MASK(count_width);
 
-	/* Calculate a somewhat reasonable rating value. */
+	 
 	gic_clocksource.rating = 200 + gic_frequency / 10000000;
 
 	ret = clocksource_register_hz(&gic_clocksource, gic_frequency);
@@ -248,15 +248,10 @@ static int __init gic_clocksource_of_init(struct device_node *node)
 			pr_warn("Unable to register clock notifier\n");
 	}
 
-	/* And finally start the counter */
+	 
 	clear_gic_config(GIC_CONFIG_COUNTSTOP);
 
-	/*
-	 * It's safe to use the MIPS GIC timer as a sched clock source only if
-	 * its ticks are stable, which is true on either the platforms with
-	 * stable CPU frequency or on the platforms with CM3 and CPU frequency
-	 * change performed by the CPC core clocks divider.
-	 */
+	 
 	if (mips_cm_revision() >= CM_REV_CM3 || !IS_ENABLED(CONFIG_CPU_FREQ)) {
 		sched_clock_register(mips_cm_is64 ?
 				     gic_read_count_64 : gic_read_count_2x32,

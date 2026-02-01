@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * camss-ispif.h
- *
- * Qualcomm MSM Camera Subsystem - ISPIF (ISP Interface) Module
- *
- * Copyright (c) 2013-2014, The Linux Foundation. All rights reserved.
- * Copyright (C) 2015-2018 Linaro Ltd.
- */
+ 
+ 
 #ifndef QC_MSM_CAMSS_ISPIF_H
 #define QC_MSM_CAMSS_ISPIF_H
 
@@ -76,4 +69,4 @@ int msm_ispif_register_entities(struct ispif_device *ispif,
 
 void msm_ispif_unregister_entities(struct ispif_device *ispif);
 
-#endif /* QC_MSM_CAMSS_ISPIF_H */
+#endif  

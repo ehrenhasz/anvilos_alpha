@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright 2021 Collabora ltd.
- */
+ 
+ 
 
 #ifndef PANFROST_DUMP_H
 #define PANFROST_DUMP_H

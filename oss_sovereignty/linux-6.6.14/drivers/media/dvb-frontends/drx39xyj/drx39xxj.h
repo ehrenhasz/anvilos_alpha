@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- *  Driver for Micronas DRX39xx family (drx3933j)
- *
- *  Written by Devin Heitmueller <devin.heitmueller@kernellabs.com>
- */
+ 
+ 
 
 #ifndef DRX39XXJ_H
 #define DRX39XXJ_H
@@ -28,4 +24,4 @@ static inline struct dvb_frontend *drx39xxj_attach(struct i2c_adapter *i2c) {
 };
 #endif
 
-#endif /* DVB_DUMMY_FE_H */
+#endif  

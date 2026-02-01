@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: MIT
+
 #include <linux/string.h>
 #include <drm/drm_crtc.h>
 #include <drm/drm_atomic_helper.h>
@@ -90,10 +90,7 @@ static void nv50_crc_ctx_flip_work(struct kthread_work *base)
 	uint64_t end_vbl;
 	u8 new_idx = crc->ctx_idx ^ 1;
 
-	/*
-	 * We don't want to accidentally wait for longer then the vblank, so
-	 * try again for the next vblank if we don't grab the lock
-	 */
+	 
 	if (!mutex_trylock(&disp->mutex)) {
 		drm_dbg_kms(dev, "Lock contended, delaying CRC ctx flip for %s\n", crtc->name);
 		drm_vblank_work_schedule(work, start_vbl + 1, true);
@@ -133,11 +130,7 @@ nv50_crc_get_entries(struct nv50_head *head,
 	u32 output_crc;
 
 	while (crc->entry_idx < func->num_entries) {
-		/*
-		 * While Nvidia's documentation says CRCs are written on each
-		 * subsequent vblank after being enabled, in practice they
-		 * aren't written immediately.
-		 */
+		 
 		output_crc = func->get_entry(head, &crc->ctx[crc->ctx_idx],
 					     source, crc->entry_idx);
 		if (!output_crc)
@@ -161,11 +154,7 @@ void nv50_crc_handle_vblank(struct nv50_head *head)
 	if (!func)
 		return;
 
-	/*
-	 * We don't lose events if we aren't able to report CRCs until the
-	 * next vblank, so only report CRCs if the locks we need aren't
-	 * contended to prevent missing an actual vblank event
-	 */
+	 
 	if (!spin_trylock(&crc->lock))
 		return;
 
@@ -180,19 +169,7 @@ void nv50_crc_handle_vblank(struct nv50_head *head)
 		crc->entry_idx = 0;
 		crc->ctx_changed = false;
 
-		/*
-		 * Unfortunately when notifier contexts are changed during CRC
-		 * capture, we will inevitably lose the CRC entry for the
-		 * frame where the hardware actually latched onto the first
-		 * UPDATE. According to Nvidia's hardware engineers, there's
-		 * no workaround for this.
-		 *
-		 * Now, we could try to be smart here and calculate the number
-		 * of missed CRCs based on audit timestamps, but those were
-		 * removed starting with volta. Since we always flush our
-		 * updates back-to-back without waiting, we'll just be
-		 * optimistic and assume we always miss exactly one frame.
-		 */
+		 
 		drm_dbg_kms(head->base.base.dev,
 			    "Notifier ctx flip for head-%d finished, lost CRC for frame %llu\n",
 			    head->base.index, crc->frame);
@@ -260,10 +237,7 @@ void nv50_crc_atomic_stop_reporting(struct drm_atomic_state *state)
 			  "CRC reporting on vblank for head-%d disabled\n",
 			  head->base.index);
 
-		/* CRC generation is still enabled in hw, we'll just report
-		 * any remaining CRC entries ourselves after it gets disabled
-		 * in hardware
-		 */
+		 
 	}
 }
 
@@ -406,10 +380,7 @@ void nv50_crc_atomic_check_outp(struct nv50_atom *atom)
 		if (!asyh->clr.crc)
 			continue;
 
-		/*
-		 * Re-programming ORs can't be done in the same flush as
-		 * disabling CRCs
-		 */
+		 
 		list_for_each_entry(outp_atom, &atom->outp, head) {
 			if (outp_atom->encoder == encoder) {
 				if (outp_atom->set.mask) {
@@ -493,9 +464,7 @@ nv50_crc_raster_type(enum nv50_crc_source source)
 	return 0;
 }
 
-/* We handle mapping the memory for CRC notifiers ourselves, since each
- * notifier needs it's own handle
- */
+ 
 static inline int
 nv50_crc_ctx_init(struct nv50_head *head, struct nvif_mmu *mmu,
 		  struct nv50_crc_notifier_ctx *ctx, size_t len, int idx)
@@ -553,10 +522,7 @@ int nv50_crc_set_source(struct drm_crtc *crtc, const char *source_str)
 	if (ret)
 		return ret;
 
-	/*
-	 * Since we don't want the user to accidentally interrupt us as we're
-	 * disabling CRCs
-	 */
+	 
 	if (source)
 		ctx_flags |= DRM_MODESET_ACQUIRE_INTERRUPTIBLE;
 	drm_modeset_acquire_init(&ctx, ctx_flags);
@@ -597,10 +563,7 @@ retry:
 		goto out_drop_locks;
 
 	if (!source) {
-		/*
-		 * If the user specified a custom flip threshold through
-		 * debugfs, reset it
-		 */
+		 
 		crc->flip_threshold = func->flip_threshold;
 	}
 

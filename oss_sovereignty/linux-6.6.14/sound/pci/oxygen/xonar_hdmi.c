@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * helper functions for HDMI models (Xonar HDAV1.3/HDAV1.3 Slim)
- *
- * Copyright (c) Clemens Ladisch <clemens@ladisch.de>
- */
+
+ 
 
 #include <linux/pci.h>
 #include <linux/delay.h>
@@ -80,7 +76,7 @@ void xonar_hdmi_pcm_hardware_filter(unsigned int channel,
 void xonar_set_hdmi_params(struct oxygen *chip, struct xonar_hdmi *hdmi,
 			   struct snd_pcm_hw_params *params)
 {
-	hdmi->params[0] = 0; /* 1 = non-audio */
+	hdmi->params[0] = 0;  
 	switch (params_rate(params)) {
 	case 44100:
 		hdmi->params[1] = IEC958_AES3_CON_FS_44100;
@@ -88,7 +84,7 @@ void xonar_set_hdmi_params(struct oxygen *chip, struct xonar_hdmi *hdmi,
 	case 48000:
 		hdmi->params[1] = IEC958_AES3_CON_FS_48000;
 		break;
-	default: /* 96000 */
+	default:  
 		hdmi->params[1] = IEC958_AES3_CON_FS_96000;
 		break;
 	case 192000:
@@ -100,7 +96,7 @@ void xonar_set_hdmi_params(struct oxygen *chip, struct xonar_hdmi *hdmi,
 		hdmi->params[3] = 0;
 	else
 		hdmi->params[3] = 0xc0;
-	hdmi->params[4] = 1; /* ? */
+	hdmi->params[4] = 1;  
 	hdmi_write_command(chip, 0x54, 5, hdmi->params);
 }
 
